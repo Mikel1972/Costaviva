@@ -113,21 +113,26 @@ async function previsionSpot(spot) {
   };
 }
 
-// Boya de Bilbao-Vizcaya (Puertos del Estado, red REDEXT) — datos MEDIDOS de
-// verdad en mar abierto (no un modelo), transmitidos por satélite cada hora.
-// Boya real, ~40 millas al norte de Bilbao, profundidad 580m.
-const BOYA = { codigo: 2136, nombre: "Bilbao-Vizcaya", lat: 43.64, lon: -3.04 };
+// Boyas reales de Puertos del Estado (medidas por satélite/radio, no un
+// modelo) que cubren el tramo Lekeitio→Bilbao de oeste a este: Gijón queda
+// algo fuera del mapa pero da contexto del Cantábrico, Bilbao-Vizcaya es la
+// boya de referencia frente a la zona, y Pasaia II cubre el lado este.
+const BOYAS = [
+  { codigo: 1117, nombre: "Gijón", lat: 43.62, lon: -5.66 },
+  { codigo: 2136, nombre: "Bilbao-Vizcaya", lat: 43.64, lon: -3.04 },
+  { codigo: 1101, nombre: "Pasaia II", lat: 43.36, lon: -1.89 },
+];
 
 function fechaParaBoya(d) {
   const p2 = (n) => String(n).padStart(2, "0");
   return `${d.getUTCFullYear()}${p2(d.getUTCMonth() + 1)}${p2(d.getUTCDate())}@${p2(d.getUTCHours())}${p2(d.getUTCMinutes())}`;
 }
 
-async function datosBoya() {
+async function datosBoya(boya) {
   const ahora = new Date();
   const desde = new Date(ahora.getTime() - 6 * 3600 * 1000);
   const url =
-    `https://poem.puertos.es/portus/StationData?code=${BOYA.codigo}` +
+    `https://poem.puertos.es/portus/StationData?code=${boya.codigo}` +
     `&params=Hm0,Tp,MeanDir,WaterTemp&from=${fechaParaBoya(desde)}&to=${fechaParaBoya(ahora)}`;
   const datos = await fetchJSON(url);
   const cabeceras = datos[0]; // ["UTC", "Hm0 (m)", "Tp (s)", "MeanDir (º)", "WaterTemp (ºC)"] — el orden puede variar
@@ -142,7 +147,7 @@ async function datosBoya() {
   };
 
   return {
-    ...BOYA,
+    ...boya,
     actualizado: new Date(ultima[0] * 1000).toISOString(),
     alturaSignificativa: valor("Hm0"),
     periodoPico: valor("Tp"),
@@ -155,16 +160,16 @@ async function datosBoya() {
 }
 
 export async function onRequestGet(context) {
-  const [resultados, boya] = await Promise.all([
+  const [resultados, boyas] = await Promise.all([
     Promise.all(
       SPOTS.map((spot) =>
         previsionSpot(spot).catch((e) => ({ slug: spot.slug, nombre: spot.nombre, error: String(e) }))
       )
     ),
-    datosBoya().catch((e) => ({ ...BOYA, error: String(e) })),
+    Promise.all(BOYAS.map((b) => datosBoya(b).catch((e) => ({ ...b, error: String(e) })))),
   ]);
 
-  return new Response(JSON.stringify({ spots: resultados, boya }, null, 2), {
+  return new Response(JSON.stringify({ spots: resultados, boyas }, null, 2), {
     headers: {
       "content-type": "application/json; charset=utf-8",
       // Cache corto en el edge de Cloudflare — el modelo de Open-Meteo se

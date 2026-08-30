@@ -28,47 +28,55 @@
     height: 100vh;
     overflow: hidden;
   }
-  header { padding: 20px 28px 14px; border-bottom: 1px solid #1C3F4F; flex-shrink: 0; }
+  header { padding: 8px 20px; border-bottom: 1px solid #1C3F4F; flex-shrink: 0; display: flex; align-items: baseline; flex-wrap: wrap; column-gap: 12px; row-gap: 2px; }
   header h1 {
     font-family: 'Fraunces', serif;
-    font-size: 24px;
+    font-size: 17px;
     font-weight: 600;
     margin: 0;
     display: inline-block;
   }
   header .fecha {
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 12px;
+    font-size: 10.5px;
     color: #7FA3AF;
-    margin-left: 10px;
   }
-  header p { margin: 6px 0 0; color: #9FB8BF; font-size: 13px; max-width: 640px; }
+  header p { margin: 0; color: #7FA3AF; font-size: 11px; max-width: 520px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
   .main { display: flex; flex: 1; min-height: 0; }
   .mapa-wrap { flex: 1; position: relative; }
   #map { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #0B2532; }
-  #heat-canvas { position: absolute; top: 0; left: 0; pointer-events: none; z-index: 450; }
 
+  .marcador-envoltorio { position: relative; width: 24px; height: 24px; }
   .marcador {
-    width: 16px; height: 16px; border-radius: 50%;
+    position: relative; z-index: 2;
+    width: 24px; height: 24px; border-radius: 50%;
     background: #0B2532; border: 2px solid #E8E2D0;
     display: flex; align-items: center; justify-content: center;
-    font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 700; color: #E8E2D0;
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 700; color: #E8E2D0;
     cursor: pointer;
   }
   .marcador.activo { border-width: 3px; box-shadow: 0 0 0 3px rgba(232,226,208,0.25); }
+  .anillo-pulso {
+    position: absolute; inset: 0; border-radius: 50%; z-index: 1;
+    animation: pulsoAnillo 2.2s ease-out infinite;
+  }
+  @keyframes pulsoAnillo {
+    0% { transform: scale(0.7); opacity: 0.6; }
+    75%, 100% { transform: scale(2.6); opacity: 0; }
+  }
   .etiqueta-spot {
     font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; color: #F5F1E6;
     text-shadow: 0 0 4px #0B2532, 0 0 4px #0B2532, 0 0 4px #0B2532;
     white-space: nowrap; pointer-events: none;
   }
   .rio-marcador {
-    width: 16px; height: 16px; transform: rotate(45deg);
+    width: 10px; height: 10px; transform: rotate(45deg);
     border: 1.5px solid #E8E2D0;
     transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
   }
   .rio-marcador:hover {
-    transform: rotate(45deg) scale(1.7);
+    transform: rotate(45deg) scale(2);
     box-shadow: 0 0 0 4px rgba(232,226,208,0.2);
   }
   .marcador-boya {
@@ -138,10 +146,9 @@
     .leyenda-toggle { bottom: 10px; left: 10px; width: 34px; height: 34px; }
     .leyenda { bottom: 10px; left: 56px; }
 
-    header { padding: 14px 16px 10px; }
-    header h1 { font-size: 20px; }
-    header .fecha { display: block; margin: 2px 0 0 0; }
-    header p { font-size: 12px; margin-top: 4px; }
+    header { padding: 6px 14px; }
+    header h1 { font-size: 15px; }
+    header p { display: none; }
 
     #avisoRayos, #sinRayos { padding: 6px 16px; font-size: 10.5px; }
 
@@ -206,7 +213,7 @@
 
 <header>
   <h1>Costa Viva</h1><span class="fecha">LEKEITIO → BILBAO · 24 AGO 2026</span>
-  <p>Mapa real con halo de color por spot (oleaje+viento combinados) y boya de mar abierto de Puertos del Estado.</p>
+  <p>Mapa real con estado del mar por spot (oleaje+viento combinados) y boya de mar abierto de Puertos del Estado.</p>
 </header>
 
 <div id="avisoRayos" style="display:none; background:#A34A35; color:#F5F1E6; padding:8px 28px; font-family:'IBM Plex Mono', monospace; font-size:12px; font-weight:700; flex-shrink:0;">
@@ -219,8 +226,7 @@
 <div class="main">
   <div class="mapa-wrap">
     <div id="map"></div>
-    <canvas id="heat-canvas"></canvas>
-    <button class="leyenda-toggle" id="toggleLeyenda" aria-label="Mostrar/ocultar leyenda">☰</button>
+    <button class="leyenda-toggle" id="toggleLeyenda" title="¿Qué significan los colores del mapa?" aria-label="Mostrar/ocultar leyenda">ⓘ</button>
     <div class="leyenda" id="leyendaPanel">
       <div class="titulo">ÍNDICE DE MAR (oleaje + viento + ángulo entre ambos)</div>
       <div class="fila"><span class="chip" style="background:#4F9D69"></span><span>tranquilo</span></div>
@@ -300,12 +306,14 @@ const SPOTS = [
     nubosidad: null, precipitacion: null, tempAgua: null, rayosCerca: null },
 ];
 
-// Boya real de Bilbao-Vizcaya (Puertos del Estado, REDEXT) — mar abierto,
-// datos medidos por satélite cada hora, no un modelo. Ver /prevision.
-const BOYA = {
-  nombre: "Bilbao-Vizcaya", lat: 43.64, lon: -3.04,
-  alturaSignificativa: null, periodoPico: null, dirOla: null, tempAgua: null, actualizado: null,
-};
+// Boyas reales de Puertos del Estado — mar abierto, datos medidos por
+// satélite cada hora, no un modelo. Ver /prevision. Se rellenan desde el
+// backend; sin datos reales, no se dibujan (nunca un número inventado).
+const BOYAS = [
+  { codigo: 1117, nombre: "Gijón", lat: 43.62, lon: -5.66 },
+  { codigo: 2136, nombre: "Bilbao-Vizcaya", lat: 43.64, lon: -3.04 },
+  { codigo: 1101, nombre: "Pasaia II", lat: 43.36, lon: -1.89 },
+].map((b) => ({ ...b, alturaSignificativa: null, periodoPico: null, dirOla: null, tempAgua: null, actualizado: null }));
 
 const RIOS = [
   // Cada río con 3 puntos aproximados (cabecera / medio / desembocadura),
@@ -418,9 +426,11 @@ async function actualizarDesdeBackend() {
       if (b.nubosidad !== undefined) s.nubosidad = b.nubosidad;
       s.indice = indiceMar(s);
     });
-    if (datos.boya && !datos.boya.error) {
-      Object.assign(BOYA, datos.boya);
-    }
+    (datos.boyas || []).forEach((bBackend) => {
+      if (bBackend.error) return;
+      const b = BOYAS.find((x) => x.codigo === bBackend.codigo);
+      if (b) Object.assign(b, bBackend);
+    });
     console.log("Datos reales cargados desde /prevision");
   } catch (e) {
     console.log("Backend no disponible, usando datos fijos de hoy:", e.message);
@@ -435,8 +445,13 @@ async function actualizarDesdeBackend() {
 const map = L.map("map", {
   center: [43.51, -2.82],
   zoom: 10,
-  minZoom: 9,
+  minZoom: 5,
   maxZoom: 15,
+  // La animación de zoom de Leaflet puede quedarse "atascada" si el evento
+  // CSS transitionend no llega a disparar (pasa en algunos navegadores/
+  // entornos automatizados) — a partir de ahí deja de responder a más
+  // zooms. Desactivarla hace el zoom instantáneo pero siempre fiable.
+  zoomAnimation: false,
   dragging: true,
   scrollWheelZoom: true,
   doubleClickZoom: true,
@@ -457,34 +472,6 @@ L.tileLayer("https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_
   opacity: 0.9,
 }).addTo(map);
 
-const canvas = document.getElementById("heat-canvas");
-const ctx = canvas.getContext("2d");
-
-// Halos de color localizados en cada spot (no todo el lienzo) — así el mar
-// se ve azul de verdad en vez de con un velo translúcido por encima de todo
-// el mapa (tierra incluida), que es lo que daba el efecto de "niebla".
-const RADIO_HALO = 80;
-function dibujarCalor() {
-  const size = map.getSize();
-  canvas.width = size.x;
-  canvas.height = size.y;
-  canvas.style.width = size.x + "px";
-  canvas.style.height = size.y + "px";
-  ctx.clearRect(0, 0, size.x, size.y);
-
-  SPOTS.forEach((s) => {
-    const p = map.latLngToContainerPoint([s.lat, s.lon]);
-    const [r, g, b] = colorGradiente(s.indice, 0, 100);
-    const gradiente = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, RADIO_HALO);
-    gradiente.addColorStop(0, `rgba(${r},${g},${b},0.55)`);
-    gradiente.addColorStop(1, `rgba(${r},${g},${b},0)`);
-    ctx.fillStyle = gradiente;
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, RADIO_HALO, 0, Math.PI * 2);
-    ctx.fill();
-  });
-}
-
 function iconoFlecha(grados, color) {
   const rumbo = (grados + 180) % 360;
   return `<svg width="11" height="11" viewBox="0 0 24 24" style="transform:rotate(${rumbo}deg)">
@@ -501,10 +488,13 @@ function crearMarcadores() {
           ${iconoFlecha(gradosDesdeTexto(s.dirOla), "#7EC8E3")}
           ${iconoFlecha(gradosDesdeTexto(s.dirViento), "#D4A24C")}
           <span style="font-family:'IBM Plex Mono',monospace; font-size:9px; font-weight:700; color:#D4A24C; text-shadow:0 0 3px #0B2532,0 0 3px #0B2532;">${s.viento}</span>
-          <div class="marcador" id="marcador-${s.slug}" style="background:${color}; color:#0B2532;">${s.indice}</div>
+          <div class="marcador-envoltorio">
+            <div class="anillo-pulso" style="background:${color};"></div>
+            <div class="marcador" id="marcador-${s.slug}" style="background:${color}; color:#0B2532;">${s.indice}</div>
+          </div>
         </div>
       </div>`;
-    const icon = L.divIcon({ html, className: "", iconSize: [104, 46], iconAnchor: [52, 23] });
+    const icon = L.divIcon({ html, className: "", iconSize: [110, 50], iconAnchor: [55, 25] });
     const marker = L.marker([s.lat, s.lon], { icon }).addTo(map);
     marker.on("click", () => abrirPanel(s));
   });
@@ -517,7 +507,7 @@ function crearMarcadores() {
     r.puntos.forEach((p) => {
       const cat = categoriaCaudal(p.caudal);
       const html = `<div class="rio-marcador" style="background:${cat.color};"></div>`;
-      const icon = L.divIcon({ html, className: "", iconSize: [14, 14], iconAnchor: [7, 7] });
+      const icon = L.divIcon({ html, className: "", iconSize: [10, 10], iconAnchor: [5, 5] });
       const llamada = `
         <div class="rio-nombre">${r.rio}</div>
         <div class="rio-tramo">${p.tramo}</div>
@@ -528,30 +518,30 @@ function crearMarcadores() {
     });
   });
 
-  crearMarcadorBoya();
+  BOYAS.forEach(crearMarcadorBoya);
 }
 
-function crearMarcadorBoya() {
-  // Solo se dibuja si el backend trajo datos reales de la boya — sin
+function crearMarcadorBoya(boya) {
+  // Solo se dibuja si el backend trajo datos reales de esa boya — sin
   // fallback inventado, mejor no mostrarla a mostrar un número falso.
-  if (BOYA.alturaSignificativa === null || BOYA.alturaSignificativa === undefined) return;
+  if (boya.alturaSignificativa === null || boya.alturaSignificativa === undefined) return;
 
   const html = `
     <div style="display:flex; flex-direction:column; align-items:center;">
-      <div class="etiqueta-spot" style="color:#7EC8E3;">⚓ ${BOYA.nombre}</div>
+      <div class="etiqueta-spot" style="color:#7EC8E3;">⚓ ${boya.nombre}</div>
       <div style="display:flex; align-items:center; gap:4px;">
-        ${BOYA.dirOla ? iconoFlecha(gradosDesdeTexto(BOYA.dirOla), "#7EC8E3") : ""}
-        <div class="marcador-boya">${BOYA.alturaSignificativa.toFixed(1)}m</div>
+        ${boya.dirOla ? iconoFlecha(gradosDesdeTexto(boya.dirOla), "#7EC8E3") : ""}
+        <div class="marcador-boya">${boya.alturaSignificativa.toFixed(1)}m</div>
       </div>
     </div>`;
   const icon = L.divIcon({ html, className: "", iconSize: [110, 46], iconAnchor: [55, 23] });
-  const marker = L.marker([BOYA.lat, BOYA.lon], { icon }).addTo(map);
+  const marker = L.marker([boya.lat, boya.lon], { icon }).addTo(map);
 
   const llamada = `
-    <div class="rio-nombre">⚓ Boya ${BOYA.nombre}</div>
+    <div class="rio-nombre">⚓ Boya ${boya.nombre}</div>
     <div class="rio-tramo">Mar abierto · dato medido (Puertos del Estado)</div>
-    <div class="rio-caudal">Oleaje: ${BOYA.alturaSignificativa}m${BOYA.periodoPico ? ` · ${Math.round(BOYA.periodoPico)}s` : ""}${BOYA.dirOla ? ` · ${BOYA.dirOla}` : ""}</div>
-    ${BOYA.tempAgua !== null ? `<div class="rio-caudal">🌡 Agua: ${BOYA.tempAgua}°C</div>` : ""}
+    <div class="rio-caudal">Oleaje: ${boya.alturaSignificativa}m${boya.periodoPico ? ` · ${Math.round(boya.periodoPico)}s` : ""}${boya.dirOla ? ` · ${boya.dirOla}` : ""}</div>
+    ${boya.tempAgua !== null ? `<div class="rio-caudal">🌡 Agua: ${boya.tempAgua}°C</div>` : ""}
   `;
   marker.bindTooltip(llamada, { direction: "top", offset: [0, -10], className: "llamada-rio", opacity: 1 });
 }
@@ -699,7 +689,7 @@ function abrirPanel(s) {
 }
 document.getElementById("toggleLeyenda").addEventListener("click", () => {
   const abierta = document.getElementById("leyendaPanel").classList.toggle("visible");
-  document.getElementById("toggleLeyenda").textContent = abierta ? "✕" : "☰";
+  document.getElementById("toggleLeyenda").textContent = abierta ? "✕" : "ⓘ";
 });
 document.getElementById("cerrarPanel").addEventListener("click", () => {
   document.getElementById("panel").classList.remove("visible");
@@ -709,7 +699,6 @@ document.getElementById("cerrarPanel").addEventListener("click", () => {
 map.whenReady(async () => {
   await actualizarDesdeBackend();
   crearMarcadores();
-  dibujarCalor();
   comprobarAvisoRayos();
 });
 
@@ -718,12 +707,6 @@ function comprobarAvisoRayos() {
   document.getElementById("avisoRayos").style.display = hayRiesgo ? "block" : "none";
   document.getElementById("sinRayos").style.display = hayRiesgo ? "none" : "block";
 }
-window.addEventListener("resize", dibujarCalor);
-// El canvas de calor está superpuesto sobre el mapa pero no es una capa de
-// Leaflet, así que no se mueve solo al hacer zoom/arrastrar — hay que
-// redibujarlo cuando el mapa termina de moverse para que los halos sigan
-// alineados con los marcadores.
-map.on("zoomend moveend", dibujarCalor);
 </script>
 
 </body>
