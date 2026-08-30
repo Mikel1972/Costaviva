@@ -65,7 +65,28 @@
   .rio-marcador {
     width: 16px; height: 16px; transform: rotate(45deg);
     border: 1.5px solid #E8E2D0;
+    transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
   }
+  .rio-marcador:hover {
+    transform: rotate(45deg) scale(1.7);
+    box-shadow: 0 0 0 4px rgba(232,226,208,0.2);
+  }
+
+  /* Llamada de caudal: tooltip de Leaflet restilizado para que se note que
+     el marcador de río se puede "abrir" al pasar el cursor por encima. */
+  .llamada-rio {
+    background: #0F2C38 !important; border: 1px solid #1C3F4F !important;
+    color: #E8E2D0 !important; border-radius: 8px !important;
+    padding: 8px 11px !important; font-family: 'Inter', sans-serif; font-size: 12px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.35) !important;
+    transform-origin: bottom center;
+    animation: expandirLlamada 0.14s ease-out;
+  }
+  @keyframes expandirLlamada { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+  .leaflet-tooltip.llamada-rio::before { border-top-color: #1C3F4F !important; }
+  .llamada-rio .rio-nombre { font-weight: 600; color: #F5F1E6; margin-bottom: 2px; }
+  .llamada-rio .rio-tramo { color: #9FB8BF; font-size: 10.5px; }
+  .llamada-rio .rio-caudal { margin-top: 3px; display: flex; align-items: center; gap: 5px; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; }
 
   .leyenda {
     position: absolute; bottom: 16px; left: 16px; z-index: 500;
@@ -99,7 +120,6 @@
   /* ---- Móvil ---- */
   @media (max-width: 720px) {
     .leyenda { bottom: 10px; left: 10px; }
-    #tablaRiosBox { top: 10px; right: 10px; }
 
     header { padding: 14px 16px 10px; }
     header h1 { font-size: 20px; }
@@ -118,7 +138,6 @@
     }
     .leyenda .titulo { font-size: 10px; margin-bottom: 4px; }
     .leyenda .nota { font-size: 9px; }
-    #tablaRiosBox { max-width: 46vw; }
 
     /* Panel de detalle: deja de ser columna lateral y pasa a hoja
        deslizante desde abajo, superpuesta al mapa */
@@ -189,11 +208,7 @@
       <div class="fila"><span class="chip" style="background:#4F9D69"></span><span>tranquilo</span></div>
       <div class="fila"><span class="chip" style="background:#D4A24C"></span><span>moderado</span></div>
       <div class="fila"><span class="chip" style="background:#A34A35"></span><span>agitado</span></div>
-      <div class="nota" style="margin-top:10px; padding-top:8px; border-top:1px solid #1C3F4F;">◆ RÍOS: 3 puntos por río (cabecera→desembocadura), color por caudal bajo/normal/alto. Lo que se mide arriba llega a la costa horas después — útil como aviso de tendencia. Posiciones aproximadas, sin datos reales todavía (URA/Euskalmet).</div>
-    </div>
-    <div class="leyenda" id="tablaRiosBox" style="left:auto; right:16px; bottom:auto; top:16px; max-width:260px;">
-      <div class="titulo">TENDENCIA DE CAUDAL POR RÍO</div>
-      <div id="tablaRios"></div>
+      <div class="nota" style="margin-top:10px; padding-top:8px; border-top:1px solid #1C3F4F;">◆ RÍOS: 3 puntos por río (cabecera→desembocadura), color por caudal bajo/normal/alto — pasa el cursor por un punto para ver el detalle. Lo que se mide arriba llega a la costa horas después — útil como aviso de tendencia. Posiciones aproximadas, sin datos reales todavía (URA/Euskalmet).</div>
     </div>
   </div>
   <div class="panel" id="panel">
@@ -441,28 +456,6 @@ function iconoFlecha(grados, color) {
     <path d="M12 2 L18 16 L12 12 L6 16 Z" fill="${color}" /></svg>`;
 }
 
-function pintarTablaRios() {
-  const cont = document.getElementById("tablaRios");
-  cont.innerHTML = RIOS.map((r) => {
-    const filas = r.puntos
-      .map((p) => {
-        const cat = categoriaCaudal(p.caudal);
-        return `<div class="fila" style="justify-content:space-between; gap:6px;">
-          <span style="color:#9FB8BF; font-size:10px;">${p.tramo.split(" (")[0]}</span>
-          <span style="display:flex; align-items:center; gap:5px;">
-            <span class="chip" style="background:${cat.color}"></span>
-            <span style="font-size:10px;">${cat.etiqueta}</span>
-          </span>
-        </div>`;
-      })
-      .join("");
-    return `<div style="margin-top:8px;">
-      <div style="font-family:'Inter',sans-serif; font-size:12px; font-weight:600; color:#E8E2D0;">${r.rio}</div>
-      ${filas}
-    </div>`;
-  }).join("");
-}
-
 function crearMarcadores() {
   SPOTS.forEach((s) => {
     const color = colorIndiceMarCss(s.indice);
@@ -487,10 +480,15 @@ function crearMarcadores() {
 
     r.puntos.forEach((p) => {
       const cat = categoriaCaudal(p.caudal);
-      const html = `<div class="rio-marcador" style="background:${cat.color};" title="${r.rio} — ${p.tramo}: ${cat.etiqueta}"></div>`;
+      const html = `<div class="rio-marcador" style="background:${cat.color};"></div>`;
       const icon = L.divIcon({ html, className: "", iconSize: [14, 14], iconAnchor: [7, 7] });
+      const llamada = `
+        <div class="rio-nombre">${r.rio}</div>
+        <div class="rio-tramo">${p.tramo}</div>
+        <div class="rio-caudal"><span class="chip" style="width:8px;height:8px;border-radius:2px;background:${cat.color};"></span>Caudal: ${cat.etiqueta}</div>
+      `;
       L.marker([p.lat, p.lon], { icon }).addTo(map)
-        .bindTooltip(`${r.rio} · ${p.tramo}<br>Caudal: ${cat.etiqueta}`, { direction: "top" });
+        .bindTooltip(llamada, { direction: "top", offset: [0, -6], className: "llamada-rio", opacity: 1 });
     });
   });
 }
@@ -644,7 +642,6 @@ map.whenReady(async () => {
   await actualizarDesdeBackend();
   crearMarcadores();
   dibujarCalor();
-  pintarTablaRios();
   comprobarAvisoRayos();
 });
 
