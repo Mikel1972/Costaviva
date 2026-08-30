@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>Costa Viva</title>
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="icon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="icon.svg" />
+<meta name="theme-color" content="#0B2532" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Costa Viva" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: #0B2532;
+    color: #E8E2D0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
+  header { padding: 20px 28px 14px; border-bottom: 1px solid #1C3F4F; flex-shrink: 0; }
+  header h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0;
+    display: inline-block;
+  }
+  header .fecha {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: #7FA3AF;
+    margin-left: 10px;
+  }
+  header p { margin: 6px 0 0; color: #9FB8BF; font-size: 13px; max-width: 640px; }
+
+  .main { display: flex; flex: 1; min-height: 0; }
+  .mapa-wrap { flex: 1; position: relative; }
+  #map { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #0B2532; }
+  #heat-canvas { position: absolute; top: 0; left: 0; pointer-events: none; z-index: 450; }
+
+  .marcador {
+    width: 16px; height: 16px; border-radius: 50%;
+    background: #0B2532; border: 2px solid #E8E2D0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 700; color: #E8E2D0;
+    cursor: pointer;
+  }
+  .marcador.activo { border-width: 3px; box-shadow: 0 0 0 3px rgba(232,226,208,0.25); }
+  .etiqueta-spot {
+    font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; color: #F5F1E6;
+    text-shadow: 0 0 4px #0B2532, 0 0 4px #0B2532, 0 0 4px #0B2532;
+    white-space: nowrap; pointer-events: none;
+  }
+  .rio-marcador {
+    width: 16px; height: 16px; transform: rotate(45deg);
+    border: 1.5px solid #E8E2D0;
+  }
+
+  .leyenda {
+    position: absolute; bottom: 16px; left: 16px; z-index: 500;
+    background: #0F2C38; border: 1px solid #1C3F4F; border-radius: 8px;
+    padding: 12px 16px; font-size: 12px; font-family: 'IBM Plex Mono', monospace;
+    max-width: 240px;
+  }
+  .leyenda .titulo { color: #7FA3AF; margin-bottom: 6px; }
+  .leyenda .fila { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+  .leyenda .chip { width: 10px; height: 10px; border-radius: 2px; }
+  .leyenda .nota { color: #6C8890; font-size: 10px; margin-top: 8px; }
+
+  .panel {
+    width: 320px; border-left: 1px solid #1C3F4F; background: #0F2C38;
+    padding: 22px; overflow-y: auto; display: none; flex-shrink: 0;
+  }
+  .panel.visible { display: block; }
+  .panel h2 { font-family: 'Fraunces', serif; font-size: 20px; margin: 0 0 4px; font-weight: 600; }
+  .panel .cerrar {
+    float: right; background: none; border: none; color: #7FA3AF; cursor: pointer; font-size: 16px;
+  }
+  .panel .coords { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7FA3AF; }
+  .panel .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+  .panel .tarjeta { background: #123B4D; border-radius: 8px; padding: 10px 12px; }
+  .panel .tarjeta .etq { color: #7FA3AF; font-size: 10px; }
+  .panel .tarjeta .val { font-family: 'IBM Plex Mono', monospace; font-size: 16px; margin-top: 3px; }
+  .panel .indice-box { margin-top: 14px; background: #123B4D; border-radius: 8px; padding: 12px; text-align: center; }
+  .panel .indice-box .num { font-family: 'IBM Plex Mono', monospace; font-size: 30px; font-weight: 700; }
+  .panel .nota-final { font-size: 11px; color: #6C8890; margin-top: 16px; line-height: 1.5; }
+
+  /* ---- Móvil ---- */
+  @media (max-width: 720px) {
+    .leyenda { bottom: 10px; left: 10px; }
+    #tablaRiosBox { top: 10px; right: 10px; }
+
+    header { padding: 14px 16px 10px; }
+    header h1 { font-size: 20px; }
+    header .fecha { display: block; margin: 2px 0 0 0; }
+    header p { font-size: 12px; margin-top: 4px; }
+
+    #avisoRayos, #sinRayos { padding: 6px 16px; font-size: 10.5px; }
+
+    .main { flex-direction: column; position: relative; }
+    .mapa-wrap { flex: 1; min-height: 0; }
+
+    .leyenda {
+      max-width: 46vw;
+      padding: 8px 10px;
+      font-size: 10px;
+    }
+    .leyenda .titulo { font-size: 10px; margin-bottom: 4px; }
+    .leyenda .nota { font-size: 9px; }
+    #tablaRiosBox { max-width: 46vw; }
+
+    /* Panel de detalle: deja de ser columna lateral y pasa a hoja
+       deslizante desde abajo, superpuesta al mapa */
+    .panel {
+      display: block;
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      width: auto;
+      max-height: 65vh;
+      border-left: none;
+      border-top: 1px solid #1C3F4F;
+      border-radius: 16px 16px 0 0;
+      transform: translateY(100%);
+      transition: transform 0.25s ease-out;
+      z-index: 1000;
+      box-shadow: 0 -8px 24px rgba(0,0,0,0.4);
+    }
+    .panel.visible { transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<!--
+  ACCESO CON SUPABASE — desactivado temporalmente para el primer despliegue
+  de validación (sin cuenta de Supabase creada todavía). Para reactivarlo:
+  1. Crear proyecto en supabase.com, tabla "perfiles" con campo "aprobado"
+  2. Rellenar SUPABASE_URL y SUPABASE_ANON_KEY aquí y en login.html
+  3. Descomentar este bloque
+
+<div id="comprobandoAcceso" style="position:fixed; inset:0; background:#0B2532; z-index:9999; display:flex; align-items:center; justify-content:center; color:#7FA3AF; font-family:'IBM Plex Mono',monospace; font-size:13px;">
+  Comprobando acceso…
+</div>
+<script type="module">
+  import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+  const SUPABASE_URL = "https://TU-PROYECTO.supabase.co";
+  const SUPABASE_ANON_KEY = "TU-ANON-KEY-AQUI";
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const { data } = await supabase.auth.getSession();
+  if (!data.session) {
+    window.location.href = "/login.html";
+  } else {
+    document.getElementById("comprobandoAcceso").remove();
+  }
+</script>
+-->
+
+
+<header>
+  <h1>Costa Viva</h1><span class="fecha">LEKEITIO → BILBAO · 24 AGO 2026</span>
+  <p>Mapa real (OpenStreetMap) con mapa de calor del efecto combinado oleaje+viento, interpolado entre los 6 spots.</p>
+</header>
+
+<div id="avisoRayos" style="display:none; background:#A34A35; color:#F5F1E6; padding:8px 28px; font-family:'IBM Plex Mono', monospace; font-size:12px; font-weight:700; flex-shrink:0;">
+  ⚡ RIESGO DE RAYOS DETECTADO EN LA ZONA — no salir a roca/muelle hasta que pase
+</div>
+<div id="sinRayos" style="background:#0F2C38; border-bottom:1px solid #1C3F4F; color:#6C8890; padding:6px 28px; font-family:'IBM Plex Mono', monospace; font-size:11px; flex-shrink:0;">
+  ⚡ Sin datos de rayos conectados todavía — fuente prevista: red LINET/Euskalmet (VHF+LF+VLF, tiempo real)
+</div>
+
+<div class="main">
+  <div class="mapa-wrap">
+    <div id="map"></div>
+    <canvas id="heat-canvas"></canvas>
+    <div class="leyenda">
+      <div class="titulo">ÍNDICE DE MAR (oleaje + viento + ángulo entre ambos)</div>
+      <div class="fila"><span class="chip" style="background:#4F9D69"></span><span>tranquilo</span></div>
+      <div class="fila"><span class="chip" style="background:#D4A24C"></span><span>moderado</span></div>
+      <div class="fila"><span class="chip" style="background:#A34A35"></span><span>agitado</span></div>
+      <div class="nota" style="margin-top:10px; padding-top:8px; border-top:1px solid #1C3F4F;">◆ RÍOS: 3 puntos por río (cabecera→desembocadura), color por caudal bajo/normal/alto. Lo que se mide arriba llega a la costa horas después — útil como aviso de tendencia. Posiciones aproximadas, sin datos reales todavía (URA/Euskalmet).</div>
+    </div>
+    <div class="leyenda" id="tablaRiosBox" style="left:auto; right:16px; bottom:auto; top:16px; max-width:260px;">
+      <div class="titulo">TENDENCIA DE CAUDAL POR RÍO</div>
+      <div id="tablaRios"></div>
+    </div>
+  </div>
+  <div class="panel" id="panel">
+    <button class="cerrar" id="cerrarPanel">✕</button>
+    <h2 id="panelNombre"></h2>
+    <div class="coords" id="panelCoords"></div>
+    <div class="grid2">
+      <div class="tarjeta">
+        <div class="etq">OLEAJE (12h)</div>
+        <div class="val" id="panelOla"></div>
+        <div class="etq" id="panelOlaDir"></div>
+      </div>
+      <div class="tarjeta">
+        <div class="etq">VIENTO (12h)</div>
+        <div class="val" id="panelViento"></div>
+        <div class="etq" id="panelVientoDir"></div>
+      </div>
+    </div>
+    <div class="indice-box">
+      <div class="etq">ÍNDICE DE MAR COMBINADO</div>
+      <div class="num" id="panelIndice"></div>
+    </div>
+    <div class="grid2" style="margin-top:10px;">
+      <div class="tarjeta">
+        <div class="etq">NUBOSIDAD</div>
+        <div class="val" id="panelNubosidad" style="font-size:13px;">sin datos</div>
+      </div>
+      <div class="tarjeta">
+        <div class="etq">PRECIPITACIÓN</div>
+        <div class="val" id="panelPrecipitacion" style="font-size:13px;">sin datos</div>
+      </div>
+    </div>
+    <div class="tarjeta" style="margin-top:10px; border: 1px solid #1C3F4F;">
+      <div class="etq">⚡ RAYOS EN LA ZONA</div>
+      <div class="val" id="panelRayos" style="font-size:13px;">sin datos (fuente: LINET/Euskalmet)</div>
+    </div>
+    <div id="panelWebcamBox" style="margin-top:14px;">
+      <div class="etq" style="margin-bottom:6px;">WEBCAM EN DIRECTO</div>
+      <div id="panelWebcamContenido"></div>
+    </div>
+    <p class="nota-final">Estimación orientativa combinando altura, viento y el ángulo entre sus direcciones. Pendiente: claridad de agua, caudal de ríos y cámara fija.</p>
+  </div>
+</div>
+
+<script>
+// ---------------------------------------------------------------------------
+// Datos reales de hoy (scrapeados de Todosurf en esta sesión)
+// ---------------------------------------------------------------------------
+const SPOTS = [
+  { slug: "lekeitio", nombre: "Lekeitio", lat: 43.3647, lon: -2.5089,
+    altura: [0.3, 0.7], periodo: 4, viento: 14, dirViento: "ENE", dirOla: "NNE 32°",
+    nubosidad: null, precipitacion: null, rayosCerca: null },
+  { slug: "mundaka", nombre: "Mundaka", lat: 43.4047, lon: -2.6989,
+    altura: [0.1, 0.5], periodo: 5, viento: 20, dirViento: "ENE", dirOla: "NNW 342°",
+    nubosidad: null, precipitacion: null, rayosCerca: null },
+  { slug: "bakio", nombre: "Bakio", lat: 43.4297, lon: -2.8103,
+    altura: [0.2, 0.6], periodo: 6, viento: 24, dirViento: "ENE", dirOla: "NW 323°",
+    nubosidad: null, precipitacion: null, rayosCerca: null },
+  { slug: "sopelana", nombre: "Sopelana", lat: 43.3878, lon: -2.9975,
+    altura: [0.0, 0.4], periodo: 5, viento: 16, dirViento: "NE", dirOla: "N 3°",
+    nubosidad: null, precipitacion: null, rayosCerca: null },
+  { slug: "plentzia", nombre: "Plentzia", lat: 43.4053, lon: -2.9436,
+    altura: [0.0, 0.3], periodo: 8, viento: 12, dirViento: "NNW", dirOla: "NW 307°",
+    nubosidad: null, precipitacion: null, rayosCerca: null },
+  { slug: "getxo", nombre: "Getxo (Ereaga)", lat: 43.3489, lon: -3.0119,
+    altura: [0.0, 0.2], periodo: 4, viento: 10, dirViento: "NE", dirOla: "NE 37°",
+    nubosidad: null, precipitacion: null, rayosCerca: null },
+];
+
+const RIOS = [
+  // Cada río con 3 puntos aproximados (cabecera / medio / desembocadura),
+  // NO son las estaciones oficiales exactas de URA/Diputación de Bizkaia
+  // (su catálogo bloquea el acceso automático) — posiciones ilustrativas
+  // basadas en la geografía real del curso de cada río.
+  {
+    rio: "Lea", spotCosta: "lekeitio",
+    puntos: [
+      { tramo: "Cabecera (Munitibar)", lat: 43.2967, lon: -2.5389, caudal: null },
+      { tramo: "Medio (Amoroto)", lat: 43.335, lon: -2.515, caudal: null },
+      { tramo: "Desembocadura (Lekeitio)", lat: 43.3652, lon: -2.501, caudal: null },
+    ],
+  },
+  {
+    rio: "Oka", spotCosta: "mundaka",
+    puntos: [
+      { tramo: "Cabecera (Muxika)", lat: 43.2467, lon: -2.6733, caudal: null },
+      { tramo: "Medio (Gernika-Lumo)", lat: 43.3167, lon: -2.6767, caudal: null },
+      { tramo: "Desembocadura (Urdaibai/Mundaka)", lat: 43.4055, lon: -2.6965, caudal: null },
+    ],
+  },
+  {
+    rio: "Butroe", spotCosta: "plentzia",
+    puntos: [
+      { tramo: "Cabecera (Fruiz)", lat: 43.3267, lon: -2.8867, caudal: null },
+      { tramo: "Medio (Gatika)", lat: 43.365, lon: -2.92, caudal: null },
+      { tramo: "Desembocadura (Plentzia)", lat: 43.4065, lon: -2.958, caudal: null },
+    ],
+  },
+  {
+    rio: "Nervión", spotCosta: "getxo",
+    puntos: [
+      { tramo: "Cabecera (Orduña, fuera de mapa)", lat: 43.15, lon: -3.0, caudal: null },
+      { tramo: "Medio (Bilbao)", lat: 43.26, lon: -2.925, caudal: null },
+      { tramo: "Desembocadura (Getxo/Portugalete)", lat: 43.353, lon: -3.033, caudal: null },
+    ],
+  },
+];
+// Lista plana de todos los puntos, para dibujar en el mapa
+const RIO_PUNTOS = RIOS.flatMap((r) =>
+  r.puntos.map((p) => ({ ...p, rio: r.rio }))
+);
+
+function categoriaCaudal(caudal) {
+  if (caudal === null) return { etiqueta: "sin datos", color: "#3A5361" };
+  if (caudal < 33) return { etiqueta: "bajo", color: "#4F9D69" };
+  if (caudal < 66) return { etiqueta: "normal", color: "#D4A24C" };
+  return { etiqueta: "alto", color: "#A34A35" };
+}
+
+const GRADOS_COMPAS = {
+  N: 0, NNE: 22.5, NE: 45, ENE: 67.5, E: 90, ESE: 112.5, SE: 135, SSE: 157.5,
+  S: 180, SSW: 202.5, SW: 225, WSW: 247.5, W: 270, WNW: 292.5, NW: 315, NNW: 337.5,
+};
+function gradosDesdeTexto(texto) {
+  const m = texto.match(/(\d+(\.\d+)?)°/);
+  if (m) return parseFloat(m[1]);
+  const letra = texto.trim().split(" ")[0].toUpperCase();
+  return GRADOS_COMPAS[letra] ?? 0;
+}
+
+function indiceMar(s) {
+  const alturaMedia = (s.altura[0] + s.altura[1]) / 2;
+  const alturaNorm = Math.min(alturaMedia / 1.2, 1);
+  const vientoNorm = Math.min(s.viento / 30, 1);
+  const gradOla = gradosDesdeTexto(s.dirOla);
+  const gradViento = gradosDesdeTexto(s.dirViento);
+  const diffRad = (((gradOla - gradViento + 540) % 360) - 180) * (Math.PI / 180);
+  const factorOposicion = (1 - Math.cos(diffRad)) / 2;
+  return Math.round(Math.min(100, alturaNorm * 40 + vientoNorm * 35 + factorOposicion * 25));
+}
+
+function colorGradiente(valor, min, max) {
+  let t = Math.max(0, Math.min(1, (valor - min) / (max - min)));
+  const verde = [79, 157, 105], ambar = [212, 162, 76], oxido = [163, 74, 53];
+  let c1, c2, tt;
+  if (t < 0.5) { c1 = verde; c2 = ambar; tt = t / 0.5; }
+  else { c1 = ambar; c2 = oxido; tt = (t - 0.5) / 0.5; }
+  return c1.map((v, i) => Math.round(v + (c2[i] - v) * tt));
+}
+function colorIndiceMarCss(valor) {
+  const [r, g, b] = colorGradiente(valor, 0, 100);
+  return `rgb(${r},${g},${b})`;
+}
+
+SPOTS.forEach((s) => (s.indice = indiceMar(s)));
+
+// Intenta traer datos reales de la función de backend (/prevision, ver
+// functions/prevision.js) — solo funciona una vez desplegado en Cloudflare
+// Pages, no en este archivo abierto suelto. Si falla (aún no desplegado,
+// sin red, etc.), la app se queda con los datos fijos de hoy como
+// respaldo — nunca se queda en blanco.
+async function actualizarDesdeBackend() {
+  try {
+    const resp = await fetch("/prevision", { cache: "no-store" });
+    if (!resp.ok) throw new Error("sin backend desplegado todavía");
+    const datos = await resp.json();
+    datos.spots.forEach((sBackend) => {
+      const s = SPOTS.find((x) => x.slug === sBackend.slug);
+      if (!s || sBackend.error || !sBackend.bloques || !sBackend.bloques.length) return;
+      // Usa el bloque más cercano a mediodía, igual que el resto de la app
+      const b = sBackend.bloques.find((x) => x.hora === "12pm") || sBackend.bloques[0];
+      s.altura = b.altura;
+      s.periodo = b.periodo;
+      s.dirOla = b.dirOla;
+      if (b.viento !== null) { s.viento = b.viento; s.dirViento = b.dirViento; }
+      s.indice = indiceMar(s);
+    });
+    console.log("Datos reales cargados desde /prevision");
+  } catch (e) {
+    console.log("Backend no disponible, usando datos fijos de hoy:", e.message);
+  }
+}
+
+
+// ---------------------------------------------------------------------------
+// Mapa real (Leaflet + OpenStreetMap), sin interacción -> vista fija para
+// que el canvas de calor superpuesto no se desalinee al mover/hacer zoom
+// ---------------------------------------------------------------------------
+const map = L.map("map", {
+  center: [43.39, -2.765],
+  zoom: 11,
+  dragging: false,
+  scrollWheelZoom: false,
+  doubleClickZoom: false,
+  boxZoom: false,
+  keyboard: false,
+  zoomControl: false,
+  touchZoom: false,
+  attributionControl: true,
+});
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: "&copy; OpenStreetMap contributors",
+  subdomains: ["a", "b", "c"],
+  maxZoom: 18,
+}).addTo(map);
+
+const canvas = document.getElementById("heat-canvas");
+const ctx = canvas.getContext("2d");
+
+function dibujarCalor() {
+  const size = map.getSize();
+  canvas.width = size.x;
+  canvas.height = size.y;
+  canvas.style.width = size.x + "px";
+  canvas.style.height = size.y + "px";
+
+  const puntos = SPOTS.map((s) => {
+    const p = map.latLngToContainerPoint([s.lat, s.lon]);
+    return { x: p.x, y: p.y, indice: s.indice };
+  });
+
+  const paso = 8;
+  for (let y = 0; y < size.y; y += paso) {
+    for (let x = 0; x < size.x; x += paso) {
+      let sumaPeso = 0, sumaValor = 0;
+      for (const p of puntos) {
+        const dx = x - p.x, dy = y - p.y;
+        const peso = 1 / Math.max(dx * dx + dy * dy, 100);
+        sumaPeso += peso;
+        sumaValor += peso * p.indice;
+      }
+      const valor = sumaValor / sumaPeso;
+      const [r, g, b] = colorGradiente(valor, 0, 100);
+      ctx.fillStyle = `rgba(${r},${g},${b},0.4)`;
+      ctx.fillRect(x, y, paso, paso);
+    }
+  }
+}
+
+function iconoFlecha(grados, color) {
+  const rumbo = (grados + 180) % 360;
+  return `<svg width="11" height="11" viewBox="0 0 24 24" style="transform:rotate(${rumbo}deg)">
+    <path d="M12 2 L18 16 L12 12 L6 16 Z" fill="${color}" /></svg>`;
+}
+
+function pintarTablaRios() {
+  const cont = document.getElementById("tablaRios");
+  cont.innerHTML = RIOS.map((r) => {
+    const filas = r.puntos
+      .map((p) => {
+        const cat = categoriaCaudal(p.caudal);
+        return `<div class="fila" style="justify-content:space-between; gap:6px;">
+          <span style="color:#9FB8BF; font-size:10px;">${p.tramo.split(" (")[0]}</span>
+          <span style="display:flex; align-items:center; gap:5px;">
+            <span class="chip" style="background:${cat.color}"></span>
+            <span style="font-size:10px;">${cat.etiqueta}</span>
+          </span>
+        </div>`;
+      })
+      .join("");
+    return `<div style="margin-top:8px;">
+      <div style="font-family:'Inter',sans-serif; font-size:12px; font-weight:600; color:#E8E2D0;">${r.rio}</div>
+      ${filas}
+    </div>`;
+  }).join("");
+}
+
+function crearMarcadores() {
+  SPOTS.forEach((s) => {
+    const color = colorIndiceMarCss(s.indice);
+    const html = `
+      <div style="display:flex; flex-direction:column; align-items:center;">
+        <div class="etiqueta-spot">${s.nombre}</div>
+        <div style="display:flex; align-items:center; gap:3px;">
+          ${iconoFlecha(gradosDesdeTexto(s.dirOla), "#7EC8E3")}
+          ${iconoFlecha(gradosDesdeTexto(s.dirViento), "#D4A24C")}
+          <div class="marcador" id="marcador-${s.slug}" style="background:${color}; color:#0B2532;">${s.indice}</div>
+        </div>
+      </div>`;
+    const icon = L.divIcon({ html, className: "", iconSize: [90, 46], iconAnchor: [45, 23] });
+    const marker = L.marker([s.lat, s.lon], { icon }).addTo(map);
+    marker.on("click", () => abrirPanel(s));
+  });
+
+  RIOS.forEach((r) => {
+    // Línea que conecta los puntos del mismo río (cabecera -> desembocadura)
+    const latlngs = r.puntos.map((p) => [p.lat, p.lon]);
+    L.polyline(latlngs, { color: "#4A6472", weight: 2, opacity: 0.6, dashArray: "3,4" }).addTo(map);
+
+    r.puntos.forEach((p) => {
+      const cat = categoriaCaudal(p.caudal);
+      const html = `<div class="rio-marcador" style="background:${cat.color};" title="${r.rio} — ${p.tramo}: ${cat.etiqueta}"></div>`;
+      const icon = L.divIcon({ html, className: "", iconSize: [14, 14], iconAnchor: [7, 7] });
+      L.marker([p.lat, p.lon], { icon }).addTo(map)
+        .bindTooltip(`${r.rio} · ${p.tramo}<br>Caudal: ${cat.etiqueta}`, { direction: "top" });
+    });
+  });
+}
+
+const SPOTS_CON_WEBCAM = ["mundaka", "bakio", "sopelana"];
+
+function pintarWebcam(slug, nombre) {
+  const cont = document.getElementById("panelWebcamContenido");
+  if (!SPOTS_CON_WEBCAM.includes(slug)) {
+    cont.innerHTML = `<div class="tarjeta" style="text-align:center; color:#6C8890; font-size:12px;">Sin webcam identificada para este spot todavía.</div>`;
+    return;
+  }
+  // Se pide a nuestro propio proxy (/webcam/<slug>, ver functions/webcam/[slug].js),
+  // que descarga la imagen en servidor -> evita el bloqueo CORS que sufrimos
+  // al cargar estas imágenes directo desde el navegador en el prototipo anterior.
+  cont.innerHTML = `
+    <img id="imgWebcam" src="/webcam/${slug}?_=${Date.now()}" alt="Webcam en directo de ${nombre}"
+         style="width:100%; border-radius:8px; border:1px solid #1C3F4F; display:block;" />
+    <p class="nota-final" id="notaWebcam">Servida por nuestro propio backend (evita bloqueos CORS del proveedor original). Actualiza el panel para ver una captura más reciente.</p>
+  `;
+  document.getElementById("imgWebcam").addEventListener("error", () => {
+    cont.innerHTML = `<div class="tarjeta" style="text-align:center; color:#6C8890; font-size:12px;">
+      No se pudo cargar la webcam de ${nombre} ahora mismo<br>
+      (solo funciona una vez desplegado en Cloudflare Pages — no en este archivo abierto suelto).
+    </div>`;
+  });
+}
+
+function abrirPanel(s) {
+  document.getElementById("panel").classList.add("visible");
+  document.getElementById("panelNombre").textContent = s.nombre;
+  document.getElementById("panelCoords").textContent = `${s.lat.toFixed(4)}°N, ${Math.abs(s.lon).toFixed(4)}°W`;
+  document.getElementById("panelOla").textContent = `${s.altura[0]}–${s.altura[1]}m`;
+  document.getElementById("panelOlaDir").textContent = `${s.periodo}s · ${s.dirOla}`;
+  document.getElementById("panelViento").textContent = `${s.viento} km/h`;
+  document.getElementById("panelVientoDir").textContent = s.dirViento;
+  const indiceEl = document.getElementById("panelIndice");
+  indiceEl.textContent = s.indice;
+  indiceEl.style.color = colorIndiceMarCss(s.indice);
+
+  document.getElementById("panelNubosidad").textContent = s.nubosidad === null ? "sin datos" : `${s.nubosidad}%`;
+  document.getElementById("panelPrecipitacion").textContent = s.precipitacion === null ? "sin datos" : `${s.precipitacion} mm/h`;
+  document.getElementById("panelRayos").textContent =
+    s.rayosCerca === null ? "sin datos (fuente: LINET/Euskalmet)" : s.rayosCerca ? "⚡ detectados cerca" : "sin actividad";
+
+  pintarWebcam(s.slug, s.nombre);
+
+  document.querySelectorAll(".marcador").forEach((m) => m.classList.remove("activo"));
+  document.getElementById(`marcador-${s.slug}`).classList.add("activo");
+}
+document.getElementById("cerrarPanel").addEventListener("click", () => {
+  document.getElementById("panel").classList.remove("visible");
+  document.querySelectorAll(".marcador").forEach((m) => m.classList.remove("activo"));
+});
+
+map.whenReady(async () => {
+  await actualizarDesdeBackend();
+  crearMarcadores();
+  dibujarCalor();
+  pintarTablaRios();
+  comprobarAvisoRayos();
+});
+
+function comprobarAvisoRayos() {
+  const hayRiesgo = SPOTS.some((s) => s.rayosCerca === true);
+  document.getElementById("avisoRayos").style.display = hayRiesgo ? "block" : "none";
+  document.getElementById("sinRayos").style.display = hayRiesgo ? "none" : "block";
+}
+window.addEventListener("resize", dibujarCalor);
+</script>
+
+</body>
+</html>
