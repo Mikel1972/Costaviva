@@ -435,13 +435,15 @@ async function actualizarDesdeBackend() {
 const map = L.map("map", {
   center: [43.51, -2.82],
   zoom: 10,
-  dragging: false,
-  scrollWheelZoom: false,
-  doubleClickZoom: false,
+  minZoom: 9,
+  maxZoom: 15,
+  dragging: true,
+  scrollWheelZoom: true,
+  doubleClickZoom: true,
   boxZoom: false,
-  keyboard: false,
-  zoomControl: false,
-  touchZoom: false,
+  keyboard: true,
+  zoomControl: true,
+  touchZoom: true,
   attributionControl: true,
 });
 // Esri Ocean Basemap: gratis, sin API key, mar en azul de verdad (con
@@ -717,6 +719,11 @@ function comprobarAvisoRayos() {
   document.getElementById("sinRayos").style.display = hayRiesgo ? "none" : "block";
 }
 window.addEventListener("resize", dibujarCalor);
+// El canvas de calor está superpuesto sobre el mapa pero no es una capa de
+// Leaflet, así que no se mueve solo al hacer zoom/arrastrar — hay que
+// redibujarlo cuando el mapa termina de moverse para que los halos sigan
+// alineados con los marcadores.
+map.on("zoomend moveend", dibujarCalor);
 </script>
 
 </body>
