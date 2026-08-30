@@ -71,6 +71,12 @@
     transform: rotate(45deg) scale(1.7);
     box-shadow: 0 0 0 4px rgba(232,226,208,0.2);
   }
+  .marcador-boya {
+    min-width: 34px; padding: 2px 7px; border-radius: 6px;
+    background: #123B4D; border: 2px solid #7EC8E3; color: #E8E2D0;
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 700;
+    text-align: center; white-space: nowrap;
+  }
 
   /* Llamada de caudal: tooltip de Leaflet restilizado para que se note que
      el marcador de río se puede "abrir" al pasar el cursor por encima. */
@@ -88,12 +94,22 @@
   .llamada-rio .rio-tramo { color: #9FB8BF; font-size: 10.5px; }
   .llamada-rio .rio-caudal { margin-top: 3px; display: flex; align-items: center; gap: 5px; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; }
 
+  .leyenda-toggle {
+    position: absolute; bottom: 16px; left: 16px; z-index: 502;
+    width: 38px; height: 38px; border-radius: 8px;
+    background: #0F2C38; border: 1px solid #1C3F4F; color: #E8E2D0;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 16px; padding: 0;
+  }
   .leyenda {
-    position: absolute; bottom: 16px; left: 16px; z-index: 500;
+    position: absolute; bottom: 16px; left: 64px; z-index: 500;
     background: #0F2C38; border: 1px solid #1C3F4F; border-radius: 8px;
     padding: 12px 16px; font-size: 12px; font-family: 'IBM Plex Mono', monospace;
     max-width: 240px;
+    opacity: 0; transform: translateX(-14px); pointer-events: none;
+    transition: opacity 0.15s ease-out, transform 0.15s ease-out;
   }
+  .leyenda.visible { opacity: 1; transform: translateX(0); pointer-events: auto; }
   .leyenda .titulo { color: #7FA3AF; margin-bottom: 6px; }
   .leyenda .fila { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
   .leyenda .chip { width: 10px; height: 10px; border-radius: 2px; }
@@ -119,7 +135,8 @@
 
   /* ---- Móvil ---- */
   @media (max-width: 720px) {
-    .leyenda { bottom: 10px; left: 10px; }
+    .leyenda-toggle { bottom: 10px; left: 10px; width: 34px; height: 34px; }
+    .leyenda { bottom: 10px; left: 56px; }
 
     header { padding: 14px 16px 10px; }
     header h1 { font-size: 20px; }
@@ -189,7 +206,7 @@
 
 <header>
   <h1>Costa Viva</h1><span class="fecha">LEKEITIO → BILBAO · 24 AGO 2026</span>
-  <p>Mapa real (OpenStreetMap) con mapa de calor del efecto combinado oleaje+viento, interpolado entre los 6 spots.</p>
+  <p>Mapa real con halo de color por spot (oleaje+viento combinados) y boya de mar abierto de Puertos del Estado.</p>
 </header>
 
 <div id="avisoRayos" style="display:none; background:#A34A35; color:#F5F1E6; padding:8px 28px; font-family:'IBM Plex Mono', monospace; font-size:12px; font-weight:700; flex-shrink:0;">
@@ -203,7 +220,8 @@
   <div class="mapa-wrap">
     <div id="map"></div>
     <canvas id="heat-canvas"></canvas>
-    <div class="leyenda">
+    <button class="leyenda-toggle" id="toggleLeyenda" aria-label="Mostrar/ocultar leyenda">☰</button>
+    <div class="leyenda" id="leyendaPanel">
       <div class="titulo">ÍNDICE DE MAR (oleaje + viento + ángulo entre ambos)</div>
       <div class="fila"><span class="chip" style="background:#4F9D69"></span><span>tranquilo</span></div>
       <div class="fila"><span class="chip" style="background:#D4A24C"></span><span>moderado</span></div>
@@ -230,6 +248,10 @@
     <div class="indice-box">
       <div class="etq">ÍNDICE DE MAR COMBINADO</div>
       <div class="num" id="panelIndice"></div>
+    </div>
+    <div class="tarjeta" style="margin-top:10px; text-align:center;">
+      <div class="etq">TEMPERATURA DEL AGUA</div>
+      <div class="val" id="panelTempAgua" style="font-size:18px;">sin datos</div>
     </div>
     <div class="grid2" style="margin-top:10px;">
       <div class="tarjeta">
@@ -260,23 +282,30 @@
 const SPOTS = [
   { slug: "lekeitio", nombre: "Lekeitio", lat: 43.3647, lon: -2.5089,
     altura: [0.3, 0.7], periodo: 4, viento: 14, dirViento: "ENE", dirOla: "NNE 32°",
-    nubosidad: null, precipitacion: null, rayosCerca: null },
+    nubosidad: null, precipitacion: null, tempAgua: null, rayosCerca: null },
   { slug: "mundaka", nombre: "Mundaka", lat: 43.4047, lon: -2.6989,
     altura: [0.1, 0.5], periodo: 5, viento: 20, dirViento: "ENE", dirOla: "NNW 342°",
-    nubosidad: null, precipitacion: null, rayosCerca: null },
+    nubosidad: null, precipitacion: null, tempAgua: null, rayosCerca: null },
   { slug: "bakio", nombre: "Bakio", lat: 43.4297, lon: -2.8103,
     altura: [0.2, 0.6], periodo: 6, viento: 24, dirViento: "ENE", dirOla: "NW 323°",
-    nubosidad: null, precipitacion: null, rayosCerca: null },
+    nubosidad: null, precipitacion: null, tempAgua: null, rayosCerca: null },
   { slug: "sopelana", nombre: "Sopelana", lat: 43.3878, lon: -2.9975,
     altura: [0.0, 0.4], periodo: 5, viento: 16, dirViento: "NE", dirOla: "N 3°",
-    nubosidad: null, precipitacion: null, rayosCerca: null },
+    nubosidad: null, precipitacion: null, tempAgua: null, rayosCerca: null },
   { slug: "plentzia", nombre: "Plentzia", lat: 43.4053, lon: -2.9436,
     altura: [0.0, 0.3], periodo: 8, viento: 12, dirViento: "NNW", dirOla: "NW 307°",
-    nubosidad: null, precipitacion: null, rayosCerca: null },
+    nubosidad: null, precipitacion: null, tempAgua: null, rayosCerca: null },
   { slug: "getxo", nombre: "Getxo (Ereaga)", lat: 43.3489, lon: -3.0119,
     altura: [0.0, 0.2], periodo: 4, viento: 10, dirViento: "NE", dirOla: "NE 37°",
-    nubosidad: null, precipitacion: null, rayosCerca: null },
+    nubosidad: null, precipitacion: null, tempAgua: null, rayosCerca: null },
 ];
+
+// Boya real de Bilbao-Vizcaya (Puertos del Estado, REDEXT) — mar abierto,
+// datos medidos por satélite cada hora, no un modelo. Ver /prevision.
+const BOYA = {
+  nombre: "Bilbao-Vizcaya", lat: 43.64, lon: -3.04,
+  alturaSignificativa: null, periodoPico: null, dirOla: null, tempAgua: null, actualizado: null,
+};
 
 const RIOS = [
   // Cada río con 3 puntos aproximados (cabecera / medio / desembocadura),
@@ -384,8 +413,14 @@ async function actualizarDesdeBackend() {
       s.periodo = b.periodo;
       s.dirOla = b.dirOla;
       if (b.viento !== null) { s.viento = b.viento; s.dirViento = b.dirViento; }
+      if (b.tempAgua !== undefined) s.tempAgua = b.tempAgua;
+      if (b.precipitacion !== undefined) s.precipitacion = b.precipitacion;
+      if (b.nubosidad !== undefined) s.nubosidad = b.nubosidad;
       s.indice = indiceMar(s);
     });
+    if (datos.boya && !datos.boya.error) {
+      Object.assign(BOYA, datos.boya);
+    }
     console.log("Datos reales cargados desde /prevision");
   } catch (e) {
     console.log("Backend no disponible, usando datos fijos de hoy:", e.message);
@@ -398,8 +433,8 @@ async function actualizarDesdeBackend() {
 // que el canvas de calor superpuesto no se desalinee al mover/hacer zoom
 // ---------------------------------------------------------------------------
 const map = L.map("map", {
-  center: [43.39, -2.765],
-  zoom: 11,
+  center: [43.51, -2.82],
+  zoom: 10,
   dragging: false,
   scrollWheelZoom: false,
   doubleClickZoom: false,
@@ -409,45 +444,43 @@ const map = L.map("map", {
   touchZoom: false,
   attributionControl: true,
 });
-// Esri World Street Map: gratis, sin API key, con calles y etiquetas claras
-// — visualmente más parecido a Google Maps que el estilo por defecto de OSM.
-// (CARTO Voyager, la primera opción probada, ahora exige API key propia).
-L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", {
-  attribution: "Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom",
-  maxZoom: 19,
+// Esri Ocean Basemap: gratis, sin API key, mar en azul de verdad (con
+// batimetría) en vez del gris apagado del mapa de calles por defecto.
+L.tileLayer("https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}", {
+  attribution: "Tiles &copy; Esri &mdash; Sources: GEBCO, NOAA, National Geographic, DeLorme, HERE, Geonames.org",
+  maxZoom: 16,
+}).addTo(map);
+L.tileLayer("https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Reference/MapServer/tile/{z}/{y}/{x}", {
+  maxZoom: 16,
+  opacity: 0.9,
 }).addTo(map);
 
 const canvas = document.getElementById("heat-canvas");
 const ctx = canvas.getContext("2d");
 
+// Halos de color localizados en cada spot (no todo el lienzo) — así el mar
+// se ve azul de verdad en vez de con un velo translúcido por encima de todo
+// el mapa (tierra incluida), que es lo que daba el efecto de "niebla".
+const RADIO_HALO = 80;
 function dibujarCalor() {
   const size = map.getSize();
   canvas.width = size.x;
   canvas.height = size.y;
   canvas.style.width = size.x + "px";
   canvas.style.height = size.y + "px";
+  ctx.clearRect(0, 0, size.x, size.y);
 
-  const puntos = SPOTS.map((s) => {
+  SPOTS.forEach((s) => {
     const p = map.latLngToContainerPoint([s.lat, s.lon]);
-    return { x: p.x, y: p.y, indice: s.indice };
+    const [r, g, b] = colorGradiente(s.indice, 0, 100);
+    const gradiente = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, RADIO_HALO);
+    gradiente.addColorStop(0, `rgba(${r},${g},${b},0.55)`);
+    gradiente.addColorStop(1, `rgba(${r},${g},${b},0)`);
+    ctx.fillStyle = gradiente;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, RADIO_HALO, 0, Math.PI * 2);
+    ctx.fill();
   });
-
-  const paso = 8;
-  for (let y = 0; y < size.y; y += paso) {
-    for (let x = 0; x < size.x; x += paso) {
-      let sumaPeso = 0, sumaValor = 0;
-      for (const p of puntos) {
-        const dx = x - p.x, dy = y - p.y;
-        const peso = 1 / Math.max(dx * dx + dy * dy, 100);
-        sumaPeso += peso;
-        sumaValor += peso * p.indice;
-      }
-      const valor = sumaValor / sumaPeso;
-      const [r, g, b] = colorGradiente(valor, 0, 100);
-      ctx.fillStyle = `rgba(${r},${g},${b},0.4)`;
-      ctx.fillRect(x, y, paso, paso);
-    }
-  }
 }
 
 function iconoFlecha(grados, color) {
@@ -465,10 +498,11 @@ function crearMarcadores() {
         <div style="display:flex; align-items:center; gap:3px;">
           ${iconoFlecha(gradosDesdeTexto(s.dirOla), "#7EC8E3")}
           ${iconoFlecha(gradosDesdeTexto(s.dirViento), "#D4A24C")}
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:9px; font-weight:700; color:#D4A24C; text-shadow:0 0 3px #0B2532,0 0 3px #0B2532;">${s.viento}</span>
           <div class="marcador" id="marcador-${s.slug}" style="background:${color}; color:#0B2532;">${s.indice}</div>
         </div>
       </div>`;
-    const icon = L.divIcon({ html, className: "", iconSize: [90, 46], iconAnchor: [45, 23] });
+    const icon = L.divIcon({ html, className: "", iconSize: [104, 46], iconAnchor: [52, 23] });
     const marker = L.marker([s.lat, s.lon], { icon }).addTo(map);
     marker.on("click", () => abrirPanel(s));
   });
@@ -491,6 +525,33 @@ function crearMarcadores() {
         .bindTooltip(llamada, { direction: "top", offset: [0, -6], className: "llamada-rio", opacity: 1 });
     });
   });
+
+  crearMarcadorBoya();
+}
+
+function crearMarcadorBoya() {
+  // Solo se dibuja si el backend trajo datos reales de la boya — sin
+  // fallback inventado, mejor no mostrarla a mostrar un número falso.
+  if (BOYA.alturaSignificativa === null || BOYA.alturaSignificativa === undefined) return;
+
+  const html = `
+    <div style="display:flex; flex-direction:column; align-items:center;">
+      <div class="etiqueta-spot" style="color:#7EC8E3;">⚓ ${BOYA.nombre}</div>
+      <div style="display:flex; align-items:center; gap:4px;">
+        ${BOYA.dirOla ? iconoFlecha(gradosDesdeTexto(BOYA.dirOla), "#7EC8E3") : ""}
+        <div class="marcador-boya">${BOYA.alturaSignificativa.toFixed(1)}m</div>
+      </div>
+    </div>`;
+  const icon = L.divIcon({ html, className: "", iconSize: [110, 46], iconAnchor: [55, 23] });
+  const marker = L.marker([BOYA.lat, BOYA.lon], { icon }).addTo(map);
+
+  const llamada = `
+    <div class="rio-nombre">⚓ Boya ${BOYA.nombre}</div>
+    <div class="rio-tramo">Mar abierto · dato medido (Puertos del Estado)</div>
+    <div class="rio-caudal">Oleaje: ${BOYA.alturaSignificativa}m${BOYA.periodoPico ? ` · ${Math.round(BOYA.periodoPico)}s` : ""}${BOYA.dirOla ? ` · ${BOYA.dirOla}` : ""}</div>
+    ${BOYA.tempAgua !== null ? `<div class="rio-caudal">🌡 Agua: ${BOYA.tempAgua}°C</div>` : ""}
+  `;
+  marker.bindTooltip(llamada, { direction: "top", offset: [0, -10], className: "llamada-rio", opacity: 1 });
 }
 
 const SPOTS_CON_WEBCAM = ["mundaka", "bakio", "sopelana"];
@@ -623,6 +684,7 @@ function abrirPanel(s) {
   indiceEl.textContent = s.indice;
   indiceEl.style.color = colorIndiceMarCss(s.indice);
 
+  document.getElementById("panelTempAgua").textContent = (s.tempAgua === null || s.tempAgua === undefined) ? "sin datos" : `${s.tempAgua}°C`;
   document.getElementById("panelNubosidad").textContent = s.nubosidad === null ? "sin datos" : `${s.nubosidad}%`;
   document.getElementById("panelPrecipitacion").textContent = s.precipitacion === null ? "sin datos" : `${s.precipitacion} mm/h`;
   document.getElementById("panelRayos").textContent =
@@ -633,6 +695,10 @@ function abrirPanel(s) {
   document.querySelectorAll(".marcador").forEach((m) => m.classList.remove("activo"));
   document.getElementById(`marcador-${s.slug}`).classList.add("activo");
 }
+document.getElementById("toggleLeyenda").addEventListener("click", () => {
+  const abierta = document.getElementById("leyendaPanel").classList.toggle("visible");
+  document.getElementById("toggleLeyenda").textContent = abierta ? "✕" : "☰";
+});
 document.getElementById("cerrarPanel").addEventListener("click", () => {
   document.getElementById("panel").classList.remove("visible");
   document.querySelectorAll(".marcador").forEach((m) => m.classList.remove("activo"));

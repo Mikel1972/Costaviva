@@ -47,12 +47,21 @@ async function previsionSpot(spot) {
 
   const [marino, viento] = await Promise.all([
     fetchJSON(
-      `https://marine-api.open-meteo.com/v1/marine?${paramsComunes}&hourly=wave_height,wave_period,wave_direction`
+      `https://marine-api.open-meteo.com/v1/marine?${paramsComunes}&hourly=wave_height,wave_period,wave_direction,sea_surface_temperature`
     ),
     fetchJSON(
-      `https://api.open-meteo.com/v1/forecast?${paramsComunes}&hourly=windspeed_10m,winddirection_10m&windspeed_unit=kmh`
+      `https://api.open-meteo.com/v1/forecast?${paramsComunes}&hourly=windspeed_10m,winddirection_10m,precipitation,cloudcover&windspeed_unit=kmh`
     ),
   ]);
+  const tempAguaPorHoraISO = Object.fromEntries(
+    (marino.hourly?.time || []).map((t, i) => [t, marino.hourly.sea_surface_temperature?.[i] ?? null])
+  );
+  const precipNubesPorHoraISO = Object.fromEntries(
+    (viento.hourly?.time || []).map((t, i) => [
+      t,
+      { precipitacion: viento.hourly.precipitation?.[i] ?? null, nubosidad: viento.hourly.cloudcover?.[i] ?? null },
+    ])
+  );
 
   const horasOla = marino.hourly?.time || [];
   const horasViento = viento.hourly?.time || [];
@@ -74,6 +83,8 @@ async function previsionSpot(spot) {
     if (alturaOla === null || alturaOla === undefined) continue;
 
     const v = vientoPorHoraISO[horasOla[i]];
+    const pn = precipNubesPorHoraISO[horasOla[i]];
+    const tempAgua = tempAguaPorHoraISO[horasOla[i]];
 
     bloques.push({
       hora: HORAS_BLOQUE[h],
@@ -85,6 +96,9 @@ async function previsionSpot(spot) {
       dirOla: dirOlaGrados === null ? null : `${rumboDesdeGrados(dirOlaGrados)} ${Math.round(dirOlaGrados)}°`,
       viento: v ? Math.round(v.viento) : null,
       dirViento: v ? rumboDesdeGrados(v.dirGrados) : null,
+      tempAgua: tempAgua === null || tempAgua === undefined ? null : +tempAgua.toFixed(1),
+      precipitacion: pn?.precipitacion ?? null,
+      nubosidad: pn?.nubosidad ?? null,
     });
   }
 
@@ -99,14 +113,58 @@ async function previsionSpot(spot) {
   };
 }
 
-export async function onRequestGet(context) {
-  const resultados = await Promise.all(
-    SPOTS.map((spot) =>
-      previsionSpot(spot).catch((e) => ({ slug: spot.slug, nombre: spot.nombre, error: String(e) }))
-    )
-  );
+// Boya de Bilbao-Vizcaya (Puertos del Estado, red REDEXT) — datos MEDIDOS de
+// verdad en mar abierto (no un modelo), transmitidos por satélite cada hora.
+// Boya real, ~40 millas al norte de Bilbao, profundidad 580m.
+const BOYA = { codigo: 2136, nombre: "Bilbao-Vizcaya", lat: 43.64, lon: -3.04 };
 
-  return new Response(JSON.stringify({ spots: resultados }, null, 2), {
+function fechaParaBoya(d) {
+  const p2 = (n) => String(n).padStart(2, "0");
+  return `${d.getUTCFullYear()}${p2(d.getUTCMonth() + 1)}${p2(d.getUTCDate())}@${p2(d.getUTCHours())}${p2(d.getUTCMinutes())}`;
+}
+
+async function datosBoya() {
+  const ahora = new Date();
+  const desde = new Date(ahora.getTime() - 6 * 3600 * 1000);
+  const url =
+    `https://poem.puertos.es/portus/StationData?code=${BOYA.codigo}` +
+    `&params=Hm0,Tp,MeanDir,WaterTemp&from=${fechaParaBoya(desde)}&to=${fechaParaBoya(ahora)}`;
+  const datos = await fetchJSON(url);
+  const cabeceras = datos[0]; // ["UTC", "Hm0 (m)", "Tp (s)", "MeanDir (º)", "WaterTemp (ºC)"] — el orden puede variar
+  const filas = datos[1];
+  if (!filas || !filas.length) throw new Error("boya sin datos recientes");
+  const ultima = filas[filas.length - 1];
+
+  const indice = (nombreCorto) => cabeceras.findIndex((c) => c.startsWith(nombreCorto));
+  const valor = (nombreCorto) => {
+    const i = indice(nombreCorto);
+    return i === -1 || !ultima[i] ? null : ultima[i][0];
+  };
+
+  return {
+    ...BOYA,
+    actualizado: new Date(ultima[0] * 1000).toISOString(),
+    alturaSignificativa: valor("Hm0"),
+    periodoPico: valor("Tp"),
+    dirOla: (() => {
+      const g = valor("MeanDir");
+      return g === null ? null : `${rumboDesdeGrados(g)} ${Math.round(g)}°`;
+    })(),
+    tempAgua: valor("WaterTemp"),
+  };
+}
+
+export async function onRequestGet(context) {
+  const [resultados, boya] = await Promise.all([
+    Promise.all(
+      SPOTS.map((spot) =>
+        previsionSpot(spot).catch((e) => ({ slug: spot.slug, nombre: spot.nombre, error: String(e) }))
+      )
+    ),
+    datosBoya().catch((e) => ({ ...BOYA, error: String(e) })),
+  ]);
+
+  return new Response(JSON.stringify({ spots: resultados, boya }, null, 2), {
     headers: {
       "content-type": "application/json; charset=utf-8",
       // Cache corto en el edge de Cloudflare — el modelo de Open-Meteo se
