@@ -393,10 +393,12 @@ const map = L.map("map", {
   touchZoom: false,
   attributionControl: true,
 });
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  attribution: "&copy; OpenStreetMap contributors",
-  subdomains: ["a", "b", "c"],
-  maxZoom: 18,
+// Esri World Street Map: gratis, sin API key, con calles y etiquetas claras
+// — visualmente más parecido a Google Maps que el estilo por defecto de OSM.
+// (CARTO Voyager, la primera opción probada, ahora exige API key propia).
+L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", {
+  attribution: "Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom",
+  maxZoom: 19,
 }).addTo(map);
 
 const canvas = document.getElementById("heat-canvas");
@@ -493,8 +495,15 @@ function crearMarcadores() {
 }
 
 const SPOTS_CON_WEBCAM = ["mundaka", "bakio", "sopelana"];
+const REFRESCO_WEBCAM_MS = 60000; // 1 min: suficiente para sentirse "en directo" sin sobrecargar al proveedor original
+let intervaloWebcam = null;
+
+function pararRefrescoWebcam() {
+  if (intervaloWebcam) { clearInterval(intervaloWebcam); intervaloWebcam = null; }
+}
 
 function pintarWebcam(slug, nombre) {
+  pararRefrescoWebcam();
   const cont = document.getElementById("panelWebcamContenido");
   if (!SPOTS_CON_WEBCAM.includes(slug)) {
     cont.innerHTML = `<div class="tarjeta" style="text-align:center; color:#6C8890; font-size:12px;">Sin webcam identificada para este spot todavía.</div>`;
@@ -504,16 +513,31 @@ function pintarWebcam(slug, nombre) {
   // que descarga la imagen en servidor -> evita el bloqueo CORS que sufrimos
   // al cargar estas imágenes directo desde el navegador en el prototipo anterior.
   cont.innerHTML = `
-    <img id="imgWebcam" src="/webcam/${slug}?_=${Date.now()}" alt="Webcam en directo de ${nombre}"
-         style="width:100%; border-radius:8px; border:1px solid #1C3F4F; display:block;" />
-    <p class="nota-final" id="notaWebcam">Servida por nuestro propio backend (evita bloqueos CORS del proveedor original). Actualiza el panel para ver una captura más reciente.</p>
+    <div style="position:relative;">
+      <img id="imgWebcam" src="/webcam/${slug}?_=${Date.now()}" alt="Webcam en directo de ${nombre}"
+           style="width:100%; border-radius:8px; border:1px solid #1C3F4F; display:block;" />
+      <span style="position:absolute; top:8px; left:8px; display:flex; align-items:center; gap:5px;
+                    background:rgba(11,37,50,0.75); padding:3px 8px; border-radius:12px;
+                    font-family:'IBM Plex Mono',monospace; font-size:10px; color:#F5F1E6;">
+        <span style="width:7px; height:7px; border-radius:50%; background:#A34A35; animation:pulso 1.6s infinite;"></span>
+        EN DIRECTO
+      </span>
+    </div>
+    <p class="nota-final" id="notaWebcam">Servida por nuestro propio backend (evita bloqueos CORS del proveedor original). Se actualiza sola cada minuto.</p>
   `;
-  document.getElementById("imgWebcam").addEventListener("error", () => {
+  const img = document.getElementById("imgWebcam");
+  img.addEventListener("error", () => {
+    pararRefrescoWebcam();
     cont.innerHTML = `<div class="tarjeta" style="text-align:center; color:#6C8890; font-size:12px;">
       No se pudo cargar la webcam de ${nombre} ahora mismo<br>
       (solo funciona una vez desplegado en Cloudflare Pages — no en este archivo abierto suelto).
     </div>`;
   });
+  intervaloWebcam = setInterval(() => {
+    const el = document.getElementById("imgWebcam");
+    if (!el) { pararRefrescoWebcam(); return; }
+    el.src = `/webcam/${slug}?_=${Date.now()}`;
+  }, REFRESCO_WEBCAM_MS);
 }
 
 function abrirPanel(s) {
