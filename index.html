@@ -581,7 +581,7 @@ const map = L.map("map", {
   center: [43.51, -2.82],
   zoom: 10,
   minZoom: 5,
-  maxZoom: 15,
+  maxZoom: 19,
   // La animación de zoom de Leaflet puede quedarse "atascada" si el evento
   // CSS transitionend no llega a disparar (pasa en algunos navegadores/
   // entornos automatizados) — a partir de ahí deja de responder a más
@@ -600,10 +600,12 @@ const map = L.map("map", {
 // batimetría) en vez del gris apagado del mapa de calles por defecto.
 L.tileLayer("https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}", {
   attribution: "Tiles &copy; Esri &mdash; Sources: GEBCO, NOAA, National Geographic, DeLorme, HERE, Geonames.org",
-  maxZoom: 16,
+  maxZoom: 19,
+  maxNativeZoom: 16, // Esri no tiene teselas propias más allá de esto — Leaflet las amplía (algo borrosas) para los niveles siguientes
 }).addTo(map);
 L.tileLayer("https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Reference/MapServer/tile/{z}/{y}/{x}", {
-  maxZoom: 16,
+  maxZoom: 19,
+  maxNativeZoom: 16,
   opacity: 0.9,
 }).addTo(map);
 
@@ -612,12 +614,15 @@ L.tileLayer("https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_
 // mapa. Resolución ~230m: sirve para ver caídas de profundidad y zonas
 // generales, no el detalle de metros pegados a la orilla que daría una
 // sonda de barco.
+// Color + líneas de profundidad (isóbatas) con su etiqueta en metros, en
+// una sola petición — las líneas solas son blancas y no se ven sin el
+// color debajo, comprobado antes de montarlo así.
 const capaBatimetria = L.tileLayer.wms("https://ows.emodnet-bathymetry.eu/wms", {
-  layers: "emodnet:mean",
-  styles: "multicolour",
+  layers: "emodnet:mean,emodnet:contours",
+  styles: "atlas_land,contours", // tonos azules suaves de atlas náutico, en vez del arcoíris de "multicolour"
   format: "image/png",
   transparent: true,
-  opacity: 0.6,
+  opacity: 0.75,
   attribution: "Batimetría: EMODnet Bathymetry",
 });
 document.getElementById("toggleBatimetria").addEventListener("click", (e) => {
