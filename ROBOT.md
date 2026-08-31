@@ -87,6 +87,79 @@ Bizkaia). Eso se configura en los ajustes de red del entorno de esta
 sesión programada (ver la documentación de Claude Code on the web); no es
 algo que yo pueda cambiar desde dentro de la sesión.
 
+### 2026-08-31 (segunda pasada, misma fecha)
+
+**La red mejoró respecto a la pasada anterior de hoy, pero sigue siendo
+parcial — no es una lista negra fija de este proyecto, es una política de
+red del entorno que deja pasar unos dominios y bloquea otros sin patrón
+evidente.** Comprobado con `curl` real (dos intentos cada uno, resultado
+idéntico ambas veces):
+
+```
+$ curl -sS -o /dev/null -w "%{http_code}\n" https://marine-api.open-meteo.com
+400   (respuesta real del servidor a GET / sin parámetros — dominio OK)
+$ curl -sS -o /dev/null -w "%{http_code}\n" https://poem.puertos.es
+200
+$ curl -sS -o /dev/null -w "%{http_code}\n" https://aa.usno.navy.mil/api/rstt/oneday?...
+200
+$ curl -sS -o /dev/null -w "%{http_code}\n" https://pyscada.isurki.com/.../bakio.1.snap.last.thumb.jpeg
+200 (764906 bytes, JPEG válido)
+$ curl -sS -o /dev/null -w "%{http_code}\n" https://detectia.net/img/webcam-sopelana-azti3.webp
+200 (117346 bytes, WebP válido)
+
+$ curl -sS -o /dev/null -w "%{http_code}\n" https://www.aemet.es
+curl: (56) CONNECT tunnel failed, response 403   ← bloqueado por el proxy de salida
+$ curl -sS -o /dev/null -w "%{http_code}\n" https://www.kostasystem.com
+curl: (56) CONNECT tunnel failed, response 403   ← bloqueado (webcam de Mundaka)
+$ curl -sS -o /dev/null -w "%{http_code}\n" https://www.euskadi.eus
+curl: (56) CONNECT tunnel failed, response 403   ← bloqueado, 3/3 intentos
+$ curl -sS -o /dev/null -w "%{http_code}\n" https://www.uragentzia.euskadi.eus
+curl: (56) CONNECT tunnel failed, response 403   ← bloqueado
+$ curl -sS -o /dev/null -w "%{http_code}\n" https://opendata.euskadi.eus
+curl: (56) CONNECT tunnel failed, response 403   ← bloqueado
+$ curl -sS -o /dev/null -w "%{http_code}\n" https://www.webcamtaxi.com
+curl: (56) CONNECT tunnel failed, response 403   ← bloqueado
+```
+
+**Fuentes candidatas encontradas por WebSearch pero SIN verificar** (el
+dominio está bloqueado desde este entorno, así que no se pueden integrar
+sin violar la norma de "nunca dar nada por hecho sin comprobarlo"):
+- **Caudal de ríos — Agencia Vasca del Agua (URA)**: existe una página
+  "Datos de estaciones de aforo" en `uragentzia.euskadi.eus` y un catálogo
+  de APIs REST en `opendata.euskadi.eus` (Open Data Euskadi), que según
+  los resultados de búsqueda sí publica datos de calidad/cantidad de agua
+  en JSON. Encajaría bien con los ríos que ya están en el mapa con
+  `caudal: null` (Lea, Oka, Butroe, Nervión...) — pero todo el dominio
+  `*.euskadi.eus` está bloqueado desde aquí, así que no he podido ver una
+  URL de endpoint real ni la forma de su JSON. Sigue pendiente.
+- **Webcam de Lekeitio**: varios agregadores turísticos (Webcamtaxi,
+  SkylineWebcams, Worldcam, "Turismo Live") dicen tener cámara del puerto
+  de Lekeitio, pero (a) todos esos dominios están bloqueados desde aquí
+  para comprobar si sirven una imagen estática hotlinkable o solo un
+  reproductor de vídeo con DRM/token, y (b) el patrón que usa este
+  proyecto (`functions/webcam/[slug].js`) necesita una URL de imagen
+  directa, no un iframe de terceros — habría que confirmarlo antes de
+  integrar nada.
+- **Webcam de Plentzia**: igual — varios sitios (surf30.net,
+  camarastrafico.com.es, escueladesurfsopelana.com) la mencionan, mismo
+  problema de dominios bloqueados para comprobar la URL directa.
+- Getxo: no salió ningún candidato claro en esta búsqueda.
+
+**No se integra nada nuevo esta pasada** porque ningún candidato pasó la
+prueba de "URL comprobada con una petición real" — es la misma norma que
+ya se aplicó la pasada anterior, solo que ahora la razón es un bloqueo
+por dominio concreto, no un bloqueo total de la red.
+
+**Propuesta actualizada para el usuario:** para poder cerrar caudal de
+ríos y las webcams que faltan, la política de red de este entorno
+necesitaría permitir además `*.euskadi.eus` (o al menos
+`uragentzia.euskadi.eus` y `opendata.euskadi.eus`) y, si se quiere
+comprobar hotlinking de imagen directa, los dominios concretos de
+cualquier candidato de webcam que se decida investigar (no una lista
+genérica de agregadores turísticos, que cambian). El resto de fuentes ya
+integradas (Open-Meteo, Puertos del Estado, USNO) sí son alcanzables
+ahora mismo.
+
 ---
 
 ## Auditoría de datos
@@ -126,6 +199,68 @@ de `prevision.js` (marine + forecast API por spot), `luna.js` (USNO) y
 valores tengan sentido (rango de altura de ola, temperatura del agua,
 etc.), y la boya 2136/1117/1101 de `poem.puertos.es`.
 
+### 2026-08-31 (segunda pasada, misma fecha)
+
+**Auditoría real hecha con `curl` para todo lo que el entorno permite
+alcanzar hoy.** Resultado: todo lo comprobable está sano, nada que
+corregir.
+
+- **`functions/prevision.js` — Open-Meteo Marine + Forecast, los 6
+  spots.** Pedí exactamente las mismas URLs que construye el código
+  (mismos parámetros: `hourly=wave_height,wave_period,wave_direction,
+  sea_surface_temperature,ocean_current_velocity,ocean_current_direction,
+  sea_level_height_msl` para marine; `windspeed_10m,winddirection_10m,
+  precipitation,cloudcover` para forecast). HTTP 200 en los 6 spots.
+  Forma del JSON correcta (`hourly.time`, `hourly.wave_height`, etc.,
+  igual que espera el código). Valores con sentido para finales de agosto
+  en el Cantábrico: altura de ola 0.9–1.6 m, temperatura del agua
+  ~22–24°C, viento 8–11 km/h. Nada roto, nada que corregir.
+- **Boyas de Puertos del Estado (`poem.puertos.es/portus/StationData`) —
+  2136 Bilbao-Vizcaya, 1117 Gijón, 1101 Pasaia II.** Las tres responden
+  HTTP 200 con la forma esperada (`[cabeceras, filas]`, cada valor
+  `[numero, flag_calidad]`). Bilbao-Vizcaya: Hm0 en torno a 2.0–2.5 m,
+  periodo pico 9–10.5 s, dirección ~294–301° (NW/WNW), temp. agua
+  ~22.6°C — coherente con oleaje de fondo de Cantábrico en verano, no un
+  valor roto ni sospechoso.
+- **`functions/luna.js` — USNO (`aa.usno.navy.mil/api/rstt/oneday`).**
+  HTTP 200, JSON con la forma que el código espera
+  (`properties.data.curphase`, `.moondata[].phen/time`, `.fracillum`).
+  Para hoy: fase "Waning Gibbous" (89% iluminada), coherente con la luna
+  llena real del 28 de agosto que también devuelve la propia API
+  (`closestphase`) — el cálculo de fase encaja con la fecha, no hay
+  desfase.
+- **`functions/webcam/[slug].js` — bakio y sopelana.** Ambas URL
+  configuradas devuelven HTTP 200 con una imagen real y válida (JPEG de
+  1024×768 y WebP de 2464×2056 respectivamente, no una página de error ni
+  un placeholder). **mundaka** (`kostasystem.com`) no se pudo comprobar
+  esta pasada — ese dominio concreto está bloqueado por la política de
+  red del entorno (ver sección "Fuentes nuevas" de hoy), no porque la
+  fuente esté rota; queda pendiente de revisar la próxima vez que el
+  dominio sea alcanzable.
+- **`functions/rayos-imagen.js` y el bloque `metaRayos()` dentro de
+  `prevision.js` (ambos contra `www.aemet.es`)**: **no se pudo auditar
+  esta pasada** — `aemet.es` está bloqueado por la política de red de
+  este entorno concreto (comprobado 3 veces, mismo resultado las 3). Esto
+  es distinto de la pasada anterior (donde *toda* la red estaba
+  bloqueada): ahora es un bloqueo específico de ese dominio. No se marca
+  como "roto" porque no hay evidencia de que lo esté — solo no se ha
+  podido comprobar desde aquí. Pendiente para cuando el dominio sea
+  alcanzable, o para verificarlo manualmente contra el despliegue de
+  Cloudflare Pages si el usuario lo prefiere.
+- **Repaso de `index.html` para valores hardcodeados presentados como
+  reales**: confirmado que los nombres de campo que lee el frontend
+  (`alturaSignificativa`, `periodoPico`, `dirOla`, `tempAgua`,
+  `marea.altura`, `marea.tendencia`, `marea.proximas`) coinciden
+  exactamente con lo que devuelve `functions/prevision.js` — no hay
+  desajuste de forma entre backend y frontend. El único bloque de datos
+  fijos (`SPOTS`, línea ~410-445) sigue siendo el *fallback* declarado
+  para cuando `/prevision` falla, no un dato inventado disfrazado de
+  real — mismo veredicto que la pasada anterior, ahora confirmado
+  también revisando cómo se consume en el resto del archivo.
+
+**Nada que corregir esta pasada** — todo lo alcanzable coincide con lo
+que el código espera y tiene valores con sentido.
+
 ---
 
 ## Calibración
@@ -147,3 +282,32 @@ la primera línea real a `CALIBRACION.jsonl`. Con al menos 8 puntos de
 historial se podrá calcular la desviación media y, si es sistemática y
 grande, proponer aquí un factor de corrección (a confirmar por el
 usuario, nunca aplicado en automático).
+
+### 2026-08-31 (segunda pasada, misma fecha)
+
+**Primer punto de calibración real registrado en `CALIBRACION.jsonl`.**
+La red permitió esta vez alcanzar tanto Open-Meteo como
+`poem.puertos.es`, así que pedí por `curl` la altura de ola calculada
+para los 6 spots (misma llamada que hace `functions/prevision.js`) y la
+boya 2136 Bilbao-Vizcaya, ambas para la misma hora local (2026-08-31
+14:00 CEST = 12:00 UTC, coincide exactamente con el último dato de la
+boya). Resultado (boya Hm0 = 1.99 m):
+
+| spot | altura calculada | diferencia | % |
+|---|---|---|---|
+| lekeitio | 1.02 m | −0.97 m | −48.7% |
+| mundaka | 1.58 m | −0.41 m | −20.6% |
+| bakio | 1.28 m | −0.71 m | −35.7% |
+| sopelana | 1.34 m | −0.65 m | −32.7% |
+| plentzia | 1.34 m | −0.65 m | −32.7% |
+| getxo | 1.30 m | −0.69 m | −34.7% |
+
+Con un solo punto **no se puede sacar ninguna conclusión de calibración
+todavía** (hacen falta al menos 8, según la instrucción de esta tarea).
+Es solo el primer dato, guardado en `CALIBRACION.jsonl` (no se ha tocado
+nada más del archivo, solo se ha añadido esta línea). A simple vista
+todos los spots calculan por debajo de la boya, lo cual es esperable
+_a priori_ (la boya está en mar abierto, los spots están más resguardados
+en la costa) — pero con un punto no se distingue "efecto costero real"
+de "ruido de un día concreto", así que no se propone ningún factor de
+corrección todavía. Seguir acumulando puntos en próximas pasadas.
