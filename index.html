@@ -396,6 +396,15 @@
         <div class="val" id="panelPrecipitacion" style="font-size:13px;">sin datos</div>
       </div>
     </div>
+    <div class="tarjeta" style="margin-top:10px; text-align:center;">
+      <div class="etq">PRESIÓN ATMOSFÉRICA</div>
+      <div class="val" id="panelPresion" style="font-size:15px;">sin datos</div>
+      <div class="etq" id="panelPresionNota"></div>
+    </div>
+    <div class="tarjeta" style="margin-top:10px; border: 1px solid #1C3F4F;">
+      <div class="etq">🎣 QUÉ SE PUEDE PESCAR (por temporada)</div>
+      <div id="panelEspecies" style="font-size:12px; margin-top:4px; line-height:1.5;"></div>
+    </div>
     <div id="panelWebcamBox" style="margin-top:14px;">
       <div class="etq" style="margin-bottom:6px;">WEBCAM EN DIRECTO</div>
       <div id="panelWebcamContenido"></div>
@@ -417,27 +426,27 @@ const SPOTS = [
   { slug: "lekeitio", nombre: "Lekeitio", lat: 43.3647, lon: -2.5089,
     altura: [0.3, 0.7], periodo: 4, viento: 14, dirViento: "ENE", dirOla: "NNE 32°",
     nubosidad: null, precipitacion: null, tempAgua: null, rayosCerca: null,
-    corriente: null, dirCorriente: null, marea: null },
+    corriente: null, dirCorriente: null, marea: null, presion: null },
   { slug: "mundaka", nombre: "Mundaka", lat: 43.4047, lon: -2.6989,
     altura: [0.1, 0.5], periodo: 5, viento: 20, dirViento: "ENE", dirOla: "NNW 342°",
     nubosidad: null, precipitacion: null, tempAgua: null, rayosCerca: null,
-    corriente: null, dirCorriente: null, marea: null },
+    corriente: null, dirCorriente: null, marea: null, presion: null },
   { slug: "bakio", nombre: "Bakio", lat: 43.4297, lon: -2.8103,
     altura: [0.2, 0.6], periodo: 6, viento: 24, dirViento: "ENE", dirOla: "NW 323°",
     nubosidad: null, precipitacion: null, tempAgua: null, rayosCerca: null,
-    corriente: null, dirCorriente: null, marea: null },
+    corriente: null, dirCorriente: null, marea: null, presion: null },
   { slug: "sopelana", nombre: "Sopelana", lat: 43.3878, lon: -2.9975,
     altura: [0.0, 0.4], periodo: 5, viento: 16, dirViento: "NE", dirOla: "N 3°",
     nubosidad: null, precipitacion: null, tempAgua: null, rayosCerca: null,
-    corriente: null, dirCorriente: null, marea: null },
+    corriente: null, dirCorriente: null, marea: null, presion: null },
   { slug: "plentzia", nombre: "Plentzia", lat: 43.4053, lon: -2.9436,
     altura: [0.0, 0.3], periodo: 8, viento: 12, dirViento: "NNW", dirOla: "NW 307°",
     nubosidad: null, precipitacion: null, tempAgua: null, rayosCerca: null,
-    corriente: null, dirCorriente: null, marea: null },
+    corriente: null, dirCorriente: null, marea: null, presion: null },
   { slug: "getxo", nombre: "Getxo (Ereaga)", lat: 43.3489, lon: -3.0119,
     altura: [0.0, 0.2], periodo: 4, viento: 10, dirViento: "NE", dirOla: "NE 37°",
     nubosidad: null, precipitacion: null, tempAgua: null, rayosCerca: null,
-    corriente: null, dirCorriente: null, marea: null },
+    corriente: null, dirCorriente: null, marea: null, presion: null },
 ];
 
 // Boyas reales de Puertos del Estado — mar abierto, datos medidos por
@@ -515,6 +524,33 @@ function categoriaCaudal(caudal) {
   return { etiqueta: "alto", color: "#A34A35" };
 }
 
+// Especies de pesca recreativa habituales en esta costa y su temporada
+// real, según guías de pesca del País Vasco (aipeces.com, haypesca.es) —
+// NO son rangos de temperatura exactos por especie (no hemos encontrado
+// una fuente que los dé con precisión para esta zona), así que el criterio
+// es el mes del año, que sí está bien documentado. La temperatura del agua
+// se muestra al lado como contexto, no como filtro.
+const ESPECIES = [
+  { nombre: "Lubina", emoji: "🐟", meses: [9, 10, 11, 12, 1, 2, 3, 4],
+    nota: "de otoño a primavera, mejor con poca luz (amanecer/anochecer)" },
+  { nombre: "Bonito del norte", emoji: "🐟", meses: [7, 8, 9, 10],
+    nota: "verano-otoño, pelágico, mar adentro" },
+  { nombre: "Sargo", emoji: "🐟", meses: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+    nota: "todo el año en rompientes, más activo con agua fría" },
+  { nombre: "Abadejo", emoji: "🐟", meses: [9, 10, 11, 12, 1, 2],
+    nota: "mejor en otoño-invierno, peces de roca" },
+  { nombre: "Calamar / chipirón", emoji: "🦑", meses: [9, 10, 11, 12, 1, 2],
+    nota: "otoño-invierno, técnica de eging en puerto" },
+  { nombre: "Congrio", emoji: "🐍", meses: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+    nota: "todo el año, nocturno, en puertos y espigones" },
+  { nombre: "Txitxarro / verdel", emoji: "🐟", meses: [4, 5, 6, 7, 8],
+    nota: "primavera-verano, spinning ligero" },
+];
+function especiesEnTemporada() {
+  const mesActual = new Date().getMonth() + 1;
+  return ESPECIES.filter((e) => e.meses.includes(mesActual));
+}
+
 const GRADOS_COMPAS = {
   N: 0, NNE: 22.5, NE: 45, ENE: 67.5, E: 90, ESE: 112.5, SE: 135, SSE: 157.5,
   S: 180, SSW: 202.5, SW: 225, WSW: 247.5, W: 270, WNW: 292.5, NW: 315, NNW: 337.5,
@@ -576,6 +612,7 @@ async function actualizarDesdeBackend() {
       if (b.nubosidad !== undefined) s.nubosidad = b.nubosidad;
       if (b.corriente !== undefined) { s.corriente = b.corriente; s.dirCorriente = b.dirCorriente; }
       if (sBackend.marea) s.marea = sBackend.marea;
+      if (sBackend.presion) s.presion = sBackend.presion;
       s.indice = indiceMar(s);
     });
     (datos.boyas || []).forEach((bBackend) => {
@@ -898,6 +935,20 @@ function abrirPanel(s) {
   document.getElementById("panelTempAgua").textContent = (s.tempAgua === null || s.tempAgua === undefined) ? "sin datos" : `${s.tempAgua}°C`;
   document.getElementById("panelNubosidad").textContent = s.nubosidad === null ? "sin datos" : `${s.nubosidad}%`;
   document.getElementById("panelPrecipitacion").textContent = s.precipitacion === null ? "sin datos" : `${s.precipitacion} mm/h`;
+
+  if (s.presion && s.presion.valor !== null) {
+    document.getElementById("panelPresion").textContent = `${s.presion.valor} hPa`;
+    const notas = { bajando: "↓ bajando — suele coincidir con más actividad", subiendo: "↑ subiendo — actividad más floja las próximas 24-48h", estable: "→ estable — buena señal si lleva días así" };
+    document.getElementById("panelPresionNota").textContent = s.presion.tendencia ? notas[s.presion.tendencia] : "";
+  } else {
+    document.getElementById("panelPresion").textContent = "sin datos";
+    document.getElementById("panelPresionNota").textContent = "";
+  }
+
+  const especiesHoy = especiesEnTemporada();
+  document.getElementById("panelEspecies").innerHTML = especiesHoy.length
+    ? especiesHoy.map((e) => `${e.emoji} <b>${e.nombre}</b> — ${e.nota}`).join("<br>")
+    : "sin especies de temporada esta época del año";
 
   pintarWebcam(s.slug, s.nombre);
 

@@ -70,6 +70,32 @@ function calcularMarea(horas, alturas) {
   };
 }
 
+// Presión atmosférica: no es una marea (sin máximos/mínimos que buscar),
+// así que comparamos el valor actual contra el de 3h antes para ver si
+// sube o baja. A diferencia de la fase lunar, la tendencia de presión sí
+// tiene respaldo real en pesca — una bajada suele venir antes de un
+// cambio de tiempo y coincide con más actividad alimenticia; lo marcamos
+// como orientativo, nunca como una certeza.
+function calcularPresion(horas, presiones) {
+  if (!horas.length || !presiones.length) return null;
+  const ahoraISO = new Date().toISOString().slice(0, 13);
+  let idxAhora = horas.findIndex((h) => h.slice(0, 13) === ahoraISO);
+  if (idxAhora === -1) idxAhora = 0;
+
+  const actual = presiones[idxAhora];
+  if (actual === null || actual === undefined) return null;
+
+  const idxAntes = Math.max(0, idxAhora - 3);
+  const antes = presiones[idxAntes];
+  let tendencia = null;
+  if (antes !== null && antes !== undefined) {
+    const delta = actual - antes;
+    tendencia = delta <= -1 ? "bajando" : delta >= 1 ? "subiendo" : "estable";
+  }
+
+  return { valor: Math.round(actual), tendencia };
+}
+
 async function fetchJSON(url) {
   const resp = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0 (compatible; CostaVivaApp/0.1)" } });
   if (!resp.ok) throw new Error(`HTTP ${resp.status} (${url})`);
@@ -84,7 +110,7 @@ async function previsionSpot(spot) {
       `https://marine-api.open-meteo.com/v1/marine?${paramsComunes}&hourly=wave_height,wave_period,wave_direction,sea_surface_temperature,ocean_current_velocity,ocean_current_direction,sea_level_height_msl`
     ),
     fetchJSON(
-      `https://api.open-meteo.com/v1/forecast?${paramsComunes}&hourly=windspeed_10m,winddirection_10m,precipitation,cloudcover&windspeed_unit=kmh`
+      `https://api.open-meteo.com/v1/forecast?${paramsComunes}&hourly=windspeed_10m,winddirection_10m,precipitation,cloudcover,pressure_msl&windspeed_unit=kmh`
     ),
   ]);
   const tempAguaPorHoraISO = Object.fromEntries(
@@ -100,6 +126,7 @@ async function previsionSpot(spot) {
     ])
   );
   const marea = calcularMarea(marino.hourly?.time || [], marino.hourly?.sea_level_height_msl || []);
+  const presion = calcularPresion(viento.hourly?.time || [], viento.hourly?.pressure_msl || []);
   const precipNubesPorHoraISO = Object.fromEntries(
     (viento.hourly?.time || []).map((t, i) => [
       t,
@@ -157,6 +184,7 @@ async function previsionSpot(spot) {
     fuente: "Open-Meteo (Marine + Forecast API) — cálculo propio, no Todosurf",
     actualizado: new Date().toISOString(),
     marea,
+    presion,
     bloques,
   };
 }
