@@ -325,17 +325,20 @@
     </div>
     <button class="luna-toggle" id="toggleLuna" title="Fase y posición de la luna" aria-label="Mostrar/ocultar datos de la luna">🌙</button>
     <div class="luna-panel" id="lunaPanel">
-      <div class="fase-fila">
-        <span class="fase-emoji" id="lunaEmoji">🌙</span>
-        <div>
-          <div class="fase-nombre" id="lunaFase">—</div>
-          <div class="fase-iluminacion" id="lunaIluminacion"></div>
+      <div class="nota" id="lunaZoomAviso" style="display:none; font-size:11px; color:#9FB8BF; text-align:center; padding:6px 0;">🔍 Acércate (zoom in) para ver la luna de esa ubicación</div>
+      <div id="lunaContenido">
+        <div class="fase-fila">
+          <span class="fase-emoji" id="lunaEmoji">🌙</span>
+          <div>
+            <div class="fase-nombre" id="lunaFase">—</div>
+            <div class="fase-iluminacion" id="lunaIluminacion"></div>
+          </div>
         </div>
+        <div class="fila-dato"><span>Sale</span><b id="lunaSalida">—</b></div>
+        <div class="fila-dato"><span>Se pone</span><b id="lunaPuesta">—</b></div>
+        <div class="fila-dato"><span>Altura máx.</span><b id="lunaAltura">—</b></div>
+        <div class="nota">Para el centro del mapa actual. Azimut y altura: cálculo propio (±1°). Horas y fase: Observatorio Naval de EE.UU.</div>
       </div>
-      <div class="fila-dato"><span>Sale</span><b id="lunaSalida">—</b></div>
-      <div class="fila-dato"><span>Se pone</span><b id="lunaPuesta">—</b></div>
-      <div class="fila-dato"><span>Altura máx.</span><b id="lunaAltura">—</b></div>
-      <div class="nota">Azimut y altura: cálculo propio (±1°). Horas y fase: Observatorio Naval de EE.UU.</div>
     </div>
   </div>
   <div class="panel" id="panel">
@@ -554,20 +557,6 @@ async function actualizarDesdeBackend() {
       const b = BOYAS.find((x) => x.codigo === bBackend.codigo);
       if (b) Object.assign(b, bBackend);
     });
-    if (datos.luna && !datos.luna.error) {
-      const l = datos.luna;
-      document.getElementById("lunaEmoji").textContent = l.emoji;
-      document.getElementById("lunaFase").textContent = l.fase;
-      document.getElementById("lunaIluminacion").textContent = `${l.iluminacion} iluminada`;
-      document.getElementById("lunaSalida").textContent = l.horaSalida
-        ? `${l.horaSalida} · ${l.rumboSalida} (${l.azimutSalida}°)`
-        : "sin datos";
-      document.getElementById("lunaPuesta").textContent = l.horaPuesta
-        ? `${l.horaPuesta} · ${l.rumboPuesta} (${l.azimutPuesta}°)`
-        : "sin datos";
-      document.getElementById("lunaAltura").textContent =
-        l.alturaMaxima !== null ? `${l.alturaMaxima}° (${l.horaCulminacion})` : "sin datos";
-    }
     console.log("Datos reales cargados desde /prevision");
   } catch (e) {
     console.log("Backend no disponible, usando datos fijos de hoy:", e.message);
@@ -859,9 +848,52 @@ document.getElementById("cerrarModalRayos").addEventListener("click", () => {
 document.getElementById("modalRayos").addEventListener("click", (e) => {
   if (e.target.id === "modalRayos") document.getElementById("modalRayos").classList.remove("visible");
 });
+// La luna se pide para el centro del mapa en cada momento (no es fija para
+// toda la zona) — a poco zoom el "centro" deja de significar nada útil
+// (podría ser medio océano Atlántico), así que por debajo de cierto nivel
+// se avisa en vez de mostrar un dato que no tiene sentido pedir.
+const ZOOM_MINIMO_LUNA = 8;
+let lunaAbierta = false;
+
+async function actualizarLuna() {
+  const aviso = document.getElementById("lunaZoomAviso");
+  const contenido = document.getElementById("lunaContenido");
+  if (map.getZoom() < ZOOM_MINIMO_LUNA) {
+    aviso.style.display = "block";
+    contenido.style.display = "none";
+    return;
+  }
+  aviso.style.display = "none";
+  contenido.style.display = "block";
+
+  const centro = map.getCenter();
+  try {
+    const resp = await fetch(`/luna?lat=${centro.lat.toFixed(4)}&lon=${centro.lng.toFixed(4)}`, { cache: "no-store" });
+    const l = await resp.json();
+    if (!resp.ok || l.error) throw new Error(l.error || "sin datos");
+    document.getElementById("lunaEmoji").textContent = l.emoji;
+    document.getElementById("lunaFase").textContent = l.fase;
+    document.getElementById("lunaIluminacion").textContent = `${l.iluminacion} iluminada`;
+    document.getElementById("lunaSalida").textContent = l.horaSalida
+      ? `${l.horaSalida} · ${l.rumboSalida} (${l.azimutSalida}°)`
+      : "sin datos";
+    document.getElementById("lunaPuesta").textContent = l.horaPuesta
+      ? `${l.horaPuesta} · ${l.rumboPuesta} (${l.azimutPuesta}°)`
+      : "sin datos";
+    document.getElementById("lunaAltura").textContent =
+      l.alturaMaxima !== null && l.alturaMaxima !== undefined ? `${l.alturaMaxima}° (${l.horaCulminacion})` : "sin datos";
+  } catch (e) {
+    console.log("No se pudo cargar la luna para esta ubicación:", e.message);
+  }
+}
+
 document.getElementById("toggleLuna").addEventListener("click", () => {
-  const abierta = document.getElementById("lunaPanel").classList.toggle("visible");
-  document.getElementById("toggleLuna").textContent = abierta ? "✕" : "🌙";
+  lunaAbierta = document.getElementById("lunaPanel").classList.toggle("visible");
+  document.getElementById("toggleLuna").textContent = lunaAbierta ? "✕" : "🌙";
+  if (lunaAbierta) actualizarLuna();
+});
+map.on("moveend zoomend", () => {
+  if (lunaAbierta) actualizarLuna();
 });
 document.getElementById("cerrarPanel").addEventListener("click", () => {
   document.getElementById("panel").classList.remove("visible");
