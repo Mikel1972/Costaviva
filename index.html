@@ -147,6 +147,27 @@
   }
   .rayos-panel img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
   .rayos-panel .nota { color: #6C8890; font-size: 9.5px; margin-top: 6px; line-height: 1.4; }
+  .expandir-rayos {
+    position: absolute; top: 6px; right: 6px; z-index: 2;
+    width: 24px; height: 24px; border-radius: 4px;
+    background: rgba(11,37,50,0.75); border: 1px solid rgba(232,226,208,0.3); color: #E8E2D0;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 13px; padding: 0;
+  }
+  .modal-rayos {
+    position: fixed; inset: 0; z-index: 2000;
+    background: rgba(11,37,50,0.88);
+    display: none; align-items: center; justify-content: center; padding: 32px;
+  }
+  .modal-rayos.visible { display: flex; }
+  .modal-rayos-contenido {
+    position: relative; width: min(92vw, 960px); aspect-ratio: 680 / 246;
+    border-radius: 10px; overflow: hidden; border: 1px solid #1C3F4F;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+    background-image: url("https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/export?bbox=-18,35,14,47&bboxSR=4326&size=960,347&format=png&transparent=false&f=image");
+    background-size: cover; background-position: center;
+  }
+  .modal-rayos-contenido img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
   .leyenda .titulo { color: #7FA3AF; margin-bottom: 6px; }
   .leyenda .fila { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
   .leyenda .chip { width: 10px; height: 10px; border-radius: 2px; }
@@ -268,8 +289,15 @@
       <div class="titulo">RAYOS — ESPAÑA</div>
       <div class="marco-imagen">
         <img id="imgRayos" src="/rayos-imagen" alt="Mapa de rayos de España, última hora" />
+        <button class="expandir-rayos" id="expandirRayos" title="Ver en grande" aria-label="Ver mapa de rayos en grande">⤢</button>
       </div>
       <div class="nota" id="notaRayos">Fuente: AEMET</div>
+    </div>
+    <div class="modal-rayos" id="modalRayos">
+      <div class="modal-rayos-contenido">
+        <button class="cerrar" id="cerrarModalRayos" style="position:absolute; top:8px; right:8px; z-index:2; background:rgba(11,37,50,0.7); border-radius:4px;">✕</button>
+        <img id="imgRayosGrande" src="/rayos-imagen" alt="Mapa de rayos de España, última hora, en grande" />
+      </div>
     </div>
   </div>
   <div class="panel" id="panel">
@@ -768,6 +796,16 @@ document.getElementById("toggleRayos").addEventListener("click", () => {
 document.getElementById("imgRayos").addEventListener("error", (e) => {
   e.target.style.display = "none";
   document.getElementById("notaRayos").textContent = "Fuente: AEMET (no disponible ahora mismo)";
+});
+document.getElementById("expandirRayos").addEventListener("click", () => {
+  document.getElementById("imgRayosGrande").src = `/rayos-imagen?_=${Date.now()}`;
+  document.getElementById("modalRayos").classList.add("visible");
+});
+document.getElementById("cerrarModalRayos").addEventListener("click", () => {
+  document.getElementById("modalRayos").classList.remove("visible");
+});
+document.getElementById("modalRayos").addEventListener("click", (e) => {
+  if (e.target.id === "modalRayos") document.getElementById("modalRayos").classList.remove("visible");
 });
 document.getElementById("cerrarPanel").addEventListener("click", () => {
   document.getElementById("panel").classList.remove("visible");
