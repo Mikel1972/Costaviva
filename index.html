@@ -136,7 +136,12 @@
   }
   .rayos-panel.visible { opacity: 1; transform: translateX(0); pointer-events: auto; }
   .rayos-panel .titulo { color: #7FA3AF; margin-bottom: 6px; }
-  .rayos-panel img { width: 100%; border-radius: 4px; background: #E8E2D0; display: block; }
+  .rayos-panel .marco-imagen {
+    width: 100%; height: 100px; border-radius: 4px; border: 1px solid #1C3F4F;
+    background: #E8E2D0; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .rayos-panel img { max-width: 100%; max-height: 100%; display: block; }
   .rayos-panel .nota { color: #6C8890; font-size: 9.5px; margin-top: 6px; line-height: 1.4; }
   .leyenda .titulo { color: #7FA3AF; margin-bottom: 6px; }
   .leyenda .fila { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
@@ -256,10 +261,11 @@
     </div>
     <button class="rayos-toggle" id="toggleRayos" title="Mapa de rayos de España (AEMET)" aria-label="Mostrar/ocultar mapa de rayos">⚡</button>
     <div class="rayos-panel" id="rayosPanel">
-      <div class="titulo">RAYOS — ESPAÑA (AEMET)</div>
-      <img id="imgRayos" src="/rayos-imagen" alt="Mapa de rayos de España, última hora" />
-      <div class="nota" id="notaRayos">actualizando…</div>
-      <div class="nota">Imagen de todo el país (AEMET no publica coordenadas por rayo) — en blanco si no hay actividad detectada. No es una capa de esta zona en concreto.</div>
+      <div class="titulo">RAYOS — ESPAÑA</div>
+      <div class="marco-imagen">
+        <img id="imgRayos" src="/rayos-imagen" alt="Mapa de rayos de España, última hora" />
+      </div>
+      <div class="nota" id="notaRayos">Fuente: AEMET</div>
     </div>
   </div>
   <div class="panel" id="panel">
@@ -473,12 +479,6 @@ async function actualizarDesdeBackend() {
       if (sBackend.marea) s.marea = sBackend.marea;
       s.indice = indiceMar(s);
     });
-    if (datos.rayosNacional && !datos.rayosNacional.error) {
-      const hora = new Date(datos.rayosNacional.actualizado).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
-      document.getElementById("notaRayos").textContent = `actualizado ${hora}`;
-    } else {
-      document.getElementById("notaRayos").textContent = "no disponible ahora mismo";
-    }
     (datos.boyas || []).forEach((bBackend) => {
       if (bBackend.error) return;
       const b = BOYAS.find((x) => x.codigo === bBackend.codigo);
@@ -763,7 +763,7 @@ document.getElementById("toggleRayos").addEventListener("click", () => {
 });
 document.getElementById("imgRayos").addEventListener("error", (e) => {
   e.target.style.display = "none";
-  document.getElementById("notaRayos").textContent = "no disponible ahora mismo";
+  document.getElementById("notaRayos").textContent = "Fuente: AEMET (no disponible ahora mismo)";
 });
 document.getElementById("cerrarPanel").addEventListener("click", () => {
   document.getElementById("panel").classList.remove("visible");
