@@ -41,7 +41,8 @@ Requisito: Node.js instalado (el script te avisa si falta).
 - Si `/prevision` no responde (por ejemplo, abriendo `index.html` suelto sin desplegar), la app no se rompe — se queda con los datos de respaldo
 - Las webcams de Mundaka/Bakio/Sopelana se piden a `/webcam/<slug>` (nuestro propio proxy) y se refrescan solas cada minuto mientras el panel está abierto (indicador "EN DIRECTO") — si el proveedor original ha cambiado la URL o la bloquea, el panel avisa en vez de romperse
 - Temperatura del agua, nubosidad y precipitación vienen de Open-Meteo; marea (altura, tendencia, próxima pleamar/bajamar) y corriente marina también, calculadas a partir de la curva horaria real del modelo. Además hay 3 boyas reales de Puertos del Estado (Gijón, Bilbao-Vizcaya, Pasaia II) con oleaje y temperatura MEDIDOS, no modelados
-- Los índices de mar combinado se calculan en el momento; caudal de ríos y rayos siguen sin datos reales — fuentes pendientes de conectar (URA/Euskalmet), documentadas en el concepto principal
+- Rayos: botón ⚡ en el mapa, muestra el mapa nacional de AEMET (imagen, actualizada cada hora, sin API key). AEMET no publica coordenadas por rayo en abierto — comprobado tanto en su API oficial como en el código de su propia web — así que no es una capa de puntos de esta zona, es una imagen de referencia de toda España
+- Los índices de mar combinado se calculan en el momento; caudal de ríos sigue sin datos reales — fuente pendiente de conectar (URA), documentada en el concepto principal
 
 ## Acceso con Supabase (desactivado en este primer despliegue)
 

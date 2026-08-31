@@ -118,6 +118,26 @@
     transition: opacity 0.15s ease-out, transform 0.15s ease-out;
   }
   .leyenda.visible { opacity: 1; transform: translateX(0); pointer-events: auto; }
+
+  .rayos-toggle {
+    position: absolute; top: 16px; right: 16px; z-index: 502;
+    width: 38px; height: 38px; border-radius: 8px;
+    background: #0F2C38; border: 1px solid #1C3F4F; color: #E8E2D0;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 16px; padding: 0;
+  }
+  .rayos-panel {
+    position: absolute; top: 16px; right: 64px; z-index: 501;
+    background: #0F2C38; border: 1px solid #1C3F4F; border-radius: 8px;
+    padding: 10px; font-size: 11px; font-family: 'IBM Plex Mono', monospace;
+    width: 220px;
+    opacity: 0; transform: translateX(14px); pointer-events: none;
+    transition: opacity 0.15s ease-out, transform 0.15s ease-out;
+  }
+  .rayos-panel.visible { opacity: 1; transform: translateX(0); pointer-events: auto; }
+  .rayos-panel .titulo { color: #7FA3AF; margin-bottom: 6px; }
+  .rayos-panel img { width: 100%; border-radius: 4px; background: #E8E2D0; display: block; }
+  .rayos-panel .nota { color: #6C8890; font-size: 9.5px; margin-top: 6px; line-height: 1.4; }
   .leyenda .titulo { color: #7FA3AF; margin-bottom: 6px; }
   .leyenda .fila { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
   .leyenda .chip { width: 10px; height: 10px; border-radius: 2px; }
@@ -220,7 +240,7 @@
   ⚡ RIESGO DE RAYOS DETECTADO EN LA ZONA — no salir a roca/muelle hasta que pase
 </div>
 <div id="sinRayos" style="background:#0F2C38; border-bottom:1px solid #1C3F4F; color:#6C8890; padding:6px 28px; font-family:'IBM Plex Mono', monospace; font-size:11px; flex-shrink:0;">
-  ⚡ Sin datos de rayos conectados todavía — fuente prevista: red LINET/Euskalmet (VHF+LF+VLF, tiempo real)
+  ⚡ Sin aviso de rayos activo para esta zona — mapa nacional de referencia (AEMET) disponible en el botón ⚡ del mapa
 </div>
 
 <div class="main">
@@ -233,6 +253,13 @@
       <div class="fila"><span class="chip" style="background:#D4A24C"></span><span>moderado</span></div>
       <div class="fila"><span class="chip" style="background:#A34A35"></span><span>agitado</span></div>
       <div class="nota" style="margin-top:10px; padding-top:8px; border-top:1px solid #1C3F4F;">◆ RÍOS: 3 puntos por río (cabecera→desembocadura), color por caudal bajo/normal/alto — pasa el cursor por un punto para ver el detalle. Lo que se mide arriba llega a la costa horas después — útil como aviso de tendencia. Posiciones aproximadas, sin datos reales todavía (URA/Euskalmet).</div>
+    </div>
+    <button class="rayos-toggle" id="toggleRayos" title="Mapa de rayos de España (AEMET)" aria-label="Mostrar/ocultar mapa de rayos">⚡</button>
+    <div class="rayos-panel" id="rayosPanel">
+      <div class="titulo">RAYOS — ESPAÑA (AEMET)</div>
+      <img id="imgRayos" src="/rayos-imagen" alt="Mapa de rayos de España, última hora" />
+      <div class="nota" id="notaRayos">actualizando…</div>
+      <div class="nota">Imagen de todo el país (AEMET no publica coordenadas por rayo) — en blanco si no hay actividad detectada. No es una capa de esta zona en concreto.</div>
     </div>
   </div>
   <div class="panel" id="panel">
@@ -283,7 +310,7 @@
     </div>
     <div class="tarjeta" style="margin-top:10px; border: 1px solid #1C3F4F;">
       <div class="etq">⚡ RAYOS EN LA ZONA</div>
-      <div class="val" id="panelRayos" style="font-size:13px;">sin datos (fuente: LINET/Euskalmet)</div>
+      <div class="val" id="panelRayos" style="font-size:13px;">ver mapa nacional (botón ⚡)</div>
     </div>
     <div id="panelWebcamBox" style="margin-top:14px;">
       <div class="etq" style="margin-bottom:6px;">WEBCAM EN DIRECTO</div>
@@ -446,6 +473,12 @@ async function actualizarDesdeBackend() {
       if (sBackend.marea) s.marea = sBackend.marea;
       s.indice = indiceMar(s);
     });
+    if (datos.rayosNacional && !datos.rayosNacional.error) {
+      const hora = new Date(datos.rayosNacional.actualizado).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
+      document.getElementById("notaRayos").textContent = `actualizado ${hora}`;
+    } else {
+      document.getElementById("notaRayos").textContent = "no disponible ahora mismo";
+    }
     (datos.boyas || []).forEach((bBackend) => {
       if (bBackend.error) return;
       const b = BOYAS.find((x) => x.codigo === bBackend.codigo);
@@ -713,7 +746,7 @@ function abrirPanel(s) {
   document.getElementById("panelNubosidad").textContent = s.nubosidad === null ? "sin datos" : `${s.nubosidad}%`;
   document.getElementById("panelPrecipitacion").textContent = s.precipitacion === null ? "sin datos" : `${s.precipitacion} mm/h`;
   document.getElementById("panelRayos").textContent =
-    s.rayosCerca === null ? "sin datos (fuente: LINET/Euskalmet)" : s.rayosCerca ? "⚡ detectados cerca" : "sin actividad";
+    s.rayosCerca === null ? "ver mapa nacional (botón ⚡)" : s.rayosCerca ? "⚡ detectados cerca" : "sin actividad";
 
   pintarWebcam(s.slug, s.nombre);
 
@@ -723,6 +756,14 @@ function abrirPanel(s) {
 document.getElementById("toggleLeyenda").addEventListener("click", () => {
   const abierta = document.getElementById("leyendaPanel").classList.toggle("visible");
   document.getElementById("toggleLeyenda").textContent = abierta ? "✕" : "ⓘ";
+});
+document.getElementById("toggleRayos").addEventListener("click", () => {
+  const abierta = document.getElementById("rayosPanel").classList.toggle("visible");
+  document.getElementById("toggleRayos").textContent = abierta ? "✕" : "⚡";
+});
+document.getElementById("imgRayos").addEventListener("error", (e) => {
+  e.target.style.display = "none";
+  document.getElementById("notaRayos").textContent = "no disponible ahora mismo";
 });
 document.getElementById("cerrarPanel").addEventListener("click", () => {
   document.getElementById("panel").classList.remove("visible");

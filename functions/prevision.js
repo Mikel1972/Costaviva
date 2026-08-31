@@ -207,17 +207,32 @@ async function datosBoya(boya) {
   };
 }
 
+// Metadato de la imagen nacional de rayos de AEMET (ver /rayos-imagen) —
+// solo la hora de la última actualización, para no repetir la llamada al
+// timeline en el navegador.
+async function metaRayos() {
+  const resp = await fetch("https://www.aemet.es/es/api-eltiempo/rayos/timeline", {
+    headers: { "User-Agent": "Mozilla/5.0 (compatible; CostaVivaApp/0.1)" },
+  });
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+  const datos = await resp.json();
+  const bloques = datos?.ica_horario?.penbal?.variables?.rayos || [];
+  if (!bloques.length) throw new Error("sin datos");
+  return { actualizado: bloques[bloques.length - 1].fecha };
+}
+
 export async function onRequestGet(context) {
-  const [resultados, boyas] = await Promise.all([
+  const [resultados, boyas, rayosNacional] = await Promise.all([
     Promise.all(
       SPOTS.map((spot) =>
         previsionSpot(spot).catch((e) => ({ slug: spot.slug, nombre: spot.nombre, error: String(e) }))
       )
     ),
     Promise.all(BOYAS.map((b) => datosBoya(b).catch((e) => ({ ...b, error: String(e) })))),
+    metaRayos().catch((e) => ({ error: String(e) })),
   ]);
 
-  return new Response(JSON.stringify({ spots: resultados, boyas }, null, 2), {
+  return new Response(JSON.stringify({ spots: resultados, boyas, rayosNacional }, null, 2), {
     headers: {
       "content-type": "application/json; charset=utf-8",
       // Cache corto en el edge de Cloudflare — el modelo de Open-Meteo se
