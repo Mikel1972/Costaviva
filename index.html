@@ -176,6 +176,14 @@
     display: flex; align-items: center; justify-content: center;
     cursor: pointer; font-size: 16px; padding: 0;
   }
+  .batimetria-toggle {
+    position: absolute; top: 112px; right: 16px; z-index: 502;
+    width: 38px; height: 38px; border-radius: 8px;
+    background: #0F2C38; border: 1px solid #1C3F4F; color: #E8E2D0;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 16px; padding: 0;
+  }
+  .batimetria-toggle.activo { background: #D4A24C; color: #0B2532; }
   .luna-panel {
     position: absolute; top: 64px; right: 64px; z-index: 501;
     background: #0F2C38; border: 1px solid #1C3F4F; border-radius: 8px;
@@ -340,6 +348,7 @@
         <div class="nota">Para el centro del mapa actual. Azimut y altura: cálculo propio (±1°). Horas y fase: Observatorio Naval de EE.UU.</div>
       </div>
     </div>
+    <button class="batimetria-toggle" id="toggleBatimetria" title="Batimetría (profundidad del mar)" aria-label="Mostrar/ocultar batimetría">📏</button>
   </div>
   <div class="panel" id="panel">
     <button class="cerrar" id="cerrarPanel">✕</button>
@@ -597,6 +606,29 @@ L.tileLayer("https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_
   maxZoom: 16,
   opacity: 0.9,
 }).addTo(map);
+
+// Batimetría real (EMODnet Bathymetry, WMS público y gratis, sin clave) —
+// capa activable, no puesta por defecto porque tapa bastante el resto del
+// mapa. Resolución ~230m: sirve para ver caídas de profundidad y zonas
+// generales, no el detalle de metros pegados a la orilla que daría una
+// sonda de barco.
+const capaBatimetria = L.tileLayer.wms("https://ows.emodnet-bathymetry.eu/wms", {
+  layers: "emodnet:mean",
+  styles: "multicolour",
+  format: "image/png",
+  transparent: true,
+  opacity: 0.6,
+  attribution: "Batimetría: EMODnet Bathymetry",
+});
+document.getElementById("toggleBatimetria").addEventListener("click", (e) => {
+  if (map.hasLayer(capaBatimetria)) {
+    map.removeLayer(capaBatimetria);
+    e.currentTarget.classList.remove("activo");
+  } else {
+    capaBatimetria.addTo(map);
+    e.currentTarget.classList.add("activo");
+  }
+});
 
 function iconoFlecha(grados, color) {
   const rumbo = (grados + 180) % 360;
