@@ -251,6 +251,18 @@
         <div class="etq" id="panelVientoDir"></div>
       </div>
     </div>
+    <div class="grid2" style="margin-top:10px;">
+      <div class="tarjeta">
+        <div class="etq">MAREA</div>
+        <div class="val" id="panelMarea" style="font-size:15px;">sin datos</div>
+        <div class="etq" id="panelMareaProxima"></div>
+      </div>
+      <div class="tarjeta">
+        <div class="etq">CORRIENTE</div>
+        <div class="val" id="panelCorriente" style="font-size:15px;">sin datos</div>
+        <div class="etq" id="panelCorrienteDir"></div>
+      </div>
+    </div>
     <div class="indice-box">
       <div class="etq">ÍNDICE DE MAR COMBINADO</div>
       <div class="num" id="panelIndice"></div>
@@ -288,22 +300,28 @@
 const SPOTS = [
   { slug: "lekeitio", nombre: "Lekeitio", lat: 43.3647, lon: -2.5089,
     altura: [0.3, 0.7], periodo: 4, viento: 14, dirViento: "ENE", dirOla: "NNE 32°",
-    nubosidad: null, precipitacion: null, tempAgua: null, rayosCerca: null },
+    nubosidad: null, precipitacion: null, tempAgua: null, rayosCerca: null,
+    corriente: null, dirCorriente: null, marea: null },
   { slug: "mundaka", nombre: "Mundaka", lat: 43.4047, lon: -2.6989,
     altura: [0.1, 0.5], periodo: 5, viento: 20, dirViento: "ENE", dirOla: "NNW 342°",
-    nubosidad: null, precipitacion: null, tempAgua: null, rayosCerca: null },
+    nubosidad: null, precipitacion: null, tempAgua: null, rayosCerca: null,
+    corriente: null, dirCorriente: null, marea: null },
   { slug: "bakio", nombre: "Bakio", lat: 43.4297, lon: -2.8103,
     altura: [0.2, 0.6], periodo: 6, viento: 24, dirViento: "ENE", dirOla: "NW 323°",
-    nubosidad: null, precipitacion: null, tempAgua: null, rayosCerca: null },
+    nubosidad: null, precipitacion: null, tempAgua: null, rayosCerca: null,
+    corriente: null, dirCorriente: null, marea: null },
   { slug: "sopelana", nombre: "Sopelana", lat: 43.3878, lon: -2.9975,
     altura: [0.0, 0.4], periodo: 5, viento: 16, dirViento: "NE", dirOla: "N 3°",
-    nubosidad: null, precipitacion: null, tempAgua: null, rayosCerca: null },
+    nubosidad: null, precipitacion: null, tempAgua: null, rayosCerca: null,
+    corriente: null, dirCorriente: null, marea: null },
   { slug: "plentzia", nombre: "Plentzia", lat: 43.4053, lon: -2.9436,
     altura: [0.0, 0.3], periodo: 8, viento: 12, dirViento: "NNW", dirOla: "NW 307°",
-    nubosidad: null, precipitacion: null, tempAgua: null, rayosCerca: null },
+    nubosidad: null, precipitacion: null, tempAgua: null, rayosCerca: null,
+    corriente: null, dirCorriente: null, marea: null },
   { slug: "getxo", nombre: "Getxo (Ereaga)", lat: 43.3489, lon: -3.0119,
     altura: [0.0, 0.2], periodo: 4, viento: 10, dirViento: "NE", dirOla: "NE 37°",
-    nubosidad: null, precipitacion: null, tempAgua: null, rayosCerca: null },
+    nubosidad: null, precipitacion: null, tempAgua: null, rayosCerca: null,
+    corriente: null, dirCorriente: null, marea: null },
 ];
 
 // Boyas reales de Puertos del Estado — mar abierto, datos medidos por
@@ -424,6 +442,8 @@ async function actualizarDesdeBackend() {
       if (b.tempAgua !== undefined) s.tempAgua = b.tempAgua;
       if (b.precipitacion !== undefined) s.precipitacion = b.precipitacion;
       if (b.nubosidad !== undefined) s.nubosidad = b.nubosidad;
+      if (b.corriente !== undefined) { s.corriente = b.corriente; s.dirCorriente = b.dirCorriente; }
+      if (sBackend.marea) s.marea = sBackend.marea;
       s.indice = indiceMar(s);
     });
     (datos.boyas || []).forEach((bBackend) => {
@@ -672,6 +692,19 @@ function abrirPanel(s) {
   document.getElementById("panelOlaDir").textContent = `${s.periodo}s · ${s.dirOla}`;
   document.getElementById("panelViento").textContent = `${s.viento} km/h`;
   document.getElementById("panelVientoDir").textContent = s.dirViento;
+
+  if (s.marea && s.marea.altura !== null) {
+    const flecha = s.marea.tendencia === "subiendo" ? "↑" : s.marea.tendencia === "bajando" ? "↓" : "";
+    document.getElementById("panelMarea").textContent = `${s.marea.altura}m ${flecha}`;
+    const prox = s.marea.proximas && s.marea.proximas[0];
+    document.getElementById("panelMareaProxima").textContent = prox ? `próx. ${prox.tipo} ${prox.hora}` : "";
+  } else {
+    document.getElementById("panelMarea").textContent = "sin datos";
+    document.getElementById("panelMareaProxima").textContent = "";
+  }
+  document.getElementById("panelCorriente").textContent = (s.corriente === null || s.corriente === undefined) ? "sin datos" : `${s.corriente} km/h`;
+  document.getElementById("panelCorrienteDir").textContent = s.dirCorriente || "";
+
   const indiceEl = document.getElementById("panelIndice");
   indiceEl.textContent = s.indice;
   indiceEl.style.color = colorIndiceMarCss(s.indice);

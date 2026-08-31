@@ -36,6 +36,40 @@ function horaLocalDesdeISO(iso) {
   return parseInt(iso.slice(11, 13), 10);
 }
 
+// Encuentra pleamares/bajamares reales a partir de la curva horaria de
+// altura de marea (máximos/mínimos locales) y devuelve el estado actual
+// (altura + si sube o baja) más las próximas 2 mareas.
+function calcularMarea(horas, alturas) {
+  if (!horas.length || !alturas.length) return null;
+
+  const eventos = [];
+  for (let i = 1; i < alturas.length - 1; i++) {
+    const [prev, cur, next] = [alturas[i - 1], alturas[i], alturas[i + 1]];
+    if (cur === null || prev === null || next === null) continue;
+    if (cur >= prev && cur >= next) eventos.push({ tipo: "pleamar", hora: horas[i], altura: cur });
+    else if (cur <= prev && cur <= next) eventos.push({ tipo: "bajamar", hora: horas[i], altura: cur });
+  }
+
+  const ahoraISO = new Date().toISOString().slice(0, 13); // "YYYY-MM-DDTHH"
+  let idxAhora = horas.findIndex((h) => h.slice(0, 13) === ahoraISO);
+  if (idxAhora === -1) idxAhora = 0;
+
+  const proximas = eventos
+    .filter((e) => e.hora > horas[idxAhora])
+    .slice(0, 2)
+    .map((e) => ({ ...e, hora: e.hora.slice(11, 16), altura: +e.altura.toFixed(2) }));
+
+  const actual = alturas[idxAhora];
+  const siguiente = alturas[idxAhora + 1];
+  const tendencia = actual === null || siguiente === null ? null : siguiente > actual ? "subiendo" : "bajando";
+
+  return {
+    altura: actual === null ? null : +actual.toFixed(2),
+    tendencia,
+    proximas,
+  };
+}
+
 async function fetchJSON(url) {
   const resp = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0 (compatible; CostaVivaApp/0.1)" } });
   if (!resp.ok) throw new Error(`HTTP ${resp.status} (${url})`);
@@ -47,7 +81,7 @@ async function previsionSpot(spot) {
 
   const [marino, viento] = await Promise.all([
     fetchJSON(
-      `https://marine-api.open-meteo.com/v1/marine?${paramsComunes}&hourly=wave_height,wave_period,wave_direction,sea_surface_temperature`
+      `https://marine-api.open-meteo.com/v1/marine?${paramsComunes}&hourly=wave_height,wave_period,wave_direction,sea_surface_temperature,ocean_current_velocity,ocean_current_direction,sea_level_height_msl`
     ),
     fetchJSON(
       `https://api.open-meteo.com/v1/forecast?${paramsComunes}&hourly=windspeed_10m,winddirection_10m,precipitation,cloudcover&windspeed_unit=kmh`
@@ -56,6 +90,16 @@ async function previsionSpot(spot) {
   const tempAguaPorHoraISO = Object.fromEntries(
     (marino.hourly?.time || []).map((t, i) => [t, marino.hourly.sea_surface_temperature?.[i] ?? null])
   );
+  const corrientePorHoraISO = Object.fromEntries(
+    (marino.hourly?.time || []).map((t, i) => [
+      t,
+      {
+        velocidad: marino.hourly.ocean_current_velocity?.[i] ?? null,
+        dirGrados: marino.hourly.ocean_current_direction?.[i] ?? null,
+      },
+    ])
+  );
+  const marea = calcularMarea(marino.hourly?.time || [], marino.hourly?.sea_level_height_msl || []);
   const precipNubesPorHoraISO = Object.fromEntries(
     (viento.hourly?.time || []).map((t, i) => [
       t,
@@ -85,6 +129,7 @@ async function previsionSpot(spot) {
     const v = vientoPorHoraISO[horasOla[i]];
     const pn = precipNubesPorHoraISO[horasOla[i]];
     const tempAgua = tempAguaPorHoraISO[horasOla[i]];
+    const c = corrientePorHoraISO[horasOla[i]];
 
     bloques.push({
       hora: HORAS_BLOQUE[h],
@@ -99,6 +144,8 @@ async function previsionSpot(spot) {
       tempAgua: tempAgua === null || tempAgua === undefined ? null : +tempAgua.toFixed(1),
       precipitacion: pn?.precipitacion ?? null,
       nubosidad: pn?.nubosidad ?? null,
+      corriente: c?.velocidad ?? null,
+      dirCorriente: c?.dirGrados !== null && c?.dirGrados !== undefined ? rumboDesdeGrados(c.dirGrados) : null,
     });
   }
 
@@ -109,6 +156,7 @@ async function previsionSpot(spot) {
     lon: spot.lon,
     fuente: "Open-Meteo (Marine + Forecast API) — cálculo propio, no Todosurf",
     actualizado: new Date().toISOString(),
+    marea,
     bloques,
   };
 }
