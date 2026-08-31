@@ -401,6 +401,11 @@
       <div class="val" id="panelPresion" style="font-size:15px;">sin datos</div>
       <div class="etq" id="panelPresionNota"></div>
     </div>
+    <div class="indice-box">
+      <div class="etq">🎣 ÍNDICE DE PESCA (estimación)</div>
+      <div class="num" id="panelIndicePesca"></div>
+      <div class="etq" id="panelIndicePescaNota" style="margin-top:4px; font-size:10px; line-height:1.4;"></div>
+    </div>
     <div class="tarjeta" style="margin-top:10px; border: 1px solid #1C3F4F;">
       <div class="etq">🎣 QUÉ SE PUEDE PESCAR (por temporada)</div>
       <div id="panelEspecies" style="font-size:12px; margin-top:4px; line-height:1.5;"></div>
@@ -570,11 +575,23 @@ function especiesEnTemporada() {
   const mesActual = new Date().getMonth() + 1;
   return ESPECIES.filter((e) => e.meses.includes(mesActual));
 }
-function especiesPorZona() {
-  const enTemporada = especiesEnTemporada();
+// Usa la temperatura real del agua en el spot para estimar qué especies
+// tienen más papeletas ahora mismo: si su rango de temperatura coincide
+// con el agua actual, se marca como buena opción y sube arriba de la
+// lista; si no coincide (o no tenemos rango documentado para esa
+// especie), se queda igual de visible pero sin esa marca — la temporada
+// (el mes) sigue siendo el primer filtro, la temperatura es el segundo.
+function coincideTemp(e, tempAgua) {
+  if (!e.rangoTemp || tempAgua === null || tempAgua === undefined) return null;
+  const [min, max] = e.rangoTemp;
+  return tempAgua >= min && tempAgua <= max;
+}
+function especiesPorZona(tempAgua) {
+  const enTemporada = especiesEnTemporada().map((e) => ({ ...e, coincide: coincideTemp(e, tempAgua) }));
+  const orden = (a, b) => (b.coincide === true) - (a.coincide === true);
   return {
-    costa: enTemporada.filter((e) => e.zona === "costa"),
-    marAdentro: enTemporada.filter((e) => e.zona === "mar adentro"),
+    costa: enTemporada.filter((e) => e.zona === "costa").sort(orden),
+    marAdentro: enTemporada.filter((e) => e.zona === "mar adentro").sort(orden),
   };
 }
 
@@ -972,14 +989,13 @@ function abrirPanel(s) {
     document.getElementById("panelPresionNota").textContent = "";
   }
 
-  const { costa, marAdentro } = especiesPorZona();
+  const { costa, marAdentro } = especiesPorZona(s.tempAgua);
   const listaEspecie = (e) => {
     let franja = "";
     if (e.rangoTemp) {
       const [min, max] = e.rangoTemp;
-      const dentro = s.tempAgua !== null && s.tempAgua !== undefined && s.tempAgua >= min && s.tempAgua <= max;
-      const color = dentro ? "#4F9D69" : "#6C8890";
-      franja = ` <span style="color:${color};">[${min}-${max}°C${dentro ? " ✓ hoy está en su rango" : ""}]</span>`;
+      const color = e.coincide ? "#4F9D69" : "#6C8890";
+      franja = ` <span style="color:${color};">[${min}-${max}°C${e.coincide ? " ✓ ahora mismo pega bien" : ""}]</span>`;
     }
     return `<div style="margin-bottom:6px;">${e.emoji} <b>${e.nombre}</b>${franja}<br>${e.nota}<br>` +
       `<span style="color:#9FB8BF;">🍽 ${e.alimento}</span></div>`;
@@ -993,6 +1009,24 @@ function abrirPanel(s) {
     `<div style="color:#6C8890; font-size:10.5px; margin-top:4px; line-height:1.4;">` +
     `La parrotxa es la cría de sardina — así la llaman por aquí. Cuando hay mucha cerca de la costa, se acercan a por ella la lubina y el bonito sobre todo, y se pesca mejor. Esto no lo medimos nosotros — lo sabes tú mejor mirando el agua.` +
     `</div>`;
+
+  // Índice de pesca: mismo estilo que el índice de mar (un número orientativo,
+  // no una promesa), pero construido a partir de dos cosas reales que sí
+  // conocemos: cuántas de las especies de temporada tienen su agua ideal
+  // ahora mismo (de las que tenemos rango documentado — si no tenemos
+  // rango para ninguna, no penalizamos por eso, nos quedamos neutros) y la
+  // tendencia de la presión (bajando = mejor, subiendo = peor).
+  const todasHoy = [...costa, ...marAdentro];
+  const conDatoTemp = todasHoy.filter((e) => e.coincide !== null);
+  const ratioTemp = conDatoTemp.length ? conDatoTemp.filter((e) => e.coincide).length / conDatoTemp.length : 0.5;
+  const bonusPresion = { bajando: 25, estable: 15, subiendo: 0 }[s.presion?.tendencia] ?? 10;
+  const indicePesca = Math.round(Math.min(100, ratioTemp * 70 + bonusPresion));
+  document.getElementById("panelIndicePesca").textContent = indicePesca;
+  document.getElementById("panelIndicePesca").style.color = colorIndiceMarCss(indicePesca);
+  document.getElementById("panelIndicePescaNota").textContent =
+    conDatoTemp.length
+      ? `${conDatoTemp.filter((e) => e.coincide).length}/${conDatoTemp.length} especies de temporada con su agua ideal ahora, presión ${s.presion?.tendencia || "sin datos"}`
+      : `sin especies con rango de temperatura documentado hoy — basado solo en la presión (${s.presion?.tendencia || "sin datos"})`;
 
   pintarWebcam(s.slug, s.nombre);
 
