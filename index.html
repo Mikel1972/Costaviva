@@ -396,10 +396,6 @@
         <div class="val" id="panelPrecipitacion" style="font-size:13px;">sin datos</div>
       </div>
     </div>
-    <div class="tarjeta" style="margin-top:10px; border: 1px solid #1C3F4F;">
-      <div class="etq">⚡ RAYOS EN LA ZONA</div>
-      <div class="val" id="panelRayos" style="font-size:13px;">ver mapa nacional (botón ⚡)</div>
-    </div>
     <div id="panelWebcamBox" style="margin-top:14px;">
       <div class="etq" style="margin-bottom:6px;">WEBCAM EN DIRECTO</div>
       <div id="panelWebcamContenido"></div>
@@ -897,8 +893,6 @@ function abrirPanel(s) {
   document.getElementById("panelTempAgua").textContent = (s.tempAgua === null || s.tempAgua === undefined) ? "sin datos" : `${s.tempAgua}°C`;
   document.getElementById("panelNubosidad").textContent = s.nubosidad === null ? "sin datos" : `${s.nubosidad}%`;
   document.getElementById("panelPrecipitacion").textContent = s.precipitacion === null ? "sin datos" : `${s.precipitacion} mm/h`;
-  document.getElementById("panelRayos").textContent =
-    s.rayosCerca === null ? "ver mapa nacional (botón ⚡)" : s.rayosCerca ? "⚡ detectados cerca" : "sin actividad";
 
   pintarWebcam(s.slug, s.nombre);
 
