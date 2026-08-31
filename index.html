@@ -137,11 +137,15 @@
   .rayos-panel.visible { opacity: 1; transform: translateX(0); pointer-events: auto; }
   .rayos-panel .titulo { color: #7FA3AF; margin-bottom: 6px; }
   .rayos-panel .marco-imagen {
-    width: 100%; height: 100px; border-radius: 4px; border: 1px solid #1C3F4F;
-    background: #E8E2D0; overflow: hidden;
-    display: flex; align-items: center; justify-content: center;
+    position: relative; width: 100%; height: 110px; border-radius: 4px; border: 1px solid #1C3F4F;
+    overflow: hidden;
+    /* Mismo encuadre (bbox) que la imagen de rayos de AEMET, para que
+       encajen una encima de otra: así se ve el contorno de España aunque
+       la capa de rayos esté vacía (sin tormentas). */
+    background-image: url("https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/export?bbox=-18,35,14,47&bboxSR=4326&size=680,246&format=png&transparent=false&f=image");
+    background-size: cover; background-position: center;
   }
-  .rayos-panel img { max-width: 100%; max-height: 100%; display: block; }
+  .rayos-panel img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
   .rayos-panel .nota { color: #6C8890; font-size: 9.5px; margin-top: 6px; line-height: 1.4; }
   .leyenda .titulo { color: #7FA3AF; margin-bottom: 6px; }
   .leyenda .fila { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
