@@ -524,37 +524,47 @@ function categoriaCaudal(caudal) {
   return { etiqueta: "alto", color: "#A34A35" };
 }
 
-// Especies de pesca recreativa habituales en esta costa, su temporada y
-// de qué se alimentan — según guías de pesca del País Vasco (aipeces.com,
-// haypesca.es) y fichas de cada especie (pescaderiascorunesas.es,
-// calamarpedia.com, mundopesquero.com, etc.). NO son rangos de
-// temperatura exactos por especie (no hemos encontrado una fuente que los
-// dé con precisión para esta zona), así que el criterio de temporada es
-// el mes del año, que sí está bien documentado. El desglose de dieta por
-// época solo aparece cuando la fuente lo menciona explícitamente (caso
-// del verdel/txitxarro en primavera); el resto es su dieta general.
+// Especies de pesca recreativa habituales en esta costa, su temporada, de
+// qué se alimentan y su rango de temperatura — según guías de pesca del
+// País Vasco (aipeces.com, haypesca.es), fichas de cada especie
+// (pescaderiascorunesas.es, mundopesquero.com) y datos de temperatura de
+// FishBase, ICCAT y fuentes biológicas (aquaportail.com, animalia.bio).
+// "rangoTemp" es null cuando NO hemos encontrado una cifra numérica fiable
+// para esa especie (comprobado directamente en FishBase u otra ficha
+// biológica) — en ese caso no se inventa un número, solo se deja la nota
+// cualitativa que sí está documentada. El criterio de temporada sigue
+// siendo el mes del año. El desglose de dieta por época solo aparece
+// cuando la fuente lo menciona explícitamente (verdel/txitxarro en
+// primavera); el resto es su dieta general.
 const ESPECIES = [
   { nombre: "Lubina", emoji: "🐟", zona: "costa", meses: [9, 10, 11, 12, 1, 2, 3, 4],
-    nota: "de otoño a primavera, mejor con poca luz (amanecer/anochecer)",
-    alimento: "sardinas, anchoas pequeñas, lisas, quisquillas, gusanos de mar y cangrejos de arena — sobre todo en puertos, dársenas y desembocaduras" },
+    rangoTemp: [8, 24],
+    nota: "activa entre 8-24°C (FishBase); apenas come por debajo de ~7°C — de ahí que en esta costa se pesque mejor de otoño a primavera, con poca luz (amanecer/anochecer)",
+    alimento: "sardinas y anchoas pequeñas (parrotxa), lisas, quisquillas, gusanos de mar y cangrejos de arena — sobre todo en puertos, dársenas y desembocaduras" },
   { nombre: "Sargo", emoji: "🐟", zona: "costa", meses: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-    nota: "todo el año en rompientes, más activo con agua fría",
+    rangoTemp: null,
+    nota: "sin cifra numérica fiable encontrada; las fuentes solo confirman que está presente todo el año en rompientes y es más activo con agua fría, sin dar un rango concreto",
     alimento: "mejillones, percebes y erizos de mar sobre todo, además de otros moluscos y crustáceos de fondo rocoso" },
   { nombre: "Abadejo", emoji: "🐟", zona: "costa", meses: [9, 10, 11, 12, 1, 2],
-    nota: "mejor en otoño-invierno, peces de roca",
+    rangoTemp: null,
+    nota: "sin cifra numérica fiable encontrada (descartamos un dato de FishBase que resultó ser erróneo); especie de aguas templadas del Atlántico norte, mejor en otoño-invierno",
     alimento: "peces pequeños (arenques), calamares, camarones y langostinos; de joven se centra en crustáceos de aguas someras" },
   { nombre: "Calamar / chipirón", emoji: "🦑", zona: "costa", meses: [9, 10, 11, 12, 1, 2],
-    nota: "otoño-invierno, técnica de eging en puerto",
+    rangoTemp: [13, 20],
+    nota: "activo entre 13-20°C, con preferencia marcada en torno a 18°C; se pesca sobre todo de noche o al atardecer",
     alimento: "peces pequeños, cangrejos y camarones; los ejemplares jóvenes se alimentan de plancton" },
   { nombre: "Congrio", emoji: "🐍", zona: "costa", meses: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-    nota: "todo el año, nocturno, en puertos y espigones",
-    alimento: "jurel, sardina, calamar y crustáceos — caza de noche desde cuevas y grietas" },
+    rangoTemp: null,
+    nota: "sin cifra numérica documentada — es de las pocas especies que apenas parece verse afectada por la temperatura del agua; lo que sí manda es la hora (caza de noche desde cuevas y grietas)",
+    alimento: "jurel, sardina, calamar y crustáceos" },
   { nombre: "Bonito del norte", emoji: "🐟", zona: "mar adentro", meses: [7, 8, 9, 10],
-    nota: "verano-otoño, pelágico, mar adentro",
+    rangoTemp: [16, 19],
+    nota: "tolera un rango amplio (9.5-25.2°C) pero se concentra y muerde mejor entre 16-19°C — por eso entra en el Cantábrico a finales de primavera/verano siguiendo el agua templada",
     alimento: "bancos de sardina, anchoa, caballa y jurel; también calamar, especialmente en su época de desove" },
   { nombre: "Txitxarro / verdel", emoji: "🐟", zona: "mar adentro", meses: [4, 5, 6, 7, 8],
-    nota: "primavera-verano, spinning ligero",
-    alimento: "en primavera empieza con zooplancton y va pasando a sardina y anchoa pequeña conforme avanza la temporada" },
+    rangoTemp: [15, 20],
+    nota: "tolera 14-23°C, pero los bancos se concentran entre 15-20°C; con ese calor suben desde los ~200m de invierno hasta la superficie, cerca de la costa",
+    alimento: "en primavera empieza con zooplancton y va pasando a sardina y anchoa pequeña (parrotxa) conforme avanza la temporada" },
 ];
 function especiesEnTemporada() {
   const mesActual = new Date().getMonth() + 1;
@@ -963,15 +973,26 @@ function abrirPanel(s) {
   }
 
   const { costa, marAdentro } = especiesPorZona();
-  const listaEspecie = (e) =>
-    `<div style="margin-bottom:6px;">${e.emoji} <b>${e.nombre}</b> — ${e.nota}<br>` +
-    `<span style="color:#9FB8BF;">🍽 ${e.alimento}</span></div>`;
+  const listaEspecie = (e) => {
+    let franja = "";
+    if (e.rangoTemp) {
+      const [min, max] = e.rangoTemp;
+      const dentro = s.tempAgua !== null && s.tempAgua !== undefined && s.tempAgua >= min && s.tempAgua <= max;
+      const color = dentro ? "#4F9D69" : "#6C8890";
+      franja = ` <span style="color:${color};">[${min}-${max}°C${dentro ? " ✓ agua actual dentro de rango" : ""}]</span>`;
+    }
+    return `<div style="margin-bottom:6px;">${e.emoji} <b>${e.nombre}</b>${franja}<br>${e.nota}<br>` +
+      `<span style="color:#9FB8BF;">🍽 ${e.alimento}</span></div>`;
+  };
   const bloqueZona = (titulo, lista) =>
     `<div style="margin-bottom:8px;"><div style="color:#7FA3AF; font-weight:600; margin-bottom:3px;">${titulo}</div>` +
     (lista.length ? lista.map(listaEspecie).join("") : `<span style="color:#6C8890;">ninguna de temporada ahora</span>`) +
     `</div>`;
   document.getElementById("panelEspecies").innerHTML =
-    bloqueZona("🪨 COSTA", costa) + bloqueZona("🌊 MAR ADENTRO", marAdentro);
+    bloqueZona("🪨 COSTA", costa) + bloqueZona("🌊 MAR ADENTRO", marAdentro) +
+    `<div style="color:#6C8890; font-size:10.5px; margin-top:4px; line-height:1.4;">` +
+    `"Parrotxa" = cría de sardina, nombre vasco de la sardinilla joven usada de cebo. Cuando hay un pico de parrotxa en la zona (bancos abundantes cerca de la costa), suele atraer a los depredadores que se alimentan de ella — lubina y bonito sobre todo — y mejora la pesca. No tenemos datos en tiempo real de dónde hay parrotxa; es una observación de quien está en el agua.` +
+    `</div>`;
 
   pintarWebcam(s.slug, s.nombre);
 
