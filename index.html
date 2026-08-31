@@ -581,7 +581,10 @@ const map = L.map("map", {
   center: [43.51, -2.82],
   zoom: 10,
   minZoom: 5,
-  maxZoom: 19,
+  // Tope en 16: es hasta donde Esri tiene teselas propias en esta zona de
+  // mar abierto — más allá se ve borroso (ampliado digitalmente), así que
+  // mejor bloquear el zoom ahí que dejar llegar a un mapa que se ve mal.
+  maxZoom: 16,
   // La animación de zoom de Leaflet puede quedarse "atascada" si el evento
   // CSS transitionend no llega a disparar (pasa en algunos navegadores/
   // entornos automatizados) — a partir de ahí deja de responder a más
@@ -600,12 +603,10 @@ const map = L.map("map", {
 // batimetría) en vez del gris apagado del mapa de calles por defecto.
 L.tileLayer("https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}", {
   attribution: "Tiles &copy; Esri &mdash; Sources: GEBCO, NOAA, National Geographic, DeLorme, HERE, Geonames.org",
-  maxZoom: 19,
-  maxNativeZoom: 16, // Esri no tiene teselas propias más allá de esto — Leaflet las amplía (algo borrosas) para los niveles siguientes
+  maxZoom: 16,
 }).addTo(map);
 L.tileLayer("https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Reference/MapServer/tile/{z}/{y}/{x}", {
-  maxZoom: 19,
-  maxNativeZoom: 16,
+  maxZoom: 16,
   opacity: 0.9,
 }).addTo(map);
 
