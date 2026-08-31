@@ -160,6 +160,77 @@ genérica de agregadores turísticos, que cambian). El resto de fuentes ya
 integradas (Open-Meteo, Puertos del Estado, USNO) sí son alcanzables
 ahora mismo.
 
+### 2026-08-31 (tercera pasada, misma fecha)
+
+**La red hoy es sensiblemente mejor que en las dos pasadas anteriores del
+mismo día** — incluso `www.aemet.es` y `*.euskadi.eus` responden ahora
+(`301`, redirección real, no bloqueo). Aun así, dos dominios concretos que
+hacían falta para cerrar los candidatos más prometedores siguen bloqueados.
+Nada se integra esta pasada porque ningún candidato completó la
+verificación de extremo a extremo, pero hay dos pistas concretas y
+accionables que no había antes:
+
+- **Caudal de ríos — visor oficial de URA localizado y parcialmente
+  verificado.** La página informativa
+  (`https://www.uragentzia.euskadi.eus/datos-de-estaciones-de-aforo/webura00-contents/es/`,
+  HTTP 200) enlaza al visor real:
+  `https://www.uragentzia.euskadi.eus/visor-de-estaciones-de-aforo/webura00-minima/es/`
+  (comprobado con `curl`, HTTP 200). Ese visor carga un `<iframe>` con un
+  Esri ArcGIS Web AppBuilder:
+  `https://www.geo.euskadi.eus/geoestudioa/apps/webappviewer/index.html?id=405399e081f040efb36a9548b2c88db4`
+  — que es donde vive el Feature Service/Map Service REST con los datos
+  reales de caudal. Pero tanto `geo.euskadi.eus`/`www.geo.euskadi.eus`
+  como `services.arcgis.com` están bloqueados por el proxy de salida
+  (`curl: (56) CONNECT tunnel failed, response 403`, comprobado 2 veces
+  cada uno; lo mismo con `WebFetch`: `EGRESS_BLOCKED`). Es decir, el
+  dominio "informativo" pasa pero el dominio donde vive el dato en sí
+  sigue sin ser alcanzable — no se puede ver la forma del JSON ni
+  confirmar qué ríos concretos cubre (Lea, Oka, Butroe, Nervión), así que
+  no se integra nada todavía.
+- **Boyas costeras más cercanas — red de Euskalmet identificada.**
+  Euskalmet (Agencia Vasca de Meteorología) mantiene boyas propias en
+  Bilbao, Bermeo, Ondarroa, Getaria, Pasaia y Hondarribia — mucho más
+  cerca de los spots del mapa que las boyas de Puertos del Estado que ya
+  usamos (2136 Bilbao-Vizcaya está mar adentro). Una boya en Bermeo u
+  Ondarroa sería un dato de calibración más relevante para
+  Bakio/Mundaka/Lekeitio que la boya actual. Están expuestas vía la API
+  REST de Open Data Euskadi (`opendata.euskadi.eus`, alcanzable, HTTP
+  200), pero **piden API key** — hay que registrarse en
+  `https://api.euskadi.eus/opendata-apikey/` (o contactar con
+  `opendata@euskadi.eus`, según su propia documentación). Esto no es algo
+  que el robot pueda hacer solo — necesita que el usuario registre una
+  cuenta/API key. Queda como propuesta, no como código.
+- **Aviso de mantenimiento sobre la boya que ya usamos.** De paso se ha
+  visto que `poem.puertos.es` ahora sirve una Swagger UI oficial
+  (`https://poem.puertos.es` → HTML con `<title>POEM</title>` y
+  `swagger-ui`) que exige login OAuth (`identidadmf.puertos.es`) para ver
+  la documentación/API soportada. El endpoint que usa nuestro código,
+  `/portus/StationData`, **sigue funcionando sin login** (confirmado con
+  `curl`, ver auditoría de hoy) pero no está claro si es parte de la API
+  nueva y soportada o un endpoint legado que podría dejar de funcionar sin
+  aviso. No es una acción para hoy, solo una nota de riesgo a vigilar en
+  próximas auditorías.
+- **Webcams Lekeitio/Plentzia/Getxo — sigue sin resolverse.** La mayoría de
+  dominios candidatos (`skylinewebcams.com`, `webcamtaxi.com`,
+  `camaramar.com`, `camarasdgt.es`, `camarastrafico.com.es`,
+  `meteosurfcanarias.com`, `surf30.net`, `eitb.eus`, `getxo.eus`,
+  `urlekeitio.com`) siguen bloqueados o devuelven `403` directo.
+  `es.windfinder.com` sí es alcanzable (HTTP 200) y tiene una página de
+  webcam de Lekeitio, pero es una SPA renderizada en cliente — el HTML
+  crudo que devuelve `curl` no contiene ninguna URL de imagen directa
+  (`.jpg`/`.webp`), solo assets de la propia web. No sirve para el patrón
+  de `functions/webcam/[slug].js` (necesita una URL de imagen hotlinkable,
+  no una app de JS). Nada nuevo que integrar.
+
+**Propuesta para el usuario:** dos acciones concretas desbloquearían fuentes
+reales ya localizadas — (1) permitir `geo.euskadi.eus`/`www.geo.euskadi.eus`
+y `services.arcgis.com` en la política de red de este entorno para poder
+inspeccionar el Feature Service real de caudal de ríos de URA, y (2)
+registrar una API key gratuita de Open Data Euskadi
+(`https://api.euskadi.eus/opendata-apikey/`) para poder consultar las boyas
+de Euskalmet (Bermeo/Ondarroa/Bilbao), que son más representativas de los
+spots que la boya actual de mar abierto.
+
 ---
 
 ## Auditoría de datos
@@ -261,6 +332,50 @@ corregir.
 **Nada que corregir esta pasada** — todo lo alcanzable coincide con lo
 que el código espera y tiene valores con sentido.
 
+### 2026-08-31 (tercera pasada, misma fecha)
+
+**Auditoría completa con `curl` real — todo alcanzable esta vez** (la red
+de hoy permitió llegar a `aemet.es`, algo que las dos pasadas anteriores
+no pudieron). Un hallazgo trivial corregido, el resto sano.
+
+- **`functions/prevision.js` — Open-Meteo, los 6 spots.** HTTP 200 en
+  marine y forecast para los 6. Forma correcta (`hourly.wave_height`,
+  `.wave_period`, `.sea_surface_temperature`, etc.). Valores con sentido:
+  altura de ola 0.8–1.6 m, agua ~23°C — coherente con la pasada anterior
+  del mismo día.
+- **Boyas de Puertos del Estado — 2136 Bilbao-Vizcaya, 1117 Gijón, 1101
+  Pasaia II.** Las tres HTTP 200, forma `[cabeceras, filas]` correcta.
+  Bilbao-Vizcaya: Hm0 1.88 m, Tp 10.55 s, dirección 298° (WNW), agua
+  22.9°C. Gijón: Hm0 2.13 m. Pasaia II: Hm0 1.61 m. Todo coherente con
+  oleaje de fondo de verano en el Cantábrico.
+- **`functions/luna.js` — USNO.** HTTP 200, forma correcta. Fase "Waning
+  Gibbous" (89% iluminada), coherente con la luna llena real del 28 de
+  agosto (`closestphase` de la propia API).
+- **`functions/rayos-imagen.js` (y `metaRayos()` en `prevision.js`) —
+  AEMET.** Timeline HTTP 200 (24 bloques horarios) e imagen HTTP 200,
+  PNG válido de 5472×1965 px. El fichero pesa solo ~1.4 KB — comprobado
+  con `file` que es un PNG 1-bit en escala de grises real y no una
+  respuesta rota o vacía; un tamaño tan pequeño es normal en un mapa
+  nacional de rayos de un día sin apenas actividad eléctrica (imagen casi
+  toda blanca, muy compresible), no un indicio de fallo.
+- **`functions/webcam/[slug].js` — mundaka, bakio, sopelana.** Las tres
+  HTTP 200 con imagen real (JPEG/WebP válidos, no placeholders).
+- **Repaso de código:** se encontró un comentario desactualizado en
+  `index.html` (línea ~409) que describía el bloque `SPOTS` de respaldo
+  como "datos reales de hoy (scrapeados de Todosurf en esta sesión)" —
+  pero `functions/prevision.js` deja claro en sus propios comentarios que
+  el scraping de Todosurf se sustituyó por Open-Meteo hace tiempo; ese
+  bloque es solo un snapshot estático viejo que se usa de respaldo si
+  `/prevision` no responde (comportamiento correcto y ya documentado
+  unas líneas más abajo, en `actualizarDesdeBackend()`). No es una
+  violación de la norma de honestidad de datos — nada de esto llega al
+  usuario etiquetado como algo que no es — pero el comentario en sí
+  inducía a error a quien leyera el código. Corregido directamente por
+  ser un ajuste trivial de un comentario, sin tocar comportamiento.
+
+**Nada más que corregir** — todo lo demás coincide con lo que el código
+espera.
+
 ---
 
 ## Calibración
@@ -311,3 +426,36 @@ _a priori_ (la boya está en mar abierto, los spots están más resguardados
 en la costa) — pero con un punto no se distingue "efecto costero real"
 de "ruido de un día concreto", así que no se propone ningún factor de
 corrección todavía. Seguir acumulando puntos en próximas pasadas.
+
+### 2026-08-31 (tercera pasada, misma fecha)
+
+**Segundo punto de calibración añadido a `CALIBRACION.jsonl`** (solo se
+añade la línea nueva, historial anterior intacto). Misma metodología que
+la pasada anterior: pedir por `curl` la altura de ola calculada para los
+6 spots y la boya 2136, emparejando la hora local de Open-Meteo con la
+hora exacta del último dato real de la boya (esta vez la boya publicó su
+última lectura a las 13:00 UTC = 15:00 CEST, una hora más tarde que en el
+punto anterior del mismo día — no es una hora fija, se recalcula cada vez
+a partir del propio timestamp que devuelve la boya). Resultado (boya
+Hm0 = 1.88 m):
+
+| spot | altura calculada | diferencia | % |
+|---|---|---|---|
+| lekeitio | 1.02 m | −0.86 m | −45.7% |
+| mundaka | 1.58 m | −0.30 m | −16.0% |
+| bakio | 1.30 m | −0.58 m | −30.9% |
+| sopelana | 1.34 m | −0.54 m | −28.7% |
+| plentzia | 1.34 m | −0.54 m | −28.7% |
+| getxo | 1.32 m | −0.56 m | −29.8% |
+
+Con 2 puntos de historial **sigue sin llegar al mínimo de 8** que pide la
+tarea antes de calcular una desviación media o proponer un factor de
+corrección. Lo que sí se puede decir informalmente: en ambos puntos del
+mismo día, todos los spots calculan sistemáticamente por debajo de la
+boya (mar abierto vs. costa resguardada, como cabía esperar), con
+mundaka consistentemente la desviación más pequeña (−20.6% y −16.0%) y
+lekeitio la mayor (−48.7% y −45.7%) — pero son solo 2 muestras del mismo
+día, así que esto es una observación, no una conclusión. Sin factor de
+corrección propuesto todavía; seguir acumulando puntos, idealmente en
+días y horas distintas para no confundir el patrón real con el estado de
+mar de un único día.
