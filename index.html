@@ -524,31 +524,48 @@ function categoriaCaudal(caudal) {
   return { etiqueta: "alto", color: "#A34A35" };
 }
 
-// Especies de pesca recreativa habituales en esta costa y su temporada
-// real, según guías de pesca del País Vasco (aipeces.com, haypesca.es) —
-// NO son rangos de temperatura exactos por especie (no hemos encontrado
-// una fuente que los dé con precisión para esta zona), así que el criterio
-// es el mes del año, que sí está bien documentado. La temperatura del agua
-// se muestra al lado como contexto, no como filtro.
+// Especies de pesca recreativa habituales en esta costa, su temporada y
+// de qué se alimentan — según guías de pesca del País Vasco (aipeces.com,
+// haypesca.es) y fichas de cada especie (pescaderiascorunesas.es,
+// calamarpedia.com, mundopesquero.com, etc.). NO son rangos de
+// temperatura exactos por especie (no hemos encontrado una fuente que los
+// dé con precisión para esta zona), así que el criterio de temporada es
+// el mes del año, que sí está bien documentado. El desglose de dieta por
+// época solo aparece cuando la fuente lo menciona explícitamente (caso
+// del verdel/txitxarro en primavera); el resto es su dieta general.
 const ESPECIES = [
-  { nombre: "Lubina", emoji: "🐟", meses: [9, 10, 11, 12, 1, 2, 3, 4],
-    nota: "de otoño a primavera, mejor con poca luz (amanecer/anochecer)" },
-  { nombre: "Bonito del norte", emoji: "🐟", meses: [7, 8, 9, 10],
-    nota: "verano-otoño, pelágico, mar adentro" },
-  { nombre: "Sargo", emoji: "🐟", meses: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-    nota: "todo el año en rompientes, más activo con agua fría" },
-  { nombre: "Abadejo", emoji: "🐟", meses: [9, 10, 11, 12, 1, 2],
-    nota: "mejor en otoño-invierno, peces de roca" },
-  { nombre: "Calamar / chipirón", emoji: "🦑", meses: [9, 10, 11, 12, 1, 2],
-    nota: "otoño-invierno, técnica de eging en puerto" },
-  { nombre: "Congrio", emoji: "🐍", meses: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-    nota: "todo el año, nocturno, en puertos y espigones" },
-  { nombre: "Txitxarro / verdel", emoji: "🐟", meses: [4, 5, 6, 7, 8],
-    nota: "primavera-verano, spinning ligero" },
+  { nombre: "Lubina", emoji: "🐟", zona: "costa", meses: [9, 10, 11, 12, 1, 2, 3, 4],
+    nota: "de otoño a primavera, mejor con poca luz (amanecer/anochecer)",
+    alimento: "sardinas, anchoas pequeñas, lisas, quisquillas, gusanos de mar y cangrejos de arena — sobre todo en puertos, dársenas y desembocaduras" },
+  { nombre: "Sargo", emoji: "🐟", zona: "costa", meses: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+    nota: "todo el año en rompientes, más activo con agua fría",
+    alimento: "mejillones, percebes y erizos de mar sobre todo, además de otros moluscos y crustáceos de fondo rocoso" },
+  { nombre: "Abadejo", emoji: "🐟", zona: "costa", meses: [9, 10, 11, 12, 1, 2],
+    nota: "mejor en otoño-invierno, peces de roca",
+    alimento: "peces pequeños (arenques), calamares, camarones y langostinos; de joven se centra en crustáceos de aguas someras" },
+  { nombre: "Calamar / chipirón", emoji: "🦑", zona: "costa", meses: [9, 10, 11, 12, 1, 2],
+    nota: "otoño-invierno, técnica de eging en puerto",
+    alimento: "peces pequeños, cangrejos y camarones; los ejemplares jóvenes se alimentan de plancton" },
+  { nombre: "Congrio", emoji: "🐍", zona: "costa", meses: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+    nota: "todo el año, nocturno, en puertos y espigones",
+    alimento: "jurel, sardina, calamar y crustáceos — caza de noche desde cuevas y grietas" },
+  { nombre: "Bonito del norte", emoji: "🐟", zona: "mar adentro", meses: [7, 8, 9, 10],
+    nota: "verano-otoño, pelágico, mar adentro",
+    alimento: "bancos de sardina, anchoa, caballa y jurel; también calamar, especialmente en su época de desove" },
+  { nombre: "Txitxarro / verdel", emoji: "🐟", zona: "mar adentro", meses: [4, 5, 6, 7, 8],
+    nota: "primavera-verano, spinning ligero",
+    alimento: "en primavera empieza con zooplancton y va pasando a sardina y anchoa pequeña conforme avanza la temporada" },
 ];
 function especiesEnTemporada() {
   const mesActual = new Date().getMonth() + 1;
   return ESPECIES.filter((e) => e.meses.includes(mesActual));
+}
+function especiesPorZona() {
+  const enTemporada = especiesEnTemporada();
+  return {
+    costa: enTemporada.filter((e) => e.zona === "costa"),
+    marAdentro: enTemporada.filter((e) => e.zona === "mar adentro"),
+  };
 }
 
 const GRADOS_COMPAS = {
@@ -945,10 +962,16 @@ function abrirPanel(s) {
     document.getElementById("panelPresionNota").textContent = "";
   }
 
-  const especiesHoy = especiesEnTemporada();
-  document.getElementById("panelEspecies").innerHTML = especiesHoy.length
-    ? especiesHoy.map((e) => `${e.emoji} <b>${e.nombre}</b> — ${e.nota}`).join("<br>")
-    : "sin especies de temporada esta época del año";
+  const { costa, marAdentro } = especiesPorZona();
+  const listaEspecie = (e) =>
+    `<div style="margin-bottom:6px;">${e.emoji} <b>${e.nombre}</b> — ${e.nota}<br>` +
+    `<span style="color:#9FB8BF;">🍽 ${e.alimento}</span></div>`;
+  const bloqueZona = (titulo, lista) =>
+    `<div style="margin-bottom:8px;"><div style="color:#7FA3AF; font-weight:600; margin-bottom:3px;">${titulo}</div>` +
+    (lista.length ? lista.map(listaEspecie).join("") : `<span style="color:#6C8890;">ninguna de temporada ahora</span>`) +
+    `</div>`;
+  document.getElementById("panelEspecies").innerHTML =
+    bloqueZona("🪨 COSTA", costa) + bloqueZona("🌊 MAR ADENTRO", marAdentro);
 
   pintarWebcam(s.slug, s.nombre);
 
