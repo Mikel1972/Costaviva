@@ -539,31 +539,31 @@ function categoriaCaudal(caudal) {
 const ESPECIES = [
   { nombre: "Lubina", emoji: "🐟", zona: "costa", meses: [9, 10, 11, 12, 1, 2, 3, 4],
     rangoTemp: [8, 24],
-    nota: "activa entre 8-24°C (FishBase); apenas come por debajo de ~7°C — de ahí que en esta costa se pesque mejor de otoño a primavera, con poca luz (amanecer/anochecer)",
+    nota: "se mueve bien entre 8-24°C, pero por debajo de 7°C casi ni come. Por eso aquí pica mejor de otoño a primavera, y sobre todo al amanecer o anochecer",
     alimento: "sardinas y anchoas pequeñas (parrotxa), lisas, quisquillas, gusanos de mar y cangrejos de arena — sobre todo en puertos, dársenas y desembocaduras" },
   { nombre: "Sargo", emoji: "🐟", zona: "costa", meses: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
     rangoTemp: null,
-    nota: "sin cifra numérica fiable encontrada; las fuentes solo confirman que está presente todo el año en rompientes y es más activo con agua fría, sin dar un rango concreto",
+    nota: "no hemos encontrado un número fiable para este. Lo que sí se sabe: está todo el año en las rompientes y se anima más con el agua fría",
     alimento: "mejillones, percebes y erizos de mar sobre todo, además de otros moluscos y crustáceos de fondo rocoso" },
   { nombre: "Abadejo", emoji: "🐟", zona: "costa", meses: [9, 10, 11, 12, 1, 2],
     rangoTemp: null,
-    nota: "sin cifra numérica fiable encontrada (descartamos un dato de FishBase que resultó ser erróneo); especie de aguas templadas del Atlántico norte, mejor en otoño-invierno",
+    nota: "tampoco hay un rango fiable para este (había un dato que descartamos por raro). Lo seguro: mejor en otoño-invierno",
     alimento: "peces pequeños (arenques), calamares, camarones y langostinos; de joven se centra en crustáceos de aguas someras" },
   { nombre: "Calamar / chipirón", emoji: "🦑", zona: "costa", meses: [9, 10, 11, 12, 1, 2],
     rangoTemp: [13, 20],
-    nota: "activo entre 13-20°C, con preferencia marcada en torno a 18°C; se pesca sobre todo de noche o al atardecer",
+    nota: "se mueve entre 13-20°C, y le va especialmente bien sobre los 18°C. Mejor de noche o al atardecer",
     alimento: "peces pequeños, cangrejos y camarones; los ejemplares jóvenes se alimentan de plancton" },
   { nombre: "Congrio", emoji: "🐍", zona: "costa", meses: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
     rangoTemp: null,
-    nota: "sin cifra numérica documentada — es de las pocas especies que apenas parece verse afectada por la temperatura del agua; lo que sí manda es la hora (caza de noche desde cuevas y grietas)",
+    nota: "a este la temperatura le da igual, casi no le afecta. Lo que manda es la hora: caza de noche, escondido en cuevas y grietas",
     alimento: "jurel, sardina, calamar y crustáceos" },
   { nombre: "Bonito del norte", emoji: "🐟", zona: "mar adentro", meses: [7, 8, 9, 10],
     rangoTemp: [16, 19],
-    nota: "tolera un rango amplio (9.5-25.2°C) pero se concentra y muerde mejor entre 16-19°C — por eso entra en el Cantábrico a finales de primavera/verano siguiendo el agua templada",
+    nota: "aguanta un rango amplio, pero pica mejor entre 16-19°C. Por eso entra al Cantábrico en verano, siguiendo el agua templada",
     alimento: "bancos de sardina, anchoa, caballa y jurel; también calamar, especialmente en su época de desove" },
   { nombre: "Txitxarro / verdel", emoji: "🐟", zona: "mar adentro", meses: [4, 5, 6, 7, 8],
     rangoTemp: [15, 20],
-    nota: "tolera 14-23°C, pero los bancos se concentran entre 15-20°C; con ese calor suben desde los ~200m de invierno hasta la superficie, cerca de la costa",
+    nota: "aguanta 14-23°C, pero los bancos se juntan entre 15-20°C. Con ese calorcillo suben desde los ~200m de invierno hasta la superficie, pegados a la costa",
     alimento: "en primavera empieza con zooplancton y va pasando a sardina y anchoa pequeña (parrotxa) conforme avanza la temporada" },
 ];
 function especiesEnTemporada() {
@@ -965,7 +965,7 @@ function abrirPanel(s) {
 
   if (s.presion && s.presion.valor !== null) {
     document.getElementById("panelPresion").textContent = `${s.presion.valor} hPa`;
-    const notas = { bajando: "↓ bajando — suele coincidir con más actividad", subiendo: "↑ subiendo — actividad más floja las próximas 24-48h", estable: "→ estable — buena señal si lleva días así" };
+    const notas = { bajando: "↓ bajando — buena señal, suelen animarse", subiendo: "↑ subiendo — van a estar más parados 24-48h", estable: "→ estable — bien, mejor si lleva así varios días" };
     document.getElementById("panelPresionNota").textContent = s.presion.tendencia ? notas[s.presion.tendencia] : "";
   } else {
     document.getElementById("panelPresion").textContent = "sin datos";
@@ -979,7 +979,7 @@ function abrirPanel(s) {
       const [min, max] = e.rangoTemp;
       const dentro = s.tempAgua !== null && s.tempAgua !== undefined && s.tempAgua >= min && s.tempAgua <= max;
       const color = dentro ? "#4F9D69" : "#6C8890";
-      franja = ` <span style="color:${color};">[${min}-${max}°C${dentro ? " ✓ agua actual dentro de rango" : ""}]</span>`;
+      franja = ` <span style="color:${color};">[${min}-${max}°C${dentro ? " ✓ hoy está en su rango" : ""}]</span>`;
     }
     return `<div style="margin-bottom:6px;">${e.emoji} <b>${e.nombre}</b>${franja}<br>${e.nota}<br>` +
       `<span style="color:#9FB8BF;">🍽 ${e.alimento}</span></div>`;
@@ -991,7 +991,7 @@ function abrirPanel(s) {
   document.getElementById("panelEspecies").innerHTML =
     bloqueZona("🪨 COSTA", costa) + bloqueZona("🌊 MAR ADENTRO", marAdentro) +
     `<div style="color:#6C8890; font-size:10.5px; margin-top:4px; line-height:1.4;">` +
-    `"Parrotxa" = cría de sardina, nombre vasco de la sardinilla joven usada de cebo. Cuando hay un pico de parrotxa en la zona (bancos abundantes cerca de la costa), suele atraer a los depredadores que se alimentan de ella — lubina y bonito sobre todo — y mejora la pesca. No tenemos datos en tiempo real de dónde hay parrotxa; es una observación de quien está en el agua.` +
+    `La parrotxa es la cría de sardina — así la llaman por aquí. Cuando hay mucha cerca de la costa, se acercan a por ella la lubina y el bonito sobre todo, y se pesca mejor. Esto no lo medimos nosotros — lo sabes tú mejor mirando el agua.` +
     `</div>`;
 
   pintarWebcam(s.slug, s.nombre);
