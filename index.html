@@ -599,16 +599,41 @@ const map = L.map("map", {
   touchZoom: true,
   attributionControl: true,
 });
-// Esri Ocean Basemap: gratis, sin API key, mar en azul de verdad (con
-// batimetría) en vez del gris apagado del mapa de calles por defecto.
-L.tileLayer("https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}", {
+// Esri Ocean Basemap: gratis, sin API key, mar en azul de verdad. PERO
+// solo tiene teselas reales hasta zoom 10 en esta zona — a partir de ahí
+// devuelve un aviso "Map data not yet available" en vez de mapa (lo vimos
+// al comprobarlo tesela a tesela). Por eso solo se usa hasta zoom 10, y
+// de ahí en adelante se cambia a World Street Map (sí tiene detalle real
+// hasta zoom 16, agua también en azul aunque con otro estilo).
+//
+// El cambio de capa se hace a mano (añadir/quitar en vez de dejarlo a los
+// minZoom/maxZoom propios de cada capa) porque con la animación de zoom
+// desactivada, Leaflet no siempre "despierta" una capa nueva al cruzar su
+// rango de zoom — se queda en blanco hasta que se le pide un redibujado.
+const capaOceanoBase = L.tileLayer("https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}", {
   attribution: "Tiles &copy; Esri &mdash; Sources: GEBCO, NOAA, National Geographic, DeLorme, HERE, Geonames.org",
-  maxZoom: 16,
-}).addTo(map);
-L.tileLayer("https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Reference/MapServer/tile/{z}/{y}/{x}", {
-  maxZoom: 16,
+});
+const capaOceanoRef = L.tileLayer("https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Reference/MapServer/tile/{z}/{y}/{x}", {
   opacity: 0.9,
-}).addTo(map);
+});
+const capaCalles = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", {
+  attribution: "Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom",
+});
+const ZOOM_CAMBIO_MAPA_BASE = 10; // hasta aquí, Ocean; a partir de aquí, calles
+
+function actualizarMapaBaseSegunZoom() {
+  if (map.getZoom() <= ZOOM_CAMBIO_MAPA_BASE) {
+    if (map.hasLayer(capaCalles)) map.removeLayer(capaCalles);
+    if (!map.hasLayer(capaOceanoBase)) capaOceanoBase.addTo(map);
+    if (!map.hasLayer(capaOceanoRef)) capaOceanoRef.addTo(map);
+  } else {
+    if (map.hasLayer(capaOceanoBase)) map.removeLayer(capaOceanoBase);
+    if (map.hasLayer(capaOceanoRef)) map.removeLayer(capaOceanoRef);
+    if (!map.hasLayer(capaCalles)) capaCalles.addTo(map);
+  }
+}
+actualizarMapaBaseSegunZoom();
+map.on("zoomend", actualizarMapaBaseSegunZoom);
 
 // Batimetría real (EMODnet Bathymetry, WMS público y gratis, sin clave) —
 // capa activable, no puesta por defecto porque tapa bastante el resto del
