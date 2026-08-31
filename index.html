@@ -406,7 +406,12 @@
 
 <script>
 // ---------------------------------------------------------------------------
-// Datos reales de hoy (scrapeados de Todosurf en esta sesión)
+// Datos de respaldo ESTÁTICOS (snapshot antiguo, ya no viene de Todosurf —
+// ver functions/prevision.js). Solo se usan como placeholder inicial hasta
+// que actualizarDesdeBackend() los sobrescribe con datos reales de
+// Open-Meteo; si el backend no responde, la app se queda con estos en vez
+// de quedarse en blanco, y son visualmente indistinguibles de un dato viejo
+// real — no representan el oleaje de hoy.
 // ---------------------------------------------------------------------------
 const SPOTS = [
   { slug: "lekeitio", nombre: "Lekeitio", lat: 43.3647, lon: -2.5089,
