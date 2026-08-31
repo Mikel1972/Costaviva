@@ -168,6 +168,30 @@
     background-size: cover; background-position: center;
   }
   .modal-rayos-contenido img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+  .luna-toggle {
+    position: absolute; top: 64px; right: 16px; z-index: 502;
+    width: 38px; height: 38px; border-radius: 8px;
+    background: #0F2C38; border: 1px solid #1C3F4F; color: #E8E2D0;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 16px; padding: 0;
+  }
+  .luna-panel {
+    position: absolute; top: 64px; right: 64px; z-index: 501;
+    background: #0F2C38; border: 1px solid #1C3F4F; border-radius: 8px;
+    padding: 12px 14px; font-size: 11.5px; font-family: 'IBM Plex Mono', monospace;
+    width: 210px;
+    opacity: 0; transform: translateX(14px); pointer-events: none;
+    transition: opacity 0.15s ease-out, transform 0.15s ease-out;
+  }
+  .luna-panel.visible { opacity: 1; transform: translateX(0); pointer-events: auto; }
+  .luna-panel .fase-fila { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .luna-panel .fase-emoji { font-size: 26px; }
+  .luna-panel .fase-nombre { font-family: 'Inter', sans-serif; color: #F5F1E6; font-size: 13px; }
+  .luna-panel .fase-iluminacion { color: #7FA3AF; font-size: 10.5px; }
+  .luna-panel .fila-dato { display: flex; justify-content: space-between; margin-top: 4px; color: #9FB8BF; }
+  .luna-panel .fila-dato b { color: #E8E2D0; font-weight: 700; }
+  .luna-panel .nota { color: #6C8890; font-size: 9.5px; margin-top: 8px; line-height: 1.4; }
   .leyenda .titulo { color: #7FA3AF; margin-bottom: 6px; }
   .leyenda .fila { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
   .leyenda .chip { width: 10px; height: 10px; border-radius: 2px; }
@@ -298,6 +322,20 @@
         <button class="cerrar" id="cerrarModalRayos" style="position:absolute; top:8px; right:8px; z-index:2; background:rgba(11,37,50,0.7); border-radius:4px;">✕</button>
         <img id="imgRayosGrande" src="/rayos-imagen" alt="Mapa de rayos de España, última hora, en grande" />
       </div>
+    </div>
+    <button class="luna-toggle" id="toggleLuna" title="Fase y posición de la luna" aria-label="Mostrar/ocultar datos de la luna">🌙</button>
+    <div class="luna-panel" id="lunaPanel">
+      <div class="fase-fila">
+        <span class="fase-emoji" id="lunaEmoji">🌙</span>
+        <div>
+          <div class="fase-nombre" id="lunaFase">—</div>
+          <div class="fase-iluminacion" id="lunaIluminacion"></div>
+        </div>
+      </div>
+      <div class="fila-dato"><span>Sale</span><b id="lunaSalida">—</b></div>
+      <div class="fila-dato"><span>Se pone</span><b id="lunaPuesta">—</b></div>
+      <div class="fila-dato"><span>Altura máx.</span><b id="lunaAltura">—</b></div>
+      <div class="nota">Azimut y altura: cálculo propio (±1°). Horas y fase: Observatorio Naval de EE.UU.</div>
     </div>
   </div>
   <div class="panel" id="panel">
@@ -516,6 +554,20 @@ async function actualizarDesdeBackend() {
       const b = BOYAS.find((x) => x.codigo === bBackend.codigo);
       if (b) Object.assign(b, bBackend);
     });
+    if (datos.luna && !datos.luna.error) {
+      const l = datos.luna;
+      document.getElementById("lunaEmoji").textContent = l.emoji;
+      document.getElementById("lunaFase").textContent = l.fase;
+      document.getElementById("lunaIluminacion").textContent = `${l.iluminacion} iluminada`;
+      document.getElementById("lunaSalida").textContent = l.horaSalida
+        ? `${l.horaSalida} · ${l.rumboSalida} (${l.azimutSalida}°)`
+        : "sin datos";
+      document.getElementById("lunaPuesta").textContent = l.horaPuesta
+        ? `${l.horaPuesta} · ${l.rumboPuesta} (${l.azimutPuesta}°)`
+        : "sin datos";
+      document.getElementById("lunaAltura").textContent =
+        l.alturaMaxima !== null ? `${l.alturaMaxima}° (${l.horaCulminacion})` : "sin datos";
+    }
     console.log("Datos reales cargados desde /prevision");
   } catch (e) {
     console.log("Backend no disponible, usando datos fijos de hoy:", e.message);
@@ -806,6 +858,10 @@ document.getElementById("cerrarModalRayos").addEventListener("click", () => {
 });
 document.getElementById("modalRayos").addEventListener("click", (e) => {
   if (e.target.id === "modalRayos") document.getElementById("modalRayos").classList.remove("visible");
+});
+document.getElementById("toggleLuna").addEventListener("click", () => {
+  const abierta = document.getElementById("lunaPanel").classList.toggle("visible");
+  document.getElementById("toggleLuna").textContent = abierta ? "✕" : "🌙";
 });
 document.getElementById("cerrarPanel").addEventListener("click", () => {
   document.getElementById("panel").classList.remove("visible");

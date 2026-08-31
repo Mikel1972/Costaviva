@@ -207,6 +207,138 @@ async function datosBoya(boya) {
   };
 }
 
+// ---------------------------------------------------------------------------
+// Luna: fase y horas de salida/puesta/culminación vienen del Observatorio
+// Naval de EE.UU. (aa.usno.navy.mil), API JSON oficial y gratuita. El
+// azimut (por dónde sale/se pone) y la altura máxima en el cielo NO están
+// en esa API — la página que sí los tiene es HTML pensada para lectura
+// humana, no fiable de parsear automáticamente — así que los calculamos
+// nosotros mismos con una posición lunar aproximada (fórmula compacta
+// estándar, precisión ~0.3-1°, de sobra para saber hacia dónde mirar).
+// ---------------------------------------------------------------------------
+const FASES_LUNA = {
+  "New Moon": { es: "Luna nueva", emoji: "🌑" },
+  "Waxing Crescent": { es: "Creciente", emoji: "🌒" },
+  "First Quarter": { es: "Cuarto creciente", emoji: "🌓" },
+  "Waxing Gibbous": { es: "Gibosa creciente", emoji: "🌔" },
+  "Full Moon": { es: "Luna llena", emoji: "🌕" },
+  "Waning Gibbous": { es: "Gibosa menguante", emoji: "🌖" },
+  "Last Quarter": { es: "Cuarto menguante", emoji: "🌗" },
+  "Waning Crescent": { es: "Menguante", emoji: "🌘" },
+};
+
+function norm360(x) {
+  return ((x % 360) + 360) % 360;
+}
+
+function fechaJuliana(fecha) {
+  return fecha.getTime() / 86400000 + 2440587.5;
+}
+
+// Posición eclíptica geocéntrica aproximada de la Luna.
+function posicionEclipticaLuna(jd) {
+  const d = jd - 2451545.0;
+  const L = norm360(218.316 + 13.176396 * d);
+  const M = ((norm360(134.963 + 13.064993 * d)) * Math.PI) / 180;
+  const F = ((norm360(93.272 + 13.22935 * d)) * Math.PI) / 180;
+  return { lon: norm360(L + 6.289 * Math.sin(M)), lat: 5.128 * Math.sin(F) };
+}
+
+function eclipticaAEcuatorial(lonGrados, latGrados) {
+  const eps = (23.4397 * Math.PI) / 180;
+  const lon = (lonGrados * Math.PI) / 180;
+  const lat = (latGrados * Math.PI) / 180;
+  const dec = Math.asin(Math.sin(lat) * Math.cos(eps) + Math.cos(lat) * Math.sin(eps) * Math.sin(lon));
+  const ra = norm360(
+    (Math.atan2(Math.sin(lon) * Math.cos(eps) - Math.tan(lat) * Math.sin(eps), Math.cos(lon)) * 180) / Math.PI
+  );
+  return { ra, dec: (dec * 180) / Math.PI };
+}
+
+function tiempoSiderealGreenwich(jd) {
+  const d = jd - 2451545.0;
+  return norm360(280.46061837 + 360.98564736629 * d);
+}
+
+function altAzLuna(fecha, latObs, lonObs) {
+  const jd = fechaJuliana(fecha);
+  const { lon, lat } = posicionEclipticaLuna(jd);
+  const { ra, dec } = eclipticaAEcuatorial(lon, lat);
+  const lst = norm360(tiempoSiderealGreenwich(jd) + lonObs);
+  const H = (norm360(lst - ra) * Math.PI) / 180;
+  const latR = (latObs * Math.PI) / 180;
+  const decR = (dec * Math.PI) / 180;
+
+  const alt = Math.asin(Math.sin(decR) * Math.sin(latR) + Math.cos(decR) * Math.cos(latR) * Math.cos(H));
+  let az =
+    (Math.acos(
+      Math.max(-1, Math.min(1, (Math.sin(decR) - Math.sin(alt) * Math.sin(latR)) / (Math.cos(alt) * Math.cos(latR))))
+    ) *
+      180) /
+    Math.PI;
+  if (Math.sin(H) > 0) az = 360 - az;
+
+  return { altitud: +((alt * 180) / Math.PI).toFixed(1), azimut: +az.toFixed(1) };
+}
+
+function fechaMadridActual() {
+  const ahora = new Date();
+  const partes = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Madrid",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(ahora);
+  const fecha = `${partes.find((p) => p.type === "year").value}-${partes.find((p) => p.type === "month").value}-${partes.find((p) => p.type === "day").value}`;
+  const enMadrid = new Date(ahora.toLocaleString("en-US", { timeZone: "Europe/Madrid" }));
+  const enUTC = new Date(ahora.toLocaleString("en-US", { timeZone: "UTC" }));
+  const offsetHoras = Math.round((enMadrid.getTime() - enUTC.getTime()) / 3600000);
+  return { fecha, offsetHoras };
+}
+
+async function datosLuna() {
+  const { fecha, offsetHoras } = fechaMadridActual();
+  // Punto central de la zona — la posición de la luna no cambia de forma
+  // apreciable entre los 6 spots, no hace falta calcularla por separado.
+  const centro = { lat: 43.4, lon: -2.8 };
+  const url = `https://aa.usno.navy.mil/api/rstt/oneday?date=${fecha}&coords=${centro.lat},${centro.lon}&tz=${offsetHoras}`;
+  const datos = await fetchJSON(url);
+  const p = datos?.properties?.data;
+  if (!p) throw new Error("sin datos del Observatorio Naval de EE.UU.");
+
+  const horaDe = (fen) => (p.moondata || []).find((m) => m.phen === fen)?.time || null;
+  const horaSalida = horaDe("Rise");
+  const horaPuesta = horaDe("Set");
+  const horaCulminacion = horaDe("Upper Transit") || horaDe("Lower Transit");
+
+  const aFechaHora = (hhmm) => {
+    if (!hhmm) return null;
+    const signo = offsetHoras >= 0 ? "+" : "-";
+    const offsetStr = String(Math.abs(offsetHoras)).padStart(2, "0");
+    return new Date(`${fecha}T${hhmm}:00${signo}${offsetStr}:00`);
+  };
+
+  const fSalida = aFechaHora(horaSalida);
+  const fPuesta = aFechaHora(horaPuesta);
+  const fCulminacion = aFechaHora(horaCulminacion);
+
+  const fase = FASES_LUNA[p.curphase] || { es: p.curphase, emoji: "🌙" };
+
+  return {
+    fase: fase.es,
+    emoji: fase.emoji,
+    iluminacion: p.fracillum,
+    horaSalida,
+    horaPuesta,
+    horaCulminacion,
+    azimutSalida: fSalida ? altAzLuna(fSalida, centro.lat, centro.lon).azimut : null,
+    azimutPuesta: fPuesta ? altAzLuna(fPuesta, centro.lat, centro.lon).azimut : null,
+    alturaMaxima: fCulminacion ? altAzLuna(fCulminacion, centro.lat, centro.lon).altitud : null,
+    rumboSalida: fSalida ? rumboDesdeGrados(altAzLuna(fSalida, centro.lat, centro.lon).azimut) : null,
+    rumboPuesta: fPuesta ? rumboDesdeGrados(altAzLuna(fPuesta, centro.lat, centro.lon).azimut) : null,
+  };
+}
+
 // Metadato de la imagen nacional de rayos de AEMET (ver /rayos-imagen) —
 // solo la hora de la última actualización, para no repetir la llamada al
 // timeline en el navegador.
@@ -222,7 +354,7 @@ async function metaRayos() {
 }
 
 export async function onRequestGet(context) {
-  const [resultados, boyas, rayosNacional] = await Promise.all([
+  const [resultados, boyas, rayosNacional, luna] = await Promise.all([
     Promise.all(
       SPOTS.map((spot) =>
         previsionSpot(spot).catch((e) => ({ slug: spot.slug, nombre: spot.nombre, error: String(e) }))
@@ -230,9 +362,10 @@ export async function onRequestGet(context) {
     ),
     Promise.all(BOYAS.map((b) => datosBoya(b).catch((e) => ({ ...b, error: String(e) })))),
     metaRayos().catch((e) => ({ error: String(e) })),
+    datosLuna().catch((e) => ({ error: String(e) })),
   ]);
 
-  return new Response(JSON.stringify({ spots: resultados, boyas, rayosNacional }, null, 2), {
+  return new Response(JSON.stringify({ spots: resultados, boyas, rayosNacional, luna }, null, 2), {
     headers: {
       "content-type": "application/json; charset=utf-8",
       // Cache corto en el edge de Cloudflare — el modelo de Open-Meteo se
