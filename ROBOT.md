@@ -231,6 +231,80 @@ registrar una API key gratuita de Open Data Euskadi
 de Euskalmet (Bermeo/Ondarroa/Bilbao), que son más representativas de los
 spots que la boya actual de mar abierto.
 
+### 2026-09-07
+
+**`geo.euskadi.eus` y `services.arcgis.com` ya son alcanzables hoy** — la
+petición de la pasada anterior (2026-08-31) ya no hace falta, la red de hoy
+deja pasar ambos dominios sin problema. Esto permitió completar la
+investigación del Feature Service de caudal de ríos de URA que quedó a
+medias, con URLs reales comprobadas de principio a fin:
+
+- **Localizado el MapServer real de URA, sin necesidad de API key.**
+  Siguiendo la cadena visor→iframe→config de la app ArcGIS Web AppBuilder
+  (`https://www.geo.euskadi.eus/geoestudioa/sharing/content/items/
+  405399e081f040efb36a9548b2c88db4/data?f=json`, HTTP 200) se llega al
+  webmap real (`.../items/801a2792f5e041f8bfcf22d9a962bbcb/data?f=json`,
+  HTTP 200), que apunta a la capa
+  `https://www.geo.euskadi.eus/geoeuskadi/rest/services/V06GIS/URA_CAS_EUS/MapServer/23`
+  ("Estaciones de aforo de aguas superficiales") — un servicio REST público
+  de solo lectura, **sin API key**, que responde JSON estándar de ArcGIS.
+  Consultado con `.../query?where=1=1&outFields=*&geometry=-3.15,43.1,-2.3,43.5
+  &geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects
+  &outSR=4326&f=json` (HTTP 200, 80 estaciones reales devueltas con nombre,
+  gestor, código URA y coordenadas) en la zona del mapa — cubre justo los
+  ríos que ya tenemos con `caudal: null` (Lea, Oka, Butroe, Nervión...):
+  ejemplos reales cerca de esos cauces son "Aulestia" (Lea), "Muxika" (Oka),
+  "Gatika" (Butroe), "Abusu"/"Areta"/"Sangroniz" (cuenca del Nervión).
+- **Por qué NO se integra el dato de caudal en sí todavía — verificado, no
+  es apto para "ahora mismo".** Cada estación con datos tiene dos campos
+  `Q_MED_DIA`/`Q_DIEZMINU` que no son el número de caudal sino una URL a un
+  ZIP (ej. `https://uragentzia.euskadi.eus/.../diezminutales/
+  C005_Gatika_Caudal_Diezminutal.zip`, HTTP 200, ~2MB, comprobado
+  descargando y descomprimiendo de verdad). Dentro hay un `.dat` con
+  formato CSV real por 10 minutos (`FECHA,CAUDAL (m3/s)` —
+  `2026-04-01 00:00,1.908`, etc.) — pero el último mes publicado dentro del
+  ZIP de hoy es **abril de 2026**, es decir con **~5 meses de retraso**, no
+  en tiempo real pese al nombre "diezminutal". Mostrarlo en el mapa como si
+  fuera el caudal de "ahora" sería engañoso; mostrarlo con su fecha real
+  ("último dato: abril 2026") sería honesto pero de poca utilidad práctica
+  para alguien mirando el estado del mar hoy, y descomprimir un ZIP de 2MB
+  por estación en una Cloudflare Pages Function sin bundler/librería external
+  tampoco es el integración "sencilla" que pide la norma de esta tarea —
+  por eso queda como propuesta, no como código.
+- **Lo que sí encaja en "bajo riesgo y fácil" pero se deja como propuesta
+  por prudencia, no por bloqueo técnico:** las coordenadas y nombres reales
+  de las 80 estaciones (sin caudal, solo posición) sí se podrían usar para
+  sustituir las posiciones *aproximadas* que tiene hoy `RIOS` en
+  `index.html` (la nota de la UI ya dice "posiciones aproximadas, sin datos
+  reales todavía") por las posiciones *reales* de estaciones oficiales más
+  cercanas a cada río. No lo hago en esta pasada porque emparejar cada
+  estación con el río/tramo correcto de nuestro mapa (cabecera/medio/
+  desembocadura) a partir del nombre de municipio requiere criterio
+  geográfico caso por caso — un error de asociación (asignar una estación
+  al río equivocado) sería peor que dejar la posición aproximada actual, y
+  la instrucción de esta tarea es no arriesgar una etiqueta "real" que
+  pueda estar mal. Quede como tarea concreta para una próxima pasada (o
+  para el usuario), con el endpoint ya localizado y verificado arriba.
+- **Webcams Lekeitio/Plentzia/Getxo: sigue sin resolverse, mismo motivo que
+  pasadas anteriores.** Con la red de hoy pude buscar más candidatos
+  (`escueladesurfsopelana.com/plentzia-webcam`, `surfingarage.com`,
+  `camaramar.com`) pero los tres dominos siguen bloqueados por el proxy de
+  salida (`curl: (56) CONNECT tunnel failed, response 403`, y lo mismo con
+  `WebFetch`: `EGRESS_BLOCKED`) — no se puede ver si sirven una imagen
+  directa hotlinkable o solo un reproductor de terceros. Nada nuevo que
+  integrar.
+
+**Propuesta para el usuario:** (1) confirmar si merece la pena que una
+próxima pasada dedique tiempo a emparejar manualmente las estaciones URA
+reales (endpoint ya verificado arriba) con cada uno de los 6 ríos del mapa
+para al menos mostrar posición real en vez de aproximada (sin caudal,
+seguiría en `null`); (2) el caudal en sí, dado el retraso de ~5 meses de los
+ZIPs de URA, probablemente no merece la pena mostrarlo con la etiqueta
+"ahora" — si se quisiera igualmente, habría que decidir explícitamente
+mostrar la fecha real del dato ("último dato: abril 2026") en vez de
+disfrazarlo de actual, y valorar si una Cloudflare Function puede
+descomprimir ZIP sin dependencias (Workers no traen `unzip` nativo).
+
 ---
 
 ## Auditoría de datos
@@ -376,6 +450,52 @@ no pudieron). Un hallazgo trivial corregido, el resto sano.
 **Nada más que corregir** — todo lo demás coincide con lo que el código
 espera.
 
+### 2026-09-07
+
+**Auditoría completa con `curl` real — todo alcanzable, todo sano, nada
+que corregir.**
+
+- **`functions/prevision.js` — Open-Meteo, los 6 spots.** Repetidas las
+  mismas llamadas (marine + forecast) que hace el código. HTTP 200 en las
+  12 peticiones (dos timeouts puntuales en el primer intento para
+  Lekeitio/Sopelana en `forecast`, ambos resueltos con un segundo intento
+  inmediato — ruido de red transitorio, no un fallo del proveedor). Forma
+  correcta (`hourly.wave_height`, `.sea_surface_temperature`,
+  `.windspeed_10m`, `.pressure_msl`, 48 horas por spot). Valores con
+  sentido para principios de septiembre: altura de ola 0.66–1.0 m, agua
+  22.7–23.4°C, viento 1.5–11.3 km/h, presión ~1024–1025 hPa. Nada roto.
+- **Boyas de Puertos del Estado — 2136 Bilbao-Vizcaya, 1117 Gijón, 1101
+  Pasaia II.** Las tres HTTP 200, forma `[cabeceras, filas]` correcta.
+  Bilbao-Vizcaya: Hm0 1.41 m, Tp 15.43 s, dirección 294° (WNW), agua
+  22.94°C. Gijón: Hm0 1.21 m, agua 21.1°C. Pasaia II: Hm0 1.08 m, agua
+  23.2°C. Todo coherente con oleaje de fondo suave de principios de otoño.
+- **`functions/luna.js` — USNO.** HTTP 200, forma correcta. Fase "Waning
+  Crescent" (17% iluminada), coherente con el cuarto menguante real del 4
+  de septiembre que devuelve la propia API (`closestphase`) — encaja con
+  la fecha, sin desfase.
+- **`functions/rayos-imagen.js` (y `metaRayos()` en `prevision.js`) —
+  AEMET.** Timeline HTTP 200 (24 bloques horarios) e imagen HTTP 200, PNG
+  válido de 5472×1965 px, 1-bit escala de grises (imagen casi toda blanca,
+  normal para un día sin apenas actividad eléctrica, no indicio de fallo).
+- **`functions/webcam/[slug].js` — mundaka, bakio, sopelana.** Las tres
+  HTTP 200 con imagen real y válida (JPEG 1024×768 ×2, WebP 2464×2056), no
+  placeholders ni páginas de error.
+- **Repaso de `index.html` y `functions/*.js` en busca de valores
+  inventados presentados como reales:** nada nuevo desde la última
+  auditoría. El bloque `SPOTS` de respaldo (línea ~430) sigue siendo el
+  *fallback* declarado, con su comentario ya corregido en la pasada del
+  2026-08-31. El "ÍNDICE DE PESCA" añadido en sesiones de desarrollo
+  recientes (no de este robot) está etiquetado en la UI como "(estimación)"
+  y en el código dice explícitamente que se calcula solo a partir de dos
+  datos reales (temperatura del agua vs. rango documentado por especie, y
+  tendencia de presión) — cumple el patrón de honestidad, no es un
+  hallazgo. Los rangos de temperatura de `ESPECIES` (línea ~544) traen
+  `rangoTemp: null` explícito para las especies sin cifra fiable
+  encontrada en fuentes biológicas, en vez de inventar un número — también
+  cumple la norma.
+
+**Nada que corregir esta pasada.**
+
 ---
 
 ## Calibración
@@ -459,3 +579,39 @@ día, así que esto es una observación, no una conclusión. Sin factor de
 corrección propuesto todavía; seguir acumulando puntos, idealmente en
 días y horas distintas para no confundir el patrón real con el estado de
 mar de un único día.
+
+### 2026-09-07
+
+**Tercer punto de calibración añadido a `CALIBRACION.jsonl`** (solo se
+añade la línea nueva, historial anterior intacto) — primer punto que no es
+del mismo día que los dos anteriores (31 de agosto), así que empieza a
+aportar variedad real de días/estados de mar en vez de repetir el mismo
+día. Misma metodología: `curl` a la boya 2136 y a Open-Meteo para los 6
+spots, emparejando por la hora exacta del último dato real de la boya
+(07:00 UTC = 09:00 CEST). Resultado (boya Hm0 = 1.41 m, bastante más baja
+que en los dos puntos de agosto):
+
+| spot | altura calculada | diferencia | % |
+|---|---|---|---|
+| lekeitio | 0.70 m | −0.71 m | −50.4% |
+| mundaka | 1.00 m | −0.41 m | −29.1% |
+| bakio | 0.84 m | −0.57 m | −40.4% |
+| sopelana | 0.86 m | −0.55 m | −39.0% |
+| plentzia | 0.86 m | −0.55 m | −39.0% |
+| getxo | 0.84 m | −0.57 m | −40.4% |
+
+Con 3 puntos **todavía no se llega al mínimo de 8** que pide la tarea antes
+de calcular una desviación media o proponer un factor de corrección. Lo que
+sí se sostiene con este tercer punto, ahora en un día distinto y con un
+estado de mar más suave que los dos anteriores (Hm0 boya bajó de ~1.9-2.0m
+a 1.41m): el patrón de "todos los spots por debajo de la boya" se mantiene,
+mundaka sigue siendo consistentemente el spot con menor desviación (−20.6%,
+−16.0%, −29.1%) y lekeitio el de mayor (−48.7%, −45.7%, −50.4%) — la
+distancia entre ambos extremos se mantiene bastante estable alrededor de
+~20-30 puntos porcentuales en los tres puntos, lo cual empieza a parecer
+más un efecto geográfico consistente (mundaka es una ría más resguardada/
+con más refracción de oleaje hacia dentro; lekeitio puede estar peor
+representado por las coordenadas actuales del spot) que ruido — pero con
+solo 3 muestras sigue siendo una observación, no una conclusión con
+suficiente respaldo. Seguir acumulando puntos en próximas pasadas, faltan
+al menos 5 más.
