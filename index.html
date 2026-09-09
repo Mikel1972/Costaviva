@@ -519,6 +519,32 @@ const SPOTS = [
     ["sagres", "Sagres (PT)", 37.008, -8.946],
     ["lagos", "Lagos (PT)", 37.102, -8.674],
     ["faro", "Faro/Olhão (PT)", 37.019, -7.930],
+    ["alicante", "Alicante (Puerto)", 38.345, -0.481],
+    ["altea", "Altea", 38.599, -0.051],
+    ["benidorm", "Benidorm (Levante)", 38.541, -0.131],
+    ["guardamardelsegura", "Guardamar del Segura", 38.087, -0.653],
+    ["vilajoiosa", "La Vila Joiosa", 38.505, -0.234],
+    ["orihuelacosta", "Orihuela Costa", 37.870, -0.767],
+    ["pilardelahoradada", "Pilar de la Horadada", 37.860, -0.787],
+    ["santapola", "Santa Pola", 38.192, -0.564],
+    ["javea", "Xàbia/Jávea", 38.789, 0.167],
+    ["alcossebre", "Alcossebre", 40.219, 0.239],
+    ["benicassim", "Benicàssim", 40.050, 0.064],
+    ["burriana", "Burriana", 39.889, -0.081],
+    ["castellon", "Castelló (Grau)", 39.986, -0.036],
+    ["xilxes", "Xilxes", 39.762, -0.213],
+    ["oropesa", "Oropesa del Mar", 40.088, 0.132],
+    ["torreblanca", "Torreblanca", 40.213, 0.203],
+    ["vinaros", "Vinaròs", 40.465, 0.474],
+    ["alboraya", "Alboraia (La Patacona)", 39.494, -0.336],
+    ["canetdeberenguer", "Canet d'en Berenguer", 39.677, -0.219],
+    ["cullera", "Cullera", 39.160, -0.252],
+    ["pobladefarnals", "La Pobla de Farnals", 39.556, -0.296],
+    ["oliva", "Oliva", 38.920, -0.114],
+    ["piles", "Piles", 38.965, -0.130],
+    ["calamillor", "Cala Millor (Mallorca)", 39.593, 3.383],
+    ["sonbou", "Son Bou (Menorca)", 39.917, 4.083],
+    ["muro", "Platja de Muro (Mallorca)", 39.762, 3.108],
   ].map(([slug, nombre, lat, lon]) => ({
     slug, nombre, lat, lon,
     altura: [0.2, 0.5], periodo: 5, viento: 12, dirViento: "N", dirOla: "N 350°",
@@ -935,6 +961,14 @@ const SPOTS_CON_WEBCAM = [
   "baiona", "acoruna", "camarinas", "cangas", "corrubedo", "ribadeo", "ons", "portosin", "cies",
   // Gobierno de Cantabria — imagen JPG directa, verificada 2026-09-09
   "suances", "castrourdiales", "laredo", "sanvicente", "comillas", "santona",
+  // Turisme Comunitat Valenciana — imagen PNG directa, verificada 2026-09-09
+  "calpe", "denia", "peniscola", "gandia", "valencia", "alicante", "altea",
+  "benidorm", "guardamardelsegura", "vilajoiosa", "orihuelacosta",
+  "pilardelahoradada", "santapola", "javea", "alcossebre", "benicassim",
+  "burriana", "castellon", "xilxes", "oropesa", "torreblanca", "vinaros",
+  "alboraya", "canetdeberenguer", "cullera", "pobladefarnals", "oliva", "piles",
+  // SOCIB (Baleares) — endpoint interno del visor BEAMON, verificado 2026-09-09
+  "calamillor", "sonbou", "muro",
 ];
 const REFRESCO_WEBCAM_MS = 60000; // 1 min: suficiente para sentirse "en directo" sin sobrecargar al proveedor original
 let intervaloWebcam = null;

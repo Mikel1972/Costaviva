@@ -97,6 +97,37 @@ const SPOTS = [
   { slug: "sagres", nombre: "Sagres (PT)", lat: 37.008, lon: -8.946 },
   { slug: "lagos", nombre: "Lagos (PT)", lat: 37.102, lon: -8.674 },
   { slug: "faro", nombre: "Faro/Olhão (PT)", lat: 37.019, lon: -7.930 },
+
+  // --- Ampliación C. Valenciana + Baleares (2026-09-09) con webcam pública
+  // verificada de Turisme Comunitat Valenciana / SOCIB — ver
+  // functions/webcam/[slug].js. calpe, denia, peniscola, gandia y valencia
+  // ya existían más arriba, solo se les añade webcam. ---
+  { slug: "alicante", nombre: "Alicante (Puerto)", lat: 38.345, lon: -0.481 },
+  { slug: "altea", nombre: "Altea", lat: 38.599, lon: -0.051 },
+  { slug: "benidorm", nombre: "Benidorm (Levante)", lat: 38.541, lon: -0.131 },
+  { slug: "guardamardelsegura", nombre: "Guardamar del Segura", lat: 38.087, lon: -0.653 },
+  { slug: "vilajoiosa", nombre: "La Vila Joiosa", lat: 38.505, lon: -0.234 },
+  { slug: "orihuelacosta", nombre: "Orihuela Costa", lat: 37.870, lon: -0.767 },
+  { slug: "pilardelahoradada", nombre: "Pilar de la Horadada", lat: 37.860, lon: -0.787 },
+  { slug: "santapola", nombre: "Santa Pola", lat: 38.192, lon: -0.564 },
+  { slug: "javea", nombre: "Xàbia/Jávea", lat: 38.789, lon: 0.167 },
+  { slug: "alcossebre", nombre: "Alcossebre", lat: 40.219, lon: 0.239 },
+  { slug: "benicassim", nombre: "Benicàssim", lat: 40.050, lon: 0.064 },
+  { slug: "burriana", nombre: "Burriana", lat: 39.889, lon: -0.081 },
+  { slug: "castellon", nombre: "Castelló (Grau)", lat: 39.986, lon: -0.036 },
+  { slug: "xilxes", nombre: "Xilxes", lat: 39.762, lon: -0.213 },
+  { slug: "oropesa", nombre: "Oropesa del Mar", lat: 40.088, lon: 0.132 },
+  { slug: "torreblanca", nombre: "Torreblanca", lat: 40.213, lon: 0.203 },
+  { slug: "vinaros", nombre: "Vinaròs", lat: 40.465, lon: 0.474 },
+  { slug: "alboraya", nombre: "Alboraia (La Patacona)", lat: 39.494, lon: -0.336 },
+  { slug: "canetdeberenguer", nombre: "Canet d'en Berenguer", lat: 39.677, lon: -0.219 },
+  { slug: "cullera", nombre: "Cullera", lat: 39.160, lon: -0.252 },
+  { slug: "pobladefarnals", nombre: "La Pobla de Farnals", lat: 39.556, lon: -0.296 },
+  { slug: "oliva", nombre: "Oliva", lat: 38.920, lon: -0.114 },
+  { slug: "piles", nombre: "Piles", lat: 38.965, lon: -0.130 },
+  { slug: "calamillor", nombre: "Cala Millor (Mallorca)", lat: 39.593, lon: 3.383 },
+  { slug: "sonbou", nombre: "Son Bou (Menorca)", lat: 39.917, lon: 4.083 },
+  { slug: "muro", nombre: "Platja de Muro (Mallorca)", lat: 39.762, lon: 3.108 },
 ];
 
 // Bloques de 3h que queremos mostrar, igual que el formato anterior
