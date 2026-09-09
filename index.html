@@ -267,20 +267,13 @@
 </head>
 <body>
 
-<!--
-  ACCESO CON SUPABASE — desactivado temporalmente para el primer despliegue
-  de validación (sin cuenta de Supabase creada todavía). Para reactivarlo:
-  1. Crear proyecto en supabase.com, tabla "perfiles" con campo "aprobado"
-  2. Rellenar SUPABASE_URL y SUPABASE_ANON_KEY aquí y en login.html
-  3. Descomentar este bloque
-
 <div id="comprobandoAcceso" style="position:fixed; inset:0; background:#0B2532; z-index:9999; display:flex; align-items:center; justify-content:center; color:#7FA3AF; font-family:'IBM Plex Mono',monospace; font-size:13px;">
   Comprobando acceso…
 </div>
 <script type="module">
   import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-  const SUPABASE_URL = "https://TU-PROYECTO.supabase.co";
-  const SUPABASE_ANON_KEY = "TU-ANON-KEY-AQUI";
+  const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   const { data } = await supabase.auth.getSession();
@@ -290,7 +283,6 @@
     document.getElementById("comprobandoAcceso").remove();
   }
 </script>
--->
 
 
 <header>
