@@ -17,6 +17,86 @@ const SPOTS = [
   { slug: "sopelana", nombre: "Sopelana", lat: 43.3878, lon: -2.9975 },
   { slug: "plentzia", nombre: "Plentzia", lat: 43.4053, lon: -2.9436 },
   { slug: "getxo", nombre: "Getxo (Ereaga)", lat: 43.3489, lon: -3.0119 },
+
+  // --- Ampliación nacional España (coordenadas de localidad conocida, no de
+  // un pico/roca concreto — Open-Meteo funciona en cualquier lat/lon del
+  // mundo así que no hace falta más verificación que la geografía real) ---
+  // Galicia — Rías Baixas
+  { slug: "baiona", nombre: "Baiona", lat: 42.117, lon: -8.850 },
+  { slug: "aguarda", nombre: "A Guarda", lat: 41.900, lon: -8.867 },
+  { slug: "cangas", nombre: "Cangas", lat: 42.266, lon: -8.786 },
+  { slug: "cies", nombre: "Vigo (Illas Cíes)", lat: 42.241, lon: -8.721 },
+  { slug: "sanxenxo", nombre: "Sanxenxo", lat: 42.400, lon: -8.808 },
+  { slug: "ons", nombre: "Illas Ons", lat: 42.383, lon: -8.933 },
+  // Galicia — Rías Altas / Costa da Morte
+  { slug: "acoruna", nombre: "A Coruña", lat: 43.362, lon: -8.412 },
+  { slug: "camarinas", nombre: "Camariñas", lat: 43.130, lon: -9.181 },
+  { slug: "corrubedo", nombre: "Corrubedo (Ribeira)", lat: 42.565, lon: -9.047 },
+  { slug: "portosin", nombre: "Portosín", lat: 42.755, lon: -8.933 },
+  { slug: "ribadeo", nombre: "Ribadeo", lat: 43.539, lon: -7.041 },
+  // Asturias / Cantabria (resto de costa no vasca)
+  { slug: "llanes", nombre: "Llanes", lat: 43.420, lon: -4.755 },
+  { slug: "ribadesella", nombre: "Ribadesella", lat: 43.463, lon: -5.057 },
+  { slug: "santander", nombre: "Santander", lat: 43.462, lon: -3.810 },
+  { slug: "suances", nombre: "Suances", lat: 43.440, lon: -4.040 },
+  { slug: "comillas", nombre: "Comillas", lat: 43.386, lon: -4.292 },
+  { slug: "sanvicente", nombre: "San Vicente de la Barquera", lat: 43.383, lon: -4.398 },
+  { slug: "santona", nombre: "Santoña", lat: 43.442, lon: -3.440 },
+  { slug: "laredo", nombre: "Laredo", lat: 43.413, lon: -3.409 },
+  { slug: "castrourdiales", nombre: "Castro Urdiales", lat: 43.385, lon: -3.217 },
+  // Cataluña
+  { slug: "roses", nombre: "Roses", lat: 42.262, lon: 3.176 },
+  { slug: "blanes", nombre: "Blanes", lat: 41.674, lon: 2.791 },
+  { slug: "cambrils", nombre: "Cambrils", lat: 41.067, lon: 1.058 },
+  // Comunidad Valenciana
+  { slug: "peniscola", nombre: "Peñíscola", lat: 40.360, lon: 0.402 },
+  { slug: "valencia", nombre: "Valencia (Malvarrosa)", lat: 39.475, lon: -0.322 },
+  { slug: "gandia", nombre: "Gandía", lat: 38.993, lon: -0.152 },
+  { slug: "denia", nombre: "Dénia", lat: 38.841, lon: 0.105 },
+  { slug: "calpe", nombre: "Calpe", lat: 38.645, lon: 0.045 },
+  // Murcia
+  { slug: "cartagena", nombre: "Cartagena", lat: 37.605, lon: -0.986 },
+  { slug: "aguilas", nombre: "Águilas", lat: 37.405, lon: -1.583 },
+  { slug: "cabodepalos", nombre: "Cabo de Palos", lat: 37.638, lon: -0.696 },
+  // Andalucía — Atlántico
+  { slug: "cadiz", nombre: "Cádiz", lat: 36.530, lon: -6.293 },
+  { slug: "conil", nombre: "Conil de la Frontera", lat: 36.267, lon: -6.093 },
+  { slug: "chipiona", nombre: "Chipiona", lat: 36.739, lon: -6.435 },
+  { slug: "puntaumbria", nombre: "Punta Umbría", lat: 37.183, lon: -6.974 },
+  // Andalucía — Mediterráneo
+  { slug: "malaga", nombre: "Málaga", lat: 36.721, lon: -4.421 },
+  { slug: "nerja", nombre: "Nerja", lat: 36.750, lon: -3.875 },
+  { slug: "almeria", nombre: "Almería", lat: 36.834, lon: -2.464 },
+  { slug: "roquetas", nombre: "Roquetas de Mar", lat: 36.764, lon: -2.614 },
+  // Baleares
+  { slug: "palma", nombre: "Palma de Mallorca", lat: 39.570, lon: 2.650 },
+  { slug: "ciutadella", nombre: "Ciutadella (Menorca)", lat: 40.000, lon: 3.833 },
+  { slug: "formentera", nombre: "Formentera (Es Pujols)", lat: 38.722, lon: 1.440 },
+  // Canarias
+  { slug: "laspalmas", nombre: "Las Palmas (Las Canteras)", lat: 28.140, lon: -15.436 },
+  { slug: "santacruztenerife", nombre: "Santa Cruz de Tenerife", lat: 28.464, lon: -16.252 },
+  { slug: "elmedano", nombre: "El Médano (Tenerife)", lat: 28.042, lon: -16.539 },
+  { slug: "corralejo", nombre: "Corralejo (Fuerteventura)", lat: 28.736, lon: -13.867 },
+
+  // --- Ampliación Portugal (misma lógica: coordenadas de localidad real,
+  // previsión vía Open-Meteo — sin boya real disponible, ver BOYAS más abajo) ---
+  { slug: "moledo", nombre: "Moledo (Caminha, PT)", lat: 41.864, lon: -8.866 },
+  { slug: "vianadocastelo", nombre: "Viana do Castelo (PT)", lat: 41.693, lon: -8.852 },
+  { slug: "povoadevarzim", nombre: "Póvoa de Varzim (PT)", lat: 41.381, lon: -8.764 },
+  { slug: "matosinhos", nombre: "Matosinhos (PT)", lat: 41.186, lon: -8.701 },
+  { slug: "aveiro", nombre: "Aveiro (PT)", lat: 40.644, lon: -8.753 },
+  { slug: "figueiradafoz", nombre: "Figueira da Foz (PT)", lat: 40.151, lon: -8.862 },
+  { slug: "nazare", nombre: "Nazaré (PT)", lat: 39.603, lon: -9.080 },
+  { slug: "peniche", nombre: "Peniche (PT)", lat: 39.339, lon: -9.335 },
+  { slug: "ericeira", nombre: "Ericeira (PT)", lat: 38.993, lon: -9.421 },
+  { slug: "cascais", nombre: "Cascais (PT)", lat: 38.733, lon: -9.475 },
+  { slug: "costadacaparica", nombre: "Costa da Caparica (PT)", lat: 38.647, lon: -9.237 },
+  { slug: "troia", nombre: "Tróia (PT)", lat: 38.491, lon: -8.893 },
+  { slug: "sines", nombre: "Sines (PT)", lat: 37.956, lon: -8.865 },
+  { slug: "milfontes", nombre: "Vila Nova de Milfontes (PT)", lat: 37.726, lon: -8.783 },
+  { slug: "sagres", nombre: "Sagres (PT)", lat: 37.008, lon: -8.946 },
+  { slug: "lagos", nombre: "Lagos (PT)", lat: 37.102, lon: -8.674 },
+  { slug: "faro", nombre: "Faro/Olhão (PT)", lat: 37.019, lon: -7.930 },
 ];
 
 // Bloques de 3h que queremos mostrar, igual que el formato anterior
@@ -190,13 +270,46 @@ async function previsionSpot(spot) {
 }
 
 // Boyas reales de Puertos del Estado (medidas por satélite/radio, no un
-// modelo) que cubren el tramo Lekeitio→Bilbao de oeste a este: Gijón queda
-// algo fuera del mapa pero da contexto del Cantábrico, Bilbao-Vizcaya es la
-// boya de referencia frente a la zona, y Pasaia II cubre el lado este.
+// modelo). Verificadas una a una el 2026-09-09 contra
+// https://poem.puertos.es/portus/StationData?code=<codigo> antes de
+// incluirlas — se descartaron 1560 (Melilla) y 2620 (Valencia) por no traer
+// datos en las últimas 30h, y 2542 (Mar de Alborán) por estar retirada
+// oficialmente desde 2006. Fuente de la lista de códigos: tablas oficiales
+// REDCOS (bancodatos.puertos.es/BD/informes/INT_1.pdf) y REDEXT
+// (.../INT_2.pdf).
 const BOYAS = [
+  // REDCOS (costeras, <100m de profundidad)
   { codigo: 1117, nombre: "Gijón", lat: 43.62, lon: -5.66 },
-  { codigo: 2136, nombre: "Bilbao-Vizcaya", lat: 43.64, lon: -3.04 },
   { codigo: 1101, nombre: "Pasaia II", lat: 43.36, lon: -1.89 },
+  { codigo: 1103, nombre: "AP Bilbao", lat: 43.40, lon: -3.13 },
+  { codigo: 1239, nombre: "Langosteira (A Coruña)", lat: 43.35, lon: -8.56 },
+  { codigo: 1414, nombre: "Las Palmas Este", lat: 28.05, lon: -15.39 },
+  { codigo: 1421, nombre: "Sta. Cruz de Tenerife", lat: 28.46, lon: -16.23 },
+  { codigo: 1500, nombre: "Tarifa", lat: 36.00, lon: -5.59 },
+  { codigo: 1504, nombre: "Algeciras-Pta. Carnero", lat: 36.07, lon: -5.42 },
+  { codigo: 1512, nombre: "Ceuta", lat: 35.90, lon: -5.33 },
+  { codigo: 1514, nombre: "Málaga", lat: 36.69, lon: -4.42 },
+  { codigo: 1712, nombre: "Tarragona", lat: 41.07, lon: 1.19 },
+  { codigo: 1731, nombre: "Barcelona II", lat: 41.32, lon: 2.20 },
+
+  // REDEXT (exteriores, >200m de profundidad). Coordenadas aproximadas de
+  // la zona/cabo homónimo — el PDF oficial trae el fondeo exacto pero no
+  // se extrajo en esta pasada; el código de boya (lo único que importa
+  // para pedir datos reales a la API) sí está verificado uno a uno.
+  { codigo: 2136, nombre: "Bilbao-Vizcaya", lat: 43.64, lon: -3.04 },
+  { codigo: 2242, nombre: "Cabo Peñas", lat: 43.72, lon: -6.16 },
+  { codigo: 2244, nombre: "Estaca de Bares", lat: 43.79, lon: -7.69 },
+  { codigo: 2246, nombre: "Villano-Sisargas", lat: 43.16, lon: -9.21 },
+  { codigo: 2248, nombre: "Cabo Silleiro", lat: 42.11, lon: -8.90 },
+  { codigo: 2342, nombre: "Golfo de Cádiz", lat: 36.48, lon: -7.00 },
+  { codigo: 2442, nombre: "Gran Canaria", lat: 28.00, lon: -15.60 },
+  { codigo: 2446, nombre: "Tenerife Sur", lat: 28.00, lon: -16.60 },
+  { codigo: 2548, nombre: "Cabo de Gata", lat: 36.72, lon: -2.19 },
+  { codigo: 2610, nombre: "Cabo de Palos", lat: 37.63, lon: -0.70 },
+  { codigo: 2720, nombre: "Tarragona (exterior)", lat: 40.68, lon: 1.47 },
+  { codigo: 2798, nombre: "Cabo de Begur", lat: 41.95, lon: 3.23 },
+  { codigo: 2820, nombre: "Dragonera (Mallorca)", lat: 39.58, lon: 2.32 },
+  { codigo: 2838, nombre: "Mahón (Menorca)", lat: 39.87, lon: 4.29 },
 ];
 
 function fechaParaBoya(d) {
