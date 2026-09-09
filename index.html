@@ -27,7 +27,20 @@
     flex-direction: column;
     height: 100vh;
     overflow: hidden;
+    padding-bottom: 54px; /* deja hueco fijo para .tabs-nav */
   }
+  .tabs-nav {
+    position: fixed; left: 0; right: 0; bottom: 0; height: 54px;
+    background: #0F2C38; border-top: 1px solid #1C3F4F;
+    display: flex; z-index: 700;
+  }
+  .tabs-nav a {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 2px; text-decoration: none; color: #7FA3AF;
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+  }
+  .tabs-nav a .icono { font-size: 18px; line-height: 1; }
+  .tabs-nav a.activa { color: #D4A24C; }
   header { padding: 8px 20px; border-bottom: 1px solid #1C3F4F; flex-shrink: 0; display: flex; align-items: baseline; flex-wrap: wrap; column-gap: 12px; row-gap: 2px; }
   header h1 {
     font-family: 'Fraunces', serif;
@@ -256,7 +269,7 @@
     .panel {
       display: block;
       position: fixed;
-      left: 0; right: 0; bottom: 0;
+      left: 0; right: 0; bottom: 54px;
       width: auto;
       max-height: 65vh;
       border-left: none;
@@ -1288,6 +1301,12 @@ function comprobarAvisoRayos() {
   document.getElementById("sinRayos").style.display = hayRiesgo ? "none" : "block";
 }
 </script>
+
+<nav class="tabs-nav">
+  <a href="/" class="activa"><span class="icono">🗺️</span>Mapa</a>
+  <a href="/diario.html"><span class="icono">🎣</span>Diario</a>
+  <a href="/alarma.html"><span class="icono">🆘</span>Alarma</a>
+</nav>
 
 </body>
 </html>

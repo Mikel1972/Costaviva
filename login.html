@@ -46,6 +46,13 @@
   .mensaje.ok { display: block; background: rgba(79,157,105,0.12); color: #8FCBA3; border: 1px solid #3A6B4C; }
   .toggle { text-align: center; margin-top: 18px; font-size: 12.5px; color: #7FA3AF; }
   .toggle a { color: #D4A24C; cursor: pointer; text-decoration: underline; }
+  .consentimiento { display: none; margin-top: 16px; }
+  .consentimiento.visible { display: block; }
+  .consentimiento label.checkbox {
+    display: flex; align-items: flex-start; gap: 8px; margin: 10px 0 0;
+    font-family: 'Inter', sans-serif; font-weight: 400; font-size: 12px; color: #9FB8BF; cursor: pointer;
+  }
+  .consentimiento input[type="checkbox"] { width: auto; margin-top: 2px; accent-color: #D4A24C; flex-shrink: 0; }
 </style>
 </head>
 <body>
@@ -61,6 +68,18 @@
     <input type="email" id="email" required autocomplete="email" />
     <label for="password">Contraseña</label>
     <input type="password" id="password" required autocomplete="current-password" />
+
+    <div class="consentimiento" id="cajaConsentimiento">
+      <label class="checkbox">
+        <input type="checkbox" id="checkTerminos" />
+        Acepto los términos de uso y la política de privacidad de Costa Viva, incluyendo el tratamiento de mis datos de cuenta para dar el servicio (obligatorio para crear la cuenta).
+      </label>
+      <label class="checkbox">
+        <input type="checkbox" id="checkDatosCapturas" />
+        Autorizo el uso anónimo de mis capturas registradas en el diario para mejorar el índice de pesca de Costa Viva (opcional — puedes usar la app igualmente si no lo marcas).
+      </label>
+    </div>
+
     <button type="submit" id="btnPrincipal">Entrar</button>
     <button type="button" class="secundario" id="btnAlternar">Crear una cuenta nueva</button>
   </form>
@@ -93,6 +112,9 @@ const btnPrincipal = document.getElementById("btnPrincipal");
 const btnAlternar = document.getElementById("btnAlternar");
 const mensajeEl = document.getElementById("mensaje");
 const subtitulo = document.getElementById("subtitulo");
+const cajaConsentimiento = document.getElementById("cajaConsentimiento");
+const checkTerminos = document.getElementById("checkTerminos");
+const checkDatosCapturas = document.getElementById("checkDatosCapturas");
 
 function mostrarMensaje(texto, tipo) {
   mensajeEl.textContent = texto;
@@ -107,6 +129,7 @@ btnAlternar.addEventListener("click", () => {
     modo === "login"
       ? "Accede con tu cuenta para ver la zona Lekeitio → Bilbao"
       : "Tu cuenta necesitará aprobación antes de poder entrar";
+  cajaConsentimiento.classList.toggle("visible", modo === "registro");
   mensajeEl.className = "mensaje";
 });
 
@@ -126,7 +149,16 @@ form.addEventListener("submit", async (e) => {
   mensajeEl.className = "mensaje";
 
   if (modo === "registro") {
-    const { error } = await supabase.auth.signUp({ email, password });
+    if (!checkTerminos.checked) {
+      mostrarMensaje("Tienes que aceptar los términos de uso para crear la cuenta.", "error");
+      btnPrincipal.disabled = false;
+      return;
+    }
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { consiente_uso_datos_capturas: checkDatosCapturas.checked } },
+    });
     if (error) {
       mostrarMensaje(error.message, "error");
     } else {

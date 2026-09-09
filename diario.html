@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>Diario — Costa Viva</title>
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="icon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="icon.svg" />
+<meta name="theme-color" content="#0B2532" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Costa Viva" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  @keyframes pulso { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+  body {
+    margin: 0; font-family: 'Inter', sans-serif; background: #0B2532; color: #E8E2D0;
+    display: flex; flex-direction: column; height: 100vh; overflow: hidden; padding-bottom: 54px;
+  }
+  header { padding: 10px 20px; border-bottom: 1px solid #1C3F4F; flex-shrink: 0; }
+  header h1 { font-family: 'Fraunces', serif; font-size: 17px; font-weight: 600; margin: 0; }
+  header p { margin: 2px 0 0; color: #7FA3AF; font-size: 11px; }
+
+  .contenido { flex: 1; min-height: 0; overflow-y: auto; padding: 16px; }
+
+  .cabecera-mes { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 14px; }
+  .cabecera-mes button {
+    background: #123B4D; border: 1px solid #1C3F4F; color: #E8E2D0; border-radius: 8px;
+    width: 32px; height: 32px; font-size: 16px; cursor: pointer;
+  }
+  .cabecera-mes .mes-nombre { font-family: 'Fraunces', serif; font-size: 17px; text-transform: capitalize; }
+
+  .calendario { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; max-width: 480px; margin: 0 auto; }
+  .dia-semana { text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #6C8890; padding-bottom: 4px; }
+  .dia {
+    aspect-ratio: 1; border-radius: 8px; background: #0F2C38; border: 1px solid #1C3F4F;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #9FB8BF; cursor: pointer; position: relative;
+  }
+  .dia.vacio { visibility: hidden; cursor: default; }
+  .dia.hoy { border-color: #D4A24C; }
+  .dia.rojo { background: rgba(163,74,53,0.28); border-color: #A34A35; color: #F5D9D2; }
+  .dia.verde { background: rgba(79,157,105,0.28); border-color: #4F9D69; color: #D9F0E1; }
+  .dia:active { transform: scale(0.94); }
+
+  .leyenda-dias { display: flex; justify-content: center; gap: 18px; margin-top: 14px; font-size: 11px; color: #7FA3AF; }
+  .leyenda-dias span { display: inline-flex; align-items: center; gap: 5px; }
+  .chip { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+
+  .aviso-consentimiento {
+    max-width: 480px; margin: 0 auto 16px; background: #0F2C38; border: 1px solid #1C3F4F; border-radius: 10px;
+    padding: 12px 14px; font-size: 12px; color: #9FB8BF; line-height: 1.5;
+  }
+  .aviso-consentimiento a { color: #D4A24C; }
+
+  /* Panel de detalle del día — hoja deslizante desde abajo, igual patrón que index.html */
+  .panel-dia {
+    display: none; position: fixed; left: 0; right: 0; bottom: 54px; max-height: 78vh;
+    background: #0F2C38; border-top: 1px solid #1C3F4F; border-radius: 16px 16px 0 0;
+    padding: 20px; overflow-y: auto; z-index: 1000; box-shadow: 0 -8px 24px rgba(0,0,0,0.4);
+  }
+  .panel-dia.visible { display: block; }
+  .panel-dia h2 { font-family: 'Fraunces', serif; font-size: 19px; margin: 0 0 12px; text-transform: capitalize; }
+  .panel-dia .cerrar { position: absolute; top: 14px; right: 16px; background: none; border: none; color: #7FA3AF; font-size: 16px; cursor: pointer; }
+
+  label { display: block; font-size: 12px; color: #9FB8BF; margin: 12px 0 5px; font-family: 'IBM Plex Mono', monospace; }
+  input, select, textarea {
+    width: 100%; padding: 9px 11px; border-radius: 8px; border: 1px solid #1C3F4F; background: #123B4D;
+    color: #E8E2D0; font-family: 'Inter', sans-serif; font-size: 14px;
+  }
+  textarea { resize: vertical; min-height: 60px; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: #D4A24C; }
+  button.principal {
+    width: 100%; margin-top: 16px; padding: 11px; border-radius: 8px; border: none;
+    background: #D4A24C; color: #0B2532; font-weight: 600; font-size: 14px; cursor: pointer;
+  }
+  button.principal:disabled { opacity: 0.6; }
+  button.secundario {
+    width: 100%; margin-top: 8px; padding: 10px; border-radius: 8px; border: 1px solid #1C3F4F;
+    background: transparent; color: #9FB8BF; font-size: 13px; cursor: pointer;
+  }
+  button.peligro { color: #E8907A; border-color: #A34A35; }
+
+  .tarjeta-captura { background: #123B4D; border-radius: 10px; padding: 12px; margin-top: 10px; }
+  .tarjeta-captura .fila-titulo { display: flex; justify-content: space-between; align-items: baseline; }
+  .tarjeta-captura .especie { font-weight: 600; font-size: 14px; }
+  .tarjeta-captura .detalle { font-size: 12px; color: #9FB8BF; margin-top: 2px; }
+  .galeria-fotos { display: flex; gap: 6px; margin-top: 8px; overflow-x: auto; }
+  .galeria-fotos img { width: 76px; height: 76px; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
+  .tarjeta-captura button.borrar-captura {
+    background: none; border: none; color: #E8907A; font-size: 11px; cursor: pointer; margin-top: 6px; padding: 0;
+  }
+
+  .contexto-ambiental { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0 4px; }
+  .contexto-ambiental .dato { background: #123B4D; border-radius: 8px; padding: 8px; text-align: center; }
+  .contexto-ambiental .dato .etq { font-size: 9px; color: #6C8890; }
+  .contexto-ambiental .dato .val { font-family: 'IBM Plex Mono', monospace; font-size: 13px; margin-top: 2px; }
+
+  .mensaje { margin-top: 10px; font-size: 12px; padding: 8px 10px; border-radius: 8px; display: none; }
+  .mensaje.error { display: block; background: rgba(163,74,53,0.15); color: #E8907A; border: 1px solid #A34A35; }
+  .mensaje.ok { display: block; background: rgba(79,157,105,0.12); color: #8FCBA3; border: 1px solid #3A6B4C; }
+
+  .tabs-nav {
+    position: fixed; left: 0; right: 0; bottom: 0; height: 54px;
+    background: #0F2C38; border-top: 1px solid #1C3F4F; display: flex; z-index: 700;
+  }
+  .tabs-nav a {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 2px; text-decoration: none; color: #7FA3AF; font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+  }
+  .tabs-nav a .icono { font-size: 18px; line-height: 1; }
+  .tabs-nav a.activa { color: #D4A24C; }
+</style>
+</head>
+<body>
+
+<div id="comprobandoAcceso" style="position:fixed; inset:0; background:#0B2532; z-index:9999; display:flex; align-items:center; justify-content:center; color:#7FA3AF; font-family:'IBM Plex Mono',monospace; font-size:13px;">
+  Comprobando acceso…
+</div>
+
+<header>
+  <h1>🎣 Diario de capturas</h1>
+  <p>Agenda privada — solo la ves tú. Rojo: saliste sin captura. Verde: con captura declarada.</p>
+</header>
+
+<div class="contenido">
+  <div class="cabecera-mes">
+    <button id="btnMesAnterior" aria-label="Mes anterior">‹</button>
+    <div class="mes-nombre" id="nombreMes">—</div>
+    <button id="btnMesSiguiente" aria-label="Mes siguiente">›</button>
+  </div>
+
+  <div class="calendario" id="calendario"></div>
+
+  <div class="leyenda-dias">
+    <span><span class="chip" style="background:#A34A35;"></span>sin captura</span>
+    <span><span class="chip" style="background:#4F9D69;"></span>con captura</span>
+    <span><span class="chip" style="background:#0F2C38; border:1px solid #1C3F4F;"></span>sin registrar</span>
+  </div>
+</div>
+
+<div class="panel-dia" id="panelDia">
+  <button class="cerrar" id="cerrarPanelDia">✕</button>
+  <h2 id="panelDiaFecha">—</h2>
+  <div id="panelDiaContenido"></div>
+</div>
+
+<nav class="tabs-nav">
+  <a href="/"><span class="icono">🗺️</span>Mapa</a>
+  <a href="/diario.html" class="activa"><span class="icono">🎣</span>Diario</a>
+  <a href="/alarma.html"><span class="icono">🆘</span>Alarma</a>
+</nav>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const { data: sesionInicial } = await supabase.auth.getSession();
+if (!sesionInicial.session) {
+  window.location.href = "/login.html";
+  throw new Error("sin sesión");
+}
+const usuario = sesionInicial.session.user;
+document.getElementById("comprobandoAcceso").remove();
+
+// ---------------------------------------------------------------------------
+// Copia reducida (slug, nombre, lat, lon) de SPOTS de index.html/prevision.js
+// — solo para rellenar el <select> de spot y resolver lat/lon al guardar una
+// salida. Si se añaden spots nuevos allí, replicar aquí también.
+// ---------------------------------------------------------------------------
+const SPOTS = [
+  ["lekeitio", "Lekeitio", 43.3647, -2.5089],
+  ["mundaka", "Mundaka", 43.4047, -2.6989],
+  ["bakio", "Bakio", 43.4297, -2.8103],
+  ["sopelana", "Sopelana", 43.3878, -2.9975],
+  ["plentzia", "Plentzia", 43.4053, -2.9436],
+  ["getxo", "Getxo (Ereaga)", 43.3489, -3.0119],
+  ["baiona", "Baiona", 42.117, -8.850],
+  ["aguarda", "A Guarda", 41.900, -8.867],
+  ["cangas", "Cangas", 42.266, -8.786],
+  ["cies", "Vigo (Illas Cíes)", 42.241, -8.721],
+  ["sanxenxo", "Sanxenxo", 42.400, -8.808],
+  ["ons", "Illas Ons", 42.383, -8.933],
+  ["acoruna", "A Coruña", 43.362, -8.412],
+  ["camarinas", "Camariñas", 43.130, -9.181],
+  ["corrubedo", "Corrubedo (Ribeira)", 42.565, -9.047],
+  ["portosin", "Portosín", 42.755, -8.933],
+  ["ribadeo", "Ribadeo", 43.539, -7.041],
+  ["llanes", "Llanes", 43.420, -4.755],
+  ["ribadesella", "Ribadesella", 43.463, -5.057],
+  ["santander", "Santander", 43.462, -3.810],
+  ["suances", "Suances", 43.440, -4.040],
+  ["comillas", "Comillas", 43.386, -4.292],
+  ["sanvicente", "San Vicente de la Barquera", 43.383, -4.398],
+  ["santona", "Santoña", 43.442, -3.440],
+  ["laredo", "Laredo", 43.413, -3.409],
+  ["castrourdiales", "Castro Urdiales", 43.385, -3.217],
+  ["roses", "Roses", 42.262, 3.176],
+  ["blanes", "Blanes", 41.674, 2.791],
+  ["cambrils", "Cambrils", 41.067, 1.058],
+  ["peniscola", "Peñíscola", 40.360, 0.402],
+  ["valencia", "Valencia (Malvarrosa)", 39.475, -0.322],
+  ["gandia", "Gandía", 38.993, -0.152],
+  ["denia", "Dénia", 38.841, 0.105],
+  ["calpe", "Calpe", 38.645, 0.045],
+  ["cartagena", "Cartagena", 37.605, -0.986],
+  ["aguilas", "Águilas", 37.405, -1.583],
+  ["cabodepalos", "Cabo de Palos", 37.638, -0.696],
+  ["cadiz", "Cádiz", 36.530, -6.293],
+  ["conil", "Conil de la Frontera", 36.267, -6.093],
+  ["chipiona", "Chipiona", 36.739, -6.435],
+  ["puntaumbria", "Punta Umbría", 37.183, -6.974],
+  ["malaga", "Málaga", 36.721, -4.421],
+  ["nerja", "Nerja", 36.750, -3.875],
+  ["almeria", "Almería", 36.834, -2.464],
+  ["roquetas", "Roquetas de Mar", 36.764, -2.614],
+  ["palma", "Palma de Mallorca", 39.570, 2.650],
+  ["ciutadella", "Ciutadella (Menorca)", 40.000, 3.833],
+  ["formentera", "Formentera (Es Pujols)", 38.722, 1.440],
+  ["laspalmas", "Las Palmas (Las Canteras)", 28.140, -15.436],
+  ["santacruztenerife", "Santa Cruz de Tenerife", 28.464, -16.252],
+  ["elmedano", "El Médano (Tenerife)", 28.042, -16.539],
+  ["corralejo", "Corralejo (Fuerteventura)", 28.736, -13.867],
+  ["moledo", "Moledo (Caminha, PT)", 41.864, -8.866],
+  ["vianadocastelo", "Viana do Castelo (PT)", 41.693, -8.852],
+  ["povoadevarzim", "Póvoa de Varzim (PT)", 41.381, -8.764],
+  ["matosinhos", "Matosinhos (PT)", 41.186, -8.701],
+  ["aveiro", "Aveiro (PT)", 40.644, -8.753],
+  ["figueiradafoz", "Figueira da Foz (PT)", 40.151, -8.862],
+  ["nazare", "Nazaré (PT)", 39.603, -9.080],
+  ["peniche", "Peniche (PT)", 39.339, -9.335],
+  ["ericeira", "Ericeira (PT)", 38.993, -9.421],
+  ["cascais", "Cascais (PT)", 38.733, -9.475],
+  ["costadacaparica", "Costa da Caparica (PT)", 38.647, -9.237],
+  ["troia", "Tróia (PT)", 38.491, -8.893],
+  ["sines", "Sines (PT)", 37.956, -8.865],
+  ["milfontes", "Vila Nova de Milfontes (PT)", 37.726, -8.783],
+  ["sagres", "Sagres (PT)", 37.008, -8.946],
+  ["lagos", "Lagos (PT)", 37.102, -8.674],
+  ["faro", "Faro/Olhão (PT)", 37.019, -7.930],
+  ["alicante", "Alicante (Puerto)", 38.345, -0.481],
+  ["altea", "Altea", 38.599, -0.051],
+  ["benidorm", "Benidorm (Levante)", 38.541, -0.131],
+  ["guardamardelsegura", "Guardamar del Segura", 38.087, -0.653],
+  ["vilajoiosa", "La Vila Joiosa", 38.505, -0.234],
+  ["orihuelacosta", "Orihuela Costa", 37.870, -0.767],
+  ["pilardelahoradada", "Pilar de la Horadada", 37.860, -0.787],
+  ["santapola", "Santa Pola", 38.192, -0.564],
+  ["javea", "Xàbia/Jávea", 38.789, 0.167],
+  ["alcossebre", "Alcossebre", 40.219, 0.239],
+  ["benicassim", "Benicàssim", 40.050, 0.064],
+  ["burriana", "Burriana", 39.889, -0.081],
+  ["castellon", "Castelló (Grau)", 39.986, -0.036],
+  ["xilxes", "Xilxes", 39.762, -0.213],
+  ["oropesa", "Oropesa del Mar", 40.088, 0.132],
+  ["torreblanca", "Torreblanca", 40.213, 0.203],
+  ["vinaros", "Vinaròs", 40.465, 0.474],
+  ["alboraya", "Alboraia (La Patacona)", 39.494, -0.336],
+  ["canetdeberenguer", "Canet d'en Berenguer", 39.677, -0.219],
+  ["cullera", "Cullera", 39.160, -0.252],
+  ["pobladefarnals", "La Pobla de Farnals", 39.556, -0.296],
+  ["oliva", "Oliva", 38.920, -0.114],
+  ["piles", "Piles", 38.965, -0.130],
+  ["calamillor", "Cala Millor (Mallorca)", 39.593, 3.383],
+  ["sonbou", "Son Bou (Menorca)", 39.917, 4.083],
+  ["muro", "Platja de Muro (Mallorca)", 39.762, 3.108],
+].map(([slug, nombre, lat, lon]) => ({ slug, nombre, lat, lon }));
+
+const ESPECIES = ["Lubina", "Sargo", "Abadejo", "Calamar / chipirón", "Congrio", "Bonito del norte", "Txitxarro / verdel", "Otra"];
+
+const MESES = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+const DIAS_SEMANA = ["L","M","X","J","V","S","D"];
+
+let cursor = new Date();
+cursor.setDate(1);
+let salidasPorFecha = {}; // "YYYY-MM-DD" -> { salida, capturas: [...] }
+
+function fechaISO(d) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+async function cargarDatos() {
+  const { data: salidas, error: errSalidas } = await supabase
+    .from("salidas_pesca")
+    .select("*")
+    .order("fecha", { ascending: false });
+  if (errSalidas) { console.error(errSalidas); return; }
+
+  const idsSalidas = salidas.map((s) => s.id);
+  let capturasPorSalida = {};
+  if (idsSalidas.length) {
+    const { data: capturas, error: errCapturas } = await supabase
+      .from("capturas")
+      .select("*")
+      .in("salida_id", idsSalidas)
+      .order("creado_en", { ascending: true });
+    if (errCapturas) console.error(errCapturas);
+    (capturas || []).forEach((c) => {
+      (capturasPorSalida[c.salida_id] = capturasPorSalida[c.salida_id] || []).push(c);
+    });
+  }
+
+  salidasPorFecha = {};
+  salidas.forEach((s) => {
+    salidasPorFecha[s.fecha] = { salida: s, capturas: capturasPorSalida[s.id] || [] };
+  });
+}
+
+function renderCalendario() {
+  document.getElementById("nombreMes").textContent = `${MESES[cursor.getMonth()]} ${cursor.getFullYear()}`;
+  const cont = document.getElementById("calendario");
+  cont.innerHTML = "";
+  DIAS_SEMANA.forEach((d) => {
+    const el = document.createElement("div");
+    el.className = "dia-semana";
+    el.textContent = d;
+    cont.appendChild(el);
+  });
+
+  const primerDia = new Date(cursor.getFullYear(), cursor.getMonth(), 1);
+  const ultimoDia = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 0);
+  const huecoInicial = (primerDia.getDay() + 6) % 7; // lunes = 0
+
+  for (let i = 0; i < huecoInicial; i++) {
+    const el = document.createElement("div");
+    el.className = "dia vacio";
+    cont.appendChild(el);
+  }
+
+  const hoyISO = fechaISO(new Date());
+  for (let dia = 1; dia <= ultimoDia.getDate(); dia++) {
+    const fecha = new Date(cursor.getFullYear(), cursor.getMonth(), dia);
+    const iso = fechaISO(fecha);
+    const el = document.createElement("div");
+    el.className = "dia";
+    if (iso === hoyISO) el.classList.add("hoy");
+    const entrada = salidasPorFecha[iso];
+    if (entrada) el.classList.add(entrada.capturas.length ? "verde" : "rojo");
+    el.textContent = String(dia);
+    el.addEventListener("click", () => abrirDia(iso, fecha));
+    cont.appendChild(el);
+  }
+}
+
+document.getElementById("btnMesAnterior").addEventListener("click", async () => {
+  cursor.setMonth(cursor.getMonth() - 1);
+  renderCalendario();
+});
+document.getElementById("btnMesSiguiente").addEventListener("click", async () => {
+  cursor.setMonth(cursor.getMonth() + 1);
+  renderCalendario();
+});
+
+const panelDia = document.getElementById("panelDia");
+document.getElementById("cerrarPanelDia").addEventListener("click", () => panelDia.classList.remove("visible"));
+
+async function urlFirmada(path) {
+  const { data, error } = await supabase.storage.from("capturas-fotos").createSignedUrl(path, 3600);
+  if (error) { console.error(error); return ""; }
+  return data.signedUrl;
+}
+
+async function redimensionarImagen(file, maxAncho = 1600, calidad = 0.8) {
+  const bitmap = await createImageBitmap(file);
+  const escala = Math.min(1, maxAncho / bitmap.width);
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.round(bitmap.width * escala);
+  canvas.height = Math.round(bitmap.height * escala);
+  canvas.getContext("2d").drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  return new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", calidad));
+}
+
+async function contextoAmbiental(lat, lon) {
+  const paramsComunes = `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&forecast_days=1`;
+  const resultado = { marea_altura: null, marea_tendencia: null, presion_valor: null, presion_tendencia: null,
+    luna_fase: null, luna_iluminacion: null, viento_kmh: null, viento_dir: null,
+    oleaje_altura_min: null, oleaje_altura_max: null, temp_agua: null };
+  try {
+    const [marino, viento, luna] = await Promise.all([
+      fetch(`https://marine-api.open-meteo.com/v1/marine?${paramsComunes}&hourly=wave_height,sea_level_height_msl,sea_surface_temperature`).then((r) => r.json()),
+      fetch(`https://api.open-meteo.com/v1/forecast?${paramsComunes}&hourly=windspeed_10m,winddirection_10m,pressure_msl&windspeed_unit=kmh`).then((r) => r.json()),
+      fetch(`/luna?lat=${lat}&lon=${lon}`).then((r) => r.json()),
+    ]);
+    const horas = marino.hourly?.time || [];
+    const ahoraISO = new Date().toISOString().slice(0, 13);
+    let idx = horas.findIndex((h) => h.slice(0, 13) === ahoraISO);
+    if (idx === -1) idx = 0;
+
+    const alturaOla = marino.hourly?.wave_height?.[idx];
+    if (alturaOla !== undefined && alturaOla !== null) {
+      resultado.oleaje_altura_min = +(alturaOla * 0.9).toFixed(1);
+      resultado.oleaje_altura_max = +(alturaOla * 1.1).toFixed(1);
+    }
+    resultado.temp_agua = marino.hourly?.sea_surface_temperature?.[idx] ?? null;
+    const alturaMarea = marino.hourly?.sea_level_height_msl?.[idx];
+    const alturaMareaSig = marino.hourly?.sea_level_height_msl?.[idx + 1];
+    resultado.marea_altura = alturaMarea ?? null;
+    resultado.marea_tendencia = alturaMarea != null && alturaMareaSig != null ? (alturaMareaSig > alturaMarea ? "subiendo" : "bajando") : null;
+
+    resultado.viento_kmh = viento.hourly?.windspeed_10m?.[idx] != null ? Math.round(viento.hourly.windspeed_10m[idx]) : null;
+    resultado.presion_valor = viento.hourly?.pressure_msl?.[idx] != null ? Math.round(viento.hourly.pressure_msl[idx]) : null;
+
+    resultado.luna_fase = luna?.fase ?? null;
+    resultado.luna_iluminacion = luna?.iluminacion ?? null;
+  } catch (e) {
+    console.warn("No se pudo obtener contexto ambiental:", e.message);
+  }
+  return resultado;
+}
+
+function formularioSalida(fecha) {
+  const opcionesSpots = SPOTS.map((s) => `<option value="${s.slug}">${s.nombre}</option>`).join("");
+  return `
+    <p style="font-size:12px; color:#9FB8BF;">Todavía no hay nada registrado este día. Puedes guardar el día sin captura (quedará en rojo) o añadir capturas directamente.</p>
+    <label for="salidaSpot">Spot</label>
+    <select id="salidaSpot">
+      <option value="">Mi ubicación actual</option>
+      ${opcionesSpots}
+    </select>
+    <label for="salidaNotas">Notas del día</label>
+    <textarea id="salidaNotas" placeholder="Cómo estuvo la jornada…"></textarea>
+    <button class="principal" id="btnGuardarSalida">Guardar día</button>
+    <div class="mensaje" id="mensajeSalida"></div>
+  `;
+}
+
+async function crearSalida(fecha) {
+  const btn = document.getElementById("btnGuardarSalida");
+  const mensajeEl = document.getElementById("mensajeSalida");
+  btn.disabled = true;
+  const spotSlug = document.getElementById("salidaSpot").value;
+  const notas = document.getElementById("salidaNotas").value;
+  const spot = SPOTS.find((s) => s.slug === spotSlug);
+
+  let lat, lon;
+  if (spot) {
+    lat = spot.lat; lon = spot.lon;
+  } else {
+    try {
+      const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, { timeout: 8000 }));
+      lat = pos.coords.latitude; lon = pos.coords.longitude;
+    } catch (e) {
+      mensajeEl.className = "mensaje error";
+      mensajeEl.textContent = "No se pudo obtener tu ubicación — elige un spot de la lista.";
+      btn.disabled = false;
+      return;
+    }
+  }
+
+  const contexto = await contextoAmbiental(lat, lon);
+  const { error } = await supabase.from("salidas_pesca").insert({
+    user_id: usuario.id, fecha, spot_slug: spot?.slug ?? null, spot_nombre: spot?.nombre ?? "Ubicación actual",
+    lat, lon, notas, ...contexto,
+  });
+  if (error) {
+    mensajeEl.className = "mensaje error";
+    mensajeEl.textContent = error.message;
+    btn.disabled = false;
+    return;
+  }
+  await cargarDatos();
+  renderCalendario();
+  abrirDia(fecha, new Date(fecha + "T00:00:00"));
+}
+
+function contextoHTML(salida) {
+  const filas = [
+    ["MAREA", salida.marea_altura != null ? `${salida.marea_altura.toFixed?.(2) ?? salida.marea_altura}m ${salida.marea_tendencia === "subiendo" ? "↑" : salida.marea_tendencia === "bajando" ? "↓" : ""}` : "—"],
+    ["VIENTO", salida.viento_kmh != null ? `${salida.viento_kmh} km/h` : "—"],
+    ["OLEAJE", salida.oleaje_altura_min != null ? `${salida.oleaje_altura_min}–${salida.oleaje_altura_max}m` : "—"],
+    ["PRESIÓN", salida.presion_valor != null ? `${salida.presion_valor} hPa` : "—"],
+    ["LUNA", salida.luna_fase ?? "—"],
+    ["TEMP. AGUA", salida.temp_agua != null ? `${salida.temp_agua}°C` : "—"],
+  ];
+  return `<div class="contexto-ambiental">${filas.map(([e, v]) => `<div class="dato"><div class="etq">${e}</div><div class="val">${v}</div></div>`).join("")}</div>`;
+}
+
+async function tarjetaCapturaHTML(captura) {
+  const { data: fotos } = await supabase.from("captura_fotos").select("*").eq("captura_id", captura.id).order("orden");
+  const urls = await Promise.all((fotos || []).map((f) => urlFirmada(f.foto_path)));
+  return `
+    <div class="tarjeta-captura" data-captura-id="${captura.id}">
+      <div class="fila-titulo"><span class="especie">🐟 ${captura.especie}</span><span class="detalle">${captura.talla_cm ? captura.talla_cm + " cm" : ""} ${captura.peso_g ? "· " + captura.peso_g + " g" : ""}</span></div>
+      ${captura.cebo || captura.aparejo ? `<div class="detalle">${captura.cebo ? "Cebo: " + captura.cebo : ""} ${captura.aparejo ? "· Aparejo: " + captura.aparejo : ""}</div>` : ""}
+      ${captura.notas ? `<div class="detalle">${captura.notas}</div>` : ""}
+      ${urls.length ? `<div class="galeria-fotos">${urls.map((u) => `<img src="${u}" alt="Foto de ${captura.especie}" />`).join("")}</div>` : ""}
+      <button class="borrar-captura" data-id="${captura.id}">Borrar esta captura</button>
+    </div>
+  `;
+}
+
+function formularioCaptura() {
+  const opcionesEspecies = ESPECIES.map((e) => `<option value="${e}">${e}</option>`).join("");
+  return `
+    <div class="tarjeta-captura" style="border:1px dashed #1C3F4F;">
+      <label for="capturaEspecie">Especie</label>
+      <select id="capturaEspecie">${opcionesEspecies}</select>
+      <div id="capturaEspecieOtraBox" style="display:none;">
+        <label for="capturaEspecieOtra">¿Cuál?</label>
+        <input type="text" id="capturaEspecieOtra" />
+      </div>
+      <label for="capturaTalla">Talla (cm)</label>
+      <input type="number" id="capturaTalla" step="0.5" min="0" />
+      <label for="capturaPeso">Peso (g)</label>
+      <input type="number" id="capturaPeso" step="1" min="0" />
+      <label for="capturaCebo">Cebo</label>
+      <input type="text" id="capturaCebo" />
+      <label for="capturaAparejo">Aparejo</label>
+      <input type="text" id="capturaAparejo" />
+      <label for="capturaNotas">Notas</label>
+      <textarea id="capturaNotas"></textarea>
+      <label for="capturaFotos">Fotos (puedes elegir varias)</label>
+      <input type="file" id="capturaFotos" accept="image/*" capture="environment" multiple />
+      <button class="principal" id="btnGuardarCaptura">Añadir captura</button>
+      <div class="mensaje" id="mensajeCaptura"></div>
+    </div>
+  `;
+}
+
+async function guardarCaptura(salidaId, fecha) {
+  const btn = document.getElementById("btnGuardarCaptura");
+  const mensajeEl = document.getElementById("mensajeCaptura");
+  btn.disabled = true;
+  const especieSel = document.getElementById("capturaEspecie").value;
+  const especie = especieSel === "Otra" ? document.getElementById("capturaEspecieOtra").value.trim() : especieSel;
+  if (!especie) {
+    mensajeEl.className = "mensaje error";
+    mensajeEl.textContent = "Indica la especie.";
+    btn.disabled = false;
+    return;
+  }
+  const talla = document.getElementById("capturaTalla").value;
+  const peso = document.getElementById("capturaPeso").value;
+  const cebo = document.getElementById("capturaCebo").value;
+  const aparejo = document.getElementById("capturaAparejo").value;
+  const notas = document.getElementById("capturaNotas").value;
+  const archivos = Array.from(document.getElementById("capturaFotos").files || []);
+
+  const { data: captura, error } = await supabase
+    .from("capturas")
+    .insert({ salida_id: salidaId, user_id: usuario.id, especie, talla_cm: talla || null, peso_g: peso || null, cebo: cebo || null, aparejo: aparejo || null, notas: notas || null })
+    .select()
+    .single();
+  if (error) {
+    mensajeEl.className = "mensaje error";
+    mensajeEl.textContent = error.message;
+    btn.disabled = false;
+    return;
+  }
+
+  for (let i = 0; i < archivos.length; i++) {
+    try {
+      const blob = await redimensionarImagen(archivos[i]);
+      const path = `${usuario.id}/${crypto.randomUUID()}.jpg`;
+      const { error: errSubida } = await supabase.storage.from("capturas-fotos").upload(path, blob, { contentType: "image/jpeg" });
+      if (errSubida) { console.error(errSubida); continue; }
+      await supabase.from("captura_fotos").insert({ captura_id: captura.id, user_id: usuario.id, foto_path: path, orden: i });
+    } catch (e) {
+      console.error("Error subiendo foto:", e);
+    }
+  }
+
+  await cargarDatos();
+  renderCalendario();
+  abrirDia(fecha, new Date(fecha + "T00:00:00"));
+}
+
+async function detalleSalida(entrada, fecha) {
+  const { salida, capturas } = entrada;
+  const tarjetas = await Promise.all(capturas.map(tarjetaCapturaHTML));
+  return `
+    <div class="detalle" style="font-size:12px; color:#9FB8BF;">📍 ${salida.spot_nombre || "Ubicación actual"}</div>
+    ${salida.notas ? `<p style="font-size:13px; margin-top:8px;">${salida.notas}</p>` : ""}
+    ${contextoHTML(salida)}
+    <div style="margin-top:14px; font-family:'IBM Plex Mono',monospace; font-size:11px; color:#6C8890;">CAPTURAS (${capturas.length})</div>
+    ${tarjetas.join("") || `<p style="font-size:12px; color:#6C8890;">Ninguna todavía.</p>`}
+    ${formularioCaptura()}
+    <button class="secundario peligro" id="btnBorrarSalida">Borrar todo el día</button>
+  `;
+}
+
+async function abrirDia(iso, fechaObj) {
+  const panel = document.getElementById("panelDia");
+  const tituloEl = document.getElementById("panelDiaFecha");
+  const contEl = document.getElementById("panelDiaContenido");
+  tituloEl.textContent = fechaObj.toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+
+  const entrada = salidasPorFecha[iso];
+  if (!entrada) {
+    contEl.innerHTML = formularioSalida(iso);
+    document.getElementById("btnGuardarSalida").addEventListener("click", () => crearSalida(iso));
+  } else {
+    contEl.innerHTML = await detalleSalida(entrada, iso);
+    const especieSel = document.getElementById("capturaEspecie");
+    especieSel.addEventListener("change", () => {
+      document.getElementById("capturaEspecieOtraBox").style.display = especieSel.value === "Otra" ? "block" : "none";
+    });
+    document.getElementById("btnGuardarCaptura").addEventListener("click", () => guardarCaptura(entrada.salida.id, iso));
+    document.getElementById("btnBorrarSalida").addEventListener("click", async () => {
+      if (!confirm("¿Borrar este día y todas sus capturas y fotos?")) return;
+      await supabase.from("salidas_pesca").delete().eq("id", entrada.salida.id);
+      await cargarDatos();
+      renderCalendario();
+      panel.classList.remove("visible");
+    });
+    contEl.querySelectorAll(".borrar-captura").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        if (!confirm("¿Borrar esta captura?")) return;
+        await supabase.from("capturas").delete().eq("id", btn.dataset.id);
+        await cargarDatos();
+        renderCalendario();
+        abrirDia(iso, fechaObj);
+      });
+    });
+  }
+  panel.classList.add("visible");
+}
+
+await cargarDatos();
+renderCalendario();
+</script>
+
+</body>
+</html>

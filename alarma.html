@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>Alarma — Costa Viva</title>
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="icon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="icon.svg" />
+<meta name="theme-color" content="#0B2532" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Costa Viva" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  @keyframes pulso { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+  body {
+    margin: 0; font-family: 'Inter', sans-serif; background: #0B2532; color: #E8E2D0;
+    display: flex; flex-direction: column; height: 100vh; overflow: hidden; padding-bottom: 54px;
+  }
+  header { padding: 10px 20px; border-bottom: 1px solid #1C3F4F; flex-shrink: 0; }
+  header h1 { font-family: 'Fraunces', serif; font-size: 17px; font-weight: 600; margin: 0; }
+  header p { margin: 2px 0 0; color: #7FA3AF; font-size: 11px; }
+
+  .contenido { flex: 1; min-height: 0; overflow-y: auto; padding: 16px; max-width: 480px; margin: 0 auto; width: 100%; }
+
+  .seccion { background: #0F2C38; border: 1px solid #1C3F4F; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+  .seccion h2 { font-family: 'Fraunces', serif; font-size: 15px; margin: 0 0 4px; }
+  .seccion .explicacion { font-size: 11.5px; color: #7FA3AF; line-height: 1.5; margin-bottom: 10px; }
+
+  button.sos {
+    width: 100%; padding: 22px; border-radius: 14px; border: 2px solid #A34A35;
+    background: rgba(163,74,53,0.18); color: #F5D9D2; font-size: 20px; font-weight: 700;
+    font-family: 'Fraunces', serif; cursor: pointer;
+  }
+  button.sos:active { background: rgba(163,74,53,0.35); }
+  button.sos:disabled { opacity: 0.5; }
+
+  a.llamar112 {
+    display: block; width: 100%; padding: 18px; border-radius: 14px; border: 2px solid #D4A24C;
+    background: rgba(212,162,76,0.14); color: #F5E4C4; font-size: 18px; font-weight: 700;
+    font-family: 'Fraunces', serif; text-align: center; text-decoration: none; margin-top: 12px;
+  }
+
+  .coords-actuales {
+    margin-top: 10px; text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 14px;
+    color: #9FB8BF; background: #123B4D; border-radius: 8px; padding: 8px;
+  }
+
+  button.compartir {
+    width: 100%; margin-top: 10px; padding: 11px; border-radius: 8px; border: 1px solid #1C3F4F;
+    background: transparent; color: #9FB8BF; font-size: 13px; cursor: pointer;
+  }
+
+  .contacto { display: flex; align-items: center; justify-content: space-between; background: #123B4D; border-radius: 8px; padding: 10px 12px; margin-top: 8px; }
+  .contacto .info { font-size: 13px; }
+  .contacto .info .nombre { font-weight: 600; }
+  .contacto .info .email { font-size: 11px; color: #7FA3AF; }
+  .contacto button { background: none; border: none; color: #E8907A; font-size: 12px; cursor: pointer; }
+
+  label { display: block; font-size: 12px; color: #9FB8BF; margin: 10px 0 5px; font-family: 'IBM Plex Mono', monospace; }
+  input {
+    width: 100%; padding: 9px 11px; border-radius: 8px; border: 1px solid #1C3F4F; background: #123B4D;
+    color: #E8E2D0; font-family: 'Inter', sans-serif; font-size: 14px;
+  }
+  input:focus { outline: none; border-color: #D4A24C; }
+  button.principal {
+    width: 100%; margin-top: 12px; padding: 10px; border-radius: 8px; border: none;
+    background: #D4A24C; color: #0B2532; font-weight: 600; font-size: 13px; cursor: pointer;
+  }
+
+  .interruptor-fila { display: flex; align-items: center; justify-content: space-between; }
+  .interruptor { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+  .interruptor input { opacity: 0; width: 0; height: 0; }
+  .interruptor .pista {
+    position: absolute; inset: 0; background: #1C3F4F; border-radius: 12px; cursor: pointer; transition: 0.2s;
+  }
+  .interruptor .pista::before {
+    content: ""; position: absolute; width: 18px; height: 18px; left: 3px; top: 3px; background: #E8E2D0;
+    border-radius: 50%; transition: 0.2s;
+  }
+  .interruptor input:checked + .pista { background: #D4A24C; }
+  .interruptor input:checked + .pista::before { transform: translateX(20px); }
+
+  .aviso-caida {
+    font-size: 11px; color: #E8C888; background: rgba(212,162,76,0.1); border: 1px solid #6B5530;
+    border-radius: 8px; padding: 10px; margin-top: 10px; line-height: 1.5;
+  }
+
+  .mensaje { margin-top: 10px; font-size: 12px; padding: 8px 10px; border-radius: 8px; display: none; }
+  .mensaje.error { display: block; background: rgba(163,74,53,0.15); color: #E8907A; border: 1px solid #A34A35; }
+  .mensaje.ok { display: block; background: rgba(79,157,105,0.12); color: #8FCBA3; border: 1px solid #3A6B4C; }
+
+  .cuenta-atras-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(11,37,50,0.96); z-index: 2000;
+    flex-direction: column; align-items: center; justify-content: center; gap: 18px; text-align: center; padding: 24px;
+  }
+  .cuenta-atras-overlay.visible { display: flex; }
+  .cuenta-atras-overlay .numero { font-family: 'Fraunces', serif; font-size: 64px; color: #A34A35; }
+  .cuenta-atras-overlay button.cancelar {
+    padding: 16px 32px; border-radius: 12px; border: 2px solid #4F9D69; background: rgba(79,157,105,0.15);
+    color: #8FCBA3; font-size: 16px; font-weight: 700; cursor: pointer;
+  }
+
+  .tabs-nav {
+    position: fixed; left: 0; right: 0; bottom: 0; height: 54px;
+    background: #0F2C38; border-top: 1px solid #1C3F4F; display: flex; z-index: 700;
+  }
+  .tabs-nav a {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 2px; text-decoration: none; color: #7FA3AF; font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+  }
+  .tabs-nav a .icono { font-size: 18px; line-height: 1; }
+  .tabs-nav a.activa { color: #D4A24C; }
+</style>
+</head>
+<body>
+
+<div id="comprobandoAcceso" style="position:fixed; inset:0; background:#0B2532; z-index:9999; display:flex; align-items:center; justify-content:center; color:#7FA3AF; font-family:'IBM Plex Mono',monospace; font-size:13px;">
+  Comprobando acceso…
+</div>
+
+<header>
+  <h1>🆘 Alarma</h1>
+  <p>Aviso a tus contactos y llamada rápida al 112.</p>
+</header>
+
+<div class="contenido">
+  <div class="seccion">
+    <h2>Activar SOS</h2>
+    <p class="explicacion">Manda tu ubicación por email a tus contactos de emergencia registrados abajo.</p>
+    <button class="sos" id="btnSOS">🆘 Activar SOS</button>
+    <div class="coords-actuales" id="coordsActuales">Ubicación no obtenida todavía</div>
+    <button class="compartir" id="btnCompartir">📤 Compartir ubicación por WhatsApp/SMS/email</button>
+    <div class="mensaje" id="mensajeSOS"></div>
+
+    <a class="llamar112" href="tel:112">📞 Llamar al 112</a>
+    <p class="explicacion" style="margin-top:8px; margin-bottom:0;">Esto abre el marcador de tu teléfono — no es una llamada ni un aviso automático. No existe forma de avisar al 112 en silencio desde una web: solo lo puede integrar quien tenga acuerdo oficial con el servicio de emergencias.</p>
+  </div>
+
+  <div class="seccion">
+    <h2>Contactos de emergencia</h2>
+    <p class="explicacion">Reciben un email con tu ubicación cuando pulsas "Activar SOS".</p>
+    <div id="listaContactos"></div>
+    <label for="contactoNombre">Nombre</label>
+    <input type="text" id="contactoNombre" />
+    <label for="contactoEmail">Email</label>
+    <input type="email" id="contactoEmail" />
+    <button class="principal" id="btnAnadirContacto">Añadir contacto</button>
+    <div class="mensaje" id="mensajeContacto"></div>
+  </div>
+
+  <div class="seccion">
+    <div class="interruptor-fila">
+      <h2 style="margin:0;">Detección de caída (experimental)</h2>
+      <label class="interruptor">
+        <input type="checkbox" id="checkDeteccionCaida" />
+        <span class="pista"></span>
+      </label>
+    </div>
+    <div class="aviso-caida">
+      ⚠️ Solo funciona con esta pantalla abierta y visible, con el teléfono desbloqueado — los navegadores cortan el acceso a los sensores en segundo plano o con la pantalla apagada. <b>No sustituye</b> a la detección de caídas nativa de tu iPhone/Apple Watch o Android — actívala también en los ajustes de tu teléfono, esa sí funciona siempre.
+    </div>
+    <div class="mensaje" id="mensajeCaida"></div>
+  </div>
+</div>
+
+<div class="cuenta-atras-overlay" id="overlayCaida">
+  <div>Se ha detectado un posible golpe.<br>¿Estás bien?</div>
+  <div class="numero" id="numeroCuentaAtras">15</div>
+  <button class="cancelar" id="btnCancelarSOS">Estoy bien, cancelar</button>
+</div>
+
+<nav class="tabs-nav">
+  <a href="/"><span class="icono">🗺️</span>Mapa</a>
+  <a href="/diario.html"><span class="icono">🎣</span>Diario</a>
+  <a href="/alarma.html" class="activa"><span class="icono">🆘</span>Alarma</a>
+</nav>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const { data: sesionInicial } = await supabase.auth.getSession();
+if (!sesionInicial.session) {
+  window.location.href = "/login.html";
+  throw new Error("sin sesión");
+}
+const usuario = sesionInicial.session.user;
+let tokenAcceso = sesionInicial.session.access_token;
+supabase.auth.onAuthStateChange((_evento, sesion) => { if (sesion) tokenAcceso = sesion.access_token; });
+document.getElementById("comprobandoAcceso").remove();
+
+let ultimaPosicion = null;
+
+function actualizarUbicacion() {
+  if (!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      ultimaPosicion = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+      document.getElementById("coordsActuales").textContent = `${ultimaPosicion.lat.toFixed(5)}°N, ${ultimaPosicion.lon.toFixed(5)}°`;
+    },
+    (err) => {
+      document.getElementById("coordsActuales").textContent = "No se pudo obtener tu ubicación — revisa el permiso de localización.";
+    },
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
+}
+actualizarUbicacion();
+
+async function dispararSOS(tipo) {
+  const mensajeEl = document.getElementById("mensajeSOS");
+  const btn = document.getElementById("btnSOS");
+  btn.disabled = true;
+  mensajeEl.className = "mensaje";
+
+  if (!ultimaPosicion) {
+    try {
+      const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, { timeout: 8000, enableHighAccuracy: true }));
+      ultimaPosicion = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+    } catch (e) {
+      mensajeEl.className = "mensaje error";
+      mensajeEl.textContent = "No se pudo obtener tu ubicación. Revisa el permiso de localización del navegador.";
+      btn.disabled = false;
+      return;
+    }
+  }
+
+  await supabase.from("alertas_sos").insert({ user_id: usuario.id, lat: ultimaPosicion.lat, lon: ultimaPosicion.lon, tipo });
+
+  try {
+    const resp = await fetch("/sos-alerta", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${tokenAcceso}` },
+      body: JSON.stringify({ lat: ultimaPosicion.lat, lon: ultimaPosicion.lon, tipo }),
+    });
+    const datos = await resp.json();
+    if (!resp.ok) throw new Error(datos.error || "fallo al enviar el aviso");
+    mensajeEl.className = "mensaje ok";
+    mensajeEl.textContent = `Aviso enviado a ${datos.enviados ?? 0} contacto(s).`;
+  } catch (e) {
+    mensajeEl.className = "mensaje error";
+    mensajeEl.textContent = "No se pudo enviar el email automático (" + e.message + "). Usa 'Compartir ubicación' o llama al 112.";
+  }
+  btn.disabled = false;
+}
+
+document.getElementById("btnSOS").addEventListener("click", () => dispararSOS("manual"));
+
+document.getElementById("btnCompartir").addEventListener("click", async () => {
+  if (!ultimaPosicion) actualizarUbicacion();
+  const lat = ultimaPosicion?.lat, lon = ultimaPosicion?.lon;
+  const texto = lat
+    ? `Necesito ayuda. Mi ubicación: https://maps.google.com/?q=${lat},${lon}`
+    : "Necesito ayuda, no pude obtener mi ubicación exacta.";
+  if (navigator.share) {
+    try { await navigator.share({ text: texto }); } catch (e) { /* usuario canceló */ }
+  } else {
+    await navigator.clipboard.writeText(texto);
+    alert("Tu navegador no soporta compartir directamente — el texto se copió al portapapeles.");
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Contactos de emergencia
+// ---------------------------------------------------------------------------
+async function cargarContactos() {
+  const { data, error } = await supabase.from("contactos_emergencia").select("*").order("creado_en");
+  const cont = document.getElementById("listaContactos");
+  if (error) { cont.innerHTML = `<p class="explicacion">${error.message}</p>`; return; }
+  if (!data.length) { cont.innerHTML = `<p class="explicacion">Todavía no has añadido ningún contacto.</p>`; return; }
+  cont.innerHTML = data.map((c) => `
+    <div class="contacto" data-id="${c.id}">
+      <div class="info"><div class="nombre">${c.nombre}</div><div class="email">${c.email}</div></div>
+      <button data-id="${c.id}">Borrar</button>
+    </div>
+  `).join("");
+  cont.querySelectorAll("button[data-id]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      await supabase.from("contactos_emergencia").delete().eq("id", btn.dataset.id);
+      cargarContactos();
+    });
+  });
+}
+
+document.getElementById("btnAnadirContacto").addEventListener("click", async () => {
+  const mensajeEl = document.getElementById("mensajeContacto");
+  const nombre = document.getElementById("contactoNombre").value.trim();
+  const email = document.getElementById("contactoEmail").value.trim();
+  if (!nombre || !email) {
+    mensajeEl.className = "mensaje error";
+    mensajeEl.textContent = "Rellena nombre y email.";
+    return;
+  }
+  const { error } = await supabase.from("contactos_emergencia").insert({ user_id: usuario.id, nombre, email });
+  if (error) {
+    mensajeEl.className = "mensaje error";
+    mensajeEl.textContent = error.message;
+    return;
+  }
+  document.getElementById("contactoNombre").value = "";
+  document.getElementById("contactoEmail").value = "";
+  mensajeEl.className = "mensaje ok";
+  mensajeEl.textContent = "Contacto añadido.";
+  cargarContactos();
+});
+
+await cargarContactos();
+
+// ---------------------------------------------------------------------------
+// Detección de caída — heurística simple por acelerómetro: una caída libre
+// (aceleración total cerca de 0) seguida de un pico de impacto en menos de
+// 1.5s. Solo corre mientras esta pestaña está abierta y visible — es una
+// limitación real del navegador (no del código), documentada arriba.
+// ---------------------------------------------------------------------------
+let vigilandoCaida = false;
+let momentoCaidaLibre = null;
+let cuentaAtrasInterval = null;
+
+function magnitud(e) {
+  const a = e.accelerationIncludingGravity || e.acceleration;
+  if (!a || a.x === null) return null;
+  return Math.sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
+}
+
+function alDetectarMovimiento(e) {
+  const g = magnitud(e);
+  if (g === null) return;
+  const ahora = Date.now();
+  if (g < 3) {
+    momentoCaidaLibre = ahora; // aceleración casi nula: posible caída libre
+  } else if (g > 25 && momentoCaidaLibre && ahora - momentoCaidaLibre < 1500) {
+    momentoCaidaLibre = null;
+    iniciarCuentaAtrasSOS();
+  }
+}
+
+function iniciarCuentaAtrasSOS() {
+  if (cuentaAtrasInterval) return;
+  const overlay = document.getElementById("overlayCaida");
+  const numeroEl = document.getElementById("numeroCuentaAtras");
+  let restante = 15;
+  numeroEl.textContent = restante;
+  overlay.classList.add("visible");
+  cuentaAtrasInterval = setInterval(() => {
+    restante -= 1;
+    numeroEl.textContent = restante;
+    if (restante <= 0) {
+      clearInterval(cuentaAtrasInterval);
+      cuentaAtrasInterval = null;
+      overlay.classList.remove("visible");
+      dispararSOS("caida_detectada");
+    }
+  }, 1000);
+}
+
+document.getElementById("btnCancelarSOS").addEventListener("click", () => {
+  clearInterval(cuentaAtrasInterval);
+  cuentaAtrasInterval = null;
+  document.getElementById("overlayCaida").classList.remove("visible");
+});
+
+document.getElementById("checkDeteccionCaida").addEventListener("change", async (e) => {
+  const mensajeEl = document.getElementById("mensajeCaida");
+  if (e.target.checked) {
+    if (typeof DeviceMotionEvent !== "undefined" && typeof DeviceMotionEvent.requestPermission === "function") {
+      try {
+        const permiso = await DeviceMotionEvent.requestPermission();
+        if (permiso !== "granted") {
+          mensajeEl.className = "mensaje error";
+          mensajeEl.textContent = "Permiso de sensores de movimiento denegado.";
+          e.target.checked = false;
+          return;
+        }
+      } catch (err) {
+        mensajeEl.className = "mensaje error";
+        mensajeEl.textContent = "Tu navegador no permite pedir este permiso.";
+        e.target.checked = false;
+        return;
+      }
+    }
+    window.addEventListener("devicemotion", alDetectarMovimiento);
+    vigilandoCaida = true;
+    mensajeEl.className = "mensaje ok";
+    mensajeEl.textContent = "Detección activa mientras esta pantalla esté abierta.";
+  } else {
+    window.removeEventListener("devicemotion", alDetectarMovimiento);
+    vigilandoCaida = false;
+    mensajeEl.className = "mensaje";
+  }
+});
+
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden && vigilandoCaida) {
+    // No podemos seguir vigilando en segundo plano — avisamos al volver.
+  }
+});
+</script>
+
+</body>
+</html>
