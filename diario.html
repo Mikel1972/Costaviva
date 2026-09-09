@@ -379,11 +379,12 @@ async function contextoAmbiental(lat, lon) {
   const paramsComunes = `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&forecast_days=1`;
   const resultado = { marea_altura: null, marea_tendencia: null, presion_valor: null, presion_tendencia: null,
     luna_fase: null, luna_iluminacion: null, viento_kmh: null, viento_dir: null,
-    oleaje_altura_min: null, oleaje_altura_max: null, temp_agua: null };
+    oleaje_altura_min: null, oleaje_altura_max: null, temp_agua: null,
+    nubosidad: null, precipitacion: null };
   try {
     const [marino, viento, luna] = await Promise.all([
       fetch(`https://marine-api.open-meteo.com/v1/marine?${paramsComunes}&hourly=wave_height,sea_level_height_msl,sea_surface_temperature`).then((r) => r.json()),
-      fetch(`https://api.open-meteo.com/v1/forecast?${paramsComunes}&hourly=windspeed_10m,winddirection_10m,pressure_msl&windspeed_unit=kmh`).then((r) => r.json()),
+      fetch(`https://api.open-meteo.com/v1/forecast?${paramsComunes}&hourly=windspeed_10m,winddirection_10m,pressure_msl,cloudcover,precipitation&windspeed_unit=kmh`).then((r) => r.json()),
       fetch(`/luna?lat=${lat}&lon=${lon}`).then((r) => r.json()),
     ]);
     const horas = marino.hourly?.time || [];
@@ -404,6 +405,8 @@ async function contextoAmbiental(lat, lon) {
 
     resultado.viento_kmh = viento.hourly?.windspeed_10m?.[idx] != null ? Math.round(viento.hourly.windspeed_10m[idx]) : null;
     resultado.presion_valor = viento.hourly?.pressure_msl?.[idx] != null ? Math.round(viento.hourly.pressure_msl[idx]) : null;
+    resultado.nubosidad = viento.hourly?.cloudcover?.[idx] != null ? Math.round(viento.hourly.cloudcover[idx]) : null;
+    resultado.precipitacion = viento.hourly?.precipitation?.[idx] != null ? viento.hourly.precipitation[idx] : null;
 
     resultado.luna_fase = luna?.fase ?? null;
     resultado.luna_iluminacion = luna?.iluminacion ?? null;
@@ -476,6 +479,8 @@ function contextoHTML(salida) {
     ["PRESIÓN", salida.presion_valor != null ? `${salida.presion_valor} hPa` : "—"],
     ["LUNA", salida.luna_fase ?? "—"],
     ["TEMP. AGUA", salida.temp_agua != null ? `${salida.temp_agua}°C` : "—"],
+    ["NUBOSIDAD", salida.nubosidad != null ? `${salida.nubosidad}%` : "—"],
+    ["LLUVIA", salida.precipitacion != null ? `${salida.precipitacion} mm/h` : "—"],
   ];
   return `<div class="contexto-ambiental">${filas.map(([e, v]) => `<div class="dato"><div class="etq">${e}</div><div class="val">${v}</div></div>`).join("")}</div>`;
 }

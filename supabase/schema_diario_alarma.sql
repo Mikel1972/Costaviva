@@ -65,6 +65,8 @@ create table if not exists public.salidas_pesca (
   oleaje_altura_min numeric,
   oleaje_altura_max numeric,
   temp_agua numeric,
+  nubosidad numeric,
+  precipitacion numeric,
   creado_en timestamptz not null default now()
 );
 

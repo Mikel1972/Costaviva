@@ -210,18 +210,7 @@
     display: flex; align-items: center; justify-content: center;
     cursor: pointer; font-size: 16px; padding: 0;
   }
-  .nubes-panel {
-    position: absolute; top: 160px; right: 64px; z-index: 501;
-    background: #0F2C38; border: 1px solid #1C3F4F; border-radius: 8px;
-    padding: 12px 14px; font-size: 11.5px; font-family: 'IBM Plex Mono', monospace;
-    width: 210px;
-    opacity: 0; transform: translateX(14px); pointer-events: none;
-    transition: opacity 0.15s ease-out, transform 0.15s ease-out;
-  }
-  .nubes-panel.visible { opacity: 1; transform: translateX(0); pointer-events: auto; }
-  .nubes-panel .fila-dato { display: flex; justify-content: space-between; margin-top: 4px; color: #9FB8BF; }
-  .nubes-panel .fila-dato b { color: #E8E2D0; font-weight: 700; }
-  .nubes-panel .nota { color: #6C8890; font-size: 9.5px; margin-top: 8px; line-height: 1.4; }
+  .nubes-toggle.activo { background: #D4A24C; color: #0B2532; }
   .luna-panel {
     position: absolute; top: 64px; right: 64px; z-index: 501;
     background: #0F2C38; border: 1px solid #1C3F4F; border-radius: 8px;
@@ -379,16 +368,7 @@
       </div>
     </div>
     <button class="batimetria-toggle" id="toggleBatimetria" title="Batimetría (profundidad del mar)" aria-label="Mostrar/ocultar batimetría">📏</button>
-    <button class="nubes-toggle" id="toggleNubes" title="Nubosidad y lluvia" aria-label="Mostrar/ocultar nubosidad y lluvia">☁️</button>
-    <div class="nubes-panel" id="nubesPanel">
-      <div class="nota" id="nubesZoomAviso" style="display:none;">🔍 Acércate (zoom in) para ver nubosidad/lluvia de esa ubicación</div>
-      <div id="nubesContenido">
-        <div class="fila-dato"><span>Nubosidad</span><b id="nubesCobertura">—</b></div>
-        <div class="fila-dato"><span>Precipitación</span><b id="nubesPrecipitacion">—</b></div>
-        <div class="fila-dato"><span>Próximas 3h</span><b id="nubesTendencia">—</b></div>
-        <div class="nota">Para el centro del mapa actual. Fuente: Open-Meteo (mismo modelo que el oleaje/viento).</div>
-      </div>
-    </div>
+    <button class="nubes-toggle" id="toggleNubes" title="Radar de lluvia en directo (RainViewer)" aria-label="Mostrar/ocultar radar de lluvia">☁️</button>
   </div>
   <div class="panel" id="panel">
     <button class="cerrar" id="cerrarPanel">✕</button>
@@ -832,9 +812,145 @@ const ESPECIES = [
     nota: "aguanta 14-23°C, pero los bancos se juntan entre 15-20°C. Con ese calorcillo suben desde los ~200m de invierno hasta la superficie, pegados a la costa",
     alimento: "en primavera empieza con zooplancton y va pasando a sardina y anchoa pequeña (parrotxa) conforme avanza la temporada" },
 ];
-function especiesEnTemporada() {
+
+// Ampliación nacional (2026-09-09): 3 listas nuevas para las zonas cuya
+// fauna es claramente distinta de la cantábrica de arriba — Galicia,
+// Asturias, Cantabria y la costa atlántica de Portugal comparten fauna
+// similar a ESPECIES y siguen usando esa misma lista. Fuentes: guías de
+// pesca recreativa por localidad (Rota/Cádiz para el Golfo de Cádiz),
+// FishBase/aipeces.com/ICCAT para temperatura y dieta, y la Federación de
+// Cofradías de Canarias para confirmar qué especies se capturan allí. Se
+// comprobó si las lonjas locales (Palamós/Roses, Santa Pola, Barbate/Cádiz,
+// Canarias) publican boletines públicos de capturas por especie/mes — no
+// se encontró ninguno utilizable, así que no aparecen como fuente aquí.
+const ESPECIES_MEDITERRANEO = [
+  { nombre: "Dorada", emoji: "🐟", zona: "costa", meses: [3, 4, 5, 9, 10, 11],
+    rangoTemp: [12, 21],
+    nota: "vive entre 12-21°C y está más activa sobre los 18°C. Se deja ver sobre todo en primavera y, más aún, en otoño. Es cauta: mordisquea el cebo, lo prueba y lo suelta antes de tragarlo",
+    alimento: "moluscos y crustáceos (mejillones, almejas, cangrejos) y gusanos marinos" },
+  { nombre: "Dentón", emoji: "🐟", zona: "mar adentro", meses: [3, 4, 5, 6, 9, 10],
+    rangoTemp: [13, 21],
+    nota: "aguanta 13-21°C con el punto dulce sobre 18°C, que coincide con la primavera, cuando se junta a desovar en fondos rocosos de 15-50m. Solitario y territorial, caza al amanecer y al anochecer",
+    alimento: "peces medianos, cefalópodos (sepia, calamar, pulpo) y crustáceos" },
+  { nombre: "Sargo", emoji: "🐟", zona: "costa", meses: [1,2,3,4,5,6,7,8,9,10,11,12],
+    rangoTemp: [15, 24],
+    nota: "está todo el año en las rompientes, entre 15-24°C y óptimo sobre 19°C, aunque da mejores ejemplares en otoño-invierno y durante el desove de primavera. Muy diurno",
+    alimento: "cangrejos (sobre todo recién mudados), gusanos, erizos, moluscos y camarones" },
+  { nombre: "Corvina", emoji: "🐟", zona: "costa", meses: [3,4,5,6,7,8,9,10,11],
+    rangoTemp: null,
+    nota: "sin cifra de temperatura fiable, pero desova entre 17-22°C. Pica bien en primavera y otoño en desembocaduras, con los cambios de marea y al anochecer",
+    alimento: "crustáceos, moluscos, gusanos y peces — muy voraz" },
+  { nombre: "Lubina", emoji: "🐟", zona: "costa", meses: [9,10,11,12,1,2,3],
+    rangoTemp: [8, 24],
+    nota: "misma especie que en el Cantábrico: se mueve entre 8-24°C y apenas come por debajo de 7°C. Aquí busca desembocaduras (Júcar, Segura) y puertos, sobre todo en otoño-invierno",
+    alimento: "sardinas y anchoas pequeñas, lisas, quisquillas, gusanos y cangrejos de arena" },
+  { nombre: "Lisa / Mújol", emoji: "🐟", zona: "costa", meses: [1,2,3,4,5,6,7,8,9,10,11,12],
+    rangoTemp: [8, 24],
+    nota: "aguanta un rango enorme y casi no depende de la temperatura — vive en playas, puertos y estuarios. El mejor momento suele ser a finales de otoño",
+    alimento: "detritos, diatomeas, algas y materia orgánica del fondo" },
+  { nombre: "Choco / Sepia", emoji: "🦑", zona: "costa", meses: [10,11,12,1,2,3,4,5],
+    rangoTemp: [12, 18],
+    nota: "de casi 12.000 capturas registradas en España, el 87% caen entre octubre y mayo, y más del 70% con el agua entre 12-18°C. Abril es el mejor mes. Caza al acecho, camuflada en el fondo",
+    alimento: "crustáceos y peces pequeños" },
+  { nombre: "Calamar", emoji: "🦑", zona: "costa", meses: [9, 10, 11, 12],
+    rangoTemp: [13, 20],
+    nota: "misma especie que en el Cantábrico, activo entre 13-20°C. Se pesca sobre todo a «eging» en puertos y espigones, al anochecer",
+    alimento: "peces pequeños, cangrejos y camarones" },
+  { nombre: "Palometa", emoji: "🐟", zona: "costa", meses: [6, 7, 8, 9],
+    rangoTemp: null,
+    nota: "dato dudoso: las fuentes de temperatura se contradicen, así que no forzamos un número. Se acerca a la costa, a pocos centímetros de la superficie, entre verano y otoño",
+    alimento: "pequeños crustáceos, moluscos y gusanos de fondos arenosos (dato genérico del género)" },
+  { nombre: "Breca", emoji: "🐟", zona: "costa", meses: [12, 1, 2, 3, 4, 6, 7],
+    rangoTemp: null,
+    nota: "sin cifra de temperatura fiable. Se pesca sobre todo de diciembre a abril, aunque en junio-julio también caen ejemplares grandes. A veces entra en los puertos en pequeños bancos",
+    alimento: "invertebrados bentónicos y peces pequeños" },
+];
+
+const ESPECIES_GOLFO_CADIZ = [
+  { nombre: "Urta", emoji: "🐟", zona: "mar adentro", meses: [3,4,5,9,10,11],
+    rangoTemp: [14, 27],
+    nota: "dato apoyado sobre todo en biología (14-27,5°C, no hay guía recreativa con meses exactos para esta zona): se aparea en primavera y otoño, que es cuando más se mueve. Vive en fondos duros",
+    alimento: "moluscos, incluidos cefalópodos, y crustáceos" },
+  { nombre: "Dorada", emoji: "🐟", zona: "costa", meses: [9, 10, 11],
+    rangoTemp: [12, 21],
+    nota: "en Rota (Cádiz) el pico está en septiembre-noviembre, sobre todo con la marea subiendo. Vive entre 12-21°C, óptimo sobre 18°C, y es cauta con el cebo",
+    alimento: "moluscos y crustáceos (mejillones, almejas, cangrejos) y gusanos marinos" },
+  { nombre: "Corvina", emoji: "🐟", zona: "costa", meses: [6, 7, 8],
+    rangoTemp: null,
+    nota: "en Rota se pesca sobre todo en noches de verano, a cebo de cangrejo ermitaño y surfcasting nocturno. Sin cifra de temperatura fiable; desova entre 17-22°C",
+    alimento: "crustáceos, moluscos, gusanos y peces" },
+  { nombre: "Choco", emoji: "🦑", zona: "costa", meses: [1,2,3,4,5],
+    rangoTemp: [12, 18],
+    nota: "en Huelva (Isla Cristina) es una de las capturas más importantes; en primavera-principios de verano aparecen ejemplares con ovas. A nivel nacional, el 87% de capturas caen entre octubre y mayo",
+    alimento: "crustáceos y peces pequeños; caza al acecho" },
+  { nombre: "Lubina", emoji: "🐟", zona: "costa", meses: [9,10,11,12,1,2,3],
+    rangoTemp: [8, 24],
+    nota: "en Rota se pesca de septiembre a marzo, activa al amanecer cerca de espigones. Se mueve entre 8-24°C y apenas come por debajo de 7°C",
+    alimento: "sardinas y anchoas pequeñas, lisas, quisquillas, gusanos y cangrejos de arena" },
+  { nombre: "Sargo", emoji: "🐟", zona: "costa", meses: [1,2,3,4,5,6,7,8,9,10,11,12],
+    rangoTemp: [15, 24],
+    nota: "todo el año, concentrado junto a estructuras rocosas. Vive entre 15-24°C, óptimo sobre 19°C, y es muy diurno",
+    alimento: "cangrejos, gusanos, erizos, moluscos y camarones" },
+  { nombre: "Lenguado", emoji: "🐟", zona: "costa", meses: [10,11,12,1,2,3,4],
+    rangoTemp: null,
+    nota: "cierta contradicción entre fuentes sobre el mes exacto; nos quedamos con la ventana más citada (otoño-invierno-inicio de primavera). Se pesca de noche, en arena fina, a gusano",
+    alimento: "peces pequeños, crustáceos e invertebrados de fondo" },
+  { nombre: "Bocinegro", emoji: "🐟", zona: "mar adentro", meses: [4,5,6,7,8,9,10,11],
+    rangoTemp: null,
+    nota: "dato poco verificado (sin guía recreativa con meses exactos): se aleja a más profundidad en invierno y desova entre enero-mayo. Vive en fondos rocosos hasta 250m",
+    alimento: "crustáceos, sobre todo camarones, percebes y nécoras pequeñas" },
+];
+
+const ESPECIES_CANARIAS = [
+  { nombre: "Vieja", emoji: "🐠", zona: "costa", meses: [1,2,3,4,5,6,7,8,9,10,11,12],
+    rangoTemp: null,
+    nota: "sin cifra de temperatura fiable, pero se pesca todo el año en fondos rocosos poco profundos (20-50m). El pez más característico de Canarias",
+    alimento: "algas epilíticas y coralinas, y pequeños invertebrados" },
+  { nombre: "Sama", emoji: "🐟", zona: "mar adentro", meses: [3,4,5,6,7,8,9,10,11],
+    rangoTemp: null,
+    nota: "de las capturas más apreciadas en la pesca de fondo artesanal canaria. Vive entre 20-40m (hasta 250m) y en invierno se aleja a más profundidad. Sin cifra de temperatura fiable",
+    alimento: "camarones, percebes y nécoras pequeñas; de adulta, exclusivamente carnívora" },
+  { nombre: "Medregal", emoji: "🐟", zona: "mar adentro", meses: [1,2,3,4,5,6,7,8,9,10,11,12],
+    rangoTemp: null,
+    nota: "activo todo el año sobre bajos y estructuras. Sin cifra de temperatura fiable para pesca real (solo hay datos de cría en cautividad, no del pez en libertad)",
+    alimento: "crustáceos, cefalópodos y peces pequeños (sardina, castañuela)" },
+  { nombre: "Bicuda", emoji: "🐟", zona: "mar adentro", meses: [3,4,5,6,7,8,9,10,11],
+    rangoTemp: null,
+    nota: "especie tropical, sin cifra de temperatura fiable. Se pesca con menos frecuencia en invierno",
+    alimento: "cefalópodos, crustáceos y peces" },
+  { nombre: "Chicharro canario", emoji: "🐟", zona: "mar adentro", meses: [1,2,3,4,5,6,7,8,9,10,11,12],
+    rangoTemp: null,
+    nota: "dato flojo, sin guía con meses concretos para Canarias. Vive en bancos, en zonas neríticas entre 100-370m, más cerca de costa de joven",
+    alimento: "zooplancton, crustáceos, moluscos y peces pequeños" },
+  { nombre: "Breca", emoji: "🐟", zona: "costa", meses: [12, 1, 2, 3, 4, 6, 7],
+    rangoTemp: null,
+    nota: "dato extrapolado de guías peninsulares (no encontramos temporada específica para Canarias). Vive en fondos de roca, grava, arena y fango, 20-100m",
+    alimento: "invertebrados bentónicos y peces pequeños" },
+  { nombre: "Salema", emoji: "🐠", zona: "costa", meses: [1,2,3,4,5,6,7,8,9,10,11,12],
+    rangoTemp: [18, 25],
+    nota: "dato de temperatura poco robusto (más de fichas de acuario que de biología de campo). Presente todo el año en fondos rocosos con algas",
+    alimento: "casi exclusivamente algas; de los pocos peces que come el alga invasora Caulerpa taxifolia" },
+  { nombre: "Cabrilla", emoji: "🐟", zona: "costa", meses: [3,4,5,6,7],
+    rangoTemp: null,
+    nota: "sin cifra de temperatura fiable. Se reproduce todo el año pero sobre todo entre marzo y julio, que usamos como proxy de su ventana de más actividad",
+    alimento: "peces pequeños e invertebrados" },
+];
+
+// Qué lista de especies usar según el spot — Galicia, Asturias, Cantabria
+// y la costa atlántica de Portugal comparten fauna similar a la vasca
+// (ESPECIES) y no necesitan lista propia.
+const SPOTS_MEDITERRANEO = new Set(["roses","blanes","cambrils","peniscola","valencia","gandia","denia","calpe","cartagena","aguilas","cabodepalos","malaga","nerja","almeria","roquetas","palma","ciutadella","formentera","alicante","altea","benidorm","guardamardelsegura","vilajoiosa","orihuelacosta","pilardelahoradada","santapola","javea","alcossebre","benicassim","burriana","castellon","xilxes","oropesa","torreblanca","vinaros","alboraya","canetdeberenguer","cullera","pobladefarnals","oliva","piles","calamillor","sonbou","muro"]);
+const SPOTS_GOLFO_CADIZ = new Set(["cadiz","conil","chipiona","puntaumbria"]);
+const SPOTS_CANARIAS = new Set(["laspalmas","santacruztenerife","elmedano","corralejo"]);
+function especiesPorSpot(slug) {
+  if (SPOTS_MEDITERRANEO.has(slug)) return ESPECIES_MEDITERRANEO;
+  if (SPOTS_GOLFO_CADIZ.has(slug)) return ESPECIES_GOLFO_CADIZ;
+  if (SPOTS_CANARIAS.has(slug)) return ESPECIES_CANARIAS;
+  return ESPECIES;
+}
+function especiesEnTemporada(listaEspecies) {
   const mesActual = new Date().getMonth() + 1;
-  return ESPECIES.filter((e) => e.meses.includes(mesActual));
+  return listaEspecies.filter((e) => e.meses.includes(mesActual));
 }
 // Usa la temperatura real del agua en el spot para estimar qué especies
 // tienen más papeletas ahora mismo: si su rango de temperatura coincide
@@ -847,8 +963,8 @@ function coincideTemp(e, tempAgua) {
   const [min, max] = e.rangoTemp;
   return tempAgua >= min && tempAgua <= max;
 }
-function especiesPorZona(tempAgua) {
-  const enTemporada = especiesEnTemporada().map((e) => ({ ...e, coincide: coincideTemp(e, tempAgua) }));
+function especiesPorZona(tempAgua, slug) {
+  const enTemporada = especiesEnTemporada(especiesPorSpot(slug)).map((e) => ({ ...e, coincide: coincideTemp(e, tempAgua) }));
   const orden = (a, b) => (b.coincide === true) - (a.coincide === true);
   return {
     costa: enTemporada.filter((e) => e.zona === "costa").sort(orden),
@@ -1361,7 +1477,7 @@ function abrirPanel(s) {
     document.getElementById("panelPresionNota").textContent = "";
   }
 
-  const { costa, marAdentro } = especiesPorZona(s.tempAgua);
+  const { costa, marAdentro } = especiesPorZona(s.tempAgua, s.slug);
   const listaEspecie = (e) => {
     let franja = "";
     if (e.rangoTemp) {
@@ -1472,60 +1588,49 @@ document.getElementById("toggleLuna").addEventListener("click", () => {
   if (lunaAbierta) actualizarLuna();
 });
 
-// Nubosidad/lluvia: mismo patrón que la luna (para el centro del mapa,
-// se recalcula al mover/hacer zoom), pero pedido directo a Open-Meteo
-// desde el navegador — es la misma API que ya usa functions/prevision.js
-// para los spots fijos, sin necesidad de un endpoint propio porque
-// Open-Meteo tiene CORS abierto y no requiere cálculo astronómico como
-// la luna.
-const ZOOM_MINIMO_NUBES = 8;
-let nubesAbierto = false;
-
-async function actualizarNubes() {
-  const aviso = document.getElementById("nubesZoomAviso");
-  const contenido = document.getElementById("nubesContenido");
-  if (map.getZoom() < ZOOM_MINIMO_NUBES) {
-    aviso.style.display = "block";
-    contenido.style.display = "none";
-    return;
-  }
-  aviso.style.display = "none";
-  contenido.style.display = "block";
-
-  const centro = map.getCenter();
+// Radar de lluvia — capa de teselas real sobre el mapa (no un panel de
+// texto), igual patrón que capaBatimetria más arriba. Fuente: RainViewer
+// (api.rainviewer.com), gratis y sin API key — verificado en vivo
+// 2026-09-09 (weather-maps.json responde con los frames disponibles, y
+// una tesela de ejemplo carga como image/png real). Es radar de
+// PRECIPITACIÓN real, no un mapa genérico de nubosidad — por eso el
+// tooltip del botón dice "radar de lluvia", no "nubes", para no prometer
+// más de lo que es.
+let capaRadarLluvia = null;
+let radarLluviaCargando = false;
+async function prepararCapaRadarLluvia() {
+  if (capaRadarLluvia || radarLluviaCargando) return capaRadarLluvia;
+  radarLluviaCargando = true;
   try {
-    const resp = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${centro.lat.toFixed(4)}&longitude=${centro.lng.toFixed(4)}&timezone=Europe%2FMadrid&hourly=cloudcover,precipitation`,
-      { cache: "no-store" }
-    );
+    const resp = await fetch("https://api.rainviewer.com/public/weather-maps.json");
     const datos = await resp.json();
-    if (!resp.ok || !datos.hourly) throw new Error("sin datos");
-    const horas = datos.hourly.time;
-    const ahoraISO = new Date().toISOString().slice(0, 13);
-    let idx = horas.findIndex((h) => h.slice(0, 13) === ahoraISO);
-    if (idx === -1) idx = 0;
-    const cobertura = datos.hourly.cloudcover[idx];
-    const precipitacion = datos.hourly.precipitation[idx];
-    const precipitacion3h = [1, 2, 3].reduce((suma, i) => suma + (datos.hourly.precipitation[idx + i] || 0), 0);
-
-    document.getElementById("nubesCobertura").textContent = cobertura != null ? `${Math.round(cobertura)}%` : "sin datos";
-    document.getElementById("nubesPrecipitacion").textContent =
-      precipitacion != null ? `${precipitacion.toFixed(1)} mm/h` : "sin datos";
-    document.getElementById("nubesTendencia").textContent =
-      precipitacion3h > 0 ? `${precipitacion3h.toFixed(1)} mm esperados` : "sin lluvia prevista";
+    const ultimoFrame = (datos.radar?.past || []).slice(-1)[0];
+    if (!ultimoFrame) throw new Error("sin frames de radar disponibles");
+    capaRadarLluvia = L.tileLayer(`${datos.host}${ultimoFrame.path}/256/{z}/{x}/{y}/2/1_1.png`, {
+      opacity: 0.55,
+      attribution: "Radar de lluvia: RainViewer",
+    });
   } catch (e) {
-    console.log("No se pudo cargar nubosidad/lluvia para esta ubicación:", e.message);
+    console.log("No se pudo cargar el radar de lluvia:", e.message);
+  } finally {
+    radarLluviaCargando = false;
   }
+  return capaRadarLluvia;
 }
-
-document.getElementById("toggleNubes").addEventListener("click", () => {
-  nubesAbierto = document.getElementById("nubesPanel").classList.toggle("visible");
-  document.getElementById("toggleNubes").textContent = nubesAbierto ? "✕" : "☁️";
-  if (nubesAbierto) actualizarNubes();
+document.getElementById("toggleNubes").addEventListener("click", async (e) => {
+  const boton = e.currentTarget;
+  const capa = await prepararCapaRadarLluvia();
+  if (!capa) return;
+  if (map.hasLayer(capa)) {
+    map.removeLayer(capa);
+    boton.classList.remove("activo");
+  } else {
+    capa.addTo(map);
+    boton.classList.add("activo");
+  }
 });
 map.on("moveend zoomend", () => {
   if (lunaAbierta) actualizarLuna();
-  if (nubesAbierto) actualizarNubes();
 });
 document.getElementById("cerrarPanel").addEventListener("click", () => {
   document.getElementById("panel").classList.remove("visible");
