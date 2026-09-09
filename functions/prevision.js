@@ -182,10 +182,19 @@ async function fetchJSON(url) {
   return resp.json();
 }
 
-async function previsionSpot(spot) {
-  const paramsComunes = `latitude=${spot.lat}&longitude=${spot.lon}&timezone=Europe%2FMadrid&forecast_days=2`;
+// Cloudflare Pages Functions (plan gratuito) corta la invocación entera con
+// "Too many subrequests" a partir de 50 fetches por petición. Con ~70 spots,
+// pedir cada uno por separado (2 fetches x spot) lo revienta de largo. Open-
+// Meteo admite varias localizaciones en una sola llamada pasando las listas
+// de lat/lon separadas por comas — así, sea cual sea el número de spots,
+// siempre son solo 2 fetches a Open-Meteo (uno marino, uno de viento) más
+// las boyas y los rayos, muy por debajo del límite.
+async function previsionTodosSpots(spots) {
+  const lats = spots.map((s) => s.lat).join(",");
+  const lons = spots.map((s) => s.lon).join(",");
+  const paramsComunes = `latitude=${lats}&longitude=${lons}&timezone=Europe%2FMadrid&forecast_days=2`;
 
-  const [marino, viento] = await Promise.all([
+  const [marinos, vientos] = await Promise.all([
     fetchJSON(
       `https://marine-api.open-meteo.com/v1/marine?${paramsComunes}&hourly=wave_height,wave_period,wave_direction,sea_surface_temperature,ocean_current_velocity,ocean_current_direction,sea_level_height_msl`
     ),
@@ -193,6 +202,12 @@ async function previsionSpot(spot) {
       `https://api.open-meteo.com/v1/forecast?${paramsComunes}&hourly=windspeed_10m,winddirection_10m,precipitation,cloudcover,pressure_msl&windspeed_unit=kmh`
     ),
   ]);
+  // Con más de una localización, Open-Meteo devuelve un array (uno por
+  // coordenada, mismo orden que se pidió) en vez de un único objeto.
+  return spots.map((spot, i) => procesarSpot(spot, marinos[i], vientos[i]));
+}
+
+function procesarSpot(spot, marino, viento) {
   const tempAguaPorHoraISO = Object.fromEntries(
     (marino.hourly?.time || []).map((t, i) => [t, marino.hourly.sea_surface_temperature?.[i] ?? null])
   );
@@ -368,10 +383,8 @@ async function metaRayos() {
 
 export async function onRequestGet(context) {
   const [resultados, boyas, rayosNacional] = await Promise.all([
-    Promise.all(
-      SPOTS.map((spot) =>
-        previsionSpot(spot).catch((e) => ({ slug: spot.slug, nombre: spot.nombre, error: String(e) }))
-      )
+    previsionTodosSpots(SPOTS).catch((e) =>
+      SPOTS.map((spot) => ({ slug: spot.slug, nombre: spot.nombre, error: String(e) }))
     ),
     Promise.all(BOYAS.map((b) => datosBoya(b).catch((e) => ({ ...b, error: String(e) })))),
     metaRayos().catch((e) => ({ error: String(e) })),
