@@ -394,6 +394,73 @@ async function datosBoya(boya) {
   };
 }
 
+// Boya real de Nazaré costeira (Instituto Hidrográfico de Portugal, red
+// MONICAN) — único punto de Portugal con dato de boya real y en vivo que
+// encontramos: no hay equivalente público a poem.puertos.es para toda la
+// red portuguesa (Leixões/Sines/Faro exigen login en su geoportal). Este
+// endpoint no está documentado como API pública, pero es de un organismo
+// público, sin autenticación, y se comprobó a mano el 2026-09-09 que
+// devuelve datos reales y actuales (la boya "oceânica" hermana, en cambio,
+// solo devuelve NaN — parece averiada, así que no se usa). Parámetros
+// (id_est, id_eqp, dbn) sacados del <option> del propio selector de la
+// página https://monican.hidrografico.pt/boias.nazare — puede romperse si
+// el Instituto Hidrográfico cambia el visor.
+async function fetchJSONPost(url, body) {
+  const resp = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "X-Requested-With": "XMLHttpRequest",
+      Referer: "https://monican.hidrografico.pt/boias.nazare",
+      "User-Agent": "Mozilla/5.0 (compatible; CostaVivaApp/0.1)",
+    },
+    body,
+  });
+  if (!resp.ok) throw new Error(`HTTP ${resp.status} (${url})`);
+  return resp.json();
+}
+
+async function datosBoyaNazare() {
+  const ahora = new Date();
+  const dtime = `${ahora.toISOString().slice(0, 10)} ${String(ahora.getUTCHours()).padStart(2, "0")}:${String(ahora.getUTCMinutes()).padStart(2, "0")}`;
+  const url = "https://monican.hidrografico.pt/json/boia.graph.php";
+  const comunes = "id_est=2&id_eqp=2&gmt=GMT&dtz=Europe%2FLisbon&dbn=monican&per=1";
+  const cuerpo = (par) => `${comunes}&par=${par}&dtime=${encodeURIComponent(dtime)}`;
+
+  const [alturas, periodos, direcciones, temps] = await Promise.all([
+    fetchJSONPost(url, cuerpo(1)),
+    fetchJSONPost(url, cuerpo(2)),
+    fetchJSONPost(url, cuerpo(3)),
+    fetchJSONPost(url, cuerpo(4)),
+  ]);
+
+  const ultimoValido = (serie, campo) => {
+    for (let i = serie.length - 1; i >= 0; i--) {
+      const v = serie[i][campo];
+      if (v !== null && v !== undefined && v !== "NaN" && !Number.isNaN(v)) return { valor: v, sdata: serie[i].SDATA };
+    }
+    return null;
+  };
+
+  const hs = ultimoValido(alturas, "HS");
+  const tp = ultimoValido(periodos, "TP");
+  const dir = ultimoValido(direcciones, "THTP");
+  const temp = ultimoValido(temps, "TEMP");
+  if (!hs) throw new Error("boya de Nazaré sin datos recientes");
+
+  return {
+    codigo: "PT-nazare-costeira",
+    nombre: "Nazaré (costeira, PT)",
+    lat: 39.560,
+    lon: -9.210,
+    actualizado: hs.sdata,
+    alturaSignificativa: hs.valor,
+    periodoPico: tp ? tp.valor : null,
+    dirOla: dir ? `${rumboDesdeGrados(dir.valor)} ${Math.round(dir.valor)}°` : null,
+    tempAgua: temp ? temp.valor : null,
+  };
+}
+
 // Luna: movida a functions/luna.js (endpoint propio /luna?lat=&lon=) — su
 // posición depende de dónde esté centrado el mapa en cada momento, así que
 // el navegador la pide aparte en vez de venir fija dentro de /prevision.
@@ -413,13 +480,17 @@ async function metaRayos() {
 }
 
 export async function onRequestGet(context) {
-  const [resultados, boyas, rayosNacional] = await Promise.all([
+  const [resultados, boyasEspana, boyaNazare, rayosNacional] = await Promise.all([
     previsionTodosSpots(SPOTS).catch((e) =>
       SPOTS.map((spot) => ({ slug: spot.slug, nombre: spot.nombre, error: String(e) }))
     ),
     Promise.all(BOYAS.map((b) => datosBoya(b).catch((e) => ({ ...b, error: String(e) })))),
+    datosBoyaNazare().catch((e) => ({
+      codigo: "PT-nazare-costeira", nombre: "Nazaré (costeira, PT)", lat: 39.560, lon: -9.210, error: String(e),
+    })),
     metaRayos().catch((e) => ({ error: String(e) })),
   ]);
+  const boyas = [...boyasEspana, boyaNazare];
 
   return new Response(JSON.stringify({ spots: resultados, boyas, rayosNacional }, null, 2), {
     headers: {

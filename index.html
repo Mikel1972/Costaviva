@@ -583,6 +583,10 @@ const BOYAS = [
   { codigo: 2798, nombre: "Cabo de Begur", lat: 41.95, lon: 3.23 },
   { codigo: 2820, nombre: "Dragonera (Mallorca)", lat: 39.58, lon: 2.32 },
   { codigo: 2838, nombre: "Mahón (Menorca)", lat: 39.87, lon: 4.29 },
+  // Portugal: único punto con boya real verificada (Instituto Hidrográfico,
+  // red MONICAN) — el resto de la red portuguesa exige login, ver
+  // functions/prevision.js para el detalle de la fuente.
+  { codigo: "PT-nazare-costeira", nombre: "Nazaré (costeira, PT)", lat: 39.560, lon: -9.210 },
 ].map((b) => ({ ...b, alturaSignificativa: null, periodoPico: null, dirOla: null, tempAgua: null, actualizado: null }));
 
 const RIOS = [
@@ -970,6 +974,16 @@ const SPOTS_CON_WEBCAM = [
   // SOCIB (Baleares) — endpoint interno del visor BEAMON, verificado 2026-09-09
   "calamillor", "sonbou", "muro",
 ];
+// Subconjunto de SPOTS_CON_WEBCAM donde SÍ se calcula la lectura visual de
+// oleaje (puntuacionOleajeVisual) — de momento solo las 3 originales, contra
+// las que se calibraron a ojo los umbrales. Se comprobó a mano una muestra
+// de las cámaras nuevas (descargando la imagen real) y varias resultaron ser
+// interior de puerto deportivo con el agua en calma (ej. Suances) o con el
+// encuadre dominado por vegetación/tejados en vez de agua (ej. Corrubedo) —
+// aplicar ahí el mismo análisis daría una lectura falsa. Antes de añadir una
+// cámara aquí hay que mirar la imagen real y confirmar que el encuadre es
+// mar abierto, sin estructuras de puerto ni objetos delante.
+const SPOTS_CON_LECTURA_VISUAL = ["mundaka", "bakio", "sopelana"];
 const REFRESCO_WEBCAM_MS = 60000; // 1 min: suficiente para sentirse "en directo" sin sobrecargar al proveedor original
 let intervaloWebcam = null;
 
@@ -998,8 +1012,10 @@ function pintarWebcam(slug, nombre) {
         EN DIRECTO
       </span>
     </div>
-    <div id="lecturaVisual" style="margin-top:8px; font-size:11.5px; color:#7FA3AF;">👁 Analizando imagen…</div>
-    <p class="nota-final" id="notaWebcam">Servida por nuestro propio backend (evita bloqueos CORS del proveedor original). Se actualiza sola cada minuto — la lectura de "estado del mar" se calcula en tu propio navegador a partir del contraste de la imagen, no es una medida en metros.</p>
+    ${SPOTS_CON_LECTURA_VISUAL.includes(slug)
+      ? `<div id="lecturaVisual" style="margin-top:8px; font-size:11.5px; color:#7FA3AF;">👁 Analizando imagen…</div>
+    <p class="nota-final" id="notaWebcam">Servida por nuestro propio backend (evita bloqueos CORS del proveedor original). Se actualiza sola cada minuto — la lectura de "estado del mar" se calcula en tu propio navegador a partir del contraste de la imagen, no es una medida en metros.</p>`
+      : `<p class="nota-final" id="notaWebcam">Servida por nuestro propio backend (evita bloqueos CORS del proveedor original). Se actualiza sola cada minuto — solo informativa: esta cámara todavía no tiene verificado si encuadra mar abierto (puede ser interior de puerto/bahía resguardada), así que no calculamos una lectura de oleaje a partir de ella.</p>`}
   `;
   const img = document.getElementById("imgWebcam");
   img.addEventListener("load", () => actualizarLecturaVisual(img));
