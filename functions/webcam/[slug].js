@@ -48,7 +48,6 @@ const WEBCAMS = {
   benidorm: "https://streaming.comunitatvalenciana.com/static/BenidormLevante/webcam_mini.png",
   guardamardelsegura: "https://streaming.comunitatvalenciana.com/static/GuardamardelSegura/webcam_mini.png",
   vilajoiosa: "https://streaming.comunitatvalenciana.com/static/LaVilaJoiosa/webcam_mini.png",
-  orihuelacosta: "https://streaming.comunitatvalenciana.com/static/Orihuela/webcam_mini.png",
   pilardelahoradada: "https://streaming.comunitatvalenciana.com/static/PilardelaHoradada/webcam_mini.png",
   santapola: "https://streaming.comunitatvalenciana.com/static/SantaPolaGranPlaya/webcam_mini.png",
   javea: "https://streaming.comunitatvalenciana.com/static/Xabiapuerto/webcam_mini.png",

@@ -965,9 +965,12 @@ const SPOTS_CON_WEBCAM = [
   "baiona", "acoruna", "camarinas", "cangas", "corrubedo", "ribadeo", "ons", "portosin", "cies",
   // Gobierno de Cantabria — imagen JPG directa, verificada 2026-09-09
   "suances", "castrourdiales", "laredo", "sanvicente", "comillas", "santona",
-  // Turisme Comunitat Valenciana — imagen PNG directa, verificada 2026-09-09
+  // Turisme Comunitat Valenciana — imagen PNG directa, verificada 2026-09-09.
+  // "orihuelacosta" se quitó: el código "Orihuela" de Turisme CV apunta al
+  // casco histórico (una iglesia), no a la costa — no es un problema de
+  // encuadre, es la cámara equivocada para este spot.
   "calpe", "denia", "peniscola", "gandia", "valencia", "alicante", "altea",
-  "benidorm", "guardamardelsegura", "vilajoiosa", "orihuelacosta",
+  "benidorm", "guardamardelsegura", "vilajoiosa",
   "pilardelahoradada", "santapola", "javea", "alcossebre", "benicassim",
   "burriana", "castellon", "xilxes", "oropesa", "torreblanca", "vinaros",
   "alboraya", "canetdeberenguer", "cullera", "pobladefarnals", "oliva", "piles",
@@ -975,15 +978,29 @@ const SPOTS_CON_WEBCAM = [
   "calamillor", "sonbou", "muro",
 ];
 // Subconjunto de SPOTS_CON_WEBCAM donde SÍ se calcula la lectura visual de
-// oleaje (puntuacionOleajeVisual) — de momento solo las 3 originales, contra
-// las que se calibraron a ojo los umbrales. Se comprobó a mano una muestra
-// de las cámaras nuevas (descargando la imagen real) y varias resultaron ser
-// interior de puerto deportivo con el agua en calma (ej. Suances) o con el
-// encuadre dominado por vegetación/tejados en vez de agua (ej. Corrubedo) —
-// aplicar ahí el mismo análisis daría una lectura falsa. Antes de añadir una
-// cámara aquí hay que mirar la imagen real y confirmar que el encuadre es
-// mar abierto, sin estructuras de puerto ni objetos delante.
-const SPOTS_CON_LECTURA_VISUAL = ["mundaka", "bakio", "sopelana"];
+// oleaje (puntuacionOleajeVisual). Se descargó y miró a mano la imagen real
+// de cada cámara (2026-09-09); el criterio NO es "mar abierto sí, puerto no"
+// — una dársena pesquera o una marisma son spots de pesca válidos igual que
+// una rompiente expuesta, y la lectura describe lo que se ve en ESA cámara,
+// no el estado general de la zona. Se excluye solo cuando:
+//   1) la cámara está caída / da un cartel de "inactiva" (portosin),
+//   2) el encuadre no muestra agua de verdad, dominado por árboles/tejados/
+//      vista lejana de tierra (corrubedo, ons, canetdeberenguer, cullera,
+//      valencia-LasArenas),
+//   3) es una zona sin relación con la pesca: terminal de ferris o puerto
+//      industrial/comercial (denia, burriana, castellon).
+// Antes de añadir una cámara nueva aquí hay que mirar la imagen real.
+const SPOTS_CON_LECTURA_VISUAL = [
+  "mundaka", "bakio", "sopelana",
+  "baiona", "acoruna", "camarinas", "cangas", "ribadeo", "cies",
+  "suances", "castrourdiales", "laredo", "sanvicente", "comillas", "santona",
+  "calpe", "peniscola", "gandia", "alicante", "altea",
+  "benidorm", "guardamardelsegura", "vilajoiosa",
+  "pilardelahoradada", "santapola", "javea", "alcossebre", "benicassim",
+  "xilxes", "oropesa", "torreblanca", "vinaros", "alboraya", "pobladefarnals",
+  "oliva", "piles",
+  "calamillor", "sonbou", "muro",
+];
 const REFRESCO_WEBCAM_MS = 60000; // 1 min: suficiente para sentirse "en directo" sin sobrecargar al proveedor original
 let intervaloWebcam = null;
 
