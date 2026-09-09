@@ -1016,28 +1016,39 @@ function iconoFlecha(grados, color) {
 // "codos" al unir un tramo con el siguiente. Puramente visual — un río
 // nunca es una línea recta — la semilla (nombre del río) hace que cada uno
 // tenga una forma algo distinta en vez de la misma onda repetida.
-function curvaMeandro(puntos, nombreRio) {
-  const semilla = nombreRio.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
+// Curva de un solo tramo (a -> b) con un serpenteo perpendicular que se
+// atenúa a 0 en los dos extremos, para poder dibujar cada tramo del río
+// como su propia polilínea (con su propio grosor) sin dejar un "codo" al
+// unirla con el tramo siguiente. Puramente visual — un río nunca es un
+// segmento recto.
+function curvaTramo(a, b, semilla) {
   const pseudoAleatorio = (n) => {
     const x = Math.sin(n * 12.9898 + semilla * 0.7823) * 43758.5453;
     return x - Math.floor(x);
   };
+  const dLat = b.lat - a.lat, dLon = b.lon - a.lon;
+  const longitud = Math.hypot(dLat, dLon) || 1e-6;
+  const amplitud = longitud * 0.14;
+  const perpLat = -dLon / longitud, perpLon = dLat / longitud;
+  const fase = pseudoAleatorio(semilla) * Math.PI * 2;
+  const pasos = 16;
   const resultado = [];
-  for (let i = 0; i < puntos.length - 1; i++) {
-    const a = puntos[i], b = puntos[i + 1];
-    const dLat = b.lat - a.lat, dLon = b.lon - a.lon;
-    const longitud = Math.hypot(dLat, dLon) || 1e-6;
-    const amplitud = longitud * 0.14;
-    const perpLat = -dLon / longitud, perpLon = dLat / longitud;
-    const fase = pseudoAleatorio(i) * Math.PI * 2;
-    const pasos = 16;
-    for (let s = i === 0 ? 0 : 1; s <= pasos; s++) {
-      const t = s / pasos;
-      const onda = Math.sin(t * Math.PI * 2.5 + fase) * amplitud * Math.sin(t * Math.PI);
-      resultado.push([a.lat + dLat * t + perpLat * onda, a.lon + dLon * t + perpLon * onda]);
-    }
+  for (let s = 0; s <= pasos; s++) {
+    const t = s / pasos;
+    const onda = Math.sin(t * Math.PI * 2.5 + fase) * amplitud * Math.sin(t * Math.PI);
+    resultado.push([a.lat + dLat * t + perpLat * onda, a.lon + dLon * t + perpLon * onda]);
   }
   return resultado;
+}
+
+// Grosor de un tramo según su propio caudal (si lo tiene) — así un río con
+// más agua en la desembocadura que en cabecera se ve con un trazo más
+// grueso ahí, en vez de un grosor uniforme de punta a punta.
+function grosorTramo(punto) {
+  const GROSOR_BASE = 2, GROSOR_MAX = 7;
+  if (punto.caudal == null || punto.umbralAlto == null) return GROSOR_BASE;
+  const ratio = Math.min(1, punto.caudal / punto.umbralAlto);
+  return +(GROSOR_BASE + ratio * (GROSOR_MAX - GROSOR_BASE)).toFixed(1);
 }
 
 function crearMarcadores() {
@@ -1062,11 +1073,19 @@ function crearMarcadores() {
   });
 
   RIOS.forEach((r) => {
-    // Curva sinuosa entre los puntos del río (cabecera -> desembocadura) —
-    // puramente decorativa, para que parezca un cauce real en vez de un
-    // segmento recto; no mueve los puntos reales con datos de caudal.
-    const latlngs = curvaMeandro(r.puntos, r.rio);
-    L.polyline(latlngs, { color: "#4A6472", weight: 2, opacity: 0.6, dashArray: "3,4", smoothFactor: 1 }).addTo(map);
+    // Un río = una polilínea continua por tramo (cabecera->medio,
+    // medio->desembocadura), cada una con su propio grosor según el
+    // caudal de su punto final — así un tramo con más agua se ve más
+    // grueso que el resto, en vez de un grosor uniforme de punta a punta.
+    // Curva sinuosa puramente decorativa (curvaTramo), no mueve los puntos
+    // reales con datos de caudal.
+    const semillaRio = r.rio.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
+    for (let i = 0; i < r.puntos.length - 1; i++) {
+      const puntosTramo = curvaTramo(r.puntos[i], r.puntos[i + 1], semillaRio + i);
+      L.polyline(puntosTramo, {
+        color: "#3E8FC0", weight: grosorTramo(r.puntos[i + 1]), opacity: 0.75, smoothFactor: 1,
+      }).addTo(map);
+    }
 
     r.puntos.forEach((p) => {
       const cat = categoriaCaudal(p.caudal, p.umbralBajo, p.umbralAlto);
