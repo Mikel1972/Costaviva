@@ -1010,6 +1010,36 @@ function iconoFlecha(grados, color) {
     <path d="M12 2 L18 16 L12 12 L6 16 Z" fill="${color}" /></svg>`;
 }
 
+// Genera una polilínea sinuosa que pasa exactamente por los puntos reales
+// del río (cabecera/medio/desembocadura no se mueven), con un serpenteo
+// perpendicular que se atenúa a 0 en cada punto real para que no haya
+// "codos" al unir un tramo con el siguiente. Puramente visual — un río
+// nunca es una línea recta — la semilla (nombre del río) hace que cada uno
+// tenga una forma algo distinta en vez de la misma onda repetida.
+function curvaMeandro(puntos, nombreRio) {
+  const semilla = nombreRio.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
+  const pseudoAleatorio = (n) => {
+    const x = Math.sin(n * 12.9898 + semilla * 0.7823) * 43758.5453;
+    return x - Math.floor(x);
+  };
+  const resultado = [];
+  for (let i = 0; i < puntos.length - 1; i++) {
+    const a = puntos[i], b = puntos[i + 1];
+    const dLat = b.lat - a.lat, dLon = b.lon - a.lon;
+    const longitud = Math.hypot(dLat, dLon) || 1e-6;
+    const amplitud = longitud * 0.14;
+    const perpLat = -dLon / longitud, perpLon = dLat / longitud;
+    const fase = pseudoAleatorio(i) * Math.PI * 2;
+    const pasos = 16;
+    for (let s = i === 0 ? 0 : 1; s <= pasos; s++) {
+      const t = s / pasos;
+      const onda = Math.sin(t * Math.PI * 2.5 + fase) * amplitud * Math.sin(t * Math.PI);
+      resultado.push([a.lat + dLat * t + perpLat * onda, a.lon + dLon * t + perpLon * onda]);
+    }
+  }
+  return resultado;
+}
+
 function crearMarcadores() {
   SPOTS.forEach((s) => {
     const color = colorIndiceMarCss(s.indice);
@@ -1032,9 +1062,11 @@ function crearMarcadores() {
   });
 
   RIOS.forEach((r) => {
-    // Línea que conecta los puntos del mismo río (cabecera -> desembocadura)
-    const latlngs = r.puntos.map((p) => [p.lat, p.lon]);
-    L.polyline(latlngs, { color: "#4A6472", weight: 2, opacity: 0.6, dashArray: "3,4" }).addTo(map);
+    // Curva sinuosa entre los puntos del río (cabecera -> desembocadura) —
+    // puramente decorativa, para que parezca un cauce real en vez de un
+    // segmento recto; no mueve los puntos reales con datos de caudal.
+    const latlngs = curvaMeandro(r.puntos, r.rio);
+    L.polyline(latlngs, { color: "#4A6472", weight: 2, opacity: 0.6, dashArray: "3,4", smoothFactor: 1 }).addTo(map);
 
     r.puntos.forEach((p) => {
       const cat = categoriaCaudal(p.caudal, p.umbralBajo, p.umbralAlto);
