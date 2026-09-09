@@ -203,6 +203,25 @@
     cursor: pointer; font-size: 16px; padding: 0;
   }
   .batimetria-toggle.activo { background: #D4A24C; color: #0B2532; }
+  .nubes-toggle {
+    position: absolute; top: 160px; right: 16px; z-index: 502;
+    width: 38px; height: 38px; border-radius: 8px;
+    background: #0F2C38; border: 1px solid #1C3F4F; color: #E8E2D0;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 16px; padding: 0;
+  }
+  .nubes-panel {
+    position: absolute; top: 160px; right: 64px; z-index: 501;
+    background: #0F2C38; border: 1px solid #1C3F4F; border-radius: 8px;
+    padding: 12px 14px; font-size: 11.5px; font-family: 'IBM Plex Mono', monospace;
+    width: 210px;
+    opacity: 0; transform: translateX(14px); pointer-events: none;
+    transition: opacity 0.15s ease-out, transform 0.15s ease-out;
+  }
+  .nubes-panel.visible { opacity: 1; transform: translateX(0); pointer-events: auto; }
+  .nubes-panel .fila-dato { display: flex; justify-content: space-between; margin-top: 4px; color: #9FB8BF; }
+  .nubes-panel .fila-dato b { color: #E8E2D0; font-weight: 700; }
+  .nubes-panel .nota { color: #6C8890; font-size: 9.5px; margin-top: 8px; line-height: 1.4; }
   .luna-panel {
     position: absolute; top: 64px; right: 64px; z-index: 501;
     background: #0F2C38; border: 1px solid #1C3F4F; border-radius: 8px;
@@ -360,6 +379,16 @@
       </div>
     </div>
     <button class="batimetria-toggle" id="toggleBatimetria" title="Batimetría (profundidad del mar)" aria-label="Mostrar/ocultar batimetría">📏</button>
+    <button class="nubes-toggle" id="toggleNubes" title="Nubosidad y lluvia" aria-label="Mostrar/ocultar nubosidad y lluvia">☁️</button>
+    <div class="nubes-panel" id="nubesPanel">
+      <div class="nota" id="nubesZoomAviso" style="display:none;">🔍 Acércate (zoom in) para ver nubosidad/lluvia de esa ubicación</div>
+      <div id="nubesContenido">
+        <div class="fila-dato"><span>Nubosidad</span><b id="nubesCobertura">—</b></div>
+        <div class="fila-dato"><span>Precipitación</span><b id="nubesPrecipitacion">—</b></div>
+        <div class="fila-dato"><span>Próximas 3h</span><b id="nubesTendencia">—</b></div>
+        <div class="nota">Para el centro del mapa actual. Fuente: Open-Meteo (mismo modelo que el oleaje/viento).</div>
+      </div>
+    </div>
   </div>
   <div class="panel" id="panel">
     <button class="cerrar" id="cerrarPanel">✕</button>
@@ -1442,8 +1471,61 @@ document.getElementById("toggleLuna").addEventListener("click", () => {
   document.getElementById("toggleLuna").textContent = lunaAbierta ? "✕" : "🌙";
   if (lunaAbierta) actualizarLuna();
 });
+
+// Nubosidad/lluvia: mismo patrón que la luna (para el centro del mapa,
+// se recalcula al mover/hacer zoom), pero pedido directo a Open-Meteo
+// desde el navegador — es la misma API que ya usa functions/prevision.js
+// para los spots fijos, sin necesidad de un endpoint propio porque
+// Open-Meteo tiene CORS abierto y no requiere cálculo astronómico como
+// la luna.
+const ZOOM_MINIMO_NUBES = 8;
+let nubesAbierto = false;
+
+async function actualizarNubes() {
+  const aviso = document.getElementById("nubesZoomAviso");
+  const contenido = document.getElementById("nubesContenido");
+  if (map.getZoom() < ZOOM_MINIMO_NUBES) {
+    aviso.style.display = "block";
+    contenido.style.display = "none";
+    return;
+  }
+  aviso.style.display = "none";
+  contenido.style.display = "block";
+
+  const centro = map.getCenter();
+  try {
+    const resp = await fetch(
+      `https://api.open-meteo.com/v1/forecast?latitude=${centro.lat.toFixed(4)}&longitude=${centro.lng.toFixed(4)}&timezone=Europe%2FMadrid&hourly=cloudcover,precipitation`,
+      { cache: "no-store" }
+    );
+    const datos = await resp.json();
+    if (!resp.ok || !datos.hourly) throw new Error("sin datos");
+    const horas = datos.hourly.time;
+    const ahoraISO = new Date().toISOString().slice(0, 13);
+    let idx = horas.findIndex((h) => h.slice(0, 13) === ahoraISO);
+    if (idx === -1) idx = 0;
+    const cobertura = datos.hourly.cloudcover[idx];
+    const precipitacion = datos.hourly.precipitation[idx];
+    const precipitacion3h = [1, 2, 3].reduce((suma, i) => suma + (datos.hourly.precipitation[idx + i] || 0), 0);
+
+    document.getElementById("nubesCobertura").textContent = cobertura != null ? `${Math.round(cobertura)}%` : "sin datos";
+    document.getElementById("nubesPrecipitacion").textContent =
+      precipitacion != null ? `${precipitacion.toFixed(1)} mm/h` : "sin datos";
+    document.getElementById("nubesTendencia").textContent =
+      precipitacion3h > 0 ? `${precipitacion3h.toFixed(1)} mm esperados` : "sin lluvia prevista";
+  } catch (e) {
+    console.log("No se pudo cargar nubosidad/lluvia para esta ubicación:", e.message);
+  }
+}
+
+document.getElementById("toggleNubes").addEventListener("click", () => {
+  nubesAbierto = document.getElementById("nubesPanel").classList.toggle("visible");
+  document.getElementById("toggleNubes").textContent = nubesAbierto ? "✕" : "☁️";
+  if (nubesAbierto) actualizarNubes();
+});
 map.on("moveend zoomend", () => {
   if (lunaAbierta) actualizarLuna();
+  if (nubesAbierto) actualizarNubes();
 });
 document.getElementById("cerrarPanel").addEventListener("click", () => {
   document.getElementById("panel").classList.remove("visible");
