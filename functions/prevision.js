@@ -465,6 +465,116 @@ async function datosBoyaNazare() {
 // posición depende de dónde esté centrado el mapa en cada momento, así que
 // el navegador la pide aparte en vez de venir fija dentro de /prevision.
 
+// ---------------------------------------------------------------------------
+// Caudal real de ríos — a diferencia del caso vasco (URA/Bizkaia, bloqueado
+// y ~5 meses de retraso, ver RIOS en index.html), estas 4 fuentes SÍ dan
+// datos de hoy sin login. Cada una se verificó a mano con una petición real
+// el 2026-09-09 antes de escribir el parser. Devuelven un objeto
+// { <slugRio>: { caudal, actualizado, estacion } } que el cliente cruza con
+// sus propios puntos de río por nombre.
+// ---------------------------------------------------------------------------
+
+// Confederación Hidrográfica del Cantábrico — Sella, Besaya, Pas, Asón, Eo.
+// Devuelve una tabla HTML (sin API JSON pública), hay que extraer filas.
+async function datosCaudalCantabrico() {
+  const resp = await fetch("https://visor.saichcantabrico.es/wp-admin/admin-ajax.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded", "User-Agent": "Mozilla/5.0 (compatible; CostaVivaApp/0.1)" },
+    body: "action=tabla_caudal",
+  });
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+  const html = await resp.text();
+
+  const re = /data-codigo="(\d+)">.*?primera-columna">([^<]+)<.*?izquierda"> <span class="_texto">([^<]+)<\/span><\/td><td class="td-valor izquierda"> <span class="_texto">([^<]+)<\/span><\/td><td data-color="\d" class="td-valor "><a title="Caudal río "><span class="[a-z]+">([0-9.]+)<\/span>.*?<span>(\d+)<\/span><\/div><\/td><td><div class="agrupacion-valor-campana"><img[^>]+>&nbsp;<span>(\d+)<\/span><\/div><\/td><td><div class="agrupacion-valor-campana"><img[^>]+>&nbsp;<span>(\d+)<\/span>.*?class="td-actualizacion">([^<]+)</g;
+  const filas = [];
+  let m;
+  while ((m = re.exec(html)))
+    filas.push({
+      rio: m[3], estacion: m[4], caudal: parseFloat(m[5]),
+      umbralBajo: parseFloat(m[6]), umbralMedio: parseFloat(m[7]), umbralAlto: parseFloat(m[8]),
+      actualizado: m[9],
+    });
+
+  const buscar = (estacion) => {
+    const f = filas.find((x) => x.estacion === estacion);
+    return f
+      ? { caudal: f.caudal, actualizado: f.actualizado, estacion: f.estacion, umbralBajo: f.umbralBajo, umbralAlto: f.umbralAlto }
+      : null;
+  };
+  return {
+    sella: buscar("Arriondas"),
+    besaya: buscar("Puente de Torres"),
+    pas: buscar("Puente Viesgo"),
+    ason: buscar("Ramales de la Victoria"),
+    eo: buscar("A Pontenova"),
+  };
+}
+
+// Confederación Hidrográfica del Júcar — Júcar, Turia, Mijares. Página con
+// un array JS embebido (`let aforos = [...]`), sin API JSON aparte.
+async function datosCaudalJucar() {
+  const resp = await fetch("https://saih.chj.es/mapa-aforos", {
+    headers: { "User-Agent": "Mozilla/5.0 (compatible; CostaVivaApp/0.1)" },
+  });
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+  const html = await resp.text();
+  const inicio = html.indexOf("let aforos = [") + "let aforos = ".length;
+  const fin = html.indexOf("];", inicio) + 1;
+  if (inicio < "let aforos = ".length || fin < 0) throw new Error("no se encontró el array de aforos");
+  const aforos = JSON.parse(html.slice(inicio, fin));
+
+  const buscar = (nombre) => {
+    const f = aforos.find((a) => a.fldTNombre === nombre);
+    return f
+      ? {
+          caudal: +Number(f.lastValue).toFixed(2), actualizado: f.lastValueFecha, estacion: f.fldTNombre,
+          umbralBajo: f.fldFUmbralBajo ?? null, umbralAlto: f.fldFUmbralAlto ?? null,
+        }
+      : null;
+  };
+  return {
+    jucar: buscar("EA 89 HUERTO MULET"),
+    turia: buscar("EA 25 AGUAS POTABLES"),
+    mijares: buscar("EA 5 LA PRESA DE VILA-REAL"),
+  };
+}
+
+// Confederación Hidrográfica del Segura — Segura (cerca de Guardamar).
+async function datosCaudalSegura() {
+  const resp = await fetch("https://saihweb.chsegura.es/apps/iVisor/obtener_datos.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded", "User-Agent": "Mozilla/5.0 (compatible; CostaVivaApp/0.1)" },
+    body: "action=consultar_cauces_topo",
+  });
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+  const puntos = await resp.json();
+  const p = puntos.find((x) => x.NombreCortoPM === "A.Rojales");
+  if (!p) throw new Error("estación A.Rojales no encontrada");
+  return { segura: { caudal: parseFloat(p.UltimoDatoCaudal.replace(",", ".")), actualizado: null, estacion: "Rojales" } };
+}
+
+// Augas de Galicia (vía MeteoGalicia) — río Lagares, Ría de Vigo.
+async function datosCaudalGalicia() {
+  const resp = await fetch("https://servizos.meteogalicia.gal/mgafos/estacions/listUltimosDatos.action?idEstacion=140123", {
+    headers: { "User-Agent": "Mozilla/5.0 (compatible; CostaVivaApp/0.1)" },
+  });
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+  const html = await resp.text();
+  const m = html.match(/Caudal medio da auga[\s\S]{0,120}?<td>([0-9,]+)&nbsp;\s*m3\/s/);
+  if (!m) throw new Error("no se encontró el dato de caudal");
+  return { lagares: { caudal: parseFloat(m[1].replace(",", ".")), actualizado: null, estacion: "Lagares (Vigo)" } };
+}
+
+async function datosCaudalTodos() {
+  const [cantabrico, jucar, segura, galicia] = await Promise.all([
+    datosCaudalCantabrico().catch((e) => ({ error: String(e) })),
+    datosCaudalJucar().catch((e) => ({ error: String(e) })),
+    datosCaudalSegura().catch((e) => ({ error: String(e) })),
+    datosCaudalGalicia().catch((e) => ({ error: String(e) })),
+  ]);
+  return { ...cantabrico, ...jucar, ...segura, ...galicia };
+}
+
 // Metadato de la imagen nacional de rayos de AEMET (ver /rayos-imagen) —
 // solo la hora de la última actualización, para no repetir la llamada al
 // timeline en el navegador.
@@ -480,7 +590,7 @@ async function metaRayos() {
 }
 
 export async function onRequestGet(context) {
-  const [resultados, boyasEspana, boyaNazare, rayosNacional] = await Promise.all([
+  const [resultados, boyasEspana, boyaNazare, rayosNacional, caudales] = await Promise.all([
     previsionTodosSpots(SPOTS).catch((e) =>
       SPOTS.map((spot) => ({ slug: spot.slug, nombre: spot.nombre, error: String(e) }))
     ),
@@ -489,10 +599,11 @@ export async function onRequestGet(context) {
       codigo: "PT-nazare-costeira", nombre: "Nazaré (costeira, PT)", lat: 39.560, lon: -9.210, error: String(e),
     })),
     metaRayos().catch((e) => ({ error: String(e) })),
+    datosCaudalTodos().catch((e) => ({ error: String(e) })),
   ]);
   const boyas = [...boyasEspana, boyaNazare];
 
-  return new Response(JSON.stringify({ spots: resultados, boyas, rayosNacional }, null, 2), {
+  return new Response(JSON.stringify({ spots: resultados, boyas, rayosNacional, caudales }, null, 2), {
     headers: {
       "content-type": "application/json; charset=utf-8",
       // Cache corto en el edge de Cloudflare — el modelo de Open-Meteo se

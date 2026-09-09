@@ -325,7 +325,7 @@
       <div class="fila"><span class="chip" style="background:#4F9D69"></span><span>tranquilo</span></div>
       <div class="fila"><span class="chip" style="background:#D4A24C"></span><span>moderado</span></div>
       <div class="fila"><span class="chip" style="background:#A34A35"></span><span>agitado</span></div>
-      <div class="nota" style="margin-top:10px; padding-top:8px; border-top:1px solid #1C3F4F;">◆ RÍOS: 3 puntos por río (cabecera→desembocadura), color por caudal bajo/normal/alto — pasa el cursor por un punto para ver el detalle. Lo que se mide arriba llega a la costa horas después — útil como aviso de tendencia. Posiciones aproximadas, sin datos reales todavía (URA/Euskalmet).</div>
+      <div class="nota" style="margin-top:10px; padding-top:8px; border-top:1px solid #1C3F4F;">◆ RÍOS: 3 puntos por río (cabecera→desembocadura), color por caudal bajo/normal/alto — pasa el cursor por un punto para ver el detalle. Lo que se mide arriba llega a la costa horas después — útil como aviso de tendencia. Posiciones ilustrativas, no las estaciones oficiales exactas. Caudal real solo en Sella, Besaya, Pas, Asón, Eo, Júcar, Turia, Mijares, Segura y Lagares (Confederaciones Hidrográficas + Augas de Galicia) — los ríos vascos siguen sin dato real (URA/Bizkaia bloquea el acceso automático).</div>
     </div>
     <button class="rayos-toggle" id="toggleRayos" title="Mapa de rayos de España (AEMET)" aria-label="Mostrar/ocultar mapa de rayos">⚡</button>
     <div class="rayos-panel" id="rayosPanel">
@@ -655,16 +655,109 @@ const RIOS = [
       { tramo: "Desembocadura (Getxo/Portugalete)", lat: 43.353, lon: -3.033, caudal: null },
     ],
   },
+
+  // --- Ríos con caudal REAL (ver functions/prevision.js datosCaudalTodos)
+  // — a diferencia de los 6 de arriba, aquí el punto de desembocadura sí
+  // lleva "slugCaudal" y actualizarDesdeBackend() lo rellena con el dato
+  // real de la estación más cercana verificada. Cabecera/medio siguen
+  // siendo posiciones ilustrativas sin dato, igual que en los ríos vascos. ---
+  {
+    rio: "Sella", spotCosta: "ribadesella",
+    puntos: [
+      { tramo: "Cabecera (Sajambre)", lat: 43.220, lon: -4.980, caudal: null },
+      { tramo: "Medio (Cangas de Onís)", lat: 43.351, lon: -5.132, caudal: null },
+      { tramo: "Desembocadura (Ribadesella) — estación Arriondas", lat: 43.463, lon: -5.057, caudal: null, slugCaudal: "sella" },
+    ],
+  },
+  {
+    rio: "Besaya", spotCosta: "suances",
+    puntos: [
+      { tramo: "Cabecera (Bárcena de Pie de Concha)", lat: 43.196, lon: -4.084, caudal: null },
+      { tramo: "Medio (Torrelavega)", lat: 43.354, lon: -4.048, caudal: null },
+      { tramo: "Desembocadura (Suances) — estación Puente de Torres", lat: 43.440, lon: -4.040, caudal: null, slugCaudal: "besaya" },
+    ],
+  },
+  {
+    rio: "Pas", spotCosta: "santander",
+    puntos: [
+      { tramo: "Cabecera (Vega de Pas)", lat: 43.169, lon: -3.836, caudal: null },
+      { tramo: "Medio (Puente Viesgo)", lat: 43.297, lon: -3.958, caudal: null },
+      { tramo: "Desembocadura (Mogro, ría de Santander) — estación Puente Viesgo", lat: 43.454, lon: -3.897, caudal: null, slugCaudal: "pas" },
+    ],
+  },
+  {
+    rio: "Asón", spotCosta: "santona",
+    puntos: [
+      { tramo: "Cabecera (Collados del Asón)", lat: 43.232, lon: -3.478, caudal: null },
+      { tramo: "Medio (Ramales de la Victoria)", lat: 43.264, lon: -3.459, caudal: null },
+      { tramo: "Desembocadura (marismas de Santoña) — estación Ramales", lat: 43.441, lon: -3.451, caudal: null, slugCaudal: "ason" },
+    ],
+  },
+  {
+    rio: "Eo", spotCosta: "ribadeo",
+    puntos: [
+      { tramo: "Cabecera (A Fonsagrada)", lat: 43.130, lon: -7.196, caudal: null },
+      { tramo: "Medio (A Pontenova)", lat: 43.343, lon: -7.249, caudal: null },
+      { tramo: "Desembocadura (Ribadeo) — estación A Pontenova", lat: 43.539, lon: -7.041, caudal: null, slugCaudal: "eo" },
+    ],
+  },
+  {
+    rio: "Júcar", spotCosta: "cullera",
+    puntos: [
+      { tramo: "Cabecera (Antella)", lat: 39.089, lon: -0.590, caudal: null },
+      { tramo: "Medio (Algemesí) — estación Huerto Mulet", lat: 39.190, lon: -0.435, caudal: null },
+      { tramo: "Desembocadura (Cullera)", lat: 39.160, lon: -0.252, caudal: null, slugCaudal: "jucar" },
+    ],
+  },
+  {
+    rio: "Turia", spotCosta: "valencia",
+    puntos: [
+      { tramo: "Cabecera (Villamarchante)", lat: 39.556, lon: -0.598, caudal: null },
+      { tramo: "Medio (Manises) — estación Aguas Potables", lat: 39.489, lon: -0.462, caudal: null },
+      { tramo: "Desembocadura (Valencia)", lat: 39.441, lon: -0.325, caudal: null, slugCaudal: "turia" },
+    ],
+  },
+  {
+    rio: "Mijares", spotCosta: "burriana",
+    puntos: [
+      { tramo: "Cabecera (Montanejos)", lat: 39.981, lon: -0.517, caudal: null },
+      { tramo: "Medio (Vila-real) — estación Presa de Vila-real", lat: 39.928, lon: -0.101, caudal: null },
+      { tramo: "Desembocadura (Burriana)", lat: 39.889, lon: -0.081, caudal: null, slugCaudal: "mijares" },
+    ],
+  },
+  {
+    rio: "Segura", spotCosta: "guardamardelsegura",
+    puntos: [
+      { tramo: "Cabecera (Orihuela)", lat: 38.085, lon: -0.947, caudal: null },
+      { tramo: "Medio (Rojales) — estación A.Rojales", lat: 38.088, lon: -0.720, caudal: null },
+      { tramo: "Desembocadura (Guardamar del Segura)", lat: 38.087, lon: -0.653, caudal: null, slugCaudal: "segura" },
+    ],
+  },
+  {
+    rio: "Lagares", spotCosta: "cangas",
+    puntos: [
+      { tramo: "Cabecera (A Madroa, Vigo)", lat: 42.211, lon: -8.683, caudal: null },
+      { tramo: "Medio (Vigo)", lat: 42.225, lon: -8.700, caudal: null },
+      { tramo: "Desembocadura (Ría de Vigo)", lat: 42.238, lon: -8.720, caudal: null, slugCaudal: "lagares" },
+    ],
+  },
 ];
 // Lista plana de todos los puntos, para dibujar en el mapa
 const RIO_PUNTOS = RIOS.flatMap((r) =>
   r.puntos.map((p) => ({ ...p, rio: r.rio }))
 );
 
-function categoriaCaudal(caudal) {
-  if (caudal === null) return { etiqueta: "sin datos", color: "#3A5361" };
-  if (caudal < 33) return { etiqueta: "bajo", color: "#4F9D69" };
-  if (caudal < 66) return { etiqueta: "normal", color: "#D4A24C" };
+// Categoriza el caudal real (m3/s) contra los umbrales de aviso oficiales
+// de esa estación en concreto (cada río tiene su propia escala — el Eo
+// avisa por encima de 227 m3/s, el Turia por encima de 200 — no existe un
+// "alto" universal). Si no tenemos el umbral oficial de esa fuente
+// (Segura, Lagares), se muestra el número real pero sin colorear como
+// bajo/normal/alto para no inventar una escala.
+function categoriaCaudal(caudal, umbralBajo, umbralAlto) {
+  if (caudal === null || caudal === undefined) return { etiqueta: "sin datos", color: "#3A5361" };
+  if (umbralBajo == null || umbralAlto == null) return { etiqueta: `${caudal} m³/s`, color: "#7FA3AF" };
+  if (caudal < umbralBajo) return { etiqueta: "bajo", color: "#4F9D69" };
+  if (caudal < umbralAlto) return { etiqueta: "normal", color: "#D4A24C" };
   return { etiqueta: "alto", color: "#A34A35" };
 }
 
@@ -803,6 +896,19 @@ async function actualizarDesdeBackend() {
       const b = BOYAS.find((x) => x.codigo === bBackend.codigo);
       if (b) Object.assign(b, bBackend);
     });
+    if (datos.caudales) {
+      RIOS.forEach((r) => {
+        r.puntos.forEach((p) => {
+          if (!p.slugCaudal) return;
+          const c = datos.caudales[p.slugCaudal];
+          if (!c || c.error) return;
+          p.caudal = c.caudal;
+          p.umbralBajo = c.umbralBajo ?? null;
+          p.umbralAlto = c.umbralAlto ?? null;
+          p.estacion = c.estacion;
+        });
+      });
+    }
     console.log("Datos reales cargados desde /prevision");
   } catch (e) {
     console.log("Backend no disponible, usando datos fijos de hoy:", e.message);
@@ -931,13 +1037,17 @@ function crearMarcadores() {
     L.polyline(latlngs, { color: "#4A6472", weight: 2, opacity: 0.6, dashArray: "3,4" }).addTo(map);
 
     r.puntos.forEach((p) => {
-      const cat = categoriaCaudal(p.caudal);
+      const cat = categoriaCaudal(p.caudal, p.umbralBajo, p.umbralAlto);
       const html = `<div class="rio-marcador" style="background:${cat.color};"></div>`;
       const icon = L.divIcon({ html, className: "", iconSize: [10, 10], iconAnchor: [5, 5] });
+      const detalleCaudal =
+        p.caudal != null && p.umbralBajo != null
+          ? `${p.caudal} m³/s (${cat.etiqueta})`
+          : cat.etiqueta;
       const llamada = `
         <div class="rio-nombre">${r.rio}</div>
-        <div class="rio-tramo">${p.tramo}</div>
-        <div class="rio-caudal"><span class="chip" style="width:8px;height:8px;border-radius:2px;background:${cat.color};"></span>Caudal: ${cat.etiqueta}</div>
+        <div class="rio-tramo">${p.tramo}${p.estacion ? ` — estación ${p.estacion}` : ""}</div>
+        <div class="rio-caudal"><span class="chip" style="width:8px;height:8px;border-radius:2px;background:${cat.color};"></span>Caudal: ${detalleCaudal}</div>
       `;
       L.marker([p.lat, p.lon], { icon }).addTo(map)
         .bindTooltip(llamada, { direction: "top", offset: [0, -6], className: "llamada-rio", opacity: 1 });
