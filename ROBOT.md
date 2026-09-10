@@ -496,6 +496,64 @@ que corregir.**
 
 **Nada que corregir esta pasada.**
 
+### 2026-09-10 (pasada nocturna corta — salud de datos)
+
+**Pasada nocturna diaria, distinta de la auditoría semanal completa** (esta
+sesión es la rutina "Costa Viva — calibración nocturna", no el "Robot de
+datos" semanal — no se ha tocado ninguna lista de especies ni se ha buscado
+ninguna fuente nueva, eso es trabajo de la semanal). Alcance: comprobar con
+`curl` real que las fuentes ya integradas siguen respondiendo con la forma
+esperada.
+
+- **Boyas de Puertos del Estado — 2136 Bilbao-Vizcaya, 1117 Gijón, 1101
+  Pasaia II, y 1731 Barcelona II** (rotando esta noche a una boya
+  mediterránea además de las 3 cántabras habituales, según pide la tarea).
+  Las 4 HTTP 200, forma `[cabeceras, filas]` correcta, datos de las últimas
+  horas. Bilbao-Vizcaya Hm0 1.88 m, Gijón Hm0 1.9 m, Pasaia II Hm0 2.0 m,
+  Barcelona II Hm0 0.96 m. Todas sanas — detalle completo en la sección
+  "Calibración" de hoy.
+- **Boya de Nazaré (Portugal, `monican.hidrografico.pt`) — no se pudo
+  comprobar esta pasada.** El dominio fue rechazado por el proxy de salida
+  del entorno (`curl: (56) CONNECT tunnel failed, response 403`, 3/3
+  intentos, confirmado también contra la raíz del dominio, no solo el
+  endpoint JSON). Es el mismo patrón ya documentado muchas veces en este
+  archivo: la política de red de este entorno varía de un día/pasada a
+  otro y bloquea dominios concretos sin patrón fijo — no hay evidencia de
+  que la fuente en sí esté rota, solo que no fue alcanzable hoy desde
+  aquí. Sin severidad porque no es un hallazgo, es una limitación de esta
+  pasada — pendiente de reintentar en la próxima.
+- **Las 4 fuentes de caudal de ríos (Cantábrico/Júcar/Segura/Galicia) — no
+  se pudieron comprobar esta pasada, mismo motivo.** Los 4 dominios
+  (`visor.saichcantabrico.es`, `saih.chj.es`, `saihweb.chsegura.es`,
+  `servizos.meteogalicia.gal`) fueron rechazados por el proxy de salida
+  (`403` en los 4, un único intento cada uno tras confirmar con el estado
+  del proxy — `recentRelayFailures` — que es un rechazo de política, no un
+  timeout del servidor de destino). Son justo las fuentes que la propia
+  tarea señala como "las más propensas a romperse" por ser parsers de HTML
+  frágiles, así que sería deseable volver a intentarlo pronto — pero de
+  momento no hay ninguna evidencia real de rotura, solo de bloqueo de red
+  local a esta pasada.
+- **Webcams — muestra de 3 (no se llegó a 4 por el mismo bloqueo de red):
+  bakio, sopelana, mundaka, las 3 sanas.** HTTP 200 con imagen real y
+  válida (JPEG 764 906 bytes, WebP 60 166 bytes, JPEG 173 085 bytes
+  respectivamente — no placeholders ni páginas de error). Se intentó
+  también una muestra de otras zonas para cumplir mejor el espíritu de
+  "zonas distintas" (`cantabria.es` para Suances, `comunitatvalenciana.com`
+  para Calpe, `meteogalicia.gal` para A Coruña, `apps.socib.es` para
+  Balears) pero los 4 dominios fueron rechazados por el proxy de salida —
+  no se pudo ampliar la muestra fuera del País Vasco esta noche. Ninguna
+  marcada como rota, solo no alcanzable hoy.
+
+**Resumen de severidad para el usuario:** nada roto confirmado esta noche.
+Lo único a vigilar es que la política de red de este entorno bloqueó hoy 8
+dominios de fuentes ya integradas y sanas en pasadas anteriores (Nazaré,
+las 4 de caudal, y 3 de las 4 webcams de fuera del País Vasco) — igual que
+ya ha pasado varias veces documentado más arriba en este archivo, parece
+ser variabilidad de la política de red del entorno entre pasadas, no una
+rotura real de ninguna fuente. Si esto se repite varias noches seguidas
+para el mismo dominio, ahí sí habría que sospechar de una rotura real en
+vez de una limitación de red puntual.
+
 ---
 
 ## Calibración
@@ -615,3 +673,57 @@ representado por las coordenadas actuales del spot) que ruido — pero con
 solo 3 muestras sigue siendo una observación, no una conclusión con
 suficiente respaldo. Seguir acumulando puntos en próximas pasadas, faltan
 al menos 5 más.
+
+### 2026-09-10 (pasada nocturna corta — nueva metodología)
+
+**Pasada nocturna diaria** (rutina "Costa Viva — calibración nocturna",
+corta y enfocada, distinta de la auditoría semanal completa que hace
+`ROBOT.md` en sus otras entradas). A partir de hoy la calibración nocturna
+usa una metodología algo distinta a los 3 puntos anteriores de este
+archivo, y **no son directamente comparables entre sí**:
+
+- Los 3 puntos anteriores (31 ago. y 7 sep.) comparaban la altura
+  calculada **en cada uno de los 6 spots del País Vasco** contra la altura
+  medida por **una sola boya de referencia** (2136, mar adentro) — mezclan
+  en la misma cifra el error del modelo de Open-Meteo *y* el efecto
+  geográfico real de estar más resguardado en la costa que en mar abierto.
+- Los 4 puntos de hoy comparan, boya por boya, la altura calculada por
+  Open-Meteo **justo en las coordenadas de esa misma boya** contra lo que
+  la boya mide en ese instante — así se aísla el error propio del modelo,
+  sin mezclarlo con la distancia geográfica a ningún spot. Se marcan en
+  `CALIBRACION.jsonl` con `"tipo": "boya_vs_openmeteo_mismo_punto"` para
+  distinguirlos de las líneas anteriores (que no llevan ese campo).
+
+Metodología de hoy: `curl` real a `poem.puertos.es/portus/StationData` para
+las boyas 2136 (Bilbao-Vizcaya), 1117 (Gijón) y 1101 (Pasaia II) —el
+mínimo que pide la tarea— más una cuarta boya de otra región para ir
+rotando cobertura: **1731 Barcelona II** (Mediterráneo, no comprobada
+hasta ahora en ninguna pasada de calibración). Para cada una, `curl` a
+Open-Meteo Marine (`marine-api.open-meteo.com/v1/marine`, mismo parámetro
+`wave_height` que usa `functions/prevision.js`) con la lat/lon exacta de
+esa boya (las mismas coordenadas que trae `BOYAS` en
+`functions/prevision.js`), emparejando por la hora UTC exacta del último
+dato real de cada boya:
+
+| boya | hora UTC | altura medida | altura calculada | diferencia | % |
+|---|---|---|---|---|---|
+| 2136 Bilbao-Vizcaya | 01:00 | 1.88 m | 1.72 m | −0.16 m | −8.5% |
+| 1117 Gijón | 2026-09-09 23:00 | 1.90 m | 1.62 m | −0.28 m | −14.7% |
+| 1101 Pasaia II | 00:00 | 2.00 m | 1.28 m | −0.72 m | −36.0% |
+| 1731 Barcelona II | 00:00 | 0.96 m | 0.74 m | −0.22 m | −22.9% |
+
+Con solo 4 puntos de esta nueva metodología (0 de historial previo, porque
+es la primera pasada que la usa) **no se llega ni de lejos** al mínimo de
+15 puntos por boya/zona que pide la tarea antes de proponer un factor de
+corrección — ni siquiera hay más de un punto todavía para ninguna boya
+individual. Observación preliminar sin ninguna conclusión: las 4 boyas de
+hoy salen con Open-Meteo calculando **por debajo** de la medición real
+directamente en el punto de la boya (no solo en los spots costeros como ya
+se veía antes), con Pasaia II la desviación más grande (−36%) y
+Bilbao-Vizcaya la más pequeña (−8.5%) — pero es un único punto por boya en
+un único instante, así que podría ser tanto sesgo real del modelo en esa
+zona como ruido de esta hora/estado de mar concreto. Seguir acumulando,
+rotando cada noche por alguna boya nueva de otra región (candidatas para
+próximas pasadas: 1514 Málaga, 2548 Cabo de Gata, o repetir 2136/1117/1101
+para ir sumando historial en las 3 obligatorias) hasta tener al menos 15
+puntos por boya antes de plantear ningún factor de corrección.
