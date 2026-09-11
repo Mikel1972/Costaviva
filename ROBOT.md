@@ -554,6 +554,65 @@ rotura real de ninguna fuente. Si esto se repite varias noches seguidas
 para el mismo dominio, ahí sí habría que sospechar de una rotura real en
 vez de una limitación de red puntual.
 
+### 2026-09-11 (pasada nocturna corta — salud de datos)
+
+**Pasada nocturna diaria, mismo alcance estrecho que la de ayer** (rutina
+"Costa Viva — calibración nocturna", distinta de la auditoría semanal
+completa; no se ha tocado ninguna lista de especies ni se ha buscado
+ninguna fuente nueva). Resultado: todo lo alcanzable hoy está sano, pero
+**el mismo bloqueo de red de anoche para Nazaré y las 4 fuentes de caudal
+se repite hoy, dos noches seguidas** — empieza a merecer vigilancia, ver
+aviso más abajo.
+
+- **Boyas de Puertos del Estado — 2136 Bilbao-Vizcaya, 1117 Gijón, 1101
+  Pasaia II, y 1514 Málaga** (rotando hoy a una boya del Mediterráneo/Sur
+  distinta de la de anoche, según pide la tarea). Las 4 HTTP 200, forma
+  `[cabeceras, filas]` correcta, datos de las últimas horas. Bilbao-Vizcaya
+  Hm0 0.94 m, Gijón Hm0 0.81 m, Pasaia II Hm0 1.1 m, Málaga Hm0 0.42 m.
+  Todas sanas — detalle completo en la sección "Calibración" de hoy.
+- **Boya de Nazaré (Portugal, `monican.hidrografico.pt`) — bloqueada de
+  nuevo, segunda noche seguida.** Rechazada por el proxy de salida
+  (`curl: (56) CONNECT tunnel failed, response 403`, 2/2 intentos, tanto al
+  endpoint JSON como a la raíz del dominio). Idéntico resultado a la pasada
+  de anoche (2026-09-10). Todavía sin evidencia de que la fuente en sí esté
+  rota (nunca ha llegado a responder con datos vacíos o mal formados, solo
+  no ha sido alcanzable), pero ya son 2/2 noches — si mañana se repite otra
+  vez, pasaría a marcarse como hallazgo de red persistente en vez de ruido
+  puntual.
+- **Las 4 fuentes de caudal de ríos (Cantábrico/Júcar/Segura/Galicia) —
+  bloqueadas de nuevo, segunda noche seguida, mismo motivo.** Los 4
+  dominios (`visor.saichcantabrico.es`, `saih.chj.es`, `saihweb.chsegura.es`,
+  `servizos.meteogalicia.gal`) rechazados por el proxy de salida (`403` en
+  los 4, confirmado también que no hay fallos de red registrados en el
+  estado del proxy — es un rechazo de política, no un timeout del servidor
+  de destino). Igual que con Nazaré: 2/2 noches seguidas bloqueadas. Son
+  justo las fuentes que la tarea señala como más frágiles (parsers de HTML),
+  así que esta racha de bloqueo de red es más preocupante para ellas que
+  para las boyas — pero sigue sin haber ninguna evidencia real de rotura de
+  la fuente en sí, solo de la red de este entorno hacia esos 4 dominios
+  concretos.
+- **Webcams — intento de ampliar a zonas fuera del País Vasco (suances,
+  calpe, acoruna, calamillor) bloqueado en los 4 dominios**, mismo patrón
+  que anoche. Se cayó de nuevo a la muestra de las 3 habituales del País
+  Vasco: **mundaka, bakio, sopelana — las 3 sanas.** HTTP 200 con imagen
+  real y válida (JPEG 144 618 bytes 1024×768, JPEG 764 906 bytes 1024×768,
+  WebP 48 158 bytes 2464×2056 respectivamente — no placeholders ni páginas
+  de error).
+
+**Resumen de severidad para el usuario:** nada roto confirmado esta noche
+tampoco. **Aviso de vigilancia (no severidad "roto" todavía):** Nazaré y
+las 4 fuentes de caudal llevan **2/2 pasadas nocturnas seguidas** (2026-09-10
+y 2026-09-11) bloqueadas por la política de red de este entorno, sin poder
+confirmar si siguen sanas. No es (todavía) evidencia de rotura real — el
+propio historial de este archivo muestra que la política de red de este
+entorno varía de un día a otro sin patrón fijo (ver entradas de agosto) —
+pero si una tercera noche seguida repite el mismo bloqueo para los mismos
+dominios, la siguiente pasada debería empezar a tratarlo como una limitación
+estructural de este entorno concreto (a reportar al usuario como tal) en
+vez de asumir que se resolverá solo. Las webcams de fuera del País Vasco
+tienen el mismo patrón pero son de severidad menor (hay 46 webcams más que
+sí se pueden comprobar cuando la red lo permite).
+
 ---
 
 ## Calibración
@@ -727,3 +786,50 @@ rotando cada noche por alguna boya nueva de otra región (candidatas para
 próximas pasadas: 1514 Málaga, 2548 Cabo de Gata, o repetir 2136/1117/1101
 para ir sumando historial en las 3 obligatorias) hasta tener al menos 15
 puntos por boya antes de plantear ningún factor de corrección.
+
+### 2026-09-11 (pasada nocturna corta)
+
+**Segundo día con la metodología "boya vs. Open-Meteo en el mismo punto"**
+(mismo criterio que ayer: se aísla el error del modelo, sin mezclarlo con
+el efecto costero de los spots). `curl` a las boyas 2136 (Bilbao-Vizcaya),
+1117 (Gijón) y 1101 (Pasaia II) —las 3 obligatorias— más **1514 Málaga**
+como cuarta boya de rotación (Mediterráneo/Sur, distinta de la 1731
+Barcelona II de anoche, para ir cubriendo más zonas como pide la tarea).
+Mismo método: Open-Meteo Marine en las coordenadas exactas de cada boya,
+emparejando por la hora UTC exacta del último dato real de cada boya:
+
+| boya | hora UTC | altura medida | altura calculada | diferencia | % |
+|---|---|---|---|---|---|
+| 2136 Bilbao-Vizcaya | 01:00 | 0.94 m | 0.94 m | 0.00 m | 0.0% |
+| 1117 Gijón | 00:00 | 0.81 m | 0.84 m | +0.03 m | +3.7% |
+| 1101 Pasaia II | 00:00 | 1.10 m | 0.80 m | −0.30 m | −27.3% |
+| 1514 Málaga | 00:00 | 0.42 m | 0.26 m | −0.16 m | −38.1% |
+
+Con este segundo día, el historial de esta metodología queda así (todavía
+muy lejos del mínimo de 15 puntos por boya que pide la tarea antes de
+proponer ningún factor de corrección):
+
+- **2136 Bilbao-Vizcaya**: 2 puntos (−8.5%, 0.0%) — la boya con menor
+  desviación en ambos días, consistente con ser la que Open-Meteo modela
+  mejor de las 3 obligatorias hasta ahora.
+- **1117 Gijón**: 2 puntos (−14.7%, +3.7%) — signo distinto entre los dos
+  días (un día por debajo, otro por encima), demasiado pronto para hablar
+  de sesgo sistemático.
+- **1101 Pasaia II**: 2 puntos (−36.0%, −27.3%) — sigue siendo, con
+  diferencia, la boya de las 3 obligatorias con mayor desviación los dos
+  días que se ha comprobado, siempre en la misma dirección (Open-Meteo por
+  debajo). Es la que más vale la pena vigilar de cerca en próximas pasadas:
+  si se mantiene así con más puntos, sería la primera candidata a un factor
+  de corrección de zona.
+- **1731 Barcelona II** (Mediterráneo): 1 punto (−22.9%), sin repetir hoy.
+- **1514 Málaga** (Sur/Mediterráneo): 1 punto nuevo hoy (−38.1%), la
+  desviación más grande de las 5 boyas vistas hasta ahora en cualquier día
+  — pero un solo punto no permite decir si es sesgo de zona o el propio
+  oleaje residual/de mar de viento local (Hm0 muy bajo, 0.42 m, donde un
+  error absoluto pequeño se traduce en un % grande) mal capturado por el
+  modelo de aguas abiertas.
+
+**Ningún factor de corrección propuesto todavía** — ninguna boya llega ni
+de lejos a los 15 puntos que pide la tarea. Seguir rotando cada noche por
+alguna boya nueva de otra región (candidata para la próxima: 2548 Cabo de
+Gata) además de sumar historial en las 3 obligatorias.
