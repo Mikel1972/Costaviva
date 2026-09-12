@@ -258,23 +258,36 @@ En vez de seguir afinando esa aproximación, `coeficientePorSpot()`
 (`functions/prevision.js` y `diario.html`) calcula uno real y distinto
 por spot: el rango de marea (pleamar menos bajamar) que Open-Meteo
 modela para ESE punto concreto cada día, normalizado contra el rango
-mínimo y máximo del propio spot en una ventana de ~17 días (past_days=8
-+ forecast_days=16 en el mapa; ±8 días alrededor de la fecha en el
-diario) — cubre un ciclo vivas-muertas completo (~14.77 días). Escala
-20-120 igual que el índice nacional, pero ahora sí varía de un punto a
-otro porque usa el modelo de oleaje/marea propio de cada coordenada.
-`coeficienteMarea()` (la fórmula astronómica con el retraso calibrado)
-se queda como **respaldo**, solo si la ventana ancha no trae datos
-suficientes (menos de 10 días válidos, o sin variación real que
-normalizar).
+mínimo y máximo del propio spot en una ventana que cubre un ciclo
+vivas-muertas completo (~14.77 días; ±8 días alrededor de la fecha en
+el diario). Escala 20-120 igual que el índice nacional, pero ahora sí
+varía de un punto a otro porque usa el modelo de oleaje/marea propio de
+cada coordenada. `coeficienteMarea()` (la fórmula astronómica con el
+retraso calibrado) se queda como **respaldo**, solo si la ventana ancha
+no trae datos suficientes (menos de 10 días válidos, o sin variación
+real que normalizar).
 
-Efecto colateral a vigilar: la Marine API del mapa ahora pide un rango
-de fechas mucho más ancho (~2.9 MB en una prueba real con los 95 spots,
-~1s de respuesta) — el bucle que arma los "bloques" de previsión
-(`procesarSpot`) tenía que empezar a contar desde `i = 0`, que ahora
-apunta a 8 días atrás; se corrigió para que empiece en el índice de
-"ahora" (`idxAhoraOla`), si no las franjas horarias mostradas habrían
-sido de la semana pasada.
+**Incidente real en producción, mismo día (2026-09-13):** la primera
+versión pedía la ventana ancha (`forecast_days=16`) con las 7 variables
+marinas de golpe (~2.9 MB para los 95 spots) — funcionaba en pruebas
+locales con Node.js (sin límite de tiempo/CPU), pero en Cloudflare
+Pages `/prevision` empezó a devolver **503** en producción (el Worker
+cortaba la respuesta a medias por pasarse del presupuesto de
+tiempo/CPU). `previsionTodosSpots()` ahora hace DOS peticiones a la
+Marine API en vez de una: la de siempre (7 variables, solo
+`forecast_days=2`, para bloques/oleaje/temperatura/corriente) y una
+aparte, ligera (una sola variable, `sea_level_height_msl`,
+`forecast_days=16`, ~920 KB) solo para `coeficientePorSpot()`.
+Verificado en real tras el arreglo: `/prevision` vuelve a responder
+`200` en ~1s. Nota para la próxima vez que se amplíe una ventana de
+datos: el preview de esa misma rama SÍ respondió `200` al probarlo antes
+de mergear (una sola vez) — el límite de tiempo/CPU de Cloudflare
+Workers parece tener algo de variabilidad caso límite (según qué tan
+"caliente" esté el Worker, la ubicación de borde, etc.), así que una
+única comprobación en preview que sale bien no es garantía si la
+petición va muy justa de presupuesto — mejor quedarse con margen de
+sobra (payload bastante más pequeño del límite) que apurar al límite y
+confiar en que una prueba puntual lo confirme.
 
 **Especies enriquecidas por la comunidad (2026-09-12):** el
 desplegable de especies del diario muestra el nombre científico entre
