@@ -103,6 +103,30 @@
   .mensaje.error { display: block; background: rgba(163,74,53,0.15); color: #E8907A; border: 1px solid #A34A35; }
   .mensaje.ok { display: block; background: rgba(79,157,105,0.12); color: #8FCBA3; border: 1px solid #3A6B4C; }
 
+  /* Selector de hora "de rueda": dos columnas con scroll y snap (horas,
+     minutos), estilo selector nativo tipo iOS — sustituye a
+     <input type="time"> en toda la app, ver crearSelectorHora(). */
+  .rueda-hora { margin: 4px 0 2px; }
+  .rueda-check { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: #9FB8BF; margin-bottom: 4px; cursor: pointer; }
+  .rueda-hora-ruedas { display: flex; align-items: center; justify-content: center; gap: 2px; position: relative; }
+  .rueda-marco {
+    position: absolute; left: 4px; right: 4px; top: 36px; height: 36px;
+    border-top: 1px solid #D4A24C; border-bottom: 1px solid #D4A24C; pointer-events: none; z-index: 1;
+  }
+  .rueda-columna {
+    height: 108px; width: 46px; overflow-y: auto; scroll-snap-type: y mandatory;
+    scrollbar-width: none; -ms-overflow-style: none;
+  }
+  .rueda-columna::-webkit-scrollbar { display: none; }
+  .rueda-item {
+    height: 36px; display: flex; align-items: center; justify-content: center;
+    scroll-snap-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 16px; color: #6C8890;
+  }
+  .rueda-item.seleccionado { color: #D4A24C; font-weight: 700; }
+  .rueda-relleno { height: 36px; }
+  .rueda-separador { font-family: 'Fraunces', serif; font-size: 20px; color: #9FB8BF; padding: 0 2px; }
+  .rueda-etiqueta { font-size: 10.5px; color: #6C8890; text-align: center; margin-top: 2px; }
+
   .tabs-nav {
     position: fixed; left: 0; right: 0; bottom: 0; height: 54px;
     background: #0F2C38; border-top: 1px solid #1C3F4F; display: flex; z-index: 700;
@@ -294,6 +318,13 @@ let cursor = new Date();
 cursor.setDate(1);
 let salidasPorFecha = {}; // "YYYY-MM-DD" -> { salida, capturas: [...] }
 
+// Instancias activas de los selectores de hora "de rueda" del formulario
+// abierto en cada momento (ver crearSelectorHora) — se recrean cada vez
+// que se pinta el formulario correspondiente.
+let selectorHoraInicio = null;
+let selectorHoraFin = null;
+let selectorHoraCaptura = null;
+
 // Ubicaciones personalizadas (Fase 2 del plan de mejoras): además de la
 // lista fija de arriba, cualquier spot que el usuario haya creado en el
 // mapa (index.html) — propio o público de otra persona — también debe
@@ -431,6 +462,83 @@ async function redimensionarImagen(file, maxAncho = 1600, calidad = 0.8) {
   return new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", calidad));
 }
 
+// Selector de hora "de rueda" (dos columnas con scroll y snap, horas y
+// minutos) — sustituye a <input type="time">, cuyo desplegable nativo en
+// algunos navegadores/móviles solo deja ver unas pocas horas a la vez.
+// Vanilla JS/CSS: el repo no tiene build step ni dependencias externas
+// para esto.
+const ALTURA_ITEM_RUEDA = 36;
+// valorInicial null/undefined -> empieza "sin especificar" (checkbox
+// marcado, rueda oculta) — todas las horas de la app son opcionales
+// (igual que ya lo era el <input type="time"> al que sustituye): quien
+// va en una embarcación moviéndose puede querer registrar una captura
+// de un momento concreto sin rellenar nada más.
+function crearSelectorHora(idContenedor, valorInicial) {
+  const cont = document.getElementById(idContenedor);
+  const horas = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0"));
+  const minutos = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, "0"));
+  const sinEspecificar = !valorInicial;
+  const [hIni, mIni] = (valorInicial || "12:00").split(":");
+
+  const columna = (valores) => `
+    <div class="rueda-relleno"></div>
+    ${valores.map((v) => `<div class="rueda-item" data-valor="${v}">${v}</div>`).join("")}
+    <div class="rueda-relleno"></div>`;
+  cont.innerHTML = `
+    <label class="rueda-check"><input type="checkbox" class="rueda-check-input" ${sinEspecificar ? "checked" : ""} /> Sin especificar</label>
+    <div class="rueda-hora-ruedas" style="${sinEspecificar ? "display:none;" : ""}">
+      <div class="rueda-marco"></div>
+      <div class="rueda-columna" data-lista="horas">${columna(horas)}</div>
+      <div class="rueda-separador">:</div>
+      <div class="rueda-columna" data-lista="minutos">${columna(minutos)}</div>
+    </div>
+  `;
+  const checkbox = cont.querySelector(".rueda-check-input");
+  const ruedasDiv = cont.querySelector(".rueda-hora-ruedas");
+  checkbox.addEventListener("change", () => {
+    ruedasDiv.style.display = checkbox.checked ? "none" : "flex";
+  });
+  const colH = cont.querySelector('[data-lista="horas"]');
+  const colM = cont.querySelector('[data-lista="minutos"]');
+
+  function indexDeValor(col, valor) {
+    const items = [...col.querySelectorAll(".rueda-item")];
+    const idx = items.findIndex((el) => el.dataset.valor === valor);
+    return idx === -1 ? 0 : idx;
+  }
+  function irA(col, index, suave) {
+    col.scrollTo({ top: index * ALTURA_ITEM_RUEDA, behavior: suave ? "smooth" : "auto" });
+  }
+  function marcarSeleccionVisual(col) {
+    const idx = Math.round(col.scrollTop / ALTURA_ITEM_RUEDA);
+    col.querySelectorAll(".rueda-item").forEach((el, i) => el.classList.toggle("seleccionado", i === idx));
+  }
+  const temporizadores = new WeakMap();
+  function alDejarDeMover(col) {
+    clearTimeout(temporizadores.get(col));
+    temporizadores.set(col, setTimeout(() => {
+      const idx = Math.round(col.scrollTop / ALTURA_ITEM_RUEDA);
+      irA(col, idx, true);
+      marcarSeleccionVisual(col);
+    }, 120));
+  }
+  [colH, colM].forEach((col) => col.addEventListener("scroll", () => alDejarDeMover(col)));
+
+  irA(colH, indexDeValor(colH, hIni), false);
+  irA(colM, indexDeValor(colM, mIni), false);
+  marcarSeleccionVisual(colH);
+  marcarSeleccionVisual(colM);
+
+  return {
+    valor() {
+      if (checkbox.checked) return null;
+      const idxH = Math.min(23, Math.round(colH.scrollTop / ALTURA_ITEM_RUEDA));
+      const idxM = Math.min(59, Math.round(colM.scrollTop / ALTURA_ITEM_RUEDA));
+      return `${horas[idxH]}:${minutos[idxM]}`;
+    },
+  };
+}
+
 async function contextoAmbiental(lat, lon, horaElegida, tipoSalida) {
   const paramsComunes = `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&forecast_days=1`;
   const resultado = { marea_altura: null, marea_tendencia: null, presion_valor: null, presion_tendencia: null,
@@ -445,7 +553,7 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida) {
     ]);
     const horas = marino.hourly?.time || [];
     // Sin hora elegida: la hora de ahora (comportamiento de siempre). Con
-    // hora elegida (HH:MM, del <input type="time">): la hora en punto
+    // hora elegida (HH:MM, de la hora de inicio del selector de rueda): la hora en punto
     // más cercana — Open-Meteo da el dato por hora, no por minuto, así
     // que los minutos son solo para el registro, no cambian qué bloque
     // horario se usa. Redondea a la hora más cercana (no trunca hacia
@@ -545,8 +653,10 @@ function formularioSalida(fecha) {
     <select id="salidaSpot">
       ${opcionesSpotsPara("costa")}
     </select>
-    <label for="salidaHora">Hora</label>
-    <input type="time" id="salidaHora" />
+    <label>Hora de inicio</label>
+    <div class="rueda-hora" id="ruedaSalidaInicio"></div>
+    <label>Hora de fin</label>
+    <div class="rueda-hora" id="ruedaSalidaFin"></div>
     <label for="salidaNotas">Notas del día</label>
     <textarea id="salidaNotas" placeholder="Cómo estuvo la jornada…"></textarea>
     <button class="principal" id="btnGuardarSalida">Guardar día</button>
@@ -560,9 +670,20 @@ async function crearSalida(fecha) {
   btn.disabled = true;
   const spotSlug = document.getElementById("salidaSpot").value;
   const notas = document.getElementById("salidaNotas").value;
-  const hora = document.getElementById("salidaHora").value || null;
+  const horaInicio = selectorHoraInicio.valor();
+  const horaFin = selectorHoraFin.valor();
   const tipoSalida = document.getElementById("salidaTipo").value;
   const spot = todosLosSpotsDiario().find((s) => s.slug === spotSlug);
+
+  // Las dos horas son opcionales — solo se valida el orden cuando están
+  // las dos puestas. Asume que la salida no cruza medianoche (limitación
+  // conocida, no contemplada aún).
+  if (horaInicio && horaFin && horaFin <= horaInicio) {
+    mensajeEl.className = "mensaje error";
+    mensajeEl.textContent = "La hora de fin debe ser posterior a la hora de inicio.";
+    btn.disabled = false;
+    return;
+  }
 
   let lat, lon;
   if (spot) {
@@ -579,10 +700,10 @@ async function crearSalida(fecha) {
     }
   }
 
-  const contexto = await contextoAmbiental(lat, lon, hora, tipoSalida);
+  const contexto = await contextoAmbiental(lat, lon, horaInicio, tipoSalida);
   const { error } = await supabase.from("salidas_pesca").insert({
     user_id: usuario.id, fecha, spot_slug: spot?.slug ?? null, spot_nombre: spot?.nombre ?? "Ubicación actual",
-    lat, lon, notas, hora, tipo_salida: tipoSalida, ...contexto,
+    lat, lon, notas, hora_inicio: horaInicio, hora_fin: horaFin, tipo_salida: tipoSalida, ...contexto,
   });
   if (error) {
     mensajeEl.className = "mensaje error";
@@ -638,8 +759,8 @@ function formularioCaptura() {
         <label for="capturaEspecieOtra">¿Cuál?</label>
         <input type="text" id="capturaEspecieOtra" />
       </div>
-      <label for="capturaHora">Hora</label>
-      <input type="time" id="capturaHora" />
+      <label>Hora</label>
+      <div class="rueda-hora" id="ruedaCapturaHora"></div>
       <label for="capturaTalla">Talla (cm)</label>
       <input type="number" id="capturaTalla" step="0.5" min="0" />
       <label for="capturaPeso">Peso (g)</label>
@@ -686,7 +807,13 @@ async function guardarCaptura(salidaId, fecha) {
     btn.disabled = false;
     return;
   }
-  const hora = document.getElementById("capturaHora").value || null;
+  const hora = selectorHoraCaptura.valor();
+  let avisoFueraDeRango = "";
+  const salidaDelDia = salidasPorFecha[fecha]?.salida;
+  if (hora && salidaDelDia?.hora_inicio && salidaDelDia?.hora_fin &&
+      (hora < salidaDelDia.hora_inicio.slice(0, 5) || hora > salidaDelDia.hora_fin.slice(0, 5))) {
+    avisoFueraDeRango = ` (fuera del rango de la salida, ${salidaDelDia.hora_inicio.slice(0, 5)}–${salidaDelDia.hora_fin.slice(0, 5)} — se guarda igual, es solo un aviso)`;
+  }
   const talla = document.getElementById("capturaTalla").value;
   const peso = document.getElementById("capturaPeso").value;
   const cebo = document.getElementById("capturaCebo").value;
@@ -711,6 +838,11 @@ async function guardarCaptura(salidaId, fecha) {
     btn.disabled = false;
     return;
   }
+  // El panel se repinta entero justo después de guardar (abrirDia más
+  // abajo), así que un mensaje en mensajeEl no llegaría a verse — de ahí
+  // el alert() para este aviso puntual (no bloquea nada, la captura ya
+  // se guardó).
+  if (avisoFueraDeRango) alert(`Captura guardada${avisoFueraDeRango}.`);
 
   for (let i = 0; i < archivos.length; i++) {
     try {
@@ -736,7 +868,10 @@ async function detalleSalida(entrada, fecha) {
     <div class="detalle" style="font-size:12px; color:#9FB8BF;">
       📍 ${salida.spot_nombre || "Ubicación actual"}
       ${salida.tipo_salida ? ` · ${etiquetaTipoSalida[salida.tipo_salida] || salida.tipo_salida}` : ""}
-      ${salida.hora ? ` · 🕐 ${salida.hora.slice(0, 5)}` : ""}
+      ${salida.hora_inicio && salida.hora_fin ? ` · 🕐 ${salida.hora_inicio.slice(0, 5)}–${salida.hora_fin.slice(0, 5)}`
+        : salida.hora_inicio ? ` · 🕐 desde ${salida.hora_inicio.slice(0, 5)}`
+        : salida.hora_fin ? ` · 🕐 hasta ${salida.hora_fin.slice(0, 5)}`
+        : ""}
     </div>
     ${salida.notas ? `<p style="font-size:13px; margin-top:8px;">${salida.notas}</p>` : ""}
     ${contextoHTML(salida)}
@@ -756,12 +891,15 @@ async function abrirDia(iso, fechaObj) {
   const entrada = salidasPorFecha[iso];
   if (!entrada) {
     contEl.innerHTML = formularioSalida(iso);
+    selectorHoraInicio = crearSelectorHora("ruedaSalidaInicio", null);
+    selectorHoraFin = crearSelectorHora("ruedaSalidaFin", null);
     document.getElementById("salidaTipo").addEventListener("change", (e) => {
       document.getElementById("salidaSpot").innerHTML = opcionesSpotsPara(e.target.value);
     });
     document.getElementById("btnGuardarSalida").addEventListener("click", () => crearSalida(iso));
   } else {
     contEl.innerHTML = await detalleSalida(entrada, iso);
+    selectorHoraCaptura = crearSelectorHora("ruedaCapturaHora", null);
     const especieSel = document.getElementById("capturaEspecie");
     especieSel.addEventListener("change", () => {
       document.getElementById("capturaEspecieOtraBox").style.display = especieSel.value === "Otra" ? "block" : "none";

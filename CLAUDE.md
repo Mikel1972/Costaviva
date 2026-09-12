@@ -80,6 +80,11 @@ otro usuario". Cualquier cambio que toque `alarma.html`,
   - `contactos_emergencia`, `alertas_sos` — alarma SOS.
   - Bucket de Storage `capturas-fotos`: cada usuario solo lee/escribe su
     propia carpeta (`<user_id>/...`).
+  - `spots_usuario`, `spots_favoritos` (añadidas 2026-09-12, ver
+    "Ubicaciones personalizadas" más abajo) — **excepción al patrón de
+    arriba**: `spots_usuario` permite además `select` cuando
+    `publica = true` (no solo `auth.uid() = user_id`), a propósito —
+    es la tabla que sostiene el mapa colaborativo.
 - **Verificado en vivo el 2026-09-12**: petición sin token de sesión (solo
   anon apikey) contra las 6 tablas de usuario devuelve `200 []` en todas
   — RLS está activo y funcionando, no solo declarado en el `.sql`.
@@ -94,16 +99,12 @@ otro usuario". Cualquier cambio que toque `alarma.html`,
 ## Diario de pesca — campos añadidos 2026-09-12
 
 `salidas_pesca`: `tipo_salida` (costa/embarcación/submarinismo — primero
-en el formulario) y `hora` (`<input type="time">`, HH:MM — recalcula
-marea/oleaje/viento/luna redondeando a la hora en punto más cercana, en
-vez de "ahora"; sustituyó a un primer intento con franjas fijas —
-amanecer/mañana/... — que el usuario pidió cambiar por precisión real
-de minutos). **Solo embarcación** usa la boya real más cercana (Puertos
-del Estado, vía `/prevision`) en vez del modelo por coordenadas —
-`boya_usada` guarda cuál, solo informativo. Submarinismo se pesca cerca
-de costa (como "costa"), así que NO usa la boya de mar abierto — es una
-corrección explícita del usuario, no lo cambies de vuelta sin
-preguntar.
+en el formulario). **Solo embarcación** usa la boya real más cercana
+(Puertos del Estado, vía `/prevision`) en vez del modelo por
+coordenadas — `boya_usada` guarda cuál, solo informativo. Submarinismo
+se pesca cerca de costa (como "costa"), así que NO usa la boya de mar
+abierto — es una corrección explícita del usuario, no lo cambies de
+vuelta sin preguntar.
 
 `capturas`: ya tenía especie/talla/peso/cebo/notas/fotos, todo opcional
 — no hacía falta añadirlos. Lo nuevo es `hora` (por captura, solo
@@ -114,12 +115,68 @@ condicional que activa: técnicas de señuelo (Spinning/Jigging/Curricán/
 Popping/Eging) piden "tipo de señuelo" (texto libre); el resto sigue
 con "Aparejo" (Plomo/Corcho/Otro, ya existía).
 
+**Hora de inicio/fin (2026-09-12, Fase 3 del plan de mejoras):**
+`salidas_pesca.hora` se renombró a `hora_inicio` y se añadió
+`hora_fin` (migración `20260912190000_hora_inicio_fin_salida.sql`).
+Las dos son opcionales — no se fuerza a rellenarlas (alguien en una
+embarcación moviéndose puede querer registrar una captura de un momento
+concreto sin más contexto), solo se valida que `hora_fin` sea posterior
+a `hora_inicio` cuando las dos están puestas (asume que la salida no
+cruza medianoche, limitación conocida). `capturas.hora` sigue siendo
+por captura y opcional; si cae fuera de `[hora_inicio, hora_fin]` de su
+salida no se bloquea el guardado, solo se avisa (no tiene sentido negar
+un dato real de campo por no encajar en el rango declarado).
+
+Todos los selectores de hora de la app (`hora_inicio`, `hora_fin`, la
+hora de cada captura) usan el mismo componente `crearSelectorHora()`
+(rueda con scroll+snap para horas y minutos, con un checkbox "Sin
+especificar") en vez de `<input type="time">` — el nativo, en algunos
+navegadores/móviles, solo deja ver unas pocas horas a la vez. Vanilla
+JS/CSS, sin librerías (el repo no tiene build step).
+
 Todas las migraciones probadas en real antes de mergear (rama +
 preview): login con cuenta de prueba, salida embarcación → boya real
 usada correctamente (y NO usada para submarinismo, verificado tras la
 corrección); captura con técnica Spinning → campo de señuelo apareció y
 se guardó bien; hora exacta (07:40 y 08:15) guardada y mostrada
 correctamente tanto en la salida como en la captura.
+
+## Ubicaciones personalizadas (Fase 2 del plan de mejoras, 2026-09-12)
+
+Cualquier usuario puede marcar un punto nuevo en el mapa de
+`index.html` (clic, con el botón ➕) o usar su GPS (botón 📍). Nunca
+escribe el nombre a mano: sale siempre de `/geocodificar` (proxy a
+Nominatim/OpenStreetMap, `functions/geocodificar.js` — necesita
+User-Agent propio, por eso no se llama directo desde el navegador) para
+que la lista de spots se enriquezca con nombres reales, no apodos. Al
+crear una ubicación se elige:
+- **Tipo** (🪨 Costa / 🚤 Embarcación / 🤿 Buceo): Costa sí resuelve un
+  nombre de localidad real por geocodificación inversa. Embarcación y
+  Buceo son puntos de mar abierto — forzarles un nombre de localidad
+  cercana sería engañoso (el punto no está ahí, está varios km mar
+  adentro) — así que se identifican por sus coordenadas
+  (`🚤 43.4123°N, 2.6789°W`), sin llamar a la geocodificación para el
+  nombre. Corrección hecha tras probar la Fase 2 en real con el
+  usuario — no revertir a "siempre geocodificar" sin volver a hablarlo.
+- **Privada o pública**: pública la ve cualquier usuario de la app;
+  privada, solo su creador. La visibilidad "compartida con mi grupo"
+  (Fase 5, grupos privados, sin empezar todavía) se añadirá aparte vía
+  funciones RPC — la tabla y su RLS no se tocan para eso.
+
+Tabla `spots_usuario` (`nombre`, `tipo`, `pais`, `ccaa`, `lat`, `lon`,
+`publica`) + `spots_favoritos` (favoritos por usuario, vale tanto para
+un spot fijo como para uno personalizado). Nunca tienen cámara — nunca
+llevan el punto verde de webcam en directo. Su índice de mar/pesca no
+sale de `/prevision` (que solo conoce su lista fija de siempre) sino de
+una llamada directa a Open-Meteo hecha en el propio `index.html`, igual
+que ya hacía `diario.html` para "mi ubicación actual".
+
+`diario.html` filtra el desplegable "Spot" según el tipo de salida
+elegido (costa/embarcación/submarinismo): los ~90 spots fijos cuentan
+todos como "costa"; cada ubicación personalizada aparece solo para su
+propio tipo (buceo ↔ submarinismo). Si no hay ninguna ubicación de ese
+tipo todavía, el desplegable lo dice en vez de mostrarse vacío sin
+explicación.
 
 ## Endpoints (`functions/`)
 
