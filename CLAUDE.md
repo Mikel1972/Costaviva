@@ -80,6 +80,20 @@ otro usuario". Cualquier cambio que toque `alarma.html`,
   - `contactos_emergencia`, `alertas_sos` — alarma SOS.
   - Bucket de Storage `capturas-fotos`: cada usuario solo lee/escribe su
     propia carpeta (`<user_id>/...`).
+  - `spots_usuario`, `spots_favoritos` (añadidas 2026-09-12, ver
+    "Ubicaciones personalizadas" más abajo) — **excepción al patrón de
+    arriba**: `spots_usuario` permite además `select` cuando
+    `publica = true` (no solo `auth.uid() = user_id`), a propósito —
+    es la tabla que sostiene el mapa colaborativo.
+  - `especies_comunidad` (añadida 2026-09-12) — otra excepción: lectura
+    Y escritura abiertas a cualquier usuario logueado (`to authenticated
+    using (true)` / `with check (auth.uid() = creado_por)`), mismo
+    criterio de "enriquecer entre todos" que `spots_usuario`.
+  - `presion_historico` (añadida 2026-09-12, Fase 4) — otra excepción:
+    lectura pública sin sesión (`using (true)`), sin política de
+    insert/update/delete para clientes — solo escribe
+    `functions/registrar-presion.js` (protegido con secreto
+    compartido). No son datos personales de nadie.
 - **Verificado en vivo el 2026-09-12**: petición sin token de sesión (solo
   anon apikey) contra las 6 tablas de usuario devuelve `200 []` en todas
   — RLS está activo y funcionando, no solo declarado en el `.sql`.
@@ -94,16 +108,12 @@ otro usuario". Cualquier cambio que toque `alarma.html`,
 ## Diario de pesca — campos añadidos 2026-09-12
 
 `salidas_pesca`: `tipo_salida` (costa/embarcación/submarinismo — primero
-en el formulario) y `hora` (`<input type="time">`, HH:MM — recalcula
-marea/oleaje/viento/luna redondeando a la hora en punto más cercana, en
-vez de "ahora"; sustituyó a un primer intento con franjas fijas —
-amanecer/mañana/... — que el usuario pidió cambiar por precisión real
-de minutos). **Solo embarcación** usa la boya real más cercana (Puertos
-del Estado, vía `/prevision`) en vez del modelo por coordenadas —
-`boya_usada` guarda cuál, solo informativo. Submarinismo se pesca cerca
-de costa (como "costa"), así que NO usa la boya de mar abierto — es una
-corrección explícita del usuario, no lo cambies de vuelta sin
-preguntar.
+en el formulario). **Solo embarcación** usa la boya real más cercana
+(Puertos del Estado, vía `/prevision`) en vez del modelo por
+coordenadas — `boya_usada` guarda cuál, solo informativo. Submarinismo
+se pesca cerca de costa (como "costa"), así que NO usa la boya de mar
+abierto — es una corrección explícita del usuario, no lo cambies de
+vuelta sin preguntar.
 
 `capturas`: ya tenía especie/talla/peso/cebo/notas/fotos, todo opcional
 — no hacía falta añadirlos. Lo nuevo es `hora` (por captura, solo
@@ -114,12 +124,136 @@ condicional que activa: técnicas de señuelo (Spinning/Jigging/Curricán/
 Popping/Eging) piden "tipo de señuelo" (texto libre); el resto sigue
 con "Aparejo" (Plomo/Corcho/Otro, ya existía).
 
+**Hora de inicio/fin (2026-09-12, Fase 3 del plan de mejoras):**
+`salidas_pesca.hora` se renombró a `hora_inicio` y se añadió
+`hora_fin` (migración `20260912190000_hora_inicio_fin_salida.sql`).
+Las dos son opcionales — no se fuerza a rellenarlas (alguien en una
+embarcación moviéndose puede querer registrar una captura de un momento
+concreto sin más contexto), solo se valida que `hora_fin` sea posterior
+a `hora_inicio` cuando las dos están puestas (asume que la salida no
+cruza medianoche, limitación conocida). `capturas.hora` sigue siendo
+por captura y opcional; si cae fuera de `[hora_inicio, hora_fin]` de su
+salida no se bloquea el guardado, solo se avisa (no tiene sentido negar
+un dato real de campo por no encajar en el rango declarado).
+
+Todos los selectores de hora de la app (`hora_inicio`, `hora_fin`, la
+hora de cada captura) usan el mismo componente `crearSelectorHora()`:
+dos `<select>` nativos (hora, minuto), primera opción "--" para "sin
+especificar". Se probó antes una rueda de scroll/snap hecha a mano (dos
+intentos) que en la práctica no se veía bien para el usuario — un
+`<select>` nativo ya trae scroll de fábrica con muchas opciones, así
+que es la vía más simple y fiable. Vanilla JS/CSS, sin librerías (el
+repo no tiene build step).
+
+**Varias entradas por día + edición (2026-09-12):** una fecha puede
+tener más de una salida (p.ej. embarcación por la mañana y costa por la
+tarde, o dos spots distintos el mismo día) — `salidasPorFecha[fecha]`
+es una LISTA de `{salida, capturas}`, no un único objeto. El calendario
+sigue siendo una celda por día (verde si alguna entrada tiene capturas,
+rojo si no), pero al abrirlo se ve la lista de entradas con "➕ Añadir
+otra entrada este día" al final. Cada entrada y cada captura tienen
+botón "✏️ Editar" (mismo formulario de creación, precargado, guarda con
+`update` en vez de `insert` — `guardarSalida(fecha, idExistente)` /
+`guardarCaptura(salidaId, fecha, idExistente, ordenFotoBase)`) y
+"🗑 Borrar" — borrar ya es por entrada/captura suelta, nunca "todo el
+día" (así lo pidió el usuario explícitamente, tras un primer diseño que
+solo dejaba borrar el día completo). Editar una captura permite además
+añadir fotos nuevas sin tocar las que ya hubiera (nunca las reemplaza).
+
 Todas las migraciones probadas en real antes de mergear (rama +
 preview): login con cuenta de prueba, salida embarcación → boya real
 usada correctamente (y NO usada para submarinismo, verificado tras la
 corrección); captura con técnica Spinning → campo de señuelo apareció y
 se guardó bien; hora exacta (07:40 y 08:15) guardada y mostrada
 correctamente tanto en la salida como en la captura.
+
+**Bug real corregido 2026-09-12 — "ahora" en UTC contra horas en
+local:** el usuario vio nubosidad 100% cuando en realidad no pasaba del
+20%. Causa: Open-Meteo (con `timezone=Europe/Madrid`) etiqueta su array
+horario en hora LOCAL, pero el cálculo de "ahora" usaba
+`new Date().toISOString()` (UTC) — con CEST eso desplazaba el "ahora"
+2h hacia atrás. Bug preexistente (no introducido en esta sesión de
+mejoras), presente en `functions/prevision.js`
+(`calcularMarea`/`calcularPresion`, afectaba a TODOS los spots fijos),
+`diario.html` (`contextoAmbiental`) y el `datosAmbientalesPunto` nuevo
+de `index.html`. Corregido con un helper `horaActualMadridISO()`
+(`Intl.DateTimeFormat` con `timeZone` real) duplicado en los tres
+sitios. Segundo bug relacionado, también preexistente:
+`actualizarDesdeBackend()` en `index.html` cogía SIEMPRE el bloque de
+"12pm" de `/prevision` sin importar la hora real — ahora coge el bloque
+de 3h más cercano a la hora real de Madrid (`bloqueMasCercanoAAhora()`).
+
+**Altura de marea confusa, corregida 2026-09-12:** `sea_level_height_msl`
+de Open-Meteo es una anomalía respecto al nivel medio del mar (podía
+salir negativa, ej. "-2.3m"), no la altura de marea de una tabla
+náutica normal que espera alguien que no es oceanógrafo. Se
+re-referencia contra el mínimo de la ventana de datos pedida, para
+mostrar siempre un número positivo e intuitivo ("cuánta agua hay por
+encima de la bajamar más cercana") — no es el cero hidrográfico oficial
+de un puerto (eso exigiría datos batimétricos reales que no tenemos),
+solo una aproximación honesta. Misma corrección en
+`functions/prevision.js` (`calcularMarea`) y `diario.html`
+(`contextoAmbiental`).
+
+**Coeficiente de marea (2026-09-12):** mareas vivas (coeficiente alto,
+hasta 120) cerca de luna nueva/llena, muertas (bajo, ~45) cerca de los
+cuartos — aproximación astronómica por fase lunar
+(`coeficienteMarea()`, duplicada en `functions/prevision.js` y
+`diario.html`), NO un dato oficial de un servicio hidrográfico (eso
+requeriría análisis armónico real por puerto). Se muestra junto a la
+altura de marea en el panel de cada spot del mapa y se guarda también
+por salida (`salidas_pesca.marea_coeficiente`).
+
+**Especies enriquecidas por la comunidad (2026-09-12):** el
+desplegable de especies del diario muestra el nombre científico entre
+paréntesis (verificado por especie, `ESPECIES` en `diario.html`). Una
+especie escrita a mano bajo "Otra" se da de alta en
+`especies_comunidad` (pública de lectura y escritura para cualquier
+usuario logueado — mismo criterio de "enriquecer entre todos" que
+`spots_usuario`) para aparecer como opción real la siguiente vez, en
+vez de perderse en el campo de texto libre de esa única captura.
+
+**Pendiente, aparcado a propósito (Fase 5, grupos privados):**
+atribución de "quién subió esta captura/ubicación" — solo tiene sentido
+cuando algo es visible para más gente que su dueño, que es justo lo que
+grupos privados va a añadir. Se implementa junto con eso, no antes.
+
+## Ubicaciones personalizadas (Fase 2 del plan de mejoras, 2026-09-12)
+
+Cualquier usuario puede marcar un punto nuevo en el mapa de
+`index.html` (clic, con el botón ➕) o usar su GPS (botón 📍). Nunca
+escribe el nombre a mano: sale siempre de `/geocodificar` (proxy a
+Nominatim/OpenStreetMap, `functions/geocodificar.js` — necesita
+User-Agent propio, por eso no se llama directo desde el navegador) para
+que la lista de spots se enriquezca con nombres reales, no apodos. Al
+crear una ubicación se elige:
+- **Tipo** (🪨 Costa / 🚤 Embarcación / 🤿 Buceo): Costa sí resuelve un
+  nombre de localidad real por geocodificación inversa. Embarcación y
+  Buceo son puntos de mar abierto — forzarles un nombre de localidad
+  cercana sería engañoso (el punto no está ahí, está varios km mar
+  adentro) — así que se identifican por sus coordenadas
+  (`🚤 43.4123°N, 2.6789°W`), sin llamar a la geocodificación para el
+  nombre. Corrección hecha tras probar la Fase 2 en real con el
+  usuario — no revertir a "siempre geocodificar" sin volver a hablarlo.
+- **Privada o pública**: pública la ve cualquier usuario de la app;
+  privada, solo su creador. La visibilidad "compartida con mi grupo"
+  (Fase 5, grupos privados, sin empezar todavía) se añadirá aparte vía
+  funciones RPC — la tabla y su RLS no se tocan para eso.
+
+Tabla `spots_usuario` (`nombre`, `tipo`, `pais`, `ccaa`, `lat`, `lon`,
+`publica`) + `spots_favoritos` (favoritos por usuario, vale tanto para
+un spot fijo como para uno personalizado). Nunca tienen cámara — nunca
+llevan el punto verde de webcam en directo. Su índice de mar/pesca no
+sale de `/prevision` (que solo conoce su lista fija de siempre) sino de
+una llamada directa a Open-Meteo hecha en el propio `index.html`, igual
+que ya hacía `diario.html` para "mi ubicación actual".
+
+`diario.html` filtra el desplegable "Spot" según el tipo de salida
+elegido (costa/embarcación/submarinismo): los ~90 spots fijos cuentan
+todos como "costa"; cada ubicación personalizada aparece solo para su
+propio tipo (buceo ↔ submarinismo). Si no hay ninguna ubicación de ese
+tipo todavía, el desplegable lo dice en vez de mostrarse vacío sin
+explicación.
 
 ## Endpoints (`functions/`)
 
@@ -131,6 +265,8 @@ correctamente tanto en la salida como en la captura.
 | `/webcam/<slug>` | `webcam/[slug].js` | Proxy de imagen de webcam (evita CORS/hotlinking) | No requiere sesión |
 | `/sos-alerta` | `sos-alerta.js` | POST: manda el aviso SOS (email vía Resend) a los contactos de emergencia del usuario que llama | **Requiere** `Authorization: Bearer <token de sesión>` |
 | `/aviso-alta` | `aviso-alta.js` | POST: avisa al admin por email cuando un `user_id` corresponde a un alta real de los últimos 5 min | Sin token — verifica con `service_role` server-side (ver más abajo) |
+| `/geocodificar` | `geocodificar.js` | GET: geocodificación inversa (`?lat=&lon=`) para nombrar ubicaciones personalizadas, vía Nominatim | No requiere sesión |
+| `/registrar-presion` | `registrar-presion.js` | POST: guarda la presión real de cada spot en `presion_historico` (Fase 4) | Sin sesión de usuario — protegido con secreto compartido (`X-Cron-Secret` / `CRON_SECRET`) |
 
 Ninguno de los cuatro primeros toca tablas de usuario en Supabase.
 `sos-alerta.js` es el único que sí, y usa siempre el token de quien llama.
@@ -266,10 +402,10 @@ a mano.
 
 ## Rutinas programadas (todas activas y probadas en real, 2026-09-12)
 
-Las cuatro se probaron primero a mano (`workflow_dispatch`) antes de
-activar el `schedule` — `smoke-test.yml` falló en su primer intento (ver
-abajo) y se corrigió antes de programarlo. Horas escalonadas para no
-competir por runners:
+Las cuatro originales se probaron primero a mano (`workflow_dispatch`)
+antes de activar el `schedule` — `smoke-test.yml` falló en su primer
+intento (ver abajo) y se corrigió antes de programarlo. Horas
+escalonadas para no competir por runners:
 
 | Workflow | Cron (UTC) | Qué hace |
 |---|---|---|
@@ -277,6 +413,7 @@ competir por runners:
 | `smoke-test.yml` | `0 5 * * *` | login real → `/prevision` → `/webcam/mundaka` → crea/borra una salida de pesca de prueba. `/sos-alerta` excluido a propósito (ver más abajo) |
 | `daily-report.yml` | `0 6 * * *` | salud + conteo real de SOS (24h) → entrada nueva en el Issue "Informe diario — Costa Viva" |
 | `auth-test.yml` | `17 6 * * *` | RLS sin token + prueba cruzada A-lee-B (secrets ya puestos) |
+| `presion-historico.yml` | `7 * * * *` (cada hora) | POST a `/registrar-presion` (secret `PRESION_CRON_SECRET`) — guarda la presión real de cada spot en `presion_historico`, para la tendencia real de `/prevision` (Fase 4, ver más abajo). **Pendiente de activar de verdad**: hace falta poner `PRESION_CRON_SECRET` (GitHub) y `CRON_SECRET` (Cloudflare Pages, mismo valor) antes de que funcione — sin eso, `/registrar-presion` devuelve 401 y el workflow falla. |
 
 `0 6 * * *` = 08:00 en verano (CEST) / 07:00 en invierno (CET) — GitHub
 Actions no ajusta el cron por el cambio de hora. Ajustar aquí si se

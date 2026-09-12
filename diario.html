@@ -20,7 +20,8 @@
     display: flex; flex-direction: column; height: 100vh; overflow: hidden; padding-bottom: 54px;
   }
   header { padding: 10px 20px; border-bottom: 1px solid #1C3F4F; flex-shrink: 0; }
-  header h1 { font-family: 'Fraunces', serif; font-size: 17px; font-weight: 600; margin: 0; }
+  header h1 { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 700; letter-spacing: 0.2px; margin: 0; }
+  @media (max-width: 380px) { header h1 { font-size: 20px; } }
   header p { margin: 2px 0 0; color: #7FA3AF; font-size: 11px; }
 
   .contenido { flex: 1; min-height: 0; overflow-y: auto; padding: 16px; }
@@ -65,7 +66,7 @@
   .panel-dia h2 { font-family: 'Fraunces', serif; font-size: 19px; margin: 0 0 12px; text-transform: capitalize; }
   .panel-dia .cerrar { position: absolute; top: 14px; right: 16px; background: none; border: none; color: #7FA3AF; font-size: 16px; cursor: pointer; }
 
-  label { display: block; font-size: 12px; color: #9FB8BF; margin: 12px 0 5px; font-family: 'IBM Plex Mono', monospace; }
+  label { display: block; font-size: 12px; color: #9FB8BF; margin: 12px 0 5px; font-family: 'Inter', sans-serif; font-weight: 500; }
   input, select, textarea {
     width: 100%; padding: 9px 11px; border-radius: 8px; border: 1px solid #1C3F4F; background: #123B4D;
     color: #E8E2D0; font-family: 'Inter', sans-serif; font-size: 14px;
@@ -81,7 +82,6 @@
     width: 100%; margin-top: 8px; padding: 10px; border-radius: 8px; border: 1px solid #1C3F4F;
     background: transparent; color: #9FB8BF; font-size: 13px; cursor: pointer;
   }
-  button.peligro { color: #E8907A; border-color: #A34A35; }
 
   .tarjeta-captura { background: #123B4D; border-radius: 10px; padding: 12px; margin-top: 10px; }
   .tarjeta-captura .fila-titulo { display: flex; justify-content: space-between; align-items: baseline; }
@@ -102,13 +102,29 @@
   .mensaje.error { display: block; background: rgba(163,74,53,0.15); color: #E8907A; border: 1px solid #A34A35; }
   .mensaje.ok { display: block; background: rgba(79,157,105,0.12); color: #8FCBA3; border: 1px solid #3A6B4C; }
 
+  /* Selector de hora: dos <select> nativos (hora, minuto) — el propio
+     desplegable del navegador ya trae scroll cuando tiene muchas
+     opciones, así que es la forma más simple y fiable de tener "un
+     desplegable con scroll" sin reinventar el control. Sustituye tanto
+     a <input type="time"> como a un primer intento con una rueda de
+     scroll/snap a medida, que en la práctica no se veía bien en todos
+     los navegadores. Primera opción siempre "--" (sin especificar) —
+     todas las horas de la app son opcionales.
+  */
+  .hora-select { display: flex; align-items: center; gap: 6px; margin: 4px 0 10px; }
+  .hora-select select {
+    width: auto; padding: 8px 10px; border-radius: 8px; border: 1px solid #1C3F4F;
+    background: #123B4D; color: #E8E2D0; font-family: 'IBM Plex Mono', monospace; font-size: 14px;
+  }
+  .hora-select-sep { font-family: 'Fraunces', serif; font-size: 16px; color: #9FB8BF; }
+
   .tabs-nav {
     position: fixed; left: 0; right: 0; bottom: 0; height: 54px;
     background: #0F2C38; border-top: 1px solid #1C3F4F; display: flex; z-index: 700;
   }
   .tabs-nav a {
     flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 2px; text-decoration: none; color: #7FA3AF; font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+    gap: 2px; text-decoration: none; color: #7FA3AF; font-family: 'Inter', sans-serif; font-size: 10.5px; font-weight: 500;
   }
   .tabs-nav a .icono { font-size: 18px; line-height: 1; }
   .tabs-nav a.activa { color: #D4A24C; }
@@ -278,7 +294,33 @@ const SPOTS = [
   ["muro", "Platja de Muro (Mallorca)", 39.762, 3.108],
 ].map(([slug, nombre, lat, lon]) => ({ slug, nombre, lat, lon }));
 
-const ESPECIES = ["Lubina", "Sargo", "Abadejo", "Calamar / chipirón", "Congrio", "Bonito del norte", "Txitxarro / verdel", "Otra"];
+// Nombre científico entre paréntesis, verificado por especie (no de
+// memoria). "Txitxarro / verdel" agrupa dos peces distintos bajo un
+// mismo nombre coloquial de toda la vida — se muestran los dos
+// científicos en vez de elegir uno solo, sería inventar cuál es "el
+// bueno".
+const ESPECIES = [
+  { nombre: "Lubina", cientifico: "Dicentrarchus labrax" },
+  { nombre: "Sargo", cientifico: "Diplodus sargus" },
+  { nombre: "Abadejo", cientifico: "Pollachius pollachius" },
+  { nombre: "Calamar / chipirón", cientifico: "Loligo vulgaris" },
+  { nombre: "Congrio", cientifico: "Conger conger" },
+  { nombre: "Bonito del norte", cientifico: "Thunnus alalunga" },
+  { nombre: "Txitxarro / verdel", cientifico: "Trachurus trachurus / Scomber scombrus" },
+];
+// Especies dadas de alta por la comunidad al escribir un nombre bajo
+// "Otra" (ver guardarCaptura) — se cargan una vez al entrar y se suman
+// a las de arriba en el desplegable, para que a partir de la siguiente
+// vez ya aparezcan como opción real. "Otra" se queda siempre la última.
+let especiesComunidad = [];
+async function cargarEspeciesComunidad() {
+  const { data, error } = await supabase.from("especies_comunidad").select("nombre, nombre_cientifico").order("nombre");
+  if (error) { console.warn("No se pudieron cargar las especies de la comunidad:", error.message); return; }
+  especiesComunidad = (data || []).map((e) => ({ nombre: e.nombre, cientifico: e.nombre_cientifico }));
+}
+function todasLasEspecies() {
+  return [...ESPECIES, ...especiesComunidad, { nombre: "Otra", cientifico: null }];
+}
 
 // Técnicas con señuelo (artificial) -> se pide "tipo de señuelo" en vez de
 // "aparejo" (que es para las técnicas de cebo con plomo/corcho). Lista
@@ -292,6 +334,55 @@ const DIAS_SEMANA = ["L","M","X","J","V","S","D"];
 let cursor = new Date();
 cursor.setDate(1);
 let salidasPorFecha = {}; // "YYYY-MM-DD" -> { salida, capturas: [...] }
+
+// Instancias activas de los selectores de hora "de rueda" del formulario
+// abierto en cada momento (ver crearSelectorHora) — se recrean cada vez
+// que se pinta el formulario correspondiente.
+let selectorHoraInicio = null;
+let selectorHoraFin = null;
+let selectorHoraCaptura = null;
+
+// Ubicaciones personalizadas (Fase 2 del plan de mejoras): además de la
+// lista fija de arriba, cualquier spot que el usuario haya creado en el
+// mapa (index.html) — propio o público de otra persona — también debe
+// poder elegirse aquí. spotsUsuario ya viene filtrado por RLS (solo
+// propios + públicos, ver supabase/migrations/*_ubicaciones_personalizadas.sql).
+let spotsUsuario = [];
+let favoritosClaves = new Set(); // spot_slug (fijo) o id de spots_usuario
+
+async function cargarSpotsUsuario() {
+  const [{ data: filas, error: errSpots }, { data: favs, error: errFav }] = await Promise.all([
+    supabase.from("spots_usuario").select("*"),
+    supabase.from("spots_favoritos").select("*").eq("user_id", usuario.id),
+  ]);
+  if (errSpots) { console.warn("No se pudieron cargar las ubicaciones personalizadas:", errSpots.message); return; }
+  if (errFav) console.warn("No se pudieron cargar los favoritos:", errFav.message);
+  spotsUsuario = filas || [];
+  favoritosClaves = new Set((favs || []).map((f) => f.spot_slug || f.spot_usuario_id));
+}
+
+// Todos los spots elegibles en el desplegable del diario: los fijos +
+// los personalizados, cada uno con su slug (uuid para los
+// personalizados) y marcados esUsuario para poder resolver lat/lon igual
+// en los dos casos.
+function todosLosSpotsDiario() {
+  // Los ~90 spots fijos son todos de costa/roca — nunca se han
+  // clasificado por tipo porque hasta ahora no hacía falta. Los
+  // personalizados sí llevan su tipo (costa/embarcacion/buceo, elegido
+  // al crearlos en el mapa, ver index.html).
+  const fijos = SPOTS.map((s) => ({ ...s, esUsuario: false, tipo: "costa" }));
+  const personalizados = spotsUsuario.map((f) => ({ slug: f.id, nombre: f.nombre, lat: f.lat, lon: f.lon, esUsuario: true, tipo: f.tipo }));
+  return [...fijos, ...personalizados];
+}
+
+// tipo_salida (costa/embarcacion/submarinismo) -> qué tipo de spot encaja.
+// "submarinismo" usa spots de tipo "buceo" (nombre de columna heredado de
+// cuando solo eran ubicaciones de mar abierto para embarcación/buceo, ver
+// migración 20260912180000_tipo_ubicacion_usuario.sql).
+const TIPO_SALIDA_A_TIPO_SPOT = { costa: "costa", embarcacion: "embarcacion", submarinismo: "buceo" };
+function spotEncajaConTipoSalida(spot, tipoSalida) {
+  return spot.tipo === TIPO_SALIDA_A_TIPO_SPOT[tipoSalida];
+}
 
 function fechaISO(d) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -318,9 +409,15 @@ async function cargarDatos() {
     });
   }
 
+  // Varias entradas por día (pedido explícito del usuario: puede pescar
+  // en varios spots el mismo día, o ir en barco por la mañana y de
+  // costa por la tarde) — cada fecha guarda una LISTA de entradas, no
+  // una sola. `salidas` ya viene ordenado por fecha desc; se mantiene
+  // ese orden relativo dentro de cada día (más reciente primero según
+  // se creó, gracias al orden de inserción del array).
   salidasPorFecha = {};
   salidas.forEach((s) => {
-    salidasPorFecha[s.fecha] = { salida: s, capturas: capturasPorSalida[s.id] || [] };
+    (salidasPorFecha[s.fecha] = salidasPorFecha[s.fecha] || []).push({ salida: s, capturas: capturasPorSalida[s.id] || [] });
   });
 }
 
@@ -352,8 +449,10 @@ function renderCalendario() {
     const el = document.createElement("div");
     el.className = "dia";
     if (iso === hoyISO) el.classList.add("hoy");
-    const entrada = salidasPorFecha[iso];
-    if (entrada) el.classList.add(entrada.capturas.length ? "verde" : "rojo");
+    const entradas = salidasPorFecha[iso];
+    if (entradas && entradas.length) {
+      el.classList.add(entradas.some((e) => e.capturas.length) ? "verde" : "rojo");
+    }
     el.textContent = String(dia);
     el.addEventListener("click", () => abrirDia(iso, fecha));
     cont.appendChild(el);
@@ -388,9 +487,75 @@ async function redimensionarImagen(file, maxAncho = 1600, calidad = 0.8) {
   return new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", calidad));
 }
 
+// Selector de hora: dos <select> nativos (hora, minuto) — sustituye a
+// <input type="time"> (su desplegable nativo, en algunos navegadores/
+// móviles, solo deja ver unas pocas horas a la vez) y a un primer
+// intento con una rueda de scroll/snap hecha a mano, que en la práctica
+// no se veía igual en todos los navegadores. El propio <select> del
+// navegador ya trae scroll cuando tiene muchas opciones, así que es la
+// forma más simple y fiable de tener "un desplegable con scroll".
+// valorInicial null/undefined -> empieza sin nada elegido ("--" en
+// ambos) — todas las horas de la app son opcionales: quien va en una
+// embarcación moviéndose puede querer registrar una captura de un
+// momento concreto sin rellenar nada más, o solo la hora de inicio sin
+// la de fin si es una salida puntual.
+function crearSelectorHora(idContenedor, valorInicial) {
+  const cont = document.getElementById(idContenedor);
+  const horas = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0"));
+  const minutos = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, "0"));
+  const [hIni, mIni] = (valorInicial || "").split(":");
+
+  const opciones = (valores, actual) =>
+    `<option value="">--</option>` +
+    valores.map((v) => `<option value="${v}" ${v === actual ? "selected" : ""}>${v}</option>`).join("");
+  cont.innerHTML = `
+    <select class="hora-select-h">${opciones(horas, hIni)}</select>
+    <span class="hora-select-sep">:</span>
+    <select class="hora-select-m">${opciones(minutos, mIni)}</select>
+  `;
+  const selH = cont.querySelector(".hora-select-h");
+  const selM = cont.querySelector(".hora-select-m");
+
+  return {
+    valor() {
+      if (!selH.value || !selM.value) return null;
+      return `${selH.value}:${selM.value}`;
+    },
+  };
+}
+
+// Bug real encontrado 2026-09-12 (el usuario vio nubosidad 100% cuando en
+// realidad no pasaba del 20%): Open-Meteo (timezone=Europe/Madrid)
+// etiqueta sus horas en local, no en UTC — new Date().toISOString() es
+// UTC y comparado tal cual desplazaba el "ahora" 1-2h según CET/CEST.
+// Mismo fallo corregido a la vez en functions/prevision.js e index.html.
+function horaActualMadridISO() {
+  const partes = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Madrid", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", hourCycle: "h23",
+  }).formatToParts(new Date());
+  const val = (t) => partes.find((p) => p.type === t).value;
+  return `${val("year")}-${val("month")}-${val("day")}T${val("hour")}`;
+}
+
+// Coeficiente de marea: mareas vivas (coeficiente alto) cerca de luna
+// nueva/llena, muertas (bajo) cerca de los cuartos — aproximación
+// astronómica estándar por fase lunar, escala 20-120 como las tablas de
+// mareas habituales. No es un dato oficial de un servicio hidrográfico.
+// Misma fórmula que functions/prevision.js (coeficienteMarea), duplicada
+// aquí porque no hay bundling entre archivos en este repo.
+const SINODICO_DIAS = 29.530588853;
+const JD_LUNA_NUEVA_REF = 2451550.1; // 2000-01-06 18:14 UTC, luna nueva de referencia (J2000)
+function coeficienteMarea(fecha) {
+  const jd = fecha.getTime() / 86400000 + 2440587.5;
+  const edadDias = (((jd - JD_LUNA_NUEVA_REF) % SINODICO_DIAS) + SINODICO_DIAS) % SINODICO_DIAS;
+  const fase = edadDias / SINODICO_DIAS;
+  const factorVivas = Math.abs(Math.cos(2 * Math.PI * fase));
+  return Math.round(45 + 75 * factorVivas);
+}
+
 async function contextoAmbiental(lat, lon, horaElegida, tipoSalida) {
   const paramsComunes = `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&forecast_days=1`;
-  const resultado = { marea_altura: null, marea_tendencia: null, presion_valor: null, presion_tendencia: null,
+  const resultado = { marea_altura: null, marea_tendencia: null, marea_coeficiente: null, presion_valor: null, presion_tendencia: null,
     luna_fase: null, luna_iluminacion: null, viento_kmh: null, viento_dir: null,
     oleaje_altura_min: null, oleaje_altura_max: null, temp_agua: null,
     nubosidad: null, precipitacion: null, boya_usada: null };
@@ -402,7 +567,7 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida) {
     ]);
     const horas = marino.hourly?.time || [];
     // Sin hora elegida: la hora de ahora (comportamiento de siempre). Con
-    // hora elegida (HH:MM, del <input type="time">): la hora en punto
+    // hora elegida (HH:MM, de la hora de inicio del selector de rueda): la hora en punto
     // más cercana — Open-Meteo da el dato por hora, no por minuto, así
     // que los minutos son solo para el registro, no cambian qué bloque
     // horario se usa. Redondea a la hora más cercana (no trunca hacia
@@ -415,8 +580,7 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida) {
       idx = horas.findIndex((hs) => +hs.slice(11, 13) === horaObjetivo);
     }
     if (idx === -1) {
-      const ahoraISO = new Date().toISOString().slice(0, 13);
-      idx = horas.findIndex((h) => h.slice(0, 13) === ahoraISO);
+      idx = horas.findIndex((h) => h.slice(0, 13) === horaActualMadridISO());
     }
     if (idx === -1) idx = 0;
 
@@ -426,10 +590,19 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida) {
       resultado.oleaje_altura_max = +(alturaOla * 1.1).toFixed(1);
     }
     resultado.temp_agua = marino.hourly?.sea_surface_temperature?.[idx] ?? null;
-    const alturaMarea = marino.hourly?.sea_level_height_msl?.[idx];
-    const alturaMareaSig = marino.hourly?.sea_level_height_msl?.[idx + 1];
-    resultado.marea_altura = alturaMarea ?? null;
+    // sea_level_height_msl es una anomalía respecto al nivel medio del
+    // mar (puede salir negativa) — se re-referencia contra el mínimo de
+    // la propia ventana de datos para mostrar la altura de marea de
+    // forma intuitiva (siempre ≥ 0), no un dato oceanográfico confuso.
+    // Mismo criterio que functions/prevision.js (calcularMarea).
+    const serieAltura = marino.hourly?.sea_level_height_msl || [];
+    const validasAltura = serieAltura.filter((v) => v !== null && v !== undefined);
+    const minAltura = validasAltura.length ? Math.min(...validasAltura) : 0;
+    const alturaMarea = serieAltura[idx];
+    const alturaMareaSig = serieAltura[idx + 1];
+    resultado.marea_altura = alturaMarea != null ? +(alturaMarea - minAltura).toFixed(2) : null;
     resultado.marea_tendencia = alturaMarea != null && alturaMareaSig != null ? (alturaMareaSig > alturaMarea ? "subiendo" : "bajando") : null;
+    resultado.marea_coeficiente = coeficienteMarea(new Date());
 
     resultado.viento_kmh = viento.hourly?.windspeed_10m?.[idx] != null ? Math.round(viento.hourly.windspeed_10m[idx]) : null;
     resultado.presion_valor = viento.hourly?.pressure_msl?.[idx] != null ? Math.round(viento.hourly.pressure_msl[idx]) : null;
@@ -472,10 +645,29 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida) {
 
 const etiquetaTipoSalida = { costa: "🪨 Costa", embarcacion: "🚤 Embarcación", submarinismo: "🤿 Submarinismo" };
 
-function formularioSalida(fecha) {
-  const opcionesSpots = SPOTS.map((s) => `<option value="${s.slug}">${s.nombre}</option>`).join("");
+// Los spots encajan según el tipo de salida (los ~90 fijos son todos de
+// costa; los personalizados llevan su propio tipo, ver
+// spotEncajaConTipoSalida) — cambiar el tipo de salida cambia qué spots
+// tiene sentido ofrecer, así que las <option> del Spot se regeneran cada
+// vez que cambia el tipo, no una sola vez al abrir el formulario.
+function opcionesSpotsPara(tipoSalida) {
+  const todos = todosLosSpotsDiario().filter((s) => spotEncajaConTipoSalida(s, tipoSalida));
+  const favoritos = todos.filter((s) => favoritosClaves.has(s.slug));
+  const resto = todos.filter((s) => !favoritosClaves.has(s.slug));
+  const opcion = (s) => `<option value="${s.slug}">${s.nombre}${s.esUsuario ? " 📍" : ""}</option>`;
+  const bloqueFavoritos = favoritos.length ? `<optgroup label="★ Favoritos">${favoritos.map(opcion).join("")}</optgroup>` : "";
+  const bloqueResto = resto.length
+    ? `<optgroup label="Todos los spots">${resto.map(opcion).join("")}</optgroup>`
+    : `<option value="" disabled>— sin spots de este tipo todavía, añade uno en el mapa —</option>`;
+  return `<option value="">Mi ubicación actual</option>${bloqueFavoritos}${bloqueResto}`;
+}
+
+// Un único formulario, reutilizado para crear una entrada nueva y para
+// editar una ya existente (idExistente en guardarSalida decide insert
+// vs update) — así no hay que mantener dos plantillas casi iguales.
+function formularioSalida() {
   return `
-    <p style="font-size:12px; color:#9FB8BF;">Todavía no hay nada registrado este día. Puedes guardar el día sin captura (quedará en rojo) o añadir capturas directamente.</p>
+    <p style="font-size:12px; color:#9FB8BF;">Rellena estos datos y guarda — luego se abre el menú para añadir capturas (especie, técnica, cebo…) de esta entrada.</p>
     <label for="salidaTipo">Tipo de salida</label>
     <select id="salidaTipo">
       <option value="costa">🪨 Costa</option>
@@ -484,27 +676,54 @@ function formularioSalida(fecha) {
     </select>
     <label for="salidaSpot">Spot</label>
     <select id="salidaSpot">
-      <option value="">Mi ubicación actual</option>
-      ${opcionesSpots}
+      ${opcionesSpotsPara("costa")}
     </select>
-    <label for="salidaHora">Hora</label>
-    <input type="time" id="salidaHora" />
-    <label for="salidaNotas">Notas del día</label>
+    <label>Hora de inicio</label>
+    <div class="hora-select" id="ruedaSalidaInicio"></div>
+    <label>Hora de fin</label>
+    <div class="hora-select" id="ruedaSalidaFin"></div>
+    <label for="salidaNotas">Notas</label>
     <textarea id="salidaNotas" placeholder="Cómo estuvo la jornada…"></textarea>
-    <button class="principal" id="btnGuardarSalida">Guardar día</button>
+    <div style="display:flex; gap:8px; margin-top:16px;">
+      <button class="secundario" id="btnCancelarSalida" style="margin-top:0; flex:1;">Cancelar</button>
+      <button class="principal" id="btnGuardarSalida" style="margin-top:0; flex:1;">Guardar</button>
+    </div>
     <div class="mensaje" id="mensajeSalida"></div>
   `;
 }
 
-async function crearSalida(fecha) {
+// horaRangoTexto: texto "🕐 08:00–12:00" / "🕐 desde 08:00" / "🕐 hasta
+// 12:00" / "" según qué horas tenga la entrada — usado tanto en el
+// resumen de cada entrada como (antes) en detalleSalida.
+function horaRangoTexto(salida) {
+  if (salida.hora_inicio && salida.hora_fin) return ` · 🕐 ${salida.hora_inicio.slice(0, 5)}–${salida.hora_fin.slice(0, 5)}`;
+  if (salida.hora_inicio) return ` · 🕐 desde ${salida.hora_inicio.slice(0, 5)}`;
+  if (salida.hora_fin) return ` · 🕐 hasta ${salida.hora_fin.slice(0, 5)}`;
+  return "";
+}
+
+// idExistente null -> crea una entrada nueva ese día; con id -> actualiza
+// la entrada existente (mismo formulario, ver formularioSalida).
+async function guardarSalida(fecha, idExistente) {
   const btn = document.getElementById("btnGuardarSalida");
   const mensajeEl = document.getElementById("mensajeSalida");
   btn.disabled = true;
   const spotSlug = document.getElementById("salidaSpot").value;
   const notas = document.getElementById("salidaNotas").value;
-  const hora = document.getElementById("salidaHora").value || null;
+  const horaInicio = selectorHoraInicio.valor();
+  const horaFin = selectorHoraFin.valor();
   const tipoSalida = document.getElementById("salidaTipo").value;
-  const spot = SPOTS.find((s) => s.slug === spotSlug);
+  const spot = todosLosSpotsDiario().find((s) => s.slug === spotSlug);
+
+  // Las dos horas son opcionales — solo se valida el orden cuando están
+  // las dos puestas. Asume que la salida no cruza medianoche (limitación
+  // conocida, no contemplada aún).
+  if (horaInicio && horaFin && horaFin <= horaInicio) {
+    mensajeEl.className = "mensaje error";
+    mensajeEl.textContent = "La hora de fin debe ser posterior a la hora de inicio.";
+    btn.disabled = false;
+    return;
+  }
 
   let lat, lon;
   if (spot) {
@@ -521,11 +740,14 @@ async function crearSalida(fecha) {
     }
   }
 
-  const contexto = await contextoAmbiental(lat, lon, hora, tipoSalida);
-  const { error } = await supabase.from("salidas_pesca").insert({
+  const contexto = await contextoAmbiental(lat, lon, horaInicio, tipoSalida);
+  const datos = {
     user_id: usuario.id, fecha, spot_slug: spot?.slug ?? null, spot_nombre: spot?.nombre ?? "Ubicación actual",
-    lat, lon, notas, hora, tipo_salida: tipoSalida, ...contexto,
-  });
+    lat, lon, notas, hora_inicio: horaInicio, hora_fin: horaFin, tipo_salida: tipoSalida, ...contexto,
+  };
+  const { error } = idExistente
+    ? await supabase.from("salidas_pesca").update(datos).eq("id", idExistente)
+    : await supabase.from("salidas_pesca").insert(datos);
   if (error) {
     mensajeEl.className = "mensaje error";
     mensajeEl.textContent = error.message;
@@ -540,6 +762,7 @@ async function crearSalida(fecha) {
 function contextoHTML(salida) {
   const filas = [
     ["MAREA", salida.marea_altura != null ? `${salida.marea_altura.toFixed?.(2) ?? salida.marea_altura}m ${salida.marea_tendencia === "subiendo" ? "↑" : salida.marea_tendencia === "bajando" ? "↓" : ""}` : "—"],
+    ["COEF. MAREA", salida.marea_coeficiente != null ? String(salida.marea_coeficiente) : "—"],
     ["VIENTO", salida.viento_kmh != null ? `${salida.viento_kmh} km/h` : "—"],
     ["OLEAJE", salida.oleaje_altura_min != null ? `${salida.oleaje_altura_min}–${salida.oleaje_altura_max}m` : "—"],
     ["PRESIÓN", salida.presion_valor != null ? `${salida.presion_valor} hPa` : "—"],
@@ -564,13 +787,18 @@ async function tarjetaCapturaHTML(captura) {
       ${captura.cebo || captura.aparejo || captura.senuelo ? `<div class="detalle">${captura.cebo ? "Cebo: " + captura.cebo : ""} ${captura.aparejo ? "· Aparejo: " + captura.aparejo : ""} ${captura.senuelo ? "· Señuelo: " + captura.senuelo : ""}</div>` : ""}
       ${captura.notas ? `<div class="detalle">${captura.notas}</div>` : ""}
       ${urls.length ? `<div class="galeria-fotos">${urls.map((u) => `<img src="${u}" alt="Foto de ${captura.especie}" />`).join("")}</div>` : ""}
-      <button class="borrar-captura" data-id="${captura.id}">Borrar esta captura</button>
+      <div style="display:flex; gap:12px; margin-top:6px;">
+        <button class="editar-captura" data-id="${captura.id}" style="background:none; border:none; color:#9FB8BF; font-size:11px; cursor:pointer; padding:0;">✏️ Editar</button>
+        <button class="borrar-captura" data-id="${captura.id}" style="background:none; border:none; color:#E8907A; font-size:11px; cursor:pointer; padding:0;">🗑 Borrar</button>
+      </div>
     </div>
   `;
 }
 
 function formularioCaptura() {
-  const opcionesEspecies = ESPECIES.map((e) => `<option value="${e}">${e}</option>`).join("");
+  const opcionesEspecies = todasLasEspecies()
+    .map((e) => `<option value="${e.nombre}">${e.nombre}${e.cientifico ? ` (${e.cientifico})` : ""}</option>`)
+    .join("");
   const opcionesTecnicas = TECNICAS.map((t) => `<option value="${t}">${t}</option>`).join("");
   return `
     <div class="tarjeta-captura" style="border:1px dashed #1C3F4F;">
@@ -580,8 +808,8 @@ function formularioCaptura() {
         <label for="capturaEspecieOtra">¿Cuál?</label>
         <input type="text" id="capturaEspecieOtra" />
       </div>
-      <label for="capturaHora">Hora</label>
-      <input type="time" id="capturaHora" />
+      <label>Hora</label>
+      <div class="hora-select" id="ruedaCapturaHora"></div>
       <label for="capturaTalla">Talla (cm)</label>
       <input type="number" id="capturaTalla" step="0.5" min="0" />
       <label for="capturaPeso">Peso (g)</label>
@@ -608,15 +836,21 @@ function formularioCaptura() {
       <input type="text" id="capturaCebo" />
       <label for="capturaNotas">Notas</label>
       <textarea id="capturaNotas"></textarea>
-      <label for="capturaFotos">Fotos (puedes elegir varias)</label>
+      <label for="capturaFotos">Fotos nuevas (puedes elegir varias — las que ya hubiera se quedan)</label>
       <input type="file" id="capturaFotos" accept="image/*" capture="environment" multiple />
-      <button class="principal" id="btnGuardarCaptura">Añadir captura</button>
+      <div style="display:flex; gap:8px;">
+        <button class="secundario" id="btnCancelarCaptura" style="margin-top:0; flex:1;">Cancelar</button>
+        <button class="principal" id="btnGuardarCaptura" style="margin-top:0; flex:1;">Añadir captura</button>
+      </div>
       <div class="mensaje" id="mensajeCaptura"></div>
     </div>
   `;
 }
 
-async function guardarCaptura(salidaId, fecha) {
+// idExistente null -> añade una captura nueva a la entrada salidaId; con
+// id -> actualiza esa captura (las fotos que ya tuviera se quedan, las
+// nuevas del selector de fichero se suman detrás, nunca las reemplaza).
+async function guardarCaptura(salidaId, fecha, idExistente, ordenFotoBase) {
   const btn = document.getElementById("btnGuardarCaptura");
   const mensajeEl = document.getElementById("mensajeCaptura");
   btn.disabled = true;
@@ -628,7 +862,23 @@ async function guardarCaptura(salidaId, fecha) {
     btn.disabled = false;
     return;
   }
-  const hora = document.getElementById("capturaHora").value || null;
+  // Especie escrita a mano bajo "Otra": se da de alta para la comunidad
+  // (si no existe ya) para que aparezca como opción real la próxima vez
+  // — sin nombre científico, eso se revisa/añade aparte.
+  if (especieSel === "Otra" && !todasLasEspecies().some((e) => e.nombre.toLowerCase() === especie.toLowerCase())) {
+    const { error: errEspecie } = await supabase
+      .from("especies_comunidad")
+      .upsert({ nombre: especie, creado_por: usuario.id }, { onConflict: "nombre", ignoreDuplicates: true });
+    if (errEspecie) console.warn("No se pudo dar de alta la especie para la comunidad:", errEspecie.message);
+  }
+  const hora = selectorHoraCaptura.valor();
+  let avisoFueraDeRango = "";
+  const entradaDelDia = (salidasPorFecha[fecha] || []).find((e) => e.salida.id === salidaId);
+  const salidaDelDia = entradaDelDia?.salida;
+  if (hora && salidaDelDia?.hora_inicio && salidaDelDia?.hora_fin &&
+      (hora < salidaDelDia.hora_inicio.slice(0, 5) || hora > salidaDelDia.hora_fin.slice(0, 5))) {
+    avisoFueraDeRango = ` (fuera del rango de la salida, ${salidaDelDia.hora_inicio.slice(0, 5)}–${salidaDelDia.hora_fin.slice(0, 5)} — se guarda igual, es solo un aviso)`;
+  }
   const talla = document.getElementById("capturaTalla").value;
   const peso = document.getElementById("capturaPeso").value;
   const cebo = document.getElementById("capturaCebo").value;
@@ -639,20 +889,24 @@ async function guardarCaptura(salidaId, fecha) {
   const notas = document.getElementById("capturaNotas").value;
   const archivos = Array.from(document.getElementById("capturaFotos").files || []);
 
-  const { data: captura, error } = await supabase
-    .from("capturas")
-    .insert({
-      salida_id: salidaId, user_id: usuario.id, especie, hora, talla_cm: talla || null, peso_g: peso || null,
-      cebo: cebo || null, tecnica: tecnica || null, senuelo: senuelo || null, aparejo: aparejo || null, notas: notas || null,
-    })
-    .select()
-    .single();
-  if (error) {
-    mensajeEl.className = "mensaje error";
-    mensajeEl.textContent = error.message;
-    btn.disabled = false;
-    return;
+  const datos = {
+    salida_id: salidaId, user_id: usuario.id, especie, hora, talla_cm: talla || null, peso_g: peso || null,
+    cebo: cebo || null, tecnica: tecnica || null, senuelo: senuelo || null, aparejo: aparejo || null, notas: notas || null,
+  };
+  let capturaId = idExistente;
+  if (idExistente) {
+    const { error } = await supabase.from("capturas").update(datos).eq("id", idExistente);
+    if (error) { mensajeEl.className = "mensaje error"; mensajeEl.textContent = error.message; btn.disabled = false; return; }
+  } else {
+    const { data: captura, error } = await supabase.from("capturas").insert(datos).select().single();
+    if (error) { mensajeEl.className = "mensaje error"; mensajeEl.textContent = error.message; btn.disabled = false; return; }
+    capturaId = captura.id;
   }
+  // El panel se repinta entero justo después de guardar (abrirDia más
+  // abajo), así que un mensaje en mensajeEl no llegaría a verse — de ahí
+  // el alert() para este aviso puntual (no bloquea nada, la captura ya
+  // se guardó).
+  if (avisoFueraDeRango) alert(`Captura guardada${avisoFueraDeRango}.`);
 
   for (let i = 0; i < archivos.length; i++) {
     try {
@@ -660,7 +914,7 @@ async function guardarCaptura(salidaId, fecha) {
       const path = `${usuario.id}/${crypto.randomUUID()}.jpg`;
       const { error: errSubida } = await supabase.storage.from("capturas-fotos").upload(path, blob, { contentType: "image/jpeg" });
       if (errSubida) { console.error(errSubida); continue; }
-      await supabase.from("captura_fotos").insert({ captura_id: captura.id, user_id: usuario.id, foto_path: path, orden: i });
+      await supabase.from("captura_fotos").insert({ captura_id: capturaId, user_id: usuario.id, foto_path: path, orden: (ordenFotoBase || 0) + i });
     } catch (e) {
       console.error("Error subiendo foto:", e);
     }
@@ -671,22 +925,116 @@ async function guardarCaptura(salidaId, fecha) {
   abrirDia(fecha, new Date(fecha + "T00:00:00"));
 }
 
-async function detalleSalida(entrada, fecha) {
+// Resumen de una entrada del día (siempre visible) — el spot/tipo/horas
+// y sus capturas. Editar/añadir abren el formulario compartido de más
+// abajo (#zonaFormulario), no se edita en línea sobre este resumen.
+async function resumenEntradaHTML(entrada, idx) {
   const { salida, capturas } = entrada;
   const tarjetas = await Promise.all(capturas.map(tarjetaCapturaHTML));
   return `
-    <div class="detalle" style="font-size:12px; color:#9FB8BF;">
-      📍 ${salida.spot_nombre || "Ubicación actual"}
-      ${salida.tipo_salida ? ` · ${etiquetaTipoSalida[salida.tipo_salida] || salida.tipo_salida}` : ""}
-      ${salida.hora ? ` · 🕐 ${salida.hora.slice(0, 5)}` : ""}
+    <div class="tarjeta-captura" style="margin-top:0; margin-bottom:14px; border:1px solid #1C3F4F;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+        <div class="detalle" style="font-size:12px; color:#9FB8BF; flex:1;">
+          📍 ${salida.spot_nombre || "Ubicación actual"}
+          ${salida.tipo_salida ? ` · ${etiquetaTipoSalida[salida.tipo_salida] || salida.tipo_salida}` : ""}
+          ${horaRangoTexto(salida)}
+        </div>
+        <div style="display:flex; gap:10px; flex-shrink:0;">
+          <button class="editar-entrada" data-idx="${idx}" style="background:none; border:none; color:#9FB8BF; font-size:11px; cursor:pointer; padding:0;">✏️ Editar</button>
+          <button class="borrar-entrada" data-idx="${idx}" style="background:none; border:none; color:#E8907A; font-size:11px; cursor:pointer; padding:0;">🗑 Borrar</button>
+        </div>
+      </div>
+      ${salida.notas ? `<p style="font-size:13px; margin-top:8px;">${salida.notas}</p>` : ""}
+      ${contextoHTML(salida)}
+      <div style="margin-top:14px; font-family:'Inter',sans-serif; font-weight:500; font-size:11px; color:#6C8890;">CAPTURAS (${capturas.length})</div>
+      ${tarjetas.join("") || `<p style="font-size:12px; color:#6C8890;">Ninguna todavía.</p>`}
+      <button class="secundario anadir-captura" data-idx="${idx}" style="margin-top:10px;">➕ Añadir captura</button>
     </div>
-    ${salida.notas ? `<p style="font-size:13px; margin-top:8px;">${salida.notas}</p>` : ""}
-    ${contextoHTML(salida)}
-    <div style="margin-top:14px; font-family:'IBM Plex Mono',monospace; font-size:11px; color:#6C8890;">CAPTURAS (${capturas.length})</div>
-    ${tarjetas.join("") || `<p style="font-size:12px; color:#6C8890;">Ninguna todavía.</p>`}
-    ${formularioCaptura()}
-    <button class="secundario peligro" id="btnBorrarSalida">Borrar todo el día</button>
   `;
+}
+
+function cancelarFormulario() {
+  document.getElementById("zonaFormulario").innerHTML = "";
+}
+
+function engancharFormularioSalida(iso, idExistente) {
+  document.getElementById("salidaTipo").addEventListener("change", (e) => {
+    document.getElementById("salidaSpot").innerHTML = opcionesSpotsPara(e.target.value);
+  });
+  document.getElementById("btnCancelarSalida").addEventListener("click", cancelarFormulario);
+  document.getElementById("btnGuardarSalida").addEventListener("click", () => guardarSalida(iso, idExistente));
+}
+
+function mostrarFormularioNuevaEntrada(iso) {
+  const zona = document.getElementById("zonaFormulario");
+  zona.innerHTML = formularioSalida();
+  selectorHoraInicio = crearSelectorHora("ruedaSalidaInicio", null);
+  selectorHoraFin = crearSelectorHora("ruedaSalidaFin", null);
+  engancharFormularioSalida(iso, null);
+  zona.scrollIntoView({ behavior: "smooth", block: "end" });
+}
+
+function mostrarFormularioEditarEntrada(iso, salida) {
+  const zona = document.getElementById("zonaFormulario");
+  zona.innerHTML = formularioSalida();
+  document.getElementById("salidaTipo").value = salida.tipo_salida || "costa";
+  document.getElementById("salidaSpot").innerHTML = opcionesSpotsPara(document.getElementById("salidaTipo").value);
+  document.getElementById("salidaSpot").value = salida.spot_slug || "";
+  selectorHoraInicio = crearSelectorHora("ruedaSalidaInicio", salida.hora_inicio ? salida.hora_inicio.slice(0, 5) : null);
+  selectorHoraFin = crearSelectorHora("ruedaSalidaFin", salida.hora_fin ? salida.hora_fin.slice(0, 5) : null);
+  document.getElementById("salidaNotas").value = salida.notas || "";
+  document.getElementById("btnGuardarSalida").textContent = "Guardar cambios";
+  engancharFormularioSalida(iso, salida.id);
+  zona.scrollIntoView({ behavior: "smooth", block: "end" });
+}
+
+function engancharFormularioCaptura(iso, salidaId, idExistente, ordenFotoBase) {
+  const especieSel = document.getElementById("capturaEspecie");
+  especieSel.addEventListener("change", () => {
+    document.getElementById("capturaEspecieOtraBox").style.display = especieSel.value === "Otra" ? "block" : "none";
+  });
+  const tecnicaSel = document.getElementById("capturaTecnica");
+  tecnicaSel.addEventListener("change", () => {
+    const conSenuelo = TECNICAS_CON_SENUELO.has(tecnicaSel.value);
+    document.getElementById("capturaSenueloBox").style.display = conSenuelo ? "block" : "none";
+    document.getElementById("capturaAparejoBox").style.display = conSenuelo ? "none" : "block";
+  });
+  document.getElementById("btnCancelarCaptura").addEventListener("click", cancelarFormulario);
+  document.getElementById("btnGuardarCaptura").addEventListener("click", () => guardarCaptura(salidaId, iso, idExistente, ordenFotoBase));
+}
+
+function mostrarFormularioNuevaCaptura(iso, salidaId) {
+  const zona = document.getElementById("zonaFormulario");
+  zona.innerHTML = formularioCaptura();
+  selectorHoraCaptura = crearSelectorHora("ruedaCapturaHora", null);
+  engancharFormularioCaptura(iso, salidaId, null, 0);
+  zona.scrollIntoView({ behavior: "smooth", block: "end" });
+}
+
+async function mostrarFormularioEditarCaptura(iso, salidaId, captura) {
+  const zona = document.getElementById("zonaFormulario");
+  zona.innerHTML = formularioCaptura();
+  const especieConocida = todasLasEspecies().some((e) => e.nombre === captura.especie);
+  document.getElementById("capturaEspecie").value = especieConocida ? captura.especie : "Otra";
+  if (!especieConocida) {
+    document.getElementById("capturaEspecieOtraBox").style.display = "block";
+    document.getElementById("capturaEspecieOtra").value = captura.especie;
+  }
+  selectorHoraCaptura = crearSelectorHora("ruedaCapturaHora", captura.hora ? captura.hora.slice(0, 5) : null);
+  document.getElementById("capturaTalla").value = captura.talla_cm ?? "";
+  document.getElementById("capturaPeso").value = captura.peso_g ?? "";
+  document.getElementById("capturaTecnica").value = captura.tecnica || "";
+  const conSenuelo = TECNICAS_CON_SENUELO.has(captura.tecnica || "");
+  document.getElementById("capturaSenueloBox").style.display = conSenuelo ? "block" : "none";
+  document.getElementById("capturaAparejoBox").style.display = conSenuelo ? "none" : "block";
+  if (conSenuelo) document.getElementById("capturaSenuelo").value = captura.senuelo || "";
+  else document.getElementById("capturaAparejo").value = captura.aparejo || "";
+  document.getElementById("capturaCebo").value = captura.cebo || "";
+  document.getElementById("capturaNotas").value = captura.notas || "";
+  document.getElementById("btnGuardarCaptura").textContent = "Guardar cambios";
+  const { count } = await supabase.from("captura_fotos").select("id", { count: "exact", head: true }).eq("captura_id", captura.id);
+  engancharFormularioCaptura(iso, salidaId, captura.id, count || 0);
+  zona.scrollIntoView({ behavior: "smooth", block: "end" });
 }
 
 async function abrirDia(iso, fechaObj) {
@@ -695,44 +1043,54 @@ async function abrirDia(iso, fechaObj) {
   const contEl = document.getElementById("panelDiaContenido");
   tituloEl.textContent = fechaObj.toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 
-  const entrada = salidasPorFecha[iso];
-  if (!entrada) {
-    contEl.innerHTML = formularioSalida(iso);
-    document.getElementById("btnGuardarSalida").addEventListener("click", () => crearSalida(iso));
-  } else {
-    contEl.innerHTML = await detalleSalida(entrada, iso);
-    const especieSel = document.getElementById("capturaEspecie");
-    especieSel.addEventListener("change", () => {
-      document.getElementById("capturaEspecieOtraBox").style.display = especieSel.value === "Otra" ? "block" : "none";
-    });
-    const tecnicaSel = document.getElementById("capturaTecnica");
-    tecnicaSel.addEventListener("change", () => {
-      const conSenuelo = TECNICAS_CON_SENUELO.has(tecnicaSel.value);
-      document.getElementById("capturaSenueloBox").style.display = conSenuelo ? "block" : "none";
-      document.getElementById("capturaAparejoBox").style.display = conSenuelo ? "none" : "block";
-    });
-    document.getElementById("btnGuardarCaptura").addEventListener("click", () => guardarCaptura(entrada.salida.id, iso));
-    document.getElementById("btnBorrarSalida").addEventListener("click", async () => {
-      if (!confirm("¿Borrar este día y todas sus capturas y fotos?")) return;
-      await supabase.from("salidas_pesca").delete().eq("id", entrada.salida.id);
+  const entradas = salidasPorFecha[iso] || [];
+  const resumenes = await Promise.all(entradas.map((e, idx) => resumenEntradaHTML(e, idx)));
+  contEl.innerHTML =
+    (resumenes.join("") || `<p style="font-size:12px; color:#9FB8BF;">Todavía no hay nada registrado este día.</p>`) +
+    `<div id="zonaFormulario"></div>` +
+    `<button class="secundario" id="btnAnadirEntrada">➕ Añadir ${entradas.length ? "otra " : ""}entrada este día</button>`;
+
+  document.getElementById("btnAnadirEntrada").addEventListener("click", () => mostrarFormularioNuevaEntrada(iso));
+
+  contEl.querySelectorAll(".editar-entrada").forEach((btn) => {
+    btn.addEventListener("click", () => mostrarFormularioEditarEntrada(iso, entradas[+btn.dataset.idx].salida));
+  });
+  contEl.querySelectorAll(".borrar-entrada").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      if (!confirm("¿Borrar esta entrada y todas sus capturas y fotos?")) return;
+      await supabase.from("salidas_pesca").delete().eq("id", entradas[+btn.dataset.idx].salida.id);
       await cargarDatos();
       renderCalendario();
-      panel.classList.remove("visible");
+      abrirDia(iso, fechaObj);
     });
-    contEl.querySelectorAll(".borrar-captura").forEach((btn) => {
-      btn.addEventListener("click", async () => {
-        if (!confirm("¿Borrar esta captura?")) return;
-        await supabase.from("capturas").delete().eq("id", btn.dataset.id);
-        await cargarDatos();
-        renderCalendario();
-        abrirDia(iso, fechaObj);
-      });
+  });
+  contEl.querySelectorAll(".anadir-captura").forEach((btn) => {
+    btn.addEventListener("click", () => mostrarFormularioNuevaCaptura(iso, entradas[+btn.dataset.idx].salida.id));
+  });
+  contEl.querySelectorAll(".editar-captura").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      for (const e of entradas) {
+        const captura = e.capturas.find((c) => c.id === btn.dataset.id);
+        if (captura) { mostrarFormularioEditarCaptura(iso, e.salida.id, captura); break; }
+      }
     });
-  }
+  });
+  contEl.querySelectorAll(".borrar-captura").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      if (!confirm("¿Borrar esta captura?")) return;
+      await supabase.from("capturas").delete().eq("id", btn.dataset.id);
+      await cargarDatos();
+      renderCalendario();
+      abrirDia(iso, fechaObj);
+    });
+  });
+
   panel.classList.add("visible");
 }
 
 await cargarDatos();
+await cargarSpotsUsuario();
+await cargarEspeciesComunidad();
 renderCalendario();
 </script>
 
