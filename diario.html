@@ -109,6 +109,7 @@
   .rueda-hora { margin: 4px 0 2px; }
   .rueda-check { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: #9FB8BF; margin-bottom: 4px; cursor: pointer; }
   .rueda-hora-ruedas { display: flex; align-items: center; justify-content: center; gap: 2px; position: relative; }
+  .rueda-hora-ruedas.deshabilitada { opacity: 0.35; pointer-events: none; }
   .rueda-marco {
     position: absolute; left: 4px; right: 4px; top: 36px; height: 36px;
     border-top: 1px solid #D4A24C; border-bottom: 1px solid #D4A24C; pointer-events: none; z-index: 1;
@@ -486,7 +487,7 @@ function crearSelectorHora(idContenedor, valorInicial) {
     <div class="rueda-relleno"></div>`;
   cont.innerHTML = `
     <label class="rueda-check"><input type="checkbox" class="rueda-check-input" ${sinEspecificar ? "checked" : ""} /> Sin especificar</label>
-    <div class="rueda-hora-ruedas" style="${sinEspecificar ? "display:none;" : ""}">
+    <div class="rueda-hora-ruedas${sinEspecificar ? " deshabilitada" : ""}">
       <div class="rueda-marco"></div>
       <div class="rueda-columna" data-lista="horas">${columna(horas)}</div>
       <div class="rueda-separador">:</div>
@@ -495,8 +496,11 @@ function crearSelectorHora(idContenedor, valorInicial) {
   `;
   const checkbox = cont.querySelector(".rueda-check-input");
   const ruedasDiv = cont.querySelector(".rueda-hora-ruedas");
+  // La rueda se queda siempre visible (solo se atenúa y deja de responder
+  // al tacto/ratón si "Sin especificar" está marcado) — antes se ocultaba
+  // del todo con display:none y parecía que el control no existía.
   checkbox.addEventListener("change", () => {
-    ruedasDiv.style.display = checkbox.checked ? "none" : "flex";
+    ruedasDiv.classList.toggle("deshabilitada", checkbox.checked);
   });
   const colH = cont.querySelector('[data-lista="horas"]');
   const colM = cont.querySelector('[data-lista="minutos"]');
