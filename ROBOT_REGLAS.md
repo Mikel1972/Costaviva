@@ -53,6 +53,38 @@ reconozca esas variantes.
   seguridad de más abajo (esto es solo un insert por fila propuesta, no
   un cambio de código).
 
+## Coeficiente de marea: por spot, no por zona (revisado 2026-09-13)
+
+Esta sección decía originalmente que había que calibrar un
+`RETRASO_MAREA_DIAS` distinto por zona (Cantábrico, Mediterráneo, Golfo
+de Cádiz, Canarias...). **Al comprobarlo, resultó falso**: se verificó
+contra tides4fishing.com en 6 puertos de zonas distintas (Armintza,
+Vigo, Cádiz, Valencia, Las Palmas, Peniche) y el coeficiente publicado
+es EXACTAMENTE el mismo, día a día, en los seis — no es un dato por
+puerto, es un índice astronómico nacional/compartido (ver
+`CALIBRACION.jsonl`, `tipo: "coeficiente_marea_vs_tides4fishing"`).
+Calibrar un retraso por zona no tenía sentido: el número de referencia
+contra el que se compararía no cambia entre zonas.
+
+Por eso `coeficientePorSpot()` (`functions/prevision.js` y
+`diario.html`) ya no usa ese índice nacional como fuente principal —
+calcula uno real y distinto por spot a partir del propio rango de marea
+que Open-Meteo modela para esa coordenada exacta (ver el comentario
+largo en `functions/prevision.js` y la entrada de `CLAUDE.md` del
+2026-09-13). `coeficienteMarea()` (la fórmula astronómica con el
+retraso de 2 días, verificado con la comparación de arriba) se queda
+solo como **respaldo** para cuando la ventana de datos ancha no alcance.
+
+**Si en el futuro se sospecha que `coeficientePorSpot()` da valores
+raros para algún spot concreto** (rango casi sin variación, un fallo de
+Open-Meteo para esas coordenadas, etc.): compara el resultado contra
+tides4fishing.com u otra fuente real para ESE punto en varios días
+consecutivos, anota la comparación en `CALIBRACION.jsonl` (mismo
+`tipo`), y **propón** el ajuste en `ROBOT.md` — nunca lo apliques
+directamente: es un cambio de fórmula que afecta a un dato que se le
+muestra al usuario como si fuera fiable, sigue la regla general de
+"cambio de producto → proponer, no implementar".
+
 ## Red de seguridad de la automatización (añadido 2026-09-12)
 
 Estas reglas existen porque "el propio prompt dice que esto es

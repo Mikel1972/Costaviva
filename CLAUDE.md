@@ -217,6 +217,65 @@ requeriría análisis armónico real por puerto). Se muestra junto a la
 altura de marea en el panel de cada spot del mapa y se guarda también
 por salida (`salidas_pesca.marea_coeficiente`).
 
+**Dos bugs reales encontrados y corregidos el 2026-09-13, el usuario
+los cazó comparando contra tides4fishing.com para Armintza (Vizcaya):**
+- **`marea_coeficiente` del diario usaba `new Date()` (el momento de
+  guardar), no la fecha real de la salida.** Una salida del 7 de
+  septiembre guardada/editada más tarde mostraba el coeficiente de HOY,
+  no el del 7 de septiembre — `contextoAmbiental()` ahora recibe `fecha`
+  y la usa (a mediodía de ese día, la hora del día es irrelevante para
+  la fase lunar). **Esto revela un problema más amplio, sin resolver
+  todavía**: `contextoAmbiental()` sigue pidiendo a Open-Meteo el
+  forecast de "ahora" (`forecast_days=1`, sin `start_date`/`end_date`)
+  para TODO lo demás (oleaje, viento, presión, nubosidad, temp. agua,
+  altura de marea) — para cualquier entrada guardada en una fecha
+  distinta a cuando se guardó de verdad (registro retroactivo), esos
+  datos también estarían mal, mismo tipo de fallo que el del
+  coeficiente. Pendiente de arreglar con `start_date=end_date=fecha` en
+  vez de `forecast_days=1`.
+- **La fórmula del coeficiente no tenía en cuenta el "retraso de la
+  marea"** (la marea real no responde al instante a la luna nueva/llena
+  — desfase físico real de varios días según el puerto, por fricción y
+  propagación de la onda). Comparado contra tides4fishing.com para
+  Armintza del 5 al 10 de septiembre de 2026 (ver `CALIBRACION.jsonl`,
+  `tipo: "coeficiente_marea_vs_tides4fishing"`), la fórmula sin retraso
+  salía sistemáticamente ~2 días adelantada (ej. 7 sept: fórmula 92,
+  real 66 — pero el real del 9 sept es 92). Corregido con
+  `RETRASO_MAREA_DIAS = 2`.
+
+**Coeficiente real por spot, sustituye al índice nacional (2026-09-13):**
+al calibrar el punto anterior contra más puertos (Vigo, Cádiz, Valencia,
+Las Palmas, Peniche), salió un hallazgo que cambió el enfoque:
+**tides4fishing.com publica el mismo coeficiente, día a día, en TODOS
+los puertos comprobados** (Cantábrico, Atlántico Galicia, Golfo de
+Cádiz, Mediterráneo, Canarias y Portugal) — no es un dato por puerto,
+es un índice astronómico nacional compartido, así que calibrar un
+`RETRASO_MAREA_DIAS` por zona (lo que se dejó preparado en
+`ROBOT_REGLAS.md`) no tenía sentido: el número de referencia no varía
+entre zonas.
+
+En vez de seguir afinando esa aproximación, `coeficientePorSpot()`
+(`functions/prevision.js` y `diario.html`) calcula uno real y distinto
+por spot: el rango de marea (pleamar menos bajamar) que Open-Meteo
+modela para ESE punto concreto cada día, normalizado contra el rango
+mínimo y máximo del propio spot en una ventana de ~17 días (past_days=8
++ forecast_days=16 en el mapa; ±8 días alrededor de la fecha en el
+diario) — cubre un ciclo vivas-muertas completo (~14.77 días). Escala
+20-120 igual que el índice nacional, pero ahora sí varía de un punto a
+otro porque usa el modelo de oleaje/marea propio de cada coordenada.
+`coeficienteMarea()` (la fórmula astronómica con el retraso calibrado)
+se queda como **respaldo**, solo si la ventana ancha no trae datos
+suficientes (menos de 10 días válidos, o sin variación real que
+normalizar).
+
+Efecto colateral a vigilar: la Marine API del mapa ahora pide un rango
+de fechas mucho más ancho (~2.9 MB en una prueba real con los 95 spots,
+~1s de respuesta) — el bucle que arma los "bloques" de previsión
+(`procesarSpot`) tenía que empezar a contar desde `i = 0`, que ahora
+apunta a 8 días atrás; se corrigió para que empiece en el índice de
+"ahora" (`idxAhoraOla`), si no las franjas horarias mostradas habrían
+sido de la semana pasada.
+
 **Especies enriquecidas por la comunidad (2026-09-12):** el
 desplegable de especies del diario muestra el nombre científico entre
 paréntesis (verificado por especie, `ESPECIES` en `diario.html`). Una
