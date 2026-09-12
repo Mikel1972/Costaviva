@@ -2159,6 +2159,15 @@ async function prepararCapaRadarLluvia() {
     capaRadarLluvia = L.tileLayer(`${datos.host}${ultimoFrame.path}/256/{z}/{x}/{y}/2/1_1.png`, {
       opacity: 0.55,
       attribution: "Radar de lluvia: RainViewer",
+      // RainViewer documenta que su zoom máximo real es 7 — pedir teselas
+      // de zoom 8+ no da un error HTTP, devuelve una tesela válida con el
+      // texto "Zoom Level Not Supported" dibujado dentro (verificado en
+      // vivo 2026-09-13, bug reportado por el usuario: "me pone zoom
+      // level not supported" al acercar el mapa). maxNativeZoom hace que,
+      // a partir de zoom 8, Leaflet siga pidiendo la tesela de zoom 7 y
+      // la reescale — se sigue pudiendo acercar el mapa, pero sin pedir
+      // teselas que no existen de verdad.
+      maxNativeZoom: 7,
     });
   } catch (e) {
     console.log("No se pudo cargar el radar de lluvia:", e.message);
