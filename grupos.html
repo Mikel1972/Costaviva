@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>Grupos — Costa Viva</title>
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="icon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="icon.svg" />
+<meta name="theme-color" content="#0B2532" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Costa Viva" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: 'Inter', sans-serif; background: #0B2532; color: #E8E2D0;
+    display: flex; flex-direction: column; height: 100vh; overflow: hidden; padding-bottom: 54px;
+  }
+  header { padding: 10px 20px; border-bottom: 1px solid #1C3F4F; flex-shrink: 0; }
+  header h1 { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 700; letter-spacing: 0.2px; margin: 0; }
+  @media (max-width: 380px) { header h1 { font-size: 20px; } }
+  header p { margin: 2px 0 0; color: #7FA3AF; font-size: 11px; }
+
+  .contenido { flex: 1; min-height: 0; overflow-y: auto; padding: 16px; max-width: 480px; margin: 0 auto; width: 100%; }
+
+  .seccion { background: #0F2C38; border: 1px solid #1C3F4F; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+  .seccion h2 { font-family: 'Fraunces', serif; font-size: 16px; margin: 0 0 4px; }
+  .seccion .explicacion { font-size: 11.5px; color: #7FA3AF; line-height: 1.5; margin-bottom: 10px; }
+
+  label { display: block; font-size: 12px; color: #9FB8BF; margin: 12px 0 5px; font-family: 'Inter', sans-serif; font-weight: 500; }
+  input {
+    width: 100%; padding: 9px 11px; border-radius: 8px; border: 1px solid #1C3F4F; background: #123B4D;
+    color: #E8E2D0; font-family: 'Inter', sans-serif; font-size: 14px;
+  }
+  input:focus { outline: none; border-color: #D4A24C; }
+  button.principal {
+    width: 100%; margin-top: 12px; padding: 11px; border-radius: 8px; border: none;
+    background: #D4A24C; color: #0B2532; font-weight: 600; font-size: 14px; cursor: pointer;
+  }
+  button.principal:disabled { opacity: 0.6; }
+  button.secundario {
+    width: 100%; margin-top: 8px; padding: 10px; border-radius: 8px; border: 1px solid #1C3F4F;
+    background: transparent; color: #9FB8BF; font-size: 13px; cursor: pointer;
+  }
+  button.peligro { color: #E8907A; border-color: #A34A35; }
+
+  .tarjeta-grupo { background: #123B4D; border-radius: 10px; padding: 14px; margin-top: 12px; }
+  .tarjeta-grupo .nombre-grupo { font-family: 'Fraunces', serif; font-size: 16px; }
+  .tarjeta-grupo .fila-botones { display: flex; gap: 8px; margin-top: 10px; }
+  .tarjeta-grupo .fila-botones button { flex: 1; margin-top: 0; }
+
+  .compartir-toggles { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; font-size: 12.5px; }
+  .compartir-toggles label { display: flex; align-items: center; gap: 8px; margin: 0; font-weight: 400; cursor: pointer; }
+  .compartir-toggles input[type="checkbox"] { width: auto; accent-color: #D4A24C; }
+
+  .invitacion-caja {
+    margin-top: 10px; background: #0F2C38; border: 1px dashed #1C3F4F; border-radius: 8px; padding: 10px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #D4A24C; word-break: break-all;
+  }
+
+  .actividad-compartida { margin-top: 12px; border-top: 1px solid #1C3F4F; padding-top: 10px; }
+  .actividad-compartida h3 { font-size: 11px; color: #6C8890; margin: 10px 0 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .fila-actividad { font-size: 12.5px; padding: 6px 0; border-bottom: 1px solid #1C3F4F; }
+  .fila-actividad:last-child { border-bottom: none; }
+  .fila-actividad .autor { color: #D4A24C; font-weight: 600; }
+  .fila-actividad .detalle { color: #9FB8BF; font-size: 11.5px; }
+
+  .mensaje { margin-top: 10px; font-size: 12px; padding: 8px 10px; border-radius: 8px; display: none; }
+  .mensaje.error { display: block; background: rgba(163,74,53,0.15); color: #E8907A; border: 1px solid #A34A35; }
+  .mensaje.ok { display: block; background: rgba(79,157,105,0.12); color: #8FCBA3; border: 1px solid #3A6B4C; }
+
+  .tabs-nav {
+    position: fixed; left: 0; right: 0; bottom: 0; height: 54px;
+    background: #0F2C38; border-top: 1px solid #1C3F4F; display: flex; z-index: 700;
+  }
+  .tabs-nav a {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 2px; text-decoration: none; color: #7FA3AF; font-family: 'Inter', sans-serif; font-size: 10.5px; font-weight: 500;
+  }
+  .tabs-nav a .icono { font-size: 18px; line-height: 1; }
+  .tabs-nav a.activa { color: #D4A24C; }
+</style>
+</head>
+<body>
+
+<div id="comprobandoAcceso" style="position:fixed; inset:0; background:#0B2532; z-index:9999; display:flex; align-items:center; justify-content:center; color:#7FA3AF; font-family:'IBM Plex Mono',monospace; font-size:13px;">
+  Comprobando acceso…
+</div>
+
+<header>
+  <h1>👥 Grupos</h1>
+  <p>Comparte ubicaciones, capturas y calendario con tu cuadrilla — nadie tiene más permisos que nadie.</p>
+</header>
+
+<div class="contenido">
+  <div class="seccion">
+    <h2>Mi apodo</h2>
+    <p class="explicacion">Es lo que ven los demás miembros de tus grupos junto a lo que compartas — nunca tu email.</p>
+    <label for="miApodo">Apodo</label>
+    <input type="text" id="miApodo" placeholder="ej. Mikel" maxlength="40" />
+    <button class="principal" id="btnGuardarApodo">Guardar apodo</button>
+    <div class="mensaje" id="mensajeApodo"></div>
+  </div>
+
+  <div class="seccion">
+    <h2>Unirse a un grupo</h2>
+    <p class="explicacion">Pega aquí el código o enlace de invitación que te ha pasado alguien de tu cuadrilla.</p>
+    <label for="codigoUnirse">Código de invitación</label>
+    <input type="text" id="codigoUnirse" placeholder="ej. AB12CD34" />
+    <button class="principal" id="btnUnirse">Unirme</button>
+    <div class="mensaje" id="mensajeUnirse"></div>
+  </div>
+
+  <div class="seccion">
+    <h2>Crear un grupo</h2>
+    <label for="nombreGrupo">Nombre del grupo</label>
+    <input type="text" id="nombreGrupo" placeholder="ej. Cuadrilla Mundaka" maxlength="60" />
+    <button class="principal" id="btnCrearGrupo">Crear grupo</button>
+    <div class="mensaje" id="mensajeCrearGrupo"></div>
+  </div>
+
+  <div class="seccion">
+    <h2>Mis grupos</h2>
+    <div id="listaGrupos"><p style="font-size:12px; color:#6C8890;">Cargando…</p></div>
+  </div>
+</div>
+
+<nav class="tabs-nav">
+  <a href="/"><span class="icono">🗺️</span>Mapa</a>
+  <a href="/diario.html"><span class="icono">🎣</span>Diario</a>
+  <a href="/alarma.html"><span class="icono">🆘</span>Alarma</a>
+  <a href="/grupos.html" class="activa"><span class="icono">👥</span>Grupos</a>
+  <a href="#" id="btnCerrarSesion"><span class="icono">🚪</span>Salir</a>
+</nav>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const { data: sesionInicial } = await supabase.auth.getSession();
+if (!sesionInicial.session) {
+  window.location.href = "/login.html";
+  throw new Error("sin sesión");
+}
+const usuario = sesionInicial.session.user;
+document.getElementById("comprobandoAcceso").remove();
+
+document.getElementById("btnCerrarSesion").addEventListener("click", async (e) => {
+  e.preventDefault();
+  await supabase.auth.signOut();
+  window.location.href = "/login.html";
+});
+
+function mostrarMensaje(idEl, texto, tipo) {
+  const el = document.getElementById(idEl);
+  el.className = `mensaje ${tipo}`;
+  el.textContent = texto;
+}
+
+// ---- Apodo ----
+async function cargarApodo() {
+  const { data } = await supabase.from("perfiles").select("nombre").eq("id", usuario.id).single();
+  document.getElementById("miApodo").value = data?.nombre || "";
+}
+document.getElementById("btnGuardarApodo").addEventListener("click", async () => {
+  const nombre = document.getElementById("miApodo").value.trim();
+  if (!nombre) { mostrarMensaje("mensajeApodo", "Escribe un apodo.", "error"); return; }
+  const { error } = await supabase.from("perfiles").update({ nombre }).eq("id", usuario.id);
+  if (error) mostrarMensaje("mensajeApodo", error.message, "error");
+  else mostrarMensaje("mensajeApodo", "Apodo guardado.", "ok");
+});
+
+// ---- Unirse a un grupo (código o enlace pegado con ?codigo=) ----
+async function unirseConCodigo(codigoBruto) {
+  // Acepta tanto el código suelo como un enlace completo (.../grupos.html?codigo=XXXX).
+  let codigo = codigoBruto.trim();
+  const m = codigo.match(/[?&]codigo=([^&]+)/);
+  if (m) codigo = decodeURIComponent(m[1]);
+  if (!codigo) { mostrarMensaje("mensajeUnirse", "Pega un código o enlace de invitación.", "error"); return; }
+  const { error } = await supabase.rpc("unirse_a_grupo", { p_codigo: codigo });
+  if (error) { mostrarMensaje("mensajeUnirse", error.message, "error"); return; }
+  mostrarMensaje("mensajeUnirse", "Te has unido al grupo.", "ok");
+  document.getElementById("codigoUnirse").value = "";
+  await cargarGrupos();
+}
+document.getElementById("btnUnirse").addEventListener("click", () => unirseConCodigo(document.getElementById("codigoUnirse").value));
+
+const codigoDeLaURL = new URLSearchParams(window.location.search).get("codigo");
+if (codigoDeLaURL) {
+  document.getElementById("codigoUnirse").value = codigoDeLaURL;
+  if (confirm("¿Unirte al grupo de esta invitación?")) unirseConCodigo(codigoDeLaURL);
+}
+
+// ---- Crear grupo ----
+document.getElementById("btnCrearGrupo").addEventListener("click", async () => {
+  const nombre = document.getElementById("nombreGrupo").value.trim();
+  if (!nombre) { mostrarMensaje("mensajeCrearGrupo", "Ponle un nombre al grupo.", "error"); return; }
+  const { error } = await supabase.rpc("crear_grupo", { p_nombre: nombre });
+  if (error) { mostrarMensaje("mensajeCrearGrupo", error.message, "error"); return; }
+  document.getElementById("nombreGrupo").value = "";
+  mostrarMensaje("mensajeCrearGrupo", "Grupo creado.", "ok");
+  await cargarGrupos();
+});
+
+// ---- Código aleatorio para invitaciones (8 caracteres, sin ambiguos) ----
+function generarCodigo() {
+  const alfabeto = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // sin 0/O/1/I
+  let codigo = "";
+  const azar = new Uint8Array(8);
+  crypto.getRandomValues(azar);
+  for (let i = 0; i < 8; i++) codigo += alfabeto[azar[i] % alfabeto.length];
+  return codigo;
+}
+
+async function generarInvitacion(grupoId, contenedorEl) {
+  const codigo = generarCodigo();
+  const { error } = await supabase.from("invitaciones_grupo").insert({ grupo_id: grupoId, creado_por: usuario.id, codigo });
+  if (error) { alert(`No se ha podido generar la invitación: ${error.message}`); return; }
+  const enlace = `${window.location.origin}/grupos.html?codigo=${codigo}`;
+  contenedorEl.innerHTML = `<div class="invitacion-caja">${enlace}</div>`;
+}
+
+async function actividadCompartidaHTML(grupoId) {
+  const [{ data: calendario }, { data: capturas }, { data: ubicaciones }] = await Promise.all([
+    supabase.rpc("obtener_calendario_grupo", { p_grupo_id: grupoId }),
+    supabase.rpc("obtener_capturas_grupo", { p_grupo_id: grupoId }),
+    supabase.rpc("obtener_ubicaciones_grupo", { p_grupo_id: grupoId }),
+  ]);
+
+  const filaCalendario = (s) =>
+    `<div class="fila-actividad"><span class="autor">${s.autor_nombre}</span> — ${s.fecha}
+      <div class="detalle">📍 ${s.spot_nombre || "Ubicación actual"}${s.tipo_salida ? ` · ${s.tipo_salida}` : ""}</div>
+    </div>`;
+  const filaCaptura = (c) =>
+    `<div class="fila-actividad"><span class="autor">${c.autor_nombre}</span> — 🐟 ${c.especie}
+      <div class="detalle">${c.talla_cm ? c.talla_cm + " cm " : ""}${c.peso_g ? "· " + c.peso_g + " g" : ""}</div>
+    </div>`;
+  const filaUbicacion = (u) =>
+    `<div class="fila-actividad"><span class="autor">${u.autor_nombre}</span> — 📍 ${u.nombre}</div>`;
+
+  return `
+    <div class="actividad-compartida">
+      <h3>📅 Calendario compartido (${calendario?.length || 0})</h3>
+      ${calendario?.length ? calendario.map(filaCalendario).join("") : `<p style="font-size:11.5px; color:#6C8890;">Nada compartido todavía.</p>`}
+      <h3>🐟 Capturas compartidas (${capturas?.length || 0})</h3>
+      ${capturas?.length ? capturas.map(filaCaptura).join("") : `<p style="font-size:11.5px; color:#6C8890;">Nada compartido todavía.</p>`}
+      <h3>📍 Ubicaciones compartidas (${ubicaciones?.length || 0})</h3>
+      ${ubicaciones?.length ? ubicaciones.map(filaUbicacion).join("") : `<p style="font-size:11.5px; color:#6C8890;">Nada compartido todavía.</p>`}
+    </div>
+  `;
+}
+
+function tarjetaGrupoHTML(grupo, miembro) {
+  return `
+    <div class="tarjeta-grupo" data-grupo-id="${grupo.id}">
+      <div class="nombre-grupo">${grupo.nombre}</div>
+      <div class="compartir-toggles">
+        <label><input type="checkbox" class="chk-compartir" data-campo="compartir_ubicaciones" ${miembro.compartir_ubicaciones ? "checked" : ""} /> Compartir mis ubicaciones</label>
+        <label><input type="checkbox" class="chk-compartir" data-campo="compartir_capturas" ${miembro.compartir_capturas ? "checked" : ""} /> Compartir mis capturas</label>
+        <label><input type="checkbox" class="chk-compartir" data-campo="compartir_calendario" ${miembro.compartir_calendario ? "checked" : ""} /> Compartir mi calendario</label>
+      </div>
+      <div class="fila-botones">
+        <button class="secundario btn-invitar">🔗 Invitar</button>
+        <button class="secundario peligro btn-salir-grupo">Salir del grupo</button>
+      </div>
+      <div class="invitacion-zona"></div>
+      <div class="actividad-zona"><p style="font-size:11.5px; color:#6C8890; margin-top:10px;">Cargando actividad compartida…</p></div>
+    </div>
+  `;
+}
+
+async function cargarGrupos() {
+  const cont = document.getElementById("listaGrupos");
+  const { data: miembros, error } = await supabase
+    .from("miembros_grupo")
+    .select("*, grupos(id, nombre)")
+    .eq("user_id", usuario.id);
+  if (error) { cont.innerHTML = `<p style="font-size:12px; color:#E8907A;">${error.message}</p>`; return; }
+  if (!miembros || !miembros.length) {
+    cont.innerHTML = `<p style="font-size:12px; color:#6C8890;">Todavía no perteneces a ningún grupo — crea uno o únete con un código.</p>`;
+    return;
+  }
+
+  cont.innerHTML = miembros.map((m) => tarjetaGrupoHTML(m.grupos, m)).join("");
+
+  cont.querySelectorAll(".tarjeta-grupo").forEach((tarjetaEl) => {
+    const grupoId = tarjetaEl.dataset.grupoId;
+
+    tarjetaEl.querySelectorAll(".chk-compartir").forEach((chk) => {
+      chk.addEventListener("change", async () => {
+        const { error: errUpd } = await supabase
+          .from("miembros_grupo")
+          .update({ [chk.dataset.campo]: chk.checked })
+          .eq("grupo_id", grupoId)
+          .eq("user_id", usuario.id);
+        if (errUpd) alert(`No se ha podido guardar: ${errUpd.message}`);
+      });
+    });
+
+    tarjetaEl.querySelector(".btn-invitar").addEventListener("click", () => {
+      generarInvitacion(grupoId, tarjetaEl.querySelector(".invitacion-zona"));
+    });
+
+    tarjetaEl.querySelector(".btn-salir-grupo").addEventListener("click", async () => {
+      if (!confirm("¿Salir de este grupo? Dejarás de ver y de compartir contenido con él.")) return;
+      await supabase.from("miembros_grupo").delete().eq("grupo_id", grupoId).eq("user_id", usuario.id);
+      await cargarGrupos();
+    });
+
+    actividadCompartidaHTML(grupoId).then((html) => {
+      tarjetaEl.querySelector(".actividad-zona").innerHTML = html;
+    });
+  });
+}
+
+await cargarApodo();
+await cargarGrupos();
+</script>
+
+</body>
+</html>
