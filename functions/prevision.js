@@ -201,23 +201,30 @@ function coeficienteMarea(fecha) {
 // número compartido para todo el país — no varía de un puerto a otro
 // (comprobado en vivo: Armintza, Vigo, Cádiz, Valencia, Las Palmas y
 // Peniche dan exactamente la misma secuencia esos días), así que no
-// aporta nada específico de cada spot. Aquí calculamos uno propio,
+// aporta nada específico de cada spot. Esto calcula uno propio,
 // distinto por spot de verdad: el rango de marea (altura pleamar menos
 // bajamar) que Open-Meteo modela para ESE punto concreto cada día,
 // normalizado contra el rango mínimo y máximo del propio spot en una
-// ventana que cubre un ciclo vivas-muertas completo (~14.77 días) —
-// `previsionTodosSpots` pide `forecast_days=16` a la Marine API, en una
-// petición APARTE y ligera (solo sea_level_height_msl, no las otras 6
-// variables) justo para esto — ver la nota de 2026-09-13 sobre el 503
-// que dio pedir la ventana ancha con todas las variables a la vez. Sigue
+// ventana que cubre un ciclo vivas-muertas completo (~14.77 días). Sigue
 // sin ser el dato oficial de un servicio hidrográfico (eso exigiría un
-// mareógrafo real en ese puerto), pero sí
-// refleja la amplitud de marea real de cada punto, cosa que el índice
-// nacional no hace. Si la ventana de datos es demasiado corta o no hay
-// variación que normalizar (spot en mar prácticamente sin marea, o
-// fallo puntual de Open-Meteo para esas horas), devuelve null y
-// calcularMarea() cae de vuelta a coeficienteMarea() como respaldo.
-function coeficientePorSpot(horas, alturas) {
+// mareógrafo real en ese puerto), pero sí refleja la amplitud de marea
+// real de cada punto, cosa que el índice nacional no hace.
+//
+// TERCER bug real del mismo día: primero (7 variables, ventana ancha) →
+// 503 por pasarse del presupuesto del Worker; separado en una petición
+// aparte ligera (1 variable) → seguía dando "error 1102" (límite de
+// recursos) de forma INTERMITENTE con los 95 spots a la vez. Se movió el
+// cálculo entero a `functions/registrar-presion.js` (misma rutina
+// programada que ya guarda la presión histórica, cada hora) — calcula
+// esto UNA vez para todos los spots y lo guarda en
+// `coeficiente_marea_actual`; `/prevision` ahora solo hace una lectura
+// ligera de esa tabla (`coeficienteMareaCache()` más abajo) en vez de
+// pedir la ventana ancha en cada petición de cada usuario. Si la tabla
+// no tiene fila para un spot (cron no ha corrido aún, o le tocó un
+// fallo puntual — la ventana ancha sigue siendo pesada de calcular, solo
+// que ahora una vez por hora en vez de en cada visita), calcularMarea()
+// cae de vuelta a coeficienteMarea() como respaldo.
+export function coeficientePorSpot(horas, alturas) {
   // Índice propio de "ahora" dentro de esta ventana (que es distinta de
   // la ventana corta que usa calcularMarea() para todo lo demás), no se
   // reutiliza el idxAhora de fuera.
@@ -267,7 +274,7 @@ function coeficientePorSpot(horas, alturas) {
 // batimétricos reales que no tenemos), solo un número intuitivo — la
 // detección de pleamar/bajamar y la tendencia no cambian, un
 // desplazamiento constante no mueve los máximos/mínimos relativos.
-function calcularMarea(horas, alturas, horasAmplias, alturasAmplias) {
+function calcularMarea(horas, alturas, coeficienteCacheado) {
   if (!horas.length || !alturas.length) return null;
 
   const validas = alturas.filter((v) => v !== null && v !== undefined);
@@ -298,7 +305,7 @@ function calcularMarea(horas, alturas, horasAmplias, alturasAmplias) {
     altura: actualRaw === null ? null : +(actualRaw - minVentana).toFixed(2),
     tendencia,
     proximas,
-    coeficiente: coeficientePorSpot(horasAmplias || [], alturasAmplias || []) ?? coeficienteMarea(new Date()),
+    coeficiente: coeficienteCacheado ?? coeficienteMarea(new Date()),
   };
 }
 
@@ -364,6 +371,25 @@ async function historicoPresionPorSpot() {
   }
 }
 
+// Lectura ligera de coeficiente_marea_actual (ver el comentario largo de
+// coeficientePorSpot más arriba) — una sola consulta para TODOS los
+// spots, calculado aparte por functions/registrar-presion.js cada hora.
+// Si falla o no hay filas todavía, devuelve {} y cada spot cae de vuelta
+// a coeficienteMarea() en calcularMarea().
+async function coeficienteMareaCache() {
+  try {
+    const url = `${SUPABASE_URL}/rest/v1/coeficiente_marea_actual?select=spot_slug,valor`;
+    const resp = await fetch(url, { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } });
+    if (!resp.ok) return {};
+    const filas = await resp.json();
+    const mapa = {};
+    for (const f of filas) mapa[f.spot_slug] = f.valor;
+    return mapa;
+  } catch (e) {
+    return {};
+  }
+}
+
 async function fetchJSON(url) {
   const resp = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0 (compatible; CostaVivaApp/0.1)" } });
   if (!resp.ok) throw new Error(`HTTP ${resp.status} (${url})`);
@@ -381,45 +407,23 @@ async function previsionTodosSpots(spots) {
   const lats = spots.map((s) => s.lat).join(",");
   const lons = spots.map((s) => s.lon).join(",");
   const paramsComunes = `latitude=${lats}&longitude=${lons}&timezone=Europe%2FMadrid&forecast_days=2`;
-  // Bug real en producción (2026-09-13): pedir TODAS las variables
-  // marinas (7) en la ventana ancha (past_days=8+forecast_days=16, ~24
-  // días) para los 95 spots a la vez daba un JSON de ~2.9MB — funcionaba
-  // en pruebas locales, pero hacía que /prevision devolviera 503 en
-  // Cloudflare Pages (el Worker se corta a media respuesta, límite de
-  // tiempo/CPU). Se separa en dos peticiones a la Marine API: la de
-  // siempre (todas las variables, solo 2 días, para bloques/oleaje/
-  // temperatura/corriente) y una aparte, ligera (una sola variable,
-  // sea_level_height_msl) solo para coeficientePorSpot() — un séptimo de
-  // las variables cabe de sobra en el presupuesto del Worker aunque la
-  // ventana temporal sea más larga (~1.37MB con past_days+forecast_days,
-  // probado en real con los 95 spots).
-  //
-  // Segundo bug real (2026-09-13, mismo día): esta ventana era solo
-  // hacia ADELANTE (forecast_days=16, sin past_days) — cuando "hoy" cae
-  // justo en un pico de marea viva, no hay ningún día pasado con el que
-  // compararlo dentro de la ventana, así que el cálculo lo empujaba
-  // artificialmente hacia el techo de la escala (120), muy por encima de
-  // lo que daba diario.html (que sí mira ±8 días) para el mismo punto y
-  // fecha. Con past_days=8 aquí también, las dos vistas usan el mismo
-  // tipo de ventana (centrada en la fecha), y coinciden.
-  const paramsMarea = `latitude=${lats}&longitude=${lons}&timezone=Europe%2FMadrid&past_days=8&forecast_days=16`;
 
-  const [marinos, mareasAmplias, vientos, historicoPresion] = await Promise.all([
+  const [marinos, vientos, historicoPresion, coeficientes] = await Promise.all([
     fetchJSON(
       `https://marine-api.open-meteo.com/v1/marine?${paramsComunes}&hourly=wave_height,wave_period,wave_direction,sea_surface_temperature,ocean_current_velocity,ocean_current_direction,sea_level_height_msl`
     ),
-    fetchJSON(`https://marine-api.open-meteo.com/v1/marine?${paramsMarea}&hourly=sea_level_height_msl`),
     fetchJSON(
       `https://api.open-meteo.com/v1/forecast?${paramsComunes}&hourly=windspeed_10m,winddirection_10m,precipitation,cloudcover,pressure_msl&windspeed_unit=kmh`
     ),
     historicoPresionPorSpot(),
+    coeficienteMareaCache(),
   ]);
   // Con más de una localización, Open-Meteo devuelve un array (uno por
   // coordenada, mismo orden que se pidió) en vez de un único objeto.
-  return spots.map((spot, i) => procesarSpot(spot, marinos[i], mareasAmplias[i], vientos[i], historicoPresion));
+  return spots.map((spot, i) => procesarSpot(spot, marinos[i], vientos[i], historicoPresion, coeficientes));
 }
 
-function procesarSpot(spot, marino, mareaAmplia, viento, historicoPresion) {
+function procesarSpot(spot, marino, viento, historicoPresion, coeficientes) {
   const tempAguaPorHoraISO = Object.fromEntries(
     (marino.hourly?.time || []).map((t, i) => [t, marino.hourly.sea_surface_temperature?.[i] ?? null])
   );
@@ -435,8 +439,7 @@ function procesarSpot(spot, marino, mareaAmplia, viento, historicoPresion) {
   const marea = calcularMarea(
     marino.hourly?.time || [],
     marino.hourly?.sea_level_height_msl || [],
-    mareaAmplia?.hourly?.time || [],
-    mareaAmplia?.hourly?.sea_level_height_msl || []
+    coeficientes?.[spot.slug]
   );
   const presion = calcularPresion(viento.hourly?.time || [], viento.hourly?.pressure_msl || [], historicoPresion?.[spot.slug]);
   const precipNubesPorHoraISO = Object.fromEntries(

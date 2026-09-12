@@ -884,7 +884,14 @@ function contextoHTML(salida) {
   const notaBoya = salida.boya_usada
     ? `<div class="detalle" style="font-size:11px; color:#6C8890; margin-top:4px;">⚓ Oleaje y temperatura de la boya real de ${salida.boya_usada} (Puertos del Estado), no del modelo por coordenadas.</div>`
     : "";
-  return `<div class="contexto-ambiental">${filas.map(([e, v]) => `<div class="dato"><div class="etq">${e}</div><div class="val">${v}</div></div>`).join("")}</div>${notaBoya}`;
+  // Coeficiente real por spot, no el índice "nacional" de tides4fishing y
+  // similares (ver CLAUDE.md, 2026-09-13) — se explica siempre que se
+  // muestre, para que no parezca un error si alguien lo compara con otra
+  // web/app de mareas.
+  const notaCoef = salida.marea_coeficiente != null
+    ? `<div class="detalle" style="font-size:11px; color:#6C8890; margin-top:4px;">🌊 El coeficiente de marea es propio de este spot (compara la marea de ese día contra el máximo/mínimo real de ese mismo sitio) — no es el índice nacional que usan otras webs de mareas, así que no tiene por qué coincidir con ellas.</div>`
+    : "";
+  return `<div class="contexto-ambiental">${filas.map(([e, v]) => `<div class="dato"><div class="etq">${e}</div><div class="val">${v}</div></div>`).join("")}</div>${notaBoya}${notaCoef}`;
 }
 
 async function tarjetaCapturaHTML(captura) {
