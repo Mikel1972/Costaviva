@@ -5,6 +5,26 @@ cambian las convenciones — no es un historial (para eso está `ROBOT.md`).
 Si algo de aquí queda desactualizado, corrígelo en el momento en que lo
 detectes, no lo dejes para luego.
 
+## ⚠ CRÍTICO SIN RESOLVER: el SOS probablemente no llega a nadie (2026-09-12)
+
+`sos-alerta.js` manda el email de socorro desde `sos@costaviva.app`, pero
+**ese dominio no está verificado en Resend** (no hay dominio propio
+registrado todavía). Confirmado en real: Resend rechaza con `403 "domain
+is not verified"` cualquier envío desde ese dominio a un destinatario
+que no sea el dueño de la cuenta de Resend. Los contactos de emergencia
+son personas reales, nunca el dueño de la cuenta de Resend — así que
+**la alarma SOS de este repo, en producción, probablemente no está
+avisando a nadie ahora mismo**, aunque el resto del flujo (RLS, auth, la
+respuesta que ve el usuario) esté bien y no lo delate.
+
+Arreglo real pendiente: verificar un dominio propio en Resend
+(resend.com/domains) y usarlo en el `from` de `sos-alerta.js`. Hasta
+entonces, esto es lo primero que cualquier sesión futura debería mirar.
+(`aviso-alta.js`, que sí notifica al dueño de la cuenta de Resend, se
+arregló usando el remitente de pruebas `onboarding@resend.com` — pero
+esa solución NO sirve para `sos-alerta.js`, cuyos destinatarios son
+siempre otra persona.)
+
 ## Qué es esta app
 
 App de condiciones costeras (oleaje, mareas, corriente, webcams, rayos,
@@ -292,13 +312,15 @@ al dueño del repo) — no se montó un canal de email aparte para esto.
   con éxito). Único uso de `SUPABASE_SERVICE_ROLE_KEY` en todo el repo —
   solo lectura de `auth.users` por id para verificar que el alta es
   real y de los últimos 5 minutos (resistente a spoofing con un
-  `user_id` inventado o reutilizado), nunca para tablas de usuario.
-  **Pendiente de que el usuario añada 2 variables de entorno nuevas en
-  Cloudflare Pages** (Settings > Environment variables, como Secret):
-  `SUPABASE_SERVICE_ROLE_KEY` y `ADMIN_EMAIL` (reutiliza el
-  `RESEND_API_KEY` ya existente). Sin ellas el endpoint responde `501`
-  sin romper el alta — verificado en el preview de Cloudflare Pages
-  antes de mergear a `main`.
+  `user_id` inventado o reutilizado), nunca para tablas de usuario. Las
+  3 variables de entorno (`SUPABASE_SERVICE_ROLE_KEY`, `ADMIN_EMAIL`,
+  `RESEND_API_KEY`) ya están puestas en Cloudflare Pages. Usa el
+  remitente de pruebas de Resend (`onboarding@resend.com`) porque no hay
+  dominio propio verificado — ver el aviso crítico al principio de este
+  fichero. **Pendiente de confirmación final**: el usuario va a
+  registrarse de verdad en `/login.html` para comprobar si el email le
+  llega (bloqueado de probarlo yo mismo por el rate-limit de altas de
+  Supabase).
 - Punto 13 del diagnóstico (2026-09-12, sin aplicar nada): el alta en
   `login.html` es pública sin CAPTCHA/Turnstile — mitigado parcialmente
   porque `perfiles.aprobado` bloquea el acceso real hasta aprobación
