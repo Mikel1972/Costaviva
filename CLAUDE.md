@@ -86,9 +86,31 @@ otro usuario". Cualquier cambio que toque `alarma.html`,
   Pendiente (no hecho todavía, requiere confirmación antes de crear
   cuentas de prueba reales): la prueba cruzada "token de usuario A leyendo
   fila de usuario B".
-- Ningún endpoint de `functions/*.js` usa `service_role` — solo el token
-  que llega en `Authorization: Bearer <token>` del propio usuario
-  (`sos-alerta.js` es el único que toca tablas de usuario).
+- `sos-alerta.js` usa siempre el token del que llama, nunca
+  `service_role`. `aviso-alta.js` es la única excepción del repo — ver
+  su sección propia más abajo (solo lee `auth.users` por id, nunca
+  tablas de usuario).
+
+## Diario de pesca — campos añadidos 2026-09-12
+
+`salidas_pesca`: `tipo_salida` (costa/embarcación/submarinismo — primero
+en el formulario) y `franja_horaria` (recalcula marea/oleaje/viento/luna
+para esa hora en vez de "ahora"). Embarcación y submarinismo usan la
+boya real más cercana (Puertos del Estado, vía `/prevision`) en vez del
+modelo por coordenadas — `boya_usada` guarda cuál, solo informativo.
+
+`capturas`: ya tenía especie/talla/peso/cebo/notas/fotos, todo opcional
+— no hacía falta añadirlos. Lo nuevo es `tecnica` (lista verificada con
+búsqueda real: Surfcasting/Spinning/Jigging/Curricán/Fondo/
+Flotador-Corcheo/Popping/Eging/Otra) y el campo condicional que activa:
+técnicas de señuelo (Spinning/Jigging/Curricán/Popping/Eging) piden
+"tipo de señuelo" (texto libre); el resto sigue con "Aparejo"
+(Plomo/Corcho/Otro, ya existía).
+
+Ambas migraciones probadas en real antes de mergear (rama +
+preview): login con cuenta de prueba, salida embarcación con franja
+"amanecer" → boya real usada correctamente; captura con técnica
+Spinning → campo de señuelo apareció y se guardó bien.
 
 ## Endpoints (`functions/`)
 
