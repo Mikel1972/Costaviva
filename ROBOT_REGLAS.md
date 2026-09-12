@@ -18,6 +18,41 @@ usuario afina un criterio — no es un historial (para eso está `ROBOT.md`).
 - El factor de corrección de calibración nunca se aplica en automático:
   siempre es una propuesta a confirmar por el usuario.
 
+## Sinónimos regionales de especies y cebos (añadido 2026-09-13)
+
+Cuarta responsabilidad de esta rutina, pedida explícitamente por el
+usuario: investigar las distintas formas de llamar a un mismo pez o
+cebo según la zona de costa (ej. chipirón = txipirón/txipi en Euskadi,
+lubina = róbalo en otras zonas de España) y guardarlas en la tabla
+`sinonimos_especie` de Supabase para que, con el tiempo, el sistema
+reconozca esas variantes.
+
+- **Usa `WebSearch`, no peticiones directas a dominios de datos.** Esta
+  es una investigación lingüística/de contenido (nombres, no APIs), y
+  `WebSearch` ya funciona sin depender de la política de red saliente
+  del entorno (ver `ROBOT.md`, 2026-08-31) — no hace falta pedir
+  ampliar el allowlist de red para esto.
+- **Cobertura**: revisa las especies ya conocidas por la app (`ESPECIES`
+  en `diario.html` + lo que haya en `especies_comunidad`) y las zonas
+  donde hay spots (fijos + `spots_usuario`) — prioriza sinónimos de
+  zonas con más spots/actividad.
+- **Nunca inventar un sinónimo ni una región** — si una fuente no es
+  clara sobre si es de verdad un nombre regional usado (y no un error
+  de la propia fuente), no lo propongas.
+- **Solo propone, nunca verifica**: inserta en `sinonimos_especie` con
+  `verificado=false` (la política de RLS ya lo obliga a nivel de base de
+  datos — un intento de insertar `verificado=true` con la anon key
+  falla). La verificación es manual, desde el Table Editor, mismo patrón
+  que `perfiles.aprobado`. Añade también una entrada en `ROBOT.md`
+  (nueva sección "Sinónimos regionales") resumiendo qué se propuso y de
+  dónde sale, para que quede historial legible sin tener que abrir la
+  tabla.
+- **Sin límite de pasadas** para esto en concreto (a diferencia de otras
+  responsabilidades): puede ir añadiendo sinónimos poco a poco, pasada a
+  pasada, sin que cuente contra el límite de volumen de la red de
+  seguridad de más abajo (esto es solo un insert por fila propuesta, no
+  un cambio de código).
+
 ## Red de seguridad de la automatización (añadido 2026-09-12)
 
 Estas reglas existen porque "el propio prompt dice que esto es

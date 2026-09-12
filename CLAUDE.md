@@ -94,6 +94,13 @@ otro usuario". Cualquier cambio que toque `alarma.html`,
     insert/update/delete para clientes — solo escribe
     `functions/registrar-presion.js` (protegido con secreto
     compartido). No son datos personales de nadie.
+  - `sinonimos_especie` (añadida 2026-09-13) — nueva responsabilidad del
+    robot de datos (ver `ROBOT_REGLAS.md`): investiga sinónimos
+    regionales de especies/cebos (txipirón/chipirón, róbalo/lubina...)
+    vía `WebSearch` y los propone aquí. Lectura pública; la anon key
+    solo puede insertar con `verificado=false` (la propia RLS lo obliga
+    — un intento de insertar ya verificado falla), verificación manual
+    desde el Table Editor, mismo patrón que `perfiles.aprobado`.
 - **Verificado en vivo el 2026-09-12**: petición sin token de sesión (solo
   anon apikey) contra las 6 tablas de usuario devuelve `200 []` en todas
   — RLS está activo y funcionando, no solo declarado en el `.sql`.
@@ -413,7 +420,7 @@ escalonadas para no competir por runners:
 | `smoke-test.yml` | `0 5 * * *` | login real → `/prevision` → `/webcam/mundaka` → crea/borra una salida de pesca de prueba. `/sos-alerta` excluido a propósito (ver más abajo) |
 | `daily-report.yml` | `0 6 * * *` | salud + conteo real de SOS (24h) → entrada nueva en el Issue "Informe diario — Costa Viva" |
 | `auth-test.yml` | `17 6 * * *` | RLS sin token + prueba cruzada A-lee-B (secrets ya puestos) |
-| `presion-historico.yml` | `7 * * * *` (cada hora) | POST a `/registrar-presion` (secret `PRESION_CRON_SECRET`) — guarda la presión real de cada spot en `presion_historico`, para la tendencia real de `/prevision` (Fase 4, ver más abajo). **Pendiente de activar de verdad**: hace falta poner `PRESION_CRON_SECRET` (GitHub) y `CRON_SECRET` (Cloudflare Pages, mismo valor) antes de que funcione — sin eso, `/registrar-presion` devuelve 401 y el workflow falla. |
+| `presion-historico.yml` | `7 * * * *` (cada hora) | POST a `/registrar-presion` (secret `PRESION_CRON_SECRET`) — guarda la presión real de cada spot en `presion_historico`, para la tendencia real de `/prevision` (Fase 4, ver más abajo). **Activada y verificada en real el 2026-09-12**: primer intento falló (42501, faltaba política de `insert` en la RLS de `presion_historico` — ni el propio endpoint podía escribir con la anon key sin sesión), corregido en `20260912230000_fix_insert_presion_historico.sql`; segundo intento escribió filas reales, confirmado leyendo la tabla. |
 
 `0 6 * * *` = 08:00 en verano (CEST) / 07:00 en invierno (CET) — GitHub
 Actions no ajusta el cron por el cambio de hora. Ajustar aquí si se
