@@ -289,6 +289,20 @@ petición va muy justa de presupuesto — mejor quedarse con margen de
 sobra (payload bastante más pequeño del límite) que apurar al límite y
 confiar en que una prueba puntual lo confirme.
 
+**Aclaración de UX añadida 2026-09-13**: el usuario probó el coeficiente
+por spot contra un caso real (Armintza, 7 de septiembre) y vio 47 en
+vez del 66 que muestra tides4fishing.com — no es un bug (se replicó el
+cálculo a mano y es correcto: el rango de marea de ese día, dentro de
+la ventana de 17 días de ESE punto, cae en la parte baja de la subida
+hacia el pico de vivas), es la consecuencia esperada de comparar contra
+la propia ventana del spot en vez del índice nacional. Como esto puede
+parecer "mal" a quien lo compare con otra web de mareas sin saber que
+es un cálculo distinto a propósito, se añadió una nota siempre visible
+(no solo un `title`, que en móvil no se ve) junto al coeficiente tanto
+en `index.html` (`#panelMareaCoefNota`) como en `diario.html`
+(`contextoHTML()`) explicándolo. Decisión confirmada con el usuario:
+mantener el cálculo por spot en vez de volver al índice nacional.
+
 **Especies enriquecidas por la comunidad (2026-09-12):** el
 desplegable de especies del diario muestra el nombre científico entre
 paréntesis (verificado por especie, `ESPECIES` en `diario.html`). Una
