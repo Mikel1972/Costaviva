@@ -96,10 +96,11 @@ añadir `functions/_middleware.js`, `ROBOT.md`, `CALIBRACION.jsonl`,
 `README.md`, `start.ps1` y ambos `supabase/*.sql` se servían con `200` en
 producción (contenido revisado: sin secretos ni datos reales de
 usuarios, pero sí detalle interno de esquema/RLS e historial operativo —
-exposición de información, no fuga de datos de usuario). El middleware
-las bloquea; pendiente de verificar en vivo tras el próximo deploy que
-las 7 rutas devuelven `404` y que `/`, `/login`, `/prevision`,
-`/sos-alerta`, etc. siguen funcionando igual.
+exposición de información, no fuga de datos de usuario). **Verificado en
+vivo el 2026-09-12 tras el deploy**: las 7 rutas bloqueadas devuelven
+`404`, y `/`, `/login`, `/prevision`, `/webcam/<slug>`, `/luna` y
+`/sos-alerta` (incluido su rechazo 401 sin token) siguen funcionando
+igual que antes.
 
 ## Fórmulas del índice de mar / índice de pesca (`index.html`)
 
@@ -196,20 +197,49 @@ rechaza peticiones sin token o con un token inválido. Programado a diario
 en `.github/workflows/auth-test.yml` (no escribe nada, solo lee/rechaza —
 seguro de tener en automático).
 
-**No cubre** la prueba más estricta (token de usuario A leyendo una fila
-de usuario B) — necesita dos cuentas reales y confirmadas (el alta tiene
-"Confirm email" activo en este proyecto), así que no se puede automatizar
-sin que el usuario aporte esas credenciales o decida otra vía.
+**No cubre todavía** la prueba más estricta (token de usuario A leyendo
+una fila de usuario B). Cuentas de prueba creadas el 2026-09-12
+(`admin+fishnowtest1@costaviva.invalid` / `admin+fishnowtest2@costaviva.invalid`,
+alias de Gmail — llegan al mismo buzón del usuario), pendiente de que el
+usuario confirme ambos emails ("Confirm email" está activo en este
+proyecto) antes de poder hacer `signInWithPassword` con ellas y añadir el
+caso al test. Credenciales fuera del repo (no commitear nunca contraseñas
+de estas cuentas, ni de prueba).
+
+## Escaneo de seguridad y informe diario (diseñados 2026-09-12, sin activar)
+
+Ambos con `workflow_dispatch` únicamente (el `schedule` está comentado en
+el propio YAML) — se pueden lanzar a mano desde la pestaña Actions para
+probarlos, pero no corren solos hasta descomentar el cron.
+
+- **`.github/workflows/security-scan.yml`**: ZAP en modo baseline (pasivo,
+  nunca payloads activos) contra `fishnow-59u.pages.dev`. Los hallazgos
+  abren/actualizan un Issue en este repo — no se decidió un email
+  separado porque GitHub ya avisa por email de los Issues nuevos en tu
+  propio repo.
+- **`.github/workflows/daily-report.yml`**: corre el test de
+  autenticación, comprueba que `/prevision`, `/rayos-imagen`,
+  `/webcam/mundaka` y `/luna` responden en producción real, mira la
+  fecha de la última entrada de `ROBOT.md`, y cuenta las alarmas SOS de
+  las últimas 24h — vía una función nueva en Supabase
+  (`supabase/schema_conteo_sos.sql`, **pendiente de aplicar en el SQL
+  Editor** — hasta entonces el informe mostrará "N/D" ahí) que devuelve
+  solo un número agregado (`security definer`, nunca filas ni user_id).
+  Añade una entrada a un único Issue "Informe diario — Costa Viva" que
+  crece con el tiempo, en vez de abrir uno nuevo cada día.
 
 ## Pendiente conocido (no tocar sin confirmar)
 
-- Prueba cruzada usuario-A-lee-fila-de-usuario-B: cuentas de prueba en
-  curso de creación (2026-09-12), pendiente de que el usuario confirme
-  los dos emails cuando lleguen.
-- Verificar en producción, tras el deploy de `functions/_middleware.js`,
-  que las 7 rutas bloqueadas devuelven 404 y nada más se rompe.
-- Escaneo de seguridad tipo OWASP ZAP contra producción — diseño
-  propuesto, pendiente de decisión sobre a quién avisar y si activarlo ya.
-- Informe diario de salud (fuentes externas, alarmas SOS disparadas sin
-  exponer datos personales, incidentes) — pendiente de decidir
-  destinatario y mecanismo de envío.
+- Prueba cruzada usuario-A-lee-fila-de-usuario-B (ver arriba: confirmar
+  los dos emails de prueba, luego extender el test).
+- Aplicar `supabase/schema_conteo_sos.sql` en el SQL Editor para que el
+  informe diario tenga el conteo real de SOS.
+- Decidir si/cuándo activar los `schedule` de `security-scan.yml` y
+  `daily-report.yml` (hoy solo corren a mano).
+- Punto 13 del diagnóstico (2026-09-12, sin aplicar nada): el alta en
+  `login.html` es pública sin CAPTCHA/Turnstile — mitigado parcialmente
+  porque `perfiles.aprobado` bloquea el acceso real hasta aprobación
+  manual, pero no hay ningún aviso al admin cuando alguien se registra
+  (hoy hay que mirar el Table Editor a mano). No existen todavía código
+  de invitación/descuento ni cuentas compartidas tipo "tripulación" — no
+  hay nada que blindar ahí hasta que esas features existan.

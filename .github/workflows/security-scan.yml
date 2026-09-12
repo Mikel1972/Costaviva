@@ -1,0 +1,37 @@
+name: Escaneo de seguridad (OWASP ZAP baseline)
+
+# DISEÑADO, NO ACTIVADO TODAVIA: el trigger `schedule` está comentado a
+# propósito — de momento solo corre si alguien lo lanza a mano
+# (workflow_dispatch, pestaña Actions > este workflow > "Run workflow").
+# Descomenta el cron cuando decidas activarlo en automático.
+#
+# Modo baseline = pasivo (spidering + comprobaciones de cabeceras/cookies/
+# CSP/rutas expuestas), NUNCA "full scan" con payloads activos contra
+# producción real. Objetivo: la URL real de producción confirmada en
+# CLAUDE.md (fishnow-59u.pages.dev), nunca costaviva.app (no es este
+# despliegue).
+#
+# Aviso de hallazgos: la propia action abre/actualiza un Issue en este
+# repo con el resultado — GitHub ya te avisa por email de los Issues
+# nuevos en tu propio repo (Settings > Notifications), así que esto
+# funciona sin decidir todavía un destinatario/mecanismo de email aparte.
+
+on:
+  # schedule:
+  #   - cron: "30 5 * * 1" # una vez por semana, lunes
+  workflow_dispatch: {}
+
+jobs:
+  zap-baseline:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: ZAP baseline scan
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          target: "https://fishnow-59u.pages.dev/"
+          cmd_options: "-a" # incluye también las páginas enlazadas (alarma, diario, login)
+          allow_issue_writing: true
+          fail_action: false # no bloquea el workflow por hallazgos; el Issue es el aviso
