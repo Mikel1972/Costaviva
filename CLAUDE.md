@@ -180,6 +180,27 @@ corrección); captura con técnica Spinning → campo de señuelo apareció y
 se guardó bien; hora exacta (07:40 y 08:15) guardada y mostrada
 correctamente tanto en la salida como en la captura.
 
+## Sesión de pesca "en curso" (2026-09-13)
+
+Pedido explícito del usuario: poder abrir una entrada de salida al
+llegar al spot y dejarla abierta mientras dura la jornada (apuntando
+notas, añadiendo capturas conforme van pasando), en vez del modelo
+anterior donde una entrada nacía siempre ya completa. `salidas_pesca`
+tiene ahora `concluida boolean not null default true` (migración
+`20260913030000_sesion_en_curso.sql`) — las filas ya existentes se dan
+por concluidas (eran registros completos), una entrada nueva se crea con
+`concluida = false` y solo pasa a `true` al pulsar "✅ Concluir jornada"
+en `diario.html`, que además rellena `hora_fin` con la hora actual
+(Madrid local) **solo si no se había puesto ya** — no pisa una hora de
+fin que el usuario haya escrito a mano. Editar una entrada ya existente
+(`guardarSalida` con `idExistente`) nunca toca `concluida`, así corregir
+una nota o el spot de una jornada ya cerrada no la vuelve a abrir.
+
+En la UI, una entrada en curso se distingue con una insignia "🟢 En
+curso" y borde en color de acento (`resumenEntradaHTML()` en
+`diario.html`); mientras está en curso se sigue pudiendo "➕ Añadir
+captura" con normalidad.
+
 **Bug real corregido 2026-09-12 — "ahora" en UTC contra horas en
 local:** el usuario vio nubosidad 100% cuando en realidad no pasaba del
 20%. Causa: Open-Meteo (con `timezone=Europe/Madrid`) etiqueta su array
