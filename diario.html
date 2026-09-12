@@ -103,30 +103,21 @@
   .mensaje.error { display: block; background: rgba(163,74,53,0.15); color: #E8907A; border: 1px solid #A34A35; }
   .mensaje.ok { display: block; background: rgba(79,157,105,0.12); color: #8FCBA3; border: 1px solid #3A6B4C; }
 
-  /* Selector de hora "de rueda": dos columnas con scroll y snap (horas,
-     minutos), estilo selector nativo tipo iOS — sustituye a
-     <input type="time"> en toda la app, ver crearSelectorHora(). */
-  .rueda-hora { margin: 4px 0 2px; }
-  .rueda-check { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: #9FB8BF; margin-bottom: 4px; cursor: pointer; }
-  .rueda-hora-ruedas { display: flex; align-items: center; justify-content: center; gap: 2px; position: relative; }
-  .rueda-hora-ruedas.deshabilitada { opacity: 0.35; pointer-events: none; }
-  .rueda-marco {
-    position: absolute; left: 4px; right: 4px; top: 36px; height: 36px;
-    border-top: 1px solid #D4A24C; border-bottom: 1px solid #D4A24C; pointer-events: none; z-index: 1;
+  /* Selector de hora: dos <select> nativos (hora, minuto) — el propio
+     desplegable del navegador ya trae scroll cuando tiene muchas
+     opciones, así que es la forma más simple y fiable de tener "un
+     desplegable con scroll" sin reinventar el control. Sustituye tanto
+     a <input type="time"> como a un primer intento con una rueda de
+     scroll/snap a medida, que en la práctica no se veía bien en todos
+     los navegadores. Primera opción siempre "--" (sin especificar) —
+     todas las horas de la app son opcionales.
+  */
+  .hora-select { display: flex; align-items: center; gap: 6px; margin: 4px 0 10px; }
+  .hora-select select {
+    width: auto; padding: 8px 10px; border-radius: 8px; border: 1px solid #1C3F4F;
+    background: #123B4D; color: #E8E2D0; font-family: 'IBM Plex Mono', monospace; font-size: 14px;
   }
-  .rueda-columna {
-    height: 108px; width: 46px; overflow-y: auto; scroll-snap-type: y mandatory;
-    scrollbar-width: none; -ms-overflow-style: none;
-  }
-  .rueda-columna::-webkit-scrollbar { display: none; }
-  .rueda-item {
-    height: 36px; display: flex; align-items: center; justify-content: center;
-    scroll-snap-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 16px; color: #6C8890;
-  }
-  .rueda-item.seleccionado { color: #D4A24C; font-weight: 700; }
-  .rueda-relleno { height: 36px; }
-  .rueda-separador { font-family: 'Fraunces', serif; font-size: 20px; color: #9FB8BF; padding: 0 2px; }
-  .rueda-etiqueta { font-size: 10.5px; color: #6C8890; text-align: center; margin-top: 2px; }
+  .hora-select-sep { font-family: 'Fraunces', serif; font-size: 16px; color: #9FB8BF; }
 
   .tabs-nav {
     position: fixed; left: 0; right: 0; bottom: 0; height: 54px;
@@ -463,82 +454,39 @@ async function redimensionarImagen(file, maxAncho = 1600, calidad = 0.8) {
   return new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", calidad));
 }
 
-// Selector de hora "de rueda" (dos columnas con scroll y snap, horas y
-// minutos) — sustituye a <input type="time">, cuyo desplegable nativo en
-// algunos navegadores/móviles solo deja ver unas pocas horas a la vez.
-// Vanilla JS/CSS: el repo no tiene build step ni dependencias externas
-// para esto.
-const ALTURA_ITEM_RUEDA = 36;
-// valorInicial null/undefined -> empieza "sin especificar" (checkbox
-// marcado, rueda oculta) — todas las horas de la app son opcionales
-// (igual que ya lo era el <input type="time"> al que sustituye): quien
-// va en una embarcación moviéndose puede querer registrar una captura
-// de un momento concreto sin rellenar nada más.
+// Selector de hora: dos <select> nativos (hora, minuto) — sustituye a
+// <input type="time"> (su desplegable nativo, en algunos navegadores/
+// móviles, solo deja ver unas pocas horas a la vez) y a un primer
+// intento con una rueda de scroll/snap hecha a mano, que en la práctica
+// no se veía igual en todos los navegadores. El propio <select> del
+// navegador ya trae scroll cuando tiene muchas opciones, así que es la
+// forma más simple y fiable de tener "un desplegable con scroll".
+// valorInicial null/undefined -> empieza sin nada elegido ("--" en
+// ambos) — todas las horas de la app son opcionales: quien va en una
+// embarcación moviéndose puede querer registrar una captura de un
+// momento concreto sin rellenar nada más, o solo la hora de inicio sin
+// la de fin si es una salida puntual.
 function crearSelectorHora(idContenedor, valorInicial) {
   const cont = document.getElementById(idContenedor);
   const horas = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0"));
   const minutos = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, "0"));
-  const sinEspecificar = !valorInicial;
-  const [hIni, mIni] = (valorInicial || "12:00").split(":");
+  const [hIni, mIni] = (valorInicial || "").split(":");
 
-  const columna = (valores) => `
-    <div class="rueda-relleno"></div>
-    ${valores.map((v) => `<div class="rueda-item" data-valor="${v}">${v}</div>`).join("")}
-    <div class="rueda-relleno"></div>`;
+  const opciones = (valores, actual) =>
+    `<option value="">--</option>` +
+    valores.map((v) => `<option value="${v}" ${v === actual ? "selected" : ""}>${v}</option>`).join("");
   cont.innerHTML = `
-    <label class="rueda-check"><input type="checkbox" class="rueda-check-input" ${sinEspecificar ? "checked" : ""} /> Sin especificar</label>
-    <div class="rueda-hora-ruedas${sinEspecificar ? " deshabilitada" : ""}">
-      <div class="rueda-marco"></div>
-      <div class="rueda-columna" data-lista="horas">${columna(horas)}</div>
-      <div class="rueda-separador">:</div>
-      <div class="rueda-columna" data-lista="minutos">${columna(minutos)}</div>
-    </div>
+    <select class="hora-select-h">${opciones(horas, hIni)}</select>
+    <span class="hora-select-sep">:</span>
+    <select class="hora-select-m">${opciones(minutos, mIni)}</select>
   `;
-  const checkbox = cont.querySelector(".rueda-check-input");
-  const ruedasDiv = cont.querySelector(".rueda-hora-ruedas");
-  // La rueda se queda siempre visible (solo se atenúa y deja de responder
-  // al tacto/ratón si "Sin especificar" está marcado) — antes se ocultaba
-  // del todo con display:none y parecía que el control no existía.
-  checkbox.addEventListener("change", () => {
-    ruedasDiv.classList.toggle("deshabilitada", checkbox.checked);
-  });
-  const colH = cont.querySelector('[data-lista="horas"]');
-  const colM = cont.querySelector('[data-lista="minutos"]');
-
-  function indexDeValor(col, valor) {
-    const items = [...col.querySelectorAll(".rueda-item")];
-    const idx = items.findIndex((el) => el.dataset.valor === valor);
-    return idx === -1 ? 0 : idx;
-  }
-  function irA(col, index, suave) {
-    col.scrollTo({ top: index * ALTURA_ITEM_RUEDA, behavior: suave ? "smooth" : "auto" });
-  }
-  function marcarSeleccionVisual(col) {
-    const idx = Math.round(col.scrollTop / ALTURA_ITEM_RUEDA);
-    col.querySelectorAll(".rueda-item").forEach((el, i) => el.classList.toggle("seleccionado", i === idx));
-  }
-  const temporizadores = new WeakMap();
-  function alDejarDeMover(col) {
-    clearTimeout(temporizadores.get(col));
-    temporizadores.set(col, setTimeout(() => {
-      const idx = Math.round(col.scrollTop / ALTURA_ITEM_RUEDA);
-      irA(col, idx, true);
-      marcarSeleccionVisual(col);
-    }, 120));
-  }
-  [colH, colM].forEach((col) => col.addEventListener("scroll", () => alDejarDeMover(col)));
-
-  irA(colH, indexDeValor(colH, hIni), false);
-  irA(colM, indexDeValor(colM, mIni), false);
-  marcarSeleccionVisual(colH);
-  marcarSeleccionVisual(colM);
+  const selH = cont.querySelector(".hora-select-h");
+  const selM = cont.querySelector(".hora-select-m");
 
   return {
     valor() {
-      if (checkbox.checked) return null;
-      const idxH = Math.min(23, Math.round(colH.scrollTop / ALTURA_ITEM_RUEDA));
-      const idxM = Math.min(59, Math.round(colM.scrollTop / ALTURA_ITEM_RUEDA));
-      return `${horas[idxH]}:${minutos[idxM]}`;
+      if (!selH.value || !selM.value) return null;
+      return `${selH.value}:${selM.value}`;
     },
   };
 }
@@ -658,9 +606,9 @@ function formularioSalida(fecha) {
       ${opcionesSpotsPara("costa")}
     </select>
     <label>Hora de inicio</label>
-    <div class="rueda-hora" id="ruedaSalidaInicio"></div>
+    <div class="hora-select" id="ruedaSalidaInicio"></div>
     <label>Hora de fin</label>
-    <div class="rueda-hora" id="ruedaSalidaFin"></div>
+    <div class="hora-select" id="ruedaSalidaFin"></div>
     <label for="salidaNotas">Notas del día</label>
     <textarea id="salidaNotas" placeholder="Cómo estuvo la jornada…"></textarea>
     <button class="principal" id="btnGuardarSalida">Guardar día</button>
@@ -764,7 +712,7 @@ function formularioCaptura() {
         <input type="text" id="capturaEspecieOtra" />
       </div>
       <label>Hora</label>
-      <div class="rueda-hora" id="ruedaCapturaHora"></div>
+      <div class="hora-select" id="ruedaCapturaHora"></div>
       <label for="capturaTalla">Talla (cm)</label>
       <input type="number" id="capturaTalla" step="0.5" min="0" />
       <label for="capturaPeso">Peso (g)</label>
