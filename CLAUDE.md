@@ -19,10 +19,14 @@ otro usuario". Cualquier cambio que toque `alarma.html`,
 ## Stack y despliegue
 
 - HTML + JS plano, sin build step. Cloudflare Pages sirve el árbol de git
-  tal cual, salvo lo que bloquee `_redirects` — **cualquier fichero que
-  añadas al repo fuera de `functions/` es servido en público** salvo que
-  lo excluyas explícitamente. Antes de añadir un fichero con datos
-  internos/operativos a la raíz, añádelo a `_redirects`.
+  tal cual, salvo lo que bloquee `functions/_middleware.js` —
+  **cualquier fichero que añadas al repo es servido en público** salvo
+  que lo excluyas explícitamente ahí. Antes de añadir un fichero con
+  datos internos/operativos, añade su ruta a `RUTAS_BLOQUEADAS` o
+  `PREFIJOS_BLOQUEADOS` en `functions/_middleware.js`. (Se intentó
+  primero con un fichero `_redirects` de solo-código — Cloudflare lo
+  ignoraba en silencio por faltarle un destino; el middleware sí
+  funciona, verificado en vivo.)
 - `functions/*.js` son Cloudflare Pages Functions (edge, red real — a
   diferencia de las sesiones de robot/auditoría en la nube, que tienen la
   salida de red bloqueada salvo dominios de infraestructura, ver
@@ -88,14 +92,14 @@ despliegue — responde con cabeceras de Vercel y 404 en rutas que sí
 existen aquí; no usarlo para verificar nada de este repo.
 
 **Exposición pública confirmada y corregida el 2026-09-12**: antes de
-añadir `_redirects`, `ROBOT.md`, `CALIBRACION.jsonl`, `README.md`,
-`start.ps1` y ambos `supabase/*.sql` se servían con `200` en producción
-(contenido revisado: sin secretos ni datos reales de usuarios, pero sí
-detalle interno de esquema/RLS e historial operativo — exposición de
-información, no fuga de datos de usuario). El `_redirects` los bloquea;
-falta desplegarlo (commit + push) para que el arreglo llegue a
-producción — hasta entonces `git status`/este fichero no reflejan lo que
-de verdad sirve `fishnow-59u.pages.dev`.
+añadir `functions/_middleware.js`, `ROBOT.md`, `CALIBRACION.jsonl`,
+`README.md`, `start.ps1` y ambos `supabase/*.sql` se servían con `200` en
+producción (contenido revisado: sin secretos ni datos reales de
+usuarios, pero sí detalle interno de esquema/RLS e historial operativo —
+exposición de información, no fuga de datos de usuario). El middleware
+las bloquea; pendiente de verificar en vivo tras el próximo deploy que
+las 7 rutas devuelven `404` y que `/`, `/login`, `/prevision`,
+`/sos-alerta`, etc. siguen funcionando igual.
 
 ## Fórmulas del índice de mar / índice de pesca (`index.html`)
 
@@ -199,11 +203,11 @@ sin que el usuario aporte esas credenciales o decida otra vía.
 
 ## Pendiente conocido (no tocar sin confirmar)
 
-- Prueba cruzada usuario-A-lee-fila-de-usuario-B (ver arriba: necesita
-  credenciales de dos cuentas reales confirmadas, o decidir otra vía).
-- Desplegar lo de esta sesión (commit + push) para que llegue de verdad a
-  producción: `_redirects`, el test de autenticación programado, la
-  vigencia de 1h del índice de mar/pesca.
+- Prueba cruzada usuario-A-lee-fila-de-usuario-B: cuentas de prueba en
+  curso de creación (2026-09-12), pendiente de que el usuario confirme
+  los dos emails cuando lleguen.
+- Verificar en producción, tras el deploy de `functions/_middleware.js`,
+  que las 7 rutas bloqueadas devuelven 404 y nada más se rompe.
 - Escaneo de seguridad tipo OWASP ZAP contra producción — diseño
   propuesto, pendiente de decisión sobre a quién avisar y si activarlo ya.
 - Informe diario de salud (fuentes externas, alarmas SOS disparadas sin
