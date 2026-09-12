@@ -537,13 +537,46 @@ function horaActualMadridISO() {
   return `${val("year")}-${val("month")}-${val("day")}T${val("hour")}`;
 }
 
-// Coeficiente de marea: mareas vivas (coeficiente alto) cerca de luna
-// nueva/llena, muertas (bajo) cerca de los cuartos — aproximación
-// astronómica por fase lunar, escala 20-120 como las tablas de mareas
-// habituales. No es un dato oficial de un servicio hidrográfico. Misma
-// fórmula (+ mismo RETRASO_MAREA_DIAS calibrado, ver el comentario
-// largo en functions/prevision.js y CALIBRACION.jsonl) que
-// prevision.js, duplicada aquí porque no hay bundling entre archivos.
+// Coeficiente de marea por spot (2026-09-13, ver el comentario largo en
+// functions/prevision.js): el índice "nacional" por fase lunar (más
+// abajo, coeficienteMarea) resultó ser el MISMO número en toda España y
+// Portugal (verificado contra tides4fishing.com en 6 puertos distintos)
+// — no aporta nada específico de cada spot. Este calcula uno real, a
+// partir del propio rango de marea (pleamar menos bajamar) que
+// Open-Meteo modela para ESE punto, normalizado contra el mínimo y
+// máximo rango de ese mismo spot en una ventana de ~17 días alrededor
+// de la fecha (cubre un ciclo vivas-muertas completo, ~14.77 días).
+// Misma función que coeficientePorSpot() en functions/prevision.js,
+// duplicada aquí porque no hay bundling entre archivos.
+function coeficientePorSpot(horas, alturas, idxReferencia) {
+  const rangosPorDia = {};
+  horas.forEach((h, i) => {
+    const v = alturas[i];
+    if (v === null || v === undefined) return;
+    const dia = h.slice(0, 10);
+    if (!rangosPorDia[dia]) rangosPorDia[dia] = { min: v, max: v };
+    else {
+      rangosPorDia[dia].min = Math.min(rangosPorDia[dia].min, v);
+      rangosPorDia[dia].max = Math.max(rangosPorDia[dia].max, v);
+    }
+  });
+  const dias = Object.keys(rangosPorDia);
+  if (dias.length < 10) return null;
+  const rangos = dias.map((d) => rangosPorDia[d].max - rangosPorDia[d].min);
+  const rangoMin = Math.min(...rangos);
+  const rangoMax = Math.max(...rangos);
+  if (rangoMax - rangoMin < 0.01) return null;
+  const diaRef = horas[idxReferencia]?.slice(0, 10);
+  const rangoRef = rangosPorDia[diaRef] ? rangosPorDia[diaRef].max - rangosPorDia[diaRef].min : null;
+  if (rangoRef === null) return null;
+  const factor = Math.max(0, Math.min(1, (rangoRef - rangoMin) / (rangoMax - rangoMin)));
+  return Math.round(20 + 100 * factor);
+}
+
+// Respaldo si la ventana amplia no trae datos suficientes (fallo puntual
+// de Open-Meteo, spot casi sin marea, etc.) — aproximación astronómica
+// por fase lunar, escala 20-120. No es un dato oficial de un servicio
+// hidrográfico.
 const RETRASO_MAREA_DIAS = 2;
 const SINODICO_DIAS = 29.530588853;
 const JD_LUNA_NUEVA_REF = 2451550.1; // 2000-01-06 18:14 UTC, luna nueva de referencia (J2000)
@@ -568,13 +601,27 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha) {
   // comportamiento de siempre.
   const rangoFechas = fecha ? `start_date=${fecha}&end_date=${fecha}` : "forecast_days=1";
   const paramsComunes = `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&${rangoFechas}`;
+  // La Marine API pide una ventana más ancha que el resto (±8 días
+  // alrededor de la fecha, ~17 días — cubre un ciclo vivas-muertas
+  // completo, ~14.77 días) para poder calcular coeficientePorSpot(): el
+  // rango de marea de esa fecha en concreto normalizado contra el
+  // mínimo/máximo rango real de ese mismo spot. Sin fecha, cae de vuelta
+  // a la ventana corta de siempre.
+  const sumarDias = (iso, dias) => {
+    const d = new Date(iso + "T00:00:00Z");
+    d.setUTCDate(d.getUTCDate() + dias);
+    return d.toISOString().slice(0, 10);
+  };
+  const paramsMarea = fecha
+    ? `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&start_date=${sumarDias(fecha, -8)}&end_date=${sumarDias(fecha, 8)}`
+    : paramsComunes;
   const resultado = { marea_altura: null, marea_tendencia: null, marea_coeficiente: null, presion_valor: null, presion_tendencia: null,
     luna_fase: null, luna_iluminacion: null, viento_kmh: null, viento_dir: null,
     oleaje_altura_min: null, oleaje_altura_max: null, temp_agua: null,
     nubosidad: null, precipitacion: null, boya_usada: null };
   try {
     const [marino, viento, luna] = await Promise.all([
-      fetch(`https://marine-api.open-meteo.com/v1/marine?${paramsComunes}&hourly=wave_height,sea_level_height_msl,sea_surface_temperature`).then((r) => r.json()),
+      fetch(`https://marine-api.open-meteo.com/v1/marine?${paramsMarea}&hourly=wave_height,sea_level_height_msl,sea_surface_temperature`).then((r) => r.json()),
       fetch(`https://api.open-meteo.com/v1/forecast?${paramsComunes}&hourly=windspeed_10m,winddirection_10m,pressure_msl,cloudcover,precipitation&windspeed_unit=kmh`).then((r) => r.json()),
       fetch(`/luna?lat=${lat}&lon=${lon}`).then((r) => r.json()),
     ]);
@@ -585,12 +632,15 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha) {
     // que los minutos son solo para el registro, no cambian qué bloque
     // horario se usa. Redondea a la hora más cercana (no trunca hacia
     // abajo) para que 07:40 use el bloque de las 8h, más representativo
-    // que el de las 7h.
+    // que el de las 7h. `horas` ahora puede traer ±8 días de más (por la
+    // ventana ancha del coeficiente) — hay que exigir también que la
+    // FECHA coincida con la de la salida, no solo la hora del día, o se
+    // colaría la primera de los ±8 días que tenga esa misma hora.
     let idx = -1;
     if (horaElegida) {
       const [h, m] = horaElegida.split(":").map(Number);
       const horaObjetivo = m >= 30 ? (h + 1) % 24 : h;
-      idx = horas.findIndex((hs) => +hs.slice(11, 13) === horaObjetivo);
+      idx = horas.findIndex((hs) => (!fecha || hs.startsWith(fecha)) && +hs.slice(11, 13) === horaObjetivo);
     }
     if (idx === -1) {
       idx = horas.findIndex((h) => h.slice(0, 13) === horaActualMadridISO());
@@ -599,8 +649,8 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha) {
     // hora de ahora no significa nada para un día distinto — mediodía
     // es una referencia más representativa de la jornada que
     // medianoche (el índice 0 al que caería si no se afina esto).
-    if (idx === -1) idx = horas.findIndex((h) => +h.slice(11, 13) === 12);
-    if (idx === -1) idx = 0;
+    if (idx === -1) idx = horas.findIndex((hs) => (!fecha || hs.startsWith(fecha)) && +hs.slice(11, 13) === 12);
+    if (idx === -1) idx = fecha ? Math.max(0, horas.findIndex((hs) => hs.startsWith(fecha))) : 0;
 
     const alturaOla = marino.hourly?.wave_height?.[idx];
     if (alturaOla !== undefined && alturaOla !== null) {
@@ -624,10 +674,12 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha) {
     // new Date() (el momento de guardar), no la fecha real de la
     // salida — una salida del 7 de septiembre guardada/editada más
     // tarde mostraba el coeficiente de HOY, no el del 7 de septiembre.
-    // La fase lunar depende del día, no de a qué hora del día se
-    // guarda, así que mediodía es una referencia arbitraria pero
-    // irrelevante para el resultado.
-    resultado.marea_coeficiente = coeficienteMarea(fecha ? new Date(fecha + "T12:00:00") : new Date());
+    // Ahora usa coeficientePorSpot() (real, por spot — ver el comentario
+    // largo más arriba) con la fecha real, y solo si esa ventana no trae
+    // datos suficientes cae de vuelta a la fórmula astronómica genérica.
+    resultado.marea_coeficiente =
+      coeficientePorSpot(horas, serieAltura, idx) ??
+      coeficienteMarea(fecha ? new Date(fecha + "T12:00:00") : new Date());
 
     resultado.viento_kmh = viento.hourly?.windspeed_10m?.[idx] != null ? Math.round(viento.hourly.windspeed_10m[idx]) : null;
     resultado.presion_valor = viento.hourly?.pressure_msl?.[idx] != null ? Math.round(viento.hourly.pressure_msl[idx]) : null;
