@@ -50,12 +50,14 @@ jobs:
             -H "apikey: $SUPABASE_ANON_KEY" -H "Content-Type: application/json" \
             -d "{\"email\":\"$SMOKE_TEST_EMAIL\",\"password\":\"$SMOKE_TEST_PASSWORD\"}")
           token=$(echo "$resp" | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{console.log(JSON.parse(d).access_token||'')}catch{console.log('')}})")
-          if [ -z "$token" ]; then
+          userid=$(echo "$resp" | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{console.log(JSON.parse(d).user.id||'')}catch{console.log('')}})")
+          if [ -z "$token" ] || [ -z "$userid" ]; then
             echo "::error::Login de la cuenta de prueba falló: $resp"
             exit 1
           fi
           echo "::add-mask::$token"
           echo "token=$token" >> "$GITHUB_OUTPUT"
+          echo "userid=$userid" >> "$GITHUB_OUTPUT"
 
       - name: /prevision y /webcam/<slug> responden
         run: |
@@ -67,11 +69,12 @@ jobs:
       - name: Escribe y borra una salida de pesca de prueba
         env:
           TOKEN: ${{ steps.login.outputs.token }}
+          USERID: ${{ steps.login.outputs.userid }}
         run: |
           creada=$(curl -sS -X POST "$SUPABASE_URL/rest/v1/salidas_pesca" \
             -H "apikey: $SUPABASE_ANON_KEY" -H "Authorization: Bearer $TOKEN" \
             -H "Content-Type: application/json" -H "Prefer: return=representation" \
-            -d '{"fecha":"2000-01-01","spot_slug":"smoke-test","notas":"smoke test automatico, se borra solo"}')
+            -d "{\"user_id\":\"$USERID\",\"fecha\":\"2000-01-01\",\"spot_slug\":\"smoke-test\",\"notas\":\"smoke test automatico, se borra solo\"}")
           id=$(echo "$creada" | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{console.log(JSON.parse(d)[0].id||'')}catch{console.log('')}})")
           if [ -z "$id" ]; then
             echo "::error::No se pudo crear la salida de prueba: $creada"
