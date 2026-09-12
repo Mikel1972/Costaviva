@@ -1621,7 +1621,7 @@ async function actualizarLuna() {
     if (!resp.ok || l.error) throw new Error(l.error || "sin datos");
     document.getElementById("lunaEmoji").textContent = l.emoji;
     document.getElementById("lunaFase").textContent = l.fase;
-    document.getElementById("lunaIluminacion").textContent = `${l.iluminacion} iluminada`;
+    document.getElementById("lunaIluminacion").textContent = `${l.iluminacion}% iluminada`;
     document.getElementById("lunaSalida").textContent = l.horaSalida
       ? `${l.horaSalida} · ${l.rumboSalida} (${l.azimutSalida}°)`
       : "sin datos";

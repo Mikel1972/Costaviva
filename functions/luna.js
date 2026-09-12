@@ -136,7 +136,12 @@ async function datosLuna(lat, lon) {
   return {
     fase: fase.es,
     emoji: fase.emoji,
-    iluminacion: p.fracillum,
+    // La API de la USNO devuelve esto como texto con el símbolo de
+    // porcentaje ("2%"), no como número — guardarlo tal cual rompía el
+    // insert en salidas_pesca.luna_iluminacion (columna numeric) con
+    // "invalid input syntax for type numeric". parseFloat corta en el
+    // primer carácter no numérico, así que "2%" -> 2.
+    iluminacion: p.fracillum != null ? parseFloat(p.fracillum) : null,
     horaSalida,
     horaPuesta,
     horaCulminacion,
