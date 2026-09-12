@@ -211,6 +211,35 @@ requeriría análisis armónico real por puerto). Se muestra junto a la
 altura de marea en el panel de cada spot del mapa y se guarda también
 por salida (`salidas_pesca.marea_coeficiente`).
 
+**Dos bugs reales encontrados y corregidos el 2026-09-13, el usuario
+los cazó comparando contra tides4fishing.com para Armintza (Vizcaya):**
+- **`marea_coeficiente` del diario usaba `new Date()` (el momento de
+  guardar), no la fecha real de la salida.** Una salida del 7 de
+  septiembre guardada/editada más tarde mostraba el coeficiente de HOY,
+  no el del 7 de septiembre — `contextoAmbiental()` ahora recibe `fecha`
+  y la usa (a mediodía de ese día, la hora del día es irrelevante para
+  la fase lunar). **Esto revela un problema más amplio, sin resolver
+  todavía**: `contextoAmbiental()` sigue pidiendo a Open-Meteo el
+  forecast de "ahora" (`forecast_days=1`, sin `start_date`/`end_date`)
+  para TODO lo demás (oleaje, viento, presión, nubosidad, temp. agua,
+  altura de marea) — para cualquier entrada guardada en una fecha
+  distinta a cuando se guardó de verdad (registro retroactivo), esos
+  datos también estarían mal, mismo tipo de fallo que el del
+  coeficiente. Pendiente de arreglar con `start_date=end_date=fecha` en
+  vez de `forecast_days=1`.
+- **La fórmula del coeficiente no tenía en cuenta el "retraso de la
+  marea"** (la marea real no responde al instante a la luna nueva/llena
+  — desfase físico real de varios días según el puerto, por fricción y
+  propagación de la onda). Comparado contra tides4fishing.com para
+  Armintza del 5 al 10 de septiembre de 2026 (ver `CALIBRACION.jsonl`,
+  `tipo: "coeficiente_marea_vs_tides4fishing"`), la fórmula sin retraso
+  salía sistemáticamente ~2 días adelantada (ej. 7 sept: fórmula 92,
+  real 66 — pero el real del 9 sept es 92). Corregido con
+  `RETRASO_MAREA_DIAS = 2`, verificado SOLO para esta zona — se usa
+  como mejor valor disponible en el resto de costas hasta que se
+  calibre cada una por separado (regla para hacerlo en
+  `ROBOT_REGLAS.md`, "Calibración del retraso de marea por zona").
+
 **Especies enriquecidas por la comunidad (2026-09-12):** el
 desplegable de especies del diario muestra el nombre científico entre
 paréntesis (verificado por especie, `ESPECIES` en `diario.html`). Una

@@ -539,22 +539,35 @@ function horaActualMadridISO() {
 
 // Coeficiente de marea: mareas vivas (coeficiente alto) cerca de luna
 // nueva/llena, muertas (bajo) cerca de los cuartos — aproximación
-// astronómica estándar por fase lunar, escala 20-120 como las tablas de
-// mareas habituales. No es un dato oficial de un servicio hidrográfico.
-// Misma fórmula que functions/prevision.js (coeficienteMarea), duplicada
-// aquí porque no hay bundling entre archivos en este repo.
+// astronómica por fase lunar, escala 20-120 como las tablas de mareas
+// habituales. No es un dato oficial de un servicio hidrográfico. Misma
+// fórmula (+ mismo RETRASO_MAREA_DIAS calibrado, ver el comentario
+// largo en functions/prevision.js y CALIBRACION.jsonl) que
+// prevision.js, duplicada aquí porque no hay bundling entre archivos.
+const RETRASO_MAREA_DIAS = 2;
 const SINODICO_DIAS = 29.530588853;
 const JD_LUNA_NUEVA_REF = 2451550.1; // 2000-01-06 18:14 UTC, luna nueva de referencia (J2000)
 function coeficienteMarea(fecha) {
-  const jd = fecha.getTime() / 86400000 + 2440587.5;
+  const jd = fecha.getTime() / 86400000 + 2440587.5 - RETRASO_MAREA_DIAS;
   const edadDias = (((jd - JD_LUNA_NUEVA_REF) % SINODICO_DIAS) + SINODICO_DIAS) % SINODICO_DIAS;
   const fase = edadDias / SINODICO_DIAS;
   const factorVivas = Math.abs(Math.cos(2 * Math.PI * fase));
   return Math.round(45 + 75 * factorVivas);
 }
 
-async function contextoAmbiental(lat, lon, horaElegida, tipoSalida) {
-  const paramsComunes = `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&forecast_days=1`;
+async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha) {
+  // Bug real encontrado 2026-09-13 (el usuario cazó el del coeficiente
+  // de marea y llevó a revisar el resto): con forecast_days=1 esto
+  // pedía siempre el pronóstico de "ahora mismo", sin importar la fecha
+  // real de la salida — una entrada guardada/editada un día distinto al
+  // que ocurrió (registro retroactivo) se guardaba con el oleaje/
+  // viento/presión/nubosidad/temperatura de HOY, no de su propia fecha.
+  // start_date=end_date=fecha lo pide para el día correcto (verificado
+  // en real que Open-Meteo lo sirve así para fechas pasadas recientes);
+  // sin fecha (no debería pasar, pero por si acaso) cae de vuelta al
+  // comportamiento de siempre.
+  const rangoFechas = fecha ? `start_date=${fecha}&end_date=${fecha}` : "forecast_days=1";
+  const paramsComunes = `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&${rangoFechas}`;
   const resultado = { marea_altura: null, marea_tendencia: null, marea_coeficiente: null, presion_valor: null, presion_tendencia: null,
     luna_fase: null, luna_iluminacion: null, viento_kmh: null, viento_dir: null,
     oleaje_altura_min: null, oleaje_altura_max: null, temp_agua: null,
@@ -582,6 +595,11 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida) {
     if (idx === -1) {
       idx = horas.findIndex((h) => h.slice(0, 13) === horaActualMadridISO());
     }
+    // Sin hora elegida y la fecha no es hoy (registro retroactivo): la
+    // hora de ahora no significa nada para un día distinto — mediodía
+    // es una referencia más representativa de la jornada que
+    // medianoche (el índice 0 al que caería si no se afina esto).
+    if (idx === -1) idx = horas.findIndex((h) => +h.slice(11, 13) === 12);
     if (idx === -1) idx = 0;
 
     const alturaOla = marino.hourly?.wave_height?.[idx];
@@ -602,7 +620,14 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida) {
     const alturaMareaSig = serieAltura[idx + 1];
     resultado.marea_altura = alturaMarea != null ? +(alturaMarea - minAltura).toFixed(2) : null;
     resultado.marea_tendencia = alturaMarea != null && alturaMareaSig != null ? (alturaMareaSig > alturaMarea ? "subiendo" : "bajando") : null;
-    resultado.marea_coeficiente = coeficienteMarea(new Date());
+    // Bug real reportado por el usuario (2026-09-13): esto usaba
+    // new Date() (el momento de guardar), no la fecha real de la
+    // salida — una salida del 7 de septiembre guardada/editada más
+    // tarde mostraba el coeficiente de HOY, no el del 7 de septiembre.
+    // La fase lunar depende del día, no de a qué hora del día se
+    // guarda, así que mediodía es una referencia arbitraria pero
+    // irrelevante para el resultado.
+    resultado.marea_coeficiente = coeficienteMarea(fecha ? new Date(fecha + "T12:00:00") : new Date());
 
     resultado.viento_kmh = viento.hourly?.windspeed_10m?.[idx] != null ? Math.round(viento.hourly.windspeed_10m[idx]) : null;
     resultado.presion_valor = viento.hourly?.pressure_msl?.[idx] != null ? Math.round(viento.hourly.pressure_msl[idx]) : null;
@@ -740,7 +765,7 @@ async function guardarSalida(fecha, idExistente) {
     }
   }
 
-  const contexto = await contextoAmbiental(lat, lon, horaInicio, tipoSalida);
+  const contexto = await contextoAmbiental(lat, lon, horaInicio, tipoSalida, fecha);
   const datos = {
     user_id: usuario.id, fecha, spot_slug: spot?.slug ?? null, spot_nombre: spot?.nombre ?? "Ubicación actual",
     lat, lon, notas, hora_inicio: horaInicio, hora_fin: horaFin, tipo_salida: tipoSalida, ...contexto,
