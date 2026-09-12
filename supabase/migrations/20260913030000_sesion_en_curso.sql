@@ -1,0 +1,13 @@
+-- Costa Viva — sesiones de pesca "en curso"
+--
+-- Pedido explícito del usuario: al ir a pescar, poder abrir una entrada
+-- y dejarla abierta mientras dura la salida (apuntando notas, añadiendo
+-- capturas a medida que van pasando) y "concluirla" explícitamente al
+-- terminar — en vez del modelo anterior, donde una entrada era siempre
+-- un registro ya completo desde que se creaba.
+--
+-- Todas las filas ya existentes se dan por concluidas (default true) —
+-- ya eran registros completos, no sesiones a medias. Las entradas
+-- nuevas se crean con concluida=false ("en curso") y se marcan
+-- concluida=true al pulsar "Concluir jornada" en el cliente.
+alter table public.salidas_pesca add column if not exists concluida boolean not null default true;

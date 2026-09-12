@@ -855,6 +855,12 @@ async function guardarSalida(fecha, idExistente) {
     user_id: usuario.id, fecha, spot_slug: spot?.slug ?? null, spot_nombre: spot?.nombre ?? "Ubicación actual",
     lat, lon, notas, hora_inicio: horaInicio, hora_fin: horaFin, tipo_salida: tipoSalida, ...contexto,
   };
+  // Una entrada nueva empieza "en curso" (pedido explícito del usuario:
+  // abrirla al salir a pescar y dejarla así mientras dura la jornada,
+  // añadiendo capturas/notas, hasta pulsar "Concluir jornada"). Al
+  // editar una ya existente no se toca concluida — así corregir una
+  // nota o el spot de una jornada ya cerrada no la vuelve a abrir.
+  if (!idExistente) datos.concluida = false;
   const { error } = idExistente
     ? await supabase.from("salidas_pesca").update(datos).eq("id", idExistente)
     : await supabase.from("salidas_pesca").insert(datos);
@@ -1050,11 +1056,16 @@ async function guardarCaptura(salidaId, fecha, idExistente, ordenFotoBase) {
 async function resumenEntradaHTML(entrada, idx) {
   const { salida, capturas } = entrada;
   const tarjetas = await Promise.all(capturas.map(tarjetaCapturaHTML));
+  // "En curso" (pedido explícito del usuario): una entrada nueva empieza
+  // abierta — se puede ir añadiendo capturas y notas mientras dura la
+  // jornada, hasta pulsar "Concluir jornada". Estilo distinto (borde en
+  // color de acento) para que se note de un vistazo cuál sigue abierta.
+  const enCurso = salida.concluida === false;
   return `
-    <div class="tarjeta-captura" style="margin-top:0; margin-bottom:14px; border:1px solid #1C3F4F;">
+    <div class="tarjeta-captura" style="margin-top:0; margin-bottom:14px; border:1px solid ${enCurso ? "#D4A24C" : "#1C3F4F"};">
       <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
         <div class="detalle" style="font-size:12px; color:#9FB8BF; flex:1;">
-          📍 ${salida.spot_nombre || "Ubicación actual"}
+          ${enCurso ? `<span style="color:#D4A24C; font-weight:600;">🟢 En curso</span> · ` : ""}📍 ${salida.spot_nombre || "Ubicación actual"}
           ${salida.tipo_salida ? ` · ${etiquetaTipoSalida[salida.tipo_salida] || salida.tipo_salida}` : ""}
           ${horaRangoTexto(salida)}
         </div>
@@ -1067,13 +1078,36 @@ async function resumenEntradaHTML(entrada, idx) {
       ${contextoHTML(salida)}
       <div style="margin-top:14px; font-family:'Inter',sans-serif; font-weight:500; font-size:11px; color:#6C8890;">CAPTURAS (${capturas.length})</div>
       ${tarjetas.join("") || `<p style="font-size:12px; color:#6C8890;">Ninguna todavía.</p>`}
-      <button class="secundario anadir-captura" data-idx="${idx}" style="margin-top:10px;">➕ Añadir captura</button>
+      <div style="display:flex; gap:8px; margin-top:10px;">
+        <button class="secundario anadir-captura" data-idx="${idx}" style="margin-top:0; flex:1;">➕ Añadir captura</button>
+        ${enCurso ? `<button class="principal concluir-entrada" data-idx="${idx}" style="margin-top:0; flex:1;">✅ Concluir jornada</button>` : ""}
+      </div>
     </div>
   `;
 }
 
 function cancelarFormulario() {
   document.getElementById("zonaFormulario").innerHTML = "";
+}
+
+// Concluir jornada (pedido explícito del usuario): marca la entrada como
+// terminada y, si no se había puesto ya, rellena la hora de fin con la
+// hora actual — igual que la hora de inicio, es hora LOCAL de Madrid
+// (horaActualMadridISO() da fecha+hora en UTC del sistema, aquí solo
+// hace falta HH:MM).
+function horaActualHHMM() {
+  return new Intl.DateTimeFormat("es-ES", { timeZone: "Europe/Madrid", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(new Date());
+}
+async function concluirEntrada(iso, fechaObj, salida) {
+  if (!confirm("¿Concluir esta jornada? Podrás seguir editándola después si hace falta.")) return;
+  const { error } = await supabase
+    .from("salidas_pesca")
+    .update({ concluida: true, hora_fin: salida.hora_fin || horaActualHHMM() })
+    .eq("id", salida.id);
+  if (error) { alert(`No se ha podido concluir: ${error.message}`); return; }
+  await cargarDatos();
+  renderCalendario();
+  abrirDia(iso, fechaObj);
 }
 
 function engancharFormularioSalida(iso, idExistente) {
@@ -1286,6 +1320,9 @@ async function abrirDia(iso, fechaObj) {
   });
   contEl.querySelectorAll(".anadir-captura").forEach((btn) => {
     btn.addEventListener("click", () => mostrarFormularioNuevaCaptura(iso, entradas[+btn.dataset.idx].salida.id));
+  });
+  contEl.querySelectorAll(".concluir-entrada").forEach((btn) => {
+    btn.addEventListener("click", () => concluirEntrada(iso, fechaObj, entradas[+btn.dataset.idx].salida));
   });
   contEl.querySelectorAll(".editar-captura").forEach((btn) => {
     btn.addEventListener("click", () => {
