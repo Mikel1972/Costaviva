@@ -220,13 +220,6 @@
     cursor: pointer; font-size: 16px; padding: 0;
   }
   .anadir-ubicacion-toggle.activo { background: #D4A24C; color: #0B2532; }
-  .gps-ubicacion-toggle {
-    position: absolute; top: 256px; right: 16px; z-index: 502;
-    width: 38px; height: 38px; border-radius: 8px;
-    background: #0F2C38; border: 1px solid #1C3F4F; color: #E8E2D0;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; font-size: 16px; padding: 0;
-  }
   .confirmar-ubicacion-panel {
     display: none; position: absolute; top: 64px; left: 50%; transform: translateX(-50%);
     z-index: 900; background: #0F2C38; border: 1px solid #D4A24C; border-radius: 10px;
@@ -244,6 +237,11 @@
   }
   .confirmar-ubicacion-panel button.confirmar { background: #D4A24C; color: #0B2532; border: none; font-weight: 600; }
   .confirmar-ubicacion-panel button.cancelar { background: transparent; color: #9FB8BF; }
+  .confirmar-ubicacion-panel button.secundario-ubicacion {
+    width: 100%; text-align: left; padding: 10px 12px; border-radius: 8px; border: 1px solid #1C3F4F;
+    background: #123B4D; color: #E8E2D0; cursor: pointer; font-size: 13px;
+  }
+  .confirmar-ubicacion-panel button.secundario-ubicacion:hover { border-color: #D4A24C; }
   .luna-panel {
     position: absolute; top: 64px; right: 64px; z-index: 501;
     background: #0F2C38; border: 1px solid #1C3F4F; border-radius: 8px;
@@ -417,8 +415,30 @@
     </div>
     <button class="batimetria-toggle" id="toggleBatimetria" title="Batimetría (profundidad del mar)" aria-label="Mostrar/ocultar batimetría">📏</button>
     <button class="nubes-toggle" id="toggleNubes" title="Radar de lluvia en directo (RainViewer)" aria-label="Mostrar/ocultar radar de lluvia">☁️</button>
-    <button class="anadir-ubicacion-toggle" id="toggleAnadirUbicacion" title="Añadir una ubicación nueva: haz clic en el mapa" aria-label="Añadir ubicación en el mapa">➕</button>
-    <button class="gps-ubicacion-toggle" id="toggleGpsUbicacion" title="Añadir mi ubicación GPS actual" aria-label="Añadir mi ubicación GPS actual">📍</button>
+    <button class="anadir-ubicacion-toggle" id="toggleAnadirUbicacion" title="Añadir una ubicación nueva" aria-label="Añadir ubicación">➕</button>
+    <div class="confirmar-ubicacion-panel" id="eligeMetodoPanel">
+      <div class="titulo">¿Cómo quieres marcar el punto?</div>
+      <div class="botones" style="flex-direction:column; gap:8px;">
+        <button class="secundario-ubicacion" id="btnMetodoGps">📍 Mi GPS actual</button>
+        <button class="secundario-ubicacion" id="btnMetodoMapa">🖱 Elegir en el mapa</button>
+        <button class="secundario-ubicacion" id="btnMetodoCoords">🔢 Introducir coordenadas</button>
+      </div>
+      <div class="botones" style="margin-top:10px;">
+        <button class="cancelar" id="btnCancelarEligeMetodo">Cancelar</button>
+      </div>
+    </div>
+    <div class="confirmar-ubicacion-panel" id="coordsManualPanel">
+      <div class="titulo">Coordenadas</div>
+      <label style="display:block; font-size:11.5px; color:#9FB8BF; margin-bottom:3px;">Latitud</label>
+      <input type="number" id="coordsManualLat" step="0.0001" min="-90" max="90" placeholder="ej. 43.4123" style="width:100%; padding:7px 9px; border-radius:6px; border:1px solid #1C3F4F; background:#123B4D; color:#E8E2D0; font-family:'IBM Plex Mono',monospace; margin-bottom:8px;" />
+      <label style="display:block; font-size:11.5px; color:#9FB8BF; margin-bottom:3px;">Longitud</label>
+      <input type="number" id="coordsManualLon" step="0.0001" min="-180" max="180" placeholder="ej. -2.6789" style="width:100%; padding:7px 9px; border-radius:6px; border:1px solid #1C3F4F; background:#123B4D; color:#E8E2D0; font-family:'IBM Plex Mono',monospace; margin-bottom:10px;" />
+      <div id="coordsManualError" class="error" style="display:none;"></div>
+      <div class="botones">
+        <button class="cancelar" id="btnCancelarCoordsManual">Cancelar</button>
+        <button class="confirmar" id="btnUsarCoordsManual">Usar estas coordenadas</button>
+      </div>
+    </div>
     <div class="confirmar-ubicacion-panel" id="confirmarUbicacionPanel">
       <div class="titulo">Nueva ubicación</div>
       <div id="confirmarUbicacionError" class="error" style="display:none;"></div>
@@ -1529,26 +1549,63 @@ function todosLosSpots() {
   return [...SPOTS, ...spotsPersonalizados];
 }
 
-// ---- Añadir ubicación: por clic en el mapa o por GPS ----
+// ---- Añadir ubicación: un botón, tres formas de marcar el punto ----
 let modoAnadirUbicacion = false;
 let puntoPendiente = null; // { lat, lon }
 
-document.getElementById("toggleAnadirUbicacion").addEventListener("click", (e) => {
-  modoAnadirUbicacion = !modoAnadirUbicacion;
-  e.currentTarget.classList.toggle("activo", modoAnadirUbicacion);
-  if (!modoAnadirUbicacion) cerrarConfirmarUbicacion();
+function cerrarEligeMetodo() {
+  document.getElementById("eligeMetodoPanel").classList.remove("visible");
+}
+document.getElementById("toggleAnadirUbicacion").addEventListener("click", () => {
+  document.getElementById("eligeMetodoPanel").classList.add("visible");
 });
-map.on("click", (e) => {
-  if (!modoAnadirUbicacion) return;
-  iniciarNuevaUbicacion(e.latlng.lat, e.latlng.lng);
-});
+document.getElementById("btnCancelarEligeMetodo").addEventListener("click", cerrarEligeMetodo);
 
-document.getElementById("toggleGpsUbicacion").addEventListener("click", () => {
+document.getElementById("btnMetodoGps").addEventListener("click", () => {
+  cerrarEligeMetodo();
   navigator.geolocation.getCurrentPosition(
     (pos) => iniciarNuevaUbicacion(pos.coords.latitude, pos.coords.longitude),
     () => { mostrarErrorUbicacion("No se ha podido obtener tu GPS — revisa los permisos de ubicación del navegador."); },
     { timeout: 8000 }
   );
+});
+
+document.getElementById("btnMetodoMapa").addEventListener("click", () => {
+  cerrarEligeMetodo();
+  modoAnadirUbicacion = true;
+  document.getElementById("toggleAnadirUbicacion").classList.add("activo");
+});
+map.on("click", (e) => {
+  if (!modoAnadirUbicacion) return;
+  modoAnadirUbicacion = false;
+  document.getElementById("toggleAnadirUbicacion").classList.remove("activo");
+  iniciarNuevaUbicacion(e.latlng.lat, e.latlng.lng);
+});
+
+// Coordenadas a mano: sobre todo para embarcación/buceo, donde el punto
+// suele venir de un GPS/plotter propio (una marca de pesca, un pecio…) y
+// no tiene sentido intentar afinarlo con el dedo sobre el mapa.
+document.getElementById("btnMetodoCoords").addEventListener("click", () => {
+  cerrarEligeMetodo();
+  document.getElementById("coordsManualPanel").classList.add("visible");
+  document.getElementById("coordsManualLat").value = "";
+  document.getElementById("coordsManualLon").value = "";
+  document.getElementById("coordsManualError").style.display = "none";
+});
+document.getElementById("btnCancelarCoordsManual").addEventListener("click", () => {
+  document.getElementById("coordsManualPanel").classList.remove("visible");
+});
+document.getElementById("btnUsarCoordsManual").addEventListener("click", () => {
+  const lat = parseFloat(document.getElementById("coordsManualLat").value);
+  const lon = parseFloat(document.getElementById("coordsManualLon").value);
+  const errEl = document.getElementById("coordsManualError");
+  if (!Number.isFinite(lat) || !Number.isFinite(lon) || lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+    errEl.textContent = "Introduce una latitud (-90 a 90) y una longitud (-180 a 180) válidas.";
+    errEl.style.display = "block";
+    return;
+  }
+  document.getElementById("coordsManualPanel").classList.remove("visible");
+  iniciarNuevaUbicacion(lat, lon);
 });
 
 function mostrarErrorUbicacion(mensaje) {
