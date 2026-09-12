@@ -94,23 +94,32 @@ otro usuario". Cualquier cambio que toque `alarma.html`,
 ## Diario de pesca — campos añadidos 2026-09-12
 
 `salidas_pesca`: `tipo_salida` (costa/embarcación/submarinismo — primero
-en el formulario) y `franja_horaria` (recalcula marea/oleaje/viento/luna
-para esa hora en vez de "ahora"). Embarcación y submarinismo usan la
-boya real más cercana (Puertos del Estado, vía `/prevision`) en vez del
-modelo por coordenadas — `boya_usada` guarda cuál, solo informativo.
+en el formulario) y `hora` (`<input type="time">`, HH:MM — recalcula
+marea/oleaje/viento/luna redondeando a la hora en punto más cercana, en
+vez de "ahora"; sustituyó a un primer intento con franjas fijas —
+amanecer/mañana/... — que el usuario pidió cambiar por precisión real
+de minutos). **Solo embarcación** usa la boya real más cercana (Puertos
+del Estado, vía `/prevision`) en vez del modelo por coordenadas —
+`boya_usada` guarda cuál, solo informativo. Submarinismo se pesca cerca
+de costa (como "costa"), así que NO usa la boya de mar abierto — es una
+corrección explícita del usuario, no lo cambies de vuelta sin
+preguntar.
 
 `capturas`: ya tenía especie/talla/peso/cebo/notas/fotos, todo opcional
-— no hacía falta añadirlos. Lo nuevo es `tecnica` (lista verificada con
-búsqueda real: Surfcasting/Spinning/Jigging/Curricán/Fondo/
-Flotador-Corcheo/Popping/Eging/Otra) y el campo condicional que activa:
-técnicas de señuelo (Spinning/Jigging/Curricán/Popping/Eging) piden
-"tipo de señuelo" (texto libre); el resto sigue con "Aparejo"
-(Plomo/Corcho/Otro, ya existía).
+— no hacía falta añadirlos. Lo nuevo es `hora` (por captura, solo
+informativo — a qué hora se pescó ese pez en concreto) y `tecnica`
+(lista verificada con búsqueda real: Surfcasting/Spinning/Jigging/
+Curricán/Fondo/Flotador-Corcheo/Popping/Eging/Otra) con el campo
+condicional que activa: técnicas de señuelo (Spinning/Jigging/Curricán/
+Popping/Eging) piden "tipo de señuelo" (texto libre); el resto sigue
+con "Aparejo" (Plomo/Corcho/Otro, ya existía).
 
-Ambas migraciones probadas en real antes de mergear (rama +
-preview): login con cuenta de prueba, salida embarcación con franja
-"amanecer" → boya real usada correctamente; captura con técnica
-Spinning → campo de señuelo apareció y se guardó bien.
+Todas las migraciones probadas en real antes de mergear (rama +
+preview): login con cuenta de prueba, salida embarcación → boya real
+usada correctamente (y NO usada para submarinismo, verificado tras la
+corrección); captura con técnica Spinning → campo de señuelo apareció y
+se guardó bien; hora exacta (07:40 y 08:15) guardada y mostrada
+correctamente tanto en la salida como en la captura.
 
 ## Endpoints (`functions/`)
 
