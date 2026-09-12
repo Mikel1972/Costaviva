@@ -176,6 +176,7 @@
   <a href="/"><span class="icono">🗺️</span>Mapa</a>
   <a href="/diario.html"><span class="icono">🎣</span>Diario</a>
   <a href="/alarma.html" class="activa"><span class="icono">🆘</span>Alarma</a>
+  <a href="#" id="btnCerrarSesion"><span class="icono">🚪</span>Salir</a>
 </nav>
 
 <script type="module">
@@ -194,6 +195,12 @@ const usuario = sesionInicial.session.user;
 let tokenAcceso = sesionInicial.session.access_token;
 supabase.auth.onAuthStateChange((_evento, sesion) => { if (sesion) tokenAcceso = sesion.access_token; });
 document.getElementById("comprobandoAcceso").remove();
+
+document.getElementById("btnCerrarSesion").addEventListener("click", async (e) => {
+  e.preventDefault();
+  await supabase.auth.signOut();
+  window.location.href = "/login.html";
+});
 
 let ultimaPosicion = null;
 
