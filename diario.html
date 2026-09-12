@@ -318,9 +318,22 @@ async function cargarSpotsUsuario() {
 // personalizados) y marcados esUsuario para poder resolver lat/lon igual
 // en los dos casos.
 function todosLosSpotsDiario() {
-  const fijos = SPOTS.map((s) => ({ ...s, esUsuario: false }));
-  const personalizados = spotsUsuario.map((f) => ({ slug: f.id, nombre: f.nombre, lat: f.lat, lon: f.lon, esUsuario: true }));
+  // Los ~90 spots fijos son todos de costa/roca — nunca se han
+  // clasificado por tipo porque hasta ahora no hacía falta. Los
+  // personalizados sí llevan su tipo (costa/embarcacion/buceo, elegido
+  // al crearlos en el mapa, ver index.html).
+  const fijos = SPOTS.map((s) => ({ ...s, esUsuario: false, tipo: "costa" }));
+  const personalizados = spotsUsuario.map((f) => ({ slug: f.id, nombre: f.nombre, lat: f.lat, lon: f.lon, esUsuario: true, tipo: f.tipo }));
   return [...fijos, ...personalizados];
+}
+
+// tipo_salida (costa/embarcacion/submarinismo) -> qué tipo de spot encaja.
+// "submarinismo" usa spots de tipo "buceo" (nombre de columna heredado de
+// cuando solo eran ubicaciones de mar abierto para embarcación/buceo, ver
+// migración 20260912180000_tipo_ubicacion_usuario.sql).
+const TIPO_SALIDA_A_TIPO_SPOT = { costa: "costa", embarcacion: "embarcacion", submarinismo: "buceo" };
+function spotEncajaConTipoSalida(spot, tipoSalida) {
+  return spot.tipo === TIPO_SALIDA_A_TIPO_SPOT[tipoSalida];
 }
 
 function fechaISO(d) {
@@ -502,14 +515,24 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida) {
 
 const etiquetaTipoSalida = { costa: "🪨 Costa", embarcacion: "🚤 Embarcación", submarinismo: "🤿 Submarinismo" };
 
-function formularioSalida(fecha) {
-  const todos = todosLosSpotsDiario();
+// Los spots encajan según el tipo de salida (los ~90 fijos son todos de
+// costa; los personalizados llevan su propio tipo, ver
+// spotEncajaConTipoSalida) — cambiar el tipo de salida cambia qué spots
+// tiene sentido ofrecer, así que las <option> del Spot se regeneran cada
+// vez que cambia el tipo, no una sola vez al abrir el formulario.
+function opcionesSpotsPara(tipoSalida) {
+  const todos = todosLosSpotsDiario().filter((s) => spotEncajaConTipoSalida(s, tipoSalida));
   const favoritos = todos.filter((s) => favoritosClaves.has(s.slug));
   const resto = todos.filter((s) => !favoritosClaves.has(s.slug));
   const opcion = (s) => `<option value="${s.slug}">${s.nombre}${s.esUsuario ? " 📍" : ""}</option>`;
-  const opcionesSpots =
-    (favoritos.length ? `<optgroup label="★ Favoritos">${favoritos.map(opcion).join("")}</optgroup>` : "") +
-    `<optgroup label="Todos los spots">${resto.map(opcion).join("")}</optgroup>`;
+  const bloqueFavoritos = favoritos.length ? `<optgroup label="★ Favoritos">${favoritos.map(opcion).join("")}</optgroup>` : "";
+  const bloqueResto = resto.length
+    ? `<optgroup label="Todos los spots">${resto.map(opcion).join("")}</optgroup>`
+    : `<option value="" disabled>— sin spots de este tipo todavía, añade uno en el mapa —</option>`;
+  return `<option value="">Mi ubicación actual</option>${bloqueFavoritos}${bloqueResto}`;
+}
+
+function formularioSalida(fecha) {
   return `
     <p style="font-size:12px; color:#9FB8BF;">Todavía no hay nada registrado este día. Puedes guardar el día sin captura (quedará en rojo) o añadir capturas directamente.</p>
     <label for="salidaTipo">Tipo de salida</label>
@@ -520,8 +543,7 @@ function formularioSalida(fecha) {
     </select>
     <label for="salidaSpot">Spot</label>
     <select id="salidaSpot">
-      <option value="">Mi ubicación actual</option>
-      ${opcionesSpots}
+      ${opcionesSpotsPara("costa")}
     </select>
     <label for="salidaHora">Hora</label>
     <input type="time" id="salidaHora" />
@@ -734,6 +756,9 @@ async function abrirDia(iso, fechaObj) {
   const entrada = salidasPorFecha[iso];
   if (!entrada) {
     contEl.innerHTML = formularioSalida(iso);
+    document.getElementById("salidaTipo").addEventListener("change", (e) => {
+      document.getElementById("salidaSpot").innerHTML = opcionesSpotsPara(e.target.value);
+    });
     document.getElementById("btnGuardarSalida").addEventListener("click", () => crearSalida(iso));
   } else {
     contEl.innerHTML = await detalleSalida(entrada, iso);

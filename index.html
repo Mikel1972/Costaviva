@@ -236,7 +236,7 @@
   .confirmar-ubicacion-panel .titulo { font-family: 'Fraunces', serif; font-size: 15px; margin-bottom: 4px; }
   .confirmar-ubicacion-panel .nombre-resuelto { font-size: 14px; color: #D4A24C; margin-bottom: 10px; }
   .confirmar-ubicacion-panel .error { font-size: 12px; color: #E8907A; margin-bottom: 10px; }
-  .confirmar-ubicacion-panel .visibilidad { display: flex; gap: 14px; font-size: 12.5px; margin-bottom: 12px; }
+  .confirmar-ubicacion-panel .visibilidad { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: 12.5px; margin-bottom: 12px; }
   .confirmar-ubicacion-panel .visibilidad label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
   .confirmar-ubicacion-panel .botones { display: flex; gap: 8px; }
   .confirmar-ubicacion-panel button {
@@ -423,6 +423,11 @@
       <div class="titulo">Nueva ubicación</div>
       <div id="confirmarUbicacionError" class="error" style="display:none;"></div>
       <div id="confirmarUbicacionContenido" style="display:none;">
+        <div class="visibilidad" id="confirmarUbicacionTipo">
+          <label><input type="radio" name="tipoUbicacion" value="costa" checked /> 🪨 Costa</label>
+          <label><input type="radio" name="tipoUbicacion" value="embarcacion" /> 🚤 Embarcación</label>
+          <label><input type="radio" name="tipoUbicacion" value="buceo" /> 🤿 Buceo</label>
+        </div>
         <div class="nombre-resuelto" id="confirmarUbicacionNombre"></div>
         <div class="visibilidad">
           <label><input type="radio" name="visibilidadUbicacion" value="privada" checked /> Privada</label>
@@ -1484,6 +1489,7 @@ async function cargarSpotsPersonalizados() {
   spotsPersonalizados = (spotsFilas || []).map((fila) => ({
     slug: fila.id,
     nombre: fila.nombre,
+    tipo: fila.tipo,
     lat: fila.lat,
     lon: fila.lon,
     pais: fila.pais,
@@ -1559,32 +1565,70 @@ function cerrarConfirmarUbicacion() {
   puntoPendiente = null;
 }
 
+function formatoCoordenadas(lat, lon) {
+  return `${lat.toFixed(4)}°N, ${Math.abs(lon).toFixed(4)}°${lon < 0 ? "W" : "E"}`;
+}
+const EMOJI_TIPO_UBICACION = { costa: "", embarcacion: "🚤 ", buceo: "🤿 " };
+
+// Un punto de costa sí tiene un nombre de localidad real que tiene
+// sentido mostrar (geocodificación inversa). Un punto de embarcación o
+// buceo está en mar abierto — la localidad más cercana sería engañosa
+// (el punto no está ahí, está varios km mar adentro) — así que esos dos
+// tipos se identifican por sus coordenadas, no por un nombre de sitio.
+// Corrección hecha tras probar la Fase 2 en real con el usuario.
+function actualizarVistaPreviaUbicacion() {
+  if (!puntoPendiente) return;
+  const tipo = document.querySelector('input[name="tipoUbicacion"]:checked').value;
+  const nombreEl = document.getElementById("confirmarUbicacionNombre");
+  const btnConfirmar = document.getElementById("btnConfirmarUbicacion");
+  if (tipo === "costa") {
+    if (puntoPendiente.errorGeocodificacion) {
+      nombreEl.textContent = "No se ha podido identificar el nombre de esta zona — prueba otro punto, o cámbialo a Embarcación/Buceo si es un punto de mar abierto.";
+      btnConfirmar.disabled = true;
+    } else if (puntoPendiente.nombreGeocodificado) {
+      nombreEl.textContent = puntoPendiente.nombreGeocodificado;
+      btnConfirmar.disabled = false;
+    } else {
+      nombreEl.textContent = "Buscando el nombre de la zona…";
+      btnConfirmar.disabled = true;
+    }
+  } else {
+    nombreEl.textContent = EMOJI_TIPO_UBICACION[tipo] + formatoCoordenadas(puntoPendiente.lat, puntoPendiente.lon);
+    btnConfirmar.disabled = false;
+  }
+}
+document.querySelectorAll('input[name="tipoUbicacion"]').forEach((r) => r.addEventListener("change", actualizarVistaPreviaUbicacion));
+
 async function iniciarNuevaUbicacion(lat, lon) {
-  puntoPendiente = { lat, lon };
+  puntoPendiente = { lat, lon, nombreGeocodificado: null, errorGeocodificacion: false, pais: null, ccaa: null };
   document.getElementById("confirmarUbicacionPanel").classList.add("visible");
-  document.getElementById("confirmarUbicacionContenido").style.display = "none";
+  document.getElementById("confirmarUbicacionContenido").style.display = "block";
   document.getElementById("confirmarUbicacionError").style.display = "none";
+  document.querySelector('input[name="tipoUbicacion"][value="costa"]').checked = true;
+  actualizarVistaPreviaUbicacion();
   try {
     const resp = await fetch(`/geocodificar?lat=${lat}&lon=${lon}`);
     const datos = await resp.json();
     if (!resp.ok) throw new Error(datos.error || "no identificado");
-    puntoPendiente.nombre = datos.nombre;
+    puntoPendiente.nombreGeocodificado = datos.nombre;
     puntoPendiente.pais = datos.pais;
     puntoPendiente.ccaa = datos.ccaa;
-    document.getElementById("confirmarUbicacionNombre").textContent = datos.nombre;
-    document.getElementById("confirmarUbicacionContenido").style.display = "block";
   } catch (e) {
-    mostrarErrorUbicacion("No se ha podido identificar el nombre de esta zona — prueba con otro punto más cerca de la costa.");
+    puntoPendiente.errorGeocodificacion = true;
   }
+  actualizarVistaPreviaUbicacion();
 }
 
 document.getElementById("btnCancelarUbicacion").addEventListener("click", cerrarConfirmarUbicacion);
 document.getElementById("btnConfirmarUbicacion").addEventListener("click", async () => {
   if (!puntoPendiente || !window.supabaseCliente) return;
+  const tipo = document.querySelector('input[name="tipoUbicacion"]:checked').value;
   const publica = document.querySelector('input[name="visibilidadUbicacion"]:checked').value === "publica";
+  const nombre = tipo === "costa" ? puntoPendiente.nombreGeocodificado : EMOJI_TIPO_UBICACION[tipo] + formatoCoordenadas(puntoPendiente.lat, puntoPendiente.lon);
   const { error } = await window.supabaseCliente.from("spots_usuario").insert({
     user_id: window.usuarioIdActual,
-    nombre: puntoPendiente.nombre,
+    nombre,
+    tipo,
     pais: puntoPendiente.pais,
     ccaa: puntoPendiente.ccaa,
     lat: puntoPendiente.lat,
