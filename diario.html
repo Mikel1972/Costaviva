@@ -388,7 +388,7 @@ async function redimensionarImagen(file, maxAncho = 1600, calidad = 0.8) {
   return new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", calidad));
 }
 
-async function contextoAmbiental(lat, lon, franjaHoraria, tipoSalida) {
+async function contextoAmbiental(lat, lon, horaElegida, tipoSalida) {
   const paramsComunes = `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&forecast_days=1`;
   const resultado = { marea_altura: null, marea_tendencia: null, presion_valor: null, presion_tendencia: null,
     luna_fase: null, luna_iluminacion: null, viento_kmh: null, viento_dir: null,
@@ -401,14 +401,18 @@ async function contextoAmbiental(lat, lon, franjaHoraria, tipoSalida) {
       fetch(`/luna?lat=${lat}&lon=${lon}`).then((r) => r.json()),
     ]);
     const horas = marino.hourly?.time || [];
-    // Sin franja: la hora de ahora (comportamiento de siempre). Con
-    // franja: la hora representativa de esa franja (ver
-    // FRANJAS_HORARIAS) — así el contexto refleja cuándo se pescó de
-    // verdad, no cuándo se rellenó el formulario.
+    // Sin hora elegida: la hora de ahora (comportamiento de siempre). Con
+    // hora elegida (HH:MM, del <input type="time">): la hora en punto
+    // más cercana — Open-Meteo da el dato por hora, no por minuto, así
+    // que los minutos son solo para el registro, no cambian qué bloque
+    // horario se usa. Redondea a la hora más cercana (no trunca hacia
+    // abajo) para que 07:40 use el bloque de las 8h, más representativo
+    // que el de las 7h.
     let idx = -1;
-    const horaObjetivo = FRANJAS_HORARIAS.find((f) => f.valor === franjaHoraria)?.hora;
-    if (horaObjetivo !== undefined) {
-      idx = horas.findIndex((h) => +h.slice(11, 13) === horaObjetivo);
+    if (horaElegida) {
+      const [h, m] = horaElegida.split(":").map(Number);
+      const horaObjetivo = m >= 30 ? (h + 1) % 24 : h;
+      idx = horas.findIndex((hs) => +hs.slice(11, 13) === horaObjetivo);
     }
     if (idx === -1) {
       const ahoraISO = new Date().toISOString().slice(0, 13);
@@ -466,20 +470,10 @@ async function contextoAmbiental(lat, lon, franjaHoraria, tipoSalida) {
   return resultado;
 }
 
-const FRANJAS_HORARIAS = [
-  { valor: "amanecer", etiqueta: "Amanecer", hora: 7 },
-  { valor: "manana", etiqueta: "Mañana", hora: 10 },
-  { valor: "mediodia", etiqueta: "Mediodía", hora: 13 },
-  { valor: "tarde", etiqueta: "Tarde", hora: 17 },
-  { valor: "atardecer", etiqueta: "Atardecer", hora: 20 },
-  { valor: "noche", etiqueta: "Noche", hora: 23 },
-];
-const etiquetaFranja = (valor) => FRANJAS_HORARIAS.find((f) => f.valor === valor)?.etiqueta ?? null;
 const etiquetaTipoSalida = { costa: "🪨 Costa", embarcacion: "🚤 Embarcación", submarinismo: "🤿 Submarinismo" };
 
 function formularioSalida(fecha) {
   const opcionesSpots = SPOTS.map((s) => `<option value="${s.slug}">${s.nombre}</option>`).join("");
-  const opcionesFranjas = FRANJAS_HORARIAS.map((f) => `<option value="${f.valor}">${f.etiqueta}</option>`).join("");
   return `
     <p style="font-size:12px; color:#9FB8BF;">Todavía no hay nada registrado este día. Puedes guardar el día sin captura (quedará en rojo) o añadir capturas directamente.</p>
     <label for="salidaTipo">Tipo de salida</label>
@@ -493,11 +487,8 @@ function formularioSalida(fecha) {
       <option value="">Mi ubicación actual</option>
       ${opcionesSpots}
     </select>
-    <label for="salidaFranja">Franja horaria</label>
-    <select id="salidaFranja">
-      <option value="">Sin especificar (usa la hora de ahora)</option>
-      ${opcionesFranjas}
-    </select>
+    <label for="salidaHora">Hora</label>
+    <input type="time" id="salidaHora" />
     <label for="salidaNotas">Notas del día</label>
     <textarea id="salidaNotas" placeholder="Cómo estuvo la jornada…"></textarea>
     <button class="principal" id="btnGuardarSalida">Guardar día</button>
@@ -511,7 +502,7 @@ async function crearSalida(fecha) {
   btn.disabled = true;
   const spotSlug = document.getElementById("salidaSpot").value;
   const notas = document.getElementById("salidaNotas").value;
-  const franjaHoraria = document.getElementById("salidaFranja").value || null;
+  const hora = document.getElementById("salidaHora").value || null;
   const tipoSalida = document.getElementById("salidaTipo").value;
   const spot = SPOTS.find((s) => s.slug === spotSlug);
 
@@ -530,10 +521,10 @@ async function crearSalida(fecha) {
     }
   }
 
-  const contexto = await contextoAmbiental(lat, lon, franjaHoraria, tipoSalida);
+  const contexto = await contextoAmbiental(lat, lon, hora, tipoSalida);
   const { error } = await supabase.from("salidas_pesca").insert({
     user_id: usuario.id, fecha, spot_slug: spot?.slug ?? null, spot_nombre: spot?.nombre ?? "Ubicación actual",
-    lat, lon, notas, franja_horaria: franjaHoraria, tipo_salida: tipoSalida, ...contexto,
+    lat, lon, notas, hora, tipo_salida: tipoSalida, ...contexto,
   });
   if (error) {
     mensajeEl.className = "mensaje error";
@@ -568,7 +559,7 @@ async function tarjetaCapturaHTML(captura) {
   const urls = await Promise.all((fotos || []).map((f) => urlFirmada(f.foto_path)));
   return `
     <div class="tarjeta-captura" data-captura-id="${captura.id}">
-      <div class="fila-titulo"><span class="especie">🐟 ${captura.especie}</span><span class="detalle">${captura.talla_cm ? captura.talla_cm + " cm" : ""} ${captura.peso_g ? "· " + captura.peso_g + " g" : ""}</span></div>
+      <div class="fila-titulo"><span class="especie">🐟 ${captura.especie}</span><span class="detalle">${captura.hora ? "🕐 " + captura.hora.slice(0, 5) + " " : ""}${captura.talla_cm ? captura.talla_cm + " cm" : ""} ${captura.peso_g ? "· " + captura.peso_g + " g" : ""}</span></div>
       ${captura.tecnica ? `<div class="detalle">🎣 ${captura.tecnica}</div>` : ""}
       ${captura.cebo || captura.aparejo || captura.senuelo ? `<div class="detalle">${captura.cebo ? "Cebo: " + captura.cebo : ""} ${captura.aparejo ? "· Aparejo: " + captura.aparejo : ""} ${captura.senuelo ? "· Señuelo: " + captura.senuelo : ""}</div>` : ""}
       ${captura.notas ? `<div class="detalle">${captura.notas}</div>` : ""}
@@ -589,6 +580,8 @@ function formularioCaptura() {
         <label for="capturaEspecieOtra">¿Cuál?</label>
         <input type="text" id="capturaEspecieOtra" />
       </div>
+      <label for="capturaHora">Hora</label>
+      <input type="time" id="capturaHora" />
       <label for="capturaTalla">Talla (cm)</label>
       <input type="number" id="capturaTalla" step="0.5" min="0" />
       <label for="capturaPeso">Peso (g)</label>
@@ -635,6 +628,7 @@ async function guardarCaptura(salidaId, fecha) {
     btn.disabled = false;
     return;
   }
+  const hora = document.getElementById("capturaHora").value || null;
   const talla = document.getElementById("capturaTalla").value;
   const peso = document.getElementById("capturaPeso").value;
   const cebo = document.getElementById("capturaCebo").value;
@@ -648,7 +642,7 @@ async function guardarCaptura(salidaId, fecha) {
   const { data: captura, error } = await supabase
     .from("capturas")
     .insert({
-      salida_id: salidaId, user_id: usuario.id, especie, talla_cm: talla || null, peso_g: peso || null,
+      salida_id: salidaId, user_id: usuario.id, especie, hora, talla_cm: talla || null, peso_g: peso || null,
       cebo: cebo || null, tecnica: tecnica || null, senuelo: senuelo || null, aparejo: aparejo || null, notas: notas || null,
     })
     .select()
@@ -684,7 +678,7 @@ async function detalleSalida(entrada, fecha) {
     <div class="detalle" style="font-size:12px; color:#9FB8BF;">
       📍 ${salida.spot_nombre || "Ubicación actual"}
       ${salida.tipo_salida ? ` · ${etiquetaTipoSalida[salida.tipo_salida] || salida.tipo_salida}` : ""}
-      ${salida.franja_horaria ? ` · ${etiquetaFranja(salida.franja_horaria) || salida.franja_horaria}` : ""}
+      ${salida.hora ? ` · 🕐 ${salida.hora.slice(0, 5)}` : ""}
     </div>
     ${salida.notas ? `<p style="font-size:13px; margin-top:8px;">${salida.notas}</p>` : ""}
     ${contextoHTML(salida)}
