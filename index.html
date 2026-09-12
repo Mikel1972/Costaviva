@@ -538,6 +538,22 @@
 // ---------------------------------------------------------------------------
 // Datos de respaldo ESTÁTICOS (snapshot antiguo, ya no viene de Todosurf —
 // ver functions/prevision.js). Solo se usan como placeholder inicial hasta
+// Bug real encontrado 2026-09-12 (el usuario vio nubosidad 100% cuando en
+// realidad no pasaba del 20%): actualizarDesdeBackend() cogía siempre el
+// bloque de "12pm" (mediodía) de /prevision, sin importar la hora real —
+// si consultabas la app por la tarde/noche, veías el dato de mediodía
+// disfrazado de "actualizado ahora mismo". Ahora se coge el bloque de 3h
+// más cercano a la hora real de Madrid.
+const HORAS_BLOQUE_POR_NUM = { 0: "12am", 3: "3am", 6: "6am", 9: "9am", 12: "12pm", 15: "3pm", 18: "6pm", 21: "9pm" };
+function bloqueMasCercanoAAhora(bloques) {
+  const horaMadrid = parseInt(
+    new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Madrid", hour: "2-digit", hourCycle: "h23" }).format(new Date()),
+    10
+  );
+  const bloqueHora = (Math.round(horaMadrid / 3) * 3) % 24;
+  return bloques.find((x) => x.hora === HORAS_BLOQUE_POR_NUM[bloqueHora]) || bloques[0];
+}
+
 // que actualizarDesdeBackend() los sobrescribe con datos reales de
 // Open-Meteo; si el backend no responde, la app se queda con estos en vez
 // de quedarse en blanco, y son visualmente indistinguibles de un dato viejo
@@ -1166,8 +1182,7 @@ async function actualizarDesdeBackend() {
     datos.spots.forEach((sBackend) => {
       const s = SPOTS.find((x) => x.slug === sBackend.slug);
       if (!s || sBackend.error || !sBackend.bloques || !sBackend.bloques.length) return;
-      // Usa el bloque más cercano a mediodía, igual que el resto de la app
-      const b = sBackend.bloques.find((x) => x.hora === "12pm") || sBackend.bloques[0];
+      const b = bloqueMasCercanoAAhora(sBackend.bloques);
       s.altura = b.altura;
       s.periodo = b.periodo;
       s.dirOla = b.dirOla;
@@ -1420,6 +1435,18 @@ function crearMarcadores() {
 // hace diario.html para "mi ubicación actual".
 // ---------------------------------------------------------------------------
 
+// Mismo fallo real corregido a la vez en functions/prevision.js y
+// diario.html: Open-Meteo (timezone=Europe/Madrid) etiqueta sus horas en
+// local, no en UTC — new Date().toISOString() es UTC y comparado tal
+// cual desplaza el "ahora" 1-2h según CET/CEST.
+function horaActualMadridISO() {
+  const partes = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Madrid", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", hourCycle: "h23",
+  }).formatToParts(new Date());
+  const val = (t) => partes.find((p) => p.type === t).value;
+  return `${val("year")}-${val("month")}-${val("day")}T${val("hour")}`;
+}
+
 const RUMBOS_16 = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
 function textoRumbo(grados) {
   const idx = Math.round((((grados % 360) + 360) % 360) / 22.5) % 16;
@@ -1445,7 +1472,11 @@ async function datosAmbientalesPunto(lat, lon) {
     fetch(`https://api.open-meteo.com/v1/forecast?${params}&hourly=windspeed_10m,winddirection_10m,pressure_msl,cloudcover,precipitation&windspeed_unit=kmh`).then((r) => r.json()),
   ]);
   const horas = marino.hourly?.time || [];
-  const ahoraISO = new Date().toISOString().slice(0, 13); // "YYYY-MM-DDTHH"
+  // Open-Meteo (timezone=Europe/Madrid) etiqueta las horas en local, no en
+  // UTC — comparar con new Date().toISOString() (UTC) desplazaba el
+  // "ahora" 1-2h según CET/CEST. Mismo bug real ya corregido en
+  // functions/prevision.js y diario.html (horaActualMadridISO()).
+  const ahoraISO = horaActualMadridISO();
   let idx = horas.findIndex((h) => h.startsWith(ahoraISO));
   if (idx === -1) idx = 0;
   const idxFin = Math.min(idx + 12, horas.length - 1);

@@ -491,6 +491,19 @@ function crearSelectorHora(idContenedor, valorInicial) {
   };
 }
 
+// Bug real encontrado 2026-09-12 (el usuario vio nubosidad 100% cuando en
+// realidad no pasaba del 20%): Open-Meteo (timezone=Europe/Madrid)
+// etiqueta sus horas en local, no en UTC — new Date().toISOString() es
+// UTC y comparado tal cual desplazaba el "ahora" 1-2h según CET/CEST.
+// Mismo fallo corregido a la vez en functions/prevision.js e index.html.
+function horaActualMadridISO() {
+  const partes = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Madrid", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", hourCycle: "h23",
+  }).formatToParts(new Date());
+  const val = (t) => partes.find((p) => p.type === t).value;
+  return `${val("year")}-${val("month")}-${val("day")}T${val("hour")}`;
+}
+
 async function contextoAmbiental(lat, lon, horaElegida, tipoSalida) {
   const paramsComunes = `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&forecast_days=1`;
   const resultado = { marea_altura: null, marea_tendencia: null, presion_valor: null, presion_tendencia: null,
@@ -518,8 +531,7 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida) {
       idx = horas.findIndex((hs) => +hs.slice(11, 13) === horaObjetivo);
     }
     if (idx === -1) {
-      const ahoraISO = new Date().toISOString().slice(0, 13);
-      idx = horas.findIndex((h) => h.slice(0, 13) === ahoraISO);
+      idx = horas.findIndex((h) => h.slice(0, 13) === horaActualMadridISO());
     }
     if (idx === -1) idx = 0;
 

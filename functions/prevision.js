@@ -147,6 +147,22 @@ function horaLocalDesdeISO(iso) {
   return parseInt(iso.slice(11, 13), 10);
 }
 
+// Bug real encontrado 2026-09-12 (el usuario vio nubosidad 100% cuando en
+// realidad no pasaba del 20%): calcularMarea/calcularPresion comparaban
+// `new Date().toISOString()` (UTC) contra el array `horas`, que viene
+// etiquetado en hora LOCAL de Madrid (por el `timezone=Europe/Madrid` de
+// la petición) — con CEST (verano) eso desplazaba el "ahora" 2h hacia
+// atrás, cogiendo el dato de una hora que no era la real. Mismo fallo
+// corregido a la vez en index.html y diario.html (sus propias copias de
+// este mismo cálculo de "ahora").
+function horaActualMadridISO() {
+  const partes = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Madrid", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", hourCycle: "h23",
+  }).formatToParts(new Date());
+  const val = (t) => partes.find((p) => p.type === t).value;
+  return `${val("year")}-${val("month")}-${val("day")}T${val("hour")}`;
+}
+
 // Encuentra pleamares/bajamares reales a partir de la curva horaria de
 // altura de marea (máximos/mínimos locales) y devuelve el estado actual
 // (altura + si sube o baja) más las próximas 2 mareas.
@@ -161,7 +177,7 @@ function calcularMarea(horas, alturas) {
     else if (cur <= prev && cur <= next) eventos.push({ tipo: "bajamar", hora: horas[i], altura: cur });
   }
 
-  const ahoraISO = new Date().toISOString().slice(0, 13); // "YYYY-MM-DDTHH"
+  const ahoraISO = horaActualMadridISO();
   let idxAhora = horas.findIndex((h) => h.slice(0, 13) === ahoraISO);
   if (idxAhora === -1) idxAhora = 0;
 
@@ -189,7 +205,7 @@ function calcularMarea(horas, alturas) {
 // como orientativo, nunca como una certeza.
 function calcularPresion(horas, presiones) {
   if (!horas.length || !presiones.length) return null;
-  const ahoraISO = new Date().toISOString().slice(0, 13);
+  const ahoraISO = horaActualMadridISO();
   let idxAhora = horas.findIndex((h) => h.slice(0, 13) === ahoraISO);
   if (idxAhora === -1) idxAhora = 0;
 
