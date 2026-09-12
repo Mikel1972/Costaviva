@@ -6,6 +6,19 @@
 //
 // Variable de entorno necesaria en Cloudflare Pages (Settings > Environment
 // variables, como "Secret", nunca en el repo): RESEND_API_KEY.
+//
+// *** LIMITACIÓN CRÍTICA CONOCIDA (encontrada 2026-09-12, sin resolver) ***
+// El dominio "costaviva.app" NO está verificado en Resend (no hay dominio
+// propio todavía). Sin verificar un dominio, Resend RECHAZA cualquier
+// email a un destinatario que no sea el dueño de la cuenta de Resend
+// (confirmado en real: 403 "domain is not verified" al mandar desde
+// avisos@costaviva.app). Como los contactos de emergencia son personas
+// reales distintas del dueño de la cuenta de Resend, **este endpoint
+// probablemente no está entregando el email de socorro a nadie en
+// producción ahora mismo**, aunque el resto del flujo (RLS, auth, la
+// respuesta al cliente) funcione bien. Arreglo real pendiente: verificar
+// un dominio propio en Resend (resend.com/domains) y usarlo aquí en
+// "from". Ver CLAUDE.md.
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const SUPABASE_ANON_KEY =

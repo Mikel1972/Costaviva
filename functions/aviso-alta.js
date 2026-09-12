@@ -97,7 +97,13 @@ export async function onRequestPost(context) {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${resendKey}` },
       body: JSON.stringify({
-        from: "Costa Viva <avisos@costaviva.app>",
+        // "onboarding@resend.com" es el remitente de pruebas de Resend:
+        // funciona sin verificar ningún dominio, pero SOLO entrega al
+        // email con el que se creó la cuenta de Resend. Aquí eso no es
+        // una limitación real — el destinatario de este aviso ES esa
+        // misma cuenta (ADMIN_EMAIL). Si algún día se verifica un
+        // dominio propio en Resend, cambiar esto a ese dominio.
+        from: "Costa Viva <onboarding@resend.com>",
         to: [adminEmail],
         subject: asunto,
         html: cuerpo,
