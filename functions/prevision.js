@@ -184,15 +184,31 @@ function coeficienteMarea(fecha) {
 // Encuentra pleamares/bajamares reales a partir de la curva horaria de
 // altura de marea (máximos/mínimos locales) y devuelve el estado actual
 // (altura + si sube o baja) más las próximas 2 mareas.
+//
+// `alturas` (sea_level_height_msl de Open-Meteo) es una anomalía
+// respecto al nivel medio del mar, no la altura de marea de una tabla
+// náutica normal — puede salir negativa (ej. "-2.3m"), que para
+// cualquiera que no sea oceanógrafo es un número sin sentido. Se
+// re-referencia contra el mínimo de la propia ventana de datos, para
+// mostrar "cuánta agua hay por encima de la bajamar más cercana"
+// (siempre ≥ 0, con la forma de una tabla de mareas normal). Corrección
+// real hecha 2026-09-12 tras el aviso del usuario. Aproximación honesta:
+// no es el cero hidrográfico oficial de un puerto (eso exigiría datos
+// batimétricos reales que no tenemos), solo un número intuitivo — la
+// detección de pleamar/bajamar y la tendencia no cambian, un
+// desplazamiento constante no mueve los máximos/mínimos relativos.
 function calcularMarea(horas, alturas) {
   if (!horas.length || !alturas.length) return null;
+
+  const validas = alturas.filter((v) => v !== null && v !== undefined);
+  const minVentana = validas.length ? Math.min(...validas) : 0;
 
   const eventos = [];
   for (let i = 1; i < alturas.length - 1; i++) {
     const [prev, cur, next] = [alturas[i - 1], alturas[i], alturas[i + 1]];
     if (cur === null || prev === null || next === null) continue;
-    if (cur >= prev && cur >= next) eventos.push({ tipo: "pleamar", hora: horas[i], altura: cur });
-    else if (cur <= prev && cur <= next) eventos.push({ tipo: "bajamar", hora: horas[i], altura: cur });
+    if (cur >= prev && cur >= next) eventos.push({ tipo: "pleamar", hora: horas[i], altura: cur - minVentana });
+    else if (cur <= prev && cur <= next) eventos.push({ tipo: "bajamar", hora: horas[i], altura: cur - minVentana });
   }
 
   const ahoraISO = horaActualMadridISO();
@@ -204,12 +220,12 @@ function calcularMarea(horas, alturas) {
     .slice(0, 2)
     .map((e) => ({ ...e, hora: e.hora.slice(11, 16), altura: +e.altura.toFixed(2) }));
 
-  const actual = alturas[idxAhora];
-  const siguiente = alturas[idxAhora + 1];
-  const tendencia = actual === null || siguiente === null ? null : siguiente > actual ? "subiendo" : "bajando";
+  const actualRaw = alturas[idxAhora];
+  const siguienteRaw = alturas[idxAhora + 1];
+  const tendencia = actualRaw === null || siguienteRaw === null ? null : siguienteRaw > actualRaw ? "subiendo" : "bajando";
 
   return {
-    altura: actual === null ? null : +actual.toFixed(2),
+    altura: actualRaw === null ? null : +(actualRaw - minVentana).toFixed(2),
     tendencia,
     proximas,
     coeficiente: coeficienteMarea(new Date()),

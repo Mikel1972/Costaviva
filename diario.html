@@ -295,7 +295,33 @@ const SPOTS = [
   ["muro", "Platja de Muro (Mallorca)", 39.762, 3.108],
 ].map(([slug, nombre, lat, lon]) => ({ slug, nombre, lat, lon }));
 
-const ESPECIES = ["Lubina", "Sargo", "Abadejo", "Calamar / chipirón", "Congrio", "Bonito del norte", "Txitxarro / verdel", "Otra"];
+// Nombre científico entre paréntesis, verificado por especie (no de
+// memoria). "Txitxarro / verdel" agrupa dos peces distintos bajo un
+// mismo nombre coloquial de toda la vida — se muestran los dos
+// científicos en vez de elegir uno solo, sería inventar cuál es "el
+// bueno".
+const ESPECIES = [
+  { nombre: "Lubina", cientifico: "Dicentrarchus labrax" },
+  { nombre: "Sargo", cientifico: "Diplodus sargus" },
+  { nombre: "Abadejo", cientifico: "Pollachius pollachius" },
+  { nombre: "Calamar / chipirón", cientifico: "Loligo vulgaris" },
+  { nombre: "Congrio", cientifico: "Conger conger" },
+  { nombre: "Bonito del norte", cientifico: "Thunnus alalunga" },
+  { nombre: "Txitxarro / verdel", cientifico: "Trachurus trachurus / Scomber scombrus" },
+];
+// Especies dadas de alta por la comunidad al escribir un nombre bajo
+// "Otra" (ver guardarCaptura) — se cargan una vez al entrar y se suman
+// a las de arriba en el desplegable, para que a partir de la siguiente
+// vez ya aparezcan como opción real. "Otra" se queda siempre la última.
+let especiesComunidad = [];
+async function cargarEspeciesComunidad() {
+  const { data, error } = await supabase.from("especies_comunidad").select("nombre, nombre_cientifico").order("nombre");
+  if (error) { console.warn("No se pudieron cargar las especies de la comunidad:", error.message); return; }
+  especiesComunidad = (data || []).map((e) => ({ nombre: e.nombre, cientifico: e.nombre_cientifico }));
+}
+function todasLasEspecies() {
+  return [...ESPECIES, ...especiesComunidad, { nombre: "Otra", cientifico: null }];
+}
 
 // Técnicas con señuelo (artificial) -> se pide "tipo de señuelo" en vez de
 // "aparejo" (que es para las técnicas de cebo con plomo/corcho). Lista
@@ -557,9 +583,17 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida) {
       resultado.oleaje_altura_max = +(alturaOla * 1.1).toFixed(1);
     }
     resultado.temp_agua = marino.hourly?.sea_surface_temperature?.[idx] ?? null;
-    const alturaMarea = marino.hourly?.sea_level_height_msl?.[idx];
-    const alturaMareaSig = marino.hourly?.sea_level_height_msl?.[idx + 1];
-    resultado.marea_altura = alturaMarea ?? null;
+    // sea_level_height_msl es una anomalía respecto al nivel medio del
+    // mar (puede salir negativa) — se re-referencia contra el mínimo de
+    // la propia ventana de datos para mostrar la altura de marea de
+    // forma intuitiva (siempre ≥ 0), no un dato oceanográfico confuso.
+    // Mismo criterio que functions/prevision.js (calcularMarea).
+    const serieAltura = marino.hourly?.sea_level_height_msl || [];
+    const validasAltura = serieAltura.filter((v) => v !== null && v !== undefined);
+    const minAltura = validasAltura.length ? Math.min(...validasAltura) : 0;
+    const alturaMarea = serieAltura[idx];
+    const alturaMareaSig = serieAltura[idx + 1];
+    resultado.marea_altura = alturaMarea != null ? +(alturaMarea - minAltura).toFixed(2) : null;
     resultado.marea_tendencia = alturaMarea != null && alturaMareaSig != null ? (alturaMareaSig > alturaMarea ? "subiendo" : "bajando") : null;
     resultado.marea_coeficiente = coeficienteMarea(new Date());
 
@@ -731,7 +765,9 @@ async function tarjetaCapturaHTML(captura) {
 }
 
 function formularioCaptura() {
-  const opcionesEspecies = ESPECIES.map((e) => `<option value="${e}">${e}</option>`).join("");
+  const opcionesEspecies = todasLasEspecies()
+    .map((e) => `<option value="${e.nombre}">${e.nombre}${e.cientifico ? ` (${e.cientifico})` : ""}</option>`)
+    .join("");
   const opcionesTecnicas = TECNICAS.map((t) => `<option value="${t}">${t}</option>`).join("");
   return `
     <div class="tarjeta-captura" style="border:1px dashed #1C3F4F;">
@@ -788,6 +824,15 @@ async function guardarCaptura(salidaId, fecha) {
     mensajeEl.textContent = "Indica la especie.";
     btn.disabled = false;
     return;
+  }
+  // Especie escrita a mano bajo "Otra": se da de alta para la comunidad
+  // (si no existe ya) para que aparezca como opción real la próxima vez
+  // — sin nombre científico, eso se revisa/añade aparte.
+  if (especieSel === "Otra" && !todasLasEspecies().some((e) => e.nombre.toLowerCase() === especie.toLowerCase())) {
+    const { error: errEspecie } = await supabase
+      .from("especies_comunidad")
+      .upsert({ nombre: especie, creado_por: usuario.id }, { onConflict: "nombre", ignoreDuplicates: true });
+    if (errEspecie) console.warn("No se pudo dar de alta la especie para la comunidad:", errEspecie.message);
   }
   const hora = selectorHoraCaptura.valor();
   let avisoFueraDeRango = "";
@@ -915,6 +960,7 @@ async function abrirDia(iso, fechaObj) {
 
 await cargarDatos();
 await cargarSpotsUsuario();
+await cargarEspeciesComunidad();
 renderCalendario();
 </script>
 
