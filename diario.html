@@ -435,12 +435,12 @@ async function contextoAmbiental(lat, lon, franjaHoraria, tipoSalida) {
     resultado.luna_fase = luna?.fase ?? null;
     resultado.luna_iluminacion = luna?.iluminacion ?? null;
 
-    // Embarcación y submarinismo: la boya real más cercana (Puertos del
-    // Estado, vía /prevision) es un dato medido, mejor que el modelo por
-    // coordenadas — se usa en vez del oleaje/temperatura calculados
-    // arriba cuando hay una boya real disponible. Para submarinismo la
-    // temperatura del agua medida es tan o más relevante que el oleaje.
-    if (tipoSalida === "embarcacion" || tipoSalida === "submarinismo") {
+    // Solo embarcación: la boya real más cercana (Puertos del Estado, vía
+    // /prevision) es un dato medido de mar abierto, mejor que el modelo
+    // por coordenadas ahí — pero el submarinismo se hace cerca de costa
+    // (igual que "costa"), donde la boya de mar abierto no es
+    // representativa, así que sigue usando el modelo por coordenadas.
+    if (tipoSalida === "embarcacion") {
       try {
         const prevision = await fetch("/prevision", { cache: "no-store" }).then((r) => r.json());
         const boyas = (prevision.boyas || []).filter(
