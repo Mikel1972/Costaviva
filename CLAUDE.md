@@ -128,11 +128,28 @@ salida no se bloquea el guardado, solo se avisa (no tiene sentido negar
 un dato real de campo por no encajar en el rango declarado).
 
 Todos los selectores de hora de la app (`hora_inicio`, `hora_fin`, la
-hora de cada captura) usan el mismo componente `crearSelectorHora()`
-(rueda con scroll+snap para horas y minutos, con un checkbox "Sin
-especificar") en vez de `<input type="time">` — el nativo, en algunos
-navegadores/móviles, solo deja ver unas pocas horas a la vez. Vanilla
-JS/CSS, sin librerías (el repo no tiene build step).
+hora de cada captura) usan el mismo componente `crearSelectorHora()`:
+dos `<select>` nativos (hora, minuto), primera opción "--" para "sin
+especificar". Se probó antes una rueda de scroll/snap hecha a mano (dos
+intentos) que en la práctica no se veía bien para el usuario — un
+`<select>` nativo ya trae scroll de fábrica con muchas opciones, así
+que es la vía más simple y fiable. Vanilla JS/CSS, sin librerías (el
+repo no tiene build step).
+
+**Varias entradas por día + edición (2026-09-12):** una fecha puede
+tener más de una salida (p.ej. embarcación por la mañana y costa por la
+tarde, o dos spots distintos el mismo día) — `salidasPorFecha[fecha]`
+es una LISTA de `{salida, capturas}`, no un único objeto. El calendario
+sigue siendo una celda por día (verde si alguna entrada tiene capturas,
+rojo si no), pero al abrirlo se ve la lista de entradas con "➕ Añadir
+otra entrada este día" al final. Cada entrada y cada captura tienen
+botón "✏️ Editar" (mismo formulario de creación, precargado, guarda con
+`update` en vez de `insert` — `guardarSalida(fecha, idExistente)` /
+`guardarCaptura(salidaId, fecha, idExistente, ordenFotoBase)`) y
+"🗑 Borrar" — borrar ya es por entrada/captura suelta, nunca "todo el
+día" (así lo pidió el usuario explícitamente, tras un primer diseño que
+solo dejaba borrar el día completo). Editar una captura permite además
+añadir fotos nuevas sin tocar las que ya hubiera (nunca las reemplaza).
 
 Todas las migraciones probadas en real antes de mergear (rama +
 preview): login con cuenta de prueba, salida embarcación → boya real
@@ -140,6 +157,57 @@ usada correctamente (y NO usada para submarinismo, verificado tras la
 corrección); captura con técnica Spinning → campo de señuelo apareció y
 se guardó bien; hora exacta (07:40 y 08:15) guardada y mostrada
 correctamente tanto en la salida como en la captura.
+
+**Bug real corregido 2026-09-12 — "ahora" en UTC contra horas en
+local:** el usuario vio nubosidad 100% cuando en realidad no pasaba del
+20%. Causa: Open-Meteo (con `timezone=Europe/Madrid`) etiqueta su array
+horario en hora LOCAL, pero el cálculo de "ahora" usaba
+`new Date().toISOString()` (UTC) — con CEST eso desplazaba el "ahora"
+2h hacia atrás. Bug preexistente (no introducido en esta sesión de
+mejoras), presente en `functions/prevision.js`
+(`calcularMarea`/`calcularPresion`, afectaba a TODOS los spots fijos),
+`diario.html` (`contextoAmbiental`) y el `datosAmbientalesPunto` nuevo
+de `index.html`. Corregido con un helper `horaActualMadridISO()`
+(`Intl.DateTimeFormat` con `timeZone` real) duplicado en los tres
+sitios. Segundo bug relacionado, también preexistente:
+`actualizarDesdeBackend()` en `index.html` cogía SIEMPRE el bloque de
+"12pm" de `/prevision` sin importar la hora real — ahora coge el bloque
+de 3h más cercano a la hora real de Madrid (`bloqueMasCercanoAAhora()`).
+
+**Altura de marea confusa, corregida 2026-09-12:** `sea_level_height_msl`
+de Open-Meteo es una anomalía respecto al nivel medio del mar (podía
+salir negativa, ej. "-2.3m"), no la altura de marea de una tabla
+náutica normal que espera alguien que no es oceanógrafo. Se
+re-referencia contra el mínimo de la ventana de datos pedida, para
+mostrar siempre un número positivo e intuitivo ("cuánta agua hay por
+encima de la bajamar más cercana") — no es el cero hidrográfico oficial
+de un puerto (eso exigiría datos batimétricos reales que no tenemos),
+solo una aproximación honesta. Misma corrección en
+`functions/prevision.js` (`calcularMarea`) y `diario.html`
+(`contextoAmbiental`).
+
+**Coeficiente de marea (2026-09-12):** mareas vivas (coeficiente alto,
+hasta 120) cerca de luna nueva/llena, muertas (bajo, ~45) cerca de los
+cuartos — aproximación astronómica por fase lunar
+(`coeficienteMarea()`, duplicada en `functions/prevision.js` y
+`diario.html`), NO un dato oficial de un servicio hidrográfico (eso
+requeriría análisis armónico real por puerto). Se muestra junto a la
+altura de marea en el panel de cada spot del mapa y se guarda también
+por salida (`salidas_pesca.marea_coeficiente`).
+
+**Especies enriquecidas por la comunidad (2026-09-12):** el
+desplegable de especies del diario muestra el nombre científico entre
+paréntesis (verificado por especie, `ESPECIES` en `diario.html`). Una
+especie escrita a mano bajo "Otra" se da de alta en
+`especies_comunidad` (pública de lectura y escritura para cualquier
+usuario logueado — mismo criterio de "enriquecer entre todos" que
+`spots_usuario`) para aparecer como opción real la siguiente vez, en
+vez de perderse en el campo de texto libre de esa única captura.
+
+**Pendiente, aparcado a propósito (Fase 5, grupos privados):**
+atribución de "quién subió esta captura/ubicación" — solo tiene sentido
+cuando algo es visible para más gente que su dueño, que es justo lo que
+grupos privados va a añadir. Se implementa junto con eso, no antes.
 
 ## Ubicaciones personalizadas (Fase 2 del plan de mejoras, 2026-09-12)
 

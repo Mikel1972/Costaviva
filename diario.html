@@ -82,7 +82,6 @@
     width: 100%; margin-top: 8px; padding: 10px; border-radius: 8px; border: 1px solid #1C3F4F;
     background: transparent; color: #9FB8BF; font-size: 13px; cursor: pointer;
   }
-  button.peligro { color: #E8907A; border-color: #A34A35; }
 
   .tarjeta-captura { background: #123B4D; border-radius: 10px; padding: 12px; margin-top: 10px; }
   .tarjeta-captura .fila-titulo { display: flex; justify-content: space-between; align-items: baseline; }
@@ -410,9 +409,15 @@ async function cargarDatos() {
     });
   }
 
+  // Varias entradas por día (pedido explícito del usuario: puede pescar
+  // en varios spots el mismo día, o ir en barco por la mañana y de
+  // costa por la tarde) — cada fecha guarda una LISTA de entradas, no
+  // una sola. `salidas` ya viene ordenado por fecha desc; se mantiene
+  // ese orden relativo dentro de cada día (más reciente primero según
+  // se creó, gracias al orden de inserción del array).
   salidasPorFecha = {};
   salidas.forEach((s) => {
-    salidasPorFecha[s.fecha] = { salida: s, capturas: capturasPorSalida[s.id] || [] };
+    (salidasPorFecha[s.fecha] = salidasPorFecha[s.fecha] || []).push({ salida: s, capturas: capturasPorSalida[s.id] || [] });
   });
 }
 
@@ -444,8 +449,10 @@ function renderCalendario() {
     const el = document.createElement("div");
     el.className = "dia";
     if (iso === hoyISO) el.classList.add("hoy");
-    const entrada = salidasPorFecha[iso];
-    if (entrada) el.classList.add(entrada.capturas.length ? "verde" : "rojo");
+    const entradas = salidasPorFecha[iso];
+    if (entradas && entradas.length) {
+      el.classList.add(entradas.some((e) => e.capturas.length) ? "verde" : "rojo");
+    }
     el.textContent = String(dia);
     el.addEventListener("click", () => abrirDia(iso, fecha));
     cont.appendChild(el);
@@ -655,9 +662,12 @@ function opcionesSpotsPara(tipoSalida) {
   return `<option value="">Mi ubicación actual</option>${bloqueFavoritos}${bloqueResto}`;
 }
 
-function formularioSalida(fecha) {
+// Un único formulario, reutilizado para crear una entrada nueva y para
+// editar una ya existente (idExistente en guardarSalida decide insert
+// vs update) — así no hay que mantener dos plantillas casi iguales.
+function formularioSalida() {
   return `
-    <p style="font-size:12px; color:#9FB8BF;">Todavía no hay nada registrado este día. Rellena estos datos y guarda — luego se abre el menú para añadir capturas (especie, técnica, cebo…) de este mismo día.</p>
+    <p style="font-size:12px; color:#9FB8BF;">Rellena estos datos y guarda — luego se abre el menú para añadir capturas (especie, técnica, cebo…) de esta entrada.</p>
     <label for="salidaTipo">Tipo de salida</label>
     <select id="salidaTipo">
       <option value="costa">🪨 Costa</option>
@@ -672,14 +682,29 @@ function formularioSalida(fecha) {
     <div class="hora-select" id="ruedaSalidaInicio"></div>
     <label>Hora de fin</label>
     <div class="hora-select" id="ruedaSalidaFin"></div>
-    <label for="salidaNotas">Notas del día</label>
+    <label for="salidaNotas">Notas</label>
     <textarea id="salidaNotas" placeholder="Cómo estuvo la jornada…"></textarea>
-    <button class="principal" id="btnGuardarSalida">Guardar día</button>
+    <div style="display:flex; gap:8px; margin-top:16px;">
+      <button class="secundario" id="btnCancelarSalida" style="margin-top:0; flex:1;">Cancelar</button>
+      <button class="principal" id="btnGuardarSalida" style="margin-top:0; flex:1;">Guardar</button>
+    </div>
     <div class="mensaje" id="mensajeSalida"></div>
   `;
 }
 
-async function crearSalida(fecha) {
+// horaRangoTexto: texto "🕐 08:00–12:00" / "🕐 desde 08:00" / "🕐 hasta
+// 12:00" / "" según qué horas tenga la entrada — usado tanto en el
+// resumen de cada entrada como (antes) en detalleSalida.
+function horaRangoTexto(salida) {
+  if (salida.hora_inicio && salida.hora_fin) return ` · 🕐 ${salida.hora_inicio.slice(0, 5)}–${salida.hora_fin.slice(0, 5)}`;
+  if (salida.hora_inicio) return ` · 🕐 desde ${salida.hora_inicio.slice(0, 5)}`;
+  if (salida.hora_fin) return ` · 🕐 hasta ${salida.hora_fin.slice(0, 5)}`;
+  return "";
+}
+
+// idExistente null -> crea una entrada nueva ese día; con id -> actualiza
+// la entrada existente (mismo formulario, ver formularioSalida).
+async function guardarSalida(fecha, idExistente) {
   const btn = document.getElementById("btnGuardarSalida");
   const mensajeEl = document.getElementById("mensajeSalida");
   btn.disabled = true;
@@ -716,10 +741,13 @@ async function crearSalida(fecha) {
   }
 
   const contexto = await contextoAmbiental(lat, lon, horaInicio, tipoSalida);
-  const { error } = await supabase.from("salidas_pesca").insert({
+  const datos = {
     user_id: usuario.id, fecha, spot_slug: spot?.slug ?? null, spot_nombre: spot?.nombre ?? "Ubicación actual",
     lat, lon, notas, hora_inicio: horaInicio, hora_fin: horaFin, tipo_salida: tipoSalida, ...contexto,
-  });
+  };
+  const { error } = idExistente
+    ? await supabase.from("salidas_pesca").update(datos).eq("id", idExistente)
+    : await supabase.from("salidas_pesca").insert(datos);
   if (error) {
     mensajeEl.className = "mensaje error";
     mensajeEl.textContent = error.message;
@@ -759,7 +787,10 @@ async function tarjetaCapturaHTML(captura) {
       ${captura.cebo || captura.aparejo || captura.senuelo ? `<div class="detalle">${captura.cebo ? "Cebo: " + captura.cebo : ""} ${captura.aparejo ? "· Aparejo: " + captura.aparejo : ""} ${captura.senuelo ? "· Señuelo: " + captura.senuelo : ""}</div>` : ""}
       ${captura.notas ? `<div class="detalle">${captura.notas}</div>` : ""}
       ${urls.length ? `<div class="galeria-fotos">${urls.map((u) => `<img src="${u}" alt="Foto de ${captura.especie}" />`).join("")}</div>` : ""}
-      <button class="borrar-captura" data-id="${captura.id}">Borrar esta captura</button>
+      <div style="display:flex; gap:12px; margin-top:6px;">
+        <button class="editar-captura" data-id="${captura.id}" style="background:none; border:none; color:#9FB8BF; font-size:11px; cursor:pointer; padding:0;">✏️ Editar</button>
+        <button class="borrar-captura" data-id="${captura.id}" style="background:none; border:none; color:#E8907A; font-size:11px; cursor:pointer; padding:0;">🗑 Borrar</button>
+      </div>
     </div>
   `;
 }
@@ -805,15 +836,21 @@ function formularioCaptura() {
       <input type="text" id="capturaCebo" />
       <label for="capturaNotas">Notas</label>
       <textarea id="capturaNotas"></textarea>
-      <label for="capturaFotos">Fotos (puedes elegir varias)</label>
+      <label for="capturaFotos">Fotos nuevas (puedes elegir varias — las que ya hubiera se quedan)</label>
       <input type="file" id="capturaFotos" accept="image/*" capture="environment" multiple />
-      <button class="principal" id="btnGuardarCaptura">Añadir captura</button>
+      <div style="display:flex; gap:8px;">
+        <button class="secundario" id="btnCancelarCaptura" style="margin-top:0; flex:1;">Cancelar</button>
+        <button class="principal" id="btnGuardarCaptura" style="margin-top:0; flex:1;">Añadir captura</button>
+      </div>
       <div class="mensaje" id="mensajeCaptura"></div>
     </div>
   `;
 }
 
-async function guardarCaptura(salidaId, fecha) {
+// idExistente null -> añade una captura nueva a la entrada salidaId; con
+// id -> actualiza esa captura (las fotos que ya tuviera se quedan, las
+// nuevas del selector de fichero se suman detrás, nunca las reemplaza).
+async function guardarCaptura(salidaId, fecha, idExistente, ordenFotoBase) {
   const btn = document.getElementById("btnGuardarCaptura");
   const mensajeEl = document.getElementById("mensajeCaptura");
   btn.disabled = true;
@@ -836,7 +873,8 @@ async function guardarCaptura(salidaId, fecha) {
   }
   const hora = selectorHoraCaptura.valor();
   let avisoFueraDeRango = "";
-  const salidaDelDia = salidasPorFecha[fecha]?.salida;
+  const entradaDelDia = (salidasPorFecha[fecha] || []).find((e) => e.salida.id === salidaId);
+  const salidaDelDia = entradaDelDia?.salida;
   if (hora && salidaDelDia?.hora_inicio && salidaDelDia?.hora_fin &&
       (hora < salidaDelDia.hora_inicio.slice(0, 5) || hora > salidaDelDia.hora_fin.slice(0, 5))) {
     avisoFueraDeRango = ` (fuera del rango de la salida, ${salidaDelDia.hora_inicio.slice(0, 5)}–${salidaDelDia.hora_fin.slice(0, 5)} — se guarda igual, es solo un aviso)`;
@@ -851,19 +889,18 @@ async function guardarCaptura(salidaId, fecha) {
   const notas = document.getElementById("capturaNotas").value;
   const archivos = Array.from(document.getElementById("capturaFotos").files || []);
 
-  const { data: captura, error } = await supabase
-    .from("capturas")
-    .insert({
-      salida_id: salidaId, user_id: usuario.id, especie, hora, talla_cm: talla || null, peso_g: peso || null,
-      cebo: cebo || null, tecnica: tecnica || null, senuelo: senuelo || null, aparejo: aparejo || null, notas: notas || null,
-    })
-    .select()
-    .single();
-  if (error) {
-    mensajeEl.className = "mensaje error";
-    mensajeEl.textContent = error.message;
-    btn.disabled = false;
-    return;
+  const datos = {
+    salida_id: salidaId, user_id: usuario.id, especie, hora, talla_cm: talla || null, peso_g: peso || null,
+    cebo: cebo || null, tecnica: tecnica || null, senuelo: senuelo || null, aparejo: aparejo || null, notas: notas || null,
+  };
+  let capturaId = idExistente;
+  if (idExistente) {
+    const { error } = await supabase.from("capturas").update(datos).eq("id", idExistente);
+    if (error) { mensajeEl.className = "mensaje error"; mensajeEl.textContent = error.message; btn.disabled = false; return; }
+  } else {
+    const { data: captura, error } = await supabase.from("capturas").insert(datos).select().single();
+    if (error) { mensajeEl.className = "mensaje error"; mensajeEl.textContent = error.message; btn.disabled = false; return; }
+    capturaId = captura.id;
   }
   // El panel se repinta entero justo después de guardar (abrirDia más
   // abajo), así que un mensaje en mensajeEl no llegaría a verse — de ahí
@@ -877,7 +914,7 @@ async function guardarCaptura(salidaId, fecha) {
       const path = `${usuario.id}/${crypto.randomUUID()}.jpg`;
       const { error: errSubida } = await supabase.storage.from("capturas-fotos").upload(path, blob, { contentType: "image/jpeg" });
       if (errSubida) { console.error(errSubida); continue; }
-      await supabase.from("captura_fotos").insert({ captura_id: captura.id, user_id: usuario.id, foto_path: path, orden: i });
+      await supabase.from("captura_fotos").insert({ captura_id: capturaId, user_id: usuario.id, foto_path: path, orden: (ordenFotoBase || 0) + i });
     } catch (e) {
       console.error("Error subiendo foto:", e);
     }
@@ -888,25 +925,116 @@ async function guardarCaptura(salidaId, fecha) {
   abrirDia(fecha, new Date(fecha + "T00:00:00"));
 }
 
-async function detalleSalida(entrada, fecha) {
+// Resumen de una entrada del día (siempre visible) — el spot/tipo/horas
+// y sus capturas. Editar/añadir abren el formulario compartido de más
+// abajo (#zonaFormulario), no se edita en línea sobre este resumen.
+async function resumenEntradaHTML(entrada, idx) {
   const { salida, capturas } = entrada;
   const tarjetas = await Promise.all(capturas.map(tarjetaCapturaHTML));
   return `
-    <div class="detalle" style="font-size:12px; color:#9FB8BF;">
-      📍 ${salida.spot_nombre || "Ubicación actual"}
-      ${salida.tipo_salida ? ` · ${etiquetaTipoSalida[salida.tipo_salida] || salida.tipo_salida}` : ""}
-      ${salida.hora_inicio && salida.hora_fin ? ` · 🕐 ${salida.hora_inicio.slice(0, 5)}–${salida.hora_fin.slice(0, 5)}`
-        : salida.hora_inicio ? ` · 🕐 desde ${salida.hora_inicio.slice(0, 5)}`
-        : salida.hora_fin ? ` · 🕐 hasta ${salida.hora_fin.slice(0, 5)}`
-        : ""}
+    <div class="tarjeta-captura" style="margin-top:0; margin-bottom:14px; border:1px solid #1C3F4F;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+        <div class="detalle" style="font-size:12px; color:#9FB8BF; flex:1;">
+          📍 ${salida.spot_nombre || "Ubicación actual"}
+          ${salida.tipo_salida ? ` · ${etiquetaTipoSalida[salida.tipo_salida] || salida.tipo_salida}` : ""}
+          ${horaRangoTexto(salida)}
+        </div>
+        <div style="display:flex; gap:10px; flex-shrink:0;">
+          <button class="editar-entrada" data-idx="${idx}" style="background:none; border:none; color:#9FB8BF; font-size:11px; cursor:pointer; padding:0;">✏️ Editar</button>
+          <button class="borrar-entrada" data-idx="${idx}" style="background:none; border:none; color:#E8907A; font-size:11px; cursor:pointer; padding:0;">🗑 Borrar</button>
+        </div>
+      </div>
+      ${salida.notas ? `<p style="font-size:13px; margin-top:8px;">${salida.notas}</p>` : ""}
+      ${contextoHTML(salida)}
+      <div style="margin-top:14px; font-family:'Inter',sans-serif; font-weight:500; font-size:11px; color:#6C8890;">CAPTURAS (${capturas.length})</div>
+      ${tarjetas.join("") || `<p style="font-size:12px; color:#6C8890;">Ninguna todavía.</p>`}
+      <button class="secundario anadir-captura" data-idx="${idx}" style="margin-top:10px;">➕ Añadir captura</button>
     </div>
-    ${salida.notas ? `<p style="font-size:13px; margin-top:8px;">${salida.notas}</p>` : ""}
-    ${contextoHTML(salida)}
-    <div style="margin-top:14px; font-family:'IBM Plex Mono',monospace; font-size:11px; color:#6C8890;">CAPTURAS (${capturas.length})</div>
-    ${tarjetas.join("") || `<p style="font-size:12px; color:#6C8890;">Ninguna todavía.</p>`}
-    ${formularioCaptura()}
-    <button class="secundario peligro" id="btnBorrarSalida">Borrar todo el día</button>
   `;
+}
+
+function cancelarFormulario() {
+  document.getElementById("zonaFormulario").innerHTML = "";
+}
+
+function engancharFormularioSalida(iso, idExistente) {
+  document.getElementById("salidaTipo").addEventListener("change", (e) => {
+    document.getElementById("salidaSpot").innerHTML = opcionesSpotsPara(e.target.value);
+  });
+  document.getElementById("btnCancelarSalida").addEventListener("click", cancelarFormulario);
+  document.getElementById("btnGuardarSalida").addEventListener("click", () => guardarSalida(iso, idExistente));
+}
+
+function mostrarFormularioNuevaEntrada(iso) {
+  const zona = document.getElementById("zonaFormulario");
+  zona.innerHTML = formularioSalida();
+  selectorHoraInicio = crearSelectorHora("ruedaSalidaInicio", null);
+  selectorHoraFin = crearSelectorHora("ruedaSalidaFin", null);
+  engancharFormularioSalida(iso, null);
+  zona.scrollIntoView({ behavior: "smooth", block: "end" });
+}
+
+function mostrarFormularioEditarEntrada(iso, salida) {
+  const zona = document.getElementById("zonaFormulario");
+  zona.innerHTML = formularioSalida();
+  document.getElementById("salidaTipo").value = salida.tipo_salida || "costa";
+  document.getElementById("salidaSpot").innerHTML = opcionesSpotsPara(document.getElementById("salidaTipo").value);
+  document.getElementById("salidaSpot").value = salida.spot_slug || "";
+  selectorHoraInicio = crearSelectorHora("ruedaSalidaInicio", salida.hora_inicio ? salida.hora_inicio.slice(0, 5) : null);
+  selectorHoraFin = crearSelectorHora("ruedaSalidaFin", salida.hora_fin ? salida.hora_fin.slice(0, 5) : null);
+  document.getElementById("salidaNotas").value = salida.notas || "";
+  document.getElementById("btnGuardarSalida").textContent = "Guardar cambios";
+  engancharFormularioSalida(iso, salida.id);
+  zona.scrollIntoView({ behavior: "smooth", block: "end" });
+}
+
+function engancharFormularioCaptura(iso, salidaId, idExistente, ordenFotoBase) {
+  const especieSel = document.getElementById("capturaEspecie");
+  especieSel.addEventListener("change", () => {
+    document.getElementById("capturaEspecieOtraBox").style.display = especieSel.value === "Otra" ? "block" : "none";
+  });
+  const tecnicaSel = document.getElementById("capturaTecnica");
+  tecnicaSel.addEventListener("change", () => {
+    const conSenuelo = TECNICAS_CON_SENUELO.has(tecnicaSel.value);
+    document.getElementById("capturaSenueloBox").style.display = conSenuelo ? "block" : "none";
+    document.getElementById("capturaAparejoBox").style.display = conSenuelo ? "none" : "block";
+  });
+  document.getElementById("btnCancelarCaptura").addEventListener("click", cancelarFormulario);
+  document.getElementById("btnGuardarCaptura").addEventListener("click", () => guardarCaptura(salidaId, iso, idExistente, ordenFotoBase));
+}
+
+function mostrarFormularioNuevaCaptura(iso, salidaId) {
+  const zona = document.getElementById("zonaFormulario");
+  zona.innerHTML = formularioCaptura();
+  selectorHoraCaptura = crearSelectorHora("ruedaCapturaHora", null);
+  engancharFormularioCaptura(iso, salidaId, null, 0);
+  zona.scrollIntoView({ behavior: "smooth", block: "end" });
+}
+
+async function mostrarFormularioEditarCaptura(iso, salidaId, captura) {
+  const zona = document.getElementById("zonaFormulario");
+  zona.innerHTML = formularioCaptura();
+  const especieConocida = todasLasEspecies().some((e) => e.nombre === captura.especie);
+  document.getElementById("capturaEspecie").value = especieConocida ? captura.especie : "Otra";
+  if (!especieConocida) {
+    document.getElementById("capturaEspecieOtraBox").style.display = "block";
+    document.getElementById("capturaEspecieOtra").value = captura.especie;
+  }
+  selectorHoraCaptura = crearSelectorHora("ruedaCapturaHora", captura.hora ? captura.hora.slice(0, 5) : null);
+  document.getElementById("capturaTalla").value = captura.talla_cm ?? "";
+  document.getElementById("capturaPeso").value = captura.peso_g ?? "";
+  document.getElementById("capturaTecnica").value = captura.tecnica || "";
+  const conSenuelo = TECNICAS_CON_SENUELO.has(captura.tecnica || "");
+  document.getElementById("capturaSenueloBox").style.display = conSenuelo ? "block" : "none";
+  document.getElementById("capturaAparejoBox").style.display = conSenuelo ? "none" : "block";
+  if (conSenuelo) document.getElementById("capturaSenuelo").value = captura.senuelo || "";
+  else document.getElementById("capturaAparejo").value = captura.aparejo || "";
+  document.getElementById("capturaCebo").value = captura.cebo || "";
+  document.getElementById("capturaNotas").value = captura.notas || "";
+  document.getElementById("btnGuardarCaptura").textContent = "Guardar cambios";
+  const { count } = await supabase.from("captura_fotos").select("id", { count: "exact", head: true }).eq("captura_id", captura.id);
+  engancharFormularioCaptura(iso, salidaId, captura.id, count || 0);
+  zona.scrollIntoView({ behavior: "smooth", block: "end" });
 }
 
 async function abrirDia(iso, fechaObj) {
@@ -915,46 +1043,48 @@ async function abrirDia(iso, fechaObj) {
   const contEl = document.getElementById("panelDiaContenido");
   tituloEl.textContent = fechaObj.toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 
-  const entrada = salidasPorFecha[iso];
-  if (!entrada) {
-    contEl.innerHTML = formularioSalida(iso);
-    selectorHoraInicio = crearSelectorHora("ruedaSalidaInicio", null);
-    selectorHoraFin = crearSelectorHora("ruedaSalidaFin", null);
-    document.getElementById("salidaTipo").addEventListener("change", (e) => {
-      document.getElementById("salidaSpot").innerHTML = opcionesSpotsPara(e.target.value);
-    });
-    document.getElementById("btnGuardarSalida").addEventListener("click", () => crearSalida(iso));
-  } else {
-    contEl.innerHTML = await detalleSalida(entrada, iso);
-    selectorHoraCaptura = crearSelectorHora("ruedaCapturaHora", null);
-    const especieSel = document.getElementById("capturaEspecie");
-    especieSel.addEventListener("change", () => {
-      document.getElementById("capturaEspecieOtraBox").style.display = especieSel.value === "Otra" ? "block" : "none";
-    });
-    const tecnicaSel = document.getElementById("capturaTecnica");
-    tecnicaSel.addEventListener("change", () => {
-      const conSenuelo = TECNICAS_CON_SENUELO.has(tecnicaSel.value);
-      document.getElementById("capturaSenueloBox").style.display = conSenuelo ? "block" : "none";
-      document.getElementById("capturaAparejoBox").style.display = conSenuelo ? "none" : "block";
-    });
-    document.getElementById("btnGuardarCaptura").addEventListener("click", () => guardarCaptura(entrada.salida.id, iso));
-    document.getElementById("btnBorrarSalida").addEventListener("click", async () => {
-      if (!confirm("¿Borrar este día y todas sus capturas y fotos?")) return;
-      await supabase.from("salidas_pesca").delete().eq("id", entrada.salida.id);
+  const entradas = salidasPorFecha[iso] || [];
+  const resumenes = await Promise.all(entradas.map((e, idx) => resumenEntradaHTML(e, idx)));
+  contEl.innerHTML =
+    (resumenes.join("") || `<p style="font-size:12px; color:#9FB8BF;">Todavía no hay nada registrado este día.</p>`) +
+    `<div id="zonaFormulario"></div>` +
+    `<button class="secundario" id="btnAnadirEntrada">➕ Añadir ${entradas.length ? "otra " : ""}entrada este día</button>`;
+
+  document.getElementById("btnAnadirEntrada").addEventListener("click", () => mostrarFormularioNuevaEntrada(iso));
+
+  contEl.querySelectorAll(".editar-entrada").forEach((btn) => {
+    btn.addEventListener("click", () => mostrarFormularioEditarEntrada(iso, entradas[+btn.dataset.idx].salida));
+  });
+  contEl.querySelectorAll(".borrar-entrada").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      if (!confirm("¿Borrar esta entrada y todas sus capturas y fotos?")) return;
+      await supabase.from("salidas_pesca").delete().eq("id", entradas[+btn.dataset.idx].salida.id);
       await cargarDatos();
       renderCalendario();
-      panel.classList.remove("visible");
+      abrirDia(iso, fechaObj);
     });
-    contEl.querySelectorAll(".borrar-captura").forEach((btn) => {
-      btn.addEventListener("click", async () => {
-        if (!confirm("¿Borrar esta captura?")) return;
-        await supabase.from("capturas").delete().eq("id", btn.dataset.id);
-        await cargarDatos();
-        renderCalendario();
-        abrirDia(iso, fechaObj);
-      });
+  });
+  contEl.querySelectorAll(".anadir-captura").forEach((btn) => {
+    btn.addEventListener("click", () => mostrarFormularioNuevaCaptura(iso, entradas[+btn.dataset.idx].salida.id));
+  });
+  contEl.querySelectorAll(".editar-captura").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      for (const e of entradas) {
+        const captura = e.capturas.find((c) => c.id === btn.dataset.id);
+        if (captura) { mostrarFormularioEditarCaptura(iso, e.salida.id, captura); break; }
+      }
     });
-  }
+  });
+  contEl.querySelectorAll(".borrar-captura").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      if (!confirm("¿Borrar esta captura?")) return;
+      await supabase.from("capturas").delete().eq("id", btn.dataset.id);
+      await cargarDatos();
+      renderCalendario();
+      abrirDia(iso, fechaObj);
+    });
+  });
+
   panel.classList.add("visible");
 }
 
