@@ -1,0 +1,14 @@
+# Cloudflare Pages sirve como archivo estático cualquier cosa que exista en
+# el árbol de git, sin build step, salvo lo que se bloquee explícitamente
+# aquí (mismo patrón de incidente real ya visto en Pólizas.ai, 2026-09-09:
+# un fichero interno quedó accesible sin autenticación por no estar
+# bloqueado). Ninguno de estos ficheros contiene datos reales de usuarios,
+# pero son ficheros internos/operativos, no parte de la app — no tienen
+# nada que hacer servidos en público.
+/ROBOT.md 404
+/ROBOT_REGLAS.md 404
+/CALIBRACION.jsonl 404
+/README.md 404
+/start.ps1 404
+/supabase/* 404
+/test/* 404

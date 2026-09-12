@@ -313,7 +313,7 @@
 
 
 <header>
-  <h1>Costa Viva</h1><span class="fecha">LEKEITIO → BILBAO · 24 AGO 2026</span>
+  <h1>Costa Viva</h1><span class="fecha">LEKEITIO → BILBAO · <span id="estadoVigenciaGlobal">cargando…</span></span>
   <p>Mapa real con estado del mar por spot (oleaje+viento combinados) y boya de mar abierto de Puertos del Estado.</p>
 </header>
 
@@ -401,6 +401,7 @@
     <div class="indice-box">
       <div class="etq">ÍNDICE DE MAR COMBINADO</div>
       <div class="num" id="panelIndice"></div>
+      <div class="etq" id="panelIndiceNota" style="margin-top:4px; font-size:10px; line-height:1.4;"></div>
     </div>
     <div class="tarjeta" style="margin-top:10px; text-align:center;">
       <div class="etq">TEMPERATURA DEL AGUA</div>
@@ -983,7 +984,37 @@ function gradosDesdeTexto(texto) {
   return GRADOS_COMPAS[letra] ?? 0;
 }
 
+// Vigencia de los datos: un índice calculado con datos de hace horas (o con
+// el placeholder fijo que trae la página al cargar, antes de que responda
+// /prevision) no es "información del momento" aunque el número tenga buena
+// pinta — es tan engañoso como un dato inventado. Por eso indiceMar()
+// devuelve null (sin dato, nunca un número de aspecto confiable) salvo que
+// ESE spot en concreto tenga un fetch real de /prevision de la última hora.
+// Es por spot (no un flag global) porque /prevision puede fallar para un
+// spot suelto (p.ej. Open-Meteo sin dato para esa coordenada) mientras el
+// resto sí se actualiza — un flag global habría dado por "vigente" (y
+// calculado un índice) a un spot que en realidad se quedó con el
+// placeholder inicial.
+const VIGENCIA_MAX_MS = 60 * 60 * 1000; // 1h
+let ultimaActualizacionOk = null; // para el indicador general del header
+function spotVigente(s) {
+  return !!s.actualizadoEn && (Date.now() - s.actualizadoEn) < VIGENCIA_MAX_MS;
+}
+function textoVigencia(s) {
+  const marca = s ? s.actualizadoEn : ultimaActualizacionOk;
+  if (!marca) return "sin datos actuales todavía — esperando /prevision";
+  const minutos = Math.round((Date.now() - marca) / 60000);
+  if ((s ? spotVigente(s) : datosVigentes())) {
+    return minutos < 1 ? "actualizado ahora mismo" : `actualizado hace ${minutos} min`;
+  }
+  return `sin datos actuales (última respuesta hace ${minutos} min, más de 1h)`;
+}
+function datosVigentes() {
+  return ultimaActualizacionOk !== null && (Date.now() - ultimaActualizacionOk) < VIGENCIA_MAX_MS;
+}
+
 function indiceMar(s) {
+  if (!spotVigente(s)) return null;
   const alturaMedia = (s.altura[0] + s.altura[1]) / 2;
   const alturaNorm = Math.min(alturaMedia / 1.2, 1);
   const vientoNorm = Math.min(s.viento / 30, 1);
@@ -1003,8 +1034,12 @@ function colorGradiente(valor, min, max) {
   return c1.map((v, i) => Math.round(v + (c2[i] - v) * tt));
 }
 function colorIndiceMarCss(valor) {
+  if (valor === null || valor === undefined) return "#6C8890"; // sin datos vigentes — gris neutro, no un color de la escala
   const [r, g, b] = colorGradiente(valor, 0, 100);
   return `rgb(${r},${g},${b})`;
+}
+function textoIndice(valor) {
+  return (valor === null || valor === undefined) ? "S/D" : String(valor);
 }
 
 SPOTS.forEach((s) => (s.indice = indiceMar(s)));
@@ -1019,6 +1054,11 @@ async function actualizarDesdeBackend() {
     const resp = await fetch("/prevision", { cache: "no-store" });
     if (!resp.ok) throw new Error("sin backend desplegado todavía");
     const datos = await resp.json();
+    // Se marca vigente ANTES de recalcular los índices de cada spot, para
+    // que indiceMar() de este mismo fetch ya vea los datos como "del
+    // momento" (si se marcara después, el primer cálculo de cada carga
+    // usaría el estado de vigencia del fetch anterior).
+    ultimaActualizacionOk = Date.now();
     datos.spots.forEach((sBackend) => {
       const s = SPOTS.find((x) => x.slug === sBackend.slug);
       if (!s || sBackend.error || !sBackend.bloques || !sBackend.bloques.length) return;
@@ -1034,6 +1074,7 @@ async function actualizarDesdeBackend() {
       if (b.corriente !== undefined) { s.corriente = b.corriente; s.dirCorriente = b.dirCorriente; }
       if (sBackend.marea) s.marea = sBackend.marea;
       if (sBackend.presion) s.presion = sBackend.presion;
+      s.actualizadoEn = ultimaActualizacionOk;
       s.indice = indiceMar(s);
     });
     (datos.boyas || []).forEach((bBackend) => {
@@ -1208,7 +1249,7 @@ function crearMarcadores() {
           <span style="font-family:'IBM Plex Mono',monospace; font-size:9px; font-weight:700; color:#D4A24C; text-shadow:0 0 3px #0B2532,0 0 3px #0B2532;">${s.viento}</span>
           <div class="marcador-envoltorio">
             <div class="anillo-pulso" style="background:${color};"></div>
-            <div class="marcador" id="marcador-${s.slug}" style="background:${color}; color:#0B2532;">${s.indice}</div>
+            <div class="marcador" id="marcador-${s.slug}" style="background:${color}; color:#0B2532;">${textoIndice(s.indice)}</div>
           </div>
         </div>
       </div>`;
@@ -1461,8 +1502,9 @@ function abrirPanel(s) {
   document.getElementById("panelCorrienteDir").textContent = s.dirCorriente || "";
 
   const indiceEl = document.getElementById("panelIndice");
-  indiceEl.textContent = s.indice;
+  indiceEl.textContent = textoIndice(s.indice);
   indiceEl.style.color = colorIndiceMarCss(s.indice);
+  document.getElementById("panelIndiceNota").textContent = textoVigencia(s);
 
   document.getElementById("panelTempAgua").textContent = (s.tempAgua === null || s.tempAgua === undefined) ? "sin datos" : `${s.tempAgua}°C`;
   document.getElementById("panelNubosidad").textContent = s.nubosidad === null ? "sin datos" : `${s.nubosidad}%`;
@@ -1504,15 +1546,20 @@ function abrirPanel(s) {
   // ahora mismo (de las que tenemos rango documentado — si no tenemos
   // rango para ninguna, no penalizamos por eso, nos quedamos neutros) y la
   // tendencia de la presión (bajando = mejor, subiendo = peor).
+  // La temperatura del agua y la presión vienen del mismo /prevision que el
+  // índice de mar — mismo criterio de vigencia: sin fetch de la última hora,
+  // no se calcula (evita mostrar "coincide con su rango ideal" a partir de
+  // una temperatura de hace horas, o de la del placeholder inicial).
   const todasHoy = [...costa, ...marAdentro];
   const conDatoTemp = todasHoy.filter((e) => e.coincide !== null);
   const ratioTemp = conDatoTemp.length ? conDatoTemp.filter((e) => e.coincide).length / conDatoTemp.length : 0.5;
   const bonusPresion = { bajando: 25, estable: 15, subiendo: 0 }[s.presion?.tendencia] ?? 10;
-  const indicePesca = Math.round(Math.min(100, ratioTemp * 70 + bonusPresion));
-  document.getElementById("panelIndicePesca").textContent = indicePesca;
+  const indicePesca = spotVigente(s) ? Math.round(Math.min(100, ratioTemp * 70 + bonusPresion)) : null;
+  document.getElementById("panelIndicePesca").textContent = textoIndice(indicePesca);
   document.getElementById("panelIndicePesca").style.color = colorIndiceMarCss(indicePesca);
-  document.getElementById("panelIndicePescaNota").textContent =
-    conDatoTemp.length
+  document.getElementById("panelIndicePescaNota").textContent = !spotVigente(s)
+    ? textoVigencia(s)
+    : conDatoTemp.length
       ? `${conDatoTemp.filter((e) => e.coincide).length}/${conDatoTemp.length} especies de temporada con su agua ideal ahora, presión ${s.presion?.tendencia || "sin datos"}`
       : `sin especies con rango de temperatura documentado hoy — basado solo en la presión (${s.presion?.tendencia || "sin datos"})`;
 
@@ -1637,10 +1684,49 @@ document.getElementById("cerrarPanel").addEventListener("click", () => {
   document.querySelectorAll(".marcador").forEach((m) => m.classList.remove("activo"));
 });
 
+// Refresca lo que ya está pintado (marcadores + panel abierto + indicador
+// de vigencia del header) sin recrear el mapa. Se llama tanto tras cada
+// fetch real a /prevision como en un tick ligero cada minuto, para que el
+// índice se ponga en gris/"S/D" en cuanto pasa 1h sin datos aunque el
+// fetch de refresco esté fallando (nunca se queda un número verde
+// mostrando una hora vieja solo porque nadie volvió a pintarlo).
+function refrescarIndicesVisibles() {
+  SPOTS.forEach((s) => {
+    s.indice = indiceMar(s);
+    const marcadorEl = document.getElementById(`marcador-${s.slug}`);
+    if (!marcadorEl) return;
+    const color = colorIndiceMarCss(s.indice);
+    marcadorEl.textContent = textoIndice(s.indice);
+    marcadorEl.style.background = color;
+    const anillo = marcadorEl.parentElement?.querySelector(".anillo-pulso");
+    if (anillo) anillo.style.background = color;
+  });
+  const estadoEl = document.getElementById("estadoVigenciaGlobal");
+  if (estadoEl) estadoEl.textContent = textoVigencia();
+  const marcadorActivo = document.querySelector(".marcador.activo");
+  if (marcadorActivo) {
+    const sAbierto = SPOTS.find((x) => x.slug === marcadorActivo.id.replace("marcador-", ""));
+    if (sAbierto) abrirPanel(sAbierto);
+  }
+}
+
 map.whenReady(async () => {
   await actualizarDesdeBackend();
   crearMarcadores();
   comprobarAvisoRayos();
+  refrescarIndicesVisibles();
+  // Refresco real de datos cada hora (antes solo se pedía una vez al
+  // cargar la página, así que dejarla abierta más de 1h mostraba un
+  // índice calculado con datos viejos sin que nada lo avisara).
+  setInterval(async () => {
+    await actualizarDesdeBackend();
+    refrescarIndicesVisibles();
+    comprobarAvisoRayos();
+  }, VIGENCIA_MAX_MS);
+  // Tick ligero cada minuto: solo recalcula vigencia/colores con los datos
+  // que ya tenemos, para que el paso de "vigente" a "S/D" se note aunque
+  // el refresco de arriba esté fallando.
+  setInterval(refrescarIndicesVisibles, 60 * 1000);
 });
 
 function comprobarAvisoRayos() {

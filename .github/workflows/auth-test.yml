@@ -1,0 +1,23 @@
+name: Test de autenticación (endpoints de usuario)
+
+# Comprueba periódicamente contra producción real y el Supabase real que
+# los datos de usuario (contactos de emergencia, alertas SOS, capturas...)
+# no son accesibles sin la sesión de su propio dueño. Ver
+# test/endpoints-auth.test.js y CLAUDE.md para el detalle y las
+# limitaciones conocidas (no cubre la prueba cruzada usuario-A-lee-B).
+# No escribe nada ni en Supabase ni en producción — solo lee/rechaza.
+
+on:
+  schedule:
+    - cron: "17 6 * * *" # una vez al día
+  workflow_dispatch: {}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: node test/endpoints-auth.test.js

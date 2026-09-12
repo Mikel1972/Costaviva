@@ -5,23 +5,31 @@ Estructura lista para desplegar en Cloudflare Pages, igual que tus otros proyect
 ```
 costa-viva-app/
 ├── index.html              # La app (mapa + datos)
-├── login.html               # Pantalla de acceso (Supabase, desactivada por ahora)
-├── manifest.json             # Para que se pueda "Añadir a pantalla de inicio"
-├── icon.svg                   # Icono de la app
-├── start.ps1                   # Arranca todo en local con un clic (Windows)
-└── functions/
-    ├── prevision.js           # Backend real: scrapea Todosurf en servidor,
-    │                           # accesible en /prevision (no /functions/prevision)
+├── login.html              # Pantalla de acceso (Supabase, activa)
+├── alarma.html             # Alarma SOS: detección de caída + aviso manual
+├── diario.html             # Cuaderno de pesca (salidas, capturas, fotos)
+├── manifest.json           # Para que se pueda "Añadir a pantalla de inicio"
+├── icon.svg                # Icono de la app
+├── start.ps1               # Arranca todo en local con un clic (Windows)
+├── supabase/
+│   ├── schema.sql                  # Tabla perfiles + RLS + trigger de alta
+│   └── schema_diario_alarma.sql    # salidas_pesca/capturas/contactos_emergencia/alertas_sos + RLS
+└── functions/                      # Cloudflare Pages Functions (edge, sin build step)
+    ├── prevision.js         # Oleaje/viento/marea/corriente reales (Open-Meteo + boyas Puertos del Estado) — /prevision
+    ├── luna.js              # Fase y posición lunar por coordenadas — /luna
+    ├── rayos-imagen.js      # Proxy del mapa de rayos de AEMET — /rayos-imagen
+    ├── sos-alerta.js        # Envía el aviso SOS a los contactos de emergencia — /sos-alerta (POST, requiere token de sesión)
     └── webcam/
-        └── [slug].js           # Proxy de imágenes de webcam en servidor,
-                                  # accesible en /webcam/<slug>
+        └── [slug].js        # Proxy de imágenes de webcam — /webcam/<slug>
 ```
+
+Ver `CLAUDE.md` para el detalle de cada endpoint, el proyecto Supabase real y las convenciones de despliegue.
 
 ## Desplegar en Cloudflare Pages
 
 1. Sube esta carpeta a un repo de GitHub (nuevo o dentro de uno existente)
 2. Conéctalo en Cloudflare Pages como ya haces con Etxeapala/Pólizas.ai — sin build command, la carpeta raíz es la carpeta de salida (no hay paso de compilación, es HTML+JS plano)
-3. Cloudflare detecta `functions/` automáticamente y publica `/prevision` y `/webcam/<slug>`
+3. Cloudflare detecta `functions/` automáticamente y publica `/prevision`, `/luna`, `/rayos-imagen`, `/sos-alerta` y `/webcam/<slug>`
 
 ## Arrancar en local (Windows, con un clic)
 
@@ -42,17 +50,13 @@ Requisito: Node.js instalado (el script te avisa si falta).
 - Las webcams de Mundaka/Bakio/Sopelana se piden a `/webcam/<slug>` (nuestro propio proxy) y se refrescan solas cada minuto mientras el panel está abierto (indicador "EN DIRECTO") — si el proveedor original ha cambiado la URL o la bloquea, el panel avisa en vez de romperse
 - Temperatura del agua, nubosidad y precipitación vienen de Open-Meteo; marea (altura, tendencia, próxima pleamar/bajamar) y corriente marina también, calculadas a partir de la curva horaria real del modelo. Además hay 3 boyas reales de Puertos del Estado (Gijón, Bilbao-Vizcaya, Pasaia II) con oleaje y temperatura MEDIDOS, no modelados
 - Rayos: botón ⚡ en el mapa, muestra el mapa nacional de AEMET (imagen, actualizada cada hora, sin API key). AEMET no publica coordenadas por rayo en abierto — comprobado tanto en su API oficial como en el código de su propia web — así que no es una capa de puntos de esta zona, es una imagen de referencia de toda España
-- Los índices de mar combinado se calculan en el momento; caudal de ríos sigue sin datos reales — fuente pendiente de conectar (URA), documentada en el concepto principal
+- Los índices de mar combinado se calculan en el momento; caudal de ríos es real en Sella, Besaya, Pas, Asón, Eo, Júcar, Turia, Mijares, Segura y Lagares (Confederaciones Hidrográficas + Augas de Galicia) — los ríos vascos (Lea, Oka, Butroe...) siguen en `null` porque URA/Bizkaia bloquea el acceso automático a su SAIH
 
-## Acceso con Supabase (desactivado en este primer despliegue)
+## Acceso con Supabase (activo)
 
-`login.html` y el bloque de comprobación de sesión en `index.html` están listos pero **comentados** — se decidió desplegar primero sin login para validar que el backend (scraper + webcams) funciona de verdad contra internet real, antes de invertir tiempo en montar Supabase.
+`login.html` y el bloque de comprobación de sesión en `index.html` (y en `alarma.html`/`diario.html`) están activos de verdad: sin sesión, la app redirige a `/login.html`. El proyecto Supabase real es `imncbmizxkorotpeisic` — mismo patrón que Etxeapala (tabla `perfiles` con `aprobado` booleano, aprobación manual desde el Table Editor).
 
-Cuando quieras activar el acceso:
-1. Crea un proyecto en [supabase.com](https://supabase.com) (gratis)
-2. Crea una tabla `perfiles` con un campo `aprobado` (booleano) — mismo patrón que Etxeapala (Root/Superadmin/Member + aprobación manual)
-3. Rellena `SUPABASE_URL` y `SUPABASE_ANON_KEY` en `login.html` y en el bloque comentado de `index.html`
-4. Descomenta ese bloque en `index.html`
+Ver `CLAUDE.md` para el detalle de tablas, políticas RLS y endpoints que dependen de la sesión (en particular `functions/sos-alerta.js`, que maneja el aviso SOS).
 
 ## Instalar en el móvil
 

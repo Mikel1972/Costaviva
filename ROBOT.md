@@ -3,22 +3,9 @@
 Este archivo lo mantiene el robot de investigación/auditoría de datos que
 corre en sesiones programadas contra este repo. Cada pasada añade una
 entrada fechada en la sección que corresponda — nunca se borra el
-historial anterior, solo se añade.
-
-Reglas para el robot (hasta que el usuario anote otras aquí):
-- Nunca inventar un dato. `null`/sin-dato es siempre preferible a un
-  número inventado, tal como pide el resto del proyecto.
-- Fuente nueva de bajo riesgo y fácil de integrar (endpoint tipo
-  `functions/*.js` siguiendo el patrón existente) → intégrala e implementa
-  en una rama `robot/AAAA-MM-DD`, verifica con `node --check` antes de
-  commitear.
-- Cualquier cosa que cambie mucho el frontend, el diseño del mapa, o que
-  sea una decisión de producto → no implementar, solo proponer aquí.
-- Corrección de auditoría trivial (un campo de un JSON, una URL que
-  cambió de dominio) → corregir directamente. Cualquier otra cosa →
-  proponer.
-- El factor de corrección de calibración nunca se aplica en automático:
-  siempre es una propuesta a confirmar por el usuario.
+historial anterior, solo se añade. Es historial puro: las reglas
+estables del robot viven en [`ROBOT_REGLAS.md`](ROBOT_REGLAS.md), léelas
+antes de actuar.
 
 ---
 
