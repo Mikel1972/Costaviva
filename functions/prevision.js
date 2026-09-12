@@ -10,7 +10,7 @@
 // coordenadas, y calculamos nosotros mismos todo lo demás (etiquetas de
 // hora, rumbos en texto, y el índice de mar combinado que hace el cliente).
 
-const SPOTS = [
+export const SPOTS = [
   { slug: "lekeitio", nombre: "Lekeitio", lat: 43.3647, lon: -2.5089 },
   { slug: "mundaka", nombre: "Mundaka", lat: 43.4047, lon: -2.6989 },
   { slug: "bakio", nombre: "Bakio", lat: 43.4297, lon: -2.8103 },
@@ -233,12 +233,20 @@ function calcularMarea(horas, alturas) {
 }
 
 // Presión atmosférica: no es una marea (sin máximos/mínimos que buscar),
-// así que comparamos el valor actual contra el de 3h antes para ver si
+// así que comparamos el valor actual contra el de ~3h antes para ver si
 // sube o baja. A diferencia de la fase lunar, la tendencia de presión sí
 // tiene respaldo real en pesca — una bajada suele venir antes de un
 // cambio de tiempo y coincide con más actividad alimenticia; lo marcamos
 // como orientativo, nunca como una certeza.
-function calcularPresion(horas, presiones) {
+//
+// valorHistorico3h (Fase 4, 2026-09-12): preferimos una lectura REAL de
+// hace ~3h (tabla presion_historico, ver historicoPresionPorSpot) sobre
+// comparar dentro del mismo forecast — el "hace 3h" de un forecast es un
+// valor modelado, no lo que Open-Meteo midió de verdad en su momento. Si
+// todavía no hay historia suficiente (recién desplegado, o el cron
+// llevaba poco corriendo), se cae de vuelta a la comparación dentro del
+// forecast — mejor que no dar tendencia ninguna.
+function calcularPresion(horas, presiones, valorHistorico3h) {
   if (!horas.length || !presiones.length) return null;
   const ahoraISO = horaActualMadridISO();
   let idxAhora = horas.findIndex((h) => h.slice(0, 13) === ahoraISO);
@@ -247,8 +255,11 @@ function calcularPresion(horas, presiones) {
   const actual = presiones[idxAhora];
   if (actual === null || actual === undefined) return null;
 
-  const idxAntes = Math.max(0, idxAhora - 3);
-  const antes = presiones[idxAntes];
+  let antes = valorHistorico3h;
+  if (antes === null || antes === undefined) {
+    const idxAntes = Math.max(0, idxAhora - 3);
+    antes = presiones[idxAntes];
+  }
   let tendencia = null;
   if (antes !== null && antes !== undefined) {
     const delta = actual - antes;
@@ -256,6 +267,31 @@ function calcularPresion(horas, presiones) {
   }
 
   return { valor: Math.round(actual), tendencia };
+}
+
+// Una lectura real por spot de hace ~3h, de presion_historico (Fase 4).
+// Una sola consulta batched para TODOS los spots (nunca una por spot —
+// Cloudflare Pages corta en ~50 subrequests, ver previsionTodosSpots).
+// Ventana de 1h centrada en "hace 3h" porque el cron corre cada hora, así
+// que cualquier fila ahí dentro sirve como aproximación razonable. Si
+// falla o no hay filas (tabla vacía al principio), devuelve {} — cada
+// spot cae de vuelta a la comparación dentro del forecast.
+const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
+async function historicoPresionPorSpot() {
+  try {
+    const desde = new Date(Date.now() - 3.5 * 3600 * 1000).toISOString();
+    const hasta = new Date(Date.now() - 2.5 * 3600 * 1000).toISOString();
+    const url = `${SUPABASE_URL}/rest/v1/presion_historico?select=spot_slug,valor_hpa&medido_en=gte.${desde}&medido_en=lte.${hasta}&order=medido_en.desc`;
+    const resp = await fetch(url, { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } });
+    if (!resp.ok) return {};
+    const filas = await resp.json();
+    const mapa = {};
+    for (const f of filas) if (!(f.spot_slug in mapa)) mapa[f.spot_slug] = f.valor_hpa;
+    return mapa;
+  } catch (e) {
+    return {};
+  }
 }
 
 async function fetchJSON(url) {
@@ -276,20 +312,21 @@ async function previsionTodosSpots(spots) {
   const lons = spots.map((s) => s.lon).join(",");
   const paramsComunes = `latitude=${lats}&longitude=${lons}&timezone=Europe%2FMadrid&forecast_days=2`;
 
-  const [marinos, vientos] = await Promise.all([
+  const [marinos, vientos, historicoPresion] = await Promise.all([
     fetchJSON(
       `https://marine-api.open-meteo.com/v1/marine?${paramsComunes}&hourly=wave_height,wave_period,wave_direction,sea_surface_temperature,ocean_current_velocity,ocean_current_direction,sea_level_height_msl`
     ),
     fetchJSON(
       `https://api.open-meteo.com/v1/forecast?${paramsComunes}&hourly=windspeed_10m,winddirection_10m,precipitation,cloudcover,pressure_msl&windspeed_unit=kmh`
     ),
+    historicoPresionPorSpot(),
   ]);
   // Con más de una localización, Open-Meteo devuelve un array (uno por
   // coordenada, mismo orden que se pidió) en vez de un único objeto.
-  return spots.map((spot, i) => procesarSpot(spot, marinos[i], vientos[i]));
+  return spots.map((spot, i) => procesarSpot(spot, marinos[i], vientos[i], historicoPresion));
 }
 
-function procesarSpot(spot, marino, viento) {
+function procesarSpot(spot, marino, viento, historicoPresion) {
   const tempAguaPorHoraISO = Object.fromEntries(
     (marino.hourly?.time || []).map((t, i) => [t, marino.hourly.sea_surface_temperature?.[i] ?? null])
   );
@@ -303,7 +340,7 @@ function procesarSpot(spot, marino, viento) {
     ])
   );
   const marea = calcularMarea(marino.hourly?.time || [], marino.hourly?.sea_level_height_msl || []);
-  const presion = calcularPresion(viento.hourly?.time || [], viento.hourly?.pressure_msl || []);
+  const presion = calcularPresion(viento.hourly?.time || [], viento.hourly?.pressure_msl || [], historicoPresion?.[spot.slug]);
   const precipNubesPorHoraISO = Object.fromEntries(
     (viento.hourly?.time || []).map((t, i) => [
       t,

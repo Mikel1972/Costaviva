@@ -1,0 +1,35 @@
+name: Histórico de presión
+
+# Fase 4 del plan de mejoras (2026-09-12): guarda la presión real de cada
+# spot cada hora (vía functions/registrar-presion.js), para que la
+# tendencia de presión se calcule contra historia real en vez de
+# comparar dentro del mismo forecast de Open-Meteo. Minuto 7 (no en
+# punto) para no coincidir con la carga de golpe que reciben los
+# runners programados justo a las horas exactas.
+#
+# Necesita el secret PRESION_CRON_SECRET en este repo (Settings →
+# Secrets → Actions) con el MISMO valor que la variable de entorno
+# CRON_SECRET en Cloudflare Pages (Settings → Environment variables) —
+# si no coinciden, /registrar-presion devuelve 401 y el workflow falla.
+#
+# Probar a mano (workflow_dispatch) antes de fiarse del schedule, mismo
+# criterio que las demás rutinas programadas de este repo.
+
+on:
+  schedule:
+    - cron: "7 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  registrar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Llamar a /registrar-presion
+        run: |
+          code=$(curl -sS -o /tmp/resp.json -w "%{http_code}" -X POST \
+            -H "X-Cron-Secret: ${{ secrets.PRESION_CRON_SECRET }}" \
+            --max-time 30 \
+            "https://fishnow-59u.pages.dev/registrar-presion")
+          echo "HTTP $code"
+          cat /tmp/resp.json
+          if [ "$code" != "200" ]; then exit 1; fi

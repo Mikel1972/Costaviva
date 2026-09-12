@@ -85,6 +85,15 @@ otro usuario". Cualquier cambio que toque `alarma.html`,
     arriba**: `spots_usuario` permite además `select` cuando
     `publica = true` (no solo `auth.uid() = user_id`), a propósito —
     es la tabla que sostiene el mapa colaborativo.
+  - `especies_comunidad` (añadida 2026-09-12) — otra excepción: lectura
+    Y escritura abiertas a cualquier usuario logueado (`to authenticated
+    using (true)` / `with check (auth.uid() = creado_por)`), mismo
+    criterio de "enriquecer entre todos" que `spots_usuario`.
+  - `presion_historico` (añadida 2026-09-12, Fase 4) — otra excepción:
+    lectura pública sin sesión (`using (true)`), sin política de
+    insert/update/delete para clientes — solo escribe
+    `functions/registrar-presion.js` (protegido con secreto
+    compartido). No son datos personales de nadie.
 - **Verificado en vivo el 2026-09-12**: petición sin token de sesión (solo
   anon apikey) contra las 6 tablas de usuario devuelve `200 []` en todas
   — RLS está activo y funcionando, no solo declarado en el `.sql`.
@@ -256,6 +265,8 @@ explicación.
 | `/webcam/<slug>` | `webcam/[slug].js` | Proxy de imagen de webcam (evita CORS/hotlinking) | No requiere sesión |
 | `/sos-alerta` | `sos-alerta.js` | POST: manda el aviso SOS (email vía Resend) a los contactos de emergencia del usuario que llama | **Requiere** `Authorization: Bearer <token de sesión>` |
 | `/aviso-alta` | `aviso-alta.js` | POST: avisa al admin por email cuando un `user_id` corresponde a un alta real de los últimos 5 min | Sin token — verifica con `service_role` server-side (ver más abajo) |
+| `/geocodificar` | `geocodificar.js` | GET: geocodificación inversa (`?lat=&lon=`) para nombrar ubicaciones personalizadas, vía Nominatim | No requiere sesión |
+| `/registrar-presion` | `registrar-presion.js` | POST: guarda la presión real de cada spot en `presion_historico` (Fase 4) | Sin sesión de usuario — protegido con secreto compartido (`X-Cron-Secret` / `CRON_SECRET`) |
 
 Ninguno de los cuatro primeros toca tablas de usuario en Supabase.
 `sos-alerta.js` es el único que sí, y usa siempre el token de quien llama.
@@ -391,10 +402,10 @@ a mano.
 
 ## Rutinas programadas (todas activas y probadas en real, 2026-09-12)
 
-Las cuatro se probaron primero a mano (`workflow_dispatch`) antes de
-activar el `schedule` — `smoke-test.yml` falló en su primer intento (ver
-abajo) y se corrigió antes de programarlo. Horas escalonadas para no
-competir por runners:
+Las cuatro originales se probaron primero a mano (`workflow_dispatch`)
+antes de activar el `schedule` — `smoke-test.yml` falló en su primer
+intento (ver abajo) y se corrigió antes de programarlo. Horas
+escalonadas para no competir por runners:
 
 | Workflow | Cron (UTC) | Qué hace |
 |---|---|---|
@@ -402,6 +413,7 @@ competir por runners:
 | `smoke-test.yml` | `0 5 * * *` | login real → `/prevision` → `/webcam/mundaka` → crea/borra una salida de pesca de prueba. `/sos-alerta` excluido a propósito (ver más abajo) |
 | `daily-report.yml` | `0 6 * * *` | salud + conteo real de SOS (24h) → entrada nueva en el Issue "Informe diario — Costa Viva" |
 | `auth-test.yml` | `17 6 * * *` | RLS sin token + prueba cruzada A-lee-B (secrets ya puestos) |
+| `presion-historico.yml` | `7 * * * *` (cada hora) | POST a `/registrar-presion` (secret `PRESION_CRON_SECRET`) — guarda la presión real de cada spot en `presion_historico`, para la tendencia real de `/prevision` (Fase 4, ver más abajo). **Pendiente de activar de verdad**: hace falta poner `PRESION_CRON_SECRET` (GitHub) y `CRON_SECRET` (Cloudflare Pages, mismo valor) antes de que funcione — sin eso, `/registrar-presion` devuelve 401 y el workflow falla. |
 
 `0 6 * * *` = 08:00 en verano (CEST) / 07:00 en invierno (CET) — GitHub
 Actions no ajusta el cron por el cambio de hora. Ajustar aquí si se
