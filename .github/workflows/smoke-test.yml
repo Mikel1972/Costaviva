@@ -1,0 +1,82 @@
+name: Smoke test E2E
+
+# DISEÑADO, NO ACTIVADO TODAVIA: `schedule` comentado a proposito, y
+# ademas este workflow no puede correr hasta que existan los secrets
+# SMOKE_TEST_EMAIL / SMOKE_TEST_PASSWORD (Settings > Secrets and
+# variables > Actions) de una cuenta de prueba real y confirmada. Puede
+# ser la misma cuenta de prueba usada para la comprobacion cruzada de RLS
+# (ver CLAUDE.md, "Test de autenticación") — no hace falta una tercera.
+#
+# Recorre el camino real de un usuario contra produccion: login ->
+# /prevision y /webcam/<slug> responden -> escribe una entrada de prueba
+# en el cuaderno de pesca (salidas_pesca) -> la borra. Si algo falla, el
+# workflow falla (GitHub avisa por email de los runs programados que
+# fallan, sin plumbing adicional).
+#
+# LA FUNCION SOS QUEDA FUERA A PROPOSITO (decision explicita del
+# 2026-09-12): este smoke test NUNCA debe llamar a /sos-alerta. Hacerlo
+# dispararia un email de socorro real via Resend a los contactos de
+# emergencia de la cuenta de prueba (si tuviera alguno). Si en el futuro
+# se quiere cubrir tambien el camino del SOS, hace falta antes un modo de
+# prueba explicito en sos-alerta.js que nunca llame a Resend de verdad
+# para una cuenta marcada como test -- decidir eso aparte, no asumirlo.
+
+on:
+  # schedule:
+  #   - cron: "0 6 * * *" # una vez al dia
+  workflow_dispatch: {}
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_URL: "https://imncbmizxkorotpeisic.supabase.co"
+      SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc"
+      PRODUCCION_URL: "https://fishnow-59u.pages.dev"
+      SMOKE_TEST_EMAIL: ${{ secrets.SMOKE_TEST_EMAIL }}
+      SMOKE_TEST_PASSWORD: ${{ secrets.SMOKE_TEST_PASSWORD }}
+    steps:
+      - name: Comprobar que los secrets existen
+        run: |
+          if [ -z "$SMOKE_TEST_EMAIL" ] || [ -z "$SMOKE_TEST_PASSWORD" ]; then
+            echo "::error::Faltan los secrets SMOKE_TEST_EMAIL/SMOKE_TEST_PASSWORD — ver CLAUDE.md."
+            exit 1
+          fi
+
+      - name: Login con la cuenta de prueba
+        id: login
+        run: |
+          resp=$(curl -sS -X POST "$SUPABASE_URL/auth/v1/token?grant_type=password" \
+            -H "apikey: $SUPABASE_ANON_KEY" -H "Content-Type: application/json" \
+            -d "{\"email\":\"$SMOKE_TEST_EMAIL\",\"password\":\"$SMOKE_TEST_PASSWORD\"}")
+          token=$(echo "$resp" | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{console.log(JSON.parse(d).access_token||'')}catch{console.log('')}})")
+          if [ -z "$token" ]; then
+            echo "::error::Login de la cuenta de prueba falló: $resp"
+            exit 1
+          fi
+          echo "::add-mask::$token"
+          echo "token=$token" >> "$GITHUB_OUTPUT"
+
+      - name: /prevision y /webcam/<slug> responden
+        run: |
+          for ruta in "prevision" "webcam/mundaka"; do
+            code=$(curl -sS -o /dev/null -w "%{http_code}" --max-time 15 "$PRODUCCION_URL/$ruta")
+            if [ "$code" != "200" ]; then echo "::error::$ruta devolvió $code"; exit 1; fi
+          done
+
+      - name: Escribe y borra una salida de pesca de prueba
+        env:
+          TOKEN: ${{ steps.login.outputs.token }}
+        run: |
+          creada=$(curl -sS -X POST "$SUPABASE_URL/rest/v1/salidas_pesca" \
+            -H "apikey: $SUPABASE_ANON_KEY" -H "Authorization: Bearer $TOKEN" \
+            -H "Content-Type: application/json" -H "Prefer: return=representation" \
+            -d '{"fecha":"2000-01-01","spot_slug":"smoke-test","notas":"smoke test automatico, se borra solo"}')
+          id=$(echo "$creada" | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{console.log(JSON.parse(d)[0].id||'')}catch{console.log('')}})")
+          if [ -z "$id" ]; then
+            echo "::error::No se pudo crear la salida de prueba: $creada"
+            exit 1
+          fi
+          echo "Creada salida de prueba $id, borrando..."
+          curl -sS -X DELETE "$SUPABASE_URL/rest/v1/salidas_pesca?id=eq.$id" \
+            -H "apikey: $SUPABASE_ANON_KEY" -H "Authorization: Bearer $TOKEN"

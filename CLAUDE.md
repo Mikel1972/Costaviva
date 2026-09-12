@@ -228,14 +228,43 @@ probarlos, pero no corren solos hasta descomentar el cron.
   Añade una entrada a un único Issue "Informe diario — Costa Viva" que
   crece con el tiempo, en vez de abrir uno nuevo cada día.
 
+## Disciplina de trabajo (añadida 2026-09-12, ver memoria de sesión)
+
+- **Rama + preview antes de mergear a main**: cualquier cambio con efecto
+  visible (frontend, un endpoint de `functions/`, cualquier cosa que
+  cambie lo que ve/hace un usuario real) va en una rama; se espera el
+  deploy de preview de Cloudflare Pages y se prueba ahí de verdad antes
+  de mergear. Cambios inertes (documentación, workflows solo con
+  `workflow_dispatch`, SQL todavía sin aplicar) no necesitan este paso.
+- **Migraciones de Supabase, no `.sql` suelto**: `supabase init` ya
+  corrido (`supabase/config.toml`). `supabase link --project-ref
+  imncbmizxkorotpeisic` **bloqueado**: la sesión de la CLI autenticada en
+  esta máquina no tiene privilegios sobre este proyecto (confirma la
+  norma de no asumir que la cuenta/token de otro proyecto sirve aquí).
+  Pendiente de que el usuario haga `supabase login` con la cuenta que sí
+  es dueña de `imncbmizxkorotpeisic`, y entonces: `supabase link`,
+  `supabase db pull` (para traer el esquema ya aplicado como baseline sin
+  volver a ejecutarlo), y convertir `schema_conteo_sos.sql` en la primera
+  migración nueva de verdad.
+
 ## Pendiente conocido (no tocar sin confirmar)
 
-- Prueba cruzada usuario-A-lee-fila-de-usuario-B (ver arriba: confirmar
-  los dos emails de prueba, luego extender el test).
-- Aplicar `supabase/schema_conteo_sos.sql` en el SQL Editor para que el
-  informe diario tenga el conteo real de SOS.
-- Decidir si/cuándo activar los `schedule` de `security-scan.yml` y
-  `daily-report.yml` (hoy solo corren a mano).
+- Prueba cruzada usuario-A-lee-fila-de-usuario-B: confirmar los dos
+  emails de prueba, luego extender `test/endpoints-auth.test.js`.
+- Aplicar `supabase/schema_conteo_sos.sql` (o su migración equivalente
+  una vez resuelto el link de arriba) para que el informe diario tenga
+  el conteo real de SOS.
+- Decidir si/cuándo activar los `schedule` (hoy comentados,
+  `workflow_dispatch` únicamente) de `security-scan.yml`,
+  `daily-report.yml` y `smoke-test.yml`.
+- `smoke-test.yml` (diseñado 2026-09-12): recorre login → `/prevision` →
+  `/webcam/mundaka` → crea y borra una salida de pesca de prueba.
+  **`/sos-alerta` queda excluido a propósito** — nunca debe llamarse
+  automáticamente, dispararía un email de socorro real. Necesita los
+  secrets `SMOKE_TEST_EMAIL`/`SMOKE_TEST_PASSWORD` — puede ser la misma
+  cuenta de prueba de la prueba cruzada de RLS (no hace falta una
+  tercera; intentar crear una tercera cuenta chocó con el rate-limit de
+  envío de emails de Supabase).
 - Punto 13 del diagnóstico (2026-09-12, sin aplicar nada): el alta en
   `login.html` es pública sin CAPTCHA/Turnstile — mitigado parcialmente
   porque `perfiles.aprobado` bloquea el acceso real hasta aprobación
