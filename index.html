@@ -37,15 +37,16 @@
   .tabs-nav a {
     flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
     gap: 2px; text-decoration: none; color: #7FA3AF;
-    font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+    font-family: 'Inter', sans-serif; font-size: 10.5px; font-weight: 500;
   }
   .tabs-nav a .icono { font-size: 18px; line-height: 1; }
   .tabs-nav a.activa { color: #D4A24C; }
   header { padding: 8px 20px; border-bottom: 1px solid #1C3F4F; flex-shrink: 0; display: flex; align-items: baseline; flex-wrap: wrap; column-gap: 12px; row-gap: 2px; }
   header h1 {
     font-family: 'Fraunces', serif;
-    font-size: 17px;
-    font-weight: 600;
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
     margin: 0;
     display: inline-block;
   }
@@ -211,6 +212,38 @@
     cursor: pointer; font-size: 16px; padding: 0;
   }
   .nubes-toggle.activo { background: #D4A24C; color: #0B2532; }
+  .anadir-ubicacion-toggle {
+    position: absolute; top: 208px; right: 16px; z-index: 502;
+    width: 38px; height: 38px; border-radius: 8px;
+    background: #0F2C38; border: 1px solid #1C3F4F; color: #E8E2D0;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 16px; padding: 0;
+  }
+  .anadir-ubicacion-toggle.activo { background: #D4A24C; color: #0B2532; }
+  .gps-ubicacion-toggle {
+    position: absolute; top: 256px; right: 16px; z-index: 502;
+    width: 38px; height: 38px; border-radius: 8px;
+    background: #0F2C38; border: 1px solid #1C3F4F; color: #E8E2D0;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 16px; padding: 0;
+  }
+  .confirmar-ubicacion-panel {
+    display: none; position: absolute; top: 64px; left: 50%; transform: translateX(-50%);
+    z-index: 900; background: #0F2C38; border: 1px solid #D4A24C; border-radius: 10px;
+    padding: 14px 16px; width: 260px; box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+  }
+  .confirmar-ubicacion-panel.visible { display: block; }
+  .confirmar-ubicacion-panel .titulo { font-family: 'Fraunces', serif; font-size: 15px; margin-bottom: 4px; }
+  .confirmar-ubicacion-panel .nombre-resuelto { font-size: 14px; color: #D4A24C; margin-bottom: 10px; }
+  .confirmar-ubicacion-panel .error { font-size: 12px; color: #E8907A; margin-bottom: 10px; }
+  .confirmar-ubicacion-panel .visibilidad { display: flex; gap: 14px; font-size: 12.5px; margin-bottom: 12px; }
+  .confirmar-ubicacion-panel .visibilidad label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+  .confirmar-ubicacion-panel .botones { display: flex; gap: 8px; }
+  .confirmar-ubicacion-panel button {
+    flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #1C3F4F; cursor: pointer; font-size: 12.5px;
+  }
+  .confirmar-ubicacion-panel button.confirmar { background: #D4A24C; color: #0B2532; border: none; font-weight: 600; }
+  .confirmar-ubicacion-panel button.cancelar { background: transparent; color: #9FB8BF; }
   .luna-panel {
     position: absolute; top: 64px; right: 64px; z-index: 501;
     background: #0F2C38; border: 1px solid #1C3F4F; border-radius: 8px;
@@ -256,7 +289,7 @@
     .leyenda { bottom: 10px; left: 56px; }
 
     header { padding: 6px 14px; }
-    header h1 { font-size: 15px; }
+    header h1 { font-size: 22px; }
     header p { display: none; }
 
     #avisoRayos, #sinRayos { padding: 6px 16px; font-size: 10.5px; }
@@ -308,6 +341,15 @@
     window.location.href = "/login.html";
   } else {
     document.getElementById("comprobandoAcceso").remove();
+    // El resto de la app vive en un <script> clásico más abajo (por el
+    // mapa de Leaflet, sin módulos) — se expone aquí lo que necesita de
+    // Supabase para las ubicaciones personalizadas (Fase 2).
+    window.supabaseCliente = supabase;
+    window.usuarioIdActual = data.session.user.id;
+    // El <script> clásico del mapa (sin módulos, más abajo) puede terminar
+    // de ejecutarse antes o después de que este módulo resuelva la sesión
+    // — este evento es lo que le avisa de que ya puede usar Supabase.
+    window.dispatchEvent(new Event("supabase-listo"));
   }
 
   document.getElementById("btnCerrarSesion").addEventListener("click", async (e) => {
@@ -375,11 +417,33 @@
     </div>
     <button class="batimetria-toggle" id="toggleBatimetria" title="Batimetría (profundidad del mar)" aria-label="Mostrar/ocultar batimetría">📏</button>
     <button class="nubes-toggle" id="toggleNubes" title="Radar de lluvia en directo (RainViewer)" aria-label="Mostrar/ocultar radar de lluvia">☁️</button>
+    <button class="anadir-ubicacion-toggle" id="toggleAnadirUbicacion" title="Añadir una ubicación nueva: haz clic en el mapa" aria-label="Añadir ubicación en el mapa">➕</button>
+    <button class="gps-ubicacion-toggle" id="toggleGpsUbicacion" title="Añadir mi ubicación GPS actual" aria-label="Añadir mi ubicación GPS actual">📍</button>
+    <div class="confirmar-ubicacion-panel" id="confirmarUbicacionPanel">
+      <div class="titulo">Nueva ubicación</div>
+      <div id="confirmarUbicacionError" class="error" style="display:none;"></div>
+      <div id="confirmarUbicacionContenido" style="display:none;">
+        <div class="nombre-resuelto" id="confirmarUbicacionNombre"></div>
+        <div class="visibilidad">
+          <label><input type="radio" name="visibilidadUbicacion" value="privada" checked /> Privada</label>
+          <label><input type="radio" name="visibilidadUbicacion" value="publica" /> Pública</label>
+        </div>
+        <div class="botones">
+          <button class="cancelar" id="btnCancelarUbicacion">Cancelar</button>
+          <button class="confirmar" id="btnConfirmarUbicacion">Confirmar</button>
+        </div>
+      </div>
+    </div>
   </div>
   <div class="panel" id="panel">
     <button class="cerrar" id="cerrarPanel">✕</button>
     <h2 id="panelNombre"></h2>
     <div class="coords" id="panelCoords"></div>
+    <div style="display:flex; align-items:center; gap:10px; margin:6px 0 2px;">
+      <button id="panelBtnFavorito" title="Marcar/quitar de favoritos" style="background:none; border:none; cursor:pointer; font-size:18px; padding:0; color:#6C8890; line-height:1;">☆</button>
+      <span id="panelEtiquetaComunidad" style="display:none; font-size:10.5px; color:#7FA3AF;">📍 ubicación de un usuario, sin cámara</span>
+      <button id="panelBtnBorrar" style="display:none; margin-left:auto; background:none; border:none; color:#E8907A; font-size:11px; cursor:pointer;">🗑 Borrar</button>
+    </div>
     <div class="grid2">
       <div class="tarjeta">
         <div class="etq">OLEAJE (12h)</div>
@@ -949,10 +1013,19 @@ const ESPECIES_CANARIAS = [
 const SPOTS_MEDITERRANEO = new Set(["roses","blanes","cambrils","peniscola","valencia","gandia","denia","calpe","cartagena","aguilas","cabodepalos","malaga","nerja","almeria","roquetas","palma","ciutadella","formentera","alicante","altea","benidorm","guardamardelsegura","vilajoiosa","orihuelacosta","pilardelahoradada","santapola","javea","alcossebre","benicassim","burriana","castellon","xilxes","oropesa","torreblanca","vinaros","alboraya","canetdeberenguer","cullera","pobladefarnals","oliva","piles","calamillor","sonbou","muro"]);
 const SPOTS_GOLFO_CADIZ = new Set(["cadiz","conil","chipiona","puntaumbria"]);
 const SPOTS_CANARIAS = new Set(["laspalmas","santacruztenerife","elmedano","corralejo"]);
-function especiesPorSpot(slug) {
-  if (SPOTS_MEDITERRANEO.has(slug)) return ESPECIES_MEDITERRANEO;
-  if (SPOTS_GOLFO_CADIZ.has(slug)) return ESPECIES_GOLFO_CADIZ;
-  if (SPOTS_CANARIAS.has(slug)) return ESPECIES_CANARIAS;
+// zonaForzada: para ubicaciones personalizadas (sin slug conocido en los
+// Sets de arriba), se pasa la aproximación por coordenadas calculada en
+// zonaPorCoordenadas() — ver esa función para el porqué es una
+// aproximación y no una fuente oficial.
+function especiesPorSpot(slug, zonaForzada) {
+  const zona = zonaForzada
+    || (SPOTS_MEDITERRANEO.has(slug) ? "mediterraneo"
+      : SPOTS_GOLFO_CADIZ.has(slug) ? "golfoCadiz"
+      : SPOTS_CANARIAS.has(slug) ? "canarias"
+      : "atlantico");
+  if (zona === "mediterraneo") return ESPECIES_MEDITERRANEO;
+  if (zona === "golfoCadiz") return ESPECIES_GOLFO_CADIZ;
+  if (zona === "canarias") return ESPECIES_CANARIAS;
   return ESPECIES;
 }
 function especiesEnTemporada(listaEspecies) {
@@ -970,8 +1043,8 @@ function coincideTemp(e, tempAgua) {
   const [min, max] = e.rangoTemp;
   return tempAgua >= min && tempAgua <= max;
 }
-function especiesPorZona(tempAgua, slug) {
-  const enTemporada = especiesEnTemporada(especiesPorSpot(slug)).map((e) => ({ ...e, coincide: coincideTemp(e, tempAgua) }));
+function especiesPorZona(tempAgua, slug, zonaForzada) {
+  const enTemporada = especiesEnTemporada(especiesPorSpot(slug, zonaForzada)).map((e) => ({ ...e, coincide: coincideTemp(e, tempAgua) }));
   const orden = (a, b) => (b.coincide === true) - (a.coincide === true);
   return {
     costa: enTemporada.filter((e) => e.zona === "costa").sort(orden),
@@ -1243,26 +1316,36 @@ function grosorTramo(punto) {
   return +(GROSOR_BASE + ratio * (GROSOR_MAX - GROSOR_BASE)).toFixed(1);
 }
 
-function crearMarcadores() {
-  SPOTS.forEach((s) => {
-    const color = colorIndiceMarCss(s.indice);
-    const html = `
-      <div style="display:flex; flex-direction:column; align-items:center;">
-        <div class="etiqueta-spot">${s.nombre}${SPOTS_CON_WEBCAM.includes(s.slug) ? '<span class="punto-webcam-viva" title="Webcam en directo"></span>' : ""}</div>
-        <div style="display:flex; align-items:center; gap:3px;">
-          ${iconoFlecha(gradosDesdeTexto(s.dirOla), "#7EC8E3")}
-          ${iconoFlecha(gradosDesdeTexto(s.dirViento), "#D4A24C")}
-          <span style="font-family:'IBM Plex Mono',monospace; font-size:9px; font-weight:700; color:#D4A24C; text-shadow:0 0 3px #0B2532,0 0 3px #0B2532;">${s.viento}</span>
-          <div class="marcador-envoltorio">
-            <div class="anillo-pulso" style="background:${color};"></div>
-            <div class="marcador" id="marcador-${s.slug}" style="background:${color}; color:#0B2532;">${textoIndice(s.indice)}</div>
-          </div>
+// Un spot fijo (de SPOTS) y una ubicación personalizada (de
+// spots_usuario, s.esUsuario === true) usan el mismo marcador — la única
+// diferencia es que una personalizada nunca lleva el punto verde de
+// webcam en directo (no tiene cámara).
+const marcadoresPorSlug = new Map();
+function crearMarcadorSpot(s) {
+  const color = colorIndiceMarCss(s.indice);
+  const tieneWebcam = !s.esUsuario && SPOTS_CON_WEBCAM.includes(s.slug);
+  const html = `
+    <div style="display:flex; flex-direction:column; align-items:center;">
+      <div class="etiqueta-spot">${s.nombre}${tieneWebcam ? '<span class="punto-webcam-viva" title="Webcam en directo"></span>' : ""}</div>
+      <div style="display:flex; align-items:center; gap:3px;">
+        ${iconoFlecha(gradosDesdeTexto(s.dirOla), "#7EC8E3")}
+        ${iconoFlecha(gradosDesdeTexto(s.dirViento), "#D4A24C")}
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:9px; font-weight:700; color:#D4A24C; text-shadow:0 0 3px #0B2532,0 0 3px #0B2532;">${s.viento}</span>
+        <div class="marcador-envoltorio">
+          <div class="anillo-pulso" style="background:${color};"></div>
+          <div class="marcador" id="marcador-${s.slug}" style="background:${color}; color:#0B2532;">${textoIndice(s.indice)}</div>
         </div>
-      </div>`;
-    const icon = L.divIcon({ html, className: "", iconSize: [110, 50], iconAnchor: [55, 25] });
-    const marker = L.marker([s.lat, s.lon], { icon }).addTo(map);
-    marker.on("click", () => abrirPanel(s));
-  });
+      </div>
+    </div>`;
+  const icon = L.divIcon({ html, className: "", iconSize: [110, 50], iconAnchor: [55, 25] });
+  const marker = L.marker([s.lat, s.lon], { icon }).addTo(map);
+  marker.on("click", () => abrirPanel(s));
+  marcadoresPorSlug.set(s.slug, marker);
+  return marker;
+}
+
+function crearMarcadores() {
+  SPOTS.forEach(crearMarcadorSpot);
 
   RIOS.forEach((r) => {
     // Un río = una polilínea continua por tramo (cabecera->medio,
@@ -1298,6 +1381,261 @@ function crearMarcadores() {
   });
 
   BOYAS.forEach(crearMarcadorBoya);
+}
+
+// ---------------------------------------------------------------------------
+// Ubicaciones personalizadas (Fase 2 del plan de mejoras, 2026-09-12):
+// cualquier usuario puede marcar un punto nuevo en el mapa (o usar su
+// GPS). El nombre nunca lo escribe el usuario — sale siempre de
+// /geocodificar (geocodificación inversa real, ver functions/geocodificar.js)
+// para que la lista de spots se enriquezca con nombres reales. No tienen
+// cámara (nunca punto verde de webcam) y no tienen datos de /prevision
+// (esa función solo conoce la lista fija) — su índice de mar/pesca se
+// calcula aquí mismo con una llamada directa a Open-Meteo, igual que ya
+// hace diario.html para "mi ubicación actual".
+// ---------------------------------------------------------------------------
+
+const RUMBOS_16 = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
+function textoRumbo(grados) {
+  const idx = Math.round((((grados % 360) + 360) % 360) / 22.5) % 16;
+  return RUMBOS_16[idx];
+}
+
+// Aproximación por coordenadas de a qué lista de especies acercarse — solo
+// para ubicaciones personalizadas, que no tienen un slug conocido en
+// SPOTS_MEDITERRANEO/SPOTS_GOLFO_CADIZ/SPOTS_CANARIAS. Simplificación
+// consciente (documentada en el plan): son cajas geográficas
+// aproximadas, no límites costeros oficiales.
+function zonaPorCoordenadas(lat, lon) {
+  if (lat >= 27 && lat <= 29.6 && lon >= -18.5 && lon <= -13) return "canarias";
+  if (lat >= 36 && lat <= 37.5 && lon >= -7.6 && lon <= -5.5) return "golfoCadiz";
+  if (lat < 43.5 && lon > -5.5) return "mediterraneo";
+  return "atlantico";
+}
+
+async function datosAmbientalesPunto(lat, lon) {
+  const params = `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&forecast_days=1`;
+  const [marino, tiempo] = await Promise.all([
+    fetch(`https://marine-api.open-meteo.com/v1/marine?${params}&hourly=wave_height,wave_direction,sea_surface_temperature`).then((r) => r.json()),
+    fetch(`https://api.open-meteo.com/v1/forecast?${params}&hourly=windspeed_10m,winddirection_10m,pressure_msl,cloudcover,precipitation&windspeed_unit=kmh`).then((r) => r.json()),
+  ]);
+  const horas = marino.hourly?.time || [];
+  const ahoraISO = new Date().toISOString().slice(0, 13); // "YYYY-MM-DDTHH"
+  let idx = horas.findIndex((h) => h.startsWith(ahoraISO));
+  if (idx === -1) idx = 0;
+  const idxFin = Math.min(idx + 12, horas.length - 1);
+  const alturasVentana = (marino.hourly?.wave_height || []).slice(idx, idxFin + 1).filter((v) => v != null);
+
+  const presionAhora = tiempo.hourly?.pressure_msl?.[idx] ?? null;
+  const presionHace3h = tiempo.hourly?.pressure_msl?.[Math.max(0, idx - 3)] ?? null;
+  let tendenciaPresion = null;
+  if (presionAhora != null && presionHace3h != null) {
+    const diff = presionAhora - presionHace3h;
+    tendenciaPresion = diff <= -1 ? "bajando" : diff >= 1 ? "subiendo" : "estable";
+  }
+
+  return {
+    altura: alturasVentana.length ? [Math.min(...alturasVentana), Math.max(...alturasVentana)] : [0, 0],
+    periodo: null,
+    dirOla: textoRumbo(marino.hourly?.wave_direction?.[idx] ?? 0),
+    viento: Math.round(tiempo.hourly?.windspeed_10m?.[idx] ?? 0),
+    dirViento: textoRumbo(tiempo.hourly?.winddirection_10m?.[idx] ?? 0),
+    marea: null,
+    corriente: null, dirCorriente: null,
+    tempAgua: marino.hourly?.sea_surface_temperature?.[idx] ?? null,
+    nubosidad: tiempo.hourly?.cloudcover?.[idx] ?? null,
+    precipitacion: tiempo.hourly?.precipitation?.[idx] ?? null,
+    presion: presionAhora != null ? { valor: Math.round(presionAhora), tendencia: tendenciaPresion } : null,
+    actualizadoEn: Date.now(),
+  };
+}
+
+let spotsPersonalizados = [];
+const favoritosClaves = new Set(); // "slug" del spot fijo, o el uuid del spot_usuario
+let favoritosFilas = []; // filas crudas de spots_favoritos, para poder borrar por id
+
+function claveFavorito(s) {
+  return s.slug;
+}
+
+async function cargarSpotsPersonalizados() {
+  if (!window.supabaseCliente) return;
+  const sb = window.supabaseCliente;
+  const uid = window.usuarioIdActual;
+
+  const [{ data: spotsFilas, error: errSpots }, { data: favFilas, error: errFav }] = await Promise.all([
+    sb.from("spots_usuario").select("*"),
+    sb.from("spots_favoritos").select("*").eq("user_id", uid),
+  ]);
+  if (errSpots) { console.warn("No se pudieron cargar las ubicaciones personalizadas:", errSpots.message); return; }
+  if (errFav) console.warn("No se pudieron cargar los favoritos:", errFav.message);
+
+  favoritosClaves.clear();
+  favoritosFilas = favFilas || [];
+  favoritosFilas.forEach((f) => favoritosClaves.add(f.spot_slug || f.spot_usuario_id));
+
+  // Quita los marcadores personalizados anteriores antes de repintar (por
+  // si se llama de nuevo tras crear/borrar uno).
+  spotsPersonalizados.forEach((s) => {
+    const m = marcadoresPorSlug.get(s.slug);
+    if (m) { map.removeLayer(m); marcadoresPorSlug.delete(s.slug); }
+  });
+
+  spotsPersonalizados = (spotsFilas || []).map((fila) => ({
+    slug: fila.id,
+    nombre: fila.nombre,
+    lat: fila.lat,
+    lon: fila.lon,
+    pais: fila.pais,
+    ccaa: fila.ccaa,
+    esUsuario: true,
+    propio: fila.user_id === uid,
+    publica: fila.publica,
+    zonaAprox: zonaPorCoordenadas(fila.lat, fila.lon),
+    altura: [0, 0], periodo: null, dirOla: "N", viento: 0, dirViento: "N",
+    marea: null, corriente: null, dirCorriente: null,
+    tempAgua: null, nubosidad: null, precipitacion: null, presion: null,
+    actualizadoEn: null,
+  }));
+
+  spotsPersonalizados.forEach((s) => { s.indice = indiceMar(s); crearMarcadorSpot(s); });
+
+  // El índice de mar de un punto personalizado no depende de /prevision
+  // (que no lo conoce) — se calcula aparte con una llamada directa a
+  // Open-Meteo, una por spot. Se hace después de pintar el marcador
+  // (con "S/D" de partida) para no bloquear el resto del mapa mientras
+  // llegan estas respuestas.
+  spotsPersonalizados.forEach(async (s) => {
+    try {
+      const datos = await datosAmbientalesPunto(s.lat, s.lon);
+      Object.assign(s, datos);
+      s.indice = indiceMar(s);
+      const marker = marcadoresPorSlug.get(s.slug);
+      if (marker) map.removeLayer(marker);
+      crearMarcadorSpot(s);
+    } catch (e) {
+      console.warn(`No se pudo calcular el índice para "${s.nombre}":`, e.message);
+    }
+  });
+}
+
+function todosLosSpots() {
+  return [...SPOTS, ...spotsPersonalizados];
+}
+
+// ---- Añadir ubicación: por clic en el mapa o por GPS ----
+let modoAnadirUbicacion = false;
+let puntoPendiente = null; // { lat, lon }
+
+document.getElementById("toggleAnadirUbicacion").addEventListener("click", (e) => {
+  modoAnadirUbicacion = !modoAnadirUbicacion;
+  e.currentTarget.classList.toggle("activo", modoAnadirUbicacion);
+  if (!modoAnadirUbicacion) cerrarConfirmarUbicacion();
+});
+map.on("click", (e) => {
+  if (!modoAnadirUbicacion) return;
+  iniciarNuevaUbicacion(e.latlng.lat, e.latlng.lng);
+});
+
+document.getElementById("toggleGpsUbicacion").addEventListener("click", () => {
+  navigator.geolocation.getCurrentPosition(
+    (pos) => iniciarNuevaUbicacion(pos.coords.latitude, pos.coords.longitude),
+    () => { mostrarErrorUbicacion("No se ha podido obtener tu GPS — revisa los permisos de ubicación del navegador."); },
+    { timeout: 8000 }
+  );
+});
+
+function mostrarErrorUbicacion(mensaje) {
+  document.getElementById("confirmarUbicacionPanel").classList.add("visible");
+  document.getElementById("confirmarUbicacionContenido").style.display = "none";
+  const errEl = document.getElementById("confirmarUbicacionError");
+  errEl.style.display = "block";
+  errEl.textContent = mensaje;
+}
+
+function cerrarConfirmarUbicacion() {
+  document.getElementById("confirmarUbicacionPanel").classList.remove("visible");
+  document.getElementById("confirmarUbicacionError").style.display = "none";
+  puntoPendiente = null;
+}
+
+async function iniciarNuevaUbicacion(lat, lon) {
+  puntoPendiente = { lat, lon };
+  document.getElementById("confirmarUbicacionPanel").classList.add("visible");
+  document.getElementById("confirmarUbicacionContenido").style.display = "none";
+  document.getElementById("confirmarUbicacionError").style.display = "none";
+  try {
+    const resp = await fetch(`/geocodificar?lat=${lat}&lon=${lon}`);
+    const datos = await resp.json();
+    if (!resp.ok) throw new Error(datos.error || "no identificado");
+    puntoPendiente.nombre = datos.nombre;
+    puntoPendiente.pais = datos.pais;
+    puntoPendiente.ccaa = datos.ccaa;
+    document.getElementById("confirmarUbicacionNombre").textContent = datos.nombre;
+    document.getElementById("confirmarUbicacionContenido").style.display = "block";
+  } catch (e) {
+    mostrarErrorUbicacion("No se ha podido identificar el nombre de esta zona — prueba con otro punto más cerca de la costa.");
+  }
+}
+
+document.getElementById("btnCancelarUbicacion").addEventListener("click", cerrarConfirmarUbicacion);
+document.getElementById("btnConfirmarUbicacion").addEventListener("click", async () => {
+  if (!puntoPendiente || !window.supabaseCliente) return;
+  const publica = document.querySelector('input[name="visibilidadUbicacion"]:checked').value === "publica";
+  const { error } = await window.supabaseCliente.from("spots_usuario").insert({
+    user_id: window.usuarioIdActual,
+    nombre: puntoPendiente.nombre,
+    pais: puntoPendiente.pais,
+    ccaa: puntoPendiente.ccaa,
+    lat: puntoPendiente.lat,
+    lon: puntoPendiente.lon,
+    publica,
+  });
+  if (error) {
+    mostrarErrorUbicacion(`No se ha podido guardar: ${error.message}`);
+    return;
+  }
+  cerrarConfirmarUbicacion();
+  modoAnadirUbicacion = false;
+  document.getElementById("toggleAnadirUbicacion").classList.remove("activo");
+  await cargarSpotsPersonalizados();
+});
+
+// ---- Favoritos y borrado (desde el panel de detalle de un spot) ----
+async function alternarFavorito(s) {
+  if (!window.supabaseCliente) return;
+  const sb = window.supabaseCliente;
+  const uid = window.usuarioIdActual;
+  const clave = claveFavorito(s);
+  const esFavorito = favoritosClaves.has(clave);
+  if (esFavorito) {
+    const fila = favoritosFilas.find((f) => (f.spot_slug || f.spot_usuario_id) === clave);
+    if (fila) await sb.from("spots_favoritos").delete().eq("id", fila.id);
+    favoritosClaves.delete(clave);
+    favoritosFilas = favoritosFilas.filter((f) => f.id !== fila?.id);
+  } else {
+    const campo = s.esUsuario ? { spot_usuario_id: s.slug } : { spot_slug: s.slug };
+    const { data } = await sb.from("spots_favoritos").insert({ user_id: uid, ...campo }).select().single();
+    favoritosClaves.add(clave);
+    if (data) favoritosFilas.push(data);
+  }
+  actualizarBotonFavorito(s);
+}
+
+function actualizarBotonFavorito(s) {
+  const btn = document.getElementById("panelBtnFavorito");
+  const esFavorito = favoritosClaves.has(claveFavorito(s));
+  btn.textContent = esFavorito ? "★" : "☆";
+  btn.style.color = esFavorito ? "#D4A24C" : "#6C8890";
+}
+
+async function borrarSpotPersonalizado(s) {
+  if (!window.supabaseCliente || !s.esUsuario || !s.propio) return;
+  if (!confirm(`¿Borrar "${s.nombre}"? No se puede deshacer.`)) return;
+  const { error } = await window.supabaseCliente.from("spots_usuario").delete().eq("id", s.slug);
+  if (error) { alert(`No se ha podido borrar: ${error.message}`); return; }
+  document.getElementById("panel").classList.remove("visible");
+  await cargarSpotsPersonalizados();
 }
 
 function crearMarcadorBoya(boya) {
@@ -1492,10 +1830,15 @@ function actualizarLecturaVisual(img) {
   el.innerHTML = `👁 <span style="color:${et.color};">${et.texto}</span>`;
 }
 
+let spotAbiertoActual = null;
 function abrirPanel(s) {
+  spotAbiertoActual = s;
   document.getElementById("panel").classList.add("visible");
   document.getElementById("panelNombre").textContent = s.nombre;
   document.getElementById("panelCoords").textContent = `${s.lat.toFixed(4)}°N, ${Math.abs(s.lon).toFixed(4)}°W`;
+  actualizarBotonFavorito(s);
+  document.getElementById("panelEtiquetaComunidad").style.display = s.esUsuario ? "inline" : "none";
+  document.getElementById("panelBtnBorrar").style.display = (s.esUsuario && s.propio) ? "inline" : "none";
   document.getElementById("panelOla").textContent = `${s.altura[0]}–${s.altura[1]}m`;
   document.getElementById("panelOlaDir").textContent = `${s.periodo}s · ${s.dirOla}`;
   document.getElementById("panelViento").textContent = `${s.viento} km/h`;
@@ -1531,7 +1874,7 @@ function abrirPanel(s) {
     document.getElementById("panelPresionNota").textContent = "";
   }
 
-  const { costa, marAdentro } = especiesPorZona(s.tempAgua, s.slug);
+  const { costa, marAdentro } = especiesPorZona(s.tempAgua, s.slug, s.esUsuario ? s.zonaAprox : undefined);
   const listaEspecie = (e) => {
     let franja = "";
     if (e.rangoTemp) {
@@ -1580,6 +1923,12 @@ function abrirPanel(s) {
   document.querySelectorAll(".marcador").forEach((m) => m.classList.remove("activo"));
   document.getElementById(`marcador-${s.slug}`).classList.add("activo");
 }
+document.getElementById("panelBtnFavorito").addEventListener("click", () => {
+  if (spotAbiertoActual) alternarFavorito(spotAbiertoActual);
+});
+document.getElementById("panelBtnBorrar").addEventListener("click", () => {
+  if (spotAbiertoActual) borrarSpotPersonalizado(spotAbiertoActual);
+});
 document.getElementById("toggleLeyenda").addEventListener("click", () => {
   const abierta = document.getElementById("leyendaPanel").classList.toggle("visible");
   document.getElementById("toggleLeyenda").textContent = abierta ? "✕" : "ⓘ";
@@ -1703,7 +2052,7 @@ document.getElementById("cerrarPanel").addEventListener("click", () => {
 // fetch de refresco esté fallando (nunca se queda un número verde
 // mostrando una hora vieja solo porque nadie volvió a pintarlo).
 function refrescarIndicesVisibles() {
-  SPOTS.forEach((s) => {
+  todosLosSpots().forEach((s) => {
     s.indice = indiceMar(s);
     const marcadorEl = document.getElementById(`marcador-${s.slug}`);
     if (!marcadorEl) return;
@@ -1717,7 +2066,7 @@ function refrescarIndicesVisibles() {
   if (estadoEl) estadoEl.textContent = textoVigencia();
   const marcadorActivo = document.querySelector(".marcador.activo");
   if (marcadorActivo) {
-    const sAbierto = SPOTS.find((x) => x.slug === marcadorActivo.id.replace("marcador-", ""));
+    const sAbierto = todosLosSpots().find((x) => x.slug === marcadorActivo.id.replace("marcador-", ""));
     if (sAbierto) abrirPanel(sAbierto);
   }
 }
@@ -1727,6 +2076,11 @@ map.whenReady(async () => {
   crearMarcadores();
   comprobarAvisoRayos();
   refrescarIndicesVisibles();
+  if (window.supabaseCliente) {
+    cargarSpotsPersonalizados();
+  } else {
+    window.addEventListener("supabase-listo", () => cargarSpotsPersonalizados(), { once: true });
+  }
   // Refresco real de datos cada hora (antes solo se pedía una vez al
   // cargar la página, así que dejarla abierta más de 1h mostraba un
   // índice calculado con datos viejos sin que nada lo avisara).
