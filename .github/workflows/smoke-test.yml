@@ -1,11 +1,9 @@
 name: Smoke test E2E
 
-# DISEÑADO, NO ACTIVADO TODAVIA: `schedule` comentado a proposito, y
-# ademas este workflow no puede correr hasta que existan los secrets
-# SMOKE_TEST_EMAIL / SMOKE_TEST_PASSWORD (Settings > Secrets and
-# variables > Actions) de una cuenta de prueba real y confirmada. Puede
-# ser la misma cuenta de prueba usada para la comprobacion cruzada de RLS
-# (ver CLAUDE.md, "Test de autenticación") — no hace falta una tercera.
+# ACTIVADO 2026-09-12, probado a mano primero (encontró y arregló un bug
+# real: faltaba user_id explícito en el insert de prueba). Corre a las
+# 05:00 UTC, antes que el informe diario (06:00 UTC) y el test de
+# autenticación (06:17 UTC), para no saturar los runners a la vez.
 #
 # Recorre el camino real de un usuario contra produccion: login ->
 # /prevision y /webcam/<slug> responden -> escribe una entrada de prueba
@@ -22,8 +20,8 @@ name: Smoke test E2E
 # para una cuenta marcada como test -- decidir eso aparte, no asumirlo.
 
 on:
-  # schedule:
-  #   - cron: "0 6 * * *" # una vez al dia
+  schedule:
+    - cron: "0 5 * * *"
   workflow_dispatch: {}
 
 jobs:

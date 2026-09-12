@@ -1,22 +1,21 @@
 name: Informe diario
 
-# DISEÑADO, NO ACTIVADO TODAVIA: el trigger `schedule` está comentado a
-# propósito — de momento solo corre si alguien lo lanza a mano
-# (workflow_dispatch). Descomenta el cron cuando quieras que corra solo.
+# ACTIVADO 2026-09-12: 06:00 UTC = 08:00 en verano (CEST) / 07:00 en
+# invierno (CET) — GitHub Actions no ajusta el cron por DST, así que en
+# invierno llegará una hora más pronto. Cambiar el minuto/hora aquí si se
+# quiere afinar.
 #
 # Qué hace: comprueba salud básica (fuentes externas respondiendo,
 # ROBOT.md con actividad reciente, test de autenticación en verde) y el
-# conteo de alarmas SOS de las últimas 24h (agregado, nunca filas ni datos
-# personales — ver supabase/schema_conteo_sos.sql, hay que aplicarlo en
-# Supabase antes de que este número salga real en vez de "N/D").
-# Añade una fila a un único Issue "Informe diario" (uno crece con el
-# tiempo, no un Issue nuevo cada día) — GitHub ya avisa por email de la
-# actividad en Issues que sigues, así que funciona sin decidir todavía un
-# destinatario/mecanismo de email aparte.
+# conteo real de alarmas SOS de las últimas 24h (agregado, nunca filas ni
+# datos personales — vía contar_alertas_sos_24h(), ya aplicada en
+# producción). Añade una fila a un único Issue "Informe diario" (uno
+# crece con el tiempo, no un Issue nuevo cada día) — GitHub ya avisa por
+# email de la actividad en Issues que sigues.
 
 on:
-  # schedule:
-  #   - cron: "0 7 * * *" # una vez al día
+  schedule:
+    - cron: "0 6 * * *"
   workflow_dispatch: {}
 
 jobs:

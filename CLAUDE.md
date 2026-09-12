@@ -79,6 +79,7 @@ otro usuario". Cualquier cambio que toque `alarma.html`,
 | `/rayos-imagen` | `rayos-imagen.js` | Proxy del mapa de rayos de AEMET | No requiere sesión |
 | `/webcam/<slug>` | `webcam/[slug].js` | Proxy de imagen de webcam (evita CORS/hotlinking) | No requiere sesión |
 | `/sos-alerta` | `sos-alerta.js` | POST: manda el aviso SOS (email vía Resend) a los contactos de emergencia del usuario que llama | **Requiere** `Authorization: Bearer <token de sesión>` |
+| `/aviso-alta` | `aviso-alta.js` | POST: avisa al admin por email cuando un `user_id` corresponde a un alta real de los últimos 5 min | Sin token — verifica con `service_role` server-side (ver más abajo) |
 
 Ninguno de los cuatro primeros toca tablas de usuario en Supabase.
 `sos-alerta.js` es el único que sí, y usa siempre el token de quien llama.
@@ -212,27 +213,34 @@ cuentas, ni de prueba). Los 6 secrets ya están puestos en GitHub Actions
 prueba cruzada ya corre de verdad en el `auth-test.yml` diario, no solo
 a mano.
 
-## Escaneo de seguridad y informe diario (diseñados 2026-09-12, sin activar)
+## Rutinas programadas (todas activas y probadas en real, 2026-09-12)
 
-Ambos con `workflow_dispatch` únicamente (el `schedule` está comentado en
-el propio YAML) — se pueden lanzar a mano desde la pestaña Actions para
-probarlos, pero no corren solos hasta descomentar el cron.
+Las cuatro se probaron primero a mano (`workflow_dispatch`) antes de
+activar el `schedule` — `smoke-test.yml` falló en su primer intento (ver
+abajo) y se corrigió antes de programarlo. Horas escalonadas para no
+competir por runners:
 
-- **`.github/workflows/security-scan.yml`**: ZAP en modo baseline (pasivo,
-  nunca payloads activos) contra `fishnow-59u.pages.dev`. Los hallazgos
-  abren/actualizan un Issue en este repo — no se decidió un email
-  separado porque GitHub ya avisa por email de los Issues nuevos en tu
-  propio repo.
-- **`.github/workflows/daily-report.yml`**: corre el test de
-  autenticación, comprueba que `/prevision`, `/rayos-imagen`,
-  `/webcam/mundaka` y `/luna` responden en producción real, mira la
-  fecha de la última entrada de `ROBOT.md`, y cuenta las alarmas SOS de
-  las últimas 24h — vía `contar_alertas_sos_24h()`, una función
-  `security definer` en Supabase (nunca filas ni user_id, solo el
-  entero). **Aplicada en producción el 2026-09-12** (verificado con una
-  llamada real: `200`, devuelve `0`). Añade una entrada a un único Issue
-  "Informe diario — Costa Viva" que crece con el tiempo, en vez de abrir
-  uno nuevo cada día.
+| Workflow | Cron (UTC) | Qué hace |
+|---|---|---|
+| `security-scan.yml` | `30 4 * * 1` (lunes) | ZAP baseline (pasivo) contra producción → Issue "ZAP Scan Baseline Report" |
+| `smoke-test.yml` | `0 5 * * *` | login real → `/prevision` → `/webcam/mundaka` → crea/borra una salida de pesca de prueba. `/sos-alerta` excluido a propósito (ver más abajo) |
+| `daily-report.yml` | `0 6 * * *` | salud + conteo real de SOS (24h) → entrada nueva en el Issue "Informe diario — Costa Viva" |
+| `auth-test.yml` | `17 6 * * *` | RLS sin token + prueba cruzada A-lee-B (secrets ya puestos) |
+
+`0 6 * * *` = 08:00 en verano (CEST) / 07:00 en invierno (CET) — GitHub
+Actions no ajusta el cron por el cambio de hora. Ajustar aquí si se
+quiere afinar. Avisos vía Issues de GitHub (que ya notifican por email
+al dueño del repo) — no se montó un canal de email aparte para esto.
+
+- **`security-scan.yml`**: ZAP en modo baseline (pasivo, nunca payloads
+  activos) contra `fishnow-59u.pages.dev`.
+- **`daily-report.yml`**: cuenta las alarmas SOS de las últimas 24h vía
+  `contar_alertas_sos_24h()`, función `security definer` en Supabase
+  (nunca filas ni user_id, solo el entero) — aplicada en producción el
+  2026-09-12.
+- **`smoke-test.yml`**: su primer intento falló (`42501`, RLS) porque el
+  insert de prueba en `salidas_pesca` no mandaba `user_id` explícito —
+  corregido extrayendo el id del login antes de programarlo.
 
 ## Disciplina de trabajo (añadida 2026-09-12, ver memoria de sesión)
 
@@ -274,15 +282,23 @@ probarlos, pero no corren solos hasta descomentar el cron.
   2026-09-12** — usuario B nunca vio las filas de usuario A (ni listado
   ni por id directo) en `contactos_emergencia` ni `salidas_pesca`; filas
   de prueba limpiadas después. RLS confirmado en el caso más estricto.
-- Decidir si/cuándo activar los `schedule` (hoy comentados,
-  `workflow_dispatch` únicamente) de `security-scan.yml`,
-  `daily-report.yml` y `smoke-test.yml`.
-- `smoke-test.yml` (diseñado 2026-09-12, secrets ya puestos): recorre
-  login → `/prevision` → `/webcam/mundaka` → crea y borra una salida de
-  pesca de prueba. **`/sos-alerta` queda excluido a propósito** — nunca
-  debe llamarse automáticamente, dispararía un email de socorro real.
-  Sigue con solo `workflow_dispatch`, pendiente de probarlo a mano una
-  vez y decidir si activar el `schedule`.
+- `smoke-test.yml` nunca debe llamar a `/sos-alerta` (decisión explícita
+  del 2026-09-12) — dispararía un email de socorro real. Si en el futuro
+  se quiere cubrir también ese camino, hace falta antes un modo de
+  prueba explícito en `sos-alerta.js` que nunca llame a Resend de verdad
+  para una cuenta marcada como test — decidirlo aparte, no asumirlo.
+- **`functions/aviso-alta.js`** (añadido 2026-09-12): avisa por email al
+  admin en cada alta real (llamado desde `login.html` tras un `signUp()`
+  con éxito). Único uso de `SUPABASE_SERVICE_ROLE_KEY` en todo el repo —
+  solo lectura de `auth.users` por id para verificar que el alta es
+  real y de los últimos 5 minutos (resistente a spoofing con un
+  `user_id` inventado o reutilizado), nunca para tablas de usuario.
+  **Pendiente de que el usuario añada 2 variables de entorno nuevas en
+  Cloudflare Pages** (Settings > Environment variables, como Secret):
+  `SUPABASE_SERVICE_ROLE_KEY` y `ADMIN_EMAIL` (reutiliza el
+  `RESEND_API_KEY` ya existente). Sin ellas el endpoint responde `501`
+  sin romper el alta — verificado en el preview de Cloudflare Pages
+  antes de mergear a `main`.
 - Punto 13 del diagnóstico (2026-09-12, sin aplicar nada): el alta en
   `login.html` es pública sin CAPTCHA/Turnstile — mitigado parcialmente
   porque `perfiles.aprobado` bloquea el acceso real hasta aprobación

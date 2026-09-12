@@ -1,9 +1,8 @@
 name: Escaneo de seguridad (OWASP ZAP baseline)
 
-# DISEÑADO, NO ACTIVADO TODAVIA: el trigger `schedule` está comentado a
-# propósito — de momento solo corre si alguien lo lanza a mano
-# (workflow_dispatch, pestaña Actions > este workflow > "Run workflow").
-# Descomenta el cron cuando decidas activarlo en automático.
+# ACTIVADO 2026-09-12, probado a mano primero (pasó en verde, abrió el
+# Issue "ZAP Scan Baseline Report"). Semanal, lunes 04:30 UTC — antes que
+# el resto de rutinas diarias, para no competir por runners.
 #
 # Modo baseline = pasivo (spidering + comprobaciones de cabeceras/cookies/
 # CSP/rutas expuestas), NUNCA "full scan" con payloads activos contra
@@ -17,8 +16,8 @@ name: Escaneo de seguridad (OWASP ZAP baseline)
 # funciona sin decidir todavía un destinatario/mecanismo de email aparte.
 
 on:
-  # schedule:
-  #   - cron: "30 5 * * 1" # una vez por semana, lunes
+  schedule:
+    - cron: "30 4 * * 1"
   workflow_dispatch: {}
 
 jobs:
