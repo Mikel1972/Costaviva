@@ -197,14 +197,20 @@ rechaza peticiones sin token o con un token inválido. Programado a diario
 en `.github/workflows/auth-test.yml` (no escribe nada, solo lee/rechaza —
 seguro de tener en automático).
 
-**No cubre todavía** la prueba más estricta (token de usuario A leyendo
-una fila de usuario B). Cuentas de prueba creadas el 2026-09-12
+**Incluye también** la prueba más estricta (token de usuario A leyendo una
+fila de usuario B) — opcional: solo corre si están las variables de
+entorno `TEST_USER_A_EMAIL`/`TEST_USER_A_PASSWORD`/`TEST_USER_B_EMAIL`/
+`TEST_USER_B_PASSWORD`; sin ellas se salta con un aviso en vez de fallar.
+Cuentas de prueba creadas y confirmadas el 2026-09-12
 (`admin+fishnowtest1@costaviva.invalid` / `admin+fishnowtest2@costaviva.invalid`,
-alias de Gmail — llegan al mismo buzón del usuario), pendiente de que el
-usuario confirme ambos emails ("Confirm email" está activo en este
-proyecto) antes de poder hacer `signInWithPassword` con ellas y añadir el
-caso al test. Credenciales fuera del repo (no commitear nunca contraseñas
-de estas cuentas, ni de prueba).
+alias de Gmail — llegan al mismo buzón del usuario; la misma cuenta A
+sirve también para `smoke-test.yml`). **Ejecutado en real el 2026-09-12:
+el token de B no vio la fila de A, ni por listado ni por id directo.**
+Credenciales fuera del repo (no commitear nunca contraseñas de estas
+cuentas, ni de prueba). Los 6 secrets ya están puestos en GitHub Actions
+(`TEST_USER_A/B_EMAIL/PASSWORD`, `SMOKE_TEST_EMAIL/PASSWORD`) — la
+prueba cruzada ya corre de verdad en el `auth-test.yml` diario, no solo
+a mano.
 
 ## Escaneo de seguridad y informe diario (diseñados 2026-09-12, sin activar)
 
@@ -221,12 +227,12 @@ probarlos, pero no corren solos hasta descomentar el cron.
   autenticación, comprueba que `/prevision`, `/rayos-imagen`,
   `/webcam/mundaka` y `/luna` responden en producción real, mira la
   fecha de la última entrada de `ROBOT.md`, y cuenta las alarmas SOS de
-  las últimas 24h — vía una función nueva en Supabase
-  (`supabase/schema_conteo_sos.sql`, **pendiente de aplicar en el SQL
-  Editor** — hasta entonces el informe mostrará "N/D" ahí) que devuelve
-  solo un número agregado (`security definer`, nunca filas ni user_id).
-  Añade una entrada a un único Issue "Informe diario — Costa Viva" que
-  crece con el tiempo, en vez de abrir uno nuevo cada día.
+  las últimas 24h — vía `contar_alertas_sos_24h()`, una función
+  `security definer` en Supabase (nunca filas ni user_id, solo el
+  entero). **Aplicada en producción el 2026-09-12** (verificado con una
+  llamada real: `200`, devuelve `0`). Añade una entrada a un único Issue
+  "Informe diario — Costa Viva" que crece con el tiempo, en vez de abrir
+  uno nuevo cada día.
 
 ## Disciplina de trabajo (añadida 2026-09-12, ver memoria de sesión)
 
@@ -235,36 +241,48 @@ probarlos, pero no corren solos hasta descomentar el cron.
   cambie lo que ve/hace un usuario real) va en una rama; se espera el
   deploy de preview de Cloudflare Pages y se prueba ahí de verdad antes
   de mergear. Cambios inertes (documentación, workflows solo con
-  `workflow_dispatch`, SQL todavía sin aplicar) no necesitan este paso.
-- **Migraciones de Supabase, no `.sql` suelto**: `supabase init` ya
-  corrido (`supabase/config.toml`). `supabase link --project-ref
-  imncbmizxkorotpeisic` **bloqueado**: la sesión de la CLI autenticada en
-  esta máquina no tiene privilegios sobre este proyecto (confirma la
-  norma de no asumir que la cuenta/token de otro proyecto sirve aquí).
-  Pendiente de que el usuario haga `supabase login` con la cuenta que sí
-  es dueña de `imncbmizxkorotpeisic`, y entonces: `supabase link`,
-  `supabase db pull` (para traer el esquema ya aplicado como baseline sin
-  volver a ejecutarlo), y convertir `schema_conteo_sos.sql` en la primera
-  migración nueva de verdad.
+  `workflow_dispatch`, migraciones todavía sin aplicar) no necesitan este
+  paso.
+- **Migraciones de Supabase, no `.sql` suelto**: adoptado —
+  `supabase/migrations/` con `20260912144111_conteo_alertas_sos_24h.sql`
+  como primera migración real, aplicada con `supabase db push
+  --db-url <connection pooling string>`. Notas para la próxima vez:
+  - `supabase link` con un Personal Access Token de cuenta **no
+    funcionó** (error de privilegios de la API de gestión de Supabase,
+    incluso con el usuario confirmado como Owner y el token con todos
+    los scopes) — no perder tiempo ahí de nuevo sin comprobar primero si
+    Supabase lo ha arreglado.
+  - La cadena de conexión **directa** (`db.imncbmizxkorotpeisic.supabase.co`)
+    solo tiene registro DNS AAAA (IPv6) — falla en cualquier entorno sin
+    salida IPv6 (`ENOTFOUND`). Usar siempre la de **Connection
+    Pooling** (`aws-*.pooler.supabase.com`, usuario
+    `postgres.imncbmizxkorotpeisic`), que sí resuelve por IPv4.
+  - `supabase db pull` en modo migración necesita Docker (no disponible
+    en este entorno) para la "shadow database" — no se pudo traer un
+    baseline de `schema.sql`/`schema_diario_alarma.sql` como migración.
+    Por eso esas dos tablas siguen siendo `.sql` suelto (ya aplicado
+    hace tiempo, no se toca) y solo lo *nuevo* a partir de ahora usa
+    `supabase/migrations/`. Migrar el histórico requeriría Docker
+    Desktop en la máquina donde se ejecute.
+  - `supabase db push --db-url "<pooler>" --include-all --yes` sí
+    funciona sin Docker ni `link` — es la vía a repetir para la próxima
+    migración.
 
 ## Pendiente conocido (no tocar sin confirmar)
 
-- Prueba cruzada usuario-A-lee-fila-de-usuario-B: confirmar los dos
-  emails de prueba, luego extender `test/endpoints-auth.test.js`.
-- Aplicar `supabase/schema_conteo_sos.sql` (o su migración equivalente
-  una vez resuelto el link de arriba) para que el informe diario tenga
-  el conteo real de SOS.
+- Prueba cruzada usuario-A-lee-fila-de-usuario-B: **hecha y verificada el
+  2026-09-12** — usuario B nunca vio las filas de usuario A (ni listado
+  ni por id directo) en `contactos_emergencia` ni `salidas_pesca`; filas
+  de prueba limpiadas después. RLS confirmado en el caso más estricto.
 - Decidir si/cuándo activar los `schedule` (hoy comentados,
   `workflow_dispatch` únicamente) de `security-scan.yml`,
   `daily-report.yml` y `smoke-test.yml`.
-- `smoke-test.yml` (diseñado 2026-09-12): recorre login → `/prevision` →
-  `/webcam/mundaka` → crea y borra una salida de pesca de prueba.
-  **`/sos-alerta` queda excluido a propósito** — nunca debe llamarse
-  automáticamente, dispararía un email de socorro real. Necesita los
-  secrets `SMOKE_TEST_EMAIL`/`SMOKE_TEST_PASSWORD` — puede ser la misma
-  cuenta de prueba de la prueba cruzada de RLS (no hace falta una
-  tercera; intentar crear una tercera cuenta chocó con el rate-limit de
-  envío de emails de Supabase).
+- `smoke-test.yml` (diseñado 2026-09-12, secrets ya puestos): recorre
+  login → `/prevision` → `/webcam/mundaka` → crea y borra una salida de
+  pesca de prueba. **`/sos-alerta` queda excluido a propósito** — nunca
+  debe llamarse automáticamente, dispararía un email de socorro real.
+  Sigue con solo `workflow_dispatch`, pendiente de probarlo a mano una
+  vez y decidir si activar el `schedule`.
 - Punto 13 del diagnóstico (2026-09-12, sin aplicar nada): el alta en
   `login.html` es pública sin CAPTCHA/Turnstile — mitigado parcialmente
   porque `perfiles.aprobado` bloquea el acceso real hasta aprobación

@@ -3,9 +3,16 @@ name: Test de autenticación (endpoints de usuario)
 # Comprueba periódicamente contra producción real y el Supabase real que
 # los datos de usuario (contactos de emergencia, alertas SOS, capturas...)
 # no son accesibles sin la sesión de su propio dueño. Ver
-# test/endpoints-auth.test.js y CLAUDE.md para el detalle y las
-# limitaciones conocidas (no cubre la prueba cruzada usuario-A-lee-B).
-# No escribe nada ni en Supabase ni en producción — solo lee/rechaza.
+# test/endpoints-auth.test.js y CLAUDE.md para el detalle.
+#
+# La prueba cruzada (token de A leyendo fila de B) solo corre si existen
+# los 4 secrets TEST_USER_A/B_EMAIL/PASSWORD — sin ellos se salta con un
+# aviso, no falla el workflow. Añadirlos en Settings > Secrets and
+# variables > Actions para activarla aquí también.
+#
+# El resto de comprobaciones no escriben nada ni en Supabase ni en
+# producción — solo leen/rechazan. La cruzada sí crea y borra una fila de
+# prueba en contactos_emergencia con la cuenta de test A.
 
 on:
   schedule:
@@ -15,6 +22,11 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      TEST_USER_A_EMAIL: ${{ secrets.TEST_USER_A_EMAIL }}
+      TEST_USER_A_PASSWORD: ${{ secrets.TEST_USER_A_PASSWORD }}
+      TEST_USER_B_EMAIL: ${{ secrets.TEST_USER_B_EMAIL }}
+      TEST_USER_B_PASSWORD: ${{ secrets.TEST_USER_B_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

@@ -1,9 +1,5 @@
 -- Costa Viva — conteo agregado de alertas SOS, para el informe diario
 --
--- Cómo usar: pega esto en el SQL Editor del proyecto de Supabase
--- (imncbmizxkorotpeisic) y dale a "Run". No toca ninguna tabla existente,
--- solo añade una función.
---
 -- Por qué existe: `alertas_sos` tiene RLS (cada usuario ve solo las suyas),
 -- así que con la anon key un informe diario no puede hacer
 -- `select count(*) from alertas_sos` — vería 0 siempre. La alternativa
