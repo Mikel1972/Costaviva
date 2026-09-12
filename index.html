@@ -1978,7 +1978,8 @@ function abrirPanel(s) {
 
   if (s.marea && s.marea.altura !== null) {
     const flecha = s.marea.tendencia === "subiendo" ? "↑" : s.marea.tendencia === "bajando" ? "↓" : "";
-    document.getElementById("panelMarea").textContent = `${s.marea.altura}m ${flecha}`;
+    const coef = s.marea.coeficiente != null ? ` · coef. ${s.marea.coeficiente}` : "";
+    document.getElementById("panelMarea").textContent = `${s.marea.altura}m ${flecha}${coef}`;
     const prox = s.marea.proximas && s.marea.proximas[0];
     document.getElementById("panelMareaProxima").textContent = prox ? `próx. ${prox.tipo} ${prox.hora}` : "";
   } else {

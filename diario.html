@@ -504,9 +504,25 @@ function horaActualMadridISO() {
   return `${val("year")}-${val("month")}-${val("day")}T${val("hour")}`;
 }
 
+// Coeficiente de marea: mareas vivas (coeficiente alto) cerca de luna
+// nueva/llena, muertas (bajo) cerca de los cuartos — aproximación
+// astronómica estándar por fase lunar, escala 20-120 como las tablas de
+// mareas habituales. No es un dato oficial de un servicio hidrográfico.
+// Misma fórmula que functions/prevision.js (coeficienteMarea), duplicada
+// aquí porque no hay bundling entre archivos en este repo.
+const SINODICO_DIAS = 29.530588853;
+const JD_LUNA_NUEVA_REF = 2451550.1; // 2000-01-06 18:14 UTC, luna nueva de referencia (J2000)
+function coeficienteMarea(fecha) {
+  const jd = fecha.getTime() / 86400000 + 2440587.5;
+  const edadDias = (((jd - JD_LUNA_NUEVA_REF) % SINODICO_DIAS) + SINODICO_DIAS) % SINODICO_DIAS;
+  const fase = edadDias / SINODICO_DIAS;
+  const factorVivas = Math.abs(Math.cos(2 * Math.PI * fase));
+  return Math.round(45 + 75 * factorVivas);
+}
+
 async function contextoAmbiental(lat, lon, horaElegida, tipoSalida) {
   const paramsComunes = `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&forecast_days=1`;
-  const resultado = { marea_altura: null, marea_tendencia: null, presion_valor: null, presion_tendencia: null,
+  const resultado = { marea_altura: null, marea_tendencia: null, marea_coeficiente: null, presion_valor: null, presion_tendencia: null,
     luna_fase: null, luna_iluminacion: null, viento_kmh: null, viento_dir: null,
     oleaje_altura_min: null, oleaje_altura_max: null, temp_agua: null,
     nubosidad: null, precipitacion: null, boya_usada: null };
@@ -545,6 +561,7 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida) {
     const alturaMareaSig = marino.hourly?.sea_level_height_msl?.[idx + 1];
     resultado.marea_altura = alturaMarea ?? null;
     resultado.marea_tendencia = alturaMarea != null && alturaMareaSig != null ? (alturaMareaSig > alturaMarea ? "subiendo" : "bajando") : null;
+    resultado.marea_coeficiente = coeficienteMarea(new Date());
 
     resultado.viento_kmh = viento.hourly?.windspeed_10m?.[idx] != null ? Math.round(viento.hourly.windspeed_10m[idx]) : null;
     resultado.presion_valor = viento.hourly?.pressure_msl?.[idx] != null ? Math.round(viento.hourly.pressure_msl[idx]) : null;
@@ -683,6 +700,7 @@ async function crearSalida(fecha) {
 function contextoHTML(salida) {
   const filas = [
     ["MAREA", salida.marea_altura != null ? `${salida.marea_altura.toFixed?.(2) ?? salida.marea_altura}m ${salida.marea_tendencia === "subiendo" ? "↑" : salida.marea_tendencia === "bajando" ? "↓" : ""}` : "—"],
+    ["COEF. MAREA", salida.marea_coeficiente != null ? String(salida.marea_coeficiente) : "—"],
     ["VIENTO", salida.viento_kmh != null ? `${salida.viento_kmh} km/h` : "—"],
     ["OLEAJE", salida.oleaje_altura_min != null ? `${salida.oleaje_altura_min}–${salida.oleaje_altura_max}m` : "—"],
     ["PRESIÓN", salida.presion_valor != null ? `${salida.presion_valor} hPa` : "—"],

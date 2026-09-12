@@ -163,6 +163,24 @@ function horaActualMadridISO() {
   return `${val("year")}-${val("month")}-${val("day")}T${val("hour")}`;
 }
 
+// Coeficiente de marea: mareas vivas (coeficiente alto) cerca de luna
+// nueva/llena, mareas muertas (coeficiente bajo) cerca de los cuartos —
+// aproximación astronómica estándar por fase lunar, escala 20-120 como
+// las tablas de mareas habituales en España/Francia. No es un dato
+// oficial de un servicio hidrográfico (eso requeriría análisis armónico
+// real por puerto, con datos que no tenemos) — se documenta aquí como
+// aproximación, igual que el resto de fórmulas de la app sin fuente
+// oficial (ver CLAUDE.md, índice de mar).
+const SINODICO_DIAS = 29.530588853;
+const JD_LUNA_NUEVA_REF = 2451550.1; // 2000-01-06 18:14 UTC, luna nueva de referencia (J2000)
+function coeficienteMarea(fecha) {
+  const jd = fecha.getTime() / 86400000 + 2440587.5;
+  const edadDias = (((jd - JD_LUNA_NUEVA_REF) % SINODICO_DIAS) + SINODICO_DIAS) % SINODICO_DIAS;
+  const fase = edadDias / SINODICO_DIAS; // 0 = nueva, 0.5 = llena
+  const factorVivas = Math.abs(Math.cos(2 * Math.PI * fase)); // 1 en nueva/llena, 0 en cuartos
+  return Math.round(45 + 75 * factorVivas); // ~45 (muertas) a 120 (vivas)
+}
+
 // Encuentra pleamares/bajamares reales a partir de la curva horaria de
 // altura de marea (máximos/mínimos locales) y devuelve el estado actual
 // (altura + si sube o baja) más las próximas 2 mareas.
@@ -194,6 +212,7 @@ function calcularMarea(horas, alturas) {
     altura: actual === null ? null : +actual.toFixed(2),
     tendencia,
     proximas,
+    coeficiente: coeficienteMarea(new Date()),
   };
 }
 
