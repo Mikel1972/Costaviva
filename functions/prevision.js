@@ -195,6 +195,53 @@ function coeficienteMarea(fecha) {
   return Math.round(45 + 75 * factorVivas); // ~45 (muertas) a 120 (vivas)
 }
 
+// Coeficiente REAL por spot (2026-09-13, sustituye a coeficienteMarea()
+// como fuente principal): el usuario verificó que el índice de arriba
+// (y el que publican tides4fishing/Puertos del Estado) es un ÚNICO
+// número compartido para todo el país — no varía de un puerto a otro
+// (comprobado en vivo: Armintza, Vigo, Cádiz, Valencia, Las Palmas y
+// Peniche dan exactamente la misma secuencia esos días), así que no
+// aporta nada específico de cada spot. Aquí calculamos uno propio,
+// distinto por spot de verdad: el rango de marea (altura pleamar menos
+// bajamar) que Open-Meteo modela para ESE punto concreto cada día,
+// normalizado contra el rango mínimo y máximo del propio spot en una
+// ventana que cubre un ciclo vivas-muertas completo (~14.77 días) —
+// `previsionTodosSpots` pide `past_days=8&forecast_days=16` a la Marine
+// API justo para esto. Sigue sin ser el dato oficial de un servicio
+// hidrográfico (eso exigiría un mareógrafo real en ese puerto), pero sí
+// refleja la amplitud de marea real de cada punto, cosa que el índice
+// nacional no hace. Si la ventana de datos es demasiado corta o no hay
+// variación que normalizar (spot en mar prácticamente sin marea, o
+// fallo puntual de Open-Meteo para esas horas), devuelve null y
+// calcularMarea() cae de vuelta a coeficienteMarea() como respaldo.
+function coeficientePorSpot(horas, alturas, idxAhora) {
+  const rangosPorDia = {};
+  horas.forEach((h, i) => {
+    const v = alturas[i];
+    if (v === null || v === undefined) return;
+    const dia = h.slice(0, 10);
+    if (!rangosPorDia[dia]) rangosPorDia[dia] = { min: v, max: v };
+    else {
+      rangosPorDia[dia].min = Math.min(rangosPorDia[dia].min, v);
+      rangosPorDia[dia].max = Math.max(rangosPorDia[dia].max, v);
+    }
+  });
+  const dias = Object.keys(rangosPorDia);
+  if (dias.length < 10) return null; // ventana demasiado corta para normalizar de verdad
+
+  const rangos = dias.map((d) => rangosPorDia[d].max - rangosPorDia[d].min);
+  const rangoMin = Math.min(...rangos);
+  const rangoMax = Math.max(...rangos);
+  if (rangoMax - rangoMin < 0.01) return null; // sin variación real que normalizar
+
+  const diaHoy = horas[idxAhora]?.slice(0, 10);
+  const rangoHoy = rangosPorDia[diaHoy] ? rangosPorDia[diaHoy].max - rangosPorDia[diaHoy].min : null;
+  if (rangoHoy === null) return null;
+
+  const factor = Math.max(0, Math.min(1, (rangoHoy - rangoMin) / (rangoMax - rangoMin)));
+  return Math.round(20 + 100 * factor); // 20 (muertas de este spot) a 120 (vivas de este spot)
+}
+
 // Encuentra pleamares/bajamares reales a partir de la curva horaria de
 // altura de marea (máximos/mínimos locales) y devuelve el estado actual
 // (altura + si sube o baja) más las próximas 2 mareas.
@@ -242,7 +289,7 @@ function calcularMarea(horas, alturas) {
     altura: actualRaw === null ? null : +(actualRaw - minVentana).toFixed(2),
     tendencia,
     proximas,
-    coeficiente: coeficienteMarea(new Date()),
+    coeficiente: coeficientePorSpot(horas, alturas, idxAhora) ?? coeficienteMarea(new Date()),
   };
 }
 
@@ -325,10 +372,18 @@ async function previsionTodosSpots(spots) {
   const lats = spots.map((s) => s.lat).join(",");
   const lons = spots.map((s) => s.lon).join(",");
   const paramsComunes = `latitude=${lats}&longitude=${lons}&timezone=Europe%2FMadrid&forecast_days=2`;
+  // La Marine API pide una ventana bastante más ancha que el resto
+  // (past_days=8 + forecast_days=16, ~24 días) para poder calcular
+  // coeficientePorSpot(): normalizar el rango de marea de hoy hace falta
+  // un ciclo vivas-muertas completo (~14.77 días) de datos reales de ESE
+  // punto. Sigue siendo una sola petición batched (todos los spots a la
+  // vez), no una por spot — el límite de subrequests de Cloudflare no se
+  // resiente por esto.
+  const paramsMarea = `latitude=${lats}&longitude=${lons}&timezone=Europe%2FMadrid&past_days=8&forecast_days=16`;
 
   const [marinos, vientos, historicoPresion] = await Promise.all([
     fetchJSON(
-      `https://marine-api.open-meteo.com/v1/marine?${paramsComunes}&hourly=wave_height,wave_period,wave_direction,sea_surface_temperature,ocean_current_velocity,ocean_current_direction,sea_level_height_msl`
+      `https://marine-api.open-meteo.com/v1/marine?${paramsMarea}&hourly=wave_height,wave_period,wave_direction,sea_surface_temperature,ocean_current_velocity,ocean_current_direction,sea_level_height_msl`
     ),
     fetchJSON(
       `https://api.open-meteo.com/v1/forecast?${paramsComunes}&hourly=windspeed_10m,winddirection_10m,precipitation,cloudcover,pressure_msl&windspeed_unit=kmh`
@@ -371,8 +426,15 @@ function procesarSpot(spot, marino, viento, historicoPresion) {
     ])
   );
 
+  // horasOla ahora incluye días pasados (past_days=8, para poder calcular
+  // coeficientePorSpot() más arriba) — sin este punto de partida, los
+  // "bloques" de previsión de este spot empezarían por horas ya pasadas
+  // en vez de por las próximas.
+  let idxAhoraOla = horasOla.findIndex((h) => h.slice(0, 13) === horaActualMadridISO());
+  if (idxAhoraOla === -1) idxAhoraOla = 0;
+
   const bloques = [];
-  for (let i = 0; i < horasOla.length && bloques.length < 8; i++) {
+  for (let i = idxAhoraOla; i < horasOla.length && bloques.length < 8; i++) {
     const h = horaLocalDesdeISO(horasOla[i]);
     if (!(h in HORAS_BLOQUE)) continue;
 

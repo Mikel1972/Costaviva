@@ -53,40 +53,37 @@ reconozca esas variantes.
   seguridad de más abajo (esto es solo un insert por fila propuesta, no
   un cambio de código).
 
-## Calibración del retraso de marea por zona (añadido 2026-09-13)
+## Coeficiente de marea: por spot, no por zona (revisado 2026-09-13)
 
-`coeficienteMarea()` (`functions/prevision.js` y `diario.html`) calcula
-el coeficiente de marea por fase lunar, con un `RETRASO_MAREA_DIAS`
-("edad de la marea" — la marea real no responde al instante a la luna
-nueva/llena) calibrado el 2026-09-13 SOLO para Armintza/costa cantábrica
-(comparado contra tides4fishing.com, ver `CALIBRACION.jsonl`,
-`tipo: "coeficiente_marea_vs_tides4fishing"` — sin ese retraso, la
-fórmula salía sistemáticamente ~2 días adelantada). Ese mismo valor
-(2 días) se usa hoy como mejor estimación disponible para TODAS las
-zonas (Mediterráneo, Golfo de Cádiz, Canarias, Atlántico portugués) sin
-haberse verificado ahí — puede que el retraso real sea distinto en cada
-una (el fenómeno depende de la geometría de cada costa/puerto).
+Esta sección decía originalmente que había que calibrar un
+`RETRASO_MAREA_DIAS` distinto por zona (Cantábrico, Mediterráneo, Golfo
+de Cádiz, Canarias...). **Al comprobarlo, resultó falso**: se verificó
+contra tides4fishing.com en 6 puertos de zonas distintas (Armintza,
+Vigo, Cádiz, Valencia, Las Palmas, Peniche) y el coeficiente publicado
+es EXACTAMENTE el mismo, día a día, en los seis — no es un dato por
+puerto, es un índice astronómico nacional/compartido (ver
+`CALIBRACION.jsonl`, `tipo: "coeficiente_marea_vs_tides4fishing"`).
+Calibrar un retraso por zona no tenía sentido: el número de referencia
+contra el que se compararía no cambia entre zonas.
 
-**Regla para cuando se añadan spots nuevos en una zona todavía sin
-calibrar** (pedido explícito del usuario — llevar un archivo interno
-con los datos ya calibrados por zona + cómo calibrar las que falten):
+Por eso `coeficientePorSpot()` (`functions/prevision.js` y
+`diario.html`) ya no usa ese índice nacional como fuente principal —
+calcula uno real y distinto por spot a partir del propio rango de marea
+que Open-Meteo modela para esa coordenada exacta (ver el comentario
+largo en `functions/prevision.js` y la entrada de `CLAUDE.md` del
+2026-09-13). `coeficienteMarea()` (la fórmula astronómica con el
+retraso de 2 días, verificado con la comparación de arriba) se queda
+solo como **respaldo** para cuando la ventana de datos ancha no alcance.
 
-1. Elige un puerto real de esa zona con coeficiente de marea publicado
-   (ej. `tides4fishing.com/es/<provincia>/<puerto>`) — verifica con una
-   petición/lectura real, nunca de memoria.
-2. Anota el coeficiente real de 5-6 días consecutivos.
-3. Calcula lo que da `coeficienteMarea()` SIN retraso para esas mismas
-   fechas (edad de marea = fecha, sin restar nada).
-4. El desfase en días entre la curva calculada y la real (cuánto hay que
-   restar para que ambas curvas casen) es el `RETRASO_MAREA_DIAS` de esa
-   zona — normalmente entre 0 y 3 días.
-5. Añade las observaciones a `CALIBRACION.jsonl` (mismo `tipo:
-   "coeficiente_marea_vs_tides4fishing"`, con el `spot`/`region`
-   correspondiente) y **propón** en `ROBOT.md` el nuevo valor por zona —
-   nunca lo apliques tú solo al código: es un cambio de fórmula que
-   afecta a un dato que se le muestra al usuario como si fuera fiable,
-   así que sigue la regla general de "cambio de producto → proponer, no
-   implementar".
+**Si en el futuro se sospecha que `coeficientePorSpot()` da valores
+raros para algún spot concreto** (rango casi sin variación, un fallo de
+Open-Meteo para esas coordenadas, etc.): compara el resultado contra
+tides4fishing.com u otra fuente real para ESE punto en varios días
+consecutivos, anota la comparación en `CALIBRACION.jsonl` (mismo
+`tipo`), y **propón** el ajuste en `ROBOT.md` — nunca lo apliques
+directamente: es un cambio de fórmula que afecta a un dato que se le
+muestra al usuario como si fuera fiable, sigue la regla general de
+"cambio de producto → proponer, no implementar".
 
 ## Red de seguridad de la automatización (añadido 2026-09-12)
 
