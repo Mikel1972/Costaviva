@@ -154,7 +154,7 @@ form.addEventListener("submit", async (e) => {
       btnPrincipal.disabled = false;
       return;
     }
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: { data: { consiente_uso_datos_capturas: checkDatosCapturas.checked } },
@@ -167,6 +167,16 @@ form.addEventListener("submit", async (e) => {
       // eso se gestiona con una tabla "perfiles" con un campo "aprobado"
       // y Row Level Security que bloquea el resto de tablas hasta que sea true.
       mostrarMensaje("Cuenta creada. Un administrador debe aprobarla antes de que puedas entrar.", "info");
+      // Aviso al admin, sin bloquear ni depender de él para nada del
+      // flujo de alta — si falla (todavía no configurado, red, lo que
+      // sea), el usuario no debe notarlo ni verse afectado.
+      if (data?.user?.id) {
+        fetch("/aviso-alta", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_id: data.user.id }),
+        }).catch(() => {});
+      }
     }
   } else {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
