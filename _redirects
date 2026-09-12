@@ -5,10 +5,10 @@
 # bloqueado). Ninguno de estos ficheros contiene datos reales de usuarios,
 # pero son ficheros internos/operativos, no parte de la app — no tienen
 # nada que hacer servidos en público.
-/ROBOT.md 404
-/ROBOT_REGLAS.md 404
-/CALIBRACION.jsonl 404
-/README.md 404
-/start.ps1 404
-/supabase/* 404
-/test/* 404
+/ROBOT.md /bloqueado 404
+/ROBOT_REGLAS.md /bloqueado 404
+/CALIBRACION.jsonl /bloqueado 404
+/README.md /bloqueado 404
+/start.ps1 /bloqueado 404
+/supabase/* /bloqueado 404
+/test/* /bloqueado 404
