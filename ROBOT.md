@@ -613,6 +613,76 @@ vez de asumir que se resolverá solo. Las webcams de fuera del País Vasco
 tienen el mismo patrón pero son de severidad menor (hay 46 webcams más que
 sí se pueden comprobar cuando la red lo permite).
 
+### 2026-09-12 (pasada nocturna corta — salud de datos)
+
+**Pasada nocturna diaria, mismo alcance estrecho** (rutina "Costa Viva —
+calibración nocturna", no la auditoría semanal completa). **Aviso
+importante: el bloqueo de red de las dos noches anteriores se repite hoy
+por tercera noche seguida y exactamente para los mismos 5 dominios**
+(Nazaré + las 4 fuentes de caudal), mientras que todo lo demás (boyas de
+Puertos del Estado, Open-Meteo, las 3 webcams del País Vasco) sigue
+respondiendo con normalidad las 3 noches. Con este patrón tan estable —
+siempre los mismos dominios bloqueados, todo lo demás sano — deja de
+parecer variabilidad aleatoria de red y empieza a parecer una política de
+salida de **este entorno concreto** (no de las fuentes en sí) que excluye
+esos dominios de forma consistente. Ver aviso al usuario más abajo.
+
+- **Boyas de Puertos del Estado — 2136 Bilbao-Vizcaya, 1117 Gijón, 1101
+  Pasaia II, y 2548 Cabo de Gata** (rotando hoy a una boya del
+  Mediterráneo/Sur distinta de las de las dos noches anteriores, según pide
+  la tarea). Las 4 HTTP 200 finalmente, forma `[cabeceras, filas]`
+  correcta, datos de la última hora. La petición a 1117 Gijón devolvió un
+  502 en el primer intento (`gateway answered 502 to CONNECT`, registrado
+  en el estado del proxy) pero funcionó a la primera reintentando — parece
+  un fallo transitorio puntual, no un patrón, así que no se marca como
+  hallazgo. Bilbao-Vizcaya Hm0 0.59 m, Gijón Hm0 0.73 m, Pasaia II Hm0
+  0.82 m, Cabo de Gata Hm0 0.59 m. Todas sanas — detalle completo en la
+  sección "Calibración" de hoy.
+- **Boya de Nazaré (Portugal, `monican.hidrografico.pt`) — bloqueada
+  tercera noche seguida (2026-09-10, 11 y 12), 2/2 intentos hoy** (endpoint
+  JSON y raíz del dominio), mismo error exacto que las dos noches
+  anteriores: `curl: (56) CONNECT tunnel failed, response 403`, confirmado
+  en el estado del proxy como `connect_rejected` (`policy denial or
+  upstream failure`). Sigue sin haber ninguna evidencia de que la fuente en
+  sí esté rota (nunca ha respondido con datos vacíos o mal formados, solo
+  no ha sido alcanzable desde aquí) — pero 3/3 noches con el mismo bloqueo
+  exacto, mientras que boyas y webcams de otros dominios sí funcionan sin
+  problema esas mismas noches, ya no encaja con "ruido puntual de red".
+- **Las 4 fuentes de caudal de ríos (Cantábrico/Júcar/Segura/Galicia) —
+  bloqueadas tercera noche seguida, mismo motivo exacto.** Los 4 dominios
+  (`visor.saichcantabrico.es`, `saih.chj.es`, `saihweb.chsegura.es`,
+  `servizos.meteogalicia.gal`) rechazados con HTTP 403 en el primer intento
+  de cada uno, confirmado en el estado del proxy como `connect_rejected`
+  (rechazo de política, no timeout del servidor de destino). 3/3 noches
+  seguidas para estos 4 dominios exactos.
+- **Webcams — muestra de 3 del País Vasco (mundaka, bakio, sopelana), las
+  3 sanas**, HTTP 200 con imagen real y válida (JPEG 150 431 bytes, JPEG
+  764 906 bytes, WebP 53 996 bytes respectivamente). Se intentó de nuevo
+  ampliar a otras zonas (acoruna/meteogalicia.gal, suances/cantabria.es,
+  calpe/comunitatvalenciana.com, calamillor/apps.socib.es) y los 4 dominios
+  fueron rechazados, mismo patrón que las dos noches anteriores — de nuevo
+  no se pudo ampliar la muestra fuera del País Vasco.
+
+**Resumen de severidad para el usuario — esto ya merece tu atención, no
+solo vigilancia:** nada de lo comprobado esta noche está confirmado como
+roto en el propio origen de datos. Pero **Nazaré y las 4 fuentes de caudal
+de ríos llevan 3/3 pasadas nocturnas seguidas (10, 11 y 12 de septiembre)
+bloqueadas siempre por los mismos 5 dominios exactos**, mientras que en
+esas mismas noches todo lo demás (boyas españolas, Open-Meteo, webcams del
+País Vasco) responde con normalidad. Esa consistencia — mismos dominios,
+mismas 3 noches, todo lo demás sano — apunta a que **este entorno de
+ejecución concreto tiene esos 5 dominios excluidos de su política de salida
+de red**, no a que las fuentes en sí se hayan roto. Severidad: media para
+los 4 ríos (son justo los parsers de HTML más frágiles, como advierte la
+tarea, y esta rutina no puede vigilarlos de verdad mientras dure el
+bloqueo) y baja-media para Nazaré (es la única boya real de Portugal, pero
+el resto del proyecto sigue funcionando sin ella). Si el bloqueo persiste,
+convendría revisar la política de red de este entorno programado para
+esos 5 dominios (`monican.hidrografico.pt`, `visor.saichcantabrico.es`,
+`saih.chj.es`, `saihweb.chsegura.es`, `servizos.meteogalicia.gal`) — la
+rutina nocturna seguirá sin poder confirmar su salud mientras sigan
+bloqueados desde aquí.
+
 ---
 
 ## Calibración
@@ -833,3 +903,58 @@ proponer ningún factor de corrección):
 de lejos a los 15 puntos que pide la tarea. Seguir rotando cada noche por
 alguna boya nueva de otra región (candidata para la próxima: 2548 Cabo de
 Gata) además de sumar historial en las 3 obligatorias.
+
+### 2026-09-12 (pasada nocturna corta)
+
+**Tercer día con la metodología "boya vs. Open-Meteo en el mismo punto".**
+`curl` a las boyas 2136 (Bilbao-Vizcaya), 1117 (Gijón) y 1101 (Pasaia II)
+—las 3 obligatorias— más **2548 Cabo de Gata** como cuarta boya de rotación
+(Mediterráneo/Sur, la candidata que quedó apuntada ayer, distinta de 1731
+Barcelona II y 1514 Málaga ya vistas). Mismo método: Open-Meteo Marine en
+las coordenadas exactas de cada boya, emparejando por la hora UTC exacta
+del último dato real de cada boya:
+
+| boya | hora UTC | altura medida | altura calculada | diferencia | % |
+|---|---|---|---|---|---|
+| 2136 Bilbao-Vizcaya | 01:00 | 0.59 m | 0.74 m | +0.15 m | +25.4% |
+| 1117 Gijón | 00:00 | 0.73 m | 0.74 m | +0.01 m | +1.4% |
+| 1101 Pasaia II | 00:00 | 0.82 m | 0.58 m | −0.24 m | −29.3% |
+| 2548 Cabo de Gata | 01:00 | 0.59 m | 0.52 m | −0.07 m | −11.9% |
+
+Con este tercer día, el historial de esta metodología queda así (todavía
+lejos del mínimo de 15 puntos por boya que pide la tarea antes de proponer
+ningún factor de corrección):
+
+- **2136 Bilbao-Vizcaya**: 3 puntos (−8.5%, 0.0%, +25.4%) — primera vez que
+  cambia de signo (Open-Meteo pasa de calcular por debajo a calcular por
+  encima). Con tanta dispersión y cambio de signo en solo 3 puntos, deja de
+  parecer la boya "mejor modelada" que sugerían los 2 primeros días —
+  demasiado pronto para decir nada firme, pero ya no hay un patrón claro.
+- **1117 Gijón**: 3 puntos (−14.7%, +3.7%, +1.4%) — los dos últimos días
+  muy cerca de 0%, tras un primer día más alejado. Podría estar
+  estabilizándose cerca de una desviación pequeña, pero con 3 puntos sigue
+  siendo pronto para afirmarlo.
+- **1101 Pasaia II**: 3 puntos, **los 3 con el mismo signo y magnitud
+  parecida (−36.0%, −27.3%, −29.3%, media ≈ −30.9%)** — es, con diferencia,
+  la boya con el patrón más consistente de las 3 obligatorias hasta ahora:
+  siempre Open-Meteo calculando por debajo, siempre alrededor de 30 puntos
+  porcentuales. Sigue siendo la principal candidata a un futuro factor de
+  corrección de zona, pero **3 puntos no son ni de lejos los 15 que pide la
+  tarea** — se necesita bastante más historial (idealmente en más
+  condiciones de mar distintas) antes de proponer nada en firme.
+- **1731 Barcelona II**: 1 punto (−22.9%), sin repetir desde el 2026-09-10.
+- **1514 Málaga**: 1 punto (−38.1%), sin repetir desde el 2026-09-11.
+- **2548 Cabo de Gata**: 1 punto nuevo hoy (−11.9%) — la desviación más
+  pequeña en valor absoluto de las boyas de rotación (no obligatorias)
+  vistas hasta ahora, pero un único punto no permite decir si es
+  representativo de la zona o del estado de mar de esta noche en concreto.
+
+**Ningún factor de corrección propuesto todavía** — ninguna boya llega a
+los 15 puntos mínimos. Pasaia II es la que más vigilancia merece de cerca
+en próximas pasadas (3/3 noches con el mismo signo y magnitud similar);
+seguir sumando historial en las 3 obligatorias y rotando una boya nueva de
+otra región cada noche (ya cubiertas: 1731 Barcelona II, 1514 Málaga, 2548
+Cabo de Gata — candidatas para próximas pasadas: repetir alguna de estas
+tres para empezar a acumular su propio historial, o sumar una nueva de la
+lista de `BOYAS` en `functions/prevision.js` como 2242 Cabo Peñas o 2820
+Dragonera).
