@@ -428,11 +428,12 @@ async function contextoAmbiental(lat, lon, franjaHoraria, tipoSalida) {
     resultado.luna_fase = luna?.fase ?? null;
     resultado.luna_iluminacion = luna?.iluminacion ?? null;
 
-    // Embarcación: la boya real más cercana (Puertos del Estado, vía
-    // /prevision) es un dato medido, mejor que el modelo por
+    // Embarcación y submarinismo: la boya real más cercana (Puertos del
+    // Estado, vía /prevision) es un dato medido, mejor que el modelo por
     // coordenadas — se usa en vez del oleaje/temperatura calculados
-    // arriba cuando hay una boya real disponible.
-    if (tipoSalida === "embarcacion") {
+    // arriba cuando hay una boya real disponible. Para submarinismo la
+    // temperatura del agua medida es tan o más relevante que el oleaje.
+    if (tipoSalida === "embarcacion" || tipoSalida === "submarinismo") {
       try {
         const prevision = await fetch("/prevision", { cache: "no-store" }).then((r) => r.json());
         const boyas = (prevision.boyas || []).filter(
@@ -467,13 +468,19 @@ const FRANJAS_HORARIAS = [
   { valor: "noche", etiqueta: "Noche", hora: 23 },
 ];
 const etiquetaFranja = (valor) => FRANJAS_HORARIAS.find((f) => f.valor === valor)?.etiqueta ?? null;
-const etiquetaTipoSalida = { costa: "🪨 Costa", embarcacion: "🚤 Embarcación" };
+const etiquetaTipoSalida = { costa: "🪨 Costa", embarcacion: "🚤 Embarcación", submarinismo: "🤿 Submarinismo" };
 
 function formularioSalida(fecha) {
   const opcionesSpots = SPOTS.map((s) => `<option value="${s.slug}">${s.nombre}</option>`).join("");
   const opcionesFranjas = FRANJAS_HORARIAS.map((f) => `<option value="${f.valor}">${f.etiqueta}</option>`).join("");
   return `
     <p style="font-size:12px; color:#9FB8BF;">Todavía no hay nada registrado este día. Puedes guardar el día sin captura (quedará en rojo) o añadir capturas directamente.</p>
+    <label for="salidaTipo">Tipo de salida</label>
+    <select id="salidaTipo">
+      <option value="costa">🪨 Costa</option>
+      <option value="embarcacion">🚤 Embarcación</option>
+      <option value="submarinismo">🤿 Submarinismo</option>
+    </select>
     <label for="salidaSpot">Spot</label>
     <select id="salidaSpot">
       <option value="">Mi ubicación actual</option>
@@ -483,11 +490,6 @@ function formularioSalida(fecha) {
     <select id="salidaFranja">
       <option value="">Sin especificar (usa la hora de ahora)</option>
       ${opcionesFranjas}
-    </select>
-    <label for="salidaTipo">Tipo de salida</label>
-    <select id="salidaTipo">
-      <option value="costa">🪨 Costa</option>
-      <option value="embarcacion">🚤 Embarcación</option>
     </select>
     <label for="salidaNotas">Notas del día</label>
     <textarea id="salidaNotas" placeholder="Cómo estuvo la jornada…"></textarea>
