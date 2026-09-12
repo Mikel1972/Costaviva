@@ -53,6 +53,41 @@ reconozca esas variantes.
   seguridad de más abajo (esto es solo un insert por fila propuesta, no
   un cambio de código).
 
+## Calibración del retraso de marea por zona (añadido 2026-09-13)
+
+`coeficienteMarea()` (`functions/prevision.js` y `diario.html`) calcula
+el coeficiente de marea por fase lunar, con un `RETRASO_MAREA_DIAS`
+("edad de la marea" — la marea real no responde al instante a la luna
+nueva/llena) calibrado el 2026-09-13 SOLO para Armintza/costa cantábrica
+(comparado contra tides4fishing.com, ver `CALIBRACION.jsonl`,
+`tipo: "coeficiente_marea_vs_tides4fishing"` — sin ese retraso, la
+fórmula salía sistemáticamente ~2 días adelantada). Ese mismo valor
+(2 días) se usa hoy como mejor estimación disponible para TODAS las
+zonas (Mediterráneo, Golfo de Cádiz, Canarias, Atlántico portugués) sin
+haberse verificado ahí — puede que el retraso real sea distinto en cada
+una (el fenómeno depende de la geometría de cada costa/puerto).
+
+**Regla para cuando se añadan spots nuevos en una zona todavía sin
+calibrar** (pedido explícito del usuario — llevar un archivo interno
+con los datos ya calibrados por zona + cómo calibrar las que falten):
+
+1. Elige un puerto real de esa zona con coeficiente de marea publicado
+   (ej. `tides4fishing.com/es/<provincia>/<puerto>`) — verifica con una
+   petición/lectura real, nunca de memoria.
+2. Anota el coeficiente real de 5-6 días consecutivos.
+3. Calcula lo que da `coeficienteMarea()` SIN retraso para esas mismas
+   fechas (edad de marea = fecha, sin restar nada).
+4. El desfase en días entre la curva calculada y la real (cuánto hay que
+   restar para que ambas curvas casen) es el `RETRASO_MAREA_DIAS` de esa
+   zona — normalmente entre 0 y 3 días.
+5. Añade las observaciones a `CALIBRACION.jsonl` (mismo `tipo:
+   "coeficiente_marea_vs_tides4fishing"`, con el `spot`/`region`
+   correspondiente) y **propón** en `ROBOT.md` el nuevo valor por zona —
+   nunca lo apliques tú solo al código: es un cambio de fórmula que
+   afecta a un dato que se le muestra al usuario como si fuera fiable,
+   así que sigue la regla general de "cambio de producto → proponer, no
+   implementar".
+
 ## Red de seguridad de la automatización (añadido 2026-09-12)
 
 Estas reglas existen porque "el propio prompt dice que esto es

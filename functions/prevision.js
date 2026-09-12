@@ -165,16 +165,30 @@ function horaActualMadridISO() {
 
 // Coeficiente de marea: mareas vivas (coeficiente alto) cerca de luna
 // nueva/llena, mareas muertas (coeficiente bajo) cerca de los cuartos —
-// aproximación astronómica estándar por fase lunar, escala 20-120 como
-// las tablas de mareas habituales en España/Francia. No es un dato
-// oficial de un servicio hidrográfico (eso requeriría análisis armónico
-// real por puerto, con datos que no tenemos) — se documenta aquí como
-// aproximación, igual que el resto de fórmulas de la app sin fuente
-// oficial (ver CLAUDE.md, índice de mar).
+// aproximación astronómica por fase lunar, escala 20-120 como las
+// tablas de mareas habituales en España/Francia. No es un dato oficial
+// de un servicio hidrográfico (eso requeriría análisis armónico real
+// por puerto, con datos que no tenemos).
+//
+// RETRASO_MAREA_DIAS (calibrado 2026-09-13, ver CALIBRACION.jsonl):
+// la marea real no responde al instante a la luna nueva/llena — hay un
+// desfase físico real ("retraso de la marea"/"establecimiento de
+// puerto", por fricción y propagación de la onda de marea) de varios
+// días según el puerto. Comparado contra datos reales de
+// tides4fishing.com para Armintza (Vizcaya, costa cantábrica) del 5 al
+// 10 de septiembre de 2026, la fórmula sin retraso salía sistemáticamente
+// ~2 días adelantada (ej. 7 sept: fórmula 92, real 66 — pero el real del
+// 9 sept es 92, justo el mismo valor 2 días después). Con 2 días de
+// retraso, la fórmula coincide con el real dentro de 0-3 puntos en 5 de
+// los 6 días comparados. Verificado SOLO para esta zona — se usa como
+// mejor valor disponible en el resto de costas hasta que el robot de
+// datos calibre otras zonas del mismo modo (ver ROBOT_REGLAS.md,
+// "Calibración del retraso de marea por zona").
+const RETRASO_MAREA_DIAS = 2;
 const SINODICO_DIAS = 29.530588853;
 const JD_LUNA_NUEVA_REF = 2451550.1; // 2000-01-06 18:14 UTC, luna nueva de referencia (J2000)
 function coeficienteMarea(fecha) {
-  const jd = fecha.getTime() / 86400000 + 2440587.5;
+  const jd = fecha.getTime() / 86400000 + 2440587.5 - RETRASO_MAREA_DIAS;
   const edadDias = (((jd - JD_LUNA_NUEVA_REF) % SINODICO_DIAS) + SINODICO_DIAS) % SINODICO_DIAS;
   const fase = edadDias / SINODICO_DIAS; // 0 = nueva, 0.5 = llena
   const factorVivas = Math.abs(Math.cos(2 * Math.PI * fase)); // 1 en nueva/llena, 0 en cuartos
