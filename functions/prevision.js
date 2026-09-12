@@ -389,10 +389,20 @@ async function previsionTodosSpots(spots) {
   // tiempo/CPU). Se separa en dos peticiones a la Marine API: la de
   // siempre (todas las variables, solo 2 días, para bloques/oleaje/
   // temperatura/corriente) y una aparte, ligera (una sola variable,
-  // sea_level_height_msl, sin past_days) solo para
-  // coeficientePorSpot() — un séptimo de las variables cabe de sobra en
-  // el presupuesto del Worker aunque la ventana temporal sea más larga.
-  const paramsMarea = `latitude=${lats}&longitude=${lons}&timezone=Europe%2FMadrid&forecast_days=16`;
+  // sea_level_height_msl) solo para coeficientePorSpot() — un séptimo de
+  // las variables cabe de sobra en el presupuesto del Worker aunque la
+  // ventana temporal sea más larga (~1.37MB con past_days+forecast_days,
+  // probado en real con los 95 spots).
+  //
+  // Segundo bug real (2026-09-13, mismo día): esta ventana era solo
+  // hacia ADELANTE (forecast_days=16, sin past_days) — cuando "hoy" cae
+  // justo en un pico de marea viva, no hay ningún día pasado con el que
+  // compararlo dentro de la ventana, así que el cálculo lo empujaba
+  // artificialmente hacia el techo de la escala (120), muy por encima de
+  // lo que daba diario.html (que sí mira ±8 días) para el mismo punto y
+  // fecha. Con past_days=8 aquí también, las dos vistas usan el mismo
+  // tipo de ventana (centrada en la fecha), y coinciden.
+  const paramsMarea = `latitude=${lats}&longitude=${lons}&timezone=Europe%2FMadrid&past_days=8&forecast_days=16`;
 
   const [marinos, mareasAmplias, vientos, historicoPresion] = await Promise.all([
     fetchJSON(
