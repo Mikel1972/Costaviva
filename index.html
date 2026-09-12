@@ -1297,7 +1297,13 @@ function crearMarcadores() {
 function crearMarcadorBoya(boya) {
   // Solo se dibuja si el backend trajo datos reales de esa boya — sin
   // fallback inventado, mejor no mostrarla a mostrar un número falso.
-  if (boya.alturaSignificativa === null || boya.alturaSignificativa === undefined) return;
+  // Number.isFinite (no solo !== null) porque alguna fuente de boya ha
+  // mandado el número como string — .toFixed() de más abajo solo existe
+  // en Number.prototype, así que sin esto una boya con un dato "raro" tira
+  // abajo TODO crearMarcadores() a media ejecución (visto en vivo
+  // 2026-09-12: dejaba sin pintar lo que viniera después, incluido el
+  // indicador de vigencia).
+  if (!Number.isFinite(boya.alturaSignificativa)) return;
 
   const html = `
     <div style="display:flex; flex-direction:column; align-items:center;">

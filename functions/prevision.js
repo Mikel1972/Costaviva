@@ -378,7 +378,12 @@ async function datosBoya(boya) {
   const indice = (nombreCorto) => cabeceras.findIndex((c) => c.startsWith(nombreCorto));
   const valor = (nombreCorto) => {
     const i = indice(nombreCorto);
-    return i === -1 || !ultima[i] ? null : ultima[i][0];
+    if (i === -1 || !ultima[i]) return null;
+    // La API de Puertos del Estado no siempre da el número como number —
+    // a veces llega como string. Number(null)/Number(undefined) darían 0/NaN
+    // de forma engañosa, así que esos casos ya se filtran arriba.
+    const n = Number(ultima[i][0]);
+    return Number.isFinite(n) ? n : null;
   };
 
   return {
@@ -436,8 +441,12 @@ async function datosBoyaNazare() {
 
   const ultimoValido = (serie, campo) => {
     for (let i = serie.length - 1; i >= 0; i--) {
-      const v = serie[i][campo];
-      if (v !== null && v !== undefined && v !== "NaN" && !Number.isNaN(v)) return { valor: v, sdata: serie[i].SDATA };
+      // El visor de Nazaré manda los números como string en el JSON — de
+      // ahí el Number() antes de comprobar si es válido (si no, un "1.99"
+      // pasaba el filtro pero luego rompía el .toFixed() del cliente, que
+      // sí espera number).
+      const n = Number(serie[i][campo]);
+      if (Number.isFinite(n)) return { valor: n, sdata: serie[i].SDATA };
     }
     return null;
   };
