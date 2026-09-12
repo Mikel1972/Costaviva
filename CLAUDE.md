@@ -94,6 +94,12 @@ otro usuario". Cualquier cambio que toque `alarma.html`,
     insert/update/delete para clientes — solo escribe
     `functions/registrar-presion.js` (protegido con secreto
     compartido). No son datos personales de nadie.
+  - `grupos`, `miembros_grupo`, `invitaciones_grupo` (añadidas
+    2026-09-13, Fase 5 — ver más abajo) — visibilidad de grupo, con
+    helper `es_miembro_de()` para evitar RLS recursivo.
+  - `perfiles.nombre` (añadida 2026-09-13) — apodo público opcional,
+    solo el propio usuario puede escribirlo (`grant update (nombre)`,
+    ver Fase 5 más abajo).
   - `sinonimos_especie` (añadida 2026-09-13) — nueva responsabilidad del
     robot de datos (ver `ROBOT_REGLAS.md`): investiga sinónimos
     regionales de especies/cebos (txipirón/chipirón, róbalo/lubina...)
@@ -470,6 +476,71 @@ al dueño del repo) — no se montó un canal de email aparte para esto.
   - `supabase db push --db-url "<pooler>" --include-all --yes` sí
     funciona sin Docker ni `link` — es la vía a repetir para la próxima
     migración.
+
+## Grupos privados (Fase 5 del plan de mejoras, 2026-09-13)
+
+Cuadrillas de amigos que comparten entre ellos ubicaciones, capturas
+y/o calendario — sin admin: cualquier miembro puede invitar, cualquiera
+puede salirse y borrar su propio contenido. Página nueva `grupos.html`
+(mismo esqueleto de login-guard + `tabs-nav` que `diario.html`/
+`alarma.html`, pestaña añadida en las 4 páginas).
+
+**Decisión de seguridad clave — no tocada la RLS de `salidas_pesca`/
+`capturas`.** Esas dos tablas tienen una política ya verificada con
+pruebas cruzadas reales (`auth.uid() = user_id`, ver
+`test/endpoints-auth.test.js`) — tocarla para meter la visibilidad de
+grupo ahí habría sido el cambio de más riesgo de todo este plan. En vez
+de eso, tres funciones `security definer`
+(`obtener_calendario_grupo`/`obtener_capturas_grupo`/
+`obtener_ubicaciones_grupo`, en la migración
+`20260913010000_grupos_privados.sql`) hacen su propia comprobación de
+pertenencia al grupo (`es_miembro_de()`, helper `security definer` que
+evita el problema conocido de políticas RLS recursivas) + de si el
+dueño de esa fila activó "compartir" esa categoría para ESE grupo, y
+solo entonces devuelven las filas — como `jsonb` (no `setof <tabla>`,
+para poder añadir `autor_nombre` sin enumerar a mano todas las columnas
+de cada tabla).
+
+**"Técnicas" plegado dentro de "capturas"** (simplificación deliberada,
+ya anotada en el plan): el mensaje original del usuario pedía poder
+compartir spot/capturas/técnicas/calendario como cuatro cosas
+independientes. Separar la técnica del resto de una captura
+(especie/talla/peso/fotos) exigiría una vista de solo-columnas-
+permitidas, mucho más compleja de mantener segura — para esta primera
+versión, activar "compartir capturas" comparte la captura entera,
+técnica incluida.
+
+**Atribución ("quién subió esto")**: se aparcó a propósito en la Fase 2
+hasta que hubiera un sitio donde tuviera sentido (solo importa cuando
+algo es visible para más gente que su dueño). Se añadió
+`perfiles.nombre` (apodo público, antes no existía nada — solo el email
+privado) para esto: cada usuario pone su propio apodo desde
+`grupos.html`, nunca se expone el email. Para que nadie pueda
+aprovechar un PATCH a `perfiles` para auto-aprobarse
+(`perfiles.aprobado`), se revocó el `UPDATE` de tabla completa a
+`authenticated` y se concedió solo en la columna `nombre` —
+`grant update (nombre) on public.perfiles to authenticated`, además de
+la política RLS normal por fila.
+
+**Invitaciones**: solo por enlace/código por ahora
+(`invitaciones_grupo`, consumido vía `unirse_a_grupo()` — la tabla en sí
+no tiene política de select pública, así que el código no es
+enumerable leyendo la tabla). **La opción de invitar por email NO se ha
+implementado**: sufriría el mismo problema ya documentado al principio
+de este fichero (`sos-alerta.js`) — mandar a un destinatario arbitrario
+desde un dominio no verificado en Resend falla con 403. Implementarlo
+ahora habría sido una función garantizada de no funcionar; se deja para
+cuando se verifique un dominio propio.
+
+**Sin probar en real con dos cuentas todavía** (pendiente, ver
+`CLAUDE.md` sección de cuentas de prueba): la exploración de
+`login.html`/entrada de contraseñas está fuera de lo que un asistente
+puede hacer por su cuenta (nunca debe manejar contraseñas), así que esta
+fase se verificó con `curl` + anon key (confirmado: sin recursión de
+RLS, `grupos`/`miembros_grupo` responden `200 []` sin sesión) pero NO
+con el flujo completo de dos usuarios reales creando/uniéndose a un
+grupo. Probarlo así es el siguiente paso antes de dar la fase por
+cerrada del todo.
 
 ## Pendiente conocido (no tocar sin confirmar)
 
