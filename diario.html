@@ -101,6 +101,27 @@
   .mensaje { margin-top: 10px; font-size: 12px; padding: 8px 10px; border-radius: 8px; display: none; }
   .mensaje.error { display: block; background: rgba(163,74,53,0.15); color: #E8907A; border: 1px solid #A34A35; }
   .mensaje.ok { display: block; background: rgba(79,157,105,0.12); color: #8FCBA3; border: 1px solid #3A6B4C; }
+  .mensaje.info { display: block; background: rgba(212,162,76,0.1); color: #E8C888; border: 1px solid #6B5530; }
+
+  /* Modal "¿cómo quieres añadir la foto?" — identificación de captura
+     por IA (2026-09-13). Overlay simple centrado, no una hoja deslizante
+     como .panel-dia (esto es una elección puntual de dos botones, no un
+     formulario). */
+  .modal-elegir-foto {
+    display: none; position: fixed; inset: 0; background: rgba(11,37,50,0.75); z-index: 1500;
+    align-items: center; justify-content: center; padding: 24px;
+  }
+  .modal-elegir-foto.visible { display: flex; }
+  .modal-elegir-foto .caja {
+    background: #0F2C38; border: 1px solid #1C3F4F; border-radius: 14px; padding: 20px; width: 100%; max-width: 320px;
+  }
+  .modal-elegir-foto .titulo { font-family: 'Fraunces', serif; font-size: 16px; margin-bottom: 14px; text-align: center; }
+  .modal-elegir-foto button {
+    width: 100%; margin-top: 8px; padding: 12px; border-radius: 8px; border: 1px solid #1C3F4F;
+    background: #123B4D; color: #E8E2D0; font-size: 14px; cursor: pointer; text-align: left;
+  }
+  .modal-elegir-foto button:first-of-type { margin-top: 0; }
+  .modal-elegir-foto button.cancelar { background: transparent; color: #9FB8BF; text-align: center; }
 
   /* Selector de hora: dos <select> nativos (hora, minuto) — el propio
      desplegable del navegador ya trae scroll cuando tiene muchas
@@ -161,6 +182,17 @@
   <button class="cerrar" id="cerrarPanelDia">✕</button>
   <h2 id="panelDiaFecha">—</h2>
   <div id="panelDiaContenido"></div>
+</div>
+
+<input type="file" id="inputFotoCamara" accept="image/*" capture="environment" style="display:none;" />
+<input type="file" id="inputFotoGaleria" accept="image/*" style="display:none;" />
+<div class="modal-elegir-foto" id="modalElegirFoto">
+  <div class="caja">
+    <div class="titulo">¿Cómo quieres añadir la foto?</div>
+    <button type="button" id="btnModalCamara">📷 Sacar foto</button>
+    <button type="button" id="btnModalGaleria">🖼 Elegir de la galería</button>
+    <button type="button" class="cancelar" id="btnModalCancelarFoto">Cancelar</button>
+  </div>
 </div>
 
 <nav class="tabs-nav">
@@ -880,6 +912,8 @@ function formularioCaptura() {
   const opcionesTecnicas = TECNICAS.map((t) => `<option value="${t}">${t}</option>`).join("");
   return `
     <div class="tarjeta-captura" style="border:1px dashed #1C3F4F;">
+      <button type="button" class="secundario" id="btnIdentificarFoto" style="margin-top:0;">📷 Identificar con una foto</button>
+      <div class="mensaje" id="mensajeIdentificarFoto"></div>
       <label for="capturaEspecie">Especie</label>
       <select id="capturaEspecie">${opcionesEspecies}</select>
       <div id="capturaEspecieOtraBox" style="display:none;">
@@ -1079,6 +1113,107 @@ function engancharFormularioCaptura(iso, salidaId, idExistente, ordenFotoBase) {
   });
   document.getElementById("btnCancelarCaptura").addEventListener("click", cancelarFormulario);
   document.getElementById("btnGuardarCaptura").addEventListener("click", () => guardarCaptura(salidaId, iso, idExistente, ordenFotoBase));
+  document.getElementById("btnIdentificarFoto").addEventListener("click", () => {
+    document.getElementById("modalElegirFoto").classList.add("visible");
+  });
+}
+
+// ---- Identificar especie/talla/peso a partir de una foto (IA) ----
+document.getElementById("btnModalCancelarFoto").addEventListener("click", () => {
+  document.getElementById("modalElegirFoto").classList.remove("visible");
+});
+document.getElementById("btnModalCamara").addEventListener("click", () => {
+  document.getElementById("modalElegirFoto").classList.remove("visible");
+  document.getElementById("inputFotoCamara").click();
+});
+document.getElementById("btnModalGaleria").addEventListener("click", () => {
+  document.getElementById("modalElegirFoto").classList.remove("visible");
+  document.getElementById("inputFotoGaleria").click();
+});
+document.getElementById("inputFotoCamara").addEventListener("change", (e) => {
+  if (e.target.files[0]) identificarFotoDesdeArchivo(e.target.files[0]);
+  e.target.value = "";
+});
+document.getElementById("inputFotoGaleria").addEventListener("change", (e) => {
+  if (e.target.files[0]) identificarFotoDesdeArchivo(e.target.files[0]);
+  e.target.value = "";
+});
+
+function archivoABase64(blob) {
+  return new Promise((resolve, reject) => {
+    const lector = new FileReader();
+    lector.onload = () => resolve(lector.result.split(",")[1]);
+    lector.onerror = reject;
+    lector.readAsDataURL(blob);
+  });
+}
+
+// Añade el archivo al <input type="file"> de fotos sin perder los que ya
+// hubiera elegidos — así la foto usada para identificar se sube también
+// como foto de la captura, sin tener que elegirla dos veces.
+function anadirArchivoAInputFotos(file) {
+  const inputFotos = document.getElementById("capturaFotos");
+  if (!inputFotos) return;
+  const dt = new DataTransfer();
+  Array.from(inputFotos.files || []).forEach((f) => dt.items.add(f));
+  dt.items.add(file);
+  inputFotos.files = dt.files;
+}
+
+// Pone la especie identificada en el desplegable si coincide con una
+// conocida (ESPECIES + especies_comunidad); si no, cae en "Otra" con el
+// nombre en el campo de texto libre — mismo criterio que
+// mostrarFormularioEditarCaptura().
+function aplicarEspecieIdentificada(nombreEspecie) {
+  const especieSel = document.getElementById("capturaEspecie");
+  const especieConocida = todasLasEspecies().some((e) => e.nombre.toLowerCase() === nombreEspecie.toLowerCase());
+  if (especieConocida) {
+    especieSel.value = todasLasEspecies().find((e) => e.nombre.toLowerCase() === nombreEspecie.toLowerCase()).nombre;
+    document.getElementById("capturaEspecieOtraBox").style.display = "none";
+  } else {
+    especieSel.value = "Otra";
+    document.getElementById("capturaEspecieOtraBox").style.display = "block";
+    document.getElementById("capturaEspecieOtra").value = nombreEspecie;
+  }
+}
+
+async function identificarFotoDesdeArchivo(file) {
+  const mensajeEl = document.getElementById("mensajeIdentificarFoto");
+  mensajeEl.className = "mensaje info";
+  mensajeEl.textContent = "🤖 Analizando la foto…";
+  try {
+    const blob = await redimensionarImagen(file);
+    anadirArchivoAInputFotos(new File([blob], "captura.jpg", { type: "image/jpeg" }));
+    const imagenBase64 = await archivoABase64(blob);
+    const { data: sesion } = await supabase.auth.getSession();
+    const resp = await fetch("/identificar-captura", {
+      method: "POST",
+      headers: { "content-type": "application/json", Authorization: `Bearer ${sesion.session.access_token}` },
+      body: JSON.stringify({ imagenBase64, tipoMime: "image/jpeg" }),
+    });
+    const resultado = await resp.json();
+    if (!resp.ok) throw new Error(resultado.error || `HTTP ${resp.status}`);
+
+    if (resultado.especie) aplicarEspecieIdentificada(resultado.especie);
+    if (resultado.talla_cm != null) document.getElementById("capturaTalla").value = resultado.talla_cm;
+    if (resultado.peso_g != null) document.getElementById("capturaPeso").value = resultado.peso_g;
+
+    const partes = [];
+    if (!resultado.especie) partes.push("no se identificó la especie con seguridad");
+    let sugerencia = "";
+    if (resultado.talla_cm == null) {
+      // Pedido explícito del usuario: si no hay nada en la foto con lo
+      // que comparar el tamaño, proponer explícitamente qué hacer la
+      // próxima vez, no solo constatar que faltan datos.
+      sugerencia = " 💡 No se detectó ninguna referencia de tamaño en la foto (una mano, un aparejo, una cinta métrica…) — inclúyela la próxima vez para poder estimar también talla y peso.";
+    }
+    mensajeEl.className = "mensaje info";
+    mensajeEl.textContent = `🤖 Estimado por IA a partir de la foto (confianza: ${resultado.confianza || "desconocida"}) — revisa y corrige antes de guardar.` +
+      (partes.length ? ` (${partes.join("; ")})` : "") + sugerencia;
+  } catch (e) {
+    mensajeEl.className = "mensaje error";
+    mensajeEl.textContent = `No se ha podido identificar la foto: ${e.message}`;
+  }
 }
 
 function mostrarFormularioNuevaCaptura(iso, salidaId) {
