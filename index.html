@@ -27,21 +27,42 @@
     flex-direction: column;
     height: 100vh;
     overflow: hidden;
-    padding-bottom: 54px; /* deja hueco fijo para .tabs-nav */
+    padding-bottom: 64px; /* deja hueco fijo para .tabs-nav */
   }
   .tabs-nav {
-    position: fixed; left: 0; right: 0; bottom: 0; height: 54px;
+    position: fixed; left: 0; right: 0; bottom: 0; height: 64px;
     background: #0F2C38; border-top: 1px solid #1C3F4F;
-    display: flex; z-index: 700;
+    display: flex; gap: 6px; padding: 8px 8px; z-index: 700;
   }
   .tabs-nav a {
     flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 2px; text-decoration: none; color: #7FA3AF;
+    gap: 3px; text-decoration: none; color: #7FA3AF; border-radius: 12px;
     font-family: 'Inter', sans-serif; font-size: 10.5px; font-weight: 500;
   }
-  .tabs-nav a .icono { font-size: 18px; line-height: 1; }
+  .tabs-nav a .icono {
+    font-size: 18px; line-height: 1; width: 32px; height: 32px; border-radius: 10px;
+    background: #123B4D; display: flex; align-items: center; justify-content: center;
+  }
   .tabs-nav a.activa { color: #D4A24C; }
-  header { padding: 8px 20px; border-bottom: 1px solid #1C3F4F; flex-shrink: 0; display: flex; align-items: baseline; flex-wrap: wrap; column-gap: 12px; row-gap: 2px; }
+  .tabs-nav a.activa .icono { background: rgba(212,162,76,0.18); }
+
+  .cuenta-menu-wrap { position: relative; margin-left: auto; }
+  .cuenta-menu-btn {
+    background: #123B4D; border: 1px solid #1C3F4F; color: #E8E2D0; width: 34px; height: 34px;
+    border-radius: 50%; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+  .cuenta-menu-dropdown {
+    display: none; position: absolute; top: 42px; right: 0; background: #0F2C38; border: 1px solid #1C3F4F;
+    border-radius: 10px; padding: 6px; min-width: 200px; z-index: 900; box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+  .cuenta-menu-dropdown.visible { display: block; }
+  .cuenta-menu-dropdown button {
+    display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; background: none; border: none;
+    color: #E8E2D0; font-family: 'Inter', sans-serif; font-size: 13px; padding: 9px 10px; border-radius: 6px; cursor: pointer;
+  }
+  .cuenta-menu-dropdown button:hover { background: #123B4D; }
+
+  header { padding: 8px 20px; border-bottom: 1px solid #1C3F4F; flex-shrink: 0; display: flex; align-items: center; flex-wrap: wrap; column-gap: 12px; row-gap: 2px; }
   header h1 {
     font-family: 'Fraunces', serif;
     font-size: 30px;
@@ -281,6 +302,29 @@
   .panel .indice-box .num { font-family: 'IBM Plex Mono', monospace; font-size: 30px; font-weight: 700; }
   .panel .nota-final { font-size: 11px; color: #6C8890; margin-top: 16px; line-height: 1.5; }
 
+  .info-btn {
+    background: rgba(232,226,208,0.12); border: none; color: #D4A24C; width: 16px; height: 16px;
+    border-radius: 50%; font-size: 11px; line-height: 16px; padding: 0; cursor: pointer; flex-shrink: 0;
+  }
+  .indice-box .etq { display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .explicacion-indice {
+    display: none; text-align: left; font-size: 11px; color: #9FB8BF; line-height: 1.5;
+    margin-top: 8px; padding-top: 8px; border-top: 1px solid #1C3F4F;
+  }
+  .explicacion-indice.visible { display: block; }
+
+  .especie-desplegable {
+    background: #0F2C38; border: 1px solid #1C3F4F; border-radius: 8px; margin-bottom: 6px; overflow: hidden;
+  }
+  .especie-desplegable summary {
+    padding: 8px 10px; cursor: pointer; list-style: none; display: flex; align-items: center; gap: 6px;
+  }
+  .especie-desplegable summary::-webkit-details-marker { display: none; }
+  .especie-desplegable summary::after { content: "›"; margin-left: auto; color: #6C8890; transform: rotate(90deg); font-size: 16px; }
+  .especie-desplegable[open] summary::after { transform: rotate(-90deg); }
+  .especie-desplegable .especie-detalle { padding: 0 10px 10px; color: #9FB8BF; line-height: 1.5; }
+  .especie-zona-titulo { color: #7FA3AF; font-weight: 600; margin-bottom: 6px; font-size: 11.5px; }
+
   /* ---- Móvil ---- */
   @media (max-width: 720px) {
     .leyenda-toggle { bottom: 10px; left: 10px; width: 34px; height: 34px; }
@@ -355,12 +399,37 @@
     await supabase.auth.signOut();
     window.location.href = "/login.html";
   });
+
+  // Menú de cuenta arriba a la derecha (2026-09-13, pedido explícito del
+  // usuario: "el salir, datos de la cuenta, etc.. como siempre, arriba a
+  // la derecha") — sustituye al enlace "Salir" que antes vivía en el
+  // menú inferior, igual patrón en las 4 páginas.
+  document.getElementById("btnCuentaMenu").addEventListener("click", (e) => {
+    e.stopPropagation();
+    document.getElementById("cuentaMenuDropdown").classList.toggle("visible");
+  });
+  document.addEventListener("click", () => document.getElementById("cuentaMenuDropdown").classList.remove("visible"));
+  document.getElementById("btnInvitarAmigo").addEventListener("click", async () => {
+    const texto = "Échale un ojo a Costa Viva, la app de condiciones costeras y diario de pesca que estoy usando: https://fishnow-59u.pages.dev/";
+    if (navigator.share) {
+      try { await navigator.share({ text: texto }); } catch (e) { /* usuario canceló */ }
+    } else {
+      await navigator.clipboard.writeText(texto);
+      alert("Tu navegador no soporta compartir directamente — el texto se copió al portapapeles.");
+    }
+  });
 </script>
 
 
 <header>
   <h1>Costa Viva</h1><span class="fecha">LEKEITIO → BILBAO · <span id="estadoVigenciaGlobal">cargando…</span></span>
-  <p>Mapa real con estado del mar por spot (oleaje+viento combinados) y boya de mar abierto de Puertos del Estado.</p>
+  <div class="cuenta-menu-wrap">
+    <button class="cuenta-menu-btn" id="btnCuentaMenu" type="button" aria-label="Cuenta">👤</button>
+    <div class="cuenta-menu-dropdown" id="cuentaMenuDropdown">
+      <button type="button" id="btnInvitarAmigo">📤 Invitar a un amigo</button>
+      <button type="button" id="btnCerrarSesion">🚪 Cerrar sesión</button>
+    </div>
+  </div>
 </header>
 
 <div id="avisoRayos" style="display:none; background:#A34A35; color:#F5F1E6; padding:8px 28px; font-family:'IBM Plex Mono', monospace; font-size:12px; font-weight:700; flex-shrink:0;">
@@ -486,7 +555,6 @@
         <div class="etq">MAREA</div>
         <div class="val" id="panelMarea" style="font-size:15px;">sin datos</div>
         <div class="etq" id="panelMareaProxima"></div>
-        <div class="etq" id="panelMareaCoefNota" style="font-size:9px; line-height:1.3; margin-top:2px;"></div>
       </div>
       <div class="tarjeta">
         <div class="etq">CORRIENTE</div>
@@ -495,9 +563,12 @@
       </div>
     </div>
     <div class="indice-box">
-      <div class="etq">ÍNDICE DE MAR COMBINADO</div>
+      <div class="etq">ÍNDICE DE MAR COMBINADO
+        <button class="info-btn" id="infoIndiceMarBtn" type="button" aria-label="¿Qué significa este número?">ⓘ</button>
+      </div>
       <div class="num" id="panelIndice"></div>
       <div class="etq" id="panelIndiceNota" style="margin-top:4px; font-size:10px; line-height:1.4;"></div>
+      <div class="explicacion-indice" id="explicacionIndiceMar">Con nuestra propia fórmula (oleaje, viento y el ángulo entre ambos), este número resume en una escala de 0 a 100 qué tan buenas pintan las condiciones del mar para salir hoy en este punto — cuanto más alto, mejor pinta.</div>
     </div>
     <div class="tarjeta" style="margin-top:10px; text-align:center;">
       <div class="etq">TEMPERATURA DEL AGUA</div>
@@ -519,12 +590,15 @@
       <div class="etq" id="panelPresionNota"></div>
     </div>
     <div class="indice-box">
-      <div class="etq">🎣 ÍNDICE DE PESCA (estimación)</div>
+      <div class="etq">🎣 ÍNDICE DE PESCA (estimación)
+        <button class="info-btn" id="infoIndicePescaBtn" type="button" aria-label="¿Qué significa este número?">ⓘ</button>
+      </div>
       <div class="num" id="panelIndicePesca"></div>
       <div class="etq" id="panelIndicePescaNota" style="margin-top:4px; font-size:10px; line-height:1.4;"></div>
+      <div class="explicacion-indice" id="explicacionIndicePesca">Con nuestro propio algoritmo (temperatura del agua ideal para las especies de temporada + tendencia de la presión), este número es nuestra estimación, en una escala de 0 a 100, de qué probabilidad hay de que hoy sea un buen día de pesca en este punto — una orientación, no una garantía.</div>
     </div>
     <div class="tarjeta" style="margin-top:10px; border: 1px solid #1C3F4F;">
-      <div class="etq">🎣 QUÉ SE PUEDE PESCAR (por temporada)</div>
+      <div class="etq">🎣 ¿Qué esperamos pescar hoy?</div>
       <div id="panelEspecies" style="font-size:12px; margin-top:4px; line-height:1.5;"></div>
     </div>
     <div id="panelWebcamBox" style="margin-top:14px;">
@@ -1983,16 +2057,8 @@ function abrirPanel(s) {
     document.getElementById("panelMarea").textContent = `${s.marea.altura}m ${flecha}${coef}`;
     const prox = s.marea.proximas && s.marea.proximas[0];
     document.getElementById("panelMareaProxima").textContent = prox ? `próx. ${prox.tipo} ${prox.hora}` : "";
-    // Coeficiente real por spot, no el índice "nacional" de tides4fishing
-    // y similares (ver CLAUDE.md, 2026-09-13) — nota siempre visible
-    // (no solo un title, que en móvil no se ve) para que no parezca un
-    // error si alguien lo compara con otra web/app.
-    document.getElementById("panelMareaCoefNota").textContent = s.marea.coeficiente != null
-      ? "Coef. propio de este punto (no el de otras webs de mareas)"
-      : "";
   } else {
     document.getElementById("panelMarea").textContent = "sin datos";
-    document.getElementById("panelMareaCoefNota").textContent = "";
     document.getElementById("panelMareaProxima").textContent = "";
   }
   document.getElementById("panelCorriente").textContent = (s.corriente === null || s.corriente === undefined) ? "sin datos" : `${s.corriente} km/h`;
@@ -2024,11 +2090,16 @@ function abrirPanel(s) {
       const color = e.coincide ? "#4F9D69" : "#6C8890";
       franja = ` <span style="color:${color};">[${min}-${max}°C${e.coincide ? " ✓ ahora mismo pega bien" : ""}]</span>`;
     }
-    return `<div style="margin-bottom:6px;">${e.emoji} <b>${e.nombre}</b>${franja}<br>${e.nota}<br>` +
-      `<span style="color:#9FB8BF;">🍽 ${e.alimento}</span></div>`;
+    // <details> nativo: desplegable sin JS propio, más limpio que mostrar
+    // las 5-6 especies siempre expandidas de golpe (pedido explícito del
+    // usuario, 2026-09-13).
+    return `<details class="especie-desplegable">
+      <summary>${e.emoji} <b>${e.nombre}</b>${franja}</summary>
+      <div class="especie-detalle">${e.nota}<br><span style="color:#9FB8BF;">🍽 ${e.alimento}</span></div>
+    </details>`;
   };
   const bloqueZona = (titulo, lista) =>
-    `<div style="margin-bottom:8px;"><div style="color:#7FA3AF; font-weight:600; margin-bottom:3px;">${titulo}</div>` +
+    `<div style="margin-bottom:10px;"><div class="especie-zona-titulo">${titulo}</div>` +
     (lista.length ? lista.map(listaEspecie).join("") : `<span style="color:#6C8890;">ninguna de temporada ahora</span>`) +
     `</div>`;
   document.getElementById("panelEspecies").innerHTML =
@@ -2074,6 +2145,12 @@ document.getElementById("panelBtnBorrar").addEventListener("click", () => {
 document.getElementById("toggleLeyenda").addEventListener("click", () => {
   const abierta = document.getElementById("leyendaPanel").classList.toggle("visible");
   document.getElementById("toggleLeyenda").textContent = abierta ? "✕" : "ⓘ";
+});
+document.getElementById("infoIndiceMarBtn").addEventListener("click", () => {
+  document.getElementById("explicacionIndiceMar").classList.toggle("visible");
+});
+document.getElementById("infoIndicePescaBtn").addEventListener("click", () => {
+  document.getElementById("explicacionIndicePesca").classList.toggle("visible");
 });
 document.getElementById("toggleRayos").addEventListener("click", () => {
   const abierta = document.getElementById("rayosPanel").classList.toggle("visible");
@@ -2258,7 +2335,6 @@ function comprobarAvisoRayos() {
   <a href="/diario.html"><span class="icono">🎣</span>Diario</a>
   <a href="/alarma.html"><span class="icono">🆘</span>Alarma</a>
   <a href="/grupos.html"><span class="icono">👥</span>Grupos</a>
-  <a href="#" id="btnCerrarSesion"><span class="icono">🚪</span>Salir</a>
 </nav>
 
 </body>
