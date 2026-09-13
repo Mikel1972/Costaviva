@@ -15,7 +15,27 @@
   }
   header { padding: 16px 20px; border-bottom: 1px solid #DDE2DC; display: flex; align-items: center; gap: 12px; }
   header h1 { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700; margin: 0; flex: 1; }
-  header a.salir { color: #5F7981; font-size: 13px; text-decoration: none; }
+
+  a.volver-btn {
+    background: #EEF2EF; border: 1px solid #DDE2DC; color: #0B2532; width: 34px; height: 34px;
+    border-radius: 50%; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    text-decoration: none; flex-shrink: 0;
+  }
+  .cuenta-menu-wrap { position: relative; flex-shrink: 0; }
+  .cuenta-menu-btn {
+    background: #EEF2EF; border: 1px solid #DDE2DC; color: #0B2532; width: 34px; height: 34px;
+    border-radius: 50%; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+  .cuenta-menu-dropdown {
+    display: none; position: absolute; top: 42px; right: 0; background: #FFFFFF; border: 1px solid #DDE2DC;
+    border-radius: 10px; padding: 6px; min-width: 180px; z-index: 900; box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+  .cuenta-menu-dropdown.visible { display: block; }
+  .cuenta-menu-dropdown button {
+    display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; background: none; border: none;
+    color: #0B2532; font-family: 'Inter', sans-serif; font-size: 13px; padding: 9px 10px; border-radius: 6px; cursor: pointer;
+  }
+  .cuenta-menu-dropdown button:hover { background: #EEF2EF; }
 
   .contenido { max-width: 760px; margin: 0 auto; padding: 20px 16px; }
   .resumen { font-size: 12.5px; color: #5C7680; margin-bottom: 14px; }
@@ -52,8 +72,14 @@
 </div>
 
 <header style="display:none;" id="cabecera">
-  <h1>🔐 Administración</h1>
-  <a class="salir" href="#" id="btnCerrarSesion">🚪 Cerrar sesión</a>
+  <h1>⚙️ Administración</h1>
+  <a class="volver-btn" href="/" title="Volver al mapa" aria-label="Volver al mapa">←</a>
+  <div class="cuenta-menu-wrap">
+    <button class="cuenta-menu-btn" id="btnCuentaMenu" type="button" aria-label="Cuenta">👤</button>
+    <div class="cuenta-menu-dropdown" id="cuentaMenuDropdown">
+      <button type="button" id="btnCerrarSesion">🚪 Cerrar sesión</button>
+    </div>
+  </div>
 </header>
 
 <div class="contenido" style="display:none;" id="zonaContenido">
@@ -81,9 +107,11 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 // admin_fijar_acceso, admin_eliminar_usuario) que comprueban
 // es_admin() (auth.email() = 'etxebe2005@gmail.com') antes de tocar
 // nada — ver supabase/migrations/20260913090000_panel_administrador.sql.
-// Esta página no aparece en el menú inferior de ninguna otra página a
-// propósito (acceso solo por URL directa), para no anunciarla a nadie
-// más.
+// Esta página no aparece en el menú inferior de ninguna otra página —
+// el único acceso visible es el icono ⚙️ junto al botón de cuenta en
+// las 4 páginas, y solo se pinta si el email de la sesión coincide con
+// el del admin (ver cada página, comprobación en JS junto al resto del
+// guard de sesión).
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
@@ -101,6 +129,11 @@ document.getElementById("btnCerrarSesion").addEventListener("click", async (e) =
   await supabase.auth.signOut();
   window.location.href = "/login.html";
 });
+document.getElementById("btnCuentaMenu").addEventListener("click", (e) => {
+  e.stopPropagation();
+  document.getElementById("cuentaMenuDropdown").classList.toggle("visible");
+});
+document.addEventListener("click", () => document.getElementById("cuentaMenuDropdown").classList.remove("visible"));
 
 function mostrarMensaje(texto, tipo) {
   const el = document.getElementById("mensaje");
