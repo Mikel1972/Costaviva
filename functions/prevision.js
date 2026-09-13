@@ -224,6 +224,28 @@ function coeficienteMarea(fecha) {
 // fallo puntual — la ventana ancha sigue siendo pesada de calcular, solo
 // que ahora una vez por hora en vez de en cada visita), calcularMarea()
 // cae de vuelta a coeficienteMarea() como respaldo.
+// Bug real encontrado y corregido el 2026-09-13, comparando un mes
+// completo de Armintza contra tides4fishing.com (el usuario pegó la
+// tabla real de septiembre 2026): el coeficiente por spot salía
+// sistemáticamente 10-28 puntos por encima del real, TODOS los días, no
+// solo el 7 de septiembre que ya se sabía que iba a diferir a propósito.
+// Causa: Open-Meteo devuelve el array horario completo para toda la
+// ventana pedida (`forecast_days=16`), pero el horizonte real de
+// previsión de `sea_level_height_msl` es bastante más corto — a partir
+// de ~9 días vista, el día solo trae 1-2 horas válidas (el resto
+// `null`), aunque formalmente "el día está en la ventana". Ese día con
+// datos parciales daba un rango de marea (max-min) falsamente pequeño
+// (verificado: 0.23m en vez de los ~2-3m reales de ese día, con solo 2
+// de las 24 horas) y, al entrar igual en el cálculo de rangoMin de toda
+// la ventana, desplazaba al alza el coeficiente de TODOS los demás días
+// — confirmado también en Bakio, mismo patrón exacto, así que afecta a
+// los 95 spots en cada pasada del cron horario, no es cosa de un punto
+// suelto. Corregido exigiendo un mínimo de horas válidas por día antes
+// de dejarlo entrar en la normalización (mismo principio de "nunca
+// inventar un dato" ya aplicado en el resto del proyecto: un día sin
+// datos suficientes se descarta, nunca se usa a medias).
+const HORAS_MINIMAS_POR_DIA = 20;
+
 export function coeficientePorSpot(horas, alturas) {
   // Índice propio de "ahora" dentro de esta ventana (que es distinta de
   // la ventana corta que usa calcularMarea() para todo lo demás), no se
@@ -236,13 +258,14 @@ export function coeficientePorSpot(horas, alturas) {
     const v = alturas[i];
     if (v === null || v === undefined) return;
     const dia = h.slice(0, 10);
-    if (!rangosPorDia[dia]) rangosPorDia[dia] = { min: v, max: v };
+    if (!rangosPorDia[dia]) rangosPorDia[dia] = { min: v, max: v, horas: 1 };
     else {
       rangosPorDia[dia].min = Math.min(rangosPorDia[dia].min, v);
       rangosPorDia[dia].max = Math.max(rangosPorDia[dia].max, v);
+      rangosPorDia[dia].horas++;
     }
   });
-  const dias = Object.keys(rangosPorDia);
+  const dias = Object.keys(rangosPorDia).filter((d) => rangosPorDia[d].horas >= HORAS_MINIMAS_POR_DIA);
   if (dias.length < 10) return null; // ventana demasiado corta para normalizar de verdad
 
   const rangos = dias.map((d) => rangosPorDia[d].max - rangosPorDia[d].min);
@@ -251,8 +274,9 @@ export function coeficientePorSpot(horas, alturas) {
   if (rangoMax - rangoMin < 0.01) return null; // sin variación real que normalizar
 
   const diaHoy = horas[idxAhora]?.slice(0, 10);
-  const rangoHoy = rangosPorDia[diaHoy] ? rangosPorDia[diaHoy].max - rangosPorDia[diaHoy].min : null;
-  if (rangoHoy === null) return null;
+  const datosHoy = rangosPorDia[diaHoy];
+  if (!datosHoy || datosHoy.horas < HORAS_MINIMAS_POR_DIA) return null; // hoy mismo sin datos suficientes — mejor "sin dato" que uno calculado con 1-2 horas
+  const rangoHoy = datosHoy.max - datosHoy.min;
 
   const factor = Math.max(0, Math.min(1, (rangoHoy - rangoMin) / (rangoMax - rangoMin)));
   return Math.round(20 + 100 * factor); // 20 (muertas de este spot) a 120 (vivas de este spot)
