@@ -7,18 +7,14 @@
 // Variable de entorno necesaria en Cloudflare Pages (Settings > Environment
 // variables, como "Secret", nunca en el repo): RESEND_API_KEY.
 //
-// *** LIMITACIÓN CRÍTICA CONOCIDA (encontrada 2026-09-12, sin resolver) ***
-// El dominio "costaviva.app" NO está verificado en Resend (no hay dominio
-// propio todavía). Sin verificar un dominio, Resend RECHAZA cualquier
-// email a un destinatario que no sea el dueño de la cuenta de Resend
-// (confirmado en real: 403 "domain is not verified" al mandar desde
-// avisos@costaviva.app). Como los contactos de emergencia son personas
-// reales distintas del dueño de la cuenta de Resend, **este endpoint
-// probablemente no está entregando el email de socorro a nadie en
-// producción ahora mismo**, aunque el resto del flujo (RLS, auth, la
-// respuesta al cliente) funcione bien. Arreglo real pendiente: verificar
-// un dominio propio en Resend (resend.com/domains) y usarlo aquí en
-// "from". Ver CLAUDE.md.
+// *** LIMITACIÓN CRÍTICA, RESUELTA 2026-09-13 ***
+// El dominio "costaviva.app" (que ni siquiera es nuestro — es un
+// despliegue de Vercel de otra persona) nunca estuvo verificado en
+// Resend, así que este endpoint probablemente no entregó ningún email
+// de socorro real en producción durante un tiempo. Se compró un
+// dominio propio (costaviva.org, vía Cloudflare Registrar) y se
+// verificó en Resend (DKIM/SPF/DMARC, ver CLAUDE.md) — el remitente
+// pasa a ser de ese dominio real.
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const SUPABASE_ANON_KEY =
@@ -55,7 +51,7 @@ async function enviarEmail(resendKey, destinatario, nombreUsuario, lat, lon, tip
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${resendKey}` },
     body: JSON.stringify({
-      from: "Costa Viva SOS <sos@costaviva.app>",
+      from: "Costa Viva SOS <sos@costaviva.org>",
       to: [destinatario],
       subject: asunto,
       html: cuerpo,
