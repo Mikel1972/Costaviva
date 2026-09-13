@@ -893,6 +893,53 @@ al de Cloudflare Pages, aunque se reutilice el mismo valor que ya usa
 `functions/identificar-captura.js`) y probar con `workflow_dispatch`
 antes de esperar a que dispare solo.
 
+## Panel de administrador (2026-09-13)
+
+Pedido explícito del usuario: "como en Pólizas.ai", ver quién está
+inscrito, pudiendo pausarlo o eliminarlo. `admin.html` — no aparece en
+el menú de ninguna otra página; el acceso visible es un icono 🔐 a la
+izquierda del botón de cuenta, solo pintado cuando
+`session.user.email === "etxebe2005@gmail.com"` (comprobado en JS en
+las 4 páginas con cabecera). Esa comprobación en el cliente es solo
+para no anunciar el icono a nadie más — la seguridad real está en
+Supabase.
+
+**Decisión de diseño clave**: nada de esto usa `service_role` ni un
+segundo endpoint de Cloudflare. Tres funciones `security definer` en
+Postgres (`supabase/migrations/20260913090000_panel_administrador.sql`):
+- `es_admin()` — `auth.email() = 'etxebe2005@gmail.com'`.
+- `admin_listar_usuarios()` — salta el RLS de `perfiles` (que solo deja
+  ver la fila propia) SOLO si `es_admin()`.
+- `admin_fijar_acceso(user_id, aprobado)` — "pausar" reutiliza la
+  columna `perfiles.aprobado` que ya existía y ya estaba probada
+  (login.html bloquea el acceso si es `false`) — no hace falta una
+  columna "pausado" aparte, es el mismo estado real. Bloquea que el
+  admin se pause a sí mismo.
+- `admin_eliminar_usuario(user_id)` — borra directamente de
+  `auth.users` (el rol que ejecuta la función tiene permiso sobre el
+  esquema `auth`, no hace falta la Admin API ni service_role);
+  cascada automática a todas las tablas de usuario por las FK ya
+  existentes (`references auth.users(id) on delete cascade`).
+  Bloquea que el admin se elimine a sí mismo. **Irreversible** —
+  `admin.html` pide confirmación con `confirm()` antes de llamarla.
+
+**Bug de seguridad real encontrado y corregido en la misma sesión**
+(`20260913091500_fix_es_admin_null.sql`): `es_admin()` devolvía `NULL`
+(no `false`) sin sesión, porque `auth.email() = 'x'` con `auth.email()`
+NULL da NULL — y en PL/pgSQL `if not es_admin()` con NULL nunca entra
+en la rama, así que las funciones no rechazaban llamadas sin
+autenticar. Detectado probando con la sola anon key (`admin_fijar_acceso`
+devolvía `204` en vez de un error) antes de dar el panel por bueno.
+Corregido con `coalesce(..., false)` en `es_admin()`. Verificado tras
+el fix: las 3 funciones rechazan con `400 "no autorizado"` sin sesión.
+
+**Probado en real con datos reales** (2026-09-13): el panel muestra
+correctamente los 6 usuarios registrados hasta ahora, incluidas dos
+altas nuevas del mismo día; pausar/reactivar probado de verdad sobre
+`etxebe2005+fishnowtest1@gmail.com` (restaurado a como estaba después).
+"Eliminar" no se ha probado en real todavía (es irreversible) — la
+capa de autorización sí está verificada.
+
 ## Pendiente conocido (no tocar sin confirmar)
 
 - Prueba cruzada usuario-A-lee-fila-de-usuario-B: **hecha y verificada el
