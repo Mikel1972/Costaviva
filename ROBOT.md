@@ -670,6 +670,55 @@ esos 5 dominios (`monican.hidrografico.pt`, `visor.saichcantabrico.es`,
 rutina nocturna seguirá sin poder confirmar su salud mientras sigan
 bloqueados desde aquí.
 
+### 2026-09-13 (pasada nocturna corta — salud de datos)
+
+**Pasada nocturna diaria, mismo alcance estrecho** (rutina "Costa Viva —
+calibración nocturna", no la auditoría semanal completa). **El bloqueo de
+red de las tres noches anteriores se repite hoy por cuarta noche
+seguida, exactamente para los mismos 5 dominios** (Nazaré + las 4 fuentes
+de caudal), mientras que todo lo demás sigue sano.
+
+- **Boyas de Puertos del Estado — 2136 Bilbao-Vizcaya, 1117 Gijón, 1101
+  Pasaia II, y 2820 Dragonera (Mallorca)** (rotando hoy a una boya del
+  Mediterráneo/Baleares, región distinta de las tres últimas rotaciones —
+  1731 Barcelona II, 1514 Málaga, 2548 Cabo de Gata). Las 4 HTTP 200,
+  forma `[cabeceras, filas]` correcta, datos de la última hora. Bilbao-
+  Vizcaya Hm0 0.94 m, Gijón Hm0 1.26 m, Pasaia II Hm0 0.83 m, Dragonera
+  Hm0 0.47 m. Todas sanas — detalle completo en la sección "Calibración"
+  de hoy.
+- **Boya de Nazaré (Portugal, `monican.hidrografico.pt`) — bloqueada
+  cuarta noche seguida (2026-09-10, 11, 12 y 13), 2/2 intentos hoy**
+  (endpoint JSON y raíz del dominio), mismo error exacto que las tres
+  noches anteriores: `curl: (56) CONNECT tunnel failed, response 403`.
+  Sigue sin haber ninguna evidencia de que la fuente en sí esté rota —
+  solo no ha sido alcanzable desde aquí ninguna de las 4 noches.
+- **Las 4 fuentes de caudal de ríos (Cantábrico/Júcar/Segura/Galicia) —
+  bloqueadas cuarta noche seguida, mismo motivo exacto.** Los 4 dominios
+  (`visor.saichcantabrico.es`, `saih.chj.es`, `saihweb.chsegura.es`,
+  `servizos.meteogalicia.gal`) rechazados con HTTP 403 en el primer
+  intento de cada uno. 4/4 noches seguidas para estos 4 dominios exactos.
+- **Webcams — muestra de 3 del País Vasco (mundaka, bakio, sopelana), las
+  3 sanas**, HTTP 200 con imagen real y válida (JPEG 177 905 bytes,
+  JPEG 764 906 bytes, WebP 50 238 bytes respectivamente). Se intentó de
+  nuevo ampliar a otras zonas (acoruna/meteogalicia.gal,
+  suances/cantabria.es, calpe/comunitatvalenciana.com) y los 3 dominios
+  fueron rechazados, mismo patrón que las noches anteriores — de nuevo no
+  se pudo ampliar la muestra fuera del País Vasco.
+
+**Resumen de severidad para el usuario: sin cambios respecto a ayer, ya
+son 4/4 noches seguidas.** Nada de lo comprobado esta noche está
+confirmado como roto en el origen de datos — Nazaré y las 4 fuentes de
+caudal llevan **4/4 pasadas nocturnas seguidas (10, 11, 12 y 13 de
+septiembre) bloqueadas siempre por los mismos 5 dominios exactos**,
+mientras que boyas españolas, Open-Meteo y las webcams del País Vasco
+siguen respondiendo con normalidad esas mismas noches. Esto refuerza la
+conclusión de ayer: es una exclusión de política de red de este entorno
+concreto hacia esos 5 dominios, no una rotura real de las fuentes.
+Severidad sin cambios (media para los 4 ríos, baja-media para Nazaré) —
+sigue pendiente que el usuario revise la política de red de este entorno
+programado para esos 5 dominios si quiere que esta rutina pueda vigilar
+su salud de verdad.
+
 ---
 
 ## Calibración
@@ -945,3 +994,58 @@ Cabo de Gata — candidatas para próximas pasadas: repetir alguna de estas
 tres para empezar a acumular su propio historial, o sumar una nueva de la
 lista de `BOYAS` en `functions/prevision.js` como 2242 Cabo Peñas o 2820
 Dragonera).
+
+### 2026-09-13 (pasada nocturna corta — calibración)
+
+**Cuarto punto de calibración añadido para las 3 boyas obligatorias, y
+primer punto para 2820 Dragonera (Mallorca)** — rotación de hoy, primera
+vez que se cubre una boya balear (las tres rotaciones anteriores fueron
+Barcelona II, Málaga y Cabo de Gata). Mismo método que las pasadas
+anteriores: `curl` a `poem.puertos.es/portus/StationData` para la altura
+real, Open-Meteo Marine en las coordenadas exactas de cada boya para la
+altura calculada, emparejando por la hora UTC exacta del último dato real
+de cada boya:
+
+| boya | hora UTC | altura medida | altura calculada | diferencia | % |
+|---|---|---|---|---|---|
+| 2136 Bilbao-Vizcaya | 01:00 | 0.94 m | 1.00 m | +0.06 m | +6.4% |
+| 1117 Gijón | 00:00 | 1.26 m | 1.24 m | −0.02 m | −1.6% |
+| 1101 Pasaia II | 00:00 | 0.83 m | 0.70 m | −0.13 m | −15.7% |
+| 2820 Dragonera | 01:00 | 0.47 m | 0.32 m | −0.15 m | −31.9% |
+
+Con este cuarto punto, el historial de esta metodología queda así
+(todavía lejos del mínimo de 15 puntos por boya que pide la tarea):
+
+- **2136 Bilbao-Vizcaya**: 4 puntos (−8.5%, 0.0%, +25.4%, +6.4%) — sigue
+  sin patrón claro, alterna signo y magnitud entre pasadas. De las 3
+  obligatorias, la que menos se parece a tener una desviación sistemática
+  hasta ahora.
+- **1117 Gijón**: 4 puntos (−14.7%, +3.7%, +1.4%, −1.6%) — los últimos 3
+  puntos seguidos dentro de ±4%, tras un primer día más alejado. Empieza a
+  parecer la boya mejor modelada por Open-Meteo de las 3 obligatorias,
+  pero con 4 puntos sigue siendo pronto para afirmarlo en firme.
+- **1101 Pasaia II**: 4 puntos, **los 4 con el mismo signo** (−36.0%,
+  −27.3%, −29.3%, −15.7%, media ≈ −27.1%) — sigue siendo, con diferencia,
+  la boya con el patrón más consistente de las 3 obligatorias: 4/4 noches
+  con Open-Meteo calculando por debajo de la boya real. La magnitud varía
+  bastante (de −15.7% a −36.0%), así que todavía no se puede fijar un
+  porcentaje concreto, pero la dirección del sesgo (Open-Meteo infravalora
+  el oleaje en ese punto) se mantiene noche tras noche. Sigue siendo la
+  principal candidata a un futuro factor de corrección de zona — **4
+  puntos, todavía lejos de los 15 que pide la tarea antes de proponer nada
+  en firme.**
+- **1731 Barcelona II**: 1 punto (−22.9%), sin repetir desde el 2026-09-10.
+- **1514 Málaga**: 1 punto (−38.1%), sin repetir desde el 2026-09-11.
+- **2548 Cabo de Gata**: 1 punto (−11.9%), sin repetir desde el 2026-09-12.
+- **2820 Dragonera**: 1 punto nuevo hoy (−31.9%) — desviación considerable
+  ya en el primer punto, pero una sola muestra no permite decir si es
+  representativa de la zona o del estado de mar de esta noche.
+
+**Ningún factor de corrección propuesto todavía** — ninguna boya llega a
+los 15 puntos mínimos. Pasaia II sigue siendo la que más vigilancia
+merece de cerca (4/4 noches con el mismo signo); seguir sumando historial
+en las 3 obligatorias y rotando una boya nueva de otra región cada noche
+(ya cubiertas: 1731 Barcelona II, 1514 Málaga, 2548 Cabo de Gata, 2820
+Dragonera — candidata para la próxima pasada: 2242 Cabo Peñas, la única
+de la lista corta que queda sin probar, o repetir alguna de las 4 ya
+vistas para empezar a acumular su propio historial).
