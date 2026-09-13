@@ -64,7 +64,7 @@ jobs:
           fi
           resp=$(curl -sS -X POST "$SUPABASE_URL/auth/v1/verify" \
             -H "apikey: $SUPABASE_ANON_KEY" -H "Content-Type: application/json" \
-            -d "{\"type\":\"magiclink\",\"token\":\"$hashed_token\",\"email\":\"$SMOKE_TEST_EMAIL\"}")
+            -d "{\"type\":\"email\",\"token\":\"$hashed_token\",\"email\":\"$SMOKE_TEST_EMAIL\"}")
           token=$(echo "$resp" | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{console.log(JSON.parse(d).access_token||'')}catch{console.log('')}})")
           userid=$(echo "$resp" | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{console.log(JSON.parse(d).user.id||'')}catch{console.log('')}})")
           if [ -z "$token" ] || [ -z "$userid" ]; then
