@@ -148,6 +148,7 @@
     <h1>🆘 Alarma</h1>
     <p>Aviso a tus contactos y llamada rápida al 112.</p>
   </div>
+  <a id="enlaceAdmin" href="/admin.html" title="Panel de administrador" aria-label="Administración" style="display:none; background:#EEF2EF; border:1px solid #DDE2DC; color:#0B2532; width:34px; height:34px; border-radius:50%; font-size:15px; cursor:pointer; align-items:center; justify-content:center; text-decoration:none;">🔐</a>
   <div class="cuenta-menu-wrap">
     <button class="cuenta-menu-btn" id="btnCuentaMenu" type="button" aria-label="Cuenta">👤</button>
     <div class="cuenta-menu-dropdown" id="cuentaMenuDropdown">
@@ -226,6 +227,9 @@ const usuario = sesionInicial.session.user;
 let tokenAcceso = sesionInicial.session.access_token;
 supabase.auth.onAuthStateChange((_evento, sesion) => { if (sesion) tokenAcceso = sesion.access_token; });
 document.getElementById("comprobandoAcceso").remove();
+if (usuario.email === "etxebe2005@gmail.com") {
+  document.getElementById("enlaceAdmin").style.display = "flex";
+}
 
 document.getElementById("btnCerrarSesion").addEventListener("click", async (e) => {
   e.preventDefault();
