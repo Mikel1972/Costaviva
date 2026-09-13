@@ -5,7 +5,7 @@ cambian las convenciones — no es un historial (para eso está `ROBOT.md`).
 Si algo de aquí queda desactualizado, corrígelo en el momento en que lo
 detectes, no lo dejes para luego.
 
-## ✅ RESUELTO (2026-09-13): recuperación de contraseña arreglada + CAPTCHA en login.html
+## ✅ RESUELTO (2026-09-13/14): recuperación de contraseña arreglada + CAPTCHA en login.html
 
 **Bug original**: el enlace de "recuperar contraseña" autenticaba de
 verdad (Supabase lo hace así a propósito, para poder llamar a
@@ -13,51 +13,53 @@ verdad (Supabase lo hace así a propósito, para poder llamar a
 cambiarla — el login simplemente veía que ya había sesión y mandaba
 directo al mapa, sin dejar nunca escribir la contraseña nueva.
 
-**Primer arreglo**: pantalla nueva `#cajaNuevaContrasena` (formulario
-con contraseña nueva + repetir, llama a `supabase.auth.updateUser()`) y
-detección vía `supabase.auth.onAuthStateChange()` — evento
-`PASSWORD_RECOVERY` muestra la pantalla nueva; evento `INITIAL_SESSION`
-(no una llamada aparte a `getSession()`) decide si redirigir al mapa por
-sesión ya existente. Se prefirió `onAuthStateChange` a mirar a mano el
-hash/query de la URL porque supabase-js tiene dos formatos de enlace de
-recuperación distintos según versión (hash `#type=recovery` vs `?code=`
-a intercambiar de forma asíncrona) y solo el evento del SDK es fiable
-en ambos casos.
+**Causa real, encontrada tras tres intentos fallidos de arreglar el
+código de `login.html`**: el problema nunca estuvo en `login.html`. El
+enlace del email (`https://<proyecto>.supabase.co/auth/v1/verify?...
+&redirect_to=...`) llevaba un `redirect_to` que apuntaba a la raíz de
+`fishnow-59u.pages.dev` (sin `/login`) — la "Site URL" configurada en
+Supabase (Authentication → URL Configuration), de antes de que
+existiera esta pantalla de recuperación. El enlace caía siempre en
+`index.html` (el mapa), que solo ve una sesión válida y la muestra sin
+más — ningún cambio dentro de `login.html` podía arreglar esto nunca,
+porque el enlace no llegaba a ese fichero en absoluto. Encontrado
+inspeccionando el enlace real del email en crudo (copiándolo sin
+abrirlo) — **esta es la comprobación que había que hacer desde el
+principio** en vez de seguir cambiando la lógica de eventos de
+`login.html` a ciegas.
 
-**Segundo intento, también fallido en real esa misma tarde**: con el
-primer arreglo ya desplegado, probando con una sesión ya guardada en el
-navegador (típico si el móvil ya había iniciado sesión antes),
-`INITIAL_SESSION` llegaba con esa sesión existente y redirigía al mapa
-con `window.location.href` ANTES de que el SDK terminara de procesar el
-código del enlace de recuperación y disparara `PASSWORD_RECOVERY` —
-mismo síntoma exacto del bug original. Se intentó corregir dando un
-margen de 400ms antes de redirigir por `INITIAL_SESSION`, cancelable si
-`PASSWORD_RECOVERY` llegaba mientras tanto — pensado para una condición
-de carrera de timing.
+**Arreglo real, dos partes**:
+1. En Supabase → Authentication → URL Configuration: "Site URL"
+   actualizada a `https://costaviva.org` y añadida
+   `https://costaviva.org/**` a "Redirect URLs" (antes solo estaba
+   `https://fishnow-59u.pages.dev/**`).
+2. `resetPasswordForEmail()` en `login.html` pasa ahora un `redirectTo`
+   explícito (`${window.location.origin}/login`) — no basta con
+   arreglar la Site URL, porque sin `redirectTo` explícito en el
+   propio código, cualquier cambio futuro a esa configuración del panel
+   volvería a romper esto en silencio. Si la URL de `redirectTo` no
+   está en la lista blanca de "Redirect URLs", Supabase la ignora en
+   silencio y vuelve a usar la Site URL — por eso las dos partes son
+   necesarias juntas.
 
-**Ese segundo arreglo TAMBIÉN falló probando en real**, con un enlace
-nuevo (sin caducar) y la misma sesión que lo pidió: siguió entrando
-directo al mapa. Esto descartó que fuera solo timing — la detección
-automática de Supabase (`detectSessionInUrl`) para el parámetro
-`?code=` (flujo PKCE) simplemente no estaba disparando
-`PASSWORD_RECOVERY` de forma fiable en este caso, por mucho margen que
-se le diera.
+**Lección para la próxima vez que "el enlace de un email hace algo
+raro"**: comprobar el enlace real en crudo (mantener pulsado sobre el
+botón del email → Copiar, sin abrirlo) ANTES de tocar el código de la
+página de destino — un `redirect_to`/Site URL mal configurado en
+Supabase produce exactamente el mismo síntoma visible ("me entra
+directo") que un bug real de JavaScript en la página, y sin mirar el
+enlace en sí es indistinguible de fuera.
 
-**Arreglo definitivo (tercer intento)**: dejar de depender por completo
-de la detección automática del SDK (`detectSessionInUrl: false` en el
-`createClient`) y gestionar el código a mano — `gestionarAccesoInicial()`
-en `login.html` lee `?code=` de la URL y llama directamente a
-`supabase.auth.exchangeCodeForSession(code)` (o, como respaldo, el hash
-`#access_token=...&type=recovery` con `setSession()`, por si el
-proyecto cambiara de flujo), sin eventos ni márgenes de tiempo de por
-medio — determinista, no hay nada que pueda ganarle la carrera. **Lección
-para cualquier futuro cambio a este bloque**: `onAuthStateChange` +
-`detectSessionInUrl` automático no es fiable para este flujo en este
-proyecto — cualquier cambio futuro debe seguir gestionando el código de
-la URL a mano, y probarse SIEMPRE con una sesión ya activa en el
-navegador (el caso "sin sesión previa" no revela ninguno de los dos
-bugs anteriores) y con un enlace recién pedido (no reutilizar uno viejo,
-puede haber caducado y dar el mismo síntoma por un motivo distinto).
+**Además, endurecido por el camino** (no era la causa del bug, pero es
+una mejora real que se queda): la detección de la sesión ya no depende
+de `supabase.auth.onAuthStateChange()` + la detección automática del
+SDK (`detectSessionInUrl`) — se comprobó en real que no dispara el
+evento `PASSWORD_RECOVERY` de forma fiable para el flujo PKCE
+(`?code=`) de este proyecto. `login.html` ahora gestiona el código a
+mano (`gestionarAccesoInicial()`: lee `?code=` y llama a
+`supabase.auth.exchangeCodeForSession()`, con un respaldo por hash
+`#access_token=...&type=recovery` + `setSession()` para el formato
+antiguo) — determinista, sin eventos ni márgenes de tiempo.
 
 **CAPTCHA (Cloudflare Turnstile)**, pedido explícito del usuario ("como
 en Pólizas.ai"): Site Key `0x4AAAAAAEywlSn_bxleOonO`, widget "costa
@@ -74,14 +76,12 @@ Cloudflare Pages usan subdominios distintos en cada deploy, ej.
 `ad90e324.fishnow-59u.pages.dev`) — sin esto, Turnstile falla con
 "Error 300031" (hostname no permitido) en cualquier preview.
 
-**Verificado en real, 2026-09-13**: CAPTCHA resuelto en preview y en
-producción; `resetPasswordForEmail` con token aceptado sin error
-(Supabase valida contra Cloudflare de verdad). **Pendiente de
-confirmación final**: repetir el clic en el enlace real del email
-(nuevo, no reutilizar uno viejo) con una sesión ya activa en Safari,
-ahora con el arreglo determinista (`exchangeCodeForSession` a mano)
-desplegado — los dos intentos anteriores basados en `onAuthStateChange`
-fallaron en este mismo escenario.
+**Verificado en real de extremo a extremo, 2026-09-14**: pedido un
+enlace nuevo, confirmado en crudo que `redirect_to=
+https://costaviva.org/login`, clic en el enlace → aparece "Nueva
+contraseña" → contraseña guardada → acceso concedido. El ciclo completo
+de login/registro/recuperación con CAPTCHA queda verificado en
+producción real.
 
 ## ✅ RESUELTO (2026-09-13): el SOS ya llega de verdad — dominio propio verificado
 
@@ -586,6 +586,36 @@ canónica — usar `costaviva.org` en código/documentación nueva.
 cabeceras de Vercel y 404 en rutas que sí existen aquí; no usarlo para
 verificar nada de este repo (fácil de confundir con el dominio real).
 
+**Incidente y arreglo — CNAME de la zona en "DNS only", no "Proxied"
+(2026-09-13/14)**: `costaviva.org` empezó a fallar de forma
+intermitente (timeout puro, sin respuesta HTTP) unas horas después de
+migrar el dominio — confirmado que no era cosa de esta red/máquina
+(mismo fallo desde `WebFetch`, que corre en infraestructura de
+Anthropic, completamente aparte). El panel de Cloudflare Pages →
+Custom domains seguía mostrando "Active, SSL enabled" durante el fallo
+— **ese estado no es fiable para descartar este problema**. Ni el
+certificado (válido, confirmado en SSL/TLS → Edge Certificates) ni el
+DNS (correcto, confirmado registro a registro) eran la causa; quitar y
+volver a añadir el custom domain en Pages tampoco lo arregló.
+
+Diagnóstico real, de un agente de soporte de Cloudflare: al añadirse la
+zona DNS de `costaviva.org` a la cuenta el mismo día que ya existía el
+custom domain en Pages, quedó un conflicto entre el certificado "SaaS"
+que usa Pages para custom domains y el certificado Universal SSL propio
+de la zona — distintos nodos de borde de Cloudflare elegían uno u otro
+de forma inconsistente, y los que elegían el de la zona intentaban un
+proxy naranja-a-naranja hacia `*.pages.dev` que nunca resolvía (de ahí
+la intermitencia). **Arreglo verificado en real**: en la zona DNS (no en
+Pages) → DNS → Records → cambiar el CNAME `costaviva.org` →
+`fishnow-59u.pages.dev` de "Proxied" (nube naranja) a **"DNS only"**
+(nube gris). Efecto inmediato. Se pierde el proxy de zona (WAF/
+analíticas a ese nivel) para este registro, irrelevante para esta app
+(sin reglas de WAF propias) — Cloudflare Pages sigue sirviendo el sitio
+igual de bien por su propia red. **Si esto vuelve a pasar en cualquiera
+de los otros proyectos hermanos** (Pólizas.ai, Etxeapala, Lurnahi) al
+añadir un dominio nuevo: sospechar de esto primero, no perder tiempo
+revisando certificado/DNS/remove-readd (ver memoria de sesión).
+
 **Exposición pública confirmada y corregida el 2026-09-12**: antes de
 añadir `functions/_middleware.js`, `ROBOT.md`, `CALIBRACION.jsonl`,
 `README.md`, `start.ps1` y ambos `supabase/*.sql` se servían con `200` en
@@ -974,6 +1004,24 @@ retomarlo expresamente con él:
   ubicaciones personalizadas con más actividad como candidatas
   prioritarias en vez de buscar a ciegas. Documentación pendiente de
   añadir a `ROBOT_REGLAS.md`, no requiere código nuevo.
+
+**Cuarta idea, pedida el 2026-09-14, misma categoría (aparcada, solo
+investigación por ahora)**: **estimar la mar de fondo (swell de periodo
+largo) combinando boyas exteriores + batimetría + imágenes de webcam**.
+El oleaje de fondo viaja por aguas profundas con poca pérdida de
+energía y a una velocidad de grupo calculable por su periodo, así que
+en teoría se puede propagar la lectura de una boya exterior hasta cada
+spot y contrastarla con la transformación por batimetría al acercarse a
+la costa — calibrando ese modelo contra las boyas costeras que Puertos
+del Estado ya tiene cerca de cada zona, mismo patrón que la calibración
+de oleaje/coeficiente de marea que ya existe. Las webcams se ven más
+como corroboración cualitativa (p.ej. % de espuma/rompiente visible)
+que como fuente numérica independiente — visión artificial para altura
+de ola real es un problema difícil y frágil (necesita calibración por
+cámara, se rompe si alguien mueve la cámara). Añadido como tarea de
+investigación para la pasada de "mareas y oleaje" del robot buscador de
+fuentes (ver más abajo) — como todo lo que toca el índice de mar, sería
+siempre una propuesta a confirmar, nunca un cambio directo.
 
 ## Robot buscador de fuentes — 4 veces al día + 2 áreas 1x/día (2026-09-13)
 
