@@ -199,7 +199,9 @@ una nota o el spot de una jornada ya cerrada no la vuelve a abrir.
 En la UI, una entrada en curso se distingue con una insignia "🟢 En
 curso" y borde en color de acento (`resumenEntradaHTML()` en
 `diario.html`); mientras está en curso se sigue pudiendo "➕ Añadir
-captura" con normalidad.
+captura" con normalidad. **Probado en real por el usuario en producción
+2026-09-13**: abrir una entrada, ir añadiendo capturas y concluir la
+jornada funciona bien.
 
 ## Bug corregido — radar de lluvia mostraba "Zoom Level Not Supported" (2026-09-13)
 
@@ -214,6 +216,8 @@ level is 7". Arreglado añadiendo `maxNativeZoom: 7` al `L.tileLayer` de
 `capaRadarLluvia` (index.html, dentro de `prepararCapaRadarLluvia()`) —
 Leaflet sigue dejando acercar el mapa, pero a partir de zoom 8 reescala
 la última tesela real de zoom 7 en vez de pedir una que no existe.
+**Probado en real por el usuario en producción 2026-09-13**: confirmado
+que ya no aparece el aviso al acercar el mapa.
 
 **Bug real corregido 2026-09-12 — "ahora" en UTC contra horas en
 local:** el usuario vio nubosidad 100% cuando en realidad no pasaba del
