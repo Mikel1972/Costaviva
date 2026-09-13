@@ -34,7 +34,14 @@
     position: fixed; left: 0; right: 0; bottom: 0;
     height: calc(64px + env(safe-area-inset-bottom));
     background: #0F2C38; border-top: 1px solid #1C3F4F;
-    display: flex; gap: 6px; padding: 8px 8px calc(8px + env(safe-area-inset-bottom)) 8px; z-index: 700;
+    display: flex; gap: 6px; padding: 8px 8px calc(8px + env(safe-area-inset-bottom)) 8px;
+    /* Por encima del panel de spot (z-index 1000) a propósito: pedido
+       explícito del usuario (2026-09-13) — el menú Mapa/Diario/Alarma/
+       Grupos debe verse SIEMPRE, incluso con la ficha de un spot abierta
+       debajo. El panel ya reserva este hueco con su "bottom" offset, pero
+       esto lo garantiza pase lo que pase con la altura real del panel en
+       cada dispositivo. */
+    z-index: 1100;
   }
   .tabs-nav a {
     flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
