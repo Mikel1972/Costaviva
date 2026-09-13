@@ -294,6 +294,12 @@
   .panel h2 { font-family: 'Fraunces', serif; font-size: 20px; margin: 0 0 4px; font-weight: 600; }
   .panel .cerrar {
     float: right; background: none; border: none; color: #7FA3AF; cursor: pointer; font-size: 16px;
+    /* Zona de toque real de al menos 44x44 (mínimo recomendado en iOS/Android)
+       sin mover el icono visualmente — el padding amplía el área pulsable y el
+       margen negativo la compensa para que siga pegada a la esquina de siempre.
+       Bug real reportado por el usuario en su iPhone: el botón "✕" no
+       respondía al toque, solo al ratón en escritorio (2026-09-13). */
+    padding: 14px; margin: -14px -14px 0 0; line-height: 1;
   }
   .panel .coords { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7FA3AF; }
   .panel .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
