@@ -5,6 +5,84 @@ cambian las convenciones — no es un historial (para eso está `ROBOT.md`).
 Si algo de aquí queda desactualizado, corrígelo en el momento en que lo
 detectes, no lo dejes para luego.
 
+## ✅ RESUELTO (2026-09-13): recuperación de contraseña arreglada + CAPTCHA en login.html
+
+**Bug original**: el enlace de "recuperar contraseña" autenticaba de
+verdad (Supabase lo hace así a propósito, para poder llamar a
+`updateUser()`), pero `login.html` no tenía ninguna pantalla para
+cambiarla — el login simplemente veía que ya había sesión y mandaba
+directo al mapa, sin dejar nunca escribir la contraseña nueva.
+
+**Primer arreglo**: pantalla nueva `#cajaNuevaContrasena` (formulario
+con contraseña nueva + repetir, llama a `supabase.auth.updateUser()`) y
+detección vía `supabase.auth.onAuthStateChange()` — evento
+`PASSWORD_RECOVERY` muestra la pantalla nueva; evento `INITIAL_SESSION`
+(no una llamada aparte a `getSession()`) decide si redirigir al mapa por
+sesión ya existente. Se prefirió `onAuthStateChange` a mirar a mano el
+hash/query de la URL porque supabase-js tiene dos formatos de enlace de
+recuperación distintos según versión (hash `#type=recovery` vs `?code=`
+a intercambiar de forma asíncrona) y solo el evento del SDK es fiable
+en ambos casos.
+
+**Segundo intento, también fallido en real esa misma tarde**: con el
+primer arreglo ya desplegado, probando con una sesión ya guardada en el
+navegador (típico si el móvil ya había iniciado sesión antes),
+`INITIAL_SESSION` llegaba con esa sesión existente y redirigía al mapa
+con `window.location.href` ANTES de que el SDK terminara de procesar el
+código del enlace de recuperación y disparara `PASSWORD_RECOVERY` —
+mismo síntoma exacto del bug original. Se intentó corregir dando un
+margen de 400ms antes de redirigir por `INITIAL_SESSION`, cancelable si
+`PASSWORD_RECOVERY` llegaba mientras tanto — pensado para una condición
+de carrera de timing.
+
+**Ese segundo arreglo TAMBIÉN falló probando en real**, con un enlace
+nuevo (sin caducar) y la misma sesión que lo pidió: siguió entrando
+directo al mapa. Esto descartó que fuera solo timing — la detección
+automática de Supabase (`detectSessionInUrl`) para el parámetro
+`?code=` (flujo PKCE) simplemente no estaba disparando
+`PASSWORD_RECOVERY` de forma fiable en este caso, por mucho margen que
+se le diera.
+
+**Arreglo definitivo (tercer intento)**: dejar de depender por completo
+de la detección automática del SDK (`detectSessionInUrl: false` en el
+`createClient`) y gestionar el código a mano — `gestionarAccesoInicial()`
+en `login.html` lee `?code=` de la URL y llama directamente a
+`supabase.auth.exchangeCodeForSession(code)` (o, como respaldo, el hash
+`#access_token=...&type=recovery` con `setSession()`, por si el
+proyecto cambiara de flujo), sin eventos ni márgenes de tiempo de por
+medio — determinista, no hay nada que pueda ganarle la carrera. **Lección
+para cualquier futuro cambio a este bloque**: `onAuthStateChange` +
+`detectSessionInUrl` automático no es fiable para este flujo en este
+proyecto — cualquier cambio futuro debe seguir gestionando el código de
+la URL a mano, y probarse SIEMPRE con una sesión ya activa en el
+navegador (el caso "sin sesión previa" no revela ninguno de los dos
+bugs anteriores) y con un enlace recién pedido (no reutilizar uno viejo,
+puede haber caducado y dar el mismo síntoma por un motivo distinto).
+
+**CAPTCHA (Cloudflare Turnstile)**, pedido explícito del usuario ("como
+en Pólizas.ai"): Site Key `0x4AAAAAAEywlSn_bxleOonO`, widget "costa
+viva", modo Managed. El token (leído de
+`input[name="cf-turnstile-response"]`, que el script de Turnstile crea
+solo) se exige antes de `signUp`, `signInWithPassword` y
+`resetPasswordForEmail`, y se resetea (`window.turnstile.reset()`, los
+tokens son de un solo uso) tras cada intento. La clave secreta se
+configuró directamente en Supabase (Authentication → Settings → Enable
+Captcha protection), nunca pasó por aquí. **Hostname Management del
+widget**: tuvo que incluir no solo `costaviva.org`, sino también
+`fishnow-59u.pages.dev` con subdominios (las URLs de preview de
+Cloudflare Pages usan subdominios distintos en cada deploy, ej.
+`ad90e324.fishnow-59u.pages.dev`) — sin esto, Turnstile falla con
+"Error 300031" (hostname no permitido) en cualquier preview.
+
+**Verificado en real, 2026-09-13**: CAPTCHA resuelto en preview y en
+producción; `resetPasswordForEmail` con token aceptado sin error
+(Supabase valida contra Cloudflare de verdad). **Pendiente de
+confirmación final**: repetir el clic en el enlace real del email
+(nuevo, no reutilizar uno viejo) con una sesión ya activa en Safari,
+ahora con el arreglo determinista (`exchangeCodeForSession` a mano)
+desplegado — los dos intentos anteriores basados en `onAuthStateChange`
+fallaron en este mismo escenario.
+
 ## ✅ RESUELTO (2026-09-13): el SOS ya llega de verdad — dominio propio verificado
 
 **Historial del problema** (crítico, sin resolver desde 2026-09-12):

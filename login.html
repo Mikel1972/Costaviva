@@ -123,7 +123,15 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// detectSessionInUrl: false — la detección automática de Supabase para
+// el enlace de recuperación (parámetro "?code=" de PKCE) demostró no
+// ser fiable en la práctica (ver más abajo, sección de recuperación de
+// contraseña): con una sesión ya guardada en el navegador, entraba
+// directo al mapa sin procesar el código de recuperación. Se gestiona
+// ese intercambio a mano en su lugar, de forma determinista.
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: { detectSessionInUrl: false },
+});
 
 let modo = "login"; // "login" | "registro"
 
@@ -186,32 +194,30 @@ document.getElementById("linkRecuperar").addEventListener("click", async () => {
 // mientras se resuelve el enlace) — sin esta pantalla, el login mandaba
 // directo al mapa sin dejar nunca cambiar la contraseña.
 //
-// La detección va por onAuthStateChange (evento "PASSWORD_RECOVERY"),
-// NO por mirar a mano el hash/query de la URL — supabase-js tiene dos
-// formatos de enlace distintos según la versión (uno mete los datos en
-// el hash de la URL, otro en un parámetro "?code=" que hay que
-// intercambiar de forma asíncrona) y solo el evento del propio SDK
-// funciona igual pase lo que pase con eso.
+// HISTORIAL — dos intentos previos, ambos fallaron probando en real:
+// 1) Detectar la recuperación solo con onAuthStateChange (evento
+//    "PASSWORD_RECOVERY"), confiando en la detección automática de
+//    Supabase (detectSessionInUrl). Fallo: con una sesión ya guardada
+//    en el navegador, "INITIAL_SESSION" llegaba con esa sesión y
+//    redirigía al mapa antes de que se procesara el código.
+// 2) Añadir un margen de 400ms antes de redirigir por "INITIAL_SESSION",
+//    cancelable si "PASSWORD_RECOVERY" llegaba mientras tanto — pensado
+//    para una condición de carrera de timing. Probado en real 2026-09-13
+//    con un enlace NUEVO (no caducado) y sesión ya activa en el mismo
+//    Safari que pidió el enlace: siguió fallando igual (entra directo al
+//    mapa). Esto descarta que fuera solo timing — la detección
+//    automática de Supabase para el parámetro "?code=" (flujo PKCE)
+//    simplemente no está dejando pasar el evento "PASSWORD_RECOVERY" de
+//    forma fiable en este caso.
 //
-// BUG REAL encontrado probando en real 2026-09-13 (con una primera
-// versión de este mismo arreglo, sin el margen de abajo): si el
-// navegador ya tenía guardada una sesión válida de esa cuenta (por
-// ejemplo, de haber iniciado sesión antes en el mismo teléfono),
-// "INITIAL_SESSION" llega con esa sesión ya existente y redirigía al
-// mapa con window.location.href ANTES de que el SDK terminara de
-// intercambiar el token/código del enlace de recuperación y disparara
-// "PASSWORD_RECOVERY" — la navegación corta la página a media
-// ejecución, así que ese segundo evento nunca llega a procesarse. Es
-// el mismo síntoma exacto del bug original ("entra directo sin dejar
-// cambiar la contraseña"), solo que causado esta vez por una condición
-// de carrera en el propio arreglo, no por falta de pantalla.
-//
-// Corregido dando un margen antes de redirigir por "INITIAL_SESSION"
-// (solo cuando ya hay sesión — si no hay ninguna, no hay nada que
-// retrasar), cancelable si "PASSWORD_RECOVERY" llega mientras tanto.
+// ARREGLO ACTUAL: dejar de depender de la detección automática del SDK
+// por completo (`detectSessionInUrl: false` en el createClient de más
+// arriba) y gestionar el código de recuperación a mano, de forma
+// determinista — sin eventos, sin margenes de tiempo, sin adivinar qué
+// dispara antes. Cubre tanto el formato "?code=" (PKCE, el que usa este
+// proyecto) como el formato antiguo por hash (#access_token=...&type=
+// recovery), por si el proyecto de Supabase cambiara de flujo alguna vez.
 // ---------------------------------------------------------------------------
-let flujoDecidido = false;
-let temporizadorRedirigirInicial = null;
 
 function mostrarPantallaNuevaContrasena() {
   document.getElementById("cajaLogin").style.display = "none";
@@ -246,24 +252,40 @@ formNueva.addEventListener("submit", async (e) => {
   window.location.href = "/";
 });
 
-supabase.auth.onAuthStateChange((evento, sesion) => {
-  if (evento === "PASSWORD_RECOVERY") {
-    flujoDecidido = true;
-    if (temporizadorRedirigirInicial) clearTimeout(temporizadorRedirigirInicial);
-    mostrarPantallaNuevaContrasena();
-  } else if (evento === "INITIAL_SESSION" && !flujoDecidido) {
-    if (sesion) {
-      temporizadorRedirigirInicial = setTimeout(() => {
-        if (!flujoDecidido) {
-          flujoDecidido = true;
-          window.location.href = "/";
-        }
-      }, 400);
-    } else {
-      flujoDecidido = true;
+async function gestionarAccesoInicial() {
+  const query = new URLSearchParams(window.location.search);
+  const code = query.get("code");
+  if (code) {
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    history.replaceState(null, "", window.location.pathname);
+    if (error) {
+      mostrarMensaje("El enlace de recuperación no es válido o ha caducado. Pide uno nuevo.", "error");
+      return;
     }
+    mostrarPantallaNuevaContrasena();
+    return;
   }
-});
+
+  const hash = new URLSearchParams(window.location.hash.slice(1));
+  if (hash.get("type") === "recovery" && hash.get("access_token")) {
+    const { error } = await supabase.auth.setSession({
+      access_token: hash.get("access_token"),
+      refresh_token: hash.get("refresh_token"),
+    });
+    history.replaceState(null, "", window.location.pathname);
+    if (error) {
+      mostrarMensaje("El enlace de recuperación no es válido o ha caducado. Pide uno nuevo.", "error");
+      return;
+    }
+    mostrarPantallaNuevaContrasena();
+    return;
+  }
+
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) window.location.href = "/";
+}
+
+gestionarAccesoInicial();
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
