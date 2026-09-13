@@ -1,0 +1,115 @@
+name: Robot buscador de fuentes
+
+# Pedido explícito del usuario (2026-09-13): "robots" que busquen, 4 veces
+# al día, fuentes de datos que mejoren lo que ya hay (cámaras, mareas y
+# oleaje, corrientes, presión). Se implementa como UN solo workflow (no 4
+# separados — decisión explícita del usuario, más barato y fácil de
+# mantener) que rota de área según qué cron lo disparó, invocando una
+# sesión de Claude Code en modo no interactivo ("headless") que sigue las
+# reglas ya existentes de ROBOT_REGLAS.md — mismo criterio de "nunca
+# inventar un dato", mismo límite de volumen para aplicar cambios
+# directos, mismo interruptor ROBOT_PAUSADO.
+#
+# IMPORTANTE — probar a mano (workflow_dispatch) antes de fiarse del
+# schedule, mismo criterio que el resto de rutinas de este repo. Necesita
+# el secret ANTHROPIC_API_KEY (la misma que ya usa
+# functions/identificar-captura.js en Cloudflare Pages — hay que añadirla
+# también aquí, como secret de GitHub Actions, son almacenes distintos).
+#
+# Cada pasada escribe un resumen corto en ROBOT.md (con fecha, para que
+# daily-report.yml lo vea) y además publica su propio resumen en el
+# mismo Issue "Informe diario — Costa Viva" que ya usa daily-report.yml.
+
+on:
+  schedule:
+    - cron: "47 2 * * *"  # cámaras/webcams
+    - cron: "47 8 * * *"  # mareas y oleaje
+    - cron: "47 14 * * *" # corrientes marinas
+    - cron: "47 20 * * *" # presión atmosférica
+  workflow_dispatch:
+    inputs:
+      area:
+        description: "Área a investigar (solo para probar a mano)"
+        required: false
+        default: "cámaras/webcams nuevas para spots sin cámara todavía"
+
+jobs:
+  buscar:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Determinar área de esta pasada
+        id: area
+        run: |
+          case "${{ github.event.schedule }}" in
+            "47 2 * * *")  AREA="cámaras/webcams nuevas para spots (fijos o spots_usuario populares) que todavía no tienen" ;;
+            "47 8 * * *")  AREA="fuentes de mareas y oleaje — comparar contra CALIBRACION.jsonl, buscar puntos de calibración nuevos" ;;
+            "47 14 * * *") AREA="fuentes de corrientes marinas por zona" ;;
+            "47 20 * * *") AREA="fuentes de presión atmosférica e histórico por zona" ;;
+            *) AREA="${{ github.event.inputs.area }}" ;;
+          esac
+          echo "area=$AREA" >> "$GITHUB_OUTPUT"
+
+      - name: Instalar Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Configurar git para el commit del robot
+        run: |
+          git config user.name "Claude (robot Costa Viva)"
+          git config user.email "noreply@anthropic.com"
+
+      - name: Ejecutar el robot de datos (Claude Code, sesión no interactiva)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          AREA: ${{ steps.area.outputs.area }}
+        run: |
+          rm -f /tmp/robot-informe.txt
+          claude -p "Eres el robot de investigación/auditoría de datos de Costa Viva (repo Fishnow), ejecutándote como una pasada programada más (no la rutina nocturna principal, esta es la de búsqueda de fuentes, 4 veces al día). Sigue ESTRICTAMENTE ROBOT_REGLAS.md antes de tocar nada: nunca inventes un dato ni una URL; si vas a tocar más de 3 ficheros o ~80 líneas en total, o cualquier fichero de functions/ o supabase/, NO lo apliques directo — proponlo como texto en ROBOT.md en vez de commitear. Si existe un fichero ROBOT_PAUSADO en la raíz del repo, no escribas nada (ni commits ni ramas), solo lee y para ahí. Tarea de esta pasada: investiga $AREA. Usa WebSearch para encontrar fuentes reales; si encuentras algo verificable con una petición HTTP real, verifícalo antes de proponerlo o integrarlo. Añade siempre una entrada nueva fechada (fecha y hora UTC de hoy) a ROBOT.md resumiendo qué buscaste y qué encontraste, incluso si no hay nada nuevo (en ese caso dilo explícitamente: 'sin novedades esta pasada'). Si hiciste cambios que caen dentro de los límites de ROBOT_REGLAS.md para aplicar directo, haz commit y push a main tú mismo con git (usa git add/commit/push; el remoto y las credenciales ya están configurados en este runner) firmando igual que las entradas anteriores de ROBOT.md. Al terminar, escribe un resumen de 2 a 4 frases en español, sin jerga, de qué hiciste en esta pasada (o exactamente 'Sin novedades esta pasada.' si no encontraste nada) en el fichero /tmp/robot-informe.txt — se usa para el informe diario del repo." \
+            --dangerously-skip-permissions \
+            --allowedTools "Bash,Read,Write,Edit,Grep,Glob,WebSearch,WebFetch"
+
+      - name: Publicar el resumen en el Issue "Informe diario"
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require("fs");
+            let resumen = "⚠️ El robot no dejó resumen esta pasada (revisar el log del workflow).";
+            try { resumen = fs.readFileSync("/tmp/robot-informe.txt", "utf8").trim() || resumen; } catch (e) {}
+
+            const ahora = new Date().toISOString().replace("T", " ").slice(0, 16) + " UTC";
+            const fila = [
+              `#### 🔎 Robot buscador de fuentes — ${ahora}`,
+              `Área: ${{ steps.area.outputs.area }}`,
+              resumen,
+              "",
+            ].join("\n");
+
+            const titulo = "Informe diario — Costa Viva";
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo,
+              state: "open", labels: "informe-diario",
+            });
+            let issue = issues.find((i) => i.title === titulo);
+            if (!issue) {
+              const creado = await github.rest.issues.create({
+                owner: context.repo.owner, repo: context.repo.repo,
+                title: titulo, labels: ["informe-diario"],
+                body: "Informe diario de salud de Costa Viva — una entrada nueva cada día, la más reciente arriba.\n\n" + fila,
+              });
+              issue = creado.data;
+            } else {
+              const cabecera = issue.body.split("\n").slice(0, 2).join("\n");
+              await github.rest.issues.update({
+                owner: context.repo.owner, repo: context.repo.repo, issue_number: issue.number,
+                body: cabecera + "\n\n" + fila + "\n" + issue.body.split("\n").slice(2).join("\n"),
+              });
+            }
