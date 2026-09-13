@@ -735,6 +735,46 @@ checkboxes en `grupos.html` bajo el interruptor maestro (se ocultan si
 ahora une con `salidas_pesca` para filtrar por `tipo_salida` — filas
 antiguas sin ese campo (antes de que existiera) se tratan como "costa".
 
+## Tema claro (2026-09-13)
+
+Pedido explícito del usuario: "utiliza colores claros" / "piensa en un
+look&feel atractivo, moderno" — sustituido el tema oscuro por uno claro
+en las 5 páginas (no un interruptor, se eligió reemplazar del todo).
+Misma identidad de marca (dorado `#D4A24C`, Fraunces/Inter/IBM Plex
+Mono), roles de luminosidad invertidos:
+
+| Rol | Antes (oscuro) | Ahora (claro) |
+|---|---|---|
+| Fondo de página | `#0B2532` | `#F7F3E8` |
+| Tarjeta/sección | `#0F2C38` | `#FFFFFF` |
+| Fondo terciario (inputs, chips, iconos) | `#123B4D` | `#EEF2EF` |
+| Texto principal | `#E8E2D0` | `#0B2532` (reutilizado — ya era el texto oscuro de los botones dorados) |
+| Texto secundario | `#7FA3AF` | `#5C7680` |
+| Texto apagado | `#9FB8BF` / `#6C8890` | `#5F7981` / `#42585F` |
+| Bordes | `#1C3F4F` | `#DDE2DC` |
+| Dorado como texto (antes ilegible en blanco) | `#D4A24C` | `#A8792A` (el dorado de fondo de botón no cambia) |
+
+Mensajes de error/éxito/aviso reutilizan el antiguo color de borde
+(ya bastante oscuro) como nuevo color de texto, y generan un borde
+nuevo más claro (`#A8D4B8`, `#D9C08A`). `theme-color` y
+`apple-mobile-web-app-status-bar-style` (pasó de `black-translucent` a
+`default`) actualizados para que la barra de estado del móvil combine.
+
+**Casos de doble rol que un reemplazo ciego habría roto** (revisados a
+mano): texto claro sobre elementos con **fondo oscuro propio**
+(distinto del fondo general de la página) se deja intencionadamente en
+claro — el botón de ampliar el mapa de rayos, la insignia "EN DIRECTO"
+de la webcam, el `.expandir-rayos`, y la cuenta atrás de SOS
+(`.cuenta-atras-overlay`, fondo `rgba(11,37,50,0.96)` a propósito, para
+que la emergencia destaque incluso en tema claro). `#7FA3AF` original
+en `#comprobandoAcceso` (pantalla de carga) sí seguía el patrón general
+sin excepción.
+
+**Contraste ajustado tras revisar en real**: `#7C939A` (primera versión
+del texto más apagado) daba ~3.4:1 sobre blanco, por debajo del mínimo
+recomendado (4.5:1) — usado en TODAS las etiquetas de formulario de las
+5 páginas. Sustituido por `#5F7981` (~4.8:1).
+
 ## Rediseño de cabecera/menús (2026-09-13)
 
 Pedido explícito del usuario tras revisar la app en vivo desde el
