@@ -117,7 +117,7 @@ async function generarSesion(email) {
     body: JSON.stringify({ type: "magiclink", token: hashedToken }),
   });
   const cuerpo = await resp.json().catch(() => null);
-  if (!resp.ok || !cuerpo?.access_token) throw new Error(`no se pudo canjear la sesión para ${email}: HTTP ${resp.status}`);
+  if (!resp.ok || !cuerpo?.access_token) throw new Error(`no se pudo canjear la sesión para ${email}: HTTP ${resp.status}, body=${JSON.stringify(cuerpo).slice(0, 300)}`);
   return { token: cuerpo.access_token, userId: cuerpo.user.id };
 }
 
