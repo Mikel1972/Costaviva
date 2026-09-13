@@ -404,6 +404,13 @@
     window.location.href = "/login.html";
   } else {
     document.getElementById("comprobandoAcceso").remove();
+    // Enlace al panel de administrador (2026-09-13, pedido explícito del
+    // usuario): solo visible para su propia cuenta — el panel en sí ya
+    // rechaza a cualquier otra por su cuenta (es_admin() en Supabase),
+    // esto es solo para no mostrar el icono a nadie más.
+    if (data.session.user.email === "etxebe2005@gmail.com") {
+      document.getElementById("enlaceAdmin").style.display = "flex";
+    }
     // El resto de la app vive en un <script> clásico más abajo (por el
     // mapa de Leaflet, sin módulos) — se expone aquí lo que necesita de
     // Supabase para las ubicaciones personalizadas (Fase 2).
@@ -443,7 +450,8 @@
 
 
 <header>
-  <h1>Costa Viva</h1><span class="fecha">LEKEITIO → BILBAO · <span id="estadoVigenciaGlobal">cargando…</span></span>
+  <h1>Costa Viva</h1><span class="fecha"><span id="estadoVigenciaGlobal">cargando…</span></span>
+  <a id="enlaceAdmin" href="/admin.html" title="Panel de administrador" aria-label="Administración" style="display:none; background:#EEF2EF; border:1px solid #DDE2DC; color:#0B2532; width:34px; height:34px; border-radius:50%; font-size:15px; cursor:pointer; align-items:center; justify-content:center; text-decoration:none;">🔐</a>
   <div class="cuenta-menu-wrap">
     <button class="cuenta-menu-btn" id="btnCuentaMenu" type="button" aria-label="Cuenta">👤</button>
     <div class="cuenta-menu-dropdown" id="cuentaMenuDropdown">
