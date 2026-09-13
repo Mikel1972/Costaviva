@@ -44,13 +44,18 @@ llegó de verdad** (confirmado por el usuario, revisando spam
 incluido), y se borró el contacto temporal para dejar todo como
 estaba. La alarma SOS de este repo ya avisa a alguien de verdad.
 
-**Pendiente relacionado, no crítico**: configurar el SMTP de Supabase
-Auth con este mismo dominio (Resend ofrece SMTP relay,
-`smtp.resend.com`, usuario `resend`, contraseña = `RESEND_API_KEY`)
-para dejar de depender del límite de emails del plan gratuito de
-Supabase — ver más abajo, "email rate limit exceeded" al recrear
-cuentas de prueba el mismo día. Esto no es urgente (ya no bloquea
-altas reales, solo afecta a crear muchas cuentas de prueba seguidas).
+**Resuelto también, mismo día**: Supabase Auth usa su PROPIO sistema de
+email interno para confirmaciones de alta/recuperación de contraseña —
+completamente aparte de Resend, con su propio límite de cupo del plan
+gratuito (el "email rate limit exceeded" que bloqueó recrear las
+cuentas de prueba tras borrarlas desde el panel de admin). Configurado
+el SMTP personalizado de Supabase (Authentication → Emails → SMTP
+Settings) apuntando a Resend (`smtp.resend.com`, puerto 465, usuario
+`resend`, contraseña = `RESEND_API_KEY`, remitente
+`noreply@costaviva.org`) — verificado en real pidiendo un
+restablecimiento de contraseña para `etxebe2005+fishnowtest1@gmail.com`
+vía `POST /auth/v1/recover`: `200` y el email llegó de verdad. Ya no
+depende del límite de Supabase.
 
 ## Bug de seguridad corregido — CLAUDE.md y el código de functions/ se servían en público (2026-09-13)
 
