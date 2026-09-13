@@ -63,6 +63,40 @@ reconozca esas variantes.
   seguridad de más abajo (esto es solo un insert por fila propuesta, no
   un cambio de código).
 
+## Variables adicionales para el índice de pesca + turbidez por especie (añadido 2026-09-14)
+
+Sexta responsabilidad, pedida explícitamente por el usuario: investigar
+variables reales que puedan mejorar `indicePesca` (hoy solo usa rango de
+temperatura por especie) y cómo afecta la turbidez del agua a cada
+especie/técnica/cebo.
+
+- **Variables candidatas a investigar**: tendencia de presión (ya hay
+  histórico real en `presion_historico`, falta usarlo como modificador
+  del índice, no solo mostrarlo), ventana de cambio de marea (entrando/
+  saliendo suele ser mejor que la pleamar/bajamar de reposo), fase
+  solunar (heurística tradicional entre pescadores, no ciencia dura —
+  si se añade, dejarlo dicho así de claro en la UI).
+- **Turbidez**: afecta mucho según la especie (especies de acecho como
+  la lubina suelen ir mejor con turbidez moderada; especies que cazan a
+  la vista rinden peor). Open-Meteo no expone turbidez — investigar
+  productos de color del océano por satélite (Copernicus Marine tiene
+  capas de turbidez) o usar el caudal de ríos que ya tenemos
+  (`datosCaudalTodos()` en `functions/prevision.js`) como aproximación
+  cerca de desembocaduras, ya que una crecida suele traer turbidez a la
+  costa cercana.
+- **Fuentes a revisar primero, encontradas el 2026-09-14**: AZTI tiene
+  su propia app de pesca recreativa, **RecreAPP** (`aztidata.es/recreapp`),
+  centrada en esta misma zona (Golfo de Bizkaia) — mirar si publican
+  datos agregados abiertos o estudios derivados. **Open Data Euskadi**
+  (`opendata.euskadi.eus`) tiene datasets del Gobierno Vasco sobre
+  fauna/pesca — revisar si hay algo de calidad de agua/turbidez o
+  biología de especies aprovechable. Ninguna de las dos se ha
+  comprobado todavía con una petición real — verificar antes de dar
+  nada por buena, como con cualquier fuente nueva.
+- **Siempre propuesta en `ROBOT.md`, nunca cambio directo** a
+  `indicePesca` ni a `ESPECIES` — es un dato que se le muestra al
+  usuario como fiable para decidir cuándo y qué pescar.
+
 ## Coeficiente de marea: por spot, no por zona (revisado 2026-09-13)
 
 Esta sección decía originalmente que había que calibrar un
