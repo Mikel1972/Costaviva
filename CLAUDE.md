@@ -756,6 +756,39 @@ móvil:
   por especie bajo el titular "¿Qué esperamos pescar hoy?", en vez de
   mostrar las 5-6 especies siempre expandidas de golpe.
 
+**3 bugs reales encontrados y corregidos probando en real en un iPhone
+(PWA instalada), el mismo día del rediseño de arriba** — ninguno se
+veía en escritorio, solo se detectaron con capturas reales del usuario:
+
+1. **Menú inferior invisible en la PWA instalada**: en modo standalone
+   (`apple-mobile-web-app-capable`), la app ocupa toda la pantalla
+   incluida la franja del home indicator de iOS — sin ajuste de área
+   segura, el contenido fijo del fondo puede quedar ahí. Arreglado con
+   `viewport-fit=cover` en las 4 páginas + `body` a `100dvh` (con
+   `100vh` de respaldo) + `.tabs-nav`/su padding-bottom sumando
+   `env(safe-area-inset-bottom)` a los 64px de siempre. De paso se
+   corrigió un `bottom: 54px` obsoleto en `.panel` (index.html) que
+   seguía con la altura antigua del menú, antes del rediseño a 64px.
+2. **Botón "✕" de cerrar el panel de spot, sin respuesta al toque**:
+   16px sin padding es un objetivo táctil demasiado pequeño para un
+   dedo (mínimo recomendado 44×44 en iOS/Android). Arreglado con
+   padding + margen negativo (amplía la zona pulsable sin mover el
+   icono visualmente) en `.panel .cerrar`.
+3. **Ese mismo botón se iba con el scroll**: el panel de un spot es más
+   alto que la pantalla de un móvil (hay que bajar el scroll para ver
+   marea/corriente/índices), y el botón de cerrar no era `sticky` —
+   dejaba de estar donde el usuario lo buscaba tras bajar el scroll.
+   Arreglado con `position: sticky; top: 0` en `.panel .cerrar`,
+   verificado en el navegador que se queda fijo tras 300px de scroll.
+
+**Decisión de producto explícita, mismo hilo**: el usuario pidió que el
+menú inferior se vea SIEMPRE, incluso con la ficha de un spot abierta
+debajo — antes el panel (z-index 1000) podía quedar por encima del
+menú (z-index 700) según la altura real en cada dispositivo. Ahora
+`.tabs-nav` tiene z-index 1100 (por encima del panel) a propósito, para
+garantizarlo pase lo que pase con el cálculo de alturas de cada móvil,
+no solo confiando en el `bottom` offset del panel.
+
 ## Ideas aparcadas explícitamente (2026-09-13, no empezadas)
 
 Tres pedidas por el usuario la misma noche del rediseño de arriba,
