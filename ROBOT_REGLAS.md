@@ -128,6 +128,34 @@ trivial — documentar el hallazgo en `CALIBRACION.jsonl` y proponer en
 `ROBOT.md`, no aplicar directo si toca `functions/` (ver límite de
 volumen más abajo).
 
+## Buenas prácticas de otras apps y biología de especies (añadido 2026-09-13)
+
+Dos responsabilidades más, pedidas explícitamente por el usuario, que se
+suman a las 4 originales del robot buscador de fuentes — a diferencia de
+esas (datos en tiempo real, verificables con una petición HTTP), estas
+dos son de investigación/contenido, así que corren solo 1 vez al día
+cada una (no 4):
+
+- **Buenas prácticas de otras apps de mareas/pesca**: qué datos en
+  tiempo real o funciones tienen apps como Windy, Tides4fishing,
+  Fishbrain, Meteoblue, Puertos del Estado o AEMET que Costa Viva no
+  tenga todavía. Usa `WebSearch`. **Esto es siempre una propuesta, nunca
+  una implementación directa** — "otra app hace X" es una decisión de
+  producto por definición (ver la regla general de este fichero: cambio
+  de frontend/diseño/producto → proponer, no implementar), así que
+  aplica aquí sin excepción, no solo cuando la pasada decida que el
+  cambio es grande. Añade una entrada a `ROBOT.md` con lo encontrado,
+  aunque sea "sin novedades esta pasada".
+- **Migración y cría de especies**: para las especies ya en `ESPECIES`
+  (`diario.html`), investigar épocas de migración y rangos de
+  temperatura para reproducción/cría/reposo (no solo el rango de pesca
+  que ya se usa en `indicePesca`). Mismo criterio que los sinónimos
+  regionales de especies: **nunca inventar un dato** — si una fuente no
+  da un rango claro y verificable para una especie/zona concreta, no lo
+  propongas. Esto es también siempre una propuesta en `ROBOT.md` (nunca
+  un cambio directo a `ESPECIES` ni a la fórmula de `indicePesca`),
+  porque cambia lo que se le muestra al usuario como dato fiable.
+
 ## Red de seguridad de la automatización (añadido 2026-09-12)
 
 Estas reglas existen porque "el propio prompt dice que esto es

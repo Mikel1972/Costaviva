@@ -897,7 +897,7 @@ retomarlo expresamente con él:
   prioritarias en vez de buscar a ciegas. Documentación pendiente de
   añadir a `ROBOT_REGLAS.md`, no requiere código nuevo.
 
-## Robot buscador de fuentes — 4 veces al día (2026-09-13)
+## Robot buscador de fuentes — 4 veces al día + 2 áreas 1x/día (2026-09-13)
 
 Nuevo workflow `.github/workflows/robot-buscador-fuentes.yml`, pedido
 explícito del usuario: investigar fuentes nuevas (cámaras, mareas y
@@ -910,6 +910,21 @@ sigue las mismas reglas de `ROBOT_REGLAS.md` que la rutina nocturna
 externa (nunca inventar datos, límite de volumen para aplicar cambios
 directos, interruptor `ROBOT_PAUSADO`). Publica su resumen en el mismo
 Issue "Informe diario — Costa Viva" que ya usa `daily-report.yml`.
+
+**Ampliado el mismo día con 2 áreas más**, pedidas explícitamente por el
+usuario, cada una 1 vez al día (no 4, a diferencia de las originales —
+ver `ROBOT_REGLAS.md`, sección "Buenas prácticas de otras apps y
+biología de especies"):
+- **Buenas prácticas de otras apps** (Windy, Tides4fishing, Fishbrain,
+  Meteoblue, Puertos del Estado, AEMET...) — qué datos en tiempo real o
+  funciones tienen que Costa Viva no. Siempre propuesta en `ROBOT.md`,
+  nunca implementación directa (es una decisión de producto por
+  definición).
+- **Migración y cría de especies** — épocas de migración y rangos de
+  temperatura para reproducción/cría/reposo de las especies de
+  `ESPECIES` (`diario.html`), para enriquecer eso o `indicePesca` más
+  adelante. Mismo criterio de "nunca inventar un dato" que los
+  sinónimos regionales; siempre propuesta, nunca cambio directo.
 
 **Limitación importante que hay que recordar**: la herramienta de cron
 de una sesión de Claude Code normal (`CronCreate`) es solo de esa
