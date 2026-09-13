@@ -11,7 +11,7 @@
 // los navegadores no dejan fijar ese header desde fetch(), así que tiene
 // que pasar por este proxy en vez de llamarse directo desde el cliente.
 
-const USER_AGENT = "Mozilla/5.0 (compatible; CostaVivaApp/0.1; +https://fishnow-59u.pages.dev)";
+const USER_AGENT = "Mozilla/5.0 (compatible; CostaVivaApp/0.1; +https://costaviva.org)";
 
 function nombreDesdeDireccion(address) {
   return (

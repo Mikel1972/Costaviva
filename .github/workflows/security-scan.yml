@@ -6,9 +6,10 @@ name: Escaneo de seguridad (OWASP ZAP baseline)
 #
 # Modo baseline = pasivo (spidering + comprobaciones de cabeceras/cookies/
 # CSP/rutas expuestas), NUNCA "full scan" con payloads activos contra
-# producción real. Objetivo: la URL real de producción confirmada en
-# CLAUDE.md (fishnow-59u.pages.dev), nunca costaviva.app (no es este
-# despliegue).
+# producción real. Objetivo: costaviva.org (dominio propio, verificado
+# y apuntando al mismo despliegue de Cloudflare Pages desde 2026-09-13
+# — antes era fishnow-59u.pages.dev, que sigue funcionando igual pero
+# ya no es la URL canónica).
 #
 # Aviso de hallazgos: la propia action abre/actualiza un Issue en este
 # repo con el resultado — GitHub ya te avisa por email de los Issues
@@ -30,7 +31,7 @@ jobs:
       - name: ZAP baseline scan
         uses: zaproxy/action-baseline@v0.14.0
         with:
-          target: "https://fishnow-59u.pages.dev/"
+          target: "https://costaviva.org/"
           cmd_options: "-a" # incluye también las páginas enlazadas (alarma, diario, login)
           allow_issue_writing: true
           fail_action: false # no bloquea el workflow por hallazgos; el Issue es el aviso

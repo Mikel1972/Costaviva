@@ -5,34 +5,25 @@ cambian las convenciones — no es un historial (para eso está `ROBOT.md`).
 Si algo de aquí queda desactualizado, corrígelo en el momento en que lo
 detectes, no lo dejes para luego.
 
-## ⚠ CRÍTICO SIN RESOLVER: el SOS probablemente no llega a nadie (2026-09-12)
+## ✅ RESUELTO (2026-09-13): el SOS ya llega de verdad — dominio propio verificado
 
-`sos-alerta.js` manda el email de socorro desde `sos@costaviva.app`, pero
-**ese dominio no está verificado en Resend** (no hay dominio propio
-registrado todavía). Confirmado en real: Resend rechaza con `403 "domain
-is not verified"` cualquier envío desde ese dominio a un destinatario
-que no sea el dueño de la cuenta de Resend. Los contactos de emergencia
-son personas reales, nunca el dueño de la cuenta de Resend — así que
-**la alarma SOS de este repo, en producción, probablemente no está
-avisando a nadie ahora mismo**, aunque el resto del flujo (RLS, auth, la
-respuesta que ve el usuario) esté bien y no lo delate.
+**Historial del problema** (crítico, sin resolver desde 2026-09-12):
+`sos-alerta.js` mandaba el email de socorro desde `sos@costaviva.app`,
+un dominio que ni siquiera era nuestro (despliegue de Vercel de otra
+persona) y que nunca estuvo verificado en Resend. Confirmado en real en
+su momento: Resend rechazaba con `403 "domain is not verified"`
+cualquier envío a un destinatario que no fuera el dueño de la cuenta de
+Resend — y los contactos de emergencia son siempre otra persona, así
+que la alarma SOS probablemente no avisó a nadie en producción durante
+un tiempo, sin que el resto del flujo (RLS, auth, la respuesta que veía
+el usuario) lo delatara.
 
-Arreglo real pendiente: verificar un dominio propio en Resend
-(resend.com/domains) y usarlo en el `from` de `sos-alerta.js`. Hasta
-entonces, esto es lo primero que cualquier sesión futura debería mirar.
-(`aviso-alta.js`, que sí notifica al dueño de la cuenta de Resend, se
-arregló usando el remitente de pruebas `onboarding@resend.com` — pero
-esa solución NO sirve para `sos-alerta.js`, cuyos destinatarios son
-siempre otra persona.)
-
-**EN CURSO (2026-09-13): dominio comprado, verificación en marcha.**
-El usuario compró `costaviva.org` en Namecheap y lo dio de alta en
-Resend (región `eu-west-1`, sin click/open tracking — son emails
-transaccionales de seguridad, no marketing, activar tracking no aporta
-nada y puede empeorar la entregabilidad). Registros DNS que Resend pidió
-verificar (públicos por diseño — el DKIM es la clave PÚBLICA, Resend se
-queda la privada — no hay ningún secreto en esta tabla, seguro tenerla
-aquí):
+**Arreglo real, el mismo día**: el usuario compró `costaviva.org` (vía
+Cloudflare Registrar) y lo dio de alta en Resend (región `eu-west-1`,
+sin click/open tracking — son emails transaccionales de seguridad, no
+marketing). Registros DNS añadidos en Cloudflare (públicos por diseño —
+el DKIM es la clave PÚBLICA, Resend se queda la privada — sin ningún
+secreto real en esta tabla):
 
 | Tipo | Host/Name | Valor | TTL |
 |---|---|---|---|
@@ -41,13 +32,25 @@ aquí):
 | CNAME | `send` | `send.forge.rmta.net` | Auto |
 | TXT (opcional, DMARC) | `_dmarc` | `v=DMARC1; p=none;` | Auto |
 
-Pendiente: confirmar que Resend marca el dominio como verificado (puede
-tardar de minutos a un par de horas en propagar DNS), y entonces
-actualizar el `from` de `sos-alerta.js` (y de paso `aviso-alta.js`, y
-valorar configurar el SMTP de Supabase Auth con este mismo dominio para
-dejar de depender del límite de emails del plan gratuito — ver más
-abajo, "email rate limit exceeded" al recrear cuentas de prueba el
-mismo día).
+`sos-alerta.js` (`sos@costaviva.org`) y `aviso-alta.js`
+(`avisos@costaviva.org`, ya no depende del remitente de pruebas
+`onboarding@resend.com`) actualizados y desplegados.
+
+**Verificado en real de extremo a extremo, 2026-09-13**: se añadió el
+email del propio usuario como contacto de emergencia temporal, se
+disparó un SOS real desde `alarma.html` (`btnSOS`), el endpoint
+respondió `"Aviso enviado a 1 contacto(s)"` sin error, **el email
+llegó de verdad** (confirmado por el usuario, revisando spam
+incluido), y se borró el contacto temporal para dejar todo como
+estaba. La alarma SOS de este repo ya avisa a alguien de verdad.
+
+**Pendiente relacionado, no crítico**: configurar el SMTP de Supabase
+Auth con este mismo dominio (Resend ofrece SMTP relay,
+`smtp.resend.com`, usuario `resend`, contraseña = `RESEND_API_KEY`)
+para dejar de depender del límite de emails del plan gratuito de
+Supabase — ver más abajo, "email rate limit exceeded" al recrear
+cuentas de prueba el mismo día. Esto no es urgente (ya no bloquea
+altas reales, solo afecta a crear muchas cuentas de prueba seguidas).
 
 ## Bug de seguridad corregido — CLAUDE.md y el código de functions/ se servían en público (2026-09-13)
 
@@ -490,11 +493,15 @@ Ninguno de los cuatro primeros toca tablas de usuario en Supabase.
 
 ## URL de producción
 
-**`https://fishnow-59u.pages.dev/`** (confirmado 2026-09-12: `Server:
-cloudflare`, `/login`, `/manifest.json` y todos los endpoints de
-`functions/` responden como se espera). `costaviva.app` NO es este
-despliegue — responde con cabeceras de Vercel y 404 en rutas que sí
-existen aquí; no usarlo para verificar nada de este repo.
+**`https://costaviva.org/`** (dominio propio, añadido como dominio
+personalizado del proyecto de Cloudflare Pages el 2026-09-13 —
+verificado en real que sirve la app de verdad, `/login` y `/prevision`
+responden bien). `https://costaviva.org/` sigue funcionando
+exactamente igual (mismo despliegue, dos puertas) pero ya no es la URL
+canónica — usar `costaviva.org` en código/documentación nueva.
+`costaviva.app` (sin la "org") NO es este despliegue — responde con
+cabeceras de Vercel y 404 en rutas que sí existen aquí; no usarlo para
+verificar nada de este repo (fácil de confundir con el dominio real).
 
 **Exposición pública confirmada y corregida el 2026-09-12**: antes de
 añadir `functions/_middleware.js`, `ROBOT.md`, `CALIBRACION.jsonl`,
@@ -596,7 +603,7 @@ respetarla, igual que el resto de `ROBOT_REGLAS.md`.
 ## Test de autenticación (`test/endpoints-auth.test.js`)
 
 Corre con `node test/endpoints-auth.test.js` (sin dependencias) contra
-Supabase real y `https://fishnow-59u.pages.dev`. Comprueba: las 6 tablas
+Supabase real y `https://costaviva.org`. Comprueba: las 6 tablas
 de usuario no devuelven datos sin token (solo anon key), y `/sos-alerta`
 rechaza peticiones sin token o con un token inválido. Programado a diario
 en `.github/workflows/auth-test.yml` (no escribe nada, solo lee/rechaza —
@@ -638,7 +645,7 @@ quiere afinar. Avisos vía Issues de GitHub (que ya notifican por email
 al dueño del repo) — no se montó un canal de email aparte para esto.
 
 - **`security-scan.yml`**: ZAP en modo baseline (pasivo, nunca payloads
-  activos) contra `fishnow-59u.pages.dev`.
+  activos) contra `costaviva.org`.
 - **`daily-report.yml`**: cuenta las alarmas SOS de las últimas 24h vía
   `contar_alertas_sos_24h()`, función `security definer` en Supabase
   (nunca filas ni user_id, solo el entero) — aplicada en producción el

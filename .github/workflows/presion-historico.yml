@@ -37,7 +37,7 @@ jobs:
             code=$(curl -sS -o /tmp/resp.json -w "%{http_code}" -X POST \
               -H "X-Cron-Secret: ${{ secrets.PRESION_CRON_SECRET }}" \
               --max-time 30 \
-              "https://fishnow-59u.pages.dev/registrar-presion")
+              "https://costaviva.org/registrar-presion")
             echo "Intento $intento: HTTP $code"
             cat /tmp/resp.json
             echo
