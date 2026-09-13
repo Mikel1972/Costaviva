@@ -111,13 +111,12 @@ async function generarSesion(email) {
   const hashedToken = enlace?.hashed_token || enlace?.properties?.hashed_token;
   if (!hashedToken) throw new Error(`no se pudo generar el enlace de sesión para ${email}: ${JSON.stringify(enlace).slice(0, 200)}`);
 
-  // type "email" aquí, no "magiclink" — ese valor está obsoleto
-  // específicamente para /verify (sigue siendo válido para pedir el
-  // enlace en /admin/generate_link, son dos parámetros distintos).
+  // "token_hash", no "token" — ese último campo es para el código OTP de
+  // 6 dígitos (email_otp), el hash de generate_link va en token_hash.
   const resp = await fetch(`${SUPABASE_URL}/auth/v1/verify`, {
     method: "POST",
     headers: { apikey: SUPABASE_ANON_KEY, "Content-Type": "application/json" },
-    body: JSON.stringify({ type: "email", token: hashedToken, email }),
+    body: JSON.stringify({ type: "email", token_hash: hashedToken }),
   });
   const cuerpo = await resp.json().catch(() => null);
   if (!resp.ok || !cuerpo?.access_token) throw new Error(`no se pudo canjear la sesión para ${email}: HTTP ${resp.status}, body=${JSON.stringify(cuerpo).slice(0, 300)}`);
