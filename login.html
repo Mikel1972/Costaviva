@@ -8,6 +8,7 @@
 <link rel="icon" href="icon.svg" type="image/svg+xml" />
 <meta name="theme-color" content="#F7F3E8" />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <style>
   * { box-sizing: border-box; }
   body {
@@ -57,7 +58,7 @@
 </head>
 <body>
 
-<div class="caja">
+<div class="caja" id="cajaLogin">
   <h1>Costa Viva</h1>
   <p class="sub" id="subtitulo">Accede con tu cuenta para ver la zona Lekeitio → Bilbao</p>
 
@@ -80,11 +81,30 @@
       </label>
     </div>
 
+    <div class="cf-turnstile" data-sitekey="0x4AAAAAAEywlSn_bxleOonO" style="margin-top:14px;"></div>
+
     <button type="submit" id="btnPrincipal">Entrar</button>
     <button type="button" class="secundario" id="btnAlternar">Crear una cuenta nueva</button>
   </form>
 
   <div class="toggle">¿Olvidaste tu contraseña? <a id="linkRecuperar">Recupérala aquí</a></div>
+</div>
+
+<!-- Pantalla de "nueva contraseña" tras pulsar el enlace del email de
+     recuperación — bug real encontrado 2026-09-13: el enlace SÍ
+     autentica (así funciona Supabase), pero sin esta pantalla el login
+     mandaba directo al mapa sin dejar nunca cambiar la contraseña. -->
+<div class="caja" id="cajaNuevaContrasena" style="display:none;">
+  <h1>Nueva contraseña</h1>
+  <p class="sub">Escribe tu nueva contraseña para tu cuenta.</p>
+  <div id="mensajeNueva" class="mensaje"></div>
+  <form id="formNuevaContrasena">
+    <label for="passwordNueva">Contraseña nueva</label>
+    <input type="password" id="passwordNueva" required autocomplete="new-password" minlength="6" />
+    <label for="passwordNuevaRepetir">Repite la contraseña</label>
+    <input type="password" id="passwordNuevaRepetir" required autocomplete="new-password" minlength="6" />
+    <button type="submit" id="btnGuardarNuevaContrasena">Guardar y entrar</button>
+  </form>
 </div>
 
 <script type="module">
@@ -121,6 +141,22 @@ function mostrarMensaje(texto, tipo) {
   mensajeEl.className = `mensaje ${tipo}`;
 }
 
+// CAPTCHA (Cloudflare Turnstile, 2026-09-13, pedido explícito del
+// usuario: "como en Pólizas.ai") — widget declarativo (el script lo
+// renderiza solo al cargar), así que solo hace falta leer el token que
+// deja en un input oculto y pedirle a Turnstile un token nuevo después
+// de cada intento (los tokens son de un solo uso). Supabase exige este
+// token en signUp/signInWithPassword/resetPasswordForEmail en cuanto
+// "Enable Captcha protection" está activado en su panel — sin él,
+// rechaza la petición.
+function leerTokenTurnstile() {
+  const input = document.querySelector('input[name="cf-turnstile-response"]');
+  return input ? input.value : "";
+}
+function reiniciarTurnstile() {
+  if (window.turnstile) window.turnstile.reset();
+}
+
 btnAlternar.addEventListener("click", () => {
   modo = modo === "login" ? "registro" : "login";
   btnPrincipal.textContent = modo === "login" ? "Entrar" : "Crear cuenta";
@@ -136,9 +172,75 @@ btnAlternar.addEventListener("click", () => {
 document.getElementById("linkRecuperar").addEventListener("click", async () => {
   const email = document.getElementById("email").value;
   if (!email) { mostrarMensaje("Escribe primero tu correo electrónico.", "error"); return; }
-  const { error } = await supabase.auth.resetPasswordForEmail(email);
+  const captchaToken = leerTokenTurnstile();
+  if (!captchaToken) { mostrarMensaje("Completa la verificación de seguridad de más abajo antes de continuar.", "error"); return; }
+  const { error } = await supabase.auth.resetPasswordForEmail(email, { captchaToken });
+  reiniciarTurnstile();
   if (error) mostrarMensaje(error.message, "error");
   else mostrarMensaje("Te hemos enviado un enlace para restablecer la contraseña.", "ok");
+});
+
+// ---------------------------------------------------------------------------
+// Recuperación de contraseña: el enlace del email autentica de verdad
+// (Supabase lo hace así a propósito, para poder llamar a updateUser()
+// mientras se resuelve el enlace) — sin esta pantalla, el login mandaba
+// directo al mapa sin dejar nunca cambiar la contraseña.
+//
+// La detección va por onAuthStateChange (evento "PASSWORD_RECOVERY"),
+// NO por mirar a mano el hash/query de la URL — supabase-js tiene dos
+// formatos de enlace distintos según la versión (uno mete los datos en
+// el hash de la URL, otro en un parámetro "?code=" que hay que
+// intercambiar de forma asíncrona) y solo el evento del propio SDK
+// funciona igual pase lo que pase con eso. Se muestra la pantalla de
+// contraseña nueva en cuanto llega ese evento; para la sesión normal
+// (visita con sesión ya guardada) se espera al primer evento
+// "INITIAL_SESSION" en vez de a una llamada aparte a getSession(),
+// para no arriesgarse a redirigir antes de que el SDK termine de
+// resolver un enlace de recuperación en curso.
+// ---------------------------------------------------------------------------
+let flujoDecidido = false;
+
+function mostrarPantallaNuevaContrasena() {
+  document.getElementById("cajaLogin").style.display = "none";
+  document.getElementById("cajaNuevaContrasena").style.display = "block";
+}
+
+const mensajeNuevaEl = document.getElementById("mensajeNueva");
+const formNueva = document.getElementById("formNuevaContrasena");
+const btnGuardarNueva = document.getElementById("btnGuardarNuevaContrasena");
+
+formNueva.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const nueva = document.getElementById("passwordNueva").value;
+  const repetir = document.getElementById("passwordNuevaRepetir").value;
+  mensajeNuevaEl.className = "mensaje";
+
+  if (nueva !== repetir) {
+    mensajeNuevaEl.textContent = "Las dos contraseñas no coinciden.";
+    mensajeNuevaEl.className = "mensaje error";
+    return;
+  }
+
+  btnGuardarNueva.disabled = true;
+  const { error } = await supabase.auth.updateUser({ password: nueva });
+  btnGuardarNueva.disabled = false;
+
+  if (error) {
+    mensajeNuevaEl.textContent = error.message;
+    mensajeNuevaEl.className = "mensaje error";
+    return;
+  }
+  window.location.href = "/";
+});
+
+supabase.auth.onAuthStateChange((evento, sesion) => {
+  if (evento === "PASSWORD_RECOVERY") {
+    flujoDecidido = true;
+    mostrarPantallaNuevaContrasena();
+  } else if (evento === "INITIAL_SESSION" && !flujoDecidido) {
+    flujoDecidido = true;
+    if (sesion) window.location.href = "/";
+  }
 });
 
 form.addEventListener("submit", async (e) => {
@@ -147,6 +249,13 @@ form.addEventListener("submit", async (e) => {
   const password = document.getElementById("password").value;
   btnPrincipal.disabled = true;
   mensajeEl.className = "mensaje";
+
+  const captchaToken = leerTokenTurnstile();
+  if (!captchaToken) {
+    mostrarMensaje("Completa la verificación de seguridad de más abajo antes de continuar.", "error");
+    btnPrincipal.disabled = false;
+    return;
+  }
 
   if (modo === "registro") {
     if (!checkTerminos.checked) {
@@ -157,8 +266,9 @@ form.addEventListener("submit", async (e) => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { consiente_uso_datos_capturas: checkDatosCapturas.checked } },
+      options: { data: { consiente_uso_datos_capturas: checkDatosCapturas.checked }, captchaToken },
     });
+    reiniciarTurnstile();
     if (error) {
       mostrarMensaje(error.message, "error");
     } else {
@@ -179,7 +289,8 @@ form.addEventListener("submit", async (e) => {
       }
     }
   } else {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password, options: { captchaToken } });
+    reiniciarTurnstile();
     if (error) {
       mostrarMensaje(error.message, "error");
     } else {
@@ -200,11 +311,6 @@ form.addEventListener("submit", async (e) => {
     }
   }
   btnPrincipal.disabled = false;
-});
-
-// Si ya hay sesión activa, no mostrar el login
-supabase.auth.getSession().then(({ data }) => {
-  if (data.session) window.location.href = "/";
 });
 </script>
 
