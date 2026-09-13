@@ -7,9 +7,9 @@
 <link rel="manifest" href="manifest.json" />
 <link rel="icon" href="icon.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="icon.svg" />
-<meta name="theme-color" content="#0B2532" />
+<meta name="theme-color" content="#F7F3E8" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
 <meta name="apple-mobile-web-app-title" content="Costa Viva" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -21,8 +21,8 @@
   body {
     margin: 0;
     font-family: 'Inter', sans-serif;
-    background: #0B2532;
-    color: #E8E2D0;
+    background: #F7F3E8;
+    color: #0B2532;
     display: flex;
     flex-direction: column;
     height: 100vh;
@@ -33,7 +33,7 @@
   .tabs-nav {
     position: fixed; left: 0; right: 0; bottom: 0;
     height: calc(64px + env(safe-area-inset-bottom));
-    background: #0F2C38; border-top: 1px solid #1C3F4F;
+    background: #FFFFFF; border-top: 1px solid #DDE2DC;
     display: flex; gap: 6px; padding: 8px 8px calc(8px + env(safe-area-inset-bottom)) 8px;
     /* Por encima del panel de spot (z-index 1000) a propósito: pedido
        explícito del usuario (2026-09-13) — el menú Mapa/Diario/Alarma/
@@ -45,33 +45,33 @@
   }
   .tabs-nav a {
     flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 3px; text-decoration: none; color: #7FA3AF; border-radius: 12px;
+    gap: 3px; text-decoration: none; color: #5C7680; border-radius: 12px;
     font-family: 'Inter', sans-serif; font-size: 10.5px; font-weight: 500;
   }
   .tabs-nav a .icono {
     font-size: 18px; line-height: 1; width: 32px; height: 32px; border-radius: 10px;
-    background: #123B4D; display: flex; align-items: center; justify-content: center;
+    background: #EEF2EF; display: flex; align-items: center; justify-content: center;
   }
-  .tabs-nav a.activa { color: #D4A24C; }
+  .tabs-nav a.activa { color: #A8792A; }
   .tabs-nav a.activa .icono { background: rgba(212,162,76,0.18); }
 
   .cuenta-menu-wrap { position: relative; margin-left: auto; }
   .cuenta-menu-btn {
-    background: #123B4D; border: 1px solid #1C3F4F; color: #E8E2D0; width: 34px; height: 34px;
+    background: #EEF2EF; border: 1px solid #DDE2DC; color: #0B2532; width: 34px; height: 34px;
     border-radius: 50%; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center;
   }
   .cuenta-menu-dropdown {
-    display: none; position: absolute; top: 42px; right: 0; background: #0F2C38; border: 1px solid #1C3F4F;
+    display: none; position: absolute; top: 42px; right: 0; background: #FFFFFF; border: 1px solid #DDE2DC;
     border-radius: 10px; padding: 6px; min-width: 200px; z-index: 900; box-shadow: 0 8px 24px rgba(0,0,0,0.4);
   }
   .cuenta-menu-dropdown.visible { display: block; }
   .cuenta-menu-dropdown button {
     display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; background: none; border: none;
-    color: #E8E2D0; font-family: 'Inter', sans-serif; font-size: 13px; padding: 9px 10px; border-radius: 6px; cursor: pointer;
+    color: #0B2532; font-family: 'Inter', sans-serif; font-size: 13px; padding: 9px 10px; border-radius: 6px; cursor: pointer;
   }
-  .cuenta-menu-dropdown button:hover { background: #123B4D; }
+  .cuenta-menu-dropdown button:hover { background: #EEF2EF; }
 
-  header { padding: 8px 20px; border-bottom: 1px solid #1C3F4F; flex-shrink: 0; display: flex; align-items: center; flex-wrap: wrap; column-gap: 12px; row-gap: 2px; }
+  header { padding: 8px 20px; border-bottom: 1px solid #DDE2DC; flex-shrink: 0; display: flex; align-items: center; flex-wrap: wrap; column-gap: 12px; row-gap: 2px; }
   header h1 {
     font-family: 'Fraunces', serif;
     font-size: 30px;
@@ -83,21 +83,21 @@
   header .fecha {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 10.5px;
-    color: #7FA3AF;
+    color: #5C7680;
   }
-  header p { margin: 0; color: #7FA3AF; font-size: 11px; max-width: 520px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  header p { margin: 0; color: #5C7680; font-size: 11px; max-width: 520px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
   .main { display: flex; flex: 1; min-height: 0; }
   .mapa-wrap { flex: 1; position: relative; }
-  #map { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #0B2532; }
+  #map { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #F7F3E8; }
 
   .marcador-envoltorio { position: relative; width: 24px; height: 24px; }
   .marcador {
     position: relative; z-index: 2;
     width: 24px; height: 24px; border-radius: 50%;
-    background: #0B2532; border: 2px solid #E8E2D0;
+    background: #F7F3E8; border: 2px solid #0B2532;
     display: flex; align-items: center; justify-content: center;
-    font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 700; color: #E8E2D0;
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 700; color: #0B2532;
     cursor: pointer;
   }
   .marcador.activo { border-width: 3px; box-shadow: 0 0 0 3px rgba(232,226,208,0.25); }
@@ -122,7 +122,7 @@
   }
   .rio-marcador {
     width: 10px; height: 10px; transform: rotate(45deg);
-    border: 1.5px solid #E8E2D0;
+    border: 1.5px solid #0B2532;
     transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
   }
   .rio-marcador:hover {
@@ -131,7 +131,7 @@
   }
   .marcador-boya {
     min-width: 34px; padding: 2px 7px; border-radius: 6px;
-    background: #123B4D; border: 2px solid #7EC8E3; color: #E8E2D0;
+    background: #EEF2EF; border: 2px solid #2E7BA0; color: #0B2532;
     font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 700;
     text-align: center; white-space: nowrap;
   }
@@ -139,29 +139,29 @@
   /* Llamada de caudal: tooltip de Leaflet restilizado para que se note que
      el marcador de río se puede "abrir" al pasar el cursor por encima. */
   .llamada-rio {
-    background: #0F2C38 !important; border: 1px solid #1C3F4F !important;
-    color: #E8E2D0 !important; border-radius: 8px !important;
+    background: #FFFFFF !important; border: 1px solid #DDE2DC !important;
+    color: #0B2532 !important; border-radius: 8px !important;
     padding: 8px 11px !important; font-family: 'Inter', sans-serif; font-size: 12px;
     box-shadow: 0 4px 14px rgba(0,0,0,0.35) !important;
     transform-origin: bottom center;
     animation: expandirLlamada 0.14s ease-out;
   }
   @keyframes expandirLlamada { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
-  .leaflet-tooltip.llamada-rio::before { border-top-color: #1C3F4F !important; }
-  .llamada-rio .rio-nombre { font-weight: 600; color: #F5F1E6; margin-bottom: 2px; }
-  .llamada-rio .rio-tramo { color: #9FB8BF; font-size: 10.5px; }
+  .leaflet-tooltip.llamada-rio::before { border-top-color: #DDE2DC !important; }
+  .llamada-rio .rio-nombre { font-weight: 600; color: #0B2532; margin-bottom: 2px; }
+  .llamada-rio .rio-tramo { color: #5F7981; font-size: 10.5px; }
   .llamada-rio .rio-caudal { margin-top: 3px; display: flex; align-items: center; gap: 5px; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; }
 
   .leyenda-toggle {
     position: absolute; bottom: 16px; left: 16px; z-index: 502;
     width: 38px; height: 38px; border-radius: 8px;
-    background: #0F2C38; border: 1px solid #1C3F4F; color: #E8E2D0;
+    background: #FFFFFF; border: 1px solid #DDE2DC; color: #0B2532;
     display: flex; align-items: center; justify-content: center;
     cursor: pointer; font-size: 16px; padding: 0;
   }
   .leyenda {
     position: absolute; bottom: 16px; left: 64px; z-index: 500;
-    background: #0F2C38; border: 1px solid #1C3F4F; border-radius: 8px;
+    background: #FFFFFF; border: 1px solid #DDE2DC; border-radius: 8px;
     padding: 12px 16px; font-size: 12px; font-family: 'IBM Plex Mono', monospace;
     max-width: 240px;
     opacity: 0; transform: translateX(-14px); pointer-events: none;
@@ -172,22 +172,22 @@
   .rayos-toggle {
     position: absolute; top: 16px; right: 16px; z-index: 502;
     width: 38px; height: 38px; border-radius: 8px;
-    background: #0F2C38; border: 1px solid #1C3F4F; color: #E8E2D0;
+    background: #FFFFFF; border: 1px solid #DDE2DC; color: #0B2532;
     display: flex; align-items: center; justify-content: center;
     cursor: pointer; font-size: 16px; padding: 0;
   }
   .rayos-panel {
     position: absolute; top: 16px; right: 64px; z-index: 501;
-    background: #0F2C38; border: 1px solid #1C3F4F; border-radius: 8px;
+    background: #FFFFFF; border: 1px solid #DDE2DC; border-radius: 8px;
     padding: 10px; font-size: 11px; font-family: 'IBM Plex Mono', monospace;
     width: 220px;
     opacity: 0; transform: translateX(14px); pointer-events: none;
     transition: opacity 0.15s ease-out, transform 0.15s ease-out;
   }
   .rayos-panel.visible { opacity: 1; transform: translateX(0); pointer-events: auto; }
-  .rayos-panel .titulo { color: #7FA3AF; margin-bottom: 6px; }
+  .rayos-panel .titulo { color: #5C7680; margin-bottom: 6px; }
   .rayos-panel .marco-imagen {
-    position: relative; width: 100%; height: 110px; border-radius: 4px; border: 1px solid #1C3F4F;
+    position: relative; width: 100%; height: 110px; border-radius: 4px; border: 1px solid #DDE2DC;
     overflow: hidden;
     /* Mismo encuadre (bbox) que la imagen de rayos de AEMET, para que
        encajen una encima de otra: así se ve el contorno de España aunque
@@ -196,11 +196,11 @@
     background-size: cover; background-position: center;
   }
   .rayos-panel img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-  .rayos-panel .nota { color: #6C8890; font-size: 9.5px; margin-top: 6px; line-height: 1.4; }
+  .rayos-panel .nota { color: #42585F; font-size: 9.5px; margin-top: 6px; line-height: 1.4; }
   .expandir-rayos {
     position: absolute; top: 6px; right: 6px; z-index: 2;
     width: 24px; height: 24px; border-radius: 4px;
-    background: rgba(11,37,50,0.75); border: 1px solid rgba(232,226,208,0.3); color: #E8E2D0;
+    background: rgba(11,37,50,0.75); border: 1px solid rgba(232,226,208,0.3); color: #F7F3E8;
     display: flex; align-items: center; justify-content: center;
     cursor: pointer; font-size: 13px; padding: 0;
   }
@@ -212,7 +212,7 @@
   .modal-rayos.visible { display: flex; }
   .modal-rayos-contenido {
     position: relative; width: min(92vw, 960px); aspect-ratio: 680 / 246;
-    border-radius: 10px; overflow: hidden; border: 1px solid #1C3F4F;
+    border-radius: 10px; overflow: hidden; border: 1px solid #DDE2DC;
     box-shadow: 0 12px 40px rgba(0,0,0,0.5);
     background-image: url("https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/export?bbox=-18,35,14,47&bboxSR=4326&size=960,347&format=png&transparent=false&f=image");
     background-size: cover; background-position: center;
@@ -222,14 +222,14 @@
   .luna-toggle {
     position: absolute; top: 64px; right: 16px; z-index: 502;
     width: 38px; height: 38px; border-radius: 8px;
-    background: #0F2C38; border: 1px solid #1C3F4F; color: #E8E2D0;
+    background: #FFFFFF; border: 1px solid #DDE2DC; color: #0B2532;
     display: flex; align-items: center; justify-content: center;
     cursor: pointer; font-size: 16px; padding: 0;
   }
   .batimetria-toggle {
     position: absolute; top: 112px; right: 16px; z-index: 502;
     width: 38px; height: 38px; border-radius: 8px;
-    background: #0F2C38; border: 1px solid #1C3F4F; color: #E8E2D0;
+    background: #FFFFFF; border: 1px solid #DDE2DC; color: #0B2532;
     display: flex; align-items: center; justify-content: center;
     cursor: pointer; font-size: 16px; padding: 0;
   }
@@ -237,7 +237,7 @@
   .nubes-toggle {
     position: absolute; top: 160px; right: 16px; z-index: 502;
     width: 38px; height: 38px; border-radius: 8px;
-    background: #0F2C38; border: 1px solid #1C3F4F; color: #E8E2D0;
+    background: #FFFFFF; border: 1px solid #DDE2DC; color: #0B2532;
     display: flex; align-items: center; justify-content: center;
     cursor: pointer; font-size: 16px; padding: 0;
   }
@@ -245,36 +245,36 @@
   .anadir-ubicacion-toggle {
     position: absolute; top: 208px; right: 16px; z-index: 502;
     width: 38px; height: 38px; border-radius: 8px;
-    background: #0F2C38; border: 1px solid #1C3F4F; color: #E8E2D0;
+    background: #FFFFFF; border: 1px solid #DDE2DC; color: #0B2532;
     display: flex; align-items: center; justify-content: center;
     cursor: pointer; font-size: 16px; padding: 0;
   }
   .anadir-ubicacion-toggle.activo { background: #D4A24C; color: #0B2532; }
   .confirmar-ubicacion-panel {
     display: none; position: absolute; top: 64px; left: 50%; transform: translateX(-50%);
-    z-index: 900; background: #0F2C38; border: 1px solid #D4A24C; border-radius: 10px;
+    z-index: 900; background: #FFFFFF; border: 1px solid #D4A24C; border-radius: 10px;
     padding: 14px 16px; width: 260px; box-shadow: 0 6px 18px rgba(0,0,0,0.4);
   }
   .confirmar-ubicacion-panel.visible { display: block; }
   .confirmar-ubicacion-panel .titulo { font-family: 'Fraunces', serif; font-size: 15px; margin-bottom: 4px; }
-  .confirmar-ubicacion-panel .nombre-resuelto { font-size: 14px; color: #D4A24C; margin-bottom: 10px; }
-  .confirmar-ubicacion-panel .error { font-size: 12px; color: #E8907A; margin-bottom: 10px; }
+  .confirmar-ubicacion-panel .nombre-resuelto { font-size: 14px; color: #A8792A; margin-bottom: 10px; }
+  .confirmar-ubicacion-panel .error { font-size: 12px; color: #A34A35; margin-bottom: 10px; }
   .confirmar-ubicacion-panel .visibilidad { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: 12.5px; margin-bottom: 12px; }
   .confirmar-ubicacion-panel .visibilidad label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
   .confirmar-ubicacion-panel .botones { display: flex; gap: 8px; }
   .confirmar-ubicacion-panel button {
-    flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #1C3F4F; cursor: pointer; font-size: 12.5px;
+    flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #DDE2DC; cursor: pointer; font-size: 12.5px;
   }
   .confirmar-ubicacion-panel button.confirmar { background: #D4A24C; color: #0B2532; border: none; font-weight: 600; }
-  .confirmar-ubicacion-panel button.cancelar { background: transparent; color: #9FB8BF; }
+  .confirmar-ubicacion-panel button.cancelar { background: transparent; color: #5F7981; }
   .confirmar-ubicacion-panel button.secundario-ubicacion {
-    width: 100%; text-align: left; padding: 10px 12px; border-radius: 8px; border: 1px solid #1C3F4F;
-    background: #123B4D; color: #E8E2D0; cursor: pointer; font-size: 13px;
+    width: 100%; text-align: left; padding: 10px 12px; border-radius: 8px; border: 1px solid #DDE2DC;
+    background: #EEF2EF; color: #0B2532; cursor: pointer; font-size: 13px;
   }
-  .confirmar-ubicacion-panel button.secundario-ubicacion:hover { border-color: #D4A24C; }
+  .confirmar-ubicacion-panel button.secundario-ubicacion:hover { border-color: #A8792A; }
   .luna-panel {
     position: absolute; top: 64px; right: 64px; z-index: 501;
-    background: #0F2C38; border: 1px solid #1C3F4F; border-radius: 8px;
+    background: #FFFFFF; border: 1px solid #DDE2DC; border-radius: 8px;
     padding: 12px 14px; font-size: 11.5px; font-family: 'IBM Plex Mono', monospace;
     width: 210px;
     opacity: 0; transform: translateX(14px); pointer-events: none;
@@ -283,24 +283,24 @@
   .luna-panel.visible { opacity: 1; transform: translateX(0); pointer-events: auto; }
   .luna-panel .fase-fila { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
   .luna-panel .fase-emoji { font-size: 26px; }
-  .luna-panel .fase-nombre { font-family: 'Inter', sans-serif; color: #F5F1E6; font-size: 13px; }
-  .luna-panel .fase-iluminacion { color: #7FA3AF; font-size: 10.5px; }
-  .luna-panel .fila-dato { display: flex; justify-content: space-between; margin-top: 4px; color: #9FB8BF; }
-  .luna-panel .fila-dato b { color: #E8E2D0; font-weight: 700; }
-  .luna-panel .nota { color: #6C8890; font-size: 9.5px; margin-top: 8px; line-height: 1.4; }
-  .leyenda .titulo { color: #7FA3AF; margin-bottom: 6px; }
+  .luna-panel .fase-nombre { font-family: 'Inter', sans-serif; color: #0B2532; font-size: 13px; }
+  .luna-panel .fase-iluminacion { color: #5C7680; font-size: 10.5px; }
+  .luna-panel .fila-dato { display: flex; justify-content: space-between; margin-top: 4px; color: #5F7981; }
+  .luna-panel .fila-dato b { color: #0B2532; font-weight: 700; }
+  .luna-panel .nota { color: #42585F; font-size: 9.5px; margin-top: 8px; line-height: 1.4; }
+  .leyenda .titulo { color: #5C7680; margin-bottom: 6px; }
   .leyenda .fila { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
   .leyenda .chip { width: 10px; height: 10px; border-radius: 2px; }
-  .leyenda .nota { color: #6C8890; font-size: 10px; margin-top: 8px; }
+  .leyenda .nota { color: #42585F; font-size: 10px; margin-top: 8px; }
 
   .panel {
-    width: 320px; border-left: 1px solid #1C3F4F; background: #0F2C38;
+    width: 320px; border-left: 1px solid #DDE2DC; background: #FFFFFF;
     padding: 22px; overflow-y: auto; display: none; flex-shrink: 0;
   }
   .panel.visible { display: block; }
   .panel h2 { font-family: 'Fraunces', serif; font-size: 20px; margin: 0 0 4px; font-weight: 600; }
   .panel .cerrar {
-    float: right; border: none; color: #7FA3AF; cursor: pointer; font-size: 16px;
+    float: right; border: none; color: #5C7680; cursor: pointer; font-size: 16px;
     /* Zona de toque real de al menos 44x44 (mínimo recomendado en iOS/Android)
        sin mover el icono visualmente — el padding amplía el área pulsable y el
        margen negativo la compensa para que siga pegada a la esquina de siempre.
@@ -312,39 +312,39 @@
        corriente, índices...) — sin "sticky" el botón de cerrar se iba con el
        scroll y dejaba de estar donde el usuario lo buscaba. Con position:sticky
        se queda siempre a la vista, arriba del todo, aunque se haga scroll. */
-    position: sticky; top: 0; z-index: 5; background: #0F2C38;
+    position: sticky; top: 0; z-index: 5; background: #FFFFFF;
   }
-  .panel .coords { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7FA3AF; }
+  .panel .coords { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #5C7680; }
   .panel .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
-  .panel .tarjeta { background: #123B4D; border-radius: 8px; padding: 10px 12px; }
-  .panel .tarjeta .etq { color: #7FA3AF; font-size: 10px; }
+  .panel .tarjeta { background: #EEF2EF; border-radius: 8px; padding: 10px 12px; }
+  .panel .tarjeta .etq { color: #5C7680; font-size: 10px; }
   .panel .tarjeta .val { font-family: 'IBM Plex Mono', monospace; font-size: 16px; margin-top: 3px; }
-  .panel .indice-box { margin-top: 14px; background: #123B4D; border-radius: 8px; padding: 12px; text-align: center; }
+  .panel .indice-box { margin-top: 14px; background: #EEF2EF; border-radius: 8px; padding: 12px; text-align: center; }
   .panel .indice-box .num { font-family: 'IBM Plex Mono', monospace; font-size: 30px; font-weight: 700; }
-  .panel .nota-final { font-size: 11px; color: #6C8890; margin-top: 16px; line-height: 1.5; }
+  .panel .nota-final { font-size: 11px; color: #42585F; margin-top: 16px; line-height: 1.5; }
 
   .info-btn {
-    background: rgba(232,226,208,0.12); border: none; color: #D4A24C; width: 16px; height: 16px;
+    background: rgba(232,226,208,0.12); border: none; color: #A8792A; width: 16px; height: 16px;
     border-radius: 50%; font-size: 11px; line-height: 16px; padding: 0; cursor: pointer; flex-shrink: 0;
   }
   .indice-box .etq { display: flex; align-items: center; justify-content: center; gap: 6px; }
   .explicacion-indice {
-    display: none; text-align: left; font-size: 11px; color: #9FB8BF; line-height: 1.5;
-    margin-top: 8px; padding-top: 8px; border-top: 1px solid #1C3F4F;
+    display: none; text-align: left; font-size: 11px; color: #5F7981; line-height: 1.5;
+    margin-top: 8px; padding-top: 8px; border-top: 1px solid #DDE2DC;
   }
   .explicacion-indice.visible { display: block; }
 
   .especie-desplegable {
-    background: #0F2C38; border: 1px solid #1C3F4F; border-radius: 8px; margin-bottom: 6px; overflow: hidden;
+    background: #FFFFFF; border: 1px solid #DDE2DC; border-radius: 8px; margin-bottom: 6px; overflow: hidden;
   }
   .especie-desplegable summary {
     padding: 8px 10px; cursor: pointer; list-style: none; display: flex; align-items: center; gap: 6px;
   }
   .especie-desplegable summary::-webkit-details-marker { display: none; }
-  .especie-desplegable summary::after { content: "›"; margin-left: auto; color: #6C8890; transform: rotate(90deg); font-size: 16px; }
+  .especie-desplegable summary::after { content: "›"; margin-left: auto; color: #42585F; transform: rotate(90deg); font-size: 16px; }
   .especie-desplegable[open] summary::after { transform: rotate(-90deg); }
-  .especie-desplegable .especie-detalle { padding: 0 10px 10px; color: #9FB8BF; line-height: 1.5; }
-  .especie-zona-titulo { color: #7FA3AF; font-weight: 600; margin-bottom: 6px; font-size: 11.5px; }
+  .especie-desplegable .especie-detalle { padding: 0 10px 10px; color: #5F7981; line-height: 1.5; }
+  .especie-zona-titulo { color: #5C7680; font-weight: 600; margin-bottom: 6px; font-size: 11.5px; }
 
   /* ---- Móvil ---- */
   @media (max-width: 720px) {
@@ -377,7 +377,7 @@
       width: auto;
       max-height: 65vh;
       border-left: none;
-      border-top: 1px solid #1C3F4F;
+      border-top: 1px solid #DDE2DC;
       border-radius: 16px 16px 0 0;
       transform: translateY(100%);
       transition: transform 0.25s ease-out;
@@ -390,7 +390,7 @@
 </head>
 <body>
 
-<div id="comprobandoAcceso" style="position:fixed; inset:0; background:#0B2532; z-index:9999; display:flex; align-items:center; justify-content:center; color:#7FA3AF; font-family:'IBM Plex Mono',monospace; font-size:13px;">
+<div id="comprobandoAcceso" style="position:fixed; inset:0; background:#F7F3E8; z-index:9999; display:flex; align-items:center; justify-content:center; color:#5C7680; font-family:'IBM Plex Mono',monospace; font-size:13px;">
   Comprobando acceso…
 </div>
 <script type="module">
@@ -456,7 +456,7 @@
 <div id="avisoRayos" style="display:none; background:#A34A35; color:#F5F1E6; padding:8px 28px; font-family:'IBM Plex Mono', monospace; font-size:12px; font-weight:700; flex-shrink:0;">
   ⚡ RIESGO DE RAYOS DETECTADO EN LA ZONA — no salir a roca/muelle hasta que pase
 </div>
-<div id="sinRayos" style="background:#0F2C38; border-bottom:1px solid #1C3F4F; color:#6C8890; padding:6px 28px; font-family:'IBM Plex Mono', monospace; font-size:11px; flex-shrink:0;">
+<div id="sinRayos" style="background:#FFFFFF; border-bottom:1px solid #DDE2DC; color:#42585F; padding:6px 28px; font-family:'IBM Plex Mono', monospace; font-size:11px; flex-shrink:0;">
   ⚡ Sin aviso de rayos activo para esta zona — mapa nacional de referencia (AEMET) disponible en el botón ⚡ del mapa
 </div>
 
@@ -469,7 +469,7 @@
       <div class="fila"><span class="chip" style="background:#4F9D69"></span><span>tranquilo</span></div>
       <div class="fila"><span class="chip" style="background:#D4A24C"></span><span>moderado</span></div>
       <div class="fila"><span class="chip" style="background:#A34A35"></span><span>agitado</span></div>
-      <div class="nota" style="margin-top:10px; padding-top:8px; border-top:1px solid #1C3F4F;">◆ RÍOS: 3 puntos por río (cabecera→desembocadura), color por caudal bajo/normal/alto — pasa el cursor por un punto para ver el detalle. Lo que se mide arriba llega a la costa horas después — útil como aviso de tendencia. Posiciones ilustrativas, no las estaciones oficiales exactas. Caudal real solo en Sella, Besaya, Pas, Asón, Eo, Júcar, Turia, Mijares, Segura y Lagares (Confederaciones Hidrográficas + Augas de Galicia) — los ríos vascos siguen sin dato real (URA/Bizkaia bloquea el acceso automático).</div>
+      <div class="nota" style="margin-top:10px; padding-top:8px; border-top:1px solid #DDE2DC;">◆ RÍOS: 3 puntos por río (cabecera→desembocadura), color por caudal bajo/normal/alto — pasa el cursor por un punto para ver el detalle. Lo que se mide arriba llega a la costa horas después — útil como aviso de tendencia. Posiciones ilustrativas, no las estaciones oficiales exactas. Caudal real solo en Sella, Besaya, Pas, Asón, Eo, Júcar, Turia, Mijares, Segura y Lagares (Confederaciones Hidrográficas + Augas de Galicia) — los ríos vascos siguen sin dato real (URA/Bizkaia bloquea el acceso automático).</div>
     </div>
     <button class="rayos-toggle" id="toggleRayos" title="Mapa de rayos de España (AEMET)" aria-label="Mostrar/ocultar mapa de rayos">⚡</button>
     <div class="rayos-panel" id="rayosPanel">
@@ -482,13 +482,13 @@
     </div>
     <div class="modal-rayos" id="modalRayos">
       <div class="modal-rayos-contenido">
-        <button class="cerrar" id="cerrarModalRayos" style="position:absolute; top:8px; right:8px; z-index:2; background:rgba(11,37,50,0.7); border-radius:4px;">✕</button>
+        <button class="cerrar" id="cerrarModalRayos" style="position:absolute; top:8px; right:8px; z-index:2; background:rgba(11,37,50,0.7); color:#F7F3E8; border-radius:4px;">✕</button>
         <img id="imgRayosGrande" src="/rayos-imagen" alt="Mapa de rayos de España, última hora, en grande" />
       </div>
     </div>
     <button class="luna-toggle" id="toggleLuna" title="Fase y posición de la luna" aria-label="Mostrar/ocultar datos de la luna">🌙</button>
     <div class="luna-panel" id="lunaPanel">
-      <div class="nota" id="lunaZoomAviso" style="display:none; font-size:11px; color:#9FB8BF; text-align:center; padding:6px 0;">🔍 Acércate (zoom in) para ver la luna de esa ubicación</div>
+      <div class="nota" id="lunaZoomAviso" style="display:none; font-size:11px; color:#5F7981; text-align:center; padding:6px 0;">🔍 Acércate (zoom in) para ver la luna de esa ubicación</div>
       <div id="lunaContenido">
         <div class="fase-fila">
           <span class="fase-emoji" id="lunaEmoji">🌙</span>
@@ -519,10 +519,10 @@
     </div>
     <div class="confirmar-ubicacion-panel" id="coordsManualPanel">
       <div class="titulo">Coordenadas</div>
-      <label style="display:block; font-size:11.5px; color:#9FB8BF; margin-bottom:3px;">Latitud</label>
-      <input type="number" id="coordsManualLat" step="0.0001" min="-90" max="90" placeholder="ej. 43.4123" style="width:100%; padding:7px 9px; border-radius:6px; border:1px solid #1C3F4F; background:#123B4D; color:#E8E2D0; font-family:'IBM Plex Mono',monospace; margin-bottom:8px;" />
-      <label style="display:block; font-size:11.5px; color:#9FB8BF; margin-bottom:3px;">Longitud</label>
-      <input type="number" id="coordsManualLon" step="0.0001" min="-180" max="180" placeholder="ej. -2.6789" style="width:100%; padding:7px 9px; border-radius:6px; border:1px solid #1C3F4F; background:#123B4D; color:#E8E2D0; font-family:'IBM Plex Mono',monospace; margin-bottom:10px;" />
+      <label style="display:block; font-size:11.5px; color:#5F7981; margin-bottom:3px;">Latitud</label>
+      <input type="number" id="coordsManualLat" step="0.0001" min="-90" max="90" placeholder="ej. 43.4123" style="width:100%; padding:7px 9px; border-radius:6px; border:1px solid #DDE2DC; background:#EEF2EF; color:#0B2532; font-family:'IBM Plex Mono',monospace; margin-bottom:8px;" />
+      <label style="display:block; font-size:11.5px; color:#5F7981; margin-bottom:3px;">Longitud</label>
+      <input type="number" id="coordsManualLon" step="0.0001" min="-180" max="180" placeholder="ej. -2.6789" style="width:100%; padding:7px 9px; border-radius:6px; border:1px solid #DDE2DC; background:#EEF2EF; color:#0B2532; font-family:'IBM Plex Mono',monospace; margin-bottom:10px;" />
       <div id="coordsManualError" class="error" style="display:none;"></div>
       <div class="botones">
         <button class="cancelar" id="btnCancelarCoordsManual">Cancelar</button>
@@ -555,9 +555,9 @@
     <h2 id="panelNombre"></h2>
     <div class="coords" id="panelCoords"></div>
     <div style="display:flex; align-items:center; gap:10px; margin:6px 0 2px;">
-      <button id="panelBtnFavorito" title="Marcar/quitar de favoritos" style="background:none; border:none; cursor:pointer; font-size:18px; padding:0; color:#6C8890; line-height:1;">☆</button>
-      <span id="panelEtiquetaComunidad" style="display:none; font-size:10.5px; color:#7FA3AF;">📍 ubicación de un usuario, sin cámara</span>
-      <button id="panelBtnBorrar" style="display:none; margin-left:auto; background:none; border:none; color:#E8907A; font-size:11px; cursor:pointer;">🗑 Borrar</button>
+      <button id="panelBtnFavorito" title="Marcar/quitar de favoritos" style="background:none; border:none; cursor:pointer; font-size:18px; padding:0; color:#42585F; line-height:1;">☆</button>
+      <span id="panelEtiquetaComunidad" style="display:none; font-size:10.5px; color:#5C7680;">📍 ubicación de un usuario, sin cámara</span>
+      <button id="panelBtnBorrar" style="display:none; margin-left:auto; background:none; border:none; color:#A34A35; font-size:11px; cursor:pointer;">🗑 Borrar</button>
     </div>
     <div class="grid2">
       <div class="tarjeta">
@@ -618,7 +618,7 @@
       <div class="etq" id="panelIndicePescaNota" style="margin-top:4px; font-size:10px; line-height:1.4;"></div>
       <div class="explicacion-indice" id="explicacionIndicePesca">Con nuestro propio algoritmo (temperatura del agua ideal para las especies de temporada + tendencia de la presión), este número es nuestra estimación, en una escala de 0 a 100, de qué probabilidad hay de que hoy sea un buen día de pesca en este punto — una orientación, no una garantía.</div>
     </div>
-    <div class="tarjeta" style="margin-top:10px; border: 1px solid #1C3F4F;">
+    <div class="tarjeta" style="margin-top:10px; border: 1px solid #DDE2DC;">
       <div class="etq">🎣 ¿Qué esperamos pescar hoy?</div>
       <div id="panelEspecies" style="font-size:12px; margin-top:4px; line-height:1.5;"></div>
     </div>
@@ -971,8 +971,8 @@ const RIO_PUNTOS = RIOS.flatMap((r) =>
 // (Segura, Lagares), se muestra el número real pero sin colorear como
 // bajo/normal/alto para no inventar una escala.
 function categoriaCaudal(caudal, umbralBajo, umbralAlto) {
-  if (caudal === null || caudal === undefined) return { etiqueta: "sin datos", color: "#3A5361" };
-  if (umbralBajo == null || umbralAlto == null) return { etiqueta: `${caudal} m³/s`, color: "#7FA3AF" };
+  if (caudal === null || caudal === undefined) return { etiqueta: "sin datos", color: "#8B9AA0" };
+  if (umbralBajo == null || umbralAlto == null) return { etiqueta: `${caudal} m³/s`, color: "#5C7680" };
   if (caudal < umbralBajo) return { etiqueta: "bajo", color: "#4F9D69" };
   if (caudal < umbralAlto) return { etiqueta: "normal", color: "#D4A24C" };
   return { etiqueta: "alto", color: "#A34A35" };
@@ -1250,7 +1250,7 @@ function colorGradiente(valor, min, max) {
   return c1.map((v, i) => Math.round(v + (c2[i] - v) * tt));
 }
 function colorIndiceMarCss(valor) {
-  if (valor === null || valor === undefined) return "#6C8890"; // sin datos vigentes — gris neutro, no un color de la escala
+  if (valor === null || valor === undefined) return "#42585F"; // sin datos vigentes — gris neutro, no un color de la escala
   const [r, g, b] = colorGradiente(valor, 0, 100);
   return `rgb(${r},${g},${b})`;
 }
@@ -1464,9 +1464,9 @@ function crearMarcadorSpot(s) {
     <div style="display:flex; flex-direction:column; align-items:center;">
       <div class="etiqueta-spot">${s.nombre}${tieneWebcam ? '<span class="punto-webcam-viva" title="Webcam en directo"></span>' : ""}</div>
       <div style="display:flex; align-items:center; gap:3px;">
-        ${iconoFlecha(gradosDesdeTexto(s.dirOla), "#7EC8E3")}
+        ${iconoFlecha(gradosDesdeTexto(s.dirOla), "#2E7BA0")}
         ${iconoFlecha(gradosDesdeTexto(s.dirViento), "#D4A24C")}
-        <span style="font-family:'IBM Plex Mono',monospace; font-size:9px; font-weight:700; color:#D4A24C; text-shadow:0 0 3px #0B2532,0 0 3px #0B2532;">${s.viento}</span>
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:9px; font-weight:700; color:#A8792A; text-shadow:0 0 3px #0B2532,0 0 3px #0B2532;">${s.viento}</span>
         <div class="marcador-envoltorio">
           <div class="anillo-pulso" style="background:${color};"></div>
           <div class="marcador" id="marcador-${s.slug}" style="background:${color}; color:#0B2532;">${textoIndice(s.indice)}</div>
@@ -1494,7 +1494,7 @@ function crearMarcadores() {
     for (let i = 0; i < r.puntos.length - 1; i++) {
       const puntosTramo = curvaTramo(r.puntos[i], r.puntos[i + 1], semillaRio + i);
       L.polyline(puntosTramo, {
-        color: "#3E8FC0", weight: grosorTramo(r.puntos[i + 1]), opacity: 0.75, smoothFactor: 1,
+        color: "#2E7BA0", weight: grosorTramo(r.puntos[i + 1]), opacity: 0.75, smoothFactor: 1,
       }).addTo(map);
     }
 
@@ -1854,7 +1854,7 @@ function actualizarBotonFavorito(s) {
   const btn = document.getElementById("panelBtnFavorito");
   const esFavorito = favoritosClaves.has(claveFavorito(s));
   btn.textContent = esFavorito ? "★" : "☆";
-  btn.style.color = esFavorito ? "#D4A24C" : "#6C8890";
+  btn.style.color = esFavorito ? "#D4A24C" : "#42585F";
 }
 
 async function borrarSpotPersonalizado(s) {
@@ -1879,9 +1879,9 @@ function crearMarcadorBoya(boya) {
 
   const html = `
     <div style="display:flex; flex-direction:column; align-items:center;">
-      <div class="etiqueta-spot" style="color:#7EC8E3;">⚓ ${boya.nombre}</div>
+      <div class="etiqueta-spot" style="color:#2E7BA0;">⚓ ${boya.nombre}</div>
       <div style="display:flex; align-items:center; gap:4px;">
-        ${boya.dirOla ? iconoFlecha(gradosDesdeTexto(boya.dirOla), "#7EC8E3") : ""}
+        ${boya.dirOla ? iconoFlecha(gradosDesdeTexto(boya.dirOla), "#2E7BA0") : ""}
         <div class="marcador-boya">${boya.alturaSignificativa.toFixed(1)}m</div>
       </div>
     </div>`;
@@ -1950,7 +1950,7 @@ function pintarWebcam(slug, nombre) {
   pararRefrescoWebcam();
   const cont = document.getElementById("panelWebcamContenido");
   if (!SPOTS_CON_WEBCAM.includes(slug)) {
-    cont.innerHTML = `<div class="tarjeta" style="text-align:center; color:#6C8890; font-size:12px;">Sin webcam identificada para este spot todavía.</div>`;
+    cont.innerHTML = `<div class="tarjeta" style="text-align:center; color:#42585F; font-size:12px;">Sin webcam identificada para este spot todavía.</div>`;
     return;
   }
   // Se pide a nuestro propio proxy (/webcam/<slug>, ver functions/webcam/[slug].js),
@@ -1959,7 +1959,7 @@ function pintarWebcam(slug, nombre) {
   cont.innerHTML = `
     <div style="position:relative;">
       <img id="imgWebcam" crossorigin="anonymous" src="/webcam/${slug}?_=${Date.now()}" alt="Webcam en directo de ${nombre}"
-           style="width:100%; border-radius:8px; border:1px solid #1C3F4F; display:block;" />
+           style="width:100%; border-radius:8px; border:1px solid #DDE2DC; display:block;" />
       <span style="position:absolute; top:8px; left:8px; display:flex; align-items:center; gap:5px;
                     background:rgba(11,37,50,0.75); padding:3px 8px; border-radius:12px;
                     font-family:'IBM Plex Mono',monospace; font-size:10px; color:#F5F1E6;">
@@ -1968,7 +1968,7 @@ function pintarWebcam(slug, nombre) {
       </span>
     </div>
     ${SPOTS_CON_LECTURA_VISUAL.includes(slug)
-      ? `<div id="lecturaVisual" style="margin-top:8px; font-size:11.5px; color:#7FA3AF;">👁 Analizando imagen…</div>
+      ? `<div id="lecturaVisual" style="margin-top:8px; font-size:11.5px; color:#5C7680;">👁 Analizando imagen…</div>
     <p class="nota-final" id="notaWebcam">Servida por nuestro propio backend (evita bloqueos CORS del proveedor original). Se actualiza sola cada minuto — la lectura de "estado del mar" se calcula en tu propio navegador a partir del contraste de la imagen, no es una medida en metros.</p>`
       : `<p class="nota-final" id="notaWebcam">Servida por nuestro propio backend (evita bloqueos CORS del proveedor original). Se actualiza sola cada minuto — solo informativa: esta cámara todavía no tiene verificado si encuadra mar abierto (puede ser interior de puerto/bahía resguardada), así que no calculamos una lectura de oleaje a partir de ella.</p>`}
   `;
@@ -1976,7 +1976,7 @@ function pintarWebcam(slug, nombre) {
   img.addEventListener("load", () => actualizarLecturaVisual(img));
   img.addEventListener("error", () => {
     pararRefrescoWebcam();
-    cont.innerHTML = `<div class="tarjeta" style="text-align:center; color:#6C8890; font-size:12px;">
+    cont.innerHTML = `<div class="tarjeta" style="text-align:center; color:#42585F; font-size:12px;">
       No se pudo cargar la webcam de ${nombre} ahora mismo<br>
       (solo funciona una vez desplegado en Cloudflare Pages — no en este archivo abierto suelto).
     </div>`;
@@ -2044,7 +2044,7 @@ function puntuacionOleajeVisual(img) {
 }
 
 function etiquetaOleajeVisual(puntuacion) {
-  if (puntuacion === null) return { texto: "sin lectura disponible ahora mismo", color: "#6C8890" };
+  if (puntuacion === null) return { texto: "sin lectura disponible ahora mismo", color: "#42585F" };
   if (puntuacion < 18) return { texto: "mar en calma (lectura visual)", color: "#4F9D69" };
   if (puntuacion < 35) return { texto: "oleaje moderado visible", color: "#D4A24C" };
   return { texto: "oleaje visible con rompiente", color: "#A34A35" };
@@ -2108,7 +2108,7 @@ function abrirPanel(s) {
     let franja = "";
     if (e.rangoTemp) {
       const [min, max] = e.rangoTemp;
-      const color = e.coincide ? "#4F9D69" : "#6C8890";
+      const color = e.coincide ? "#4F9D69" : "#42585F";
       franja = ` <span style="color:${color};">[${min}-${max}°C${e.coincide ? " ✓ ahora mismo pega bien" : ""}]</span>`;
     }
     // <details> nativo: desplegable sin JS propio, más limpio que mostrar
@@ -2116,16 +2116,16 @@ function abrirPanel(s) {
     // usuario, 2026-09-13).
     return `<details class="especie-desplegable">
       <summary>${e.emoji} <b>${e.nombre}</b>${franja}</summary>
-      <div class="especie-detalle">${e.nota}<br><span style="color:#9FB8BF;">🍽 ${e.alimento}</span></div>
+      <div class="especie-detalle">${e.nota}<br><span style="color:#5F7981;">🍽 ${e.alimento}</span></div>
     </details>`;
   };
   const bloqueZona = (titulo, lista) =>
     `<div style="margin-bottom:10px;"><div class="especie-zona-titulo">${titulo}</div>` +
-    (lista.length ? lista.map(listaEspecie).join("") : `<span style="color:#6C8890;">ninguna de temporada ahora</span>`) +
+    (lista.length ? lista.map(listaEspecie).join("") : `<span style="color:#42585F;">ninguna de temporada ahora</span>`) +
     `</div>`;
   document.getElementById("panelEspecies").innerHTML =
     bloqueZona("🪨 COSTA", costa) + bloqueZona("🌊 MAR ADENTRO", marAdentro) +
-    `<div style="color:#6C8890; font-size:10.5px; margin-top:4px; line-height:1.4;">` +
+    `<div style="color:#42585F; font-size:10.5px; margin-top:4px; line-height:1.4;">` +
     `La parrotxa es la cría de sardina — así la llaman por aquí. Cuando hay mucha cerca de la costa, se acercan a por ella la lubina y el bonito sobre todo, y se pesca mejor. Esto no lo medimos nosotros — lo sabes tú mejor mirando el agua.` +
     `</div>`;
 

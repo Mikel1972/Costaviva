@@ -7,118 +7,118 @@
 <link rel="manifest" href="manifest.json" />
 <link rel="icon" href="icon.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="icon.svg" />
-<meta name="theme-color" content="#0B2532" />
+<meta name="theme-color" content="#F7F3E8" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
 <meta name="apple-mobile-web-app-title" content="Costa Viva" />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; }
   @keyframes pulso { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
   body {
-    margin: 0; font-family: 'Inter', sans-serif; background: #0B2532; color: #E8E2D0;
+    margin: 0; font-family: 'Inter', sans-serif; background: #F7F3E8; color: #0B2532;
     display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; padding-bottom: calc(64px + env(safe-area-inset-bottom));
   }
-  header { padding: 10px 20px; border-bottom: 1px solid #1C3F4F; flex-shrink: 0; display: flex; align-items: center; gap: 12px; }
+  header { padding: 10px 20px; border-bottom: 1px solid #DDE2DC; flex-shrink: 0; display: flex; align-items: center; gap: 12px; }
   header .titulos { flex: 1; min-width: 0; }
   header h1 { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 700; letter-spacing: 0.2px; margin: 0; }
   @media (max-width: 380px) { header h1 { font-size: 20px; } }
-  header p { margin: 2px 0 0; color: #7FA3AF; font-size: 11px; }
+  header p { margin: 2px 0 0; color: #5C7680; font-size: 11px; }
 
   .cuenta-menu-wrap { position: relative; flex-shrink: 0; }
   .cuenta-menu-btn {
-    background: #123B4D; border: 1px solid #1C3F4F; color: #E8E2D0; width: 34px; height: 34px;
+    background: #EEF2EF; border: 1px solid #DDE2DC; color: #0B2532; width: 34px; height: 34px;
     border-radius: 50%; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center;
   }
   .cuenta-menu-dropdown {
-    display: none; position: absolute; top: 42px; right: 0; background: #0F2C38; border: 1px solid #1C3F4F;
+    display: none; position: absolute; top: 42px; right: 0; background: #FFFFFF; border: 1px solid #DDE2DC;
     border-radius: 10px; padding: 6px; min-width: 200px; z-index: 900; box-shadow: 0 8px 24px rgba(0,0,0,0.4);
   }
   .cuenta-menu-dropdown.visible { display: block; }
   .cuenta-menu-dropdown button {
     display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; background: none; border: none;
-    color: #E8E2D0; font-family: 'Inter', sans-serif; font-size: 13px; padding: 9px 10px; border-radius: 6px; cursor: pointer;
+    color: #0B2532; font-family: 'Inter', sans-serif; font-size: 13px; padding: 9px 10px; border-radius: 6px; cursor: pointer;
   }
-  .cuenta-menu-dropdown button:hover { background: #123B4D; }
+  .cuenta-menu-dropdown button:hover { background: #EEF2EF; }
 
   .contenido { flex: 1; min-height: 0; overflow-y: auto; padding: 16px; }
 
   .cabecera-mes { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 14px; }
   .cabecera-mes button {
-    background: #123B4D; border: 1px solid #1C3F4F; color: #E8E2D0; border-radius: 8px;
+    background: #EEF2EF; border: 1px solid #DDE2DC; color: #0B2532; border-radius: 8px;
     width: 32px; height: 32px; font-size: 16px; cursor: pointer;
   }
   .cabecera-mes .mes-nombre { font-family: 'Fraunces', serif; font-size: 17px; text-transform: capitalize; }
 
   .calendario { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; max-width: 480px; margin: 0 auto; }
-  .dia-semana { text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #6C8890; padding-bottom: 4px; }
+  .dia-semana { text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #42585F; padding-bottom: 4px; }
   .dia {
-    aspect-ratio: 1; border-radius: 8px; background: #0F2C38; border: 1px solid #1C3F4F;
+    aspect-ratio: 1; border-radius: 8px; background: #FFFFFF; border: 1px solid #DDE2DC;
     display: flex; align-items: center; justify-content: center;
-    font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #9FB8BF; cursor: pointer; position: relative;
+    font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #5F7981; cursor: pointer; position: relative;
   }
   .dia.vacio { visibility: hidden; cursor: default; }
-  .dia.hoy { border-color: #D4A24C; }
-  .dia.rojo { background: rgba(163,74,53,0.28); border-color: #A34A35; color: #F5D9D2; }
+  .dia.hoy { border-color: #A8792A; }
+  .dia.rojo { background: rgba(163,74,53,0.28); border-color: #A34A35; color: #8C3826; }
   .dia.verde { background: rgba(79,157,105,0.28); border-color: #4F9D69; color: #D9F0E1; }
   .dia:active { transform: scale(0.94); }
 
-  .leyenda-dias { display: flex; justify-content: center; gap: 18px; margin-top: 14px; font-size: 11px; color: #7FA3AF; }
+  .leyenda-dias { display: flex; justify-content: center; gap: 18px; margin-top: 14px; font-size: 11px; color: #5C7680; }
   .leyenda-dias span { display: inline-flex; align-items: center; gap: 5px; }
   .chip { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
 
   .aviso-consentimiento {
-    max-width: 480px; margin: 0 auto 16px; background: #0F2C38; border: 1px solid #1C3F4F; border-radius: 10px;
-    padding: 12px 14px; font-size: 12px; color: #9FB8BF; line-height: 1.5;
+    max-width: 480px; margin: 0 auto 16px; background: #FFFFFF; border: 1px solid #DDE2DC; border-radius: 10px;
+    padding: 12px 14px; font-size: 12px; color: #5F7981; line-height: 1.5;
   }
-  .aviso-consentimiento a { color: #D4A24C; }
+  .aviso-consentimiento a { color: #A8792A; }
 
   /* Panel de detalle del día — hoja deslizante desde abajo, igual patrón que index.html */
   .panel-dia {
     display: none; position: fixed; left: 0; right: 0; bottom: 54px; max-height: 78vh;
-    background: #0F2C38; border-top: 1px solid #1C3F4F; border-radius: 16px 16px 0 0;
+    background: #FFFFFF; border-top: 1px solid #DDE2DC; border-radius: 16px 16px 0 0;
     padding: 20px; overflow-y: auto; z-index: 1000; box-shadow: 0 -8px 24px rgba(0,0,0,0.4);
   }
   .panel-dia.visible { display: block; }
   .panel-dia h2 { font-family: 'Fraunces', serif; font-size: 19px; margin: 0 0 12px; text-transform: capitalize; }
-  .panel-dia .cerrar { position: absolute; top: 14px; right: 16px; background: none; border: none; color: #7FA3AF; font-size: 16px; cursor: pointer; }
+  .panel-dia .cerrar { position: absolute; top: 14px; right: 16px; background: none; border: none; color: #5C7680; font-size: 16px; cursor: pointer; }
 
-  label { display: block; font-size: 12px; color: #9FB8BF; margin: 12px 0 5px; font-family: 'Inter', sans-serif; font-weight: 500; }
+  label { display: block; font-size: 12px; color: #5F7981; margin: 12px 0 5px; font-family: 'Inter', sans-serif; font-weight: 500; }
   input, select, textarea {
-    width: 100%; padding: 9px 11px; border-radius: 8px; border: 1px solid #1C3F4F; background: #123B4D;
-    color: #E8E2D0; font-family: 'Inter', sans-serif; font-size: 14px;
+    width: 100%; padding: 9px 11px; border-radius: 8px; border: 1px solid #DDE2DC; background: #EEF2EF;
+    color: #0B2532; font-family: 'Inter', sans-serif; font-size: 14px;
   }
   textarea { resize: vertical; min-height: 60px; }
-  input:focus, select:focus, textarea:focus { outline: none; border-color: #D4A24C; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: #A8792A; }
   button.principal {
     width: 100%; margin-top: 16px; padding: 11px; border-radius: 8px; border: none;
     background: #D4A24C; color: #0B2532; font-weight: 600; font-size: 14px; cursor: pointer;
   }
   button.principal:disabled { opacity: 0.6; }
   button.secundario {
-    width: 100%; margin-top: 8px; padding: 10px; border-radius: 8px; border: 1px solid #1C3F4F;
-    background: transparent; color: #9FB8BF; font-size: 13px; cursor: pointer;
+    width: 100%; margin-top: 8px; padding: 10px; border-radius: 8px; border: 1px solid #DDE2DC;
+    background: transparent; color: #5F7981; font-size: 13px; cursor: pointer;
   }
 
-  .tarjeta-captura { background: #123B4D; border-radius: 10px; padding: 12px; margin-top: 10px; }
+  .tarjeta-captura { background: #EEF2EF; border-radius: 10px; padding: 12px; margin-top: 10px; }
   .tarjeta-captura .fila-titulo { display: flex; justify-content: space-between; align-items: baseline; }
   .tarjeta-captura .especie { font-weight: 600; font-size: 14px; }
-  .tarjeta-captura .detalle { font-size: 12px; color: #9FB8BF; margin-top: 2px; }
+  .tarjeta-captura .detalle { font-size: 12px; color: #5F7981; margin-top: 2px; }
   .galeria-fotos { display: flex; gap: 6px; margin-top: 8px; overflow-x: auto; }
   .galeria-fotos img { width: 76px; height: 76px; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
   .tarjeta-captura button.borrar-captura {
-    background: none; border: none; color: #E8907A; font-size: 11px; cursor: pointer; margin-top: 6px; padding: 0;
+    background: none; border: none; color: #A34A35; font-size: 11px; cursor: pointer; margin-top: 6px; padding: 0;
   }
 
   .contexto-ambiental { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0 4px; }
-  .contexto-ambiental .dato { background: #123B4D; border-radius: 8px; padding: 8px; text-align: center; }
-  .contexto-ambiental .dato .etq { font-size: 9px; color: #6C8890; }
+  .contexto-ambiental .dato { background: #EEF2EF; border-radius: 8px; padding: 8px; text-align: center; }
+  .contexto-ambiental .dato .etq { font-size: 9px; color: #42585F; }
   .contexto-ambiental .dato .val { font-family: 'IBM Plex Mono', monospace; font-size: 13px; margin-top: 2px; }
 
   .mensaje { margin-top: 10px; font-size: 12px; padding: 8px 10px; border-radius: 8px; display: none; }
-  .mensaje.error { display: block; background: rgba(163,74,53,0.15); color: #E8907A; border: 1px solid #A34A35; }
-  .mensaje.ok { display: block; background: rgba(79,157,105,0.12); color: #8FCBA3; border: 1px solid #3A6B4C; }
-  .mensaje.info { display: block; background: rgba(212,162,76,0.1); color: #E8C888; border: 1px solid #6B5530; }
+  .mensaje.error { display: block; background: rgba(163,74,53,0.15); color: #A34A35; border: 1px solid #A34A35; }
+  .mensaje.ok { display: block; background: rgba(79,157,105,0.12); color: #3A6B4C; border: 1px solid #A8D4B8; }
+  .mensaje.info { display: block; background: rgba(212,162,76,0.1); color: #6B5530; border: 1px solid #D9C08A; }
 
   /* Modal "¿cómo quieres añadir la foto?" — identificación de captura
      por IA (2026-09-13). Overlay simple centrado, no una hoja deslizante
@@ -130,15 +130,15 @@
   }
   .modal-elegir-foto.visible { display: flex; }
   .modal-elegir-foto .caja {
-    background: #0F2C38; border: 1px solid #1C3F4F; border-radius: 14px; padding: 20px; width: 100%; max-width: 320px;
+    background: #FFFFFF; border: 1px solid #DDE2DC; border-radius: 14px; padding: 20px; width: 100%; max-width: 320px;
   }
   .modal-elegir-foto .titulo { font-family: 'Fraunces', serif; font-size: 16px; margin-bottom: 14px; text-align: center; }
   .modal-elegir-foto button {
-    width: 100%; margin-top: 8px; padding: 12px; border-radius: 8px; border: 1px solid #1C3F4F;
-    background: #123B4D; color: #E8E2D0; font-size: 14px; cursor: pointer; text-align: left;
+    width: 100%; margin-top: 8px; padding: 12px; border-radius: 8px; border: 1px solid #DDE2DC;
+    background: #EEF2EF; color: #0B2532; font-size: 14px; cursor: pointer; text-align: left;
   }
   .modal-elegir-foto button:first-of-type { margin-top: 0; }
-  .modal-elegir-foto button.cancelar { background: transparent; color: #9FB8BF; text-align: center; }
+  .modal-elegir-foto button.cancelar { background: transparent; color: #5F7981; text-align: center; }
 
   /* Selector de hora: dos <select> nativos (hora, minuto) — el propio
      desplegable del navegador ya trae scroll cuando tiene muchas
@@ -151,31 +151,31 @@
   */
   .hora-select { display: flex; align-items: center; gap: 6px; margin: 4px 0 10px; }
   .hora-select select {
-    width: auto; padding: 8px 10px; border-radius: 8px; border: 1px solid #1C3F4F;
-    background: #123B4D; color: #E8E2D0; font-family: 'IBM Plex Mono', monospace; font-size: 14px;
+    width: auto; padding: 8px 10px; border-radius: 8px; border: 1px solid #DDE2DC;
+    background: #EEF2EF; color: #0B2532; font-family: 'IBM Plex Mono', monospace; font-size: 14px;
   }
-  .hora-select-sep { font-family: 'Fraunces', serif; font-size: 16px; color: #9FB8BF; }
+  .hora-select-sep { font-family: 'Fraunces', serif; font-size: 16px; color: #5F7981; }
 
   .tabs-nav {
     position: fixed; left: 0; right: 0; bottom: 0; height: calc(64px + env(safe-area-inset-bottom));
-    background: #0F2C38; border-top: 1px solid #1C3F4F; display: flex; gap: 6px; padding: 8px 8px calc(8px + env(safe-area-inset-bottom)) 8px; z-index: 700;
+    background: #FFFFFF; border-top: 1px solid #DDE2DC; display: flex; gap: 6px; padding: 8px 8px calc(8px + env(safe-area-inset-bottom)) 8px; z-index: 700;
   }
   .tabs-nav a {
     flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 3px; text-decoration: none; color: #7FA3AF; border-radius: 12px;
+    gap: 3px; text-decoration: none; color: #5C7680; border-radius: 12px;
     font-family: 'Inter', sans-serif; font-size: 10.5px; font-weight: 500;
   }
   .tabs-nav a .icono {
     font-size: 18px; line-height: 1; width: 32px; height: 32px; border-radius: 10px;
-    background: #123B4D; display: flex; align-items: center; justify-content: center;
+    background: #EEF2EF; display: flex; align-items: center; justify-content: center;
   }
-  .tabs-nav a.activa { color: #D4A24C; }
+  .tabs-nav a.activa { color: #A8792A; }
   .tabs-nav a.activa .icono { background: rgba(212,162,76,0.18); }
 </style>
 </head>
 <body>
 
-<div id="comprobandoAcceso" style="position:fixed; inset:0; background:#0B2532; z-index:9999; display:flex; align-items:center; justify-content:center; color:#7FA3AF; font-family:'IBM Plex Mono',monospace; font-size:13px;">
+<div id="comprobandoAcceso" style="position:fixed; inset:0; background:#F7F3E8; z-index:9999; display:flex; align-items:center; justify-content:center; color:#5C7680; font-family:'IBM Plex Mono',monospace; font-size:13px;">
   Comprobando acceso…
 </div>
 
@@ -205,7 +205,7 @@
   <div class="leyenda-dias">
     <span><span class="chip" style="background:#A34A35;"></span>sin captura</span>
     <span><span class="chip" style="background:#4F9D69;"></span>con captura</span>
-    <span><span class="chip" style="background:#0F2C38; border:1px solid #1C3F4F;"></span>sin registrar</span>
+    <span><span class="chip" style="background:#FFFFFF; border:1px solid #DDE2DC;"></span>sin registrar</span>
   </div>
 </div>
 
@@ -834,7 +834,7 @@ function opcionesSpotsPara(tipoSalida) {
 // vs update) — así no hay que mantener dos plantillas casi iguales.
 function formularioSalida() {
   return `
-    <p style="font-size:12px; color:#9FB8BF;">Rellena estos datos y guarda — luego se abre el menú para añadir capturas (especie, técnica, cebo…) de esta entrada.</p>
+    <p style="font-size:12px; color:#5F7981;">Rellena estos datos y guarda — luego se abre el menú para añadir capturas (especie, técnica, cebo…) de esta entrada.</p>
     <label for="salidaTipo">Tipo de salida</label>
     <select id="salidaTipo">
       <option value="costa">🪨 Costa</option>
@@ -945,14 +945,14 @@ function contextoHTML(salida) {
     ["LLUVIA", salida.precipitacion != null ? `${salida.precipitacion} mm/h` : "—"],
   ];
   const notaBoya = salida.boya_usada
-    ? `<div class="detalle" style="font-size:11px; color:#6C8890; margin-top:4px;">⚓ Oleaje y temperatura de la boya real de ${salida.boya_usada} (Puertos del Estado), no del modelo por coordenadas.</div>`
+    ? `<div class="detalle" style="font-size:11px; color:#42585F; margin-top:4px;">⚓ Oleaje y temperatura de la boya real de ${salida.boya_usada} (Puertos del Estado), no del modelo por coordenadas.</div>`
     : "";
   // Coeficiente real por spot, no el índice "nacional" de tides4fishing y
   // similares (ver CLAUDE.md, 2026-09-13) — se explica siempre que se
   // muestre, para que no parezca un error si alguien lo compara con otra
   // web/app de mareas.
   const notaCoef = salida.marea_coeficiente != null
-    ? `<div class="detalle" style="font-size:11px; color:#6C8890; margin-top:4px;">🌊 El coeficiente de marea es propio de este spot (compara la marea de ese día contra el máximo/mínimo real de ese mismo sitio) — no es el índice nacional que usan otras webs de mareas, así que no tiene por qué coincidir con ellas.</div>`
+    ? `<div class="detalle" style="font-size:11px; color:#42585F; margin-top:4px;">🌊 El coeficiente de marea es propio de este spot (compara la marea de ese día contra el máximo/mínimo real de ese mismo sitio) — no es el índice nacional que usan otras webs de mareas, así que no tiene por qué coincidir con ellas.</div>`
     : "";
   return `<div class="contexto-ambiental">${filas.map(([e, v]) => `<div class="dato"><div class="etq">${e}</div><div class="val">${v}</div></div>`).join("")}</div>${notaBoya}${notaCoef}`;
 }
@@ -968,8 +968,8 @@ async function tarjetaCapturaHTML(captura) {
       ${captura.notas ? `<div class="detalle">${captura.notas}</div>` : ""}
       ${urls.length ? `<div class="galeria-fotos">${urls.map((u) => `<img src="${u}" alt="Foto de ${captura.especie}" />`).join("")}</div>` : ""}
       <div style="display:flex; gap:12px; margin-top:6px;">
-        <button class="editar-captura" data-id="${captura.id}" style="background:none; border:none; color:#9FB8BF; font-size:11px; cursor:pointer; padding:0;">✏️ Editar</button>
-        <button class="borrar-captura" data-id="${captura.id}" style="background:none; border:none; color:#E8907A; font-size:11px; cursor:pointer; padding:0;">🗑 Borrar</button>
+        <button class="editar-captura" data-id="${captura.id}" style="background:none; border:none; color:#5F7981; font-size:11px; cursor:pointer; padding:0;">✏️ Editar</button>
+        <button class="borrar-captura" data-id="${captura.id}" style="background:none; border:none; color:#A34A35; font-size:11px; cursor:pointer; padding:0;">🗑 Borrar</button>
       </div>
     </div>
   `;
@@ -981,7 +981,7 @@ function formularioCaptura() {
     .join("");
   const opcionesTecnicas = TECNICAS.map((t) => `<option value="${t}">${t}</option>`).join("");
   return `
-    <div class="tarjeta-captura" style="border:1px dashed #1C3F4F;">
+    <div class="tarjeta-captura" style="border:1px dashed #DDE2DC;">
       <button type="button" class="secundario" id="btnIdentificarFoto" style="margin-top:0;">📷 Identificar con una foto</button>
       <div class="mensaje" id="mensajeIdentificarFoto"></div>
       <label for="capturaEspecie">Especie</label>
@@ -1119,22 +1119,22 @@ async function resumenEntradaHTML(entrada, idx) {
   // color de acento) para que se note de un vistazo cuál sigue abierta.
   const enCurso = salida.concluida === false;
   return `
-    <div class="tarjeta-captura" style="margin-top:0; margin-bottom:14px; border:1px solid ${enCurso ? "#D4A24C" : "#1C3F4F"};">
+    <div class="tarjeta-captura" style="margin-top:0; margin-bottom:14px; border:1px solid ${enCurso ? "#D4A24C" : "#DDE2DC"};">
       <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
-        <div class="detalle" style="font-size:12px; color:#9FB8BF; flex:1;">
-          ${enCurso ? `<span style="color:#D4A24C; font-weight:600;">🟢 En curso</span> · ` : ""}📍 ${salida.spot_nombre || "Ubicación actual"}
+        <div class="detalle" style="font-size:12px; color:#5F7981; flex:1;">
+          ${enCurso ? `<span style="color:#A8792A; font-weight:600;">🟢 En curso</span> · ` : ""}📍 ${salida.spot_nombre || "Ubicación actual"}
           ${salida.tipo_salida ? ` · ${etiquetaTipoSalida[salida.tipo_salida] || salida.tipo_salida}` : ""}
           ${horaRangoTexto(salida)}
         </div>
         <div style="display:flex; gap:10px; flex-shrink:0;">
-          <button class="editar-entrada" data-idx="${idx}" style="background:none; border:none; color:#9FB8BF; font-size:11px; cursor:pointer; padding:0;">✏️ Editar</button>
-          <button class="borrar-entrada" data-idx="${idx}" style="background:none; border:none; color:#E8907A; font-size:11px; cursor:pointer; padding:0;">🗑 Borrar</button>
+          <button class="editar-entrada" data-idx="${idx}" style="background:none; border:none; color:#5F7981; font-size:11px; cursor:pointer; padding:0;">✏️ Editar</button>
+          <button class="borrar-entrada" data-idx="${idx}" style="background:none; border:none; color:#A34A35; font-size:11px; cursor:pointer; padding:0;">🗑 Borrar</button>
         </div>
       </div>
       ${salida.notas ? `<p style="font-size:13px; margin-top:8px;">${salida.notas}</p>` : ""}
       ${contextoHTML(salida)}
-      <div style="margin-top:14px; font-family:'Inter',sans-serif; font-weight:500; font-size:11px; color:#6C8890;">CAPTURAS (${capturas.length})</div>
-      ${tarjetas.join("") || `<p style="font-size:12px; color:#6C8890;">Ninguna todavía.</p>`}
+      <div style="margin-top:14px; font-family:'Inter',sans-serif; font-weight:500; font-size:11px; color:#42585F;">CAPTURAS (${capturas.length})</div>
+      ${tarjetas.join("") || `<p style="font-size:12px; color:#42585F;">Ninguna todavía.</p>`}
       <div style="display:flex; gap:8px; margin-top:10px;">
         <button class="secundario anadir-captura" data-idx="${idx}" style="margin-top:0; flex:1;">➕ Añadir captura</button>
         ${enCurso ? `<button class="principal concluir-entrada" data-idx="${idx}" style="margin-top:0; flex:1;">✅ Concluir jornada</button>` : ""}
@@ -1357,7 +1357,7 @@ async function abrirDia(iso, fechaObj) {
   const entradas = salidasPorFecha[iso] || [];
   const resumenes = await Promise.all(entradas.map((e, idx) => resumenEntradaHTML(e, idx)));
   contEl.innerHTML =
-    (resumenes.join("") || `<p style="font-size:12px; color:#9FB8BF;">Todavía no hay nada registrado este día.</p>`) +
+    (resumenes.join("") || `<p style="font-size:12px; color:#5F7981;">Todavía no hay nada registrado este día.</p>`) +
     `<div id="zonaFormulario"></div>` +
     `<button class="secundario" id="btnAnadirEntrada">➕ Añadir ${entradas.length ? "otra " : ""}entrada este día</button>`;
 
