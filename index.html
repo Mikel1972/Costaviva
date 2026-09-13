@@ -293,13 +293,19 @@
   .panel.visible { display: block; }
   .panel h2 { font-family: 'Fraunces', serif; font-size: 20px; margin: 0 0 4px; font-weight: 600; }
   .panel .cerrar {
-    float: right; background: none; border: none; color: #7FA3AF; cursor: pointer; font-size: 16px;
+    float: right; border: none; color: #7FA3AF; cursor: pointer; font-size: 16px;
     /* Zona de toque real de al menos 44x44 (mínimo recomendado en iOS/Android)
        sin mover el icono visualmente — el padding amplía el área pulsable y el
        margen negativo la compensa para que siga pegada a la esquina de siempre.
        Bug real reportado por el usuario en su iPhone: el botón "✕" no
        respondía al toque, solo al ratón en escritorio (2026-09-13). */
     padding: 14px; margin: -14px -14px 0 0; line-height: 1;
+    /* Segundo bug real, mismo hilo: el panel es más alto que la pantalla de
+       un móvil y hay que bajar el scroll para ver toda la ficha (marea,
+       corriente, índices...) — sin "sticky" el botón de cerrar se iba con el
+       scroll y dejaba de estar donde el usuario lo buscaba. Con position:sticky
+       se queda siempre a la vista, arriba del todo, aunque se haga scroll. */
+    position: sticky; top: 0; z-index: 5; background: #0F2C38;
   }
   .panel .coords { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7FA3AF; }
   .panel .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
