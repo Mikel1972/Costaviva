@@ -1122,33 +1122,32 @@ capa de autorización sí está verificada.
 
 ## Pendiente conocido (no tocar sin confirmar)
 
-- Prueba cruzada usuario-A-lee-fila-de-usuario-B: **hecha y verificada el
-  2026-09-12** — usuario B nunca vio las filas de usuario A (ni listado
-  ni por id directo) en `contactos_emergencia` ni `salidas_pesca`; filas
-  de prueba limpiadas después. RLS confirmado en el caso más estricto.
+- **Cuenta atrás para reintentar `/prevision`** (2026-09-14): la cuota
+  diaria de Open-Meteo se agotó por el volumen de pruebas de esta
+  sesión (ver más abajo, sección de la caché) — pendiente de confirmar
+  que se recupera sola cuando reinicie (probablemente medianoche UTC) y
+  que la caché nueva evita que vuelva a pasar con tráfico normal.
+- **Recrear las cuentas de prueba borradas** (`etxebe2005+fishnowtest2@gmail.com`,
+  `etxebe2005+fishnowavisotest@gmail.com`) — el usuario las borró desde
+  el panel de administrador; ahora que el rate-limit de Supabase está
+  arreglado (SMTP propio vía Resend) debería poder recrearlas sin
+  problema. `auth-test.yml` (prueba cruzada A-lee-B) y `smoke-test.yml`
+  fallarán hasta que existan de nuevo. Yo no puedo crearlas (no debo
+  manejar contraseñas) — pendiente de que el usuario lo haga.
+- **`ANTHROPIC_API_KEY` como secret de GitHub Actions**, para que
+  `robot-buscador-fuentes.yml` funcione — es un almacén distinto al de
+  Cloudflare Pages, aunque se reutilice el mismo valor. Probar con
+  `workflow_dispatch` antes de fiarse del `schedule`.
+- **Grupos privados (Fase 5)**: la RLS y las funciones RPC se
+  verificaron con `curl` + anon key (sin recursión, responden `200 []`
+  sin sesión), pero **no se ha probado el flujo completo con dos
+  cuentas reales** creando/uniéndose a un grupo — pendiente antes de dar
+  la fase por cerrada del todo.
 - `smoke-test.yml` nunca debe llamar a `/sos-alerta` (decisión explícita
   del 2026-09-12) — dispararía un email de socorro real. Si en el futuro
   se quiere cubrir también ese camino, hace falta antes un modo de
   prueba explícito en `sos-alerta.js` que nunca llame a Resend de verdad
   para una cuenta marcada como test — decidirlo aparte, no asumirlo.
-- **`functions/aviso-alta.js`** (añadido 2026-09-12): avisa por email al
-  admin en cada alta real (llamado desde `login.html` tras un `signUp()`
-  con éxito). Único uso de `SUPABASE_SERVICE_ROLE_KEY` en todo el repo —
-  solo lectura de `auth.users` por id para verificar que el alta es
-  real y de los últimos 5 minutos (resistente a spoofing con un
-  `user_id` inventado o reutilizado), nunca para tablas de usuario. Las
-  3 variables de entorno (`SUPABASE_SERVICE_ROLE_KEY`, `ADMIN_EMAIL`,
-  `RESEND_API_KEY`) ya están puestas en Cloudflare Pages. Usa el
-  remitente de pruebas de Resend (`onboarding@resend.com`) porque no hay
-  dominio propio verificado — ver el aviso crítico al principio de este
-  fichero. **Pendiente de confirmación final**: el usuario va a
-  registrarse de verdad en `/login.html` para comprobar si el email le
-  llega (bloqueado de probarlo yo mismo por el rate-limit de altas de
-  Supabase).
-- Punto 13 del diagnóstico (2026-09-12, sin aplicar nada): el alta en
-  `login.html` es pública sin CAPTCHA/Turnstile — mitigado parcialmente
-  porque `perfiles.aprobado` bloquea el acceso real hasta aprobación
-  manual, pero no hay ningún aviso al admin cuando alguien se registra
-  (hoy hay que mirar el Table Editor a mano). No existen todavía código
-  de invitación/descuento ni cuentas compartidas tipo "tripulación" — no
-  hay nada que blindar ahí hasta que esas features existan.
+- No existen todavía código de invitación/descuento ni cuentas
+  compartidas tipo "tripulación" — no hay nada que blindar ahí hasta que
+  esas features existan.
