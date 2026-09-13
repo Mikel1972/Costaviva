@@ -149,7 +149,7 @@
   @keyframes expandirLlamada { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
   .leaflet-tooltip.llamada-rio::before { border-top-color: #DDE2DC !important; }
   .llamada-rio .rio-nombre { font-weight: 600; color: #0B2532; margin-bottom: 2px; }
-  .llamada-rio .rio-tramo { color: #7C939A; font-size: 10.5px; }
+  .llamada-rio .rio-tramo { color: #5F7981; font-size: 10.5px; }
   .llamada-rio .rio-caudal { margin-top: 3px; display: flex; align-items: center; gap: 5px; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; }
 
   .leyenda-toggle {
@@ -266,7 +266,7 @@
     flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #DDE2DC; cursor: pointer; font-size: 12.5px;
   }
   .confirmar-ubicacion-panel button.confirmar { background: #D4A24C; color: #0B2532; border: none; font-weight: 600; }
-  .confirmar-ubicacion-panel button.cancelar { background: transparent; color: #7C939A; }
+  .confirmar-ubicacion-panel button.cancelar { background: transparent; color: #5F7981; }
   .confirmar-ubicacion-panel button.secundario-ubicacion {
     width: 100%; text-align: left; padding: 10px 12px; border-radius: 8px; border: 1px solid #DDE2DC;
     background: #EEF2EF; color: #0B2532; cursor: pointer; font-size: 13px;
@@ -285,7 +285,7 @@
   .luna-panel .fase-emoji { font-size: 26px; }
   .luna-panel .fase-nombre { font-family: 'Inter', sans-serif; color: #0B2532; font-size: 13px; }
   .luna-panel .fase-iluminacion { color: #5C7680; font-size: 10.5px; }
-  .luna-panel .fila-dato { display: flex; justify-content: space-between; margin-top: 4px; color: #7C939A; }
+  .luna-panel .fila-dato { display: flex; justify-content: space-between; margin-top: 4px; color: #5F7981; }
   .luna-panel .fila-dato b { color: #0B2532; font-weight: 700; }
   .luna-panel .nota { color: #42585F; font-size: 9.5px; margin-top: 8px; line-height: 1.4; }
   .leyenda .titulo { color: #5C7680; margin-bottom: 6px; }
@@ -329,7 +329,7 @@
   }
   .indice-box .etq { display: flex; align-items: center; justify-content: center; gap: 6px; }
   .explicacion-indice {
-    display: none; text-align: left; font-size: 11px; color: #7C939A; line-height: 1.5;
+    display: none; text-align: left; font-size: 11px; color: #5F7981; line-height: 1.5;
     margin-top: 8px; padding-top: 8px; border-top: 1px solid #DDE2DC;
   }
   .explicacion-indice.visible { display: block; }
@@ -343,7 +343,7 @@
   .especie-desplegable summary::-webkit-details-marker { display: none; }
   .especie-desplegable summary::after { content: "›"; margin-left: auto; color: #42585F; transform: rotate(90deg); font-size: 16px; }
   .especie-desplegable[open] summary::after { transform: rotate(-90deg); }
-  .especie-desplegable .especie-detalle { padding: 0 10px 10px; color: #7C939A; line-height: 1.5; }
+  .especie-desplegable .especie-detalle { padding: 0 10px 10px; color: #5F7981; line-height: 1.5; }
   .especie-zona-titulo { color: #5C7680; font-weight: 600; margin-bottom: 6px; font-size: 11.5px; }
 
   /* ---- Móvil ---- */
@@ -488,7 +488,7 @@
     </div>
     <button class="luna-toggle" id="toggleLuna" title="Fase y posición de la luna" aria-label="Mostrar/ocultar datos de la luna">🌙</button>
     <div class="luna-panel" id="lunaPanel">
-      <div class="nota" id="lunaZoomAviso" style="display:none; font-size:11px; color:#7C939A; text-align:center; padding:6px 0;">🔍 Acércate (zoom in) para ver la luna de esa ubicación</div>
+      <div class="nota" id="lunaZoomAviso" style="display:none; font-size:11px; color:#5F7981; text-align:center; padding:6px 0;">🔍 Acércate (zoom in) para ver la luna de esa ubicación</div>
       <div id="lunaContenido">
         <div class="fase-fila">
           <span class="fase-emoji" id="lunaEmoji">🌙</span>
@@ -519,9 +519,9 @@
     </div>
     <div class="confirmar-ubicacion-panel" id="coordsManualPanel">
       <div class="titulo">Coordenadas</div>
-      <label style="display:block; font-size:11.5px; color:#7C939A; margin-bottom:3px;">Latitud</label>
+      <label style="display:block; font-size:11.5px; color:#5F7981; margin-bottom:3px;">Latitud</label>
       <input type="number" id="coordsManualLat" step="0.0001" min="-90" max="90" placeholder="ej. 43.4123" style="width:100%; padding:7px 9px; border-radius:6px; border:1px solid #DDE2DC; background:#EEF2EF; color:#0B2532; font-family:'IBM Plex Mono',monospace; margin-bottom:8px;" />
-      <label style="display:block; font-size:11.5px; color:#7C939A; margin-bottom:3px;">Longitud</label>
+      <label style="display:block; font-size:11.5px; color:#5F7981; margin-bottom:3px;">Longitud</label>
       <input type="number" id="coordsManualLon" step="0.0001" min="-180" max="180" placeholder="ej. -2.6789" style="width:100%; padding:7px 9px; border-radius:6px; border:1px solid #DDE2DC; background:#EEF2EF; color:#0B2532; font-family:'IBM Plex Mono',monospace; margin-bottom:10px;" />
       <div id="coordsManualError" class="error" style="display:none;"></div>
       <div class="botones">
@@ -2116,7 +2116,7 @@ function abrirPanel(s) {
     // usuario, 2026-09-13).
     return `<details class="especie-desplegable">
       <summary>${e.emoji} <b>${e.nombre}</b>${franja}</summary>
-      <div class="especie-detalle">${e.nota}<br><span style="color:#7C939A;">🍽 ${e.alimento}</span></div>
+      <div class="especie-detalle">${e.nota}<br><span style="color:#5F7981;">🍽 ${e.alimento}</span></div>
     </details>`;
   };
   const bloqueZona = (titulo, lista) =>

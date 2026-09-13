@@ -55,7 +55,7 @@
   .dia {
     aspect-ratio: 1; border-radius: 8px; background: #FFFFFF; border: 1px solid #DDE2DC;
     display: flex; align-items: center; justify-content: center;
-    font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #7C939A; cursor: pointer; position: relative;
+    font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #5F7981; cursor: pointer; position: relative;
   }
   .dia.vacio { visibility: hidden; cursor: default; }
   .dia.hoy { border-color: #A8792A; }
@@ -69,7 +69,7 @@
 
   .aviso-consentimiento {
     max-width: 480px; margin: 0 auto 16px; background: #FFFFFF; border: 1px solid #DDE2DC; border-radius: 10px;
-    padding: 12px 14px; font-size: 12px; color: #7C939A; line-height: 1.5;
+    padding: 12px 14px; font-size: 12px; color: #5F7981; line-height: 1.5;
   }
   .aviso-consentimiento a { color: #A8792A; }
 
@@ -83,7 +83,7 @@
   .panel-dia h2 { font-family: 'Fraunces', serif; font-size: 19px; margin: 0 0 12px; text-transform: capitalize; }
   .panel-dia .cerrar { position: absolute; top: 14px; right: 16px; background: none; border: none; color: #5C7680; font-size: 16px; cursor: pointer; }
 
-  label { display: block; font-size: 12px; color: #7C939A; margin: 12px 0 5px; font-family: 'Inter', sans-serif; font-weight: 500; }
+  label { display: block; font-size: 12px; color: #5F7981; margin: 12px 0 5px; font-family: 'Inter', sans-serif; font-weight: 500; }
   input, select, textarea {
     width: 100%; padding: 9px 11px; border-radius: 8px; border: 1px solid #DDE2DC; background: #EEF2EF;
     color: #0B2532; font-family: 'Inter', sans-serif; font-size: 14px;
@@ -97,13 +97,13 @@
   button.principal:disabled { opacity: 0.6; }
   button.secundario {
     width: 100%; margin-top: 8px; padding: 10px; border-radius: 8px; border: 1px solid #DDE2DC;
-    background: transparent; color: #7C939A; font-size: 13px; cursor: pointer;
+    background: transparent; color: #5F7981; font-size: 13px; cursor: pointer;
   }
 
   .tarjeta-captura { background: #EEF2EF; border-radius: 10px; padding: 12px; margin-top: 10px; }
   .tarjeta-captura .fila-titulo { display: flex; justify-content: space-between; align-items: baseline; }
   .tarjeta-captura .especie { font-weight: 600; font-size: 14px; }
-  .tarjeta-captura .detalle { font-size: 12px; color: #7C939A; margin-top: 2px; }
+  .tarjeta-captura .detalle { font-size: 12px; color: #5F7981; margin-top: 2px; }
   .galeria-fotos { display: flex; gap: 6px; margin-top: 8px; overflow-x: auto; }
   .galeria-fotos img { width: 76px; height: 76px; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
   .tarjeta-captura button.borrar-captura {
@@ -138,7 +138,7 @@
     background: #EEF2EF; color: #0B2532; font-size: 14px; cursor: pointer; text-align: left;
   }
   .modal-elegir-foto button:first-of-type { margin-top: 0; }
-  .modal-elegir-foto button.cancelar { background: transparent; color: #7C939A; text-align: center; }
+  .modal-elegir-foto button.cancelar { background: transparent; color: #5F7981; text-align: center; }
 
   /* Selector de hora: dos <select> nativos (hora, minuto) — el propio
      desplegable del navegador ya trae scroll cuando tiene muchas
@@ -154,7 +154,7 @@
     width: auto; padding: 8px 10px; border-radius: 8px; border: 1px solid #DDE2DC;
     background: #EEF2EF; color: #0B2532; font-family: 'IBM Plex Mono', monospace; font-size: 14px;
   }
-  .hora-select-sep { font-family: 'Fraunces', serif; font-size: 16px; color: #7C939A; }
+  .hora-select-sep { font-family: 'Fraunces', serif; font-size: 16px; color: #5F7981; }
 
   .tabs-nav {
     position: fixed; left: 0; right: 0; bottom: 0; height: calc(64px + env(safe-area-inset-bottom));
@@ -834,7 +834,7 @@ function opcionesSpotsPara(tipoSalida) {
 // vs update) — así no hay que mantener dos plantillas casi iguales.
 function formularioSalida() {
   return `
-    <p style="font-size:12px; color:#7C939A;">Rellena estos datos y guarda — luego se abre el menú para añadir capturas (especie, técnica, cebo…) de esta entrada.</p>
+    <p style="font-size:12px; color:#5F7981;">Rellena estos datos y guarda — luego se abre el menú para añadir capturas (especie, técnica, cebo…) de esta entrada.</p>
     <label for="salidaTipo">Tipo de salida</label>
     <select id="salidaTipo">
       <option value="costa">🪨 Costa</option>
@@ -968,7 +968,7 @@ async function tarjetaCapturaHTML(captura) {
       ${captura.notas ? `<div class="detalle">${captura.notas}</div>` : ""}
       ${urls.length ? `<div class="galeria-fotos">${urls.map((u) => `<img src="${u}" alt="Foto de ${captura.especie}" />`).join("")}</div>` : ""}
       <div style="display:flex; gap:12px; margin-top:6px;">
-        <button class="editar-captura" data-id="${captura.id}" style="background:none; border:none; color:#7C939A; font-size:11px; cursor:pointer; padding:0;">✏️ Editar</button>
+        <button class="editar-captura" data-id="${captura.id}" style="background:none; border:none; color:#5F7981; font-size:11px; cursor:pointer; padding:0;">✏️ Editar</button>
         <button class="borrar-captura" data-id="${captura.id}" style="background:none; border:none; color:#A34A35; font-size:11px; cursor:pointer; padding:0;">🗑 Borrar</button>
       </div>
     </div>
@@ -1121,13 +1121,13 @@ async function resumenEntradaHTML(entrada, idx) {
   return `
     <div class="tarjeta-captura" style="margin-top:0; margin-bottom:14px; border:1px solid ${enCurso ? "#D4A24C" : "#DDE2DC"};">
       <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
-        <div class="detalle" style="font-size:12px; color:#7C939A; flex:1;">
+        <div class="detalle" style="font-size:12px; color:#5F7981; flex:1;">
           ${enCurso ? `<span style="color:#A8792A; font-weight:600;">🟢 En curso</span> · ` : ""}📍 ${salida.spot_nombre || "Ubicación actual"}
           ${salida.tipo_salida ? ` · ${etiquetaTipoSalida[salida.tipo_salida] || salida.tipo_salida}` : ""}
           ${horaRangoTexto(salida)}
         </div>
         <div style="display:flex; gap:10px; flex-shrink:0;">
-          <button class="editar-entrada" data-idx="${idx}" style="background:none; border:none; color:#7C939A; font-size:11px; cursor:pointer; padding:0;">✏️ Editar</button>
+          <button class="editar-entrada" data-idx="${idx}" style="background:none; border:none; color:#5F7981; font-size:11px; cursor:pointer; padding:0;">✏️ Editar</button>
           <button class="borrar-entrada" data-idx="${idx}" style="background:none; border:none; color:#A34A35; font-size:11px; cursor:pointer; padding:0;">🗑 Borrar</button>
         </div>
       </div>
@@ -1357,7 +1357,7 @@ async function abrirDia(iso, fechaObj) {
   const entradas = salidasPorFecha[iso] || [];
   const resumenes = await Promise.all(entradas.map((e, idx) => resumenEntradaHTML(e, idx)));
   contEl.innerHTML =
-    (resumenes.join("") || `<p style="font-size:12px; color:#7C939A;">Todavía no hay nada registrado este día.</p>`) +
+    (resumenes.join("") || `<p style="font-size:12px; color:#5F7981;">Todavía no hay nada registrado este día.</p>`) +
     `<div id="zonaFormulario"></div>` +
     `<button class="secundario" id="btnAnadirEntrada">➕ Añadir ${entradas.length ? "otra " : ""}entrada este día</button>`;
 
