@@ -93,6 +93,19 @@ especie/técnica/cebo.
   biología de especies aprovechable. Ninguna de las dos se ha
   comprobado todavía con una petición real — verificar antes de dar
   nada por buena, como con cualquier fuente nueva.
+- **Completar `RIOS` en `index.html` (pedido explícito 2026-09-14)**:
+  el array `RIOS` (río + 3 puntos aproximados + `spotCosta`) solo cubre
+  ~15 de los ~95 spots fijos ahora mismo — para el resto del río más
+  cercano a la desembocadura de cada spot sin entrada todavía, sirve de
+  base tanto para el caudal que ya se muestra como para la aproximación
+  de turbidez por caudal de arriba. Mismo criterio que ya usa el array:
+  posiciones ilustrativas basadas en geografía real (cabecera/medio/
+  desembocadura), no coordenadas oficiales de estación — verificar con
+  un mapa real que el río de verdad desemboca en o cerca de ese spot
+  antes de proponerlo, nunca inventar un nombre de río. Si un spot no
+  tiene ningún río real cerca (costa rocosa sin cuenca relevante), no
+  forzar una entrada — es un dato correcto que ese spot simplemente no
+  tenga río asociado.
 - **Siempre propuesta en `ROBOT.md`, nunca cambio directo** a
   `indicePesca` ni a `ESPECIES` — es un dato que se le muestra al
   usuario como fiable para decidir cuándo y qué pescar.
