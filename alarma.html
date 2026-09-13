@@ -243,7 +243,7 @@ document.getElementById("btnCuentaMenu").addEventListener("click", (e) => {
 });
 document.addEventListener("click", () => document.getElementById("cuentaMenuDropdown").classList.remove("visible"));
 document.getElementById("btnInvitarAmigo").addEventListener("click", async () => {
-  const texto = "Échale un ojo a Costa Viva, la app de condiciones costeras y diario de pesca que estoy usando: https://fishnow-59u.pages.dev/";
+  const texto = "Échale un ojo a Costa Viva, la app de condiciones costeras y diario de pesca que estoy usando: https://costaviva.org/";
   if (navigator.share) {
     try { await navigator.share({ text: texto }); } catch (e) { /* usuario canceló */ }
   } else {

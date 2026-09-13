@@ -50,10 +50,10 @@ jobs:
           }
           {
             echo "resultado<<EOF"
-            check "/prevision (Open-Meteo + boyas Puertos del Estado)" "https://fishnow-59u.pages.dev/prevision"
-            check "/rayos-imagen (AEMET)" "https://fishnow-59u.pages.dev/rayos-imagen"
-            check "/webcam/mundaka" "https://fishnow-59u.pages.dev/webcam/mundaka"
-            check "/luna" "https://fishnow-59u.pages.dev/luna?lat=43.4&lon=-2.7"
+            check "/prevision (Open-Meteo + boyas Puertos del Estado)" "https://costaviva.org/prevision"
+            check "/rayos-imagen (AEMET)" "https://costaviva.org/rayos-imagen"
+            check "/webcam/mundaka" "https://costaviva.org/webcam/mundaka"
+            check "/luna" "https://costaviva.org/luna?lat=43.4&lon=-2.7"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
