@@ -128,6 +128,49 @@ trivial — documentar el hallazgo en `CALIBRACION.jsonl` y proponer en
 `ROBOT.md`, no aplicar directo si toca `functions/` (ver límite de
 volumen más abajo).
 
+## Cuota de Open-Meteo cuenta por ubicación, no solo por petición HTTP (añadido 2026-09-14)
+
+Hallazgo real: Open-Meteo cuenta cada ubicación de una petición con
+varias coordenadas combinadas como una llamada aparte contra su cuota
+(10.000/día en el plan gratuito) — una sola petición a la Marine API
+con las ~95 coordenadas de `SPOTS` (como hace `functions/prevision.js`)
+gasta de golpe ~95 llamadas de esa cuota, no 1. Con tráfico de pruebas
+más el cron horario de `presion-historico.yml`, esto agotó la cuota
+diaria en un solo día (ver `CLAUDE.md`, incidente del 2026-09-13/14 —
+casi todos los spots del mapa se quedaron sin datos, HTTP 429).
+Corregido con caché real (Cache API de Cloudflare) en `/prevision`, no
+tocar esa protección al investigar fuentes nuevas de Open-Meteo. **Para
+cualquier fuente nueva que este robot proponga o integre**: si combina
+varias ubicaciones en una sola petición (patrón habitual de Open-Meteo
+y de otras APIs meteorológicas/marinas), asumir que la cuota se cuenta
+por ubicación, no por petición HTTP, y tenerlo en cuenta al estimar si
+una fuente nueva es viable dentro de un plan gratuito.
+
+## Mar de fondo: boyas exteriores + batimetría + webcams (añadido 2026-09-14)
+
+Quinta responsabilidad de esta rutina, pedida explícitamente por el
+usuario: investigar si es viable estimar la mar de fondo (swell de
+periodo largo) que va a llegar a cada spot en las próximas horas,
+combinando tres fuentes:
+
+- **Boyas exteriores** (aguas profundas) de Puertos del Estado — el
+  oleaje de fondo viaja con poca pérdida de energía y a una velocidad
+  de grupo calculable por su periodo, así que se podría propagar la
+  lectura hasta cada spot.
+- **Batimetría** para modelar cómo se transforma esa mar de fondo al
+  llegar a aguas más someras cerca de cada spot.
+- **Imágenes de webcam** como corroboración cualitativa (nunca como
+  fuente numérica independiente — visión artificial para altura de ola
+  real es frágil y necesitaría calibración por cámara).
+
+**Encaja en la pasada de "mareas y oleaje"** (cron `47 8 * * *`) del
+robot buscador de fuentes. Cualquier modelo resultante debe calibrarse
+contra boyas costeras reales antes de proponerse (mismo patrón que la
+calibración de oleaje y el coeficiente de marea por spot, ver
+`CALIBRACION.jsonl`) — **siempre propuesta en `ROBOT.md`, nunca
+aplicación directa**, es un cambio a un dato que se muestra al usuario
+como fiable.
+
 ## Buenas prácticas de otras apps y biología de especies (añadido 2026-09-13)
 
 Dos responsabilidades más, pedidas explícitamente por el usuario, que se
