@@ -55,6 +55,10 @@
   .compartir-toggles label { display: flex; align-items: center; gap: 8px; margin: 0; font-weight: 400; cursor: pointer; }
   .compartir-toggles input[type="checkbox"] { width: auto; accent-color: #D4A24C; }
 
+  .sub-toggles-capturas { display: flex; flex-direction: column; gap: 4px; margin: 2px 0 2px 26px; font-size: 11.5px; }
+  .sub-toggles-capturas label { display: flex; align-items: center; gap: 8px; margin: 0; font-weight: 400; color: #9FB8BF; cursor: pointer; }
+  .sub-toggles-capturas input[type="checkbox"] { width: auto; accent-color: #D4A24C; }
+
   .invitacion-caja {
     margin-top: 10px; background: #0F2C38; border: 1px dashed #1C3F4F; border-radius: 8px; padding: 10px;
     font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #D4A24C; word-break: break-all;
@@ -261,7 +265,12 @@ function tarjetaGrupoHTML(grupo, miembro) {
       <div class="nombre-grupo">${grupo.nombre}</div>
       <div class="compartir-toggles">
         <label><input type="checkbox" class="chk-compartir" data-campo="compartir_ubicaciones" ${miembro.compartir_ubicaciones ? "checked" : ""} /> Compartir mis ubicaciones</label>
-        <label><input type="checkbox" class="chk-compartir" data-campo="compartir_capturas" ${miembro.compartir_capturas ? "checked" : ""} /> Compartir mis capturas</label>
+        <label><input type="checkbox" class="chk-compartir chk-capturas-master" data-campo="compartir_capturas" ${miembro.compartir_capturas ? "checked" : ""} /> Compartir mis capturas</label>
+        <div class="sub-toggles-capturas" style="${miembro.compartir_capturas ? "" : "display:none;"}">
+          <label><input type="checkbox" class="chk-compartir" data-campo="compartir_capturas_costa" ${miembro.compartir_capturas_costa ? "checked" : ""} /> 🪨 Costa</label>
+          <label><input type="checkbox" class="chk-compartir" data-campo="compartir_capturas_embarcacion" ${miembro.compartir_capturas_embarcacion ? "checked" : ""} /> 🚤 Embarcación</label>
+          <label><input type="checkbox" class="chk-compartir" data-campo="compartir_capturas_submarinismo" ${miembro.compartir_capturas_submarinismo ? "checked" : ""} /> 🤿 Submarinismo</label>
+        </div>
         <label><input type="checkbox" class="chk-compartir" data-campo="compartir_calendario" ${miembro.compartir_calendario ? "checked" : ""} /> Compartir mi calendario</label>
       </div>
       <div class="fila-botones">
@@ -300,6 +309,14 @@ async function cargarGrupos() {
           .eq("user_id", usuario.id);
         if (errUpd) alert(`No se ha podido guardar: ${errUpd.message}`);
       });
+    });
+
+    // Los 3 sub-checkboxes de tipo (costa/embarcación/submarinismo) solo
+    // tienen sentido con "Compartir mis capturas" activado — se ocultan
+    // (nunca se desmarcan solos) cuando el interruptor maestro se apaga,
+    // así al reactivarlo se recuerda la combinación anterior.
+    tarjetaEl.querySelector(".chk-capturas-master").addEventListener("change", (e) => {
+      tarjetaEl.querySelector(".sub-toggles-capturas").style.display = e.target.checked ? "" : "none";
     });
 
     tarjetaEl.querySelector(".btn-invitar").addEventListener("click", () => {
