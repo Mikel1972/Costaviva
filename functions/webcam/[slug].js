@@ -9,7 +9,12 @@ const WEBCAMS = {
   mundaka: "https://www.kostasystem.com/wp-content/uploads/irudiak/mundaka/camara1_snap.jpeg",
   bakio: "https://pyscada.isurki.com/static/pyscada/sirena/aditu/BakioNAS/last/bakio.1.snap.last.thumb.jpeg",
   sopelana: "https://detectia.net/img/webcam-sopelana-azti3.webp",
-  // lekeitio, plentzia, getxo: sin fuente identificada todavía
+  // AZTI (detectia.net), mismo proveedor que Sopelana. Verificado por el
+  // robot buscador de fuentes el 2026-09-13 (imagen WebP real descargada
+  // y comprobada, no un placeholder).
+  lekeitio: "https://detectia.net/img/webcam-lekeitio.webp",
+  getxo: "https://detectia.net/img/webcam-ereaga.webp",
+  // plentzia: sin fuente identificada todavía
 
   // MeteoGalicia (Xunta de Galicia) — imagen JPG directa sin cabeceras
   // especiales, verificada en vivo 2026-09-09. El nombre de fichero puede
