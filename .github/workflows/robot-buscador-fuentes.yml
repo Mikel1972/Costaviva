@@ -10,6 +10,15 @@ name: Robot buscador de fuentes
 # inventar un dato", mismo límite de volumen para aplicar cambios
 # directos, mismo interruptor ROBOT_PAUSADO.
 #
+# Ampliado el mismo día con dos áreas más, pedidas también explícitamente
+# ("buenas prácticas de otras apps de mareas/pesca" y "migración/cría de
+# especies con sus temperaturas") — a diferencia de las 4 originales
+# (datos en tiempo real, verificables con una petición HTTP), estas dos
+# son más de investigación/contenido que de datos objetivos, así que van
+# UNA vez al día (no 4) y con más énfasis en "proponer, nunca
+# implementar" (ver ROBOT_REGLAS.md, sección "Buenas prácticas de otras
+# apps y biología de especies").
+#
 # IMPORTANTE — probar a mano (workflow_dispatch) antes de fiarse del
 # schedule, mismo criterio que el resto de rutinas de este repo. Necesita
 # el secret ANTHROPIC_API_KEY (la misma que ya usa
@@ -26,6 +35,8 @@ on:
     - cron: "47 8 * * *"  # mareas y oleaje
     - cron: "47 14 * * *" # corrientes marinas
     - cron: "47 20 * * *" # presión atmosférica
+    - cron: "47 11 * * *" # buenas prácticas de otras apps (1x/día)
+    - cron: "47 17 * * *" # migración y cría de especies (1x/día)
   workflow_dispatch:
     inputs:
       area:
@@ -54,6 +65,8 @@ jobs:
             "47 8 * * *")  AREA="fuentes de mareas y oleaje — comparar contra CALIBRACION.jsonl, buscar puntos de calibración nuevos" ;;
             "47 14 * * *") AREA="fuentes de corrientes marinas por zona" ;;
             "47 20 * * *") AREA="fuentes de presión atmosférica e histórico por zona" ;;
+            "47 11 * * *") AREA="buenas prácticas de otras apps de mareas/pesca (Windy, Tides4fishing, Fishbrain, Meteoblue, Puertos del Estado, AEMET...) — qué datos en tiempo real o funciones tienen que nosotros no, solo para PROPONER en ROBOT.md, nunca implementar directo" ;;
+            "47 17 * * *") AREA="migración y cría de las especies ya conocidas por la app (ESPECIES en diario.html) — épocas de migración y rangos de temperatura para reproducción/cría/reposo, para PROPONER cómo enriquecer ESPECIES o el índice de pesca, nunca aplicar directo" ;;
             *) AREA="${{ github.event.inputs.area }}" ;;
           esac
           echo "area=$AREA" >> "$GITHUB_OUTPUT"
