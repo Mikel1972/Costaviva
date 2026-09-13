@@ -818,6 +818,21 @@ async function metaRayos() {
 }
 
 export async function onRequestGet(context) {
+  const { request } = context;
+
+  // Caché real en el edge de Cloudflare (2026-09-14) — encontrado en real
+  // que la cabecera "cache-control" de más abajo, por sí sola, NO hace
+  // que Cloudflare cachee de verdad una Pages Function (solo sirve de
+  // instrucción al navegador/proxies intermedios) — cada visita disparaba
+  // una llamada nueva a Open-Meteo pidiendo los ~95 spots de golpe, y con
+  // tráfico de sobra (varias pestañas/pruebas a la vez) se agotó su
+  // límite de peticiones (HTTP 429), dejando casi todos los spots sin
+  // datos. La Cache API (`caches.default`) sí cachea de verdad.
+  const cache = caches.default;
+  const cacheKey = new Request(request.url, request);
+  const cacheada = await cache.match(cacheKey);
+  if (cacheada) return cacheada;
+
   const [resultados, boyasEspana, boyaNazare, rayosNacional, caudales] = await Promise.all([
     previsionTodosSpots(SPOTS).catch((e) =>
       SPOTS.map((spot) => ({ slug: spot.slug, nombre: spot.nombre, error: String(e) }))
@@ -831,12 +846,24 @@ export async function onRequestGet(context) {
   ]);
   const boyas = [...boyasEspana, boyaNazare];
 
-  return new Response(JSON.stringify({ spots: resultados, boyas, rayosNacional, caudales }, null, 2), {
+  const respuesta = new Response(JSON.stringify({ spots: resultados, boyas, rayosNacional, caudales }, null, 2), {
     headers: {
       "content-type": "application/json; charset=utf-8",
-      // Cache corto en el edge de Cloudflare — el modelo de Open-Meteo se
-      // actualiza varias veces al día, no hace falta pedirlo en cada visita.
+      // El modelo de Open-Meteo se actualiza varias horas, no hace falta
+      // pedirlo en cada visita — la Cache API de abajo respeta este
+      // max-age para decidir cuánto guardar la respuesta.
       "cache-control": "public, max-age=1800",
     },
   });
+
+  // No cachear una respuesta mayormente en error (p.ej. Open-Meteo dando
+  // 429 como ahora) — cachearla dejaría el fallo "congelado" media hora
+  // aunque la fuente externa ya se hubiera recuperado en la siguiente
+  // visita real. Solo se guarda si la mayoría de spots sí trajo datos.
+  const conError = resultados.filter((s) => s.error).length;
+  if (conError < resultados.length / 2) {
+    context.waitUntil(cache.put(cacheKey, respuesta.clone()));
+  }
+
+  return respuesta;
 }
