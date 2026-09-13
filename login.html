@@ -182,7 +182,20 @@ document.getElementById("linkRecuperar").addEventListener("click", async () => {
   if (!email) { mostrarMensaje("Escribe primero tu correo electrónico.", "error"); return; }
   const captchaToken = leerTokenTurnstile();
   if (!captchaToken) { mostrarMensaje("Completa la verificación de seguridad de más abajo antes de continuar.", "error"); return; }
-  const { error } = await supabase.auth.resetPasswordForEmail(email, { captchaToken });
+  // redirectTo explícito: sin esto, Supabase manda al enlace a la "Site
+  // URL" configurada en su panel — que, encontrado el 2026-09-13,
+  // apuntaba a la raíz de fishnow-59u.pages.dev (sin /login), de antes
+  // de que existiera esta pantalla de recuperación. El enlace caía
+  // directo en index.html (el mapa), que solo ve una sesión válida y la
+  // muestra sin más — ningún arreglo dentro de login.html podía
+  // funcionar nunca si el enlace no llegaba aquí en absoluto. Requiere
+  // que esta URL esté en la lista blanca "Redirect URLs" del panel de
+  // Supabase (Authentication → URL Configuration), si no, Supabase la
+  // ignora en silencio y vuelve a usar la Site URL por defecto.
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    captchaToken,
+    redirectTo: `${window.location.origin}/login`,
+  });
   reiniciarTurnstile();
   if (error) mostrarMensaje(error.message, "error");
   else mostrarMensaje("Te hemos enviado un enlace para restablecer la contraseña.", "ok");
