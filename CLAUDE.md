@@ -201,6 +201,20 @@ curso" y borde en color de acento (`resumenEntradaHTML()` en
 `diario.html`); mientras está en curso se sigue pudiendo "➕ Añadir
 captura" con normalidad.
 
+## Bug corregido — radar de lluvia mostraba "Zoom Level Not Supported" (2026-09-13)
+
+Reportado por el usuario: al acercar el mapa de nubes/lluvia
+(`toggleNubes`, capa RainViewer en `index.html`), aparecía el texto
+"Zoom Level Not Supported" pintado sobre el mapa. **No es un fallo
+nuestro de red ni un error HTTP** — verificado en vivo pidiendo teselas
+directamente: a partir de zoom 8 la API de RainViewer responde `200` con
+una tesela PNG real que lleva ese texto dibujado dentro, para cualquier
+x/y. La documentación oficial de RainViewer lo confirma: "Maximum zoom
+level is 7". Arreglado añadiendo `maxNativeZoom: 7` al `L.tileLayer` de
+`capaRadarLluvia` (index.html, dentro de `prepararCapaRadarLluvia()`) —
+Leaflet sigue dejando acercar el mapa, pero a partir de zoom 8 reescala
+la última tesela real de zoom 7 en vez de pedir una que no existe.
+
 **Bug real corregido 2026-09-12 — "ahora" en UTC contra horas en
 local:** el usuario vio nubosidad 100% cuando en realidad no pasaba del
 20%. Causa: Open-Meteo (con `timezone=Europe/Madrid`) etiqueta su array
