@@ -85,6 +85,39 @@ directamente: es un cambio de fórmula que afecta a un dato que se le
 muestra al usuario como si fuera fiable, sigue la regla general de
 "cambio de producto → proponer, no implementar".
 
+## Regla general: nunca normalizar/agregar con un día a medias (añadida 2026-09-13)
+
+Bug real encontrado comparando un mes completo de Armintza y A Coruña
+contra tides4fishing.com: `coeficientePorSpot()` pedía una ventana ancha
+de `sea_level_height_msl` a Open-Meteo (`forecast_days=16`), pero el
+horizonte real de previsión de esa variable concreta es más corto — a
+partir de ~9 días vista, Open-Meteo sigue devolviendo el hueco horario
+completo en el JSON, pero con solo 1-2 horas con valor real y el resto
+`null`. Ese día "a medias" entraba igual en el cálculo de
+`rangoMin`/`rangoMax` de toda la ventana con un rango de marea
+falsamente pequeño, y eso desplazaba al alza el coeficiente de TODOS los
+demás días de la ventana, no solo el de ese día — confirmado en 3 spots
+de costas distintas (Armintza, Bakio, A Coruña), así que no es un caso
+aislado. Corregido exigiendo un mínimo de horas válidas (20 de 24) antes
+de dejar entrar un día en cualquier cálculo que agregue/normalice contra
+una ventana temporal — ver `HORAS_MINIMAS_POR_DIA` en
+`functions/prevision.js` y su copia en `diario.html`.
+
+**Regla para cualquier fuente de datos nueva que este robot integre, y
+para cualquier revisión futura de las que ya existen**: si un cálculo
+agrega u normaliza datos horarios/diarios de una API externa dentro de
+una ventana temporal (no solo mareas — vale igual para oleaje, viento,
+presión, o lo que venga), comprobar primero cuántas muestras válidas
+(no `null`) trae cada punto de la ventana, no solo si el punto
+"aparece" en el JSON. Un punto con muy pocas muestras reales debe
+descartarse de la agregación, nunca tratarse como un dato completo. Si
+al integrar una fuente nueva no está claro cuál es su horizonte real de
+fiabilidad (puede ser distinto del `forecast_days`/rango que el propio
+parámetro de la API deja pedir), es una corrección de auditoría, no
+trivial — documentar el hallazgo en `CALIBRACION.jsonl` y proponer en
+`ROBOT.md`, no aplicar directo si toca `functions/` (ver límite de
+volumen más abajo).
+
 ## Red de seguridad de la automatización (añadido 2026-09-12)
 
 Estas reglas existen porque "el propio prompt dice que esto es

@@ -25,6 +25,37 @@ arregló usando el remitente de pruebas `onboarding@resend.com` — pero
 esa solución NO sirve para `sos-alerta.js`, cuyos destinatarios son
 siempre otra persona.)
 
+## Bug de seguridad corregido — CLAUDE.md y el código de functions/ se servían en público (2026-09-13)
+
+Auditoría completa pedida por el usuario. Dos exposiciones reales
+confirmadas en vivo (`200` en producción) antes del fix, ambas en
+`functions/_middleware.js`:
+
+1. **Este mismo fichero (`CLAUDE.md`) nunca se añadió a
+   `RUTAS_BLOQUEADAS`** al crearla el 2026-09-12 (se bloquearon
+   `ROBOT.md`, `ROBOT_REGLAS.md`, `CALIBRACION.jsonl`, `README.md` y
+   `start.ps1`, pero no este) — es el fichero más sensible de todos,
+   sirviéndose en público con el aviso de que el SOS probablemente no
+   avisa a nadie, emails de las cuentas de prueba y detalle interno de
+   RLS/esquema.
+2. **Cloudflare Pages sirve el código fuente completo de cada
+   `functions/*.js` como archivo estático** en su ruta literal (ej.
+   `/functions/sos-alerta.js`), aparte de ejecutarlo como Function en su
+   ruta reescrita (`/sos-alerta`) — confirmado también con
+   `/functions/prevision.js`. Ningún fichero del frontend pide nunca
+   `/functions/...` (solo las rutas ya reescritas), así que bloquear ese
+   prefijo no rompe nada real.
+
+Corregido añadiendo `/CLAUDE.md` a `RUTAS_BLOQUEADAS` y `/functions/` a
+`PREFIJOS_BLOQUEADOS`. Verificado en preview antes de mergear: las 3
+rutas dan `404` y las rutas reescritas (`/prevision`, `/login`,
+`/diario`, `/luna`) siguen respondiendo igual que antes. **Cualquier
+fichero nuevo que se añada a la raíz del repo o a `functions/` sigue el
+mismo riesgo por defecto** (Cloudflare sirve todo lo que hay en el árbol
+de git salvo que se bloquee explícitamente) — revisar `_middleware.js`
+cada vez que se cree un fichero interno nuevo, no solo cuando se detecta
+por accidente.
+
 ## Qué es esta app
 
 App de condiciones costeras (oleaje, mareas, corriente, webcams, rayos,
@@ -341,6 +372,30 @@ es un cálculo distinto a propósito, se añadió una nota siempre visible
 en `index.html` (`#panelMareaCoefNota`) como en `diario.html`
 (`contextoHTML()`) explicándolo. Decisión confirmada con el usuario:
 mantener el cálculo por spot en vez de volver al índice nacional.
+
+**Bug real corregido 2026-09-13 — un día con datos parciales inflaba el
+coeficiente de toda la ventana:** el usuario pegó la tabla completa de
+septiembre 2026 de tides4fishing.com para Armintza y, comparándola
+contra `coeficientePorSpot()`, salía sistemáticamente 10-28 puntos por
+encima del real, todos los días (no solo el 7 de septiembre, que ya se
+sabía que iba a diferir a propósito). Causa: Open-Meteo devuelve el
+array horario completo para toda la ventana pedida
+(`forecast_days=16`), pero el horizonte real de previsión de
+`sea_level_height_msl` es más corto — a partir de ~9 días vista, el día
+trae solo 1-2 horas con valor real (el resto `null`), verificado también
+en Bakio y A Coruña (mismo patrón exacto en las 3 costas, así que afecta
+a los 95 spots en cada pasada del cron horario). Ese día "a medias"
+entraba igual en el cálculo de `rangoMin`/`rangoMax` de la ventana con
+un rango de marea falsamente pequeño, desplazando al alza el coeficiente
+de todos los demás días. Corregido exigiendo un mínimo de 20 horas
+válidas por día (`HORAS_MINIMAS_POR_DIA`) antes de dejarlo entrar en la
+normalización, en `functions/prevision.js` y su copia en `diario.html` —
+regla general documentada en `ROBOT_REGLAS.md` para cualquier futura
+ventana de datos horaria. Verificado con datos reales: el error medio
+frente a tides4fishing.com baja de ~20 a ~11-12 puntos, tanto en
+Armintza como en A Coruña (la diferencia residual es la esperada por
+diseño, ver párrafo anterior — no es el bug). Cron forzado a mano tras
+el merge para refrescar ya el valor cacheado en producción.
 
 **Especies enriquecidas por la comunidad (2026-09-12):** el
 desplegable de especies del diario muestra el nombre científico entre
