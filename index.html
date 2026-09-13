@@ -219,6 +219,26 @@
   }
   .modal-rayos-contenido img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 
+  /* Ampliar webcam con doble clic (pedido explícito del usuario,
+     2026-09-14) — mismo patrón que el modal de rayos de arriba, pero sin
+     el truco de aspect-ratio fijo: cada webcam tiene su propia proporción,
+     así que la imagen se ajusta con object-fit dentro del hueco disponible. */
+  .modal-webcam {
+    position: fixed; inset: 0; z-index: 2000;
+    background: rgba(11,37,50,0.88);
+    display: none; align-items: center; justify-content: center; padding: 32px;
+  }
+  .modal-webcam.visible { display: flex; }
+  .modal-webcam img {
+    max-width: 100%; max-height: 100%; object-fit: contain;
+    border-radius: 10px; border: 1px solid #DDE2DC; box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+  }
+  .modal-webcam .cerrar {
+    position: absolute; top: 20px; right: 20px; z-index: 2;
+    background: rgba(11,37,50,0.7); color: #F7F3E8; border: none; border-radius: 4px;
+    width: 32px; height: 32px; font-size: 16px; cursor: pointer;
+  }
+
   .luna-toggle {
     position: absolute; top: 64px; right: 16px; z-index: 502;
     width: 38px; height: 38px; border-radius: 8px;
@@ -638,6 +658,11 @@
   </div>
 </div>
 
+<div class="modal-webcam" id="modalWebcam">
+  <button class="cerrar" id="cerrarModalWebcam" aria-label="Cerrar">✕</button>
+  <img id="imgWebcamGrande" alt="Webcam en directo, en grande" />
+</div>
+
 <script>
 // ---------------------------------------------------------------------------
 // Datos de respaldo ESTÁTICOS (snapshot antiguo, ya no viene de Todosurf —
@@ -1021,11 +1046,21 @@ const ESPECIES = [
     alimento: "jurel, sardina, calamar y crustáceos" },
   { nombre: "Bonito del norte", emoji: "🐟", zona: "mar adentro", meses: [7, 8, 9, 10],
     rangoTemp: [16, 19],
-    nota: "aguanta un rango amplio, pero pica mejor entre 16-19°C. Por eso entra al Cantábrico en verano, siguiendo el agua templada",
+    nota: "aguanta un rango amplio, pero pica mejor entre 16-19°C. Por eso entra al Cantábrico en verano, siguiendo el agua templada. Es de verdad mar adentro: pescarlo desde costa (muelle, roca) es prácticamente imposible, no solo poco probable",
     alimento: "bancos de sardina, anchoa, caballa y jurel; también calamar, especialmente en su época de desove" },
-  { nombre: "Txitxarro / verdel", emoji: "🐟", zona: "mar adentro", meses: [4, 5, 6, 7, 8],
+  // Separadas 2026-09-14 (antes una sola ficha "Txitxarro / verdel"):
+  // confirmado en real por el usuario un txitxarro capturado desde
+  // muelle en Armintza a mediados de septiembre, con mucha actividad —
+  // la ficha combinada decía "mar adentro" y temporada abril-agosto para
+  // los dos, lo cual es correcto para el verdel/caballa pero no para el
+  // txitxarro/jurel, que sí es especie de costa con temporada más amplia.
+  { nombre: "Txitxarro / jurel", emoji: "🐟", zona: "costa", meses: [5, 6, 7, 8, 9, 10],
+    rangoTemp: [15, 22],
+    nota: "a diferencia de la caballa, el jurel/txitxarro sí es habitual desde costa (muelles, espigones) — entra en bancos grandes muy cerca de puerto, con rachas de mucha actividad de golpe. Confirmado en real: pica bien en septiembre, con más actividad al anochecer y algo por la noche",
+    alimento: "zooplancton de joven, pasando a sardina y anchoa pequeña (parrotxa) conforme crece" },
+  { nombre: "Caballa / verdel", emoji: "🐟", zona: "mar adentro", meses: [4, 5, 6, 7, 8],
     rangoTemp: [15, 20],
-    nota: "aguanta 14-23°C, pero los bancos se juntan entre 15-20°C. Con ese calorcillo suben desde los ~200m de invierno hasta la superficie, pegados a la costa",
+    nota: "aguanta 14-23°C, pero los bancos se juntan entre 15-20°C. Con ese calorcillo suben desde los ~200m de invierno hasta la superficie. Aunque puede verse todo el año, el pico real es mayo; es de verdad mar adentro — pescarla desde muelle/costa es complicado de verdad, se pesca mejor desde embarcación (confirmado en real por el usuario)",
     alimento: "en primavera empieza con zooplancton y va pasando a sardina y anchoa pequeña (parrotxa) conforme avanza la temporada" },
 ];
 
@@ -1970,7 +2005,8 @@ function pintarWebcam(slug, nombre) {
   cont.innerHTML = `
     <div style="position:relative;">
       <img id="imgWebcam" crossorigin="anonymous" src="/webcam/${slug}?_=${Date.now()}" alt="Webcam en directo de ${nombre}"
-           style="width:100%; border-radius:8px; border:1px solid #DDE2DC; display:block;" />
+           style="width:100%; border-radius:8px; border:1px solid #DDE2DC; display:block; cursor:zoom-in;"
+           title="Doble clic para ampliar" />
       <span style="position:absolute; top:8px; left:8px; display:flex; align-items:center; gap:5px;
                     background:rgba(11,37,50,0.75); padding:3px 8px; border-radius:12px;
                     font-family:'IBM Plex Mono',monospace; font-size:10px; color:#F5F1E6;">
@@ -1985,6 +2021,10 @@ function pintarWebcam(slug, nombre) {
   `;
   const img = document.getElementById("imgWebcam");
   img.addEventListener("load", () => actualizarLecturaVisual(img));
+  img.addEventListener("dblclick", () => {
+    document.getElementById("imgWebcamGrande").src = img.src;
+    document.getElementById("modalWebcam").classList.add("visible");
+  });
   img.addEventListener("error", () => {
     pararRefrescoWebcam();
     cont.innerHTML = `<div class="tarjeta" style="text-align:center; color:#42585F; font-size:12px;">
@@ -2201,6 +2241,12 @@ document.getElementById("cerrarModalRayos").addEventListener("click", () => {
 });
 document.getElementById("modalRayos").addEventListener("click", (e) => {
   if (e.target.id === "modalRayos") document.getElementById("modalRayos").classList.remove("visible");
+});
+document.getElementById("cerrarModalWebcam").addEventListener("click", () => {
+  document.getElementById("modalWebcam").classList.remove("visible");
+});
+document.getElementById("modalWebcam").addEventListener("click", (e) => {
+  if (e.target.id === "modalWebcam") document.getElementById("modalWebcam").classList.remove("visible");
 });
 // La luna se pide para el centro del mapa en cada momento (no es fija para
 // toda la zona) — a poco zoom el "centro" deja de significar nada útil
