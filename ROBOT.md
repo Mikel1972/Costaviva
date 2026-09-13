@@ -292,6 +292,83 @@ mostrar la fecha real del dato ("último dato: abril 2026") en vez de
 disfrazarlo de actual, y valorar si una Cloudflare Function puede
 descomprimir ZIP sin dependencias (Workers no traen `unzip` nativo).
 
+### 2026-09-13 22:57 UTC (pasada buscadora — webcams para spots sin cámara)
+
+**Objetivo de la pasada:** buscar cámaras/webcams nuevas para spots que
+todavía no tienen ninguna. Primero comprobé qué dominios de webcam son
+alcanzables de verdad desde este runner (la egress de estas sesiones es
+selectiva, ver 2026-08-31): `meteogalicia.gal` y las de AZTI
+(`detectia.net`, `kostasystem.com`) responden `200` con imagen real;
+`cantabria.es/ftp_webcam` está **bloqueado** (`HTTP 000`), así que
+cualquier cámara del Gobierno de Cantabria (p.ej. Santander/El Sardinero)
+no se puede verificar desde aquí y no la propongo sin comprobarla —
+regla de "nunca una URL sin verificar".
+
+**Hallazgo real — dos spots que estaban sin cámara desde el principio
+ya tienen fuente directa verificada** (Lekeitio y Getxo/Ereaga, ambos en
+`SPOTS` de `index.html` sin webcam; ver la nota "sin fuente identificada
+todavía" en `functions/webcam/[slug].js` y las pasadas 2026-08-31 y
+2026-09-07 que no pudieron resolverlas porque entonces los dominios de
+AZTI estaban bloqueados por la egress). Hoy `detectia.net` sí es
+alcanzable — mismo proveedor (AZTI) que ya se usa para Sopelana
+(`webcam-sopelana-azti3.webp`) — y encontré imagen JPEG/WebP directa,
+descargada y comprobada de verdad (no un placeholder ni un reproductor
+de terceros):
+
+| spot (slug) | URL verificada | resultado real |
+|---|---|---|
+| Lekeitio (`lekeitio`) | `https://detectia.net/img/webcam-lekeitio.webp` | `200`, `image/webp`, WebP VP8 real 1280×720, ~82 KB |
+| Getxo/Ereaga (`getxo`) | `https://detectia.net/img/webcam-ereaga.webp` | `200`, `image/webp`, WebP VP8 real 1280×720, ~38 KB |
+
+Método: probé el patrón de nombres del proveedor ya conocido
+(`webcam-<lugar>[-aztiN].webp`) contra el endpoint alcanzable; un nombre
+inexistente devuelve `404` limpio (no una imagen-placeholder), así que un
+`200` con `image/webp` y dimensiones reales confirma que la cámara
+existe. `file` sobre la descarga confirma "Web/P image, VP8 encoding,
+1280x720" en ambas.
+
+**Plentzia sigue sin resolverse:** probé varias variantes del nombre en
+`detectia.net` (`plentzia`, `plencia`, `gorliz`, con y sin sufijo
+`-aztiN`) y todas dan `404`. No hay fuente directa verificada para
+Plentzia en este proveedor; queda igual que hasta ahora (sin cámara).
+
+**Galicia (los 2 spots sin cámara: A Guarda y Sanxenxo):** MeteoGalicia
+es la fuente de las cámaras gallegas que ya tenemos, pero su lista JSON
+oficial
+(`https://servizos.meteogalicia.gal/mgrss/observacion/jsonCamaras.action`)
+devuelve hoy `{"listaCamaras":[]}` (vacía, aunque las imágenes ya
+integradas siguen respondiendo `200`), así que no pude enumerar
+autoritativamente cámaras nuevas por ahí. Probé nombres de carpeta
+plausibles para A Guarda y Sanxenxo/Portonovo contra el patrón
+`.../datosred/camaras/MeteoGalicia/<Name>/ultima.jpg` y todos dieron
+`404`; el foro de referencia (totalwind) tampoco lista cámara de MeteoGalicia
+para esos dos municipios. Sin fuente verificable → no propongo nada para
+Galicia esta pasada.
+
+**Por qué esto queda como PROPUESTA y no como código commiteado:**
+integrar Lekeitio y Getxo exige tocar `functions/webcam/[slug].js`
+(añadir 2 entradas al mapa `WEBCAMS`) y `index.html` (añadir `lekeitio`
+y `getxo` a `SPOTS_CON_WEBCAM`). Tocar `functions/` cae, por la red de
+seguridad de `ROBOT_REGLAS.md`, en cuarentena: no se aplica directo, se
+propone. **Cambio propuesto, listo para que el usuario lo aplique** (no
+añadir a `SPOTS_CON_LECTURA_VISUAL` sin antes mirar el encuadre real de
+cada cámara, tal como pide el comentario de ese array):
+
+```js
+// functions/webcam/[slug].js — dentro del objeto WEBCAMS, junto a sopelana
+// AZTI (detectia.net), mismo proveedor que Sopelana. Verificado 2026-09-13.
+lekeitio: "https://detectia.net/img/webcam-lekeitio.webp",
+getxo:    "https://detectia.net/img/webcam-ereaga.webp",
+```
+
+```js
+// index.html — añadir a SPOTS_CON_WEBCAM
+"lekeitio", "getxo",
+```
+
+**Firmado:** robot buscador de fuentes (pasada de webcams), 2026-09-13
+22:57 UTC.
+
 ---
 
 ## Auditoría de datos
