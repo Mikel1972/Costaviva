@@ -191,14 +191,27 @@ document.getElementById("linkRecuperar").addEventListener("click", async () => {
 // formatos de enlace distintos según la versión (uno mete los datos en
 // el hash de la URL, otro en un parámetro "?code=" que hay que
 // intercambiar de forma asíncrona) y solo el evento del propio SDK
-// funciona igual pase lo que pase con eso. Se muestra la pantalla de
-// contraseña nueva en cuanto llega ese evento; para la sesión normal
-// (visita con sesión ya guardada) se espera al primer evento
-// "INITIAL_SESSION" en vez de a una llamada aparte a getSession(),
-// para no arriesgarse a redirigir antes de que el SDK termine de
-// resolver un enlace de recuperación en curso.
+// funciona igual pase lo que pase con eso.
+//
+// BUG REAL encontrado probando en real 2026-09-13 (con una primera
+// versión de este mismo arreglo, sin el margen de abajo): si el
+// navegador ya tenía guardada una sesión válida de esa cuenta (por
+// ejemplo, de haber iniciado sesión antes en el mismo teléfono),
+// "INITIAL_SESSION" llega con esa sesión ya existente y redirigía al
+// mapa con window.location.href ANTES de que el SDK terminara de
+// intercambiar el token/código del enlace de recuperación y disparara
+// "PASSWORD_RECOVERY" — la navegación corta la página a media
+// ejecución, así que ese segundo evento nunca llega a procesarse. Es
+// el mismo síntoma exacto del bug original ("entra directo sin dejar
+// cambiar la contraseña"), solo que causado esta vez por una condición
+// de carrera en el propio arreglo, no por falta de pantalla.
+//
+// Corregido dando un margen antes de redirigir por "INITIAL_SESSION"
+// (solo cuando ya hay sesión — si no hay ninguna, no hay nada que
+// retrasar), cancelable si "PASSWORD_RECOVERY" llega mientras tanto.
 // ---------------------------------------------------------------------------
 let flujoDecidido = false;
+let temporizadorRedirigirInicial = null;
 
 function mostrarPantallaNuevaContrasena() {
   document.getElementById("cajaLogin").style.display = "none";
@@ -236,10 +249,19 @@ formNueva.addEventListener("submit", async (e) => {
 supabase.auth.onAuthStateChange((evento, sesion) => {
   if (evento === "PASSWORD_RECOVERY") {
     flujoDecidido = true;
+    if (temporizadorRedirigirInicial) clearTimeout(temporizadorRedirigirInicial);
     mostrarPantallaNuevaContrasena();
   } else if (evento === "INITIAL_SESSION" && !flujoDecidido) {
-    flujoDecidido = true;
-    if (sesion) window.location.href = "/";
+    if (sesion) {
+      temporizadorRedirigirInicial = setTimeout(() => {
+        if (!flujoDecidido) {
+          flujoDecidido = true;
+          window.location.href = "/";
+        }
+      }, 400);
+    } else {
+      flujoDecidido = true;
+    }
   }
 });
 
