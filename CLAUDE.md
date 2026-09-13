@@ -723,19 +723,39 @@ en `.github/workflows/auth-test.yml` (no escribe nada, solo lee/rechaza —
 seguro de tener en automático).
 
 **Incluye también** la prueba más estricta (token de usuario A leyendo una
-fila de usuario B) — opcional: solo corre si están las variables de
-entorno `TEST_USER_A_EMAIL`/`TEST_USER_A_PASSWORD`/`TEST_USER_B_EMAIL`/
-`TEST_USER_B_PASSWORD`; sin ellas se salta con un aviso en vez de fallar.
-Cuentas de prueba creadas y confirmadas el 2026-09-12
+fila de usuario B) — opcional: solo corre si están `TEST_USER_A_EMAIL`,
+`TEST_USER_B_EMAIL` y `SUPABASE_SERVICE_ROLE_KEY`; sin ellas se salta con
+un aviso en vez de fallar. Cuentas de prueba
 (`etxebe2005+fishnowtest1@gmail.com` / `etxebe2005+fishnowtest2@gmail.com`,
 alias de Gmail — llegan al mismo buzón del usuario; la misma cuenta A
-sirve también para `smoke-test.yml`). **Ejecutado en real el 2026-09-12:
-el token de B no vio la fila de A, ni por listado ni por id directo.**
+sirve también para `smoke-test.yml`). **Ejecutado en real: el token de B
+no vio la fila de A, ni por listado ni por id directo.**
+
+**Sin password desde 2026-09-14**: activar el CAPTCHA de Turnstile en
+Supabase bloqueó el login por password
+(`/auth/v1/token?grant_type=password`) que usaban tanto esta prueba como
+`smoke-test.yml` — mismo endpoint que un usuario real, sin
+`captcha_token` Supabase lo rechaza siempre (`error_code:
+"captcha_failed"`), y un script de CI no puede resolver un CAPTCHA real.
+Arreglado generando la sesión vía API admin en su lugar
+(`/auth/v1/admin/generate_link` con `SUPABASE_SERVICE_ROLE_KEY` +
+`/auth/v1/verify` con la anon key) — `TEST_USER_A/B_PASSWORD` y
+`SMOKE_TEST_PASSWORD` ya no hacen falta. **Dos detalles no obvios de la
+API de Supabase, encontrados a base de probar en real** (documentar
+aquí para no repetir la búsqueda si hace falta tocar esto otra vez):
+- `/auth/v1/verify` espera el hash en el campo **`token_hash`**, no
+  `token` (ese último es para el código OTP de 6 dígitos que trae
+  `email_otp`, un campo distinto de la misma respuesta).
+- El `type` en `/verify` debe ser **`"email"`**, no `"magiclink"` (ese
+  valor está obsoleto específicamente ahí — sigue siendo válido como
+  `type` al pedir el enlace en `/admin/generate_link`, son dos
+  parámetros de dos llamadas distintas con el mismo nombre).
+
 Credenciales fuera del repo (no commitear nunca contraseñas de estas
-cuentas, ni de prueba). Los 6 secrets ya están puestos en GitHub Actions
-(`TEST_USER_A/B_EMAIL/PASSWORD`, `SMOKE_TEST_EMAIL/PASSWORD`) — la
-prueba cruzada ya corre de verdad en el `auth-test.yml` diario, no solo
-a mano.
+cuentas, ni de prueba). Secrets en GitHub Actions:
+`TEST_USER_A_EMAIL`/`TEST_USER_B_EMAIL`/`SUPABASE_SERVICE_ROLE_KEY`
+(compartida con `smoke-test.yml`), `SMOKE_TEST_EMAIL` — la prueba
+cruzada ya corre de verdad en el `auth-test.yml` diario, no solo a mano.
 
 ## Rutinas programadas (todas activas y probadas en real, 2026-09-12)
 
@@ -1127,17 +1147,16 @@ capa de autorización sí está verificada.
   sesión (ver más abajo, sección de la caché) — pendiente de confirmar
   que se recupera sola cuando reinicie (probablemente medianoche UTC) y
   que la caché nueva evita que vuelva a pasar con tráfico normal.
-- **Recrear las cuentas de prueba borradas** (`etxebe2005+fishnowtest2@gmail.com`,
-  `etxebe2005+fishnowavisotest@gmail.com`) — el usuario las borró desde
-  el panel de administrador; ahora que el rate-limit de Supabase está
-  arreglado (SMTP propio vía Resend) debería poder recrearlas sin
-  problema. `auth-test.yml` (prueba cruzada A-lee-B) y `smoke-test.yml`
-  fallarán hasta que existan de nuevo. Yo no puedo crearlas (no debo
-  manejar contraseñas) — pendiente de que el usuario lo haga.
-- **`ANTHROPIC_API_KEY` como secret de GitHub Actions**, para que
-  `robot-buscador-fuentes.yml` funcione — es un almacén distinto al de
-  Cloudflare Pages, aunque se reutilice el mismo valor. Probar con
-  `workflow_dispatch` antes de fiarse del `schedule`.
+- **Cuentas de prueba recreadas y `auth-test.yml`/`smoke-test.yml`
+  arreglados, 2026-09-14**: `fishnowtest2` y `fishnowavisotest` se
+  recrearon desde Supabase → Authentication → Users ("Add user" +
+  "Auto Confirm User", sin pasar por el alta pública) — más rápido que
+  el flujo normal y sin CAPTCHA/confirmación de email de por medio. Ver
+  la sección de arriba ("Test de autenticación") para el arreglo del
+  CAPTCHA bloqueando el login de estos workflows.
+- **`ANTHROPIC_API_KEY` añadido como secret de GitHub Actions y probado
+  con `workflow_dispatch`** — ver el resultado de esa primera ejecución
+  en `ROBOT.md` antes de fiarse del `schedule` en automático.
 - **Grupos privados (Fase 5)**: la RLS y las funciones RPC se
   verificaron con `curl` + anon key (sin recursión, responden `200 []`
   sin sesión), pero **no se ha probado el flujo completo con dos
