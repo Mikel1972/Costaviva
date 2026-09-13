@@ -24,12 +24,24 @@ jobs:
   registrar:
     runs-on: ubuntu-latest
     steps:
-      - name: Llamar a /registrar-presion
+      # Reintento añadido 2026-09-13: ~2 de cada 7 pasadas fallaban con
+      # "HTTP 503 / error code: 1102" (límite de recursos intermitente de
+      # Cloudflare Workers, ya documentado en registrar-presion.js — no
+      # es un fallo nuestro de lógica, se confirmó que reintentar más
+      # tarde funciona). Antes solo se recuperaba en la siguiente pasada
+      # horaria; ahora reintenta hasta 3 veces con una pequeña espera
+      # antes de darse por vencido, para perder menos horas de historial.
+      - name: Llamar a /registrar-presion (con reintentos)
         run: |
-          code=$(curl -sS -o /tmp/resp.json -w "%{http_code}" -X POST \
-            -H "X-Cron-Secret: ${{ secrets.PRESION_CRON_SECRET }}" \
-            --max-time 30 \
-            "https://fishnow-59u.pages.dev/registrar-presion")
-          echo "HTTP $code"
-          cat /tmp/resp.json
-          if [ "$code" != "200" ]; then exit 1; fi
+          for intento in 1 2 3; do
+            code=$(curl -sS -o /tmp/resp.json -w "%{http_code}" -X POST \
+              -H "X-Cron-Secret: ${{ secrets.PRESION_CRON_SECRET }}" \
+              --max-time 30 \
+              "https://fishnow-59u.pages.dev/registrar-presion")
+            echo "Intento $intento: HTTP $code"
+            cat /tmp/resp.json
+            echo
+            if [ "$code" = "200" ]; then exit 0; fi
+            if [ "$intento" != "3" ]; then sleep 20; fi
+          done
+          exit 1
