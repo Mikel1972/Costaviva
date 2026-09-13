@@ -581,27 +581,39 @@ function horaActualMadridISO() {
 // de la fecha (cubre un ciclo vivas-muertas completo, ~14.77 días).
 // Misma función que coeficientePorSpot() en functions/prevision.js,
 // duplicada aquí porque no hay bundling entre archivos.
+// Regla fija tras el bug real del 2026-09-13 (ver CLAUDE.md): Open-Meteo
+// devuelve el array horario completo para toda la ventana pedida, pero
+// el horizonte real de previsión de sea_level_height_msl es más corto —
+// a partir de ~9 días vista, el día trae 1-2 horas válidas (el resto
+// null), y eso basta para dar un rango de marea (max-min) falsamente
+// pequeño que descoloca el rangoMin/rangoMax de TODA la ventana, no solo
+// el de ese día. Cualquier copia de esta función (aquí y en
+// functions/prevision.js) debe exigir este mínimo antes de dejar entrar
+// un día en la normalización — nunca calcular con un día a medias.
+const HORAS_MINIMAS_POR_DIA = 20;
 function coeficientePorSpot(horas, alturas, idxReferencia) {
   const rangosPorDia = {};
   horas.forEach((h, i) => {
     const v = alturas[i];
     if (v === null || v === undefined) return;
     const dia = h.slice(0, 10);
-    if (!rangosPorDia[dia]) rangosPorDia[dia] = { min: v, max: v };
+    if (!rangosPorDia[dia]) rangosPorDia[dia] = { min: v, max: v, horas: 1 };
     else {
       rangosPorDia[dia].min = Math.min(rangosPorDia[dia].min, v);
       rangosPorDia[dia].max = Math.max(rangosPorDia[dia].max, v);
+      rangosPorDia[dia].horas++;
     }
   });
-  const dias = Object.keys(rangosPorDia);
+  const dias = Object.keys(rangosPorDia).filter((d) => rangosPorDia[d].horas >= HORAS_MINIMAS_POR_DIA);
   if (dias.length < 10) return null;
   const rangos = dias.map((d) => rangosPorDia[d].max - rangosPorDia[d].min);
   const rangoMin = Math.min(...rangos);
   const rangoMax = Math.max(...rangos);
   if (rangoMax - rangoMin < 0.01) return null;
   const diaRef = horas[idxReferencia]?.slice(0, 10);
-  const rangoRef = rangosPorDia[diaRef] ? rangosPorDia[diaRef].max - rangosPorDia[diaRef].min : null;
-  if (rangoRef === null) return null;
+  const datosRef = rangosPorDia[diaRef];
+  if (!datosRef || datosRef.horas < HORAS_MINIMAS_POR_DIA) return null;
+  const rangoRef = datosRef.max - datosRef.min;
   const factor = Math.max(0, Math.min(1, (rangoRef - rangoMin) / (rangoMax - rangoMin)));
   return Math.round(20 + 100 * factor);
 }
