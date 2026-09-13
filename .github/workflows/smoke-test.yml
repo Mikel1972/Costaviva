@@ -18,6 +18,15 @@ name: Smoke test E2E
 # se quiere cubrir tambien el camino del SOS, hace falta antes un modo de
 # prueba explicito en sos-alerta.js que nunca llame a Resend de verdad
 # para una cuenta marcada como test -- decidir eso aparte, no asumirlo.
+#
+# LOGIN SIN PASSWORD, VIA ADMIN API (cambiado 2026-09-14): activar el
+# CAPTCHA de Cloudflare Turnstile en Supabase (ver CLAUDE.md) bloqueo el
+# login por password de este workflow (mismo endpoint /auth/v1/token que
+# usa un usuario real, sin captcha_token no cuela). Se genera la sesion
+# via API admin (generate_link + verify) en su lugar -- no necesita
+# password en absoluto, solo el email y SUPABASE_SERVICE_ROLE_KEY (misma
+# key que ya usa aviso-alta.js, aqui como secret nuevo y separado de
+# GitHub Actions, solo para esto). SMOKE_TEST_PASSWORD ya no hace falta.
 
 on:
   schedule:
@@ -32,25 +41,34 @@ jobs:
       SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc"
       PRODUCCION_URL: "https://costaviva.org"
       SMOKE_TEST_EMAIL: ${{ secrets.SMOKE_TEST_EMAIL }}
-      SMOKE_TEST_PASSWORD: ${{ secrets.SMOKE_TEST_PASSWORD }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
     steps:
       - name: Comprobar que los secrets existen
         run: |
-          if [ -z "$SMOKE_TEST_EMAIL" ] || [ -z "$SMOKE_TEST_PASSWORD" ]; then
-            echo "::error::Faltan los secrets SMOKE_TEST_EMAIL/SMOKE_TEST_PASSWORD — ver CLAUDE.md."
+          if [ -z "$SMOKE_TEST_EMAIL" ] || [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "::error::Faltan los secrets SMOKE_TEST_EMAIL/SUPABASE_SERVICE_ROLE_KEY — ver CLAUDE.md."
             exit 1
           fi
 
-      - name: Login con la cuenta de prueba
+      - name: Genera una sesión para la cuenta de prueba (sin password, vía API admin)
         id: login
         run: |
-          resp=$(curl -sS -X POST "$SUPABASE_URL/auth/v1/token?grant_type=password" \
+          enlace=$(curl -sS -X POST "$SUPABASE_URL/auth/v1/admin/generate_link" \
+            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
+            -H "Content-Type: application/json" \
+            -d "{\"type\":\"magiclink\",\"email\":\"$SMOKE_TEST_EMAIL\"}")
+          hashed_token=$(echo "$enlace" | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{console.log(JSON.parse(d).hashed_token||JSON.parse(d).properties.hashed_token||'')}catch{console.log('')}})")
+          if [ -z "$hashed_token" ]; then
+            echo "::error::No se pudo generar el enlace de sesión: $enlace"
+            exit 1
+          fi
+          resp=$(curl -sS -X POST "$SUPABASE_URL/auth/v1/verify" \
             -H "apikey: $SUPABASE_ANON_KEY" -H "Content-Type: application/json" \
-            -d "{\"email\":\"$SMOKE_TEST_EMAIL\",\"password\":\"$SMOKE_TEST_PASSWORD\"}")
+            -d "{\"type\":\"magiclink\",\"token\":\"$hashed_token\"}")
           token=$(echo "$resp" | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{console.log(JSON.parse(d).access_token||'')}catch{console.log('')}})")
           userid=$(echo "$resp" | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{console.log(JSON.parse(d).user.id||'')}catch{console.log('')}})")
           if [ -z "$token" ] || [ -z "$userid" ]; then
-            echo "::error::Login de la cuenta de prueba falló: $resp"
+            echo "::error::No se pudo intercambiar el token de sesión: $resp"
             exit 1
           fi
           echo "::add-mask::$token"

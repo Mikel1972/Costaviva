@@ -16,17 +16,27 @@
 //
 // La prueba cruzada (token de usuario A leyendo una fila de usuario B) SÍ
 // está incluida, pero es opcional: solo corre si están las variables de
-// entorno TEST_USER_A_EMAIL/PASSWORD y TEST_USER_B_EMAIL/PASSWORD (dos
-// cuentas reales y confirmadas — el alta tiene "Confirm email" activado en
-// este proyecto). Sin ellas, esa comprobación se salta con un aviso en vez
-// de fallar — así el workflow diario no se rompe hasta que existan esos
-// secrets en GitHub Actions.
+// entorno TEST_USER_A_EMAIL, TEST_USER_B_EMAIL y SUPABASE_SERVICE_ROLE_KEY
+// (dos cuentas reales y confirmadas — el alta tiene "Confirm email"
+// activado en este proyecto). Sin ellas, esa comprobación se salta con un
+// aviso en vez de fallar — así el workflow diario no se rompe hasta que
+// existan esos secrets en GitHub Actions.
+//
+// SIN PASSWORD, VÍA API ADMIN (cambiado 2026-09-14): activar el CAPTCHA de
+// Cloudflare Turnstile en Supabase (ver CLAUDE.md) bloqueó el login por
+// password de este test (mismo endpoint /auth/v1/token que usa un usuario
+// real, sin captcha_token no cuela). La sesión de cada cuenta de prueba se
+// genera ahora vía API admin (generate_link + verify), que no pasa por el
+// endpoint protegido por CAPTCHA — no hace falta guardar/sincronizar
+// TEST_USER_A/B_PASSWORD nunca más, solo el email de cada cuenta y
+// SUPABASE_SERVICE_ROLE_KEY (misma key que ya usa aviso-alta.js, aquí como
+// secret de GitHub Actions, separado del de Cloudflare Pages).
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
 const PRODUCCION_URL = process.env.PRODUCCION_URL || "https://costaviva.org";
-const { TEST_USER_A_EMAIL, TEST_USER_A_PASSWORD, TEST_USER_B_EMAIL, TEST_USER_B_PASSWORD } = process.env;
+const { TEST_USER_A_EMAIL, TEST_USER_B_EMAIL, SUPABASE_SERVICE_ROLE_KEY } = process.env;
 
 const TABLAS_USUARIO = [
   "contactos_emergencia",
@@ -88,24 +98,36 @@ async function comprobarSosAlertaTokenBasura() {
   }
 }
 
-async function iniciarSesion(email, password) {
-  const resp = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+async function generarSesion(email) {
+  const enlace = await fetch(`${SUPABASE_URL}/auth/v1/admin/generate_link`, {
+    method: "POST",
+    headers: {
+      apikey: SUPABASE_SERVICE_ROLE_KEY,
+      Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ type: "magiclink", email }),
+  }).then((r) => r.json());
+  const hashedToken = enlace?.hashed_token || enlace?.properties?.hashed_token;
+  if (!hashedToken) throw new Error(`no se pudo generar el enlace de sesión para ${email}: ${JSON.stringify(enlace).slice(0, 200)}`);
+
+  const resp = await fetch(`${SUPABASE_URL}/auth/v1/verify`, {
     method: "POST",
     headers: { apikey: SUPABASE_ANON_KEY, "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ type: "magiclink", token: hashedToken }),
   });
   const cuerpo = await resp.json().catch(() => null);
-  if (!resp.ok || !cuerpo?.access_token) throw new Error(`login falló para ${email}: HTTP ${resp.status}`);
+  if (!resp.ok || !cuerpo?.access_token) throw new Error(`no se pudo canjear la sesión para ${email}: HTTP ${resp.status}`);
   return { token: cuerpo.access_token, userId: cuerpo.user.id };
 }
 
 async function comprobarAislamientoCruzado() {
-  if (!TEST_USER_A_EMAIL || !TEST_USER_A_PASSWORD || !TEST_USER_B_EMAIL || !TEST_USER_B_PASSWORD) {
-    console.log("  --  prueba cruzada A-lee-B saltada (faltan TEST_USER_A/B_EMAIL/PASSWORD)");
+  if (!TEST_USER_A_EMAIL || !TEST_USER_B_EMAIL || !SUPABASE_SERVICE_ROLE_KEY) {
+    console.log("  --  prueba cruzada A-lee-B saltada (faltan TEST_USER_A/B_EMAIL o SUPABASE_SERVICE_ROLE_KEY)");
     return;
   }
-  const a = await iniciarSesion(TEST_USER_A_EMAIL, TEST_USER_A_PASSWORD);
-  const b = await iniciarSesion(TEST_USER_B_EMAIL, TEST_USER_B_PASSWORD);
+  const a = await generarSesion(TEST_USER_A_EMAIL);
+  const b = await generarSesion(TEST_USER_B_EMAIL);
 
   const creada = await fetch(`${SUPABASE_URL}/rest/v1/contactos_emergencia`, {
     method: "POST",
