@@ -25,6 +25,30 @@ arregló usando el remitente de pruebas `onboarding@resend.com` — pero
 esa solución NO sirve para `sos-alerta.js`, cuyos destinatarios son
 siempre otra persona.)
 
+**EN CURSO (2026-09-13): dominio comprado, verificación en marcha.**
+El usuario compró `costaviva.org` en Namecheap y lo dio de alta en
+Resend (región `eu-west-1`, sin click/open tracking — son emails
+transaccionales de seguridad, no marketing, activar tracking no aporta
+nada y puede empeorar la entregabilidad). Registros DNS que Resend pidió
+verificar (públicos por diseño — el DKIM es la clave PÚBLICA, Resend se
+queda la privada — no hay ningún secreto en esta tabla, seguro tenerla
+aquí):
+
+| Tipo | Host/Name | Valor | TTL |
+|---|---|---|---|
+| TXT | `resend._domainkey` | `p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCYovm3KUA1AMQvuuJ3CJz2LI8VvBc8hoKTnnH5J0K3A/cDiNc/mbQScSk2LC1AA/XLoOQvX6qia9FAv7p7GsWoQ+B1lzFfQHy5KQeqFzzVBUhFKY+ez2HWKB1rV0npqayH0GdZvWTS1/boD8VF3/3o5DwFCwbVSJXSQMzWChFcSQIDAQAB` | Auto |
+| CNAME | `rsend` | `rsend-euw1.forge.rmta.net` | Auto |
+| CNAME | `send` | `send.forge.rmta.net` | Auto |
+| TXT (opcional, DMARC) | `_dmarc` | `v=DMARC1; p=none;` | Auto |
+
+Pendiente: confirmar que Resend marca el dominio como verificado (puede
+tardar de minutos a un par de horas en propagar DNS), y entonces
+actualizar el `from` de `sos-alerta.js` (y de paso `aviso-alta.js`, y
+valorar configurar el SMTP de Supabase Auth con este mismo dominio para
+dejar de depender del límite de emails del plan gratuito — ver más
+abajo, "email rate limit exceeded" al recrear cuentas de prueba el
+mismo día).
+
 ## Bug de seguridad corregido — CLAUDE.md y el código de functions/ se servían en público (2026-09-13)
 
 Auditoría completa pedida por el usuario. Dos exposiciones reales
