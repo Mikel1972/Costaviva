@@ -16,7 +16,13 @@ name: Test de autenticación (endpoints de usuario)
 
 on:
   schedule:
-    - cron: "17 6 * * *" # una vez al día
+    # Auditoría 2026-09-13: este cron nunca se había disparado solo pese a
+    # llevar activo desde 2026-09-12 (los otros 4 workflows del repo sí
+    # confirmaron su primer disparo por horario ese mismo día) — probado a
+    # mano y funciona bien, así que el fallo estaba en el registro del
+    # cron de GitHub Actions, no en el workflow. Reescribir la expresión
+    # es un truco conocido para que GitHub la vuelva a registrar.
+    - cron: "19 6 * * *" # una vez al día
   workflow_dispatch: {}
 
 jobs:
