@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 <title>Costa Viva</title>
 <link rel="manifest" href="manifest.json" />
 <link rel="icon" href="icon.svg" type="image/svg+xml" />
@@ -26,13 +26,15 @@
     display: flex;
     flex-direction: column;
     height: 100vh;
+    height: 100dvh; /* iOS Safari/PWA: 100vh puede incluir zona no visible; dvh es el real */
     overflow: hidden;
-    padding-bottom: 64px; /* deja hueco fijo para .tabs-nav */
+    padding-bottom: calc(64px + env(safe-area-inset-bottom)); /* deja hueco fijo para .tabs-nav, incluida la franja del home indicator en PWA instalada */
   }
   .tabs-nav {
-    position: fixed; left: 0; right: 0; bottom: 0; height: 64px;
+    position: fixed; left: 0; right: 0; bottom: 0;
+    height: calc(64px + env(safe-area-inset-bottom));
     background: #0F2C38; border-top: 1px solid #1C3F4F;
-    display: flex; gap: 6px; padding: 8px 8px; z-index: 700;
+    display: flex; gap: 6px; padding: 8px 8px calc(8px + env(safe-area-inset-bottom)) 8px; z-index: 700;
   }
   .tabs-nav a {
     flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -352,7 +354,7 @@
     .panel {
       display: block;
       position: fixed;
-      left: 0; right: 0; bottom: 54px;
+      left: 0; right: 0; bottom: calc(64px + env(safe-area-inset-bottom));
       width: auto;
       max-height: 65vh;
       border-left: none;
