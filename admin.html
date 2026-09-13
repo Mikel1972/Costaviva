@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<title>Administración — Costa Viva</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml" />
+<meta name="theme-color" content="#F7F3E8" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: 'Inter', sans-serif; background: #F7F3E8; color: #0B2532;
+    min-height: 100vh; min-height: 100dvh; padding: 0 0 32px;
+  }
+  header { padding: 16px 20px; border-bottom: 1px solid #DDE2DC; display: flex; align-items: center; gap: 12px; }
+  header h1 { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700; margin: 0; flex: 1; }
+  header a.salir { color: #5F7981; font-size: 13px; text-decoration: none; }
+
+  .contenido { max-width: 760px; margin: 0 auto; padding: 20px 16px; }
+  .resumen { font-size: 12.5px; color: #5C7680; margin-bottom: 14px; }
+
+  table { width: 100%; border-collapse: collapse; background: #FFFFFF; border: 1px solid #DDE2DC; border-radius: 10px; overflow: hidden; font-size: 13px; }
+  thead th { text-align: left; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.4px; color: #42585F; background: #EEF2EF; padding: 9px 12px; }
+  tbody td { padding: 10px 12px; border-top: 1px solid #DDE2DC; vertical-align: middle; }
+  tbody tr:hover { background: #FBF9F3; }
+  .email { font-family: 'IBM Plex Mono', monospace; font-size: 12px; word-break: break-all; }
+  .fecha { color: #5C7680; font-size: 12px; white-space: nowrap; }
+  .estado { display: inline-block; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .estado.activo { background: rgba(79,157,105,0.15); color: #3A6B4C; }
+  .estado.pausado { background: rgba(212,162,76,0.18); color: #8A6A1E; }
+  .fila-botones { display: flex; gap: 6px; flex-wrap: wrap; }
+  .fila-botones button {
+    border: 1px solid #DDE2DC; background: #FFFFFF; color: #0B2532; border-radius: 6px;
+    padding: 5px 10px; font-size: 11.5px; cursor: pointer; font-family: 'Inter', sans-serif;
+  }
+  .fila-botones button:hover { background: #EEF2EF; }
+  .fila-botones button.pausar { color: #8A6A1E; border-color: #D9C08A; }
+  .fila-botones button.eliminar { color: #A34A35; border-color: #A34A35; }
+
+  .mensaje { margin: 0 0 14px; font-size: 12.5px; padding: 10px 12px; border-radius: 8px; display: none; }
+  .mensaje.error { display: block; background: rgba(163,74,53,0.15); color: #A34A35; border: 1px solid #A34A35; }
+  .mensaje.ok { display: block; background: rgba(79,157,105,0.12); color: #3A6B4C; border: 1px solid #A8D4B8; }
+
+  .no-admin { max-width: 420px; margin: 80px auto; text-align: center; font-size: 14px; color: #5C7680; }
+</style>
+</head>
+<body>
+
+<div id="comprobandoAcceso" style="position:fixed; inset:0; background:#F7F3E8; z-index:9999; display:flex; align-items:center; justify-content:center; color:#5C7680; font-family:'IBM Plex Mono',monospace; font-size:13px;">
+  Comprobando acceso…
+</div>
+
+<header style="display:none;" id="cabecera">
+  <h1>🔐 Administración</h1>
+  <a class="salir" href="#" id="btnCerrarSesion">🚪 Cerrar sesión</a>
+</header>
+
+<div class="contenido" style="display:none;" id="zonaContenido">
+  <div class="mensaje" id="mensaje"></div>
+  <p class="resumen" id="resumen">Cargando usuarios…</p>
+  <table>
+    <thead>
+      <tr><th>Email</th><th>Alta</th><th>Estado</th><th>Acciones</th></tr>
+    </thead>
+    <tbody id="filasUsuarios"></tbody>
+  </table>
+</div>
+
+<div class="no-admin" id="zonaNoAdmin" style="display:none;">
+  Esta página no es para ti — vuelve al <a href="/">mapa</a>.
+</div>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+// Panel de administrador (2026-09-13), pedido explícito del usuario:
+// ver quién está inscrito, pudiendo pausarlo o eliminarlo — "como en
+// Pólizas.ai". Sin acceso vía Cloudflare/service_role: todo pasa por
+// 3 funciones security-definer en Supabase (admin_listar_usuarios,
+// admin_fijar_acceso, admin_eliminar_usuario) que comprueban
+// es_admin() (auth.email() = 'etxebe2005@gmail.com') antes de tocar
+// nada — ver supabase/migrations/20260913090000_panel_administrador.sql.
+// Esta página no aparece en el menú inferior de ninguna otra página a
+// propósito (acceso solo por URL directa), para no anunciarla a nadie
+// más.
+
+const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const { data: sesionInicial } = await supabase.auth.getSession();
+if (!sesionInicial.session) {
+  window.location.href = "/login.html";
+  throw new Error("sin sesión");
+}
+document.getElementById("comprobandoAcceso").remove();
+
+document.getElementById("btnCerrarSesion").addEventListener("click", async (e) => {
+  e.preventDefault();
+  await supabase.auth.signOut();
+  window.location.href = "/login.html";
+});
+
+function mostrarMensaje(texto, tipo) {
+  const el = document.getElementById("mensaje");
+  el.textContent = texto;
+  el.className = `mensaje ${tipo}`;
+}
+
+async function cargarUsuarios() {
+  const { data, error } = await supabase.rpc("admin_listar_usuarios");
+  if (error) {
+    // "no autorizado" es justo lo que devuelve es_admin() para
+    // cualquiera que no sea el admin — no distinguimos el motivo en
+    // el mensaje al usuario, solo lo mandamos de vuelta al mapa.
+    document.getElementById("zonaNoAdmin").style.display = "block";
+    return;
+  }
+  document.getElementById("cabecera").style.display = "flex";
+  document.getElementById("zonaContenido").style.display = "block";
+  document.getElementById("resumen").textContent =
+    `${data.length} usuario${data.length === 1 ? "" : "s"} registrado${data.length === 1 ? "" : "s"}.`;
+
+  const formateador = new Intl.DateTimeFormat("es-ES", { day: "2-digit", month: "2-digit", year: "numeric" });
+  document.getElementById("filasUsuarios").innerHTML = data.map((u) => `
+    <tr data-id="${u.id}">
+      <td class="email">${u.email || "—"}${u.nombre ? `<br><span style="color:#5C7680;">${u.nombre}</span>` : ""}</td>
+      <td class="fecha">${formateador.format(new Date(u.creado_en))}</td>
+      <td><span class="estado ${u.aprobado ? "activo" : "pausado"}">${u.aprobado ? "Activo" : "Sin acceso"}</span></td>
+      <td>
+        <div class="fila-botones">
+          <button class="pausar" data-accion="${u.aprobado ? "pausar" : "reactivar"}">${u.aprobado ? "⏸ Pausar" : "▶ Reactivar"}</button>
+          <button class="eliminar" data-accion="eliminar">🗑 Eliminar</button>
+        </div>
+      </td>
+    </tr>
+  `).join("");
+
+  document.getElementById("filasUsuarios").querySelectorAll("button").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const fila = btn.closest("tr");
+      const userId = fila.dataset.id;
+      const email = fila.querySelector(".email").textContent.trim();
+      const accion = btn.dataset.accion;
+
+      if (accion === "eliminar") {
+        if (!confirm(`¿Eliminar a ${email} para siempre? Se borran también todas sus capturas, salidas, contactos de emergencia, etc. Esto NO se puede deshacer.`)) return;
+        const { error: errDel } = await supabase.rpc("admin_eliminar_usuario", { p_user_id: userId });
+        if (errDel) { mostrarMensaje(errDel.message, "error"); return; }
+        mostrarMensaje(`${email} eliminado.`, "ok");
+      } else {
+        const nuevoAprobado = accion === "reactivar";
+        const { error: errFijar } = await supabase.rpc("admin_fijar_acceso", { p_user_id: userId, p_aprobado: nuevoAprobado });
+        if (errFijar) { mostrarMensaje(errFijar.message, "error"); return; }
+        mostrarMensaje(`${email} ${nuevoAprobado ? "reactivado" : "pausado"}.`, "ok");
+      }
+      await cargarUsuarios();
+    });
+  });
+}
+
+await cargarUsuarios();
+</script>
+
+</body>
+</html>
