@@ -6,53 +6,53 @@
 <title>Acceso — Costa Viva</title>
 <link rel="manifest" href="manifest.json" />
 <link rel="icon" href="icon.svg" type="image/svg+xml" />
-<meta name="theme-color" content="#0B2532" />
+<meta name="theme-color" content="#F7F3E8" />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; }
   body {
     margin: 0; min-height: 100vh;
     display: flex; align-items: center; justify-content: center;
-    background: #0B2532; color: #E8E2D0;
+    background: #F7F3E8; color: #0B2532;
     font-family: 'Inter', sans-serif;
     padding: 24px;
   }
   .caja {
     width: 100%; max-width: 380px;
-    background: #0F2C38; border: 1px solid #1C3F4F; border-radius: 14px;
+    background: #FFFFFF; border: 1px solid #DDE2DC; border-radius: 14px;
     padding: 32px 28px;
   }
   .caja h1 {
     font-family: 'Fraunces', serif; font-size: 32px; font-weight: 700; letter-spacing: 0.2px; margin: 0 0 4px;
   }
-  .caja p.sub { color: #7FA3AF; font-size: 13px; margin: 0 0 24px; }
-  label { display: block; font-size: 12px; color: #9FB8BF; margin: 14px 0 5px; font-family: 'Inter', sans-serif; font-weight: 500; }
+  .caja p.sub { color: #5C7680; font-size: 13px; margin: 0 0 24px; }
+  label { display: block; font-size: 12px; color: #7C939A; margin: 14px 0 5px; font-family: 'Inter', sans-serif; font-weight: 500; }
   input {
     width: 100%; padding: 10px 12px; border-radius: 8px;
-    border: 1px solid #1C3F4F; background: #123B4D; color: #E8E2D0;
+    border: 1px solid #DDE2DC; background: #EEF2EF; color: #0B2532;
     font-family: 'Inter', sans-serif; font-size: 14px;
   }
-  input:focus { outline: none; border-color: #D4A24C; }
+  input:focus { outline: none; border-color: #A8792A; }
   button {
     width: 100%; margin-top: 20px; padding: 11px; border-radius: 8px; border: none;
     background: #D4A24C; color: #0B2532; font-weight: 600; font-size: 14px;
     cursor: pointer; font-family: 'Inter', sans-serif;
   }
   button:disabled { opacity: 0.6; cursor: default; }
-  button.secundario { background: transparent; border: 1px solid #1C3F4F; color: #9FB8BF; margin-top: 8px; }
+  button.secundario { background: transparent; border: 1px solid #DDE2DC; color: #7C939A; margin-top: 8px; }
   .mensaje { margin-top: 14px; font-size: 12.5px; padding: 10px 12px; border-radius: 8px; display: none; }
-  .mensaje.error { display: block; background: rgba(163,74,53,0.15); color: #E8907A; border: 1px solid #A34A35; }
-  .mensaje.info { display: block; background: rgba(212,162,76,0.12); color: #E8C888; border: 1px solid #6B5530; }
-  .mensaje.ok { display: block; background: rgba(79,157,105,0.12); color: #8FCBA3; border: 1px solid #3A6B4C; }
-  .toggle { text-align: center; margin-top: 18px; font-size: 12.5px; color: #7FA3AF; }
-  .toggle a { color: #D4A24C; cursor: pointer; text-decoration: underline; }
+  .mensaje.error { display: block; background: rgba(163,74,53,0.15); color: #A34A35; border: 1px solid #A34A35; }
+  .mensaje.info { display: block; background: rgba(212,162,76,0.12); color: #6B5530; border: 1px solid #D9C08A; }
+  .mensaje.ok { display: block; background: rgba(79,157,105,0.12); color: #3A6B4C; border: 1px solid #A8D4B8; }
+  .toggle { text-align: center; margin-top: 18px; font-size: 12.5px; color: #5C7680; }
+  .toggle a { color: #A8792A; cursor: pointer; text-decoration: underline; }
   .consentimiento { display: none; margin-top: 16px; }
   .consentimiento.visible { display: block; }
   .consentimiento label.checkbox {
     display: flex; align-items: flex-start; gap: 8px; margin: 10px 0 0;
-    font-family: 'Inter', sans-serif; font-weight: 400; font-size: 12px; color: #9FB8BF; cursor: pointer;
+    font-family: 'Inter', sans-serif; font-weight: 400; font-size: 12px; color: #7C939A; cursor: pointer;
   }
-  .consentimiento input[type="checkbox"] { width: auto; margin-top: 2px; accent-color: #D4A24C; flex-shrink: 0; }
+  .consentimiento input[type="checkbox"] { width: auto; margin-top: 2px; accent-color: #A8792A; flex-shrink: 0; }
 </style>
 </head>
 <body>
