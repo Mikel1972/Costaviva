@@ -17,6 +17,16 @@ usuario afina un criterio — no es un historial (para eso está `ROBOT.md`).
   proponer.
 - El factor de corrección de calibración nunca se aplica en automático:
   siempre es una propuesta a confirmar por el usuario.
+- **Candidatos a webcam nueva, priorizados (añadido 2026-09-13, pedido
+  explícito del usuario)**: antes de buscar cámaras a ciegas, mira
+  primero `spots_usuario` (tabla de ubicaciones personalizadas, ver
+  Fase 2 en `CLAUDE.md`) — prioriza las que tengan más actividad real
+  asociada (más `salidas_pesca`/`capturas` con ese `spot_usuario_id`,
+  o simplemente las más recientes si no hay forma fácil de contar
+  actividad todavía) como candidatas para investigar webcam antes que
+  spots aleatorios de la lista fija. Sigue aplicando todo lo demás de
+  este fichero (nunca inventar una URL, límite de volumen, proponer si
+  no es trivial).
 
 ## Sinónimos regionales de especies y cebos (añadido 2026-09-13)
 

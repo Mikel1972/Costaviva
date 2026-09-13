@@ -722,6 +722,104 @@ con el flujo completo de dos usuarios reales creando/uniéndose a un
 grupo. Probarlo así es el siguiente paso antes de dar la fase por
 cerrada del todo.
 
+**Compartir capturas por tipo de salida (2026-09-13):** "compartir
+capturas" era todo o nada — pedido explícito del usuario: poder
+compartir solo costa y no embarcación (o al revés), y que sea
+independiente por grupo (mismo usuario puede compartir distinto en cada
+cuadrilla, ya sale gratis porque `miembros_grupo` es por
+`(grupo_id, user_id)`). Tres columnas nuevas
+(`compartir_capturas_costa/embarcacion/submarinismo`, todas `default
+true` para no recortar en silencio lo que ya se compartía) más 3
+checkboxes en `grupos.html` bajo el interruptor maestro (se ocultan si
+"Compartir mis capturas" está desactivado). `obtener_capturas_grupo()`
+ahora une con `salidas_pesca` para filtrar por `tipo_salida` — filas
+antiguas sin ese campo (antes de que existiera) se tratan como "costa".
+
+## Rediseño de cabecera/menús (2026-09-13)
+
+Pedido explícito del usuario tras revisar la app en vivo desde el
+móvil:
+- **Menú de cuenta arriba a la derecha** (👤, en las 4 páginas): "📤
+  Invitar a un amigo" (comparte el enlace de la app vía
+  `navigator.share`, con fallback a copiar al portapapeles — mismo
+  patrón que "Compartir ubicación" en `alarma.html`) y "🚪 Cerrar
+  sesión" — sustituye al enlace "Salir" que vivía en el menú inferior
+  (`.tabs-nav`).
+- **Menú inferior** rediseñado: cada icono va dentro de un recuadro
+  redondeado (`.tabs-nav a .icono`) en vez de flotar sobre fondo plano
+  — pedido explícito: "que parece que están sacados de una excel".
+- **`index.html`**: quitado el párrafo fijo de la cabecera y la nota
+  "Coef. propio de este punto..." bajo MAREA (redundantes). Nuevo botón
+  "ⓘ" expandible junto a "ÍNDICE DE MAR COMBINADO" y "ÍNDICE DE PESCA"
+  que explica en una frase qué representa cada número (0-100, según
+  nuestro propio algoritmo). "Qué se puede pescar" pasa a `<details>`
+  por especie bajo el titular "¿Qué esperamos pescar hoy?", en vez de
+  mostrar las 5-6 especies siempre expandidas de golpe.
+
+## Ideas aparcadas explícitamente (2026-09-13, no empezadas)
+
+Tres pedidas por el usuario la misma noche del rediseño de arriba,
+aparcadas a propósito por su tamaño/sensibilidad — no tocar sin
+retomarlo expresamente con él:
+
+- **Agente de "qué se está pescando ahora"**: agregar capturas reales
+  de usuarios que hayan consentido (el checkbox de `login.html`,
+  `consiente_uso_datos_capturas`, ya existe para esto) cruzándolo con
+  los datos de temporada/temperatura ya en `ESPECIES` — "si no hay
+  nada, sin comentarios, sin más" (nunca inventar). El usuario apuntó
+  que el consentimiento podría acabar viviendo dentro del acuerdo de
+  una futura suscripción en vez de un checkbox aparte — pendiente de
+  que esa suscripción exista antes de diseñar esto del todo. Falta
+  decidir un mínimo de capturas/usuarios distintos antes de mostrar
+  nada agregado, para no des-anonimizar sin querer a quien haya
+  pescado algo poco común en un spot con muy poca actividad.
+- **Comprobación de normativa de pesca recreativa** al subir una foto
+  de captura (talla mínima, cupo de piezas/kg por jornada) + un
+  contador por salida que se ajusta según lo declarado. Requiere
+  investigar tallas/cupos reales por Comunidad Autónoma (varían mucho,
+  y España delega la competencia de pesca marítima recreativa en las
+  CCAA) — dar un "OK" equivocado tendría consecuencias reales, así que
+  esto necesita fuentes oficiales verificadas antes de escribir una
+  sola regla, no unos valores aproximados.
+- **Priorizar `spots_usuario` populares como candidatos para el robot
+  de cámaras**: el robot de datos ya investiga fuentes nuevas por su
+  cuenta (ver `ROBOT_REGLAS.md`) — la idea es darle una lista de
+  ubicaciones personalizadas con más actividad como candidatas
+  prioritarias en vez de buscar a ciegas. Documentación pendiente de
+  añadir a `ROBOT_REGLAS.md`, no requiere código nuevo.
+
+## Robot buscador de fuentes — 4 veces al día (2026-09-13)
+
+Nuevo workflow `.github/workflows/robot-buscador-fuentes.yml`, pedido
+explícito del usuario: investigar fuentes nuevas (cámaras, mareas y
+oleaje, corrientes, presión) 4 veces al día, no solo en la pasada
+nocturna. Un solo workflow (no 4 separados, decisión explícita del
+usuario) que rota de área según qué cron lo disparó
+(`github.event.schedule`), invocando una sesión de Claude Code en modo
+no interactivo (`claude -p ... --dangerously-skip-permissions`) que
+sigue las mismas reglas de `ROBOT_REGLAS.md` que la rutina nocturna
+externa (nunca inventar datos, límite de volumen para aplicar cambios
+directos, interruptor `ROBOT_PAUSADO`). Publica su resumen en el mismo
+Issue "Informe diario — Costa Viva" que ya usa `daily-report.yml`.
+
+**Limitación importante que hay que recordar**: la herramienta de cron
+de una sesión de Claude Code normal (`CronCreate`) es solo de esa
+sesión — se borra al cerrarla y caduca a los 7 días. Por eso esto se
+montó como GitHub Action (igual que los otros 5 workflows del repo),
+no como algo programado desde dentro de una conversación — es la única
+vía duradera y versionada que esta sesión puede crear por sí misma. La
+rutina nocturna "principal" (la que escribe en `ROBOT.md` con más
+profundidad) sigue viviendo en otro sitio fuera de este repo, con una
+cadencia y permisos que esta sesión no puede ver (limitación ya
+reconocida arriba).
+
+**Pendiente antes de fiarse del schedule** (mismo criterio que el
+resto de rutinas de este repo): añadir el secret `ANTHROPIC_API_KEY` a
+GitHub Actions (Settings → Secrets → Actions — es un almacén distinto
+al de Cloudflare Pages, aunque se reutilice el mismo valor que ya usa
+`functions/identificar-captura.js`) y probar con `workflow_dispatch`
+antes de esperar a que dispare solo.
+
 ## Pendiente conocido (no tocar sin confirmar)
 
 - Prueba cruzada usuario-A-lee-fila-de-usuario-B: **hecha y verificada el
