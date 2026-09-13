@@ -897,12 +897,15 @@ antes de esperar a que dispare solo.
 
 Pedido explícito del usuario: "como en Pólizas.ai", ver quién está
 inscrito, pudiendo pausarlo o eliminarlo. `admin.html` — no aparece en
-el menú de ninguna otra página; el acceso visible es un icono 🔐 a la
-izquierda del botón de cuenta, solo pintado cuando
+el menú inferior de ninguna otra página; el acceso visible es un icono
+⚙️ junto al botón de cuenta (`title="Admin"`), solo pintado cuando
 `session.user.email === "etxebe2005@gmail.com"` (comprobado en JS en
 las 4 páginas con cabecera). Esa comprobación en el cliente es solo
 para no anunciar el icono a nadie más — la seguridad real está en
-Supabase.
+Supabase. La propia `admin.html` tiene su cabecera a juego con el
+resto de la app: botón "← Volver al mapa" + botón de cuenta con
+desplegable para cerrar sesión (pedido explícito tras el primer
+despliegue: "no tengo botón para echar para atrás").
 
 **Decisión de diseño clave**: nada de esto usa `service_role` ni un
 segundo endpoint de Cloudflare. Tres funciones `security definer` en
