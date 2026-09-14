@@ -668,6 +668,108 @@ especies), 2026-09-14 21:03 UTC.
 
 ---
 
+### 2026-09-14 23:31 UTC (pasada buscadora — presión atmosférica e histórico por zona)
+
+**Qué se buscó:** fuentes de presión atmosférica y, sobre todo, de
+**histórico de presión por zona** que mejoren lo que ya tenemos. Hoy la
+presión de cada spot sale del modelo de Open-Meteo (`pressure_msl` en
+`/prevision`) y el "histórico" se construye desde cero, hora a hora, con
+el cron `presion-historico.yml` escribiendo en la tabla
+`presion_historico` — es decir, la tendencia real solo tiene tanta
+profundidad como tiempo lleve corriendo ese cron (arrancó el
+2026-09-12), y un spot recién añadido no tiene pasado ninguno. La
+búsqueda iba a fuentes que permitieran **rellenar histórico real hacia
+atrás** (backfill) o dar presión observada por estación.
+
+**Nota de entorno:** a diferencia de las pasadas de agosto (bloqueadas
+por el proxy de red, ver 2026-08-31), esta corre en un runner con salida
+de red abierta a dominios de datos — se pudo verificar todo con
+peticiones HTTP reales, no solo por búsqueda.
+
+**Hallazgo verificado con petición HTTP real (candidato de primer
+nivel) — Open-Meteo Historical Weather API (archivo ERA5):**
+`https://archive-api.open-meteo.com/v1/archive` devuelve `pressure_msl`
+y `surface_pressure` horarios (hPa) para cualquier coordenada, con
+reanálisis ERA5 desde 1940. Verificado en vivo hoy para un punto del
+Cantábrico (43.41°N, 2.68°W):
+
+```
+GET archive-api.open-meteo.com/v1/archive?latitude=43.41&longitude=-2.68
+    &start_date=2026-08-01&end_date=2026-08-01
+    &hourly=pressure_msl,surface_pressure&timezone=Europe/Madrid
+→ 200, pressure_msl[0:6] = [1020.6, 1020.6, 1020.0, 1019.7, 1019.2, 1018.9] hPa
+```
+
+Sin autenticación, licencia CC BY 4.0, mismo formato JSON que la API de
+forecast que ya usamos. **Utilidad concreta**: permitiría hacer backfill
+real de `presion_historico` para todos los spots (fijos y nuevos) de
+golpe, en vez de esperar días/semanas a que el cron horario acumule
+tendencia — la tendencia de presión es justo una de las variables que
+`ROBOT_REGLAS.md` (sección "Variables adicionales para el índice de
+pesca") apunta como candidata a mejorar `indicePesca`.
+
+**Segundo endpoint verificado — Historical Forecast API (pasado
+reciente):** `https://historical-forecast-api.open-meteo.com/v1/forecast`
+respondió `200` para `pressure_msl` del 5 al 10 de septiembre de 2026.
+Es el complemento del anterior: el archivo ERA5 tiene ~5 días de latencia
+(el reanálisis final no está disponible al instante), así que para la
+franja de "los últimos días" conviene esta API (que reconstruye el pasado
+reciente de las propias corridas del modelo) y el archivo ERA5 para lo
+más antiguo. Para la tendencia corta que le interesa a un pescador
+(subiendo/bajando en las últimas 24-48h) basta con la forecast que ya
+tenemos; el backfill histórico es lo que aportarían estas dos.
+
+**Fuente de presión OBSERVADA (no modelo), ya parcialmente en casa —
+AEMET OpenData "Climatologías diarias":** confirmado por la propia
+documentación de AEMET que OpenData sirve series diarias validadas por
+estación (hasta 5 años por descarga, algunas estaciones desde 1920),
+incluida presión — más de 945 estaciones. Es observación real, no
+reanálisis. **No se pudo probar en vivo esta pasada**: la petición exige
+la `AEMET_API_KEY`, que vive solo como secreto en Cloudflare Pages y no
+está disponible en este runner (`AEMET_API_KEY` ausente en el entorno,
+comprobado). Ya usamos AEMET para observación horaria de presión/
+precipitación de 25 estaciones (`ESTACIONES_AEMET` en
+`functions/prevision.js`); el endpoint de climatologías diarias sería la
+vía para su **histórico** observado, complementario al reanálisis de
+Open-Meteo.
+
+**Aviso de cuota (regla de `ROBOT_REGLAS.md`, sección de cuota
+Open-Meteo):** el archivo de Open-Meteo cuenta contra la misma cuota
+diaria por-ubicación (10.000/día en el plan gratuito). Un backfill de
+~95 spots × muchos días de golpe gastaría mucha cuota — habría que
+hacerlo por lotes/una vez, con caché, y sin colisionar con el cron
+horario que ya consume cuota. No es gratis "de una", tenerlo en cuenta
+al dimensionar.
+
+**Por qué solo propuesta, no implementación** (ver `ROBOT_REGLAS.md`):
+integrarlo tocaría `functions/` (un endpoint de backfill nuevo o cambios
+en `registrar-presion.js`) y/o una migración de `supabase/`, ambos por
+encima del límite de volumen para aplicar directo; además, usar la
+tendencia de presión como modificador de `indicePesca` es una decisión
+de producto (cambia un dato que se le muestra al usuario como fiable).
+No se ha tocado código.
+
+**Propuesta concreta para el usuario, si se retoma:**
+1. Script/endpoint de backfill único (protegido con `CRON_SECRET`, mismo
+   patrón que `/registrar-presion`) que, por lotes y con caché, rellene
+   `presion_historico` hacia atrás desde `archive-api` para todos los
+   spots — dándole a la tendencia de presión profundidad real desde el
+   día uno de cada spot, no solo desde que arrancó el cron.
+2. Combinar archivo ERA5 (histórico antiguo) + historical-forecast-api
+   (últimos ~5 días, por la latencia de ERA5) para no dejar hueco.
+3. Más adelante, cruzar con las climatologías diarias de AEMET como
+   histórico OBSERVADO por estación cercana (requiere usar la
+   `AEMET_API_KEY` desde una function, no desde este runner).
+
+**Fuentes:** [Open-Meteo Historical Weather API](https://open-meteo.com/en/docs/historical-weather-api),
+[Open-Meteo Historical Forecast API](https://open-meteo.com/en/docs/historical-forecast-api),
+[AEMET OpenData](https://www.aemet.es/en/datos_abiertos/AEMET_OpenData).
+
+**Firmado:** robot buscador de fuentes (pasada de presión atmosférica e
+histórico por zona), 2026-09-14 23:31 UTC.
+
+---
+
 ## Auditoría de datos
 
 ### 2026-08-31
