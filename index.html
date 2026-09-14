@@ -2313,18 +2313,24 @@ function pintarWebcamHls(slug, nombre) {
     </div>`;
   };
 
-  if (video.canPlayType("application/vnd.apple.mpegurl")) {
-    // Safari: soporte nativo de HLS, sin librería
-    video.src = url;
-    video.addEventListener("loadeddata", arrancarLecturas, { once: true });
-    video.addEventListener("error", fallo, { once: true });
-  } else if (window.Hls && window.Hls.isSupported()) {
+  // hls.js primero SIEMPRE que esté disponible — probado en real 2026-09-14:
+  // Chrome devuelve "maybe" en video.canPlayType('application/vnd.apple.mpegurl')
+  // (un "maybe" es válido según el propio estándar, no promete nada) pero NO
+  // sabe reproducir HLS de verdad vía <video src> directo — con ese orden al
+  // revés, Chrome entraba en la rama "nativa" y se quedaba colgado sin pedir
+  // nada al stream. Nativo queda solo como respaldo para cuando hls.js no
+  // esté disponible (Safari antiguo/iOS con MSE restringido).
+  if (window.Hls && window.Hls.isSupported()) {
     hlsActivo = new Hls();
     hlsActivo.loadSource(url);
     hlsActivo.attachMedia(video);
     hlsActivo.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(() => {}));
     video.addEventListener("loadeddata", arrancarLecturas, { once: true });
     hlsActivo.on(Hls.Events.ERROR, (_evt, data) => { if (data.fatal) fallo(); });
+  } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+    video.src = url;
+    video.addEventListener("loadeddata", arrancarLecturas, { once: true });
+    video.addEventListener("error", fallo, { once: true });
   } else {
     cont.innerHTML = `<div class="tarjeta" style="text-align:center; color:#42585F; font-size:12px;">Tu navegador no soporta vídeo en directo (HLS).</div>`;
   }
