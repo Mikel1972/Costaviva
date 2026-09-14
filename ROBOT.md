@@ -507,6 +507,71 @@ API REST limpia, queda anotada, no verificada esta pasada.
 **Firmado:** robot buscador de fuentes (pasada de mareas y oleaje),
 2026-09-14 15:18 UTC.
 
+### 2026-09-14 19:37 UTC (pasada buscadora — corrientes marinas por zona)
+
+**Qué se buscó:** fuentes de corrientes marinas por zona que mejoren lo
+que ya tenemos. Hoy la corriente sale del modelo global de Open-Meteo
+Marine API (`ocean_current_velocity` / `ocean_current_direction` en
+`functions/prevision.js`, líneas ~489-572) — es un modelo por
+coordenada, igual para toda la costa, sin observación real. La búsqueda
+iba orientada a fuentes de OBSERVACIÓN real (radar de alta frecuencia) y
+a modelos regionales de más resolución.
+
+**Hallazgo verificado con petición HTTP real (candidato de primer
+nivel):** la red de radar de alta frecuencia (HF) de **Puertos del
+Estado** (REDRAD, tecnología CODAR) mide corrientes superficiales reales
+por hora en zonas concretas de la costa — Galicia (rejilla 6 km,
+INTECMAR/Xunta), canal de Ibiza (SOCIB, rejilla 3 km) y delta del Ebro
+(sitios Salou/Alfacada/Vinaroz). Lo importante para nosotros: esos datos
+se publican de forma legible por máquina en **ERDDAP de EMODnet
+Physics**, que sí es un servicio REST simple (`.json`/`.csv` por
+lat/lon/tiempo, sin toolbox raro). Verificado en vivo hoy:
+`https://erddap.emodnet-physics.eu/erddap/info/HFRADAR_IBIZA_Totals/index.html`
+responde y describe un dataset real de corrientes totales del canal de
+Ibiza (fuente SOCIB), con variables `EWCT` (componente E-O) y `NSCT`
+(componente N-S), resolución horaria, cobertura declarada desde
+2019-02-01 hasta mediados de 2026. También confirmado por búsqueda el
+catálogo THREDDS de Puertos del Estado (`opendap.puertos.es/thredds/`,
+carpeta NW_Iberian) y el de INTECMAR (`opendap.intecmar.gal/thredds/`,
+`HFR-Galicia-UI_*.nc`) para Galicia.
+
+**Candidato de segundo nivel (modelo regional, NO verificado con HTTP —
+exige alta/credenciales):** Copernicus Marine, producto
+`IBI_ANALYSISFORECAST_PHY_005_001` (Atlantic-Iberian Biscay Irish, NEMO
+1/36°, ~2.8 km) — da corrientes superficiales horarias de previsión a 10
+días para todo el golfo de Bizkaia e Iberia atlántica, con mucha más
+resolución que el modelo global de Open-Meteo y cubriendo TODA la costa
+NO/N (no solo las zonas con radar). Igual que ya se anotó para el swell
+(entrada de las 15:18 de hoy), su acceso no es un `GET` REST limpio
+(requiere registro y toolbox/subsetting), así que no se pudo comprobar en
+vivo esta pasada — queda anotado, no verificado.
+
+**Por qué solo propuesta, no implementación** (ver `ROBOT_REGLAS.md`):
+integrar cualquiera de estas dos fuentes tocaría `functions/prevision.js`
+(por encima del límite de volumen para aplicar directo) y, sobre todo, es
+una decisión de producto — el radar HF solo cubre 3 zonas concretas
+(Ibiza, Galicia, Ebro), no los ~95 spots fijos, así que habría que
+decidir cómo mezclar "corriente observada real donde hay radar" con "el
+modelo de Open-Meteo en el resto" sin confundir al usuario sobre qué es
+observación y qué es modelo. Eso cambia lo que se le muestra como fiable
+→ regla general "producto → proponer, no implementar". No se ha tocado
+código.
+
+**Propuesta concreta para el usuario, si se retoma:** empezar por el
+canal de Ibiza vía ERDDAP de EMODnet (es la fuente más fácil de
+consumir, REST puro, ya verificada hoy) como PRUEBA de concepto de
+"corriente observada real por radar" para los spots de esa zona,
+etiquetándola claramente como observación de radar HF (distinta del
+modelo). Antes de proponer un factor o mezcla, calibrar la lectura del
+radar contra el `ocean_current_velocity` de Open-Meteo en esos mismos
+puntos y anotarlo en `CALIBRACION.jsonl` (mismo patrón que oleaje y
+coeficiente de marea). Ojo con la cuota: ERDDAP no tiene la cuota
+por-ubicación de Open-Meteo, pero conviene cachear igual (patrón ya
+existente en `/prevision`).
+
+**Firmado:** robot buscador de fuentes (pasada de corrientes marinas),
+2026-09-14 19:37 UTC.
+
 ---
 
 ## Auditoría de datos
