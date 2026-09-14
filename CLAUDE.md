@@ -1180,6 +1180,33 @@ Guardada como secreto `AEMET_API_KEY` en Cloudflare Pages (Settings →
 Environment variables), nunca en el repo — mismo patrón que
 `RESEND_API_KEY`.
 
+**Implementado en código y verificado end-to-end en preview
+(2026-09-14)**: `ESTACIONES_AEMET` + `datosEstacionesAemet()` en
+`functions/prevision.js` (25 estaciones curadas, código `idema` +
+coordenadas verificados uno a uno con una petición real antes de
+escribirlos), expuesto en `/prevision` como `estacionesAemet`. En
+`index.html`, marcador propio (🌧, sin dato inventado — igual que las
+boyas, si no hay lectura real no se dibuja) que al pulsar abre un modal
+con el detalle completo (precipitación, presión, temperatura,
+viento...).
+
+**Incidente real al configurar el secreto en Cloudflare Pages, mismo
+día — para la próxima vez que algo similar "no llega" pese a estar bien
+puesto**: la variable `AEMET_API_KEY` aparecía correctamente en el
+dashboard (nombre bien, en el proyecto correcto, en Preview) pero
+`context.env.AEMET_API_KEY` seguía dando el mismo error que si no
+existiera — **se había guardado con el valor vacío** (un fallo de
+copia/pegado en el propio formulario de Cloudflare, no nuestro). La
+forma real de diagnosticarlo, más rápida que pelearse con los logs del
+dashboard: añadir temporalmente al `Response` de la function un campo
+con `Object.keys(context.env)` (nombres de variables, nunca valores) y
+opcionalmente `.length` de la sospechosa — confirma en segundos si el
+problema es "no existe la variable", "existe pero vacía", o el propio
+código. Quitar el campo debug en cuanto se resuelva, nunca dejarlo en `main`.
+("Retry deployment" sí recoge el valor actual de las variables al
+volver a desplegar — lo que no hace es refrescar solo, hace falta
+relanzarlo a mano tras cambiar una variable.)
+
 **Pendiente, bloqueado del lado de Euskalmet**: perfil creado en
 `https://api.euskadi.eus/met01uiApiKeyUsersWar/` con `datos@costaviva.org`
 (dos intentos, 2026-09-14), pero el correo con la API key **nunca ha
