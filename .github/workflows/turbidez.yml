@@ -1,0 +1,64 @@
+name: Turbidez del agua
+
+# Pedido explícito del usuario (2026-09-14): una lectura diaria de
+# turbidez del agua por spot a partir de las webcams ya existentes
+# (imagen fija y vídeo HLS de Gipuzkoa) — ver
+# supabase/migrations/20260914100000_turbidez_historico.sql para el
+# razonamiento completo (por qué es un valor relativo al propio
+# histórico del spot, no una medida física real).
+#
+# Corre a las 11:00 UTC — mediodía en Madrid en horario de invierno
+# (CET), 13:00 en verano (CEST); GitHub Actions no ajusta el cron por el
+# cambio de hora, igual que el resto de rutinas de este repo (ver nota
+# en CLAUDE.md sobre daily-report.yml). Se eligió mediodía porque es
+# cuando más luz ambiental hay, para que las lecturas de días distintos
+# sean lo más comparables posible entre sí.
+#
+# A diferencia de registrar-presion.js (una llamada JSON directa desde
+# la propia función de Cloudflare), aquí el cálculo pesado (decodificar
+# imágenes/vídeo) NO puede vivir en Cloudflare Pages Functions —
+# Workers no tiene ninguna API de imagen/canvas. Por eso corre aquí, en
+# un runner real de GitHub Actions con Node + sharp + ffmpeg, y solo el
+# resultado ya calculado se manda a /registrar-turbidez.
+#
+# Necesita el secret PRESION_CRON_SECRET (Settings → Secrets → Actions
+# de este repo) — el MISMO que ya usa presion-historico.yml, porque
+# /registrar-turbidez comprueba la misma variable de entorno CRON_SECRET
+# en Cloudflare Pages que /registrar-presion. No hace falta crear un
+# secreto nuevo.
+#
+# Probar a mano (workflow_dispatch) antes de fiarse del schedule, mismo
+# criterio que las demás rutinas programadas de este repo — esta en
+# concreto nunca se ha corrido de verdad todavía.
+
+on:
+  schedule:
+    - cron: "0 11 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  medir:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Comprobar/instalar ffmpeg
+        run: |
+          if ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update && sudo apt-get install -y ffmpeg
+          fi
+          ffmpeg -version | head -1
+
+      - name: Instalar dependencias del script
+        working-directory: scripts/turbidez
+        run: npm ci --no-audit --no-fund
+
+      - name: Medir turbidez y guardar
+        working-directory: scripts/turbidez
+        env:
+          CRON_SECRET: ${{ secrets.PRESION_CRON_SECRET }}
+        run: node medir-turbidez.mjs

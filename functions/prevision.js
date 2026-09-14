@@ -429,6 +429,43 @@ async function coeficienteMareaCache() {
   }
 }
 
+// Turbidez relativa por spot (ver supabase/migrations/20260914100000_
+// turbidez_historico.sql para el razonamiento completo) — nunca se compara
+// un spot contra otro, solo contra su propia historia (ventana de 90
+// días), porque el ángulo/distancia de cada cámara hace que un valor
+// absoluto no signifique lo mismo de un spot a otro. Con menos de
+// TURBIDEZ_MIN_LECTURAS días de historia todavía, el spot no entra en el
+// resultado -> el cliente lo muestra como "S/D" en vez de clasificar con
+// poca base. Más saturación de color en el agua = menos turbia (agua
+// turbia tiende a un tono desaturado/pardusco); percentil de la lectura de
+// hoy dentro de su propio histórico decide el tercio (no turbia / turbia /
+// muy turbia).
+const TURBIDEZ_MIN_LECTURAS = 14;
+async function datosTurbidezPorSpot() {
+  try {
+    const desde = new Date(Date.now() - 90 * 24 * 3600 * 1000).toISOString().slice(0, 10);
+    const url = `${SUPABASE_URL}/rest/v1/turbidez_historico?select=spot_slug,fecha,saturacion_media&fecha=gte.${desde}&order=fecha.asc`;
+    const resp = await fetch(url, { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } });
+    if (!resp.ok) return {};
+    const filas = await resp.json();
+    const porSpot = {};
+    for (const f of filas) (porSpot[f.spot_slug] ||= []).push(f);
+
+    const resultado = {};
+    for (const [slug, lista] of Object.entries(porSpot)) {
+      if (lista.length < TURBIDEZ_MIN_LECTURAS) continue;
+      const ultima = lista[lista.length - 1];
+      const valores = lista.map((f) => f.saturacion_media).sort((a, b) => a - b);
+      const posicion = valores.filter((v) => v <= ultima.saturacion_media).length / valores.length;
+      const etiqueta = posicion >= 0.66 ? "no turbia" : posicion >= 0.33 ? "turbia" : "muy turbia";
+      resultado[slug] = { etiqueta, actualizado: ultima.fecha, lecturas: lista.length };
+    }
+    return resultado;
+  } catch (e) {
+    return {};
+  }
+}
+
 async function fetchJSON(url) {
   const resp = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0 (compatible; CostaVivaApp/0.1)" } });
   if (!resp.ok) throw new Error(`HTTP ${resp.status} (${url})`);
@@ -923,7 +960,7 @@ export async function onRequestGet(context) {
   const cacheada = await cache.match(cacheKey);
   if (cacheada) return cacheada;
 
-  const [resultados, boyasEspana, boyaNazare, rayosNacional, caudales, estacionesAemet] = await Promise.all([
+  const [resultados, boyasEspana, boyaNazare, rayosNacional, caudales, estacionesAemet, turbidez] = await Promise.all([
     previsionTodosSpots(SPOTS).catch((e) =>
       SPOTS.map((spot) => ({ slug: spot.slug, nombre: spot.nombre, error: String(e) }))
     ),
@@ -934,10 +971,11 @@ export async function onRequestGet(context) {
     metaRayos().catch((e) => ({ error: String(e) })),
     datosCaudalTodos().catch((e) => ({ error: String(e) })),
     datosEstacionesAemet(context.env.AEMET_API_KEY).catch((e) => ({ error: String(e) })),
+    datosTurbidezPorSpot(),
   ]);
   const boyas = [...boyasEspana, boyaNazare];
 
-  const respuesta = new Response(JSON.stringify({ spots: resultados, boyas, rayosNacional, caudales, estacionesAemet }, null, 2), {
+  const respuesta = new Response(JSON.stringify({ spots: resultados, boyas, rayosNacional, caudales, estacionesAemet, turbidez }, null, 2), {
     headers: {
       "content-type": "application/json; charset=utf-8",
       // El modelo de Open-Meteo se actualiza varias horas, no hace falta

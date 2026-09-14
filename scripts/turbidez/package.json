@@ -1,0 +1,9 @@
+{
+  "name": "costaviva-medir-turbidez",
+  "private": true,
+  "type": "module",
+  "description": "Script de un solo uso, corrido por .github/workflows/turbidez.yml — NO forma parte del deploy de Cloudflare Pages (vive fuera de la raíz del repo a propósito, para que Cloudflare no lo detecte como manifiesto de build).",
+  "dependencies": {
+    "sharp": "^0.35.4"
+  }
+}
