@@ -263,8 +263,8 @@
      Columna A (right:16px, pegada al borde): capas de referencia/
      ambiente — rayos, luna, batimetría, radar de lluvia, estaciones.
      Columna B (right:64px, justo a su izquierda): capas de "cosas en el
-     mapa" — spots, ríos, boyas — y el botón "+" de añadir ubicación
-     justo debajo de spots (solo visible con spots encendido, ver JS). */
+     mapa". Spots + "+" van pegados como un único grupo visual (el "+"
+     solo visible con spots encendido, ver JS) — debajo, ríos y boyas. */
   .luna-toggle, .batimetria-toggle, .nubes-toggle, .estaciones-toggle,
   .spots-toggle, .rios-toggle, .boyas-toggle, .anadir-ubicacion-toggle {
     position: absolute; z-index: 502;
@@ -277,10 +277,15 @@
   .batimetria-toggle { top: 112px; right: 16px; }
   .nubes-toggle { top: 160px; right: 16px; }
   .estaciones-toggle { top: 208px; right: 16px; }
-  .spots-toggle { top: 16px; right: 64px; }
-  .rios-toggle { top: 64px; right: 64px; }
-  .boyas-toggle { top: 112px; right: 64px; }
-  .anadir-ubicacion-toggle { top: 160px; right: 64px; }
+  .rios-toggle { top: 104px; right: 64px; }
+  .boyas-toggle { top: 152px; right: 64px; }
+  /* Spots + "+" pegados como un único grupo de 2 (pedido explícito del
+     usuario: el botón de añadir ubicación debe verse asociado al de
+     spots, no como una capa más suelta) — sin hueco entre los dos,
+     esquinas redondeadas solo por fuera y una línea fina de separación
+     en vez del borde completo, como un control segmentado. */
+  .spots-toggle { top: 16px; right: 64px; border-radius: 8px 8px 0 0; }
+  .anadir-ubicacion-toggle { top: 54px; right: 64px; border-radius: 0 0 8px 8px; border-top: none; }
   .batimetria-toggle.activo, .nubes-toggle.activo, .estaciones-toggle.activo,
   .spots-toggle.activo, .rios-toggle.activo, .boyas-toggle.activo, .anadir-ubicacion-toggle.activo {
     background: #D4A24C; color: #0B2532;
