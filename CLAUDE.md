@@ -1140,6 +1140,156 @@ altas nuevas del mismo día; pausar/reactivar probado de verdad sobre
 "Eliminar" no se ha probado en real todavía (es irreversible) — la
 capa de autorización sí está verificada.
 
+## Estaciones de monte (precipitación/presión real) — en curso, 2026-09-14
+
+Pedido explícito del usuario tras investigar el hueco de `caudal: null`
+en los ríos vascos de `RIOS` (`index.html`) — ver el comentario en
+`functions/prevision.js` sobre URA/Bizkaia bloqueando el acceso
+automático. Idea: usar precipitación/presión real de estaciones de
+monte (en vez de solo el modelo de Open-Meteo) como dato complementario
+donde no hay caudal real. Alcance decidido con el usuario: **solo
+rellenar el hueco de los ríos vascos** (no un rediseño de todo `RIOS`),
+**Euskalmet para Euskadi, AEMET para el resto**.
+
+**Email propio del proyecto para altas externas**: `datos@costaviva.org`
+(Cloudflare Email Routing, activado 2026-09-14 — reenvía al Gmail del
+usuario, sin buzón real). Mismo criterio que las direcciones de Resend
+(`sos@`/`avisos@`/`noreply@`): nunca mezclar altas de servicios externos
+con el email personal del usuario.
+
+**AEMET OpenData — hecho y verificado**: alta en
+`https://opendata.aemet.es/centrodedescargas/altaUsuario` con
+`datos@costaviva.org`. Key obtenida y probada con una petición real
+contra `/opendata/api/observacion/convencional/todas` (patrón de dos
+pasos: esa llamada devuelve una URL corta en `datos`, hay que hacer un
+segundo `GET` a esa URL para las lecturas reales) — confirmado en vivo:
+Bilbao Aeropuerto, Santander Aeropuerto y Donostia Aeropuerto con
+`prec` (precipitación de la hora) y `pres`/`pres_nmar` (presión) reales
+del 2026-09-14. Cobertura nacional (~10.000 lecturas de golpe, todas
+las estaciones), sirve para "AEMET para el resto".
+
+**Caduca cada ~100 días (~3 meses) — decodificado del propio JWT
+devuelto**: `iat` 2026-09-14, `exp` **2026-12-23**. Antes de esa fecha,
+pedir una key nueva desde el mismo formulario con `datos@costaviva.org`
+(la vieja deja de funcionar, no hay renovación automática) y
+actualizar el secreto `AEMET_API_KEY` en Cloudflare Pages. **Recordar
+esto explícitamente la próxima vez que se toque este fichero cerca de
+esa fecha.**
+
+Guardada como secreto `AEMET_API_KEY` en Cloudflare Pages (Settings →
+Environment variables), nunca en el repo — mismo patrón que
+`RESEND_API_KEY`.
+
+**Implementado en código y verificado end-to-end en preview
+(2026-09-14)**: `ESTACIONES_AEMET` + `datosEstacionesAemet()` en
+`functions/prevision.js` (25 estaciones curadas, código `idema` +
+coordenadas verificados uno a uno con una petición real antes de
+escribirlos), expuesto en `/prevision` como `estacionesAemet`. En
+`index.html`, marcador propio (🌧, sin dato inventado — igual que las
+boyas, si no hay lectura real no se dibuja) que al pulsar abre un modal
+con el detalle completo (precipitación, presión, temperatura,
+viento...).
+
+**Incidente real al configurar el secreto en Cloudflare Pages, mismo
+día — para la próxima vez que algo similar "no llega" pese a estar bien
+puesto**: la variable `AEMET_API_KEY` aparecía correctamente en el
+dashboard (nombre bien, en el proyecto correcto, en Preview) pero
+`context.env.AEMET_API_KEY` seguía dando el mismo error que si no
+existiera — **se había guardado con el valor vacío** (un fallo de
+copia/pegado en el propio formulario de Cloudflare, no nuestro). La
+forma real de diagnosticarlo, más rápida que pelearse con los logs del
+dashboard: añadir temporalmente al `Response` de la function un campo
+con `Object.keys(context.env)` (nombres de variables, nunca valores) y
+opcionalmente `.length` de la sospechosa — confirma en segundos si el
+problema es "no existe la variable", "existe pero vacía", o el propio
+código. Quitar el campo debug en cuanto se resuelva, nunca dejarlo en `main`.
+("Retry deployment" sí recoge el valor actual de las variables al
+volver a desplegar — lo que no hace es refrescar solo, hace falta
+relanzarlo a mano tras cambiar una variable.)
+
+**Pendiente, bloqueado del lado de Euskalmet**: perfil creado en
+`https://api.euskadi.eus/met01uiApiKeyUsersWar/` con `datos@costaviva.org`
+(dos intentos, 2026-09-14), pero el correo con la API key **nunca ha
+llegado** — confirmado que no es un problema nuestro: MX/SPF de
+`costaviva.org` están bien propagados (verificado con DNS real) y el
+usuario revisó los logs de Cloudflare Email Routing. A diferencia de
+AEMET (instantáneo), Euskalmet parece pasar por gestión/aprobación
+manual (típico de una administración pública) — puede tardar. No
+reintentar el alta ni tocar DNS por esto. **2026-09-14, mismo día**:
+enviado email a soporte de Open Data Euskadi (`opendata@euskadi.eus`,
+contacto oficial confirmado en su documentación) explicando el
+problema. Respondieron pidiendo probar el acceso por **XLNets**
+(sistema de identificación electrónica del Gobierno Vasco) — probado,
+pero el email prometido **sigue sin llegar**, mismo síntoma que antes.
+Refuerza que el problema es de Euskalmet, no nuestro: la key de AEMET
+llegó instantánea a la misma dirección (`datos@costaviva.org`), así que
+la recepción de correo funciona bien cuando el remitente lo hace bien.
+Se ha respondido a soporte con este detalle — a la espera de nuevo. Una vez haya key,
+guardar como `EUSKALMET_API_KEY` (mismo patrón) y entonces sí escribir
+el código en `functions/prevision.js` (nueva función a estilo
+`datosCaudalTodos()`) que, para los ríos vascos de `RIOS`, cruce por
+CCAA/bounding box qué fuente usar y devuelva precipitación/presión real
+de la estación de monte más cercana a la cabecera de cada río
+(candidatas ya identificadas por su ubicación: Oiz — cabecera compartida
+de Lea y Oka —, Urkiola, Berriatua, Sodupe). Nada de esto se ha
+implementado en código todavía, solo la parte de credenciales.
+
+## Webcams en vídeo de Gipuzkoa + turbidez + capas del mapa (2026-09-14)
+
+Misma sesión que lo de arriba, tres piezas más añadidas en la rama
+`feat/estaciones-monte-gipuzkoa`, verificadas de extremo a extremo:
+
+**Webcams en vídeo real (HLS)** — 6 playas de Gipuzkoa (Hondarribia,
+Donostia/Zurriola, Orio, Zarautz, Deba, Mutriku/Mutrikukaia), fuente
+Diputación Foral de Gipuzkoa, CORS abierto (`Access-Control-Allow-Origin:
+*`), cargadas directas sin proxy propio (`WEBCAMS_HLS` en `index.html`).
+`puntuacionOleajeVisual()` generalizada para analizar tanto `<img>` como
+`<video>`; para vídeo se capturan 3 frames espaciados 2.5s y se descarta
+el que más se aparta de los otros dos (posible giro de cámara panorámica
+a media captura) antes de promediar. **Bug real encontrado y arreglado
+probando en vivo**: Chrome devuelve `"maybe"` en
+`video.canPlayType('application/vnd.apple.mpegurl')` (válido según el
+propio estándar, no implica soporte real) — el código comprobaba eso
+antes que `Hls.isSupported()`, así que Chrome entraba siempre por la
+rama "nativa" y el vídeo se quedaba colgado sin pedir nada al stream.
+Arreglado invirtiendo la prioridad (hls.js primero siempre que esté
+disponible). **Confirmado funcionando en un Chrome real del usuario**
+tras el arreglo. Nota para la próxima vez que haga falta depurar vídeo/
+HLS: el navegador automatizado de esta sesión (Claude in Chrome) no
+decodifica bien streams HLS reales (manifiesto y segmentos se
+descargaban perfectos vía `fetch()`, pero hls.js nunca llegaba a pedir
+un fragmento) — es una limitación de ese entorno de pruebas, no del
+código; para depurar reproducción de vídeo de verdad, pedir al usuario
+que pruebe en su propio navegador en vez de fiarse de la automatización.
+
+**Turbidez relativa del agua** — pieza completa nueva (no confundir con
+el oleaje visual, es un cálculo aparte): tabla `turbidez_historico`
+(pendiente de aplicar la migración
+`20260914100000_turbidez_historico.sql` en Supabase — no se ha hecho
+todavía), endpoint `/registrar-turbidez` (mismo `CRON_SECRET` que
+`/registrar-presion`), workflow diario `turbidez.yml` (mediodía Madrid,
+runner de GitHub Actions con `sharp`+`ffmpeg` porque Cloudflare Workers
+no tiene API de imagen/vídeo) que analiza saturación/tono HSV del agua
+de cada webcam (imagen fija y vídeo) y lo guarda. Nunca se compara un
+spot contra otro (el ángulo de cada cámara lo haría sin sentido, mismo
+problema que ya existía con el coeficiente de marea) — cada lectura se
+clasifica en no turbia/turbia/muy turbia por percentil contra el propio
+histórico de 90 días de ESE spot, y con menos de 14 lecturas se queda
+sin clasificar (S/D). **Pendiente**: aplicar la migración y lanzar el
+workflow a mano (`workflow_dispatch`) para la primera prueba real — no
+se ha ejecutado todavía.
+
+**Spots, ríos y boyas como capas independientes** — pedido explícito del
+usuario para un mapa limpio y personalizable: tras el login solo la capa
+de spots empieza encendida (`capaSpots`, botón 📍 activo por defecto);
+ríos (`capaRios`, botón 〰️) y boyas (`capaBoyas`, botón ⚓) quedan
+apagadas hasta que el usuario las active, mismo patrón que batimetría/
+radar/estaciones AEMET que ya eran opt-in. Apagar spots deshabilita
+también el botón "+" de añadir ubicación (`.deshabilitado`, pointer-
+events:none) — no tiene sentido añadir un punto que no se va a poder
+ver. Verificado en preview real: los spots (incluidos los nuevos de
+Gipuzkoa) se pintan bien, el resto de capas arrancan apagadas.
+
 ## Pendiente conocido (no tocar sin confirmar)
 
 - **Cuenta atrás para reintentar `/prevision`** (2026-09-14): la cuota
