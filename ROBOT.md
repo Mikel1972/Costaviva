@@ -1426,3 +1426,98 @@ al valorar si una boya tiene sesgo, no fiarse solo del %.
 
 **Firmado:** robot buscador de fuentes (pasada de mareas y oleaje),
 2026-09-14 15:18 UTC.
+
+### 2026-09-14 17:04 UTC (pasada buscadora — buenas prácticas de otras apps)
+
+Investigación con `WebSearch` de qué datos en tiempo real o funciones
+ofrecen otras apps de mareas/pesca (Windy, Fishbrain, Tides4fishing,
+Puertos del Estado, FishTrack, Marine Weather Forecast Pro, FishWeather)
+que Costa Viva no tenga todavía. **Solo propuestas — cambio de producto
+por definición, nunca implementación directa** (regla de
+`ROBOT_REGLAS.md`). Nada se ha tocado en código.
+
+Recordatorio de lo que Costa Viva YA tiene, para no proponer duplicados:
+oleaje/viento/marea/corriente por spot, coeficiente de marea propio por
+spot, fase y posición lunar (`/luna`), presión histórica + tendencia,
+estaciones AEMET (precipitación/presión), turbidez relativa por webcam,
+webcams (imagen + vídeo HLS), rayos (AEMET), índice de pesca por rango
+de temperatura de especie, capa de batimetría y radar de lluvia.
+
+**Huecos reales encontrados, ordenados por lo verificable/accionable que
+parece cada uno:**
+
+1. **Avisos costeros oficiales de AEMET (fenómenos marítimos)** — varias
+   apps (Marine Weather Forecast Pro, FishWeather con su "Advisories
+   Layer") muestran los avisos meteorológicos oficiales del gobierno
+   (temporal, aviso por viento/oleaje, "small craft advisory"). Costa
+   Viva no muestra ningún aviso oficial pese a que ya usamos AEMET para
+   rayos y estaciones. AEMET OpenData publica los avisos en formato CAP
+   (`/api/avisos_cap/...`), potencialmente accesible con la misma
+   `AEMET_API_KEY` que ya tenemos (caduca 2026-12-23). **No verificado
+   con petición real en esta pasada** — la key vive como secreto en
+   Cloudflare Pages, no en este runner. Sería un aviso de seguridad real
+   ("no salgas hoy") muy alineado con el carácter de la app (SOS,
+   seguridad en la mar). Candidato de más valor: propongo verificar el
+   endpoint CAP con la key real y, si va, integrarlo como capa/aviso en
+   `functions/prevision.js` + banner en `index.html` (eso sí sería
+   cambio de frontend → propuesta aparte antes de implementar).
+
+2. **Periodos solunares (mayor/menor) como recomendación horaria** —
+   Tides4fishing y el "BiteTime" de Fishbrain marcan las franjas del día
+   con más actividad prevista (paso lunar por el meridiano, orto/ocaso
+   lunar y solar). Costa Viva ya calcula posición lunar en `/luna`, así
+   que el dato base está — faltaría derivar las 2-4 ventanas diarias.
+   Ya anotado en `ROBOT_REGLAS.md` (sec. de variables del índice de
+   pesca) como **heurística tradicional, no ciencia dura**: si se añade,
+   dejarlo dicho así de claro en la UI. No inventa ningún dato externo
+   (es cálculo astronómico sobre lo que ya tenemos), pero sigue siendo
+   decisión de producto → propuesta.
+
+3. **Recomendación de cebo/técnica por comunidad ("Top Baits")** —
+   Fishbrain agrega los cebos/técnicas con más capturas reportadas por
+   spot. Costa Viva ya guarda `cebo`/`tecnica` por captura y tiene
+   `especies_comunidad`, pero no agrega nada para recomendar. Encaja
+   directamente con la idea ya aparcada "qué se está pescando ahora"
+   (`CLAUDE.md`, consentimiento vía `consiente_uso_datos_capturas`) —
+   mismo problema pendiente de mínimo de capturas/usuarios antes de
+   mostrar agregados para no des-anonimizar. No abrir sin retomar esa
+   idea con el usuario.
+
+4. **Cartas de temperatura superficial del mar (SST) y clorofila por
+   satélite** — FishTrack, SatFish y SeaLegs muestran "temperature
+   breaks" y barreras de color donde se concentra el pez (sobre todo
+   pesca de embarcación/altura). Copernicus Marine (ya citado en
+   `ROBOT_REGLAS.md` para turbidez) publica capas de SST y clorofila.
+   Más relevante para embarcación que para costa; requiere auth de
+   Copernicus (no verificable sin alta previa). Interés medio para el
+   perfil actual de la app (mayoría de spots de costa) — dejar como
+   idea de fondo, no prioritaria.
+
+5. **Descarga de previsión sin conexión (offline)** — Windy y Wavve
+   permiten descargar la previsión para consultarla sin cobertura, algo
+   habitual en la mar. Costa Viva ya es PWA; podría cachear el último
+   `/prevision` con un service worker para lectura offline. Mejora de
+   robustez real (seguridad: consultar condiciones sin cobertura), pero
+   es trabajo de frontend/PWA no trivial → propuesta.
+
+**Ya cubierto por ideas aparcadas existentes, no re-propongo como nuevo**:
+normativa de pesca por CCAA (Fishbrain "local rules"), agregado de
+capturas de comunidad, y batimetría (ya tenemos capa). **Sin novedad
+verificable con petición HTTP en esta pasada** — todo lo de arriba es
+propuesta de producto; lo único con verificación HTTP realista a corto
+plazo es el punto 1 (avisos CAP de AEMET), que no se pudo comprobar aquí
+por no tener la key en este runner.
+
+Fuentes consultadas:
+- Windy.app (App Store / Google Play) y guías de apps marinas 2026
+  (wavveboating.com, discoverboating.com, sealegs.ai).
+- Fishbrain (fishbrain.com, Google Play) y reseñas 2026 (gilledit.com,
+  bassanglermag.com).
+- Tides4fishing (tides4fishing.com/tides/tidal-coefficient,
+  /solunar-tables).
+- Puertos del Estado / PORTUS (portus.puertos.es, puertos.es).
+- FishTrack (fishtrack.com), SatFish (satfish.com), SeaLegs
+  (sealegs.ai), Marine Weather Forecast Pro y FishWeather (App Store).
+
+**Firmado:** robot buscador de fuentes (pasada de buenas prácticas de
+otras apps), 2026-09-14 17:04 UTC.
