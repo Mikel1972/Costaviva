@@ -369,6 +369,104 @@ getxo:    "https://detectia.net/img/webcam-ereaga.webp",
 **Firmado:** robot buscador de fuentes (pasada de webcams), 2026-09-13
 22:57 UTC.
 
+### 2026-09-14 08:14 UTC (pasada buscadora — webcams para spots sin cámara)
+
+**Objetivo de la pasada:** misma tarea que la del 2026-09-13 22:57 UTC —
+buscar cámaras nuevas para spots fijos que aún no tienen ninguna
+(Sanxenxo, A Guarda, Santander, Plentzia y el resto de la costa atlántica
+portuguesa/andaluza/canaria). Priorizados los dos gallegos y los dos del
+Cantábrico porque ya usamos sus proveedores (MeteoGalicia, Gobierno de
+Cantabria) y una cámara del mismo proveedor es la integración más barata
+y fiable.
+
+**Hallazgo nuevo respecto a la pasada anterior — la lista JSON oficial de
+MeteoGalicia vuelve a estar poblada.** El 2026-09-13 esa lista
+(`https://servizos.meteogalicia.gal/mgrss/observacion/jsonCamaras.action`)
+devolvía `{"listaCamaras":[]}` (vacía), así que aquella pasada no pudo
+enumerar cámaras gallegas de forma autoritativa y tuvo que descartar
+Sanxenxo/A Guarda a base de probar nombres de carpeta (404). **Hoy la
+lista trae 33 cámaras reales** (descargada de verdad desde este runner,
+`meteogalicia.gal` es alcanzable, ver 2026-09-13) — así que ahora la
+comprobación es autoritativa, no por sondeo:
+
+- **Sanxenxo:** NO tiene cámara de MeteoGalicia (los `concello` costeros
+  más cercanos con cámara son Poio/Castrove, Marín/Aguete y Bueu/Ons —
+  ninguno es Sanxenxo). Confirmado contra la lista completa.
+- **A Guarda:** NO tiene cámara de MeteoGalicia (la más al sur de la
+  lista es Baiona, que ya usamos). Confirmado contra la lista completa.
+
+Conclusión para los dos spots fijos gallegos sin cámara: **siguen sin
+fuente**, igual que hasta ahora, pero ahora está confirmado con la lista
+oficial en vez de por 404-probing.
+
+**Cámaras gallegas nuevas verificadas que NO corresponden a ningún spot
+fijo actual** (aparecen hoy en la lista oficial; las 4 marcadas las
+descargué de verdad con `curl`, `200 image/jpeg` + `file` = JPEG real, el
+resto salen de la misma lista JSON autoritativa con el patrón de URL ya
+conocido):
+
+| concello | carpeta MeteoGalicia | verificado a mano |
+|---|---|---|
+| Burela | `Burela` | ✅ 200, image/jpeg, ~67 KB, JPEG real |
+| Viveiro (Penedo do Galo) | `Penedodogalo` | ✅ 200, image/jpeg, ~151 KB, JPEG real |
+| Cariño | `Carinho` | ✅ 200, image/jpeg, ~227 KB, JPEG real |
+| Cedeira (Punta Candieira) | `PuntaCandieira` | ✅ 200, image/jpeg, ~95 KB, JPEG real |
+| Narón/Ferrol (Aldea Nova) | `AldeaNova` | — (en lista JSON) |
+| Arteixo (Langosteira) | `Langosteira` | — (en lista JSON) |
+| Ribeira (illa de Sálvora) | `Salvora` | — (en lista JSON) |
+| Vilanova de Arousa (Corón) | `Coron` | — (en lista JSON) |
+| Marín (Aguete) | `Aguete2` | — (en lista JSON) |
+| Bueu (praia de Ons) | `Onsplaya` | — (en lista JSON) |
+| Poio (Castrove) | `Castrove` | — (en lista JSON) |
+
+**Esto NO se integra ni se propone como código**: ninguna de estas
+cámaras es de un spot que ya exista en `SPOTS` (`index.html`) —
+integrarlas significaría **añadir spots nuevos a la app**, que es una
+decisión de producto (regla general de `ROBOT_REGLAS.md`: frontend/mapa/
+producto → proponer, nunca implementar). Se dejan aquí solo como lista de
+candidatos verificados por si el usuario decide en algún momento ampliar
+la cobertura gallega (norte de Lugo y Ferrolterra, hoy sin ningún spot).
+Patrón de URL para la imagen a tamaño completo, igual que las gallegas ya
+integradas: `https://www.meteogalicia.gal/datosred/camaras/MeteoGalicia/<carpeta>/ultima.jpg`
+(la lista JSON da `miniUltima.jpg`, la miniatura; usar `ultima.jpg` como
+hacen las entradas actuales de `functions/webcam/[slug].js`).
+
+**Santander / El Sardinero:** confirmado que existe una cámara del
+**Gobierno de Cantabria** (`cantabria.es/webcams`) — el MISMO proveedor
+que ya proxyeamos para Suances, Castro, Laredo, San Vicente, Comillas y
+Santoña — además de las 4 de la Autoridad Portuaria de Santander
+(`puertosantander.es`). Pero `cantabria.es` **sigue sin ser alcanzable
+para verificar la URL directa de la imagen** desde la infraestructura de
+esta pasada (`ECONNREFUSED` a `195.235.112.12:443`; la pasada del
+2026-09-13 ya lo vio bloqueado con `HTTP 000`). Sin poder descargar la
+imagen real, no propongo una URL concreta — sería inventarla. **Pista
+firme para una comprobación manual:** la cámara del Sardinero cuelga de
+`https://www.cantabria.es/webcams` con el mismo esquema
+`cantabria.es/ftp_webcam/<nombre>-New-<id>.jpg` que las 6 cántabras ya
+integradas; falta solo confirmar `<nombre>` y `<id>` reales abriendo esa
+página desde un navegador normal.
+
+**Plentzia:** sin novedad respecto a la pasada anterior. Solo aparecen
+agregadores de terceros (leonoticias, surf-forecast, escueladesurfsopelana)
+y una cámara IP en crudo de una escuela de surf
+(`http://62.99.56.33:81/jpg/1/image.jpg`) — no es un proveedor
+institucional estable como los que usamos (AZTI, MeteoGalicia, Gobierno
+de Cantabria, Turisme CV, SOCIB), así que no la propongo. AZTI
+(`detectia.net`) no tiene cámara de Plentzia (comprobado 2026-09-13).
+Queda sin cámara.
+
+**Resultado neto de la pasada:** ninguna webcam nueva integrable para un
+spot fijo existente. Sí un dato nuevo y autoritativo: la lista oficial de
+MeteoGalicia vuelve a responder poblada y confirma que Sanxenxo y A
+Guarda no tienen cámara propia, más 11 cámaras costeras gallegas
+verificadas disponibles como candidatas solo si se decide añadir spots
+nuevos. Sin cambios de código (y cualquier integración de webcam tocaría
+`functions/webcam/[slug].js`, que por la red de seguridad de
+`ROBOT_REGLAS.md` sería propuesta, no commit directo, de todos modos).
+
+**Firmado:** robot buscador de fuentes (pasada de webcams), 2026-09-14
+08:14 UTC.
+
 ---
 
 ## Auditoría de datos
