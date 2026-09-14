@@ -942,8 +942,9 @@ export async function onRequestGet(context) {
   // AEMET_API_KEY no llega pese a estar puesta en el dashboard. Quitar en
   // cuanto se resuelva.
   const debugEnvKeys = Object.keys(context.env || {});
+  const debugAemetKeyLength = (context.env?.AEMET_API_KEY || "").length;
 
-  const respuesta = new Response(JSON.stringify({ spots: resultados, boyas, rayosNacional, caudales, estacionesAemet, debugEnvKeys }, null, 2), {
+  const respuesta = new Response(JSON.stringify({ spots: resultados, boyas, rayosNacional, caudales, estacionesAemet, debugEnvKeys, debugAemetKeyLength }, null, 2), {
     headers: {
       "content-type": "application/json; charset=utf-8",
       // El modelo de Open-Meteo se actualiza varias horas, no hace falta
