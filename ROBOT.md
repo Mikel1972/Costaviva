@@ -467,6 +467,46 @@ nuevos. Sin cambios de código (y cualquier integración de webcam tocaría
 **Firmado:** robot buscador de fuentes (pasada de webcams), 2026-09-14
 08:14 UTC.
 
+### 2026-09-14 15:18 UTC (pasada buscadora — mareas y oleaje)
+
+**Hallazgo verificable para la responsabilidad de "mar de fondo"
+(swell), ver `ROBOT_REGLAS.md`:** la propia Marine API de Open-Meteo,
+que ya usamos en `functions/prevision.js` para el oleaje total, expone
+directamente las variables de solo-mar-de-fondo `swell_wave_height`,
+`swell_wave_period` y `swell_wave_direction` — no hacía falta buscar una
+fuente nueva ni montar un modelo de propagación por batimetría desde
+cero para tener una primera aproximación del swell. Verificado con una
+petición real hoy (Pasaia II, 43.36,-1.89, 14:00 UTC):
+`swell_wave_height` 0.9 m, `swell_wave_period` 8.45 s, frente a
+`wave_height` total de 0.92 m. Es el mismo modelo (no una boya real) que
+ya calibramos contra Puertos del Estado, así que hereda la misma
+desviación por zona que estamos midiendo abajo — pero da el desglose
+mar-de-viento / mar-de-fondo gratis, sin credenciales ni cuota extra
+(cuenta contra la misma cuota por-ubicación de Open-Meteo ya conocida,
+ver `ROBOT_REGLAS.md`). **Solo propuesta, no implementado**: mostrar u
+usar el swell en el índice de mar cambia lo que se le enseña al usuario
+como fiable, así que sigue la regla de "producto → proponer, no
+implementar". Si se retoma la idea de mar de fondo, este es el primer
+peldaño más barato antes de nada de batimetría/propagación.
+
+**Alternativa más completa, anotada pero NO verificada con HTTP (exige
+alta/credenciales):** Copernicus Marine
+(`data.marine.copernicus.eu`) publica productos de oleaje globales y
+regionales con componentes de swell primario/secundario (altura y
+periodo medios) — producto global `GLOBAL_ANALYSISFORECAST_WAV_001_027`
+(3-horario, 10 días) y regionales del noroeste atlántico y Mediterráneo
+(horarios, 7 días). Más rico que Open-Meteo (separa swell primario y
+secundario), pero requiere registro y su acceso no es un `GET` REST
+simple (toolbox/subsetting), así que no se comprobó en vivo esta pasada
+— queda como candidata de segundo nivel solo si el swell de Open-Meteo
+se queda corto. También revisado el conjunto **SIMAR** de Puertos del
+Estado (oleaje modelado histórico+predicción, descarga CSV) como posible
+alternativa/contraste al modelo de Open-Meteo — mismo caso: no es una
+API REST limpia, queda anotada, no verificada esta pasada.
+
+**Firmado:** robot buscador de fuentes (pasada de mareas y oleaje),
+2026-09-14 15:18 UTC.
+
 ---
 
 ## Auditoría de datos
@@ -1337,3 +1377,52 @@ de la próxima pasada tiene más sentido repetir alguna de ellas (empezando
 por las que llevan más noches sin repetirse: 1731 Barcelona II y 1514
 Málaga) para que alguna empiece a acumular su propio historial, en vez de
 seguir sumando boyas nuevas de un solo punto cada una.
+
+### 2026-09-14 15:18 UTC (pasada buscadora — mareas y oleaje, calibración)
+
+Esta pasada corre en un runner de GitHub Actions con salida de red real
+(a diferencia de la nocturna en Claude-on-the-web, ver 2026-08-31), así
+que se pudo hacer una comparación real boya vs Open-Meteo a media tarde,
+además de la nocturna de hoy — mismo método: `poem.puertos.es/portus/
+StationData` para la altura real (Hm0), Marine API de Open-Meteo en las
+coordenadas exactas de cada boya para la altura calculada, emparejando
+por la hora UTC exacta del último dato real de cada boya. Siguiendo la
+recomendación de la pasada nocturna anterior, se repitieron las 3 boyas
+obligatorias más las dos de la lista corta que llevaban más tiempo sin
+repetirse (1731 Barcelona II, 1514 Málaga):
+
+| boya | hora UTC | altura medida | altura calculada | diferencia | % |
+|---|---|---|---|---|---|
+| 2136 Bilbao-Vizcaya | 15:00 | 1.17 m | 1.22 m | +0.05 m | +4.3% |
+| 1117 Gijón | 13:00 | 1.22 m | 1.08 m | −0.14 m | −11.5% |
+| 1101 Pasaia II | 14:00 | 1.23 m | 0.92 m | −0.31 m | −25.2% |
+| 1731 Barcelona II | 14:00 | 0.58 m | 0.30 m | −0.28 m | −48.3% |
+| 1514 Málaga | 14:00 | 0.48 m | 0.54 m | +0.06 m | +12.5% |
+
+Lectura de estos puntos frente al historial de `CALIBRACION.jsonl`:
+
+- **1101 Pasaia II** suma su **sexto punto seguido con signo negativo**
+  (−25.2%, en línea con la media ≈−26% de las noches anteriores). Sigue
+  siendo, con diferencia, la boya con la desviación más consistente:
+  Open-Meteo calcula sistemáticamente por debajo de la boya real en esa
+  ría. Aun así, **6 puntos, todavía por debajo de los 15 mínimos** que
+  pide la tarea antes de proponer un factor de corrección de zona — es
+  la principal candidata, pero no se propone nada todavía.
+- **1731 Barcelona II** estrena su segundo punto (−48.3%; el primero fue
+  −22.9% el 2026-09-10). Los dos negativos, pero la magnitud varía mucho
+  — con mar de solo 0.58 m, un error absoluto pequeño (−0.28 m) dispara
+  el porcentaje, así que este −48.3% pesa poco como señal de sesgo real.
+- **1514 Málaga** estrena segundo punto (+12.5%) con **signo opuesto** al
+  primero (−38.1% el 2026-09-11): sin patrón, mar muy baja (0.48 m).
+- **2136 Bilbao-Vizcaya** (+4.3%) y **1117 Gijón** (−11.5%) dentro de lo
+  ya visto; siguen sin desviación sistemática clara.
+
+**Ningún factor de corrección propuesto** — se mantiene la regla de 15
+puntos mínimos por boya y de que la calibración nunca se aplica sola. La
+señal de Pasaia II es la única que merece seguimiento cercano. Nota de
+método: con oleaje bajo (<0.6 m) el porcentaje de error es muy sensible
+a diferencias absolutas mínimas; conviene ponderar por altura absoluta
+al valorar si una boya tiene sesgo, no fiarse solo del %.
+
+**Firmado:** robot buscador de fuentes (pasada de mareas y oleaje),
+2026-09-14 15:18 UTC.
