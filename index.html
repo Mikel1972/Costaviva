@@ -13,9 +13,6 @@
 <meta name="apple-mobile-web-app-title" content="Costa Viva" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<!-- Prueba de heatmap (2026-09-14, pedido explícito tras ver sporas.io) —
-     capa opcional vía botón, no sustituye a los marcadores de spot. -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.heat/0.2.0/leaflet-heat.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -280,14 +277,6 @@
     cursor: pointer; font-size: 16px; padding: 0;
   }
   .nubes-toggle.activo { background: #D4A24C; color: #0B2532; }
-  .heatmap-toggle {
-    position: absolute; top: 256px; right: 16px; z-index: 502;
-    width: 38px; height: 38px; border-radius: 8px;
-    background: #FFFFFF; border: 1px solid #DDE2DC; color: #0B2532;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; font-size: 16px; padding: 0;
-  }
-  .heatmap-toggle.activo { background: #D4A24C; color: #0B2532; }
   .anadir-ubicacion-toggle {
     position: absolute; top: 208px; right: 16px; z-index: 502;
     width: 38px; height: 38px; border-radius: 8px;
@@ -401,7 +390,7 @@
     header h1 { font-size: 22px; }
     header p { display: none; }
 
-    #avisoRayos, #sinRayos { padding: 6px 16px; font-size: 10.5px; }
+    #avisoRayos { padding: 6px 16px; font-size: 10.5px; }
 
     .main { flex-direction: column; position: relative; }
     .mapa-wrap { flex: 1; min-height: 0; }
@@ -497,12 +486,14 @@
 
 <header>
   <h1>Costa Viva</h1><span class="fecha"><span id="estadoVigenciaGlobal">cargando…</span></span>
-  <a id="enlaceAdmin" href="/admin.html" title="Admin" aria-label="Administración" style="display:none; margin-left:auto; background:#EEF2EF; border:1px solid #DDE2DC; color:#0B2532; width:34px; height:34px; border-radius:50%; font-size:15px; cursor:pointer; align-items:center; justify-content:center; text-decoration:none;">⚙️</a>
-  <div class="cuenta-menu-wrap">
-    <button class="cuenta-menu-btn" id="btnCuentaMenu" type="button" aria-label="Cuenta">👤</button>
-    <div class="cuenta-menu-dropdown" id="cuentaMenuDropdown">
-      <button type="button" id="btnInvitarAmigo">📤 Invitar a un amigo</button>
-      <button type="button" id="btnCerrarSesion">🚪 Cerrar sesión</button>
+  <div style="display:flex; align-items:center; gap:8px; margin-left:auto;">
+    <a id="enlaceAdmin" href="/admin.html" title="Admin" aria-label="Administración" style="display:none; background:#EEF2EF; border:1px solid #DDE2DC; color:#0B2532; width:34px; height:34px; border-radius:50%; font-size:15px; cursor:pointer; align-items:center; justify-content:center; text-decoration:none;">⚙️</a>
+    <div class="cuenta-menu-wrap">
+      <button class="cuenta-menu-btn" id="btnCuentaMenu" type="button" aria-label="Cuenta">👤</button>
+      <div class="cuenta-menu-dropdown" id="cuentaMenuDropdown">
+        <button type="button" id="btnInvitarAmigo">📤 Invitar a un amigo</button>
+        <button type="button" id="btnCerrarSesion">🚪 Cerrar sesión</button>
+      </div>
     </div>
   </div>
 </header>
@@ -510,10 +501,6 @@
 <div id="avisoRayos" style="display:none; background:#A34A35; color:#F5F1E6; padding:8px 28px; font-family:'IBM Plex Mono', monospace; font-size:12px; font-weight:700; flex-shrink:0;">
   ⚡ RIESGO DE RAYOS DETECTADO EN LA ZONA — no salir a roca/muelle hasta que pase
 </div>
-<div id="sinRayos" style="background:#FFFFFF; border-bottom:1px solid #DDE2DC; color:#42585F; padding:6px 28px; font-family:'IBM Plex Mono', monospace; font-size:11px; flex-shrink:0;">
-  ⚡ Sin aviso de rayos activo para esta zona — mapa nacional de referencia (AEMET) disponible en el botón ⚡ del mapa
-</div>
-
 <div class="main">
   <div class="mapa-wrap">
     <div id="map"></div>
@@ -560,7 +547,6 @@
     <button class="batimetria-toggle" id="toggleBatimetria" title="Batimetría (profundidad del mar)" aria-label="Mostrar/ocultar batimetría">📏</button>
     <button class="nubes-toggle" id="toggleNubes" title="Radar de lluvia en directo (RainViewer)" aria-label="Mostrar/ocultar radar de lluvia">☁️</button>
     <button class="anadir-ubicacion-toggle" id="toggleAnadirUbicacion" title="Añadir una ubicación nueva" aria-label="Añadir ubicación">➕</button>
-    <button class="heatmap-toggle" id="toggleHeatmap" title="Mapa de calor del índice de mar/pesca (prueba)" aria-label="Mostrar/ocultar mapa de calor">🔥</button>
     <div class="confirmar-ubicacion-panel" id="eligeMetodoPanel">
       <div class="titulo">¿Cómo quieres marcar el punto?</div>
       <div class="botones" style="flex-direction:column; gap:8px;">
@@ -1530,40 +1516,6 @@ document.getElementById("toggleBatimetria").addEventListener("click", (e) => {
   }
 });
 
-// Heatmap de prueba (2026-09-14, pedido explícito tras ver el estilo de
-// sporas.io) — sobre el índice de mar combinado de cada spot (0-100).
-// Deliberadamente un botón aparte, no sustituye a los marcadores: es un
-// experimento para "ver cómo queda", no una decisión de diseño todavía.
-let capaHeatmap = null;
-function puntosHeatmap() {
-  return todosLosSpots()
-    .filter((s) => Number.isFinite(s.indice))
-    .map((s) => [s.lat, s.lon, s.indice / 100]);
-}
-function actualizarCapaHeatmap() {
-  if (!capaHeatmap || !map.hasLayer(capaHeatmap)) return;
-  capaHeatmap.setLatLngs(puntosHeatmap());
-}
-document.getElementById("toggleHeatmap").addEventListener("click", (e) => {
-  if (capaHeatmap && map.hasLayer(capaHeatmap)) {
-    map.removeLayer(capaHeatmap);
-    e.currentTarget.classList.remove("activo");
-    return;
-  }
-  if (!capaHeatmap) {
-    // Misma paleta que ya usa el resto de la app (azul->verde->dorado->rojo)
-    // en vez del arcoíris por defecto de leaflet.heat.
-    capaHeatmap = L.heatLayer(puntosHeatmap(), {
-      radius: 45, blur: 35, maxZoom: 12, max: 1.0,
-      gradient: { 0.2: "#2E7BA0", 0.4: "#4F9D69", 0.65: "#D9C08A", 0.8: "#D4A24C", 1.0: "#A34A35" },
-    });
-  } else {
-    capaHeatmap.setLatLngs(puntosHeatmap());
-  }
-  capaHeatmap.addTo(map);
-  e.currentTarget.classList.add("activo");
-});
-
 function iconoFlecha(grados, color) {
   const rumbo = (grados + 180) % 360;
   return `<svg width="11" height="11" viewBox="0 0 24 24" style="transform:rotate(${rumbo}deg)">
@@ -2527,7 +2479,6 @@ function refrescarIndicesVisibles() {
   });
   const estadoEl = document.getElementById("estadoVigenciaGlobal");
   if (estadoEl) estadoEl.textContent = textoVigencia();
-  actualizarCapaHeatmap();
   const marcadorActivo = document.querySelector(".marcador.activo");
   if (marcadorActivo) {
     const sAbierto = todosLosSpots().find((x) => x.slug === marcadorActivo.id.replace("marcador-", ""));
@@ -2562,7 +2513,6 @@ map.whenReady(async () => {
 function comprobarAvisoRayos() {
   const hayRiesgo = SPOTS.some((s) => s.rayosCerca === true);
   document.getElementById("avisoRayos").style.display = hayRiesgo ? "block" : "none";
-  document.getElementById("sinRayos").style.display = hayRiesgo ? "none" : "block";
 }
 </script>
 
