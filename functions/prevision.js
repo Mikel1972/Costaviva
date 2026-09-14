@@ -18,6 +18,21 @@ export const SPOTS = [
   { slug: "plentzia", nombre: "Plentzia", lat: 43.4053, lon: -2.9436 },
   { slug: "getxo", nombre: "Getxo (Ereaga)", lat: 43.3489, lon: -3.0119 },
 
+  // Gipuzkoa (de Lekeitio a la frontera francesa) — hueco detectado
+  // 2026-09-14, no había ningún spot ahí. Mismo criterio que la
+  // ampliación nacional: coordenadas de localidad real, sin snapshot
+  // propio de un día.
+  { slug: "ondarroa", nombre: "Ondarroa", lat: 43.3225, lon: -2.4200 },
+  { slug: "mutriku", nombre: "Mutriku", lat: 43.3167, lon: -2.3833 },
+  { slug: "deba", nombre: "Deba", lat: 43.2917, lon: -2.3550 },
+  { slug: "zumaia", nombre: "Zumaia", lat: 43.2967, lon: -2.2617 },
+  { slug: "getaria", nombre: "Getaria", lat: 43.3050, lon: -2.2017 },
+  { slug: "zarautz", nombre: "Zarautz", lat: 43.2833, lon: -2.1667 },
+  { slug: "orio", nombre: "Orio", lat: 43.2833, lon: -2.1300 },
+  { slug: "donostia", nombre: "Donostia/San Sebastián", lat: 43.3183, lon: -1.9812 },
+  { slug: "pasaia", nombre: "Pasaia", lat: 43.3283, lon: -1.9283 },
+  { slug: "hondarribia", nombre: "Hondarribia", lat: 43.3736, lon: -1.7964 },
+
   // --- Ampliación nacional España (coordenadas de localidad conocida, no de
   // un pico/roca concreto — Open-Meteo funciona en cualquier lat/lon del
   // mundo así que no hace falta más verificación que la geografía real) ---
@@ -803,6 +818,81 @@ async function datosCaudalTodos() {
   return { ...cantabrico, ...jucar, ...segura, ...galicia };
 }
 
+// ---------------------------------------------------------------------------
+// Estaciones meteorológicas reales (AEMET OpenData) — precipitación/presión
+// medidas de verdad, no el modelo de Open-Meteo. Pedido explícito del
+// usuario 2026-09-14 tras investigar el hueco de caudal real en los ríos
+// vascos (ver RIOS en index.html): "Euskalmet para Euskadi, AEMET para el
+// resto". Esta es la parte AEMET — cubre el resto de la costa española con
+// estaciones ya existentes (aeropuertos/climatológicas), no la red densa de
+// monte de Euskadi (eso depende de la key de Euskalmet, todavía pendiente,
+// ver CLAUDE.md). Cada código (idema) y coordenada se verificó con una
+// petición real el 2026-09-14 contra /opendata/api/observacion/convencional
+// antes de escribirlos aquí — nombres reales de AEMET, no inventados.
+export const ESTACIONES_AEMET = [
+  { idema: "1082", nombre: "Bilbao Aeropuerto", lat: 43.297952, lon: -2.906304 },
+  { idema: "1014A", nombre: "Donostia/San Sebastián Aeropuerto", lat: 43.357075, lon: -1.792116 },
+  { idema: "1109X", nombre: "Santander Aeropuerto", lat: 43.428613, lon: -3.831385 },
+  { idema: "1212E", nombre: "Asturias/Avilés Aeropuerto", lat: 43.566941, lon: -6.044173 },
+  { idema: "1249X", nombre: "Oviedo", lat: 43.353333, lon: -5.873889 },
+  { idema: "1387", nombre: "A Coruña", lat: 43.365969, lon: -8.421517 },
+  { idema: "1428", nombre: "Santiago de Compostela/Lavacolla", lat: 42.888011, lon: -8.410515 },
+  { idema: "1495", nombre: "Vigo/Peinador Aeropuerto", lat: 42.238616, lon: -8.623765 },
+  { idema: "0076", nombre: "Barcelona Aeropuerto", lat: 41.292781, lon: 2.069995 },
+  { idema: "0042Y", nombre: "Tarragona (Fac. Geografia)", lat: 41.123892, lon: 1.249167 },
+  { idema: "8414A", nombre: "Valencia Aeropuerto", lat: 39.485015, lon: -0.474677 },
+  { idema: "8019", nombre: "Alicante-Elche Aeropuerto", lat: 38.282778, lon: -0.570830 },
+  { idema: "7012D", nombre: "Cartagena (Tentegorra)", lat: 37.604444, lon: -1.023333 },
+  { idema: "7031X", nombre: "Murcia/San Javier Aeropuerto", lat: 37.778332, lon: -0.805916 },
+  { idema: "6199X", nombre: "Vélez-Málaga", lat: 36.768611, lon: -4.093611 },
+  { idema: "6268Y", nombre: "Motril (Puerto Náutico)", lat: 36.724011, lon: -3.529267 },
+  { idema: "5960", nombre: "Jerez de la Frontera Aeropuerto", lat: 36.750495, lon: -6.055857 },
+  { idema: "4642E", nombre: "Huelva (Ronda Este)", lat: 37.278412, lon: -6.911696 },
+  { idema: "B228", nombre: "Palma de Mallorca (Portopí)", lat: 39.554258, lon: 2.625268 },
+  { idema: "B954", nombre: "Ibiza (Es Codolà)", lat: 38.876385, lon: 1.384446 },
+  { idema: "B893", nombre: "Menorca Aeropuerto", lat: 39.854726, lon: 4.215556 },
+  { idema: "C649I", nombre: "Las Palmas (Gando)", lat: 27.917725, lon: -15.395303 },
+  { idema: "C429I", nombre: "Tenerife Sur", lat: 28.046992, lon: -16.561158 },
+  { idema: "C249I", nombre: "Fuerteventura Aeropuerto", lat: 28.444720, lon: -13.863055 },
+  { idema: "C029O", nombre: "Lanzarote Aeropuerto", lat: 28.951943, lon: -13.600279 },
+];
+
+// Devuelve { <idema>: { prec, pres, presNmar, ta, tamin, tamax, hr, vv,
+// vmax, dv, ts, actualizado } } solo para las estaciones de arriba — nunca
+// las ~850 que trae "todas" de golpe (ver el incidente real de payload/CPU
+// de Cloudflare Workers documentado en CLAUDE.md, mismo riesgo si esto se
+// devolviera sin filtrar). Patrón de dos pasos propio de AEMET OpenData: la
+// llamada inicial no trae los datos, solo una URL corta a la que hay que
+// volver a pedir.
+async function datosEstacionesAemet(apiKey) {
+  if (!apiKey) throw new Error("falta AEMET_API_KEY");
+  const meta = await fetch("https://opendata.aemet.es/opendata/api/observacion/convencional/todas", {
+    headers: { api_key: apiKey },
+  });
+  if (!meta.ok) throw new Error(`HTTP ${meta.status} (metadatos)`);
+  const { datos, estado, descripcion } = await meta.json();
+  if (!datos) throw new Error(`sin URL de datos (estado ${estado}: ${descripcion})`);
+  const resp = await fetch(datos);
+  if (!resp.ok) throw new Error(`HTTP ${resp.status} (datos)`);
+  const lecturas = await resp.json();
+
+  const idemasQueremos = new Set(ESTACIONES_AEMET.map((e) => e.idema));
+  const resultado = {};
+  for (const l of lecturas) {
+    if (!idemasQueremos.has(l.idema)) continue;
+    // "todas" trae más de una lectura por estación (horas distintas) —
+    // nos quedamos con la más reciente por fecha (fint).
+    if (resultado[l.idema] && resultado[l.idema].actualizado >= l.fint) continue;
+    resultado[l.idema] = {
+      prec: l.prec ?? null, pres: l.pres ?? null, presNmar: l.pres_nmar ?? null,
+      ta: l.ta ?? null, tamin: l.tamin ?? null, tamax: l.tamax ?? null,
+      hr: l.hr ?? null, vv: l.vv ?? null, vmax: l.vmax ?? null, dv: l.dv ?? null,
+      ts: l.ts ?? null, actualizado: l.fint,
+    };
+  }
+  return resultado;
+}
+
 // Metadato de la imagen nacional de rayos de AEMET (ver /rayos-imagen) —
 // solo la hora de la última actualización, para no repetir la llamada al
 // timeline en el navegador.
@@ -833,7 +923,7 @@ export async function onRequestGet(context) {
   const cacheada = await cache.match(cacheKey);
   if (cacheada) return cacheada;
 
-  const [resultados, boyasEspana, boyaNazare, rayosNacional, caudales] = await Promise.all([
+  const [resultados, boyasEspana, boyaNazare, rayosNacional, caudales, estacionesAemet] = await Promise.all([
     previsionTodosSpots(SPOTS).catch((e) =>
       SPOTS.map((spot) => ({ slug: spot.slug, nombre: spot.nombre, error: String(e) }))
     ),
@@ -843,10 +933,11 @@ export async function onRequestGet(context) {
     })),
     metaRayos().catch((e) => ({ error: String(e) })),
     datosCaudalTodos().catch((e) => ({ error: String(e) })),
+    datosEstacionesAemet(context.env.AEMET_API_KEY).catch((e) => ({ error: String(e) })),
   ]);
   const boyas = [...boyasEspana, boyaNazare];
 
-  const respuesta = new Response(JSON.stringify({ spots: resultados, boyas, rayosNacional, caudales }, null, 2), {
+  const respuesta = new Response(JSON.stringify({ spots: resultados, boyas, rayosNacional, caudales, estacionesAemet }, null, 2), {
     headers: {
       "content-type": "application/json; charset=utf-8",
       // El modelo de Open-Meteo se actualiza varias horas, no hace falta

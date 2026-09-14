@@ -13,6 +13,9 @@
 <meta name="apple-mobile-web-app-title" content="Costa Viva" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<!-- Prueba de heatmap (2026-09-14, pedido explícito tras ver sporas.io) —
+     capa opcional vía botón, no sustituye a los marcadores de spot. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.heat/0.2.0/leaflet-heat.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -135,6 +138,41 @@
     font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 700;
     text-align: center; white-space: nowrap;
   }
+  .marcador-estacion {
+    min-width: 34px; padding: 2px 7px; border-radius: 6px;
+    background: #EEF2EF; border: 2px solid #8B5E3C; color: #0B2532;
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 700;
+    text-align: center; white-space: nowrap;
+  }
+
+  /* Modal de estación meteorológica (2026-09-14) — fondo oscuro + tarjeta
+     clara, mismo lenguaje visual que el resto de la app. */
+  .modal-estacion {
+    position: fixed; inset: 0; z-index: 2000;
+    background: rgba(11,37,50,0.72);
+    display: none; align-items: center; justify-content: center; padding: 24px;
+  }
+  .modal-estacion.visible { display: flex; }
+  .modal-estacion-contenido {
+    background: #FFFFFF; border-radius: 14px; border: 1px solid #DDE2DC;
+    max-width: 360px; width: 100%; padding: 22px 22px 18px; position: relative;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+  }
+  .modal-estacion-contenido h3 {
+    font-family: 'Fraunces', serif; margin: 0 22px 4px 0; color: #0B2532; font-size: 19px;
+  }
+  .fila-estacion {
+    display: flex; justify-content: space-between; gap: 12px;
+    padding: 7px 0; border-bottom: 1px solid #EEF2EF;
+    font-family: 'Inter', sans-serif; font-size: 12.5px; color: #42585F;
+  }
+  .fila-estacion strong { color: #0B2532; font-family: 'IBM Plex Mono', monospace; }
+  .fila-estacion:last-child { border-bottom: none; }
+  .modal-estacion .cerrar {
+    position: absolute; top: 14px; right: 14px;
+    background: transparent; border: none; color: #5F7981; font-size: 16px; cursor: pointer;
+    padding: 6px; margin: -6px;
+  }
 
   /* Llamada de caudal: tooltip de Leaflet restilizado para que se note que
      el marcador de río se puede "abrir" al pasar el cursor por encima. */
@@ -242,6 +280,14 @@
     cursor: pointer; font-size: 16px; padding: 0;
   }
   .nubes-toggle.activo { background: #D4A24C; color: #0B2532; }
+  .heatmap-toggle {
+    position: absolute; top: 256px; right: 16px; z-index: 502;
+    width: 38px; height: 38px; border-radius: 8px;
+    background: #FFFFFF; border: 1px solid #DDE2DC; color: #0B2532;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 16px; padding: 0;
+  }
+  .heatmap-toggle.activo { background: #D4A24C; color: #0B2532; }
   .anadir-ubicacion-toggle {
     position: absolute; top: 208px; right: 16px; z-index: 502;
     width: 38px; height: 38px; border-radius: 8px;
@@ -514,6 +560,7 @@
     <button class="batimetria-toggle" id="toggleBatimetria" title="Batimetría (profundidad del mar)" aria-label="Mostrar/ocultar batimetría">📏</button>
     <button class="nubes-toggle" id="toggleNubes" title="Radar de lluvia en directo (RainViewer)" aria-label="Mostrar/ocultar radar de lluvia">☁️</button>
     <button class="anadir-ubicacion-toggle" id="toggleAnadirUbicacion" title="Añadir una ubicación nueva" aria-label="Añadir ubicación">➕</button>
+    <button class="heatmap-toggle" id="toggleHeatmap" title="Mapa de calor del índice de mar/pesca (prueba)" aria-label="Mostrar/ocultar mapa de calor">🔥</button>
     <div class="confirmar-ubicacion-panel" id="eligeMetodoPanel">
       <div class="titulo">¿Cómo quieres marcar el punto?</div>
       <div class="botones" style="flex-direction:column; gap:8px;">
@@ -638,6 +685,13 @@
   </div>
 </div>
 
+<div class="modal-estacion" id="modalEstacion">
+  <div class="modal-estacion-contenido">
+    <button class="cerrar" id="cerrarModalEstacion" aria-label="Cerrar">✕</button>
+    <h3 id="tituloModalEstacion"></h3>
+    <div id="contenidoModalEstacion"></div>
+  </div>
+</div>
 <script>
 // ---------------------------------------------------------------------------
 // Datos de respaldo ESTÁTICOS (snapshot antiguo, ya no viene de Todosurf —
@@ -689,6 +743,27 @@ const SPOTS = [
     nubosidad: null, precipitacion: null, tempAgua: null, rayosCerca: null,
     corriente: null, dirCorriente: null, marea: null, presion: null },
 ].concat(
+  // Gipuzkoa (de Lekeitio a la frontera francesa) — hueco detectado
+  // 2026-09-14, no había ningún spot ahí. Mismo placeholder genérico que
+  // la ampliación nacional de abajo (sin snapshot propio de un día real).
+  [
+    ["ondarroa", "Ondarroa", 43.3225, -2.4200],
+    ["mutriku", "Mutriku", 43.3167, -2.3833],
+    ["deba", "Deba", 43.2917, -2.3550],
+    ["zumaia", "Zumaia", 43.2967, -2.2617],
+    ["getaria", "Getaria", 43.3050, -2.2017],
+    ["zarautz", "Zarautz", 43.2833, -2.1667],
+    ["orio", "Orio", 43.2833, -2.1300],
+    ["donostia", "Donostia/San Sebastián", 43.3183, -1.9812],
+    ["pasaia", "Pasaia", 43.3283, -1.9283],
+    ["hondarribia", "Hondarribia", 43.3736, -1.7964],
+  ].map(([slug, nombre, lat, lon]) => ({
+    slug, nombre, lat, lon,
+    altura: [0.2, 0.5], periodo: 5, viento: 12, dirViento: "N", dirOla: "N 350°",
+    nubosidad: null, precipitacion: null, tempAgua: null, rayosCerca: null,
+    corriente: null, dirCorriente: null, marea: null, presion: null,
+  }))
+).concat(
   // Ampliación nacional (España + Portugal, 2026-09-09). Sin snapshot propio
   // de un día real como los 6 originales — placeholder genérico idéntico
   // para todos, sobrescrito por actualizarDesdeBackend() casi al instante;
@@ -826,6 +901,42 @@ const BOYAS = [
   // functions/prevision.js para el detalle de la fuente.
   { codigo: "PT-nazare-costeira", nombre: "Nazaré (costeira, PT)", lat: 39.560, lon: -9.210 },
 ].map((b) => ({ ...b, alturaSignificativa: null, periodoPico: null, dirOla: null, tempAgua: null, actualizado: null }));
+
+// Estaciones meteorológicas reales de AEMET OpenData — mismas coordenadas
+// que ESTACIONES_AEMET en functions/prevision.js (2026-09-14, "Euskalmet
+// para Euskadi, AEMET para el resto"). Sin dato inventado: si /prevision no
+// trae nada real para una estación, su marcador no se dibuja (ver
+// crearMarcadorEstacion), igual que las boyas de arriba.
+const ESTACIONES_METEO = [
+  { idema: "1082", nombre: "Bilbao Aeropuerto", lat: 43.297952, lon: -2.906304 },
+  { idema: "1014A", nombre: "Donostia/San Sebastián Aeropuerto", lat: 43.357075, lon: -1.792116 },
+  { idema: "1109X", nombre: "Santander Aeropuerto", lat: 43.428613, lon: -3.831385 },
+  { idema: "1212E", nombre: "Asturias/Avilés Aeropuerto", lat: 43.566941, lon: -6.044173 },
+  { idema: "1249X", nombre: "Oviedo", lat: 43.353333, lon: -5.873889 },
+  { idema: "1387", nombre: "A Coruña", lat: 43.365969, lon: -8.421517 },
+  { idema: "1428", nombre: "Santiago de Compostela/Lavacolla", lat: 42.888011, lon: -8.410515 },
+  { idema: "1495", nombre: "Vigo/Peinador Aeropuerto", lat: 42.238616, lon: -8.623765 },
+  { idema: "0076", nombre: "Barcelona Aeropuerto", lat: 41.292781, lon: 2.069995 },
+  { idema: "0042Y", nombre: "Tarragona (Fac. Geografia)", lat: 41.123892, lon: 1.249167 },
+  { idema: "8414A", nombre: "Valencia Aeropuerto", lat: 39.485015, lon: -0.474677 },
+  { idema: "8019", nombre: "Alicante-Elche Aeropuerto", lat: 38.282778, lon: -0.570830 },
+  { idema: "7012D", nombre: "Cartagena (Tentegorra)", lat: 37.604444, lon: -1.023333 },
+  { idema: "7031X", nombre: "Murcia/San Javier Aeropuerto", lat: 37.778332, lon: -0.805916 },
+  { idema: "6199X", nombre: "Vélez-Málaga", lat: 36.768611, lon: -4.093611 },
+  { idema: "6268Y", nombre: "Motril (Puerto Náutico)", lat: 36.724011, lon: -3.529267 },
+  { idema: "5960", nombre: "Jerez de la Frontera Aeropuerto", lat: 36.750495, lon: -6.055857 },
+  { idema: "4642E", nombre: "Huelva (Ronda Este)", lat: 37.278412, lon: -6.911696 },
+  { idema: "B228", nombre: "Palma de Mallorca (Portopí)", lat: 39.554258, lon: 2.625268 },
+  { idema: "B954", nombre: "Ibiza (Es Codolà)", lat: 38.876385, lon: 1.384446 },
+  { idema: "B893", nombre: "Menorca Aeropuerto", lat: 39.854726, lon: 4.215556 },
+  { idema: "C649I", nombre: "Las Palmas (Gando)", lat: 27.917725, lon: -15.395303 },
+  { idema: "C429I", nombre: "Tenerife Sur", lat: 28.046992, lon: -16.561158 },
+  { idema: "C249I", nombre: "Fuerteventura Aeropuerto", lat: 28.444720, lon: -13.863055 },
+  { idema: "C029O", nombre: "Lanzarote Aeropuerto", lat: 28.951943, lon: -13.600279 },
+].map((e) => ({
+  ...e, prec: null, pres: null, presNmar: null, ta: null, tamin: null, tamax: null,
+  hr: null, vv: null, vmax: null, dv: null, ts: null, actualizado: null,
+}));
 
 const RIOS = [
   // Cada río con 3 puntos aproximados (cabecera / medio / desembocadura),
@@ -1305,6 +1416,12 @@ async function actualizarDesdeBackend() {
       const b = BOYAS.find((x) => x.codigo === bBackend.codigo);
       if (b) Object.assign(b, bBackend);
     });
+    if (datos.estacionesAemet && !datos.estacionesAemet.error) {
+      ESTACIONES_METEO.forEach((e) => {
+        const d = datos.estacionesAemet[e.idema];
+        if (d) Object.assign(e, d);
+      });
+    }
     if (datos.caudales) {
       RIOS.forEach((r) => {
         r.puntos.forEach((p) => {
@@ -1411,6 +1528,40 @@ document.getElementById("toggleBatimetria").addEventListener("click", (e) => {
     capaBatimetria.addTo(map);
     e.currentTarget.classList.add("activo");
   }
+});
+
+// Heatmap de prueba (2026-09-14, pedido explícito tras ver el estilo de
+// sporas.io) — sobre el índice de mar combinado de cada spot (0-100).
+// Deliberadamente un botón aparte, no sustituye a los marcadores: es un
+// experimento para "ver cómo queda", no una decisión de diseño todavía.
+let capaHeatmap = null;
+function puntosHeatmap() {
+  return todosLosSpots()
+    .filter((s) => Number.isFinite(s.indice))
+    .map((s) => [s.lat, s.lon, s.indice / 100]);
+}
+function actualizarCapaHeatmap() {
+  if (!capaHeatmap || !map.hasLayer(capaHeatmap)) return;
+  capaHeatmap.setLatLngs(puntosHeatmap());
+}
+document.getElementById("toggleHeatmap").addEventListener("click", (e) => {
+  if (capaHeatmap && map.hasLayer(capaHeatmap)) {
+    map.removeLayer(capaHeatmap);
+    e.currentTarget.classList.remove("activo");
+    return;
+  }
+  if (!capaHeatmap) {
+    // Misma paleta que ya usa el resto de la app (azul->verde->dorado->rojo)
+    // en vez del arcoíris por defecto de leaflet.heat.
+    capaHeatmap = L.heatLayer(puntosHeatmap(), {
+      radius: 45, blur: 35, maxZoom: 12, max: 1.0,
+      gradient: { 0.2: "#2E7BA0", 0.4: "#4F9D69", 0.65: "#D9C08A", 0.8: "#D4A24C", 1.0: "#A34A35" },
+    });
+  } else {
+    capaHeatmap.setLatLngs(puntosHeatmap());
+  }
+  capaHeatmap.addTo(map);
+  e.currentTarget.classList.add("activo");
 });
 
 function iconoFlecha(grados, color) {
@@ -1525,6 +1676,7 @@ function crearMarcadores() {
   });
 
   BOYAS.forEach(crearMarcadorBoya);
+  ESTACIONES_METEO.forEach(crearMarcadorEstacion);
 }
 
 // ---------------------------------------------------------------------------
@@ -1905,6 +2057,51 @@ function crearMarcadorBoya(boya) {
   marker.bindTooltip(llamada, { direction: "top", offset: [0, -10], className: "llamada-rio", opacity: 1 });
 }
 
+// Estaciones meteorológicas reales (AEMET, ver ESTACIONES_METEO más
+// arriba) — símbolo distinto al de las boyas (🌧 en vez de ⚓, color
+// tierra en vez de azul) para no confundir "medido en el mar" con
+// "medido en tierra". Mismo criterio de nunca inventar: sin dato real,
+// sin marcador (igual que crearMarcadorBoya). Al pulsar abre un modal
+// con el resumen completo (pedido explícito del usuario, 2026-09-14),
+// no solo el tooltip resumido de las boyas/ríos.
+function crearMarcadorEstacion(estacion) {
+  if (!Number.isFinite(estacion.pres) && !Number.isFinite(estacion.prec) && !Number.isFinite(estacion.ta)) return;
+
+  const html = `
+    <div style="display:flex; flex-direction:column; align-items:center; cursor:pointer;">
+      <div class="etiqueta-spot" style="color:#8B5E3C;">🌧 ${estacion.nombre}</div>
+      <div class="marcador-estacion">${Number.isFinite(estacion.pres) ? estacion.pres.toFixed(0) + " hPa" : "—"}</div>
+    </div>`;
+  const icon = L.divIcon({ html, className: "", iconSize: [130, 42], iconAnchor: [65, 21] });
+  const marker = L.marker([estacion.lat, estacion.lon], { icon, zIndexOffset: -100 }).addTo(map);
+  marker.on("click", () => abrirModalEstacion(estacion));
+}
+
+function filaModalEstacion(etiqueta, valor) {
+  return valor === null || valor === undefined ? "" : `
+    <div class="fila-estacion"><span>${etiqueta}</span><strong>${valor}</strong></div>`;
+}
+
+function abrirModalEstacion(estacion) {
+  const hora = estacion.actualizado
+    ? new Date(estacion.actualizado).toLocaleString("es-ES", { timeZone: "Europe/Madrid", hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit" })
+    : "—";
+  document.getElementById("tituloModalEstacion").textContent = `🌧 ${estacion.nombre}`;
+  document.getElementById("contenidoModalEstacion").innerHTML = `
+    <div class="rio-tramo" style="margin-bottom:10px;">Estación real AEMET · actualizado ${hora}</div>
+    ${filaModalEstacion("Precipitación (última hora)", Number.isFinite(estacion.prec) ? `${estacion.prec} mm` : null)}
+    ${filaModalEstacion("Presión", Number.isFinite(estacion.pres) ? `${estacion.pres} hPa` : null)}
+    ${filaModalEstacion("Presión a nivel del mar", Number.isFinite(estacion.presNmar) ? `${estacion.presNmar} hPa` : null)}
+    ${filaModalEstacion("Temperatura", Number.isFinite(estacion.ta) ? `${estacion.ta}°C` : null)}
+    ${filaModalEstacion("Mín. / Máx. del día", (Number.isFinite(estacion.tamin) && Number.isFinite(estacion.tamax)) ? `${estacion.tamin}°C / ${estacion.tamax}°C` : null)}
+    ${filaModalEstacion("Humedad relativa", Number.isFinite(estacion.hr) ? `${estacion.hr}%` : null)}
+    ${filaModalEstacion("Viento medio", Number.isFinite(estacion.vv) ? `${estacion.vv} m/s${Number.isFinite(estacion.dv) ? " " + textoRumbo(estacion.dv) : ""}` : null)}
+    ${filaModalEstacion("Racha máxima", Number.isFinite(estacion.vmax) ? `${estacion.vmax} m/s` : null)}
+    ${filaModalEstacion("Temp. del mar (si la mide)", Number.isFinite(estacion.ts) ? `${estacion.ts}°C` : null)}
+  `;
+  document.getElementById("modalEstacion").classList.add("visible");
+}
+
 const SPOTS_CON_WEBCAM = [
   "mundaka", "bakio", "sopelana",
   // AZTI (detectia.net), mismo proveedor que Sopelana — verificado por el
@@ -2202,6 +2399,12 @@ document.getElementById("cerrarModalRayos").addEventListener("click", () => {
 document.getElementById("modalRayos").addEventListener("click", (e) => {
   if (e.target.id === "modalRayos") document.getElementById("modalRayos").classList.remove("visible");
 });
+document.getElementById("cerrarModalEstacion").addEventListener("click", () => {
+  document.getElementById("modalEstacion").classList.remove("visible");
+});
+document.getElementById("modalEstacion").addEventListener("click", (e) => {
+  if (e.target.id === "modalEstacion") document.getElementById("modalEstacion").classList.remove("visible");
+});
 // La luna se pide para el centro del mapa en cada momento (no es fija para
 // toda la zona) — a poco zoom el "centro" deja de significar nada útil
 // (podría ser medio océano Atlántico), así que por debajo de cierto nivel
@@ -2324,6 +2527,7 @@ function refrescarIndicesVisibles() {
   });
   const estadoEl = document.getElementById("estadoVigenciaGlobal");
   if (estadoEl) estadoEl.textContent = textoVigencia();
+  actualizarCapaHeatmap();
   const marcadorActivo = document.querySelector(".marcador.activo");
   if (marcadorActivo) {
     const sAbierto = todosLosSpots().find((x) => x.slug === marcadorActivo.id.replace("marcador-", ""));
