@@ -1218,7 +1218,13 @@ manual (típico de una administración pública) — puede tardar. No
 reintentar el alta ni tocar DNS por esto. **2026-09-14, mismo día**:
 enviado email a soporte de Open Data Euskadi (`opendata@euskadi.eus`,
 contacto oficial confirmado en su documentación) explicando el
-problema — a la espera de respuesta. Una vez haya key,
+problema. Respondieron pidiendo probar el acceso por **XLNets**
+(sistema de identificación electrónica del Gobierno Vasco) — probado,
+pero el email prometido **sigue sin llegar**, mismo síntoma que antes.
+Refuerza que el problema es de Euskalmet, no nuestro: la key de AEMET
+llegó instantánea a la misma dirección (`datos@costaviva.org`), así que
+la recepción de correo funciona bien cuando el remitente lo hace bien.
+Se ha respondido a soporte con este detalle — a la espera de nuevo. Una vez haya key,
 guardar como `EUSKALMET_API_KEY` (mismo patrón) y entonces sí escribir
 el código en `functions/prevision.js` (nueva función a estilo
 `datosCaudalTodos()`) que, para los ríos vascos de `RIOS`, cruce por

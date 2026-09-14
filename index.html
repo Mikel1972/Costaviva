@@ -257,57 +257,38 @@
   }
   .modal-rayos-contenido img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 
-  .luna-toggle {
-    position: absolute; top: 64px; right: 16px; z-index: 502;
+  /* Botones de capas reorganizados en 2 columnas por tipología
+     (2026-09-14, pedido explícito: "que se vean todos") — antes era una
+     sola columna de 9 botones que se salía de pantalla en móvil.
+     Columna A (right:16px, pegada al borde): capas de referencia/
+     ambiente — rayos, luna, batimetría, radar de lluvia, estaciones.
+     Columna B (right:64px, justo a su izquierda): capas de "cosas en el
+     mapa" — spots, ríos, boyas — y el botón "+" de añadir ubicación
+     justo debajo de spots (solo visible con spots encendido, ver JS). */
+  .luna-toggle, .batimetria-toggle, .nubes-toggle, .estaciones-toggle,
+  .spots-toggle, .rios-toggle, .boyas-toggle, .anadir-ubicacion-toggle {
+    position: absolute; z-index: 502;
     width: 38px; height: 38px; border-radius: 8px;
     background: #FFFFFF; border: 1px solid #DDE2DC; color: #0B2532;
     display: flex; align-items: center; justify-content: center;
     cursor: pointer; font-size: 16px; padding: 0;
   }
-  .batimetria-toggle {
-    position: absolute; top: 112px; right: 16px; z-index: 502;
-    width: 38px; height: 38px; border-radius: 8px;
-    background: #FFFFFF; border: 1px solid #DDE2DC; color: #0B2532;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; font-size: 16px; padding: 0;
+  .luna-toggle { top: 64px; right: 16px; }
+  .batimetria-toggle { top: 112px; right: 16px; }
+  .nubes-toggle { top: 160px; right: 16px; }
+  .estaciones-toggle { top: 208px; right: 16px; }
+  .spots-toggle { top: 16px; right: 64px; }
+  .rios-toggle { top: 64px; right: 64px; }
+  .boyas-toggle { top: 112px; right: 64px; }
+  .anadir-ubicacion-toggle { top: 160px; right: 64px; }
+  .batimetria-toggle.activo, .nubes-toggle.activo, .estaciones-toggle.activo,
+  .spots-toggle.activo, .rios-toggle.activo, .boyas-toggle.activo, .anadir-ubicacion-toggle.activo {
+    background: #D4A24C; color: #0B2532;
   }
-  .batimetria-toggle.activo { background: #D4A24C; color: #0B2532; }
-  .nubes-toggle {
-    position: absolute; top: 160px; right: 16px; z-index: 502;
-    width: 38px; height: 38px; border-radius: 8px;
-    background: #FFFFFF; border: 1px solid #DDE2DC; color: #0B2532;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; font-size: 16px; padding: 0;
-  }
-  .nubes-toggle.activo { background: #D4A24C; color: #0B2532; }
-  .anadir-ubicacion-toggle {
-    position: absolute; top: 208px; right: 16px; z-index: 502;
-    width: 38px; height: 38px; border-radius: 8px;
-    background: #FFFFFF; border: 1px solid #DDE2DC; color: #0B2532;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; font-size: 16px; padding: 0;
-  }
-  .anadir-ubicacion-toggle.activo { background: #D4A24C; color: #0B2532; }
-  .estaciones-toggle {
-    position: absolute; top: 256px; right: 16px; z-index: 502;
-    width: 38px; height: 38px; border-radius: 8px;
-    background: #FFFFFF; border: 1px solid #DDE2DC; color: #0B2532;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; font-size: 16px; padding: 0;
-  }
-  .estaciones-toggle.activo { background: #D4A24C; color: #0B2532; }
-  .spots-toggle, .rios-toggle, .boyas-toggle {
-    position: absolute; right: 16px; z-index: 502;
-    width: 38px; height: 38px; border-radius: 8px;
-    background: #FFFFFF; border: 1px solid #DDE2DC; color: #0B2532;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; font-size: 16px; padding: 0;
-  }
-  .spots-toggle { top: 304px; }
-  .rios-toggle { top: 352px; }
-  .boyas-toggle { top: 400px; }
-  .spots-toggle.activo, .rios-toggle.activo, .boyas-toggle.activo { background: #D4A24C; color: #0B2532; }
-  .anadir-ubicacion-toggle.deshabilitado { opacity: 0.4; cursor: default; pointer-events: none; }
+  /* El display:flex de arriba (regla de autor) gana por defecto al
+     display:none del atributo [hidden] (regla de user-agent) — sin esto,
+     poner el botón "+" en hidden no lo ocultaría de verdad. */
+  .anadir-ubicacion-toggle[hidden] { display: none; }
   .confirmar-ubicacion-panel {
     display: none; position: absolute; top: 64px; left: 50%; transform: translateX(-50%);
     z-index: 900; background: #FFFFFF; border: 1px solid #D4A24C; border-radius: 10px;
@@ -1586,18 +1567,20 @@ document.getElementById("toggleBoyas").addEventListener("click", (e) => {
 });
 // Spots es la única capa que, al apagarla, tiene un efecto en cascada: sin
 // spots visibles no tiene sentido poder añadir uno nuevo (pedido explícito
-// del usuario, 2026-09-14) — el botón "+" se deshabilita visualmente y deja
-// de responder a clics mientras tanto (ver .anadir-ubicacion-toggle.deshabilitado).
+// del usuario, 2026-09-14) — el botón "+" directamente desaparece (no solo
+// se deshabilita) mientras spots esté apagada, y vuelve a aparecer al
+// encenderla. `hidden` en vez de display:none a mano, mismo criterio que el
+// resto del proyecto para mostrar/ocultar.
 document.getElementById("toggleSpots").addEventListener("click", (e) => {
   const btnAnadir = document.getElementById("toggleAnadirUbicacion");
   if (map.hasLayer(capaSpots)) {
     map.removeLayer(capaSpots);
     e.currentTarget.classList.remove("activo");
-    btnAnadir.classList.add("deshabilitado");
+    btnAnadir.hidden = true;
   } else {
     capaSpots.addTo(map);
     e.currentTarget.classList.add("activo");
-    btnAnadir.classList.remove("deshabilitado");
+    btnAnadir.hidden = false;
   }
 });
 
