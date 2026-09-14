@@ -369,6 +369,89 @@ getxo:    "https://detectia.net/img/webcam-ereaga.webp",
 **Firmado:** robot buscador de fuentes (pasada de webcams), 2026-09-13
 22:57 UTC.
 
+### 2026-09-14 (pasada semanal completa — fuentes nuevas por región)
+
+**Objetivo de esta pasada:** cerrar los huecos geográficos señalados en la
+tarea (Asturias, Cataluña, Murcia, Andalucía, Canarias; más boyas en
+Portugal — Leixões/Sines/Faro; webcams para Portugal). **Primero
+reverifiqué contra el código actual si esos huecos siguen siendo reales**
+(la tarea avisa de que pudieron cerrarse desde la última vez): siguen
+siendo reales — los ~95 `SPOTS` ya cubren esas 5 regiones con boyas de
+Puertos del Estado cercanas (2242 Cabo Peñas/Asturias, 1712/1731/2798/2720
+Cataluña, 2610 Murcia, 1500/1504/1514/2342/2548 Andalucía,
+1414/1421/2442/2446 Canarias — ya en `BOYAS`), pero **ninguna de esas 5
+regiones tiene webcam propia** en `functions/webcam/[slug].js` (todas las
+`WEBCAMS` de hoy son País Vasco, Galicia, Cantabria, Com. Valenciana y
+Baleares) y **`RIOS` no cubre ningún río de esas 5 regiones tampoco** (los
+16 ríos actuales son País Vasco, Asturias, Cantabria y Com. Valenciana —
+ni siquiera Asturias tiene todos los suyos).
+
+**Hallazgo de red — mucho más severo hoy que en cualquier pasada anterior,
+y esto sí es nuevo.** No solo los 5 dominios ya documentados (Nazaré + 4
+de caudal) están bloqueados: hoy también lo están dominios que en pasadas
+anteriores SÍ funcionaban y llevan meses en producción sin cambios —
+`www.cantabria.es` (webcams ya integradas) y `www.meteogalicia.gal`
+(webcams ya integradas), y hasta **`costaviva.org`, el propio dominio de
+producción de esta app**, además de `nominatim.openstreetmap.org` (la
+fuente real detrás de `/geocodificar`). Comprobado con `curl` real, todos
+`(56) CONNECT tunnel failed, response 403`:
+
+```
+$ curl -sS -o /dev/null -w "%{http_code}\n" https://costaviva.org
+curl: (56) CONNECT tunnel failed, response 403
+$ curl -sS -o /dev/null -w "%{http_code}\n" https://www.cantabria.es
+curl: (56) CONNECT tunnel failed, response 403
+$ curl -sS -o /dev/null -w "%{http_code}\n" https://www.meteogalicia.gal/...
+curl: (56) CONNECT tunnel failed, response 403
+$ curl -sS -o /dev/null -w "%{http_code}\n" https://nominatim.openstreetmap.org/...
+curl: (56) CONNECT tunnel failed, response 403
+```
+
+Todos los dominios candidatos nuevos que busqué para esta pasada
+(`api.ipma.pt`, `www.hidrografico.pt`/`monican.hidrografico.pt` —boyas de
+Portugal—, `aca.gencat.cat`/`aplicacions.aca.gencat.cat` —caudal
+Cataluña—, `webcamsdeasturias.com`) dieron el mismo `403` con `curl` y con
+`WebFetch` (`EGRESS_BLOCKED`). Solo siguieron alcanzables hoy los dominios
+ya usados en producción con más historial: `marine-api.open-meteo.com`,
+`api.open-meteo.com`, `poem.puertos.es`, `www.aemet.es`, `detectia.net` —
+ver auditoría de hoy más abajo, todos sanos.
+
+**Candidatos encontrados por `WebSearch` (sin verificar con petición
+real, así que no se integra nada, solo quedan anotados para cuando la red
+lo permita):**
+- **Boyas de Portugal (Leixões/Sines/Faro)**: confirmado por búsqueda que
+  el Instituto Hidrográfico mantiene una red de 3 boyas Datawell Waverider
+  (Leixões, Sines, Faro) — mismo organismo que ya da la boya de Nazaré que
+  sí tenemos. La página `hidrografico.pt/boias-ondografo.php` sería el
+  punto de partida, pero el dominio está bloqueado hoy (mismo bloqueo que
+  lleva Nazaré 6 pasadas seguidas). `api.ipma.pt/open-data/` (el otro
+  organismo, meteorología) también bloqueado.
+- **Caudal de ríos en Cataluña**: la Agència Catalana de l'Aigua (ACA)
+  tiene un visor en tiempo real (`aplicacions.aca.gencat.cat/aetr/vishid/`)
+  y menciona un portal de "dades obertes en temps real" — mismo patrón que
+  la investigación de URA que sí se cerró en su día (2026-09-07), pero sin
+  poder alcanzar el dominio no se puede confirmar si expone un JSON público
+  o si, como URA, la lectura en tiempo real vive detrás de un visor
+  ArcGIS/JS que haya que rastrear. Bloqueado hoy, sin verificar.
+- **Webcams de Asturias**: `webcamsdeasturias.com` (agregador con cámaras
+  de puerto de Gijón y Avilés) apareció en la búsqueda, pero — igual que
+  otros agregadores turísticos ya descartados en pasadas anteriores
+  (SkylineWebcams, Webcamtaxi) — no hay forma de saber si sirve una imagen
+  directa hotlinkable o un reproductor con token sin poder alcanzar el
+  dominio. Sin verificar.
+- **Webcams de Cataluña/Murcia/Andalucía**: solo aparecieron agregadores
+  turísticos genéricos (SkylineWebcams, Enterat, Worldcam) sin ningún
+  candidato con pinta de imagen directa — mismo patrón ya visto y
+  descartado varias veces para otras zonas. Nada que perseguir sin poder
+  verificar.
+
+**Nada se integra esta pasada** — cero candidatos completaron la
+verificación de "URL comprobada con una petición real". El bloqueo de hoy
+es más amplio que el ya documentado (afecta incluso a dominios sanos de
+producción, ver arriba) — si esto se repite, convendría que el usuario
+revise si algo cambió en la política de red de este entorno programado en
+concreto, no solo para los 5 dominios ya conocidos.
+
 ---
 
 ## Auditoría de datos
@@ -850,6 +933,65 @@ ríos, baja-media para Nazaré) — sigue pendiente que el usuario revise la
 política de red de este entorno programado para esos 5 dominios si quiere
 que esta rutina pueda vigilar su salud de verdad.
 
+### 2026-09-14 (pasada semanal completa — auditoría con peticiones reales)
+
+**Todo lo alcanzable hoy está sano, nada que corregir.** Repetidas con
+`curl` real las mismas llamadas que hace cada endpoint:
+
+- **`functions/prevision.js` — Open-Meteo Marine + Forecast (spot
+  Lekeitio, representativo).** `marine-api.open-meteo.com/v1/marine` con
+  los mismos parámetros que usa el código
+  (`wave_height,wave_period,wave_direction,sea_surface_temperature,
+  ocean_current_velocity,ocean_current_direction,sea_level_height_msl`):
+  HTTP 200, forma correcta. `api.open-meteo.com/v1/forecast`
+  (`windspeed_10m,winddirection_10m,precipitation,cloudcover,pressure_msl`):
+  HTTP 200 tras un timeout puntual en el primer intento (ruido de red
+  transitorio, segundo intento inmediato resuelto), forma correcta.
+- **Boyas de Puertos del Estado — 2136 Bilbao-Vizcaya, 1117 Gijón, 1101
+  Pasaia II (las 3 obligatorias) + 1731 Barcelona II y 1514 Málaga**
+  (2 boyas de rotación extra, aprovechando que esta es la pasada semanal
+  completa y no solo la nocturna corta). Las 5 HTTP 200,
+  `poem.puertos.es/portus/StationData?code=...`, forma `[cabeceras,
+  filas]` correcta, con las 4 columnas esperadas
+  (`Hm0,Tp,MeanDir,WaterTemp`). Detalle completo y comparación contra
+  Open-Meteo en la sección "Calibración" de hoy — los 5 puntos nuevos ya
+  están en `CALIBRACION.jsonl`.
+- **`functions/luna.js` — USNO (`aa.usno.navy.mil/api/rstt/oneday`).**
+  HTTP 200, forma correcta (`properties.data.curphase`,
+  `.moondata[].phen/time`). Fase de hoy: "Waxing Crescent" (12%
+  iluminada), coherente con la luna nueva real de estos días (el ciclo
+  encaja, sin desfase).
+- **`functions/rayos-imagen.js` (timeline + imagen, AEMET).** Timeline
+  (`www.aemet.es/es/api-eltiempo/rayos/timeline`) HTTP 200, JSON con la
+  forma esperada (`ica_horario.penbal.variables.rayos[].ficheros.PROV`).
+  Con el nombre de fichero real que devuelve el timeline (no uno
+  adivinado — un nombre adivinado da `404` limpio, ya lo sabíamos de
+  pasadas anteriores), la imagen (`.../imagen/rayos/<fichero>`) HTTP 200,
+  PNG real 5472×1965 px, 1-bit escala de grises (imagen pequeña, ~1.4 KB,
+  normal para un mapa con poca actividad eléctrica, no indicio de fallo).
+- **Webcams — muestra de 5 (todas las del País Vasco, incluida mundaka,
+  que en pasadas recientes ha estado bloqueada por red más veces que
+  alcanzable): mundaka, bakio, sopelana, lekeitio, getxo — las 5 sanas**
+  hoy, HTTP 200 con imagen real y válida (JPEG 116 641 y 764 906 bytes,
+  WebP 51 070/100 994/53 368 bytes respectivamente, confirmado con `file`
+  que son JPEG/WebP reales, no placeholders).
+- **No se pudo auditar hoy** (mismo bloqueo de red que la sección
+  "Fuentes nuevas" de arriba, no evidencia de rotura): `/geocodificar`
+  (su fuente real, `nominatim.openstreetmap.org`, bloqueada) y
+  `/sos-alerta` (necesita pedir contra `costaviva.org`, bloqueado hoy
+  incluso para el propio dominio de producción — no se pudo ni comprobar
+  el rechazo `401` sin token). `/registrar-presion` tampoco se pudo
+  probar (necesita el secreto `CRON_SECRET`, que esta sesión no tiene por
+  diseño).
+- **Repaso de código en busca de valores inventados presentados como
+  reales:** nada nuevo desde la última auditoría. La especie añadida hoy
+  (ver sección "Especies de pesca por región") sigue el mismo patrón de
+  honestidad que el resto de `ESPECIES*` (`rangoTemp: null` explícito
+  cuando no hay cifra fiable, en vez de inventar un número).
+
+**Nada que corregir esta pasada** en lo alcanzable; lo no alcanzable es
+limitación de red de hoy, no un hallazgo de rotura.
+
 ---
 
 ## Calibración
@@ -1239,3 +1381,214 @@ de la próxima pasada tiene más sentido repetir alguna de ellas (empezando
 por las que llevan más noches sin repetirse: 1731 Barcelona II y 1514
 Málaga) para que alguna empiece a acumular su propio historial, en vez de
 seguir sumando boyas nuevas de un solo punto cada una.
+
+### 2026-09-14 (pasada semanal completa — segundo lote del día)
+
+**Segundo lote de puntos hoy** (distinto de la pasada nocturna corta de
+más arriba, unas horas antes) — mismo método de siempre: `curl` a
+`poem.puertos.es/portus/StationData` para la altura real, Open-Meteo
+Marine en las coordenadas exactas de cada boya para la altura calculada,
+emparejando por la hora UTC exacta del último dato real de cada boya. Las
+3 obligatorias más las 2 boyas de rotación que más tiempo llevaban sin
+repetirse (1731 Barcelona II y 1514 Málaga, siguiendo la recomendación de
+la propia entrada de arriba):
+
+| boya | hora UTC | altura medida | altura calculada | diferencia | % |
+|---|---|---|---|---|---|
+| 2136 Bilbao-Vizcaya | 07:00 | 1.52 m | 1.36 m | −0.16 m | −10.5% |
+| 1117 Gijón | 06:00 | 1.53 m | 1.24 m | −0.29 m | −19.0% |
+| 1101 Pasaia II | 06:00 | 1.47 m | 1.04 m | −0.43 m | −29.3% |
+| 1731 Barcelona II | 06:00 | 0.16 m | 0.10 m | −0.06 m | −37.5% |
+| 1514 Málaga | 06:00 | 0.49 m | 0.70 m | +0.21 m | +42.9% |
+
+Añadidas a `CALIBRACION.jsonl` (historial anterior intacto). Con este
+segundo lote del día, el historial queda así (todavía lejos del mínimo de
+15 puntos por boya):
+
+- **2136 Bilbao-Vizcaya**: 6 puntos (−8.5%, 0.0%, +25.4%, +6.4%, +2.1%,
+  −10.5%) — sigue sin patrón claro, alterna signo constantemente. Sigue
+  siendo la que menos parece tener una desviación sistemática de las 3
+  obligatorias.
+- **1117 Gijón**: 6 puntos (−14.7%, +3.7%, +1.4%, −1.6%, −1.5%, −19.0%) —
+  el último punto rompe la racha de 4 seguidos dentro de ±4% que llevaba
+  — con Hm0 medido bastante más alto hoy (1.53 m) que en esos 4 puntos, no
+  está claro todavía si es ruido puntual o si la buena precisión anterior
+  era solo para oleaje suave. A vigilar.
+- **1101 Pasaia II**: 6 puntos, **los 6 con el mismo signo** (−36.0%,
+  −27.3%, −29.3%, −15.7%, −22.3%, −29.3%, media ≈ −26.6%) — sigue siendo,
+  con diferencia, la boya con el patrón más consistente de las 3
+  obligatorias: 6/6 pasadas con Open-Meteo calculando por debajo de la
+  boya real, media estable entre pasadas (≈−26/−27% las últimas 3). Sigue
+  siendo la principal candidata a un futuro factor de corrección de zona
+  — **6 puntos, todavía lejos de los 15 que pide la tarea**, pero cada vez
+  más sólido.
+- **1731 Barcelona II**: 2 puntos (−22.9%, −37.5%) — primera vez que
+  repite desde el primer punto del 2026-09-10, empieza a acumular su
+  propio historial. Ambos puntos con oleaje muy pequeño (Hm0 medido
+  0.16-0.96 m) y el mismo signo (Open-Meteo por debajo).
+- **1514 Málaga**: 2 puntos, **cambia de signo** (−38.1% el 2026-09-11,
+  +42.9% hoy) — con Hm0 medido muy bajo en ambos casos (0.42 m y 0.49 m),
+  un error absoluto pequeño se traduce en un porcentaje grande en
+  cualquier dirección; con solo 2 puntos no se puede distinguir todavía
+  si Málaga simplemente no tiene sesgo sistemático (el modelo acierta en
+  media, con ruido grande en ambos sentidos para oleaje residual pequeño)
+  o si hace falta más historial para verlo. A diferencia de Pasaia II,
+  esta boya NO muestra por ahora ningún patrón consistente.
+- **2548 Cabo de Gata, 2820 Dragonera, 2242 Cabo Peñas**: sin puntos
+  nuevos hoy, siguen en 1 punto cada una desde sus respectivas pasadas.
+
+**Ningún factor de corrección propuesto todavía** — ninguna boya llega a
+los 15 puntos mínimos, aunque Pasaia II (6/6 mismo signo, media estable)
+cada vez lo parece más. Para la próxima pasada, sigue teniendo más
+sentido repetir boyas que ya tienen historial (Pasaia II para acercarse a
+los 15, o Málaga para ver si su cambio de signo de hoy se confirma o era
+ruido) que sumar boyas nuevas de un solo punto.
+
+---
+
+## Especies de pesca por región
+
+### 2026-09-14 (pasada semanal completa)
+
+**Objetivo:** repasar si faltan especies importantes en alguna de las 4
+listas (`ESPECIES`, `ESPECIES_MEDITERRANEO`, `ESPECIES_GOLFO_CADIZ`,
+`ESPECIES_CANARIAS`, todas en `index.html`) y si algún `rangoTemp`/`meses`
+se puede verificar mejor. Consultadas guías de pesca recreativa por
+localidad, biología de especies (Wikipedia/CSIC como resumen de fuentes
+primarias) y comprobado si hay boletines públicos de lonjas — de nuevo, y
+como en la pasada del 2026-09-09, **no se encontró ningún boletín de
+lonja utilizable** para las zonas revisadas (Rota/Cádiz).
+
+**Añadida directamente `Herrera` (Lithognathus mormyrus) a
+`ESPECIES_GOLFO_CADIZ`** — bien verificada, cumple el criterio de la
+tarea ("2-3 especies nuevas bien verificadas"): varias guías de pesca real
+de Rota (`haypesca.es`, `viciopesca.net`) la listan expresamente junto a
+dorada/sargo/urta/lubina/besugo como captura habitual de la bahía de
+Cádiz, y su biología (CSIC, Wikipedia, asturnatura.com) confirma hábitat
+de fondos de arena/arena-fango <50m y dieta de moluscos/crustáceos/
+gusanos — coherente con lo que dicen las guías recreativas. **Sin cifra
+de temperatura fiable encontrada** → `rangoTemp: null`, igual que el resto
+de especies sin dato sólido. Sin ventana de meses de pesca recreativa
+específica (solo se confirmó que se reproduce en primavera-verano) →
+`meses` cubre el año completo, mismo criterio ya usado para Sargo/Vieja/
+Medregal cuando no hay estacionalidad clara. Cambio de `index.html`
+verificado con `node --check` sobre el JS extraído del fichero antes de
+commitear (no hay `.html --check` directo, así que se extrajo el
+contenido de los `<script>` y se validó aparte).
+
+**Investigada y NO añadida — Abade (Mycteroperca fusca), Canarias,
+queda como propuesta, no como código.** Es una especie muy citada en
+pesca recreativa canaria (`turevistadepesca.es`, Cabildo de Tenerife,
+CanariWiki) y encajaría bien en `ESPECIES_CANARIAS`, pero dos motivos
+para no aplicarla directo esta vez: (1) no encontré una fuente que
+confirme su dieta específica más allá de "es un mero/cherna, género
+generalmente carnívoro" — heredar la dieta de otras especies del género
+`Mycteroperca` sin una fuente que lo confirme para `fusca` en concreto
+sería el tipo de dato flojo que la norma de "nunca inventar" pide evitar;
+(2) la IUCN la cataloga como **"Vulnerable"** (`en.wikipedia.org/wiki/
+Mycteroperca_fusca`) — añadir una especie amenazada a una app que anima a
+salir a pescarla es una decisión con matiz de producto/responsabilidad
+que prefiero dejar en manos del usuario, no aplicarla sola. Si se
+confirma con más detalle (dieta real + criterio del usuario sobre
+especies vulnerables) sería una buena candidata para una próxima pasada.
+
+**Resto de listas repasadas sin hallazgos**: `ESPECIES` (Cantábrico) y
+`ESPECIES_MEDITERRANEO` ya están bastante completas y con `rangoTemp`
+razonablemente bien documentado donde existe cifra fiable — no encontré
+ninguna especie de pesca recreativa habitual que falte con suficiente
+verificación para añadirla hoy. Queda pendiente para una próxima pasada
+seguir revisando si aparece algún boletín de lonja público real (se ha
+intentado varias veces sin éxito) que permita verificar meses con datos
+de pesca comercial real, en vez de solo guías recreativas.
+
+---
+
+## Algoritmo de aprendizaje de capturas reales — propuesta de arquitectura
+
+### 2026-09-14 (pasada semanal completa)
+
+Objetivo a largo plazo del usuario: que la app pronostique qué se puede
+pescar y dónde, aprendiendo de las capturas reales del diario
+(`salidas_pesca`/`capturas`, con todo el contexto ambiental de cada
+salida) además de los cálculos ya existentes (`indiceMar`, hoy un índice
+ponderado simple de oleaje+viento+ángulo). Esta pasada **no ha tocado la
+base de datos de producción ni ha intentado leer capturas de usuarios
+reales** — no tiene ni debe tener credenciales de Supabase. Lo que sigue
+es solo una propuesta técnica (arquitectura, no código final) para que el
+usuario decida si y cuándo construirlo.
+
+### Por qué esto NO puede vivir en el cliente ni usar la anon key
+
+Cada usuario da consentimiento explícito al crear su cuenta
+(`perfiles.consiente_uso_datos_capturas`) para que sus capturas se usen de
+forma anónima con este fin — pero la RLS actual de `salidas_pesca`/
+`capturas` (`auth.uid() = user_id`, deliberadamente sin tocar, ver
+`CLAUDE.md` "Grupos privados") impide que la anon key de ningún usuario
+lea las capturas de otro, consienta o no. Cualquier agregado
+cruzando-usuarios necesita, por definición, saltarse esa RLS fila a fila
+— eso solo se puede hacer de forma segura en el backend, nunca desde el
+navegador de nadie.
+
+### Arquitectura propuesta
+
+1. **Nueva Cloudflare Pages Function**, ej. `functions/estadisticas-pesca.js`
+   (patrón ya establecido por `functions/registrar-presion.js`: sin sesión
+   de usuario, protegida con un secreto — aquí no haría falta ni eso, ver
+   punto 4). Usa la `service_role` key de Supabase **solo en el backend**,
+   como variable de entorno tipo "Secret" en Cloudflare Pages (mismo
+   patrón que `RESEND_API_KEY`) — **nunca expuesta al cliente, nunca en el
+   repo**, igual que ya dice `CLAUDE.md` para cualquier secreto real.
+2. **La consulta en sí, con `service_role`, filtra siempre por**
+   `perfiles.consiente_uso_datos_capturas = true` (join
+   `capturas → salidas_pesca → perfiles`) — ninguna fila de un usuario sin
+   consentimiento entra nunca en el agregado, ni de forma indirecta.
+3. **La función devuelve ÚNICAMENTE agregados — nunca filas individuales
+   ni nada identificable.** Agrupar por combinaciones tipo
+   `(especie, spot_o_zona, mes, rango_marea, rango_viento, rango_oleaje)`
+   y devolver solo `{conteo, media_talla?, media_peso?}` por grupo. Nunca
+   devolver `user_id`, fecha exacta de una captura individual, ni ningún
+   campo de texto libre (notas) que pudiera identificar a alguien
+   indirectamente.
+4. **Umbral mínimo de agregación, para no des-anonimizar sin querer** —
+   ya apuntado como pendiente en `CLAUDE.md` ("Ideas aparcadas
+   explícitamente", 2026-09-13): un grupo con muy pocas capturas de pocos
+   usuarios distintos en un spot de poca actividad podría identificar a
+   una persona concreta indirectamente (ej. "la única captura de especie
+   rara en este spot este mes"). Concretando esa idea aquí: cada grupo
+   debe cumplir un mínimo de **capturas Y de usuarios distintos** (ej. ≥5
+   capturas de ≥3 usuarios distintos — cifra de partida a validar con
+   datos reales, no una cifra definitiva) antes de devolverse; si no lo
+   cumple, ese grupo se omite del resultado en vez de devolverse con un
+   conteo bajo.
+5. **Consumo desde el cliente**: `index.html`/`diario.html` llaman a
+   `/estadisticas-pesca?spot=<slug>&mes=<n>` (sin autenticación de
+   usuario necesaria, ya que la respuesta es agregada y anónima por
+   diseño) y lo muestran como una capa más de información ("de N capturas
+   reales de otros usuarios en este spot este mes, la especie más
+   frecuente fue X") — nunca sustituyendo a `indiceMar`/`indicePesca`,
+   sumándose como una señal más, claramente etiquetada como "capturas
+   reales de la comunidad" para no mezclarla con los cálculos propios.
+6. **Primera versión = solo lectura/estadística descriptiva, no un
+   modelo predictivo.** Antes de plantear nada tipo ML (que necesitaría
+   bastante más volumen de datos y validación), lo más honesto y de menor
+   riesgo es empezar por agregados descriptivos simples (conteos/medias
+   por grupo, como arriba) — es lo mínimo que ya aportaría valor real y
+   es fácil de auditar que no hay dato inventado ni identificable. Un
+   modelo más sofisticado (ej. ponderar `indicePesca` con la frecuencia
+   real de capturas por condición) sería una fase posterior, a proponer
+   aparte cuando haya validado que el agregado simple funciona y tiene
+   suficiente volumen detrás.
+
+### Pregunta para el usuario
+
+Esta pasada no puede comprobar por sí misma cuántas capturas reales hay
+ya registradas en producción (no tiene acceso a la base de datos, por
+diseño). **¿Ya hay volumen suficiente de capturas reales con
+`consiente_uso_datos_capturas = true` como para que merezca la pena
+empezar a construir esto?** Si la respuesta es sí, el primer paso
+concreto sería: (a) decidir el umbral mínimo real de agregación del punto
+4 mirando la distribución real de capturas por spot/especie que haya hoy
+en la base de datos, y (b) implementar `functions/estadisticas-pesca.js`
+con una sola combinación de agrupación primero (ej. solo
+`especie × spot × mes`, sin meter todavía rangos de marea/viento/oleaje)
+para validar el patrón end-to-end con el mínimo riesgo antes de ampliarlo.
