@@ -574,6 +574,100 @@ existente en `/prevision`).
 
 ---
 
+### 2026-09-14 21:03 UTC (pasada buscadora — migración y cría de especies)
+
+Investigación con `WebSearch` de las épocas de migración y los rangos de
+temperatura de reproducción/cría/reposo de las 7 especies ya conocidas
+por la app (`ESPECIES` en `diario.html`: Lubina, Sargo, Abadejo, Calamar/
+chipirón, Congrio, Bonito del norte, Txitxarro/verdel). Objetivo: tener
+un dato distinto del rango de PESCA que ya usa `indicePesca` — cuándo
+cada especie está desovando/en reposo (menos pescable o vedada de facto)
+frente a cuándo está activa y cerca de costa. **Todo esto es propuesta,
+nunca cambio directo a `ESPECIES` ni a `indicePesca`** (regla de
+`ROBOT_REGLAS.md`, sec. "Buenas prácticas de otras apps y biología de
+especies") — es un dato que se le muestra al usuario como fiable.
+
+**Ficha por especie (época de desove / temperatura / patrón migratorio),
+solo lo que las fuentes dieron claro y verificable — donde una fuente no
+dio cifra fiable, se deja en blanco, nunca se inventa:**
+
+| Especie | Desove | Temp. reproducción | Migración / patrón |
+|---|---|---|---|
+| **Lubina** (*D. labrax*) | Invierno; Atlántico ~dic–jun según latitud (Bretaña abr–may, Irlanda hasta jun; Mediterráneo ene–mar) | Óptimo 12–14 °C; huevos raros bajo 8,5–9 °C o sobre 15 °C | Se agrupa para el desove alejándose algo de costa en la fría; vuelve a costa/estuarios en primavera-verano |
+| **Sargo** (*D. sargus*) | Primavera-verano (algunas fuentes ene–mar en el Atlántico) | Sin cifra fiable de temperatura de puesta | Costero, sedentario; hermafrodita proterándrico, madura ~2 años/17 cm |
+| **Abadejo** (*P. pollachius*) | Feb–may (según latitud; ene–jun en agregaciones) | Sin cifra fiable | Se congrega en cardúmenes para desovar a 100–150 m; el resto del año más solitario |
+| **Calamar/chipirón** (*L. vulgaris*) | Dos pulsos: primavera y verano | Eclosión 25–45 días según temperatura (sin umbral de puesta claro) | Se acerca a costa a desovar (busca sustrato donde fijar las puestas); ciclo de vida ~1 año |
+| **Congrio** (*C. conger*) | Verano–otoño | Sin cifra fiable | Semélparo: migra a alta mar y desova a 2.000–3.000 m una sola vez y muere; adultos costeros 50–500 m fuera del desove |
+| **Bonito del norte** (*T. alalunga*) | Prim–verano, pero **fuera de la zona**: mar de los Sargazos, aguas >25 °C | Tolera 9,5–25,2 °C; en el Cantábrico es migración TRÓFICA, no de puesta | Sube por la fachada atlántica al Golfo de Vizcaya en verano tras anchoa/chicharro; vuelve a invernar a Azores en otoño |
+| **Txitxarro/verdel** — verdel = caballa (*S. scombrus*) | Atlántico may–jul (Mediterráneo mar–abr); desove mar–jun en aguas someras cerca de costa | Óptimo ~10 °C, aguas frías-templadas | Inverna profundo (~200 m) y remonta a superficie/costa en primavera-verano en grandes bancos |
+| **Txitxarro** — jurel/chicharro (*T. trachurus*) | Primavera-verano, en aguas abiertas | Prefiere aguas templadas-cálidas (sin cifra exacta) | Forma grandes bancos; migra a capas superficiales/costeras con el calor |
+
+**Nota sobre el `ESPECIES` actual**: la entrada "Txitxarro / verdel"
+mezcla dos peces distintos con biología parecida pero no idéntica —
+*Trachurus trachurus* (jurel/chicharro, familia Carangidae) y *Scomber
+scombrus* (caballa/verdel, familia Scombridae). Los dos desovan en
+primavera-verano y remontan a costa con el calor, así que a efectos de
+"temporada" se comportan parecido, pero si algún día se separan en dos
+entradas convendría no arrastrar la mezcla. **No lo toco** — es una
+decisión de contenido para el usuario.
+
+**Patrón útil que sale de juntar las 7**: casi todas (lubina, sargo,
+abadejo, verdel, jurel, calamar) desovan en el arco invierno→verano y
+muchas se ALEJAN de costa o bajan a profundidad justo entonces (abadejo
+a 100–150 m, verdel invernando a 200 m, congrio a miles de metros),
+volviendo a costa/superficie cuando el agua templa. Es decir: el pico de
+desove suele coincidir con MENOR disponibilidad para el pescador de
+costa, no mayor. El bonito es el caso opuesto y limpio: en el Golfo de
+Vizcaya nunca está reproduciéndose (desova en el Sargazo), su presencia
+aquí es puramente trófica de verano→otoño — un dato de "temporada de
+paso" muy concreto y fácil de mostrar.
+
+**Propuesta concreta, para que el usuario decida (sin implementar nada):**
+1. Añadir a cada objeto de `ESPECIES` un campo informativo opcional
+   (p.ej. `desove: { meses: [...], nota }` y/o `presencia`/`temporada`)
+   con lo de la tabla de arriba, mostrado SOLO como texto informativo en
+   el `<details>` por especie de `index.html` ("¿Qué esperamos pescar
+   hoy?") — nunca como número que se sume al índice todavía.
+2. Como mucho, un modificador SUAVE y bien etiquetado de `indicePesca`:
+   restar un poco cuando la especie está en pleno desove lejos de costa
+   (menos pescable desde tierra) o marcar "temporada de paso" para el
+   bonito. Cualquier peso concreto tendría que calibrarse y confirmarse
+   igual que los umbrales de `indiceMar` (que ya se documentan como
+   criterio de diseño, no fuente oficial). No propongo cifras de peso
+   aquí a propósito: sin capturas reales contra las que calibrar sería
+   inventar, justo lo que prohíbe la regla.
+3. Antes de dar por buena cualquier cifra de temperatura para el índice,
+   contrastarla con una segunda fuente por especie (aquí solo la lubina
+   y el verdel traen umbral numérico claro; sargo/abadejo/jurel se
+   quedaron sin cifra fiable de temperatura de puesta — pendiente de más
+   búsqueda antes de usarlas para nada cuantitativo).
+
+**Verificación HTTP real hecha en esta pasada**: la cifra de la lubina
+(desove en invierno; huevos raros bajo 8,5–9 °C o sobre 15 °C) se
+confirmó con una petición directa a Wikipedia
+(`es.wikipedia.org/wiki/Dicentrarchus_labrax`), no solo con el resumen
+del buscador. Fishipedia (`fishipedia.es`) devolvió `403` a la petición
+directa — sus datos quedan solo como referencia del buscador, sin
+verificar en crudo.
+
+Fuentes consultadas (todas vía `WebSearch`, salvo la de Wikipedia ya
+citada, verificada con `WebFetch`):
+- Wikipedia ES: *Dicentrarchus labrax*, *Scomber scombrus*, *Trachurus
+  trachurus*, *Loligo vulgaris*.
+- Fishipedia (`fishipedia.es`) para lubina, sargo, caballa y jurel
+  (referencia del buscador, no verificada en crudo por el `403`).
+- Fichas divulgativas: animalesbiologia.com, cienciaybiologia.com,
+  aquaportail.com, wastemagazine.es, atlasdeanimales.com,
+  pellagofio.es (congrio semélparo), mariskito.com y aipeces.com
+  (costera del bonito en el Cantábrico).
+
+**Sin cambios en código** — investigación de contenido, propuesta pura.
+
+**Firmado:** robot buscador de fuentes (pasada de migración y cría de
+especies), 2026-09-14 21:03 UTC.
+
+---
+
 ## Auditoría de datos
 
 ### 2026-08-31
