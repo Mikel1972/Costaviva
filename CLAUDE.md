@@ -1228,6 +1228,62 @@ de la estación de monte más cercana a la cabecera de cada río
 de Lea y Oka —, Urkiola, Berriatua, Sodupe). Nada de esto se ha
 implementado en código todavía, solo la parte de credenciales.
 
+## Webcams en vídeo de Gipuzkoa + turbidez + capas del mapa (2026-09-14)
+
+Misma sesión que lo de arriba, tres piezas más añadidas en la rama
+`feat/estaciones-monte-gipuzkoa`, verificadas de extremo a extremo:
+
+**Webcams en vídeo real (HLS)** — 6 playas de Gipuzkoa (Hondarribia,
+Donostia/Zurriola, Orio, Zarautz, Deba, Mutriku/Mutrikukaia), fuente
+Diputación Foral de Gipuzkoa, CORS abierto (`Access-Control-Allow-Origin:
+*`), cargadas directas sin proxy propio (`WEBCAMS_HLS` en `index.html`).
+`puntuacionOleajeVisual()` generalizada para analizar tanto `<img>` como
+`<video>`; para vídeo se capturan 3 frames espaciados 2.5s y se descarta
+el que más se aparta de los otros dos (posible giro de cámara panorámica
+a media captura) antes de promediar. **Bug real encontrado y arreglado
+probando en vivo**: Chrome devuelve `"maybe"` en
+`video.canPlayType('application/vnd.apple.mpegurl')` (válido según el
+propio estándar, no implica soporte real) — el código comprobaba eso
+antes que `Hls.isSupported()`, así que Chrome entraba siempre por la
+rama "nativa" y el vídeo se quedaba colgado sin pedir nada al stream.
+Arreglado invirtiendo la prioridad (hls.js primero siempre que esté
+disponible). **Confirmado funcionando en un Chrome real del usuario**
+tras el arreglo. Nota para la próxima vez que haga falta depurar vídeo/
+HLS: el navegador automatizado de esta sesión (Claude in Chrome) no
+decodifica bien streams HLS reales (manifiesto y segmentos se
+descargaban perfectos vía `fetch()`, pero hls.js nunca llegaba a pedir
+un fragmento) — es una limitación de ese entorno de pruebas, no del
+código; para depurar reproducción de vídeo de verdad, pedir al usuario
+que pruebe en su propio navegador en vez de fiarse de la automatización.
+
+**Turbidez relativa del agua** — pieza completa nueva (no confundir con
+el oleaje visual, es un cálculo aparte): tabla `turbidez_historico`
+(pendiente de aplicar la migración
+`20260914100000_turbidez_historico.sql` en Supabase — no se ha hecho
+todavía), endpoint `/registrar-turbidez` (mismo `CRON_SECRET` que
+`/registrar-presion`), workflow diario `turbidez.yml` (mediodía Madrid,
+runner de GitHub Actions con `sharp`+`ffmpeg` porque Cloudflare Workers
+no tiene API de imagen/vídeo) que analiza saturación/tono HSV del agua
+de cada webcam (imagen fija y vídeo) y lo guarda. Nunca se compara un
+spot contra otro (el ángulo de cada cámara lo haría sin sentido, mismo
+problema que ya existía con el coeficiente de marea) — cada lectura se
+clasifica en no turbia/turbia/muy turbia por percentil contra el propio
+histórico de 90 días de ESE spot, y con menos de 14 lecturas se queda
+sin clasificar (S/D). **Pendiente**: aplicar la migración y lanzar el
+workflow a mano (`workflow_dispatch`) para la primera prueba real — no
+se ha ejecutado todavía.
+
+**Spots, ríos y boyas como capas independientes** — pedido explícito del
+usuario para un mapa limpio y personalizable: tras el login solo la capa
+de spots empieza encendida (`capaSpots`, botón 📍 activo por defecto);
+ríos (`capaRios`, botón 〰️) y boyas (`capaBoyas`, botón ⚓) quedan
+apagadas hasta que el usuario las active, mismo patrón que batimetría/
+radar/estaciones AEMET que ya eran opt-in. Apagar spots deshabilita
+también el botón "+" de añadir ubicación (`.deshabilitado`, pointer-
+events:none) — no tiene sentido añadir un punto que no se va a poder
+ver. Verificado en preview real: los spots (incluidos los nuevos de
+Gipuzkoa) se pintan bien, el resto de capas arrancan apagadas.
+
 ## Pendiente conocido (no tocar sin confirmar)
 
 - **Cuenta atrás para reintentar `/prevision`** (2026-09-14): la cuota
