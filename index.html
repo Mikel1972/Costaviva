@@ -135,11 +135,11 @@
     font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 700;
     text-align: center; white-space: nowrap;
   }
-  .marcador-estacion {
-    min-width: 34px; padding: 2px 7px; border-radius: 6px;
-    background: #EEF2EF; border: 2px solid #8B5E3C; color: #0B2532;
-    font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 700;
-    text-align: center; white-space: nowrap;
+  .marcador-estacion-icono {
+    width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+    background: #FFFFFF; border: 2px solid #8B5E3C;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.25);
   }
 
   /* Modal de estación meteorológica (2026-09-14) — fondo oscuro + tarjeta
@@ -285,6 +285,14 @@
     cursor: pointer; font-size: 16px; padding: 0;
   }
   .anadir-ubicacion-toggle.activo { background: #D4A24C; color: #0B2532; }
+  .estaciones-toggle {
+    position: absolute; top: 256px; right: 16px; z-index: 502;
+    width: 38px; height: 38px; border-radius: 8px;
+    background: #FFFFFF; border: 1px solid #DDE2DC; color: #0B2532;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 16px; padding: 0;
+  }
+  .estaciones-toggle.activo { background: #D4A24C; color: #0B2532; }
   .confirmar-ubicacion-panel {
     display: none; position: absolute; top: 64px; left: 50%; transform: translateX(-50%);
     z-index: 900; background: #FFFFFF; border: 1px solid #D4A24C; border-radius: 10px;
@@ -547,6 +555,7 @@
     <button class="batimetria-toggle" id="toggleBatimetria" title="Batimetría (profundidad del mar)" aria-label="Mostrar/ocultar batimetría">📏</button>
     <button class="nubes-toggle" id="toggleNubes" title="Radar de lluvia en directo (RainViewer)" aria-label="Mostrar/ocultar radar de lluvia">☁️</button>
     <button class="anadir-ubicacion-toggle" id="toggleAnadirUbicacion" title="Añadir una ubicación nueva" aria-label="Añadir ubicación">➕</button>
+    <button class="estaciones-toggle" id="toggleEstaciones" title="Estaciones meteorológicas reales (AEMET)" aria-label="Mostrar/ocultar estaciones meteorológicas">🌧</button>
     <div class="confirmar-ubicacion-panel" id="eligeMetodoPanel">
       <div class="titulo">¿Cómo quieres marcar el punto?</div>
       <div class="botones" style="flex-direction:column; gap:8px;">
@@ -1515,6 +1524,15 @@ document.getElementById("toggleBatimetria").addEventListener("click", (e) => {
     e.currentTarget.classList.add("activo");
   }
 });
+document.getElementById("toggleEstaciones").addEventListener("click", (e) => {
+  if (map.hasLayer(capaEstaciones)) {
+    map.removeLayer(capaEstaciones);
+    e.currentTarget.classList.remove("activo");
+  } else {
+    capaEstaciones.addTo(map);
+    e.currentTarget.classList.add("activo");
+  }
+});
 
 function iconoFlecha(grados, color) {
   const rumbo = (grados + 180) % 360;
@@ -2016,17 +2034,18 @@ function crearMarcadorBoya(boya) {
 // sin marcador (igual que crearMarcadorBoya). Al pulsar abre un modal
 // con el resumen completo (pedido explícito del usuario, 2026-09-14),
 // no solo el tooltip resumido de las boyas/ríos.
+// Capa aparte (toggle propio, como batimetría/nubes) — pedido explícito
+// del usuario 2026-09-14: ni número ni nombre siempre visibles en el
+// mapa, solo un icono; el detalle se ve al pulsar (abrirModalEstacion).
+const capaEstaciones = L.layerGroup();
 function crearMarcadorEstacion(estacion) {
   if (!Number.isFinite(estacion.pres) && !Number.isFinite(estacion.prec) && !Number.isFinite(estacion.ta)) return;
 
-  const html = `
-    <div style="display:flex; flex-direction:column; align-items:center; cursor:pointer;">
-      <div class="etiqueta-spot" style="color:#8B5E3C;">🌧 ${estacion.nombre}</div>
-      <div class="marcador-estacion">${Number.isFinite(estacion.pres) ? estacion.pres.toFixed(0) + " hPa" : "—"}</div>
-    </div>`;
-  const icon = L.divIcon({ html, className: "", iconSize: [130, 42], iconAnchor: [65, 21] });
-  const marker = L.marker([estacion.lat, estacion.lon], { icon, zIndexOffset: -100 }).addTo(map);
+  const html = `<div class="marcador-estacion-icono" title="${estacion.nombre}">🌧</div>`;
+  const icon = L.divIcon({ html, className: "", iconSize: [30, 30], iconAnchor: [15, 15] });
+  const marker = L.marker([estacion.lat, estacion.lon], { icon, zIndexOffset: -100 });
   marker.on("click", () => abrirModalEstacion(estacion));
+  marker.addTo(capaEstaciones);
 }
 
 function filaModalEstacion(etiqueta, valor) {
