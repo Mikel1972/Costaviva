@@ -296,6 +296,18 @@
     cursor: pointer; font-size: 16px; padding: 0;
   }
   .estaciones-toggle.activo { background: #D4A24C; color: #0B2532; }
+  .spots-toggle, .rios-toggle, .boyas-toggle {
+    position: absolute; right: 16px; z-index: 502;
+    width: 38px; height: 38px; border-radius: 8px;
+    background: #FFFFFF; border: 1px solid #DDE2DC; color: #0B2532;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 16px; padding: 0;
+  }
+  .spots-toggle { top: 304px; }
+  .rios-toggle { top: 352px; }
+  .boyas-toggle { top: 400px; }
+  .spots-toggle.activo, .rios-toggle.activo, .boyas-toggle.activo { background: #D4A24C; color: #0B2532; }
+  .anadir-ubicacion-toggle.deshabilitado { opacity: 0.4; cursor: default; pointer-events: none; }
   .confirmar-ubicacion-panel {
     display: none; position: absolute; top: 64px; left: 50%; transform: translateX(-50%);
     z-index: 900; background: #FFFFFF; border: 1px solid #D4A24C; border-radius: 10px;
@@ -559,6 +571,9 @@
     <button class="nubes-toggle" id="toggleNubes" title="Radar de lluvia en directo (RainViewer)" aria-label="Mostrar/ocultar radar de lluvia">☁️</button>
     <button class="anadir-ubicacion-toggle" id="toggleAnadirUbicacion" title="Añadir una ubicación nueva" aria-label="Añadir ubicación">➕</button>
     <button class="estaciones-toggle" id="toggleEstaciones" title="Estaciones meteorológicas reales (AEMET)" aria-label="Mostrar/ocultar estaciones meteorológicas">🌧</button>
+    <button class="spots-toggle activo" id="toggleSpots" title="Spots" aria-label="Mostrar/ocultar spots">📍</button>
+    <button class="rios-toggle" id="toggleRios" title="Ríos" aria-label="Mostrar/ocultar ríos">〰️</button>
+    <button class="boyas-toggle" id="toggleBoyas" title="Boyas reales (Puertos del Estado)" aria-label="Mostrar/ocultar boyas">⚓</button>
     <div class="confirmar-ubicacion-panel" id="eligeMetodoPanel">
       <div class="titulo">¿Cómo quieres marcar el punto?</div>
       <div class="botones" style="flex-direction:column; gap:8px;">
@@ -1471,6 +1486,16 @@ const map = L.map("map", {
   touchZoom: true,
   attributionControl: true,
 });
+
+// Capas por botón (2026-09-14, pedido explícito del usuario: "una visual
+// tan limpia como queramos, con los elementos que a cada usuario le
+// gusten"). Tras el login solo "spots" empieza encendida — el resto
+// (ríos, boyas, batimetría, radar de lluvia, estaciones AEMET) se activa
+// a mano, para no abrumar el mapa por defecto.
+const capaSpots = L.layerGroup();
+const capaRios = L.layerGroup();
+const capaBoyas = L.layerGroup();
+
 // Esri Ocean Basemap: gratis, sin API key, mar en azul de verdad. PERO
 // solo tiene teselas reales hasta zoom 10 en esta zona — a partir de ahí
 // devuelve un aviso "Map data not yet available" en vez de mapa (lo vimos
@@ -1539,6 +1564,40 @@ document.getElementById("toggleEstaciones").addEventListener("click", (e) => {
   } else {
     capaEstaciones.addTo(map);
     e.currentTarget.classList.add("activo");
+  }
+});
+document.getElementById("toggleRios").addEventListener("click", (e) => {
+  if (map.hasLayer(capaRios)) {
+    map.removeLayer(capaRios);
+    e.currentTarget.classList.remove("activo");
+  } else {
+    capaRios.addTo(map);
+    e.currentTarget.classList.add("activo");
+  }
+});
+document.getElementById("toggleBoyas").addEventListener("click", (e) => {
+  if (map.hasLayer(capaBoyas)) {
+    map.removeLayer(capaBoyas);
+    e.currentTarget.classList.remove("activo");
+  } else {
+    capaBoyas.addTo(map);
+    e.currentTarget.classList.add("activo");
+  }
+});
+// Spots es la única capa que, al apagarla, tiene un efecto en cascada: sin
+// spots visibles no tiene sentido poder añadir uno nuevo (pedido explícito
+// del usuario, 2026-09-14) — el botón "+" se deshabilita visualmente y deja
+// de responder a clics mientras tanto (ver .anadir-ubicacion-toggle.deshabilitado).
+document.getElementById("toggleSpots").addEventListener("click", (e) => {
+  const btnAnadir = document.getElementById("toggleAnadirUbicacion");
+  if (map.hasLayer(capaSpots)) {
+    map.removeLayer(capaSpots);
+    e.currentTarget.classList.remove("activo");
+    btnAnadir.classList.add("deshabilitado");
+  } else {
+    capaSpots.addTo(map);
+    e.currentTarget.classList.add("activo");
+    btnAnadir.classList.remove("deshabilitado");
   }
 });
 
@@ -1611,7 +1670,7 @@ function crearMarcadorSpot(s) {
       </div>
     </div>`;
   const icon = L.divIcon({ html, className: "", iconSize: [110, 50], iconAnchor: [55, 25] });
-  const marker = L.marker([s.lat, s.lon], { icon }).addTo(map);
+  const marker = L.marker([s.lat, s.lon], { icon }).addTo(capaSpots);
   marker.on("click", () => abrirPanel(s));
   marcadoresPorSlug.set(s.slug, marker);
   return marker;
@@ -1632,7 +1691,7 @@ function crearMarcadores() {
       const puntosTramo = curvaTramo(r.puntos[i], r.puntos[i + 1], semillaRio + i);
       L.polyline(puntosTramo, {
         color: "#2E7BA0", weight: grosorTramo(r.puntos[i + 1]), opacity: 0.75, smoothFactor: 1,
-      }).addTo(map);
+      }).addTo(capaRios);
     }
 
     r.puntos.forEach((p) => {
@@ -1648,7 +1707,7 @@ function crearMarcadores() {
         <div class="rio-tramo">${p.tramo}${p.estacion ? ` — estación ${p.estacion}` : ""}</div>
         <div class="rio-caudal"><span class="chip" style="width:8px;height:8px;border-radius:2px;background:${cat.color};"></span>Caudal: ${detalleCaudal}</div>
       `;
-      L.marker([p.lat, p.lon], { icon }).addTo(map)
+      L.marker([p.lat, p.lon], { icon }).addTo(capaRios)
         .bindTooltip(llamada, { direction: "top", offset: [0, -6], className: "llamada-rio", opacity: 1 });
     });
   });
@@ -2024,7 +2083,7 @@ function crearMarcadorBoya(boya) {
       </div>
     </div>`;
   const icon = L.divIcon({ html, className: "", iconSize: [110, 46], iconAnchor: [55, 23] });
-  const marker = L.marker([boya.lat, boya.lon], { icon }).addTo(map);
+  const marker = L.marker([boya.lat, boya.lon], { icon }).addTo(capaBoyas);
 
   const llamada = `
     <div class="rio-nombre">⚓ Boya ${boya.nombre}</div>
@@ -2685,6 +2744,9 @@ function refrescarIndicesVisibles() {
 }
 
 map.whenReady(async () => {
+  // Solo spots empieza encendida (ver toggleSpots más arriba) — todo lo
+  // demás (ríos, boyas, batimetría, radar, estaciones) es opt-in.
+  capaSpots.addTo(map);
   await actualizarDesdeBackend();
   crearMarcadores();
   comprobarAvisoRayos();
