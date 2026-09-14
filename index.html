@@ -13,6 +13,9 @@
 <meta name="apple-mobile-web-app-title" content="Costa Viva" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<!-- Webcams en vídeo en directo de Gipuzkoa (2026-09-14) — HLS, no hace
+     falta en Safari (soporte nativo) pero sí en Chrome/Firefox/Edge. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.6.15/hls.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -135,6 +138,41 @@
     font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 700;
     text-align: center; white-space: nowrap;
   }
+  .marcador-estacion-icono {
+    width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+    background: #FFFFFF; border: 2px solid #8B5E3C;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+  }
+
+  /* Modal de estación meteorológica (2026-09-14) — fondo oscuro + tarjeta
+     clara, mismo lenguaje visual que el resto de la app. */
+  .modal-estacion {
+    position: fixed; inset: 0; z-index: 2000;
+    background: rgba(11,37,50,0.72);
+    display: none; align-items: center; justify-content: center; padding: 24px;
+  }
+  .modal-estacion.visible { display: flex; }
+  .modal-estacion-contenido {
+    background: #FFFFFF; border-radius: 14px; border: 1px solid #DDE2DC;
+    max-width: 360px; width: 100%; padding: 22px 22px 18px; position: relative;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+  }
+  .modal-estacion-contenido h3 {
+    font-family: 'Fraunces', serif; margin: 0 22px 4px 0; color: #0B2532; font-size: 19px;
+  }
+  .fila-estacion {
+    display: flex; justify-content: space-between; gap: 12px;
+    padding: 7px 0; border-bottom: 1px solid #EEF2EF;
+    font-family: 'Inter', sans-serif; font-size: 12.5px; color: #42585F;
+  }
+  .fila-estacion strong { color: #0B2532; font-family: 'IBM Plex Mono', monospace; }
+  .fila-estacion:last-child { border-bottom: none; }
+  .modal-estacion .cerrar {
+    position: absolute; top: 14px; right: 14px;
+    background: transparent; border: none; color: #5F7981; font-size: 16px; cursor: pointer;
+    padding: 6px; margin: -6px;
+  }
 
   /* Llamada de caudal: tooltip de Leaflet restilizado para que se note que
      el marcador de río se puede "abrir" al pasar el cursor por encima. */
@@ -219,37 +257,43 @@
   }
   .modal-rayos-contenido img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 
-  .luna-toggle {
-    position: absolute; top: 64px; right: 16px; z-index: 502;
+  /* Botones de capas reorganizados en 2 columnas por tipología
+     (2026-09-14, pedido explícito: "que se vean todos") — antes era una
+     sola columna de 9 botones que se salía de pantalla en móvil.
+     Columna A (right:16px, pegada al borde): capas de referencia/
+     ambiente — rayos, luna, batimetría, radar de lluvia, estaciones.
+     Columna B (right:64px, justo a su izquierda): capas de "cosas en el
+     mapa". Spots + "+" van pegados como un único grupo visual (el "+"
+     solo visible con spots encendido, ver JS) — debajo, ríos y boyas. */
+  .luna-toggle, .batimetria-toggle, .nubes-toggle, .estaciones-toggle,
+  .spots-toggle, .rios-toggle, .boyas-toggle, .anadir-ubicacion-toggle {
+    position: absolute; z-index: 502;
     width: 38px; height: 38px; border-radius: 8px;
     background: #FFFFFF; border: 1px solid #DDE2DC; color: #0B2532;
     display: flex; align-items: center; justify-content: center;
     cursor: pointer; font-size: 16px; padding: 0;
   }
-  .batimetria-toggle {
-    position: absolute; top: 112px; right: 16px; z-index: 502;
-    width: 38px; height: 38px; border-radius: 8px;
-    background: #FFFFFF; border: 1px solid #DDE2DC; color: #0B2532;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; font-size: 16px; padding: 0;
+  .luna-toggle { top: 64px; right: 16px; }
+  .batimetria-toggle { top: 112px; right: 16px; }
+  .nubes-toggle { top: 160px; right: 16px; }
+  .estaciones-toggle { top: 208px; right: 16px; }
+  .rios-toggle { top: 104px; right: 64px; }
+  .boyas-toggle { top: 152px; right: 64px; }
+  /* Spots + "+" pegados como un único grupo de 2 (pedido explícito del
+     usuario: el botón de añadir ubicación debe verse asociado al de
+     spots, no como una capa más suelta) — sin hueco entre los dos,
+     esquinas redondeadas solo por fuera y una línea fina de separación
+     en vez del borde completo, como un control segmentado. */
+  .spots-toggle { top: 16px; right: 64px; border-radius: 8px 8px 0 0; }
+  .anadir-ubicacion-toggle { top: 54px; right: 64px; border-radius: 0 0 8px 8px; border-top: none; }
+  .batimetria-toggle.activo, .nubes-toggle.activo, .estaciones-toggle.activo,
+  .spots-toggle.activo, .rios-toggle.activo, .boyas-toggle.activo, .anadir-ubicacion-toggle.activo {
+    background: #D4A24C; color: #0B2532;
   }
-  .batimetria-toggle.activo { background: #D4A24C; color: #0B2532; }
-  .nubes-toggle {
-    position: absolute; top: 160px; right: 16px; z-index: 502;
-    width: 38px; height: 38px; border-radius: 8px;
-    background: #FFFFFF; border: 1px solid #DDE2DC; color: #0B2532;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; font-size: 16px; padding: 0;
-  }
-  .nubes-toggle.activo { background: #D4A24C; color: #0B2532; }
-  .anadir-ubicacion-toggle {
-    position: absolute; top: 208px; right: 16px; z-index: 502;
-    width: 38px; height: 38px; border-radius: 8px;
-    background: #FFFFFF; border: 1px solid #DDE2DC; color: #0B2532;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; font-size: 16px; padding: 0;
-  }
-  .anadir-ubicacion-toggle.activo { background: #D4A24C; color: #0B2532; }
+  /* El display:flex de arriba (regla de autor) gana por defecto al
+     display:none del atributo [hidden] (regla de user-agent) — sin esto,
+     poner el botón "+" en hidden no lo ocultaría de verdad. */
+  .anadir-ubicacion-toggle[hidden] { display: none; }
   .confirmar-ubicacion-panel {
     display: none; position: absolute; top: 64px; left: 50%; transform: translateX(-50%);
     z-index: 900; background: #FFFFFF; border: 1px solid #D4A24C; border-radius: 10px;
@@ -355,7 +399,7 @@
     header h1 { font-size: 22px; }
     header p { display: none; }
 
-    #avisoRayos, #sinRayos { padding: 6px 16px; font-size: 10.5px; }
+    #avisoRayos { padding: 6px 16px; font-size: 10.5px; }
 
     .main { flex-direction: column; position: relative; }
     .mapa-wrap { flex: 1; min-height: 0; }
@@ -451,12 +495,14 @@
 
 <header>
   <h1>Costa Viva</h1><span class="fecha"><span id="estadoVigenciaGlobal">cargando…</span></span>
-  <a id="enlaceAdmin" href="/admin.html" title="Admin" aria-label="Administración" style="display:none; margin-left:auto; background:#EEF2EF; border:1px solid #DDE2DC; color:#0B2532; width:34px; height:34px; border-radius:50%; font-size:15px; cursor:pointer; align-items:center; justify-content:center; text-decoration:none;">⚙️</a>
-  <div class="cuenta-menu-wrap">
-    <button class="cuenta-menu-btn" id="btnCuentaMenu" type="button" aria-label="Cuenta">👤</button>
-    <div class="cuenta-menu-dropdown" id="cuentaMenuDropdown">
-      <button type="button" id="btnInvitarAmigo">📤 Invitar a un amigo</button>
-      <button type="button" id="btnCerrarSesion">🚪 Cerrar sesión</button>
+  <div style="display:flex; align-items:center; gap:8px; margin-left:auto;">
+    <a id="enlaceAdmin" href="/admin.html" title="Admin" aria-label="Administración" style="display:none; background:#EEF2EF; border:1px solid #DDE2DC; color:#0B2532; width:34px; height:34px; border-radius:50%; font-size:15px; cursor:pointer; align-items:center; justify-content:center; text-decoration:none;">⚙️</a>
+    <div class="cuenta-menu-wrap">
+      <button class="cuenta-menu-btn" id="btnCuentaMenu" type="button" aria-label="Cuenta">👤</button>
+      <div class="cuenta-menu-dropdown" id="cuentaMenuDropdown">
+        <button type="button" id="btnInvitarAmigo">📤 Invitar a un amigo</button>
+        <button type="button" id="btnCerrarSesion">🚪 Cerrar sesión</button>
+      </div>
     </div>
   </div>
 </header>
@@ -464,10 +510,6 @@
 <div id="avisoRayos" style="display:none; background:#A34A35; color:#F5F1E6; padding:8px 28px; font-family:'IBM Plex Mono', monospace; font-size:12px; font-weight:700; flex-shrink:0;">
   ⚡ RIESGO DE RAYOS DETECTADO EN LA ZONA — no salir a roca/muelle hasta que pase
 </div>
-<div id="sinRayos" style="background:#FFFFFF; border-bottom:1px solid #DDE2DC; color:#42585F; padding:6px 28px; font-family:'IBM Plex Mono', monospace; font-size:11px; flex-shrink:0;">
-  ⚡ Sin aviso de rayos activo para esta zona — mapa nacional de referencia (AEMET) disponible en el botón ⚡ del mapa
-</div>
-
 <div class="main">
   <div class="mapa-wrap">
     <div id="map"></div>
@@ -514,6 +556,10 @@
     <button class="batimetria-toggle" id="toggleBatimetria" title="Batimetría (profundidad del mar)" aria-label="Mostrar/ocultar batimetría">📏</button>
     <button class="nubes-toggle" id="toggleNubes" title="Radar de lluvia en directo (RainViewer)" aria-label="Mostrar/ocultar radar de lluvia">☁️</button>
     <button class="anadir-ubicacion-toggle" id="toggleAnadirUbicacion" title="Añadir una ubicación nueva" aria-label="Añadir ubicación">➕</button>
+    <button class="estaciones-toggle" id="toggleEstaciones" title="Estaciones meteorológicas reales (AEMET)" aria-label="Mostrar/ocultar estaciones meteorológicas">🌧</button>
+    <button class="spots-toggle activo" id="toggleSpots" title="Spots" aria-label="Mostrar/ocultar spots">📍</button>
+    <button class="rios-toggle" id="toggleRios" title="Ríos" aria-label="Mostrar/ocultar ríos">〰️</button>
+    <button class="boyas-toggle" id="toggleBoyas" title="Boyas reales (Puertos del Estado)" aria-label="Mostrar/ocultar boyas">⚓</button>
     <div class="confirmar-ubicacion-panel" id="eligeMetodoPanel">
       <div class="titulo">¿Cómo quieres marcar el punto?</div>
       <div class="botones" style="flex-direction:column; gap:8px;">
@@ -638,6 +684,13 @@
   </div>
 </div>
 
+<div class="modal-estacion" id="modalEstacion">
+  <div class="modal-estacion-contenido">
+    <button class="cerrar" id="cerrarModalEstacion" aria-label="Cerrar">✕</button>
+    <h3 id="tituloModalEstacion"></h3>
+    <div id="contenidoModalEstacion"></div>
+  </div>
+</div>
 <script>
 // ---------------------------------------------------------------------------
 // Datos de respaldo ESTÁTICOS (snapshot antiguo, ya no viene de Todosurf —
@@ -689,6 +742,27 @@ const SPOTS = [
     nubosidad: null, precipitacion: null, tempAgua: null, rayosCerca: null,
     corriente: null, dirCorriente: null, marea: null, presion: null },
 ].concat(
+  // Gipuzkoa (de Lekeitio a la frontera francesa) — hueco detectado
+  // 2026-09-14, no había ningún spot ahí. Mismo placeholder genérico que
+  // la ampliación nacional de abajo (sin snapshot propio de un día real).
+  [
+    ["ondarroa", "Ondarroa", 43.3225, -2.4200],
+    ["mutriku", "Mutriku", 43.3167, -2.3833],
+    ["deba", "Deba", 43.2917, -2.3550],
+    ["zumaia", "Zumaia", 43.2967, -2.2617],
+    ["getaria", "Getaria", 43.3050, -2.2017],
+    ["zarautz", "Zarautz", 43.2833, -2.1667],
+    ["orio", "Orio", 43.2833, -2.1300],
+    ["donostia", "Donostia/San Sebastián", 43.3183, -1.9812],
+    ["pasaia", "Pasaia", 43.3283, -1.9283],
+    ["hondarribia", "Hondarribia", 43.3736, -1.7964],
+  ].map(([slug, nombre, lat, lon]) => ({
+    slug, nombre, lat, lon,
+    altura: [0.2, 0.5], periodo: 5, viento: 12, dirViento: "N", dirOla: "N 350°",
+    nubosidad: null, precipitacion: null, tempAgua: null, rayosCerca: null,
+    corriente: null, dirCorriente: null, marea: null, presion: null,
+  }))
+).concat(
   // Ampliación nacional (España + Portugal, 2026-09-09). Sin snapshot propio
   // de un día real como los 6 originales — placeholder genérico idéntico
   // para todos, sobrescrito por actualizarDesdeBackend() casi al instante;
@@ -826,6 +900,42 @@ const BOYAS = [
   // functions/prevision.js para el detalle de la fuente.
   { codigo: "PT-nazare-costeira", nombre: "Nazaré (costeira, PT)", lat: 39.560, lon: -9.210 },
 ].map((b) => ({ ...b, alturaSignificativa: null, periodoPico: null, dirOla: null, tempAgua: null, actualizado: null }));
+
+// Estaciones meteorológicas reales de AEMET OpenData — mismas coordenadas
+// que ESTACIONES_AEMET en functions/prevision.js (2026-09-14, "Euskalmet
+// para Euskadi, AEMET para el resto"). Sin dato inventado: si /prevision no
+// trae nada real para una estación, su marcador no se dibuja (ver
+// crearMarcadorEstacion), igual que las boyas de arriba.
+const ESTACIONES_METEO = [
+  { idema: "1082", nombre: "Bilbao Aeropuerto", lat: 43.297952, lon: -2.906304 },
+  { idema: "1014A", nombre: "Donostia/San Sebastián Aeropuerto", lat: 43.357075, lon: -1.792116 },
+  { idema: "1109X", nombre: "Santander Aeropuerto", lat: 43.428613, lon: -3.831385 },
+  { idema: "1212E", nombre: "Asturias/Avilés Aeropuerto", lat: 43.566941, lon: -6.044173 },
+  { idema: "1249X", nombre: "Oviedo", lat: 43.353333, lon: -5.873889 },
+  { idema: "1387", nombre: "A Coruña", lat: 43.365969, lon: -8.421517 },
+  { idema: "1428", nombre: "Santiago de Compostela/Lavacolla", lat: 42.888011, lon: -8.410515 },
+  { idema: "1495", nombre: "Vigo/Peinador Aeropuerto", lat: 42.238616, lon: -8.623765 },
+  { idema: "0076", nombre: "Barcelona Aeropuerto", lat: 41.292781, lon: 2.069995 },
+  { idema: "0042Y", nombre: "Tarragona (Fac. Geografia)", lat: 41.123892, lon: 1.249167 },
+  { idema: "8414A", nombre: "Valencia Aeropuerto", lat: 39.485015, lon: -0.474677 },
+  { idema: "8019", nombre: "Alicante-Elche Aeropuerto", lat: 38.282778, lon: -0.570830 },
+  { idema: "7012D", nombre: "Cartagena (Tentegorra)", lat: 37.604444, lon: -1.023333 },
+  { idema: "7031X", nombre: "Murcia/San Javier Aeropuerto", lat: 37.778332, lon: -0.805916 },
+  { idema: "6199X", nombre: "Vélez-Málaga", lat: 36.768611, lon: -4.093611 },
+  { idema: "6268Y", nombre: "Motril (Puerto Náutico)", lat: 36.724011, lon: -3.529267 },
+  { idema: "5960", nombre: "Jerez de la Frontera Aeropuerto", lat: 36.750495, lon: -6.055857 },
+  { idema: "4642E", nombre: "Huelva (Ronda Este)", lat: 37.278412, lon: -6.911696 },
+  { idema: "B228", nombre: "Palma de Mallorca (Portopí)", lat: 39.554258, lon: 2.625268 },
+  { idema: "B954", nombre: "Ibiza (Es Codolà)", lat: 38.876385, lon: 1.384446 },
+  { idema: "B893", nombre: "Menorca Aeropuerto", lat: 39.854726, lon: 4.215556 },
+  { idema: "C649I", nombre: "Las Palmas (Gando)", lat: 27.917725, lon: -15.395303 },
+  { idema: "C429I", nombre: "Tenerife Sur", lat: 28.046992, lon: -16.561158 },
+  { idema: "C249I", nombre: "Fuerteventura Aeropuerto", lat: 28.444720, lon: -13.863055 },
+  { idema: "C029O", nombre: "Lanzarote Aeropuerto", lat: 28.951943, lon: -13.600279 },
+].map((e) => ({
+  ...e, prec: null, pres: null, presNmar: null, ta: null, tamin: null, tamax: null,
+  hr: null, vv: null, vmax: null, dv: null, ts: null, actualizado: null,
+}));
 
 const RIOS = [
   // Cada río con 3 puntos aproximados (cabecera / medio / desembocadura),
@@ -1221,6 +1331,10 @@ function gradosDesdeTexto(texto) {
 // placeholder inicial.
 const VIGENCIA_MAX_MS = 60 * 60 * 1000; // 1h
 let ultimaActualizacionOk = null; // para el indicador general del header
+// Turbidez relativa por spot (ver datosTurbidezPorSpot en
+// functions/prevision.js) — { <slug>: { etiqueta, actualizado, lecturas } },
+// solo para spots con suficiente histórico; el resto no aparece aquí.
+let TURBIDEZ = {};
 function spotVigente(s) {
   return !!s.actualizadoEn && (Date.now() - s.actualizadoEn) < VIGENCIA_MAX_MS;
 }
@@ -1305,6 +1419,13 @@ async function actualizarDesdeBackend() {
       const b = BOYAS.find((x) => x.codigo === bBackend.codigo);
       if (b) Object.assign(b, bBackend);
     });
+    if (datos.estacionesAemet && !datos.estacionesAemet.error) {
+      ESTACIONES_METEO.forEach((e) => {
+        const d = datos.estacionesAemet[e.idema];
+        if (d) Object.assign(e, d);
+      });
+    }
+    if (datos.turbidez) TURBIDEZ = datos.turbidez;
     if (datos.caudales) {
       RIOS.forEach((r) => {
         r.puntos.forEach((p) => {
@@ -1351,6 +1472,16 @@ const map = L.map("map", {
   touchZoom: true,
   attributionControl: true,
 });
+
+// Capas por botón (2026-09-14, pedido explícito del usuario: "una visual
+// tan limpia como queramos, con los elementos que a cada usuario le
+// gusten"). Tras el login solo "spots" empieza encendida — el resto
+// (ríos, boyas, batimetría, radar de lluvia, estaciones AEMET) se activa
+// a mano, para no abrumar el mapa por defecto.
+const capaSpots = L.layerGroup();
+const capaRios = L.layerGroup();
+const capaBoyas = L.layerGroup();
+
 // Esri Ocean Basemap: gratis, sin API key, mar en azul de verdad. PERO
 // solo tiene teselas reales hasta zoom 10 en esta zona — a partir de ahí
 // devuelve un aviso "Map data not yet available" en vez de mapa (lo vimos
@@ -1410,6 +1541,51 @@ document.getElementById("toggleBatimetria").addEventListener("click", (e) => {
   } else {
     capaBatimetria.addTo(map);
     e.currentTarget.classList.add("activo");
+  }
+});
+document.getElementById("toggleEstaciones").addEventListener("click", (e) => {
+  if (map.hasLayer(capaEstaciones)) {
+    map.removeLayer(capaEstaciones);
+    e.currentTarget.classList.remove("activo");
+  } else {
+    capaEstaciones.addTo(map);
+    e.currentTarget.classList.add("activo");
+  }
+});
+document.getElementById("toggleRios").addEventListener("click", (e) => {
+  if (map.hasLayer(capaRios)) {
+    map.removeLayer(capaRios);
+    e.currentTarget.classList.remove("activo");
+  } else {
+    capaRios.addTo(map);
+    e.currentTarget.classList.add("activo");
+  }
+});
+document.getElementById("toggleBoyas").addEventListener("click", (e) => {
+  if (map.hasLayer(capaBoyas)) {
+    map.removeLayer(capaBoyas);
+    e.currentTarget.classList.remove("activo");
+  } else {
+    capaBoyas.addTo(map);
+    e.currentTarget.classList.add("activo");
+  }
+});
+// Spots es la única capa que, al apagarla, tiene un efecto en cascada: sin
+// spots visibles no tiene sentido poder añadir uno nuevo (pedido explícito
+// del usuario, 2026-09-14) — el botón "+" directamente desaparece (no solo
+// se deshabilita) mientras spots esté apagada, y vuelve a aparecer al
+// encenderla. `hidden` en vez de display:none a mano, mismo criterio que el
+// resto del proyecto para mostrar/ocultar.
+document.getElementById("toggleSpots").addEventListener("click", (e) => {
+  const btnAnadir = document.getElementById("toggleAnadirUbicacion");
+  if (map.hasLayer(capaSpots)) {
+    map.removeLayer(capaSpots);
+    e.currentTarget.classList.remove("activo");
+    btnAnadir.hidden = true;
+  } else {
+    capaSpots.addTo(map);
+    e.currentTarget.classList.add("activo");
+    btnAnadir.hidden = false;
   }
 });
 
@@ -1482,7 +1658,7 @@ function crearMarcadorSpot(s) {
       </div>
     </div>`;
   const icon = L.divIcon({ html, className: "", iconSize: [110, 50], iconAnchor: [55, 25] });
-  const marker = L.marker([s.lat, s.lon], { icon }).addTo(map);
+  const marker = L.marker([s.lat, s.lon], { icon }).addTo(capaSpots);
   marker.on("click", () => abrirPanel(s));
   marcadoresPorSlug.set(s.slug, marker);
   return marker;
@@ -1503,7 +1679,7 @@ function crearMarcadores() {
       const puntosTramo = curvaTramo(r.puntos[i], r.puntos[i + 1], semillaRio + i);
       L.polyline(puntosTramo, {
         color: "#2E7BA0", weight: grosorTramo(r.puntos[i + 1]), opacity: 0.75, smoothFactor: 1,
-      }).addTo(map);
+      }).addTo(capaRios);
     }
 
     r.puntos.forEach((p) => {
@@ -1519,12 +1695,13 @@ function crearMarcadores() {
         <div class="rio-tramo">${p.tramo}${p.estacion ? ` — estación ${p.estacion}` : ""}</div>
         <div class="rio-caudal"><span class="chip" style="width:8px;height:8px;border-radius:2px;background:${cat.color};"></span>Caudal: ${detalleCaudal}</div>
       `;
-      L.marker([p.lat, p.lon], { icon }).addTo(map)
+      L.marker([p.lat, p.lon], { icon }).addTo(capaRios)
         .bindTooltip(llamada, { direction: "top", offset: [0, -6], className: "llamada-rio", opacity: 1 });
     });
   });
 
   BOYAS.forEach(crearMarcadorBoya);
+  ESTACIONES_METEO.forEach(crearMarcadorEstacion);
 }
 
 // ---------------------------------------------------------------------------
@@ -1894,7 +2071,7 @@ function crearMarcadorBoya(boya) {
       </div>
     </div>`;
   const icon = L.divIcon({ html, className: "", iconSize: [110, 46], iconAnchor: [55, 23] });
-  const marker = L.marker([boya.lat, boya.lon], { icon }).addTo(map);
+  const marker = L.marker([boya.lat, boya.lon], { icon }).addTo(capaBoyas);
 
   const llamada = `
     <div class="rio-nombre">⚓ Boya ${boya.nombre}</div>
@@ -1903,6 +2080,52 @@ function crearMarcadorBoya(boya) {
     ${boya.tempAgua !== null ? `<div class="rio-caudal">🌡 Agua: ${boya.tempAgua}°C</div>` : ""}
   `;
   marker.bindTooltip(llamada, { direction: "top", offset: [0, -10], className: "llamada-rio", opacity: 1 });
+}
+
+// Estaciones meteorológicas reales (AEMET, ver ESTACIONES_METEO más
+// arriba) — símbolo distinto al de las boyas (🌧 en vez de ⚓, color
+// tierra en vez de azul) para no confundir "medido en el mar" con
+// "medido en tierra". Mismo criterio de nunca inventar: sin dato real,
+// sin marcador (igual que crearMarcadorBoya). Al pulsar abre un modal
+// con el resumen completo (pedido explícito del usuario, 2026-09-14),
+// no solo el tooltip resumido de las boyas/ríos.
+// Capa aparte (toggle propio, como batimetría/nubes) — pedido explícito
+// del usuario 2026-09-14: ni número ni nombre siempre visibles en el
+// mapa, solo un icono; el detalle se ve al pulsar (abrirModalEstacion).
+const capaEstaciones = L.layerGroup();
+function crearMarcadorEstacion(estacion) {
+  if (!Number.isFinite(estacion.pres) && !Number.isFinite(estacion.prec) && !Number.isFinite(estacion.ta)) return;
+
+  const html = `<div class="marcador-estacion-icono" title="${estacion.nombre}">🌧</div>`;
+  const icon = L.divIcon({ html, className: "", iconSize: [30, 30], iconAnchor: [15, 15] });
+  const marker = L.marker([estacion.lat, estacion.lon], { icon, zIndexOffset: -100 });
+  marker.on("click", () => abrirModalEstacion(estacion));
+  marker.addTo(capaEstaciones);
+}
+
+function filaModalEstacion(etiqueta, valor) {
+  return valor === null || valor === undefined ? "" : `
+    <div class="fila-estacion"><span>${etiqueta}</span><strong>${valor}</strong></div>`;
+}
+
+function abrirModalEstacion(estacion) {
+  const hora = estacion.actualizado
+    ? new Date(estacion.actualizado).toLocaleString("es-ES", { timeZone: "Europe/Madrid", hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit" })
+    : "—";
+  document.getElementById("tituloModalEstacion").textContent = `🌧 ${estacion.nombre}`;
+  document.getElementById("contenidoModalEstacion").innerHTML = `
+    <div class="rio-tramo" style="margin-bottom:10px;">Estación real AEMET · actualizado ${hora}</div>
+    ${filaModalEstacion("Precipitación (última hora)", Number.isFinite(estacion.prec) ? `${estacion.prec} mm` : null)}
+    ${filaModalEstacion("Presión", Number.isFinite(estacion.pres) ? `${estacion.pres} hPa` : null)}
+    ${filaModalEstacion("Presión a nivel del mar", Number.isFinite(estacion.presNmar) ? `${estacion.presNmar} hPa` : null)}
+    ${filaModalEstacion("Temperatura", Number.isFinite(estacion.ta) ? `${estacion.ta}°C` : null)}
+    ${filaModalEstacion("Mín. / Máx. del día", (Number.isFinite(estacion.tamin) && Number.isFinite(estacion.tamax)) ? `${estacion.tamin}°C / ${estacion.tamax}°C` : null)}
+    ${filaModalEstacion("Humedad relativa", Number.isFinite(estacion.hr) ? `${estacion.hr}%` : null)}
+    ${filaModalEstacion("Viento medio", Number.isFinite(estacion.vv) ? `${estacion.vv} m/s${Number.isFinite(estacion.dv) ? " " + textoRumbo(estacion.dv) : ""}` : null)}
+    ${filaModalEstacion("Racha máxima", Number.isFinite(estacion.vmax) ? `${estacion.vmax} m/s` : null)}
+    ${filaModalEstacion("Temp. del mar (si la mide)", Number.isFinite(estacion.ts) ? `${estacion.ts}°C` : null)}
+  `;
+  document.getElementById("modalEstacion").classList.add("visible");
 }
 
 const SPOTS_CON_WEBCAM = [
@@ -1925,6 +2148,9 @@ const SPOTS_CON_WEBCAM = [
   "alboraya", "canetdeberenguer", "cullera", "pobladefarnals", "oliva", "piles",
   // SOCIB (Baleares) — endpoint interno del visor BEAMON, verificado 2026-09-09
   "calamillor", "sonbou", "muro",
+  // Diputación Foral de Gipuzkoa (vídeo HLS, ver WEBCAMS_HLS más abajo) —
+  // verificadas 2026-09-14
+  "hondarribia", "donostia", "orio", "zarautz", "deba", "mutriku",
 ];
 // Subconjunto de SPOTS_CON_WEBCAM donde SÍ se calcula la lectura visual de
 // oleaje (puntuacionOleajeVisual). Se descargó y miró a mano la imagen real
@@ -1949,19 +2175,53 @@ const SPOTS_CON_LECTURA_VISUAL = [
   "xilxes", "oropesa", "torreblanca", "vinaros", "alboraya", "pobladefarnals",
   "oliva", "piles",
   "calamillor", "sonbou", "muro",
+  // Gipuzkoa (vídeo HLS, ver WEBCAMS_HLS) — a diferencia de las de arriba,
+  // aquí SÍ se ve mar abierto de verdad en las 6 (Diputación Foral de
+  // Gipuzkoa, verificadas con petición real 2026-09-14).
+  "hondarribia", "donostia", "orio", "zarautz", "deba", "mutriku",
 ];
+
+// Webcams en vídeo en directo (HLS) — Diputación Foral de Gipuzkoa,
+// verificadas con petición real el 2026-09-14 (CORS abierto de par en par,
+// Access-Control-Allow-Origin: *, tanto en el .m3u8 como en los .ts). NO usan
+// nuestro proxy /webcam/<slug> — se cargan directas, el proveedor ya permite
+// acceso cruzado. "malkorbe" (Getaria) existe en la web de la Diputación
+// pero su URL de stream daba 404 en la comprobación real — no incluida hasta
+// que vuelva a funcionar. Zumaia no tiene cámara en absoluto en esta fuente.
+const WEBCAMS_HLS = {
+  hondarribia: "https://58f14c0895a20.streamlock.net/camaramar/GIP_hondarribia_169.stream/playlist.m3u8",
+  // Zurriola (playa expuesta a mar abierto), no La Concha/Ondarreta (bahía
+  // resguardada, mucho menos representativa del estado real del mar).
+  donostia: "https://58f14c0895a20.streamlock.net/camaramar/GIP_zurriola_169.stream/playlist.m3u8",
+  orio: "https://58f14c0895a20.streamlock.net/camaramar/GIP_orio_169.stream/playlist.m3u8",
+  zarautz: "https://58f14c0895a20.streamlock.net/camaramar/GIP_zarautz_169.stream/playlist.m3u8",
+  deba: "https://58f14c0895a20.streamlock.net/camaramar/GIP_deba_169.stream/playlist.m3u8",
+  // "mutrikukaia" (puerto de Mutriku, coincide con la ubicación real del
+  // spot) en vez de "saturraran" (playa distinta, más cerca de Deba).
+  mutriku: "https://58f14c0895a20.streamlock.net/camaramar/GIP_mutrikukaia_169.stream/playlist.m3u8",
+};
+
 const REFRESCO_WEBCAM_MS = 60000; // 1 min: suficiente para sentirse "en directo" sin sobrecargar al proveedor original
 let intervaloWebcam = null;
+let hlsActivo = null;
 
 function pararRefrescoWebcam() {
   if (intervaloWebcam) { clearInterval(intervaloWebcam); intervaloWebcam = null; }
 }
+function destruirHlsActivo() {
+  if (hlsActivo) { hlsActivo.destroy(); hlsActivo = null; }
+}
 
 function pintarWebcam(slug, nombre) {
   pararRefrescoWebcam();
+  destruirHlsActivo();
   const cont = document.getElementById("panelWebcamContenido");
   if (!SPOTS_CON_WEBCAM.includes(slug)) {
     cont.innerHTML = `<div class="tarjeta" style="text-align:center; color:#42585F; font-size:12px;">Sin webcam identificada para este spot todavía.</div>`;
+    return;
+  }
+  if (WEBCAMS_HLS[slug]) {
+    pintarWebcamHls(slug, nombre);
     return;
   }
   // Se pide a nuestro propio proxy (/webcam/<slug>, ver functions/webcam/[slug].js),
@@ -1980,6 +2240,7 @@ function pintarWebcam(slug, nombre) {
     </div>
     ${SPOTS_CON_LECTURA_VISUAL.includes(slug)
       ? `<div id="lecturaVisual" style="margin-top:8px; font-size:11.5px; color:#5C7680;">👁 Analizando imagen…</div>
+    ${lineaTurbidezHtml(slug)}
     <p class="nota-final" id="notaWebcam">Servida por nuestro propio backend (evita bloqueos CORS del proveedor original). Se actualiza sola cada minuto — la lectura de "estado del mar" se calcula en tu propio navegador a partir del contraste de la imagen, no es una medida en metros.</p>`
       : `<p class="nota-final" id="notaWebcam">Servida por nuestro propio backend (evita bloqueos CORS del proveedor original). Se actualiza sola cada minuto — solo informativa: esta cámara todavía no tiene verificado si encuadra mar abierto (puede ser interior de puerto/bahía resguardada), así que no calculamos una lectura de oleaje a partir de ella.</p>`}
   `;
@@ -1999,6 +2260,78 @@ function pintarWebcam(slug, nombre) {
   }, REFRESCO_WEBCAM_MS);
 }
 
+// Webcams de Gipuzkoa: vídeo real (no una imagen que se refresca), pedido
+// explícito del usuario 2026-09-14 — "la herramienta se vuelve mucho más
+// potente si el usuario ve vídeo, aunque nosotros analicemos frames". CORS
+// abierto en el proveedor, así que se carga directo, sin pasar por nuestro
+// proxy (ese sigue existiendo solo para las webcams de imagen fija).
+function pintarWebcamHls(slug, nombre) {
+  const cont = document.getElementById("panelWebcamContenido");
+  cont.innerHTML = `
+    <div style="position:relative;">
+      <video id="videoWebcam" crossorigin="anonymous" muted autoplay playsinline
+             style="width:100%; border-radius:8px; border:1px solid #DDE2DC; display:block; background:#0B2532; aspect-ratio:16/9;"></video>
+      <span style="position:absolute; top:8px; left:8px; display:flex; align-items:center; gap:5px;
+                    background:rgba(11,37,50,0.75); padding:3px 8px; border-radius:12px;
+                    font-family:'IBM Plex Mono',monospace; font-size:10px; color:#F5F1E6;">
+        <span style="width:7px; height:7px; border-radius:50%; background:#A34A35; animation:pulso 1.6s infinite;"></span>
+        EN DIRECTO
+      </span>
+    </div>
+    <div id="lecturaVisual" style="margin-top:8px; font-size:11.5px; color:#5C7680;">👁 Analizando vídeo…</div>
+    ${lineaTurbidezHtml(slug)}
+    <p class="nota-final" id="notaWebcam">Vídeo en directo (Diputación Foral de Gipuzkoa). La lectura de "estado del mar" se calcula en tu propio navegador a partir de varios frames del vídeo, no es una medida en metros.</p>
+  `;
+  const video = document.getElementById("videoWebcam");
+  const url = WEBCAMS_HLS[slug];
+
+  const arrancarLecturas = () => {
+    actualizarLecturaVisualVideo(video);
+    intervaloWebcam = setInterval(() => {
+      const v = document.getElementById("videoWebcam");
+      if (!v) { pararRefrescoWebcam(); return; }
+      actualizarLecturaVisualVideo(v);
+    }, REFRESCO_WEBCAM_MS);
+  };
+  const fallo = () => {
+    pararRefrescoWebcam();
+    destruirHlsActivo();
+    cont.innerHTML = `<div class="tarjeta" style="text-align:center; color:#42585F; font-size:12px;">
+      No se pudo cargar la webcam de ${nombre} ahora mismo.
+    </div>`;
+  };
+
+  // hls.js primero SIEMPRE que esté disponible — probado en real 2026-09-14:
+  // Chrome devuelve "maybe" en video.canPlayType('application/vnd.apple.mpegurl')
+  // (un "maybe" es válido según el propio estándar, no promete nada) pero NO
+  // sabe reproducir HLS de verdad vía <video src> directo — con ese orden al
+  // revés, Chrome entraba en la rama "nativa" y se quedaba colgado sin pedir
+  // nada al stream. Nativo queda solo como respaldo para cuando hls.js no
+  // esté disponible (Safari antiguo/iOS con MSE restringido).
+  if (window.Hls && window.Hls.isSupported()) {
+    hlsActivo = new Hls();
+    hlsActivo.loadSource(url);
+    hlsActivo.attachMedia(video);
+    hlsActivo.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(() => {}));
+    video.addEventListener("loadeddata", arrancarLecturas, { once: true });
+    hlsActivo.on(Hls.Events.ERROR, (_evt, data) => { if (data.fatal) fallo(); });
+  } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+    video.src = url;
+    video.addEventListener("loadeddata", arrancarLecturas, { once: true });
+    video.addEventListener("error", fallo, { once: true });
+  } else {
+    cont.innerHTML = `<div class="tarjeta" style="text-align:center; color:#42585F; font-size:12px;">Tu navegador no soporta vídeo en directo (HLS).</div>`;
+  }
+}
+
+async function actualizarLecturaVisualVideo(video) {
+  const p = await promedioVisualMultiFrame(video);
+  const el = document.getElementById("lecturaVisual"); // recogido de nuevo: el panel pudo cambiar mientras se esperaba
+  if (!el) return;
+  const et = etiquetaOleajeVisual(p);
+  el.innerHTML = `👁 <span style="color:${et.color};">${et.texto}</span>`;
+}
+
 // ---------------------------------------------------------------------------
 // Lectura visual orientativa del estado del mar a partir de la propia imagen
 // de la webcam — corre entera en el navegador de quien la mira (canvas), no
@@ -2012,46 +2345,103 @@ function pintarWebcam(slug, nombre) {
 // no calibrados contra alturas medidas — de ahí que se muestre como
 // etiqueta cualitativa y nunca como número en metros.
 // ---------------------------------------------------------------------------
+// Refactorizado 2026-09-14 para poder analizar también frames de <video>
+// (webcams HLS de Gipuzkoa), no solo <img> — drawImage() acepta los dos por
+// igual, solo cambia de dónde se saca el ancho/alto natural. Separado en dos
+// pasos (analizarFrame -> gris crudo, puntuacionDeGris -> número) para poder
+// comparar frames entre sí antes de puntuarlos (ver promedioVisualMultiFrame).
+function analizarFrame(source) {
+  const wNat = source.videoWidth || source.naturalWidth;
+  const hNat = source.videoHeight || source.naturalHeight;
+  const w = 160;
+  const h = Math.round((hNat / wNat) * w) || 120;
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  ctx.drawImage(source, 0, 0, w, h);
+
+  const y0 = Math.round(h * 0.35); // se salta el tercio superior (cielo/tierra/marca de fecha)
+  const alto = h - y0;
+  const { data } = ctx.getImageData(0, y0, w, alto);
+
+  const gris = new Float32Array(w * alto);
+  for (let i = 0, p = 0; i < data.length; i += 4, p++) {
+    gris[p] = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+  }
+  return { gris, w, alto };
+}
+
+function puntuacionDeGris(gris, w, alto) {
+  const n = w * alto;
+  let sumaBrillo = 0, sumaBrillo2 = 0;
+  for (let p = 0; p < n; p++) { sumaBrillo += gris[p]; sumaBrillo2 += gris[p] * gris[p]; }
+  const media = sumaBrillo / n;
+  const desviacion = Math.sqrt(Math.max(sumaBrillo2 / n - media * media, 0));
+
+  let sumaBorde = 0;
+  for (let y = 1; y < alto; y++) {
+    for (let x = 1; x < w; x++) {
+      const p = y * w + x;
+      sumaBorde += Math.abs(gris[p] - gris[p - 1]) + Math.abs(gris[p] - gris[p - w]);
+    }
+  }
+  const bordeMedio = sumaBorde / (2 * w * alto);
+
+  return Math.min(100, Math.round(desviacion * 0.6 + bordeMedio * 4));
+}
+
+// Diferencia media entre dos frames ya en gris (mismo tamaño) — sirve para
+// detectar un cambio de encuadre (cámara panorámica girando entre frames),
+// no solo cambios de oleaje.
+function diferenciaMediaGris(a, b) {
+  let suma = 0;
+  for (let i = 0; i < a.length; i++) suma += Math.abs(a[i] - b[i]);
+  return suma / a.length;
+}
+
 function puntuacionOleajeVisual(img) {
   try {
-    const w = 160;
-    const h = Math.round((img.naturalHeight / img.naturalWidth) * w) || 120;
-    const canvas = document.createElement("canvas");
-    canvas.width = w;
-    canvas.height = h;
-    const ctx = canvas.getContext("2d", { willReadFrequently: true });
-    ctx.drawImage(img, 0, 0, w, h);
-
-    const y0 = Math.round(h * 0.35); // se salta el tercio superior (cielo/tierra/marca de fecha)
-    const alto = h - y0;
-    const { data } = ctx.getImageData(0, y0, w, alto);
-
-    const gris = new Float32Array(w * alto);
-    let sumaBrillo = 0, sumaBrillo2 = 0;
-    for (let i = 0, p = 0; i < data.length; i += 4, p++) {
-      const g = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
-      gris[p] = g;
-      sumaBrillo += g;
-      sumaBrillo2 += g * g;
-    }
-    const n = w * alto;
-    const media = sumaBrillo / n;
-    const desviacion = Math.sqrt(Math.max(sumaBrillo2 / n - media * media, 0));
-
-    let sumaBorde = 0;
-    for (let y = 1; y < alto; y++) {
-      for (let x = 1; x < w; x++) {
-        const p = y * w + x;
-        sumaBorde += Math.abs(gris[p] - gris[p - 1]) + Math.abs(gris[p] - gris[p - w]);
-      }
-    }
-    const bordeMedio = sumaBorde / (2 * w * alto);
-
-    return Math.min(100, Math.round(desviacion * 0.6 + bordeMedio * 4));
+    const { gris, w, alto } = analizarFrame(img);
+    return puntuacionDeGris(gris, w, alto);
   } catch (e) {
     console.log("No se pudo analizar la imagen de la webcam:", e.message);
     return null;
   }
+}
+
+// Para webcams en vídeo (HLS, Gipuzkoa): captura varios frames espaciados en
+// el tiempo en vez de uno solo. Pedido explícito del usuario 2026-09-14 —
+// algunas de estas cámaras son panorámicas y pueden girar; en vez de asumir
+// un ciclo de giro conocido, se compara cada frame contra los demás y se
+// descarta el que más se distancia del resto (probable cambio de encuadre a
+// media captura), antes de promediar la puntuación de los que quedan.
+async function promedioVisualMultiFrame(video, nFrames = 3, intervaloMs = 2500) {
+  const frames = [];
+  for (let i = 0; i < nFrames; i++) {
+    try { frames.push(analizarFrame(video)); }
+    catch (e) { console.log("No se pudo capturar un frame:", e.message); }
+    if (i < nFrames - 1) await new Promise((r) => setTimeout(r, intervaloMs));
+  }
+  if (!frames.length) return null;
+  if (frames.length === 1) return puntuacionDeGris(frames[0].gris, frames[0].w, frames[0].alto);
+
+  // Suma de diferencias de cada frame contra todos los demás — el que más
+  // se aparta es el candidato a "cambio de encuadre a media captura".
+  const sumasDiferencia = frames.map((f, i) =>
+    frames.reduce((acc, g, j) => (i === j ? acc : acc + diferenciaMediaGris(f.gris, g.gris)), 0)
+  );
+  let descartado = -1;
+  if (frames.length >= 3) {
+    const ordenados = [...sumasDiferencia].sort((a, b) => b - a);
+    // Solo se descarta si de verdad destaca (más del doble que el segundo
+    // peor) — si los tres son parecidos, es que no hubo giro, se quedan los 3.
+    if (ordenados[0] > ordenados[1] * 2) descartado = sumasDiferencia.indexOf(ordenados[0]);
+  }
+
+  const usados = frames.filter((_, i) => i !== descartado);
+  const puntuaciones = usados.map((f) => puntuacionDeGris(f.gris, f.w, f.alto));
+  return Math.round(puntuaciones.reduce((a, b) => a + b, 0) / puntuaciones.length);
 }
 
 function etiquetaOleajeVisual(puntuacion) {
@@ -2059,6 +2449,14 @@ function etiquetaOleajeVisual(puntuacion) {
   if (puntuacion < 18) return { texto: "mar en calma (lectura visual)", color: "#4F9D69" };
   if (puntuacion < 35) return { texto: "oleaje moderado visible", color: "#D4A24C" };
   return { texto: "oleaje visible con rompiente", color: "#A34A35" };
+}
+
+const COLOR_TURBIDEZ = { "no turbia": "#4F9D69", "turbia": "#D4A24C", "muy turbia": "#A34A35" };
+function lineaTurbidezHtml(slug) {
+  const t = TURBIDEZ[slug];
+  if (!t) return "";
+  const color = COLOR_TURBIDEZ[t.etiqueta] || "#5C7680";
+  return `<div style="margin-top:4px; font-size:11.5px; color:#5C7680;">💧 Agua <span style="color:${color};">${t.etiqueta}</span> (relativo a este mismo punto, 1 lectura/día)</div>`;
 }
 
 function actualizarLecturaVisual(img) {
@@ -2202,6 +2600,12 @@ document.getElementById("cerrarModalRayos").addEventListener("click", () => {
 document.getElementById("modalRayos").addEventListener("click", (e) => {
   if (e.target.id === "modalRayos") document.getElementById("modalRayos").classList.remove("visible");
 });
+document.getElementById("cerrarModalEstacion").addEventListener("click", () => {
+  document.getElementById("modalEstacion").classList.remove("visible");
+});
+document.getElementById("modalEstacion").addEventListener("click", (e) => {
+  if (e.target.id === "modalEstacion") document.getElementById("modalEstacion").classList.remove("visible");
+});
 // La luna se pide para el centro del mapa en cada momento (no es fija para
 // toda la zona) — a poco zoom el "centro" deja de significar nada útil
 // (podría ser medio océano Atlántico), así que por debajo de cierto nivel
@@ -2303,6 +2707,8 @@ map.on("moveend zoomend", () => {
 document.getElementById("cerrarPanel").addEventListener("click", () => {
   document.getElementById("panel").classList.remove("visible");
   document.querySelectorAll(".marcador").forEach((m) => m.classList.remove("activo"));
+  pararRefrescoWebcam();
+  destruirHlsActivo();
 });
 
 // Refresca lo que ya está pintado (marcadores + panel abierto + indicador
@@ -2332,6 +2738,9 @@ function refrescarIndicesVisibles() {
 }
 
 map.whenReady(async () => {
+  // Solo spots empieza encendida (ver toggleSpots más arriba) — todo lo
+  // demás (ríos, boyas, batimetría, radar, estaciones) es opt-in.
+  capaSpots.addTo(map);
   await actualizarDesdeBackend();
   crearMarcadores();
   comprobarAvisoRayos();
@@ -2358,7 +2767,6 @@ map.whenReady(async () => {
 function comprobarAvisoRayos() {
   const hayRiesgo = SPOTS.some((s) => s.rayosCerca === true);
   document.getElementById("avisoRayos").style.display = hayRiesgo ? "block" : "none";
-  document.getElementById("sinRayos").style.display = hayRiesgo ? "none" : "block";
 }
 </script>
 
