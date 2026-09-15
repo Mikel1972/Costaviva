@@ -824,6 +824,110 @@ No se ha tocado código.
 **Firmado:** robot buscador de fuentes (pasada de presión atmosférica e
 histórico por zona), 2026-09-14 23:31 UTC.
 
+### 2026-09-15 13:33 UTC (pasada buscadora — presión atmosférica e histórico por zona)
+
+**Qué se buscó y por qué:** la pasada anterior de este mismo tema
+(2026-09-14 23:31 UTC, justo arriba) ya cubrió a fondo el **reanálisis
+por coordenada** (Open-Meteo Historical Weather API / archivo ERA5 +
+Historical Forecast API, ambos verificados en vivo) y dejó apuntada
+AEMET "Climatologías diarias" como histórico OBSERVADO por estación en
+España (sin poder probarla, requiere `AEMET_API_KEY`). Para no repetir,
+esta pasada fue a por el **hueco que quedaba abierto ahí**: presión
+**observada** (no modelo/reanálisis) por estación en la **costa
+portuguesa** — el proyecto cubre España **y Portugal** enteros
+(`ROBOT_REGLAS.md`), y hasta ahora la única fuente de observación real
+de presión en casa es AEMET, que es solo España.
+
+**Nota de entorno:** este runner sí tiene salida de red a dominios de
+datos (a diferencia de las pasadas de agosto, ver 2026-08-31) — todo lo
+de abajo se verificó con peticiones HTTP reales, no solo por búsqueda.
+
+**Hallazgo verificado con petición HTTP real (candidato de primer nivel)
+— IPMA Open Data (Instituto Português do Mar e da Atmosfera):** dos
+endpoints JSON, **sin autenticación**, que juntos dan presión observada
+por estación en Portugal continental + Azores + Madeira:
+
+1. Observaciones horarias:
+   `https://api.ipma.pt/open-data/observation/meteorology/stations/observations.json`
+   → JSON anidado, primer nivel = fecha-hora ISO (`"2026-09-14T15:00"`),
+   segundo nivel = `idEstacao`, tercer nivel = objeto con
+   `temperatura`, `humidade`, `intensidadeVentoKM`, `radiacao` y
+   **`pressao`** (hPa). Valor centinela de dato ausente: `-99.0`
+   (mismo criterio "sin dato" que ya usamos). Verificado en vivo hoy:
+   estación `1210881` (Olhão, EPPO, Algarve) → `pressao: 1020.3` real;
+   también `1210883` (1020.7) y `1200535` (1020.2) en el mismo sello de
+   tiempo.
+2. Catálogo de estaciones:
+   `https://api.ipma.pt/open-data/observation/meteorology/stations/stations.json`
+   → GeoJSON con `idEstacao` + coordenadas (`geometry.coordinates`
+   `[lon, lat]`) + `localEstacao`. Verificado en vivo: ~280 estaciones;
+   ej. `idEstacao 1210881` = "Olhão, EPPO" en `[-7.821, 37.033]`. Es lo
+   que permite mapear cada `idEstacao` de las observaciones a
+   coordenadas y elegir la estación costera más cercana a cada spot
+   portugués — mismo patrón exacto que `ESTACIONES_AEMET` en
+   `functions/prevision.js` (código de estación + coordenadas curadas,
+   marcador propio, sin dato inventado si la lectura es `-99.0`).
+
+**Encaje con lo que ya hay:** IPMA sería el equivalente portugués de las
+25 `ESTACIONES_AEMET` que ya se pintan (🌧) en `index.html` — misma
+naturaleza (observación real horaria de presión/precipitación/viento por
+estación), rellenando la mitad portuguesa del mapa que AEMET no cubre.
+Para el **histórico** observado en Portugal, la vía sería la misma que se
+apuntó para AEMET: además del endpoint horario de arriba (solo tiempo
+presente), IPMA publica series diarias por estación en su portal de
+datos — no verificado en vivo esta pasada porque el endpoint horario ya
+demuestra la fuente y el catálogo, y el histórico diario merece su propia
+comprobación de formato antes de prometer nada.
+
+**Puertos del Estado — histórico de presión costera (revisado, NO
+integrable trivialmente):** confirmado por su propia documentación que
+las boyas REDEXT/REDCOS miden presión atmosférica (hPa) y que PORTUS
+tiene una sección de "Datos Históricos" con descarga. **Pero** el acceso
+es un servicio de descarga por formulario/petición (`bancodatos.puertos.es`,
+ficheros de texto tabulados), no una API JSON limpia por coordenada como
+IPMA u Open-Meteo — no se pudo verificar una URL estable de respuesta
+directa esta pasada. Además, ya tenemos 26 boyas de Puertos del Estado
+en tiempo real (`BOYAS` en `functions/prevision.js`) rozando el límite
+de 50 sub-peticiones de Cloudflare (ver `ROBOT_REGLAS.md`), así que
+sumar histórico de esa misma fuente por ahí no es la vía. Queda anotado
+como fuente real existente pero de integración no trivial, no como
+candidato inmediato.
+
+**Aviso de cuota:** IPMA sirve TODAS las estaciones en **una sola
+petición** (un JSON con todas las lecturas de la última hora), igual que
+el patrón bulk de AEMET (`observacion/convencional/todas`) — así que a
+diferencia de Open-Meteo (que cuenta por ubicación, ver `ROBOT_REGLAS.md`)
+aquí una llamada cubre todo Portugal sin multiplicar cuota. Bien para el
+patrón de una function que cachea la respuesta.
+
+**Por qué solo propuesta, no implementación** (ver `ROBOT_REGLAS.md`):
+integrar IPMA tocaría `functions/prevision.js` (nueva
+`ESTACIONES_IPMA` + `datosEstacionesIpma()` a estilo de la de AEMET, más
+exponerlo en `/prevision`) y `index.html` (marcador nuevo en el mapa) —
+por encima del límite de volumen para aplicar directo, y `index.html` es
+UI que ve el usuario. No se ha tocado código.
+
+**Propuesta concreta para el usuario, si se retoma:**
+1. Curar `ESTACIONES_IPMA` (código `idEstacao` + coordenadas del
+   catálogo, verificados uno a uno con una petición real antes de
+   escribirlos, igual que se hizo con `ESTACIONES_AEMET`), priorizando
+   las estaciones costeras cercanas a los spots portugueses.
+2. `datosEstacionesIpma()` en `functions/prevision.js` que lea el
+   endpoint bulk, descarte `-99.0` (sin dato → no se pinta, nunca
+   inventar), y lo exponga en `/prevision` como `estacionesIpma`.
+3. Reutilizar el mismo marcador 🌧 / modal de detalle de AEMET en
+   `index.html` para no duplicar UI.
+4. Histórico portugués: pendiente de comprobar el formato de las series
+   diarias de IPMA en una pasada futura, análogo a lo pendiente con las
+   climatologías diarias de AEMET.
+
+**Fuentes:** [IPMA — API open data](https://api.ipma.pt/),
+[IPMA — observações estações (JSON)](https://api.ipma.pt/open-data/observation/meteorology/stations/observations.json),
+[Puertos del Estado — datos históricos (PORTUS)](https://portus.puertos.es/Portus/html/info/infohist.html).
+
+**Firmado:** robot buscador de fuentes (pasada de presión atmosférica e
+histórico por zona), 2026-09-15 13:33 UTC.
+
 ### 2026-09-15 08:20 UTC (pasada buscadora — webcams para spots sin cámara)
 
 **Objetivo de la pasada:** misma tarea recurrente que las del 2026-09-13
