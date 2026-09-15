@@ -113,6 +113,12 @@ export async function onRequestPost(context) {
     // Dashboard de Stripe (Products → Coupons), no hace falta código
     // nuevo aquí para cada cupón.
     params.append("allow_promotion_codes", "true");
+    // "Managed Payments" (activado por defecto en cuentas nuevas de
+    // Stripe) exige un tax_code por producto si está activo — no
+    // configuramos Stripe Tax a propósito (ver login.html/suscripcion.html,
+    // decisión explícita de no activarlo por ahora), así que se
+    // desactiva para esta sesión en vez de rellenar un código fiscal.
+    params.append("managed_payments[enabled]", "false");
     if (clienteExistente) {
       params.append("customer", clienteExistente);
     } else {
