@@ -1476,6 +1476,99 @@ de la vía AZTI/Euskalmet propia.
 
 ---
 
+### 2026-09-15 18:35 UTC (pasada buscadora — corrientes marinas por zona)
+
+**Qué se buscó:** cerrar el hueco que dejó abierto la pasada anterior
+(2026-09-15 13:31 UTC): el radar HF de **EUSKOOS (AZTI, Golfo de
+Bizkaia)** — justo la costa de casa de la app — está **congelado desde
+el 2026-07-16 en el mirror de EMODnet Physics**, y aquella pasada dejó
+apuntado que, si se retoma, el dato para el Cantábrico oriental habría
+que buscarlo en la **fuente propia de AZTI/EuskOOS (THREDDS)**, no en
+EMODnet. Esta pasada ha ido a verificar en vivo si ese THREDDS propio
+existe, está accesible por REST y sirve dato actual.
+
+**Hallazgo principal, verificado con peticiones HTTP reales:** el
+servidor THREDDS nativo de EuskOOS existe y responde —
+`https://thredds.euskoos.eus/thredds/catalog.xml` → `200`. Publica los
+productos de radar HF de las dos antenas de la red (Matxitxako + Higer):
+radiales (`MATX`/`HIGE`), **totales combinados** (`TOTL`, `OMA`,
+`2DVAR`), FSLE, y mareógrafos. Servicios OPeNDAP (`/thredds/dodsC/`),
+DAP4, HTTPServer y WMS abiertos, sin login. Cobertura de la rejilla de
+totales confirmada en los metadatos: **lat 43.3–44.6, lon −3.2 a −1.2**
+(Golfo de Bizkaia / Euskadi — Bilbao, Bermeo, Getaria, Pasaia...),
+rejilla 29×32 celdas, resolución horaria, variables `EWCT`/`NSCT`
+(componentes E-O y N-S de la corriente superficial, m/s) más
+incertidumbres (`EWCS`/`NSCS`) y flags de calidad (`CSPD_QC`, `GDOP`...)
+— mismo esquema estándar de radar HF que los datasets NRT de EMODnet ya
+vistos.
+
+**El servidor SÍ ingesta dato actual hoy (probado en vivo):** el CSV del
+mareógrafo de Txingudi
+(`/thredds/fileServer/mareografos/R4C_Txingudi_Obscape_TG_4466.csv`)
+tiene su última fila en **`2026-09-15 18:00:00`** (minutos antes de esta
+pasada) — es decir, el THREDDS de EuskOOS está vivo y actualizándose al
+minuto, a diferencia del mirror de EMODnet. La costa de casa SÍ tiene
+fuente propia viva.
+
+**Caveat importante, verificado también en vivo — no es "coger la
+agregación y ya":** las agregaciones cómodas FMRC "best time series"
+(`/thredds/dodsC/fmrc/HFR-EUSKOOS-TOTL/HFR-EUSKOOS-TOTL_best.ncd`, y las
+equivalentes de radiales `-MATX`/`-HIGE`) están **rotas/congeladas**:
+las tres devuelven un único paso temporal fijado en **2023-05-31**
+(leído el valor real de la variable `TIME`: 26813.75 / 26813.79 días
+desde 1950-01-01 → 2023-05-31 18:00–19:00 UTC), claramente una
+agregación mal configurada del servidor, NO el horizonte real del dato
+(los mareógrafos del mismo servidor van a hoy). Y los resolvers
+`latest.xml` de los datasetScan (`/thredds/catalog/TOTL/latest.xml`)
+devuelven `500`; el catálogo plano de ficheros (`/thredds/catalog/TOTL/
+catalog.xml`) es tan grande que agota el timeout (>60s) al listarlo.
+**Conclusión:** el dato de radar horario vivo existe y está en el
+servidor, pero NO es accesible por la vía trivial de la agregación —
+para leer la última hora habría que averiguar la convención de nombre
+de los ficheros `.nc` por hora dentro del datasetScan `TOTL`/`OMA` y
+pedirlos uno a uno por OPeNDAP; esta pasada no ha conseguido enumerar
+ese catálogo (demasiado grande / timeout), así que **no se ha
+confirmado una lectura de corriente de la hora actual**, solo que la
+fuente está viva (mareógrafo al minuto) y que la agregación fácil no
+sirve.
+
+**Por qué SOLO propuesta, no implementación** (igual que las dos pasadas
+de corrientes anteriores, ver `ROBOT_REGLAS.md`): integrar radar HF
+tocaría `functions/prevision.js` (por encima del límite de volumen para
+aplicar directo) y es una decisión de producto — mezclar "corriente
+observada por radar donde la hay" con "el modelo Open-Meteo en el
+resto", y además cada zona sería una sub-petición más a `/prevision`,
+que ya está cerca del límite de 50 de Cloudflare (ver `ROBOT_REGLAS.md`)
+→ tendría que ser un endpoint aparte o bajo demanda al abrir un spot. No
+se ha tocado código.
+
+**Próximo paso concreto para una futura pasada (si se retoma EuskOOS):**
+enumerar el datasetScan `TOTL` (o `OMA`, que suele ser el producto
+operacional de totales) en trozos — probablemente hay subcarpetas por
+año/mes que sí se listan rápido — para sacar el nombre del fichero de la
+última hora y confirmar una lectura de corriente real vía OPeNDAP
+`.ascii?EWCT[...]`/`NSCT[...]`. Una vez confirmada, calibrarla contra el
+`ocean_current_velocity` de Open-Meteo en esos mismos puntos y anotarlo
+en `CALIBRACION.jsonl` (mismo patrón que oleaje y coeficiente de marea),
+antes de proponer cualquier mezcla. Con esto, EuskOOS/AZTI queda como la
+vía viva para el Cantábrico oriental que EMODnet no da (frozen desde
+julio), cerrando el único hueco de zona que dejó la pasada del 13:31.
+
+**Licencia y cita:** datos de EuskOOS — Euskalmet (Gobierno Vasco) con
+asesoría técnica de AZTI; si se integran, citar a EuskOOS/Euskalmet/AZTI
+(y al nodo europeo de radar HF de EuroGOOS según el producto), mismo
+criterio de atribución que EMODnet.
+
+**Fuentes:**
+[EuskOOS THREDDS (verificado vivo)](https://thredds.euskoos.eus/thredds/catalog.html),
+[plataforma info.euskoos.eus](https://info.euskoos.eus/en/),
+[EuskOOS en AZTI](https://www.azti.es/productos/euskoos-sistema-vasco-de-oceanografia-operacional/).
+
+**Firmado:** robot buscador de fuentes (pasada de corrientes marinas),
+2026-09-15 18:35 UTC.
+
+---
+
 ## Auditoría de datos
 
 ### 2026-08-31
