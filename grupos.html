@@ -16,7 +16,7 @@
   * { box-sizing: border-box; }
   body {
     margin: 0; font-family: 'Inter', sans-serif; background: #F7F3E8; color: #0B2532;
-    display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; padding-bottom: calc(64px + env(safe-area-inset-bottom));
+    display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; padding-bottom: calc(72px + env(safe-area-inset-bottom));
   }
   header { padding: 10px 20px; border-bottom: 1px solid #DDE2DC; flex-shrink: 0; display: flex; align-items: center; gap: 12px; }
   header .titulos { flex: 1; min-width: 0; }
@@ -92,21 +92,27 @@
   .mensaje.error { display: block; background: rgba(163,74,53,0.15); color: #A34A35; border: 1px solid #A34A35; }
   .mensaje.ok { display: block; background: rgba(79,157,105,0.12); color: #3A6B4C; border: 1px solid #A8D4B8; }
 
+  /* Menú inferior rediseñado 2026-09-15 (pedido explícito del usuario: "muy
+     feo... más grandes, con las palabras en una línea") — icono y texto en
+     fila (antes apilados en dos líneas) dentro de una píldora, la pestaña
+     activa con relleno dorado sólido en vez de solo un tinte del icono. */
   .tabs-nav {
-    position: fixed; left: 0; right: 0; bottom: 0; height: calc(64px + env(safe-area-inset-bottom));
-    background: #FFFFFF; border-top: 1px solid #DDE2DC; display: flex; gap: 6px; padding: 8px 8px calc(8px + env(safe-area-inset-bottom)) 8px; z-index: 700;
+    position: fixed; left: 0; right: 0; bottom: 0; height: calc(72px + env(safe-area-inset-bottom));
+    background: #FFFFFF; border-top: 1px solid #DDE2DC; display: flex; gap: 12px; padding: 10px 10px calc(10px + env(safe-area-inset-bottom)) 10px; z-index: 700;
   }
   .tabs-nav a {
-    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 3px; text-decoration: none; color: #5C7680; border-radius: 12px;
-    font-family: 'Inter', sans-serif; font-size: 10.5px; font-weight: 500;
+    flex: 1; display: flex; flex-direction: row; align-items: center; justify-content: center;
+    gap: 7px; text-decoration: none; color: #42585F; border-radius: 14px; background: rgba(212,162,76,0.12);
+    font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; white-space: nowrap;
   }
-  .tabs-nav a .icono {
-    font-size: 18px; line-height: 1; width: 32px; height: 32px; border-radius: 10px;
-    background: #EEF2EF; display: flex; align-items: center; justify-content: center;
-  }
-  .tabs-nav a.activa { color: #A8792A; }
-  .tabs-nav a.activa .icono { background: rgba(212,162,76,0.18); }
+  .tabs-nav a .icono { width: 22px; height: 22px; display: flex; flex-shrink: 0; }
+  .tabs-nav a .icono svg { width: 100%; height: 100%; }
+  .ico-mapa { color: #3E7CB1; }
+  .ico-diario { color: #4F9D69; }
+  .ico-alarma { color: #A34A35; }
+  .ico-grupos { color: #8B6BB1; }
+  .tabs-nav a.activa .icono svg { color: #FFFFFF; }
+  .tabs-nav a.activa { color: #FFFFFF; background: #A8792A; }
 </style>
 </head>
 <body>
@@ -164,10 +170,10 @@
 </div>
 
 <nav class="tabs-nav">
-  <a href="/"><span class="icono">🗺️</span>Mapa</a>
-  <a href="/diario.html"><span class="icono">🎣</span>Diario</a>
-  <a href="/alarma.html"><span class="icono">🆘</span>Alarma</a>
-  <a href="/grupos.html" class="activa"><span class="icono">👥</span>Grupos</a>
+  <a href="/"><span class="icono"><svg class="ico-mapa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span>Mapa</a>
+  <a href="/diario.html"><span class="icono"><svg class="ico-diario" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A2 2 0 0 1 6 2.5h14V19H6a2 2 0 0 0-2 2V4.5z"/><path d="M4 19a2 2 0 0 1 2-2h14"/></svg></span>Diario</a>
+  <a href="/alarma.html"><span class="icono"><svg class="ico-alarma" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 2.5 20h19L12 3.2z"/><line x1="12" y1="9.5" x2="12" y2="14"/><circle cx="12" cy="17" r="0.9" fill="currentColor" stroke="none"/></svg></span>Alarma</a>
+  <a href="/grupos.html" class="activa"><span class="icono"><svg class="ico-grupos" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.3 19.5c0-3.5 2.6-5.7 5.7-5.7s5.7 2.2 5.7 5.7"/><circle cx="17" cy="9" r="2.6"/><path d="M15.3 13.9c2.5.4 4.2 2.3 4.2 5.6"/></svg></span>Grupos</a>
 </nav>
 
 <script type="module">
