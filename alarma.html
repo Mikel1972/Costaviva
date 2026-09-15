@@ -133,7 +133,12 @@
     gap: 7px; text-decoration: none; color: #42585F; border-radius: 14px; background: rgba(212,162,76,0.12);
     font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; white-space: nowrap;
   }
-  .tabs-nav a .icono { width: 22px; height: 22px; display: flex; flex-shrink: 0; }
+  .tabs-nav a .icono { width: 22px; height: 22px; display: flex; flex-shrink: 0; position: relative; }
+  .punto-novedades-grupos {
+    position: absolute; top: -3px; right: -3px; width: 9px; height: 9px;
+    border-radius: 50%; background: #4F9D69; border: 2px solid #FFFFFF;
+    animation: pulso 1.6s infinite;
+  }
   .tabs-nav a .icono svg { width: 100%; height: 100%; }
   .ico-mapa { color: #3E7CB1; }
   .ico-diario { color: #4F9D69; }
@@ -214,7 +219,7 @@
   <a href="/"><span class="icono"><svg class="ico-mapa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span>Mapa</a>
   <a href="/diario.html"><span class="icono"><svg class="ico-diario" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A2 2 0 0 1 6 2.5h14V19H6a2 2 0 0 0-2 2V4.5z"/><path d="M4 19a2 2 0 0 1 2-2h14"/></svg></span>Diario</a>
   <a href="/alarma.html" class="activa"><span class="icono"><svg class="ico-alarma" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 2.5 20h19L12 3.2z"/><line x1="12" y1="9.5" x2="12" y2="14"/><circle cx="12" cy="17" r="0.9" fill="currentColor" stroke="none"/></svg></span>Alarma</a>
-  <a href="/grupos.html"><span class="icono"><svg class="ico-grupos" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.3 19.5c0-3.5 2.6-5.7 5.7-5.7s5.7 2.2 5.7 5.7"/><circle cx="17" cy="9" r="2.6"/><path d="M15.3 13.9c2.5.4 4.2 2.3 4.2 5.6"/></svg></span>Grupos</a>
+  <a href="/grupos.html"><span class="icono"><svg class="ico-grupos" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.3 19.5c0-3.5 2.6-5.7 5.7-5.7s5.7 2.2 5.7 5.7"/><circle cx="17" cy="9" r="2.6"/><path d="M15.3 13.9c2.5.4 4.2 2.3 4.2 5.6"/></svg><span class="punto-novedades-grupos" id="puntoNovedadesGrupos" hidden></span></span>Grupos</a>
 </nav>
 
 <script type="module">
@@ -223,6 +228,16 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// Punto verde de "hay novedades" en la pestaña Grupos del menú inferior
+// (pedido explícito del usuario, 2026-09-15) — se comprueba una vez al
+// cargar la página. Un fallo aquí nunca debe romper nada más.
+async function comprobarNovedadesGrupos(cliente) {
+  try {
+    const { data: hay, error } = await cliente.rpc("hay_novedades_grupos");
+    if (!error && hay) document.getElementById("puntoNovedadesGrupos")?.removeAttribute("hidden");
+  } catch (e) {}
+}
 
 const { data: sesionInicial } = await supabase.auth.getSession();
 if (!sesionInicial.session) {
@@ -233,6 +248,7 @@ const usuario = sesionInicial.session.user;
 let tokenAcceso = sesionInicial.session.access_token;
 supabase.auth.onAuthStateChange((_evento, sesion) => { if (sesion) tokenAcceso = sesion.access_token; });
 document.getElementById("comprobandoAcceso").remove();
+comprobarNovedadesGrupos(supabase);
 if (usuario.email === "etxebe2005@gmail.com") {
   document.getElementById("enlaceAdmin").style.display = "flex";
 }
