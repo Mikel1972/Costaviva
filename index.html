@@ -41,7 +41,7 @@
     position: fixed; left: 0; right: 0; bottom: 0;
     height: calc(72px + env(safe-area-inset-bottom));
     background: #FFFFFF; border-top: 1px solid #DDE2DC;
-    display: flex; gap: 8px; padding: 10px 10px calc(10px + env(safe-area-inset-bottom)) 10px;
+    display: flex; gap: 12px; padding: 10px 10px calc(10px + env(safe-area-inset-bottom)) 10px;
     /* Por encima del panel de spot (z-index 1000) a propósito: pedido
        explícito del usuario (2026-09-13) — el menú Mapa/Diario/Alarma/
        Grupos debe verse SIEMPRE, incluso con la ficha de un spot abierta
@@ -52,7 +52,7 @@
   }
   .tabs-nav a {
     flex: 1; display: flex; flex-direction: row; align-items: center; justify-content: center;
-    gap: 7px; text-decoration: none; color: #42585F; border-radius: 14px; background: #EEF2EF;
+    gap: 7px; text-decoration: none; color: #42585F; border-radius: 14px; background: rgba(212,162,76,0.12);
     font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; white-space: nowrap;
   }
   .tabs-nav a .icono { font-size: 20px; line-height: 1; }
