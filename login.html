@@ -12,16 +12,92 @@
 <style>
   * { box-sizing: border-box; }
   body {
-    margin: 0; min-height: 100vh;
-    display: flex; align-items: center; justify-content: center;
-    background: #F7F3E8; color: #0B2532;
+    margin: 0; min-height: 100vh; min-height: 100dvh;
+    background: #0B2532; color: #0B2532;
     font-family: 'Inter', sans-serif;
-    padding: 24px;
+    overflow-x: hidden;
   }
+
+  /* Landing/portada (2026-09-15, pedido explícito del usuario): vídeo de
+     fondo a pantalla completa + descripción de servicios + el formulario
+     de acceso de siempre como panel lateral — sin tocar en absoluto la
+     lógica de autenticación de más abajo (CAPTCHA, recuperación de
+     contraseña ya verificada en real tres veces), solo la disposición
+     visual alrededor. Vídeo real, licencia Pexels (uso libre, incluido
+     comercial) — banco de peces en aguas claras, sin relación con
+     ninguna especie de la app en concreto (pedido explícito: "no tiene
+     por qué ser lubina, tiene que ser un vídeo claro, bonito"). Versión
+     ligera aparte para móvil (960x540) vía <source media>, para no gastar
+     datos de más en 4G. */
+  .video-fondo {
+    position: fixed; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; z-index: -2;
+  }
+  .overlay-fondo {
+    position: fixed; inset: 0; z-index: -1;
+    background: linear-gradient(100deg, rgba(11,37,50,0.82) 0%, rgba(11,37,50,0.6) 45%, rgba(11,37,50,0.28) 100%);
+  }
+  .creditos-video {
+    position: fixed; left: 12px; bottom: 8px; z-index: 1;
+    color: rgba(247,243,232,0.55); font-size: 10px; font-family: 'IBM Plex Mono', monospace;
+  }
+  .creditos-video a { color: inherit; }
+
+  .landing {
+    position: relative; min-height: 100vh; min-height: 100dvh;
+    max-width: 1280px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between; gap: 48px;
+    padding: 32px 28px;
+  }
+  .lado-marketing { flex: 1; min-width: 0; color: #F7F3E8; padding: 24px 0; }
+  .lado-marketing .marca {
+    font-family: 'Fraunces', serif; font-size: 44px; font-weight: 700; letter-spacing: 0.2px; margin: 0 0 10px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .lado-marketing .eslogan {
+    font-family: 'Fraunces', serif; font-size: 22px; font-weight: 400; color: #F7F3E8;
+    margin: 0 0 28px; max-width: 480px; line-height: 1.35;
+  }
+  .lista-servicios { list-style: none; margin: 0 0 32px; padding: 0; display: flex; flex-direction: column; gap: 14px; max-width: 480px; }
+  .lista-servicios li { display: flex; align-items: flex-start; gap: 12px; font-size: 14px; line-height: 1.5; color: rgba(247,243,232,0.92); }
+  .lista-servicios .icono-servicio { font-size: 20px; flex-shrink: 0; line-height: 1.3; }
+  .lista-servicios b { color: #FFFFFF; }
+
+  .conseguir-app {
+    max-width: 460px; background: rgba(11,37,50,0.4); border: 1px solid rgba(247,243,232,0.18);
+    border-radius: 14px; padding: 18px 20px; backdrop-filter: blur(2px);
+  }
+  .conseguir-app-titulo { font-family: 'Fraunces', serif; font-size: 16px; margin: 0 0 10px; color: #FFFFFF; }
+  .conseguir-app-fila { display: flex; align-items: center; gap: 16px; }
+  .conseguir-app-fila img.qr { width: 76px; height: 76px; border-radius: 8px; background: #FFFFFF; padding: 4px; flex-shrink: 0; }
+  .conseguir-app-texto { font-size: 12px; color: rgba(247,243,232,0.85); line-height: 1.5; }
+  .badges-tienda { display: flex; gap: 8px; margin-top: 10px; }
+  .badge-tienda {
+    display: inline-flex; align-items: center; gap: 5px; font-size: 10.5px; font-weight: 600;
+    color: rgba(247,243,232,0.6); border: 1px solid rgba(247,243,232,0.3); border-radius: 6px; padding: 5px 9px;
+    cursor: default;
+  }
+  .badge-tienda .puntito { width: 5px; height: 5px; border-radius: 50%; background: #D4A24C; }
+
+  .lado-acceso { flex-shrink: 0; width: 100%; max-width: 380px; }
   .caja {
     width: 100%; max-width: 380px;
     background: #FFFFFF; border: 1px solid #DDE2DC; border-radius: 14px;
     padding: 32px 28px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+  }
+
+  @media (max-width: 860px) {
+    .landing { flex-direction: column; padding: 24px 20px calc(24px + env(safe-area-inset-bottom)); gap: 28px; }
+    /* Móvil: quien llega aquí casi siempre es para entrar rápido, no para
+       leer folleto — el acceso va primero, el marketing debajo (pedido
+       explícito del usuario: "tenemos claro que la venta... va a ser con
+       el móvil"). En escritorio el orden del HTML ya pone el acceso a la
+       derecha, se deja tal cual. */
+    .lado-acceso { order: 1; max-width: 420px; }
+    .lado-marketing { order: 2; padding: 8px 0 0; }
+    .lado-marketing .marca { font-size: 32px; }
+    .lado-marketing .eslogan { font-size: 17px; margin-bottom: 20px; }
   }
   .caja h1 {
     font-family: 'Fraunces', serif; font-size: 32px; font-weight: 700; letter-spacing: 0.2px; margin: 0 0 4px;
@@ -58,6 +134,42 @@
 </head>
 <body>
 
+<video class="video-fondo" autoplay muted loop playsinline poster="/assets/hero-peces-poster.jpg">
+  <source media="(max-width: 760px)" srcset="/assets/hero-peces-movil.mp4" type="video/mp4" />
+  <source src="/assets/hero-peces.webm" type="video/webm" />
+  <source src="/assets/hero-peces.mp4" type="video/mp4" />
+</video>
+<div class="overlay-fondo"></div>
+<p class="creditos-video">Vídeo: <a href="https://www.pexels.com/video/underwater-school-of-fish-in-clear-ocean-34537920/" target="_blank" rel="noopener">Pexels</a></p>
+
+<div class="landing">
+  <div class="lado-marketing">
+    <p class="marca">🐟 Costa Viva</p>
+    <p class="eslogan">Conoce el mar antes de salir de casa.</p>
+    <ul class="lista-servicios">
+      <li><span class="icono-servicio">🌊</span><span><b>Condiciones en tiempo real</b> — oleaje, marea, corriente, viento y presión en cada spot de la costa.</span></li>
+      <li><span class="icono-servicio">📷</span><span><b>Webcams en directo</b> — mira el estado real de la playa antes de salir de casa.</span></li>
+      <li><span class="icono-servicio">🎣</span><span><b>Diario de pesca</b> — registra tus salidas y capturas, con fotos e identificación de especies.</span></li>
+      <li><span class="icono-servicio">🆘</span><span><b>Alarma SOS</b> — detección de caída y aviso automático a tus contactos con tu ubicación.</span></li>
+      <li><span class="icono-servicio">👥</span><span><b>Grupos privados</b> — comparte spots, capturas y calendario con tu cuadrilla.</span></li>
+      <li><span class="icono-servicio">🌙</span><span><b>Luna y especies de temporada</b> — para saber qué esperar antes de tirar el aparejo.</span></li>
+    </ul>
+    <div class="conseguir-app">
+      <p class="conseguir-app-titulo">Llévatela contigo</p>
+      <div class="conseguir-app-fila">
+        <img class="qr" src="/assets/qr-costaviva.svg" alt="Código QR para instalar Costa Viva" />
+        <div class="conseguir-app-texto">
+          Escanea con el móvil y pulsa «Añadir a pantalla de inicio» — se instala como una app, al momento.
+          <div class="badges-tienda">
+            <span class="badge-tienda" title="Próximamente"><span class="puntito"></span>App Store — pronto</span>
+            <span class="badge-tienda" title="Próximamente"><span class="puntito"></span>Google Play — pronto</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="lado-acceso">
 <div class="caja" id="cajaLogin">
   <h1>Costa Viva</h1>
   <p class="sub" id="subtitulo">Accede con tu cuenta para ver la zona Lekeitio → Bilbao</p>
@@ -105,6 +217,8 @@
     <input type="password" id="passwordNuevaRepetir" required autocomplete="new-password" minlength="6" />
     <button type="submit" id="btnGuardarNuevaContrasena">Guardar y entrar</button>
   </form>
+</div>
+  </div>
 </div>
 
 <script type="module">
