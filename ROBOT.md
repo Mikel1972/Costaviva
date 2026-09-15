@@ -1186,6 +1186,84 @@ fuente estable, no intentar fijar un encuadre inexistente).
 **Firmado:** robot buscador de fuentes (pasada de webcams — auditoría
 PTZ/rotación), 2026-09-15 10:14 UTC.
 
+### 2026-09-15 13:13 UTC (pasada buscadora — webcams para spots sin cámara)
+
+**Objetivo de la pasada:** misma tarea recurrente (buscar cámaras nuevas
+para spots fijos sin cámara). Punto de partida: recontados los spots sin
+cámara cruzando `SPOTS`/regionales de `index.html` contra
+`SPOTS_CON_WEBCAM` — **48 spots fijos siguen sin cámara** (Portugal
+entero, Canarias, buena parte de Andalucía y del Mediterráneo, más
+Plentzia, Santander, Sanxenxo, A Guarda, Pasaia, Ondarroa, Getaria,
+Zumaia, Llanes, Ribadesella...). No pude priorizar por `spots_usuario`
+(la regla lo pide primero) porque esta pasada no tiene token de sesión
+para consultar esa tabla y no hay contador de actividad accesible sin
+credenciales — así que centré la búsqueda en los huecos de spots fijos.
+
+**Red desde este runner:** `meteogalicia.gal` `200`, `detectia.net`
+`200`. **`cantabria.es` sigue sin ser alcanzable** (`HTTP 000`/timeout
+pidiendo `suances-New-85.jpg`, una imagen ya integrada) — mismo bloqueo
+que las pasadas del 2026-09-13/14/15 08:20, así que la cámara de
+Santander/El Sardinero sigue **sin poder verificarse** desde aquí (la
+pista firme de aquellas pasadas —`cantabria.es/ftp_webcam/<nombre>-New-<id>.jpg`
+desde `cantabria.es/webcams`— queda igual de válida y pendiente de
+comprobación manual desde un navegador normal).
+
+**Re-inventario autoritativo de AZTI (`detectia.net`), el proveedor de
+Sopelana/Lekeitio/Getxo — hallazgo nuevo respecto a pasadas
+anteriores.** `detectia.net` no publica lista de cámaras, así que sondeé
+por nombre de fichero (`webcam-<lugar>.webp`) y **descargué de verdad**
+cada candidato que respondió. Resultado del conjunto realmente servido:
+
+| Fichero | Estado | Corresponde a |
+|---|---|---|
+| `webcam-sopelana-azti3.webp` | ✅ 200, WebP real ~96 KB | Sopelana (ya integrado) |
+| `webcam-lekeitio.webp` | ✅ 200, WebP real ~121 KB | Lekeitio (ya integrado) |
+| `webcam-ereaga.webp` | ✅ 200, WebP real ~66 KB | Getxo/Ereaga (ya integrado) |
+| `webcam-mundaka.webp` | ✅ 200, WebP real ~80 KB | **Mundaka** (hoy vía `kostasystem.com`) |
+| `webcam-bakio.webp` | ✅ 200, WebP real ~59 KB | **Bakio** (hoy vía `pyscada.isurki.com`) |
+
+Lo **nuevo y útil**: AZTI también sirve Mundaka y Bakio, dos spots que
+hoy tiran de OTRO proveedor. No es un spot nuevo, pero sí una **fuente
+de respaldo verificada** para esos dos por si `kostasystem` o `pyscada`
+dejan de responder algún día (mismo patrón y mismo proveedor que las 3
+cámaras AZTI ya integradas). No lo integro ni lo propongo como cambio:
+las dos cámaras actuales funcionan, y tocar `functions/webcam/[slug].js`
+sería propuesta y no commit directo por la red de seguridad de
+`ROBOT_REGLAS.md` de todos modos — se anota aquí como opción de fallback
+lista para usar si hiciera falta.
+
+**Euskadi — huecos exhaustivamente descartados en AZTI.** Probé (y todos
+dieron 404 real, no imagen) los nombres de los spots vascos sin cámara y
+sus playas: `plentzia`, `ondarroa`, `getaria`, `zumaia`, `pasaia`, más
+variantes por nombre de playa (`gorliz`, `laga`, `laida`, `arrigunaga`,
+`concha`/`laconcha`, `zurriola`, `hondarribia`, `saturraran`,
+`karraspio`, `isuntza`, `itzurun`, `malkorbe`, `orio`, `santiago`,
+`zarautz`...). **AZTI/detectia no tiene cámara para ninguno** — su
+inventario real se limita a los 5 de la tabla de arriba. Plentzia sigue,
+como en pasadas anteriores, sin más opción que agregadores de terceros o
+una IP-cam de escuela de surf en crudo (no institucional), así que
+queda sin cámara.
+
+**Canarias (Las Canteras, El Médano):** vuelto a comprobar en vivo —
+las páginas de `canariaslife.com` solo exponen fotos estáticas de
+artículo (`wp-content/uploads/...jpg`), el feed en directo va por un
+reproductor de terceros embebido (Canarian Surf Fruit / SkylineWebcams),
+sin `.m3u8`/`img` directo ni CORS confirmado. Confirma lo que ya cerró la
+pasada del 2026-09-15 08:20: sin fuente institucional con imagen directa,
+no se inventa una URL. Queda sin cámara.
+
+**Resultado neto de la pasada: sin novedades integrables** para ningún
+spot fijo sin cámara. Lo único nuevo y aprovechable es la fuente de
+respaldo AZTI verificada para Mundaka y Bakio (anotada arriba). Sin
+cambios de código.
+
+**Fuentes:** [detectia.net (AZTI)](https://detectia.net/),
+[CanariasLife — Las Canteras](https://canariaslife.com/en/webcams-of-gran-canaria/las-palmas-de-gran-canaria/las-canteras-beach/),
+[Meteocantabria — Webcams](https://www.meteocantabria.es/meteocantabria/webcam/view).
+
+**Firmado:** robot buscador de fuentes (pasada de webcams), 2026-09-15
+13:13 UTC.
+
 ---
 
 ## Auditoría de datos
