@@ -246,22 +246,24 @@ cada una (no 4):
   un cambio directo a `ESPECIES` ni a la fórmula de `indicePesca`),
   porque cambia lo que se le muestra al usuario como dato fiable.
 
-**Fuente candidata encontrada por el usuario (2026-09-15), pendiente de
-investigar en una pasada futura**: proyecto **DIGIPESCA** (Universitat
-Politècnica de València) — bases de datos de pesca/lonja subidas al
-repositorio institucional RiuNet, de libre uso y acceso
-(`https://digipesca.webs.upv.es/`). No se ha comprobado todavía en real
-qué contiene exactamente ni si sirve para algo concreto de este
-proyecto — antes de usarla, verificar con una petición/descarga real
-qué datos trae (especie, zona, mes, precio en lonja...) y si el acceso
-es de verdad abierto sin registro. Idea del propio usuario que encaja
-aquí: la evolución del **precio en lonja** de una especie a lo largo
-del año podría ser una señal indirecta de cuándo hay más/mejor pesca de
-esa especie (precio bajo = más oferta = más capturas), complementaria a
-`meses`/`rangoTemp` — pero solo si DIGIPESCA (u otra fuente equivalente,
-ej. lonjas públicas) publica series de precio por especie/fecha
-reutilizables; si no, esta idea concreta se descarta sin más, no forzar
-una fuente que no da el dato limpio.
+**Fuente DIGIPESCA — verificada en real por el robot el 2026-09-15
+(entrada `ROBOT.md` 09:18 UTC), NO integrada todavía**: proyecto
+DIGIPESCA (Universitat Politècnica de València), 12 bases de datos
+reales subidas a RiuNet — por especie: cantidad, precio medio y
+facturación, por lonja y por mes, 2010-2021. El acceso "libre sin
+registro" está confirmado solo por notas de prensa, no con una descarga
+real (el robot no localizó el `handle` exacto de RiuNet en esta
+pasada). **Hallazgo que la descarta por ahora**: cobertura Mediterráneo
+español + Atlántico de Andalucía — NO cubre Cantábrico, Galicia **ni la
+costa atlántica de Portugal** (corrección del usuario, 2026-09-15:
+Costa Viva cubre España Y Portugal, así que Portugal cuenta como zona
+sin cobertura igual que el resto del Atlántico Norte). Idea original del
+usuario que motivó esta investigación: la evolución del **precio en
+lonja** de una especie podría ser señal indirecta de cuándo hay más/mejor
+pesca (precio bajo = más oferta), complementaria a `meses`/`rangoTemp` —
+sigue viva como idea para el Mediterráneo/Andalucía si en el futuro se
+localiza el dataset descargable de verdad; para el resto de España y
+Portugal haría falta una fuente equivalente que hoy no existe conocida.
 
 **Advertencia explícita del usuario, obligatoria antes de usar cualquier
 dato de lonja/desembarque para nada de esto**: hay que separar bajura de
@@ -303,6 +305,40 @@ fuente clara sobre sus hábitos reales de captura (no solo su biología
 general), no proponer la conclusión de "buen mes de costa" — proponer
 como mucho el dato de lonja en bruto, marcado explícitamente como sin
 contrastar con hábitos.
+
+**Localismos regionales en los textos de `ESPECIES` (añadido
+2026-09-15, bug real encontrado por el usuario)**: cada campo `nota` y
+`alimento` puede mencionar cómo llaman a algo por esa zona en concreto
+(ej. "parrotxa" para cría de sardina, propio del valenciano/catalán) —
+pero SOLO si ese texto vive en el array regional correcto
+(`ESPECIES_MEDITERRANEO`, `ESPECIES_GOLFO_CADIZ`, etc.), nunca en
+`ESPECIES` (Cantábrico/Atlántico Norte) ni copiado sin más a otra
+región. Se encontró exactamente este bug: "parrotxa" aparecía en dos
+entradas de `ESPECIES` (Cantábrico) y una frase genérica al pie del
+panel de especies ("así la llaman por aquí") se mostraba siempre, para
+cualquier spot de España o Portugal — ya corregido (el término solo
+sigue en la entrada de Lubina de `ESPECIES_MEDITERRANEO`, y la frase del
+pie solo se pinta si esa palabra aparece de verdad en la lista de
+especies de temporada de ESE spot). Antes de proponer o aplicar un
+localismo nuevo: verificar con una fuente real que se usa en ESA zona en
+concreto (no asumir que un término vale para toda España), y nunca
+reutilizarlo sin comprobar en una región distinta.
+
+**Visión a largo plazo, pedida explícitamente por el usuario
+(2026-09-15)**: el objetivo no es solo tener 4 listas regionales de
+especies (`ESPECIES`/`_MEDITERRANEO`/`_GOLFO_CADIZ`/`_CANARIAS`), sino ir
+buscando progresivamente estudios de todo tipo — locales, comarcales,
+nacionales — que enriquezcan CADA spot en concreto, no solo su región
+amplia. El ideal declarado por el usuario es que exista una fuente/
+estudio de este tipo por spot. Esto es un objetivo a muy largo plazo,
+no una tarea de una sola pasada — cada vez que el robot (en la pasada de
+"migración y cría de especies" o en la de "buenas prácticas") encuentre
+un estudio con alcance más fino que las 4 regiones actuales (un puerto,
+una ría, una comarca costera concreta), debe proponerlo en `ROBOT.md`
+como candidato a granularidad extra para ese spot en particular, aunque
+de momento no exista mecanismo en el código para aplicar datos por spot
+individual dentro de una lista regional (eso sería, en sí mismo, un
+cambio de diseño a proponer aparte, nunca aplicado directo).
 
 ## Red de seguridad de la automatización (añadido 2026-09-12)
 
