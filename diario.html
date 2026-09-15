@@ -736,21 +736,38 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha) {
     // ventana ancha del coeficiente) — hay que exigir también que la
     // FECHA coincida con la de la salida, no solo la hora del día, o se
     // colaría la primera de los ±8 días que tenga esa misma hora.
-    let idx = -1;
-    if (horaElegida) {
-      const [h, m] = horaElegida.split(":").map(Number);
-      const horaObjetivo = m >= 30 ? (h + 1) % 24 : h;
-      idx = horas.findIndex((hs) => (!fecha || hs.startsWith(fecha)) && +hs.slice(11, 13) === horaObjetivo);
-    }
-    if (idx === -1) {
-      idx = horas.findIndex((h) => h.slice(0, 13) === horaActualMadridISO());
-    }
-    // Sin hora elegida y la fecha no es hoy (registro retroactivo): la
-    // hora de ahora no significa nada para un día distinto — mediodía
-    // es una referencia más representativa de la jornada que
-    // medianoche (el índice 0 al que caería si no se afina esto).
-    if (idx === -1) idx = horas.findIndex((hs) => (!fecha || hs.startsWith(fecha)) && +hs.slice(11, 13) === 12);
-    if (idx === -1) idx = fecha ? Math.max(0, horas.findIndex((hs) => hs.startsWith(fecha))) : 0;
+    // Extraído a función 2026-09-15: el índice se necesita DOS veces, una
+    // vez para `horas` (marino.hourly.time — ventana ancha de ±8 días
+    // cuando hay fecha, para el coeficiente de marea) y otra para
+    // viento.hourly.time (siempre un único día, start_date=end_date=fecha)
+    // — son arrays de longitud distinta. Bug real encontrado por el
+    // usuario 2026-09-15: se calculaba un único `idx` sobre `horas` y se
+    // reutilizaba tal cual para leer viento.hourly.windspeed_10m/
+    // pressure_msl/cloudcover/precipitation — con fecha puesta, ese índice
+    // (dentro de la ventana ancha) caía muy por encima de las 24 horas del
+    // array corto de viento, así que esos 4 campos salían siempre
+    // `undefined`/"—", aunque marea/oleaje/temp. agua (que sí usan el
+    // array correcto) se vieran bien.
+    const buscarIndiceHora = (listaHoras) => {
+      let i = -1;
+      if (horaElegida) {
+        const [h, m] = horaElegida.split(":").map(Number);
+        const horaObjetivo = m >= 30 ? (h + 1) % 24 : h;
+        i = listaHoras.findIndex((hs) => (!fecha || hs.startsWith(fecha)) && +hs.slice(11, 13) === horaObjetivo);
+      }
+      if (i === -1) {
+        i = listaHoras.findIndex((hs) => hs.slice(0, 13) === horaActualMadridISO());
+      }
+      // Sin hora elegida y la fecha no es hoy (registro retroactivo): la
+      // hora de ahora no significa nada para un día distinto — mediodía
+      // es una referencia más representativa de la jornada que
+      // medianoche (el índice 0 al que caería si no se afina esto).
+      if (i === -1) i = listaHoras.findIndex((hs) => (!fecha || hs.startsWith(fecha)) && +hs.slice(11, 13) === 12);
+      if (i === -1) i = fecha ? Math.max(0, listaHoras.findIndex((hs) => hs.startsWith(fecha))) : 0;
+      return i;
+    };
+    const idx = buscarIndiceHora(horas);
+    const idxViento = buscarIndiceHora(viento.hourly?.time || []);
 
     const alturaOla = marino.hourly?.wave_height?.[idx];
     if (alturaOla !== undefined && alturaOla !== null) {
@@ -781,10 +798,10 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha) {
       coeficientePorSpot(horas, serieAltura, idx) ??
       coeficienteMarea(fecha ? new Date(fecha + "T12:00:00") : new Date());
 
-    resultado.viento_kmh = viento.hourly?.windspeed_10m?.[idx] != null ? Math.round(viento.hourly.windspeed_10m[idx]) : null;
-    resultado.presion_valor = viento.hourly?.pressure_msl?.[idx] != null ? Math.round(viento.hourly.pressure_msl[idx]) : null;
-    resultado.nubosidad = viento.hourly?.cloudcover?.[idx] != null ? Math.round(viento.hourly.cloudcover[idx]) : null;
-    resultado.precipitacion = viento.hourly?.precipitation?.[idx] != null ? viento.hourly.precipitation[idx] : null;
+    resultado.viento_kmh = viento.hourly?.windspeed_10m?.[idxViento] != null ? Math.round(viento.hourly.windspeed_10m[idxViento]) : null;
+    resultado.presion_valor = viento.hourly?.pressure_msl?.[idxViento] != null ? Math.round(viento.hourly.pressure_msl[idxViento]) : null;
+    resultado.nubosidad = viento.hourly?.cloudcover?.[idxViento] != null ? Math.round(viento.hourly.cloudcover[idxViento]) : null;
+    resultado.precipitacion = viento.hourly?.precipitation?.[idxViento] != null ? viento.hourly.precipitation[idxViento] : null;
 
     resultado.luna_fase = luna?.fase ?? null;
     resultado.luna_iluminacion = luna?.iluminacion ?? null;
