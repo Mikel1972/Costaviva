@@ -680,7 +680,6 @@
       <div class="etq" style="margin-bottom:6px;">WEBCAM EN DIRECTO</div>
       <div id="panelWebcamContenido"></div>
     </div>
-    <p class="nota-final">Estimación orientativa combinando altura, viento y el ángulo entre sus direcciones. Pendiente: claridad de agua, caudal de ríos y cámara fija.</p>
   </div>
 </div>
 
@@ -2211,7 +2210,7 @@ function pintarWebcam(slug, nombre) {
       </span>
     </div>
     ${lineaTurbidezHtml(slug)}
-    <p class="nota-final" id="notaWebcam">Servida por nuestro propio backend (evita bloqueos CORS del proveedor original). Se actualiza sola cada minuto — solo informativa, no es una medida en metros.</p>
+    <p class="nota-final" id="notaWebcam">Servida por nuestro propio backend (evita bloqueos CORS del proveedor original). Se actualiza sola cada minuto.</p>
   `;
   const img = document.getElementById("imgWebcam");
   img.addEventListener("error", () => {
