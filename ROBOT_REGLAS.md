@@ -263,6 +263,25 @@ ej. lonjas públicas) publica series de precio por especie/fecha
 reutilizables; si no, esta idea concreta se descarta sin más, no forzar
 una fuente que no da el dato limpio.
 
+**Advertencia explícita del usuario, obligatoria antes de usar cualquier
+dato de lonja/desembarque para nada de esto**: hay que separar bajura de
+altura, y el criterio ya existe en el código — el campo `zona` de cada
+especie en `ESPECIES` (`"costa"` = bajura, `"mar adentro"` = altura). Un
+dato de precio/volumen en una lonja concreta es un proxy razonable de
+"se está pescando cerca de aquí" SOLO para especies de bajura (barcos que
+salen y vuelven el mismo día, cerca del puerto). Para especies de altura
+(ej. Bonito del norte, Dentón, Urta, Medregal — cualquiera con
+`zona: "mar adentro"`) el dato de desembarque NO sirve como proxy de
+zona: el pez puede llevar días de viaje y haberse capturado a cientos de
+km del puerto donde se vendió, así que usar su precio/volumen de lonja
+para inferir "hay actividad de esta especie en ESTA zona costera" sería
+un dato mal interpretado, no uno fiable. Cualquier propuesta que use
+datos de lonja debe distinguir explícitamente bajura/altura y, para
+altura, contrastar con al menos otra fuente (zona de pesca real del
+barco, no solo puerto de venta) antes de dar el dato por bueno — si no
+se puede contrastar, se descarta esa especie para esta idea en concreto,
+no se propone con la salvedad "puede que no sea exacto".
+
 ## Red de seguridad de la automatización (añadido 2026-09-12)
 
 Estas reglas existen porque "el propio prompt dice que esto es
