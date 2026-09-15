@@ -30,14 +30,16 @@
      ligera aparte para móvil (854x480) vía <source media>, para no gastar
      datos de más en 4G.
 
-     2026-09-15, sustituido el vídeo original (banco de peces visto de
-     lado, con la típica bruma/partículas en suspensión de casi todo el
-     vídeo submarino real — pedido explícito del usuario: "necesito una
-     claridad total, sin bruma") por uno tomado desde arriba (dron/aéreo)
-     en aguas turquesa: la vista aérea evita por completo el problema de
-     bruma/backscatter, que es un artefacto propio de grabar DESDE DENTRO
-     del agua, no de la claridad real del agua en sí — verificado frame a
-     frame con ffmpeg antes de integrarlo. */
+     2026-09-15, dos vueltas más al vídeo: (1) el original (banco de
+     peces visto de lado, con la típica bruma/partículas en suspensión de
+     casi todo el vídeo submarino real) se sustituyó por uno aéreo/dron en
+     aguas turquesa — evitaba la bruma (artefacto de grabar DESDE DENTRO
+     del agua) pero al usuario no le convenció el estilo; (2) sustituido
+     de nuevo por uno de azul profundo, agua clara, banco de peces
+     nadando junto a un arrecife (pedido explícito: "azul profundo, claro
+     con peces nadando lentamente") — verificado frame a frame con ffmpeg
+     antes de integrarlo, igual que los dos anteriores. Recortado a 10s
+     (el original dura 17s) para un bucle más ligero. */
   .video-fondo {
     position: fixed; inset: 0; width: 100%; height: 100%;
     object-fit: cover; z-index: -2;
@@ -145,11 +147,10 @@
 
 <video class="video-fondo" autoplay muted loop playsinline poster="/assets/hero-peces-poster.jpg">
   <source media="(max-width: 760px)" srcset="/assets/hero-peces-movil.mp4" type="video/mp4" />
-  <source src="/assets/hero-peces.webm" type="video/webm" />
   <source src="/assets/hero-peces.mp4" type="video/mp4" />
 </video>
 <div class="overlay-fondo"></div>
-<p class="creditos-video">Vídeo: <a href="https://www.pexels.com/video/fish-under-transparent-blue-water-10996471/" target="_blank" rel="noopener">Pexels</a></p>
+<p class="creditos-video">Vídeo: <a href="https://www.pexels.com/video/school-of-fish-in-the-deep-blue-sea-5358755/" target="_blank" rel="noopener">Pexels</a></p>
 
 <div class="landing">
   <div class="lado-marketing">
