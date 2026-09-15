@@ -2544,6 +2544,16 @@ document.getElementById("contenidoZoomWebcam").addEventListener("click", (e) => 
   // Clic en la foto/vídeo -> alterna zoom. Clic en el fondo alrededor
   // (el propio contenedor, no un hijo) -> cierra, como un lightbox normal.
   if (e.target.tagName === "IMG" || e.target.tagName === "VIDEO") {
+    // Pedido explícito del usuario: el zoom debe centrarse en el punto
+    // exacto donde se hace clic, no siempre en el centro de la foto —
+    // se fija transform-origin al punto clicado (en %) justo antes de
+    // ampliar, así el zoom "crece" desde ahí en vez de desde el centro.
+    if (!e.target.classList.contains("ampliada")) {
+      const rect = e.target.getBoundingClientRect();
+      const xPct = ((e.clientX - rect.left) / rect.width) * 100;
+      const yPct = ((e.clientY - rect.top) / rect.height) * 100;
+      e.target.style.transformOrigin = `${xPct}% ${yPct}%`;
+    }
     e.target.classList.toggle("ampliada");
   } else {
     cerrarZoomWebcam();
