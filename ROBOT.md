@@ -2654,6 +2654,74 @@ ya conocido, requiere alta previa, sin cambios.
 
 ---
 
+### 2026-09-15 13:56 UTC (pasada buscadora — mareas y oleaje)
+
+Pasada diurna de "mareas y oleaje". **No se pudo hacer la calibración
+boya-vs-Open-Meteo de siempre**: la API de Puertos del Estado
+(`poem.puertos.es/portus/StationData`) devolvió **HTTP 500 para TODAS las
+boyas probadas y en 3 reintentos** (2136 Bilbao-Vizcaya, 1117 Gijón, 1101
+Pasaia II, 2248 Cabo Silleiro, 2244 Estaca de Bares, 2610 Cabo de Palos),
+tanto con `params` completos como pidiendo solo `Hm0`, con y sin
+`User-Agent` propio. **No es problema de la red del runner ni nuestro**:
+la misma pasada de las 13:24 UTC (32 min antes) sí obtuvo datos reales de
+esa API, y en esta pasada la Marine API de Open-Meteo respondió con
+normalidad a las mismas coordenadas — es una **caída temporal del lado de
+Puertos del Estado**. `StationInfo` en el mismo host da 404 y la raíz
+`/portus/` 404, coherente con un fallo interno del servicio de datos, no
+con un cambio de contrato de la API. **No hay punto de calibración nuevo
+esta pasada** — no se añade nada a `CALIBRACION.jsonl`; se reanudará la
+calibración en la siguiente pasada cuando la fuente vuelva.
+
+Impacto en producción durante la caída: `functions/prevision.js` envuelve
+cada boya en `.catch()` (`BOYAS.map((b) => datosBoya(b).catch(...))`), así
+que las boyas que fallan simplemente no se dibujan en el mapa (patrón "no
+inventar dato" de siempre) — el resto de `/prevision` (Open-Meteo) sigue
+funcionando. No requiere acción; solo se anota por si la caída persiste.
+
+**Fuente nueva verificada con petición HTTP real — boyas de Portugal
+(Instituto Hidrográfico), llena un hueco real.** Hoy solo tenemos una
+boya portuguesa (Nazaré, vía MONICAN); el IH portugués tiene su red
+Datawell Waverider (Leixões, Sines, Faro + Azores/Madeira) accesible por
+dos vías, ambas comprobadas en vivo:
+- **OGC API Features** (`https://ogcapi.hidrografico.pt/collections`,
+  sin key, licencia CC-BY 4.0): la colección `buoys_datawell` lista las
+  estaciones activas con metadatos y frescura real —verificado hoy:
+  Leixões (`id_est` 4, 41.316°N/8.983°W, `last_sea`
+  2026-09-15T11:32Z), Sines (`id_est` 19, 37.921°N/8.929°W,
+  11:26Z), Faro (`id_est` 20, 36.904°N/7.898°W, 11:25Z), todas
+  `status: active`, `nrt: near-real-time data available`. Esto da la
+  ubicación y el estado, **no** la medida de oleaje.
+- **Medida NRT real** (`hm0`, `tp`, `temp` + flags QC, en JSON):
+  `https://supportserver1.hidrografico.pt/geodata/buoys/getDatawellData`
+  (y `.../getDatawellTemp` para temperatura), parámetros `stationId` +
+  `startDate`/`endDate` (ventana máx. 15 días). **Verificado en vivo que
+  el endpoint existe y exige autenticación**: sin key devuelve
+  `401 "Invalid API KEY"`. La key es **gratuita, se pide por email** a
+  `cedencia.dados@hidrografico.pt` y se pasa en la cabecera `X-API-KEY`
+  (mismo patrón que AEMET/Euskalmet — usar `datos@costaviva.org` para el
+  alta, ver `CLAUDE.md`).
+
+**Solo propuesta, NO se integra en esta pasada**, por dos motivos ya
+documentados en `ROBOT_REGLAS.md`: (1) tocar la lista `BOYAS` de
+`functions/prevision.js` está fuera del límite de volumen de
+auto-aplicación (fichero de `functions/`), y (2) el riesgo del límite de
+50 sub-peticiones de `/prevision` — cada boya nueva es un `fetch` más, y
+la medida NRT del IH parece exigir una petición por estación (no un bulk
+"todas las boias en una llamada"), así que 3 boyas portuguesas = 3
+sub-peticiones más. Recomendación: pedir la key gratuita con
+`datos@costaviva.org`, guardarla como secreto en Cloudflare Pages
+(patrón `AEMET_API_KEY`) y solo entonces valorar la integración,
+midiendo antes cuántas sub-peticiones quedan libres en `/prevision`.
+Sigue siendo la vía más limpia y verificada para cubrir el hueco de
+Portugal, mejor que `labouee.app` (evaluado el 2026-09-15 13:24 UTC:
+exige key de pago y reempaqueta datos de Puertos del Estado que ya
+tenemos gratis).
+
+**Firmado:** robot buscador de fuentes (pasada de mareas y oleaje),
+2026-09-15 13:56 UTC.
+
+---
+
 ## Robot de experiencia de usuario
 
 ### 2026-09-15
