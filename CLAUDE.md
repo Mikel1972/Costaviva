@@ -1043,6 +1043,43 @@ investigación para la pasada de "mareas y oleaje" del robot buscador de
 fuentes (ver más abajo) — como todo lo que toca el índice de mar, sería
 siempre una propuesta a confirmar, nunca un cambio directo.
 
+**Quinta idea, pedida el 2026-09-15, misma categoría (aparcada, solo
+diseñada por ahora, sin código)**: **botón de "trackeo" en `alarma.html`**
+— quien va solo pulsa un botón, la app guarda su ubicación GPS cada
+cierto intervalo (p.ej. 3 min) y la comparte con un contacto elegido, como
+tranquilidad mientras dura la salida ("es una forma de estar tranquilo si
+voy solo", palabras del usuario) — complementaria a la Alarma SOS (esa
+avisa solo tras una caída detectada; esto es visibilidad continua elegida
+a propósito, sin esperar a un incidente).
+
+**Limitación técnica real que hay que dejar clara antes de construirlo**:
+en iOS (Safari/PWA instalada, que es el uso principal de la app —
+[[project-movil-primero]]), `watchPosition()`/`setInterval()` **se
+pausan o se detienen en cuanto la pantalla se apaga o la app pasa a
+segundo plano** — no hay geolocalización en background real sin ser una
+app nativa con permiso "Always" (Costa Viva es PWA, no tiene eso). Un
+pescador con el móvil en el bolsillo y la pantalla apagada dejaría de
+mandar ubicaciones sin ningún aviso — igual de peligroso que no tener el
+botón, si se promete "cada 3 minutos" sin más matiz. Cualquier versión de
+esto necesita, como mínimo: (a) dejarlo muy claro en la propia UI ("con
+la pantalla encendida" o similar, no prometer algo que el sistema
+operativo no permite cumplir), y/o (b) usar una notificación
+persistente/Wake Lock API mientras el trackeo está activo para animar a
+mantener la pantalla encendida, sabiendo que ni así hay garantía total.
+
+**Diseño recomendado, no implementado todavía** (para cuando se retome):
+reutilizar `contactos_emergencia` (ya existe, ya verificado con RLS) en
+vez de crear una tabla de contactos aparte; nueva tabla
+`trackeo_activo` (o similar) con `user_id`, `activo boolean`, y un
+histórico de puntos `lat/lon/timestamp`, RLS igual que el resto
+(`auth.uid() = user_id` para escribir; el contacto que recibe el trackeo
+necesitaría una vía de lectura sin cuenta propia — probablemente un
+enlace con token, no una cuenta Supabase, ya que un contacto de
+emergencia no tiene por qué estar registrado en Costa Viva). Igual que el
+resto de ideas de esta sección: cuando se retome, es una propuesta de
+diseño a confirmar con el usuario antes de escribir una sola línea de
+RLS, no una implementación directa.
+
 ## Robot buscador de fuentes — 4 veces al día + 2 áreas 1x/día (2026-09-13)
 
 Nuevo workflow `.github/workflows/robot-buscador-fuentes.yml`, pedido
