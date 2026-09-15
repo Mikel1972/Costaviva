@@ -16,7 +16,15 @@
 //      hora (se reintenta la siguiente) — /prevision nunca falla por
 //      esto, solo sirve un valor con hasta 1h de antigüedad.
 //
-// Llamado por .github/workflows/presion-historico.yml.
+// Llamado por .github/workflows/presion-historico.yml — que ahora hace
+// VARIAS peticiones por pasada en vez de una sola (ver NUM_LOTES más
+// abajo): cada petición HTTP a un Worker de Cloudflare tiene su propio
+// presupuesto de CPU, así que repartir los 95 spots en lotes más
+// pequeños (cada uno en su propia petición) reduce el trabajo de CPU de
+// CADA petición (parsear el JSON de la Marine API + el bucle de
+// coeficientePorSpot) en vez de intentar reducirlo dentro de una sola —
+// eso último ya se había probado (ver más abajo) y seguía dando 1102
+// intermitente con los 95 spots de golpe.
 //
 // Protegido con un secreto compartido (cabecera X-Cron-Secret, variable
 // de entorno CRON_SECRET en Cloudflare Pages) para que no sea un
@@ -29,6 +37,12 @@ import { SPOTS, coeficientePorSpot } from "./prevision.js";
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
 
+// Número de peticiones en las que se reparte el cálculo de coeficientes
+// (la parte pesada — ver comentario de arriba). La parte de presión
+// (ligera, un único valor "current" por spot) sigue yendo siempre
+// entera en la petición sin `?lote=`.
+const NUM_LOTES_COEFICIENTES = 4;
+
 export async function onRequestPost(context) {
   const secretoEsperado = context.env.CRON_SECRET;
   const secretoRecibido = context.request.headers.get("X-Cron-Secret");
@@ -39,11 +53,17 @@ export async function onRequestPost(context) {
     });
   }
 
+  const lote = new URL(context.request.url).searchParams.get("lote");
+
   // Las dos partes son independientes (fuentes y tablas distintas) — un
   // fallo en una no debe impedir que la otra se guarde, así que cada una
   // reporta su propio resultado en vez de que un throw corte a la otra.
+  // Además, desde que se reparte en lotes, cada petición solo hace UNA
+  // de las dos partes (presión si no hay `?lote=`, un lote de
+  // coeficientes si lo hay) — nunca las dos a la vez.
   const resultado = { presion: null, coeficientes: null };
 
+  if (lote === null) {
   try {
     const lats = SPOTS.map((s) => s.lat).join(",");
     const lons = SPOTS.map((s) => s.lon).join(",");
@@ -78,42 +98,56 @@ export async function onRequestPost(context) {
   } catch (e) {
     resultado.presion = { ok: false, error: String(e) };
   }
+  } else {
+    const numLote = Number(lote);
+    if (!Number.isInteger(numLote) || numLote < 0 || numLote >= NUM_LOTES_COEFICIENTES) {
+      return new Response(JSON.stringify({ error: "lote inválido" }), {
+        status: 400,
+        headers: { "content-type": "application/json" },
+      });
+    }
+    const spotsLote = SPOTS.filter((_, i) => i % NUM_LOTES_COEFICIENTES === numLote);
 
-  try {
-    // Ventana ancha (~24 días, cubre un ciclo vivas-muertas completo),
-    // una sola variable — igual que se probó en real antes de mover esto
-    // aquí (~1.37MB con los 95 spots). Al correr en un cron y no en la
-    // petición de cada usuario, un fallo puntual (o que esto tarde más
-    // de lo normal) no afecta a nadie visitando la web esa hora.
-    const lats = SPOTS.map((s) => s.lat).join(",");
-    const lons = SPOTS.map((s) => s.lon).join(",");
-    const resp = await fetch(
-      `https://marine-api.open-meteo.com/v1/marine?latitude=${lats}&longitude=${lons}&timezone=Europe%2FMadrid&past_days=8&forecast_days=16&hourly=sea_level_height_msl`
-    );
-    if (!resp.ok) throw new Error(`Open-Meteo (marine) HTTP ${resp.status}`);
-    const datos = await resp.json();
-    const lista = Array.isArray(datos) ? datos : [datos];
-    const filas = SPOTS.map((spot, i) => ({
-      spot_slug: spot.slug,
-      valor: coeficientePorSpot(lista[i]?.hourly?.time || [], lista[i]?.hourly?.sea_level_height_msl || []),
-    })).filter((f) => Number.isFinite(f.valor));
+    try {
+      // Ventana ancha (~24 días, cubre un ciclo vivas-muertas completo),
+      // una sola variable — igual que se probó en real antes de mover
+      // esto aquí (~1.37MB con los 95 spots de golpe, de ahí el reparto
+      // en lotes de arriba: cada lote pide y parsea solo ~1/4 de eso).
+      // Al correr en un cron y no en la petición de cada usuario, un
+      // fallo puntual (o que esto tarde más de lo normal) no afecta a
+      // nadie visitando la web esa hora.
+      const lats = spotsLote.map((s) => s.lat).join(",");
+      const lons = spotsLote.map((s) => s.lon).join(",");
+      const resp = await fetch(
+        `https://marine-api.open-meteo.com/v1/marine?latitude=${lats}&longitude=${lons}&timezone=Europe%2FMadrid&past_days=8&forecast_days=16&hourly=sea_level_height_msl`
+      );
+      if (!resp.ok) throw new Error(`Open-Meteo (marine) HTTP ${resp.status}`);
+      const datos = await resp.json();
+      const lista = Array.isArray(datos) ? datos : [datos];
+      const filas = spotsLote
+        .map((spot, i) => ({
+          spot_slug: spot.slug,
+          valor: coeficientePorSpot(lista[i]?.hourly?.time || [], lista[i]?.hourly?.sea_level_height_msl || []),
+        }))
+        .filter((f) => Number.isFinite(f.valor));
 
-    if (!filas.length) throw new Error("no se pudo calcular ningún coeficiente");
+      if (!filas.length) throw new Error("no se pudo calcular ningún coeficiente de este lote");
 
-    const upsertResp = await fetch(`${SUPABASE_URL}/rest/v1/coeficiente_marea_actual?on_conflict=spot_slug`, {
-      method: "POST",
-      headers: {
-        apikey: SUPABASE_ANON_KEY,
-        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-        "content-type": "application/json",
-        Prefer: "resolution=merge-duplicates,return=minimal",
-      },
-      body: JSON.stringify(filas.map((f) => ({ ...f, actualizado_en: new Date().toISOString() }))),
-    });
-    if (!upsertResp.ok) throw new Error(`Supabase upsert HTTP ${upsertResp.status}: ${await upsertResp.text()}`);
-    resultado.coeficientes = { ok: true, filas: filas.length };
-  } catch (e) {
-    resultado.coeficientes = { ok: false, error: String(e) };
+      const upsertResp = await fetch(`${SUPABASE_URL}/rest/v1/coeficiente_marea_actual?on_conflict=spot_slug`, {
+        method: "POST",
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          "content-type": "application/json",
+          Prefer: "resolution=merge-duplicates,return=minimal",
+        },
+        body: JSON.stringify(filas.map((f) => ({ ...f, actualizado_en: new Date().toISOString() }))),
+      });
+      if (!upsertResp.ok) throw new Error(`Supabase upsert HTTP ${upsertResp.status}: ${await upsertResp.text()}`);
+      resultado.coeficientes = { ok: true, lote: numLote, filas: filas.length };
+    } catch (e) {
+      resultado.coeficientes = { ok: false, lote: numLote, error: String(e) };
+    }
   }
 
   const status = resultado.presion?.ok || resultado.coeficientes?.ok ? 200 : 502;

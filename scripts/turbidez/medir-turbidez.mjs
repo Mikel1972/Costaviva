@@ -5,13 +5,12 @@
 // real, `sharp` para decodificar imágenes y `ffmpeg` del sistema para sacar
 // un frame de los streams HLS).
 //
-// Para cada spot con lectura visual: descarga una imagen (proxy propio
+// Para cada spot con webcam analizable: descarga una imagen (proxy propio
 // /webcam/<slug> para las de imagen fija, o un frame vía ffmpeg para las de
-// vídeo de Gipuzkoa), calcula saturación/tono medios del agua en HSV
-// (misma zona recortada — se salta el 35% superior — que
-// puntuacionOleajeVisual en index.html, pero aquí para turbidez en vez de
-// oleaje), pide la nubosidad real de Open-Meteo para ese spot a esta misma
-// hora, y manda todo junto a /registrar-turbidez.
+// vídeo de Gipuzkoa), calcula saturación/tono medios del agua en HSV (se
+// salta el 35% superior del encuadre — cielo/tierra/marca de fecha), pide
+// la nubosidad real de Open-Meteo para ese spot a esta misma hora, y manda
+// todo junto a /registrar-turbidez.
 //
 // Nunca inventa un dato: un spot cuya imagen no se puede descargar o
 // decodificar simplemente no manda fila ese día (mejor sin lectura que una
@@ -31,8 +30,8 @@ if (!CRON_SECRET) {
   process.exit(1);
 }
 
-// Mismo listado que SPOTS_CON_LECTURA_VISUAL en index.html (solo las de
-// imagen fija) — mantener sincronizado a mano si cambia allí.
+// Spots de imagen fija con cámara verificada de mar abierto — mantener
+// sincronizado a mano con SPOTS_CON_WEBCAM en index.html si cambia allí.
 const SPOTS_IMAGEN = [
   "mundaka", "bakio", "sopelana",
   "baiona", "acoruna", "camarinas", "cangas", "ribadeo", "cies",
@@ -72,8 +71,7 @@ function rgbToHsv(r, g, b) {
 
 // Analiza los píxeles ya decodificados (RGB planos, sin alfa) y devuelve
 // saturación media (0-100) y tono medio circular (0-360) de la zona de agua
-// (se salta el 35% superior del frame — cielo/tierra/marca de fecha, mismo
-// criterio que puntuacionOleajeVisual en index.html).
+// (se salta el 35% superior del frame — cielo/tierra/marca de fecha).
 function analizarPixeles(data, width, height) {
   const y0 = Math.round(height * 0.35);
   const alto = height - y0;
