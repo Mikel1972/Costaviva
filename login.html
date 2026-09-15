@@ -172,7 +172,7 @@
   <div class="lado-acceso">
 <div class="caja" id="cajaLogin">
   <h1>Costa Viva</h1>
-  <p class="sub" id="subtitulo">Accede con tu cuenta para ver la zona Lekeitio → Bilbao</p>
+  <p class="sub" id="subtitulo">Accede con tu cuenta</p>
 
   <div id="mensaje" class="mensaje"></div>
 
@@ -285,7 +285,7 @@ btnAlternar.addEventListener("click", () => {
   btnAlternar.textContent = modo === "login" ? "Crear una cuenta nueva" : "Ya tengo cuenta";
   subtitulo.textContent =
     modo === "login"
-      ? "Accede con tu cuenta para ver la zona Lekeitio → Bilbao"
+      ? "Accede con tu cuenta"
       : "Tu cuenta necesitará aprobación antes de poder entrar";
   cajaConsentimiento.classList.toggle("visible", modo === "registro");
   mensajeEl.className = "mensaje";
