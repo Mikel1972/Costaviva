@@ -220,11 +220,11 @@ como fiable.
 
 ## Buenas prácticas de otras apps y biología de especies (añadido 2026-09-13)
 
-Dos responsabilidades más, pedidas explícitamente por el usuario, que se
-suman a las 4 originales del robot buscador de fuentes — a diferencia de
-esas (datos en tiempo real, verificables con una petición HTTP), estas
-dos son de investigación/contenido, así que corren solo 1 vez al día
-cada una (no 4):
+Tres responsabilidades más, pedidas explícitamente por el usuario, que
+se suman a las 4 originales del robot buscador de fuentes — a
+diferencia de esas (datos en tiempo real, verificables con una
+petición HTTP), estas tres son de investigación/contenido, así que
+corren solo 1 vez al día cada una (no 4):
 
 - **Buenas prácticas de otras apps de mareas/pesca**: qué datos en
   tiempo real o funciones tienen apps como Windy, Tides4fishing,
@@ -245,6 +245,26 @@ cada una (no 4):
   propongas. Esto es también siempre una propuesta en `ROBOT.md` (nunca
   un cambio directo a `ESPECIES` ni a la fórmula de `indicePesca`),
   porque cambia lo que se le muestra al usuario como dato fiable.
+- **Estudios institucionales/académicos, tipo DIGIPESCA** (añadido
+  2026-09-15, pedido explícito del usuario): buscar con `WebSearch`
+  bases de datos y estudios reales — de universidades, organismos
+  públicos de pesca, proyectos de investigación financiados (Next
+  Generation EU, Ministerio de Agricultura/Pesca, Xunta, Generalitat,
+  Junta de Andalucía, equivalentes portugueses como el IPMA...) — que
+  aporten datos verificables de especies/lonjas/capturas/precios por
+  zona y fecha, del estilo del proyecto DIGIPESCA (ver la entrada
+  dedicada más abajo). El **ámbito geográfico actual es España y
+  Portugal** (visión del usuario: si funciona bien ahí, se expandirá a
+  otros países más adelante — no asumir que el proyecto es solo del
+  Cantábrico ni solo de España). Cada estudio nuevo que se encuentre
+  debe pasar, antes de proponer nada con él, por las mismas reglas ya
+  documentadas para DIGIPESCA en esta sección: separar bajura/altura,
+  cruzar con hábitos/costumbres reales de captura, cuidado con
+  localismos regionales (un término/dato de una zona no vale para
+  otra sin verificar), y nunca inventar un dato que la fuente no dé
+  claro. Propuesta en `ROBOT.md` primero; solo aplicar directo a
+  `ESPECIES`/`index.html` cuando el dato esté genuinamente contrastado
+  y dentro de los límites de volumen de este fichero.
 
 **Fuente DIGIPESCA — verificada en real por el robot el 2026-09-15
 (entrada `ROBOT.md` 09:18 UTC), NO integrada todavía**: proyecto
