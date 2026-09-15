@@ -1205,7 +1205,7 @@ const ESPECIES_MEDITERRANEO = [
   { nombre: "Lubina", emoji: "🐟", zona: "costa", meses: [9,10,11,12,1,2,3],
     rangoTemp: [8, 24],
     nota: "misma especie que en el Cantábrico: se mueve entre 8-24°C y apenas come por debajo de 7°C. Aquí busca desembocaduras (Júcar, Segura) y puertos, sobre todo en otoño-invierno",
-    alimento: "sardinas y anchoas pequeñas (parrotxa), lisas, quisquillas, gusanos y cangrejos de arena" },
+    alimento: "sardinas y anchoas pequeñas, lisas, quisquillas, gusanos y cangrejos de arena" },
   { nombre: "Lisa / Mújol", emoji: "🐟", zona: "costa", meses: [1,2,3,4,5,6,7,8,9,10,11,12],
     rangoTemp: [8, 24],
     nota: "aguanta un rango enorme y casi no depende de la temperatura — vive en playas, puertos y estuarios. El mejor momento suele ser a finales de otoño",
@@ -2435,20 +2435,18 @@ function abrirPanel(s) {
     (lista.length ? lista.map(listaEspecie).join("") : `<span style="color:#42585F;">ninguna de temporada ahora</span>`) +
     `</div>`;
   // Nota de "parrotxa" (cría de sardina): antes aparecía SIEMPRE, para
-  // cualquier spot, incluidos los de Canarias/Golfo de Cádiz donde ese
-  // término no se usa — bug real reportado por el usuario 2026-09-15
-  // ("no puede ser que en Cartagena hablemos de parrotxa"). Confirmado
-  // por el propio usuario que el término SÍ es correcto en el Cantábrico
-  // (no solo en Mediterráneo, como se asumió en un primer intento de
-  // arreglo) — se queda en las dos listas. Ahora la nota solo sale si la
-  // palabra aparece de verdad en la lista de especies de ESTE spot, lo
-  // que arregla Canarias/Cádiz. PENDIENTE: Cartagena comparte
-  // ESPECIES_MEDITERRANEO entero con Valencia/Catalunya, así que sigue
-  // mostrándose ahí igual que en el resto del Mediterráneo — no hay
-  // forma de distinguir Cartagena del resto de ese array sin verificar
-  // primero si "parrotxa" se usa realmente allí y, si no, separar
-  // Cartagena en su propia lista (encaja con la visión a largo plazo de
-  // estudios por spot, ver ROBOT_REGLAS.md) — no resuelto todavía.
+  // cualquier spot — bug real reportado por el usuario 2026-09-15 ("no
+  // puede ser que en Cartagena hablemos de parrotxa"). Tras dos
+  // intentos (primero se quitó del Cantábrico por error, luego el
+  // usuario confirmó que "ese nombre solo se usa en el Cantábrico"),
+  // el término se queda SOLO en ESPECIES (Cantábrico); quitado de
+  // ESPECIES_MEDITERRANEO. La nota del pie solo sale si la palabra
+  // aparece de verdad en la lista de especies de ESTE spot, así que
+  // ahora solo se ve en spots del Cantábrico — arregla Cartagena de
+  // paso. Mediterráneo/Golfo de Cádiz/Canarias se quedan sin
+  // localismo propio para esto hasta que el robot (ver
+  // "Localismos/acepciones regionales por spot" en ROBOT_REGLAS.md)
+  // investigue y proponga el término real de cada zona.
   const hayParrotxa = [...costa, ...marAdentro].some((e) => e.alimento?.includes("parrotxa") || e.nota?.includes("parrotxa"));
   document.getElementById("panelEspecies").innerHTML =
     bloqueZona("🪨 COSTA", costa) + bloqueZona("🌊 MAR ADENTRO", marAdentro) +

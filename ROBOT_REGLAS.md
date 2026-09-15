@@ -63,6 +63,62 @@ reconozca esas variantes.
   seguridad de más abajo (esto es solo un insert por fila propuesta, no
   un cambio de código).
 
+## Localismos/acepciones regionales por spot (añadido 2026-09-15)
+
+Responsabilidad nueva, pedida explícitamente por el usuario, 1x/día por
+ahora — distinta de los sinónimos de arriba (que van a la tabla
+`sinonimos_especie`) pero del mismo espíritu: los textos libres
+(`nota`/`alimento`) de `ESPECIES`/`ESPECIES_MEDITERRANEO`/
+`ESPECIES_GOLFO_CADIZ`/`ESPECIES_CANARIAS` en `index.html` a veces
+mencionan cómo se llama algo por esa zona (ej. "parrotxa" para la cría
+de sardina) — motivado por un bug real: ese término solo se usa en el
+Cantábrico según el propio usuario, pero apareció puesto también en
+Mediterráneo hasta que se corrigió a mano el 2026-09-15.
+
+- **Objetivo**: para cada spot/zona que ya tiene un localismo puesto
+  (como "parrotxa" en Cantábrico) pero le falta el equivalente en las
+  otras 3 listas regionales (Mediterráneo, Golfo de Cádiz, Canarias),
+  investigar con `WebSearch` si existe un término local real y
+  verificable para lo mismo en esa zona — y proponerlo. Prioriza
+  primero los huecos ya conocidos (ver arriba: falta el equivalente de
+  "parrotxa" — cría de sardina — para Mediterráneo/Cádiz/Canarias).
+- **Granularidad real, no solo las 4 zonas amplias**: si una fuente dice
+  que un término es de un pueblo/comarca concreto y no de toda la
+  región (ej. "en Cartagena no se dice así, se dice X"), anota esa
+  matización tal cual en `ROBOT.md` en vez de generalizar a toda la
+  lista regional — encaja con la visión a largo plazo del usuario de
+  llegar a tener un estudio/fuente por spot, no solo por región amplia.
+- **Nunca inventar ni asumir que un término vale para toda España** —
+  mismo criterio que el resto de este fichero. Si no se encuentra una
+  fuente clara y verificable de que un término se usa de verdad en esa
+  zona concreta, no se propone, se deja como hueco explícito.
+- **Solo propuesta en `ROBOT.md`**, nunca cambio directo a `index.html`
+  — es texto que ve el usuario final, mismo criterio que el resto de
+  contenido de `ESPECIES`.
+
+**Segundo objetivo de esta misma pasada, pedido explícitamente por el
+usuario (2026-09-15)**: cuestionar de forma sistemática — no dar por
+buena para siempre — la propia agrupación de las 4 listas regionales
+(`ESPECIES_MEDITERRANEO`/`ESPECIES_GOLFO_CADIZ`/`ESPECIES_CANARIAS`
+comparten un único listado entre decenas de spots cada una; `ESPECIES`
+por defecto cubre Euskadi+Cantabria+Asturias+Galicia+Portugal
+atlántico entero). El usuario ve "muchos spots con los mismos peces" y,
+aunque reconoce que tiene cierta lógica biológica (fauna similar en una
+misma costa), quiere que el robot lo audite activamente en vez de
+asumirlo sin más. Cada pasada de esta responsabilidad debe, además de
+localismos, elegir 1-2 spots de una lista regional amplia (rotando cuál,
+para cubrir distintos con el tiempo) e investigar con `WebSearch` si su
+fauna real difiere de forma notable del resto de spots de esa misma
+lista (ej. "¿las especies que se pescan en A Coruña son de verdad las
+mismas que en Bermeo, o hay diferencias documentadas?"). Si encuentra
+una diferencia real y verificable, proponerla en `ROBOT.md` como
+candidata a separar ese spot (o grupo de spots) en su propia lista —
+nunca aplicar el cambio directo, es una decisión de producto/estructura
+de datos. Si no encuentra diferencias, decirlo explícitamente
+("verificado: A Coruña no muestra diferencias documentadas frente al
+resto de ESPECIES") para que quede constancia de que SÍ se comprobó, no
+solo que se asumió.
+
 ## Variables adicionales para el índice de pesca + turbidez por especie (añadido 2026-09-14)
 
 Sexta responsabilidad, pedida explícitamente por el usuario: investigar
