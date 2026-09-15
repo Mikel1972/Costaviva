@@ -835,6 +835,102 @@ commit directo, de todos modos).
 **Firmado:** robot buscador de fuentes (pasada de webcams), 2026-09-15
 08:20 UTC.
 
+### 2026-09-15 09:18 UTC (pasada buscadora — verificación de DIGIPESCA/RiuNet como fuente de precio en lonja)
+
+**Qué se buscó:** verificar en real la fuente candidata DIGIPESCA
+(`digipesca.webs.upv.es`, Universitat Politècnica de València) que el
+usuario apuntó el 2026-09-15 en `ROBOT_REGLAS.md` — comprobar con
+peticiones reales qué contiene de verdad (especie, zona, mes, precio en
+lonja), si el acceso es abierto sin registro, y si sirve para su idea de
+usar el precio/volumen en lonja como señal indirecta de la mejor época
+de pesca de una especie. Aplicando SIEMPRE las dos advertencias ya
+documentadas allí: separar bajura/altura, y cruzar con hábitos/costumbres
+reales de captura de la especie antes de dar por buena cualquier lectura.
+
+**Qué se encontró (verificado con `WebFetch`/`WebSearch` reales, no de
+memoria):**
+
+- **La base de datos existe y es real.** El proyecto DIGIPESCA
+  ("Digitalización y valorización de la pesca en el Mediterráneo
+  español", financiado por el Ministerio de Agricultura vía fondos Next
+  Generation) publicó en 2023 un conjunto de **12 bases de datos**, unas
+  400.000 variables cada una, ~5 millones de datos en total, sobre ventas
+  en lonjas.
+- **Campos que trae (confirmado en 3 fuentes independientes):** por cada
+  especie, **cantidad, precio medio y facturación**, desglosado **por
+  lonja y por mes**, a lo largo de **12 años (2010–2021)**. Esto encaja
+  casi exactamente con lo que pedía la idea del usuario (especie · zona ·
+  mes · precio).
+- **Acceso:** descrito como "de libre uso y acceso"; las bases están
+  subidas al repositorio institucional de la UPV (**RiuNet**) y
+  enlazadas desde la web del proyecto. Ninguna fuente menciona registro
+  obligatorio. **Salvedad honesta:** NO conseguí llegar al fichero
+  descargable en sí en esta pasada — el `handle` concreto de RiuNet no
+  aparece en ninguna de las páginas divulgativas, `digipesca.webs.upv.es/datos/`
+  da 404, y el buscador simple de RiuNet no respondió por `WebFetch`. Así
+  que "acceso abierto sin registro" está confirmado solo a nivel de lo que
+  dicen las notas de prensa, **no comprobado con una descarga real del
+  dataset**. Antes de integrar nada haría falta localizar el `handle`
+  exacto en RiuNet (buscar "Digipesca" / "lonjas" en el buscador del
+  repositorio, o pedir el enlace directo al contacto del proyecto,
+  `proyectodigipesca@gmail.com`) y bajar un fichero de verdad para
+  confirmar formato (¿CSV/Excel?), licencia y que efectivamente no pide
+  login.
+
+**Problema de fondo que hace esta fuente poco útil para ESTA app (el
+hallazgo más importante de la pasada):** la cobertura geográfica es
+**Mediterráneo español + Atlántico de Andalucía** (confirmado
+explícitamente en 3 fuentes). **NO cubre el Cantábrico ni Galicia**, que
+es justo donde está la inmensa mayoría de los spots fijos y de los
+usuarios de Costa Viva (Euskadi, Cantabria, Asturias, Galicia). Una
+señal de "precio en lonja de esta especie este mes" sacada de lonjas de
+Valencia, Almería o Cádiz no dice nada fiable sobre la actividad de pesca
+en Bermeo o Lekeitio. Esto por sí solo ya desaconseja integrarla como
+señal para el índice de pesca tal cual está la app hoy.
+
+**Cruces obligatorios de `ROBOT_REGLAS.md`, para dejar constancia de que
+se aplicaron (aunque la fuente ya se descarta por lo geográfico):**
+
+1. **Bajura vs altura:** el dato es "precio/volumen en la lonja X", es
+   decir *puerto de venta*, no *zona de captura*. Para especies de altura
+   (`zona: "mar adentro"` en `ESPECIES`: Bonito del norte, Dentón, Urta,
+   Medregal…) el pez puede haberse capturado a cientos de km del puerto
+   donde se vendió, así que su precio de lonja NO sirve como proxy de
+   "hay actividad de esta especie cerca de esta costa". Solo tendría
+   sentido, como mucho, para especies de bajura (`zona: "costa"`).
+2. **Usos y costumbres reales de captura:** además, "abundante+barato en
+   lonja este mes" tampoco implica "se puede pescar de costa" — muchas
+   especies de bajura se capturan sobre todo desde embarcación o en
+   fondos profundos cercanos, poco realistas a lanzado desde la orilla
+   (el ejemplo del pargo del propio usuario). El dato de lonja por sí
+   solo no distingue esto.
+
+**Conclusión / propuesta (solo propuesta, no se toca `ESPECIES` ni
+`indicePesca`, tal como manda la regla):** DIGIPESCA es una fuente real,
+seria y con exactamente los campos que la idea necesitaba (especie · lonja
+· mes · precio/cantidad, 2010–2021), pero **no es directamente aprovechable
+para Costa Viva por dos motivos**: (a) no cubre la costa cantábrica/gallega
+donde está el grueso de la app, y (b) aun donde sí cubre, traducir precio
+de lonja en "mejor época/lugar de pesca" exige los dos cruces de arriba
+(bajura/altura + hábitos reales de captura), que la propia base no aporta.
+**Recomendación:** dejarla anotada como referencia útil solo si en el
+futuro la app se expandiera al Mediterráneo/Andalucía, y en ese caso
+usarla únicamente para una *climatología mensual por especie de bajura*
+(qué meses hay históricamente más volumen/precio más bajo de una especie
+de costa en una lonja concreta), nunca como dato "en vivo" (es un
+histórico estático 2010–2021) y nunca sin el cruce de hábitos de captura.
+Para el Cantábrico habría que buscar el equivalente en las estadísticas de
+lonja de cada CCAA (p. ej. datos de lonjas del Gobierno Vasco / Azti,
+Xunta de Galicia) — pendiente de una pasada futura, no investigado hoy.
+
+**Fuentes:** [DIGIPESCA — web del proyecto (UPV)](https://digipesca.webs.upv.es/),
+[Nota del proyecto: ~5 millones de datos de lonjas](https://digipesca.webs.upv.es/en/2023/08/investigadoras-del-proyecto-digipesca-crean-una-base-con-casi-5-millones-de-datos-sobre-las-lonjas-de-pescado-del-mediterraneo-espanol/),
+[UPV Campus Gandia — nota de prensa](https://www.upv.es/contenidos/CGANDIA/noticiaf_1226881i.html),
+[Pasión por el Mar — cobertura de la base de datos](https://www.pasionporelmar.com/es/noticia/sabes-que-pescado-se-vende-en-la-lonja-y-cuanto-cuesta-/4493).
+
+**Firmado:** robot buscador de fuentes (pasada de verificación de fuente
+de lonja/DIGIPESCA), 2026-09-15 09:18 UTC.
+
 ---
 
 ## Auditoría de datos
