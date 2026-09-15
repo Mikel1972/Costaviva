@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<title>Mi suscripción — Costa Viva</title>
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="icon.svg" type="image/svg+xml" />
+<meta name="theme-color" content="#F7F3E8" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; min-height: 100dvh;
+    display: flex; align-items: center; justify-content: center;
+    background: #F7F3E8; color: #0B2532;
+    font-family: 'Inter', sans-serif;
+    padding: 24px calc(24px) calc(24px + env(safe-area-inset-bottom));
+  }
+  .caja {
+    width: 100%; max-width: 440px;
+    background: #FFFFFF; border: 1px solid #DDE2DC; border-radius: 14px;
+    padding: 28px 26px;
+  }
+  .caja h1 {
+    font-family: 'Fraunces', serif; font-size: 26px; font-weight: 700; letter-spacing: 0.2px; margin: 0 0 4px;
+  }
+  .caja p.sub { color: #5C7680; font-size: 13px; margin: 0 0 20px; line-height: 1.4; }
+  .mensaje { margin-bottom: 16px; font-size: 12.5px; padding: 10px 12px; border-radius: 8px; }
+  .mensaje.info { background: rgba(212,162,76,0.12); color: #6B5530; border: 1px solid #D9C08A; }
+  .mensaje.ok { background: rgba(79,157,105,0.12); color: #3A6B4C; border: 1px solid #A8D4B8; }
+  .mensaje.error { background: rgba(163,74,53,0.15); color: #A34A35; border: 1px solid #A34A35; }
+  .plan {
+    border: 1px solid #DDE2DC; border-radius: 10px; padding: 14px 16px; margin-bottom: 14px;
+  }
+  .plan .precio { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 700; margin: 0 0 2px; }
+  .plan .detalle { font-size: 12px; color: #5C7680; margin: 0 0 10px; line-height: 1.4; }
+  .plan label.checkbox {
+    display: flex; align-items: flex-start; gap: 8px; margin: 0 0 10px;
+    font-family: 'Inter', sans-serif; font-weight: 400; font-size: 11.5px; color: #5F7981; cursor: pointer; line-height: 1.4;
+  }
+  .plan input[type="checkbox"] { width: auto; margin-top: 2px; accent-color: #A8792A; flex-shrink: 0; }
+  button {
+    width: 100%; padding: 10px; border-radius: 7px; border: none;
+    background: #D4A24C; color: #0B2532; font-weight: 600; font-size: 13.5px;
+    cursor: pointer; font-family: 'Inter', sans-serif;
+  }
+  button:disabled { opacity: 0.5; cursor: default; }
+  .nota-legal {
+    font-size: 11px; color: #5F7981; line-height: 1.45; margin: 4px 0 20px;
+  }
+  .gestionar {
+    text-align: center; margin-top: 6px; font-size: 12.5px;
+  }
+  .gestionar a { color: #A8792A; cursor: pointer; text-decoration: underline; }
+  .volver { text-align: center; margin-top: 14px; font-size: 12px; }
+  .volver a { color: #5C7680; text-decoration: none; }
+  .confirmando { text-align: center; padding: 20px 0; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #5C7680; }
+</style>
+</head>
+<body>
+
+<div id="comprobandoAcceso" style="position:fixed; inset:0; background:#F7F3E8; z-index:9999; display:flex; align-items:center; justify-content:center; color:#5C7680; font-family:'IBM Plex Mono',monospace; font-size:13px;">
+  Comprobando acceso…
+</div>
+
+<div class="caja" id="caja" style="display:none;">
+  <h1>Tu suscripción</h1>
+  <p class="sub" id="subEstado">Cargando estado de tu cuenta…</p>
+
+  <div id="mensajeEstado"></div>
+
+  <div id="bloqueConfirmando" class="confirmando" style="display:none;">Confirmando tu suscripción…</div>
+
+  <div id="bloquePaywall" style="display:none;">
+    <div class="plan">
+      <p class="precio">3,99€ / mes</p>
+      <p class="detalle">Renovación mensual automática. Puedes cancelar cuando quieras — el acceso sigue activo hasta el final del mes ya pagado, sin devolución de ese importe.</p>
+      <button type="button" id="btnMensual">Suscribirme mensual</button>
+    </div>
+    <div class="plan">
+      <p class="precio">39,99€ / año</p>
+      <p class="detalle">Renovación anual automática. Puedes cancelar cuando quieras — el acceso sigue activo hasta el final del año ya pagado, pero ese importe no es reembolsable.</p>
+      <label class="checkbox">
+        <input type="checkbox" id="checkAnual" />
+        Entiendo que, al contratar el plan anual, el servicio empieza de inmediato, renuncio a mi derecho de desistimiento de 14 días para esta compra, y el importe del año ya pagado no se reembolsa aunque cancele antes de que termine.
+      </label>
+      <button type="button" id="btnAnual" disabled>Suscribirme anual</button>
+    </div>
+    <p class="nota-legal">¿Tienes un código de descuento? Podrás introducirlo en la propia pantalla de pago de Stripe.</p>
+    <p class="gestionar"><a id="linkGestionar">Gestionar o cancelar mi suscripción actual</a></p>
+  </div>
+
+  <p class="volver"><a href="/">← Volver al mapa</a></p>
+</div>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const cajaEl = document.getElementById("caja");
+const subEstadoEl = document.getElementById("subEstado");
+const mensajeEstadoEl = document.getElementById("mensajeEstado");
+const bloqueConfirmando = document.getElementById("bloqueConfirmando");
+const bloquePaywall = document.getElementById("bloquePaywall");
+
+function mostrarMensaje(texto, tipo) {
+  mensajeEstadoEl.innerHTML = `<div class="mensaje ${tipo}">${texto}</div>`;
+}
+
+async function iniciarCheckout(plan) {
+  const { data: { session } } = await supabase.auth.getSession();
+  const resp = await fetch("/crear-checkout-stripe", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+    body: JSON.stringify({ plan }),
+  });
+  const resultado = await resp.json();
+  if (resultado.url) {
+    window.location.href = resultado.url;
+  } else {
+    mostrarMensaje(resultado.error || "No se pudo iniciar el pago, inténtalo de nuevo.", "error");
+  }
+}
+
+document.getElementById("btnMensual").addEventListener("click", (e) => {
+  e.target.disabled = true;
+  iniciarCheckout("monthly");
+});
+document.getElementById("checkAnual").addEventListener("change", (e) => {
+  document.getElementById("btnAnual").disabled = !e.target.checked;
+});
+document.getElementById("btnAnual").addEventListener("click", (e) => {
+  e.target.disabled = true;
+  iniciarCheckout("annual");
+});
+document.getElementById("linkGestionar").addEventListener("click", async () => {
+  const { data: { session } } = await supabase.auth.getSession();
+  const resp = await fetch("/crear-portal-stripe", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+  });
+  const resultado = await resp.json();
+  if (resultado.url) window.location.href = resultado.url;
+  else mostrarMensaje(resultado.error || "No se pudo abrir la gestión de la suscripción.", "error");
+});
+
+function formatearFecha(iso) {
+  if (!iso) return null;
+  return new Date(iso).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" });
+}
+
+async function comprobarEstado() {
+  const { data, error } = await supabase.rpc("mi_estado_suscripcion");
+  return !error && data ? data : null;
+}
+
+async function esperarConfirmacion() {
+  bloqueConfirmando.style.display = "block";
+  bloquePaywall.style.display = "none";
+  for (let intento = 0; intento < 5; intento++) {
+    const estado = await comprobarEstado();
+    if (estado && estado.con_acceso) {
+      window.location.href = "/";
+      return;
+    }
+    await new Promise((r) => setTimeout(r, 1500));
+  }
+  bloqueConfirmando.style.display = "none";
+  mostrarMensaje("Si ya has pagado, esto puede tardar unos segundos más — recarga la página en un momento.", "info");
+  bloquePaywall.style.display = "block";
+}
+
+async function iniciar() {
+  const { data: sesionInicial } = await supabase.auth.getSession();
+  if (!sesionInicial.session) {
+    window.location.href = "/login.html";
+    return;
+  }
+  document.getElementById("comprobandoAcceso").remove();
+  cajaEl.style.display = "block";
+
+  const query = new URLSearchParams(window.location.search);
+  if (query.get("exito") === "1") {
+    await esperarConfirmacion();
+    return;
+  }
+  if (query.get("cancelado") === "1") {
+    mostrarMensaje("Pago cancelado — no se ha realizado ningún cargo.", "info");
+  }
+
+  bloquePaywall.style.display = "block";
+  const estado = await comprobarEstado();
+  if (estado && estado.estado === "admin") {
+    subEstadoEl.textContent = "Tienes acceso de administrador, sin necesidad de suscripción.";
+  } else if (estado && estado.con_acceso && estado.prueba_termina_en) {
+    subEstadoEl.textContent = `Estás en tu semana de prueba gratuita, hasta el ${formatearFecha(estado.prueba_termina_en)}.`;
+  } else if (estado && estado.con_acceso) {
+    subEstadoEl.textContent = `Suscripción activa (${estado.periodo || ""}), próxima renovación el ${formatearFecha(estado.periodo_actual_fin) || "—"}.`;
+  } else {
+    subEstadoEl.textContent = "Tu prueba gratuita ha terminado. Suscríbete para seguir usando Costa Viva.";
+  }
+}
+
+iniciar();
+</script>
+
+</body>
+</html>

@@ -496,6 +496,16 @@
   if (!data.session) {
     window.location.href = "/login.html";
   } else {
+    // Paywall (2026-09-15, pedido explícito del usuario): 7 días de
+    // prueba desde el alta, luego bloqueo total sin suscripción activa
+    // — mi_estado_suscripcion() ya resuelve el bypass del admin en el
+    // servidor. Fallo silencioso a propósito si la RPC falla por red:
+    // solo bloquea un con_acceso === false explícito, nunca un error.
+    const { data: estadoSuscripcion, error: errorSuscripcion } = await supabase.rpc("mi_estado_suscripcion");
+    if (!errorSuscripcion && estadoSuscripcion && estadoSuscripcion.con_acceso === false) {
+      window.location.href = "/suscripcion.html";
+      return;
+    }
     document.getElementById("comprobandoAcceso").remove();
     // Enlace al panel de administrador (2026-09-13, pedido explícito del
     // usuario): solo visible para su propia cuenta — el panel en sí ya
@@ -515,6 +525,10 @@
     // — este evento es lo que le avisa de que ya puede usar Supabase.
     window.dispatchEvent(new Event("supabase-listo"));
   }
+
+  document.getElementById("btnMiSuscripcion").addEventListener("click", () => {
+    window.location.href = "/suscripcion.html";
+  });
 
   document.getElementById("btnCerrarSesion").addEventListener("click", async (e) => {
     e.preventDefault();
@@ -551,6 +565,7 @@
       <button class="cuenta-menu-btn" id="btnCuentaMenu" type="button" aria-label="Cuenta">👤</button>
       <div class="cuenta-menu-dropdown" id="cuentaMenuDropdown">
         <button type="button" id="btnInvitarAmigo">📤 Invitar a un amigo</button>
+        <button type="button" id="btnMiSuscripcion">💳 Mi suscripción</button>
         <button type="button" id="btnCerrarSesion">🚪 Cerrar sesión</button>
       </div>
     </div>
