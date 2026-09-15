@@ -272,6 +272,37 @@ y de otras APIs meteorológicas/marinas), asumir que la cuota se cuenta
 por ubicación, no por petición HTTP, y tenerlo en cuenta al estimar si
 una fuente nueva es viable dentro de un plan gratuito.
 
+## `/prevision` cerca del límite de 50 sub-peticiones de Cloudflare (añadido 2026-09-15)
+
+Hallazgo real de una auditoría de fallos silenciosos pedida por el
+usuario: cada petición a `/prevision` hace ~39 sub-peticiones de red de
+las 50 que permite el plan gratuito de Cloudflare Pages Functions antes
+de cortar la petición entera (mismo error 1102 que ya rompió
+`registrar-presion.js` — ver más abajo, "Red de seguridad"). El grueso
+son las **26 boyas de `BOYAS`** en `functions/prevision.js`
+(`datosBoya()`, una petición HTTP por boya a
+`poem.puertos.es/portus/StationData?code=<código>`) — ya se comprobó en
+real el 2026-09-15 que esa API **no admite varios códigos separados por
+comas en el mismo parámetro** (`code=2136,1117,1101` → `500 Internal
+Server Error`), así que no hay forma trivial de agruparlas en menos
+peticiones sin más investigación (¿existe algún otro endpoint de
+Puertos del Estado que sí sea "todas las boyas en una llamada"? No se ha
+encontrado todavía).
+
+**Regla para cualquier pasada de este robot que toque `BOYAS` u otra
+lista que se recorra con `.map()` haciendo un fetch por elemento dentro
+de `/prevision`**: antes de añadir una boya/estación nueva a esa lista,
+comprobar cuántas hay ya (contar las entradas de `BOYAS` en
+`functions/prevision.js`) y tener en cuenta que cada una es una
+sub-petición más cerca del límite — con margen para poco más de 10
+boyas nuevas antes de arriesgarse a romper `/prevision` en silencio
+para TODOS los usuarios (no solo un cron interno, como pasó con la
+presión). Si se encuentra una fuente de boyas nueva, investigar primero
+si tiene una variante de "todas las estaciones en una sola petición"
+(patrón bulk) — si no la tiene, proponerla en `ROBOT.md` marcando
+explícitamente este riesgo, nunca integrarla directa sin más si ya hay
+boyas cerca del límite.
+
 ## Mar de fondo: boyas exteriores + batimetría + webcams (añadido 2026-09-14)
 
 Quinta responsabilidad de esta rutina, pedida explícitamente por el
