@@ -467,6 +467,374 @@ nuevos. Sin cambios de código (y cualquier integración de webcam tocaría
 **Firmado:** robot buscador de fuentes (pasada de webcams), 2026-09-14
 08:14 UTC.
 
+### 2026-09-14 15:18 UTC (pasada buscadora — mareas y oleaje)
+
+**Hallazgo verificable para la responsabilidad de "mar de fondo"
+(swell), ver `ROBOT_REGLAS.md`:** la propia Marine API de Open-Meteo,
+que ya usamos en `functions/prevision.js` para el oleaje total, expone
+directamente las variables de solo-mar-de-fondo `swell_wave_height`,
+`swell_wave_period` y `swell_wave_direction` — no hacía falta buscar una
+fuente nueva ni montar un modelo de propagación por batimetría desde
+cero para tener una primera aproximación del swell. Verificado con una
+petición real hoy (Pasaia II, 43.36,-1.89, 14:00 UTC):
+`swell_wave_height` 0.9 m, `swell_wave_period` 8.45 s, frente a
+`wave_height` total de 0.92 m. Es el mismo modelo (no una boya real) que
+ya calibramos contra Puertos del Estado, así que hereda la misma
+desviación por zona que estamos midiendo abajo — pero da el desglose
+mar-de-viento / mar-de-fondo gratis, sin credenciales ni cuota extra
+(cuenta contra la misma cuota por-ubicación de Open-Meteo ya conocida,
+ver `ROBOT_REGLAS.md`). **Solo propuesta, no implementado**: mostrar u
+usar el swell en el índice de mar cambia lo que se le enseña al usuario
+como fiable, así que sigue la regla de "producto → proponer, no
+implementar". Si se retoma la idea de mar de fondo, este es el primer
+peldaño más barato antes de nada de batimetría/propagación.
+
+**Alternativa más completa, anotada pero NO verificada con HTTP (exige
+alta/credenciales):** Copernicus Marine
+(`data.marine.copernicus.eu`) publica productos de oleaje globales y
+regionales con componentes de swell primario/secundario (altura y
+periodo medios) — producto global `GLOBAL_ANALYSISFORECAST_WAV_001_027`
+(3-horario, 10 días) y regionales del noroeste atlántico y Mediterráneo
+(horarios, 7 días). Más rico que Open-Meteo (separa swell primario y
+secundario), pero requiere registro y su acceso no es un `GET` REST
+simple (toolbox/subsetting), así que no se comprobó en vivo esta pasada
+— queda como candidata de segundo nivel solo si el swell de Open-Meteo
+se queda corto. También revisado el conjunto **SIMAR** de Puertos del
+Estado (oleaje modelado histórico+predicción, descarga CSV) como posible
+alternativa/contraste al modelo de Open-Meteo — mismo caso: no es una
+API REST limpia, queda anotada, no verificada esta pasada.
+
+**Firmado:** robot buscador de fuentes (pasada de mareas y oleaje),
+2026-09-14 15:18 UTC.
+
+### 2026-09-14 19:37 UTC (pasada buscadora — corrientes marinas por zona)
+
+**Qué se buscó:** fuentes de corrientes marinas por zona que mejoren lo
+que ya tenemos. Hoy la corriente sale del modelo global de Open-Meteo
+Marine API (`ocean_current_velocity` / `ocean_current_direction` en
+`functions/prevision.js`, líneas ~489-572) — es un modelo por
+coordenada, igual para toda la costa, sin observación real. La búsqueda
+iba orientada a fuentes de OBSERVACIÓN real (radar de alta frecuencia) y
+a modelos regionales de más resolución.
+
+**Hallazgo verificado con petición HTTP real (candidato de primer
+nivel):** la red de radar de alta frecuencia (HF) de **Puertos del
+Estado** (REDRAD, tecnología CODAR) mide corrientes superficiales reales
+por hora en zonas concretas de la costa — Galicia (rejilla 6 km,
+INTECMAR/Xunta), canal de Ibiza (SOCIB, rejilla 3 km) y delta del Ebro
+(sitios Salou/Alfacada/Vinaroz). Lo importante para nosotros: esos datos
+se publican de forma legible por máquina en **ERDDAP de EMODnet
+Physics**, que sí es un servicio REST simple (`.json`/`.csv` por
+lat/lon/tiempo, sin toolbox raro). Verificado en vivo hoy:
+`https://erddap.emodnet-physics.eu/erddap/info/HFRADAR_IBIZA_Totals/index.html`
+responde y describe un dataset real de corrientes totales del canal de
+Ibiza (fuente SOCIB), con variables `EWCT` (componente E-O) y `NSCT`
+(componente N-S), resolución horaria, cobertura declarada desde
+2019-02-01 hasta mediados de 2026. También confirmado por búsqueda el
+catálogo THREDDS de Puertos del Estado (`opendap.puertos.es/thredds/`,
+carpeta NW_Iberian) y el de INTECMAR (`opendap.intecmar.gal/thredds/`,
+`HFR-Galicia-UI_*.nc`) para Galicia.
+
+**Candidato de segundo nivel (modelo regional, NO verificado con HTTP —
+exige alta/credenciales):** Copernicus Marine, producto
+`IBI_ANALYSISFORECAST_PHY_005_001` (Atlantic-Iberian Biscay Irish, NEMO
+1/36°, ~2.8 km) — da corrientes superficiales horarias de previsión a 10
+días para todo el golfo de Bizkaia e Iberia atlántica, con mucha más
+resolución que el modelo global de Open-Meteo y cubriendo TODA la costa
+NO/N (no solo las zonas con radar). Igual que ya se anotó para el swell
+(entrada de las 15:18 de hoy), su acceso no es un `GET` REST limpio
+(requiere registro y toolbox/subsetting), así que no se pudo comprobar en
+vivo esta pasada — queda anotado, no verificado.
+
+**Por qué solo propuesta, no implementación** (ver `ROBOT_REGLAS.md`):
+integrar cualquiera de estas dos fuentes tocaría `functions/prevision.js`
+(por encima del límite de volumen para aplicar directo) y, sobre todo, es
+una decisión de producto — el radar HF solo cubre 3 zonas concretas
+(Ibiza, Galicia, Ebro), no los ~95 spots fijos, así que habría que
+decidir cómo mezclar "corriente observada real donde hay radar" con "el
+modelo de Open-Meteo en el resto" sin confundir al usuario sobre qué es
+observación y qué es modelo. Eso cambia lo que se le muestra como fiable
+→ regla general "producto → proponer, no implementar". No se ha tocado
+código.
+
+**Propuesta concreta para el usuario, si se retoma:** empezar por el
+canal de Ibiza vía ERDDAP de EMODnet (es la fuente más fácil de
+consumir, REST puro, ya verificada hoy) como PRUEBA de concepto de
+"corriente observada real por radar" para los spots de esa zona,
+etiquetándola claramente como observación de radar HF (distinta del
+modelo). Antes de proponer un factor o mezcla, calibrar la lectura del
+radar contra el `ocean_current_velocity` de Open-Meteo en esos mismos
+puntos y anotarlo en `CALIBRACION.jsonl` (mismo patrón que oleaje y
+coeficiente de marea). Ojo con la cuota: ERDDAP no tiene la cuota
+por-ubicación de Open-Meteo, pero conviene cachear igual (patrón ya
+existente en `/prevision`).
+
+**Firmado:** robot buscador de fuentes (pasada de corrientes marinas),
+2026-09-14 19:37 UTC.
+
+---
+
+### 2026-09-14 21:03 UTC (pasada buscadora — migración y cría de especies)
+
+Investigación con `WebSearch` de las épocas de migración y los rangos de
+temperatura de reproducción/cría/reposo de las 7 especies ya conocidas
+por la app (`ESPECIES` en `diario.html`: Lubina, Sargo, Abadejo, Calamar/
+chipirón, Congrio, Bonito del norte, Txitxarro/verdel). Objetivo: tener
+un dato distinto del rango de PESCA que ya usa `indicePesca` — cuándo
+cada especie está desovando/en reposo (menos pescable o vedada de facto)
+frente a cuándo está activa y cerca de costa. **Todo esto es propuesta,
+nunca cambio directo a `ESPECIES` ni a `indicePesca`** (regla de
+`ROBOT_REGLAS.md`, sec. "Buenas prácticas de otras apps y biología de
+especies") — es un dato que se le muestra al usuario como fiable.
+
+**Ficha por especie (época de desove / temperatura / patrón migratorio),
+solo lo que las fuentes dieron claro y verificable — donde una fuente no
+dio cifra fiable, se deja en blanco, nunca se inventa:**
+
+| Especie | Desove | Temp. reproducción | Migración / patrón |
+|---|---|---|---|
+| **Lubina** (*D. labrax*) | Invierno; Atlántico ~dic–jun según latitud (Bretaña abr–may, Irlanda hasta jun; Mediterráneo ene–mar) | Óptimo 12–14 °C; huevos raros bajo 8,5–9 °C o sobre 15 °C | Se agrupa para el desove alejándose algo de costa en la fría; vuelve a costa/estuarios en primavera-verano |
+| **Sargo** (*D. sargus*) | Primavera-verano (algunas fuentes ene–mar en el Atlántico) | Sin cifra fiable de temperatura de puesta | Costero, sedentario; hermafrodita proterándrico, madura ~2 años/17 cm |
+| **Abadejo** (*P. pollachius*) | Feb–may (según latitud; ene–jun en agregaciones) | Sin cifra fiable | Se congrega en cardúmenes para desovar a 100–150 m; el resto del año más solitario |
+| **Calamar/chipirón** (*L. vulgaris*) | Dos pulsos: primavera y verano | Eclosión 25–45 días según temperatura (sin umbral de puesta claro) | Se acerca a costa a desovar (busca sustrato donde fijar las puestas); ciclo de vida ~1 año |
+| **Congrio** (*C. conger*) | Verano–otoño | Sin cifra fiable | Semélparo: migra a alta mar y desova a 2.000–3.000 m una sola vez y muere; adultos costeros 50–500 m fuera del desove |
+| **Bonito del norte** (*T. alalunga*) | Prim–verano, pero **fuera de la zona**: mar de los Sargazos, aguas >25 °C | Tolera 9,5–25,2 °C; en el Cantábrico es migración TRÓFICA, no de puesta | Sube por la fachada atlántica al Golfo de Vizcaya en verano tras anchoa/chicharro; vuelve a invernar a Azores en otoño |
+| **Txitxarro/verdel** — verdel = caballa (*S. scombrus*) | Atlántico may–jul (Mediterráneo mar–abr); desove mar–jun en aguas someras cerca de costa | Óptimo ~10 °C, aguas frías-templadas | Inverna profundo (~200 m) y remonta a superficie/costa en primavera-verano en grandes bancos |
+| **Txitxarro** — jurel/chicharro (*T. trachurus*) | Primavera-verano, en aguas abiertas | Prefiere aguas templadas-cálidas (sin cifra exacta) | Forma grandes bancos; migra a capas superficiales/costeras con el calor |
+
+**Nota sobre el `ESPECIES` actual**: la entrada "Txitxarro / verdel"
+mezcla dos peces distintos con biología parecida pero no idéntica —
+*Trachurus trachurus* (jurel/chicharro, familia Carangidae) y *Scomber
+scombrus* (caballa/verdel, familia Scombridae). Los dos desovan en
+primavera-verano y remontan a costa con el calor, así que a efectos de
+"temporada" se comportan parecido, pero si algún día se separan en dos
+entradas convendría no arrastrar la mezcla. **No lo toco** — es una
+decisión de contenido para el usuario.
+
+**Patrón útil que sale de juntar las 7**: casi todas (lubina, sargo,
+abadejo, verdel, jurel, calamar) desovan en el arco invierno→verano y
+muchas se ALEJAN de costa o bajan a profundidad justo entonces (abadejo
+a 100–150 m, verdel invernando a 200 m, congrio a miles de metros),
+volviendo a costa/superficie cuando el agua templa. Es decir: el pico de
+desove suele coincidir con MENOR disponibilidad para el pescador de
+costa, no mayor. El bonito es el caso opuesto y limpio: en el Golfo de
+Vizcaya nunca está reproduciéndose (desova en el Sargazo), su presencia
+aquí es puramente trófica de verano→otoño — un dato de "temporada de
+paso" muy concreto y fácil de mostrar.
+
+**Propuesta concreta, para que el usuario decida (sin implementar nada):**
+1. Añadir a cada objeto de `ESPECIES` un campo informativo opcional
+   (p.ej. `desove: { meses: [...], nota }` y/o `presencia`/`temporada`)
+   con lo de la tabla de arriba, mostrado SOLO como texto informativo en
+   el `<details>` por especie de `index.html` ("¿Qué esperamos pescar
+   hoy?") — nunca como número que se sume al índice todavía.
+2. Como mucho, un modificador SUAVE y bien etiquetado de `indicePesca`:
+   restar un poco cuando la especie está en pleno desove lejos de costa
+   (menos pescable desde tierra) o marcar "temporada de paso" para el
+   bonito. Cualquier peso concreto tendría que calibrarse y confirmarse
+   igual que los umbrales de `indiceMar` (que ya se documentan como
+   criterio de diseño, no fuente oficial). No propongo cifras de peso
+   aquí a propósito: sin capturas reales contra las que calibrar sería
+   inventar, justo lo que prohíbe la regla.
+3. Antes de dar por buena cualquier cifra de temperatura para el índice,
+   contrastarla con una segunda fuente por especie (aquí solo la lubina
+   y el verdel traen umbral numérico claro; sargo/abadejo/jurel se
+   quedaron sin cifra fiable de temperatura de puesta — pendiente de más
+   búsqueda antes de usarlas para nada cuantitativo).
+
+**Verificación HTTP real hecha en esta pasada**: la cifra de la lubina
+(desove en invierno; huevos raros bajo 8,5–9 °C o sobre 15 °C) se
+confirmó con una petición directa a Wikipedia
+(`es.wikipedia.org/wiki/Dicentrarchus_labrax`), no solo con el resumen
+del buscador. Fishipedia (`fishipedia.es`) devolvió `403` a la petición
+directa — sus datos quedan solo como referencia del buscador, sin
+verificar en crudo.
+
+Fuentes consultadas (todas vía `WebSearch`, salvo la de Wikipedia ya
+citada, verificada con `WebFetch`):
+- Wikipedia ES: *Dicentrarchus labrax*, *Scomber scombrus*, *Trachurus
+  trachurus*, *Loligo vulgaris*.
+- Fishipedia (`fishipedia.es`) para lubina, sargo, caballa y jurel
+  (referencia del buscador, no verificada en crudo por el `403`).
+- Fichas divulgativas: animalesbiologia.com, cienciaybiologia.com,
+  aquaportail.com, wastemagazine.es, atlasdeanimales.com,
+  pellagofio.es (congrio semélparo), mariskito.com y aipeces.com
+  (costera del bonito en el Cantábrico).
+
+**Sin cambios en código** — investigación de contenido, propuesta pura.
+
+**Firmado:** robot buscador de fuentes (pasada de migración y cría de
+especies), 2026-09-14 21:03 UTC.
+
+---
+
+### 2026-09-14 23:31 UTC (pasada buscadora — presión atmosférica e histórico por zona)
+
+**Qué se buscó:** fuentes de presión atmosférica y, sobre todo, de
+**histórico de presión por zona** que mejoren lo que ya tenemos. Hoy la
+presión de cada spot sale del modelo de Open-Meteo (`pressure_msl` en
+`/prevision`) y el "histórico" se construye desde cero, hora a hora, con
+el cron `presion-historico.yml` escribiendo en la tabla
+`presion_historico` — es decir, la tendencia real solo tiene tanta
+profundidad como tiempo lleve corriendo ese cron (arrancó el
+2026-09-12), y un spot recién añadido no tiene pasado ninguno. La
+búsqueda iba a fuentes que permitieran **rellenar histórico real hacia
+atrás** (backfill) o dar presión observada por estación.
+
+**Nota de entorno:** a diferencia de las pasadas de agosto (bloqueadas
+por el proxy de red, ver 2026-08-31), esta corre en un runner con salida
+de red abierta a dominios de datos — se pudo verificar todo con
+peticiones HTTP reales, no solo por búsqueda.
+
+**Hallazgo verificado con petición HTTP real (candidato de primer
+nivel) — Open-Meteo Historical Weather API (archivo ERA5):**
+`https://archive-api.open-meteo.com/v1/archive` devuelve `pressure_msl`
+y `surface_pressure` horarios (hPa) para cualquier coordenada, con
+reanálisis ERA5 desde 1940. Verificado en vivo hoy para un punto del
+Cantábrico (43.41°N, 2.68°W):
+
+```
+GET archive-api.open-meteo.com/v1/archive?latitude=43.41&longitude=-2.68
+    &start_date=2026-08-01&end_date=2026-08-01
+    &hourly=pressure_msl,surface_pressure&timezone=Europe/Madrid
+→ 200, pressure_msl[0:6] = [1020.6, 1020.6, 1020.0, 1019.7, 1019.2, 1018.9] hPa
+```
+
+Sin autenticación, licencia CC BY 4.0, mismo formato JSON que la API de
+forecast que ya usamos. **Utilidad concreta**: permitiría hacer backfill
+real de `presion_historico` para todos los spots (fijos y nuevos) de
+golpe, en vez de esperar días/semanas a que el cron horario acumule
+tendencia — la tendencia de presión es justo una de las variables que
+`ROBOT_REGLAS.md` (sección "Variables adicionales para el índice de
+pesca") apunta como candidata a mejorar `indicePesca`.
+
+**Segundo endpoint verificado — Historical Forecast API (pasado
+reciente):** `https://historical-forecast-api.open-meteo.com/v1/forecast`
+respondió `200` para `pressure_msl` del 5 al 10 de septiembre de 2026.
+Es el complemento del anterior: el archivo ERA5 tiene ~5 días de latencia
+(el reanálisis final no está disponible al instante), así que para la
+franja de "los últimos días" conviene esta API (que reconstruye el pasado
+reciente de las propias corridas del modelo) y el archivo ERA5 para lo
+más antiguo. Para la tendencia corta que le interesa a un pescador
+(subiendo/bajando en las últimas 24-48h) basta con la forecast que ya
+tenemos; el backfill histórico es lo que aportarían estas dos.
+
+**Fuente de presión OBSERVADA (no modelo), ya parcialmente en casa —
+AEMET OpenData "Climatologías diarias":** confirmado por la propia
+documentación de AEMET que OpenData sirve series diarias validadas por
+estación (hasta 5 años por descarga, algunas estaciones desde 1920),
+incluida presión — más de 945 estaciones. Es observación real, no
+reanálisis. **No se pudo probar en vivo esta pasada**: la petición exige
+la `AEMET_API_KEY`, que vive solo como secreto en Cloudflare Pages y no
+está disponible en este runner (`AEMET_API_KEY` ausente en el entorno,
+comprobado). Ya usamos AEMET para observación horaria de presión/
+precipitación de 25 estaciones (`ESTACIONES_AEMET` en
+`functions/prevision.js`); el endpoint de climatologías diarias sería la
+vía para su **histórico** observado, complementario al reanálisis de
+Open-Meteo.
+
+**Aviso de cuota (regla de `ROBOT_REGLAS.md`, sección de cuota
+Open-Meteo):** el archivo de Open-Meteo cuenta contra la misma cuota
+diaria por-ubicación (10.000/día en el plan gratuito). Un backfill de
+~95 spots × muchos días de golpe gastaría mucha cuota — habría que
+hacerlo por lotes/una vez, con caché, y sin colisionar con el cron
+horario que ya consume cuota. No es gratis "de una", tenerlo en cuenta
+al dimensionar.
+
+**Por qué solo propuesta, no implementación** (ver `ROBOT_REGLAS.md`):
+integrarlo tocaría `functions/` (un endpoint de backfill nuevo o cambios
+en `registrar-presion.js`) y/o una migración de `supabase/`, ambos por
+encima del límite de volumen para aplicar directo; además, usar la
+tendencia de presión como modificador de `indicePesca` es una decisión
+de producto (cambia un dato que se le muestra al usuario como fiable).
+No se ha tocado código.
+
+**Propuesta concreta para el usuario, si se retoma:**
+1. Script/endpoint de backfill único (protegido con `CRON_SECRET`, mismo
+   patrón que `/registrar-presion`) que, por lotes y con caché, rellene
+   `presion_historico` hacia atrás desde `archive-api` para todos los
+   spots — dándole a la tendencia de presión profundidad real desde el
+   día uno de cada spot, no solo desde que arrancó el cron.
+2. Combinar archivo ERA5 (histórico antiguo) + historical-forecast-api
+   (últimos ~5 días, por la latencia de ERA5) para no dejar hueco.
+3. Más adelante, cruzar con las climatologías diarias de AEMET como
+   histórico OBSERVADO por estación cercana (requiere usar la
+   `AEMET_API_KEY` desde una function, no desde este runner).
+
+**Fuentes:** [Open-Meteo Historical Weather API](https://open-meteo.com/en/docs/historical-weather-api),
+[Open-Meteo Historical Forecast API](https://open-meteo.com/en/docs/historical-forecast-api),
+[AEMET OpenData](https://www.aemet.es/en/datos_abiertos/AEMET_OpenData).
+
+**Firmado:** robot buscador de fuentes (pasada de presión atmosférica e
+histórico por zona), 2026-09-14 23:31 UTC.
+
+### 2026-09-15 08:20 UTC (pasada buscadora — webcams para spots sin cámara)
+
+**Objetivo de la pasada:** misma tarea recurrente que las del 2026-09-13
+22:57 y 2026-09-14 08:14 UTC — buscar cámaras nuevas para spots fijos sin
+cámara. Como aquellas dos ya cubrieron a fondo el Cantábrico (AZTI,
+Gobierno de Cantabria) y Galicia (lista oficial de MeteoGalicia), esta
+pasada abrió tres zonas todavía sin explorar en las pasadas anteriores:
+**Canarias, Andalucía y la costa atlántica portuguesa** (que hoy no tiene
+ni una sola cámara integrada, pese a tener 15 spots fijos).
+
+**Red sí alcanzable desde este runner** (a diferencia del entorno
+nocturno remoto, ver 2026-08-31): `example.com` `200`, `meteogalicia.gal`
+`302`. **`cantabria.es` sigue sin ser alcanzable** (timeout puro a los
+20 s pidiendo una de las imágenes ya integradas,
+`suances-New-85.jpg`) — mismo bloqueo que vieron las pasadas del
+2026-09-13/14, así que sigo sin poder verificar la cámara de Santander/El
+Sardinero (la pista firme de aquellas pasadas queda igual de válida, y
+igual de pendiente de comprobación manual desde un navegador normal).
+
+**Canarias (Las Palmas / Las Canteras, El Médano, etc.):** solo aparecen
+agregadores de terceros (SkylineWebcams, webcamtaxi, canariaslife,
+miplayadelascanteras) — el mismo tipo de fuente que las pasadas
+anteriores ya descartaron por no ser institucional y no dar una URL de
+imagen hotlinkable. Comprobado en vivo con `WebFetch` sobre
+`miplayadelascanteras.com/webcam-de-la-cicer-hd/`: es una SPA, el stream
+se carga por JavaScript, no hay `.m3u8`/`.jpg`/`img src` en el HTML
+servido. Sin fuente institucional con imagen directa. Queda sin cámara.
+
+**Andalucía (Cádiz, Conil, Chipiona):** la web institucional **Puertos de
+Andalucía** (`puertosdeandalucia.es`) tiene ficha de cada puerto pero
+**ninguna cámara embebida** — comprobado en vivo con `WebFetch` sobre la
+ficha del Puerto de Conil: solo datos de contacto y concesionario, ningún
+feed de imagen/vídeo. El resto de resultados son agregadores (Skyline,
+lacostadecadiz, andalucialive). Sin fuente institucional con imagen
+directa. Queda sin cámara.
+
+**Portugal (Nazaré, Ericeira, Peniche, Cascais, Matosinhos...):** la red
+de referencia es **Beachcam** (hoy operada por MEO,
+`beachcam.meo.pt`). **Hallazgo nuevo y útil: Beachcam es ahora un
+servicio de pago** ("Beachcam+", 3,49 €/mes) — `WebFetch` a la página de
+la cámara de Nazaré (Praia do Norte) devuelve **`403 Forbidden`**. Los
+antiguos streams HLS públicos de Beachcam
+(`http://video-auth1.iol.pt:1935/beachcam/<playa>/chunks.m3u8`, que aún
+aparecen en listas IPTV de terceros en GitHub) están **muertos**:
+probados dos en vivo (`nazareparadonorte`, `lagide`) → timeout puro, el
+servidor legacy ya no sirve. **Conclusión para todos los spots
+portugueses: no hay fuente gratuita/hotlinkable viable hoy** — la fuente
+natural (Beachcam) se ha cerrado tras un muro de pago. Anotado
+expresamente para que futuras pasadas no vuelvan a perseguir Beachcam ni
+sus URLs HLS heredadas.
+
+**Resultado neto de la pasada: sin novedades integrables.** Ninguna
+webcam nueva para un spot fijo existente en Canarias, Andalucía ni
+Portugal — todas las fuentes encontradas son agregadores de terceros sin
+imagen directa, fichas institucionales sin cámara, o (Beachcam) un
+servicio que pasó a ser de pago y responde `403`. Sin cambios de código
+(y cualquier integración de webcam tocaría `functions/webcam/[slug].js`,
+que por la red de seguridad de `ROBOT_REGLAS.md` sería propuesta, no
+commit directo, de todos modos).
+
+**Fuentes:** [Puertos de Andalucía — Puerto de Conil](https://www.puertosdeandalucia.es/puertos/puertos/cadiz/puerto-de-conil),
+[Mi Playa de Las Canteras — webcam La Cícer](https://miplayadelascanteras.com/webcam-de-la-cicer-hd/),
+[Beachcam MEO — Livecams](https://beachcam.meo.pt/livecams/).
+
+**Firmado:** robot buscador de fuentes (pasada de webcams), 2026-09-15
+08:20 UTC.
+
 ---
 
 ## Auditoría de datos
@@ -948,6 +1316,52 @@ ríos, baja-media para Nazaré) — sigue pendiente que el usuario revise la
 política de red de este entorno programado para esos 5 dominios si quiere
 que esta rutina pueda vigilar su salud de verdad.
 
+### 2026-09-15 (pasada nocturna corta — salud de datos)
+
+**Pasada nocturna diaria, mismo alcance estrecho.** **El bloqueo de red
+se repite hoy por sexta noche seguida, exactamente para los mismos 5
+dominios** (Nazaré + las 4 fuentes de caudal), mientras que todo lo demás
+sigue sano. Confirmado de nuevo en `recentRelayFailures` del proxy de
+esta sesión: mismo `connect_rejected` / "gateway answered 403 to CONNECT"
+que las cinco noches anteriores.
+
+- **Boyas de Puertos del Estado — 2136 Bilbao-Vizcaya, 1117 Gijón, 1101
+  Pasaia II y 2548 Cabo de Gata** (rotando a la boya de la lista corta que
+  llevaba más noches sin repetirse). Las 4 HTTP 200, forma
+  `[cabeceras, filas]` correcta, dato de la última hora. Bilbao-Vizcaya
+  Hm0 0.94 m, Gijón Hm0 1.07 m, Pasaia II Hm0 0.99 m, Cabo de Gata Hm0
+  0.35 m. Todas sanas — detalle completo en la sección "Calibración" de
+  hoy.
+- **Boya de Nazaré (Portugal, `monican.hidrografico.pt`) — bloqueada
+  sexta noche seguida (2026-09-10 a 15)**, mismo `curl: (56) CONNECT
+  tunnel failed, response 403` que siempre. Sigue sin ninguna evidencia
+  de que la fuente en sí esté rota, solo inalcanzable desde aquí.
+- **Las 4 fuentes de caudal de ríos (Cantábrico/Júcar/Segura/Galicia) —
+  bloqueadas sexta noche seguida, mismos 4 dominios exactos**
+  (`visor.saichcantabrico.es`, `saih.chj.es`, `saihweb.chsegura.es`,
+  `servizos.meteogalicia.gal`), rechazo 403 en el primer intento de cada
+  una.
+- **Webcams — muestra de 3 del País Vasco (mundaka, bakio, sopelana), las
+  3 sanas**, HTTP 200 con imagen real (JPEG ~169 KB, JPEG ~765 KB, WebP
+  ~50 KB respectivamente — tamaños coherentes con una foto real, no una
+  respuesta vacía o de error). Se intentó de nuevo ampliar la muestra
+  fuera del País Vasco (`www.meteogalicia.gal` para A Coruña,
+  `www.cantabria.es` para Laredo, `streaming.comunitatvalenciana.com`
+  para Valencia, `apps.socib.es` para Calamillor) y los 4 dominios
+  siguieron rechazados — mismo patrón que las noches anteriores, sin
+  poder confirmar salud fuera de las webcams vascas.
+
+**Resumen de severidad: sin cambios respecto a las cinco noches
+anteriores, ya son 6/6 seguidas.** Nada de lo comprobado esta noche está
+confirmado como roto en origen — Nazaré y las 4 fuentes de caudal llevan
+6/6 pasadas nocturnas seguidas (10 al 15 de septiembre) bloqueadas
+siempre por los mismos 5 dominios exactos, mientras boyas españolas,
+Open-Meteo y las webcams vascas siguen respondiendo con normalidad.
+Severidad sin cambios (media para los 4 ríos, baja-media para Nazaré) —
+sigue pendiente que el usuario revise la política de red de este entorno
+para esos 5 dominios concretos si quiere que esta rutina pueda vigilar su
+salud de verdad.
+
 ---
 
 ## Calibración
@@ -1337,3 +1751,210 @@ de la próxima pasada tiene más sentido repetir alguna de ellas (empezando
 por las que llevan más noches sin repetirse: 1731 Barcelona II y 1514
 Málaga) para que alguna empiece a acumular su propio historial, en vez de
 seguir sumando boyas nuevas de un solo punto cada una.
+
+### 2026-09-14 15:18 UTC (pasada buscadora — mareas y oleaje, calibración)
+
+Esta pasada corre en un runner de GitHub Actions con salida de red real
+(a diferencia de la nocturna en Claude-on-the-web, ver 2026-08-31), así
+que se pudo hacer una comparación real boya vs Open-Meteo a media tarde,
+además de la nocturna de hoy — mismo método: `poem.puertos.es/portus/
+StationData` para la altura real (Hm0), Marine API de Open-Meteo en las
+coordenadas exactas de cada boya para la altura calculada, emparejando
+por la hora UTC exacta del último dato real de cada boya. Siguiendo la
+recomendación de la pasada nocturna anterior, se repitieron las 3 boyas
+obligatorias más las dos de la lista corta que llevaban más tiempo sin
+repetirse (1731 Barcelona II, 1514 Málaga):
+
+| boya | hora UTC | altura medida | altura calculada | diferencia | % |
+|---|---|---|---|---|---|
+| 2136 Bilbao-Vizcaya | 15:00 | 1.17 m | 1.22 m | +0.05 m | +4.3% |
+| 1117 Gijón | 13:00 | 1.22 m | 1.08 m | −0.14 m | −11.5% |
+| 1101 Pasaia II | 14:00 | 1.23 m | 0.92 m | −0.31 m | −25.2% |
+| 1731 Barcelona II | 14:00 | 0.58 m | 0.30 m | −0.28 m | −48.3% |
+| 1514 Málaga | 14:00 | 0.48 m | 0.54 m | +0.06 m | +12.5% |
+
+Lectura de estos puntos frente al historial de `CALIBRACION.jsonl`:
+
+- **1101 Pasaia II** suma su **sexto punto seguido con signo negativo**
+  (−25.2%, en línea con la media ≈−26% de las noches anteriores). Sigue
+  siendo, con diferencia, la boya con la desviación más consistente:
+  Open-Meteo calcula sistemáticamente por debajo de la boya real en esa
+  ría. Aun así, **6 puntos, todavía por debajo de los 15 mínimos** que
+  pide la tarea antes de proponer un factor de corrección de zona — es
+  la principal candidata, pero no se propone nada todavía.
+- **1731 Barcelona II** estrena su segundo punto (−48.3%; el primero fue
+  −22.9% el 2026-09-10). Los dos negativos, pero la magnitud varía mucho
+  — con mar de solo 0.58 m, un error absoluto pequeño (−0.28 m) dispara
+  el porcentaje, así que este −48.3% pesa poco como señal de sesgo real.
+- **1514 Málaga** estrena segundo punto (+12.5%) con **signo opuesto** al
+  primero (−38.1% el 2026-09-11): sin patrón, mar muy baja (0.48 m).
+- **2136 Bilbao-Vizcaya** (+4.3%) y **1117 Gijón** (−11.5%) dentro de lo
+  ya visto; siguen sin desviación sistemática clara.
+
+**Ningún factor de corrección propuesto** — se mantiene la regla de 15
+puntos mínimos por boya y de que la calibración nunca se aplica sola. La
+señal de Pasaia II es la única que merece seguimiento cercano. Nota de
+método: con oleaje bajo (<0.6 m) el porcentaje de error es muy sensible
+a diferencias absolutas mínimas; conviene ponderar por altura absoluta
+al valorar si una boya tiene sesgo, no fiarse solo del %.
+
+**Firmado:** robot buscador de fuentes (pasada de mareas y oleaje),
+2026-09-14 15:18 UTC.
+
+### 2026-09-14 17:04 UTC (pasada buscadora — buenas prácticas de otras apps)
+
+Investigación con `WebSearch` de qué datos en tiempo real o funciones
+ofrecen otras apps de mareas/pesca (Windy, Fishbrain, Tides4fishing,
+Puertos del Estado, FishTrack, Marine Weather Forecast Pro, FishWeather)
+que Costa Viva no tenga todavía. **Solo propuestas — cambio de producto
+por definición, nunca implementación directa** (regla de
+`ROBOT_REGLAS.md`). Nada se ha tocado en código.
+
+Recordatorio de lo que Costa Viva YA tiene, para no proponer duplicados:
+oleaje/viento/marea/corriente por spot, coeficiente de marea propio por
+spot, fase y posición lunar (`/luna`), presión histórica + tendencia,
+estaciones AEMET (precipitación/presión), turbidez relativa por webcam,
+webcams (imagen + vídeo HLS), rayos (AEMET), índice de pesca por rango
+de temperatura de especie, capa de batimetría y radar de lluvia.
+
+**Huecos reales encontrados, ordenados por lo verificable/accionable que
+parece cada uno:**
+
+1. **Avisos costeros oficiales de AEMET (fenómenos marítimos)** — varias
+   apps (Marine Weather Forecast Pro, FishWeather con su "Advisories
+   Layer") muestran los avisos meteorológicos oficiales del gobierno
+   (temporal, aviso por viento/oleaje, "small craft advisory"). Costa
+   Viva no muestra ningún aviso oficial pese a que ya usamos AEMET para
+   rayos y estaciones. AEMET OpenData publica los avisos en formato CAP
+   (`/api/avisos_cap/...`), potencialmente accesible con la misma
+   `AEMET_API_KEY` que ya tenemos (caduca 2026-12-23). **No verificado
+   con petición real en esta pasada** — la key vive como secreto en
+   Cloudflare Pages, no en este runner. Sería un aviso de seguridad real
+   ("no salgas hoy") muy alineado con el carácter de la app (SOS,
+   seguridad en la mar). Candidato de más valor: propongo verificar el
+   endpoint CAP con la key real y, si va, integrarlo como capa/aviso en
+   `functions/prevision.js` + banner en `index.html` (eso sí sería
+   cambio de frontend → propuesta aparte antes de implementar).
+
+2. **Periodos solunares (mayor/menor) como recomendación horaria** —
+   Tides4fishing y el "BiteTime" de Fishbrain marcan las franjas del día
+   con más actividad prevista (paso lunar por el meridiano, orto/ocaso
+   lunar y solar). Costa Viva ya calcula posición lunar en `/luna`, así
+   que el dato base está — faltaría derivar las 2-4 ventanas diarias.
+   Ya anotado en `ROBOT_REGLAS.md` (sec. de variables del índice de
+   pesca) como **heurística tradicional, no ciencia dura**: si se añade,
+   dejarlo dicho así de claro en la UI. No inventa ningún dato externo
+   (es cálculo astronómico sobre lo que ya tenemos), pero sigue siendo
+   decisión de producto → propuesta.
+
+3. **Recomendación de cebo/técnica por comunidad ("Top Baits")** —
+   Fishbrain agrega los cebos/técnicas con más capturas reportadas por
+   spot. Costa Viva ya guarda `cebo`/`tecnica` por captura y tiene
+   `especies_comunidad`, pero no agrega nada para recomendar. Encaja
+   directamente con la idea ya aparcada "qué se está pescando ahora"
+   (`CLAUDE.md`, consentimiento vía `consiente_uso_datos_capturas`) —
+   mismo problema pendiente de mínimo de capturas/usuarios antes de
+   mostrar agregados para no des-anonimizar. No abrir sin retomar esa
+   idea con el usuario.
+
+4. **Cartas de temperatura superficial del mar (SST) y clorofila por
+   satélite** — FishTrack, SatFish y SeaLegs muestran "temperature
+   breaks" y barreras de color donde se concentra el pez (sobre todo
+   pesca de embarcación/altura). Copernicus Marine (ya citado en
+   `ROBOT_REGLAS.md` para turbidez) publica capas de SST y clorofila.
+   Más relevante para embarcación que para costa; requiere auth de
+   Copernicus (no verificable sin alta previa). Interés medio para el
+   perfil actual de la app (mayoría de spots de costa) — dejar como
+   idea de fondo, no prioritaria.
+
+5. **Descarga de previsión sin conexión (offline)** — Windy y Wavve
+   permiten descargar la previsión para consultarla sin cobertura, algo
+   habitual en la mar. Costa Viva ya es PWA; podría cachear el último
+   `/prevision` con un service worker para lectura offline. Mejora de
+   robustez real (seguridad: consultar condiciones sin cobertura), pero
+   es trabajo de frontend/PWA no trivial → propuesta.
+
+**Ya cubierto por ideas aparcadas existentes, no re-propongo como nuevo**:
+normativa de pesca por CCAA (Fishbrain "local rules"), agregado de
+capturas de comunidad, y batimetría (ya tenemos capa). **Sin novedad
+verificable con petición HTTP en esta pasada** — todo lo de arriba es
+propuesta de producto; lo único con verificación HTTP realista a corto
+plazo es el punto 1 (avisos CAP de AEMET), que no se pudo comprobar aquí
+por no tener la key en este runner.
+
+Fuentes consultadas:
+- Windy.app (App Store / Google Play) y guías de apps marinas 2026
+  (wavveboating.com, discoverboating.com, sealegs.ai).
+- Fishbrain (fishbrain.com, Google Play) y reseñas 2026 (gilledit.com,
+  bassanglermag.com).
+- Tides4fishing (tides4fishing.com/tides/tidal-coefficient,
+  /solunar-tables).
+- Puertos del Estado / PORTUS (portus.puertos.es, puertos.es).
+- FishTrack (fishtrack.com), SatFish (satfish.com), SeaLegs
+  (sealegs.ai), Marine Weather Forecast Pro y FishWeather (App Store).
+
+**Firmado:** robot buscador de fuentes (pasada de buenas prácticas de
+otras apps), 2026-09-14 17:04 UTC.
+
+### 2026-09-15 (pasada nocturna corta — calibración)
+
+**Sexto punto de calibración para las 3 boyas obligatorias, y segundo
+punto para 2548 Cabo de Gata** (rotación de esta noche: de la lista corta
+de candidatas ya probadas al menos una vez — 1731 Barcelona II, 1514
+Málaga, 2548 Cabo de Gata, 2820 Dragonera, 2242 Cabo Peñas — se repitió
+Cabo de Gata, la que llevaba más noches sin repetirse desde el
+2026-09-12). Mismo método de siempre: `curl` a
+`poem.puertos.es/portus/StationData` para la altura real, Open-Meteo
+Marine en las coordenadas exactas de cada boya para la altura calculada,
+emparejando por la hora UTC exacta del último dato real de cada boya:
+
+| boya | hora UTC | altura medida | altura calculada | diferencia | % |
+|---|---|---|---|---|---|
+| 2136 Bilbao-Vizcaya | 01:00 | 0.94 m | 1.00 m | +0.06 m | +6.4% |
+| 1117 Gijón | 00:00 | 1.07 m | 0.90 m | −0.17 m | −15.9% |
+| 1101 Pasaia II | 00:00 | 0.99 m | 0.76 m | −0.23 m | −23.2% |
+| 2548 Cabo de Gata | 01:00 | 0.35 m | 0.36 m | +0.01 m | +2.9% |
+
+Con este sexto punto, el historial de esta metodología queda así
+(todavía lejos del mínimo de 15 puntos por boya que pide la tarea):
+
+- **2136 Bilbao-Vizcaya**: 6 puntos (−8.5%, 0.0%, +25.4%, +6.4%, +2.1%,
+  +6.4%) — media ≈ +5.3%, sigue sin un patrón sistemático claro, la más
+  cercana a "sin desviación" de las 3 obligatorias.
+- **1117 Gijón**: 6 puntos (−14.7%, +3.7%, +1.4%, −1.6%, −1.5%, −15.9%) —
+  el punto de hoy rompe la racha de 4 noches seguidas dentro de ±3.7%,
+  volviendo a una magnitud parecida a la del primer día. Con solo 6
+  puntos y esta variación, todavía no hay patrón sólido, ni siquiera el
+  que empezaba a insinuarse ayer.
+- **1101 Pasaia II**: 6 puntos, **los 6 con el mismo signo** (−36.0%,
+  −27.3%, −29.3%, −15.7%, −22.3%, −23.2%, media ≈ −25.6%) — sigue siendo,
+  con diferencia, la boya con el patrón más consistente y estable de las
+  3 obligatorias: 6/6 noches con Open-Meteo calculando por debajo de la
+  boya real, la media apenas se mueve entre pasadas (≈−26.1% ayer, ≈−25.6%
+  hoy). Principal candidata a un futuro factor de corrección de zona —
+  **6 puntos, todavía lejos de los 15 que pide la tarea**, pero la
+  consistencia ya es notable.
+- **1731 Barcelona II**: 1 punto (−22.9%), sin repetir desde el
+  2026-09-10 (repetido hoy por la pasada buscadora diurna, ver
+  2026-09-14 15:18 UTC más arriba, con un segundo punto de −48.3%).
+- **1514 Málaga**: 1 punto propio de esta rutina nocturna (−38.1%), sin
+  repetir desde el 2026-09-11 (también repetido hoy por la pasada
+  buscadora diurna, +12.5%).
+- **2548 Cabo de Gata**: **2 puntos** (−11.9%, +2.9%) — signo opuesto
+  entre los dos, mar muy baja en ambos casos (<0.6 m), consistente con el
+  patrón ya visto en otras boyas de que con oleaje pequeño el error
+  porcentual es ruidoso y poco fiable como señal de sesgo real.
+- **2820 Dragonera**: 1 punto (−31.9%), sin repetir desde el 2026-09-13.
+- **2242 Cabo Peñas**: 1 punto (−25.5%), sin repetir desde el 2026-09-14.
+
+**Ningún factor de corrección propuesto todavía** — ninguna boya llega a
+los 15 puntos mínimos. Pasaia II sigue siendo, con diferencia, la que más
+vigilancia merece de cerca (6/6 noches con el mismo signo, magnitud
+estable en torno a −25/−26%); seguir sumando historial ahí es lo más
+valioso de las 3 obligatorias. Para la próxima rotación, 1731 Barcelona
+II y 1514 Málaga siguen siendo las candidatas con más noches sin
+repetirse desde el punto de vista de esta rutina nocturna en concreto
+(aunque ambas ya tienen un segundo punto vía la pasada buscadora diurna
+de hoy, que corre aparte).
+
+**Firmado:** robot de calibración nocturna, 2026-09-15 01:13 UTC.
