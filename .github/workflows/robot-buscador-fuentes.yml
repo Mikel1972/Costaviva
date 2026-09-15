@@ -19,6 +19,12 @@ name: Robot buscador de fuentes
 # implementar" (ver ROBOT_REGLAS.md, sección "Buenas prácticas de otras
 # apps y biología de especies").
 #
+# Ampliado de nuevo el 2026-09-15 con dos áreas más, pedidas también
+# explícitamente: "caudal de ríos" (se une a las 4 originales de datos en
+# tiempo real — era un hueco real, ver functions/prevision.js/RIOS) y
+# "estudios institucionales/académicos tipo DIGIPESCA" (se une a las de
+# investigación/contenido, 1x/día — ver ROBOT_REGLAS.md).
+#
 # IMPORTANTE — probar a mano (workflow_dispatch) antes de fiarse del
 # schedule, mismo criterio que el resto de rutinas de este repo. Necesita
 # el secret ANTHROPIC_API_KEY (la misma que ya usa
@@ -35,8 +41,10 @@ on:
     - cron: "47 8 * * *"  # mareas y oleaje
     - cron: "47 14 * * *" # corrientes marinas
     - cron: "47 20 * * *" # presión atmosférica
+    - cron: "47 5 * * *"  # caudal de ríos y estaciones de monte (añadido 2026-09-15)
     - cron: "47 11 * * *" # buenas prácticas de otras apps (1x/día)
     - cron: "47 17 * * *" # migración y cría de especies (1x/día)
+    - cron: "47 23 * * *" # estudios institucionales/académicos tipo DIGIPESCA (1x/día)
   workflow_dispatch:
     inputs:
       area:
@@ -65,8 +73,10 @@ jobs:
             "47 8 * * *")  AREA="fuentes de mareas y oleaje — comparar contra CALIBRACION.jsonl, buscar puntos de calibración nuevos" ;;
             "47 14 * * *") AREA="fuentes de corrientes marinas por zona" ;;
             "47 20 * * *") AREA="fuentes de presión atmosférica e histórico por zona" ;;
+            "47 5 * * *")  AREA="fuentes de caudal de ríos por zona (huecos conocidos: caudal:null en los ríos vascos de RIOS en index.html, ver el comentario en functions/prevision.js sobre URA/Bizkaia bloqueando acceso automático) y nuevas estaciones de monte (precipitación/presión real, estilo ESTACIONES_AEMET en functions/prevision.js) para España y Portugal, no solo Euskadi" ;;
             "47 11 * * *") AREA="buenas prácticas de otras apps de mareas/pesca (Windy, Tides4fishing, Fishbrain, Meteoblue, Puertos del Estado, AEMET...) — qué datos en tiempo real o funciones tienen que nosotros no, solo para PROPONER en ROBOT.md, nunca implementar directo" ;;
             "47 17 * * *") AREA="migración y cría de las especies ya conocidas por la app (ESPECIES en diario.html) — épocas de migración y rangos de temperatura para reproducción/cría/reposo, para PROPONER cómo enriquecer ESPECIES o el índice de pesca, nunca aplicar directo" ;;
+            "47 23 * * *") AREA="estudios institucionales/académicos reales (tipo DIGIPESCA — universidades, organismos públicos de pesca, proyectos financiados) con datos verificables de especies/lonjas/capturas/precios por zona y fecha, para España y Portugal (ver ROBOT_REGLAS.md, sección 'Buenas prácticas de otras apps y biología de especies', para las reglas obligatorias de bajura/altura, hábitos y localismos antes de proponer nada) — solo propuesta en ROBOT.md, nunca aplicar directo" ;;
             *) AREA="${{ github.event.inputs.area }}" ;;
           esac
           echo "area=$AREA" >> "$GITHUB_OUTPUT"

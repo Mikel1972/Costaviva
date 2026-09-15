@@ -63,6 +63,62 @@ reconozca esas variantes.
   seguridad de más abajo (esto es solo un insert por fila propuesta, no
   un cambio de código).
 
+## Localismos/acepciones regionales por spot (añadido 2026-09-15)
+
+Responsabilidad nueva, pedida explícitamente por el usuario, 1x/día por
+ahora — distinta de los sinónimos de arriba (que van a la tabla
+`sinonimos_especie`) pero del mismo espíritu: los textos libres
+(`nota`/`alimento`) de `ESPECIES`/`ESPECIES_MEDITERRANEO`/
+`ESPECIES_GOLFO_CADIZ`/`ESPECIES_CANARIAS` en `index.html` a veces
+mencionan cómo se llama algo por esa zona (ej. "parrotxa" para la cría
+de sardina) — motivado por un bug real: ese término solo se usa en el
+Cantábrico según el propio usuario, pero apareció puesto también en
+Mediterráneo hasta que se corrigió a mano el 2026-09-15.
+
+- **Objetivo**: para cada spot/zona que ya tiene un localismo puesto
+  (como "parrotxa" en Cantábrico) pero le falta el equivalente en las
+  otras 3 listas regionales (Mediterráneo, Golfo de Cádiz, Canarias),
+  investigar con `WebSearch` si existe un término local real y
+  verificable para lo mismo en esa zona — y proponerlo. Prioriza
+  primero los huecos ya conocidos (ver arriba: falta el equivalente de
+  "parrotxa" — cría de sardina — para Mediterráneo/Cádiz/Canarias).
+- **Granularidad real, no solo las 4 zonas amplias**: si una fuente dice
+  que un término es de un pueblo/comarca concreto y no de toda la
+  región (ej. "en Cartagena no se dice así, se dice X"), anota esa
+  matización tal cual en `ROBOT.md` en vez de generalizar a toda la
+  lista regional — encaja con la visión a largo plazo del usuario de
+  llegar a tener un estudio/fuente por spot, no solo por región amplia.
+- **Nunca inventar ni asumir que un término vale para toda España** —
+  mismo criterio que el resto de este fichero. Si no se encuentra una
+  fuente clara y verificable de que un término se usa de verdad en esa
+  zona concreta, no se propone, se deja como hueco explícito.
+- **Solo propuesta en `ROBOT.md`**, nunca cambio directo a `index.html`
+  — es texto que ve el usuario final, mismo criterio que el resto de
+  contenido de `ESPECIES`.
+
+**Segundo objetivo de esta misma pasada, pedido explícitamente por el
+usuario (2026-09-15)**: cuestionar de forma sistemática — no dar por
+buena para siempre — la propia agrupación de las 4 listas regionales
+(`ESPECIES_MEDITERRANEO`/`ESPECIES_GOLFO_CADIZ`/`ESPECIES_CANARIAS`
+comparten un único listado entre decenas de spots cada una; `ESPECIES`
+por defecto cubre Euskadi+Cantabria+Asturias+Galicia+Portugal
+atlántico entero). El usuario ve "muchos spots con los mismos peces" y,
+aunque reconoce que tiene cierta lógica biológica (fauna similar en una
+misma costa), quiere que el robot lo audite activamente en vez de
+asumirlo sin más. Cada pasada de esta responsabilidad debe, además de
+localismos, elegir 1-2 spots de una lista regional amplia (rotando cuál,
+para cubrir distintos con el tiempo) e investigar con `WebSearch` si su
+fauna real difiere de forma notable del resto de spots de esa misma
+lista (ej. "¿las especies que se pescan en A Coruña son de verdad las
+mismas que en Bermeo, o hay diferencias documentadas?"). Si encuentra
+una diferencia real y verificable, proponerla en `ROBOT.md` como
+candidata a separar ese spot (o grupo de spots) en su propia lista —
+nunca aplicar el cambio directo, es una decisión de producto/estructura
+de datos. Si no encuentra diferencias, decirlo explícitamente
+("verificado: A Coruña no muestra diferencias documentadas frente al
+resto de ESPECIES") para que quede constancia de que SÍ se comprobó, no
+solo que se asumió.
+
 ## Variables adicionales para el índice de pesca + turbidez por especie (añadido 2026-09-14)
 
 Sexta responsabilidad, pedida explícitamente por el usuario: investigar
@@ -220,11 +276,11 @@ como fiable.
 
 ## Buenas prácticas de otras apps y biología de especies (añadido 2026-09-13)
 
-Dos responsabilidades más, pedidas explícitamente por el usuario, que se
-suman a las 4 originales del robot buscador de fuentes — a diferencia de
-esas (datos en tiempo real, verificables con una petición HTTP), estas
-dos son de investigación/contenido, así que corren solo 1 vez al día
-cada una (no 4):
+Tres responsabilidades más, pedidas explícitamente por el usuario, que
+se suman a las 4 originales del robot buscador de fuentes — a
+diferencia de esas (datos en tiempo real, verificables con una
+petición HTTP), estas tres son de investigación/contenido, así que
+corren solo 1 vez al día cada una (no 4):
 
 - **Buenas prácticas de otras apps de mareas/pesca**: qué datos en
   tiempo real o funciones tienen apps como Windy, Tides4fishing,
@@ -245,23 +301,69 @@ cada una (no 4):
   propongas. Esto es también siempre una propuesta en `ROBOT.md` (nunca
   un cambio directo a `ESPECIES` ni a la fórmula de `indicePesca`),
   porque cambia lo que se le muestra al usuario como dato fiable.
+- **Estudios institucionales/académicos, tipo DIGIPESCA** (añadido
+  2026-09-15, pedido explícito del usuario): buscar con `WebSearch`
+  bases de datos y estudios reales — de universidades, organismos
+  públicos de pesca, proyectos de investigación financiados (Next
+  Generation EU, Ministerio de Agricultura/Pesca, Xunta, Generalitat,
+  Junta de Andalucía, equivalentes portugueses como el IPMA...) — que
+  aporten datos verificables de especies/lonjas/capturas/precios por
+  zona y fecha, del estilo del proyecto DIGIPESCA (ver la entrada
+  dedicada más abajo). El **ámbito geográfico actual es España y
+  Portugal** (visión del usuario: si funciona bien ahí, se expandirá a
+  otros países más adelante — no asumir que el proyecto es solo del
+  Cantábrico ni solo de España). Cada estudio nuevo que se encuentre
+  debe pasar, antes de proponer nada con él, por las mismas reglas ya
+  documentadas para DIGIPESCA en esta sección: separar bajura/altura,
+  cruzar con hábitos/costumbres reales de captura, cuidado con
+  localismos regionales (un término/dato de una zona no vale para
+  otra sin verificar), y nunca inventar un dato que la fuente no dé
+  claro. Propuesta en `ROBOT.md` primero; solo aplicar directo a
+  `ESPECIES`/`index.html` cuando el dato esté genuinamente contrastado
+  y dentro de los límites de volumen de este fichero.
 
-**Fuente candidata encontrada por el usuario (2026-09-15), pendiente de
-investigar en una pasada futura**: proyecto **DIGIPESCA** (Universitat
-Politècnica de València) — bases de datos de pesca/lonja subidas al
-repositorio institucional RiuNet, de libre uso y acceso
-(`https://digipesca.webs.upv.es/`). No se ha comprobado todavía en real
-qué contiene exactamente ni si sirve para algo concreto de este
-proyecto — antes de usarla, verificar con una petición/descarga real
-qué datos trae (especie, zona, mes, precio en lonja...) y si el acceso
-es de verdad abierto sin registro. Idea del propio usuario que encaja
-aquí: la evolución del **precio en lonja** de una especie a lo largo
-del año podría ser una señal indirecta de cuándo hay más/mejor pesca de
-esa especie (precio bajo = más oferta = más capturas), complementaria a
-`meses`/`rangoTemp` — pero solo si DIGIPESCA (u otra fuente equivalente,
-ej. lonjas públicas) publica series de precio por especie/fecha
-reutilizables; si no, esta idea concreta se descarta sin más, no forzar
-una fuente que no da el dato limpio.
+**Fuente DIGIPESCA — acceso real conseguido el 2026-09-15, 1 corrección
+ya aplicada a `ESPECIES_MEDITERRANEO`**: proyecto DIGIPESCA (Universitat
+Politècnica de València), datos reales de venta en lonja por especie —
+cantidad, precio medio, facturación — desglosados por lonja y por mes.
+Cobertura: **Mediterráneo español + Atlántico de Andalucía únicamente —
+NO Cantábrico, Galicia ni la costa atlántica de Portugal** (Costa Viva
+cubre España y Portugal enteros, así que esa zona se queda sin esta
+fuente).
+
+**Cómo acceder de verdad (la web/notas de prensa NUNCA enlazan el
+fichero directo — esto es lo que costó encontrar, reutilizar en futuras
+pasadas)**: la API REST de discovery de RiuNet.
+`https://riunet.upv.es/server/api/discover/search/objects?query=digipesca`
+devuelve un item por año (2011-2021, faltan 2016-2018 sin indexar con
+ese término), cada uno con su propio `handle` (`10251/1957XX`). Cada
+item trae 2 bundles descargables sin login (licencia ODC-PDDL/dominio
+público) en `/server/api/core/bitstreams/{uuid}/content`: un README y un
+`.xlsx` real (~2MB, ~480.000 celdas, una hoja por lonja/cofradía).
+
+**Resultado real de cruzar el `.xlsx` de 2021 con nuestras especies**
+(solo bajura, `zona: "costa"`, por la regla de arriba):
+- Dorada, Calamar y Choco/Sepia: confirman sin cambios los `meses` que
+  ya teníamos.
+- **Breca (aplicado)**: las 3 lonjas catalanas con desglose mensual
+  (Roses/Blanes/Cambrils) muestran volumen real casi todos los meses,
+  sin el hueco (mayo, agosto-noviembre) que teníamos — `meses` ampliado
+  a todo el año, citando DIGIPESCA en la nota.
+- Cartagena (spot propio): sin desglose mensual en 2021, solo totales
+  anuales — no sirve para refinar `meses` ahí.
+- Golfo de Cádiz: sí hay desglose mensual pero volúmenes minúsculos (ej.
+  Sargo, 65 kg/año total) — demasiado ruido para una conclusión fiable,
+  no se tocó nada ahí.
+- Palometa: descartada — DIGIPESCA mezcla 3 nombres distintos ("japuta/
+  palometa negra", "capellán/palometa", "palometa blanca") sin que quede
+  claro cuál es la nuestra; coincide con que ya estaba marcada como dato
+  dudoso.
+
+**Pendiente para una futura pasada**: hay 6 años más descargables
+(2011-2015, 2019-2021 ya visto) que podrían confirmar si el patrón de
+Breca es consistente o fue solo cosa de 2021, y localizar los años
+2016-2018 (no indexados por "digipesca" en la búsqueda — probar otros
+términos en la misma API de discovery).
 
 **Advertencia explícita del usuario, obligatoria antes de usar cualquier
 dato de lonja/desembarque para nada de esto**: hay que separar bajura de
@@ -303,6 +405,40 @@ fuente clara sobre sus hábitos reales de captura (no solo su biología
 general), no proponer la conclusión de "buen mes de costa" — proponer
 como mucho el dato de lonja en bruto, marcado explícitamente como sin
 contrastar con hábitos.
+
+**Localismos regionales en los textos de `ESPECIES` (añadido
+2026-09-15, bug real encontrado por el usuario)**: cada campo `nota` y
+`alimento` puede mencionar cómo llaman a algo por esa zona en concreto
+(ej. "parrotxa" para cría de sardina, propio del valenciano/catalán) —
+pero SOLO si ese texto vive en el array regional correcto
+(`ESPECIES_MEDITERRANEO`, `ESPECIES_GOLFO_CADIZ`, etc.), nunca en
+`ESPECIES` (Cantábrico/Atlántico Norte) ni copiado sin más a otra
+región. Se encontró exactamente este bug: "parrotxa" aparecía en dos
+entradas de `ESPECIES` (Cantábrico) y una frase genérica al pie del
+panel de especies ("así la llaman por aquí") se mostraba siempre, para
+cualquier spot de España o Portugal — ya corregido (el término solo
+sigue en la entrada de Lubina de `ESPECIES_MEDITERRANEO`, y la frase del
+pie solo se pinta si esa palabra aparece de verdad en la lista de
+especies de temporada de ESE spot). Antes de proponer o aplicar un
+localismo nuevo: verificar con una fuente real que se usa en ESA zona en
+concreto (no asumir que un término vale para toda España), y nunca
+reutilizarlo sin comprobar en una región distinta.
+
+**Visión a largo plazo, pedida explícitamente por el usuario
+(2026-09-15)**: el objetivo no es solo tener 4 listas regionales de
+especies (`ESPECIES`/`_MEDITERRANEO`/`_GOLFO_CADIZ`/`_CANARIAS`), sino ir
+buscando progresivamente estudios de todo tipo — locales, comarcales,
+nacionales — que enriquezcan CADA spot en concreto, no solo su región
+amplia. El ideal declarado por el usuario es que exista una fuente/
+estudio de este tipo por spot. Esto es un objetivo a muy largo plazo,
+no una tarea de una sola pasada — cada vez que el robot (en la pasada de
+"migración y cría de especies" o en la de "buenas prácticas") encuentre
+un estudio con alcance más fino que las 4 regiones actuales (un puerto,
+una ría, una comarca costera concreta), debe proponerlo en `ROBOT.md`
+como candidato a granularidad extra para ese spot en particular, aunque
+de momento no exista mecanismo en el código para aplicar datos por spot
+individual dentro de una lista regional (eso sería, en sí mismo, un
+cambio de diseño a proponer aparte, nunca aplicado directo).
 
 ## Red de seguridad de la automatización (añadido 2026-09-12)
 
