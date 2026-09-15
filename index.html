@@ -174,6 +174,32 @@
     padding: 6px; margin: -6px;
   }
 
+  /* Pop-up de zoom para la foto/vídeo de la webcam (2026-09-15) — fondo
+     casi negro (a diferencia de modal-estacion) para que la imagen
+     destaque, sin tarjeta blanca alrededor. */
+  .modal-zoom-webcam {
+    position: fixed; inset: 0; z-index: 2100;
+    background: rgba(11,37,50,0.94);
+    display: none; align-items: center; justify-content: center;
+  }
+  .modal-zoom-webcam.visible { display: flex; }
+  .modal-zoom-webcam .cerrar {
+    position: absolute; top: 14px; right: 14px; z-index: 2;
+    background: rgba(11,37,50,0.7); border: none; color: #F7F3E8; font-size: 20px; cursor: pointer;
+    width: 40px; height: 40px; border-radius: 50%;
+  }
+  #contenidoZoomWebcam {
+    width: 100%; height: 100%; overflow: auto;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #contenidoZoomWebcam img, #contenidoZoomWebcam video {
+    max-width: 100%; max-height: 100%; cursor: zoom-in;
+    transition: transform 0.15s ease-out;
+  }
+  #contenidoZoomWebcam img.ampliada, #contenidoZoomWebcam video.ampliada {
+    max-width: none; max-height: none; transform: scale(2.2); cursor: zoom-out;
+  }
+
   /* Llamada de caudal: tooltip de Leaflet restilizado para que se note que
      el marcador de río se puede "abrir" al pasar el cursor por encima. */
   .llamada-rio {
@@ -689,6 +715,11 @@
     <h3 id="tituloModalEstacion"></h3>
     <div id="contenidoModalEstacion"></div>
   </div>
+</div>
+
+<div class="modal-zoom-webcam" id="modalZoomWebcam">
+  <button class="cerrar" id="cerrarModalZoomWebcam" aria-label="Cerrar">✕</button>
+  <div id="contenidoZoomWebcam"></div>
 </div>
 <script>
 // ---------------------------------------------------------------------------
@@ -2183,9 +2214,51 @@ function destruirHlsActivo() {
   if (hlsActivo) { hlsActivo.destroy(); hlsActivo = null; }
 }
 
+// Pop-up de zoom para la foto/vídeo de la webcam (2026-09-15), pedido
+// explícito del usuario. La imagen fija se clona en un <img> nuevo dentro
+// del pop-up (no interfiere con el refresco automático cada minuto del
+// original). El vídeo HLS, en cambio, se MUEVE (no se clona) — así sigue
+// reproduciendo con el mismo hls.js ya enganchado, sin volver a pedir el
+// stream; se guarda su estilo y de dónde salió para devolverlo tal cual
+// estaba al cerrar.
+let videoZoomOrigen = null; // wrapper del que se sacó el <video>, o null si el pop-up es de una imagen
+
+function abrirZoomImagen(src, alt) {
+  document.getElementById("contenidoZoomWebcam").innerHTML = `<img src="${src}" alt="${alt}">`;
+  document.getElementById("modalZoomWebcam").classList.add("visible");
+}
+
+function abrirZoomVideo(video) {
+  videoZoomOrigen = video.parentElement;
+  video.dataset.estiloOriginal = video.style.cssText;
+  video.style.cssText = "max-width:100%; max-height:100%; cursor:zoom-in;";
+  document.getElementById("contenidoZoomWebcam").appendChild(video);
+  document.getElementById("modalZoomWebcam").classList.add("visible");
+}
+
+function cerrarZoomWebcam() {
+  const modal = document.getElementById("modalZoomWebcam");
+  if (!modal.classList.contains("visible")) return;
+  modal.classList.remove("visible");
+  const contenido = document.getElementById("contenidoZoomWebcam");
+  if (videoZoomOrigen) {
+    const video = contenido.querySelector("video");
+    if (video) {
+      video.classList.remove("ampliada");
+      video.style.cssText = video.dataset.estiloOriginal || "";
+      delete video.dataset.estiloOriginal;
+      videoZoomOrigen.prepend(video);
+    }
+    videoZoomOrigen = null;
+  } else {
+    contenido.innerHTML = "";
+  }
+}
+
 function pintarWebcam(slug, nombre) {
   pararRefrescoWebcam();
   destruirHlsActivo();
+  cerrarZoomWebcam();
   const cont = document.getElementById("panelWebcamContenido");
   if (!SPOTS_CON_WEBCAM.includes(slug)) {
     cont.innerHTML = `<div class="tarjeta" style="text-align:center; color:#42585F; font-size:12px;">Sin webcam identificada para este spot todavía.</div>`;
@@ -2201,7 +2274,7 @@ function pintarWebcam(slug, nombre) {
   cont.innerHTML = `
     <div style="position:relative;">
       <img id="imgWebcam" crossorigin="anonymous" src="/webcam/${slug}?_=${Date.now()}" alt="Webcam en directo de ${nombre}"
-           style="width:100%; border-radius:8px; border:1px solid #DDE2DC; display:block;" />
+           style="width:100%; border-radius:8px; border:1px solid #DDE2DC; display:block; cursor:zoom-in;" />
       <span style="position:absolute; top:8px; left:8px; display:flex; align-items:center; gap:5px;
                     background:rgba(11,37,50,0.75); padding:3px 8px; border-radius:12px;
                     font-family:'IBM Plex Mono',monospace; font-size:10px; color:#F5F1E6;">
@@ -2213,6 +2286,7 @@ function pintarWebcam(slug, nombre) {
     <p class="nota-final" id="notaWebcam">Se actualiza sola cada minuto.</p>
   `;
   const img = document.getElementById("imgWebcam");
+  img.addEventListener("click", () => abrirZoomImagen(img.src, img.alt));
   img.addEventListener("error", () => {
     pararRefrescoWebcam();
     cont.innerHTML = `<div class="tarjeta" style="text-align:center; color:#42585F; font-size:12px;">
@@ -2235,9 +2309,9 @@ function pintarWebcam(slug, nombre) {
 function pintarWebcamHls(slug, nombre) {
   const cont = document.getElementById("panelWebcamContenido");
   cont.innerHTML = `
-    <div style="position:relative;">
+    <div style="position:relative;" id="wrapperVideoWebcam">
       <video id="videoWebcam" crossorigin="anonymous" muted autoplay playsinline
-             style="width:100%; border-radius:8px; border:1px solid #DDE2DC; display:block; background:#0B2532; aspect-ratio:16/9;"></video>
+             style="width:100%; border-radius:8px; border:1px solid #DDE2DC; display:block; background:#0B2532; aspect-ratio:16/9; cursor:zoom-in;"></video>
       <span style="position:absolute; top:8px; left:8px; display:flex; align-items:center; gap:5px;
                     background:rgba(11,37,50,0.75); padding:3px 8px; border-radius:12px;
                     font-family:'IBM Plex Mono',monospace; font-size:10px; color:#F5F1E6;">
@@ -2249,6 +2323,7 @@ function pintarWebcamHls(slug, nombre) {
     <p class="nota-final" id="notaWebcam">Vídeo en directo (Diputación Foral de Gipuzkoa).</p>
   `;
   const video = document.getElementById("videoWebcam");
+  video.addEventListener("click", () => abrirZoomVideo(video));
   const url = WEBCAMS_HLS[slug];
 
   const fallo = () => {
@@ -2427,6 +2502,19 @@ document.getElementById("cerrarModalEstacion").addEventListener("click", () => {
 document.getElementById("modalEstacion").addEventListener("click", (e) => {
   if (e.target.id === "modalEstacion") document.getElementById("modalEstacion").classList.remove("visible");
 });
+document.getElementById("cerrarModalZoomWebcam").addEventListener("click", cerrarZoomWebcam);
+document.getElementById("contenidoZoomWebcam").addEventListener("click", (e) => {
+  // Clic en la foto/vídeo -> alterna zoom. Clic en el fondo alrededor
+  // (el propio contenedor, no un hijo) -> cierra, como un lightbox normal.
+  if (e.target.tagName === "IMG" || e.target.tagName === "VIDEO") {
+    e.target.classList.toggle("ampliada");
+  } else {
+    cerrarZoomWebcam();
+  }
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") cerrarZoomWebcam();
+});
 // La luna se pide para el centro del mapa en cada momento (no es fija para
 // toda la zona) — a poco zoom el "centro" deja de significar nada útil
 // (podría ser medio océano Atlántico), así que por debajo de cierto nivel
@@ -2530,6 +2618,7 @@ document.getElementById("cerrarPanel").addEventListener("click", () => {
   document.querySelectorAll(".marcador").forEach((m) => m.classList.remove("activo"));
   pararRefrescoWebcam();
   destruirHlsActivo();
+  cerrarZoomWebcam();
 });
 
 // Refresca lo que ya está pintado (marcadores + panel abierto + indicador
