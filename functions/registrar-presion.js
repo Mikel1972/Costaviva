@@ -47,10 +47,7 @@ export async function onRequestPost(context) {
   const secretoEsperado = context.env.CRON_SECRET;
   const secretoRecibido = context.request.headers.get("X-Cron-Secret");
   if (!secretoEsperado || secretoRecibido !== secretoEsperado) {
-    return new Response(JSON.stringify({
-      error: "no autorizado",
-      debugTemporal: { tieneSecretoEnEntorno: !!secretoEsperado, longitudEsperado: secretoEsperado ? secretoEsperado.length : 0, longitudRecibido: secretoRecibido ? secretoRecibido.length : 0 },
-    }), {
+    return new Response(JSON.stringify({ error: "no autorizado" }), {
       status: 401,
       headers: { "content-type": "application/json" },
     });
