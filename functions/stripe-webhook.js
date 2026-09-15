@@ -24,9 +24,10 @@
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 
 // Mismo producto/precios que crear-checkout-stripe.js.
+// Mismos precios live que crear-checkout-stripe.js (2026-09-15).
 const PERIODOS_POR_PRECIO = {
-  "price_1UFyhEGXcSRiyJYIvGpTzjZu": "mensual",
-  "price_1UFyhEGXcSRiyJYIdjCv5aFH": "anual",
+  "price_1UG0hPGVID60u22aXMcBJNF3": "mensual",
+  "price_1UG0hPGVID60u22a3GO1Cflj": "anual",
 };
 
 async function verificarFirmaStripe(rawBody, header, secret) {
