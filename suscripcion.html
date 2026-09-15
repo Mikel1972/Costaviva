@@ -154,8 +154,13 @@ function formatearFecha(iso) {
 }
 
 async function comprobarEstado() {
-  const { data, error } = await supabase.rpc("mi_estado_suscripcion");
-  return !error && data ? data : null;
+  try {
+    const { data, error } = await supabase.rpc("mi_estado_suscripcion");
+    return !error && data ? data : null;
+  } catch (e) {
+    console.error("mi_estado_suscripcion falló:", e);
+    return null;
+  }
 }
 
 async function esperarConfirmacion() {

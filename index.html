@@ -499,12 +499,19 @@
     // Paywall (2026-09-15, pedido explícito del usuario): 7 días de
     // prueba desde el alta, luego bloqueo total sin suscripción activa
     // — mi_estado_suscripcion() ya resuelve el bypass del admin en el
-    // servidor. Fallo silencioso a propósito si la RPC falla por red:
-    // solo bloquea un con_acceso === false explícito, nunca un error.
-    const { data: estadoSuscripcion, error: errorSuscripcion } = await supabase.rpc("mi_estado_suscripcion");
-    if (!errorSuscripcion && estadoSuscripcion && estadoSuscripcion.con_acceso === false) {
-      window.location.href = "/suscripcion.html";
-      return;
+    // servidor. Fallo silencioso a propósito si la RPC falla (red, error
+    // devuelto, o incluso una excepción real) — try/catch explícito
+    // porque un throw sin capturar aquí pararía TODO el script del
+    // módulo (top-level await, sin nada más abajo que lo recoja) y
+    // dejaría "Comprobando acceso…" colgado para siempre.
+    try {
+      const { data: estadoSuscripcion, error: errorSuscripcion } = await supabase.rpc("mi_estado_suscripcion");
+      if (!errorSuscripcion && estadoSuscripcion && estadoSuscripcion.con_acceso === false) {
+        window.location.href = "/suscripcion.html";
+        return;
+      }
+    } catch (e) {
+      console.error("mi_estado_suscripcion falló, se deja pasar:", e);
     }
     document.getElementById("comprobandoAcceso").remove();
     // Enlace al panel de administrador (2026-09-13, pedido explícito del

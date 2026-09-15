@@ -126,11 +126,18 @@ if (!sesionInicial.session) {
 
 // Paywall (2026-09-15): por consistencia con el resto de páginas,
 // aunque aquí es un no-op en la práctica — mi_estado_suscripcion()
-// siempre da con_acceso:true a la cuenta admin (es_admin()).
-const { data: estadoSuscripcion, error: errorSuscripcion } = await supabase.rpc("mi_estado_suscripcion");
-if (!errorSuscripcion && estadoSuscripcion && estadoSuscripcion.con_acceso === false) {
-  window.location.href = "/suscripcion.html";
-  throw new Error("sin suscripción activa");
+// siempre da con_acceso:true a la cuenta admin (es_admin()). Fallo
+// silencioso a propósito si la RPC falla — try/catch explícito porque
+// un throw sin capturar aquí dejaría "Comprobando acceso…" colgado.
+try {
+  const { data: estadoSuscripcion, error: errorSuscripcion } = await supabase.rpc("mi_estado_suscripcion");
+  if (!errorSuscripcion && estadoSuscripcion && estadoSuscripcion.con_acceso === false) {
+    window.location.href = "/suscripcion.html";
+    throw new Error("sin suscripción activa");
+  }
+} catch (e) {
+  if (e.message === "sin suscripción activa") throw e;
+  console.error("mi_estado_suscripcion falló, se deja pasar:", e);
 }
 
 document.getElementById("comprobandoAcceso").remove();
