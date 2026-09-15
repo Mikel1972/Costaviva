@@ -381,6 +381,11 @@ async function cargarGrupos() {
     tarjetaEl.querySelector(".btn-salir-grupo").addEventListener("click", async () => {
       if (!confirm("¿Salir de este grupo? Dejarás de ver y de compartir contenido con él.")) return;
       await supabase.from("miembros_grupo").delete().eq("grupo_id", grupoId).eq("user_id", usuario.id);
+      // Si era el último miembro, esto borra también la fila de grupos —
+      // si quedan más, la RPC rechaza el borrado y lo ignoramos aquí sin
+      // más (grupos.html no necesita saber cuántos miembros quedaban,
+      // eliminar_grupo() ya hace esa comprobación de forma segura).
+      await supabase.rpc("eliminar_grupo", { p_grupo_id: grupoId }).catch(() => {});
       await cargarGrupos();
     });
 
