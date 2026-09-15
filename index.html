@@ -1799,8 +1799,23 @@ async function datosAmbientalesPunto(lat, lon) {
   const idxFin = Math.min(idx + 12, horas.length - 1);
   const alturasVentana = (marino.hourly?.wave_height || []).slice(idx, idxFin + 1).filter((v) => v != null);
 
-  const presionAhora = tiempo.hourly?.pressure_msl?.[idx] ?? null;
-  const presionHace3h = tiempo.hourly?.pressure_msl?.[Math.max(0, idx - 3)] ?? null;
+  // idxTiempo: índice de la MISMA hora exacta (horas[idx]) pero dentro
+  // de tiempo.hourly.time — una respuesta de una API distinta (Forecast,
+  // no Marine). Aunque las dos peticiones piden los mismos params y en
+  // la práctica devuelven arrays alineados, no hay ninguna garantía
+  // documentada de eso — reutilizar `idx` a ciegas entre dos respuestas
+  // distintas ya causó un bug real (contextoAmbiental en diario.html,
+  // 2026-09-15: viento/presión/nubosidad/lluvia siempre en blanco). Aquí
+  // se busca por timestamp en vez de asumir alineación, con `idx` como
+  // respaldo solo si de verdad no aparece (no debería pasar con los
+  // mismos params, pero así no depende de esa suposición).
+  const horaObjetivo = horas[idx];
+  const horasTiempo = tiempo.hourly?.time || [];
+  let idxTiempo = horaObjetivo ? horasTiempo.indexOf(horaObjetivo) : -1;
+  if (idxTiempo === -1) idxTiempo = idx;
+
+  const presionAhora = tiempo.hourly?.pressure_msl?.[idxTiempo] ?? null;
+  const presionHace3h = tiempo.hourly?.pressure_msl?.[Math.max(0, idxTiempo - 3)] ?? null;
   let tendenciaPresion = null;
   if (presionAhora != null && presionHace3h != null) {
     const diff = presionAhora - presionHace3h;
@@ -1811,13 +1826,13 @@ async function datosAmbientalesPunto(lat, lon) {
     altura: alturasVentana.length ? [Math.min(...alturasVentana), Math.max(...alturasVentana)] : [0, 0],
     periodo: null,
     dirOla: textoRumbo(marino.hourly?.wave_direction?.[idx] ?? 0),
-    viento: Math.round(tiempo.hourly?.windspeed_10m?.[idx] ?? 0),
-    dirViento: textoRumbo(tiempo.hourly?.winddirection_10m?.[idx] ?? 0),
+    viento: Math.round(tiempo.hourly?.windspeed_10m?.[idxTiempo] ?? 0),
+    dirViento: textoRumbo(tiempo.hourly?.winddirection_10m?.[idxTiempo] ?? 0),
     marea: null,
     corriente: null, dirCorriente: null,
     tempAgua: marino.hourly?.sea_surface_temperature?.[idx] ?? null,
-    nubosidad: tiempo.hourly?.cloudcover?.[idx] ?? null,
-    precipitacion: tiempo.hourly?.precipitation?.[idx] ?? null,
+    nubosidad: tiempo.hourly?.cloudcover?.[idxTiempo] ?? null,
+    precipitacion: tiempo.hourly?.precipitation?.[idxTiempo] ?? null,
     presion: presionAhora != null ? { valor: Math.round(presionAhora), tendencia: tendenciaPresion } : null,
     actualizadoEn: Date.now(),
   };
