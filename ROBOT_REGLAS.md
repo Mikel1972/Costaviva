@@ -27,6 +27,29 @@ usuario afina un criterio — no es un historial (para eso está `ROBOT.md`).
   spots aleatorios de la lista fija. Sigue aplicando todo lo demás de
   este fichero (nunca inventar una URL, límite de volumen, proponer si
   no es trivial).
+- **Cámaras que rotan y pueden enseñar tierra en vez de mar (añadido
+  2026-09-15, bug real reportado por el usuario)**: vio una webcam de
+  **imagen fija** (no las 6 de vídeo HLS de Gipuzkoa, esas van bien —
+  "a ratos dan la playa pero no pasa nada" es normal en un vídeo en
+  directo) mostrando solo la playa/tierra en vez del mar — probable
+  cámara física que rota/PTZ (pan-tilt-zoom) entre varios encuadres, y
+  la foto de esa hora en concreto cayó apuntando a tierra. **No
+  intentar arreglarlo con visión artificial** (clasificar "esta foto es
+  mar/no es mar") — ya se probó ese enfoque para el oleaje visual y se
+  quitó el 2026-09-15 por poco fiable (confundía barcos/edificios con
+  oleaje), mismo riesgo aquí. En vez de eso, revisar CADA cámara de
+  imagen fija de `functions/webcam/[slug].js` (~40 entradas) para
+  comprobar: (1) si el proveedor documenta que esa cámara es rotativa/
+  PTZ (a veces lo dice en su propia web), y (2) si su URL/API soporta
+  pedir un encuadre o preset concreto (muchos sistemas PTZ tienen un
+  parámetro tipo `?preset=` o una URL distinta por posición) que se
+  pueda fijar apuntando siempre al mar, en vez de la última posición de
+  rotación. Si se encuentra una URL de preset real y verificable con
+  una petición HTTP, es una corrección de auditoría trivial (cambiar la
+  URL en `WEBCAMS`) — aplicar directo. Si no existe esa opción para una
+  cámara en concreto, dejarlo anotado en `ROBOT.md` como limitación
+  conocida de esa cámara, nunca inventar un parámetro que no esté
+  documentado ni verificado.
 
 ## Sinónimos regionales de especies y cebos (añadido 2026-09-13)
 
