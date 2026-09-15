@@ -1054,6 +1054,82 @@ proponer nada.
 **Firmado:** robot buscador de fuentes (pasada de caudal de ríos y
 estaciones de monte, España y Portugal), 2026-09-15 09:30 UTC.
 
+### 2026-09-15 10:14 UTC (pasada buscadora — cámaras de imagen fija que rotan/PTZ y muestran tierra en vez de mar)
+
+**Objetivo de la pasada:** el bug real reportado por el usuario (ver
+`ROBOT_REGLAS.md`, sección añadida 2026-09-15) — vio una webcam de
+**imagen fija** mostrando solo playa/tierra en vez del mar, probable
+cámara física que rota/PTZ entre encuadres. Auditar las ~40 entradas de
+`WEBCAMS` en `functions/webcam/[slug].js` para, por proveedor,
+comprobar: (1) si documenta que la cámara es rotativa/PTZ, y (2) si su
+URL/API admite pedir un preset/encuadre concreto apuntando al mar. Sin
+visión artificial (ya se descartó ese enfoque el 2026-09-15).
+
+**Hallazgo principal — la mayor parte de nuestras cámaras son FIJAS por
+diseño, no pueden rotar:** una porción grande de la lista pertenece a la
+familia de **videometría costera** (KOSTASystem de AZTI, SIRENA, y el
+sistema MOBIMS/BEAMON de SOCIB). Esta tecnología hace fotogrametría de
+la costa (extracción de línea de orilla, timex, etc.), lo que **exige un
+punto de vista estable** — una cámara que se moviera invalidaría el
+análisis. Confirmado en la documentación de los propios proveedores
+(AZTI/KOSTASystem: "cámaras que capturan desde un punto de vista fijo
+tratado con técnicas fotogramétricas"; SOCIB/MOBIMS: sistema de 5
+cámaras fijas por estación, cada una cubriendo un sector `c01`–`c05`).
+Entran aquí, y por tanto **no son candidatas al bug**:
+- Mundaka (`kostasystem.com`).
+- Sopelana, Lekeitio, Getxo (`detectia.net`, AZTI — mismo KOSTASystem).
+- Bakio (`pyscada.isurki.com`, la propia URL contiene `sirena/aditu` —
+  es una estación SIRENA).
+- Cala Millor, Son Bou, Muro (`apps.socib.es/beamon`, SOCIB/MOBIMS).
+
+Detalle útil de SOCIB para el futuro: cada estación BEAMON expone varias
+cámaras fijas (`c01`…`c05`), cada una a un sector distinto. Usamos `c01`.
+Si algún día `c01` de un spot enseñara demasiada playa, se podría
+cambiar el código a otro sector fijo que mire más al mar — **pero eso
+exige inspección visual de qué sector es cuál**, así que no se cambia a
+ciegas (nunca se toca sin verificar cuál apunta al mar).
+
+**Proveedores donde NO se pudo descartar PTZ, pero que tampoco ofrecen
+preset por URL:** MeteoGalicia (9 cámaras: Baiona, A Coruña, Camariñas,
+Cangas, Corrubedo, Ribadeo, Ons, Portosín, Cíes), Gobierno de Cantabria
+(6: Suances, Castro Urdiales, Laredo, San Vicente, Comillas, Santoña) y
+Turisme Comunitat Valenciana (28 cámaras de playa). Buscada
+documentación de tipo de cámara (PTZ/rotación) en cada proveedor sin
+encontrar una fuente clara que lo confirme ni lo descarte. Lo **decisivo
+para la tarea**: ninguna de las tres familias expone un parámetro de
+preset/posición en la URL — todas sirven un **único "último frame"** por
+cámara (`.../ultima.jpg`, `.../<nombre>-New-<n>.jpg`,
+`.../webcam_mini.png`). Aunque alguna de estas cámaras fuera físicamente
+PTZ y cayera a veces mirando a tierra, **no hay URL de preset
+documentada y verificable** para fijarla al mar. Por la regla explícita
+de `ROBOT_REGLAS.md` (nunca inventar un parámetro no documentado ni
+verificado), no se propone ningún cambio de URL para estas.
+
+**Resultado neto: sin cambios de código.** No se encontró ninguna URL de
+preset/encuadre real y verificable para ninguna cámara, y ninguna de las
+cámaras de imagen fija de nuestra lista resultó ser demostrablemente PTZ
+con encuadre configurable por URL. La mayoría (familia videometría/
+SIRENA/KOSTASystem/SOCIB) son fijas por diseño y quedan descartadas como
+causa del bug.
+
+**Limitación conocida y siguiente paso más útil:** el usuario no indicó
+QUÉ webcam concreta vio mostrando tierra. Sin ese dato no se puede
+reproducir el caso exacto ni saber si es una de las de MeteoGalicia/
+Cantabria/Valencia (las únicas no-fijas-por-diseño). **Recomendación
+registrada para el usuario:** si anota el slug de la cámara que mostró
+tierra, la próxima pasada puede centrarse en ese proveedor concreto (y,
+si es PTZ sin preset, la conclusión sería reemplazar esa cámara por otra
+fuente estable, no intentar fijar un encuadre inexistente).
+
+**Fuentes:** [AZTI — KOSTASystem: Videometry and coastal applications](https://www.azti.es/en/productos/kostasystem-videometry-and-coastal-applications/),
+[SOCIB BEAMON — About us](https://help.beamon.socib.es/home/about-us),
+[SOCIB BEAMON — Cala Millor (cámaras c01–c05)](https://apps.socib.es/beamon/filtering?station=clm&group=clm&cameras=c05&product=snapshot),
+[MeteoGalicia — Servicio de panel de cámaras web (PDF)](https://www.meteogalicia.gal/datosred/infoweb/meteo/docs/observacion/camaras/servizopanelcamaras_es.pdf),
+[Ayuntamiento de Suances — WebCams Municipales](https://suances.es/webcams-municipales/).
+
+**Firmado:** robot buscador de fuentes (pasada de webcams — auditoría
+PTZ/rotación), 2026-09-15 10:14 UTC.
+
 ---
 
 ## Auditoría de datos
