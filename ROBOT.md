@@ -2388,6 +2388,60 @@ de hoy, que corre aparte).
 
 **Firmado:** robot de calibración nocturna, 2026-09-15 01:13 UTC.
 
+### 2026-09-15 13:24 UTC (pasada buscadora — mareas y oleaje)
+
+Pasada diurna de "mareas y oleaje". **La red saliente de este runner sí
+funciona** (a diferencia de la sesión cloud nocturna): verificado con
+peticiones reales a `poem.puertos.es/portus/StationData` y a la Marine
+API de Open-Meteo. Método de siempre: altura real de boya (`Hm0`, último
+dato) contra `wave_height` de Open-Meteo en las coordenadas exactas de
+cada boya, emparejando por la hora UTC exacta del último dato de la boya.
+
+| boya | hora UTC | medida | calculada | diferencia | % |
+|---|---|---|---|---|---|
+| 2136 Bilbao-Vizcaya | 13:00 | 1.88 m | 1.72 m | −0.16 m | −8.5% |
+| 1117 Gijón | 12:00 | 1.11 m | 1.22 m | +0.11 m | +9.9% |
+| 1101 Pasaia II | 12:00 | 1.90 m | 0.96 m | −0.94 m | **−49.5%** |
+| 1731 Barcelona II | 12:00 | 0.35 m | 0.26 m | −0.09 m | −25.7% |
+| 2246 Villano-Sisargas | 13:00 | 1.17 m | 1.04 m | −0.13 m | −11.1% |
+
+**Punto de calibración nuevo:** 2246 Villano-Sisargas (Galicia, REDEXT) —
+primera vez que se calibra esta boya, amplía la cobertura geográfica del
+historial más allá de las 3 obligatorias del Cantábrico.
+
+**Hallazgo destacado — Pasaia II (1101), octavo punto consecutivo con el
+mismo signo negativo** (−36.0%, −27.3%, −29.3%, −15.7%, −22.3%, −25.2%,
+−23.2%, −49.5%; media ≈ **−28.6%**). Sigue siendo, con diferencia, la boya
+con el sesgo más consistente: Open-Meteo calcula sistemáticamente por
+debajo de la medida real ahí. El punto de hoy (−49.5% con 1.9 m de mar
+real) es el mayor sesgo visto y descarta que fuera solo ruido de oleaje
+pequeño. **8 puntos, todavía lejos de los 15 mínimos que pide la tarea
+antes de proponer un factor de corrección de zona** — no se propone
+ningún ajuste todavía, solo se sigue acumulando historial. Es la
+principal candidata a un futuro factor de corrección.
+
+Resto sin patrón nuevo: 2136 Bilbao-Vizcaya sigue siendo la más cercana a
+cero; 1117 Gijón sigue oscilando de signo sin estabilizarse; 1731
+Barcelona II acumula 3 puntos todos negativos pero siempre con mar <0.6 m
+(porcentaje ruidoso, poco fiable como señal de sesgo real).
+
+**Fuente nueva revisada (mareas/oleaje):** `labouee.app` "The Buoy API"
+—aparecida buscando cobertura de boyas de Portugal, que es un hueco real
+(hoy solo tenemos Nazaré vía MONICAN)—. Comprobado con petición HTTP real
+que **exige API key** (`Authorization: Bearer`, cuota 1.000 req/h) y que
+reempaqueta sobre todo datos de Puertos del Estado, que ya obtenemos
+gratis y directo. No se pudo verificar si su cobertura de las boyas del
+IH portugués (Leixões/Sines) es real ni si hay plan gratuito sin
+registrarse. Queda como **lead a evaluar, no drop-in gratuito** — y
+tocar la lista `BOYAS` de `functions/prevision.js` está fuera del límite
+de volumen de auto-aplicación de todas formas (ver `ROBOT_REGLAS.md`,
+además del riesgo del límite de 50 sub-peticiones ya documentado).
+Copernicus Marine IBI (reanálisis de oleaje) reaparece en la búsqueda —
+ya conocido, requiere alta previa, sin cambios.
+
+**Firmado:** robot buscador de fuentes (pasada de mareas y oleaje),
+2026-09-15 13:24 UTC.
+
 ---
 
 ## Robot de experiencia de usuario
