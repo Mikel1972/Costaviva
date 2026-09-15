@@ -13,6 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Costa Viva" />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
+  @keyframes pulso { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
   * { box-sizing: border-box; }
   body {
     margin: 0; font-family: 'Inter', sans-serif; background: #F7F3E8; color: #0B2532;
@@ -105,7 +106,12 @@
     gap: 7px; text-decoration: none; color: #42585F; border-radius: 14px; background: rgba(212,162,76,0.12);
     font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; white-space: nowrap;
   }
-  .tabs-nav a .icono { width: 22px; height: 22px; display: flex; flex-shrink: 0; }
+  .tabs-nav a .icono { width: 22px; height: 22px; display: flex; flex-shrink: 0; position: relative; }
+  .punto-novedades-grupos {
+    position: absolute; top: -3px; right: -3px; width: 9px; height: 9px;
+    border-radius: 50%; background: #4F9D69; border: 2px solid #FFFFFF;
+    animation: pulso 1.6s infinite;
+  }
   .tabs-nav a .icono svg { width: 100%; height: 100%; }
   .ico-mapa { color: #3E7CB1; }
   .ico-diario { color: #4F9D69; }
@@ -173,7 +179,7 @@
   <a href="/"><span class="icono"><svg class="ico-mapa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span>Mapa</a>
   <a href="/diario.html"><span class="icono"><svg class="ico-diario" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A2 2 0 0 1 6 2.5h14V19H6a2 2 0 0 0-2 2V4.5z"/><path d="M4 19a2 2 0 0 1 2-2h14"/></svg></span>Diario</a>
   <a href="/alarma.html"><span class="icono"><svg class="ico-alarma" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 2.5 20h19L12 3.2z"/><line x1="12" y1="9.5" x2="12" y2="14"/><circle cx="12" cy="17" r="0.9" fill="currentColor" stroke="none"/></svg></span>Alarma</a>
-  <a href="/grupos.html" class="activa"><span class="icono"><svg class="ico-grupos" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.3 19.5c0-3.5 2.6-5.7 5.7-5.7s5.7 2.2 5.7 5.7"/><circle cx="17" cy="9" r="2.6"/><path d="M15.3 13.9c2.5.4 4.2 2.3 4.2 5.6"/></svg></span>Grupos</a>
+  <a href="/grupos.html" class="activa"><span class="icono"><svg class="ico-grupos" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.3 19.5c0-3.5 2.6-5.7 5.7-5.7s5.7 2.2 5.7 5.7"/><circle cx="17" cy="9" r="2.6"/><path d="M15.3 13.9c2.5.4 4.2 2.3 4.2 5.6"/></svg><span class="punto-novedades-grupos" id="puntoNovedadesGrupos" hidden></span></span>Grupos</a>
 </nav>
 
 <script type="module">
@@ -351,6 +357,12 @@ async function cargarGrupos() {
   }
 
   cont.innerHTML = miembros.map((m) => tarjetaGrupoHTML(m.grupos, m)).join("");
+
+  // La actividad de todos los grupos ya se pinta entera al abrir esta
+  // página (nada queda oculto tras un clic), así que basta con marcar
+  // TODOS los grupos como vistos de una vez — apaga el punto verde de
+  // novedades del menú inferior hasta que llegue algo nuevo.
+  supabase.rpc("marcar_grupos_visitados").catch(() => {});
 
   cont.querySelectorAll(".tarjeta-grupo").forEach((tarjetaEl) => {
     const grupoId = tarjetaEl.dataset.grupoId;
