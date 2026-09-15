@@ -33,7 +33,12 @@
   .plan {
     border: 1px solid #DDE2DC; border-radius: 10px; padding: 14px 16px; margin-bottom: 14px;
   }
+  .plan.actual { border-color: #A8792A; border-width: 2px; background: rgba(212,162,76,0.06); }
   .plan .precio { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 700; margin: 0 0 2px; }
+  .badge-actual {
+    display: inline-block; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 10.5px;
+    color: #6B5530; background: rgba(212,162,76,0.18); border-radius: 5px; padding: 2px 7px; vertical-align: middle; margin-left: 4px;
+  }
   .plan .detalle { font-size: 12px; color: #5C7680; margin: 0 0 10px; line-height: 1.4; }
   .plan label.checkbox {
     display: flex; align-items: flex-start; gap: 8px; margin: 0 0 10px;
@@ -73,22 +78,22 @@
   <div id="bloqueConfirmando" class="confirmando" style="display:none;">Confirmando tu suscripción…</div>
 
   <div id="bloquePaywall" style="display:none;">
-    <div class="plan">
-      <p class="precio">3,99€ / mes</p>
+    <div class="plan" id="planMensual">
+      <p class="precio">3,99€ / mes <span class="badge-actual" id="badgeMensual" hidden>✓ Tu plan actual</span></p>
       <p class="detalle">Renovación mensual automática. Puedes cancelar cuando quieras — el acceso sigue activo hasta el final del mes ya pagado, sin devolución de ese importe.</p>
       <button type="button" id="btnMensual">Suscribirme mensual</button>
     </div>
-    <div class="plan">
-      <p class="precio">39,99€ / año</p>
+    <div class="plan" id="planAnual">
+      <p class="precio">39,99€ / año <span class="badge-actual" id="badgeAnual" hidden>✓ Tu plan actual</span></p>
       <p class="detalle">Renovación anual automática. Puedes cancelar cuando quieras — el acceso sigue activo hasta el final del año ya pagado, pero ese importe no es reembolsable.</p>
-      <label class="checkbox">
+      <label class="checkbox" id="labelCheckAnual">
         <input type="checkbox" id="checkAnual" />
         Entiendo que, al contratar el plan anual, el servicio empieza de inmediato, renuncio a mi derecho de desistimiento de 14 días para esta compra, y el importe del año ya pagado no se reembolsa aunque cancele antes de que termine.
       </label>
       <button type="button" id="btnAnual" disabled>Suscribirme anual</button>
     </div>
     <p class="nota-legal">¿Tienes un código de descuento? Podrás introducirlo en la propia pantalla de pago de Stripe.</p>
-    <p class="gestionar"><a id="linkGestionar">Gestionar o cancelar mi suscripción actual</a></p>
+    <p class="gestionar"><a id="linkGestionar">Gestionar, cambiar o cancelar mi suscripción</a></p>
   </div>
 
   <p class="volver"><a href="/">← Volver al mapa</a></p>
@@ -126,18 +131,7 @@ async function iniciarCheckout(plan) {
   }
 }
 
-document.getElementById("btnMensual").addEventListener("click", (e) => {
-  e.target.disabled = true;
-  iniciarCheckout("monthly");
-});
-document.getElementById("checkAnual").addEventListener("change", (e) => {
-  document.getElementById("btnAnual").disabled = !e.target.checked;
-});
-document.getElementById("btnAnual").addEventListener("click", (e) => {
-  e.target.disabled = true;
-  iniciarCheckout("annual");
-});
-document.getElementById("linkGestionar").addEventListener("click", async () => {
+async function abrirPortal() {
   const { data: { session } } = await supabase.auth.getSession();
   const resp = await fetch("/crear-portal-stripe", {
     method: "POST",
@@ -146,7 +140,52 @@ document.getElementById("linkGestionar").addEventListener("click", async () => {
   const resultado = await resp.json();
   if (resultado.url) window.location.href = resultado.url;
   else mostrarMensaje(resultado.error || "No se pudo abrir la gestión de la suscripción.", "error");
+}
+
+const btnMensual = document.getElementById("btnMensual");
+const btnAnual = document.getElementById("btnAnual");
+
+btnMensual.addEventListener("click", (e) => {
+  e.target.disabled = true;
+  if (btnMensual.dataset.accion === "cambiar") abrirPortal();
+  else iniciarCheckout("monthly");
 });
+document.getElementById("checkAnual").addEventListener("change", (e) => {
+  btnAnual.disabled = !e.target.checked;
+});
+btnAnual.addEventListener("click", (e) => {
+  e.target.disabled = true;
+  if (btnAnual.dataset.accion === "cambiar") abrirPortal();
+  else iniciarCheckout("annual");
+});
+document.getElementById("linkGestionar").addEventListener("click", abrirPortal);
+
+// Marca el plan que ya se tiene (borde + insignia "Tu plan actual") y
+// convierte el botón del OTRO plan en "Cambiar a..." (vale igual para
+// subir a anual que para bajar a mensual — pedido explícito del
+// usuario) — el cambio en sí se hace desde el Portal de Stripe, que ya
+// resuelve el prorrateo, en vez de escribir esa lógica a mano aquí.
+function aplicarPlanActual(periodo) {
+  if (periodo === "mensual") {
+    document.getElementById("planMensual").classList.add("actual");
+    document.getElementById("badgeMensual").hidden = false;
+    btnMensual.textContent = "Tu plan actual";
+    btnMensual.disabled = true;
+    document.getElementById("labelCheckAnual").style.display = "none";
+    btnAnual.textContent = "Cambiar a anual";
+    btnAnual.disabled = false;
+    btnAnual.dataset.accion = "cambiar";
+  } else if (periodo === "anual") {
+    document.getElementById("planAnual").classList.add("actual");
+    document.getElementById("badgeAnual").hidden = false;
+    document.getElementById("labelCheckAnual").style.display = "none";
+    btnAnual.textContent = "Tu plan actual";
+    btnAnual.disabled = true;
+    btnMensual.textContent = "Cambiar a mensual";
+    btnMensual.disabled = false;
+    btnMensual.dataset.accion = "cambiar";
+  }
+}
 
 function formatearFecha(iso) {
   if (!iso) return null;
@@ -201,10 +240,15 @@ async function iniciar() {
   const estado = await comprobarEstado();
   if (estado && estado.estado === "admin") {
     subEstadoEl.textContent = "Tienes acceso de administrador, sin necesidad de suscripción.";
-  } else if (estado && estado.con_acceso && estado.prueba_termina_en) {
-    subEstadoEl.textContent = `Estás en tu semana de prueba gratuita, hasta el ${formatearFecha(estado.prueba_termina_en)}.`;
+  } else if (estado && estado.periodo) {
+    // Ya pasó por Checkout alguna vez (trialing/active de Stripe, no el
+    // trial de la app) — se distingue de "solo en prueba" precisamente
+    // porque tiene un periodo real. aplicarPlanActual() marca cuál es
+    // y convierte el otro botón en "Cambiar a...".
+    subEstadoEl.textContent = `Tu plan: ${estado.periodo}, próxima renovación el ${formatearFecha(estado.periodo_actual_fin) || "—"}.`;
+    aplicarPlanActual(estado.periodo);
   } else if (estado && estado.con_acceso) {
-    subEstadoEl.textContent = `Suscripción activa (${estado.periodo || ""}), próxima renovación el ${formatearFecha(estado.periodo_actual_fin) || "—"}.`;
+    subEstadoEl.textContent = `Estás en tu semana de prueba gratuita, hasta el ${formatearFecha(estado.prueba_termina_en)}.`;
   } else {
     subEstadoEl.textContent = "Tu prueba gratuita ha terminado. Suscríbete para seguir usando Costa Viva.";
   }
