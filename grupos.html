@@ -16,7 +16,7 @@
   * { box-sizing: border-box; }
   body {
     margin: 0; font-family: 'Inter', sans-serif; background: #F7F3E8; color: #0B2532;
-    display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; padding-bottom: calc(64px + env(safe-area-inset-bottom));
+    display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; padding-bottom: calc(72px + env(safe-area-inset-bottom));
   }
   header { padding: 10px 20px; border-bottom: 1px solid #DDE2DC; flex-shrink: 0; display: flex; align-items: center; gap: 12px; }
   header .titulos { flex: 1; min-width: 0; }
@@ -92,21 +92,21 @@
   .mensaje.error { display: block; background: rgba(163,74,53,0.15); color: #A34A35; border: 1px solid #A34A35; }
   .mensaje.ok { display: block; background: rgba(79,157,105,0.12); color: #3A6B4C; border: 1px solid #A8D4B8; }
 
+  /* Menú inferior rediseñado 2026-09-15 (pedido explícito del usuario: "muy
+     feo... más grandes, con las palabras en una línea") — icono y texto en
+     fila (antes apilados en dos líneas) dentro de una píldora, la pestaña
+     activa con relleno dorado sólido en vez de solo un tinte del icono. */
   .tabs-nav {
-    position: fixed; left: 0; right: 0; bottom: 0; height: calc(64px + env(safe-area-inset-bottom));
-    background: #FFFFFF; border-top: 1px solid #DDE2DC; display: flex; gap: 6px; padding: 8px 8px calc(8px + env(safe-area-inset-bottom)) 8px; z-index: 700;
+    position: fixed; left: 0; right: 0; bottom: 0; height: calc(72px + env(safe-area-inset-bottom));
+    background: #FFFFFF; border-top: 1px solid #DDE2DC; display: flex; gap: 8px; padding: 10px 10px calc(10px + env(safe-area-inset-bottom)) 10px; z-index: 700;
   }
   .tabs-nav a {
-    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 3px; text-decoration: none; color: #5C7680; border-radius: 12px;
-    font-family: 'Inter', sans-serif; font-size: 10.5px; font-weight: 500;
+    flex: 1; display: flex; flex-direction: row; align-items: center; justify-content: center;
+    gap: 7px; text-decoration: none; color: #42585F; border-radius: 14px; background: #EEF2EF;
+    font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; white-space: nowrap;
   }
-  .tabs-nav a .icono {
-    font-size: 18px; line-height: 1; width: 32px; height: 32px; border-radius: 10px;
-    background: #EEF2EF; display: flex; align-items: center; justify-content: center;
-  }
-  .tabs-nav a.activa { color: #A8792A; }
-  .tabs-nav a.activa .icono { background: rgba(212,162,76,0.18); }
+  .tabs-nav a .icono { font-size: 20px; line-height: 1; }
+  .tabs-nav a.activa { color: #FFFFFF; background: #A8792A; }
 </style>
 </head>
 <body>
