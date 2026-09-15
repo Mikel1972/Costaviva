@@ -24,24 +24,39 @@ jobs:
   registrar:
     runs-on: ubuntu-latest
     steps:
-      # Reintento añadido 2026-09-13: ~2 de cada 7 pasadas fallaban con
-      # "HTTP 503 / error code: 1102" (límite de recursos intermitente de
-      # Cloudflare Workers, ya documentado en registrar-presion.js — no
-      # es un fallo nuestro de lógica, se confirmó que reintentar más
-      # tarde funciona). Antes solo se recuperaba en la siguiente pasada
-      # horaria; ahora reintenta hasta 3 veces con una pequeña espera
-      # antes de darse por vencido, para perder menos horas de historial.
-      - name: Llamar a /registrar-presion (con reintentos)
+      # Reintento añadido 2026-09-13, repartido en varias peticiones desde
+      # 2026-09-15: "HTTP 503 / error code: 1102" (límite de CPU de
+      # Cloudflare Workers, ya documentado en registrar-presion.js) seguía
+      # dando ~30% de fallos con una sola petición que hacía presión +
+      # coeficientes de los 95 spots de golpe — cada petición HTTP tiene su
+      # propio presupuesto de CPU, así que ahora se reparte en 5 llamadas
+      # (presión entera + 4 lotes de coeficientes, ~24 spots cada uno) en
+      # vez de una sola. Cada llamada reintenta hasta 3 veces por su cuenta
+      # antes de darse por vencida — un fallo en un lote no bloquea a los
+      # demás, se pierde solo ese cuarto de spots esa hora.
+      - name: Llamar a /registrar-presion (presión + 4 lotes de coeficientes, con reintentos)
         run: |
-          for intento in 1 2 3; do
-            code=$(curl -sS -o /tmp/resp.json -w "%{http_code}" -X POST \
-              -H "X-Cron-Secret: ${{ secrets.PRESION_CRON_SECRET }}" \
-              --max-time 30 \
-              "https://costaviva.org/registrar-presion")
-            echo "Intento $intento: HTTP $code"
-            cat /tmp/resp.json
-            echo
-            if [ "$code" = "200" ]; then exit 0; fi
-            if [ "$intento" != "3" ]; then sleep 20; fi
+          llamar() {
+            local url="$1"
+            for intento in 1 2 3; do
+              code=$(curl -sS -o /tmp/resp.json -w "%{http_code}" -X POST \
+                -H "X-Cron-Secret: ${{ secrets.PRESION_CRON_SECRET }}" \
+                --max-time 30 \
+                "$url")
+              echo "  Intento $intento: HTTP $code"
+              cat /tmp/resp.json
+              echo
+              if [ "$code" = "200" ]; then return 0; fi
+              if [ "$intento" != "3" ]; then sleep 20; fi
+            done
+            return 1
+          }
+
+          fallo=0
+          echo "== Presión =="
+          llamar "https://costaviva.org/registrar-presion" || fallo=1
+          for lote in 0 1 2 3; do
+            echo "== Coeficientes, lote $lote =="
+            llamar "https://costaviva.org/registrar-presion?lote=$lote" || fallo=1
           done
-          exit 1
+          exit $fallo

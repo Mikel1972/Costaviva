@@ -680,7 +680,6 @@
       <div class="etq" style="margin-bottom:6px;">WEBCAM EN DIRECTO</div>
       <div id="panelWebcamContenido"></div>
     </div>
-    <p class="nota-final">Estimación orientativa combinando altura, viento y el ángulo entre sus direcciones. Pendiente: claridad de agua, caudal de ríos y cámara fija.</p>
   </div>
 </div>
 
@@ -2152,34 +2151,6 @@ const SPOTS_CON_WEBCAM = [
   // verificadas 2026-09-14
   "hondarribia", "donostia", "orio", "zarautz", "deba", "mutriku",
 ];
-// Subconjunto de SPOTS_CON_WEBCAM donde SÍ se calcula la lectura visual de
-// oleaje (puntuacionOleajeVisual). Se descargó y miró a mano la imagen real
-// de cada cámara (2026-09-09); el criterio NO es "mar abierto sí, puerto no"
-// — una dársena pesquera o una marisma son spots de pesca válidos igual que
-// una rompiente expuesta, y la lectura describe lo que se ve en ESA cámara,
-// no el estado general de la zona. Se excluye solo cuando:
-//   1) la cámara está caída / da un cartel de "inactiva" (portosin),
-//   2) el encuadre no muestra agua de verdad, dominado por árboles/tejados/
-//      vista lejana de tierra (corrubedo, ons, canetdeberenguer, cullera,
-//      valencia-LasArenas),
-//   3) es una zona sin relación con la pesca: terminal de ferris o puerto
-//      industrial/comercial (denia, burriana, castellon).
-// Antes de añadir una cámara nueva aquí hay que mirar la imagen real.
-const SPOTS_CON_LECTURA_VISUAL = [
-  "mundaka", "bakio", "sopelana",
-  "baiona", "acoruna", "camarinas", "cangas", "ribadeo", "cies",
-  "suances", "castrourdiales", "laredo", "sanvicente", "comillas", "santona",
-  "calpe", "peniscola", "gandia", "alicante", "altea",
-  "benidorm", "guardamardelsegura", "vilajoiosa",
-  "pilardelahoradada", "santapola", "javea", "alcossebre", "benicassim",
-  "xilxes", "oropesa", "torreblanca", "vinaros", "alboraya", "pobladefarnals",
-  "oliva", "piles",
-  "calamillor", "sonbou", "muro",
-  // Gipuzkoa (vídeo HLS, ver WEBCAMS_HLS) — a diferencia de las de arriba,
-  // aquí SÍ se ve mar abierto de verdad en las 6 (Diputación Foral de
-  // Gipuzkoa, verificadas con petición real 2026-09-14).
-  "hondarribia", "donostia", "orio", "zarautz", "deba", "mutriku",
-];
 
 // Webcams en vídeo en directo (HLS) — Diputación Foral de Gipuzkoa,
 // verificadas con petición real el 2026-09-14 (CORS abierto de par en par,
@@ -2238,14 +2209,10 @@ function pintarWebcam(slug, nombre) {
         EN DIRECTO
       </span>
     </div>
-    ${SPOTS_CON_LECTURA_VISUAL.includes(slug)
-      ? `<div id="lecturaVisual" style="margin-top:8px; font-size:11.5px; color:#5C7680;">👁 Analizando imagen…</div>
     ${lineaTurbidezHtml(slug)}
-    <p class="nota-final" id="notaWebcam">Servida por nuestro propio backend (evita bloqueos CORS del proveedor original). Se actualiza sola cada minuto — la lectura de "estado del mar" se calcula en tu propio navegador a partir del contraste de la imagen, no es una medida en metros.</p>`
-      : `<p class="nota-final" id="notaWebcam">Servida por nuestro propio backend (evita bloqueos CORS del proveedor original). Se actualiza sola cada minuto — solo informativa: esta cámara todavía no tiene verificado si encuadra mar abierto (puede ser interior de puerto/bahía resguardada), así que no calculamos una lectura de oleaje a partir de ella.</p>`}
+    <p class="nota-final" id="notaWebcam">Se actualiza sola cada minuto.</p>
   `;
   const img = document.getElementById("imgWebcam");
-  img.addEventListener("load", () => actualizarLecturaVisual(img));
   img.addEventListener("error", () => {
     pararRefrescoWebcam();
     cont.innerHTML = `<div class="tarjeta" style="text-align:center; color:#42585F; font-size:12px;">
@@ -2278,21 +2245,12 @@ function pintarWebcamHls(slug, nombre) {
         EN DIRECTO
       </span>
     </div>
-    <div id="lecturaVisual" style="margin-top:8px; font-size:11.5px; color:#5C7680;">👁 Analizando vídeo…</div>
     ${lineaTurbidezHtml(slug)}
-    <p class="nota-final" id="notaWebcam">Vídeo en directo (Diputación Foral de Gipuzkoa). La lectura de "estado del mar" se calcula en tu propio navegador a partir de varios frames del vídeo, no es una medida en metros.</p>
+    <p class="nota-final" id="notaWebcam">Vídeo en directo (Diputación Foral de Gipuzkoa).</p>
   `;
   const video = document.getElementById("videoWebcam");
   const url = WEBCAMS_HLS[slug];
 
-  const arrancarLecturas = () => {
-    actualizarLecturaVisualVideo(video);
-    intervaloWebcam = setInterval(() => {
-      const v = document.getElementById("videoWebcam");
-      if (!v) { pararRefrescoWebcam(); return; }
-      actualizarLecturaVisualVideo(v);
-    }, REFRESCO_WEBCAM_MS);
-  };
   const fallo = () => {
     pararRefrescoWebcam();
     destruirHlsActivo();
@@ -2313,142 +2271,13 @@ function pintarWebcamHls(slug, nombre) {
     hlsActivo.loadSource(url);
     hlsActivo.attachMedia(video);
     hlsActivo.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(() => {}));
-    video.addEventListener("loadeddata", arrancarLecturas, { once: true });
     hlsActivo.on(Hls.Events.ERROR, (_evt, data) => { if (data.fatal) fallo(); });
   } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
     video.src = url;
-    video.addEventListener("loadeddata", arrancarLecturas, { once: true });
     video.addEventListener("error", fallo, { once: true });
   } else {
     cont.innerHTML = `<div class="tarjeta" style="text-align:center; color:#42585F; font-size:12px;">Tu navegador no soporta vídeo en directo (HLS).</div>`;
   }
-}
-
-async function actualizarLecturaVisualVideo(video) {
-  const p = await promedioVisualMultiFrame(video);
-  const el = document.getElementById("lecturaVisual"); // recogido de nuevo: el panel pudo cambiar mientras se esperaba
-  if (!el) return;
-  const et = etiquetaOleajeVisual(p);
-  el.innerHTML = `👁 <span style="color:${et.color};">${et.texto}</span>`;
-}
-
-// ---------------------------------------------------------------------------
-// Lectura visual orientativa del estado del mar a partir de la propia imagen
-// de la webcam — corre entera en el navegador de quien la mira (canvas), no
-// en el servidor: decodificar y analizar una foto tarda más de lo que
-// permite el límite de CPU gratuito de Cloudflare Functions por petición.
-//
-// No mide metros: es un proxy de "cuánta espuma/rompiente se ve" basado en
-// contraste local (desviación) y densidad de bordes en la zona inferior de
-// la imagen (donde suele estar el agua en estas cámaras fijas de costa).
-// Los umbrales están puestos a ojo mirando capturas reales de las 3 cámaras,
-// no calibrados contra alturas medidas — de ahí que se muestre como
-// etiqueta cualitativa y nunca como número en metros.
-// ---------------------------------------------------------------------------
-// Refactorizado 2026-09-14 para poder analizar también frames de <video>
-// (webcams HLS de Gipuzkoa), no solo <img> — drawImage() acepta los dos por
-// igual, solo cambia de dónde se saca el ancho/alto natural. Separado en dos
-// pasos (analizarFrame -> gris crudo, puntuacionDeGris -> número) para poder
-// comparar frames entre sí antes de puntuarlos (ver promedioVisualMultiFrame).
-function analizarFrame(source) {
-  const wNat = source.videoWidth || source.naturalWidth;
-  const hNat = source.videoHeight || source.naturalHeight;
-  const w = 160;
-  const h = Math.round((hNat / wNat) * w) || 120;
-  const canvas = document.createElement("canvas");
-  canvas.width = w;
-  canvas.height = h;
-  const ctx = canvas.getContext("2d", { willReadFrequently: true });
-  ctx.drawImage(source, 0, 0, w, h);
-
-  const y0 = Math.round(h * 0.35); // se salta el tercio superior (cielo/tierra/marca de fecha)
-  const alto = h - y0;
-  const { data } = ctx.getImageData(0, y0, w, alto);
-
-  const gris = new Float32Array(w * alto);
-  for (let i = 0, p = 0; i < data.length; i += 4, p++) {
-    gris[p] = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
-  }
-  return { gris, w, alto };
-}
-
-function puntuacionDeGris(gris, w, alto) {
-  const n = w * alto;
-  let sumaBrillo = 0, sumaBrillo2 = 0;
-  for (let p = 0; p < n; p++) { sumaBrillo += gris[p]; sumaBrillo2 += gris[p] * gris[p]; }
-  const media = sumaBrillo / n;
-  const desviacion = Math.sqrt(Math.max(sumaBrillo2 / n - media * media, 0));
-
-  let sumaBorde = 0;
-  for (let y = 1; y < alto; y++) {
-    for (let x = 1; x < w; x++) {
-      const p = y * w + x;
-      sumaBorde += Math.abs(gris[p] - gris[p - 1]) + Math.abs(gris[p] - gris[p - w]);
-    }
-  }
-  const bordeMedio = sumaBorde / (2 * w * alto);
-
-  return Math.min(100, Math.round(desviacion * 0.6 + bordeMedio * 4));
-}
-
-// Diferencia media entre dos frames ya en gris (mismo tamaño) — sirve para
-// detectar un cambio de encuadre (cámara panorámica girando entre frames),
-// no solo cambios de oleaje.
-function diferenciaMediaGris(a, b) {
-  let suma = 0;
-  for (let i = 0; i < a.length; i++) suma += Math.abs(a[i] - b[i]);
-  return suma / a.length;
-}
-
-function puntuacionOleajeVisual(img) {
-  try {
-    const { gris, w, alto } = analizarFrame(img);
-    return puntuacionDeGris(gris, w, alto);
-  } catch (e) {
-    console.log("No se pudo analizar la imagen de la webcam:", e.message);
-    return null;
-  }
-}
-
-// Para webcams en vídeo (HLS, Gipuzkoa): captura varios frames espaciados en
-// el tiempo en vez de uno solo. Pedido explícito del usuario 2026-09-14 —
-// algunas de estas cámaras son panorámicas y pueden girar; en vez de asumir
-// un ciclo de giro conocido, se compara cada frame contra los demás y se
-// descarta el que más se distancia del resto (probable cambio de encuadre a
-// media captura), antes de promediar la puntuación de los que quedan.
-async function promedioVisualMultiFrame(video, nFrames = 3, intervaloMs = 2500) {
-  const frames = [];
-  for (let i = 0; i < nFrames; i++) {
-    try { frames.push(analizarFrame(video)); }
-    catch (e) { console.log("No se pudo capturar un frame:", e.message); }
-    if (i < nFrames - 1) await new Promise((r) => setTimeout(r, intervaloMs));
-  }
-  if (!frames.length) return null;
-  if (frames.length === 1) return puntuacionDeGris(frames[0].gris, frames[0].w, frames[0].alto);
-
-  // Suma de diferencias de cada frame contra todos los demás — el que más
-  // se aparta es el candidato a "cambio de encuadre a media captura".
-  const sumasDiferencia = frames.map((f, i) =>
-    frames.reduce((acc, g, j) => (i === j ? acc : acc + diferenciaMediaGris(f.gris, g.gris)), 0)
-  );
-  let descartado = -1;
-  if (frames.length >= 3) {
-    const ordenados = [...sumasDiferencia].sort((a, b) => b - a);
-    // Solo se descarta si de verdad destaca (más del doble que el segundo
-    // peor) — si los tres son parecidos, es que no hubo giro, se quedan los 3.
-    if (ordenados[0] > ordenados[1] * 2) descartado = sumasDiferencia.indexOf(ordenados[0]);
-  }
-
-  const usados = frames.filter((_, i) => i !== descartado);
-  const puntuaciones = usados.map((f) => puntuacionDeGris(f.gris, f.w, f.alto));
-  return Math.round(puntuaciones.reduce((a, b) => a + b, 0) / puntuaciones.length);
-}
-
-function etiquetaOleajeVisual(puntuacion) {
-  if (puntuacion === null) return { texto: "sin lectura disponible ahora mismo", color: "#42585F" };
-  if (puntuacion < 18) return { texto: "mar en calma (lectura visual)", color: "#4F9D69" };
-  if (puntuacion < 35) return { texto: "oleaje moderado visible", color: "#D4A24C" };
-  return { texto: "oleaje visible con rompiente", color: "#A34A35" };
 }
 
 const COLOR_TURBIDEZ = { "no turbia": "#4F9D69", "turbia": "#D4A24C", "muy turbia": "#A34A35" };
@@ -2457,14 +2286,6 @@ function lineaTurbidezHtml(slug) {
   if (!t) return "";
   const color = COLOR_TURBIDEZ[t.etiqueta] || "#5C7680";
   return `<div style="margin-top:4px; font-size:11.5px; color:#5C7680;">💧 Agua <span style="color:${color};">${t.etiqueta}</span> (relativo a este mismo punto, 1 lectura/día)</div>`;
-}
-
-function actualizarLecturaVisual(img) {
-  const el = document.getElementById("lecturaVisual");
-  if (!el) return;
-  const p = puntuacionOleajeVisual(img);
-  const et = etiquetaOleajeVisual(p);
-  el.innerHTML = `👁 <span style="color:${et.color};">${et.texto}</span>`;
 }
 
 let spotAbiertoActual = null;
