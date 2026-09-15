@@ -1148,7 +1148,7 @@ const ESPECIES = [
   { nombre: "Lubina", emoji: "🐟", zona: "costa", meses: [9, 10, 11, 12, 1, 2, 3, 4],
     rangoTemp: [8, 24],
     nota: "se mueve bien entre 8-24°C, pero por debajo de 7°C casi ni come. Por eso aquí pica mejor de otoño a primavera, y sobre todo al amanecer o anochecer",
-    alimento: "sardinas y anchoas pequeñas (parrotxa), lisas, quisquillas, gusanos de mar y cangrejos de arena — sobre todo en puertos, dársenas y desembocaduras" },
+    alimento: "sardinas y anchoas pequeñas, lisas, quisquillas, gusanos de mar y cangrejos de arena — sobre todo en puertos, dársenas y desembocaduras" },
   { nombre: "Sargo", emoji: "🐟", zona: "costa", meses: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
     rangoTemp: [15, 24],
     nota: "está todo el año en las rompientes; aguanta 15-24°C (FishBase, misma especie que en el resto de España, n=400), óptimo sobre 19°C, pero en el Cantábrico se anima más cuando el agua está en la parte fría de esa franja",
@@ -1172,7 +1172,7 @@ const ESPECIES = [
   { nombre: "Txitxarro / verdel", emoji: "🐟", zona: "mar adentro", meses: [4, 5, 6, 7, 8],
     rangoTemp: [15, 20],
     nota: "aguanta 14-23°C, pero los bancos se juntan entre 15-20°C. Con ese calorcillo suben desde los ~200m de invierno hasta la superficie, pegados a la costa",
-    alimento: "en primavera empieza con zooplancton y va pasando a sardina y anchoa pequeña (parrotxa) conforme avanza la temporada" },
+    alimento: "en primavera empieza con zooplancton y va pasando a sardina y anchoa pequeña conforme avanza la temporada" },
 ];
 
 // Ampliación nacional (2026-09-09): 3 listas nuevas para las zonas cuya
@@ -1205,7 +1205,7 @@ const ESPECIES_MEDITERRANEO = [
   { nombre: "Lubina", emoji: "🐟", zona: "costa", meses: [9,10,11,12,1,2,3],
     rangoTemp: [8, 24],
     nota: "misma especie que en el Cantábrico: se mueve entre 8-24°C y apenas come por debajo de 7°C. Aquí busca desembocaduras (Júcar, Segura) y puertos, sobre todo en otoño-invierno",
-    alimento: "sardinas y anchoas pequeñas, lisas, quisquillas, gusanos y cangrejos de arena" },
+    alimento: "sardinas y anchoas pequeñas (parrotxa), lisas, quisquillas, gusanos y cangrejos de arena" },
   { nombre: "Lisa / Mújol", emoji: "🐟", zona: "costa", meses: [1,2,3,4,5,6,7,8,9,10,11,12],
     rangoTemp: [8, 24],
     nota: "aguanta un rango enorme y casi no depende de la temperatura — vive en playas, puertos y estuarios. El mejor momento suele ser a finales de otoño",
@@ -1222,9 +1222,9 @@ const ESPECIES_MEDITERRANEO = [
     rangoTemp: null,
     nota: "dato dudoso: las fuentes de temperatura se contradicen, así que no forzamos un número. Se acerca a la costa, a pocos centímetros de la superficie, entre verano y otoño",
     alimento: "pequeños crustáceos, moluscos y gusanos de fondos arenosos (dato genérico del género)" },
-  { nombre: "Breca", emoji: "🐟", zona: "costa", meses: [12, 1, 2, 3, 4, 6, 7],
+  { nombre: "Breca", emoji: "🐟", zona: "costa", meses: [1,2,3,4,5,6,7,8,9,10,11,12],
     rangoTemp: [12, 21],
-    nota: "vive entre 12-21°C (FishBase, n=492), óptimo sobre 17°C. Se pesca sobre todo de diciembre a abril, aunque en junio-julio también caen ejemplares grandes. A veces entra en los puertos en pequeños bancos",
+    nota: "vive entre 12-21°C (FishBase, n=492), óptimo sobre 17°C. Desembarco real todo el año en las 3 lonjas catalanas con datos mensuales de DIGIPESCA/RiuNet 2021 (Roses, Blanes, Cambrils) — sin un pico estacional claro, así que se amplía de la ventana anterior (dic-abr y jun-jul) a todo el año en vez de dejar fuera meses con volumen real. A veces entra en los puertos en pequeños bancos",
     alimento: "invertebrados bentónicos y peces pequeños" },
 ];
 
@@ -2434,11 +2434,22 @@ function abrirPanel(s) {
     `<div style="margin-bottom:10px;"><div class="especie-zona-titulo">${titulo}</div>` +
     (lista.length ? lista.map(listaEspecie).join("") : `<span style="color:#42585F;">ninguna de temporada ahora</span>`) +
     `</div>`;
+  // Nota de "parrotxa" (localismo valenciano/catalán, cría de sardina):
+  // antes aparecía SIEMPRE, incluso en spots del Cantábrico/Canarias/
+  // Golfo de Cádiz donde ese término no se usa — bug real detectado por
+  // el usuario 2026-09-15 ("no puede ser que en Cartagena hablemos de
+  // parrotxa"), agravado porque encima estaba puesto en el array
+  // equivocado (Cantábrico tenía la palabra, Mediterráneo no). Corregido
+  // el array y esta nota ahora solo sale si la palabra aparece de verdad
+  // en alguna especie de temporada de ESTE spot, en vez de a ciegas.
+  const hayParrotxa = [...costa, ...marAdentro].some((e) => e.alimento?.includes("parrotxa") || e.nota?.includes("parrotxa"));
   document.getElementById("panelEspecies").innerHTML =
     bloqueZona("🪨 COSTA", costa) + bloqueZona("🌊 MAR ADENTRO", marAdentro) +
-    `<div style="color:#42585F; font-size:10.5px; margin-top:4px; line-height:1.4;">` +
-    `La parrotxa es la cría de sardina — así la llaman por aquí. Cuando hay mucha cerca de la costa, se acercan a por ella la lubina y el bonito sobre todo, y se pesca mejor. Esto no lo medimos nosotros — lo sabes tú mejor mirando el agua.` +
-    `</div>`;
+    (hayParrotxa
+      ? `<div style="color:#42585F; font-size:10.5px; margin-top:4px; line-height:1.4;">` +
+        `La parrotxa es la cría de sardina — así la llaman por aquí. Cuando hay mucha cerca de la costa, se acercan a por ella la lubina y el bonito sobre todo, y se pesca mejor. Esto no lo medimos nosotros — lo sabes tú mejor mirando el agua.` +
+        `</div>`
+      : "");
 
   // Índice de pesca: mismo estilo que el índice de mar (un número orientativo,
   // no una promesa), pero construido a partir de dos cosas reales que sí
