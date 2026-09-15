@@ -668,6 +668,62 @@ especies), 2026-09-14 21:03 UTC.
 
 ---
 
+### 2026-09-15 13:00 UTC (pasada buscadora — migración y cría, cierre de huecos de temperatura)
+
+Continuación directa de la pasada del 2026-09-14 21:03 UTC (misma
+responsabilidad "migración y cría de especies"). Aquella dejó cuatro
+huecos EXPLÍCITOS de "sin cifra fiable de temperatura de puesta":
+**sargo, abadejo, calamar/chipirón y jurel**. Esta pasada fue a por
+esos cuatro en concreto con `WebSearch`, verificando en crudo con
+peticiones HTTP reales las cifras numéricas antes de darlas por buenas
+(regla de `ROBOT_REGLAS.md`: nunca proponer un dato cuantitativo sin
+comprobarlo). Sigue siendo **propuesta pura, sin tocar `ESPECIES` ni
+`indicePesca`**.
+
+**Resultado por hueco:**
+
+| Especie | Temperatura de puesta encontrada | ¿Verificada en crudo? |
+|---|---|---|
+| **Sargo** (*D. sargus*) | Desova mar–may cuando el agua sube de **15 °C a 18 °C** (Golfo de Túnez); en acuicultura pone entre 11,5–24,4 °C pero con **mayor fecundidad a 17,5–20,4 °C**. La temporada se alarga al bajar la latitud. | **Sí** — `WebFetch` a `en.wikipedia.org/wiki/Sargo`: "spawned from March to May, sexual activity began as the water temperature rose from 15 °C to 18 °C". |
+| **Calamar/chipirón** (*L. vulgaris*) | Desarrollo del huevo **12–22 °C** (26–45 días según temperatura); **por debajo de 10 °C los huevos no se desarrollan y mueren**. Esto acota el desove costero al final del invierno/primavera solo donde el fondo no baja de ~10 °C. | **Sí** — `WebFetch` al artículo de *ICES Journal of Marine Science* (Oxford Academic, `academic.oup.com/icesjms/article/79/6/1918/6633838`): "egg development ... takes between 26 and 45 days at 12–22 °C" y "do not develop and die at 10 °C". |
+| **Abadejo** (*P. pollachius*) | Búsqueda apunta a desove a **8–10 °C** (feb–may, a profundidad, aguas offshore con fondo duro). | **NO** — no se pudo confirmar en crudo: Wikipedia EN de *P. pollachius* no da la cifra, FishBase tampoco. La cifra sale solo de resúmenes del buscador (seafishpool.com y similares). **Ojo a no confundir con *P. virens*** (carbonero/pollock, especie DISTINTA) — parte de los resultados eran de esa. Queda como referencia sin verificar, NO como dato fiable. |
+| **Jurel** (*T. trachurus*) | **Sigue sin cifra de temperatura de puesta** tras esta búsqueda. Lo que sí se confirma: temporada de puesta muy larga (hasta ~8 meses, varía con la geografía); en el Mediterráneo oriental dos picos (feb–abr y jul–sep); la temperatura y el fotoperiodo influyen en la maduración, pero ninguna fuente da un rango en °C. | Hueco explícito, no se cierra. |
+
+**Balance:** de los 4 huecos, **2 quedan cerrados y verificados en crudo
+(sargo y calamar)**, 1 con dato solo de buscador y sin verificar
+(abadejo), 1 sigue abierto (jurel). Sumado a lo de la pasada anterior
+(lubina y verdel/caballa ya traían umbral verificado), ya hay **cuatro
+especies de las siete con rango de temperatura de reproducción
+verificado**: lubina (óptimo 12–14 °C, huevos raros bajo 8,5–9 °C o
+sobre 15 °C), verdel/caballa (~10 °C), sargo (15–18 °C al subir) y
+calamar (12–22 °C, muere bajo 10 °C).
+
+**Propuesta (idéntica en espíritu a la del 2026-09-14, ahora con más
+casillas rellenas):** si el usuario decide añadir un campo informativo
+de temporada/temperatura de reproducción a `ESPECIES`, ya hay cuatro
+especies con cifra defendible. Para cualquier uso CUANTITATIVO en
+`indicePesca` (no solo texto informativo) sigue haciendo falta calibrar
+el peso contra capturas reales — no propongo cifras de peso, sería
+inventar. Abadejo y jurel deben quedar sin cifra de temperatura hasta
+encontrar una fuente verificable en crudo, mismo criterio de "null mejor
+que inventado".
+
+**Fuentes** (todas por `WebSearch`, más las dos verificadas en crudo con
+`WebFetch` ya citadas en la tabla): Scientia Marina (CSIC) y Wikipedia EN
+para *Diplodus sargus*; *ICES Journal of Marine Science* (Oxford
+Academic), ResearchGate y ScienceDirect para *Loligo vulgaris*;
+seafishpool.com, animaldiversity.org (este último de *P. virens*, ojo) y
+FishBase para *Pollachius pollachius*; Wageningen UR, ResearchGate y
+PMC (revisión en el Mediterráneo oriental marroquí) para *Trachurus
+trachurus*.
+
+**Sin cambios en código** — investigación de contenido, propuesta pura.
+
+**Firmado:** robot buscador de fuentes (pasada de migración y cría de
+especies), 2026-09-15 13:00 UTC.
+
+---
+
 ### 2026-09-14 23:31 UTC (pasada buscadora — presión atmosférica e histórico por zona)
 
 **Qué se buscó:** fuentes de presión atmosférica y, sobre todo, de
