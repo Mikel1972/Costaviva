@@ -153,14 +153,20 @@ export async function onRequestPost(context) {
       }
       const item = obj.items?.data?.[0];
       const estado = evento.type === "customer.subscription.deleted" ? "canceled" : obj.status;
+      // Verificado en real contra un evento de prueba (2026-09-15): en
+      // esta versión de la API de Stripe, current_period_end YA NO vive
+      // en el objeto Subscription de nivel superior (venía null) — se
+      // movió al subscription_item. trial_end sí sigue en el nivel
+      // superior y coincide con el fin del periodo durante el trial.
+      const finPeriodoUnix = item?.current_period_end || obj.trial_end || null;
       await upsertSuscripcion(serviceRoleKey, {
         user_id: userId,
         stripe_customer_id: obj.customer,
         stripe_subscription_id: obj.id,
         estado,
         periodo: PERIODOS_POR_PRECIO[item?.price?.id] || null,
-        periodo_actual_fin: obj.current_period_end
-          ? new Date(obj.current_period_end * 1000).toISOString()
+        periodo_actual_fin: finPeriodoUnix
+          ? new Date(finPeriodoUnix * 1000).toISOString()
           : null,
         actualizado_en: new Date().toISOString(),
       });
