@@ -123,10 +123,18 @@ jobs:
         run: |
           curl -sSL -o /tmp/pez.jpg "https://upload.wikimedia.org/wikipedia/commons/d/d0/Bar_%28Dicentrarchus_labrax%29_%28Ifremer_00735-84702%29_%28cropped%29.jpg"
           if [ ! -s /tmp/pez.jpg ]; then echo "::error::No se pudo descargar la foto de prueba"; exit 1; fi
-          base64_img=$(base64 -w0 /tmp/pez.jpg)
+          # El base64 de la foto (~400KB) no cabe como argumento de línea de
+          # comandos ("Argument list too long", confirmado en real
+          # 2026-09-15) — el cuerpo se arma en un fichero y curl lo lee con
+          # -d @fichero en vez de pasarlo inline.
+          node -e "
+            const fs = require('fs');
+            const img = fs.readFileSync('/tmp/pez.jpg').toString('base64');
+            fs.writeFileSync('/tmp/payload.json', JSON.stringify({ imagenBase64: img, tipoMime: 'image/jpeg' }));
+          "
           resp=$(curl -sS -X POST "$PRODUCCION_URL/identificar-captura" \
             -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
-            -d "{\"imagenBase64\":\"$base64_img\",\"tipoMime\":\"image/jpeg\"}")
+            -d @/tmp/payload.json)
           echo "$resp" > /tmp/identificacion.json
           especie=$(node -e "
             const fs = require('fs');
