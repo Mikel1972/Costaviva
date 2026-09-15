@@ -319,12 +319,34 @@ function calcularMarea(horas, alturas, coeficienteCacheado) {
   const validas = alturas.filter((v) => v !== null && v !== undefined);
   const minVentana = validas.length ? Math.min(...validas) : 0;
 
-  const eventos = [];
+  const eventosCrudos = [];
   for (let i = 1; i < alturas.length - 1; i++) {
     const [prev, cur, next] = [alturas[i - 1], alturas[i], alturas[i + 1]];
     if (cur === null || prev === null || next === null) continue;
-    if (cur >= prev && cur >= next) eventos.push({ tipo: "pleamar", hora: horas[i], altura: cur - minVentana });
-    else if (cur <= prev && cur <= next) eventos.push({ tipo: "bajamar", hora: horas[i], altura: cur - minVentana });
+    if (cur >= prev && cur >= next) eventosCrudos.push({ tipo: "pleamar", hora: horas[i], altura: cur - minVentana });
+    else if (cur <= prev && cur <= next) eventosCrudos.push({ tipo: "bajamar", hora: horas[i], altura: cur - minVentana });
+  }
+  // Bug real encontrado por el robot de experiencia de usuario
+  // (2026-09-15): en spots de marea casi nula (Mediterráneo bajo —
+  // Peñíscola, Gandía, Torreblanca, Vinaròs, Piles, Cala Millor,
+  // Son Bou, Muro...) el ruido del propio modelo (unos pocos cm) genera
+  // pleamares/bajamares falsos muy seguidos entre sí: dos pleamares
+  // seguidas, o una pleamar y una bajamar casi a la misma altura con 1h
+  // de diferencia — contradictorio para cualquiera que lo mire. Se
+  // descarta un evento cuando su altura difiere del evento anterior en
+  // menos que este umbral (ruido del modelo, no una marea real de
+  // verdad), quedándose con el más extremo de los dos.
+  const UMBRAL_RUIDO_MAREA_M = 0.12;
+  const eventos = [];
+  for (const e of eventosCrudos) {
+    const anterior = eventos[eventos.length - 1];
+    if (anterior && Math.abs(e.altura - anterior.altura) < UMBRAL_RUIDO_MAREA_M) {
+      const esMasExtremo =
+        (e.tipo === "pleamar" && e.altura > anterior.altura) || (e.tipo === "bajamar" && e.altura < anterior.altura);
+      if (esMasExtremo) eventos[eventos.length - 1] = e;
+      continue;
+    }
+    eventos.push(e);
   }
 
   const ahoraISO = horaActualMadridISO();
