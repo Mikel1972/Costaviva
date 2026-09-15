@@ -1660,6 +1660,101 @@ criterio de atribución que EMODnet.
 **Firmado:** robot buscador de fuentes (pasada de corrientes marinas),
 2026-09-15 18:35 UTC.
 
+### 2026-09-15 23:12 UTC (pasada buscadora — presión atmosférica e histórico por zona)
+
+**Qué se buscó y por qué:** las dos pasadas previas de este mismo tema
+(2026-09-14 23:31 y 2026-09-15 13:33, más arriba) ya cubrieron el
+**reanálisis por coordenada** (Open-Meteo Historical Weather API / archivo
+ERA5 + Historical Forecast API, verificados) y la **observación por
+estación** vía AEMET (España, sin poder probar el histórico diario por
+falta de `AEMET_API_KEY`) e IPMA (Portugal, verificado en vivo). Para no
+repetir, esta pasada fue al hueco que quedaba: una fuente de **histórico
+observado por estación, profundo (décadas) y bulk**, que sirva para
+backfill de `presion_historico` hacia atrás y como referencia de
+calibración — cubriendo España y Portugal a la vez.
+
+**Nota de entorno:** este runner tiene salida de red a dominios de datos
+(a diferencia de las pasadas de agosto, ver 2026-08-31) — todo lo de abajo
+se verificó con peticiones HTTP reales, no solo por búsqueda.
+
+**Hallazgo 1 verificado en vivo — Meteostat (bulk data interface):**
+observación histórica por estación, sin autenticación ni API key.
+- Catálogo de estaciones (`https://bulk.meteostat.net/v2/stations/lite.json.gz`,
+  ~806 KB, `200`): 15.931 estaciones globales, cada una con `id`,
+  coordenadas (`location.latitude/longitude/elevation`) e identificadores
+  `wmo`/`icao`. **104 estaciones en España, 39 en Portugal** — suficiente
+  para curar por coordenada las costeras cercanas a cada spot, igual que
+  `ESTACIONES_AEMET`. Ej. verificado: `08025` = "Bilbao / Sondica",
+  `[43.3, -2.9333]`, WMO 08025 / ICAO LEBB.
+- Serie horaria por estación (`https://bulk.meteostat.net/v2/hourly/08025.csv.gz`,
+  ~3 MB, `200`): CSV horario con columnas
+  `date,hour,temp,dwpt,rhum,prcp,snow,wdir,wspd,wpgt,pres,tsun,coco` — la
+  **11ª columna `pres` es presión real en hPa**. Verificado en vivo:
+  Bilbao arranca en **1973-01-01** (`pres` 1025.3 hPa) y la última fila
+  del fichero descargado hoy era **2025-09-13** (1018.2 hPa). Décadas de
+  observación real, en un solo fichero por estación.
+
+**Pega importante de Meteostat — licencia CC BY-NC 4.0 (no comercial):**
+confirmado en su web de términos/licencia y por búsqueda. Meteostat no
+posee los datos (los agrega de servicios públicos: NOAA, DWD...), pero
+**redistribuye bajo Creative Commons Attribution-NonCommercial 4.0** — la
+cláusula NC es un problema real ahora que Costa Viva tiene paywall de
+suscripción (ver `CLAUDE.md`, Stripe 2026-09-15). Por eso Meteostat queda
+como **referencia de calibración/contraste offline** (comparar nuestra
+tendencia de presión contra observación real), NO como fuente servida
+dentro de la app de pago. Para eso, el hallazgo 2:
+
+**Hallazgo 2 verificado en vivo — NOAA NCEI "Global Hourly" (ISD), la
+alternativa de dominio público:** misma naturaleza (presión observada por
+estación, décadas de profundidad) pero **dominio público** (obra del
+gobierno de EE.UU., sin cláusula NC — apta para uso comercial), sin API
+key. CSV por año y estación:
+`https://www.ncei.noaa.gov/data/global-hourly/access/2024/08025099999.csv`
+(`200`, ~9,3 MB, 25.627 filas para Bilbao 2024). Trae `STATION`, `DATE`,
+`LATITUDE`, `LONGITUDE` y la columna **`SLP`** (presión a nivel del mar):
+formato codificado en décimas de hPa + flag de calidad (ej. `10200,1` =
+1020.0 hPa; centinela de ausente `99999`). Es la misma fuente primaria de
+la que Meteostat bebe, pero sin el intermediario ni la licencia NC.
+
+**Encaje / utilidad concreta:** cualquiera de las dos permitiría backfill
+observado real de `presion_historico` (complementario al reanálisis ERA5
+de Open-Meteo ya documentado) y calibrar la tendencia de presión que
+`ROBOT_REGLAS.md` (sección "Variables adicionales para el índice de
+pesca") apunta como candidata a mejorar `indicePesca`. Para una app de
+pago, la vía correcta es NCEI/ISD (dominio público) o el archivo de
+Open-Meteo (CC BY 4.0), reservando Meteostat solo para contraste interno.
+
+**Aviso de cuota:** ambas son bulk-por-estación (un fichero cubre toda la
+serie histórica de una estación), no por-ubicación como la Marine API de
+Open-Meteo — así que no multiplican cuota al estilo de `ROBOT_REGLAS.md`
+(sección de cuota Open-Meteo). Ficheros grandes (MB), conviene bajarlos
+por lotes/una vez y cachear, nunca en caliente dentro de `/prevision`.
+
+**Flag colateral, fuera del alcance de presión pero relevante y nuevo
+(anotado, no investigado a fondo aquí):** al mirar licencias salió que el
+propio Open-Meteo se declara "free for non-commercial use" (el uso
+comercial requiere su plan de pago), y la app ya depende de Open-Meteo
+para casi todo. Con el paywall recién lanzado, merecería una revisión
+dedicada de si el uso actual de Open-Meteo (y de cualquier otra fuente
+"gratis solo no comercial") encaja con una app de pago — es una cuestión
+legal/de producto, no algo que este robot deba resolver ni tocar; solo
+queda apuntada aquí para que el usuario la valore.
+
+**Por qué solo propuesta, no implementación** (ver `ROBOT_REGLAS.md`):
+integrar cualquiera de estas tocaría `functions/` (endpoint de backfill o
+`ESTACIONES_*` nuevas + parseo) y/o `supabase/`, por encima del límite de
+volumen para aplicar directo; y usar la tendencia de presión como
+modificador de `indicePesca` es decisión de producto. No se ha tocado
+código — solo esta entrada de bitácora.
+
+**Fuentes:**
+[Meteostat — Bulk Data](https://dev.meteostat.net/data/bulk),
+[Meteostat — Terms & License (CC BY-NC 4.0)](https://dev.meteostat.net/terms.html),
+[NOAA NCEI — Global Hourly (ISD)](https://www.ncei.noaa.gov/products/land-based-station/integrated-surface-database).
+
+**Firmado:** robot buscador de fuentes (pasada de presión atmosférica e
+histórico por zona), 2026-09-15 23:12 UTC.
+
 ---
 
 ## Auditoría de datos
