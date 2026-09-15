@@ -78,8 +78,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          linea=$(gh run list --workflow=smoke-test.yml --limit 1 --json conclusion,createdAt,htmlUrl \
-            --jq '.[0] | "\(.conclusion // "en curso") — \(.createdAt) — \(.htmlUrl)"' 2>/dev/null || echo "")
+          linea=$(gh run list --workflow=smoke-test.yml --limit 1 --json conclusion,createdAt,url \
+            --jq '.[0] | "\(.conclusion // "en curso") — \(.createdAt) — \(.url)"' 2>/dev/null || echo "")
           if [ -z "$linea" ]; then
             echo "resultado=no se pudo consultar" >> "$GITHUB_OUTPUT"
           else
