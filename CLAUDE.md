@@ -1262,6 +1262,36 @@ un fragmento) — es una limitación de ese entorno de pruebas, no del
 código; para depurar reproducción de vídeo de verdad, pedir al usuario
 que pruebe en su propio navegador en vez de fiarse de la automatización.
 
+**✅ Quitada del todo (2026-09-15): la "lectura visual" de oleaje
+(`puntuacionOleajeVisual()`/`etiquetaOleajeVisual()` de arriba) resultó no
+ser un problema de umbral mal puesto, sino de raíz — la métrica confunde
+"muchos bordes de alto contraste" con "oleaje".** Reportado por el
+usuario ("por qué pone esto siempre?"), investigado descargando 5
+imágenes reales de cámaras de proveedores distintos y replicando el
+cálculo exacto en Node (`sharp`) fuera del navegador: Laredo y Calpe
+(puertos deportivos llenos de barcos amarrados, agua totalmente en calma)
+puntuaron 93 y 100 — MÁS alto que Bakio (58, oleaje real con espuma) —
+porque los cascos/mástiles/reflejos de los barcos generan tantos "bordes"
+como la espuma de una ola rompiendo. Mundaka, con el mar liso, ya
+puntuaba 38 (por encima del umbral de "rompiente", 35) solo por el ruido
+de sensor/compresión JPEG y los edificios de la orilla en el recorte
+inferior. No hay un único umbral que separe bien ambos casos porque el
+puerto en calma ya puntúa por encima del mar agitado de verdad — subir el
+umbral rompería la detección real (Bakio, 58) antes de dejar de marcar
+falsos positivos en los puertos. Decisión del usuario, con este hallazgo
+ya sobre la mesa: quitar la función entera en vez de intentar excluir a
+mano las ~15 cámaras de puerto/marina de `SPOTS_CON_LECTURA_VISUAL`. Se
+borraron `SPOTS_CON_LECTURA_VISUAL`, `analizarFrame()`,
+`puntuacionDeGris()`, `diferenciaMediaGris()`, `puntuacionOleajeVisual()`,
+`promedioVisualMultiFrame()`, `etiquetaOleajeVisual()`,
+`actualizarLecturaVisual()`/`actualizarLecturaVisualVideo()` y el `<div
+id="lecturaVisual">` de los dos paneles de webcam (imagen fija y HLS) —
+las webcams en sí (imagen y vídeo HLS) se quedan igual, solo desaparece
+el indicador "👁 ...". Los comentarios de
+`scripts/turbidez/medir-turbidez.mjs` que citaban esta función (es un
+cálculo HSV independiente, nunca importó nada de `index.html`) se
+actualizaron para no referenciar algo que ya no existe.
+
 **Turbidez relativa del agua** — pieza completa nueva (no confundir con
 el oleaje visual, es un cálculo aparte): tabla `turbidez_historico`
 (pendiente de aplicar la migración
