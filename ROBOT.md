@@ -768,6 +768,73 @@ No se ha tocado código.
 **Firmado:** robot buscador de fuentes (pasada de presión atmosférica e
 histórico por zona), 2026-09-14 23:31 UTC.
 
+### 2026-09-15 08:20 UTC (pasada buscadora — webcams para spots sin cámara)
+
+**Objetivo de la pasada:** misma tarea recurrente que las del 2026-09-13
+22:57 y 2026-09-14 08:14 UTC — buscar cámaras nuevas para spots fijos sin
+cámara. Como aquellas dos ya cubrieron a fondo el Cantábrico (AZTI,
+Gobierno de Cantabria) y Galicia (lista oficial de MeteoGalicia), esta
+pasada abrió tres zonas todavía sin explorar en las pasadas anteriores:
+**Canarias, Andalucía y la costa atlántica portuguesa** (que hoy no tiene
+ni una sola cámara integrada, pese a tener 15 spots fijos).
+
+**Red sí alcanzable desde este runner** (a diferencia del entorno
+nocturno remoto, ver 2026-08-31): `example.com` `200`, `meteogalicia.gal`
+`302`. **`cantabria.es` sigue sin ser alcanzable** (timeout puro a los
+20 s pidiendo una de las imágenes ya integradas,
+`suances-New-85.jpg`) — mismo bloqueo que vieron las pasadas del
+2026-09-13/14, así que sigo sin poder verificar la cámara de Santander/El
+Sardinero (la pista firme de aquellas pasadas queda igual de válida, y
+igual de pendiente de comprobación manual desde un navegador normal).
+
+**Canarias (Las Palmas / Las Canteras, El Médano, etc.):** solo aparecen
+agregadores de terceros (SkylineWebcams, webcamtaxi, canariaslife,
+miplayadelascanteras) — el mismo tipo de fuente que las pasadas
+anteriores ya descartaron por no ser institucional y no dar una URL de
+imagen hotlinkable. Comprobado en vivo con `WebFetch` sobre
+`miplayadelascanteras.com/webcam-de-la-cicer-hd/`: es una SPA, el stream
+se carga por JavaScript, no hay `.m3u8`/`.jpg`/`img src` en el HTML
+servido. Sin fuente institucional con imagen directa. Queda sin cámara.
+
+**Andalucía (Cádiz, Conil, Chipiona):** la web institucional **Puertos de
+Andalucía** (`puertosdeandalucia.es`) tiene ficha de cada puerto pero
+**ninguna cámara embebida** — comprobado en vivo con `WebFetch` sobre la
+ficha del Puerto de Conil: solo datos de contacto y concesionario, ningún
+feed de imagen/vídeo. El resto de resultados son agregadores (Skyline,
+lacostadecadiz, andalucialive). Sin fuente institucional con imagen
+directa. Queda sin cámara.
+
+**Portugal (Nazaré, Ericeira, Peniche, Cascais, Matosinhos...):** la red
+de referencia es **Beachcam** (hoy operada por MEO,
+`beachcam.meo.pt`). **Hallazgo nuevo y útil: Beachcam es ahora un
+servicio de pago** ("Beachcam+", 3,49 €/mes) — `WebFetch` a la página de
+la cámara de Nazaré (Praia do Norte) devuelve **`403 Forbidden`**. Los
+antiguos streams HLS públicos de Beachcam
+(`http://video-auth1.iol.pt:1935/beachcam/<playa>/chunks.m3u8`, que aún
+aparecen en listas IPTV de terceros en GitHub) están **muertos**:
+probados dos en vivo (`nazareparadonorte`, `lagide`) → timeout puro, el
+servidor legacy ya no sirve. **Conclusión para todos los spots
+portugueses: no hay fuente gratuita/hotlinkable viable hoy** — la fuente
+natural (Beachcam) se ha cerrado tras un muro de pago. Anotado
+expresamente para que futuras pasadas no vuelvan a perseguir Beachcam ni
+sus URLs HLS heredadas.
+
+**Resultado neto de la pasada: sin novedades integrables.** Ninguna
+webcam nueva para un spot fijo existente en Canarias, Andalucía ni
+Portugal — todas las fuentes encontradas son agregadores de terceros sin
+imagen directa, fichas institucionales sin cámara, o (Beachcam) un
+servicio que pasó a ser de pago y responde `403`. Sin cambios de código
+(y cualquier integración de webcam tocaría `functions/webcam/[slug].js`,
+que por la red de seguridad de `ROBOT_REGLAS.md` sería propuesta, no
+commit directo, de todos modos).
+
+**Fuentes:** [Puertos de Andalucía — Puerto de Conil](https://www.puertosdeandalucia.es/puertos/puertos/cadiz/puerto-de-conil),
+[Mi Playa de Las Canteras — webcam La Cícer](https://miplayadelascanteras.com/webcam-de-la-cicer-hd/),
+[Beachcam MEO — Livecams](https://beachcam.meo.pt/livecams/).
+
+**Firmado:** robot buscador de fuentes (pasada de webcams), 2026-09-15
+08:20 UTC.
+
 ---
 
 ## Auditoría de datos
