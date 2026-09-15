@@ -933,6 +933,129 @@ de lonja/DIGIPESCA), 2026-09-15 09:18 UTC.
 
 ---
 
+### 2026-09-15 09:30 UTC (pasada buscadora — caudal de ríos por zona y estaciones de monte, España y Portugal)
+
+**Qué se buscó:** (1) una fuente abierta y automatizable de caudal de
+los ríos vascos de `RIOS` en `index.html` (los 6 de Bizkaia — Lea, Oka,
+Estepona/Zarraga, Butroe, Arroyo Sopelana, Nervión — que hoy salen con
+`caudal: null` porque URA/Bizkaia bloquea el acceso automático, ver el
+comentario en `functions/prevision.js`); (2) estaciones de monte con
+precipitación/presión real (estilo `ESTACIONES_AEMET`) para toda la
+costa de **España y Portugal**, no solo Euskadi.
+
+---
+
+**HALLAZGO PRINCIPAL — IPMA (Portugal), fuente nueva verificada en vivo,
+PROPUESTA (no aplicada).** Costa Viva cubre España y Portugal pero hoy
+no tiene NINGUNA fuente de datos portuguesa integrada (ni estaciones
+meteo ni caudal). El Instituto Português do Mar e da Atmosfera (IPMA)
+publica una API abierta, sin registro ni token, con observación horaria
+de sus estaciones — el equivalente portugués exacto de `ESTACIONES_AEMET`:
+
+- Estaciones (GeoJSON, id + nombre + coordenadas):
+  `https://api.ipma.pt/open-data/observation/meteorology/stations/stations.json`
+- Observaciones horarias (últimas 24 h):
+  `https://api.ipma.pt/open-data/observation/meteorology/stations/observations.json`
+
+**Verificado con petición real hoy 2026-09-15 ~09:30 UTC**: el endpoint
+de observaciones devolvió `200 application/json` (~1,0 MB), con 24
+marcas horarias (última `2026-09-15T08:00`, es decir dato de hace <1 h)
+y 222 estaciones en la última hora. Estructura: objeto indexado por
+timestamp → objeto indexado por `idEstacao` → medida con los campos
+`pressao` (hPa), `precAcumulada` (mm), `temperatura` (°C), `humidade`
+(%), `intensidadeVentoKM` (km/h), `idDireccVento`, `radiacao`. **Valor
+ausente = `-99.0`** (hay que tratarlo como `null`, nunca como dato real
+— algunas estaciones traen presión pero no precipitación y viceversa).
+
+**Estaciones costeras portuguesas ya verificadas con dato reciente
+real** (presión/precipitación no nulos en la pasada de hoy), listas para
+una lista curada tipo `ESTACIONES_AEMET` que cubra toda la costa
+atlántica portuguesa de norte a sur:
+
+| idEstacao | estación | lat | lon | pres (hPa) hoy |
+|---|---|---|---|---|
+| 1200551 | Viana Castelo, Chafé | 41.6489 | -8.8046 | 1023.7 |
+| 1200545 | Porto, Pedras Rubras (Aeródromo) | 41.2335 | -8.6813 | 1023.7 |
+| 1210702 | Aveiro (Universidade) | 40.6353 | -8.6596 | 1023.8 |
+| 1200531 | Cabo Carvoeiro (Peniche) | 39.3800 | -9.4074 | 1023.7 |
+| 1200535 | Lisboa (Geofísico) | 38.7191 | -9.1497 | 1022.4 |
+| 1200541 | Sines | 37.9545 | -8.8383 | 1021.9 |
+| 1200533 | Sagres | 37.0128 | -8.9491 | 1021.8 |
+| 1200554 | Faro (Aeródromo) | 37.0166 | -7.9720 | 1021.8 |
+| 1210878 | Portimão (Aeródromo) | 37.1492 | -8.5814 | 1021.7 |
+| 1210883 | Tavira | 37.1217 | -7.6205 | 1022.0 |
+
+(Además hay más candidatas con dato de precipitación pero sin presión —
+Cabo da Roca, Cabo Raso, Figueira da Foz, Torres Vedras — a incluir solo
+para el campo que sí traigan.)
+
+**Por qué es PROPUESTA y no cambio directo**: integrarlo toca
+`functions/prevision.js` (nueva constante `ESTACIONES_IPMA` + una función
+`datosEstacionesIpma()` a estilo `datosEstacionesAemet()`, expuesta en
+`/prevision`) y `index.html` (marcador 🌧 propio para Portugal, igual
+que el de AEMET) — muy por encima del límite de volumen de
+`ROBOT_REGLAS.md` y con dos ficheros de `functions/`/frontend, así que
+queda en cuarentena para que el usuario lo revise. Notas de diseño para
+cuando se implemente: la API trae las 222 estaciones de golpe en una
+sola petición HTTP (no una por estación, así que no aplica el problema
+de cuota por ubicación de Open-Meteo — es una sola descarga), conviene
+cachearla igual que ya se cachea `/prevision`; y el IPMA pide (términos
+de uso) avisar por email a `webmaster@ipma.pt` del uso que se le da al
+servicio — decisión del usuario si se hace, no la puede hacer el robot.
+
+---
+
+**Hueco de los ríos vascos (Bizkaia): sin fuente abierta nueva — sigue
+bloqueado en el mismo sitio ya documentado.** Comprobado en esta pasada:
+
+- El caudal en tiempo real de los ríos de Bizkaia solo se publica de
+  forma automatizable a través de la **API REST de Euskalmet**
+  (`opendata.euskadi.eus/api-euskalmet/`), que **requiere API key** — la
+  misma key de Euskalmet que `CLAUDE.md` ya documenta como pendiente (el
+  email con la key nunca llegó, en gestión manual de Open Data Euskadi).
+  No hay atajo abierto: el hueco de Bizkaia sigue dependiendo de esa key,
+  tal como ya estaba anotado. No se propone nada nuevo aquí.
+- **Gipuzkoa** (Diputación Foral, red distinta de Bizkaia) sí tiene
+  página de datos en tiempo real de ~23 estaciones de aforo
+  (`gipuzkoa.eus/.../unean-uneko-datuak`), pero es un portlet Liferay sin
+  endpoint JSON expuesto en el HTML — no automatizable sin inspeccionar
+  las llamadas internas del navegador, que este robot no puede hacer de
+  forma fiable. El dataset de Open Data Euskadi "Estaciones de aforos de
+  los ríos de Gipuzkoa" (`api.gipuzkoairekia.eus/dataset/recurso/...`) es
+  de frecuencia **anual** y solo describe qué parámetros mide cada
+  estación (metadatos), NO da el caudal actual — no sirve para tiempo
+  real. (Nota: si algún día se resuelve la key de Euskalmet, esa misma
+  API cubriría también las estaciones de Gipuzkoa, que ahora tiene spots
+  costeros nuevos — Deba, Zarautz, Orio, Hondarribia — cuyos ríos
+  Deba/Urola/Oria/Bidasoa quedarían enriquecibles.)
+
+**Lead sin verificar para caudal de ríos de Portugal (SNIRH/APA)**: el
+Sistema Nacional de Informação de Recursos Hídricos (`snirh.apambiente.pt`)
+publica datos hidrométricos (nivel/caudal) de los ríos portugueses de
+forma libre y gratuita, y hay un dataset asociado en
+`dados.gov.pt` ("Rede de estações hidrométricas (SNIRH)"). **No
+verificado en esta pasada**: el portal devolvió `403` a la petición
+automática (bloquea user-agents de bot), así que no se localizó todavía
+un patrón de URL de exportación de la serie de una estación concreta.
+Queda como candidato a investigar en una próxima pasada de caudal —
+igual que se hizo con las 4 confederaciones hidrográficas españolas ya
+integradas (Cantábrico/Júcar/Segura/Galicia), habría que dar con el
+endpoint real de datos y verificarlo con una petición de verdad antes de
+proponer nada.
+
+**Fuentes:**
+[IPMA — API open data (observación meteorología)](https://api.ipma.pt/),
+[URA — Datos de estaciones de aforo](https://www.uragentzia.euskadi.eus/datos-de-estaciones-de-aforo/webura00-contents/es/),
+[Euskalmet — API Rest (Open Data Euskadi)](https://opendata.euskadi.eus/api-euskalmet/-/api-de-euskalmet/),
+[Gipuzkoa — Datos en tiempo real (Obras Hidráulicas)](https://www.gipuzkoa.eus/es/web/obrahidraulikoak/hidrologia-eta-kalitatea/unean-uneko-datuak),
+[SNIRH — APA (Portugal)](https://snirh.apambiente.pt/),
+[Rede de estações hidrométricas (SNIRH) — dados.gov.pt](https://dados.gov.pt/pt/datasets/rede-de-estacoes-hidrometricas-snirh/).
+
+**Firmado:** robot buscador de fuentes (pasada de caudal de ríos y
+estaciones de monte, España y Portugal), 2026-09-15 09:30 UTC.
+
+---
+
 ## Auditoría de datos
 
 ### 2026-08-31
