@@ -1,21 +1,36 @@
 name: Informe diario
 
-# ACTIVADO 2026-09-12: 06:00 UTC = 08:00 en verano (CEST) / 07:00 en
-# invierno (CET) — GitHub Actions no ajusta el cron por DST, así que en
-# invierno llegará una hora más pronto. Cambiar el minuto/hora aquí si se
-# quiere afinar.
+# ACTUALIZADO 2026-09-15 (pedido explícito del usuario, "tipo el que
+# hacemos en polizas-ai"): pasa de 06:00 a 08:00 UTC EXACTAS (antes
+# quedaba a 08:00 en verano / 07:00 en invierno por no ajustarse al DST —
+# ahora es siempre 08:00 UTC, 10:00 CEST verano / 09:00 CET invierno) y
+# añade una síntesis con Claude Code (mismo patrón que
+# robot-buscador-fuentes.yml) de TODO el trabajo interno y externo de
+# las últimas 24h: la calibración nocturna + las pasadas del robot
+# buscador de fuentes (ROBOT.md) más el resultado del smoke test
+# (external, ver smoke-test.yml). Sección obligatoria aparte: "Nuevas
+# fuentes encontradas, pendientes de validar" — un resumen breve + la
+# opinión del propio Claude sobre cada fuente nueva mencionada en las
+# últimas 24h, para que el usuario pueda validarlas de un vistazo sin
+# tener que leer todo ROBOT.md.
 #
-# Qué hace: comprueba salud básica (fuentes externas respondiendo,
-# ROBOT.md con actividad reciente, test de autenticación en verde) y el
-# conteo real de alarmas SOS de las últimas 24h (agregado, nunca filas ni
-# datos personales — vía contar_alertas_sos_24h(), ya aplicada en
-# producción). Añade una fila a un único Issue "Informe diario" (uno
-# crece con el tiempo, no un Issue nuevo cada día) — GitHub ya avisa por
-# email de la actividad en Issues que sigues.
+# Qué hace, en orden: comprueba salud básica (fuentes externas
+# respondiendo, test de autenticación en verde), el conteo real de
+# alarmas SOS de las últimas 24h (agregado, nunca filas ni datos
+# personales), el resultado del último smoke-test.yml, reúne lo que se
+# añadió a ROBOT.md en las últimas 24h y pide a Claude Code que lo
+# sintetice. Todo se añade como una fila nueva al mismo Issue "Informe
+# diario" de siempre (uno que crece con el tiempo, no uno nuevo cada
+# día) — GitHub ya avisa por email de la actividad en Issues que sigues.
+#
+# Necesita el secret ANTHROPIC_API_KEY (el mismo que ya usa
+# robot-buscador-fuentes.yml) para el paso de síntesis — si falta o no
+# tiene crédito, ese paso se salta con continue-on-error y el resto del
+# informe (los chequeos deterministas) se publica igual.
 
 on:
   schedule:
-    - cron: "0 6 * * *"
+    - cron: "0 8 * * *"
   workflow_dispatch: {}
 
 jobs:
@@ -24,6 +39,7 @@ jobs:
     permissions:
       contents: read
       issues: write
+      actions: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -57,6 +73,19 @@ jobs:
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
+      - name: Último smoke test (external, ver smoke-test.yml)
+        id: smoke
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          linea=$(gh run list --workflow=smoke-test.yml --limit 1 --json conclusion,createdAt,htmlUrl \
+            --jq '.[0] | "\(.conclusion // "en curso") — \(.createdAt) — \(.htmlUrl)"' 2>/dev/null || echo "")
+          if [ -z "$linea" ]; then
+            echo "resultado=no se pudo consultar" >> "$GITHUB_OUTPUT"
+          else
+            echo "resultado=$linea" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Actividad del robot de datos (ROBOT.md)
         id: robot
         run: |
@@ -81,18 +110,61 @@ jobs:
             echo "resultado=N/D (¿falta aplicar supabase/schema_conteo_sos.sql?)" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Reunir lo añadido a ROBOT.md en las últimas 24h
+        id: robot24h
+        run: |
+          git log --since="24 hours ago" -p -- ROBOT.md \
+            | grep -E '^\+' | grep -vE '^\+\+\+' | sed 's/^\+//' \
+            > /tmp/robot-ultimas-24h.txt || true
+          echo "lineas=$(wc -l < /tmp/robot-ultimas-24h.txt)" >> "$GITHUB_OUTPUT"
+
+      - name: Instalar Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Síntesis del día (Claude Code, sesión no interactiva)
+        id: sintesis
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        continue-on-error: true
+        run: |
+          rm -f /tmp/informe-sintesis.txt
+          claude -p "Eres el redactor del informe diario de Costa Viva (repo Fishnow). Tienes en /tmp/robot-ultimas-24h.txt todo lo que se añadió a ROBOT.md en las últimas 24 horas (mezcla de la rutina de calibración nocturna y las distintas pasadas del robot buscador de fuentes — cámaras, mareas/oleaje, corrientes, presión, caudal de ríos, buenas prácticas de otras apps, migración/cría de especies, estudios institucionales tipo DIGIPESCA). Léelo con Read y escribe un informe en español, sin jerga, para el dueño del proyecto (no técnico en detalle), estructurado EXACTAMENTE así con estos encabezados markdown:
+
+## 🛠 Trabajo interno (calibración y datos)
+2-4 frases resumiendo qué hizo la calibración nocturna y las pasadas de datos en tiempo real (cámaras/mareas/corrientes/presión/caudal) de las últimas 24h — solo LO QUE PASÓ, sin repetir cifras que ya vienen aparte en el informe (SOS, salud de endpoints).
+
+## 🔎 Trabajo externo (investigación de contenido)
+2-4 frases resumiendo las pasadas de 'buenas prácticas de otras apps', 'migración y cría de especies' y 'estudios institucionales' de las últimas 24h — qué se investigó, si se propuso algo o si no hubo novedades.
+
+## 🆕 Nuevas fuentes encontradas, pendientes de validar
+Para CADA fuente de datos nueva (no ya integrada) que aparezca mencionada en /tmp/robot-ultimas-24h.txt: un sub-apartado con el nombre de la fuente, 2-3 frases de resumen de qué es y qué aportaría, y tu propia opinión honesta y breve sobre si los datos que ofrece parecen sólidos/utilizables para Costa Viva o si tienes dudas (cobertura geográfica limitada, fuente sin verificar del todo, requeriría más trabajo, etc). Si no se encontró ninguna fuente nueva en las últimas 24h, escribe solo 'Ninguna fuente nueva en las últimas 24h.' bajo este encabezado, nada más.
+
+Reglas: nunca inventes nada que no esté en el fichero — si el fichero está vacío o no tiene información útil, dilo explícitamente en cada sección en vez de rellenar con generalidades. Sé conciso, no reescribas ROBOT.md entero. Guarda el resultado en /tmp/informe-sintesis.txt (usa Write), nada más — no toques ningún otro fichero del repo, no hagas commits." \
+            --dangerously-skip-permissions \
+            --allowedTools "Bash,Read,Write,Grep"
+
       - name: Publicar/actualizar el Issue "Informe diario"
         uses: actions/github-script@v7
         with:
           script: |
+            const fs = require("fs");
+            let sintesis = "_(síntesis no disponible esta pasada — revisar ANTHROPIC_API_KEY/crédito, o mirar ROBOT.md directamente)_";
+            try {
+              const contenido = fs.readFileSync("/tmp/informe-sintesis.txt", "utf8").trim();
+              if (contenido) sintesis = contenido;
+            } catch (e) {}
+
             const fecha = new Date().toISOString().slice(0, 10);
             const fila = [
               `### ${fecha}`,
               `- Test de autenticación: ${{ steps.auth_test.outputs.resultado }}`,
+              `- Smoke test: ${{ steps.smoke.outputs.resultado }}`,
               `- Robot de datos: ${{ steps.robot.outputs.resultado }}`,
               `- Alarmas SOS (24h): ${{ steps.sos.outputs.resultado }}`,
               `- Fuentes externas:`,
               `${{ steps.fuentes.outputs.resultado }}`,
+              "",
+              sintesis,
               "",
             ].join("\n");
 
@@ -106,7 +178,7 @@ jobs:
               const creado = await github.rest.issues.create({
                 owner: context.repo.owner, repo: context.repo.repo,
                 title: titulo, labels: ["informe-diario"],
-                body: "Informe diario de salud de Costa Viva — una entrada nueva cada día, la más reciente arriba.\n\n" + fila,
+                body: "Informe diario de salud + síntesis de trabajo interno/externo de Costa Viva — una entrada nueva cada día, la más reciente arriba.\n\n" + fila,
               });
               issue = creado.data;
             } else {
