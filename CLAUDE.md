@@ -255,9 +255,12 @@ otro usuario". Cualquier cambio que toque `alarma.html`,
   cuentas de prueba reales): la prueba cruzada "token de usuario A leyendo
   fila de usuario B".
 - `sos-alerta.js` usa siempre el token del que llama, nunca
-  `service_role`. `aviso-alta.js` es la única excepción del repo — ver
-  su sección propia más abajo (solo lee `auth.users` por id, nunca
-  tablas de usuario).
+  `service_role`. Hay **dos excepciones** en el repo: `aviso-alta.js`
+  (solo lee `auth.users` por id, nunca tablas de usuario — ver su
+  sección propia más abajo) y `stripe-webhook.js` (sí escribe una
+  tabla `public.*`, `suscripciones`, pero solo tras verificar a mano
+  la firma criptográfica `Stripe-Signature` — ver la sección del
+  paywall más abajo).
 
 ## Diario de pesca — campos añadidos 2026-09-12
 
@@ -570,9 +573,15 @@ explicación.
 | `/aviso-alta` | `aviso-alta.js` | POST: avisa al admin por email cuando un `user_id` corresponde a un alta real de los últimos 5 min | Sin token — verifica con `service_role` server-side (ver más abajo) |
 | `/geocodificar` | `geocodificar.js` | GET: geocodificación inversa (`?lat=&lon=`) para nombrar ubicaciones personalizadas, vía Nominatim | No requiere sesión |
 | `/registrar-presion` | `registrar-presion.js` | POST: guarda la presión real de cada spot en `presion_historico` (Fase 4) | Sin sesión de usuario — protegido con secreto compartido (`X-Cron-Secret` / `CRON_SECRET`) |
+| `/crear-checkout-stripe` | `crear-checkout-stripe.js` | POST: crea una Stripe Checkout Session (suscripción mensual/anual, con prueba) para el usuario que llama | **Requiere** `Authorization: Bearer <token de sesión>` |
+| `/crear-portal-stripe` | `crear-portal-stripe.js` | POST: crea una sesión del Billing Portal de Stripe para gestionar/cancelar la suscripción propia | **Requiere** `Authorization: Bearer <token de sesión>` |
+| `/stripe-webhook` | `stripe-webhook.js` | POST: recibe eventos de Stripe (checkout/suscripción) y actualiza `suscripciones` | Sin sesión — verifica la firma `Stripe-Signature` con `STRIPE_WEBHOOK_SECRET` |
 
 Ninguno de los cuatro primeros toca tablas de usuario en Supabase.
-`sos-alerta.js` es el único que sí, y usa siempre el token de quien llama.
+`sos-alerta.js` sí, y usa siempre el token de quien llama.
+`crear-checkout-stripe.js`/`crear-portal-stripe.js` también usan el
+token de quien llama. `stripe-webhook.js` es la única excepción de
+esta lista que usa `service_role` (ver sección del paywall más abajo).
 
 ## URL de producción
 
@@ -1356,6 +1365,154 @@ también el botón "+" de añadir ubicación (`.deshabilitado`, pointer-
 events:none) — no tiene sentido añadir un punto que no se va a poder
 ver. Verificado en preview real: los spots (incluidos los nuevos de
 Gipuzkoa) se pintan bien, el resto de capas arrancan apagadas.
+
+## Paywall de suscripción — Stripe (2026-09-15, en curso)
+
+Pedido explícito del usuario: pasar de app gratis a **7 días de prueba
+desde el alta, luego bloqueo total** (no freemium) salvo suscripción
+activa — **3,99€/mes o 39,99€/año**. Proveedor: **Stripe**, vía web
+(las tiendas siguen "próximamente", ver `project_movil_primero` en
+memoria). Producto real en Stripe (modo TEST de momento):
+`prod_VGVio7rbJPK1Oh` "Costa Viva Premium", precios
+`price_1UFyhEGXcSRiyJYIvGpTzjZu` (mensual) y
+`price_1UFyhEGXcSRiyJYIdjCv5aFH` (anual).
+
+**Diseño**: tabla `public.suscripciones` (migración
+`20260915160000_suscripciones_stripe.sql`) con RLS "deny by
+default" — solo lectura propia (`auth.uid() = user_id`), **sin**
+políticas de escritura; la única escritura es `stripe-webhook.js` vía
+`service_role`, justificado porque ahí no hay sesión de usuario y la
+prueba de autenticidad es la firma `Stripe-Signature` de Stripe
+(verificada a mano con Web Crypto, sin SDK — el repo no tiene build
+step). Es la **segunda excepción** del repo al patrón "nunca
+service_role", junto a `aviso-alta.js`.
+
+Toda la lógica de acceso vive en una única función
+`security definer`, `mi_estado_suscripcion()`: el trial sale de
+`perfiles.creado_en` (7 días, sin columna nueva), el admin
+(`es_admin()`) siempre tiene acceso, y pasado el trial solo hay acceso
+con `estado` `trialing`/`active` en `suscripciones`. El frontend
+(`index.html`/`diario.html`/`alarma.html`/`grupos.html`/`admin.html`,
+cada uno con su propio guard duplicado, sin partial compartido) llama
+a esta función justo después de comprobar que hay sesión, y redirige a
+`suscripcion.html` si `con_acceso === false` — fallo silencioso si la
+RPC falla por red, solo bloquea un `false` explícito.
+
+`suscripcion.html` es la pantalla de pago/gestión (mismos tokens
+visuales que `login.html`): dos botones que llaman a
+`/crear-checkout-stripe` (nunca acepta el price id crudo del cliente,
+solo `"monthly"`/`"annual"` traducido server-side) y redirigen a la
+URL de Stripe Checkout devuelta. `success_url`/`cancel_url` se
+calculan del origen de la petición (`new URL(request.url).origin`),
+no hardcodeados a `costaviva.org`, para que funcione igual en preview
+y producción. `allow_promotion_codes=true` en la sesión de Checkout —
+los cupones (% o importe fijo, con caducidad o límite de usos) se
+gestionan enteramente desde el Dashboard de Stripe, no hace falta
+código para cada cupón nuevo.
+
+**Cancelación y reembolsos, decisión explícita del usuario**: se puede
+cancelar cuando se quiera (vía `/crear-portal-stripe`, que abre el
+Billing Portal de Stripe), pero el plazo ya pagado **no se
+reembolsa** — el acceso sigue activo hasta el final de ese periodo y
+luego no se renueva. Esto es el comportamiento natural de Stripe con
+una cancelación "al final del periodo" (no inmediata): el estado sigue
+`active` hasta que el periodo termina de verdad, así que
+`mi_estado_suscripcion()` no necesita lógica extra para esto. **Pendiente
+de configurar a mano en el Dashboard de Stripe** (no es algo que se
+pueda fijar desde el código sin la API de configuración del portal):
+Settings → Billing → Customer portal → Cancellations → "Cancel at end
+of billing period" (no "Cancel immediately").
+
+Para el plan **anual**, además, `suscripcion.html` exige marcar una
+casilla de consentimiento explícito antes de activar el botón de pago
+— no basta con decir "no reembolsable" en la UI: por defecto, en la UE
+el usuario tiene 14 días de derecho de desistimiento en compras
+online, así que la casilla declara explícitamente que el servicio
+empieza de inmediato y que renuncia a ese derecho para esa compra. Sin
+ese consentimiento explícito, la cláusula de "no reembolsable" podría
+no ser válida ante una reclamación real.
+
+**Trial de Stripe vs. trial de la app**: `crear-checkout-stripe.js`
+calcula `subscription_data[trial_period_days]` dinámicamente
+(`7 - días desde el alta`, mínimo 1) en vez de fijarlo siempre a 7 —
+evita regalar otros 7 días de prueba de Stripe encima de una prueba de
+la app ya parcialmente consumida si el usuario se suscribe tarde
+dentro de su semana gratis. `subscription_data[metadata][supabase_user_id]`
+(no solo el `metadata`/`client_reference_id` de nivel superior de la
+Checkout Session) es imprescindible para que el `user_id` llegue a los
+eventos `customer.subscription.*` del webhook — el objeto Subscription
+de Stripe no hereda el metadata de nivel superior de la Session.
+
+**✅ Verificado en real de extremo a extremo, 2026-09-15** (rama
+`feat/stripe-suscripciones`, modo TEST): migración aplicada, checkout
+mensual completo con tarjeta de prueba (`4242 4242 4242 4242`),
+webhook entregado y procesado, fila real en `suscripciones` con
+`estado: "trialing"` y los IDs de Stripe correctos. Cuatro bugs reales
+encontrados y corregidos por el camino — documentados aquí para no
+repetir la investigación:
+
+1. **`return` a nivel superior del módulo en `index.html` — SyntaxError
+   real.** El gate de suscripción se escribió primero con
+   `if (...) { ...; return; }` dentro de un `else` que NO está envuelto
+   en ninguna función (script de módulo con top-level `await`, como el
+   resto de páginas) — `return` fuera de una función es un error de
+   sintaxis en JS, así que el navegador ni siquiera podía parsear el
+   script entero. Síntoma: "Comprobando acceso…" colgado para siempre,
+   sin ningún error visible en pantalla (el resto de páginas usan
+   `throw new Error(...)` en el mismo sitio, que SÍ es válido a nivel
+   superior — por eso solo `index.html` tenía este bug). Arreglado
+   sustituyendo el `return` por un flag (`conAcceso`) que envuelve el
+   resto del bloque. **Lección**: `node --check` sobre el contenido de
+   un `<script type="module">` extraído (no sobre el `.html` en sí)
+   habría detectado esto al instante — hacerlo la próxima vez que se
+   toque el top-level de un módulo de estas páginas.
+2. **"Managed Payments" de Stripe (activado por defecto en cuentas
+   nuevas) exige un `tax_code` de producto.** Sin él, `crear-checkout-
+   stripe.js` recibía `400 "Invalid line_items[0]: the product tax
+   code is missing"`. Como no se configuró Stripe Tax a propósito (ver
+   más arriba), se desactiva con `managed_payments[enabled]=false` al
+   crear la Checkout Session, en vez de rellenar un código fiscal.
+3. **`Subscription.current_period_end` ya NO vive en el objeto de
+   nivel superior en esta versión de la API de Stripe (`2026-08-26.
+   dahlia`)** — venía `null` siempre. El dato real está en
+   `items.data[0].current_period_end` (a nivel de `subscription_item`).
+   `stripe-webhook.js` corregido para leer de ahí, con `trial_end`
+   (que sí sigue en el nivel superior) como respaldo.
+4. **Cambiar un secret en Cloudflare Pages no refresca los despliegues
+   ya existentes** (mismo comportamiento ya documentado para
+   `AEMET_API_KEY` en su sección propia) — tras corregir un valor
+   equivocado de `SUPABASE_SERVICE_ROLE_KEY` (que daba
+   `401 "Invalid API key"` en el webhook), hizo falta forzar un
+   redeploy nuevo (`git commit --allow-empty` + push) para que la
+   Function empezara a usar el valor corregido — "Reenviar" el evento
+   sin redeploy seguía dando el mismo error viejo.
+
+**Confirmado también**: Cloudflare Pages tiene los secrets de Preview
+y Production en ámbitos totalmente separados (`wrangler pages secret
+list --env preview` solo devolvía `AEMET_API_KEY` hasta que se
+añadieron los de Stripe explícitamente ahí también) — al añadir
+cualquier secret nuevo, marcar también "Preview" en el Dashboard, o
+probar directamente tras mergear a main.
+
+**Pendiente antes de dar esto por cerrado**:
+- Reenviar/confirmar también el evento `checkout.session.completed`
+  (el de `customer.subscription.created` ya quedó verificado en
+  `200`).
+- Mergear a main y registrar un segundo webhook en Stripe contra
+  `https://costaviva.org/stripe-webhook` (la URL de preview no sirve
+  en producción).
+- ✅ Configurada en el Dashboard de Stripe la cancelación "al final del
+  periodo" y el cambio de plan (mensual↔anual) con prorrateo
+  facturado de inmediato — ambas en Settings → Billing → Customer
+  portal. `suscripcion.html` ya marca el plan vigente ("✓ Tu plan
+  actual") y ofrece "Cambiar a..." en el otro, pedido explícito del
+  usuario: subir de plan se aplica al momento con el saldo del mes ya
+  pagado descontado del cobro nuevo — comportamiento por defecto de
+  Stripe una vez el Portal tiene el cambio de plan activado, no
+  requirió código de prorrateo propio.
+- Pasar de modo TEST a modo LIVE en Stripe cuando todo lo anterior esté
+  verificado (verificación de negocio/banco, nueva clave `sk_live_...`
+  sin pasar nunca por el chat).
 
 ## Pendiente conocido (no tocar sin confirmar)
 

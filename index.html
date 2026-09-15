@@ -496,25 +496,52 @@
   if (!data.session) {
     window.location.href = "/login.html";
   } else {
-    document.getElementById("comprobandoAcceso").remove();
-    // Enlace al panel de administrador (2026-09-13, pedido explícito del
-    // usuario): solo visible para su propia cuenta — el panel en sí ya
-    // rechaza a cualquier otra por su cuenta (es_admin() en Supabase),
-    // esto es solo para no mostrar el icono a nadie más.
-    if (data.session.user.email === "etxebe2005@gmail.com") {
-      document.getElementById("enlaceAdmin").style.display = "flex";
+    // Paywall (2026-09-15, pedido explícito del usuario): 7 días de
+    // prueba desde el alta, luego bloqueo total sin suscripción activa
+    // — mi_estado_suscripcion() ya resuelve el bypass del admin en el
+    // servidor. Fallo silencioso a propósito si la RPC falla (red, error
+    // devuelto, o incluso una excepción real) — try/catch explícito
+    // porque un throw sin capturar aquí pararía TODO el script del
+    // módulo (top-level await, sin nada más abajo que lo recoja) y
+    // dejaría "Comprobando acceso…" colgado para siempre. Nota: no se
+    // puede usar "return" aquí — este bloque no está dentro de ninguna
+    // función (es top-level del módulo), así que se usa un flag en su
+    // lugar para saltarse el resto sin un "return" ilegal.
+    let conAcceso = true;
+    try {
+      const { data: estadoSuscripcion, error: errorSuscripcion } = await supabase.rpc("mi_estado_suscripcion");
+      if (!errorSuscripcion && estadoSuscripcion && estadoSuscripcion.con_acceso === false) {
+        conAcceso = false;
+        window.location.href = "/suscripcion.html";
+      }
+    } catch (e) {
+      console.error("mi_estado_suscripcion falló, se deja pasar:", e);
     }
-    // El resto de la app vive en un <script> clásico más abajo (por el
-    // mapa de Leaflet, sin módulos) — se expone aquí lo que necesita de
-    // Supabase para las ubicaciones personalizadas (Fase 2).
-    window.supabaseCliente = supabase;
-    window.usuarioIdActual = data.session.user.id;
-    comprobarNovedadesGrupos(supabase);
-    // El <script> clásico del mapa (sin módulos, más abajo) puede terminar
-    // de ejecutarse antes o después de que este módulo resuelva la sesión
-    // — este evento es lo que le avisa de que ya puede usar Supabase.
-    window.dispatchEvent(new Event("supabase-listo"));
+    if (conAcceso) {
+      document.getElementById("comprobandoAcceso").remove();
+      // Enlace al panel de administrador (2026-09-13, pedido explícito del
+      // usuario): solo visible para su propia cuenta — el panel en sí ya
+      // rechaza a cualquier otra por su cuenta (es_admin() en Supabase),
+      // esto es solo para no mostrar el icono a nadie más.
+      if (data.session.user.email === "etxebe2005@gmail.com") {
+        document.getElementById("enlaceAdmin").style.display = "flex";
+      }
+      // El resto de la app vive en un <script> clásico más abajo (por el
+      // mapa de Leaflet, sin módulos) — se expone aquí lo que necesita de
+      // Supabase para las ubicaciones personalizadas (Fase 2).
+      window.supabaseCliente = supabase;
+      window.usuarioIdActual = data.session.user.id;
+      comprobarNovedadesGrupos(supabase);
+      // El <script> clásico del mapa (sin módulos, más abajo) puede terminar
+      // de ejecutarse antes o después de que este módulo resuelva la sesión
+      // — este evento es lo que le avisa de que ya puede usar Supabase.
+      window.dispatchEvent(new Event("supabase-listo"));
+    }
   }
+
+  document.getElementById("btnMiSuscripcion").addEventListener("click", () => {
+    window.location.href = "/suscripcion.html";
+  });
 
   document.getElementById("btnCerrarSesion").addEventListener("click", async (e) => {
     e.preventDefault();
@@ -551,6 +578,7 @@
       <button class="cuenta-menu-btn" id="btnCuentaMenu" type="button" aria-label="Cuenta">👤</button>
       <div class="cuenta-menu-dropdown" id="cuentaMenuDropdown">
         <button type="button" id="btnInvitarAmigo">📤 Invitar a un amigo</button>
+        <button type="button" id="btnMiSuscripcion">💳 Mi suscripción</button>
         <button type="button" id="btnCerrarSesion">🚪 Cerrar sesión</button>
       </div>
     </div>
