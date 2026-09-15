@@ -15,10 +15,14 @@ const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
 
-// Producto real en Stripe (modo TEST): "Costa Viva Premium", prod_VGVio7rbJPK1Oh.
+// Producto real en Stripe, modo LIVE (2026-09-15, tras verificar la
+// cuenta): "Costa Viva Premium". Los IDs de test (prod_VGVio7rbJPK1Oh y
+// sus precios) quedan en el historial de git, ya no son válidos aquí
+// — test y live son espacios de objetos completamente separados en
+// Stripe, un STRIPE_SECRET_KEY live no puede usar precios de test.
 const PRECIOS = {
-  monthly: "price_1UFyhEGXcSRiyJYIvGpTzjZu", // 3,99€/mes
-  annual: "price_1UFyhEGXcSRiyJYIdjCv5aFH", // 39,99€/año
+  monthly: "price_1UG0hPGVID60u22aXMcBJNF3", // 3,99€/mes
+  annual: "price_1UG0hPGVID60u22a3GO1Cflj", // 39,99€/año
 };
 
 async function usuarioDesdeToken(token) {
