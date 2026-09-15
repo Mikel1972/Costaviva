@@ -1510,9 +1510,34 @@ probar directamente tras mergear a main.
   pagado descontado del cobro nuevo — comportamiento por defecto de
   Stripe una vez el Portal tiene el cambio de plan activado, no
   requirió código de prorrateo propio.
-- Pasar de modo TEST a modo LIVE en Stripe cuando todo lo anterior esté
-  verificado (verificación de negocio/banco, nueva clave `sk_live_...`
-  sin pasar nunca por el chat).
+- ✅ **Pasado a modo LIVE en producción, 2026-09-15.** Cuenta de Stripe
+  activada y verificada (negocio/banco), perfil público configurado
+  ("Costa Viva", @costaviva, categoría Software/SaaS, uso comercial,
+  sin app móvil todavía). Producto "Costa Viva Premium" recreado en
+  live con **Stripe Tax activado** (decisión explícita, dado que se
+  vende un servicio digital a clientes de la UE — con las reglas de
+  IVA de servicios digitales, hay obligación real de cobrarlo; nota:
+  no es asesoría fiscal, confirmarlo con gestoría si hace falta más
+  seguridad legal) — a diferencia de test, aquí el producto SÍ lleva
+  código fiscal ("SaaS, uso comercial, sin app móvil"), así que
+  `managed_payments[enabled]=false` en `crear-checkout-stripe.js` ya
+  no es estrictamente necesario por esa causa (se dejó igual, sin
+  probar con Managed Payments activado). Nuevos Price ID live:
+  `price_1UG0hPGVID60u22aXMcBJNF3` (mensual) y
+  `price_1UG0hPGVID60u22a3GO1Cflj` (anual) — actualizados en
+  `crear-checkout-stripe.js` y `stripe-webhook.js`. `STRIPE_SECRET_KEY`
+  y `STRIPE_WEBHOOK_SECRET` en Cloudflare Production sustituidos por
+  los valores live (nuevo webhook `costaviva-webhook-live` registrado
+  contra `https://costaviva.org/stripe-webhook`), producción
+  redesplegada para recogerlos.
+  **Pendiente — nunca se ha probado con dinero real todavía**: el
+  usuario decidió no hacer una compra real de prueba por ahora ("ya la
+  haré"). Todo lo verificado en real (checkout, webhook, portal,
+  cancelación, cambio de plan) fue en modo test — modo live comparte
+  el mismo código pero es la primera vez que corre con la cuenta live
+  de verdad. Antes de anunciar el cobro a usuarios reales, sería
+  prudente hacer al menos una compra real de prueba (mensual, 3,99€) y
+  confirmar que el ciclo completo funciona con dinero de verdad.
 
 ## Pendiente conocido (no tocar sin confirmar)
 
