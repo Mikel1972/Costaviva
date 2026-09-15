@@ -255,9 +255,12 @@ otro usuario". Cualquier cambio que toque `alarma.html`,
   cuentas de prueba reales): la prueba cruzada "token de usuario A leyendo
   fila de usuario B".
 - `sos-alerta.js` usa siempre el token del que llama, nunca
-  `service_role`. `aviso-alta.js` es la única excepción del repo — ver
-  su sección propia más abajo (solo lee `auth.users` por id, nunca
-  tablas de usuario).
+  `service_role`. Hay **dos excepciones** en el repo: `aviso-alta.js`
+  (solo lee `auth.users` por id, nunca tablas de usuario — ver su
+  sección propia más abajo) y `stripe-webhook.js` (sí escribe una
+  tabla `public.*`, `suscripciones`, pero solo tras verificar a mano
+  la firma criptográfica `Stripe-Signature` — ver la sección del
+  paywall más abajo).
 
 ## Diario de pesca — campos añadidos 2026-09-12
 
@@ -570,9 +573,15 @@ explicación.
 | `/aviso-alta` | `aviso-alta.js` | POST: avisa al admin por email cuando un `user_id` corresponde a un alta real de los últimos 5 min | Sin token — verifica con `service_role` server-side (ver más abajo) |
 | `/geocodificar` | `geocodificar.js` | GET: geocodificación inversa (`?lat=&lon=`) para nombrar ubicaciones personalizadas, vía Nominatim | No requiere sesión |
 | `/registrar-presion` | `registrar-presion.js` | POST: guarda la presión real de cada spot en `presion_historico` (Fase 4) | Sin sesión de usuario — protegido con secreto compartido (`X-Cron-Secret` / `CRON_SECRET`) |
+| `/crear-checkout-stripe` | `crear-checkout-stripe.js` | POST: crea una Stripe Checkout Session (suscripción mensual/anual, con prueba) para el usuario que llama | **Requiere** `Authorization: Bearer <token de sesión>` |
+| `/crear-portal-stripe` | `crear-portal-stripe.js` | POST: crea una sesión del Billing Portal de Stripe para gestionar/cancelar la suscripción propia | **Requiere** `Authorization: Bearer <token de sesión>` |
+| `/stripe-webhook` | `stripe-webhook.js` | POST: recibe eventos de Stripe (checkout/suscripción) y actualiza `suscripciones` | Sin sesión — verifica la firma `Stripe-Signature` con `STRIPE_WEBHOOK_SECRET` |
 
 Ninguno de los cuatro primeros toca tablas de usuario en Supabase.
-`sos-alerta.js` es el único que sí, y usa siempre el token de quien llama.
+`sos-alerta.js` sí, y usa siempre el token de quien llama.
+`crear-checkout-stripe.js`/`crear-portal-stripe.js` también usan el
+token de quien llama. `stripe-webhook.js` es la única excepción de
+esta lista que usa `service_role` (ver sección del paywall más abajo).
 
 ## URL de producción
 
@@ -1356,6 +1365,106 @@ también el botón "+" de añadir ubicación (`.deshabilitado`, pointer-
 events:none) — no tiene sentido añadir un punto que no se va a poder
 ver. Verificado en preview real: los spots (incluidos los nuevos de
 Gipuzkoa) se pintan bien, el resto de capas arrancan apagadas.
+
+## Paywall de suscripción — Stripe (2026-09-15, en curso)
+
+Pedido explícito del usuario: pasar de app gratis a **7 días de prueba
+desde el alta, luego bloqueo total** (no freemium) salvo suscripción
+activa — **3,99€/mes o 39,99€/año**. Proveedor: **Stripe**, vía web
+(las tiendas siguen "próximamente", ver `project_movil_primero` en
+memoria). Producto real en Stripe (modo TEST de momento):
+`prod_VGVio7rbJPK1Oh` "Costa Viva Premium", precios
+`price_1UFyhEGXcSRiyJYIvGpTzjZu` (mensual) y
+`price_1UFyhEGXcSRiyJYIdjCv5aFH` (anual).
+
+**Diseño**: tabla `public.suscripciones` (migración
+`20260915160000_suscripciones_stripe.sql`) con RLS "deny by
+default" — solo lectura propia (`auth.uid() = user_id`), **sin**
+políticas de escritura; la única escritura es `stripe-webhook.js` vía
+`service_role`, justificado porque ahí no hay sesión de usuario y la
+prueba de autenticidad es la firma `Stripe-Signature` de Stripe
+(verificada a mano con Web Crypto, sin SDK — el repo no tiene build
+step). Es la **segunda excepción** del repo al patrón "nunca
+service_role", junto a `aviso-alta.js`.
+
+Toda la lógica de acceso vive en una única función
+`security definer`, `mi_estado_suscripcion()`: el trial sale de
+`perfiles.creado_en` (7 días, sin columna nueva), el admin
+(`es_admin()`) siempre tiene acceso, y pasado el trial solo hay acceso
+con `estado` `trialing`/`active` en `suscripciones`. El frontend
+(`index.html`/`diario.html`/`alarma.html`/`grupos.html`/`admin.html`,
+cada uno con su propio guard duplicado, sin partial compartido) llama
+a esta función justo después de comprobar que hay sesión, y redirige a
+`suscripcion.html` si `con_acceso === false` — fallo silencioso si la
+RPC falla por red, solo bloquea un `false` explícito.
+
+`suscripcion.html` es la pantalla de pago/gestión (mismos tokens
+visuales que `login.html`): dos botones que llaman a
+`/crear-checkout-stripe` (nunca acepta el price id crudo del cliente,
+solo `"monthly"`/`"annual"` traducido server-side) y redirigen a la
+URL de Stripe Checkout devuelta. `success_url`/`cancel_url` se
+calculan del origen de la petición (`new URL(request.url).origin`),
+no hardcodeados a `costaviva.org`, para que funcione igual en preview
+y producción. `allow_promotion_codes=true` en la sesión de Checkout —
+los cupones (% o importe fijo, con caducidad o límite de usos) se
+gestionan enteramente desde el Dashboard de Stripe, no hace falta
+código para cada cupón nuevo.
+
+**Cancelación y reembolsos, decisión explícita del usuario**: se puede
+cancelar cuando se quiera (vía `/crear-portal-stripe`, que abre el
+Billing Portal de Stripe), pero el plazo ya pagado **no se
+reembolsa** — el acceso sigue activo hasta el final de ese periodo y
+luego no se renueva. Esto es el comportamiento natural de Stripe con
+una cancelación "al final del periodo" (no inmediata): el estado sigue
+`active` hasta que el periodo termina de verdad, así que
+`mi_estado_suscripcion()` no necesita lógica extra para esto. **Pendiente
+de configurar a mano en el Dashboard de Stripe** (no es algo que se
+pueda fijar desde el código sin la API de configuración del portal):
+Settings → Billing → Customer portal → Cancellations → "Cancel at end
+of billing period" (no "Cancel immediately").
+
+Para el plan **anual**, además, `suscripcion.html` exige marcar una
+casilla de consentimiento explícito antes de activar el botón de pago
+— no basta con decir "no reembolsable" en la UI: por defecto, en la UE
+el usuario tiene 14 días de derecho de desistimiento en compras
+online, así que la casilla declara explícitamente que el servicio
+empieza de inmediato y que renuncia a ese derecho para esa compra. Sin
+ese consentimiento explícito, la cláusula de "no reembolsable" podría
+no ser válida ante una reclamación real.
+
+**Trial de Stripe vs. trial de la app**: `crear-checkout-stripe.js`
+calcula `subscription_data[trial_period_days]` dinámicamente
+(`7 - días desde el alta`, mínimo 1) en vez de fijarlo siempre a 7 —
+evita regalar otros 7 días de prueba de Stripe encima de una prueba de
+la app ya parcialmente consumida si el usuario se suscribe tarde
+dentro de su semana gratis. `subscription_data[metadata][supabase_user_id]`
+(no solo el `metadata`/`client_reference_id` de nivel superior de la
+Checkout Session) es imprescindible para que el `user_id` llegue a los
+eventos `customer.subscription.*` del webhook — el objeto Subscription
+de Stripe no hereda el metadata de nivel superior de la Session.
+
+**Pendiente antes de dar esto por cerrado** (nada probado en real
+todavía, solo escrito):
+- Aplicar la migración con `supabase db push` contra la base real.
+- Añadir `STRIPE_SECRET_KEY` (ya la tenemos, modo test) como Secret en
+  Cloudflare Pages.
+- Desplegar a preview, registrar ahí el webhook en el Dashboard de
+  Stripe (modo test) para obtener `STRIPE_WEBHOOK_SECRET`, y
+  comprobar si Cloudflare Pages necesita un valor de env var distinto
+  para Preview vs Production (webhooks separados por entorno) antes de
+  mergear a main y registrar el segundo endpoint contra
+  `https://costaviva.org/stripe-webhook`.
+- Confirmar contra un Checkout de prueba real (tarjeta `4242 4242 4242
+  4242`) que el payload de `customer.subscription.created` trae de
+  verdad `metadata.supabase_user_id` e `items.data[0].price.id` con la
+  forma esperada — el diseño de `stripe-webhook.js` asume el
+  comportamiento estándar documentado de Stripe, pero no se ha
+  disparado ni un solo evento real todavía.
+- Configurar en el Dashboard de Stripe la cancelación "al final del
+  periodo" (ver arriba).
+- Pasar de modo TEST a modo LIVE en Stripe cuando todo lo anterior esté
+  verificado (verificación de negocio/banco, nueva clave `sk_live_...`
+  sin pasar nunca por el chat).
 
 ## Pendiente conocido (no tocar sin confirmar)
 
