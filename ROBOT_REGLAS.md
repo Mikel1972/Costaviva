@@ -266,24 +266,48 @@ corren solo 1 vez al día cada una (no 4):
   `ESPECIES`/`index.html` cuando el dato esté genuinamente contrastado
   y dentro de los límites de volumen de este fichero.
 
-**Fuente DIGIPESCA — verificada en real por el robot el 2026-09-15
-(entrada `ROBOT.md` 09:18 UTC), NO integrada todavía**: proyecto
-DIGIPESCA (Universitat Politècnica de València), 12 bases de datos
-reales subidas a RiuNet — por especie: cantidad, precio medio y
-facturación, por lonja y por mes, 2010-2021. El acceso "libre sin
-registro" está confirmado solo por notas de prensa, no con una descarga
-real (el robot no localizó el `handle` exacto de RiuNet en esta
-pasada). **Hallazgo que la descarta por ahora**: cobertura Mediterráneo
-español + Atlántico de Andalucía — NO cubre Cantábrico, Galicia **ni la
-costa atlántica de Portugal** (corrección del usuario, 2026-09-15:
-Costa Viva cubre España Y Portugal, así que Portugal cuenta como zona
-sin cobertura igual que el resto del Atlántico Norte). Idea original del
-usuario que motivó esta investigación: la evolución del **precio en
-lonja** de una especie podría ser señal indirecta de cuándo hay más/mejor
-pesca (precio bajo = más oferta), complementaria a `meses`/`rangoTemp` —
-sigue viva como idea para el Mediterráneo/Andalucía si en el futuro se
-localiza el dataset descargable de verdad; para el resto de España y
-Portugal haría falta una fuente equivalente que hoy no existe conocida.
+**Fuente DIGIPESCA — acceso real conseguido el 2026-09-15, 1 corrección
+ya aplicada a `ESPECIES_MEDITERRANEO`**: proyecto DIGIPESCA (Universitat
+Politècnica de València), datos reales de venta en lonja por especie —
+cantidad, precio medio, facturación — desglosados por lonja y por mes.
+Cobertura: **Mediterráneo español + Atlántico de Andalucía únicamente —
+NO Cantábrico, Galicia ni la costa atlántica de Portugal** (Costa Viva
+cubre España y Portugal enteros, así que esa zona se queda sin esta
+fuente).
+
+**Cómo acceder de verdad (la web/notas de prensa NUNCA enlazan el
+fichero directo — esto es lo que costó encontrar, reutilizar en futuras
+pasadas)**: la API REST de discovery de RiuNet.
+`https://riunet.upv.es/server/api/discover/search/objects?query=digipesca`
+devuelve un item por año (2011-2021, faltan 2016-2018 sin indexar con
+ese término), cada uno con su propio `handle` (`10251/1957XX`). Cada
+item trae 2 bundles descargables sin login (licencia ODC-PDDL/dominio
+público) en `/server/api/core/bitstreams/{uuid}/content`: un README y un
+`.xlsx` real (~2MB, ~480.000 celdas, una hoja por lonja/cofradía).
+
+**Resultado real de cruzar el `.xlsx` de 2021 con nuestras especies**
+(solo bajura, `zona: "costa"`, por la regla de arriba):
+- Dorada, Calamar y Choco/Sepia: confirman sin cambios los `meses` que
+  ya teníamos.
+- **Breca (aplicado)**: las 3 lonjas catalanas con desglose mensual
+  (Roses/Blanes/Cambrils) muestran volumen real casi todos los meses,
+  sin el hueco (mayo, agosto-noviembre) que teníamos — `meses` ampliado
+  a todo el año, citando DIGIPESCA en la nota.
+- Cartagena (spot propio): sin desglose mensual en 2021, solo totales
+  anuales — no sirve para refinar `meses` ahí.
+- Golfo de Cádiz: sí hay desglose mensual pero volúmenes minúsculos (ej.
+  Sargo, 65 kg/año total) — demasiado ruido para una conclusión fiable,
+  no se tocó nada ahí.
+- Palometa: descartada — DIGIPESCA mezcla 3 nombres distintos ("japuta/
+  palometa negra", "capellán/palometa", "palometa blanca") sin que quede
+  claro cuál es la nuestra; coincide con que ya estaba marcada como dato
+  dudoso.
+
+**Pendiente para una futura pasada**: hay 6 años más descargables
+(2011-2015, 2019-2021 ya visto) que podrían confirmar si el patrón de
+Breca es consistente o fue solo cosa de 2021, y localizar los años
+2016-2018 (no indexados por "digipesca" en la búsqueda — probar otros
+términos en la misma API de discovery).
 
 **Advertencia explícita del usuario, obligatoria antes de usar cualquier
 dato de lonja/desembarque para nada de esto**: hay que separar bajura de
