@@ -1443,38 +1443,66 @@ Checkout Session) es imprescindible para que el `user_id` llegue a los
 eventos `customer.subscription.*` del webhook — el objeto Subscription
 de Stripe no hereda el metadata de nivel superior de la Session.
 
-**Pendiente antes de dar esto por cerrado** (nada probado en real
-todavía, solo escrito):
-- Aplicar la migración con `supabase db push` contra la base real.
-- Añadir `STRIPE_SECRET_KEY` (ya la tenemos, modo test) como Secret en
-  Cloudflare Pages.
-- **Confirmado 2026-09-15**: Cloudflare Pages en este proyecto tiene
-  los secrets de Preview y Production en ámbitos totalmente separados
-  (`wrangler pages secret list --env preview` solo devolvía
-  `AEMET_API_KEY`, mientras que Production ya tenía
-  `STRIPE_SECRET_KEY`/`STRIPE_WEBHOOK_SECRET`/`SUPABASE_SERVICE_ROLE_KEY`/etc.)
-  — un secret añadido sin marcar explícitamente "Preview" (o "todos los
-  entornos") en el Dashboard **no** llega a los despliegues de rama.
-  Esto es una limitación preexistente del proyecto (afecta también a
-  `RESEND_API_KEY` — probar la Alarma SOS en un preview también daría
-  `501` sin este ajuste), no algo nuevo del paywall, pero hay que
-  tenerlo en cuenta cada vez que se pruebe algo con secretos en una
-  rama: añadir el secret también al ámbito "Preview" en Cloudflare
-  Pages → Settings → Environment variables, o probar directamente tras
-  mergear a main.
-- Registrado en Stripe (modo test) el webhook contra la URL estable de
-  esta rama: `https://feat-stripe-suscripciones.fishnow-59u.pages.dev/stripe-webhook`
-  (4 eventos, `STRIPE_WEBHOOK_SECRET` ya añadido a Production). Falta
-  registrar el segundo endpoint contra `https://costaviva.org/stripe-webhook`
-  cuando se mergee a main.
-- Confirmar contra un Checkout de prueba real (tarjeta `4242 4242 4242
-  4242`) que el payload de `customer.subscription.created` trae de
-  verdad `metadata.supabase_user_id` e `items.data[0].price.id` con la
-  forma esperada — el diseño de `stripe-webhook.js` asume el
-  comportamiento estándar documentado de Stripe, pero no se ha
-  disparado ni un solo evento real todavía.
+**✅ Verificado en real de extremo a extremo, 2026-09-15** (rama
+`feat/stripe-suscripciones`, modo TEST): migración aplicada, checkout
+mensual completo con tarjeta de prueba (`4242 4242 4242 4242`),
+webhook entregado y procesado, fila real en `suscripciones` con
+`estado: "trialing"` y los IDs de Stripe correctos. Cuatro bugs reales
+encontrados y corregidos por el camino — documentados aquí para no
+repetir la investigación:
+
+1. **`return` a nivel superior del módulo en `index.html` — SyntaxError
+   real.** El gate de suscripción se escribió primero con
+   `if (...) { ...; return; }` dentro de un `else` que NO está envuelto
+   en ninguna función (script de módulo con top-level `await`, como el
+   resto de páginas) — `return` fuera de una función es un error de
+   sintaxis en JS, así que el navegador ni siquiera podía parsear el
+   script entero. Síntoma: "Comprobando acceso…" colgado para siempre,
+   sin ningún error visible en pantalla (el resto de páginas usan
+   `throw new Error(...)` en el mismo sitio, que SÍ es válido a nivel
+   superior — por eso solo `index.html` tenía este bug). Arreglado
+   sustituyendo el `return` por un flag (`conAcceso`) que envuelve el
+   resto del bloque. **Lección**: `node --check` sobre el contenido de
+   un `<script type="module">` extraído (no sobre el `.html` en sí)
+   habría detectado esto al instante — hacerlo la próxima vez que se
+   toque el top-level de un módulo de estas páginas.
+2. **"Managed Payments" de Stripe (activado por defecto en cuentas
+   nuevas) exige un `tax_code` de producto.** Sin él, `crear-checkout-
+   stripe.js` recibía `400 "Invalid line_items[0]: the product tax
+   code is missing"`. Como no se configuró Stripe Tax a propósito (ver
+   más arriba), se desactiva con `managed_payments[enabled]=false` al
+   crear la Checkout Session, en vez de rellenar un código fiscal.
+3. **`Subscription.current_period_end` ya NO vive en el objeto de
+   nivel superior en esta versión de la API de Stripe (`2026-08-26.
+   dahlia`)** — venía `null` siempre. El dato real está en
+   `items.data[0].current_period_end` (a nivel de `subscription_item`).
+   `stripe-webhook.js` corregido para leer de ahí, con `trial_end`
+   (que sí sigue en el nivel superior) como respaldo.
+4. **Cambiar un secret en Cloudflare Pages no refresca los despliegues
+   ya existentes** (mismo comportamiento ya documentado para
+   `AEMET_API_KEY` en su sección propia) — tras corregir un valor
+   equivocado de `SUPABASE_SERVICE_ROLE_KEY` (que daba
+   `401 "Invalid API key"` en el webhook), hizo falta forzar un
+   redeploy nuevo (`git commit --allow-empty` + push) para que la
+   Function empezara a usar el valor corregido — "Reenviar" el evento
+   sin redeploy seguía dando el mismo error viejo.
+
+**Confirmado también**: Cloudflare Pages tiene los secrets de Preview
+y Production en ámbitos totalmente separados (`wrangler pages secret
+list --env preview` solo devolvía `AEMET_API_KEY` hasta que se
+añadieron los de Stripe explícitamente ahí también) — al añadir
+cualquier secret nuevo, marcar también "Preview" en el Dashboard, o
+probar directamente tras mergear a main.
+
+**Pendiente antes de dar esto por cerrado**:
+- Reenviar/confirmar también el evento `checkout.session.completed`
+  (el de `customer.subscription.created` ya quedó verificado en
+  `200`).
+- Mergear a main y registrar un segundo webhook en Stripe contra
+  `https://costaviva.org/stripe-webhook` (la URL de preview no sirve
+  en producción).
 - Configurar en el Dashboard de Stripe la cancelación "al final del
-  periodo" (ver arriba).
+  periodo" (ver arriba) — todavía no hecho.
 - Pasar de modo TEST a modo LIVE en Stripe cuando todo lo anterior esté
   verificado (verificación de negocio/banco, nueva clave `sk_live_...`
   sin pasar nunca por el chat).
