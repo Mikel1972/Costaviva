@@ -1501,8 +1501,15 @@ probar directamente tras mergear a main.
 - Mergear a main y registrar un segundo webhook en Stripe contra
   `https://costaviva.org/stripe-webhook` (la URL de preview no sirve
   en producción).
-- Configurar en el Dashboard de Stripe la cancelación "al final del
-  periodo" (ver arriba) — todavía no hecho.
+- ✅ Configurada en el Dashboard de Stripe la cancelación "al final del
+  periodo" y el cambio de plan (mensual↔anual) con prorrateo
+  facturado de inmediato — ambas en Settings → Billing → Customer
+  portal. `suscripcion.html` ya marca el plan vigente ("✓ Tu plan
+  actual") y ofrece "Cambiar a..." en el otro, pedido explícito del
+  usuario: subir de plan se aplica al momento con el saldo del mes ya
+  pagado descontado del cobro nuevo — comportamiento por defecto de
+  Stripe una vez el Portal tiene el cambio de plan activado, no
+  requirió código de prorrateo propio.
 - Pasar de modo TEST a modo LIVE en Stripe cuando todo lo anterior esté
   verificado (verificación de negocio/banco, nueva clave `sk_live_...`
   sin pasar nunca por el chat).
