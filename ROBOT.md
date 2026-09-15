@@ -2177,3 +2177,32 @@ repetirse desde el punto de vista de esta rutina nocturna en concreto
 de hoy, que corre aparte).
 
 **Firmado:** robot de calibración nocturna, 2026-09-15 01:13 UTC.
+
+---
+
+## Robot de experiencia de usuario
+
+### 2026-09-15
+
+Pasada de prueba intensiva de "usuario real exigente" contra producción
+(costaviva.org + API REST de Supabase), con las dos cuentas de prueba.
+Núcleo sólido: /prevision (105 spots, 0 errores, dato fresco, "ahora"
+alineado con Madrid), datos coherentes por zona (marea, temperatura de
+agua, presión, coeficiente por spot con 26 valores distintos),
+/identificar-captura acertó "Lubina" (Dicentrarchus labrax) sin inventar
+talla/peso por falta de escala, /luna, /geocodificar, /webcam y rutas
+bloqueadas correctos, y el flujo completo de grupos (crear/invitar/unir/
+compartir con interruptores granulares + aislamiento entre cuentas
+verificado) funciona bien. Dos hallazgos: (1) los spots de marea casi
+nula del Mediterráneo (peniscola, gandia, torreblanca, vinaros, piles,
+calamillor, sonbou, muro) muestran "próximas mareas" contradictorias
+—dos pleamares seguidos, o pleamar y bajamar a la misma altura con 1 h
+de diferencia— que son puro ruido del modelo (delta 0.00–0.06 m);
+convendría ocultar los eventos cuando el rango es < ~0.10–0.15 m. (2) La
+función eliminar_grupo() está en el repo (migración 20260915120000) pero
+NO desplegada en producción (PGRST202), y grupos.html la llama con
+`.catch(()=>{})`, así que al salir el último miembro el grupo queda
+huérfano en silencio —ya hay una invitación huérfana previa que lo
+confirma; falta aplicar la migración. Datos de prueba limpiados salvo la
+fila de grupo huérfana y su invitación (consecuencia directa del
+hallazgo 2, inofensivas). Informe completo en /tmp/experiencia-informe.txt.
