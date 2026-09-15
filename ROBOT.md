@@ -2535,6 +2535,94 @@ Fuentes consultadas:
 **Firmado:** robot buscador de fuentes (pasada de buenas prácticas de
 otras apps), 2026-09-14 17:04 UTC.
 
+### 2026-09-15 15:42 UTC (pasada buscadora — buenas prácticas de otras apps)
+
+Investigación con `WebSearch` de qué funciones/datos tienen otras apps de
+mareas/pesca que Costa Viva no tenga, evitando repetir lo ya propuesto el
+2026-09-14 (avisos CAP de AEMET, periodos solunares, "top baits" de
+comunidad, cartas SST/clorofila por satélite, previsión offline en la
+PWA). **Solo propuestas — cambio de producto por definición, nunca
+implementación directa** (regla de `ROBOT_REGLAS.md`). No se ha tocado
+código. Ninguno de estos hallazgos es una API de datos verificable con
+una petición HTTP: son funciones de producto/UX de apps de terceros
+(App Store / Google Play / sus propias webs), así que aquí no aplica la
+verificación HTTP, igual que en la pasada del 2026-09-14.
+
+**Huecos nuevos encontrados (no cubiertos por la pasada anterior),
+ordenados por lo accionable que parece cada uno:**
+
+1. **Avisos/alarmas configurables por el usuario (Nautide)** — Nautide
+   deja poner alarmas y eventos de calendario (hasta 90 días vista) para
+   condiciones concretas: pleamar/bajamar, umbral de viento/racha, o "el
+   mejor momento de pesca" del día. Costa Viva hoy **no tiene ningún
+   sistema de notificaciones/avisos** — ni push ni recordatorios. Encaja
+   con el carácter de seguridad de la app (avisar "hoy hay temporal en tu
+   spot"). **Limitación técnica real a dejar clara antes de construirlo,
+   la misma ya documentada para el trackeo GPS y la geolocalización en
+   segundo plano** (ver `CLAUDE.md`, ideas aparcadas): las push de una
+   PWA en iOS solo funcionan con la app instalada en pantalla de inicio y
+   iOS ≥16.4, y con limitaciones; no prometer avisos fiables que el
+   sistema operativo no garantiza. Propuesta de producto → no abrir sin
+   hablarlo con el usuario.
+
+2. **Planificador por condición de marea a futuro ("SeaQuery" de
+   Nautide)** — filtrar los próximos N días buscando cuándo se da una
+   condición concreta en un spot: marea entrante/saliente, o coeficiente
+   por encima de un umbral. Costa Viva **ya calcula el coeficiente por
+   spot** (`coeficientePorSpot()`) y la altura/fase de marea, pero solo
+   los muestra para "ahora"; no hay forma de preguntar "¿cuándo, en los
+   próximos días, hay marea entrante + coeficiente alto en Bermeo?". El
+   dato base ya existe, faltaría la vista de planificación (frontend). Es
+   una función muy usada por pescadores para planear la salida.
+   Propuesta.
+
+3. **Explicabilidad del índice + índice horario a lo largo del día
+   (Fish & Tides "Bite Score", Nautide "fish activity")** — estas apps
+   dan un índice 0-100 **por hora** para todo el día y dejan tocar cada
+   hora para ver POR QUÉ puntúa alto o bajo (qué variable pesa). Costa
+   Viva ya tiene `indicePesca` (0-100) pero es un único valor "de ahora"
+   por spot, sin curva horaria ni desglose de por qué sale ese número.
+   Dos ideas separables: (a) mostrar el índice como curva a lo largo del
+   día/próximas horas, no un único valor; (b) al pulsar, explicar qué
+   factor lo sube/baja (ya hay un botón "ⓘ" que explica el concepto, pero
+   no el valor concreto de ese momento). Nota: enriquecer `indicePesca`
+   con MÁS variables (tendencia de presión, ventana de cambio de marea,
+   solunar) ya está anotado aparte en `ROBOT_REGLAS.md` (sec. "Variables
+   adicionales para el índice de pesca") — lo NUEVO de esta pasada es la
+   parte de UX (curva horaria + "por qué este número"), no las variables
+   en sí. Propuesta de producto.
+
+4. **Racha de viento (gust), no solo viento medio (Nautide, FishWeather)**
+   — varias apps muestran la racha además del viento medio, porque para
+   decidir si salir en una embarcación pequeña la racha máxima importa
+   tanto o más que la media. `indiceMar()` en `index.html` usa viento
+   medio; Open-Meteo expone `wind_gusts_10m` en la misma petición que ya
+   se hace. Sería un dato real más (mostrarlo) y, potencialmente, un
+   factor del índice. **Ojo**: meterlo en la fórmula de `indiceMar` es un
+   cambio a un dato que se muestra como fiable → propuesta, nunca cambio
+   directo (regla general del fichero). Mostrarlo solo como dato
+   informativo (sin tocar la fórmula) sería de menor riesgo, pero sigue
+   siendo frontend → propuesta.
+
+**Ya cubierto por la pasada del 2026-09-14 o por ideas aparcadas
+existentes, no re-propongo**: avisos oficiales CAP de AEMET, periodos
+solunares como recomendación horaria, recomendación de cebo/técnica por
+comunidad, SST/clorofila por satélite, y descarga offline en la PWA. El
+punto 3 (explicabilidad) se cruza con el solunar ya propuesto pero añade
+la dimensión nueva de "índice horario + por qué".
+
+Fuentes consultadas:
+- Nautide (`apps.apple.com/us/app/nautide-tides-wind-waves/id1413108902`,
+  `play.google.com/store/apps/details?id=com.nautide.app`, `mwm.ai`).
+- Fish & Tides (`fishandtides.com`, `fishandtides.com/best-tide-app-for-fishing.html`,
+  `apps.apple.com/us/app/fish-tides/id1589893765`).
+- FishWeather y SeaLegs AI (`sealegs.ai/blog/best-fishing-weather-apps`,
+  `sealegs.ai/blog/best-marine-weather-apps`).
+- Fishbrain (`fishbrain.com/features/depth-maps`, Google Play/App Store).
+
+**Firmado:** robot buscador de fuentes (pasada de buenas prácticas de
+otras apps), 2026-09-15 15:42 UTC.
+
 ### 2026-09-15 (pasada nocturna corta — calibración)
 
 **Sexto punto de calibración para las 3 boyas obligatorias, y segundo
