@@ -246,6 +246,23 @@ cada una (no 4):
   un cambio directo a `ESPECIES` ni a la fórmula de `indicePesca`),
   porque cambia lo que se le muestra al usuario como dato fiable.
 
+**Fuente candidata encontrada por el usuario (2026-09-15), pendiente de
+investigar en una pasada futura**: proyecto **DIGIPESCA** (Universitat
+Politècnica de València) — bases de datos de pesca/lonja subidas al
+repositorio institucional RiuNet, de libre uso y acceso
+(`https://digipesca.webs.upv.es/`). No se ha comprobado todavía en real
+qué contiene exactamente ni si sirve para algo concreto de este
+proyecto — antes de usarla, verificar con una petición/descarga real
+qué datos trae (especie, zona, mes, precio en lonja...) y si el acceso
+es de verdad abierto sin registro. Idea del propio usuario que encaja
+aquí: la evolución del **precio en lonja** de una especie a lo largo
+del año podría ser una señal indirecta de cuándo hay más/mejor pesca de
+esa especie (precio bajo = más oferta = más capturas), complementaria a
+`meses`/`rangoTemp` — pero solo si DIGIPESCA (u otra fuente equivalente,
+ej. lonjas públicas) publica series de precio por especie/fecha
+reutilizables; si no, esta idea concreta se descarta sin más, no forzar
+una fuente que no da el dato limpio.
+
 ## Red de seguridad de la automatización (añadido 2026-09-12)
 
 Estas reglas existen porque "el propio prompt dice que esto es
