@@ -724,6 +724,99 @@ especies), 2026-09-15 13:00 UTC.
 
 ---
 
+### 2026-09-15 20:26 UTC (pasada buscadora — migración y cría, verificación en crudo de los 2 huecos abiertos)
+
+Tercera pasada de la misma responsabilidad ("migración y cría de
+especies"). Las dos anteriores (2026-09-14 21:03 y 2026-09-15 13:00 UTC)
+dejaron **dos huecos explícitos sin cerrar**: la temperatura de puesta
+del **abadejo** (*P. pollachius*, solo dato de buscador sin verificar) y
+la del **jurel** (*T. trachurus*, sin ninguna cifra en °C). Esta pasada
+fue a por esos dos en concreto, intentando confirmarlos con peticiones
+HTTP reales (`WebFetch`) antes de darlos por buenos — sigue siendo
+**propuesta pura, sin tocar `ESPECIES` ni `indicePesca`** (regla de
+`ROBOT_REGLAS.md`).
+
+**Resultado por hueco:**
+
+- **Abadejo (*P. pollachius*) — SIGUE SIN CERRARSE.** La cifra de "desove
+  a 8–10 °C, marzo–mayo, en profundidad" vuelve a salir en varios
+  resúmenes del buscador, pero **no se pudo confirmar en crudo**: la
+  página real de FishBase (`fishbase.se/summary/pollachius-pollachius`,
+  verificada con `WebFetch`) **no da temperatura de puesta** — solo banda
+  geográfica templada (72°N–36°N) y rango de profundidad (40–200 m,
+  normalmente 40–100 m). La ficha institucional del HELCOM Red List
+  (`helcom.fi/.../HELCOM-Red-List-Pollachius-pollachius.pdf`) es un PDF
+  comprimido del que `WebFetch` no pudo extraer texto legible. El
+  "preferido térmico" que da FishBase por modelo (7–11,9 °C, media
+  8,9 °C) es un ESTIMADO de ocurrencia, no una temperatura de puesta, y
+  además tampoco aparece en la página resumen en crudo. **Conclusión:
+  igual que en la pasada del 2026-09-15 13:00 — el 8–10 °C del abadejo
+  queda como referencia de buscador, NO como dato fiable.** Ojo repetido:
+  no confundir con *P. virens* (carbonero), que contamina parte de los
+  resultados.
+- **Jurel (*T. trachurus*) — temperatura en °C SIGUE SIN APARECER**, pero
+  se cierra un dato distinto y **verificado en crudo, directamente
+  relevante para nuestra zona**: la página real de FishBase
+  (`fishbase.se/summary/Trachurus-trachurus.html`, `WebFetch`) dice
+  literalmente que el stock oeste *"spawns in a belt from the Biscay to
+  Ireland in early spring"* y el del Mar del Norte *"in the southern
+  North Sea in summer"*, con rango de profundidad 0–1050 m (normalmente
+  100–200 m). Es decir: para el Golfo de Vizcaya / Cantábrico (justo la
+  zona de `ESPECIES` por defecto), la puesta del jurel es a **principios
+  de primavera en una franja Vizcaya→Irlanda** — más preciso que el
+  "primavera-verano en aguas abiertas" que teníamos, y confirmado en
+  fuente primaria, no en resumen. La cifra de temperatura en °C sigue sin
+  fuente verificable (Wikipedia, Wageningen, la revisión de ResearchGate
+  —403 al fetch— y la del Mediterráneo oriental hablan de que temperatura
+  y fotoperiodo influyen, pero ninguna da un rango numérico). Hueco de
+  temperatura del jurel: **sigue abierto**, no se inventa.
+
+**Dato de contexto útil que confirma la coherencia de zona**: el artículo
+de *Scientia Marina* (CSIC) sobre el destino de huevos y larvas de
+caballa (*S. scombrus*), jurel (*T. trachurus*) y sardina en el **Golfo
+de Vizcaya** aparece como fuente real (indexado en
+`scientiamarina.revistas.csic.es`) — respalda que caballa y jurel
+efectivamente desovan en nuestra zona en primavera, coherente con lo de
+FishBase. No se cita como cifra de temperatura porque no la aporta en el
+resumen accesible.
+
+**Balance acumulado de las 3 pasadas** (sin cambios respecto al recuento
+de la del 2026-09-15 13:00 en cuanto a temperatura): siguen siendo
+**cuatro de siete** especies con rango de temperatura de reproducción
+verificado en crudo — lubina (12–14 °C óptimo; huevos raros bajo
+8,5–9 °C o sobre 15 °C), verdel/caballa (~10 °C), sargo (15–18 °C al
+subir) y calamar (12–22 °C, mueren bajo 10 °C). Abadejo y jurel siguen
+**sin cifra de temperatura fiable** y deben quedarse en blanco si algún
+día se añade el campo, mismo criterio "null mejor que inventado". Lo
+nuevo de esta pasada es de tipo geográfico-estacional (no térmico):
+puesta del jurel confirmada en Vizcaya→Irlanda a principios de
+primavera.
+
+**Propuesta (sin implementar nada, idéntica en espíritu a las dos
+anteriores):** si el usuario decide añadir a `ESPECIES` un campo
+informativo opcional (p.ej. `desove: { meses, zona, nota }`), el jurel ya
+puede llevar "puesta principal a comienzos de primavera, franja Golfo de
+Vizcaya→Irlanda (FishBase)" como texto informativo verificado, aunque sin
+temperatura numérica. Cualquier uso CUANTITATIVO en `indicePesca` sigue
+necesitando calibración contra capturas reales — no propongo pesos, sería
+inventar.
+
+**Verificaciones HTTP reales de esta pasada** (`WebFetch`):
+`fishbase.se/summary/pollachius-pollachius` (abadejo: sin temp de puesta,
+solo profundidad y banda geográfica) y
+`fishbase.se/summary/Trachurus-trachurus.html` (jurel: puesta
+Vizcaya→Irlanda en primavera temprana, confirmada). El PDF de HELCOM y la
+revisión de ResearchGate del jurel devolvieron contenido no legible / 403
+respectivamente — sus datos quedan solo como referencia de buscador.
+
+**Sin cambios en código** — investigación de contenido, propuesta pura;
+solo esta entrada en `ROBOT.md`.
+
+**Firmado:** robot buscador de fuentes (pasada de migración y cría de
+especies), 2026-09-15 20:26 UTC.
+
+---
+
 ### 2026-09-14 23:31 UTC (pasada buscadora — presión atmosférica e histórico por zona)
 
 **Qué se buscó:** fuentes de presión atmosférica y, sobre todo, de
