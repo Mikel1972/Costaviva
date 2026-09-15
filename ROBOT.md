@@ -1266,6 +1266,112 @@ cambios de código.
 
 ---
 
+### 2026-09-15 13:31 UTC (pasada buscadora — corrientes marinas por zona)
+
+**Qué se buscó:** continuación de la pasada de corrientes del 2026-09-14
+19:37 UTC (ver más arriba). Aquel día se verificó en vivo UN dataset de
+radar HF (canal de Ibiza, vía ERDDAP de EMODnet Physics) y se dejaron
+Galicia y el delta del Ebro solo citados. Esta pasada ha rastreado el
+catálogo entero de EMODnet Physics ERDDAP para ver qué zonas de la costa
+de España y Portugal (el ámbito real de Costa Viva, no solo el
+Cantábrico) tienen radar HF consumible por REST, y si esos datos están
+vivos hoy o congelados.
+
+**Este runner SÍ tiene salida de red** (a diferencia de la sesión
+nocturna en la nube, bloqueada por egress proxy — ver 2026-08-31): `curl`
+a `erddap.emodnet-physics.eu` devuelve `200`, así que se ha podido
+verificar todo con peticiones HTTP reales, no solo por búsqueda.
+
+**Hallazgo principal, verificado en vivo:** EMODnet Physics ERDDAP
+publica 56 datasets con "HFRADAR", y hay DOS familias distintas para las
+mismas zonas — importa mucho cuál se usa:
+- `HFRADAR_<zona>_Totals` — **archivo/agregación, CONGELADO**. El de
+  Galicia acaba en `2024-02-29`; Ibiza/Ebro/PLOCAN/Gibraltar/South en
+  torno a `2026-07-30/31`; Lisboa en `2026-02-04`. Inservible para
+  tiempo real.
+- `EUHFR_NRTcurrent_HFR-<zona>-Total` — **Near Real Time, VIVO hoy**.
+  `time_coverage_end` comprobado uno a uno el 2026-09-15:
+
+  | Zona (dataset NRT) | Institución | Última hora disponible |
+  |---|---|---|
+  | Galicia | INTECMAR-Xunta / PdE / IH | 2026-09-15 09:00Z |
+  | Lisboa (Portugal) | Instituto Hidrográfico | 2026-09-15 11:00Z |
+  | Gibraltar (cerca G. de Cádiz) | Puertos del Estado | 2026-09-15 10:00Z |
+  | Ibiza | SOCIB | 2026-09-15 11:00Z |
+  | PLOCAN (Canarias) | PLOCAN | 2026-09-14 05:00Z |
+  | **EUSKOOS (Euskadi/Golfo de Bizkaia)** | **AZTI; Ifremer** | **2026-07-16 08:00Z (CONGELADO)** |
+
+  Es decir: la familia NRT cubre las cuatro zonas del código de Costa
+  Viva (`ESPECIES` atlántico N, `_MEDITERRANEO` vía Ibiza/Ebro,
+  `_GOLFO_CADIZ` vía Gibraltar/South, `_CANARIAS` vía PLOCAN, y Portugal
+  vía Lisboa/South) con radar HF de OBSERVACIÓN real, hora a hora.
+
+**Caveat importante y contraintuitivo:** la única zona parada es
+**EUSKOOS (AZTI), que es justo la costa de casa de la app** (Bilbao,
+Bermeo, Getaria, Pasaia... — cobertura lat 43.32–44.58, lon −3.20 a
+−1.20, confirmada en los metadatos). Su feed NRT en EMODnet no se
+actualiza desde el 2026-07-16 — no es un fallo nuestro, es el mirror de
+EMODnet el que está detenido para esa zona. Si algún día se integra
+esto, el dato de radar para el Cantábrico oriental habría que buscarlo
+en la fuente propia de AZTI/Euskoos (THREDDS), no en EMODnet — y AZTI
+enlaza con la vía Euskalmet que sigue bloqueada del lado de ellos (ver
+`CLAUDE.md`, estaciones de monte). Para el resto de zonas, EMODnet vale.
+
+**Cadena completa verificada de extremo a extremo (petición real →
+número real):** consultado el griddap NRT de Galicia para la última hora
+(`2026-09-15 11:00Z`), devuelve 51 celdas con corriente real de las
+3807 de la rejilla (el radar solo cubre la franja donde solapan las
+antenas, el resto es `null` — correcto, nunca se inventa dato). Ejemplo
+real leído: lat 41.111, lon −9.648 → EWCT −0.035 m/s, NSCT −0.249 m/s →
+módulo 0.25 m/s (0.49 nudos). Variables por dataset: `EWCT`/`NSCT`
+(componentes E-O y N-S, m/s), `EWCS`/`NSCS` (incertidumbre), y flags de
+calidad (`QCflag`, `CSPD_QC`, `VART_QC`, `GDOP`...). Resolución `PT1H`
+(horaria), processing level 3B, gestionado por el nodo europeo de radar
+HF de EuroGOOS.
+
+**Acceso y licencia:** REST puro, sin login — griddap `.json`/`.csv` por
+`[time][depth][lat][lon]` en `erddap.emodnet-physics.eu`. Licencia
+**Creative Commons (CC-BY)** con cita obligatoria al EuroGOOS European
+HFR Node y a las instituciones de cada zona (Puertos del Estado,
+INTECMAR-Xunta, Instituto Hidrográfico, SOCIB, AZTI, PLOCAN según
+corresponda). Sin cuota por-ubicación tipo Open-Meteo, pero conviene
+cachear igual (patrón `/prevision`).
+
+**Por qué SOLO propuesta, no implementación** (misma razón que la pasada
+del 2026-09-14, ver `ROBOT_REGLAS.md`): integrarlo tocaría
+`functions/prevision.js` (por encima del límite de volumen) y es una
+decisión de producto — el radar HF solo cubre unas pocas franjas
+costeras concretas (no los ~95 spots fijos, y con muchas celdas `null`
+incluso dentro de su zona), así que hay que decidir cómo mezclar
+"corriente observada real por radar donde la hay" con "el modelo de
+Open-Meteo (`ocean_current_velocity`) en el resto" sin confundir al
+usuario sobre qué es observación y qué es modelo. Además, cada zona
+añadiría una sub-petición más a `/prevision`, que ya está cerca del
+límite de 50 de Cloudflare (ver `ROBOT_REGLAS.md`) — habría que hacerlo
+como endpoint aparte o bajo demanda al abrir un spot, no en la pasada
+general. No se ha tocado código.
+
+**Propuesta concreta para el usuario, si se retoma:** empezar por
+Galicia o Ibiza (NRT, ya verificados vivos hoy) como prueba de concepto
+de "corriente observada por radar HF", mostrada SOLO al abrir un spot de
+esa zona y etiquetada claramente como observación (distinta del modelo
+Open-Meteo). Antes de proponer cualquier mezcla o factor, calibrar la
+lectura del radar contra el `ocean_current_velocity` de Open-Meteo en
+esos mismos puntos y anotarlo en `CALIBRACION.jsonl` (mismo patrón que
+oleaje y coeficiente de marea). Para el Cantábrico oriental (Euskadi),
+NO usar EMODnet mientras siga congelado desde julio — dejarlo pendiente
+de la vía AZTI/Euskalmet propia.
+
+**Fuentes:**
+[EMODnet Physics ERDDAP](https://erddap.emodnet-physics.eu/erddap/search/index.html?searchFor=HFRADAR),
+[dataset NRT Galicia (verificado vivo)](https://erddap.emodnet-physics.eu/erddap/info/EUHFR_NRTcurrent_HFR-Galicia-Total/index.html),
+[dataset NRT EUSKOOS (congelado)](https://erddap.emodnet-physics.eu/erddap/info/EUHFR_NRTcurrent_HFR-EUSKOOS-Total/index.html).
+
+**Firmado:** robot buscador de fuentes (pasada de corrientes marinas),
+2026-09-15 13:31 UTC.
+
+---
+
 ## Auditoría de datos
 
 ### 2026-08-31
