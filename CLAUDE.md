@@ -1448,12 +1448,25 @@ todavía, solo escrito):
 - Aplicar la migración con `supabase db push` contra la base real.
 - Añadir `STRIPE_SECRET_KEY` (ya la tenemos, modo test) como Secret en
   Cloudflare Pages.
-- Desplegar a preview, registrar ahí el webhook en el Dashboard de
-  Stripe (modo test) para obtener `STRIPE_WEBHOOK_SECRET`, y
-  comprobar si Cloudflare Pages necesita un valor de env var distinto
-  para Preview vs Production (webhooks separados por entorno) antes de
-  mergear a main y registrar el segundo endpoint contra
-  `https://costaviva.org/stripe-webhook`.
+- **Confirmado 2026-09-15**: Cloudflare Pages en este proyecto tiene
+  los secrets de Preview y Production en ámbitos totalmente separados
+  (`wrangler pages secret list --env preview` solo devolvía
+  `AEMET_API_KEY`, mientras que Production ya tenía
+  `STRIPE_SECRET_KEY`/`STRIPE_WEBHOOK_SECRET`/`SUPABASE_SERVICE_ROLE_KEY`/etc.)
+  — un secret añadido sin marcar explícitamente "Preview" (o "todos los
+  entornos") en el Dashboard **no** llega a los despliegues de rama.
+  Esto es una limitación preexistente del proyecto (afecta también a
+  `RESEND_API_KEY` — probar la Alarma SOS en un preview también daría
+  `501` sin este ajuste), no algo nuevo del paywall, pero hay que
+  tenerlo en cuenta cada vez que se pruebe algo con secretos en una
+  rama: añadir el secret también al ámbito "Preview" en Cloudflare
+  Pages → Settings → Environment variables, o probar directamente tras
+  mergear a main.
+- Registrado en Stripe (modo test) el webhook contra la URL estable de
+  esta rama: `https://feat-stripe-suscripciones.fishnow-59u.pages.dev/stripe-webhook`
+  (4 eventos, `STRIPE_WEBHOOK_SECRET` ya añadido a Production). Falta
+  registrar el segundo endpoint contra `https://costaviva.org/stripe-webhook`
+  cuando se mergee a main.
 - Confirmar contra un Checkout de prueba real (tarjeta `4242 4242 4242
   4242`) que el payload de `customer.subscription.created` trae de
   verdad `metadata.supabase_user_id` e `items.data[0].price.id` con la
