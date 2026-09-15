@@ -1148,7 +1148,7 @@ const ESPECIES = [
   { nombre: "Lubina", emoji: "🐟", zona: "costa", meses: [9, 10, 11, 12, 1, 2, 3, 4],
     rangoTemp: [8, 24],
     nota: "se mueve bien entre 8-24°C, pero por debajo de 7°C casi ni come. Por eso aquí pica mejor de otoño a primavera, y sobre todo al amanecer o anochecer",
-    alimento: "sardinas y anchoas pequeñas, lisas, quisquillas, gusanos de mar y cangrejos de arena — sobre todo en puertos, dársenas y desembocaduras" },
+    alimento: "sardinas y anchoas pequeñas (parrotxa), lisas, quisquillas, gusanos de mar y cangrejos de arena — sobre todo en puertos, dársenas y desembocaduras" },
   { nombre: "Sargo", emoji: "🐟", zona: "costa", meses: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
     rangoTemp: [15, 24],
     nota: "está todo el año en las rompientes; aguanta 15-24°C (FishBase, misma especie que en el resto de España, n=400), óptimo sobre 19°C, pero en el Cantábrico se anima más cuando el agua está en la parte fría de esa franja",
@@ -1172,7 +1172,7 @@ const ESPECIES = [
   { nombre: "Txitxarro / verdel", emoji: "🐟", zona: "mar adentro", meses: [4, 5, 6, 7, 8],
     rangoTemp: [15, 20],
     nota: "aguanta 14-23°C, pero los bancos se juntan entre 15-20°C. Con ese calorcillo suben desde los ~200m de invierno hasta la superficie, pegados a la costa",
-    alimento: "en primavera empieza con zooplancton y va pasando a sardina y anchoa pequeña conforme avanza la temporada" },
+    alimento: "en primavera empieza con zooplancton y va pasando a sardina y anchoa pequeña (parrotxa) conforme avanza la temporada" },
 ];
 
 // Ampliación nacional (2026-09-09): 3 listas nuevas para las zonas cuya
@@ -2434,14 +2434,21 @@ function abrirPanel(s) {
     `<div style="margin-bottom:10px;"><div class="especie-zona-titulo">${titulo}</div>` +
     (lista.length ? lista.map(listaEspecie).join("") : `<span style="color:#42585F;">ninguna de temporada ahora</span>`) +
     `</div>`;
-  // Nota de "parrotxa" (localismo valenciano/catalán, cría de sardina):
-  // antes aparecía SIEMPRE, incluso en spots del Cantábrico/Canarias/
-  // Golfo de Cádiz donde ese término no se usa — bug real detectado por
-  // el usuario 2026-09-15 ("no puede ser que en Cartagena hablemos de
-  // parrotxa"), agravado porque encima estaba puesto en el array
-  // equivocado (Cantábrico tenía la palabra, Mediterráneo no). Corregido
-  // el array y esta nota ahora solo sale si la palabra aparece de verdad
-  // en alguna especie de temporada de ESTE spot, en vez de a ciegas.
+  // Nota de "parrotxa" (cría de sardina): antes aparecía SIEMPRE, para
+  // cualquier spot, incluidos los de Canarias/Golfo de Cádiz donde ese
+  // término no se usa — bug real reportado por el usuario 2026-09-15
+  // ("no puede ser que en Cartagena hablemos de parrotxa"). Confirmado
+  // por el propio usuario que el término SÍ es correcto en el Cantábrico
+  // (no solo en Mediterráneo, como se asumió en un primer intento de
+  // arreglo) — se queda en las dos listas. Ahora la nota solo sale si la
+  // palabra aparece de verdad en la lista de especies de ESTE spot, lo
+  // que arregla Canarias/Cádiz. PENDIENTE: Cartagena comparte
+  // ESPECIES_MEDITERRANEO entero con Valencia/Catalunya, así que sigue
+  // mostrándose ahí igual que en el resto del Mediterráneo — no hay
+  // forma de distinguir Cartagena del resto de ese array sin verificar
+  // primero si "parrotxa" se usa realmente allí y, si no, separar
+  // Cartagena en su propia lista (encaja con la visión a largo plazo de
+  // estudios por spot, ver ROBOT_REGLAS.md) — no resuelto todavía.
   const hayParrotxa = [...costa, ...marAdentro].some((e) => e.alimento?.includes("parrotxa") || e.nota?.includes("parrotxa"));
   document.getElementById("panelEspecies").innerHTML =
     bloqueZona("🪨 COSTA", costa) + bloqueZona("🌊 MAR ADENTRO", marAdentro) +
