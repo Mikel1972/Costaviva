@@ -282,6 +282,28 @@ barco, no solo puerto de venta) antes de dar el dato por bueno — si no
 se puede contrastar, se descarta esa especie para esta idea en concreto,
 no se propone con la salvedad "puede que no sea exacto".
 
+**Segundo cruce obligatorio, añadido por el usuario (2026-09-15)**: que
+una especie esté abundante y barata en lonja un mes concreto (indicativo
+de que hay muchas capturas) NO significa que un pescador de costa vaya a
+poder pescarla — el ejemplo del propio usuario: mucho pargo a buen
+precio no quiere decir que se pesque bien de costa, "alguno saldrá pero
+es raro", porque el pargo vive y se captura sobre todo en fondos
+profundos/embarcación. Antes de traducir "abundante+barato en lonja este
+mes" en una propuesta tipo "buen mes para pescar esta especie [en esta
+zona]", hay que cruzarlo con los **usos y costumbres reales de la
+especie** — hábitat (profundidad, tipo de fondo), si se captura
+normalmente desde costa/embarcación (mismo campo `zona` de arriba, pero
+mirado ahora desde el ángulo "¿es realista para alguien tirando desde la
+orilla?", no solo "¿dónde se desembarcó?") y método de pesca habitual —
+no solo la fase bajura/altura del barco. Una especie de bajura (zona:
+"costa") puede seguir siendo predominantemente de fondo profundo cerca
+de la costa y poco realista a lanzado desde la orilla; el dato de lonja
+por sí solo no lo distingue. Si la especie/mes en cuestión no tiene una
+fuente clara sobre sus hábitos reales de captura (no solo su biología
+general), no proponer la conclusión de "buen mes de costa" — proponer
+como mucho el dato de lonja en bruto, marcado explícitamente como sin
+contrastar con hábitos.
+
 ## Red de seguridad de la automatización (añadido 2026-09-12)
 
 Estas reglas existen porque "el propio prompt dice que esto es
