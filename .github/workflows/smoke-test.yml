@@ -5,19 +5,29 @@ name: Smoke test E2E
 # 05:00 UTC, antes que el informe diario (06:00 UTC) y el test de
 # autenticación (06:17 UTC), para no saturar los runners a la vez.
 #
-# Recorre el camino real de un usuario contra produccion: login ->
-# /prevision y /webcam/<slug> responden -> escribe una entrada de prueba
-# en el cuaderno de pesca (salidas_pesca) -> la borra. Si algo falla, el
-# workflow falla (GitHub avisa por email de los runs programados que
-# fallan, sin plumbing adicional).
+# AMPLIADO 2026-09-15 (pedido explícito del usuario): "imagínate que eres
+# un usuario real, o tres, y que has pagado por la app — esa es la
+# experiencia que quiero que un robot trabaje para ver que falla, en
+# silencio o no". Ya no es solo login + /prevision + una salida de
+# prueba: recorre el camino real de un usuario de principio a fin —
+# login -> /prevision y /webcam/<slug> responden -> crea/borra una salida
+# de pesca -> sube una foto real a /identificar-captura y registra/borra
+# una captura completa con lo que identifique -> con DOS cuentas de
+# prueba, crea un grupo, invita, la segunda cuenta se une, ambas salen y
+# el grupo se borra de verdad (ver eliminar_grupo(), migración
+# 20260915120000_eliminar_grupo.sql). Si algo falla, el workflow falla
+# (GitHub avisa por email de los runs programados que fallan, sin
+# plumbing adicional) y el informe diario (daily-report.yml) recoge el
+# resultado de esta pasada automáticamente.
 #
 # LA FUNCION SOS QUEDA FUERA A PROPOSITO (decision explicita del
-# 2026-09-12): este smoke test NUNCA debe llamar a /sos-alerta. Hacerlo
-# dispararia un email de socorro real via Resend a los contactos de
-# emergencia de la cuenta de prueba (si tuviera alguno). Si en el futuro
-# se quiere cubrir tambien el camino del SOS, hace falta antes un modo de
-# prueba explicito en sos-alerta.js que nunca llame a Resend de verdad
-# para una cuenta marcada como test -- decidir eso aparte, no asumirlo.
+# 2026-09-12, reconfirmada 2026-09-15): este smoke test NUNCA debe llamar
+# a /sos-alerta ni tocar nada de alarma.html. Hacerlo dispararia un email
+# de socorro real via Resend a los contactos de emergencia de la cuenta
+# de prueba (si tuviera alguno). Si en el futuro se quiere cubrir tambien
+# el camino del SOS, hace falta antes un modo de prueba explicito en
+# sos-alerta.js que nunca llame a Resend de verdad para una cuenta
+# marcada como test -- decidir eso aparte, no asumirlo.
 #
 # LOGIN SIN PASSWORD, VIA ADMIN API (cambiado 2026-09-14): activar el
 # CAPTCHA de Cloudflare Turnstile en Supabase (ver CLAUDE.md) bloqueo el
@@ -27,6 +37,12 @@ name: Smoke test E2E
 # password en absoluto, solo el email y SUPABASE_SERVICE_ROLE_KEY (misma
 # key que ya usa aviso-alta.js, aqui como secret nuevo y separado de
 # GitHub Actions, solo para esto). SMOKE_TEST_PASSWORD ya no hace falta.
+#
+# CUENTAS DE PRUEBA: SMOKE_TEST_EMAIL para el recorrido de un solo
+# usuario (prevision/webcam/salida/captura/foto); TEST_USER_A_EMAIL y
+# TEST_USER_B_EMAIL (las mismas que ya usa auth-test.yml para la prueba
+# cruzada de RLS) para el recorrido de grupos, que necesita dos cuentas
+# distintas de verdad.
 
 on:
   schedule:
@@ -99,3 +115,159 @@ jobs:
           echo "Creada salida de prueba $id, borrando..."
           curl -sS -X DELETE "$SUPABASE_URL/rest/v1/salidas_pesca?id=eq.$id" \
             -H "apikey: $SUPABASE_ANON_KEY" -H "Authorization: Bearer $TOKEN"
+
+      - name: Identificación de captura por foto real (/identificar-captura)
+        id: identificacion
+        env:
+          TOKEN: ${{ steps.login.outputs.token }}
+        run: |
+          curl -sSL -o /tmp/pez.jpg "https://upload.wikimedia.org/wikipedia/commons/d/d0/Bar_%28Dicentrarchus_labrax%29_%28Ifremer_00735-84702%29_%28cropped%29.jpg"
+          if [ ! -s /tmp/pez.jpg ]; then echo "::error::No se pudo descargar la foto de prueba"; exit 1; fi
+          base64_img=$(base64 -w0 /tmp/pez.jpg)
+          resp=$(curl -sS -X POST "$PRODUCCION_URL/identificar-captura" \
+            -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+            -d "{\"imagenBase64\":\"$base64_img\",\"tipoMime\":\"image/jpeg\"}")
+          echo "$resp" > /tmp/identificacion.json
+          especie=$(node -e "
+            const fs = require('fs');
+            let r;
+            try { r = JSON.parse(fs.readFileSync('/tmp/identificacion.json', 'utf8')); }
+            catch (e) { console.error('JSON inválido en la respuesta: ' + e.message); process.exit(1); }
+            if (r.error) { console.error('El endpoint devolvió un error: ' + r.error); process.exit(1); }
+            for (const k of ['especie', 'talla_cm', 'peso_g', 'confianza']) {
+              if (!(k in r)) { console.error('Falta la clave \"' + k + '\" en la respuesta'); process.exit(1); }
+            }
+            console.log(r.especie || 'Lubina');
+          ")
+          if [ $? -ne 0 ]; then
+            echo "::error::/identificar-captura devolvió algo inesperado: $resp"
+            exit 1
+          fi
+          echo "Identificación real de la foto de prueba: $(cat /tmp/identificacion.json)"
+          echo "especie=$especie" >> "$GITHUB_OUTPUT"
+
+      - name: Registra una captura completa (con la especie identificada) y la borra
+        env:
+          TOKEN: ${{ steps.login.outputs.token }}
+          USERID: ${{ steps.login.outputs.userid }}
+          ESPECIE: ${{ steps.identificacion.outputs.especie }}
+        run: |
+          creada=$(curl -sS -X POST "$SUPABASE_URL/rest/v1/salidas_pesca" \
+            -H "apikey: $SUPABASE_ANON_KEY" -H "Authorization: Bearer $TOKEN" \
+            -H "Content-Type: application/json" -H "Prefer: return=representation" \
+            -d "{\"user_id\":\"$USERID\",\"fecha\":\"2000-01-01\",\"spot_slug\":\"smoke-test\",\"notas\":\"smoke test captura, se borra solo\"}")
+          salida_id=$(echo "$creada" | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{console.log(JSON.parse(d)[0].id||'')}catch{console.log('')}})")
+          if [ -z "$salida_id" ]; then
+            echo "::error::No se pudo crear la salida para la captura de prueba: $creada"
+            exit 1
+          fi
+
+          especie="${ESPECIE:-Lubina}"
+          capturada=$(curl -sS -X POST "$SUPABASE_URL/rest/v1/capturas" \
+            -H "apikey: $SUPABASE_ANON_KEY" -H "Authorization: Bearer $TOKEN" \
+            -H "Content-Type: application/json" -H "Prefer: return=representation" \
+            -d "{\"salida_id\":\"$salida_id\",\"user_id\":\"$USERID\",\"especie\":\"$especie\",\"notas\":\"smoke test, se borra sola\"}")
+          captura_id=$(echo "$capturada" | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{console.log(JSON.parse(d)[0].id||'')}catch{console.log('')}})")
+          if [ -z "$captura_id" ]; then
+            echo "::error::No se pudo crear la captura de prueba: $capturada"
+            curl -sS -X DELETE "$SUPABASE_URL/rest/v1/salidas_pesca?id=eq.$salida_id" \
+              -H "apikey: $SUPABASE_ANON_KEY" -H "Authorization: Bearer $TOKEN"
+            exit 1
+          fi
+          echo "Creada captura de prueba $captura_id (especie: $especie), borrando..."
+          curl -sS -X DELETE "$SUPABASE_URL/rest/v1/capturas?id=eq.$captura_id" \
+            -H "apikey: $SUPABASE_ANON_KEY" -H "Authorization: Bearer $TOKEN"
+          curl -sS -X DELETE "$SUPABASE_URL/rest/v1/salidas_pesca?id=eq.$salida_id" \
+            -H "apikey: $SUPABASE_ANON_KEY" -H "Authorization: Bearer $TOKEN"
+
+      - name: Genera sesiones para las cuentas de prueba A y B (grupos)
+        id: login_ab
+        env:
+          TEST_USER_A_EMAIL: ${{ secrets.TEST_USER_A_EMAIL }}
+          TEST_USER_B_EMAIL: ${{ secrets.TEST_USER_B_EMAIL }}
+        run: |
+          if [ -z "$TEST_USER_A_EMAIL" ] || [ -z "$TEST_USER_B_EMAIL" ]; then
+            echo "::error::Faltan los secrets TEST_USER_A_EMAIL/TEST_USER_B_EMAIL — ver auth-test.yml/CLAUDE.md."
+            exit 1
+          fi
+          login_de() {
+            local email="$1"
+            local enlace hashed_token resp token userid
+            enlace=$(curl -sS -X POST "$SUPABASE_URL/auth/v1/admin/generate_link" \
+              -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
+              -H "Content-Type: application/json" \
+              -d "{\"type\":\"magiclink\",\"email\":\"$email\"}")
+            hashed_token=$(echo "$enlace" | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{console.log(JSON.parse(d).hashed_token||JSON.parse(d).properties.hashed_token||'')}catch{console.log('')}})")
+            if [ -z "$hashed_token" ]; then echo "::error::No se pudo generar el enlace de sesión para $email: $enlace" >&2; return 1; fi
+            resp=$(curl -sS -X POST "$SUPABASE_URL/auth/v1/verify" \
+              -H "apikey: $SUPABASE_ANON_KEY" -H "Content-Type: application/json" \
+              -d "{\"type\":\"email\",\"token_hash\":\"$hashed_token\"}")
+            token=$(echo "$resp" | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{console.log(JSON.parse(d).access_token||'')}catch{console.log('')}})")
+            userid=$(echo "$resp" | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{console.log(JSON.parse(d).user.id||'')}catch{console.log('')}})")
+            if [ -z "$token" ] || [ -z "$userid" ]; then echo "::error::No se pudo intercambiar el token de sesión para $email: $resp" >&2; return 1; fi
+            echo "$token|$userid"
+          }
+
+          salida_a=$(login_de "$TEST_USER_A_EMAIL") || exit 1
+          salida_b=$(login_de "$TEST_USER_B_EMAIL") || exit 1
+          token_a="${salida_a%%|*}"; userid_a="${salida_a##*|}"
+          token_b="${salida_b%%|*}"; userid_b="${salida_b##*|}"
+          echo "::add-mask::$token_a"
+          echo "::add-mask::$token_b"
+          echo "token_a=$token_a" >> "$GITHUB_OUTPUT"
+          echo "userid_a=$userid_a" >> "$GITHUB_OUTPUT"
+          echo "token_b=$token_b" >> "$GITHUB_OUTPUT"
+          echo "userid_b=$userid_b" >> "$GITHUB_OUTPUT"
+
+      - name: Grupos — crear, invitar, unirse, salir y borrar (dos cuentas de verdad)
+        env:
+          TOKEN_A: ${{ steps.login_ab.outputs.token_a }}
+          USERID_A: ${{ steps.login_ab.outputs.userid_a }}
+          TOKEN_B: ${{ steps.login_ab.outputs.token_b }}
+          USERID_B: ${{ steps.login_ab.outputs.userid_b }}
+        run: |
+          nombre_grupo="smoke-test $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          grupo_id=$(curl -sS -X POST "$SUPABASE_URL/rest/v1/rpc/crear_grupo" \
+            -H "apikey: $SUPABASE_ANON_KEY" -H "Authorization: Bearer $TOKEN_A" \
+            -H "Content-Type: application/json" \
+            -d "{\"p_nombre\":\"$nombre_grupo\"}" \
+            | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{const v=JSON.parse(d);console.log(typeof v==='string'?v:'')}catch{console.log('')}})")
+          if [ -z "$grupo_id" ]; then echo "::error::No se pudo crear el grupo de prueba"; exit 1; fi
+          echo "Grupo de prueba creado: $grupo_id ($nombre_grupo)"
+
+          codigo=$(node -e "console.log(require('crypto').randomBytes(8).toString('hex'))")
+          invitacion=$(curl -sS -X POST "$SUPABASE_URL/rest/v1/invitaciones_grupo" \
+            -H "apikey: $SUPABASE_ANON_KEY" -H "Authorization: Bearer $TOKEN_A" \
+            -H "Content-Type: application/json" -H "Prefer: return=representation" \
+            -d "{\"grupo_id\":\"$grupo_id\",\"creado_por\":\"$USERID_A\",\"codigo\":\"$codigo\"}")
+          invitacion_id=$(echo "$invitacion" | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{console.log(JSON.parse(d)[0].id||'')}catch{console.log('')}})")
+          if [ -z "$invitacion_id" ]; then echo "::error::No se pudo crear la invitación al grupo: $invitacion"; exit 1; fi
+
+          union=$(curl -sS -X POST "$SUPABASE_URL/rest/v1/rpc/unirse_a_grupo" \
+            -H "apikey: $SUPABASE_ANON_KEY" -H "Authorization: Bearer $TOKEN_B" \
+            -H "Content-Type: application/json" \
+            -d "{\"p_codigo\":\"$codigo\"}")
+          echo "$union" | grep -q "$grupo_id" || { echo "::error::La cuenta B no pudo unirse con el código de invitación: $union"; exit 1; }
+
+          es_miembro=$(curl -sS "$SUPABASE_URL/rest/v1/miembros_grupo?grupo_id=eq.$grupo_id&user_id=eq.$USERID_B&select=grupo_id" \
+            -H "apikey: $SUPABASE_ANON_KEY" -H "Authorization: Bearer $TOKEN_B")
+          echo "$es_miembro" | grep -q "$grupo_id" || { echo "::error::La cuenta B se unió pero no aparece como miembro: $es_miembro"; exit 1; }
+          echo "Cuenta B unida correctamente al grupo $grupo_id"
+
+          curl -sS -X DELETE "$SUPABASE_URL/rest/v1/miembros_grupo?grupo_id=eq.$grupo_id&user_id=eq.$USERID_B" \
+            -H "apikey: $SUPABASE_ANON_KEY" -H "Authorization: Bearer $TOKEN_B"
+
+          curl -sS -X DELETE "$SUPABASE_URL/rest/v1/miembros_grupo?grupo_id=eq.$grupo_id&user_id=eq.$USERID_A" \
+            -H "apikey: $SUPABASE_ANON_KEY" -H "Authorization: Bearer $TOKEN_A"
+          curl -sS -X POST "$SUPABASE_URL/rest/v1/rpc/eliminar_grupo" \
+            -H "apikey: $SUPABASE_ANON_KEY" -H "Authorization: Bearer $TOKEN_A" \
+            -H "Content-Type: application/json" \
+            -d "{\"p_grupo_id\":\"$grupo_id\"}"
+
+          restante=$(curl -sS "$SUPABASE_URL/rest/v1/grupos?id=eq.$grupo_id&select=id" \
+            -H "apikey: $SUPABASE_ANON_KEY" -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY")
+          if [ "$restante" != "[]" ]; then
+            echo "::error::El grupo de prueba $grupo_id no se borró del todo (¿falta aplicar la migración eliminar_grupo? ver supabase/migrations/20260915120000_eliminar_grupo.sql): $restante"
+            exit 1
+          fi
+          echo "Grupo de prueba $grupo_id borrado correctamente — ciclo completo de grupos OK"

@@ -1,0 +1,163 @@
+name: Robot de experiencia de usuario
+
+# Pedido explícito del usuario (2026-09-15): "imagínate que eres un
+# usuario real, o tres, y que has pagado por la app. Esa es la
+# experiencia que quiero que un robot trabaje para ver qué falla, en
+# silencio o no [...] pon en duda todo. Haz una prueba lo más intensiva
+# y extrema posible. Busquemos los huecos, bugs, silencios o fallos
+# claros."
+#
+# Distinto de smoke-test.yml (que es determinista: pasos fijos,
+# comprueba códigos HTTP y presencia de campos) — este workflow le da
+# a una sesión de Claude Code las credenciales de sesión ya generadas
+# de 1-2 cuentas de prueba reales y la deja EXPLORAR y JUZGAR: no solo
+# "¿respondió 200?" sino "¿el contenido de la respuesta tiene sentido
+# de verdad, o algo huele raro aunque no haya error?" — el mismo tipo
+# de fallo silencioso que el bug real de viento/presión/nubosidad/
+# lluvia en blanco en diario.html (arreglado el mismo día que se pidió
+# este robot): ahí no había ningún error HTTP, solo un dato mal
+# indexado que se veía como "sin datos" en vez de como un fallo.
+#
+# GUARDARRAÍLES DE SEGURIDAD, no negociables:
+# 1. NUNCA toca /sos-alerta ni nada de alarma.html — pedido explícito
+#    del usuario ("deja fuera el sos"), y es la parte más crítica del
+#    repo (ver CLAUDE.md). Si el prompt de abajo cambia alguna vez,
+#    esta exclusión no se toca sin pedirlo expresamente.
+# 2. Sin acceso de escritura al repo: --allowedTools no incluye Edit
+#    ni Write sobre ficheros del repo (solo puede escribir su propio
+#    fichero de informe en /tmp) y no se le da git. Esto prueba la app
+#    YA DESPLEGADA en producción, nunca cambia código.
+# 3. Cualquier dato de prueba que cree (entradas de diario, capturas,
+#    grupos...) debe quedar borrado por la propia sesión antes de
+#    terminar, usando siempre el token de sesión de la cuenta de
+#    prueba (nunca service_role para escribir/borrar — solo para
+#    generar el login, igual que ya hace smoke-test.yml).
+# 4. Nunca toca ficheros del repo (código o configuración) aunque
+#    encuentre un bug — solo REPORTA. Los fallos que encuentre se
+#    corrigen después, a mano o con otra pasada dedicada, revisados
+#    por una persona antes de tocar producción.
+#
+# 1x/día por ahora (pedido explícito, "por ahora") — corre después del
+# smoke test determinista (05:00 UTC) y antes del informe diario
+# (08:00 UTC) para que sus hallazgos ya estén en ROBOT.md a tiempo de
+# entrar en la síntesis de esa mañana.
+#
+# Necesita el secret ANTHROPIC_API_KEY (mismo que robot-buscador-
+# fuentes.yml) y las mismas TEST_USER_A_EMAIL/TEST_USER_B_EMAIL/
+# SUPABASE_SERVICE_ROLE_KEY que ya usan smoke-test.yml/auth-test.yml —
+# sin login por password (CAPTCHA activo), mismo patrón admin
+# generate_link + verify ya probado en real.
+
+on:
+  schedule:
+    - cron: "30 5 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  experiencia:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      SUPABASE_URL: "https://imncbmizxkorotpeisic.supabase.co"
+      SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc"
+      PRODUCCION_URL: "https://costaviva.org"
+      TEST_USER_A_EMAIL: ${{ secrets.TEST_USER_A_EMAIL }}
+      TEST_USER_B_EMAIL: ${{ secrets.TEST_USER_B_EMAIL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Comprobar que los secrets existen
+        run: |
+          if [ -z "$TEST_USER_A_EMAIL" ] || [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "::error::Faltan los secrets TEST_USER_A_EMAIL/SUPABASE_SERVICE_ROLE_KEY — ver CLAUDE.md."
+            exit 1
+          fi
+
+      - name: Genera sesión(es) de prueba (sin password, vía API admin)
+        id: login
+        run: |
+          generar_token() {
+            local email="$1"
+            local enlace hashed_token resp token
+            enlace=$(curl -sS -X POST "$SUPABASE_URL/auth/v1/admin/generate_link" \
+              -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
+              -H "Content-Type: application/json" \
+              -d "{\"type\":\"magiclink\",\"email\":\"$email\"}")
+            hashed_token=$(echo "$enlace" | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{console.log(JSON.parse(d).hashed_token||JSON.parse(d).properties.hashed_token||'')}catch{console.log('')}})")
+            if [ -z "$hashed_token" ]; then echo "::error::No se pudo generar el enlace para $email: $enlace"; exit 1; fi
+            resp=$(curl -sS -X POST "$SUPABASE_URL/auth/v1/verify" \
+              -H "apikey: $SUPABASE_ANON_KEY" -H "Content-Type: application/json" \
+              -d "{\"type\":\"email\",\"token_hash\":\"$hashed_token\"}")
+            token=$(echo "$resp" | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{console.log(JSON.parse(d).access_token||'')}catch{console.log('')}})")
+            if [ -z "$token" ]; then echo "::error::No se pudo intercambiar el token para $email: $resp"; exit 1; fi
+            echo "$token"
+          }
+          token_a=$(generar_token "$TEST_USER_A_EMAIL")
+          echo "::add-mask::$token_a"
+          echo "$token_a" > /tmp/token_usuario_a.txt
+          if [ -n "$TEST_USER_B_EMAIL" ]; then
+            token_b=$(generar_token "$TEST_USER_B_EMAIL")
+            echo "::add-mask::$token_b"
+            echo "$token_b" > /tmp/token_usuario_b.txt
+            echo "dos_usuarios=si" >> "$GITHUB_OUTPUT"
+          else
+            echo "dos_usuarios=no" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Instalar Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Explorar la app como usuario(s) real(es) (Claude Code, sesión no interactiva)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        continue-on-error: true
+        run: |
+          rm -f /tmp/experiencia-informe.txt
+          claude -p "Eres un probador de calidad extremadamente exigente y desconfiado de Costa Viva (app real de condiciones costeras + diario de pesca + grupos, repo Fishnow), actuando HOY como uno o dos usuarios reales que han pagado por la app y la usan de verdad — no como un script que solo comprueba códigos HTTP. Tu misión, pedida explícitamente por el dueño del proyecto: 'pon en duda todo. Haz una prueba lo más intensiva y extrema posible. Busquemos los huecos, bugs, silencios o fallos claros'. Un código 200 con datos mal calculados NO es un éxito — ya hubo un bug real así este mismo día (viento/presión/nubosidad/lluvia siempre en blanco en el diario por un índice mal cruzado entre dos respuestas de API distintas, sin ningún error visible). Trata cada respuesta con sospecha: LEE el contenido de verdad y pregúntate si tiene sentido, no solo si la petición 'funcionó'. Herramientas: tienes Bash (curl, node, jq si hace falta) para hablar con la API REST de Supabase ($SUPABASE_URL, cabecera apikey: $SUPABASE_ANON_KEY) y con los endpoints reales de producción ($PRODUCCION_URL — /prevision, /luna, /webcam/<slug>, /identificar-captura, /geocodificar, etc., ver functions/ en el propio repo si quieres leer qué hace cada uno ANTES de probarlo, target de lectura únicamente). El token de sesión de la cuenta de prueba A está en /tmp/token_usuario_a.txt (y, si existe, el de la cuenta B en /tmp/token_usuario_b.txt — comprueba si el fichero existe antes de usarlo) — Authorization: Bearer <token de ese fichero> para llamadas autenticadas. REGLAS DE SEGURIDAD, INNEGOCIABLES, NUNCA LAS ROMPAS AUNQUE PAREZCA ÚTIL PARA LA PRUEBA: (1) JAMÁS llames a /sos-alerta ni toques nada relacionado con alarma.html/SOS — ninguna excepción, bajo ningún argumento. (2) JAMÁS edites, borres ni crees ficheros del repositorio salvo ROBOT.md al final, como se indica abajo (no tienes Edit/Write sobre código de todos modos). No hagas git commit salvo el único permitido al final. Tu trabajo es probar la app YA DESPLEGADA, nunca tocar el código. (3) Cualquier dato de prueba que crees en Supabase (salidas_pesca, capturas, grupos, spots_usuario, lo que sea) DEBES borrarlo tú mismo antes de terminar, usando el token de la cuenta de prueba correspondiente (nunca la service_role key, que no tienes de todas formas). Si algo falla a mitad de una prueba y no puedes limpiarlo del todo, dilo explícitamente en el informe en vez de dejarlo sin más. (4) No agotes la cuota de ninguna API externa a lo bestia — unas pocas pruebas bien elegidas por zona/función, no cientos de peticiones idénticas. Qué probar, con espíritu de 'usuario real pagando por esto, exigente': crea una entrada de diario con datos realistas para un spot real (elige uno de functions/prevision.js), comprueba que marea/oleaje/viento/presión/nubosidad/lluvia/coeficiente de marea que devuelve tengan pinta de reales y no contradictorios entre sí (ej. ¿la marea sube pero el coeficiente es absurdo? ¿la temperatura del agua es coherente con la época del año?); prueba /identificar-captura con una foto real (descarga una de un pez conocido, por ejemplo https://upload.wikimedia.org/wikipedia/commons/d/d0/Bar_%28Dicentrarchus_labrax%29_%28Ifremer_00735-84702%29_%28cropped%29.jpg, base64 y compara si la especie que devuelve tiene sentido); si tienes las dos cuentas, prueba el flujo de grupos completo (crear grupo vía rpc/crear_grupo, invitar, que la cuenta B se una vía rpc/unirse_a_grupo, comprobar que B ve de verdad lo compartido, que A NO ve nada de B si B no comparte, salir, limpiar); prueba /prevision para 2-3 spots de zonas distintas (Cantábrico, Mediterráneo, Canarias) y compara si los números parecen razonables para esa zona/época; prueba con 1-2 entradas límite/raras a propósito (una fecha rara, un spot_slug que no existe, un campo vacío) y comprueba que el error (si lo hay) es claro y no un fallo silencioso a medias. Sé eficiente — no hace falta agotar cada rincón de la app en una sola pasada, prioriza lo que más importe a un usuario real y deja constancia de lo que NO te dio tiempo a probar hoy para la próxima pasada. Escribe tu informe en español, sin jerga, en /tmp/experiencia-informe.txt (usa Write), con esta estructura: '## Qué probé hoy' (lista breve), '## Todo bien' (lo que funcionó y tenía sentido de verdad, no solo 'no dio error'), '## Hallazgos' (cada uno: qué hiciste, qué esperabas, qué pasó de verdad, por qué te parece raro/mal — sé específico con valores reales, no vagues) y '## Pendiente para la próxima pasada' (qué no te dio tiempo). Si no encontraste NADA raro en absoluto, dilo así de claro en Hallazgos, no inventes un problema para rellenar. Después de escribir el informe, añade también una entrada nueva fechada a ROBOT.md (nueva sección si no existe todavía: Robot de experiencia de usuario) resumiendo lo mismo en 3-5 frases, y haz commit+push tú mismo a main con git SOLO de ese cambio a ROBOT.md (el remoto y las credenciales ya están configurados en este runner) — nunca cambies ningún otro fichero del repo." \
+            --dangerously-skip-permissions \
+            --allowedTools "Bash,Read,Write,Grep"
+
+      - name: Publicar el resumen en el Issue "Informe diario"
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require("fs");
+            let resumen = "⚠️ El robot de experiencia de usuario no dejó informe esta pasada (revisar el log del workflow, o el crédito de ANTHROPIC_API_KEY).";
+            try {
+              const contenido = fs.readFileSync("/tmp/experiencia-informe.txt", "utf8").trim();
+              if (contenido) resumen = contenido;
+            } catch (e) {}
+
+            const ahora = new Date().toISOString().replace("T", " ").slice(0, 16) + " UTC";
+            const fila = [
+              `#### 🧪 Robot de experiencia de usuario — ${ahora}`,
+              resumen,
+              "",
+            ].join("\n");
+
+            const titulo = "Informe diario — Costa Viva";
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo,
+              state: "open", labels: "informe-diario",
+            });
+            let issue = issues.find((i) => i.title === titulo);
+            if (!issue) {
+              const creado = await github.rest.issues.create({
+                owner: context.repo.owner, repo: context.repo.repo,
+                title: titulo, labels: ["informe-diario"],
+                body: "Informe diario de salud de Costa Viva — una entrada nueva cada día, la más reciente arriba.\n\n" + fila,
+              });
+              issue = creado.data;
+            } else {
+              const cabecera = issue.body.split("\n").slice(0, 2).join("\n");
+              await github.rest.issues.update({
+                owner: context.repo.owner, repo: context.repo.repo, issue_number: issue.number,
+                body: cabecera + "\n\n" + fila + "\n" + issue.body.split("\n").slice(2).join("\n"),
+              });
+            }
