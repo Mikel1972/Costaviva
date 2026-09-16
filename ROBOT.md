@@ -1892,6 +1892,85 @@ alcance de una pasada buscadora.
 institucionales/académicos tipo DIGIPESCA, España y Portugal),
 2026-09-16 01:42 UTC.
 
+### 2026-09-16 07:55 UTC (pasada buscadora — webcams para spots sin cámara)
+
+**Objetivo:** tarea recurrente de buscar cámaras nuevas para spots fijos
+sin cámara. Recontados los huecos cruzando `SPOTS`/regionales contra
+`SPOTS_CON_WEBCAM`: siguen sin cámara Plentzia, Ondarroa, Zumaia,
+Getaria, Pasaia, A Guarda, Sanxenxo, Llanes, Ribadesella, Santander,
+casi toda Cataluña/Murcia/Andalucía/Canarias/Baleares fuera de las ya
+integradas, y **Portugal entero (17 spots)**. Como en pasadas
+anteriores, no pude priorizar por `spots_usuario` (sin token de sesión
+ni contador de actividad accesible sin credenciales).
+
+**Red desde este runner (GitHub Actions, no el sandbox web del
+2026-08-31):** `meteogalicia.gal` `200`, `apps.socib.es` alcanzable.
+**`cantabria.es` sigue en `HTTP 000`/timeout** (probado con
+`Laredo-New-1.jpg`, ya integrada) — Santander/El Sardinero sigue **sin
+poder verificarse** desde aquí, igual que todas las pasadas previas.
+**`beachcam.meo.pt` bloquea IPs de datacenter** (`403` CloudFront tanto
+por `curl` como por `WebFetch`) — la referencia lusa no es proxyable
+desde edge; Portugal solo sería viable con HLS directo desde el
+navegador del usuario (patrón Gipuzkoa), a descubrir desde un navegador
+real, no desde esta automatización.
+
+**Hallazgo de método (nuevo respecto a pasadas anteriores) — roster
+autoritativo de MeteoGalicia.** La web de cámaras es una SPA Angular sin
+la lista en el JS; la fuente real es el panel server-rendered
+`https://servizos.meteogalicia.gal/paneis/camaras.action?ids=9999`, que
+lista las 31 cámaras por su nombre de directorio
+(`datosred/camaras/MeteoGalicia/<Nombre>/ultima.jpg`, mismo patrón ya
+integrado). Descargadas y confirmadas como JPEG real (`200`) las
+costeras que NO teníamos: `Burela`, `Carinho` (Cariño), `PuntaCandieira`
+(Cedeira), `Cabodomundo` (Foz), `Coron` (Vilanova de Arousa), `Salvora`
+(Illa de Sálvora), `Aguete2` (Marín), `CiesFaroNorte`. Auditoría de paso:
+las conocidas (`Baiona`/`Corunha`/`Onspuerto`) siguen `200`.
+
+**Pero ninguna cubre un spot-hueco existente.** Nuestros únicos huecos
+gallegos son A Guarda y Sanxenxo, y MeteoGalicia no tiene cámara de
+ninguno de los dos (probados `Sanxenxo`/`Portonovo`/`AGuarda`/`Guarda` →
+404 real). Las 8 cámaras costeras nuevas de arriba corresponden a
+**localidades que hoy no son spots** — añadirlas exige crear el spot
+primero, que es decisión de producto (mapa/frontend), así que **solo se
+proponen**, no se integran:
+
+> **Propuesta (no aplicada): 8 spots nuevos gallegos con webcam
+> institucional ya verificada.** Cariño, Cedeira (Punta Candieira),
+> Foz (Cabo de Mundo), Burela (costa de Lugo/Cantábrico gallego),
+> Vilanova de Arousa (Corón), Illa de Sálvora, Marín (Aguete) — todos
+> con cámara MeteoGalicia `200`/JPEG real y encaje directo en el proxy
+> `/webcam/<slug>` existente. Rellenan un tramo con poca densidad de
+> spots (costa de Lugo y Rías Baixas interiores). Requiere el visto bueno
+> del usuario por ser alta de spots nuevos, no un cambio de dato.
+
+**SOCIB (Baleares) — método de verificación definitivo y cierre del
+hueco.** El endpoint interno `apps.socib.es/.../view/<code>/...` hace un
+`307` para CUALQUIER código (inyecta el código en una plantilla), así que
+no vale para verificar; e `images.socib.es` (destino real) rechaza
+conexiones desde este runner y desde `WebFetch` (`ECONNREFUSED`) — solo
+resuelve desde el edge de Cloudflare, por eso las 3 actuales funcionan en
+producción pero no se pueden comprobar aquí. La vía fiable es la API
+`.../api/image_access/getlatestdirectory/<code>/<code>/thumbnail/`:
+devuelve **JSON de cámaras si la estación existe** y **`500` si no**.
+Con eso, verificado sin ambigüedad: solo existen `clm` (Cala Millor),
+`snb` (Son Bou) y `muro` (Platja de Muro) — **las 3 que ya tenemos**.
+Sondeados y descartados (`500`, igual que un código inventado de control)
+`palma`, `pdp`, `arenal`, `canpastilla`, `ciutadella`, `formentera` y
+~12 variantes más: **SOCIB no tiene cámara para Palma, Ciutadella ni
+Formentera** pese a que la documentación menciona "Playa de Palma" (será
+histórica o de otro sistema). Doble valor: cierra ese hueco para futuras
+pasadas (no volver a sondear a ciegas) y sirve de auditoría — las 3
+cámaras SOCIB integradas confirmadas vivas.
+
+**Resultado neto: sin novedades integrables directas** para ningún
+spot-hueco existente. Lo aprovechable queda como propuesta (8 spots
+gallegos nuevos con webcam ya verificada) y como método reutilizable
+(roster de MeteoGalicia vía `paneis/camaras.action`; verificación de
+existencia de SOCIB vía `getlatestdirectory`). Sin cambios de código.
+
+**Firmado:** robot buscador de fuentes (pasada de webcams para spots sin
+cámara), 2026-09-16 07:55 UTC.
+
 ---
 
 ## Auditoría de datos
