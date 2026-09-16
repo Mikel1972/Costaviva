@@ -25,6 +25,19 @@ name: Robot buscador de fuentes
 # "estudios institucionales/académicos tipo DIGIPESCA" (se une a las de
 # investigación/contenido, 1x/día — ver ROBOT_REGLAS.md).
 #
+# Recortado el 2026-09-16 (gasto real de API más alto de lo esperado en
+# la cuenta, revisado junto con el usuario): las 4 áreas de datos en
+# tiempo real verificables (cámaras, mareas/oleaje, corrientes, presión)
+# se quedan a diario -- son las que de verdad encuentran/verifican
+# integraciones nuevas. Las 4 de "investigación/contenido, solo propuesta
+# en ROBOT.md, nunca aplicación directa" (caudal de ríos+estaciones de
+# monte, buenas prácticas de otras apps, migración/especies, estudios
+# académicos) pasan de diario a semanal, un día distinto cada una -- no
+# tienen la misma urgencia (nada se aplica solo, siempre hay que
+# revisarlo a mano) y eran las que más volumen de sesión sumaban.
+# Además, --model y --max-turns fijados explícitamente para que ninguna
+# pasada quede corriendo más de la cuenta.
+#
 # IMPORTANTE — probar a mano (workflow_dispatch) antes de fiarse del
 # schedule, mismo criterio que el resto de rutinas de este repo. Necesita
 # el secret ANTHROPIC_API_KEY (la misma que ya usa
@@ -37,14 +50,14 @@ name: Robot buscador de fuentes
 
 on:
   schedule:
-    - cron: "47 2 * * *"  # cámaras/webcams
-    - cron: "47 8 * * *"  # mareas y oleaje
-    - cron: "47 14 * * *" # corrientes marinas
-    - cron: "47 20 * * *" # presión atmosférica
-    - cron: "47 5 * * *"  # caudal de ríos y estaciones de monte (añadido 2026-09-15)
-    - cron: "47 11 * * *" # buenas prácticas de otras apps (1x/día)
-    - cron: "47 17 * * *" # migración y cría de especies (1x/día)
-    - cron: "47 23 * * *" # estudios institucionales/académicos tipo DIGIPESCA (1x/día)
+    - cron: "47 2 * * *"  # cámaras/webcams (diario)
+    - cron: "47 8 * * *"  # mareas y oleaje (diario)
+    - cron: "47 14 * * *" # corrientes marinas (diario)
+    - cron: "47 20 * * *" # presión atmosférica (diario)
+    - cron: "47 5 * * 2"  # caudal de ríos y estaciones de monte (semanal, martes)
+    - cron: "47 11 * * 3" # buenas prácticas de otras apps (semanal, miércoles)
+    - cron: "47 17 * * 4" # migración y cría de especies (semanal, jueves)
+    - cron: "47 23 * * 5" # estudios institucionales/académicos tipo DIGIPESCA (semanal, viernes)
   workflow_dispatch:
     inputs:
       area:
@@ -73,10 +86,10 @@ jobs:
             "47 8 * * *")  AREA="fuentes de mareas y oleaje — comparar contra CALIBRACION.jsonl, buscar puntos de calibración nuevos" ;;
             "47 14 * * *") AREA="fuentes de corrientes marinas por zona" ;;
             "47 20 * * *") AREA="fuentes de presión atmosférica e histórico por zona" ;;
-            "47 5 * * *")  AREA="fuentes de caudal de ríos por zona (huecos conocidos: caudal:null en los ríos vascos de RIOS en index.html, ver el comentario en functions/prevision.js sobre URA/Bizkaia bloqueando acceso automático) y nuevas estaciones de monte (precipitación/presión real, estilo ESTACIONES_AEMET en functions/prevision.js) para España y Portugal, no solo Euskadi" ;;
-            "47 11 * * *") AREA="buenas prácticas de otras apps de mareas/pesca (Windy, Tides4fishing, Fishbrain, Meteoblue, Puertos del Estado, AEMET...) — qué datos en tiempo real o funciones tienen que nosotros no, solo para PROPONER en ROBOT.md, nunca implementar directo" ;;
-            "47 17 * * *") AREA="migración y cría de las especies ya conocidas por la app (ESPECIES en diario.html) — épocas de migración y rangos de temperatura para reproducción/cría/reposo, para PROPONER cómo enriquecer ESPECIES o el índice de pesca, nunca aplicar directo" ;;
-            "47 23 * * *") AREA="estudios institucionales/académicos reales (tipo DIGIPESCA — universidades, organismos públicos de pesca, proyectos financiados) con datos verificables de especies/lonjas/capturas/precios por zona y fecha, para España y Portugal (ver ROBOT_REGLAS.md, sección 'Buenas prácticas de otras apps y biología de especies', para las reglas obligatorias de bajura/altura, hábitos y localismos antes de proponer nada) — solo propuesta en ROBOT.md, nunca aplicar directo" ;;
+            "47 5 * * 2")  AREA="fuentes de caudal de ríos por zona (huecos conocidos: caudal:null en los ríos vascos de RIOS en index.html, ver el comentario en functions/prevision.js sobre URA/Bizkaia bloqueando acceso automático) y nuevas estaciones de monte (precipitación/presión real, estilo ESTACIONES_AEMET en functions/prevision.js) para España y Portugal, no solo Euskadi" ;;
+            "47 11 * * 3") AREA="buenas prácticas de otras apps de mareas/pesca (Windy, Tides4fishing, Fishbrain, Meteoblue, Puertos del Estado, AEMET...) — qué datos en tiempo real o funciones tienen que nosotros no, solo para PROPONER en ROBOT.md, nunca implementar directo" ;;
+            "47 17 * * 4") AREA="migración y cría de las especies ya conocidas por la app (ESPECIES en diario.html) — épocas de migración y rangos de temperatura para reproducción/cría/reposo, para PROPONER cómo enriquecer ESPECIES o el índice de pesca, nunca aplicar directo" ;;
+            "47 23 * * 5") AREA="estudios institucionales/académicos reales (tipo DIGIPESCA — universidades, organismos públicos de pesca, proyectos financiados) con datos verificables de especies/lonjas/capturas/precios por zona y fecha, para España y Portugal (ver ROBOT_REGLAS.md, sección 'Buenas prácticas de otras apps y biología de especies', para las reglas obligatorias de bajura/altura, hábitos y localismos antes de proponer nada) — solo propuesta en ROBOT.md, nunca aplicar directo" ;;
             *) AREA="${{ github.event.inputs.area }}" ;;
           esac
           echo "area=$AREA" >> "$GITHUB_OUTPUT"
@@ -97,6 +110,8 @@ jobs:
           rm -f /tmp/robot-informe.txt
           claude -p "Eres el robot de investigación/auditoría de datos de Costa Viva (repo Fishnow), ejecutándote como una pasada programada más (no la rutina nocturna principal, esta es la de búsqueda de fuentes, 4 veces al día). Sigue ESTRICTAMENTE ROBOT_REGLAS.md antes de tocar nada: nunca inventes un dato ni una URL; si vas a tocar más de 3 ficheros o ~80 líneas en total, o cualquier fichero de functions/ o supabase/, NO lo apliques directo — proponlo como texto en ROBOT.md en vez de commitear. Si existe un fichero ROBOT_PAUSADO en la raíz del repo, no escribas nada (ni commits ni ramas), solo lee y para ahí. Tarea de esta pasada: investiga $AREA. Usa WebSearch para encontrar fuentes reales; si encuentras algo verificable con una petición HTTP real, verifícalo antes de proponerlo o integrarlo. Añade siempre una entrada nueva fechada (fecha y hora UTC de hoy) a ROBOT.md resumiendo qué buscaste y qué encontraste, incluso si no hay nada nuevo (en ese caso dilo explícitamente: 'sin novedades esta pasada'). Si hiciste cambios que caen dentro de los límites de ROBOT_REGLAS.md para aplicar directo, haz commit y push a main tú mismo con git (usa git add/commit/push; el remoto y las credenciales ya están configurados en este runner) firmando igual que las entradas anteriores de ROBOT.md. Al terminar, escribe un resumen de 2 a 4 frases en español, sin jerga, de qué hiciste en esta pasada (o exactamente 'Sin novedades esta pasada.' si no encontraste nada) en el fichero /tmp/robot-informe.txt — se usa para el informe diario del repo." \
             --dangerously-skip-permissions \
+            --model claude-sonnet-5 \
+            --max-turns 25 \
             --allowedTools "Bash,Read,Write,Edit,Grep,Glob,WebSearch,WebFetch"
 
       - name: Publicar el resumen en el Issue "Informe diario"

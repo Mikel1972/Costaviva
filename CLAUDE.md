@@ -1136,6 +1136,40 @@ al de Cloudflare Pages, aunque se reutilice el mismo valor que ya usa
 `functions/identificar-captura.js`) y probar con `workflow_dispatch`
 antes de esperar a que dispare solo.
 
+**Recortado el 2026-09-16 — gasto real de API más alto de lo esperado
+en la cuenta (60 USD en un día), revisado junto con el usuario.** Las 4
+áreas de datos en tiempo real verificables (cámaras, mareas/oleaje,
+corrientes, presión) se quedan a diario. Las 4 de
+"investigación/contenido, solo propuesta en `ROBOT.md`, nunca aplicación
+directa" (caudal de ríos, buenas prácticas de otras apps, migración/cría
+de especies, estudios académicos) pasan de diario a **semanal**, cada
+una un día distinto (martes/miércoles/jueves/viernes) — no tenían la
+misma urgencia que las de datos en tiempo real (nada se aplica solo,
+siempre se revisa a mano) y eran las que más volumen de sesión sumaban.
+Además, `--model claude-sonnet-5` y `--max-turns 40` fijados
+explícitamente en este workflow y en `robot-experiencia-usuario.yml`
+(antes ninguno de los dos limitaba modelo ni turnos — una sesión podía
+quedarse investigando sin tope).
+
+**Corrección a la limitación de arriba, encontrada la misma sesión**: la
+"rutina nocturna principal" SÍ es visible e inspeccionable — no vive
+fuera del alcance de una sesión de Claude Code, vive como una **rutina
+en la nube** (`claude.ai/code/routines`, herramienta `RemoteTrigger`/skill
+`schedule`, distinta de `CronCreate`) — persiste igual que un GitHub
+Action, no caduca a los 7 días ni se borra con la sesión. Es
+"Fishnow - Calibracion y salud nocturna" (diaria, 01:12 UTC) más
+"Fishnow - Robot de datos (fuentes, auditoria, calibracion)" (semanal).
+**Hallazgo más importante de esa misma revisión**: la cuenta tiene
+además **~10 rutinas en la nube de Pólizas.ai**, varias más frecuentes
+que cualquier cosa de este repo (una cada 6h, una 3x/día) — es multi-
+proyecto, así que un gasto alto en un día concreto no implica
+necesariamente que la causa esté en Fishnow. Dos de las de Pólizas.ai
+(Diccionario del sector, antes cada 6h; Catálogo de mercado, antes
+3x/día) se bajaron a diario ese mismo día como parte de este ajuste.
+Antes de asumir que un gasto alto viene de este repo, revisar también
+`RemoteTrigger`/`claude.ai/code/routines` de la cuenta completa, no solo
+los workflows de este repo.
+
 ## Panel de administrador (2026-09-13)
 
 Pedido explícito del usuario: "como en Pólizas.ai", ver quién está
