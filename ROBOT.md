@@ -2282,6 +2282,49 @@ sigue pendiente que el usuario revise la política de red de este entorno
 para esos 5 dominios concretos si quiere que esta rutina pueda vigilar su
 salud de verdad.
 
+### 2026-09-16 (pasada nocturna corta — salud de datos)
+
+**Pasada nocturna diaria, mismo alcance estrecho.** **El bloqueo de red se
+repite hoy por séptima noche seguida, exactamente para los mismos 5
+dominios** (Nazaré + las 4 fuentes de caudal), mientras que todo lo demás
+sigue sano.
+
+- **Boyas de Puertos del Estado — 2136 Bilbao-Vizcaya, 1117 Gijón, 1101
+  Pasaia II y 1731 Barcelona II** (rotación de esta noche: Barcelona II,
+  la candidata de la lista corta con más noches sin repetirse desde el
+  punto de vista de esta rutina nocturna). Las 4 HTTP 200, forma
+  `[cabeceras, filas]` correcta, dato de la última hora (Pasaia II con un
+  hueco `"-"` a las 23:00 pero con dato válido justo antes, sin problema).
+  Bilbao-Vizcaya Hm0 1.52 m, Gijón Hm0 1.62 m, Pasaia II Hm0 1.37 m,
+  Barcelona II Hm0 0.36 m. Todas sanas — detalle completo en la sección
+  "Calibración" de hoy.
+- **Boya de Nazaré (Portugal, `monican.hidrografico.pt`) — bloqueada
+  séptima noche seguida (2026-09-10 a 16)**, mismo `curl: (56) CONNECT
+  tunnel failed, response 403` que siempre. Sigue sin ninguna evidencia de
+  que la fuente en sí esté rota, solo inalcanzable desde aquí.
+- **Las 4 fuentes de caudal de ríos (Cantábrico/Júcar/Segura/Galicia) —
+  bloqueadas séptima noche seguida, mismos 4 dominios exactos**
+  (`visor.saichcantabrico.es`, `saih.chj.es`, `saihweb.chsegura.es`,
+  `servizos.meteogalicia.gal`), rechazo 403 en el primer intento de cada
+  una.
+- **Webcams — muestra de 3 del País Vasco (mundaka, bakio, sopelana), las
+  3 sanas**, HTTP 200 con imagen real (JPEG ~123 KB, JPEG ~747 KB, WebP
+  ~39 KB respectivamente). Se intentó de nuevo ampliar la muestra fuera
+  del País Vasco (`www.meteogalicia.gal` para A Coruña, `www.cantabria.es`
+  para Laredo, `streaming.comunitatvalenciana.com` para Valencia,
+  `apps.socib.es` para Calamillor) y los 4 dominios siguieron rechazados —
+  mismo patrón que las seis noches anteriores.
+
+**Resumen de severidad: sin cambios respecto a las seis noches anteriores,
+ya son 7/7 seguidas.** Nada de lo comprobado esta noche está confirmado
+como roto en origen — Nazaré y las 4 fuentes de caudal llevan 7/7 pasadas
+nocturnas seguidas (10 al 16 de septiembre) bloqueadas siempre por los
+mismos 5 dominios exactos, mientras boyas españolas, Open-Meteo y las
+webcams vascas siguen respondiendo con normalidad. Severidad sin cambios
+(media para los 4 ríos, baja-media para Nazaré) — sigue pendiente que el
+usuario revise la política de red de este entorno para esos 5 dominios
+concretos si quiere que esta rutina pueda vigilar su salud de verdad.
+
 ---
 
 ## Calibración
@@ -3088,6 +3131,75 @@ tenemos gratis).
 
 **Firmado:** robot buscador de fuentes (pasada de mareas y oleaje),
 2026-09-15 13:56 UTC.
+
+---
+
+### 2026-09-16 (pasada nocturna corta — calibración)
+
+**Noveno punto de calibración para las 3 boyas obligatorias, y cuarto
+punto para 1731 Barcelona II** (rotación de esta noche: de la lista corta
+de candidatas ya probadas al menos una vez, Barcelona II era la que más
+noches llevaba sin repetirse desde el punto de vista de esta rutina
+nocturna en concreto — Málaga sigue con solo el punto propio del
+2026-09-11, pendiente para la próxima rotación). Mismo método de siempre:
+`curl` a `poem.puertos.es/portus/StationData` para la altura real,
+Open-Meteo Marine en las coordenadas exactas de cada boya para la altura
+calculada, emparejando por la hora UTC exacta del último dato real de
+cada boya:
+
+| boya | hora UTC | altura medida | altura calculada | diferencia | % |
+|---|---|---|---|---|---|
+| 2136 Bilbao-Vizcaya | 01:00 | 1.52 m | 1.42 m | −0.10 m | −6.6% |
+| 1117 Gijón | 00:00 | 1.62 m | 1.36 m | −0.26 m | −16.0% |
+| 1101 Pasaia II | 23:00 (día anterior) | 1.37 m | 1.00 m | −0.37 m | −27.0% |
+| 1731 Barcelona II | 00:00 | 0.36 m | 0.26 m | −0.10 m | −27.8% |
+
+Con este noveno punto, el historial de la metodología `boya_vs_openmeteo_
+mismo_punto` (excluyendo la del 2026-08-31, spot-vs-boya, ya superseded)
+queda así — todavía lejos del mínimo de 15 puntos por boya que pide la
+tarea:
+
+- **2136 Bilbao-Vizcaya**: 9 puntos (−8.5%, 0.0%, +25.4%, +6.4%, +2.1%,
+  +6.4%, −8.5%, +4.3%, −6.6%) — media ≈ +2.3%, sigue sin patrón
+  sistemático claro, la más cercana a "sin desviación" de las 3
+  obligatorias.
+- **1117 Gijón**: 9 puntos (−14.7%, +3.7%, +1.4%, −1.6%, −1.5%, −15.9%,
+  −11.5%, +9.9%, −16.0%) — media ≈ −5.1%, sigue alternando signo y
+  magnitud pasada a pasada, sin patrón sólido.
+- **1101 Pasaia II**: 9 puntos, **los 9 con el mismo signo negativo**
+  (−36.0%, −27.3%, −29.3%, −15.7%, −22.3%, −25.2%, −23.2%, −49.5%, −27.0%,
+  media ≈ **−28.4%**) — sigue siendo, con diferencia, la boya con el sesgo
+  más consistente y estable: 9/9 puntos (nocturnos y diurnos combinados)
+  con Open-Meteo calculando por debajo de la boya real, la media apenas
+  se mueve pasada a pasada. Principal candidata a un futuro factor de
+  corrección de zona — **9 puntos, todavía lejos de los 15 mínimos**, pero
+  a este ritmo (una pasada nocturna + alguna diurna al día) podría
+  alcanzarlos en unos días más.
+- **1731 Barcelona II**: **4 puntos, los 4 con signo negativo** (−22.9%,
+  −48.3%, −25.7%, −27.8%; media ≈ −31.2%) — mar siempre <0.6 m en las
+  cuatro mediciones, así que el porcentaje sigue siendo ruidoso (un error
+  absoluto pequeño dispara el %), pero la consistencia del signo empieza a
+  llamar la atención igual que pasó con Pasaia II en sus primeros puntos.
+  A vigilar en próximas rotaciones, sin sacar conclusiones todavía con
+  solo 4 puntos.
+- **1514 Málaga**: 2 puntos (−38.1%, +12.5%), sin repetir desde el
+  2026-09-14 (pasada buscadora diurna). Candidata para la próxima
+  rotación de esta rutina nocturna.
+- **2548 Cabo de Gata**: 2 puntos (−11.9%, +2.9%), sin cambios desde el
+  2026-09-15.
+- **2820 Dragonera**: 1 punto (−31.9%), sin repetir desde el 2026-09-13.
+- **2242 Cabo Peñas**: 1 punto (−25.5%), sin repetir desde el 2026-09-14.
+- **2246 Villano-Sisargas**: 1 punto (−11.1%, vía pasada buscadora diurna
+  del 2026-09-15), primera boya de Galicia en el historial.
+
+**Ningún factor de corrección propuesto todavía** — ninguna boya llega a
+los 15 puntos mínimos, aunque Pasaia II (9 puntos, 9/9 mismo signo, media
+estable ≈−28%) es ya la candidata más sólida y se acerca al umbral;
+seguir sumando historial ahí sigue siendo lo más valioso. Para la próxima
+rotación de esta rutina nocturna, 1514 Málaga es la candidata con más
+noches sin repetirse.
+
+**Firmado:** robot de calibración nocturna, 2026-09-16 01:14 UTC.
 
 ---
 
