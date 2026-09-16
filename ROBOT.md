@@ -1757,6 +1757,143 @@ histórico por zona), 2026-09-15 23:12 UTC.
 
 ---
 
+### 2026-09-16 01:42 UTC (pasada buscadora — estudios institucionales/académicos tipo DIGIPESCA, España y Portugal)
+
+**Qué se buscó:** dar continuidad a la pasada de DIGIPESCA del 2026-09-15
+09:18 UTC, que dejó explícitamente pendiente lo más importante: DIGIPESCA
+(UPV) solo cubre **Mediterráneo español + Atlántico de Andalucía** y NO el
+Cantábrico ni Galicia, que es justo donde está el grueso de spots y
+usuarios de Costa Viva. Esta pasada buscó los **equivalentes
+institucionales** de datos de especie · lonja/puerto · mes · precio/volumen
+para las zonas que DIGIPESCA no toca (Cantábrico/Euskadi, Galicia) y para
+**Portugal** (ámbito geográfico ya declarado en `ROBOT_REGLAS.md`: España
+y Portugal enteros). Solo propuesta, no se ha tocado `ESPECIES`,
+`indicePesca` ni ningún fichero de código — únicamente esta entrada.
+
+**Qué se encontró (todo verificado con `WebFetch`/`WebSearch` reales, no de
+memoria — cada fuente confirmada con una petición HTTP que devolvió
+contenido real):**
+
+1. **Gobierno Vasco — "Subastas en lonja de bajura" (el hallazgo más
+   relevante, cubre la zona con más spots).** Estadística oficial de
+   Eustat/Gobierno Vasco, publicada también en **Open Data Euskadi**.
+   Desglose por **especie principal · punto de venta (lonja/puerto) ·
+   periodo**, con **cantidad y valor**. Rango largo (evolución **1985–2025**,
+   última actualización 03/07/2026), descargable en formatos abiertos
+   (**XLSX y CSV**; Open Data Euskadi además ofrece API/JSON/XML). Sin
+   registro aparente. **Lo más importante para nuestras reglas: la propia
+   fuente separa de raíz "bajura" de "altura"** — el dataset se titula
+   literalmente "subastas en lonja de **bajura**" (pesca cercana a la costa
+   con embarcaciones pequeñas), que es exactamente la distinción que
+   `ROBOT_REGLAS.md` exige aplicar a mano con DIGIPESCA. Aquí viene ya
+   hecha por el organismo. Verificado en:
+   `euskadi.eus/.../estadistica/subastas_lonja_bajura/`. Granularidad
+   temporal confirmada solo a nivel anual desde los títulos; queda por
+   confirmar si el desglose descargable llega a mensual (una futura pasada
+   debería bajar un XLSX real y mirarlo, como se hizo con el `.xlsx` de
+   DIGiPESCA).
+
+2. **Pesca de Galicia (Xunta) — "Cotizacións nas lonxas".** Plataforma
+   tecnolóxica da pesca (`pescadegalicia.gal`). Herramienta de consulta por
+   **fecha de venta · lonxa/zona de producción · especie**, con
+   **cantidad, importe y precio medio/mínimo/máximo**, agrupable por
+   **últimos 30 días / últimos 12 meses / últimos 10 años**. Datos de las
+   notas de primera venta de las 65 lonjas gallegas, con opción de
+   descarga. **Ventaja sobre DIGIPESCA: no es un histórico estático
+   2010–2021, sino que llega casi al día** (Idapes/DIGIPESCA son series
+   cerradas; esta se alimenta de la primera venta reciente). El dataset
+   machine-readable equivalente está en datos.gob.es ("Primera venta de
+   productos pesqueros frescos", Xunta de Galicia, **actualización diaria**,
+   licencia **CC BY-SA 4.0**). Cubre exactamente el hueco de Galicia que
+   DIGIPESCA dejaba fuera. Verificado en
+   `pescadegalicia.gal/informe-cotizaciones-lonjas/agregation` y
+   `datos.gob.es/.../primera-venta-de-productos-pesqueros-frescos1`.
+
+3. **Idapes — Junta de Andalucía (mejora sobre DIGIPESCA para el Golfo de
+   Cádiz).** "Consultas estadísticas pesqueras": primera venta de pesca
+   fresca en lonja **por especie (agrupada en crustáceos/moluscos/peces) ·
+   lonja/puerto de Andalucía · año y mes**, series desde **2000 hasta
+   2026**. Sin registro aparente. Más actual y granular que DIGIPESCA para
+   la misma zona (Atlántico de Andalucía / Golfo de Cádiz), donde Costa
+   Viva sí tiene spots (`ESPECIES_GOLFO_CADIZ`). Verificado en el
+   `FrontController?action=ConsultarPrecios` de
+   `juntadeandalucia.es/agriculturaypesca/idapes`.
+
+4. **Portugal — DGRM "Estatísticas Mensais da Pesca" + dados.gov.pt
+   "Capturas nominais de pescado (t)".** DGRM (`dgrm.pt/estatisticasmensais`)
+   publica descargas **mensuales** por especie y puerto (solo territorio
+   nacional, desembarques en puertos portugueses). El portal de datos
+   abiertos `dados.gov.pt` tiene además el dataset **"Capturas nominais de
+   pescado (t) por Porto de descarga (NUTS-2013) e Espécie"** (fuente
+   INE/DGRM, licencia **CC BY 4.0**), aunque este último es **anual, no
+   mensual**. Cubre el hueco de Portugal (`ESPECIES` por defecto incluye el
+   Portugal atlántico). Verificado en
+   `dados.gov.pt/.../capturas-nominais-de-pescado-t/` y la búsqueda de
+   `dgrm.pt/estatisticasmensais`.
+
+**Cruces obligatorios de `ROBOT_REGLAS.md` aplicados a estas fuentes antes
+de proponer nada (todas quedan como fuente candidata, no como dato
+aplicado):**
+
+- **Bajura vs altura:** el dato de todas ellas es *puerto de venta*, no
+  *zona de captura*. Solo es proxy razonable de "se pesca cerca de aquí"
+  para especies de bajura (`zona: "costa"` en `ESPECIES`). Para altura
+  (`zona: "mar adentro"`: Bonito del norte, Dentón, Urta, Medregal…) el pez
+  puede haberse capturado a cientos de km del puerto de venta — NO usar su
+  volumen/precio de lonja como señal de zona. **La fuente vasca es la única
+  que trae esta separación ya hecha por el organismo** (dataset de
+  "bajura"); en Galicia/Andalucía/Portugal habría que filtrarla a mano por
+  especie usando el campo `zona` que ya tenemos.
+- **Hábitos/costumbres reales de captura:** "abundante+barato en lonja este
+  mes" no implica "se pesca de costa" — muchas especies de bajura se
+  capturan sobre todo desde embarcación o en fondos profundos cercanos,
+  poco realistas a lanzado desde la orilla (ejemplo del pargo del propio
+  usuario). Cualquier traducción de estos datos a "buen mes para pescar X
+  desde la orilla en esta zona" exige cruzar con los hábitos reales de la
+  especie; el dato de lonja por sí solo no lo distingue.
+- **Localismos regionales:** los nombres de especie de estas fuentes son
+  regionales (una lonja vasca puede etiquetar "antxoa/bokarta", una gallega
+  "xouba", etc.). Antes de casar una fila de lonja con una especie de
+  `ESPECIES` habría que mapear el nombre con cuidado y sin asumir que un
+  término vale para otra zona — encaja con la responsabilidad de
+  `sinonimos_especie` y con la de localismos por spot.
+
+**Por qué solo propuesta, no implementación** (ver `ROBOT_REGLAS.md`):
+integrar cualquiera de estas cambiaría lo que se muestra al usuario como
+dato fiable (`ESPECIES`/`indicePesca`) y/o tocaría `functions/` — decisión
+de producto por definición, siempre a confirmar. Además son históricos/
+notas de primera venta, no un dato "en vivo" del estado del mar: su encaje
+natural sería una *climatología mensual por especie de bajura y por zona*
+(qué meses hay más volumen histórico de una especie de costa en las lonjas
+de ESA costa), nunca un valor en tiempo real.
+
+**Recomendación / siguiente paso para una futura pasada:** ahora que hay
+una fuente institucional real por cada zona de la app (Euskadi→Gobierno
+Vasco/bajura, Galicia→Pesca de Galicia, Andalucía→Idapes, Med.
+español→DIGIPESCA, Portugal→DGRM), el trabajo pendiente es descargar un
+fichero real de la vasca (la mejor por venir ya separada en bajura) y de la
+gallega, comprobar si el desglose llega a mensual, y construir una tabla de
+prueba especie·zona·mes·volumen solo con especies de bajura — para
+enseñársela al usuario y que decida si quiere usarla como climatología
+estacional. No se ha bajado ningún fichero grande en esta pasada (solo
+verificación de existencia/estructura de cada portal), para no exceder el
+alcance de una pasada buscadora.
+
+**Fuentes:**
+[Gobierno Vasco — Subastas en lonja de bajura](https://www.euskadi.eus/gobierno-vasco/-/estadistica/subastas-en-lonja-de-bajura/),
+[Open Data Euskadi — Banco de datos de Pesca](https://www.euskadi.eus/gobierno-vasco/-/estadistica/banco-de-datos-pesca/),
+[Pesca de Galicia — Cotizacións nas lonxas](https://www.pescadegalicia.gal/informe-cotizaciones-lonjas/agregation),
+[datos.gob.es — Primera venta de productos pesqueros frescos (Xunta)](https://datos.gob.es/en/catalogo/a12002994-primera-venta-de-productos-pesqueros-frescos1),
+[Idapes — Junta de Andalucía (primera venta en lonja)](https://www.juntadeandalucia.es/agriculturaypesca/idapes/servlet/FrontController?action=ConsultarPrecios&optSel=origen&ec=observatorio&id_menu=menu_1),
+[DGRM — Estatísticas Mensais da Pesca](https://www.dgrm.pt/estatisticasmensais),
+[dados.gov.pt — Capturas nominais de pescado (t) por porto e espécie](https://dados.gov.pt/en/datasets/capturas-nominais-de-pescado-t/).
+
+**Firmado:** robot buscador de fuentes (pasada de estudios
+institucionales/académicos tipo DIGIPESCA, España y Portugal),
+2026-09-16 01:42 UTC.
+
+---
+
 ## Auditoría de datos
 
 ### 2026-08-31
