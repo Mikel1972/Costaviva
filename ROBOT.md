@@ -3445,3 +3445,33 @@ huérfano en silencio —ya hay una invitación huérfana previa que lo
 confirma; falta aplicar la migración. Datos de prueba limpiados salvo la
 fila de grupo huérfana y su invitación (consecuencia directa del
 hallazgo 2, inofensivas). Informe completo en /tmp/experiencia-informe.txt.
+
+### 2026-09-16
+
+Segunda pasada intensiva de "usuario real exigente" contra producción
+(costaviva.org + API REST de Supabase) con las dos cuentas de prueba.
+Núcleo muy sólido: /prevision (105 spots, 0 errores, 0 nulos en los
+bloques, dato fresco del día) con valores coherentes por zona —marea del
+Mediterráneo minúscula (Valencia 0.1 m) vs Cantábrico ~2.4 m vs Atlántico
+~1.8 m—, temperatura del agua que refleja el afloramiento real del NW de
+Portugal/Costa da Morte (13.8–14.8 °C) frente a Baleares (27–28 °C), y las
+27 boyas de Puertos del Estado con oleaje real. /identificar-captura volvió
+a acertar "Lubina" (Dicentrarchus labrax) sin inventar talla/peso por falta
+de escala; /luna coherente con la fase real (creciente 28%); errores de
+borde claros (geocodificar en el océano → 422, sin lat/lon → 400, webcam
+inexistente → 404). RLS verificado en cruzado (B no ve nada de A; B
+suplantando el user_id de A al insertar → 403) y el flujo COMPLETO de
+grupos con dos cuentas reales (crear/invitar/unir/ver-compartido +
+interruptor maestro y granular por tipo de salida + aislamiento de
+no-miembro que no revela si el grupo existe) funciona bien. Dos hallazgos
+menores, ninguno de cálculo: (1) la boya de Nazaré (fuente real: Instituto
+Hidrográfico de Portugal) se etiqueta en el popup de index.html como
+"Puertos del Estado" —atribución de fuente incorrecta, única boya
+afectada; (2) su campo "actualizado" usa formato no-ISO ("2026-09-16
+11:00") frente al ISO-Z del resto, latente pero hoy sin impacto porque el
+popup no muestra ese campo. Nota útil sobre el hallazgo huérfano del
+2026-09-15: el DELETE directo del creador sobre la tabla `grupos` SÍ
+funciona (204, 0 residual verificado), así que la limpieza de grupos es
+posible sin la RPC eliminar_grupo() pendiente de desplegar. Todos los datos
+de prueba borrados y verificados a 0. Informe completo en
+/tmp/experiencia-informe.txt.
