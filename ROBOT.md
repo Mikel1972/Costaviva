@@ -1971,6 +1971,110 @@ existencia de SOCIB vía `getlatestdirectory`). Sin cambios de código.
 **Firmado:** robot buscador de fuentes (pasada de webcams para spots sin
 cámara), 2026-09-16 07:55 UTC.
 
+### 2026-09-16 10:27 UTC (pasada buscadora — caudal de ríos por zona + estaciones de monte, España y Portugal)
+
+**Objetivo:** los dos huecos conocidos: (1) `caudal: null` en los ríos
+vascos de `RIOS` (`index.html`) — el comentario de `functions/prevision.js`
+dice "URA/Bizkaia bloquea el acceso automático"; (2) ampliar las
+estaciones de monte reales (precip/presión, estilo `ESTACIONES_AEMET`) a
+España **y Portugal**, no solo Euskadi. Esta pasada corre desde el runner
+de GitHub Actions (red real, no el sandbox web bloqueado del 2026-08-31).
+**Todo lo de abajo tocaría `functions/prevision.js` y/o `RIOS` en
+`index.html` → por la regla de volumen de `ROBOT_REGLAS.md` es propuesta,
+nunca aplicación directa.** No se ha cambiado ni una línea de código.
+
+**HALLAZGO 1 — Open Data Bizkaia publica datos hidrometeorológicos en
+tiempo real (24h), abiertos y sin key.** La premisa del comentario de
+`prevision.js` ("URA/Bizkaia bloquea el acceso automático") puede estar
+**desactualizada**: `opendatabizkaia.eus` tiene el dataset "Datos de las
+estaciones de Bizkaia (en tiempo real, últimas 24 horas)" (red foral de
+~40 estaciones hidrometeorológicas, integrada en la red de URA) con
+descarga en JSON/CSV/XML/TSV/XLSX y patrón de dump tipo
+`/opendata/es/datastore/dump/<dataset-id>/...?format=csv`. Recursos:
+`https://www.opendatabizkaia.eus/es/catalogo/hidrologia/recurso/datos-estaciones-bizkaia-tiempo-real`
+y el de metadatos de estaciones (coordenadas/ids)
+`https://www.opendatabizkaia.eus/es/catalogo/hidrologia/recurso/estaciones-hidrometeorologicas`.
+Sería justo lo que falta para desbloquear Lea, Oka, Butrón, Gobela,
+Nervión/Ibaizabal y el resto de ríos de Bizkaia de `RIOS`.
+**PERO no he podido verificarlo desde este runner**: `opendatabizkaia.eus`
+rechaza conexiones desde IP de datacenter (`ECONNREFUSED`/`HTTP 000` tanto
+por `curl` como por `WebFetch`) — mismo patrón que ya se documentó con
+`beachcam.meo.pt`/`images.socib.es`. **Antes de integrarlo hay que
+verificar el endpoint exacto (dataset-id real + campos de caudal/precip/
+presión + frescura) desde un navegador real o, mejor, desde una Function
+de Cloudflare** (comprobar si el edge de Cloudflare sí alcanza el host, ya
+que producción corre ahí, no en este runner) — no dar por bueno el
+formato sin una petición real que devuelva datos, como con cualquier
+fuente nueva.
+
+**HALLAZGO 2 — Gipuzkoa (Obras Hidráulicas) da caudal REAL en vivo,
+verificado hoy.** Portal "Datos en tiempo real"
+(`gipuzkoa.eus/es/web/obrahidraulikoak/hidrologia-y-calidad/datos-en-tiempo-real`),
+una página por estación (portlet Liferay, parámetro `idEstacion=<código>`,
+`view=datosTiempoReal`). **Verificado en real hoy**: la estación DEBA
+(`idEstacion=A1Z1`) devuelve una tabla server-rendered con datos de
+**16/09/2026** cada 10 min, con columnas Nivel (m), **Caudal (m³/s)**,
+**Pluv. (l/m²)**, Tª Agua (ºC) y **Turb. (NTU)** — ej. 00:00 → nivel
+0.202 m, caudal 0.282 m³/s. Estaciones útiles para spots de Gipuzkoa
+(hoy sin caudal en `RIOS`): DEBA `A1Z1`/`A3Z1` (Deba, Mutriku), UROLA
+`B1Z1`/`B2Z1` (Zumaia), ORIA `C5Z1`/`C9Z1` (Orio, Zarautz), URUMEA
+`D1T1`/`D2W1` (Donostia), OIARTZUN `E1W1` (Pasaia), ENDARA `F1W1`
+(Bidasoa, Hondarribia). **No rellena el hueco vasco original (esos son de
+Bizkaia), sino que AÑADE caudal nuevo a la costa guipuzcoana** (más rico
+incluso: trae también pluviometría, temperatura del agua y turbidez —
+esto último encaja con la responsabilidad de turbidez de
+`ROBOT_REGLAS.md`). **Cautelas para el diseño (proponer, no aplicar)**:
+(a) no encontré un endpoint JSON limpio del portlet — cada estación es
+una página HTML de ~200 KB que habría que parsear, y es **un fetch por
+estación**, lo que choca con el límite de ~50 sub-peticiones de Cloudflare
+que ya está al 78% en `/prevision` (ver `ROBOT_REGLAS.md`, 2026-09-15);
+integrarlo exigiría o bien un endpoint bulk que no aparece, o un cron
+propio que cachee (patrón `registrar-presion`), no llamadas en vivo desde
+`/prevision`. (b) verificar con mapa que cada estación cae de verdad
+aguas arriba del spot antes de cruzarla.
+
+**HALLAZGO 3 — Portugal: estaciones de monte reales, verificado, sin key.**
+IPMA (Instituto Português do Mar e da Atmosfera) publica observación
+horaria abierta: `https://api.ipma.pt/open-data/observation/meteorology/stations/observations.json`
+(**verificado hoy**: `200`, ~1 MB, 24 timestamps, última hora
+2026-09-16T09:00 con **222 estaciones**; campos por estación
+`precAcumulada` (precip), `pressao` (presión hPa), `temperatura`,
+`humidade`, viento — en la última hora, 160 estaciones con precip válida y
+78 con presión válida) y el listado de estaciones con coordenadas en
+`https://api.ipma.pt/open-data/observation/meteorology/stations/stations.json`
+(GeoJSON, `idEstacao` + `localEstacao` + coords). **Es el equivalente
+exacto de `ESTACIONES_AEMET` para Portugal** — hoy los 17 spots
+portugueses de la app no tienen ninguna estación de monte, porque
+`ESTACIONES_AEMET` es solo AEMET/España. Encaje directo con el patrón ya
+existente (`ESTACIONES_AEMET`/`datosEstacionesAemet()`), una sola petición
+para toda la cobertura nacional (no cuenta por ubicación como Open-Meteo).
+Candidato fuerte, pero es alta de una fuente nueva en `functions/` →
+propuesta, a confirmar por el usuario.
+
+**Sin verificar / descartado esta pasada:** la red autonómica de URA
+(`uragentzia.euskadi.eus`, visor de estaciones de aforo) permite descargar
+media diaria y datos a 10 min, pero no localicé un endpoint JSON/tiempo
+real sin login desde el HTML (usa un `getJSON` cuyo destino no se expone
+en los scripts servidos); Euskalmet (red conjunta) sigue dependiendo de la
+`EUSKALMET_API_KEY` que nunca llegó (ver `CLAUDE.md`). Para España
+peninsular, `ESTACIONES_AEMET` ya cubre el hueco vía AEMET — no hace falta
+fuente nueva ahí, como mucho ampliar la lista de `idema`.
+
+**Resultado neto:** 3 fuentes reales candidatas para los dos huecos, dos
+de ellas verificadas en vivo hoy (Gipuzkoa caudal, IPMA Portugal) y una
+muy prometedora pero no verificable desde este runner (Open Data Bizkaia,
+IP de datacenter bloqueada — verificar desde el edge de Cloudflare). Sin
+cambios de código: todo toca `functions/`/`RIOS` → propuesta a confirmar.
+
+**Fuentes:**
+[Open Data Bizkaia — estaciones en tiempo real (24h)](https://www.opendatabizkaia.eus/es/catalogo/hidrologia/recurso/datos-estaciones-bizkaia-tiempo-real),
+[Gipuzkoa — Obras Hidráulicas, datos en tiempo real](https://www.gipuzkoa.eus/es/web/obrahidraulikoak/hidrologia-y-calidad/datos-en-tiempo-real),
+[URA — datos de estaciones de aforo](https://www.uragentzia.euskadi.eus/datos-de-estaciones-de-aforo/webura00-contents/es/),
+[IPMA — observação meteorológica (open data)](https://api.ipma.pt/open-data/observation/meteorology/stations/observations.json).
+
+**Firmado:** robot buscador de fuentes (pasada de caudal de ríos +
+estaciones de monte, España y Portugal), 2026-09-16 10:27 UTC.
+
 ---
 
 ## Auditoría de datos
