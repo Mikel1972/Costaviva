@@ -1,4 +1,4 @@
-# ROBOT_REGLAS.md — reglas estables del robot de datos de Costa Viva
+# ROBOT_REGLAS.md — reglas estables del robot de datos de Costaviva
 
 Este fichero contiene solo las reglas de negocio vigentes para el robot de
 investigación/auditoría de datos. Se reescribe libremente cuando el
@@ -338,7 +338,7 @@ corren solo 1 vez al día cada una (no 4):
 
 - **Buenas prácticas de otras apps de mareas/pesca**: qué datos en
   tiempo real o funciones tienen apps como Windy, Tides4fishing,
-  Fishbrain, Meteoblue, Puertos del Estado o AEMET que Costa Viva no
+  Fishbrain, Meteoblue, Puertos del Estado o AEMET que Costaviva no
   tenga todavía. Usa `WebSearch`. **Esto es siempre una propuesta, nunca
   una implementación directa** — "otra app hace X" es una decisión de
   producto por definición (ver la regla general de este fichero: cambio
@@ -381,7 +381,7 @@ ya aplicada a `ESPECIES_MEDITERRANEO`**: proyecto DIGIPESCA (Universitat
 Politècnica de València), datos reales de venta en lonja por especie —
 cantidad, precio medio, facturación — desglosados por lonja y por mes.
 Cobertura: **Mediterráneo español + Atlántico de Andalucía únicamente —
-NO Cantábrico, Galicia ni la costa atlántica de Portugal** (Costa Viva
+NO Cantábrico, Galicia ni la costa atlántica de Portugal** (Costaviva
 cubre España y Portugal enteros, así que esa zona se queda sin esta
 fuente).
 

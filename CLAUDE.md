@@ -1,4 +1,4 @@
-# CLAUDE.md — Costa Viva
+# CLAUDE.md — Costaviva
 
 Este fichero se lee al empezar cada sesión y se reescribe libremente cuando
 cambian las convenciones — no es un historial (para eso está `ROBOT.md`).
@@ -828,7 +828,7 @@ escalonadas para no competir por runners:
 |---|---|---|
 | `security-scan.yml` | `30 4 * * 1` (lunes) | ZAP baseline (pasivo) contra producción → Issue "ZAP Scan Baseline Report" |
 | `smoke-test.yml` | `0 5 * * *` | login real → `/prevision` → `/webcam/mundaka` → crea/borra una salida de pesca de prueba. `/sos-alerta` excluido a propósito (ver más abajo) |
-| `daily-report.yml` | `0 6 * * *` | salud + conteo real de SOS (24h) → entrada nueva en el Issue "Informe diario — Costa Viva" |
+| `daily-report.yml` | `0 6 * * *` | salud + conteo real de SOS (24h) → entrada nueva en el Issue "Informe diario — Costaviva" |
 | `auth-test.yml` | `17 6 * * *` | RLS sin token + prueba cruzada A-lee-B (secrets ya puestos) |
 | `presion-historico.yml` | `7 * * * *` (cada hora) | POST a `/registrar-presion` (secret `PRESION_CRON_SECRET`) — guarda la presión real de cada spot en `presion_historico`, para la tendencia real de `/prevision` (Fase 4, ver más abajo). **Activada y verificada en real el 2026-09-12**: primer intento falló (42501, faltaba política de `insert` en la RLS de `presion_historico` — ni el propio endpoint podía escribir con la anon key sin sesión), corregido en `20260912230000_fix_insert_presion_historico.sql`; segundo intento escribió filas reales, confirmado leyendo la tabla. |
 
@@ -1117,7 +1117,7 @@ en iOS (Safari/PWA instalada, que es el uso principal de la app —
 [[project-movil-primero]]), `watchPosition()`/`setInterval()` **se
 pausan o se detienen en cuanto la pantalla se apaga o la app pasa a
 segundo plano** — no hay geolocalización en background real sin ser una
-app nativa con permiso "Always" (Costa Viva es PWA, no tiene eso). Un
+app nativa con permiso "Always" (Costaviva es PWA, no tiene eso). Un
 pescador con el móvil en el bolsillo y la pantalla apagada dejaría de
 mandar ubicaciones sin ningún aviso — igual de peligroso que no tener el
 botón, si se promete "cada 3 minutos" sin más matiz. Cualquier versión de
@@ -1135,7 +1135,7 @@ histórico de puntos `lat/lon/timestamp`, RLS igual que el resto
 (`auth.uid() = user_id` para escribir; el contacto que recibe el trackeo
 necesitaría una vía de lectura sin cuenta propia — probablemente un
 enlace con token, no una cuenta Supabase, ya que un contacto de
-emergencia no tiene por qué estar registrado en Costa Viva). Igual que el
+emergencia no tiene por qué estar registrado en Costaviva). Igual que el
 resto de ideas de esta sección: cuando se retome, es una propuesta de
 diseño a confirmar con el usuario antes de escribir una sola línea de
 RLS, no una implementación directa.
@@ -1152,7 +1152,7 @@ no interactivo (`claude -p ... --dangerously-skip-permissions`) que
 sigue las mismas reglas de `ROBOT_REGLAS.md` que la rutina nocturna
 externa (nunca inventar datos, límite de volumen para aplicar cambios
 directos, interruptor `ROBOT_PAUSADO`). Publica su resumen en el mismo
-Issue "Informe diario — Costa Viva" que ya usa `daily-report.yml`.
+Issue "Informe diario — Costaviva" que ya usa `daily-report.yml`.
 
 **Ampliado el mismo día con 2 áreas más**, pedidas explícitamente por el
 usuario, cada una 1 vez al día (no 4, a diferencia de las originales —
@@ -1160,7 +1160,7 @@ ver `ROBOT_REGLAS.md`, sección "Buenas prácticas de otras apps y
 biología de especies"):
 - **Buenas prácticas de otras apps** (Windy, Tides4fishing, Fishbrain,
   Meteoblue, Puertos del Estado, AEMET...) — qué datos en tiempo real o
-  funciones tienen que Costa Viva no. Siempre propuesta en `ROBOT.md`,
+  funciones tienen que Costaviva no. Siempre propuesta en `ROBOT.md`,
   nunca implementación directa (es una decisión de producto por
   definición).
 - **Migración y cría de especies** — épocas de migración y rangos de
@@ -1458,7 +1458,7 @@ desde el alta, luego bloqueo total** (no freemium) salvo suscripción
 activa — **3,99€/mes o 39,99€/año**. Proveedor: **Stripe**, vía web
 (las tiendas siguen "próximamente", ver `project_movil_primero` en
 memoria). Producto real en Stripe (modo TEST de momento):
-`prod_VGVio7rbJPK1Oh` "Costa Viva Premium", precios
+`prod_VGVio7rbJPK1Oh` "Costaviva Premium", precios
 `price_1UFyhEGXcSRiyJYIvGpTzjZu` (mensual) y
 `price_1UFyhEGXcSRiyJYIdjCv5aFH` (anual).
 
@@ -1597,8 +1597,8 @@ probar directamente tras mergear a main.
   requirió código de prorrateo propio.
 - ✅ **Pasado a modo LIVE en producción, 2026-09-15.** Cuenta de Stripe
   activada y verificada (negocio/banco), perfil público configurado
-  ("Costa Viva", @costaviva, categoría Software/SaaS, uso comercial,
-  sin app móvil todavía). Producto "Costa Viva Premium" recreado en
+  ("Costaviva", @costaviva, categoría Software/SaaS, uso comercial,
+  sin app móvil todavía). Producto "Costaviva Premium" recreado en
   live con **Stripe Tax activado** (decisión explícita, dado que se
   vende un servicio digital a clientes de la UE — con las reglas de
   IVA de servicios digitales, hay obligación real de cobrarlo; nota:

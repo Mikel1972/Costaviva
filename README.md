@@ -1,4 +1,4 @@
-# Costa Viva — piloto instalable
+# Costaviva — piloto instalable
 
 Estructura lista para desplegar en Cloudflare Pages, igual que tus otros proyectos:
 

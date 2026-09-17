@@ -1,7 +1,7 @@
--- Costa Viva — alta automática, sin aprobación manual del admin
+-- Costaviva — alta automática, sin aprobación manual del admin
 --
 -- Pedido explícito del usuario (2026-09-17): en Etxeapala (app familiar
--- cerrada) la aprobación manual tiene sentido, pero aquí Costa Viva es de
+-- cerrada) la aprobación manual tiene sentido, pero aquí Costaviva es de
 -- alta abierta y ese paso solo añadía fricción sin aportar seguridad real
 -- — ninguna tabla de usuario comprueba "aprobado" en su RLS, todas
 -- comprueban auth.uid() = user_id; la barrera real de quién entra ya la

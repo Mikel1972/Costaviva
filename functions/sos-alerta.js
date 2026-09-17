@@ -40,9 +40,9 @@ async function contactosDelUsuario(token) {
 async function enviarEmail(resendKey, destinatario, nombreUsuario, lat, lon, tipo, horaLocal) {
   const enlaceMapa = `https://maps.google.com/?q=${lat},${lon}`;
   const motivo = tipo === "caida_detectada" ? "una posible caída detectada por su teléfono" : "un aviso manual";
-  const asunto = `🆘 Aviso SOS de ${nombreUsuario} — Costa Viva`;
+  const asunto = `🆘 Aviso SOS de ${nombreUsuario} — Costaviva`;
   const cuerpo = `
-    <p><b>${nombreUsuario}</b> ha activado una alarma en Costa Viva (${motivo}) a las ${horaLocal}.</p>
+    <p><b>${nombreUsuario}</b> ha activado una alarma en Costaviva (${motivo}) a las ${horaLocal}.</p>
     <p>Última ubicación conocida:</p>
     <p><a href="${enlaceMapa}">${enlaceMapa}</a></p>
     <p style="color:#888; font-size:12px;">Este es un aviso automático. Si no puedes contactar con ${nombreUsuario}, considera llamar al 112.</p>
@@ -51,7 +51,7 @@ async function enviarEmail(resendKey, destinatario, nombreUsuario, lat, lon, tip
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${resendKey}` },
     body: JSON.stringify({
-      from: "Costa Viva SOS <sos@costaviva.org>",
+      from: "Costaviva SOS <sos@costaviva.org>",
       to: [destinatario],
       subject: asunto,
       html: cuerpo,
@@ -109,7 +109,7 @@ export async function onRequestPost(context) {
       });
     }
     const horaLocal = new Date().toLocaleString("es-ES", { timeZone: "Europe/Madrid" });
-    const nombreUsuario = usuario.email || "un usuario de Costa Viva";
+    const nombreUsuario = usuario.email || "un usuario de Costaviva";
 
     const resultados = await Promise.allSettled(
       contactos.map((c) => enviarEmail(resendKey, c.email, nombreUsuario, lat, lon, tipo, horaLocal))

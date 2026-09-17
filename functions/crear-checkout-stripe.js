@@ -16,7 +16,7 @@ const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
 
 // Producto real en Stripe, modo LIVE (2026-09-15, tras verificar la
-// cuenta): "Costa Viva Premium". Los IDs de test (prod_VGVio7rbJPK1Oh y
+// cuenta): "Costaviva Premium". Los IDs de test (prod_VGVio7rbJPK1Oh y
 // sus precios) quedan en el historial de git, ya no son válidos aquí
 // — test y live son espacios de objetos completamente separados en
 // Stripe, un STRIPE_SECRET_KEY live no puede usar precios de test.

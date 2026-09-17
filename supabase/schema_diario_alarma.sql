@@ -1,4 +1,4 @@
--- Costa Viva — Diario de capturas (agenda por dias) + Alarma SOS
+-- Costaviva — Diario de capturas (agenda por dias) + Alarma SOS
 --
 -- Como usar: pega esto entero en el SQL Editor del proyecto de Supabase
 -- "costaviva" y dale a "Run". Es autocontenido y no toca las tablas ya

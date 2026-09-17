@@ -50,7 +50,7 @@ export async function onRequestPost(context) {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${resendKey}` },
       body: JSON.stringify({
-        from: "Costa Viva <avisos@costaviva.org>",
+        from: "Costaviva <avisos@costaviva.org>",
         to: [adminEmail],
         subject: asunto,
         html: cuerpo,
@@ -72,8 +72,8 @@ export async function onRequestPost(context) {
     const filas = await resp.json();
     for (const fila of filas) {
       await enviarEmail(
-        `Costa Viva: alta activada — ${fila.email}`,
-        `<p>${fila.email} confirmó su email y ya tiene acceso a Costa Viva.</p><p>No hace falta ninguna acción por tu parte.</p>`
+        `Costaviva: alta activada — ${fila.email}`,
+        `<p>${fila.email} confirmó su email y ya tiene acceso a Costaviva.</p><p>No hace falta ninguna acción por tu parte.</p>`
       );
       const marcar = await fetch(`${SUPABASE_URL}/rest/v1/rpc/marcar_alta_activada_avisada`, {
         method: "POST",
@@ -98,7 +98,7 @@ export async function onRequestPost(context) {
     const filas = await resp.json();
     for (const fila of filas) {
       await enviarEmail(
-        `Costa Viva: alta sin confirmar — ${fila.email}`,
+        `Costaviva: alta sin confirmar — ${fila.email}`,
         `<p>${fila.email} se registró el ${fila.creado_en} y sigue sin confirmar su email 48h después.</p><p>Puede ser un problema de entrega del email de confirmación — merece un vistazo.</p>`
       );
       const marcar = await fetch(`${SUPABASE_URL}/rest/v1/rpc/marcar_alta_fallida_avisada`, {
