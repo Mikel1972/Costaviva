@@ -3655,3 +3655,71 @@ funciona (204, 0 residual verificado), así que la limpieza de grupos es
 posible sin la RPC eliminar_grupo() pendiente de desplegar. Todos los datos
 de prueba borrados y verificados a 0. Informe completo en
 /tmp/experiencia-informe.txt.
+
+---
+
+## Robot de patrones de uso
+
+### 2026-09-17
+
+Primera pasada real de esta rutina semanal (nueva, ver `CLAUDE.md`).
+Leído por REST con `SUPABASE_SERVICE_ROLE_KEY` (solo lectura): `eventos_uso`
+(0 filas), `capturas` (0 filas), `salidas_pesca` (1 fila), `spots_favoritos`
+(1 fila), `spots_usuario` (1 fila), `perfiles` (7 filas totales).
+
+**`eventos_uso` está a 0 filas — no es un fallo, es prematuro.** La tabla
+y la instrumentación se añadieron hoy mismo (2026-09-17, mismo día de esta
+pasada), así que no ha dado tiempo a acumular ningún evento real todavía.
+Verificado por código (grep) que las 9 llamadas a `registrarEvento()`
+documentadas en `CLAUDE.md` existen de verdad y donde dicen: `ver_mapa`,
+`ver_capa_batimetria/estaciones/rios/boyas/radar_lluvia`,
+`crear_ubicacion_personalizada`, `marcar_favorito` en `index.html`;
+`crear_salida`, `crear_captura` en `diario.html`; `pulsar_sos` en
+`alarma.html`; `crear_grupo`, `unirse_grupo` en `grupos.html`;
+`ver_suscripcion`, `iniciar_checkout` en `suscripcion.html` — el
+helper hace `insert` a `eventos_uso` con `try/catch` mudo, nunca bloquea
+la interacción. En `index.html`, el primer intento de `ver_mapa` ocurre
+antes de que `window.usuarioIdActual` esté listo (script clásico se
+ejecuta antes que el `<script type="module">` de login-guard), pero hay
+un respaldo correcto: queda un listener de `supabase-listo` (evento que
+el módulo sí dispara tras fijar `usuarioIdActual`) que vuelve a intentarlo
+— no parece un bug, solo no se puede confirmar en producción de verdad
+hasta que haya tráfico real que lo dispare. **No se puede confirmar
+todavía, con datos, que la recogida funciona de extremo a extremo en
+producción** — solo que el código está bien enganchado. Revisar esto en
+la pasada de la semana que viene (2026-09-24), cuando ya haya ~1 semana
+de tráfico real acumulado.
+
+**El resto de tablas también tiene muestra mínima**: de los 7 perfiles
+dados de alta, solo 1 (`85447dec...`, el más antiguo, dado de alta
+2026-09-09) tiene alguna fila real en `salidas_pesca`/`spots_favoritos`/
+`spots_usuario` (una de cada, las tres del mismo usuario); los otros 6
+perfiles (dados de alta entre 2026-09-13 y 2026-09-16, todos con menos
+de 7 días de antigüedad todavía) no tienen ninguna fila en ninguna de
+esas tablas ni en `capturas`. **No interpreto esto como abandono real**:
+`CLAUDE.md` ya documenta varias cuentas de prueba conocidas
+(`fishnowtest1`/`fishnowtest2`/`fishnowavisotest`, más la cuenta admin)
+que encajan en ese rango de fechas y count — con el alcance de lectura
+de esta pasada (`perfiles` solo expone `id`/`creado_en`/`aprobado`, sin
+email) no puedo distinguir cuentas de prueba de altas reales, así que
+etiquetar a esos 6 perfiles como "usuarios que probaron la app y la
+dejaron" sería inventar un patrón que la muestra no respalda.
+
+**Sin propuestas de rediseño/eliminación de producto esta pasada** —
+con 0 eventos de uso y 1 sola fila de actividad real de producto (fuera
+de las tablas de perfil/cuenta), no hay ninguna base numérica real
+todavía para decidir qué función usa la gente o no. Cualquier propuesta
+ahora sería una intuición disfrazada de dato, justo lo que esta rutina
+existe para evitar. Confirmado en cambio que la instrumentación en
+código está donde `CLAUDE.md` dice que está.
+
+**Qué no dio tiempo a mirar esta pasada**: no se comprobó
+`admin_resumen_eventos_uso()`/`admin_eventos_uso_usuario()` en sí (esta
+rutina no puede llamarlas, ver `CLAUDE.md` — usan `auth.email()`, no
+disponible con un token de `service_role`); no se leyó `detalle` (jsonb)
+de ningún evento porque no hay ninguno; no se comparó actividad por
+`spot`/tipo de salida en `salidas_pesca` más allá de la única fila
+existente, por ser una muestra de 1.
+
+**Firmado:** robot de patrones de uso, 2026-09-17 (pasada semanal,
+sábado UTC).
