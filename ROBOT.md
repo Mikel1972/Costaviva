@@ -3521,6 +3521,82 @@ noches sin repetirse.
 
 **Firmado:** robot de calibración nocturna, 2026-09-16 01:14 UTC.
 
+### 2026-09-17 (pasada nocturna corta — calibración + salud de datos)
+
+**Calibración — décimo punto para las 3 boyas obligatorias, tercer punto
+para 1514 Málaga** (rotación de esta noche, era la candidata con más
+noches sin repetirse desde la nota de ayer). Mismo método de siempre:
+`curl` a `poem.puertos.es/portus/StationData` para la altura real,
+Open-Meteo Marine en las coordenadas exactas de cada boya para la altura
+calculada, emparejando por la hora UTC exacta del último dato real de
+cada boya:
+
+| boya | hora UTC | altura medida | altura calculada | diferencia | % |
+|---|---|---|---|---|---|
+| 2136 Bilbao-Vizcaya | 01:00 | 1.76 m | 1.86 m | +0.10 m | +5.7% |
+| 1117 Gijón | 00:00 | 2.24 m | 1.74 m | −0.50 m | −22.3% |
+| 1101 Pasaia II | 00:00 | 1.71 m | 1.22 m | −0.49 m | −28.7% |
+| 1514 Málaga | 00:00 | 0.87 m | 0.52 m | −0.35 m | −40.2% |
+
+Historial actualizado de la metodología `boya_vs_openmeteo_mismo_punto`
+(sigue lejos del mínimo de 15 puntos por boya):
+
+- **2136 Bilbao-Vizcaya**: 10 puntos (−8.5%, 0.0%, +25.4%, +6.4%, +2.1%,
+  +6.4%, −8.5%, +4.3%, −6.6%, +5.7%) — media ≈ **+2.7%**, sigue sin
+  patrón sistemático claro, la más cercana a "sin desviación" de las 3
+  obligatorias.
+- **1117 Gijón**: 10 puntos (−14.7%, +3.7%, +1.4%, −1.6%, −1.5%, −15.9%,
+  −11.5%, +9.9%, −16.0%, −22.3%) — media ≈ **−6.9%**, sigue alternando
+  signo y magnitud pasada a pasada, sin patrón sólido.
+- **1101 Pasaia II**: **10 puntos, los 10 con el mismo signo negativo**
+  (media ≈ **−28.4%**) — sigue siendo, con diferencia, la boya con el
+  sesgo más consistente y estable. Faltan **5 puntos más** para el
+  mínimo de 15; a este ritmo (una pasada nocturna al día) podría
+  alcanzarlos en menos de una semana. Sigue siendo la candidata más
+  sólida a un futuro factor de corrección de zona, pero todavía no se
+  propone ninguno — falta llegar al umbral acordado.
+- **1731 Barcelona II**: 4 puntos, sin cambios desde ayer (no le tocaba
+  rotación esta noche).
+- **1514 Málaga**: 3 puntos (−38.1%, +12.5%, −40.2%; media ≈ **−21.9%**)
+  — 2 de 3 negativos, todavía muy poca muestra y signo no consistente
+  como Pasaia II. A vigilar en próximas rotaciones.
+- Resto de boyas (2548 Cabo de Gata, 2820 Dragonera, 2242 Cabo Peñas,
+  2246 Villano-Sisargas): sin cambios desde su última pasada, no les
+  tocaba rotación esta noche.
+
+**Ningún factor de corrección propuesto todavía** — ninguna boya llega a
+los 15 puntos mínimos. Para la próxima rotación de esta rutina nocturna,
+candidatas con más noches sin repetirse: Cabo de Gata, Dragonera, Cabo
+Peñas o Villano-Sisargas (todas con 1-2 puntos, sin tocar desde hace
+varios días).
+
+**Salud de datos — bloqueada por la política de red de esta sesión en
+concreto, no por ninguna fuente real caída.** Se pudo verificar en vivo:
+las 4 boyas de Puertos del Estado de arriba (mismo endpoint que
+`datosBoya()`, responde con datos reales y recientes) y 3 webcams de
+proveedores distintos (`mundaka` — kostasystem.com, `bakio` —
+pyscada.isurki.com, `sopelana` — detectia.net; las 3 con `200` y una
+imagen real de tamaño razonable). **No se pudo comprobar** la boya de
+Nazaré (`monican.hidrografico.pt`), ninguna de las 4 fuentes de caudal
+de río (`visor.saichcantabrico.es`, `saih.chj.es`,
+`saihweb.chsegura.es`, `servizos.meteogalicia.gal`) ni una cuarta
+webcam de otra región (`streaming.comunitatvalenciana.com`) — todas
+rechazadas por el propio proxy de salida de esta sesión
+(`connect_rejected`, "gateway answered 403 to CONNECT"), confirmado con
+`curl .../__agentproxy/status` y repitiendo la petición sin cambio de
+resultado. Es la misma limitación ya documentada el 2026-08-31 (esta
+sesión en la nube tiene salida de red bloqueada salvo un conjunto de
+dominios, que no incluye estos) — **no se anota ninguna de estas 5
+fuentes como rota**, porque no hay evidencia real de que lo estén, solo
+evidencia de que esta sesión concreta no puede alcanzarlas esta noche.
+Ninguna corrección de código aplicada (no había nada que corregir: no es
+un fallo del sitio ni de nuestro parser). Si esto se repite varias
+noches seguidas, valdría la pena confirmar si el conjunto de dominios
+permitidos para esta rutina en concreto puede ampliarse, en vez de
+asumir cada vez que es transitorio.
+
+**Firmado:** robot de calibración nocturna, 2026-09-17 01:16 UTC.
+
 ---
 
 ## Robot de experiencia de usuario
