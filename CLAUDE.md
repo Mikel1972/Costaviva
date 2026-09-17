@@ -38,6 +38,24 @@ desde antes, `eventos_uso` es solo sobre qué funciones se tocan.
 (geocodificación directa) — usado para centrar el mapa de index.html en
 la zona del usuario (`perfiles.codigo_postal`, recogido en el alta).
 
+**Robot de patrones de uso** (`.github/workflows/robot-patrones-uso.yml`,
+añadido el mismo día): pedido explícito del usuario ("debiera haber un
+robot analizando patrones de uso... para proponer cambios y mejoras").
+Semanal (sábados, no diario — con pocos usuarios una semana ya dice más
+que un día, y evita gastar cuota de API sin nada nuevo que aportar,
+mismo criterio que el recorte de `robot-buscador-fuentes.yml` del
+2026-09-16). Lee `eventos_uso`/`capturas`/`salidas_pesca` por REST con
+`SUPABASE_SERVICE_ROLE_KEY` (bypassa RLS, solo lectura) — no puede usar
+`admin_resumen_eventos_uso()`/`admin_eventos_uso_usuario()` porque esas
+comprueban `es_admin()` vía `auth.email()`, que no existe en un token de
+service_role. **Regla más estricta que el resto de robots del repo**:
+nunca implementa ningún cambio de producto/UI por su cuenta bajo ningún
+argumento (decidir qué rediseñar/quitar es puramente decisión del
+usuario) — solo puede escribir en `ROBOT.md`, nada más. Publica su
+resumen en el mismo Issue "Informe diario — Costaviva" que el resto.
+**Pendiente de primera ejecución real** (probar con `workflow_dispatch`
+antes de fiarse del `schedule`, mismo criterio que el resto de rutinas).
+
 ## ✅ RESUELTO (2026-09-17): fin de la aprobación manual de altas + repo renombrado a Costaviva
 
 **Bug real encontrado el mismo día, tras probar con un alta real**: la
