@@ -186,6 +186,23 @@
     padding: 6px; margin: -6px;
   }
 
+  /* Pop-up de bienvenida (2026-09-17, pedido explícito del usuario):
+     solo tras crear la contraseña justo después del alta (nunca tras
+     recuperar una contraseña olvidada, ver el parámetro ?bienvenida=1
+     que pone login.html), mismo lenguaje visual que modal-estacion. */
+  #modalBienvenida p { font-family: 'Inter', sans-serif; font-size: 13px; color: #42585F; line-height: 1.5; margin: 0 0 16px; }
+  #modalBienvenida .botones-bienvenida { display: flex; flex-direction: column; gap: 8px; }
+  #modalBienvenida button.primario {
+    width: 100%; padding: 9px; border-radius: 7px; border: none;
+    background: #D4A24C; color: #0B2532; font-weight: 600; font-size: 13px;
+    cursor: pointer; font-family: 'Inter', sans-serif;
+  }
+  #modalBienvenida button.secundario {
+    width: 100%; padding: 9px; border-radius: 7px; border: 1px solid #DDE2DC;
+    background: transparent; color: #42585F; font-size: 13px;
+    cursor: pointer; font-family: 'Inter', sans-serif;
+  }
+
   /* Pop-up de zoom para la foto/vídeo de la webcam (2026-09-15) — fondo
      casi negro (a diferencia de modal-estacion) para que la imagen
      destaque, sin tarjeta blanca alrededor. */
@@ -768,6 +785,17 @@
     <button class="cerrar" id="cerrarModalEstacion" aria-label="Cerrar">✕</button>
     <h3 id="tituloModalEstacion"></h3>
     <div id="contenidoModalEstacion"></div>
+  </div>
+</div>
+
+<div class="modal-estacion" id="modalBienvenida">
+  <div class="modal-estacion-contenido">
+    <h3>🐟 ¡Bienvenido a Costaviva!</h3>
+    <p>Tienes <b>7 días de prueba gratuita</b>. Cuando terminen, tu cuenta quedará desactivada hasta que actives una suscripción — puedes hacerlo cuando quieras desde tu perfil, en <b>«Mi suscripción»</b>.</p>
+    <div class="botones-bienvenida">
+      <button type="button" class="primario" id="btnVerPlanesBienvenida">Ver los planes</button>
+      <button type="button" class="secundario" id="btnCerrarBienvenida">Entendido, ¡a pescar!</button>
+    </div>
   </div>
 </div>
 
@@ -2646,6 +2674,22 @@ document.getElementById("cerrarModalEstacion").addEventListener("click", () => {
 document.getElementById("modalEstacion").addEventListener("click", (e) => {
   if (e.target.id === "modalEstacion") document.getElementById("modalEstacion").classList.remove("visible");
 });
+// Pop-up de bienvenida (2026-09-17): solo aparece justo tras crear la
+// cuenta (login.html añade ?bienvenida=1 al redirigir aquí tras el paso
+// 3 del alta, nunca tras recuperar una contraseña olvidada). Se limpia
+// el parámetro de la URL para que no vuelva a salir al recargar.
+const parametrosURL = new URLSearchParams(window.location.search);
+if (parametrosURL.get("bienvenida") === "1") {
+  document.getElementById("modalBienvenida").classList.add("visible");
+  history.replaceState(null, "", window.location.pathname);
+}
+document.getElementById("btnCerrarBienvenida").addEventListener("click", () => {
+  document.getElementById("modalBienvenida").classList.remove("visible");
+});
+document.getElementById("btnVerPlanesBienvenida").addEventListener("click", () => {
+  window.location.href = "/suscripcion.html";
+});
+
 document.getElementById("cerrarModalZoomWebcam").addEventListener("click", cerrarZoomWebcam);
 document.getElementById("contenidoZoomWebcam").addEventListener("click", (e) => {
   // Clic en la foto/vídeo -> alterna zoom. Clic en el fondo alrededor
