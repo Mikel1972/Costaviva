@@ -5,6 +5,39 @@ cambian las convenciones — no es un historial (para eso está `ROBOT.md`).
 Si algo de aquí queda desactualizado, corrígelo en el momento en que lo
 detectes, no lo dejes para luego.
 
+## Analítica de uso propia (`eventos_uso`, añadida 2026-09-17)
+
+Pedido explícito del usuario: entender qué usa de verdad cada usuario
+para (1) poder darle mejor servicio y (2) decidir qué rediseñar/quitar
+en base a uso real, no intuición. Cloudflare Web Analytics no sirve
+(agregado/anónimo, sin usuario).
+
+Tabla `public.eventos_uso` (user_id, tipo, detalle jsonb, creado_en),
+RLS: cada usuario solo puede **insertar** sus propios eventos, nadie
+puede leer nada desde el cliente (ni admin.html, ni el propio dueño).
+Lectura solo vía dos funciones `security definer` restringidas a
+`es_admin()`:
+- `admin_resumen_eventos_uso()` — por tipo de evento: total, usuarios
+  distintos, último uso. Para ver qué se usa/no se usa.
+- `admin_eventos_uso_usuario(p_user_id)` — desglose de un usuario
+  concreto. Para ayudar a alguien en particular.
+
+Helper `registrarEvento(tipo, detalle)` duplicado en cada página
+(mismo criterio que otros helpers del repo, sin build step para
+compartir código) — nunca bloquea la interacción si falla. Eventos ya
+instrumentados: `ver_mapa`, `ver_capa_batimetria/estaciones/rios/boyas/
+radar_lluvia`, `crear_ubicacion_personalizada`, `marcar_favorito`
+(index.html); `crear_salida`, `crear_captura` (diario.html, solo altas
+nuevas, no ediciones); `pulsar_sos` (alarma.html); `crear_grupo`,
+`unirse_grupo` (grupos.html); `ver_suscripcion`, `iniciar_checkout`
+(suscripcion.html). **No duplica** los datos de pesca en sí (especie,
+talla, spot, etc.) — eso ya vive completo en `capturas`/`salidas_pesca`
+desde antes, `eventos_uso` es solo sobre qué funciones se tocan.
+
+`functions/geocodificar.js` ampliado con `?cp=<código postal>`
+(geocodificación directa) — usado para centrar el mapa de index.html en
+la zona del usuario (`perfiles.codigo_postal`, recogido en el alta).
+
 ## ✅ RESUELTO (2026-09-17): fin de la aprobación manual de altas + repo renombrado a Costaviva
 
 **Bug real encontrado el mismo día, tras probar con un alta real**: la

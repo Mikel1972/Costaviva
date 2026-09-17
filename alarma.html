@@ -250,6 +250,14 @@ const usuario = sesionInicial.session.user;
 let tokenAcceso = sesionInicial.session.access_token;
 supabase.auth.onAuthStateChange((_evento, sesion) => { if (sesion) tokenAcceso = sesion.access_token; });
 
+// Analítica de uso propia (2026-09-17, ver index.html para el detalle) —
+// nunca bloquea la interacción si falla.
+async function registrarEvento(tipo, detalle) {
+  try {
+    await supabase.from("eventos_uso").insert({ user_id: usuario.id, tipo, detalle: detalle ?? null });
+  } catch (e) { /* nunca debe romper la interacción del usuario */ }
+}
+
 // Paywall (2026-09-15, pedido explícito del usuario): 7 días de prueba
 // desde el alta, luego bloqueo total sin suscripción activa —
 // mi_estado_suscripcion() ya resuelve el bypass del admin en el
@@ -334,6 +342,7 @@ async function dispararSOS(tipo) {
   }
 
   await supabase.from("alertas_sos").insert({ user_id: usuario.id, lat: ultimaPosicion.lat, lon: ultimaPosicion.lon, tipo });
+  registrarEvento("pulsar_sos", { tipo });
 
   try {
     const resp = await fetch("/sos-alerta", {

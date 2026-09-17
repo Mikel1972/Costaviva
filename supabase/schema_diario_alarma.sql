@@ -47,6 +47,15 @@ $$;
 -- mismo momento en que crea la fila — sin necesitar sesion ni una
 -- politica de UPDATE nueva sobre perfiles (que seguiria sin existir, para
 -- que nadie pueda auto-aprobarse).
+-- bienvenida_pendiente (2026-09-17): marca si al usuario le falta ver el
+-- popup de "7 días de prueba gratis" — marcado por servidor en vez de
+-- localStorage (el enlace del email puede abrirse en otro navegador o
+-- dispositivo). Se apaga con marcar_bienvenida_vista(), la única forma
+-- que tiene un usuario normal de tocar su propia fila de perfiles (no
+-- hay política de UPDATE general, a propósito).
+alter table public.perfiles
+  add column if not exists bienvenida_pendiente boolean not null default true;
+
 create or replace function public.gestionar_alta_perfil()
 returns trigger
 language plpgsql
@@ -54,17 +63,28 @@ security definer
 set search_path = public
 as $$
 begin
-  insert into public.perfiles (id, email, aprobado, consiente_uso_datos_capturas, codigo_postal)
+  insert into public.perfiles (id, email, aprobado, consiente_uso_datos_capturas, codigo_postal, bienvenida_pendiente)
   values (
     new.id,
     new.email,
     true,
     coalesce((new.raw_user_meta_data ->> 'consiente_uso_datos_capturas')::boolean, false),
-    new.raw_user_meta_data ->> 'codigo_postal'
+    new.raw_user_meta_data ->> 'codigo_postal',
+    true
   );
   return new;
 end;
 $$;
+
+create or replace function public.marcar_bienvenida_vista()
+returns void
+language sql
+security definer
+set search_path = public
+as $$
+  update public.perfiles set bienvenida_pendiente = false where id = auth.uid();
+$$;
+grant execute on function public.marcar_bienvenida_vista() to authenticated;
 
 create table if not exists public.salidas_pesca (
   id uuid primary key default gen_random_uuid(),

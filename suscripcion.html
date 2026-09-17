@@ -39,6 +39,11 @@
     display: inline-block; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 10.5px;
     color: #6B5530; background: rgba(212,162,76,0.18); border-radius: 5px; padding: 2px 7px; vertical-align: middle; margin-left: 4px;
   }
+  /* Bug real encontrado 2026-09-17: "display: inline-block" de arriba
+     gana por especificidad al comportamiento por defecto del atributo
+     hidden — sin esta regla, la insignia se ve SIEMPRE (en las dos
+     tarjetas a la vez si nadie tiene plan activo), esté oculta o no. */
+  .badge-actual[hidden] { display: none; }
   .plan .detalle { font-size: 12px; color: #5C7680; margin: 0 0 10px; line-height: 1.4; }
   .plan label.checkbox {
     display: flex; align-items: flex-start; gap: 8px; margin: 0 0 10px;
@@ -117,7 +122,18 @@ function mostrarMensaje(texto, tipo) {
   mensajeEstadoEl.innerHTML = `<div class="mensaje ${tipo}">${texto}</div>`;
 }
 
+// Analítica de uso propia (2026-09-17, ver index.html para el detalle) —
+// nunca bloquea la interacción si falla.
+async function registrarEvento(tipo, detalle) {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+    await supabase.from("eventos_uso").insert({ user_id: session.user.id, tipo, detalle: detalle ?? null });
+  } catch (e) { /* nunca debe romper la interacción del usuario */ }
+}
+
 async function iniciarCheckout(plan) {
+  registrarEvento("iniciar_checkout", { plan });
   const { data: { session } } = await supabase.auth.getSession();
   const resp = await fetch("/crear-checkout-stripe", {
     method: "POST",
@@ -227,6 +243,7 @@ async function iniciar() {
   }
   document.getElementById("comprobandoAcceso").remove();
   cajaEl.style.display = "block";
+  registrarEvento("ver_suscripcion");
 
   const query = new URLSearchParams(window.location.search);
   if (query.get("exito") === "1") {
