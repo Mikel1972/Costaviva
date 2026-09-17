@@ -550,6 +550,23 @@
       // Supabase para las ubicaciones personalizadas (Fase 2).
       window.supabaseCliente = supabase;
       window.usuarioIdActual = data.session.user.id;
+      // Popup de bienvenida (2026-09-17): marcado por servidor
+      // (perfiles.bienvenida_pendiente), no por localStorage — el
+      // enlace de verificación del alta puede abrirse en otro
+      // navegador/dispositivo del que se registró, y localStorage no
+      // viaja con él (bug real encontrado en preview el mismo día). El
+      // <script> clásico de más abajo decide si lo muestra y llama a
+      // marcar_bienvenida_vista() cuando lo hace.
+      try {
+        const { data: perfilBienvenida } = await supabase
+          .from("perfiles")
+          .select("bienvenida_pendiente")
+          .eq("id", data.session.user.id)
+          .single();
+        window.bienvenidaPendiente = perfilBienvenida?.bienvenida_pendiente === true;
+      } catch (e) {
+        window.bienvenidaPendiente = false;
+      }
       comprobarNovedadesGrupos(supabase);
       // El <script> clásico del mapa (sin módulos, más abajo) puede terminar
       // de ejecutarse antes o después de que este módulo resuelva la sesión
@@ -2674,14 +2691,19 @@ document.getElementById("cerrarModalEstacion").addEventListener("click", () => {
 document.getElementById("modalEstacion").addEventListener("click", (e) => {
   if (e.target.id === "modalEstacion") document.getElementById("modalEstacion").classList.remove("visible");
 });
-// Pop-up de bienvenida (2026-09-17): solo aparece justo tras crear la
-// cuenta (login.html añade ?bienvenida=1 al redirigir aquí tras el paso
-// 3 del alta, nunca tras recuperar una contraseña olvidada). Se limpia
-// el parámetro de la URL para que no vuelva a salir al recargar.
-const parametrosURL = new URLSearchParams(window.location.search);
-if (parametrosURL.get("bienvenida") === "1") {
+// Pop-up de bienvenida (2026-09-17): solo aparece si
+// perfiles.bienvenida_pendiente es true (visto en el módulo de más
+// arriba) — marcado por servidor, funciona igual aunque el enlace de
+// verificación del alta se abra en otro navegador/dispositivo.
+function mostrarPopupBienvenidaSiToca() {
+  if (!window.bienvenidaPendiente) return;
   document.getElementById("modalBienvenida").classList.add("visible");
-  history.replaceState(null, "", window.location.pathname);
+  window.supabaseCliente.rpc("marcar_bienvenida_vista").catch(() => {});
+}
+if (window.supabaseCliente) {
+  mostrarPopupBienvenidaSiToca();
+} else {
+  window.addEventListener("supabase-listo", mostrarPopupBienvenidaSiToca, { once: true });
 }
 document.getElementById("btnCerrarBienvenida").addEventListener("click", () => {
   document.getElementById("modalBienvenida").classList.remove("visible");

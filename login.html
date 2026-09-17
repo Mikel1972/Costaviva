@@ -463,16 +463,11 @@ formNueva.addEventListener("submit", async (e) => {
     mensajeNuevaEl.className = "mensaje error";
     return;
   }
-  // Popup de bienvenida (2026-09-17, pedido explícito del usuario) solo
-  // tras crear la cuenta, nunca tras recuperar una contraseña olvidada
-  // — se distingue con localStorage (marcado en el paso 1 del alta) en
-  // vez de mirar el tipo de enlace del email, porque el enlace puede
-  // abrirse en una pestaña/dispositivo distinto de donde se registró y
-  // porque es más robusto que depender del flujo exacto que use
-  // Supabase (?code= vs #access_token) si cambiara alguna vez.
-  const vieneDeAltaNueva = localStorage.getItem("costaviva_alta_pendiente") === "1";
-  localStorage.removeItem("costaviva_alta_pendiente");
-  window.location.href = vieneDeAltaNueva ? "/?bienvenida=1" : "/";
+  // El popup de bienvenida (2026-09-17) ya no depende de nada puesto
+  // aquí — index.html lo decide solo, consultando
+  // perfiles.bienvenida_pendiente (marcado por servidor, funciona igual
+  // aunque el enlace del email se abra en otro navegador/dispositivo).
+  window.location.href = "/";
 });
 
 async function gestionarAccesoInicial() {
@@ -621,10 +616,8 @@ formRegistroDatos.addEventListener("submit", async (e) => {
   } else {
     // El admin se entera solo cuando el email quede confirmado de
     // verdad, sin bloquear a nadie, vía notificar-altas.yml (cron cada
-    // 30 min) — no hace falta avisar nada desde aquí.
-    // Miga de pan para el popup de bienvenida de index.html, ver el
-    // comentario junto a formNueva más abajo.
-    localStorage.setItem("costaviva_alta_pendiente", "1");
+    // 30 min) — no hace falta avisar nada desde aquí. El popup de
+    // bienvenida tampoco necesita nada de aquí, ver index.html.
     mostrarPantalla(cajaRegistroEsperando);
   }
 });
