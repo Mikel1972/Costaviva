@@ -487,7 +487,12 @@ async function gestionarAccesoInicial() {
 
   const hash = new URLSearchParams(window.location.hash.slice(1));
   const tipoHash = hash.get("type");
-  if ((tipoHash === "recovery" || tipoHash === "magiclink") && hash.get("access_token")) {
+  // El enlace de verificación del alta en 2 pasos (signInWithOtp con
+  // shouldCreateUser:true) llega con el hash por implicit flow y
+  // type=signup — confirmado en real 2026-09-17 (no "magiclink" como
+  // cabría esperar). Se acepta junto a "recovery"/"magiclink" por si el
+  // proyecto cambia de comportamiento alguna vez.
+  if ((tipoHash === "recovery" || tipoHash === "magiclink" || tipoHash === "signup") && hash.get("access_token")) {
     const { error } = await supabase.auth.setSession({
       access_token: hash.get("access_token"),
       refresh_token: hash.get("refresh_token"),
