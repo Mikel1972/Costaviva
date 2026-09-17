@@ -396,7 +396,15 @@ async function cargarGrupos() {
   // página (nada queda oculto tras un clic), así que basta con marcar
   // TODOS los grupos como vistos de una vez — apaga el punto verde de
   // novedades del menú inferior hasta que llegue algo nuevo.
-  supabase.rpc("marcar_grupos_visitados").catch(() => {});
+  //
+  // Bug real encontrado 2026-09-17: rpc() de supabase-js no es un
+  // Promise normal (sin .catch() directo) — encadenar .catch() lanza un
+  // TypeError síncrono ANTES de que la petición llegue a dispararse, así
+  // que esta llamada nunca hizo nada desde que se escribió. Corregido
+  // con await dentro de un try/catch real.
+  try {
+    await supabase.rpc("marcar_grupos_visitados");
+  } catch (e) { /* el punto verde se apagará en la próxima carga */ }
 
   cont.querySelectorAll(".tarjeta-grupo").forEach((tarjetaEl) => {
     const grupoId = tarjetaEl.dataset.grupoId;
@@ -431,7 +439,15 @@ async function cargarGrupos() {
       // si quedan más, la RPC rechaza el borrado y lo ignoramos aquí sin
       // más (grupos.html no necesita saber cuántos miembros quedaban,
       // eliminar_grupo() ya hace esa comprobación de forma segura).
-      await supabase.rpc("eliminar_grupo", { p_grupo_id: grupoId }).catch(() => {});
+      //
+      // Bug real encontrado 2026-09-17: rpc() de supabase-js no es un
+      // Promise normal (sin .catch() directo) — "await X.catch(...)"
+      // lanzaba un TypeError síncrono no capturado que paraba esta
+      // función ANTES de llegar a cargarGrupos(), así que la lista no se
+      // refrescaba nunca al salir de un grupo.
+      try {
+        await supabase.rpc("eliminar_grupo", { p_grupo_id: grupoId });
+      } catch (e) { /* esperado si quedan más miembros, ver comentario de arriba */ }
       await cargarGrupos();
     });
 

@@ -2695,10 +2695,14 @@ document.getElementById("modalEstacion").addEventListener("click", (e) => {
 // perfiles.bienvenida_pendiente es true (visto en el módulo de más
 // arriba) — marcado por servidor, funciona igual aunque el enlace de
 // verificación del alta se abra en otro navegador/dispositivo.
-function mostrarPopupBienvenidaSiToca() {
+async function mostrarPopupBienvenidaSiToca() {
   if (!window.bienvenidaPendiente) return;
   document.getElementById("modalBienvenida").classList.add("visible");
-  window.supabaseCliente.rpc("marcar_bienvenida_vista").catch(() => {});
+  // rpc() de supabase-js no es un Promise normal (sin .catch() directo)
+  // — hace falta await dentro de un try/catch, no encadenar .catch().
+  try {
+    await window.supabaseCliente.rpc("marcar_bienvenida_vista");
+  } catch (e) { /* si falla, se volverá a intentar en la próxima carga */ }
 }
 if (window.supabaseCliente) {
   mostrarPopupBienvenidaSiToca();
