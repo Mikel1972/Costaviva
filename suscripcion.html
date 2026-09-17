@@ -117,7 +117,18 @@ function mostrarMensaje(texto, tipo) {
   mensajeEstadoEl.innerHTML = `<div class="mensaje ${tipo}">${texto}</div>`;
 }
 
+// Analítica de uso propia (2026-09-17, ver index.html para el detalle) —
+// nunca bloquea la interacción si falla.
+async function registrarEvento(tipo, detalle) {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+    await supabase.from("eventos_uso").insert({ user_id: session.user.id, tipo, detalle: detalle ?? null });
+  } catch (e) { /* nunca debe romper la interacción del usuario */ }
+}
+
 async function iniciarCheckout(plan) {
+  registrarEvento("iniciar_checkout", { plan });
   const { data: { session } } = await supabase.auth.getSession();
   const resp = await fetch("/crear-checkout-stripe", {
     method: "POST",
@@ -227,6 +238,7 @@ async function iniciar() {
   }
   document.getElementById("comprobandoAcceso").remove();
   cajaEl.style.display = "block";
+  registrarEvento("ver_suscripcion");
 
   const query = new URLSearchParams(window.location.search);
   if (query.get("exito") === "1") {

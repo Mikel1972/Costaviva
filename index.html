@@ -1556,6 +1556,59 @@ const map = L.map("map", {
   touchZoom: true,
   attributionControl: true,
 });
+if (window.supabaseCliente) {
+  registrarEvento("ver_mapa");
+} else {
+  window.addEventListener("supabase-listo", () => registrarEvento("ver_mapa"), { once: true });
+}
+
+// Analítica de uso propia (2026-09-17, pedido explícito del usuario: para
+// poder ver qué se usa de verdad y rediseñar en base a eso, y para poder
+// ayudar mejor a un usuario concreto) — un evento por acción clave,
+// nunca bloquea ni interrumpe la interacción si falla (RLS/red/lo que
+// sea). Solo escribe (RLS de eventos_uso no deja leer nada desde el
+// cliente), leer los datos es cosa del admin vía las funciones
+// admin_resumen_eventos_uso()/admin_eventos_uso_usuario().
+async function registrarEvento(tipo, detalle) {
+  try {
+    if (!window.supabaseCliente || !window.usuarioIdActual) return;
+    await window.supabaseCliente.from("eventos_uso").insert({
+      user_id: window.usuarioIdActual,
+      tipo,
+      detalle: detalle ?? null,
+    });
+  } catch (e) { /* nunca debe romper la interacción del usuario */ }
+}
+
+// Centrar el mapa en el código postal del usuario (2026-09-17, pedido
+// explícito del usuario, ver perfiles.codigo_postal recogido en el paso 1
+// del alta de login.html) — si no tiene código postal guardado, o la
+// geocodificación falla por lo que sea, se queda la vista fija de
+// siempre; nunca bloquea ni retrasa el resto de la carga del mapa.
+async function centrarMapaEnCodigoPostal() {
+  try {
+    const { data: perfil, error } = await window.supabaseCliente
+      .from("perfiles")
+      .select("codigo_postal")
+      .eq("id", window.usuarioIdActual)
+      .single();
+    if (error || !perfil?.codigo_postal) return;
+
+    const resp = await fetch(`/geocodificar?cp=${perfil.codigo_postal}`);
+    if (!resp.ok) return;
+    const { lat, lon } = await resp.json();
+    if (Number.isFinite(lat) && Number.isFinite(lon)) {
+      map.setView([lat, lon], 11);
+    }
+  } catch (e) {
+    console.log("No se ha podido centrar el mapa por código postal:", e.message);
+  }
+}
+if (window.supabaseCliente) {
+  centrarMapaEnCodigoPostal();
+} else {
+  window.addEventListener("supabase-listo", () => centrarMapaEnCodigoPostal(), { once: true });
+}
 
 // Capas por botón (2026-09-14, pedido explícito del usuario: "una visual
 // tan limpia como queramos, con los elementos que a cada usuario le
@@ -1625,6 +1678,7 @@ document.getElementById("toggleBatimetria").addEventListener("click", (e) => {
   } else {
     capaBatimetria.addTo(map);
     e.currentTarget.classList.add("activo");
+    registrarEvento("ver_capa_batimetria");
   }
 });
 document.getElementById("toggleEstaciones").addEventListener("click", (e) => {
@@ -1634,6 +1688,7 @@ document.getElementById("toggleEstaciones").addEventListener("click", (e) => {
   } else {
     capaEstaciones.addTo(map);
     e.currentTarget.classList.add("activo");
+    registrarEvento("ver_capa_estaciones");
   }
 });
 document.getElementById("toggleRios").addEventListener("click", (e) => {
@@ -1643,6 +1698,7 @@ document.getElementById("toggleRios").addEventListener("click", (e) => {
   } else {
     capaRios.addTo(map);
     e.currentTarget.classList.add("activo");
+    registrarEvento("ver_capa_rios");
   }
 });
 document.getElementById("toggleBoyas").addEventListener("click", (e) => {
@@ -1652,6 +1708,7 @@ document.getElementById("toggleBoyas").addEventListener("click", (e) => {
   } else {
     capaBoyas.addTo(map);
     e.currentTarget.classList.add("activo");
+    registrarEvento("ver_capa_boyas");
   }
 });
 // Spots es la única capa que, al apagarla, tiene un efecto en cascada: sin
@@ -2110,6 +2167,7 @@ document.getElementById("btnConfirmarUbicacion").addEventListener("click", async
   cerrarConfirmarUbicacion();
   modoAnadirUbicacion = false;
   document.getElementById("toggleAnadirUbicacion").classList.remove("activo");
+  registrarEvento("crear_ubicacion_personalizada", { tipo, publica });
   await cargarSpotsPersonalizados();
 });
 
@@ -2130,6 +2188,7 @@ async function alternarFavorito(s) {
     const { data } = await sb.from("spots_favoritos").insert({ user_id: uid, ...campo }).select().single();
     favoritosClaves.add(clave);
     if (data) favoritosFilas.push(data);
+    registrarEvento("marcar_favorito", { slug: s.slug });
   }
   actualizarBotonFavorito(s);
 }
@@ -2703,6 +2762,7 @@ document.getElementById("toggleNubes").addEventListener("click", async (e) => {
   } else {
     capa.addTo(map);
     boton.classList.add("activo");
+    registrarEvento("ver_capa_radar_lluvia");
   }
 });
 map.on("moveend zoomend", () => {

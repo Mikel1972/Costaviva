@@ -6,6 +6,12 @@
 // de aquí, para que la lista de spots se enriquezca con nombres reales,
 // no apodos.
 //
+// Añadido 2026-09-17: geocodificación DIRECTA por código postal
+// (/geocodificar?cp=48001) — para centrar el mapa de index.html en la
+// zona del usuario la primera vez que entra (perfiles.codigo_postal, ver
+// el paso 1 del alta en login.html). Mismo proxy, misma razón: Nominatim
+// exige User-Agent, que un fetch() de navegador no puede fijar.
+//
 // Nominatim (OpenStreetMap), gratuito y sin clave, pero exige un
 // User-Agent identificando la app en cada petición (política de uso) —
 // los navegadores no dejan fijar ese header desde fetch(), así que tiene
@@ -22,11 +28,51 @@ function nombreDesdeDireccion(address) {
 
 export async function onRequestGet(context) {
   const url = new URL(context.request.url);
+  const codigoPostal = url.searchParams.get("cp");
+
+  if (codigoPostal !== null) {
+    if (!/^[0-9]{5}$/.test(codigoPostal)) {
+      return new Response(JSON.stringify({ error: "código postal inválido" }), {
+        status: 400,
+        headers: { "content-type": "application/json" },
+      });
+    }
+    try {
+      const resp = await fetch(
+        `https://nominatim.openstreetmap.org/search?postalcode=${codigoPostal}&country=Spain&format=jsonv2&limit=1`,
+        { headers: { "User-Agent": USER_AGENT } }
+      );
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const resultados = await resp.json();
+      const primero = resultados[0];
+      if (!primero) {
+        return new Response(
+          JSON.stringify({ error: "no se ha podido localizar ese código postal" }),
+          { status: 422, headers: { "content-type": "application/json" } }
+        );
+      }
+      return new Response(
+        JSON.stringify({ lat: parseFloat(primero.lat), lon: parseFloat(primero.lon) }),
+        {
+          headers: {
+            "content-type": "application/json; charset=utf-8",
+            "cache-control": "public, max-age=86400", // un código postal no cambia de sitio
+          },
+        }
+      );
+    } catch (e) {
+      return new Response(JSON.stringify({ error: String(e) }), {
+        status: 502,
+        headers: { "content-type": "application/json" },
+      });
+    }
+  }
+
   const lat = parseFloat(url.searchParams.get("lat"));
   const lon = parseFloat(url.searchParams.get("lon"));
 
   if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
-    return new Response(JSON.stringify({ error: "faltan lat/lon" }), {
+    return new Response(JSON.stringify({ error: "faltan lat/lon (o ?cp=)" }), {
       status: 400,
       headers: { "content-type": "application/json" },
     });

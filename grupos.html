@@ -198,6 +198,14 @@ if (!sesionInicial.session) {
 }
 const usuario = sesionInicial.session.user;
 
+// Analítica de uso propia (2026-09-17, ver index.html para el detalle) —
+// nunca bloquea la interacción si falla.
+async function registrarEvento(tipo, detalle) {
+  try {
+    await supabase.from("eventos_uso").insert({ user_id: usuario.id, tipo, detalle: detalle ?? null });
+  } catch (e) { /* nunca debe romper la interacción del usuario */ }
+}
+
 // Paywall (2026-09-15, pedido explícito del usuario): 7 días de prueba
 // desde el alta, luego bloqueo total sin suscripción activa —
 // mi_estado_suscripcion() ya resuelve el bypass del admin en el
@@ -273,6 +281,7 @@ async function unirseConCodigo(codigoBruto) {
   if (!codigo) { mostrarMensaje("mensajeUnirse", "Pega un código o enlace de invitación.", "error"); return; }
   const { error } = await supabase.rpc("unirse_a_grupo", { p_codigo: codigo });
   if (error) { mostrarMensaje("mensajeUnirse", error.message, "error"); return; }
+  registrarEvento("unirse_grupo");
   mostrarMensaje("mensajeUnirse", "Te has unido al grupo.", "ok");
   document.getElementById("codigoUnirse").value = "";
   await cargarGrupos();
@@ -291,6 +300,7 @@ document.getElementById("btnCrearGrupo").addEventListener("click", async () => {
   if (!nombre) { mostrarMensaje("mensajeCrearGrupo", "Ponle un nombre al grupo.", "error"); return; }
   const { error } = await supabase.rpc("crear_grupo", { p_nombre: nombre });
   if (error) { mostrarMensaje("mensajeCrearGrupo", error.message, "error"); return; }
+  registrarEvento("crear_grupo");
   document.getElementById("nombreGrupo").value = "";
   mostrarMensaje("mensajeCrearGrupo", "Grupo creado.", "ok");
   await cargarGrupos();
