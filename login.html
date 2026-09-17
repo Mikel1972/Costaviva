@@ -461,21 +461,11 @@ form.addEventListener("submit", async (e) => {
     if (error) {
       mostrarMensaje(error.message, "error");
     } else {
-      // Igual que en Etxeapala: la cuenta se crea pero queda pendiente de
-      // aprobación manual (Root/Superadmin) antes de tener acceso real —
-      // eso se gestiona con una tabla "perfiles" con un campo "aprobado"
-      // y Row Level Security que bloquea el resto de tablas hasta que sea true.
-      mostrarMensaje("Cuenta creada. Un administrador debe aprobarla antes de que puedas entrar.", "info");
-      // Aviso al admin, sin bloquear ni depender de él para nada del
-      // flujo de alta — si falla (todavía no configurado, red, lo que
-      // sea), el usuario no debe notarlo ni verse afectado.
-      if (data?.user?.id) {
-        fetch("/aviso-alta", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ user_id: data.user.id }),
-        }).catch(() => {});
-      }
+      // Desde 2026-09-17 el alta ya no espera aprobación manual del admin
+      // (ver migración 20260917080000) — solo falta confirmar el email.
+      // El admin se entera solo, sin bloquear a nadie, vía
+      // notificar-altas.yml (cron cada 30 min).
+      mostrarMensaje("Cuenta creada. Revisa tu email para confirmar la cuenta.", "info");
     }
   } else {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password, options: { captchaToken } });
@@ -483,8 +473,9 @@ form.addEventListener("submit", async (e) => {
     if (error) {
       mostrarMensaje(error.message, "error");
     } else {
-      // Comprobar aprobación antes de dejar pasar (ajustar nombre de tabla/
-      // campo a lo que definas realmente en Supabase)
+      // Desde 2026-09-17 "aprobado" ya no es un gate inicial (las altas se
+      // aprueban solas) — solo sirve para bloquear a alguien que el admin
+      // haya pausado después desde admin.html.
       const { data: perfil } = await supabase
         .from("perfiles")
         .select("aprobado")
