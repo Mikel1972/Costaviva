@@ -7,6 +7,20 @@ detectes, no lo dejes para luego.
 
 ## ✅ RESUELTO (2026-09-17): fin de la aprobación manual de altas + repo renombrado a Costaviva
 
+**Bug real encontrado el mismo día, tras probar con un alta real**: la
+primera versión de este cambio (migración `20260917080000`) arregló
+`handle_new_user()` — pero esa función es **código huérfano**, no está
+enganchada a ningún trigger. El trigger de verdad (`on_auth_user_created`
+en `auth.users`) llama a **`gestionar_alta_perfil()`** (la función real,
+definida en `schema.sql` y redefinida con un campo más en
+`schema_diario_alarma.sql`), que seguía insertando `aprobado=false`. Una
+cuenta de prueba creada después del primer merge quedó bloqueada al
+segundo login pese a la migración. Arreglado en
+`20260917092621_fix_gestionar_alta_perfil_aprobado.sql` (la función
+correcta esta vez) — **si algo similar vuelve a tocar el alta, comprobar
+SIEMPRE qué función ejecuta de verdad `on_auth_user_created` antes de
+tocar ninguna función con un nombre parecido.**
+
 **Pedido explícito del usuario**: el alta copiaba el patrón de Etxeapala
 (cuenta creada pero bloqueada hasta que el admin la aprobaba a mano desde
 Supabase, avisado por email vía `aviso-alta.js` justo al registrarse) —

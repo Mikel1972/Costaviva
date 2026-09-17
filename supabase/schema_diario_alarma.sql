@@ -38,7 +38,7 @@ begin
   values (
     new.id,
     new.email,
-    false,
+    true,
     coalesce((new.raw_user_meta_data ->> 'consiente_uso_datos_capturas')::boolean, false)
   );
   return new;
