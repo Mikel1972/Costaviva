@@ -38,6 +38,14 @@ name: Robot buscador de fuentes
 # Además, --model y --max-turns fijados explícitamente para que ninguna
 # pasada quede corriendo más de la cuenta.
 #
+# Corregido el 2026-09-17: --max-turns se había dejado en 25 (demasiado
+# bajo para esta tarea — varias búsquedas web + verificación HTTP real +
+# editar ROBOT.md + a veces commit/push), así que la mayoría de pasadas
+# desde el 2026-09-16 agotaban el límite ("Reached max turns") antes de
+# llegar a escribir la entrada en ROBOT.md o el resumen del Issue diario —
+# no solo fallaba el job, se perdía el trabajo de la pasada entera. Subido
+# a 40, mismo límite que ya usa robot-experiencia-usuario.yml.
+#
 # IMPORTANTE — probar a mano (workflow_dispatch) antes de fiarse del
 # schedule, mismo criterio que el resto de rutinas de este repo. Necesita
 # el secret ANTHROPIC_API_KEY (la misma que ya usa
@@ -111,7 +119,7 @@ jobs:
           claude -p "Eres el robot de investigación/auditoría de datos de Costaviva (repo Costaviva), ejecutándote como una pasada programada más (no la rutina nocturna principal, esta es la de búsqueda de fuentes, 4 veces al día). Sigue ESTRICTAMENTE ROBOT_REGLAS.md antes de tocar nada: nunca inventes un dato ni una URL; si vas a tocar más de 3 ficheros o ~80 líneas en total, o cualquier fichero de functions/ o supabase/, NO lo apliques directo — proponlo como texto en ROBOT.md en vez de commitear. Si existe un fichero ROBOT_PAUSADO en la raíz del repo, no escribas nada (ni commits ni ramas), solo lee y para ahí. Tarea de esta pasada: investiga $AREA. Usa WebSearch para encontrar fuentes reales; si encuentras algo verificable con una petición HTTP real, verifícalo antes de proponerlo o integrarlo. Añade siempre una entrada nueva fechada (fecha y hora UTC de hoy) a ROBOT.md resumiendo qué buscaste y qué encontraste, incluso si no hay nada nuevo (en ese caso dilo explícitamente: 'sin novedades esta pasada'). Si hiciste cambios que caen dentro de los límites de ROBOT_REGLAS.md para aplicar directo, haz commit y push a main tú mismo con git (usa git add/commit/push; el remoto y las credenciales ya están configurados en este runner) firmando igual que las entradas anteriores de ROBOT.md. Al terminar, escribe un resumen de 2 a 4 frases en español, sin jerga, de qué hiciste en esta pasada (o exactamente 'Sin novedades esta pasada.' si no encontraste nada) en el fichero /tmp/robot-informe.txt — se usa para el informe diario del repo." \
             --dangerously-skip-permissions \
             --model claude-sonnet-5 \
-            --max-turns 25 \
+            --max-turns 40 \
             --allowedTools "Bash,Read,Write,Edit,Grep,Glob,WebSearch,WebFetch"
 
       - name: Publicar el resumen en el Issue "Informe diario"
