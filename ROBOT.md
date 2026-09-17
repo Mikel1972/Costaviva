@@ -817,6 +817,107 @@ especies), 2026-09-15 20:26 UTC.
 
 ---
 
+### 2026-09-17 20:15 UTC (pasada buscadora — migración y cría, cuarta pasada)
+
+Cuarta pasada de la misma responsabilidad. Las tres anteriores (2026-09-14
+21:03, 2026-09-15 13:00 y 2026-09-15 20:26 UTC) dejaron dos huecos
+explícitos: la temperatura de reproducción del **abadejo** (*P.
+pollachius*) sin verificar en crudo, y la del **jurel** (*T. trachurus*)
+sin ninguna cifra en °C (aunque con la puesta ya situada en
+Vizcaya→Irlanda a inicios de primavera). Esta pasada fue a por esos dos
+huecos con `WebSearch`/`WebFetch`, con ángulos de búsqueda distintos a
+los ya probados. **Sigue siendo propuesta pura, sin tocar `ESPECIES` ni
+`indicePesca`** (regla de `ROBOT_REGLAS.md`).
+
+**Abadejo — sigue SIN CERRARSE, y esta vez con una advertencia añadida.**
+`WebSearch` devolvió cifras muy concretas (desova a 8, 10 o 12 °C, óptimo
+8–10 °C; producción de huevos por kg de 599.612±249.545 a 8 °C,
+323.230±136.796 a 10 °C y 26.068±35.989 a 12 °C), atribuidas a un estudio
+real de IFREMER (Suquet, Petton, Normant, Dosdat, Gaignon — *"First
+rearing attempts of pollack, Pollachius pollachius"*, *Aquatic Living
+Resources* 9, 1996, pp. 103–106). **No se pudo verificar en crudo ninguna
+de esas cifras**: el PDF del propio artículo
+(`alr-journal.org/articles/alr/pdf/1996/02/alr96203.pdf`) da `403`; la
+página del resumen del mismo journal, también `403`; ResearchGate y
+Academia.edu (con el texto completo del mismo estudio), también `403`;
+el libro/informe de IFREMER en Archimer
+(`archimer.ifremer.fr/doc/00715/82752/87574.pdf`, 32 páginas, dominio
+oficial) resultó ser un PDF escaneado (imagen), sin texto extraíble —
+solo pudo confirmarse de ahí que "*Le lieu jaune pond au printemps*"
+(desova en primavera) y una temperatura de CRECIMIENTO en cautividad
+(13–18 °C), no de puesta. **Aviso explícito para futuras pasadas**: las
+cifras de huevos/kg tan precisas que da el resumen de `WebSearch` no
+deben darse por buenas solo por parecer reales — sin poder confirmarlas
+contra el texto original, no se puede descartar que sean una síntesis
+del motor de búsqueda a partir de fragmentos indexados de un PDF que ni
+siquiera el propio `WebFetch` puede leer directamente. Se mantiene el
+hueco en blanco, mismo criterio de las tres pasadas anteriores.
+
+**Congrio — comprobado un posible atajo, descartado por el mismo motivo
+que ya se documentó para el abadejo.** FishBase da una "temperatura
+preferida" de 4,4–14,4 °C (media 8,7 °C) para *Conger conger*, pero es un
+modelo de temperatura de OCURRENCIA (dónde se le encuentra normalmente),
+no una temperatura de puesta documentada — mismo tipo de confusión que ya
+se señaló para el abadejo en la pasada del 2026-09-15 20:26 UTC (el
+7–11,9 °C de FishBase ahí tampoco era temperatura de puesta). Con el
+desove del congrio ocurriendo a 2.000–3.000 m de profundidad (agua
+profunda, térmicamente muy estable), es razonable que no exista ninguna
+medición real de "temperatura de puesta" en la literatura accesible —
+sigue sin cifra fiable, y no se propone la cifra de FishBase para evitar
+el mismo error de categoría.
+
+**Jurel — cifra en °C sigue sin aparecer, pero se encuentra un dato
+distinto, nuevo y verificado en crudo, más útil que un umbral fijo**: el
+proyecto europeo Urban Klima 2050 (LIFE18 IPC 000001,
+`urbanklima2050.eu/es/indicador-especies-marinas/`, verificado con
+`WebFetch` directo) cita textualmente: *"En años en los que la
+temperatura del mar es más caliente, el chicharro avanza su época de
+desove unos 12 días por grado de calentamiento"* — atribuido a Chust, G.,
+F. G. Taboada, P. Alvarez y L. Ibaibarriaga (2023), *"Species
+acclimatization pathways: Latitudinal shifts and timing adjustments to
+track ocean warming"*, *Ecological Indicators* 146:109752 (autores de
+AZTI, mismo centro de investigación del Golfo de Bizkaia que ya salió en
+la pasada del 2026-09-14 23:31 UTC para presión). El resumen del propio
+estudio (visto solo vía `WebSearch`, sin poder acceder al texto completo
+— ScienceDirect y ResearchGate dieron `403`, el repositorio abierto de
+AZTI en `dspace.aztidata.es` dio `500`) añade un matiz cualitativo
+relevante sin cifra: el jurel tiene un "nicho térmico reproductivo más
+estrecho" que la caballa/verdel (*S. scombrus*), lo que ata su puesta más
+rígidamente a una combinación concreta de latitud y fecha, mientras que
+la caballa (nicho más ancho) puede desovar de forma casi sincronizada en
+un rango geográfico mucho mayor — coherente con que la caballa ya tenía
+umbral de temperatura verificado (~10 °C) y el jurel no. Esta parte
+cualitativa NO se verificó en crudo contra el texto completo del
+artículo, solo contra la síntesis de `WebSearch` — tratarla como
+referencia, no como dato cerrado, si se usa en el futuro.
+
+**Balance acumulado (4 pasadas)**: siguen siendo **cuatro de siete**
+especies con temperatura de reproducción verificada en crudo (lubina,
+verdel/caballa, sargo, calamar). Abadejo y congrio se quedan sin cifra de
+puesta fiable — con la lección añadida de no confundir "temperatura
+preferida/de ocurrencia" (FishBase) con "temperatura de puesta" para
+ninguna especie futura. El jurel gana un dato de fenología climática real
+y verificado (12 días de adelanto de desove por °C de calentamiento) que
+puede mostrarse como texto informativo aunque siga sin umbral numérico de
+temperatura.
+
+**Propuesta (sin implementar nada)**: si el usuario decide añadir un
+campo informativo de reproducción a `ESPECIES`, el jurel puede llevar el
+dato de sensibilidad climática de Chust et al. 2023 como nota de interés
+("su época de puesta se adelanta con el calentamiento del mar, ~12 días
+por grado, según AZTI") en vez de un rango de temperatura fijo. Ningún
+uso cuantitativo en `indicePesca` todavía — seguiría haciendo falta
+calibrar contra capturas reales, y esta cifra en concreto (días de
+adelanto) no es directamente un input de `indicePesca` de todos modos.
+
+**Sin cambios en código** — investigación de contenido, propuesta pura;
+solo esta entrada en `ROBOT.md`.
+
+**Firmado:** robot buscador de fuentes (pasada de migración y cría de
+especies), 2026-09-17 20:15 UTC.
+
+---
+
 ### 2026-09-14 23:31 UTC (pasada buscadora — presión atmosférica e histórico por zona)
 
 **Qué se buscó:** fuentes de presión atmosférica y, sobre todo, de
