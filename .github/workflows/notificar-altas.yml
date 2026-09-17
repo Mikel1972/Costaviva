@@ -1,0 +1,36 @@
+name: Notificar altas
+
+# Añadido 2026-09-17, junto con la migración 20260917080000 (fin de la
+# aprobación manual de altas). Llama a /notificar-altas cada 30 min:
+# avisa al admin por email cuando alguien confirma su email de verdad
+# (alta activada, sin necesitar ninguna acción) y cuando alguien lleva
+# más de 48h sin confirmar (posible fallo). Cada alta se avisa como mucho
+# una vez por tipo (lo controla la propia base de datos, ver la
+# migración).
+#
+# Reutiliza el secret PRESION_CRON_SECRET (mismo valor que CRON_SECRET en
+# Cloudflare Pages) que ya usa presion-historico.yml — no hace falta
+# ningún secret nuevo.
+#
+# Probar a mano (workflow_dispatch) antes de fiarse del schedule, mismo
+# criterio que las demás rutinas programadas de este repo.
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  notificar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Llamar a /notificar-altas
+        run: |
+          code=$(curl -sS -o /tmp/resp.json -w "%{http_code}" -X POST \
+            -H "X-Cron-Secret: ${{ secrets.PRESION_CRON_SECRET }}" \
+            --max-time 30 \
+            "https://costaviva.org/notificar-altas")
+          echo "HTTP $code"
+          cat /tmp/resp.json
+          echo
+          if [ "$code" != "200" ]; then exit 1; fi

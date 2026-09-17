@@ -1,9 +1,52 @@
-# CLAUDE.md — Costa Viva / Fishnow
+# CLAUDE.md — Costaviva
 
 Este fichero se lee al empezar cada sesión y se reescribe libremente cuando
 cambian las convenciones — no es un historial (para eso está `ROBOT.md`).
 Si algo de aquí queda desactualizado, corrígelo en el momento en que lo
 detectes, no lo dejes para luego.
+
+## ✅ RESUELTO (2026-09-17): fin de la aprobación manual de altas + repo renombrado a Costaviva
+
+**Pedido explícito del usuario**: el alta copiaba el patrón de Etxeapala
+(cuenta creada pero bloqueada hasta que el admin la aprobaba a mano desde
+Supabase, avisado por email vía `aviso-alta.js` justo al registrarse) —
+eso tiene sentido en Etxeapala (app familiar cerrada) pero no aquí, Costa
+Viva es de alta abierta y el paso extra solo añadía fricción sin
+seguridad real (ninguna RLS de tabla de usuario comprueba `aprobado`,
+todas comprueban `auth.uid() = user_id`; la barrera real de quién entra
+ya la pone la confirmación de email obligatoria de Supabase).
+
+**Cambio, migración `20260917080000_alta_autoaprobada.sql`**:
+- `perfiles.aprobado` pasa a `default true` (y el trigger `handle_new_user`
+  a insertar `true`) — las altas nuevas quedan activas desde el momento
+  del registro, sin esperar nada. Las que estaban pendientes de aprobar
+  antes de este cambio también se pusieron a `true` (grandfathered).
+- El campo `aprobado` **no desaparece**: `admin.html` sigue usándolo para
+  "Pausar/Reactivar" una cuenta después del alta (moderación), vía
+  `admin_fijar_acceso()` — eso no cambia.
+- `login.html`: ya no llama a `/aviso-alta` ni muestra "un administrador
+  debe aprobarla" — ahora dice "revisa tu email para confirmar la
+  cuenta". El check de `aprobado === false` al iniciar sesión se queda,
+  pero ahora es "cuenta pausada por el admin", no "pendiente de aprobar".
+- `functions/aviso-alta.js` **eliminado**, sustituido por
+  `functions/notificar-altas.js` (llamado cada 30 min por
+  `.github/workflows/notificar-altas.yml`, mismo `CRON_SECRET` que
+  `/registrar-presion`): avisa al admin por email (a) cuando alguien
+  confirma su email de verdad (alta activada, informativo) y (b) cuando
+  alguien lleva más de 48h sin confirmar (posible fallo de entrega) —
+  cada alta se avisa como mucho una vez por tipo, controlado por las
+  columnas nuevas `perfiles.email_confirmado_avisado` /
+  `alta_fallida_avisada` y las funciones `security definer`
+  `altas_activadas_pendientes_aviso()` / `altas_sin_confirmar_pendiente_aviso()`
+  (grant solo a `service_role`, nunca a `authenticated`).
+
+**Repo renombrado el mismo día**: `Mikel1972/Fishnow` → `Mikel1972/Costaviva`
+en GitHub (con `gh repo rename`) — GitHub redirige el nombre antiguo
+automáticamente. El proyecto de Cloudflare Pages (interno, URL
+`fishnow-59u.pages.dev`) **sigue llamándose "fishnow" por dentro** —
+pendiente, requiere tocar DNS/Turnstile a mano por el usuario (ver
+"Triggers / rutinas" más abajo y el incidente de DNS de 2026-09-13/14).
+`costaviva.org` no se ve afectado por nada de esto.
 
 ## ✅ RESUELTO (2026-09-13/14): recuperación de contraseña arreglada + CAPTCHA en login.html
 
@@ -110,8 +153,9 @@ secreto real en esta tabla):
 | CNAME | `send` | `send.forge.rmta.net` | Auto |
 | TXT (opcional, DMARC) | `_dmarc` | `v=DMARC1; p=none;` | Auto |
 
-`sos-alerta.js` (`sos@costaviva.org`) y `aviso-alta.js`
-(`avisos@costaviva.org`, ya no depende del remitente de pruebas
+`sos-alerta.js` (`sos@costaviva.org`) y `aviso-alta.js` (sustituido el
+2026-09-17 por `notificar-altas.js`, mismo remitente
+`avisos@costaviva.org`, ya no depende del remitente de pruebas
 `onboarding@resend.com`) actualizados y desplegados.
 
 **Verificado en real de extremo a extremo, 2026-09-13**: se añadió el
@@ -215,8 +259,12 @@ otro usuario". Cualquier cambio que toque `alarma.html`,
 - Tablas y RLS (todas con `using/with check (auth.uid() = user_id)`,
   definidas en `supabase/schema.sql` y
   `supabase/schema_diario_alarma.sql`):
-  - `perfiles` — una fila por usuario, `aprobado` boolean, aprobación
-    manual desde el Table Editor (patrón Etxeapala).
+  - `perfiles` — una fila por usuario, `aprobado` boolean. Desde
+    2026-09-17 ya NO es aprobación manual inicial (eso era el patrón de
+    Etxeapala, no aplica aquí — alta abierta) — el default es `true` y
+    solo se pone a `false` si el admin pausa la cuenta después, desde
+    `admin.html` (`admin_fijar_acceso()`). Ver migración
+    `20260917080000_alta_autoaprobada.sql`.
   - `salidas_pesca`, `capturas`, `captura_fotos` — cuaderno de pesca.
   - `contactos_emergencia`, `alertas_sos` — alarma SOS.
   - Bucket de Storage `capturas-fotos`: cada usuario solo lee/escribe su
@@ -255,12 +303,15 @@ otro usuario". Cualquier cambio que toque `alarma.html`,
   cuentas de prueba reales): la prueba cruzada "token de usuario A leyendo
   fila de usuario B".
 - `sos-alerta.js` usa siempre el token del que llama, nunca
-  `service_role`. Hay **dos excepciones** en el repo: `aviso-alta.js`
-  (solo lee `auth.users` por id, nunca tablas de usuario — ver su
-  sección propia más abajo) y `stripe-webhook.js` (sí escribe una
-  tabla `public.*`, `suscripciones`, pero solo tras verificar a mano
-  la firma criptográfica `Stripe-Signature` — ver la sección del
-  paywall más abajo).
+  `service_role`. Hay **dos excepciones** en el repo: `notificar-altas.js`
+  (llama por REST a dos funciones `security definer` con `grant ... to
+  service_role` — `altas_activadas_pendientes_aviso()` /
+  `altas_sin_confirmar_pendiente_aviso()`, ver migración
+  `20260917080000` — nunca lee tablas de usuario directamente, y solo lo
+  llama el cron de `notificar-altas.yml`, protegido con `CRON_SECRET`) y
+  `stripe-webhook.js` (sí escribe una tabla `public.*`, `suscripciones`,
+  pero solo tras verificar a mano la firma criptográfica
+  `Stripe-Signature` — ver la sección del paywall más abajo).
 
 ## Diario de pesca — campos añadidos 2026-09-12
 
@@ -570,8 +621,8 @@ explicación.
 | `/rayos-imagen` | `rayos-imagen.js` | Proxy del mapa de rayos de AEMET | No requiere sesión |
 | `/webcam/<slug>` | `webcam/[slug].js` | Proxy de imagen de webcam (evita CORS/hotlinking) | No requiere sesión |
 | `/sos-alerta` | `sos-alerta.js` | POST: manda el aviso SOS (email vía Resend) a los contactos de emergencia del usuario que llama | **Requiere** `Authorization: Bearer <token de sesión>` |
-| `/aviso-alta` | `aviso-alta.js` | POST: avisa al admin por email cuando un `user_id` corresponde a un alta real de los últimos 5 min | Sin token — verifica con `service_role` server-side (ver más abajo) |
 | `/geocodificar` | `geocodificar.js` | GET: geocodificación inversa (`?lat=&lon=`) para nombrar ubicaciones personalizadas, vía Nominatim | No requiere sesión |
+| `/notificar-altas` | `notificar-altas.js` | POST: avisa al admin por email de altas activadas (email confirmado) y de altas sin confirmar tras 48h — sustituye a `aviso-alta.js` (eliminado 2026-09-17) | Sin sesión de usuario — protegido con secreto compartido (`X-Cron-Secret` / `CRON_SECRET`, mismo que `/registrar-presion`) |
 | `/registrar-presion` | `registrar-presion.js` | POST: guarda la presión real de cada spot en `presion_historico` (Fase 4) | Sin sesión de usuario — protegido con secreto compartido (`X-Cron-Secret` / `CRON_SECRET`) |
 | `/crear-checkout-stripe` | `crear-checkout-stripe.js` | POST: crea una Stripe Checkout Session (suscripción mensual/anual, con prueba) para el usuario que llama | **Requiere** `Authorization: Bearer <token de sesión>` |
 | `/crear-portal-stripe` | `crear-portal-stripe.js` | POST: crea una sesión del Billing Portal de Stripe para gestionar/cancelar la suscripción propia | **Requiere** `Authorization: Bearer <token de sesión>` |
@@ -777,7 +828,7 @@ escalonadas para no competir por runners:
 |---|---|---|
 | `security-scan.yml` | `30 4 * * 1` (lunes) | ZAP baseline (pasivo) contra producción → Issue "ZAP Scan Baseline Report" |
 | `smoke-test.yml` | `0 5 * * *` | login real → `/prevision` → `/webcam/mundaka` → crea/borra una salida de pesca de prueba. `/sos-alerta` excluido a propósito (ver más abajo) |
-| `daily-report.yml` | `0 6 * * *` | salud + conteo real de SOS (24h) → entrada nueva en el Issue "Informe diario — Costa Viva" |
+| `daily-report.yml` | `0 6 * * *` | salud + conteo real de SOS (24h) → entrada nueva en el Issue "Informe diario — Costaviva" |
 | `auth-test.yml` | `17 6 * * *` | RLS sin token + prueba cruzada A-lee-B (secrets ya puestos) |
 | `presion-historico.yml` | `7 * * * *` (cada hora) | POST a `/registrar-presion` (secret `PRESION_CRON_SECRET`) — guarda la presión real de cada spot en `presion_historico`, para la tendencia real de `/prevision` (Fase 4, ver más abajo). **Activada y verificada en real el 2026-09-12**: primer intento falló (42501, faltaba política de `insert` en la RLS de `presion_historico` — ni el propio endpoint podía escribir con la anon key sin sesión), corregido en `20260912230000_fix_insert_presion_historico.sql`; segundo intento escribió filas reales, confirmado leyendo la tabla. |
 
@@ -1066,7 +1117,7 @@ en iOS (Safari/PWA instalada, que es el uso principal de la app —
 [[project-movil-primero]]), `watchPosition()`/`setInterval()` **se
 pausan o se detienen en cuanto la pantalla se apaga o la app pasa a
 segundo plano** — no hay geolocalización en background real sin ser una
-app nativa con permiso "Always" (Costa Viva es PWA, no tiene eso). Un
+app nativa con permiso "Always" (Costaviva es PWA, no tiene eso). Un
 pescador con el móvil en el bolsillo y la pantalla apagada dejaría de
 mandar ubicaciones sin ningún aviso — igual de peligroso que no tener el
 botón, si se promete "cada 3 minutos" sin más matiz. Cualquier versión de
@@ -1084,7 +1135,7 @@ histórico de puntos `lat/lon/timestamp`, RLS igual que el resto
 (`auth.uid() = user_id` para escribir; el contacto que recibe el trackeo
 necesitaría una vía de lectura sin cuenta propia — probablemente un
 enlace con token, no una cuenta Supabase, ya que un contacto de
-emergencia no tiene por qué estar registrado en Costa Viva). Igual que el
+emergencia no tiene por qué estar registrado en Costaviva). Igual que el
 resto de ideas de esta sección: cuando se retome, es una propuesta de
 diseño a confirmar con el usuario antes de escribir una sola línea de
 RLS, no una implementación directa.
@@ -1101,7 +1152,7 @@ no interactivo (`claude -p ... --dangerously-skip-permissions`) que
 sigue las mismas reglas de `ROBOT_REGLAS.md` que la rutina nocturna
 externa (nunca inventar datos, límite de volumen para aplicar cambios
 directos, interruptor `ROBOT_PAUSADO`). Publica su resumen en el mismo
-Issue "Informe diario — Costa Viva" que ya usa `daily-report.yml`.
+Issue "Informe diario — Costaviva" que ya usa `daily-report.yml`.
 
 **Ampliado el mismo día con 2 áreas más**, pedidas explícitamente por el
 usuario, cada una 1 vez al día (no 4, a diferencia de las originales —
@@ -1109,7 +1160,7 @@ ver `ROBOT_REGLAS.md`, sección "Buenas prácticas de otras apps y
 biología de especies"):
 - **Buenas prácticas de otras apps** (Windy, Tides4fishing, Fishbrain,
   Meteoblue, Puertos del Estado, AEMET...) — qué datos en tiempo real o
-  funciones tienen que Costa Viva no. Siempre propuesta en `ROBOT.md`,
+  funciones tienen que Costaviva no. Siempre propuesta en `ROBOT.md`,
   nunca implementación directa (es una decisión de producto por
   definición).
 - **Migración y cría de especies** — épocas de migración y rangos de
@@ -1407,7 +1458,7 @@ desde el alta, luego bloqueo total** (no freemium) salvo suscripción
 activa — **3,99€/mes o 39,99€/año**. Proveedor: **Stripe**, vía web
 (las tiendas siguen "próximamente", ver `project_movil_primero` en
 memoria). Producto real en Stripe (modo TEST de momento):
-`prod_VGVio7rbJPK1Oh` "Costa Viva Premium", precios
+`prod_VGVio7rbJPK1Oh` "Costaviva Premium", precios
 `price_1UFyhEGXcSRiyJYIvGpTzjZu` (mensual) y
 `price_1UFyhEGXcSRiyJYIdjCv5aFH` (anual).
 
@@ -1419,7 +1470,7 @@ políticas de escritura; la única escritura es `stripe-webhook.js` vía
 prueba de autenticidad es la firma `Stripe-Signature` de Stripe
 (verificada a mano con Web Crypto, sin SDK — el repo no tiene build
 step). Es la **segunda excepción** del repo al patrón "nunca
-service_role", junto a `aviso-alta.js`.
+service_role", junto a `notificar-altas.js`.
 
 Toda la lógica de acceso vive en una única función
 `security definer`, `mi_estado_suscripcion()`: el trial sale de
@@ -1546,8 +1597,8 @@ probar directamente tras mergear a main.
   requirió código de prorrateo propio.
 - ✅ **Pasado a modo LIVE en producción, 2026-09-15.** Cuenta de Stripe
   activada y verificada (negocio/banco), perfil público configurado
-  ("Costa Viva", @costaviva, categoría Software/SaaS, uso comercial,
-  sin app móvil todavía). Producto "Costa Viva Premium" recreado en
+  ("Costaviva", @costaviva, categoría Software/SaaS, uso comercial,
+  sin app móvil todavía). Producto "Costaviva Premium" recreado en
   live con **Stripe Tax activado** (decisión explícita, dado que se
   vende un servicio digital a clientes de la UE — con las reglas de
   IVA de servicios digitales, hay obligación real de cobrarlo; nota:

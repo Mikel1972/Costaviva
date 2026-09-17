@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-<title>Costa Viva, pesca en tiempo real | Mareas y previsión marina</title>
+<title>Costaviva, pesca en tiempo real | Mareas y previsión marina</title>
 <meta name="description" content="Previsión marina en tiempo real: mareas, oleaje, viento y actividad de los peces para planificar tu salida de pesca en España y Portugal." />
 <link rel="manifest" href="manifest.json" />
 <link rel="icon" href="icon.svg" type="image/svg+xml" />
@@ -11,7 +11,7 @@
 <meta name="theme-color" content="#F7F3E8" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-<meta name="apple-mobile-web-app-title" content="Costa Viva" />
+<meta name="apple-mobile-web-app-title" content="Costaviva" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <!-- Webcams en vídeo en directo de Gipuzkoa (2026-09-14) — HLS, no hace
@@ -561,7 +561,7 @@
   });
   document.addEventListener("click", () => document.getElementById("cuentaMenuDropdown").classList.remove("visible"));
   document.getElementById("btnInvitarAmigo").addEventListener("click", async () => {
-    const texto = "Échale un ojo a Costa Viva, la app de condiciones costeras y diario de pesca que estoy usando: https://costaviva.org/";
+    const texto = "Échale un ojo a Costaviva, la app de condiciones costeras y diario de pesca que estoy usando: https://costaviva.org/";
     if (navigator.share) {
       try { await navigator.share({ text: texto }); } catch (e) { /* usuario canceló */ }
     } else {
@@ -573,7 +573,7 @@
 
 
 <header>
-  <h1>Costa Viva</h1><p>pesca en tiempo real</p><span class="fecha"><span id="estadoVigenciaGlobal">cargando…</span></span>
+  <h1>Costaviva</h1><p>pesca en tiempo real</p><span class="fecha"><span id="estadoVigenciaGlobal">cargando…</span></span>
   <div style="display:flex; align-items:center; gap:8px; margin-left:auto;">
     <a id="enlaceAdmin" href="/admin.html" title="Admin" aria-label="Administración" style="display:none; background:#EEF2EF; border:1px solid #DDE2DC; color:#0B2532; width:34px; height:34px; border-radius:50%; font-size:15px; cursor:pointer; align-items:center; justify-content:center; text-decoration:none;">⚙️</a>
     <div class="cuenta-menu-wrap">

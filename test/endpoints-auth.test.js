@@ -1,7 +1,7 @@
 // test/endpoints-auth.test.js
 //
 // Comprueba, contra la Supabase real y la producción real (nunca contra un
-// mock), que los datos de usuario de Costa Viva no son accesibles sin la
+// mock), que los datos de usuario de Costaviva no son accesibles sin la
 // sesión de su propio dueño. Sin dependencias/framework — Node 18+ trae
 // fetch nativo, coherente con el resto del repo (sin build step).
 //

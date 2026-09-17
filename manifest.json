@@ -1,6 +1,6 @@
 {
-  "name": "Costa Viva — Lekeitio a Bilbao",
-  "short_name": "Costa Viva",
+  "name": "Costaviva — Lekeitio a Bilbao",
+  "short_name": "Costaviva",
   "description": "Cockpit de decisión para pesca de costa: oleaje, viento, ríos y rayos en un vistazo",
   "start_url": "/",
   "display": "standalone",

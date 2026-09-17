@@ -1,4 +1,4 @@
-# ROBOT.md — bitácora del robot de datos de Costa Viva
+# ROBOT.md — bitácora del robot de datos de Costaviva
 
 Este archivo lo mantiene el robot de investigación/auditoría de datos que
 corre en sesiones programadas contra este repo. Cada pasada añade una
@@ -1135,7 +1135,7 @@ hallazgo más importante de la pasada):** la cobertura geográfica es
 **Mediterráneo español + Atlántico de Andalucía** (confirmado
 explícitamente en 3 fuentes). **NO cubre el Cantábrico ni Galicia**, que
 es justo donde está la inmensa mayoría de los spots fijos y de los
-usuarios de Costa Viva (Euskadi, Cantabria, Asturias, Galicia). Una
+usuarios de Costaviva (Euskadi, Cantabria, Asturias, Galicia). Una
 señal de "precio en lonja de esta especie este mes" sacada de lonjas de
 Valencia, Almería o Cádiz no dice nada fiable sobre la actividad de pesca
 en Bermeo o Lekeitio. Esto por sí solo ya desaconseja integrarla como
@@ -1162,7 +1162,7 @@ se aplicaron (aunque la fuente ya se descarta por lo geográfico):**
 `indicePesca`, tal como manda la regla):** DIGIPESCA es una fuente real,
 seria y con exactamente los campos que la idea necesitaba (especie · lonja
 · mes · precio/cantidad, 2010–2021), pero **no es directamente aprovechable
-para Costa Viva por dos motivos**: (a) no cubre la costa cantábrica/gallega
+para Costaviva por dos motivos**: (a) no cubre la costa cantábrica/gallega
 donde está el grueso de la app, y (b) aun donde sí cubre, traducir precio
 de lonja en "mejor época/lugar de pesca" exige los dos cruces de arriba
 (bajura/altura + hábitos reales de captura), que la propia base no aporta.
@@ -1199,7 +1199,7 @@ costa de **España y Portugal**, no solo Euskadi.
 ---
 
 **HALLAZGO PRINCIPAL — IPMA (Portugal), fuente nueva verificada en vivo,
-PROPUESTA (no aplicada).** Costa Viva cubre España y Portugal pero hoy
+PROPUESTA (no aplicada).** Costaviva cubre España y Portugal pero hoy
 no tiene NINGUNA fuente de datos portuguesa integrada (ni estaciones
 meteo ni caudal). El Instituto Português do Mar e da Atmosfera (IPMA)
 publica una API abierta, sin registro ni token, con observación horaria
@@ -1470,7 +1470,7 @@ cambios de código.
 radar HF (canal de Ibiza, vía ERDDAP de EMODnet Physics) y se dejaron
 Galicia y el delta del Ebro solo citados. Esta pasada ha rastreado el
 catálogo entero de EMODnet Physics ERDDAP para ver qué zonas de la costa
-de España y Portugal (el ámbito real de Costa Viva, no solo el
+de España y Portugal (el ámbito real de Costaviva, no solo el
 Cantábrico) tienen radar HF consumible por REST, y si esos datos están
 vivos hoy o congelados.
 
@@ -1698,7 +1698,7 @@ observación histórica por estación, sin autenticación ni API key.
 confirmado en su web de términos/licencia y por búsqueda. Meteostat no
 posee los datos (los agrega de servicios públicos: NOAA, DWD...), pero
 **redistribuye bajo Creative Commons Attribution-NonCommercial 4.0** — la
-cláusula NC es un problema real ahora que Costa Viva tiene paywall de
+cláusula NC es un problema real ahora que Costaviva tiene paywall de
 suscripción (ver `CLAUDE.md`, Stripe 2026-09-15). Por eso Meteostat queda
 como **referencia de calibración/contraste offline** (comparar nuestra
 tendencia de presión contra observación real), NO como fuente servida
@@ -1763,7 +1763,7 @@ histórico por zona), 2026-09-15 23:12 UTC.
 09:18 UTC, que dejó explícitamente pendiente lo más importante: DIGIPESCA
 (UPV) solo cubre **Mediterráneo español + Atlántico de Andalucía** y NO el
 Cantábrico ni Galicia, que es justo donde está el grueso de spots y
-usuarios de Costa Viva. Esta pasada buscó los **equivalentes
+usuarios de Costaviva. Esta pasada buscó los **equivalentes
 institucionales** de datos de especie · lonja/puerto · mes · precio/volumen
 para las zonas que DIGIPESCA no toca (Cantábrico/Euskadi, Galicia) y para
 **Portugal** (ámbito geográfico ya declarado en `ROBOT_REGLAS.md`: España
@@ -2269,7 +2269,7 @@ que corregir.**
 ### 2026-09-10 (pasada nocturna corta — salud de datos)
 
 **Pasada nocturna diaria, distinta de la auditoría semanal completa** (esta
-sesión es la rutina "Costa Viva — calibración nocturna", no el "Robot de
+sesión es la rutina "Costaviva — calibración nocturna", no el "Robot de
 datos" semanal — no se ha tocado ninguna lista de especies ni se ha buscado
 ninguna fuente nueva, eso es trabajo de la semanal). Alcance: comprobar con
 `curl` real que las fuentes ya integradas siguen respondiendo con la forma
@@ -2327,7 +2327,7 @@ vez de una limitación de red puntual.
 ### 2026-09-11 (pasada nocturna corta — salud de datos)
 
 **Pasada nocturna diaria, mismo alcance estrecho que la de ayer** (rutina
-"Costa Viva — calibración nocturna", distinta de la auditoría semanal
+"Costaviva — calibración nocturna", distinta de la auditoría semanal
 completa; no se ha tocado ninguna lista de especies ni se ha buscado
 ninguna fuente nueva). Resultado: todo lo alcanzable hoy está sano, pero
 **el mismo bloqueo de red de anoche para Nazaré y las 4 fuentes de caudal
@@ -2385,7 +2385,7 @@ sí se pueden comprobar cuando la red lo permite).
 
 ### 2026-09-12 (pasada nocturna corta — salud de datos)
 
-**Pasada nocturna diaria, mismo alcance estrecho** (rutina "Costa Viva —
+**Pasada nocturna diaria, mismo alcance estrecho** (rutina "Costaviva —
 calibración nocturna", no la auditoría semanal completa). **Aviso
 importante: el bloqueo de red de las dos noches anteriores se repite hoy
 por tercera noche seguida y exactamente para los mismos 5 dominios**
@@ -2455,7 +2455,7 @@ bloqueados desde aquí.
 
 ### 2026-09-13 (pasada nocturna corta — salud de datos)
 
-**Pasada nocturna diaria, mismo alcance estrecho** (rutina "Costa Viva —
+**Pasada nocturna diaria, mismo alcance estrecho** (rutina "Costaviva —
 calibración nocturna", no la auditoría semanal completa). **El bloqueo de
 red de las tres noches anteriores se repite hoy por cuarta noche
 seguida, exactamente para los mismos 5 dominios** (Nazaré + las 4 fuentes
@@ -2504,7 +2504,7 @@ su salud de verdad.
 
 ### 2026-09-14 (pasada nocturna corta — salud de datos)
 
-**Pasada nocturna diaria, mismo alcance estrecho** (rutina "Costa Viva —
+**Pasada nocturna diaria, mismo alcance estrecho** (rutina "Costaviva —
 calibración nocturna", no la auditoría semanal completa). **El bloqueo de
 red de las cuatro noches anteriores se repite hoy por quinta noche
 seguida, exactamente para los mismos 5 dominios** (Nazaré + las 4 fuentes
@@ -2767,7 +2767,7 @@ al menos 5 más.
 
 ### 2026-09-10 (pasada nocturna corta — nueva metodología)
 
-**Pasada nocturna diaria** (rutina "Costa Viva — calibración nocturna",
+**Pasada nocturna diaria** (rutina "Costaviva — calibración nocturna",
 corta y enfocada, distinta de la auditoría semanal completa que hace
 `ROBOT.md` en sus otras entradas). A partir de hoy la calibración nocturna
 usa una metodología algo distinta a los 3 puntos anteriores de este
@@ -3089,11 +3089,11 @@ al valorar si una boya tiene sesgo, no fiarse solo del %.
 Investigación con `WebSearch` de qué datos en tiempo real o funciones
 ofrecen otras apps de mareas/pesca (Windy, Fishbrain, Tides4fishing,
 Puertos del Estado, FishTrack, Marine Weather Forecast Pro, FishWeather)
-que Costa Viva no tenga todavía. **Solo propuestas — cambio de producto
+que Costaviva no tenga todavía. **Solo propuestas — cambio de producto
 por definición, nunca implementación directa** (regla de
 `ROBOT_REGLAS.md`). Nada se ha tocado en código.
 
-Recordatorio de lo que Costa Viva YA tiene, para no proponer duplicados:
+Recordatorio de lo que Costaviva YA tiene, para no proponer duplicados:
 oleaje/viento/marea/corriente por spot, coeficiente de marea propio por
 spot, fase y posición lunar (`/luna`), presión histórica + tendencia,
 estaciones AEMET (precipitación/presión), turbidez relativa por webcam,
@@ -3122,7 +3122,7 @@ parece cada uno:**
 2. **Periodos solunares (mayor/menor) como recomendación horaria** —
    Tides4fishing y el "BiteTime" de Fishbrain marcan las franjas del día
    con más actividad prevista (paso lunar por el meridiano, orto/ocaso
-   lunar y solar). Costa Viva ya calcula posición lunar en `/luna`, así
+   lunar y solar). Costaviva ya calcula posición lunar en `/luna`, así
    que el dato base está — faltaría derivar las 2-4 ventanas diarias.
    Ya anotado en `ROBOT_REGLAS.md` (sec. de variables del índice de
    pesca) como **heurística tradicional, no ciencia dura**: si se añade,
@@ -3132,7 +3132,7 @@ parece cada uno:**
 
 3. **Recomendación de cebo/técnica por comunidad ("Top Baits")** —
    Fishbrain agrega los cebos/técnicas con más capturas reportadas por
-   spot. Costa Viva ya guarda `cebo`/`tecnica` por captura y tiene
+   spot. Costaviva ya guarda `cebo`/`tecnica` por captura y tiene
    `especies_comunidad`, pero no agrega nada para recomendar. Encaja
    directamente con la idea ya aparcada "qué se está pescando ahora"
    (`CLAUDE.md`, consentimiento vía `consiente_uso_datos_capturas`) —
@@ -3152,7 +3152,7 @@ parece cada uno:**
 
 5. **Descarga de previsión sin conexión (offline)** — Windy y Wavve
    permiten descargar la previsión para consultarla sin cobertura, algo
-   habitual en la mar. Costa Viva ya es PWA; podría cachear el último
+   habitual en la mar. Costaviva ya es PWA; podría cachear el último
    `/prevision` con un service worker para lectura offline. Mejora de
    robustez real (seguridad: consultar condiciones sin cobertura), pero
    es trabajo de frontend/PWA no trivial → propuesta.
@@ -3182,7 +3182,7 @@ otras apps), 2026-09-14 17:04 UTC.
 ### 2026-09-15 15:42 UTC (pasada buscadora — buenas prácticas de otras apps)
 
 Investigación con `WebSearch` de qué funciones/datos tienen otras apps de
-mareas/pesca que Costa Viva no tenga, evitando repetir lo ya propuesto el
+mareas/pesca que Costaviva no tenga, evitando repetir lo ya propuesto el
 2026-09-14 (avisos CAP de AEMET, periodos solunares, "top baits" de
 comunidad, cartas SST/clorofila por satélite, previsión offline en la
 PWA). **Solo propuestas — cambio de producto por definición, nunca
@@ -3198,7 +3198,7 @@ ordenados por lo accionable que parece cada uno:**
 1. **Avisos/alarmas configurables por el usuario (Nautide)** — Nautide
    deja poner alarmas y eventos de calendario (hasta 90 días vista) para
    condiciones concretas: pleamar/bajamar, umbral de viento/racha, o "el
-   mejor momento de pesca" del día. Costa Viva hoy **no tiene ningún
+   mejor momento de pesca" del día. Costaviva hoy **no tiene ningún
    sistema de notificaciones/avisos** — ni push ni recordatorios. Encaja
    con el carácter de seguridad de la app (avisar "hoy hay temporal en tu
    spot"). **Limitación técnica real a dejar clara antes de construirlo,
@@ -3212,7 +3212,7 @@ ordenados por lo accionable que parece cada uno:**
 2. **Planificador por condición de marea a futuro ("SeaQuery" de
    Nautide)** — filtrar los próximos N días buscando cuándo se da una
    condición concreta en un spot: marea entrante/saliente, o coeficiente
-   por encima de un umbral. Costa Viva **ya calcula el coeficiente por
+   por encima de un umbral. Costaviva **ya calcula el coeficiente por
    spot** (`coeficientePorSpot()`) y la altura/fase de marea, pero solo
    los muestra para "ahora"; no hay forma de preguntar "¿cuándo, en los
    próximos días, hay marea entrante + coeficiente alto en Bermeo?". El
