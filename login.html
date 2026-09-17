@@ -9,7 +9,7 @@
 <link rel="icon" href="icon.svg" type="image/svg+xml" />
 <meta name="theme-color" content="#F7F3E8" />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 <style>
   * { box-sizing: border-box; }
   body {
@@ -177,7 +177,7 @@
   <div class="lado-acceso">
 <div class="caja" id="cajaLogin">
   <h1>Costaviva</h1>
-  <p class="sub" id="subtitulo">Accede con tu cuenta</p>
+  <p class="sub">Accede con tu cuenta</p>
 
   <div id="mensaje" class="mensaje"></div>
 
@@ -187,7 +187,31 @@
     <label for="password">Contraseña</label>
     <input type="password" id="password" required autocomplete="current-password" />
 
-    <div class="consentimiento" id="cajaConsentimiento">
+    <div id="turnstileLogin" style="margin-top:8px;"></div>
+
+    <button type="submit" id="btnPrincipal">Entrar</button>
+    <button type="button" class="secundario" id="btnIrARegistro">Crear una cuenta nueva</button>
+  </form>
+
+  <div class="toggle">¿Olvidaste tu contraseña? <a id="linkRecuperar">Recupérala aquí</a></div>
+</div>
+
+<!-- Paso 1 del alta (2026-09-17, pedido explícito del usuario): email +
+     código postal, sin contraseña todavía — se pide un enlace de
+     verificación (signInWithOtp, sin contraseña) en vez de crear la
+     cuenta con contraseña de una vez. El código postal se usa luego
+     para centrar el mapa de index.html la primera vez que entra. -->
+<div class="caja" id="cajaRegistroDatos" style="display:none;">
+  <h1>Crear cuenta</h1>
+  <p class="sub">Te mandaremos un enlace para verificar tu email.</p>
+  <div id="mensajeRegistro" class="mensaje"></div>
+  <form id="formRegistroDatos">
+    <label for="emailRegistro">Correo electrónico</label>
+    <input type="email" id="emailRegistro" required autocomplete="email" />
+    <label for="codigoPostal">Código postal</label>
+    <input type="text" id="codigoPostal" required inputmode="numeric" pattern="[0-9]{5}" maxlength="5" placeholder="Ej. 48001" />
+
+    <div class="consentimiento visible">
       <label class="checkbox">
         <input type="checkbox" id="checkTerminos" />
         Acepto los términos de uso y la política de privacidad de Costaviva, incluyendo el tratamiento de mis datos de cuenta para dar el servicio (obligatorio para crear la cuenta).
@@ -198,25 +222,34 @@
       </label>
     </div>
 
-    <div class="cf-turnstile" data-sitekey="0x4AAAAAAEywlSn_bxleOonO" style="margin-top:8px;"></div>
+    <div id="turnstileRegistro" style="margin-top:8px;"></div>
 
-    <button type="submit" id="btnPrincipal">Entrar</button>
-    <button type="button" class="secundario" id="btnAlternar">Crear una cuenta nueva</button>
+    <button type="submit" id="btnContinuarRegistro">Continuar</button>
+    <button type="button" class="secundario" id="btnYaTengoCuenta">Ya tengo cuenta</button>
   </form>
-
-  <div class="toggle">¿Olvidaste tu contraseña? <a id="linkRecuperar">Recupérala aquí</a></div>
 </div>
 
-<!-- Pantalla de "nueva contraseña" tras pulsar el enlace del email de
-     recuperación — bug real encontrado 2026-09-13: el enlace SÍ
-     autentica (así funciona Supabase), pero sin esta pantalla el login
-     mandaba directo al mapa sin dejar nunca cambiar la contraseña. -->
+<!-- Paso 2: esperando a que confirme el email. -->
+<div class="caja" id="cajaRegistroEsperando" style="display:none;">
+  <h1>Revisa tu email</h1>
+  <p class="sub">Te hemos mandado un enlace a tu correo para verificar la cuenta. Ábrelo para continuar y crear tu contraseña.</p>
+  <div class="toggle"><a id="linkVolverDesdeEspera">Volver</a></div>
+</div>
+
+<!-- Paso 3 del alta (crear la contraseña, tras verificar el email) y
+     también la pantalla de "nueva contraseña" tras pulsar el enlace del
+     email de recuperación — mismo formulario para las dos cosas, el
+     mecanismo (updateUser con sesión ya autenticada por el enlace) es
+     idéntico. Bug real encontrado 2026-09-13 con la recuperación: el
+     enlace SÍ autentica (así funciona Supabase), pero sin esta pantalla
+     el login mandaba directo al mapa sin dejar nunca cambiar la
+     contraseña. -->
 <div class="caja" id="cajaNuevaContrasena" style="display:none;">
-  <h1>Nueva contraseña</h1>
-  <p class="sub">Escribe tu nueva contraseña para tu cuenta.</p>
+  <h1>Crea tu contraseña</h1>
+  <p class="sub">Mínimo 6 caracteres, con una mayúscula, un número y un símbolo.</p>
   <div id="mensajeNueva" class="mensaje"></div>
   <form id="formNuevaContrasena">
-    <label for="passwordNueva">Contraseña nueva</label>
+    <label for="passwordNueva">Contraseña</label>
     <input type="password" id="passwordNueva" required autocomplete="new-password" minlength="6" />
     <label for="passwordNuevaRepetir">Repite la contraseña</label>
     <input type="password" id="passwordNuevaRepetir" required autocomplete="new-password" minlength="6" />
@@ -241,14 +274,15 @@
 
 <script type="module">
 // ---------------------------------------------------------------------------
-// Acceso vía Supabase Auth, mismo patrón que Etxeapala (Cloudflare Pages +
-// Supabase + JS vanilla, con aprobación manual de nuevas cuentas antes de
-// dar acceso — sistema Root/Superadmin/Member).
+// Acceso vía Supabase Auth (Cloudflare Pages + Supabase + JS vanilla).
+// Alta abierta, auto-aprobada (ver CLAUDE.md, 2026-09-17) — en 3 pasos:
+// 1) email + código postal (signInWithOtp, sin contraseña) — cajaRegistroDatos
+// 2) "revisa tu email" — cajaRegistroEsperando
+// 3) enlace del email → crear contraseña (updateUser) — cajaNuevaContrasena
 //
-// PENDIENTE ANTES DE DESPLEGAR: sustituir estos dos valores por los de tu
-// propio proyecto de Supabase (Project Settings > API). El "anon key" es
-// público por diseño (va en el cliente), la seguridad real la da Row Level
-// Security en las tablas de Supabase, no ocultar esta clave.
+// La anon key de abajo es pública por diseño (va en el cliente), la
+// seguridad real la da Row Level Security en las tablas de Supabase, no
+// ocultar esta clave.
 // ---------------------------------------------------------------------------
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -265,16 +299,19 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: { detectSessionInUrl: false },
 });
 
-let modo = "login"; // "login" | "registro"
+const cajaLogin = document.getElementById("cajaLogin");
+const cajaRegistroDatos = document.getElementById("cajaRegistroDatos");
+const cajaRegistroEsperando = document.getElementById("cajaRegistroEsperando");
+const cajaNuevaContrasena = document.getElementById("cajaNuevaContrasena");
+const TODAS_LAS_CAJAS = [cajaLogin, cajaRegistroDatos, cajaRegistroEsperando, cajaNuevaContrasena];
 
-const form = document.getElementById("formLogin");
+function mostrarPantalla(caja) {
+  TODAS_LAS_CAJAS.forEach((c) => { c.style.display = c === caja ? "block" : "none"; });
+}
+
+const formLogin = document.getElementById("formLogin");
 const btnPrincipal = document.getElementById("btnPrincipal");
-const btnAlternar = document.getElementById("btnAlternar");
 const mensajeEl = document.getElementById("mensaje");
-const subtitulo = document.getElementById("subtitulo");
-const cajaConsentimiento = document.getElementById("cajaConsentimiento");
-const checkTerminos = document.getElementById("checkTerminos");
-const checkDatosCapturas = document.getElementById("checkDatosCapturas");
 
 function mostrarMensaje(texto, tipo) {
   mensajeEl.textContent = texto;
@@ -282,37 +319,57 @@ function mostrarMensaje(texto, tipo) {
 }
 
 // CAPTCHA (Cloudflare Turnstile, 2026-09-13, pedido explícito del
-// usuario: "como en Pólizas.ai") — widget declarativo (el script lo
-// renderiza solo al cargar), así que solo hace falta leer el token que
-// deja en un input oculto y pedirle a Turnstile un token nuevo después
-// de cada intento (los tokens son de un solo uso). Supabase exige este
-// token en signUp/signInWithPassword/resetPasswordForEmail en cuanto
-// "Enable Captcha protection" está activado en su panel — sin él,
-// rechaza la petición.
-function leerTokenTurnstile() {
-  const input = document.querySelector('input[name="cf-turnstile-response"]');
-  return input ? input.value : "";
-}
-function reiniciarTurnstile() {
-  if (window.turnstile) window.turnstile.reset();
-}
+// usuario: "como en Pólizas.ai"). Desde el rediseño del alta en 2 pasos
+// (2026-09-17) hay DOS widgets en la página (login y registro), y el de
+// registro empieza dentro de una caja oculta (display:none) — el
+// renderizado automático de Turnstile no dibuja bien un widget oculto,
+// así que se usa renderizado explícito (`?render=explicit` en el script)
+// y cada widget se crea a mano, el de login al cargar la página y el de
+// registro justo al mostrar esa pantalla por primera vez.
+const TURNSTILE_SITE_KEY = "0x4AAAAAAEywlSn_bxleOonO";
+let widgetLogin = null;
+let widgetRegistro = null;
 
-btnAlternar.addEventListener("click", () => {
-  modo = modo === "login" ? "registro" : "login";
-  btnPrincipal.textContent = modo === "login" ? "Entrar" : "Crear cuenta";
-  btnAlternar.textContent = modo === "login" ? "Crear una cuenta nueva" : "Ya tengo cuenta";
-  subtitulo.textContent =
-    modo === "login"
-      ? "Accede con tu cuenta"
-      : "Tu cuenta necesitará aprobación antes de poder entrar";
-  cajaConsentimiento.classList.toggle("visible", modo === "registro");
-  mensajeEl.className = "mensaje";
+function turnstileListo() {
+  return new Promise((resolve) => {
+    if (window.turnstile) { resolve(); return; }
+    const intervalo = setInterval(() => {
+      if (window.turnstile) { clearInterval(intervalo); resolve(); }
+    }, 50);
+  });
+}
+async function asegurarWidgetLogin() {
+  await turnstileListo();
+  if (widgetLogin === null) widgetLogin = window.turnstile.render("#turnstileLogin", { sitekey: TURNSTILE_SITE_KEY });
+}
+async function asegurarWidgetRegistro() {
+  await turnstileListo();
+  if (widgetRegistro === null) widgetRegistro = window.turnstile.render("#turnstileRegistro", { sitekey: TURNSTILE_SITE_KEY });
+}
+function leerTokenTurnstile(widgetId) {
+  if (widgetId === null || !window.turnstile) return "";
+  return window.turnstile.getResponse(widgetId) || "";
+}
+function reiniciarTurnstile(widgetId) {
+  if (widgetId !== null && window.turnstile) window.turnstile.reset(widgetId);
+}
+asegurarWidgetLogin();
+
+document.getElementById("btnIrARegistro").addEventListener("click", () => {
+  mostrarPantalla(cajaRegistroDatos);
+  asegurarWidgetRegistro();
+});
+document.getElementById("btnYaTengoCuenta").addEventListener("click", () => {
+  mostrarPantalla(cajaLogin);
+});
+document.getElementById("linkVolverDesdeEspera").addEventListener("click", () => {
+  mostrarPantalla(cajaLogin);
 });
 
 document.getElementById("linkRecuperar").addEventListener("click", async () => {
   const email = document.getElementById("email").value;
   if (!email) { mostrarMensaje("Escribe primero tu correo electrónico.", "error"); return; }
-  const captchaToken = leerTokenTurnstile();
+  const captchaToken = leerTokenTurnstile(widgetLogin);
   if (!captchaToken) { mostrarMensaje("Completa la verificación de seguridad de más abajo antes de continuar.", "error"); return; }
   // redirectTo explícito: sin esto, Supabase manda al enlace a la "Site
   // URL" configurada en su panel — que, encontrado el 2026-09-13,
@@ -328,7 +385,7 @@ document.getElementById("linkRecuperar").addEventListener("click", async () => {
     captchaToken,
     redirectTo: `${window.location.origin}/login`,
   });
-  reiniciarTurnstile();
+  reiniciarTurnstile(widgetLogin);
   if (error) mostrarMensaje(error.message, "error");
   else mostrarMensaje("Te hemos enviado un enlace para restablecer la contraseña.", "ok");
 });
@@ -365,13 +422,20 @@ document.getElementById("linkRecuperar").addEventListener("click", async () => {
 // ---------------------------------------------------------------------------
 
 function mostrarPantallaNuevaContrasena() {
-  document.getElementById("cajaLogin").style.display = "none";
-  document.getElementById("cajaNuevaContrasena").style.display = "block";
+  mostrarPantalla(cajaNuevaContrasena);
 }
 
 const mensajeNuevaEl = document.getElementById("mensajeNueva");
 const formNueva = document.getElementById("formNuevaContrasena");
 const btnGuardarNueva = document.getElementById("btnGuardarNuevaContrasena");
+
+// Válida tanto para "recupera tu contraseña" como para "crea tu
+// contraseña" del paso 3 del alta — el mecanismo (hay una sesión ya
+// autenticada por el enlace del email, se llama a updateUser) es
+// idéntico en los dos casos, así que se reutiliza la misma pantalla.
+function passwordValida(pw) {
+  return pw.length >= 6 && /[A-Z]/.test(pw) && /[0-9]/.test(pw) && /[^A-Za-z0-9]/.test(pw);
+}
 
 formNueva.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -381,6 +445,11 @@ formNueva.addEventListener("submit", async (e) => {
 
   if (nueva !== repetir) {
     mensajeNuevaEl.textContent = "Las dos contraseñas no coinciden.";
+    mensajeNuevaEl.className = "mensaje error";
+    return;
+  }
+  if (!passwordValida(nueva)) {
+    mensajeNuevaEl.textContent = "La contraseña debe tener al menos 6 caracteres, con una mayúscula, un número y un símbolo.";
     mensajeNuevaEl.className = "mensaje error";
     return;
   }
@@ -401,10 +470,15 @@ async function gestionarAccesoInicial() {
   const query = new URLSearchParams(window.location.search);
   const code = query.get("code");
   if (code) {
+    // El mismo "?code=" PKCE llega aquí tanto si es un enlace de
+    // recuperación de contraseña como si es el enlace de verificación
+    // del alta en 2 pasos (signInWithOtp) — en los dos casos, tras
+    // canjearlo hay que dejar crear/cambiar la contraseña, así que no
+    // hace falta distinguirlos.
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     history.replaceState(null, "", window.location.pathname);
     if (error) {
-      mostrarMensaje("El enlace de recuperación no es válido o ha caducado. Pide uno nuevo.", "error");
+      mostrarMensaje("El enlace no es válido o ha caducado. Pide uno nuevo.", "error");
       return;
     }
     mostrarPantallaNuevaContrasena();
@@ -412,14 +486,15 @@ async function gestionarAccesoInicial() {
   }
 
   const hash = new URLSearchParams(window.location.hash.slice(1));
-  if (hash.get("type") === "recovery" && hash.get("access_token")) {
+  const tipoHash = hash.get("type");
+  if ((tipoHash === "recovery" || tipoHash === "magiclink") && hash.get("access_token")) {
     const { error } = await supabase.auth.setSession({
       access_token: hash.get("access_token"),
       refresh_token: hash.get("refresh_token"),
     });
     history.replaceState(null, "", window.location.pathname);
     if (error) {
-      mostrarMensaje("El enlace de recuperación no es válido o ha caducado. Pide uno nuevo.", "error");
+      mostrarMensaje("El enlace no es válido o ha caducado. Pide uno nuevo.", "error");
       return;
     }
     mostrarPantallaNuevaContrasena();
@@ -432,65 +507,109 @@ async function gestionarAccesoInicial() {
 
 gestionarAccesoInicial();
 
-form.addEventListener("submit", async (e) => {
+formLogin.addEventListener("submit", async (e) => {
   e.preventDefault();
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
   btnPrincipal.disabled = true;
   mensajeEl.className = "mensaje";
 
-  const captchaToken = leerTokenTurnstile();
+  const captchaToken = leerTokenTurnstile(widgetLogin);
   if (!captchaToken) {
     mostrarMensaje("Completa la verificación de seguridad de más abajo antes de continuar.", "error");
     btnPrincipal.disabled = false;
     return;
   }
 
-  if (modo === "registro") {
-    if (!checkTerminos.checked) {
-      mostrarMensaje("Tienes que aceptar los términos de uso para crear la cuenta.", "error");
-      btnPrincipal.disabled = false;
-      return;
-    }
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { consiente_uso_datos_capturas: checkDatosCapturas.checked }, captchaToken },
-    });
-    reiniciarTurnstile();
-    if (error) {
-      mostrarMensaje(error.message, "error");
-    } else {
-      // Desde 2026-09-17 el alta ya no espera aprobación manual del admin
-      // (ver migración 20260917080000) — solo falta confirmar el email.
-      // El admin se entera solo, sin bloquear a nadie, vía
-      // notificar-altas.yml (cron cada 30 min).
-      mostrarMensaje("Cuenta creada. Revisa tu email para confirmar la cuenta.", "info");
-    }
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password, options: { captchaToken } });
+  reiniciarTurnstile(widgetLogin);
+  if (error) {
+    mostrarMensaje(error.message, "error");
   } else {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password, options: { captchaToken } });
-    reiniciarTurnstile();
-    if (error) {
-      mostrarMensaje(error.message, "error");
-    } else {
-      // Desde 2026-09-17 "aprobado" ya no es un gate inicial (las altas se
-      // aprueban solas) — solo sirve para bloquear a alguien que el admin
-      // haya pausado después desde admin.html.
-      const { data: perfil } = await supabase
-        .from("perfiles")
-        .select("aprobado")
-        .eq("id", data.user.id)
-        .single();
+    // "aprobado" ya no es un gate inicial (las altas se aprueban solas)
+    // — solo sirve para bloquear a alguien que el admin haya pausado
+    // después desde admin.html.
+    const { data: perfil } = await supabase
+      .from("perfiles")
+      .select("aprobado")
+      .eq("id", data.user.id)
+      .single();
 
-      if (perfil && perfil.aprobado === false) {
-        mostrarMensaje("Tu cuenta no tiene acceso activo ahora mismo.", "info");
-        await supabase.auth.signOut();
-      } else {
-        window.location.href = "/";
-      }
+    if (perfil && perfil.aprobado === false) {
+      mostrarMensaje("Tu cuenta no tiene acceso activo ahora mismo.", "info");
+      await supabase.auth.signOut();
+    } else {
+      window.location.href = "/";
     }
   }
   btnPrincipal.disabled = false;
+});
+
+// --- Paso 1 del alta: email + código postal, sin contraseña todavía ---
+// signInWithOtp (en vez de signUp) manda un enlace de verificación sin
+// pedir contraseña aquí — la contraseña se crea en el paso 3, al volver
+// del enlace (mismo formulario que "recuperar contraseña", ver arriba).
+// El código postal y el consentimiento viajan como metadato del alta
+// (options.data) y el trigger gestionar_alta_perfil() los copia a
+// public.perfiles en el mismo momento en que crea la fila.
+const formRegistroDatos = document.getElementById("formRegistroDatos");
+const btnContinuarRegistro = document.getElementById("btnContinuarRegistro");
+const mensajeRegistroEl = document.getElementById("mensajeRegistro");
+const checkTerminos = document.getElementById("checkTerminos");
+const checkDatosCapturas = document.getElementById("checkDatosCapturas");
+
+function mostrarMensajeRegistro(texto, tipo) {
+  mensajeRegistroEl.textContent = texto;
+  mensajeRegistroEl.className = `mensaje ${tipo}`;
+}
+
+formRegistroDatos.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const email = document.getElementById("emailRegistro").value;
+  const codigoPostal = document.getElementById("codigoPostal").value.trim();
+  btnContinuarRegistro.disabled = true;
+  mensajeRegistroEl.className = "mensaje";
+
+  if (!/^[0-9]{5}$/.test(codigoPostal)) {
+    mostrarMensajeRegistro("El código postal debe tener 5 dígitos.", "error");
+    btnContinuarRegistro.disabled = false;
+    return;
+  }
+  if (!checkTerminos.checked) {
+    mostrarMensajeRegistro("Tienes que aceptar los términos de uso para crear la cuenta.", "error");
+    btnContinuarRegistro.disabled = false;
+    return;
+  }
+  const captchaToken = leerTokenTurnstile(widgetRegistro);
+  if (!captchaToken) {
+    mostrarMensajeRegistro("Completa la verificación de seguridad de más abajo antes de continuar.", "error");
+    btnContinuarRegistro.disabled = false;
+    return;
+  }
+
+  const { error } = await supabase.auth.signInWithOtp({
+    email,
+    options: {
+      shouldCreateUser: true,
+      emailRedirectTo: `${window.location.origin}/login`,
+      captchaToken,
+      data: {
+        codigo_postal: codigoPostal,
+        consiente_uso_datos_capturas: checkDatosCapturas.checked,
+      },
+    },
+  });
+  reiniciarTurnstile(widgetRegistro);
+  btnContinuarRegistro.disabled = false;
+
+  if (error) {
+    mostrarMensajeRegistro(error.message, "error");
+  } else {
+    // El admin se entera solo cuando el email quede confirmado de
+    // verdad, sin bloquear a nadie, vía notificar-altas.yml (cron cada
+    // 30 min) — no hace falta avisar nada desde aquí.
+    mostrarPantalla(cajaRegistroEsperando);
+  }
 });
 </script>
 

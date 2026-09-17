@@ -19,12 +19,32 @@
 alter table public.perfiles
   add column if not exists consiente_uso_datos_capturas boolean not null default false;
 
--- El consentimiento se recoge en el propio formulario de alta (login.html),
--- no despues — pero justo al hacer signUp() todavia no hay sesion activa si
--- "Confirm email" esta activado (como aqui), asi que una politica RLS de
--- UPDATE normal no serviria a tiempo. Se manda el valor como metadato del
--- propio signUp (options.data) y el trigger de alta lo copia a la columna
--- en el mismo momento en que crea la fila — sin necesitar sesion ni una
+-- Codigo postal (2026-09-17): se pide en el paso 1 del alta (antes de
+-- verificar el email), se usa luego para centrar el mapa de index.html
+-- la primera vez. Mismo mecanismo que consiente_uso_datos_capturas —
+-- viaja como metadato del alta, sin sesion todavia.
+alter table public.perfiles
+  add column if not exists codigo_postal text;
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint where conname = 'perfiles_codigo_postal_formato'
+  ) then
+    alter table public.perfiles
+      add constraint perfiles_codigo_postal_formato
+      check (codigo_postal is null or codigo_postal ~ '^[0-9]{5}$');
+  end if;
+end;
+$$;
+
+-- El consentimiento (y desde 2026-09-17, el codigo postal) se recogen en
+-- el propio formulario de alta (login.html), no despues — pero justo al
+-- registrarse todavia no hay sesion activa (el alta usa signInWithOtp(),
+-- sin contrasena, hasta que se confirma el email), asi que una politica
+-- RLS de UPDATE normal no serviria a tiempo. Se mandan como metadato del
+-- propio alta (options.data) y el trigger los copia a las columnas en el
+-- mismo momento en que crea la fila — sin necesitar sesion ni una
 -- politica de UPDATE nueva sobre perfiles (que seguiria sin existir, para
 -- que nadie pueda auto-aprobarse).
 create or replace function public.gestionar_alta_perfil()
@@ -34,12 +54,13 @@ security definer
 set search_path = public
 as $$
 begin
-  insert into public.perfiles (id, email, aprobado, consiente_uso_datos_capturas)
+  insert into public.perfiles (id, email, aprobado, consiente_uso_datos_capturas, codigo_postal)
   values (
     new.id,
     new.email,
     true,
-    coalesce((new.raw_user_meta_data ->> 'consiente_uso_datos_capturas')::boolean, false)
+    coalesce((new.raw_user_meta_data ->> 'consiente_uso_datos_capturas')::boolean, false),
+    new.raw_user_meta_data ->> 'codigo_postal'
   );
   return new;
 end;
