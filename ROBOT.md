@@ -2409,6 +2409,101 @@ igual que las otras 5 zonas, vía EMODnet ERDDAP REST puro.
 
 ---
 
+### 2026-09-17 23:10 UTC (pasada buscadora — presión atmosférica e histórico por zona, cuarta pasada)
+
+**Qué se buscó y por qué:** las tres pasadas previas de este mismo tema
+(2026-09-14 23:31, 2026-09-15 13:33 y 2026-09-15 23:12, más arriba) ya
+verificaron el reanálisis por coordenada (Open-Meteo ERA5/Historical
+Forecast), la observación horaria por estación en España (AEMET,
+`ESTACIONES_AEMET` ya en producción) y Portugal (IPMA, verificado en
+vivo pero sin integrar todavía), y dos fuentes de histórico observado
+bulk (Meteostat, con problema de licencia NC; NOAA NCEI/ISD, dominio
+público). Quedaban dos huecos explícitos sin cerrar: (1) el histórico
+**diario** de AEMET (nunca probado, por falta de `AEMET_API_KEY` en
+este runner) y (2) el formato del histórico **diario** de IPMA (solo se
+había verificado el endpoint horario). Esta pasada fue a cerrar esos dos
+huecos.
+
+**Nota de entorno:** `AEMET_API_KEY` sigue sin estar disponible en este
+runner (comprobado con `env`, igual que en las tres pasadas anteriores)
+— vive solo como secreto en Cloudflare Pages. Red de salida abierta a
+dominios de datos, todo lo de abajo verificado con peticiones HTTP
+reales.
+
+**Hueco 1 (AEMET) — sin poder verificar en vivo, pero se descarta un
+posible atajo.** Se investigó si el catálogo de datos abiertos del
+Gobierno de España (`datosabiertos.miteco.gob.es`) republicaba las
+"Climatologías diarias" de AEMET como fichero descargable sin API key
+— **no es así**: su ficha de catálogo
+(`catalogo.dataset/2d48e936-95a2-4904-af7e-59d912d002ec/resource/
+fb436028-d2fe-4040-9ac7-24dedbc6f49b`, verificada en vivo, `200` tras
+un par de reintentos — el servidor de MITECO es intermitente,
+alternando `200`/`502` en peticiones seguidas) es solo una entrada de
+catálogo/metadatos que enlaza directamente al propio
+`opendata.aemet.es` (endpoint
+`/api/valores/climatologicos/diarios/datos/...`, el mismo que ya
+apuntaba la pasada del 2026-09-14). No hay atajo: sigue haciendo falta
+la `AEMET_API_KEY` real desde una `functions/` para esto, nunca desde
+este runner.
+
+**Hueco 2 (IPMA) — verificado en vivo, hallazgo real y más limitado de
+lo que sugería la documentación general.** Las "séries longas" de IPMA
+(`ipma.pt/pt/oclima/series.longas/`) se describen en la propia web como
+~50 estaciones con registros desde 1855 incluyendo presión reducida al
+nivel del mar — pero el catálogo real que sirve los ficheros
+(`ipma.pt/opencms/pt/oclima/series.longas/list-long-series-stations.json`,
+`200`, verificado) solo lista **16 estaciones con serie larga
+descargable**, y de esas, **solo 1 tiene dato de presión**: Lisboa /
+Geofísico (`NEstacao 535`), con fichero diario
+(`pressdaily_Lisbon-Geofisico_igidl_1864-2006_no-grav-correction_
+28072020.xlsx`, descarga verificada en vivo — `200`, `.xlsx` real de
+2,3 MB) que cubre **1864-2006 sin corrección de gravedad** (no
+actualizado desde entonces) y un fichero mensual homogeneizado
+equivalente. Las otras 15 estaciones (Porto, Terceira, Beja, Bragança,
+Castelo Branco, Coimbra, Évora, Faro, Funchal, Montalegre, Penhas
+Douradas, Portalegre, Ponta Delgada, Santarém, Setúbal) solo tienen
+temperatura/precipitación, ninguna presión. **Conclusión: esta fuente
+sirve como referencia histórica muy larga para UN punto de Lisboa, no
+como fuente de backfill por estación para la costa portuguesa en
+general** — para eso sigue siendo mejor lo ya encontrado (IPMA
+observación horaria en vivo desde 2026-09-15, o NCEI/ISD bulk del
+2026-09-15 23:12, que sí cubre estaciones portuguesas costeras con
+décadas de profundidad).
+
+**Puertos del Estado, confirmación adicional (sin cambio de
+conclusión):** se buscó si `datos.gob.es` o la app "iMar" exponían una
+vía API alternativa al formulario de `bancodatos.puertos.es` ya
+descartado el 2026-09-15 — no se encontró ninguna; `bancodatos.puertos.es`
+sigue devolviendo `403` a una petición directa sin sesión de formulario,
+verificado de nuevo hoy. Se mantiene como fuente real pero de
+integración no trivial, igual que la pasada anterior.
+
+**Balance de las 4 pasadas de este tema**: los dos huecos que quedaban
+abiertos ya están cerrados con una respuesta verificada (aunque la de
+IPMA sea "más limitada de lo esperado", es una respuesta real, no una
+suposición). No queda ninguna pregunta pendiente de este tema sin al
+menos un intento real de verificación — la vía con más profundidad y
+cobertura sigue siendo NOAA NCEI/ISD (dominio público, décadas, España y
+Portugal) para backfill, más el archivo ERA5 de Open-Meteo para relleno
+por coordenada exacta. Nada de esto se ha implementado en código —
+sigue siendo decisión de producto ya explicada en las tres pasadas
+anteriores (tocaría `functions/`/`supabase/` y afecta a un dato que se
+muestra al usuario como fiable).
+
+**Sin cambios en código** — investigación pura, solo esta entrada en
+`ROBOT.md`.
+
+**Fuentes:**
+[MITECO — catálogo, Climatologías diarias (enlaza a AEMET OpenData)](https://catalogo.datosabiertos.miteco.gob.es/catalogo/dataset/2d48e936-95a2-4904-af7e-59d912d002ec/resource/fb436028-d2fe-4040-9ac7-24dedbc6f49b),
+[IPMA — Séries Longas](https://www.ipma.pt/pt/oclima/series.longas/),
+[IPMA — catálogo de estaciones de série longa (JSON)](https://www.ipma.pt/opencms/pt/oclima/series.longas/list-long-series-stations.json),
+[IPMA — descarga verificada, presión diaria Lisboa/Geofísico 1864-2006](https://api.ipma.pt/open-data/observation/climate/monthly-long-series/pressdaily_Lisbon-Geofisico_igidl_1864-2006_no-grav-correction_28072020.xlsx).
+
+**Firmado:** robot buscador de fuentes (pasada de presión atmosférica e
+histórico por zona), 2026-09-17 23:10 UTC.
+
+---
+
 ## Auditoría de datos
 
 ### 2026-08-31
