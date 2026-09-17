@@ -2198,6 +2198,116 @@ como tarea resuelta.
 
 ---
 
+### 2026-09-17 18:41 UTC (pasada buscadora — corrientes marinas por zona)
+
+**Qué se buscó:** continuación de las tres pasadas previas de corrientes
+(2026-09-14 19:37, 2026-09-15 13:31 y 2026-09-15 18:35, más arriba). La
+última dejó dos frentes abiertos: (1) el radar HF de **EUSKOOS** (AZTI,
+Golfo de Bizkaia — la costa de casa de la app) aparecía **congelado
+desde el 2026-07-16** en el mirror de EMODnet Physics, y (2) la fuente
+propia de EuskOOS (THREDDS nativo) sí está viva pero su agregación fácil
+está rota (single time-step fijo en 2023-05-31), sin conseguir enumerar
+el catálogo `TOTL` por timeout/500 para leer un fichero por hora
+directamente.
+
+**Verificado en vivo el frente (2), sigue exactamente igual que el
+2026-09-15**: `TOTL/catalog.xml`, `MATX/catalog.xml` y `HIGE/catalog.xml`
+siguen devolviendo `500` de inmediato (no timeout, error real del
+servidor); `OMA/catalog.xml` y `2DVAR/catalog.xml` siguen sin responder
+en 30s (catálogo demasiado grande para listar plano); los resolvers
+`latest.xml` de `TOTL`/`MATX`/`HIGE` siguen en `500` (`OMA/latest.xml`
+da `404`, antes ni se había probado). El `best.ncd` de la agregación FMRC
+de `TOTL` sigue devolviendo un único `TIME` fijo en 26813.75 días desde
+1950 (2023-05-31 18:00 UTC) y su WMS `GetCapabilities` da `403`. **Sin
+cambios en este frente** — la vía THREDDS nativa de EuskOOS sigue sin
+ser utilizable por REST simple.
+
+**Hallazgo real y verificado en el frente (1) — buenas noticias: el
+radar de EUSKOOS en EMODnet Physics YA NO ESTÁ CONGELADO.** Petición
+directa a
+`erddap.emodnet-physics.eu/erddap/info/EUHFR_NRTcurrent_HFR-EUSKOOS-Total/index.csv`
+hoy: `time_coverage_end = 2026-09-17T12:00:00Z` (y una petición de dato
+real un rato después mostró hasta las 14:00 UTC) — se ha reanudado la
+actualización desde julio, sin que este robot haya hecho nada para
+provocarlo (probablemente el propio EMODnet arregló su mirror). Petición
+de dato real confirmada: para la hora 2026-09-17T11:00Z, 716 celdas con
+corriente real de 957 en la rejilla del recorte de coordenadas de
+Euskadi/Cantabria — muchísima más cobertura que Galicia (51 de 3807 el
+2026-09-15, radar más disperso). **Revisadas también las otras 5 zonas
+como comprobación de salud**: Galicia, Lisboa, Gibraltar, Ibiza y PLOCAN
+(Canarias) están las 5 vivas hoy con `time_coverage_end` de hoy mismo
+(PLOCAN, que iba con 1.5 días de retraso el 2026-09-15, hoy está al día
+también) — **las 4 zonas de Costaviva + Portugal tienen radar HF real
+vivo simultáneamente por primera vez desde que se investiga esto**, sin
+necesidad de tocar la vía THREDDS rota de EuskOOS: EMODnet ya sirve el
+dato de la costa de casa también.
+
+**Calibración de un punto real, pedida por `ROBOT_REGLAS.md` antes de
+proponer nada** (mismo criterio que oleaje/coeficiente de marea):
+comparado el radar HF de EUSKOOS contra `ocean_current_velocity`/
+`ocean_current_direction` de Open-Meteo (mismo modelo que usa
+`functions/prevision.js` hoy) para Mundaka (43.4047, −2.6989 — celda de
+radar más próxima a 500 m), 3 horas del mismo día (05:00, 11:00, 14:00
+UTC):
+
+| hora UTC | radar (EWCT/NSCT → velocidad/dirección) | Open-Meteo | veredicto |
+|---|---|---|---|
+| 05:00 | 0.45 m/s, 178° (hacia el sur) | 0.4 m/s, 297° | velocidad parecida, dirección muy distinta (119°) |
+| 11:00 | 0.61 m/s, 230° (hacia el SO) | 0.6 m/s, 288° | velocidad casi idéntica, dirección distinta (58°) |
+| 14:00 | 0.18 m/s, 327° (hacia el NO) | 0.6 m/s, 288° | velocidad muy distinta (3.4×), dirección algo más cercana (38°) |
+
+Confirmado con la propia documentación de Open-Meteo (ambas usan la
+misma convención — "hacia dónde va" la corriente, 0°=norte, sentido
+horario — así que la comparación de arriba es directa, no hace falta
+invertir 180° ningún lado). **Patrón real, con solo 3 puntos pero
+consistente**: la dirección del radar (dato real) ROTA con claridad a lo
+largo del día (178°→230°→327°, compatible con el giro típico de una
+corriente de marea), mientras que Open-Meteo se queda prácticamente fijo
+(297°→288°→288°) — el modelo no parece capturar bien la componente de
+marea de la corriente en este punto, solo algo más estable (¿residual /
+deriva media?). La velocidad, en cambio, coincide muy bien en 2 de los 3
+puntos (diferencia de solo 0.01–0.05 m/s) pero falla claramente en el
+tercero (0.18 real vs 0.6 modelo). Guardado como 3 filas nuevas en
+`CALIBRACION.jsonl` (`tipo: "corriente_radar_hf_vs_openmeteo"`).
+
+**Con solo 3 puntos de una sola zona y un solo día no hay base para
+proponer ningún factor de corrección** (mismo criterio que boyas/
+coeficiente de marea: mínimo de puntos antes de tocar nada) — esto es
+solo el primer punto de calibración real que pide `ROBOT_REGLAS.md`
+antes de proponer una mezcla, no una conclusión cerrada.
+
+**Por qué solo propuesta, no implementación** (misma razón que las tres
+pasadas anteriores de corrientes, ver `ROBOT_REGLAS.md`): integrar esto
+tocaría `functions/prevision.js` (por encima del límite de volumen) y es
+decisión de producto — ahora que las 4 zonas + Portugal están vivas a la
+vez, la pregunta de "cómo mezclar corriente observada real donde hay
+radar con el modelo en el resto sin confundir al usuario" ya no tiene la
+limitación de cobertura parcial de antes, pero sigue habiendo celdas
+`null` fuera de la zona de antena y sigue sumando sub-peticiones cerca
+del límite de 50 de Cloudflare (ver `ROBOT_REGLAS.md`) — seguiría
+necesitando ser un endpoint aparte o bajo demanda, no parte de la
+petición general de `/prevision`. No se ha tocado código.
+
+**Propuesta concreta para el usuario, actualizada:** con las 4 zonas +
+Portugal ya verificadas vivas simultáneamente (Galicia, EUSKOOS,
+Gibraltar, Ibiza, PLOCAN, Lisboa), el bloqueo real ya no es de
+cobertura/disponibilidad de la fuente — es solo de diseño (dónde vive el
+endpoint, cómo se etiqueta observación-vs-modelo) y de calibración
+(solo 3 puntos hechos, haría falta ampliar a varias zonas/horas/días
+antes de decidir si mostrar la dirección del radar en vez de la de
+Open-Meteo, dado el desacuerdo de dirección encontrado hoy). Si se
+retoma, EUSKOOS ya no necesita la vía THREDDS rota — se puede consumir
+igual que las otras 5 zonas, vía EMODnet ERDDAP REST puro.
+
+**Fuentes:**
+[EMODnet Physics ERDDAP — EUSKOOS NRT (verificado vivo hoy)](https://erddap.emodnet-physics.eu/erddap/info/EUHFR_NRTcurrent_HFR-EUSKOOS-Total/index.html),
+[Open-Meteo Marine API docs (convención de `ocean_current_direction`)](https://open-meteo.com/en/docs/marine-weather-api).
+
+**Firmado:** robot buscador de fuentes (pasada de corrientes marinas),
+2026-09-17 18:41 UTC.
+
+---
+
 ## Auditoría de datos
 
 ### 2026-08-31
