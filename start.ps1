@@ -1,5 +1,5 @@
 # start.ps1
-# Arranca Costa Viva en local con Wrangler (el CLI de Cloudflare), incluyendo
+# Arranca Costaviva en local con Wrangler (el CLI de Cloudflare), incluyendo
 # las funciones de backend (/prevision, /webcam/<slug>), y abre el navegador.
 #
 # Requisito: Node.js instalado (https://nodejs.org). Si no lo tienes, este
@@ -12,7 +12,7 @@
 $ErrorActionPreference = "Stop"
 $carpetaApp = $PSScriptRoot
 
-Write-Host "Costa Viva — arrancando entorno local..." -ForegroundColor Cyan
+Write-Host "Costaviva — arrancando entorno local..." -ForegroundColor Cyan
 
 # 1) Comprobar Node.js
 try {

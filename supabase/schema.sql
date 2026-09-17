@@ -1,4 +1,4 @@
--- Costa Viva — acceso con aprobación manual (mismo patrón que Etxeapala)
+-- Costaviva — acceso con aprobación manual (mismo patrón que Etxeapala)
 --
 -- Cómo usar: pega esto entero en el SQL Editor del proyecto de Supabase que
 -- decidas usar (nuevo o uno ya existente) y dale a "Run". No depende de qué
