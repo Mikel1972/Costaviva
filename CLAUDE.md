@@ -1262,10 +1262,18 @@ de especies, estudios académicos) pasan de diario a **semanal**, cada
 una un día distinto (martes/miércoles/jueves/viernes) — no tenían la
 misma urgencia que las de datos en tiempo real (nada se aplica solo,
 siempre se revisa a mano) y eran las que más volumen de sesión sumaban.
-Además, `--model claude-sonnet-5` y `--max-turns 40` fijados
+Además, `--model claude-sonnet-5` y `--max-turns` fijados
 explícitamente en este workflow y en `robot-experiencia-usuario.yml`
 (antes ninguno de los dos limitaba modelo ni turnos — una sesión podía
-quedarse investigando sin tope).
+quedarse investigando sin tope). **Corrección 2026-09-17**: esta
+entrada decía "40" para los dos workflows, pero `robot-buscador-
+fuentes.yml` se había quedado en `--max-turns 25` — insuficiente para
+la tarea (búsquedas web + verificación HTTP + editar `ROBOT.md` +
+a veces commit/push), así que casi todas las pasadas desde el
+2026-09-16 agotaban el límite antes de llegar a escribir la entrada en
+`ROBOT.md` o el resumen del Issue diario (perdían el trabajo entero de
+la pasada, no solo fallaba el job en rojo). Subido a 40, igualado con
+`robot-experiencia-usuario.yml`.
 
 **Corrección a la limitación de arriba, encontrada la misma sesión**: la
 "rutina nocturna principal" SÍ es visible e inspeccionable — no vive
