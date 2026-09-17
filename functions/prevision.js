@@ -352,11 +352,18 @@ function calcularMarea(horas, alturas, coeficienteCacheado) {
   const ahoraISO = horaActualMadridISO();
   let idxAhora = horas.findIndex((h) => h.slice(0, 13) === ahoraISO);
   if (idxAhora === -1) idxAhora = 0;
+  const hoyISO = ahoraISO.slice(0, 10);
 
+  // Bug real encontrado por el robot de experiencia de usuario (2026-09-17):
+  // en spots de marea casi nula (ver UMBRAL_RUIDO_MAREA_M arriba), el único
+  // evento que sobrevive al filtro de ruido puede caer al día siguiente (más
+  // de ~24h vista) — sin marcarlo, el panel solo mostraba la hora ("16:00")
+  // y se podía leer como si ya hubiera pasado. `manana` deja que el
+  // frontend lo aclare.
   const proximas = eventos
     .filter((e) => e.hora > horas[idxAhora])
     .slice(0, 2)
-    .map((e) => ({ ...e, hora: e.hora.slice(11, 16), altura: +e.altura.toFixed(2) }));
+    .map((e) => ({ ...e, manana: e.hora.slice(0, 10) !== hoyISO, hora: e.hora.slice(11, 16), altura: +e.altura.toFixed(2) }));
 
   const actualRaw = alturas[idxAhora];
   const siguienteRaw = alturas[idxAhora + 1];
