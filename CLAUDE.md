@@ -1272,8 +1272,24 @@ la tarea (búsquedas web + verificación HTTP + editar `ROBOT.md` +
 a veces commit/push), así que casi todas las pasadas desde el
 2026-09-16 agotaban el límite antes de llegar a escribir la entrada en
 `ROBOT.md` o el resumen del Issue diario (perdían el trabajo entero de
-la pasada, no solo fallaba el job en rojo). Subido a 40, igualado con
-`robot-experiencia-usuario.yml`.
+la pasada, no solo fallaba el job en rojo). Subido a 40 (en su momento
+igualado con `robot-experiencia-usuario.yml`, que ese mismo día se
+subió otra vez a 60 — ver el párrafo siguiente).
+
+**Mismo problema encontrado también en `robot-experiencia-usuario.yml`,
+mismo día (2026-09-17), pero enmascarado**: ese workflow tiene
+`continue-on-error: true` en el paso de Claude Code, así que cuando
+agota `--max-turns` el job queda en **verde** en GitHub Actions en vez
+de en rojo — solo se nota porque el Issue "Informe diario" muestra el
+mensaje de reserva "⚠️ El robot de experiencia de usuario no dejó
+informe esta pasada". La pasada del 2026-09-16 sí completó dentro de 40
+turnos y encontró 2 bugs reales (mareas absurdas en spots mediterráneos
+de marea casi nula, y `eliminar_grupo()` sin desplegar en producción —
+ver el detalle en `ROBOT.md`), pero la del 2026-09-17 agotó el límite y
+perdió el informe entero. Subido `--max-turns` 40→60 ahí también. **Para
+la próxima vez que se revise este workflow: un job en verde no garantiza
+que la pasada terminara de verdad** — comprobar siempre el contenido real
+del Issue, no solo el color del check.
 
 **Corrección a la limitación de arriba, encontrada la misma sesión**: la
 "rutina nocturna principal" SÍ es visible e inspeccionable — no vive
