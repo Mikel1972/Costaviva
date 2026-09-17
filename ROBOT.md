@@ -2077,6 +2077,71 @@ estaciones de monte, España y Portugal), 2026-09-16 10:27 UTC.
 
 ---
 
+### 2026-09-17 (pasada buscadora — webcams para spots sin cámara)
+
+**Objetivo:** misma tarea recurrente, recontados los huecos vigentes:
+Plentzia, Ondarroa, Zumaia, Getaria, Pasaia (Euskadi), A Guarda, Sanxenxo
+(Galicia, ya descartados en pasadas previas — MeteoGalicia no tiene
+cámara de ninguno de los dos), Llanes, Ribadesella, Santander (Cantabria/
+Asturias), casi toda Cataluña/Murcia/Andalucía/Canarias/Baleares fuera de
+lo ya integrado, y Portugal entero. Como en pasadas anteriores, no se
+pudo priorizar por `spots_usuario` (sin credenciales de Supabase
+accesibles desde esta sesión).
+
+**✅ Encontrada e integrada — Pasaia, mismo proveedor AZTI/detectia.net ya
+usado para Sopelana/Lekeitio/Getxo.** Probando por fuerza bruta el
+esquema de nombre de fichero de este proveedor (`webcam-<lugar>.webp`,
+`webcam-<lugar>-azti.webp`) contra los huecos vascos, `webcam-pasaia-
+azti.webp` respondió `200` — descargada y confirmada de verdad: WebP VP8
+real, 2464×2056, ~140 KB, `Last-Modified` de hoy mismo (no una imagen
+estática/placeholder cacheada). Pasaia es un spot-hueco real (sin cámara
+desde que se creó, ver pasada 2026-09-16), así que esto sí rellena un
+hueco existente (a diferencia de otros aciertos del mismo proveedor
+encontrados en esta misma pasada — `deba-azti`, `zarautz-azti`,
+`hondarribia-azti` también dan `200`, pero esos tres spots ya tienen
+cámara por HLS de Gipuzkoa, así que no se tocan). Bajo riesgo, mismo
+patrón ya integrado varias veces — añadida directamente: `pasaia` en
+`functions/webcam/[slug].js` (`WEBCAMS`) y en `SPOTS_CON_WEBCAM`
+(`index.html`). Verificado con `node --check` antes de commitear. Sigue
+sin encontrarse fuente para Plentzia, Ondarroa, Zumaia ni Getaria con
+este mismo esquema de nombre (todas `404`, varias variantes probadas).
+
+**Llanes/Ribadesella — pista real pero no verificable sin más trabajo,
+no integrada.** `webcamsdeasturias.com` (agregador con red de cámaras
+reales del Principado, distinto de los agregadores ya descartados en
+pasadas previas como SkylineWebcams) tiene páginas dedicadas a Playa de
+Vega (Ribadesella) y Playa de Toró/Barro (Llanes). Inspeccionado el HTML
+real de la página de Vega: el reproductor es un iframe a
+`rtsp.me/embed/9d6iFr5a/` (servicio de re-streaming RTSP→HLS/embed) — el
+propio embed carga el stream por JavaScript (`devlinePlayerLoader`), sin
+ninguna URL de imagen/`.m3u8` directa visible en el HTML estático
+descargado por `curl`. No se pudo verificar una URL final proxyable sin
+inspeccionar peticiones de red reales desde un navegador (fuera del
+alcance de esta sesión) — se deja como pista para retomar, no se
+integra ni se propone como cambio todavía (regla de no inventar una
+URL: sin la URL real del stream, no hay nada que proponer).
+
+**Cantabria (Santander) sigue sin poder verificarse desde este runner**:
+`cantabria.es` vuelve a dar timeout (`000`), mismo síntoma que pasadas
+anteriores — no se trata como fuente rota, solo como límite de red de
+este entorno, igual que se documentó en la pasada de calibración de
+anoche.
+
+**Resultado neto:** 1 webcam nueva verificada e integrada (Pasaia).
+Ninguna otra novedad integrable esta pasada; Llanes/Ribadesella quedan
+como pista real a seguir investigando (necesita inspección de red desde
+navegador), no como propuesta todavía.
+
+**Fuentes:**
+[detectia.net — webcam-pasaia-azti.webp](https://detectia.net/img/webcam-pasaia-azti.webp),
+[Webcams de Asturias — Playa de Vega (Ribadesella)](https://www.webcamsdeasturias.com/asturias/oriente/ribadesella/vega/playa-de-vega-hd/132/),
+[Webcams de Asturias — Playa de Toró (Llanes)](https://www.webcamsdeasturias.com/asturias/oriente/llanes/llanes/playa-de-toro-mirador-de-toro-hd/53/).
+
+**Firmado:** robot buscador de fuentes (pasada de webcams para spots sin
+cámara), 2026-09-17 15:50 UTC.
+
+---
+
 ## Auditoría de datos
 
 ### 2026-08-31

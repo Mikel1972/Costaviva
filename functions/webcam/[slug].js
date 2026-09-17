@@ -14,7 +14,11 @@ const WEBCAMS = {
   // y comprobada, no un placeholder).
   lekeitio: "https://detectia.net/img/webcam-lekeitio.webp",
   getxo: "https://detectia.net/img/webcam-ereaga.webp",
-  // plentzia: sin fuente identificada todavía
+  // Pasaia, encontrada 2026-09-17 (mismo proveedor AZTI/detectia.net,
+  // slug distinto del resto: "-azti" en vez de sin sufijo). Verificada con
+  // descarga real: WebP 2464x2056, ~140 KB, no un placeholder.
+  pasaia: "https://detectia.net/img/webcam-pasaia-azti.webp",
+  // plentzia, ondarroa, zumaia, getaria: sin fuente identificada todavía
 
   // MeteoGalicia (Xunta de Galicia) — imagen JPG directa sin cabeceras
   // especiales, verificada en vivo 2026-09-09. El nombre de fichero puede
