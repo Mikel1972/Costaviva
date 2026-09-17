@@ -3777,6 +3777,35 @@ posible sin la RPC eliminar_grupo() pendiente de desplegar. Todos los datos
 de prueba borrados y verificados a 0. Informe completo en
 /tmp/experiencia-informe.txt.
 
+### 2026-09-17
+
+Tercera pasada intensiva de "usuario real exigente" contra producción
+(costaviva.org + API REST de Supabase) con las dos cuentas de prueba.
+Núcleo sólido de nuevo: entrada de diario real en Mundaka con todos los
+campos ambientales (marea, presión, viento, oleaje, temp. agua,
+nubosidad, coeficiente) llegando completos y coherentes con /prevision
+para ese spot — no se repitió el bug de índices cruzados que dejaba esos
+campos en blanco; /identificar-captura volvió a acertar "Lubina" con una
+foto real sin inventar talla/peso por falta de escala; el flujo completo
+de grupos con las dos cuentas (crear/invitar/unir/compartir por tipo de
+salida con interruptor maestro + aislamiento mientras no se comparte)
+funcionó exactamente como está diseñado; y `eliminar_grupo()` con un
+`grupo_id` inexistente ya da el error limpio "Grupo no encontrado"
+(confirma en producción el arreglo de hoy mismo,
+`20260917160000_eliminar_grupo_id_invalido.sql`). Un hallazgo, relacionado
+con el ya conocido de mareas casi nulas del Mediterráneo (2026-09-15): en
+Valencia, con un rango de marea real de solo ~9 cm en 48h, el filtro de
+ruido deja un único evento de "próxima pleamar" que puede caer más de 24h
+vista (la de mañana, no la de hoy) — y el panel de index.html
+(`panelMareaProxima`) muestra solo la hora ("16:00"), sin indicar si es
+hoy o mañana, lo que puede leerse como si ya hubiera pasado. No es un
+cálculo erróneo (es la consecuencia esperada del filtro de ruido ya
+documentado), pero sí una ambigüedad real de interfaz que valdría la
+pena aclarar con un indicador de "mañana" cuando el evento no cae en las
+próximas horas. Todos los datos de prueba (2 salidas, 2 capturas, 1
+grupo, 1 invitación, 1 membresía) borrados y verificados a 0. Informe
+completo en /tmp/experiencia-informe.txt.
+
 ---
 
 ## Robot de patrones de uso
