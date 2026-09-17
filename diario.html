@@ -271,6 +271,14 @@ if (!sesionInicial.session) {
 }
 const usuario = sesionInicial.session.user;
 
+// Analítica de uso propia (2026-09-17, ver index.html para el detalle) —
+// nunca bloquea la interacción si falla.
+async function registrarEvento(tipo, detalle) {
+  try {
+    await supabase.from("eventos_uso").insert({ user_id: usuario.id, tipo, detalle: detalle ?? null });
+  } catch (e) { /* nunca debe romper la interacción del usuario */ }
+}
+
 // Paywall (2026-09-15, pedido explícito del usuario): 7 días de prueba
 // desde el alta, luego bloqueo total sin suscripción activa —
 // mi_estado_suscripcion() ya resuelve el bypass del admin en el
@@ -994,6 +1002,7 @@ async function guardarSalida(fecha, idExistente) {
     btn.disabled = false;
     return;
   }
+  if (!idExistente) registrarEvento("crear_salida", { tipo_salida: tipoSalida });
   await cargarDatos();
   renderCalendario();
   abrirDia(fecha, new Date(fecha + "T00:00:00"));
@@ -1150,6 +1159,7 @@ async function guardarCaptura(salidaId, fecha, idExistente, ordenFotoBase) {
     const { data: captura, error } = await supabase.from("capturas").insert(datos).select().single();
     if (error) { mensajeEl.className = "mensaje error"; mensajeEl.textContent = error.message; btn.disabled = false; return; }
     capturaId = captura.id;
+    registrarEvento("crear_captura", { especie, tecnica: tecnica || null });
   }
   // El panel se repinta entero justo después de guardar (abrirDia más
   // abajo), así que un mensaje en mensajeEl no llegaría a verse — de ahí

@@ -463,6 +463,10 @@ formNueva.addEventListener("submit", async (e) => {
     mensajeNuevaEl.className = "mensaje error";
     return;
   }
+  // El popup de bienvenida (2026-09-17) ya no depende de nada puesto
+  // aquí — index.html lo decide solo, consultando
+  // perfiles.bienvenida_pendiente (marcado por servidor, funciona igual
+  // aunque el enlace del email se abra en otro navegador/dispositivo).
   window.location.href = "/";
 });
 
@@ -612,7 +616,8 @@ formRegistroDatos.addEventListener("submit", async (e) => {
   } else {
     // El admin se entera solo cuando el email quede confirmado de
     // verdad, sin bloquear a nadie, vía notificar-altas.yml (cron cada
-    // 30 min) — no hace falta avisar nada desde aquí.
+    // 30 min) — no hace falta avisar nada desde aquí. El popup de
+    // bienvenida tampoco necesita nada de aquí, ver index.html.
     mostrarPantalla(cajaRegistroEsperando);
   }
 });
