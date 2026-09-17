@@ -2140,6 +2140,62 @@ navegador), no como propuesta todavía.
 **Firmado:** robot buscador de fuentes (pasada de webcams para spots sin
 cámara), 2026-09-17 15:50 UTC.
 
+### 2026-09-17 16:27 UTC (pasada buscadora — mareas y oleaje)
+
+**Calibración — 4 puntos nuevos, cerrando el hueco de las boyas menos
+recientes** (candidatas señaladas explícitamente por la pasada nocturna
+de esta misma madrugada: Cabo de Gata, Dragonera, Cabo Peñas y
+Villano-Sisargas, todas sin rotar desde hace varios días). Mismo método
+de siempre: `curl` real a `poem.puertos.es/portus/StationData` para la
+altura medida, Marine API de Open-Meteo en las coordenadas exactas de
+cada boya para la calculada, emparejando por la hora UTC exacta del
+último dato real de cada boya (todas coincidieron en 2026-09-17 16:00
+UTC):
+
+| boya | altura medida | altura calculada | diferencia | % |
+|---|---|---|---|---|
+| 2548 Cabo de Gata | 0.82 m | 0.58 m | −0.24 m | −29.3% |
+| 2820 Dragonera (Mallorca) | 0.94 m | 0.96 m | +0.02 m | +2.1% |
+| 2242 Cabo Peñas | 1.88 m | 1.40 m | −0.48 m | −25.5% |
+| 2246 Villano-Sisargas | 1.99 m | 1.48 m | −0.51 m | −25.6% |
+
+Añadidos a `CALIBRACION.jsonl` (mismo `tipo:
+"boya_vs_openmeteo_mismo_punto"` de siempre). Recuento actualizado tras
+esta pasada: Cabo de Gata 3 puntos (−11.9%, +2.9%, −29.3% — signo
+mixto), Dragonera 2 puntos (−31.9%, +2.1% — signo mixto), Cabo Peñas 2
+puntos, Villano-Sisargas 2 puntos (−11.1%, −25.6% — mismo signo,
+todavía muestra mínima). **Curiosidad anotada, no un error**: el punto
+nuevo de Cabo Peñas (1.88 m medido → 1.40 m calculado, −25.5%) coincide
+EXACTAMENTE, hasta el decimal, con el único punto anterior de esa misma
+boya (2026-09-14T01:00 UTC) pese a ser una petición real distinta 3
+días después — verificado que no es un error de copia (los números
+salen del `curl` de hoy, con la hora de hoy); se deja constancia por si
+en el futuro se quiere investigar si es casualidad de estado de mar
+repetido o algún patrón del modelo, pero con un solo caso no hay nada
+que perseguir todavía. **Ninguna boya llega ni de lejos al mínimo de 15
+puntos** — sigue sin proponerse ningún factor de corrección.
+
+**Fuentes nuevas investigadas — sin resultado aprovechable.** Se buscó
+de nuevo un endpoint de Puertos del Estado que devuelva varias boyas en
+una sola petición (relevante por el límite de ~50 sub-peticiones de
+Cloudflare que ya documenta `ROBOT_REGLAS.md`, con 26 boyas ya en
+`BOYAS`). `widgets.pdf` de PORTUS (`portus.puertos.es/Portus/docs/`) no
+se pudo leer como documentación (es mayormente binario/imagen embebida,
+sin especificación de API legible). Se identificó el servidor
+OPeNDAP/THREDDS de Puertos del Estado
+(`opendap.puertos.es/thredds/catalog/circulation_coastal_bil/`),
+accesible por HTTP simple, pero sirve datos de **modelo de circulación
+en rejilla (NetCDF/DAP)**, no lecturas puntuales de boyas reales — no
+sirve como fuente de verdad independiente para calibrar (sería
+comparar un modelo contra otro modelo) ni como sustituto simple en JSON
+de las peticiones actuales a `StationData`, así que no se integra ni se
+propone. Se confirma que sigue sin encontrarse una alternativa de
+"todas las boyas en una llamada" — queda como limitación conocida, no
+como tarea resuelta.
+
+**Firmado:** robot buscador de fuentes (pasada de mareas y oleaje),
+2026-09-17 16:27 UTC.
+
 ---
 
 ## Auditoría de datos
