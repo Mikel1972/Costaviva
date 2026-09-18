@@ -4454,3 +4454,101 @@ Ninguna otra novedad esta pasada.
 
 **Firmado:** robot buscador de fuentes (pasada de webcams para spots sin
 cámara), 2026-09-18 07:40 UTC.
+
+---
+
+### 2026-09-18 14:20 UTC (pasada buscadora — corrientes marinas por zona, quinta pasada)
+
+**Qué se buscó:** continuación de las cuatro pasadas previas de corrientes
+(2026-09-14 19:37, 2026-09-15 13:31, 2026-09-15 18:35 y 2026-09-17 18:41,
+más arriba). La última dejó pendiente ampliar la calibración radar HF vs.
+Open-Meteo a "varias zonas/horas/días" antes de poder decidir nada — solo
+había 3 puntos, un único día, una única zona (EUSKOOS/Mundaka).
+
+**Salud de las 6 zonas, verificada de nuevo hoy:** las 6 (EUSKOOS,
+Galicia, Lisboa, Gibraltar, Ibiza, PLOCAN) siguen vivas con
+`time_coverage_end` de hoy mismo (`2026-09-18`, entre las 08:00Z de
+EUSKOOS y las 16:00Z de Lisboa/Ibiza/PLOCAN/South) — se confirma que la
+reanudación de EUSKOOS encontrada el 2026-09-17 no fue algo puntual de un
+día, sigue viva hoy también.
+
+**Calibración ampliada — 6 puntos nuevos, 2 zonas, 2 días (frente al 1
+zona/1 día de la pasada anterior):**
+- **Mundaka/EUSKOOS, segundo día** (03:00, 05:00, 08:00 UTC de hoy,
+  mismo punto ya usado el 2026-09-17): dirección real del radar rota
+  otra vez a lo largo del día (201°→7°→69°), con horas y velocidades
+  distintas al día anterior — refuerza que es variación real (marea),
+  no ruido de un único día suelto.
+- **Galicia, primera zona nueva calibrada** (03:00, 09:00, 12:00 UTC):
+  el punto real más cercano a un spot de Costaviva con cobertura de
+  radar (A Guarda, 41.900, −8.867) está a **~46 km mar adentro**
+  (41.921467, −9.502433) — comprobado en vivo que ni la ría de Vigo ni
+  la franja pegada a la costa de A Guarda tienen NINGUNA celda con dato
+  real (todo `null`), el radar de Galicia solo cubre mar abierto. Es un
+  hallazgo en sí mismo: si se integrara esto, no sería "corriente real
+  en el spot", sería "corriente real a decenas de km del spot".
+
+**Resultado de las 6 comparaciones (radar real vs. Open-Meteo, mismo
+punto/hora exactos):** la diferencia de dirección nunca baja de 60° en
+ningún punto de los 6 (rango 60°–165°), y la velocidad tampoco converge
+a un factor estable — en Galicia el radar sale sistemáticamente más
+bajo que Open-Meteo (0.28 vs 0.6, 0.69 vs 1.3, 0.44 vs 1.2 m/s, roughly
+2-3x), pero en Mundaka la relación se invierte según la hora (unas veces
+el radar es más alto, otras más bajo). **Con 9 puntos totales ya
+acumulados (3+6) en 2 zonas y 2 días, la conclusión provisional de la
+pasada anterior se sostiene y se refuerza**: no hay ningún factor de
+corrección único que tenga sentido proponer — el patrón real es que
+Open-Meteo no captura bien el componente de marea de la corriente
+costera, así que la única integración honesta seguiría siendo "mostrar
+el dato del radar como observación real, aparte del modelo", nunca
+mezclarlos con un factor.
+
+**Hallazgo metodológico nuevo, importante para cualquier integración
+futura — los flags de calidad del propio dataset SÍ marcan datos malos,
+y hay que mirar los dos campos, no uno solo:** al pedir `QCflag` y
+`CSPD_QC` junto a `EWCT`/`NSCT` por primera vez en esta serie de
+pasadas, se encontraron 2 puntos claramente erróneos que un uso ingenuo
+del dato (solo `EWCT`/`NSCT`, como han hecho las 4 pasadas anteriores)
+habría colado sin más: Mundaka 06:00Z de hoy dio una "corriente" de
+**2.6 m/s** (imposible para esta zona, muy por encima de cualquier otro
+punto medido) con `QCflag=4` y `CSPD_QC=4` (ambos "malo"); Galicia
+06:00Z dio un valor con `QCflag=4` también. Los dos se descartaron de la
+calibración de arriba. **Además, encontrado un caso donde los dos flags
+NO coinciden** (Mundaka 00:00Z de hoy: `QCflag=4` pero `CSPD_QC=1`) —
+confirma que hay que comprobar ambos campos antes de confiar en una
+celda, no basta con uno. Ninguna de las 4 pasadas anteriores de
+corrientes había usado estos campos de calidad — quedaba implícito en
+la documentación del dataset pero no se había comprobado en la práctica
+hasta ahora.
+
+**Búsqueda complementaria, sin verificar todavía:** `WebSearch` confirma
+que la misma red europea de radar HF (EuroGOOS European HFR Node) se
+redistribuye también a través de **Copernicus Marine Service**
+(`INSITU_GLO_PHY_UV_DISCRETE_NRT_013_048` y productos hermanos), "con
+flags de calidad y metadatos" según su propia descripción — podría ser
+una vía alternativa a EMODnet ERDDAP, potencialmente más oficial/
+estable. **No verificado con ninguna petición real esta pasada**
+(Copernicus Marine normalmente exige cuenta/token, a diferencia del
+ERDDAP anónimo de EMODnet que ya funciona) — queda como pista para una
+futura pasada, no como fuente confirmada.
+
+**Por qué solo propuesta, no implementación** (misma razón que las 4
+pasadas anteriores, ver `ROBOT_REGLAS.md`): sigue tocando
+`functions/prevision.js` por encima del límite de volumen y siendo una
+decisión de producto. El hallazgo de hoy (diferencia de dirección
+siempre grande, sin factor estable, y cobertura real solo mar adentro
+en Galicia) más bien debilita el caso de "mezclar" nada — si se retoma,
+apunta más a mostrar el radar como un dato de observación aparte,
+opcional, solo donde hay cobertura real, nunca como sustituto ni
+corrección del modelo. No se ha tocado código.
+
+**6 filas nuevas en `CALIBRACION.jsonl`** (`tipo:
+"corriente_radar_hf_vs_openmeteo"`), sumando 9 en total para este tipo.
+
+**Fuentes:**
+[EMODnet Physics ERDDAP — EUSKOOS NRT](https://erddap.emodnet-physics.eu/erddap/info/EUHFR_NRTcurrent_HFR-EUSKOOS-Total/index.html),
+[EMODnet Physics ERDDAP — Galicia NRT](https://erddap.emodnet-physics.eu/erddap/info/EUHFR_NRTcurrent_HFR-Galicia-Total/index.html),
+[Copernicus Marine Service — Global Ocean in-situ NRT currents (pista sin verificar)](https://data.marine.copernicus.eu/product/INSITU_GLO_PHY_UV_DISCRETE_NRT_013_048/description).
+
+**Firmado:** robot buscador de fuentes (pasada de corrientes marinas),
+2026-09-18 14:20 UTC.
