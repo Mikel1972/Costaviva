@@ -171,6 +171,24 @@ async function ultimaLecturaValida(stationId, sensorId, measureType, measureId, 
   return null;
 }
 
+// Varios puntos comparten la misma estación (ej. Zorrotza da la presión de
+// 6 de los 12 puntos) — pedirla una vez por punto en vez de una vez por
+// estación agotó el límite de 50 subpeticiones de un Worker (bug real,
+// 2026-09-18: 58 lecturas pedidas, error 500 genérico de Cloudflare, ni
+// siquiera llegaba al try/catch propio porque el runtime corta la
+// invocación entera). Este caché, con clave estación+sensor+medida,
+// deja el total real en ~37 — de sobra por debajo del límite.
+function cacheLecturas(jwt) {
+  const cache = new Map();
+  return (stationId, sensorId, measureType, measureId) => {
+    const clave = `${stationId}|${sensorId}|${measureType}|${measureId}`;
+    if (!cache.has(clave)) {
+      cache.set(clave, ultimaLecturaValida(stationId, sensorId, measureType, measureId, jwt).catch(() => null));
+    }
+    return cache.get(clave);
+  };
+}
+
 export async function onRequestPost(context) {
   const secretoEsperado = context.env.CRON_SECRET;
   const secretoRecibido = context.request.headers.get("X-Cron-Secret");
@@ -184,16 +202,17 @@ export async function onRequestPost(context) {
 
   const jwt = await firmarJwtEuskalmet(privateKeyPem);
   const ahora = new Date().toISOString();
+  const leer = cacheLecturas(jwt);
 
   const filas = await Promise.all(
     OBJETIVOS.map(async (obj) => {
       const [precipLectura, presionLectura, tempLectura, humedadLectura, vientoVelLectura, vientoDirLectura] = await Promise.all([
-        ultimaLecturaValida(obj.precip.id, obj.precip.sensor, "measuresForWater", "precipitation", jwt).catch(() => null),
-        ultimaLecturaValida(obj.presion.id, obj.presion.sensor, "measuresForAtmosphere", "pressure", jwt).catch(() => null),
-        obj.temp ? ultimaLecturaValida(obj.precip.id, obj.temp, "measuresForAir", "temperature", jwt).catch(() => null) : null,
-        obj.temp ? ultimaLecturaValida(obj.precip.id, obj.temp, "measuresForAir", "humidity", jwt).catch(() => null) : null,
-        obj.viento ? ultimaLecturaValida(obj.precip.id, obj.viento, "measuresForWind", "mean_speed", jwt).catch(() => null) : null,
-        obj.viento ? ultimaLecturaValida(obj.precip.id, obj.viento, "measuresForWind", "mean_direction", jwt).catch(() => null) : null,
+        leer(obj.precip.id, obj.precip.sensor, "measuresForWater", "precipitation"),
+        leer(obj.presion.id, obj.presion.sensor, "measuresForAtmosphere", "pressure"),
+        obj.temp ? leer(obj.precip.id, obj.temp, "measuresForAir", "temperature") : null,
+        obj.temp ? leer(obj.precip.id, obj.temp, "measuresForAir", "humidity") : null,
+        obj.viento ? leer(obj.precip.id, obj.viento, "measuresForWind", "mean_speed") : null,
+        obj.viento ? leer(obj.precip.id, obj.viento, "measuresForWind", "mean_direction") : null,
       ]);
       const ultimo = (lectura) => (lectura ? lectura.valores[lectura.valores.length - 1] : null);
       return {
