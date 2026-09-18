@@ -37,7 +37,15 @@ const RUTAS_BLOQUEADAS = new Set([
 // — solo cierra la fuga del propio código (lógica de auth, nombres de
 // cabeceras de secreto, comentarios internos) que no tiene por qué ser
 // público aunque no contenga secretos en sí.
-const PREFIJOS_BLOQUEADOS = ["/supabase/", "/test/", "/functions/"];
+// "/scripts/" añadido el 2026-09-18, al crear scripts/camaras/: mismo
+// hueco que ya tenía "/functions/" antes de la auditoría del 2026-09-13 —
+// Cloudflare Pages sirve el código fuente de scripts/turbidez/ y
+// scripts/camaras/ como archivo estático en su ruta literal (ej.
+// /scripts/turbidez/medir-turbidez.mjs) porque nada lo bloqueaba todavía.
+// No contienen secretos (el CRON_SECRET siempre llega por variable de
+// entorno, nunca hardcodeado), pero es código interno sin motivo para
+// estar público, mismo criterio que /functions/.
+const PREFIJOS_BLOQUEADOS = ["/supabase/", "/test/", "/functions/", "/scripts/"];
 
 export async function onRequest(context) {
   const { request, next } = context;
