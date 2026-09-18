@@ -8,7 +8,7 @@
 // de un frame de error del proveedor, un "sin señal", o un objetivo
 // tapado/roto), cuenta como sin señal sea cual sea la causa.
 //
-// Dos comprobaciones independientes, ambas cuentan como "sin señal":
+// Tres comprobaciones independientes, todas cuentan como "sin señal":
 // 1. Frame PLANO — sin variación de brillo real (ver UMBRAL_DESVIACION).
 // 2. Frame CONGELADO — con contenido real, pero IDÉNTICO al de la
 //    comprobación anterior durante más de UMBRAL_CONGELADA_MS seguidas.
@@ -23,6 +23,16 @@
 //    HTTP del proveedor. 3h de margen es tiempo de sobra para que
 //    cualquier cámara de mar en directo muestre algo distinto por las
 //    olas/la luz, incluso de noche.
+// 3. Fallo de descarga/decodificación (http_xxx, sin_respuesta,
+//    sin_pixeles) o frame plano, pero solo si se repite en la
+//    comprobación INMEDIATAMENTE SIGUIENTE (ver UMBRAL_FALLOS_SEGUIDOS).
+//    Bug real reportado por el usuario el mismo día: castrourdiales salió
+//    "sin señal" por un único 502 pasajero del servidor de Cantabria (las
+//    6 cámaras de ese proveedor fallaron juntas esa vez) — comprobó la
+//    cámara a mano y la imagen real tenía solo 15 min. Con
+//    comprobaciones cada 30 min, exigir 2 fallos seguidos significa que
+//    el problema tiene que durar más de media hora para llegar a
+//    mostrarse — un simple bache de red ya no pinta un punto rojo.
 //
 // Mismo motivo que scripts/turbidez/medir-turbidez.mjs para vivir aquí y
 // no en Cloudflare Pages: Workers no tiene ninguna API de imagen/canvas
@@ -59,6 +69,7 @@ if (!CRON_SECRET) {
 // positivos/negativos en real.
 const UMBRAL_DESVIACION = 3; // desviación típica de brillo (0-255) mínima para no ser "plano"
 const UMBRAL_CONGELADA_MS = 3 * 60 * 60 * 1000; // 3h con el mismo frame -> "congelado"
+const UMBRAL_FALLOS_SEGUIDOS = 2; // fallos/frame plano seguidos antes de mostrarlo (evita baches de red de una sola pasada)
 
 // Mismas URLs que WEBCAMS_HLS en index.html — mantener sincronizado a
 // mano, igual que ya hace SPOTS_VIDEO en scripts/turbidez/medir-turbidez.mjs.
@@ -126,47 +137,68 @@ async function comprobarVideo(url) {
 }
 
 // A partir del resultado bruto de esta pasada y el estado guardado la
-// pasada anterior, decide sinSenal/motivo/hashFrame/hashDesde. Vive aparte
-// de comprobarImagen/comprobarVideo porque necesita el estado previo (que
-// esas funciones no conocen) para poder comparar el hash.
+// pasada anterior, decide sinSenal/motivo/hashFrame/hashDesde/fallosSeguidos.
+// Vive aparte de comprobarImagen/comprobarVideo porque necesita el estado
+// previo (que esas funciones no conocen) para poder comparar el hash y
+// contar fallos consecutivos.
 function decidirEstado(bruto, previo, ahoraISO) {
   if (!bruto.ok) {
     // No se pudo ni descargar/decodificar — se conserva el hash previo tal
     // cual (no se puede comparar nada esta vez), nunca se inventa uno.
-    return { sinSenal: true, motivo: bruto.motivo, hashFrame: previo?.hashFrame ?? null, hashDesde: previo?.hashDesde ?? null };
+    const fallosSeguidos = (previo?.fallosSeguidos ?? 0) + 1;
+    return {
+      sinSenal: fallosSeguidos >= UMBRAL_FALLOS_SEGUIDOS,
+      motivo: bruto.motivo,
+      fallosSeguidos,
+      hashFrame: previo?.hashFrame ?? null,
+      hashDesde: previo?.hashDesde ?? null,
+    };
   }
   const mismoHash = !!previo?.hashFrame && previo.hashFrame === bruto.hash;
   const hashDesde = mismoHash ? (previo.hashDesde ?? ahoraISO) : ahoraISO;
 
   if (bruto.desviacion < UMBRAL_DESVIACION) {
-    return { sinSenal: true, motivo: "frame_plano", hashFrame: bruto.hash, hashDesde };
+    const fallosSeguidos = (previo?.fallosSeguidos ?? 0) + 1;
+    return { sinSenal: fallosSeguidos >= UMBRAL_FALLOS_SEGUIDOS, motivo: "frame_plano", fallosSeguidos, hashFrame: bruto.hash, hashDesde };
   }
+  // Lectura buena de verdad -> se resetea el contador de fallos seguidos,
+  // aunque acabe marcándose congelada por el motivo independiente del hash.
   const congelada = mismoHash && Date.now() - new Date(hashDesde).getTime() > UMBRAL_CONGELADA_MS;
-  return { sinSenal: congelada, motivo: congelada ? "frame_congelado" : "ok", hashFrame: bruto.hash, hashDesde };
+  return { sinSenal: congelada, motivo: congelada ? "frame_congelado" : "ok", fallosSeguidos: 0, hashFrame: bruto.hash, hashDesde };
 }
 
 // Lee el estado guardado la pasada anterior de cada cámara — hace falta
-// para decidir tanto "ultima_senal_en" (ver el comentario largo en
-// functions/registrar-estado-camaras.js) como si el hash de esta pasada
-// es el mismo que el de la anterior (detección de frame congelado).
+// para decidir "ultima_senal_en" (ver el comentario largo en
+// functions/registrar-estado-camaras.js), si el hash de esta pasada es el
+// mismo que el de la anterior (frame congelado), y cuántos fallos seguidos
+// lleva (debounce de fallos/frame plano).
 async function estadoPrevioPorSlug() {
-  const resp = await fetch(`${SUPABASE_URL}/rest/v1/camara_estado?select=spot_slug,ultima_senal_en,hash_frame,hash_desde`, {
+  const resp = await fetch(`${SUPABASE_URL}/rest/v1/camara_estado?select=spot_slug,ultima_senal_en,hash_frame,hash_desde,fallos_seguidos`, {
     headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
   });
   if (!resp.ok) return {};
   const filas = await resp.json();
   return Object.fromEntries(
-    filas.map((f) => [f.spot_slug, { ultimaSenalEn: f.ultima_senal_en, hashFrame: f.hash_frame, hashDesde: f.hash_desde }])
+    filas.map((f) => [
+      f.spot_slug,
+      { ultimaSenalEn: f.ultima_senal_en, hashFrame: f.hash_frame, hashDesde: f.hash_desde, fallosSeguidos: f.fallos_seguidos ?? 0 },
+    ])
   );
 }
 
 function construirLectura(slug, bruto, previo, ahora) {
   const estado = decidirEstado(bruto, previo, ahora);
+  // "ultima_senal_en" se basa en si ESTA lectura fue buena de verdad (no en
+  // si el debounce ya lo enseña como sin señal) — así "sin señal desde hace
+  // X" cuenta desde el último frame realmente bueno, no desde que empezó a
+  // mostrarse en pantalla.
+  const lecturaBuena = bruto.ok && bruto.desviacion >= UMBRAL_DESVIACION;
   return {
     spot: slug,
     sinSenal: estado.sinSenal,
     motivo: estado.motivo,
-    ultimaSenalEn: estado.sinSenal ? (previo?.ultimaSenalEn ?? null) : ahora,
+    ultimaSenalEn: lecturaBuena ? ahora : (previo?.ultimaSenalEn ?? null),
+    fallosSeguidos: estado.fallosSeguidos,
     hashFrame: estado.hashFrame,
     hashDesde: estado.hashDesde,
   };
