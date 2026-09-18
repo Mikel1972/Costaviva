@@ -603,7 +603,10 @@ async function datosEstacionesMonteRios(privateKeyPem) {
   if (!privateKeyPem) return { error: "Falta EUSKALMET_API_KEY" };
   try {
     const estaciones = await euskalmetGet("/euskalmet/stations", privateKeyPem);
-    return { ok: true, muestra: Array.isArray(estaciones) ? estaciones.slice(0, 3) : estaciones };
+    if (!Array.isArray(estaciones)) return { ok: true, noEsArray: true, valor: estaciones };
+    const idsUnicos = [...new Set(estaciones.map((e) => e.stationId))];
+    const actual = await euskalmetGet(`/euskalmet/stations/${idsUnicos[0]}/current`, privateKeyPem);
+    return { ok: true, total: estaciones.length, idsUnicos: idsUnicos.length, primerosIds: idsUnicos.slice(0, 15), ejemploCurrent: actual };
   } catch (e) {
     return { error: String(e) };
   }
