@@ -1475,6 +1475,12 @@ let TURBIDEZ = {};
 // comprobadoEn } }. No distingue de noche de cámara caída a propósito
 // (ver supabase/migrations/20260918120000_camara_estado.sql).
 let CAMARAS = {};
+// Precipitación/presión real de estaciones de monte de Euskalmet, para
+// los 6 ríos vascos sin caudal real (ver datosMonteRios en
+// functions/prevision.js) — { <rio>: { <tramo>: { precipitacionMm,
+// estacionPrecip, presionHpa, estacionPresion, actualizado } } }.
+// Actualizado una vez al día, nunca en cada visita.
+let MONTE_RIOS = {};
 function spotVigente(s) {
   return !!s.actualizadoEn && (Date.now() - s.actualizadoEn) < VIGENCIA_MAX_MS;
 }
@@ -1567,6 +1573,7 @@ async function actualizarDesdeBackend() {
     }
     if (datos.turbidez) TURBIDEZ = datos.turbidez;
     if (datos.camaras) CAMARAS = datos.camaras;
+    if (datos.monteRios) MONTE_RIOS = datos.monteRios;
     if (datos.caudales) {
       RIOS.forEach((r) => {
         r.puntos.forEach((p) => {
@@ -1892,6 +1899,7 @@ function crearMarcadores() {
         <div class="rio-nombre">${r.rio}</div>
         <div class="rio-tramo">${p.tramo}${p.estacion ? ` — estación ${p.estacion}` : ""}</div>
         <div class="rio-caudal"><span class="chip" style="width:8px;height:8px;border-radius:2px;background:${cat.color};"></span>Caudal: ${detalleCaudal}</div>
+        ${lineaMonteRiosHtml(r.rio, p.tramo)}
       `;
       L.marker([p.lat, p.lon], { icon }).addTo(capaRios)
         .bindTooltip(llamada, { direction: "top", offset: [0, -6], className: "llamada-rio", opacity: 1 });
@@ -2532,6 +2540,21 @@ function pintarWebcamHls(slug, nombre) {
   } else {
     cont.innerHTML = `<div class="tarjeta" style="text-align:center; color:#42585F; font-size:12px;">Tu navegador no soporta vídeo en directo (HLS).</div>`;
   }
+}
+
+// Precipitación/presión real de estaciones de monte de Euskalmet (ver
+// MONTE_RIOS/datosMonteRios en functions/prevision.js) — solo para la
+// cabecera y el tramo medio de los 6 ríos vascos sin caudal real; la
+// desembocadura no lleva esto (ya tiene datos reales propios vía su
+// spotCosta). Complementario al caudal, nunca lo sustituye — no es el
+// mismo dato.
+function lineaMonteRiosHtml(rio, tramo) {
+  const d = MONTE_RIOS[rio]?.[tramo];
+  if (!d || (d.precipitacionMm == null && d.presionHpa == null)) return "";
+  const partes = [];
+  if (d.precipitacionMm != null) partes.push(`🌧 ${d.precipitacionMm} mm/h (${d.estacionPrecip})`);
+  if (d.presionHpa != null) partes.push(`${d.presionHpa} hPa (${d.estacionPresion})`);
+  return `<div class="rio-caudal" style="margin-top:2px; color:#5C7680;">${partes.join(" · ")}</div>`;
 }
 
 const COLOR_TURBIDEZ = { "no turbia": "#4F9D69", "turbia": "#D4A24C", "muy turbia": "#A34A35" };
