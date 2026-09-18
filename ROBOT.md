@@ -2504,6 +2504,107 @@ histórico por zona), 2026-09-17 23:10 UTC.
 
 ---
 
+### 2026-09-18 13:10 UTC (pasada buscadora — mareas y oleaje)
+
+**Calibración — 3 puntos nuevos, rotación de las boyas exteriores menos
+recientes.** Candidatas señaladas por la pasada buscadora de ayer
+(2026-09-17 16:27 UTC) y confirmadas como las que llevaban más tiempo sin
+repetirse (Dragonera ya recibió un punto extra en la pasada nocturna de
+esta madrugada, así que no le tocaba hoy): mismo método de siempre,
+`curl` real a `poem.puertos.es/portus/StationData` para la altura
+medida, Marine API de Open-Meteo en las coordenadas exactas de cada boya
+para la calculada, emparejando por la hora UTC exacta (13:00 UTC en las
+3):
+
+| boya | altura medida | altura calculada | diferencia | % |
+|---|---|---|---|---|
+| 2548 Cabo de Gata | 0.82 m | 0.84 m | +0.02 m | +2.4% |
+| 2242 Cabo Peñas | 2.70 m | 2.32 m | −0.38 m | −14.1% |
+| 2246 Villano-Sisargas | 2.34 m | 2.38 m | +0.04 m | +1.7% |
+
+Añadidos a `CALIBRACION.jsonl` (`tipo: "boya_vs_openmeteo_mismo_punto"`).
+Recuento tras esta pasada: **Cabo de Gata** 4 puntos (−11.9%, +2.9%,
+−29.3%, +2.4% — sigue con signo mixto). **Cabo Peñas** 3 puntos (−25.5%,
+−25.5%, −14.1% — los 3 ahora con signo negativo, aunque las dos primeras
+lecturas coinciden hasta el decimal por una casualidad ya anotada el
+2026-09-17; con el punto de hoy distinto, empieza a parecer un sesgo
+real más que una repetición de caché). **Villano-Sisargas** 3 puntos
+(−11.1%, −25.6%, +1.7% — sigue con signo mixto). Ninguna llega ni de
+lejos al mínimo de 15 puntos — no se propone ningún factor de
+corrección.
+
+**Fuente nueva real encontrada — catálogo OGC API Features del
+Instituto Hidrográfico de Portugal (`ogcapi.hidrografico.pt`), verificado
+en vivo, pero con un límite importante que hay que dejar anotado antes
+de que otra pasada intente integrarlo a ciegas.** Buscando alternativas
+a Puertos del Estado para el lado portugués (hasta ahora solo cubierto
+por la boya de Nazaré ya integrada), apareció este servidor OGC
+(`https://ogcapi.hidrografico.pt/collections?f=json`, sin autenticación,
+CORS no comprobado pero HTTP directo funciona bien) con **~40
+colecciones geoespaciales reales**, entre ellas tres relevantes para
+mareas/oleaje:
+- `buoys_datawell` (Red de boyas Datawell Waverider): 11 boyas reales,
+  con estado (`active`/`inactive`) y timestamp del último dato
+  (`last_sea`) — confirmadas **activas con dato reciente hoy**: Leixões
+  (CSA92/D, −8.9825, 41.316, `last_sea` 2026-09-17T11:32 UTC), Sines
+  (CSA83/1D), Faro (CSA82/D), Caniçal (Madeira) y Graciosa (Azores).
+- `buoys_Fugro_oceanor_wavescan`: 9 boyas, incluida **"Boia Nazaré
+  Costeira" (CSA88/2, `id_est=2`) — el mismo `id_est=2` que ya usa
+  `datosBoyaNazare()` en `functions/prevision.js` contra
+  `monican.hidrografico.pt/json/boia.graph.php`**, así que esta
+  colección confirma de forma independiente que la boya que ya
+  integramos es real y sigue activa (`last_data` 2026-09-18T12:00 UTC,
+  justo antes de esta pasada). También aparecen ZLT1/ZLT2 (activas) y
+  varias boyas oceánicas ya inactivas (Nazaré Oceânica, Leixões
+  Oceânica, Sines Oceânica, Faro Oceânica).
+- `tide_obs_nrt` (Red de estaciones mareográficas activas): catálogo de
+  estaciones de marea reales (Funchal, Leixões, Vila Real de Santo
+  António...) con coordenadas.
+
+**El límite real, comprobado con peticiones directas, no solo
+sospechado**: estas tres colecciones son catálogos de METADATOS
+(posición, nombre, estado, fecha del último dato) — ninguna trae el
+valor real (altura de ola, nivel del mar) dentro de la propia respuesta
+OGC, ni existe una colección `*_obs`/`*_data` hermana con las lecturas.
+Probé el mismo patrón que ya funciona para Nazaré
+(`monican.hidrografico.pt/json/boia.graph.php` con el `id_est=4` de la
+boya Datawell de Leixões, que es la más interesante por estar cerca de
+los spots portugueses de Viana do Castelo/Póvoa de Varzim) y con varias
+variantes razonables de `dbn` (`datawell`, `csa`, `leixoes`, `porto`,
+además del `monican` que sí funciona para Nazaré) — las 4 devolvieron
+`302` a `index.php` (mismo error que con un `id_est` no reconocido en
+esa base de datos), así que la red Datawell claramente vive en un
+sistema/base de datos distinto de `monican` y no he encontrado cuál.
+**No se ha inventado ningún parámetro** — se probaron variantes y se
+descartaron por no dar resultado real, no se propone ninguna de ellas.
+Queda como pista real y verificada (existe una boya activa cerca de
+Leixões, con dato de hoy) pero sin forma de leer su valor todavía —
+candidata a retomar en una futura pasada, quizá inspeccionando
+`https://www.hidrografico.pt/m.mare` o el visor de AnavNet en un
+navegador real (fuera del alcance de esta sesión, ver limitación de red
+ya documentada en pasadas anteriores).
+
+**Fuentes nuevas de bulk buoy — sin resultado, mismo diagnóstico que el
+2026-09-17.** Se volvió a buscar un endpoint de Puertos del Estado con
+"todas las boyas en una sola petición" (relevante por el límite de ~50
+sub-peticiones de Cloudflare). Encontrada la tabla
+`static.puertos.es/pred_simplificada/Predolas/tablas.html`, pero enlaza
+a `bancodatos.puertos.es/TablaAccesoSimplificado/` — predicción de
+modelo (HIRLAM/WAM) por puerto, no lectura real de boya; mismo problema
+ya descartado el 2026-09-17 con el servidor OPeNDAP (comparar un modelo
+contra otro modelo no sirve para calibrar). No se integra ni se
+propone.
+
+**Fuentes:**
+[ogcapi.hidrografico.pt — catálogo de colecciones](https://ogcapi.hidrografico.pt/collections?f=json),
+[Instituto Hidrográfico — Acesso a Dados / OGC API Features](https://www.hidrografico.pt/paginas-genericas/dt/dcdt/acesso-a-dados/oapif/),
+[Tablas de Viento y Oleaje, Puertos del Estado/AEMET](https://static.puertos.es/pred_simplificada/Predolas/tablas.html).
+
+**Firmado:** robot buscador de fuentes (pasada de mareas y oleaje),
+2026-09-18 13:10 UTC.
+
+---
+
 ## Auditoría de datos
 
 ### 2026-08-31
