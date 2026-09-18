@@ -516,121 +516,38 @@ async function datosCamarasPorSpot() {
   }
 }
 
-// Estaciones de monte de Euskalmet, para rellenar precipitación/presión
-// real en los 6 ríos vascos que no tienen caudal real (URA/Diputación de
-// Bizkaia bloquean el acceso automático a su catálogo, ver RIOS en
-// index.html — esos 6 se quedan con "caudal: null" a propósito). Pedido
-// explícito del usuario 2026-09-14, credenciales resueltas 2026-09-18.
+// Precipitación/presión real de estaciones de monte de Euskalmet, para
+// los 6 ríos vascos que no tienen caudal real (URA/Diputación de Bizkaia
+// bloquean el acceso automático a su catálogo, ver RIOS en index.html —
+// esos 6 se quedan con "caudal: null" a propósito). Pedido explícito del
+// usuario 2026-09-14, credenciales resueltas 2026-09-18.
 //
-// Autenticación: JWT RS256 firmado con la clave privada
-// (EUSKALMET_API_KEY, variable de entorno — nunca en el repo), formato de
-// payload verificado contra el código fuente real de una librería cliente
-// ya publicada (github.com/r3v1/python-euskalmet, no la documentación
-// pública de Euskalmet, que no detalla esto) — no se ha adivinado nada de
-// esta parte. Cloudflare Workers no tiene ninguna librería JWT instalable
-// sin build step, así que la firma se hace a mano con Web Crypto
-// (SubtleCrypto), disponible de forma nativa en el runtime.
-const EUSKALMET_BASE = "https://api.euskadi.eus";
-// Cuenta real asociada a esta clave privada — no es datos@costaviva.org
-// (esa dirección nunca pudo completar el alta: Cloudflare Email Routing
-// descarta cualquier correo que no pase SPF/DKIM, y el servidor de
-// opendata.euskadi.eus no los tiene bien configurados; confirmado con
-// Google, "Unauthenticated" en el log de Cloudflare Email Routing,
-// 2026-09-18). Se usó un Gmail personal como workaround y SÍ llegó la key.
-const EUSKALMET_EMAIL = "cot2038@gmail.com";
-const EUSKALMET_ISS = "Costaviva";
-
-function base64UrlDesdeBytes(bytes) {
-  let binario = "";
-  for (let i = 0; i < bytes.length; i++) binario += String.fromCharCode(bytes[i]);
-  return btoa(binario).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-}
-function base64UrlDesdeTexto(texto) {
-  return base64UrlDesdeBytes(new TextEncoder().encode(texto));
-}
-function pemADer(pem) {
-  const b64 = pem.replace(/-----BEGIN [^-]+-----/g, "").replace(/-----END [^-]+-----/g, "").replace(/\s+/g, "");
-  const binario = atob(b64);
-  const bytes = new Uint8Array(binario.length);
-  for (let i = 0; i < binario.length; i++) bytes[i] = binario.charCodeAt(i);
-  return bytes.buffer;
-}
-
-// exp/iat cortos (5 min), calculados en cada llamada — a diferencia de la
-// librería de referencia (que los lee de un fichero de configuración
-// estático), aquí no tiene sentido guardar una expiración fija: cada
-// petición firma su propio JWT de un solo uso.
-async function firmarJwtEuskalmet(privateKeyPem) {
-  const header = { alg: "RS256", typ: "JWT" };
-  const ahoraS = Math.floor(Date.now() / 1000);
-  const payload = {
-    aud: "met01.apikey",
-    iss: EUSKALMET_ISS,
-    exp: ahoraS + 300,
-    iat: ahoraS,
-    version: "1.0.0",
-    email: EUSKALMET_EMAIL,
-  };
-  const entrada = `${base64UrlDesdeTexto(JSON.stringify(header))}.${base64UrlDesdeTexto(JSON.stringify(payload))}`;
-  const clave = await crypto.subtle.importKey(
-    "pkcs8",
-    pemADer(privateKeyPem),
-    { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
-    false,
-    ["sign"]
-  );
-  const firma = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", clave, new TextEncoder().encode(entrada));
-  return `${entrada}.${base64UrlDesdeBytes(new Uint8Array(firma))}`;
-}
-
-// Recibe el JWT ya firmado (nunca la clave) — firmar de más cuesta CPU de
-// verdad: RSA-sign con Web Crypto varias veces en la misma invocación llegó
-// a agotar el límite de recursos de un Worker (error 1102) al barrer varias
-// estaciones a la vez durante las pruebas de esta integración. Un JWT vale
-// para las varias llamadas de una misma petición a /prevision (5 min de
-// validez, de sobra).
-async function euskalmetGet(endpoint, jwt) {
-  const resp = await fetch(`${EUSKALMET_BASE}${endpoint}`, {
-    headers: { Authorization: `Bearer ${jwt}`, Accept: "application/json" },
-  });
-  if (!resp.ok) throw new Error(`Euskalmet HTTP ${resp.status} (${endpoint}): ${(await resp.text().catch(() => "")).slice(0, 300)}`);
-  return resp.json();
-}
-
-// PASO 1 de la integración (2026-09-18): todavía no sabemos la forma real
-// del JSON que devuelve /euskalmet/stations (la documentación pública no
-// la detalla, y no podemos probarla nosotros mismos sin la clave privada,
-// que nunca debe pasar por esta sesión) — así que de momento esta función
-// solo pide la lista y la devuelve tal cual, para inspeccionarla en preview
-// con datos reales antes de escribir la resolución de estación más
-// cercana / sensores / lectura. No es la versión final.
-async function datosEstacionesMonteRios(privateKeyPem, offset, limit) {
-  if (!privateKeyPem) return { error: "Falta EUSKALMET_API_KEY" };
+// La llamada real a la API de Euskalmet (JWT RS256 + lecturas por
+// estación) vive en functions/actualizar-euskalmet-rios.js, corrida una
+// vez al día por .github/workflows/euskalmet-rios.yml (decisión explícita
+// del usuario: "con dar la medida una vez al día es más que suficiente").
+// Aquí solo se lee el resultado ya guardado — mismo patrón que
+// datosTurbidezPorSpot()/datosCamarasPorSpot(), nunca se llama a Euskalmet
+// en cada visita a /prevision.
+async function datosMonteRios() {
   try {
-    const jwt = await firmarJwtEuskalmet(privateKeyPem);
-    const estaciones = await euskalmetGet("/euskalmet/stations", jwt);
-    if (!Array.isArray(estaciones)) return { ok: true, noEsArray: true, valor: estaciones };
-    const idsUnicos = [...new Set(estaciones.map((e) => e.stationId))];
-    if (offset == null) return { ok: true, total: estaciones.length, idsUnicos: idsUnicos.length };
-    const tanda = idsUnicos.slice(offset, offset + limit);
-    const actuales = await Promise.all(
-      tanda.map((id) =>
-        euskalmetGet(`/euskalmet/stations/${id}/current`, jwt)
-          .then((d) => ({
-            id,
-            tipo: d.stationType,
-            nombre: d.name?.SPANISH,
-            municipio: d.municipality?.SPANISH,
-            lat: d.position?.position?.GOOGLE?.y,
-            lon: d.position?.position?.GOOGLE?.x,
-            sensores: (d.sensors || []).map((s) => s.sensorKey.replace("euskalmet/sensors/", "")),
-          }))
-          .catch((e) => ({ id, error: String(e) }))
-      )
-    );
-    return { ok: true, idsUnicos: idsUnicos.length, offset, tanda: actuales };
+    const url = `${SUPABASE_URL}/rest/v1/euskalmet_rios?select=rio,punto,precipitacion_mm,estacion_precip_nombre,presion_hpa,estacion_presion_nombre,actualizado_en`;
+    const resp = await fetch(url, { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } });
+    if (!resp.ok) return {};
+    const filas = await resp.json();
+    const resultado = {};
+    for (const f of filas) {
+      (resultado[f.rio] ||= {})[f.punto] = {
+        precipitacionMm: f.precipitacion_mm,
+        estacionPrecip: f.estacion_precip_nombre,
+        presionHpa: f.presion_hpa,
+        estacionPresion: f.estacion_presion_nombre,
+        actualizado: f.actualizado_en,
+      };
+    }
+    return resultado;
   } catch (e) {
-    return { error: String(e) };
+    return {};
   }
 }
 
@@ -1128,7 +1045,7 @@ export async function onRequestGet(context) {
   const cacheada = await cache.match(cacheKey);
   if (cacheada) return cacheada;
 
-  const [resultados, boyasEspana, boyaNazare, rayosNacional, caudales, estacionesAemet, turbidez, camaras, euskalmetDebug] = await Promise.all([
+  const [resultados, boyasEspana, boyaNazare, rayosNacional, caudales, estacionesAemet, turbidez, camaras, monteRios] = await Promise.all([
     previsionTodosSpots(SPOTS).catch((e) =>
       SPOTS.map((spot) => ({ slug: spot.slug, nombre: spot.nombre, error: String(e) }))
     ),
@@ -1141,15 +1058,11 @@ export async function onRequestGet(context) {
     datosEstacionesAemet(context.env.AEMET_API_KEY).catch((e) => ({ error: String(e) })),
     datosTurbidezPorSpot(),
     datosCamarasPorSpot(),
-    datosEstacionesMonteRios(
-      context.env.EUSKALMET_API_KEY,
-      new URL(request.url).searchParams.has("euskOffset") ? Number(new URL(request.url).searchParams.get("euskOffset")) : null,
-      Number(new URL(request.url).searchParams.get("euskLimit") || 40)
-    ),
+    datosMonteRios(),
   ]);
   const boyas = [...boyasEspana, boyaNazare];
 
-  const respuesta = new Response(JSON.stringify({ spots: resultados, boyas, rayosNacional, caudales, estacionesAemet, turbidez, camaras, euskalmetDebug }, null, 2), {
+  const respuesta = new Response(JSON.stringify({ spots: resultados, boyas, rayosNacional, caudales, estacionesAemet, turbidez, camaras, monteRios }, null, 2), {
     headers: {
       "content-type": "application/json; charset=utf-8",
       // El modelo de Open-Meteo se actualiza varias horas, no hace falta
