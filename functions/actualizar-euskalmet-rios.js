@@ -34,25 +34,38 @@
 // comprobarlo así: pedir /euskalmet/readings/... para varias horas
 // seguidas — un 404 sistemático en todas es un sensor muerto, no un
 // hueco de datos puntual.
+// temp/viento (2026-09-18, pedido explícito del usuario): sacados SIEMPRE
+// de la misma estación de precipitación de cada punto (nunca de la de
+// presión, más lejana) — el viento en superficie cambia mucho más por el
+// relieve local que la presión, así que solo tiene sentido si es la
+// estación realmente cercana. "viento" se omite cuando esa estación no
+// tenía sensor de viento real (verificado uno a uno, no asumido por el
+// prefijo del id).
 const OBJETIVOS = [
   { rio: "Lea", punto: "Cabecera (Munitibar)",
     precip: { id: "C0BD", nombre: "Iruzubieta (Ziortza-Bolibar)", sensor: "G458" },
-    presion: { id: "C03A", nombre: "Zorrotza (Bilbao)", sensor: "S0AG" } },
+    presion: { id: "C03A", nombre: "Zorrotza (Bilbao)", sensor: "S0AG" },
+    temp: "R0SI" },
   { rio: "Lea", punto: "Medio (Amoroto)",
     precip: { id: "C0BA", nombre: "Oleta (Amoroto)", sensor: "G418" },
-    presion: { id: "C03A", nombre: "Zorrotza (Bilbao)", sensor: "S0AG" } },
+    presion: { id: "C03A", nombre: "Zorrotza (Bilbao)", sensor: "S0AG" },
+    temp: "R0CX" },
   { rio: "Oka", punto: "Cabecera (Muxika)",
     precip: { id: "C063", nombre: "Muxika", sensor: "G4R7" },
-    presion: { id: "C03A", nombre: "Zorrotza (Bilbao)", sensor: "S0AG" } },
+    presion: { id: "C03A", nombre: "Zorrotza (Bilbao)", sensor: "S0AG" },
+    temp: "R0BT" },
   { rio: "Oka", punto: "Medio (Gernika-Lumo)",
     precip: { id: "C063", nombre: "Muxika", sensor: "G4R7" },
-    presion: { id: "C03A", nombre: "Zorrotza (Bilbao)", sensor: "S0AG" } },
+    presion: { id: "C03A", nombre: "Zorrotza (Bilbao)", sensor: "S0AG" },
+    temp: "R0BT" },
   { rio: "Estepona (Zarraga)", punto: "Cabecera (Meñaka)",
     precip: { id: "C069", nombre: "Almike (Bermeo)", sensor: "G4AR" },
-    presion: { id: "C03A", nombre: "Zorrotza (Bilbao)", sensor: "S0AG" } },
+    presion: { id: "C03A", nombre: "Zorrotza (Bilbao)", sensor: "S0AG" },
+    temp: "R014", viento: "Y033" },
   { rio: "Estepona (Zarraga)", punto: "Medio (Bakio urbano)",
     precip: { id: "C019", nombre: "Matxitxako (Bermeo)", sensor: "G455" },
-    presion: { id: "C042", nombre: "Punta Galea (Getxo)", sensor: "S0AC" } },
+    presion: { id: "C042", nombre: "Punta Galea (Getxo)", sensor: "S0AC" },
+    temp: "R0FM", viento: "Y0BT" },
   { rio: "Butroe", punto: "Cabecera (Fruiz)",
     // Derio (C003/G4R2) descartada tras el primer run real: su sensor de
     // precipitación devuelve ENTITY_NOT_FOUND en todas las horas
@@ -61,22 +74,28 @@ const OBJETIVOS = [
     // estación ya usada para el tramo medio de este río, confirmada con
     // datos reales en ese mismo run.
     precip: { id: "C057", nombre: "Mungia", sensor: "G4D0" },
-    presion: { id: "C03A", nombre: "Zorrotza (Bilbao)", sensor: "S0AG" } },
+    presion: { id: "C03A", nombre: "Zorrotza (Bilbao)", sensor: "S0AG" },
+    temp: "R0GF", viento: "Y011" },
   { rio: "Butroe", punto: "Medio (Gatika)",
     precip: { id: "C057", nombre: "Mungia", sensor: "G4D0" },
-    presion: { id: "C042", nombre: "Punta Galea (Getxo)", sensor: "S0AC" } },
+    presion: { id: "C042", nombre: "Punta Galea (Getxo)", sensor: "S0AC" },
+    temp: "R0GF", viento: "Y011" },
   { rio: "Arroyo Sopelana", punto: "Cabecera (pinar)",
     precip: { id: "C0B8", nombre: "Larrainazubi (Getxo)", sensor: "G4DB" },
-    presion: { id: "C042", nombre: "Punta Galea (Getxo)", sensor: "S0AC" } },
+    presion: { id: "C042", nombre: "Punta Galea (Getxo)", sensor: "S0AC" },
+    temp: "R0HJ" },
   { rio: "Arroyo Sopelana", punto: "Medio (canalizado)",
     precip: { id: "C0B8", nombre: "Larrainazubi (Getxo)", sensor: "G4DB" },
-    presion: { id: "C042", nombre: "Punta Galea (Getxo)", sensor: "S0AC" } },
+    presion: { id: "C042", nombre: "Punta Galea (Getxo)", sensor: "S0AC" },
+    temp: "R0HJ" },
   { rio: "Nervión", punto: "Cabecera (Orduña)",
     precip: { id: "C067", nombre: "Gardea (Laudio/Llodio)", sensor: "G4R8" },
-    presion: { id: "C03A", nombre: "Zorrotza (Bilbao)", sensor: "S0AG" } },
+    presion: { id: "C03A", nombre: "Zorrotza (Bilbao)", sensor: "S0AG" },
+    temp: "R0W1", viento: "Y0DR" },
   { rio: "Nervión", punto: "Medio (Bilbao)",
     precip: { id: "C0B1", nombre: "Abusu (Arrigorriaga)", sensor: "G4AI" },
-    presion: { id: "C03A", nombre: "Zorrotza (Bilbao)", sensor: "S0AG" } },
+    presion: { id: "C03A", nombre: "Zorrotza (Bilbao)", sensor: "S0AG" },
+    temp: "R0FP" },
 ];
 
 const EUSKALMET_BASE = "https://api.euskadi.eus";
@@ -168,10 +187,15 @@ export async function onRequestPost(context) {
 
   const filas = await Promise.all(
     OBJETIVOS.map(async (obj) => {
-      const [precipLectura, presionLectura] = await Promise.all([
+      const [precipLectura, presionLectura, tempLectura, humedadLectura, vientoVelLectura, vientoDirLectura] = await Promise.all([
         ultimaLecturaValida(obj.precip.id, obj.precip.sensor, "measuresForWater", "precipitation", jwt).catch(() => null),
         ultimaLecturaValida(obj.presion.id, obj.presion.sensor, "measuresForAtmosphere", "pressure", jwt).catch(() => null),
+        obj.temp ? ultimaLecturaValida(obj.precip.id, obj.temp, "measuresForAir", "temperature", jwt).catch(() => null) : null,
+        obj.temp ? ultimaLecturaValida(obj.precip.id, obj.temp, "measuresForAir", "humidity", jwt).catch(() => null) : null,
+        obj.viento ? ultimaLecturaValida(obj.precip.id, obj.viento, "measuresForWind", "mean_speed", jwt).catch(() => null) : null,
+        obj.viento ? ultimaLecturaValida(obj.precip.id, obj.viento, "measuresForWind", "mean_direction", jwt).catch(() => null) : null,
       ]);
+      const ultimo = (lectura) => (lectura ? lectura.valores[lectura.valores.length - 1] : null);
       return {
         rio: obj.rio,
         punto: obj.punto,
@@ -182,8 +206,17 @@ export async function onRequestPost(context) {
         precipitacion_mm: precipLectura ? Math.round(precipLectura.valores.reduce((a, b) => a + b, 0) * 10) / 10 : null,
         estacion_presion_id: obj.presion.id,
         estacion_presion_nombre: obj.presion.nombre,
-        // Último valor real disponible (la presión no tiene sentido sumarla).
-        presion_hpa: presionLectura ? presionLectura.valores[presionLectura.valores.length - 1] : null,
+        // Resto de magnitudes: último valor real disponible, no tiene
+        // sentido sumar presión/temperatura/viento como sí con la lluvia.
+        presion_hpa: ultimo(presionLectura),
+        temperatura_c: ultimo(tempLectura),
+        humedad_pct: ultimo(humedadLectura),
+        // La API devuelve la velocidad en m/s (verificado en real: valores
+        // de 0.5-2 en una mañana tranquila de costa) — se convierte a
+        // km/h (×3.6) para ser consistente con el resto de la app
+        // (Open-Meteo ya se pide en windspeed_unit=kmh).
+        viento_vel_kmh: ultimo(vientoVelLectura) != null ? Math.round(ultimo(vientoVelLectura) * 3.6 * 10) / 10 : null,
+        viento_dir_grados: ultimo(vientoDirLectura),
         actualizado_en: ahora,
       };
     })
