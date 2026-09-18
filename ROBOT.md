@@ -4193,6 +4193,47 @@ próximas horas. Todos los datos de prueba (2 salidas, 2 capturas, 1
 grupo, 1 invitación, 1 membresía) borrados y verificados a 0. Informe
 completo en /tmp/experiencia-informe.txt.
 
+### 2026-09-18
+
+Cuarta pasada intensiva de "usuario real exigente" contra producción
+(costaviva.org + API REST de Supabase) con las dos cuentas de prueba.
+Núcleo sólido de nuevo: entrada de diario real en Mundaka con marea/
+oleaje/viento/presión/coeficiente internamente coherentes (swell real
+entrando, periodo alargándose de 9 a 13s); /identificar-captura volvió a
+acertar "Lubina" con una foto real sin inventar talla/peso por falta de
+escala; flujo completo de grupos con las dos cuentas (crear/invitar/
+unir/compartir selectivo por categoría, aislamiento verificado en ambos
+sentidos, atribución cae bien a "Miembro del grupo") funcionó exactamente
+como está diseñado; `eliminar_grupo()` con id inexistente sigue dando el
+error limpio confirmado el 2026-09-17. Dos hallazgos: (1) profundizando en
+el bug de mareas casi nulas del Mediterráneo ya conocido (2026-09-15,
+2026-09-17): repliqué el algoritmo exacto de `calcularMarea()` con datos
+horarios reales de Open-Meteo para Roses y confirmé que el filtro de ruido
+(`UMBRAL_RUIDO_MAREA_M=0.12`) no solo funde pares de eventos aislados —
+en cascada, funde TODOS los eventos de la ventana de 2 días en uno solo,
+porque en el Mediterráneo cada pleamar/bajamar consecutiva difiere de la
+anterior en menos de 0.12m. Resultado: la pleamar real de hoy (14-15h,
+0.16m) y la bajamar real de hoy (22-23h) desaparecen sin aviso, y el
+panel solo muestra un evento de MAÑANA — comprobado el mismo patrón sin
+excepción en Torreblanca, Vinaròs, Piles, Cala Millor, Son Bou y Muro (los
+6 spots que el propio código ya señalaba como afectados). (2) Hallazgo
+nuevo: el indicador "caudal bajo/normal/alto" del mapa de ríos
+(`categoriaCaudal()`, index.html) usa como umbrales los niveles de ALERTA
+POR INUNDACIÓN de la fuente oficial (confirmado mirando el HTML crudo de
+visor.saichcantabrico.es: son literalmente 3 iconos de semáforo
+amarillo/naranja/rojo de aviso de avenida, no una tabla de abundancia de
+agua) — con el Sella hoy en 5.22 m³/s frente a un `umbralBajo` (primer
+nivel de alerta) de 438, cualquier caudal normal sin lluvias sale
+etiquetado "bajo" (verde) casi todos los días del año, dando una falsa
+sensación de indicador variable cuando en la práctica casi nunca cambia
+de color salvo en una crecida real. No comprobado si Júcar/Turia/Mijares
+(fuente distinta) tienen el mismo problema — pendiente. También un
+detalle menor de UX: una foto corrupta en /identificar-captura devuelve
+un error crudo que menciona "Anthropic" y se muestra literal al usuario
+en diario.html, en vez de un mensaje cuidado. Todos los datos de prueba
+(2 salidas, 2 capturas, 1 grupo, 1 invitación, 2 membresías) borrados y
+verificados a 0. Informe completo en /tmp/experiencia-informe.txt.
+
 ---
 
 ## Robot de patrones de uso
