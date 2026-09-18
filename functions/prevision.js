@@ -502,13 +502,13 @@ async function datosTurbidezPorSpot() {
 // aparte por scripts/camaras/comprobar-camaras.mjs cada 30 min.
 async function datosCamarasPorSpot() {
   try {
-    const url = `${SUPABASE_URL}/rest/v1/camara_estado?select=spot_slug,sin_senal,ultima_senal_en,comprobado_en`;
+    const url = `${SUPABASE_URL}/rest/v1/camara_estado?select=spot_slug,sin_senal,motivo,ultima_senal_en,comprobado_en`;
     const resp = await fetch(url, { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } });
     if (!resp.ok) return {};
     const filas = await resp.json();
     const resultado = {};
     for (const f of filas) {
-      resultado[f.spot_slug] = { sinSenal: f.sin_senal, ultimaSenalEn: f.ultima_senal_en, comprobadoEn: f.comprobado_en };
+      resultado[f.spot_slug] = { sinSenal: f.sin_senal, motivo: f.motivo, ultimaSenalEn: f.ultima_senal_en, comprobadoEn: f.comprobado_en };
     }
     return resultado;
   } catch (e) {
