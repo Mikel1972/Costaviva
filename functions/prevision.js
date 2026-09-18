@@ -583,8 +583,13 @@ async function firmarJwtEuskalmet(privateKeyPem) {
   return `${entrada}.${base64UrlDesdeBytes(new Uint8Array(firma))}`;
 }
 
-async function euskalmetGet(endpoint, privateKeyPem) {
-  const jwt = await firmarJwtEuskalmet(privateKeyPem);
+// Recibe el JWT ya firmado (nunca la clave) — firmar de más cuesta CPU de
+// verdad: RSA-sign con Web Crypto varias veces en la misma invocación llegó
+// a agotar el límite de recursos de un Worker (error 1102) al barrer varias
+// estaciones a la vez durante las pruebas de esta integración. Un JWT vale
+// para las varias llamadas de una misma petición a /prevision (5 min de
+// validez, de sobra).
+async function euskalmetGet(endpoint, jwt) {
   const resp = await fetch(`${EUSKALMET_BASE}${endpoint}`, {
     headers: { Authorization: `Bearer ${jwt}`, Accept: "application/json" },
   });
@@ -602,14 +607,15 @@ async function euskalmetGet(endpoint, privateKeyPem) {
 async function datosEstacionesMonteRios(privateKeyPem, offset, limit) {
   if (!privateKeyPem) return { error: "Falta EUSKALMET_API_KEY" };
   try {
-    const estaciones = await euskalmetGet("/euskalmet/stations", privateKeyPem);
+    const jwt = await firmarJwtEuskalmet(privateKeyPem);
+    const estaciones = await euskalmetGet("/euskalmet/stations", jwt);
     if (!Array.isArray(estaciones)) return { ok: true, noEsArray: true, valor: estaciones };
     const idsUnicos = [...new Set(estaciones.map((e) => e.stationId))];
     if (offset == null) return { ok: true, total: estaciones.length, idsUnicos: idsUnicos.length };
     const tanda = idsUnicos.slice(offset, offset + limit);
     const actuales = await Promise.all(
       tanda.map((id) =>
-        euskalmetGet(`/euskalmet/stations/${id}/current`, privateKeyPem)
+        euskalmetGet(`/euskalmet/stations/${id}/current`, jwt)
           .then((d) => ({
             id,
             tipo: d.stationType,
