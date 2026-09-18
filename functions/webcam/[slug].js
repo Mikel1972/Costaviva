@@ -5,7 +5,13 @@
 // imágenes directamente desde el navegador en el prototipo anterior.
 // Alcanzable en /webcam/<slug>, ej. /webcam/bakio
 
-const WEBCAMS = {
+// Exportado (además de usarse aquí mismo) para que scripts/camaras/
+// comprobar-camaras.mjs pueda comprobar exactamente la misma lista de
+// cámaras de imagen fija que sirve este proxy, sin mantener una tercera
+// copia a mano (a diferencia de SPOTS_IMAGEN en scripts/turbidez/
+// medir-turbidez.mjs, que sí es una copia manual más antigua y ya
+// incompleta frente a esta lista real).
+export const WEBCAMS = {
   mundaka: "https://www.kostasystem.com/wp-content/uploads/irudiak/mundaka/camara1_snap.jpeg",
   bakio: "https://pyscada.isurki.com/static/pyscada/sirena/aditu/BakioNAS/last/bakio.1.snap.last.thumb.jpeg",
   sopelana: "https://detectia.net/img/webcam-sopelana-azti3.webp",

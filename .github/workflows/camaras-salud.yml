@@ -1,0 +1,58 @@
+name: Salud de las webcams
+
+# Pedido explícito del usuario (2026-09-18): un punto rojo automático
+# cuando se detecta que una webcam no está devolviendo imagen real. Ver
+# supabase/migrations/20260918120000_camara_estado.sql y
+# scripts/camaras/comprobar-camaras.mjs para el razonamiento completo
+# (por qué no se distingue "de noche" de "cámara caída" — decisión
+# explícita del usuario, no un descuido).
+#
+# Cada 30 min: coincide con el max-age de la caché de /prevision
+# (functions/prevision.js) y con el intervalo real de refresco del
+# frontend (cada hora, ver VIGENCIA_MAX_MS en index.html) — comprobar más
+# a menudo no adelantaría nada porque el cliente no volvería a leerlo
+# antes igualmente. A diferencia de robot-buscador-fuentes.yml (que sí se
+# recortó por gasto real de la API de Claude, ver CLAUDE.md 2026-09-16),
+# esto es solo `sharp`/`ffmpeg` en el runner — no llama a ningún LLM, así
+# que subir la frecuencia no tiene el mismo coste.
+#
+# Necesita el secret PRESION_CRON_SECRET (Settings → Secrets → Actions de
+# este repo) — el MISMO que ya usan presion-historico.yml y turbidez.yml,
+# porque /registrar-estado-camaras comprueba la misma variable de entorno
+# CRON_SECRET en Cloudflare Pages. No hace falta crear un secreto nuevo.
+#
+# Probar a mano (workflow_dispatch) antes de fiarse del schedule, mismo
+# criterio que el resto de rutinas programadas de este repo — esta en
+# concreto nunca se ha corrido de verdad todavía.
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  comprobar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Comprobar/instalar ffmpeg
+        run: |
+          if ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update && sudo apt-get install -y ffmpeg
+          fi
+          ffmpeg -version | head -1
+
+      - name: Instalar dependencias del script
+        working-directory: scripts/camaras
+        run: npm ci --no-audit --no-fund
+
+      - name: Comprobar cámaras y guardar
+        working-directory: scripts/camaras
+        env:
+          CRON_SECRET: ${{ secrets.PRESION_CRON_SECRET }}
+        run: node comprobar-camaras.mjs
