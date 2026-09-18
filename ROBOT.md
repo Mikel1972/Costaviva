@@ -4024,6 +4024,87 @@ asumir cada vez que es transitorio.
 
 **Firmado:** robot de calibración nocturna, 2026-09-17 01:16 UTC.
 
+### 2026-09-18 (pasada nocturna corta — calibración + salud de datos)
+
+**Calibración — undécimo punto para las 3 boyas obligatorias, tercer
+punto para 2820 Dragonera** (rotación de esta noche: de las candidatas
+señaladas ayer con más noches sin repetirse — Cabo de Gata, Dragonera,
+Cabo Peñas, Villano-Sisargas — Dragonera llevaba desde el 2026-09-13 sin
+un punto de esta rutina nocturna en concreto, aunque sí sumó un segundo
+punto vía la pasada buscadora diurna del 2026-09-17). Mismo método de
+siempre: `curl` a `poem.puertos.es/portus/StationData` para la altura
+real, Open-Meteo Marine en las coordenadas exactas de cada boya para la
+altura calculada, emparejando por la hora UTC exacta del último dato
+real de cada boya:
+
+| boya | hora UTC | altura medida | altura calculada | diferencia | % |
+|---|---|---|---|---|---|
+| 2136 Bilbao-Vizcaya | 01:00 | 1.52 m | 1.38 m | −0.14 m | −9.2% |
+| 1117 Gijón | 00:00 | 1.16 m | 1.24 m | +0.08 m | +6.9% |
+| 1101 Pasaia II | 00:00 | 1.36 m | 0.98 m | −0.38 m | −27.9% |
+| 2820 Dragonera | 01:00 | 0.70 m | 0.52 m | −0.18 m | −25.7% |
+
+Historial actualizado de la metodología `boya_vs_openmeteo_mismo_punto`
+(sigue lejos del mínimo de 15 puntos por boya):
+
+- **2136 Bilbao-Vizcaya**: 11 puntos, media ≈ **+1.6%**, sigue sin patrón
+  sistemático claro, la más cercana a "sin desviación" de las 3
+  obligatorias.
+- **1117 Gijón**: 11 puntos, media ≈ **−5.6%** (7/11 negativos), sigue
+  alternando signo y magnitud pasada a pasada, sin patrón sólido.
+- **1101 Pasaia II**: **11 puntos, los 11 con el mismo signo negativo**,
+  media ≈ **−28.4%** — sigue siendo, con diferencia, la boya con el
+  sesgo más consistente y estable. Faltan **4 puntos más** para el
+  mínimo de 15; a este ritmo (una pasada nocturna al día, a veces más
+  con las pasadas buscadoras diurnas) debería alcanzarlos en pocos días
+  más. Sigue siendo la candidata más sólida a un futuro factor de
+  corrección de zona, pero todavía no se propone ninguno — falta llegar
+  al umbral acordado.
+- **2820 Dragonera**: 3 puntos (−31.9%, +2.1%, −25.7%; media ≈ **−18.5%**),
+  2 de 3 negativos — mar siempre <1m en las tres mediciones, así que el
+  porcentaje sigue siendo ruidoso (un error absoluto pequeño dispara el
+  %); sin patrón de signo tan claro como Pasaia II todavía.
+- Resto de boyas (1731 Barcelona II, 1514 Málaga, 2548 Cabo de Gata,
+  2242 Cabo Peñas, 2246 Villano-Sisargas): sin cambios desde su última
+  pasada, no les tocaba rotación esta noche.
+
+**Ningún factor de corrección propuesto todavía** — ninguna boya llega a
+los 15 puntos mínimos, aunque Pasaia II (11 puntos, 11/11 mismo signo,
+media estable ≈−28%) sigue siendo la más cerca del umbral. Para la
+próxima rotación de esta rutina nocturna, candidatas con más noches sin
+repetirse: Cabo de Gata (desde 2026-09-15), Cabo Peñas (desde
+2026-09-14) o Villano-Sisargas (desde 2026-09-15).
+
+**Salud de datos — verificado en vivo lo alcanzable, mismo bloqueo de
+red que anoche para el resto (segunda noche seguida con el mismo
+patrón).** Las 4 boyas de Puertos del Estado de la tabla de arriba
+(mismo endpoint que `datosBoya()`) respondieron con datos reales y
+recientes, sin cambios de forma. Se comprobaron también 3 webcams de
+proveedores distintos — `mundaka` (kostasystem.com), `bakio`
+(pyscada.isurki.com), `sopelana` (detectia.net) — las 3 con `200` y una
+imagen real de tamaño razonable (104 KB, 765 KB y 72 KB respectivamente).
+**No se pudo comprobar** la boya de Nazaré (`monican.hidrografico.pt`),
+ninguna de las 4 fuentes de caudal de río (`visor.saichcantabrico.es`,
+`saih.chj.es`, `saihweb.chsegura.es`, `servizos.meteogalicia.gal`) ni una
+cuarta webcam de otra región (se probó `meteogalicia.gal`,
+`cantabria.es`, `comunitatvalenciana.com` y `socib.es`, las 4
+rechazadas) — todas con `connect_rejected` / "gateway answered 403 to
+CONNECT" del propio proxy de salida de esta sesión, confirmado con
+`curl .../__agentproxy/status`. Exactamente la misma limitación ya
+documentada el 2026-08-31 y el 2026-09-17 (dominios fuera de la lista
+blanca de esta sesión en la nube en concreto) — **no se anota ninguna de
+estas fuentes como rota**, no hay evidencia de que lo estén, solo de que
+esta sesión no puede alcanzarlas. Es la segunda noche consecutiva con
+exactamente el mismo bloqueo (mismos dominios, mismo tipo de error) — si
+se repite una tercera noche seguida, ya no parece tan "transitorio":
+valdría la pena que el usuario confirme si el conjunto de dominios
+permitidos para esta rutina en concreto puede ampliarse (Puertos del
+Estado y Open-Meteo sí están permitidos; los proveedores de ríos/Nazaré/
+otras webcams no). Ninguna corrección de código aplicada — no hay nada
+que corregir del lado del repo.
+
+**Firmado:** robot de calibración nocturna, 2026-09-18 01:16 UTC.
+
 ---
 
 ## Robot de experiencia de usuario
