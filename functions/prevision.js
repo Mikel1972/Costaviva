@@ -599,14 +599,30 @@ async function euskalmetGet(endpoint, privateKeyPem) {
 // solo pide la lista y la devuelve tal cual, para inspeccionarla en preview
 // con datos reales antes de escribir la resolución de estación más
 // cercana / sensores / lectura. No es la versión final.
-async function datosEstacionesMonteRios(privateKeyPem) {
+async function datosEstacionesMonteRios(privateKeyPem, offset, limit) {
   if (!privateKeyPem) return { error: "Falta EUSKALMET_API_KEY" };
   try {
     const estaciones = await euskalmetGet("/euskalmet/stations", privateKeyPem);
     if (!Array.isArray(estaciones)) return { ok: true, noEsArray: true, valor: estaciones };
     const idsUnicos = [...new Set(estaciones.map((e) => e.stationId))];
-    const actual = await euskalmetGet(`/euskalmet/stations/${idsUnicos[0]}/current`, privateKeyPem);
-    return { ok: true, total: estaciones.length, idsUnicos: idsUnicos.length, primerosIds: idsUnicos.slice(0, 15), ejemploCurrent: actual };
+    if (offset == null) return { ok: true, total: estaciones.length, idsUnicos: idsUnicos.length };
+    const tanda = idsUnicos.slice(offset, offset + limit);
+    const actuales = await Promise.all(
+      tanda.map((id) =>
+        euskalmetGet(`/euskalmet/stations/${id}/current`, privateKeyPem)
+          .then((d) => ({
+            id,
+            tipo: d.stationType,
+            nombre: d.name?.SPANISH,
+            municipio: d.municipality?.SPANISH,
+            lat: d.position?.position?.GOOGLE?.y,
+            lon: d.position?.position?.GOOGLE?.x,
+            sensores: (d.sensors || []).map((s) => s.sensorKey.replace("euskalmet/sensors/", "")),
+          }))
+          .catch((e) => ({ id, error: String(e) }))
+      )
+    );
+    return { ok: true, idsUnicos: idsUnicos.length, offset, tanda: actuales };
   } catch (e) {
     return { error: String(e) };
   }
@@ -1119,7 +1135,11 @@ export async function onRequestGet(context) {
     datosEstacionesAemet(context.env.AEMET_API_KEY).catch((e) => ({ error: String(e) })),
     datosTurbidezPorSpot(),
     datosCamarasPorSpot(),
-    datosEstacionesMonteRios(context.env.EUSKALMET_API_KEY),
+    datosEstacionesMonteRios(
+      context.env.EUSKALMET_API_KEY,
+      new URL(request.url).searchParams.has("euskOffset") ? Number(new URL(request.url).searchParams.get("euskOffset")) : null,
+      Number(new URL(request.url).searchParams.get("euskLimit") || 40)
+    ),
   ]);
   const boyas = [...boyasEspana, boyaNazare];
 
