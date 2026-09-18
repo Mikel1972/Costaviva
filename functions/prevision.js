@@ -516,6 +516,41 @@ async function datosCamarasPorSpot() {
   }
 }
 
+// Precipitación/presión real de estaciones de monte de Euskalmet, para
+// los 6 ríos vascos que no tienen caudal real (URA/Diputación de Bizkaia
+// bloquean el acceso automático a su catálogo, ver RIOS en index.html —
+// esos 6 se quedan con "caudal: null" a propósito). Pedido explícito del
+// usuario 2026-09-14, credenciales resueltas 2026-09-18.
+//
+// La llamada real a la API de Euskalmet (JWT RS256 + lecturas por
+// estación) vive en functions/actualizar-euskalmet-rios.js, corrida una
+// vez al día por .github/workflows/euskalmet-rios.yml (decisión explícita
+// del usuario: "con dar la medida una vez al día es más que suficiente").
+// Aquí solo se lee el resultado ya guardado — mismo patrón que
+// datosTurbidezPorSpot()/datosCamarasPorSpot(), nunca se llama a Euskalmet
+// en cada visita a /prevision.
+async function datosMonteRios() {
+  try {
+    const url = `${SUPABASE_URL}/rest/v1/euskalmet_rios?select=rio,punto,precipitacion_mm,estacion_precip_nombre,presion_hpa,estacion_presion_nombre,actualizado_en`;
+    const resp = await fetch(url, { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } });
+    if (!resp.ok) return {};
+    const filas = await resp.json();
+    const resultado = {};
+    for (const f of filas) {
+      (resultado[f.rio] ||= {})[f.punto] = {
+        precipitacionMm: f.precipitacion_mm,
+        estacionPrecip: f.estacion_precip_nombre,
+        presionHpa: f.presion_hpa,
+        estacionPresion: f.estacion_presion_nombre,
+        actualizado: f.actualizado_en,
+      };
+    }
+    return resultado;
+  } catch (e) {
+    return {};
+  }
+}
+
 async function fetchJSON(url) {
   const resp = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0 (compatible; CostaVivaApp/0.1)" } });
   if (!resp.ok) throw new Error(`HTTP ${resp.status} (${url})`);
@@ -1010,7 +1045,7 @@ export async function onRequestGet(context) {
   const cacheada = await cache.match(cacheKey);
   if (cacheada) return cacheada;
 
-  const [resultados, boyasEspana, boyaNazare, rayosNacional, caudales, estacionesAemet, turbidez, camaras] = await Promise.all([
+  const [resultados, boyasEspana, boyaNazare, rayosNacional, caudales, estacionesAemet, turbidez, camaras, monteRios] = await Promise.all([
     previsionTodosSpots(SPOTS).catch((e) =>
       SPOTS.map((spot) => ({ slug: spot.slug, nombre: spot.nombre, error: String(e) }))
     ),
@@ -1023,10 +1058,11 @@ export async function onRequestGet(context) {
     datosEstacionesAemet(context.env.AEMET_API_KEY).catch((e) => ({ error: String(e) })),
     datosTurbidezPorSpot(),
     datosCamarasPorSpot(),
+    datosMonteRios(),
   ]);
   const boyas = [...boyasEspana, boyaNazare];
 
-  const respuesta = new Response(JSON.stringify({ spots: resultados, boyas, rayosNacional, caudales, estacionesAemet, turbidez, camaras }, null, 2), {
+  const respuesta = new Response(JSON.stringify({ spots: resultados, boyas, rayosNacional, caudales, estacionesAemet, turbidez, camaras, monteRios }, null, 2), {
     headers: {
       "content-type": "application/json; charset=utf-8",
       // El modelo de Open-Meteo se actualiza varias horas, no hace falta
