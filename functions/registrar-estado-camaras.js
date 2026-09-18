@@ -62,6 +62,11 @@ export async function onRequestPost(context) {
       // script ya compara contra el hash previo, aquí solo se guarda.
       hash_frame: typeof l.hashFrame === "string" ? l.hashFrame : null,
       hash_desde: typeof l.hashDesde === "string" ? l.hashDesde : null,
+      // fallos_seguidos: debounce de fallos/frame plano (ver el comentario
+      // largo en scripts/camaras/comprobar-camaras.mjs) — un fallo aislado
+      // no debe mostrarse como sin señal, solo si se repite en la
+      // comprobación siguiente.
+      fallos_seguidos: Number.isInteger(l.fallosSeguidos) ? l.fallosSeguidos : 0,
     }));
   if (!filas.length) {
     return new Response(JSON.stringify({ error: "ninguna lectura válida en el array recibido" }), {
