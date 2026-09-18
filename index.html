@@ -2581,7 +2581,14 @@ function lineaCamaraSaludHtml(slug) {
   const desde = c.ultimaSenalEn
     ? `desde hace ${tiempoTranscurridoDesde(c.ultimaSenalEn)}`
     : "desde que empezamos a comprobarla";
-  return `<div style="margin-top:4px; font-size:11.5px; color:#A34A35;">⚠ Sin señal detectada ${desde} (puede ser que ahora mismo sea de noche, o que la cámara/el proveedor esté caído)</div>`;
+  // "frame_congelado": la imagen tiene contenido real pero no cambia desde
+  // hace horas (ver el hallazgo real documentado en scripts/camaras/
+  // comprobar-camaras.mjs) — mensaje distinto porque aquí SÍ se ve algo,
+  // solo que es viejo, a diferencia de una imagen realmente en blanco.
+  const texto = c.motivo === "frame_congelado"
+    ? `⚠ Esta imagen no se actualiza ${desde} (el proveedor podría haberse quedado colgado)`
+    : `⚠ Sin señal detectada ${desde} (puede ser que ahora mismo sea de noche, o que la cámara/el proveedor esté caído)`;
+  return `<div style="margin-top:4px; font-size:11.5px; color:#A34A35;">${texto}</div>`;
 }
 
 let spotAbiertoActual = null;

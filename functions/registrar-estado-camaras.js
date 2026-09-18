@@ -57,6 +57,11 @@ export async function onRequestPost(context) {
       // seguidas caída. Se hace en el script y no aquí porque un upsert
       // en bloque necesita que todas las filas tengan las mismas columnas.
       ultima_senal_en: typeof l.ultimaSenalEn === "string" ? l.ultimaSenalEn : null,
+      // hash_frame/hash_desde: detección de frame congelado (ver el
+      // comentario largo en scripts/camaras/comprobar-camaras.mjs) — el
+      // script ya compara contra el hash previo, aquí solo se guarda.
+      hash_frame: typeof l.hashFrame === "string" ? l.hashFrame : null,
+      hash_desde: typeof l.hashDesde === "string" ? l.hashDesde : null,
     }));
   if (!filas.length) {
     return new Response(JSON.stringify({ error: "ninguna lectura válida en el array recibido" }), {

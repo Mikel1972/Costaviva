@@ -6,10 +6,23 @@
 // se intenta distinguir "de noche, oscuro de verdad" de "cámara caída" —
 // si el frame no tiene variación real de brillo (plano de verdad, típico
 // de un frame de error del proveedor, un "sin señal", o un objetivo
-// tapado/roto), cuenta como sin señal sea cual sea la causa. Un frame de
-// noche real casi siempre conserva algo de variación (luces, ruido de
-// sensor, silueta del horizonte) — no es infalible, pero es la misma
-// asunción explícita que ya se aceptó para simplificar esto.
+// tapado/roto), cuenta como sin señal sea cual sea la causa.
+//
+// Dos comprobaciones independientes, ambas cuentan como "sin señal":
+// 1. Frame PLANO — sin variación de brillo real (ver UMBRAL_DESVIACION).
+// 2. Frame CONGELADO — con contenido real, pero IDÉNTICO al de la
+//    comprobación anterior durante más de UMBRAL_CONGELADA_MS seguidas.
+//    Añadido el mismo día tras encontrar el caso real en preview: Mundaka
+//    y Sopelana no estaban planas (tienen luces/olas/nubes de sobra) pero
+//    sí llevaban ~13h congeladas — la de Mundaka con su propia fecha
+//    grabada en la imagen ("2026-09-17 20:50"), la de Sopelana un
+//    atardecer de la noche anterior — y la cabecera Last-Modified del
+//    proveedor no servía para detectarlo (decía "hace 24 min" en la de
+//    Mundaka, sin relación con cuándo cambió el contenido de verdad). Por
+//    eso esto compara el CONTENIDO decodificado (hash), nunca cabeceras
+//    HTTP del proveedor. 3h de margen es tiempo de sobra para que
+//    cualquier cámara de mar en directo muestre algo distinto por las
+//    olas/la luz, incluso de noche.
 //
 // Mismo motivo que scripts/turbidez/medir-turbidez.mjs para vivir aquí y
 // no en Cloudflare Pages: Workers no tiene ninguna API de imagen/canvas
@@ -24,6 +37,7 @@
 // tampoco vería nada al abrir el panel de esa webcam).
 
 import sharp from "sharp";
+import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -40,11 +54,11 @@ if (!CRON_SECRET) {
   process.exit(1);
 }
 
-// Un frame con toda su variación de brillo por debajo de esto se trata
-// como "plano" (sin señal real). Umbral de diseño, no calibrado en
-// laboratorio (mismo criterio que otros umbrales del repo, ej.
-// indiceMar()) — revisar si da falsos positivos/negativos en real.
-const UMBRAL_DESVIACION = 3;
+// Umbrales de diseño, no calibrados en laboratorio (mismo criterio que
+// otros umbrales del repo, ej. indiceMar()) — revisar si dan falsos
+// positivos/negativos en real.
+const UMBRAL_DESVIACION = 3; // desviación típica de brillo (0-255) mínima para no ser "plano"
+const UMBRAL_CONGELADA_MS = 3 * 60 * 60 * 1000; // 3h con el mismo frame -> "congelado"
 
 // Mismas URLs que WEBCAMS_HLS en index.html — mantener sincronizado a
 // mano, igual que ya hace SPOTS_VIDEO en scripts/turbidez/medir-turbidez.mjs.
@@ -57,10 +71,14 @@ const WEBCAMS_VIDEO = {
   mutriku: "https://58f14c0895a20.streamlock.net/camaramar/GIP_mutrikukaia_169.stream/playlist.m3u8",
 };
 
-// Desviación típica de brillo (escala grises, 0-255) de un buffer de
-// imagen ya descargado — sea cual sea el formato de origen (JPEG/WebP/
-// PNG), sharp lo decodifica igual.
-async function desviacionBrillo(buffer) {
+// Decodifica el buffer (JPEG/WebP/PNG, o un frame ya extraído del vídeo) a
+// una versión pequeña en escala de grises — de ahí saca la desviación
+// típica de brillo (detecta "plano") y un hash del contenido (detecta
+// "congelado"). Reducir a 80px de ancho, además de más rápido, hace el
+// hash tolerante al ruido de recompresión que un mismo proveedor a veces
+// introduce entre una petición y otra sin que la imagen real haya
+// cambiado.
+async function analizarBuffer(buffer) {
   const { data } = await sharp(buffer)
     .resize(80, null, { fit: "inside" })
     .greyscale()
@@ -73,21 +91,21 @@ async function desviacionBrillo(buffer) {
   const media = suma / n;
   let sumaCuadrados = 0;
   for (let i = 0; i < n; i++) sumaCuadrados += (data[i] - media) ** 2;
-  return Math.sqrt(sumaCuadrados / n);
+  const desviacion = Math.sqrt(sumaCuadrados / n);
+  const hash = createHash("sha256").update(data).digest("hex");
+  return { desviacion, hash };
 }
 
 async function comprobarImagen(slug) {
   const resp = await fetch(`${BASE_URL}/webcam/${slug}`, { headers: { "User-Agent": "CostaVivaCamarasBot/1.0" } });
-  if (!resp.ok) return { sinSenal: true, motivo: `http_${resp.status}` };
+  if (!resp.ok) return { ok: false, motivo: `http_${resp.status}` };
   const buffer = Buffer.from(await resp.arrayBuffer());
-  const desviacion = await desviacionBrillo(buffer);
-  if (desviacion == null) return { sinSenal: true, motivo: "sin_pixeles" };
-  return desviacion < UMBRAL_DESVIACION
-    ? { sinSenal: true, motivo: "frame_plano" }
-    : { sinSenal: false, motivo: "ok" };
+  const r = await analizarBuffer(buffer);
+  if (!r) return { ok: false, motivo: "sin_pixeles" };
+  return { ok: true, ...r };
 }
 
-async function comprobarVideo(slug, url) {
+async function comprobarVideo(url) {
   const dir = mkdtempSync(join(tmpdir(), "camaras-"));
   const salida = join(dir, "frame.jpg");
   try {
@@ -97,33 +115,65 @@ async function comprobarVideo(slug, url) {
       { timeout: 30000 }
     );
     const buffer = readFileSync(salida);
-    const desviacion = await desviacionBrillo(buffer);
-    if (desviacion == null) return { sinSenal: true, motivo: "sin_pixeles" };
-    return desviacion < UMBRAL_DESVIACION
-      ? { sinSenal: true, motivo: "frame_plano" }
-      : { sinSenal: false, motivo: "ok" };
+    const r = await analizarBuffer(buffer);
+    if (!r) return { ok: false, motivo: "sin_pixeles" };
+    return { ok: true, ...r };
   } catch (e) {
-    return { sinSenal: true, motivo: "sin_respuesta" };
+    return { ok: false, motivo: "sin_respuesta" };
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
 }
 
-// Lee el estado guardado la pasada anterior — solo hace falta
-// ultima_senal_en, para no pisarlo con "ahora" cuando la cámara sigue
-// caída (ver el comentario largo en functions/registrar-estado-camaras.js
-// sobre por qué esto se decide aquí y no en el propio endpoint).
-async function ultimaSenalPrevia() {
-  const resp = await fetch(`${SUPABASE_URL}/rest/v1/camara_estado?select=spot_slug,ultima_senal_en`, {
+// A partir del resultado bruto de esta pasada y el estado guardado la
+// pasada anterior, decide sinSenal/motivo/hashFrame/hashDesde. Vive aparte
+// de comprobarImagen/comprobarVideo porque necesita el estado previo (que
+// esas funciones no conocen) para poder comparar el hash.
+function decidirEstado(bruto, previo, ahoraISO) {
+  if (!bruto.ok) {
+    // No se pudo ni descargar/decodificar — se conserva el hash previo tal
+    // cual (no se puede comparar nada esta vez), nunca se inventa uno.
+    return { sinSenal: true, motivo: bruto.motivo, hashFrame: previo?.hashFrame ?? null, hashDesde: previo?.hashDesde ?? null };
+  }
+  const mismoHash = !!previo?.hashFrame && previo.hashFrame === bruto.hash;
+  const hashDesde = mismoHash ? (previo.hashDesde ?? ahoraISO) : ahoraISO;
+
+  if (bruto.desviacion < UMBRAL_DESVIACION) {
+    return { sinSenal: true, motivo: "frame_plano", hashFrame: bruto.hash, hashDesde };
+  }
+  const congelada = mismoHash && Date.now() - new Date(hashDesde).getTime() > UMBRAL_CONGELADA_MS;
+  return { sinSenal: congelada, motivo: congelada ? "frame_congelado" : "ok", hashFrame: bruto.hash, hashDesde };
+}
+
+// Lee el estado guardado la pasada anterior de cada cámara — hace falta
+// para decidir tanto "ultima_senal_en" (ver el comentario largo en
+// functions/registrar-estado-camaras.js) como si el hash de esta pasada
+// es el mismo que el de la anterior (detección de frame congelado).
+async function estadoPrevioPorSlug() {
+  const resp = await fetch(`${SUPABASE_URL}/rest/v1/camara_estado?select=spot_slug,ultima_senal_en,hash_frame,hash_desde`, {
     headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
   });
   if (!resp.ok) return {};
   const filas = await resp.json();
-  return Object.fromEntries(filas.map((f) => [f.spot_slug, f.ultima_senal_en]));
+  return Object.fromEntries(
+    filas.map((f) => [f.spot_slug, { ultimaSenalEn: f.ultima_senal_en, hashFrame: f.hash_frame, hashDesde: f.hash_desde }])
+  );
+}
+
+function construirLectura(slug, bruto, previo, ahora) {
+  const estado = decidirEstado(bruto, previo, ahora);
+  return {
+    spot: slug,
+    sinSenal: estado.sinSenal,
+    motivo: estado.motivo,
+    ultimaSenalEn: estado.sinSenal ? (previo?.ultimaSenalEn ?? null) : ahora,
+    hashFrame: estado.hashFrame,
+    hashDesde: estado.hashDesde,
+  };
 }
 
 async function main() {
-  const previo = await ultimaSenalPrevia().catch((e) => {
+  const previo = await estadoPrevioPorSlug().catch((e) => {
     console.log("No se pudo leer el estado previo, se asumirá vacío:", e.message);
     return {};
   });
@@ -131,19 +181,21 @@ async function main() {
   const lecturas = [];
 
   for (const slug of Object.keys(WEBCAMS)) {
+    let bruto;
     try {
-      const r = await comprobarImagen(slug);
-      lecturas.push({ spot: slug, sinSenal: r.sinSenal, motivo: r.motivo, ultimaSenalEn: r.sinSenal ? (previo[slug] ?? null) : ahora });
-      console.log(`${r.sinSenal ? "✗" : "✓"} ${slug}: ${r.motivo}`);
+      bruto = await comprobarImagen(slug);
     } catch (e) {
-      lecturas.push({ spot: slug, sinSenal: true, motivo: "error_descarga", ultimaSenalEn: previo[slug] ?? null });
-      console.log(`✗ ${slug}: error_descarga (${e.message})`);
+      bruto = { ok: false, motivo: "error_descarga" };
     }
+    const lectura = construirLectura(slug, bruto, previo[slug], ahora);
+    lecturas.push(lectura);
+    console.log(`${lectura.sinSenal ? "✗" : "✓"} ${slug}: ${lectura.motivo}`);
   }
   for (const [slug, url] of Object.entries(WEBCAMS_VIDEO)) {
-    const r = await comprobarVideo(slug, url);
-    lecturas.push({ spot: slug, sinSenal: r.sinSenal, motivo: r.motivo, ultimaSenalEn: r.sinSenal ? (previo[slug] ?? null) : ahora });
-    console.log(`${r.sinSenal ? "✗" : "✓"} ${slug} (vídeo): ${r.motivo}`);
+    const bruto = await comprobarVideo(url);
+    const lectura = construirLectura(slug, bruto, previo[slug], ahora);
+    lecturas.push(lectura);
+    console.log(`${lectura.sinSenal ? "✗" : "✓"} ${slug} (vídeo): ${lectura.motivo}`);
   }
 
   if (!lecturas.length) {
