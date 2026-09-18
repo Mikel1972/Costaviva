@@ -135,6 +135,12 @@
     box-shadow: 0 0 4px #0B2532, 0 0 4px #0B2532;
     animation: pulso 1.6s ease-in-out infinite;
   }
+  /* Sin señal detectada (ver CAMARAS/datosCamarasPorSpot) — mismo punto,
+     rojo y sin el pulso de "en directo", para no sugerir que se está
+     viendo algo que en realidad no llega. */
+  .punto-webcam-viva.sin-senal {
+    background: #A34A35; animation: none;
+  }
   .rio-marcador {
     width: 10px; height: 10px; transform: rotate(45deg);
     border: 1.5px solid #0B2532;
@@ -1464,6 +1470,11 @@ let ultimaActualizacionOk = null; // para el indicador general del header
 // functions/prevision.js) — { <slug>: { etiqueta, actualizado, lecturas } },
 // solo para spots con suficiente histórico; el resto no aparece aquí.
 let TURBIDEZ = {};
+// Estado "sin señal" por webcam (ver datosCamarasPorSpot en
+// functions/prevision.js) — { <slug>: { sinSenal, ultimaSenalEn,
+// comprobadoEn } }. No distingue de noche de cámara caída a propósito
+// (ver supabase/migrations/20260918120000_camara_estado.sql).
+let CAMARAS = {};
 function spotVigente(s) {
   return !!s.actualizadoEn && (Date.now() - s.actualizadoEn) < VIGENCIA_MAX_MS;
 }
@@ -1555,6 +1566,7 @@ async function actualizarDesdeBackend() {
       });
     }
     if (datos.turbidez) TURBIDEZ = datos.turbidez;
+    if (datos.camaras) CAMARAS = datos.camaras;
     if (datos.caudales) {
       RIOS.forEach((r) => {
         r.puntos.forEach((p) => {
@@ -1832,7 +1844,7 @@ function crearMarcadorSpot(s) {
   const tieneWebcam = !s.esUsuario && SPOTS_CON_WEBCAM.includes(s.slug);
   const html = `
     <div style="display:flex; flex-direction:column; align-items:center;">
-      <div class="etiqueta-spot">${s.nombre}${tieneWebcam ? '<span class="punto-webcam-viva" title="Webcam en directo"></span>' : ""}</div>
+      <div class="etiqueta-spot">${s.nombre}${tieneWebcam ? `<span class="punto-webcam-viva" id="webcam-punto-${s.slug}" title="Webcam en directo"></span>` : ""}</div>
       <div style="display:flex; align-items:center; gap:3px;">
         ${iconoFlecha(gradosDesdeTexto(s.dirOla), "#2E7BA0")}
         ${iconoFlecha(gradosDesdeTexto(s.dirViento), "#D4A24C")}
@@ -2449,13 +2461,9 @@ function pintarWebcam(slug, nombre) {
     <div style="position:relative;">
       <img id="imgWebcam" crossorigin="anonymous" src="/webcam/${slug}?_=${Date.now()}" alt="Webcam en directo de ${nombre}"
            style="width:100%; border-radius:8px; border:1px solid #DDE2DC; display:block; cursor:zoom-in;" />
-      <span style="position:absolute; top:8px; left:8px; display:flex; align-items:center; gap:5px;
-                    background:rgba(11,37,50,0.75); padding:3px 8px; border-radius:12px;
-                    font-family:'IBM Plex Mono',monospace; font-size:10px; color:#F5F1E6;">
-        <span style="width:7px; height:7px; border-radius:50%; background:#A34A35; animation:pulso 1.6s infinite;"></span>
-        EN DIRECTO
-      </span>
+      ${badgeWebcamHtml(slug)}
     </div>
+    ${lineaCamaraSaludHtml(slug)}
     ${lineaTurbidezHtml(slug)}
     <p class="nota-final" id="notaWebcam">Se actualiza sola cada minuto.</p>
   `;
@@ -2486,13 +2494,9 @@ function pintarWebcamHls(slug, nombre) {
     <div style="position:relative;" id="wrapperVideoWebcam">
       <video id="videoWebcam" crossorigin="anonymous" muted autoplay playsinline
              style="width:100%; border-radius:8px; border:1px solid #DDE2DC; display:block; background:#0B2532; aspect-ratio:16/9; cursor:zoom-in;"></video>
-      <span style="position:absolute; top:8px; left:8px; display:flex; align-items:center; gap:5px;
-                    background:rgba(11,37,50,0.75); padding:3px 8px; border-radius:12px;
-                    font-family:'IBM Plex Mono',monospace; font-size:10px; color:#F5F1E6;">
-        <span style="width:7px; height:7px; border-radius:50%; background:#A34A35; animation:pulso 1.6s infinite;"></span>
-        EN DIRECTO
-      </span>
+      ${badgeWebcamHtml(slug)}
     </div>
+    ${lineaCamaraSaludHtml(slug)}
     ${lineaTurbidezHtml(slug)}
     <p class="nota-final" id="notaWebcam">Vídeo en directo (Diputación Foral de Gipuzkoa).</p>
   `;
@@ -2535,6 +2539,49 @@ function lineaTurbidezHtml(slug) {
   if (!t) return "";
   const color = COLOR_TURBIDEZ[t.etiqueta] || "#5C7680";
   return `<div style="margin-top:4px; font-size:11.5px; color:#5C7680;">💧 Agua <span style="color:${color};">${t.etiqueta}</span> (relativo a este mismo punto, 1 lectura/día)</div>`;
+}
+
+// Desde cuándo (texto corto) una marca de tiempo ISO viene sucediendo —
+// usado solo para "sin señal desde hace X", donde el rango puede ser de
+// horas o días (a diferencia de textoVigencia(), pensado para minutos).
+function tiempoTranscurridoDesde(iso) {
+  const minutos = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
+  if (minutos < 60) return `${minutos} min`;
+  const horas = Math.round(minutos / 60);
+  if (horas < 48) return `${horas} h`;
+  return `${Math.round(horas / 24)} días`;
+}
+
+// Punto rojo/verde + etiqueta de la webcam (ver CAMARAS/datosCamarasPorSpot
+// en functions/prevision.js) — nunca distingue de noche de cámara caída a
+// propósito, decisión explícita del usuario (ver supabase/migrations/
+// 20260918120000_camara_estado.sql).
+function badgeWebcamHtml(slug) {
+  const c = CAMARAS[slug];
+  if (c?.sinSenal) {
+    return `
+      <span style="position:absolute; top:8px; left:8px; display:flex; align-items:center; gap:5px;
+                    background:rgba(11,37,50,0.75); padding:3px 8px; border-radius:12px;
+                    font-family:'IBM Plex Mono',monospace; font-size:10px; color:#F5F1E6;">
+        <span style="width:7px; height:7px; border-radius:50%; background:#A34A35;"></span>
+        SIN SEÑAL
+      </span>`;
+  }
+  return `
+    <span style="position:absolute; top:8px; left:8px; display:flex; align-items:center; gap:5px;
+                  background:rgba(11,37,50,0.75); padding:3px 8px; border-radius:12px;
+                  font-family:'IBM Plex Mono',monospace; font-size:10px; color:#F5F1E6;">
+      <span style="width:7px; height:7px; border-radius:50%; background:#A34A35; animation:pulso 1.6s infinite;"></span>
+      EN DIRECTO
+    </span>`;
+}
+function lineaCamaraSaludHtml(slug) {
+  const c = CAMARAS[slug];
+  if (!c?.sinSenal) return "";
+  const desde = c.ultimaSenalEn
+    ? `desde hace ${tiempoTranscurridoDesde(c.ultimaSenalEn)}`
+    : "desde que empezamos a comprobarla";
+  return `<div style="margin-top:4px; font-size:11.5px; color:#A34A35;">⚠ Sin señal detectada ${desde} (puede ser que ahora mismo sea de noche, o que la cámara/el proveedor esté caído)</div>`;
 }
 
 let spotAbiertoActual = null;
@@ -2869,6 +2916,12 @@ function refrescarIndicesVisibles() {
     marcadorEl.style.background = color;
     const anillo = marcadorEl.parentElement?.querySelector(".anillo-pulso");
     if (anillo) anillo.style.background = color;
+    const puntoWebcam = document.getElementById(`webcam-punto-${s.slug}`);
+    if (puntoWebcam) {
+      const sinSenal = !!CAMARAS[s.slug]?.sinSenal;
+      puntoWebcam.classList.toggle("sin-senal", sinSenal);
+      puntoWebcam.title = sinSenal ? "Sin señal detectada en la webcam" : "Webcam en directo";
+    }
   });
   const estadoEl = document.getElementById("estadoVigenciaGlobal");
   if (estadoEl) estadoEl.textContent = textoVigencia();

@@ -495,6 +495,27 @@ async function datosTurbidezPorSpot() {
   }
 }
 
+// Estado "sin señal" por webcam (ver supabase/migrations/
+// 20260918120000_camara_estado.sql para el razonamiento completo). A
+// diferencia de datosTurbidezPorSpot(), aquí no hay histórico que
+// resumir — solo se lee el estado actual, una fila por cámara, calculado
+// aparte por scripts/camaras/comprobar-camaras.mjs cada 30 min.
+async function datosCamarasPorSpot() {
+  try {
+    const url = `${SUPABASE_URL}/rest/v1/camara_estado?select=spot_slug,sin_senal,ultima_senal_en,comprobado_en`;
+    const resp = await fetch(url, { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } });
+    if (!resp.ok) return {};
+    const filas = await resp.json();
+    const resultado = {};
+    for (const f of filas) {
+      resultado[f.spot_slug] = { sinSenal: f.sin_senal, ultimaSenalEn: f.ultima_senal_en, comprobadoEn: f.comprobado_en };
+    }
+    return resultado;
+  } catch (e) {
+    return {};
+  }
+}
+
 async function fetchJSON(url) {
   const resp = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0 (compatible; CostaVivaApp/0.1)" } });
   if (!resp.ok) throw new Error(`HTTP ${resp.status} (${url})`);
@@ -989,7 +1010,7 @@ export async function onRequestGet(context) {
   const cacheada = await cache.match(cacheKey);
   if (cacheada) return cacheada;
 
-  const [resultados, boyasEspana, boyaNazare, rayosNacional, caudales, estacionesAemet, turbidez] = await Promise.all([
+  const [resultados, boyasEspana, boyaNazare, rayosNacional, caudales, estacionesAemet, turbidez, camaras] = await Promise.all([
     previsionTodosSpots(SPOTS).catch((e) =>
       SPOTS.map((spot) => ({ slug: spot.slug, nombre: spot.nombre, error: String(e) }))
     ),
@@ -1001,10 +1022,11 @@ export async function onRequestGet(context) {
     datosCaudalTodos().catch((e) => ({ error: String(e) })),
     datosEstacionesAemet(context.env.AEMET_API_KEY).catch((e) => ({ error: String(e) })),
     datosTurbidezPorSpot(),
+    datosCamarasPorSpot(),
   ]);
   const boyas = [...boyasEspana, boyaNazare];
 
-  const respuesta = new Response(JSON.stringify({ spots: resultados, boyas, rayosNacional, caudales, estacionesAemet, turbidez }, null, 2), {
+  const respuesta = new Response(JSON.stringify({ spots: resultados, boyas, rayosNacional, caudales, estacionesAemet, turbidez, camaras }, null, 2), {
     headers: {
       "content-type": "application/json; charset=utf-8",
       // El modelo de Open-Meteo se actualiza varias horas, no hace falta
