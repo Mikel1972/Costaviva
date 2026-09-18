@@ -51,6 +51,14 @@ export async function onRequestGet(context) {
   try {
     const jwt = await firmarJwt(key);
 
+    const lectura = params.get("lectura"); // "stationId,sensorId,measureType,measureId,YYYY,MM,DD,HH"
+    if (lectura) {
+      const [stationId, sensorId, measureType, measureId, y, m, dd, hh] = lectura.split(",");
+      const url = `/euskalmet/readings/forStation/${stationId}/${sensorId}/measures/${measureType}/${measureId}/at/${y}/${m}/${dd}/${hh}`;
+      const data = await eGet(url, jwt).catch((e) => ({ error: String(e) }));
+      return new Response(JSON.stringify({ url, data }, null, 2), { headers: { "content-type": "application/json" } });
+    }
+
     if (sensoresPedidos) {
       const ids = sensoresPedidos.split(",");
       const info = await Promise.all(
