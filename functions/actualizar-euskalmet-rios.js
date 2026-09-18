@@ -23,19 +23,30 @@
 // puede ser muy local) — no sería razonable hacer lo mismo con lluvia a
 // esa distancia, con presión sí. Nada de esto es una lista oficial de
 // Euskalmet, es nuestra propia elección basada en distancia real.
+//
+// Corrección real tras el primer run (2026-09-18): Deusto (C039/S009,
+// la más cercana para Lea/Oka/Nervión) devolvía siempre
+// ENTITY_NOT_FOUND para su sensor de presión — dado de baja en el
+// catálogo real aunque siga apareciendo en los metadatos de la estación
+// (misma situación con Derio/G4R2 para precipitación). Sustituidas por
+// Zorrotza (presión) y Mungia (precipitación), ambas confirmadas con
+// datos reales en ese mismo run. Si vuelve a pasar con otra estación,
+// comprobarlo así: pedir /euskalmet/readings/... para varias horas
+// seguidas — un 404 sistemático en todas es un sensor muerto, no un
+// hueco de datos puntual.
 const OBJETIVOS = [
   { rio: "Lea", punto: "Cabecera (Munitibar)",
     precip: { id: "C0BD", nombre: "Iruzubieta (Ziortza-Bolibar)", sensor: "G458" },
-    presion: { id: "C039", nombre: "Deusto (Bilbao)", sensor: "S009" } },
+    presion: { id: "C03A", nombre: "Zorrotza (Bilbao)", sensor: "S0AG" } },
   { rio: "Lea", punto: "Medio (Amoroto)",
     precip: { id: "C0BA", nombre: "Oleta (Amoroto)", sensor: "G418" },
-    presion: { id: "C039", nombre: "Deusto (Bilbao)", sensor: "S009" } },
+    presion: { id: "C03A", nombre: "Zorrotza (Bilbao)", sensor: "S0AG" } },
   { rio: "Oka", punto: "Cabecera (Muxika)",
     precip: { id: "C063", nombre: "Muxika", sensor: "G4R7" },
-    presion: { id: "C039", nombre: "Deusto (Bilbao)", sensor: "S009" } },
+    presion: { id: "C03A", nombre: "Zorrotza (Bilbao)", sensor: "S0AG" } },
   { rio: "Oka", punto: "Medio (Gernika-Lumo)",
     precip: { id: "C063", nombre: "Muxika", sensor: "G4R7" },
-    presion: { id: "C039", nombre: "Deusto (Bilbao)", sensor: "S009" } },
+    presion: { id: "C03A", nombre: "Zorrotza (Bilbao)", sensor: "S0AG" } },
   { rio: "Estepona (Zarraga)", punto: "Cabecera (Meñaka)",
     precip: { id: "C069", nombre: "Almike (Bermeo)", sensor: "G4AR" },
     presion: { id: "C03A", nombre: "Zorrotza (Bilbao)", sensor: "S0AG" } },
@@ -43,7 +54,13 @@ const OBJETIVOS = [
     precip: { id: "C019", nombre: "Matxitxako (Bermeo)", sensor: "G455" },
     presion: { id: "C042", nombre: "Punta Galea (Getxo)", sensor: "S0AC" } },
   { rio: "Butroe", punto: "Cabecera (Fruiz)",
-    precip: { id: "C003", nombre: "Derio", sensor: "G4R2" },
+    // Derio (C003/G4R2) descartada tras el primer run real: su sensor de
+    // precipitación devuelve ENTITY_NOT_FOUND en todas las horas
+    // probadas (sensor dado de baja en el catálogo, aunque siga listado
+    // en los metadatos de la estación) — se reutiliza Mungia, la misma
+    // estación ya usada para el tramo medio de este río, confirmada con
+    // datos reales en ese mismo run.
+    precip: { id: "C057", nombre: "Mungia", sensor: "G4D0" },
     presion: { id: "C03A", nombre: "Zorrotza (Bilbao)", sensor: "S0AG" } },
   { rio: "Butroe", punto: "Medio (Gatika)",
     precip: { id: "C057", nombre: "Mungia", sensor: "G4D0" },
@@ -56,10 +73,10 @@ const OBJETIVOS = [
     presion: { id: "C042", nombre: "Punta Galea (Getxo)", sensor: "S0AC" } },
   { rio: "Nervión", punto: "Cabecera (Orduña)",
     precip: { id: "C067", nombre: "Gardea (Laudio/Llodio)", sensor: "G4R8" },
-    presion: { id: "C039", nombre: "Deusto (Bilbao)", sensor: "S009" } },
+    presion: { id: "C03A", nombre: "Zorrotza (Bilbao)", sensor: "S0AG" } },
   { rio: "Nervión", punto: "Medio (Bilbao)",
     precip: { id: "C0B1", nombre: "Abusu (Arrigorriaga)", sensor: "G4AI" },
-    presion: { id: "C039", nombre: "Deusto (Bilbao)", sensor: "S009" } },
+    presion: { id: "C03A", nombre: "Zorrotza (Bilbao)", sensor: "S0AG" } },
 ];
 
 const EUSKALMET_BASE = "https://api.euskadi.eus";
