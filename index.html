@@ -1888,6 +1888,16 @@ function crearMarcadores() {
     }
 
     r.puntos.forEach((p) => {
+      // Solo se pinta el rombo si el punto tiene AL MENOS un dato real
+      // (caudal o, en los 6 ríos vascos, precipitación/presión/temperatura/
+      // viento de Euskalmet) — pedido explícito del usuario: mejor no
+      // pintar nada ahí que un rombo que nunca va a tener datos (cabecera/
+      // medio de ríos como el Asón, donde la única estación real de
+      // caudal está en la desembocadura).
+      const monte = MONTE_RIOS[r.rio]?.[p.tramo];
+      const tieneMonte = !!monte && (monte.precipitacionMm != null || monte.presionHpa != null || monte.temperaturaC != null || monte.vientoVelKmh != null);
+      if (p.caudal == null && !tieneMonte) return;
+
       const cat = categoriaCaudal(p.caudal, p.umbralBajo, p.umbralAlto);
       const html = `<div class="rio-marcador" style="background:${cat.color};"></div>`;
       const icon = L.divIcon({ html, className: "", iconSize: [10, 10], iconAnchor: [5, 5] });
@@ -1895,10 +1905,17 @@ function crearMarcadores() {
         p.caudal != null && p.umbralBajo != null
           ? `${p.caudal} m³/s (${cat.etiqueta})`
           : cat.etiqueta;
+      // La línea de caudal solo aparece si de verdad hay caudal — un punto
+      // que se pinta solo por tener datos de Euskalmet no necesita un
+      // "Caudal: sin datos" a la vista (nunca lo va a tener, no es un
+      // hueco temporal).
+      const lineaCaudal = p.caudal != null
+        ? `<div class="rio-caudal"><span class="chip" style="width:8px;height:8px;border-radius:2px;background:${cat.color};"></span>Caudal: ${detalleCaudal}</div>`
+        : "";
       const llamada = `
         <div class="rio-nombre">${r.rio}</div>
         <div class="rio-tramo">${p.tramo}${p.estacion ? ` — estación ${p.estacion}` : ""}</div>
-        <div class="rio-caudal"><span class="chip" style="width:8px;height:8px;border-radius:2px;background:${cat.color};"></span>Caudal: ${detalleCaudal}</div>
+        ${lineaCaudal}
         ${lineaMonteRiosHtml(r.rio, p.tramo)}
       `;
       L.marker([p.lat, p.lon], { icon }).addTo(capaRios)
@@ -2550,9 +2567,13 @@ function pintarWebcamHls(slug, nombre) {
 // mismo dato.
 function lineaMonteRiosHtml(rio, tramo) {
   const d = MONTE_RIOS[rio]?.[tramo];
-  if (!d || (d.precipitacionMm == null && d.presionHpa == null)) return "";
+  if (!d) return "";
+  const hayAlgo = d.precipitacionMm != null || d.presionHpa != null || d.temperaturaC != null || d.vientoVelKmh != null;
+  if (!hayAlgo) return "";
   const partes = [];
   if (d.precipitacionMm != null) partes.push(`🌧 ${d.precipitacionMm} mm/h (${d.estacionPrecip})`);
+  if (d.temperaturaC != null) partes.push(`${d.temperaturaC}°C${d.humedadPct != null ? ` / ${Math.round(d.humedadPct)}% hum.` : ""}`);
+  if (d.vientoVelKmh != null) partes.push(`💨 ${d.vientoVelKmh} km/h${d.vientoDirGrados != null ? ` ${textoRumbo(d.vientoDirGrados)}` : ""}`);
   if (d.presionHpa != null) partes.push(`${d.presionHpa} hPa (${d.estacionPresion})`);
   return `<div class="rio-caudal" style="margin-top:2px; color:#5C7680;">${partes.join(" · ")}</div>`;
 }

@@ -531,7 +531,7 @@ async function datosCamarasPorSpot() {
 // en cada visita a /prevision.
 async function datosMonteRios() {
   try {
-    const url = `${SUPABASE_URL}/rest/v1/euskalmet_rios?select=rio,punto,precipitacion_mm,estacion_precip_nombre,presion_hpa,estacion_presion_nombre,actualizado_en`;
+    const url = `${SUPABASE_URL}/rest/v1/euskalmet_rios?select=rio,punto,precipitacion_mm,estacion_precip_nombre,presion_hpa,estacion_presion_nombre,temperatura_c,humedad_pct,viento_vel_kmh,viento_dir_grados,actualizado_en`;
     const resp = await fetch(url, { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } });
     if (!resp.ok) return {};
     const filas = await resp.json();
@@ -542,6 +542,10 @@ async function datosMonteRios() {
         estacionPrecip: f.estacion_precip_nombre,
         presionHpa: f.presion_hpa,
         estacionPresion: f.estacion_presion_nombre,
+        temperaturaC: f.temperatura_c,
+        humedadPct: f.humedad_pct,
+        vientoVelKmh: f.viento_vel_kmh,
+        vientoDirGrados: f.viento_dir_grados,
         actualizado: f.actualizado_en,
       };
     }
