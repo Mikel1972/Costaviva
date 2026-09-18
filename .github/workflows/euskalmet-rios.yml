@@ -32,5 +32,8 @@ jobs:
     steps:
       - name: Llamar a /actualizar-euskalmet-rios
         run: |
-          curl -sf -X POST "https://costaviva.org/actualizar-euskalmet-rios" \
-            -H "X-Cron-Secret: ${{ secrets.PRESION_CRON_SECRET }}"
+          resp=$(curl -s -w "\nHTTP_CODE:%{http_code}" -X POST "https://costaviva.org/actualizar-euskalmet-rios" \
+            -H "X-Cron-Secret: ${{ secrets.PRESION_CRON_SECRET }}")
+          echo "$resp"
+          code=$(echo "$resp" | grep -o 'HTTP_CODE:[0-9]*' | cut -d: -f2)
+          if [ "$code" -ge 400 ]; then exit 1; fi
