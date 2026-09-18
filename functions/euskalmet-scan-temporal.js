@@ -46,9 +46,23 @@ export async function onRequestGet(context) {
   const params = new URL(context.request.url).searchParams;
   const offset = Number(params.get("offset") || 0);
   const limit = Number(params.get("limit") || 45);
+  const sensoresPedidos = params.get("sensores");
 
   try {
     const jwt = await firmarJwt(key);
+
+    if (sensoresPedidos) {
+      const ids = sensoresPedidos.split(",");
+      const info = await Promise.all(
+        ids.map((id) =>
+          eGet(`/euskalmet/sensors/${id}`, jwt)
+            .then((d) => ({ id, meteors: d.meteors }))
+            .catch((e) => ({ id, error: String(e) }))
+        )
+      );
+      return new Response(JSON.stringify(info, null, 2), { headers: { "content-type": "application/json" } });
+    }
+
     const estaciones = await eGet("/euskalmet/stations", jwt);
     const idsUnicos = [...new Set(estaciones.map((e) => e.stationId))];
     const tanda = idsUnicos.slice(offset, offset + limit);
