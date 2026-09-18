@@ -1,0 +1,36 @@
+name: Precipitación/presión ríos vascos (Euskalmet)
+
+# Pedido explícito del usuario (2026-09-14, credenciales resueltas
+# 2026-09-18): rellenar el hueco de los 6 ríos vascos sin caudal real con
+# precipitación/presión real de la estación de monte más cercana. A
+# diferencia de turbidez.yml/camaras-salud.yml, aquí NO hace falta ningún
+# runner de Node con librerías especiales — la llamada real a Euskalmet
+# (firma JWT con Web Crypto + JSON) vive entera en
+# functions/actualizar-euskalmet-rios.js, una Cloudflare Pages Function
+# normal. Este workflow solo la dispara.
+#
+# Una vez al día — decisión explícita del usuario ("con dar la medida una
+# vez al día es más que suficiente").
+#
+# Necesita el secret PRESION_CRON_SECRET (Settings → Secrets → Actions de
+# este repo) — el MISMO que ya usan presion-historico.yml/turbidez.yml/
+# camaras-salud.yml, porque /actualizar-euskalmet-rios comprueba la misma
+# variable de entorno CRON_SECRET en Cloudflare Pages. No hace falta crear
+# un secreto nuevo.
+#
+# Probar a mano (workflow_dispatch) antes de fiarse del schedule, mismo
+# criterio que el resto de rutinas programadas de este repo.
+
+on:
+  schedule:
+    - cron: "30 5 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Llamar a /actualizar-euskalmet-rios
+        run: |
+          curl -sf -X POST "https://costaviva.org/actualizar-euskalmet-rios" \
+            -H "X-Cron-Secret: ${{ secrets.PRESION_CRON_SECRET }}"
