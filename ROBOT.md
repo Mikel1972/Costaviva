@@ -4260,3 +4260,55 @@ existente, por ser una muestra de 1.
 
 **Firmado:** robot de patrones de uso, 2026-09-17 (pasada semanal,
 sábado UTC).
+
+### 2026-09-18 07:40 UTC (pasada buscadora — webcams para spots sin cámara)
+
+**Objetivo:** tarea recurrente de buscar cámaras nuevas para spots fijos
+sin cámara (o `spots_usuario` populares — sigue sin poder priorizarse por
+esto último, esta sesión no tiene credenciales de Supabase accesibles,
+mismo límite ya documentado en pasadas anteriores). Huecos vigentes tras
+la pasada de 2026-09-17: Plentzia, Ondarroa, Zumaia, Getaria (Euskadi);
+A Guarda, Sanxenxo (Galicia, ya descartados — MeteoGalicia no tiene
+cámara de ninguno); Llanes, Ribadesella, Santander (pista real pendiente
+de verificar); el resto de Cataluña/Murcia/Andalucía/Canarias/Baleares
+fuera de lo ya integrado, y Portugal entero.
+
+**✅ Encontrada e integrada — Getaria (playa de Malkorbe), mismo proveedor
+AZTI/detectia.net ya usado para Sopelana/Lekeitio/Getxo/Pasaia.**
+Probando por fuerza bruta variantes del esquema de nombre de este
+proveedor contra los huecos vascos, `webcam-malkorbe-azti.webp` respondió
+`200` — descargada y comprobada de verdad: WebP VP8 real, 1600×1200,
+~54 KB, `Last-Modified` de ayer por la tarde (no un placeholder estático).
+Inspeccionada visualmente la imagen descargada: se ve con claridad el
+"Ratón de Getaria" (el promontorio característico del pueblo) al fondo,
+así que confirma sin duda que es la cámara de Getaria y no otro spot con
+nombre parecido. El slug del proveedor es el de la playa (`malkorbe`), no
+el del pueblo (`getaria`) — por eso no había aparecido en los intentos de
+pasadas anteriores, que probaron solo `getaria`/`getaria-azti`. Bajo
+riesgo, mismo patrón ya integrado varias veces (mismo proveedor, mismo
+proxy `/webcam/<slug>` existente) — añadida directamente: `getaria` en
+`functions/webcam/[slug].js` (`WEBCAMS`) y en `SPOTS_CON_WEBCAM`
+(`index.html`). Verificado con `node --check` antes de commitear.
+
+**Sigue sin encontrarse fuente para Plentzia, Ondarroa ni Zumaia** con
+este mismo proveedor (probadas ~10 variantes de nombre entre esta pasada
+y las anteriores, todas `404`) ni con ningún otro ya descartado en
+pasadas previas.
+
+**Santander/Cantabria sigue sin poder verificarse desde este runner**:
+`cantabria.es` da timeout de conexión (`000`) de nuevo, mismo síntoma que
+todas las pasadas anteriores desde el 2026-09-13 — se sigue tratando como
+límite de red de este entorno, no como fuente rota (el resto de la web sí
+responde bien desde este mismo runner, incluido `detectia.net`).
+Llanes/Ribadesella (pista `rtsp.me` sin URL de stream verificable, ver
+pasada 2026-09-17) no se ha retomado esta pasada — sigue pendiente de
+inspección de red real desde navegador, fuera del alcance de esta sesión.
+
+**Resultado neto:** 1 webcam nueva verificada e integrada (Getaria).
+Ninguna otra novedad esta pasada.
+
+**Fuentes:**
+[detectia.net — webcam-malkorbe-azti.webp](https://detectia.net/img/webcam-malkorbe-azti.webp).
+
+**Firmado:** robot buscador de fuentes (pasada de webcams para spots sin
+cámara), 2026-09-18 07:40 UTC.

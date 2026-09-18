@@ -18,7 +18,12 @@ const WEBCAMS = {
   // slug distinto del resto: "-azti" en vez de sin sufijo). Verificada con
   // descarga real: WebP 2464x2056, ~140 KB, no un placeholder.
   pasaia: "https://detectia.net/img/webcam-pasaia-azti.webp",
-  // plentzia, ondarroa, zumaia, getaria: sin fuente identificada todavía
+  // Getaria (playa de Malkorbe), encontrada 2026-09-18. Mismo proveedor
+  // AZTI/detectia.net, slug "malkorbe-azti" (nombre de playa, no del
+  // pueblo). Verificada con descarga real: WebP 1600x1200, ~54 KB, imagen
+  // real (no placeholder) con el Ratón de Getaria reconocible al fondo.
+  getaria: "https://detectia.net/img/webcam-malkorbe-azti.webp",
+  // plentzia, ondarroa, zumaia: sin fuente identificada todavía
 
   // MeteoGalicia (Xunta de Galicia) — imagen JPG directa sin cabeceras
   // especiales, verificada en vivo 2026-09-09. El nombre de fichero puede
