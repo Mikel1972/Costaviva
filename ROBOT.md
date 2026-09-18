@@ -4552,3 +4552,109 @@ corrección del modelo. No se ha tocado código.
 
 **Firmado:** robot buscador de fuentes (pasada de corrientes marinas),
 2026-09-18 14:20 UTC.
+
+---
+
+### 2026-09-18 22:54 UTC (pasada buscadora — presión atmosférica e histórico por zona, quinta pasada)
+
+**Qué se buscó y por qué:** las cuatro pasadas previas de este tema
+(2026-09-14 23:31, 2026-09-15 13:33, 2026-09-15 23:12 y 2026-09-17 23:10,
+más arriba) ya dejaron cerrados con verificación real: reanálisis ERA5/
+historical-forecast de Open-Meteo, observación horaria AEMET (España,
+`ESTACIONES_AEMET` en producción) e IPMA (Portugal, verificado pero sin
+integrar), histórico bulk NOAA NCEI/ISD, y la "serie larga" de IPMA
+(solo Lisboa tiene presión). La pasada del 2026-09-17 concluyó que "no
+queda ninguna pregunta pendiente sin al menos un intento real de
+verificación". Esta pasada fue a buscar ángulos genuinamente nuevos en
+vez de repetir lo ya cerrado: (1) un posible API/histórico programático
+de Puertos del Estado más allá del formulario `bancodatos.puertos.es`
+(descartado dos veces por no API), y (2) mirrors/portales alternativos de
+AEMET/IPMA no revisados todavía.
+
+**Nota de entorno:** red de salida abierta a dominios de datos en este
+runner, igual que las pasadas anteriores — todo lo de abajo verificado
+con peticiones HTTP reales, no solo `WebSearch`. `AEMET_API_KEY` sigue
+sin estar disponible aquí (solo vive en Cloudflare Pages).
+
+**Hallazgo nuevo, verificado en vivo — Puertos del Estado SÍ tiene un
+servidor THREDDS/OpenDAP público (`opendap.puertos.es`), pero resulta
+NO servir presión atmosférica observada.** Encontrado vía un artículo de
+JERICO-RI (infraestructura europea de investigación oceanográfica) sobre
+"Portuscopia" (`portuscopia.puertos.es`), la capa de descarga masiva que
+complementa a PORTUS — más amigable que el THREDDS crudo, con descargas
+recurrentes por script. Verificado en vivo el propio THREDDS
+(`http://opendap.puertos.es/thredds/catalog/catalog.html`, `200` tras
+seguir la redirección desde `catalog.html`): es un catálogo público sin
+login, con ~200 entradas organizadas por categoría
+(`wave_local_<código>` tipo a01/a02/.../a23 — probablemente los mismos
+códigos internos que las boyas de aguas profundas ya usadas en `BOYAS`—,
+`circulation_local/coastal/regional`, `radar_local`,
+`atmosphere_regional_harmonie25`, `atmosphere_local_safeport`,
+`tidegauge_*`, `nivmar_large`, `sat_large`). Inspeccionado el fichero
+NetCDF de una boya real vía OPeNDAP (`.das` de
+`wave_local_a01/HOURLY/HW-2026092100-B2026091800-FC.nc`): la única
+variable es `VHM0` (altura significativa de ola) — es un **producto de
+modelo de oleaje** (hindcast/forecast, prefijo "HW"), no una serie de
+sensor real con presión. Las dos carpetas con "atmosphere" en el nombre
+tampoco sirven para esto: `atmosphere_regional_harmonie25` es salida del
+modelo numérico Harmonie (predicción, no observación) y
+`atmosphere_local_safeport` es un proyecto de escala muy local (6 puntos
+en la bahía de Algeciras/Tarifa, proyecto "SAFEPORT") — ninguno cubre la
+costa general de España/Portugal ni es dato observado de estación.
+**Conclusión verificada**: Portuscopia/THREDDS es una vía real y
+programática (sin necesidad del formulario de `bancodatos.puertos.es`,
+que sigue siendo la única vía para lo que sí interesaría, dato
+observado real de presión de boya/REDEXT), pero para PRESIÓN
+específicamente no aporta nada nuevo — sigue sin haber una API abierta
+de Puertos del Estado para su histórico observado. Sí es un hallazgo
+útil para la idea aparcada de "mar de fondo" (`ROBOT_REGLAS.md`,
+sección dedicada): estos ficheros de hindcast de oleaje por boya
+(a01-a23, con histórico) podrían servir para calibrar esa propagación
+sin depender solo de la lectura en vivo de `poem.puertos.es` — anotado
+ahí como pista, no día de hoy.
+
+**Segundo hallazgo, mirror no oficial de AEMET (`datosclima.es`) —
+existe pero no es una vía recomendable para integrar.** `WebSearch`
+encontró `datosclima.es/Aemethistorico/Descargahistorico.html`,
+un sitio de terceros (no gubernamental) que republica series de AEMET
+desde 1920 sin necesitar `AEMET_API_KEY`, incluida presión por estación.
+No se ha verificado con una petición HTTP real porque, aunque sea
+técnicamente accesible, tiene dos problemas que lo descartan como fuente
+para Costaviva: (a) es un mirror no oficial sin garantía de
+mantenimiento ni de fidelidad a los datos originales de AEMET (a
+diferencia de OpenData, que es la fuente primaria), y (b) su propia
+descripción dice que la descarga completa por estación requiere pedirla
+por email a una dirección personal (`historicoexcel@yahoo.com`) — no es
+automatizable ni fiable para un cron. Se descarta como candidato; queda
+anotado solo para no repetir la búsqueda si alguien lo sugiere de nuevo.
+
+**Tercer intento, IPMA `dataclima.ipma.pt` ("Monitorização
+climática")** — nueva URL que no había aparecido en las 4 pasadas
+anteriores (esas cubrieron `obs.superficie` horario y `series.longas`).
+Bloqueada con `403 Forbidden` tanto con `WebFetch` como con `curl` con
+User-Agent de navegador real — no se pudo verificar su contenido ni
+confirmar si expone presión diaria por estación más allá de lo ya
+conocido. Queda como hueco sin cerrar (a diferencia del resto de esta
+pasada, aquí no hubo ni intento exitoso), no descartada ni confirmada.
+
+**Balance:** ningún hallazgo cambia la conclusión ya asentada en las 4
+pasadas anteriores — la vía con más profundidad para backfill sigue
+siendo NOAA NCEI/ISD + archivo ERA5 de Open-Meteo, y AEMET/IPMA (ya
+integrados en tiempo real) seguirían siendo la vía de observación cuando
+se retome. Ningún cambio de código esta pasada — sigue tocando
+`functions/`/`supabase/` y siendo decisión de producto (ver
+`ROBOT_REGLAS.md`). Dada la profundidad ya alcanzada en 5 pasadas sobre
+el mismo tema sin encontrar nada que cambie la propuesta, sugiero al
+usuario espaciar esta responsabilidad concreta (no las otras 3 de datos
+en tiempo real) hasta que exista una razón nueva para retomarla — por
+ejemplo la clave de AEMET, o una respuesta de `dataclima.ipma.pt`.
+
+**Fuentes:**
+[JERICO-RI — Thredds/OpenDAP y Portuscopia de Puertos del Estado](https://www.jerico-ri.eu/2023/12/13/jerico-va-navigating-oceanographic-and-meteorological-data-with-puertos-del-estado-thredds-opendap-service-and-portuscopia/),
+[Puertos del Estado — THREDDS Data Server (catálogo público)](http://opendap.puertos.es/thredds/catalog/catalog.html),
+[Puertos del Estado — Portuscopia](https://portuscopia.puertos.es/),
+[datosclima.es — histórico AEMET (mirror no oficial, descartado)](https://datosclima.es/Aemethistorico/Descargahistorico.html),
+[IPMA — Monitorização climática (bloqueado 403, sin verificar)](https://dataclima.ipma.pt/pt/sobre-os-dados/).
+
+**Firmado:** robot buscador de fuentes (pasada de presión atmosférica e
+histórico por zona), 2026-09-18 22:54 UTC.
