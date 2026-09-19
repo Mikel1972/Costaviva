@@ -4972,3 +4972,105 @@ ejemplo la clave de AEMET, o una respuesta de `dataclima.ipma.pt`.
 
 **Firmado:** robot buscador de fuentes (pasada de presión atmosférica e
 histórico por zona), 2026-09-18 22:54 UTC.
+
+---
+
+### 2026-09-19 17:33 UTC (pasada buscadora — corrientes marinas por zona, sexta pasada)
+
+**Qué se buscó:** continuación de las cinco pasadas previas (2026-09-14
+19:37, 2026-09-15 13:31, 2026-09-15 18:35, 2026-09-17 18:41 y 2026-09-18
+14:20, más arriba), que ya dejaron una conclusión sólida (no hay factor
+de corrección estable entre el radar HF real y Open-Meteo, en 2 zonas —
+Cantábrico/EUSKOOS y Atlántico/Galicia) pero solo habían mirado 2 de las
+6 redes de radar HF que EMODnet Physics ya tenía identificadas
+(EUSKOOS, Galicia, Lisboa, Gibraltar, Ibiza, PLOCAN). Esta pasada partió
+de la pista sin verificar que dejó la quinta ("Copernicus Marine Service
+redistribuye la misma red, con cuenta/token") para comprobarla de
+verdad con peticiones HTTP reales.
+
+**Hallazgo 1 — Copernicus Marine SÍ es accesible sin cuenta ni token,
+corrigiendo la suposición de la pasada anterior.** El producto
+`INSITU_GLO_PHY_UV_DISCRETE_NRT_013_048` publica su metadato STAC
+(`stac.marine.copernicus.eu`) en abierto, y de ahí se llega a un bucket
+S3 público (`s3.waw3-1.cloudferro.com/mdl-native-03/...`) que se puede
+listar y descargar sin autenticación (verificado con peticiones `GET`
+reales, incluido un fichero NetCDF completo de ~1.1 MB). Aun así, **no
+aporta nada nuevo sobre EMODnet ERDDAP para este caso de uso concreto**:
+mismas variables (`EWCT`/`NSCT`/`QCflag`/`CSPD_QC`, mismo dataset
+OceanSITES redistribuido), pero en NetCDF crudo (hay que descargar el
+fichero del día entero y parsearlo) en vez del ERDDAP de EMODnet (que
+permite pedir un punto/hora concreto por URL) — peor candidato para una
+integración real en `functions/prevision.js`, solo útil como mirror de
+respaldo si EMODnet cayera.
+
+**Hallazgo 2, más relevante — el propio listado de Copernicus reveló 2
+redes de radar HF reales que las 5 pasadas anteriores nunca habían
+buscado, porque la búsqueda se centró en las 6 zonas ya conocidas en vez
+de mirar el catálogo completo:**
+- **ICATMAR** (Generalitat de Catalunya + Institut de Ciències del Mar/
+  CSIC): cubre la costa catalana completa (`geospatial_lat` 40.5–43.5,
+  `lon` 1.0–4.3), con dato real hasta hoy mismo. Verificado también en
+  EMODnet ERDDAP (`EUHFR_NRTcurrent_HFR-ICATMAR-Total`, existía, nunca
+  se había buscado por ese nombre).
+- **DeltaEbro** (Puertos del Estado — la misma institución que ya
+  aporta las boyas de `BOYAS`): cubre el golfo de Sant Jordi/delta del
+  Ebro (`lat` 39.6–41.2, `lon` 0.06–2.08), con histórico real desde
+  2019-01-01. También confirmado en EMODnet ERDDAP.
+- (Se descartó una tercera red vista en el mismo listado, **CALYPSO**:
+  cubre el canal Sicilia-Malta, en Italia — fuera del ámbito de España/
+  Portugal de Costaviva.)
+
+**Cobertura real comprobada contra spots de Costaviva (con petición
+real a ERDDAP, filtrando por `QCflag=1` Y `CSPD_QC=1`, ambos "buenos" —
+regla ya aprendida en la pasada del 2026-09-18):**
+- **Peñíscola**: celda real a solo **~6.6 km** de la costa — la
+  cobertura más cercana a un spot encontrada hasta ahora en las 6
+  pasadas de corrientes (mejor que los ~46 km de Galicia).
+- **Vinaròs**: celda más cercana con `QCflag=4` (mala) pese a
+  `CSPD_QC=1` — mismo caso de discrepancia entre flags ya documentado
+  el 2026-09-18, descartada.
+- **Cambrils**: celda válida más cercana a ~31 km, y con `QCflag=4`
+  igualmente — sin cobertura útil.
+- **Blanes**: celda real (ambos flags buenos) a solo **~4.6 km**.
+- **Roses**: celda real a ~14 km.
+
+**Calibración real, 8 puntos nuevos (4 en Peñíscola/DeltaEbro, 4 en
+Blanes/ICATMAR), primera vez que se prueba el Mediterráneo/Cataluña en
+esta serie de pasadas — la conclusión ya asentada en Cantábrico y
+Atlántico se confirma también aquí, y con un matiz nuevo:** en
+Peñíscola, dirección y velocidad reales del radar no guardan relación
+estable con Open-Meteo (diferencias de dirección 22°–86°), igual que en
+las pasadas anteriores. En Blanes aparece un patrón distinto y
+llamativo: Open-Meteo predice una corriente **fuerte y casi constante
+durante todo el día** (0.8–0.9 m/s, 27°–56°, apenas varía en 24h) que el
+radar real **no confirma en ningún momento** (0.04–0.65 m/s, con la
+dirección llegando a invertirse por completo entre horas) — un caso más
+extremo que los ya vistos, con el modelo sobreestimando la velocidad
+real varias veces seguidas, no solo puntualmente.
+
+**Conclusión, igual que las 5 pasadas anteriores — solo propuesta, no
+cambio de código** (sigue tocando `functions/prevision.js` y siendo
+decisión de producto, ver `ROBOT_REGLAS.md`): con ya **17 puntos de
+calibración en 4 zonas distintas** (EUSKOOS, Galicia, DeltaEbro,
+ICATMAR) y ningún factor de corrección estable en ninguna, la propuesta
+sigue siendo la misma — si se integra, mostrar el radar como dato de
+observación real aparte (con su propia etiqueta de fuente/distancia al
+spot), nunca como sustituto ni corrección del modelo de Open-Meteo. El
+hallazgo nuevo de hoy (ICATMAR/DeltaEbro con coberturas de 4.6-6.6 km,
+mejores que las ya conocidas) sí mejora el caso concreto de "para qué
+spots merecería la pena mostrarlo primero" si el usuario decide
+retomarlo: Peñíscola y Blanes serían los primeros candidatos por
+cercanía real de la celda.
+
+**Salud general, comprobada de nuevo:** EUSKOOS sigue viva pero con el
+último dato de ayer (`time_coverage_end` 2026-09-18T08:00Z, no de hoy)
+— dentro del patrón de huecos ya conocido para esta red concreta, no es
+una caída nueva que investigar aparte.
+
+**Fuentes:**
+[Copernicus Marine — INSITU_GLO_PHY_UV_DISCRETE_NRT_013_048 (STAC, acceso anónimo confirmado)](https://stac.marine.copernicus.eu/metadata/INSITU_GLO_PHY_UV_DISCRETE_NRT_013_048/product.stac.json),
+[EMODnet Physics ERDDAP — ICATMAR](https://erddap.emodnet-physics.eu/erddap/info/EUHFR_NRTcurrent_HFR-ICATMAR-Total/index.html),
+[EMODnet Physics ERDDAP — DeltaEbro](https://erddap.emodnet-physics.eu/erddap/info/EUHFR_NRTcurrent_HFR-DeltaEbro-Total/index.html).
+
+**Firmado:** robot buscador de fuentes (pasada de corrientes marinas),
+2026-09-19 17:33 UTC.
