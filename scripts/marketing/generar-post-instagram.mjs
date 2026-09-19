@@ -173,7 +173,7 @@ async function generarCondiciones() {
     "",
     "Consulta el estado en directo de tu spot, capas de viento/boyas/radar de lluvia y muchos más datos para que incrementes tus posibilidades de pesca -- enlace en la bio 🎣",
     "",
-    "#pesca #surf #costaviva #paisvasco #cantabrico #pescadesdecosta",
+    "#pesca #fishing #instafishing #pescadeportiva #pescadesdecosta #surfcasting #saltwaterfishing #costaviva #euskadi #cantabria #cantabrico",
   ].join("\n");
 
   if (!fotoWebcamBuffer) {
@@ -262,7 +262,7 @@ async function generarEspecies() {
     "",
     "Consulta las condiciones reales de tu spot y muchos más datos para que incrementes tus posibilidades de pesca -- enlace en la bio 🎣",
     "",
-    "#pesca #pescarecreativa #costaviva #paisvasco #cantabrico",
+    "#pesca #fishing #instafishing #pescarecreativa #pescadeportiva #costaviva #euskadi #cantabria #pescaenespaña",
   ].join("\n");
 
   return { tipo: "especies", svg, caption, slug: `especies-${especie.nombre.toLowerCase().replace(/[^a-z0-9]+/g, "-")}` };
