@@ -1,0 +1,50 @@
+name: Métricas de Instagram
+
+# Pedido explícito del usuario (2026-09-19): "que el robot tenga una
+# regla de cantidad de impactos e impresiones de la publicación para ir
+# afinando". Revisa a diario los posts publicados por
+# publicar-post-instagram.yml (ver scripts/marketing/posts-publicados.jsonl)
+# y, para los que ya llevan 48h publicados (a las métricas de Instagram
+# les hace falta ese margen para asentarse), guarda alcance/impresiones/
+# likes/comentarios/guardados reales en CALIBRACION.jsonl -- el mismo
+# fichero que ya usa el resto de calibraciones del repo, nunca se
+# inventa un número si la API no lo da.
+#
+# Probar a mano (workflow_dispatch) antes de fiarse del schedule, mismo
+# criterio que el resto de rutinas de este repo.
+
+on:
+  schedule:
+    - cron: "0 8 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  medir:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Medir métricas de posts publicados
+        working-directory: scripts/marketing
+        env:
+          META_PAGE_ACCESS_TOKEN: ${{ secrets.META_PAGE_ACCESS_TOKEN }}
+        run: node medir-metricas-instagram.mjs
+
+      - name: Comitear resultados si hubo algo nuevo
+        run: |
+          git config user.name "Claude (robot Costaviva)"
+          git config user.email "actions@github.com"
+          if git diff --quiet -- CALIBRACION.jsonl scripts/marketing/posts-publicados.jsonl; then
+            echo "Sin cambios, nada que comitear."
+          else
+            git add CALIBRACION.jsonl scripts/marketing/posts-publicados.jsonl
+            git commit -m "Robot de marketing: métricas de posts de Instagram"
+            git push
+          fi
