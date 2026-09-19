@@ -87,12 +87,15 @@
 <div class="contenido" style="display:none;" id="zonaContenido">
   <div class="mensaje" id="mensaje"></div>
   <p class="resumen" id="resumen">Cargando usuarios…</p>
-  <table>
-    <thead>
-      <tr><th>Email</th><th>Alta</th><th>Estado</th><th>Acciones</th></tr>
-    </thead>
-    <tbody id="filasUsuarios"></tbody>
-  </table>
+  <p class="resumen" style="margin-top:-8px;">"Última sesión" es aproximada (agrupa eventos con menos de 30 min entre sí) y solo hay datos desde el 17-09-2026.</p>
+  <div style="overflow-x:auto;">
+    <table>
+      <thead>
+        <tr><th>Email</th><th>Alta</th><th>Último acceso</th><th>Última sesión</th><th>Estado</th><th>Acciones</th></tr>
+      </thead>
+      <tbody id="filasUsuarios"></tbody>
+    </table>
+  </div>
 </div>
 
 <div class="no-admin" id="zonaNoAdmin" style="display:none;">
@@ -163,8 +166,25 @@ function mostrarMensaje(texto, tipo) {
   el.className = `mensaje ${tipo}`;
 }
 
+// Duración de la última sesión, aproximada a partir de eventos_uso
+// (ver admin_ultima_sesion_usuarios() en
+// supabase/migrations/20260920100000_admin_ultimo_acceso_duracion_sesion.sql)
+// — un solo evento en la última visita da 0 min, no "entró y salió al
+// instante": significa que solo hay un evento registrado para medir.
+function formatoDuracion(ms, eventos) {
+  if (eventos === 1) return "1 evento (sin más para medir)";
+  const minutos = Math.round(ms / 60000);
+  if (minutos < 1) return "<1 min";
+  const horas = Math.floor(minutos / 60);
+  const resto = minutos % 60;
+  return horas > 0 ? `${horas} h ${resto} min` : `${minutos} min`;
+}
+
 async function cargarUsuarios() {
-  const { data, error } = await supabase.rpc("admin_listar_usuarios");
+  const [{ data, error }, { data: sesiones, error: errorSesiones }] = await Promise.all([
+    supabase.rpc("admin_listar_usuarios"),
+    supabase.rpc("admin_ultima_sesion_usuarios"),
+  ]);
   if (error) {
     // "no autorizado" es justo lo que devuelve es_admin() para
     // cualquiera que no sea el admin — no distinguimos el motivo en
@@ -177,11 +197,22 @@ async function cargarUsuarios() {
   document.getElementById("resumen").textContent =
     `${data.length} usuario${data.length === 1 ? "" : "s"} registrado${data.length === 1 ? "" : "s"}.`;
 
+  // Fallo silencioso si admin_ultima_sesion_usuarios() falla por lo
+  // que sea (la lista de usuarios, lo importante, ya llegó bien) —
+  // las columnas de sesión simplemente salen en "—".
+  const sesionesPorUsuario = new Map((errorSesiones ? [] : sesiones).map((s) => [s.user_id, s]));
+
   const formateador = new Intl.DateTimeFormat("es-ES", { day: "2-digit", month: "2-digit", year: "numeric" });
-  document.getElementById("filasUsuarios").innerHTML = data.map((u) => `
+  const formateadorHora = new Intl.DateTimeFormat("es-ES", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+  document.getElementById("filasUsuarios").innerHTML = data.map((u) => {
+    const sesion = sesionesPorUsuario.get(u.id);
+    const duracion = sesion ? formatoDuracion(new Date(sesion.fin) - new Date(sesion.inicio), sesion.eventos) : "—";
+    return `
     <tr data-id="${u.id}">
       <td class="email">${u.email || "—"}${u.nombre ? `<br><span style="color:#5C7680;">${u.nombre}</span>` : ""}</td>
       <td class="fecha">${formateador.format(new Date(u.creado_en))}</td>
+      <td class="fecha">${u.ultimo_acceso ? formateadorHora.format(new Date(u.ultimo_acceso)) : "Nunca"}</td>
+      <td class="fecha">${duracion}</td>
       <td><span class="estado ${u.aprobado ? "activo" : "pausado"}">${u.aprobado ? "Activo" : "Sin acceso"}</span></td>
       <td>
         <div class="fila-botones">
@@ -190,7 +221,8 @@ async function cargarUsuarios() {
         </div>
       </td>
     </tr>
-  `).join("");
+  `;
+  }).join("");
 
   document.getElementById("filasUsuarios").querySelectorAll("button").forEach((btn) => {
     btn.addEventListener("click", async () => {
