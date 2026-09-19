@@ -19,7 +19,7 @@
      dependencia que Leaflet (ya cargado arriba). cdnjs no aloja este
      paquete, jsDelivr sí (permitido en el CDN de este proyecto). -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-velocity@2.1.4/dist/leaflet-velocity.min.css" />
-<script src="https://cdn.jsdelivr.net/npm/leaflet-velocity@2.1.4/dist/leaflet-velocity.min.js"></script>
+<script src="/assets/js/leaflet-velocity.js"></script>
 <!-- Webcams en vídeo en directo de Gipuzkoa (2026-09-14) — HLS, no hace
      falta en Safari (soporte nativo) pero sí en Chrome/Firefox/Edge. -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.6.15/hls.min.js"></script>
@@ -3142,7 +3142,10 @@ document.getElementById("toggleNubes").addEventListener("click", async (e) => {
 // una leyenda fija). 0-15 m/s (~54 km/h) cubre de sobra el viento real
 // de esta costa. Compartida entre la capa y su leyenda para que nunca
 // se desincronicen.
-const VIENTO_COLOR_SCALE = ["#3A0CA3", "#560BAD", "#7209B7", "#9D174D", "#B5179E", "#F72585", "#D00000"];
+// Verde en calma (0 m/s) -> morado -> magenta según sube el viento,
+// pedido explícito del usuario 2026-09-19 (antes empezaba ya en morado
+// oscuro, sin marcar visualmente la calma).
+const VIENTO_COLOR_SCALE = ["#22C55E", "#3A0CA3", "#560BAD", "#7209B7", "#9D174D", "#B5179E", "#F72585"];
 const VIENTO_MAX_MS = 15;
 let capaViento = null;
 let vientoSnapshots = [];
