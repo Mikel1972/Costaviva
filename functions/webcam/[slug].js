@@ -23,6 +23,17 @@
 // una reserva (0 = la principal, >0 = cuál de las siguientes) y reportarlo
 // en el informe diario -- el failover en sí es transparente para quien ve
 // la app, pero no debe serlo para quien vigila la salud de las cámaras.
+//
+// Orden de preferencia entre varias fuentes de un mismo spot (criterio
+// explícito del usuario, 2026-09-19): 1) vídeo antes que imagen fija
+// (WEBCAMS_HLS en index.html, no este WEBCAMS -- son dos listas
+// separadas), 2) entre imágenes fijas, la de mejor resolución/nitidez
+// real de píxeles, 3) entre las que empatan de día, la que sea infrarroja
+// y siga enseñando algo útil de noche. Este array (WEBCAMS) solo ordena
+// fuentes de IMAGEN FIJA entre sí -- si para un spot aparece una fuente de
+// vídeo nueva y hoy solo tiene imagen fija aquí, la decisión de pasarlo a
+// WEBCAMS_HLS (y así ganarle prioridad a la imagen fija) es aparte, no la
+// resuelve el orden de este array.
 export const WEBCAMS = {
   mundaka: "https://www.kostasystem.com/wp-content/uploads/irudiak/mundaka/camara1_snap.jpeg",
   bakio: "https://pyscada.isurki.com/static/pyscada/sirena/aditu/BakioNAS/last/bakio.1.snap.last.thumb.jpeg",
