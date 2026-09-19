@@ -14,6 +14,12 @@
 <meta name="apple-mobile-web-app-title" content="Costaviva" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<!-- Capa de viento estilo Windy (2026-09-19, pedido explícito del
+     usuario) — partículas animadas sobre una rejilla u/v, sin más
+     dependencia que Leaflet (ya cargado arriba). cdnjs no aloja este
+     paquete, jsDelivr sí (permitido en el CDN de este proyecto). -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-velocity@2.1.4/dist/leaflet-velocity.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/leaflet-velocity@2.1.4/dist/leaflet-velocity.min.js"></script>
 <!-- Webcams en vídeo en directo de Gipuzkoa (2026-09-14) — HLS, no hace
      falta en Safari (soporte nativo) pero sí en Chrome/Firefox/Edge. -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.6.15/hls.min.js"></script>
@@ -268,13 +274,7 @@
   }
   .leyenda.visible { opacity: 1; transform: translateX(0); pointer-events: auto; }
 
-  .rayos-toggle {
-    position: absolute; top: 16px; right: 16px; z-index: 502;
-    width: 38px; height: 38px; border-radius: 8px;
-    background: #FFFFFF; border: 1px solid #DDE2DC; color: #0B2532;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; font-size: 16px; padding: 0;
-  }
+  .rayos-toggle { top: 16px; right: 16px; }
   .rayos-panel {
     position: absolute; top: 16px; right: 64px; z-index: 501;
     background: #FFFFFF; border: 1px solid #DDE2DC; border-radius: 8px;
@@ -318,37 +318,61 @@
   }
   .modal-rayos-contenido img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 
-  /* Botones de capas reorganizados en 2 columnas por tipología
-     (2026-09-14, pedido explícito: "que se vean todos") — antes era una
-     sola columna de 9 botones que se salía de pantalla en móvil.
+  /* Botones de capas en 2 columnas por tipología (2026-09-14, "que se
+     vean todos"; rediseñado 2026-09-19, pedido explícito del usuario:
+     "debemos ordenarlas y poner el título de cada debajo" al añadir la
+     capa de viento -- cada botón lleva ahora una etiqueta corta debajo
+     del icono, no solo un title/tooltip que en móvil no se ve nunca sin
+     mantener pulsado.
      Columna A (right:16px, pegada al borde): capas de referencia/
-     ambiente — rayos, luna, batimetría, radar de lluvia, estaciones.
-     Columna B (right:64px, justo a su izquierda): capas de "cosas en el
-     mapa". Spots + "+" van pegados como un único grupo visual (el "+"
-     solo visible con spots encendido, ver JS) — debajo, ríos y boyas. */
-  .luna-toggle, .batimetria-toggle, .nubes-toggle, .estaciones-toggle,
-  .spots-toggle, .rios-toggle, .boyas-toggle, .anadir-ubicacion-toggle {
+     ambiente, de arriba a abajo por lo crítico/frecuente que es cada
+     una — rayos (seguridad), luna, batimetría, lluvia, estaciones,
+     viento (la más nueva, al final).
+     Columna B (right:64px): capas de "cosas en el mapa". Spots + "+"
+     van pegados como un único grupo visual (el "+" solo visible con
+     spots encendido, ver JS) — debajo, ríos y boyas. */
+  .rayos-toggle, .luna-toggle, .batimetria-toggle, .nubes-toggle, .estaciones-toggle, .viento-toggle,
+  .rios-toggle, .boyas-toggle {
+    position: absolute; z-index: 502;
+    width: 44px; height: 44px; border-radius: 8px;
+    background: #FFFFFF; border: 1px solid #DDE2DC; color: #0B2532;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+    cursor: pointer; font-size: 15px; padding: 2px 0;
+  }
+  .rayos-toggle .capa-label, .luna-toggle .capa-label, .batimetria-toggle .capa-label,
+  .nubes-toggle .capa-label, .estaciones-toggle .capa-label, .viento-toggle .capa-label,
+  .rios-toggle .capa-label, .boyas-toggle .capa-label {
+    font-size: 7.5px; font-family: 'IBM Plex Mono', monospace; line-height: 1; color: #5F7981;
+  }
+  .rayos-toggle.activo .capa-label, .luna-toggle.activo .capa-label, .batimetria-toggle.activo .capa-label,
+  .nubes-toggle.activo .capa-label, .estaciones-toggle.activo .capa-label, .viento-toggle.activo .capa-label,
+  .rios-toggle.activo .capa-label, .boyas-toggle.activo .capa-label { color: #0B2532; }
+  .rayos-toggle { top: 16px; right: 16px; }
+  .luna-toggle { top: 68px; right: 16px; }
+  .batimetria-toggle { top: 120px; right: 16px; }
+  .nubes-toggle { top: 172px; right: 16px; }
+  .estaciones-toggle { top: 224px; right: 16px; }
+  .viento-toggle { top: 276px; right: 16px; }
+  .rios-toggle { top: 104px; right: 64px; }
+  .boyas-toggle { top: 156px; right: 64px; }
+  /* Spots + "+" pegados como un único grupo de 2 (pedido explícito del
+     usuario: el botón de añadir ubicación debe verse asociado al de
+     spots, no como una capa más suelta) — sin hueco entre los dos,
+     esquinas redondeadas solo por fuera y una línea fina de separación
+     en vez del borde completo, como un control segmentado. Se quedan sin
+     etiqueta (son un grupo de acción/selección, no una capa suelta) y
+     con el tamaño compacto de siempre. */
+  .spots-toggle, .anadir-ubicacion-toggle {
     position: absolute; z-index: 502;
     width: 38px; height: 38px; border-radius: 8px;
     background: #FFFFFF; border: 1px solid #DDE2DC; color: #0B2532;
     display: flex; align-items: center; justify-content: center;
     cursor: pointer; font-size: 16px; padding: 0;
   }
-  .luna-toggle { top: 64px; right: 16px; }
-  .batimetria-toggle { top: 112px; right: 16px; }
-  .nubes-toggle { top: 160px; right: 16px; }
-  .estaciones-toggle { top: 208px; right: 16px; }
-  .rios-toggle { top: 104px; right: 64px; }
-  .boyas-toggle { top: 152px; right: 64px; }
-  /* Spots + "+" pegados como un único grupo de 2 (pedido explícito del
-     usuario: el botón de añadir ubicación debe verse asociado al de
-     spots, no como una capa más suelta) — sin hueco entre los dos,
-     esquinas redondeadas solo por fuera y una línea fina de separación
-     en vez del borde completo, como un control segmentado. */
   .spots-toggle { top: 16px; right: 64px; border-radius: 8px 8px 0 0; }
   .anadir-ubicacion-toggle { top: 54px; right: 64px; border-radius: 0 0 8px 8px; border-top: none; }
-  .batimetria-toggle.activo, .nubes-toggle.activo, .estaciones-toggle.activo,
-  .spots-toggle.activo, .rios-toggle.activo, .boyas-toggle.activo, .anadir-ubicacion-toggle.activo {
+  .batimetria-toggle.activo, .nubes-toggle.activo, .estaciones-toggle.activo, .viento-toggle.activo,
+  .spots-toggle.activo, .rios-toggle.activo, .boyas-toggle.activo, .anadir-ubicacion-toggle.activo, .rayos-toggle.activo {
     background: #D4A24C; color: #0B2532;
   }
   /* El display:flex de arriba (regla de autor) gana por defecto al
@@ -377,6 +401,21 @@
     background: #EEF2EF; color: #0B2532; cursor: pointer; font-size: 13px;
   }
   .confirmar-ubicacion-panel button.secundario-ubicacion:hover { border-color: #A8792A; }
+  /* Barra deslizante de "próximas horas" para la capa de viento
+     (2026-09-19) -- mismo estilo de panel lateral que rayos/luna, pero
+     sin el fade-in (aparece/desaparece junto con la propia capa, no hay
+     necesidad de la transición). */
+  .viento-slider-panel {
+    position: absolute; top: 276px; right: 64px; z-index: 501;
+    background: #FFFFFF; border: 1px solid #DDE2DC; border-radius: 8px;
+    padding: 10px 14px; font-size: 11px; font-family: 'IBM Plex Mono', monospace;
+    width: 190px;
+  }
+  .viento-slider-panel[hidden] { display: none; }
+  .viento-slider-panel .titulo { color: #5C7680; margin-bottom: 6px; }
+  .viento-slider-panel input[type="range"] { width: 100%; }
+  .viento-slider-panel .etq { text-align: center; color: #5C7680; margin-top: 2px; }
+
   .luna-panel {
     position: absolute; top: 64px; right: 64px; z-index: 501;
     background: #FFFFFF; border: 1px solid #DDE2DC; border-radius: 8px;
@@ -641,7 +680,7 @@
       <div class="fila"><span class="chip" style="background:#A34A35"></span><span>agitado</span></div>
       <div class="nota" style="margin-top:10px; padding-top:8px; border-top:1px solid #DDE2DC;">◆ RÍOS: 3 puntos por río (cabecera→desembocadura), color por caudal bajo/normal/alto — pasa el cursor por un punto para ver el detalle. Lo que se mide arriba llega a la costa horas después — útil como aviso de tendencia. Posiciones ilustrativas, no las estaciones oficiales exactas. Caudal real solo en Sella, Besaya, Pas, Asón, Eo, Júcar, Turia, Mijares, Segura y Lagares (Confederaciones Hidrográficas + Augas de Galicia) — los ríos vascos siguen sin dato real (URA/Bizkaia bloquea el acceso automático).</div>
     </div>
-    <button class="rayos-toggle" id="toggleRayos" title="Mapa de rayos de España (AEMET)" aria-label="Mostrar/ocultar mapa de rayos">⚡</button>
+    <button class="rayos-toggle" id="toggleRayos" title="Mapa de rayos de España (AEMET)" aria-label="Mostrar/ocultar mapa de rayos">⚡<span class="capa-label">Rayos</span></button>
     <div class="rayos-panel" id="rayosPanel">
       <div class="titulo">RAYOS — ESPAÑA</div>
       <div class="marco-imagen">
@@ -656,7 +695,7 @@
         <img id="imgRayosGrande" src="/rayos-imagen" alt="Mapa de rayos de España, última hora, en grande" />
       </div>
     </div>
-    <button class="luna-toggle" id="toggleLuna" title="Fase y posición de la luna" aria-label="Mostrar/ocultar datos de la luna">🌙</button>
+    <button class="luna-toggle" id="toggleLuna" title="Fase y posición de la luna" aria-label="Mostrar/ocultar datos de la luna">🌙<span class="capa-label">Luna</span></button>
     <div class="luna-panel" id="lunaPanel">
       <div class="nota" id="lunaZoomAviso" style="display:none; font-size:11px; color:#5F7981; text-align:center; padding:6px 0;">🔍 Acércate (zoom in) para ver la luna de esa ubicación</div>
       <div id="lunaContenido">
@@ -673,13 +712,19 @@
         <div class="nota">Para el centro del mapa actual. Azimut y altura: cálculo propio (±1°). Horas y fase: Observatorio Naval de EE.UU.</div>
       </div>
     </div>
-    <button class="batimetria-toggle" id="toggleBatimetria" title="Batimetría (profundidad del mar)" aria-label="Mostrar/ocultar batimetría">📏</button>
-    <button class="nubes-toggle" id="toggleNubes" title="Radar de lluvia en directo (RainViewer)" aria-label="Mostrar/ocultar radar de lluvia">☁️</button>
+    <button class="batimetria-toggle" id="toggleBatimetria" title="Batimetría (profundidad del mar)" aria-label="Mostrar/ocultar batimetría">📏<span class="capa-label">Fondo</span></button>
+    <button class="nubes-toggle" id="toggleNubes" title="Radar de lluvia en directo (RainViewer)" aria-label="Mostrar/ocultar radar de lluvia">☁️<span class="capa-label">Lluvia</span></button>
     <button class="anadir-ubicacion-toggle" id="toggleAnadirUbicacion" title="Añadir una ubicación nueva" aria-label="Añadir ubicación">➕</button>
-    <button class="estaciones-toggle" id="toggleEstaciones" title="Estaciones meteorológicas reales (AEMET)" aria-label="Mostrar/ocultar estaciones meteorológicas">🌧</button>
+    <button class="estaciones-toggle" id="toggleEstaciones" title="Estaciones meteorológicas reales (AEMET)" aria-label="Mostrar/ocultar estaciones meteorológicas">🌧<span class="capa-label">Estac.</span></button>
+    <button class="viento-toggle" id="toggleViento" title="Viento en directo, estilo Windy (partículas animadas)" aria-label="Mostrar/ocultar capa de viento">💨<span class="capa-label">Viento</span></button>
     <button class="spots-toggle activo" id="toggleSpots" title="Spots" aria-label="Mostrar/ocultar spots">📍</button>
-    <button class="rios-toggle" id="toggleRios" title="Ríos" aria-label="Mostrar/ocultar ríos">〰️</button>
-    <button class="boyas-toggle" id="toggleBoyas" title="Boyas reales (Puertos del Estado)" aria-label="Mostrar/ocultar boyas">⚓</button>
+    <button class="rios-toggle" id="toggleRios" title="Ríos" aria-label="Mostrar/ocultar ríos">〰️<span class="capa-label">Ríos</span></button>
+    <button class="boyas-toggle" id="toggleBoyas" title="Boyas reales (Puertos del Estado)" aria-label="Mostrar/ocultar boyas">⚓<span class="capa-label">Boyas</span></button>
+    <div class="viento-slider-panel" id="vientoSliderPanel" hidden>
+      <div class="titulo">VIENTO — próximas horas</div>
+      <input type="range" id="vientoSlider" min="0" max="23" value="0" step="1" />
+      <div class="etq" id="vientoSliderHora">ahora</div>
+    </div>
     <div class="confirmar-ubicacion-panel" id="eligeMetodoPanel">
       <div class="titulo">¿Cómo quieres marcar el punto?</div>
       <div class="botones" style="flex-direction:column; gap:8px;">
@@ -3054,6 +3099,86 @@ document.getElementById("toggleNubes").addEventListener("click", async (e) => {
     registrarEvento("ver_capa_radar_lluvia");
   }
 });
+
+// Capa de viento estilo Windy (2026-09-19, pedido explícito del usuario):
+// partículas animadas sobre una rejilla de viento real (ver
+// functions/viento-campo.js), con una barra deslizante para ver cómo
+// evoluciona en las próximas horas — el dato de "ahora" es el índice 0,
+// nunca se pide nada nuevo a Open-Meteo al mover la barra, solo se
+// cambia qué hora ya descargada se muestra.
+let capaViento = null;
+let vientoSnapshots = [];
+let vientoCargando = false;
+let vientoMoveendTimer = null;
+
+function horaVientoTexto(iso, indice) {
+  if (!iso) return "—";
+  const hhmm = iso.slice(11, 16);
+  return indice === 0 ? `ahora (${hhmm})` : hhmm;
+}
+
+function mostrarHoraViento(indice) {
+  if (!vientoSnapshots.length) return;
+  const i = Math.min(Math.max(indice, 0), vientoSnapshots.length - 1);
+  const snap = vientoSnapshots[i];
+  if (capaViento) { map.removeLayer(capaViento); capaViento = null; }
+  capaViento = L.velocityLayer({
+    displayValues: false,
+    data: snap.data,
+    velocityScale: 0.012,
+    opacity: 0.85,
+  });
+  if (document.getElementById("toggleViento").classList.contains("activo")) capaViento.addTo(map);
+  document.getElementById("vientoSliderHora").textContent = horaVientoTexto(snap.hora, i);
+}
+
+async function cargarCampoViento() {
+  if (vientoCargando) return;
+  vientoCargando = true;
+  try {
+    const b = map.getBounds();
+    const bbox = `${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()}`;
+    const resp = await fetch(`/viento-campo?bbox=${bbox}`);
+    const datos = await resp.json();
+    if (!resp.ok || !datos.snapshots?.length) throw new Error(datos.error || "sin snapshots de viento");
+    vientoSnapshots = datos.snapshots;
+    const slider = document.getElementById("vientoSlider");
+    slider.max = String(vientoSnapshots.length - 1);
+    mostrarHoraViento(+slider.value);
+  } catch (e) {
+    console.warn("No se pudo cargar la capa de viento:", e.message);
+  } finally {
+    vientoCargando = false;
+  }
+}
+
+document.getElementById("toggleViento").addEventListener("click", (e) => {
+  const boton = e.currentTarget;
+  const panel = document.getElementById("vientoSliderPanel");
+  if (boton.classList.contains("activo")) {
+    if (capaViento) map.removeLayer(capaViento);
+    boton.classList.remove("activo");
+    panel.hidden = true;
+  } else {
+    boton.classList.add("activo");
+    panel.hidden = false;
+    registrarEvento("ver_capa_viento");
+    cargarCampoViento();
+  }
+});
+document.getElementById("vientoSlider").addEventListener("input", (e) => {
+  mostrarHoraViento(+e.target.value);
+});
+// La rejilla se recalcula al mover/hacer zoom en el mapa con la capa
+// activa (pedido explícito del usuario: "la rejilla debe recalcularse")
+// — con un pequeño debounce para no disparar una petición por cada
+// frame intermedio de un arrastre largo.
+map.on("moveend zoomend", () => {
+  if (!document.getElementById("toggleViento").classList.contains("activo")) return;
+  clearTimeout(vientoMoveendTimer);
+  vientoMoveendTimer = setTimeout(cargarCampoViento, 600);
+});
+
 map.on("moveend zoomend", () => {
   if (lunaAbierta) actualizarLuna();
 });
