@@ -946,6 +946,74 @@ al dueño del repo) — no se montó un canal de email aparte para esto.
     funciona sin Docker ni `link` — es la vía a repetir para la próxima
     migración.
 
+**Actualización 2026-09-20 — credenciales persistentes + dos hallazgos
+reales al usarlas por primera vez.** Pedido explícito del usuario: en
+vez de darle SQL para pegar a mano en el editor de Supabase cada vez
+(frágil — ver el bug de abajo), guardó él mismo la cadena de conexión
+de **Connection Pooling** (con su contraseña real) en su propio
+`~/.bashrc` como `SUPABASE_DB_URL` — **nunca escrita en este repo ni
+pegada en el chat**, la puso él directamente en el fichero. Cualquier
+sesión de Claude Code que abra una terminal Bash la hereda sola (el
+shell se inicializa desde el perfil del usuario), así que a partir de
+ahora se puede montar el comando `supabase db push --db-url
+"$SUPABASE_DB_URL" ...` sin pedirle a nadie que pegue nada a mano — con
+una excepción real, ver el punto siguiente.
+
+- **El "clasificador de modo automático" de Claude Code bloquea en
+  duro cualquier comando de Bash que escriba sobre la base de datos de
+  producción** (`psql "$SUPABASE_DB_URL" ...`, `supabase migration
+  repair ...`, `supabase db push ...`) cuando lo intenta ejecutar la
+  propia sesión — no es un permiso que se pueda aprobar respondiendo en
+  el chat, es un bloqueo previo a eso. Comandos de solo lectura contra
+  la misma base (`supabase migration list`) sí funcionan bien desde la
+  sesión. **La vía real**: preparar el comando exacto (ya con
+  `$SUPABASE_DB_URL`, sin ningún dato sensible de más) y pedirle al
+  usuario que lo pegue él mismo en su propio Git Bash — funciona sin
+  problema al ejecutarlo él.
+- **Historial de migraciones desincronizado, encontrado al usar
+  `supabase migration list` por primera vez**: las ~13 migraciones
+  aplicadas entre el 2026-09-17 y el 2026-09-19 se habían pegado a mano
+  en el SQL Editor (antes de que existiera esta cadena de conexión), así
+  que la tabla de seguimiento de la CLI nunca se enteró — salían como
+  `"remote": ""` pese a estar de verdad en producción (confirmado, esas
+  mismas migraciones ya estaban documentadas aquí como verificadas en
+  real). Lanzar `db push` tal cual habría intentado re-ejecutarlas
+  contra producción, con riesgo real de error (columnas/tablas que ya
+  existen). Arreglado con `supabase migration repair --db-url
+  "$SUPABASE_DB_URL" --status applied <lista de versiones>` (solo toca
+  la tabla de metadatos de la CLI, ni esquema ni datos) antes de aplicar
+  la migración nueva de verdad. **Para la próxima vez**: si alguna
+  migración futura se vuelve a aplicar a mano en el editor en vez de por
+  `db push` (por lo que sea), va a volver a aparecer este mismo hueco —
+  correr siempre `supabase migration list` primero para comprobarlo
+  antes de lanzar un `db push` a ciegas.
+
+## Panel de admin — último acceso y duración de la última sesión (2026-09-20)
+
+Pedido explícito del usuario, tras preguntar si un usuario concreto
+había vuelto a entrar/navegar por la web — hasta entonces no había
+ninguna forma de verlo sin ir al SQL Editor a mano.
+
+- `admin_listar_usuarios()` ampliada con `ultimo_acceso`
+  (`auth.users.last_sign_in_at`, dato real de Supabase Auth — no
+  aproximado). Cambia el tipo de retorno, así que la migración hace
+  `drop function` + `create function` en vez de `create or replace`
+  (Postgres no deja cambiar las columnas de salida con `replace`).
+- Nueva función `admin_ultima_sesion_usuarios()`: la duración de sesión
+  no existe como tal en Supabase Auth (solo el último login, no cuánto
+  duró) — se aproxima agrupando `eventos_uso` por huecos de más de 30
+  minutos entre eventos consecutivos (heurística estándar de "sesión" en
+  analítica web), y se calcula para todos los usuarios de golpe (no una
+  función por usuario que el panel tuviera que llamar en bucle). Límites
+  reales, mostrados también como nota en `admin.html`: solo hay datos
+  desde el 2026-09-17 (fecha de alta de `eventos_uso`), y una última
+  visita con un solo evento registrado se etiqueta "1 evento (sin más
+  para medir)" en vez de "0 min", para no dar una falsa sensación de
+  precisión.
+- Migración: `supabase/migrations/20260920100000_admin_ultimo_acceso_duracion_sesion.sql`.
+  `admin.html` pinta las dos columnas nuevas ("Último acceso", "Última
+  sesión") junto a la tabla de usuarios existente.
+
 ## Grupos privados (Fase 5 del plan de mejoras, 2026-09-13)
 
 Cuadrillas de amigos que comparten entre ellos ubicaciones, capturas
