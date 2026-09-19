@@ -410,6 +410,12 @@
     background: #FFFFFF; border: 1px solid #DDE2DC; border-radius: 8px;
     padding: 10px 14px; font-size: 11px; font-family: 'IBM Plex Mono', monospace;
     width: 190px;
+    /* Bug real visto en producción 2026-09-19: en una pantalla no muy
+       alta, el panel (con la leyenda añadida) se quedaba parcialmente
+       tapado por el menú inferior fijo -- con scroll propio si hace
+       falta, en vez de cortarse sin más. */
+    max-height: calc(100dvh - 340px);
+    overflow-y: auto;
   }
   .viento-slider-panel[hidden] { display: none; }
   .viento-slider-panel .titulo { color: #5C7680; margin-bottom: 6px; }
