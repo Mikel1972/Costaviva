@@ -4206,6 +4206,106 @@ que corregir del lado del repo.
 
 **Firmado:** robot de calibración nocturna, 2026-09-18 01:16 UTC.
 
+### 2026-09-19 (pasada nocturna corta — calibración + salud de datos)
+
+**Calibración — duodécimo punto para las 3 boyas obligatorias, quinto
+punto para 1731 Barcelona II** (rotación de esta noche: era la boya de
+la lista corta con más noches sin repetirse, desde el 2026-09-16).
+Mismo método de siempre: `curl` a `poem.puertos.es/portus/StationData`
+para la altura real, Open-Meteo Marine en las coordenadas exactas de
+cada boya para la altura calculada, emparejando por la hora UTC exacta
+del último dato real de cada boya. **Segunda noche seguida de mar
+agitado** en las 3 obligatorias (Hm0 real 2.9-3.9 m, frente a menos de
+2 m casi siempre hasta hace dos días):
+
+| boya | hora UTC | altura medida | altura calculada | diferencia | % |
+|---|---|---|---|---|---|
+| 2136 Bilbao-Vizcaya | 01:00 | 3.87 m | 2.66 m | −1.21 m | −31.3% |
+| 1117 Gijón | 00:00 | 2.91 m | 2.56 m | −0.35 m | −12.0% |
+| 1101 Pasaia II | 00:00 | 3.39 m | 1.90 m | −1.49 m | −44.0% |
+| 1731 Barcelona II | 00:00 | 0.41 m | 0.30 m | −0.11 m | −26.8% |
+
+Historial actualizado de la metodología `boya_vs_openmeteo_mismo_punto`
+(sigue lejos del mínimo de 15 puntos por boya, salvo Pasaia II que ya
+está muy cerca):
+
+- **2136 Bilbao-Vizcaya**: 12 puntos, media ≈ **−1.2%** — con mar en
+  calma esta boya solía repartirse entre signos sin patrón claro (media
+  ≈+1.6% con 11 puntos); el punto de hoy, el más negativo visto hasta
+  ahora (−31.3%, coincidiendo con la noche de mar más agitado), tira la
+  media a un valor algo negativo pero sigue sin verse ninguna
+  desviación sistemática real — puede que Open-Meteo se comporte
+  distinto con mar de temporal que con mar en calma en este punto,
+  algo a vigilar si se repiten noches agitadas.
+- **1117 Gijón**: 12 puntos, media ≈ **−6.1%** — sigue alternando signo
+  y magnitud, sin patrón sólido pese al aumento del historial.
+- **1101 Pasaia II**: **12 puntos, los 12 con el mismo signo negativo**
+  (media ≈ **−29.7%**) — el punto de hoy es además la mayor desviación
+  absoluta vista en esta boya hasta ahora (mar más agitado, −1.49 m).
+  Sigue siendo, con diferencia, la boya con el sesgo más consistente y
+  estable de las 3 obligatorias: 12/12 noches con Open-Meteo calculando
+  por debajo, magnitud siempre en un rango similar (entre −15.7% y
+  −49.5%). **Faltan solo 3 puntos más para el mínimo de 15** — a este
+  ritmo (una pasada nocturna al día, a veces más con las buscadoras
+  diurnas) se alcanzaría en 2-3 días. Sigue sin proponerse ningún factor
+  de corrección todavía, pero la próxima pasada o la siguiente ya
+  debería tener base suficiente para redactar una propuesta concreta si
+  el signo se mantiene.
+- **1731 Barcelona II**: 5 puntos (−22.9%, −48.3%, −25.7%, −27.8%,
+  −26.8%), **los 5 con el mismo signo negativo**, media ≈ **−30.3%** —
+  magnitud muy parecida a la de Pasaia II (≈−29.7%) pese a ser una zona
+  completamente distinta (Mediterráneo vs. Cantábrico). Es la segunda
+  boya, tras Pasaia II, que empieza a mostrar un sesgo negativo
+  consistente en todas sus muestras — con 5 puntos todavía es pronto
+  para tratarlo como confirmado, pero merece seguimiento cercano en
+  próximas rotaciones.
+- Resto de boyas (1514 Málaga, 2548 Cabo de Gata, 2820 Dragonera, 2242
+  Cabo Peñas, 2246 Villano-Sisargas): sin cambios desde su última
+  pasada, no les tocaba rotación esta noche.
+
+**Ningún factor de corrección propuesto todavía** — Pasaia II está a
+solo 3 puntos del umbral de 15; si las próximas pasadas siguen dando
+signo negativo (como las 12 anteriores), la próxima entrada de esta
+rutina o la siguiente debería ya poder proponer un factor concreto para
+esa zona. Para la próxima rotación nocturna, candidatas con más noches
+sin repetirse: 1514 Málaga (desde 2026-09-17) o Cabo Peñas (desde
+2026-09-14, solo actualizada por pasadas buscadoras diurnas desde
+entonces).
+
+**Salud de datos — misma limitación de red de la sesión que las dos
+noches anteriores, ya documentada el 2026-08-31, el 2026-09-17 y el
+2026-09-18: no es evidencia de que ninguna fuente esté rota.**
+Verificado en vivo con `curl`: las 4 boyas de Puertos del Estado de
+arriba (responden `200` con datos reales y recientes, última lectura
+hace 0-1h) y 3 webcams de proveedores distintos (`mundaka` —
+kostasystem.com, 106 KB; `bakio` — pyscada.isurki.com, 765 KB;
+`sopelana` — detectia.net, 63 KB; las 3 con `200` y una imagen real de
+tamaño razonable). **No se pudo comprobar** la boya de Nazaré
+(`monican.hidrografico.pt`), ninguna de las 4 fuentes de caudal de río
+(`visor.saichcantabrico.es`, `saih.chj.es`, `saihweb.chsegura.es`,
+`servizos.meteogalicia.gal`), ni webcams de otros proveedores
+(`meteogalicia.gal`, `cantabria.es`, `apps.socib.es`,
+`streaming.comunitatvalenciana.com`) — las 8 rechazadas por el propio
+proxy de salida de esta sesión (`connect_rejected`, "gateway answered
+403 to CONNECT"), confirmado con `curl .../__agentproxy/status`.
+**Incluso `https://costaviva.org/` en sí mismo está bloqueado por el
+mismo proxy** — se intentó pedirlo para verificar estas fuentes de
+forma indirecta a través de `/prevision` en producción, sin éxito, así
+que no hay ninguna vía alternativa disponible desde esta sesión.
+Ninguna corrección de código aplicada — no hay evidencia de ningún
+fallo real, solo de que esta sesión concreta no alcanza esos dominios.
+**Esto ya es la tercera noche consecutiva con exactamente el mismo
+patrón de dominios bloqueados** (2026-09-17, 2026-09-18 y hoy) — la
+nota de la pasada anterior ya recomendaba que el usuario revisara si el
+conjunto de dominios permitidos para esta rutina puede ampliarse
+(Puertos del Estado y Open-Meteo sí están permitidos; ríos/Nazaré/otras
+webcams/incluso el propio costaviva.org no); con esta tercera
+repetición seguida, se reitera esa recomendación con más insistencia —
+no es algo que esta sesión pueda cambiar por sí misma, y de momento
+sigue sin haber señal de que sea transitorio.
+
+**Firmado:** robot de calibración nocturna, 2026-09-19 01:18 UTC.
+
 ---
 
 ## Robot de experiencia de usuario
