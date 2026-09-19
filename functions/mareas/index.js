@@ -7,6 +7,8 @@
 // Portugal"). Sin datos en vivo aquí a propósito -- solo el listado y
 // enlaces, los datos reales viven en la página de cada spot.
 
+import { REGIONES } from "./_regiones.js";
+
 const DORADO = "#A8792A";
 const NAVY = "#0B2532";
 const GRIS = "#5C7680";
@@ -63,6 +65,9 @@ export async function onRequestGet(context) {
   .lista { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
   .lista li a { display: block; background: ${BLANCO}; border: 1px solid ${BORDE}; border-radius: 10px; padding: 10px 14px; text-decoration: none; color: ${NAVY}; font-size: 14px; }
   a { color: ${DORADO}; }
+  h2 { font-family: Georgia, serif; font-size: 20px; margin: 40px 0 12px; }
+  .regiones { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-bottom: 8px; }
+  .regiones li a { display: block; background: ${NAVY}; color: ${BLANCO}; border-radius: 10px; padding: 12px 16px; text-decoration: none; font-size: 14px; font-weight: bold; }
 </style>
 </head>
 <body>
@@ -75,6 +80,12 @@ export async function onRequestGet(context) {
 
     <a class="cta" href="/login">Ver el mapa completo, webcams en directo y mucho más → Entra gratis</a>
 
+    <h2>Por región</h2>
+    <ul class="regiones">
+      ${REGIONES.map((r) => `<li><a href="/mareas/region/${r.slug}">${escaparHtml(r.nombre)} (${r.spots.size})</a></li>`).join("\n      ")}
+    </ul>
+
+    <h2>Todos los spots</h2>
     <ul class="lista">
       ${spots.map((s) => `<li><a href="/mareas/${s.slug}">${escaparHtml(s.nombre)}</a></li>`).join("\n      ")}
     </ul>
