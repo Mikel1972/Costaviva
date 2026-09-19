@@ -11,10 +11,43 @@
 // copia a mano (a diferencia de SPOTS_IMAGEN en scripts/turbidez/
 // medir-turbidez.mjs, que sí es una copia manual más antigua y ya
 // incompleta frente a esta lista real).
+//
+// Varias fuentes por spot + failover (añadido 2026-09-19, pedido explícito
+// del usuario): un valor puede ser un string (una sola fuente, como hasta
+// ahora) o un array de strings (varias, en orden de preferencia). El proxy
+// prueba cada una en orden y sirve la primera que responda bien -- si la
+// principal está caída (ver la regla "Fallos correlados por proveedor" en
+// ROBOT_REGLAS.md), el usuario sigue viendo imagen real de la cámara de
+// reserva sin notar nada. Añade la cabecera X-Webcam-Fuente-Indice para que
+// scripts/camaras/comprobar-camaras.mjs pueda saber si tuvo que recurrir a
+// una reserva (0 = la principal, >0 = cuál de las siguientes) y reportarlo
+// en el informe diario -- el failover en sí es transparente para quien ve
+// la app, pero no debe serlo para quien vigila la salud de las cámaras.
+//
+// Orden de preferencia entre varias fuentes de un mismo spot (criterio
+// explícito del usuario, 2026-09-19): 1) vídeo antes que imagen fija
+// (WEBCAMS_HLS en index.html, no este WEBCAMS -- son dos listas
+// separadas), 2) entre imágenes fijas, la de mejor resolución/nitidez
+// real de píxeles, 3) entre las que empatan de día, la que sea infrarroja
+// y siga enseñando algo útil de noche. Este array (WEBCAMS) solo ordena
+// fuentes de IMAGEN FIJA entre sí -- si para un spot aparece una fuente de
+// vídeo nueva y hoy solo tiene imagen fija aquí, la decisión de pasarlo a
+// WEBCAMS_HLS (y así ganarle prioridad a la imagen fija) es aparte, no la
+// resuelve el orden de este array.
 export const WEBCAMS = {
   mundaka: "https://www.kostasystem.com/wp-content/uploads/irudiak/mundaka/camara1_snap.jpeg",
   bakio: "https://pyscada.isurki.com/static/pyscada/sirena/aditu/BakioNAS/last/bakio.1.snap.last.thumb.jpeg",
-  sopelana: "https://detectia.net/img/webcam-sopelana-azti3.webp",
+  // Dos fuentes reales e independientes, verificadas en vivo 2026-09-19
+  // (ver ROBOT_REGLAS.md, "Aprendizaje por zonas" > Bizkaia): la principal
+  // es AZTI/detectia.net; la de reserva es la cámara propia del
+  // ayuntamiento de Sopela (sopela.eus/webcam-olas/, vía IPCamLive) --
+  // proveedor totalmente distinto, así que una caída de detectia.net (que
+  // se lleva consigo a bakio/pasaia/getaria a la vez, ver la regla de
+  // fallos correlados) no afecta a esta reserva.
+  sopelana: [
+    "https://detectia.net/img/webcam-sopelana-azti3.webp",
+    "https://s61.ipcamlive.com/streams/3d0d8zpvutondjmwg/snapshot.jpg",
+  ],
   // AZTI (detectia.net), mismo proveedor que Sopelana. Verificado por el
   // robot buscador de fuentes el 2026-09-13 (imagen WebP real descargada
   // y comprobada, no un placeholder).
@@ -97,34 +130,48 @@ export const WEBCAMS = {
 
 export async function onRequestGet(context) {
   const { slug } = context.params;
-  const url = WEBCAMS[slug];
+  const entrada = WEBCAMS[slug];
 
-  if (!url) {
+  if (!entrada) {
     return new Response(JSON.stringify({ error: `Sin webcam registrada para "${slug}"` }), {
       status: 404,
       headers: { "content-type": "application/json" },
     });
   }
 
-  try {
-    const resp = await fetch(url, {
-      headers: { "User-Agent": "Mozilla/5.0 (compatible; CostaVivaApp/0.1)" },
-    });
-    if (!resp.ok) throw new Error(`HTTP ${resp.status} del proveedor de la webcam`);
+  const fuentes = Array.isArray(entrada) ? entrada : [entrada];
+  const errores = [];
 
-    // Reenviamos la imagen tal cual, pero con caché corta propia (no
-    // dependemos de las cabeceras de caché del proveedor original)
-    return new Response(resp.body, {
-      headers: {
-        "content-type": resp.headers.get("content-type") || "image/jpeg",
-        "cache-control": "public, max-age=120", // 2 min: son capturas que se actualizan solas
-        "access-control-allow-origin": "*",
-      },
-    });
-  } catch (e) {
-    return new Response(JSON.stringify({ error: String(e), slug, url_origen: url }), {
-      status: 502,
-      headers: { "content-type": "application/json" },
-    });
+  for (let i = 0; i < fuentes.length; i++) {
+    const url = fuentes[i];
+    try {
+      const resp = await fetch(url, {
+        headers: { "User-Agent": "Mozilla/5.0 (compatible; CostaVivaApp/0.1)" },
+      });
+      if (!resp.ok) throw new Error(`HTTP ${resp.status} del proveedor de la webcam`);
+
+      // Reenviamos la imagen tal cual, pero con caché corta propia (no
+      // dependemos de las cabeceras de caché del proveedor original)
+      return new Response(resp.body, {
+        headers: {
+          "content-type": resp.headers.get("content-type") || "image/jpeg",
+          "cache-control": "public, max-age=120", // 2 min: son capturas que se actualizan solas
+          "access-control-allow-origin": "*",
+          // Índice de la fuente que sirvió de verdad (0 = principal, >0 =
+          // se recurrió a una de reserva) -- lo lee scripts/camaras/
+          // comprobar-camaras.mjs para poder avisar aunque el failover deje
+          // la app funcionando con normalidad de cara al usuario.
+          "x-webcam-fuente-indice": String(i),
+          "x-webcam-fuentes-total": String(fuentes.length),
+        },
+      });
+    } catch (e) {
+      errores.push(`fuente ${i} (${url}): ${String(e)}`);
+    }
   }
+
+  return new Response(JSON.stringify({ error: "todas las fuentes fallaron", slug, detalle: errores }), {
+    status: 502,
+    headers: { "content-type": "application/json" },
+  });
 }

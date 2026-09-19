@@ -1,0 +1,31 @@
+{
+  "_comentario": "Nombres alternativos/co-oficiales de poblaciones costeras, para que el robot buscador de fuentes (área 'cámaras/webcams', ver ROBOT_REGLAS.md sección 'Aprendizaje por zonas') busque también bajo el nombre en el otro idioma co-oficial de la zona -- una webcam local a veces solo aparece bajo uno de los dos. Lista deliberadamente incompleta: solo nombres verificados con confianza real (topónimos oficiales conocidos), nunca una traducción inventada. Amplíala tú mismo cuando confirmes un nombre alternativo real usado por una fuente encontrada -- nunca al revés (no inventes un nombre para justificar una búsqueda).",
+  "pais_vasco": {
+    "_idiomas": "euskera / castellano",
+    "donostia": ["Donostia", "San Sebastián"],
+    "hondarribia": ["Hondarribia", "Fuenterrabía"],
+    "getaria": ["Getaria", "Guetaria"],
+    "deba": ["Deba", "Deva"],
+    "zarautz": ["Zarautz", "Zarauz"],
+    "zumaia": ["Zumaia", "Zumaya"],
+    "pasaia": ["Pasaia", "Pasajes"],
+    "mutriku": ["Mutriku", "Mutriko"],
+    "_nota": "Bermeo, Mundaka, Bakio, Sopelana/Sopela, Getxo, Plentzia, Lekeitio, Ondarroa se escriben igual (o casi) en los dos idiomas -- Sopela es la forma corta habitual de Sopelana en euskera, comprobar ambas si una búsqueda de 'Sopelana' no encuentra nada."
+  },
+  "galicia": {
+    "_idiomas": "galego / castellano",
+    "acoruna": ["A Coruña", "La Coruña"],
+    "baiona": ["Baiona", "Bayona"],
+    "_nota": "Ons, Cíes, Cangas, Corrubedo, Ribadeo, Portosín, Camariñas se escriben igual en los dos idiomas (o casi idénticos) -- comprobar de todas formas, la ortografía exacta en fuentes antiguas puede variar (ej. 'Camarinhas' con h, visto en MeteoGalicia, probablemente un despiste del propio proveedor, no un nombre alternativo real)."
+  },
+  "comunidad_valenciana": {
+    "_idiomas": "valencià / castellano",
+    "peniscola": ["Peníscola", "Peñíscola"],
+    "javea": ["Xàbia", "Jávea"],
+    "alicante": ["Alacant", "Alicante"],
+    "vilajoiosa": ["la Vila Joiosa", "Villajoyosa"],
+    "burriana": ["Borriana", "Burriana"],
+    "castellon": ["Castelló de la Plana", "Castellón de la Plana"],
+    "vinaros": ["Vinaròs", "Vinaroz"]
+  }
+}

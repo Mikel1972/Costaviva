@@ -30,7 +30,16 @@ name: Informe diario
 
 on:
   schedule:
-    - cron: "0 8 * * *"
+    # Corregido 2026-09-19: estaba en "0 8 * * *", justo en la hora exacta —
+    # la peor opción posible, porque miles de workflows de GitHub Actions
+    # de todo el mundo disparan también justo a esa hora y compiten por
+    # runners. Confirmado en real revisando el historial de ejecuciones:
+    # el cron dice 08:00 UTC pero las pasadas reales llevan días saliendo
+    # entre las 12:00 y las 13:00 UTC — 4-5h de retraso sistemático, no un
+    # bache puntual. Desplazado a un minuto suelto (mismo criterio que ya
+    # usan el resto de workflows del repo, ej. "47 8 * * *" en
+    # robot-buscador-fuentes.yml) para evitar la hora en punto.
+    - cron: "13 8 * * *"
   workflow_dispatch: {}
 
 jobs:
@@ -72,6 +81,42 @@ jobs:
             check "/luna" "https://costaviva.org/luna?lat=43.4&lon=-2.7"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
+
+      - name: Estado de las webcams (camara_estado, tabla pública)
+        # Añadido 2026-09-19, pedido explícito del usuario: un informe
+        # diario de qué cámaras están fallando (sin señal de verdad, o
+        # funcionando solo gracias a una fuente de reserva — ver
+        # functions/webcam/[slug].js y ROBOT_REGLAS.md, "Fallos correlados
+        # por proveedor"). Lectura pública, sin necesidad de ningún secreto
+        # (RLS de camara_estado ya permite select a cualquiera).
+        id: camaras
+        run: |
+          node -e '
+            fetch("https://imncbmizxkorotpeisic.supabase.co/rest/v1/camara_estado?select=spot_slug,sin_senal,motivo,fuente_usada,ultima_senal_en&order=spot_slug", {
+              headers: {
+                apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc",
+              },
+            })
+              .then((r) => r.json())
+              .then((filas) => {
+                const caidas = filas.filter((f) => f.sin_senal);
+                const conReserva = filas.filter((f) => !f.sin_senal && f.fuente_usada > 0);
+                const lineas = [];
+                if (!caidas.length && !conReserva.length) {
+                  lineas.push("  - Todas las cámaras monitorizadas responden con su fuente principal.");
+                } else {
+                  for (const f of caidas) lineas.push(`  - ❌ ${f.spot_slug}: sin señal (${f.motivo})`);
+                  for (const f of conReserva) lineas.push(`  - ⚠️ ${f.spot_slug}: funcionando con fuente de reserva #${f.fuente_usada} (la principal está fallando)`);
+                }
+                const fs = require("fs");
+                fs.appendFileSync(process.env.GITHUB_OUTPUT, "resultado<<EOF\n" + lineas.join("\n") + "\nEOF\n");
+              })
+              .catch((e) => {
+                const fs = require("fs");
+                fs.appendFileSync(process.env.GITHUB_OUTPUT, "resultado<<EOF\n  - No se pudo comprobar (" + String(e) + ")\nEOF\n");
+              });
+          '
+        continue-on-error: true
 
       - name: Último smoke test (external, ver smoke-test.yml)
         id: smoke
@@ -133,6 +178,7 @@ jobs:
             --allowedTools "Bash,Read,Write,Grep"
 
       - name: Publicar/actualizar el Issue "Informe diario"
+        id: publicar
         uses: actions/github-script@v7
         with:
           script: |
@@ -152,6 +198,8 @@ jobs:
               `- Alarmas SOS (24h): ${{ steps.sos.outputs.resultado }}`,
               `- Fuentes externas:`,
               `${{ steps.fuentes.outputs.resultado }}`,
+              `- Cámaras/webcams:`,
+              `${{ steps.camaras.outputs.resultado }}`,
               "",
               sintesis,
               "",
@@ -160,9 +208,16 @@ jobs:
             const titulo = "Informe diario — Costaviva";
             const { data: issues } = await github.rest.issues.listForRepo({
               owner: context.repo.owner, repo: context.repo.repo,
-              state: "open", labels: "informe-diario",
+              state: "open", labels: "informe-diario", sort: "updated", direction: "desc",
             });
-            let issue = issues.find((i) => i.title === titulo);
+            // Coger el más reciente por LABEL, no por coincidencia exacta de
+            // título (bug real 2026-09-19: el título cambió de "Informe
+            // diario — Costa Viva" a "— Costaviva" en algún punto y el match
+            // exacto abrió un Issue nuevo cada vez en vez de seguir en el
+            // mismo — se fragmentó en 3 Issues distintos, #2/#6/#9. El
+            // título se sigue usando solo para crear uno nuevo si de verdad
+            // no existe ninguno abierto con esta label.
+            let issue = issues[0];
             if (!issue) {
               const creado = await github.rest.issues.create({
                 owner: context.repo.owner, repo: context.repo.repo,
@@ -177,3 +232,29 @@ jobs:
                 body: cabecera + "\n\n" + fila + "\n" + issue.body.split("\n").slice(2).join("\n"),
               });
             }
+
+            // Se manda también por email (ver el paso siguiente) además de
+            // quedar en el Issue — el Issue solo avisa por email si el
+            // usuario está "Watching" ese repo/Issue en GitHub, cosa que no
+            // se puede garantizar ni activar desde aquí.
+            core.setOutput("texto_email", fila);
+
+      - name: Mandar también por email (Resend, vía functions/informe-diario-email.js)
+        # Añadido 2026-09-19 — hallazgo real: en Pólizas.ai este informe
+        # llega solo porque se manda por email de verdad (avisar.js/Resend),
+        # no por depender de las notificaciones de GitHub. El Issue de
+        # arriba se queda como histórico, pero esto es lo que garantiza que
+        # de verdad llegue cada día sin que el usuario tenga que configurar
+        # nada en GitHub. continue-on-error: un fallo de email nunca debe
+        # tumbar el resto del informe (que ya quedó bien en el Issue).
+        continue-on-error: true
+        env:
+          TEXTO: ${{ steps.publicar.outputs.texto_email }}
+          CRON_SECRET: ${{ secrets.PRESION_CRON_SECRET }}
+        run: |
+          node -e 'process.stdout.write(JSON.stringify({texto: process.env.TEXTO}))' > /tmp/informe-email.json
+          curl -sS -X POST "https://costaviva.org/informe-diario-email" \
+            -H "X-Cron-Secret: $CRON_SECRET" \
+            -H "Content-Type: application/json" \
+            --fail-with-body \
+            --data-binary @/tmp/informe-email.json

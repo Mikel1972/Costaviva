@@ -46,6 +46,13 @@ name: Robot buscador de fuentes
 # no solo fallaba el job, se perdía el trabajo de la pasada entera. Subido
 # a 40, mismo límite que ya usa robot-experiencia-usuario.yml.
 #
+# Volvió a pasar el 2026-09-19 (pasada de "cámaras/webcams", ~4m54s hasta
+# agotar el límite) — 40 tampoco bastaba para esta área en concreto.
+# Subido a 60. Si vuelve a agotarse, no seguir subiendo el número a
+# ciegas: revisar antes si la tarea de "cámaras/webcams" hace de verdad
+# más búsquedas/verificaciones que las demás áreas, o si se puede acotar
+# el alcance de esa pasada en vez de solo dar más turnos.
+#
 # IMPORTANTE — probar a mano (workflow_dispatch) antes de fiarse del
 # schedule, mismo criterio que el resto de rutinas de este repo. Necesita
 # el secret ANTHROPIC_API_KEY (la misma que ya usa
@@ -90,7 +97,7 @@ jobs:
         id: area
         run: |
           case "${{ github.event.schedule }}" in
-            "47 2 * * *")  AREA="cámaras/webcams nuevas para spots (fijos o spots_usuario populares) que todavía no tienen" ;;
+            "47 2 * * *")  AREA="cámaras/webcams nuevas para spots (fijos o spots_usuario populares) que todavía no tienen, o para reemplazar una de un proveedor con caídas repetidas — busca población por población (\"<pueblo/playa> webcam directo\"), incluyendo webs de ayuntamientos/turismo local y escuelas de surf/clubes náuticos, no solo ampliar los proveedores ya integrados (AZTI/detectia.net, kostasystem.com, cantabria.es...); ver ROBOT_REGLAS.md, reglas de 'Fallos correlados por proveedor' y 'Buscar webcams fuera de las redes/agregadores nacionales' para el criterio completo y un caso real ya investigado (Sopelana/kostasystem)" ;;
             "47 8 * * *")  AREA="fuentes de mareas y oleaje — comparar contra CALIBRACION.jsonl, buscar puntos de calibración nuevos" ;;
             "47 14 * * *") AREA="fuentes de corrientes marinas por zona" ;;
             "47 20 * * *") AREA="fuentes de presión atmosférica e histórico por zona" ;;
@@ -100,6 +107,35 @@ jobs:
             "47 23 * * 5") AREA="estudios institucionales/académicos reales (tipo DIGIPESCA — universidades, organismos públicos de pesca, proyectos financiados) con datos verificables de especies/lonjas/capturas/precios por zona y fecha, para España y Portugal (ver ROBOT_REGLAS.md, sección 'Buenas prácticas de otras apps y biología de especies', para las reglas obligatorias de bajura/altura, hábitos y localismos antes de proponer nada) — solo propuesta en ROBOT.md, nunca aplicar directo" ;;
             *) AREA="${{ github.event.inputs.area }}" ;;
           esac
+
+          # Rotación de zona para la pasada de cámaras (añadido 2026-09-19,
+          # pedido explícito del usuario: "ir por zonas... aprender de cada
+          # una... pasar a la siguiente" sin que haga falta acordarse de
+          # decírselo cada día). Zona = día del año % 10, determinista — no
+          # depende de que el robot recuerde ni actualice ningún puntero de
+          # estado, así nunca se pierde ni se repite por error. Rotación
+          # completa cada ~10 días. Ver ROBOT_REGLAS.md, regla "Aprendizaje
+          # por zonas" para el porqué y qué se espera que el robot escriba
+          # al terminar cada zona.
+          if [ "${{ github.event.schedule }}" = "47 2 * * *" ]; then
+            ZONAS=(
+              "País Vasco — Bizkaia"
+              "País Vasco — Gipuzkoa (y costa francesa cercana, Baiona)"
+              "Cantabria"
+              "Asturias"
+              "Galicia — Rías Altas / costa norte"
+              "Galicia — Rías Baixas / costa sur"
+              "Portugal — centro y norte (Porto, Leixões, Nazaré, Peniche)"
+              "Portugal — sur (Lisboa, Algarve/Faro, Sines)"
+              "Comunidad Valenciana y Murcia"
+              "Cataluña, Baleares, Andalucía y Canarias"
+            )
+            DIA_DEL_ANO=$(date -u +%j)
+            INDICE=$((10#$DIA_DEL_ANO % 10))
+            ZONA="${ZONAS[$INDICE]}"
+            AREA="$AREA — ZONA DE HOY: $ZONA. Investiga SOLO esta zona en esta pasada (no todo el litoral de golpe, para no disparar el volumen de llamadas). Antes de nada, lee ROBOT_REGLAS.md sección 'Aprendizaje por zonas' y la parte de ROBOT.md de la última vez que se investigó esta misma zona (búscala por su nombre) para no repetir trabajo ya hecho. Al terminar, si aprendiste algo generalizable sobre esta zona (un proveedor que cubre varias poblaciones, un patrón de nombres en otro idioma, un tipo de fuente que nunca funciona ahí...) añádelo o afina una regla en ROBOT_REGLAS.md bajo esa misma sección — no solo lo dejes en ROBOT.md."
+          fi
+
           echo "area=$AREA" >> "$GITHUB_OUTPUT"
 
       - name: Instalar Claude Code CLI
@@ -119,7 +155,7 @@ jobs:
           claude -p "Eres el robot de investigación/auditoría de datos de Costaviva (repo Costaviva), ejecutándote como una pasada programada más (no la rutina nocturna principal, esta es la de búsqueda de fuentes, 4 veces al día). Sigue ESTRICTAMENTE ROBOT_REGLAS.md antes de tocar nada: nunca inventes un dato ni una URL; si vas a tocar más de 3 ficheros o ~80 líneas en total, o cualquier fichero de functions/ o supabase/, NO lo apliques directo — proponlo como texto en ROBOT.md en vez de commitear. Si existe un fichero ROBOT_PAUSADO en la raíz del repo, no escribas nada (ni commits ni ramas), solo lee y para ahí. Tarea de esta pasada: investiga $AREA. Usa WebSearch para encontrar fuentes reales; si encuentras algo verificable con una petición HTTP real, verifícalo antes de proponerlo o integrarlo. Añade siempre una entrada nueva fechada (fecha y hora UTC de hoy) a ROBOT.md resumiendo qué buscaste y qué encontraste, incluso si no hay nada nuevo (en ese caso dilo explícitamente: 'sin novedades esta pasada'). Si hiciste cambios que caen dentro de los límites de ROBOT_REGLAS.md para aplicar directo, haz commit y push a main tú mismo con git (usa git add/commit/push; el remoto y las credenciales ya están configurados en este runner) firmando igual que las entradas anteriores de ROBOT.md. Al terminar, escribe un resumen de 2 a 4 frases en español, sin jerga, de qué hiciste en esta pasada (o exactamente 'Sin novedades esta pasada.' si no encontraste nada) en el fichero /tmp/robot-informe.txt — se usa para el informe diario del repo." \
             --dangerously-skip-permissions \
             --model claude-sonnet-5 \
-            --max-turns 40 \
+            --max-turns 60 \
             --allowedTools "Bash,Read,Write,Edit,Grep,Glob,WebSearch,WebFetch"
 
       - name: Publicar el resumen en el Issue "Informe diario"
@@ -142,9 +178,12 @@ jobs:
             const titulo = "Informe diario — Costaviva";
             const { data: issues } = await github.rest.issues.listForRepo({
               owner: context.repo.owner, repo: context.repo.repo,
-              state: "open", labels: "informe-diario",
+              state: "open", labels: "informe-diario", sort: "updated", direction: "desc",
             });
-            let issue = issues.find((i) => i.title === titulo);
+            // Coger el más reciente por LABEL, no por título exacto — ver el
+            // comentario igual en daily-report.yml (bug real 2026-09-19: un
+            // cambio de título fragmentó el informe en 3 Issues distintos).
+            let issue = issues[0];
             if (!issue) {
               const creado = await github.rest.issues.create({
                 owner: context.repo.owner, repo: context.repo.repo,
