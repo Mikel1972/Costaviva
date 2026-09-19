@@ -37,7 +37,30 @@ function paginaNoEncontrada(slug) {
   );
 }
 
-function renderizarPagina(spot) {
+// Distancia aproximada entre dos puntos (fórmula de Haversine, km) --
+// solo para ordenar "spots cercanos", no hace falta más precisión que
+// esa. Pedido explícito del usuario: enlaces cruzados entre spots
+// cercanos, para que Google entienda mejor la relación entre páginas
+// (antes cada página de spot estaba aislada, sin enlaces internos).
+function distanciaKm(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function spotsCercanos(todos, spot, n = 4) {
+  return todos
+    .filter((s) => s.slug !== spot.slug)
+    .map((s) => ({ ...s, distancia: distanciaKm(spot.lat, spot.lon, s.lat, s.lon) }))
+    .sort((a, b) => a.distancia - b.distancia)
+    .slice(0, n);
+}
+
+function renderizarPagina(spot, todos) {
   const bloque = spot.bloques[0];
   const oleajeTexto = bloque ? `${bloque.altura[0]}–${bloque.altura[1]} m (periodo ${bloque.periodo}s)` : "sin dato ahora mismo";
   const vientoTexto = bloque ? `${bloque.viento} km/h ${bloque.dirViento}` : "sin dato ahora mismo";
@@ -88,6 +111,10 @@ function renderizarPagina(spot) {
   .cta { display: block; text-align: center; background: ${DORADO}; color: ${BLANCO}; font-weight: bold; text-decoration: none; padding: 16px; border-radius: 10px; margin: 32px 0 16px; font-size: 16px; }
   .nota { color: ${GRIS}; font-size: 12px; line-height: 1.5; }
   a { color: ${DORADO}; }
+  .cercanos { margin: 32px 0; }
+  .cercanos .titulo { font-size: 13px; font-weight: bold; color: ${GRIS}; letter-spacing: 1px; margin-bottom: 8px; }
+  .cercanos ul { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .cercanos li a { display: inline-block; background: ${BLANCO}; border: 1px solid ${BORDE}; border-radius: 20px; padding: 6px 14px; font-size: 14px; text-decoration: none; }
 </style>
 </head>
 <body>
@@ -107,6 +134,17 @@ function renderizarPagina(spot) {
     <a class="cta" href="/login">Ver el mapa completo, webcams en directo y mucho más → Entra gratis</a>
 
     <p class="nota">Costaviva es una app de condiciones costeras en tiempo real (oleaje, mareas, corriente, webcams, radar de lluvia) y diario de pesca, para toda la costa de España y Portugal. Este dato es gratis y no necesita cuenta -- crea una cuenta gratuita para ver el mapa completo, las webcams en directo de este spot y de otros, y llevar tu propio diario de pesca.</p>
+
+    <div class="cercanos">
+      <div class="titulo">SPOTS CERCANOS</div>
+      <ul>
+        ${spotsCercanos(todos, spot)
+          .map((s) => `<li><a href="/mareas/${s.slug}">${escaparHtml(s.nombre)}</a></li>`)
+          .join("")}
+      </ul>
+    </div>
+
+    <p class="nota"><a href="/mareas">Ver todos los spots →</a></p>
   </div>
 </body>
 </html>`;
@@ -129,7 +167,7 @@ export async function onRequestGet(context) {
   const spot = datos.spots.find((s) => s.slug === slug);
   if (!spot) return paginaNoEncontrada(slug);
 
-  return new Response(renderizarPagina(spot), {
+  return new Response(renderizarPagina(spot, datos.spots), {
     headers: {
       "content-type": "text/html; charset=utf-8",
       // Media hora -- mismo orden de magnitud que la caché de /prevision,
