@@ -1,0 +1,9 @@
+{
+  "name": "costaviva-marketing-instagram",
+  "private": true,
+  "type": "module",
+  "description": "Script de un solo uso, corrido por .github/workflows/robot-marketing-instagram.yml — NO forma parte del deploy de Cloudflare Pages (vive fuera de la raíz del repo a propósito, mismo criterio que scripts/turbidez).",
+  "dependencies": {
+    "sharp": "^0.35.4"
+  }
+}
