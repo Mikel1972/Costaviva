@@ -2603,6 +2603,98 @@ propone.
 **Firmado:** robot buscador de fuentes (pasada de mareas y oleaje),
 2026-09-18 13:10 UTC.
 
+### 2026-09-19 01:48 UTC (pasada buscadora — estudios institucionales/académicos tipo DIGIPESCA, segunda pasada)
+
+**Qué se buscó:** dar continuidad a la pasada del 2026-09-16 01:42 UTC,
+que dejó pendiente confirmar si el dataset vasco (el único que ya trae
+la separación bajura/altura hecha por el propio organismo) llega a
+desglose mensual, y buscar ángulos genuinamente nuevos (fuentes
+nacionales o de Cantabria, zona que ni el dataset vasco ni el gallego
+cubren bien). Solo propuesta/diagnóstico — no se ha tocado `ESPECIES`,
+`indicePesca` ni ningún fichero de código, únicamente esta entrada.
+
+**Resultado, en su mayoría negativo pero verificado en vivo (no de
+memoria) — deja el panorama más claro para no repetir estas
+comprobaciones:**
+
+1. **Gobierno Vasco, confirmado: es anual, NO mensual.** La propia
+   página del dataset ("Subastas en lonja de bajura") y el catálogo
+   "Banco de datos de Pesca" declaran explícitamente
+   "Frecuencia de actualización: Anual" para las tres tablas de
+   subastas — ninguna baja a mes. Cierra la pregunta pendiente del
+   2026-09-16: la fuente vasca sigue siendo la única con bajura/altura
+   ya separada por el organismo, pero **no sirve para una climatología
+   mensual**, solo para comparar años completos. Los ficheros de
+   descarga reales viven en `nasdap.net` (dominio de Lakuntza/NASDAP,
+   no `euskadi.eus` directamente) — ese dominio no respondió a una
+   petición HTTP directa desde este runner (timeout), la periodicidad
+   se confirmó leyendo la propia página del catálogo, no el fichero.
+2. **El enlace de acceso a datos de "Primera venta de productos
+   pesqueros frescos" (Xunta, citado el 2026-09-16 como el
+   machine-readable de Pesca de Galicia) está roto.** El RDF del
+   dataset en `abertos.xunta.gal` redirige (302) a
+   `pescadegalicia.com/cotizaciones/ventas.aspx` (dominio `.com`,
+   distinto del `.gal` ya probado), que devuelve **404** — el sitio se
+   reestructuró y el enlace de datos.gob.es/abertos.xunta.gal quedó
+   obsoleto. La vía real que sigue viva es la herramienta interactiva de
+   `pescadegalicia.gal/informe-cotizaciones-lonjas/agregation` (ya
+   verificada el 2026-09-16), pero no tiene endpoint de API confirmado —
+   para usarla habría que automatizar su exportación desde la propia
+   interfaz, no una descarga directa.
+3. **Fuente nueva candidata, sin verificar todavía: IEO (Instituto
+   Español de Oceanografía, CSIC) gestiona el PNDB** (Programa Nacional
+   de Datos Básicos del sector pesquero español) — muestreos de talla y
+   peso de especies objetivo al desembarcar en lonja, cobertura
+   nacional. Tiene un catálogo de datos abiertos en `datos.ieo.es`
+   (geonetwork), pero **no se ha podido verificar en vivo esta pasada**
+   (la petición a `datos.ieo.es` y a `ieo.es/es/web/vigo/analisis-
+   actividad-pesquera` dieron timeout desde este runner) — queda como
+   pista sin confirmar, no como fuente candidata real todavía. Repetir
+   el intento en una futura pasada antes de proponerla en firme.
+4. **Comprobado y descartado: MAPA — "Estadísticas de Capturas y
+   Desembarcos de Pesca Marítima"** (cobertura nacional, actualizado
+   17/12/2025, XLSX descargable desde 1992). Desglosa por especie, zona
+   de captura (aguas nacionales/comunitarias/terceros países) y
+   fresco/congelado — **no por puerto/lonja ni por mes**, son capturas
+   de la flota española agregadas por caladero, no desembarcos locales.
+   No sirve para el proxy de "se pesca cerca de aquí" que necesita esta
+   idea; no hace falta revisarlo de nuevo en pasadas futuras.
+5. **Cantabria, hueco real sin cubrir todavía**: ni el dataset vasco ni
+   el gallego cubren esta zona (8 puertos: San Vicente de la Barquera,
+   Comillas, Suances, Santander, Santoña, Laredo, Colindres, Castro
+   Urdiales). Solo se encontraron noticias de prensa con totales
+   anuales agregados por lonja (ej. Forbes/El Diario, cifras de 2025),
+   nada de un portal de datos abiertos del Gobierno de Cantabria con
+   desglose por especie/mes. Sin una fuente institucional verificable,
+   no se propone nada para esta zona por ahora.
+
+**Cruces obligatorios de `ROBOT_REGLAS.md` (bajura/altura, hábitos
+reales de captura, localismos)**: no aplican todavía a nada de esta
+pasada — no hay ningún dato nuevo que traducir a una propuesta sobre
+`ESPECIES`, solo diagnóstico de qué fuentes sirven o no.
+
+**Recomendación para la próxima pasada de este tema**: (a) reintentar
+`datos.ieo.es` con más margen de tiempo o vía `WebSearch` dirigido a su
+geonetwork, para confirmar si el PNDB tiene algo descargable y
+granular; (b) si se quiere seguir con la vía gallega, probar
+directamente si `pescadegalicia.gal` expone algún parámetro de URL o
+llamada XHR interna con los datos en crudo (inspeccionar la petición
+de red que hace la propia herramienta al aplicar un filtro, no solo
+leer el HTML de la página); (c) Cantabria y Asturias siguen siendo el
+hueco más claro del Cantábrico — sin fuente institucional encontrada
+todavía en ninguna de las dos.
+
+**Fuentes:**
+[Gobierno Vasco — Banco de datos de Pesca (confirma periodicidad anual)](https://www.euskadi.eus/gobierno-vasco/-/estadistica/banco-de-datos-pesca/),
+[abertos.xunta.gal — ficha RDF del dataset (enlace roto verificado)](https://abertos.xunta.gal/catalogo/economia-empresa-emprego/-/dataset/0154/primeira-venda-produtos-pesqueiros-frescos.rdf),
+[IEO — Análisis de la actividad pesquera (PNDB, sin verificar en vivo esta pasada)](https://www.ieo.es/el/web/vigo/analisis-actividad-pesquera),
+[MAPA — Estadística de Capturas y Desembarcos de Pesca Marítima (descartada, sin desglose por lonja/mes)](https://www.mapa.gob.es/es/estadistica/temas/estadisticas-pesqueras/pesca-maritima/estadistica-capturas-desembarcos),
+[Forbes España — pesca subastada en lonjas de Cantabria 2025 (solo prensa, sin portal de datos abiertos)](https://forbes.es/economia/859783/la-pesca-subastada-en-lonjas-de-cantabria-baja-un-37-en-2025-pero-aumenta-su-valor-hasta-69-millones/).
+
+**Firmado:** robot buscador de fuentes (pasada de estudios
+institucionales/académicos tipo DIGIPESCA, segunda pasada),
+2026-09-19 01:48 UTC.
+
 ---
 
 ## Auditoría de datos
