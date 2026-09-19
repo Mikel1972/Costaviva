@@ -201,6 +201,52 @@ jobs:
             echo "resultado=N/D (¿falta aplicar supabase/schema_conteo_sos.sql?)" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Actividad de marketing (Instagram)
+        # Añadido 2026-09-19, pedido explícito del usuario: "des ponerlo
+        # como parte de resumen diario. Un apartado que reúna la
+        # actividad de los post" -- tras montar el robot de marketing
+        # (robot-marketing-instagram.yml + publicar-post-instagram.yml +
+        # metricas-instagram.yml). Reúne, siempre de datos ya reales del
+        # propio repo (nunca inventado): posts publicados de verdad en
+        # las últimas 24h, borradores todavía esperando aprobación
+        # (Issues con label "marketing" abiertos), y métricas de alcance/
+        # impresiones que se hayan medido en las últimas 24h.
+        id: marketing
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PUBLICADOS_24H=$(node -e '
+            const fs = require("fs");
+            const ruta = "scripts/marketing/posts-publicados.jsonl";
+            if (!fs.existsSync(ruta)) { console.log(0); process.exit(0); }
+            const lineas = fs.readFileSync(ruta, "utf8").split("\n").filter(Boolean).map((l) => JSON.parse(l));
+            const ahora = Date.now();
+            const recientes = lineas.filter((l) => ahora - new Date(l.fecha).getTime() < 24 * 60 * 60 * 1000);
+            console.log(recientes.length);
+          ')
+          PENDIENTES=$(gh issue list --label marketing --state open --json number --jq 'length' 2>/dev/null || echo "?")
+          METRICAS_24H=$(node -e '
+            const fs = require("fs");
+            const ruta = "CALIBRACION.jsonl";
+            if (!fs.existsSync(ruta)) { console.log(""); process.exit(0); }
+            const lineas = fs.readFileSync(ruta, "utf8").split("\n").filter(Boolean).map((l) => JSON.parse(l));
+            const ahora = Date.now();
+            const recientes = lineas.filter((l) => l.tipo === "instagram_metricas" && ahora - new Date(l.fecha).getTime() < 24 * 60 * 60 * 1000);
+            const textos = recientes.map((m) => `    - post ${m.postId}: alcance ${m.alcance ?? "N/D"}, impresiones ${m.impresiones ?? "N/D"}, likes ${m.likes ?? "N/D"}, comentarios ${m.comentarios ?? "N/D"}, guardados ${m.guardados ?? "N/D"}`);
+            console.log(textos.join("\n"));
+          ')
+          {
+            echo "resultado<<EOF"
+            echo "  - Posts publicados (24h): $PUBLICADOS_24H"
+            echo "  - Borradores esperando aprobación: $PENDIENTES"
+            if [ -n "$METRICAS_24H" ]; then
+              echo "  - Métricas medidas (24h):"
+              echo "$METRICAS_24H"
+            fi
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+        continue-on-error: true
+
       - name: Reunir lo añadido a ROBOT.md en las últimas 24h
         id: robot24h
         run: |
@@ -287,6 +333,8 @@ jobs:
               `${{ steps.fuentes.outputs.resultado }}`,
               `- Cámaras/webcams:`,
               `${{ steps.camaras.outputs.resultado }}`,
+              `- Marketing (Instagram):`,
+              `${{ steps.marketing.outputs.resultado }}`,
               lineaKpi,
               "",
               sintesis,
