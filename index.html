@@ -2618,6 +2618,26 @@ const WEBCAMS_HLS = {
   zumaia: "https://58f14c0895a20.streamlock.net/camaramar/GIP_zumaia2.stream/playlist.m3u8",
 };
 
+// Atribución real por cámara para el pie de página del vídeo — NO todas las
+// entradas de WEBCAMS_HLS son de la Diputación de Gipuzkoa (bug real
+// reportado por el usuario 2026-09-20: el pie decía "Diputación Foral de
+// Gipuzkoa" también en Sopelana, que es Bizkaia, y en Santoña, que es
+// Cantabria — el texto estaba fijo en pintarWebcamHls() sin mirar la
+// fuente real de cada slug). Fuentes verificadas al añadir cada cámara,
+// ver los comentarios de WEBCAMS_HLS arriba.
+const WEBCAMS_HLS_FUENTE = {
+  santona: "Watsay Surf School",
+  sopelana: "Ayuntamiento de Sopela",
+  hondarribia: "Diputación Foral de Gipuzkoa",
+  donostia: "Diputación Foral de Gipuzkoa",
+  orio: "Diputación Foral de Gipuzkoa",
+  zarautz: "Diputación Foral de Gipuzkoa",
+  deba: "Diputación Foral de Gipuzkoa",
+  mutriku: "Diputación Foral de Gipuzkoa",
+  getaria: "Diputación Foral de Gipuzkoa",
+  zumaia: "Ayuntamiento de Zumaia",
+};
+
 const REFRESCO_WEBCAM_MS = 60000; // 1 min: suficiente para sentirse "en directo" sin sobrecargar al proveedor original
 let intervaloWebcam = null;
 let hlsActivo = null;
@@ -2727,7 +2747,7 @@ function pintarWebcamHls(slug, nombre) {
     </div>
     ${lineaCamaraSaludHtml(slug)}
     ${lineaTurbidezHtml(slug)}
-    <p class="nota-final" id="notaWebcam">Vídeo en directo (Diputación Foral de Gipuzkoa).</p>
+    <p class="nota-final" id="notaWebcam">Vídeo en directo (${WEBCAMS_HLS_FUENTE[slug] || "fuente externa"}).</p>
   `;
   const video = document.getElementById("videoWebcam");
   video.addEventListener("click", () => abrirZoomVideo(video));
@@ -2913,27 +2933,8 @@ function abrirPanel(s) {
     `<div style="margin-bottom:10px;"><div class="especie-zona-titulo">${titulo}</div>` +
     (lista.length ? lista.map(listaEspecie).join("") : `<span style="color:#42585F;">ninguna de temporada ahora</span>`) +
     `</div>`;
-  // Nota de "parrotxa" (cría de sardina): antes aparecía SIEMPRE, para
-  // cualquier spot — bug real reportado por el usuario 2026-09-15 ("no
-  // puede ser que en Cartagena hablemos de parrotxa"). Tras dos
-  // intentos (primero se quitó del Cantábrico por error, luego el
-  // usuario confirmó que "ese nombre solo se usa en el Cantábrico"),
-  // el término se queda SOLO en ESPECIES (Cantábrico); quitado de
-  // ESPECIES_MEDITERRANEO. La nota del pie solo sale si la palabra
-  // aparece de verdad en la lista de especies de ESTE spot, así que
-  // ahora solo se ve en spots del Cantábrico — arregla Cartagena de
-  // paso. Mediterráneo/Golfo de Cádiz/Canarias se quedan sin
-  // localismo propio para esto hasta que el robot (ver
-  // "Localismos/acepciones regionales por spot" en ROBOT_REGLAS.md)
-  // investigue y proponga el término real de cada zona.
-  const hayParrotxa = [...costa, ...marAdentro].some((e) => e.alimento?.includes("parrotxa") || e.nota?.includes("parrotxa"));
   document.getElementById("panelEspecies").innerHTML =
-    bloqueZona("🪨 COSTA", costa) + bloqueZona("🌊 MAR ADENTRO", marAdentro) +
-    (hayParrotxa
-      ? `<div style="color:#42585F; font-size:10.5px; margin-top:4px; line-height:1.4;">` +
-        `La parrotxa es la cría de sardina — así la llaman por aquí. Cuando hay mucha cerca de la costa, se acercan a por ella la lubina y el bonito sobre todo, y se pesca mejor. Esto no lo medimos nosotros — lo sabes tú mejor mirando el agua.` +
-        `</div>`
-      : "");
+    bloqueZona("🪨 COSTA", costa) + bloqueZona("🌊 MAR ADENTRO", marAdentro);
 
   // Índice de pesca: mismo estilo que el índice de mar (un número orientativo,
   // no una promesa), pero construido a partir de dos cosas reales que sí
