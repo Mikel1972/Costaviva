@@ -1969,10 +1969,71 @@ function zonaPorCoordenadas(lat, lon) {
   return "atlantico";
 }
 
+// Marea para ubicaciones personalizadas (2026-09-19, pedido explícito
+// del usuario: "por qué Lemoiz aparece sin marea") -- adaptada de
+// calcularMarea() en functions/prevision.js (misma lógica probada:
+// detecta picos/valles reales, filtra el ruido del modelo en spots de
+// marea casi nula, marca "mañana" si la próxima cae al día siguiente),
+// sin el coeficiente de marea -- ese necesita una ventana de ±8 días que
+// este fetch ligero de spots personalizados no pide, así que se deja sin
+// dato en vez de aproximarlo con la fórmula astronómica genérica (sería
+// menos preciso que el que ya se calcula server-side para los spots fijos).
+function mareaParaSpotUsuario(horas, alturas) {
+  if (!horas.length || !alturas.length) return null;
+  const validas = alturas.filter((v) => v !== null && v !== undefined);
+  const minVentana = validas.length ? Math.min(...validas) : 0;
+
+  const eventosCrudos = [];
+  for (let i = 1; i < alturas.length - 1; i++) {
+    const [prev, cur, next] = [alturas[i - 1], alturas[i], alturas[i + 1]];
+    if (cur === null || prev === null || next === null) continue;
+    if (cur >= prev && cur >= next) eventosCrudos.push({ tipo: "pleamar", hora: horas[i], altura: cur - minVentana });
+    else if (cur <= prev && cur <= next) eventosCrudos.push({ tipo: "bajamar", hora: horas[i], altura: cur - minVentana });
+  }
+  const UMBRAL_RUIDO_MAREA_M = 0.12;
+  const eventos = [];
+  for (const e of eventosCrudos) {
+    const anterior = eventos[eventos.length - 1];
+    if (anterior && Math.abs(e.altura - anterior.altura) < UMBRAL_RUIDO_MAREA_M) {
+      const esMasExtremo = (e.tipo === "pleamar" && e.altura > anterior.altura) || (e.tipo === "bajamar" && e.altura < anterior.altura);
+      if (esMasExtremo) eventos[eventos.length - 1] = e;
+      continue;
+    }
+    eventos.push(e);
+  }
+
+  const ahoraISO = horaActualMadridISO();
+  let idxAhora = horas.findIndex((h) => h.slice(0, 13) === ahoraISO);
+  if (idxAhora === -1) idxAhora = 0;
+  const hoyISO = ahoraISO.slice(0, 10);
+
+  const proximas = eventos
+    .filter((e) => e.hora > horas[idxAhora])
+    .slice(0, 2)
+    .map((e) => ({ ...e, manana: e.hora.slice(0, 10) !== hoyISO, hora: e.hora.slice(11, 16), altura: +e.altura.toFixed(2) }));
+
+  const actualRaw = alturas[idxAhora];
+  const siguienteRaw = alturas[idxAhora + 1];
+  const tendencia = actualRaw === null || siguienteRaw === null ? null : siguienteRaw > actualRaw ? "subiendo" : "bajando";
+
+  return {
+    altura: actualRaw === null ? null : +(actualRaw - minVentana).toFixed(2),
+    tendencia,
+    proximas,
+    coeficiente: null,
+  };
+}
+
 async function datosAmbientalesPunto(lat, lon) {
   const params = `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&forecast_days=1`;
+  // La marea pide forecast_days=2, no 1 (2026-09-19, pedido explícito del
+  // usuario: los spots personalizados no traían marea en absoluto) --
+  // con solo 1 día, "próxima marea" se quedaba sin datos cerca del final
+  // del día. sea_level_height_msl añadido al hourly de marine, el resto
+  // (oleaje/viento/etc.) se queda con la ventana de siempre.
+  const paramsMarea = `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&forecast_days=2`;
   const [marino, tiempo] = await Promise.all([
-    fetch(`https://marine-api.open-meteo.com/v1/marine?${params}&hourly=wave_height,wave_direction,sea_surface_temperature`).then((r) => r.json()),
+    fetch(`https://marine-api.open-meteo.com/v1/marine?${paramsMarea}&hourly=wave_height,wave_direction,sea_surface_temperature,sea_level_height_msl,ocean_current_velocity,ocean_current_direction`).then((r) => r.json()),
     fetch(`https://api.open-meteo.com/v1/forecast?${params}&hourly=windspeed_10m,winddirection_10m,pressure_msl,cloudcover,precipitation&windspeed_unit=kmh`).then((r) => r.json()),
   ]);
   const horas = marino.hourly?.time || [];
@@ -2009,14 +2070,22 @@ async function datosAmbientalesPunto(lat, lon) {
     tendenciaPresion = diff <= -1 ? "bajando" : diff >= 1 ? "subiendo" : "estable";
   }
 
+  // Corriente: mismo campo que ya usan los spots fijos
+  // (ocean_current_velocity/direction, directo de Open-Meteo para esta
+  // coordenada exacta -- no hace falta interpolar entre puntos vecinos,
+  // Open-Meteo ya da un valor propio para cualquier lat/lon que se pida).
+  const velocidadCorriente = marino.hourly?.ocean_current_velocity?.[idx];
+  const dirCorrienteGrados = marino.hourly?.ocean_current_direction?.[idx];
+
   return {
     altura: alturasVentana.length ? [Math.min(...alturasVentana), Math.max(...alturasVentana)] : [0, 0],
     periodo: null,
     dirOla: textoRumbo(marino.hourly?.wave_direction?.[idx] ?? 0),
     viento: Math.round(tiempo.hourly?.windspeed_10m?.[idxTiempo] ?? 0),
     dirViento: textoRumbo(tiempo.hourly?.winddirection_10m?.[idxTiempo] ?? 0),
-    marea: null,
-    corriente: null, dirCorriente: null,
+    marea: mareaParaSpotUsuario(horas, marino.hourly?.sea_level_height_msl || []),
+    corriente: velocidadCorriente ?? null,
+    dirCorriente: dirCorrienteGrados != null ? textoRumbo(dirCorrienteGrados) : null,
     tempAgua: marino.hourly?.sea_surface_temperature?.[idx] ?? null,
     nubosidad: tiempo.hourly?.cloudcover?.[idxTiempo] ?? null,
     precipitacion: tiempo.hourly?.precipitation?.[idxTiempo] ?? null,
