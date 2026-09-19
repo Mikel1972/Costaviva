@@ -74,6 +74,12 @@ const UMBRAL_FALLOS_SEGUIDOS = 2; // fallos/frame plano seguidos antes de mostra
 // Mismas URLs que WEBCAMS_HLS en index.html — mantener sincronizado a
 // mano, igual que ya hace SPOTS_VIDEO en scripts/turbidez/medir-turbidez.mjs.
 const WEBCAMS_VIDEO = {
+  // Sopela (ayuntamiento, IPCamLive) — ver el comentario igual en
+  // index.html (WEBCAMS_HLS). Mismo motivo para excluirla del bucle de
+  // imagen fija más abajo (skipPorVideo): lo que se comprueba tiene que
+  // ser lo que de verdad se pinta en pantalla, no la imagen de reserva
+  // que ya no se muestra mientras esta entrada de vídeo exista.
+  sopelana: "https://s61.ipcamlive.com/streams/3d0d8zpvutondjmwg/stream.m3u8",
   hondarribia: "https://58f14c0895a20.streamlock.net/camaramar/GIP_hondarribia_169.stream/playlist.m3u8",
   donostia: "https://58f14c0895a20.streamlock.net/camaramar/GIP_zurriola_169.stream/playlist.m3u8",
   orio: "https://58f14c0895a20.streamlock.net/camaramar/GIP_orio_169.stream/playlist.m3u8",
@@ -221,7 +227,13 @@ async function main() {
   const ahora = new Date().toISOString();
   const lecturas = [];
 
+  // Spots que ya se comprueban como vídeo (WEBCAMS_VIDEO, más abajo) se
+  // saltan aquí aunque también tengan una entrada de imagen fija de
+  // reserva en WEBCAMS (functions/webcam/[slug].js) -- lo que hay que
+  // vigilar es lo que de verdad se pinta en pantalla (ver index.html,
+  // pintarWebcam(): WEBCAMS_HLS gana siempre a la imagen fija).
   for (const slug of Object.keys(WEBCAMS)) {
+    if (WEBCAMS_VIDEO[slug]) continue;
     let bruto;
     try {
       bruto = await comprobarImagen(slug);

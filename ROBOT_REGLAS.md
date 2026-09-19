@@ -184,16 +184,22 @@ reinventarlo si añades una estimación nueva sobre una fuente de vídeo.
   directo).
   URLs verificadas: `https://www.kostasystem.com/wp-content/uploads/irudiak/puntaluzero/camara1_snap.jpeg`
   y `camara2_snap.jpeg` (mismo patrón).
-- **Sopelana tiene una segunda fuente real, independiente de AZTI**: el
-  propio ayuntamiento (`sopela.eus/webcam-olas/`) embebe un reproductor
-  de IPCamLive — la imagen fija real está en
-  `https://s61.ipcamlive.com/streams/3d0d8zpvutondjmwg/snapshot.jpg`
-  (verificada en vivo 2026-09-19, JPEG real y actualizándose). Al ser un
-  proveedor totalmente distinto de detectia.net, sirve como respaldo de
-  verdad si detectia.net se cae (ver "Fallos correlados por proveedor"
-  más arriba) — candidata natural a segunda fuente de `sopelana` en
-  `WEBCAMS` (ver mecanismo de fuentes múltiples/fallback en
-  `functions/webcam/[slug].js`).
+- **Sopelana tiene una segunda fuente real, independiente de AZTI, Y
+  ADEMÁS es vídeo real (no solo imagen fija)**: el propio ayuntamiento
+  (`sopela.eus/webcam-olas/`) embebe un reproductor de IPCamLive.
+  Verificado en vivo 2026-09-19: además de la imagen fija
+  (`https://s61.ipcamlive.com/streams/3d0d8zpvutondjmwg/snapshot.jpg`,
+  usada como reserva en `WEBCAMS` de `functions/webcam/[slug].js`), esa
+  misma cámara sirve un HLS real y en directo en
+  `https://s61.ipcamlive.com/streams/3d0d8zpvutondjmwg/stream.m3u8`
+  (`EXT-X-MEDIA-SEQUENCE` avanzando en tiempo real, CORS abierto). Por el
+  criterio de prioridad vídeo > imagen fija, esta URL pasó a ser la
+  fuente principal de pantalla para `sopelana` en `WEBCAMS_HLS`
+  (`index.html`) — la imagen fija de AZTI/detectia.net queda solo como
+  dato de reserva, ya no se muestra a menos que esta entrada de vídeo se
+  quite. Al ser un proveedor totalmente distinto de detectia.net, seguía
+  sirviendo como ejemplo de por qué no depender de un único proveedor
+  (ver "Fallos correlados por proveedor" más arriba).
 - **Plentzia (spot ya existente, sin cámara desde su creación) sigue sin
   fuente real**: la escuela de surf `escueladesurfsopelana.com` enlaza
   una cámara IP directa (`62.99.56.33:81/jpg/1/image.jpg`, vía el proxy

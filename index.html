@@ -2403,6 +2403,15 @@ const SPOTS_CON_WEBCAM = [
 // pero su URL de stream daba 404 en la comprobación real — no incluida hasta
 // que vuelva a funcionar. Zumaia no tiene cámara en absoluto en esta fuente.
 const WEBCAMS_HLS = {
+  // Sopela (ayuntamiento), vía IPCamLive — encontrada y verificada en vivo
+  // 2026-09-19 (secuencia HLS avanzando en tiempo real, CORS abierto igual
+  // que el resto de esta lista). Aplicando el criterio de prioridad
+  // "vídeo antes que imagen fija" (ver ROBOT_REGLAS.md): sustituye a la
+  // imagen fija de AZTI/detectia.net como fuente principal de pantalla —
+  // esa imagen fija se queda igualmente en functions/webcam/[slug].js
+  // (WEBCAMS.sopelana) como dato de reserva, sin usarse para pintar nada
+  // mientras esta entrada exista aquí.
+  sopelana: "https://s61.ipcamlive.com/streams/3d0d8zpvutondjmwg/stream.m3u8",
   hondarribia: "https://58f14c0895a20.streamlock.net/camaramar/GIP_hondarribia_169.stream/playlist.m3u8",
   // Zurriola (playa expuesta a mar abierto), no La Concha/Ondarreta (bahía
   // resguardada, mucho menos representativa del estado real del mar).
