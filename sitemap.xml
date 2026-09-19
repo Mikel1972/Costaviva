@@ -19,6 +19,46 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://costaviva.org/mareas/region/pais-vasco</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://costaviva.org/mareas/region/cantabria</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://costaviva.org/mareas/region/asturias</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://costaviva.org/mareas/region/galicia</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://costaviva.org/mareas/region/portugal</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://costaviva.org/mareas/region/mediterraneo</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://costaviva.org/mareas/region/golfo-de-cadiz</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://costaviva.org/mareas/region/canarias</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
     <loc>https://costaviva.org/mareas/acoruna</loc>
     <changefreq>hourly</changefreq>
     <priority>0.7</priority>
