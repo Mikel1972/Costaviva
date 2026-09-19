@@ -62,7 +62,8 @@ export const WEBCAMS = {
   // pueblo). Verificada con descarga real: WebP 1600x1200, ~54 KB, imagen
   // real (no placeholder) con el Ratón de Getaria reconocible al fondo.
   getaria: "https://detectia.net/img/webcam-malkorbe-azti.webp",
-  // plentzia, ondarroa, zumaia: sin fuente identificada todavía
+  // plentzia, ondarroa: sin fuente identificada todavía (zumaia ya tiene
+  // vídeo, ver WEBCAMS_HLS en index.html)
 
   // MeteoGalicia (Xunta de Galicia) — imagen JPG directa sin cabeceras
   // especiales, verificada en vivo 2026-09-09. El nombre de fichero puede
@@ -81,8 +82,20 @@ export const WEBCAMS = {
   // verificada en vivo 2026-09-09. El sufijo numérico del fichero es el id
   // interno de la cámara y puede cambiar si la reinstalan.
   suances: "https://www.cantabria.es/ftp_webcam/suances-New-85.jpg",
-  castrourdiales: "https://www.cantabria.es/ftp_webcam/castro-New-117.jpg",
-  laredo: "https://www.cantabria.es/ftp_webcam/Laredo-New-1.jpg",
+  // Reserva añadida 2026-09-19: cantabria.es llevaba caído (http_502) todo
+  // el día en las 6 cámaras de este proveedor a la vez (ver ROBOT_REGLAS.md,
+  // "Fallos correlados por proveedor"). Red independiente
+  // webcamsencantabria.com (tendsys.net) verificada en vivo -- poster real
+  // actualizándose cada pocos minutos. Solo encontrada para Castro-Urdiales
+  // y Laredo, no para Santoña/Suances/San Vicente/Comillas.
+  castrourdiales: [
+    "https://www.cantabria.es/ftp_webcam/castro-New-117.jpg",
+    "https://rswc.tendsys.net/memfs/56b44eac-9cc1-4487-98fc-3991c5a4874d.jpg",
+  ],
+  laredo: [
+    "https://www.cantabria.es/ftp_webcam/Laredo-New-1.jpg",
+    "https://rswc.tendsys.net/memfs/4d8076d3-525d-4868-b02d-8126c51da987.jpg",
+  ],
   sanvicente: "https://www.cantabria.es/ftp_webcam/sanvicente-New-101_1.jpg",
   comillas: "https://www.cantabria.es/ftp_webcam/Comillas-New-1.jpg",
   santona: "https://www.cantabria.es/ftp_webcam/Santonia-New-69.jpg",
