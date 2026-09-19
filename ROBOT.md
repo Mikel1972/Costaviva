@@ -5074,3 +5074,107 @@ una caída nueva que investigar aparte.
 
 **Firmado:** robot buscador de fuentes (pasada de corrientes marinas),
 2026-09-19 17:33 UTC.
+
+---
+
+### 2026-09-19 22:35 UTC (pasada buscadora — presión atmosférica e histórico por zona, sexta pasada)
+
+**Contexto:** las 5 pasadas previas de este tema (2026-09-14 23:31,
+2026-09-15 13:33, 2026-09-15 23:12, 2026-09-17 23:10 y 2026-09-18 22:54,
+más arriba) dejaron todas las vías obvias cerradas (AEMET/IPMA en tiempo
+real, ERA5/archive de Open-Meteo, NOAA NCEI/ISD, Puertos del Estado sin
+API) y la última pasada recomendó espaciar este tema hasta que hubiera
+una razón nueva (la `AEMET_API_KEY`, o que `dataclima.ipma.pt` dejara de
+dar 403). Comprobado de nuevo: `dataclima.ipma.pt` sigue dando **403**
+con `curl`/User-Agent real (sin cambios). Esta pasada buscó en dos
+direcciones nuevas, no cubiertas en ninguna de las 5 anteriores.
+
+**Hallazgo real y verificado — MeteoGalicia tiene API pública con datos
+diarios/históricos, pero sin confirmar si incluye presión ni cobertura
+costera** (no se profundizó más por el hallazgo más relevante de abajo,
+que sí llegó hasta el dato real): existe un servicio JSON documentado
+(`JSON_EstacionsDiarios_es.pdf`, descargado y accesible sin clave) con
+resoluciones `instant`/`current_day`/`daily`/`monthly`. Queda como pista
+sin verificar del todo — pendiente de una petición real a su endpoint
+JSON con una estación costera concreta antes de dar nada por bueno.
+
+**Hallazgo principal, verificado en real con datos reales descargados —
+Euskalmet SÍ publica presión atmosférica costera histórica de forma
+completamente abierta, sin la `EUSKALMET_API_KEY` que lleva bloqueada
+desde el 2026-09-14 (registro nunca llegó por email, ver `CLAUDE.md`).**
+Es una vía totalmente distinta de la API REST de Euskalmet (que sí
+exige esa clave): el portal de datasets `opendata.euskadi.eus` (parte
+de Open Data Euskadi, ya usado en este repo para
+`especies_comunidad`/investigación de fauna, nunca antes para
+meteorología) publica un catálogo "Estaciones meteorológicas: lecturas
+recogidas en <año>" con un ZIP anual descargable sin login ni clave:
+
+- `https://opendata.euskadi.eus/contenidos/ds_meteorologicos/met_stations_ds_2026/opendata/2026.zip`
+  (~100 MB, verificado con descarga real completa) y el mismo patrón
+  para 2025 (`met_stations_ds_2025/opendata/2025.zip`, ~148 MB,
+  confirmado con `HEAD` real) — multi-año, sirve para backfill.
+- Contiene un ZIP por estación y año (`<código>_2026.zip`), y dentro un
+  XML por mes con lecturas cada **10 minutos**.
+- El listado maestro de estaciones (con coordenadas, sin necesitar
+  clave tampoco) está en
+  `https://opendata.euskadi.eus/contenidos/ds_meteorologicos/estaciones_meteorologicas/opendata/estaciones.json`
+  — 153 estaciones, con un tipo `"B"` (8 estaciones) que son
+  específicamente **puertos/boyas costeras**: Bilbao (Punta Lucero,
+  Santurtzi), Armintza, Bermeo, Ondarroa, Getaria, Pasaia, Hondarribia y
+  Mutriku — coinciden con spots reales de `SPOTS`.
+- **Verificado descargando y abriendo el XML real de Bilbao (B090,
+  agosto 2026)**: cada lectura de 10 minutos trae
+  `Presion._a_2200cm` (presión real en hPa, ej. 1017.6) además de
+  `Tem.Aire`, `Humedad`, `Precip.`, `Vel.Med`/`Vel.Max`/`Dir.Med`
+  (viento) — y, como extra no buscado pero relevante para otra parte de
+  la app, también **oleaje real de boya** (`OlaSig`/`OlaMax`/`OlaPer`,
+  altura significativa/máxima y periodo) y **temperatura del agua**
+  (`Tp._a_0cm`). Mismo formato confirmado en Pasaia (B096).
+
+**Limitación real encontrada, no ocultarla**: de las 8 estaciones tipo
+`"B"`, el ZIP de 2026 **solo incluye 2 con datos** (Bilbao/B090 y
+Pasaia/B096) — Armintza, Bermeo, Ondarroa, Getaria, Hondarribia y
+Mutriku no aparecen en el archivo de este año, no se ha investigado
+todavía si es porque dejaron de reportar, nunca llegaron a tener sensor
+de presión, o el "thin"/otro año las incluye. No dar las 8 por
+disponibles sin comprobar caso por caso.
+
+**Por qué esto es relevante de verdad, más allá de "una fuente más"**:
+esto no depende de que llegue el email de alta de Euskalmet (bloqueado
+desde hace 5 días, ver `CLAUDE.md`) — es un canal completamente
+distinto del mismo organismo (Gobierno Vasco), ya accesible hoy. Con
+solo 2 estaciones cubiertas no sustituye a AEMET (que ya cubre
+observación horaria en producción), pero sí sirve para lo que ninguna
+otra fuente había resuelto en las 5 pasadas anteriores: **backfill
+histórico real de presión** (no solo tiempo real) para 2 puntos
+concretos de la costa de Bizkaia/Gipuzkoa, multi-año, con periodicidad
+de 10 minutos (más fina que la horaria de AEMET).
+
+**No aplicado a código esta pasada** (sigue siendo decisión de producto
+y tocaría `functions/`, ver `ROBOT_REGLAS.md`) — **propuesta**: si el
+usuario quiere retomar el backfill de `presion_historico` (aparcado
+desde la primera pasada de este tema, 2026-09-14), este ZIP anual de
+Bilbao/Pasaia es la fuente más prometedora encontrada hasta ahora para
+ese objetivo concreto en esas 2 ubicaciones — requeriría un script de
+importación puntual (no un cron, es un histórico ya cerrado por año),
+descargar el ZIP, parsear el XML mensual y volcar `Presion._a_2200cm`
+con su timestamp real. Antes de implementarlo: confirmar por qué las
+otras 6 estaciones tipo B no están en el archivo de este año (puede
+cambiar qué años/estaciones merece la pena importar) y decidir si
+también interesa aprovechar el oleaje/temperatura del agua reales de
+paso, ya que vienen en el mismo fichero sin coste adicional.
+
+**Pendiente para la próxima pasada de este tema**: verificar el
+endpoint JSON de MeteoGalicia con una petición real (estación costera
+gallega concreta) para saber si aporta presión y si hace falta clave;
+y comprobar si las 6 estaciones tipo B que faltan en el ZIP de 2026
+aparecen en años anteriores (2024, 2023...) o en el fichero "thin".
+
+**Fuentes:**
+[Open Data Euskadi — catálogo "Estaciones meteorológicas: lecturas recogidas en 2026"](https://opendata.euskadi.eus/catalogo/-/estaciones-meteorologicas-lecturas-recogidas-en-2026/),
+[Open Data Euskadi — listado de estaciones (JSON, sin clave)](https://opendata.euskadi.eus/contenidos/ds_meteorologicos/estaciones_meteorologicas/opendata/estaciones.json),
+[MeteoGalicia — documentación del servicio JSON de datos diarios](https://www.meteogalicia.gal/datosred/infoweb/meteo/docs/rss/JSON_EstacionsDiarios_es.pdf),
+[dataclima.ipma.pt (sigue en 403, sin cambios respecto a la pasada anterior)](https://dataclima.ipma.pt/pt/sobre-os-dados/).
+
+**Firmado:** robot buscador de fuentes (pasada de presión atmosférica e
+histórico por zona), 2026-09-19 22:35 UTC.
