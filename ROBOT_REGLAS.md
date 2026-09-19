@@ -265,8 +265,46 @@ reinventarlo si añades una estimación nueva sobre una fuente de vídeo.
   Arrigorri (Ondarroa) pero sin ninguna cámara real embebida (solo
   enlaces a su sección de cámaras de nieve/montaña, nada de costa). Dar
   por buena esta población como "sin fuente conocida" hasta que aparezca
-  algo genuinely nuevo — no repetir esta misma búsqueda sin una pista
+  algo realmente nuevo — no repetir esta misma búsqueda sin una pista
   distinta.
+
+### Zona: Cantabria (pasada puntual 2026-09-19, interactiva con el usuario, no la rotación automática — motivada por una caída real de cantabria.es que duró todo el día)
+
+- **Red independiente `webcamsencantabria.com` (backend `tendsys.net`)
+  confirmada real y viva**, totalmente aparte del Gobierno de Cantabria
+  (`cantabria.es`/`puertosdecantabria.es`, caídos con `http_502` desde
+  al menos las 05:46 hasta pasadas las 13:00 del 2026-09-19 — más de 7h,
+  ver "Fallos correlados por proveedor"). Cada página de cámara de ese
+  sitio embebe un `<video>`/iframe de `rswc.tendsys.net` con un HLS en
+  directo (**sin CORS** — `Access-Control-Allow-Origin` ausente incluso
+  mandando `Origin` explícito, comprobado con curl — no se puede cargar
+  directo en el navegador como las HLS de Gipuzkoa) pero TAMBIÉN sirve un
+  póster JPEG que se regenera cada pocos minutos en
+  `https://rswc.tendsys.net/memfs/<uuid>.jpg` — ese sí es utilizable, vía
+  nuestro proxy `/webcam/<slug>` (el CORS del origen da igual ahí, la
+  petición la hace el propio Worker, no el navegador). Añadidas como
+  reserva en `WEBCAMS` para `castrourdiales`
+  (`56b44eac-9cc1-4487-98fc-3991c5a4874d`) y `laredo`
+  (`4d8076d3-525d-4868-b02d-8126c51da987`), verificadas en vivo
+  (`Last-Modified` a menos de 1 minuto de la comprobación).
+- **No se encontró página de esta red para Santoña** pese a tenerla para
+  Castro-Urdiales/Laredo/otras poblaciones de Cantabria — su página de
+  overview (`webcamsencantabria.com/webcams/webcams-en-santona/`) no
+  listaba ninguna cámara propia de Santoña, revisado su sitemap también
+  sin resultado. Sigue sin fuente de reserva.
+- **Bakio (Bizkaia, no Cantabria, pero mismo caso de fallo — frame
+  congelado de AZTI/detectia.net desde antes de las 07:26)**: su
+  ayuntamiento (`bakio.eus/.../Webcam.aspx`) tiene página de webcam pero
+  exige login (SharePoint, redirige a `Authenticate.aspx`) — no hay forma
+  de sacar una imagen real sin credenciales. `kostasystem.com` también
+  tiene carpeta `bakio/` pero lleva muerta desde enero 2026 (mismo patrón
+  ya documentado en la zona de Bizkaia). Sin fuente de reserva encontrada
+  todavía.
+- **Si el HLS de tendsys.net se quisiera usar como vídeo de verdad en
+  algún momento** (no solo el póster de reserva), haría falta un proxy
+  propio de HLS (reescribir las URLs relativas de los segmentos dentro
+  del `.m3u8`) — no es una corrección trivial, es un desarrollo nuevo;
+  no intentarlo sin que el usuario lo pida explícitamente.
 
 ## Sinónimos regionales de especies y cebos (añadido 2026-09-13)
 
