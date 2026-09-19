@@ -406,15 +406,23 @@
      sin el fade-in (aparece/desaparece junto con la propia capa, no hay
      necesidad de la transición). */
   .viento-slider-panel {
-    position: absolute; top: 276px; right: 64px; z-index: 501;
+    /* Anclado por abajo (no por arriba) a propósito -- verificado en vivo
+       2026-09-19: con "top" fijo, en pantallas no muy altas el panel (ya
+       con la leyenda añadida) se salía por debajo tanto del control de
+       atribución del mapa (Esri/GEBCO/NOAA, z-index 800) como del menú
+       inferior fijo (z-index 1100), los dos por encima del panel
+       (z-index 501 antes) -- se veía "la leyenda del viento detrás de
+       la leyenda del mapa". Con "bottom" fijo el panel siempre reserva
+       el mismo hueco respecto al borde inferior del mapa, así que ya no
+       depende de calcular a mano cuánto mide la atribución + el menú en
+       cada viewport. z-index subido a 900 (por encima de la atribución,
+       por si acaso) pero sigue por debajo del menú (1100) a propósito.
+    */
+    position: absolute; bottom: 90px; right: 64px; z-index: 900;
     background: #FFFFFF; border: 1px solid #DDE2DC; border-radius: 8px;
     padding: 10px 14px; font-size: 11px; font-family: 'IBM Plex Mono', monospace;
     width: 190px;
-    /* Bug real visto en producción 2026-09-19: en una pantalla no muy
-       alta, el panel (con la leyenda añadida) se quedaba parcialmente
-       tapado por el menú inferior fijo -- con scroll propio si hace
-       falta, en vez de cortarse sin más. */
-    max-height: calc(100dvh - 340px);
+    max-height: calc(100dvh - 150px);
     overflow-y: auto;
   }
   .viento-slider-panel[hidden] { display: none; }
@@ -3144,8 +3152,15 @@ document.getElementById("toggleNubes").addEventListener("click", async (e) => {
 // se desincronicen.
 // Verde en calma (0 m/s) -> morado -> magenta según sube el viento,
 // pedido explícito del usuario 2026-09-19 (antes empezaba ya en morado
-// oscuro, sin marcar visualmente la calma).
-const VIENTO_COLOR_SCALE = ["#22C55E", "#3A0CA3", "#560BAD", "#7209B7", "#9D174D", "#B5179E", "#F72585"];
+// oscuro, sin marcar visualmente la calma). Los tres tercios de la
+// escala (verde/morado/magenta) tienen el mismo número de tonos cada
+// uno -- pedido explícito, antes el verde era un único tono suelto
+// mientras morado/magenta ya tenían varios matices.
+const VIENTO_COLOR_SCALE = [
+  "#86EFAC", "#4ADE80", "#16A34A", // verde: calma -> brisa suave
+  "#A78BFA", "#8B5CF6", "#6D28D9", // morado: viento moderado
+  "#F472B6", "#EC4899", "#BE185D", // magenta: viento fuerte
+];
 const VIENTO_MAX_MS = 15;
 let capaViento = null;
 let vientoSnapshots = [];
