@@ -74,6 +74,12 @@ const UMBRAL_FALLOS_SEGUIDOS = 2; // fallos/frame plano seguidos antes de mostra
 // Mismas URLs que WEBCAMS_HLS en index.html — mantener sincronizado a
 // mano, igual que ya hace SPOTS_VIDEO en scripts/turbidez/medir-turbidez.mjs.
 const WEBCAMS_VIDEO = {
+  // Sopela (ayuntamiento, IPCamLive) — ver el comentario igual en
+  // index.html (WEBCAMS_HLS). Mismo motivo para excluirla del bucle de
+  // imagen fija más abajo (skipPorVideo): lo que se comprueba tiene que
+  // ser lo que de verdad se pinta en pantalla, no la imagen de reserva
+  // que ya no se muestra mientras esta entrada de vídeo exista.
+  sopelana: "https://s61.ipcamlive.com/streams/3d0d8zpvutondjmwg/stream.m3u8",
   hondarribia: "https://58f14c0895a20.streamlock.net/camaramar/GIP_hondarribia_169.stream/playlist.m3u8",
   donostia: "https://58f14c0895a20.streamlock.net/camaramar/GIP_zurriola_169.stream/playlist.m3u8",
   orio: "https://58f14c0895a20.streamlock.net/camaramar/GIP_orio_169.stream/playlist.m3u8",
@@ -110,10 +116,15 @@ async function analizarBuffer(buffer) {
 async function comprobarImagen(slug) {
   const resp = await fetch(`${BASE_URL}/webcam/${slug}`, { headers: { "User-Agent": "CostaVivaCamarasBot/1.0" } });
   if (!resp.ok) return { ok: false, motivo: `http_${resp.status}` };
+  // Índice de la fuente que sirvió de verdad (ver functions/webcam/[slug].js)
+  // — >0 significa que la principal falló y el proxy recurrió sola a una de
+  // reserva sin que el usuario lo note; aquí sí interesa saberlo para
+  // reportarlo, aunque la app siga funcionando con normalidad.
+  const fuenteUsada = Number(resp.headers.get("x-webcam-fuente-indice") ?? 0) || 0;
   const buffer = Buffer.from(await resp.arrayBuffer());
   const r = await analizarBuffer(buffer);
-  if (!r) return { ok: false, motivo: "sin_pixeles" };
-  return { ok: true, ...r };
+  if (!r) return { ok: false, motivo: "sin_pixeles", fuenteUsada };
+  return { ok: true, ...r, fuenteUsada };
 }
 
 async function comprobarVideo(url) {
@@ -201,6 +212,10 @@ function construirLectura(slug, bruto, previo, ahora) {
     fallosSeguidos: estado.fallosSeguidos,
     hashFrame: estado.hashFrame,
     hashDesde: estado.hashDesde,
+    // 0 = sirvió la fuente principal; >0 = el proxy tuvo que recurrir a una
+    // de reserva (ver functions/webcam/[slug].js) — la app sigue mostrando
+    // imagen real, pero interesa saber que la principal está fallando.
+    fuenteUsada: bruto.fuenteUsada ?? 0,
   };
 }
 
@@ -212,7 +227,13 @@ async function main() {
   const ahora = new Date().toISOString();
   const lecturas = [];
 
+  // Spots que ya se comprueban como vídeo (WEBCAMS_VIDEO, más abajo) se
+  // saltan aquí aunque también tengan una entrada de imagen fija de
+  // reserva en WEBCAMS (functions/webcam/[slug].js) -- lo que hay que
+  // vigilar es lo que de verdad se pinta en pantalla (ver index.html,
+  // pintarWebcam(): WEBCAMS_HLS gana siempre a la imagen fija).
   for (const slug of Object.keys(WEBCAMS)) {
+    if (WEBCAMS_VIDEO[slug]) continue;
     let bruto;
     try {
       bruto = await comprobarImagen(slug);
@@ -221,7 +242,8 @@ async function main() {
     }
     const lectura = construirLectura(slug, bruto, previo[slug], ahora);
     lecturas.push(lectura);
-    console.log(`${lectura.sinSenal ? "✗" : "✓"} ${slug}: ${lectura.motivo}`);
+    const avisoReserva = lectura.fuenteUsada > 0 ? ` [usando fuente de reserva #${lectura.fuenteUsada}]` : "";
+    console.log(`${lectura.sinSenal ? "✗" : "✓"} ${slug}: ${lectura.motivo}${avisoReserva}`);
   }
   for (const [slug, url] of Object.entries(WEBCAMS_VIDEO)) {
     const bruto = await comprobarVideo(url);
