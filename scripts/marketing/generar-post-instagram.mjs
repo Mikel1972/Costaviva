@@ -171,7 +171,7 @@ async function generarCondiciones() {
     `💨 Viento: ${vientoTexto}`,
     `🌙 Marea: ${spot.marea.tendencia} (coef. ${spot.marea.coeficiente})`,
     "",
-    "Consulta el estado en directo de tu spot, capas de viento/boyas/radar de lluvia y mucho más -- enlace en la bio 🎣",
+    "Consulta el estado en directo de tu spot, capas de viento/boyas/radar de lluvia y muchos más datos para que incrementes tus posibilidades de pesca -- enlace en la bio 🎣",
     "",
     "#pesca #surf #costaviva #paisvasco #cantabrico #pescadesdecosta",
   ].join("\n");
@@ -260,7 +260,7 @@ async function generarEspecies() {
     "",
     `🍽️ Se alimenta de: ${especie.alimento}`,
     "",
-    "Consulta las condiciones reales de tu spot y qué se puede pescar hoy -- enlace en la bio 🎣",
+    "Consulta las condiciones reales de tu spot y muchos más datos para que incrementes tus posibilidades de pesca -- enlace en la bio 🎣",
     "",
     "#pesca #pescarecreativa #costaviva #paisvasco #cantabrico",
   ].join("\n");
