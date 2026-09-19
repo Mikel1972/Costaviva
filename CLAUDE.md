@@ -5,6 +5,90 @@ cambian las convenciones — no es un historial (para eso está `ROBOT.md`).
 Si algo de aquí queda desactualizado, corrígelo en el momento en que lo
 detectes, no lo dejes para luego.
 
+## Informe diario — Search Console real, conteo de cámaras, robot de especies (2026-09-20)
+
+Pedido explícito del usuario: ampliar `daily-report.yml` con (1) cuántas
+webcams funcionan bien y cuántas no, (2) cuántas cámaras nuevas encontró
+el robot buscador de fuentes, (3) evolución del robot de especies, (4)
+resumen de Instagram, (5) conclusiones de Search Console. Antes de tocar
+nada se investigó qué existía ya — (1), (2), (3) y (4) ya tenían la
+infraestructura montada (tabla `camara_estado`, `ROBOT.md`, el paso
+"marketing" con métricas reales de Instagram vía `CALIBRACION.jsonl`),
+solo hacía falta pulir el informe. (5) no existía — decisión previa
+explícita de no montar la API de Google, revertida hoy tras preguntarle
+al usuario.
+
+**Cambios en `daily-report.yml`**:
+- Paso "Estado de las webcams": ahora imprime `N de M cámaras funcionan
+  correctamente` como primera línea, antes de listar caídas/con reserva.
+- Prompt de "Síntesis del día": pide explícitamente el número de
+  cámaras nuevas propuestas por el robot buscador de fuentes en las
+  últimas 24h (línea `**Cámaras nuevas encontradas:**`), y separa la
+  investigación de migración/cría de especies en su propia línea
+  (`**Robot de especies:**`) dentro de "Trabajo externo" — esa pasada
+  solo corre los jueves, así que la mayoría de días debe decir
+  explícitamente "no le tocaba pasar hoy" en vez de inventar novedades.
+
+**Search Console — integrado de verdad, sin clave descargable.** La
+cuenta de Google del usuario tiene activada una política de
+organización (`iam.disableServiceAccountKeyCreation`) que bloquea crear
+claves JSON para cuentas de servicio — común en cuentas nuevas, medida
+de seguridad real de Google, no un fallo. En vez de pedir que se
+desactive (puede que ni haya un admin de políticas al que recurrir, es
+una cuenta personal), se montó **Workload Identity Federation**: GitHub
+Actions se autentica directo contra Google Cloud con su propio token
+OIDC de cada ejecución, sin ningún secreto guardado en ningún sitio (ni
+en el repo, ni como GitHub Secret).
+
+Recursos creados (todo esto vive en Google Cloud, no en este repo):
+- Proyecto: `project-5a5d60f4-a099-4065-a23` (número `1029831673189`).
+- Cuenta de servicio: `costaviva-search-console-reade@project-5a5d60f4-a099-4065-a23.iam.gserviceaccount.com`
+  (el nombre se truncó solo a 30 caracteres, límite de Google Cloud —
+  "reade" en vez de "reader" es correcto, no un error). Dada de alta a
+  mano en Search Console → Configuración → Usuarios y permisos, con
+  acceso **Restringido** (solo lectura) sobre la propiedad
+  `sc-domain:costaviva.org`.
+- Workload Identity Pool: `github-actions-pool`.
+- Proveedor OIDC dentro del pool: nombre visible `github-actions-provider`,
+  emisor `https://token.actions.githubusercontent.com`, atributos
+  `google.subject=assertion.sub`, `attribute.repository=assertion.repository`,
+  `attribute.repository_owner=assertion.repository_owner`. Acceso
+  concedido a la cuenta de servicio filtrando por
+  `attribute.repository == Mikel1972/Costaviva`.
+
+**Trampa real encontrada al usarlo por primera vez, para no repetir la
+búsqueda**: el **ID real del proveedor no es el "nombre visible"** —
+Google Cloud generó el ID con un guion delante:
+`-github-actions-provider` (no `github-actions-provider`). La lista de
+proveedores solo muestra el "nombre visible" sin guion, así que es
+fácil copiar mal el `workload_identity_provider` del workflow (pasó en
+la primera prueba real con `workflow_dispatch`, dio `invalid_target`).
+Se confirmó el ID real comparando contra el texto
+"Público predeterminado" que la propia consola de Google Cloud mostró
+al configurar el proveedor (ese sí lleva el nombre de recurso completo
+y correcto). **Si algún día hay que tocar este proveedor de nuevo**:
+verificar siempre el ID real antes de asumir que coincide con el
+nombre visible.
+
+`workload_identity_provider` completo, tal como vive en
+`daily-report.yml`:
+```
+projects/1029831673189/locations/global/workloadIdentityPools/github-actions-pool/providers/-github-actions-provider
+```
+
+El paso "Search Console" usa `google-auth-library` (no el paquete
+`googleapis` completo, mucho más pesado) para conseguir un token de
+acceso y llama directo a la API REST clásica de Search Console
+(`www.googleapis.com/webmasters/v3/...`) con `fetch` — mismo patrón
+que el resto de endpoints externos del repo. Datos que muestra: clics/
+impresiones/CTR/posición media de los últimos 7 días (con variación
+frente a los 7 anteriores) y el top 5 de búsquedas — o un aviso
+explícito de que Google no desglosa búsquedas concretas cuando el
+volumen es tan bajo que entra en su umbral de privacidad (pasa con
+`costaviva.org` ahora mismo, SEO muy reciente). Verificado en real dos
+veces con `workflow_dispatch` antes de mergear — la propiedad detectada
+es `sc-domain:costaviva.org` (propiedad de dominio, no de prefijo URL).
+
 ## Analítica de uso propia (`eventos_uso`, añadida 2026-09-17)
 
 Pedido explícito del usuario: entender qué usa de verdad cada usuario
