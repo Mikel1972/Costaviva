@@ -62,8 +62,18 @@ jobs:
           git config user.name "Claude (robot Costaviva)"
           git config user.email "actions@github.com"
           git add assets/marketing/
-          git commit -m "Robot de marketing: nueva imagen para Instagram"
-          git push
+          # Bug real visto en producción 2026-09-19: si se relanza el robot
+          # el mismo día para el mismo spot/especie y los datos no han
+          # cambiado (p.ej. una prueba manual poco después de la pasada
+          # normal), la imagen sale byte a byte idéntica y no hay nada que
+          # comitear -- `git commit` fallaría entero por eso. Se salta el
+          # commit+push en ese caso en vez de romper el resto del workflow.
+          if git diff --cached --quiet; then
+            echo "La imagen ya existía sin cambios, no hace falta comitear."
+          else
+            git commit -m "Robot de marketing: nueva imagen para Instagram"
+            git push
+          fi
 
       - name: Asegurar que existe la etiqueta "marketing"
         env:
