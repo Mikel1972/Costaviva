@@ -51,6 +51,11 @@ jobs:
       actions: read
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Historial completo (no el shallow clone por defecto) — hace
+          # falta para poder contar TODOS los commits del robot autónomo
+          # en el paso de KPIs de evolución autónoma, más abajo.
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
@@ -142,6 +147,47 @@ jobs:
             echo "resultado=última pasada: $ultima (hace $dias días)" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: KPIs de evolución autónoma del algoritmo
+        # Añadido 2026-09-19, pedido explícito del usuario: cuánto ha
+        # crecido el sistema por su cuenta, sin que él tenga que pedirlo
+        # cada vez — cifras deterministas, sacadas del propio repo, no de
+        # la síntesis de Claude (para que sean exactas y reproducibles).
+        # La comparación con el día anterior se calcula en el paso
+        # siguiente, parseando la línea equivalente ya guardada en el
+        # propio Issue (marcador HTML invisible KPI_AUTONOMO) — así no
+        # hace falta ninguna tabla nueva en Supabase para guardar el
+        # histórico, el Issue ya lo es.
+        id: kpi
+        run: |
+          commits=$(git log --author="Claude (robot Costaviva)" --oneline | wc -l | tr -d ' ')
+          calibracion=$(grep -c . CALIBRACION.jsonl 2>/dev/null || echo 0)
+          reglas=$(grep -c '^## ' ROBOT_REGLAS.md || echo 0)
+          camaras=$(node -e '
+            // No usa require/import (functions/webcam/[slug].js es un módulo
+            // ES con "export const" -- no lo carga require de Node en CommonJS)
+            // -- extrae el objeto como texto y lo evalúa, mismo truco que ya
+            // se usa en otros sitios de este repo para leer WEBCAMS_HLS.
+            const fs = require("fs");
+            function objetoDesde(ruta, patron) {
+              const txt = fs.readFileSync(ruta, "utf8");
+              const m = txt.match(patron);
+              if (!m) return {};
+              const obj = {};
+              eval(m[0].replace(/^(export )?const \w+/, "var _o") + "\nObject.assign(obj, _o);");
+              return obj;
+            }
+            const webcams = objetoDesde("functions/webcam/[slug].js", /export const WEBCAMS = \{[\s\S]*?\n\};/);
+            const hls = objetoDesde("index.html", /const WEBCAMS_HLS = \{[\s\S]*?\n\};/);
+            const spots = new Set([...Object.keys(webcams), ...Object.keys(hls)]);
+            console.log(spots.size);
+          ' 2>/dev/null || echo "?")
+          {
+            echo "commits=$commits"
+            echo "calibracion=$calibracion"
+            echo "reglas=$reglas"
+            echo "camaras=$camaras"
+          } >> "$GITHUB_OUTPUT"
+
       - name: Conteo de alarmas SOS (24h, agregado, sin datos personales)
         id: sos
         run: |
@@ -189,22 +235,6 @@ jobs:
               if (contenido) sintesis = contenido;
             } catch (e) {}
 
-            const fecha = new Date().toISOString().slice(0, 10);
-            const fila = [
-              `### ${fecha}`,
-              `- Test de autenticación: ${{ steps.auth_test.outputs.resultado }}`,
-              `- Smoke test: ${{ steps.smoke.outputs.resultado }}`,
-              `- Robot de datos: ${{ steps.robot.outputs.resultado }}`,
-              `- Alarmas SOS (24h): ${{ steps.sos.outputs.resultado }}`,
-              `- Fuentes externas:`,
-              `${{ steps.fuentes.outputs.resultado }}`,
-              `- Cámaras/webcams:`,
-              `${{ steps.camaras.outputs.resultado }}`,
-              "",
-              sintesis,
-              "",
-            ].join("\n");
-
             const titulo = "Informe diario — Costaviva";
             const { data: issues } = await github.rest.issues.listForRepo({
               owner: context.repo.owner, repo: context.repo.repo,
@@ -218,6 +248,51 @@ jobs:
             // título se sigue usando solo para crear uno nuevo si de verdad
             // no existe ninguno abierto con esta label.
             let issue = issues[0];
+
+            // KPIs de evolución autónoma (pedido explícito del usuario,
+            // 2026-09-19): la comparación con el día anterior se saca del
+            // marcador invisible <!-- KPI_AUTONOMO ... --> que esta misma
+            // línea deja en el Issue cada día -- así no hace falta guardar
+            // el histórico en ningún otro sitio, el propio Issue ya lo es.
+            const hoy = {
+              commits: parseInt("${{ steps.kpi.outputs.commits }}", 10) || 0,
+              calibracion: parseInt("${{ steps.kpi.outputs.calibracion }}", 10) || 0,
+              reglas: parseInt("${{ steps.kpi.outputs.reglas }}", 10) || 0,
+              camaras: parseInt("${{ steps.kpi.outputs.camaras }}", 10) || 0,
+            };
+            const matchAnterior = issue
+              ? issue.body.match(/<!-- KPI_AUTONOMO commits=(\d+) calibracion=(\d+) reglas=(\d+) camaras=(\d+) -->/)
+              : null;
+            const anterior = matchAnterior
+              ? { commits: +matchAnterior[1], calibracion: +matchAnterior[2], reglas: +matchAnterior[3], camaras: +matchAnterior[4] }
+              : null;
+            const conSigno = (n) => (n > 0 ? `+${n}` : `${n}`);
+            const variacion = (clave) => (anterior ? ` (${conSigno(hoy[clave] - anterior[clave])})` : " (primer día con este KPI)");
+            const lineaKpi = [
+              `- 🤖 Evolución autónoma del algoritmo: ${hoy.commits} commits del robot${variacion("commits")}, `
+                + `${hoy.calibracion} puntos de calibración${variacion("calibracion")}, `
+                + `${hoy.reglas} reglas en ROBOT_REGLAS.md${variacion("reglas")}, `
+                + `${hoy.camaras} cámaras activas${variacion("camaras")}`,
+              `<!-- KPI_AUTONOMO commits=${hoy.commits} calibracion=${hoy.calibracion} reglas=${hoy.reglas} camaras=${hoy.camaras} -->`,
+            ].join("\n");
+
+            const fecha = new Date().toISOString().slice(0, 10);
+            const fila = [
+              `### ${fecha}`,
+              `- Test de autenticación: ${{ steps.auth_test.outputs.resultado }}`,
+              `- Smoke test: ${{ steps.smoke.outputs.resultado }}`,
+              `- Robot de datos: ${{ steps.robot.outputs.resultado }}`,
+              `- Alarmas SOS (24h): ${{ steps.sos.outputs.resultado }}`,
+              `- Fuentes externas:`,
+              `${{ steps.fuentes.outputs.resultado }}`,
+              `- Cámaras/webcams:`,
+              `${{ steps.camaras.outputs.resultado }}`,
+              lineaKpi,
+              "",
+              sintesis,
+              "",
+            ].join("\n");
+
             if (!issue) {
               const creado = await github.rest.issues.create({
                 owner: context.repo.owner, repo: context.repo.repo,
