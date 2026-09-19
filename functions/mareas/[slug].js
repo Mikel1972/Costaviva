@@ -7,16 +7,16 @@
 // en Google "marea Mundaka hoy" encuentre de verdad una página nuestra
 // que responda a eso.
 //
-// De momento solo Mundaka (ver SLUGS_PUBLICADOS más abajo) -- prototipo
-// para validar el enfoque antes de generalizar a los ~105 spots. Nunca
-// inventa datos: reutiliza el mismo /prevision ya real que usa la app
-// (mismo criterio del resto del repo), no un cálculo aparte.
+// Generalizado a los ~105 spots 2026-09-19 (probado antes solo con
+// Mundaka como prototipo, confirmado en producción real) -- cualquier
+// slug que exista en /prevision tiene página pública, no hace falta
+// mantener una lista aparte: si el spot existe en la app, existe aquí.
+// Nunca inventa datos: reutiliza el mismo /prevision ya real que usa la
+// app (mismo criterio del resto del repo), no un cálculo aparte.
 //
 // La página actúa de puerta de entrada: da el dato real al instante
 // (gratis, sin cuenta) y ofrece un CTA claro hacia /login para ver el
 // mapa completo, las webcams en directo, el diario de pesca, etc.
-
-const SLUGS_PUBLICADOS = new Set(["mundaka"]);
 
 const DORADO = "#A8792A";
 const NAVY = "#0B2532";
@@ -115,8 +115,6 @@ function renderizarPagina(spot) {
 export async function onRequestGet(context) {
   const { request, params } = context;
   const slug = params.slug;
-
-  if (!SLUGS_PUBLICADOS.has(slug)) return paginaNoEncontrada(slug);
 
   const previsionUrl = new URL("/prevision", request.url).toString();
   let datos;
