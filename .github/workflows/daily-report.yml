@@ -134,7 +134,14 @@ jobs:
         id: auth_google
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: "projects/1029831673189/locations/global/workloadIdentityPools/github-actions-pool/providers/github-actions-provider"
+          # OJO: el ID real del proveedor lleva un guion delante
+          # ("-github-actions-provider", no "github-actions-provider") --
+          # confirmado en real 2026-09-20 comparando contra el "público
+          # predeterminado" que la propia consola de Google Cloud mostró
+          # al configurarlo. El "nombre visible" en la lista de
+          # proveedores SÍ es "github-actions-provider" sin guion -- son
+          # dos campos distintos, no te fíes solo del nombre visible.
+          workload_identity_provider: "projects/1029831673189/locations/global/workloadIdentityPools/github-actions-pool/providers/-github-actions-provider"
           service_account: "costaviva-search-console-reade@project-5a5d60f4-a099-4065-a23.iam.gserviceaccount.com"
         continue-on-error: true
 
