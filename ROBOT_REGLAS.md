@@ -116,6 +116,38 @@ usuario afina un criterio — no es un historial (para eso está `ROBOT.md`).
     real (pendiente de probar en la próxima zona) — la lógica es que
     cofradías/lonjas/clubes de pesca podrían tener cámara del estado
     del puerto igual que las escuelas de surf la tienen del oleaje.
+    Poblaciones probadas sin resultado: (ninguna todavía).
+
+  **Poda de términos improductivos (pedido explícito del usuario
+  2026-09-19): un término se retira de la lista activa solo si falla en
+  15 poblaciones DISTINTAS** (no 15 intentos sueltos, ni 15 pasadas —
+  15 poblaciones diferentes donde de verdad no apareció nada real).
+  Mientras un término no llegue a 15, se sigue probando en cada
+  población nueva con normalidad.
+  **Muestreo lógico entre zonas (pedido explícito del usuario
+  2026-09-19)**: las 15 poblaciones tienen que venir de zonas
+  DISTINTAS, repartidas, no las primeras 15 que toquen dentro de la
+  misma zona — un término puede fallar sistemáticamente en el País
+  Vasco (pocas cofradías, muchas escuelas de surf) y funcionar bien en
+  Galicia (al revés), así que juzgarlo solo con poblaciones de una
+  zona daría una conclusión sesgada. Como referencia, con 10 zonas en
+  rotación (ver la lista del workflow) y como mucho 2-3 poblaciones por
+  zona contando para la poda de un mismo término, hacen falta
+  poblaciones de al menos 5-6 zonas distintas antes de llegar a 15 —
+  si un término lleva ya 2-3 fallos en la zona de hoy, prueba con las
+  demás poblaciones de la MISMA zona igualmente (para no dejar cámaras
+  sin buscar), pero no sigas sumando esos fallos extra al contador de
+  poda de ese término una vez pasado ese tope por zona.
+  Cómo llevar la cuenta: cada vez que
+  un término de esta lista se pruebe en una población y no dé ningún
+  resultado, añade el nombre de esa población a su lista de
+  "Poblaciones probadas sin resultado" (justo debajo del término, como
+  ya se ve en `webcam pesca` de arriba) — nunca cuentes la misma
+  población dos veces para el mismo término. Al llegar a 15, mueve el
+  término (con su lista completa de poblaciones) a un apartado nuevo
+  "Términos retirados" al final de esta sección, y dejar de incluirlo
+  por defecto en las búsquedas — pero sin borrar el historial, por si
+  alguna vez conviene revisarlo.
 
 ## Aprendizaje por zonas (añadido 2026-09-19, pedido explícito del usuario)
 
