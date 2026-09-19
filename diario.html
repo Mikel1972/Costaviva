@@ -743,7 +743,13 @@ function coeficienteMarea(fecha) {
 // para saber si de verdad es un giro, así que nunca comprueba los dos
 // extremos de la serie.
 function buscarGiroDeMarea(serie, desde, hasta, paso) {
-  for (let i = desde + paso; paso > 0 ? i < hasta : i > hasta; i += paso) {
+  // Bug real encontrado 2026-09-19 backfilleando entradas existentes: con
+  // "<"/">" (límite excluido) un giro que cae justo EN `hasta` (ej. la
+  // bajamar exacta en la hora de fin de la salida) nunca se detectaba —
+  // se colaba a la búsqueda "fuera del intervalo" y devolvía un pico
+  // irrelevante de mucho antes de la sesión. "<="/">=" incluye el propio
+  // límite como candidato válido.
+  for (let i = desde + paso; paso > 0 ? i <= hasta : i >= hasta; i += paso) {
     const antes = serie[i - paso], actual = serie[i], despues = serie[i + paso];
     if (antes == null || actual == null || despues == null) continue;
     const subiendoAntes = actual - antes;
