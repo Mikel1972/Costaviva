@@ -3142,7 +3142,10 @@ document.getElementById("toggleNubes").addEventListener("click", async (e) => {
 // una leyenda fija). 0-15 m/s (~54 km/h) cubre de sobra el viento real
 // de esta costa. Compartida entre la capa y su leyenda para que nunca
 // se desincronicen.
-const VIENTO_COLOR_SCALE = ["#3A0CA3", "#560BAD", "#7209B7", "#9D174D", "#B5179E", "#F72585", "#D00000"];
+// Verde en calma (0 m/s) -> morado -> magenta según sube el viento,
+// pedido explícito del usuario 2026-09-19 (antes empezaba ya en morado
+// oscuro, sin marcar visualmente la calma).
+const VIENTO_COLOR_SCALE = ["#22C55E", "#3A0CA3", "#560BAD", "#7209B7", "#9D174D", "#B5179E", "#F72585"];
 const VIENTO_MAX_MS = 15;
 let capaViento = null;
 let vientoSnapshots = [];
