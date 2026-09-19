@@ -93,6 +93,29 @@ usuario afina un criterio — no es un historial (para eso está `ROBOT.md`).
   nunca sirve la imagen directamente. Sigue aplicando todo lo demás de
   este fichero (verificar con una petición HTTP real antes de proponer o
   integrar, nunca inventar una URL).
+  **Lista de modificadores de búsqueda, en expansión constante (pedido
+  explícito del usuario 2026-09-19: "si con surf encuentro cámaras que
+  me valen, el robot debe incluir surf para buscar más")** — para cada
+  población de la zona del día, combinar el nombre con CADA uno de
+  estos términos (no solo "webcam directo"), y si uno nuevo (no listado
+  aquí) resulta productivo (encuentra una cámara real que se termina
+  integrando o proponiendo), AÑADIRLO a esta lista con una nota de qué
+  población lo confirmó — así la propia lista de búsqueda mejora sola
+  con cada pasada, sin que haga falta que el usuario lo pida cada vez:
+  - `webcam directo` (línea base, ya en uso)
+  - `webcam surf` — confirmado productivo 2026-09-19: encontró
+    escuelas de surf con cámara propia en Plentzia/Bakio/Zarautz/
+    Zurriola/Muskiz/Laga/Arrigunaga (`escueladesurfsopelana.com`) y en
+    Santoña/playa de Berria (`watsaysurfschool.com`) — las escuelas de
+    surf resultaron de las fuentes más fiables de todo el día (dueño
+    identificado, cámara fija, buena resolución).
+  - `webcam ayuntamiento` — confirmado productivo 2026-09-19: Zumaia
+    (zumaia.eus), Sopela (sopela.eus), turismo de Castro-Urdiales.
+  - `webcam pesca` / `webcam puerto` / `webcam cofradía de pescadores`
+    — sugeridos por el usuario 2026-09-19, todavía sin confirmar en
+    real (pendiente de probar en la próxima zona) — la lógica es que
+    cofradías/lonjas/clubes de pesca podrían tener cámara del estado
+    del puerto igual que las escuelas de surf la tienen del oleaje.
 
 ## Aprendizaje por zonas (añadido 2026-09-19, pedido explícito del usuario)
 
