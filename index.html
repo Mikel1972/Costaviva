@@ -1671,6 +1671,12 @@ const map = L.map("map", {
   touchZoom: true,
   attributionControl: true,
 });
+// Quita solo el prefijo "Leaflet" (pedido explícito del usuario: "quita
+// la leyenda del mapa, la de leaflet") -- los créditos reales de datos
+// (Esri/GEBCO/NOAA/EMODnet/RainViewer, ver attribution de cada capa) se
+// quedan, esos sí son una condición real de uso de esos servicios
+// gratuitos, no solo un logo de la librería.
+map.attributionControl.setPrefix(false);
 if (window.supabaseCliente) {
   registrarEvento("ver_mapa");
 } else {
