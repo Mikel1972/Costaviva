@@ -18,6 +18,8 @@
 // (gratis, sin cuenta) y ofrece un CTA claro hacia /login para ver el
 // mapa completo, las webcams en directo, el diario de pesca, etc.
 
+import { regionDeSlug } from "./_regiones.js";
+
 const DORADO = "#A8792A";
 const NAVY = "#0B2532";
 const GRIS = "#5C7680";
@@ -67,6 +69,7 @@ function renderizarPagina(spot, todos) {
   const mareaFlecha = spot.marea.tendencia === "subiendo" ? "▲" : "▼";
   const mareaTexto = `${spot.marea.altura} m, ${spot.marea.tendencia} ${mareaFlecha} (coeficiente ${spot.marea.coeficiente})`;
   const nombre = escaparHtml(spot.nombre);
+  const region = regionDeSlug(spot.slug);
   const descripcion = `Marea, oleaje y viento reales en ${spot.nombre} ahora mismo: oleaje ${oleajeTexto}, viento ${vientoTexto}, marea ${mareaTexto}. Datos actualizados cada hora, sin necesidad de cuenta.`;
   const url = `https://costaviva.org/mareas/${spot.slug}`;
 
@@ -102,6 +105,8 @@ function renderizarPagina(spot, todos) {
   .envoltorio { max-width: 640px; margin: 0 auto; padding: 32px 20px 64px; }
   .marca { font-family: Georgia, 'Liberation Serif', serif; font-size: 28px; font-weight: bold; color: ${DORADO}; letter-spacing: 1px; text-decoration: none; }
   .subtitulo { color: ${GRIS}; font-size: 14px; margin-top: 4px; }
+  .migas { font-size: 13px; color: ${GRIS}; margin-top: 24px; }
+  .migas a { color: ${GRIS}; }
   h1 { font-family: Georgia, serif; font-size: 32px; margin: 32px 0 4px; }
   .actualizado { color: ${GRIS}; font-size: 13px; margin-bottom: 24px; }
   .tarjetas { display: grid; grid-template-columns: 1fr; gap: 12px; }
@@ -122,6 +127,7 @@ function renderizarPagina(spot, todos) {
     <a class="marca" href="/login">COSTAVIVA</a>
     <div class="subtitulo">pesca en tiempo real</div>
 
+    <div class="migas"><a href="/mareas">Todos los spots</a>${region ? ` → <a href="/mareas/region/${region.slug}">${escaparHtml(region.nombre)}</a>` : ""} → ${nombre}</div>
     <h1>${nombre}</h1>
     <div class="actualizado">Datos reales, actualizados: ${new Date(spot.actualizado).toLocaleString("es-ES", { timeZone: "Europe/Madrid" })}</div>
 
