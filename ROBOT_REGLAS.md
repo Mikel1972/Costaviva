@@ -93,6 +93,35 @@ usuario afina un criterio — no es un historial (para eso está `ROBOT.md`).
   nunca sirve la imagen directamente. Sigue aplicando todo lo demás de
   este fichero (verificar con una petición HTTP real antes de proponer o
   integrar, nunca inventar una URL).
+  **Diccionario de tipos de entidad (fuente de los términos de
+  búsqueda, añadido/formalizado 2026-09-20, pedido explícito del
+  usuario)**: la razón de que "webcam surf" o "webcam ayuntamiento"
+  funcionen no es casualidad de la palabra en sí — es que revelan qué
+  TIPO de entidad no oficial suele colgar una webcam por su cuenta
+  (escuela de surf, ayuntamiento pequeño, cofradía de pescadores...).
+  La lista de modificadores de abajo es la traducción a término de
+  búsqueda de este diccionario de tipos, no una lista de palabras
+  sueltas elegidas al azar. **Cada vez que se integra o propone una
+  cámara nueva, clasifica de qué TIPO de entidad es su dueño** (mirar
+  el dominio/titularidad de la página, no hace falta leer el texto de
+  la página en detalle) contra los tipos ya conocidos:
+  - Ayuntamiento / turismo local
+  - Escuela de surf / surf school
+  - Cofradía de pescadores / puerto pesquero
+  - Club náutico / puerto deportivo (categoría candidata, sin ningún
+    caso real confirmado todavía — la lógica es la misma que cofradías:
+    suelen tener cámara de sus instalaciones/bahía)
+
+  Si la cámara nueva encaja en un tipo YA conocido, no hace falta hacer
+  nada más aquí (el término correspondiente ya está en la lista). Si es
+  un tipo de entidad genuinamente NUEVO (no encaja en ninguno de
+  arriba), añádelo a esta lista con el caso real que lo confirmó, deriva
+  de él un término de búsqueda nuevo (`webcam <tipo>`) y méteselo a la
+  lista de modificadores de abajo con el mismo protocolo de
+  promoción/poda que el resto — así el diccionario crece solo con cada
+  cámara nueva, en vez de depender de que el usuario proponga la
+  siguiente palabra a mano.
+
   **Lista de modificadores de búsqueda, en expansión constante (pedido
   explícito del usuario 2026-09-19: "si con surf encuentro cámaras que
   me valen, el robot debe incluir surf para buscar más")** — para cada
@@ -103,20 +132,29 @@ usuario afina un criterio — no es un historial (para eso está `ROBOT.md`).
   población lo confirmó — así la propia lista de búsqueda mejora sola
   con cada pasada, sin que haga falta que el usuario lo pida cada vez:
   - `webcam directo` (línea base, ya en uso)
-  - `webcam surf` — confirmado productivo 2026-09-19: encontró
-    escuelas de surf con cámara propia en Plentzia/Bakio/Zarautz/
-    Zurriola/Muskiz/Laga/Arrigunaga (`escueladesurfsopelana.com`) y en
-    Santoña/playa de Berria (`watsaysurfschool.com`) — las escuelas de
-    surf resultaron de las fuentes más fiables de todo el día (dueño
-    identificado, cámara fija, buena resolución).
-  - `webcam ayuntamiento` — confirmado productivo 2026-09-19: Zumaia
-    (zumaia.eus), Sopela (sopela.eus), turismo de Castro-Urdiales.
+  - `webcam surf` — tipo de entidad: escuela de surf. Confirmado
+    productivo 2026-09-19: encontró escuelas de surf con cámara propia
+    en Plentzia/Bakio/Zarautz/Zurriola/Muskiz/Laga/Arrigunaga
+    (`escueladesurfsopelana.com`) y en Santoña/playa de Berria
+    (`watsaysurfschool.com`) — las escuelas de surf resultaron de las
+    fuentes más fiables de todo el día (dueño identificado, cámara
+    fija, buena resolución).
+  - `webcam ayuntamiento` — tipo de entidad: ayuntamiento/turismo
+    local. Confirmado productivo 2026-09-19: Zumaia (zumaia.eus),
+    Sopela (sopela.eus), turismo de Castro-Urdiales.
   - `webcam pesca` / `webcam puerto` / `webcam cofradía de pescadores`
-    — sugeridos por el usuario 2026-09-19, todavía sin confirmar en
-    real (pendiente de probar en la próxima zona) — la lógica es que
+    — tipo de entidad: cofradía de pescadores/puerto pesquero.
+    Sugeridos por el usuario 2026-09-19, todavía sin confirmar en real
+    (pendiente de probar en la próxima zona) — la lógica es que
     cofradías/lonjas/clubes de pesca podrían tener cámara del estado
     del puerto igual que las escuelas de surf la tienen del oleaje.
     Recuento por zona (ver protocolo de poda más abajo): ninguna zona
+    probada todavía.
+  - `webcam club náutico` / `webcam puerto deportivo` — tipo de
+    entidad: club náutico/puerto deportivo. Añadido 2026-09-20, sin
+    ningún caso real confirmado todavía (categoría candidata derivada
+    del diccionario de tipos, no de un hallazgo real) — probar en la
+    próxima zona igual que el resto. Recuento por zona: ninguna zona
     probada todavía.
 
   **Poda de términos improductivos — protocolo mecánico, sin juicio
