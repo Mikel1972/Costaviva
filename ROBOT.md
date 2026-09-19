@@ -4527,6 +4527,57 @@ en diario.html, en vez de un mensaje cuidado. Todos los datos de prueba
 (2 salidas, 2 capturas, 1 grupo, 1 invitación, 2 membresías) borrados y
 verificados a 0. Informe completo en /tmp/experiencia-informe.txt.
 
+### 2026-09-19
+
+Quinta pasada intensiva de "usuario real exigente" contra producción
+(costaviva.org + API REST de Supabase) con las dos cuentas de prueba.
+Núcleo sólido de nuevo: comparé /prevision en detalle para 3 zonas
+(Mundaka/Cantábrico, Valencia/Mediterráneo, Las Palmas/Canarias) y todo
+—marea, oleaje, viento, temperatura del agua— tenía pinta coherente
+para la época; puse en duda a propósito el coeficiente de marea por
+spot (hoy casi todos los spots atlánticos daban 20-23, el mínimo de su
+escala, mientras la fórmula astronómica de respaldo daba 70 calculada a
+mano) y lo verifiqué contra tides4fishing.com para Bermeo: el
+coeficiente real de hoy es 25-27 ("muy bajo"), coincide con lo que
+muestra la app — no era un bug, era el mecanismo principal funcionando
+bien un día de mareas muertas de verdad. Entrada de diario real en
+Mundaka con los mismos valores que /prevision, /identificar-captura
+acertó "Lubina" sin inventar talla/peso, y el flujo completo de grupos
+con las dos cuentas (crear/invitar/unir/compartir selectivo, activar un
+compartir a media prueba y verlo reflejado al momento, aislamiento
+verificado en ambos sentidos) funcionó exactamente como está diseñado.
+Casos límite probados con errores claros en todos los casos (400/401/502
+según toque, nunca un 200 silencioso): /luna sin coordenadas y con
+coordenadas absurdas, /geocodificar sin parámetros, /identificar-captura
+sin sesión y sin imagen, insert sin "especie", fecha con formato
+inválido.
+
+**El bug de "dos pleamares seguidas sin bajamar entre medias" en spots
+de marea casi plana (documentado ya el 2026-09-15, 2026-09-17 y
+2026-09-18, `UMBRAL_RUIDO_MAREA_M` en `calcularMarea()`,
+`functions/prevision.js`) SIGUE sin corregirse — 4ª confirmación
+consecutiva.** Hoy apareció en Valencia (Malvarrosa), que no estaba en
+la lista de 6-8 spots ya catalogados como afectados (peniscola, gandia,
+torreblanca, vinaros, piles, cala millor, son bou, muro) — reproduje el
+algoritmo exacto con los datos horarios reales de Open-Meteo para
+Valencia y confirmé que una bajamar real y grande (el mínimo de toda la
+ventana de 48h, hacia las 08-10h del segundo día) desaparece del todo
+porque el filtro de ruido compara el nuevo evento contra el último
+evento que sobrevivió sin importar si es del mismo tipo (pleamar vs.
+bajamar) — con esto, cualquier spot de marea muy plana puede verse
+afectado, no solo la lista cerrada de siempre. Sugerencia (solo
+propuesta, no aplicada): antes de descartar un evento por diferencia de
+altura, exigir también que sea del mismo tipo que el evento con el que
+se compara — así una bajamar real nunca se compararía contra una
+pleamar guardada y no desaparecería sin dejar rastro. Hallazgo menor
+aparte: `/luna` con coordenadas fuera de rango (lat=999,lon=999) da 502
+con el texto crudo de la URL del proveedor externo (USNO) en el mensaje
+de error, en vez de un 400 propio de validación — sin datos sensibles
+expuestos, pero menos cuidado que el resto de endpoints. Todos los
+datos de prueba (2 salidas, 2 capturas, 1 grupo, 1 invitación, 2
+membresías) borrados y verificados a 0. Informe completo en
+/tmp/experiencia-informe.txt.
+
 ---
 
 ## Robot de patrones de uso
