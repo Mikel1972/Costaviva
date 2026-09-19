@@ -957,15 +957,18 @@ async function guardarSalida(fecha, idExistente) {
   const tipoSalida = document.getElementById("salidaTipo").value;
   const spot = todosLosSpotsDiario().find((s) => s.slug === spotSlug);
 
-  // Las dos horas son opcionales — solo se valida el orden cuando están
-  // las dos puestas. Asume que la salida no cruza medianoche (limitación
-  // conocida, no contemplada aún).
-  if (horaInicio && horaFin && horaFin <= horaInicio) {
-    mensajeEl.className = "mensaje error";
-    mensajeEl.textContent = "La hora de fin debe ser posterior a la hora de inicio.";
-    btn.disabled = false;
-    return;
-  }
+  // Las dos horas son opcionales. Bug real reportado por el usuario
+  // 2026-09-19: una salida de noche (ej. 23:00 a 02:00) se rechazaba
+  // porque "la hora de fin debe ser posterior" no contemplaba que la
+  // salida cruce medianoche — una pesca nocturna real y habitual. Ya no
+  // se bloquea nunca por esto: si hora_fin <= hora_inicio se asume
+  // sesión que cruza medianoche (mismo criterio que el resto de la app,
+  // "un dato real de campo no se rechaza por no encajar en un formato
+  // asumido" — ver también el aviso, no bloqueo, de hora de captura
+  // fuera de rango más abajo). Limitación conocida que se mantiene: no
+  // se puede distinguir esto de un despiste real (ej. escribir la hora
+  // de fin antes que la de inicio del mismo día) — se prefiere aceptar
+  // el dato tal cual antes que bloquear una salida nocturna real.
 
   let lat, lon;
   if (spot) {
@@ -1133,9 +1136,19 @@ async function guardarCaptura(salidaId, fecha, idExistente, ordenFotoBase) {
   let avisoFueraDeRango = "";
   const entradaDelDia = (salidasPorFecha[fecha] || []).find((e) => e.salida.id === salidaId);
   const salidaDelDia = entradaDelDia?.salida;
-  if (hora && salidaDelDia?.hora_inicio && salidaDelDia?.hora_fin &&
-      (hora < salidaDelDia.hora_inicio.slice(0, 5) || hora > salidaDelDia.hora_fin.slice(0, 5))) {
-    avisoFueraDeRango = ` (fuera del rango de la salida, ${salidaDelDia.hora_inicio.slice(0, 5)}–${salidaDelDia.hora_fin.slice(0, 5)} — se guarda igual, es solo un aviso)`;
+  if (hora && salidaDelDia?.hora_inicio && salidaDelDia?.hora_fin) {
+    const inicioHHMM = salidaDelDia.hora_inicio.slice(0, 5);
+    const finHHMM = salidaDelDia.hora_fin.slice(0, 5);
+    // Si fin <= inicio, la salida cruza medianoche (ver el mismo criterio
+    // en guardarSalida()) — el rango "envuelve" la medianoche en vez de
+    // ser un tramo normal del mismo día.
+    const cruzaMedianoche = finHHMM <= inicioHHMM;
+    const dentroDelRango = cruzaMedianoche
+      ? (hora >= inicioHHMM || hora <= finHHMM)
+      : (hora >= inicioHHMM && hora <= finHHMM);
+    if (!dentroDelRango) {
+      avisoFueraDeRango = ` (fuera del rango de la salida, ${inicioHHMM}–${finHHMM} — se guarda igual, es solo un aviso)`;
+    }
   }
   const talla = document.getElementById("capturaTalla").value;
   const peso = document.getElementById("capturaPeso").value;
