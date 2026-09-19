@@ -138,15 +138,30 @@ usuario afina un criterio — no es un historial (para eso está `ROBOT.md`).
   demás poblaciones de la MISMA zona igualmente (para no dejar cámaras
   sin buscar), pero no sigas sumando esos fallos extra al contador de
   poda de ese término una vez pasado ese tope por zona.
-  Cómo llevar la cuenta: cada vez que
-  un término de esta lista se pruebe en una población y no dé ningún
-  resultado, añade el nombre de esa población a su lista de
-  "Poblaciones probadas sin resultado" (justo debajo del término, como
-  ya se ve en `webcam pesca` de arriba) — nunca cuentes la misma
-  población dos veces para el mismo término. Al llegar a 15, mueve el
-  término (con su lista completa de poblaciones) a un apartado nuevo
-  "Términos retirados" al final de esta sección, y dejar de incluirlo
-  por defecto en las búsquedas — pero sin borrar el historial, por si
+  **No todo "sin resultado" cuenta como fallo (pedido explícito del
+  usuario 2026-09-19, matiz importante)**: antes de sumar una
+  población al contador de un término, juzga si tenía sentido
+  probarlo ahí. Si `webcam surf` no encuentra nada en una población
+  sin ninguna playa de surf real (una ría, un puerto resguardado sin
+  oleaje, una cala sin tradición de surf) — NO cuenta como fallo del
+  término, cuenta como "no aplicaba", y no se anota en absoluto. Solo
+  cuenta como fallo real cuando el término era plausible ahí (hay
+  playa/costa expuesta al oleaje, por ejemplo) y aun así la búsqueda no
+  encontró ninguna cámara. Mismo criterio para `webcam pesca`/`puerto`/
+  `cofradía` en una población sin puerto pesquero real. Esta
+  distinción es la que evita que un término bueno se pode solo por
+  haberse probado en sitios donde nunca iba a aplicar.
+
+  Cómo llevar la cuenta (solo para fallos reales, según el criterio de
+  arriba): cada vez que un término de esta lista se pruebe en una
+  población donde SÍ era plausible y no dé ningún resultado, añade el
+  nombre de esa población a su lista de "Poblaciones probadas sin
+  resultado" (justo debajo del término, como ya se ve en
+  `webcam pesca` de arriba) — nunca cuentes la misma población dos
+  veces para el mismo término. Al llegar a 15, mueve el término (con
+  su lista completa de poblaciones) a un apartado nuevo "Términos
+  retirados" al final de esta sección, y dejar de incluirlo por
+  defecto en las búsquedas — pero sin borrar el historial, por si
   alguna vez conviene revisarlo.
 
 ## Aprendizaje por zonas (añadido 2026-09-19, pedido explícito del usuario)
