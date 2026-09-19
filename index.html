@@ -416,6 +416,9 @@
   .viento-slider-panel input[type="range"] { width: 100%; }
   .viento-slider-panel .etq { text-align: center; color: #5C7680; margin-top: 2px; }
   .viento-slider-ticks { display: flex; justify-content: space-between; font-size: 9px; color: #5C7680; margin-top: -2px; }
+  .viento-leyenda-titulo { font-size: 9.5px; color: #5C7680; margin-top: 10px; border-top: 1px solid #DDE2DC; padding-top: 8px; }
+  .viento-leyenda-barra { height: 10px; border-radius: 4px; margin-top: 4px; }
+  .viento-leyenda-extremos { display: flex; justify-content: space-between; font-size: 9px; color: #5C7680; margin-top: 2px; }
 
   .luna-panel {
     position: absolute; top: 64px; right: 64px; z-index: 501;
@@ -730,6 +733,14 @@
            ancho del panel. -->
       <div class="viento-slider-ticks" id="vientoSliderTicks"></div>
       <div class="etq" id="vientoSliderHora">ahora</div>
+      <!-- Leyenda de colores (pedido explícito del usuario: "debe
+           aparecer una leyenda de colores para interpretar lo que
+           vemos") -- la barra de degradado se rellena por JS con la
+           misma paleta (VIENTO_COLOR_SCALE) que usa la capa de verdad,
+           nunca a mano en el CSS, para que no se puedan desincronizar. -->
+      <div class="viento-leyenda-titulo">Velocidad del viento</div>
+      <div class="viento-leyenda-barra" id="vientoLeyendaBarra"></div>
+      <div class="viento-leyenda-extremos"><span>0 km/h</span><span>54+ km/h</span></div>
     </div>
     <div class="confirmar-ubicacion-panel" id="eligeMetodoPanel">
       <div class="titulo">¿Cómo quieres marcar el punto?</div>
@@ -3118,6 +3129,15 @@ document.getElementById("toggleNubes").addEventListener("click", async (e) => {
 // evoluciona en las próximas horas — el dato de "ahora" es el índice 0,
 // nunca se pide nada nuevo a Open-Meteo al mover la barra, solo se
 // cambia qué hora ya descargada se muestra.
+// Escala de color y rango de velocidad fijos (no los valores por defecto
+// de la librería, que se ajustan solos al mínimo/máximo de cada rejilla
+// descargada -- con eso el mismo color significaría una velocidad
+// distinta cada vez que cambias de zona o de hora, imposible de leer con
+// una leyenda fija). 0-15 m/s (~54 km/h) cubre de sobra el viento real
+// de esta costa. Compartida entre la capa y su leyenda para que nunca
+// se desincronicen.
+const VIENTO_COLOR_SCALE = ["#3A0CA3", "#560BAD", "#7209B7", "#9D174D", "#B5179E", "#F72585", "#D00000"];
+const VIENTO_MAX_MS = 15;
 let capaViento = null;
 let vientoSnapshots = [];
 let vientoCargando = false;
@@ -3140,16 +3160,9 @@ function mostrarHoraViento(indice) {
     velocityScale: 0.012,
     opacity: 0.9,
     lineWidth: 2,
-    // Paleta propia (2026-09-19, ajustada dos veces por contraste real
-    // visto en producción por el usuario): el primer intento (blanco→
-    // amarillo→naranja→rojo) pensaba en un mapa OSCURO estilo Windy real
-    // — este mapa es CLARO (mar celeste, tierra en tonos tierra), así
-    // que los tonos claros/cálidos se difuminaban contra los dos fondos
-    // a la vez. Morado-magenta oscuro y saturado de punta a punta, sin
-    // tocar nunca blancos/pasteles — ese color no aparece de forma
-    // natural en ninguno de los dos fondos del mapa, así que destaca
-    // siempre, sea agua o tierra.
-    colorScale: ["#3A0CA3", "#560BAD", "#7209B7", "#9D174D", "#B5179E", "#F72585", "#D00000"],
+    minVelocity: 0,
+    maxVelocity: VIENTO_MAX_MS,
+    colorScale: VIENTO_COLOR_SCALE,
   });
   if (document.getElementById("toggleViento").classList.contains("activo")) capaViento.addTo(map);
   document.getElementById("vientoSliderHora").textContent = horaVientoTexto(snap.hora, i);
@@ -3193,6 +3206,8 @@ document.getElementById("toggleViento").addEventListener("click", (e) => {
   } else {
     boton.classList.add("activo");
     panel.hidden = false;
+    document.getElementById("vientoLeyendaBarra").style.background =
+      `linear-gradient(to right, ${VIENTO_COLOR_SCALE.join(", ")})`;
     registrarEvento("ver_capa_viento");
     cargarCampoViento();
   }
