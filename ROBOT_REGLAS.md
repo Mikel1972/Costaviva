@@ -50,6 +50,137 @@ usuario afina un criterio — no es un historial (para eso está `ROBOT.md`).
   cámara en concreto, dejarlo anotado en `ROBOT.md` como limitación
   conocida de esa cámara, nunca inventar un parámetro que no esté
   documentado ni verificado.
+- **Fallos correlados por proveedor, nunca N problemas sueltos (añadido
+  2026-09-19, caso real)**: `camara-salud.yml` (comprobación cada 30 min,
+  ver `supabase/migrations/20260918120000_camara_estado.sql` y
+  `20260918130000_camara_estado_frame_congelado.sql`) marcó a la vez
+  "sin señal" a bakio+sopelana+pasaia+getaria (mismo proveedor AZTI/
+  detectia.net, las 4 con frame congelado) y por separado a las 6
+  cámaras de Cantabria (`cantabria.es`, las 6 con `http_502`) el mismo
+  día — confirmado revisando el log real del workflow, no una
+  suposición. **Antes de investigar o proponer nada sobre una cámara
+  marcada "sin señal", agrupa las que fallan por proveedor/dominio real
+  (mirar la URL en `WEBCAMS`/`WEBCAMS_HLS`, no solo el nombre del
+  spot)**: si varias cámaras del MISMO proveedor caen o se congelan a la
+  vez, es una caída del proveedor entero, no una integración rota
+  nuestra — no hace falta investigar cámara por cámara ni buscar
+  reemplazo el mismo día, solo anotarlo en `ROBOT.md` con la lista de
+  cámaras afectadas y el proveedor común, y comprobar en la siguiente
+  pasada si se ha recuperado solo (lo normal). Solo tiene sentido buscar
+  una fuente alternativa para una cámara en concreto si ESE proveedor
+  lleva fallando de forma repetida durante varios días/semanas — un
+  patrón real de abandono, no un bache puntual.
+- **Buscar webcams fuera de las redes/agregadores nacionales, no solo
+  ampliar los proveedores ya conocidos (añadido 2026-09-19, pedido
+  explícito del usuario tras un caso real)**: `sopelana` lleva desde
+  2026-09-13 con la webcam de AZTI/detectia.net (que se congela con
+  cierta frecuencia, ver regla anterior), pero el propio ayuntamiento
+  (`https://sopela.eus/webcam-olas/`) tiene SU PROPIA cámara en directo
+  vía IPCamLive, nunca encontrada en ~6 días de pasadas de "cámaras"
+  porque las búsquedas hasta ahora se centraban en ampliar proveedores
+  ya integrados (AZTI/detectia.net, cantabria.es...) en vez de mirar
+  población por población. Para cada spot fijo SIN cámara todavía, y
+  también para los que ya tienen una pero de un proveedor con historial
+  de caídas (ver regla anterior), añadir a la búsqueda: `"<nombre del
+  pueblo/playa>" webcam directo`, y revisar explícitamente la web del
+  ayuntamiento/turismo local y de escuelas de surf/clubs náuticos de esa
+  población — no solo repetir búsquedas de agregadores ya conocidos.
+  Patrón útil ya visto en real: una web local embebe un reproductor de
+  un proveedor de streaming genérico (IPCamLive, YouTube Live, etc.) —
+  hay que mirar el HTML/JS de la propia página (`curl` con
+  `-A "Mozilla/5.0"`, un `<iframe>`/`<script>` con `src=`) para sacar la
+  URL real del stream/snapshot, la página del ayuntamiento en sí casi
+  nunca sirve la imagen directamente. Sigue aplicando todo lo demás de
+  este fichero (verificar con una petición HTTP real antes de proponer o
+  integrar, nunca inventar una URL).
+
+## Aprendizaje por zonas (añadido 2026-09-19, pedido explícito del usuario)
+
+Principio general para la pasada diaria de "cámaras/webcams"
+(`.github/workflows/robot-buscador-fuentes.yml`, cron `47 2 * * *`):
+**el algoritmo tiene que ir mejorando solo, sin que el usuario tenga que
+pedirlo cada vez** — la búsqueda de cámaras nuevas no es una tarea
+puntual, es continua, pero yendo zona por zona (nunca todo el litoral de
+golpe, para no disparar el volumen de llamadas a WebSearch/HTTP). Cada
+pasada:
+
+1. Investiga SOLO la zona del día (rotación automática por
+   `date -u +%j % 10`, ver el workflow — no depende de que el robot
+   recuerde nada entre pasadas).
+2. Verifica cada fuente candidata con una petición HTTP real antes de
+   proponerla o integrarla (regla general del fichero, se aplica igual
+   aquí).
+3. **Al terminar, si aprendiste algo que se generaliza más allá de una
+   cámara suelta, añade o afina una regla aquí debajo (en esta misma
+   sección)** — un proveedor que cubre varias poblaciones de una vez, un
+   patrón de nombres en otro idioma co-oficial, un tipo de fuente que
+   nunca funciona en esa zona, etc. Es la forma de que el conocimiento se
+   quede aunque pasen días sin que nadie revise `ROBOT.md` a mano.
+   Mantén cada edición pequeña (un párrafo por hallazgo, bajo la
+   subsección de su zona) — esto NO es una excepción al límite de
+   volumen de "Red de seguridad de la automatización" más abajo, sigue
+   contando para ese límite.
+
+**Nombres alternativos / co-oficiales**: antes de dar una población por
+"sin webcam", busca también por su nombre en el otro idioma co-oficial de
+la zona (euskera/castellano en País Vasco, galego/castellano en Galicia,
+valencià/castellano en Comunitat Valenciana) — una fuente local a veces
+solo aparece bajo un nombre. Ver
+`scripts/camaras/nombres-alternativos.json` (aunque esté incompleto,
+amplíalo tú mismo cuando confirmes un nombre alternativo real por una
+fuente que lo use, nunca inventes una traducción).
+
+### Zona: País Vasco — Bizkaia (última pasada real: 2026-09-19, interactiva con el usuario, no la rotación automática)
+
+- **AZTI opera DOS redes de cámaras distintas, no una** —
+  `detectia.net` (la que ya usamos: bakio/sopelana/lekeitio/getxo/pasaia/
+  getaria) y, por separado, `kostasystem.com` (la que ya usamos solo para
+  Mundaka). `kostasystem.com` tiene MUCHAS más carpetas de las que
+  usamos (`/wp-content/uploads/irudiak/`, listado de directorio Apache
+  abierto — útil para auditar de golpe qué está vivo) — pero comprobado
+  en real el 2026-09-19 que casi todas llevan **meses sin actualizarse**
+  (bakio, pasaia, malkorbe/getaria, arrigunaga, barinatxe, muskiz, laga,
+  bermeo: todas con fecha de enero-marzo 2026, es decir, cámaras muertas
+  aunque el fichero siga respondiendo 200 con una imagen vieja). Solo
+  `mundaka` y `puntaluzero` tenían fecha de HOY. **No des por buena una
+  carpeta de `kostasystem.com` solo porque responda 200 — comprueba
+  SIEMPRE la fecha real del fichero** (cabecera `Last-Modified` de la
+  imagen en sí, o el listado de directorio) antes de proponerla.
+- **`puntaluzero` (zona de Punta Lucero, Santurtzi/Zierbena, bocana de la
+  ría de Bilbao) es una cámara real y viva de AZTI/kostasystem.com que
+  Costaviva no usa todavía** — 2 cámaras (`camara1`/`camara2`),
+  actualizándose varias veces por hora, comprobado en real. No hay spot
+  fijo ahí actualmente — sería un spot nuevo, no solo una cámara para uno
+  existente, así que es decisión de producto (proponer, no crear el spot
+  directo).
+  URLs verificadas: `https://www.kostasystem.com/wp-content/uploads/irudiak/puntaluzero/camara1_snap.jpeg`
+  y `camara2_snap.jpeg` (mismo patrón).
+- **Sopelana tiene una segunda fuente real, independiente de AZTI**: el
+  propio ayuntamiento (`sopela.eus/webcam-olas/`) embebe un reproductor
+  de IPCamLive — la imagen fija real está en
+  `https://s61.ipcamlive.com/streams/3d0d8zpvutondjmwg/snapshot.jpg`
+  (verificada en vivo 2026-09-19, JPEG real y actualizándose). Al ser un
+  proveedor totalmente distinto de detectia.net, sirve como respaldo de
+  verdad si detectia.net se cae (ver "Fallos correlados por proveedor"
+  más arriba) — candidata natural a segunda fuente de `sopelana` en
+  `WEBCAMS` (ver mecanismo de fuentes múltiples/fallback en
+  `functions/webcam/[slug].js`).
+- **Plentzia (spot ya existente, sin cámara desde su creación) sigue sin
+  fuente real**: la escuela de surf `escueladesurfsopelana.com` enlaza
+  una cámara IP directa (`62.99.56.33:81/jpg/1/image.jpg`, vía el proxy
+  público `images.weserv.nl`) pero comprobado en real el 2026-09-19 que
+  esa IP concreta no responde (fuera de servicio ahora mismo) — no
+  integrar sin volver a comprobar en una pasada futura que ha vuelto.
+- **Gorliz: descartado.** `visitgorliz.eus/webcam/` enlaza a
+  `webcam.gorliz.net`, que resulta ser una página HTML estática guardada
+  ("saved from url=...", comentario literal en el HTML) de hace tiempo,
+  no una cámara en directo — la propia web de turismo local admite que
+  "está fuera de servicio por mantenimiento". No investigar más esta
+  población salvo que aparezca una fuente nueva y distinta.
+- **Bermeo: sin verificar todavía** — `bermeo.eus/webcam.html` existe
+  (enlazada desde su portada) pero no se pudo comprobar por timeout de
+  red en la sesión que hizo esta pasada; su carpeta en `kostasystem.com`
+  lleva muerta desde 2024. Pendiente de reintentar.
 
 ## Sinónimos regionales de especies y cebos (añadido 2026-09-13)
 

@@ -67,6 +67,11 @@ export async function onRequestPost(context) {
       // no debe mostrarse como sin señal, solo si se repite en la
       // comprobación siguiente.
       fallos_seguidos: Number.isInteger(l.fallosSeguidos) ? l.fallosSeguidos : 0,
+      // fuente_usada: 0 = sirvió la fuente principal, >0 = el proxy
+      // (functions/webcam/[slug].js) recurrió a una de reserva — la app
+      // sigue enseñando imagen real, pero es la señal de que la principal
+      // está fallando y merece revisión aunque no haya ningún punto rojo.
+      fuente_usada: Number.isInteger(l.fuenteUsada) ? l.fuenteUsada : 0,
     }));
   if (!filas.length) {
     return new Response(JSON.stringify({ error: "ninguna lectura válida en el array recibido" }), {
