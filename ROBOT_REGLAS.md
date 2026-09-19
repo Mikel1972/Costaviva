@@ -93,6 +93,29 @@ usuario afina un criterio — no es un historial (para eso está `ROBOT.md`).
   nunca sirve la imagen directamente. Sigue aplicando todo lo demás de
   este fichero (verificar con una petición HTTP real antes de proponer o
   integrar, nunca inventar una URL).
+  **Lista de modificadores de búsqueda, en expansión constante (pedido
+  explícito del usuario 2026-09-19: "si con surf encuentro cámaras que
+  me valen, el robot debe incluir surf para buscar más")** — para cada
+  población de la zona del día, combinar el nombre con CADA uno de
+  estos términos (no solo "webcam directo"), y si uno nuevo (no listado
+  aquí) resulta productivo (encuentra una cámara real que se termina
+  integrando o proponiendo), AÑADIRLO a esta lista con una nota de qué
+  población lo confirmó — así la propia lista de búsqueda mejora sola
+  con cada pasada, sin que haga falta que el usuario lo pida cada vez:
+  - `webcam directo` (línea base, ya en uso)
+  - `webcam surf` — confirmado productivo 2026-09-19: encontró
+    escuelas de surf con cámara propia en Plentzia/Bakio/Zarautz/
+    Zurriola/Muskiz/Laga/Arrigunaga (`escueladesurfsopelana.com`) y en
+    Santoña/playa de Berria (`watsaysurfschool.com`) — las escuelas de
+    surf resultaron de las fuentes más fiables de todo el día (dueño
+    identificado, cámara fija, buena resolución).
+  - `webcam ayuntamiento` — confirmado productivo 2026-09-19: Zumaia
+    (zumaia.eus), Sopela (sopela.eus), turismo de Castro-Urdiales.
+  - `webcam pesca` / `webcam puerto` / `webcam cofradía de pescadores`
+    — sugeridos por el usuario 2026-09-19, todavía sin confirmar en
+    real (pendiente de probar en la próxima zona) — la lógica es que
+    cofradías/lonjas/clubes de pesca podrían tener cámara del estado
+    del puerto igual que las escuelas de surf la tienen del oleaje.
 
 ## Aprendizaje por zonas (añadido 2026-09-19, pedido explícito del usuario)
 
@@ -287,19 +310,48 @@ reinventarlo si añades una estimación nueva sobre una fuente de vídeo.
   (`56b44eac-9cc1-4487-98fc-3991c5a4874d`) y `laredo`
   (`4d8076d3-525d-4868-b02d-8126c51da987`), verificadas en vivo
   (`Last-Modified` a menos de 1 minuto de la comprobación).
-- **No se encontró página de esta red para Santoña** pese a tenerla para
-  Castro-Urdiales/Laredo/otras poblaciones de Cantabria — su página de
-  overview (`webcamsencantabria.com/webcams/webcams-en-santona/`) no
-  listaba ninguna cámara propia de Santoña, revisado su sitemap también
-  sin resultado. Sigue sin fuente de reserva.
+- **No se encontró página de `webcamsencantabria.com` para Santoña**,
+  pero SÍ apareció una fuente real por otra vía (pista del usuario):
+  Watsay Surf School (`watsaysurfschool.com/webcam/`) tiene su propia
+  cámara de la playa de Berria (término de Santoña) vía IPCamLive —
+  vídeo HLS real, CORS abierto, 4K, cámara fija (no PTZ) — confirmado
+  visualmente que enseña la playa/rompiente con gente real caminando,
+  no una imagen de stock. Pasó a fuente PRINCIPAL de `santona` en
+  `WEBCAMS_HLS` (sustituye a la imagen fija de cantabria.es, que se
+  queda como reserva) — mejor caso posible: dueño identificado, vídeo
+  real, resolución alta.
 - **Bakio (Bizkaia, no Cantabria, pero mismo caso de fallo — frame
   congelado de AZTI/detectia.net desde antes de las 07:26)**: su
   ayuntamiento (`bakio.eus/.../Webcam.aspx`) tiene página de webcam pero
   exige login (SharePoint, redirige a `Authenticate.aspx`) — no hay forma
   de sacar una imagen real sin credenciales. `kostasystem.com` también
   tiene carpeta `bakio/` pero lleva muerta desde enero 2026 (mismo patrón
-  ya documentado en la zona de Bizkaia). Sin fuente de reserva encontrada
-  todavía.
+  ya documentado en la zona de Bizkaia).
+  **Resuelto igualmente, de otra forma (pedido explícito del usuario,
+  "como último recurso"):** `webviewcams.com/europe/spain/bakio` es un
+  directorio de cámaras IP con control PTZ abierto a cualquier
+  visitante — NO es una fuente oficial, cualquiera puede moverla en
+  cualquier momento, y Workers no tiene forma de comprobar por píxeles
+  que siga apuntando al mar en cada petición (sin API de imagen). Se
+  añadió de todas formas como reserva de ÚLTIMA prioridad, ya avisada
+  esta limitación y aceptada explícitamente — comprobado en el momento
+  de añadirla que sí apuntaba a la playa de Bakio de verdad. Es un
+  stream MJPEG (no una imagen suelta), necesitó una función nueva
+  (`extraerFramePrimeroDeMjpeg` en `functions/webcam/[slug].js`) que
+  extrae un frame por bytes (sin librería de imagen) y corta la
+  conexión — nunca usar `Buffer` en código de Cloudflare Functions, no
+  está garantizado en ese runtime; usar `Uint8Array` a mano.
+- **`surf30.net` (blog de webcams de olas) tiene entradas viejas
+  (~2018-2020) para `detectia.net/img/webcam-gorliz.webp` y
+  `webcam-plentzia.webp`** — comprobado en vivo 2026-09-19: las dos dan
+  `404` ahora, esas cámaras de AZTI ya no existen con esos nombres (el
+  directorio `detectia.net/img/` da 403, no se puede listar para
+  encontrar el nombre actual si lo cambiaron). Gorliz y Plentzia siguen
+  sin fuente de reserva. También reveló una segunda cámara real de
+  Bakio en el mismo proveedor que la principal
+  (`bakio.2.snap.last.thumb.jpeg`, isurki.com) — no añadida como
+  reserva porque es el MISMO proveedor que la principal, no aporta
+  independencia frente a una caída de isurki.com/AZTI.
 - **Si el HLS de tendsys.net se quisiera usar como vídeo de verdad en
   algún momento** (no solo el póster de reserva), haría falta un proxy
   propio de HLS (reescribir las URLs relativas de los segmentos dentro

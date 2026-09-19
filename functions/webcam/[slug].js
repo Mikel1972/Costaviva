@@ -36,7 +36,22 @@
 // resuelve el orden de este array.
 export const WEBCAMS = {
   mundaka: "https://www.kostasystem.com/wp-content/uploads/irudiak/mundaka/camara1_snap.jpeg",
-  bakio: "https://pyscada.isurki.com/static/pyscada/sirena/aditu/BakioNAS/last/bakio.1.snap.last.thumb.jpeg",
+  // Reserva de ÚLTIMO RECURSO añadida 2026-09-19 (pedido explícito del
+  // usuario, con la limitación ya avisada y aceptada): webviewcams.com es
+  // un directorio de cámaras IP controlables por cualquier visitante
+  // (pan/tilt/zoom), no una fuente oficial -- comprobado en vivo que
+  // apuntaba bien al mar (playa de Bakio, con "La Vela" reconocible), pero
+  // NADA garantiza que siga así la próxima vez que alguien la mueva.
+  // Workers no puede decodificar/analizar la imagen para verificarlo en
+  // cada petición (sin API de imagen), así que no hay comprobación de
+  // píxeles en tiempo real -- se usa tal cual SOLO cuando la fuente
+  // principal (isurki.com) también falla, bajo el criterio de "algo (casi
+  // siempre correcto) es mejor que nada". Es un stream MJPEG, no una
+  // imagen suelta (`mjpeg: true`, ver extraerFramePrimeroDeMjpeg).
+  bakio: [
+    "https://pyscada.isurki.com/static/pyscada/sirena/aditu/BakioNAS/last/bakio.1.snap.last.thumb.jpeg",
+    { url: "https://www.webviewcams.com/stream-image?ip=82.130.141.93&size=640", mjpeg: true },
+  ],
   // Dos fuentes reales e independientes, verificadas en vivo 2026-09-19
   // (ver ROBOT_REGLAS.md, "Aprendizaje por zonas" > Bizkaia): la principal
   // es AZTI/detectia.net; la de reserva es la cámara propia del
@@ -141,6 +156,52 @@ export const WEBCAMS = {
   muro: "https://apps.socib.es/beamon/api/image_access/view/muro/muro/c01/latest/latest/thumbnail/",
 };
 
+// Busca una subsecuencia de bytes dentro de un Uint8Array a partir de
+// `desde` -- versión mínima de Buffer.indexOf sin depender de Buffer
+// (Node), que no está garantizado en el runtime de Cloudflare Workers.
+function indiceDeBytes(datos, patron, desde = 0) {
+  for (let i = desde; i <= datos.length - patron.length; i++) {
+    let coincide = true;
+    for (let j = 0; j < patron.length; j++) {
+      if (datos[i + j] !== patron[j]) { coincide = false; break; }
+    }
+    if (coincide) return i;
+  }
+  return -1;
+}
+
+// Extrae el primer frame JPEG completo (marcadores SOI 0xFFD8 ... EOI
+// 0xFFD9) de un stream MJPEG (`multipart/x-mixed-replace`) que en teoría
+// no termina nunca -- lee por trozos y corta la conexión en cuanto tiene
+// un frame entero, en vez de esperar a que el stream termine solo (nunca
+// pasaría). Sin librería de imagen ni Buffer de Node: solo Uint8Array,
+// universal en cualquier runtime de Workers.
+async function extraerFramePrimeroDeMjpeg(resp) {
+  const reader = resp.body.getReader();
+  const trozos = [];
+  let total = 0;
+  const LIMITE_BYTES = 2 * 1024 * 1024; // margen de sobra para un frame + cabecera multipart
+  try {
+    while (total < LIMITE_BYTES) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      trozos.push(value);
+      total += value.length;
+      const datos = new Uint8Array(total);
+      let offset = 0;
+      for (const t of trozos) { datos.set(t, offset); offset += t.length; }
+      const inicio = indiceDeBytes(datos, [0xff, 0xd8, 0xff]);
+      if (inicio < 0) continue;
+      const fin = indiceDeBytes(datos, [0xff, 0xd9], inicio);
+      if (fin < 0) continue;
+      return datos.subarray(inicio, fin + 2);
+    }
+  } finally {
+    reader.cancel().catch(() => {});
+  }
+  return null;
+}
+
 export async function onRequestGet(context) {
   const { slug } = context.params;
   const entrada = WEBCAMS[slug];
@@ -156,12 +217,31 @@ export async function onRequestGet(context) {
   const errores = [];
 
   for (let i = 0; i < fuentes.length; i++) {
-    const url = fuentes[i];
+    const fuente = fuentes[i];
+    // Fuentes MJPEG (ver ROBOT_REGLAS.md, Bakio "último recurso"): objeto
+    // { url, mjpeg: true } en vez de un string plano -- necesitan extraer
+    // un frame en vez de reenviar la respuesta tal cual.
+    const url = typeof fuente === "string" ? fuente : fuente.url;
+    const esMjpeg = typeof fuente === "object" && fuente.mjpeg === true;
     try {
       const resp = await fetch(url, {
         headers: { "User-Agent": "Mozilla/5.0 (compatible; CostaVivaApp/0.1)" },
       });
       if (!resp.ok) throw new Error(`HTTP ${resp.status} del proveedor de la webcam`);
+
+      if (esMjpeg) {
+        const frame = await extraerFramePrimeroDeMjpeg(resp);
+        if (!frame) throw new Error("no se encontró ningún frame JPEG completo en el stream MJPEG");
+        return new Response(frame, {
+          headers: {
+            "content-type": "image/jpeg",
+            "cache-control": "public, max-age=120",
+            "access-control-allow-origin": "*",
+            "x-webcam-fuente-indice": String(i),
+            "x-webcam-fuentes-total": String(fuentes.length),
+          },
+        });
+      }
 
       // Reenviamos la imagen tal cual, pero con caché corta propia (no
       // dependemos de las cabeceras de caché del proveedor original)

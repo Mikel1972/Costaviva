@@ -2413,6 +2413,12 @@ const SPOTS_CON_WEBCAM = [
 // fuente (confirmado 2026-09-19 revisando el directorio completo de la
 // Diputación, gipuzkoa.eus/.../hondartzak/webcams — no aparecen listadas).
 const WEBCAMS_HLS = {
+  // Playa de Berria (Santoña) — Watsay Surf School, vía IPCamLive.
+  // Encontrada 2026-09-19 (pista del usuario), verificada en vivo: HLS
+  // real, CORS abierto, imagen 4K nítida y estable (cámara fija, no PTZ).
+  // Sustituye a la imagen fija de cantabria.es (caída ese mismo día) como
+  // fuente principal — esa se queda como reserva en WEBCAMS.santona.
+  santona: "https://s110.ipcamlive.com/streams/6erjzdw9wypirqvta/stream.m3u8",
   // Sopela (ayuntamiento), vía IPCamLive — encontrada y verificada en vivo
   // 2026-09-19 (secuencia HLS avanzando en tiempo real, CORS abierto igual
   // que el resto de esta lista). Aplicando el criterio de prioridad
