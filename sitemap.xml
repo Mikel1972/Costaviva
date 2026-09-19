@@ -10,4 +10,12 @@
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
+  <!-- Fase 2 de SEO (2026-09-19): páginas públicas por spot, sin login,
+       ver functions/mareas/[slug].js -- de momento solo Mundaka
+       (prototipo), añadir aquí cada slug nuevo que se publique. -->
+  <url>
+    <loc>https://costaviva.org/mareas/mundaka</loc>
+    <changefreq>hourly</changefreq>
+    <priority>0.7</priority>
+  </url>
 </urlset>
