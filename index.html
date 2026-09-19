@@ -2399,9 +2399,9 @@ const SPOTS_CON_WEBCAM = [
 // verificadas con petición real el 2026-09-14 (CORS abierto de par en par,
 // Access-Control-Allow-Origin: *, tanto en el .m3u8 como en los .ts). NO usan
 // nuestro proxy /webcam/<slug> — se cargan directas, el proveedor ya permite
-// acceso cruzado. "malkorbe" (Getaria) existe en la web de la Diputación
-// pero su URL de stream daba 404 en la comprobación real — no incluida hasta
-// que vuelva a funcionar. Zumaia no tiene cámara en absoluto en esta fuente.
+// acceso cruzado. Zumaia y Ondarroa no tienen cámara en absoluto en esta
+// fuente (confirmado 2026-09-19 revisando el directorio completo de la
+// Diputación, gipuzkoa.eus/.../hondartzak/webcams — no aparecen listadas).
 const WEBCAMS_HLS = {
   // Sopela (ayuntamiento), vía IPCamLive — encontrada y verificada en vivo
   // 2026-09-19 (secuencia HLS avanzando en tiempo real, CORS abierto igual
@@ -2422,6 +2422,14 @@ const WEBCAMS_HLS = {
   // "mutrikukaia" (puerto de Mutriku, coincide con la ubicación real del
   // spot) en vez de "saturraran" (playa distinta, más cerca de Deba).
   mutriku: "https://58f14c0895a20.streamlock.net/camaramar/GIP_mutrikukaia_169.stream/playlist.m3u8",
+  // Getaria/Malkorbe: el 2026-09-14 se probó "GIP_malkorbe_169" (el nombre
+  // de la playa, como en la URL de la página de la Diputación) y dio 404 —
+  // el nombre real de la cámara en el servidor es "getaria" (el pueblo),
+  // no "malkorbe". Verificado en vivo 2026-09-19: 1920x1080, CORS abierto,
+  // segmentos reales. Sustituye a la imagen fija de AZTI/detectia.net como
+  // fuente principal (mismo criterio vídeo > imagen fija que Sopelana) —
+  // esa imagen fija se queda como reserva en WEBCAMS.getaria.
+  getaria: "https://58f14c0895a20.streamlock.net/camaramar/GIP_getaria_169.stream/playlist.m3u8",
 };
 
 const REFRESCO_WEBCAM_MS = 60000; // 1 min: suficiente para sentirse "en directo" sin sobrecargar al proveedor original
