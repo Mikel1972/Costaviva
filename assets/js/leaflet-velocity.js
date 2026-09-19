@@ -490,6 +490,21 @@ var Windy = function Windy(params) {
   var PARTICLE_LINE_WIDTH_MAX = params.lineWidth || 1; // line width of the fastest particles
   var PARTICLE_LINE_WIDTH_MIN = PARTICLE_LINE_WIDTH_MAX * 0.35; // ratio elegido a ojo (Costaviva, 2026-09-19): mas fino cuanto mas lento, igual que ya pasaba con la longitud del trazo
 
+  // Multiplicador de longitud por cubeta de velocidad (Costaviva,
+  // 2026-09-19): "un verde no puede ser tan largo como un morado ni un
+  // morado como un magenta. hay que diferenciarlos" -- sin esto, el
+  // desplazamiento por frame (y por tanto la longitud visible del
+  // trazo) salía directo de la velocidad real interpolada del punto,
+  // que cambia poco a poco -- dos partículas justo a un lado y otro de
+  // la frontera entre dos tercios de color (p.ej. la última verde y la
+  // primera morada) tenían casi la misma longitud pese a verse de un
+  // color muy distinto. Con este multiplicador (lineal por índice de
+  // cubeta, igual que ya se hacía con el grosor) cada tercio de la
+  // paleta queda en una banda de longitud claramente distinta, no solo
+  // de color.
+  var PARTICLE_LENGTH_MULT_MIN = 0.5;
+  var PARTICLE_LENGTH_MULT_MAX = 2.2;
+
   var PARTICLE_MULTIPLIER = params.particleMultiplier || 1 / 300; // particle count scalar (completely arbitrary--this values looks nice)
 
   var PARTICLE_REDUCTION = Math.pow(window.devicePixelRatio, 1 / 3) || 1.6; // multiply particle count for mobiles by this amount
@@ -876,6 +891,11 @@ var Windy = function Windy(params) {
     var buckets = colorStyles.map(function () {
       return [];
     });
+    var lengthMultPorCubeta = colorStyles.map(function (_, i) {
+      return buckets.length > 1
+        ? PARTICLE_LENGTH_MULT_MIN + (PARTICLE_LENGTH_MULT_MAX - PARTICLE_LENGTH_MULT_MIN) * (i / (buckets.length - 1))
+        : 1;
+    });
     var particleCount = Math.round(bounds.width * bounds.height * PARTICLE_MULTIPLIER);
 
     if (isMobile()) {
@@ -909,14 +929,16 @@ var Windy = function Windy(params) {
         if (m === null) {
           particle.age = MAX_PARTICLE_AGE; // particle has escaped the grid, never to return...
         } else {
-          var xt = x + v[0];
-          var yt = y + v[1];
+          var bIdx = colorStyles.indexFor(m);
+          var mult = lengthMultPorCubeta[bIdx];
+          var xt = x + v[0] * mult;
+          var yt = y + v[1] * mult;
 
           if (field(xt, yt)[2] !== null) {
             // Path from (x,y) to (xt,yt) is visible, so add this particle to the appropriate draw bucket.
             particle.xt = xt;
             particle.yt = yt;
-            buckets[colorStyles.indexFor(m)].push(particle);
+            buckets[bIdx].push(particle);
           } else {
             // Particle isn't visible, but it still moves through the field.
             particle.x = xt;
