@@ -3162,10 +3162,28 @@ const VIENTO_COLOR_SCALE = [
   "#F472B6", "#EC4899", "#BE185D", // magenta: viento fuerte
 ];
 const VIENTO_MAX_MS = 15;
-let capaViento = null;
-let vientoSnapshots = [];
+// Cobertura fija de todo el ámbito geográfico de la app (pedido explícito
+// del usuario 2026-09-19: "no aparece el viento mas que en el cantabrico
+// ... aplicala a todo el ambito geografico"). Antes la rejilla se pedía
+// solo para el trozo de mapa visible en cada momento (recalculada al
+// mover/hacer zoom, con debounce) -- así que fuera de Cantábrico, la
+// vista inicial de la app, no había ni una partícula hasta que el
+// usuario paneaba hasta allí. Ahora se piden DOS rejillas fijas de una
+// vez, siempre, cubran o no la vista actual: España peninsular +
+// Baleares + Portugal por un lado, Canarias por otro (demasiado lejos
+// como para entrar en la misma rejilla de 16x16 sin desperdiciar casi
+// toda la resolución en el océano vacío de en medio). Límites calculados
+// a partir de los propios SPOTS (incluidos los de SPOTS_CANARIAS), con
+// margen. De paso esto deja de disparar una petición nueva en cada pan/
+// zoom -- dos rejillas fijas cachean mucho mejor en el edge que miles de
+// bbox ligeramente distintos según por dónde ande cada usuario.
+const VIENTO_REGIONES = [
+  { id: "peninsula", bbox: { sur: 35.5, oeste: -9.8, norte: 44.0, este: 4.5 } },
+  { id: "canarias", bbox: { sur: 27.3, oeste: -18.5, norte: 29.6, este: -13.0 } },
+];
+let vientoCapas = {};
+let vientoSnapshotsPorRegion = {};
 let vientoCargando = false;
-let vientoMoveendTimer = null;
 
 function horaVientoTexto(iso, indice) {
   if (!iso) return "—";
@@ -3174,43 +3192,54 @@ function horaVientoTexto(iso, indice) {
 }
 
 function mostrarHoraViento(indice) {
-  if (!vientoSnapshots.length) return;
-  const i = Math.min(Math.max(indice, 0), vientoSnapshots.length - 1);
-  const snap = vientoSnapshots[i];
-  if (capaViento) { map.removeLayer(capaViento); capaViento = null; }
-  capaViento = L.velocityLayer({
-    displayValues: false,
-    data: snap.data,
-    velocityScale: 0.012,
-    opacity: 0.9,
-    lineWidth: 2,
-    minVelocity: 0,
-    maxVelocity: VIENTO_MAX_MS,
-    colorScale: VIENTO_COLOR_SCALE,
+  const referencia = vientoSnapshotsPorRegion[VIENTO_REGIONES[0].id];
+  if (!referencia?.length) return;
+  const i = Math.min(Math.max(indice, 0), referencia.length - 1);
+  const activo = document.getElementById("toggleViento").classList.contains("activo");
+  VIENTO_REGIONES.forEach((region) => {
+    const snaps = vientoSnapshotsPorRegion[region.id];
+    if (!snaps?.length) return;
+    const snap = snaps[Math.min(i, snaps.length - 1)];
+    if (vientoCapas[region.id]) { map.removeLayer(vientoCapas[region.id]); vientoCapas[region.id] = null; }
+    vientoCapas[region.id] = L.velocityLayer({
+      displayValues: false,
+      data: snap.data,
+      velocityScale: 0.012,
+      opacity: 0.9,
+      lineWidth: 2,
+      minVelocity: 0,
+      maxVelocity: VIENTO_MAX_MS,
+      colorScale: VIENTO_COLOR_SCALE,
+    });
+    if (activo) vientoCapas[region.id].addTo(map);
   });
-  if (document.getElementById("toggleViento").classList.contains("activo")) capaViento.addTo(map);
-  document.getElementById("vientoSliderHora").textContent = horaVientoTexto(snap.hora, i);
+  document.getElementById("vientoSliderHora").textContent = horaVientoTexto(referencia[i].hora, i);
 }
 
 async function cargarCampoViento() {
   if (vientoCargando) return;
   vientoCargando = true;
   try {
-    const b = map.getBounds();
-    const bbox = `${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()}`;
-    const resp = await fetch(`/viento-campo?bbox=${bbox}`);
-    const datos = await resp.json();
-    if (!resp.ok || !datos.snapshots?.length) throw new Error(datos.error || "sin snapshots de viento");
-    vientoSnapshots = datos.snapshots;
+    const resultados = await Promise.all(
+      VIENTO_REGIONES.map(async (region) => {
+        const { sur, oeste, norte, este } = region.bbox;
+        const resp = await fetch(`/viento-campo?bbox=${sur},${oeste},${norte},${este}`);
+        const datos = await resp.json();
+        if (!resp.ok || !datos.snapshots?.length) throw new Error(datos.error || `sin snapshots de viento (${region.id})`);
+        return [region.id, datos.snapshots];
+      })
+    );
+    resultados.forEach(([id, snaps]) => { vientoSnapshotsPorRegion[id] = snaps; });
+    const referencia = vientoSnapshotsPorRegion[VIENTO_REGIONES[0].id];
     const slider = document.getElementById("vientoSlider");
-    slider.max = String(vientoSnapshots.length - 1);
+    slider.max = String(referencia.length - 1);
     // Marcas de hora real repartidas a lo largo de la barra (5 puntos:
     // inicio, cada cuarto, y final) — "las horas, no la diferencia".
     const ticks = document.getElementById("vientoSliderTicks");
-    const numMarcas = Math.min(5, vientoSnapshots.length);
+    const numMarcas = Math.min(5, referencia.length);
     ticks.innerHTML = Array.from({ length: numMarcas }, (_, k) => {
-      const idx = Math.round((k / (numMarcas - 1)) * (vientoSnapshots.length - 1));
-      return `<span>${vientoSnapshots[idx].hora.slice(11, 16)}</span>`;
+      const idx = Math.round((k / (numMarcas - 1)) * (referencia.length - 1));
+      return `<span>${referencia[idx].hora.slice(11, 16)}</span>`;
     }).join("");
     mostrarHoraViento(+slider.value);
   } catch (e) {
@@ -3224,7 +3253,7 @@ document.getElementById("toggleViento").addEventListener("click", (e) => {
   const boton = e.currentTarget;
   const panel = document.getElementById("vientoSliderPanel");
   if (boton.classList.contains("activo")) {
-    if (capaViento) map.removeLayer(capaViento);
+    Object.values(vientoCapas).forEach((capa) => { if (capa) map.removeLayer(capa); });
     boton.classList.remove("activo");
     panel.hidden = true;
   } else {
@@ -3238,15 +3267,6 @@ document.getElementById("toggleViento").addEventListener("click", (e) => {
 });
 document.getElementById("vientoSlider").addEventListener("input", (e) => {
   mostrarHoraViento(+e.target.value);
-});
-// La rejilla se recalcula al mover/hacer zoom en el mapa con la capa
-// activa (pedido explícito del usuario: "la rejilla debe recalcularse")
-// — con un pequeño debounce para no disparar una petición por cada
-// frame intermedio de un arrastre largo.
-map.on("moveend zoomend", () => {
-  if (!document.getElementById("toggleViento").classList.contains("activo")) return;
-  clearTimeout(vientoMoveendTimer);
-  vientoMoveendTimer = setTimeout(cargarCampoViento, 600);
 });
 
 map.on("moveend zoomend", () => {
