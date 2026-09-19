@@ -1671,6 +1671,12 @@ const map = L.map("map", {
   touchZoom: true,
   attributionControl: true,
 });
+// Quita solo el prefijo "Leaflet" (pedido explícito del usuario: "quita
+// la leyenda del mapa, la de leaflet") -- los créditos reales de datos
+// (Esri/GEBCO/NOAA/EMODnet/RainViewer, ver attribution de cada capa) se
+// quedan, esos sí son una condición real de uso de esos servicios
+// gratuitos, no solo un logo de la librería.
+map.attributionControl.setPrefix(false);
 if (window.supabaseCliente) {
   registrarEvento("ver_mapa");
 } else {
@@ -3134,13 +3140,16 @@ function mostrarHoraViento(indice) {
     velocityScale: 0.012,
     opacity: 0.9,
     lineWidth: 2,
-    // Paleta propia con más contraste (pedido explícito del usuario: "no
-    // se ve del todo bien por los colores") — la de la librería por
-    // defecto empieza en azules/verdes pálidos para viento flojo, que se
-    // funden con el mar de fondo del mapa. Tonos cálidos de punta a
-    // punta (blanco→amarillo→naranja→rojo intenso), visibles tanto sobre
-    // el agua como sobre tierra.
-    colorScale: ["#FFFFFF", "#FFE066", "#FFB347", "#FF8C42", "#FF5733", "#E63946", "#C1121F", "#9D0208"],
+    // Paleta propia (2026-09-19, ajustada dos veces por contraste real
+    // visto en producción por el usuario): el primer intento (blanco→
+    // amarillo→naranja→rojo) pensaba en un mapa OSCURO estilo Windy real
+    // — este mapa es CLARO (mar celeste, tierra en tonos tierra), así
+    // que los tonos claros/cálidos se difuminaban contra los dos fondos
+    // a la vez. Morado-magenta oscuro y saturado de punta a punta, sin
+    // tocar nunca blancos/pasteles — ese color no aparece de forma
+    // natural en ninguno de los dos fondos del mapa, así que destaca
+    // siempre, sea agua o tierra.
+    colorScale: ["#3A0CA3", "#560BAD", "#7209B7", "#9D174D", "#B5179E", "#F72585", "#D00000"],
   });
   if (document.getElementById("toggleViento").classList.contains("activo")) capaViento.addTo(map);
   document.getElementById("vientoSliderHora").textContent = horaVientoTexto(snap.hora, i);
