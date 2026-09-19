@@ -736,7 +736,7 @@ function coeficienteMarea(fecha) {
   return Math.round(45 + 75 * factorVivas);
 }
 
-async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha) {
+async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha, horaFinSalida) {
   // Bug real encontrado 2026-09-13 (el usuario cazó el del coeficiente
   // de marea y llevó a revisar el resto): con forecast_days=1 esto
   // pedía siempre el pronóstico de "ahora mismo", sin importar la fecha
@@ -763,7 +763,8 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha) {
   const paramsMarea = fecha
     ? `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&start_date=${sumarDias(fecha, -8)}&end_date=${sumarDias(fecha, 8)}`
     : paramsComunes;
-  const resultado = { marea_altura: null, marea_tendencia: null, marea_coeficiente: null, presion_valor: null, presion_tendencia: null,
+  const resultado = { marea_altura: null, marea_tendencia: null, marea_altura_fin: null, marea_tendencia_fin: null,
+    marea_coeficiente: null, presion_valor: null, presion_tendencia: null,
     luna_fase: null, luna_iluminacion: null, viento_kmh: null, viento_dir: null,
     oleaje_altura_min: null, oleaje_altura_max: null, temp_agua: null,
     nubosidad: null, precipitacion: null, boya_usada: null };
@@ -796,10 +797,14 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha) {
     // array corto de viento, así que esos 4 campos salían siempre
     // `undefined`/"—", aunque marea/oleaje/temp. agua (que sí usan el
     // array correcto) se vieran bien.
-    const buscarIndiceHora = (listaHoras) => {
+    // horaObjetivo parametrizada (no por closure) desde 2026-09-19 — hace
+    // falta buscar el índice de DOS horas distintas (inicio y fin de la
+    // salida) sobre la misma serie ya descargada, ver marea_altura_fin
+    // más abajo.
+    const buscarIndiceHora = (listaHoras, horaObjetivo0 = horaElegida) => {
       let i = -1;
-      if (horaElegida) {
-        const [h, m] = horaElegida.split(":").map(Number);
+      if (horaObjetivo0) {
+        const [h, m] = horaObjetivo0.split(":").map(Number);
         const horaObjetivo = m >= 30 ? (h + 1) % 24 : h;
         i = listaHoras.findIndex((hs) => (!fecha || hs.startsWith(fecha)) && +hs.slice(11, 13) === horaObjetivo);
       }
@@ -835,6 +840,21 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha) {
     const alturaMareaSig = serieAltura[idx + 1];
     resultado.marea_altura = alturaMarea != null ? +(alturaMarea - minAltura).toFixed(2) : null;
     resultado.marea_tendencia = alturaMarea != null && alturaMareaSig != null ? (alturaMareaSig > alturaMarea ? "subiendo" : "bajando") : null;
+
+    // Marea a la hora de FIN de la salida (2026-09-19, pedido explícito
+    // del usuario: saber si subía o bajaba tanto al llegar como al irse)
+    // — reutiliza la misma serie horaria ya descargada (`horas`/
+    // `serieAltura`), así que no hace falta ninguna petición extra a
+    // Open-Meteo, solo mirar un índice distinto.
+    if (horaFinSalida) {
+      const idxFin = buscarIndiceHora(horas, horaFinSalida);
+      const alturaMareaFin = serieAltura[idxFin];
+      const alturaMareaFinSig = serieAltura[idxFin + 1];
+      resultado.marea_altura_fin = alturaMareaFin != null ? +(alturaMareaFin - minAltura).toFixed(2) : null;
+      resultado.marea_tendencia_fin = alturaMareaFin != null && alturaMareaFinSig != null
+        ? (alturaMareaFinSig > alturaMareaFin ? "subiendo" : "bajando")
+        : null;
+    }
     // Bug real reportado por el usuario (2026-09-13): esto usaba
     // new Date() (el momento de guardar), no la fecha real de la
     // salida — una salida del 7 de septiembre guardada/editada más
@@ -883,6 +903,39 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha) {
     console.warn("No se pudo obtener contexto ambiental:", e.message);
   }
   return resultado;
+}
+
+// Marea suelta (altura + tendencia) en un momento concreto — versión
+// ligera de la parte de marea de contextoAmbiental(), sin pedir viento/
+// oleaje/luna/boya (2026-09-19, pedido explícito del usuario: guardar la
+// marea de cada captura y de la hora de fin al concluir la jornada). Una
+// sola llamada a la Marine API, ventana corta (un solo día, no hace
+// falta la ventana ancha de ±8 días que solo usa el coeficiente de
+// marea).
+async function mareaEnMomento(lat, lon, hora, fecha) {
+  if (!hora || !Number.isFinite(lat) || !Number.isFinite(lon)) return { altura: null, tendencia: null };
+  try {
+    const rangoFechas = fecha ? `start_date=${fecha}&end_date=${fecha}` : "forecast_days=1";
+    const url = `https://marine-api.open-meteo.com/v1/marine?latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&${rangoFechas}&hourly=sea_level_height_msl`;
+    const marino = await fetch(url).then((r) => r.json());
+    const horas = marino.hourly?.time || [];
+    const serie = marino.hourly?.sea_level_height_msl || [];
+    const validas = serie.filter((v) => v !== null && v !== undefined);
+    const min = validas.length ? Math.min(...validas) : 0;
+    const [h, m] = hora.split(":").map(Number);
+    const horaObjetivo = m >= 30 ? (h + 1) % 24 : h;
+    let idx = horas.findIndex((hs) => (!fecha || hs.startsWith(fecha)) && +hs.slice(11, 13) === horaObjetivo);
+    if (idx === -1) idx = fecha ? Math.max(0, horas.findIndex((hs) => hs.startsWith(fecha))) : 0;
+    const altura = serie[idx];
+    const alturaSig = serie[idx + 1];
+    return {
+      altura: altura != null ? +(altura - min).toFixed(2) : null,
+      tendencia: altura != null && alturaSig != null ? (alturaSig > altura ? "subiendo" : "bajando") : null,
+    };
+  } catch (e) {
+    console.warn("No se pudo calcular la marea:", e.message);
+    return { altura: null, tendencia: null };
+  }
 }
 
 const etiquetaTipoSalida = { costa: "🪨 Costa", embarcacion: "🚤 Embarcación", submarinismo: "🤿 Submarinismo" };
@@ -934,13 +987,27 @@ function formularioSalida() {
   `;
 }
 
-// horaRangoTexto: texto "🕐 08:00–12:00" / "🕐 desde 08:00" / "🕐 hasta
-// 12:00" / "" según qué horas tenga la entrada — usado tanto en el
-// resumen de cada entrada como (antes) en detalleSalida.
+// Flecha de tendencia de marea (2026-09-19, pedido explícito del
+// usuario): verde subiendo, roja bajando, nada si no hay dato. Mismos
+// colores que ya usa el resto de la app para éxito/error
+// (#3A6B4C / #A34A35).
+function flechaMareaHtml(tendencia) {
+  if (tendencia === "subiendo") return `<span style="color:#3A6B4C;" title="Marea subiendo">▲</span>`;
+  if (tendencia === "bajando") return `<span style="color:#A34A35;" title="Marea bajando">▼</span>`;
+  return "";
+}
+
+// horaRangoTexto: texto "🕐 08:00 ▲–12:00 ▼" / "🕐 desde 08:00 ▲" / "🕐
+// hasta 12:00 ▼" / "" según qué horas tenga la entrada — usado tanto en
+// el resumen de cada entrada como (antes) en detalleSalida. La flecha de
+// marea va pegada a cada hora (subida al llegar, bajada al irse, o lo
+// que sea real) — nunca se inventa si no hay marea_tendencia calculada.
 function horaRangoTexto(salida) {
-  if (salida.hora_inicio && salida.hora_fin) return ` · 🕐 ${salida.hora_inicio.slice(0, 5)}–${salida.hora_fin.slice(0, 5)}`;
-  if (salida.hora_inicio) return ` · 🕐 desde ${salida.hora_inicio.slice(0, 5)}`;
-  if (salida.hora_fin) return ` · 🕐 hasta ${salida.hora_fin.slice(0, 5)}`;
+  const inicioHtml = salida.hora_inicio ? `${salida.hora_inicio.slice(0, 5)} ${flechaMareaHtml(salida.marea_tendencia)}` : "";
+  const finHtml = salida.hora_fin ? `${salida.hora_fin.slice(0, 5)} ${flechaMareaHtml(salida.marea_tendencia_fin)}` : "";
+  if (salida.hora_inicio && salida.hora_fin) return ` · 🕐 ${inicioHtml}–${finHtml}`;
+  if (salida.hora_inicio) return ` · 🕐 desde ${inicioHtml}`;
+  if (salida.hora_fin) return ` · 🕐 hasta ${finHtml}`;
   return "";
 }
 
@@ -985,7 +1052,7 @@ async function guardarSalida(fecha, idExistente) {
     }
   }
 
-  const contexto = await contextoAmbiental(lat, lon, horaInicio, tipoSalida, fecha);
+  const contexto = await contextoAmbiental(lat, lon, horaInicio, tipoSalida, fecha, horaFin);
   const datos = {
     user_id: usuario.id, fecha, spot_slug: spot?.slug ?? null, spot_nombre: spot?.nombre ?? "Ubicación actual",
     lat, lon, notas, hora_inicio: horaInicio, hora_fin: horaFin, tipo_salida: tipoSalida, ...contexto,
@@ -1041,7 +1108,7 @@ async function tarjetaCapturaHTML(captura) {
   const urls = await Promise.all((fotos || []).map((f) => urlFirmada(f.foto_path)));
   return `
     <div class="tarjeta-captura" data-captura-id="${captura.id}">
-      <div class="fila-titulo"><span class="especie">🐟 ${captura.especie}</span><span class="detalle">${captura.hora ? "🕐 " + captura.hora.slice(0, 5) + " " : ""}${captura.talla_cm ? captura.talla_cm + " cm" : ""} ${captura.peso_g ? "· " + captura.peso_g + " g" : ""}</span></div>
+      <div class="fila-titulo"><span class="especie">🐟 ${captura.especie}</span><span class="detalle">${captura.hora ? "🕐 " + captura.hora.slice(0, 5) + " " + flechaMareaHtml(captura.marea_tendencia) + " " : ""}${captura.talla_cm ? captura.talla_cm + " cm" : ""} ${captura.peso_g ? "· " + captura.peso_g + " g" : ""}</span></div>
       ${captura.tecnica ? `<div class="detalle">🎣 ${captura.tecnica}</div>` : ""}
       ${captura.cebo || captura.aparejo || captura.senuelo ? `<div class="detalle">${captura.cebo ? "Cebo: " + captura.cebo : ""} ${captura.aparejo ? "· Aparejo: " + captura.aparejo : ""} ${captura.senuelo ? "· Señuelo: " + captura.senuelo : ""}</div>` : ""}
       ${captura.notas ? `<div class="detalle">${captura.notas}</div>` : ""}
@@ -1160,9 +1227,17 @@ async function guardarCaptura(salidaId, fecha, idExistente, ordenFotoBase) {
   const notas = document.getElementById("capturaNotas").value;
   const archivos = Array.from(document.getElementById("capturaFotos").files || []);
 
+  // Marea en el momento exacto de la captura (2026-09-19, pedido
+  // explícito del usuario) — reutiliza el lat/lon y la fecha ya
+  // conocidos de la salida a la que pertenece esta captura.
+  const marea = hora && salidaDelDia
+    ? await mareaEnMomento(salidaDelDia.lat, salidaDelDia.lon, hora, fecha)
+    : { altura: null, tendencia: null };
+
   const datos = {
     salida_id: salidaId, user_id: usuario.id, especie, hora, talla_cm: talla || null, peso_g: peso || null,
     cebo: cebo || null, tecnica: tecnica || null, senuelo: senuelo || null, aparejo: aparejo || null, notas: notas || null,
+    marea_altura: marea.altura, marea_tendencia: marea.tendencia,
   };
   let capturaId = idExistente;
   if (idExistente) {
@@ -1246,10 +1321,19 @@ function horaActualHHMM() {
   return new Intl.DateTimeFormat("es-ES", { timeZone: "Europe/Madrid", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(new Date());
 }
 async function concluirEntrada(iso, fechaObj, salida) {
+  // Hora de fin obligatoria para concluir (pedido explícito del usuario
+  // 2026-09-19, para poder calcular estadísticas de marea/duración más
+  // adelante) — ya no se rellena sola con la hora actual en silencio,
+  // hay que ponerla a mano editando la entrada antes de concluir.
+  if (!salida.hora_fin) {
+    alert("Para concluir la jornada hace falta la hora de fin — edítala (✏️) y ponla antes de concluir.");
+    return;
+  }
   if (!confirm("¿Concluir esta jornada? Podrás seguir editándola después si hace falta.")) return;
+  const marea = await mareaEnMomento(salida.lat, salida.lon, salida.hora_fin.slice(0, 5), salida.fecha);
   const { error } = await supabase
     .from("salidas_pesca")
-    .update({ concluida: true, hora_fin: salida.hora_fin || horaActualHHMM() })
+    .update({ concluida: true, marea_altura_fin: marea.altura, marea_tendencia_fin: marea.tendencia })
     .eq("id", salida.id);
   if (error) { alert(`No se ha podido concluir: ${error.message}`); return; }
   await cargarDatos();
