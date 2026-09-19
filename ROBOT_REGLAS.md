@@ -130,6 +130,35 @@ solo aparece bajo un nombre. Ver
 amplíalo tú mismo cuando confirmes un nombre alternativo real por una
 fuente que lo use, nunca inventes una traducción).
 
+**Prioridad entre varias cámaras de un mismo spot (criterio explícito del
+usuario, 2026-09-19)**, en este orden:
+1. **Vídeo antes que imagen fija.** Si encuentras una fuente de vídeo
+   (HLS/RTSP/similar) para un spot que hoy solo tiene imagen fija, es
+   candidata a reemplazarla como fuente principal — proponlo, no lo
+   integres directo (cambiar de `WEBCAMS` a `WEBCAMS_HLS` toca
+   `index.html` y varios scripts de monitorización a la vez, así que cae
+   fuera de "corrección trivial").
+2. **Entre imágenes fijas, la de mejor resolución/nitidez real** (no el
+   tamaño en bytes — una imagen más pesada solo por menos compresión no
+   es "más nítida"). Compara descargando ambas.
+3. **Entre las que empatan de día, prioriza la que sea infrarroja** (o
+   documente visión nocturna) — se nota comprobando una imagen de esa
+   misma cámara de noche, no lo des por hecho por el nombre del producto.
+4. Guarda las que no ganen igualmente como fuente de reserva en el array
+   de `WEBCAMS[slug]` (ver `functions/webcam/[slug].js`) en vez de
+   descartarlas — sirven para el failover aunque no sean la principal.
+
+**Vídeo y estimaciones (turbidez, en su momento oleaje visual)**: cuando
+la fuente principal de un spot es vídeo, la extracción de fotogramas para
+cualquier estimación (turbidez ya activa en
+`scripts/turbidez/medir-turbidez.mjs`; oleaje visual se probó y se quitó
+el 2026-09-15 por poco fiable, no reactivarlo sin que el usuario lo pida
+de nuevo) necesita varios frames espaciados en el tiempo, nunca uno solo
+— un único frame de un vídeo en directo puede pillar un momento atípico
+(un barco pasando, un reflejo). Ese patrón de varios-frames-y-descartar-
+el-atípico ya existe en `medir-turbidez.mjs`, reutilízalo en vez de
+reinventarlo si añades una estimación nueva sobre una fuente de vídeo.
+
 ### Zona: País Vasco — Bizkaia (última pasada real: 2026-09-19, interactiva con el usuario, no la rotación automática)
 
 - **AZTI opera DOS redes de cámaras distintas, no una** —
