@@ -49,6 +49,11 @@ jobs:
       contents: read
       issues: write
       actions: read
+      # Necesario para google-github-actions/auth (Workload Identity
+      # Federation, ver el paso "Autenticarse en Google Cloud" más abajo)
+      # -- sin esto GitHub no emite el token OIDC que Google Cloud necesita
+      # para verificar que la llamada viene de verdad de este repo.
+      id-token: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -87,17 +92,16 @@ jobs:
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
-      - name: SEO -- páginas públicas (comprobación técnica, sin API de Search Console)
+      - name: SEO -- páginas públicas (comprobación técnica, solo HTTP 200)
         # Añadido 2026-09-19, pedido explícito del usuario ("avísame en
         # los informes diarios") tras publicar las páginas públicas de
-        # SEO (índice /mareas, 8 regiones, 105 spots). Esto NO son datos
-        # reales de indexación/tráfico de Google -- eso necesitaría la
-        # API de Search Console (proyecto de Google Cloud + cuenta de
-        # servicio), que el usuario decidió no montar por ahora. Es solo
-        # una comprobación de que las páginas siguen respondiendo bien,
-        # mismo patrón que el resto de "Fuentes externas" de este
-        # informe -- si un día se monta la integración real con Search
-        # Console, este paso se sustituye por datos de verdad.
+        # SEO (índice /mareas, 8 regiones, 105 spots). Esto sigue siendo
+        # solo una comprobación de que las páginas responden -- desde el
+        # 2026-09-20 los datos reales de indexación/tráfico de Google SÍ
+        # existen, ver el paso "Search Console" más abajo (Workload
+        # Identity Federation, sin clave descargable -- la política de la
+        # organización de Google del usuario lo bloqueaba, ver
+        # CLAUDE.md).
         id: seo
         run: |
           check() {
@@ -113,6 +117,77 @@ jobs:
             check "/sitemap.xml" "https://costaviva.org/sitemap.xml"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
+        continue-on-error: true
+
+      - name: Autenticarse en Google Cloud (Workload Identity Federation, sin clave)
+        # Añadido 2026-09-20, pedido explícito del usuario: datos reales
+        # de Search Console en el informe diario. La política de la
+        # organización de Google del usuario bloquea la creación de
+        # claves JSON descargables para cuentas de servicio
+        # (iam.disableServiceAccountKeyCreation) -- en vez de eso, este
+        # job pide directamente un token de corta duración a Google Cloud
+        # usando su propio token OIDC de GitHub Actions (google-github-
+        # actions/auth), sin ningún secreto guardado en ningún sitio.
+        # Cuenta de servicio con acceso "Restringido" (solo lectura) dado
+        # de alta a mano en Search Console -> Configuración -> Usuarios y
+        # permisos.
+        id: auth_google
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: "projects/1029831673189/locations/global/workloadIdentityPools/github-actions-pool/providers/github-actions-provider"
+          service_account: "costaviva-search-console-reade@project-5a5d60f4-a099-4065-a23.iam.gserviceaccount.com"
+        continue-on-error: true
+
+      - name: Search Console -- rendimiento real de búsqueda (últimos 7 días)
+        # Usa google-auth-library (no el paquete googleapis completo,
+        # mucho más pesado) para obtener un token de acceso vía las
+        # credenciales que dejó el paso anterior, y llama directo a la
+        # API REST de Search Console con fetch -- mismo patrón que el
+        # resto de endpoints externos de este repo (prevision.js,
+        # sos-alerta.js), sin SDK de más.
+        id: searchconsole
+        run: |
+          npm install google-auth-library --no-save
+          node -e '
+            const { GoogleAuth } = require("google-auth-library");
+            const fs = require("fs");
+            (async () => {
+              try {
+                const auth = new GoogleAuth({ scopes: ["https://www.googleapis.com/auth/webmasters.readonly"] });
+                const client = await auth.getClient();
+                const token = (await client.getAccessToken()).token;
+                const cabecera = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
+                const sitesResp = await fetch("https://www.googleapis.com/webmasters/v3/sites", { headers: cabecera });
+                const sitesData = await sitesResp.json();
+                const sitio = sitesData.siteEntry && sitesData.siteEntry[0] && sitesData.siteEntry[0].siteUrl;
+                if (!sitio) throw new Error("la cuenta de servicio no ve ninguna propiedad todavía -- revisar el alta en Search Console");
+                const haceNDias = (n) => new Date(Date.now() - n * 86400000).toISOString().slice(0, 10);
+                async function periodo(desde, hasta, dimensions, rowLimit) {
+                  const resp = await fetch(
+                    `https://www.googleapis.com/webmasters/v3/sites/${encodeURIComponent(sitio)}/searchAnalytics/query`,
+                    { method: "POST", headers: cabecera, body: JSON.stringify({ startDate: desde, endDate: hasta, dimensions, rowLimit }) }
+                  );
+                  return resp.json();
+                }
+                const totalesActual = await periodo(haceNDias(7), haceNDias(1), [], 1);
+                const totalesAnterior = await periodo(haceNDias(14), haceNDias(8), [], 1);
+                const a = (totalesActual.rows || [])[0] || { clicks: 0, impressions: 0, ctr: 0, position: 0 };
+                const b = (totalesAnterior.rows || [])[0] || { clicks: 0, impressions: 0, ctr: 0, position: 0 };
+                const variacion = (actual, previo) => (previo > 0 ? ` (${actual - previo >= 0 ? "+" : ""}${Math.round(((actual - previo) / previo) * 100)}% vs 7 días antes)` : "");
+                const topData = await periodo(haceNDias(7), haceNDias(1), ["query"], 5);
+                const top = (topData.rows || []).map((r) => `    - "${r.keys[0]}": ${r.clicks} clics, ${r.impressions} impresiones`);
+                const lineas = [
+                  `  - Propiedad: ${sitio}`,
+                  `  - Últimos 7 días: ${a.clicks} clics${variacion(a.clicks, b.clicks)}, ${a.impressions} impresiones${variacion(a.impressions, b.impressions)}, CTR medio ${(a.ctr * 100).toFixed(1)}%, posición media ${a.position.toFixed(1)}`,
+                  top.length ? "  - Top búsquedas (7 días):" : "  - Sin búsquedas registradas en los últimos 7 días.",
+                  ...top,
+                ];
+                fs.appendFileSync(process.env.GITHUB_OUTPUT, "resultado<<EOF\n" + lineas.join("\n") + "\nEOF\n");
+              } catch (e) {
+                fs.appendFileSync(process.env.GITHUB_OUTPUT, "resultado<<EOF\n  - No se pudo consultar Search Console (" + String((e && e.message) || e) + ")\nEOF\n");
+              }
+            })();
+          '
         continue-on-error: true
 
       - name: Estado de las webcams (camara_estado, tabla pública)
@@ -367,6 +442,8 @@ jobs:
               `${{ steps.camaras.outputs.resultado }}`,
               `- SEO (páginas públicas):`,
               `${{ steps.seo.outputs.resultado }}`,
+              `- Search Console (rendimiento real de búsqueda):`,
+              `${{ steps.searchconsole.outputs.resultado }}`,
               `- Marketing (Instagram):`,
               `${{ steps.marketing.outputs.resultado }}`,
               lineaKpi,
