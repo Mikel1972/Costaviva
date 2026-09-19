@@ -4646,6 +4646,77 @@ existente, por ser una muestra de 1.
 **Firmado:** robot de patrones de uso, 2026-09-17 (pasada semanal,
 sábado UTC).
 
+### 2026-09-19 13:07 UTC
+
+Pasada de seguimiento (no exactamente semanal — solo 2 días desde la
+anterior, pero se cumple el pedido explícito del usuario de comprobar
+esta métrica en cuanto hubiera datos reales). Leído por REST con
+`SUPABASE_SERVICE_ROLE_KEY` (solo lectura): `eventos_uso` (70 filas,
+antes 0), `capturas` (0 filas, igual que antes), `salidas_pesca` (1
+fila, misma que la semana pasada), `spots_favoritos` (1 fila, igual),
+`spots_usuario` (1 fila, igual), `grupos` (4 filas), `miembros_grupo`
+(2 filas, ambas del mismo grupo), `perfiles` (7 filas totales, igual).
+
+**Primera confirmación real de que `eventos_uso` funciona de extremo a
+extremo en producción** (la semana pasada no se pudo confirmar, estaba a
+0 filas). Las 70 filas van de 2026-09-17 17:29 UTC a 2026-09-19 12:55
+UTC. Desglose por tipo (total / usuarios distintos / último uso):
+`ver_mapa` 41/2/19-09 12:55, `ver_capa_rios` 9/2/18-09 17:37,
+`ver_capa_boyas` 6/2/19-09 07:45, `ver_capa_estaciones` 6/2/18-09 17:38,
+`ver_capa_radar_lluvia` 6/2/18-09 17:38, `ver_capa_batimetria` 1/1/18-09
+17:37, `unirse_grupo` 1/1/18-09 17:39. Cero filas todavía de
+`crear_salida`, `crear_captura`, `pulsar_sos`, `crear_ubicacion_personalizada`,
+`marcar_favorito`, `ver_suscripcion`, `iniciar_checkout`, `crear_grupo`.
+Verificado por código (grep en `index.html`/`grupos.html`) que las
+llamadas a `ver_mapa`, las 5 capas y `unirse_grupo` nunca pasan un
+segundo argumento `detalle` — por eso las 70 filas tienen `detalle: null`,
+no es un fallo de la instrumentación, es lo esperado para esos tipos
+concretos. El único evento de tipo con estado ligado a otra tabla
+(`unirse_grupo`) coincide exactamente con los datos reales: el grupo
+`3633549d...` tiene 2 miembros (`85447dec...` y `2a0e7aaa...`), y esos
+son justo los 2 `user_id` que aparecen en `eventos_uso` — la
+instrumentación registra lo que de verdad ocurrió, no un dato inventado
+ni duplicado.
+
+**Pero la muestra sigue siendo demasiado pequeña para proponer ningún
+cambio de producto.** De los 7 perfiles totales, solo 2 (`85447dec...`,
+dado de alta 2026-09-09, y `2a0e7aaa...`, dado de alta 2026-09-13) han
+generado algún evento — los mismos 2 que ya tenían actividad real en
+otras tablas la semana pasada. Los otros 5 perfiles (`bb401ba6...`,
+`13809555...`, `2cd60e7e...`, `f81a8b12...`, `e4865583...`, entre 2 y 6
+días de antigüedad) siguen sin ninguna fila en `eventos_uso` ni en
+`capturas`/`salidas_pesca`/`spots_favoritos` — igual que la semana
+pasada, y coherente con que `CLAUDE.md` ya documenta varias de esas
+fechas como cuentas de prueba conocidas (no leí email en esta pasada,
+solo `id`/`creado_en`/`aprobado`, así que no puedo confirmarlo con
+certeza, solo descartar que sea una señal de abandono real nueva).
+`salidas_pesca`/`spots_favoritos`/`spots_usuario` no han cambiado de
+número desde la semana pasada.
+
+**Sin propuestas de rediseño/eliminación de producto esta pasada,
+otra vez.** Con solo 2 usuarios distintos generando actividad de los 7
+perfiles totales, cualquier ranking de "capa más/menos usada" (p.ej.
+`ver_capa_batimetria` con 1 uso de 1 usuario frente a `ver_capa_rios`
+con 9 usos de 2 usuarios) reflejaría el comportamiento de una sola
+persona probando la app a fondo, no un patrón real de la base de
+usuarios — proponer quitar o simplificar algo con este tamaño de
+muestra sería la misma intuición disfrazada de dato que esta rutina
+existe para evitar. Recomendación: repetir esta lectura cuando haya más
+usuarios activos y/o pase más tiempo (la semana que viene, 2026-09-26,
+sería ya una semana completa de instrumentación real) antes de esperar
+ningún hallazgo con base numérica suficiente.
+
+**Qué no dio tiempo a mirar esta pasada**: `admin_resumen_eventos_uso()`/
+`admin_eventos_uso_usuario()` (esta rutina sigue sin poder llamarlas, ver
+`CLAUDE.md` — usan `auth.email()`, no disponible con `service_role`); el
+campo `detalle` (jsonb) en sí, porque las únicas filas con algo que leer
+ahí serían de tipos que todavía no han ocurrido ni una vez
+(`crear_salida`/`crear_captura`/etc.); comparación de actividad por
+`spot`/tipo de salida en `salidas_pesca`, sigue en una sola fila.
+
+**Firmado:** robot de patrones de uso, 2026-09-19 13:07 UTC (pasada de
+seguimiento).
+
 ### 2026-09-18 07:40 UTC (pasada buscadora — webcams para spots sin cámara)
 
 **Objetivo:** tarea recurrente de buscar cámaras nuevas para spots fijos
