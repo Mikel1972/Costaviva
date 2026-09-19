@@ -736,6 +736,50 @@ function coeficienteMarea(fecha) {
   return Math.round(45 + 75 * factorVivas);
 }
 
+// Busca, desde `desde` (sin incluirlo) hacia `hasta` (con paso ±1), el
+// primer índice donde la serie de altura de marea cambia de dirección —
+// un pico (pleamar) si venía subiendo, un valle (bajamar) si venía
+// bajando. Necesita el punto anterior Y el siguiente a cada candidato
+// para saber si de verdad es un giro, así que nunca comprueba los dos
+// extremos de la serie.
+function buscarGiroDeMarea(serie, desde, hasta, paso) {
+  for (let i = desde + paso; paso > 0 ? i < hasta : i > hasta; i += paso) {
+    const antes = serie[i - paso], actual = serie[i], despues = serie[i + paso];
+    if (antes == null || actual == null || despues == null) continue;
+    const subiendoAntes = actual - antes;
+    const subiendoDespues = despues - actual;
+    if (subiendoAntes !== 0 && subiendoDespues !== 0 && (subiendoAntes > 0) !== (subiendoDespues > 0)) {
+      return { idx: i, tipo: subiendoAntes > 0 ? "pleamar" : "bajamar" };
+    }
+  }
+  return null;
+}
+
+// Pico de marea (pleamar/bajamar) relevante para TODA la salida, no uno
+// suelto por hora (2026-09-19, pedido explícito del usuario). Prioriza
+// un giro real DENTRO de [idxInicio, idxFin]; si no hay ninguno ahí
+// (sesión corta durante una sola subida o bajada, sin llegar a girar),
+// coge el giro más cercano por FUERA del intervalo — mirando hacia atrás
+// desde el inicio y hacia delante desde el fin, el que esté a menos
+// horas de distancia del intervalo gana.
+function picoDeMareaEnIntervalo(serieAltura, horas, idxInicio, idxFin) {
+  if (idxInicio == null || idxInicio < 0) return null;
+  const lo = Math.min(idxInicio, idxFin ?? idxInicio);
+  const hi = Math.max(idxInicio, idxFin ?? idxInicio);
+  let giro = buscarGiroDeMarea(serieAltura, lo, hi, 1);
+  if (!giro) {
+    // Ventana de sobra: un ciclo de marea completo son ~12.4h, con margen
+    // hasta 18h para no quedarse corto si idx cae justo tras un giro.
+    const atras = buscarGiroDeMarea(serieAltura, lo, Math.max(0, lo - 18), -1);
+    const delante = buscarGiroDeMarea(serieAltura, hi, Math.min(serieAltura.length - 1, hi + 18), 1);
+    const distAtras = atras ? lo - atras.idx : Infinity;
+    const distDelante = delante ? delante.idx - hi : Infinity;
+    giro = distAtras <= distDelante ? atras : delante;
+  }
+  if (!giro || !horas[giro.idx]) return null;
+  return { tipo: giro.tipo, hora: horas[giro.idx].slice(11, 16) };
+}
+
 async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha, horaFinSalida) {
   // Bug real encontrado 2026-09-13 (el usuario cazó el del coeficiente
   // de marea y llevó a revisar el resto): con forecast_days=1 esto
@@ -764,6 +808,7 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha, horaF
     ? `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&start_date=${sumarDias(fecha, -8)}&end_date=${sumarDias(fecha, 8)}`
     : paramsComunes;
   const resultado = { marea_altura: null, marea_tendencia: null, marea_altura_fin: null, marea_tendencia_fin: null,
+    marea_pico_tipo: null, marea_pico_hora: null,
     marea_coeficiente: null, presion_valor: null, presion_tendencia: null,
     luna_fase: null, luna_iluminacion: null, viento_kmh: null, viento_dir: null,
     oleaje_altura_min: null, oleaje_altura_max: null, temp_agua: null,
@@ -797,16 +842,22 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha, horaF
     // array corto de viento, así que esos 4 campos salían siempre
     // `undefined`/"—", aunque marea/oleaje/temp. agua (que sí usan el
     // array correcto) se vieran bien.
-    // horaObjetivo parametrizada (no por closure) desde 2026-09-19 — hace
-    // falta buscar el índice de DOS horas distintas (inicio y fin de la
-    // salida) sobre la misma serie ya descargada, ver marea_altura_fin
-    // más abajo.
-    const buscarIndiceHora = (listaHoras, horaObjetivo0 = horaElegida) => {
+    // horaObjetivo y fechaObjetivo parametrizadas (no por closure) desde
+    // 2026-09-19 — hace falta buscar el índice de DOS horas distintas
+    // (inicio y fin de la salida) sobre la misma serie ya descargada, ver
+    // marea_altura_fin más abajo, y la de fin puede caer en el día
+    // SIGUIENTE si la salida cruza medianoche (fechaObjetivo distinta de
+    // `fecha`) — bug real encontrado al diseñar el pico de marea: antes
+    // esto siempre buscaba dentro del mismo `fecha` de la salida, así que
+    // una hora_fin de madrugada (ej. 02:00 de una salida que empezó a las
+    // 23:00) nunca se encontraba de verdad y caía en uno de los
+    // respaldos (mediodía del día de inicio, dato incorrecto).
+    const buscarIndiceHora = (listaHoras, horaObjetivo0 = horaElegida, fechaObjetivo = fecha) => {
       let i = -1;
       if (horaObjetivo0) {
         const [h, m] = horaObjetivo0.split(":").map(Number);
         const horaObjetivo = m >= 30 ? (h + 1) % 24 : h;
-        i = listaHoras.findIndex((hs) => (!fecha || hs.startsWith(fecha)) && +hs.slice(11, 13) === horaObjetivo);
+        i = listaHoras.findIndex((hs) => (!fechaObjetivo || hs.startsWith(fechaObjetivo)) && +hs.slice(11, 13) === horaObjetivo);
       }
       if (i === -1) {
         i = listaHoras.findIndex((hs) => hs.slice(0, 13) === horaActualMadridISO());
@@ -846,8 +897,15 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha, horaF
     // — reutiliza la misma serie horaria ya descargada (`horas`/
     // `serieAltura`), así que no hace falta ninguna petición extra a
     // Open-Meteo, solo mirar un índice distinto.
+    let idxFin = idx;
     if (horaFinSalida) {
-      const idxFin = buscarIndiceHora(horas, horaFinSalida);
+      // Si hora_fin <= hora_inicio, la salida cruza medianoche (mismo
+      // criterio ya usado para aceptar el dato sin bloquear el guardado)
+      // — la hora de fin cae en el día SIGUIENTE, no en `fecha`.
+      const fechaFin = fecha && horaFinSalida <= horaElegida
+        ? (() => { const d = new Date(fecha + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + 1); return d.toISOString().slice(0, 10); })()
+        : fecha;
+      idxFin = buscarIndiceHora(horas, horaFinSalida, fechaFin);
       const alturaMareaFin = serieAltura[idxFin];
       const alturaMareaFinSig = serieAltura[idxFin + 1];
       resultado.marea_altura_fin = alturaMareaFin != null ? +(alturaMareaFin - minAltura).toFixed(2) : null;
@@ -855,6 +913,19 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha, horaF
         ? (alturaMareaFinSig > alturaMareaFin ? "subiendo" : "bajando")
         : null;
     }
+
+    // Próximo pico de marea (pleamar/bajamar) de la SALIDA, no un número
+    // de altura suelto (2026-09-19, pedido explícito del usuario: "el
+    // dato de marea no tiene mucha lógica tal cual" — una altura relativa
+    // no dice nada útil por sí sola). Un único pico para toda la salida,
+    // no uno por hora_inicio y otro por hora_fin: el que caiga DENTRO del
+    // intervalo [hora_inicio, hora_fin]; si no hay ninguno dentro (sesión
+    // corta durante una subida/bajada sin girar), el más cercano por
+    // fuera del intervalo.
+    const picoMarea = picoDeMareaEnIntervalo(serieAltura, horas, idx, idxFin);
+    resultado.marea_pico_tipo = picoMarea?.tipo ?? null;
+    resultado.marea_pico_hora = picoMarea?.hora ?? null;
+
     // Bug real reportado por el usuario (2026-09-13): esto usaba
     // new Date() (el momento de guardar), no la fecha real de la
     // salida — una salida del 7 de septiembre guardada/editada más
@@ -935,6 +1006,48 @@ async function mareaEnMomento(lat, lon, hora, fecha) {
   } catch (e) {
     console.warn("No se pudo calcular la marea:", e.message);
     return { altura: null, tendencia: null };
+  }
+}
+
+// Marea completa al concluir la jornada (2026-09-19, pedido explícito
+// del usuario): altura+tendencia en hora_fin, y el pico de marea
+// (pleamar/bajamar) de toda la sesión — ver picoDeMareaEnIntervalo() y
+// el comentario largo en contextoAmbiental(). Ventana de 2 días (fecha y
+// fecha+1) en vez de uno solo: si la salida cruza medianoche, hora_fin
+// cae en el día siguiente y hace falta esa franja horaria en la serie.
+async function mareaDeConclusion(lat, lon, horaInicio, horaFin, fecha) {
+  const vacio = { alturaFin: null, tendenciaFin: null, picoTipo: null, picoHora: null };
+  if (!horaInicio || !horaFin || !fecha || !Number.isFinite(lat) || !Number.isFinite(lon)) return vacio;
+  try {
+    const manana = (() => { const d = new Date(fecha + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + 1); return d.toISOString().slice(0, 10); })();
+    const url = `https://marine-api.open-meteo.com/v1/marine?latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&start_date=${fecha}&end_date=${manana}&hourly=sea_level_height_msl`;
+    const marino = await fetch(url).then((r) => r.json());
+    const horas = marino.hourly?.time || [];
+    const serie = marino.hourly?.sea_level_height_msl || [];
+    const validas = serie.filter((v) => v !== null && v !== undefined);
+    const min = validas.length ? Math.min(...validas) : 0;
+    const indiceDe = (hora, fechaObjetivo) => {
+      const [h, m] = hora.split(":").map(Number);
+      const horaObjetivo = m >= 30 ? (h + 1) % 24 : h;
+      let i = horas.findIndex((hs) => hs.startsWith(fechaObjetivo) && +hs.slice(11, 13) === horaObjetivo);
+      if (i === -1) i = Math.max(0, horas.findIndex((hs) => hs.startsWith(fechaObjetivo)));
+      return i;
+    };
+    const idxInicio = indiceDe(horaInicio, fecha);
+    const fechaFin = horaFin <= horaInicio ? manana : fecha;
+    const idxFin = indiceDe(horaFin, fechaFin);
+    const alturaFin = serie[idxFin];
+    const alturaFinSig = serie[idxFin + 1];
+    const pico = picoDeMareaEnIntervalo(serie, horas, idxInicio, idxFin);
+    return {
+      alturaFin: alturaFin != null ? +(alturaFin - min).toFixed(2) : null,
+      tendenciaFin: alturaFin != null && alturaFinSig != null ? (alturaFinSig > alturaFin ? "subiendo" : "bajando") : null,
+      picoTipo: pico?.tipo ?? null,
+      picoHora: pico?.hora ?? null,
+    };
+  } catch (e) {
+    console.warn("No se pudo calcular la marea de conclusión:", e.message);
+    return vacio;
   }
 }
 
@@ -1080,7 +1193,13 @@ async function guardarSalida(fecha, idExistente) {
 
 function contextoHTML(salida) {
   const filas = [
-    ["MAREA", salida.marea_altura != null ? `${salida.marea_altura.toFixed?.(2) ?? salida.marea_altura}m ${salida.marea_tendencia === "subiendo" ? "↑" : salida.marea_tendencia === "bajando" ? "↓" : ""}` : "—"],
+    // Pico de marea (pleamar/bajamar + hora), no una altura suelta —
+    // pedido explícito del usuario 2026-09-19: "el dato de marea no tiene
+    // mucha lógica tal cual", un número de altura relativo no dice nada
+    // útil por sí solo. Ver picoDeMareaEnIntervalo().
+    ["MAREA", salida.marea_pico_tipo != null
+      ? `${salida.marea_pico_tipo === "pleamar" ? "🔺 Pleamar" : "🔻 Bajamar"} a las ${salida.marea_pico_hora}`
+      : "—"],
     ["COEF. MAREA", salida.marea_coeficiente != null ? String(salida.marea_coeficiente) : "—"],
     ["VIENTO", salida.viento_kmh != null ? `${salida.viento_kmh} km/h` : "—"],
     ["OLEAJE", salida.oleaje_altura_min != null ? `${salida.oleaje_altura_min}–${salida.oleaje_altura_max}m` : "—"],
@@ -1330,10 +1449,14 @@ async function concluirEntrada(iso, fechaObj, salida) {
     return;
   }
   if (!confirm("¿Concluir esta jornada? Podrás seguir editándola después si hace falta.")) return;
-  const marea = await mareaEnMomento(salida.lat, salida.lon, salida.hora_fin.slice(0, 5), salida.fecha);
+  const marea = await mareaDeConclusion(salida.lat, salida.lon, salida.hora_inicio?.slice(0, 5), salida.hora_fin.slice(0, 5), salida.fecha);
   const { error } = await supabase
     .from("salidas_pesca")
-    .update({ concluida: true, marea_altura_fin: marea.altura, marea_tendencia_fin: marea.tendencia })
+    .update({
+      concluida: true,
+      marea_altura_fin: marea.alturaFin, marea_tendencia_fin: marea.tendenciaFin,
+      marea_pico_tipo: marea.picoTipo, marea_pico_hora: marea.picoHora,
+    })
     .eq("id", salida.id);
   if (error) { alert(`No se ha podido concluir: ${error.message}`); return; }
   await cargarDatos();
