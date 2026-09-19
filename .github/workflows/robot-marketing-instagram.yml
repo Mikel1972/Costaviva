@@ -1,0 +1,79 @@
+name: Robot de marketing — Instagram
+
+# Pedido explícito del usuario (2026-09-19): marketing orgánico en
+# Instagram para captar usuarios, sin anuncios de pago. Alterna
+# condiciones reales de un spot (lunes/viernes) y especies de temporada
+# (miércoles) -- ver scripts/marketing/generar-post-instagram.mjs para el
+# criterio exacto, siempre a partir de datos ya reales del propio repo,
+# nunca inventados.
+#
+# Este workflow NUNCA publica nada en Instagram por su cuenta -- solo crea
+# un borrador (contenedor de la Content Publishing API, sin publicar) y
+# abre un Issue para que el usuario decida. La publicación real es un
+# segundo workflow aparte (publicar-post-instagram.yml), disparado a
+# mano. Pedido explícito del usuario: aprobación humana antes de que nada
+# se vea en público.
+#
+# Necesita los secrets/variables ya configurados en este repo (Settings →
+# Secrets and variables → Actions):
+#   - META_PAGE_ACCESS_TOKEN (secret) -- token de la Página de Facebook
+#     Costaviva, de larga duración, con acceso a la cuenta de Instagram
+#     Business vinculada.
+#   - META_IG_BUSINESS_ACCOUNT_ID (variable, no secreta) -- id de la
+#     cuenta de Instagram Business.
+#
+# Probar a mano (workflow_dispatch) antes de fiarse del schedule, mismo
+# criterio que el resto de rutinas programadas de este repo.
+
+on:
+  schedule:
+    - cron: "0 9 * * 1,3,5"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  generar-y-proponer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Instalar fuente de emoji (el runner Ubuntu no trae ninguna)
+        run: |
+          sudo apt-get update && sudo apt-get install -y fonts-noto-color-emoji
+          fc-cache -f
+
+      - name: Instalar dependencias del script
+        working-directory: scripts/marketing
+        run: npm ci --no-audit --no-fund
+
+      - name: Generar imagen y texto del post
+        working-directory: scripts/marketing
+        run: node generar-post-instagram.mjs
+
+      - name: Comitear y subir la imagen generada
+        run: |
+          git config user.name "Claude (robot Costaviva)"
+          git config user.email "actions@github.com"
+          git add assets/marketing/
+          git commit -m "Robot de marketing: nueva imagen para Instagram"
+          git push
+
+      - name: Asegurar que existe la etiqueta "marketing"
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh label create marketing --color FFD700 --description "Propuestas de marketing (Instagram, etc.)" --force
+
+      - name: Crear borrador en Instagram y abrir Issue de revisión
+        working-directory: scripts/marketing
+        env:
+          GH_TOKEN: ${{ github.token }}
+          META_PAGE_ACCESS_TOKEN: ${{ secrets.META_PAGE_ACCESS_TOKEN }}
+          META_IG_BUSINESS_ACCOUNT_ID: ${{ vars.META_IG_BUSINESS_ACCOUNT_ID }}
+        run: node publicar-borrador-instagram.mjs
