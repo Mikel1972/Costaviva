@@ -212,10 +212,61 @@ reinventarlo si añades una estimación nueva sobre una fuente de vídeo.
   no una cámara en directo — la propia web de turismo local admite que
   "está fuera de servicio por mantenimiento". No investigar más esta
   población salvo que aparezca una fuente nueva y distinta.
-- **Bermeo: sin verificar todavía** — `bermeo.eus/webcam.html` existe
-  (enlazada desde su portada) pero no se pudo comprobar por timeout de
-  red en la sesión que hizo esta pasada; su carpeta en `kostasystem.com`
-  lleva muerta desde 2024. Pendiente de reintentar.
+- **Bermeo: sin verificar todavía, dos intentos reales fallidos por
+  timeout de red** (`bermeo.eus/webcam.html`, 2026-09-19, con reintentos)
+  — no es un 404 ni un rechazo, es que la conexión no llega a completarse
+  desde este entorno; puede ser el propio servidor de bermeo.eus, no
+  necesariamente un bloqueo de nuestro lado (ver la limitación ya
+  documentada de red bloqueada en sesiones de robot/auditoría en la
+  nube — aquí fue en una sesión interactiva, así que no está tan claro
+  que sea lo mismo). Su carpeta en `kostasystem.com` lleva muerta desde
+  2024. Pendiente de reintentar en una pasada futura, desde otra red si
+  es posible verificarlo así.
+
+### Zona: País Vasco — Gipuzkoa (última pasada real: 2026-09-19, interactiva con el usuario, no la rotación automática)
+
+- **Directorio oficial completo de webcams de la Diputación Foral**:
+  `gipuzkoa.eus/es/web/hondartzak/webcams` lista sus cámaras reales:
+  Deba, Hondarribia, La Concha, Malkorbe (Getaria), Ondarreta, Orio,
+  Puerto de Mutriku, Saturrarán, Zarautz, Zurriola (Donostia). Ni Zumaia
+  ni Ondarroa aparecen en este directorio — confirmado que la Diputación
+  no tiene cámara en esas dos poblaciones, no hace falta seguir buscando
+  ahí.
+- **Bug real corregido: Getaria (Malkorbe) SÍ tenía vídeo de la
+  Diputación, el 404 de 2026-09-14 fue por probar el nombre equivocado.**
+  La URL de su página web usa "malkorbe" (el nombre de la playa), pero el
+  nombre real de la cámara en el servidor (`58f14c0895a20.streamlock.net`)
+  es "getaria" (el nombre del pueblo) — mismo patrón que ya se sabía de
+  "mutrikukaia" vs. el nombre de playa. **Lección para pasadas futuras de
+  este proveedor**: cuando una URL con el nombre de la playa/página dé
+  404, probar también con el nombre del pueblo antes de dar la cámara
+  por inexistente — la Diputación no es consistente en qué nombre usa
+  para cada cámara. Integrado como fuente principal de `getaria`
+  (`WEBCAMS_HLS`), la imagen fija de AZTI se queda como reserva.
+- **Zumaia (playa de Itzurun) tenía cámara real, nunca la habíamos
+  encontrado**: no está en el directorio de la Diputación, pero el propio
+  ayuntamiento (`zumaia.eus/.../webcam`) la aloja en el MISMO servidor
+  streamlock.net que la Diputación, con un nombre de stream distinto
+  (`GIP_zumaia2`) — verificado en vivo, 1280x960, CORS abierto. Primera
+  cámara real de este spot. **Lección**: cuando un ayuntamiento no tenga
+  su propia infraestructura de streaming, comprobar si usa el mismo
+  proveedor/servidor que la Diputación/gobierno regional antes de
+  descartar la población — puede estar ahí con un nombre distinto al que
+  aparece en el directorio oficial.
+- **Ondarroa: sin fuente real encontrada, confirmado con más
+  profundidad que en la primera pasada.** Ni en el directorio de la
+  Diputación, ni en `kostasystem.com`, ni intentando nombres de stream
+  plausibles en streamlock.net (`ondarroa`, `ondarroa2`, `arrigorri`
+  → 404). Existe `GIP_saturraran_169` (200, real) pero Saturrarán es una
+  playa distinta, en término de Mutriku, ya descartada a propósito para
+  el spot de Mutriku por el mismo motivo ("la cámara equivocada para
+  este spot", no un problema de encuadre) — no reutilizarla para
+  Ondarroa por la misma razón. EITB tiene página de "playas" para
+  Arrigorri (Ondarroa) pero sin ninguna cámara real embebida (solo
+  enlaces a su sección de cámaras de nieve/montaña, nada de costa). Dar
+  por buena esta población como "sin fuente conocida" hasta que aparezca
+  algo genuinely nuevo — no repetir esta misma búsqueda sin una pista
+  distinta.
 
 ## Sinónimos regionales de especies y cebos (añadido 2026-09-13)
 
