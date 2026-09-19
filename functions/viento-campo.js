@@ -97,7 +97,10 @@ export async function onRequestGet(context) {
   try {
     const resp = await fetch(
       `https://api.open-meteo.com/v1/forecast?latitude=${lats.join(",")}&longitude=${lons.join(",")}` +
-        `&hourly=windspeed_10m,winddirection_10m&wind_speed_unit=ms&forecast_days=1&timezone=UTC`
+        // forecast_days=2, no 1: si "ahora" cae tarde en el día, con solo
+        // el día de hoy no quedarían 24h reales por delante para la
+        // barra deslizante (ver el recorte por idxAhora más abajo).
+        `&hourly=windspeed_10m,winddirection_10m&wind_speed_unit=ms&forecast_days=2&timezone=UTC`
     );
     if (!resp.ok) throw new Error(`Open-Meteo respondió ${resp.status}`);
     datos = await resp.json();
@@ -112,10 +115,21 @@ export async function onRequestGet(context) {
   // punto, mismo orden que se pidió) en vez de un único objeto.
   const porPunto = Array.isArray(datos) ? datos : [datos];
   const horas = porPunto[0]?.hourly?.time || [];
-  const NUM_HORAS = Math.min(horas.length, 24);
+
+  // Bug real encontrado probando el endpoint en preview: forecast_days=1
+  // devuelve las 24h del día completo empezando en medianoche UTC, así
+  // que el índice 0 podía ser "medianoche", no "ahora" -- el usuario
+  // pidió expresamente "el dato actual" como snapshot por defecto.
+  // Busca la hora UTC actual dentro de la serie y empieza a contar desde
+  // ahí (con 0 como respaldo si por lo que sea no aparece).
+  const horaActualUTC = new Date().toISOString().slice(0, 13);
+  let idxAhora = horas.findIndex((h) => h.startsWith(horaActualUTC));
+  if (idxAhora === -1) idxAhora = 0;
+  const NUM_HORAS = Math.min(horas.length - idxAhora, 24);
 
   const snapshots = [];
-  for (let h = 0; h < NUM_HORAS; h++) {
+  for (let hh = 0; hh < NUM_HORAS; hh++) {
+    const h = idxAhora + hh;
     const bandaU = new Array(PUNTOS_POR_LADO * PUNTOS_POR_LADO).fill(0);
     const bandaV = new Array(PUNTOS_POR_LADO * PUNTOS_POR_LADO).fill(0);
     for (let p = 0; p < porPunto.length; p++) {
