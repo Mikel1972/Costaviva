@@ -1,0 +1,50 @@
+name: Publicar post de Instagram
+
+# Segundo paso del robot de marketing (ver robot-marketing-instagram.yml)
+# -- pedido explícito del usuario: la publicación real en Instagram
+# SIEMPRE es manual, nunca automática. Este workflow solo hace el
+# segundo paso de la Content Publishing API (/media_publish) sobre un
+# contenedor ya creado por el robot -- nunca crea contenido nuevo por su
+# cuenta.
+#
+# Disparar a mano desde la pestaña Actions → "Run workflow", pegando el
+# creation_id que trae el Issue de revisión que abrió el robot.
+
+on:
+  workflow_dispatch:
+    inputs:
+      creation_id:
+        description: "ID del contenedor a publicar (viene en el Issue de revisión)"
+        required: true
+        type: string
+      issue_number:
+        description: "Número del Issue de revisión, para comentar/cerrarlo al publicar (opcional)"
+        required: false
+        type: string
+
+permissions:
+  issues: write
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publicar el contenedor en Instagram
+        env:
+          META_PAGE_ACCESS_TOKEN: ${{ secrets.META_PAGE_ACCESS_TOKEN }}
+          META_IG_BUSINESS_ACCOUNT_ID: ${{ vars.META_IG_BUSINESS_ACCOUNT_ID }}
+        run: |
+          RESPUESTA=$(curl -s -X POST "https://graph.facebook.com/v21.0/${META_IG_BUSINESS_ACCOUNT_ID}/media_publish" \
+            --data-urlencode "creation_id=${{ inputs.creation_id }}" \
+            --data-urlencode "access_token=${META_PAGE_ACCESS_TOKEN}")
+          echo "$RESPUESTA"
+          echo "$RESPUESTA" | grep -q '"id"' || { echo "::error::La publicación falló, revisa la respuesta de arriba"; exit 1; }
+          echo "POST_ID=$(echo "$RESPUESTA" | grep -o '"id":"[^"]*"' | head -1 | cut -d'"' -f4)" >> "$GITHUB_ENV"
+
+      - name: Comentar y cerrar el Issue de revisión
+        if: ${{ inputs.issue_number != '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue comment "${{ inputs.issue_number }}" --body "✅ Publicado en Instagram (id del post: ${POST_ID})."
+          gh issue close "${{ inputs.issue_number }}"
