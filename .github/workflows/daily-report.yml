@@ -87,6 +87,34 @@ jobs:
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
+      - name: SEO -- páginas públicas (comprobación técnica, sin API de Search Console)
+        # Añadido 2026-09-19, pedido explícito del usuario ("avísame en
+        # los informes diarios") tras publicar las páginas públicas de
+        # SEO (índice /mareas, 8 regiones, 105 spots). Esto NO son datos
+        # reales de indexación/tráfico de Google -- eso necesitaría la
+        # API de Search Console (proyecto de Google Cloud + cuenta de
+        # servicio), que el usuario decidió no montar por ahora. Es solo
+        # una comprobación de que las páginas siguen respondiendo bien,
+        # mismo patrón que el resto de "Fuentes externas" de este
+        # informe -- si un día se monta la integración real con Search
+        # Console, este paso se sustituye por datos de verdad.
+        id: seo
+        run: |
+          check() {
+            local nombre="$1" url="$2"
+            code=$(curl -sS -o /dev/null -w "%{http_code}" --max-time 15 "$url" || echo "000")
+            if [ "$code" = "200" ]; then echo "  - $nombre: ✅ ($code)"; else echo "  - $nombre: ❌ ($code)"; fi
+          }
+          {
+            echo "resultado<<EOF"
+            check "/mareas (índice)" "https://costaviva.org/mareas"
+            check "/mareas/region/pais-vasco" "https://costaviva.org/mareas/region/pais-vasco"
+            check "/mareas/mundaka (spot de ejemplo)" "https://costaviva.org/mareas/mundaka"
+            check "/sitemap.xml" "https://costaviva.org/sitemap.xml"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+        continue-on-error: true
+
       - name: Estado de las webcams (camara_estado, tabla pública)
         # Añadido 2026-09-19, pedido explícito del usuario: un informe
         # diario de qué cámaras están fallando (sin señal de verdad, o
@@ -333,6 +361,8 @@ jobs:
               `${{ steps.fuentes.outputs.resultado }}`,
               `- Cámaras/webcams:`,
               `${{ steps.camaras.outputs.resultado }}`,
+              `- SEO (páginas públicas):`,
+              `${{ steps.seo.outputs.resultado }}`,
               `- Marketing (Instagram):`,
               `${{ steps.marketing.outputs.resultado }}`,
               lineaKpi,
