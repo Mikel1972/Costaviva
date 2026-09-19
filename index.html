@@ -2391,8 +2391,18 @@ const SPOTS_CON_WEBCAM = [
   // SOCIB (Baleares) — endpoint interno del visor BEAMON, verificado 2026-09-09
   "calamillor", "sonbou", "muro",
   // Diputación Foral de Gipuzkoa (vídeo HLS, ver WEBCAMS_HLS más abajo) —
-  // verificadas 2026-09-14
+  // verificadas 2026-09-14. "getaria" ya estaba en la lista de arriba
+  // (AZTI) — desde 2026-09-19 usa el vídeo de la Diputación como fuente
+  // principal (el nombre real de cámara en su servidor es "getaria", no
+  // "malkorbe" como en la URL de su propia web — el 404 de 2026-09-14 era
+  // por eso, no porque la cámara no exista), la imagen de AZTI se queda
+  // como reserva.
   "hondarribia", "donostia", "orio", "zarautz", "deba", "mutriku",
+  // Zumaia (playa de Itzurun) — cámara propia del ayuntamiento
+  // (zumaia.eus), añadida 2026-09-19: mismo servidor streamlock.net que
+  // la Diputación pero un stream distinto (GIP_zumaia2), verificado en
+  // vivo. Primera cámara real de este spot desde que existe en la app.
+  "zumaia",
 ];
 
 // Webcams en vídeo en directo (HLS) — Diputación Foral de Gipuzkoa,
@@ -2430,6 +2440,12 @@ const WEBCAMS_HLS = {
   // fuente principal (mismo criterio vídeo > imagen fija que Sopelana) —
   // esa imagen fija se queda como reserva en WEBCAMS.getaria.
   getaria: "https://58f14c0895a20.streamlock.net/camaramar/GIP_getaria_169.stream/playlist.m3u8",
+  // Zumaia (playa de Itzurun): cámara propia del ayuntamiento
+  // (zumaia.eus/.../webcam), hospedada en el mismo servidor streamlock.net
+  // que la Diputación pero como stream aparte. Verificada en vivo
+  // 2026-09-19: 1280x960, CORS abierto, segmentos reales. Zumaia no tenía
+  // ninguna cámara hasta ahora.
+  zumaia: "https://58f14c0895a20.streamlock.net/camaramar/GIP_zumaia2.stream/playlist.m3u8",
 };
 
 const REFRESCO_WEBCAM_MS = 60000; // 1 min: suficiente para sentirse "en directo" sin sobrecargar al proveedor original
