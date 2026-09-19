@@ -418,7 +418,18 @@
        cada viewport. z-index subido a 900 (por encima de la atribución,
        por si acaso) pero sigue por debajo del menú (1100) a propósito.
     */
-    position: absolute; bottom: 90px; right: 64px; z-index: 900;
+    /* right:118px, no 64px -- pedido explícito del usuario 2026-09-19:
+       "la leyenda no debe tapar el menu de capas". Hay DOS columnas de
+       botones de capa superpuestas visualmente sobre el mapa: la
+       principal en right:16px (Rayos/Luna/Fondo/Lluvia/Estac./Viento) y
+       otra en right:64px (Spots/Añadir/Ríos/Boyas) -- el panel arrancaba
+       justo en right:64px, exactamente donde empieza esa segunda
+       columna, así que su borde izquierdo del panel (con 190px de
+       ancho) se comía Ríos/Boyas por debajo (z-index 502, menor que el
+       901 del panel). 118px = 64 + 44 (ancho de un botón) + 10 de hueco,
+       deja las dos columnas completamente libres.
+    */
+    position: absolute; bottom: 90px; right: 118px; z-index: 900;
     background: #FFFFFF; border: 1px solid #DDE2DC; border-radius: 8px;
     padding: 10px 14px; font-size: 11px; font-family: 'IBM Plex Mono', monospace;
     width: 190px;
