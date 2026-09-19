@@ -9,6 +9,15 @@ name: Publicar post de Instagram
 #
 # Disparar a mano desde la pestaña Actions → "Run workflow", pegando el
 # creation_id que trae el Issue de revisión que abrió el robot.
+#
+# Pedido explícito del usuario (2026-09-19): llevar cuenta de impresiones/
+# alcance de cada post publicado, para ir afinando qué contenido funciona
+# mejor. Este workflow apunta el post recién publicado en
+# scripts/marketing/posts-publicados.jsonl (id, fecha, tipo, issue); un
+# workflow aparte (metricas-instagram.yml) revisa esa lista pasadas 48h
+# (a las métricas de Instagram les hace falta ese margen para asentarse)
+# y guarda el resultado real en CALIBRACION.jsonl, mismo fichero que ya
+# usa el resto de calibraciones del repo.
 
 on:
   workflow_dispatch:
@@ -24,11 +33,14 @@ on:
 
 permissions:
   issues: write
+  contents: write
 
 jobs:
   publicar:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+
       - name: Publicar el contenedor en Instagram
         env:
           META_PAGE_ACCESS_TOKEN: ${{ secrets.META_PAGE_ACCESS_TOKEN }}
@@ -41,10 +53,21 @@ jobs:
           echo "$RESPUESTA" | grep -q '"id"' || { echo "::error::La publicación falló, revisa la respuesta de arriba"; exit 1; }
           echo "POST_ID=$(echo "$RESPUESTA" | grep -o '"id":"[^"]*"' | head -1 | cut -d'"' -f4)" >> "$GITHUB_ENV"
 
+      - name: Apuntar el post publicado (para medir métricas más adelante)
+        run: |
+          mkdir -p scripts/marketing
+          LINEA=$(node -e "console.log(JSON.stringify({postId: process.env.POST_ID, fecha: new Date().toISOString(), issueNumber: '${{ inputs.issue_number }}' || null, medido: false}))")
+          echo "$LINEA" >> scripts/marketing/posts-publicados.jsonl
+          git config user.name "Claude (robot Costaviva)"
+          git config user.email "actions@github.com"
+          git add scripts/marketing/posts-publicados.jsonl
+          git commit -m "Robot de marketing: post publicado en Instagram (${POST_ID})"
+          git push
+
       - name: Comentar y cerrar el Issue de revisión
         if: ${{ inputs.issue_number != '' }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh issue comment "${{ inputs.issue_number }}" --body "✅ Publicado en Instagram (id del post: ${POST_ID})."
+          gh issue comment "${{ inputs.issue_number }}" --body "✅ Publicado en Instagram (id del post: ${POST_ID}). Las métricas de alcance/impresiones se revisarán automáticamente a las 48h."
           gh issue close "${{ inputs.issue_number }}"

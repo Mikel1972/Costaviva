@@ -31,12 +31,23 @@ if (!PAGE_ACCESS_TOKEN || !IG_BUSINESS_ACCOUNT_ID) {
   process.exit(1);
 }
 
+// Bug real visto en producción 2026-09-19: el primer intento ya daba 200
+// (la propia comprobación tocó un nodo de Cloudflare que ya tenía el
+// fichero recién publicado), pero la API de Instagram rechazó la imagen
+// con "formato desconocido" al intentar descargarla ella misma segundos
+// después -- lo más probable, su rastreador tocó OTRO nodo del borde de
+// Cloudflare que todavía no había recibido la propagación global del
+// deploy. Por eso, tras el primer 200, se espera un margen fijo antes de
+// darlo por bueno de verdad, en vez de seguir al instante.
+const MARGEN_PROPAGACION_MS = 45000;
+
 async function esperarUrlPublica(url, intentosMax = 20, esperaMs = 15000) {
   for (let intento = 1; intento <= intentosMax; intento++) {
     try {
       const resp = await fetch(url, { method: "HEAD" });
       if (resp.ok) {
-        console.log(`✓ ${url} ya responde 200 (intento ${intento})`);
+        console.log(`✓ ${url} respondió 200 (intento ${intento}) -- esperando ${MARGEN_PROPAGACION_MS / 1000}s más para que se propague por todo el borde de Cloudflare`);
+        await new Promise((r) => setTimeout(r, MARGEN_PROPAGACION_MS));
         return;
       }
       console.log(`… ${url} respondió ${resp.status}, reintentando (${intento}/${intentosMax})`);
