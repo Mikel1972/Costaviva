@@ -110,10 +110,15 @@ async function analizarBuffer(buffer) {
 async function comprobarImagen(slug) {
   const resp = await fetch(`${BASE_URL}/webcam/${slug}`, { headers: { "User-Agent": "CostaVivaCamarasBot/1.0" } });
   if (!resp.ok) return { ok: false, motivo: `http_${resp.status}` };
+  // Índice de la fuente que sirvió de verdad (ver functions/webcam/[slug].js)
+  // — >0 significa que la principal falló y el proxy recurrió sola a una de
+  // reserva sin que el usuario lo note; aquí sí interesa saberlo para
+  // reportarlo, aunque la app siga funcionando con normalidad.
+  const fuenteUsada = Number(resp.headers.get("x-webcam-fuente-indice") ?? 0) || 0;
   const buffer = Buffer.from(await resp.arrayBuffer());
   const r = await analizarBuffer(buffer);
-  if (!r) return { ok: false, motivo: "sin_pixeles" };
-  return { ok: true, ...r };
+  if (!r) return { ok: false, motivo: "sin_pixeles", fuenteUsada };
+  return { ok: true, ...r, fuenteUsada };
 }
 
 async function comprobarVideo(url) {
@@ -201,6 +206,10 @@ function construirLectura(slug, bruto, previo, ahora) {
     fallosSeguidos: estado.fallosSeguidos,
     hashFrame: estado.hashFrame,
     hashDesde: estado.hashDesde,
+    // 0 = sirvió la fuente principal; >0 = el proxy tuvo que recurrir a una
+    // de reserva (ver functions/webcam/[slug].js) — la app sigue mostrando
+    // imagen real, pero interesa saber que la principal está fallando.
+    fuenteUsada: bruto.fuenteUsada ?? 0,
   };
 }
 
@@ -221,7 +230,8 @@ async function main() {
     }
     const lectura = construirLectura(slug, bruto, previo[slug], ahora);
     lecturas.push(lectura);
-    console.log(`${lectura.sinSenal ? "✗" : "✓"} ${slug}: ${lectura.motivo}`);
+    const avisoReserva = lectura.fuenteUsada > 0 ? ` [usando fuente de reserva #${lectura.fuenteUsada}]` : "";
+    console.log(`${lectura.sinSenal ? "✗" : "✓"} ${slug}: ${lectura.motivo}${avisoReserva}`);
   }
   for (const [slug, url] of Object.entries(WEBCAMS_VIDEO)) {
     const bruto = await comprobarVideo(url);
