@@ -2033,7 +2033,7 @@ async function datosAmbientalesPunto(lat, lon) {
   // (oleaje/viento/etc.) se queda con la ventana de siempre.
   const paramsMarea = `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&forecast_days=2`;
   const [marino, tiempo] = await Promise.all([
-    fetch(`https://marine-api.open-meteo.com/v1/marine?${paramsMarea}&hourly=wave_height,wave_direction,sea_surface_temperature,sea_level_height_msl,ocean_current_velocity,ocean_current_direction`).then((r) => r.json()),
+    fetch(`https://marine-api.open-meteo.com/v1/marine?${paramsMarea}&hourly=wave_height,wave_period,wave_direction,sea_surface_temperature,sea_level_height_msl,ocean_current_velocity,ocean_current_direction`).then((r) => r.json()),
     fetch(`https://api.open-meteo.com/v1/forecast?${params}&hourly=windspeed_10m,winddirection_10m,pressure_msl,cloudcover,precipitation&windspeed_unit=kmh`).then((r) => r.json()),
   ]);
   const horas = marino.hourly?.time || [];
@@ -2077,9 +2077,11 @@ async function datosAmbientalesPunto(lat, lon) {
   const velocidadCorriente = marino.hourly?.ocean_current_velocity?.[idx];
   const dirCorrienteGrados = marino.hourly?.ocean_current_direction?.[idx];
 
+  const periodoOla = marino.hourly?.wave_period?.[idx];
+
   return {
     altura: alturasVentana.length ? [Math.min(...alturasVentana), Math.max(...alturasVentana)] : [0, 0],
-    periodo: null,
+    periodo: periodoOla != null ? Math.round(periodoOla) : null,
     dirOla: textoRumbo(marino.hourly?.wave_direction?.[idx] ?? 0),
     viento: Math.round(tiempo.hourly?.windspeed_10m?.[idxTiempo] ?? 0),
     dirViento: textoRumbo(tiempo.hourly?.winddirection_10m?.[idxTiempo] ?? 0),
@@ -2754,7 +2756,10 @@ function abrirPanel(s) {
   document.getElementById("panelEtiquetaComunidad").style.display = s.esUsuario ? "inline" : "none";
   document.getElementById("panelBtnBorrar").style.display = (s.esUsuario && s.propio) ? "inline" : "none";
   document.getElementById("panelOla").textContent = `${s.altura[0]}–${s.altura[1]}m`;
-  document.getElementById("panelOlaDir").textContent = `${s.periodo}s · ${s.dirOla}`;
+  // Bug real visto en Lemoiz (spot personalizado) 2026-09-19: con
+  // periodo null salía literalmente "nulls · NW" -- ahora se esconde el
+  // periodo si no hay dato, en vez de interpolarlo tal cual en el texto.
+  document.getElementById("panelOlaDir").textContent = s.periodo != null ? `${s.periodo}s · ${s.dirOla}` : s.dirOla;
   document.getElementById("panelViento").textContent = `${s.viento} km/h`;
   document.getElementById("panelVientoDir").textContent = s.dirViento;
 
