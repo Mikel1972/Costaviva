@@ -31,11 +31,6 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const RAIZ_REPO = join(__dirname, "..", "..");
 const BASE_URL = "https://costaviva.org";
 
-// Spots con nombre reconocible y buena presencia visual para protagonizar
-// el post -- rotación determinista por día del año, no aleatoria, para que
-// sea reproducible si hay que depurar una pasada concreta.
-const SPOTS_DESTACADOS = ["mundaka", "bakio", "zarautz", "donostia", "santander", "laredo", "hondarribia", "getxo"];
-
 const DORADO = "#A8792A";
 const DORADO_FONDO = "#D4A24C";
 const NAVY = "#0B2532";
@@ -89,6 +84,19 @@ function piePaginaSvg() {
   `;
 }
 
+// Solo spots con webcam real servida por nuestro propio proxy /webcam/
+// (imagen fija, no vídeo HLS -- eso necesitaría ffmpeg, que este script
+// no lleva) -- pedido explícito del usuario: la foto real en directo es
+// justo lo que diferencia el post de un simple parte del tiempo. Lista
+// verificada a mano contra SPOTS_CON_WEBCAM/functions/webcam/[slug].js
+// 2026-09-19: mundaka, bakio, getxo, laredo, santona tienen imagen fija;
+// zarautz/donostia/hondarribia son solo vídeo HLS y santander no tiene
+// webcam -- se quitaron de esta lista (mantener sincronizado a mano si
+// cambia el proxy).
+const SPOTS_DESTACADOS = ["mundaka", "bakio", "getxo", "laredo", "santona"];
+
+const PANEL_FOTO = { x: 140, y: 410, width: 800, height: 310 };
+
 async function generarCondiciones() {
   const dia = diaDelAnio(new Date());
   const slug = SPOTS_DESTACADOS[dia % SPOTS_DESTACADOS.length];
@@ -118,29 +126,47 @@ async function generarCondiciones() {
     .map((t, i) => {
       const x = inicioX + i * (anchoTarjeta + espacio);
       return `
-        <rect x="${x}" y="620" width="${anchoTarjeta}" height="220" rx="16" fill="${BLANCO}" stroke="${BORDE}" stroke-width="2" />
-        <text x="${x + anchoTarjeta / 2}" y="680" font-family="Arial, sans-serif" font-size="44" text-anchor="middle">${t.emoji}</text>
-        <text x="${x + anchoTarjeta / 2}" y="730" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="${GRIS}" letter-spacing="1" text-anchor="middle">${t.titulo}</text>
-        <text x="${x + anchoTarjeta / 2}" y="775" font-family="Georgia, serif" font-size="26" font-weight="bold" fill="${NAVY}" text-anchor="middle">${escaparXml(t.valor)}</text>
+        <rect x="${x}" y="760" width="${anchoTarjeta}" height="190" rx="16" fill="${BLANCO}" stroke="${BORDE}" stroke-width="2" />
+        <text x="${x + anchoTarjeta / 2}" y="810" font-family="Arial, sans-serif" font-size="38" text-anchor="middle">${t.emoji}</text>
+        <text x="${x + anchoTarjeta / 2}" y="852" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="${GRIS}" letter-spacing="1" text-anchor="middle">${t.titulo}</text>
+        <text x="${x + anchoTarjeta / 2}" y="895" font-family="Georgia, serif" font-size="24" font-weight="bold" fill="${NAVY}" text-anchor="middle">${escaparXml(t.valor)}</text>
       `;
     })
     .join("");
 
-  const svg = `
+  // Intenta traer la foto real de la webcam del spot (nuestro propio
+  // proxy, ya gestiona failover/extracción de MJPEG él solo) -- si falla
+  // por lo que sea, el post sigue saliendo igual pero con el círculo de
+  // antes en vez de la foto (nunca bloquea la generación por esto).
+  let fotoWebcamBuffer = null;
+  try {
+    const respFoto = await fetch(`${BASE_URL}/webcam/${slug}`);
+    if (respFoto.ok) fotoWebcamBuffer = Buffer.from(await respFoto.arrayBuffer());
+    else console.warn(`No se pudo traer la webcam de ${slug}: HTTP ${respFoto.status}`);
+  } catch (e) {
+    console.warn(`No se pudo traer la webcam de ${slug}: ${e.message}`);
+  }
+
+  const capaBase = `
     <svg width="1080" height="1080" xmlns="http://www.w3.org/2000/svg">
       ${cabeceraSvg()}
       <text x="540" y="330" font-family="Georgia, serif" font-size="72" font-weight="bold" fill="${NAVY}" text-anchor="middle">${escaparXml(spot.nombre)}</text>
-      <text x="540" y="380" font-family="Arial, sans-serif" font-size="24" fill="${GRIS}" text-anchor="middle">Condiciones reales ahora mismo</text>
-      <circle cx="540" cy="520" r="150" fill="${DORADO_FONDO}" opacity="0.15" />
-      <text x="540" y="545" font-family="Arial, sans-serif" font-size="90" text-anchor="middle">🎣</text>
+      <text x="540" y="380" font-family="Arial, sans-serif" font-size="24" fill="${GRIS}" text-anchor="middle">${fotoWebcamBuffer ? "Webcam en directo + condiciones reales" : "Condiciones reales ahora mismo"}</text>
+      ${fotoWebcamBuffer ? "" : `
+        <circle cx="540" cy="565" r="150" fill="${DORADO_FONDO}" opacity="0.15" />
+        <text x="540" y="590" font-family="Arial, sans-serif" font-size="90" text-anchor="middle">🎣</text>
+      `}
       ${tarjetasSvg}
       ${piePaginaSvg()}
     </svg>
   `;
 
   const caption = [
+    "🎣 La primera app que te da los datos reales del momento de tu spot de pesca",
+    "",
     `📍 ${spot.nombre} ahora mismo`,
     "",
+    ...(fotoWebcamBuffer ? ["🎥 Con webcam en directo -- mira el mar antes de salir de casa", ""] : []),
     `🌊 Oleaje: ${oleajeTexto}`,
     `💨 Viento: ${vientoTexto}`,
     `🌙 Marea: ${spot.marea.tendencia} (coef. ${spot.marea.coeficiente})`,
@@ -150,7 +176,37 @@ async function generarCondiciones() {
     "#pesca #surf #costaviva #paisvasco #cantabrico #pescadesdecosta",
   ].join("\n");
 
-  return { tipo: "condiciones", svg, caption, slug: `condiciones-${slug}` };
+  if (!fotoWebcamBuffer) {
+    return { tipo: "condiciones", svg: capaBase, caption, slug: `condiciones-${slug}` };
+  }
+
+  // Con foto: 3 capas compuestas por sharp -- fondo (todo salvo el hueco
+  // de la foto, que se deja en blanco), la foto real recortada a ese
+  // hueco, y un borde+insignia "EN DIRECTO" encima para que se note que
+  // es una foto de verdad y no un adorno.
+  const capaBorde = `
+    <svg width="1080" height="1080" xmlns="http://www.w3.org/2000/svg">
+      <rect x="${PANEL_FOTO.x}" y="${PANEL_FOTO.y}" width="${PANEL_FOTO.width}" height="${PANEL_FOTO.height}" fill="none" stroke="${DORADO}" stroke-width="4" />
+      <rect x="${PANEL_FOTO.x + 16}" y="${PANEL_FOTO.y + 16}" width="190" height="44" rx="22" fill="#C0392B" />
+      <circle cx="${PANEL_FOTO.x + 40}" cy="${PANEL_FOTO.y + 38}" r="7" fill="${BLANCO}" />
+      <text x="${PANEL_FOTO.x + 58}" y="${PANEL_FOTO.y + 44}" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="${BLANCO}" letter-spacing="1">EN DIRECTO</text>
+    </svg>
+  `;
+
+  const fotoRecortada = await sharp(fotoWebcamBuffer)
+    .resize(PANEL_FOTO.width, PANEL_FOTO.height, { fit: "cover" })
+    .png()
+    .toBuffer();
+
+  const pngBuffer = await sharp(Buffer.from(capaBase))
+    .composite([
+      { input: fotoRecortada, top: PANEL_FOTO.y, left: PANEL_FOTO.x },
+      { input: Buffer.from(capaBorde), top: 0, left: 0 },
+    ])
+    .png()
+    .toBuffer();
+
+  return { tipo: "condiciones", pngBuffer, caption, slug: `condiciones-${slug}` };
 }
 
 // Lee ESPECIES directamente de index.html en vez de mantener una copia --
@@ -196,6 +252,8 @@ async function generarEspecies() {
   `;
 
   const caption = [
+    "🎣 La primera app que te da los datos reales del momento de tu spot de pesca",
+    "",
     `${especie.emoji} ${especie.nombre} — de temporada ahora mismo`,
     "",
     especie.nota.charAt(0).toUpperCase() + especie.nota.slice(1) + ".",
@@ -217,7 +275,7 @@ async function main() {
   const diaSemana = new Date().getDay(); // 0=domingo ... 3=miércoles
   const generador = diaSemana === 3 ? generarEspecies : generarCondiciones;
 
-  const { tipo, svg, caption, slug } = await generador();
+  const { tipo, svg, pngBuffer, caption, slug } = await generador();
 
   const fecha = new Date().toISOString().slice(0, 10);
   const nombreFichero = `${fecha}-${slug}.png`;
@@ -225,7 +283,12 @@ async function main() {
   const rutaAbsoluta = join(RAIZ_REPO, rutaRelativa);
 
   mkdirSync(join(RAIZ_REPO, "assets", "marketing"), { recursive: true });
-  await sharp(Buffer.from(svg)).png().toFile(rutaAbsoluta);
+  // generarCondiciones() puede devolver un PNG ya compuesto (foto real de
+  // la webcam de por medio) en vez de solo el SVG -- si viene el buffer
+  // ya hecho, se escribe tal cual; si no, se renderiza el SVG como
+  // siempre (mismo camino que ya usaba generarEspecies()).
+  if (pngBuffer) writeFileSync(rutaAbsoluta, pngBuffer);
+  else await sharp(Buffer.from(svg)).png().toFile(rutaAbsoluta);
   console.log(`✓ Imagen generada: ${rutaRelativa}`);
 
   const publicUrl = `${BASE_URL}/${rutaRelativa}`;
