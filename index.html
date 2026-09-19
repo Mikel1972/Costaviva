@@ -415,6 +415,7 @@
   .viento-slider-panel .titulo { color: #5C7680; margin-bottom: 6px; }
   .viento-slider-panel input[type="range"] { width: 100%; }
   .viento-slider-panel .etq { text-align: center; color: #5C7680; margin-top: 2px; }
+  .viento-slider-ticks { display: flex; justify-content: space-between; font-size: 9px; color: #5C7680; margin-top: -2px; }
 
   .luna-panel {
     position: absolute; top: 64px; right: 64px; z-index: 501;
@@ -723,6 +724,11 @@
     <div class="viento-slider-panel" id="vientoSliderPanel" hidden>
       <div class="titulo">VIENTO — próximas horas</div>
       <input type="range" id="vientoSlider" min="0" max="23" value="0" step="1" />
+      <!-- Horas reales a lo largo de la barra (pedido explícito del
+           usuario: "pon las horas y no la diferencia en horas") -- unas
+           pocas marcas repartidas, no las 24, para que quepan en el
+           ancho del panel. -->
+      <div class="viento-slider-ticks" id="vientoSliderTicks"></div>
       <div class="etq" id="vientoSliderHora">ahora</div>
     </div>
     <div class="confirmar-ubicacion-panel" id="eligeMetodoPanel">
@@ -3144,6 +3150,14 @@ async function cargarCampoViento() {
     vientoSnapshots = datos.snapshots;
     const slider = document.getElementById("vientoSlider");
     slider.max = String(vientoSnapshots.length - 1);
+    // Marcas de hora real repartidas a lo largo de la barra (5 puntos:
+    // inicio, cada cuarto, y final) — "las horas, no la diferencia".
+    const ticks = document.getElementById("vientoSliderTicks");
+    const numMarcas = Math.min(5, vientoSnapshots.length);
+    ticks.innerHTML = Array.from({ length: numMarcas }, (_, k) => {
+      const idx = Math.round((k / (numMarcas - 1)) * (vientoSnapshots.length - 1));
+      return `<span>${vientoSnapshots[idx].hora.slice(11, 16)}</span>`;
+    }).join("");
     mostrarHoraViento(+slider.value);
   } catch (e) {
     console.warn("No se pudo cargar la capa de viento:", e.message);
