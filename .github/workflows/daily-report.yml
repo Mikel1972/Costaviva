@@ -186,7 +186,11 @@ jobs:
                 const lineas = [
                   `  - Propiedad: ${sitio}`,
                   `  - Últimos 7 días: ${a.clicks} clics${variacion(a.clicks, b.clicks)}, ${a.impressions} impresiones${variacion(a.impressions, b.impressions)}, CTR medio ${(a.ctr * 100).toFixed(1)}%, posición media ${a.position.toFixed(1)}`,
-                  top.length ? "  - Top búsquedas (7 días):" : "  - Sin búsquedas registradas en los últimos 7 días.",
+                  top.length
+                    ? "  - Top búsquedas (7 días):"
+                    : (a.clicks > 0 || a.impressions > 0
+                        ? "  - Google no desglosa búsquedas concretas con tan poco volumen (umbral de privacidad)."
+                        : "  - Sin búsquedas registradas en los últimos 7 días."),
                   ...top,
                 ];
                 fs.appendFileSync(process.env.GITHUB_OUTPUT, "resultado<<EOF\n" + lineas.join("\n") + "\nEOF\n");
