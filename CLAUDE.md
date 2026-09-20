@@ -977,14 +977,30 @@ escalonadas para no competir por runners:
 |---|---|---|
 | `security-scan.yml` | `30 4 * * 1` (lunes) | ZAP baseline (pasivo) contra producción → Issue "ZAP Scan Baseline Report" |
 | `smoke-test.yml` | `0 5 * * *` | login real → `/prevision` → `/webcam/mundaka` → crea/borra una salida de pesca de prueba. `/sos-alerta` excluido a propósito (ver más abajo) |
-| `daily-report.yml` | `0 6 * * *` | salud + conteo real de SOS (24h) → entrada nueva en el Issue "Informe diario — Costaviva" |
+| `daily-report.yml` | `13 6 * * *` + `13 7 * * *` (ver abajo) | salud + conteo real de SOS (24h) + síntesis del día → única entrada nueva diaria en el Issue "Informe diario — Costaviva", más un email real aparte (Resend) |
 | `auth-test.yml` | `17 6 * * *` | RLS sin token + prueba cruzada A-lee-B (secrets ya puestos) |
 | `presion-historico.yml` | `7 * * * *` (cada hora) | POST a `/registrar-presion` (secret `PRESION_CRON_SECRET`) — guarda la presión real de cada spot en `presion_historico`, para la tendencia real de `/prevision` (Fase 4, ver más abajo). **Activada y verificada en real el 2026-09-12**: primer intento falló (42501, faltaba política de `insert` en la RLS de `presion_historico` — ni el propio endpoint podía escribir con la anon key sin sesión), corregido en `20260912230000_fix_insert_presion_historico.sql`; segundo intento escribió filas reales, confirmado leyendo la tabla. |
 
-`0 6 * * *` = 08:00 en verano (CEST) / 07:00 en invierno (CET) — GitHub
-Actions no ajusta el cron por el cambio de hora. Ajustar aquí si se
-quiere afinar. Avisos vía Issues de GitHub (que ya notifican por email
-al dueño del repo) — no se montó un canal de email aparte para esto.
+**`daily-report.yml` — actualizado 2026-09-20 (pedido explícito del
+usuario, tras notar que le llegaba "el informe" varias veces al día)**:
+ahora es el ÚNICO workflow que toca el Issue "Informe diario" — antes
+también publicaban por su cuenta `robot-buscador-fuentes.yml` (hasta 4
+veces/día), `robot-experiencia-usuario.yml` (1x/día) y
+`robot-patrones-uso.yml` (1x/semana); los tres siguen escribiendo en
+`ROBOT.md` igual que antes, solo dejaron de tocar el Issue — ver la
+entrada fechada 2026-09-20 más abajo para el detalle completo. Las dos
+horas de cron (`13 6 * * *` / `13 7 * * *`) son las dos candidatas UTC
+para que la pasada real caiga siempre a las 08:00 **hora de España**
+(con el cambio de hora correctamente gestionado vía el job
+`decidir_hora`, no a las 08:00 UTC fijas como antes) — GitHub Actions no
+entiende zonas horarias, así que se declaran ambas y se descarta la que
+no toca ese día. **Ojo, limitación real de GitHub, no de este repo**:
+pese al ajuste de minuto para evitar la hora en punto, las pasadas
+reales de este workflow se han observado saliendo con 4-5h de retraso
+sobre la hora programada (confirmado revisando el historial de
+`gh run list --workflow=daily-report.yml`) — es el propio planificador
+de GitHub Actions bajo carga global, no algo arreglable solo ajustando
+el cron.
 
 - **`security-scan.yml`**: ZAP en modo baseline (pasivo, nunca payloads
   activos) contra `costaviva.org`.
@@ -1444,6 +1460,51 @@ escribiendo en `ROBOT.md` exactamente igual que antes, solo deja de
 tocar el Issue directamente. Con esto, el único momento del día en que
 se actualiza el Issue vuelve a ser la síntesis de `daily-report.yml`
 (una vez al día).
+
+**Continuación del arreglo, mismo día (2026-09-20)**: el usuario
+confirmó que quería exactamente un informe al día, a las 08:00 —
+resultó que `robot-experiencia-usuario.yml` (diario) y
+`robot-patrones-uso.yml` (semanal, sábados) tenían el mismo patrón
+redundante (escribir en `ROBOT.md` Y publicar aparte en el Issue), así
+que se les quitó el mismo paso "Publicar el resumen en el Issue" —
+ambos siguen escribiendo en `ROBOT.md` sin cambios. Para no perder sus
+hallazgos al dejar de publicarse aparte, el prompt de síntesis de
+`daily-report.yml` se amplió con una sección nueva, '## 🧪 Experiencia
+de usuario y patrones de uso', entre "Trabajo interno" y "Trabajo
+externo" — instruida para copiar los hallazgos del robot de experiencia
+de usuario con el mismo detalle que trae `ROBOT.md` (nunca diluirlos a
+"todo bien" si hay un bug real) y para decir explícitamente "no le
+tocaba pasar esta semana" los días que no sea fin de semana, en vez de
+inventar que no hubo novedades (mismo criterio ya usado para el robot
+de especies, que solo corre los jueves).
+
+Además, pedido explícito del usuario tras preguntarle si "08:00" se
+refería a hora UTC o a hora de España: **hora de España**. Hasta
+entonces el cron estaba fijado a "siempre 08:00 UTC exactas" (decisión
+del 2026-09-15, para evitar la deriva por el cambio de hora) — eso en
+verano llega a las 10:00 hora de España, no a las 08:00. Como el cron de
+GitHub Actions no entiende zonas horarias ni DST, la solución no es un
+único cron: se declaran las dos horas UTC candidatas (`13 6 * * *` para
+cuando rige CEST/verano, `13 7 * * *` para cuando rige CET/invierno) y
+un job nuevo, `decidir_hora`, usando `TZ="Europe/Madrid" date +%z`
+(tzdata real del runner, conoce las fechas de cambio de hora sin
+calcularlas a mano) decide cuál de las dos pasadas de hoy corresponde de
+verdad — la otra sale y no hace nada (ni gasta Claude Code ni toca el
+Issue), así nunca salen dos el mismo día. El job `informe` ahora
+depende de `decidir_hora` vía `needs:` + `if:
+needs.decidir_hora.outputs.ejecutar == 'true'`.
+
+**Aviso importante que quedó documentado, no resuelto**: revisando
+`gh run list --workflow=daily-report.yml` para verificar todo esto, las
+pasadas reales de las últimas semanas han salido sistemáticamente con
+4-5h de retraso sobre la hora programada (ej. programada 08:13 UTC,
+ejecutada de verdad ~13:00 UTC) — **pese a que el ajuste de minuto
+suelto del 2026-09-19 se hizo justo para evitar esto**. Es el propio
+planificador de GitHub Actions bajo carga global (el repo es público,
+sin límite de concurrencia propio que lo explique) — no hay ajuste de
+cron que lo arregle del todo. El usuario no ha pedido investigar esto
+más a fondo todavía; si se vuelve a tocar este workflow, no dar por
+hecho que la hora de entrega real va a coincidir con la programada.
 
 **Mismo problema encontrado también en `robot-experiencia-usuario.yml`,
 mismo día (2026-09-17), pero enmascarado**: ese workflow tiene
