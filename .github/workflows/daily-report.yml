@@ -1,13 +1,10 @@
 name: Informe diario
 
 # ACTUALIZADO 2026-09-15 (pedido explícito del usuario, "tipo el que
-# hacemos en polizas-ai"): pasa de 06:00 a 08:00 UTC EXACTAS (antes
-# quedaba a 08:00 en verano / 07:00 en invierno por no ajustarse al DST —
-# ahora es siempre 08:00 UTC, 10:00 CEST verano / 09:00 CET invierno) y
-# añade una síntesis con Claude Code (mismo patrón que
-# robot-buscador-fuentes.yml) de TODO el trabajo interno y externo de
-# las últimas 24h: la calibración nocturna + las pasadas del robot
-# buscador de fuentes (ROBOT.md) más el resultado del smoke test
+# hacemos en polizas-ai"): añade una síntesis con Claude Code (mismo
+# patrón que robot-buscador-fuentes.yml) de TODO el trabajo interno y
+# externo de las últimas 24h: la calibración nocturna + las pasadas del
+# robot buscador de fuentes (ROBOT.md) más el resultado del smoke test
 # (external, ver smoke-test.yml). Sección obligatoria aparte: "Nuevas
 # fuentes encontradas, pendientes de validar" — un resumen breve + la
 # opinión del propio Claude sobre cada fuente nueva mencionada en las
@@ -21,7 +18,22 @@ name: Informe diario
 # añadió a ROBOT.md en las últimas 24h y pide a Claude Code que lo
 # sintetice. Todo se añade como una fila nueva al mismo Issue "Informe
 # diario" de siempre (uno que crece con el tiempo, no uno nuevo cada
-# día) — GitHub ya avisa por email de la actividad en Issues que sigues.
+# día) — GitHub ya avisa por email de la actividad en Issues que sigues,
+# y además se manda un email real aparte (ver el paso final del job).
+#
+# ACTUALIZADO 2026-09-20 (pedido explícito del usuario): tras notar que
+# le llegaba "el informe" varias veces al día, se quitó la publicación
+# suelta al Issue que hacían robot-buscador-fuentes.yml (4x/día),
+# robot-experiencia-usuario.yml (1x/día) y robot-patrones-uso.yml
+# (1x/semana) — los tres siguen escribiendo en ROBOT.md igual que
+# siempre, pero ya NO tocan el Issue por su cuenta. Este workflow es
+# ahora el ÚNICO que actualiza el Issue "Informe diario", y su síntesis
+# se amplió para incluir también lo que aportan esos otros dos robots
+# (ver el prompt del paso "Síntesis del día" más abajo), para no perder
+# esa información al dejar de publicarse aparte. Además, la hora pasa de
+# "siempre 08:00 UTC" a "siempre 08:00 hora de España" (con el cambio de
+# hora correctamente gestionado — ver el comentario junto a "on:
+# schedule:" más abajo, y el job "decidir_hora" nuevo).
 #
 # Necesita el secret ANTHROPIC_API_KEY (el mismo que ya usa
 # robot-buscador-fuentes.yml) para el paso de síntesis — si falta o no
@@ -33,17 +45,63 @@ on:
     # Corregido 2026-09-19: estaba en "0 8 * * *", justo en la hora exacta —
     # la peor opción posible, porque miles de workflows de GitHub Actions
     # de todo el mundo disparan también justo a esa hora y compiten por
-    # runners. Confirmado en real revisando el historial de ejecuciones:
-    # el cron dice 08:00 UTC pero las pasadas reales llevan días saliendo
-    # entre las 12:00 y las 13:00 UTC — 4-5h de retraso sistemático, no un
-    # bache puntual. Desplazado a un minuto suelto (mismo criterio que ya
-    # usan el resto de workflows del repo, ej. "47 8 * * *" en
-    # robot-buscador-fuentes.yml) para evitar la hora en punto.
-    - cron: "13 8 * * *"
+    # runners. Desplazado a un minuto suelto (mismo criterio que ya usan el
+    # resto de workflows del repo, ej. "47 8 * * *" en
+    # robot-buscador-fuentes.yml) para evitar la hora en punto — aun así
+    # las pasadas reales han seguido saliendo con 4-5h de retraso (ver
+    # historial de ejecuciones); es un retraso de GitHub Actions a nivel de
+    # su propio planificador, no algo que un ajuste de minuto pueda
+    # arreglar del todo — el runner puede tardar en asignarse en horas de
+    # mucha carga global. No hay garantía de entrega exacta a la hora.
+    #
+    # Cambiado 2026-09-20 (pedido explícito del usuario) de "siempre a las
+    # 08:00 UTC" a "siempre a las 08:00 hora de España" — con el cambio de
+    # hora de por medio, eso son horas UTC DISTINTAS según la época del
+    # año (06:00 UTC en verano/CEST, 07:00 UTC en invierno/CET), y el cron
+    # de GitHub Actions no entiende zonas horarias. Se declaran las DOS
+    # horas UTC candidatas (una para cada régimen) y el job "decidir_hora"
+    # de abajo, usando la zona horaria real de España (con DST correcto,
+    # vía tzdata), decide cuál de las dos pasadas de hoy es la que
+    # corresponde de verdad — la otra se salta sin hacer nada (sin gastar
+    # ninguna llamada a Claude Code ni tocar el Issue), así nunca salen
+    # dos informes el mismo día.
+    - cron: "13 6 * * *" # 08:13 hora de España cuando rige CEST (verano)
+    - cron: "13 7 * * *" # 08:13 hora de España cuando rige CET (invierno)
   workflow_dispatch: {}
 
 jobs:
+  decidir_hora:
+    # Job corto y barato (unos segundos, sin llamar a ninguna API de pago)
+    # que decide si la pasada programada de ahora mismo es la que
+    # corresponde de verdad a las 08:00 hora de España hoy, dado el cambio
+    # de hora — ver el comentario junto a "on: schedule:" más arriba. Con
+    # workflow_dispatch (prueba manual) se ejecuta siempre, sin filtrar por
+    # hora.
+    runs-on: ubuntu-latest
+    outputs:
+      ejecutar: ${{ steps.check.outputs.ejecutar }}
+    steps:
+      - name: Comprobar si esta pasada corresponde a las 08:00 hora de España hoy
+        id: check
+        run: |
+          if [ "${{ github.event_name }}" != "schedule" ]; then
+            echo "ejecutar=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # +0200 = CEST (verano), +0100 = CET (invierno) — tzdata en el
+          # runner de Ubuntu ya conoce las fechas reales de cambio de hora
+          # de España, no hace falta calcularlas a mano.
+          offset_hoy=$(TZ="Europe/Madrid" date +%z)
+          if { [ "$offset_hoy" = "+0200" ] && [ "${{ github.event.schedule }}" = "13 6 * * *" ]; } || \
+             { [ "$offset_hoy" = "+0100" ] && [ "${{ github.event.schedule }}" = "13 7 * * *" ]; }; then
+            echo "ejecutar=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ejecutar=false" >> "$GITHUB_OUTPUT"
+          fi
+
   informe:
+    needs: decidir_hora
+    if: needs.decidir_hora.outputs.ejecutar == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -393,7 +451,7 @@ jobs:
         continue-on-error: true
         run: |
           rm -f /tmp/informe-sintesis.txt
-          claude -p "Eres el redactor del informe diario de Costaviva (repo Costaviva). Tienes en /tmp/robot-ultimas-24h.txt todo lo que se añadió a ROBOT.md en las últimas 24 horas (mezcla de la rutina de calibración nocturna y las distintas pasadas del robot buscador de fuentes — cámaras, mareas/oleaje, corrientes, presión, caudal de ríos, buenas prácticas de otras apps, migración/cría de especies, estudios institucionales tipo DIGIPESCA). Léelo con Read y escribe un informe en español, sin jerga, para el dueño del proyecto (no técnico en detalle), estructurado EXACTAMENTE con estos 3 encabezados markdown, en este orden: (1) '## 🛠 Trabajo interno (calibración y datos)' seguido de 2-4 frases resumiendo qué hizo la calibración nocturna y las pasadas de datos en tiempo real (cámaras/mareas/corrientes/presión/caudal) de las últimas 24h — solo lo que pasó, sin repetir cifras que ya vienen aparte en el informe (SOS, salud de endpoints); dentro de esta sección incluye SIEMPRE una línea aparte empezando por '**Cámaras nuevas encontradas:**' con el número exacto de cámaras nuevas que el robot buscador de fuentes propuso o encontró en las últimas 24h (0 si no hubo ninguna esa pasada), y justo debajo otra línea empezando por '**Términos de búsqueda:**' mencionando qué términos de búsqueda de webcams (el diccionario de tipos de entidad -- surf/ayuntamiento/pesca/puerto/cofradía/etc, ver ROBOT_REGLAS.md) se probaron hoy y en qué población/zona, si el fichero lo indica, y si alguno resultó productivo por primera vez o si algún tipo de entidad nuevo (no listado todavía en el diccionario) apareció como dueño de una cámara nueva -- si el fichero no menciona nada de esto hoy, dilo explícitamente en vez de inventarlo; (2) '## 🔎 Trabajo externo (investigación de contenido)' con 1-2 frases sobre buenas prácticas de otras apps y estudios institucionales de las últimas 24h, y después una línea aparte empezando por '**Robot de especies:**' resumiendo específicamente la pasada de migración/cría de especies (esa pasada solo corre los jueves, así que la mayoría de días toca decir explícitamente 'no le tocaba pasar hoy' en vez de inventar que no hubo novedades) — qué se investigó, si se propuso algo o si no hubo novedades esa vez; (3) '## 🆕 Nuevas fuentes encontradas, pendientes de validar' seguido, para CADA fuente de datos nueva (no ya integrada) que aparezca mencionada en el fichero, de un sub-apartado con el nombre de la fuente, 2-3 frases de resumen de qué es y qué aportaría, y tu propia opinión honesta y breve sobre si los datos parecen sólidos/utilizables para Costaviva o si tienes dudas (cobertura geográfica limitada, fuente sin verificar del todo, requeriría más trabajo, etc) — si no se encontró ninguna fuente nueva en las últimas 24h, escribe solo 'Ninguna fuente nueva en las últimas 24h.' bajo ese encabezado, nada más. Reglas: nunca inventes nada que no esté en el fichero — si el fichero está vacío o no tiene información útil, dilo explícitamente en cada sección en vez de rellenar con generalidades. Sé conciso, no reescribas ROBOT.md entero. Guarda el resultado en /tmp/informe-sintesis.txt (usa Write), nada más — no toques ningún otro fichero del repo, no hagas commits." \
+          claude -p "Eres el redactor del informe diario de Costaviva (repo Costaviva). Tienes en /tmp/robot-ultimas-24h.txt todo lo que se añadió a ROBOT.md en las últimas 24 horas (mezcla de la rutina de calibración nocturna, las distintas pasadas del robot buscador de fuentes — cámaras, mareas/oleaje, corrientes, presión, caudal de ríos, buenas prácticas de otras apps, migración/cría de especies, estudios institucionales tipo DIGIPESCA —, el robot de experiencia de usuario y, los sábados, el robot de patrones de uso; estos dos últimos ya NO publican nada por su cuenta desde el 2026-09-20, así que esta síntesis es la única vía por la que sus hallazgos llegan al dueño del proyecto — no los omitas). Léelo con Read y escribe un informe en español, sin jerga, para el dueño del proyecto (no técnico en detalle), estructurado EXACTAMENTE con estos 4 encabezados markdown, en este orden: (1) '## 🛠 Trabajo interno (calibración y datos)' seguido de 2-4 frases resumiendo qué hizo la calibración nocturna y las pasadas de datos en tiempo real (cámaras/mareas/corrientes/presión/caudal) de las últimas 24h — solo lo que pasó, sin repetir cifras que ya vienen aparte en el informe (SOS, salud de endpoints); dentro de esta sección incluye SIEMPRE una línea aparte empezando por '**Cámaras nuevas encontradas:**' con el número exacto de cámaras nuevas que el robot buscador de fuentes propuso o encontró en las últimas 24h (0 si no hubo ninguna esa pasada), y justo debajo otra línea empezando por '**Términos de búsqueda:**' mencionando qué términos de búsqueda de webcams (el diccionario de tipos de entidad -- surf/ayuntamiento/pesca/puerto/cofradía/etc, ver ROBOT_REGLAS.md) se probaron hoy y en qué población/zona, si el fichero lo indica, y si alguno resultó productivo por primera vez o si algún tipo de entidad nuevo (no listado todavía en el diccionario) apareció como dueño de una cámara nueva -- si el fichero no menciona nada de esto hoy, dilo explícitamente en vez de inventarlo; (2) '## 🧪 Experiencia de usuario y patrones de uso' con una línea aparte empezando por '**Robot de experiencia de usuario:**' resumiendo en 2-4 frases qué probó ese robot hoy (corre a diario) y, MUY IMPORTANTE, si encontró algún bug/hallazgo real cópialo con el mismo nivel de detalle y valores concretos que use ROBOT.md — nunca lo diluyas a una frase vaga tipo 'todo bien' si hay un hallazgo real detrás, y si no encontró nada raro dilo así de claro; y, solo si el fichero trae una entrada del robot de patrones de uso de esta semana (corre solo los sábados, así que entre semana toca decir explícitamente 'no le tocaba pasar esta semana' salvo que hoy sea sábado o domingo justo después), otra línea aparte empezando por '**Robot de patrones de uso:**' con sus propuestas concretas (con los números reales que haya usado para justificarlas) o 'sin propuestas esta semana' si no tuvo ninguna; (3) '## 🔎 Trabajo externo (investigación de contenido)' con 1-2 frases sobre buenas prácticas de otras apps y estudios institucionales de las últimas 24h, y después una línea aparte empezando por '**Robot de especies:**' resumiendo específicamente la pasada de migración/cría de especies (esa pasada solo corre los jueves, así que la mayoría de días toca decir explícitamente 'no le tocaba pasar hoy' en vez de inventar que no hubo novedades) — qué se investigó, si se propuso algo o si no hubo novedades esa vez; (4) '## 🆕 Nuevas fuentes encontradas, pendientes de validar' seguido, para CADA fuente de datos nueva (no ya integrada) que aparezca mencionada en el fichero, de un sub-apartado con el nombre de la fuente, 2-3 frases de resumen de qué es y qué aportaría, y tu propia opinión honesta y breve sobre si los datos parecen sólidos/utilizables para Costaviva o si tienes dudas (cobertura geográfica limitada, fuente sin verificar del todo, requeriría más trabajo, etc) — si no se encontró ninguna fuente nueva en las últimas 24h, escribe solo 'Ninguna fuente nueva en las últimas 24h.' bajo ese encabezado, nada más. Reglas: nunca inventes nada que no esté en el fichero — si el fichero está vacío o no tiene información útil, dilo explícitamente en cada sección en vez de rellenar con generalidades. Sé conciso, no reescribas ROBOT.md entero. Guarda el resultado en /tmp/informe-sintesis.txt (usa Write), nada más — no toques ningún otro fichero del repo, no hagas commits." \
             --dangerously-skip-permissions \
             --allowedTools "Bash,Read,Write,Grep"
 

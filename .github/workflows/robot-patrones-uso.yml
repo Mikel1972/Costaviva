@@ -66,39 +66,9 @@ jobs:
             --max-turns 30 \
             --allowedTools "Bash,Read,Write,Grep,Glob"
 
-      - name: Publicar el resumen en el Issue "Informe diario"
-        if: always()
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require("fs");
-            let resumen = "⚠️ El robot no dejó resumen esta pasada (revisar el log del workflow).";
-            try { resumen = fs.readFileSync("/tmp/robot-informe.txt", "utf8").trim() || resumen; } catch (e) {}
-
-            const ahora = new Date().toISOString().replace("T", " ").slice(0, 16) + " UTC";
-            const fila = [
-              `#### 📊 Robot de patrones de uso — ${ahora}`,
-              resumen,
-              "",
-            ].join("\n");
-
-            const titulo = "Informe diario — Costaviva";
-            const { data: issues } = await github.rest.issues.listForRepo({
-              owner: context.repo.owner, repo: context.repo.repo,
-              state: "open", labels: "informe-diario",
-            });
-            let issue = issues.find((i) => i.title === titulo);
-            if (!issue) {
-              const creado = await github.rest.issues.create({
-                owner: context.repo.owner, repo: context.repo.repo,
-                title: titulo, labels: ["informe-diario"],
-                body: "Informe diario de salud de Costaviva — una entrada nueva cada día, la más reciente arriba.\n\n" + fila,
-              });
-              issue = creado.data;
-            } else {
-              const cabecera = issue.body.split("\n").slice(0, 2).join("\n");
-              await github.rest.issues.update({
-                owner: context.repo.owner, repo: context.repo.repo, issue_number: issue.number,
-                body: cabecera + "\n\n" + fila + "\n" + issue.body.split("\n").slice(2).join("\n"),
-              });
-            }
+      # Ya NO publica su propio resumen en el Issue "Informe diario" (quitado
+      # el 2026-09-20, pedido explícito del usuario: quería un único informe
+      # al día — este robot añadía una notificación extra los sábados,
+      # encima de la de daily-report.yml. Sigue escribiendo en ROBOT.md
+      # exactamente igual que antes; daily-report.yml lo recoge en su
+      # síntesis diaria (sección "Experiencia de usuario y patrones de uso").
