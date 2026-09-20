@@ -4398,6 +4398,85 @@ sigue sin haber señal de que sea transitorio.
 
 **Firmado:** robot de calibración nocturna, 2026-09-19 01:18 UTC.
 
+### 2026-09-20 (pasada nocturna corta — calibración + salud de datos)
+
+**Calibración — decimotercer punto para las 3 boyas obligatorias, cuarto
+punto para 2242 Cabo Peñas** (rotación de esta noche: era la candidata
+con más noches sin repetirse desde el 2026-09-14, solo tocada por
+pasadas buscadoras diurnas desde entonces). Mismo método de siempre:
+`curl` a `poem.puertos.es/portus/StationData` para la altura real,
+Open-Meteo Marine en las coordenadas exactas de cada boya para la altura
+calculada, emparejando por la hora UTC exacta del último dato real de
+cada boya. **Mar volviendo a la calma** tras las dos noches agitadas
+anteriores (Hm0 real 1.83-2.11 m esta noche, frente a 2.9-3.9 m hace 24h):
+
+| boya | hora UTC | altura medida | altura calculada | diferencia | % |
+|---|---|---|---|---|---|
+| 2136 Bilbao-Vizcaya | 01:00 | 1.99 m | 1.84 m | −0.15 m | −7.5% |
+| 1117 Gijón | 00:00 | 1.91 m | 1.70 m | −0.21 m | −11.0% |
+| 1101 Pasaia II | 00:00 | 1.83 m | 1.42 m | −0.41 m | −22.4% |
+| 2242 Cabo Peñas | 01:00 | 2.11 m | 1.82 m | −0.29 m | −13.7% |
+
+Historial actualizado de la metodología `boya_vs_openmeteo_mismo_punto`:
+
+- **2136 Bilbao-Vizcaya**: 13 puntos, media ≈ **−1.6%** — sigue sin
+  patrón sistemático claro; el punto de hoy vuelve a un valor moderado
+  tras el −31.3% de ayer (la noche más agitada vista hasta ahora).
+- **1117 Gijón**: 13 puntos, media ≈ **−6.5%** — sigue alternando signo
+  y magnitud pasada a pasada, sin patrón sólido.
+- **1101 Pasaia II**: **13 puntos, los 13 con el mismo signo negativo**
+  (media ≈ **−29.1%**) — sigue siendo, con diferencia, la boya con el
+  sesgo más consistente y estable de las 3 obligatorias, y la magnitud
+  de hoy (−22.4%) se mantiene dentro del rango habitual (−15.7% a
+  −49.5%) pese a que el mar ya no está tan agitado como ayer. **Faltan
+  solo 2 puntos más para el mínimo de 15** — a este ritmo debería
+  alcanzarse en 1-2 días; si el signo se mantiene, la próxima pasada o
+  la siguiente ya debería poder proponer un factor de corrección
+  concreto para esta zona.
+- **2242 Cabo Peñas**: 4 puntos (−25.5%, −25.5%, −14.1%, −13.7%), **los
+  4 con el mismo signo negativo**, media ≈ **−19.7%** — magnitud algo
+  menor que Pasaia II/Barcelona II pero mismo signo consistente. Tercera
+  boya, tras Pasaia II y Barcelona II, que empieza a mostrar un sesgo
+  negativo en todas sus muestras — todavía con poca muestra (4 puntos),
+  a seguir vigilando en próximas rotaciones.
+- Resto de boyas (1514 Málaga, 1731 Barcelona II, 2820 Dragonera, 2548
+  Cabo de Gata, 2246 Villano-Sisargas): sin cambios desde su última
+  pasada, no les tocaba rotación esta noche.
+
+**Ningún factor de corrección propuesto todavía** — Pasaia II está a
+solo 2 puntos del umbral de 15, el más cerca que ha estado nunca; si las
+próximas 1-2 pasadas siguen dando signo negativo (como las 13
+anteriores, sin excepción), la próxima entrada de esta rutina debería ya
+poder proponer un factor concreto para esa zona, en vez de seguir
+posponiéndolo. Para la próxima rotación nocturna, candidatas con más
+noches sin repetirse: 1514 Málaga (desde 2026-09-17) o 1731 Barcelona II
+(desde 2026-09-19).
+
+**Salud de datos — cuarta noche consecutiva con exactamente el mismo
+patrón de dominios bloqueados (2026-09-17, 18, 19 y hoy); no es evidencia
+de que ninguna fuente esté rota.** Verificado en vivo con `curl`: las 4
+boyas de Puertos del Estado de arriba (responden `200` con datos reales
+y recientes, última lectura hace 0-1h) y 3 webcams de proveedores
+distintos (`mundaka` — kostasystem.com, 106 KB; `bakio` —
+pyscada.isurki.com, 765 KB; `sopelana` — detectia.net, 48 KB; las 3 con
+`200` y una imagen real de tamaño razonable). **No se pudo comprobar** la
+boya de Nazaré (`monican.hidrografico.pt`), ninguna de las 4 fuentes de
+caudal de río (`visor.saichcantabrico.es`, `saih.chj.es`,
+`saihweb.chsegura.es`, `servizos.meteogalicia.gal`), ni una cuarta/quinta
+webcam de otra región (`meteogalicia.gal` para A Coruña,
+`streaming.comunitatvalenciana.com` para Valencia, `apps.socib.es` para
+Cala Millor) — las 7 rechazadas por el propio proxy de salida de esta
+sesión (`connect_rejected`, "gateway answered 403 to CONNECT"),
+confirmado con `curl .../__agentproxy/status`. Ninguna corrección de
+código aplicada — no hay evidencia de ningún fallo real, solo de que
+esta sesión concreta no alcanza esos dominios. Se reitera, con ya cuatro
+noches seguidas del mismo patrón, la recomendación de que el usuario
+revise si el conjunto de dominios permitidos para esta rutina puede
+ampliarse (Puertos del Estado y Open-Meteo sí están permitidos;
+ríos/Nazaré/la mayoría de webcams no).
+
+**Firmado:** robot de calibración nocturna, 2026-09-20 01:20 UTC.
+
 ---
 
 ## Robot de experiencia de usuario
