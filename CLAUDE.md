@@ -1368,8 +1368,10 @@ usuario) que rota de área según qué cron lo disparó
 no interactivo (`claude -p ... --dangerously-skip-permissions`) que
 sigue las mismas reglas de `ROBOT_REGLAS.md` que la rutina nocturna
 externa (nunca inventar datos, límite de volumen para aplicar cambios
-directos, interruptor `ROBOT_PAUSADO`). Publica su resumen en el mismo
-Issue "Informe diario — Costaviva" que ya usa `daily-report.yml`.
+directos, interruptor `ROBOT_PAUSADO`). Hasta el 2026-09-20 publicaba
+además su propio resumen en el mismo Issue "Informe diario — Costaviva"
+que ya usa `daily-report.yml` — ver el aviso más abajo, esa parte se
+quitó.
 
 **Ampliado el mismo día con 2 áreas más**, pedidas explícitamente por el
 usuario, cada una 1 vez al día (no 4, a diferencia de las originales —
@@ -1427,6 +1429,21 @@ a veces commit/push), así que casi todas las pasadas desde el
 la pasada, no solo fallaba el job en rojo). Subido a 40 (en su momento
 igualado con `robot-experiencia-usuario.yml`, que ese mismo día se
 subió otra vez a 60 — ver el párrafo siguiente).
+
+**Quitada la publicación al Issue en cada pasada (2026-09-20)**, pedido
+explícito del usuario tras notar que le llegaba "el informe" repetido
+hasta 4 veces al día: cada una de las 4 pasadas diarias
+(cámaras/mareas/corrientes/presión) editaba el Issue "Informe diario —
+Costaviva" por su cuenta, además de escribir en `ROBOT.md` — como
+`daily-report.yml` ya lee todo lo añadido a `ROBOT.md` en las últimas
+24h y hace una única síntesis diaria, esa publicación aparte era pura
+redundancia (cada edición generaba su propia notificación). Quitado el
+paso "Publicar el resumen en el Issue" de
+`.github/workflows/robot-buscador-fuentes.yml` — el robot sigue
+escribiendo en `ROBOT.md` exactamente igual que antes, solo deja de
+tocar el Issue directamente. Con esto, el único momento del día en que
+se actualiza el Issue vuelve a ser la síntesis de `daily-report.yml`
+(una vez al día).
 
 **Mismo problema encontrado también en `robot-experiencia-usuario.yml`,
 mismo día (2026-09-17), pero enmascarado**: ese workflow tiene
