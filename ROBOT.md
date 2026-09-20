@@ -5459,3 +5459,53 @@ margen, ver `ROBOT_REGLAS.md`) antes de añadir más de una.
 
 **Firmado:** robot buscador de fuentes (pasada de mareas y oleaje),
 2026-09-20 13:20 UTC.
+
+### 2026-09-20 17:43 UTC (pasada buscadora — corrientes marinas por zona, séptima pasada)
+
+**Qué se buscó:** las 6 pasadas previas ya identificaron 8 redes de
+radar HF vivas (EUSKOOS, Galicia, Lisboa, Gibraltar, Ibiza, PLOCAN,
+ICATMAR, DeltaEbro) y calibraron 4 contra spots reales, pero
+**Gibraltar y PLOCAN solo se habían comprobado como "vivas"
+(`time_coverage_end`), nunca su proximidad real a un spot de
+Costaviva**. Esta pasada cierra ese hueco con peticiones reales a los
+griddap de EMODnet ERDDAP.
+
+**Hallazgo 1, negativo — Golfo de Cádiz sin cobertura útil.** `Gibraltar`
+(lat 35.81–36.19, lon −5.85/−4.99) solo cubre el Estrecho — ningún spot
+de Costaviva cae dentro (Tarifa solo existe como boya, no como spot).
+`South` (lat 36.0–37.19, lon −9.59/−6.21) solapa en el mapa con
+Cádiz/Conil/Chipiona/Punta Umbría, pero su cobertura real está frente a
+Huelva/Algarve — celda válida más cercana a 91 km (Punta Umbría) y
+166 km (Cádiz), y con `QCflag=4` (mala) en ambos casos. Golfo de Cádiz
+queda descartado salvo red nueva.
+
+**Hallazgo 2, positivo — mejor cobertura de toda la serie.** `PLOCAN`
+tiene una celda con `QCflag=1`/`CSPD_QC=1` (buenos) a solo **2.6 km**
+de Las Palmas (Las Canteras) — mejor que Blanes (4.6 km) o Peñíscola
+(6.6 km). Los otros 3 spots de Canarias quedan fuera de su rejilla
+(95–125 km).
+
+**Calibración real, 4 puntos en Las Palmas** (06/09/12/15h UTC,
+`CALIBRACION.jsonl`, `tipo: "corriente_radar_hf_vs_openmeteo"`):
+confirma la conclusión ya asentada, sin relación estable con
+Open-Meteo — diferencia de dirección 56°–116°; a las 12:00 la
+velocidad casi coincidió (0.282 vs 0.3 m/s) pero la dirección no (49°
+vs 315°), mismo patrón de "aciertan por separado" ya visto en
+Mundaka el 2026-09-17.
+
+**Conclusión — sigue siendo solo propuesta**, no cambio de código
+(tocaría `functions/prevision.js`): con **21 puntos en 5 zonas** y sin
+factor de corrección estable en ninguna, la recomendación no cambia —
+si se integra, mostrar el radar como observación real aparte, nunca
+como sustituto del modelo. Las Palmas (2.6 km) pasa a ser el primer
+candidato por cercanía de toda la lista. Pendiente para una futura
+pasada: comprobar la proximidad real de Lisboa/Ibiza a un spot, igual
+que se ha hecho hoy con Gibraltar/PLOCAN.
+
+**Fuentes:**
+[EMODnet Physics ERDDAP — Gibraltar](https://erddap.emodnet-physics.eu/erddap/info/EUHFR_NRTcurrent_HFR-Gibraltar-Total/index.html),
+[EMODnet Physics ERDDAP — South](https://erddap.emodnet-physics.eu/erddap/info/EUHFR_NRTcurrent_HFR-South-Total/index.html),
+[EMODnet Physics ERDDAP — PLOCAN](https://erddap.emodnet-physics.eu/erddap/info/EUHFR_NRTcurrent_HFR-PLOCAN-Total/index.html).
+
+**Firmado:** robot buscador de fuentes (pasada de corrientes marinas),
+2026-09-20 17:43 UTC.
