@@ -5376,3 +5376,86 @@ para que futuras pasadas no repitan la misma investigación desde cero.
 
 **Firmado:** robot buscador de fuentes (pasada de cámaras/webcams, zona
 Asturias), 2026-09-20 08:01 UTC.
+
+### 2026-09-20 13:20 UTC (pasada buscadora — mareas y oleaje)
+
+**Calibración — 4 puntos nuevos, incluida la boya obligatoria más
+cerca del umbral de 15.** Mismo método de siempre: `curl` real a
+`poem.puertos.es/portus/StationData` para la altura medida, Marine API
+de Open-Meteo en las coordenadas exactas de cada boya para la
+calculada, emparejando por la hora UTC exacta del último dato real:
+
+| boya | hora UTC | altura medida | altura calculada | diferencia | % |
+|---|---|---|---|---|---|
+| 2136 Bilbao-Vizcaya | 13:00 | 2.11 m | 1.76 m | −0.35 m | −16.6% |
+| 1117 Gijón | 12:00 | 1.76 m | 1.54 m | −0.22 m | −12.5% |
+| 1101 Pasaia II | 12:00 | 2.06 m | 1.26 m | −0.80 m | −38.8% |
+| 1514 Málaga | 12:00 | 0.96 m | 0.98 m | +0.02 m | +2.1% |
+
+Añadidos a `CALIBRACION.jsonl` (`tipo: "boya_vs_openmeteo_mismo_punto"`).
+**Pasaia II llega a 14 puntos, LOS 14 con el mismo signo negativo**
+(media 14 puntos ≈ **−29.8%**) — solo falta 1 punto más para el mínimo
+de 15 que se viene marcando desde hace días como el umbral para
+proponer un factor de corrección concreto en esa zona; la siguiente
+pasada (buscadora o nocturna) debería ya poder proponerlo si el signo
+se mantiene, cosa que ha pasado sin excepción en las 14 muestras
+tomadas hasta ahora. Bilbao-Vizcaya (14 puntos) y Gijón (14 puntos)
+siguen sin patrón sistemático claro, signo mixto. Málaga (rotación,
+candidata con más días sin repetirse desde 2026-09-17) llega a 4
+puntos con signo todavía mixto (−38.1%, +12.5%, −40.2%, +2.1%).
+
+**Hallazgo real que resuelve una pista pendiente desde la pasada del
+2026-09-18: el endpoint real de lecturas de las boyas Datawell
+Waverider del Instituto Hidrográfico de Portugal, confirmado en vivo
+con una petición HTTP real.** La pasada del 2026-09-18 encontró el
+catálogo de metadatos (`ogcapi.hidrografico.pt`, boyas activas como
+Leixões/Sines/Faro con dato reciente) pero no el endpoint para leer el
+valor real, y descartó varias variantes de URL por no dar resultado.
+Buscando de nuevo con otros términos (`monican.hidrografico.pt`,
+`dbn`, `id_est`), apareció una página de ayuda oficial real —
+[FAQ del Instituto Hidrográfico — "Serviço de dados: boias Datawell
+Waverider"](https://faq.hidrografico.pt/books/hidrografico/page/servico-de-dados-boias-datawell-waverider) —
+que documenta dos endpoints reales:
+- `https://supportserver1.hidrografico.pt/geodata/buoys/getDatawellData`
+  (`startDate`, `endDate`, `stationId`) — altura de ola (Hm0), periodos
+  (T02, Tp), dirección y métricas espectrales con indicadores de
+  calidad.
+- `https://supportserver1.hidrografico.pt/geodata/buoys/getDatawellTemp`
+  (mismos parámetros + `qc`) — temperatura del agua.
+
+**Verificado en vivo, sin inventar nada**: una petición real a
+`getDatawellData?startDate=...&endDate=...&stationId=19` devuelve
+`401 "Invalid API KEY"` — confirma que el endpoint existe de verdad y
+está protegido, exactamente como dice la documentación (la propia FAQ
+dice que la API key es **gratuita**, mediante petición a
+`cedencia.dados@hidrografico.pt`). Serie temporal limitada a 15 días
+(mismo aviso textual de la FAQ). Para el mapeo `stationId` → boya real,
+`https://webgeo4.hidrografico.pt/geoserver/oceanography/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=oceanography%3Abuoys_datawell&outputFormat=application%2Fjson`
+(sin clave, verificado en vivo con `200`) da el catálogo completo con
+`id_est` — **id_est 4 = CSA92/D (Leixões)**, **id_est 19 = CSA83/1D
+(Sines)**, **id_est 20 = CSA82/D (Faro)**, más BOND1-6 y otras boyas
+menores; el ejemplo `stationId=19` de la propia FAQ coincide con un
+`id_est` real de este catálogo, lo que sugiere (sin confirmarlo del
+todo sin clave) que ambos identificadores son el mismo esquema.
+
+**Propuesta, no implementación** (pedir una clave nueva y tocar
+`functions/prevision.js` cae fuera de lo que esta pasada puede aplicar
+directo — nueva credencial externa + cambio de código real): pedir a
+`cedencia.dados@hidrografico.pt` una API key gratuita para
+`datos@costaviva.org` (mismo email ya usado para AEMET/Euskalmet, ver
+`CLAUDE.md`), y una vez obtenida, añadir Leixões (`id_est`/`stationId`
+4) como boya real cerca de los spots portugueses del norte (Viana do
+Castelo, Póvoa de Varzim) — completaría la cobertura portuguesa que
+hasta ahora solo tiene la boya de Nazaré. Guardar como
+`HIDROGRAFICO_PT_API_KEY` (mismo patrón de secreto que el resto), y
+recordar el límite de sub-peticiones de `/prevision` (~10 boyas de
+margen, ver `ROBOT_REGLAS.md`) antes de añadir más de una.
+
+**Fuentes:**
+[FAQ Instituto Hidrográfico — Serviço de dados: boias Datawell Waverider](https://faq.hidrografico.pt/books/hidrografico/page/servico-de-dados-boias-datawell-waverider),
+[Catálogo WFS de boyas Datawell (GeoServer, sin clave)](https://webgeo4.hidrografico.pt/geoserver/oceanography/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=oceanography%3Abuoys_datawell&outputFormat=application%2Fjson),
+[poem.puertos.es — StationData (Puertos del Estado, boyas reales)](https://poem.puertos.es/portus/StationData),
+[Open-Meteo Marine API](https://marine-api.open-meteo.com/v1/marine).
+
+**Firmado:** robot buscador de fuentes (pasada de mareas y oleaje),
+2026-09-20 13:20 UTC.
