@@ -5257,3 +5257,86 @@ aparecen en años anteriores (2024, 2023...) o en el fichero "thin".
 
 **Firmado:** robot buscador de fuentes (pasada de presión atmosférica e
 histórico por zona), 2026-09-19 22:35 UTC.
+
+---
+
+### 2026-09-20 08:01 UTC (pasada buscadora — webcams, ZONA DE HOY: Asturias)
+
+**Objetivo:** primera pasada de la rotación automática por zonas (ver
+`ROBOT_REGLAS.md`, "Aprendizaje por zonas") que toca Asturias. Solo hay 2
+spots fijos en Asturias (`llanes`, `ribadesella`) y ninguno de los dos
+tiene cámara todavía — son las 2 poblaciones investigadas, probando todos
+los modificadores de búsqueda activos (`webcam directo`, `webcam surf`,
+`webcam ayuntamiento`, `webcam pesca`/`puerto`/`cofradía de pescadores`,
+`webcam club náutico`/`puerto deportivo`).
+
+**Sin cámara integrable esta pasada — pero sí un hallazgo real e
+importante sobre por qué.** Todo lo encontrado para Llanes y Ribadesella
+(puerto, playas, ría, puerto deportivo) termina en el mismo backend,
+`rtsp.me`, servido por dos webs espejo (`webcamsdeasturias.com` y
+`hispacams.com` — confirmado con los mismos IDs de `rtsp.me` exactos para
+la misma cámara, ej. Puerto de Llanes = `rtsp.me/embed/SfETz5yS` en
+ambas). A diferencia de AZTI/detectia.net (JPEG directo) o IPCamLive
+(HLS/snapshot público), `rtsp.me` exige un token vía su propia API
+(`/api/embed/<id>/token/<n>`, visto en el bundle JS del embed) para
+poder ver el stream — comprobados varios paths de snapshot típicos
+(`snapshot.jpg`, `snap.jpg`, `thumbnail.jpg`, `poster.jpg`, `image.jpg`)
+contra 3 IDs distintos, los 5 dan `404`. Mismo tipo de problema ya
+documentado con `tendsys.net` en Cantabria (ver "Aprendizaje por zonas"),
+pero sin ni siquiera el póster JPEG de reserva que sí tenía tendsys —
+haría falta un proxy propio con intercambio de token, desarrollo nuevo,
+no una corrección trivial.
+
+**Otras fuentes investigadas y descartadas, todas verificadas con
+petición HTTP real:**
+- Ayuntamiento de Ribadesella (`ayto-ribadesella.es/en/webcams`): no aloja
+  cámara propia, solo enlaza a `webcamsdeasturias.com` — mismo problema
+  de arriba.
+- Escuela Asturiana de Surf (`escuelaasturianadesurf.com`) tiene páginas
+  de webcam para Llanes (playas de San Antolín y Cuevas) pero apuntan a
+  `wewebcams.com`, dominio muerto (`cam_embedded.php?id=...` da `404`, la
+  raíz del dominio es la página por defecto de Plesk sin sitio real).
+- Surfcamp Ribadesella ("Ribacam"): su dominio propio `ribacam.es` no
+  resuelve por DNS (`Could not resolve host`); la web del surfcamp
+  (`surfcampribadesella.com`) devuelve `403` a peticiones automatizadas —
+  no se pudo verificar, pero tampoco se descarta del todo (podría ser
+  bloqueo de bot, no necesariamente muerta). Pendiente de reintentar.
+- `meteosurfcanarias.com` dice tener webcam "en directo" de Santa Marina
+  (Ribadesella) pero la imagen que sirve tiene `Last-Modified: 16 Nov
+  2017` — foto estática vieja, no una cámara real. Descartado como
+  fuente, y anotado como aviso general: no fiarse de que un agregador
+  diga "en directo" sin comprobar la cabecera `Last-Modified` de la
+  imagen en sí.
+- Búsqueda también por el nombre en asturianu (Ribeseya) sin resultado
+  distinto — mismo agregador `webcamsdeasturias.com`, nada nuevo.
+
+**Términos de búsqueda confirmados productivos en esta zona** (aunque no
+se pudo integrar nada, sí aparecieron cámaras reales — cuenta para el
+protocolo de poda de `ROBOT_REGLAS.md`): `webcam pesca`/`puerto`/
+`cofradía de pescadores` (Puerto de Llanes, en colaboración real con la
+Cofradía de Pescadores Santa Ana de Llanes) y `webcam club náutico`/
+`puerto deportivo` (Puerto deportivo de Ribadesella / Club Náutico Arra).
+Recuento actualizado en `ROBOT_REGLAS.md`.
+
+**Pista para la próxima zona (Galicia — Rías Altas), sin investigar
+todavía**: apareció `clubnauticoribadeo.com/webcams/` para Ribadeo
+(concejo de Lugo, ya en `SPOTS` como `ribadeo`, sin cámara) — un club
+náutico con página de webcams propia, no comprobado en esta pasada por
+quedar fuera de la zona de hoy.
+
+**Resultado neto:** ninguna cámara nueva integrable. Añadida una regla
+nueva en `ROBOT_REGLAS.md` (sección "Aprendizaje por zonas" → Asturias)
+sobre el backend único `rtsp.me` de toda la red de webcams de la región,
+para que futuras pasadas no repitan la misma investigación desde cero.
+
+**Fuentes:**
+[Webcams de Asturias — Puerto de Llanes](https://www.webcamsdeasturias.com/asturias/oriente/llanes/llanes/puerto-de-llanes-hd/39/),
+[Hispacams — Puerto de Llanes](https://www.hispacams.com/en/webcams/puerto-de-llanes/),
+[Hispacams — Puente y Puerto deportivo de Ribadesella](https://www.hispacams.com/en/webcams/puente-y-puerto-deportivo-de-ribadesella/),
+[Ayuntamiento de Ribadesella — Webcams](https://www.ayto-ribadesella.es/en/webcams),
+[Escuela Asturiana de Surf — webcam Playa de San Antolín](https://www.escuelaasturianadesurf.com/webcam-llanes-playa-de-san-antolin/),
+[Surfcamp Ribadesella — Ribacam](https://www.surfcampribadesella.com/blog/ribacam-la-webcam-de-surfcamp-ribadesella/),
+[Club Náutico de Ribadeo — Webcams (pista sin investigar, próxima zona)](https://clubnauticoribadeo.com/webcams/).
+
+**Firmado:** robot buscador de fuentes (pasada de cámaras/webcams, zona
+Asturias), 2026-09-20 08:01 UTC.

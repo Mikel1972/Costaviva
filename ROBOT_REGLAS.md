@@ -144,18 +144,19 @@ usuario afina un criterio — no es un historial (para eso está `ROBOT.md`).
     Sopela (sopela.eus), turismo de Castro-Urdiales.
   - `webcam pesca` / `webcam puerto` / `webcam cofradía de pescadores`
     — tipo de entidad: cofradía de pescadores/puerto pesquero.
-    Sugeridos por el usuario 2026-09-19, todavía sin confirmar en real
-    (pendiente de probar en la próxima zona) — la lógica es que
-    cofradías/lonjas/clubes de pesca podrían tener cámara del estado
-    del puerto igual que las escuelas de surf la tienen del oleaje.
-    Recuento por zona (ver protocolo de poda más abajo): ninguna zona
-    probada todavía.
+    Sugeridos por el usuario 2026-09-19. **Confirmado productivo
+    2026-09-20**: Asturias (Llanes/Ribadesella) — Puerto de Llanes, en
+    colaboración real con la Cofradía de Pescadores Santa Ana de
+    Llanes (cámara real encontrada, aunque no se pudo integrar por el
+    backend `rtsp.me`, ver zona Asturias más abajo) — el término se
+    queda activo indefinidamente. Recuento por zona: Asturias (con
+    resultado).
   - `webcam club náutico` / `webcam puerto deportivo` — tipo de
-    entidad: club náutico/puerto deportivo. Añadido 2026-09-20, sin
-    ningún caso real confirmado todavía (categoría candidata derivada
-    del diccionario de tipos, no de un hallazgo real) — probar en la
-    próxima zona igual que el resto. Recuento por zona: ninguna zona
-    probada todavía.
+    entidad: club náutico/puerto deportivo. Añadido 2026-09-20.
+    **Confirmado productivo el mismo día**: Asturias (Ribadesella) —
+    Puerto deportivo de Ribadesella / Club Náutico Arra (cámara real,
+    mismo problema de integración que arriba) — término activo
+    indefinidamente. Recuento por zona: Asturias (con resultado).
 
   **Poda de términos improductivos — protocolo mecánico, sin juicio
   subjetivo (pedido explícito del usuario 2026-09-19, versión final
@@ -426,6 +427,66 @@ reinventarlo si añades una estimación nueva sobre una fuente de vídeo.
   propio de HLS (reescribir las URLs relativas de los segmentos dentro
   del `.m3u8`) — no es una corrección trivial, es un desarrollo nuevo;
   no intentarlo sin que el usuario lo pida explícitamente.
+
+### Zona: Asturias (última pasada real: 2026-09-20, rotación automática)
+
+Solo 2 spots fijos (`llanes`, `ribadesella`), ninguno con cámara.
+
+- **Toda la red de webcams de Asturias corre sobre un único backend,
+  `rtsp.me` — no hay un proveedor propio tipo AZTI/detectia.net con
+  snapshot JPEG directo en esta zona.** Se encontró la misma cámara
+  (mismo ID de `rtsp.me`, ej. Puerto de Llanes = `rtsp.me/embed/
+  SfETz5yS`) republicada en al menos dos webs "distintas"
+  (`webcamsdeasturias.com` y `hispacams.com`) — son espejos del mismo
+  origen, no dos fuentes independientes. Cualquier otra vía que se
+  encuentre para una cámara asturiana (ayuntamiento que solo enlaza,
+  escuela de surf con embed de un tercero) hay que comprobar primero si
+  en el fondo también apunta a `rtsp.me` antes de tratarla como una
+  fuente nueva de verdad.
+- **`rtsp.me` no tiene ningún snapshot/HLS público fijo, a diferencia de
+  `tendsys.net` (Cantabria) que al menos daba un póster JPEG de
+  reserva.** Sirve el vídeo real solo tras un intercambio de token vía
+  su propia API (`/api/embed/<id>/token/<n>`, visto en el bundle JS
+  minificado del embed). Probados 5 paths de snapshot típicos
+  (`snapshot.jpg`, `snap.jpg`, `thumbnail.jpg`, `poster.jpg`,
+  `image.jpg`) contra 3 IDs reales distintos — los 15, `404`. Integrar
+  esto exigiría replicar el intercambio de token en un proxy propio:
+  desarrollo nuevo, no una corrección trivial (mismo criterio que el
+  HLS de tendsys.net de la regla anterior) — no intentarlo sin que el
+  usuario lo pida explícitamente.
+- **Un ayuntamiento que tiene página "Webcams" no implica que aloje
+  cámara propia** — el de Ribadesella (`ayto-ribadesella.es/en/
+  webcams`) solo enlaza a `webcamsdeasturias.com`. Comprobar siempre si
+  el HTML de la página del ayuntamiento tiene un iframe/script propio o
+  solo un `<a href>` de salida antes de darlo por una fuente
+  independiente del agregador que ya se conoce.
+- **Cuidado con agregadores que dicen "en directo" pero sirven una foto
+  vieja**: `meteosurfcanarias.com` presenta una imagen de Ribadesella/
+  Santa Marina como webcam en tiempo real, pero su cabecera
+  `Last-Modified` es de 2017 — una comprobación de una sola petición
+  `HEAD` la descarta al instante. Regla general para cualquier zona:
+  antes de dar por buena la imagen de un agregador desconocido,
+  comprobar `Last-Modified` (o pedirla dos veces separadas por unos
+  segundos y comparar bytes/tamaño) antes de asumir que es una fuente
+  viva.
+- **El asturianu no tiene estatus de co-oficialidad** (a diferencia de
+  euskera/galego/valencià en las otras zonas de la regla de "Nombres
+  alternativos" de arriba) — probado igualmente por si acaso
+  (`Ribeseya` por Ribadesella) y no apareció ninguna fuente nueva, solo
+  el mismo agregador. No hace falta repetir esta comprobación en otras
+  poblaciones asturianas salvo indicio concreto de que exista una
+  fuente solo bajo el nombre en asturianu.
+- **Pendiente de retomar, no descartado del todo**: `ribacam.es`
+  (webcam propia de Surfcamp Ribadesella) no resuelve por DNS, y
+  `surfcampribadesella.com` bloqueó la petición automatizada con `403`
+  — a diferencia de un `404` claro, esto no confirma que la fuente esté
+  muerta, solo que no se pudo verificar desde este entorno. Reintentar
+  en una pasada futura antes de dar esta población por agotada.
+- **Pista sin investigar, para la zona "Galicia — Rías Altas" (la
+  siguiente en la rotación)**: `clubnauticoribadeo.com/webcams/` para
+  Ribadeo (spot ya existente en `SPOTS`, sin cámara) — apareció al
+  buscar "club náutico" para Ribadesella, pero Ribadeo cae en la
+  siguiente zona de la rotación, no investigado todavía.
 
 ## Sinónimos regionales de especies y cebos (añadido 2026-09-13)
 
