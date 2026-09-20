@@ -5509,3 +5509,109 @@ que se ha hecho hoy con Gibraltar/PLOCAN.
 
 **Firmado:** robot buscador de fuentes (pasada de corrientes marinas),
 2026-09-20 17:43 UTC.
+
+---
+
+### 2026-09-20 22:52 UTC (pasada buscadora — presión atmosférica e histórico por zona, séptima pasada)
+
+**Contexto:** seguía dos pendientes explícitos de la pasada anterior
+(2026-09-19 22:35, más arriba): (1) verificar con una petición real el
+endpoint JSON diario de MeteoGalicia con una estación costera concreta,
+y (2) comprobar si las 6 estaciones tipo "B" de Euskalmet que faltaban
+en el ZIP de 2026 (Armintza, Bermeo, Ondarroa, Getaria, Hondarribia,
+Mutriku) aparecían en años anteriores o en algún fichero "thin". Las
+dos quedan resueltas esta pasada, cierran el tema por completo.
+
+**Hallazgo principal, verificado con datos reales — MeteoGalicia SÍ
+publica presión diaria observada, real y validada, sin ninguna clave,
+para al menos 2 spots reales de Costa Viva.** El PDF oficial
+(`JSON_EstacionsDiarios_es.pdf`, descargado y leído esta vez con éxito)
+documenta el endpoint:
+
+```
+https://servizos.meteogalicia.gal/mgrss/observacion/datosDiariosEstacionsMeteo.action?idEst=<código>&dataIni=dd/MM/yyyy&dataFin=dd/MM/yyyy&idParam=<código>
+```
+
+Sin clave, sin login. Cada estación trae, entre otros, los parámetros
+`PR_AVG_1.5m` ("Presión", hPa) y `PRED_AVG_1.5m` ("Presión reducida",
+hPa) — confirmado en real contra dos estaciones costeras que
+corresponden a spots ya existentes de `SPOTS` (`index.html`):
+**Coruña-Dique (idEst 14000, junto al spot `acoruna`)** y **Porto de
+Vigo (idEst 14001, junto al spot `cies`)**. Petición real de un rango
+(`dataIni=15/09/2026&dataFin=19/09/2026`) devolvió presión real y
+validada (`lnCodigoValidacion=1`, "dato válido original") día a día,
+ej. Coruña-Dique 15-sept 1023.17 hPa / 16-sept 1023.97 hPa. Profundidad
+histórica comprobada con varias peticiones puntuales: hay dato real en
+junio de 2018, 2020 y 2023, pero **hueco real en junio de 2022**
+(`lnCodigoValidacion=9`, "dato no registrado" — sensor caído esa
+temporada, no un fallo de la consulta) — no asumir cobertura continua
+sin comprobar el rango exacto que se necesite. Antes de 2018 no se
+comprobó más atrás (petición a enero de 2015 devolvió lista vacía, sin
+investigar en qué fecha exacta empieza la serie).
+
+**Por qué es relevante**: cierra para Galicia el mismo hueco que
+Euskalmet cerró para Bizkaia/Gipuzkoa el 2026-09-19 (backfill real de
+`presion_historico`, más fino que AEMET en el sentido de venir ya
+validado con código de calidad) — y a diferencia de la vía REST de
+Euskalmet (bloqueada desde el 2026-09-14 por un alta que nunca llegó
+por email, ver `CLAUDE.md`), esta ni siquiera necesita gestionar una
+clave. Listado completo de estaciones sin clave en
+`https://servizos.meteogalicia.gal/mgrss/observacion/listaEstacionsMeteo.action`
+— no se ha revisado todavía si hay más spots de `SPOTS` con una
+estación de esta red cerca (solo se comprobaron Coruña y Vigo, las dos
+candidatas obvias); pendiente para una futura pasada.
+
+**Segundo hallazgo — resuelto del todo el misterio de las 6 estaciones
+tipo "B" de Euskalmet que faltaban en el ZIP anual.** En vez de bajar
+los ZIPs completos de 2023/2024/2025 (~150 MB cada uno), se listó su
+contenido pidiendo solo los últimos 2 MB del fichero con `curl -r`
+(el directorio central de un ZIP vive al final, `unzip -l` no necesita
+el resto) — confirmado: **los 3 años (2023, 2024, 2025) solo traen
+Bilbao (B090) y Pasaia (B096), igual que 2026**, ninguno de los otros 6.
+La causa real (nada que ver con el formato del archivo ni con un
+"fichero thin", que no existe como tal) sale de su propio XML de
+metadatos (`XMLdatos` de cada estación en
+`estaciones.json`), que trae un campo `dateTo` con la fecha real de
+baja de cada estación:
+
+| Estación | Código | Dada de baja (`dateTo`) |
+|---|---|---|
+| Puerto de Armintza | B091 | 01/01/2006 |
+| Puerto de Bermeo | B092 | 22/07/2013 |
+| Puerto de Ondarroa | B093 | 06/01/2014 |
+| Puerto de Getaria | B094 | 06/01/2014 |
+| Puerto de Hondarribia | B097 | 07/10/2014 |
+| Mutriku | B098 | 01/02/2023 |
+
+Es decir: son estaciones reales que existieron (todas desde 2003,
+salvo Mutriku desde 2021) pero **llevan dadas de baja entre 12 y 20
+años**, salvo Mutriku (baja mucho más reciente, 2023). Solo Bilbao
+(B090) y Pasaia (B096) siguen activas hoy. Para backfill histórico
+dentro de su ventana real (ej. Ondarroa 2003-2014), el dato sigue
+existiendo en los ZIP de esos años concretos — pero no aporta nada para
+tendencia reciente/actual, que es el uso principal que tendría en
+`presion_historico`.
+
+**No aplicado a código esta pasada** (sigue tocando `functions/` y
+siendo backfill/decisión de producto, ver `ROBOT_REGLAS.md`) —
+**propuesta**: si el usuario retoma el backfill de `presion_historico`
+aparcado desde el 2026-09-14, ya hay 4 fuentes reales confirmadas para
+combinar (Euskalmet ZIP anual para Bilbao/Pasaia, MeteoGalicia JSON sin
+clave para A Coruña/Vigo — y potencialmente más spots gallegos, sin
+comprobar todavía —, AEMET en producción para el resto de España, IPMA
+solo Lisboa) — ninguna cubre el litoral entero, pero entre las cuatro
+ya no queda ninguna vía obvia sin explorar. Este tema puede
+espaciarse ahora: las 7 pasadas dedicadas a "presión atmosférica e
+histórico por zona" han agotado las fuentes evidentes; la próxima
+pasada de esta rotación debería, en su lugar, comprobar qué otros spots
+de `SPOTS` (más allá de acoruna/cies) tienen una estación de
+MeteoGalicia cerca, antes de seguir buscando proveedores nuevos desde
+cero.
+
+**Fuentes:**
+[MeteoGalicia — servicio JSON de datos diarios (PDF oficial)](https://www.meteogalicia.gal/datosred/infoweb/meteo/docs/rss/JSON_EstacionsDiarios_es.pdf),
+[MeteoGalicia — listado de estaciones sin clave](https://servizos.meteogalicia.gal/mgrss/observacion/listaEstacionsMeteo.action),
+[Open Data Euskadi — listado de estaciones con XMLdatos por estación](https://opendata.euskadi.eus/contenidos/ds_meteorologicos/estaciones_meteorologicas/opendata/estaciones.json).
+
+**Firmado:** robot buscador de fuentes (pasada de presión atmosférica e
+histórico por zona), 2026-09-20 22:52 UTC.
