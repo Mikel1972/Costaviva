@@ -4657,6 +4657,42 @@ datos de prueba (2 salidas, 2 capturas, 1 grupo, 1 invitación, 2
 membresías) borrados y verificados a 0. Informe completo en
 /tmp/experiencia-informe.txt.
 
+### 2026-09-20
+
+Sexta pasada intensiva de "usuario real exigente" contra producción
+(costaviva.org + API REST de Supabase) con las dos cuentas de prueba.
+Núcleo sólido de nuevo: entrada de diario real en Mundaka con todos los
+campos ambientales coherentes con /prevision; /identificar-captura
+acertó "Lubina" sin inventar talla/peso por falta de escala;
+impersonación de `user_id` bloqueada por RLS (403) y lectura cruzada A/B
+bloqueada; flujo completo de grupos con las dos cuentas (crear/invitar/
+unir/activar compartir a media prueba/salir) funcionó exactamente como
+está diseñado, incluida `eliminar_grupo()`. Errores de borde siempre
+claros (400/401/404/422/502, nunca un 200 silencioso). Un hallazgo
+nuevo: comparé el `coeficiente` de marea de `/prevision` entre Cantábrico
+y Mediterráneo contra la fase lunar real (hoy, gibosa creciente al 65%,
+subiendo hacia la llena) y descargué yo mismo 8 días de
+`sea_level_height_msl` de Open-Meteo Marine API para Bakio, Calpe y
+Valencia: en Bakio el rango de marea diario sube de forma monótona hacia
+la llena (1.13 m hoy → 3.89 m en 7 días), como cabría esperar; en Calpe y
+Valencia el rango va justo al revés, más alto ahora y bajando toda la
+semana, con el pico varios días antes de la llena en vez de después.
+Como el Mediterráneo tiene una marea astronómica real minúscula (10-20
+cm) dominada por presión/viento, `coeficientePorSpot()` probablemente
+está normalizando ruido meteorológico como si fuera el ciclo vivas-
+muertas ahí — la app le pone la misma etiqueta y el mismo aviso genérico
+("propio de este punto") en Calpe/Valencia que en el Cantábrico, sin
+avisar de que en el Mediterráneo ese número puede no tener relación
+real con la Luna esa semana. Relacionado en espíritu con el bug ya
+conocido de eventos de marea fundidos en spots mediterráneos de marea
+casi plana (documentado 2026-09-15 a 2026-09-19) — mismo origen (marea
+real minúscula y ruidosa), pero un síntoma distinto (aquí no se pierde
+ningún evento, es el número del coeficiente el que parece no significar
+lo mismo que en el resto del país). Solo propuesta, no aplicada — es una
+decisión de producto. Todos los datos de prueba (2 salidas, 1 captura, 1
+grupo, 1 invitación, 1 membresía) borrados y verificados a 0. Informe
+completo en /tmp/experiencia-informe.txt.
+
 ---
 
 ## Robot de patrones de uso
