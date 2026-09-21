@@ -5791,3 +5791,89 @@ zona probadas contra los modificadores activos.
 
 **Firmado:** robot buscador de fuentes (pasada de cámaras/webcams, zona
 Galicia — Rías Altas / costa norte), 2026-09-21 08:20 UTC.
+
+### 2026-09-21 15:35 UTC (pasada buscadora — mareas y oleaje)
+
+**Calibración — 4 puntos nuevos, mismo método de siempre.** `curl` real
+a `poem.puertos.es/portus/StationData` para la altura medida, Marine API
+de Open-Meteo en las coordenadas exactas de cada boya para la
+calculada, emparejando por la hora UTC exacta del último dato real:
+
+| boya | hora UTC | altura medida | altura calculada | diferencia | % |
+|---|---|---|---|---|---|
+| 2136 Bilbao-Vizcaya | 15:00 | 1.76 m | 1.66 m | −0.10 m | −5.7% |
+| 1117 Gijón | 13:00 | 1.52 m | 1.56 m | +0.04 m | +2.6% |
+| 1101 Pasaia II | 13:00 | 1.65 m | 1.26 m | −0.39 m | −23.6% |
+| 2820 Dragonera | 15:00 | 0.23 m | 0.12 m | −0.11 m | −47.8% |
+
+Añadidos a `CALIBRACION.jsonl`. **Pasaia II llega a 16 puntos, los 16
+con el mismo signo negativo** — no es una novedad en sí (el robot de
+calibración nocturna ya alcanzó el umbral de 15 y escribió la propuesta
+de factor de corrección hoy mismo a las 01:15 UTC, ver la sección
+"Robot de calibración nocturna" más arriba); este punto solo confirma
+que el patrón sigue sin excepción, no hace falta repetir la propuesta.
+Bilbao-Vizcaya y Gijón (16 puntos cada una) siguen sin patrón
+sistemático claro, signo mixto. Dragonera (rotación, candidata con más
+días sin repetirse desde el 2026-09-18) llega a 2 puntos con el mismo
+signo (−31.9%, −47.8%), pero con el mar casi en calma (alturas
+absolutas de 0.12–0.23 m) el porcentaje es poco fiable como medida de
+desviación real — hace falta más muestra con mar más agitado antes de
+sacar ninguna conclusión de esta boya.
+
+**Hallazgo nuevo — fuente real de nivel del mar (mareógrafo, no
+oleaje) para calibrar el TIMING de marea, no solo el coeficiente
+astronómico.** Investigando alternativas a `tides4fishing.com` (única
+referencia usada hasta ahora para el coeficiente de marea, ver
+`ROBOT_REGLAS.md`), apareció que el servidor THREDDS de EuskOOS/AZTI
+(`thredds.euskoos.eus`, ya usado en la pasada de corrientes del
+2026-09-15 para el radar HF) también publica un **mareógrafo real y
+vivo**: `mareografos/R4C_Txingudi_Obscape_TG_4466.csv` (y dos sensores
+más del mismo punto, `_4465`/`_4464`), en la bahía de Txingudi
+(Hondarribia/Hendaia), actualizado cada 10 minutos —confirmado en vivo,
+última fila a las 15:00 UTC, minutos antes de esta pasada.
+
+Verificado contra nuestro propio cálculo para el spot `hondarribia`
+(lat 43.3736, lon −1.7964 — la bahía de Txingudi está a menos de 2 km,
+coordenada del mareógrafo solo aproximada, centro de la bahía según
+Wikipedia, la documentación pública de EuskOOS no da la posición exacta
+del sensor Obscape): el dato real y crudo de EuskOOS no es comparable
+en valor absoluto contra el `marea.altura` que devuelve `/prevision`
+(datums distintos — el mareógrafo usa su propio cero local, nuestro
+valor está re-referenciado contra el mínimo de la ventana de Open-Meteo,
+ver `CLAUDE.md` 2026-09-12), pero **sí se puede comparar el TIMING de
+pleamar/bajamar**, que es justamente lo que un pescador necesita saber
+bien. Resultado: la pleamar real observada en el mareógrafo cayó entre
+las 12:10 y las 12:40 UTC de hoy (máximo local ~0.99 en su propio
+datum); nuestra propia predicción para `hondarribia` decía bajamar a
+las 18:00 UTC (20:00 hora de Madrid) — un desfase de ~5h20-5h50, muy
+cercano al cuarto de periodo semidiurno real (~6h12m). El timing de
+nuestro modelo encaja razonablemente bien con el mareógrafo real, sin
+haber usado nunca este dato para calibrar nada hasta ahora. Detalle
+completo en `CALIBRACION.jsonl` (`tipo:
+"marea_real_txingudi_vs_modelo_propio"`).
+
+**Propuesta, no implementación** (cae fuera de lo que esta pasada puede
+aplicar directo — tocaría `functions/prevision.js`/`diario.html` y tiene
+matices de datum que conviene decidir con calma): usar este mareógrafo
+como fuente de VALIDACIÓN periódica del timing de marea para los spots
+vascos de la zona (Hondarribia, Pasaia...) en vez de depender solo de
+`tides4fishing.com` — a diferencia de esa web (una estimación de
+terceros), esto es una medición real de nivel del mar. No se propone
+mostrarlo directo al usuario (el problema del datum distinto lo haría
+confuso sin más trabajo), solo usarlo internamente para futuras
+calibraciones de `coeficientePorSpot()`/la hora de los eventos de
+marea. Si se retoma: (1) confirmar si existen más mareógrafos EuskOOS
+además de Txingudi (el catálogo del THREDDS solo lista esta estación
+por ahora, comprobado en vivo), y (2) decidir cómo restar el offset de
+datum entre el mareógrafo y nuestro cálculo antes de comparar alturas
+absolutas, no solo el timing.
+
+**Fuentes:**
+[poem.puertos.es — StationData (Puertos del Estado, boyas reales)](https://poem.puertos.es/portus/StationData),
+[Open-Meteo Marine API](https://marine-api.open-meteo.com/v1/marine),
+[THREDDS EuskOOS — catálogo de mareógrafos](https://thredds.euskoos.eus/thredds/catalog/mareografos/catalog.xml),
+[THREDDS EuskOOS — CSV real del mareógrafo de Txingudi](https://thredds.euskoos.eus/thredds/fileServer/mareografos/R4C_Txingudi_Obscape_TG_4466.csv),
+[Wikipedia — Bay of Txingudi](https://en.wikipedia.org/wiki/Bay_of_Txingudi).
+
+**Firmado:** robot buscador de fuentes (pasada de mareas y oleaje),
+2026-09-21 15:35 UTC.
