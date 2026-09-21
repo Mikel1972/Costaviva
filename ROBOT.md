@@ -5877,3 +5877,92 @@ absolutas, no solo el timing.
 
 **Firmado:** robot buscador de fuentes (pasada de mareas y oleaje),
 2026-09-21 15:35 UTC.
+
+### 2026-09-21 18:52 UTC (pasada buscadora — corrientes marinas por zona, octava pasada)
+
+**Qué se buscó:** la pasada anterior (2026-09-20 17:43 UTC) dejó pendiente
+comprobar la proximidad real de las redes de radar HF de **Lisboa** e
+**Ibiza** a un spot de Costaviva, mismo método ya aplicado a
+Gibraltar/PLOCAN (petición real al griddap de EMODnet ERDDAP, buscar la
+celda válida — `QCflag=1`/`CSPD_QC=1` — más cercana, no solo comprobar que
+la red esté "viva").
+
+**Hallazgo 1, muy positivo — Lisboa tiene la mejor cobertura de las 9
+zonas comprobadas hasta ahora.** Confirmado en vivo (`time_coverage_end`
+= hoy 17:00 UTC, actualizándose de verdad): la red `HFR-Lisboa-Total`
+tiene una celda real y de buena calidad a solo **1.1 km** de
+`costadacaparica` (spot ya existente) — más cerca que el mejor caso
+anterior (PLOCAN/Las Palmas, 2.6 km). `cascais` también cae dentro,
+a 4.1 km. El resto de spots portugueses de la zona quedan fuera de la
+rejilla real: `troia` (25.3 km), `sines` (32.8 km), `ericeira` (33.0 km,
+pese a estar geográficamente más cerca en línea recta — la rejilla con
+datos válidos no cubre esa esquina norte de la red a esta hora).
+
+**Hallazgo 2, positivo con matiz — Ibiza cubre Formentera, no Mallorca.**
+`HFR-Ibiza-Total` (viva, mismo `time_coverage_end` de hoy) tiene su celda
+válida más cercana a **12.4 km** de `formentera` (Es Pujols) — usable
+pero bastante peor que Lisboa o PLOCAN. `palma` (Mallorca) queda a 139 km,
+sin cobertura real ninguna — el nombre "Ibiza" de la red describe bien su
+alcance real, no llega a Mallorca.
+
+**Calibración real, 3 puntos nuevos** (17:00 UTC de hoy,
+`CALIBRACION.jsonl`, `tipo: "corriente_radar_hf_vs_openmeteo"`):
+Costa da Caparica (radar 0.36 m/s a 221°, Open-Meteo 0.11 m/s a 153° —
+diferencia grande en velocidad Y dirección), Cascais (radar 0.13 m/s a
+176°, Open-Meteo 0.18 m/s a 214° — velocidad parecida, dirección a 38°),
+Formentera (radar 0.10 m/s a 12°, Open-Meteo 0.14 m/s a 135° —
+dirección a 123°, la peor de las tres). Mismo patrón ya asentado en las
+7 pasadas anteriores: sin relación estable entre el radar real y el
+modelo de Open-Meteo, ni en velocidad ni en dirección — con esto ya son
+**23 puntos en 7 zonas**, ninguno con corrección estable.
+
+**Hallazgo 3, corrección de auditoría sobre esta misma responsabilidad —
+bug de unidades en las 20 calibraciones anteriores.** Revisando cómo
+pedir Open-Meteo para los 3 puntos nuevos, se comprobó que la Marine API
+devuelve `ocean_current_velocity` en **km/h por defecto** (confirmado en
+vivo y en la documentación oficial de Open-Meteo) — pero las 7 pasadas
+anteriores de esta misma responsabilidad guardaron ese valor en
+`openMeteoVelocidad` y lo compararon directamente contra
+`radarVelocidad` (que sí es real en m/s, viene de `EWCT`/`NSCT` del
+radar HF) **sin convertir**, como si ambos estuvieran en la misma
+unidad. Confirmado pidiendo el mismo punto con y sin el parámetro
+`wind_speed_unit=ms` (que también convierte `ocean_current_velocity`,
+no solo el viento pese al nombre): mismo punto, `0.4` km/h (valor ya
+guardado en calibraciones previas) frente a `0.11` m/s real (valor
+correcto). Esto invalida las lecturas cualitativas tipo "velocidad casi
+idéntica" de calibraciones anteriores (ej. Mundaka 2026-09-17 11:00 UTC:
+"0.605 vs 0.6" parecía casi idéntico, pero 0.6 era km/h = 0.167 m/s, muy
+lejos de 0.605 m/s real) — la conclusión de fondo (sin relación estable
+radar-modelo) no cambia, pero el grado de discrepancia real en velocidad
+es aún mayor de lo que las notas anteriores decían. **No se ha tocado
+código de producción** (`functions/prevision.js` etiqueta bien
+`corriente` como km/h en `index.html`, `panelCorriente` —
+`${s.corriente} km/h` — así que esto es un bug solo de la metodología de
+calibración de este robot, no de la app real). A partir de esta pasada,
+`openMeteoVelocidad_ms` en `CALIBRACION.jsonl` se guarda siempre con
+`wind_speed_unit=ms` explícito en la petición — cualquier pasada futura
+que añada un punto de este `tipo` debe hacer lo mismo, y si se revisan
+los 20 puntos anteriores para una conclusión cuantitativa, dividir su
+`openMeteoVelocidad` entre 3.6 antes de comparar.
+
+**Conclusión — sigue siendo solo propuesta**, no cambio de código: con
+la cobertura de Lisboa (1.1 km de Costa da Caparica) ya es, de largo, el
+mejor candidato de las 9 zonas comprobadas para una eventual integración
+como capa de "corriente observada" aparte del modelo — pero la
+recomendación de fondo no cambia (mostrar como observación real
+aparte, nunca sustituir el modelo, dado que ninguna zona muestra
+corrección estable). Pendiente para una futura pasada: de las 6 zonas
+con radar HF real que quedan sin comprobar la proximidad exacta a un
+spot (EUSKOOS y Galicia ya se han usado para calibrar puntos concretos,
+pero conviene repetir el mismo barrido sistemático de "celda más
+cercana" que se ha hecho hoy con Lisboa/Ibiza y antes con
+Gibraltar/PLOCAN, para tener el mismo dato de distancia real en las 9
+zonas).
+
+**Fuentes:**
+[EMODnet Physics ERDDAP — Lisboa](https://erddap.emodnet-physics.eu/erddap/info/EUHFR_NRTcurrent_HFR-Lisboa-Total/index.html),
+[EMODnet Physics ERDDAP — Ibiza](https://erddap.emodnet-physics.eu/erddap/info/EUHFR_NRTcurrent_HFR-Ibiza-Total/index.html),
+[Open-Meteo — Marine Weather API docs](https://open-meteo.com/en/docs/marine-weather-api).
+
+**Firmado:** robot buscador de fuentes (pasada de corrientes marinas),
+2026-09-21 18:52 UTC.
