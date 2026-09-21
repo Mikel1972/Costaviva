@@ -5692,3 +5692,102 @@ cero.
 
 **Firmado:** robot buscador de fuentes (pasada de presión atmosférica e
 histórico por zona), 2026-09-20 22:52 UTC.
+
+### 2026-09-21 08:20 UTC (pasada buscadora — cámaras/webcams, zona Galicia — Rías Altas / costa norte)
+
+**Objetivo de la pasada:** primera vez que la rotación automática toca
+esta zona. Solo 3 spots fijos aquí (`acoruna`, `camarinas`, `ribadeo`,
+ver `SPOTS` en `index.html`) — a diferencia de Asturias/Cantabria, los
+3 YA tienen cámara (MeteoGalicia, `functions/webcam/[slug].js`), así
+que no hay ningún hueco de "spot fijo sin cámara" que rellenar en esta
+zona. Sin acceso a `spots_usuario` (esta pasada no tiene token de
+sesión, mismo límite ya documentado en pasadas anteriores), así que la
+búsqueda se centró en: (1) comprobar que las 3 cámaras existentes
+siguen vivas, (2) seguir la pista de Ribadeo dejada por la pasada de
+Asturias, (3) buscar población por población (A Coruña, Ribadeo,
+Camariñas) con los modificadores activos de `ROBOT_REGLAS.md`.
+
+**Las 3 cámaras existentes están vivas y sin caída correlada.**
+Verificado con petición HTTP real a las 3 `ultima.jpg` de MeteoGalicia:
+A Coruña, Camariñas y Ribadeo, las 3 con `200 image/jpeg` y
+`Last-Modified` a menos de 2 minutos del momento de la comprobación
+(08:12-08:14 UTC). Nada que reemplazar.
+
+**Pista de Ribadeo confirmada real — pero mismo bloqueo técnico que
+Asturias.** `clubnauticoribadeo.com/webcams/` (Real Club Náutico de
+Ribadeo) embebe dos cámaras reales de `rtsp.me`
+(`rtsp.me/embed/TEsbennT/` y `rtsp.me/embed/6QYaBsGS/`) — la segunda es
+exactamente la misma que `hispacams.com/en/webcams/puerto-de-ribadeo/`
+(mismo ID, confirmado con `curl`: son espejos del mismo origen, igual
+que ya se vio en Asturias con `webcamsdeasturias.com`/`hispacams.com`).
+Probados los 5 paths de snapshot típicos (`snapshot.jpg`, `snap.jpg`,
+`thumbnail.jpg`, `poster.jpg`, `image.jpg`) contra los 2 IDs — los 10,
+`404`, igual que en Asturias: `rtsp.me` exige un intercambio de token
+vía su propia API para servir el vídeo, no hay snapshot público
+directo. Integrarlo exigiría un proxy propio con ese intercambio de
+token — desarrollo nuevo, no una corrección trivial, así que queda
+como propuesta sin implementar, igual que las cámaras de Llanes/
+Ribadesella en Asturias.
+
+**Hallazgo real más importante de la pasada — el "vídeo" de
+MeteoGalicia vía `streamlock.net` NO está en directo.** Buscando
+"webcam A Coruña", casi todos los resultados pasan por el agregador
+`camaramar.com`. Inspeccionando su página para A Coruña
+(`camaramar.com/webcam/coruna-dique`) apareció un `<source>` HLS real,
+con CORS abierto:
+`https://622a10e8864f7.streamlock.net/VODgrabaciones/meteo_Corunha.mp4/playlist.m3u8`
+— mismo nombre de carpeta (`Corunha`) que la URL JPEG que ya usamos.
+Confirmado que el mismo patrón (`meteo_<carpeta>.mp4`) existe también
+para Ribadeo (`meteo_Ribadeoporto.mp4`, `200`) y Camariñas
+(`meteo_Camarinhas.mp4`, `200`). A primera vista parecía un ascenso
+directo por la regla de prioridad "vídeo antes que imagen fija" de
+`ROBOT_REGLAS.md` — pero verificado en real pidiendo el mismo segmento
+`.ts` dos veces con 75 segundos de diferencia real: el `ETag` y el
+`Content-Length` no cambiaron ni un byte (mientras que, en la misma
+pasada, el `ultima.jpg` de la misma cámara sí se actualizó de verdad en
+ese margen). Es un clip fijo de ~54s grabado una vez y servido siempre
+igual (solo el nombre del `chunklist` cambia en cada petición al
+`playlist.m3u8`, el contenido real no) — **no es vídeo en directo, es
+una trampa de aspecto convincente** (CORS abierto, HLS real, nombre de
+carpeta coincidente). Añadida esta regla a `ROBOT_REGLAS.md` para que
+ninguna pasada futura pierda tiempo intentando "mejorar" una cámara de
+MeteoGalicia con esto.
+
+**Resto de vías investigadas, sin resultado verificable:**
+- Real Club Náutico de A Coruña (`rcncoruna.com`): sin cámara propia
+  encontrada.
+- Club Náutico de Camariñas: solo aparece vía Windfinder, cuya página
+  es un widget renderizado por JS — el `og:image` es un asset genérico
+  de Windfinder, no una foto real de la cámara; no verificable con una
+  petición simple, no se propone.
+- Ningún ayuntamiento de la zona (A Coruña, Ribadeo, Camariñas) tiene
+  cámara propia independiente — todo lo encontrado remite a
+  agregadores comerciales (`camaramar.com`, `g24.gal`,
+  `meteosurfcanarias.com`, `enterat.com`) que a su vez remiten a
+  MeteoGalicia o a `rtsp.me`.
+- "Webcam surf" para A Coruña encontró Razo Beach
+  (`artsurfcamp.com`) — cámara real de una escuela de surf, pero es una
+  playa distinta (término de Carballo), no el spot de A Coruña; no se
+  propone para este spot.
+
+**Resultado neto: sin cámara nueva integrable esta pasada.** Los 3
+spots fijos de esta zona ya tienen cámara viva; la única pista real
+encontrada (Ribadeo/`rtsp.me`) tiene el mismo bloqueo técnico que ya
+impidió integrar las de Asturias. Sí dos hallazgos generalizables,
+añadidos a `ROBOT_REGLAS.md` (sección "Aprendizaje por zonas" → nueva
+subsección Galicia — Rías Altas): que `rtsp.me` no es exclusivo de
+Asturias, y que el HLS de `streamlock.net`/MeteoGalicia es un clip fijo,
+no vídeo en directo — para que ninguna pasada futura repita esta
+misma investigación desde cero. Recuento de términos actualizado en
+`ROBOT_REGLAS.md` (sección de poda) para las 4 poblaciones de esta
+zona probadas contra los modificadores activos.
+
+**Fuentes:**
+[Real Club Náutico de Ribadeo — Webcams](https://clubnauticoribadeo.com/webcams/),
+[Hispacams — Puerto de Ribadeo](https://www.hispacams.com/en/webcams/puerto-de-ribadeo/),
+[Camaramar — Webcam Coruña (Dique)](https://www.camaramar.com/webcam/coruna-dique),
+[Windfinder — Club Náutico de Camariñas](https://es.windfinder.com/webcams/club-nutico-de-camarias),
+[Artsurfcamp — Razo Beach Webcam](https://www.artsurfcamp.com/en/webcam/razo-beach-webcam/).
+
+**Firmado:** robot buscador de fuentes (pasada de cámaras/webcams, zona
+Galicia — Rías Altas / costa norte), 2026-09-21 08:20 UTC.

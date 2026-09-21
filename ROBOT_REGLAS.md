@@ -138,10 +138,17 @@ usuario afina un criterio — no es un historial (para eso está `ROBOT.md`).
     (`escueladesurfsopelana.com`) y en Santoña/playa de Berria
     (`watsaysurfschool.com`) — las escuelas de surf resultaron de las
     fuentes más fiables de todo el día (dueño identificado, cámara
-    fija, buena resolución).
+    fija, buena resolución). Recuento por zona: Galicia — Rías Altas
+    (A Coruña, Ribadeo — con resultado parcial: apareció Razo Beach,
+    `artsurfcamp.com`, pero es una playa distinta en Carballo, no el
+    spot de A Coruña; no se propone para ese spot, solo confirma que
+    el término sigue vivo).
   - `webcam ayuntamiento` — tipo de entidad: ayuntamiento/turismo
     local. Confirmado productivo 2026-09-19: Zumaia (zumaia.eus),
-    Sopela (sopela.eus), turismo de Castro-Urdiales.
+    Sopela (sopela.eus), turismo de Castro-Urdiales. Recuento por
+    zona: Galicia — Rías Altas (A Coruña, Ribadeo — sin resultado, solo
+    agregadores comerciales tipo camaramar.com/g24.gal, ningún
+    ayuntamiento con cámara propia).
   - `webcam pesca` / `webcam puerto` / `webcam cofradía de pescadores`
     — tipo de entidad: cofradía de pescadores/puerto pesquero.
     Sugeridos por el usuario 2026-09-19. **Confirmado productivo
@@ -150,13 +157,17 @@ usuario afina un criterio — no es un historial (para eso está `ROBOT.md`).
     Llanes (cámara real encontrada, aunque no se pudo integrar por el
     backend `rtsp.me`, ver zona Asturias más abajo) — el término se
     queda activo indefinidamente. Recuento por zona: Asturias (con
-    resultado).
+    resultado); Galicia — Rías Altas (A Coruña, Ribadeo — con
+    resultado: Puerto de Ribadeo, mismo bloqueo técnico `rtsp.me` que
+    Asturias, ver zona Galicia más abajo).
   - `webcam club náutico` / `webcam puerto deportivo` — tipo de
     entidad: club náutico/puerto deportivo. Añadido 2026-09-20.
     **Confirmado productivo el mismo día**: Asturias (Ribadesella) —
     Puerto deportivo de Ribadesella / Club Náutico Arra (cámara real,
     mismo problema de integración que arriba) — término activo
-    indefinidamente. Recuento por zona: Asturias (con resultado).
+    indefinidamente. Recuento por zona: Asturias (con resultado);
+    Galicia — Rías Altas (A Coruña, Ribadeo — con resultado: Real Club
+    Náutico de Ribadeo, mismo bloqueo `rtsp.me`).
 
   **Poda de términos improductivos — protocolo mecánico, sin juicio
   subjetivo (pedido explícito del usuario 2026-09-19, versión final
@@ -487,6 +498,67 @@ Solo 2 spots fijos (`llanes`, `ribadesella`), ninguno con cámara.
   Ribadeo (spot ya existente en `SPOTS`, sin cámara) — apareció al
   buscar "club náutico" para Ribadesella, pero Ribadeo cae en la
   siguiente zona de la rotación, no investigado todavía.
+
+### Zona: Galicia — Rías Altas / costa norte (última pasada real: 2026-09-21, rotación automática)
+
+Solo 3 spots fijos en esta zona (`acoruna`, `camarinas`, `ribadeo`), y
+los 3 ya tienen cámara de MeteoGalicia — a diferencia de Asturias/
+Cantabria, no hay ningún spot fijo sin cámara aquí. Verificados los 3
+en real esta pasada (`ultima.jpg` de cada uno, `Last-Modified` a menos
+de 2 minutos de la comprobación) — sin caída correlada de proveedor,
+nada que reemplazar.
+
+- **La pista de Ribadeo se confirma real, pero con el mismo bloqueo
+  técnico ya documentado en Asturias — `rtsp.me` sin snapshot
+  público.** `clubnauticoribadeo.com/webcams/` (Real Club Náutico de
+  Ribadeo) embebe dos cámaras reales vía `rtsp.me`
+  (`rtsp.me/embed/TEsbennT/` y `rtsp.me/embed/6QYaBsGS/`) — la segunda
+  es la misma que replica `hispacams.com/en/webcams/puerto-de-ribadeo/`
+  (mismo ID exacto, confirmado; mismo patrón de "espejos del mismo
+  origen" ya visto en Asturias con `webcamsdeasturias.com`/
+  `hispacams.com`). Probados los 5 paths de snapshot típicos
+  (`snapshot.jpg`, `snap.jpg`, `thumbnail.jpg`, `poster.jpg`,
+  `image.jpg`) contra los 2 IDs — los 10, `404`. **`rtsp.me` no es un
+  caso aislado de Asturias, es un backend que aparece también en
+  Galicia** — cualquier cámara nueva que en esta costa resulte estar
+  detrás de `rtsp.me` tiene el mismo bloqueo (exige intercambio de
+  token vía su API, desarrollo nuevo, no corrección trivial); no
+  repetir la comprobación de los 5 paths de snapshot para cada ID
+  nuevo de `rtsp.me` que aparezca, ya está confirmado que ninguno
+  responde.
+- **Trampa real encontrada, útil para cualquier zona con MeteoGalicia
+  (Cantábrico gallego Y Rías Baixas): el "vídeo" de MeteoGalicia vía
+  `streamlock.net` NO es en directo, es el mismo clip fijo siempre.**
+  El agregador `camaramar.com` (aparece en casi cualquier búsqueda
+  "webcam <pueblo gallego>") resultó ser solo un reproductor que
+  reincrusta el mismo origen que ya usamos — para A Coruña, un HLS en
+  `https://622a10e8864f7.streamlock.net/VODgrabaciones/meteo_Corunha.mp4/playlist.m3u8`
+  (mismo `<carpeta>` que la URL JPEG que ya integramos,
+  `meteogalicia.gal/datosred/camaras/MeteoGalicia/Corunha/`; confirmado
+  el mismo patrón vivo también para `meteo_Ribadeoporto.mp4` y
+  `meteo_Camarinhas.mp4` — parece existir para cualquier cámara con
+  JPEG). CORS abierto, así que a primera vista parecía un ascenso claro
+  por la regla "vídeo antes que imagen fija" — **pero verificado en
+  real pidiendo el mismo segmento `.ts` dos veces con 75s de
+  diferencia: mismo `ETag` y `Content-Length` exactos, sin ningún
+  cambio** (mientras que el JPEG `ultima.jpg` de la misma cámara sí se
+  actualiza cada ~1 minuto, comprobado en la misma pasada). Es un clip
+  de ~54s grabado una vez y servido siempre igual (el nombre del
+  `chunklist` cambia en cada petición al `playlist.m3u8`, pero el
+  contenido real no) — **no usarlo nunca como fuente de vídeo en
+  directo para ninguna cámara de MeteoGalicia**, la imagen fija sigue
+  siendo la única fuente real y actualizada de este proveedor.
+- **Real Club Náutico de A Coruña (`rcncoruna.com`) y el Club Náutico
+  de Camariñas (aparece solo vía Windfinder) — sin cámara verificable.**
+  Ninguna de las dos webs propias expone una imagen real por HTTP
+  directo; la página de Windfinder para el club de Camariñas es un
+  widget renderizado por JS (el `og:image` es un asset genérico de
+  Windfinder, no una foto de la cámara) — no se pudo verificar con una
+  petición simple, no se propone.
+- **Ningún ayuntamiento propio con cámara independiente encontrado**
+  para A Coruña ni Ribadeo — solo agregadores comerciales
+  (`camaramar.com`, `g24.gal`, `meteosurfcanarias.com`, `enterat.com`),
+  todos remitiendo al final a MeteoGalicia o a `rtsp.me`.
 
 ## Sinónimos regionales de especies y cebos (añadido 2026-09-13)
 
