@@ -4479,6 +4479,83 @@ ríos/Nazaré/la mayoría de webcams no).
 
 ---
 
+### 2026-09-21 (pasada nocturna corta — calibración + salud de datos)
+
+**Pasada nocturna diaria, mismo alcance estrecho** (rutina "Costaviva —
+calibración nocturna", no la auditoría semanal completa).
+
+**Calibración — 4 boyas comprobadas, las 3 fijas + rotación a 2548 Cabo
+de Gata** (candidata con más noches sin repetirse, desde 2026-09-18,
+empatada con Dragonera/Villano-Sisargas pero ya elegida en pasadas
+anteriores de la lista corta del prompt). Las 4 respondieron `200` con
+forma `[cabeceras, filas]` correcta y datos de la última hora:
+
+- **2136 Bilbao-Vizcaya**: real 1.64 m, calculado 1.62 m, diferencia
+  -1.2%. Decimoquinto punto — media de 15 puntos ~= -2.6%, sigue sin
+  patrón sistemático (8/15 negativos, signo mixto).
+- **1117 Gijón**: real 1.58 m, calculado 1.54 m, diferencia -2.5%.
+  Decimoquinto punto — media de 15 puntos ~= -6.6%, igual de mixto
+  (11/15 negativos).
+- **1101 Pasaia II**: real 1.54 m, calculado 1.24 m, diferencia -19.5%.
+  **Decimoquinto punto consecutivo con signo negativo (15/15, sin
+  ninguna excepción en 15 noches/pasadas) — alcanza el mínimo de 15
+  puntos que el propio prompt de esta rutina fija para valorar un
+  factor de corrección.** Media de los 15 puntos: **-29.1%** (Open-Meteo
+  calcula sistemáticamente por debajo de lo que mide la boya real).
+  **Propuesta concreta, a confirmar por el usuario, nunca aplicada
+  aquí**: multiplicar la altura de ola calculada por Open-Meteo para la
+  zona de Pasaia/Guipúzcoa (o aplicar un factor equivalente) por **~1.29
+  – 1.4** antes de mostrarla — 1.29 si se corrige sobre la media
+  aritmética de las diferencias porcentuales (-29.1% → factor
+  1/(1-0.291)), 1.4 si se usa la media de la razón real/calculado punto
+  a punto (1.44, algo más alta porque pesa más los puntos de mar
+  agitado donde la diferencia absoluta y relativa crecen juntas — ver
+  CALIBRACION.jsonl, últimos puntos de mar agitado como el
+  2026-09-19 con -44.0%). No se ha comprobado si esta zona necesita un
+  factor distinto al resto de la costa vasca (Bilbao-Vizcaya y Gijón no
+  muestran el mismo sesgo) — sería razonable acotarlo a Pasaia/
+  Guipúzcoa en vez de aplicarlo a todo `indiceMar`/`indicePesca`, pero
+  esa decisión de alcance es del usuario.
+- **2548 Cabo de Gata**: real 1.41 m, calculado 1.08 m, diferencia
+  -23.4%. Quinto punto para esta boya, sigue sin patrón consistente
+  (-38.1%, +12.5%, -40.2%, +2.1%, -23.4% — 3/5 negativos, sin
+  candidata a factor de corrección todavía, haría falta más muestra y
+  más consistencia de signo).
+
+**Salud de datos — quinta noche consecutiva con exactamente el mismo
+patrón de dominios bloqueados (2026-09-17, 18, 19, 20 y hoy); sigue sin
+ser evidencia de que ninguna fuente esté rota.** Verificado en vivo con
+`curl`: las 4 boyas de Puertos del Estado de arriba (`200`, datos reales
+y recientes) y 3 webcams de proveedores distintos (`mundaka` —
+kostasystem.com, 94 KB JPEG 1024×768; `bakio` — pyscada.isurki.com,
+765 KB JPEG 1024×768; `sopelana` — detectia.net, 46 KB WebP 2464×2056;
+las 3 con `200` y una imagen real de tamaño razonable). **No se pudo
+comprobar** la boya de Nazaré (`monican.hidrografico.pt`), ninguna de
+las 4 fuentes de caudal de río (`visor.saichcantabrico.es`,
+`saih.chj.es`, `saihweb.chsegura.es`, `servizos.meteogalicia.gal`), ni
+la ampliación de muestra de webcams intentada hoy (`rswc.tendsys.net`,
+la reserva de Laredo — dominio nuevo, no probado en pasadas anteriores,
+también rechazado) — las 5 rechazadas por el propio proxy de salida de
+esta sesión (`connect_rejected`, "gateway answered 403 to CONNECT"),
+confirmado con `curl .../__agentproxy/status`. Ninguna corrección de
+código aplicada — no hay evidencia de ningún fallo real, solo de que
+esta sesión concreta no alcanza esos dominios. Se reitera, con ya cinco
+noches seguidas del mismo patrón, la recomendación de que el usuario
+revise si el conjunto de dominios permitidos para esta rutina puede
+ampliarse (Puertos del Estado y Open-Meteo sí están permitidos;
+ríos/Nazaré/la mayoría de webcams no).
+
+**Resumen de severidad para el usuario**: nada roto en las fuentes ya
+integradas (media/baja para los 5 dominios bloqueados por política de
+red, sin cambios respecto a las 4 noches anteriores). Novedad real de
+hoy: **Pasaia II ya tiene suficiente historial consistente (15/15
+negativo, media -29.1%) para que el usuario decida si aplicar un factor
+de corrección de ola en esa zona** — ver la propuesta concreta arriba.
+
+**Firmado:** robot de calibración nocturna, 2026-09-21 01:15 UTC.
+
+---
+
 ## Robot de experiencia de usuario
 
 ### 2026-09-15
