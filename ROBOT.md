@@ -2695,6 +2695,211 @@ todavía en ninguna de las dos.
 institucionales/académicos tipo DIGIPESCA, segunda pasada),
 2026-09-19 01:48 UTC.
 
+### 2026-09-21 (pasada semanal — cobertura geográfica: Asturias, Cataluña, Murcia, Andalucía, Canarias, Portugal)
+
+Pasada semanal completa del robot de datos (distinta de la rutina
+"buscadora" automática de 4x/día — esta hace las 5 responsabilidades
+del prompt de una vez). **Limitación de red más severa que en pasadas
+anteriores, confirmada con `curl` real contra ~20 dominios**: solo
+respondieron `poem.puertos.es` (`200`), `marine-api.open-meteo.com` /
+`api.open-meteo.com` (accesibles, ver Calibración), `aa.usno.navy.mil`
+(`200`), `www.aemet.es` (`200`/`301`, incluida su API de rayos),
+`www.kostasystem.com` / `detectia.net` (`200`, red AZTI) y
+`www.skylinewebcams.com` (`200`). **Todo lo demás probado dio `403
+connect_rejected` del propio proxy de salida de esta sesión —
+incluido, por primera vez que se comprueba explícitamente,
+`costaviva.org`, el propio dominio de producción de esta app**, no
+solo fuentes externas. Dominios nuevos confirmados bloqueados esta
+pasada (no probados en pasadas anteriores documentadas): `*.gencat.cat`
+(ACA, Cataluña), `redhidrosurmedioambiente.es` (Andalucía),
+`riunet.upv.es` (bloquea continuar el cruce DIGIPESCA 2011-2015/
+2016-2018 pendiente desde el 2026-09-19), `hidrografico.pt` y
+subdominios, `opendata.aemet.es`, `gipuzkoa.eus`, `s61.ipcamlive.com`,
+`webcamtaxi.com`, `rtsp.me`, `www.hispacams.com`,
+`www.meteogalicia.gal`, `www.cantabria.es`,
+`streaming.comunitatvalenciana.com`, `apps.socib.es`,
+`www.webviewcams.com`, y varias webs municipales (`gijon.es`,
+`malaga.eu`, `cartagena.es`, `cadizturismo.com`,
+`laspalmasdegrancanaria.es`). Se reitera, con más evidencia que nunca
+(mismo patrón ya repetido ~7-8 pasadas nocturnas seguidas, ver
+Auditoría), la recomendación de que el usuario amplíe la lista de
+dominios permitidos para esta rutina — hoy ni siquiera se puede
+verificar el propio sitio en producción desde aquí.
+
+**Cobertura de webcams — confirmado por `grep` real sobre
+`SPOTS_CON_WEBCAM` en `index.html`, no por suposición sobre lo que ya
+decía `ROBOT.md`**: la lista cubre hoy solo País Vasco (AZTI/Diputación
+Gipuzkoa), Galicia (MeteoGalicia), Cantabria (Gobierno de Cantabria),
+Comunitat Valenciana (Turisme CV) y Baleares (SOCIB) — ningún spot de
+`llanes`/`ribadesella` (Asturias), `roses`/`blanes`/`cambrils`
+(Cataluña), `cartagena`/`aguilas`/`cabodepalos` (Murcia),
+`cadiz`/`conil`/`chipiona`/`malaga`/`nerja`/`almeria`/`roquetas`
+(Andalucía) ni `laspalmas`/`santacruztenerife`/`elmedano`/`corralejo`
+(Canarias) tiene cámara todavía. No se pudo buscar cámaras nuevas de
+verdad esta pasada — `WebSearch` funciona, pero verificarlas con una
+petición HTTP real (obligatorio antes de proponer, `ROBOT_REGLAS.md`)
+está bloqueado para casi todos los dominios candidatos de estas 5
+zonas, ver arriba. Nada que proponer con la verificación real que
+exige el fichero de reglas.
+
+**Dos candidatos reales de caudal/nivel de río, encontrados con
+`WebSearch`, nunca antes documentados en `ROBOT.md` — sin verificar
+con HTTP real, solo apuntados para cuando el acceso mejore:**
+- **Cataluña**: Agència Catalana de l'Aigua (ACA), sistema SAIH-ACA
+  sobre plataforma Sentilo, visor "Agua en tiempo real"
+  (`aca-web.gencat.cat/aetr/vishid` / `aplicacions.aca.gencat.cat/aetr/vishid`),
+  cubre las cuencas internas de Cataluña (Muga, Ter, Besòs, Llobregat,
+  Francolí...) con caudal cada 5 min — potencialmente relevante para
+  Roses/Blanes/Cambrils. Dominio `*.gencat.cat` bloqueado, no se pudo
+  cargar la página para buscar el endpoint AJAX real (mismo patrón que
+  ya usan `visor.saichcantabrico.es` o `saih.chj.es`, ya integrados).
+- **Andalucía (Cádiz/Málaga)**: Red Hidrosur, SAIH de las Cuencas
+  Mediterráneas Andaluzas (Guadalete-Barbate), visor en
+  `redhidrosurmedioambiente.es/saih/mapa/tiempo/real/subsistema/...`.
+  También bloqueado, no verificable esta pasada.
+
+Ninguno de los dos se propone como "listo para integrar" — son pistas
+de `WebSearch` sin ninguna petición HTTP real detrás, lo que
+`ROBOT_REGLAS.md` exige antes de proponer o aplicar cualquier fuente.
+Quedan anotados para que la próxima pasada con mejor acceso de red los
+verifique primero.
+
+**Portugal (boyas y webcams)**: no se repite la investigación — la
+pasada del 2026-09-20 13:20 UTC (más abajo en esta misma sección) ya
+encontró y documentó el endpoint real de boyas Datawell Waverider del
+Instituto Hidrográfico portugués (`401 "Invalid API KEY"`, confirma que
+existe) y dejó la propuesta pendiente de pedir la clave gratuita a
+`cedencia.dados@hidrografico.pt` — sigue exactamente igual, sin key
+todavía. Webcams de Portugal: `beachcam.meo.pt` sigue siendo la única
+fuente conocida y sigue sin servir para integrar (tokens de 24h) — no
+se encontró alternativa nueva esta pasada.
+
+**Firmado:** robot de datos (pasada semanal, cobertura geográfica),
+2026-09-21.
+
+### 2026-09-21 (pasada semanal — especies: `ESPECIES`/`ESPECIES_MEDITERRANEO`/`ESPECIES_GOLFO_CADIZ`/`ESPECIES_CANARIAS`)
+
+**Aplicado directamente en `index.html`** (bajo el límite de volumen,
+verificado con FishBase vía `WebSearch`, mismo formato "FishBase, n=X"
+que ya usa el resto del fichero) — 3 huecos de `rangoTemp: null`
+rellenados con datos reales citables:
+- **Corvina** (`Argyrosomus regius`), en `ESPECIES_MEDITERRANEO` Y
+  `ESPECIES_GOLFO_CADIZ` (misma especie, dos entradas con nota
+  distinta): `rangoTemp: [13.3, 19.4]`, óptimo 15.3°C, FishBase n=169.
+  Coincide con un estudio de campo real por telemetría (rango
+  observado 13.3-24.8°C, 75.4% del tiempo entre 14-18°C) — cifra
+  consistente entre dos fuentes independientes, no solo FishBase.
+- **Medregal** (`Seriola dumerili`), en `ESPECIES_CANARIAS`:
+  `rangoTemp: [16.9, 29]`, óptimo 27.1°C, FishBase n=3486 (muestra muy
+  grande). La nota anterior decía "solo hay datos de cría en
+  cautividad" — resultó ser incorrecto, FishBase sí tiene preferencia
+  térmica de campo con una muestra enorme.
+
+**Solo propuesta, NO aplicado — identificación de especie ambigua o
+muestra demasiado pequeña para fiarse:**
+- **Sama** (`ESPECIES_CANARIAS`, hoy `rangoTemp: null`): el nombre
+  canario "sama" es ambiguo entre varias especies reales según la
+  fuente (Academia Canaria de la Lengua: `Dentex gibbosus`;
+  pellagofio.es lo usa de forma más amplia para el género; `Pagrus
+  auriga` es "sama roquera", especie distinta, ya cubierta como Urta en
+  `ESPECIES_GOLFO_CADIZ`). Sin poder confirmar con el usuario cuál es
+  la que la app quiere decir, no se aplica ningún rango — sería
+  inventar una identificación, no un dato.
+- **Chicharro canario** (`Trachurus picturatus`, hoy `rangoTemp:
+  null`): FishBase da 9.6-14.1°C (n=5) — muestra demasiado pequeña (5
+  celdas) para un dato mostrado al usuario como fiable, y el rango
+  resulta sospechosamente frío para una especie de aguas subtropicales
+  de Canarias (19-24°C superficial habitual) — probablemente el modelo
+  de FishBase está dominado por observaciones de otras partes de su
+  área de distribución (NE Atlántico más frío). Se deja como hueco
+  explícito, mejor que un número que no encaja con la biología conocida
+  de la zona.
+
+**Auditoría activa de la agrupación regional (pedida por
+`ROBOT_REGLAS.md`)**: esta pasada no llegó a investigar un spot nuevo
+de las listas regionales amplias (tiempo consumido en el diagnóstico de
+red de arriba) — pendiente para la próxima pasada semanal.
+
+**DIGIPESCA — continuación bloqueada por red**: los 6 años pendientes
+(2011-2015, 2016-2018) de `riunet.upv.es`, pendientes desde el
+2026-09-15/19, siguen sin poder descargarse — `riunet.upv.es` está
+bloqueado por el proxy de esta sesión (ver la pasada de arriba). Sin
+cambios sobre lo ya documentado.
+
+**Firmado:** robot de datos (pasada semanal, especies), 2026-09-21.
+
+### 2026-09-21 (pasada semanal — arquitectura para un algoritmo de pesca que aprenda de capturas reales, SOLO PROPUESTA)
+
+Quinta responsabilidad de esta pasada: arquitectura concreta (no código
+final, y sin tocar producción — esta sesión no tiene ni debe tener
+credenciales de Supabase) para agregar estadísticas anónimas de
+capturas reales y usarlas para mejorar `indicePesca`/las
+recomendaciones de la app. No se encontró una propuesta previa
+idéntica en `ROBOT.md` — hay una pieza relacionada ("Top Baits"/
+recomendación de cebo por comunidad, pasada del 2026-09-14 17:04 UTC,
+sección de "buenas prácticas de otras apps") que esta propuesta amplía
+y concreta en vez de repetir.
+
+**Arquitectura propuesta:**
+
+1. Nueva Cloudflare Pages Function, `functions/estadisticas-capturas.js`
+   (mismo patrón que el resto de `functions/`, GET, sin sesión de
+   usuario requerida para leerla — endpoint de solo agregados públicos,
+   como `/prevision`).
+2. **`service_role` solo en el backend de esta función**, nunca
+   expuesta al cliente — mismo patrón ya usado en `stripe-webhook.js`/
+   `notificar-altas.js` (las dos únicas excepciones ya documentadas en
+   `CLAUDE.md` al "nunca service_role"). A diferencia de esas dos, esta
+   función sí lee datos de muchos usuarios a la vez, así que el filtro
+   de consentimiento del punto 3 no es opcional: es la condición de
+   seguridad central de todo el diseño.
+3. **Consulta con el filtro de consentimiento en el propio `WHERE` de
+   la query** (nunca aplicado después en JS, donde un bug podría
+   dejarlo pasar): unir `capturas` → `salidas_pesca` → `perfiles` y
+   descartar cualquier fila cuyo `perfiles.consiente_uso_datos_capturas`
+   no sea `true`, antes de agregar nada.
+4. **Solo devuelve agregados, nunca filas individuales**: conteos y
+   medias agrupados por (especie, spot o zona, mes, rango de marea,
+   rango de viento, rango de oleaje) — nunca `user_id`, nunca fecha/
+   hora exacta de una captura suelta.
+5. **Mínimo de agregación explícito, para no des-anonimizar** (mismo
+   problema ya señalado en `CLAUDE.md`, idea aparcada "qué se está
+   pescando ahora"): cualquier combinación con menos de, p.ej., 5
+   capturas de al menos 3 usuarios distintos se omite del agregado en
+   vez de mostrarse con muestra de 1 pescador. El mínimo concreto es
+   solo un punto de partida razonable — debe confirmarlo el usuario,
+   junto con si el volumen actual ya lo alcanza (ver la pregunta
+   pendiente abajo).
+6. **Caché igual que `/prevision`** (Cache API de Cloudflare, TTL de
+   horas) para no golpear Supabase en cada visita y mantenerse dentro
+   del límite de sub-peticiones ya documentado en `ROBOT_REGLAS.md`.
+7. **Consumo en frontend, en dos fases**: primero una sección aparte
+   ("qué se ha pescado aquí este mes") bajo el panel de especies de
+   cada spot, sin tocar `indicePesca` — igual que la idea aparcada de
+   `CLAUDE.md`. Integrarlo dentro de la fórmula de `indicePesca` sería
+   un segundo paso posterior, solo si el usuario lo pide explícitamente
+   después de ver los agregados funcionando (cambia lo que ya se
+   muestra como dato fiable, decisión de producto).
+8. **Nunca inventar con muestra insuficiente**: si para una especie/
+   spot/mes concretos no hay agregado suficiente (mínimo del punto 5),
+   la UI debe mostrar explícitamente "sin datos de comunidad
+   suficientes todavía" — nunca dejar el hueco en blanco sin
+   explicación, ni rellenarlo con el dato genérico de `ESPECIES` como
+   si fuera lo mismo.
+
+**Pregunta pendiente para el usuario, que este robot no puede
+comprobar por sí mismo**: ¿hay ya volumen suficiente de capturas reales
+en `capturas` (con consentimiento marcado) para que un agregado como
+este devuelva algo útil, o seguimos en el mismo régimen de muestra
+mínima que ya describió el "robot de patrones de uso" el 2026-09-19 (2
+usuarios activos de 7 perfiles totales, 0 filas en `capturas`)? Si
+sigue en 0, esta arquitectura queda lista para cuando haga falta, pero
+no hay nada que implementar todavía — construir la función ahora
+devolvería siempre "sin datos", que es peor que no tenerla.
+
+**Firmado:** robot de datos (pasada semanal, arquitectura de
+aprendizaje), 2026-09-21.
+
 ---
 
 ## Auditoría de datos
@@ -3264,6 +3469,70 @@ webcams vascas siguen respondiendo con normalidad. Severidad sin cambios
 (media para los 4 ríos, baja-media para Nazaré) — sigue pendiente que el
 usuario revise la política de red de este entorno para esos 5 dominios
 concretos si quiere que esta rutina pueda vigilar su salud de verdad.
+
+### 2026-09-21 (pasada semanal — auditoría de datos)
+
+**Endpoints verificados con petición HTTP real esta pasada** (dentro de
+lo que el proxy de red de esta sesión permite, ver el detalle completo
+de dominios probados en la sección "Fuentes nuevas", entrada de hoy):
+- **`poem.puertos.es` (boyas, fuente real de `/prevision`)**: 5
+  peticiones reales (Bilbao-Vizcaya 2136, Gijón 1117, Pasaia II 1101,
+  Barcelona II 1731, Málaga 1514 — ver Calibración), todas `200` con la
+  forma `[cabeceras, filas]` esperada y datos de la última hora. Sano.
+- **Marine API de Open-Meteo** (fuente calculada de `/prevision`): 3
+  peticiones reales, `200`, forma esperada (`hourly.wave_height`).
+  Sano.
+- **`aa.usno.navy.mil` (fuente real de `functions/luna.js`)**:
+  verificado por primera vez en varias pasadas — petición real a
+  `/api/rstt/oneday?date=2026-09-21&coords=43.4,-2.7&tz=2`, `200`, JSON
+  con `closestphase`/`curphase`/`fracillum`/`moondata`/`sundata` —
+  exactamente la forma que `luna.js` espera. Sano.
+- **`www.aemet.es/es/api-eltiempo/rayos/...` (fuente real de
+  `functions/rayos-imagen.js`)**: verificado por primera vez en varias
+  pasadas también. `/timeline` responde `200` con
+  `ica_horario.penbal.variables.rayos[]` y sus `ficheros`
+  (PNBL/CCAA/PROV/LOCL); se cogió el fichero PNBL más reciente
+  (`rayos_PB_PNBL_2026092108+0200_...png`) y se pidió la imagen real:
+  `200`, `image/png`, 1444×518 real. Cadena completa sana de extremo a
+  extremo.
+- **3 webcams de proveedores distintos** (`mundaka`/kostasystem.com,
+  `bakio`/isurki.com, `sopelana`/detectia.net): mismo resultado que la
+  pasada nocturna de esta misma noche (01:15 UTC) — sin cambios, siguen
+  sanas.
+
+**Sin verificar esta pasada** (dominio bloqueado por el proxy de esta
+sesión, no evidencia de fallo real): las 4 fuentes de caudal
+(Cantábrico/Júcar/Segura/Galicia), la boya de Nazaré, y — novedad real
+de hoy — ni siquiera `costaviva.org` en sí. Mismo patrón que llevan
+documentando ~7-8 pasadas nocturnas seguidas; no se repite aquí el
+detalle completo (ver la entrada de "Fuentes nuevas" de hoy para la
+lista extendida de dominios probados).
+
+**Revisión de código en busca de valores hardcodeados/inventados
+presentados como reales**: no se encontró ningún caso nuevo. El
+placeholder genérico ya documentado en el propio código (altura/
+periodo/viento por defecto de los spots de la ampliación nacional,
+sobrescrito casi al instante por `actualizarDesdeBackend()`, nunca
+mostrado como el dato real de hoy) sigue siendo el único caso conocido
+y sigue señalado con un comentario explícito en `index.html`.
+
+**Hallazgo menor de consistencia documental (no de código) — a
+revisar, no corregido**: la entrada de `ROBOT.md` del 2026-09-15 sobre
+el bug de "parrotxa" (sección de especies, "Localismos regionales")
+describe el estado corregido como "el término solo sigue en la entrada
+de Lubina de `ESPECIES_MEDITERRANEO`" — pero el código real hoy tiene
+"parrotxa" en `ESPECIES` (Cantábrico: Lubina Y Txitxarro/verdel) y en
+NINGUNA entrada de `ESPECIES_MEDITERRANEO`. Esto coincide con lo que
+dicen `CLAUDE.md` y `ROBOT_REGLAS.md` ("ese término solo se usa en el
+Cantábrico según el propio usuario") — así que el código actual parece
+correcto según la regla de negocio vigente, y es la descripción de esa
+única entrada histórica de `ROBOT.md` la que parece tener el dato al
+revés. No se ha tocado nada (discrepancia en un texto histórico, no en
+el producto) — se anota por si el usuario quiere confirmar cuál de las
+dos versiones es la real, para que nadie la use mal como referencia más
+adelante.
+
+**Firmado:** robot de datos (pasada semanal, auditoría), 2026-09-21.
 
 ---
 
@@ -4553,6 +4822,47 @@ negativo, media -29.1%) para que el usuario decida si aplicar un factor
 de corrección de ola en esa zona** — ver la propuesta concreta arriba.
 
 **Firmado:** robot de calibración nocturna, 2026-09-21 01:15 UTC.
+
+### 2026-09-21 (pasada semanal — calibración)
+
+**3 puntos nuevos en `CALIBRACION.jsonl`** (mismo método de siempre:
+`curl` real a `poem.puertos.es/portus/StationData` para la altura
+medida, Marine API de Open-Meteo en las coordenadas exactas de cada
+boya para la calculada, emparejando por la hora UTC exacta del último
+dato real):
+
+| boya | hora UTC | medida | calculada | diferencia | % |
+|---|---|---|---|---|---|
+| 1101 Pasaia II | 06:00 | 1.57 m | 1.18 m | −0.39 m | −24.8% |
+| 1731 Barcelona II | 06:00 | 0.26 m | 0.12 m | −0.14 m | −53.8% |
+| 1514 Málaga | 06:00 | 0.83 m | 0.86 m | +0.03 m | +3.6% |
+
+**Pasaia II: 16/16 puntos consecutivos con signo negativo, media ≈
+−28.8%.** No cambia la conclusión de la pasada nocturna de hoy mismo
+(01:15 UTC) — el nuevo punto (−24.8%) está dentro del rango ya visto y
+apenas mueve la media (−29.1% con 15 puntos → ≈−28.8% con 16). **La
+propuesta de factor de corrección ~1.29-1.4 para la zona de Pasaia/
+Guipúzcoa sigue en pie, sin cambios, a la espera de que el usuario
+decida** — ver la entrada de la pasada nocturna de hoy para el detalle
+completo del cálculo, no se repite aquí.
+
+**Hallazgo nuevo de esta pasada: Barcelona II llega a 6 puntos, LOS 6
+con signo negativo (media ≈ −34.2%)** — segunda boya, tras Pasaia II,
+con sesgo negativo consistente en el 100% de los puntos vistos hasta
+ahora. Todavía lejos del umbral de 15 puntos usado para proponer un
+factor de corrección concreto, y con una salvedad real importante:
+Barcelona II casi siempre mide mar de muy poca altura (<0.6m en los 6
+puntos vistos), donde el error porcentual es estructuralmente más
+ruidoso (una diferencia absoluta pequeña se traduce en un % grande) —
+ya señalado en los puntos anteriores de esta misma boya. No se propone
+ningún factor todavía, solo queda anotado como patrón a vigilar — si el
+signo negativo se mantiene con mar más alta (>1m), sería una señal más
+fuerte de sesgo real y no solo ruido de oleaje pequeño.
+
+**Málaga: 5 puntos, sigue sin patrón de signo claro** (−38.1%, +12.5%,
+−40.2%, +2.1%, +3.6% — 2/5 negativos, 3/5 positivos). Sin novedad.
+
+**Firmado:** robot de datos (pasada semanal, calibración), 2026-09-21.
 
 ---
 
