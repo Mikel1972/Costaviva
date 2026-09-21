@@ -5966,3 +5966,93 @@ zonas).
 
 **Firmado:** robot buscador de fuentes (pasada de corrientes marinas),
 2026-09-21 18:52 UTC.
+
+### 2026-09-21 23:45 UTC (pasada buscadora — presión atmosférica e histórico por zona, octava pasada)
+
+**Contexto:** seguía el pendiente explícito dejado por la séptima pasada
+(2026-09-20 22:52 UTC, más arriba): comprobar qué otros spots de `SPOTS`
+(`index.html`) además de `acoruna`/`cies` (ya confirmados con MeteoGalicia)
+tienen una estación real de esa misma red cerca, antes de seguir buscando
+proveedores nuevos desde cero. Cubre los 9 spots gallegos restantes:
+`baiona`, `aguarda`, `cangas`, `sanxenxo`, `ons`, `camarinas`, `corrubedo`,
+`portosin`, `ribadeo`.
+
+**Método:** GET real (vía `WebFetch`, sin acceso de red directo desde esta
+sesión) al listado sin clave
+`https://servizos.meteogalicia.gal/mgrss/observacion/listaEstacionsMeteo.action`,
+verificado con dos peticiones independientes que devolvieron exactamente
+los mismos `idEst`/coordenadas — y distancia recalculada a mano
+(Haversine) para cada candidata, sin fiarse solo del cálculo de la
+primera pasada (ver el hallazgo de la última sección, se encontró un
+error real en una de esas distancias). Después, para cada estación
+candidata se pidió `datosDiariosEstacionsMeteo.action` (15-19 sept 2026)
+y se comprobó si trae de verdad `PR_AVG_1.5m`/`PRED_AVG_1.5m` — tener una
+estación cerca no basta, varias estaciones de esta red miden viento/
+temperatura/precipitación pero no llevan barómetro.
+
+**Resultado — 7 de los 9 spots pendientes SÍ tienen una estación de
+MeteoGalicia real y cercana con presión válida:**
+
+| Spot | Estación (idEst) | Distancia | Presión real (15-19 sept 2026) |
+|---|---|---|---|
+| `aguarda` | As Eiras (19047) | 7.7 km | Sí, los 5 días válidos (ej. 1018.68 hPa) |
+| `ons` | Ons (10126) | 0.3 km | Sí, los 5 días válidos (ej. 1024.88 hPa) |
+| `camarinas` | Camariñas (10800) | 0.7 km | Sí, los 5 días válidos (ej. 1020.86 hPa) |
+| `corrubedo` | Corrubedo (10049) | 1.9 km | Sí, los 5 días válidos (ej. 1019.58 hPa) |
+| `ribadeo` | Pedro Murias (10047) | 3.4 km | Sí, los 5 días válidos |
+| `portosin` | Lesende (19010) | 9.4 km | Sí, los 5 días válidos (ej. 1006.09 hPa) — nombre no coincide con la zona, es la más cercana disponible, sin estación llamada "Portosín"/"Noia"/"Muros" en el listado |
+| `sanxenxo` | Sanxenxo (10129) | 0.8 km | Sí, pero **con hueco reciente**: 15-16 sept válida (1010.63/1010.51 hPa), 17-19 sept en `-9999.0` (sensor caído esos días concretos, no un fallo de la consulta — mismo tipo de intermitencia ya visto en Coruña-Dique en junio 2022, pasada anterior) |
+
+**2 de los 9 NO tienen presión pese a tener estación muy cerca** —
+confirmado pidiendo sus datos diarios reales, ninguno de los parámetros
+de esos días incluye `PR_AVG`/`PRED_AVG`/similar:
+- `baiona`: estación Baiona (10169), 1.1 km — solo balance hídrico,
+  temperatura, viento, radiación, UV, precipitación, temperatura de
+  suelo/rocío. Sin barómetro.
+- `cangas`: estación Cangas-Porto (10906), 0.7 km — solo viento, humedad,
+  temperatura, precipitación. Sin barómetro.
+
+**Corrección sobre un dato intermedio de esta misma pasada, para que
+quede constancia:** al investigar si existía una estación mejor para
+`cies` que Porto de Vigo (ya confirmada con presión, pasada anterior),
+apareció una estación llamada literalmente "Illas Cíes" (idEst 10125) —
+pero **no lleva barómetro** (confirmado con una petición real a sus
+datos diarios) y además el primer cálculo de distancia que se hizo a
+mano la situaba a 11,7 km del spot `cies`; recalculado con más cuidado
+(Haversine completo, sin redondear a mitad de camino) la distancia real
+es **~15,6 km**, no 11,7 km. No cambia la conclusión (Porto de Vigo, a
+0,5 km y con presión real, sigue siendo la fuente correcta para `cies`
+sin ninguna duda) pero conviene dejar anotado el error de cálculo
+intermedio por si se recicla ese número en el futuro.
+
+**Conclusión — sigue siendo solo propuesta, no cambio de código** (toca
+`functions/prevision.js` y es la misma decisión de backfill de
+`presion_historico` ya aparcada desde 2026-09-14, ver `CLAUDE.md`): con
+esta pasada, **9 de los 11 spots gallegos de `SPOTS`** (todos salvo
+`baiona`/`cangas`) tienen ya una estación real y verificada de
+MeteoGalicia con presión válida a menos de 10 km — la cobertura de esta
+fuente para Galicia queda prácticamente cerrada. Si el usuario retoma el
+backfill de `presion_historico`, la lista de estaciones a usar para
+Galicia sería: A Coruña→14000, Camariñas→10800, Corrubedo→10049,
+Portosín→19010 (Lesende), Ons→10126, Sanxenxo→10129 (con el hueco
+conocido de sensor), Vigo/Cíes→14001, A Guarda→19047 (As Eiras),
+Ribadeo→10047 (Pedro Murias). Para `baiona` y `cangas` no hay estación
+de MeteoGalicia con presión disponible — quedarían sin dato de esta
+fuente concreta (seguirían con el modelo de Open-Meteo, como el resto
+de spots sin estación real cerca).
+
+**Con esto, las 8 pasadas dedicadas a "presión atmosférica e histórico
+por zona" quedan sin ningún pendiente evidente abierto** (Euskalmet,
+MeteoGalicia y AEMET ya mapeados por zona; IPMA solo cubre Lisboa). La
+próxima vez que le toque esta rotación a esta responsabilidad, conviene
+revisar primero si el usuario ha retomado el backfill de
+`presion_historico` — si no, plantearse espaciar aún más esta área o
+reasignar el hueco a otra investigación (ver la propuesta ya hecha en la
+pasada anterior).
+
+**Fuentes:**
+[MeteoGalicia — listado de estaciones sin clave](https://servizos.meteogalicia.gal/mgrss/observacion/listaEstacionsMeteo.action),
+[MeteoGalicia — datos diarios por estación (ejemplo Ons, idEst 10126)](https://servizos.meteogalicia.gal/mgrss/observacion/datosDiariosEstacionsMeteo.action?idEst=10126&dataIni=15/09/2026&dataFin=19/09/2026).
+
+**Firmado:** robot buscador de fuentes (pasada de presión atmosférica e
+histórico por zona), 2026-09-21 23:45 UTC.
