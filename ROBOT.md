@@ -6318,3 +6318,62 @@ sencillo (no comprobado todavía en esta pasada).
 
 **Firmado:** robot buscador de fuentes (pasada de mareas y oleaje),
 2026-09-22 13:44 UTC.
+
+### 2026-09-22 (pasada buscadora — presión atmosférica e histórico por zona, novena pasada)
+
+**Contexto:** las 8 pasadas anteriores de este tema (2026-09-14 a
+2026-09-21, más arriba) ya dejaron mapeadas las fuentes obvias por zona
+(AEMET nacional en producción, Euskalmet ZIP anual para Bilbao/Pasaia,
+MeteoGalicia JSON sin clave para 9 de 11 spots gallegos, IPMA solo
+Lisboa, Open-Meteo archive/ERA5 como respaldo de modelo) y la octava
+pasada concluyó **"sin ningún pendiente evidente abierto"**, recomendando
+para esta rotación (1) comprobar si el usuario había retomado el
+backfill de `presion_historico` (aparcado desde el 2026-09-14) y, si no,
+(2) espaciar aún más este tema o reasignar el hueco a otra investigación.
+
+**Comprobado (1): backfill sigue parado.** Revisados
+`supabase/migrations/` (ninguna migración nueva relacionada con
+`presion_historico`) y `functions/prevision.js`/`registrar-presion.js`
+(sin cambios de código en esa dirección) — el usuario no lo ha retomado.
+Sigue siendo una propuesta pendiente de confirmar por él, tal como
+recoge `CLAUDE.md`.
+
+**Comprobado (2): un hueco geográfico real que las 8 pasadas anteriores
+no habían mirado explícitamente para presión — Cantabria.** Búsqueda
+específica de un equivalente institucional a MeteoGalicia/Euskalmet para
+esta zona (spots `santander`/costa cántabra). Dos candidatas nuevas,
+ambas descartadas con una comprobación real:
+- **Meteocantabria** (`meteocantabria.es`, portal público con histórico
+  1984-2023 de 4 estaciones): confirmado que sus 13 variables
+  climatológicas (temperatura, precipitación, nieve, granizo, tormenta,
+  niebla, escarcha, rocío...) **no incluyen presión atmosférica en
+  ningún caso** — no aporta nada nuevo, descartado.
+- **Snowy** (`snowy.es`, red con estaciones "Snowy" + reemisión de AEMET
+  en el mismo mapa): confirmado que es una red **híbrida con estaciones
+  amateur/crowdsourced** (tipo Weather Underground) mezcladas con datos
+  ya reemitidos de AEMET/Open-Meteo — mismo tipo de fuente ya descartada
+  antes en este repo por falta de control de calidad institucional
+  (mismo criterio que Fishbrain/apps de terceros para otras áreas). No
+  aporta ninguna estación ni dato que no tengamos ya de AEMET
+  directamente, y con menos garantía de calibración. Descartado.
+
+**Conclusión de esta pasada**: Cantabria (y por extensión, muy
+probablemente Asturias — misma ausencia de un portal autonómico propio
+de datos meteorológicos abiertos, ya detectada en pasadas de otras áreas
+de este robot para lonjas/webcams) se queda, de momento, sin ninguna
+fuente de backfill histórico de presión más fina que el modelo de
+Open-Meteo (ERA5/archive) y las estaciones AEMET ya integradas
+(Santander Aeropuerto) — no es un hueco nuevo grave, es la misma
+situación que ya cubre el modelo para el resto de spots sin estación
+institucional cercana. **Sin novedades que cambien la conclusión de la
+pasada anterior**: el tema sigue sin ningún pendiente evidente real que
+justifique seguir dedicándole una pasada dedicada cada rotación — se
+reitera la recomendación de la octava pasada de espaciar este tema o
+reasignar el hueco, a decidir por el usuario.
+
+**Fuentes:**
+[Meteocantabria — histórico/estadísticas](https://www.meteocantabria.es/meteocantabria/historico/view-estadistica),
+[Snowy — estaciones en Cantabria](https://snowy.es/stations/espana/cantabria).
+
+**Firmado:** robot buscador de fuentes (pasada de presión atmosférica e
+histórico por zona), 2026-09-22 23:50 UTC.
