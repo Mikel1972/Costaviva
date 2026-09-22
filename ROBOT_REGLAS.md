@@ -142,13 +142,19 @@ usuario afina un criterio — no es un historial (para eso está `ROBOT.md`).
     (A Coruña, Ribadeo — con resultado parcial: apareció Razo Beach,
     `artsurfcamp.com`, pero es una playa distinta en Carballo, no el
     spot de A Coruña; no se propone para ese spot, solo confirma que
-    el término sigue vivo).
+    el término sigue vivo); Galicia — Rías Baixas (A Guarda, Sanxenxo —
+    sin resultado: Riders Surf School en Sanxenxo solo enlaza a una
+    cámara externa rota (`camaramar.com/spots/foxos.html`, 404),
+    ninguna escuela de surf con cámara propia confirmada en ninguna de
+    las dos poblaciones).
   - `webcam ayuntamiento` — tipo de entidad: ayuntamiento/turismo
     local. Confirmado productivo 2026-09-19: Zumaia (zumaia.eus),
     Sopela (sopela.eus), turismo de Castro-Urdiales. Recuento por
     zona: Galicia — Rías Altas (A Coruña, Ribadeo — sin resultado, solo
     agregadores comerciales tipo camaramar.com/g24.gal, ningún
-    ayuntamiento con cámara propia).
+    ayuntamiento con cámara propia); Galicia — Rías Baixas (A Guarda,
+    Sanxenxo — sin resultado: `turismoaguarda.es` solo enlaza a
+    CRTVG/`g24.gal`, ningún ayuntamiento con cámara propia).
   - `webcam pesca` / `webcam puerto` / `webcam cofradía de pescadores`
     — tipo de entidad: cofradía de pescadores/puerto pesquero.
     Sugeridos por el usuario 2026-09-19. **Confirmado productivo
@@ -159,7 +165,10 @@ usuario afina un criterio — no es un historial (para eso está `ROBOT.md`).
     queda activo indefinidamente. Recuento por zona: Asturias (con
     resultado); Galicia — Rías Altas (A Coruña, Ribadeo — con
     resultado: Puerto de Ribadeo, mismo bloqueo técnico `rtsp.me` que
-    Asturias, ver zona Galicia más abajo).
+    Asturias, ver zona Galicia más abajo); Galicia — Rías Baixas
+    (A Guarda, Sanxenxo — sin resultado: la Cofradía "Santa Tecla" de A
+    Guarda existe pero sin webcam propia asociada, ninguna cofradía con
+    cámara encontrada en ninguna de las dos poblaciones).
   - `webcam club náutico` / `webcam puerto deportivo` — tipo de
     entidad: club náutico/puerto deportivo. Añadido 2026-09-20.
     **Confirmado productivo el mismo día**: Asturias (Ribadesella) —
@@ -167,7 +176,11 @@ usuario afina un criterio — no es un historial (para eso está `ROBOT.md`).
     mismo problema de integración que arriba) — término activo
     indefinidamente. Recuento por zona: Asturias (con resultado);
     Galicia — Rías Altas (A Coruña, Ribadeo — con resultado: Real Club
-    Náutico de Ribadeo, mismo bloqueo `rtsp.me`).
+    Náutico de Ribadeo, mismo bloqueo `rtsp.me`); Galicia — Rías Baixas
+    (A Guarda, Sanxenxo — con resultado: Club Náutico de Portonovo
+    (Sanxenxo) tiene página propia con dos cámaras reales embebidas,
+    aunque ambas rotas/no en directo — ver zona Galicia — Rías Baixas
+    más abajo; A Guarda sin club náutico con cámara).
 
   **Poda de términos improductivos — protocolo mecánico, sin juicio
   subjetivo (pedido explícito del usuario 2026-09-19, versión final
@@ -559,6 +572,50 @@ nada que reemplazar.
   para A Coruña ni Ribadeo — solo agregadores comerciales
   (`camaramar.com`, `g24.gal`, `meteosurfcanarias.com`, `enterat.com`),
   todos remitiendo al final a MeteoGalicia o a `rtsp.me`.
+
+### Zona: Galicia — Rías Baixas / costa sur (última pasada real: 2026-09-22, rotación automática)
+
+8 spots fijos (`baiona`, `aguarda`, `cangas`, `cies`, `sanxenxo`, `ons`,
+`corrubedo`, `portosin`); 6 ya tienen cámara MeteoGalicia y sin caída
+correlada — solo `aguarda` y `sanxenxo` quedan sin fuente, confirmado ya
+varias veces que MeteoGalicia no los cubre.
+
+- **`g24.gal` (CRTVG) tiene una ruta de snapshot con nombre de spot
+  (`g24.gal/prog24/ARQUIVO/CAMARAS_WEB/<nombre>.jpg`) que responde `200
+  image/jpeg` pero NO es una cámara en directo — es un archivo estático
+  cacheado ~30 días (`cache-control: s-maxage=2592000`), verificado con
+  dos peticiones reales espaciadas en el tiempo dando el mismo
+  `Last-Modified`/`ETag` con `Age` de varias semanas.** El propio nombre
+  de carpeta (`ARQUIVO`, "archivo" en gallego) ya lo delataba. Confirmado
+  para `aguarda.jpg` y `sanxenxo.jpg` — **para cualquier población
+  gallega nueva, no dar por buena una URL de esta ruta `g24.gal/prog24/
+  ARQUIVO/CAMARAS_WEB/` solo por dar `200 image/jpeg`; comprobar siempre
+  `Last-Modified`/`Age` antes de proponerla**, mismo criterio que ya
+  existía para `meteosurfcanarias.com` en Asturias.
+- **Hispacams/Simbiosys puede servir un ID de cámara con metadatos
+  cruzados de OTRA ubicación distinta a la página que lo embebe** — el
+  Club Náutico de Portonovo (Sanxenxo) embebe
+  `hispacams.com/cam_embedded.php?id=000162`, pero el `caminfo.json` de
+  ese mismo ID declara "Gijón - El Musel / El Arbeyal" (Asturias), y la
+  imagen fue bit a bit idéntica en dos peticiones separadas 15s (no está
+  en directo). **Antes de dar por buena una cámara de Hispacams
+  encontrada embebida en la web de un club náutico/ayuntamiento,
+  comprobar el `caminfo.json` (o equivalente) del propio ID contra la
+  población esperada, y comparar dos descargas espaciadas en el tiempo**
+  — no basta con que el `<iframe>` esté en la página correcta, el ID
+  detrás puede estar mal indexado.
+- **`rtsp.me` no es solo un patrón de Asturias/Rías Altas — aparece
+  también aquí** (Hotel Minso, playa de Silgar/Sanxenxo,
+  `rtsp.me/embed/ZtENkk9Y/`), mismo bloqueo ya confirmado (sin snapshot
+  público). Refuerza que es un backend a evitar en cualquier zona
+  costera española, no un caso aislado — no repetir la comprobación de
+  paths de snapshot para IDs nuevos de este proveedor.
+- **A Guarda: sin ningún club náutico ni escuela de surf con cámara
+  propia encontrado** (a diferencia de Sanxenxo, que sí tiene puerto
+  deportivo con cámara — rota, ver arriba). La Cofradía de Pescadores
+  "Santa Tecla" existe pero no tiene presencia de webcam. Dar esta
+  población por agotada con los términos actuales hasta que aparezca una
+  pista nueva y distinta.
 
 ## Sinónimos regionales de especies y cebos (añadido 2026-09-13)
 

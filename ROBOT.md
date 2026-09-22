@@ -6135,3 +6135,60 @@ pasada anterior).
 
 **Firmado:** robot buscador de fuentes (pasada de presión atmosférica e
 histórico por zona), 2026-09-21 23:45 UTC.
+
+### 2026-09-22 08:03 UTC (pasada buscadora — webcams, ZONA: Galicia — Rías Baixas / costa sur)
+
+**Objetivo:** primera pasada de rotación dedicada a esta zona (no había
+sección propia en `ROBOT_REGLAS.md` → "Aprendizaje por zonas" todavía).
+Spots fijos de la zona: `baiona`, `aguarda`, `cangas`, `cies` (Illas
+Cíes), `sanxenxo`, `ons` (Illas Ons), `corrubedo`, `portosin` — 8 en
+total. De estos, **6 ya tienen cámara de MeteoGalicia** (baiona, cangas,
+cies→Ciesrodas, ons→Onspuerto, corrubedo, portosin) y **ninguno de los 6
+muestra caída correlada ni historial de fallos repetidos** (revisado
+`ROBOT.md` — sin menciones de `502`/"sin señal"/congelado para estos
+slugs), así que por la regla de "Fallos correlados por proveedor" no
+tenía sentido buscar reemplazo para ninguno. Los otros 2 (`aguarda`,
+`sanxenxo`) llevan sin cámara desde 2026-09-13/14/16 (ya confirmado
+varias veces que MeteoGalicia no los cubre) — esta pasada se centró en
+ellos, con el enfoque nuevo de "población por población" pedido por el
+usuario: ayuntamiento/turismo local, escuelas de surf, clubes náuticos y
+cofradías, no solo ampliar MeteoGalicia.
+
+**A Guarda: sin fuente nueva verificable.** `turismoaguarda.es` solo
+enlaza a CRTVG/`g24.gal` (mismo backend institucional que MeteoGalicia,
+no es independiente). Localizado un snapshot real,
+`https://www.g24.gal/prog24/ARQUIVO/CAMARAS_WEB/aguarda.jpg` (`200
+image/jpeg`) — pero **verificado en vivo que NO está en directo**:
+`Last-Modified: Fri, 28 Aug 2026`, `Age` de más de 2.100.000s (~24 días)
+y `cache-control: s-maxage=2592000` (30 días), confirmado con dos
+peticiones reales espaciadas — es una imagen de archivo (`ARQUIVO` en
+gallego), no una cámara viva. La Cofradía "Santa Tecla" existe pero sin
+webcam propia asociada; ningún club náutico ni escuela de surf con
+cámara encontrado para esta población.
+
+**Sanxenxo/Portonovo/Silgar: sin fuente nueva integrable, pero sí una
+fuente real con dos backends rotos distintos.** El Club Náutico de
+Portonovo (`nauticoportonovo.com/webcam`, fuente primaria real, no
+agregador) embebe dos cámaras: (1)
+`hispacams.com/cam_embedded.php?id=000162` — su propio `caminfo.json`
+declara metadatos de OTRA ubicación (Gijón/El Musel, Asturias, no
+Sanxenxo — cámara mal indexada en Hispacams/Simbiosys) y la imagen fue
+bit a bit idéntica en dos peticiones separadas 15s (mismo hash) → no
+está en directo; (2) `crtvg.es/camweb/cam3.php?c=portonovo` → `404`
+confirmado. El Hotel Minso (playa de Silgar) usa `rtsp.me/embed/
+ZtENkk9Y/` — mismo bloqueo ya documentado en Asturias/Rías Altas (sin
+snapshot público). El mismo patrón de archivo `g24.gal/prog24/ARQUIVO/
+CAMARAS_WEB/sanxenxo.jpg` que A Guarda, igual de desactualizado. Riders
+Surf School enlaza a `camaramar.com/spots/foxos.html` (playa de Foxos,
+sí es Sanxenxo) pero da `404`.
+
+**Conclusión de la pasada**: ninguna cámara nueva integrable para
+`aguarda` ni `sanxenxo` — siguen sin fuente real. Sin cambios de código
+(nada que proponer siquiera, todos los candidatos verificados están
+rotos/desactualizados/mal indexados). Ver `ROBOT_REGLAS.md` →
+"Aprendizaje por zonas" → nueva sección "Zona: Galicia — Rías Baixas"
+para los dos hallazgos generalizables (patrón `g24.gal/ARQUIVO` y el
+riesgo de metadatos cruzados en Hispacams).
+
+**Firmado:** robot buscador de fuentes (pasada de webcams), 2026-09-22
+08:03 UTC.
