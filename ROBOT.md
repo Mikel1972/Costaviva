@@ -6223,3 +6223,98 @@ riesgo de metadatos cruzados en Hispacams).
 
 **Firmado:** robot buscador de fuentes (pasada de webcams), 2026-09-22
 08:03 UTC.
+
+### 2026-09-22 13:44 UTC (pasada buscadora — mareas y oleaje)
+
+**Calibración — 4 puntos de siempre + primera calibración contra una
+fuente completamente nueva.** Mismo método de siempre: `curl` real a
+`poem.puertos.es/portus/StationData` para la altura medida, Marine API
+de Open-Meteo en las coordenadas exactas para la calculada, emparejando
+por la hora UTC exacta del último dato real:
+
+| boya | hora UTC | altura medida | altura calculada | diferencia | % |
+|---|---|---|---|---|---|
+| 2136 Bilbao-Vizcaya | 13:00 | 1.17 m | 1.18 m | +0.01 m | +0.9% |
+| 1117 Gijón | 13:00 | 1.19 m | 1.06 m | −0.13 m | −10.9% |
+| 1101 Pasaia II | 13:00 | 1.25 m | 0.90 m | −0.35 m | −28.0% |
+| 1731 Barcelona II | 13:00 | 0.73 m | 0.56 m | −0.17 m | −23.3% |
+
+Añadidos a `CALIBRACION.jsonl`. **Pasaia II llega a 18 puntos, los 18
+con el mismo signo negativo** (media 18 puntos ≈ **−28.6%**, estable
+respecto a la media de 15/16/17 puntos ya escrita en `ROBOT.md` el
+2026-09-21 — sigue sin ninguna excepción de signo) — no hace falta
+repetir la propuesta de factor de corrección ya hecha por el robot de
+calibración nocturna, este punto solo confirma que se mantiene.
+Bilbao-Vizcaya y Gijón siguen sin patrón sistemático claro (signo
+mixto). **Barcelona II (rotación, candidata con más días sin
+repetirse desde el 2026-09-19) llega a 6 puntos, LOS 6 con signo
+negativo (media 6 puntos ≈ −29.1%)** — y esta vez con oleaje real de
+0.73 m, el primer punto de esta boya por encima del umbral de 0.6 m que
+hasta ahora hacía sospechar que el sesgo fuera solo ruido de mar en
+calma. Con este punto, Barcelona II se parece cada vez más a Pasaia II
+en magnitud de sesgo (−29.1% vs −28.6%), aunque son zonas geográficas
+distintas (Mediterráneo vs Cantábrico/Guipúzcoa) — refuerza la
+sospecha, ya apuntada el 2026-09-19, de que Open-Meteo podría estar
+subestimando oleaje de forma más general de lo que parecía al principio
+(no solo un problema local de Pasaia).
+
+**Fuente nueva encontrada y verificada en vivo: boyas reales de SOCIB
+(Sistema de Observación y Predicción Costero de las Islas Baleares).**
+Buscando alternativas a Puertos del Estado para la zona balear (donde
+la única boya fija ya en rotación, Dragonera, lleva solo 6 puntos y con
+mar casi siempre en calma), apareció que SOCIB — instituto público de
+investigación oceanográfica de Baleares, financiado por el Ministerio
+de Ciencia y el Govern de les Illes Balears — publica boyas de oleaje
+reales y vivas en su servidor THREDDS
+(`thredds.socib.es/thredds/catalog/mooring/waves_recorder/`), con dato
+de altura significativa de ola (`WAV_HEI_SIG`, Hm0) cada 30 minutos y
+su propio control de calidad (`QC_WAV_HEI_SIG`, 1 = "good_data").
+Confirmado en vivo vía OPeNDAP (`.dds`/`.ascii`, sin necesidad de
+descargar el NetCDF completo — mismo patrón que otros THREDDS ya usados
+en el repo, ver EuskOOS 2026-09-15/21):
+
+- **Boya Bahía de Palma** (`buoy_bahiadepalma-scb_wave006`, despliegue
+  `dep0003`, lat 39.498883, lon 2.702133) — última lectura real a las
+  13:30 UTC de hoy, actualizada 20 minutos antes de esta pasada.
+  Comparada a las 13:00 UTC: real 0.26 m, calculado 0.12 m, diferencia
+  −53.8% — mar casi en calma (mismo aviso de siempre: el % es poco
+  fiable con oleaje tan pequeño), pero mismo signo negativo. Está a
+  solo **~9 km del spot fijo `palma`** (39.570, 2.650) — mucho más
+  cerca que la boya de Puertos del Estado que cubre esa zona hoy
+  (Dragonera, a ~28 km de `palma`).
+- **Boya Canal de Ibiza** (`buoy_canaldeibiza-scb_wave007`, despliegue
+  `dep0001`, lat 38.813817, lon 0.808467) — misma frescura (última
+  lectura también a las 13:30 UTC de hoy). Comparada a las 13:00 UTC:
+  real 0.50 m, calculado 0.32 m, diferencia −36.0%, mismo signo.
+
+Ambas añadidas a `CALIBRACION.jsonl` como primer punto de una fuente
+nueva (`nombre` describe la fuente en vez de un código de Puertos del
+Estado, que esta boya no tiene). El catálogo de SOCIB tiene más boyas
+de oleaje vivas sin explorar todavía (Sóller, Portocolom, más
+despliegues de "MOBIMS" en Muro/Cala Millor/Son Bou/Sonbou — todas con
+spot fijo homónimo o cercano en `index.html`) — candidatas para
+próximas pasadas de esta misma rotación.
+
+**Propuesta, no implementación** (fuente externa nueva + tocaría
+`functions/prevision.js`, cae fuera de lo que esta pasada puede aplicar
+directo): usar las boyas de SOCIB como referencia de calibración
+adicional para los spots baleares (`palma`, `formentera`, `muro`,
+`calamillor`, `sonbou`, `ciutadella`), en vez de depender solo de
+Dragonera (que cubre peor esa zona, más lejos y con menos muestra
+todavía). No se propone sustituir a Puertos del Estado en el resto de
+la costa — solo complementar la cobertura balear con una fuente real
+más cercana y ya con control de calidad propio. Antes de integrarlo
+haría falta decidir con el usuario si el acceso es vía OPeNDAP
+(NetCDF, sin API key, pero requiere leer un formato binario/subconjunto
+en vez de JSON simple) o si SOCIB tiene un endpoint JSON/REST más
+sencillo (no comprobado todavía en esta pasada).
+
+**Fuentes:**
+[poem.puertos.es — StationData (Puertos del Estado, boyas reales)](https://poem.puertos.es/portus/StationData),
+[Open-Meteo Marine API](https://marine-api.open-meteo.com/v1/marine),
+[SOCIB — Datos meteoceánicos](https://www.socib.es/es/que-hacemos/datos-meteoceanicos),
+[SOCIB — Boya Bahía de Palma](https://www.socib.es/es/que-hacemos/observacion-del-oceano/plataformas-fijas/boya-bahia-de-palma),
+[THREDDS SOCIB — catálogo de boyas de oleaje](https://thredds.socib.es/thredds/catalog/mooring/waves_recorder/catalog.html).
+
+**Firmado:** robot buscador de fuentes (pasada de mareas y oleaje),
+2026-09-22 13:44 UTC.
