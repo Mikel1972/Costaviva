@@ -4849,6 +4849,37 @@ decisión de producto. Todos los datos de prueba (2 salidas, 1 captura, 1
 grupo, 1 invitación, 1 membresía) borrados y verificados a 0. Informe
 completo en /tmp/experiencia-informe.txt.
 
+### 2026-09-22
+
+Pasada de prueba intensiva de "usuario real exigente" contra producción
+(costaviva.org + API REST de Supabase) con las dos cuentas de prueba.
+Núcleo sólido: /prevision comparado en Mundaka (Cantábrico), Calpe
+(Mediterráneo) y Las Palmas (Canarias) con datos coherentes por zona y
+época del año (agua 21.6-22°C / 26°C / 24.3-24.5°C, oleaje y mareas
+internamente consistentes, 22 boyas reales de Puertos del Estado sin
+error); /identificar-captura volvió a acertar "Lubina" con una foto real
+distinta (Ifremer/Wikimedia) sin inventar talla/peso por falta de
+referencia de escala, y sus 4 casos límite (sin token, token inválido,
+sin imagen, imagen inválida) dieron errores claros, ninguno silencioso.
+El flujo completo de grupos con las dos cuentas (crear/invitar/unir,
+aislamiento mientras no se comparte, interruptores independientes por
+categoría, salir, eliminar_grupo()) funcionó de principio a fin —
+confirma que la RPC eliminar_grupo() ya está desplegada en producción
+(el hallazgo del 2026-09-15 quedó resuelto). Dos hallazgos menores de
+validación, ninguno explotable desde la app real: (1) `capturas.especie`
+es `not null` pero acepta cadena vacía ("") por la API REST directa —
+`diario.html` ya bloquea esto en el cliente antes de llamar a Supabase,
+así que es un hueco de defensa en profundidad, no un bug activo; (2)
+`capturas.talla_cm` acepta valores negativos (-30) sin ningún `check`.
+Aparte, no es un bug pero se anota: `/geocodificar` en las coordenadas
+exactas de "Mundaka" devuelve "Sukarrieta" (dato real de Nominatim, el
+rompeolas cae en ese término municipal) — si se usa alguna vez para
+sugerir nombre a una ubicación personalizada justo ahí, puede
+sorprender a quien conozca el sitio por su nombre de surf. Todos los
+datos de prueba (2 salidas, 3 capturas, 1 grupo, 1 invitación, 2
+membresías) borrados y verificados a 0. Informe completo en
+/tmp/experiencia-informe.txt.
+
 ---
 
 ## Robot de patrones de uso
