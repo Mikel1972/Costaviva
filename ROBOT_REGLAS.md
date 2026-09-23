@@ -617,6 +617,74 @@ varias veces que MeteoGalicia no los cubre.
   población por agotada con los términos actuales hasta que aparezca una
   pista nueva y distinta.
 
+### Zona: Portugal — centro y norte (última pasada real: 2026-09-23, rotación automática, primera vez que se investiga con este sistema de zonas)
+
+8 spots fijos (`moledo`, `vianadocastelo`, `povoadevarzim`, `matosinhos`,
+`aveiro`, `figueiradafoz`, `nazare`, `peniche`), ninguno con cámara antes
+de esta pasada. Beachcam (MEO), la red de referencia histórica de
+Portugal, sigue muerta para integración (pasó a servicio de pago desde
+antes del 2026-09-15, `403 Forbidden` reconfirmado hoy) — no perseguirla
+más en esta zona ni en la de "Portugal — sur" (mismo proveedor
+nacional).
+
+- **Red Windy Webcams (`webcams.windy.com`) — hallazgo con
+  generalización potencial MÁS ALLÁ de Portugal, no probada todavía en
+  ninguna zona española.** Es una red global de cámaras subidas por
+  particulares/negocios (no una fuente institucional), pero cubrió 7 de
+  las 8 poblaciones de esta zona con cámaras reales en alta resolución
+  (1280x720 o 1920x1080) — mucho más productiva que buscar
+  ayuntamiento/surf/club náutico población por población. Se accede sin
+  necesidad de scraping vía el agregador `portugalwebcams.pt` (cada
+  cámara tiene página propia `portugalwebcams.pt/en/webcam/<slug>` con
+  un ID numérico de Windy visible en el HTML, `data-id="<id>"` dentro de
+  `<div class="webcam-detail-embed">`), y la imagen real, hotlinkable
+  directamente sin token, vive en:
+  `https://imgproxy.windy.com/_/full/plain/current/<id>/original.jpg`
+  (CORS abierto). **Usar siempre la variante `full`, nunca `preview`**
+  (esa segunda es solo una miniatura de 400x224, aparece primero al
+  mirar el HTML y es fácil copiarla por error). **Recomendación para
+  cualquier futura zona (España incluida)**: probar esta red antes que
+  las búsquedas población por población de ayuntamiento/surf/club
+  náutico — puede que sea productiva también fuera de Portugal, no
+  comprobado todavía porque esta pasada solo cubría esta zona.
+  **Importante — un ID de Windy puede llevar días sin actualizar pese a
+  responder 200 con una imagen real** (visto en Moledo/Caminha,
+  6 días de retraso) **o directamente dejar de existir** (visto en un ID
+  de Póvoa de Varzim sacado de un resultado de búsqueda, 404 en
+  `imgproxy.windy.com`) — comprobar SIEMPRE `Last-Modified` de la
+  imagen real antes de proponer cualquier ID de esta red, igual que con
+  cualquier otro proveedor de este fichero.
+- **Panomax (`<ciudad>.panomax.com`) es un callejón sin salida público,
+  mismo patrón que `g24.gal/prog24/ARQUIVO/` en Galicia**: la única
+  imagen accesible sin autenticación (el `og:image` de la portada) es un
+  cacheado estático de hace años (visto: mayo de 2022), no la vista en
+  directo — la imagen real exige su API de pago. Probado en Matosinhos y
+  Nazaré, mismo resultado en las dos. No perseguir esta vía para ninguna
+  población, en ninguna zona, salvo que aparezca documentación de una
+  API pública real.
+- **Surftotal (`surftotal.com`) NO es solo un espejo de Beachcam, pese a
+  titular sus páginas "Beachcam - ... HD"** — para Póvoa de Varzim sirve
+  desde su propio dominio (`surftotal.com/camara/stream_files/`,
+  `stream.surftotal.com`), confirmado real y actualizado, pero la imagen
+  fija es una miniatura de solo 200x113px — muy por debajo de la
+  resolución de Windy. Para el resto de poblaciones de esta pasada
+  (Nazaré, Peniche) sus páginas sí parecen replicar Beachcam (mismo
+  nombre "Beachcam - ... HD" en el título) — no verificado a fondo cada
+  una, comprobar el HTML real (buscar `stream.surftotal.com` propio vs.
+  un iframe/embed hacia `beachcam.meo.pt`) antes de asumir cuál es cuál
+  en una población nueva.
+- **Términos de búsqueda de `ROBOT_REGLAS.md`, recuento de esta zona
+  (poblaciones fijas: Nazaré y Peniche)**: `webcam surf` — sin resultado
+  confirmable (Baleal Surf Camp, Peniche, anuncia webcam propia pero no
+  se pudo verificar el contenido real, respuesta `202` sin cuerpo desde
+  este entorno); `webcam ayuntamiento`/`webcam câmara municipal` — sin
+  resultado (`cm-nazare.pt`, `cm-peniche.pt`); `webcam pesca/puerto/
+  cofradía`/`webcam porto de pesca/capitania` — sin resultado (Capitania
+  do Porto de Peniche solo ficha de contacto; el único cámara del Porto
+  de Abrigo de Nazaré es de Beachcam, ya descartado); `webcam club
+  náutico`/`webcam clube naval/marina` — sin resultado (`cnpeniche.pt`,
+  `cnnazare.pt`, ninguno con webcam propia visible).
+
 ## Sinónimos regionales de especies y cebos (añadido 2026-09-13)
 
 Cuarta responsabilidad de esta rutina, pedida explícitamente por el
