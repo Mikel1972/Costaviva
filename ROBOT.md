@@ -6472,3 +6472,169 @@ reasignar el hueco, a decidir por el usuario.
 
 **Firmado:** robot buscador de fuentes (pasada de presión atmosférica e
 histórico por zona), 2026-09-22 23:50 UTC.
+
+### 2026-09-23 08:05 UTC (pasada buscadora — cámaras/webcams, ZONA: Portugal — centro y norte, primera vez en esta rotación por zonas)
+
+**Qué se buscó**: cámara nueva para los 8 spots fijos de esta zona, todos
+sin webcam (`moledo`, `vianadocastelo`, `povoadevarzim`, `matosinhos`,
+`aveiro`, `figueiradafoz`, `nazare`, `peniche`) — población por
+población, más los términos activos de `ROBOT_REGLAS.md` (`webcam
+directo`, `webcam surf`, `webcam ayuntamiento` → `webcam câmara
+municipal`, `webcam pesca/puerto/cofradía` → `webcam porto de
+pesca/capitania`, `webcam club náutico` → `webcam clube naval/marina`).
+Antes de nada se releyó la entrada de 2026-09-15 08:20 UTC (pasada
+buscadora anterior, sin la rotación por zonas todavía) que ya había
+investigado Portugal en bloque y concluyó "sin fuente gratuita/hotlinkable
+viable" porque Beachcam (MEO) había pasado a servicio de pago
+(`403 Forbidden`) — **reconfirmado hoy en real** (`curl` a
+`beachcam.meo.pt/livecams/praia-do-norte/` → `403`, sigue muerto para
+integración directa 8 días después).
+
+**HALLAZGO PRINCIPAL — red comunitaria global Windy Webcams, nunca
+investigada en este repo, cubre 7 de las 8 poblaciones de esta zona con
+cámaras reales, propias e independientes (no Beachcam), en alta
+resolución.** Encontrada a través del agregador `portugalwebcams.pt`
+(que a su vez reincrusta el visor oficial de `webcams.windy.com`) — cada
+cámara tiene una ficha propia (`portugalwebcams.pt/en/webcam/<slug>`)
+con un ID numérico de Windy, y la imagen real se sirve directa, sin
+necesidad de scraping ni token, en:
+`https://imgproxy.windy.com/_/full/plain/current/<id>/original.jpg`
+(variante `full` = resolución real 1280x720 o 1920x1080; la variante
+`preview` que aparece primero en el HTML es solo una miniatura de
+400x224 — **usar siempre `full`, no `preview`**). CORS abierto
+(`Access-Control-Allow-Origin: *`) en las dos variantes, aunque para
+este repo es indiferente (el proxy `/webcam/<slug>` ya hace la petición
+desde el propio Worker, no desde el navegador).
+
+Verificado en real, todas con `Last-Modified` a menos de 10 minutos de
+la comprobación (08:00-08:05 UTC de hoy) y resolución real comprobada
+por bytes (no solo por la cabecera):
+
+| Spot | Cámara (nombre en Windy) | ID | Resolución | Ficha en portugalwebcams.pt |
+|---|---|---|---|---|
+| `matosinhos` | Matosinhos – Leixões Port | `1662727342` | 1280x720 | `matosinhos-leixoes-port` |
+| `matosinhos` (reserva) | Matosinhos – Leça da Palmeira | `1349771403` | 1280x720 | `matosinhos-leca-da-palmeira` |
+| `vianadocastelo` | Viana do Castelo – Darque | `1444832771` | 1920x1080 | `viana-do-castelo-darque` |
+| `vianadocastelo` (reserva) | Viana do Castelo – Darque (Panoramic) | `1672453690` | 1920x1080 | `viana-do-castelo-darque-panoramic` |
+| `aveiro` | Aveiro – Barra Beach | `1424817063` | 1920x1080 | `aveiro-barra-beach` |
+| `figueiradafoz` | Figueira da Foz – São Pedro - Cabedelo | `1793906895` | 1920x1080 | `figueira-da-foz-sao-pedro-cabedelo` |
+| `figueiradafoz` (reserva) | Figueira da Foz – Buarcos e São Julião | `1646935622` | 1920x1080 | `figueira-da-foz-buarcos-sao-juliao` |
+| `figueiradafoz` (reserva 2) | Figueira da Foz – Quiaios | `1691852074` | 1280x720 | `figueira-da-foz-quiaios` |
+| `figueiradafoz` (reserva 3) | Figueira da Foz – São Pedro | `1695295936` | 1280x720 | `figueira-da-foz-sao-pedro` |
+| `nazare` | Nazaré – Norte Beach 2 | `1399037667` | 1920x1080 | `nazare-north-beach-2` |
+| `nazare` (reserva) | Nazaré – Town Beach | `1516663648` | 1920x1080 | `nazare-town-beach` |
+| `nazare` (reserva 2) | Nazaré – Safe Harbor | `1637346177` | 1280x720 | `nazare-safe-harbor` |
+| `peniche` | Peniche – Baleal Beach | `1695285178` | 1920x1080 | `peniche-baleal-beach` |
+| `peniche` (reserva) | Peniche – Areia Branca Beach | `1742819240` | 1920x1080 | `peniche-areia-branca-beach` |
+| `peniche` (reserva 2) | Peniche – Lagide and Bay | `1695211815` | 1920x1080 | `peniche-lagide-bay` |
+
+Es decir: **9 spots nuevos con cámara candidata verificada** (6
+principales + reservas), cubriendo 6 de los 8 spots de la zona
+(`matosinhos`, `vianadocastelo`, `aveiro`, `figueiradafoz`, `nazare`,
+`peniche`). Por el criterio de prioridad de `ROBOT_REGLAS.md`
+("Aprendizaje por zonas" — vídeo > imagen fija; entre imágenes fijas, la
+de mejor resolución) se eligió como principal la de mayor resolución
+real cuando había varias por spot, dejando el resto como reserva en el
+array (nunca se investigó si hay variante de vídeo/HLS de este mismo
+proveedor — pendiente para una futura pasada si el usuario quiere
+profundizar).
+
+**`moledo` (Caminha) — encontrada pero NO propuesta todavía, cámara
+real pero actualmente parada**: `portugalwebcams.pt/en/webcam/
+caminha-moledo-beach` → Windy ID `1570535472`, 1920x1080, pero su
+`Last-Modified` es del **17 de septiembre** (6 días antes de esta
+comprobación) — la cámara existe y en su momento funcionó, pero el
+propio origen (el dueño de la cámara, no Windy) lleva varios días sin
+subir imagen nueva. Mismo patrón que las carpetas muertas de
+`kostasystem.com` en Bizkaia: responde `200` con una imagen real pero
+vieja, nunca dar esto por bueno solo por el código de estado. **No se
+propone todavía** — reintentar en una pasada futura de esta zona (la
+próxima le toca en ~10 días por la rotación) para comprobar si ha vuelto
+a actualizar.
+
+**`povoadevarzim` — sin cámara de Windy confirmada, un ID visto en un
+resultado de búsqueda resultó no existir ya.** `portugalwebcams.pt` no
+tiene ficha de ciudad para Póvoa de Varzim (`/en/city/povoa-de-varzim` →
+`404`). Un resultado de búsqueda apuntaba a
+`windy.com/pt/-Webcams/.../webcams/1570780006`, pero ese ID da `404` en
+`imgproxy.windy.com` tanto en `full` como en `preview` — la cámara ya no
+existe en la red (o se retiró). En su lugar se encontró **Surftotal**
+(`surftotal.com`, red de cámaras propia, NO un espejo de Beachcam pese
+al nombre "Beachcam - ... HD" que usa en sus títulos — comprobado
+mirando el HTML real de la página, sirve desde su propio dominio
+`stream.surftotal.com`/`surftotal.com`, no reincrusta beachcam.meo.pt):
+cámara "Ferrari" de Póvoa de Varzim, snapshot JPEG real y actualizado
+(`Last-Modified` a menos de 4 minutos de la comprobación) en
+`https://surftotal.com/camara/stream_files/today_portugal_ferrari_8.jpg`
+— pero solo **200x113px**, una miniatura, muy por debajo de la
+resolución de cualquier cámara de Windy de esta misma pasada. También
+existe un HLS (`stream.surftotal.com/portugal/ferrari/index.m3u8`) pero
+con un token de sesión en la URL (`?token=...&time=...`) — no se pudo
+confirmar si ese token caduca o es reutilizable sin más investigación
+(pendiente si se quiere profundizar). Dada la resolución tan baja de la
+imagen fija, se deja como candidata de baja prioridad para
+`povoadevarzim`, no como hallazgo fuerte — el usuario puede decidir si
+merece la pena con esta calidad.
+
+**Recuento del protocolo de poda de términos** (`ROBOT_REGLAS.md`, 2
+poblaciones fijas de esta zona: **Nazaré y Peniche**, primera vez que se
+registra esta zona):
+- `webcam surf`: sin resultado nuevo confirmable — Baleal Surf Camp
+  (Peniche) anuncia una webcam propia pero la petición automatizada dio
+  `202` sin contenido verificable, no se pudo confirmar si es
+  independiente o reincrusta Beachcam; no se cuenta como resultado
+  positivo sin verificación real.
+- `webcam ayuntamiento` (`webcam câmara municipal`): sin resultado —
+  `cm-nazare.pt` no expone webcam propia (sitio con partes en
+  mantenimiento), `cm-peniche.pt` tampoco.
+- `webcam pesca/puerto/cofradía` (`webcam porto de pesca/capitania`):
+  sin resultado — la Capitania do Porto de Peniche solo tiene ficha de
+  contacto; el "Porto de Abrigo" de Nazaré sí tiene cámara pero es de
+  Beachcam (ya descartado), no una fuente independiente de la propia
+  autoridad portuaria.
+- `webcam club náutico` (`webcam clube naval/marina`): sin resultado —
+  ni `cnpeniche.pt` (Clube Naval de Peniche) ni `cnnazare.pt` (Clube
+  Naval da Nazaré) muestran cámara propia en su web.
+
+**Aviso general para cualquier zona con Panomax**: se probó también
+`matosinhos.panomax.com` y `nazare.panomax.com` (código embebido tipo
+PANOMAX 360°, aparece en varias búsquedas de esta pasada) — el único
+recurso público sin autenticación es el `og:image` de la portada, y
+resultó ser una imagen **estática cacheada desde 2022** (`Last-Modified:
+10 May 2022`), no una vista en directo — mismo patrón ya conocido de
+`g24.gal/prog24/ARQUIVO/CAMARAS_WEB/` en Galicia. Probados también los
+paths típicos de snapshot (`current.jpg`, `live.jpg`, `latest.jpg`,
+`thumbnail.jpg`) → los 4, `404`. Panomax parece exigir su API de pago
+para la imagen real en directo; no perseguir más esta vía salvo que
+aparezca una API pública documentada.
+
+**Añadida regla nueva en `ROBOT_REGLAS.md`** (sección "Aprendizaje por
+zonas", nueva subsección de esta zona): la red Windy Webcams como
+proveedor a comprobar en cualquier zona futura (no solo Portugal), y el
+patrón `imgproxy.windy.com/_/full/plain/current/<id>/original.jpg` con
+el aviso de comprobar siempre `Last-Modified` antes de proponer (igual
+que con cualquier otro proveedor).
+
+**Nada de esto se ha integrado en código todavía** — toca
+`functions/webcam/[slug].js` y `index.html` (`SPOTS_CON_WEBCAM`/`WEBCAMS`),
+fuera del límite de "corrección trivial" de `ROBOT_REGLAS.md` (son 6
+spots nuevos con 9 URLs). **Queda como propuesta para que el usuario
+decida** cuáles de los 6 hallazgos principales integrar y con qué
+prioridad de reserva, y si quiere que se investigue también el HLS de
+Surftotal para Póvoa de Varzim antes de descartar esa cámara por baja
+resolución.
+
+**Fuentes:**
+[Portugal Webcams — Matosinhos/Leixões](https://portugalwebcams.pt/en/webcam/matosinhos-leixoes-port),
+[Portugal Webcams — Viana do Castelo/Darque](https://portugalwebcams.pt/en/webcam/viana-do-castelo-darque),
+[Portugal Webcams — Aveiro/Barra](https://portugalwebcams.pt/en/webcam/aveiro-barra-beach),
+[Portugal Webcams — Figueira da Foz](https://portugalwebcams.pt/en/city/figueira-da-foz),
+[Portugal Webcams — Nazaré](https://portugalwebcams.pt/en/city/nazare),
+[Portugal Webcams — Peniche](https://portugalwebcams.pt/en/city/peniche),
+[Portugal Webcams — Caminha/Moledo](https://portugalwebcams.pt/en/webcam/caminha-moledo-beach),
+[Surftotal — Póvoa de Varzim Ferrari HD](https://surftotal.com/camaras-report/grande-porto-douro-litoral/povoa-de-varzim-ferrari),
+[Beachcam MEO — Praia do Norte (403, referencia de lo ya descartado)](https://beachcam.meo.pt/livecams/praia-do-norte/),
+[Panomax — Matosinhos (descartado)](https://matosinhos.panomax.com/).
+
+**Firmado:** robot buscador de fuentes (pasada de cámaras/webcams, zona
+Portugal — centro y norte), 2026-09-23 08:05 UTC.
