@@ -6638,3 +6638,141 @@ resolución.
 
 **Firmado:** robot buscador de fuentes (pasada de cámaras/webcams, zona
 Portugal — centro y norte), 2026-09-23 08:05 UTC.
+
+### 2026-09-23 15:38 UTC (pasada buscadora — buenas prácticas de otras apps)
+
+Investigación con `WebSearch`/`WebFetch` de qué datos en tiempo real o
+funciones tienen otras apps de mareas/pesca (Windy, Tides4fishing,
+Fishbrain, Meteoblue, Puertos del Estado, AEMET...) que Costaviva no
+tenga todavía, evitando repetir lo ya propuesto el 2026-09-14 y el
+2026-09-15 (avisos CAP de AEMET, periodos solunares, "top baits" de
+comunidad, SST/clorofila por satélite, previsión offline PWA, alarmas
+configurables tipo Nautide, planificador por condición futura,
+explicabilidad del índice + curva horaria, racha de viento). **Solo
+propuestas — cambio de producto/dato mostrado como fiable por
+definición, nunca implementación directa** (regla de
+`ROBOT_REGLAS.md`, sec. "Buenas prácticas de otras apps y biología de
+especies"). Nada se ha tocado en código, pese a que dos de los tres
+hallazgos de abajo sí se pudieron verificar con una petición HTTP real
+(a diferencia de las dos pasadas anteriores de esta misma
+responsabilidad, que eran solo capturas de pantalla/descripciones de
+producto de apps de terceros).
+
+**1. MeteoGalicia tiene un servicio JSON público de predicción por
+playa — gratis, sin API key, y ya verificado en real — con temperatura
+del agua y UV que Costaviva no muestra hoy.** Documentado en
+`meteogalicia.gal/datosred/infoweb/meteo/docs/rss/JSON_Pred_Praia_es.pdf`:
+`https://servizos.meteogalicia.gal/mgrss/predicion/jsonPredPraia.action?idPraia=<id>`
+devuelve, para 3-4 días vista y 3 franjas horarias por día (mañana/
+tarde/noche): estado del cielo, agitación del mar (débil/moderada/
+fuerte), % de probabilidad de lluvia, dirección e intensidad de viento,
+temperatura mín/máx del aire — y, lo verdaderamente nuevo, **`tAuga`
+(temperatura del agua prevista, °C) y `uvMax` (índice UV máximo)**,
+ninguno de los dos disponible hoy en Costaviva (el agua sale del
+modelo de Open-Meteo, sin UV en ningún sitio de la app). Probado en
+vivo para Ribadeo (`idPraia=1987`, "As Catedrais ou Carricelas"):
+`200` con datos reales de hoy (`tAuga: 19`, `uvMax: 6`) y 3 días más de
+previsión. El propio documento trae un listado completo de
+identificadores de playa por ayuntamiento (Anexo I) — de los spots
+fijos de Galicia, ya se han localizado los de A Coruña (2448 Riazor,
+2449 Orzán y más), Camariñas (varios en Anexo I), Ribadeo (1987, usado
+en la prueba), Baiona (2051-2055), Cangas (2148-2158+), Sanxenxo
+(2204-2270) — faltaría cruzar cada spot fijo con la playa concreta más
+cercana antes de integrar. **Cobertura solo Galicia** (es un servicio
+autonómico) — no cubre Euskadi/Cantabria/Asturias/Portugal, sería un
+complemento regional, no sustituto de nada existente. Propuesta: (a)
+mostrar `tAuga`/`uvMax` como dato adicional en el panel de los spots
+gallegos con playa de MeteoGalicia identificada, (b) valorar si
+`tAuga` merece cruzarse con el de Open-Meteo como segunda fuente/
+validación en vez de sustituirlo. Toca `functions/prevision.js` +
+`index.html`, y hace falta identificar bien cada `idPraia` por spot
+antes de nada → propuesta, no corrección trivial.
+
+**2. Open-Meteo Marine API — la MISMA fuente que Costaviva ya usa para
+`wave_height`/`wave_period`/`wave_direction` — separa el oleaje en
+mar de fondo (swell) y mar de viento (wind wave), y Costaviva no pide
+esos campos.** Verificado en vivo contra el propio endpoint de
+`marine-api.open-meteo.com/v1/marine` (mismo que usa
+`functions/prevision.js`, línea ~578) añadiendo los parámetros
+`swell_wave_height,swell_wave_period,swell_wave_direction,
+wind_wave_height,wind_wave_period,wind_wave_direction` a la petición
+`hourly` ya existente — `200`, con valores reales y coherentes (para un
+punto de prueba en Bizkaia: oleaje combinado 1.40 m con periodo 14 s,
+descompuesto en swell 1.38 m/12 s desde 302° y mar de viento residual
+casi nulo 0.04 m). Es exactamente la distinción "swell vs. wind chop"
+que Windy, Surfline y otras apps de surf/pesca destacan como dato de
+valor (un mar de fondo largo y limpio pesca/surfea distinto de un
+oleaje corto levantado por el viento local, aunque la altura combinada
+sea la misma). **Coste de integración mínimo real**: no es un
+proveedor nuevo, son 6 parámetros más en la MISMA URL que ya se pide
+cada vez — a diferencia de la idea aparcada en `CLAUDE.md` ("estimar
+la mar de fondo combinando boyas + batimetría + webcam", pedida
+2026-09-14, sin empezar), esto no requiere ningún modelo propio ni
+calibración: Open-Meteo ya lo calcula. Sigue siendo propuesta y no
+corrección trivial porque cambia lo que se muestra en `indiceMar()` y
+en los paneles de spot (dato mostrado como fiable) y tocaría
+`functions/prevision.js` + `index.html` + `diario.html` a la vez. Si
+el usuario lo retoma, puede servir como primer paso barato antes de
+la idea más ambiciosa ya aparcada (que seguiría teniendo sentido para
+propagar swell de una boya exterior spot a spot, algo que Open-Meteo
+no hace).
+
+**3. AEMET tiene un endpoint de predicción específica por playa
+(`/api/prediccion/especifica/playa/{id}`), documentado y con un listado
+público de IDs de playa (CSV, sin autenticación) que cubre poblaciones
+de casi todas las zonas de Costaviva — no verificado con petición real
+por no tener la `AEMET_API_KEY` en este runner (vive como secreto en
+Cloudflare Pages, mismo límite ya anotado para los avisos CAP el
+2026-09-14).** El listado de playas
+(`aemet.es/documentos/es/eltiempo/prediccion/playas/Playas_codigos.csv`,
+público, verificado en vivo con `curl`, `200`) incluye playas en los
+municipios de Zarautz/Zumaia (Gipuzkoa), Llanes/Ribadesella (Asturias),
+Baiona/Cangas/Sanxenxo (Pontevedra), Castro-Urdiales/Laredo/Santoña
+(Cantabria) y Mundaka (Bizkaia) — cobertura nacional, a diferencia de
+MeteoGalicia (solo Galicia). Según la documentación pública de la API
+(no verificado con dato real), el JSON de este endpoint trae estado
+del cielo y otros campos meteorológicos por playa a 3 días vista;
+no se ha podido confirmar si incluye temperatura del agua o UV como
+MeteoGalicia. Propuesta para la próxima vez que alguien con acceso al
+secreto pueda probar el endpoint real: verificar con la key de
+Cloudflare Pages antes de decidir si aporta algo que MeteoGalicia (para
+Galicia) no ya cubra, y si merece la pena para el resto de zonas.
+
+**Encontrado pero descartado por no ser una API limpia**: NÁYADE
+(Ministerio de Sanidad, `nayadeciudadano.sanidad.gob.es`) es la fuente
+oficial española de calidad de aguas de baño (clasificación anual
+excelente/buena/suficiente/insuficiente por playa, cumplimiento de la
+directiva europea de aguas de baño) — real y verificado que responde
+(`200`, `curl` real), pero es una aplicación web antigua tipo Struts
+pensada para navegar a mano por provincia/municipio/playa, sin ningún
+endpoint JSON/REST público encontrado — integrarlo exigiría scraping
+HTML, no una petición estructurada. Además es un dato de temporada
+(clasificación anual), no en tiempo real como el resto de fuentes de
+este repo. Queda anotado como fuente real que existe, no como
+candidato a integrar a corto plazo.
+
+**Ya cubierto por pasadas anteriores, no re-propongo**: avisos CAP de
+AEMET, periodos solunares, recomendación de cebo/técnica por
+comunidad, SST/clorofila por satélite, previsión offline PWA, alarmas
+configurables, planificador de condición futura, explicabilidad del
+índice + curva horaria, racha de viento (gust). También revisados y
+sin novedad relevante frente a lo ya anotado: Windy.app (wave alerts,
+elección de datum de marea LAT/MLLW — mismo tipo de función que las
+alarmas de Nautide ya propuestas) y Tides4fishing (solunar, ya
+cubierto).
+
+Fuentes consultadas:
+- MeteoGalicia — [Servicio JSON predicción por playa (PDF)](https://www.meteogalicia.gal/datosred/infoweb/meteo/docs/rss/JSON_Pred_Praia_es.pdf),
+  endpoint verificado en vivo `servizos.meteogalicia.gal/mgrss/predicion/jsonPredPraia.action?idPraia=1987`.
+- Open-Meteo Marine API — [documentación](https://open-meteo.com/en/docs/marine-weather-api),
+  endpoint verificado en vivo con parámetros `swell_wave_*`/`wind_wave_*`.
+- AEMET OpenData — [documentación API](https://opendata.aemet.es/opendata/documentation/v2/api-docs?group=AEMET_API),
+  [listado de playas (CSV, verificado en vivo)](https://www.aemet.es/documentos/es/eltiempo/prediccion/playas/Playas_codigos.csv).
+- Ministerio de Sanidad — [NÁYADE](https://www.sanidad.gob.es/areas/sanidadAmbiental/calidadAguas/aguasBanno/nayade.htm),
+  portal verificado en vivo (`nayadeciudadano.sanidad.gob.es`).
+- Windy.app — [App Store](https://apps.apple.com/us/app/windy-app-wind-tides-radar/id997079492),
+  [novedades de mareas](https://windy.app/news/now-you-can-see-and-choose-tides-from-the-lat-and-mllw-datums.html).
+- Tides4fishing — [tablas solunares](https://tides4fishing.com/solunar-tables).
+
+**Firmado:** robot buscador de fuentes (pasada de buenas prácticas de
+otras apps), 2026-09-23 15:38 UTC.
