@@ -6841,3 +6841,127 @@ ninguna de las 9 zonas muestra relación estable entre radar y modelo.
 
 **Firmado:** robot buscador de fuentes (pasada de corrientes marinas),
 2026-09-23 18:45 UTC.
+
+### 2026-09-23 23:20 UTC (pasada buscadora — presión atmosférica e histórico por zona, décima pasada)
+
+**Contexto:** las pasadas 8ª y 9ª (2026-09-21/22) concluyeron "sin ningún
+pendiente evidente" y recomendaron espaciar este tema. Antes de repetir
+esa misma conclusión, se revisó qué zonas geográficas cubrían realmente
+las 9 pasadas anteriores — **ninguna mencionaba nunca Mediterráneo,
+Golfo de Cádiz, Baleares ni Canarias**, pese a que la app tiene ~44 spots
+mediterráneos (`SPOTS_MEDITERRANEO`), 4 de Golfo de Cádiz y 4 de
+Canarias en `index.html`. Todo el trabajo previo de "por zona" se había
+concentrado sin excepción en Cantábrico/Atlántico/Galicia/Portugal. Esta
+pasada cubre ese hueco geográfico real, no repetido antes.
+
+**Hallazgo verificado con petición HTTP real — Meteocat/XEMA (Catalunya)
+tiene histórico de presión abierto, sin clave, desde 2009.** El portal
+"Dades obertes de Catalunya" (Socrata) republica en abierto la Xarxa
+d'Estacions Meteorològiques Automàtiques (XEMA) del Servei Meteorològic
+de Catalunya:
+
+```
+GET analisi.transparenciacatalunya.cat/resource/nzvn-apee.json?codi_variable=34&$limit=5&$order=data_lectura ASC
+→ 200, primer registro real: estació "CA", 2009-01-01T00:00:00, 940 hPa
+GET .../nzvn-apee.json?codi_variable=34&$limit=5&$order=data_lectura DESC
+→ 200, último registro: 2026-09-23T22:00:00 (¡de hoy!), valores 889.9-1023.3 hPa
+```
+
+`codi_variable=34` = "Pressió atmosfèrica" (confirmado por la propia
+documentación de Meteocat, no asumido). Los valores bajos (889.9, 909.8)
+corresponden a estaciones de montaña sin reducir a nivel del mar — para
+estaciones costeras de poca altitud el dato ya sirve tal cual. Endpoint
+de metadatos de estaciones (`.../resource/yqwd-vj5e.json`) trae
+coordenadas/altitud/municipio exactos por estación — permitiría elegir
+a mano la más cercana a cada spot de Girona/Barcelona/Tarragona
+(roses, blanes, cambrils y el resto de `SPOTS_MEDITERRANEO` de esas
+provincias) igual que se hizo con `ESTACIONES_AEMET`. **Sin API key**
+para esta vía (el portal Socrata es de acceso público); la API oficial
+de Meteocat (`apidocs.meteocat.gencat.cat`) sí exige registro para
+tiempo real, pero no hace falta para este histórico. Cubre exactamente
+el mismo hueco que ya resolvían MeteoGalicia/Euskalmet para sus zonas,
+pero para Catalunya — ningún hallazgo así se había verificado antes en
+las 9 pasadas previas.
+
+**Hallazgo verificado con petición HTTP real — SOCIB (Baleares) opera
+una red dedicada de BARÓMETROS, no solo boyas de oleaje.** Confirmado
+en vivo: `https://thredds.socib.es/thredds/catalog/mooring/barometer/catalog.html`
+(`200`) lista varias estaciones reales (`station_sarapita-scb_baro007`,
+`station_santantoni-scb_baro010`, `station_santantoni-scb_baro002`...),
+cada una con datos por niveles `L0` (crudo)/`L1` (procesado) vía THREDDS/
+OPeNDAP (NetCDF), sin API key. Es más específico que las boyas
+meteo-oceánicas genéricas de Sóller/Bahía de Palma ya conocidas por
+búsqueda (esas miden viento/presión/temperatura de forma más genérica).
+**Limitación real, no un problema de esta fuente sino de formato**: a
+diferencia de AEMET/Meteocat (JSON simple), el acceso es NetCDF vía
+OPeNDAP — igual de "no trivial de integrar" que ya se documentó para el
+histórico de Puertos del Estado (ver pasada del 2026-09-15) — necesitaría
+una librería NetCDF o parseo binario propio, no un simple `fetch()+JSON`.
+Anotado como candidato real para Baleares (`palma`, `ciutadella`,
+`formentera`, `calamillor`, `sonbou`, `muro`) pero con esa salvedad de
+formato — no se ha verificado todavía qué estación de las listadas es la
+más cercana a cada uno de esos spots.
+
+**Comprobado y DESCARTADO — RIA (Red de Información Agroclimática de
+Andalucía, IFAPA/Junta de Andalucía), candidata para Golfo de Cádiz**:
+su documentación oficial (confirmada también por el paquete R
+`meteospain`, que replica su API) lista sus variables — temperatura,
+humedad, precipitación, viento, radiación solar — y **no incluye presión
+atmosférica en ningún caso**. No se pudo hacer una petición HTTP directa
+contra `juntadeandalucia.es` desde este entorno (timeout/`ECONNREFUSED`
+en dos intentos, dominio distinto de los ya probados hoy con éxito como
+`transparenciacatalunya.cat` — puede ser un bloqueo puntual de red de
+este runner hacia ese dominio en concreto, no necesariamente de la
+fuente), pero como el motivo del descarte es la ausencia documentada de
+la variable que buscamos (no un problema de acceso), no hace falta
+insistir en verificarlo por HTTP: aunque respondiera, no aportaría
+presión. Golfo de Cádiz (`cadiz`, `conil`, `chipiona`, `puntaumbria`) y
+Canarias (`laspalmas`, `santacruztenerife`, `elmedano`, `corralejo`) se
+quedan, de momento, sin ninguna red autonómica propia con presión
+verificada — igual que ya se concluyó para Cantabria/Asturias en la 9ª
+pasada, dependen de `ESTACIONES_AEMET` (ya cubre Jerez/Huelva para
+Cádiz-Huelva y las 4 islas de Canarias) y del modelo de Open-Meteo.
+
+**Por qué solo propuesta, no implementación** (ver `ROBOT_REGLAS.md`):
+integrar Meteocat o SOCIB tocaría `functions/prevision.js` (arrays de
+estaciones nuevos + función de lectura, mismo patrón que
+`ESTACIONES_AEMET`) e `index.html` (marcador en el mapa) — por encima
+del límite de volumen para aplicar directo, y es un dato que se muestra
+al usuario como fiable. No se ha tocado código.
+
+**Propuesta concreta para el usuario, si se retoma:**
+1. Curar una lista `ESTACIONES_METEOCAT` (código de estación + nombre +
+   coordenadas, sacados del endpoint de metadatos `yqwd-vj5e.json`,
+   verificados uno a uno) para los spots mediterráneos de Girona/
+   Barcelona/Tarragona — mismo patrón que `ESTACIONES_AEMET`.
+2. Para Baleares, evaluar primero si merece la pena el coste de parsear
+   NetCDF/OPeNDAP de SOCIB solo para presión, dado que `ESTACIONES_AEMET`
+   ya cubre Palma/Ibiza/Menorca en tiempo real — SOCIB aportaría sobre
+   todo profundidad histórica específica de barómetro, no necesariamente
+   algo que falte hoy.
+3. Golfo de Cádiz y Canarias: sin acción nueva, ya cubiertos por AEMET
+   nacional (climatologías diarias, mismo pendiente de siempre — hace
+   falta la `AEMET_API_KEY` desde una function, no desde este runner).
+
+**Conclusión de esta pasada**: al contrario que las dos anteriores, sí
+había un hueco real (geográfico, no solo técnico) sin investigar antes.
+Con Mediterráneo (Catalunya) y Baleares ya con al menos una fuente
+institucional identificada y verificada, y Golfo de Cádiz/Canarias
+confirmados como dependientes de AEMET nacional (sin alternativa
+autonómica con presión), el mapa de "presión por zona" queda ahora sí
+completo para las 10 zonas de la rotación de este robot. Recomendación
+para la próxima vez que toque este tema: sin una fuente nueva concreta
+que investigar, valdría la pena que el usuario decida si espaciar esta
+área (como ya sugerían las pasadas 8ª/9ª) o reasignar el hueco a otra
+investigación, como caudal de ríos o mar de fondo.
+
+**Fuentes:**
+[Dades obertes de Catalunya — Dades meteorològiques de la XEMA](https://analisi.transparenciacatalunya.cat/Medi-Ambient/Dades-meteorol-giques-de-la-XEMA/nzvn-apee/data),
+[Meteocat — informació de variables XEMA](https://www.meteo.cat/wpweb/divulgacio/equipaments-meteorologics/estacions-meteorologiques-automatiques/xarxa-destacions-meteorologiques-automatiques-xema/informacio-sobre-les-dades-meteorologiques-de-les-ema-que-es-mostren-al-web/),
+[SOCIB — THREDDS, catálogo de barómetros](https://thredds.socib.es/thredds/catalog/mooring/barometer/catalog.html),
+[SOCIB — datos meteoceánicos](https://www.socib.es/es/que-hacemos/datos-meteoceanicos),
+[IFAPA — Red de Información Agroclimática de Andalucía (RIA)](https://www.juntadeandalucia.es/agriculturaypesca/ifapa/riaweb/web/inicio_estaciones),
+[paquete R meteospain — documentación RIA](https://cran.r-project.org/web/packages/meteospain/vignettes/ria.html).
+
+**Firmado:** robot buscador de fuentes (pasada de presión atmosférica e
+histórico por zona), 2026-09-23 23:20 UTC.
