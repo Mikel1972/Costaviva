@@ -4633,6 +4633,101 @@ II.
 
 **Firmado:** robot de calibración nocturna, 2026-09-22 01:17 UTC.
 
+### 2026-09-23 (pasada nocturna corta — calibración + salud de datos)
+
+**Calibración — decimonoveno punto para las 3 boyas obligatorias, quinto
+punto para 1514 Málaga** (rotación de esta noche: candidata con más
+noches sin repetirse, desde 2026-09-17). Mismo método de siempre: `curl`
+a `poem.puertos.es/portus/StationData` para la altura real, Open-Meteo
+Marine en las coordenadas exactas de cada boya para la altura calculada,
+emparejando por la hora UTC exacta del último dato real de cada boya:
+
+| boya | hora UTC | altura medida | altura calculada | diferencia | % |
+|---|---|---|---|---|---|
+| 2136 Bilbao-Vizcaya | 01:00 | 0.82 m | 1.16 m | +0.34 m | +41.5% |
+| 1117 Gijón | 00:00 | 1.06 m | 1.26 m | +0.20 m | +18.9% |
+| 1101 Pasaia II | 00:00 | 0.82 m | 0.76 m | −0.06 m | −7.3% |
+| 1514 Málaga | 00:00 | 0.24 m | 0.20 m | −0.04 m | −16.7% |
+
+Historial actualizado de la metodología `boya_vs_openmeteo_mismo_punto`:
+
+- **2136 Bilbao-Vizcaya**: 19 puntos, media ≈ **−0.5%** — sigue sin
+  patrón sistemático (10/19 negativos, signo mixto). El +41.5% de hoy es
+  con mar en calma (0.82 m real) — diferencia relativa poco fiable con
+  oleaje tan pequeño, mismo aviso ya documentado otras noches; en
+  términos absolutos (+0.34 m) no es una desviación grande.
+- **1117 Gijón**: 19 puntos, media ≈ **−5.2%** — sigue alternando
+  signo/magnitud pasada a pasada (13/19 negativos), sin patrón sólido.
+- **1101 Pasaia II**: **19 puntos, los 19 con el mismo signo negativo**
+  (media ≈ **−27.5%**) — sigue reforzando, sin ninguna excepción de
+  signo todavía, la propuesta de factor de corrección ya escrita en
+  ROBOT.md el 2026-09-21 01:15 UTC (multiplicar la altura de ola
+  calculada por Open-Meteo en la zona de Pasaia/Guipúzcoa por ~1.29–1.4)
+  — la magnitud de hoy (−7.3%) es la más pequeña de toda la serie,
+  coincide con mar en calma (0.82 m real) igual que el aviso de
+  fiabilidad de porcentaje de arriba; sigue pendiente de que el usuario
+  decida si aplicarla, no se ha tocado ningún código.
+- **1514 Málaga**: 5 puntos (−38.1%, +12.5%, −40.2%, +2.1%, −16.7%), 3 de
+  5 negativos, sin patrón consolidado como el de Pasaia II — mar casi en
+  calma hoy (0.24 m real) también con pct poco fiable.
+- Resto de boyas (1731 Barcelona II, 2246 Villano-Sisargas, 2242 Cabo
+  Peñas, 2548 Cabo de Gata, 2820 Dragonera, SOCIB Bahía de
+  Palma/Canal de Ibiza): sin cambios desde su última pasada, no les
+  tocaba rotación esta noche.
+
+**Ningún factor de corrección nuevo propuesto** — la única propuesta
+activa sigue siendo la de Pasaia II (2026-09-21), reforzada de nuevo por
+el punto de hoy. Para la próxima rotación nocturna, la candidata con más
+noches sin repetirse es **2242 Cabo Peñas** (desde 2026-09-20).
+
+**Salud de datos — séptima noche consecutiva con el mismo patrón de
+dominios bloqueados por la política de red de esta sesión (2026-09-17 a
+hoy), más un hallazgo nuevo real esta noche.** Verificado en vivo con
+`curl`:
+- Las 4 boyas de arriba: `200`, forma `[cabeceras, filas]` correcta,
+  datos reales de la última hora — sin novedad.
+- **`mundaka`** (kostasystem.com): `200`, 84.9 KB JPEG 1024×768 — bien.
+- **`sopelana`** (detectia.net): `200`, 89.2 KB WebP 2464×2056 — bien.
+- **`bakio`, fuente principal (`pyscada.isurki.com`) — hallazgo nuevo**:
+  el TLS handshake completa bien (certificado válido, vence
+  2026-11-23) y la conexión se acepta, pero el servidor **no responde
+  nada a la petición GET** — timeout agotado dos veces (15 s y 30 s) y
+  confirmado con `curl -v` que no es un bloqueo del proxy de esta sesión
+  (no aparece como `connect_rejected` en `.../__agentproxy/status`, a
+  diferencia de los dominios de siempre). En noches anteriores esta
+  misma URL respondía bien (764.9 KB JPEG el 2026-09-21/22), así que
+  parece un problema real y nuevo del lado del proveedor (servidor
+  colgado o muy lento), no de esta sesión. **Severidad baja**: `bakio`
+  ya tiene una reserva automática configurada en
+  `functions/webcam/[slug].js` (`webviewcams.com`, MJPEG) que entra en
+  juego sola si la principal falla — el usuario final probablemente no
+  nota nada. No se ha podido comprobar la reserva esta noche (mismo
+  dominio bloqueado por la política de red de esta sesión que otras
+  noches). Ninguna corrección de código aplicada — no hay URL que
+  cambió ni campo renombrado, es un servidor real sin responder, no algo
+  que este robot pueda arreglar. Si `pyscada.isurki.com` sigue sin
+  responder en la próxima pasada (nocturna o de la rutina semanal),
+  merece subir de severidad.
+- **No se pudo comprobar**: la boya de Nazaré
+  (`monican.hidrografico.pt`), las 4 fuentes de caudal de río
+  (`visor.saichcantabrico.es`, `saih.chj.es`, `saihweb.chsegura.es`,
+  `servizos.meteogalicia.gal`) — las 5 rechazadas por el propio proxy de
+  salida de esta sesión (`connect_rejected`, "gateway answered 403 to
+  CONNECT"), mismo patrón que las últimas seis noches. Se reitera la
+  recomendación de que el usuario revise si el conjunto de dominios
+  permitidos para esta rutina puede ampliarse.
+
+**Resumen de severidad para el usuario**: nada roto de forma confirmada
+en las fuentes ya integradas — severidad media/baja para los 5 dominios
+bloqueados por política de red de esta sesión (sin cambios) y severidad
+baja/nueva para el timeout de `pyscada.isurki.com` (fuente principal de
+la webcam de Bakio), que no afecta al usuario final gracias a la reserva
+automática ya existente, pero merece vigilarse la próxima noche. Sin
+propuesta de factor de corrección nueva — la de Pasaia II sigue
+reforzándose (19/19 negativo, media −27.5%).
+
+**Firmado:** robot de calibración nocturna, 2026-09-23 01:16 UTC.
+
 ---
 
 ## Robot de experiencia de usuario
