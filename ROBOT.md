@@ -6776,3 +6776,68 @@ Fuentes consultadas:
 
 **Firmado:** robot buscador de fuentes (pasada de buenas prácticas de
 otras apps), 2026-09-23 15:38 UTC.
+
+### 2026-09-23 18:45 UTC (pasada buscadora — corrientes marinas por zona, novena pasada)
+
+**Qué se buscó:** la pasada anterior (2026-09-21 18:52 UTC, octava) dejó
+pendiente repetir para **EUSKOOS** y **Galicia** el mismo barrido
+sistemático de "celda válida más cercana a cada spot" ya hecho para
+Gibraltar/South/PLOCAN (2026-09-20) y Lisboa/Ibiza (2026-09-21) — hasta
+ahora esas dos zonas solo se habían calibrado contra un único spot cada
+una (Mundaka y A Guarda), sin comprobar el resto de spots de su costa.
+Petición real al griddap de EMODnet ERDDAP (filtrando `QCflag=1` Y
+`CSPD_QC=1`, ambos "buenos") para los 16 spots vascos (EUSKOOS) y los 11
+spots gallegos (Galicia).
+
+**Hallazgo 1, el mejor de toda la serie — Mundaka a solo 0.6 km.**
+Confirmado en vivo (`time_coverage_end` EUSKOOS = hoy 12:00 UTC): la
+celda real más cercana a Mundaka está a **0.6 km**, mejor que el mejor
+caso anterior (Lisboa/Costa da Caparica, 1.1 km, ver pasada del
+2026-09-21). El resto de la costa vasca también tiene cobertura
+razonable, algo que no se sabía hasta ahora al haber calibrado solo
+Mundaka: Getaria 1.7 km, zumaia 2.6 km, bakio 3.0 km, deba 4.0 km, orio
+4.1 km, ondarroa/pasaia/lekeitio/hondarribia/zarautz/mutriku entre 4.5 y
+4.8 km, plentzia 5.5 km, donostia 5.7 km, sopelana 8.5 km, getxo 12.9 km
+— toda la costa vasca queda dentro de 13 km de una celda válida, la
+cobertura más completa y cercana de las 9 zonas comprobadas hasta ahora.
+
+**Hallazgo 2 — Galicia mejora su mejor caso conocido, pero sigue lejos.**
+La celda real más cercana no es A Guarda (46 km, hallado el 2026-09-18)
+sino **Illas Ons, entre 36 y 65 km según la hora** (la rejilla con datos
+válidos de esta red cambia bastante de una hora a otra — comprobado en
+4 horas del mismo día: 65.2, 38.0, 36.0, 36.0 km). Sigue confirmándose
+que el radar de Galicia solo cubre mar abierto, nunca la franja pegada a
+la costa ni el interior de las rías (Baiona 42.6 km, Cangas 47.0 km,
+Sanxenxo 46.4 km, Corrubedo 38.9 km — ninguno por debajo de los ~36 km
+de Ons) — A Coruña (141 km) y Ribadeo (233 km), los dos spots del norte
+de Galicia, quedan totalmente fuera de esta red.
+
+**Calibración real, 6 puntos nuevos** (`CALIBRACION.jsonl`, `tipo:
+"corriente_radar_hf_vs_openmeteo"`, con `wind_speed_unit=ms` explícito,
+ver el aviso de unidades de la pasada del 2026-09-21): 2 en Mundaka
+(09:00 y 12:00 UTC de hoy) y 4 en Illas Ons (06:00, 09:00, 12:00 y 15:00
+UTC). Mismo patrón ya asentado en las 8 pasadas anteriores — nunca
+coinciden velocidad y dirección a la vez: en Mundaka 12:00 UTC la
+dirección casi coincide (17.6° de diferencia) pero la velocidad real es
+el doble; en Ons 15:00 UTC la dirección casi coincide (6°) pero la
+velocidad real es más de 6 veces la de Open-Meteo. Con esto ya son **29
+puntos en 9 zonas**, ninguno con corrección estable.
+
+**Conclusión — sigue siendo solo propuesta**, no cambio de código
+(tocaría `functions/prevision.js` y es decisión de producto, ver
+`ROBOT_REGLAS.md`): con el barrido de hoy, las 9 zonas de radar HF ya
+tienen su distancia real a spot comprobada de forma sistemática (no solo
+"vivo", sino "a cuántos km de qué spot en concreto"). Mundaka (0.6 km)
+pasa a ser, con diferencia, el mejor candidato de toda la serie para una
+eventual capa de "corriente observada" aparte del modelo — sin que esto
+cambie la recomendación de fondo: mostrarla como observación real
+aparte, nunca como sustituto ni corrección de Open-Meteo, dado que
+ninguna de las 9 zonas muestra relación estable entre radar y modelo.
+
+**Fuentes:**
+[EMODnet Physics ERDDAP — EUSKOOS NRT](https://erddap.emodnet-physics.eu/erddap/info/EUHFR_NRTcurrent_HFR-EUSKOOS-Total/index.html),
+[EMODnet Physics ERDDAP — Galicia NRT](https://erddap.emodnet-physics.eu/erddap/info/EUHFR_NRTcurrent_HFR-Galicia-Total/index.html),
+[Open-Meteo — Marine Weather API docs](https://open-meteo.com/en/docs/marine-weather-api).
+
+**Firmado:** robot buscador de fuentes (pasada de corrientes marinas),
+2026-09-23 18:45 UTC.
