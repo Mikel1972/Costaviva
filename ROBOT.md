@@ -4728,6 +4728,103 @@ reforzándose (19/19 negativo, media −27.5%).
 
 **Firmado:** robot de calibración nocturna, 2026-09-23 01:16 UTC.
 
+### 2026-09-24 (pasada nocturna corta — calibración + salud de datos)
+
+**Calibración — vigésimo punto para las 3 boyas obligatorias, quinto
+punto para 2242 Cabo Peñas** (rotación de esta noche: candidata con más
+noches sin repetirse, desde 2026-09-20). Mismo método de siempre: `curl`
+a `poem.puertos.es/portus/StationData` para la altura real, Open-Meteo
+Marine en las coordenadas exactas de cada boya para la altura calculada,
+emparejando por la hora UTC exacta del último dato real de cada boya:
+
+| boya | hora UTC | altura medida | altura calculada | diferencia | % |
+|---|---|---|---|---|---|
+| 2136 Bilbao-Vizcaya | 01:00 | 1.64 m | 1.52 m | −0.12 m | −7.3% |
+| 1117 Gijón | 00:00 | 1.40 m | 1.30 m | −0.10 m | −7.1% |
+| 1101 Pasaia II | 00:00 | 1.57 m | 0.96 m | −0.61 m | −38.9% |
+| 2242 Cabo Peñas | 01:00 | 1.52 m | 1.44 m | −0.08 m | −5.3% |
+
+Historial actualizado de la metodología `boya_vs_openmeteo_mismo_punto`
+(medias recalculadas sobre todos los puntos reales de `CALIBRACION.jsonl`,
+no aproximadas):
+
+- **2136 Bilbao-Vizcaya**: 20 puntos, media ≈ **−0.8%** — sigue sin
+  patrón sistemático (11/20 negativos, signo mixto).
+- **1117 Gijón**: 20 puntos, media ≈ **−5.3%** — sigue alternando
+  signo/magnitud pasada a pasada (14/20 negativos), sin patrón sólido.
+- **1101 Pasaia II**: **20 puntos, los 20 con el mismo signo negativo**
+  (media ≈ **−28.0%**) — vigésima noche consecutiva sin ninguna
+  excepción de signo, sigue reforzando la propuesta de factor de
+  corrección ya escrita en ROBOT.md el 2026-09-21 01:15 UTC (multiplicar
+  la altura de ola calculada por Open-Meteo en la zona de
+  Pasaia/Guipúzcoa por ~1.29–1.4) — sigue pendiente de que el usuario
+  decida si aplicarla, no se ha tocado ningún código.
+- **2242 Cabo Peñas**: 5 puntos (−25.5%, −25.5%, −14.1%, −13.7%, −5.3%),
+  los 5 con signo negativo (media ≈ **−16.8%**) — empieza a parecer un
+  patrón consistente como el de Pasaia II, aunque con menos historial
+  (5 frente a 20) y una magnitud menor; a vigilar en próximas rotaciones,
+  todavía lejos de los 15 puntos necesarios para proponer nada.
+- Resto de boyas (1731 Barcelona II, 2246 Villano-Sisargas, 2548 Cabo de
+  Gata, 2820 Dragonera, 1514 Málaga, SOCIB Bahía de Palma/Canal de
+  Ibiza): sin cambios desde su última pasada, no les tocaba rotación
+  esta noche.
+
+**Ningún factor de corrección nuevo propuesto** — la única propuesta
+activa sigue siendo la de Pasaia II (2026-09-21), reforzada de nuevo por
+el punto de hoy. Para la próxima rotación nocturna, la candidata con más
+noches sin repetirse es **2548 Cabo de Gata** (desde 2026-09-21).
+
+**Salud de datos — el timeout de `bakio` (`pyscada.isurki.com`)
+reportado anoche se ha resuelto solo; hallazgo nuevo esta noche: la
+política de red de esta sesión bloquea muchos más dominios de webcam de
+los documentados hasta ahora, no solo los 5 de siempre.** Verificado en
+vivo con `curl`:
+- Las 4 boyas de arriba: `200`, forma `[cabeceras, filas]` correcta,
+  datos reales de la última hora — sin novedad.
+- **`bakio` (fuente principal, `pyscada.isurki.com`) — recuperada**:
+  `200`, 764.9 KB JPEG, mismo tamaño que antes del timeout de anoche
+  (2026-09-23) — era un problema puntual del proveedor, no algo que
+  necesitara corrección de código, tal y como se apuntó ayer.
+- **`mundaka`** (kostasystem.com): `200` — bien.
+- **`getxo`** (detectia.net): `200` — bien.
+- **No se pudo comprobar, esta vez con una lista más amplia de la
+  habitual**: `acoruna` (meteogalicia.gal), `valencia`
+  (streaming.comunitatvalenciana.com) y `muro`
+  (apps.socib.es) — las 3 rechazadas por el propio proxy de salida de
+  esta sesión (`connect_rejected`, "gateway answered 403 to CONNECT"),
+  igual que las 5 fuentes ya documentadas otras noches (Nazaré + 4 ríos).
+  Probando también otros dominios usados por `functions/webcam/[slug].js`
+  para confirmar el alcance: `www.cantabria.es`, `s61.ipcamlive.com`,
+  `rswc.tendsys.net` y `www.webviewcams.com` (la reserva de `bakio`)
+  **también bloqueados** por esta misma política — solo
+  `detectia.net`, `kostasystem.com` y `pyscada.isurki.com` (todos
+  proveedores de webcams del País Vasco) resultaron alcanzables esta
+  noche, además de `poem.puertos.es` y `marine-api.open-meteo.com` para
+  la calibración. **No es una fuente rota**: es la propia sesión en la
+  nube la que no puede salir a esos dominios (mismo tipo de bloqueo que
+  ya afecta a Nazaré/los 4 ríos, documentado en `CLAUDE.md` — las
+  Functions de Cloudflare sí tienen red real, esta sesión no). Se
+  reitera con más fuerza la recomendación de que el usuario revise el
+  conjunto de dominios permitidos para esta rutina: con la lista actual,
+  la comprobación real de "salud de datos" de esta pasada nocturna queda
+  limitada casi en exclusiva a las boyas de Puertos del Estado y a las
+  3 webcams del País Vasco, sin poder verificar nunca Galicia,
+  Cantabria, Comunitat Valenciana ni Baleares desde aquí.
+
+**Resumen de severidad para el usuario**: nada roto de forma confirmada
+en las fuentes ya integradas — el timeout de `bakio` de anoche se
+resolvió solo. Severidad media/baja para los dominios bloqueados por la
+política de red de esta sesión, que hoy resultó ser una lista bastante
+más larga de la que se venía reportando — recomendación reiterada (y
+reforzada) de ampliarla si se quiere que esta pasada nocturna pueda
+comprobar de verdad la salud de las webcams fuera del País Vasco. Sin
+propuesta de factor de corrección nueva — la de Pasaia II sigue
+reforzándose (20/20 negativo, media −28.0%), y Cabo Peñas (5/5 negativo,
+media −16.8%) empieza a apuntar en la misma dirección con menos
+historial todavía.
+
+**Firmado:** robot de calibración nocturna, 2026-09-24 01:15 UTC.
+
 ---
 
 ## Robot de experiencia de usuario
