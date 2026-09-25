@@ -2117,6 +2117,23 @@ function mareaParaSpotUsuario(horas, alturas) {
   };
 }
 
+// Corrección de oleaje en Gipuzkoa — copia del mismo criterio de
+// functions/prevision.js (el repo duplica helpers a propósito, no hay build
+// step para compartir código). Ver el comentario largo de allí para el
+// porqué: 22 puntos de calibración contra la boya 1101 Pasaia II, los 22 con
+// la altura calculada por debajo de la medida, media −28.2%; factor = la
+// MEDIANA de los 22 (1.381), no la media, por un valor suelto de 1.98.
+// Se decide por coordenadas para que valga igual en spots fijos y en
+// ubicaciones personalizadas. Ondarroa queda fuera a propósito (es Bizkaia,
+// y por ese lado la boya de referencia no muestra sesgo).
+const CAJA_OLEAJE_GIPUZKOA = { latMin: 43.20, latMax: 43.50, lonMin: -2.40, lonMax: -1.70 };
+const FACTOR_OLEAJE_GIPUZKOA = 1.38;
+function factorOleaje(lat, lon) {
+  const c = CAJA_OLEAJE_GIPUZKOA;
+  const dentro = lat >= c.latMin && lat <= c.latMax && lon >= c.lonMin && lon <= c.lonMax;
+  return dentro ? FACTOR_OLEAJE_GIPUZKOA : 1;
+}
+
 async function datosAmbientalesPunto(lat, lon) {
   const params = `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&forecast_days=1`;
   // La marea pide forecast_days=2, no 1 (2026-09-19, pedido explícito del
@@ -2138,7 +2155,11 @@ async function datosAmbientalesPunto(lat, lon) {
   let idx = horas.findIndex((h) => h.startsWith(ahoraISO));
   if (idx === -1) idx = 0;
   const idxFin = Math.min(idx + 12, horas.length - 1);
-  const alturasVentana = (marino.hourly?.wave_height || []).slice(idx, idxFin + 1).filter((v) => v != null);
+  const factorOla = factorOleaje(lat, lon);
+  const alturasVentana = (marino.hourly?.wave_height || [])
+    .slice(idx, idxFin + 1)
+    .filter((v) => v != null)
+    .map((v) => v * factorOla);
 
   // idxTiempo: índice de la MISMA hora exacta (horas[idx]) pero dentro
   // de tiempo.hourly.time — una respuesta de una API distinta (Forecast,
