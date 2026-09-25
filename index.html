@@ -2597,7 +2597,20 @@ const WEBCAMS_HLS = {
   // esa imagen fija se queda igualmente en functions/webcam/[slug].js
   // (WEBCAMS.sopelana) como dato de reserva, sin usarse para pintar nada
   // mientras esta entrada exista aquí.
-  sopelana: "https://s61.ipcamlive.com/streams/3d0d8zpvutondjmwg/stream.m3u8",
+  // Stream MOVIDO, corregido 2026-09-25 (lo reportó el usuario: "sopelana
+  // te da error y está operativa"). El alias de IPCamLive del ayuntamiento
+  // cambió: antes s61/3d0d8zpvutondjmwg, ahora s153/99eod1rsuvg7yjnvk. La
+  // URL vieja devolvía 404 puro, así que el vídeo llevaba caído desde el
+  // 2026-09-21 mientras la imagen fija de AZTI seguía perfectamente bien —
+  // de ahí la contradicción entre "marcada en rojo" y "yo la veo funcionar".
+  // La URL nueva se sacó de la propia web del ayuntamiento
+  // (sopela.eus/webcam-olas/), que embebe ipcamlive.com/player/player.php
+  // ?alias=673c8a5893eaf; ese player revela el servidor y el streamid
+  // reales. IMPORTANTE para la próxima vez: en IPCamLive, tanto el número
+  // de servidor (sXX) como el streamid pueden cambiar sin aviso — no
+  // asumir que una URL guardada sigue siendo válida, resolver siempre
+  // desde el alias del player.
+  sopelana: "https://s153.ipcamlive.com/streams/99eod1rsuvg7yjnvk/stream.m3u8",
   hondarribia: "https://58f14c0895a20.streamlock.net/camaramar/GIP_hondarribia_169.stream/playlist.m3u8",
   // Zurriola (playa expuesta a mar abierto), no La Concha/Ondarreta (bahía
   // resguardada, mucho menos representativa del estado real del mar).
