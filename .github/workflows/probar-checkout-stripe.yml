@@ -92,7 +92,9 @@ jobs:
           # Diagnóstico: el código HTTP y el cuerpo. Es seguro imprimirlo — el
           # endpoint ya no reenvía nada del proveedor, solo mensajes propios.
           echo "HTTP $(cat /tmp/codigo.txt)"
-          echo "Cuerpo: $(head -c 400 /tmp/checkout.json)"
+          # Solo el principio: la URL completa lleva el id de la sesión de pago
+          # y no hace falta en el log.
+          echo "Respuesta: $(head -c 60 /tmp/checkout.json)..."
 
           # node solo extrae dos datos; el texto del resumen se arma en bash,
           # para no tener que escribir saltos de línea dentro de un literal de
@@ -100,8 +102,14 @@ jobs:
           URL=$(node -e 'try{const r=JSON.parse(require("fs").readFileSync("/tmp/checkout.json","utf8"));console.log(String(r.url||""))}catch(e){console.log("")}')
           ERROR=$(node -e 'try{const r=JSON.parse(require("fs").readFileSync("/tmp/checkout.json","utf8"));console.log(String(r.error||"respuesta ilegible"))}catch(e){console.log("respuesta ilegible")}')
 
+          # OJO: la URL NO tiene por qué ser checkout.stripe.com. Esta cuenta
+          # tiene dominio propio de Checkout configurado (pay.costaviva.org),
+          # así que lo que identifica una sesión de pago válida es el patrón
+          # "/c/pay/cs_" — comprobarlo por el dominio daba un falso negativo
+          # con el checkout funcionando perfectamente (pasó en la primera
+          # ejecución de este workflow, 2026-09-25).
           case "$URL" in
-            https://checkout.stripe.com*)
+            https://*/c/pay/cs_*)
               {
                 echo "## El checkout funciona"
                 echo ""
