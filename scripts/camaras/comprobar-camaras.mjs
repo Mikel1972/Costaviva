@@ -75,8 +75,8 @@ const UMBRAL_FALLOS_SEGUIDOS = 2; // fallos/frame plano seguidos antes de mostra
 // mano, igual que ya hace SPOTS_VIDEO en scripts/turbidez/medir-turbidez.mjs.
 const WEBCAMS_VIDEO = {
   // Playa de Berria (Santoña, Watsay Surf School) — ver el comentario
-  // igual en index.html (WEBCAMS_HLS).
-  santona: "https://s110.ipcamlive.com/streams/6erjzdw9wypirqvta/stream.m3u8",
+  // igual en index.html (WEBCAMS_HLS). Alias movido, corregido 2026-09-25.
+  santona: "https://s123.ipcamlive.com/streams/7bz57yv0sddgbiwei/stream.m3u8",
   // Sopela (ayuntamiento, IPCamLive) — ver el comentario igual en
   // index.html (WEBCAMS_HLS). Mismo motivo para excluirla del bucle de
   // imagen fija más abajo (skipPorVideo): lo que se comprueba tiene que

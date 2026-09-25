@@ -7383,3 +7383,78 @@ encontró ninguna fuente nueva utilizable que proponer o integrar.
 
 **Firmado:** robot buscador de fuentes (pasada de mareas y oleaje),
 2026-09-25 14:15 UTC.
+
+### 2026-09-25 15:03 UTC (robot de cámaras caídas — primera pasada)
+
+**9 cámaras en rojo, agrupadas por proveedor antes de tocar nada** (regla
+"Cámara caída: primero descarta que se haya MOVIDO" de `ROBOT_REGLAS.md`):
+
+**Caída de proveedor, no investigadas una a una (6 de las 9):**
+- `comillas`, `suances`, `sanvicente` — las tres en `www.cantabria.es`.
+  Ahora mismo ni siquiera responden: timeout puro a los 15s en las tres
+  (antes `http_502`, 48 fallos seguidos cada una — ha empeorado, sigue
+  siendo su lado, no el nuestro).
+- `calamillor`, `sonbou`, `muro` — las tres en `apps.socib.es`. El
+  endpoint que consultamos sí responde (`307`, redirige a
+  `images.socib.es/convert/...`), pero ese host de destino da timeout
+  puro. Es la misma caída para las tres (mismo patrón de redirección,
+  mismo destino roto), 48 fallos seguidos cada una.
+
+Ninguna de las 6 necesita ninguna URL nueva: el problema no está en
+nuestra URL guardada, está en la infraestructura del proveedor. No hay
+nada que aplicar — si sigue igual en la próxima pasada, revisar de nuevo
+sin repetir toda esta comprobación palabra por palabra.
+
+**`sopelana` — ya arreglada por el commit anterior de este mismo robot,
+solo pendiente de que el monitor se entere.** El alias IPCamLive nuevo
+(`s153/99eod1rsuvg7yjnvk`) ya estaba aplicado en los 2 sitios donde vive
+(`index.html`, `functions/webcam/[slug].js`) desde el commit `ae4153b` de
+hoy. Verificado en esta pasada: `200` real, `EXT-X-MEDIA-SEQUENCE`
+avanzando de 28907 a 28909 entre dos lecturas separadas 6s. `camara_estado`
+todavía la marca roja (`sin_respuesta`, 24 fallos, última señal
+2026-09-21) porque `camaras-salud.yml` no ha vuelto a pasar desde que se
+aplicó el fix (cada 30 min) — se espera que se ponga verde sola en la
+próxima pasada de salud, sin que haga falta tocar nada más.
+
+**`santona` — corregida esta pasada, mismo patrón que Sopelana (alias de
+IPCamLive movido).** La URL guardada (`s110/6erjzdw9wypirqvta`) daba `404`
+puro. La web de Watsay Surf School (`watsaysurfschool.com/webcam/`) sigue
+embebiendo IPCamLive, pero con un alias distinto
+(`ipcamlive.com/player/player.php?alias=webcamberria`); resolviendo ese
+player salió el servidor/streamid de hoy (`s123/7bz57yv0sddgbiwei`).
+Verificado: snapshot con `Last-Modified` de hace segundos, y mirando el
+fotograma con `Read` se ve la playa de Berria de verdad (dunas, un
+surfista cogiendo una ola, gente paseando perros) — sitio correcto, no
+otra cámara. Aplicado en los 2 sitios donde vivía la URL vieja
+(`index.html` y `scripts/camaras/comprobar-camaras.mjs`, encontrados con
+`Grep` por el streamid, no por el slug) y validado con
+`node --check` sobre el módulo JS extraído de `index.html`. Commit y push
+directos a `main`, como permite la regla para una corrección trivial de
+URL movida.
+
+**`deba` — investigada, sin sustituta que aplicar, no es un caso de "se
+ha movido".** La URL guardada
+(`58f14c0895a20.streamlock.net/camaramar/GIP_deba_169.stream/playlist.m3u8`)
+da `404` en repetidos intentos (con y sin `Referer`). Comprobado que no es
+una caída del proveedor entero: las cámaras hermanas del mismo servidor
+(`hondarribia`, `zarautz`, `getaria`, `mutriku`) responden `200`
+perfectamente ahora mismo. Comprobada la página oficial de la Diputación
+(`gipuzkoa.eus/es/web/hondartzak/webcams/deba`, HTML crudo vía `curl`, no
+solo `WebFetch`): **sigue embebiendo exactamente esa misma URL** — no hay
+ningún alias nuevo que resolver, el dueño no la ha movido, así que el 404
+es la cámara/codificador real caído en origen, algo que no podemos
+arreglar desde aquí. Probadas variantes de nombre por si acaso
+(`GIP_deba_hd`, `GIP_deba`, `GIP_deba2`, `GIP_deba_720`) — las 4, `404`.
+Se deja tal cual (última señal real: 2026-09-21T02:05 UTC, 25 fallos
+seguidos) para que la próxima pasada no repita esta búsqueda a ciegas —
+solo merece revisarse de nuevo si cambia el motivo del fallo en
+`camara_estado` (p.ej. pasa a `404` con las hermanas también caídas, señal
+de que sí se ha movido el servidor entero).
+
+**Resumen de lo aplicado**: 1 URL corregida (`santona`), 1 ya corregida
+por un commit anterior y solo pendiente de que el monitor la vea
+(`sopelana`), 6 descartadas como caída de proveedor (sin acción posible
+desde aquí), 1 sin sustituta encontrada y documentada para no repetir la
+búsqueda (`deba`).
+
+**Firmado:** robot de cámaras caídas, 2026-09-25 15:03 UTC.
