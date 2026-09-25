@@ -61,7 +61,11 @@ jobs:
         run: |
           git config user.name "Claude (robot Costaviva)"
           git config user.email "actions@github.com"
-          git add assets/marketing/
+          # rotacion-zonas.json es el estado que hace que los ciclos de zona
+          # sean COMPLETOS (ver ZONAS en generar-post-instagram.mjs). Sin
+          # comitearlo, cada pasada empezaría de cero y publicaría siempre la
+          # primera zona. Añadido 2026-09-25 junto con la rotación.
+          git add assets/marketing/ scripts/marketing/rotacion-zonas.json
           # Bug real visto en producción 2026-09-19: si se relanza el robot
           # el mismo día para el mismo spot/especie y los datos no han
           # cambiado (p.ej. una prueba manual poco después de la pasada
