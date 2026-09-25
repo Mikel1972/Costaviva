@@ -2240,6 +2240,19 @@ async function cargarSpotsPersonalizados() {
 
   spotsPersonalizados.forEach((s) => { s.indice = indiceMar(s); crearMarcadorSpot(s); });
 
+  // Esta función reemplaza los objetos de spotsPersonalizados por otros
+  // nuevos. Como spotAbiertoActual guarda una REFERENCIA al objeto (no su
+  // slug), un panel abierto se quedaría apuntando al objeto viejo y seguiría
+  // enseñando los datos con los que se abrió, mientras el marcador del mapa
+  // ya muestra los nuevos. Antes no se notaba porque esta función solo
+  // corría al cargar la página; desde que el refresco horario la llama
+  // (2026-09-25), sí puede pasar con el panel abierto. Se vuelve a apuntar
+  // al objeto nuevo del mismo spot.
+  if (spotAbiertoActual && spotAbiertoActual.esUsuario) {
+    const reemplazo = spotsPersonalizados.find((s) => s.slug === spotAbiertoActual.slug);
+    if (reemplazo) spotAbiertoActual = reemplazo;
+  }
+
   // El índice de mar de un punto personalizado no depende de /prevision
   // (que no lo conoce) — se calcula aparte con una llamada directa a
   // Open-Meteo, una por spot. Se hace después de pintar el marcador
@@ -3361,6 +3374,23 @@ map.whenReady(async () => {
   // índice calculado con datos viejos sin que nada lo avisara).
   setInterval(async () => {
     await actualizarDesdeBackend();
+    // Las ubicaciones personalizadas NO salen de /prevision (que no las
+    // conoce): sus datos los pide cargarSpotsPersonalizados() con una
+    // llamada propia a Open-Meteo. Hasta el 2026-09-25 esa función solo se
+    // llamaba al cargar la página, así que un spot personalizado se quedaba
+    // con los datos del momento en que se abrió la app, para siempre.
+    //
+    // Bug real reportado por el usuario: en Lemoiz vio "100% nublado" con un
+    // 30% real. La nubosidad de ese punto pasó ese mismo día de 100% (13:00)
+    // a 11% (15:00) — con la página abierta desde la mañana, se seguía
+    // mostrando el valor de la mañana. Los ÍNDICES sí pasaban a S/D por la
+    // vigencia, pero nubosidad/viento/lluvia se pintan directos, sin ese
+    // guardarraíl, así que salían viejos y con aspecto de actuales.
+    //
+    // Es el mismo bug que se corrigió el 2026-09-12 para los spots fijos;
+    // esta rama se quedó sin arreglar. La función es idempotente (ya quita
+    // sus marcadores antes de repintar), así que llamarla aquí es seguro.
+    await cargarSpotsPersonalizados();
     refrescarIndicesVisibles();
     comprobarAvisoRayos();
   }, VIGENCIA_MAX_MS);
