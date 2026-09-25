@@ -154,6 +154,43 @@ export const WEBCAMS = {
   calamillor: "https://apps.socib.es/beamon/api/image_access/view/clm/clm/c01/latest/latest/thumbnail/",
   sonbou: "https://apps.socib.es/beamon/api/image_access/view/snb/snb/c01/latest/latest/thumbnail/",
   muro: "https://apps.socib.es/beamon/api/image_access/view/muro/muro/c01/latest/latest/thumbnail/",
+
+  // SkylineWebcams (proveedor nuevo en el repo) — snapshot JPEG directo, sin
+  // token ni cabeceras especiales. Encontradas por el robot buscador de
+  // fuentes el 2026-09-25 (zona Comunidad Valenciana y Murcia) e integradas
+  // ese mismo día por la regla "Cámara con mar a la vista" de
+  // ROBOT_REGLAS.md. Águilas era uno de los 2 únicos spots de Murcia sin
+  // ninguna cámara.
+  //
+  // Las 4 candidatas se miraron una a una antes de elegir. El orden NO es el
+  // que propuso el robot (proponía la del puerto deportivo como principal,
+  // por "mejor composición"): para esta app lo que importa es poder leer el
+  // estado del mar, y el agua de una marina está siempre en calma detrás del
+  // espigón, así que no dice nada del mar real. Va primero la de la bahía.
+  //
+  // DESCARTADA a propósito: live911.jpg ("Águilas", panorámica). Es una
+  // vista de los tejados de la ciudad con el mar como franja lejana al
+  // fondo — no se puede leer el estado del agua, que es justo el caso que
+  // ROBOT_REGLAS.md excluye. No añadirla como reserva "por si acaso".
+  //
+  // Limitación conocida y aceptada: las 3 son de 344x193 px, bastante menos
+  // que el resto de cámaras del repo (SkylineWebcams las regenera desde su
+  // propio vídeo, no es la resolución nativa). Se integran igual porque la
+  // alternativa era dejar Águilas sin ninguna cámara. El vídeo HLS real de
+  // este proveedor exige un token de sesión que cambia en cada carga, así
+  // que no es integrable sin un proxy propio (mismo bloqueo ya documentado
+  // para rtsp.me y tendsys.net).
+  aguilas: [
+    // Bahía de Levante: bahía entera, playa, orilla y veleros fondeados —
+    // la única de las 4 en la que se ve mar abierto de verdad.
+    "https://cdn.skylinewebcams.com/live5963.jpg",
+    // Águilas Yacht Club: mar abierto en la mitad izquierda del encuadre.
+    // Confirmada de forma cruzada con la web del Club Náutico de Águilas.
+    "https://cdn.skylinewebcams.com/live260.jpg",
+    // Puerto deportivo: marina y castillo al fondo, con algo de mar arriba
+    // a la izquierda.
+    "https://cdn.skylinewebcams.com/live1448.jpg",
+  ],
 };
 
 // Busca una subsecuencia de bytes dentro de un Uint8Array a partir de
