@@ -1593,6 +1593,23 @@ async function identificarFotoDesdeArchivo(file) {
       body: JSON.stringify({ imagenBase64, tipoMime: "image/jpeg" }),
     });
     const resultado = await resp.json();
+
+    // La identificación por IA es una AYUDA opcional, no un requisito para
+    // registrar una captura — la foto ya está añadida al formulario unas
+    // líneas más arriba. Así que cuando el servicio no está disponible
+    // (sin saldo, saturado o sin configurar; ver clasificarFalloProveedor()
+    // en functions/identificar-captura.js) esto NO es un error de la app:
+    // se avisa en tono neutro y se invita a rellenar a mano. Añadido
+    // 2026-09-25 tras el incidente real del 2026-09-24, en el que se
+    // mostraba el error de facturación del proveedor en crudo.
+    const NO_DISPONIBLE = ["sin_credito", "saturado", "sin_configurar"];
+    if (!resp.ok && NO_DISPONIBLE.includes(resultado.codigo)) {
+      // "info" (ámbar), no "error" (rojo): las únicas clases reales son
+      // error/ok/info, y .mensaje es display:none sin una de ellas.
+      mensajeEl.className = "mensaje info";
+      mensajeEl.textContent = `ℹ️ ${resultado.error || "La identificación automática no está disponible ahora mismo."} La foto ya está añadida: escribe la especie y la talla a mano y guarda la captura con normalidad.`;
+      return;
+    }
     if (!resp.ok) throw new Error(resultado.error || `HTTP ${resp.status}`);
 
     if (resultado.especie) aplicarEspecieIdentificada(resultado.especie);

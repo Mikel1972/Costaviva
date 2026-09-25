@@ -155,12 +155,35 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           AREA: ${{ steps.area.outputs.area }}
         run: |
+          SALIDA_CLAUDE=/tmp/claude-salida.log
           rm -f /tmp/robot-informe.txt
           claude -p "Eres el robot de investigación/auditoría de datos de Costaviva (repo Costaviva), ejecutándote como una pasada programada más (no la rutina nocturna principal, esta es la de búsqueda de fuentes, 4 veces al día). Sigue ESTRICTAMENTE ROBOT_REGLAS.md antes de tocar nada: nunca inventes un dato ni una URL; si vas a tocar más de 3 ficheros o ~80 líneas en total, o cualquier fichero de functions/ o supabase/, NO lo apliques directo — proponlo como texto en ROBOT.md en vez de commitear. Si existe un fichero ROBOT_PAUSADO en la raíz del repo, no escribas nada (ni commits ni ramas), solo lee y para ahí. Tarea de esta pasada: investiga $AREA. Usa WebSearch para encontrar fuentes reales; si encuentras algo verificable con una petición HTTP real, verifícalo antes de proponerlo o integrarlo. Añade siempre una entrada nueva fechada (fecha y hora UTC de hoy) a ROBOT.md resumiendo qué buscaste y qué encontraste, incluso si no hay nada nuevo (en ese caso dilo explícitamente: 'sin novedades esta pasada'). Si hiciste cambios que caen dentro de los límites de ROBOT_REGLAS.md para aplicar directo, haz commit y push a main tú mismo con git (usa git add/commit/push; el remoto y las credenciales ya están configurados en este runner) firmando igual que las entradas anteriores de ROBOT.md. Al terminar, escribe un resumen de 2 a 4 frases en español, sin jerga, de qué hiciste en esta pasada (o exactamente 'Sin novedades esta pasada.' si no encontraste nada) en el fichero /tmp/robot-informe.txt — se usa para el informe diario del repo." \
             --dangerously-skip-permissions \
             --model claude-sonnet-5 \
             --max-turns 60 \
-            --allowedTools "Bash,Read,Write,Edit,Grep,Glob,WebSearch,WebFetch"
+            --allowedTools "Bash,Read,Write,Edit,Grep,Glob,WebSearch,WebFetch" > "$SALIDA_CLAUDE" 2>&1 || CODIGO=$?
+          # Guardarraíl de saldo (añadido 2026-09-25, pedido explícito del
+          # usuario: "asegúrate que cuando no hay saldo nada se rompe"). El
+          # 2026-09-24 la cuenta de Anthropic se quedó sin saldo y cada
+          # workflow lo manifestó de una forma distinta y engañosa: este tipo
+          # de pasada moría en ~20s con un rojo indistinguible de un bug real,
+          # y las que llevan continue-on-error salían en VERDE sin haber hecho
+          # nada. Un problema de facturación no es un fallo del repo: se avisa
+          # con ::warning:: nombrando la causa, se deja dicho en el fichero de
+          # informe, y se sale en verde para no disparar falsas alarmas.
+          CODIGO=${CODIGO:-0}
+          cat "$SALIDA_CLAUDE" || true
+          if [ "$CODIGO" -ne 0 ] && grep -qiE "credit balance is too low|purchase credits" "$SALIDA_CLAUDE"; then
+            echo "::warning::Sin saldo en ANTHROPIC_API_KEY: esta pasada no se ha ejecutado. No es un fallo del repo ni de la tarea — recargar saldo en Plans & Billing de Anthropic."
+            echo "No ejecutada: la ANTHROPIC_API_KEY se ha quedado sin saldo, así que esta pasada no ha podido hacer nada. No es un fallo del repo." > /tmp/robot-informe.txt
+            {
+              echo "### Pasada no ejecutada: sin saldo de API"
+              echo "La \`ANTHROPIC_API_KEY\` no tiene saldo, así que esta pasada no ha hecho nada."
+              echo "Nada que arreglar en el repo — hay que recargar saldo en Plans & Billing de Anthropic."
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          exit "$CODIGO"
 
       # Ya NO publica su propio resumen en el Issue "Informe diario" (quitado
       # el 2026-09-20, pedido explícito del usuario: le llegaba el informe
