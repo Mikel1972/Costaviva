@@ -20,6 +20,49 @@
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
 
+// Degradación cuando la IA no está disponible (añadido 2026-09-25, pedido
+// explícito del usuario: "asegúrate que cuando no hay saldo nada se
+// rompe"). El 2026-09-24 la cuenta de Anthropic se quedó sin saldo y este
+// endpoint devolvía un 502 con el texto CRUDO del proveedor — quien subía
+// la foto de su captura veía en pantalla "Your credit balance is too
+// low..." junto al request_id interno. Dos problemas en uno: una
+// experiencia rota por un motivo que no es asunto suyo, y una fuga de
+// detalle interno de infraestructura.
+//
+// A partir de ahora el fallo se CLASIFICA y nunca se reenvía el cuerpo del
+// proveedor al cliente: se devuelve un motivo legible y un `codigo` estable
+// para que el frontend (diario.html) y el smoke test puedan distinguir "la
+// IA no está disponible ahora mismo" (degradación esperada, se rellena a
+// mano) de un fallo real del endpoint. Identificar la foto es una ayuda
+// opcional: la captura se guarda igual sin ella, así que esto nunca debe
+// presentarse como un error de la app.
+function clasificarFalloProveedor(status, textoCrudo) {
+  let tipo = "", mensajeProveedor = "";
+  try {
+    const cuerpo = JSON.parse(textoCrudo);
+    tipo = cuerpo?.error?.type || "";
+    mensajeProveedor = cuerpo?.error?.message || "";
+  } catch (e) {
+    mensajeProveedor = "";
+  }
+  const dice = (t) => mensajeProveedor.toLowerCase().includes(t);
+
+  // Saldo agotado. Anthropic lo devuelve como invalid_request_error (400),
+  // no como un 402/403, así que hay que reconocerlo por el mensaje — un 400
+  // a secas sí sería un fallo nuestro (imagen mal formada, etc.).
+  if (dice("credit balance") || dice("billing") || dice("purchase credits")) {
+    return { status: 503, codigo: "sin_credito",
+      error: "La identificación automática está sin servicio ahora mismo." };
+  }
+  // Límite de peticiones o modelo saturado: temporal, se reintenta luego.
+  if (status === 429 || status === 529 || tipo === "overloaded_error" || tipo === "rate_limit_error") {
+    return { status: 503, codigo: "saturado",
+      error: "La identificación automática está saturada ahora mismo; inténtalo en unos minutos." };
+  }
+  return { status: 502, codigo: "fallo_proveedor",
+    error: "La identificación automática ha fallado." };
+}
+
 function json(status, obj) {
   return new Response(JSON.stringify(obj), { status, headers: { "content-type": "application/json" } });
 }
@@ -35,7 +78,12 @@ export async function onRequestPost(context) {
   if (!verifResp.ok) return json(401, { error: "sesión no válida" });
 
   if (!context.env.ANTHROPIC_API_KEY) {
-    return json(500, { error: "función no configurada todavía (falta ANTHROPIC_API_KEY)" });
+    // 503 + codigo, no 500: para quien usa la app es exactamente el mismo
+    // caso que el saldo agotado (la ayuda no está, la captura se guarda a
+    // mano igual), y el smoke test lo trata igual.
+    console.error("identificar-captura: falta ANTHROPIC_API_KEY en el entorno");
+    return json(503, { codigo: "sin_configurar", disponible: false,
+      error: "La identificación automática no está configurada." });
   }
 
   let cuerpo;
@@ -80,7 +128,14 @@ Responde ÚNICAMENTE con el JSON, sin texto antes ni después:
         ],
       }),
     });
-    if (!resp.ok) throw new Error(`Anthropic HTTP ${resp.status}: ${await resp.text()}`);
+    if (!resp.ok) {
+      const textoCrudo = await resp.text();
+      // El cuerpo del proveedor se queda SOLO en el log del Worker (para
+      // poder diagnosticar), nunca viaja al cliente.
+      console.error(`identificar-captura: Anthropic HTTP ${resp.status}: ${textoCrudo}`);
+      const c = clasificarFalloProveedor(resp.status, textoCrudo);
+      return json(c.status, { codigo: c.codigo, disponible: false, error: c.error });
+    }
     const datos = await resp.json();
     const textoRespuesta = datos.content?.[0]?.text || "{}";
     const match = textoRespuesta.match(/\{[\s\S]*\}/);
@@ -93,6 +148,10 @@ Responde ÚNICAMENTE con el JSON, sin texto antes ni después:
       confianza: resultado.confianza || null,
     });
   } catch (e) {
-    return json(502, { error: String(e) });
+    // Fallo de red/parseo por nuestro lado: mismo criterio, el detalle al
+    // log y al cliente solo algo que pueda leer sin alarmarse.
+    console.error(`identificar-captura: fallo inesperado: ${String(e)}`);
+    return json(502, { codigo: "fallo_proveedor", disponible: false,
+      error: "La identificación automática ha fallado." });
   }
 }

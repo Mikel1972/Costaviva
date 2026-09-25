@@ -59,12 +59,35 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
+          SALIDA_CLAUDE=/tmp/claude-salida.log
           rm -f /tmp/robot-informe.txt
           claude -p "Eres el robot de patrones de uso de Costaviva (repo Costaviva), pasada semanal. Objetivo, pedido explícito del usuario: entender qué usa de verdad la gente de la app para poder ofrecer mejor servicio y para decidir qué rediseñar/simplificar/quitar en base a uso real, nunca a intuición. Sigue ESTRICTAMENTE ROBOT_REGLAS.md antes de tocar nada: nunca inventes un dato; si existe un fichero ROBOT_PAUSADO en la raíz del repo, no escribas nada, solo lee y para ahí. REGLA ESPECIAL PARA ESTE ROBOT, más estricta que las demás: NUNCA implementes ningún cambio de producto/UI/frontend por tu cuenta, bajo ningún argumento — tu único trabajo es proponer en ROBOT.md, la decisión es siempre del usuario. No tienes Edit ni Write sobre ficheros del repo salvo ROBOT.md al final, como se indica abajo. Cómo consultar los datos: usa Bash con curl contra \$SUPABASE_URL (https://imncbmizxkorotpeisic.supabase.co), cabeceras 'apikey: \$SUPABASE_SERVICE_ROLE_KEY' y 'Authorization: Bearer \$SUPABASE_SERVICE_ROLE_KEY' (bypassa RLS, target de LECTURA únicamente, nunca escribas ni borres nada con esta key) — por ejemplo: /rest/v1/eventos_uso?select=tipo,user_id,creado_en, /rest/v1/capturas?select=especie,tecnica,creado_en, /rest/v1/salidas_pesca?select=tipo_salida,spot_slug,creado_en, /rest/v1/spots_favoritos?select=spot_slug,spot_usuario_id, /rest/v1/perfiles?select=id,creado_en,aprobado (cuenta cuántos hay, no leas nada más sensible de esa tabla). Usa jq o node para agregar (cuántos eventos de cada tipo, cuántos usuarios DISTINTOS por tipo, especies/técnicas más comunes, spots más visitados/favoritos, cuántos perfiles llevan más de 7 días sin ninguna fila en eventos_uso ni capturas ni salidas_pesca — señal de abandono real). Compara con qué funciones existen de verdad en el código (Grep sobre index.html/diario.html/alarma.html/grupos.html/suscripcion.html si hace falta ver qué hace cada tipo de evento) antes de proponer nada, para no proponer quitar algo que ya no existe o mal etiquetar una función. Si eventos_uso tiene muy pocos datos todavía (es nuevo, se añadió el 2026-09-17), dilo explícitamente y no inventes patrones de una muestra minúscula — en ese caso limítate a confirmar que los datos que hay tienen pinta correcta y que la recogida funciona. Añade siempre una entrada nueva fechada (fecha y hora UTC de hoy) a ROBOT.md (nueva sección 'Robot de patrones de uso' si no existe todavía) con: qué datos miraste (números concretos, nunca vagos), 2-4 propuestas concretas y justificadas con esos números (ej. 'la capa de batimetría la ha usado 1 de 40 usuarios activos en 4 semanas, considerar quitarla del menú principal y dejarla en un submenú avanzado' — nunca una propuesta sin el dato real detrás), y qué NO te dio tiempo a mirar esta pasada. Si de verdad no hay nada que proponer (muy pronto, datos insuficientes, todo parece sano), dilo así de claro, no rellenes con propuestas débiles. Haz commit y push tú mismo a main con git SOLO de ese cambio a ROBOT.md (el remoto y las credenciales ya están configurados en este runner) — nunca cambies ningún otro fichero del repo. Al terminar, escribe un resumen de 2 a 4 frases en español, sin jerga, de qué encontraste en esta pasada en el fichero /tmp/robot-informe.txt — se usa para el informe diario del repo." \
             --dangerously-skip-permissions \
             --model claude-sonnet-5 \
             --max-turns 30 \
-            --allowedTools "Bash,Read,Write,Grep,Glob"
+            --allowedTools "Bash,Read,Write,Grep,Glob" > "$SALIDA_CLAUDE" 2>&1 || CODIGO=$?
+          # Guardarraíl de saldo (añadido 2026-09-25, pedido explícito del
+          # usuario: "asegúrate que cuando no hay saldo nada se rompe"). El
+          # 2026-09-24 la cuenta de Anthropic se quedó sin saldo y cada
+          # workflow lo manifestó de una forma distinta y engañosa: este tipo
+          # de pasada moría en ~20s con un rojo indistinguible de un bug real,
+          # y las que llevan continue-on-error salían en VERDE sin haber hecho
+          # nada. Un problema de facturación no es un fallo del repo: se avisa
+          # con ::warning:: nombrando la causa, se deja dicho en el fichero de
+          # informe, y se sale en verde para no disparar falsas alarmas.
+          CODIGO=${CODIGO:-0}
+          cat "$SALIDA_CLAUDE" || true
+          if [ "$CODIGO" -ne 0 ] && grep -qiE "credit balance is too low|purchase credits" "$SALIDA_CLAUDE"; then
+            echo "::warning::Sin saldo en ANTHROPIC_API_KEY: esta pasada no se ha ejecutado. No es un fallo del repo ni de la tarea — recargar saldo en Plans & Billing de Anthropic."
+            echo "No ejecutada: la ANTHROPIC_API_KEY se ha quedado sin saldo, así que esta pasada no ha podido hacer nada. No es un fallo del repo." > /tmp/robot-informe.txt
+            {
+              echo "### Pasada no ejecutada: sin saldo de API"
+              echo "La \`ANTHROPIC_API_KEY\` no tiene saldo, así que esta pasada no ha hecho nada."
+              echo "Nada que arreglar en el repo — hay que recargar saldo en Plans & Billing de Anthropic."
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          exit "$CODIGO"
 
       # Ya NO publica su propio resumen en el Issue "Informe diario" (quitado
       # el 2026-09-20, pedido explícito del usuario: quería un único informe

@@ -2039,6 +2039,87 @@ probar directamente tras mergear a main.
   prudente hacer al menos una compra real de prueba (mensual, 3,99€) y
   confirmar que el ciclo completo funciona con dinero de verdad.
 
+## Sin saldo de API, nada se rompe (2026-09-25)
+
+Pedido explícito del usuario tras el incidente del 2026-09-24
+("asegúrate que cuando no hay saldo nada se rompe"): la cuenta de Anthropic
+se quedó sin saldo y **cada pieza que depende de ella lo manifestó de una
+forma distinta, todas malas**:
+
+| Pieza | Qué hacía sin saldo |
+|---|---|
+| `/identificar-captura` | Devolvía `502` con el **texto crudo del proveedor**: el usuario que subía la foto de su captura veía "Your credit balance is too low…" y el `request_id` interno en pantalla |
+| `smoke-test.yml` | En rojo varios días seguidos por ese único motivo, tapando cualquier regresión real |
+| `robot-buscador-fuentes.yml` | Moría en ~20s con un rojo indistinguible de un bug propio |
+| `robot-experiencia-usuario.yml` | **En verde**, sin haber hecho nada (tiene `continue-on-error: true`) |
+| `robot-patrones-uso.yml` | Igual, en verde sin hacer nada |
+| `daily-report.yml` | Era el único que degradaba bien (ya tenía un texto de reserva) |
+
+**Criterio adoptado: identificar la foto es una AYUDA opcional, no una pieza
+crítica.** La captura se registra igual a mano, así que un problema de
+facturación nunca debe presentarse como un error de la app ni como un repo
+roto. Dos cambios, uno de producto y otro de operaciones:
+
+**1. `functions/identificar-captura.js` — clasifica el fallo y nunca
+reenvía el cuerpo del proveedor.** Nueva función
+`clasificarFalloProveedor()` que devuelve un `codigo` estable y un mensaje
+legible:
+
+- `sin_credito` → `503`. Ojo, **Anthropic devuelve el saldo agotado como
+  `invalid_request_error` con status `400`, no como un `402`/`403`**, así
+  que se reconoce por el mensaje (`credit balance`, `billing`,
+  `purchase credits`) — un `400` a secas sí es un fallo nuestro (imagen mal
+  formada), y confundirlos sería tratar un bug propio como una degradación.
+- `saturado` → `503` (429/529, `overloaded_error`, `rate_limit_error`).
+- `sin_configurar` → `503` (falta `ANTHROPIC_API_KEY`; antes era un `500`).
+- `fallo_proveedor` → `502` para todo lo demás.
+
+El cuerpo crudo del proveedor va **solo al `console.error` del Worker**,
+nunca al cliente. Esto cierra además una fuga menor de detalle interno de
+infraestructura que existía desde que se creó el endpoint.
+
+**2. `diario.html` — lo trata como aviso, no como error.** Si el `codigo`
+es uno de los tres de "no disponible", muestra un mensaje en tono neutro
+recordando que **la foto ya está añadida** y que se puede escribir especie
+y talla a mano. **Detalle que casi se colaba**: las únicas clases de
+mensaje que existen en esa página son `error`/`ok`/`info`, y `.mensaje` es
+`display: none` sin una de ellas — una clase inventada como `aviso` habría
+dejado el mensaje **invisible**. Se usa `info` (ámbar), el mismo tono que
+"🤖 Analizando la foto…".
+
+**3. `smoke-test.yml` — avisa, no falla, y sigue probando el resto.** Si
+`/identificar-captura` responde con uno de esos códigos, emite un
+`::warning::` y continúa el recorrido con una especie de reserva, para que
+los pasos siguientes (registrar y borrar una captura real) se sigan
+probando. Un fallo de verdad del endpoint sigue poniendo el workflow en
+rojo exactamente como antes — lo verificado con los 4 casos posibles
+(sin saldo / éxito / error real / respuesta incompleta) antes de commitear.
+
+**4. Guardarraíl común en los 4 workflows que llaman a Claude**
+(`robot-buscador-fuentes`, `robot-experiencia-usuario`,
+`robot-patrones-uso`, `daily-report`): la salida del CLI se captura, y si
+el fallo trae `credit balance is too low` / `purchase credits`, el paso
+emite un `::warning::` nombrando la causa, escribe el motivo en su fichero
+de informe, lo deja en el `$GITHUB_STEP_SUMMARY` y **sale en verde**.
+Cualquier otro fallo se propaga igual que antes. Patrón usado:
+`... --allowedTools "…" > "$SALIDA_CLAUDE" 2>&1 || CODIGO=$?` — con `||` en
+vez de `set +e`, porque el shell por defecto de GitHub Actions es
+`bash -e` y sin eso la línea aborta el paso antes de poder inspeccionar
+nada.
+
+**Lo que esto NO arregla, a propósito**: `robot-experiencia-usuario.yml`
+sigue saliendo en verde cuando agota `--max-turns` (el `continue-on-error:
+true` que ya estaba documentado más arriba). Es un problema distinto del
+saldo y no se ha tocado en este cambio — si algún día molesta, el arreglo
+es el mismo patrón: detectar "Reached max turns" en la salida capturada y
+emitir un `::warning::`.
+
+**Cómo diagnosticar esto la próxima vez**: un fallo de saldo tarda ~20
+segundos y ya no se confunde con nada, porque sale como aviso con la causa
+escrita. Si aun así hay dudas,
+`gh run list --workflow=<lo-que-sea>.yml` y mirar la duración: ~20s es
+saldo o configuración, varios minutos es trabajo real.
+
 ## Pendiente conocido (no tocar sin confirmar)
 
 - **Cuenta atrás para reintentar `/prevision`** (2026-09-14): la cuota
