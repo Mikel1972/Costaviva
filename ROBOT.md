@@ -7458,3 +7458,66 @@ desde aquí), 1 sin sustituta encontrada y documentada para no repetir la
 búsqueda (`deba`).
 
 **Firmado:** robot de cámaras caídas, 2026-09-25 15:03 UTC.
+
+---
+
+### 2026-09-25 17:05 UTC (búsqueda manual de alternativas — Zumaia y Deba)
+
+Hecha a mano en sesión interactiva, no por el robot, porque Zumaia todavía no
+figuraba como roja (tenía `fallos_seguidos = 1`, por debajo del umbral de 2) y
+el robot no la habría mirado. Ese hueco se cerró el mismo día: ahora la
+consulta del robot incluye también `fallos_seguidos >= 1`.
+
+**Las dos están rotas en origen. No se han movido, y no hay alternativa viva
+hoy.** Detalle de lo comprobado, para que la próxima pasada no repita nada de
+esto:
+
+**Zumaia** (`GIP_zumaia2.stream`) y **Deba** (`GIP_deba_169.stream`) dan `404`
+en el servidor de la Diputación de Gipuzkoa.
+
+- **El resto de la red de Gipuzkoa está perfecta**: `GIP_hondarribia_169`,
+  `GIP_zurriola_169`, `GIP_zarautz_169` y `GIP_getaria_169` responden `200`.
+  No es una caída del proveedor: son esas dos en concreto. (Buen ejemplo de
+  por qué agrupar por proveedor engaña — ver la regla corregida ese día.)
+- La aplicación del servidor sigue siendo `camaramar` y funciona
+  (`camaras`, `webcams`, `live` y `hondartzak` dan 404).
+- Probadas sin éxito 13 variantes de nombre: `GIP_zumaia`, `GIP_zumaia_169`,
+  `GIP_zumaia3`, `GIP_zumaia169`, `GIP_itzurun`, `GIP_itzurun_169`,
+  `GIP_itzurun2`, `GIP_deba`, `GIP_deba2`, `GIP_deba3`, `GIP_deba169`,
+  `GIP_santiago_169`, `GIP_ondarbeltz_169`. **No seguir adivinando nombres**:
+  no es el método.
+- **Las webs de sus propios dueños embeben la MISMA URL muerta**:
+  `gipuzkoa.eus/es/web/hondartzak/webcams/deba` y
+  `zumaia.eus/eu/turismoa/zer-egin-zumaian/webcam`. Esa es la prueba de que
+  no se han movido: si hubieran cambiado de dirección, el dueño ya estaría
+  apuntando a la nueva.
+
+**Alternativa buscada y descartada — kostasystem.com** (el mismo proveedor de
+Mundaka). La encontró la web de `escueladesurfsopelana.com`, que tiene página
+propia de Deba:
+
+| Carpeta | Estado | Fecha real de la imagen |
+|---|---|---|
+| `deba/camara1..4_snap.jpeg` | 200, ~300 KB | **6 de febrero de 2026** |
+| `itzurun/camara1..2_snap.jpeg` | 200, ~250 KB | **28 de enero de 2026** |
+
+Siete y ocho meses de antigüedad. Es exactamente la trampa ya documentada en
+`ROBOT_REGLAS.md`: **kostasystem responde `200` con imágenes muertas**. Si
+alguien las integra sin mirar la fecha, la app enseñará una foto de invierno
+como si fuera de ahora, que es peor que no enseñar nada.
+
+**Conclusión:** Zumaia y Deba se quedan sin cámara. No es un fallo nuestro ni
+hay nada que arreglar en el repo — las cámaras están apagadas en origen y
+tampoco existe sustituta viva. Si la Diputación las reactiva, volverán solas
+(las URLs que tenemos son las correctas y siguen siendo las que publica el
+dueño).
+
+**Términos ya probados, para no repetirlos**: "webcam en directo playa Itzurun
+Zumaia", "Deba/Zumaia webcam surf en directo ipcamlive/youtube". Vías
+pendientes por si alguien retoma esto: Windfinder (`zumaia_faro`),
+`camarastrafico.com.es` y `surf-forecast.com` — los tres son agregadores, así
+que lo más probable es que embeban la misma fuente muerta, pero no se han
+comprobado.
+
+**Firmado:** sesión interactiva con el usuario (búsqueda manual de
+alternativas), 2026-09-25.
