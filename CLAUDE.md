@@ -2120,6 +2120,113 @@ escrita. Si aun así hay dudas,
 `gh run list --workflow=<lo-que-sea>.yml` y mirar la duración: ~20s es
 saldo o configuración, varios minutos es trabajo real.
 
+## Token de Instagram: por qué murió en una hora y cómo regenerarlo (2026-09-25)
+
+**Diagnóstico real, no "caducó a los 60 días".** El secret
+`META_PAGE_ACCESS_TOKEN` se guardó el **2026-09-19 a las 17:47 UTC** y Meta
+lo dio por caducado a las **19:00 UTC del mismo día** (`OAuthException`
+código 190, subcódigo 463, "Session has expired on Saturday,
+19-Sep-26 12:00:00 PDT"). Poco más de una hora de vida: es la firma de un
+token de **corta duración** copiado del Graph API Explorer, no de un token
+de larga duración. El robot publicó **un único post** ese día
+(`18350295562221732`) y desde entonces falló el 21 y el 23 de septiembre.
+
+**Por qué tardó 6 días en detectarse** — la parte que importa más que el
+token en sí:
+- El informe diario decía `Posts publicados (24h): 0`, indistinguible de un
+  día tranquilo.
+- `metricas-instagram.yml` salía en **verde** porque sale antes con "Nada
+  nuevo que medir hoy" (no hay posts nuevos que medir), sin llegar a tocar
+  la API.
+- `medir-metricas-instagram.mjs` trataba el fallo con `console.warn` y
+  guardaba `null`: un token muerto producía métricas vacías
+  indistinguibles de "el post no tuvo alcance".
+
+### Qué se cambió para que no se repita
+
+- **`scripts/marketing/publicar-borrador-instagram.mjs` y
+  `medir-metricas-instagram.mjs`**: detectan el error 190 /
+  `OAuthException` y salen con **código 3** (`SALIDA_TOKEN_CADUCADO`) en vez
+  de un fallo genérico o, peor, un `null` silencioso.
+- **`robot-marketing-instagram.yml` y `metricas-instagram.yml`**: ante el
+  código 3 emiten un `::warning::` nombrando la causa, lo dejan en el
+  `$GITHUB_STEP_SUMMARY` y salen en verde. Cualquier otro fallo sigue en
+  rojo.
+- **`daily-report.yml`**: el bloque de Marketing empieza ahora por
+  `Token de Instagram: <estado>`, calculado llamando de verdad a
+  `/debug_token`. Tres estados: `✅ válido, no caduca`, `⚠️ válido pero
+  CADUCA en N días` (avisa **antes** de romperse) y `❌ CADUCADO o
+  inválido`. Probado con los 5 casos posibles, incluida una respuesta vacía
+  (se trata como inválido: mejor una falsa alarma que un silencio).
+- **Nuevo workflow `comprobar-token-instagram.yml`** (`workflow_dispatch`):
+  valida el token guardado y dice si es válido, si caduca y cuándo, si
+  tiene los 5 permisos necesarios, y si de verdad da acceso a la cuenta de
+  Instagram `17841421445922598`. **Nunca imprime el token** (la respuesta se
+  vuelca a un fichero y se interpreta con node). Es el paso que faltaba el
+  19-sep: verificar antes de dar el token por bueno.
+
+### Cómo regenerarlo (pasos para el usuario)
+
+Datos ya configurados en el repo, no hay que volver a buscarlos:
+`META_IG_BUSINESS_ACCOUNT_ID` = `17841421445922598`,
+`META_PAGE_ID` = `1260025797202453` (los dos como *variables*, no secretas).
+
+**Vía recomendada — Usuario del Sistema (no caduca nunca).** Es la pensada
+para automatización:
+1. `business.facebook.com` → *Configuración del negocio*.
+2. *Usuarios → Usuarios del sistema → Añadir*. Nombre `Costaviva robot`,
+   rol *Administrador*.
+3. *Asignar activos*: la Página `1260025797202453` (control total) **y** la
+   cuenta de Instagram. Si se olvida la cuenta de Instagram, el token sale
+   válido pero sin acceso — el paso 2 de
+   `comprobar-token-instagram.yml` existe justo para cazar eso.
+4. *Generar nuevo token* → elegir la App → marcar `instagram_basic`,
+   `instagram_content_publish`, `instagram_manage_insights`,
+   `pages_show_list`, `pages_read_engagement`.
+5. Guardarlo: `gh secret set META_PAGE_ACCESS_TOKEN` (lo pide por stdin, así
+   no pasa por ningún chat ni queda en el historial de comandos).
+6. Actions → **Comprobar token de Instagram** → *Run workflow*. Tiene que
+   decir `Caducidad: NO CADUCA ✅`. **Si sale una fecha, el token no sirve** —
+   es el mismo error del 19-sep.
+
+**Vía alternativa, si no hay Business Manager** (token de página derivado de
+uno de usuario de larga duración; también deja de caducar, pero con más
+pasos):
+1. Graph API Explorer → generar token con los 5 permisos de arriba (sale de
+   corta duración, ~1h — **este es el que NO hay que guardar**).
+2. Canjearlo por uno de usuario de 60 días:
+   `GET /oauth/access_token?grant_type=fb_exchange_token&client_id=<APP_ID>&client_secret=<APP_SECRET>&fb_exchange_token=<TOKEN_CORTO>`
+3. Con ese: `GET /me/accounts?access_token=<TOKEN_LARGO>` → buscar la página
+   `1260025797202453`; su campo `access_token` es un **Page token que ya no
+   caduca**.
+4. Guardarlo y verificarlo igual que en la vía recomendada (pasos 5 y 6).
+
+**Los 2 borradores que había pendientes de aprobación están muertos**: un
+contenedor de la Content Publishing API caduca solo a las 24h y eran del 21
+y 23 de septiembre. Cuando el token funcione hay que regenerarlos
+(`robot-marketing-instagram.yml` a mano), no intentar publicarlos.
+
+## Exposición corregida: `/.github/` se servía en público (2026-09-25)
+
+Encontrada aplicando la propia regla de este fichero ("revisar
+`_middleware.js` cada vez que se cree un fichero interno nuevo"): al añadir
+`comprobar-token-instagram.yml` se comprobó la ruta en producción y
+**`https://costaviva.org/.github/workflows/daily-report.yml` respondía `200`
+con el fichero completo**. Tercera vez que aparece el mismo hueco, después
+de `/functions/` (2026-09-13) y `/scripts/` (2026-09-18).
+
+Sin fuga de secretos —sus valores nunca están en el YAML, solo referencias
+`${{ secrets.X }}`— pero sí quedaba público: los **nombres de todos los
+secrets**, el email de la cuenta de servicio de Google Cloud, la **ruta
+completa del Workload Identity Provider con su número de proyecto**, y los
+prompts e instrucciones internas de todos los robots. Corregido añadiendo
+`/.github/` a `PREFIJOS_BLOQUEADOS` en `functions/_middleware.js`.
+
+**Nota para la próxima vez**: Cloudflare Pages **sí sirve directorios que
+empiezan por punto**. No dar por hecho que un `.algo/` queda fuera del
+despliegue por convención — hay que bloquearlo explícitamente, igual que
+cualquier otro directorio interno.
+
 ## Pendiente conocido (no tocar sin confirmar)
 
 - **Cuenta atrás para reintentar `/prevision`** (2026-09-14): la cuota

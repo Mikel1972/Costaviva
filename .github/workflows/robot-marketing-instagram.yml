@@ -86,4 +86,23 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           META_PAGE_ACCESS_TOKEN: ${{ secrets.META_PAGE_ACCESS_TOKEN }}
           META_IG_BUSINESS_ACCOUNT_ID: ${{ vars.META_IG_BUSINESS_ACCOUNT_ID }}
-        run: node publicar-borrador-instagram.mjs
+        run: |
+          # Guardarraíl de credencial (añadido 2026-09-25). El script sale con
+          # código 3 cuando Meta responde que el token no vale (error 190). Un
+          # token caducado no es un fallo del repo: se avisa con ::warning::
+          # nombrando la causa y se sale en verde, para que no se confunda con
+          # un bug y, sobre todo, para que no pase desapercibido 6 días como
+          # ocurrió entre el 2026-09-19 y el 2026-09-25. Cualquier otro fallo
+          # sigue poniendo el workflow en rojo igual que antes.
+          node publicar-borrador-instagram.mjs || CODIGO=$?
+          CODIGO=${CODIGO:-0}
+          if [ "$CODIGO" -eq 3 ]; then
+            echo "::warning::El token de Instagram (META_PAGE_ACCESS_TOKEN) ha caducado o no es válido. Esta pasada no ha hecho nada. Hay que regenerarlo: lanza el workflow \"Comprobar token de Instagram\" para verificar el nuevo antes de guardarlo."
+            {
+              echo "### Token de Instagram caducado"
+              echo "El secret \`META_PAGE_ACCESS_TOKEN\` ya no vale, así que esta pasada no ha hecho nada."
+              echo "Nada que arreglar en el código: hay que regenerar el token y verificarlo con el workflow **Comprobar token de Instagram**."
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          exit "$CODIGO"

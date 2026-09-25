@@ -1,0 +1,120 @@
+name: Comprobar token de Instagram
+
+# Añadido 2026-09-25, a raíz de un fallo real: el 2026-09-19 se guardó en
+# META_PAGE_ACCESS_TOKEN un token de CORTA duración del Graph API Explorer
+# (~1h de vida) creyendo que era de larga duración. Publicó un único post y
+# murió esa misma tarde; el robot de marketing quedó 6 días fallando sin que
+# se notara, porque el informe diario solo decía "Posts publicados (24h): 0".
+#
+# Este workflow existe para que eso no se pueda repetir: se lanza a mano
+# (Actions -> Comprobar token de Instagram -> Run workflow) y dice, sin
+# ambigüedad, si el token que hay guardado (a) es válido, (b) caduca y
+# cuándo, y (c) tiene TODOS los permisos que necesitan los scripts de
+# marketing. La comprobación decisiva es `expires_at`: si no es 0, el token
+# volverá a morir y no sirve para automatización.
+#
+# NUNCA imprime el token. Solo los metadatos que devuelve /debug_token.
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  comprobar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validar el token guardado
+        env:
+          META_PAGE_ACCESS_TOKEN: ${{ secrets.META_PAGE_ACCESS_TOKEN }}
+          IG_ID: ${{ vars.META_IG_BUSINESS_ACCOUNT_ID }}
+        run: |
+          if [ -z "$META_PAGE_ACCESS_TOKEN" ]; then
+            echo "::error::No hay ningún token guardado en el secret META_PAGE_ACCESS_TOKEN."
+            exit 1
+          fi
+
+          # /debug_token acepta el propio token como inspector de sí mismo.
+          curl -sS -G "https://graph.facebook.com/v21.0/debug_token" \
+            --data-urlencode "input_token=${META_PAGE_ACCESS_TOKEN}" \
+            --data-urlencode "access_token=${META_PAGE_ACCESS_TOKEN}" \
+            -o /tmp/debug.json
+          # Se vuelca a fichero y se interpreta con node: así el token no
+          # aparece nunca en el log, ni siquiera en un mensaje de error.
+          node -e '
+            const fs = require("fs");
+            const d = JSON.parse(fs.readFileSync("/tmp/debug.json", "utf8"));
+            const lineas = [];
+            const fallos = [];
+
+            if (d.error) {
+              fallos.push("El token no es válido: " + (d.error.message || "sin detalle"));
+            }
+            const dato = d.data || {};
+            if (!d.error) {
+              lineas.push("Tipo: " + (dato.type || "desconocido"));
+              lineas.push("App: " + (dato.application || "desconocida"));
+              lineas.push("Válido ahora: " + (dato.is_valid ? "sí" : "NO"));
+              if (!dato.is_valid) fallos.push("Meta dice que el token NO es válido (caducado o revocado).");
+
+              // La comprobación que de verdad importa: expires_at 0 (o ausente)
+              // = no caduca. Cualquier fecha = volverá a romperse.
+              if (dato.expires_at === 0 || dato.expires_at === undefined) {
+                lineas.push("Caducidad: NO CADUCA ✅ — sirve para automatización");
+              } else {
+                const cuando = new Date(dato.expires_at * 1000).toISOString();
+                lineas.push("Caducidad: " + cuando + " ❌");
+                fallos.push("Este token CADUCA (" + cuando + "). Volverá a romperse igual que el del 2026-09-19 — hace falta un token que no caduque (Usuario del Sistema en Business Manager, o un Page token derivado de un token de usuario de larga duración).");
+              }
+
+              const scopes = dato.scopes || [];
+              lineas.push("Permisos concedidos: " + (scopes.length ? scopes.join(", ") : "ninguno"));
+              const necesarios = [
+                ["instagram_basic", "leer likes y comentarios"],
+                ["instagram_content_publish", "crear y publicar el post"],
+                ["instagram_manage_insights", "alcance, impresiones y guardados"],
+                ["pages_show_list", "localizar la Página"],
+                ["pages_read_engagement", "leer la Página"],
+              ];
+              for (const [permiso, para] of necesarios) {
+                if (!scopes.includes(permiso)) fallos.push("Falta el permiso " + permiso + " (" + para + ").");
+              }
+            }
+
+            console.log(lineas.join("\n"));
+            const resumen = process.env.GITHUB_STEP_SUMMARY;
+            const md = ["## Token de Instagram", "", ...lineas.map((l) => "- " + l)];
+            if (fallos.length) {
+              md.push("", "### Problemas", "", ...fallos.map((f) => "- " + f));
+            } else {
+              md.push("", "**Todo correcto**: el token es válido, no caduca y tiene todos los permisos necesarios.");
+            }
+            if (resumen) fs.appendFileSync(resumen, md.join("\n") + "\n");
+
+            for (const f of fallos) console.log("::error::" + f);
+            if (fallos.length) process.exit(1);
+            console.log("Token válido, sin caducidad y con todos los permisos.");
+          '
+
+      - name: Comprobar que el token llega de verdad a la cuenta de Instagram
+        env:
+          META_PAGE_ACCESS_TOKEN: ${{ secrets.META_PAGE_ACCESS_TOKEN }}
+          IG_ID: ${{ vars.META_IG_BUSINESS_ACCOUNT_ID }}
+        run: |
+          # Un token puede ser válido y tener los permisos, y aun así no dar
+          # acceso a ESTA cuenta de Instagram (activo no asignado al Usuario
+          # del Sistema, un caso fácil de pasar por alto en Business Manager).
+          # Se comprueba pidiendo la propia cuenta, que es una lectura inocua.
+          curl -sS -G "https://graph.facebook.com/v21.0/${IG_ID}" \
+            --data-urlencode "fields=username,followers_count" \
+            --data-urlencode "access_token=${META_PAGE_ACCESS_TOKEN}" \
+            -o /tmp/cuenta.json
+          node -e '
+            const fs = require("fs");
+            const d = JSON.parse(fs.readFileSync("/tmp/cuenta.json", "utf8"));
+            if (d.error) {
+              console.log("::error::El token no da acceso a la cuenta de Instagram " + process.env.IG_ID + ": " + (d.error.message || "sin detalle") + ". Revisa que la cuenta de Instagram Y la Página estén asignadas como activos.");
+              process.exit(1);
+            }
+            const linea = "Acceso confirmado a @" + d.username + " (" + d.followers_count + " seguidores).";
+            console.log(linea);
+            if (process.env.GITHUB_STEP_SUMMARY) fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, "\n- " + linea + "\n");
+          '
