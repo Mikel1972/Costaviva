@@ -45,7 +45,18 @@ const RUTAS_BLOQUEADAS = new Set([
 // No contienen secretos (el CRON_SECRET siempre llega por variable de
 // entorno, nunca hardcodeado), pero es código interno sin motivo para
 // estar público, mismo criterio que /functions/.
-const PREFIJOS_BLOQUEADOS = ["/supabase/", "/test/", "/functions/", "/scripts/"];
+// "/.github/" añadido el 2026-09-25, encontrado exactamente igual que los
+// dos anteriores: al crear un workflow nuevo se comprobó la ruta en
+// producción y /.github/workflows/daily-report.yml respondía 200 con el
+// fichero completo. Lo que quedaba público no eran secretos (sus VALORES
+// nunca están en el YAML, solo referencias ${{ secrets.X }}), pero sí: los
+// nombres de todos los secrets, el email de la cuenta de servicio de Google
+// Cloud, la ruta completa del Workload Identity Provider con su número de
+// proyecto, y los prompts e instrucciones internas de todos los robots.
+// Mismo criterio que /functions/ y /scripts/: código y configuración
+// interna que no tiene ningún motivo para ser pública. Nada del frontend
+// pide nunca /.github/..., así que bloquearlo no rompe nada.
+const PREFIJOS_BLOQUEADOS = ["/supabase/", "/test/", "/functions/", "/scripts/", "/.github/"];
 
 export async function onRequest(context) {
   const { request, next } = context;

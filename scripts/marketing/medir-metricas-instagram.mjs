@@ -42,6 +42,32 @@ function leerLineasJsonl(ruta) {
     .map((l) => JSON.parse(l));
 }
 
+// Detección de token de Meta caducado/inválido (añadido 2026-09-25).
+// Caso real: el token se guardó el 2026-09-19 a las 17:47 UTC y caducó a
+// las 19:00 UTC del mismo día — era un token de CORTA duración del Graph
+// API Explorer (~1h), no uno de larga duración. El robot publicó un único
+// post y desde entonces falló en silencio 6 días, porque el informe diario
+// solo decía "Posts publicados (24h): 0", que parece normal.
+//
+// Un token caducado no es un fallo del repo ni de la tarea: es una
+// credencial que hay que renovar. Se distingue con el código de error 190
+// de Meta (subcódigo 463 = sesión expirada) para que el workflow avise con
+// la causa escrita en vez de un rojo genérico. SALIDA_TOKEN_CADUCADO es el
+// código de salida que los workflows reconocen.
+const SALIDA_TOKEN_CADUCADO = 3;
+function esTokenCaducado(datos) {
+  const e = datos?.error;
+  if (!e) return false;
+  return e.code === 190 || e.type === "OAuthException";
+}
+function abortarPorTokenCaducado(datos) {
+  const mensaje = datos?.error?.message || "sin detalle";
+  console.error("TOKEN_META_CADUCADO");
+  console.error(`El token de Meta (META_PAGE_ACCESS_TOKEN) no es válido: ${mensaje}`);
+  console.error("Hay que regenerarlo y volver a guardarlo como secret. Ver CLAUDE.md, sección del token de Instagram.");
+  process.exit(SALIDA_TOKEN_CADUCADO);
+}
+
 async function medirPost(postId) {
   // "reach" (alcance de cuentas distintas) está disponible para casi
   // cualquier versión de la API; "impressions" se pidió aparte porque
@@ -55,6 +81,9 @@ async function medirPost(postId) {
     );
     const datos = await resp.json();
     if (resp.ok) alcance = datos.data?.find((m) => m.name === "reach")?.values?.[0]?.value ?? null;
+    // Antes esto solo hacía console.warn y guardaba null: un token muerto
+    // producía métricas vacías indistinguibles de "el post no tuvo alcance".
+    else if (esTokenCaducado(datos)) abortarPorTokenCaducado(datos);
     else console.warn(`No se pudo leer "reach" de ${postId}: ${JSON.stringify(datos)}`);
   } catch (e) {
     console.warn(`Error pidiendo "reach" de ${postId}: ${e.message}`);

@@ -59,6 +59,32 @@ async function esperarUrlPublica(url, intentosMax = 20, esperaMs = 15000) {
   throw new Error(`${url} no respondió 200 tras ${intentosMax} intentos -- ¿el deploy de Cloudflare Pages tardó más de lo normal?`);
 }
 
+// Detección de token de Meta caducado/inválido (añadido 2026-09-25).
+// Caso real: el token se guardó el 2026-09-19 a las 17:47 UTC y caducó a
+// las 19:00 UTC del mismo día — era un token de CORTA duración del Graph
+// API Explorer (~1h), no uno de larga duración. El robot publicó un único
+// post y desde entonces falló en silencio 6 días, porque el informe diario
+// solo decía "Posts publicados (24h): 0", que parece normal.
+//
+// Un token caducado no es un fallo del repo ni de la tarea: es una
+// credencial que hay que renovar. Se distingue con el código de error 190
+// de Meta (subcódigo 463 = sesión expirada) para que el workflow avise con
+// la causa escrita en vez de un rojo genérico. SALIDA_TOKEN_CADUCADO es el
+// código de salida que los workflows reconocen.
+const SALIDA_TOKEN_CADUCADO = 3;
+function esTokenCaducado(datos) {
+  const e = datos?.error;
+  if (!e) return false;
+  return e.code === 190 || e.type === "OAuthException";
+}
+function abortarPorTokenCaducado(datos) {
+  const mensaje = datos?.error?.message || "sin detalle";
+  console.error("TOKEN_META_CADUCADO");
+  console.error(`El token de Meta (META_PAGE_ACCESS_TOKEN) no es válido: ${mensaje}`);
+  console.error("Hay que regenerarlo y volver a guardarlo como secret. Ver CLAUDE.md, sección del token de Instagram.");
+  process.exit(SALIDA_TOKEN_CADUCADO);
+}
+
 async function crearContenedor(imageUrl, caption) {
   const params = new URLSearchParams({
     image_url: imageUrl,
@@ -70,6 +96,7 @@ async function crearContenedor(imageUrl, caption) {
     body: params,
   });
   const datos = await resp.json();
+  if (!resp.ok && esTokenCaducado(datos)) abortarPorTokenCaducado(datos);
   if (!resp.ok) throw new Error(`Graph API /media falló: ${JSON.stringify(datos)}`);
   if (!datos.id) throw new Error(`Graph API /media no devolvió id: ${JSON.stringify(datos)}`);
   return datos.id;
