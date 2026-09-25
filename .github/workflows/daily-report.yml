@@ -401,6 +401,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           META_PAGE_ACCESS_TOKEN: ${{ secrets.META_PAGE_ACCESS_TOKEN }}
+          META_IG_BUSINESS_ACCOUNT_ID: ${{ vars.META_IG_BUSINESS_ACCOUNT_ID }}
         run: |
           PUBLICADOS_24H=$(node -e '
             const fs = require("fs");
@@ -443,9 +444,47 @@ jobs:
               console.log("⚠️ válido pero CADUCA en " + dias + " día(s) (" + new Date(t.expires_at * 1000).toISOString().slice(0, 10) + ") — conviene cambiarlo por uno que no caduque");
             ')
           fi
+          # Publicaciones reales de las últimas 24h, preguntando a Instagram en
+          # vez de fiarse solo de posts-publicados.jsonl (añadido 2026-09-25,
+          # pedido explícito del usuario). El fichero local solo sabe de lo que
+          # publicó el robot; si algún día se publica a mano, no se enteraría.
+          #
+          # Tres estados, no dos — publicó / no publicó / NO SE PUDO COMPROBAR.
+          # Un cero que en realidad es un fallo de permisos es justo lo que
+          # dejó el token roto seis días sin que nadie lo notara.
+          #
+          # (Facebook se valoró y se descartó: el robot solo publica en
+          # Instagram. Decisión del usuario el 2026-09-25.)
+          PUBLICACIONES=$(node -e '
+            const token = process.env.META_PAGE_ACCESS_TOKEN;
+            const ig = process.env.META_IG_BUSINESS_ACCOUNT_ID;
+            const desde = Date.now() - 24 * 60 * 60 * 1000;
+            (async () => {
+              if (!token) { console.log("  - Publicaciones: NO SE PUDO COMPROBAR (falta el token)"); return; }
+              try {
+                const r = await fetch(`https://graph.facebook.com/v21.0/${ig}/media?fields=id,timestamp,permalink,caption,like_count,comments_count&limit=10&access_token=${token}`);
+                const d = await r.json();
+                if (d.error) throw new Error(d.error.message || "error sin detalle");
+                const hoy = (d.data || []).filter((x) => new Date(x.timestamp).getTime() >= desde);
+                if (!hoy.length) { console.log("  - Publicaciones (24h): ninguna"); return; }
+                console.log(`  - Publicaciones (24h): ${hoy.length}`);
+                for (const m of hoy) {
+                  // replace(/\s+/g," ") aplana el texto sin necesitar un salto
+                  // de línea literal, que dentro de este YAML es un incordio.
+                  const titulo = (m.caption || "(sin texto)").replace(/\s+/g, " ").trim().slice(0, 70);
+                  const cuando = m.timestamp.slice(0, 16).replace("T", " ");
+                  console.log(`    - ${cuando} — ${titulo}`);
+                  console.log(`      ${m.like_count ?? 0} me gusta · ${m.comments_count ?? 0} comentarios · ${m.permalink}`);
+                }
+              } catch (e) {
+                console.log(`  - Publicaciones: NO SE PUDO COMPROBAR — ${e.message}`);
+              }
+            })();
+          ')
           {
             echo "resultado<<EOF"
             echo "  - Token de Instagram: $TOKEN_ESTADO"
+            echo "$PUBLICACIONES"
             echo "  - Posts publicados (24h): $PUBLICADOS_24H"
             echo "  - Borradores esperando aprobación: $PENDIENTES"
             if [ -n "$METRICAS_24H" ]; then
