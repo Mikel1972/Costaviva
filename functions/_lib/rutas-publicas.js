@@ -68,6 +68,7 @@ const ARCHIVOS_PUBLICOS = new Set([
   "/crear-portal-stripe",
   "/stripe-webhook",
   "/notificar-altas",
+  "/avisar-fin-prueba",
   "/registrar-presion",
   "/registrar-turbidez",
   "/registrar-estado-camaras",

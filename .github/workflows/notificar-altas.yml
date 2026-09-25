@@ -34,3 +34,15 @@ jobs:
           cat /tmp/resp.json
           echo
           if [ "$code" != "200" ]; then exit 1; fi
+
+      # Aprovecha el mismo cron de 30 min y el mismo secreto: no hace falta
+      # un workflow aparte para llamar a un endpoint más. Se pone en un paso
+      # propio (y no encadenado con &&) para que un fallo de uno no tape al
+      # otro en el log.
+      - name: Llamar a /avisar-fin-prueba
+        run: |
+          code=$(curl -sS -o /tmp/resp2.json -w "%{http_code}" -X POST             -H "X-Cron-Secret: ${{ secrets.PRESION_CRON_SECRET }}"             --max-time 30             "https://costaviva.org/avisar-fin-prueba")
+          echo "HTTP $code"
+          cat /tmp/resp2.json
+          echo
+          if [ "$code" != "200" ]; then exit 1; fi
