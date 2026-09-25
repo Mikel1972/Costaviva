@@ -409,6 +409,113 @@ toque su zona en la rotación:
   cámara viva de AZTI/kostasystem.com, sin spot. Mismo trabajo pendiente
   que las gallegas.
 
+## Cámara caída: primero descarta que se haya MOVIDO (añadido 2026-09-25, pedido explícito del usuario)
+
+Regla del robot de reparación (`.github/workflows/robot-camaras-caidas.yml`),
+que a diferencia del buscador de fuentes **solo mira las cámaras en rojo** —
+las que `camaras-salud.yml` ya dejó marcadas con `sin_senal = true` en
+`camara_estado`. Vigilar y reparar son dos trabajos distintos: aquel
+comprueba las 59 cada 30 minutos y anota; este coge las rotas y las arregla.
+
+**El error que hay que evitar, con caso real detrás.** Sopelana estuvo 6
+días marcada en rojo y el usuario la veía funcionando perfectamente. Las dos
+cosas eran ciertas: la cámara estaba viva, pero el ayuntamiento había
+cambiado su alias de IPCamLive y nuestra URL guardada daba `404` puro. Nadie
+la había roto — **se había mudado**.
+
+Por eso el orden de hipótesis importa tanto: **una cámara en rojo no está
+rota hasta que se demuestre. Primero se descarta que haya cambiado de
+dirección.**
+
+### Orden de trabajo, sin saltarse pasos
+
+**1. Agrupa por proveedor antes de tocar nada.** Mira la URL de cada cámara
+roja en `WEBCAMS` / `WEBCAMS_HLS`, no el nombre del spot. Si varias del mismo
+proveedor cayeron a la vez, es su caída, no nuestra — anótalo y no las
+investigues una a una (regla "Fallos correlados por proveedor", más arriba).
+Ejemplo real del 2026-09-25: de 9 cámaras rojas, 6 eran solo dos proveedores
+(`cantabria.es` y `apps.socib.es`), todas con el mismo `http_502` y el mismo
+número de fallos seguidos.
+
+**2. Lee el motivo, que ya orienta bastante:**
+
+| Motivo | Qué sugiere |
+|---|---|
+| `404` en una URL que antes iba | **Movida o renombrada.** Es el caso de esta regla. |
+| `http_502`, `sin_respuesta` en varias del mismo proveedor a la vez | Caída del proveedor. Esperar, no investigar una a una. |
+| `frame_congelado` | La cámara responde pero da siempre la misma imagen: puede estar apagada de noche, o muerta de verdad. Comprobar `Last-Modified`. |
+| `sin_respuesta` en una sola, con el resto del proveedor bien | Candidata clara a haberse movido. |
+
+**3. Busca la web pública del dueño y mira qué embebe HOY.** No busques la
+URL antigua: busca la página del ayuntamiento, la escuela de surf, el club
+náutico o el puerto, y mira qué reproductor tiene puesto ahora. Es la fuente
+de verdad, y se actualiza sola cuando ellos cambian algo.
+
+**IPCamLive en concreto** (proveedor de Sopelana y Santoña): la página del
+dueño embebe `ipcamlive.com/player/player.php?alias=<alias>`. Ese **alias es
+el identificador duradero**; el servidor (`sXX`) y el `streamid` salen de él
+y **los dos pueden cambiar sin aviso**. Descarga esa página del player y saca
+`address = 'http://sXXX.ipcamlive.com/'` y `streamid = '...'` — con eso se
+arman las URLs:
+
+```
+https://<servidor>/streams/<streamid>/stream.m3u8    (vídeo)
+https://<servidor>/streams/<streamid>/snapshot.jpg   (imagen fija)
+```
+
+Anota SIEMPRE el alias en un comentario junto a la URL. Es lo que permite
+resolverla de nuevo la próxima vez sin tener que redescubrir la página.
+
+**4. Verifica antes de dar nada por bueno.** Un `200` no basta:
+
+- Imagen fija: `Last-Modified` reciente de verdad (minutos, no días).
+- Vídeo HLS: lee el manifiesto **dos veces separadas unos segundos** y
+  comprueba que `EXT-X-MEDIA-SEQUENCE` ha avanzado. Un manifiesto puede
+  responder 200 y estar congelado.
+- **Y MIRA la imagen con `Read`**: que se vea mar, y que sea el sitio
+  correcto. Una URL puede responder perfectamente y ser otra playa, u otro
+  pueblo con el mismo nombre.
+
+**5. Aplica el cambio en TODOS los sitios.** Una misma URL puede vivir en
+cuatro ficheros distintos, y dejarse uno significa que el monitor sigue
+marcando rojo aunque la app ya funcione (o al revés):
+
+| Fichero | Qué contiene |
+|---|---|
+| `functions/webcam/[slug].js` | `WEBCAMS` — imagen fija, y las reservas |
+| `index.html` | `WEBCAMS_HLS` y `WEBCAMS_HLS_FUENTE` — vídeo |
+| `scripts/camaras/comprobar-camaras.mjs` | `WEBCAMS_VIDEO` — copia manual, no importa de index.html |
+| `scripts/turbidez/medir-turbidez.mjs` | `SPOTS_IMAGEN` / `SPOTS_VIDEO` — copias manuales |
+
+**Búscala con `Grep` por el identificador del stream, no por el slug** — así
+salen todas las apariciones aunque estén en ficheros que no esperabas. En el
+caso de Sopelana, la URL muerta estaba en 3 sitios y el snapshot de reserva
+apuntaba al mismo alias caído.
+
+**6. Cambiar una URL que se ha movido es una corrección trivial**: se aplica
+directa con commit y push a main, aunque toque `functions/`. No es una
+decisión de producto ni una integración nueva — es la misma cámara en otra
+dirección. (Reemplazarla por una cámara **distinta**, de otro dueño, sí es
+otra cosa: eso va por la regla "Cámara con mar a la vista".)
+
+**7. Si no encuentras sustituta, no inventes ninguna.** Déjalo escrito en
+`ROBOT.md`: qué comprobaste, qué descartaste y por qué. El objetivo es que la
+pasada siguiente no repita el mismo trabajo a ciegas — una cámara que lleva
+48 fallos seguidos y ninguna señal registrada nunca probablemente lleve meses
+muerta, y merece menos esfuerzo que una que funcionaba ayer.
+
+### Señal de que esta regla hace falta
+
+Si una cámara está en rojo y el usuario la ve funcionando, casi siempre es
+uno de estos dos:
+
+- **La fuente principal y la que se vigila no son la misma.** Un spot con
+  vídeo en `WEBCAMS_HLS` y una imagen fija de reserva en `WEBCAMS`: si cae el
+  vídeo, el monitor marca rojo aunque la reserva funcione, y al revés.
+- **La URL se ha movido** y la cámara sigue viva en otra dirección.
+
+Los dos se resuelven con el mismo método de arriba.
+
 ## Aprendizaje por zonas (añadido 2026-09-19, pedido explícito del usuario)
 
 Principio general para la pasada diaria de "cámaras/webcams"
