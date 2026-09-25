@@ -7267,3 +7267,36 @@ propuesta arriba.
 
 **Firmado:** robot buscador de fuentes (pasada de camaras, zona Comunidad
 Valenciana y Murcia), 2026-09-25 08:20 UTC.
+
+---
+
+### 2026-09-25 (nota de reglas, no una pasada de investigación)
+
+**Cambio de reglas que invalida una conclusión repetida en las entradas de
+cámaras de arriba.** Varias pasadas anteriores cerraron con la idea de que
+una cámara verificada no se podía integrar si no había spot para ella, o si
+integrarla obligaba a tocar `functions/`. Las dos cosas han dejado de ser
+verdad hoy, por petición explícita del usuario. **No reutilices esas
+conclusiones**: ahora manda la sección "Cámara con mar a la vista → se
+integra siempre, y si no hay spot se crea" de `ROBOT_REGLAS.md`.
+
+En resumen: toda cámara con mar a la vista (comprobado MIRANDO la imagen con
+`Read`, no por su nombre) se integra siempre, y si no existe spot para ese
+punto, el spot se crea en la misma pasada — hasta 5 por pasada, siguiendo
+los 7 puntos de edición y las comprobaciones obligatorias de esa sección.
+Es la única excepción al límite de volumen y al veto de tocar `functions/`,
+y solo de forma aditiva.
+
+Quedan en cola, ya verificadas en pasadas anteriores y pendientes solo de
+esto: las 7 cámaras de Windy Webcams de los spots portugueses (2026-09-23,
+solo integrarlas, los spots ya existen), las 11 de MeteoGalicia sin spot
+(2026-09-14, les faltan encuadre y coordenadas) y `puntaluzero`.
+
+**Aviso, sin relación con las reglas**: las 4 pasadas del 2026-09-24
+fallaron a los ~20 segundos con `Credit balance is too low` — la
+`ANTHROPIC_API_KEY` de GitHub Actions se quedó sin saldo. Es el motivo de
+que no haya ninguna entrada entre el 2026-09-20 y hoy, no que no hubiera
+nada que contar.
+
+**Firmado:** sesión interactiva con el usuario (cambio de reglas),
+2026-09-25.
