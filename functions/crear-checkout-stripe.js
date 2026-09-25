@@ -135,14 +135,49 @@ export async function onRequestPost(context) {
       params.append("customer_email", usuario.email);
     }
 
-    const resp = await fetch("https://api.stripe.com/v1/checkout/sessions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${stripeKey}`,
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: params.toString(),
-    });
+    const crearSesion = (cuerpo) =>
+      fetch("https://api.stripe.com/v1/checkout/sessions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${stripeKey}`,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: cuerpo.toString(),
+      });
+
+    let resp = await crearSesion(params);
+
+    // Cliente de Stripe guardado que ya no existe (añadido 2026-09-25, bug
+    // real en producción). `suscripciones.stripe_customer_id` se rellenó
+    // durante las pruebas en modo TEST; al pasar la cuenta a modo live ese
+    // cliente dejó de existir, porque test y live son mundos separados en
+    // Stripe. Resultado: "No such customer: 'cus_...'" y nadie podía
+    // suscribirse, con la clave, la cuenta y los precios correctos.
+    //
+    // En vez de exigir limpiar la tabla a mano, se reintenta UNA vez sin el
+    // customer: Stripe crea uno nuevo y el webhook guarda su id al confirmar
+    // la suscripción, así que el problema se cura solo. Cubre además
+    // cualquier otro caso en que el cliente desaparezca (borrado desde el
+    // Dashboard, cambio de cuenta), no solo el de test-a-live.
+    if (!resp.ok && clienteExistente) {
+      const detalle = await resp.clone().text();
+      let falloDeCliente = false;
+      try {
+        const cuerpo = JSON.parse(detalle);
+        falloDeCliente =
+          cuerpo?.error?.code === "resource_missing" && cuerpo?.error?.param === "customer";
+      } catch (e) {
+        falloDeCliente = false;
+      }
+      if (falloDeCliente) {
+        console.error(
+          `crear-checkout-stripe: el cliente guardado ${clienteExistente} no existe en esta cuenta de Stripe; reintentando sin él`
+        );
+        params.delete("customer");
+        params.append("customer_email", usuario.email);
+        resp = await crearSesion(params);
+      }
+    }
 
     if (!resp.ok) {
       // El cuerpo de error de Stripe va SOLO al log del Worker, nunca al
