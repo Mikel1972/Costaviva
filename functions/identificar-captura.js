@@ -36,6 +36,19 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 // mano) de un fallo real del endpoint. Identificar la foto es una ayuda
 // opcional: la captura se guarda igual sin ella, así que esto nunca debe
 // presentarse como un error de la app.
+// SI APARECE UN SEGUNDO ENDPOINT QUE LLAME A ANTHROPIC, extrae esta función
+// a functions/_lib/ antes de copiarla. Pólizas.ai tiene el equivalente
+// (clasificarFalloClaude en functions/api/polizas/_claude.js) reutilizado por
+// 8 endpoints, y ahí compensa de sobra. Aquí todavía no: con un solo uso, un
+// helper compartido sería una indirección sin beneficio.
+//
+// (El robot de mejores prácticas propuso el 2026-09-25 unificar esto con el
+// manejo de errores de crear-checkout-stripe.js. Se revisó y se descartó: no
+// son la misma idea. Esto CLASIFICA fallos de servicio en un mensaje para el
+// usuario; aquello DETECTA una condición concreta y recuperable —un cliente
+// de Stripe que ya no existe— para reintentar. Lo único común es el
+// try/JSON.parse del cuerpo de error, cinco líneas. Unirlos habría hecho el
+// código más difícil de leer, no menos.)
 function clasificarFalloProveedor(status, textoCrudo) {
   let tipo = "", mensajeProveedor = "";
   try {

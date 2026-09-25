@@ -2299,6 +2299,26 @@ propio workflow quedan privados **sin que nadie tenga que acordarse de
 bloquearlos**, gracias a la lista blanca. Es justo el fallo por omisión que
 se buscaba invertir.
 
+## Regla para futuros endpoints con `service_role` (2026-09-25)
+
+Propuesta 5 de la comparativa entre proyectos. **Hoy no hay ningún hueco**:
+los dos sitios que usan `service_role` (`notificar-altas.js`,
+`stripe-webhook.js`, y desde hoy `avisar-fin-prueba.js`) no construyen
+filtros de PostgREST a partir de input variable. Se anota antes de que haga
+falta, que es cuando sirve.
+
+Cuando se escriba un endpoint nuevo con `service_role` **y algún parámetro
+dinámico** dentro de un filtro, copiar el patrón de Lurnahi
+(`approve-delete.js`): **validar el formato del identificador** (que un UUID
+sea un UUID) y **usar una lista blanca de nombres de tabla** antes de
+interpolar nada en la query. Con `service_role` no hay RLS que pare un
+filtro más amplio de lo previsto: lo único que protege es lo que valide el
+propio endpoint.
+
+Es exactamente el mismo criterio que la lista blanca de rutas — lo no
+previsto se rechaza por defecto, en vez de confiar en haber pensado en todos
+los casos malos.
+
 ## Pendiente conocido (no tocar sin confirmar)
 
 - **Cuenta atrás para reintentar `/prevision`** (2026-09-14): la cuota
