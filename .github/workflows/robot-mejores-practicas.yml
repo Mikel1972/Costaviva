@@ -1,0 +1,123 @@
+name: Robot de mejores prácticas entre proyectos
+
+# Pedido explícito del usuario (2026-09-25): "un robot que contenga las
+# mejores experiencias de las diferentes apps creadas, para que todas las
+# utilicen y no tengamos que partir de cero cada vez".
+#
+# La necesidad quedó demostrada ese mismo día: al ir a exportar a Pólizas.ai
+# unas lecciones de Costaviva, resultó que Pólizas.ai YA resolvía mejor dos
+# de las tres (lista blanca de rutas, y clasificación de fallos de la API de
+# Claude). Se descubrió por casualidad, revisando a mano. Este robot existe
+# para que eso no dependa de la casualidad.
+#
+# QUÉ PUEDE Y QUÉ NO (decisión explícita del usuario):
+# - Clona los otros 3 repos en SOLO LECTURA, en /tmp, y NUNCA les hace
+#   commit ni push. Un robot que modifica cuatro proyectos a la vez es
+#   exactamente lo que no queremos.
+# - Su única escritura es COMPARATIVA_PROYECTOS.md en ESTE repo. Propone;
+#   portar cada cosa sigue siendo decisión humana.
+# - No propone por gusto: cada propuesta necesita señalar el fichero y la
+#   línea donde un proyecto lo hace mejor. Una propuesta sin código detrás
+#   es una opinión, y de eso ya vamos servidos.
+#
+# COMPARATIVA_PROYECTOS.md no se sirve en público: desde la migración a
+# lista blanca (functions/_lib/rutas-publicas.js, 2026-09-25) cualquier
+# fichero nuevo es privado por defecto, sin tener que acordarse de nada.
+#
+# COSTE: semanal, no diario — comparar 4 repos es una sesión larga y el
+# conocimiento entre proyectos no cambia de un día para otro. El repo ya
+# tuvo un incidente real de gasto de API (ver CLAUDE.md, 2026-09-16).
+
+on:
+  schedule:
+    # Domingos, cuando no corre ningún otro robot pesado.
+    - cron: "37 4 * * 0"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  comparar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Clonar los proyectos hermanos (solo lectura)
+        id: clonar
+        env:
+          GH_PAT: ${{ secrets.GH_PAT_MULTIPROYECTO }}
+        run: |
+          # Los otros 3 repos son privados, así que el GITHUB_TOKEN de este
+          # runner no llega a ellos: hace falta un PAT con permiso de LECTURA
+          # sobre los cuatro. Si no está, el workflow no falla en rojo (no es
+          # un bug del repo, es una credencial que falta) — avisa y para.
+          if [ -z "$GH_PAT" ]; then
+            echo "::warning::Falta el secret GH_PAT_MULTIPROYECTO (PAT con lectura sobre polizas-ai, etxeapala y Lurnahi). Sin él este robot no puede comparar nada."
+            {
+              echo "### Robot de mejores prácticas: no ejecutado"
+              echo "Falta el secret \`GH_PAT_MULTIPROYECTO\`: un Personal Access Token con permiso de **lectura** sobre \`Mikel1972/polizas-ai\`, \`Mikel1972/etxeapala\` y \`Mikel1972/Lurnahi\`."
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "listo=no" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          mkdir -p /tmp/hermanos
+          OK=0
+          for REPO in polizas-ai etxeapala Lurnahi; do
+            # --depth 1: solo hace falta el estado actual, no el historial.
+            if git clone --depth 1 --quiet "https://x-access-token:${GH_PAT}@github.com/Mikel1972/${REPO}.git" "/tmp/hermanos/${REPO}" 2>/dev/null; then
+              echo "clonado ${REPO}"
+              OK=$((OK+1))
+            else
+              echo "::warning::No se pudo clonar ${REPO} — ¿el PAT tiene acceso a ese repo?"
+            fi
+          done
+          if [ "$OK" = "0" ]; then
+            echo "::warning::No se pudo clonar ningún repo hermano. Nada que comparar."
+            echo "listo=no" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # El remoto se borra de cada clon: así, ni por accidente puede
+          # salir un push hacia otro proyecto.
+          for D in /tmp/hermanos/*/; do git -C "$D" remote remove origin || true; done
+          echo "listo=si" >> "$GITHUB_OUTPUT"
+
+      - name: Instalar Claude Code CLI
+        if: steps.clonar.outputs.listo == 'si'
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Configurar git
+        if: steps.clonar.outputs.listo == 'si'
+        run: |
+          git config user.name "Claude (robot Costaviva)"
+          git config user.email "noreply@anthropic.com"
+
+      - name: Comparar y proponer
+        if: steps.clonar.outputs.listo == 'si'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          SALIDA_CLAUDE=/tmp/claude-salida.log
+          claude -p "Eres el robot de mejores prácticas entre los proyectos de este usuario. Tienes el repo Costaviva en el directorio actual, y los otros tres clonados en SOLO LECTURA en /tmp/hermanos/polizas-ai, /tmp/hermanos/etxeapala y /tmp/hermanos/Lurnahi (puede faltar alguno; trabaja con los que haya). Los cuatro comparten stack: Cloudflare Pages, Supabase, Functions en el edge, sin build step, y comparten cuenta de Anthropic, Cloudflare y Stripe. REGLA ABSOLUTA: NO escribas, no hagas commit ni push en /tmp/hermanos — son solo para leer. Tu única escritura permitida es COMPARATIVA_PROYECTOS.md en el directorio actual. Lee primero /tmp/hermanos/polizas-ai/TRAMPAS_COMPARTIDAS.md, que ya recoge trampas verificadas, y no repitas lo que ya esté ahí. Si existe ROBOT_PAUSADO en la raíz, para y no escribas nada. TAREA: compara los proyectos en estas dimensiones concretas, no en abstracto — (1) cómo deciden qué rutas se sirven en público; (2) cómo tratan los fallos de proveedores externos (Anthropic, Stripe, APIs de datos): si clasifican el error, si reenvían el crudo al usuario, si degradan sin romper; (3) cómo protegen los datos de usuario en Supabase (RLS, funciones security definer, uso de service_role); (4) qué hacen sus workflows cuando falta una credencial o se agota el saldo, y si un fallo puede quedar en verde; (5) cómo verifican un cambio antes de darlo por bueno (tests, smoke tests, comprobaciones en producción). Para CADA hallazgo di qué proyecto lo hace mejor, CITA el fichero y la línea concretos, y explica en una frase por qué es mejor — no vale 'parece más limpio'. Si un proyecto no tiene esa dimensión (p.ej. no usa Stripe), dilo y pasa. Escribe el resultado en COMPARATIVA_PROYECTOS.md: reescribe el fichero entero cada semana (no acumules, que se vuelve ilegible), con la fecha arriba, ordenado por lo que más aportaría portar. Marca claramente lo que ya esté portado desde la semana anterior. Sé honesto sobre la dirección: si Costaviva va por detrás en algo, dilo — es lo más útil del informe. Al final, haz commit y push a main SOLO de COMPARATIVA_PROYECTOS.md, nada más." \
+            --dangerously-skip-permissions \
+            --model claude-sonnet-5 \
+            --max-turns 60 \
+            --allowedTools "Bash,Read,Write,Edit,Grep,Glob" > "$SALIDA_CLAUDE" 2>&1 || CODIGO=$?
+          # Guardarraíl de saldo, igual que el resto de robots del repo.
+          CODIGO=${CODIGO:-0}
+          cat "$SALIDA_CLAUDE" || true
+          if [ "$CODIGO" -ne 0 ] && grep -qiE "credit balance is too low|purchase credits" "$SALIDA_CLAUDE"; then
+            echo "::warning::Sin saldo en ANTHROPIC_API_KEY: esta pasada no se ha ejecutado. No es un fallo del repo."
+            echo "### Pasada no ejecutada: sin saldo de API" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          exit "$CODIGO"
+
+      - name: Borrar los clones
+        if: always()
+        run: rm -rf /tmp/hermanos
