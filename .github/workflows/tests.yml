@@ -1,0 +1,38 @@
+name: Tests
+
+# Tests de lógica pura: sin red, sin Supabase, sin secretos. Corren en
+# segundos y por eso pueden correr en CADA push y en cada pull request, que
+# es donde está su valor — una regresión se ve antes de mergear, no al día
+# siguiente en el informe.
+#
+# Deliberadamente NO incluye test/endpoints-auth.test.js: ese sí habla con
+# Supabase y con producción, necesita secretos y tarda. Tiene su propio
+# workflow diario (auth-test.yml) y ahí debe quedarse — mezclarlos haría que
+# un fallo de red tumbara el check de cada commit, y un check que falla por
+# motivos ajenos se acaba ignorando.
+#
+# Añadido 2026-09-25, propuesto por el robot de mejores prácticas: Pólizas.ai
+# ya tenía este patrón (tests.yml allí) y Costaviva no tenía ningún test
+# corriendo en CI, solo el diario contra producción.
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Tests de lógica pura
+        run: node --test test/rutas-publicas.test.js
