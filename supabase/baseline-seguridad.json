@@ -1,0 +1,557 @@
+{
+  "tablas": [
+    {
+      "tablename": "alertas_sos",
+      "rls_enabled": true,
+      "policies": [
+        {
+          "name": "cada usuario inserta solo sus alertas",
+          "cmd": "a",
+          "roles": [
+            "-"
+          ]
+        },
+        {
+          "name": "cada usuario ve solo sus alertas",
+          "cmd": "r",
+          "roles": [
+            "-"
+          ]
+        }
+      ]
+    },
+    {
+      "tablename": "camara_estado",
+      "rls_enabled": true,
+      "policies": [
+        {
+          "name": "lectura pública del estado de las cámaras",
+          "cmd": "r",
+          "roles": [
+            "-"
+          ]
+        },
+        {
+          "name": "solo la anon key actualiza (protegido por secreto en la funció",
+          "cmd": "w",
+          "roles": [
+            "anon"
+          ]
+        },
+        {
+          "name": "solo la anon key inserta (protegido por secreto en la función)",
+          "cmd": "a",
+          "roles": [
+            "anon"
+          ]
+        }
+      ]
+    },
+    {
+      "tablename": "captura_fotos",
+      "rls_enabled": true,
+      "policies": [
+        {
+          "name": "cada usuario borra solo sus fotos",
+          "cmd": "d",
+          "roles": [
+            "-"
+          ]
+        },
+        {
+          "name": "cada usuario inserta solo sus fotos",
+          "cmd": "a",
+          "roles": [
+            "-"
+          ]
+        },
+        {
+          "name": "cada usuario ve solo sus fotos",
+          "cmd": "r",
+          "roles": [
+            "-"
+          ]
+        }
+      ]
+    },
+    {
+      "tablename": "capturas",
+      "rls_enabled": true,
+      "policies": [
+        {
+          "name": "cada usuario borra solo sus capturas",
+          "cmd": "d",
+          "roles": [
+            "-"
+          ]
+        },
+        {
+          "name": "cada usuario inserta solo sus capturas",
+          "cmd": "a",
+          "roles": [
+            "-"
+          ]
+        },
+        {
+          "name": "cada usuario ve solo sus capturas",
+          "cmd": "r",
+          "roles": [
+            "-"
+          ]
+        }
+      ]
+    },
+    {
+      "tablename": "coeficiente_marea_actual",
+      "rls_enabled": true,
+      "policies": [
+        {
+          "name": "la anon key actualiza (protegido por secreto en la función)",
+          "cmd": "a",
+          "roles": [
+            "anon"
+          ]
+        },
+        {
+          "name": "la anon key actualiza (protegido por secreto en la función), u",
+          "cmd": "w",
+          "roles": [
+            "anon"
+          ]
+        },
+        {
+          "name": "lectura pública del coeficiente de marea",
+          "cmd": "r",
+          "roles": [
+            "-"
+          ]
+        }
+      ]
+    },
+    {
+      "tablename": "contactos_emergencia",
+      "rls_enabled": true,
+      "policies": [
+        {
+          "name": "cada usuario borra solo sus contactos",
+          "cmd": "d",
+          "roles": [
+            "-"
+          ]
+        },
+        {
+          "name": "cada usuario inserta solo sus contactos",
+          "cmd": "a",
+          "roles": [
+            "-"
+          ]
+        },
+        {
+          "name": "cada usuario ve solo sus contactos",
+          "cmd": "r",
+          "roles": [
+            "-"
+          ]
+        }
+      ]
+    },
+    {
+      "tablename": "especies_comunidad",
+      "rls_enabled": true,
+      "policies": [
+        {
+          "name": "cualquiera logueado añade una especie nueva",
+          "cmd": "a",
+          "roles": [
+            "authenticated"
+          ]
+        },
+        {
+          "name": "cualquiera logueado ve la lista de especies",
+          "cmd": "r",
+          "roles": [
+            "authenticated"
+          ]
+        }
+      ]
+    },
+    {
+      "tablename": "estadisticas_capturas_anonimas",
+      "rls_enabled": true,
+      "policies": []
+    },
+    {
+      "tablename": "estadisticas_salidas_anonimas",
+      "rls_enabled": true,
+      "policies": []
+    },
+    {
+      "tablename": "euskalmet_rios",
+      "rls_enabled": true,
+      "policies": [
+        {
+          "name": "lectura pública de precipitación/presión de ríos vascos",
+          "cmd": "r",
+          "roles": [
+            "-"
+          ]
+        },
+        {
+          "name": "solo la anon key actualiza (pnción)",
+          "cmd": "w",
+          "roles": [
+            "anon"
+          ]
+        },
+        {
+          "name": "solo la anon key inserta (protegido por secreto en la función)",
+          "cmd": "a",
+          "roles": [
+            "anon"
+          ]
+        }
+      ]
+    },
+    {
+      "tablename": "eventos_uso",
+      "rls_enabled": true,
+      "policies": [
+        {
+          "name": "cada usuario registra solo sus propios eventos",
+          "cmd": "a",
+          "roles": [
+            "-"
+          ]
+        }
+      ]
+    },
+    {
+      "tablename": "grupos",
+      "rls_enabled": true,
+      "policies": [
+        {
+          "name": "cualquiera crea su propio grupo",
+          "cmd": "a",
+          "roles": [
+            "-"
+          ]
+        },
+        {
+          "name": "ver grupos de los que soy miembro",
+          "cmd": "r",
+          "roles": [
+            "-"
+          ]
+        }
+      ]
+    },
+    {
+      "tablename": "grupos_historico",
+      "rls_enabled": true,
+      "policies": []
+    },
+    {
+      "tablename": "invitaciones_grupo",
+      "rls_enabled": true,
+      "policies": [
+        {
+          "name": "un miembro del grupo genera invitaciones",
+          "cmd": "a",
+          "roles": [
+            "-"
+          ]
+        },
+        {
+          "name": "ver las invitaciones que yo he creado",
+          "cmd": "r",
+          "roles": [
+            "-"
+          ]
+        }
+      ]
+    },
+    {
+      "tablename": "miembros_grupo",
+      "rls_enabled": true,
+      "policies": [
+        {
+          "name": "actualizar mis propias preferencias de compartir",
+          "cmd": "w",
+          "roles": [
+            "-"
+          ]
+        },
+        {
+          "name": "salir de un grupo (borrar mi propia fila)",
+          "cmd": "d",
+          "roles": [
+            "-"
+          ]
+        },
+        {
+          "name": "ver mi membresia o la de mi grupo",
+          "cmd": "r",
+          "roles": [
+            "-"
+          ]
+        }
+      ]
+    },
+    {
+      "tablename": "perfiles",
+      "rls_enabled": true,
+      "policies": [
+        {
+          "name": "cada usuario actualiza su propio apodo",
+          "cmd": "w",
+          "roles": [
+            "-"
+          ]
+        },
+        {
+          "name": "cada usuario ve su propio perfil",
+          "cmd": "r",
+          "roles": [
+            "-"
+          ]
+        }
+      ]
+    },
+    {
+      "tablename": "presion_historico",
+      "rls_enabled": true,
+      "policies": [
+        {
+          "name": "lectura pública de la presión histórica",
+          "cmd": "r",
+          "roles": [
+            "-"
+          ]
+        },
+        {
+          "name": "solo la anon key inserta (protegido por secreto en la función)",
+          "cmd": "a",
+          "roles": [
+            "anon"
+          ]
+        }
+      ]
+    },
+    {
+      "tablename": "salidas_pesca",
+      "rls_enabled": true,
+      "policies": [
+        {
+          "name": "cada usuario actualiza solo sus salidas",
+          "cmd": "w",
+          "roles": [
+            "-"
+          ]
+        },
+        {
+          "name": "cada usuario borra solo sus salidas",
+          "cmd": "d",
+          "roles": [
+            "-"
+          ]
+        },
+        {
+          "name": "cada usuario inserta solo sus salidas",
+          "cmd": "a",
+          "roles": [
+            "-"
+          ]
+        },
+        {
+          "name": "cada usuario ve solo sus salidas",
+          "cmd": "r",
+          "roles": [
+            "-"
+          ]
+        }
+      ]
+    },
+    {
+      "tablename": "sinonimos_especie",
+      "rls_enabled": true,
+      "policies": [
+        {
+          "name": "la anon key solo propone, nunca verifica",
+          "cmd": "a",
+          "roles": [
+            "anon"
+          ]
+        },
+        {
+          "name": "lectura pública de sinónimos",
+          "cmd": "r",
+          "roles": [
+            "-"
+          ]
+        }
+      ]
+    },
+    {
+      "tablename": "spots_favoritos",
+      "rls_enabled": true,
+      "policies": [
+        {
+          "name": "cada usuario borra solo sus favoritos",
+          "cmd": "d",
+          "roles": [
+            "-"
+          ]
+        },
+        {
+          "name": "cada usuario marca solo sus favoritos",
+          "cmd": "a",
+          "roles": [
+            "-"
+          ]
+        },
+        {
+          "name": "cada usuario ve solo sus favoritos",
+          "cmd": "r",
+          "roles": [
+            "-"
+          ]
+        }
+      ]
+    },
+    {
+      "tablename": "spots_usuario",
+      "rls_enabled": true,
+      "policies": [
+        {
+          "name": "borrar solo mis ubicaciones",
+          "cmd": "d",
+          "roles": [
+            "-"
+          ]
+        },
+        {
+          "name": "crear solo mis ubicaciones",
+          "cmd": "a",
+          "roles": [
+            "-"
+          ]
+        },
+        {
+          "name": "editar solo mis ubicaciones",
+          "cmd": "w",
+          "roles": [
+            "-"
+          ]
+        },
+        {
+          "name": "ver mis ubicaciones o las públicas",
+          "cmd": "r",
+          "roles": [
+            "-"
+          ]
+        }
+      ]
+    },
+    {
+      "tablename": "suscripciones",
+      "rls_enabled": true,
+      "policies": [
+        {
+          "name": "cada usuario ve su propia suscripcion",
+          "cmd": "r",
+          "roles": [
+            "-"
+          ]
+        }
+      ]
+    },
+    {
+      "tablename": "turbidez_historico",
+      "rls_enabled": true,
+      "policies": [
+        {
+          "name": "lectura publica de la turbidez historica",
+          "cmd": "r",
+          "roles": [
+            "-"
+          ]
+        },
+        {
+          "name": "lectura pública de la turbidez histórica",
+          "cmd": "r",
+          "roles": [
+            "-"
+          ]
+        },
+        {
+          "name": "solo la anon key actualiza su fila del dia",
+          "cmd": "w",
+          "roles": [
+            "anon"
+          ]
+        },
+        {
+          "name": "solo la anon key actualiza su propia fila del día (upsert)",
+          "cmd": "w",
+          "roles": [
+            "anon"
+          ]
+        },
+        {
+          "name": "solo la anon key inserta",
+          "cmd": "a",
+          "roles": [
+            "anon"
+          ]
+        },
+        {
+          "name": "solo la anon key inserta (protegido por secreto en la función)",
+          "cmd": "a",
+          "roles": [
+            "anon"
+          ]
+        }
+      ]
+    }
+  ],
+  "migraciones": [
+    "20260912144111",
+    "20260912152028",
+    "20260912152501",
+    "20260912162949",
+    "20260912170000",
+    "20260912180000",
+    "20260912190000",
+    "20260912200000",
+    "20260912210000",
+    "20260912220000",
+    "20260912230000",
+    "20260913000000",
+    "20260913010000",
+    "20260913020000",
+    "20260913030000",
+    "20260913080000",
+    "20260913090000",
+    "20260913091500",
+    "20260914100000",
+    "20260915120000",
+    "20260915130000",
+    "20260915140000",
+    "20260915150000",
+    "20260915160000",
+    "20260917080000",
+    "20260917092621",
+    "20260917101022",
+    "20260917104826",
+    "20260917110508",
+    "20260917160000",
+    "20260918120000",
+    "20260918130000",
+    "20260918140000",
+    "20260918150000",
+    "20260918160000",
+    "20260919150000",
+    "20260919160000",
+    "20260920100000"
+  ]
+}
