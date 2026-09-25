@@ -1540,6 +1540,94 @@ Antes de asumir que un gasto alto viene de este repo, revisar también
 `RemoteTrigger`/`claude.ai/code/routines` de la cuenta completa, no solo
 los workflows de este repo.
 
+## Cámaras con mar: se integran siempre, y el robot ya puede crear spots (2026-09-25)
+
+Pedido explícito del usuario, a partir de un caso que recordaba de días
+atrás ("había una cámara en una playa de Galicia, pero como no era spot no
+la incluiste"): **en la pasada de cámaras, toda cámara con mar a la vista
+se integra, y si no existe spot para ese punto, se crea**. Antes se
+quedaban solo anotadas en `ROBOT.md` como candidatas.
+
+Al investigarlo salieron **dos** bloqueos, no uno — y el segundo era el más
+dañino porque nadie lo había visto:
+
+1. **Sin spot, no se integraba.** Crear un spot era decisión de producto,
+   así que solo se proponía. Caso real: la pasada del 2026-09-14 verificó
+   11 cámaras de MeteoGalicia (Burela, Viveiro, Cariño, Cedeira,
+   Narón/Aldea Nova, Arteixo, Ribeira/Sálvora, Vilanova/Corón,
+   Marín/Aguete, Bueu/Ons, Poio/Castrove) y no integró ninguna, porque el
+   norte de Lugo y Ferrolterra no tienen spot fijo. La pasada del
+   2026-09-21 volvió a esa zona y concluyó "no hay ningún spot fijo sin
+   cámara aquí" — las 11 seguían intactas.
+2. **El límite de volumen le prohibía tocar `functions/` — así que no podía
+   integrar NINGUNA cámara de imagen fija, ni siquiera en spots que ya
+   existían.** `WEBCAMS` vive en `functions/webcam/[slug].js`, y la "Red de
+   seguridad de la automatización" de `ROBOT_REGLAS.md` veta cualquier
+   cambio directo en `functions/`. Eso es lo que dejó las 7 cámaras de
+   Windy Webcams de la pasada de Portugal del 2026-09-23 en "sin integrar
+   todavía" pese a estar verificadas y ser de spots ya creados. El robot
+   llevaba semanas encontrando cámaras que estructuralmente no podía
+   aplicar.
+
+**Regla nueva**: sección "Cámara con mar a la vista → se integra siempre, y
+si no hay spot se crea" en `ROBOT_REGLAS.md`, con las tres referencias
+cruzadas puestas para que no se contradiga con las reglas que ya había (el
+bullet de "decisión de producto → solo proponer", la regla de
+`puntaluzero`, y el límite de volumen). Lo que define:
+
+- **Qué cuenta como "tiene mar"**: mar abierto, playa, rompiente, ría,
+  bocana, y también la dársena de un puerto o marina (se pesca desde los
+  muelles). No cuentan ríos de interior, embalses, ni una cámara donde el
+  mar es una franja lejana de la que no se puede leer el estado del agua.
+  **Se decide mirando la imagen con `Read`, nunca por el nombre de la
+  cámara** — una "playa de X" puede estar apuntando al paseo. Si la fuente
+  es solo HLS y no se puede sacar un fotograma en esa pasada, no se crea el
+  spot: se propone diciendo que la comprobación visual no se pudo hacer.
+- **Crear un spot son 7 puntos de edición**, no uno: `SPOTS` en
+  `index.html` *y* en `functions/prevision.js` (si falta en una de las dos,
+  el spot nace en S/D permanente), el Set de especies por zona,
+  `SPOTS_CON_WEBCAM`, la cámara en `WEBCAMS`/`WEBCAMS_HLS`, y las listas
+  manuales de `comprobar-camaras.mjs` y `medir-turbidez.mjs`.
+- **Comprobación obligatoria que evita un spot nacido roto**: pedir de
+  verdad a la Marine API de Open-Meteo el `lat`/`lon` nuevo antes de
+  commitear. Si la coordenada cae tierra adentro devuelve `null` en todo, y
+  el spot se publica sin oleaje, marea ni temperatura. La coordenada es
+  donde se pesca (la playa, el muelle), no donde está montada la lente.
+- **Campos de siembra a cero**, nunca a un valor plausible inventado —
+  `indiceMar()` ya devuelve `null` (S/D) hasta que el spot tenga un fetch
+  real de `/prevision`, así que no se llega a mostrar nada falso.
+- **Tope de 5 spots nuevos por pasada** (integrar cámaras en spots que ya
+  existen no cuenta contra el tope). El resto queda como cola en `ROBOT.md`
+  para la siguiente pasada de esa zona.
+- **La excepción al límite de volumen es acotada a propósito**: vale solo
+  para esos puntos de edición y solo de forma aditiva. Cualquier otro
+  cambio en `functions/` o `supabase/` sigue con la regla de siempre.
+
+`ROBOT_REGLAS.md` lleva además una "Cola pendiente de arranque" con las 7
+de Portugal, las 11 gallegas y `puntaluzero`, para que el robot las recoja
+cuando la rotación vuelva a sus zonas en vez de redescubrirlas.
+
+**Compromiso asumido a sabiendas**: el robot hace commit y push directo a
+`main`, sin rama ni preview, y crear un spot SÍ tiene efecto visible para
+el usuario — así que esto se salta la disciplina de "rama + preview antes
+de mergear" del final de este fichero. Se acepta porque era lo pedido ("si
+no existe spot, se crea"), y en su lugar las guardas son la comprobación
+real contra Open-Meteo, los `node --check` obligatorios, el tope de 5 y el
+carácter puramente aditivo del cambio. Si algún día se prefiere lo
+contrario, la alternativa natural es que el robot abra un PR en vez de
+empujar a `main` — pero eso vuelve a convertirlo en una propuesta.
+
+**Aviso operativo encontrado el mismo día: el robot estaba parado, no
+inactivo.** Las 4 pasadas del 2026-09-24 fallaron a los ~20 segundos con
+`Credit balance is too low` — la `ANTHROPIC_API_KEY` de GitHub Actions se
+quedó sin saldo, así que la última entrada real en `ROBOT.md` era del
+2026-09-20 pese a que los crons seguían disparando. **Ninguna regla nueva
+de este repo sirve de nada mientras eso siga así.** Para la próxima vez que
+parezca que el robot "no encuentra nada": mirar primero
+`gh run list --workflow=robot-buscador-fuentes.yml` y, si los fallos duran
+~20s, es saldo de API, no la tarea — un fallo de saldo es indistinguible de
+"sin novedades" si solo se mira el Issue diario.
+
 ## Panel de administrador (2026-09-13)
 
 Pedido explícito del usuario: "como en Pólizas.ai", ver quién está
@@ -1744,9 +1832,8 @@ actualizaron para no referenciar algo que ya no existe.
 
 **Turbidez relativa del agua** — pieza completa nueva (no confundir con
 el oleaje visual, es un cálculo aparte): tabla `turbidez_historico`
-(pendiente de aplicar la migración
-`20260914100000_turbidez_historico.sql` en Supabase — no se ha hecho
-todavía), endpoint `/registrar-turbidez` (mismo `CRON_SECRET` que
+(migración `20260914100000_turbidez_historico.sql`,
+aplicada), endpoint `/registrar-turbidez` (mismo `CRON_SECRET` que
 `/registrar-presion`), workflow diario `turbidez.yml` (mediodía Madrid,
 runner de GitHub Actions con `sharp`+`ffmpeg` porque Cloudflare Workers
 no tiene API de imagen/vídeo) que analiza saturación/tono HSV del agua
@@ -1755,9 +1842,18 @@ spot contra otro (el ángulo de cada cámara lo haría sin sentido, mismo
 problema que ya existía con el coeficiente de marea) — cada lectura se
 clasifica en no turbia/turbia/muy turbia por percentil contra el propio
 histórico de 90 días de ESE spot, y con menos de 14 lecturas se queda
-sin clasificar (S/D). **Pendiente**: aplicar la migración y lanzar el
-workflow a mano (`workflow_dispatch`) para la primera prueba real — no
-se ha ejecutado todavía.
+sin clasificar (S/D).
+
+**✅ Cerrado y funcionando, comprobado en real el 2026-09-25** (esta
+sección decía hasta hoy que la migración estaba sin aplicar y el workflow
+sin ejecutar — las dos cosas eran ya falsas, quedó sin actualizar):
+`supabase migration list` confirma `20260914100000` aplicada en
+producción, `turbidez.yml` ha corrido en verde todos los días desde el
+2026-09-14 (~5 min por pasada), y `turbidez_historico` tiene 380 filas
+reales — 37 spots con lectura del día anterior. Con 11 lecturas por spot
+todavía está por debajo de `TURBIDEZ_MIN_LECTURAS` (14), así que la app
+sigue mostrando S/D a propósito: **empieza a clasificar sola alrededor
+del 2026-09-28**, sin que haya que tocar nada.
 
 **Spots, ríos y boyas como capas independientes** — pedido explícito del
 usuario para un mapa limpio y personalizable: tras el login solo la capa

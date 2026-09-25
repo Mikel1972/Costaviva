@@ -11,7 +11,10 @@ usuario afina un criterio — no es un historial (para eso está `ROBOT.md`).
   en una rama `robot/AAAA-MM-DD`, verifica con `node --check` antes de
   commitear.
 - Cualquier cosa que cambie mucho el frontend, el diseño del mapa, o que
-  sea una decisión de producto → no implementar, solo proponer aquí.
+  sea una decisión de producto → no implementar, solo proponer aquí. Con
+  UNA excepción acotada (ver la sección "Cámara con mar a la vista" más
+  abajo): una cámara con mar a la vista sí se integra siempre, y si no
+  existe spot para ella, el spot se crea en esa misma pasada.
 - Corrección de auditoría trivial (un campo de un JSON, una URL que
   cambió de dominio) → corregir directamente. Cualquier otra cosa →
   proponer.
@@ -211,6 +214,187 @@ usuario afina un criterio — no es un historial (para eso está `ROBOT.md`).
 
 (ninguno todavía)
 
+## Cámara con mar a la vista → se integra siempre, y si no hay spot se crea (añadido 2026-09-25, pedido explícito del usuario)
+
+Hasta hoy, una cámara verificada podía quedarse sin integrar por dos
+motivos que no tenían nada que ver con su calidad:
+
+- **No había spot para ella.** Crear un spot nuevo se trataba como decisión
+  de producto. La pasada de Galicia del 2026-09-14 verificó 11 cámaras de
+  MeteoGalicia (Burela, Viveiro/Penedo do Galo, Cariño, Cedeira/Punta
+  Candieira, Narón/Aldea Nova, Arteixo/Langosteira, Ribeira/Sálvora,
+  Vilanova/Corón, Marín/Aguete, Bueu/Ons, Poio/Castrove) y no integró
+  ninguna, porque el norte de Lugo y Ferrolterra no tienen spot fijo. Eran
+  cámaras reales, vivas y con mar a la vista, descartadas por un motivo
+  puramente estructural. La pasada del 2026-09-21 volvió a pasar por esa
+  misma zona y concluyó "no hay ningún spot fijo sin cámara aquí" — las 11
+  seguían ahí sin tocar.
+- **El límite de volumen le prohibía tocar `functions/`.** Una cámara de
+  imagen fija vive en `WEBCAMS`, dentro de `functions/webcam/[slug].js` —
+  así que la regla de "nunca aplicar nada en `functions/` directo" le
+  impedía integrar cámaras **incluso para spots que ya existían**. Es lo
+  que dejó las 7 cámaras de Windy Webcams de la pasada de Portugal del
+  2026-09-23 en "sin integrar todavía" pese a estar verificadas y ser de
+  spots fijos ya creados.
+
+**Regla nueva, que sustituye a los dos criterios anteriores para el caso de
+las cámaras:** si una cámara tiene mar a la vista y pasa las comprobaciones
+de abajo, se integra **siempre**. Si no existe spot para ese punto, **el
+spot se crea en la misma pasada** — ya no se propone, se hace. El resto del
+fichero sigue igual: esta regla es una excepción acotada a las cámaras, no
+un permiso general para tomar decisiones de producto ni para editar
+`functions/` a discreción.
+
+### Qué cuenta como "tiene mar a la vista"
+
+Cuenta: mar abierto, playa, rompiente, acantilado con agua en el encuadre,
+ría o estuario, bocana, y la dársena de un puerto o marina (se pesca desde
+los muelles — el agua salada de un puerto es tan válida como una playa).
+
+No cuenta: ríos de interior, embalses, piscinas, y vistas de monte o casco
+urbano sin agua. Tampoco cuenta una cámara donde el mar es solo una franja
+lejana en el horizonte: si del encuadre no se puede leer el estado del
+agua, no aporta nada a la app.
+
+**Se decide MIRANDO la imagen, nunca por el nombre de la cámara ni del
+concello.** Una cámara llamada "playa de X" puede estar apuntando al paseo,
+y una llamada "castillo de X" puede tener toda la bahía delante.
+Descárgala a un fichero temporal y ábrela con la herramienta `Read` (esta
+sesión sí ve imágenes). En `ROBOT.md` deja escrito en una frase qué se ve
+de verdad en el encuadre ("playa con rompiente en primer plano", "dársena
+del puerto, agua en calma") — es la prueba de que la comprobación se hizo.
+
+Si la fuente es solo vídeo (HLS) y en esa pasada no se puede extraer un
+fotograma, **no se crea el spot**: se propone en `ROBOT.md` diciendo
+explícitamente que la comprobación visual no se pudo hacer. Sin ver el
+encuadre no hay forma honesta de afirmar que tiene mar.
+
+Antes de esto siguen aplicando, en este orden, las reglas que ya existen
+más arriba en este fichero: cámara muerta (comprobar la fecha real de la
+imagen con `Last-Modified`, no solo que responda 200), cámara rotativa/PTZ
+que puede enseñar tierra, y fallos correlados por proveedor.
+
+### Cómo se crea un spot nuevo
+
+Solo cuando ya no queda duda de que la cámara es real, viva y con mar. Todo
+lo de esta lista es **aditivo** — nunca se modifica ni se borra un spot o
+una cámara que ya existan.
+
+1. **Slug**: minúsculas, sin acentos, sin espacios ni guiones, y único.
+   Mismo estilo que los que ya hay (`acoruna`, `castrourdiales`,
+   `sanvicente`). El nombre visible sí lleva acentos y puede llevar
+   paréntesis, como `"Vigo (Illas Cíes)"`.
+2. **Coordenadas**: salen de una fuente real consultada en esa misma
+   pasada (los metadatos del propio proveedor son lo mejor — la lista JSON
+   de MeteoGalicia, por ejemplo, las trae), nunca estimadas a ojo sobre un
+   mapa. Anota en `ROBOT.md` de dónde salieron. Dos detalles que importan:
+   - La coordenada del spot es **el sitio donde se pesca** (la playa, la
+     bocana, el muelle que vigila la cámara), no dónde está montada la
+     lente. Una cámara en un monte a 3 km de la costa da un spot en la
+     costa, no en el monte.
+   - Tiene que estar **en el agua o justo en la orilla**. Si cae tierra
+     adentro, la Marine API de Open-Meteo devuelve `null` en todo y el spot
+     nace roto, sin oleaje ni marea ni temperatura.
+3. **`SPOTS` en `index.html`**: una entrada con el mismo formato que las
+   demás. Los campos de siembra van a cero, nunca a un valor plausible
+   inventado:
+   `altura: [0, 0], periodo: 0, viento: 0, dirViento: "N", dirOla: "N 0°"`,
+   y el resto a `null` como todas. No es un dato inventado y tampoco se
+   llega a ver: `indiceMar()` devuelve `null` (S/D en gris) hasta que ese
+   spot tenga un fetch real de `/prevision` de la última hora, y el primer
+   refresco los sobrescribe con los reales. Deja el comentario
+   `// siembra, la sobrescribe /prevision en el primer refresco`.
+4. **`SPOTS` en `functions/prevision.js`**: la misma entrada, pero ahí solo
+   `slug`, `nombre`, `lat`, `lon`. Las dos listas tienen que cuadrar — si
+   el slug no está en las dos, el backend nunca manda datos para ese spot y
+   el frontend lo deja en S/D para siempre.
+5. **Lista de especies por zona (`index.html`)**: añade el slug a
+   `SPOTS_MEDITERRANEO`, `SPOTS_GOLFO_CADIZ` o `SPOTS_CANARIAS` si le
+   corresponde. Cantábrico, Galicia, Asturias y la costa atlántica de
+   Portugal no necesitan Set: usan `ESPECIES` por defecto. Un spot
+   mediterráneo que se olvide aquí muestra especies del Cantábrico.
+6. **La cámara**: `WEBCAMS` en `functions/webcam/[slug].js` si es imagen
+   fija, o `WEBCAMS_HLS` + `WEBCAMS_HLS_FUENTE` en `index.html` si es
+   vídeo. Y en los dos casos, el slug a `SPOTS_CON_WEBCAM` (`index.html`) —
+   sin eso la cámara no se enseña aunque esté bien puesta.
+7. **Monitorización** (no es opcional aunque parezca accesorio):
+   - Imagen fija: nada que hacer, `scripts/camaras/comprobar-camaras.mjs`
+     importa `WEBCAMS` directamente y la recoge sola en la pasada
+     siguiente.
+   - Vídeo: hay que añadirla **a mano** a `WEBCAMS_VIDEO` en ese mismo
+     script (es una copia manual de `WEBCAMS_HLS`, no un import).
+   - Turbidez: añade el slug a `SPOTS_IMAGEN` o `SPOTS_VIDEO` en
+     `scripts/turbidez/medir-turbidez.mjs` (también copias manuales). Si
+     no, ese spot no empieza a acumular histórico y tardará 14 días más en
+     poder clasificar nada desde el día en que alguien se acuerde.
+
+### Comprobaciones obligatorias antes de commitear
+
+- **Que Open-Meteo devuelva datos de verdad para esa coordenada**: una
+  petición real a la Marine API con el `lat`/`lon` nuevo. Si vuelve todo
+  `null`, la coordenada está mal (casi siempre, tierra adentro) — corrígela
+  o no crees el spot. Es más barato comprobarlo ahora que descubrirlo en
+  producción con el spot ya publicado.
+- `node --check functions/prevision.js` y
+  `node --check "functions/webcam/[slug].js"`.
+- Para `index.html`, `node --check` sobre el contenido del
+  `<script type="module">` extraído a un fichero aparte, no sobre el
+  `.html`. Ya hubo un `SyntaxError` real en producción por no hacer esto
+  (ver `CLAUDE.md`, primer bug de la sección del paywall).
+- Que el slug nuevo no choque con uno ya existente en ninguna de las dos
+  listas `SPOTS`.
+
+### Límites de esta excepción
+
+- **Máximo 5 spots nuevos por pasada.** Lo que sobre se queda en `ROBOT.md`
+  como cola pendiente para la siguiente pasada de esa zona, con todo lo ya
+  verificado anotado para no repetir el trabajo. Integrar cámaras en spots
+  que ya existen no cuenta contra este tope — ahí no hay límite, son
+  siempre bienvenidas.
+- **Excepción explícita al límite de volumen** de "Red de seguridad de la
+  automatización": tanto crear un spot como añadir una cámara a un spot que
+  ya existe pueden pasar de 3 ficheros y de ~80 líneas, y pueden tocar
+  `functions/prevision.js` y `functions/webcam/[slug].js`. Vale **solo**
+  para los puntos de edición de la lista de arriba y **solo** de forma
+  aditiva. Cualquier otro cambio en `functions/` o en `supabase/` sigue con
+  la regla de siempre: se propone, no se aplica.
+- Una cámara con mar para un spot que **ya existe** se integra siempre:
+  como fuente principal o como reserva, según el orden de "Prioridad entre
+  varias cámaras de un mismo spot". Ahí no hay spot que crear, así que solo
+  hacen falta la comprobación visual del encuadre, el punto 6 y el punto 7.
+- `ROBOT_PAUSADO` sigue mandando por encima de todo esto.
+- En `ROBOT.md`, cada spot creado se anota con: slug, nombre, coordenadas y
+  de qué fuente salieron, URL de la cámara, qué se vio en el encuadre, y el
+  resultado de la comprobación de Open-Meteo. Con eso `daily-report.yml` lo
+  recoge solo en la síntesis del día.
+
+### Cola pendiente de arranque
+
+Cámaras ya verificadas en pasadas anteriores que se quedaron fuera por los
+dos motivos que esta regla elimina. Son las primeras candidatas cuando
+toque su zona en la rotación:
+
+- **4 cámaras de SkylineWebcams para `aguilas`, spot que YA existe**
+  (pasada del 2026-09-25, zona Comunidad Valenciana y Murcia): verificadas
+  con `Last-Modified` reciente, y la propia pasada las dejó sin integrar
+  con el motivo textual "toca `functions/webcam/[slug].js` e `index.html`,
+  cae fuera de corrección trivial" — o sea, el bloqueo exacto que esta
+  regla levanta, ocurriendo el mismo día. `live1448.jpg` como principal y
+  las otras 3 de reserva. Ojo a la limitación ya anotada por esa pasada:
+  son 344x193px, peor resolución que el resto del repo; es motivo para
+  avisar en `ROBOT.md`, no para no integrarlas (hoy `aguilas` no tiene
+  ninguna cámara).
+- **7 cámaras de Windy Webcams para spots portugueses que YA existen**
+  (pasada del 2026-09-23, zona "Portugal — centro y norte"): solo hay que
+  integrarlas, no crear nada. Reconfirmar `Last-Modified` antes, que en esa
+  red se queda vieja con facilidad.
+- **11 cámaras de MeteoGalicia sin spot** (pasada del 2026-09-14, zonas
+  Rías Altas y Rías Baixas): les falta la comprobación visual del encuadre
+  y coordenadas de fuente real — la lista JSON de MeteoGalicia las trae.
+- **`puntaluzero`** (Punta Lucero, Zierbena — ver su regla más abajo):
+  cámara viva de AZTI/kostasystem.com, sin spot. Mismo trabajo pendiente
+  que las gallegas.
+
 ## Aprendizaje por zonas (añadido 2026-09-19, pedido explícito del usuario)
 
 Principio general para la pasada diaria de "cámaras/webcams"
@@ -297,8 +481,10 @@ reinventarlo si añades una estimación nueva sobre una fuente de vídeo.
   Costaviva no usa todavía** — 2 cámaras (`camara1`/`camara2`),
   actualizándose varias veces por hora, comprobado en real. No hay spot
   fijo ahí actualmente — sería un spot nuevo, no solo una cámara para uno
-  existente, así que es decisión de producto (proponer, no crear el spot
-  directo).
+  existente. Desde el 2026-09-25 esto ya NO se queda en una propuesta:
+  entra por la regla "Cámara con mar a la vista", así que el spot se crea
+  — solo le faltan la comprobación visual del encuadre y unas coordenadas
+  de fuente real.
   URLs verificadas: `https://www.kostasystem.com/wp-content/uploads/irudiak/puntaluzero/camara1_snap.jpeg`
   y `camara2_snap.jpeg` (mismo patrón).
 - **Sopelana tiene una segunda fuente real, independiente de AZTI, Y
@@ -1259,7 +1445,12 @@ cualquier pasada de esta rutina que escriba directamente en el repo
   pasada va a tocar más de 3 ficheros, o más de ~80 líneas en total, o
   cualquier fichero de `functions/` o `supabase/`, eso ya no es una
   "corrección trivial": para, no lo commitees directo, y déjalo como
-  propuesta en `ROBOT.md` para que el usuario lo revise. El límite es
+  propuesta en `ROBOT.md` para que el usuario lo revise. Única
+  excepción, acotada y explícita: integrar una cámara con mar a la vista,
+  y crear su spot si no existe (ver esa sección) — ahí sí se permite pasar
+  del límite y tocar `functions/prevision.js` y `functions/webcam/[slug].js`,
+  siempre de forma aditiva y solo en los puntos de edición que esa sección
+  lista. El límite es
   deliberadamente bajo — las correcciones triviales que este fichero
   autoriza a aplicar directo (un campo de un JSON, una URL de dominio)
   caben de sobra dentro de él.
