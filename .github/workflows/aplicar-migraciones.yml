@@ -1,0 +1,103 @@
+name: Aplicar migraciones a producción
+
+# Pedido explícito del usuario (2026-09-25) tras comprobar que una sesión de
+# Claude Code NO puede aplicar migraciones: el clasificador de modo
+# automático bloquea en duro cualquier comando que escriba en la base de
+# datos de producción, y no es un permiso que se pueda aprobar en el chat.
+# Hasta ahora eso obligaba a pegar el comando a mano en una terminal.
+#
+# ESTO ES UN BOTÓN QUE CAMBIA EL ESQUEMA DE PRODUCCIÓN. Se avisó al usuario
+# del matiz antes de montarlo: queda disponible para cualquiera con acceso de
+# escritura al repo. Por eso lleva tres guardas deliberadas:
+#
+#   1. SOLO a mano (workflow_dispatch). Nunca un cron, nunca al hacer push.
+#      Una migración no debe aplicarse sola jamás.
+#   2. HAY QUE ESCRIBIR "aplicar" para que haga nada. Evita el disparo
+#      accidental desde el móvil, que es donde más fácil es darle a un botón
+#      sin querer.
+#   3. ENSEÑA EL PLAN ANTES. El primer paso lista qué migraciones constan
+#      aplicadas y cuáles no, y eso queda en el resumen del run aunque luego
+#      falle. Si algo no cuadra, se ve antes de tocar nada.
+#
+# Sobre el desfase de historial: el 2026-09-20 se descubrió que ~13
+# migraciones se habían pegado a mano en el SQL Editor y la CLI no se había
+# enterado, así que un `db push` a ciegas habría intentado reaplicarlas. Por
+# eso el plan se imprime siempre: es la misma comprobación que
+# `supabase migration list` hace a mano, delante de los ojos de quien lanza.
+# El vigía de esquema (vigia-esquema.yml) avisa a diario de ese mismo
+# desfase, así que en condiciones normales no debería aparecer nunca.
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmacion:
+        description: 'Escribe "aplicar" para confirmar que quieres tocar la base de datos de producción'
+        required: true
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  migrar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Comprobar la confirmación
+        run: |
+          if [ "${{ github.event.inputs.confirmacion }}" != "aplicar" ]; then
+            echo "::error::Para lanzar esto hay que escribir exactamente 'aplicar' en el campo de confirmación. No se ha tocado nada."
+            exit 1
+          fi
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Enseñar el plan (qué está aplicado y qué no)
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          if [ -z "$SUPABASE_DB_URL" ]; then
+            echo "::error::Falta el secret SUPABASE_DB_URL (cadena de Connection Pooling)."
+            exit 1
+          fi
+          echo "Migraciones en el repo:"
+          ls supabase/migrations/*.sql | xargs -n1 basename
+
+          echo ""
+          echo "Estado según la CLI (local vs producción):"
+          supabase migration list --db-url "$SUPABASE_DB_URL" | tee /tmp/plan.txt
+
+          {
+            echo "### Plan de migración"
+            echo '```'
+            cat /tmp/plan.txt
+            echo '```'
+            echo "Si alguna aparece en local pero no en remoto, es la que se va a aplicar."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Aplicar
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          # --include-all: aplica todas las pendientes, no solo la última.
+          # --yes: sin preguntar, porque la confirmación ya se pidió arriba y
+          # aquí no hay nadie para contestar.
+          supabase db push --db-url "$SUPABASE_DB_URL" --include-all --yes
+
+      - name: Confirmar el estado final
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          # Se vuelve a listar DESPUÉS de aplicar: es la prueba de que lo que
+          # se pretendía aplicar está aplicado de verdad, no solo que el
+          # comando no dio error.
+          supabase migration list --db-url "$SUPABASE_DB_URL" | tee /tmp/final.txt
+          {
+            echo "### Estado final"
+            echo '```'
+            cat /tmp/final.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
