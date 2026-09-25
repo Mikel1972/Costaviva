@@ -568,6 +568,53 @@ async function fetchJSON(url) {
 // de lat/lon separadas por comas — así, sea cual sea el número de spots,
 // siempre son solo 2 fetches a Open-Meteo (uno marino, uno de viento) más
 // las boyas y los rayos, muy por debajo del límite.
+// Corrección de oleaje en Gipuzkoa (aplicada 2026-09-25, decisión explícita
+// del usuario tras 22 noches de calibración).
+//
+// La boya 1101 Pasaia II lleva 22 puntos de calibración y en los 22 la
+// altura que calcula Open-Meteo queda POR DEBAJO de la medida por la boya —
+// ni una sola excepción de signo. Media −28.2%. Las alturas medidas van de
+// 0.82 a 3.39 m, o sea oleaje real: el porcentaje significa algo, a
+// diferencia de los puntos con olas de 30 cm donde un error absoluto
+// pequeño dispara el porcentaje (ver la nota de Dragonera en
+// CALIBRACION.jsonl).
+//
+// FACTOR: se usa la MEDIANA de los 22 factores medida/calculada (1.381),
+// no la media (1.417). Hay un punto de 1.98 que tira de la media hacia
+// arriba; la mediana aguanta mejor ese tipo de valor suelto. Rango
+// observado: 1.08 a 1.98.
+//
+// POR QUÉ SOLO GIPUZKOA, y no toda la costa: las otras dos boyas del
+// Cantábrico calibradas el mismo número de noches NO muestran sesgo —
+// 2136 Bilbao-Vizcaya está en −1.0% con signo mixto (12/21 negativos) y
+// 1117 Gijón en −4.9%, también alternando. O sea que esto no es "Open-Meteo
+// se queda corto en el Cantábrico", es algo de este tramo concreto.
+// Extenderlo más allá sería inventar.
+//
+// LIMITACIÓN HONESTA: la evidencia viene de UNA boya, la de Pasaia. Aplicar
+// su factor a toda la costa guipuzcoana es una extrapolación razonable
+// (mismo tramo, misma orientación al oleaje del NW) pero extrapolación al
+// fin y al cabo. Mutriku y Hondarribia están a ~50 km de la boya. Si algún
+// día hay una segunda boya en la zona, conviene recalibrar por separado.
+// Se decide por COORDENADAS, no por lista de slugs: así vale igual para los
+// spots fijos y para las ubicaciones personalizadas que alguien cree en esa
+// costa, y permite usar exactamente el mismo criterio en diario.html, que
+// solo recibe lat/lon. Un usuario que marque su punto frente a Orio debe ver
+// la misma altura que el spot de Orio.
+//
+// La caja cubre la costa guipuzcoana, de Mutriku (−2.3833) a Hondarribia
+// (−1.7964). ONDARROA QUEDA FUERA A PROPÓSITO pese a estar a 2 km de
+// Mutriku: es Bizkaia, y hacia ese lado está justamente la boya que NO
+// muestra sesgo (Bilbao-Vizcaya). Ante la duda, no corregir: un dato sin
+// tocar es honesto, uno corregido de más no.
+const CAJA_OLEAJE_GIPUZKOA = { latMin: 43.20, latMax: 43.50, lonMin: -2.40, lonMax: -1.70 };
+const FACTOR_OLEAJE_GIPUZKOA = 1.38;
+function factorOleaje(lat, lon) {
+  const c = CAJA_OLEAJE_GIPUZKOA;
+  const dentro = lat >= c.latMin && lat <= c.latMax && lon >= c.lonMin && lon <= c.lonMax;
+  return dentro ? FACTOR_OLEAJE_GIPUZKOA : 1;
+}
+
 async function previsionTodosSpots(spots) {
   const lats = spots.map((s) => s.lat).join(",");
   const lons = spots.map((s) => s.lon).join(",");
@@ -634,7 +681,11 @@ function procesarSpot(spot, marino, viento, historicoPresion, coeficientes) {
     const h = horaLocalDesdeISO(horasOla[i]);
     if (!(h in HORAS_BLOQUE)) continue;
 
-    const alturaOla = marino.hourly.wave_height[i];
+    // Altura del modelo, corregida si este spot tiene factor (ver
+    // factorOleaje() arriba). Fuera de esa zona el factor es 1 y no toca nada.
+    const alturaCruda = marino.hourly.wave_height[i];
+    const factor = factorOleaje(spot.lat, spot.lon);
+    const alturaOla = alturaCruda === null || alturaCruda === undefined ? alturaCruda : alturaCruda * factor;
     const periodoOla = marino.hourly.wave_period[i];
     const dirOlaGrados = marino.hourly.wave_direction[i];
     if (alturaOla === null || alturaOla === undefined) continue;
