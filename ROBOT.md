@@ -7036,6 +7036,82 @@ ninguna de las 9 zonas muestra relación estable entre radar y modelo.
 **Firmado:** robot buscador de fuentes (pasada de corrientes marinas),
 2026-09-23 18:45 UTC.
 
+### 2026-09-25 18:59 UTC (pasada buscadora — corrientes marinas por zona, décima pasada)
+
+**Qué se buscó:** las 9 pasadas previas (2026-09-14 a 2026-09-23) ya
+identificaron y calibraron las 9 redes de radar HF relevantes para
+España/Portugal (EUSKOOS, Galicia, Lisboa, Gibraltar, South, Ibiza,
+PLOCAN, ICATMAR, DeltaEbro), con 29 puntos de calibración y la misma
+conclusión en todas: sin factor de corrección estable frente a
+Open-Meteo. En vez de repetir calibración sobre zonas ya agotadas, esta
+pasada comprobó dos cosas nuevas: (1) si EMODnet Physics ha publicado
+alguna red de radar HF nueva desde la última revisión del catálogo
+completo (2026-09-19), y (2) si Santander (único spot fijo de
+Costaviva en Cantabria, `SPOTS` en `index.html`) tiene cobertura real de
+alguna de las dos redes vecinas (EUSKOOS al este, Galicia al oeste) —
+pregunta que ninguna pasada anterior había comprobado explícitamente
+para corrientes (sí se sabía el hueco de Cantabria para webcams/
+estaciones de monte, ver `CLAUDE.md`/`ROBOT_REGLAS.md`, pero no para
+radar de corrientes).
+
+**Hallazgo 1, negativo — sin red nueva.** Petición real al buscador de
+ERDDAP (`erddap.emodnet-physics.eu/erddap/search/index.json?searchFor=HFRADAR`,
+100 resultados): aparecen 3 datasets que las pasadas anteriores no
+habían visto por nombre (`GoS`, `ARPAS`, `Granitola`), pero verificados
+uno a uno por sus metadatos (`geospatial_lat/lon_max/min`, `summary`)
+los tres están en Italia (Golfo de Salerno/Tirreno, norte de Cerdeña,
+estrecho de Sicilia) — ninguno cubre España o Portugal. El resto del
+listado son redes ya conocidas (incluidas las 9 ya calibradas) o de
+fuera de esta región (EEUU, Mar del Norte, Báltico, Irlanda/Cornualles,
+Adriático). Catálogo completo sin cambios relevantes desde la revisión
+del 2026-09-19.
+
+**Hallazgo 2 — confirmado el hueco real de Cantabria, con margen
+suficiente para no necesitar más precisión que el propio extent de la
+rejilla.** Comprobados los límites geográficos reales de las dos redes
+vecinas (petición a `.../info/<dataset>/index.csv` de cada una):
+
+| Red | `geospatial_lon_min` | `geospatial_lon_max` |
+|---|---|---|
+| EUSKOOS | −3.196593 | −1.203407 |
+| Galicia | −11.32771 | −7.969195 |
+
+Santander está en lon −3.810 — **fuera del propio rectángulo de la
+rejilla de EUSKOOS por el oeste** (a ~49 km de su borde, calculado por
+diferencia de longitud a esa latitud) y a más de 3° al este del borde
+de Galicia (cientos de km). No hace falta pedir el griddap hora a hora
+para confirmar "sin celda válida cercana" como en el resto de spots —
+aquí ni siquiera existe una celda de la rejilla en esas coordenadas,
+válida o no. Ninguna de las 9 redes conocidas puede aportar nunca dato
+de corriente observada para Santander; el hueco es estructural, no una
+cuestión de calidad de señal como en Galicia/A Coruña-Ribadeo.
+
+**Salud general de las 9 redes ya calibradas, comprobada de nuevo (sin
+incidencias que anotar):** las 9 responden con dato de hoy mismo salvo
+EUSKOOS (último dato de ayer, 2026-09-24T05:00Z — mismo patrón de
+retraso ya documentado varias veces, no es una caída nueva).
+
+**Conclusión — sin cambio de recomendación.** Con el catálogo completo
+ya revisado dos veces (2026-09-19 y hoy) sin ninguna red nueva en la
+región, y con Cantabria confirmada como hueco estructural sin ninguna
+red que lo cubra, esta línea de investigación puede considerarse cerrada
+salvo que aparezca una red nueva en el futuro — no hace falta seguir
+dedicando pasadas completas a "buscar redes nuevas de radar HF" cada
+pocos días; basta con revisar el catálogo de forma más espaciada. Sigue
+sin aplicarse nada a código (decisión de producto, ver
+`ROBOT_REGLAS.md`): si se retoma, la propuesta sigue siendo mostrar
+Mundaka (0.6 km) o Las Palmas (2.6 km) como primera prueba de "corriente
+observada" aparte del modelo.
+
+**Fuentes:**
+[EMODnet Physics ERDDAP — búsqueda "HFRADAR" (catálogo completo)](https://erddap.emodnet-physics.eu/erddap/search/index.html?searchFor=HFRADAR),
+[EMODnet Physics ERDDAP — HFR-GoS-Total (Golfo de Salerno, Italia, descartado)](https://erddap.emodnet-physics.eu/erddap/info/EUHFR_NRTcurrent_HFR-GoS-Total/index.html),
+[EMODnet Physics ERDDAP — EUSKOOS (límites de rejilla)](https://erddap.emodnet-physics.eu/erddap/info/EUHFR_NRTcurrent_HFR-EUSKOOS-Total/index.html),
+[EMODnet Physics ERDDAP — Galicia (límites de rejilla)](https://erddap.emodnet-physics.eu/erddap/info/EUHFR_NRTcurrent_HFR-Galicia-Total/index.html).
+
+**Firmado:** robot buscador de fuentes (pasada de corrientes marinas),
+2026-09-25 18:59 UTC.
+
 ### 2026-09-23 23:20 UTC (pasada buscadora — presión atmosférica e histórico por zona, décima pasada)
 
 **Contexto:** las pasadas 8ª y 9ª (2026-09-21/22) concluyeron "sin ningún
