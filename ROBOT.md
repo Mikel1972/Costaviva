@@ -4825,6 +4825,103 @@ historial todavía.
 
 **Firmado:** robot de calibración nocturna, 2026-09-24 01:15 UTC.
 
+### 2026-09-25 (pasada nocturna corta — calibración + salud de datos)
+
+**Nota operativa previa, antes de empezar la tarea de esta noche**: el
+commit de la pasada de anoche (2026-09-24) apareció en este checkout
+como un commit local sin rama, desconectado de `main` (`git log`
+mostraba `HEAD detached from refs/heads/main`). Comprobado contra
+`origin/main`: el commit **sí estaba ya en el remoto** — era solo el
+puntero local de esta sesión el que había quedado en detached HEAD, no
+una pérdida real de trabajo. Se hizo `git checkout main` (ya estaba al
+día con `origin/main`) antes de continuar, sin tocar ningún commit. Se
+deja anotado por si vuelve a pasar: comprobar siempre `git log
+origin/main` antes de asumir que un commit huérfano se ha perdido de
+verdad.
+
+**Calibración — vigesimoprimer punto para las 3 boyas obligatorias,
+sexto punto para 2548 Cabo de Gata** (rotación de esta noche: candidata
+con más noches sin repetirse, desde 2026-09-21). Mismo método de
+siempre: `curl` a `poem.puertos.es/portus/StationData` para la altura
+real, Open-Meteo Marine en las coordenadas exactas de cada boya para la
+altura calculada, emparejando por la hora UTC exacta del último dato
+real de cada boya:
+
+| boya | hora UTC | altura medida | altura calculada | diferencia | % |
+|---|---|---|---|---|---|
+| 2136 Bilbao-Vizcaya | 01:00 | 1.29 m | 1.24 m | −0.05 m | −3.9% |
+| 1117 Gijón | 00:00 | 1.02 m | 1.04 m | +0.02 m | +2.0% |
+| 1101 Pasaia II | 00:00 | 1.22 m | 0.86 m | −0.36 m | −29.5% |
+| 2548 Cabo de Gata | 01:00 | 0.35 m | 0.24 m | −0.11 m | −31.4% |
+
+Historial actualizado de la metodología `boya_vs_openmeteo_mismo_punto`
+(medias recalculadas sobre todos los puntos reales de `CALIBRACION.jsonl`,
+no aproximadas):
+
+- **2136 Bilbao-Vizcaya**: 21 puntos, media ≈ **−1.0%** — sigue sin
+  patrón sistemático (12/21 negativos, signo mixto).
+- **1117 Gijón**: 21 puntos, media ≈ **−4.9%** — sigue alternando
+  signo/magnitud pasada a pasada (14/21 negativos), sin patrón sólido.
+- **1101 Pasaia II**: **21 puntos, los 21 con el mismo signo negativo**
+  (media ≈ **−28.1%**) — vigesimoprimera noche consecutiva sin ninguna
+  excepción de signo, sigue reforzando la propuesta de factor de
+  corrección ya escrita en ROBOT.md el 2026-09-21 01:15 UTC (multiplicar
+  la altura de ola calculada por Open-Meteo en la zona de
+  Pasaia/Guipúzcoa por ~1.29–1.4) — sigue pendiente de que el usuario
+  decida si aplicarla, no se ha tocado ningún código.
+- **2548 Cabo de Gata**: 6 puntos, 4 de 6 con signo negativo (media ≈
+  **−15.1%**) — a diferencia de Cabo Peñas (5/5 negativo), aquí el
+  signo no es consistente todavía, así que no apunta a un patrón
+  geográfico claro por ahora.
+- Resto de boyas (1731 Barcelona II, 2246 Villano-Sisargas, 2242 Cabo
+  Peñas, 2820 Dragonera, 1514 Málaga, SOCIB Bahía de Palma/Canal de
+  Ibiza): sin cambios desde su última pasada, no les tocaba rotación
+  esta noche.
+
+**Ningún factor de corrección nuevo propuesto** — la única propuesta
+activa sigue siendo la de Pasaia II (2026-09-21), reforzada de nuevo por
+el punto de hoy. Para la próxima rotación nocturna, la candidata con más
+noches sin repetirse es **2820 Dragonera (Mallorca)** (desde 2026-09-21).
+
+**Salud de datos — octava noche con el mismo patrón de dominios
+bloqueados por la política de red de esta sesión; nada roto en lo que sí
+se pudo comprobar.** Verificado en vivo con `curl` (con dos reintentos
+puntuales por timeouts transitorios en `poem.puertos.es`/2136 y en
+Open-Meteo/2136 y 1117 — los tres resolvieron bien al repetir la
+petición, no parecen un problema real de la fuente, solo ruido de red
+de esta sesión concreta esta noche):
+- Las 4 boyas de arriba: `200`, forma `[cabeceras, filas]` correcta,
+  datos reales de la última hora — sin novedad.
+- **`mundaka`** (www.kostasystem.com): `200`, 84.4 KB JPEG 1024×768 —
+  bien, tamaño en línea con noches anteriores.
+- **`sopelana`** (detectia.net): `200`, 44.7 KB WebP — bien.
+- **`getxo`** (detectia.net): `200`, 29.1 KB WebP — bien.
+- **`bakio`** (pyscada.isurki.com): `200`, 764.9 KB JPEG — bien, mismo
+  tamaño exacto que noches anteriores.
+- **No se pudo comprobar**: la boya de Nazaré (`monican.hidrografico.pt`),
+  las 4 fuentes de caudal de río (`visor.saichcantabrico.es`,
+  `saih.chj.es`, `saihweb.chsegura.es`, `servizos.meteogalicia.gal`) ni
+  la muestra ampliada de webcams de otras regiones (`meteogalicia.gal`
+  para A Coruña, `streaming.comunitatvalenciana.com` para Valencia,
+  `apps.socib.es` para Muro, `www.cantabria.es`) — las 8 rechazadas por
+  el propio proxy de salida de esta sesión (`connect_rejected`, "gateway
+  answered 403 to CONNECT"), mismo patrón exacto que las últimas siete
+  noches. Se reitera la recomendación, ya repetida varias noches, de que
+  el usuario revise si el conjunto de dominios permitidos para esta
+  rutina puede ampliarse — con la lista actual la comprobación de salud
+  sigue limitada casi en exclusiva a las boyas de Puertos del Estado y a
+  las webcams del País Vasco.
+
+**Resumen de severidad para el usuario**: nada roto de forma confirmada
+en las fuentes ya integradas. Severidad media/baja, sin cambios, para
+los 8 dominios bloqueados por la política de red de esta sesión. Sin
+propuesta de factor de corrección nueva — la de Pasaia II sigue
+reforzándose (21/21 negativo, media −28.1%); Cabo de Gata (4/6
+negativo, media −15.1%) no muestra el mismo patrón consistente que
+Cabo Peñas.
+
+**Firmado:** robot de calibración nocturna, 2026-09-25 01:25 UTC.
+
 ---
 
 ## Robot de experiencia de usuario
