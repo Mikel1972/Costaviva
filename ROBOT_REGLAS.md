@@ -429,13 +429,26 @@ dirección.**
 
 ### Orden de trabajo, sin saltarse pasos
 
-**1. Agrupa por proveedor antes de tocar nada.** Mira la URL de cada cámara
-roja en `WEBCAMS` / `WEBCAMS_HLS`, no el nombre del spot. Si varias del mismo
-proveedor cayeron a la vez, es su caída, no nuestra — anótalo y no las
-investigues una a una (regla "Fallos correlados por proveedor", más arriba).
-Ejemplo real del 2026-09-25: de 9 cámaras rojas, 6 eran solo dos proveedores
-(`cantabria.es` y `apps.socib.es`), todas con el mismo `http_502` y el mismo
-número de fallos seguidos.
+**1. Cada cámara se trata por separado. Agrupar por proveedor NO sirve para
+saltarse ninguna** (corregido el 2026-09-25, pedido explícito del usuario:
+"cada cámara es diferente, agrupar no ayuda nada").
+
+Que varias compartan proveedor es, como mucho, un **dato para el informe** —
+"estas 6 son del mismo sitio" ayuda a entender el panorama. Nunca es un
+motivo para darlas por resueltas ni para dejar de buscarles alternativa.
+
+Por qué se cambió: la versión anterior de esta regla decía "anótalo y no las
+investigues una a una", y el resultado fue que 6 cámaras de `cantabria.es` y
+`apps.socib.es` llevaban **48 fallos seguidos y ninguna señal registrada
+jamás** — muertas desde siempre, archivadas cada pasada como "caída del
+proveedor". Agrupar se había convertido en una forma elegante de no hacer el
+trabajo.
+
+Lo único que sí conviene no repetir: si ya comprobaste que el proveedor
+entero está caído, no hace falta volver a comprobar SU disponibilidad seis
+veces. Pero cada spot necesita igualmente su propia búsqueda de alternativa,
+porque **la alternativa siempre es local**: la cámara que sustituya a
+Comillas no tiene nada que ver con la que sustituya a Suances.
 
 **2. Lee el motivo, que ya orienta bastante:**
 
@@ -498,11 +511,35 @@ decisión de producto ni una integración nueva — es la misma cámara en otra
 dirección. (Reemplazarla por una cámara **distinta**, de otro dueño, sí es
 otra cosa: eso va por la regla "Cámara con mar a la vista".)
 
-**7. Si no encuentras sustituta, no inventes ninguna.** Déjalo escrito en
-`ROBOT.md`: qué comprobaste, qué descartaste y por qué. El objetivo es que la
-pasada siguiente no repita el mismo trabajo a ciegas — una cámara que lleva
-48 fallos seguidos y ninguna señal registrada nunca probablemente lleve meses
-muerta, y merece menos esfuerzo que una que funcionaba ayer.
+**7. SIEMPRE hay que buscar alternativa** (pedido explícito del usuario,
+2026-09-25). Que una cámara no se haya movido no cierra el caso: cierra la
+primera hipótesis. Si la fuente original está rota de verdad, el trabajo no
+ha terminado — hay que buscar **otra cámara distinta, de otro dueño**, para
+ese mismo punto, aplicando la regla "Cámara con mar a la vista" (verificación
+HTTP real + mirar la imagen). Un spot sin cámara es un spot peor, venga el
+fallo de donde venga.
+
+Esto vale igual cuando varias comparten proveedor (ver punto 1): que el
+fallo tenga un origen común no cambia que cada spot necesite SU propia
+sustituta. Caso real que lo motivó: el 2026-09-25
+había 6 cámaras caídas de `cantabria.es` y `apps.socib.es` con 48 fallos
+seguidos y **ninguna señal registrada jamás** — llevaban muertas desde
+siempre y nadie había buscado sustituta porque la regla las archivaba como
+"caída del proveedor".
+
+Criterio de esfuerzo, para no gastar la pasada entera en un caso perdido:
+
+| Situación | Qué hacer |
+|---|---|
+| Caída hoy, funcionaba ayer | primero "¿se ha movido?"; si no, buscar alternativa |
+| Varios días caída, o del mismo proveedor que otras | buscar alternativa directamente, sin perder tiempo en la hipótesis del movimiento |
+| Sin señal registrada nunca, muchos fallos | buscar alternativa **con prioridad**: no es una avería, es que esa fuente nunca sirvió |
+
+**8. Si tampoco hay alternativa, no inventes ninguna.** Déjalo escrito en
+`ROBOT.md`: qué buscaste, qué descartaste y por qué. El objetivo es que la
+pasada siguiente no repita el mismo trabajo a ciegas. Anota también **qué
+términos de búsqueda ya probaste**, para que la siguiente empiece por otros
+en vez de repetir los mismos.
 
 ### Señal de que esta regla hace falta
 
