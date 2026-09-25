@@ -295,15 +295,18 @@ una cámara que ya existan.
    - Tiene que estar **en el agua o justo en la orilla**. Si cae tierra
      adentro, la Marine API de Open-Meteo devuelve `null` en todo y el spot
      nace roto, sin oleaje ni marea ni temperatura.
-3. **`SPOTS` en `index.html`**: una entrada con el mismo formato que las
-   demás. Los campos de siembra van a cero, nunca a un valor plausible
-   inventado:
-   `altura: [0, 0], periodo: 0, viento: 0, dirViento: "N", dirOla: "N 0°"`,
-   y el resto a `null` como todas. No es un dato inventado y tampoco se
-   llega a ver: `indiceMar()` devuelve `null` (S/D en gris) hasta que ese
-   spot tenga un fetch real de `/prevision` de la última hora, y el primer
-   refresco los sobrescribe con los reales. Deja el comentario
-   `// siembra, la sobrescribe /prevision en el primer refresco`.
+3. **`SPOTS` en `index.html`** — **corregido 2026-09-25, al integrar
+   Águilas: esto es más simple de lo que decía antes esta regla.** El array
+   tiene dos bloques: los spots antiguos, en formato de objeto largo, y
+   debajo un bloque **compacto** de `["slug", "Nombre", lat, lon],` que
+   termina en un `.map()` (busca `].map(([slug, nombre, lat, lon])`) y que
+   ya rellena solo todos los campos de siembra. **Un spot nuevo va SIEMPRE
+   en el bloque compacto: una sola línea, nada más.** No copies el formato
+   largo de los primeros ni escribas campos de siembra a mano — ese
+   `.map()` se encarga, y así no hay forma de inventar un dato sin querer.
+   (Tampoco hace falta preocuparse por lo que siembra: `indiceMar()`
+   devuelve `null` —S/D en gris— hasta que el spot tenga un fetch real de
+   `/prevision` de la última hora.)
 4. **`SPOTS` en `functions/prevision.js`**: la misma entrada, pero ahí solo
    `slug`, `nombre`, `lat`, `lon`. Las dos listas tienen que cuadrar — si
    el slug no está en las dos, el backend nunca manda datos para ese spot y
@@ -374,7 +377,18 @@ Cámaras ya verificadas en pasadas anteriores que se quedaron fuera por los
 dos motivos que esta regla elimina. Son las primeras candidatas cuando
 toque su zona en la rotación:
 
-- **4 cámaras de SkylineWebcams para `aguilas`, spot que YA existe**
+- ~~**4 cámaras de SkylineWebcams para `aguilas`**~~ — **HECHO el
+  2026-09-25.** Integradas 3 de las 4 (`live5963` de la bahía como
+  principal, `live260` y `live1448` como reserva). La cuarta, `live911`,
+  se descartó a propósito por esta misma regla: es una panorámica de los
+  tejados de la ciudad con el mar como franja lejana, no se puede leer el
+  estado del agua. Sirve de precedente para dos cosas: (a) mirar las
+  imágenes cambia la decisión —el robot había propuesto la del puerto
+  deportivo como principal, y el agua de una marina está siempre en calma
+  detrás del espigón, así que no dice nada del mar real—, y (b) descartar
+  una candidata verificada y viva es una respuesta válida, no un fallo.
+- ~~Texto original de la entrada, para referencia:~~ 4 cámaras para
+  `aguilas`, spot que YA existe
   (pasada del 2026-09-25, zona Comunidad Valenciana y Murcia): verificadas
   con `Last-Modified` reciente, y la propia pasada las dejó sin integrar
   con el motivo textual "toca `functions/webcam/[slug].js` e `index.html`,
