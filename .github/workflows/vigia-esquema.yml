@@ -1,0 +1,123 @@
+name: Vigía de esquema (RLS, políticas y migraciones)
+
+# Portado de Pólizas.ai (vigia-esquema.yml, 2026-09-14), donde nació al
+# encontrar una tabla con RLS ya activada en producción sin ninguna migración
+# ni commit que lo explicara. Aquí lo propuso el robot de mejores prácticas en
+# su primera pasada (2026-09-25) señalando que era el hueco más caro de este
+# repo, y con razón.
+#
+# POR QUÉ HACE FALTA AQUÍ, con el incidente propio: el 2026-09-20 se descubrió
+# que ~13 migraciones aplicadas entre el 17 y el 19 de septiembre se habían
+# pegado a mano en el SQL Editor, así que la tabla de seguimiento de la CLI
+# nunca se enteró y `supabase migration list` las daba por no aplicadas. Se
+# arregló a posteriori con `migration repair`, pero nada avisó cuando ocurrió:
+# se descubrió por casualidad, días después, al usar `migration list` por
+# primera vez. Por eso esta versión vigila DOS cosas, no una: el estado de
+# RLS/políticas (como en Pólizas.ai) y el registro de migraciones.
+#
+# EL PRINCIPIO, que es lo que lo hace útil: no juzga si un cambio es bueno o
+# malo, solo si está documentado. Una RLS que alguien activó a mano salta
+# igual que una que alguien desactivó, aunque el resultado sea MÁS seguro.
+# Lo que se vigila es que nada entre sin pasar por una migración revisada.
+#
+# NECESITA EL SECRET `SUPABASE_DB_URL`: la cadena de Connection Pooling
+# (`aws-*.pooler.supabase.com`, usuario `postgres.imncbmizxkorotpeisic`), la
+# misma que el usuario ya tiene en su ~/.bashrc para la CLI. La cadena
+# DIRECTA no vale: solo tiene registro AAAA (IPv6) y el runner de GitHub no
+# tiene salida IPv6 — está documentado en CLAUDE.md y es un fallo que ya se
+# pagó una vez. Sin el secret, el workflow avisa y para en verde: falta una
+# credencial, no hay un bug.
+#
+# `psql` viene preinstalado en ubuntu-latest, así que no hace falta instalar
+# nada.
+
+on:
+  schedule:
+    # Antes del informe diario, para que si algo salta se vea el mismo día.
+    - cron: "41 3 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  vigia:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Consultar el estado real de producción
+        id: consulta
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          if [ -z "$SUPABASE_DB_URL" ]; then
+            echo "::warning::Falta el secret SUPABASE_DB_URL (cadena de Connection Pooling). Sin él el vigía no puede mirar nada."
+            {
+              echo "### Vigía de esquema: no ejecutado"
+              echo "Falta el secret \`SUPABASE_DB_URL\`. Debe ser la cadena de **Connection Pooling** (\`aws-*.pooler.supabase.com\`), no la directa: la directa solo resuelve por IPv6 y el runner no tiene salida IPv6."
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "listo=no" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          psql "$SUPABASE_DB_URL" -tAc "$(cat .github/scripts/esquema-seguridad-query.sql)" > live.json
+
+          # Si la consulta falló a medias, esto corta aquí con un mensaje
+          # claro. Comparar contra un JSON roto o vacío sería peor que no
+          # comprobar nada: parecería que se han borrado todas las tablas.
+          node -e "JSON.parse(require('fs').readFileSync('live.json','utf8'))" || {
+            echo "::error::La consulta a Supabase no devolvió JSON válido — revisar SUPABASE_DB_URL o la conexión. NO asumir que el esquema ha cambiado."
+            exit 1
+          }
+          echo "listo=si" >> "$GITHUB_OUTPUT"
+
+      - name: Comparar contra el baseline revisado
+        if: steps.consulta.outputs.listo == 'si'
+        id: comparar
+        run: |
+          set +e
+          SALIDA=$(node .github/scripts/comprobar-esquema.mjs live.json supabase/baseline-seguridad.json supabase/migrations)
+          CODIGO=$?
+          set -e
+          echo "$SALIDA"
+
+          if echo "$SALIDA" | grep -q "BASELINE_CREADO"; then
+            echo "creado=si" >> "$GITHUB_OUTPUT"
+            { echo "### Vigía de esquema: baseline inicial creado"; echo '```'; echo "$SALIDA"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          if [ "$CODIGO" -ne 0 ]; then
+            {
+              echo "### ⚠️ Cambios en producción que nadie ha revisado"
+              echo '```'
+              echo "$SALIDA"
+              echo '```'
+              echo "Si el cambio es correcto y deliberado, actualiza \`supabase/baseline-seguridad.json\` en el mismo commit que lo explique. Si no lo reconoces, revisa quién tiene acceso a Supabase."
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+          { echo "### Vigía de esquema: sin cambios sin revisar"; echo "$SALIDA"; } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Guardar el baseline inicial
+        if: steps.comparar.outputs.creado == 'si'
+        run: |
+          # Solo en el primer arranque. A partir de ahí el baseline se
+          # actualiza A MANO, en el mismo commit que la migración que
+          # justifica el cambio — si este workflow lo actualizara solo,
+          # dejaría de vigilar nada: cualquier cambio quedaría aprobado por
+          # el propio vigía.
+          git config user.name "Claude (robot Costaviva)"
+          git config user.email "noreply@anthropic.com"
+          git add supabase/baseline-seguridad.json
+          # Mensaje en varias -m: un literal multilínea dentro de un bloque
+          # "run: |" tiene que ir indentado o rompe el YAML (las líneas en
+          # columna 0 cierran el bloque). Cazado por el validador, no en
+          # producción.
+          git commit             -m "Vigía de esquema: baseline inicial (SIN revisar)"             -m "Foto del estado de RLS, políticas y migraciones de producción al arrancar el vigía. Nadie lo ha revisado todavía: es solo el punto de partida contra el que se compararán los cambios futuros."             -m "A partir de ahora este fichero se actualiza A MANO, en el mismo commit que la migración que justifique el cambio."
+          git push
