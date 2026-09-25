@@ -7300,3 +7300,86 @@ nada que contar.
 
 **Firmado:** sesión interactiva con el usuario (cambio de reglas),
 2026-09-25.
+
+### 2026-09-25 14:15 UTC (pasada buscadora — mareas y oleaje)
+
+**Calibración — 4 puntos nuevos, mismo método de siempre.** `curl` real a
+`poem.puertos.es/portus/StationData` para la altura medida, Marine API de
+Open-Meteo en las coordenadas exactas de cada boya para la calculada,
+emparejando por la hora UTC exacta del último dato real:
+
+| boya | hora UTC | altura medida | altura calculada | diferencia | % |
+|---|---|---|---|---|---|
+| 2136 Bilbao-Vizcaya | 14:00 | 1.41 m | 1.40 m | −0.01 m | −0.7% |
+| 1117 Gijón | 13:00 | 0.94 m | 1.30 m | +0.36 m | +38.3% |
+| 1101 Pasaia II | 13:00 | 1.17 m | 0.82 m | −0.35 m | −29.9% |
+| 2820 Dragonera | 14:00 | 0.59 m | 0.32 m | −0.27 m | −45.8% |
+
+Añadidos a `CALIBRACION.jsonl`. **Pasaia II llega a 22 puntos, los 22 con
+el mismo signo negativo** (media 22 puntos ≈ **−28.2%**, estable respecto
+a las medias ya escritas en `ROBOT.md` los días anteriores) — sigue sin
+ninguna excepción de signo, no hace falta repetir la propuesta de factor
+de corrección ya hecha por el robot de calibración nocturna, este punto
+solo confirma que se mantiene. Bilbao-Vizcaya (22 puntos) sigue sin
+patrón sistemático claro. Gijón (22 puntos) tampoco, aunque el punto de
+hoy es la desviación positiva más grande vista hasta ahora para esta boya
+(+38.3%, sobre un oleaje pequeño de 0.94 m — con alturas tan bajas el
+porcentaje es poco fiable, mismo aviso de siempre). Dragonera (rotación,
+candidata con más días sin repetirse desde el 2026-09-21) llega a 5
+puntos, 4 de 5 negativos (media 5 puntos ≈ −29.8%) — empieza a parecerse
+en magnitud a Pasaia II, pero con una muestra todavía pequeña y un signo
+positivo suelto en medio (2026-09-17, +2.1%), no tan limpio como Pasaia.
+
+**Búsqueda de puntos de calibración nuevos: las otras 7 boyas de oleaje
+de SOCIB (más allá de Bahía de Palma y Canal de Ibiza, ya propuestas el
+2026-09-22) están MUERTAS o llevan meses/años sin dato — verificado en
+vivo una por una, ninguna se propone.** La pasada del 2026-09-22 dejó
+anotado el catálogo completo de SOCIB
+(`thredds.socib.es/thredds/catalog/mooring/waves_recorder/`) con más
+despliegues sin explorar (Sóller, Portocolom, y los "MOBIMS" de
+Muro/Cala Millor/Son Bou/Playa de Palma) como candidatas para calibración
+balear adicional. Se comprobó cada una en esta pasada, cogiendo siempre
+el despliegue con el número más alto (el "activo" de cada catálogo) y
+pidiendo el ÚLTIMO punto real de su serie temporal vía OPeNDAP (mismo
+método que Bahía de Palma/Canal de Ibiza, `.ascii` sobre el índice final
+del array `time`) — **truco de sintaxis anotado aquí para no repetir la
+búsqueda: los corchetes de índice OPeNDAP hay que mandarlos
+URL-codificados (`%5B`/`%5D`), sin codificar `curl` los trata como rango
+de globbing y la petición falla en silencio (exit 1, sin cuerpo de
+respuesta)**:
+
+| estación | último dato real | de cuándo | ¿utilizable hoy? |
+|---|---|---|---|
+| Sóller (`buoy_soller-scb_wave008`, dep0001) | Hm0 0.43 m, QC=1 (bueno) | 2026-06-02 | No — casi 4 meses de retraso |
+| Portocolom (`buoy_portocolom-scb_wave005`, dep0002) | Hm0 "655.34 m" (valor de relleno, no real), QC=4 (dato malo) | 2026-04-01 | No — muerta, último valor ni siquiera es un dato real |
+| Cala Millor (`mobims_calamillor-scb_awac005`, dep0019) | Hm0 1.3 m | 2025-11-13 | No — más de 10 meses |
+| Muro (`mobims_muro-scb_awac005`, dep0020) | Hm0 0.12 m | 2026-07-09 | No — casi 3 meses |
+| Son Bou (`mobims_sonbou-scb_awac006`, dep0001) | Hm0 0.09 m | 2026-05-26 | No — 4 meses |
+| Playa de Palma (`mobims_playadepalma-scb_awac005`, dep0002) | Hm0 0.16 m | **2015-10-08** | No — más de 10 años, el despliegue "activo" del catálogo lleva una década parado |
+| Son Blanc (`station_sonblanc-pib_rdi002`, dep0002 — nótese que este es de Ports IB, no de SOCIB directamente, aunque vive en el mismo THREDDS) | Hm0 0.14 m, QC=1 | 2018-09-10 | No — 8 años |
+
+**Conclusión, para no repetir esta comprobación**: de las 9 plataformas de
+oleaje que publica el THREDDS de SOCIB, solo 2 (Bahía de Palma y Canal de
+Ibiza) están vivas de verdad hoy — las otras 7 aparecen en el catálogo
+como si tuvieran un despliegue "activo" (número de `dep` más alto,
+fichero `_latest.nc`), pero su último dato real es viejo, en un caso
+(Playa de Palma) de hace una década. **El nombre del fichero
+(`_latest.nc`) no significa "actualizado hoy", solo "el fichero agregado
+de este despliegue"** — antes de proponer cualquier estación de este
+catálogo hay que comprobar siempre el último timestamp real de su serie,
+nunca fiarse del nombre. No hace falta volver a revisar estas 7
+concretas salvo que aparezca alguna señal de que SOCIB las ha
+reactivado (redespliegue nuevo con número de `dep` más alto que los ya
+vistos aquí).
+
+**Sin cambios de código aplicados esta pasada** — la calibración solo
+añade filas a `CALIBRACION.jsonl` y esta entrada a `ROBOT.md`; no se
+encontró ninguna fuente nueva utilizable que proponer o integrar.
+
+**Fuentes:**
+[poem.puertos.es — StationData (Puertos del Estado, boyas reales)](https://poem.puertos.es/portus/StationData),
+[Open-Meteo Marine API](https://marine-api.open-meteo.com/v1/marine),
+[THREDDS SOCIB — catálogo de boyas de oleaje](https://thredds.socib.es/thredds/catalog/mooring/waves_recorder/catalog.html).
+
+**Firmado:** robot buscador de fuentes (pasada de mareas y oleaje),
+2026-09-25 14:15 UTC.
