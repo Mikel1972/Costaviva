@@ -400,6 +400,7 @@ jobs:
         id: marketing
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          META_PAGE_ACCESS_TOKEN: ${{ secrets.META_PAGE_ACCESS_TOKEN }}
         run: |
           PUBLICADOS_24H=$(node -e '
             const fs = require("fs");
@@ -421,8 +422,30 @@ jobs:
             const textos = recientes.map((m) => `    - post ${m.postId}: alcance ${m.alcance ?? "N/D"}, impresiones ${m.impresiones ?? "N/D"}, likes ${m.likes ?? "N/D"}, comentarios ${m.comentarios ?? "N/D"}, guardados ${m.guardados ?? "N/D"}`);
             console.log(textos.join("\n"));
           ')
+          # Estado real del token (añadido 2026-09-25). Sin esto, un token
+          # caducado se veía en el informe como "Posts publicados (24h): 0",
+          # indistinguible de un día tranquilo — así pasaron 6 días desde que
+          # murió el token el 2026-09-19 hasta que se detectó. Lo decisivo es
+          # expires_at: 0 significa que no caduca; cualquier fecha avisa ANTES
+          # de que se rompa, no después.
+          TOKEN_ESTADO="sin comprobar (no hay secret META_PAGE_ACCESS_TOKEN)"
+          if [ -n "$META_PAGE_ACCESS_TOKEN" ]; then
+            curl -sS -G "https://graph.facebook.com/v21.0/debug_token"               --data-urlencode "input_token=${META_PAGE_ACCESS_TOKEN}"               --data-urlencode "access_token=${META_PAGE_ACCESS_TOKEN}"               -o /tmp/token-debug.json || echo '{}' > /tmp/token-debug.json
+            TOKEN_ESTADO=$(node -e '
+              const fs = require("fs");
+              let d = {};
+              try { d = JSON.parse(fs.readFileSync("/tmp/token-debug.json", "utf8")); } catch (e) {}
+              if (d.error) { console.log("❌ CADUCADO o inválido — hay que regenerarlo (workflow \"Comprobar token de Instagram\")"); process.exit(0); }
+              const t = d.data || {};
+              if (!t.is_valid) { console.log("❌ CADUCADO o inválido — hay que regenerarlo (workflow \"Comprobar token de Instagram\")"); process.exit(0); }
+              if (t.expires_at === 0 || t.expires_at === undefined) { console.log("✅ válido, no caduca"); process.exit(0); }
+              const dias = Math.round((t.expires_at * 1000 - Date.now()) / 86400000);
+              console.log("⚠️ válido pero CADUCA en " + dias + " día(s) (" + new Date(t.expires_at * 1000).toISOString().slice(0, 10) + ") — conviene cambiarlo por uno que no caduque");
+            ')
+          fi
           {
             echo "resultado<<EOF"
+            echo "  - Token de Instagram: $TOKEN_ESTADO"
             echo "  - Posts publicados (24h): $PUBLICADOS_24H"
             echo "  - Borradores esperando aprobación: $PENDIENTES"
             if [ -n "$METRICAS_24H" ]; then
