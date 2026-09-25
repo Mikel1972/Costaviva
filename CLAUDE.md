@@ -2227,6 +2227,78 @@ empiezan por punto**. No dar por hecho que un `.algo/` queda fuera del
 despliegue por convención — hay que bloquearlo explícitamente, igual que
 cualquier otro directorio interno.
 
+## Rutas públicas por lista blanca + robot de mejores prácticas (2026-09-25)
+
+Dos cambios del mismo día que se apoyan el uno en el otro.
+
+### Lista blanca de rutas (`functions/_lib/rutas-publicas.js`)
+
+`_middleware.js` decidía qué servir con una lista NEGRA. Ese diseño falló
+**tres veces**, siempre igual — alguien añade un fichero y nadie se acuerda
+de bloquearlo: `CLAUDE.md` y `functions/` (2026-09-13), `scripts/`
+(2026-09-18) y `.github/workflows/` (2026-09-25, con los nombres de todos
+los secrets, el email de la cuenta de servicio de Google Cloud y la ruta del
+Workload Identity Provider).
+
+Migrado al patrón de Pólizas.ai, que hizo lo mismo el 2026-09-10 tras servir
+sin querer un JSON con datos reales de usuarios. **Lo que cambia no es
+cuánto bloquea cada enfoque, sino cómo falla cuando se te olvida algo**: con
+lista negra el olvido expone información en silencio y puede tardar meses en
+descubrirse; con lista blanca rompe una página y se nota en la siguiente
+prueba.
+
+**Si añades una página, un endpoint o una carpeta de assets, tiene que
+entrar en `rutas-publicas.js` o dará 404.** Es deliberado.
+
+Dos detalles que solo se descubren probando contra un despliegue real:
+
+- Cloudflare redirige (308) `/x.html` a `/x`, e `/index.html` a `/`. Hacen
+  falta **las dos formas** en la lista: la `.html` para que el middleware no
+  corte la petición antes del redirect, y la corta porque es la que el
+  navegador acaba pidiendo. Dejarse una rompe la página de forma confusa.
+- `/assets/` es público **entero** a propósito: incluye las imágenes del
+  robot de marketing, que **Instagram descarga por URL** al crear el
+  borrador. Bloquearlas rompería el robot.
+
+Verificado en producción: 20 rutas que deben funcionar responden 200, y 12
+internas dan 404. (Durante el despliegue, una comprobación dio un 200
+espurio en `/package.json` — era propagación a medias; repetida tres veces
+después, 404 consistente. **No dar por buena una única comprobación hecha
+justo al desplegar.**)
+
+### Robot de mejores prácticas (`.github/workflows/robot-mejores-practicas.yml`)
+
+Pedido explícito del usuario: *"un robot que contenga las mejores
+experiencias de las diferentes apps, para no partir de cero cada vez"*.
+
+La necesidad quedó demostrada ese mismo día: al ir a exportar lecciones de
+Costaviva a Pólizas.ai, resultó que **Pólizas.ai ya resolvía mejor dos de
+las tres** (lista blanca de rutas, y `clasificarFalloClaude()` en
+`functions/api/polizas/_claude.js`). Se descubrió por casualidad.
+
+Semanal (domingos). Clona los otros 3 repos en **solo lectura** en `/tmp`,
+les borra el remoto para que ni por accidente pueda salir un push, compara
+cinco dimensiones concretas (rutas públicas, fallos de proveedores externos,
+RLS y `service_role`, comportamiento de los workflows sin credenciales, y
+cómo se verifica un cambio) y escribe `COMPARATIVA_PROYECTOS.md` **solo en
+este repo**. Cada propuesta tiene que citar fichero y línea: una propuesta
+sin código detrás es una opinión.
+
+**Necesita el secret `GH_PAT_MULTIPROYECTO`** — un Personal Access Token con
+permiso de **lectura** sobre `polizas-ai`, `etxeapala` y `Lurnahi` (el
+`GITHUB_TOKEN` del runner solo llega a este repo, y los otros tres son
+privados). Sin él, el workflow avisa y para en verde: falta una credencial,
+no hay un bug.
+
+El documento curado y verificado a mano vive aparte, en
+`TRAMPAS_COMPARTIDAS.md` de `polizas-ai`. Este robot no lo toca: propone en
+el suyo, y portar sigue siendo decisión humana.
+
+**Nota agradable de las dos cosas juntas**: `COMPARATIVA_PROYECTOS.md` y el
+propio workflow quedan privados **sin que nadie tenga que acordarse de
+bloquearlos**, gracias a la lista blanca. Es justo el fallo por omisión que
+se buscaba invertir.
+
 ## Pendiente conocido (no tocar sin confirmar)
 
 - **Cuenta atrás para reintentar `/prevision`** (2026-09-14): la cuota
