@@ -685,6 +685,126 @@ nacional).
   náutico`/`webcam clube naval/marina` — sin resultado (`cnpeniche.pt`,
   `cnnazare.pt`, ninguno con webcam propia visible).
 
+### Zona: Comunidad Valenciana y Murcia (primera pasada con este sistema de zonas, 2026-09-25)
+
+Casi toda la Comunitat Valenciana (valencia, gandia, denia, calpe,
+alicante, benidorm, santapola, oropesa, cullera y varios spots
+regionales mas) ya tiene camara de Turisme Comunitat Valenciana (imagen
+PNG directa, 28 camaras, integrada desde 2026-09-09). De los spots
+fijos de esta zona, solo los 2 de Murcia (cartagena, aguilas) seguian
+sin ninguna camara, asi que esta pasada se centro en esas 2 poblaciones
+(las 2 exigidas por el protocolo de poda de terminos).
+
+- Aguilas: 4 camaras reales encontradas, red SkylineWebcams, nunca
+  usada en el repo hasta ahora. Sirve un snapshot JPEG directo y
+  estable en https://cdn.skylinewebcams.com/live<ID>.jpg, sin token
+  necesario. El CORS no se comprobo pero es irrelevante porque el
+  proxy propio (functions/webcam/[slug].js) hace la peticion desde el
+  propio Worker, no desde el navegador (mismo patron ya usado con
+  tendsys.net en Cantabria). El ID de cada camara sale del og:image
+  (social<ID>.jpg) de su pagina propia en
+  skylinewebcams.com/.../<slug>.html -- la propia pagina tambien lista
+  "camaras cercanas" con el resto de IDs de la zona, asi que hay que
+  restar la lista de la pagina para encontrar cual ID es el suyo (el
+  que falta en su propia lista de "cercanas"). Verificadas las 4 con
+  Last-Modified a menos de 10 minutos de la comprobacion:
+  - live1448.jpg -- "Puerto deportivo de Aguilas" (marina completa mas
+    castillo de fondo, mejor composicion de las 4).
+  - live911.jpg -- "Aguilas" (vista panoramica de ciudad+puerto desde
+    un cerro, la pagina principal de la localidad en SkylineWebcams).
+  - live260.jpg -- "Aguilas Yacht Club" -- confirmado de forma cruzada
+    e independiente que es de verdad la camara del Club Nautico de
+    Aguilas: su propia web (cnaguilas.com/webcam.html) embebe la misma
+    imagen exacta via embed.skylinewebcams.com/img/260.jpg. Tipo de
+    entidad: club nautico/puerto deportivo (categoria ya conocida).
+  - live5963.jpg -- "Aguilas - Bahia de Levante" (vista de playa con
+    palmeras, buena composicion, pero geograficamente mas alejada del
+    puerto que las otras 3).
+  - Nota de calidad, valida para las 4: son 344x193, un tamano de
+    miniatura bajo (SkylineWebcams las genera a partir de su propio
+    video, no es la resolucion real de la camara) -- peor que la
+    mayoria de proveedores ya integrados.
+  - Limite real de esta red, para cualquier zona futura donde aparezca:
+    el HLS de video real de SkylineWebcams (visto en el HTML como
+    livee.m3u8?a=<token>) lleva un token de sesion que cambia en cada
+    carga de pagina -- mismo bloqueo ya documentado para rtsp.me
+    (Asturias/Galicia) y el HLS de tendsys.net (Cantabria): exigiria
+    replicar la generacion del token en un proxy propio, desarrollo
+    nuevo, no correccion trivial. El snapshot JPEG directo es la unica
+    via viable sin ese desarrollo.
+- Cartagena (puerto/ciudad): ninguna camara real verificable encontrada
+  esta pasada, pese a que existe una candidata obvia sin poder
+  confirmarla. La Autoridad Portuaria de Cartagena
+  (apc.es/webapc/puerto/webcam) es la fuente que cualquier busqueda
+  sugiere primero, y meteomurcia.com confirma que existe de verdad
+  (embebe un iframe a controlvideo.apc.es:15378, un sistema de video
+  propio del puerto) -- pero tanto www.apc.es como
+  controlvideo.apc.es dieron HTTP 000 (conexion rechazada) desde este
+  entorno, mismo patron de bloqueo de red ya documentado en ROBOT.md
+  (2026-08-31) para dominios que no son de infraestructura reconocida
+  -- no se puede descartar que la camara exista y funcione, solo que
+  no se pudo verificar desde aqui. Pendiente de reintentar desde una
+  sesion interactiva o confirmar a mano. El resto de candidatas
+  encontradas se descartaron con evidencia real, no por falta de
+  busqueda:
+  - playawebcams.com/andy/webcam-cartagena.jpg y
+    webcam-puerto-cartagena.jpg -- imagenes muertas desde 2018 y 2015
+    respectivamente (Last-Modified confirmado, sin cambiar en dos
+    peticiones separadas). Anadir playawebcams.com a la lista de
+    agregadores que hay que comprobar siempre con Last-Modified antes
+    de proponer nada (mismo criterio ya aplicado a g24.gal y
+    meteosurfcanarias.com).
+  - meteosurfcanarias.com/1-webcams/webcam-murcia.jpg -- SI se
+    actualiza (Last-Modified a ~29 min), pero al abrir la imagen
+    resulto ser la misma vista de Aguilas (ciudad+puerto+castillo,
+    identica composicion a live911.jpg de SkylineWebcams), etiquetada
+    genericamente "murcia" -- no vale para el spot de Cartagena.
+    Refuerza la leccion ya escrita para Rias Baixas (Hispacams/
+    Simbiosys): un agregador puede servir la imagen de una localidad
+    distinta a la que promete su nombre de fichero/etiqueta; comprobar
+    siempre el contenido visual, no solo que el Last-Modified sea
+    reciente.
+  - cabo-de-palos.jpg (mismo agregador) -- imagen real y actualizada,
+    pero es Cabo de Palos, una localidad distinta (~20km de Cartagena
+    puerto, cerca de La Manga) -- descartada por ser el spot
+    equivocado, no por falta de datos.
+  - SkylineWebcams no tiene camara del puerto de Cartagena -- solo
+    tiene "La Manga del Mar Menor - Cartagena" (live490.jpg), que
+    corresponde a la franja de La Manga (~37.7, -0.78), geograficamente
+    muy alejada del spot cartagena de la app (37.605, -0.986, el
+    puerto/ciudad) -- mismo tipo de error ya descartado a proposito
+    para Orihuela ("la camara equivocada para este spot").
+  - Windy tiene una pagina de camara para "Cartagena/Puerto"
+    (windy.com/.../webcams/1265996057) pero, a diferencia de
+    portugalwebcams.pt (que si listaba el ID de Windy en HTML
+    estatico), la pagina de Windy en si es una SPA sin datos en el
+    HTML servido -- no se pudo extraer el ID real para construir la
+    URL imgproxy.windy.com sin usar su API (no investigada esta
+    pasada). Pendiente de retomar: revisar si existe algun agregador
+    espanol (tipo portugalwebcams.pt) que reincruste camaras de Windy
+    con el ID visible en HTML estatico, antes de recurrir a su API.
+  - Outdooractive lista una camara "Cartagena - North-east: Playa de
+    Las Salinas" (id 811771320), pero es contenido de usuario (no
+    institucional) de una playa distinta (Las Salinas, no el puerto) y
+    su pagina tampoco expone ninguna URL de imagen/video en el HTML
+    servido -- descartada por no poder verificarse.
+- Terminos de busqueda de ROBOT_REGLAS.md, recuento de esta zona
+  (poblaciones: Cartagena y Aguilas): `webcam directo` -- con resultado
+  en Aguilas (las 4 camaras de arriba), sin resultado verificable en
+  Cartagena; `webcam ayuntamiento` -- sin resultado en ninguna de las 2
+  (ningun ayuntamiento con camara propia, todo lleva a agregadores o a
+  la Autoridad Portuaria); `webcam club nautico`/`webcam puerto
+  deportivo` -- con resultado en Aguilas (Club Nautico de Aguilas,
+  live260.jpg, confirmado cruzado con cnaguilas.com), sin resultado
+  verificable en Cartagena (Yacht Port Cartagena y Club Nautico La
+  Isleta existen pero sin camara encontrada); `webcam surf` -- sin
+  resultado en ninguna de las 2 (escuelas de surf reales en ambas
+  poblaciones -- Aguilas Surf Club, Surf Nature Murcia -- pero ninguna
+  con webcam propia visible, a diferencia de las escuelas de surf
+  vascas/cantabras); `webcam pesca`/`webcam puerto`/`webcam cofradia de
+  pescadores` -- sin resultado nuevo distinto del ya cubierto por
+  apc.es (Cartagena) arriba, sin cofradia con camara propia en Aguilas.
+
 ## Sinónimos regionales de especies y cebos (añadido 2026-09-13)
 
 Cuarta responsabilidad de esta rutina, pedida explícitamente por el
