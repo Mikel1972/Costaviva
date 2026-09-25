@@ -2601,7 +2601,15 @@ const WEBCAMS_HLS = {
   // real, CORS abierto, imagen 4K nítida y estable (cámara fija, no PTZ).
   // Sustituye a la imagen fija de cantabria.es (caída ese mismo día) como
   // fuente principal — esa se queda como reserva en WEBCAMS.santona.
-  santona: "https://s110.ipcamlive.com/streams/6erjzdw9wypirqvta/stream.m3u8",
+  // Stream MOVIDO, corregido 2026-09-25 (robot de cámaras caídas): la URL
+  // s110/6erjzdw9wypirqvta daba 404 puro. La propia web de Watsay
+  // (watsaysurfschool.com/webcam/) sigue embebiendo IPCamLive, pero con un
+  // alias distinto (ipcamlive.com/player/player.php?alias=webcamberria);
+  // resolviendo ese player salió el servidor/streamid reales de hoy
+  // (s123/7bz57yv0sddgbiwei). Verificado con Last-Modified de hace
+  // segundos y mirando el fotograma: se ve la playa de Berria, dunas y un
+  // surfista cogiendo una ola — sitio correcto.
+  santona: "https://s123.ipcamlive.com/streams/7bz57yv0sddgbiwei/stream.m3u8",
   // Sopela (ayuntamiento), vía IPCamLive — encontrada y verificada en vivo
   // 2026-09-19 (secuencia HLS avanzando en tiempo real, CORS abierto igual
   // que el resto de esta lista). Aplicando el criterio de prioridad
