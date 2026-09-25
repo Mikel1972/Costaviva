@@ -7159,3 +7159,111 @@ investigación, como caudal de ríos o mar de fondo.
 
 **Firmado:** robot buscador de fuentes (pasada de presión atmosférica e
 histórico por zona), 2026-09-23 23:20 UTC.
+
+### 2026-09-25 08:20 UTC (pasada buscadora — webcams, zona Comunidad Valenciana y Murcia)
+
+**Objetivo de la pasada:** rotación automática de zonas para la busqueda
+de camaras (ver ROBOT_REGLAS.md, seccion "Aprendizaje por zonas").
+Zona de hoy: Comunidad Valenciana y Murcia — primera vez que esta zona
+se investiga con el sistema de rotacion por zonas.
+
+**Punto de partida:** de los spots fijos de esta zona, la Comunitat
+Valenciana (valencia, gandia, denia, calpe, alicante, benidorm,
+santapola, oropesa, cullera y varios mas) ya tiene camara desde 2026-09-09
+via Turisme Comunitat Valenciana (28 camaras). Solo los 2 spots de
+Murcia — `cartagena` y `aguilas` — seguian sin ninguna camara, asi que
+la busqueda se centro en esas 2 poblaciones.
+
+**Aguilas: 4 camaras reales encontradas y verificadas, provider nuevo
+para el repo (SkylineWebcams).** Snapshot JPEG directo, sin token, en
+`https://cdn.skylinewebcams.com/live<ID>.jpg`:
+- `live1448.jpg` — "Puerto deportivo de Aguilas" (marina + castillo de
+  fondo, mejor composicion de las 4).
+- `live911.jpg` — "Aguilas" (vista panoramica ciudad+puerto).
+- `live260.jpg` — "Aguilas Yacht Club" — confirmado de forma cruzada
+  con la propia web del Club Nautico de Aguilas (`cnaguilas.com/webcam.html`,
+  que embebe la misma imagen via `embed.skylinewebcams.com/img/260.jpg`).
+- `live5963.jpg` — "Aguilas - Bahia de Levante" (playa, mas alejada del
+  puerto que las otras 3).
+
+Las 4 verificadas con `Last-Modified` a menos de 10 minutos de la
+comprobacion (peticion real, dos veces espaciadas donde hizo falta).
+**Limitacion real de calidad**: las 4 son 344x193px, resolucion baja
+(SkylineWebcams las regenera a partir de su propio video, no es la
+resolucion nativa de la camara) — peor que la mayoria de camaras ya
+integradas en el repo. El video real (HLS) de SkylineWebcams exige un
+token de sesion que cambia en cada carga de pagina (visto en el HTML:
+`livee.m3u8?a=<token>`) — mismo bloqueo ya documentado para `rtsp.me`
+(Asturias/Galicia) y el HLS de `tendsys.net` (Cantabria), asi que
+integrar video en vez del JPEG exigiria un proxy de token propio,
+desarrollo nuevo fuera del alcance de esta pasada.
+
+**Propuesta (no aplicada — toca `functions/webcam/[slug].js` e
+`index.html`, cae fuera de "correccion trivial" segun ROBOT_REGLAS.md):**
+anadir `aguilas` a `WEBCAMS`/`SPOTS_CON_WEBCAM`, con `live1448.jpg` como
+fuente principal (mejor composicion) y las otras 3 como reserva en el
+mismo array — pendiente de decision del usuario, sobre todo por la
+resolucion baja frente al resto de camaras del repo.
+
+**Cartagena: ninguna camara real verificable, pese a una candidata
+obvia sin poder confirmarla.** La Autoridad Portuaria de Cartagena
+(`apc.es/webapc/puerto/webcam`) es la fuente que cualquier busqueda
+sugiere primero, y `meteomurcia.com` confirma que existe de verdad
+(embebe `controlvideo.apc.es:15378`) — pero tanto `www.apc.es` como
+`controlvideo.apc.es` dieron `HTTP 000` (conexion rechazada) desde este
+entorno, mismo patron de bloqueo de red ya documentado (2026-08-31)
+para dominios que no son de infraestructura reconocida. **No se puede
+descartar que la camara funcione de verdad — solo que no se pudo
+verificar desde aqui.** Pendiente de reintentar desde una sesion
+interactiva o confirmar a mano (recomendacion: probar
+`https://www.apc.es/webapc/puerto/webcam` desde un navegador normal).
+
+Otras candidatas para Cartagena, descartadas con evidencia real (no por
+falta de busqueda):
+- `playawebcams.com/andy/webcam-cartagena.jpg` / `webcam-puerto-cartagena.jpg`
+  — imagenes muertas desde 2018 y 2015 (`Last-Modified` confirmado en
+  dos peticiones separadas).
+- `meteosurfcanarias.com/1-webcams/webcam-murcia.jpg` — se actualiza de
+  verdad, pero resulto ser la misma vista de Aguilas (ciudad+puerto+
+  castillo) mal etiquetada como "murcia" generico — no vale para el
+  spot de Cartagena.
+- `cabo-de-palos.jpg` (mismo agregador) — real y actualizada, pero es
+  Cabo de Palos, ~20km del puerto de Cartagena — spot equivocado.
+- SkylineWebcams solo tiene "La Manga del Mar Menor - Cartagena"
+  (`live490.jpg`), que es la franja de La Manga (~37.7, -0.78), lejos
+  del spot `cartagena` de la app (37.605, -0.986, el puerto/ciudad) —
+  mismo tipo de error ya descartado para Orihuela.
+- Windy tiene pagina de camara "Cartagena/Puerto" pero es una SPA sin
+  datos en el HTML servido — no se pudo extraer el ID real sin usar su
+  API (pendiente de retomar si aparece un agregador espanol que
+  reincruste camaras de Windy con el ID visible en HTML estatico).
+- Outdooractive lista una camara de usuario en Playa de las Salinas (no
+  el puerto) sin URL de imagen verificable en el HTML servido.
+
+**Terminos de busqueda probados (protocolo de poda de ROBOT_REGLAS.md,
+2 poblaciones: Cartagena y Aguilas)**: `webcam directo` — con resultado
+en Aguilas; `webcam ayuntamiento` — sin resultado en ninguna de las 2;
+`webcam club nautico`/`webcam puerto deportivo` — con resultado en
+Aguilas (Club Nautico de Aguilas); `webcam surf` — sin resultado en
+ninguna de las 2 (hay escuelas de surf reales en ambas, ninguna con
+webcam propia); `webcam pesca`/`webcam puerto`/`webcam cofradia de
+pescadores` — sin resultado nuevo distinto de lo ya cubierto arriba.
+Detalle completo y aprendizajes generalizables anadidos a
+`ROBOT_REGLAS.md`, seccion "Aprendizaje por zonas" → "Zona: Comunidad
+Valenciana y Murcia".
+
+**Sin cambios de codigo aplicados esta pasada** — la unica camara nueva
+verificable (Aguilas) exige tocar `functions/webcam/[slug].js` e
+`index.html`, fuera del limite de aplicacion directa; queda como
+propuesta arriba.
+
+**Fuentes:**
+[SkylineWebcams — Aguilas (Puerto deportivo)](https://www.skylinewebcams.com/en/webcam/espana/region-de-murcia/murcia/marina-di-aguilas.html),
+[SkylineWebcams — Aguilas](https://www.skylinewebcams.com/en/webcam/espana/region-de-murcia/murcia/aguilas.html),
+[SkylineWebcams — Aguilas Yacht Club](https://www.skylinewebcams.com/en/webcam/espana/region-de-murcia/murcia/aguilas-yacht-club.html),
+[Club Nautico de Aguilas — Webcam](https://www.cnaguilas.com/webcam.html),
+[MeteoMurcia — Webcam Puerto de Cartagena](https://www.meteomurcia.com/webcampuertocartagena.php),
+[Autoridad Portuaria de Cartagena — Webcam](https://www.apc.es/webapc/puerto/webcam).
+
+**Firmado:** robot buscador de fuentes (pasada de camaras, zona Comunidad
+Valenciana y Murcia), 2026-09-25 08:20 UTC.
