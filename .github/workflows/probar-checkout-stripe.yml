@@ -87,7 +87,12 @@ jobs:
             -H "Authorization: Bearer $TOKEN" \
             -H "Content-Type: application/json" \
             --max-time 45 \
-            -d "{\"plan\":\"$PLAN\"}" -o /tmp/checkout.json
+            -d "{\"plan\":\"$PLAN\"}" -o /tmp/checkout.json -w "%{http_code}" > /tmp/codigo.txt
+
+          # Diagnóstico: el código HTTP y el cuerpo. Es seguro imprimirlo — el
+          # endpoint ya no reenvía nada del proveedor, solo mensajes propios.
+          echo "HTTP $(cat /tmp/codigo.txt)"
+          echo "Cuerpo: $(head -c 400 /tmp/checkout.json)"
 
           # node solo extrae dos datos; el texto del resumen se arma en bash,
           # para no tener que escribir saltos de línea dentro de un literal de
