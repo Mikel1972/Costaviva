@@ -1,0 +1,126 @@
+name: Probar el checkout de Stripe
+
+# Comprueba de extremo a extremo que un usuario puede llegar a la pantalla de
+# pago: genera una sesión real con la cuenta de pruebas, llama a
+# /crear-checkout-stripe y verifica que Stripe devuelve una URL de Checkout.
+#
+# POR QUÉ EXISTE: el checkout se rompió el 2026-09-25 por tres causas
+# encadenadas (un secret sin redesplegar, una clave de otra cuenta de Stripe,
+# y un cliente guardado en modo test que ya no existía en live). Ninguna se
+# podía detectar sin una sesión de usuario real, así que hubo que ir probando
+# a mano desde la app. Esto lo convierte en un botón.
+#
+# EFECTO SECUNDARIO, dicho claro: crea un objeto Checkout Session REAL en la
+# cuenta live de Stripe. No mueve dinero ni cobra nada —es exactamente lo
+# mismo que genera cualquiera que pulse el botón en la app— y caduca solo a
+# las 24h si nadie lo completa. Aparecerá en el Dashboard de Stripe.
+#
+# Solo a mano. No se mete en smoke-test.yml a propósito: ese corre a diario y
+# no tiene sentido dejar un rastro diario de sesiones de pago sin usar en la
+# cuenta live.
+
+on:
+  workflow_dispatch:
+    inputs:
+      plan:
+        description: "Plan a probar"
+        required: true
+        default: "monthly"
+        type: choice
+        options:
+          - monthly
+          - annual
+
+permissions:
+  contents: read
+
+env:
+  SUPABASE_URL: https://imncbmizxkorotpeisic.supabase.co
+  PRODUCCION_URL: https://costaviva.org
+
+jobs:
+  probar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Generar una sesión para la cuenta de prueba
+        id: login
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SMOKE_TEST_EMAIL: ${{ secrets.SMOKE_TEST_EMAIL }}
+        run: |
+          # Mismo método que smoke-test.yml: sin password, vía API admin. El
+          # CAPTCHA de Turnstile bloquea el login por password desde CI (ver
+          # CLAUDE.md), así que esta es la única vía que funciona.
+          SUPABASE_ANON_KEY=$(grep -oE "eyJ[A-Za-z0-9_.-]{40,}" index.html | head -1)
+          enlace=$(curl -sS -X POST "$SUPABASE_URL/auth/v1/admin/generate_link" \
+            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
+            -H "Content-Type: application/json" \
+            -d "{\"type\":\"magiclink\",\"email\":\"$SMOKE_TEST_EMAIL\"}")
+          hashed_token=$(echo "$enlace" | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{console.log(JSON.parse(d).hashed_token||JSON.parse(d).properties.hashed_token||'')}catch{console.log('')}})")
+          if [ -z "$hashed_token" ]; then
+            echo "::error::No se pudo generar el enlace de sesión."
+            exit 1
+          fi
+          resp=$(curl -sS -X POST "$SUPABASE_URL/auth/v1/verify" \
+            -H "apikey: $SUPABASE_ANON_KEY" -H "Content-Type: application/json" \
+            -d "{\"type\":\"email\",\"token_hash\":\"$hashed_token\"}")
+          token=$(echo "$resp" | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{console.log(JSON.parse(d).access_token||'')}catch{console.log('')}})")
+          if [ -z "$token" ]; then
+            echo "::error::No se pudo intercambiar el token de sesión."
+            exit 1
+          fi
+          echo "::add-mask::$token"
+          echo "token=$token" >> "$GITHUB_OUTPUT"
+
+      - name: Pedir la sesión de pago
+        env:
+          TOKEN: ${{ steps.login.outputs.token }}
+          PLAN: ${{ github.event.inputs.plan }}
+        run: |
+          curl -sS -X POST "$PRODUCCION_URL/crear-checkout-stripe" \
+            -H "Authorization: Bearer $TOKEN" \
+            -H "Content-Type: application/json" \
+            --max-time 45 \
+            -d "{\"plan\":\"$PLAN\"}" -o /tmp/checkout.json
+
+          # node solo extrae dos datos; el texto del resumen se arma en bash,
+          # para no tener que escribir saltos de línea dentro de un literal de
+          # JavaScript metido en un bloque YAML (fuente inagotable de erratas).
+          URL=$(node -e 'try{const r=JSON.parse(require("fs").readFileSync("/tmp/checkout.json","utf8"));console.log(String(r.url||""))}catch(e){console.log("")}')
+          ERROR=$(node -e 'try{const r=JSON.parse(require("fs").readFileSync("/tmp/checkout.json","utf8"));console.log(String(r.error||"respuesta ilegible"))}catch(e){console.log("respuesta ilegible")}')
+
+          case "$URL" in
+            https://checkout.stripe.com*)
+              {
+                echo "## El checkout funciona"
+                echo ""
+                echo "Stripe ha devuelto una pantalla de pago real para el plan **$PLAN**."
+                echo "Cualquiera que pulse el botón en la app llegaría hasta aquí."
+                echo ""
+                echo "La sesión creada caduca sola en 24h y no se ha cobrado nada."
+              } >> "$GITHUB_STEP_SUMMARY"
+              echo "OK: Stripe devolvió una URL de Checkout."
+              ;;
+            *)
+              # El endpoint ya no reenvía el cuerpo crudo de Stripe (corregido
+              # el 2026-09-25), así que aquí solo llega el mensaje neutro. El
+              # motivo real está en los logs.
+              {
+                echo "## El checkout NO funciona"
+                echo ""
+                echo "Respuesta del endpoint: \`$ERROR\`"
+                echo ""
+                echo "El detalle de Stripe no viaja al cliente a propósito. Para verlo:"
+                echo "- Stripe → Desarrolladores → Registros (enseña la petición exacta y con qué clave se hizo)"
+                echo "- Cloudflare → fishnow → Functions → Logs"
+              } >> "$GITHUB_STEP_SUMMARY"
+              echo "::error::El checkout falló: $ERROR"
+              exit 1
+              ;;
+          esac
