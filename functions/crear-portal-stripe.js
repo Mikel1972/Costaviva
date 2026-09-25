@@ -46,6 +46,12 @@ async function clienteStripeDelUsuario(token, userId) {
   return filas[0]?.stripe_customer_id || null;
 }
 
+// Mensaje único que ve el usuario cuando algo falla del lado de Stripe. El
+// detalle real (que es lo que hace falta para diagnosticar) se queda en el
+// log del Worker. Un error de configuración nuestro no debe presentarse como
+// si el usuario hubiera hecho algo mal, ni exponer identificadores internos.
+const MENSAJE_GENERICO = "No se ha podido abrir el pago ahora mismo. Vuelve a intentarlo en unos minutos; si sigue fallando, escríbenos.";
+
 export async function onRequestPost(context) {
   const { request, env } = context;
   const stripeKey = env.STRIPE_SECRET_KEY;
@@ -90,8 +96,15 @@ export async function onRequestPost(context) {
     });
 
     if (!resp.ok) {
+      // El cuerpo de error de Stripe va SOLO al log del Worker, nunca al
+      // cliente (añadido 2026-09-25). Antes se reenviaba tal cual y el
+      // usuario veía en pantalla el id de cuenta (acct_...), la URL de los
+      // logs del dashboard y el id de petición — detalle interno que no le
+      // sirve de nada y que no tiene por qué ser público. Mismo criterio ya
+      // aplicado hoy a /identificar-captura.
       const detalle = await resp.text();
-      return new Response(JSON.stringify({ error: `Stripe respondió ${resp.status}: ${detalle}` }), {
+      console.error(`crear-portal-stripe: Stripe HTTP ${resp.status}: ${detalle}`);
+      return new Response(JSON.stringify({ error: MENSAJE_GENERICO, codigo: "fallo_stripe" }), {
         status: 502,
         headers: { "content-type": "application/json" },
       });
@@ -102,7 +115,8 @@ export async function onRequestPost(context) {
       headers: { "content-type": "application/json" },
     });
   } catch (e) {
-    return new Response(JSON.stringify({ error: String(e) }), {
+    console.error(`crear-portal-stripe: fallo inesperado: ${String(e)}`);
+    return new Response(JSON.stringify({ error: MENSAJE_GENERICO, codigo: "fallo_stripe" }), {
       status: 500,
       headers: { "content-type": "application/json" },
     });
