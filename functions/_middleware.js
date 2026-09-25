@@ -1,67 +1,29 @@
 // functions/_middleware.js
-// Cloudflare Pages sirve como archivo estático público cualquier cosa que
-// exista en el árbol de git, sin build step, salvo lo que un middleware
-// como este bloquee explícitamente (mismo patrón de incidente real ya
-// visto en Pólizas.ai, 2026-09-09: un fichero interno quedó accesible sin
-// autenticación por no estar bloqueado). Este middleware corre en TODA
-// petición (páginas, funciones, estáticos) antes de que se resuelva —
-// intentamos primero con un `_redirects` con solo el código de estado
-// ("/ruta 404") y Cloudflare lo ignoraba en silencio por faltarle un
-// destino; esto sí es un mecanismo documentado y fiable.
+// Cloudflare Pages sirve TODO lo que hay en el árbol de git, incluidos los
+// directorios que empiezan por punto. Este middleware decide qué se sirve.
 //
-// Ninguno de estos ficheros contiene datos reales de usuarios (revisado
-// 2026-09-12) — son ficheros internos/operativos, no parte de la app, y
-// no tienen nada que hacer servidos en público.
-const RUTAS_BLOQUEADAS = new Set([
-  "/ROBOT.md",
-  "/ROBOT_REGLAS.md",
-  "/CALIBRACION.jsonl",
-  "/README.md",
-  "/start.ps1",
-  // CLAUDE.md quedó fuera de esta lista por descuido (nunca se añadió al
-  // crearla) y se sirvió en público hasta que la auditoría del
-  // 2026-09-13 lo detectó (200 en vivo) — el fichero más sensible de
-  // todos: documenta el aviso de que el SOS probablemente no avisa a
-  // nadie, emails de cuentas de prueba, nombres de secretos y detalle
-  // interno de RLS/esquema. Mismo patrón de incidente que ya motivó
-  // crear este middleware, esta vez con el propio fichero que lo explica.
-  "/CLAUDE.md",
-]);
-// "/functions/" añadido en la misma auditoría del 2026-09-13: Cloudflare
-// Pages sirve el CÓDIGO FUENTE de cada functions/*.js como archivo
-// estático si se pide su ruta literal (ej. /functions/sos-alerta.js),
-// aparte de ejecutarlo como Function en su ruta reescrita (/sos-alerta).
-// Confirmado en vivo (200, código fuente completo servido) antes de este
-// fix. Ningún fichero del frontend pide nunca "/functions/..." (solo las
-// rutas ya reescritas), así que bloquear este prefijo no rompe nada real
-// — solo cierra la fuga del propio código (lógica de auth, nombres de
-// cabeceras de secreto, comentarios internos) que no tiene por qué ser
-// público aunque no contenga secretos en sí.
-// "/scripts/" añadido el 2026-09-18, al crear scripts/camaras/: mismo
-// hueco que ya tenía "/functions/" antes de la auditoría del 2026-09-13 —
-// Cloudflare Pages sirve el código fuente de scripts/turbidez/ y
-// scripts/camaras/ como archivo estático en su ruta literal (ej.
-// /scripts/turbidez/medir-turbidez.mjs) porque nada lo bloqueaba todavía.
-// No contienen secretos (el CRON_SECRET siempre llega por variable de
-// entorno, nunca hardcodeado), pero es código interno sin motivo para
-// estar público, mismo criterio que /functions/.
-// "/.github/" añadido el 2026-09-25, encontrado exactamente igual que los
-// dos anteriores: al crear un workflow nuevo se comprobó la ruta en
-// producción y /.github/workflows/daily-report.yml respondía 200 con el
-// fichero completo. Lo que quedaba público no eran secretos (sus VALORES
-// nunca están en el YAML, solo referencias ${{ secrets.X }}), pero sí: los
-// nombres de todos los secrets, el email de la cuenta de servicio de Google
-// Cloud, la ruta completa del Workload Identity Provider con su número de
-// proyecto, y los prompts e instrucciones internas de todos los robots.
-// Mismo criterio que /functions/ y /scripts/: código y configuración
-// interna que no tiene ningún motivo para ser pública. Nada del frontend
-// pide nunca /.github/..., así que bloquearlo no rompe nada.
-const PREFIJOS_BLOQUEADOS = ["/supabase/", "/test/", "/functions/", "/scripts/", "/.github/"];
+// Desde el 2026-09-25 usa una lista BLANCA (ver functions/_lib/rutas-publicas.js
+// para la lista y el razonamiento completo). Antes era una lista negra, y
+// falló tres veces: CLAUDE.md y functions/ (2026-09-13), scripts/
+// (2026-09-18) y .github/workflows/ (2026-09-25). Siempre el mismo patrón —
+// se añade un fichero nuevo y nadie se acuerda de bloquearlo.
+//
+// La diferencia real no es cuánto bloquea cada enfoque, sino CÓMO FALLA
+// cada uno cuando se te olvida algo: con lista negra, el olvido expone
+// información en silencio y puede tardar meses en descubrirse; con lista
+// blanca, el olvido rompe una página y se nota en la siguiente prueba.
+//
+// Patrón tomado de Pólizas.ai, que migró a esto el 2026-09-10 tras haber
+// servido sin querer un JSON con datos reales de usuarios.
+//
+// SI AÑADES UNA PÁGINA, UN ENDPOINT O UNA CARPETA DE ASSETS: tiene que
+// entrar en rutas-publicas.js o devolverá 404. Es deliberado.
+import { esRutaPermitida } from "./_lib/rutas-publicas.js";
 
 export async function onRequest(context) {
   const { request, next } = context;
   const { pathname } = new URL(request.url);
-  if (RUTAS_BLOQUEADAS.has(pathname) || PREFIJOS_BLOQUEADOS.some((p) => pathname.startsWith(p))) {
+  if (!esRutaPermitida(pathname)) {
     return new Response("Not Found", { status: 404 });
   }
   return next();
