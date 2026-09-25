@@ -319,7 +319,23 @@ jobs:
           elif [ "$conclusion" = "success" ]; then
             echo "resultado=✅ todo bien ($fecha)" >> "$GITHUB_OUTPUT"
           else
-            echo "resultado=❌ encontró problemas ($conclusion, $fecha) — revisar: $url" >> "$GITHUB_OUTPUT"
+            # QUÉ falló, no solo QUE falló (añadido 2026-09-25, propuesta 4 de
+            # la comparativa entre proyectos). Antes había que abrir el run y
+            # leer los logs para saber si la caída fue por un bug real o por
+            # algo ajeno (saldo de API, configuración). El nombre del paso que
+            # falló casi siempre lo dice de un vistazo: "Identificación de
+            # captura por foto real" es muy distinto de "Crear grupo con dos
+            # cuentas".
+            id_run=$(echo "$datos" | node -e 'let d="";process.stdin.on("data",c=>d+=c);process.stdin.on("end",()=>{const r=JSON.parse(d)[0];console.log(r&&r.url?r.url.split("/").pop():"");})')
+            paso=""
+            if [ -n "$id_run" ]; then
+              paso=$(gh run view "$id_run" --json jobs                 --jq '[.jobs[].steps[] | select(.conclusion=="failure") | .name] | join("; ")' 2>/dev/null || echo "")
+            fi
+            if [ -n "$paso" ]; then
+              echo "resultado=❌ falló en: $paso ($fecha) — revisar: $url" >> "$GITHUB_OUTPUT"
+            else
+              echo "resultado=❌ encontró problemas ($conclusion, $fecha) — revisar: $url" >> "$GITHUB_OUTPUT"
+            fi
           fi
 
       - name: Actividad del robot de datos (ROBOT.md)
