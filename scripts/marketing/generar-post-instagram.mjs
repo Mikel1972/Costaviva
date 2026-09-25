@@ -93,13 +93,115 @@ function piePaginaSvg() {
 // zarautz/donostia/hondarribia son solo vídeo HLS y santander no tiene
 // webcam -- se quitaron de esta lista (mantener sincronizado a mano si
 // cambia el proxy).
-const SPOTS_DESTACADOS = ["mundaka", "bakio", "getxo", "laredo", "santona"];
+// Zonas de la costa, en el orden en que se van publicando (añadido
+// 2026-09-25, pedido explícito del usuario: "cada publicación un spot de una
+// zona diferente, en ciclos completos"). Antes eran 5 spots sueltos de los
+// que 3 eran de Bizkaia y 2 de Cantabria, así que la variedad geográfica era
+// nula.
+//
+// Solo spots con imagen fija servida por nuestro proxy /webcam/ — el vídeo
+// HLS necesitaría ffmpeg, que este script no lleva. Verificado contra
+// WEBCAMS de functions/webcam/[slug].js el 2026-09-25.
+//
+// "Ciclo completo" significa que se recorren las 8 zonas antes de repetir
+// ninguna. Como cada pasada del robot es un proceso nuevo que no recuerda
+// nada, hace falta estado en disco: rotacion-zonas.json, que el workflow
+// comitea junto con la imagen generada.
+const ZONAS = [
+  { nombre: "País Vasco — Bizkaia", spots: ["mundaka", "bakio", "sopelana", "lekeitio", "getxo"] },
+  { nombre: "País Vasco — Gipuzkoa", spots: ["getaria", "pasaia"] },
+  { nombre: "Cantabria", spots: ["santona", "laredo", "castrourdiales", "suances", "comillas", "sanvicente"] },
+  { nombre: "Galicia", spots: ["acoruna", "baiona", "camarinas", "cangas", "corrubedo", "ribadeo", "ons", "portosin", "cies"] },
+  { nombre: "Castellón", spots: ["peniscola", "alcossebre", "benicassim", "oropesa", "burriana", "castellon", "torreblanca", "vinaros", "xilxes"] },
+  { nombre: "Valencia", spots: ["valencia", "alboraya", "cullera", "gandia", "oliva", "piles", "canetdeberenguer", "pobladefarnals"] },
+  { nombre: "Alicante", spots: ["denia", "javea", "calpe", "altea", "benidorm", "vilajoiosa", "alicante", "santapola", "guardamardelsegura", "pilardelahoradada"] },
+  { nombre: "Murcia y Baleares", spots: ["aguilas", "calamillor", "sonbou", "muro"] },
+];
+
+const RUTA_ROTACION = join(__dirname, "rotacion-zonas.json");
+
+// Supabase: la anon key es pública por diseño en este repo (ver CLAUDE.md) y
+// camara_estado es de lectura pública — no son datos de nadie, es el estado
+// de unas webcams.
+const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
+const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
+
+// Estado de las cámaras. Dos niveles, no uno (añadido 2026-09-25, pedido
+// explícito del usuario: "spot sano"):
+//   - `sin_senal = false` es lo mínimo: la cámara responde.
+//   - `fuente_usada = 0` es lo bueno: responde por su fuente PRINCIPAL. Un
+//     spot con fuente_usada > 0 tira de reserva porque la principal falla:
+//     vale para la app, pero es mal candidato para un post que presume de
+//     "webcam en directo", porque si la reserva también cae se queda sin
+//     nada. Caso real del 2026-09-25: Laredo estaba así.
+async function estadoCamaras() {
+  try {
+    const resp = await fetch(
+      `${SUPABASE_URL}/rest/v1/camara_estado?select=spot_slug,sin_senal,fuente_usada`,
+      { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } }
+    );
+    if (!resp.ok) throw new Error(`camara_estado respondió ${resp.status}`);
+    return new Map((await resp.json()).map((f) => [f.spot_slug, f]));
+  } catch (e) {
+    console.warn(`No se pudo leer el estado de las cámaras (${e.message}); se publicará sin ese filtro.`);
+    return new Map();
+  }
+}
+
+function leerRotacion() {
+  try {
+    return JSON.parse(readFileSync(RUTA_ROTACION, "utf8"));
+  } catch {
+    return { ultimoIndice: -1, ciclo: 1 };
+  }
+}
+
+// Elige la SIGUIENTE zona del ciclo y, dentro de ella, el mejor spot
+// disponible. Si una zona entera no tiene ninguna cámara utilizable se salta
+// a la siguiente, pero NO se da por consumida: se reintentará en el ciclo
+// siguiente, para que "ciclo completo" siga significando lo que dice.
+async function elegirSpot() {
+  const estado = await estadoCamaras();
+  const utilizable = (slug, exigirPrincipal) => {
+    const e = estado.get(slug);
+    if (!e) return !estado.size; // sin datos de ninguna, no filtramos
+    if (e.sin_senal !== false) return false;
+    return exigirPrincipal ? (e.fuente_usada ?? 0) === 0 : true;
+  };
+
+  const rotacion = leerRotacion();
+  for (let salto = 1; salto <= ZONAS.length; salto++) {
+    const indice = (rotacion.ultimoIndice + salto) % ZONAS.length;
+    const zona = ZONAS[indice];
+    const conPrincipal = zona.spots.filter((s) => utilizable(s, true));
+    const candidatos = conPrincipal.length ? conPrincipal : zona.spots.filter((s) => utilizable(s, false));
+    if (!candidatos.length) {
+      console.warn(`Zona "${zona.nombre}" sin ninguna cámara utilizable ahora mismo; se salta (se reintentará en el ciclo siguiente).`);
+      continue;
+    }
+    // Dentro de la zona se va alternando por ciclo, para no sacar siempre el
+    // mismo spot de las zonas con varias cámaras.
+    const slug = candidatos[(rotacion.ciclo ?? 1) % candidatos.length];
+    const consumida = (rotacion.ultimoIndice + 1) % ZONAS.length;
+    const ciclo = indice < consumida || indice === 0 && rotacion.ultimoIndice >= 0
+      ? (rotacion.ciclo ?? 1) + 1
+      : (rotacion.ciclo ?? 1);
+    writeFileSync(
+      RUTA_ROTACION,
+      JSON.stringify({ ultimoIndice: indice, ciclo, ultimaZona: zona.nombre, ultimoSpot: slug, fecha: new Date().toISOString() }, null, 2) + "\n"
+    );
+    console.log(`Zona de esta publicación: ${zona.nombre} -> ${slug} (ciclo ${ciclo})`);
+    return slug;
+  }
+  console.warn("Ninguna zona tiene cámaras utilizables; se usa mundaka como último recurso.");
+  return "mundaka";
+}
 
 const PANEL_FOTO = { x: 140, y: 410, width: 800, height: 310 };
 
 async function generarCondiciones() {
-  const dia = diaDelAnio(new Date());
-  const slug = SPOTS_DESTACADOS[dia % SPOTS_DESTACADOS.length];
+  const slug = await elegirSpot();
 
   const resp = await fetch(`${BASE_URL}/prevision`);
   if (!resp.ok) throw new Error(`/prevision respondió ${resp.status}`);
