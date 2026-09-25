@@ -786,6 +786,23 @@ function picoDeMareaEnIntervalo(serieAltura, horas, idxInicio, idxFin) {
   return { tipo: giro.tipo, hora: horas[giro.idx].slice(11, 16) };
 }
 
+// Corrección de oleaje en Gipuzkoa — copia del mismo criterio de
+// functions/prevision.js (el repo duplica helpers a propósito, no hay build
+// step para compartir código). Ver el comentario largo de allí para el
+// porqué: 22 puntos de calibración contra la boya 1101 Pasaia II, los 22 con
+// la altura calculada por debajo de la medida, media −28.2%; factor = la
+// MEDIANA de los 22 (1.381), no la media, por un valor suelto de 1.98.
+// Se decide por coordenadas para que valga igual en spots fijos y en
+// ubicaciones personalizadas. Ondarroa queda fuera a propósito (es Bizkaia,
+// y por ese lado la boya de referencia no muestra sesgo).
+const CAJA_OLEAJE_GIPUZKOA = { latMin: 43.20, latMax: 43.50, lonMin: -2.40, lonMax: -1.70 };
+const FACTOR_OLEAJE_GIPUZKOA = 1.38;
+function factorOleaje(lat, lon) {
+  const c = CAJA_OLEAJE_GIPUZKOA;
+  const dentro = lat >= c.latMin && lat <= c.latMax && lon >= c.lonMin && lon <= c.lonMax;
+  return dentro ? FACTOR_OLEAJE_GIPUZKOA : 1;
+}
+
 async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha, horaFinSalida) {
   // Bug real encontrado 2026-09-13 (el usuario cazó el del coeficiente
   // de marea y llevó a revisar el resto): con forecast_days=1 esto
@@ -879,7 +896,9 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha, horaF
     const idx = buscarIndiceHora(horas);
     const idxViento = buscarIndiceHora(viento.hourly?.time || []);
 
-    const alturaOla = marino.hourly?.wave_height?.[idx];
+    const alturaCruda = marino.hourly?.wave_height?.[idx];
+    const alturaOla =
+      alturaCruda === undefined || alturaCruda === null ? alturaCruda : alturaCruda * factorOleaje(lat, lon);
     if (alturaOla !== undefined && alturaOla !== null) {
       resultado.oleaje_altura_min = +(alturaOla * 0.9).toFixed(1);
       resultado.oleaje_altura_max = +(alturaOla * 1.1).toFixed(1);
