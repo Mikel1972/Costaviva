@@ -82,7 +82,9 @@ const WEBCAMS_VIDEO = {
   // imagen fija más abajo (skipPorVideo): lo que se comprueba tiene que
   // ser lo que de verdad se pinta en pantalla, no la imagen de reserva
   // que ya no se muestra mientras esta entrada de vídeo exista.
-  sopelana: "https://s61.ipcamlive.com/streams/3d0d8zpvutondjmwg/stream.m3u8",
+  // Ver el comentario largo en WEBCAMS_HLS de index.html: el alias de
+  // IPCamLive cambió el 2026-09-25 (s61 -> s153, streamid nuevo).
+  sopelana: "https://s153.ipcamlive.com/streams/99eod1rsuvg7yjnvk/stream.m3u8",
   hondarribia: "https://58f14c0895a20.streamlock.net/camaramar/GIP_hondarribia_169.stream/playlist.m3u8",
   donostia: "https://58f14c0895a20.streamlock.net/camaramar/GIP_zurriola_169.stream/playlist.m3u8",
   orio: "https://58f14c0895a20.streamlock.net/camaramar/GIP_orio_169.stream/playlist.m3u8",
