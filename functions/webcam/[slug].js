@@ -61,7 +61,9 @@ export const WEBCAMS = {
   // fallos correlados) no afecta a esta reserva.
   sopelana: [
     "https://detectia.net/img/webcam-sopelana-azti3.webp",
-    "https://s61.ipcamlive.com/streams/3d0d8zpvutondjmwg/snapshot.jpg",
+    // Snapshot del mismo alias nuevo (ver index.html). El anterior
+    // (s61/3d0d8zpvutondjmwg) daba 404 igual que el vídeo.
+    "https://s153.ipcamlive.com/streams/99eod1rsuvg7yjnvk/snapshot.jpg",
   ],
   // AZTI (detectia.net), mismo proveedor que Sopelana. Verificado por el
   // robot buscador de fuentes el 2026-09-13 (imagen WebP real descargada
