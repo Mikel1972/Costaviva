@@ -450,10 +450,33 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         continue-on-error: true
         run: |
+          SALIDA_CLAUDE=/tmp/claude-salida.log
           rm -f /tmp/informe-sintesis.txt
           claude -p "Eres el redactor del informe diario de Costaviva (repo Costaviva). Tienes en /tmp/robot-ultimas-24h.txt todo lo que se añadió a ROBOT.md en las últimas 24 horas (mezcla de la rutina de calibración nocturna, las distintas pasadas del robot buscador de fuentes — cámaras, mareas/oleaje, corrientes, presión, caudal de ríos, buenas prácticas de otras apps, migración/cría de especies, estudios institucionales tipo DIGIPESCA —, el robot de experiencia de usuario y, los sábados, el robot de patrones de uso; estos dos últimos ya NO publican nada por su cuenta desde el 2026-09-20, así que esta síntesis es la única vía por la que sus hallazgos llegan al dueño del proyecto — no los omitas). Léelo con Read y escribe un informe en español, sin jerga, para el dueño del proyecto (no técnico en detalle), estructurado EXACTAMENTE con estos 4 encabezados markdown, en este orden: (1) '## 🛠 Trabajo interno (calibración y datos)' seguido de 2-4 frases resumiendo qué hizo la calibración nocturna y las pasadas de datos en tiempo real (cámaras/mareas/corrientes/presión/caudal) de las últimas 24h — solo lo que pasó, sin repetir cifras que ya vienen aparte en el informe (SOS, salud de endpoints); dentro de esta sección incluye SIEMPRE una línea aparte empezando por '**Cámaras nuevas encontradas:**' con el número exacto de cámaras nuevas que el robot buscador de fuentes propuso o encontró en las últimas 24h (0 si no hubo ninguna esa pasada), y justo debajo otra línea empezando por '**Términos de búsqueda:**' mencionando qué términos de búsqueda de webcams (el diccionario de tipos de entidad -- surf/ayuntamiento/pesca/puerto/cofradía/etc, ver ROBOT_REGLAS.md) se probaron hoy y en qué población/zona, si el fichero lo indica, y si alguno resultó productivo por primera vez o si algún tipo de entidad nuevo (no listado todavía en el diccionario) apareció como dueño de una cámara nueva -- si el fichero no menciona nada de esto hoy, dilo explícitamente en vez de inventarlo; (2) '## 🧪 Experiencia de usuario y patrones de uso' con una línea aparte empezando por '**Robot de experiencia de usuario:**' resumiendo en 2-4 frases qué probó ese robot hoy (corre a diario) y, MUY IMPORTANTE, si encontró algún bug/hallazgo real cópialo con el mismo nivel de detalle y valores concretos que use ROBOT.md — nunca lo diluyas a una frase vaga tipo 'todo bien' si hay un hallazgo real detrás, y si no encontró nada raro dilo así de claro; y, solo si el fichero trae una entrada del robot de patrones de uso de esta semana (corre solo los sábados, así que entre semana toca decir explícitamente 'no le tocaba pasar esta semana' salvo que hoy sea sábado o domingo justo después), otra línea aparte empezando por '**Robot de patrones de uso:**' con sus propuestas concretas (con los números reales que haya usado para justificarlas) o 'sin propuestas esta semana' si no tuvo ninguna; (3) '## 🔎 Trabajo externo (investigación de contenido)' con 1-2 frases sobre buenas prácticas de otras apps y estudios institucionales de las últimas 24h, y después una línea aparte empezando por '**Robot de especies:**' resumiendo específicamente la pasada de migración/cría de especies (esa pasada solo corre los jueves, así que la mayoría de días toca decir explícitamente 'no le tocaba pasar hoy' en vez de inventar que no hubo novedades) — qué se investigó, si se propuso algo o si no hubo novedades esa vez; (4) '## 🆕 Nuevas fuentes encontradas, pendientes de validar' seguido, para CADA fuente de datos nueva (no ya integrada) que aparezca mencionada en el fichero, de un sub-apartado con el nombre de la fuente, 2-3 frases de resumen de qué es y qué aportaría, y tu propia opinión honesta y breve sobre si los datos parecen sólidos/utilizables para Costaviva o si tienes dudas (cobertura geográfica limitada, fuente sin verificar del todo, requeriría más trabajo, etc) — si no se encontró ninguna fuente nueva en las últimas 24h, escribe solo 'Ninguna fuente nueva en las últimas 24h.' bajo ese encabezado, nada más. Reglas: nunca inventes nada que no esté en el fichero — si el fichero está vacío o no tiene información útil, dilo explícitamente en cada sección en vez de rellenar con generalidades. Sé conciso, no reescribas ROBOT.md entero. Guarda el resultado en /tmp/informe-sintesis.txt (usa Write), nada más — no toques ningún otro fichero del repo, no hagas commits." \
             --dangerously-skip-permissions \
-            --allowedTools "Bash,Read,Write,Grep"
+            --allowedTools "Bash,Read,Write,Grep" > "$SALIDA_CLAUDE" 2>&1 || CODIGO=$?
+          # Guardarraíl de saldo (añadido 2026-09-25, pedido explícito del
+          # usuario: "asegúrate que cuando no hay saldo nada se rompe"). El
+          # 2026-09-24 la cuenta de Anthropic se quedó sin saldo y cada
+          # workflow lo manifestó de una forma distinta y engañosa: este tipo
+          # de pasada moría en ~20s con un rojo indistinguible de un bug real,
+          # y las que llevan continue-on-error salían en VERDE sin haber hecho
+          # nada. Un problema de facturación no es un fallo del repo: se avisa
+          # con ::warning:: nombrando la causa, se deja dicho en el fichero de
+          # informe, y se sale en verde para no disparar falsas alarmas.
+          CODIGO=${CODIGO:-0}
+          cat "$SALIDA_CLAUDE" || true
+          if [ "$CODIGO" -ne 0 ] && grep -qiE "credit balance is too low|purchase credits" "$SALIDA_CLAUDE"; then
+            echo "::warning::Sin saldo en ANTHROPIC_API_KEY: esta pasada no se ha ejecutado. No es un fallo del repo ni de la tarea — recargar saldo en Plans & Billing de Anthropic."
+            echo "_(sin síntesis hoy: la ANTHROPIC_API_KEY se ha quedado sin saldo. El resto del informe de arriba es real y está completo — solo falta el resumen redactado. Nada que arreglar en el repo: recargar saldo en Plans y Billing de Anthropic.)_" > /tmp/informe-sintesis.txt
+            {
+              echo "### Pasada no ejecutada: sin saldo de API"
+              echo "La \`ANTHROPIC_API_KEY\` no tiene saldo, así que esta pasada no ha hecho nada."
+              echo "Nada que arreglar en el repo — hay que recargar saldo en Plans & Billing de Anthropic."
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          exit "$CODIGO"
 
       - name: Publicar/actualizar el Issue "Informe diario"
         id: publicar

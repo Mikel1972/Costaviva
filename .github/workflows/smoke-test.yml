@@ -136,20 +136,38 @@ jobs:
             -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
             -d @/tmp/payload.json)
           echo "$resp" > /tmp/identificacion.json
-          especie=$(node -e "
+          # La IA es una ayuda opcional del producto, no una pieza crítica: si
+          # el proveedor no tiene servicio (saldo agotado, saturado, o sin
+          # configurar) el endpoint lo dice con un `codigo` estable (ver
+          # clasificarFalloProveedor() en functions/identificar-captura.js) y
+          # ESTE WORKFLOW NO DEBE PONERSE ROJO POR ESO — un rojo por una
+          # condición de facturación tapa las regresiones de verdad, que es
+          # justo lo que este smoke test existe para detectar. Se avisa con
+          # ::warning:: y el recorrido sigue con una especie de reserva, para
+          # que los pasos siguientes (registrar/borrar una captura) se sigan
+          # probando igual. Añadido 2026-09-25, tras el incidente del
+          # 2026-09-24: la cuenta se quedó sin saldo y el smoke test llevaba
+          # días en rojo por ese único motivo.
+          salida=$(node -e "
             const fs = require('fs');
             let r;
             try { r = JSON.parse(fs.readFileSync('/tmp/identificacion.json', 'utf8')); }
             catch (e) { console.error('JSON inválido en la respuesta: ' + e.message); process.exit(1); }
+            const DEGRADADO = ['sin_credito', 'saturado', 'sin_configurar'];
+            if (DEGRADADO.includes(r.codigo)) { console.log('DEGRADADO ' + r.codigo); process.exit(0); }
             if (r.error) { console.error('El endpoint devolvió un error: ' + r.error); process.exit(1); }
             for (const k of ['especie', 'talla_cm', 'peso_g', 'confianza']) {
               if (!(k in r)) { console.error('Falta la clave \"' + k + '\" en la respuesta'); process.exit(1); }
             }
-            console.log(r.especie || 'Lubina');
-          ")
-          if [ $? -ne 0 ]; then
-            echo "::error::/identificar-captura devolvió algo inesperado: $resp"
-            exit 1
+            console.log('OK ' + (r.especie || 'Lubina'));
+          ") || { echo "::error::/identificar-captura devolvió algo inesperado: $resp"; exit 1; }
+          estado="${salida%% *}"
+          resto="${salida#* }"
+          if [ "$estado" = "DEGRADADO" ]; then
+            echo "::warning::/identificar-captura sin servicio ($resto): la identificación por IA no está disponible. NO es un fallo de la app — la captura se puede registrar a mano igual. El resto del recorrido sigue con una especie de reserva."
+            especie="Lubina"
+          else
+            especie="$resto"
           fi
           echo "Identificación real de la foto de prueba: $(cat /tmp/identificacion.json)"
           echo "especie=$especie" >> "$GITHUB_OUTPUT"
