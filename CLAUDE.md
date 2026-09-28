@@ -2299,6 +2299,57 @@ propio workflow quedan privados **sin que nadie tenga que acordarse de
 bloquearlos**, gracias a la lista blanca. Es justo el fallo por omisión que
 se buscaba invertir.
 
+## Fin de prueba: aviso → recordatorio → desactivar → borrar (2026-09-28)
+
+Pedido explícito del usuario: quien termina los 7 días de prueba y no se
+suscribe recibe un aviso y, si sigue sin suscribirse, su cuenta se desactiva
+y después se borra. Decisiones del usuario: 30 días desde el aviso hasta
+desactivar, desactivar primero y borrar después, recordatorio previo.
+
+Calendario, contado desde el email de aviso (`perfiles.fin_prueba_avisado_en`):
+
+| Día | Paso | Qué pasa |
+|---|---|---|
+| 0 | aviso | email con las dos fechas (desactivar y borrar) |
+| 27 | recordatorio | email "se desactivará el X" |
+| 30 | desactivar | `auth.users.banned_until` a +100 años y sesiones cerradas; datos intactos; email al usuario y al admin |
+| 60 | borrar | fotos del bucket vía Storage API, luego `delete from auth.users` (cascada); email al usuario y al admin |
+
+Todo vive en `functions/avisar-fin-prueba.js` (mismo cron de
+`notificar-altas.yml`) y en la migración `20260928120000`. Las listas de a
+quién le toca cada paso las decide Postgres (`usuarios_fin_prueba_pendiente_*`),
+y `desactivar_usuario_fin_prueba()`/`borrar_usuario_fin_prueba()` vuelven a
+comprobar las condiciones dentro antes de actuar.
+
+- **Nunca entran en el ciclo** (`fin_prueba_fuera_de_ciclo()`): el admin, los
+  alias `etxebe2005+...` (cuentas de `smoke-test.yml`/`auth-test.yml` —
+  desactivarlas rompería esos workflows) y quien haya tenido alguna vez una
+  suscripción real (cualquier fila en `suscripciones` salvo
+  `incomplete`/`incomplete_expired`). Lo último es a propósito: un suscriptor
+  que cancela meses después no debe quedar desactivado al instante por un
+  aviso de fin de prueba antiguo. **La baja de un ex-suscriptor no está
+  decidida** — no la metas en este ciclo sin preguntar.
+- **Un fallo de correo retrasa, nunca acorta**: aviso y recordatorio se
+  marcan solo tras confirmar Resend, desactivar exige recordatorio enviado
+  hace ≥3 días.
+- **Guarda de volumen**: más de 10 cuentas para desactivar o para borrar en
+  una pasada → ese paso no se ejecuta, workflow en rojo y email al admin.
+- **Sin `ADMIN_EMAIL`** en Cloudflare Pages, desactivar y borrar no se ejecutan.
+- **Reactivar a alguien**: Supabase → Authentication → Users → Unban. El
+  borrado exige que el bloqueo siga vigente, así que quitarlo lo cancela, y
+  no se le vuelve a desactivar (`desactivado_en` queda relleno). El email de
+  desactivación lleva `reply_to: datos@costaviva.org` (Email Routing → Gmail
+  del admin) para que puedan pedirlo.
+- **Lo que no es solo suyo se rescata antes de borrar**: los grupos que creó
+  con otros miembros pasan al miembro más antiguo (si no, la cascada de
+  `grupos.creado_por` borraría el grupo para todos); los que eran solo suyos
+  dejan rastro en `grupos_historico`; sus `especies_comunidad` pasan al admin.
+  Si se añade otra tabla compartida con `creado_por ... on delete cascade`,
+  hay que rescatarla también en `borrar_usuario_fin_prueba()`.
+- Al aplicar la migración, quien ya recibió el aviso viejo ("tus datos
+  siguen guardados") vuelve a la cola del aviso para recibir el nuevo con
+  fechas; su calendario arranca desde ese email.
+
 ## Regla para futuros endpoints con `service_role` (2026-09-25)
 
 Propuesta 5 de la comparativa entre proyectos. **Hoy no hay ningún hueco**:
