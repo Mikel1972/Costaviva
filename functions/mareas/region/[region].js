@@ -46,14 +46,26 @@ export async function onRequestGet(context) {
   const spots = datos.spots.filter((s) => region.spots.has(s.slug)).sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
   const url = `https://costaviva.org/mareas/region/${region.slug}`;
   const nombre = escaparHtml(region.nombre);
-  const descripcion = `Marea, oleaje y viento en tiempo real de ${spots.length} spots de pesca en ${region.nombre} -- consulta cada uno gratis, sin necesidad de cuenta.`;
+  const descripcion = `Mareas hoy en ${region.nombre}: próxima pleamar, oleaje y viento en tiempo real de ${spots.length} spots de pesca. Gratis y sin necesidad de cuenta.`;
+  // Próxima pleamar de cada spot junto a su nombre (2026-09-28): contenido
+  // real y distinto en cada página de región, en vez de una lista de
+  // nombres que Google ve casi igual en las 8 regiones.
+  const pleamarDe = (s) => (s.marea?.proximas || []).find((e) => e.tipo === "pleamar");
+  const jsonLd = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Mareas", item: "https://costaviva.org/mareas" },
+      { "@type": "ListItem", position: 2, name: region.nombre, item: url },
+    ],
+  }).replace(/</g, "\\u003c");
 
   const html = `<!doctype html>
 <html lang="es">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Mareas y oleaje en ${nombre} | Costaviva</title>
+<title>Mareas hoy en ${nombre}: pleamar, bajamar y oleaje | Costaviva</title>
 <meta name="description" content="${escaparHtml(descripcion)}" />
 <link rel="canonical" href="${url}" />
 <meta property="og:type" content="website" />
@@ -65,6 +77,7 @@ export async function onRequestGet(context) {
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Mareas y oleaje en ${nombre} | Costaviva" />
 <meta name="twitter:description" content="${escaparHtml(descripcion)}" />
+<script type="application/ld+json">${jsonLd}</script>
 <style>
   * { box-sizing: border-box; }
   body { margin: 0; background: ${CREMA}; font-family: Arial, 'Liberation Sans', sans-serif; color: ${NAVY}; }
@@ -79,6 +92,8 @@ export async function onRequestGet(context) {
   .lista { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
   .lista li a { display: block; background: ${BLANCO}; border: 1px solid ${BORDE}; border-radius: 10px; padding: 10px 14px; text-decoration: none; color: ${NAVY}; font-size: 14px; }
   a { color: ${DORADO}; }
+  .lista li a small { display: block; color: ${GRIS}; font-size: 12px; margin-top: 2px; }
+  .cta-sub { text-align: center; color: ${GRIS}; font-size: 13px; margin: -24px 0 32px; }
 </style>
 </head>
 <body>
@@ -87,13 +102,19 @@ export async function onRequestGet(context) {
     <div class="subtitulo">pesca en tiempo real</div>
 
     <div class="migas"><a href="/mareas">Todos los spots</a> → ${nombre}</div>
-    <h1>Mareas y oleaje en ${nombre}</h1>
+    <h1>Mareas hoy en ${nombre}</h1>
     <p class="intro">${escaparHtml(descripcion)}</p>
 
-    <a class="cta" href="/login">Ver el mapa completo, webcams en directo y mucho más → Entra gratis</a>
+    <a class="cta" href="/login?alta=1">Prueba Costaviva 7 días gratis →</a>
+    <p class="cta-sub">Sin tarjeta. Mapa completo, webcams en directo y diario de pesca. Después, 3,99 €/mes.</p>
 
     <ul class="lista">
-      ${spots.map((s) => `<li><a href="/mareas/${s.slug}">${escaparHtml(s.nombre)}</a></li>`).join("\n      ")}
+      ${spots
+        .map((s) => {
+          const p = pleamarDe(s);
+          return `<li><a href="/mareas/${s.slug}">${escaparHtml(s.nombre)}${p ? `<small>Pleamar ${p.manana ? "mañana " : ""}${escaparHtml(p.hora)}</small>` : ""}</a></li>`;
+        })
+        .join("\n      ")}
     </ul>
   </div>
 </body>
