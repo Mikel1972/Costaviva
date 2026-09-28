@@ -315,6 +315,8 @@ async function generarCondiciones() {
     `💨 Viento: ${vientoTexto}`,
     `🌙 Marea: ${spot.marea.tendencia} (coef. ${spot.marea.coeficiente})`,
     "",
+    `🔗 Marea y oleaje de ${spot.nombre} en tiempo real, gratis y sin cuenta: ${paginaMareas(slug)}`,
+    "",
     "Consulta el estado en directo de tu spot, capas de viento/boyas/radar de lluvia y muchos más datos para que incrementes tus posibilidades de pesca -- enlace en la bio 🎣",
     "",
     "#pesca #fishing #instafishing #pescadeportiva #pescadesdecosta #surfcasting #saltwaterfishing #costaviva #euskadi #cantabria #cantabrico",
@@ -357,6 +359,19 @@ async function generarCondiciones() {
 // mismo criterio que evitar datos duplicados/desincronizados en el resto
 // del repo. Es un array literal plano (sin referencias externas), seguro
 // de evaluar así.
+// Página pública de mareas de un spot, para citarla en el texto del post
+// (pedido del usuario, 2026-09-28: que cada post lleve a la página concreta
+// de su spot, que es lo que Google tiene que acabar indexando). Solo se
+// usa si está en sitemap.xml — si no, el índice /mareas, que existe siempre.
+// En Instagram los enlaces del texto no son clicables: se escribe sin
+// https:// para que se lea y se pueda teclear.
+function paginaMareas(slug) {
+  const sitemap = readFileSync(join(RAIZ_REPO, "sitemap.xml"), "utf8");
+  return slug && sitemap.includes(`<loc>https://costaviva.org/mareas/${slug}</loc>`)
+    ? `costaviva.org/mareas/${slug}`
+    : "costaviva.org/mareas";
+}
+
 function extraerEspecies() {
   const html = readFileSync(join(RAIZ_REPO, "index.html"), "utf8");
   const marcadorInicio = "const ESPECIES = [";
@@ -403,6 +418,8 @@ async function generarEspecies() {
     especie.nota.charAt(0).toUpperCase() + especie.nota.slice(1) + ".",
     "",
     `🍽️ Se alimenta de: ${especie.alimento}`,
+    "",
+    `🔗 Marea y oleaje de tu spot en tiempo real, gratis y sin cuenta: ${paginaMareas(null)}`,
     "",
     "Consulta las condiciones reales de tu spot y muchos más datos para que incrementes tus posibilidades de pesca -- enlace en la bio 🎣",
     "",
