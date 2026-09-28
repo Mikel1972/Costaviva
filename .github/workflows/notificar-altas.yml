@@ -20,6 +20,15 @@ on:
     - cron: "*/30 * * * *"
   workflow_dispatch: {}
 
+# Desde 2026-09-28 también la lanza pg_cron cada 30 min vía la API de GitHub
+# (supabase/migrations/20260928160000_programador_workflows_github.sql),
+# porque GitHub solo cumplía el schedule unas 7 veces al día. El schedule se
+# queda de respaldo; esto evita que dos ejecuciones se solapen (la segunda
+# espera a que acabe la primera, no se cancela nada).
+concurrency:
+  group: notificar-altas
+  cancel-in-progress: false
+
 jobs:
   notificar:
     runs-on: ubuntu-latest
