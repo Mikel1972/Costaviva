@@ -1,15 +1,16 @@
 -- Ciclo completo tras el fin de la prueba: aviso -> recordatorio ->
 -- desactivar -> borrar (pedido explicito del usuario, 2026-09-28: "si no lo
 -- hacen debemos eliminar su perfil y desactivarlo"). Decisiones del usuario:
--- 30 dias desde el aviso hasta desactivar, desactivar primero y borrar
--- despues, y un recordatorio antes del paso irreversible para el usuario.
+-- desactivar primero y borrar despues, con un recordatorio antes. El
+-- calendario va en semanas, al mismo ritmo que la prueba de 7 dias: una
+-- semana hasta desactivar y otra hasta borrar.
 --
 -- Calendario, contado desde el email de fin de prueba (fin_prueba_avisado_en):
 --   dia 0   aviso de fin de prueba (ya existia, ahora lleva las fechas)
---   dia 27  recordatorio: "el dia 30 se desactiva tu cuenta"
---   dia 30  desactivar: login bloqueado (auth.users.banned_until) y sesiones
+--   dia 5   recordatorio: "el dia 7 se desactiva tu cuenta"
+--   dia 7   desactivar: login bloqueado (auth.users.banned_until) y sesiones
 --           cerradas. Los datos siguen ahi.
---   dia 60  borrar: delete de auth.users, cascada a todas sus tablas. Las
+--   dia 14  borrar: delete de auth.users, cascada a todas sus tablas. Las
 --           fotos del bucket las borra antes el endpoint (Storage API).
 --
 -- Mismo patron que 20260925180000: la lista de a quien le toca cada paso la
@@ -40,11 +41,11 @@ alter table public.perfiles
   add column if not exists desactivado_en timestamptz;
 
 comment on column public.perfiles.fin_prueba_avisado_en is
-  'Cuándo se le mandó el email de fin de prueba. Arranca el calendario de desactivación (día 30) y borrado (día 60).';
+  'Cuándo se le mandó el email de fin de prueba. Arranca el calendario de desactivación (día 7) y borrado (día 14).';
 comment on column public.perfiles.fin_prueba_recordatorio_en is
-  'Cuándo se le mandó el recordatorio previo a la desactivación (día 27).';
+  'Cuándo se le mandó el recordatorio previo a la desactivación (día 5).';
 comment on column public.perfiles.desactivado_en is
-  'Cuándo se bloqueó su acceso por no suscribirse tras la prueba. El borrado llega 30 días después si sigue bloqueado.';
+  'Cuándo se bloqueó su acceso por no suscribirse tras la prueba. El borrado llega 7 días después si sigue bloqueado.';
 
 -- Excepciones del ciclo, en un solo sitio para que las tres listas y el
 -- borrado apliquen exactamente las mismas.
@@ -110,7 +111,7 @@ $$;
 revoke all on function public.marcar_fin_prueba_avisado(uuid) from public, authenticated, anon;
 grant execute on function public.marcar_fin_prueba_avisado(uuid) to service_role;
 
--- Recordatorio (dia 27). Exige que el aviso inicial se mandara de verdad.
+-- Recordatorio (dia 5). Exige que el aviso inicial se mandara de verdad.
 create or replace function public.usuarios_fin_prueba_pendiente_recordatorio()
 returns table (user_id uuid, email text, desactivar_en timestamptz, borrar_en timestamptz)
 language sql
@@ -118,14 +119,14 @@ security definer
 set search_path = public
 as $$
   select p.id, u.email::text,
-         p.fin_prueba_avisado_en + interval '30 days',
-         p.fin_prueba_avisado_en + interval '60 days'
+         p.fin_prueba_avisado_en + interval '7 days',
+         p.fin_prueba_avisado_en + interval '14 days'
   from public.perfiles p
   join auth.users u on u.id = p.id
   where p.fin_prueba_avisado_en is not null
     and p.fin_prueba_recordatorio_en is null
     and p.desactivado_en is null
-    and p.fin_prueba_avisado_en + interval '27 days' < now()
+    and p.fin_prueba_avisado_en + interval '5 days' < now()
     and not public.fin_prueba_fuera_de_ciclo(p.id)
     and not exists (
       select 1 from public.suscripciones s
@@ -147,9 +148,9 @@ $$;
 revoke all on function public.marcar_fin_prueba_recordatorio(uuid) from public, authenticated, anon;
 grant execute on function public.marcar_fin_prueba_recordatorio(uuid) to service_role;
 
--- Desactivacion (dia 30). Exige que el recordatorio se mandara: si Resend
+-- Desactivacion (dia 7). Exige que el recordatorio se mandara: si Resend
 -- fallo con esta persona, se queda esperando en vez de desactivarla sin
--- haberle avisado. Y al menos 3 dias desde el recordatorio, para que un
+-- haberle avisado. Y al menos 2 dias desde el recordatorio, para que un
 -- recordatorio enviado con retraso no deje un margen de horas.
 create or replace function public.usuarios_fin_prueba_pendiente_desactivar()
 returns table (user_id uuid, email text, borrar_en timestamptz)
@@ -157,14 +158,14 @@ language sql
 security definer
 set search_path = public
 as $$
-  select p.id, u.email::text, now() + interval '30 days'
+  select p.id, u.email::text, now() + interval '7 days'
   from public.perfiles p
   join auth.users u on u.id = p.id
   where p.fin_prueba_avisado_en is not null
     and p.fin_prueba_recordatorio_en is not null
     and p.desactivado_en is null
-    and p.fin_prueba_avisado_en + interval '30 days' < now()
-    and p.fin_prueba_recordatorio_en + interval '3 days' < now()
+    and p.fin_prueba_avisado_en + interval '7 days' < now()
+    and p.fin_prueba_recordatorio_en + interval '2 days' < now()
     and not public.fin_prueba_fuera_de_ciclo(p.id)
     and not exists (
       select 1 from public.suscripciones s
@@ -204,7 +205,7 @@ $$;
 revoke all on function public.desactivar_usuario_fin_prueba(uuid) from public, authenticated, anon;
 grant execute on function public.desactivar_usuario_fin_prueba(uuid) to service_role;
 
--- Borrado (dia 60 = 30 dias tras desactivar). Solo si SIGUE bloqueado de
+-- Borrado (dia 14 = 7 dias tras desactivar). Solo si SIGUE bloqueado de
 -- verdad (ver "perdon manual" arriba).
 create or replace function public.usuarios_fin_prueba_pendiente_borrar()
 returns table (user_id uuid, email text)
@@ -217,7 +218,7 @@ as $$
   join auth.users u on u.id = p.id
   where p.fin_prueba_avisado_en is not null
     and p.desactivado_en is not null
-    and p.desactivado_en + interval '30 days' < now()
+    and p.desactivado_en + interval '7 days' < now()
     and u.banned_until is not null
     and u.banned_until > now()
     and not public.fin_prueba_fuera_de_ciclo(p.id)

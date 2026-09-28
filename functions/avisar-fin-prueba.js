@@ -5,9 +5,9 @@
 // migración 20260928120000 para el calendario y las excepciones:
 //
 //   día 0   aviso de fin de prueba, ya con las dos fechas
-//   día 27  recordatorio
-//   día 30  desactivar (login bloqueado, datos intactos)
-//   día 60  borrar cuenta, datos y fotos
+//   día 5   recordatorio
+//   día 7   desactivar (login bloqueado, datos intactos)
+//   día 14  borrar cuenta, datos y fotos
 //
 // Mismo patrón que notificar-altas.js: protegido con el secreto compartido
 // X-Cron-Secret, llamado por .github/workflows/notificar-altas.yml, y
@@ -218,7 +218,7 @@ export async function onRequestPost(context) {
   try {
     const pendientes = (await rpc("usuarios_fin_prueba_pendiente_aviso")) || [];
     const ahora = Date.now();
-    const email = emailAviso(ahora + 30 * DIA_MS, ahora + 60 * DIA_MS);
+    const email = emailAviso(ahora + 7 * DIA_MS, ahora + 14 * DIA_MS);
     for (const u of pendientes) {
       if (!u.email) continue;
       try {
@@ -234,7 +234,7 @@ export async function onRequestPost(context) {
     errores.push(`aviso: ${String(e)}`);
   }
 
-  // 2) Recordatorio, día 27.
+  // 2) Recordatorio, día 5.
   try {
     const pendientes = (await rpc("usuarios_fin_prueba_pendiente_recordatorio")) || [];
     for (const u of pendientes) {
@@ -255,7 +255,7 @@ export async function onRequestPost(context) {
   if (!adminEmail) {
     errores.push("ADMIN_EMAIL no configurado: desactivar y borrar no se ejecutan");
   } else {
-    // 3) Desactivar, día 30.
+    // 3) Desactivar, día 7.
     try {
       const pendientes = (await rpc("usuarios_fin_prueba_pendiente_desactivar")) || [];
       if (pendientes.length > LIMITE_POR_PASADA) {
@@ -298,7 +298,7 @@ export async function onRequestPost(context) {
       errores.push(`desactivar: ${String(e)}`);
     }
 
-    // 4) Borrar, 30 días después de desactivar.
+    // 4) Borrar, 7 días después de desactivar.
     try {
       const pendientes = (await rpc("usuarios_fin_prueba_pendiente_borrar")) || [];
       if (pendientes.length > LIMITE_POR_PASADA) {
