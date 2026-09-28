@@ -259,6 +259,22 @@ jobs:
           '
         continue-on-error: true
 
+      - name: Search Console -- indexación de las páginas del sitemap
+        # Añadido 2026-09-28, pedido explícito del usuario ("cómo reviso las
+        # indexaciones de las páginas"). El paso anterior da el rendimiento
+        # (clics, impresiones); este dice qué URLs del sitemap ha indexado
+        # Google y por qué no las demás, con la API de inspección de URLs y
+        # las mismas credenciales. Toda la lógica vive en
+        # scripts/seo/indexacion-google.mjs, que también se puede lanzar a
+        # mano con el workflow "Comprobar indexación en Google".
+        id: indexacion
+        if: steps.auth_google.outcome == 'success'
+        working-directory: scripts/seo
+        run: |
+          npm ci --no-audit --no-fund
+          node indexacion-google.mjs
+        continue-on-error: true
+
       - name: Estado de las webcams (camara_estado, tabla pública)
         # Añadido 2026-09-19, pedido explícito del usuario: un informe
         # diario de qué cámaras están fallando (sin señal de verdad, o
@@ -609,6 +625,15 @@ jobs:
               `<!-- KPI_AUTONOMO commits=${hoy.commits} calibracion=${hoy.calibracion} reglas=${hoy.reglas} camaras=${hoy.camaras} -->`,
             ].join("\n");
 
+            // Variación de páginas indexadas frente a la pasada anterior, con
+            // el mismo truco del marcador invisible que el KPI de arriba.
+            const indexadasHoy = parseInt("${{ steps.indexacion.outputs.indexadas }}", 10);
+            const matchIndexacion = issue ? issue.body.match(/<!-- INDEXACION indexadas=(\d+) -->/) : null;
+            const lineaIndexacion = Number.isNaN(indexadasHoy)
+              ? ""
+              : (matchIndexacion ? ` — ${conSigno(indexadasHoy - +matchIndexacion[1])} vs la pasada anterior` : "")
+                + ` <!-- INDEXACION indexadas=${indexadasHoy} -->`;
+
             const fecha = new Date().toISOString().slice(0, 10);
             const fila = [
               `### ${fecha}`,
@@ -624,6 +649,8 @@ jobs:
               `${{ steps.seo.outputs.resultado }}`,
               `- Search Console (rendimiento real de búsqueda):`,
               `${{ steps.searchconsole.outputs.resultado }}`,
+              `- Indexación en Google (URLs del sitemap)${lineaIndexacion}:`,
+              `${{ steps.indexacion.outputs.resultado || '  - No se pudo consultar esta pasada (ver el paso de autenticación con Google).' }}`,
               `- Marketing (Instagram):`,
               `${{ steps.marketing.outputs.resultado }}`,
               lineaKpi,
