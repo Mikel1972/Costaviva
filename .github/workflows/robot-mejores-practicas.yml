@@ -20,6 +20,30 @@ name: Robot de mejores prácticas entre proyectos
 #   línea donde un proyecto lo hace mejor. Una propuesta sin código detrás
 #   es una opinión, y de eso ya vamos servidos.
 #
+# SUPERVISOR DEL SALDO DE API (añadido 2026-09-28, pedido explícito del
+# usuario: "crea un robot que supervise las 4 apps para optimizar el saldo
+# sin perjudicar las funcionalidades", dentro de este robot de lecciones
+# comunes). Las 4 apps comparten cuenta y saldo de Anthropic, y el saldo se
+# agotó 6 veces en 13 días. Dos piezas:
+# 1. scripts/saldo/auditar-consumo-api.mjs, SIN IA (no gasta saldo): recorre
+#    los 4 repos, estima el gasto de cada robot y marca los patrones caros
+#    (reglas R1-R8, ver el script). Escribe SALDO_API.md y lo comitea él
+#    mismo, así que el informe existe aunque no quede saldo para el paso de
+#    Claude. Si existe el secret ANTHROPIC_ADMIN_KEY (clave de
+#    administración sk-ant-admin... de la consola de Anthropic), añade el
+#    gasto REAL de los últimos 7 días.
+# 2. La sesión de Claude de abajo lee SALDO_API.md y propone los recortes
+#    concretos como primera dimensión de COMPARATIVA_PROYECTOS.md. Nunca
+#    propone quitar una funcionalidad: menos frecuencia, menos turnos, menos
+#    contexto o un modelo más barato donde la calidad aguante, siempre con
+#    el riesgo explicado. Aplicar cada recorte sigue siendo decisión humana.
+#
+# El propio robot también se abarata (mismo día): arranca desde un
+# directorio vacío para no cargar el CLAUDE.md de Costaviva (~144 KB) en
+# cada turno, baja de 80 a 50 turnos, y se le prohíbe leer enteros los
+# ficheros de más de 100 KB de los otros repos (VIGILANCIA.md de Pólizas.ai
+# pasa de 700 KB).
+#
 # ALCANCE (ampliado el 2026-09-25, pedido explícito del usuario: "incluye
 # absolutamente todo: smoke test, resolución de bugs, configuración de
 # Stripe, etc... todo aquello que nos pueda servir y que mejore todas las
@@ -97,6 +121,26 @@ jobs:
           for D in /tmp/hermanos/*/; do git -C "$D" remote remove origin || true; done
           echo "listo=si" >> "$GITHUB_OUTPUT"
 
+      - name: Auditar el consumo de API de las 4 apps (sin IA, no gasta saldo)
+        env:
+          ANTHROPIC_ADMIN_KEY: ${{ secrets.ANTHROPIC_ADMIN_KEY }}
+        run: |
+          ARGS="Costaviva=$GITHUB_WORKSPACE"
+          for REPO in polizas-ai etxeapala Lurnahi; do
+            if [ -d "/tmp/hermanos/$REPO" ]; then ARGS="$ARGS $REPO=/tmp/hermanos/$REPO"; fi
+          done
+          node scripts/saldo/auditar-consumo-api.mjs $ARGS > SALDO_API.md
+          cat SALDO_API.md >> "$GITHUB_STEP_SUMMARY"
+          git config user.name "Claude (robot Costaviva)"
+          git config user.email "noreply@anthropic.com"
+          git add SALDO_API.md
+          if git diff --cached --quiet; then
+            echo "SALDO_API.md sin cambios."
+          else
+            git commit -m "Auditoría semanal del saldo de API (sin IA)"
+            git push
+          fi
+
       - name: Instalar Claude Code CLI
         if: steps.clonar.outputs.listo == 'si'
         run: npm install -g @anthropic-ai/claude-code
@@ -113,10 +157,13 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           SALIDA_CLAUDE=/tmp/claude-salida.log
-          claude -p "Eres el robot de mejores prácticas entre los proyectos de este usuario. Tienes el repo Costaviva en el directorio actual, y los otros tres clonados en SOLO LECTURA en /tmp/hermanos/polizas-ai, /tmp/hermanos/etxeapala y /tmp/hermanos/Lurnahi (puede faltar alguno; trabaja con los que haya). Los cuatro comparten stack: Cloudflare Pages, Supabase, Functions en el edge, sin build step, y comparten cuenta de Anthropic, Cloudflare y Stripe. REGLA ABSOLUTA: NO escribas, no hagas commit ni push en /tmp/hermanos — son solo para leer. Tu única escritura permitida es COMPARATIVA_PROYECTOS.md en el directorio actual. Lee primero /tmp/hermanos/polizas-ai/TRAMPAS_COMPARTIDAS.md, que ya recoge trampas verificadas, y no repitas lo que ya esté ahí. Si existe ROBOT_PAUSADO en la raíz, para y no escribas nada. TAREA: compara los proyectos en TODO lo que pueda servir para mejorar los demás — el usuario pidió explícitamente que no te dejes nada fuera. Como guía, no como límite, cubre al menos: (1) qué rutas se sirven en público y cómo se decide; (2) fallos de proveedores externos (Anthropic, Stripe, APIs de datos): si clasifican el error, si reenvían el crudo al usuario, si degradan sin romper; (3) datos de usuario en Supabase: RLS, funciones security definer, uso de service_role, y cómo se gestionan las migraciones; (4) workflows: qué hacen si falta una credencial o se agota el saldo, si un fallo puede quedar en verde, y control de coste de API; (5) pruebas: tests unitarios, smoke tests de extremo a extremo, pruebas en producción, y qué se prueba antes de dar un cambio por bueno; (6) CONFIGURACIÓN DE STRIPE y pagos: precios, modos test/live, webhooks, cupones, portal de cliente, gestión de suscripciones y qué se guarda en base de datos; (7) autenticación y alta de usuarios: login, CAPTCHA, recuperación de contraseña, confirmación de email; (8) envío de emails transaccionales (remitentes, dominios verificados, qué se hace si falla); (9) monitorización y alertas: qué se vigila, cómo se entera el usuario de que algo se ha roto, y si un problema puede pasar desapercibido; (10) CÓMO SE RESUELVEN LOS BUGS: busca en los CLAUDE.md, ROBOT.md, AUDITORIA.md y equivalentes los incidentes reales ya documentados de cada proyecto, y saca los patrones de diagnóstico que se repiten y que ahorrarían tiempo en los otros; (11) despliegue: ramas, previews, cómo se verifica antes de mergear, gestión de secrets; (12) convenciones de documentación: qué documenta cada proyecto y qué se le olvida. Si ves algo valioso fuera de esta lista, inclúyelo igual — la lista es un suelo, no un techo. Para CADA hallazgo di qué proyecto lo hace mejor, CITA el fichero y la línea concretos, y explica en una frase por qué es mejor — no vale 'parece más limpio'. Si un proyecto no tiene esa dimensión (p.ej. no usa Stripe), dilo y pasa. Escribe el resultado en COMPARATIVA_PROYECTOS.md: reescribe el fichero entero cada semana (no acumules, que se vuelve ilegible), con la fecha arriba, ordenado por lo que más aportaría portar. Marca claramente lo que ya esté portado desde la semana anterior. Sé honesto sobre la dirección: si Costaviva va por detrás en algo, dilo — es lo más útil del informe. Al final, haz commit y push a main SOLO de COMPARATIVA_PROYECTOS.md, nada más." \
+          # Directorio vacío: que el CLI no cargue el CLAUDE.md de Costaviva
+          # en cada turno (ver la cabecera). El repo va por $GITHUB_WORKSPACE.
+          mkdir -p /tmp/sesion-mejores-practicas && cd /tmp/sesion-mejores-practicas
+          claude -p "Eres el robot de mejores prácticas entre los proyectos de este usuario. Tienes el repo Costaviva en $GITHUB_WORKSPACE, y los otros tres clonados en SOLO LECTURA en /tmp/hermanos/polizas-ai, /tmp/hermanos/etxeapala y /tmp/hermanos/Lurnahi (puede faltar alguno; trabaja con los que haya). Los cuatro comparten stack: Cloudflare Pages, Supabase, Functions en el edge, sin build step, y comparten cuenta de Anthropic, Cloudflare y Stripe. REGLA ABSOLUTA: NO escribas, no hagas commit ni push en /tmp/hermanos — son solo para leer. Tu única escritura permitida es $GITHUB_WORKSPACE/COMPARATIVA_PROYECTOS.md. AHORRO DE SALDO, obligatorio: nunca leas entero un fichero de más de 100 KB (mira el tamaño con wc -c antes); usa grep, head o tail para ir a la parte que necesitas. Lee primero /tmp/hermanos/polizas-ai/TRAMPAS_COMPARTIDAS.md, que ya recoge trampas verificadas, y no repitas lo que ya esté ahí. Si existe $GITHUB_WORKSPACE/ROBOT_PAUSADO, para y no escribas nada. PRIMERA DIMENSIÓN, LA MÁS IMPORTANTE: (0) SALDO DE LA API DE ANTHROPIC. Las 4 apps comparten saldo y el usuario ha fijado un objetivo de 20 €/semana entre todas, SIN perjudicar ninguna funcionalidad. Lee $GITHUB_WORKSPACE/SALDO_API.md, que acaba de generar un auditor sin IA con el gasto estimado de cada robot, las llamadas a la API de cada app y las reglas incumplidas (R1-R8), más el gasto real si hay clave de administración. Con eso, abre COMPARATIVA_PROYECTOS.md con una sección 'Saldo de API' que diga: el total estimado (o real) frente al objetivo; y una lista de recortes concretos ordenados por ahorro, cada uno con fichero y línea, el cambio exacto (p.ej. cron de X a Y, --max-turns de A a B, arrancar fuera del repo, enviar solo las fichas relevantes en vez del fichero entero, Haiku en vez de Sonnet para una tarea mecánica), el ahorro estimado y QUÉ RIESGO tiene para la funcionalidad. PROHIBIDO proponer quitar una funcionalidad o un robot entero: si algo no se puede abaratar sin perder calidad, dilo y déjalo. Compara con la sección de la semana anterior y marca qué recortes ya se aplicaron y cuánto bajó el total. Después, TAREA general: compara los proyectos en TODO lo que pueda servir para mejorar los demás — el usuario pidió explícitamente que no te dejes nada fuera. Como guía, no como límite, cubre al menos: (1) qué rutas se sirven en público y cómo se decide; (2) fallos de proveedores externos (Anthropic, Stripe, APIs de datos): si clasifican el error, si reenvían el crudo al usuario, si degradan sin romper; (3) datos de usuario en Supabase: RLS, funciones security definer, uso de service_role, y cómo se gestionan las migraciones; (4) workflows: qué hacen si falta una credencial o se agota el saldo, si un fallo puede quedar en verde, y control de coste de API; (5) pruebas: tests unitarios, smoke tests de extremo a extremo, pruebas en producción, y qué se prueba antes de dar un cambio por bueno; (6) CONFIGURACIÓN DE STRIPE y pagos: precios, modos test/live, webhooks, cupones, portal de cliente, gestión de suscripciones y qué se guarda en base de datos; (7) autenticación y alta de usuarios: login, CAPTCHA, recuperación de contraseña, confirmación de email; (8) envío de emails transaccionales (remitentes, dominios verificados, qué se hace si falla); (9) monitorización y alertas: qué se vigila, cómo se entera el usuario de que algo se ha roto, y si un problema puede pasar desapercibido; (10) CÓMO SE RESUELVEN LOS BUGS: busca en los CLAUDE.md, ROBOT.md, AUDITORIA.md y equivalentes los incidentes reales ya documentados de cada proyecto, y saca los patrones de diagnóstico que se repiten y que ahorrarían tiempo en los otros; (11) despliegue: ramas, previews, cómo se verifica antes de mergear, gestión de secrets; (12) convenciones de documentación: qué documenta cada proyecto y qué se le olvida. Si ves algo valioso fuera de esta lista, inclúyelo igual — la lista es un suelo, no un techo. Para CADA hallazgo di qué proyecto lo hace mejor, CITA el fichero y la línea concretos, y explica en una frase por qué es mejor — no vale 'parece más limpio'. Si un proyecto no tiene esa dimensión (p.ej. no usa Stripe), dilo y pasa. Escribe el resultado en COMPARATIVA_PROYECTOS.md: reescribe el fichero entero cada semana (no acumules, que se vuelve ilegible), con la fecha arriba, ordenado por lo que más aportaría portar. Marca claramente lo que ya esté portado desde la semana anterior. Sé honesto sobre la dirección: si Costaviva va por detrás en algo, dilo — es lo más útil del informe. Al final, haz commit y push a main SOLO de COMPARATIVA_PROYECTOS.md, con git -C \"$GITHUB_WORKSPACE\" (add, commit y push), nada más." \
             --dangerously-skip-permissions \
             --model claude-sonnet-5 \
-            --max-turns 80 \
+            --max-turns 50 \
             --allowedTools "Bash,Read,Write,Edit,Grep,Glob" > "$SALIDA_CLAUDE" 2>&1 || CODIGO=$?
           # --max-turns 80 (subido de 60 el 2026-09-25 al ampliar el alcance a 12
           # dimensiones sobre 4 repos). Si se agota, NO subirlo a ciegas: el
