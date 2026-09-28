@@ -9,11 +9,17 @@ name: Comprobar indexación en Google
 # Misma autenticación que daily-report.yml: Workload Identity Federation,
 # sin ninguna clave guardada (ver CLAUDE.md, sección de Search Console).
 
+# Martes y viernes de madrugada (2026-09-28): deja SEO_ESTADO.md en el repo
+# (indexación + rendimiento por página y búsqueda) justo antes de que pase
+# la rutina "Costaviva - Robot de SEO y diseño", que no tiene acceso a
+# Search Console y mide con este fichero si sus cambios funcionan.
 on:
+  schedule:
+    - cron: "23 3 * * 2,5"
   workflow_dispatch: {}
 
 permissions:
-  contents: read
+  contents: write
   id-token: write
 
 jobs:
@@ -40,4 +46,19 @@ jobs:
 
       - name: Inspeccionar las URLs del sitemap
         working-directory: scripts/seo
+        env:
+          SEO_ESTADO_FICHERO: ${{ github.workspace }}/SEO_ESTADO.md
         run: node indexacion-google.mjs
+
+      - name: Guardar SEO_ESTADO.md en el repo
+        run: |
+          git config user.name "Costaviva (indexación)"
+          git config user.email "actions@github.com"
+          git add SEO_ESTADO.md
+          if git diff --cached --quiet; then
+            echo "SEO_ESTADO.md sin cambios."
+          else
+            git commit -m "Estado SEO en Google (indexación y rendimiento, sin IA)"
+            git pull --rebase --quiet origin main
+            git push
+          fi
