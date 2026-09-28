@@ -2303,17 +2303,18 @@ se buscaba invertir.
 
 Pedido explícito del usuario: quien termina los 7 días de prueba y no se
 suscribe recibe un aviso y, si sigue sin suscribirse, su cuenta se desactiva
-y después se borra. Decisiones del usuario: 30 días desde el aviso hasta
-desactivar, desactivar primero y borrar después, recordatorio previo.
+y después se borra. Decisiones del usuario: desactivar primero y borrar
+después, recordatorio previo, y el calendario en semanas, al mismo ritmo
+que la prueba de 7 días.
 
 Calendario, contado desde el email de aviso (`perfiles.fin_prueba_avisado_en`):
 
 | Día | Paso | Qué pasa |
 |---|---|---|
 | 0 | aviso | email con las dos fechas (desactivar y borrar) |
-| 27 | recordatorio | email "se desactivará el X" |
-| 30 | desactivar | `auth.users.banned_until` a +100 años y sesiones cerradas; datos intactos; email al usuario y al admin |
-| 60 | borrar | fotos del bucket vía Storage API, luego `delete from auth.users` (cascada); email al usuario y al admin |
+| 5 | recordatorio | email "se desactivará el X" |
+| 7 | desactivar | `auth.users.banned_until` a +100 años y sesiones cerradas; datos intactos; email al usuario y al admin |
+| 14 | borrar | fotos del bucket vía Storage API, luego `delete from auth.users` (cascada); email al usuario y al admin |
 
 Todo vive en `functions/avisar-fin-prueba.js` (mismo cron de
 `notificar-altas.yml`) y en la migración `20260928120000`. Las listas de a
@@ -2335,7 +2336,7 @@ comprobar las condiciones dentro antes de actuar.
   metas en este ciclo sin preguntar.
 - **Un fallo de correo retrasa, nunca acorta**: aviso y recordatorio se
   marcan solo tras confirmar Resend, desactivar exige recordatorio enviado
-  hace ≥3 días.
+  hace ≥2 días.
 - **Guarda de volumen**: más de 10 cuentas para desactivar o para borrar en
   una pasada → ese paso no se ejecuta, workflow en rojo y email al admin.
 - **Sin `ADMIN_EMAIL`** en Cloudflare Pages, desactivar y borrar no se ejecutan.
