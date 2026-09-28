@@ -1,0 +1,16 @@
+name: Diagnóstico IPCamLive (temporal)
+on:
+  push:
+    branches: ["diag/ipcamlive"]
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          for alias in webcamberria 673c8a5893eaf; do
+            echo "===== $alias"
+            curl -sS -A "Mozilla/5.0" "https://ipcamlive.com/player/player.php?alias=$alias" -o p.html -w "HTTP %{http_code}\n"
+            grep -n -i -E "address|streamid|stream_id|\.m3u8|getcamerastreamstate|ajax" p.html | cut -c1-240 | head -40
+          done
+          echo "===== nuestro resolvedor"
+          for s in santona sopelana; do curl -sS -o /dev/null -D - "https://costaviva.org/webcam/hls/$s" | grep -i -E "^HTTP|^location"; done
