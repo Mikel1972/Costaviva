@@ -2400,6 +2400,23 @@ en dos piezas:
   ahorro, riesgo). **Nunca propone quitar funcionalidad**; aplicar sigue
   siendo decisión humana.
 
+**Recortes aplicados el mismo día** (estimado de robots: ~69 → ~6 €/semana,
+sin quitar ningún robot):
+- `robot-buscador-fuentes.yml`: de 32 a 6 pasadas/semana (una al día salvo
+  lunes, área según el día). Mareas/oleaje fuera: los cubre la rutina nocturna
+  de calibración. **Destino pendiente**: el usuario prefiere que corra como
+  rutina de su plan de Claude y no contra el saldo. Una rutina creada por un
+  agente (`create_trigger`) nace sin repo conectado y no pudo hacer push (se
+  probó y se borró), así que tiene que crearla el usuario en
+  claude.ai/code/routines con el repo Costaviva, pegando
+  `scripts/saldo/rutina-buscador-fuentes.txt`; entonces quitar el schedule de
+  aquí.
+- `robot-camaras-caidas.yml`, `robot-patrones-uso.yml`,
+  `robot-experiencia-usuario.yml` (este además semanal): arrancan fuera del
+  repo.
+- `daily-report.yml`: la síntesis ya no llama a Claude si los robots no
+  escribieron nada en 24 h; si lo hay, fuera del repo, Sonnet 5, 8 turnos.
+
 **Para cualquier robot nuevo de CLI**: arrancarlo desde un directorio vacío
 (`mkdir -p /tmp/sesion-X && cd /tmp/sesion-X`, repo por `$GITHUB_WORKSPACE`)
 para no cargar este `CLAUDE.md` en cada turno, fijar `--model` y
