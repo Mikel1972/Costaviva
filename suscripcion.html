@@ -266,7 +266,7 @@ async function iniciar() {
     subEstadoEl.textContent = `Tu plan: ${estado.periodo}, próxima renovación el ${formatearFecha(estado.periodo_actual_fin) || "—"}.`;
     aplicarPlanActual(estado.periodo);
   } else if (estado && estado.con_acceso) {
-    subEstadoEl.textContent = `Estás en tu semana de prueba gratuita, hasta el ${formatearFecha(estado.prueba_termina_en)}.`;
+    subEstadoEl.textContent = `Estás en tu semana de prueba gratuita, hasta el ${formatearFecha(estado.prueba_termina_en)}. Si para entonces no te has suscrito, tu cuenta se cancelará.`;
   } else {
     subEstadoEl.textContent = "Tu prueba gratuita ha terminado. Suscríbete para seguir usando Costaviva.";
   }

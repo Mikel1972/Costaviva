@@ -2299,32 +2299,35 @@ propio workflow quedan privados **sin que nadie tenga que acordarse de
 bloquearlos**, gracias a la lista blanca. Es justo el fallo por omisión que
 se buscaba invertir.
 
-## Fin de prueba: aviso → recordatorio → desactivar → borrar (2026-09-28)
+## Fin de prueba: o se suscribe o se cancela la cuenta (2026-09-28)
 
-Pedido explícito del usuario: quien termina los 7 días de prueba y no se
-suscribe recibe un aviso y, si sigue sin suscribirse, su cuenta se desactiva
-y después se borra. Decisiones del usuario: desactivar primero y borrar
-después, recordatorio previo, y el calendario en semanas, al mismo ritmo
-que la prueba de 7 días.
+Pedido explícito del usuario: "hay un periodo de prueba de 7 días sin
+cobrar. A ese vencimiento, o se da de alta o se le cancela". Después, una
+semana más hasta borrar la cuenta. Sustituye al aviso DESPUÉS de vencer que
+había desde el 2026-09-25: ahora se avisa antes y el fin de prueba es la
+cancelación.
 
-Calendario, contado desde el email de aviso (`perfiles.fin_prueba_avisado_en`):
+Calendario, contado desde el alta (`perfiles.creado_en`, la misma referencia
+que `mi_estado_suscripcion()`):
 
 | Día | Paso | Qué pasa |
 |---|---|---|
-| 0 | aviso | email con las dos fechas (desactivar y borrar) |
-| 5 | recordatorio | email "se desactivará el X" |
-| 7 | desactivar | `auth.users.banned_until` a +100 años y sesiones cerradas; datos intactos; email al usuario y al admin |
+| alta | bienvenida | email con la fecha de fin de prueba y de borrado (en cuanto confirma el email) |
+| 5 | recordatorio | email "tu prueba termina el X" — guarda esa fecha en `desactivar_previsto_en` |
+| 7 | cancelar | `auth.users.banned_until` a +100 años y sesiones cerradas; datos intactos; email al usuario y al admin |
 | 14 | borrar | fotos del bucket vía Storage API, luego `delete from auth.users` (cascada); email al usuario y al admin |
 
 Todo vive en `functions/avisar-fin-prueba.js` (mismo cron de
 `notificar-altas.yml`) y en la migración `20260928120000`. Las listas de a
-quién le toca cada paso las decide Postgres (`usuarios_fin_prueba_pendiente_*`),
-y `desactivar_usuario_fin_prueba()`/`borrar_usuario_fin_prueba()` vuelven a
-comprobar las condiciones dentro antes de actuar.
+quién le toca cada paso las decide Postgres (`usuarios_bienvenida_pendiente_email`,
+`usuarios_fin_prueba_pendiente_*`), y `desactivar_usuario_fin_prueba()`/
+`borrar_usuario_fin_prueba()` vuelven a comprobar las condiciones dentro.
+El popup de bienvenida de `index.html` y el estado de `suscripcion.html`
+dicen lo mismo.
 
 - **Nunca entran en el ciclo** (`fin_prueba_fuera_de_ciclo()`): el admin, los
   alias `etxebe2005+...` (cuentas de `smoke-test.yml`/`auth-test.yml` —
-  desactivarlas rompería esos workflows) y quien haya tenido alguna vez una
+  cancelarlas rompería esos workflows) y quien haya tenido alguna vez una
   suscripción real (cualquier fila en `suscripciones` salvo
   `incomplete`/`incomplete_expired`). Lo último es a propósito: un suscriptor
   que cancela meses después no debe quedar desactivado al instante por un
@@ -2334,11 +2337,16 @@ comprobar las condiciones dentro antes de actuar.
   `customer.subscription.deleted` (al final del periodo pagado) y
   `mi_estado_suscripcion()` solo da acceso con `trialing`/`active`. No lo
   metas en este ciclo sin preguntar.
-- **Un fallo de correo retrasa, nunca acorta**: aviso y recordatorio se
-  marcan solo tras confirmar Resend, desactivar exige recordatorio enviado
-  hace ≥2 días.
-- **Guarda de volumen**: más de 10 cuentas para desactivar o para borrar en
-  una pasada → ese paso no se ejecuta, workflow en rojo y email al admin.
+- **Nunca se cancela antes de lo que prometió el email**: sin recordatorio
+  enviado (Resend confirmado) no hay fecha de cancelación. Si el
+  recordatorio sale tarde, la cancelación es `greatest(día 7, recordatorio + 2 días)`.
+  Quien nunca confirmó su email no recibe nada y por tanto no se cancela.
+- **Guarda de volumen**: más de 10 cuentas para recordar, cancelar o borrar
+  en una pasada → ese paso no se ejecuta, workflow en rojo y email al admin.
+- **Al aplicar la migración**, los usuarios de antes con la prueba ya
+  vencida y sin suscripción reciben el recordatorio en la primera pasada y
+  se cancelan 2 días después. El número sale en el log de "Aplicar
+  migraciones" (`NOTICE`). Los perfiles existentes no reciben la bienvenida.
 - **Sin `ADMIN_EMAIL`** en Cloudflare Pages, desactivar y borrar no se ejecutan.
 - **Reactivar a alguien**: Supabase → Authentication → Users → Unban. El
   borrado exige que el bloqueo siga vigente, así que quitarlo lo cancela, y
@@ -2351,9 +2359,6 @@ comprobar las condiciones dentro antes de actuar.
   dejan rastro en `grupos_historico`; sus `especies_comunidad` pasan al admin.
   Si se añade otra tabla compartida con `creado_por ... on delete cascade`,
   hay que rescatarla también en `borrar_usuario_fin_prueba()`.
-- Al aplicar la migración, quien ya recibió el aviso viejo ("tus datos
-  siguen guardados") vuelve a la cola del aviso para recibir el nuevo con
-  fechas; su calendario arranca desde ese email.
 
 ## Regla para futuros endpoints con `service_role` (2026-09-25)
 
