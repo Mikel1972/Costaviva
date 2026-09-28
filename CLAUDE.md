@@ -2327,8 +2327,12 @@ comprobar las condiciones dentro antes de actuar.
   suscripción real (cualquier fila en `suscripciones` salvo
   `incomplete`/`incomplete_expired`). Lo último es a propósito: un suscriptor
   que cancela meses después no debe quedar desactivado al instante por un
-  aviso de fin de prueba antiguo. **La baja de un ex-suscriptor no está
-  decidida** — no la metas en este ciclo sin preguntar.
+  aviso de fin de prueba antiguo. **Ex-suscriptor que cancela (decidido
+  2026-09-28): pierde el acceso y nada más** — ni desactivar ni borrar. Ya
+  lo hace el paywall: `stripe-webhook.js` guarda `canceled` al llegar
+  `customer.subscription.deleted` (al final del periodo pagado) y
+  `mi_estado_suscripcion()` solo da acceso con `trialing`/`active`. No lo
+  metas en este ciclo sin preguntar.
 - **Un fallo de correo retrasa, nunca acorta**: aviso y recordatorio se
   marcan solo tras confirmar Resend, desactivar exige recordatorio enviado
   hace ≥3 días.
