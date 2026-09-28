@@ -2299,66 +2299,56 @@ propio workflow quedan privados **sin que nadie tenga que acordarse de
 bloquearlos**, gracias a la lista blanca. Es justo el fallo por omisión que
 se buscaba invertir.
 
-## Fin de prueba: o se suscribe o se cancela la cuenta (2026-09-28)
+## Fin de prueba: o se suscribe o su cuenta queda desactivada (2026-09-28)
 
 Pedido explícito del usuario: "hay un periodo de prueba de 7 días sin
-cobrar. A ese vencimiento, o se da de alta o se le cancela". Después, una
-semana más hasta borrar la cuenta. Sustituye al aviso DESPUÉS de vencer que
-había desde el 2026-09-25: ahora se avisa antes y el fin de prueba es la
-cancelación.
+cobrar. A ese vencimiento, o se da de alta o se le cancela". Sustituye al
+aviso DESPUÉS de vencer que había desde el 2026-09-25: ahora se avisa antes.
 
 Calendario, contado desde el alta (`perfiles.creado_en`, la misma referencia
 que `mi_estado_suscripcion()`):
 
 | Día | Paso | Qué pasa |
 |---|---|---|
-| alta | bienvenida | email con la fecha de fin de prueba y de borrado (en cuanto confirma el email) |
+| alta | bienvenida | email con la fecha de fin de prueba (en cuanto confirma el email) |
 | 5 | recordatorio | email "tu prueba termina el X" — guarda esa fecha en `desactivar_previsto_en` |
-| 7 | cancelar | `auth.users.banned_until` a +100 años y sesiones cerradas; datos intactos; email al usuario y al admin |
-| 14 | borrar | fotos del bucket vía Storage API, luego `delete from auth.users` (cascada); email al usuario y al admin |
+| 7 | desactivar | email de fin de prueba, `perfiles.desactivado_en` y aviso al admin |
+
+**Desactivar NO bloquea el login ni borra nada — decisión del usuario, no lo
+cambies sin preguntar.** Se llegó a montar un bloqueo de login + borrado a
+los 14 días; se descartó el mismo día: con el login bloqueado no podrían ni
+pagar para volver, y el usuario quiere conservar tanto la cuenta como los
+datos generados ("pasan a nuestra base de conocimientos" — en la práctica,
+sus capturas siguen alimentando `estadisticas_anonimas_capturas` si dieron
+`consiente_uso_datos_capturas` en el alta, como ya pasaba). El acceso lo
+corta el paywall (`mi_estado_suscripcion()`), que ya lo hacía antes: al
+suscribirse lo recuperan todo al instante. `desactivado_en` es la constancia
+de que su prueba terminó y se le avisó.
 
 Todo vive en `functions/avisar-fin-prueba.js` (mismo cron de
 `notificar-altas.yml`) y en la migración `20260928120000`. Las listas de a
-quién le toca cada paso las decide Postgres (`usuarios_bienvenida_pendiente_email`,
-`usuarios_fin_prueba_pendiente_*`), y `desactivar_usuario_fin_prueba()`/
-`borrar_usuario_fin_prueba()` vuelven a comprobar las condiciones dentro.
-El popup de bienvenida de `index.html` y el estado de `suscripcion.html`
-dicen lo mismo.
+quién le toca cada email las decide Postgres (`usuarios_bienvenida_pendiente_email`,
+`usuarios_fin_prueba_pendiente_*`). El popup de bienvenida de `index.html` y
+el estado de `suscripcion.html` cuentan lo mismo.
 
 - **Nunca entran en el ciclo** (`fin_prueba_fuera_de_ciclo()`): el admin, los
-  alias `etxebe2005+...` (cuentas de `smoke-test.yml`/`auth-test.yml` —
-  cancelarlas rompería esos workflows) y quien haya tenido alguna vez una
-  suscripción real (cualquier fila en `suscripciones` salvo
-  `incomplete`/`incomplete_expired`). Lo último es a propósito: un suscriptor
-  que cancela meses después no debe quedar desactivado al instante por un
-  aviso de fin de prueba antiguo. **Ex-suscriptor que cancela (decidido
-  2026-09-28): pierde el acceso y nada más** — ni desactivar ni borrar. Ya
-  lo hace el paywall: `stripe-webhook.js` guarda `canceled` al llegar
+  alias `etxebe2005+...` (cuentas de `smoke-test.yml`/`auth-test.yml`) y quien
+  haya tenido alguna vez una suscripción real (cualquier fila en
+  `suscripciones` salvo `incomplete`/`incomplete_expired`). **Ex-suscriptor
+  que cancela (decidido 2026-09-28): pierde el acceso y nada más** — lo hace
+  ya el paywall: `stripe-webhook.js` guarda `canceled` al llegar
   `customer.subscription.deleted` (al final del periodo pagado) y
-  `mi_estado_suscripcion()` solo da acceso con `trialing`/`active`. No lo
-  metas en este ciclo sin preguntar.
-- **Nunca se cancela antes de lo que prometió el email**: sin recordatorio
-  enviado (Resend confirmado) no hay fecha de cancelación. Si el
-  recordatorio sale tarde, la cancelación es `greatest(día 7, recordatorio + 2 días)`.
-  Quien nunca confirmó su email no recibe nada y por tanto no se cancela.
-- **Guarda de volumen**: más de 10 cuentas para recordar, cancelar o borrar
-  en una pasada → ese paso no se ejecuta, workflow en rojo y email al admin.
-- **Al aplicar la migración**, los usuarios de antes con la prueba ya
-  vencida y sin suscripción reciben el recordatorio en la primera pasada y
-  se cancelan 2 días después. El número sale en el log de "Aplicar
+  `mi_estado_suscripcion()` solo da acceso con `trialing`/`active`.
+- **Nunca se desactiva antes de lo que prometió el email**: sin recordatorio
+  enviado (Resend confirmado) no hay fecha. Si el recordatorio sale tarde, la
+  fecha es `greatest(día 7, recordatorio + 2 días)`. Quien nunca confirmó su
+  email no recibe nada.
+- **Guarda de volumen**: más de 10 recordatorios o desactivaciones en una
+  pasada → ese paso no se ejecuta, workflow en rojo y email al admin.
+- **Al aplicar la migración**, los usuarios de antes con la prueba ya vencida
+  y sin suscripción reciben el recordatorio en la primera pasada y el email
+  de fin de prueba 2 días después. El número sale en el log de "Aplicar
   migraciones" (`NOTICE`). Los perfiles existentes no reciben la bienvenida.
-- **Sin `ADMIN_EMAIL`** en Cloudflare Pages, desactivar y borrar no se ejecutan.
-- **Reactivar a alguien**: Supabase → Authentication → Users → Unban. El
-  borrado exige que el bloqueo siga vigente, así que quitarlo lo cancela, y
-  no se le vuelve a desactivar (`desactivado_en` queda relleno). El email de
-  desactivación lleva `reply_to: datos@costaviva.org` (Email Routing → Gmail
-  del admin) para que puedan pedirlo.
-- **Lo que no es solo suyo se rescata antes de borrar**: los grupos que creó
-  con otros miembros pasan al miembro más antiguo (si no, la cascada de
-  `grupos.creado_por` borraría el grupo para todos); los que eran solo suyos
-  dejan rastro en `grupos_historico`; sus `especies_comunidad` pasan al admin.
-  Si se añade otra tabla compartida con `creado_por ... on delete cascade`,
-  hay que rescatarla también en `borrar_usuario_fin_prueba()`.
 
 ## Regla para futuros endpoints con `service_role` (2026-09-25)
 
