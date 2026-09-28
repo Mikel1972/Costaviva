@@ -62,6 +62,29 @@ function spotsCercanos(todos, spot, n = 4) {
     .slice(0, n);
 }
 
+// "16:42" o "mañana 04:10" -- próximas pleamares/bajamares tal cual las
+// calcula /prevision (hora local de Madrid), sin recalcular nada aquí.
+function textoEvento(e) {
+  return `${e.manana ? "mañana " : ""}${e.hora} (${e.altura} m)`;
+}
+
+// "12am"/"3pm" de /prevision -> "00:00"/"15:00", más natural en español.
+function hora24(etiqueta) {
+  const m = /^(\d+)(am|pm)$/.exec(etiqueta || "");
+  if (!m) return etiqueta || "";
+  let h = Number(m[1]) % 12;
+  if (m[2] === "pm") h += 12;
+  return `${String(h).padStart(2, "0")}:00`;
+}
+
+// SEO y conversión (2026-09-28, pedido del usuario: "lo más óptimo para que
+// se pague rápido"). Lo que la gente busca en Google es "marea <sitio> hoy",
+// "pleamar <sitio>", "bajamar <sitio>": el título, la descripción y la
+// cabecera llevan ahora la hora real de la próxima pleamar/bajamar, que
+// /prevision ya calculaba pero esta página no enseñaba. También la
+// temperatura del agua y la previsión de las próximas horas (los mismos
+// bloques de la app), para que la página tenga contenido propio suficiente
+// y Google no la trate como una ficha vacía repetida 105 veces.
 function renderizarPagina(spot, todos) {
   const bloque = spot.bloques[0];
   const oleajeTexto = bloque ? `${bloque.altura[0]}–${bloque.altura[1]} m (periodo ${bloque.periodo}s)` : "sin dato ahora mismo";
@@ -70,33 +93,63 @@ function renderizarPagina(spot, todos) {
   const mareaTexto = `${spot.marea.altura} m, ${spot.marea.tendencia} ${mareaFlecha} (coeficiente ${spot.marea.coeficiente})`;
   const nombre = escaparHtml(spot.nombre);
   const region = regionDeSlug(spot.slug);
-  const descripcion = `Marea, oleaje y viento reales en ${spot.nombre} ahora mismo: oleaje ${oleajeTexto}, viento ${vientoTexto}, marea ${mareaTexto}. Datos actualizados cada hora, sin necesidad de cuenta.`;
+  const proximas = spot.marea.proximas || [];
+  const pleamar = proximas.find((e) => e.tipo === "pleamar");
+  const bajamar = proximas.find((e) => e.tipo === "bajamar");
+  const tempAgua = bloque?.tempAgua;
+  const resumenMareas = [pleamar && `pleamar ${textoEvento(pleamar)}`, bajamar && `bajamar ${textoEvento(bajamar)}`]
+    .filter(Boolean)
+    .join(", ");
+  const descripcion =
+    `Marea hoy en ${spot.nombre}: ${resumenMareas ? `próxima ${resumenMareas}; ` : ""}` +
+    `oleaje ${oleajeTexto}, viento ${vientoTexto}${tempAgua != null ? `, agua a ${tempAgua} °C` : ""}. ` +
+    `Datos reales actualizados cada hora, gratis y sin cuenta.`;
+  const titulo = `Marea hoy en ${spot.nombre}: pleamar, bajamar y oleaje | Costaviva`;
   const url = `https://costaviva.org/mareas/${spot.slug}`;
 
-  const jsonLd = JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "Place",
-    name: spot.nombre,
-    geo: { "@type": "GeoCoordinates", latitude: spot.lat, longitude: spot.lon },
-    url,
-  });
+  const migas = [
+    { name: "Mareas", item: "https://costaviva.org/mareas" },
+    ...(region ? [{ name: region.nombre, item: `https://costaviva.org/mareas/region/${region.slug}` }] : []),
+    { name: spot.nombre, item: url },
+  ];
+  const jsonLd = JSON.stringify([
+    {
+      "@context": "https://schema.org",
+      "@type": "Place",
+      name: spot.nombre,
+      geo: { "@type": "GeoCoordinates", latitude: spot.lat, longitude: spot.lon },
+      url,
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: migas.map((m, i) => ({ "@type": "ListItem", position: i + 1, name: m.name, item: m.item })),
+    },
+  ]).replace(/</g, "\\u003c");
+
+  const filasPrevision = spot.bloques
+    .map(
+      (b) =>
+        `<tr><td>${escaparHtml(hora24(b.hora))}</td><td>${b.altura[0]}–${b.altura[1]} m</td><td>${b.viento ?? "–"} km/h ${escaparHtml(b.dirViento ?? "")}</td><td>${b.tempAgua != null ? `${b.tempAgua} °C` : "–"}</td></tr>`
+    )
+    .join("");
 
   return `<!doctype html>
 <html lang="es">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Marea y oleaje en ${nombre} ahora | Costaviva</title>
+<title>${escaparHtml(titulo)}</title>
 <meta name="description" content="${escaparHtml(descripcion)}" />
 <link rel="canonical" href="${url}" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="${url}" />
-<meta property="og:title" content="Marea y oleaje en ${nombre} ahora | Costaviva" />
+<meta property="og:title" content="${escaparHtml(titulo)}" />
 <meta property="og:description" content="${escaparHtml(descripcion)}" />
 <meta property="og:image" content="https://costaviva.org/assets/hero-peces-poster.jpg" />
 <meta property="og:locale" content="es_ES" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Marea y oleaje en ${nombre} ahora | Costaviva" />
+<meta name="twitter:title" content="${escaparHtml(titulo)}" />
 <meta name="twitter:description" content="${escaparHtml(descripcion)}" />
 <script type="application/ld+json">${jsonLd}</script>
 <style>
@@ -120,6 +173,16 @@ function renderizarPagina(spot, todos) {
   .cercanos .titulo { font-size: 13px; font-weight: bold; color: ${GRIS}; letter-spacing: 1px; margin-bottom: 8px; }
   .cercanos ul { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; }
   .cercanos li a { display: inline-block; background: ${BLANCO}; border: 1px solid ${BORDE}; border-radius: 20px; padding: 6px 14px; font-size: 14px; text-decoration: none; }
+  .mareas-hoy { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .mareas-hoy .tarjeta { background: ${NAVY}; border-color: ${NAVY}; color: ${BLANCO}; }
+  .mareas-hoy .tarjeta .titulo { color: #D4A24C; }
+  h2 { font-family: Georgia, serif; font-size: 20px; margin: 32px 0 10px; }
+  .tabla-envoltorio { overflow-x: auto; background: ${BLANCO}; border: 1px solid ${BORDE}; border-radius: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid ${BORDE}; white-space: nowrap; }
+  th { font-size: 12px; color: ${GRIS}; letter-spacing: 0.5px; }
+  tr:last-child td { border-bottom: none; }
+  .cta-sub { text-align: center; color: ${GRIS}; font-size: 13px; margin: -8px 0 24px; }
 </style>
 </head>
 <body>
@@ -128,18 +191,39 @@ function renderizarPagina(spot, todos) {
     <div class="subtitulo">pesca en tiempo real</div>
 
     <div class="migas"><a href="/mareas">Todos los spots</a>${region ? ` → <a href="/mareas/region/${region.slug}">${escaparHtml(region.nombre)}</a>` : ""} → ${nombre}</div>
-    <h1>${nombre}</h1>
+    <h1>Marea hoy en ${nombre}</h1>
     <div class="actualizado">Datos reales, actualizados: ${new Date(spot.actualizado).toLocaleString("es-ES", { timeZone: "Europe/Madrid" })}</div>
+
+    ${
+      pleamar || bajamar
+        ? `<div class="mareas-hoy">
+      <div class="tarjeta"><div class="titulo">PRÓXIMA PLEAMAR</div><div class="valor">${pleamar ? escaparHtml(textoEvento(pleamar)) : "–"}</div></div>
+      <div class="tarjeta"><div class="titulo">PRÓXIMA BAJAMAR</div><div class="valor">${bajamar ? escaparHtml(textoEvento(bajamar)) : "–"}</div></div>
+    </div>`
+        : ""
+    }
 
     <div class="tarjetas">
       <div class="tarjeta"><div class="titulo">🌊 OLEAJE</div><div class="valor">${escaparHtml(oleajeTexto)}</div></div>
       <div class="tarjeta"><div class="titulo">💨 VIENTO</div><div class="valor">${escaparHtml(vientoTexto)}</div></div>
-      <div class="tarjeta"><div class="titulo">🌙 MAREA</div><div class="valor">${escaparHtml(mareaTexto)}</div></div>
+      <div class="tarjeta"><div class="titulo">🌙 MAREA AHORA</div><div class="valor">${escaparHtml(mareaTexto)}</div></div>
+      ${tempAgua != null ? `<div class="tarjeta"><div class="titulo">🌡️ TEMPERATURA DEL AGUA</div><div class="valor">${tempAgua} °C</div></div>` : ""}
     </div>
 
-    <a class="cta" href="/login">Ver el mapa completo, webcams en directo y mucho más → Entra gratis</a>
+    <a class="cta" href="/login?alta=1">Prueba Costaviva 7 días gratis →</a>
+    <p class="cta-sub">Sin tarjeta. Mapa completo, webcams en directo y diario de pesca. Después, 3,99 €/mes.</p>
 
-    <p class="nota">Costaviva es una app de condiciones costeras en tiempo real (oleaje, mareas, corriente, webcams, radar de lluvia) y diario de pesca, para toda la costa de España y Portugal. Este dato es gratis y no necesita cuenta -- crea una cuenta gratuita para ver el mapa completo, las webcams en directo de este spot y de otros, y llevar tu propio diario de pesca.</p>
+    ${
+      filasPrevision
+        ? `<h2>Previsión de las próximas horas en ${nombre}</h2>
+    <div class="tabla-envoltorio"><table>
+      <thead><tr><th>HORA</th><th>OLEAJE</th><th>VIENTO</th><th>AGUA</th></tr></thead>
+      <tbody>${filasPrevision}</tbody>
+    </table></div>`
+        : ""
+    }
+
+    <p class="nota">Costaviva es una app de condiciones costeras en tiempo real (oleaje, mareas, corriente, webcams, radar de lluvia) y diario de pesca, para toda la costa de España y Portugal. La marea, el oleaje y el viento de ${nombre} son gratis y no necesitan cuenta. Con la prueba gratuita de 7 días ves además el mapa completo, las webcams en directo de este spot y de otros, y llevas tu propio diario de pesca con los datos del momento de cada captura.</p>
 
     <div class="cercanos">
       <div class="titulo">SPOTS CERCANOS</div>
