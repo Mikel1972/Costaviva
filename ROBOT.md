@@ -7888,3 +7888,276 @@ comprobado.
 
 **Firmado:** sesión interactiva con el usuario (búsqueda manual de
 alternativas), 2026-09-25.
+
+---
+
+### 2026-09-28 (pasada semanal — robot de datos: fuentes, auditoría, calibración)
+
+**Aviso de entorno, antes de cualquier hallazgo: esta sesión concreta (la
+rutina en la nube "Fishnow - Robot de datos (fuentes, auditoria,
+calibracion)", distinta del workflow diario `robot-buscador-fuentes.yml`
+de GitHub Actions) tiene la salida de red bloqueada salvo un conjunto
+reducido de dominios — la misma limitación documentada desde 2026-08-31.**
+Confirmado esta pasada con peticiones reales y con
+`curl .../__agentproxy/status`:
+
+- **Alcanzables**: `marine-api.open-meteo.com` (oleaje/marea, lo que usa
+  `/prevision`) y `poem.puertos.es` (boyas reales de Puertos del Estado) —
+  los dos con datos reales y recientes, ver auditoría y calibración abajo.
+  También `api.github.com`, necesario para el propio trabajo de esta
+  pasada.
+- **Bloqueados** (`connect_rejected` / `EGRESS_BLOCKED`, repetido sin
+  cambio de resultado): `api.open-meteo.com`, `www.aemet.es`,
+  `monican.hidrografico.pt` (boya de Nazaré), `visor.saichcantabrico.es`,
+  `saih.chj.es`, `saihweb.chsegura.es`, `servizos.meteogalicia.gal`, y
+  dominios generales (`google.com`, `en.wikipedia.org`, el propio
+  `costaviva.org`).
+
+**Hallazgo nuevo, no anotado hasta hoy: el bloqueo es por subdominio
+exacto, no por proveedor.** Pasadas anteriores de esta misma rutina
+apuntaban simplemente "Open-Meteo funciona" — hoy se confirma que eso solo
+es cierto para `marine-api.open-meteo.com`. `api.open-meteo.com` (el
+endpoint de viento/presión/nubosidad/precipitación que
+`previsionTodosSpots()` también necesita) está bloqueado exactamente
+igual que el resto de fuentes fragiles. Quien vuelva a comprobar "salud
+de Open-Meteo" desde esta rutina en concreto: no dar por buena la marca
+del proveedor entero, comprobar el subdominio exacto.
+
+Con esa red disponible, el alcance real de las 5 pasadas de este encargo
+ha sido: calibración y parte de la auditoría, con datos de verdad;
+fuentes nuevas y especies, solo investigación (`WebSearch`) sin poder
+verificar ninguna URL candidata con una petición HTTP real — así que no
+se ha integrado nada en código esta pasada, siguiendo la norma de este
+fichero de no aplicar nada sin verificación real.
+
+## 1. Fuentes nuevas (cobertura geográfica)
+
+Nada integrado: verificar con una petición HTTP real es requisito antes
+de aplicar cualquier cosa (regla de este fichero), y los candidatos que
+salieron de la búsqueda viven todos en dominios bloqueados desde esta
+sesión. Quedan documentados para que una pasada con red completa (el
+workflow diario de GitHub Actions, o una sesión interactiva del usuario)
+los verifique de verdad:
+
+- **Cataluña — caudal de ríos, Agència Catalana de l'Aigua (ACA).**
+  Publican niveles/caudales de aforos en tiempo real sobre una plataforma
+  Sentilo (REST) — visor "Aigua en temps real"
+  (`aplicacions.aca.gencat.cat/aetr/vishid/`) y un catálogo de datos
+  abiertos en `aca.gencat.cat/ca/laigua/consulta-de-dades/dades-obertes/`.
+  Candidato real para el hueco de Cataluña (spots `roses`, `blanes`,
+  `cambrils`...) — ninguno de los 4 caudales ya integrados (Cantábrico,
+  Júcar, Segura, Galicia) llega hasta ahí. **Sin verificar**: no se pudo
+  comprobar el endpoint REST concreto ni la forma de la respuesta desde
+  esta sesión (`aca.gencat.cat` no está en la lista de dominios
+  alcanzables).
+- **Andalucía — caudal de ríos, SAIH Hidrosur.** Cubre las Cuencas
+  Mediterráneas Andaluzas y Guadalete-Barbate — la zona de los spots
+  `cadiz`, `conil`, `chipiona`, `malaga`, `nerja`, `almeria`, `roquetas`
+  ya existentes. Portal `redhidrosurmedioambiente.es/saih/`, con app
+  móvil y Telegram — la búsqueda no encontró si expone algo parecido a
+  una API JSON abierta (los otros 3 SAIH ya integrados sí la tienen,
+  vía HTML/JS embebido). **Sin verificar.**
+- **Portugal — más boyas del Instituto Hidrográfico (Leixões, Sines,
+  Faro).** La página oficial de acceso a datos
+  (`hidrografico.pt/paginas-genericas/dt/dcdt/acesso-a-dados/`) menciona
+  "OGC API Features" como vía adicional, aparte del geoportal con login
+  ya descartado en pasadas anteriores. Hipótesis razonable y barata de
+  comprobar en una pasada con red completa: `monican.hidrografico.pt/
+  json/boia.graph.php` (el mismo endpoint que ya usamos para Nazaré, con
+  `id_est=2`) podría servir otras boyas con otro valor de `id_est` — el
+  propio nombre del parámetro sugiere un catálogo de estaciones. **Sin
+  verificar ninguna de las dos vías**, `monican.hidrografico.pt` está
+  bloqueado en esta sesión.
+- **Asturias**: no se propone nada nuevo de caudal — auditando la
+  cobertura ya existente (ver más abajo) resulta que el río Sella
+  (estación de Arriondas, dentro de `datosCaudalCantabrico()`) es
+  asturiano, no cántabro. El hueco percibido en el encargo no es tan
+  real como parecía.
+- **Canarias**: no aplica "caudal de ríos" — no tiene ríos permanentes,
+  solo barrancos estacionales. Boyas (1414/1421/2442/2446) y webcams ya
+  cubren la zona, sin cambios que proponer aquí.
+- **Webcams** (las 5 zonas, más Portugal): no se ha tocado esta pasada a
+  propósito. Es el trabajo diario de `robot-buscador-fuentes.yml`, que sí
+  corre con red completa en GitHub Actions rotando zona a zona —
+  `ROBOT_REGLAS.md` ya lleva un historial extenso y muy reciente (hasta
+  el 2026-09-25) de exactamente esta investigación. Repetirla aquí sin
+  poder verificar una sola URL habría sido ruido, no trabajo real. El
+  estado de verdad está en `ROBOT_REGLAS.md` → "Aprendizaje por zonas",
+  no en esta entrada.
+
+## 2. Especies de pesca por región
+
+Un candidato real, sin integrar por el mismo motivo (no se puede
+contrastar un `rangoTemp` real contra FishBase u otra fuente numérica
+desde esta sesión, y la norma de este fichero prohíbe inventar esa
+cifra):
+
+- **Herrera / Mabra (*Lithognathus mormyrus*)** — espárido citado de
+  forma repetida y específica en guías de surfcasting mediterráneo
+  (playas de arena abierta, Mar Menor y costa mediterránea en general:
+  mundopesquero.com, aipeces.com, fishipedia.es), ausente hoy de
+  `ESPECIES_MEDITERRANEO`. Candidata sólida por lo consistente de las
+  fuentes, pero esta pasada no pudo abrir FishBase (mismo bloqueo de
+  red) para sacar una cifra real — si se integra alguna vez, tiene que
+  ser con el número de esa fuente, nunca una cifra aproximada de una
+  guía genérica de pesca.
+- No se ha revisado a fondo el resto de listas (Golfo de Cádiz,
+  Canarias) por el mismo límite de tiempo/red de esta pasada — "no se ha
+  ampliado esta vez", no "está completo y verificado".
+
+## 3. Auditoría de datos
+
+**Verificado con petición real, dentro de lo alcanzable:**
+- `marine-api.open-meteo.com` — probado con el mismo patrón multi-spot
+  que usa `previsionTodosSpots()` (dos coordenadas, las 7 variables que
+  pide `functions/prevision.js`): `200`, la forma de la respuesta (array
+  de objetos, uno por coordenada, con `hourly.wave_height`,
+  `hourly.sea_level_height_msl`, etc.) sigue exactamente como espera el
+  código. Sin cambios necesarios.
+- `poem.puertos.es/portus/StationData` — probado con la boya 1514
+  (Málaga), mismo formato que usa `datosBoya()`
+  (`code=&params=Hm0,Tp,MeanDir,WaterTemp&from=&to=`): `200`, datos
+  reales con menos de 2h de antigüedad en el momento de la prueba. Sin
+  cambios necesarios.
+
+**No se pudo auditar esta pasada** (bloqueo de red de esta sesión, no
+evidencia de nada roto): `api.open-meteo.com` (viento/presión — ver el
+aviso de entorno arriba), `rayos-imagen.js` (AEMET), `luna.js` (USNO,
+`aa.usno.navy.mil`), y las 4 fuentes de caudal más la boya de Nazaré ya
+mencionadas en el punto 1. `sos-alerta.js` no se prueba nunca en
+automático — dispararía un email de socorro real.
+
+**Revisión de código (no necesita red)**: repaso de `functions/
+prevision.js` en busca de valores que parezcan inventados — no se
+encontró ninguno nuevo. Los puntos ya sensibles (`FACTOR_OLEAJE_GIPUZKOA
+= 1.38`, la reconstrucción de marea por rango normalizado, el respaldo
+`coeficienteMarea()`) siguen etiquetados como cálculo propio, con su
+justificación en el propio comentario, tal como ya recoge `CLAUDE.md`.
+`datosCaudalTodos()` sigue degradando bien por diseño: cada fuente falla
+con su propio `{error}` sin tumbar las otras tres ni la respuesta
+completa de `/prevision` — comprobación de lectura de código, no se pudo
+forzar un fallo real hoy para verlo en vivo.
+
+## 4. Calibración
+
+Único punto nuevo posible con la red disponible esta pasada: **Málaga
+(1514)**, la boya REDCOS adicional que sugería explícitamente el
+encargo. Mismo método de siempre (`poem.puertos.es` para la altura
+medida, `marine-api.open-meteo.com` en las coordenadas exactas de la
+boya para la calculada, emparejando por la hora UTC del último dato
+real):
+
+| boya | hora UTC | altura medida | altura calculada | diferencia | % |
+|---|---|---|---|---|---|
+| 1514 Málaga | 06:00 | 0.49 m | 0.52 m | +0.03 m | +6.1% |
+
+Sexto punto para esta boya (-38.1%, +12.5%, -40.2%, +2.1%, -16.7%,
++6.1%) — sigue sin sesgo sistemático claro (3 negativos/3 positivos,
+media de los 6 ≈ -12.4%), lejos todavía del mínimo de 15 puntos antes de
+proponer nada. Añadido a `CALIBRACION.jsonl` sin borrar histórico.
+
+No se repiten Bilbao-Vizcaya/Gijón/Pasaia II/Villano-Sisargas: la rutina
+nocturna diaria ya generó un punto de cada una esta misma noche (commit
+`94f05c4`) — repetirlo aquí habría sido un punto redundante en la misma
+ventana horaria, no un dato nuevo de verdad.
+
+## 5. Propuesta de arquitectura — algoritmo de pesca que aprende de capturas reales
+
+**Recomendación: no una Cloudflare Function con `service_role`, sino una
+función `security definer` en Postgres, siguiendo el mismo patrón que ya
+usa este repo** para leer a través de RLS de forma controlada
+(`admin_listar_usuarios()`, `obtener_calendario_grupo()`,
+`obtener_capturas_grupo()`, `obtener_ubicaciones_grupo()`). Motivo: es el
+mismo problema de fondo (cruzar filas de más de un usuario sin abrir
+RLS a todo el mundo) que este repo ya resuelve así en cuatro sitios
+distintos — reutilizar el patrón evita crear una superficie nueva
+(un secreto `service_role` más, un endpoint más en `functions/`) para
+algo que la base de datos ya sabe hacer de forma segura y auditable en
+un único lugar.
+
+**Diseño propuesto** (arquitectura, no código final):
+
+1. Función nueva `estadisticas_capturas_publicas(p_especie text default
+   null, p_spot text default null)`, `security definer`, concedida a
+   `authenticated` (igual que las de grupos — cualquier usuario logueado
+   puede consultar agregados, no hace falta ser admin).
+2. Internamente: `capturas` → `salidas_pesca` (para spot/tipo_salida/
+   contexto ambiental de esa salida) → `perfiles` (para filtrar por
+   `consiente_uso_datos_capturas = true`, el único filtro de privacidad
+   que importa aquí).
+3. Agrupa por combinaciones ya existentes en los datos, nunca inventadas:
+   especie, spot (o zona si el volumen por spot es bajo), mes, y un
+   "cubo" de condiciones ambientales derivado de lo que ya guarda cada
+   salida (marea alta/media/baja según `marea_coeficiente`, viento
+   flojo/moderado/fuerte, rango de oleaje) — no hace falta guardar nada
+   nuevo, el contexto ambiental ya se guarda por salida desde antes.
+4. Devuelve solo agregados: `conteo_capturas`, `usuarios_distintos`,
+   medias de talla/peso si existen. **Nunca** una fila individual, un
+   `user_id`, una fecha exacta o una coordenada exacta.
+5. **Umbral mínimo de anonimato antes de devolver un grupo**: la propia
+   idea aparcada de "qué se está pescando ahora" (ver `CLAUDE.md`) ya
+   señaló el riesgo real — un spot con poca actividad y una captura rara
+   se podría des-anonimizar. Propuesta concreta: `having
+   count(distinct user_id) >= 5` (no solo `count(*) >= 5`, para que no
+   valga que una sola persona pesque mucho en el mismo sitio). El número
+   exacto es una decisión del usuario, no técnica.
+6. El frontend (`index.html` para el mapa, `diario.html` para "qué se
+   pesca aquí normalmente") llama a esta función tal cual, sin
+   necesitar ningún backend nuevo ni ningún secreto nuevo en Cloudflare
+   Pages — mismo patrón que ya usa `grupos.html` con sus tres funciones
+   RPC.
+
+**Evolución posterior, si esto funciona y se quiere ir más allá de un
+agregado bajo demanda**: un job programado (GitHub Actions o una rutina
+en la nube, nunca esta sesión con credenciales de Supabase) que llame a
+esa misma función `security definer` con distintas combinaciones y
+escriba el resultado en una tabla nueva
+`probabilidad_captura_por_spot_especie` (spot, especie, mes, cubo
+ambiental, conteo) — mismo patrón ya usado por `presion_historico` y
+`turbidez_historico`: el cálculo pesado se hace una vez al día, el
+frontend solo lee una tabla ya resuelta. Esto sería el primer paso real
+hacia "pronosticar qué se puede pescar", no solo "enseñar lo que ya se
+pescó" — pero es una fase claramente posterior, no algo para la primera
+versión.
+
+**Consentimiento vivo, no capturado en el momento de generar el
+agregado**: el filtro `consiente_uso_datos_capturas = true` se aplica en
+cada consulta a `perfiles`, nunca sobre una copia cacheada de qué
+usuarios consintieron — si alguien revoca su consentimiento, desaparece
+de los agregados futuros de inmediato, sin esperar a que expire ningún
+caché.
+
+## Preguntas para el usuario
+
+- **¿Hay ya volumen real de capturas con consentimiento?** Esta sesión
+  no tiene ni debe tener credenciales de Supabase, así que no se puede
+  comprobar desde aquí. Si ya hay, por ejemplo, más de ~50 capturas con
+  `consiente_uso_datos_capturas=true` repartidas en al menos 10 spots
+  distintos, el primer paso concreto sería la versión más simple posible
+  de la función de arriba — solo conteo por especie×spot×mes, sin cruzar
+  todavía con marea/viento/oleaje — mostrada en `diario.html` como "esto
+  se ha pescado aquí este mes, según otros usuarios". Añadir el cruce
+  ambiental sería la iteración siguiente, una vez esa primera versión
+  esté verificada con datos reales.
+- **¿Tiene sentido seguir buscando fuentes nuevas desde esta rutina
+  concreta?** Hoy se ha confirmado que ni siquiera cubre todos los
+  subdominios de Open-Meteo, así que buena parte del punto 1 de este
+  encargo (fuentes nuevas) no se puede verificar nunca desde aquí, solo
+  investigar por búsqueda y dejar a medias. Una alternativa sería que
+  esta rutina semanal se centre en lo que sí puede hacer de verdad
+  (calibración de boyas + la parte de auditoría alcanzable) y que la
+  búsqueda de fuentes nuevas (caudal, boyas de Portugal) se traslade del
+  todo al workflow diario de GitHub Actions, que ya hace exactamente
+  esto para webcams con red completa.
+
+**Fuentes:**
+[Open-Meteo Marine API](https://marine-api.open-meteo.com/v1/marine),
+[Puertos del Estado — StationData](https://poem.puertos.es/portus/StationData),
+[Agència Catalana de l'Aigua — dades obertes en temps real](https://aca.gencat.cat/ca/laigua/consulta-de-dades/dades-obertes/dades-obertes-temps-real/index.html),
+[SAIH Hidrosur / Junta de Andalucía](https://www.juntadeandalucia.es/organismos/agriculturapescaaguaydesarrollorural/areas/agua/situacion-hidrologica/sistemas-informacion-recursos-hidricos.html),
+[Instituto Hidrográfico — acceso a datos marinos](https://www.hidrografico.pt/paginas-genericas/dt/dcdt/acesso-a-dados/),
+[Fishipedia — Pez herrera](https://www.fishipedia.es/pez/lithognathus-mormyrus),
+[Mundo Pesquero — Herrera o mabra](https://mundopesquero.com/especies/esparidos/herrera/).
+
+**Firmado:** robot de datos (pasada semanal: fuentes, auditoría,
+calibración), 2026-09-28 07:45 UTC.
