@@ -2630,7 +2630,11 @@ const WEBCAMS_HLS = {
   // (s123/7bz57yv0sddgbiwei). Verificado con Last-Modified de hace
   // segundos y mirando el fotograma: se ve la playa de Berria, dunas y un
   // surfista cogiendo una ola — sitio correcto.
-  santona: "https://s123.ipcamlive.com/streams/7bz57yv0sddgbiwei/stream.m3u8",
+  // 2026-09-28: ya no se guarda la URL final (volvió a cambiar y a dar 404
+  // tres días después de corregirla). /webcam/hls/<slug> la resuelve en
+  // cada petición desde el alias del reproductor — ver
+  // functions/webcam/hls/[slug].js.
+  santona: "/webcam/hls/santona",
   // Sopela (ayuntamiento), vía IPCamLive — encontrada y verificada en vivo
   // 2026-09-19 (secuencia HLS avanzando en tiempo real, CORS abierto igual
   // que el resto de esta lista). Aplicando el criterio de prioridad
@@ -2652,7 +2656,8 @@ const WEBCAMS_HLS = {
   // de servidor (sXX) como el streamid pueden cambiar sin aviso — no
   // asumir que una URL guardada sigue siendo válida, resolver siempre
   // desde el alias del player.
-  sopelana: "https://s153.ipcamlive.com/streams/99eod1rsuvg7yjnvk/stream.m3u8",
+  // Resuelta desde el alias en cada petición, igual que santona (2026-09-28).
+  sopelana: "/webcam/hls/sopelana",
   hondarribia: "https://58f14c0895a20.streamlock.net/camaramar/GIP_hondarribia_169.stream/playlist.m3u8",
   // Zurriola (playa expuesta a mar abierto), no La Concha/Ondarreta (bahía
   // resguardada, mucho menos representativa del estado real del mar).
@@ -2758,6 +2763,13 @@ function pintarWebcam(slug, nombre) {
   const cont = document.getElementById("panelWebcamContenido");
   if (!SPOTS_CON_WEBCAM.includes(slug)) {
     cont.innerHTML = `<div class="tarjeta" style="text-align:center; color:#42585F; font-size:12px;">Sin webcam identificada para este spot todavía.</div>`;
+    return;
+  }
+  if (camaraRetirada(slug)) {
+    cont.innerHTML = `<div class="tarjeta" style="text-align:center; color:#42585F; font-size:12px;">
+      La webcam de ${nombre} no está emitiendo ahora mismo (el problema es de su proveedor).<br>
+      Volverá a aparecer aquí en cuanto vuelva a emitir.
+    </div>`;
     return;
   }
   if (WEBCAMS_HLS[slug]) {
@@ -2903,6 +2915,20 @@ function badgeWebcamHtml(slug) {
       <span style="width:7px; height:7px; border-radius:50%; background:#A34A35; animation:pulso 1.6s infinite;"></span>
       EN DIRECTO
     </span>`;
+}
+// Cámara retirada de la vista (2026-09-28, pedido del usuario): si lleva
+// más de 24 h sin señal no es la noche (dura ~12 h), es una caída real,
+// casi siempre del proveedor (cantabria.es y SOCIB llevan días así). Un
+// punto rojo que no se va da imagen de app rota a quien llega por primera
+// vez, así que se quita del mapa y el panel lo dice en tono neutro. Vuelve
+// sola en cuanto camaras-salud.yml la ve emitir otra vez: no hay que
+// tocar nada.
+const HORAS_CAMARA_RETIRADA = 24;
+function camaraRetirada(slug) {
+  const c = CAMARAS[slug];
+  if (!c?.sinSenal) return false;
+  if (!c.ultimaSenalEn) return true;
+  return Date.now() - new Date(c.ultimaSenalEn).getTime() > HORAS_CAMARA_RETIRADA * 3600 * 1000;
 }
 function lineaCamaraSaludHtml(slug) {
   const c = CAMARAS[slug];
@@ -3372,6 +3398,7 @@ function refrescarIndicesVisibles() {
     const puntoWebcam = document.getElementById(`webcam-punto-${s.slug}`);
     if (puntoWebcam) {
       const sinSenal = !!CAMARAS[s.slug]?.sinSenal;
+      puntoWebcam.style.display = camaraRetirada(s.slug) ? "none" : "";
       puntoWebcam.classList.toggle("sin-senal", sinSenal);
       puntoWebcam.title = sinSenal ? "Sin señal detectada en la webcam" : "Webcam en directo";
     }

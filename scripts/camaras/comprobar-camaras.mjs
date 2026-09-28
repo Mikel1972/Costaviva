@@ -76,7 +76,9 @@ const UMBRAL_FALLOS_SEGUIDOS = 2; // fallos/frame plano seguidos antes de mostra
 const WEBCAMS_VIDEO = {
   // Playa de Berria (Santoña, Watsay Surf School) — ver el comentario
   // igual en index.html (WEBCAMS_HLS). Alias movido, corregido 2026-09-25.
-  santona: "https://s123.ipcamlive.com/streams/7bz57yv0sddgbiwei/stream.m3u8",
+  // 2026-09-28: se comprueba a través de nuestro resolvedor de alias
+  // (functions/webcam/hls/[slug].js), que es lo mismo que pinta la app.
+  santona: "https://costaviva.org/webcam/hls/santona",
   // Sopela (ayuntamiento, IPCamLive) — ver el comentario igual en
   // index.html (WEBCAMS_HLS). Mismo motivo para excluirla del bucle de
   // imagen fija más abajo (skipPorVideo): lo que se comprueba tiene que
@@ -84,7 +86,7 @@ const WEBCAMS_VIDEO = {
   // que ya no se muestra mientras esta entrada de vídeo exista.
   // Ver el comentario largo en WEBCAMS_HLS de index.html: el alias de
   // IPCamLive cambió el 2026-09-25 (s61 -> s153, streamid nuevo).
-  sopelana: "https://s153.ipcamlive.com/streams/99eod1rsuvg7yjnvk/stream.m3u8",
+  sopelana: "https://costaviva.org/webcam/hls/sopelana",
   hondarribia: "https://58f14c0895a20.streamlock.net/camaramar/GIP_hondarribia_169.stream/playlist.m3u8",
   donostia: "https://58f14c0895a20.streamlock.net/camaramar/GIP_zurriola_169.stream/playlist.m3u8",
   orio: "https://58f14c0895a20.streamlock.net/camaramar/GIP_orio_169.stream/playlist.m3u8",
