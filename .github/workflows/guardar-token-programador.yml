@@ -1,0 +1,53 @@
+name: Guardar clave del programador (pg_cron → GitHub)
+
+# Guarda en Supabase Vault la clave que usa pg_cron para lanzar cada
+# 30 min camaras-salud.yml y notificar-altas.yml (ver
+# supabase/migrations/20260928160000_programador_workflows_github.sql).
+#
+# Así la clave nunca pasa por el chat ni por el editor SQL: el usuario la
+# pega solo en Settings → Secrets → Actions como PROGRAMADOR_GITHUB_TOKEN y
+# lanza esto a mano. Volver a lanzarlo si se rota o caduca la clave.
+#
+# Al final hace una prueba real: lanza camaras-salud.yml por el mismo
+# camino que usará pg_cron y enseña la respuesta de GitHub (204 = bien).
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  guardar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Guardar la clave en Vault y probarla
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          TOKEN: ${{ secrets.PROGRAMADOR_GITHUB_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ] || [ -z "$SUPABASE_DB_URL" ]; then
+            echo "::error::Falta el secret PROGRAMADOR_GITHUB_TOKEN o SUPABASE_DB_URL."
+            exit 1
+          fi
+          psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -v token="$TOKEN" -q <<'SQL'
+          select vault.update_secret(id, :'token') from vault.secrets where name = 'github_lanzar_workflows';
+          select vault.create_secret(:'token', 'github_lanzar_workflows')
+          where not exists (select 1 from vault.secrets where name = 'github_lanzar_workflows');
+          SQL
+          echo "Clave guardada en Vault."
+
+          id=$(psql "$SUPABASE_DB_URL" -tA -v ON_ERROR_STOP=1 -c "select public.lanzar_workflow_github('camaras-salud.yml');")
+          echo "Petición de prueba: $id"
+          for i in 1 2 3 4 5 6; do
+            sleep 5
+            estado=$(psql "$SUPABASE_DB_URL" -tA -c "select status_code || ' ' || coalesce(left(content, 200), '') from net._http_response where id = $id;")
+            [ -n "$estado" ] && break
+          done
+          echo "Respuesta de GitHub: ${estado:-sin respuesta todavía}"
+          echo "### Programador pg_cron → GitHub" >> "$GITHUB_STEP_SUMMARY"
+          echo "Respuesta de GitHub a la prueba: \`${estado:-sin respuesta}\` (204 = funciona)" >> "$GITHUB_STEP_SUMMARY"
+          case "$estado" in
+            204*) echo "Funciona." ;;
+            *) echo "::error::GitHub no ha aceptado la clave. Revisa que tenga acceso a Mikel1972/Costaviva y permiso Actions: Read and write."; exit 1 ;;
+          esac
