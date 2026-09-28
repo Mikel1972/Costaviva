@@ -198,6 +198,48 @@ async function elegirSpot() {
   return "mundaka";
 }
 
+// Iconos dibujados a mano como trazados SVG, en vez de emojis. Sharp pinta
+// el SVG con librsvg, que no sabe dibujar emojis de color: en el runner
+// salían como siluetas negras, rotos o directamente en blanco (visto en
+// todos los posts hasta el 2026-09-28). Un trazado no depende de ninguna
+// fuente instalada. Cada icono está dibujado en una caja de 100×100.
+const ICONOS = {
+  ola: (c) => `
+    <path d="M6 42 C 18 26, 30 26, 42 42 S 66 58, 78 42 S 90 30, 94 34" fill="none" stroke="${c}" stroke-width="8" stroke-linecap="round" />
+    <path d="M6 70 C 18 54, 30 54, 42 70 S 66 86, 78 70 S 90 58, 94 62" fill="none" stroke="${c}" stroke-width="8" stroke-linecap="round" />`,
+  viento: (c) => `
+    <path d="M8 34 H60 A13 13 0 1 0 47 21" fill="none" stroke="${c}" stroke-width="8" stroke-linecap="round" />
+    <path d="M8 54 H78 A13 13 0 1 1 65 67" fill="none" stroke="${c}" stroke-width="8" stroke-linecap="round" />
+    <path d="M8 74 H44" fill="none" stroke="${c}" stroke-width="8" stroke-linecap="round" />`,
+  luna: (c) => `
+    <path d="M58 8 A42 42 0 1 0 92 70 A34 34 0 1 1 58 8 Z" fill="${c}" />`,
+  pez: (c) => `
+    <path d="M8 50 C 26 20, 62 20, 78 50 C 62 80, 26 80, 8 50 Z" fill="${c}" />
+    <path d="M74 50 L96 28 L92 50 L96 72 Z" fill="${c}" />
+    <circle cx="26" cy="45" r="5" fill="#FFFFFF" />`,
+  calamar: (c) => `
+    <path d="M50 4 L74 38 L68 60 H32 L26 38 Z" fill="${c}" />
+    <path d="M36 60 C 32 74, 40 82, 34 96 M46 60 C 44 76, 50 84, 46 96 M54 60 C 56 76, 50 84, 54 96 M64 60 C 68 74, 60 82, 66 96" fill="none" stroke="${c}" stroke-width="5" stroke-linecap="round" />
+    <circle cx="42" cy="46" r="4" fill="#FFFFFF" /><circle cx="58" cy="46" r="4" fill="#FFFFFF" />`,
+  anguila: (c) => `
+    <path d="M8 62 C 24 30, 40 30, 54 54 S 80 80, 92 44" fill="none" stroke="${c}" stroke-width="14" stroke-linecap="round" />
+    <circle cx="88" cy="46" r="3" fill="#FFFFFF" />`,
+  cana: (c) => `
+    <path d="M12 92 L84 12" fill="none" stroke="${c}" stroke-width="7" stroke-linecap="round" />
+    <path d="M84 12 L84 64" fill="none" stroke="${c}" stroke-width="3" />
+    <path d="M84 64 V74 A8 8 0 1 1 70 70" fill="none" stroke="${c}" stroke-width="5" stroke-linecap="round" />`,
+};
+
+// Qué icono corresponde al emoji de cada especie en index.html (ESPECIES).
+// Un emoji que no esté aquí sale como pez, que es la inmensa mayoría.
+const ICONO_POR_EMOJI = { "🐟": "pez", "🐠": "pez", "🦑": "calamar", "🐙": "calamar", "🐍": "anguila" };
+
+// Dibuja un icono centrado en (cx, cy) con el tamaño dado en px.
+function iconoSvg(nombre, cx, cy, tamano, color) {
+  const escala = tamano / 100;
+  return `<g transform="translate(${cx - tamano / 2} ${cy - tamano / 2}) scale(${escala})">${ICONOS[nombre](color)}</g>`;
+}
+
 const PANEL_FOTO = { x: 140, y: 410, width: 800, height: 310 };
 
 async function generarCondiciones() {
@@ -217,9 +259,9 @@ async function generarCondiciones() {
   const mareaTexto = `${spot.marea.altura} m ${mareaFlecha}`;
 
   const tarjetas = [
-    { titulo: "OLEAJE", valor: oleajeTexto, emoji: "🌊" },
-    { titulo: "VIENTO", valor: vientoTexto, emoji: "💨" },
-    { titulo: "MAREA", valor: mareaTexto, emoji: "🌙" },
+    { titulo: "OLEAJE", valor: oleajeTexto, icono: "ola" },
+    { titulo: "VIENTO", valor: vientoTexto, icono: "viento" },
+    { titulo: "MAREA", valor: mareaTexto, icono: "luna" },
   ];
   const anchoTarjeta = 280;
   const espacio = 32;
@@ -229,7 +271,7 @@ async function generarCondiciones() {
       const x = inicioX + i * (anchoTarjeta + espacio);
       return `
         <rect x="${x}" y="760" width="${anchoTarjeta}" height="190" rx="16" fill="${BLANCO}" stroke="${BORDE}" stroke-width="2" />
-        <text x="${x + anchoTarjeta / 2}" y="810" font-family="Arial, sans-serif" font-size="38" text-anchor="middle">${t.emoji}</text>
+        ${iconoSvg(t.icono, x + anchoTarjeta / 2, 800, 44, DORADO)}
         <text x="${x + anchoTarjeta / 2}" y="852" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="${GRIS}" letter-spacing="1" text-anchor="middle">${t.titulo}</text>
         <text x="${x + anchoTarjeta / 2}" y="895" font-family="Georgia, serif" font-size="24" font-weight="bold" fill="${NAVY}" text-anchor="middle">${escaparXml(t.valor)}</text>
       `;
@@ -256,7 +298,7 @@ async function generarCondiciones() {
       <text x="540" y="380" font-family="Arial, sans-serif" font-size="24" fill="${GRIS}" text-anchor="middle">${fotoWebcamBuffer ? "Webcam en directo + condiciones reales" : "Condiciones reales ahora mismo"}</text>
       ${fotoWebcamBuffer ? "" : `
         <circle cx="540" cy="565" r="150" fill="${DORADO_FONDO}" opacity="0.15" />
-        <text x="540" y="590" font-family="Arial, sans-serif" font-size="90" text-anchor="middle">🎣</text>
+        ${iconoSvg("cana", 540, 565, 130, DORADO)}
       `}
       ${tarjetasSvg}
       ${piePaginaSvg()}
@@ -344,7 +386,7 @@ async function generarEspecies() {
     <svg width="1080" height="1080" xmlns="http://www.w3.org/2000/svg">
       ${cabeceraSvg()}
       <circle cx="540" cy="330" r="130" fill="${DORADO_FONDO}" opacity="0.18" />
-      <text x="540" y="365" font-family="Arial, sans-serif" font-size="120" text-anchor="middle">${especie.emoji}</text>
+      ${iconoSvg(ICONO_POR_EMOJI[especie.emoji] || "pez", 540, 330, 150, NAVY)}
       <text x="540" y="530" font-family="Georgia, serif" font-size="64" font-weight="bold" fill="${NAVY}" text-anchor="middle">${escaparXml(especie.nombre)}</text>
       <rect x="390" y="555" width="300" height="44" rx="22" fill="${DORADO}" />
       <text x="540" y="584" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="${BLANCO}" text-anchor="middle" letter-spacing="1">DE TEMPORADA AHORA</text>
