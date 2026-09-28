@@ -1591,6 +1591,13 @@ Antes de asumir que un gasto alto viene de este repo, revisar también
 `RemoteTrigger`/`claude.ai/code/routines` de la cuenta completa, no solo
 los workflows de este repo.
 
+## Tareas cada 30 min: las lanza pg_cron, no el `schedule:` de GitHub (2026-09-28)
+
+GitHub trata los `schedule:` como "cuando pueda": `camaras-salud.yml` y `notificar-altas.yml`, programadas cada 30 min, corrían ~7 veces al día. No es por coste: el repo es público y Actions no cobra. Ahora pg_cron (Supabase) las lanza puntualmente vía la API de GitHub (`workflow_dispatch`, que GitHub arranca al momento): migración `20260928160000_programador_workflows_github.sql`, función `lanzar_workflow_github()` con lista cerrada de workflows permitidos.
+- La clave de GitHub (fine-grained, solo este repo, permiso Actions: Read and write) vive en Supabase Vault como `github_lanzar_workflows`. Se guarda con `guardar-token-programador.yml` desde el secret `PROGRAMADOR_GITHUB_TOKEN`; ese workflow hace además una prueba real (204 = funciona). **Si la clave caduca o se rota, actualizar el secret y relanzarlo.** Nunca pegarla en el chat ni en el editor SQL.
+- El `schedule:` de los dos workflows se queda como respaldo, con `concurrency` para que dos ejecuciones no se solapen.
+- Para añadir otra tarea: añadir su fichero a la lista de `lanzar_workflow_github()` y un `cron.schedule` nuevo, en una migración.
+
 ## Cámaras caídas: fuera de la vista a las 24 h, e IPCamLive resuelto en vivo (2026-09-28)
 
 - **Más de 24 h sin señal = se oculta** (`camaraRetirada()` en `index.html`). Una noche dura ~12 h, así que 24 h es una caída real, casi siempre del proveedor (cantabria.es y SOCIB llevan días caídos). Se quita el punto del mapa y el panel dice, en tono neutro, que no está emitiendo. Vuelve sola cuando `camaras-salud.yml` la ve emitir; no hay que tocar nada. Motivo (pedido del usuario): un punto rojo permanente da imagen de app rota a quien llega por primera vez y resta suscripciones.
