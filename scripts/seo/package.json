@@ -1,0 +1,9 @@
+{
+  "name": "costaviva-seo-indexacion",
+  "private": true,
+  "type": "module",
+  "description": "Script corrido por .github/workflows/daily-report.yml e indexacion-google.yml — NO forma parte del deploy de Cloudflare Pages (scripts/ es privado por la lista blanca de functions/_lib/rutas-publicas.js).",
+  "dependencies": {
+    "google-auth-library": "^9.15.0"
+  }
+}

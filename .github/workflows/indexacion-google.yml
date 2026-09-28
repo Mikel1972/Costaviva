@@ -1,0 +1,43 @@
+name: Comprobar indexación en Google
+
+# Pedido explícito del usuario (2026-09-28): poder ver qué páginas del
+# sitemap ha indexado Google y, las que no, por qué. Lo mismo corre cada día
+# dentro de daily-report.yml (paso "Search Console -- indexación"); este
+# workflow es para consultarlo a mano cuando se quiera, sin esperar al
+# informe ni volver a mandarlo. El resultado sale en el resumen del run.
+#
+# Misma autenticación que daily-report.yml: Workload Identity Federation,
+# sin ninguna clave guardada (ver CLAUDE.md, sección de Search Console).
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  indexacion:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Autenticarse en Google Cloud (Workload Identity Federation, sin clave)
+        uses: google-github-actions/auth@v2
+        with:
+          # El ID real del proveedor lleva un guion delante — ver el mismo
+          # paso en daily-report.yml.
+          workload_identity_provider: "projects/1029831673189/locations/global/workloadIdentityPools/github-actions-pool/providers/-github-actions-provider"
+          service_account: "costaviva-search-console-reade@project-5a5d60f4-a099-4065-a23.iam.gserviceaccount.com"
+
+      - name: Instalar dependencias
+        working-directory: scripts/seo
+        run: npm ci --no-audit --no-fund
+
+      - name: Inspeccionar las URLs del sitemap
+        working-directory: scripts/seo
+        run: node indexacion-google.mjs
