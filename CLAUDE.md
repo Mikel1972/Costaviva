@@ -1591,6 +1591,11 @@ Antes de asumir que un gasto alto viene de este repo, revisar también
 `RemoteTrigger`/`claude.ai/code/routines` de la cuenta completa, no solo
 los workflows de este repo.
 
+## Cámaras caídas: fuera de la vista a las 24 h, e IPCamLive resuelto en vivo (2026-09-28)
+
+- **Más de 24 h sin señal = se oculta** (`camaraRetirada()` en `index.html`). Una noche dura ~12 h, así que 24 h es una caída real, casi siempre del proveedor (cantabria.es y SOCIB llevan días caídos). Se quita el punto del mapa y el panel dice, en tono neutro, que no está emitiendo. Vuelve sola cuando `camaras-salud.yml` la ve emitir; no hay que tocar nada. Motivo (pedido del usuario): un punto rojo permanente da imagen de app rota a quien llega por primera vez y resta suscripciones.
+- **IPCamLive (Santoña, Sopelana)**: cambia servidor y streamid sin aviso (se rompieron el 21, el 25 y el 28 de septiembre). `functions/webcam/hls/[slug].js` resuelve el alias del reproductor en cada petición y redirige al stream real. Si falla, redirige a la última URL conocida. `index.html` y `comprobar-camaras.mjs` apuntan a `/webcam/hls/<slug>`. **No volver a pegar la URL final en el código**: si cambia el alias, se cambia en `IPCAMLIVE` de ese fichero. Test: `test/webcam-ipcamlive.test.js`.
+
 ## Cámaras con mar: se integran siempre, y el robot ya puede crear spots (2026-09-25)
 
 Pedido explícito del usuario, a partir de un caso que recordaba de días
