@@ -89,6 +89,22 @@ volumen es tan bajo que entra en su umbral de privacidad (pasa con
 veces con `workflow_dispatch` antes de mergear — la propiedad detectada
 es `sc-domain:costaviva.org` (propiedad de dominio, no de prefijo URL).
 
+**Indexación en Google (añadido 2026-09-28)**, pedido explícito del
+usuario: además del rendimiento, el informe diario trae qué URLs del
+`sitemap.xml` ha indexado Google y, las que no, agrupadas por motivo
+("Rastreada: actualmente sin indexar", "Descubierta: actualmente sin
+indexar"...), con la variación frente a la pasada anterior (marcador
+`<!-- INDEXACION indexadas=N -->` en el Issue, mismo truco que
+`KPI_AUTONOMO`). Usa la API de inspección de URLs
+(`searchconsole.googleapis.com/v1/urlInspection/index:inspect`) con la misma
+cuenta de servicio. Cuota de Google: 2.000 inspecciones/día y 600/min por
+propiedad — con ~116 URLs se inspeccionan todas cada día. Lógica en
+`scripts/seo/indexacion-google.mjs`; también se lanza a mano con el workflow
+**Comprobar indexación en Google** (`indexacion-google.yml`), que deja el
+resultado en el resumen del run. Si la API responde 403, el script lo dice
+explícitamente: la cuenta tiene acceso "Restringido" y habría que subirla a
+"Completo" (el script solo pide `webmasters.readonly`).
+
 ## Analítica de uso propia (`eventos_uso`, añadida 2026-09-17)
 
 Pedido explícito del usuario: entender qué usa de verdad cada usuario
