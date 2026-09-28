@@ -67,16 +67,33 @@ name: Robot buscador de fuentes
 # al día del mismo informe, pura redundancia con la síntesis única que ya
 # hace daily-report.yml.
 
+# RECORTE DE GASTO (2026-09-28, pedido explícito del usuario). Corría 32
+# veces por semana contra la ANTHROPIC_API_KEY (~40 €/semana estimados, más
+# que todo el presupuesto de 20 €/semana de las 4 apps). Ahora:
+#   - UNA pasada al día, salvo los lunes (ese día lo cubre la rutina en la
+#     nube "Fishnow - Robot de datos"), con el área según el día de la semana
+#     (ver el paso "Determinar área"). Mareas y oleaje ya no: los cubre cada
+#     noche la rutina "Fishnow - Calibracion y salud nocturna".
+#   - Arranca fuera del repo (sin cargar CLAUDE.md en cada turno), 40 turnos.
+# DESTINO: el usuario prefiere que esto corra con su plan de Claude (rutina
+# en la nube) y no con el saldo de la API. Una rutina creada por un agente
+# no recibe el repo conectado, así que tiene que crearla el usuario en
+# claude.ai/code/routines con el repo Costaviva (prompt preparado en
+# scripts/saldo/rutina-buscador-fuentes.txt). Cuando exista y funcione, quitar
+# el schedule de aquí y dejar solo workflow_dispatch.
+#
+# Crons que tenía, para referencia:
+#   47 2 * * *   cámaras/webcams (diario, zona rotativa)
+#   47 8 * * *   mareas y oleaje (diario)
+#   47 14 * * *  corrientes marinas (diario)
+#   47 20 * * *  presión atmosférica (diario)
+#   47 5 * * 2   caudal de ríos y estaciones de monte
+#   47 11 * * 3  buenas prácticas de otras apps
+#   47 17 * * 4  migración y cría de especies
+#   47 23 * * 5  estudios institucionales tipo DIGIPESCA
 on:
   schedule:
-    - cron: "47 2 * * *"  # cámaras/webcams (diario)
-    - cron: "47 8 * * *"  # mareas y oleaje (diario)
-    - cron: "47 14 * * *" # corrientes marinas (diario)
-    - cron: "47 20 * * *" # presión atmosférica (diario)
-    - cron: "47 5 * * 2"  # caudal de ríos y estaciones de monte (semanal, martes)
-    - cron: "47 11 * * 3" # buenas prácticas de otras apps (semanal, miércoles)
-    - cron: "47 17 * * 4" # migración y cría de especies (semanal, jueves)
-    - cron: "47 23 * * 5" # estudios institucionales/académicos tipo DIGIPESCA (semanal, viernes)
+    - cron: "47 6 * * 0,2-6"
   workflow_dispatch:
     inputs:
       area:
@@ -100,7 +117,25 @@ jobs:
       - name: Determinar área de esta pasada
         id: area
         run: |
-          case "${{ github.event.schedule }}" in
+          # Área según el día de la semana (1=lunes ... 7=domingo). Se traduce
+          # a la clave del cron antiguo para reutilizar las descripciones de
+          # cada área tal cual estaban.
+          CLAVE=""
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            SEMANA=$((10#$(date -u +%V)))
+            case "$(date -u +%u)" in
+              2) CLAVE="47 5 * * 2" ;;    # caudal de ríos y estaciones de monte
+              3|6) CLAVE="47 2 * * *" ;;  # cámaras/webcams, zona rotativa
+              4) CLAVE="47 17 * * 4" ;;   # migración y cría de especies
+              5) CLAVE="47 23 * * 5" ;;   # estudios institucionales
+              7) case $((SEMANA % 3)) in
+                   0) CLAVE="47 14 * * *" ;; # corrientes marinas
+                   1) CLAVE="47 20 * * *" ;; # presión atmosférica
+                   *) CLAVE="47 11 * * 3" ;; # buenas prácticas de otras apps
+                 esac ;;
+            esac
+          fi
+          case "$CLAVE" in
             "47 2 * * *")  AREA="cámaras/webcams nuevas para spots (fijos o spots_usuario populares) que todavía no tienen, o para reemplazar una de un proveedor con caídas repetidas — busca población por población (\"<pueblo/playa> webcam directo\"), incluyendo webs de ayuntamientos/turismo local y escuelas de surf/clubes náuticos, no solo ampliar los proveedores ya integrados (AZTI/detectia.net, kostasystem.com, cantabria.es...); ver ROBOT_REGLAS.md, reglas de 'Fallos correlados por proveedor' y 'Buscar webcams fuera de las redes/agregadores nacionales' para el criterio completo y un caso real ya investigado (Sopelana/kostasystem). REGLA NUEVA Y PRIORITARIA (2026-09-25, pedido explícito del usuario) — lee la sección \"Cámara con mar a la vista\" de ROBOT_REGLAS.md ANTES de descartar nada: toda cámara con mar a la vista (playa, rompiente, ría, bocana, dársena de puerto; comprobado MIRANDO la imagen con Read, no por su nombre) se integra siempre, y si no existe spot para ese punto, CREA el spot en esta misma pasada (máximo 5 por pasada) siguiendo al pie de la letra los 7 puntos de edición y las comprobaciones obligatorias de esa sección. Ya no se queda en una propuesta. Esa sección es la única excepción al límite de volumen y al veto de tocar functions/, y solo de forma aditiva." ;;
             "47 8 * * *")  AREA="fuentes de mareas y oleaje — comparar contra CALIBRACION.jsonl, buscar puntos de calibración nuevos" ;;
             "47 14 * * *") AREA="fuentes de corrientes marinas por zona" ;;
@@ -121,7 +156,7 @@ jobs:
           # completa cada ~10 días. Ver ROBOT_REGLAS.md, regla "Aprendizaje
           # por zonas" para el porqué y qué se espera que el robot escriba
           # al terminar cada zona.
-          if [ "${{ github.event.schedule }}" = "47 2 * * *" ]; then
+          if [ "$CLAVE" = "47 2 * * *" ]; then
             ZONAS=(
               "País Vasco — Bizkaia"
               "País Vasco — Gipuzkoa (y costa francesa cercana, Baiona)"
@@ -157,10 +192,11 @@ jobs:
         run: |
           SALIDA_CLAUDE=/tmp/claude-salida.log
           rm -f /tmp/robot-informe.txt
-          claude -p "Eres el robot de investigación/auditoría de datos de Costaviva (repo Costaviva), ejecutándote como una pasada programada más (no la rutina nocturna principal, esta es la de búsqueda de fuentes, 4 veces al día). Sigue ESTRICTAMENTE ROBOT_REGLAS.md antes de tocar nada: nunca inventes un dato ni una URL; si vas a tocar más de 3 ficheros o ~80 líneas en total, o cualquier fichero de functions/ o supabase/, NO lo apliques directo — proponlo como texto en ROBOT.md en vez de commitear. Si existe un fichero ROBOT_PAUSADO en la raíz del repo, no escribas nada (ni commits ni ramas), solo lee y para ahí. Tarea de esta pasada: investiga $AREA. Usa WebSearch para encontrar fuentes reales; si encuentras algo verificable con una petición HTTP real, verifícalo antes de proponerlo o integrarlo. Añade siempre una entrada nueva fechada (fecha y hora UTC de hoy) a ROBOT.md resumiendo qué buscaste y qué encontraste, incluso si no hay nada nuevo (en ese caso dilo explícitamente: 'sin novedades esta pasada'). Si hiciste cambios que caen dentro de los límites de ROBOT_REGLAS.md para aplicar directo, haz commit y push a main tú mismo con git (usa git add/commit/push; el remoto y las credenciales ya están configurados en este runner) firmando igual que las entradas anteriores de ROBOT.md. Al terminar, escribe un resumen de 2 a 4 frases en español, sin jerga, de qué hiciste en esta pasada (o exactamente 'Sin novedades esta pasada.' si no encontraste nada) en el fichero /tmp/robot-informe.txt — se usa para el informe diario del repo." \
+          mkdir -p /tmp/sesion-buscador && cd /tmp/sesion-buscador
+          claude -p "UBICACIÓN: el repo Costaviva está en $GITHUB_WORKSPACE, no en el directorio actual (la sesión arranca fuera a propósito para no cargar CLAUDE.md, ~146 KB, en cada turno y ahorrar saldo de API). Usa siempre rutas absolutas bajo $GITHUB_WORKSPACE (p.ej. $GITHUB_WORKSPACE/ROBOT_REGLAS.md) y haz todo git con git -C \"$GITHUB_WORKSPACE\". ROBOT.md pesa ~470 KB y ROBOT_REGLAS.md ~100 KB: no los leas enteros, ve con grep/head/tail a la sección que necesitas e inserta tu entrada con Edit o un pequeño script, sin reescribir el fichero. Eres el robot de investigación/auditoría de datos de Costaviva (repo Costaviva), ejecutándote como una pasada programada más (no la rutina nocturna principal, esta es la de búsqueda de fuentes, 4 veces al día). Sigue ESTRICTAMENTE ROBOT_REGLAS.md antes de tocar nada: nunca inventes un dato ni una URL; si vas a tocar más de 3 ficheros o ~80 líneas en total, o cualquier fichero de functions/ o supabase/, NO lo apliques directo — proponlo como texto en ROBOT.md en vez de commitear. Si existe un fichero ROBOT_PAUSADO en la raíz del repo, no escribas nada (ni commits ni ramas), solo lee y para ahí. Tarea de esta pasada: investiga $AREA. Usa WebSearch para encontrar fuentes reales; si encuentras algo verificable con una petición HTTP real, verifícalo antes de proponerlo o integrarlo. Añade siempre una entrada nueva fechada (fecha y hora UTC de hoy) a ROBOT.md resumiendo qué buscaste y qué encontraste, incluso si no hay nada nuevo (en ese caso dilo explícitamente: 'sin novedades esta pasada'). Si hiciste cambios que caen dentro de los límites de ROBOT_REGLAS.md para aplicar directo, haz commit y push a main tú mismo con git (usa git add/commit/push; el remoto y las credenciales ya están configurados en este runner) firmando igual que las entradas anteriores de ROBOT.md. Al terminar, escribe un resumen de 2 a 4 frases en español, sin jerga, de qué hiciste en esta pasada (o exactamente 'Sin novedades esta pasada.' si no encontraste nada) en el fichero /tmp/robot-informe.txt — se usa para el informe diario del repo." \
             --dangerously-skip-permissions \
             --model claude-sonnet-5 \
-            --max-turns 60 \
+            --max-turns 40 \
             --allowedTools "Bash,Read,Write,Edit,Grep,Glob,WebSearch,WebFetch" > "$SALIDA_CLAUDE" 2>&1 || CODIGO=$?
           # Guardarraíl de saldo (añadido 2026-09-25, pedido explícito del
           # usuario: "asegúrate que cuando no hay saldo nada se rompe"). El
