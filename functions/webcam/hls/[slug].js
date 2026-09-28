@@ -22,7 +22,7 @@
 
 const IPCAMLIVE = {
   // Watsay Surf School, playa de Berria: watsaysurfschool.com/webcam/
-  santona: { alias: "webcamberria", ultimaConocida: "https://s123.ipcamlive.com/streams/7bz57yv0sddgbiwei/" },
+  santona: { alias: "webcamberria", ultimaConocida: "https://s104.ipcamlive.com/streams/68lowoz31j7i8vum2/" },
   // Ayuntamiento de Sopela: sopela.eus/webcam-olas/
   sopelana: { alias: "673c8a5893eaf", ultimaConocida: "https://s153.ipcamlive.com/streams/99eod1rsuvg7yjnvk/" },
 };
@@ -32,8 +32,11 @@ const IPCAMLIVE = {
 // `var streamid = '7bz57yv0sddgbiwei';` (formato documentado en
 // ROBOT_REGLAS.md). Exportada para el test.
 export function baseDesdeReproductor(html) {
-  const address = /address\s*=\s*['"](https?:\/\/[a-z0-9.-]+\.ipcamlive\.com\/?)['"]/i.exec(html)?.[1];
-  const streamid = /streamid\s*=\s*['"]([a-z0-9]+)['"]/i.exec(html)?.[1];
+  // \b delante: la página trae también `groupaddress`, `timelapseaddress`
+  // y `exportaddress` ANTES de `address` (bug real del primer despliegue,
+  // 2026-09-28: se cogía timelapseaddress = t0.ipcamlive.com y daba 404).
+  const address = /\baddress\s*=\s*['"](https?:\/\/[a-z0-9.-]+\.ipcamlive\.com\/?)['"]/i.exec(html)?.[1];
+  const streamid = /\bstreamid\s*=\s*['"]([a-z0-9]+)['"]/i.exec(html)?.[1];
   if (!address || !streamid) return null;
   const servidor = address.replace(/^http:/i, "https:").replace(/\/?$/, "/");
   return `${servidor}streams/${streamid}/`;
