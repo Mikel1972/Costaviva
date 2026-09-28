@@ -1,12 +1,12 @@
 // functions/avisar-fin-prueba.js
-// Ciclo completo de quien termina la prueba de 7 días y no se suscribe.
-// Empezó el 2026-09-25 como un simple aviso; el 2026-09-28 el usuario pidió
-// que, si no se suscriben, la cuenta se desactive y luego se borre. Ver la
-// migración 20260928120000 para el calendario y las excepciones:
+// Ciclo de la prueba de 7 días. Empezó el 2026-09-25 como un aviso DESPUÉS
+// de vencer; el 2026-09-28 el usuario lo cambió: "a ese vencimiento, o se da
+// de alta o se le cancela". Ver la migración 20260928120000 para el
+// calendario y las excepciones. Contado desde el alta:
 //
-//   día 0   aviso de fin de prueba, ya con las dos fechas
-//   día 5   recordatorio
-//   día 7   desactivar (login bloqueado, datos intactos)
+//   alta    email de bienvenida con las fechas
+//   día 5   recordatorio: la prueba acaba el día 7
+//   día 7   sin suscripción → cuenta cancelada (login bloqueado, datos intactos)
 //   día 14  borrar cuenta, datos y fotos
 //
 // Mismo patrón que notificar-altas.js: protegido con el secreto compartido
@@ -19,11 +19,12 @@
 //   - Desactivar y borrar vuelven a comprobar las condiciones DENTRO de la
 //     función de Postgres: si alguien se suscribe entre la lista y la acción,
 //     no se le toca.
-//   - Aviso y recordatorio se marcan SOLO tras confirmar Resend el envío, y
-//     desactivar exige que el recordatorio se haya enviado. Un fallo de
-//     correo retrasa el calendario de esa persona, nunca lo acorta.
+//   - El recordatorio se marca SOLO tras confirmar Resend el envío, y es ese
+//     marcado el que fija la fecha de cancelación prometida en el email. Sin
+//     recordatorio enviado no hay cancelación: un fallo de correo retrasa el
+//     calendario de esa persona, nunca lo acorta.
 //   - Guarda de volumen: si en una pasada salen más de LIMITE_POR_PASADA
-//     cuentas para desactivar o para borrar, ese paso NO se ejecuta y se
+//     cuentas para recordar, cancelar o borrar, ese paso NO se ejecuta y se
 //     avisa al admin. Con el volumen real de altas, eso es un bug, no un día
 //     normal — mismo criterio que las guardas de Pólizas.ai.
 //   - Cada desactivación y cada borrado se le cuenta al admin por email.
@@ -49,24 +50,25 @@ function fecha(valor) {
 
 const PIE = [``, `— Costaviva`, `https://costaviva.org`];
 
-function emailAviso(desactivarEn, borrarEn) {
+function emailBienvenida(pruebaTerminaEn, borrarEn) {
   return {
-    asunto: "Tu prueba de Costaviva ha terminado",
+    asunto: "Bienvenido a Costaviva: tu prueba gratis de 7 días",
     cuerpo: [
       `Hola,`,
       ``,
-      `Tus 7 días de prueba de Costaviva han terminado, así que de momento no puedes seguir consultando las condiciones del mar ni tu cuaderno de pesca.`,
+      `Gracias por darte de alta en Costaviva. Tienes 7 días de prueba gratis, sin tarjeta, hasta el ${fecha(pruebaTerminaEn)}.`,
       ``,
-      `Tus salidas, capturas, fotos y ubicaciones siguen guardadas, pero no para siempre:`,
+      `Para que no haya sorpresas, así funciona:`,
       ``,
-      `  - Si no te suscribes antes del ${fecha(desactivarEn)}, desactivaremos tu cuenta.`,
-      `  - El ${fecha(borrarEn)} la borraremos definitivamente, con todos tus datos.`,
+      `  - Si te suscribes antes del ${fecha(pruebaTerminaEn)}, sigues usando la app sin cortes.`,
+      `  - Si no, ese día se cancela tu cuenta y ya no podrás entrar.`,
+      `  - Y el ${fecha(borrarEn)} la borramos, con todos tus datos.`,
       ``,
-      `Si quieres seguir:  https://costaviva.org/suscripcion`,
+      `Te mandaremos un recordatorio dos días antes de que acabe la prueba.`,
       ``,
-      `3,99 €/mes o 39,99 €/año. Se puede cancelar cuando quieras.`,
+      `Planes:  https://costaviva.org/suscripcion  (3,99 €/mes o 39,99 €/año, se cancela cuando quieras)`,
       ``,
-      `Y si no es para ti, no pasa nada — gracias por haberla probado. No tienes que hacer nada: te mandaremos un último recordatorio antes de desactivarla.`,
+      `¡Buena pesca!`,
       ...PIE,
     ].join("\n"),
   };
@@ -74,13 +76,13 @@ function emailAviso(desactivarEn, borrarEn) {
 
 function emailRecordatorio(desactivarEn, borrarEn) {
   return {
-    asunto: `Tu cuenta de Costaviva se desactivará el ${fecha(desactivarEn)}`,
+    asunto: `Tu prueba de Costaviva termina el ${fecha(desactivarEn)}`,
     cuerpo: [
       `Hola,`,
       ``,
-      `Te escribimos una última vez antes de desactivar tu cuenta de Costaviva, como te contamos cuando terminó tu prueba.`,
+      `Tu prueba gratis de Costaviva está a punto de terminar.`,
       ``,
-      `  - El ${fecha(desactivarEn)} desactivaremos tu cuenta y ya no podrás entrar.`,
+      `  - El ${fecha(desactivarEn)}, si no te has suscrito, cancelaremos tu cuenta y ya no podrás entrar.`,
       `  - El ${fecha(borrarEn)} la borraremos, con tus salidas, capturas, fotos y ubicaciones.`,
       ``,
       `Si quieres conservarla, basta con suscribirte antes:  https://costaviva.org/suscripcion`,
@@ -93,11 +95,11 @@ function emailRecordatorio(desactivarEn, borrarEn) {
 
 function emailDesactivada(borrarEn) {
   return {
-    asunto: "Hemos desactivado tu cuenta de Costaviva",
+    asunto: "Tu prueba ha terminado y tu cuenta de Costaviva se ha cancelado",
     cuerpo: [
       `Hola,`,
       ``,
-      `Como no te has suscrito tras la prueba, hemos desactivado tu cuenta de Costaviva.`,
+      `Tu prueba gratis de Costaviva ha terminado sin suscripción, así que hemos cancelado tu cuenta.`,
       ``,
       `El ${fecha(borrarEn)} la borraremos definitivamente, con todos tus datos. Si quieres recuperarla antes de esa fecha, responde a este correo y la reactivamos.`,
       ``,
@@ -209,34 +211,43 @@ export async function onRequestPost(context) {
     throw new Error("demasiadas vueltas borrando fotos");
   }
 
-  const resultado = { avisados: 0, recordados: 0, desactivados: 0, borrados: 0, fallos: 0 };
+  const resultado = { bienvenidas: 0, recordados: 0, desactivados: 0, borrados: 0, fallos: 0 };
   const errores = [];
 
-  // 1) Aviso de fin de prueba. El calendario arranca con este email (el
-  //    marcado guarda now() segundos después), así que las fechas del texto
-  //    se calculan desde ahora.
+  // 1) Bienvenida, en cuanto confirma el email.
   try {
-    const pendientes = (await rpc("usuarios_fin_prueba_pendiente_aviso")) || [];
-    const ahora = Date.now();
-    const email = emailAviso(ahora + 7 * DIA_MS, ahora + 14 * DIA_MS);
+    const pendientes = (await rpc("usuarios_bienvenida_pendiente_email")) || [];
     for (const u of pendientes) {
       if (!u.email) continue;
       try {
-        await enviar(u.email, email);
-        await rpc("marcar_fin_prueba_avisado", { p_user_id: u.user_id });
-        resultado.avisados++;
+        await enviar(u.email, emailBienvenida(u.prueba_termina_en, u.borrar_en));
+        await rpc("marcar_bienvenida_email", { p_user_id: u.user_id });
+        resultado.bienvenidas++;
       } catch (e) {
-        console.error(`avisar-fin-prueba: aviso ${u.user_id}: ${String(e)}`);
+        console.error(`avisar-fin-prueba: bienvenida ${u.user_id}: ${String(e)}`);
         resultado.fallos++;
       }
     }
   } catch (e) {
-    errores.push(`aviso: ${String(e)}`);
+    errores.push(`bienvenida: ${String(e)}`);
   }
 
-  // 2) Recordatorio, día 5.
+  // 2) Recordatorio, día 5. Arranca la cuenta atrás de la cancelación, así
+  //    que lleva la misma guarda de volumen que cancelar y borrar: el primer
+  //    día incluye a los usuarios de antes de este cambio con la prueba ya
+  //    vencida, y si son muchos lo decide el admin, no el cron.
   try {
-    const pendientes = (await rpc("usuarios_fin_prueba_pendiente_recordatorio")) || [];
+    let pendientes = (await rpc("usuarios_fin_prueba_pendiente_recordatorio")) || [];
+    if (pendientes.length > LIMITE_POR_PASADA) {
+      errores.push(`recordatorio: ${pendientes.length} cuentas, por encima del límite; no se ha enviado ninguno`);
+      if (adminEmail) {
+        await avisarAdmin("recordatorios de fin de prueba FRENADOS", [
+          `La pasada iba a mandar ${pendientes.length} recordatorios de fin de prueba de golpe (límite: ${LIMITE_POR_PASADA}), y cada uno arranca la cancelación de esa cuenta 2 días después.`,
+          `No se ha enviado ninguno. Si son usuarios reales con la prueba vencida y quieres seguir, sube el límite en functions/avisar-fin-prueba.js.`,
+        ]);
+      }
+      pendientes = [];
+    }
     for (const u of pendientes) {
       if (!u.email) continue;
       try {
@@ -255,7 +266,7 @@ export async function onRequestPost(context) {
   if (!adminEmail) {
     errores.push("ADMIN_EMAIL no configurado: desactivar y borrar no se ejecutan");
   } else {
-    // 3) Desactivar, día 7.
+    // 3) Cancelar, día 7 (o la fecha prometida en el recordatorio).
     try {
       const pendientes = (await rpc("usuarios_fin_prueba_pendiente_desactivar")) || [];
       if (pendientes.length > LIMITE_POR_PASADA) {
