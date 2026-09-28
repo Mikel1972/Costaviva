@@ -41,17 +41,17 @@ export async function onRequestGet(context) {
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Mareas y oleaje en España y Portugal | Costaviva</title>
+<title>Mareas hoy en España y Portugal: pleamar, bajamar y oleaje | Costaviva</title>
 <meta name="description" content="${escaparHtml(descripcion)}" />
 <link rel="canonical" href="${url}" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="${url}" />
-<meta property="og:title" content="Mareas y oleaje en España y Portugal | Costaviva" />
+<meta property="og:title" content="Mareas hoy en España y Portugal: pleamar, bajamar y oleaje | Costaviva" />
 <meta property="og:description" content="${escaparHtml(descripcion)}" />
 <meta property="og:image" content="https://costaviva.org/assets/hero-peces-poster.jpg" />
 <meta property="og:locale" content="es_ES" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Mareas y oleaje en España y Portugal | Costaviva" />
+<meta name="twitter:title" content="Mareas hoy en España y Portugal: pleamar, bajamar y oleaje | Costaviva" />
 <meta name="twitter:description" content="${escaparHtml(descripcion)}" />
 <style>
   * { box-sizing: border-box; }
@@ -65,6 +65,7 @@ export async function onRequestGet(context) {
   .lista { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
   .lista li a { display: block; background: ${BLANCO}; border: 1px solid ${BORDE}; border-radius: 10px; padding: 10px 14px; text-decoration: none; color: ${NAVY}; font-size: 14px; }
   a { color: ${DORADO}; }
+  .cta-sub { text-align: center; color: ${GRIS}; font-size: 13px; margin: -24px 0 32px; }
   h2 { font-family: Georgia, serif; font-size: 20px; margin: 40px 0 12px; }
   .regiones { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-bottom: 8px; }
   .regiones li a { display: block; background: ${NAVY}; color: ${BLANCO}; border-radius: 10px; padding: 12px 16px; text-decoration: none; font-size: 14px; font-weight: bold; }
@@ -78,7 +79,8 @@ export async function onRequestGet(context) {
     <h1>Mareas y oleaje en España y Portugal</h1>
     <p class="intro">${escaparHtml(descripcion)}</p>
 
-    <a class="cta" href="/login">Ver el mapa completo, webcams en directo y mucho más → Entra gratis</a>
+    <a class="cta" href="/login?alta=1">Prueba Costaviva 7 días gratis →</a>
+    <p class="cta-sub">Sin tarjeta. Mapa completo, webcams en directo y diario de pesca. Después, 3,99 €/mes.</p>
 
     <h2>Por región</h2>
     <ul class="regiones">

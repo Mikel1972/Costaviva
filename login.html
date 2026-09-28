@@ -16,6 +16,13 @@
 <meta name="twitter:title" content="Costaviva, pesca en tiempo real" />
 <meta name="twitter:description" content="Previsión marina en tiempo real, mareas, oleaje, diario de pesca con IA y comunidad de pescadores." />
 <meta name="twitter:image" content="https://costaviva.org/assets/hero-peces-poster.jpg" />
+<!-- Datos estructurados (2026-09-28): qué es Costaviva y cuánto cuesta, con
+     los datos reales de suscripcion.html (3,99 €/mes, 7 días de prueba). -->
+<script type="application/ld+json">
+[{"@context":"https://schema.org","@type":"WebSite","name":"Costaviva","url":"https://costaviva.org/","inLanguage":"es"},
+ {"@context":"https://schema.org","@type":"Organization","name":"Costaviva","url":"https://costaviva.org/","logo":"https://costaviva.org/icon.svg"},
+ {"@context":"https://schema.org","@type":"WebApplication","name":"Costaviva","url":"https://costaviva.org/","applicationCategory":"SportsApplication","operatingSystem":"Web, iOS, Android","description":"Previsión marina en tiempo real (mareas, oleaje, viento, temperatura del agua), webcams en directo y diario de pesca para la costa de España y Portugal.","offers":{"@type":"Offer","price":"3.99","priceCurrency":"EUR","description":"7 días de prueba gratis; después 3,99 € al mes o 39,99 € al año."}}]
+</script>
 <link rel="manifest" href="manifest.json" />
 <link rel="icon" href="icon.svg" type="image/svg+xml" />
 <meta name="theme-color" content="#F7F3E8" />
@@ -106,6 +113,18 @@
   }
   .badge-tienda .puntito { width: 5px; height: 5px; border-radius: 50%; background: #D4A24C; }
 
+  /* Enlaces a las páginas públicas de mareas (2026-09-28): la portada es la
+     única página con autoridad en Google y no enlazaba a ninguna de ellas,
+     por eso 86 de 115 seguían "descubiertas, sin indexar". */
+  .mareas-portada { max-width: 460px; margin: 0 0 22px; }
+  .mareas-portada-titulo { font-family: 'Fraunces', serif; font-size: 15px; color: #FFFFFF; margin: 0 0 8px; }
+  .mareas-portada ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .mareas-portada a {
+    display: inline-block; font-size: 12px; color: #F7F3E8; text-decoration: none;
+    border: 1px solid rgba(247,243,232,0.35); border-radius: 14px; padding: 5px 11px; background: rgba(11,37,50,0.35);
+  }
+  .mareas-portada a:hover { border-color: #D4A24C; color: #D4A24C; }
+
   .lado-acceso { flex-shrink: 0; width: 100%; max-width: 360px; }
   .caja {
     width: 100%; max-width: 360px;
@@ -183,6 +202,20 @@
       <li><span class="icono-servicio">👥</span><span><b>Grupos privados</b> — comparte spots, capturas y calendario con tus amigos.</span></li>
       <li><span class="icono-servicio">🌙</span><span><b>Luna y especies de temporada</b> — para saber qué esperar antes de tirar el aparejo.</span></li>
     </ul>
+    <nav class="mareas-portada" aria-label="Mareas hoy por región">
+      <p class="mareas-portada-titulo">Mareas hoy, gratis y sin cuenta</p>
+      <ul>
+        <li><a href="/mareas/region/pais-vasco">País Vasco</a></li>
+        <li><a href="/mareas/region/cantabria">Cantabria</a></li>
+        <li><a href="/mareas/region/asturias">Asturias</a></li>
+        <li><a href="/mareas/region/galicia">Galicia</a></li>
+        <li><a href="/mareas/region/portugal">Portugal</a></li>
+        <li><a href="/mareas/region/mediterraneo">Mediterráneo</a></li>
+        <li><a href="/mareas/region/golfo-de-cadiz">Golfo de Cádiz</a></li>
+        <li><a href="/mareas/region/canarias">Canarias</a></li>
+        <li><a href="/mareas">Todos los spots →</a></li>
+      </ul>
+    </nav>
   </div>
 
   <div class="lado-acceso">
@@ -201,7 +234,7 @@
     <div id="turnstileLogin" style="margin-top:8px;"></div>
 
     <button type="submit" id="btnPrincipal">Entrar</button>
-    <button type="button" class="secundario" id="btnIrARegistro">Crear una cuenta nueva</button>
+    <button type="button" class="secundario" id="btnIrARegistro">Crear cuenta · 7 días gratis</button>
   </form>
 
   <div class="toggle">¿Olvidaste tu contraseña? <a id="linkRecuperar">Recupérala aquí</a></div>
@@ -370,6 +403,13 @@ document.getElementById("btnIrARegistro").addEventListener("click", () => {
   mostrarPantalla(cajaRegistroDatos);
   asegurarWidgetRegistro();
 });
+// /login?alta=1 (2026-09-28): el botón "Prueba 7 días gratis" de las páginas
+// públicas de mareas llega directo al formulario de alta, sin un clic más.
+// Solo cambia qué caja se ve primero; el alta en sí no se toca.
+if (new URLSearchParams(window.location.search).get("alta") === "1") {
+  mostrarPantalla(cajaRegistroDatos);
+  asegurarWidgetRegistro();
+}
 document.getElementById("btnYaTengoCuenta").addEventListener("click", () => {
   mostrarPantalla(cajaLogin);
 });
