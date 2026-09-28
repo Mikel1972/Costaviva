@@ -1,0 +1,66 @@
+name: Abrir PR de las propuestas de diseño del robot
+
+# Pedido explícito del usuario (2026-09-28): el robot de SEO y diseño
+# (rutina en la nube "Costaviva - Robot de SEO y diseño") aplica solo las
+# mejoras de SEO invisibles, pero los cambios de diseño VISIBLES tienen que
+# pasar por un PR que el usuario apruebe. Las rutinas no pueden abrir PR
+# (no tienen gh ni el conector de GitHub), así que suben una rama
+# robot/diseno-AAAA-MM-DD-<tema> y este workflow abre el PR por ellas. Sin
+# IA: solo gh.
+#
+# Cloudflare Pages genera un preview de cada rama; el enlace aparece en el
+# propio PR (comentario del bot de Cloudflare) para ver el cambio antes de
+# aprobarlo.
+
+on:
+  push:
+    branches:
+      - "robot/diseno-**"
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  abrir-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Abrir el PR si no existe ya
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RAMA: ${{ github.ref_name }}
+        run: |
+          if [ -n "$(gh pr list --head "$RAMA" --state open --json number --jq '.[0].number')" ]; then
+            echo "Ya hay un PR abierto para $RAMA."
+            exit 0
+          fi
+          TITULO=$(git log -1 --format=%s)
+          {
+            echo "Propuesta de diseño del robot de SEO y diseño (rutina en la nube)."
+            echo
+            echo "**Nada de esto llega a costaviva.org hasta que apruebes y mergees este PR.**"
+            echo "Para verlo antes: abre el enlace de *Preview* del comentario de Cloudflare de más abajo (tarda un par de minutos)."
+            echo
+            echo "## Qué cambia y por qué"
+            echo
+            git log origin/main..HEAD --format='%B' | sed 's/^Co-Authored-By.*//; s/^Claude-Session.*//'
+          } > /tmp/cuerpo.md
+          # GitHub solo deja a un workflow abrir PR si está activado Settings →
+          # Actions → General → "Allow GitHub Actions to create and approve
+          # pull requests". Si no lo está, se abre un Issue con el enlace para
+          # crear el PR con un clic, en vez de perder la propuesta en silencio.
+          if ! gh pr create --base main --head "$RAMA" --title "Diseño (robot): $TITULO" --body-file /tmp/cuerpo.md; then
+            {
+              echo "El robot de SEO y diseño ha subido la rama \`$RAMA\`, pero este workflow no ha podido abrir el PR (falta activar Settings → Actions → General → *Allow GitHub Actions to create and approve pull requests*)."
+              echo
+              echo "Créalo con un clic: https://github.com/${{ github.repository }}/compare/main...$RAMA?expand=1"
+              echo
+              cat /tmp/cuerpo.md
+            } > /tmp/issue.md
+            gh issue create --title "Propuesta de diseño del robot: $TITULO" --body-file /tmp/issue.md
+          fi
