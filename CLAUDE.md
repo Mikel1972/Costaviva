@@ -1011,7 +1011,7 @@ escalonadas para no competir por runners:
 usuario, tras notar que le llegaba "el informe" varias veces al día)**:
 ahora es el ÚNICO workflow que toca el Issue "Informe diario" — antes
 también publicaban por su cuenta `robot-buscador-fuentes.yml` (hasta 4
-veces/día), `robot-experiencia-usuario.yml` (1x/día) y
+veces/día), `robot-experiencia-usuario.yml` (1x/día entonces; 1x/semana los lunes desde el 2026-09-28, recorte de gasto de API) y
 `robot-patrones-uso.yml` (1x/semana); los tres siguen escribiendo en
 `ROBOT.md` igual que antes, solo dejaron de tocar el Issue — ver la
 entrada fechada 2026-09-20 más abajo para el detalle completo. Las dos
