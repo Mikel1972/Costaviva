@@ -30,6 +30,7 @@ const RAIZ_REPO = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const LIMITE_URLS = 500;
 const CONCURRENCIA = 4;
 const MAX_NO_INDEXADAS_LISTADAS = 10;
+const MAX_INDEXADAS_LISTADAS = 30;
 
 // Traducción de los coverageState más habituales. Uno que no esté aquí se
 // muestra tal cual lo da Google.
@@ -56,7 +57,9 @@ function urlsDelSitemap() {
   return [...xml.matchAll(/<loc>\s*([^<\s]+)\s*<\/loc>/g)].map((m) => m[1]);
 }
 
-function escribirSalida(lineas, indexadas, total) {
+// tabla: filas completas por URL, solo para el resumen del run (en el
+// informe diario serían demasiadas líneas).
+function escribirSalida(lineas, indexadas, total, tabla = "") {
   const texto = lineas.join("\n");
   console.log(texto);
   if (process.env.GITHUB_OUTPUT) {
@@ -66,7 +69,7 @@ function escribirSalida(lineas, indexadas, total) {
     );
   }
   if (process.env.GITHUB_STEP_SUMMARY) {
-    appendFileSync(process.env.GITHUB_STEP_SUMMARY, `### Indexación en Google\n\n${texto}\n`);
+    appendFileSync(process.env.GITHUB_STEP_SUMMARY, `### Indexación en Google\n\n${texto}\n${tabla}`);
   }
 }
 
@@ -152,13 +155,22 @@ async function main() {
 
   lineas.unshift(`  - Indexadas en Google: ${indexadas.length} de ${resultados.length} URLs del sitemap (${porcentaje}%)`);
 
+  const ruta = (u) => u.replace(/^https?:\/\/[^/]+/, "") || "/";
+  // Las indexadas se listan TODAS (pedido del usuario: "no puedo ver cuáles
+  // son"). Mientras sean pocas caben en el informe; si algún día son
+  // muchas, a partir de MAX_INDEXADAS_LISTADAS se remite a la tabla.
+  if (indexadas.length) {
+    const lista = indexadas.map((r) => ruta(r.url)).sort();
+    const mostradas = lista.slice(0, MAX_INDEXADAS_LISTADAS);
+    lineas.push(`  - Páginas indexadas: ${mostradas.join(", ")}${lista.length > mostradas.length ? ` y ${lista.length - mostradas.length} más (lista completa en el workflow "Comprobar indexación en Google")` : ""}`);
+  }
+
   const porEstado = {};
   for (const r of noIndexadas) porEstado[traducir(r.estado)] = (porEstado[traducir(r.estado)] || 0) + 1;
   const estadosOrdenados = Object.entries(porEstado).sort((a, b) => b[1] - a[1]);
   if (estadosOrdenados.length) {
     lineas.push("  - No indexadas, por motivo:");
     for (const [estado, n] of estadosOrdenados) lineas.push(`    - ${estado}: ${n}`);
-    const ruta = (u) => u.replace(/^https?:\/\/[^/]+/, "") || "/";
     const listadas = noIndexadas.slice(0, MAX_NO_INDEXADAS_LISTADAS).map((r) => ruta(r.url));
     lineas.push(`  - Ejemplos sin indexar: ${listadas.join(", ")}${noIndexadas.length > listadas.length ? ` y ${noIndexadas.length - listadas.length} más` : ""}`);
   }
@@ -169,7 +181,14 @@ async function main() {
     lineas.push(`  - El sitemap tiene ${todas.length} URLs; solo se inspeccionan las ${urls.length} primeras (límite de cuota).`);
   }
 
-  escribirSalida(lineas, indexadas.length, resultados.length);
+  // Tabla completa, URL por URL, para el resumen del run: indexadas primero.
+  const orden = (r) => (r.veredicto === "PASS" ? 0 : 1);
+  const filas = [...resultados]
+    .sort((a, b) => orden(a) - orden(b) || a.url.localeCompare(b.url))
+    .map((r) => `| ${r.veredicto === "PASS" ? "✅" : "—"} | ${ruta(r.url)} | ${traducir(r.estado)} | ${r.rastreo ? r.rastreo.slice(0, 10) : "nunca"} |`);
+  const tabla = ["", "| | URL | Estado en Google | Último rastreo |", "|---|---|---|---|", ...filas, ""].join("\n");
+
+  escribirSalida(lineas, indexadas.length, resultados.length, tabla);
 }
 
 main().catch((e) => {
