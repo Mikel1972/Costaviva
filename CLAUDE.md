@@ -2376,6 +2376,36 @@ el estado de `suscripcion.html` cuentan lo mismo.
   de fin de prueba 2 días después. El número sale en el log de "Aplicar
   migraciones" (`NOTICE`). Los perfiles existentes no reciben la bienvenida.
 
+## Supervisor del saldo de API de las 4 apps (2026-09-28)
+
+Pedido explícito del usuario: bajar el gasto de la API de Anthropic, que
+comparten Costaviva, Pólizas.ai, Etxeapala y Lurnahi, a unos **20 €/semana
+entre todas**, sin perjudicar ninguna funcionalidad. El saldo se agotó 6 veces
+en 13 días; la auditoría de ese día estimó que los robots de Costaviva eran
+la mayor parte del gasto (el buscador de fuentes solo, 32 sesiones/semana).
+
+Vive dentro de `robot-mejores-practicas.yml` (el robot de lecciones comunes),
+en dos piezas:
+
+- `scripts/saldo/auditar-consumo-api.mjs` — **sin IA**, no gasta saldo.
+  Estima el gasto de cada robot de CLI de los 4 repos y marca los patrones
+  caros con reglas fijas (R1-R8: sin `--max-turns`, sin `--model`, arrancar en
+  la raíz con un `CLAUDE.md` grande, más de 7 sesiones/semana, web con más de
+  40 turnos, ficheros de más de 100 KB en el prompt, no registrar `usage`,
+  `max_tokens` ≥ 16.000). Escribe `SALDO_API.md` y lo comitea él mismo, aunque
+  no quede saldo. Con el secret opcional `ANTHROPIC_ADMIN_KEY` (clave
+  `sk-ant-admin...` de la consola) añade el gasto REAL de 7 días.
+- La sesión de Claude del mismo robot lee `SALDO_API.md` y abre
+  `COMPARATIVA_PROYECTOS.md` con los recortes concretos (fichero, cambio,
+  ahorro, riesgo). **Nunca propone quitar funcionalidad**; aplicar sigue
+  siendo decisión humana.
+
+**Para cualquier robot nuevo de CLI**: arrancarlo desde un directorio vacío
+(`mkdir -p /tmp/sesion-X && cd /tmp/sesion-X`, repo por `$GITHUB_WORKSPACE`)
+para no cargar este `CLAUDE.md` en cada turno, fijar `--model` y
+`--max-turns`, y no leer enteros `ROBOT.md` (~470 KB) ni ficheros grandes.
+El auditor lo marcará si no.
+
 ## Regla para futuros endpoints con `service_role` (2026-09-25)
 
 Propuesta 5 de la comparativa entre proyectos. **Hoy no hay ningún hueco**:
