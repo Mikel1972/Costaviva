@@ -476,6 +476,14 @@ https://<servidor>/streams/<streamid>/stream.m3u8    (vídeo)
 https://<servidor>/streams/<streamid>/snapshot.jpg   (imagen fija)
 ```
 
+**Desde el 2026-09-28 esto lo hace la app sola** para Santoña y Sopelana:
+`functions/webcam/hls/[slug].js` resuelve el alias en cada petición, y
+`index.html`/`comprobar-camaras.mjs` apuntan a `/webcam/hls/<slug>`, no a
+la URL final. Si una de esas dos sale caída, NO pegues la URL final en el
+código: comprueba si ha cambiado el **alias** en la web del dueño y, si es
+así, cámbialo en `IPCAMLIVE` de ese fichero. Para una cámara nueva de
+IPCamLive, añádela ahí con su alias en vez de guardar la URL final.
+
 Anota SIEMPRE el alias en un comentario junto a la URL. Es lo que permite
 resolverla de nuevo la próxima vez sin tener que redescubrir la página.
 
