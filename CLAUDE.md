@@ -105,6 +105,16 @@ resultado en el resumen del run. Si la API responde 403, el script lo dice
 explícitamente: la cuenta tiene acceso "Restringido" y habría que subirla a
 "Completo" (el script solo pide `webmasters.readonly`).
 
+**`/login` fuera del sitemap, pero SIN `noindex` (2026-09-28).** `login.html`
+es en la práctica la portada pública: `index.html` redirige a `/login.html`
+a quien no tiene sesión (Googlebot incluido), y `login.html` lleva el
+título/descripción SEO, el vídeo y `<link rel="canonical" href="https://costaviva.org/">`.
+Se quitó del sitemap porque listar una URL cuya canónica es otra es una
+señal contradictoria para Google. **No añadirle `noindex`**: Google
+renderiza `/`, sigue la redirección y vería el `noindex` — podría sacar la
+portada del índice. Tampoco tiene efecto de seguridad en ningún sentido: la
+protección real del login es Supabase Auth + CAPTCHA + RLS.
+
 ## Analítica de uso propia (`eventos_uso`, añadida 2026-09-17)
 
 Pedido explícito del usuario: entender qué usa de verdad cada usuario
