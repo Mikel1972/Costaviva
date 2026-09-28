@@ -21,7 +21,7 @@
 // Nunca sale con error: un fallo se cuenta en el propio resumen, igual que
 // el resto de pasos del informe diario.
 
-import { readFileSync, appendFileSync } from "node:fs";
+import { readFileSync, appendFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { GoogleAuth } from "google-auth-library";
@@ -59,8 +59,20 @@ function urlsDelSitemap() {
 
 // tabla: filas completas por URL, solo para el resumen del run (en el
 // informe diario serían demasiadas líneas).
-function escribirSalida(lineas, indexadas, total, tabla = "") {
+// rendimiento: clics/impresiones por página y búsqueda (28 días).
+// Si existe SEO_ESTADO_FICHERO, todo se escribe además en ese fichero del
+// repo (SEO_ESTADO.md): es lo que lee el robot de SEO y diseño (rutina en
+// la nube, 2026-09-28), que no tiene acceso a Search Console por sí mismo.
+function escribirSalida(lineas, indexadas, total, tabla = "", rendimiento = "") {
   const texto = lineas.join("\n");
+  if (process.env.SEO_ESTADO_FICHERO) {
+    writeFileSync(
+      process.env.SEO_ESTADO_FICHERO,
+      `# SEO_ESTADO.md — estado real en Google de costaviva.org\n\n` +
+        `Generado por scripts/seo/indexacion-google.mjs (sin IA) el ${new Date().toISOString().slice(0, 16).replace("T", " ")} UTC. ` +
+        `Se reescribe entero en cada pasada: no es historial.\n\n## Indexación\n\n${texto}\n${tabla}\n${rendimiento}`
+    );
+  }
   console.log(texto);
   if (process.env.GITHUB_OUTPUT) {
     appendFileSync(
@@ -69,7 +81,43 @@ function escribirSalida(lineas, indexadas, total, tabla = "") {
     );
   }
   if (process.env.GITHUB_STEP_SUMMARY) {
-    appendFileSync(process.env.GITHUB_STEP_SUMMARY, `### Indexación en Google\n\n${texto}\n${tabla}`);
+    appendFileSync(process.env.GITHUB_STEP_SUMMARY, `### Indexación en Google\n\n${texto}\n${tabla}\n${rendimiento}`);
+  }
+}
+
+// Rendimiento de búsqueda de los últimos 28 días, por página y por búsqueda.
+// Best-effort: si falla, se dice en el propio texto y se sigue.
+async function rendimiento(sitio, cabecera) {
+  const dia = (n) => new Date(Date.now() - n * 86400000).toISOString().slice(0, 10);
+  async function consulta(dimensions, rowLimit) {
+    const resp = await fetch(
+      `https://www.googleapis.com/webmasters/v3/sites/${encodeURIComponent(sitio)}/searchAnalytics/query`,
+      { method: "POST", headers: cabecera, body: JSON.stringify({ startDate: dia(28), endDate: dia(1), dimensions, rowLimit }) }
+    );
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    return (await resp.json()).rows || [];
+  }
+  try {
+    const [total] = await consulta([], 1);
+    const paginas = await consulta(["page"], 25);
+    const busquedas = await consulta(["query"], 25);
+    const fila = (r) => `${r.clicks} | ${r.impressions} | ${(r.ctr * 100).toFixed(1)}% | ${r.position.toFixed(1)}`;
+    const ruta = (u) => u.replace(/^https?:\/\/[^/]+/, "") || "/";
+    const l = ["", "## Rendimiento en Google (últimos 28 días)", ""];
+    l.push(total ? `Total: ${total.clicks} clics, ${total.impressions} impresiones, CTR ${(total.ctr * 100).toFixed(1)}%, posición media ${total.position.toFixed(1)}.` : "Sin datos de búsqueda en estos 28 días.");
+    if (paginas.length) {
+      l.push("", "| Página | Clics | Impresiones | CTR | Posición |", "|---|---|---|---|---|");
+      for (const r of paginas) l.push(`| ${ruta(r.keys[0])} | ${fila(r)} |`);
+    }
+    if (busquedas.length) {
+      l.push("", "| Búsqueda | Clics | Impresiones | CTR | Posición |", "|---|---|---|---|---|");
+      for (const r of busquedas) l.push(`| ${r.keys[0]} | ${fila(r)} |`);
+    } else if (total && total.impressions > 0) {
+      l.push("", "Google no desglosa las búsquedas concretas con tan poco volumen (umbral de privacidad).");
+    }
+    return l.join("\n") + "\n";
+  } catch (e) {
+    return `\n## Rendimiento en Google\n\nNo se pudo consultar: ${e.message}\n`;
   }
 }
 
@@ -188,7 +236,7 @@ async function main() {
     .map((r) => `| ${r.veredicto === "PASS" ? "✅" : "—"} | ${ruta(r.url)} | ${traducir(r.estado)} | ${r.rastreo ? r.rastreo.slice(0, 10) : "nunca"} |`);
   const tabla = ["", "| | URL | Estado en Google | Último rastreo |", "|---|---|---|---|", ...filas, ""].join("\n");
 
-  escribirSalida(lineas, indexadas.length, resultados.length, tabla);
+  escribirSalida(lineas, indexadas.length, resultados.length, tabla, await rendimiento(sitio, cabecera));
 }
 
 main().catch((e) => {

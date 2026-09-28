@@ -115,6 +115,31 @@ renderiza `/`, sigue la redirección y vería el `noindex` — podría sacar la
 portada del índice. Tampoco tiene efecto de seguridad en ningún sentido: la
 protección real del login es Supabase Auth + CAPTCHA + RLS.
 
+**Robot de SEO y diseño (2026-09-28)**, pedido explícito del usuario:
+"que el robot optimice la web para que sea atractiva visualmente para el
+usuario y sobre todo para el SEO". Es una **rutina en la nube del plan de
+Claude** (no gasta saldo de API), martes y viernes, creada por el usuario en
+claude.ai/code/routines con el repo conectado; su prompt vive en
+`scripts/seo/rutina-seo-diseno.txt` (si se cambia, actualizar ahí también).
+Decisión del usuario sobre la autonomía:
+- **SEO invisible → directo a `main`**: solo `functions/mareas/**`,
+  `sitemap.xml`, `robots.txt` y el `<head>` de `login.html`/`index.html`
+  (títulos, descripciones, JSON-LD con datos reales, enlaces internos). Máx.
+  3 ficheros / ~100 líneas por pasada, con `node --check`, test de rutas
+  públicas y JSON-LD validado. Nunca `noindex` ni canonical nuevo en
+  `login.html` (ver "/login fuera del sitemap").
+- **Diseño visible → rama `robot/diseno-AAAA-MM-DD-<tema>`**, nunca `main`.
+  Las rutinas no pueden abrir PR, así que `robot-diseno-pr.yml` lo abre al
+  recibir el push (y si GitHub no deja a Actions crear PR — Settings →
+  Actions → General → "Allow GitHub Actions to create and approve pull
+  requests" —, abre un Issue con el enlace para crearlo). El usuario lo ve en
+  el preview de Cloudflare y decide.
+- **Mide con datos reales**: `indexacion-google.yml` corre martes y viernes a
+  las 03:23 UTC y deja `SEO_ESTADO.md` (indexación + clics/impresiones/CTR/
+  posición por página y búsqueda de 28 días), porque la rutina no llega a
+  Search Console. El robot anota en `SEO_ROBOT.md` (historial, se añade al
+  final) los números, lo que cambió y qué espera ver la próxima vez.
+
 ## Analítica de uso propia (`eventos_uso`, añadida 2026-09-17)
 
 Pedido explícito del usuario: entender qué usa de verdad cada usuario
