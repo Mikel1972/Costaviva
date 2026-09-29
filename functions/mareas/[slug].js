@@ -104,7 +104,7 @@ function renderizarPagina(spot, todos) {
     `Marea hoy en ${spot.nombre}: ${resumenMareas ? `próxima ${resumenMareas}; ` : ""}` +
     `oleaje ${oleajeTexto}, viento ${vientoTexto}${tempAgua != null ? `, agua a ${tempAgua} °C` : ""}. ` +
     `Datos reales actualizados cada hora, gratis y sin cuenta.`;
-  const titulo = `Marea hoy en ${spot.nombre}: pleamar, bajamar y oleaje | Costaviva`;
+  const titulo = `Marea hoy en ${spot.nombre}${region ? ` (${region.nombre})` : ""}: pleamar, bajamar y oleaje | Costaviva`;
   const url = `https://costaviva.org/mareas/${spot.slug}`;
 
   const migas = [
@@ -119,6 +119,7 @@ function renderizarPagina(spot, todos) {
       name: spot.nombre,
       geo: { "@type": "GeoCoordinates", latitude: spot.lat, longitude: spot.lon },
       url,
+      ...(region ? { containedInPlace: { "@type": "AdministrativeArea", name: region.nombre } } : {}),
     },
     {
       "@context": "https://schema.org",
