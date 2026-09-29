@@ -2697,6 +2697,23 @@ institucionales/académicos tipo DIGIPESCA, segunda pasada),
 
 ---
 
+### 2026-09-29 (pasada buscadora — caudal de ríos y estaciones de monte)
+
+**Sin novedades esta pasada.** Los tres candidatos que dejó la pasada del
+2026-09-16 (Open Data Bizkaia, caudal de Gipuzkoa e IPMA Portugal) no se
+pudieron volver a verificar: desde esta sesión `api.ipma.pt`,
+`opendatabizkaia.eus`, `gipuzkoa.eus` y `api.euskadi.eus` dieron
+`connect_rejected` del proxy de salida (dominios fuera de la lista
+permitida de esta sesión, no evidencia de que estén caídos). URA
+(`uragentzia.euskadi.eus`) sí responde `200`, pero su HTML sigue sin exponer
+ningún endpoint JSON/CSV de tiempo real (solo aparecen los del buscador
+del portal). Las rutas de open data de Euskadi probadas dan `404`.
+Sin cambios de código. Pendiente sin cambios: integrar IPMA como
+equivalente de `ESTACIONES_AEMET` para Portugal (propuesta del 2026-09-16,
+a confirmar por el usuario).
+
+**Firmado:** robot buscador de fuentes (rutina), 2026-09-29 UTC.
+
 ## Auditoría de datos
 
 ### 2026-08-31
