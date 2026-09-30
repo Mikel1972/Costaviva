@@ -2714,6 +2714,16 @@ a confirmar por el usuario).
 
 **Firmado:** robot buscador de fuentes (rutina), 2026-09-29 UTC.
 
+### 2026-09-30 04:50 UTC (pasada buscadora — webcams, zona País Vasco — Bizkaia)
+
+**Sin cambios de código: `puntaluzero` verificada visualmente pero spot NO creado.**
+- `https://www.kostasystem.com/wp-content/uploads/irudiak/puntaluzero/camara1_snap.jpeg` y `camara2_snap.jpeg`: `200`, `Last-Modified` 2026-09-29 18:22 GMT (fotograma con sello 18:40, viva).
+- Encuadre visto con `Read`: `camara1` = cabo rocoso de Punta Lucero con rompiente en las rocas, bloques del dique en primer plano y bahía abierta al fondo; `camara2` = mar abierto hasta el horizonte con mercantes fondeados y espuma sobre los bloques. Ambas cumplen "mar a la vista".
+- Bloqueo: no hay coordenada de fuente real en esta sesión (`nominatim.openstreetmap.org` y `geocoding-api.open-meteo.com` dieron 403 del proxy de salida; dominios fuera de la lista permitida, no caídos). Tampoco se pudo hacer la comprobación obligatoria de la Marine API de Open-Meteo. Estimar a ojo está prohibido por ROBOT_REGLAS.md.
+- Pendiente para la próxima pasada de Bizkaia (o desde una red con esos dominios): obtener lat/lon del sitio de pesca (agua junto al dique/cabo de Punta Lucero, Zierbena), comprobar Open-Meteo, y crear el spot `puntaluzero` con `camara2` (mar abierto) como principal y `camara1` de reserva; añadir a `SPOTS_CON_WEBCAM` y a `SPOTS_IMAGEN` de `medir-turbidez.mjs`.
+
+**Firmado:** robot buscador de fuentes (rutina), 2026-09-30 UTC.
+
 ## Auditoría de datos
 
 ### 2026-08-31
