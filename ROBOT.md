@@ -8183,3 +8183,27 @@ comprobado.
 
 **Firmado:** sesión interactiva con el usuario (búsqueda manual de
 alternativas), 2026-09-25.
+
+### 2026-10-01 04:55 UTC (pasada buscadora — migración y cría de especies, rutina)
+
+Solo propuesta, nada aplicado a `ESPECIES` ni a `indicePesca`. Cubiertas esta
+pasada: lubina, jurel (txitxarro) y caballa (verdel). Sin revisar todavía:
+sargo, abadejo, calamar/chipirón, congrio y bonito del norte (siguientes jueves).
+
+| Especie | Dato | Fuente |
+|---|---|---|
+| Lubina (*Dicentrarchus labrax*) | Una sola puesta anual: dic–mar en poblaciones mediterráneas; en las atlánticas llega hasta primavera/junio. Puesta natural a 10–14 ºC (óptimo 12–14 ºC). | MAPA ficha acuicultura (mapa.gob.es/…/lubina.pdf), es.wikipedia.org/wiki/Dicentrarchus_labrax |
+| Jurel (*Trachurus trachurus*) | Puesta larga en la plataforma ibérica, casi los 8 primeros meses del año, con pico en invierno–primavera. Huevos con mejor supervivencia a 12,2–15,8 ºC. Migraciones ontogénicas en Portugal: los jóvenes en el noroeste se desplazan hacia el sur. | mdpi.com/2410-3888/9/3/93; academic.oup.com/icesjms/article-pdf/64/3/425/2430147/fsl042.pdf |
+| Caballa (*Scomber scombrus*) | Puesta en tandas, óptimo ~11 ºC, feb–jul en la plataforma continental; la temperatura del agua es el motor principal de la migración de pre-puesta (Cantábrico: onlinelibrary.wiley.com/doi/10.1111/fog.12594). | academic.oup.com/icesjms/article/81/3/600/7205703 |
+
+**Propuesta** (decisión del usuario): mostrar en la ficha de especie del índice de
+pesca una nota "época de cría" para lubina (invierno) y caballa/jurel
+(feb–jul, pico invierno–primavera). No tocar la fórmula de `indicePesca`.
+
+**Límites**: son fuentes generales, no por zona concreta. El rango de la lubina
+mezcla Mediterráneo y Atlántico, y la web de aficionados citada no se usa como
+fuente. Falta un dato verificado por zona cantábrica/portuguesa para la lubina.
+Los datos de temperatura salen de fichas de acuicultura y estudios de huevos, no
+de capturas de pesca recreativa.
+
+**Firmado:** robot buscador de fuentes (rutina), 2026-10-01.
