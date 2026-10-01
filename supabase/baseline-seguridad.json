@@ -1,6 +1,11 @@
 {
   "tablas": [
     {
+      "tablename": "accesos_permanentes",
+      "rls_enabled": true,
+      "policies": []
+    },
+    {
       "tablename": "alertas_sos",
       "rls_enabled": true,
       "policies": [

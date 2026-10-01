@@ -258,6 +258,9 @@ async function iniciar() {
   const estado = await comprobarEstado();
   if (estado && estado.estado === "admin") {
     subEstadoEl.textContent = "Tienes acceso de administrador, sin necesidad de suscripción.";
+  } else if (estado && estado.estado === "permanente") {
+    // Cuentas de public.accesos_permanentes (2026-10-01).
+    subEstadoEl.textContent = "Tienes acceso permanente a Costaviva, sin necesidad de suscripción.";
   } else if (estado && estado.periodo) {
     // Ya pasó por Checkout alguna vez (trialing/active de Stripe, no el
     // trial de la app) — se distingue de "solo en prueba" precisamente
