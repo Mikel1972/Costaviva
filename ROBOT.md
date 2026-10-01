@@ -8207,3 +8207,85 @@ Los datos de temperatura salen de fichas de acuicultura y estudios de huevos, no
 de capturas de pesca recreativa.
 
 **Firmado:** robot buscador de fuentes (rutina), 2026-10-01.
+
+### 2026-10-01 14:01 UTC (pasada buscadora — migración y cría de especies, cierre de 2 huecos abiertos desde 2026-09-14)
+
+Solo propuesta, nada aplicado a `ESPECIES` ni a `indicePesca`. **Nota de
+corrección sobre la entrada de hoy 04:55 UTC**: decía "sin revisar todavía:
+sargo, abadejo, calamar/chipirón, congrio y bonito del norte" — eso no es
+exacto, sargo/calamar/bonito ya tenían dato verificado desde las pasadas de
+2026-09-14 y 2026-09-15 (ver esas entradas más arriba). Los huecos REALES que
+quedaban abiertos tras 4 pasadas previas (2026-09-14, dos del 09-15 y
+2026-09-17) eran solo dos: temperatura de puesta del **abadejo** y del
+**jurel**, más la ausencia total de cifra para el **congrio**. Esta pasada
+fue a por esos huecos con `WebSearch` + verificación `WebFetch` en crudo.
+
+**Jurel (*Trachurus trachurus*) — HUECO CERRADO.** `WebFetch` directo a
+`academic.oup.com/icesjms/article/64/3/425/2430147` (HTTP 200, texto en
+crudo, no solo resumen del buscador) — Lavín, Moreno-Ventas, Ortiz de
+Zárate, Abaunza y Cabanas (2007), *"Environmental variability in the North
+Atlantic and Iberian waters and its influence on horse mackerel (Trachurus
+trachurus) and albacore (Thunnus alalunga) dynamics"*, ICES Journal of
+Marine Science 64(3):425–438, DOI `10.1093/icesjms/fsl042`. Cita textual:
+*"The cooler temperatures are also in the range of best survival and
+development of horse mackerel eggs, which are pelagic until hatching:
+12.2–15.8 °C"*, referido a la plataforma ibérica, coherente con la puesta
+ya situada (pasada 2026-09-15 20:26) en la franja Vizcaya→Irlanda a inicios
+de primavera.
+
+**Abadejo (*Pollachius pollachius*) — HUECO CERRADO**, con corrección de
+cita sobre lo dicho el 2026-09-17. `WebFetch` directo a
+`agris.fao.org/search/en/records/669f5fd700eb85b7d72c2346` (HTTP 200,
+resumen completo en crudo) da el estudio real: Suquet, Normant, Gaignon,
+Quemener y Fauvel (2005), *"The effects of water temperature on pollack
+(Pollachius pollachius) spawning features"*, Aquaculture 243(1-4):113–120,
+DOI `10.1016/j.aquaculture.2004.09.021` — **no** el de 1996 que se citó el
+09-17 (mismos autores Suquet/Normant/Gaignon, artículo distinto, por eso la
+confusión). Reproductores en cautividad mantenidos a 8, 10 o 12 °C: a
+12 °C el número de puestas por hembra y el número de huevos viables caen en
+picado (huevos viables/kg: 4.175±7.167 a 12 °C frente a 192.034±145.870 a
+8 °C) — el estudio concluye textualmente *"A temperature of 12 °C is
+suggested to be close to the temperature reproduction upper limit in this
+species"*. Dato de cautividad, no de puesta libre en el mar, pero es
+cifra real y verificada en crudo (antes solo era referencia de buscador sin
+confirmar). Lectura razonable: reproducción favorecida a 8–10 °C, 12 °C ya
+cerca del límite superior.
+
+**Congrio (*Conger conger*) — SIGUE SIN CIFRA**, comprobado otra vez con
+ángulo distinto. `WebFetch` a `marlin.ac.uk/species/detail/2126` (desova a
+hasta 4.000 m, sin fecha ni temperatura) y al PDF
+`secure.toolkitfiles.co.uk/.../Conger-eel-Species-Profile.pdf` (sin datos
+reproductivos extraíbles) — ninguno da temperatura ni época verificada. El
+resumen de `WebSearch` sugería "desove dic–jun según la zona", pero esa
+frase NO aparece en ninguna de las dos fuentes verificadas en crudo, así que
+se descarta por ahora (no se propone, para no contradecir sin verificar el
+"verano–otoño" ya anotado el 2026-09-14). Sigue coherente con lo ya dicho el
+09-17: la puesta a 2.000–4.000 m nunca se ha observado en el medio natural,
+así que es razonable que no exista cifra fiable.
+
+**Bonito del norte (*T. alalunga*) — dato adicional, mismo artículo de
+Lavín et al. 2007 verificado arriba**: los juveniles en el Atlántico NE
+*"are restricted mostly to areas of SST between 15 °C and 20 °C"* y las
+anomalías cálidas de verano en el sur del golfo de Vizcaya (45°N 3°W)
+actúan como factor limitante de su distribución. Más específico y más
+propio de nuestra zona que el rango de tolerancia general (9,5–25,2 °C) ya
+anotado el 2026-09-14 — ambos son compatibles, este es el tramo donde de
+verdad se concentran en el golfo.
+
+**Balance acumulado**: de las 7 especies, ya son **6 con dato de
+temperatura verificado en crudo** — lubina, sargo, calamar, verdel/caballa,
+jurel (nuevo hoy) y abadejo (nuevo hoy, con cita corregida). Solo el
+**congrio** se queda sin cifra, y parece ser un límite real de la
+literatura (puesta nunca observada en el mar), no falta de búsqueda.
+
+**Propuesta (sin implementar nada, mismo criterio que las pasadas
+anteriores de esta responsabilidad)**: si el usuario decide añadir un campo
+informativo de reproducción a `ESPECIES` (p.ej. `desove: { meses, tempC,
+nota, fuente }`), jurel y abadejo ya pueden incorporarse con cifra y cita
+verificada. Ningún uso cuantitativo en `indicePesca` — seguiría haciendo
+falta calibrar contra capturas reales.
+
+**Sin cambios en código** — investigación de contenido, propuesta pura.
+
+**Firmado:** robot buscador de fuentes (pasada de migración y cría de
+especies), 2026-10-01 14:01 UTC.
