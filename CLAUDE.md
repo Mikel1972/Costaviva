@@ -2362,6 +2362,10 @@ propio workflow quedan privados **sin que nadie tenga que acordarse de
 bloquearlos**, gracias a la lista blanca. Es justo el fallo por omisión que
 se buscaba invertir.
 
+## Acceso permanente sin suscripción: tabla `accesos_permanentes` (2026-10-01)
+
+Para dar acceso completo para siempre a una cuenta concreta sin hacerla admin (primer caso: `maetxe2018@gmail.com`, pedido del usuario). Por email, así que vale aunque la persona aún no se haya dado de alta. `mi_estado_suscripcion()` devuelve `estado: 'permanente'` y `con_acceso: true`, y `fin_prueba_fuera_de_ciclo()` la excluye de recordatorio y desactivación. Para añadir o quitar a alguien: migración nueva con `insert`/`delete` en `public.accesos_permanentes` (email en minúsculas). Sin políticas RLS: solo la leen funciones security definer.
+
 ## Fin de prueba: o se suscribe o su cuenta queda desactivada (2026-09-28)
 
 Pedido explícito del usuario: "hay un periodo de prueba de 7 días sin
