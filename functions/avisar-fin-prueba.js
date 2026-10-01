@@ -112,6 +112,28 @@ function emailDesactivada() {
   };
 }
 
+// Cuentas de public.accesos_permanentes (2026-10-01): una vez por email, al
+// añadirlas a la lista. Texto pedido por el usuario ("como tienes enchufe...").
+function emailAccesoPermanente() {
+  return {
+    asunto: "¡Tienes enchufe! Costaviva es gratis para ti",
+    cuerpo: [
+      `¡Hola!`,
+      ``,
+      `Como tienes enchufe, Costaviva es gratis para ti. Para siempre, sin suscripción y sin tarjeta 🎣`,
+      ``,
+      `Tienes acceso completo: condiciones del mar en tiempo real, webcams en directo y tu cuaderno de pesca con tus salidas y capturas.`,
+      ``,
+      `Si aún no tienes cuenta, créala con este mismo email:`,
+      `https://costaviva.org/login?alta=1`,
+      `Si ya la tienes, entra como siempre: https://costaviva.org`,
+      ``,
+      `¡Buena pesca!`,
+      `— Costaviva`,
+    ].join("\n"),
+  };
+}
+
 function json(cuerpo, status = 200) {
   return new Response(JSON.stringify(cuerpo), {
     status,
@@ -176,12 +198,14 @@ export async function onRequestPost(context) {
     }
   }
 
-  const resultado = { bienvenidas: 0, recordados: 0, desactivados: 0, fallos: 0 };
+  const resultado = { bienvenidas: 0, recordados: 0, desactivados: 0, permanentes: 0, fallos: 0 };
   const errores = [];
 
   // Un paso: pide la lista a Postgres, aplica la guarda de volumen si toca,
   // y para cada persona manda el email y SOLO entonces marca.
-  async function paso({ nombre, lista, limitar, email, marcar, contador }) {
+  // argsMarcar: los pasos de prueba marcan por user_id; el de acceso
+  // permanente, por email (la persona puede no tener cuenta aún).
+  async function paso({ nombre, lista, limitar, email, marcar, contador, argsMarcar = (u) => ({ p_user_id: u.user_id }) }) {
     try {
       const pendientes = (await rpc(lista)) || [];
       if (limitar && pendientes.length > LIMITE_POR_PASADA) {
@@ -197,13 +221,13 @@ export async function onRequestPost(context) {
         if (!u.email) continue;
         try {
           await enviar(u.email, email(u));
-          const marcado = await rpc(marcar, { p_user_id: u.user_id });
+          const marcado = await rpc(marcar, argsMarcar(u));
           // desactivar devuelve false si se suscribió entre la lista y ahora.
           if (marcado === false) continue;
           resultado[contador]++;
           hechos.push(u.email);
         } catch (e) {
-          console.error(`avisar-fin-prueba: ${nombre} ${u.user_id}: ${String(e)}`);
+          console.error(`avisar-fin-prueba: ${nombre} ${u.user_id ?? "(sin cuenta)"}: ${String(e)}`);
           resultado.fallos++;
         }
       }
@@ -249,6 +273,17 @@ export async function onRequestPost(context) {
       ...desactivados.map((e) => `  - ${e}`),
     ]);
   }
+
+  // Sin guarda de volumen: la lista solo la rellena una migración a mano.
+  await paso({
+    nombre: "acceso permanente",
+    lista: "accesos_permanentes_pendiente_aviso",
+    limitar: false,
+    email: () => emailAccesoPermanente(),
+    marcar: "marcar_acceso_permanente_avisado",
+    contador: "permanentes",
+    argsMarcar: (u) => ({ p_email: u.email }),
+  });
 
   // Un error de paso (una rpc que no responde, la guarda de volumen) pone el
   // workflow en rojo para que se vea; un fallo con una persona suelta solo
