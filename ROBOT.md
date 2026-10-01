@@ -5413,6 +5413,101 @@ cerca por Cabo Peñas (6/6 negativo, media −20.0%, a 9 puntos del mínimo).
 
 **Firmado:** robot de calibración nocturna, 2026-09-30 01:16 UTC.
 
+### 2026-10-01 (pasada nocturna corta — calibración + salud de datos)
+
+**Calibración — vigesimoctavo punto para las 3 boyas obligatorias, séptimo
+punto para 2548 Cabo de Gata** (rotación de esta noche: era la candidata con
+más noches sin repetirse, último turno el 2026-09-25). Mismo método de
+siempre: `curl` a `poem.puertos.es/portus/StationData` para la altura real,
+Open-Meteo Marine en las coordenadas exactas de cada boya para la altura
+calculada, emparejando por la hora UTC exacta del último dato real de cada
+boya (sin incidencias de red en las boyas ni en Open-Meteo esta vez):
+
+| boya | hora UTC | altura medida | altura calculada | diferencia | % |
+|---|---|---|---|---|---|
+| 2136 Bilbao-Vizcaya | 01:00 | 1.88 m | 1.92 m | +0.04 m | +2.1% |
+| 1117 Gijón | 00:00 | 1.43 m | 1.82 m | +0.39 m | +27.3% |
+| 1101 Pasaia II | 00:00 | 1.39 m | 1.04 m | −0.35 m | −25.2% |
+| 2548 Cabo de Gata | 01:00 | 0.23 m | 0.32 m | +0.09 m | +39.1% |
+
+Historial actualizado de la metodología `boya_vs_openmeteo_mismo_punto`
+(medias recalculadas sobre todos los puntos reales de `CALIBRACION.jsonl`,
+no aproximadas):
+
+- **2136 Bilbao-Vizcaya**: 28 puntos, media ≈ **+2.7%** — sigue sin
+  patrón sistemático (13/28 negativos, signo mixto).
+- **1117 Gijón**: 28 puntos, media ≈ **+1.2%** — sigue alternando
+  signo/magnitud pasada a pasada (15/28 negativos), sin patrón sólido.
+- **1101 Pasaia II**: **28 puntos, vuelve a signo negativo** tras el único
+  punto positivo de anoche (ahora 27/28 negativos, media ≈ **−26.6%**,
+  prácticamente igual que antes de ese punto excepcional). Confirma que el
+  factor x1.38 ya aplicado en producción sigue siendo razonable; el aviso
+  de anoche queda cerrado como un punto aislado, no un cambio de tendencia.
+- **2548 Cabo de Gata — primer signo positivo de la serie**: 7 puntos
+  (antes 6, 4/6 negativos), ahora 4/7 negativos, media ≈ **−7.4%**. Mar
+  casi en calma esta noche (0.23 m medido) — mismo aviso ya repetido para
+  otras boyas con oleaje muy bajo: un % grande sobre una diferencia
+  absoluta pequeña (0.09 m) es poco fiable y no cambia la conclusión. Le
+  siguen faltando 8 puntos para el mínimo de 15.
+- Resto de boyas (1514 Málaga, 1731 Barcelona II, 2242 Cabo Peñas, 2246
+  Villano-Sisargas, 2820 Dragonera): sin cambios desde su última pasada,
+  no les tocaba rotación esta noche.
+
+**Ningún factor de corrección nuevo propuesto** — Barcelona II (7 puntos,
+7/7 negativo, media −29.3%) sigue siendo la candidata más sólida después de
+Pasaia II, seguida de Cabo Peñas (6 puntos, 6/6 negativo, media −20.0%);
+ambas a 8-9 puntos del mínimo de 15. Para la próxima rotación nocturna, la
+candidata con más noches sin repetirse es **2820 Dragonera** (su último
+turno en esta rutina nocturna fue el 2026-09-26, antes que Barcelona II el
+2026-09-27, Villano-Sisargas el 2026-09-28, Málaga el 2026-09-29, Cabo
+Peñas el 2026-09-30 y Cabo de Gata hoy).
+
+**Salud de datos — decimocuarta noche seguida con el mismo patrón de
+dominios bloqueados por la política de red de esta sesión; nada roto en lo
+que sí se pudo comprobar.** Verificado en vivo con `curl`:
+- Las 4 boyas de arriba: `200`, forma `[cabeceras, filas]` correcta, datos
+  reales de la última hora — sin novedad.
+- **`mundaka`** (www.kostasystem.com): `200`, 64.0 KB JPEG, `Last-Modified`
+  de hace ~25 min — bien.
+- **`bakio`** (pyscada.isurki.com): `200`, 764.9 KB JPEG, mismo tamaño
+  exacto que noches anteriores (imagen cacheada por el proveedor de
+  noche, no un fallo).
+- **`getxo`**, **`sopelana`**, **`pasaia`**, **`getaria`** (las 4 de
+  detectia.net/AZTI): `200` en las cuatro, con `Last-Modified` recientes
+  (minutos). `getxo` dio solo 7.0 KB (frente a los 16-76 KB habituales de
+  día) — comprobado con las cabeceras, es imagen real y reciente (01:04
+  UTC, de noche en el País Vasco), tamaño pequeño esperable de una imagen
+  mayormente oscura, no un fallo.
+- **No se pudo comprobar**: la boya de Nazaré (`monican.hidrografico.pt`),
+  las 4 fuentes de caudal de río (`visor.saichcantabrico.es`,
+  `saih.chj.es`, `saihweb.chsegura.es`, `servizos.meteogalicia.gal`), ni
+  webcams de otros proveedores/regiones — se intentó también
+  `www.meteogalicia.gal` (webcams de Galicia), `www.puertosdecantabria.es`
+  y `cdn.skylinewebcams.com` para ampliar la muestra a proveedores nuevos,
+  además de los ya conocidos — todos rechazados por el propio proxy de
+  salida de esta sesión (`connect_rejected`/`403` en el CONNECT, "the
+  egress proxy denied the CONNECT (organization policy)"), mismo patrón
+  exacto que las últimas trece noches. Se reitera la recomendación, ya
+  repetida muchas noches, de que el usuario revise si el conjunto de
+  dominios permitidos para esta rutina puede ampliarse — con la lista
+  actual la comprobación de salud sigue limitada casi en exclusiva a las
+  boyas de Puertos del Estado y a las webcams del País Vasco
+  (mundaka/bakio/getxo/sopelana/pasaia/getaria).
+
+**Resumen de severidad para el usuario**: nada roto de forma confirmada en
+las fuentes ya integradas. Severidad media/baja, sin cambios, para los 9+
+dominios bloqueados por la política de red de esta sesión (Nazaré, los 4
+ríos y las webcams fuera del País Vasco). Sin propuesta de factor de
+corrección nueva — Pasaia II sigue con su factor ya aplicado en producción
+(confirmado esta noche, vuelve a signo negativo); Barcelona II (7/7
+negativo, media −29.3%) sigue siendo la siguiente candidata más sólida, a 8
+puntos del mínimo, seguida de cerca por Cabo Peñas (6/6 negativo, media
+−20.0%, a 9 puntos del mínimo). Cabo de Gata, pese al primer punto
+positivo de hoy, sigue sin patrón sólido (4/7 negativos) y lejos del
+mínimo.
+
+**Firmado:** robot de calibración nocturna, 2026-10-01 01:20 UTC.
+
 ---
 
 ## Robot de experiencia de usuario
