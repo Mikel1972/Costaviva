@@ -108,15 +108,29 @@ function piePaginaSvg() {
 // nada, hace falta estado en disco: rotacion-zonas.json, que el workflow
 // comitea junto con la imagen generada.
 const ZONAS = [
-  { nombre: "País Vasco — Bizkaia", spots: ["mundaka", "bakio", "sopelana", "lekeitio", "getxo"] },
-  { nombre: "País Vasco — Gipuzkoa", spots: ["getaria", "pasaia"] },
-  { nombre: "Cantabria", spots: ["santona", "laredo", "castrourdiales", "suances", "comillas", "sanvicente"] },
-  { nombre: "Galicia", spots: ["acoruna", "baiona", "camarinas", "cangas", "corrubedo", "ribadeo", "ons", "portosin", "cies"] },
-  { nombre: "Castellón", spots: ["peniscola", "alcossebre", "benicassim", "oropesa", "burriana", "castellon", "torreblanca", "vinaros", "xilxes"] },
-  { nombre: "Valencia", spots: ["valencia", "alboraya", "cullera", "gandia", "oliva", "piles", "canetdeberenguer", "pobladefarnals"] },
-  { nombre: "Alicante", spots: ["denia", "javea", "calpe", "altea", "benidorm", "vilajoiosa", "alicante", "santapola", "guardamardelsegura", "pilardelahoradada"] },
-  { nombre: "Murcia y Baleares", spots: ["aguilas", "calamillor", "sonbou", "muro"] },
+  { nombre: "País Vasco — Bizkaia", hashtags: "#euskadi #bizkaia #cantabrico", spots: ["mundaka", "bakio", "sopelana", "lekeitio", "getxo"] },
+  { nombre: "País Vasco — Gipuzkoa", hashtags: "#euskadi #gipuzkoa #cantabrico", spots: ["getaria", "pasaia"] },
+  { nombre: "Cantabria", hashtags: "#cantabria #cantabrico", spots: ["santona", "laredo", "castrourdiales", "suances", "comillas", "sanvicente"] },
+  { nombre: "Galicia", hashtags: "#galicia #riasbaixas #atlantico", spots: ["acoruna", "baiona", "camarinas", "cangas", "corrubedo", "ribadeo", "ons", "portosin", "cies"] },
+  { nombre: "Castellón", hashtags: "#castellon #costaazahar #mediterraneo", spots: ["peniscola", "alcossebre", "benicassim", "oropesa", "burriana", "castellon", "torreblanca", "vinaros", "xilxes"] },
+  { nombre: "Valencia", hashtags: "#valencia #mediterraneo", spots: ["valencia", "alboraya", "cullera", "gandia", "oliva", "piles", "canetdeberenguer", "pobladefarnals"] },
+  { nombre: "Alicante", hashtags: "#alicante #costablanca #mediterraneo", spots: ["denia", "javea", "calpe", "altea", "benidorm", "vilajoiosa", "alicante", "santapola", "guardamardelsegura", "pilardelahoradada"] },
+  { nombre: "Murcia y Baleares", hashtags: "#mediterraneo", spots: ["aguilas", "calamillor", "sonbou", "muro"] },
 ];
+
+// Hashtags regionales del post de condiciones (2026-10-02): antes iban
+// fijos "#euskadi #cantabria #cantabrico" en todos los posts, también en
+// los de Castellón o Alicante. "Murcia y Baleares" mezcla regiones, así que
+// esos spots llevan los suyos propios.
+const HASHTAGS_SPOT = {
+  aguilas: "#murcia #aguilas #mediterraneo",
+  calamillor: "#mallorca #baleares #mediterraneo",
+  muro: "#mallorca #baleares #mediterraneo",
+  sonbou: "#menorca #baleares #mediterraneo",
+};
+export function hashtagsRegionales(slug) {
+  return HASHTAGS_SPOT[slug] || ZONAS.find((z) => z.spots.includes(slug))?.hashtags || "#pescaenespaña";
+}
 
 const RUTA_ROTACION = join(__dirname, "rotacion-zonas.json");
 
@@ -319,7 +333,7 @@ async function generarCondiciones() {
     "",
     "Consulta el estado en directo de tu spot, capas de viento/boyas/radar de lluvia y muchos más datos para que incrementes tus posibilidades de pesca -- enlace en la bio 🎣",
     "",
-    "#pesca #fishing #instafishing #pescadeportiva #pescadesdecosta #surfcasting #saltwaterfishing #costaviva #euskadi #cantabria #cantabrico",
+    `#pesca #fishing #instafishing #pescadeportiva #pescadesdecosta #surfcasting #saltwaterfishing #costaviva ${hashtagsRegionales(slug)}`,
   ].join("\n");
 
   if (!fotoWebcamBuffer) {
@@ -423,7 +437,7 @@ async function generarEspecies() {
     "",
     "Consulta las condiciones reales de tu spot y muchos más datos para que incrementes tus posibilidades de pesca -- enlace en la bio 🎣",
     "",
-    "#pesca #fishing #instafishing #pescarecreativa #pescadeportiva #costaviva #euskadi #cantabria #pescaenespaña",
+    "#pesca #fishing #instafishing #pescarecreativa #pescadeportiva #costaviva #pescaenespaña",
   ].join("\n");
 
   return { tipo: "especies", svg, caption, slug: `especies-${especie.nombre.toLowerCase().replace(/[^a-z0-9]+/g, "-")}` };
