@@ -2445,13 +2445,13 @@ en dos piezas:
 sin quitar ningún robot):
 - `robot-buscador-fuentes.yml`: de 32 a 6 pasadas/semana (una al día salvo
   lunes, área según el día). Mareas/oleaje fuera: los cubre la rutina nocturna
-  de calibración. **Destino pendiente**: el usuario prefiere que corra como
-  rutina de su plan de Claude y no contra el saldo. Una rutina creada por un
-  agente (`create_trigger`) nace sin repo conectado y no pudo hacer push (se
-  probó y se borró), así que tiene que crearla el usuario en
-  claude.ai/code/routines con el repo Costaviva, pegando
-  `scripts/saldo/rutina-buscador-fuentes.txt`; entonces quitar el schedule de
-  aquí.
+  de calibración. **Hecho (2026-10-02)**: corre como la rutina "Costaviva -
+  Buscador de fuentes" del plan de Claude (creada por el usuario en
+  claude.ai/code/routines con `scripts/saldo/rutina-buscador-fuentes.txt`;
+  primera pasada buena el 2026-09-29, commit 426b3d8). El workflow se queda
+  sin schedule, solo con `workflow_dispatch` de respaldo manual. Ojo: una
+  rutina creada por un agente (`create_trigger`) nace sin repo y no puede
+  hacer push; tiene que crearla el usuario.
 - `robot-camaras-caidas.yml`, `robot-patrones-uso.yml`,
   `robot-experiencia-usuario.yml` (este además semanal): arrancan fuera del
   repo.
