@@ -91,9 +91,12 @@ name: Robot buscador de fuentes
 #   47 11 * * 3  buenas prácticas de otras apps
 #   47 17 * * 4  migración y cría de especies
 #   47 23 * * 5  estudios institucionales tipo DIGIPESCA
+# SIN horario desde 2026-10-02: lo hace la rutina "Costaviva - Buscador de
+# fuentes" del plan de Claude (claude.ai/code/routines), que no gasta saldo
+# de API y lleva funcionando desde el 2026-09-29. Esta copia duplicaba la
+# pasada contra el saldo y el 2026-10-02 falló por max-turns tras 10 min.
+# Se deja workflow_dispatch para lanzarlo a mano si la rutina falla.
 on:
-  schedule:
-    - cron: "47 6 * * 0,2-6"
   workflow_dispatch:
     inputs:
       area:
