@@ -2714,6 +2714,44 @@ a confirmar por el usuario).
 
 **Firmado:** robot buscador de fuentes (rutina), 2026-09-29 UTC.
 
+### 2026-10-02 04:55 UTC (pasada buscadora — estudios institucionales/académicos, tercera pasada)
+
+**Qué se buscó:** cubrir el hueco del Cantábrico que dejó la pasada del 2026-09-19
+(Cantabria y Asturias sin fuente) y buscar una fuente pública para Portugal.
+Solo propuesta, sin cambios de código.
+
+**Resultado:**
+1. **Asturias, candidata nueva (sin verificar con petición directa).** Según la
+   búsqueda web, el catálogo de datos.gob.es tiene un conjunto "Pesca marítima en
+   Asturias" (publicado por el Principado). Incluye pesca subastada en lonjas
+   asturianas con cantidades e importes **mensuales** por producto, y también por
+   especie y lonja. Está en XLSX/ODS con licencia CC BY 4.0. El resumen que vi dice
+   que el histórico llega hasta 2020. Si se confirma, sería el primer dato mensual
+   por lonja del Cantábrico (el vasco es solo anual). Falta abrir la ficha y mirar
+   el desglose real y hasta qué año llega antes de proponerla en firme.
+2. **Cantabria:** la búsqueda no devolvió ninguna fuente institucional nueva, solo
+   prensa con totales anuales. Sin cambios.
+3. **Portugal:** DGRM coordina las lotas y publica las "Datapescas" en PDF
+   (informes estadísticos periódicos, p. ej. el nº 139 de ene-dic 2023). No encontré
+   un conjunto descargable con ventas por especie y lota. Esas son cifras agregadas
+   en PDF y no valen como climatología por puerto. Sigue siendo una pista sin
+   confirmar.
+4. **Red:** `datos.gob.es` y `dgrm.pt` no respondieron a una petición HTTP directa
+   desde esta sesión (conexión rechazada, sin código HTTP). No es prueba de que
+   estén caídos. Lo anterior viene solo de la búsqueda web, no de una petición real.
+
+**Para la próxima pasada de este tema:** abrir la ficha de Asturias desde un runner
+con red, comprobar columnas y último año disponible, y reintentar `datos.ieo.es`.
+
+**Fuentes:**
+[datos.gob.es — Pesca marítima en Asturias](https://datos.gob.es/en/catalogo/a03002951-1-pesca-maritima-asturias),
+[DGRM — Lotas](https://www.dgrm.pt/pesca-mi-lotas),
+[DGRM — Datapesca nº 139 (2023)](https://www.dgrm.pt/documents/20143/124680/DATAPESCA+N%C2%BA+139+-+janeiro+a+dezembro+2023.pdf/e1466f48-624f-15ab-adf8-81f516003397).
+
+**Firmado:** robot buscador de fuentes (rutina), 2026-10-02 04:55 UTC.
+
+---
+
 ## Auditoría de datos
 
 ### 2026-08-31
