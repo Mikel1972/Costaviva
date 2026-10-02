@@ -54,7 +54,7 @@ function distanciaKm(lat1, lon1, lat2, lon2) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-function spotsCercanos(todos, spot, n = 4) {
+function spotsCercanos(todos, spot, n = 8) {
   return todos
     .filter((s) => s.slug !== spot.slug)
     .map((s) => ({ ...s, distancia: distanciaKm(spot.lat, spot.lon, s.lat, s.lon) }))
