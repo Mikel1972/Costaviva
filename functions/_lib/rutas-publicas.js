@@ -60,6 +60,8 @@ const ARCHIVOS_PUBLICOS = new Set([
   "/prevision",
   "/luna",
   "/rayos-imagen",
+  // Rayos en tiempo real (Xweather); exige sesión dentro del propio endpoint.
+  "/rayos-cerca",
   "/geocodificar",
   "/sos-alerta",
   "/identificar-captura",

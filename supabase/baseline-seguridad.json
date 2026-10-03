@@ -343,6 +343,16 @@
       ]
     },
     {
+      "tablename": "rayos_xweather_cache",
+      "rls_enabled": true,
+      "policies": []
+    },
+    {
+      "tablename": "rayos_xweather_uso",
+      "rls_enabled": true,
+      "policies": []
+    },
+    {
       "tablename": "salidas_pesca",
       "rls_enabled": true,
       "policies": [

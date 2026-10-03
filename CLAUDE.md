@@ -2362,6 +2362,15 @@ propio workflow quedan privados **sin que nadie tenga que acordarse de
 bloquearlos**, gracias a la lista blanca. Es justo el fallo por omisión que
 se buscaba invertir.
 
+## Rayos: tiempo real con Xweather + satélite EUMETSAT de fondo (2026-10-03)
+
+El botón **Rayos** pinta dos capas sobre el propio mapa (antes solo abría la imagen nacional de AEMET, que sigue en el panel como "últimas 12 h"):
+- **Satélite (gratis, ~15 min de retraso)**: WMS de EUMETView `mtg_fd:li_afa` (Lightning Imager de MTG/EUMETSAT), últimos 6 tramos de 5 min. Sin tarifas ni restricciones, CC BY 4.0, CORS abierto. Color = intensidad (amarillo → rojo oscuro), no antigüedad. **TIME siempre explícito**: EUMETView manda `cache-control` de 7 días.
+- **Tiempo real (Vaisala Xweather)**: `functions/rayos-cerca.js`, rayos de los últimos 5 min a menos de 100 km, en morado. Solo con el mapa acercado (zoom ≥ 7), al soltar el mapa y como mucho cada minuto. Exige sesión.
+- **Coste**: cada consulta de rayos a Xweather cuesta 0,006 $ y solo hay 1.500 gratis al mes. El usuario eligió no pasar de lo gratuito: tope `LIMITE_MENSUAL = 1400` en `rayos-cerca.js`, contado de forma atómica en `rayos_xweather_uso` (`reservar_consulta_rayos`) **antes** de llamar, y caché compartida de 60 s por celda de 0,5° en `rayos_xweather_cache`. Al llegar al tope, o sin claves, el endpoint responde `fuente: limite|no_configurado|error` y el mapa se queda con el satélite. Para subir el tope: cambiar `LIMITE_MENSUAL` (y tener tarjeta en Xweather).
+- **Descartado**: Blitzortung/LightningMaps prohíben el uso comercial (Costaviva es de pago). El endpoint `lightning/within` (consulta por caja, para toda la costa) exige el plan Enterprise de Xweather.
+- Claves en Cloudflare Pages: `XWEATHER_CLIENT_ID`, `XWEATHER_CLIENT_SECRET` (nunca en el repo ni en el chat). Atribución obligatoria "Vaisala Xweather" (se añade al control de atribución del mapa al activar la capa).
+
 ## Acceso permanente sin suscripción: tabla `accesos_permanentes` (2026-10-01)
 
 Para dar acceso completo para siempre a una cuenta concreta sin hacerla admin (primer caso: `maetxe2018@gmail.com`, pedido del usuario). Por email, así que vale aunque la persona aún no se haya dado de alta. `mi_estado_suscripcion()` devuelve `estado: 'permanente'` y `con_acceso: true`, y `fin_prueba_fuera_de_ciclo()` la excluye de recordatorio y desactivación. Para añadir o quitar a alguien: migración nueva con `insert`/`delete` en `public.accesos_permanentes` (email en minúsculas). Sin políticas RLS: solo la leen funciones security definer. Al añadir a alguien le llega solo, una vez, el email "¡Tienes enchufe!" (paso "acceso permanente" de `avisar-fin-prueba.js`, columna `avisado_en`).
