@@ -1070,6 +1070,46 @@ async function datosEstacionesAemet(apiKey) {
   return resultado;
 }
 
+// AEMET OpenData se cae a menudo con 503 (visto el 2026-10-03: "HTTP 503
+// (metadatos)" y "(datos)" durante horas, y el usuario dejó de ver las
+// estaciones). Como /prevision se cachea 30 min, un solo fallo dejaba la
+// capa vacía todo ese rato. Ahora:
+//   1. un reintento corto si falla;
+//   2. cada lectura buena se guarda aparte en la Cache API 6 h, y si AEMET
+//      no responde se sirven esas últimas lecturas reales (con su propia
+//      hora en "actualizado", que el modal de cada estación ya enseña);
+//   3. solo sin respaldo se devuelve { error }.
+// Nunca se inventa una lectura: el respaldo son datos reales de AEMET, solo
+// que de hace un rato.
+const CLAVE_RESPALDO_ESTACIONES = "https://costaviva.org/__respaldo/estaciones-aemet";
+export async function estacionesAemetConRespaldo(apiKey) {
+  const cache = caches.default;
+  let ultimoError = null;
+  for (let intento = 0; intento < 2; intento++) {
+    try {
+      const datos = await datosEstacionesAemet(apiKey);
+      if (Object.keys(datos).length) {
+        await cache.put(
+          CLAVE_RESPALDO_ESTACIONES,
+          new Response(JSON.stringify(datos), {
+            headers: { "content-type": "application/json", "cache-control": "public, max-age=21600" },
+          })
+        );
+      }
+      return datos;
+    } catch (e) {
+      ultimoError = e;
+      if (intento === 0) await new Promise((r) => setTimeout(r, 1500));
+    }
+  }
+  const respaldo = await cache.match(CLAVE_RESPALDO_ESTACIONES);
+  if (respaldo) {
+    const datos = await respaldo.json();
+    return { ...datos, _respaldo: `AEMET no responde (${String(ultimoError)}); últimas lecturas guardadas` };
+  }
+  return { error: String(ultimoError) };
+}
+
 // Metadato de la imagen nacional de rayos de AEMET (ver /rayos-imagen) —
 // solo la hora de la última actualización, para no repetir la llamada al
 // timeline en el navegador.
@@ -1110,7 +1150,7 @@ export async function onRequestGet(context) {
     })),
     metaRayos().catch((e) => ({ error: String(e) })),
     datosCaudalTodos().catch((e) => ({ error: String(e) })),
-    datosEstacionesAemet(context.env.AEMET_API_KEY).catch((e) => ({ error: String(e) })),
+    estacionesAemetConRespaldo(context.env.AEMET_API_KEY).catch((e) => ({ error: String(e) })),
     datosTurbidezPorSpot(),
     datosCamarasPorSpot(),
     datosMonteRios(),
