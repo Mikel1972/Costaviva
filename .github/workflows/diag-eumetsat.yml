@@ -1,0 +1,29 @@
+name: Diagnóstico EUMETSAT rayos (temporal)
+on:
+  push:
+    branches: ["diag/eumetsat"]
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          B=https://view.eumetsat.int/geoserver
+          curl -sS "$B/mtg_fd/li_afa/wms?service=WMS&version=1.3.0&request=GetCapabilities" -o cap.xml -w "cap HTTP %{http_code} %{size_download}B\n"
+          python3 - <<'PY'
+          import re
+          s=open("cap.xml",encoding="utf-8",errors="replace").read()
+          i=s.find("<Name>li_afa</Name>"); i = i if i>=0 else s.find("li_afa")
+          blk=s[max(0,i-300):i+4000]
+          for tag in ["Name","Title","Dimension","Style","AuthorityURL","Attribution","CRS"]:
+              for m in re.findall(r"<%s[^>]*>.*?</%s>"%(tag,tag), blk, re.S)[:6]:
+                  print(re.sub(r"\s+"," ",m)[:400])
+          print("ACCESS:", re.findall(r"<AccessConstraints>.*?</AccessConstraints>", s, re.S)[:1])
+          print("FEES:", re.findall(r"<Fees>.*?</Fees>", s, re.S)[:1])
+          PY
+          echo "--- GetMap España (EPSG:3857, tiempo por defecto)"
+          curl -sS "$B/wms?service=WMS&version=1.3.0&request=GetMap&layers=mtg_fd:li_afa&styles=&crs=EPSG:3857&bbox=-2003750,4163881,1669792,6106855&width=768&height=408&format=image/png&transparent=true" -o m.png -D h.txt -w "map HTTP %{http_code} %{size_download}B %{content_type}\n"
+          grep -i -E "^(content-type|access-control-allow-origin|cache-control)" h.txt || true
+          python3 -c "
+          import zlib,struct
+          d=open('m.png','rb').read(); print('png' if d[:4]==b'\x89PNG' else d[:300])
+          "
