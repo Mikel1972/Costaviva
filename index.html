@@ -302,6 +302,12 @@
   }
   .rayos-panel img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
   .rayos-panel .nota { color: #42585F; font-size: 9.5px; margin-top: 6px; line-height: 1.4; }
+  .leyenda-rayos-sat { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 10px; color: #42585F; }
+  .leyenda-rayos-sat i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; }
+  .ocultar-panel-rayos {
+    margin-top: 6px; width: 100%; padding: 6px; border-radius: 6px; border: 1px solid #DDE2DC;
+    background: #EEF2EF; color: #42585F; font-family: inherit; font-size: 10px; cursor: pointer;
+  }
   .expandir-rayos {
     position: absolute; top: 6px; right: 6px; z-index: 2;
     width: 24px; height: 24px; border-radius: 4px;
@@ -755,7 +761,15 @@
     </div>
     <button class="rayos-toggle" id="toggleRayos" title="Mapa de rayos de España (AEMET)" aria-label="Mostrar/ocultar mapa de rayos">⚡<span class="capa-label">Rayos</span></button>
     <div class="rayos-panel" id="rayosPanel">
-      <div class="titulo">RAYOS — ESPAÑA</div>
+      <div class="titulo">RAYOS EN EL MAPA</div>
+      <div class="leyenda-rayos-sat">
+        <span><i style="background:#7B2CBF;border:1.5px solid #fff;box-shadow:0 0 0 1px #0B2532;border-radius:50%"></i>tiempo real (5 min)</span>
+        <span><i style="width:22px;background:linear-gradient(90deg,#FFF5B0,#F4A040,#8B0A2A)"></i>satélite (30 min, color = intensidad)</span>
+      </div>
+      <div class="nota" id="notaRayosVivo" style="font-weight:600;color:#0B2532;">Buscando rayos en tiempo real…</div>
+      <div class="nota" id="notaRayosSatelite">Cargando rayos del satélite…</div>
+      <button type="button" class="ocultar-panel-rayos" id="ocultarPanelRayos">Ocultar este panel (los rayos siguen en el mapa)</button>
+      <div class="titulo" style="margin-top:10px;">ÚLTIMAS 12 H — AEMET</div>
       <div class="marco-imagen">
         <img id="imgRayos" src="/rayos-imagen" alt="Mapa de rayos de España, última hora" />
         <button class="expandir-rayos" id="expandirRayos" title="Ver en grande" aria-label="Ver mapa de rayos en grande">⤢</button>
@@ -3121,11 +3135,164 @@ document.getElementById("infoIndiceMarBtn").addEventListener("click", () => {
 document.getElementById("infoIndicePescaBtn").addEventListener("click", () => {
   document.getElementById("explicacionIndicePesca").classList.toggle("visible");
 });
+// Rayos en directo sobre el propio mapa (2026-10-03, pedido del usuario:
+// "apps tipo Lightning, ¿podríamos tirar de ellas?"). Blitzortung /
+// LightningMaps quedan descartadas: sus condiciones prohíben el uso
+// comercial y Costaviva es de pago. Se usa el Lightning Imager del satélite
+// europeo MTG (EUMETSAT), servido por EUMETView como WMS: sin coste ni
+// restricciones (AccessConstraints/Fees "none"), CC BY 4.0, CORS abierto y
+// con EPSG:3857 (comprobado desde GitHub Actions el 2026-10-03).
+// - Capa mtg_fd:li_afa: área de rayos acumulada en tramos de 5 minutos,
+//   con ~10-15 min de retraso. Resolución de satélite (~4-5 km): sirve para
+//   ver dónde hay tormenta y hacia dónde va, no el punto exacto del rayo.
+// - Se pintan los últimos 6 tramos (30 min), los antiguos más tenues, para
+//   que se vea el avance de la tormenta.
+// - TIME siempre explícito: EUMETView manda cache-control de 7 días, así
+//   que una URL sin hora se quedaría enseñando rayos viejos.
+// La imagen de AEMET (12 h, toda España) se queda debajo, en el panel.
+const RAYOS_SAT_WMS = "https://view.eumetsat.int/geoserver/wms";
+const RAYOS_SAT_TRAMOS = 6;
+let capasRayosSat = [];
+let temporizadorRayosSat = null;
+async function ultimaHoraRayosSat() {
+  try {
+    const resp = await fetch("https://view.eumetsat.int/geoserver/mtg_fd/li_afa/wms?service=WMS&version=1.3.0&request=GetCapabilities");
+    const xml = await resp.text();
+    const m = /<Dimension name="time"[^>]*default="([^"]+)"/.exec(xml);
+    if (m) return new Date(m[1]);
+  } catch (e) {
+    console.log("EUMETSAT: sin capabilities, se estima la hora:", e.message);
+  }
+  // Respaldo: hace 15 min, redondeado al tramo de 5 min.
+  const t = Date.now() - 15 * 60 * 1000;
+  return new Date(t - (t % (5 * 60 * 1000)));
+}
+function quitarRayosSat() {
+  capasRayosSat.forEach((c) => map.removeLayer(c));
+  capasRayosSat = [];
+}
+async function pintarRayosSat() {
+  const nota = document.getElementById("notaRayosSatelite");
+  const ultima = await ultimaHoraRayosSat();
+  if (!document.getElementById("toggleRayos").classList.contains("activo")) return;
+  quitarRayosSat();
+  const opacidades = [1, 0.8, 0.65, 0.5, 0.4, 0.3];
+  // Del más antiguo al más reciente, para que el reciente quede encima.
+  for (let i = RAYOS_SAT_TRAMOS - 1; i >= 0; i--) {
+    const hora = new Date(ultima.getTime() - i * 5 * 60 * 1000).toISOString().replace(".000Z", "Z");
+    const capa = L.tileLayer.wms(RAYOS_SAT_WMS, {
+      layers: "mtg_fd:li_afa",
+      styles: "mtg_li_afa",
+      format: "image/png",
+      transparent: true,
+      version: "1.3.0",
+      time: hora,
+      opacity: opacidades[i],
+      zIndex: 650 - i,
+      attribution: i === 0 ? "Rayos: EUMETSAT (MTG Lightning Imager), CC BY 4.0" : "",
+    });
+    capa.addTo(map);
+    capasRayosSat.push(capa);
+  }
+  const hasta = new Date(ultima.getTime() + 5 * 60 * 1000).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Madrid" });
+  nota.textContent = `Rayos de los últimos 30 min hasta las ${hasta}, detectados por el satélite europeo MTG (EUMETSAT). Se actualiza cada 5 min, con unos 15 min de retraso.`;
+}
+// Rayos en TIEMPO REAL (Vaisala Xweather, vía functions/rayos-cerca.js)
+// encima de la capa del satélite. Cada consulta cuesta (solo hay 1.500
+// gratis al mes), así que solo se pide con el mapa acercado a una zona
+// (zoom >= 7: con toda España a la vista ya está la capa del satélite), al
+// soltar el mapa y como mucho una vez por minuto mientras la capa esté
+// abierta. El servidor comparte la respuesta por celda de 0,5° durante 60 s
+// y corta al llegar al tope del mes: entonces queda solo el satélite.
+const ZOOM_MIN_RAYOS_VIVO = 7;
+const capaRayosVivo = L.layerGroup();
+let temporizadorRayosVivo = null;
+let esperaMovimientoRayos = null;
+const ATRIBUCION_RAYOS_VIVO = "Rayos en tiempo real: Vaisala Xweather";
+function kmEntre(a, b) {
+  const R = 6371, rad = Math.PI / 180;
+  const dLat = (b.lat - a.lat) * rad, dLon = (b.lon - a.lon) * rad;
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin(dLon / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+async function actualizarRayosVivo() {
+  const nota = document.getElementById("notaRayosVivo");
+  if (!document.getElementById("toggleRayos").classList.contains("activo")) return;
+  if (map.getZoom() < ZOOM_MIN_RAYOS_VIVO) {
+    capaRayosVivo.clearLayers();
+    nota.textContent = "🔍 Acércate a una zona para ver los rayos en tiempo real.";
+    return;
+  }
+  const centro = map.getCenter();
+  let datos = null;
+  try {
+    const { data } = window.supabaseCliente ? await window.supabaseCliente.auth.getSession() : { data: null };
+    const token = data?.session?.access_token;
+    const resp = await fetch(`/rayos-cerca?lat=${centro.lat.toFixed(4)}&lon=${centro.lng.toFixed(4)}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+    datos = resp.ok ? await resp.json() : null;
+  } catch (e) {
+    console.log("rayos-cerca:", e.message);
+  }
+  if (!document.getElementById("toggleRayos").classList.contains("activo")) return;
+  capaRayosVivo.clearLayers();
+  if (datos?.fuente !== "xweather") {
+    nota.textContent = "Tiempo real no disponible ahora mismo: se ven solo los rayos del satélite (≈15 min de retraso).";
+    return;
+  }
+  const ahora = Date.now() / 1000;
+  const yo = { lat: centro.lat, lon: centro.lng };
+  let masCercano = null;
+  for (const r of datos.rayos) {
+    const edadMin = r.ts ? Math.max(0, (ahora - r.ts) / 60) : 5;
+    // Morado, no rojo: la capa del satélite ya usa amarillo→rojo para la
+    // intensidad, y los dos no deben confundirse. Más intenso = más reciente.
+    const color = edadMin < 1 ? "#5A189A" : edadMin < 3 ? "#7B2CBF" : "#B07FE0";
+    L.circleMarker([r.lat, r.lon], { radius: 5, color: "#FFFFFF", weight: 1.5, fillColor: color, fillOpacity: 0.95 })
+      .bindTooltip(`⚡ ${r.tipo === "ic" ? "Rayo entre nubes" : "Rayo a tierra"} · hace ${edadMin < 1 ? "menos de 1" : Math.round(edadMin)} min`)
+      .addTo(capaRayosVivo);
+    const km = kmEntre(yo, r);
+    if (!masCercano || km < masCercano.km) masCercano = { km, edadMin };
+  }
+  nota.textContent = masCercano
+    ? `⚡ ${datos.rayos.length} rayo(s) en los últimos 5 min · el más cercano, a ${Math.round(masCercano.km)} km del centro del mapa, hace ${masCercano.edadMin < 1 ? "menos de 1" : Math.round(masCercano.edadMin)} min.`
+    : "✅ Sin rayos en los últimos 5 min a menos de 100 km del centro del mapa.";
+}
+function alMoverMapaRayos() {
+  clearTimeout(esperaMovimientoRayos);
+  esperaMovimientoRayos = setTimeout(actualizarRayosVivo, 800);
+}
 document.getElementById("toggleRayos").addEventListener("click", () => {
-  const abierta = document.getElementById("rayosPanel").classList.toggle("visible");
+  const boton = document.getElementById("toggleRayos");
+  const panel = document.getElementById("rayosPanel");
+  const activar = !boton.classList.contains("activo");
+  boton.classList.toggle("activo", activar);
+  panel.classList.toggle("visible", activar);
   // innerHTML con la etiqueta: con textContent, al cerrar el panel el botón
   // perdía para siempre el rótulo "Rayos" de debajo del icono.
-  document.getElementById("toggleRayos").innerHTML = abierta ? "✕" : '⚡<span class="capa-label">Rayos</span>';
+  boton.innerHTML = activar ? "✕" : '⚡<span class="capa-label">Rayos</span>';
+  clearInterval(temporizadorRayosSat);
+  clearInterval(temporizadorRayosVivo);
+  if (activar) {
+    pintarRayosSat();
+    temporizadorRayosSat = setInterval(pintarRayosSat, 5 * 60 * 1000);
+    capaRayosVivo.addTo(map);
+    map.attributionControl.addAttribution(ATRIBUCION_RAYOS_VIVO);
+    actualizarRayosVivo();
+    temporizadorRayosVivo = setInterval(actualizarRayosVivo, 60 * 1000);
+    map.on("moveend", alMoverMapaRayos);
+    registrarEvento("ver_capa_rayos");
+  } else {
+    quitarRayosSat();
+    map.off("moveend", alMoverMapaRayos);
+    capaRayosVivo.clearLayers();
+    map.removeLayer(capaRayosVivo);
+    map.attributionControl.removeAttribution(ATRIBUCION_RAYOS_VIVO);
+  }
+});
+document.getElementById("ocultarPanelRayos").addEventListener("click", () => {
+  document.getElementById("rayosPanel").classList.remove("visible");
 });
 document.getElementById("imgRayos").addEventListener("error", (e) => {
   e.target.style.display = "none";
