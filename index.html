@@ -275,11 +275,17 @@
   .leyenda.visible { opacity: 1; transform: translateX(0); pointer-events: auto; }
 
   .rayos-toggle { top: 16px; right: 16px; }
+  /* right:118px, no 64px (2026-10-03, captura del usuario en el móvil: "no
+     veo nada y no puedo interactuar"): en right:64px empieza la segunda
+     columna de botones de capas (📍/+/Ríos/Boyas, z-index 502), que quedaba
+     ENCIMA del panel y tapaba la mitad derecha del mapa y el botón ⤢, lo
+     único que abría la vista grande. Mismo arreglo que .viento-slider-panel
+     (ver su comentario): 118 = 64 + 44 de botón + 10 de hueco. */
   .rayos-panel {
-    position: absolute; top: 16px; right: 64px; z-index: 501;
+    position: absolute; top: 16px; right: 118px; z-index: 501;
     background: #FFFFFF; border: 1px solid #DDE2DC; border-radius: 8px;
     padding: 10px; font-size: 11px; font-family: 'IBM Plex Mono', monospace;
-    width: 220px;
+    width: min(220px, calc(100vw - 134px));
     opacity: 0; transform: translateX(14px); pointer-events: none;
     transition: opacity 0.15s ease-out, transform 0.15s ease-out;
   }
@@ -287,7 +293,7 @@
   .rayos-panel .titulo { color: #5C7680; margin-bottom: 6px; }
   .rayos-panel .marco-imagen {
     position: relative; width: 100%; height: 110px; border-radius: 4px; border: 1px solid #DDE2DC;
-    overflow: hidden;
+    overflow: hidden; cursor: zoom-in;
     /* Mismo encuadre (bbox) que la imagen de rayos de AEMET, para que
        encajen una encima de otra: así se ve el contorno de España aunque
        la capa de rayos esté vacía (sin tormentas). */
@@ -309,14 +315,34 @@
     display: none; align-items: center; justify-content: center; padding: 32px;
   }
   .modal-rayos.visible { display: flex; }
+  /* El fondo del mapa y la imagen de AEMET viven en .lienzo-rayos (mismo
+     encuadre, uno encima de otro). En escritorio el lienzo ocupa todo el
+     contenedor, como antes; en el móvil es más ancho que la pantalla y se
+     arrastra con el dedo (ver @media de abajo), porque a 360 px de ancho
+     toda España no deja ver ningún rayo y el viewport no deja pellizcar. */
   .modal-rayos-contenido {
-    position: relative; width: min(92vw, 960px); aspect-ratio: 680 / 246;
+    position: relative; width: min(92vw, 960px);
     border-radius: 10px; overflow: hidden; border: 1px solid #DDE2DC;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
-    background-image: url("https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/export?bbox=-18,35,14,47&bboxSR=4326&size=960,347&format=png&transparent=false&f=image");
-    background-size: cover; background-position: center;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5); background: #DDE7EC;
   }
-  .modal-rayos-contenido img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .scroll-rayos { width: 100%; }
+  .lienzo-rayos {
+    position: relative; width: 100%; aspect-ratio: 680 / 246;
+    background-image: url("https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/export?bbox=-18,35,14,47&bboxSR=4326&size=1360,492&format=png&transparent=false&f=image");
+    background-size: 100% 100%;
+  }
+  .lienzo-rayos img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .pista-rayos { display: none; }
+  @media (max-width: 720px) {
+    .modal-rayos { padding: 12px; }
+    .modal-rayos-contenido { width: 96vw; }
+    .scroll-rayos { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .lienzo-rayos { width: 260%; }
+    .pista-rayos {
+      display: block; padding: 6px 10px; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px;
+      color: #F7F3E8; background: rgba(11,37,50,0.85); text-align: center;
+    }
+  }
 
   /* Botones de capas en 2 columnas por tipología (2026-09-14, "que se
      vean todos"; rediseñado 2026-09-19, pedido explícito del usuario:
@@ -716,12 +742,17 @@
         <img id="imgRayos" src="/rayos-imagen" alt="Mapa de rayos de España, última hora" />
         <button class="expandir-rayos" id="expandirRayos" title="Ver en grande" aria-label="Ver mapa de rayos en grande">⤢</button>
       </div>
-      <div class="nota" id="notaRayos">Fuente: AEMET</div>
+      <div class="nota" id="notaRayos">Fuente: AEMET · toca el mapa para ampliar</div>
     </div>
     <div class="modal-rayos" id="modalRayos">
       <div class="modal-rayos-contenido">
         <button class="cerrar" id="cerrarModalRayos" style="position:absolute; top:8px; right:8px; z-index:2; background:rgba(11,37,50,0.7); color:#F7F3E8; border-radius:4px;">✕</button>
-        <img id="imgRayosGrande" src="/rayos-imagen" alt="Mapa de rayos de España, última hora, en grande" />
+        <div class="scroll-rayos" id="scrollRayos">
+          <div class="lienzo-rayos">
+            <img id="imgRayosGrande" src="/rayos-imagen" alt="Mapa de rayos de España, última hora, en grande" />
+          </div>
+        </div>
+        <div class="pista-rayos">← Desliza para moverte por el mapa →</div>
       </div>
     </div>
     <button class="luna-toggle" id="toggleLuna" title="Fase y posición de la luna" aria-label="Mostrar/ocultar datos de la luna">🌙<span class="capa-label">Luna</span></button>
@@ -3069,16 +3100,30 @@ document.getElementById("infoIndicePescaBtn").addEventListener("click", () => {
 });
 document.getElementById("toggleRayos").addEventListener("click", () => {
   const abierta = document.getElementById("rayosPanel").classList.toggle("visible");
-  document.getElementById("toggleRayos").textContent = abierta ? "✕" : "⚡";
+  // innerHTML con la etiqueta: con textContent, al cerrar el panel el botón
+  // perdía para siempre el rótulo "Rayos" de debajo del icono.
+  document.getElementById("toggleRayos").innerHTML = abierta ? "✕" : '⚡<span class="capa-label">Rayos</span>';
 });
 document.getElementById("imgRayos").addEventListener("error", (e) => {
   e.target.style.display = "none";
   document.getElementById("notaRayos").textContent = "Fuente: AEMET (no disponible ahora mismo)";
 });
-document.getElementById("expandirRayos").addEventListener("click", () => {
+// Toda la miniatura abre la vista grande, no solo el botón ⤢ (que además
+// es pequeño para un dedo). En el móvil la vista grande se arrastra; se abre
+// centrada en la Península (≈45 % del ancho del encuadre de AEMET).
+function abrirRayosGrande() {
   document.getElementById("imgRayosGrande").src = `/rayos-imagen?_=${Date.now()}`;
   document.getElementById("modalRayos").classList.add("visible");
+  const scroll = document.getElementById("scrollRayos");
+  requestAnimationFrame(() => {
+    scroll.scrollLeft = Math.max(0, scroll.scrollWidth * 0.45 - scroll.clientWidth / 2);
+  });
+}
+document.getElementById("expandirRayos").addEventListener("click", (e) => {
+  e.stopPropagation();
+  abrirRayosGrande();
 });
+document.querySelector("#rayosPanel .marco-imagen").addEventListener("click", abrirRayosGrande);
 document.getElementById("cerrarModalRayos").addEventListener("click", () => {
   document.getElementById("modalRayos").classList.remove("visible");
 });
