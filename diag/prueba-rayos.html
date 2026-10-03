@@ -1,0 +1,58 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>html,body,#map{margin:0;height:100%}</style></head><body>
+<div id="map"></div><button id="toggleRayos" class="activo" style="display:none"></button><div id="notaRayosSatelite" style="position:absolute;z-index:999;top:0;left:0;background:#fff;font:12px sans-serif;max-width:400px"></div>
+<script>
+const map = L.map("map").setView([40.3,-3.7],6);
+L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}").addTo(map);
+const RAYOS_SAT_WMS = "https://view.eumetsat.int/geoserver/wms";
+const RAYOS_SAT_TRAMOS = 6;
+let capasRayosSat = [];
+let temporizadorRayosSat = null;
+async function ultimaHoraRayosSat() {
+  try {
+    const resp = await fetch("https://view.eumetsat.int/geoserver/mtg_fd/li_afa/wms?service=WMS&version=1.3.0&request=GetCapabilities");
+    const xml = await resp.text();
+    const m = /<Dimension name="time"[^>]*default="([^"]+)"/.exec(xml);
+    if (m) return new Date(m[1]);
+  } catch (e) {
+    console.log("EUMETSAT: sin capabilities, se estima la hora:", e.message);
+  }
+  // Respaldo: hace 15 min, redondeado al tramo de 5 min.
+  const t = Date.now() - 15 * 60 * 1000;
+  return new Date(t - (t % (5 * 60 * 1000)));
+}
+function quitarRayosSat() {
+  capasRayosSat.forEach((c) => map.removeLayer(c));
+  capasRayosSat = [];
+}
+async function pintarRayosSat() {
+  const nota = document.getElementById("notaRayosSatelite");
+  const ultima = await ultimaHoraRayosSat();
+  if (!document.getElementById("toggleRayos").classList.contains("activo")) return;
+  quitarRayosSat();
+  const opacidades = [1, 0.8, 0.65, 0.5, 0.4, 0.3];
+  // Del más antiguo al más reciente, para que el reciente quede encima.
+  for (let i = RAYOS_SAT_TRAMOS - 1; i >= 0; i--) {
+    const hora = new Date(ultima.getTime() - i * 5 * 60 * 1000).toISOString().replace(".000Z", "Z");
+    const capa = L.tileLayer.wms(RAYOS_SAT_WMS, {
+      layers: "mtg_fd:li_afa",
+      styles: "mtg_li_afa",
+      format: "image/png",
+      transparent: true,
+      version: "1.3.0",
+      time: hora,
+      opacity: opacidades[i],
+      zIndex: 650 - i,
+      attribution: i === 0 ? "Rayos: EUMETSAT (MTG Lightning Imager), CC BY 4.0" : "",
+    });
+    capa.addTo(map);
+    capasRayosSat.push(capa);
+  }
+  const hasta = new Date(ultima.getTime() + 5 * 60 * 1000).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Madrid" });
+  nota.textContent = `Rayos de los últimos 30 min hasta las ${hasta}, detectados por el satélite europeo MTG (EUMETSAT). Se actualiza cada 5 min, con unos 15 min de retraso.`;
+}
+
+pintarRayosSat().then(()=>{ window.listo=true; });
+</script></body></html>
