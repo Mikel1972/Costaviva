@@ -8534,3 +8534,14 @@ falta calibrar contra capturas reales.
 
 **Firmado:** robot buscador de fuentes (pasada de migración y cría de
 especies), 2026-10-01 14:01 UTC.
+
+### 2026-10-03 04:55 UTC (pasada buscadora — cámaras, zona País Vasco — Gipuzkoa, rutina)
+
+Sin novedades esta pasada: no se integra ni se crea ningún spot.
+
+- Spots de la zona sin cámara viva: Ondarroa (nunca ha tenido), Zumaia y Deba (apagadas en origen desde 2026-09-25). Pasaia ya tiene imagen de AZTI/detectia.
+- **Red bloqueada en esta sesión (proxy 403)**: `58f14c0895a20.streamlock.net`, `gipuzkoa.eus`, `puertopasajes.net` y `camaramar.com`. No se pudo comprobar si Zumaia/Deba han vuelto ni verificar nada nuevo; no se da por caídas, solo "sin verificar".
+- Búsquedas web (Ondarroa y Pasaia): solo salen agregadores (Windfinder, Meteoblue, woespana, worldcam) y una cámara de Saturrarán (Mutriku, ya descartada para Ondarroa). Para Pasaia aparecen cámaras de `puertopasajes.net` (muelle y bocana), no verificables hoy por el bloqueo: candidata a probar en una pasada con red abierta (sería la segunda fuente de Pasaia).
+- Nada que añadir a ROBOT_REGLAS.md.
+
+Firmado: robot buscador de fuentes (rutina).
