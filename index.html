@@ -325,7 +325,7 @@
     border-radius: 10px; overflow: hidden; border: 1px solid #DDE2DC;
     box-shadow: 0 12px 40px rgba(0,0,0,0.5); background: #DDE7EC;
   }
-  .scroll-rayos { width: 100%; max-height: 72vh; overflow: auto; -webkit-overflow-scrolling: touch; }
+  .scroll-rayos { width: 100%; max-height: 72vh; overflow: auto; -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y; }
   .lienzo-rayos {
     position: relative; width: 100%; aspect-ratio: 680 / 246;
     background-image: url("https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/export?bbox=-18,35,14,47&bboxSR=4326&size=1360,492&format=png&transparent=false&f=image");
@@ -767,7 +767,7 @@
           <button type="button" id="zoomMasRayos" aria-label="Acercar mapa de rayos">+</button>
           <button type="button" id="zoomMenosRayos" aria-label="Alejar mapa de rayos">−</button>
         </div>
-        <div class="pista-rayos">Usa + / − para acercar y arrastra para moverte</div>
+        <div class="pista-rayos">Pellizca o usa + / − para acercar · arrastra para moverte</div>
       </div>
     </div>
     <button class="luna-toggle" id="toggleLuna" title="Fase y posición de la luna" aria-label="Mostrar/ocultar datos de la luna">🌙<span class="capa-label">Luna</span></button>
@@ -3129,40 +3129,95 @@ document.getElementById("imgRayos").addEventListener("error", (e) => {
 // estabas mirando se queda en el centro. En el móvil se abre ya ampliada
 // 2,6× y centrada en la Península (≈45 % del ancho del encuadre de AEMET).
 const ZOOMS_RAYOS = [1, 1.6, 2.6, 4, 6];
-let zoomRayos = 0;
+const ESCALA_MIN_RAYOS = 1, ESCALA_MAX_RAYOS = 6;
+let escalaRayos = 1;
 let temporizadorFondoRayos = null;
-function aplicarZoomRayos(nuevo, centro) {
+// Fija la escala del lienzo manteniendo quieto un punto del mapa. "ancla" es
+// ese punto en fracción del lienzo (fx, fy) y dónde debe quedar dentro de la
+// ventana, en píxeles (px, py); por defecto, el centro de lo que se ve. Se
+// hace todo en el mismo frame (leer scrollWidth fuerza el recálculo) para
+// que el pellizco no dé saltos.
+function aplicarEscalaRayos(escala, ancla) {
   const scroll = document.getElementById("scrollRayos");
   const lienzo = scroll.querySelector(".lienzo-rayos");
-  const c = centro || {
-    x: (scroll.scrollLeft + scroll.clientWidth / 2) / (scroll.scrollWidth || 1),
-    y: (scroll.scrollTop + scroll.clientHeight / 2) / (scroll.scrollHeight || 1),
+  const a = ancla || {
+    px: scroll.clientWidth / 2,
+    py: scroll.clientHeight / 2,
+    fx: (scroll.scrollLeft + scroll.clientWidth / 2) / (scroll.scrollWidth || 1),
+    fy: (scroll.scrollTop + scroll.clientHeight / 2) / (scroll.scrollHeight || 1),
   };
-  zoomRayos = Math.max(0, Math.min(ZOOMS_RAYOS.length - 1, nuevo));
-  lienzo.style.width = `${ZOOMS_RAYOS[zoomRayos] * 100}%`;
-  document.getElementById("zoomMasRayos").disabled = zoomRayos === ZOOMS_RAYOS.length - 1;
-  document.getElementById("zoomMenosRayos").disabled = zoomRayos === 0;
-  requestAnimationFrame(() => {
-    scroll.scrollLeft = Math.max(0, c.x * scroll.scrollWidth - scroll.clientWidth / 2);
-    scroll.scrollTop = Math.max(0, c.y * scroll.scrollHeight - scroll.clientHeight / 2);
-  });
+  escalaRayos = Math.max(ESCALA_MIN_RAYOS, Math.min(ESCALA_MAX_RAYOS, escala));
+  lienzo.style.width = `${escalaRayos * 100}%`;
+  scroll.scrollLeft = Math.max(0, a.fx * scroll.scrollWidth - a.px);
+  scroll.scrollTop = Math.max(0, a.fy * scroll.scrollHeight - a.py);
+  document.getElementById("zoomMasRayos").disabled = escalaRayos >= ESCALA_MAX_RAYOS - 0.01;
+  document.getElementById("zoomMenosRayos").disabled = escalaRayos <= ESCALA_MIN_RAYOS + 0.01;
   // Mapa de fondo a la resolución del lienzo, para que no se vea borroso al
   // acercar (mismo encuadre que la imagen de AEMET; ArcGIS admite hasta 4096).
+  // Con retardo: durante un pellizco no se pide una imagen por cada frame.
   clearTimeout(temporizadorFondoRayos);
   temporizadorFondoRayos = setTimeout(() => {
     const ancho = Math.min(4096, Math.round(lienzo.getBoundingClientRect().width * (window.devicePixelRatio || 1)));
     const alto = Math.round((ancho * 246) / 680);
     lienzo.style.backgroundImage = `url("https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/export?bbox=-18,35,14,47&bboxSR=4326&size=${ancho},${alto}&format=png&transparent=false&f=image")`;
-  }, 250);
+  }, 300);
 }
 function abrirRayosGrande() {
   document.getElementById("imgRayosGrande").src = `/rayos-imagen?_=${Date.now()}`;
   document.getElementById("modalRayos").classList.add("visible");
   const movil = window.matchMedia("(max-width: 720px)").matches;
-  requestAnimationFrame(() => aplicarZoomRayos(movil ? 2 : 0, { x: 0.45, y: 0.5 }));
+  requestAnimationFrame(() => {
+    const scroll = document.getElementById("scrollRayos");
+    aplicarEscalaRayos(movil ? 2.6 : 1, { fx: 0.45, fy: 0.5, px: scroll.clientWidth / 2, py: scroll.clientHeight / 2 });
+  });
 }
-document.getElementById("zoomMasRayos").addEventListener("click", () => aplicarZoomRayos(zoomRayos + 1));
-document.getElementById("zoomMenosRayos").addEventListener("click", () => aplicarZoomRayos(zoomRayos - 1));
+// Botones: saltan al siguiente nivel de ZOOMS_RAYOS por encima/debajo de la
+// escala actual (que tras un pellizco puede ser cualquier valor intermedio).
+document.getElementById("zoomMasRayos").addEventListener("click", () => {
+  aplicarEscalaRayos(ZOOMS_RAYOS.find((z) => z > escalaRayos + 0.01) ?? ESCALA_MAX_RAYOS);
+});
+document.getElementById("zoomMenosRayos").addEventListener("click", () => {
+  aplicarEscalaRayos([...ZOOMS_RAYOS].reverse().find((z) => z < escalaRayos - 0.01) ?? ESCALA_MIN_RAYOS);
+});
+
+// Pellizco con dos dedos SOLO dentro del mapa de rayos (2026-10-03, pedido
+// del usuario). El viewport de la app lleva user-scalable=no para que no se
+// amplíe la página entera; aquí se interpreta el gesto a mano. Con un dedo el
+// navegador sigue arrastrando el mapa normal (touch-action: pan-x pan-y en el
+// CSS); con dos, se escala manteniendo bajo los dedos el punto que tocaban.
+(function pellizcoRayos() {
+  const scroll = document.getElementById("scrollRayos");
+  let inicio = null;
+  const distancia = (t) => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+  scroll.addEventListener("touchstart", (e) => {
+    if (e.touches.length !== 2) return;
+    const caja = scroll.getBoundingClientRect();
+    const mx = (e.touches[0].clientX + e.touches[1].clientX) / 2 - caja.left;
+    const my = (e.touches[0].clientY + e.touches[1].clientY) / 2 - caja.top;
+    inicio = {
+      distancia: distancia(e.touches),
+      escala: escalaRayos,
+      fx: (scroll.scrollLeft + mx) / scroll.scrollWidth,
+      fy: (scroll.scrollTop + my) / scroll.scrollHeight,
+    };
+  }, { passive: true });
+  scroll.addEventListener("touchmove", (e) => {
+    if (!inicio || e.touches.length !== 2) return;
+    e.preventDefault();
+    const caja = scroll.getBoundingClientRect();
+    const mx = (e.touches[0].clientX + e.touches[1].clientX) / 2 - caja.left;
+    const my = (e.touches[0].clientY + e.touches[1].clientY) / 2 - caja.top;
+    aplicarEscalaRayos(inicio.escala * (distancia(e.touches) / inicio.distancia), { fx: inicio.fx, fy: inicio.fy, px: mx, py: my });
+  }, { passive: false });
+  const fin = (e) => { if (e.touches.length < 2) inicio = null; };
+  scroll.addEventListener("touchend", fin);
+  scroll.addEventListener("touchcancel", fin);
+  // Safari (iOS) manda además sus propios eventos de gesto: se anulan dentro
+  // del mapa para que no intente ampliar la página a la vez.
+  for (const tipo of ["gesturestart", "gesturechange"]) {
+    scroll.addEventListener(tipo, (e) => e.preventDefault(), { passive: false });
+  }
+})();
 document.getElementById("expandirRayos").addEventListener("click", (e) => {
   e.stopPropagation();
   abrirRayosGrande();
