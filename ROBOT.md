@@ -5755,6 +5755,102 @@ siguiente candidata más sólida, a 7 puntos del mínimo.
 
 ---
 
+### 2026-10-04 (pasada nocturna corta — calibración + salud de datos)
+
+**Calibración — trigésimo primer punto para las 3 boyas obligatorias, sexto
+punto para 2246 Villano-Sisargas** (rotación de esta noche: era la
+candidata con más noches sin repetirse, último turno el 2026-09-28). Mismo
+método de siempre: `curl` a `poem.puertos.es/portus/StationData` para la
+altura real, Open-Meteo Marine en las coordenadas exactas de cada boya para
+la altura calculada, emparejando por la hora UTC exacta del último dato
+real de cada boya (sin incidencias de red en las boyas ni en Open-Meteo
+esta vez):
+
+| boya | hora UTC | altura medida | altura calculada | diferencia | % |
+|---|---|---|---|---|---|
+| 2136 Bilbao-Vizcaya | 01:00 | 1.64 m | 1.48 m | −0.16 m | −9.8% |
+| 1117 Gijón | 00:00 | 1.56 m | 1.42 m | −0.14 m | −9.0% |
+| 1101 Pasaia II | 00:00 | 1.43 m | 1.08 m | −0.35 m | −24.5% |
+| 2246 Villano-Sisargas | 01:00 | 2.11 m | 1.84 m | −0.27 m | −12.8% |
+
+Historial actualizado de la metodología `boya_vs_openmeteo_mismo_punto`
+(medias recalculadas sobre todos los puntos reales de `CALIBRACION.jsonl`,
+no aproximadas):
+
+- **2136 Bilbao-Vizcaya**: 31 puntos, media ≈ **+2.1%** — sigue sin patrón
+  sistemático (15/31 negativos, signo mixto). El punto de esta noche
+  (−9.8%) cae dentro del rango habitual.
+- **1117 Gijón**: 31 puntos, media ≈ **+0.6%** — sigue alternando
+  signo/magnitud pasada a pasada (18/31 negativos), sin patrón sólido.
+- **1101 Pasaia II**: **31 puntos, confirma la tendencia negativa de
+  siempre** (30/31 negativos, media ≈ **−27.0%**, prácticamente igual que
+  antes de este punto). El factor x1.38 ya aplicado en producción sigue
+  siendo razonable: aplicado al valor calculado de esta noche
+  (1.08 × 1.38 = 1.49) se acerca mucho al medido real (1.43).
+- **2246 Villano-Sisargas**: 6 puntos (antes 5), 5 de 6 negativos (media ≈
+  **−11.0%**). Le siguen faltando 9 puntos para el mínimo de 15.
+- Resto de boyas (1514 Málaga, 2242 Cabo Peñas, 2548 Cabo de Gata, 2820
+  Dragonera, 1731 Barcelona II): sin cambios desde su última pasada, no les
+  tocaba rotación esta noche.
+
+**Ningún factor de corrección nuevo propuesto** — Pasaia II sigue siendo la
+única boya con suficiente historial (31 puntos) y desviación sistemática
+grande, y su factor x1.38 ya está aplicado en producción. Entre las que
+todavía no llegan a 15 puntos, Barcelona II (8 puntos, 8/8 negativo, media
+−28.8%) sigue siendo la candidata más sólida tras Pasaia II, seguida de
+Dragonera (7 puntos, 6/7 negativo, media −30.7%) y Cabo Peñas (6 puntos,
+6/6 negativo, media −20.0%). Para la próxima rotación nocturna, la
+candidata con más noches sin repetirse es **1514 Málaga** (su último turno
+en esta rutina nocturna fue el 2026-09-29, antes que Cabo Peñas el
+2026-09-30, Cabo de Gata el 2026-10-01, Dragonera el 2026-10-02, Barcelona
+II el 2026-10-03 y Villano-Sisargas hoy).
+
+**Salud de datos — decimoséptima noche seguida con el mismo patrón de
+dominios bloqueados por la política de red de esta sesión; nada roto en lo
+que sí se pudo comprobar.** Verificado en vivo con `curl`:
+- Las 4 boyas de arriba: `200`, forma `[cabeceras, filas]` correcta, datos
+  reales de la última hora — sin novedad.
+- **`mundaka`** (www.kostasystem.com): `200`, `image/jpeg` real, 68.9 KB,
+  `Last-Modified` de hace ~25 min — bien.
+- **`bakio`** (pyscada.isurki.com): `200`, `image/jpeg` real, 865.8 KB,
+  `Last-Modified` de hace ~7.5h (17:40 UTC de ayer) — mismo patrón ya
+  documentado: imagen cacheada por el proveedor de noche, no un fallo.
+- **`getxo`**, **`sopelana`**, **`pasaia`**, **`getaria`** (las 4 de
+  detectia.net/AZTI): `200` en las cuatro, `image/webp` real, tamaños
+  plausibles (50.0 KB, 44.2 KB, 97.3 KB, 47.4 KB). `getxo` con
+  `Last-Modified` reciente (01:04 UTC, ~12 min antes de esta comprobación);
+  las otras tres con `Last-Modified` de ayer por la tarde (17:04-18:05
+  UTC, 7-8h antes) — mismo patrón que `bakio`, consistente con que estos
+  proveedores dejan de actualizar la imagen durante la noche en vez de
+  fallar. Ningún tamaño en cero ni página de error disfrazada de imagen.
+- **No se pudo comprobar**: la boya de Nazaré (`monican.hidrografico.pt`),
+  las 4 fuentes de caudal de río (`visor.saichcantabrico.es`,
+  `saih.chj.es`, `saihweb.chsegura.es`, `servizos.meteogalicia.gal`), ni
+  webcams de otros proveedores/regiones — se intentó también ampliar la
+  muestra a `streaming.comunitatvalenciana.com` (Comunidad Valenciana),
+  `rswc.tendsys.net` (Castro Urdiales/Laredo, reserva) y `apps.socib.es`
+  (Baleares), todos rechazados por el propio proxy de salida de esta
+  sesión (`connect_rejected`, "the egress proxy denied the CONNECT
+  (organization policy)"), mismo patrón exacto que las últimas dieciséis
+  noches. Se reitera la recomendación, ya repetida muchas noches, de que
+  el usuario revise si el conjunto de dominios permitidos para esta rutina
+  puede ampliarse — con la lista actual la comprobación de salud sigue
+  limitada casi en exclusiva a las boyas de Puertos del Estado y a las
+  webcams del País Vasco (mundaka/bakio/getxo/sopelana/pasaia/getaria).
+
+**Resumen de severidad para el usuario**: nada roto de forma confirmada en
+las fuentes ya integradas. Severidad media/baja, sin cambios, para los 9+
+dominios bloqueados por la política de red de esta sesión (Nazaré, los 4
+ríos y las webcams fuera del País Vasco). Sin propuesta de factor de
+corrección nueva — Pasaia II sigue con su factor ya aplicado en producción
+(confirmado esta noche, misma tendencia negativa); Barcelona II (8/8
+negativo, media −28.8%) sigue siendo la siguiente candidata más sólida, a
+7 puntos del mínimo.
+
+**Firmado:** robot de calibración nocturna, 2026-10-04 01:16 UTC.
+
+---
+
 ## Robot de experiencia de usuario
 
 ### 2026-09-15
