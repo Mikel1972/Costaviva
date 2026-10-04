@@ -1,4 +1,4 @@
-# Saldo de API — auditoría automática (2026-09-28)
+# Saldo de API — auditoría automática (2026-10-04)
 
 Generado por `scripts/saldo/auditar-consumo-api.mjs` sin usar IA. Repos analizados: Costaviva, polizas-ai, etxeapala, Lurnahi. Objetivo: 20 €/semana entre todas las apps.
 
@@ -10,14 +10,14 @@ Estimación de orden de magnitud: sesiones/semana × turnos × contexto por turn
 
 | App | Workflow | Sesiones/sem | Modelo | Turnos máx | Web | CLAUDE.md cargado | Estimado/sem | Avisos |
 |---|---|---|---|---|---|---|---|---|
-| Costaviva | `.github/workflows/robot-buscador-fuentes.yml` | 32 | claude-sonnet-5 | 60 | sí | 146 KB | 41 € | R3 carga CLAUDE.md de 146 KB en cada turno; R4 32 sesiones/semana; R5 web con más de 40 turnos |
-| Costaviva | `.github/workflows/daily-report.yml` | 7 | por defecto | sin límite | no | 146 KB | 15 € | R1 sin --max-turns; R2 sin --model; R3 carga CLAUDE.md de 146 KB en cada turno |
-| Costaviva | `.github/workflows/robot-camaras-caidas.yml` | 7 | claude-sonnet-5 | 80 | sí | 146 KB | 12 € | R3 carga CLAUDE.md de 146 KB en cada turno; R5 web con más de 40 turnos |
-| Costaviva | `.github/workflows/robot-patrones-uso.yml` | 1 | claude-sonnet-5 | 30 | no | 146 KB | 0.6 € | R3 carga CLAUDE.md de 146 KB en cada turno |
+| Costaviva | `.github/workflows/robot-camaras-caidas.yml` | 7 | claude-sonnet-5 | 60 | sí | no | 2.9 € | R5 web con más de 40 turnos |
+| Costaviva | `.github/workflows/daily-report.yml` | 7 | claude-sonnet-5 | 8 | no | no | 0.4 € | — |
 | Costaviva | `.github/workflows/robot-mejores-practicas.yml` | 1 | claude-sonnet-5 | 50 | no | no | 0.3 € | — |
 | Costaviva | `.github/workflows/robot-experiencia-usuario.yml` | 1 | claude-sonnet-5 | 30 | no | no | 0.2 € | — |
+| Costaviva | `.github/workflows/robot-patrones-uso.yml` | 1 | claude-sonnet-5 | 30 | no | no | 0.2 € | — |
+| Costaviva | `.github/workflows/robot-buscador-fuentes.yml` | solo manual | claude-sonnet-5 | 40 | sí | no | — | — |
 
-**Total estimado de robots: 69 €/semana** (objetivo de todo: 20 €).
+**Total estimado de robots: 4.0 €/semana** (objetivo de todo: 20 €).
 
 ## Llamadas a la API desde el código de las apps
 El gasto aquí depende del uso real (subidas, preguntas...), que este auditor no ve. Lo que sí ve son los patrones caros.
@@ -25,7 +25,7 @@ El gasto aquí depende del uso real (subidas, preguntas...), que este auditor no
 | App | Fichero | Modelos | max_tokens máx | Contexto metido en el prompt | Avisos |
 |---|---|---|---|---|---|
 | polizas-ai | `functions/api/polizas/_claude.js` | claude-sonnet-5 | 16000 | — | R7 no registra usage; R8 max_tokens 16000 |
-| polizas-ai | `functions/api/polizas/_verificacion.js` | — | 32000 | VIGILANCIA_REGLAS.md (12 KB), VERIFICACION_CALIBRACION.md (612 KB) | R6 mete VERIFICACION_CALIBRACION.md (612 KB) en el prompt; R8 max_tokens 32000 |
+| polizas-ai | `functions/api/polizas/_verificacion.js` | — | 32000 | VIGILANCIA_REGLAS.md (12 KB), VERIFICACION_CALIBRACION.md (795 KB) | R6 mete VERIFICACION_CALIBRACION.md (795 KB) en el prompt; R8 max_tokens 32000 |
 | Lurnahi | `functions/api/analyze.js` | claude-sonnet-5 | 16000 | — | R7 no registra usage; R8 max_tokens 16000 |
 | Costaviva | `functions/identificar-captura.js` | claude-haiku-4-5-20251001 | 300 | — | R7 no registra usage |
 | polizas-ai | `functions/api/polizas/_extraccion.js` | claude-sonnet-5 | 32000 | — | R8 max_tokens 32000 |
