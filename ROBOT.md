@@ -8641,3 +8641,13 @@ Sin novedades esta pasada: no se integra ni se crea ningún spot.
 - Nada que añadir a ROBOT_REGLAS.md.
 
 Firmado: robot buscador de fuentes (rutina).
+
+### 2026-10-04 04:50 UTC (pasada buscadora — presión atmosférica e histórico por zona, rutina)
+
+Sin novedades esta pasada: no se propone ni integra nada nuevo.
+
+- Las 10 zonas de la rotación ya tienen fuente de presión identificada (AEMET nacional, IPMA para Portugal, Meteocat/SOCIB para Mediterráneo y Baleares, ver pasada del 2026-09-23). No hay hueco geográfico nuevo que investigar.
+- Comprobación de red hoy: `api.ipma.pt` y `meteogalicia.gal` no responden desde esta sesión (sin respuesta HTTP, probable bloqueo de red; no se dan por caídos). `opendata.euskadi.eus/api-euskalmet` responde (301 a la ruta con barra final), pero sigue sin haber API key de Euskalmet, así que no se puede ir más allá.
+- Recomendación que se mantiene: espaciar esta área o reasignarla (caudal de ríos, mar de fondo).
+
+Firmado: robot buscador de fuentes (rutina).
