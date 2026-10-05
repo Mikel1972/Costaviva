@@ -8750,3 +8750,282 @@ Sin novedades esta pasada: no se propone ni integra nada nuevo.
 - Recomendación que se mantiene: espaciar esta área o reasignarla (caudal de ríos, mar de fondo).
 
 Firmado: robot buscador de fuentes (rutina).
+
+### 2026-10-05 07:20 UTC (pasada semanal — robot de datos: fuentes, auditoría, calibración, algoritmo de aprendizaje)
+
+Pasada completa de las 5 responsabilidades de esta rutina. Antes de nada,
+releído el estado real del repo (PASO 0): confirmado que ya son ~95 spots en
+España y Portugal (no 6 del País Vasco), con 26+1 boyas reales, 10 ríos con
+caudal real, ~63 webcams, radar de lluvia y rayos Xweather — el prompt de
+esta tarea citaba carencias geográficas ya resueltas en parte (boyas en
+Asturias/Cataluña/Murcia/Andalucía/Canarias: **ya existen**, ver `BOYAS` en
+`functions/prevision.js` — Cabo Peñas, Cabo de Palos, Málaga/Tarifa/Ceuta/
+Cádiz, Barcelona/Tarragona/Begur, Las Palmas/Tenerife/Gran Canaria). Los
+huecos reales de hoy, comprobados contra `index.html`, son otros: webcams
+(no hay ninguna en los spots de Asturias, Cataluña, Murcia, Andalucía y
+Canarias, salvo Águilas) y caudal de ríos (nada fuera de Cantábrico/Galicia/
+Júcar/Segura — Cataluña, Andalucía y Murcia sin ningún río con dato real).
+
+**Condición de red de esta pasada, que afecta a las 4 primeras
+responsabilidades**: hoy el proxy de salida deja pasar un conjunto MUY
+reducido de dominios — `marine-api.open-meteo.com`, `poem.puertos.es`,
+`portus.puertos.es`, `sig.mapama.gob.es` por `curl`, y además
+`www.aemet.es`/`aa.usno.navy.mil` por `WebFetch` (ruta de red distinta,
+confirmada otra vez que no coincide con la de `curl` — ver precedente de
+2026-08-31). Todo lo demás probado hoy dio bloqueo (`403`/`EGRESS_BLOCKED`):
+`www.puertos.es`, `costaviva.org` (ni siquiera la propia producción es
+alcanzable hoy), `*.hidrografico.pt`, `*.euskadi.eus`, `aemet.es` por
+`curl` (aunque sí por `WebFetch`), `www.cantabria.es`, `meteo.cat`,
+`saih.chj.es`, `servizos.meteogalicia.gal`, `visor.saichcantabrico.es`,
+`saihweb.chsegura.es`, `webcamsdeasturias.com`, `fishbase.se` (y los 3
+espejos probados: `.org`, `.de`, `fishbase.mnhn.fr`), `sciencedirect.com`,
+`academic.oup.com`, `agris.fao.org` (este último sí funcionaba en pasadas
+anteriores de este mismo robot — confirma otra vez que no es una lista
+negra fija, varía de sesión a sesión). Esto limita mucho lo que se puede
+dar por verificado hoy; documentado con detalle sección por sección.
+
+#### 1. Fuentes nuevas
+
+**Webcams (Asturias/Cataluña/Murcia/Andalucía/Canarias)**: `WebSearch` (que
+no pasa por el proxy bloqueado) solo devolvió agregadores de pago/DRM
+(SkylineWebcams, WhatsUpCams, meteo365, playawebcams, hispacams,
+webcamsdeasturias, meteosurfcanarias) — el mismo patrón ya descartado
+varias veces en este fichero (iframe/token, no imagen hotlinkable). Ningún
+candidato de fuente oficial (ayuntamiento, diputación, puerto) salió en las
+búsquedas, y los pocos dominios de ayuntamiento/puerto que se intentó
+verificar directamente (`gijon.es`, `cartagena.es`, `laspalmasgc.es`,
+`malaga.eu`, `sevilla.puertos.es`, `cartagena.puertos.es`,
+`webcamsdeasturias.com`) dieron bloqueo de red, así que no se puede ni
+proponer con confianza. **No se integra ni se propone nada nuevo de
+webcams esta pasada** — queda pendiente de una sesión con mejor acceso de
+red a dominios municipales/portuarios.
+
+**Boyas adicionales en Portugal**: la pista más prometedora que salió fue
+real — `WebSearch` encontró que el Instituto Hidrográfico tiene una red
+Datawell Waverider en Leixões, Sines y Faro (además de Nazaré, ya
+integrada), con un posible API OGC Features
+(`api-features.hidrografico.pt/collections/buoys_datawell`) y un WMS
+(`webgeo4.hidrografico.pt`). **Sin verificar**: todo `*.hidrografico.pt`
+dio bloqueo de red por `curl`, y `api-features.hidrografico.pt` ni
+siquiera resuelve por DNS desde la ruta de `WebFetch`
+(`getaddrinfo ENOTFOUND`) — no se puede confirmar si ese subdominio existe
+de verdad o es un nombre mal inferido por el resumen de búsqueda. **No se
+integra nada** — ni siquiera la URL base de Nazaré (`monican.hidrografico.pt`,
+ya en producción) fue alcanzable hoy para re-verificarla. Propuesta: la
+próxima vez que la red lo permita, comprobar primero si
+`api-features.hidrografico.pt` existe de verdad antes de intentar nada con
+Leixões/Sines/Faro.
+
+**Caudal de ríos en Cataluña/Andalucía/Murcia**: no se pudo buscar nada
+nuevo de verdad — los candidatos obvios (`meteo.cat`, agencia catalana del
+agua, confederaciones del Guadalquivir/Segura) están en la misma categoría
+de dominios bloqueados hoy que los 4 parsers ya integrados (ver auditoría,
+abajo, todos bloqueados también). Sin nada que proponer esta pasada.
+
+#### 2. Especies de pesca por región
+
+Repasadas las 4 listas (`ESPECIES`, `ESPECIES_MEDITERRANEO`,
+`ESPECIES_GOLFO_CADIZ`, `ESPECIES_CANARIAS`) contra el estado actual del
+código — confirmado que la cobertura es ya bastante completa tras las ~8
+pasadas anteriores dedicadas a esto (ver entradas de 2026-09-14 a
+2026-10-01 más arriba). Dos candidatos reales identificados para ampliar,
+ninguno aplicado:
+
+- **Pulpo (*Octopus vulgaris*)**: no está en ninguna lista pese a ser una
+  captura muy popular. Investigado con `WebSearch` (no bloqueado): el dato
+  de temperatura es contradictorio entre fuentes (7–28,9°C según un
+  modelo, óptimo citado entre 15–16°C en una fuente y 16–21°C/26°C en
+  otras — rango demasiado ancho y poco consistente para usar tal cual,
+  mismo criterio ya aplicado a Palometa/Medregal). Más importante: **su
+  pesca recreativa está prohibida en el litoral mediterráneo de Andalucía
+  y en el Golfo de Cádiz** (BOE/normativa autonómica), y solo permitida en
+  Cantabria en una campaña concreta (1 jul–30 sep). Añadirlo sin resolver
+  esa variación legal por CCAA sería peor que no mostrarlo — mismo tipo de
+  riesgo ya identificado y aparcado en la idea de "normativa de pesca
+  recreativa" de `CLAUDE.md`. **No se añade, se deja aparcado** hasta que
+  se investigue la normativa completa, no solo la temperatura.
+- **Lisa/Mújol para `ESPECIES` (Cantábrico)**: ya existe en
+  `ESPECIES_MEDITERRANEO` pero no en la lista cantábrica, pese a que el
+  propio repo la cita como presa habitual de la lubina ahí. `WebSearch`
+  dio un rango plausible (*Chelon labrosus* 9–20°C), pero **no se pudo
+  verificar en crudo** — FishBase (los 4 espejos probados) y los artículos
+  científicos citados por el resumen de búsqueda (ScienceDirect) dieron
+  bloqueo de red. Siguiendo la norma de esta rutina (nunca un dato sin
+  verificar en una petición real, no solo el resumen de `WebSearch`), **no
+  se añade esta pasada** — candidata para cuando la red permita llegar a
+  FishBase o un espejo.
+
+Sin cambios en `index.html`. Confirmado también (sin tocar nada): la
+entrada "Txitxarro / verdel" de `ESPECIES` sigue mezclando dos especies
+distintas (*T. trachurus* y *S. scombrus*) bajo un solo rango de
+temperatura — ya documentado y investigado a fondo en pasadas anteriores
+(ver 2026-09-15 a 2026-10-01), sigue siendo una propuesta abierta de
+separarla en dos entradas, no una novedad de hoy.
+
+#### 3. Auditoría de datos
+
+Con la red de hoy solo se pudo auditar de verdad una parte de
+`functions/prevision.js` y los otros dos endpoints pequeños — el resto
+queda "no verificable hoy" (no es lo mismo que "roto"):
+
+| Endpoint / fuente | Resultado | Cómo se comprobó |
+|---|---|---|
+| `luna.js` (USNO, `aa.usno.navy.mil`) | ✅ **OK** | Petición real con los parámetros exactos que usa el código (`fecha=2026-10-05&coords=43.4047,-2.6989&tz=2`) — `200`, forma idéntica a la esperada (`moondata` con Rise/Upper Transit/Set, `fracillum` como `"30%"`) |
+| `rayos-imagen.js` (AEMET timeline + imagen) | ✅ **OK** | `WebFetch` a `/es/api-eltiempo/rayos/timeline` — estructura `ica_horario.penbal.variables.rayos` íntegra, último bloque de las 06:00 UTC (hora de la pasada: 07:20 UTC, coherente con "se actualiza cada hora"); la imagen del fichero `PROV` de ese bloque se comprobó aparte y es un PNG válido real |
+| `prevision.js` — Marine API (Open-Meteo) | ✅ **OK** | 7 peticiones reales (una por spot de calibración, ver abajo) — forma y datos coherentes |
+| `prevision.js` — boyas Puertos del Estado (`datosBoya`) | ✅ **OK** | 7 boyas pedidas con la URL exacta del código (`StationData?code=...&params=Hm0,Tp,MeanDir,WaterTemp&from=...&to=...`) — las 7 devolvieron `200` con datos de las últimas horas, cabeceras en el orden esperado |
+| `prevision.js` — boya de Nazaré (`datosBoyaNazare`) | ⚠️ **No verificable hoy** | Todo `*.hidrografico.pt` bloqueado por la red de esta sesión (ver sección 1) — no es un fallo del endpoint, es que no se pudo intentar la petición |
+| `prevision.js` — caudal Cantábrico (`visor.saichcantabrico.es`) | ⚠️ **No verificable hoy** | Dominio bloqueado, tanto por `curl` (POST) como por `WebFetch` |
+| `prevision.js` — caudal Júcar (`saih.chj.es`) | ⚠️ **No verificable hoy** | Dominio bloqueado por `curl` y por `WebFetch` |
+| `prevision.js` — caudal Segura (`saihweb.chsegura.es`) | ⚠️ **No verificable hoy** | Dominio bloqueado (POST, solo `curl` aplicable, bloqueado) |
+| `prevision.js` — caudal Galicia (`servizos.meteogalicia.gal`) | ⚠️ **No verificable hoy** | Dominio bloqueado por `curl` y por `WebFetch` |
+| `sos-alerta.js` | No se probó (por diseño) | Requiere sesión real y dispararía un email de socorro — nunca se invoca desde esta rutina, mismo criterio que `smoke-test.yml` |
+
+No se encontró ningún valor hardcodeado presentado como real al revisar
+`index.html`/`functions/*.js` de pasada durante esta auditoría (más allá
+de los placeholders ya documentados como tales — oleaje inicial de los
+spots nuevos, que `actualizarDesdeBackend()` sobrescribe casi al
+instante). **Nada que corregir esta pasada** — ni se encontró software
+roto, ni se pudo confirmar que los 4 parsers HTML/JS frágiles sigan
+funcionando; quedan en el mismo estado documentado desde que se
+integraron, pendientes de una auditoría real la próxima vez que la red lo
+permita.
+
+#### 4. Calibración
+
+Añadidos 7 puntos nuevos a `CALIBRACION.jsonl` (hora: 07:00 UTC,
+distinta de la pasada nocturna de hoy a la 01:00 UTC — más puntos, nunca
+sustituyen a los anteriores): Bilbao-Vizcaya (2136), Gijón (1117), Pasaia
+II (1101) y Málaga (1514) ya tenían historial — sin novedad, siguen la
+misma tendencia ya conocida (Pasaia con el sesgo ya corregido en
+producción vía `FACTOR_OLEAJE_GIPUZKOA`, el resto sin sesgo sistemático
+claro). Dos boyas usadas por primera vez en esta calibración, pedidas
+explícitamente por la tarea para ampliar la rotación: **Cabo de Palos
+(2610, Murcia)** y **Las Palmas Este (1414, Canarias)** — un único punto
+cada una, sin conclusión posible todavía, quedan en el histórico.
+
+**Hallazgo real que cruza el umbral de la regla (≥8 puntos, desviación
+consistente y grande → proponer, nunca aplicar)**: la boya **Barcelona II
+(1731)** llevaba 8 puntos desde el 2026-09-10 (parte de la rotación
+nocturna habitual, aunque yo no lo sabía al empezar esta tarea —
+confirmado revisando `CALIBRACION.jsonl`); con el punto de hoy son **9,
+y los 9 son negativos sin excepción** (Open-Meteo calcula menos oleaje
+del que mide la boya): rango −22,9% a −48,3%, media −28,3%, mediana del
+factor medida/calculada ≈ **1,35**. Es prácticamente el mismo patrón, en
+magnitud y consistencia, que el de Pasaia II (22 puntos, −28,2% de media,
+factor 1,381 aplicado como `FACTOR_OLEAJE_GIPUZKOA` en
+`functions/prevision.js` desde el 2026-09-25).
+
+**Propuesta para el usuario (NO aplicada)**: si el patrón se mantiene
+unas pasadas más, aplicar el mismo mecanismo ya existente
+(`factorOleaje(lat, lon)` con una caja de coordenadas) a la zona de
+Barcelona-II — algo como una `CAJA_OLEAJE_BARCELONA` cubriendo
+Barcelona/Tarragona (spots `roses`, `blanes`, `cambrils`, `peniscola` están
+más lejos, habría que decidir el alcance geográfico igual que se hizo con
+Gipuzkoa) con un factor ≈1,35. Limitación honesta, igual que se anotó para
+Pasaia: la evidencia viene de una sola boya; varios de los 9 puntos son de
+oleaje pequeño (0,26–0,56m calculados), donde el error absoluto pequeño
+infla el porcentaje — pero el punto de hoy (0,94m calculado, 1,24m
+medido) y el del 2026-09-10 (0,74/0,96m) ya no son oleaje trivial, y el
+signo nunca cambia. Decisión de aplicarlo o no, y con qué caja geográfica,
+es del usuario — esta rutina no toca `prevision.js` por esto.
+
+#### 5. Hacia un algoritmo de pesca que aprenda de las capturas reales
+
+**Hallazgo importante antes de proponer nada**: parte de la infraestructura
+que iba a proponer **ya existe**, construida el 2026-09-15
+(`supabase/migrations/20260915140000_estadisticas_anonimas_capturas.sql`,
+pedida explícitamente por el usuario para "estadísticas de uso interno... y
+también de especies pescadas, dónde") — no lo sabía al leer el prompt de
+esta tarea, lo encontré repasando las migraciones antes de proponer desde
+cero. Lo que ya hay:
+
+- Dos tablas de solo contadores, **sin `user_id`/`salida_id`/`captura_id`
+  en ningún sitio** (no es anonimizado "solo por RLS", es anonimizado de
+  diseño — ni con acceso total a la base de datos se puede deshacer):
+  `estadisticas_capturas_anonimas (spot_slug, especie, mes, total)` y
+  `estadisticas_salidas_anonimas (spot_slug, tipo_salida, mes, total)`.
+- Dos triggers (`registrar_estadistica_captura_anonima`,
+  `registrar_estadistica_salida_anonima`) que suman 1 al contador
+  correspondiente en cada `insert` nuevo, **solo si
+  `perfiles.consiente_uso_datos_capturas = true`** y solo para los ~95
+  spots fijos (las ubicaciones personalizadas de `spots_usuario` se
+  excluyen a propósito, para no des-anonimizar un spot con pocos
+  usuarios) — exactamente el criterio de consentimiento que pedía esta
+  tarea.
+- Dos funciones `security definer` (`admin_listar_estadisticas_capturas`,
+  `admin_listar_estadisticas_salidas`) que exponen esos contadores, pero
+  **restringidas a `es_admin()`** — hoy esto es una herramienta de panel
+  de administración, no una fuente para ningún pronóstico de cara al
+  usuario.
+
+**Lo que falta para llegar al objetivo real del usuario** ("pronosticar
+qué se puede pescar y dónde", aprendiendo también de marea/viento/oleaje,
+no solo de spot/mes): las tablas de hoy no guardan ninguna dimensión
+ambiental, solo `spot_slug`/`especie`/`mes`. `salidas_pesca` sí tiene todo
+ese contexto por salida (`marea_altura`, `marea_tendencia`, `viento_kmh`,
+`oleaje_altura_min/max`, `temp_agua`, `marea_coeficiente`...), pero esos
+campos se pierden al pasar por el trigger actual. Propuesta técnica
+concreta (arquitectura, sin código final, para que el usuario decida):
+
+1. **Nueva tabla de contadores con condiciones, ampliando el patrón ya
+   probado** — `estadisticas_capturas_condiciones_anonimas (spot_slug,
+   especie, mes, bin_marea, bin_viento, bin_oleaje, total)`, misma
+   filosofía: solo contadores, nunca una fila por captura. Los "bins" son
+   la pieza nueva: en vez de guardar `marea_altura=1.43` (demasiado
+   específico, casi identifica una fila), discretizar en rangos anchos
+   acordados de antemano (p.ej. marea: subiendo/bajando × alta/media/baja;
+   viento: <10 / 10-20 / >20 km/h; oleaje: <0.5 / 0.5-1.5 / >1.5m) — menos
+   dimensiones que capturas individuales, así que el riesgo de
+   des-anonimizar con pocos datos es menor que con la tabla ya existente,
+   no mayor.
+2. **Mismo trigger, ampliado**: `registrar_estadistica_captura_anonima()`
+   ya hace un `select ... from salidas_pesca where id = new.salida_id`
+   para sacar `spot_slug`/mes — solo hace falta traer también los campos
+   ambientales de esa misma fila y calcular los bins antes del `insert`.
+   Sigue disparándose solo con `consiente_uso_datos_capturas = true` y
+   solo para spots fijos, sin tocar la tabla ya existente (se añade, no
+   se sustituye).
+3. **Exponerlo de verdad, no solo a admin**: una función `security
+   definer` nueva tipo `prediccion_especies_spot(p_spot_slug, p_mes,
+   p_bin_marea, p_bin_viento, p_bin_oleaje)` que, SIN pedir `es_admin()`
+   (a diferencia de las dos de hoy — el objetivo es que cualquier usuario
+   la vea), devuelva solo agregados: especie + conteo, ordenado, filtrando
+   automáticamente combinaciones con muy poca muestra (p.ej. `total < 5`)
+   para no mostrar "ruido" como si fuera señal. Igual que ya se hace con
+   `indicePesca`, si no hay datos suficientes para una combinación debe
+   devolver "sin datos suficientes", nunca inventar una especie.
+   `service_role` no hace falta en ningún momento de este diseño — todo
+   vive en funciones `security definer` de Postgres, el mismo patrón que
+   ya usa el resto del panel de admin y evita el riesgo de exponer la
+   clave en el cliente.
+4. **Frontend**: `index.html` ya calcula marea/viento/oleaje por spot en
+   tiempo real (`indiceMar`) — los mismos valores se podrían pasar por la
+   misma función de "bin" (duplicada en JS, mismo patrón que
+   `coeficienteMarea()`) para preguntar a `prediccion_especies_spot()` con
+   las condiciones de ahora mismo y mostrar algo como "con estas
+   condiciones, en este spot y este mes, la gente ha pescado sobre todo:
+   X, Y, Z" — nunca un número de probabilidad inventado, solo el conteo
+   real tal cual, con su límite de muestra mínima visible.
+
+**Pregunta para el usuario** (no puedo comprobarlo yo misma, esta rutina
+no tiene ni debe tener credenciales de Supabase): ¿hay ya volumen real en
+`estadisticas_capturas_anonimas`/`estadisticas_salidas_anonimas` como para
+que merezca la pena construir el paso 1-3 de arriba? Si el admin ya ve
+"pocas decenas" de filas, probablemente siga sin sentido (los bins
+ambientales trocean aún más un conteo ya pequeño); si ya hay cientos/miles
+de capturas con consentimiento repartidas en los spots más activos, el
+primer paso concreto sería la migración del punto 1+2 (tabla nueva +
+ampliar el trigger) — es aditivo y de bajo riesgo, se podría aplicar
+directamente en una rama sin esperar a tener ya la función de consulta
+lista. Si hay pocos datos: no hacer nada todavía y revisitar esto en una
+pasada semanal futura (esta pregunta se puede repetir).
+
+**Fuentes**: `poem.puertos.es/portus/StationData` (Puertos del Estado, 7
+boyas reales), `marine-api.open-meteo.com` (Open-Meteo Marine API),
+`aa.usno.navy.mil/api/rstt/oneday` (USNO), `aemet.es/es/api-eltiempo/rayos`
+(AEMET), `supabase/migrations/20260915140000_estadisticas_anonimas_capturas.sql`
+(código ya en el repo, releído como parte de esta pasada).
+
+**Firmado:** robot de datos (pasada semanal — fuentes, auditoría,
+calibración, algoritmo de aprendizaje), 2026-10-05 07:20 UTC.
