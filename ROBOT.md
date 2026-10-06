@@ -8850,3 +8850,13 @@ Sin novedades esta pasada: no se propone ni integra nada nuevo.
 - Recomendación que se mantiene: espaciar esta área o reasignarla (caudal de ríos, mar de fondo).
 
 Firmado: robot buscador de fuentes (rutina).
+
+### 2026-10-06 04:50 UTC (pasada buscadora — caudal de ríos y estaciones de monte, rutina)
+
+Sin novedades esta pasada: no se integra ni se propone ninguna fuente nueva verificada.
+
+- Ríos vascos (`caudal: null` en Lea, Oka, Butroe, Gobela...): URA (`uragentzia.euskadi.eus`) responde 200 y su página "Datos de estaciones de aforo" confirma que hay caudal diezminutal y diario descargable, pero solo a través de un visor web y de la web de Euskalmet; no se ha encontrado endpoint JSON/CSV directo verificable con petición real. `euskalmet.euskadi.eus/observacion/datos-de-estaciones/` no responde desde esta sesión (sin respuesta HTTP, probable bloqueo de red; no se da por caído). La API de Open Data Euskadi de Euskalmet (`opendata.euskadi.eus/api-euskalmet/`) responde 200 pero sigue requiriendo API key, aún pendiente.
+- Dominios sin respuesta desde esta sesión (no se dan por caídos): `sir.mapama.gob.es`, `snirh.apambiente.pt`, `saihduero.es`, `chminosil.es`, `chcantabrico.es`. No se pudo avanzar en estaciones de monte de España/Portugal fuera de Euskadi.
+- Próximo paso útil: probar con red abierta el visor de aforos de URA (inspeccionar qué petición hace) y SNIRH (Portugal).
+
+Firmado: robot buscador de fuentes (rutina).
