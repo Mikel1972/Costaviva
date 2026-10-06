@@ -5950,6 +5950,106 @@ negativo, media −28.8%) sigue siendo la siguiente candidata más sólida, a
 
 ---
 
+### 2026-10-06 (pasada nocturna corta — calibración + salud de datos)
+
+**Calibración — trigésimo tercer punto para las 3 boyas obligatorias,
+séptimo punto para 2242 Cabo Peñas** (rotación de esta noche: era la
+candidata con más noches sin repetirse, último turno el 2026-09-30). Mismo
+método de siempre: `curl` a `poem.puertos.es/portus/StationData` para la
+altura real, Open-Meteo Marine en las coordenadas exactas de cada boya para
+la altura calculada, emparejando por la hora UTC exacta del último dato
+real de cada boya (las 4 peticiones a ambas fuentes respondieron bien a la
+primera, sin reintentos):
+
+| boya | hora UTC | altura medida | altura calculada | diferencia | % |
+|---|---|---|---|---|---|
+| 2136 Bilbao-Vizcaya | 01:00 | 0.94 m | 0.94 m | 0.00 m | 0.0% |
+| 1117 Gijón | 00:00 | 1.13 m | 0.96 m | −0.17 m | −15.0% |
+| 1101 Pasaia II | 00:00 | 0.88 m | 0.68 m | −0.20 m | −22.7% |
+| 2242 Cabo Peñas | 01:00 | 1.05 m | 1.00 m | −0.05 m | −4.8% |
+
+Historial actualizado de la metodología `boya_vs_openmeteo_mismo_punto`
+(medias recalculadas sobre todos los puntos reales de `CALIBRACION.jsonl`,
+no aproximadas):
+
+- **2136 Bilbao-Vizcaya**: 33 puntos, media ≈ **+1.9%** — sigue sin patrón
+  sistemático (16/33 negativos, signo mixto). El punto de esta noche (0.0%)
+  es el más ajustado de toda la historia de esta boya.
+- **1117 Gijón**: 33 puntos, media ≈ **−0.2%** — sigue alternando
+  signo/magnitud pasada a pasada (20/33 negativos), sin patrón sólido.
+- **1101 Pasaia II**: **33 puntos, confirma la tendencia negativa de
+  siempre** (32/33 negativos, media ≈ **−26.5%**, prácticamente igual que
+  antes de este punto). El factor x1.38 ya aplicado en producción sigue
+  siendo razonable: aplicado al valor calculado de esta noche
+  (0.68 × 1.38 = 0.94) se acerca al medido real (0.88), algo por encima —
+  oleaje bajo esta noche, así que el porcentaje individual es más ruidoso
+  de lo habitual.
+- **2242 Cabo Peñas**: 7 puntos (antes 6), **7 de 7 negativos** (media ≈
+  **−17.8%**, bajando desde −20.0% con el punto más ajustado de hoy,
+  −4.8%). Empieza a sostener una tendencia consistente como Pasaia II y
+  Barcelona II, pero le siguen faltando 8 puntos para el mínimo de 15 antes
+  de considerar cualquier propuesta de factor.
+- Resto de boyas (2246 Villano-Sisargas, 2548 Cabo de Gata, 2820 Dragonera,
+  1731 Barcelona II, 1514 Málaga): sin cambios desde su última pasada, no
+  les tocaba rotación esta noche.
+
+**Ningún factor de corrección nuevo propuesto** — Pasaia II sigue siendo la
+única boya con suficiente historial (33 puntos) y desviación sistemática
+grande, y su factor x1.38 ya está aplicado en producción. Entre las que
+todavía no llegan a 15 puntos, Barcelona II (8 puntos, 8/8 negativo, media
+−28.8%) sigue siendo la candidata más sólida tras Pasaia II, seguida de
+Dragonera (7 puntos, 6/7 negativo, media −30.7%) y ahora Cabo Peñas (7
+puntos, 7/7 negativo, media −17.8%). Para la próxima rotación nocturna, la
+candidata con más noches sin repetirse es **2548 Cabo de Gata** (su último
+turno en esta rutina nocturna fue el 2026-10-01, antes que Dragonera el
+2026-10-02, Barcelona II el 2026-10-03, Villano-Sisargas el 2026-10-04 y
+Málaga el 2026-10-05).
+
+**Salud de datos — decimonovena noche seguida con el mismo patrón de
+dominios bloqueados por la política de red de esta sesión; nada roto en lo
+que sí se pudo comprobar.** Verificado en vivo con `curl`:
+- Las 4 boyas de arriba: `200`, forma `[cabeceras, filas]` correcta, datos
+  reales de la última hora — sin novedad.
+- **`mundaka`** (www.kostasystem.com): `200`, `image/jpeg` real, 75.1 KB,
+  `Last-Modified` de hace ~26 min — bien.
+- **`bakio`** (pyscada.isurki.com): `200`, `image/jpeg` real, 886.5 KB,
+  `Last-Modified` de hace ~7.6h (17:40 UTC de ayer) — mismo patrón ya
+  documentado: imagen cacheada por el proveedor de noche, no un fallo.
+- **`getxo`**, **`sopelana`**, **`pasaia`** (detectia.net/AZTI): `200` en
+  las tres, `image/webp` real, tamaños plausibles (36.1 KB, 39.8 KB,
+  105.1 KB). `getxo` con `Last-Modified` reciente (01:04 UTC, ~13 min antes
+  de esta comprobación); sopelana y pasaia con `Last-Modified` de ayer por
+  la tarde (18:04 UTC, ~7.2h antes) — mismo patrón que `bakio`. Ningún
+  tamaño en cero ni página de error disfrazada de imagen.
+- **No se pudo comprobar**: la boya de Nazaré (`monican.hidrografico.pt`),
+  las 4 fuentes de caudal de río (`visor.saichcantabrico.es`,
+  `saih.chj.es`, `saihweb.chsegura.es`, `servizos.meteogalicia.gal`), ni
+  webcams de otras regiones (se intentó también ampliar la muestra a
+  `www.meteogalicia.gal` (A Coruña), `www.cantabria.es` (Suances),
+  `streaming.comunitatvalenciana.com` (Calpe) y `apps.socib.es`
+  (Cala Millor, Baleares), las cuatro rechazadas por el propio proxy de
+  salida de esta sesión, `connect_rejected`, "the egress proxy denied the
+  CONNECT (organization policy)") — mismo patrón exacto que las últimas
+  dieciocho noches. Se reitera la recomendación, ya repetida muchas noches,
+  de que el usuario revise si el conjunto de dominios permitidos para esta
+  rutina puede ampliarse — con la lista actual la comprobación de salud
+  sigue limitada casi en exclusiva a las boyas de Puertos del Estado y a
+  las webcams del País Vasco (mundaka/bakio/getxo/sopelana/pasaia).
+
+**Resumen de severidad para el usuario**: nada roto de forma confirmada en
+las fuentes ya integradas. Severidad media/baja, sin cambios, para los 9+
+dominios bloqueados por la política de red de esta sesión (Nazaré, los 4
+ríos y las webcams fuera del País Vasco). Sin propuesta de factor de
+corrección nueva — Pasaia II sigue con su factor ya aplicado en producción
+(confirmado esta noche, misma tendencia negativa); Barcelona II (8/8
+negativo, media −28.8%) sigue siendo la siguiente candidata más sólida, y
+Cabo Peñas (7/7 negativo, media −17.8%) empieza a acercarse como tercera
+candidata, a 8 puntos del mínimo cada una.
+
+**Firmado:** robot de calibración nocturna, 2026-10-06 01:18 UTC.
+
+---
+
 ## Robot de experiencia de usuario
 
 ### 2026-09-15
