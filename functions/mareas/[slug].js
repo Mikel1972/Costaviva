@@ -106,6 +106,13 @@ function renderizarPagina(spot, todos) {
     `Datos reales actualizados cada hora, gratis y sin cuenta.`;
   const titulo = `Marea hoy en ${spot.nombre}: pleamar, bajamar y oleaje | Costaviva`;
   const url = `https://costaviva.org/mareas/${spot.slug}`;
+  // Enlaces a otros spots de la misma región (más allá de los 4 más
+  // cercanos): cada página de spot enlaza a más páginas hermanas, para que
+  // Google las descubra desde las ya indexadas.
+  const yaEnlazados = new Set(spotsCercanos(todos, spot).map((s) => s.slug));
+  const hermanos = region
+    ? spotsCercanos(todos.filter((s) => region.spots.has(s.slug)), spot, 12).filter((s) => !yaEnlazados.has(s.slug))
+    : [];
 
   const migas = [
     { name: "Mareas", item: "https://costaviva.org/mareas" },
@@ -119,6 +126,16 @@ function renderizarPagina(spot, todos) {
       name: spot.nombre,
       geo: { "@type": "GeoCoordinates", latitude: spot.lat, longitude: spot.lon },
       url,
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      name: titulo,
+      url,
+      inLanguage: "es",
+      dateModified: new Date(spot.actualizado).toISOString(),
+      isPartOf: { "@type": "WebSite", name: "Costaviva", url: "https://costaviva.org/" },
+      about: { "@type": "Place", name: spot.nombre },
     },
     {
       "@context": "https://schema.org",
@@ -233,6 +250,18 @@ function renderizarPagina(spot, todos) {
           .join("")}
       </ul>
     </div>
+
+    ${
+      hermanos.length
+        ? `<div class="cercanos">
+      <div class="titulo">MÁS SPOTS EN ${escaparHtml(region.nombre.split(" (")[0].toUpperCase())}</div>
+      <ul>
+        ${hermanos.map((s) => `<li><a href="/mareas/${s.slug}">${escaparHtml(s.nombre)}</a></li>`).join("")}
+      </ul>
+      <p class="nota"><a href="/mareas/region/${region.slug}">Mareas en toda la región →</a></p>
+    </div>`
+        : ""
+    }
 
     <p class="nota"><a href="/mareas">Ver todos los spots →</a></p>
   </div>
