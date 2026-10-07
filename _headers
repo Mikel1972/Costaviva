@@ -2,6 +2,8 @@
 # estandares/web-y-despliegue.md W7). Cloudflare Pages lee este fichero al
 # desplegar; la lista blanca de functions/_lib/rutas-publicas.js no lo sirve.
 # Sin Permissions-Policy a propósito: la app usa geolocalización y cámara.
+# La CSP NO va aquí: la pone functions/_middleware.js con un nonce por petición
+# (W6). Una CSP aquí se sumaría a esa y bloquearía los scripts.
 /*
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
