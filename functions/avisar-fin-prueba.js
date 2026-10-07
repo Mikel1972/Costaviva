@@ -34,6 +34,8 @@
 // hecho nada malo. Fechas claras, el enlace para suscribirse, y se acabó.
 // Nada de urgencia fabricada.
 
+import { secretoValido } from "./_lib/secreto.js";
+
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const LIMITE_POR_PASADA = 10;
 
@@ -145,7 +147,7 @@ export async function onRequestPost(context) {
   const { env } = context;
   const secretoEsperado = env.CRON_SECRET;
   const secretoRecibido = context.request.headers.get("X-Cron-Secret");
-  if (!secretoEsperado || secretoRecibido !== secretoEsperado) {
+  if (!secretoValido(secretoRecibido, secretoEsperado)) {
     return json({ error: "no autorizado" }, 401);
   }
 

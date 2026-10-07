@@ -16,13 +16,15 @@
 // RESEND_API_KEY/ADMIN_EMAIL/SUPABASE_SERVICE_ROLE_KEY que ya estaban
 // configurados para aviso-alta.js.
 
+import { secretoValido } from "./_lib/secreto.js";
+
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 
 export async function onRequestPost(context) {
   const { env } = context;
   const secretoEsperado = env.CRON_SECRET;
   const secretoRecibido = context.request.headers.get("X-Cron-Secret");
-  if (!secretoEsperado || secretoRecibido !== secretoEsperado) {
+  if (!secretoValido(secretoRecibido, secretoEsperado)) {
     return new Response(JSON.stringify({ error: "no autorizado" }), {
       status: 401,
       headers: { "content-type": "application/json" },

@@ -18,11 +18,13 @@
 // RESEND_API_KEY/ADMIN_EMAIL, ya configurados en Cloudflare Pages — no
 // hace falta ningún secreto nuevo.
 
+import { secretoValido } from "./_lib/secreto.js";
+
 export async function onRequestPost(context) {
   const { env } = context;
   const secretoEsperado = env.CRON_SECRET;
   const secretoRecibido = context.request.headers.get("X-Cron-Secret");
-  if (!secretoEsperado || secretoRecibido !== secretoEsperado) {
+  if (!secretoValido(secretoRecibido, secretoEsperado)) {
     return new Response(JSON.stringify({ error: "no autorizado" }), {
       status: 401,
       headers: { "content-type": "application/json" },
