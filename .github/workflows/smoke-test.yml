@@ -44,13 +44,30 @@ name: Smoke test E2E
 # cruzada de RLS) para el recorrido de grupos, que necesita dos cuentas
 # distintas de verdad.
 
+# TRAS CADA DESPLIEGUE (2026-10-07, comun pruebas-y-alertas.md P2): además
+# del diario, corre cuando Cloudflare Pages marca como correcto un despliegue
+# de PRODUCCIÓN (evento deployment_status que publica su integración con
+# GitHub). Los de preview se ignoran: este smoke apunta a costaviva.org.
+# Si Cloudflare no publicara el evento, simplemente no se dispara y queda
+# el diario como antes. Una sola pasada a la vez (las cuentas de prueba son
+# compartidas): las siguientes esperan en cola.
+
 on:
   schedule:
     - cron: "0 5 * * *"
+  deployment_status:
   workflow_dispatch: {}
+
+concurrency:
+  group: smoke-test
+  cancel-in-progress: false
 
 jobs:
   smoke:
+    if: >-
+      ${{ github.event_name != 'deployment_status' ||
+          (github.event.deployment_status.state == 'success' &&
+           contains(github.event.deployment.environment, 'production')) }}
     runs-on: ubuntu-latest
     env:
       SUPABASE_URL: "https://imncbmizxkorotpeisic.supabase.co"

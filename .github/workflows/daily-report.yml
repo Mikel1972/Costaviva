@@ -335,7 +335,10 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          datos=$(gh run list --workflow=smoke-test.yml --limit 1 --json conclusion,createdAt,url 2>/dev/null || echo "[]")
+          # Se saltan los runs "skipped": desde 2026-10-07 el smoke también se
+          # dispara con cada despliegue y los de preview quedan saltados.
+          datos=$(gh run list --workflow=smoke-test.yml --limit 30 --json conclusion,createdAt,url \
+            --jq '[.[] | select(.conclusion != "skipped")][:1]' 2>/dev/null || echo "[]")
           conclusion=$(echo "$datos" | node -e 'let d="";process.stdin.on("data",c=>d+=c);process.stdin.on("end",()=>{const r=JSON.parse(d)[0];console.log(r?(r.conclusion||"en_curso"):"");})')
           fecha=$(echo "$datos" | node -e 'let d="";process.stdin.on("data",c=>d+=c);process.stdin.on("end",()=>{const r=JSON.parse(d)[0];console.log(r?r.createdAt:"");})')
           url=$(echo "$datos" | node -e 'let d="";process.stdin.on("data",c=>d+=c);process.stdin.on("end",()=>{const r=JSON.parse(d)[0];console.log(r?r.url:"");})')
