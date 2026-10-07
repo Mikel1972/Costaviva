@@ -546,7 +546,7 @@ jobs:
         run: |
           SALIDA_CLAUDE=/tmp/claude-salida.log
           rm -f /tmp/informe-sintesis.txt
-          # Recorte de gasto de API (2026-09-28, ver SALDO_API.md): si los
+          # Recorte de gasto de API (2026-09-28, ver SALDO_API.md en Mikel1972/comun): si los
           # robots no escribieron nada en ROBOT.md en 24 h no hay nada que
           # resumir y no se llama a Claude. Si lo hay, la sesión arranca fuera
           # del repo (sin cargar CLAUDE.md), con modelo y turnos fijados: solo

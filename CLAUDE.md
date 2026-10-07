@@ -2329,38 +2329,15 @@ espurio en `/package.json` — era propagación a medias; repetida tres veces
 después, 404 consistente. **No dar por buena una única comprobación hecha
 justo al desplegar.**)
 
-### Robot de mejores prácticas (`.github/workflows/robot-mejores-practicas.yml`)
+### Robot de mejores prácticas → movido a `Mikel1972/comun` (2026-10-07)
 
-Pedido explícito del usuario: *"un robot que contenga las mejores
-experiencias de las diferentes apps, para no partir de cero cada vez"*.
-
-La necesidad quedó demostrada ese mismo día: al ir a exportar lecciones de
-Costaviva a Pólizas.ai, resultó que **Pólizas.ai ya resolvía mejor dos de
-las tres** (lista blanca de rutas, y `clasificarFalloClaude()` en
-`functions/api/polizas/_claude.js`). Se descubrió por casualidad.
-
-Semanal (domingos). Clona los otros 3 repos en **solo lectura** en `/tmp`,
-les borra el remoto para que ni por accidente pueda salir un push, compara
-cinco dimensiones concretas (rutas públicas, fallos de proveedores externos,
-RLS y `service_role`, comportamiento de los workflows sin credenciales, y
-cómo se verifica un cambio) y escribe `COMPARATIVA_PROYECTOS.md` **solo en
-este repo**. Cada propuesta tiene que citar fichero y línea: una propuesta
-sin código detrás es una opinión.
-
-**Necesita el secret `GH_PAT_MULTIPROYECTO`** — un Personal Access Token con
-permiso de **lectura** sobre `polizas-ai`, `etxeapala` y `Lurnahi` (el
-`GITHUB_TOKEN` del runner solo llega a este repo, y los otros tres son
-privados). Sin él, el workflow avisa y para en verde: falta una credencial,
-no hay un bug.
-
-El documento curado y verificado a mano vive aparte, en
-`TRAMPAS_COMPARTIDAS.md` de `polizas-ai`. Este robot no lo toca: propone en
-el suyo, y portar sigue siendo decisión humana.
-
-**Nota agradable de las dos cosas juntas**: `COMPARATIVA_PROYECTOS.md` y el
-propio workflow quedan privados **sin que nadie tenga que acordarse de
-bloquearlos**, gracias a la lista blanca. Es justo el fallo por omisión que
-se buscaba invertir.
+Hasta el 2026-10-07 vivía aquí como `robot-mejores-practicas.yml` (semanal,
+`claude -p` pagado con saldo de API, secret `GH_PAT_MULTIPROYECTO`). Ahora es
+la rutina **"comun"** del plan de Claude (domingos), con sus instrucciones en
+`rutina-comparativa.txt` del repo `Mikel1972/comun`, que no pertenece a
+ninguna app: si Costaviva se abandona, no se pierde. `COMPARATIVA_PROYECTOS.md`
+y `SALDO_API.md` también viven allí. El secret `GH_PAT_MULTIPROYECTO` de este
+repo ya no lo usa nadie.
 
 ## Rayos: tiempo real con Xweather + satélite EUMETSAT de fondo (2026-10-03)
 
@@ -2434,21 +2411,11 @@ entre todas**, sin perjudicar ninguna funcionalidad. El saldo se agotó 6 veces
 en 13 días; la auditoría de ese día estimó que los robots de Costaviva eran
 la mayor parte del gasto (el buscador de fuentes solo, 32 sesiones/semana).
 
-Vive dentro de `robot-mejores-practicas.yml` (el robot de lecciones comunes),
-en dos piezas:
-
-- `scripts/saldo/auditar-consumo-api.mjs` — **sin IA**, no gasta saldo.
-  Estima el gasto de cada robot de CLI de los 4 repos y marca los patrones
-  caros con reglas fijas (R1-R8: sin `--max-turns`, sin `--model`, arrancar en
-  la raíz con un `CLAUDE.md` grande, más de 7 sesiones/semana, web con más de
-  40 turnos, ficheros de más de 100 KB en el prompt, no registrar `usage`,
-  `max_tokens` ≥ 16.000). Escribe `SALDO_API.md` y lo comitea él mismo, aunque
-  no quede saldo. Con el secret opcional `ANTHROPIC_ADMIN_KEY` (clave
-  `sk-ant-admin...` de la consola) añade el gasto REAL de 7 días.
-- La sesión de Claude del mismo robot lee `SALDO_API.md` y abre
-  `COMPARATIVA_PROYECTOS.md` con los recortes concretos (fichero, cambio,
-  ahorro, riesgo). **Nunca propone quitar funcionalidad**; aplicar sigue
-  siendo decisión humana.
+Desde el 2026-10-07 vive en `Mikel1972/comun`: el auditor sin IA
+(`scripts/saldo/auditar-consumo-api.mjs`, reglas R1-R8) lo ejecuta la rutina
+semanal "comun", que escribe allí `SALDO_API.md` y propone los recortes en
+`COMPARATIVA_PROYECTOS.md`. **Nunca propone quitar funcionalidad**; aplicar
+sigue siendo decisión humana.
 
 **Recortes aplicados el mismo día** (estimado de robots: ~69 → ~6 €/semana,
 sin quitar ningún robot):
@@ -2524,24 +2491,23 @@ los casos malos.
   compartidas tipo "tripulación" — no hay nada que blindar ahí hasta que
   esas features existan.
 
-## Trampas compartidas con los otros proyectos (2026-10-07)
+## Trampas compartidas y regla de coste (2026-10-07)
 
-`TRAMPAS_COMPARTIDAS.md`, en el repo `Mikel1972/polizas-ai`, es el registro
-común de lo que ha fallado en producción en los 4 proyectos (Costaviva,
-Pólizas.ai, Etxeapala, Lurnahi), que comparten stack y cuentas. Lo que muerde
-en uno casi siempre existe en los demás. Por decisión de Mikel, en cada
-**sesión interactiva** de Claude Code:
+Lo común a los 4 proyectos (Costaviva, Pólizas.ai, Etxeapala, Lurnahi) vive en
+el repo `Mikel1972/comun`, que no pertenece a ninguna app.
 
-1. **Usarlo.** Antes de tocar Supabase (RLS, policies, funciones), secrets de
-   Cloudflare, Stripe, llamadas a Claude o robots/crons, añade `polizas-ai` a
-   la sesión (`add_repo`), clónalo, mira los títulos (`grep -n '^## '`) y lee
-   solo la sección que aplique. Si otro proyecto ya lo tiene resuelto, lee
-   cómo antes de escribir nada, y sigue "Antes de portar nada de aquí".
+**Regla fundamental de Mikel: todo lo posible contra la suscripción; los
+tokens de la API, al mínimo funcionalmente válido.** Un robot con IA va como
+rutina del plan de Claude, no como `claude -p` en GitHub Actions. Lo que no
+necesita IA va sin IA. Detalle en `CLAUDE.md` de `comun`.
+
+En cada **sesión interactiva** de Claude Code:
+
+1. **Usar `TRAMPAS_COMPARTIDAS.md`.** Antes de tocar Supabase (RLS, policies,
+   funciones), secrets de Cloudflare, Stripe, llamadas a Claude o
+   robots/crons, añade `comun` a la sesión (`add_repo`), clónalo, mira los
+   títulos (`grep -n '^## '`) y lee solo la sección que aplique. Si otro
+   proyecto ya lo tiene resuelto, lee cómo antes de escribir nada.
 2. **Aportar.** Cuando algo falle aquí en producción y pueda pasar en los
-   otros proyectos, añádelo allí como sección nueva, con fecha, el caso real y
-   qué proyecto lo tiene resuelto. Sin caso real, no se añade. Rama + PR +
-   merge en `polizas-ai` (autorizado por Mikel).
-
-El robot semanal de comparativa (`COMPARATIVA_PROYECTOS.md`) mantiene su
-regla: no toca ese fichero, solo propone. Esto es para las sesiones
-interactivas.
+   otros proyectos, añádelo allí con fecha, el caso real y qué proyecto lo
+   tiene resuelto. Rama + PR + merge en `comun` (autorizado por Mikel).
