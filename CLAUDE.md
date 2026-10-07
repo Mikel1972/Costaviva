@@ -2503,6 +2503,12 @@ necesita IA va sin IA. Detalle en `CLAUDE.md` de `comun`.
 
 En cada **sesión interactiva** de Claude Code:
 
+0. **Seguir los estándares.** Antes de tocar login, alta, recuperación de
+   contraseña o CAPTCHA, emails, Stripe, Supabase (RLS, funciones,
+   migraciones), llamadas a Claude o robots, rutas públicas y cabeceras, o
+   pruebas y alertas, lee `estandares/<tema>.md` de `comun` y sigue su "mejor
+   implementación". `CONFORMIDAD.md` de `comun` dice qué incumple hoy este
+   proyecto: si tocas algo de esa lista, arréglalo de paso.
 1. **Usar `TRAMPAS_COMPARTIDAS.md`.** Antes de tocar Supabase (RLS, policies,
    funciones), secrets de Cloudflare, Stripe, llamadas a Claude o
    robots/crons, añade `comun` a la sesión (`add_repo`), clónalo, mira los
