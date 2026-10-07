@@ -2523,3 +2523,25 @@ los casos malos.
 - No existen todavía código de invitación/descuento ni cuentas
   compartidas tipo "tripulación" — no hay nada que blindar ahí hasta que
   esas features existan.
+
+## Trampas compartidas con los otros proyectos (2026-10-07)
+
+`TRAMPAS_COMPARTIDAS.md`, en el repo `Mikel1972/polizas-ai`, es el registro
+común de lo que ha fallado en producción en los 4 proyectos (Costaviva,
+Pólizas.ai, Etxeapala, Lurnahi), que comparten stack y cuentas. Lo que muerde
+en uno casi siempre existe en los demás. Por decisión de Mikel, en cada
+**sesión interactiva** de Claude Code:
+
+1. **Usarlo.** Antes de tocar Supabase (RLS, policies, funciones), secrets de
+   Cloudflare, Stripe, llamadas a Claude o robots/crons, añade `polizas-ai` a
+   la sesión (`add_repo`), clónalo, mira los títulos (`grep -n '^## '`) y lee
+   solo la sección que aplique. Si otro proyecto ya lo tiene resuelto, lee
+   cómo antes de escribir nada, y sigue "Antes de portar nada de aquí".
+2. **Aportar.** Cuando algo falle aquí en producción y pueda pasar en los
+   otros proyectos, añádelo allí como sección nueva, con fecha, el caso real y
+   qué proyecto lo tiene resuelto. Sin caso real, no se añade. Rama + PR +
+   merge en `polizas-ai` (autorizado por Mikel).
+
+El robot semanal de comparativa (`COMPARATIVA_PROYECTOS.md`) mantiene su
+regla: no toca ese fichero, solo propone. Esto es para las sesiones
+interactivas.
