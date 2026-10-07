@@ -1,10 +1,15 @@
 // functions/stripe-webhook.js
 // Recibe los eventos de Stripe (checkout completado, suscripción
-// creada/actualizada/cancelada) y actualiza public.suscripciones.
-// Alcanzable en /stripe-webhook. Configurar en el Dashboard de Stripe
-// (Developers → Webhooks) contra esta URL, eventos:
+// creada/actualizada/cancelada, cobro fallido) y actualiza
+// public.suscripciones. Alcanzable en /stripe-webhook. Configurar en el
+// Dashboard de Stripe (Developers → Webhooks) contra esta URL, eventos:
 //   checkout.session.completed, customer.subscription.created,
-//   customer.subscription.updated, customer.subscription.deleted
+//   customer.subscription.updated, customer.subscription.deleted,
+//   invoice.payment_failed
+//
+// Idempotencia (comun, estandares/stripe.md S3, 2026-10-07): cada event.id
+// se guarda en public.stripe_eventos antes de procesarlo; un evento repetido
+// responde 200 sin hacer nada.
 //
 // *** SEGUNDA EXCEPCIÓN DEL REPO AL USO DE service_role (la primera es
 // aviso-alta.js) ***: aquí no hay sesión de usuario ni secreto
@@ -31,12 +36,19 @@ const PERIODOS_POR_PRECIO = {
 };
 
 async function verificarFirmaStripe(rawBody, header, secret) {
-  const partes = Object.fromEntries(
-    header.split(",").map((p) => p.split("=").map((s) => s.trim()))
-  );
-  const t = partes.t;
-  const v1 = partes.v1;
-  if (!t || !v1) throw new Error("cabecera Stripe-Signature mal formada");
+  // La cabecera puede traer varias firmas v1 (rotación del secreto en
+  // Stripe, comun stripe.md S1): vale si coincide cualquiera de ellas.
+  let t = null;
+  const firmasV1 = [];
+  for (const parte of header.split(",")) {
+    const i = parte.indexOf("=");
+    if (i < 0) continue;
+    const clave = parte.slice(0, i).trim();
+    const valor = parte.slice(i + 1).trim();
+    if (clave === "t") t = valor;
+    else if (clave === "v1" && valor) firmasV1.push(valor);
+  }
+  if (!t || !firmasV1.length) throw new Error("cabecera Stripe-Signature mal formada");
 
   const payloadFirmado = `${t}.${rawBody}`;
   const encoder = new TextEncoder();
@@ -52,12 +64,19 @@ async function verificarFirmaStripe(rawBody, header, secret) {
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
 
-  if (firmaCalculadaHex.length !== v1.length) return false;
-  let diferencia = 0;
-  for (let i = 0; i < firmaCalculadaHex.length; i++) {
-    diferencia |= firmaCalculadaHex.charCodeAt(i) ^ v1.charCodeAt(i);
-  }
-  if (diferencia !== 0) return false;
+  const coincide = (v1) => {
+    if (firmaCalculadaHex.length !== v1.length) return false;
+    let diferencia = 0;
+    for (let i = 0; i < firmaCalculadaHex.length; i++) {
+      diferencia |= firmaCalculadaHex.charCodeAt(i) ^ v1.charCodeAt(i);
+    }
+    return diferencia === 0;
+  };
+  // Se comparan todas (sin cortar en la primera) para no filtrar por tiempo
+  // cuál de ellas coincidió.
+  let alguna = false;
+  for (const v1 of firmasV1) alguna = coincide(v1) || alguna;
+  if (!alguna) return false;
 
   // Protección anti-replay recomendada por Stripe: rechazar timestamps
   // de más de 5 minutos de antigüedad.
@@ -102,6 +121,48 @@ async function userIdPorClienteStripe(serviceRoleKey, stripeCustomerId) {
   return filas[0]?.user_id || null;
 }
 
+// Idempotencia por event.id (comun stripe.md S3). Devuelve:
+//   "nuevo"       → se ha guardado ahora, hay que procesarlo;
+//   "repetido"    → ya estaba, no se vuelve a procesar;
+//   "sin_registro"→ no se pudo guardar (p.ej. tabla aún no creada): se
+//                   procesa igual, los upserts por user_id son idempotentes.
+async function registrarEvento(serviceRoleKey, evento) {
+  try {
+    const resp = await fetch(`${SUPABASE_URL}/rest/v1/stripe_eventos?on_conflict=id`, {
+      method: "POST",
+      headers: {
+        apikey: serviceRoleKey,
+        Authorization: `Bearer ${serviceRoleKey}`,
+        "content-type": "application/json",
+        Prefer: "resolution=ignore-duplicates,return=representation",
+      },
+      body: JSON.stringify([{ id: evento.id, tipo: evento.type || "?" }]),
+    });
+    if (!resp.ok) {
+      console.error(`stripe_eventos: Supabase respondió ${resp.status}, se procesa sin idempotencia:`, await resp.text());
+      return "sin_registro";
+    }
+    const filas = await resp.json();
+    return Array.isArray(filas) && filas.length ? "nuevo" : "repetido";
+  } catch (e) {
+    console.error("stripe_eventos: fallo al registrar, se procesa sin idempotencia:", e);
+    return "sin_registro";
+  }
+}
+
+// Si el procesado falla, se borra el registro para que el reintento de
+// Stripe no se tome por repetido.
+async function olvidarEvento(serviceRoleKey, eventoId) {
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/stripe_eventos?id=eq.${encodeURIComponent(eventoId)}`, {
+      method: "DELETE",
+      headers: { apikey: serviceRoleKey, Authorization: `Bearer ${serviceRoleKey}` },
+    });
+  } catch (e) {
+    console.error("stripe_eventos: no se pudo borrar el evento fallido", eventoId, e);
+  }
+}
+
 export async function onRequestPost(context) {
   const { request, env } = context;
   const webhookSecret = env.STRIPE_WEBHOOK_SECRET;
@@ -126,6 +187,15 @@ export async function onRequestPost(context) {
     evento = JSON.parse(rawBody);
   } catch {
     return new Response("cuerpo inválido", { status: 400 });
+  }
+
+  if (!evento?.id) return new Response("evento sin id", { status: 400 });
+
+  const registro = await registrarEvento(serviceRoleKey, evento);
+  if (registro === "repetido") {
+    return new Response(JSON.stringify({ received: true, repetido: true }), {
+      headers: { "content-type": "application/json" },
+    });
   }
 
   try {
@@ -171,6 +241,22 @@ export async function onRequestPost(context) {
           : null,
         actualizado_en: new Date().toISOString(),
       });
+    } else if (evento.type === "invoice.payment_failed") {
+      // Cobro fallido (comun stripe.md S4). No se toca el estado aquí: Stripe
+      // pasa la suscripción a past_due/unpaid y lo comunica con
+      // customer.subscription.updated, que es la fuente de verdad (y el
+      // acceso solo se da con trialing/active). Aquí se deja rastro en el
+      // log para poder ver en Cloudflare quién falló y cuántas veces.
+      console.warn(
+        "Stripe invoice.payment_failed:",
+        JSON.stringify({
+          evento: evento.id,
+          customer: obj.customer,
+          subscription: obj.subscription || obj.parent?.subscription_details?.subscription || null,
+          intento: obj.attempt_count,
+          proximo_intento: obj.next_payment_attempt,
+        })
+      );
     }
     // Cualquier otro tipo de evento: 200 sin acción — Stripe exige
     // confirmación 200 para todo evento entregado, no solo los que nos
@@ -184,6 +270,8 @@ export async function onRequestPost(context) {
     // 500 a propósito: Stripe reintenta los eventos fallidos con
     // backoff, así que un fallo real (p.ej. Supabase caído un momento)
     // se recupera solo en el siguiente reintento.
-    return new Response(String(e), { status: 500 });
+    if (registro === "nuevo") await olvidarEvento(serviceRoleKey, evento.id);
+    // Sin el detalle del error en la respuesta: ya está en el log.
+    return new Response("error interno", { status: 500 });
   }
 }
