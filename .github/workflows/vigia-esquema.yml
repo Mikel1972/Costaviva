@@ -56,13 +56,15 @@ jobs:
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
         run: |
           if [ -z "$SUPABASE_DB_URL" ]; then
-            echo "::warning::Falta el secret SUPABASE_DB_URL (cadena de Connection Pooling). Sin él el vigía no puede mirar nada."
+            # En rojo, no en verde: un vigía que no puede mirar no puede decir
+            # "todo bien" (Mikel1972/comun, estandares/supabase.md D16).
+            echo "::error::Falta el secret SUPABASE_DB_URL (cadena de Connection Pooling). Sin él el vigía no puede mirar nada."
             {
               echo "### Vigía de esquema: no ejecutado"
               echo "Falta el secret \`SUPABASE_DB_URL\`. Debe ser la cadena de **Connection Pooling** (\`aws-*.pooler.supabase.com\`), no la directa: la directa solo resuelve por IPv6 y el runner no tiene salida IPv6."
             } >> "$GITHUB_STEP_SUMMARY"
             echo "listo=no" >> "$GITHUB_OUTPUT"
-            exit 0
+            exit 1
           fi
 
           psql "$SUPABASE_DB_URL" -tAc "$(cat .github/scripts/esquema-seguridad-query.sql)" > live.json

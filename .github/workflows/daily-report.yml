@@ -103,6 +103,7 @@ jobs:
     needs: decidir_hora
     if: needs.decidir_hora.outputs.ejecutar == 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: read
       issues: write
@@ -544,6 +545,9 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         continue-on-error: true
         run: |
+          # Pausa comprobada en bash, ANTES de arrancar Claude: dentro del prompt
+          # ya se habria pagado el arranque (Mikel1972/comun, claude-api.md C11).
+          if [ -f "$GITHUB_WORKSPACE/ROBOT_PAUSADO" ]; then echo "ROBOT_PAUSADO: no se arranca Claude."; exit 0; fi
           SALIDA_CLAUDE=/tmp/claude-salida.log
           rm -f /tmp/informe-sintesis.txt
           # Recorte de gasto de API (2026-09-28, ver SALDO_API.md en Mikel1972/comun): si los
@@ -572,6 +576,8 @@ jobs:
           # informe, y se sale en verde para no disparar falsas alarmas.
           CODIGO=${CODIGO:-0}
           cat "$SALIDA_CLAUDE" || true
+          # Sin turnos se pierde la pasada entera (2026-09-17, 09-25, 10-02): que se vea (comun C12).
+          if grep -qiE "max turns|error_max_turns" "$SALIDA_CLAUDE"; then echo "::error::El robot se quedó sin turnos (--max-turns): la pasada no terminó."; echo "### ⚠️ Sin turnos: la pasada no terminó" >> "$GITHUB_STEP_SUMMARY"; fi
           if [ "$CODIGO" -ne 0 ] && grep -qiE "credit balance is too low|purchase credits" "$SALIDA_CLAUDE"; then
             echo "::warning::Sin saldo en ANTHROPIC_API_KEY: esta pasada no se ha ejecutado. No es un fallo del repo ni de la tarea — recargar saldo en Plans & Billing de Anthropic."
             echo "_(sin síntesis hoy: la ANTHROPIC_API_KEY se ha quedado sin saldo. El resto del informe de arriba es real y está completo — solo falta el resumen redactado. Nada que arreglar en el repo: recargar saldo en Plans y Billing de Anthropic.)_" > /tmp/informe-sintesis.txt
