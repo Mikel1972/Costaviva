@@ -420,15 +420,27 @@ jobs:
 
       - name: Conteo de alarmas SOS (24h, agregado, sin datos personales)
         id: sos
+        # Con service_role desde 2026-10-07: la migración
+        # 20261007160000_revocar_execute_definer.sql quita el EXECUTE de anon
+        # en esta función (comun supabase.md D10).
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
+          if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "::warning::Falta el secret SUPABASE_SERVICE_ROLE_KEY: sin conteo de alarmas SOS."
+            echo "resultado=N/D (falta el secret SUPABASE_SERVICE_ROLE_KEY)" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           resp=$(curl -sS --max-time 15 \
             "https://imncbmizxkorotpeisic.supabase.co/rest/v1/rpc/contar_alertas_sos_24h" \
-            -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc" \
+            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
             -H "Content-Type: application/json" -X POST -d '{}')
           if [[ "$resp" =~ ^[0-9]+$ ]]; then
             echo "resultado=$resp" >> "$GITHUB_OUTPUT"
           else
-            echo "resultado=N/D (¿falta aplicar supabase/schema_conteo_sos.sql?)" >> "$GITHUB_OUTPUT"
+            echo "::warning::contar_alertas_sos_24h no devolvió un número."
+            echo "resultado=N/D (contar_alertas_sos_24h no respondió con un número)" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Actividad de marketing (Instagram)
