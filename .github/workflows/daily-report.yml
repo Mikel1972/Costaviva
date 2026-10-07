@@ -560,11 +560,29 @@ jobs:
             > /tmp/robot-ultimas-24h.txt || true
           echo "lineas=$(wc -l < /tmp/robot-ultimas-24h.txt)" >> "$GITHUB_OUTPUT"
 
+      # Desde el 2026-10-07 la síntesis la escribe la rutina "Costaviva -
+      # Síntesis del informe diario" (suscripción) en
+      # datos-robots/sintesis-informe.md. Si es de hoy se usa, y los dos pasos
+      # siguientes se saltan (así el informe de gasto de comun ve que no se
+      # llamó a la API); si no, se hacen aquí como respaldo (comun C16).
+      - name: Síntesis de la rutina
+        id: rutina
+        run: |
+          git pull -q origin main || true
+          S=datos-robots/sintesis-informe.md
+          if [ -f "$S" ] && head -1 "$S" | grep -q "fecha=$(TZ=Europe/Madrid date +%F) "; then
+            tail -n +3 "$S" > /tmp/informe-sintesis.txt
+            echo "Síntesis de la rutina de hoy: no se llama a la API."
+            echo "hay=1" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Instalar Claude Code CLI
+        if: steps.rutina.outputs.hay != '1'
         run: npm install -g @anthropic-ai/claude-code
 
       - name: Síntesis del día (Claude Code, sesión no interactiva)
         id: sintesis
+        if: steps.rutina.outputs.hay != '1'
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         # Sin continue-on-error desde 2026-10-07 (comun claude-api.md C15 y
@@ -577,17 +595,6 @@ jobs:
           if [ -f "$GITHUB_WORKSPACE/ROBOT_PAUSADO" ]; then echo "ROBOT_PAUSADO: no se arranca Claude."; exit 0; fi
           SALIDA_CLAUDE=/tmp/claude-salida.log
           rm -f /tmp/informe-sintesis.txt
-          # Desde el 2026-10-07 la síntesis la escribe la rutina "Costaviva -
-          # Síntesis del informe diario" (suscripción) en
-          # datos-robots/sintesis-informe.md. Si es de hoy, se usa y no se llama
-          # a la API; si no, se hace aquí como respaldo (comun, claude-api.md C16).
-          git -C "$GITHUB_WORKSPACE" pull -q origin main || true
-          S="$GITHUB_WORKSPACE/datos-robots/sintesis-informe.md"
-          if [ -f "$S" ] && head -1 "$S" | grep -q "fecha=$(TZ=Europe/Madrid date +%F) "; then
-            tail -n +3 "$S" > /tmp/informe-sintesis.txt
-            echo "Síntesis de la rutina de hoy: no se llama a la API."
-            exit 0
-          fi
           # Recorte de gasto de API (2026-09-28, ver SALDO_API.md en Mikel1972/comun): si los
           # robots no escribieron nada en ROBOT.md en 24 h no hay nada que
           # resumir y no se llama a Claude. Si lo hay, la sesión arranca fuera
