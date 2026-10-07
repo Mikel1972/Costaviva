@@ -50,6 +50,12 @@ jobs:
             echo "::error::Para lanzar esto hay que escribir exactamente 'aplicar' en el campo de confirmación. No se ha tocado nada."
             exit 1
           fi
+          # Solo desde main: lo que llega a producción es lo que está
+          # fusionado (Mikel1972/comun, estandares/supabase.md D2).
+          if [ "$GITHUB_REF" != "refs/heads/main" ]; then
+            echo "::error::Las migraciones solo se aplican desde main (lanzado desde $GITHUB_REF). Fusiona primero la PR. No se ha tocado nada."
+            exit 1
+          fi
 
       - uses: supabase/setup-cli@v1
         with:
