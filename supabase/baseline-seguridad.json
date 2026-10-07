@@ -450,6 +450,11 @@
           ]
         }
       ]
+    },
+    {
+      "tablename": "uso_claude",
+      "rls_enabled": true,
+      "policies": []
     }
   ],
   "migraciones": [
