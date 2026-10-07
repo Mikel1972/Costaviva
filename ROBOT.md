@@ -8960,3 +8960,73 @@ Sin novedades esta pasada: no se integra ni se propone ninguna fuente nueva veri
 - Próximo paso útil: probar con red abierta el visor de aforos de URA (inspeccionar qué petición hace) y SNIRH (Portugal).
 
 Firmado: robot buscador de fuentes (rutina).
+
+### 2026-10-07 12:05 UTC (robot de cámaras caídas — pasada sobre Orio, Getaria, Zumaia)
+
+**10 cámaras en rojo esta pasada** (consulta directa a `camara_estado`, el
+paso que debía rellenar la lista en el prompt llegó vacío): `sonbou`,
+`suances`, `muro`, `sanvicente`, `calamillor` (112 fallos cada una, sin
+señal registrada jamás — el grupo `cantabria.es`/`apps.socib.es` ya
+documentado en pasadas anteriores), `comillas` (6 fallos, última señal
+2026-10-06T06:42 UTC), `alicante` (2 fallos, última señal hoy 02:31 UTC),
+`zumaia` (2 fallos, última señal hoy 02:31 UTC), `orio` y `getaria` (1
+fallo cada una, última señal hoy 09:28 UTC).
+
+Por el límite de 3 cámaras por pasada, se priorizaron las de pérdida de
+señal más reciente y más fácil de recuperar: **Orio, Getaria y Zumaia**
+(las 3 en `58f14c0895a20.streamlock.net`, Diputación de Gipuzkoa las dos
+primeras, Ayuntamiento de Zumaia la tercera). Quedan **sin tocar esta
+pasada, para la siguiente**: `comillas`, `alicante`, `sonbou`, `suances`,
+`muro`, `sanvicente`, `calamillor` — no se han olvidado.
+
+**Orio y Getaria — NO se han movido, son intermitentes en origen, sin
+cambios de código.** La web oficial de la Diputación
+(`gipuzkoa.eus/es/web/hondartzak/webcams/orio` y `.../malkorbe`, HTML
+crudo vía `curl`, no solo `WebFetch`) sigue embebiendo exactamente las
+mismas URLs que ya teníamos
+(`GIP_orio_169.stream/playlist.m3u8`, `GIP_getaria_169.stream/playlist.m3u8`).
+Comprobación en vivo: Orio alternó 404/200 varias veces en menos de un
+minuto, con el nombre del `chunklist_w*.m3u8` cambiando cada vez (el
+codificador del proveedor se reinicia solo, no es un fallo nuestro).
+Getaria dio `200` estable en 4 intentos seguidos (cada 10s), resolución
+1920x1080 igual que la verificada el 2026-09-19. Como la URL guardada es
+idéntica a la que el dueño publica hoy, no hay "movido" que corregir; el
+único problema es la intermitencia del origen, que debería autorresolverse
+en la próxima pasada de `camaras-salud.yml` (ambas llevan solo 1 fallo
+seguido).
+
+**Zumaia — tampoco se ha movido, pero sigue caída de verdad; sin
+sustituta encontrada.** La URL guardada
+(`GIP_zumaia2.stream/playlist.m3u8`) da `404` puro y constante: 6
+intentos seguidos a lo largo de 1 minuto, todos `404` (a diferencia de
+Orio, que sí alternaba). Comprobado que no es el servidor entero: las
+hermanas del mismo host (`hondarribia`, `donostia`, `zarautz`, `deba`,
+`mutriku`, y ahora también `orio`/`getaria`) responden bien. Confirmado
+en la web del Ayuntamiento
+(`zumaia.eus/es/turismo/que-hacer/webcam?set_language=es`, HTML crudo):
+**sigue embebiendo exactamente esa misma URL** — no hay alias nuevo que
+resolver, el dueño no la ha cambiado de sitio, así que el 404 es la
+cámara/codificador real caído en origen. Probadas variantes de nombre por
+si el stream se hubiera renombrado dentro del mismo servidor
+(`GIP_zumaia`, `GIP_zumaia1`, `GIP_zumaia3`, `GIP_zumaia_169`,
+`GIP_itzurun`, `GIP_itzurun_169`, `zumaia`, `zumaia2`) — las 8, `404`.
+
+Buscada alternativa de otro dueño para la playa de Itzurun (Zumaia),
+términos probados: `"Itzurun" webcam Zumaia en directo cámara mar`,
+`zumaia.eus webcam playa Itzurun`. Resultados: solo agregadores
+(`surf30.net`, `euskaditoptravel.com`, `camarastrafico.com.es`,
+`worldcam.eu`, `es.surf-forecast.com`) que o bien re-embeben la misma
+cámara municipal caída, o bien no tienen player propio verificable (solo
+miniaturas/enlaces a otras playas vecinas), o devuelven contenido genérico
+sin relación (surf-forecast.com mostró una imagen de Laredo). Ninguna
+cámara independiente encontrada todavía para este spot. Se deja
+documentado para que la próxima pasada no repita esta misma búsqueda:
+probar con red abierta si hay bloqueo, o buscar en euskera
+("Itzurun hondartza kamera zuzenean").
+
+**Sin cambios de código ni commits esta pasada** — ninguna de las 3
+cámaras investigadas tenía una URL que corregir (ni Orio/Getaria por ser
+intermitencia de origen con la misma URL vigente, ni Zumaia por no
+encontrarse sustituta verificada).
+
+**Firmado:** robot de cámaras caídas, 2026-10-07 12:05 UTC.
