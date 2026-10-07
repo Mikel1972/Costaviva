@@ -19,6 +19,7 @@
 // hace falta ningún secreto nuevo.
 
 import { secretoValido } from "./_lib/secreto.js";
+import { enviarEmail } from "./_lib/email.js";
 
 export async function onRequestPost(context) {
   const { env } = context;
@@ -55,19 +56,14 @@ export async function onRequestPost(context) {
   }
 
   const hoy = new Date().toISOString().slice(0, 10);
-  const envio = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${resendKey}` },
-    body: JSON.stringify({
-      from: "Costaviva <avisos@costaviva.org>",
-      to: [adminEmail],
-      subject: `Costaviva: informe diario — ${hoy}`,
-      text: cuerpo,
-    }),
+  const envio = await enviarEmail(env, {
+    to: adminEmail,
+    subject: `Costaviva: informe diario — ${hoy}`,
+    text: cuerpo,
   });
   if (!envio.ok) {
-    const detalle = await envio.text();
-    return new Response(JSON.stringify({ error: `Resend respondió ${envio.status}: ${detalle}` }), {
+    // Sin el detalle de Resend (queda en el log de Cloudflare).
+    return new Response(JSON.stringify({ error: envio.error }), {
       status: 502,
       headers: { "content-type": "application/json" },
     });
