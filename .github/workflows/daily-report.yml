@@ -134,8 +134,8 @@ jobs:
           else
             echo "resultado=❌ FALLO — revisar" >> "$GITHUB_OUTPUT"
           fi
-        # Si falla, queda rastro: ::warning:: en el paso final "Avisar de pasos fallidos" (comun P4).
         continue-on-error: true
+        # Si falla, queda rastro: ::warning:: en el paso final "Avisar de pasos fallidos" (comun P4).
 
       - name: Fuentes externas (vía producción real, nunca inventado)
         id: fuentes
@@ -179,8 +179,8 @@ jobs:
             check "/sitemap.xml" "https://costaviva.org/sitemap.xml"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
-        # Si falla, queda rastro: ::warning:: en el paso final "Avisar de pasos fallidos" (comun P4).
         continue-on-error: true
+        # Si falla, queda rastro: ::warning:: en el paso final "Avisar de pasos fallidos" (comun P4).
 
       - name: Autenticarse en Google Cloud (Workload Identity Federation, sin clave)
         # Añadido 2026-09-20, pedido explícito del usuario: datos reales
@@ -206,8 +206,8 @@ jobs:
           # dos campos distintos, no te fíes solo del nombre visible.
           workload_identity_provider: "projects/1029831673189/locations/global/workloadIdentityPools/github-actions-pool/providers/-github-actions-provider"
           service_account: "costaviva-search-console-reade@project-5a5d60f4-a099-4065-a23.iam.gserviceaccount.com"
-        # Si falla, queda rastro: ::warning:: en el paso final "Avisar de pasos fallidos" (comun P4).
         continue-on-error: true
+        # Si falla, queda rastro: ::warning:: en el paso final "Avisar de pasos fallidos" (comun P4).
 
       - name: Search Console -- rendimiento real de búsqueda (últimos 7 días)
         # Usa google-auth-library (no el paquete googleapis completo,
@@ -263,8 +263,8 @@ jobs:
               }
             })();
           '
-        # Si falla, queda rastro: ::warning:: en el paso final "Avisar de pasos fallidos" (comun P4).
         continue-on-error: true
+        # Si falla, queda rastro: ::warning:: en el paso final "Avisar de pasos fallidos" (comun P4).
 
       - name: Search Console -- indexación de las páginas del sitemap
         # Añadido 2026-09-28, pedido explícito del usuario ("cómo reviso las
@@ -280,8 +280,8 @@ jobs:
         run: |
           npm ci --no-audit --no-fund
           node indexacion-google.mjs
-        # Si falla, queda rastro: ::warning:: en el paso final "Avisar de pasos fallidos" (comun P4).
         continue-on-error: true
+        # Si falla, queda rastro: ::warning:: en el paso final "Avisar de pasos fallidos" (comun P4).
 
       - name: Estado de las webcams (camara_estado, tabla pública)
         # Añadido 2026-09-19, pedido explícito del usuario: un informe
@@ -321,8 +321,8 @@ jobs:
                 fs.appendFileSync(process.env.GITHUB_OUTPUT, "resultado<<EOF\n  - No se pudo comprobar (" + String(e) + ")\nEOF\n");
               });
           '
-        # Si falla, queda rastro: ::warning:: en el paso final "Avisar de pasos fallidos" (comun P4).
         continue-on-error: true
+        # Si falla, queda rastro: ::warning:: en el paso final "Avisar de pasos fallidos" (comun P4).
 
       - name: Último smoke test (external, ver smoke-test.yml)
         # Simplificado 2026-09-20, pedido explícito del usuario: antes
@@ -549,8 +549,8 @@ jobs:
             fi
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
-        # Si falla, queda rastro: ::warning:: en el paso final "Avisar de pasos fallidos" (comun P4).
         continue-on-error: true
+        # Si falla, queda rastro: ::warning:: en el paso final "Avisar de pasos fallidos" (comun P4).
 
       - name: Reunir lo añadido a ROBOT.md en las últimas 24h
         id: robot24h
