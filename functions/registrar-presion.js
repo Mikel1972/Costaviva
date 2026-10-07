@@ -31,11 +31,18 @@
 // endpoint de escritura abierto al público — ver la nota de seguridad en
 // supabase/migrations/20260912220000_presion_historico.sql sobre el
 // riesgo residual aceptado (la anon key es pública por diseño).
+// (Ese riesgo residual ya no se acepta desde 2026-10-07: ver más abajo.)
 
 import { SPOTS, coeficientePorSpot } from "./prevision.js";
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
+// Escrituras con SUPABASE_SERVICE_ROLE_KEY (secreto de Cloudflare Pages, el
+// mismo que ya usan notificar-altas.js / stripe-webhook.js / rayos-cerca.js),
+// no con la anon key: desde 2026-10-07 presion_historico y
+// coeficiente_marea_actual no tienen policy de escritura para anon
+// (migración ..._escrituras_solo_service_role.sql, estándar D7 de
+// Mikel1972/comun). Con la anon key fija en el código cualquiera podía
+// escribir directamente por REST saltándose el X-Cron-Secret de esta Function.
 
 // Número de peticiones en las que se reparte el cálculo de coeficientes
 // (la parte pesada — ver comentario de arriba). La parte de presión
@@ -49,6 +56,14 @@ export async function onRequestPost(context) {
   if (!secretoEsperado || secretoRecibido !== secretoEsperado) {
     return new Response(JSON.stringify({ error: "no autorizado" }), {
       status: 401,
+      headers: { "content-type": "application/json" },
+    });
+  }
+  const serviceRoleKey = context.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!serviceRoleKey) {
+    // Nunca se cae a la anon key: sin service_role no se escribe.
+    return new Response(JSON.stringify({ ok: false, error: "Falta SUPABASE_SERVICE_ROLE_KEY" }), {
+      status: 503,
       headers: { "content-type": "application/json" },
     });
   }
@@ -86,8 +101,8 @@ export async function onRequestPost(context) {
     const insertResp = await fetch(`${SUPABASE_URL}/rest/v1/presion_historico`, {
       method: "POST",
       headers: {
-        apikey: SUPABASE_ANON_KEY,
-        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        apikey: serviceRoleKey,
+        Authorization: `Bearer ${serviceRoleKey}`,
         "content-type": "application/json",
         Prefer: "return=minimal",
       },
@@ -136,8 +151,8 @@ export async function onRequestPost(context) {
       const upsertResp = await fetch(`${SUPABASE_URL}/rest/v1/coeficiente_marea_actual?on_conflict=spot_slug`, {
         method: "POST",
         headers: {
-          apikey: SUPABASE_ANON_KEY,
-          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          apikey: serviceRoleKey,
+          Authorization: `Bearer ${serviceRoleKey}`,
           "content-type": "application/json",
           Prefer: "resolution=merge-duplicates,return=minimal",
         },
