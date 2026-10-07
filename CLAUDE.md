@@ -1718,7 +1718,10 @@ despliegue: "no tengo botón para echar para atrás").
 **Decisión de diseño clave**: nada de esto usa `service_role` ni un
 segundo endpoint de Cloudflare. Tres funciones `security definer` en
 Postgres (`supabase/migrations/20260913090000_panel_administrador.sql`):
-- `es_admin()` — `auth.email() = 'etxebe2005@gmail.com'`.
+- `es_admin()` — `auth.email() = 'etxebe2005@gmail.com'`. **Pendiente de
+  aplicar (2026-10-07, comun auth.md A4):** `20261007150000_admin_por_tabla.sql`
+  la cambia a `exists` en `public.administradores` (por `user_id`, sin
+  policies). Al aplicarla, actualizar `supabase/baseline-seguridad.json`.
 - `admin_listar_usuarios()` — salta el RLS de `perfiles` (que solo deja
   ver la fila propia) SOLO si `es_admin()`.
 - `admin_fijar_acceso(user_id, aprobado)` — "pausar" reutiliza la
