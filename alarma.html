@@ -224,6 +224,7 @@
   <a href="/grupos.html"><span class="icono"><svg class="ico-grupos" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.3 19.5c0-3.5 2.6-5.7 5.7-5.7s5.7 2.2 5.7 5.7"/><circle cx="17" cy="9" r="2.6"/><path d="M15.3 13.9c2.5.4 4.2 2.3 4.2 5.6"/></svg><span class="punto-novedades-grupos" id="puntoNovedadesGrupos" hidden></span></span>Grupos</a>
 </nav>
 
+<script src="/assets/js/errores.js"></script>
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -383,7 +384,7 @@ document.getElementById("btnCompartir").addEventListener("click", async () => {
 async function cargarContactos() {
   const { data, error } = await supabase.from("contactos_emergencia").select("*").order("creado_en");
   const cont = document.getElementById("listaContactos");
-  if (error) { cont.innerHTML = `<p class="explicacion">${error.message}</p>`; return; }
+  if (error) { cont.innerHTML = ""; const p = document.createElement("p"); p.className = "explicacion"; p.textContent = traducirError(error, "No se han podido cargar tus contactos. Recarga la página."); cont.appendChild(p); return; }
   if (!data.length) { cont.innerHTML = `<p class="explicacion">Todavía no has añadido ningún contacto.</p>`; return; }
   cont.innerHTML = data.map((c) => `
     <div class="contacto" data-id="${c.id}">
@@ -411,7 +412,7 @@ document.getElementById("btnAnadirContacto").addEventListener("click", async () 
   const { error } = await supabase.from("contactos_emergencia").insert({ user_id: usuario.id, nombre, email });
   if (error) {
     mensajeEl.className = "mensaje error";
-    mensajeEl.textContent = error.message;
+    mensajeEl.textContent = traducirError(error, "No se ha podido guardar el contacto. Inténtalo de nuevo.");
     return;
   }
   document.getElementById("contactoNombre").value = "";

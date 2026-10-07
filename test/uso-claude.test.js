@@ -83,11 +83,14 @@ function contexto(env = ENV) {
   };
 }
 
-function simularTodo(anthropic) {
+function simularTodo(anthropic, usosHoy = 0) {
   const filas = [];
   globalThis.fetch = async (url, opt = {}) => {
     url = String(url);
     if (url.endsWith("/auth/v1/user")) return Response.json({ id: "user-1" });
+    if (url.includes("/rest/v1/uso_claude?") && opt.method === "HEAD") {
+      return new Response(null, { status: 200, headers: { "content-range": `*/${usosHoy}` } });
+    }
     if (url.includes("api.anthropic.com")) return anthropic();
     if (url.endsWith("/rest/v1/uso_claude")) {
       filas.push(JSON.parse(opt.body));
@@ -142,4 +145,32 @@ test("identificar-captura: fallo de red registra fallo_proveedor una sola vez", 
   assert.equal(r.status, 502);
   assert.equal(filas.length, 1);
   assert.equal(filas[0].codigo, "fallo_proveedor");
+});
+
+test("identificar-captura: con el límite diario alcanzado no llama a Claude (C6)", async () => {
+  let llamadasClaude = 0;
+  const filas = simularTodo(() => { llamadasClaude++; return Response.json({}); }, 30);
+  const { ctx, pendientes } = contexto();
+  const r = await onRequestPost(ctx);
+  await Promise.all(pendientes);
+  assert.equal(r.status, 429);
+  assert.equal((await r.json()).codigo, "limite_diario");
+  assert.equal(llamadasClaude, 0);
+  assert.equal(filas.length, 0);
+});
+
+test("identificar-captura: respuesta cortada por max_tokens es un fallo propio (C4)", async () => {
+  const filas = simularTodo(() => Response.json({
+    model: "claude-haiku-4-5-20251001", usage: USAGE, stop_reason: "max_tokens",
+    content: [{ type: "text", text: '{"especie":"Lub' }],
+  }));
+  const { ctx, pendientes } = contexto();
+  const r = await onRequestPost(ctx);
+  await Promise.all(pendientes);
+  assert.equal(r.status, 502);
+  assert.equal((await r.json()).codigo, "respuesta_cortada");
+  assert.equal(filas.length, 1);
+  assert.equal(filas[0].ok, false);
+  assert.equal(filas[0].codigo, "respuesta_cortada");
+  assert.equal(filas[0].input_tokens, 120);
 });

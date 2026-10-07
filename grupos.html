@@ -184,6 +184,7 @@
   <a href="/grupos.html" class="activa"><span class="icono"><svg class="ico-grupos" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.3 19.5c0-3.5 2.6-5.7 5.7-5.7s5.7 2.2 5.7 5.7"/><circle cx="17" cy="9" r="2.6"/><path d="M15.3 13.9c2.5.4 4.2 2.3 4.2 5.6"/></svg><span class="punto-novedades-grupos" id="puntoNovedadesGrupos" hidden></span></span>Grupos</a>
 </nav>
 
+<script src="/assets/js/errores.js"></script>
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -268,7 +269,7 @@ document.getElementById("btnGuardarApodo").addEventListener("click", async () =>
   const nombre = document.getElementById("miApodo").value.trim();
   if (!nombre) { mostrarMensaje("mensajeApodo", "Escribe un apodo.", "error"); return; }
   const { error } = await supabase.from("perfiles").update({ nombre }).eq("id", usuario.id);
-  if (error) mostrarMensaje("mensajeApodo", error.message, "error");
+  if (error) mostrarMensaje("mensajeApodo", traducirError(error, "No se ha podido guardar el apodo. Inténtalo de nuevo."), "error");
   else mostrarMensaje("mensajeApodo", "Apodo guardado.", "ok");
 });
 
@@ -280,7 +281,7 @@ async function unirseConCodigo(codigoBruto) {
   if (m) codigo = decodeURIComponent(m[1]);
   if (!codigo) { mostrarMensaje("mensajeUnirse", "Pega un código o enlace de invitación.", "error"); return; }
   const { error } = await supabase.rpc("unirse_a_grupo", { p_codigo: codigo });
-  if (error) { mostrarMensaje("mensajeUnirse", error.message, "error"); return; }
+  if (error) { mostrarMensaje("mensajeUnirse", traducirError(error, "No se ha podido unir al grupo. Revisa el código e inténtalo de nuevo."), "error"); return; }
   registrarEvento("unirse_grupo");
   mostrarMensaje("mensajeUnirse", "Te has unido al grupo.", "ok");
   document.getElementById("codigoUnirse").value = "";
@@ -299,7 +300,7 @@ document.getElementById("btnCrearGrupo").addEventListener("click", async () => {
   const nombre = document.getElementById("nombreGrupo").value.trim();
   if (!nombre) { mostrarMensaje("mensajeCrearGrupo", "Ponle un nombre al grupo.", "error"); return; }
   const { error } = await supabase.rpc("crear_grupo", { p_nombre: nombre });
-  if (error) { mostrarMensaje("mensajeCrearGrupo", error.message, "error"); return; }
+  if (error) { mostrarMensaje("mensajeCrearGrupo", traducirError(error, "No se ha podido crear el grupo. Inténtalo de nuevo."), "error"); return; }
   registrarEvento("crear_grupo");
   document.getElementById("nombreGrupo").value = "";
   mostrarMensaje("mensajeCrearGrupo", "Grupo creado.", "ok");
@@ -319,7 +320,7 @@ function generarCodigo() {
 async function generarInvitacion(grupoId, contenedorEl) {
   const codigo = generarCodigo();
   const { error } = await supabase.from("invitaciones_grupo").insert({ grupo_id: grupoId, creado_por: usuario.id, codigo });
-  if (error) { alert(`No se ha podido generar la invitación: ${error.message}`); return; }
+  if (error) { alert(traducirError(error, "No se ha podido generar la invitación. Inténtalo de nuevo.")); return; }
   const enlace = `${window.location.origin}/grupos.html?codigo=${codigo}`;
   contenedorEl.innerHTML = `<div class="invitacion-caja">${enlace}</div>`;
 }
@@ -384,7 +385,7 @@ async function cargarGrupos() {
     .from("miembros_grupo")
     .select("*, grupos(id, nombre)")
     .eq("user_id", usuario.id);
-  if (error) { cont.innerHTML = `<p style="font-size:12px; color:#A34A35;">${error.message}</p>`; return; }
+  if (error) { cont.innerHTML = ""; const p = document.createElement("p"); p.style.cssText = "font-size:12px; color:#A34A35;"; p.textContent = traducirError(error, "No se han podido cargar tus grupos. Recarga la página."); cont.appendChild(p); return; }
   if (!miembros || !miembros.length) {
     cont.innerHTML = `<p style="font-size:12px; color:#42585F;">Todavía no perteneces a ningún grupo — crea uno o únete con un código.</p>`;
     return;

@@ -316,6 +316,7 @@
   </div>
 </div>
 
+<script src="/assets/js/errores.js"></script>
 <script type="module">
 // ---------------------------------------------------------------------------
 // Acceso vía Supabase Auth (Cloudflare Pages + Supabase + JS vanilla).
@@ -437,7 +438,7 @@ document.getElementById("linkRecuperar").addEventListener("click", async () => {
     redirectTo: `${window.location.origin}/login`,
   });
   reiniciarTurnstile(widgetLogin);
-  if (error) mostrarMensaje(error.message, "error");
+  if (error) mostrarMensaje(traducirError(error, "No se ha podido enviar el enlace. Inténtalo de nuevo en unos minutos."), "error");
   else mostrarMensaje("Te hemos enviado un enlace para restablecer la contraseña.", "ok");
 });
 
@@ -510,7 +511,7 @@ formNueva.addEventListener("submit", async (e) => {
   btnGuardarNueva.disabled = false;
 
   if (error) {
-    mensajeNuevaEl.textContent = error.message;
+    mensajeNuevaEl.textContent = traducirError(error, "No se ha podido cambiar la contraseña. Inténtalo de nuevo.");
     mensajeNuevaEl.className = "mensaje error";
     return;
   }
@@ -584,7 +585,7 @@ formLogin.addEventListener("submit", async (e) => {
   const { data, error } = await supabase.auth.signInWithPassword({ email, password, options: { captchaToken } });
   reiniciarTurnstile(widgetLogin);
   if (error) {
-    mostrarMensaje(error.message, "error");
+    mostrarMensaje(traducirError(error, "No se ha podido entrar. Inténtalo de nuevo en unos minutos."), "error");
   } else {
     // "aprobado" ya no es un gate inicial (las altas se aprueban solas)
     // — solo sirve para bloquear a alguien que el admin haya pausado
@@ -663,7 +664,7 @@ formRegistroDatos.addEventListener("submit", async (e) => {
   btnContinuarRegistro.disabled = false;
 
   if (error) {
-    mostrarMensajeRegistro(error.message, "error");
+    mostrarMensajeRegistro(traducirError(error, "No se ha podido crear la cuenta. Inténtalo de nuevo en unos minutos."), "error");
   } else {
     // El admin se entera solo cuando el email quede confirmado de
     // verdad, sin bloquear a nadie, vía notificar-altas.yml (cron cada

@@ -23,6 +23,11 @@ import { registrarUsoClaude } from "./_lib/uso-claude.js";
 const FUNCION_USO = "identificar-captura";
 const MODELO = "claude-haiku-4-5-20251001";
 const MAX_TOKENS = 300;
+// Tope por usuario y 24 h (comun, estandares/claude-api.md C6, 2026-10-07).
+// Generoso para el uso real (una foto por captura) pero corta el abuso de
+// una cuenta que se ponga a mandar fotos en bucle. Se cuenta sobre
+// public.uso_claude, que ya registra cada llamada con su user_id.
+const LIMITE_DIARIO = 30;
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
@@ -83,6 +88,34 @@ function clasificarFalloProveedor(status, textoCrudo) {
     error: "La identificación automática ha fallado." };
 }
 
+// Llamadas de este usuario a este endpoint en las últimas 24 h, o null si
+// no se puede saber (sin service_role, tabla sin crear, red). Con null se
+// deja pasar y se avisa en el log: el tope es un freno de coste, no puede
+// tumbar la identificación de todos si falla el contador.
+async function usosUltimas24h(env, userId) {
+  if (!userId || !env.SUPABASE_SERVICE_ROLE_KEY) return null;
+  try {
+    const desde = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    const resp = await fetch(
+      `${SUPABASE_URL}/rest/v1/uso_claude?select=id&funcion=eq.${FUNCION_USO}` +
+        `&user_id=eq.${encodeURIComponent(userId)}&creado_en=gte.${encodeURIComponent(desde)}`,
+      {
+        method: "HEAD",
+        headers: {
+          apikey: env.SUPABASE_SERVICE_ROLE_KEY,
+          Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
+          Prefer: "count=exact",
+        },
+      }
+    );
+    if (!resp.ok) return null;
+    const total = Number(resp.headers.get("content-range")?.split("/")?.[1]);
+    return Number.isFinite(total) ? total : null;
+  } catch (e) {
+    return null;
+  }
+}
+
 function json(status, obj) {
   return new Response(JSON.stringify(obj), { status, headers: { "content-type": "application/json" } });
 }
@@ -112,6 +145,14 @@ export async function onRequestPost(context) {
     console.error("identificar-captura: falta ANTHROPIC_API_KEY en el entorno");
     return json(503, { codigo: "sin_configurar", disponible: false,
       error: "La identificación automática no está configurada." });
+  }
+
+  const usos = await usosUltimas24h(context.env, userId);
+  if (usos === null) {
+    console.warn("identificar-captura: no se pudo contar el uso diario; se deja pasar");
+  } else if (usos >= LIMITE_DIARIO) {
+    return json(429, { codigo: "limite_diario", disponible: false,
+      error: "Has llegado al límite diario de identificaciones automáticas." });
   }
 
   let cuerpo;
@@ -171,11 +212,21 @@ Responde ÚNICAMENTE con el JSON, sin texto antes ni después:
       return json(c.status, { codigo: c.codigo, disponible: false, error: c.error });
     }
     const datos = await resp.json();
+    // stop_reason (comun claude-api.md C4): si se cortó por max_tokens, el
+    // JSON está incompleto. Es un fallo propio y con nombre, no un "JSON mal
+    // formado" que acabaría en el catch genérico.
+    const cortada = datos?.stop_reason === "max_tokens";
     usoRegistrado = true;
     await registrarUsoClaude(context.env, context, {
       funcion: FUNCION_USO, modelo: datos?.model || MODELO, usage: datos?.usage,
       maxTokens: MAX_TOKENS, userId,
+      ...(cortada ? { ok: false, codigo: "respuesta_cortada" } : {}),
     });
+    if (cortada) {
+      console.error(`identificar-captura: respuesta cortada por max_tokens (${MAX_TOKENS})`);
+      return json(502, { codigo: "respuesta_cortada", disponible: false,
+        error: "La identificación automática ha fallado." });
+    }
     const textoRespuesta = datos.content?.[0]?.text || "{}";
     const match = textoRespuesta.match(/\{[\s\S]*\}/);
     const resultado = match ? JSON.parse(match[0]) : {};

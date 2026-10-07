@@ -67,11 +67,9 @@ name: Robot de experiencia de usuario
 # reales: mareas absurdas en spots mediterráneos de marea casi nula, y
 # eliminar_grupo() no desplegada en producción) — pero la del 2026-09-17
 # agotó el límite ("Reached max turns (40)") y perdió el informe entero.
-# Como el paso tiene continue-on-error: true, esto NUNCA se ve como fallo
-# en GitHub Actions (el job queda en verde) — solo se nota porque el
-# Issue muestra el mensaje de reserva "no dejó informe esta pasada". Ojo
-# la próxima vez que se revise este workflow: un job verde aquí no
-# garantiza que la pasada terminara de verdad.
+# (Entonces el paso tenía continue-on-error y el job quedaba en verde. Desde
+# 2026-10-07 ya no: un fallo real, incluido quedarse sin turnos, sale en
+# rojo; solo la falta de saldo sale en verde con ::warning::.)
 
 on:
   schedule:
@@ -142,7 +140,8 @@ jobs:
       - name: Explorar la app como usuario(s) real(es) (Claude Code, sesión no interactiva)
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        continue-on-error: true
+        # Sin continue-on-error desde 2026-10-07 (comun claude-api.md C15):
+        # un fallo real sale en rojo; sin saldo, verde con ::warning::.
         run: |
           # Pausa comprobada en bash, ANTES de arrancar Claude: dentro del prompt
           # ya se habria pagado el arranque (Mikel1972/comun, claude-api.md C11).

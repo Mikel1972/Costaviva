@@ -33,6 +33,7 @@
 // riesgo residual aceptado (la anon key es pública por diseño).
 // (Ese riesgo residual ya no se acepta desde 2026-10-07: ver más abajo.)
 
+import { secretoValido } from "./_lib/secreto.js";
 import { SPOTS, coeficientePorSpot } from "./prevision.js";
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
@@ -53,7 +54,7 @@ const NUM_LOTES_COEFICIENTES = 4;
 export async function onRequestPost(context) {
   const secretoEsperado = context.env.CRON_SECRET;
   const secretoRecibido = context.request.headers.get("X-Cron-Secret");
-  if (!secretoEsperado || secretoRecibido !== secretoEsperado) {
+  if (!secretoValido(secretoRecibido, secretoEsperado)) {
     return new Response(JSON.stringify({ error: "no autorizado" }), {
       status: 401,
       headers: { "content-type": "application/json" },

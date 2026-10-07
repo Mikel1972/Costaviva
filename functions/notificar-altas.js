@@ -16,13 +16,16 @@
 // RESEND_API_KEY/ADMIN_EMAIL/SUPABASE_SERVICE_ROLE_KEY que ya estaban
 // configurados para aviso-alta.js.
 
+import { secretoValido } from "./_lib/secreto.js";
+import { enviarEmail as enviarConResend, esc } from "./_lib/email.js";
+
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 
 export async function onRequestPost(context) {
   const { env } = context;
   const secretoEsperado = env.CRON_SECRET;
   const secretoRecibido = context.request.headers.get("X-Cron-Secret");
-  if (!secretoEsperado || secretoRecibido !== secretoEsperado) {
+  if (!secretoValido(secretoRecibido, secretoEsperado)) {
     return new Response(JSON.stringify({ error: "no autorizado" }), {
       status: 401,
       headers: { "content-type": "application/json" },
@@ -46,17 +49,8 @@ export async function onRequestPost(context) {
   };
 
   async function enviarEmail(asunto, cuerpo) {
-    const envio = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${resendKey}` },
-      body: JSON.stringify({
-        from: "Costaviva <avisos@costaviva.org>",
-        to: [adminEmail],
-        subject: asunto,
-        html: cuerpo,
-      }),
-    });
-    if (!envio.ok) throw new Error(`Resend respondió ${envio.status}: ${await envio.text()}`);
+    const envio = await enviarConResend(env, { to: adminEmail, subject: asunto, html: cuerpo });
+    if (!envio.ok) throw new Error(envio.error);
   }
 
   const resultado = { activadas: 0, sinConfirmar: 0, errores: [] };
@@ -73,7 +67,7 @@ export async function onRequestPost(context) {
     for (const fila of filas) {
       await enviarEmail(
         `Costaviva: alta activada — ${fila.email}`,
-        `<p>${fila.email} confirmó su email y ya tiene acceso a Costaviva.</p><p>No hace falta ninguna acción por tu parte.</p>`
+        `<p>${esc(fila.email)} confirmó su email y ya tiene acceso a Costaviva.</p><p>No hace falta ninguna acción por tu parte.</p>`
       );
       const marcar = await fetch(`${SUPABASE_URL}/rest/v1/rpc/marcar_alta_activada_avisada`, {
         method: "POST",
@@ -99,7 +93,7 @@ export async function onRequestPost(context) {
     for (const fila of filas) {
       await enviarEmail(
         `Costaviva: alta sin confirmar — ${fila.email}`,
-        `<p>${fila.email} se registró el ${fila.creado_en} y sigue sin confirmar su email 48h después.</p><p>Puede ser un problema de entrega del email de confirmación — merece un vistazo.</p>`
+        `<p>${esc(fila.email)} se registró el ${esc(fila.creado_en)} y sigue sin confirmar su email 48h después.</p><p>Puede ser un problema de entrega del email de confirmación — merece un vistazo.</p>`
       );
       const marcar = await fetch(`${SUPABASE_URL}/rest/v1/rpc/marcar_alta_fallida_avisada`, {
         method: "POST",

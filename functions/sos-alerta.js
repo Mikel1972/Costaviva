@@ -16,6 +16,8 @@
 // verificó en Resend (DKIM/SPF/DMARC, ver CLAUDE.md) — el remitente
 // pasa a ser de ese dominio real.
 
+import { enviarEmail as enviarConResend, esc } from "./_lib/email.js";
+
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
@@ -37,30 +39,23 @@ async function contactosDelUsuario(token) {
   return resp.json();
 }
 
-async function enviarEmail(resendKey, destinatario, nombreUsuario, lat, lon, tipo, horaLocal) {
+async function enviarEmail(env, destinatario, nombreUsuario, lat, lon, tipo, horaLocal) {
   const enlaceMapa = `https://maps.google.com/?q=${lat},${lon}`;
   const motivo = tipo === "caida_detectada" ? "una posible caída detectada por su teléfono" : "un aviso manual";
   const asunto = `🆘 Aviso SOS de ${nombreUsuario} — Costaviva`;
   const cuerpo = `
-    <p><b>${nombreUsuario}</b> ha activado una alarma en Costaviva (${motivo}) a las ${horaLocal}.</p>
+    <p><b>${esc(nombreUsuario)}</b> ha activado una alarma en Costaviva (${motivo}) a las ${horaLocal}.</p>
     <p>Última ubicación conocida:</p>
-    <p><a href="${enlaceMapa}">${enlaceMapa}</a></p>
-    <p style="color:#888; font-size:12px;">Este es un aviso automático. Si no puedes contactar con ${nombreUsuario}, considera llamar al 112.</p>
+    <p><a href="${esc(enlaceMapa)}">${esc(enlaceMapa)}</a></p>
+    <p style="color:#888; font-size:12px;">Este es un aviso automático. Si no puedes contactar con ${esc(nombreUsuario)}, considera llamar al 112.</p>
   `;
-  const resp = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${resendKey}` },
-    body: JSON.stringify({
-      from: "Costaviva SOS <sos@costaviva.org>",
-      to: [destinatario],
-      subject: asunto,
-      html: cuerpo,
-    }),
+  const envio = await enviarConResend(env, {
+    from: "Costaviva SOS <sos@costaviva.org>",
+    to: destinatario,
+    subject: asunto,
+    html: cuerpo,
   });
-  if (!resp.ok) {
-    const detalle = await resp.text();
-    throw new Error(`Resend respondió ${resp.status}: ${detalle}`);
-  }
+  if (!envio.ok) throw new Error(envio.error);
 }
 
 export async function onRequestPost(context) {
@@ -112,7 +107,7 @@ export async function onRequestPost(context) {
     const nombreUsuario = usuario.email || "un usuario de Costaviva";
 
     const resultados = await Promise.allSettled(
-      contactos.map((c) => enviarEmail(resendKey, c.email, nombreUsuario, lat, lon, tipo, horaLocal))
+      contactos.map((c) => enviarEmail(env, c.email, nombreUsuario, lat, lon, tipo, horaLocal))
     );
     const enviados = resultados.filter((r) => r.status === "fulfilled").length;
     const fallidos = resultados.filter((r) => r.status === "rejected");

@@ -34,6 +34,9 @@
 // hecho nada malo. Fechas claras, el enlace para suscribirse, y se acabó.
 // Nada de urgencia fabricada.
 
+import { secretoValido } from "./_lib/secreto.js";
+import { enviarEmail } from "./_lib/email.js";
+
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const LIMITE_POR_PASADA = 10;
 
@@ -145,7 +148,7 @@ export async function onRequestPost(context) {
   const { env } = context;
   const secretoEsperado = env.CRON_SECRET;
   const secretoRecibido = context.request.headers.get("X-Cron-Secret");
-  if (!secretoEsperado || secretoRecibido !== secretoEsperado) {
+  if (!secretoValido(secretoRecibido, secretoEsperado)) {
     return json({ error: "no autorizado" }, 401);
   }
 
@@ -174,19 +177,10 @@ export async function onRequestPost(context) {
   }
 
   async function enviar(para, { asunto, cuerpo }) {
-    const envio = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${resendKey}` },
-      body: JSON.stringify({
-        from: "Costaviva <avisos@costaviva.org>",
-        to: [para],
-        subject: asunto,
-        text: cuerpo,
-      }),
-    });
+    const envio = await enviarEmail(env, { to: para, subject: asunto, text: cuerpo });
     // El detalle de Resend nunca va a la respuesta: puede traer el email del
-    // destinatario. Se lanza para que el llamante lo deje en el log.
-    if (!envio.ok) throw new Error(`Resend ${envio.status}: ${await envio.text()}`);
+    // destinatario. El helper ya lo deja en el log; aquí solo el código.
+    if (!envio.ok) throw new Error(envio.error);
   }
 
   async function avisarAdmin(asunto, lineas) {

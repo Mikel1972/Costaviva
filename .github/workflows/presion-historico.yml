@@ -22,6 +22,9 @@ on:
 
 jobs:
   registrar:
+    # Interruptor de pausa (comun pruebas-y-alertas.md P8): con la variable de
+    # repositorio AUTOMATION_PAUSED=true este job no se ejecuta.
+    if: ${{ vars.AUTOMATION_PAUSED != 'true' }}
     runs-on: ubuntu-latest
     steps:
       # Reintento añadido 2026-09-13, repartido en varias peticiones desde

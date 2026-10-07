@@ -37,8 +37,10 @@ name: Informe diario
 #
 # Necesita el secret ANTHROPIC_API_KEY (el mismo que ya usa
 # robot-buscador-fuentes.yml) para el paso de síntesis — si falta o no
-# tiene crédito, ese paso se salta con continue-on-error y el resto del
-# informe (los chequeos deterministas) se publica igual.
+# tiene crédito, ese paso avisa con ::warning:: y el resto del informe (los
+# chequeos deterministas) se publica igual. Cualquier otro fallo de la
+# síntesis deja el job en rojo, pero el Issue y el email salen igual
+# (if: !cancelled(), 2026-10-07).
 
 on:
   schedule:
@@ -133,6 +135,7 @@ jobs:
             echo "resultado=❌ FALLO — revisar" >> "$GITHUB_OUTPUT"
           fi
         continue-on-error: true
+        # Si falla, queda rastro: ::warning:: en el paso final "Avisar de pasos fallidos" (comun P4).
 
       - name: Fuentes externas (vía producción real, nunca inventado)
         id: fuentes
@@ -177,6 +180,7 @@ jobs:
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
         continue-on-error: true
+        # Si falla, queda rastro: ::warning:: en el paso final "Avisar de pasos fallidos" (comun P4).
 
       - name: Autenticarse en Google Cloud (Workload Identity Federation, sin clave)
         # Añadido 2026-09-20, pedido explícito del usuario: datos reales
@@ -203,6 +207,7 @@ jobs:
           workload_identity_provider: "projects/1029831673189/locations/global/workloadIdentityPools/github-actions-pool/providers/-github-actions-provider"
           service_account: "costaviva-search-console-reade@project-5a5d60f4-a099-4065-a23.iam.gserviceaccount.com"
         continue-on-error: true
+        # Si falla, queda rastro: ::warning:: en el paso final "Avisar de pasos fallidos" (comun P4).
 
       - name: Search Console -- rendimiento real de búsqueda (últimos 7 días)
         # Usa google-auth-library (no el paquete googleapis completo,
@@ -259,6 +264,7 @@ jobs:
             })();
           '
         continue-on-error: true
+        # Si falla, queda rastro: ::warning:: en el paso final "Avisar de pasos fallidos" (comun P4).
 
       - name: Search Console -- indexación de las páginas del sitemap
         # Añadido 2026-09-28, pedido explícito del usuario ("cómo reviso las
@@ -275,6 +281,7 @@ jobs:
           npm ci --no-audit --no-fund
           node indexacion-google.mjs
         continue-on-error: true
+        # Si falla, queda rastro: ::warning:: en el paso final "Avisar de pasos fallidos" (comun P4).
 
       - name: Estado de las webcams (camara_estado, tabla pública)
         # Añadido 2026-09-19, pedido explícito del usuario: un informe
@@ -315,6 +322,7 @@ jobs:
               });
           '
         continue-on-error: true
+        # Si falla, queda rastro: ::warning:: en el paso final "Avisar de pasos fallidos" (comun P4).
 
       - name: Último smoke test (external, ver smoke-test.yml)
         # Simplificado 2026-09-20, pedido explícito del usuario: antes
@@ -327,7 +335,10 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          datos=$(gh run list --workflow=smoke-test.yml --limit 1 --json conclusion,createdAt,url 2>/dev/null || echo "[]")
+          # Se saltan los runs "skipped": desde 2026-10-07 el smoke también se
+          # dispara con cada despliegue y los de preview quedan saltados.
+          datos=$(gh run list --workflow=smoke-test.yml --limit 30 --json conclusion,createdAt,url \
+            --jq '[.[] | select(.conclusion != "skipped")][:1]' 2>/dev/null || echo "[]")
           conclusion=$(echo "$datos" | node -e 'let d="";process.stdin.on("data",c=>d+=c);process.stdin.on("end",()=>{const r=JSON.parse(d)[0];console.log(r?(r.conclusion||"en_curso"):"");})')
           fecha=$(echo "$datos" | node -e 'let d="";process.stdin.on("data",c=>d+=c);process.stdin.on("end",()=>{const r=JSON.parse(d)[0];console.log(r?r.createdAt:"");})')
           url=$(echo "$datos" | node -e 'let d="";process.stdin.on("data",c=>d+=c);process.stdin.on("end",()=>{const r=JSON.parse(d)[0];console.log(r?r.url:"");})')
@@ -409,15 +420,27 @@ jobs:
 
       - name: Conteo de alarmas SOS (24h, agregado, sin datos personales)
         id: sos
+        # Con service_role desde 2026-10-07: la migración
+        # 20261007160000_revocar_execute_definer.sql quita el EXECUTE de anon
+        # en esta función (comun supabase.md D10).
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
+          if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "::warning::Falta el secret SUPABASE_SERVICE_ROLE_KEY: sin conteo de alarmas SOS."
+            echo "resultado=N/D (falta el secret SUPABASE_SERVICE_ROLE_KEY)" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           resp=$(curl -sS --max-time 15 \
             "https://imncbmizxkorotpeisic.supabase.co/rest/v1/rpc/contar_alertas_sos_24h" \
-            -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc" \
+            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
             -H "Content-Type: application/json" -X POST -d '{}')
           if [[ "$resp" =~ ^[0-9]+$ ]]; then
             echo "resultado=$resp" >> "$GITHUB_OUTPUT"
           else
-            echo "resultado=N/D (¿falta aplicar supabase/schema_conteo_sos.sql?)" >> "$GITHUB_OUTPUT"
+            echo "::warning::contar_alertas_sos_24h no devolvió un número."
+            echo "resultado=N/D (contar_alertas_sos_24h no respondió con un número)" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Actividad de marketing (Instagram)
@@ -527,6 +550,7 @@ jobs:
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
         continue-on-error: true
+        # Si falla, queda rastro: ::warning:: en el paso final "Avisar de pasos fallidos" (comun P4).
 
       - name: Reunir lo añadido a ROBOT.md en las últimas 24h
         id: robot24h
@@ -543,7 +567,10 @@ jobs:
         id: sintesis
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        continue-on-error: true
+        # Sin continue-on-error desde 2026-10-07 (comun claude-api.md C15 y
+        # pruebas-y-alertas.md P4): un fallo real de Claude pone el job en
+        # rojo. Sin saldo sale en verde con ::warning:: (excepción
+        # documentada). El Issue y el email se publican igual (!cancelled()).
         run: |
           # Pausa comprobada en bash, ANTES de arrancar Claude: dentro del prompt
           # ya se habria pagado el arranque (Mikel1972/comun, claude-api.md C11).
@@ -603,6 +630,9 @@ jobs:
 
       - name: Publicar/actualizar el Issue "Informe diario"
         id: publicar
+        # Se publica aunque haya fallado un paso anterior (p.ej. la síntesis):
+        # el informe con los datos reales llega igual y el job queda en rojo.
+        if: ${{ !cancelled() }}
         uses: actions/github-script@v7
         with:
           script: |
@@ -715,9 +745,12 @@ jobs:
         # no por depender de las notificaciones de GitHub. El Issue de
         # arriba se queda como histórico, pero esto es lo que garantiza que
         # de verdad llegue cada día sin que el usuario tenga que configurar
-        # nada en GitHub. continue-on-error: un fallo de email nunca debe
-        # tumbar el resto del informe (que ya quedó bien en el Issue).
-        continue-on-error: true
+        # nada en GitHub. Es el último paso que hace algo, así que un fallo
+        # aquí ya no tumba el resto del informe (que quedó en el Issue); sin
+        # continue-on-error desde 2026-10-07 para que un email que no llega
+        # se vea en rojo (comun P4).
+        id: email
+        if: ${{ !cancelled() && steps.publicar.outcome == 'success' }}
         env:
           TEXTO: ${{ steps.publicar.outputs.texto_email }}
           CRON_SECRET: ${{ secrets.PRESION_CRON_SECRET }}
@@ -728,3 +761,30 @@ jobs:
             -H "Content-Type: application/json" \
             --fail-with-body \
             --data-binary @/tmp/informe-email.json
+
+      - name: Avisar de pasos fallidos
+        # Los pasos de datos llevan continue-on-error para que uno roto no
+        # deje sin informe al resto, pero su fallo no puede pasar en verde
+        # sin rastro (comun pruebas-y-alertas.md P4): se avisa aquí con
+        # ::warning:: y en el resumen del job.
+        if: always()
+        env:
+          RESULTADOS: >-
+            auth_test=${{ steps.auth_test.outcome }}
+            seo=${{ steps.seo.outcome }}
+            auth_google=${{ steps.auth_google.outcome }}
+            searchconsole=${{ steps.searchconsole.outcome }}
+            indexacion=${{ steps.indexacion.outcome }}
+            camaras=${{ steps.camaras.outcome }}
+            marketing=${{ steps.marketing.outcome }}
+        run: |
+          fallidos=""
+          for r in $RESULTADOS; do
+            [ "${r#*=}" = "failure" ] && fallidos="$fallidos ${r%%=*}"
+          done
+          if [ -n "$fallidos" ]; then
+            echo "::warning::Pasos del informe diario que han fallado (el informe salió sin sus datos):$fallidos"
+            echo "### ⚠️ Pasos fallidos:$fallidos" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Ningún paso de datos ha fallado."
+          fi
