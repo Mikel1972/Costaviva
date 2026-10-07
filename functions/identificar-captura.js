@@ -17,6 +17,13 @@
 // proyecto). El cliente muestra esto siempre como editable, nunca como
 // un dato ya confirmado.
 
+import { registrarUsoClaude } from "./_lib/uso-claude.js";
+
+// Registro del gasto en public.uso_claude (comun, estandares/claude-api.md C5).
+const FUNCION_USO = "identificar-captura";
+const MODELO = "claude-haiku-4-5-20251001";
+const MAX_TOKENS = 300;
+
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
 
@@ -89,6 +96,14 @@ export async function onRequestPost(context) {
     headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${token}` },
   });
   if (!verifResp.ok) return json(401, { error: "sesión no válida" });
+  // Solo para atribuir el gasto de Claude al usuario; si no se puede leer,
+  // se registra sin user_id (nunca cambia la respuesta).
+  let userId = null;
+  try {
+    userId = (await verifResp.json())?.id || null;
+  } catch (e) {
+    userId = null;
+  }
 
   if (!context.env.ANTHROPIC_API_KEY) {
     // 503 + codigo, no 500: para quien usa la app es exactamente el mismo
@@ -119,6 +134,7 @@ Identifica, si puedes:
 Responde ÚNICAMENTE con el JSON, sin texto antes ni después:
 {"especie": "...", "talla_cm": ..., "peso_g": ..., "confianza": "..."}`;
 
+  let usoRegistrado = false;
   try {
     const resp = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -128,8 +144,8 @@ Responde ÚNICAMENTE con el JSON, sin texto antes ni después:
         "content-type": "application/json",
       },
       body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
-        max_tokens: 300,
+        model: MODELO,
+        max_tokens: MAX_TOKENS,
         messages: [
           {
             role: "user",
@@ -147,9 +163,19 @@ Responde ÚNICAMENTE con el JSON, sin texto antes ni después:
       // poder diagnosticar), nunca viaja al cliente.
       console.error(`identificar-captura: Anthropic HTTP ${resp.status}: ${textoCrudo}`);
       const c = clasificarFalloProveedor(resp.status, textoCrudo);
+      usoRegistrado = true;
+      await registrarUsoClaude(context.env, context, {
+        funcion: FUNCION_USO, modelo: MODELO, usage: null, maxTokens: MAX_TOKENS,
+        ok: false, codigo: c.codigo, userId,
+      });
       return json(c.status, { codigo: c.codigo, disponible: false, error: c.error });
     }
     const datos = await resp.json();
+    usoRegistrado = true;
+    await registrarUsoClaude(context.env, context, {
+      funcion: FUNCION_USO, modelo: datos?.model || MODELO, usage: datos?.usage,
+      maxTokens: MAX_TOKENS, userId,
+    });
     const textoRespuesta = datos.content?.[0]?.text || "{}";
     const match = textoRespuesta.match(/\{[\s\S]*\}/);
     const resultado = match ? JSON.parse(match[0]) : {};
@@ -164,6 +190,12 @@ Responde ÚNICAMENTE con el JSON, sin texto antes ni después:
     // Fallo de red/parseo por nuestro lado: mismo criterio, el detalle al
     // log y al cliente solo algo que pueda leer sin alarmarse.
     console.error(`identificar-captura: fallo inesperado: ${String(e)}`);
+    if (!usoRegistrado) {
+      await registrarUsoClaude(context.env, context, {
+        funcion: FUNCION_USO, modelo: MODELO, usage: null, maxTokens: MAX_TOKENS,
+        ok: false, codigo: "fallo_proveedor", userId,
+      });
+    }
     return json(502, { codigo: "fallo_proveedor", disponible: false,
       error: "La identificación automática ha fallado." });
   }
