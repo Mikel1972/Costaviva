@@ -153,7 +153,7 @@ jobs:
             let r;
             try { r = JSON.parse(fs.readFileSync('/tmp/identificacion.json', 'utf8')); }
             catch (e) { console.error('JSON inválido en la respuesta: ' + e.message); process.exit(1); }
-            const DEGRADADO = ['sin_credito', 'saturado', 'sin_configurar'];
+            const DEGRADADO = ['sin_credito', 'saturado', 'sin_configurar', 'limite_diario'];
             if (DEGRADADO.includes(r.codigo)) { console.log('DEGRADADO ' + r.codigo); process.exit(0); }
             if (r.error) { console.error('El endpoint devolvió un error: ' + r.error); process.exit(1); }
             for (const k of ['especie', 'talla_cm', 'peso_g', 'confianza']) {
