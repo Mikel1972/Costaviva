@@ -18,6 +18,9 @@
 //
 // SI AÑADES UNA PÁGINA, UN ENDPOINT O UNA CARPETA DE ASSETS: tiene que
 // entrar en rutas-publicas.js o devolverá 404. Es deliberado.
+//
+// Además, a toda respuesta HTML le pone la CSP con nonce (abajo, conformidad
+// W6, 2026-10-07). Fail-closed: si falla, 500, nunca HTML sin CSP.
 import { esRutaPermitida } from "./_lib/rutas-publicas.js";
 
 export async function onRequest(context) {
@@ -26,5 +29,111 @@ export async function onRequest(context) {
   if (!esRutaPermitida(pathname)) {
     return new Response("Not Found", { status: 404 });
   }
-  return next();
+  return aplicarCsp(await next(), HTMLRewriter);
+}
+
+// ---------------------------------------------------------------------------
+// Content-Security-Policy con nonce por petición (Mikel1972/comun,
+// estandares/web-y-despliegue.md W6). Adaptado de Pólizas.ai
+// (su functions/_middleware.js), con tres diferencias deliberadas:
+//
+// 1. El nonce va en TODOS los <script>, no solo en los inline. Usamos
+//    'strict-dynamic', y con él los navegadores modernos ignoran la lista de
+//    hosts y 'self': un <script src> sin nonce no cargaría. A cambio, lo que
+//    carga un script con nonce (Turnstile, los módulos de esm.sh que importa
+//    el <script type="module">, el worker de hls.js) hereda la confianza sin
+//    tener que listar cada origen.
+// 2. Fail-closed: si preparar la reescritura falla, 500 en vez de servir el
+//    HTML sin CSP. La cabecera se fija ANTES de que salga el primer byte, así
+//    que un error a mitad del streaming corta la respuesta, pero lo que haya
+//    llegado al navegador ya lleva la CSP.
+// 3. connect-src, img-src y media-src admiten https: entero. Las webcams
+//    (HLS y JPG) vienen de hosts muy variados y el robot de webcams añade
+//    hosts nuevos sin tocar este fichero (streamlock.net, sXXX.ipcamlive.com,
+//    que además cambia de servidor sin aviso). Una lista cerrada rompería una
+//    cámara cada vez que cambie un host. Lo que protege de verdad frente a un
+//    XSS es script-src, que sí es estricto.
+//
+// SI AÑADES UN <script>: no hace falta nada, el middleware le pone el nonce.
+// Lo que NO funciona con esta CSP: atributos on*="..." en el HTML (ni en
+// cadenas que se metan con innerHTML), URLs javascript: y eval(). Usa
+// addEventListener.
+
+const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
+
+export function generarNonce() {
+  const bytes = new Uint8Array(18);
+  crypto.getRandomValues(bytes);
+  let bin = "";
+  for (const b of bytes) bin += String.fromCharCode(b);
+  return btoa(bin);
+}
+
+export function construirCsp(nonce) {
+  return [
+    "default-src 'self'",
+    // https: solo lo usan navegadores sin soporte de 'strict-dynamic' (los
+    // que sí lo soportan lo ignoran). Nunca 'unsafe-inline' (W6).
+    `script-src 'nonce-${nonce}' 'strict-dynamic' https:`,
+    // Los estilos inline (atributos style= y <style>) sí pueden quedarse:
+    // el estándar solo prohíbe 'unsafe-inline' en scripts.
+    "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://fonts.googleapis.com",
+    "font-src 'self' https://fonts.gstatic.com",
+    // Teselas de mapas (ArcGIS, EMODnet, EUMETSAT, RainViewer), iconos de
+    // Leaflet, fotos firmadas de Supabase Storage, snapshots de webcams.
+    "img-src 'self' data: blob: https:",
+    // Vídeo de portada (self) y HLS de webcams: hls.js usa MediaSource
+    // (blob:); Safari reproduce el .m3u8 directamente desde el host remoto.
+    "media-src 'self' blob: https:",
+    // fetch/XHR: Supabase (REST, auth, storage y realtime por wss), Open-Meteo,
+    // RainViewer, EUMETSAT, playlists y segmentos HLS, beacon de Cloudflare.
+    `connect-src 'self' https: ${SUPABASE_URL.replace("https://", "wss://")}`,
+    // hls.js arranca su worker desde un blob:.
+    "worker-src 'self' blob:",
+    // Turnstile (login.html).
+    "frame-src https://challenges.cloudflare.com",
+    "manifest-src 'self'",
+    "object-src 'none'",
+    "base-uri 'none'",
+    "form-action 'self'",
+    "frame-ancestors 'none'",
+  ].join("; ");
+}
+
+// Devuelve la respuesta con CSP y nonce en cada <script>, o la misma
+// respuesta si no es HTML. `Rewriter` es el HTMLRewriter de Cloudflare; se
+// pasa como parámetro para poder probarlo en Node (test/csp.test.js). Pages
+// solo usa los exports onRequest*; los demás exports son para el test.
+export function aplicarCsp(response, Rewriter) {
+  const tipo = response.headers.get("content-type") || "";
+  if (!tipo.toLowerCase().includes("text/html")) return response;
+
+  try {
+    const nonce = generarNonce();
+    const reescrita = new Rewriter()
+      .on("script", {
+        element(el) {
+          el.setAttribute("nonce", nonce);
+        },
+      })
+      .transform(response);
+
+    const headers = new Headers(reescrita.headers);
+    headers.set("Content-Security-Policy", construirCsp(nonce));
+    // Sin ETag: con él, el navegador revalida, recibe un 304 y reutiliza la
+    // página de antes con el nonce de antes. Cada carga, nonce nuevo.
+    headers.delete("etag");
+    headers.delete("content-length");
+    return new Response(reescrita.body, {
+      status: reescrita.status,
+      statusText: reescrita.statusText,
+      headers,
+    });
+  } catch (err) {
+    console.error("CSP: no se pudo reescribir el HTML, se devuelve 500", err);
+    return new Response("Error interno", {
+      status: 500,
+      headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" },
+    });
+  }
 }
