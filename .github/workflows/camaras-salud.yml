@@ -35,6 +35,10 @@ on:
 # porque GitHub solo cumplía el schedule unas 7 veces al día. El schedule se
 # queda de respaldo; esto evita que dos ejecuciones se solapen (la segunda
 # espera a que acabe la primera, no se cancela nada).
+# contents: write solo para el volcado diario de datos-robots/camaras-estado.json.
+permissions:
+  contents: write
+
 concurrency:
   group: camaras-salud
   cancel-in-progress: false
@@ -65,3 +69,35 @@ jobs:
         env:
           CRON_SECRET: ${{ secrets.PRESION_CRON_SECRET }}
         run: node comprobar-camaras.mjs
+
+      # Una vez al día (la primera pasada desde las 03:00 UTC) deja el estado de
+      # las cámaras en el repo para la rutina "Cámaras caídas", que corre en la
+      # nube con la suscripción y no tiene acceso a Supabase (Mikel1972/comun,
+      # claude-api.md "Dónde va cada cosa"). Sin IA. camara_estado es pública:
+      # el estado de unas webcams, no datos de nadie.
+      - name: Volcar el estado de las cámaras para la rutina
+        env:
+          SUPABASE_URL: https://imncbmizxkorotpeisic.supabase.co
+        run: |
+          F=datos-robots/camaras-estado.json
+          HOY=$(date -u +%F)
+          if [ "$(date -u +%H)" -lt 3 ]; then echo "Antes de las 03:00 UTC: no toca."; exit 0; fi
+          if [ -f "$F" ] && grep -q "\"generado_en\": *\"$HOY" "$F"; then echo "Ya volcado hoy."; exit 0; fi
+          KEY=$(grep -oE "eyJ[A-Za-z0-9_.-]{40,}" scripts/camaras/comprobar-camaras.mjs | head -1)
+          curl -sSf -G "$SUPABASE_URL/rest/v1/camara_estado" \
+            --data-urlencode "select=spot_slug,sin_senal,motivo,fallos_seguidos,ultima_senal_en,fuente_usada" \
+            --data-urlencode "order=fallos_seguidos.desc" \
+            -H "apikey: $KEY" -H "Authorization: Bearer $KEY" -o /tmp/camaras.json
+          mkdir -p datos-robots
+          node -e '
+            const fs = require("fs");
+            const camaras = JSON.parse(fs.readFileSync("/tmp/camaras.json", "utf8"));
+            if (!Array.isArray(camaras)) throw new Error("respuesta inesperada");
+            fs.writeFileSync(process.argv[1], JSON.stringify({ generado_en: new Date().toISOString(), fuente: "camara_estado", camaras }, null, 1) + "\n");
+          ' "$F"
+          git config user.name "Costaviva (volcado)"
+          git config user.email "noreply@anthropic.com"
+          git add "$F"
+          git commit -qm "Estado de las cámaras para la rutina [skip ci]"
+          for i in 1 2 3; do git pull -q --rebase origin main && git push -q origin HEAD:main && exit 0; sleep 5; done
+          echo "::warning::No se pudo subir $F"; exit 1

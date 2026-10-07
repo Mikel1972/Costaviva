@@ -550,6 +550,17 @@ jobs:
           if [ -f "$GITHUB_WORKSPACE/ROBOT_PAUSADO" ]; then echo "ROBOT_PAUSADO: no se arranca Claude."; exit 0; fi
           SALIDA_CLAUDE=/tmp/claude-salida.log
           rm -f /tmp/informe-sintesis.txt
+          # Desde el 2026-10-07 la síntesis la escribe la rutina "Costaviva -
+          # Síntesis del informe diario" (suscripción) en
+          # datos-robots/sintesis-informe.md. Si es de hoy, se usa y no se llama
+          # a la API; si no, se hace aquí como respaldo (comun, claude-api.md C16).
+          git -C "$GITHUB_WORKSPACE" pull -q origin main || true
+          S="$GITHUB_WORKSPACE/datos-robots/sintesis-informe.md"
+          if [ -f "$S" ] && head -1 "$S" | grep -q "fecha=$(TZ=Europe/Madrid date +%F) "; then
+            tail -n +3 "$S" > /tmp/informe-sintesis.txt
+            echo "Síntesis de la rutina de hoy: no se llama a la API."
+            exit 0
+          fi
           # Recorte de gasto de API (2026-09-28, ver SALDO_API.md en Mikel1972/comun): si los
           # robots no escribieron nada en ROBOT.md en 24 h no hay nada que
           # resumir y no se llama a Claude. Si lo hay, la sesión arranca fuera
