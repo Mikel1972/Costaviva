@@ -247,6 +247,7 @@
   <a href="/grupos.html"><span class="icono"><svg class="ico-grupos" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.3 19.5c0-3.5 2.6-5.7 5.7-5.7s5.7 2.2 5.7 5.7"/><circle cx="17" cy="9" r="2.6"/><path d="M15.3 13.9c2.5.4 4.2 2.3 4.2 5.6"/></svg><span class="punto-novedades-grupos" id="puntoNovedadesGrupos" hidden></span></span>Grupos</a>
 </nav>
 
+<script src="/assets/js/errores.js"></script>
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -1206,7 +1207,7 @@ async function guardarSalida(fecha, idExistente) {
     : await supabase.from("salidas_pesca").insert(datos);
   if (error) {
     mensajeEl.className = "mensaje error";
-    mensajeEl.textContent = error.message;
+    mensajeEl.textContent = traducirError(error, "No se ha podido guardar la salida. Inténtalo de nuevo.");
     btn.disabled = false;
     return;
   }
@@ -1386,10 +1387,10 @@ async function guardarCaptura(salidaId, fecha, idExistente, ordenFotoBase) {
   let capturaId = idExistente;
   if (idExistente) {
     const { error } = await supabase.from("capturas").update(datos).eq("id", idExistente);
-    if (error) { mensajeEl.className = "mensaje error"; mensajeEl.textContent = error.message; btn.disabled = false; return; }
+    if (error) { mensajeEl.className = "mensaje error"; mensajeEl.textContent = traducirError(error, "No se ha podido guardar la captura. Inténtalo de nuevo."); btn.disabled = false; return; }
   } else {
     const { data: captura, error } = await supabase.from("capturas").insert(datos).select().single();
-    if (error) { mensajeEl.className = "mensaje error"; mensajeEl.textContent = error.message; btn.disabled = false; return; }
+    if (error) { mensajeEl.className = "mensaje error"; mensajeEl.textContent = traducirError(error, "No se ha podido guardar la captura. Inténtalo de nuevo."); btn.disabled = false; return; }
     capturaId = captura.id;
     registrarEvento("crear_captura", { especie, tecnica: tecnica || null });
   }
@@ -1483,7 +1484,7 @@ async function concluirEntrada(iso, fechaObj, salida) {
       marea_pico_tipo: marea.picoTipo, marea_pico_hora: marea.picoHora,
     })
     .eq("id", salida.id);
-  if (error) { alert(`No se ha podido concluir: ${error.message}`); return; }
+  if (error) { alert(traducirError(error, "No se ha podido concluir la salida. Inténtalo de nuevo.")); return; }
   await cargarDatos();
   renderCalendario();
   abrirDia(iso, fechaObj);
