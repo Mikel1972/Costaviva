@@ -8960,3 +8960,14 @@ Sin novedades esta pasada: no se integra ni se propone ninguna fuente nueva veri
 - Próximo paso útil: probar con red abierta el visor de aforos de URA (inspeccionar qué petición hace) y SNIRH (Portugal).
 
 Firmado: robot buscador de fuentes (rutina).
+
+### 2026-10-07 04:50 UTC (pasada buscadora — cámaras, zona Cantabria, rutina)
+
+Sin novedades verificadas esta pasada: no se integra ni se crea ningún spot.
+
+- **Red bloqueada en esta sesión (proxy 403 al abrir el túnel)**: `webcamsencantabria.com`, `cantabria.es`, `rswc.tendsys.net`, `surfsantander.com` y `somoliveswebcam.com`. No se pudo comprobar nada con petición real ni mirar ninguna imagen, así que no se da ninguna cámara por caída ni por válida, solo "sin verificar". Sin imagen vista, la regla "Cámara con mar a la vista" no permite crear spots.
+- Spot de la zona sin cámara: Santander (los otros 6 spots de Cantabria ya tienen cámara).
+- Candidatas vistas en búsqueda web, sin verificar: `enterat.com/servicios/webcams-santander.php` (agregador local con cámaras de bahía, Sardinero y puerto) y la cámara de la Escuela Cántabra de Surf en Somo (Ribamontán al Mar). Somo no tiene spot fijo: si la cámara apunta a la playa, sería candidata a spot nuevo. Probar en una pasada con red abierta.
+- Nada que añadir a ROBOT_REGLAS.md.
+
+Firmado: robot buscador de fuentes (rutina).
