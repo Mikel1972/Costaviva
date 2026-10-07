@@ -1,0 +1,9 @@
+# Cabeceras de seguridad para todo el sitio (Mikel1972/comun,
+# estandares/web-y-despliegue.md W7). Cloudflare Pages lee este fichero al
+# desplegar; la lista blanca de functions/_lib/rutas-publicas.js no lo sirve.
+# Sin Permissions-Policy a propósito: la app usa geolocalización y cámara.
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
