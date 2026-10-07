@@ -20,6 +20,7 @@
      paquete, jsDelivr sí (permitido en el CDN de este proyecto). -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-velocity@2.1.4/dist/leaflet-velocity.min.css" />
 <script src="/assets/js/leaflet-velocity.js"></script>
+<script src="/assets/js/errores.js"></script>
 <!-- Webcams en vídeo en directo de Gipuzkoa (2026-09-14) — HLS, no hace
      falta en Safari (soporte nativo) pero sí en Chrome/Firefox/Edge. -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.6.15/hls.min.js"></script>
@@ -2534,7 +2535,7 @@ document.getElementById("btnConfirmarUbicacion").addEventListener("click", async
     publica,
   });
   if (error) {
-    mostrarErrorUbicacion(`No se ha podido guardar: ${error.message}`);
+    mostrarErrorUbicacion(traducirError(error, "No se ha podido guardar la ubicación. Inténtalo de nuevo."));
     return;
   }
   cerrarConfirmarUbicacion();
@@ -2577,7 +2578,7 @@ async function borrarSpotPersonalizado(s) {
   if (!window.supabaseCliente || !s.esUsuario || !s.propio) return;
   if (!confirm(`¿Borrar "${s.nombre}"? No se puede deshacer.`)) return;
   const { error } = await window.supabaseCliente.from("spots_usuario").delete().eq("id", s.slug);
-  if (error) { alert(`No se ha podido borrar: ${error.message}`); return; }
+  if (error) { alert(traducirError(error, "No se ha podido borrar. Inténtalo de nuevo.")); return; }
   document.getElementById("panel").classList.remove("visible");
   await cargarSpotsPersonalizados();
 }

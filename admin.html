@@ -110,7 +110,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 // Pólizas.ai". Sin acceso vía Cloudflare/service_role: todo pasa por
 // 3 funciones security-definer en Supabase (admin_listar_usuarios,
 // admin_fijar_acceso, admin_eliminar_usuario) que comprueban
-// es_admin() (auth.email() = 'etxebe2005@gmail.com') antes de tocar
+// es_admin() antes de tocar (desde la migración 20261007150000, por
+// user_id en public.administradores; antes, un email fijo en SQL)
 // nada — ver supabase/migrations/20260913090000_panel_administrador.sql.
 // Esta página no aparece en el menú inferior de ninguna otra página —
 // el único acceso visible es el icono ⚙️ junto al botón de cuenta en

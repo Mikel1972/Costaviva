@@ -826,7 +826,7 @@ explicación.
 | `/registrar-presion` | `registrar-presion.js` | POST: guarda la presión real de cada spot en `presion_historico` (Fase 4) | Sin sesión de usuario — protegido con secreto compartido (`X-Cron-Secret` / `CRON_SECRET`) |
 | `/crear-checkout-stripe` | `crear-checkout-stripe.js` | POST: crea una Stripe Checkout Session (suscripción mensual/anual, con prueba) para el usuario que llama | **Requiere** `Authorization: Bearer <token de sesión>` |
 | `/crear-portal-stripe` | `crear-portal-stripe.js` | POST: crea una sesión del Billing Portal de Stripe para gestionar/cancelar la suscripción propia | **Requiere** `Authorization: Bearer <token de sesión>` |
-| `/stripe-webhook` | `stripe-webhook.js` | POST: recibe eventos de Stripe (checkout/suscripción) y actualiza `suscripciones` | Sin sesión — verifica la firma `Stripe-Signature` con `STRIPE_WEBHOOK_SECRET` |
+| `/stripe-webhook` | `stripe-webhook.js` | POST: recibe eventos de Stripe (checkout/suscripción/`invoice.payment_failed`) y actualiza `suscripciones`; idempotente por `event.id` (tabla `stripe_eventos`, 2026-10-07) | Sin sesión — verifica la firma `Stripe-Signature` con `STRIPE_WEBHOOK_SECRET` |
 
 Ninguno de los cuatro primeros toca tablas de usuario en Supabase.
 `sos-alerta.js` sí, y usa siempre el token de quien llama.
@@ -939,6 +939,16 @@ explícitamente "sin especies con rango de temperatura documentado hoy".
 Ahora además hereda la vigencia por spot del punto anterior.
 
 ## Triggers / rutinas automatizadas
+
+**Interruptores de pausa (2026-10-07, comun pruebas-y-alertas.md P8):**
+- `ROBOT_PAUSADO` (fichero en la raíz): para los robots con Claude antes de
+  arrancar la CLI.
+- `AUTOMATION_PAUSED` (variable de repositorio, Settings → Secrets and
+  variables → Actions → Variables): con valor `true` se saltan los jobs que
+  escriben solos en producción, en el repo o mandan emails sin IA
+  (camaras-salud, euskalmet-rios, notificar-altas, presion-historico,
+  turbidez, indexacion-google, metricas-instagram,
+  robot-marketing-instagram). Sin la variable, todo corre como siempre.
 
 Desde el propio repo solo hay evidencia de **una** rutina programada: el
 "robot de investigación/auditoría de datos" que escribe en `ROBOT.md` y
@@ -1708,7 +1718,10 @@ despliegue: "no tengo botón para echar para atrás").
 **Decisión de diseño clave**: nada de esto usa `service_role` ni un
 segundo endpoint de Cloudflare. Tres funciones `security definer` en
 Postgres (`supabase/migrations/20260913090000_panel_administrador.sql`):
-- `es_admin()` — `auth.email() = 'etxebe2005@gmail.com'`.
+- `es_admin()` — `auth.email() = 'etxebe2005@gmail.com'`. **Pendiente de
+  aplicar (2026-10-07, comun auth.md A4):** `20261007150000_admin_por_tabla.sql`
+  la cambia a `exists` en `public.administradores` (por `user_id`, sin
+  policies). Al aplicarla, actualizar `supabase/baseline-seguridad.json`.
 - `admin_listar_usuarios()` — salta el RLS de `perfiles` (que solo deja
   ver la fila propia) SOLO si `es_admin()`.
 - `admin_fijar_acceso(user_id, aprobado)` — "pausar" reutiliza la

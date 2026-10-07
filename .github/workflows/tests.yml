@@ -35,4 +35,4 @@ jobs:
           node-version: "20"
 
       - name: Tests de lógica pura
-        run: node --test test/rutas-publicas.test.js test/webcam-ipcamlive.test.js test/rayos-cerca.test.js test/estaciones-respaldo.test.js test/uso-claude.test.js
+        run: node --test test/rutas-publicas.test.js test/webcam-ipcamlive.test.js test/rayos-cerca.test.js test/estaciones-respaldo.test.js test/uso-claude.test.js test/secreto.test.js

@@ -6,6 +6,11 @@
       "policies": []
     },
     {
+      "tablename": "administradores",
+      "rls_enabled": true,
+      "policies": []
+    },
+    {
       "tablename": "alertas_sos",
       "rls_enabled": true,
       "policies": [
@@ -417,6 +422,11 @@
           ]
         }
       ]
+    },
+    {
+      "tablename": "stripe_eventos",
+      "rls_enabled": true,
+      "policies": []
     },
     {
       "tablename": "suscripciones",

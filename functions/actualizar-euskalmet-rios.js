@@ -41,6 +41,8 @@
 // estación realmente cercana. "viento" se omite cuando esa estación no
 // tenía sensor de viento real (verificado uno a uno, no asumido por el
 // prefijo del id).
+import { secretoValido } from "./_lib/secreto.js";
+
 const OBJETIVOS = [
   { rio: "Lea", punto: "Cabecera (Munitibar)",
     precip: { id: "C0BD", nombre: "Iruzubieta (Ziortza-Bolibar)", sensor: "G458" },
@@ -197,7 +199,7 @@ function cacheLecturas(jwt) {
 export async function onRequestPost(context) {
   const secretoEsperado = context.env.CRON_SECRET;
   const secretoRecibido = context.request.headers.get("X-Cron-Secret");
-  if (!secretoEsperado || secretoRecibido !== secretoEsperado) {
+  if (!secretoValido(secretoRecibido, secretoEsperado)) {
     return new Response(JSON.stringify({ error: "no autorizado" }), { status: 401, headers: { "content-type": "application/json" } });
   }
   const serviceRoleKey = context.env.SUPABASE_SERVICE_ROLE_KEY;
