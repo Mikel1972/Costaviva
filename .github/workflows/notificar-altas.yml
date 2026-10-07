@@ -31,6 +31,9 @@ concurrency:
 
 jobs:
   notificar:
+    # Interruptor de pausa (comun pruebas-y-alertas.md P8): con la variable de
+    # repositorio AUTOMATION_PAUSED=true este job no se ejecuta.
+    if: ${{ vars.AUTOMATION_PAUSED != 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Llamar a /notificar-altas

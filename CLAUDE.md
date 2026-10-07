@@ -940,6 +940,16 @@ Ahora además hereda la vigencia por spot del punto anterior.
 
 ## Triggers / rutinas automatizadas
 
+**Interruptores de pausa (2026-10-07, comun pruebas-y-alertas.md P8):**
+- `ROBOT_PAUSADO` (fichero en la raíz): para los robots con Claude antes de
+  arrancar la CLI.
+- `AUTOMATION_PAUSED` (variable de repositorio, Settings → Secrets and
+  variables → Actions → Variables): con valor `true` se saltan los jobs que
+  escriben solos en producción, en el repo o mandan emails sin IA
+  (camaras-salud, euskalmet-rios, notificar-altas, presion-historico,
+  turbidez, indexacion-google, metricas-instagram,
+  robot-marketing-instagram). Sin la variable, todo corre como siempre.
+
 Desde el propio repo solo hay evidencia de **una** rutina programada: el
 "robot de investigación/auditoría de datos" que escribe en `ROBOT.md` y
 `CALIBRACION.jsonl`, con tres responsabilidades en la misma pasada:
