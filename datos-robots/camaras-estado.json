@@ -1,0 +1,486 @@
+{
+ "generado_en": "2026-10-07T14:55:40.978Z",
+ "fuente": "camara_estado",
+ "camaras": [
+  {
+   "spot_slug": "sanvicente",
+   "sin_senal": true,
+   "motivo": "http_502",
+   "fallos_seguidos": 114,
+   "ultima_senal_en": null,
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "suances",
+   "sin_senal": true,
+   "motivo": "http_502",
+   "fallos_seguidos": 114,
+   "ultima_senal_en": null,
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "muro",
+   "sin_senal": true,
+   "motivo": "http_502",
+   "fallos_seguidos": 114,
+   "ultima_senal_en": null,
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "sonbou",
+   "sin_senal": true,
+   "motivo": "http_502",
+   "fallos_seguidos": 114,
+   "ultima_senal_en": null,
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "calamillor",
+   "sin_senal": true,
+   "motivo": "http_502",
+   "fallos_seguidos": 114,
+   "ultima_senal_en": null,
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "comillas",
+   "sin_senal": true,
+   "motivo": "http_502",
+   "fallos_seguidos": 8,
+   "ultima_senal_en": "2026-10-06T06:42:17.84+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "alicante",
+   "sin_senal": true,
+   "motivo": "http_502",
+   "fallos_seguidos": 4,
+   "ultima_senal_en": "2026-10-07T02:31:27.208+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "orio",
+   "sin_senal": true,
+   "motivo": "sin_respuesta",
+   "fallos_seguidos": 3,
+   "ultima_senal_en": "2026-10-07T09:28:49.305+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "oliva",
+   "sin_senal": true,
+   "motivo": "http_502",
+   "fallos_seguidos": 2,
+   "ultima_senal_en": "2026-10-07T10:08:57.982+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "vinaros",
+   "sin_senal": false,
+   "motivo": "http_502",
+   "fallos_seguidos": 1,
+   "ultima_senal_en": "2026-10-07T12:11:34.558+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "alboraya",
+   "sin_senal": false,
+   "motivo": "http_502",
+   "fallos_seguidos": 1,
+   "ultima_senal_en": "2026-10-07T12:11:34.558+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "cullera",
+   "sin_senal": false,
+   "motivo": "http_502",
+   "fallos_seguidos": 1,
+   "ultima_senal_en": "2026-10-07T12:11:34.558+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "sopelana",
+   "sin_senal": false,
+   "motivo": "sin_respuesta",
+   "fallos_seguidos": 1,
+   "ultima_senal_en": "2026-10-07T12:11:34.558+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "xilxes",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "oropesa",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "torreblanca",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "canetdeberenguer",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "pobladefarnals",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "piles",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "aguilas",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "zumaia",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "baiona",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "acoruna",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "camarinas",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "cangas",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "corrubedo",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ribadeo",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "hondarribia",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "donostia",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "zarautz",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "deba",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "mutriku",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "getaria",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "guardamardelsegura",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "santona",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ons",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "portosin",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "cies",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "castrourdiales",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 1
+  },
+  {
+   "spot_slug": "laredo",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 1
+  },
+  {
+   "spot_slug": "calpe",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "denia",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "peniscola",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "gandia",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "valencia",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "altea",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "mundaka",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "benidorm",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "bakio",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "lekeitio",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "getxo",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "pasaia",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "vilajoiosa",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "pilardelahoradada",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "santapola",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "javea",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "alcossebre",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "benicassim",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "burriana",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "castellon",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-07T14:51:20.97+00:00",
+   "fuente_usada": 0
+  }
+ ]
+}
