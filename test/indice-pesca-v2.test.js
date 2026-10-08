@@ -882,3 +882,45 @@ test("usuario: solo motivos con flecha y avisos útiles, nada interno (ficha, ve
   const posts = motivosDestacados(conTodo, 10);
   assert.deepEqual(posts.map((m) => m.texto), ["mar de 2-2,5 m", "presión bajando"]);
 });
+
+// Mar grande desde costa (2026-10-08): sin el tope de ola, por encima de
+// 2,5 m la ola no restaba nada a los depredadores costeros (sus reglas de
+// mar plana/poca/movida sustituyen al factor de oleaje y acaban en 2,5 m).
+test("mar_grande_depredadores: cierra el hueco de más de 2,5 m desde costa; la ola cuenta una vez", () => {
+  // El escenario de la captura del aviso: dorada en Bakio a las 12:00 con 3,1 m.
+  const bakio = (ola) => {
+    const h = [];
+    for (let i = 0; i < 72; i++) {
+      const d = new Date(Date.UTC(2026, 9, 7) + i * 3600e3);
+      h.push({ hora: d.toISOString().slice(0, 13) + ":00", nivelMar: 1.6 * Math.sin((2 * Math.PI * i) / 12.42), ola: i < 24 ? 1.6 : ola,
+        viento: 18, vientoDir: 300, tempAgua: 18.5, presion: 1012 - Math.max(0, i - 30) * 0.25, lluvia: 0 });
+    }
+    return h;
+  };
+  const dorada = (ola, modalidad = "costa") => enHora("dorada", bakio(ola), "2026-10-08T12:00", { lat: 43.4297, lon: -2.8103, modalidad });
+  const r = dorada(3.1);
+  assert.equal(r.puntuacion, 54, "antes daba 72");
+  const ola = r.razones.filter((x) => x.variable === "ola");
+  assert.equal(ola.length, 1, "la ola cuenta una sola vez");
+  assert.equal(ola[0].factor, "regla:mar_grande_depredadores");
+  assert.equal(ola[0].texto, "mar demasiado grande: se apartan de la orilla");
+  assert.ok(ola[0].aporte <= -6, "▼▼");
+  assert.ok(r.avisoOla, "y el aviso aparte");
+  // Crece con la altura hasta ~4 m; en 2,5 m justos manda todavía mar movida.
+  assert.ok(dorada(4).puntuacion < r.puntuacion);
+  assert.equal(dorada(5).puntuacion, dorada(4).puntuacion);
+  assert.ok(razon(dorada(2.5), "regla:mar_movida_depredadores_costa"));
+  assert.ok(!razon(dorada(2.5), "regla:mar_grande_depredadores"));
+  // Embarcación y submarina: el factor de oleaje no está sustituido, así que
+  // ya resta con mar grande (sin hueco) y la regla nueva no aplica.
+  for (const modalidad of ["embarcacion", "submarina"]) {
+    const m = dorada(3.1, modalidad);
+    if (m.prohibida) continue;
+    assert.ok(!razon(m, "regla:mar_grande_depredadores"), modalidad);
+    assert.ok(razon(m, "oleaje").aporte < 0, `${modalidad}: el factor de oleaje resta`);
+  }
+  // Ninguna regla experta sustituye al oleaje fuera de costa.
+  for (const rg of DATOS.reglas_expertas.reglas) {
+    if ((rg.sustituye || []).includes("oleaje")) assert.deepEqual(rg.ambito.modalidades, ["costa"], rg.id);
+  }
+});

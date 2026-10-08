@@ -1875,9 +1875,14 @@ detalle de la hora y "⚠️ ola peligrosa" en las mejores ventanas), diario
 (`indice_factores.aviso_ola`) y piezas de Instagram (`resumenDelDia().avisoOla`,
 en la plantilla y en el texto del post y del reel). En embarcación, los
 avisos de kayak / embarcación pequeña siguen saliendo también por ola, pero su
-tope solo lo pone el viento. Ojo: desde costa, en los depredadores costeros
-el factor de oleaje lo sustituyen las reglas de mar plana/poca/movida (hasta
-2,5 m), así que por encima de 2,5 m la ola no resta nada a su nota.
+tope solo lo pone el viento. Desde costa, en los depredadores costeros el
+factor de oleaje lo sustituyen las reglas de mar plana/poca/movida (hasta
+2,5 m); por encima, `mar_grande_depredadores` ("mar demasiado grande: se
+apartan de la orilla", `tipo: cientifica`, Bacheler 2019, Udyawer 2013 y la
+flota de lubina 2022; -0,8 log-odds justo por encima de 2,5 m, hasta -1,6 a
+4 m) cierra el hueco que dejó quitar el tope: la dorada de la captura de
+prueba (Bakio, 3,1 m) pasó de 72 a 54. En embarcación y submarina ninguna
+regla sustituye al oleaje, así que no hay hueco (un test lo vigila).
 
 **Índice del spot** (`indiceSpot`): la mejor especie de temporada (sin vedas)
 de la pestaña en la hora actual, con su nombre y su porqué; es exactamente la
@@ -1930,11 +1935,12 @@ ventana, las mejores ventanas, el diario (misma regex en línea) y los posts
 ola peligrosa va en `avisoOla`. También para admin: "Técnicas habituales
 (práctica, sin fuente citable)", "Talla mínima: sin dato verificado" y
 "Pendiente de revisar" de la normativa. Un test de `indice-pesca-v2` falla
-si la salida de usuario tiene "·", "pendiente", "no cuenta" o "fuente". Igual en la ventana, el índice
+si la salida de usuario tiene "·", "pendiente", "no cuenta" o "fuente". La presentación es igual en la ventana, el índice
 del spot y la línea del diario. El admin (`window.esAdminCostaviva`,
 cosmético) tiene un desplegable "Detalle (admin)" con puntos, fuente, estado,
 confianza y la fiabilidad; la tabla de `admin.html` sigue listando las reglas.
-Hoy hay 18 reglas: 11 de Mikel (fuente `mikel_experiencia_local`, tipo
+Hoy hay 18 reglas (más las de fondo y orilla y `mar_grande_depredadores`,
+ver arriba): 11 de Mikel (fuente `mikel_experiencia_local`, tipo
 `heuristica_experta_local`, estado `por_validar`; los umbrales son la
 traducción de Claude de lo que contó Mikel; y 2 que completan la escala de
 ola de los depredadores costeros con la heurística que ya tenía la app,

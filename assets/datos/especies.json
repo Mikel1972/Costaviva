@@ -499,6 +499,23 @@
    "licencia": "ODbL 1.0 (© OpenStreetMap contributors; base de datos derivada bajo ODbL)",
    "fecha_consulta": "2026-10-08",
    "nota": "Orilla a 50 m del punto de costa de cada spot (assets/datos/tipo-fondo.json)."
+  },
+  "udyawer_2013": {
+   "titulo": "Udyawer et al. (2013). Variable response of coastal sharks to severe tropical storms: environmental cues and changes in space use. MEPS 480: 171-183.",
+   "url": "https://int-res.com/abstracts/meps/v480/p171-183",
+   "tipo": "cientifico",
+   "licencia": "solo se cita el dato (sin copiar texto); licencia del documento no revisada",
+   "fecha_consulta": "2026-10-08",
+   "leido": "resumen"
+  },
+  "bss_flota_decisiones_2022": {
+   "titulo": "Factors affecting fisher decisions: the case of the inshore fishery for European sea bass (PLoS ONE, 2022).",
+   "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8970468/",
+   "tipo": "cientifico",
+   "licencia": "CC BY 4.0",
+   "fecha_consulta": "2026-10-08",
+   "leido": "resumen",
+   "nota": "Flota artesanal inglesa: con más ola salen menos barcos y el éxito por salida (kg de lubina) baja."
   }
  },
  "jurisdicciones": {
@@ -14253,7 +14270,7 @@
     "efecto": {
      "logodds": 0.5
     },
-    "nota": "Mikel: 'el mar algo revuelto ayuda a la lubina, el sargo... a encontrar comida desde costa'. Banda 1-2,5 m. Sustituye al factor de oleaje por defecto en su ámbito (desde costa, depredadores costeros) para que la ola cuente una sola vez; el resto de la escala de ola la cubren mar_plana_depredadores_costa y mar_poca_depredadores_costa. Por encima de 2,5 m sale aparte el aviso de ola peligrosa (sin tope en la nota desde el 2026-10-08).",
+    "nota": "Mikel: 'el mar algo revuelto ayuda a la lubina, el sargo... a encontrar comida desde costa'. Banda 1-2,5 m. Sustituye al factor de oleaje por defecto en su ámbito (desde costa, depredadores costeros) para que la ola cuente una sola vez; el resto de la escala de ola la cubren mar_plana_depredadores_costa y mar_poca_depredadores_costa. Por encima de 2,5 m resta mar_grande_depredadores y sale aparte el aviso de ola peligrosa (sin tope en la nota desde el 2026-10-08).",
     "sustituye": [
      "oleaje"
     ]
@@ -14328,6 +14345,52 @@
      "logodds": -0.3
     },
     "nota": "Completa la escala de ola (ver mar_poca_depredadores_costa): el valor_bajo_minimo negativo que ya tenía la lubina (heurística heredada de la app)."
+   },
+   {
+    "id": "mar_grande_depredadores",
+    "nombre": "Mar demasiado grande desde costa",
+    "texto": "mar demasiado grande: se apartan de la orilla",
+    "fuente": "bacheler_2019",
+    "fuentes_adicionales": [
+     "udyawer_2013",
+     "bss_flota_decisiones_2022",
+     "mikel_experiencia_local"
+    ],
+    "tipo": "cientifica",
+    "estado": "por_validar",
+    "variable": "ola",
+    "sustituye": [
+     "oleaje"
+    ],
+    "validacion": "Calibrar con las salidas del diario (salidas_pesca.indice_factores) antes de subir la confianza o darla por buena.",
+    "confianza": 0.8,
+    "ambito": {
+     "modalidades": [
+      "costa"
+     ],
+     "especies": [
+      "@depredadores_costeros"
+     ]
+    },
+    "condiciones": [
+     {
+      "var": "ola",
+      "op": ">",
+      "valor": 2.5
+     }
+    ],
+    "efecto": {
+     "logodds": -2.0,
+     "escala": {
+      "var": "ola",
+      "de": 2.5,
+      "a": 4.0,
+      "minimo": 0.5
+     }
+    },
+    "mecanismo": "con temporal los peces de poco fondo se van a aguas más profundas; la flota de lubina pesca menos con más ola",
+    "nota": "Cierra el hueco de la escala de ola de los depredadores costeros desde costa: mar_plana (< 0,5 m), mar_poca (0,5-1 m) y mar_movida (1-2,5 m) sustituyen al factor de oleaje, y por encima de 2,5 m no restaba nada desde que la ola dejó de poner tope (2026-10-08). Evidencia (EVIDENCIA_FACTORES.md, regla 2 de Mikel: 'respaldada en franja moderada; con mar grande se van'): temporales y emigración a lo profundo (Bacheler 2019, Udyawer 2013) y menos lubina por salida con más ola (flota inglesa, 2022). Efecto real = -2,0 x intensidad x 0,8: -0,8 log-odds justo por encima de 2,5 m, creciendo hasta -1,6 a 4 m o más. El aviso de ola peligrosa va aparte.",
+    "activada": "2026-10-08: pedida por Mikel al quitar el tope de ola (sesión del aviso de ola peligrosa)."
    },
    {
     "fuente": "mikel_experiencia_local",
@@ -15051,14 +15114,6 @@
     "leido": "resumen",
     "nota": "Sin adhesión consistente a frentes de SST; posible asociación con frentes de clorofila en agosto-septiembre."
    },
-   "udyawer_2013": {
-    "titulo": "Udyawer et al. (2013). Variable response of coastal sharks to severe tropical storms: environmental cues and changes in space use. MEPS 480: 171-183.",
-    "url": "https://int-res.com/abstracts/meps/v480/p171-183",
-    "tipo": "cientifico",
-    "licencia": "solo se cita el dato (sin copiar texto); licencia del documento no revisada",
-    "fecha_consulta": "2026-10-08",
-    "leido": "resumen"
-   },
    "doyle_2017_bss": {
     "titulo": "Doyle et al. (2017). Localised residency and inter-annual fidelity to coastal foraging areas may place sea bass at risk to local depletion. Scientific Reports 7: 45841.",
     "url": "https://doi.org/10.1038/srep45841",
@@ -15094,15 +15149,6 @@
     "fecha_consulta": "2026-10-08",
     "leido": "resumen",
     "nota": "GLM por estuario con caudal del río, SST, clorofila y depredadores: los motores difieren entre estuarios; el caudal no tiene un efecto general."
-   },
-   "bss_flota_decisiones_2022": {
-    "titulo": "Factors affecting fisher decisions: the case of the inshore fishery for European sea bass (PLoS ONE, 2022).",
-    "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8970468/",
-    "tipo": "cientifico",
-    "licencia": "CC BY 4.0",
-    "fecha_consulta": "2026-10-08",
-    "leido": "resumen",
-    "nota": "Flota artesanal inglesa: con más ola salen menos barcos y el éxito por salida (kg de lubina) baja."
    },
    "otero_2008_pulpo": {
     "titulo": "Otero et al. (2008). Bottom-up and top-down control of Octopus vulgaris in the Galician upwelling system. MEPS 362: 181-192.",
@@ -15338,6 +15384,12 @@
     "fecha": "2026-10-08",
     "aprobada_por": "Mikel",
     "destino": "reglas_por_defecto.presion.peso_lo = 0,12"
+   },
+   {
+    "id": "mar_grande_depredadores",
+    "fecha": "2026-10-08",
+    "aprobada_por": "Mikel",
+    "destino": "reglas_expertas.reglas[mar_grande_depredadores]"
    }
   ]
  }
