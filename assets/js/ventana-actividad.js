@@ -327,6 +327,7 @@ function rangoOlaTexto(h) {
 //   reglasModalidad: especies.json.reglas_por_modalidad,
 //   reglasExpertas: especies.json.reglas_expertas (opcional),
 //   region (si no, por coordenadas),
+//   fondo: { orilla_tipo, fondo_roca, ... } | null (capa-tipo-fondo.js; ignorado en embarcación),
 //   caudalRio: "bajo"|"normal"|"alto"|null (río asociado al spot, solo hoy),
 //   rio: { nombre, distancia_desembocadura_km } | null (null = sin río conocido),
 //   batimetria: estadísticas de fondo del spot (estadisticasPunto de
@@ -345,6 +346,10 @@ export const VARIABLE_DE_FACTOR = {
   luz: "luz", marea: "nivel_mar", temperatura: "temp_agua", oleaje: "ola", viento: "viento",
   presion: "presion", turbidez: "turbidez", lluvia: "lluvia", caudal_rio: "caudal_rio",
 };
+
+// Variables de fondo y orilla que puede traer `contexto.fondo` (ver
+// capa-tipo-fondo.js, contextoFondo). Nunca en embarcación.
+const VARIABLES_FONDO_REGLAS = ["orilla_tipo", "fondo_roca", "fondo_arena", "fondo_fango", "fondo_grava", "posidonia", "algas"];
 
 export function calcularVentana(especie, reglasDefecto, horas, contexto) {
   const modalidad = contexto.modalidad || "costa";
@@ -544,6 +549,8 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
       luna: iluminacionLunar(msUTC),
       coeficiente_marea: coeficienteMareaAstronomico(msUTC),
     };
+    // Fondo y orilla (capa-tipo-fondo.js): solo costa y submarina.
+    for (const k of VARIABLES_FONDO_REGLAS) ctxReglas[k] = modalidad === "embarcacion" ? null : (contexto.fondo?.[k] ?? null);
     const ev = evaluarReglas(expertas, horas, i, ctxReglas);
     for (const r of expertas) {
       const w = Math.abs((r.efecto?.logodds || 0) * (r.confianza ?? 1));

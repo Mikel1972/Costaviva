@@ -1680,6 +1680,83 @@ pestaña en la hora actual. Hereda la vigencia por spot del punto anterior
   app (no solo esto) la usa. Pendiente de decidir con Mikel (plan comercial de
   Open-Meteo o alternativa).
 
+## Tipo de fondo y orilla (2026-10-08, aprobado por Mikel)
+
+Pedido de Mikel: saber el tipo de fondo de cada spot, sobre todo los primeros
+~50 m desde la costa, usarlo **solo** desde costa y en submarina, y verlo como
+capa del mapa al acercarse. Después pidió que la capa llegue "a mayor
+profundidad, hasta donde tengamos": cubre plataforma y talud, no solo la
+franja costera. Sin IA y sin coste.
+
+- **Datos por spot** (`assets/datos/tipo-fondo.json`, ~30 KB, lo genera a mano
+  `scripts/fondo/tipo-fondo.mjs`, Node sin dependencias; ver su cabecera):
+  punto de costa más cercano al spot sobre `natural=coastline` de OSM; tipo de
+  orilla a 50 m o menos de ese punto (`acantilado`, `roca`, `escollera`,
+  `playa_arena`, `playa_cantos`, `playa` = playa de OSM sin superficie,
+  `puerto`); fondo a 500 m y 1 km (fracciones de roca, arena, grava, fango,
+  Posidonia, pradera, biogénico y `algas` = roca infralitoral) muestreando cada
+  50 m EUSeaMap 2025 (EUNIS 2019, WFS de EMODnet) y las praderas de EMODnet;
+  `cobertura` y `primer_dato_m` (a qué distancia de la orilla empieza el dato).
+  Se re-ejecuta si cambian los spots (`--solo slug1,slug2` fusiona; `--punto
+  "Nombre,lat,lon"` imprime un punto sin guardar). Overpass público: la
+  principal (overpass-api.de) no respondía desde la nube el 2026-10-08; se usó
+  la réplica `OVERPASS_URL=https://maps.mail.ru/osm/tools/overpass/api/interpreter`
+  (da 504 a ratos: el script reintenta).
+- **Licencias (verificadas el 2026-10-08)**:
+  - OSM: "You are free to copy, distribute, transmit and adapt our data, as long
+    as you credit OpenStreetMap and its contributors. If you alter or build upon
+    our data, you may distribute the result only under the same license."
+    (https://www.openstreetmap.org/copyright). `tipo-fondo.json` es base de
+    datos derivada: queda bajo ODbL 1.0 (lo dice el propio JSON).
+  - EUSeaMap 2025 (EMODnet Seabed Habitats): "Available under the Creative
+    Commons Attribution (CC-BY) License v4.0 ... Credit: Licensed under CC-BY 4.0
+    from the European Marine Observation and Data Network (EMODnet) Seabed
+    Habitats initiative (https://emodnet.ec.europa.eu/en/seabed-habitats), funded
+    by the European Commission." (metadatos ICES/EMODnet 4c810e39... y
+    cec07b5e...). Praderas (Seagrass EOV 2025): el subconjunto europeo es CC BY
+    4.0 (el del Caribe es CC BY-NC: no se usa).
+  - EMODnet Geology (sustrato multiescala, Folk): "Creative Commons BY 4.0"
+    (metadatos europe-geology.eu). No se pide directamente: EUSeaMap ya lo
+    integra.
+  - MITECO Ecocartografías (1:1 000-1:5 000, roca/arena/Posidonia): el aviso
+    legal de MITECO permite reutilizar "sin necesidad de autorización expresa
+    ... siempre que se cite la fuente" (Ley 37/2007), pero solo hay KMZ por
+    provincia (Mediterráneo, Andalucía, Baleares, Canarias; nada del
+    Cantábrico) y no se encontró un WMS verificable (wms.mapama.gob.es no
+    respondía con TLS válido desde la nube). **No integrado**; candidato para
+    el detalle de Posidonia en el Mediterráneo.
+- **Calidad cerca de la orilla**: EUSeaMap es un modelo de escala amplia
+  (celdas de ~100 m junto a la costa); los primeros 50-100 m casi nunca
+  están resueltos (`primer_dato_m` típico 50-300 m) y en puertos y estuarios
+  puede no haber dato. Para la orilla manda OSM. Orientativo, nunca para
+  navegar.
+- **Índice** (`especies.json`, 5 reglas nuevas al principio de
+  `reglas_expertas.reglas`, todas `por_validar`, confianza 0,5-0,55, nunca en
+  embarcación): `orilla_roca_espuma` (costa, orilla de acantilado/roca/escollera:
+  lubina, sargo, sargo picudo, maragota, pulpo, congrio, cabracho, rascacio;
+  la mitad con mar plana, entera desde 1,5 m), `orilla_playa_arena` (costa,
+  playa: rodaballo, lenguado, raya; `mikel_campo_bizkaia`),
+  `dorada_arena_con_roca` (costa y submarina, arena ≥ 30 % y roca ≥ 10 %),
+  `fondo_roca_submarina` (submarina, roca ≥ 35 %, graduada) y `posidonia_cerca`
+  (Mediterráneo y Baleares, costa y submarina, Posidonia ≥ 15 %: sepia, dorada,
+  salema/salpa). Variables de contexto nuevas: `orilla_tipo`, `fondo_roca`,
+  `fondo_arena`, `fondo_fango`, `fondo_grava`, `posidonia`, `algas`
+  (`contexto.fondo` de `calcularVentana`; en embarcación el motor las pone a
+  null aunque lleguen). Fuentes nuevas: `cheminee_2021_nurseries` y
+  `marco_mendez_2016_salpa` (CC BY 4.0), `emodnet_euseamap_2025`, `osm_orilla`.
+- **Ficha del spot**: línea `panelFondo` bajo las coordenadas, "Fondo: roca y
+  arena · orilla de acantilado" (`textoFondo`, sin números). Punto propio: el
+  dato del spot fijo a 1,5 km o menos; si no hay, se pregunta en vivo a
+  EMODnet el sustrato del propio punto (GetFeatureInfo, sin orilla).
+- **Capa "Sustrato"** (botón 🪨 "Sustr." en la columna de Ríos/Boyas, debajo de Boyas;
+  ojo: "Fondo" es la batimetría e "Isób." las isóbatas de la rama
+  `claude/batimetria`): WMS `eusm_subs_group` de EMODnet Seabed Habitats (el
+  grupo cambia solo de simplificación según la escala: costa, plataforma y
+  talud), opacidad 0,6, desde zoom 7, leyenda propia (roca, arena, grava,
+  fango, Posidonia, sin clasificar) y atribución CC BY. La CSP ya admite
+  `https:` en img-src y connect-src: no hubo que tocarla.
+- Tests: `test/tipo-fondo.test.js` (en `tests.yml`).
+
 ## Índice de pesca v2: escala logística y reglas expertas (2026-10-08, aprobado por Mikel)
 
 **Fórmula** (`assets/js/ventana-actividad.js`, `INDICE_VERSION =

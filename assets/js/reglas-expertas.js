@@ -39,6 +39,11 @@ export const VARIABLES_HORARIAS = {
   temp_agua: "tempAgua", lluvia: "lluvia", nivel_mar: "nivelMar",
 };
 export const VARIABLES_CONTEXTO = [
+  // Fondo y orilla del spot (assets/js/capa-tipo-fondo.js, assets/datos/tipo-fondo.json).
+  // Solo costa y submarina: en embarcación llegan null. orilla_tipo:
+  // acantilado | roca | escollera | playa_arena | playa_cantos | playa | puerto;
+  // el resto, fracción 0-1 del fondo a 500 m del punto de costa (algas = roca somera).
+  "orilla_tipo", "fondo_roca", "fondo_arena", "fondo_fango", "fondo_grava", "posidonia", "algas",
   "caudal_rio",            // "bajo" | "normal" | "alto" | null (río asociado al spot, solo con dato real)
   "rio_desembocadura_km",  // distancia del spot a la desembocadura de su río; null si el spot no tiene río asociado
   "turbidez",              // "no turbia" | "turbia" | "muy turbia" | null
