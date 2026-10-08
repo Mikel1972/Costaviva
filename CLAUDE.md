@@ -81,6 +81,19 @@ actualizado); sin ella la página dice que el WhatsApp aún no está activado y
 el email funciona como antes. En textos de marketing: "te prepara el
 WhatsApp", nunca "manda un WhatsApp automático".
 
+**Contactos desde la agenda (2026-10-08, pedido de Mikel).** En "Añadir
+contacto", el botón "📇 Elegir de la agenda" usa la Contact Picker API
+(`navigator.contacts.select(['name','email','tel'], {multiple: true})`): solo
+existe en Chrome/Chromium de Android, en https y tras un toque. Donde no está
+(iPhone/Safari, escritorio) el botón no sale y la página dice "Tu navegador no
+deja abrir la agenda: escribe el contacto a mano". La web no lee la agenda:
+el sistema abre su selector y solo llegan los contactos marcados; después se
+revisan (si hay varios emails o teléfonos se elige uno, los teléfonos no
+válidos salen con el motivo, los repetidos van desmarcados) y nada se guarda
+hasta pulsar "Guardar N contactos". Lógica en `assets/js/agenda-contactos.js`
+(usa `normalizarTelefono` de `sos-whatsapp.js`), test
+`test/agenda-contactos.test.js`.
+
 ## Instagram en estilo Amanecer: posts, stories y reels sin IA (2026-10-08)
 
 Mikel: "imágenes/vídeos como los de Fizk son mil veces mejores que las
