@@ -19,6 +19,9 @@ on:
       # Fichas de especies (assets/datos/especies.json), rutina de los jueves
       # (ver ROBOT_REGLAS.md, "Fichas de especies"). Añadido 2026-10-07.
       - "robot/especies-**"
+      # Etiquetas de olas de Claude mirando las cámaras (rutina diaria, ver
+      # scripts/oleaje-camaras/RUTINA_ETIQUETADO.md). Añadido 2026-10-08.
+      - "robot/etiquetas-olas-**"
 
 permissions:
   contents: read
@@ -45,6 +48,7 @@ jobs:
           TITULO=$(git log -1 --format=%s)
           case "$RAMA" in
             robot/especies-*-factores) TIPO="Factores"; INTRO="Propuestas de la rutina de los viernes: reglas o pesos del índice de pesca sacados de estudios (cada uno con su fuente), contrastes con tus reglas locales (confirma/refuta/matiza, sin cambiarlas) y, si los hay, concursos con resultados reutilizables. Revisa la evidencia y la confianza de cada regla antes de aprobar." ;;
+            robot/etiquetas-olas-*) TIPO="Etiquetas de olas"; INTRO="Etiquetas de la rutina diaria de Claude mirando las cámaras (datos-robots/oleaje-camaras/etiquetas-claude.jsonl) y la calibración recalculada. Revisa qué cámaras pasan a sustituir al modelo en el panel y las cámaras movidas o ROIs que la rutina haya visto mal." ;;
             robot/especies-*) TIPO="Especies"; INTRO="Actualización de las fichas de especies (assets/datos/especies.json) de la rutina de los jueves. Revisa sobre todo las tallas y vedas: cada una debe llevar su URL oficial." ;;
             *) TIPO="Diseño"; INTRO="Propuesta de diseño del robot de SEO y diseño (rutina en la nube)." ;;
           esac

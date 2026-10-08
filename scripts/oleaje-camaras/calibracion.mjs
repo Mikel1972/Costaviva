@@ -24,14 +24,28 @@
 //     (functions/_lib/oleaje-costero.js; 1 en las playas expuestas).
 //   - Etiquetas de Mikel sobre fotos (etiquetar-olas.html): centro de la
 //     banda, peso 5. Etiquetas "ola real que veo" desde el spot: peso 3.
+//   - Etiquetas de Claude (2026-10-08, "puedes calibrar tú la cámara. Debes,
+//     de hecho"): Claude MIRA el fotograma en una sesión o rutina del plan
+//     de Claude (nunca la API) y anota la banda en
+//     datos-robots/oleaje-camaras/etiquetas-claude.jsonl (ver
+//     RUTINA_ETIQUETADO.md). Peso 2 (1 si su confianza es "baja"): por
+//     debajo de Mikel (5) y de "ola real" (3), por encima de las automáticas
+//     (1 / 0,5). "no_se_sabe" no cuenta, y solo cuentan las de fotogramas en
+//     el encuadre de referencia (estado "ok", o `encuadreVerificado` si
+//     Claude comprobó a ojo que es el mismo encuadre y lo que falló fue la
+//     huella por marea o luz).
 //   Las etiquetas son la verdad de terreno: con unas pocas, mandan sobre el
 //   coeficiente previo (que es una estimación por geometría).
 //
 // AJUSTE: mínimos cuadrados ponderados en logaritmos (el error que importa
 // es relativo: 0,3 m de error no es lo mismo con 0,5 m que con 3 m). Con
 // pocas lecturas, o todas del mismo estado de mar, p queda fijo en 1 y solo
-// se ajusta a; p se ajusta solo con ≥ 12 muestras y alturas que varíen al
-// menos ×1,8.
+// se ajusta a; p se ajusta solo con ≥ 12 muestras, alturas que varíen al
+// menos ×1,8 y de ≥ 2 días distintos. Lo de los días (2026-10-08, con las
+// etiquetas de Claude): en un solo día las alturas "variadas" pueden salir
+// solo de que la boya × coeficiente y las etiquetas no coinciden para el
+// mismo mar (Berria: boya 3,1 m, etiquetas 1,5 m), y eso daba un p = 0,5
+// sin sentido físico.
 //
 // INCERTIDUMBRE (honesta): error relativo típico = exp(rms de los residuos
 // en log) - 1, con un MÍNIMO de ±50 % mientras no haya al menos 3 días
@@ -47,6 +61,18 @@ export const PESO_BOYA = 1;
 export const PESO_MODELO = 0.5;
 export const PESO_ETIQUETA_FOTO = 5;
 export const PESO_ETIQUETA_SPOT = 3;
+export const PESO_ETIQUETA_CLAUDE = 2;
+export const PESO_ETIQUETA_CLAUDE_BAJA = 1;
+// Franja horaria de una etiqueta: bloques de 2 h UTC de un día. Sirve para
+// exigir que las etiquetas de Claude no salgan todas del mismo momento (el
+// mismo estado de mar visto varias veces no calibra la escala).
+export const HORAS_FRANJA = 2;
+export const franjaHoraria = (fecha) => {
+  const t = Date.parse(fecha);
+  if (!Number.isFinite(t)) return null;
+  const d = new Date(t);
+  return `${d.toISOString().slice(0, 10)}T${String(Math.floor(d.getUTCHours() / HORAS_FRANJA) * HORAS_FRANJA).padStart(2, "0")}`;
+};
 export const ERROR_MINIMO_POCOS_DATOS = 0.5;
 export const VENTANA_BOYA_HORAS = 4; // Copernicus publica con 2-3 h de retraso
 
@@ -73,7 +99,8 @@ export function ajustarCalibracion(muestras) {
   const rangoAlturas = hMax / hMin;
   let p = 1;
   let lnA;
-  if (m.length >= 12 && rangoAlturas >= 1.8) {
+  const diasDistintos = new Set(m.map((x) => x.dia).filter(Boolean)).size;
+  if (m.length >= 12 && rangoAlturas >= 1.8 && diasDistintos >= 2) {
     const mx = sumaPonderada(X, W) / sw, my = sumaPonderada(Y, W) / sw;
     let sxy = 0, sxx = 0;
     for (let i = 0; i < m.length; i++) {
@@ -95,7 +122,11 @@ export function ajustarCalibracion(muestras) {
     a: +Math.exp(lnA).toFixed(4),
     p: +p.toFixed(3),
     n: m.length,
-    nEtiquetas: m.filter((x) => x.etiqueta).length,
+    // nEtiquetas: las de personas (Mikel en fotos y "ola real que veo");
+    // las de Claude van aparte porque cuentan menos para fiarse.
+    nEtiquetas: m.filter((x) => x.etiqueta && !x.claude).length,
+    nEtiquetasClaude: m.filter((x) => x.claude).length,
+    franjasClaude: [...new Set(m.filter((x) => x.claude).map((x) => x.franja).filter(Boolean))].sort(),
     dias,
     hMin: +hMin.toFixed(2),
     hMax: +hMax.toFixed(2),
@@ -154,9 +185,37 @@ export function normalizarLinea(l) {
 }
 
 // Construye las muestras por clave cámara/encuadre a partir del histórico y
-// de las etiquetas. `etiquetas`: [{ origen: "foto"|"spot", banda, camara,
-// encuadre, espuma, fecha }] (las de "spot" ya emparejadas con la lectura
-// más cercana de la cámara propia del spot, ver emparejarEtiquetaSpot).
+// de las etiquetas. `etiquetas`: [{ origen: "foto"|"spot"|"claude", banda,
+// camara, encuadre, espuma, fecha }] (las de "spot" ya emparejadas con la
+// lectura más cercana de la cámara propia del spot, ver
+// emparejarEtiquetaSpot; las de "claude" salen de etiquetasClaudeParaCalibrar).
+
+// Peso de una etiqueta según su origen (y su confianza, si es de Claude).
+export function pesoEtiqueta(e) {
+  if (e?.origen === "foto") return PESO_ETIQUETA_FOTO;
+  if (e?.origen === "spot") return PESO_ETIQUETA_SPOT;
+  if (e?.origen === "claude") return e.confianza === "baja" ? PESO_ETIQUETA_CLAUDE_BAJA : PESO_ETIQUETA_CLAUDE;
+  return 0;
+}
+
+// Líneas de etiquetas-claude.jsonl -> etiquetas para muestrasPorCamara.
+// Fuera: "no_se_sabe" (o cualquier banda desconocida), sin espuma medida, y
+// fotogramas que no estaban en el encuadre de referencia salvo que Claude lo
+// haya verificado a ojo. Si un mismo fotograma (hash o miniatura) se etiquetó
+// dos veces, vale la última.
+export function etiquetasClaudeParaCalibrar(lineas, bandasValidas) {
+  const porFrame = new Map();
+  for (const l of lineas || []) {
+    if (!l || !l.camara || !bandasValidas.includes(l.banda)) continue;
+    if (!Number.isFinite(l.espuma)) continue;
+    if (!(l.estado === "ok" || (l.estado === "otro_encuadre" && l.encuadreVerificado === true))) continue;
+    porFrame.set(l.hash || l.miniatura || `${l.camara}/${l.encuadre}/${l.fecha}`, l);
+  }
+  return [...porFrame.values()].map((l) => ({
+    origen: "claude", banda: l.banda, confianza: l.confianza || "media", camara: l.camara,
+    encuadre: l.encuadre || "principal", espuma: l.espuma, fecha: l.fecha,
+  }));
+}
 export function muestrasPorCamara(historial, etiquetas, centroBanda) {
   const out = {};
   const add = (k, x) => (out[k] ||= []).push(x);
@@ -170,9 +229,12 @@ export function muestrasPorCamara(historial, etiquetas, centroBanda) {
   for (const e of etiquetas || []) {
     const h = centroBanda(e.banda);
     if (!Number.isFinite(h) || !Number.isFinite(e.espuma)) continue;
+    const peso = pesoEtiqueta(e);
+    if (!(peso > 0)) continue;
     add(claveCalibracion(e.camara, e.encuadre), {
-      espuma: e.espuma, altura: h, peso: e.origen === "foto" ? PESO_ETIQUETA_FOTO : PESO_ETIQUETA_SPOT,
+      espuma: e.espuma, altura: h, peso,
       dia: String(e.fecha).slice(0, 10), etiqueta: true,
+      ...(e.origen === "claude" ? { claude: true, franja: franjaHoraria(e.fecha) } : {}),
     });
   }
   return out;
@@ -213,13 +275,24 @@ export function calibrarTodo(historial, etiquetas, centroBanda) {
 //     (mediana de |ln(e2/e1)|, pasada a %). Si supera ±30 %, o si aún no
 //     hay 3 pares de lecturas para medirlo, la cámara es "ruidosa".
 //   - Una cámara ruidosa solo sustituye al modelo cuando su calibración
-//     tiene ≥ 5 etiquetas de Mikel (fotos) o ≥ 3 días con alturas variadas
-//     (`pocosDatos` = false). Hasta entonces se sigue midiendo y guardando
+//     tiene ≥ 5 etiquetas de personas (fotos de Mikel o "ola real"), o
+//     ≥ 3 días con alturas variadas (`pocosDatos` = false), o suficientes
+//     etiquetas de Claude (2026-10-08): cada una cuenta 5/8 de una de
+//     Mikel (= hacen falta 8 de Claude solas, o p. ej. 3 de Mikel + 4 de
+//     Claude) y, si Claude aporta, sus etiquetas tienen que venir de al
+//     menos 2 franjas de 2 h distintas (no vale mirar 8 veces el mismo mar),
+//     y la calibración de algún encuadre con esas etiquetas tiene que
+//     cuadrar con ellas (errorRel ≤ 75 %): si las etiquetas, la boya y la
+//     espuma no casan entre sí (Berria el 2026-10-08, ±100 %), las
+//     etiquetas de Claude solas no bastan para enseñar la cámara. Hasta entonces se sigue midiendo y guardando
 //     (calibra igual), pero /prevision enseña modelo × coeficiente y no la
 //     usa para corregir la previsión ni a las vecinas.
 export const RUIDO_MAXIMO = 0.3;
 export const VENTANA_RUIDO_MIN = 45;
 export const ETIQUETAS_PARA_FIARSE = 5;
+export const ETIQUETAS_CLAUDE_PARA_FIARSE = 8; // equivalen a las 5 de Mikel
+export const FRANJAS_CLAUDE_MINIMAS = 2;
+export const ERROR_MAXIMO_CLAUDE = 0.75;
 export const PARES_MINIMOS_RUIDO = 3; // con menos pares, el ruido no está medido
 
 export function ruidoCamara(historial, camara) {
@@ -247,15 +320,26 @@ export function ruidoCamara(historial, camara) {
 export function camaraSustituyeModelo(ruido, calibraciones) {
   const cals = (calibraciones || []).filter(Boolean);
   const etiquetas = cals.reduce((a, c) => a + (c.nEtiquetas || 0), 0);
+  const etiquetasClaude = cals.reduce((a, c) => a + (c.nEtiquetasClaude || 0), 0);
+  const franjasClaude = new Set(cals.flatMap((c) => c.franjasClaude || [])).size;
+  const equivalentes = etiquetas + (etiquetasClaude * ETIQUETAS_PARA_FIARSE) / ETIQUETAS_CLAUDE_PARA_FIARSE;
+  const errorClaude = Math.min(...cals.filter((c) => c.nEtiquetasClaude > 0).map((c) => (Number.isFinite(c.errorRel) ? c.errorRel : 1)), Infinity);
   const variada = cals.some((c) => c.pocosDatos === false);
   const ruidosa = !ruido || ruido.ruido === null || ruido.pares < PARES_MINIMOS_RUIDO || ruido.ruido > RUIDO_MAXIMO;
   if (!ruidosa) return { sustituye: true, motivo: `estable (±${Math.round(ruido.ruido * 100)} % entre lecturas cercanas)` };
   if (etiquetas >= ETIQUETAS_PARA_FIARSE) return { sustituye: true, motivo: `${etiquetas} etiquetas` };
+  const claudeBasta = etiquetasClaude > 0 && equivalentes >= ETIQUETAS_PARA_FIARSE - 1e-9 && franjasClaude >= FRANJAS_CLAUDE_MINIMAS;
+  if (claudeBasta && errorClaude <= ERROR_MAXIMO_CLAUDE) {
+    return { sustituye: true, motivo: `${etiquetas ? `${etiquetas} etiquetas + ` : ""}${etiquetasClaude} etiquetas de Claude en ${franjasClaude} franjas` };
+  }
   if (variada) return { sustituye: true, motivo: "≥ 3 días con alturas variadas" };
+  const base = ruido?.ruido == null || ruido.pares < PARES_MINIMOS_RUIDO
+    ? `ruido aún sin medir (${ruido?.pares || 0} pares de lecturas cercanas)`
+    : `ruidosa (±${Math.round(ruido.ruido * 100)} %) y sin calibrar`;
   return {
     sustituye: false,
-    motivo: ruido?.ruido == null || ruido.pares < PARES_MINIMOS_RUIDO
-      ? `ruido aún sin medir (${ruido?.pares || 0} pares de lecturas cercanas)`
-      : `ruidosa (±${Math.round(ruido.ruido * 100)} %) y sin calibrar`,
+    motivo: base + (!etiquetasClaude ? "" : claudeBasta
+      ? `; ${etiquetasClaude} etiquetas de Claude en ${franjasClaude} franjas, pero la calibración no cuadra con ellas (±${Math.round(errorClaude * 100)} %)`
+      : `; ${etiquetasClaude} etiquetas de Claude en ${franjasClaude} franjas (faltan)`),
   };
 }
