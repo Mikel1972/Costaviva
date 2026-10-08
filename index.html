@@ -792,7 +792,7 @@
       </div>
     </div>
     <button class="batimetria-toggle" id="toggleBatimetria" title="Batimetría (profundidad del mar)" aria-label="Mostrar/ocultar batimetría">📏<span class="capa-label">Fondo</span></button>
-    <button class="nubes-toggle" id="toggleNubes" title="Radar de lluvia en directo (RainViewer)" aria-label="Mostrar/ocultar radar de lluvia">☁️<span class="capa-label">Lluvia</span></button>
+    <button class="nubes-toggle" id="toggleNubes" title="Radar de lluvia de las últimas 3 horas, animado (EUMETNET OPERA)" aria-label="Mostrar/ocultar la lluvia de las últimas 3 horas">☁️<span class="capa-label">Lluvia</span></button>
     <button class="anadir-ubicacion-toggle" id="toggleAnadirUbicacion" title="Añadir una ubicación nueva" aria-label="Añadir ubicación">➕</button>
     <button class="estaciones-toggle" id="toggleEstaciones" title="Estaciones meteorológicas reales (AEMET)" aria-label="Mostrar/ocultar estaciones meteorológicas">🌧<span class="capa-label">Estac.</span></button>
     <button class="viento-toggle" id="toggleViento" title="Viento en directo, estilo Windy (partículas animadas)" aria-label="Mostrar/ocultar capa de viento">💨<span class="capa-label">Viento</span></button>
@@ -1014,6 +1014,13 @@
   import * as VentanaActividad from "/assets/js/ventana-actividad.js";
   window.VentanaActividad = VentanaActividad;
   window.dispatchEvent(new Event("ventana-actividad-lista"));
+</script>
+<script type="module">
+  // Lluvia animada de las últimas 3 h (assets/js/lluvia-animada.js, con
+  // tests en test/lluvia-animada.test.js). El botón "Lluvia" la usa vía
+  // window.LluviaAnimada.
+  import * as LluviaAnimada from "/assets/js/lluvia-animada.js";
+  window.LluviaAnimada = LluviaAnimada;
 </script>
 <script>
 // ---------------------------------------------------------------------------
@@ -3832,53 +3839,29 @@ document.getElementById("toggleLuna").addEventListener("click", () => {
   if (lunaAbierta) actualizarLuna();
 });
 
-// Radar de lluvia — capa de teselas real sobre el mapa (no un panel de
-// texto), igual patrón que capaBatimetria más arriba. Fuente: RainViewer
-// (api.rainviewer.com), gratis y sin API key — verificado en vivo
-// 2026-09-09 (weather-maps.json responde con los frames disponibles, y
-// una tesela de ejemplo carga como image/png real). Es radar de
-// PRECIPITACIÓN real, no un mapa genérico de nubosidad — por eso el
-// tooltip del botón dice "radar de lluvia", no "nubes", para no prometer
-// más de lo que es.
-let capaRadarLluvia = null;
-let radarLluviaCargando = false;
-async function prepararCapaRadarLluvia() {
-  if (capaRadarLluvia || radarLluviaCargando) return capaRadarLluvia;
-  radarLluviaCargando = true;
-  try {
-    const resp = await fetch("https://api.rainviewer.com/public/weather-maps.json");
-    const datos = await resp.json();
-    const ultimoFrame = (datos.radar?.past || []).slice(-1)[0];
-    if (!ultimoFrame) throw new Error("sin frames de radar disponibles");
-    capaRadarLluvia = L.tileLayer(`${datos.host}${ultimoFrame.path}/256/{z}/{x}/{y}/2/1_1.png`, {
-      opacity: 0.55,
-      attribution: "Radar de lluvia: RainViewer",
-      // RainViewer documenta que su zoom máximo real es 7 — pedir teselas
-      // de zoom 8+ no da un error HTTP, devuelve una tesela válida con el
-      // texto "Zoom Level Not Supported" dibujado dentro (verificado en
-      // vivo 2026-09-13, bug reportado por el usuario: "me pone zoom
-      // level not supported" al acercar el mapa). maxNativeZoom hace que,
-      // a partir de zoom 8, Leaflet siga pidiendo la tesela de zoom 7 y
-      // la reescale — se sigue pudiendo acercar el mapa, pero sin pedir
-      // teselas que no existen de verdad.
-      maxNativeZoom: 7,
+// Lluvia de las últimas 3 horas, animada (2026-10-08, pedido de Mikel). Toda
+// la lógica vive en assets/js/lluvia-animada.js (fuente, licencia, tests);
+// aquí solo se engancha al botón. Radar EUMETNET OPERA cada 5 min (vía
+// functions/lluvia/) con satélite H SAF de respaldo. Sustituye a la imagen
+// fija de RainViewer: solo daba 2 h y no cubre uso comercial.
+let lluviaAnimada = null;
+function prepararLluviaAnimada() {
+  if (!lluviaAnimada && window.LluviaAnimada) {
+    lluviaAnimada = window.LluviaAnimada.crearLluviaAnimada({
+      L, map, contenedor: document.getElementById("map").parentElement,
     });
-  } catch (e) {
-    console.log("No se pudo cargar el radar de lluvia:", e.message);
-  } finally {
-    radarLluviaCargando = false;
   }
-  return capaRadarLluvia;
+  return lluviaAnimada;
 }
-document.getElementById("toggleNubes").addEventListener("click", async (e) => {
+document.getElementById("toggleNubes").addEventListener("click", (e) => {
   const boton = e.currentTarget;
-  const capa = await prepararCapaRadarLluvia();
-  if (!capa) return;
-  if (map.hasLayer(capa)) {
-    map.removeLayer(capa);
+  const control = prepararLluviaAnimada();
+  if (!control) return;
+  if (control.activo()) {
+    control.desactivar();
     boton.classList.remove("activo");
   } else {
-    capa.addTo(map);
+    control.activar();
     boton.classList.add("activo");
     registrarEvento("ver_capa_radar_lluvia");
   }
