@@ -1,4 +1,17 @@
+# robots.txt de https://costaviva.org (2026-10-08).
+# Públicas e indexables: la portada, /spots, /especies, /mareas y /privacidad.
+# Las páginas de la app tras el login no aportan nada a un buscador: además de
+# esto llevan la cabecera X-Robots-Tag: noindex (functions/_middleware.js).
+# /login NO se bloquea: Google renderiza la portada (/) y su JavaScript lleva
+# a /login, cuya canonical es /. Tampoco /assets/ ni los datos que usan las
+# páginas públicas (/prevision, /meteo/), que Google necesita para pintarlas.
 User-agent: *
 Allow: /
+Disallow: /diario
+Disallow: /alarma
+Disallow: /grupos
+Disallow: /suscripcion
+Disallow: /admin
+Disallow: /etiquetar-olas
 
 Sitemap: https://costaviva.org/sitemap.xml

@@ -814,6 +814,37 @@ Decisión del usuario sobre la autonomía:
   Search Console. El robot anota en `SEO_ROBOT.md` (historial, se añade al
   final) los números, lo que cambió y qué espera ver la próxima vez.
 
+## Páginas públicas de pesca: /spots y /especies (2026-10-08, pedido de Mikel)
+
+"Costaviva no tiene visibilidad en buscadores": Google solo indexaba 4 URLs.
+Detalle y pasos de Search Console/Bing en `SEO.md`.
+
+- **Páginas** (HTML hecho en el servidor, sin JS ni IA): `/spots`,
+  `/spots/region/<región>` (las 8 de `/mareas/region/`), `/spots/<spot>`,
+  `/especies`, `/especies/<especie>` (id con guion: `bonito-norte`). Código en
+  `functions/spots/**`, `functions/especies/**` y `functions/_lib/seo/`
+  (`paginas.js` HTML, `datos.js` lógica pura, `indice-hoy.js` condiciones e
+  índice de hoy, `carga.js` red, `base.js` plantilla/caché, `sitemap.js`,
+  `indexacion.js`). Estilo en `assets/css/publico.css` (tokens Amanecer).
+  `/spots/<spot>` va de pesca y `/mareas/<spot>` de marea: se enlazan, cada
+  una con su canonical.
+- **Índice de hoy en el servidor**: misma cuenta que la ficha
+  (`VA.indiceSpot`, modalidad costa, con fondo, batimetría, turbidez y caudal),
+  con `/prevision` + `/meteo/*` del spot. Página en Cache API 30 min (1 h las
+  fijas); si un dato tarda > 4 s sale sin ese bloque y se guarda 5 min.
+- **Nada interno en público**: `TEXTO_INTERNO_PUBLICO` (datos.js) filtra
+  notas de especies.json; el test recorre las 158 páginas. Cámaras de
+  terceros solo como enlace a su dueño. `RIOS_SPOT` es copia de `RIOS` de
+  index.html (el test avisa si se desvía).
+- **`sitemap.xml` generado**: `node scripts/seo/generar-sitemap.mjs` (284
+  URLs); no editarlo a mano, el test falla si está desfasado.
+- **Un solo dominio** (`_lib/seo/indexacion.js`, en `_middleware.js`): GET de
+  páginas en `fishnow-59u.pages.dev` → 301 a `costaviva.org` (endpoints y
+  POST no se tocan); previews `*.fishnow-59u.pages.dev` con `X-Robots-Tag:
+  noindex`; http → https; páginas privadas de la app con noindex y en
+  `robots.txt`. **Nunca noindex en `/` ni `/login`** (ver arriba).
+- Tests: `test/seo-paginas.test.js` (en tests.yml).
+
 ## Observaciones abiertas, concursos y "Comparte tu captura" (2026-10-08, aprobado por Mikel)
 
 "Añade todo lo legal". Sin IA en ejecución. Cuatro piezas:

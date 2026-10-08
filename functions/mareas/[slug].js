@@ -263,6 +263,7 @@ function renderizarPagina(spot, todos) {
         : ""
     }
 
+    <p class="nota"><a href="/spots/${spot.slug}">Pesca en ${nombre}: especies, temporada, fondo y profundidad →</a></p>
     <p class="nota"><a href="/mareas">Ver todos los spots →</a></p>
   </div>
 </body>

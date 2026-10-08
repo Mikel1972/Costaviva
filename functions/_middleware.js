@@ -22,6 +22,7 @@
 // Además, a toda respuesta HTML le pone la CSP con nonce (abajo, conformidad
 // W6, 2026-10-07). Fail-closed: si falla, 500, nunca HTML sin CSP.
 import { esRutaPermitida } from "./_lib/rutas-publicas.js";
+import { decisionIndexacion } from "./_lib/seo/indexacion.js";
 
 export async function onRequest(context) {
   const { request, next } = context;
@@ -29,7 +30,19 @@ export async function onRequest(context) {
   if (!esRutaPermitida(pathname)) {
     return new Response("Not Found", { status: 404 });
   }
-  return aplicarCsp(await next(), HTMLRewriter);
+  // Un solo dominio para los buscadores (2026-10-08): http -> https y el
+  // alias fishnow-59u.pages.dev -> costaviva.org con 301; previews y
+  // páginas privadas con X-Robots-Tag: noindex. Ver _lib/seo/indexacion.js.
+  const seo = decisionIndexacion(request.url, request.method);
+  if (seo.redirigir) return Response.redirect(seo.redirigir, 301);
+  const respuesta = aplicarCsp(await next(), HTMLRewriter);
+  return seo.noindex ? conNoindex(respuesta) : respuesta;
+}
+
+export function conNoindex(respuesta) {
+  const headers = new Headers(respuesta.headers);
+  headers.set("X-Robots-Tag", "noindex");
+  return new Response(respuesta.body, { status: respuesta.status, statusText: respuesta.statusText, headers });
 }
 
 // ---------------------------------------------------------------------------
