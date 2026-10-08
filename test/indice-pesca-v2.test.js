@@ -897,20 +897,41 @@ test("mar_grande_depredadores: cierra el hueco de más de 2,5 m desde costa; la 
     }
     return h;
   };
-  const dorada = (ola, modalidad = "costa") => enHora("dorada", bakio(ola), "2026-10-08T12:00", { lat: 43.4297, lon: -2.8103, modalidad });
+  const dorada = (ola, modalidad = "costa", id = "dorada", fondo = null) => enHora(id, bakio(ola), "2026-10-08T12:00", { lat: 43.4297, lon: -2.8103, modalidad, fondo });
   const r = dorada(3.1);
-  assert.equal(r.puntuacion, 54, "antes daba 72");
+  assert.equal(r.puntuacion, 57, "antes daba 72");
   const ola = r.razones.filter((x) => x.variable === "ola");
   assert.equal(ola.length, 1, "la ola cuenta una sola vez");
   assert.equal(ola[0].factor, "regla:mar_grande_depredadores");
   assert.equal(ola[0].texto, "mar demasiado grande: se apartan de la orilla");
   assert.ok(ola[0].aporte <= -6, "▼▼");
+  assert.deepEqual([2.0, 2.5, 2.6, 3.1, 4.0].map((o) => dorada(o).puntuacion), [78, 72, 70, 57, 34]);
   assert.ok(r.avisoOla, "y el aviso aparte");
   // Crece con la altura hasta ~4 m; en 2,5 m justos manda todavía mar movida.
   assert.ok(dorada(4).puntuacion < r.puntuacion);
   assert.equal(dorada(5).puntuacion, dorada(4).puntuacion);
-  assert.ok(razon(dorada(2.5), "regla:mar_movida_depredadores_costa"));
+  assert.ok(razon(dorada(2.4), "regla:mar_movida_depredadores_costa").aporte > 0);
   assert.ok(!razon(dorada(2.5), "regla:mar_grande_depredadores"));
+
+  // Continuidad (2026-10-08): de 2,0 a 4,0 m en pasos de 0,1 la nota nunca
+  // sube y ningún paso baja más de 8 puntos (sin escalón en 2,5 m), con y
+  // sin orilla de roca.
+  for (const id of ["dorada", "lubina", "sargo"]) {
+    for (const fondo of [null, { orilla_tipo: "roca" }]) {
+      let previa = null;
+      for (let k = 20; k <= 40; k++) {
+        const p = dorada(k / 10, "costa", id, fondo).puntuacion;
+        if (previa !== null) {
+          assert.ok(p <= previa, `${id}${fondo ? " roca" : ""} ${(k / 10).toFixed(1)} m: sube (${previa} → ${p})`);
+          assert.ok(previa - p <= 8, `${id}${fondo ? " roca" : ""} ${(k / 10).toFixed(1)} m: escalón de ${previa - p}`);
+        }
+        previa = p;
+      }
+    }
+  }
+  // "Mar algo movida" no suma por encima de 2,2 m sin ir bajando: entero a 2,2, nada a 2,5.
+  const movida = (o) => razon(dorada(o), "regla:mar_movida_depredadores_costa")?.lo ?? 0;
+  assert.ok(movida(2.2) > movida(2.35) && movida(2.35) > 0 && movida(2.5) === 0);
   // Embarcación y submarina: el factor de oleaje no está sustituido, así que
   // ya resta con mar grande (sin hueco) y la regla nueva no aplica.
   for (const modalidad of ["embarcacion", "submarina"]) {
@@ -923,4 +944,16 @@ test("mar_grande_depredadores: cierra el hueco de más de 2,5 m desde costa; la 
   for (const rg of DATOS.reglas_expertas.reglas) {
     if ((rg.sustituye || []).includes("oleaje")) assert.deepEqual(rg.ambito.modalidades, ["costa"], rg.id);
   }
+});
+
+test("orilla_roca_espuma: bonus entero de 1,5 a 2,5 m y se apaga hasta 0 a 3 m (con mar grande se apartan)", () => {
+  const fondo = { orilla_tipo: "roca" };
+  const lo = (ola) => razon(enHora("lubina", serie(() => ({ ola })), HOY, { fondo }), "regla:orilla_roca_espuma")?.lo ?? 0;
+  const entero = 0.4 * 0.55;
+  assert.ok(Math.abs(lo(0.2) - entero / 2) < 0.01, "mar plana: la mitad (como lo aprobó Mikel)");
+  for (const o of [1.5, 2.0, 2.5]) assert.ok(Math.abs(lo(o) - entero) < 0.01, `${o} m: entero`);
+  assert.ok(Math.abs(lo(2.75) - entero / 2) < 0.01, "2,75 m: la mitad");
+  for (const o of [3.0, 3.5]) assert.equal(lo(o), 0, `${o} m: nada`);
+  // Sin dato de ola no atenúa (no se inventa).
+  assert.ok(Math.abs(lo(null) - entero / 2) < 0.01);
 });

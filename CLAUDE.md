@@ -1818,7 +1818,8 @@ franja costera. Sin IA y sin coste.
   `reglas_expertas.reglas`, todas `por_validar`, confianza 0,5-0,55, nunca en
   embarcación): `orilla_roca_espuma` (costa, orilla de acantilado/roca/escollera:
   lubina, sargo, sargo picudo, maragota, pulpo, congrio, cabracho, rascacio;
-  la mitad con mar plana, entera desde 1,5 m), `orilla_playa_arena` (costa,
+  la mitad con mar plana, entera de 1,5 a 2,5 m y se apaga hasta 0 a 3 m
+con `efecto.atenua`: con mar grande se apartan), `orilla_playa_arena` (costa,
   playa: rodaballo, lenguado, raya; `mikel_campo_bizkaia`),
   `dorada_arena_con_roca` (costa y submarina, arena ≥ 30 % y roca ≥ 10 %),
   `fondo_roca_submarina` (submarina, roca ≥ 35 %, graduada) y `posidonia_cerca`
@@ -1879,9 +1880,12 @@ tope solo lo pone el viento. Desde costa, en los depredadores costeros el
 factor de oleaje lo sustituyen las reglas de mar plana/poca/movida (hasta
 2,5 m); por encima, `mar_grande_depredadores` ("mar demasiado grande: se
 apartan de la orilla", `tipo: cientifica`, Bacheler 2019, Udyawer 2013 y la
-flota de lubina 2022; -0,8 log-odds justo por encima de 2,5 m, hasta -1,6 a
-4 m) cierra el hueco que dejó quitar el tope: la dorada de la captura de
-prueba (Bakio, 3,1 m) pasó de 72 a 54. En embarcación y submarina ninguna
+flota de lubina 2022; casi 0 justo por encima de 2,5 m y en línea recta hasta
+-1,6 log-odds a 4 m) cierra el hueco que dejó quitar el tope, y "mar algo
+movida" se apaga entre 2,2 y 2,5 m: la nota baja sin escalones (test de
+continuidad de 2,0 a 4,0 m, pasos de 0,1, ninguno de más de 8 puntos). Dorada
+de la captura de prueba (Bakio): 78 / 72 / 70 / 57 / 34 a 2,0 / 2,5 / 2,6 /
+3,1 / 4,0 m (con tope daba 72 a 3,1 m). En embarcación y submarina ninguna
 regla sustituye al oleaje, así que no hay hueco (un test lo vigila).
 
 **Índice del spot** (`indiceSpot`): la mejor especie de temporada (sin vedas)
@@ -1998,7 +2002,8 @@ condiciones, efecto, fuente, estado y cualquier error de forma.
    `confianza` (0-1), `estado: "por_validar"`, `validacion`, `ambito`
    (regiones, modalidades, especies o `@grupo`, especies_excluidas, meses),
    `condiciones` (todas deben cumplirse), `efecto.logodds` (±2 como mucho;
-   0,4 ≈ 10 puntos), `variable` (la que puntúa; `nombre@etiqueta` si mira
+   0,4 ≈ 10 puntos; `escala` lo gradúa y `atenua: { var, de, a }` lo apaga de
+   forma continua, 1 en `a` y 0 en `de`), `variable` (la que puntúa; `nombre@etiqueta` si mira
    otra ventana de tiempo) y, si es la de un factor base, `sustituye`. Dos
    reglas de la misma variable deben ser excluyentes.
 2. Condiciones: `{ "var": "presion", "agregado": "delta", "desde_h": -6,
