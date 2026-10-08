@@ -47,7 +47,8 @@ body.publica { margin: 0; background: var(--fondo); color: var(--tinta); font-fa
 .indice .nota-nivel { font-size: 26px; padding: 4px 14px; }
 .indice-etq { font-weight: 700; }
 .motivos { list-style: none; padding: 0; margin: 10px 0 0; display: grid; gap: 4px; font-size: 14.5px; }
-.motivos .flecha { display: inline-block; min-width: 2.2em; font-weight: 800; }
+.motivos li { display: grid; grid-template-columns: 2.2em 1fr; }
+.motivos .flecha { font-weight: 800; }
 .motivos .sube .flecha { color: var(--nivel-bueno); }
 .motivos .baja .flecha { color: var(--nivel-malo); }
 .datos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 14px 0 6px; }

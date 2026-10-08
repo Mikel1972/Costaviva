@@ -32,7 +32,7 @@ function bloqueCondiciones(cond, indice, spot) {
     ? `<div class="indice" data-nivel="${indice.nivel}">
   <div class="indice-nota"><span class="nota-nivel" data-nivel="${indice.nivel}">${indice.puntuacion}</span><span class="indice-etq">Índice de pesca desde costa${indice.especie ? ` · mejor ahora: <a href="/especies/${esc(slugEspecie(indice.especieId))}">${esc(indice.especie.toLowerCase())}</a>` : ""}</span></div>
   ${indice.avisoOla ? `<p class="aviso-ola" role="note">${esc(indice.avisoOla)}</p>` : ""}
-  ${indice.motivos.length ? `<ul class="motivos">${indice.motivos.map((m) => `<li class="${m.sube ? "sube" : "baja"}"><span class="flecha" aria-label="${m.sube ? "a favor" : "en contra"}">${esc(m.flecha)}</span> ${esc(m.texto)}</li>`).join("")}</ul>` : ""}
+  ${indice.motivos.length ? `<ul class="motivos">${indice.motivos.map((m) => `<li class="${m.sube ? "sube" : "baja"}"><span class="flecha" aria-label="${m.sube ? "a favor" : "en contra"}">${esc(m.flecha)}</span><span>${esc(m.texto)}</span></li>`).join("")}</ul>` : ""}
   ${indice.freza ? `<p class="nota">Está en freza: si lo pescas, devuélvelo.</p>` : ""}
 </div>`
     : "";
