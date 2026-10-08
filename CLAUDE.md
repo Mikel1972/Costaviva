@@ -938,6 +938,74 @@ documentado, usa un valor neutro (`0.5`) en vez de 0 o 1, y el texto dice
 explícitamente "sin especies con rango de temperatura documentado hoy".
 Ahora además hereda la vigencia por spot del punto anterior.
 
+## Fichas de especies y ventana de actividad (2026-10-07, aprobado por Mikel)
+
+- **`assets/datos/especies.json`**: ficha versionada de cada especie para toda
+  España y Portugal (nombres es/eu/gl/ca/pt, científico, hábitat, profundidad,
+  presencia por región, freza por región, actividad, temperatura, alimentación,
+  tallas mínimas y vedas por jurisdicción, cebos típicos) con **fuente por campo** (ids de la
+  tabla `fuentes`, cada una con licencia y fecha) y la lista `pendiente` de lo
+  que falta. `jurisdicciones` dice qué normativa está revisada y cuál no (UE,
+  Estado, cada comunidad autónoma, Portugal, Azores, Madeira). Vive en
+  `/assets/` porque esa carpeta ya es pública en la lista blanca (W2 de comun
+  prohíbe meter `data/` en ella).
+- **Regla de fuentes**: nunca inventar (null + nota); solo fuentes oficiales o
+  abiertas no-NC. **FishBase es CC BY-NC y Costaviva es comercial**: no se añaden
+  datos de FishBase; los que ya había en `ESPECIES*` de `index.html` siguen ahí
+  marcados con `fuentePendiente` y listados en `fishbase_pendientes`, y en la
+  ventana de actividad un rango de temperatura de FishBase **no puntúa**
+  (`excluir_del_calculo`). Tampoco FAO (CC BY-NC-SA) ni contenido de apps
+  competidoras (Fizk).
+- **`assets/js/ventana-actividad.js`**: módulo ES puro (sin DOM ni red, con
+  tests en `test/ventana-actividad.test.js`). Puntuación por hora =
+  `50 + Σ peso × valor` con un motivo y su aporte por cada factor (luz con
+  amanecer/anochecer calculados, marea, temperatura del agua, oleaje, viento,
+  tendencia de presión ±1 hPa/3 h, turbidez). Los pesos están en el JSON
+  (`reglas_por_defecto` + `reglas` por especie) con `criterio`/`fuente` y
+  `tipo: heuristica_experta` cuando lo son. **La marea se escala con el rango
+  local** (máx-mín en ±12 h del nivel del mar del propio spot frente a 2,5 m):
+  en el Mediterráneo no cuenta. Mar > 2,5 m: tope 20 y aviso. Luna: peso 0.
+- **UI**: tarjeta "Ventana de actividad por horas" del panel del spot
+  (`pintarVentanaActividad` en `index.html`): selector de especie (las que
+  tienen presencia en la región del spot, en temporada primero), Hoy/Mañana,
+  tira de 24 horas, el porqué de la hora tocada, mejores ventanas, aviso de
+  freza y talla mínima con enlace oficial. Los datos horarios se piden a
+  Open-Meteo **desde el navegador** al abrir el panel (caché 1 h por spot, con
+  el factor de oleaje de Gipuzkoa), sin tocar `/prevision`. Sin `on*=`: todo
+  con `addEventListener`.
+- **Mantenimiento**: la pasada de los jueves de la rutina del buscador de
+  fuentes (`scripts/saldo/rutina-buscador-fuentes.txt`, sección "Fichas de
+  especies" de `ROBOT_REGLAS.md`) sube cambios a `robot/especies-AAAA-MM-DD` y
+  `robot-diseno-pr.yml` abre el PR. **Si cambias el .txt, hay que pegar el
+  texto nuevo en la rutina de claude.ai/code/routines.**
+- **Fuente única de especies (2026-10-08)**: las listas `ESPECIES`,
+  `ESPECIES_MEDITERRANEO`, `ESPECIES_GOLFO_CADIZ` y `ESPECIES_CANARIAS` se
+  retiraron de `index.html`, junto con la tarjeta "¿Qué esperamos pescar hoy?".
+  Ahora todo lee `especies.json`:
+  - **Índice de pesca** (`pintarIndicePesca` en `index.html`): especies de
+    temporada en la región del spot (`regionPorCoordenadas`), sin las que están
+    en veda (`vedaActiva`); misma fórmula de antes (ratio de especies con el agua
+    en su rango × 70 + presión). Los rangos de FishBase no cuentan; sin ningún
+    rango usable, ratio neutro 0,5 como antes. El JSON se pide al cargar la página.
+  - **Post de Instagram de los miércoles** (`scripts/marketing/especie-post.mjs`):
+    región según la última zona de `rotacion-zonas.json` (por defecto Cantábrico;
+    `REGION_POST` la fuerza), prioriza especies con temporada verificada, nunca
+    una en veda, y el texto se compone con temporada + fuente, actividad,
+    alimentación, cebos, freza y talla. Ya no publica las notas antiguas (algunas
+    citaban FishBase).
+  - **Vedas**: `vedas[].meses` + `regiones` en el JSON. El abadejo lleva la veda
+    recreativa 1 ene–30 abr (Reg. (UE) 2025/202 según ICES), pendiente de
+    verificar para 2026 (Reg. (UE) 2026/249): no aparece como de temporada, ni en
+    el índice ni en los posts, y la ventana de actividad muestra "En veda" sin
+    recomendar horas.
+  - Lo que tenía la lista antigua y no tiene el JSON: la división costa/mar
+    adentro (solo la usaba la tarjeta retirada) y las notas largas (sustituidas
+    por campos con fuente). `diario.html` sigue con su propia `ESPECIES` (solo
+    nombre + científico para el desplegable de capturas): es otra cosa y no se toca.
+- **Ojo, Open-Meteo**: la API gratuita es solo para uso no comercial; toda la
+  app (no solo esto) la usa. Pendiente de decidir con Mikel (plan comercial de
+  Open-Meteo o alternativa).
+
 ## Triggers / rutinas automatizadas
 
 **Interruptores de pausa (2026-10-07, comun pruebas-y-alertas.md P8):**
@@ -1312,7 +1380,9 @@ móvil:
   que explica en una frase qué representa cada número (0-100, según
   nuestro propio algoritmo). "Qué se puede pescar" pasa a `<details>`
   por especie bajo el titular "¿Qué esperamos pescar hoy?", en vez de
-  mostrar las 5-6 especies siempre expandidas de golpe.
+  mostrar las 5-6 especies siempre expandidas de golpe. **Quitada el
+  2026-10-08** (pedido de Mikel): la sustituye la tarjeta "Ventana de
+  actividad por horas" (ver "Fichas de especies y ventana de actividad").
 
 **3 bugs reales encontrados y corregidos probando en real en un iPhone
 (PWA instalada), el mismo día del rediseño de arriba** — ninguno se

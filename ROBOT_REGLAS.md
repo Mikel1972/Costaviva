@@ -1452,7 +1452,9 @@ corren solo 1 vez al día cada una (no 4):
   aplica aquí sin excepción, no solo cuando la pasada decida que el
   cambio es grande. Añade una entrada a `ROBOT.md` con lo encontrado,
   aunque sea "sin novedades esta pasada".
-- **Migración y cría de especies**: para las especies ya en `ESPECIES`
+- **Migración y cría de especies** (desde el 2026-10-07 esta tarea es
+  mantener `assets/datos/especies.json`, ver la sección "Fichas de
+  especies" más abajo, que manda sobre este párrafo): para las especies ya en `ESPECIES`
   (`diario.html`), investigar épocas de migración y rangos de
   temperatura para reproducción/cría/reposo (no solo el rango de pesca
   que ya se usa en `indicePesca`). Mismo criterio que los sinónimos
@@ -1599,6 +1601,79 @@ como candidato a granularidad extra para ese spot en particular, aunque
 de momento no exista mecanismo en el código para aplicar datos por spot
 individual dentro de una lista regional (eso sería, en sí mismo, un
 cambio de diseño a proponer aparte, nunca aplicado directo).
+
+## Fichas de especies (`assets/datos/especies.json`) — jueves (añadido 2026-10-07, aprobado por Mikel)
+
+`assets/datos/especies.json` es la ficha de referencia de cada especie
+(nombres es/eu/gl/ca/pt, científico, hábitat, profundidad, presencia por
+región, freza, actividad, temperatura, alimentación, tallas mínimas y vedas
+por jurisdicción) y contiene las reglas de la **ventana de actividad**
+(`assets/js/ventana-actividad.js`) que ve el usuario en cada spot. Cubre toda
+España y Portugal: regiones `cantabrico`, `atlantico_norte` (Galicia),
+`portugal`, `golfo_cadiz`, `mediterraneo`, `baleares`, `canarias`, `azores`,
+`madeira`. Lo mantiene la pasada de los jueves de la rutina del buscador de
+fuentes.
+
+**Qué hacer en cada pasada** (como mucho 3 especies o 2 jurisdicciones):
+1. Mira, con `node -e` o `grep`, sin leer el fichero entero: `jurisdicciones`
+   (listas `pendiente`), `fishbase_pendientes` y el `pendiente` de cada
+   especie. Prioridad: (a) tallas y vedas que falten o puedan haber
+   cambiado (hay consecuencias reales si se muestra una talla equivocada);
+   (b) sustituir datos de FishBase; (c) freza por región; (d) el resto.
+2. Busca con `WebSearch` y **comprueba con una petición real** (WebFetch o
+   curl) que la página dice lo que vas a escribir.
+3. Escribe el dato con su fuente:
+   - cada campo lleva `fuentes` (ids de la tabla `fuentes`); una fuente nueva
+     se añade a `fuentes` con `titulo`, `url`, `editor`, `tipo`, `licencia`,
+     `fecha_documento` y `fecha_consulta`;
+   - cada talla/veda lleva `url` y `fecha_revision` (hoy); sin eso, `null`;
+   - si no encuentras dato verificable: deja `null` y añade el motivo a
+     `pendiente`. **Nunca inventar** y nunca "completar" con lo que suele ser.
+4. Si una talla oficial ha cambiado, actualízala y dilo en el mensaje del
+   commit y en `ROBOT.md` con el valor antiguo y el nuevo.
+
+**Fuentes permitidas**: boletines oficiales (BOE, DOUE/EUR-Lex, BOPV, BOC,
+BOPA, DOG, BOJA, BORM, DOGV, DOGC, BOIB, BOC de Canarias, Diário da
+República, Jornal Oficial dos Açores, JORAM), webs de los gobiernos
+(MAPA, MITECO, Gobierno Vasco, Xunta, DGRM, IPMA...), IEO-CSIC, AZTI, ICES
+**solo lo publicado como CC BY 4.0** (en ices-library.figshare.com pone la
+licencia; lo anterior a 2021 es "ICES Custom Licence" y algunos dicen
+expresamente "non-commercial"), artículos con licencia CC BY (PLOS, BMC,
+Frontiers, MDPI, Scientia Marina) y OBIS (CC BY). Mira SIEMPRE la licencia en
+la propia página antes de usarla.
+
+**Prohibidas** (Costaviva es de pago): FishBase y SeaLifeBase (CC BY-NC),
+FAO (CC BY-NC-SA), AquaMaps, datasets CC BY-NC de Ifremer/SEANOE, cualquier
+cosa "non-commercial", y el contenido de apps competidoras (Fizk: su manual,
+su Academia, su Fizk Score; tampoco Fishbrain, Tides4fishing...). Una guía de
+pesca o una web de divulgación puede servir de pista, nunca de fuente.
+
+**Cebos típicos** (`cebos` de cada especie, añadido 2026-10-08): cada cebo
+lleva `nombre`, `tipo` (`natural`/`artificial`), `modalidad` y, opcional,
+`region`. Con fuente: `fuente` + `url` + `fecha_revision` (guías de
+gobiernos autonómicos o de Portugal, federaciones, universidades, IEO-CSIC).
+Sin fuente abierta citable: `tipo_fuente: "heuristica_experta"` + `criterio`.
+Sustituye heurísticas por fuentes cuando las encuentres y vigila normas de
+cebos (p. ej. cebo vivo prohibido en alguna comunidad). Nunca copies manuales
+de pago ni contenido de apps competidoras (Fizk).
+
+**Reglas de la ventana de actividad** (`reglas` y `reglas_por_defecto`): cada
+peso o preferencia lleva `fuente` o `criterio`, y si es una heurística de
+pescadores se marca `"tipo": "heuristica_experta"`. La marea se escala con el
+rango local: no la conviertas en factor fijo.
+
+**Dónde va**: rama `robot/especies-AAAA-MM-DD`, nunca `main`. Al subirla,
+`robot-diseno-pr.yml` abre el PR (o un Issue con el enlace si GitHub no deja
+crear PR a Actions) y Mikel decide. Antes de commitear:
+`node --test test/ventana-actividad.test.js` (comprueba que toda fuente citada
+existe, que ninguna fuente NC sostiene un dato, que cada talla tiene url y
+fecha y que los meses y regiones son válidos). Si falla, no subas la rama:
+déjalo como propuesta en `ROBOT.md`. Este flujo sustituye, solo para este
+fichero, al límite de 3 ficheros/80 líneas de abajo (el PR es la revisión
+humana); no toques nada fuera de `assets/datos/especies.json`.
+
+Entrada en `ROBOT.md` siempre, aunque sea "sin novedades", con lo que se
+cambió, las fuentes y lo que queda pendiente.
 
 ## Red de seguridad de la automatización (añadido 2026-09-12)
 
