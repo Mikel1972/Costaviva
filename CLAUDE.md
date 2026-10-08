@@ -938,6 +938,50 @@ documentado, usa un valor neutro (`0.5`) en vez de 0 o 1, y el texto dice
 explícitamente "sin especies con rango de temperatura documentado hoy".
 Ahora además hereda la vigencia por spot del punto anterior.
 
+## Fichas de especies y ventana de actividad (2026-10-07, aprobado por Mikel)
+
+- **`assets/datos/especies.json`**: ficha versionada de cada especie para toda
+  España y Portugal (nombres es/eu/gl/ca/pt, científico, hábitat, profundidad,
+  presencia por región, freza por región, actividad, temperatura, alimentación,
+  tallas mínimas y vedas por jurisdicción) con **fuente por campo** (ids de la
+  tabla `fuentes`, cada una con licencia y fecha) y la lista `pendiente` de lo
+  que falta. `jurisdicciones` dice qué normativa está revisada y cuál no (UE,
+  Estado, cada comunidad autónoma, Portugal, Azores, Madeira). Vive en
+  `/assets/` porque esa carpeta ya es pública en la lista blanca (W2 de comun
+  prohíbe meter `data/` en ella).
+- **Regla de fuentes**: nunca inventar (null + nota); solo fuentes oficiales o
+  abiertas no-NC. **FishBase es CC BY-NC y Costaviva es comercial**: no se añaden
+  datos de FishBase; los que ya había en `ESPECIES*` de `index.html` siguen ahí
+  marcados con `fuentePendiente` y listados en `fishbase_pendientes`, y en la
+  ventana de actividad un rango de temperatura de FishBase **no puntúa**
+  (`excluir_del_calculo`). Tampoco FAO (CC BY-NC-SA) ni contenido de apps
+  competidoras (Fizk).
+- **`assets/js/ventana-actividad.js`**: módulo ES puro (sin DOM ni red, con
+  tests en `test/ventana-actividad.test.js`). Puntuación por hora =
+  `50 + Σ peso × valor` con un motivo y su aporte por cada factor (luz con
+  amanecer/anochecer calculados, marea, temperatura del agua, oleaje, viento,
+  tendencia de presión ±1 hPa/3 h, turbidez). Los pesos están en el JSON
+  (`reglas_por_defecto` + `reglas` por especie) con `criterio`/`fuente` y
+  `tipo: heuristica_experta` cuando lo son. **La marea se escala con el rango
+  local** (máx-mín en ±12 h del nivel del mar del propio spot frente a 2,5 m):
+  en el Mediterráneo no cuenta. Mar > 2,5 m: tope 20 y aviso. Luna: peso 0.
+- **UI**: tarjeta "Ventana de actividad por horas" del panel del spot
+  (`pintarVentanaActividad` en `index.html`): selector de especie (las que
+  tienen presencia en la región del spot, en temporada primero), Hoy/Mañana,
+  tira de 24 horas, el porqué de la hora tocada, mejores ventanas, aviso de
+  freza y talla mínima con enlace oficial. Los datos horarios se piden a
+  Open-Meteo **desde el navegador** al abrir el panel (caché 1 h por spot, con
+  el factor de oleaje de Gipuzkoa), sin tocar `/prevision`. Sin `on*=`: todo
+  con `addEventListener`.
+- **Mantenimiento**: la pasada de los jueves de la rutina del buscador de
+  fuentes (`scripts/saldo/rutina-buscador-fuentes.txt`, sección "Fichas de
+  especies" de `ROBOT_REGLAS.md`) sube cambios a `robot/especies-AAAA-MM-DD` y
+  `robot-diseno-pr.yml` abre el PR. **Si cambias el .txt, hay que pegar el
+  texto nuevo en la rutina de claude.ai/code/routines.**
+- **Ojo, Open-Meteo**: la API gratuita es solo para uso no comercial; toda la
+  app (no solo esto) la usa. Pendiente de decidir con Mikel (plan comercial de
+  Open-Meteo o alternativa).
+
 ## Triggers / rutinas automatizadas
 
 **Interruptores de pausa (2026-10-07, comun pruebas-y-alertas.md P8):**

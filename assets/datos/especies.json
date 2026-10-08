@@ -1,0 +1,4336 @@
+{
+ "version": "2026-10-07",
+ "descripcion": "Fichas de especies de Costaviva y reglas de la ventana de actividad. Mantenido a mano y por la rutina semanal de especies (scripts/saldo/rutina-buscador-fuentes.txt, jueves). Reglas del fichero: nunca inventar un valor (null + nota); solo fuentes oficiales o abiertas NO-NC; FishBase, FAO, SeaLifeBase y similares (CC BY-NC) prohibidos; cada dato con su fuente (ids de 'fuentes') y cada talla con url + fecha_revision.",
+ "aviso_legal": "Tallas y vedas orientativas: manda la norma vigente publicada en el boletín oficial correspondiente.",
+ "regiones": [
+  "cantabrico",
+  "atlantico_norte",
+  "portugal",
+  "golfo_cadiz",
+  "mediterraneo",
+  "baleares",
+  "canarias",
+  "azores",
+  "madeira"
+ ],
+ "fuentes": {
+  "pv_tallas_cupos": {
+   "titulo": "Gobierno Vasco — Especies autorizadas, sus tallas mínimas y cupos máximos de capturas (pesca marítima recreativa)",
+   "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/especies_tallas_cupos/es_def/index.shtml",
+   "editor": "Gobierno Vasco, Dpto. de Alimentación, Desarrollo Rural, Agricultura y Pesca",
+   "tipo": "oficial",
+   "licencia": "información del sector público (reutilizable citando la fuente)",
+   "fecha_documento": "2024-06-03",
+   "fecha_consulta": "2026-10-07"
+  },
+  "boe_rd560": {
+   "titulo": "Real Decreto 560/1995, tallas mínimas de determinadas especies pesqueras (texto consolidado)",
+   "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+   "editor": "BOE",
+   "tipo": "oficial",
+   "licencia": "BOE (reutilizable citando la fuente)",
+   "fecha_documento": "2025-11-01",
+   "fecha_consulta": "2026-10-07",
+   "nota": "Anexo I: Cantábrico-Noroeste y Golfo de Cádiz; anexo II: Mediterráneo; anexo III: Canarias. Aplicable a la pesca recreativa en aguas exteriores por el art. 4 del RD 347/2011."
+  },
+  "boe_rd347": {
+   "titulo": "Real Decreto 347/2011, pesca marítima de recreo en aguas exteriores (texto consolidado)",
+   "url": "https://www.boe.es/eli/es/rd/2011/03/11/347/con",
+   "editor": "BOE",
+   "tipo": "oficial",
+   "licencia": "BOE (reutilizable citando la fuente)",
+   "fecha_documento": "2026-03-19",
+   "fecha_consulta": "2026-10-07"
+  },
+  "ue_2019_1241": {
+   "titulo": "Reglamento (UE) 2019/1241, medidas técnicas (DOUE L 198 de 25.7.2019, texto original)",
+   "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
+   "editor": "DOUE (copia del BOE)",
+   "tipo": "oficial",
+   "licencia": "reutilizable citando la fuente (Decisión 2011/833/UE)",
+   "fecha_documento": "2019-07-25",
+   "fecha_consulta": "2026-10-07",
+   "nota": "Anexo VII = aguas suroccidentales (CIEM 8, 9, 10 y CPACO), anexo IX = Mediterráneo. Art. 2.2: las tallas de las partes A NO se aplican por sí solas a la pesca recreativa (solo si un acto delegado lo dispone). Texto ORIGINAL: no se ha podido leer el consolidado (EUR-Lex bloquea la descarga automática); revisar modificaciones posteriores."
+  },
+  "dgrm_tmc_2025": {
+   "titulo": "DGRM — Tabela de Tamanhos Mínimos de Captura (Portaria n.º 255/2022, Reg. (UE) 2019/1241 e Reg. (UE) 2025/202)",
+   "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
+   "editor": "Direção-Geral de Recursos Naturais, Segurança e Serviços Marítimos (Portugal)",
+   "tipo": "oficial",
+   "licencia": "información del sector público portugués (citar la fuente)",
+   "fecha_documento": "2025-10-30",
+   "fecha_consulta": "2026-10-07",
+   "nota": "Tabla general (pesca comercial). Falta confirmar en el régimen de pesca lúdica (DL 101/2013 y su portaria) que se aplica igual a la pesca recreativa."
+  },
+  "ices_mac_sa": {
+   "titulo": "ICES Stock Annex: Mackerel (Scomber scombrus) in subareas 1-7 and 14 and divisions 8.a-e, 9.a",
+   "url": "https://doi.org/10.17895/ices.pub.21105691.v1",
+   "editor": "ICES",
+   "tipo": "cientifico",
+   "licencia": "CC BY 4.0",
+   "fecha_documento": "2024-01-25",
+   "fecha_consulta": "2026-10-07"
+  },
+  "ices_hom_sa": {
+   "titulo": "ICES Stock annex: Horse mackerel (Trachurus trachurus) in Subarea 8 and divisions 2.a, 3.a, 4.a, 5.b, 6.a, 7.a-c, e-k",
+   "url": "https://doi.org/10.17895/ices.pub.29655605.v1",
+   "editor": "ICES",
+   "tipo": "cientifico",
+   "licencia": "CC BY 4.0",
+   "fecha_documento": "2025-07-29",
+   "fecha_consulta": "2026-10-07"
+  },
+  "ices_pol_sa": {
+   "titulo": "ICES Stock Annex: Pollack (Pollachius pollachius) in Subarea 8 and Division 9.a",
+   "url": "https://doi.org/10.17895/ices.pub.24922134.v1",
+   "editor": "ICES",
+   "tipo": "cientifico",
+   "licencia": "CC BY 4.0",
+   "fecha_documento": "2025-07-28",
+   "fecha_consulta": "2026-10-07"
+  },
+  "ices_bss_8c9a_sa": {
+   "titulo": "ICES Stock Annex: Sea bass (Dicentrarchus labrax) in divisions 8.c and 9.a",
+   "url": "https://doi.org/10.17895/ices.pub.18623222.v1",
+   "editor": "ICES",
+   "tipo": "cientifico",
+   "licencia": "ICES Custom Licence (anterior a 2021) — condiciones de uso comercial SIN CONFIRMAR",
+   "licencia_por_confirmar": true,
+   "fecha_documento": "2016-10-13",
+   "fecha_consulta": "2026-10-07"
+  },
+  "plos_dsargus_2018": {
+   "titulo": "Settlement and post-settlement survival rates of the white seabream (Diplodus sargus) in the western Mediterranean Sea. PLoS ONE 13(1): e0190278",
+   "url": "https://doi.org/10.1371/journal.pone.0190278",
+   "editor": "PLOS",
+   "tipo": "cientifico",
+   "licencia": "CC BY 4.0",
+   "fecha_documento": "2018-01-11",
+   "fecha_consulta": "2026-10-07"
+  },
+  "movecol_saurata_2026": {
+   "titulo": "Movement patterns and connectivity of gilthead seabream (Sparus aurata) in the NW Mediterranean Sea. Movement Ecology 14:10",
+   "url": "https://doi.org/10.1186/s40462-025-00619-5",
+   "editor": "BMC / Springer Nature",
+   "tipo": "cientifico",
+   "licencia": "CC BY 4.0",
+   "fecha_documento": "2026-02-23",
+   "fecha_consulta": "2026-10-07"
+  },
+  "miteco_peces": {
+   "titulo": "MITECO — Lista de peces continentales de España (nombres castellano/catalán/gallego/vasco)",
+   "url": "https://www.miteco.gob.es/content/dam/miteco/es/biodiversidad/servicios/banco-datos-naturaleza/lista_peces_tcm30-194951.pdf",
+   "editor": "Ministerio de Medio Ambiente (2006)",
+   "tipo": "oficial",
+   "licencia": "información del sector público",
+   "fecha_documento": "2006",
+   "fecha_consulta": "2026-10-07"
+  },
+  "app_index": {
+   "titulo": "Datos heredados de ESPECIES/ESPECIES_* de index.html (guías de pesca recreativa citadas allí: aipeces.com, haypesca.es, guías locales de Rota/Isla Cristina, Federación de Cofradías de Canarias...)",
+   "url": null,
+   "tipo": "heredado",
+   "licencia": "propio",
+   "fecha_documento": "2026-09-13",
+   "fecha_consulta": "2026-10-07",
+   "nota": "No verificado de nuevo en esta pasada. Por eso cada campo que lo usa lleva verificado:false."
+  },
+  "fishbase_nc": {
+   "titulo": "FishBase (citado en index.html)",
+   "url": "https://www.fishbase.se",
+   "tipo": "excluido",
+   "licencia": "CC BY-NC 4.0 — NO usable en Costaviva (comercial)",
+   "fecha_consulta": "2026-10-07",
+   "nota": "Solo aparece para marcar datos heredados que hay que sustituir. No añadir datos nuevos de aquí."
+  }
+ },
+ "jurisdicciones": {
+  "UE": {
+   "estado": "parcial",
+   "hecho": [
+    "Reg. (UE) 2019/1241 anexos VII (SWW) y IX (MED), texto original de 2019"
+   ],
+   "pendiente": [
+    "leer el texto consolidado (EUR-Lex bloquea la descarga automática; probar desde Actions o a mano)",
+    "Reg. (UE) 2026/249: veda y cupo recreativo de abadejo y lubina en 2026"
+   ]
+  },
+  "ES-estado": {
+   "estado": "parcial",
+   "hecho": [
+    "RD 560/1995 anexos I, II y III (consolidado 01/11/2025)",
+    "RD 347/2011 art. 4 y 4 bis (consolidado 19/03/2026)"
+   ],
+   "pendiente": [
+    "cupos por zona (art. 5 RD 347/2011 y su desarrollo)",
+    "anexo I del RD 347/2011: especies autorizadas en recreativa"
+   ]
+  },
+  "ES-PV": {
+   "estado": "parcial",
+   "hecho": [
+    "página del Gobierno Vasco (03/06/2024): temporadas, talla y cupo de lubina, cupos de grandes pelágicos"
+   ],
+   "pendiente": [
+    "Decreto 198/2000 (BOPV) anexo III: marisqueo en aguas interiores"
+   ]
+  },
+  "ES-CB": {
+   "estado": "pendiente",
+   "pendiente": [
+    "Cantabria: normativa de pesca recreativa en aguas interiores (BOC)"
+   ]
+  },
+  "ES-AS": {
+   "estado": "pendiente",
+   "pendiente": [
+    "Asturias: normativa de pesca recreativa en aguas interiores (BOPA)"
+   ]
+  },
+  "ES-GA": {
+   "estado": "pendiente",
+   "pendiente": [
+    "Galicia: pesca marítima recreativa en aguas interiores (DOG), vedas de pulpo"
+   ]
+  },
+  "ES-AN": {
+   "estado": "pendiente",
+   "pendiente": [
+    "Andalucía: pesca recreativa en aguas interiores (BOJA)"
+   ]
+  },
+  "ES-MC": {
+   "estado": "pendiente",
+   "pendiente": [
+    "Región de Murcia (BORM)"
+   ]
+  },
+  "ES-VC": {
+   "estado": "pendiente",
+   "pendiente": [
+    "Comunitat Valenciana (DOGV)"
+   ]
+  },
+  "ES-CT": {
+   "estado": "pendiente",
+   "pendiente": [
+    "Cataluña (DOGC)"
+   ]
+  },
+  "ES-IB": {
+   "estado": "pendiente",
+   "pendiente": [
+    "Illes Balears (BOIB): tallas propias, p. ej. pulpo; el Govern publica un 'reglón' de tallas"
+   ]
+  },
+  "ES-CN": {
+   "estado": "pendiente",
+   "pendiente": [
+    "Canarias (BOC): pesca recreativa en aguas interiores"
+   ]
+  },
+  "PT": {
+   "estado": "parcial",
+   "hecho": [
+    "tabla DGRM de tamaños mínimos (30/10/2025)"
+   ],
+   "pendiente": [
+    "confirmar en el régimen de pesca lúdica (DL 101/2013 y portaria) que aplica la misma tabla y los límites diarios"
+   ]
+  },
+  "PT-AC": {
+   "estado": "pendiente",
+   "pendiente": [
+    "Azores: normativa regional de pesca lúdica (Jornal Oficial)"
+   ]
+  },
+  "PT-MA": {
+   "estado": "pendiente",
+   "pendiente": [
+    "Madeira: normativa regional de pesca lúdica (JORAM)"
+   ]
+  }
+ },
+ "reglas_por_defecto": {
+  "luz": {
+   "peso": 10,
+   "preferencia": {
+    "alba": 1,
+    "ocaso": 1,
+    "dia": 0,
+    "noche": 0
+   },
+   "tipo": "heuristica_experta",
+   "criterio": "Muchos peces costeros comen más con poca luz (amanecer y atardecer). Heurística de pesca recreativa, la misma que ya recogen las notas de especies de la app; no es una medida científica por especie. Alba/ocaso = ±60 min alrededor del amanecer/anochecer calculado (algoritmo NOAA)."
+  },
+  "marea": {
+   "peso": 10,
+   "preferencia": {
+    "subiendo": 1,
+    "bajando": 0.4,
+    "repunte": -0.3
+   },
+   "rango_referencia_m": 2.5,
+   "tipo": "heuristica_experta",
+   "criterio": "Con marea en movimiento hay más corriente y más alimento en suspensión; en el repunte (±1 h de pleamar o bajamar) se para. Heurística de pesca recreativa. El aporte se ESCALA con el rango de marea local del spot (máx-mín en ±12 h) frente a 2,5 m: en el Mediterráneo, con unos centímetros, la marea no cuenta (por debajo del 25 % de la referencia se ignora)."
+  },
+  "temperatura": {
+   "peso": 12,
+   "tipo": "regla_de_datos",
+   "criterio": "Si el agua está dentro del rango de temperatura documentado de la especie suma el peso entero; fuera, resta en proporción a la distancia (3 °C fuera = peso entero en negativo). Sin rango documentado no puntúa. El rango y su fuente están en temperatura_agua de cada especie."
+  },
+  "oleaje": {
+   "peso": 8,
+   "optimo_m": [
+    0.3,
+    1.5
+   ],
+   "max_seguro_m": 2.5,
+   "tope_si_peligrosa": 20,
+   "valor_bajo_minimo": -0.3,
+   "tipo": "criterio_de_diseno",
+   "criterio": "Seguridad desde costa primero: por encima de 2,5 m la puntuación se limita a 20 y se avisa. El tramo óptimo por especie es una heurística experta (p. ej. a la lubina le gusta la espuma de la rompiente)."
+  },
+  "viento": {
+   "peso": 6,
+   "max_kmh": 30,
+   "tipo": "criterio_de_diseno",
+   "criterio": "Solo penaliza por encima de 30 km/h, el mismo umbral que ya usa el índice de mar de la app (criterio de diseño, sin fuente oficial)."
+  },
+  "presion": {
+   "peso": 6,
+   "preferencia": {
+    "bajando": 1,
+    "estable": 0.3,
+    "subiendo": -0.5
+   },
+   "tipo": "heuristica_experta",
+   "criterio": "Mismo criterio que el índice de pesca existente: una bajada de presión suele preceder a un cambio de tiempo y coincidir con más actividad; orientativo. Tendencia = diferencia con la presión de 3 h antes, umbral ±1 hPa (igual que /prevision)."
+  },
+  "turbidez": {
+   "peso": 0,
+   "preferencia": {
+    "no turbia": 0,
+    "turbia": 0,
+    "muy turbia": 0
+   },
+   "tipo": "regla_de_datos",
+   "criterio": "Por defecto no puntúa: solo cuenta en las especies con una preferencia clara (ver sus reglas). El dato es diario por spot, calculado por la app a partir de las webcams frente al propio histórico del spot."
+  },
+  "luna": {
+   "peso": 0,
+   "tipo": "informativo",
+   "criterio": "Sin respaldo verificado para darle peso propio; su efecto sobre la marea ya entra por el rango de marea. Solo se muestra como información."
+  }
+ },
+ "fishbase_pendientes": [
+  {
+   "donde": "index.html ESPECIES",
+   "especie": "Sargo",
+   "dato": "rangoTemp 15-24 °C ('FishBase, n=400')"
+  },
+  {
+   "donde": "index.html ESPECIES",
+   "especie": "Abadejo",
+   "dato": "rangoTemp 7-12 °C ('según FishBase'); la profundidad ya se cita a ICES (CC BY)"
+  },
+  {
+   "donde": "index.html ESPECIES",
+   "especie": "Congrio",
+   "dato": "rangoTemp 4-14 °C ('según FishBase')"
+  },
+  {
+   "donde": "index.html ESPECIES_MEDITERRANEO",
+   "especie": "Breca",
+   "dato": "rangoTemp 12-21 °C ('FishBase, n=492')"
+  },
+  {
+   "donde": "index.html ESPECIES_GOLFO_CADIZ",
+   "especie": "Lenguado",
+   "dato": "rangoTemp 8-24 °C ('adultos según FishBase')"
+  },
+  {
+   "donde": "index.html ESPECIES_GOLFO_CADIZ",
+   "especie": "Bocinegro",
+   "dato": "rangoTemp 16-28 °C ('FishBase, n=1356')"
+  },
+  {
+   "donde": "index.html ESPECIES_CANARIAS",
+   "especie": "Vieja",
+   "dato": "rangoTemp 15-20 °C ('FishBase, n=34')"
+  },
+  {
+   "donde": "index.html ESPECIES_CANARIAS",
+   "especie": "Bicuda",
+   "dato": "rangoTemp 15-22 °C ('según FishBase (n=230)')"
+  },
+  {
+   "donde": "index.html ESPECIES_CANARIAS",
+   "especie": "Breca",
+   "dato": "rangoTemp 12-21 °C ('FishBase, n=492')"
+  },
+  {
+   "donde": "index.html ESPECIES_CANARIAS",
+   "especie": "Cabrilla",
+   "dato": "rangoTemp 16-19 °C ('FishBase, n=26')"
+  },
+  {
+   "donde": "index.html (comentarios de cabecera de ESPECIES y de la ampliación nacional)",
+   "especie": "todas",
+   "dato": "FishBase citado como fuente general de temperatura y dieta"
+  },
+  {
+   "donde": "scripts/marketing/generar-post-instagram.mjs (comentario)",
+   "especie": "—",
+   "dato": "cita FishBase como fuente de ESPECIES"
+  }
+ ],
+ "especies": [
+  {
+   "id": "lubina",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Lubina",
+    "eu": "Lupina arrunta",
+    "ca": "Llobarro",
+    "gl": null,
+    "pt": "Robalo-legítimo"
+   },
+   "nombres_fuentes": [
+    "miteco_peces",
+    "dgrm_tmc_2025"
+   ],
+   "cientifico": "Dicentrarchus labrax",
+   "habitat": {
+    "valor": "Plataforma interior, muy pegada a costa (frente a Portugal casi siempre a menos de 10 m); puertos, desembocaduras y rompientes según la app.",
+    "fuentes": [
+     "ices_bss_8c9a_sa",
+     "app_index"
+    ],
+    "verificado": false,
+    "nota": "Fuente ICES con licencia por confirmar; la parte de puertos/desembocaduras es heredada de la app."
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false,
+    "nota": "Sin rango numérico verificado con fuente no-NC."
+   },
+   "presencia": {
+    "cantabrico": {
+     "meses": [
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "pv_tallas_cupos"
+     ],
+     "verificado": true,
+     "nota": "Gobierno Vasco: temporada abril-diciembre. OJO: la lista de index.html dice sept-abril; ver informe."
+    },
+    "atlantico_norte": {
+     "meses": [
+      9,
+      10,
+      11,
+      12,
+      1,
+      2,
+      3,
+      4
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false,
+     "nota": "La app usa para Galicia y Portugal la misma lista que para el Cantábrico; sin fuente regional propia todavía."
+    },
+    "portugal": {
+     "meses": [
+      9,
+      10,
+      11,
+      12,
+      1,
+      2,
+      3,
+      4
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false,
+     "nota": "La app usa para Galicia y Portugal la misma lista que para el Cantábrico; sin fuente regional propia todavía."
+    },
+    "golfo_cadiz": {
+     "meses": [
+      9,
+      10,
+      11,
+      12,
+      1,
+      2,
+      3
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false,
+     "nota": "Guía local de Rota (heredado)."
+    },
+    "mediterraneo": {
+     "meses": [
+      9,
+      10,
+      11,
+      12,
+      1,
+      2,
+      3
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false
+    },
+    "baleares": {
+     "meses": [
+      9,
+      10,
+      11,
+      12,
+      1,
+      2,
+      3
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false,
+     "nota": "La app usa para Baleares la lista del Mediterráneo; sin fuente propia de Baleares todavía."
+    }
+   },
+   "freza": {
+    "temperatura_c": {
+     "valor": [
+      9,
+      17
+     ],
+     "fuentes": [
+      "ices_bss_8c9a_sa"
+     ],
+     "verificado": false,
+     "nota": "'Bass spawning is limited within the 9-17 °C range' (ICES). Licencia por confirmar."
+    },
+    "por_region": {
+     "cantabrico": {
+      "meses": [
+       1,
+       2,
+       3
+      ],
+      "fuentes": [
+       "ices_bss_8c9a_sa"
+      ],
+      "verificado": false,
+      "nota": "ICES: enero-marzo en el Golfo de Bizkaia. Licencia de la fuente por confirmar."
+     },
+     "portugal": {
+      "meses": [
+       12,
+       1,
+       2,
+       3,
+       4
+      ],
+      "fuentes": [
+       "ices_bss_8c9a_sa"
+      ],
+      "verificado": false,
+      "nota": "ICES: SW de Portugal dic-feb; NW de Portugal ene-abr (Ria de Aveiro: febrero). Unidos aquí."
+     },
+     "golfo_cadiz": {
+      "meses": [
+       10,
+       11,
+       12,
+       1
+      ],
+      "fuentes": [
+       "ices_bss_8c9a_sa"
+      ],
+      "verificado": false,
+      "nota": "ICES: octubre-enero en el Golfo de Cádiz."
+     }
+    }
+   },
+   "actividad": {
+    "valor": "Sobre todo al amanecer y al anochecer; se anima con la espuma de la rompiente.",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": [
+     8,
+     24
+    ],
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false,
+    "fuente_pendiente": "Heredado de index.html sin cita concreta (su cabecera nombra FishBase entre las fuentes de temperatura). Sustituir por fuente no-NC."
+   },
+   "alimentacion": {
+    "valor": "Sardinas y anchoas pequeñas (parrotxa), lisas, quisquillas, gusanos de mar y cangrejos.",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "ES-PV",
+     "valor_cm": 42,
+     "ambito": "Euskadi, pesca marítima recreativa (aguas interiores y exteriores, según el Gobierno Vasco)",
+     "ambito_corto": "Euskadi (Gobierno Vasco)",
+     "fuente": "pv_tallas_cupos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/especies_tallas_cupos/es_def/index.shtml",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2024-06-03",
+     "nota": "44 cm de la isla de Santa Clara (Donostia) hacia el este y 42 cm hacia el oeste. Cupo: 1 ejemplar/licencia/día al este; 5 kg al oeste."
+    },
+    {
+     "jurisdiccion": "ES-recreativa-CNW",
+     "valor_cm": 42,
+     "ambito": "España, pesca marítima de recreo en aguas exteriores del Cantábrico y Noroeste (RD 347/2011)",
+     "ambito_corto": "España, pesca recreativa Cantábrico-Noroeste (RD 347/2011)",
+     "fuente": "boe_rd347",
+     "url": "https://www.boe.es/eli/es/rd/2011/03/11/347/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2026-03-19",
+     "nota": "Art. 4 bis del RD 347/2011."
+    },
+    {
+     "jurisdiccion": "ES-RD560-I",
+     "valor_cm": 36,
+     "ambito": "España, aguas exteriores del Cantábrico-Noroeste y Golfo de Cádiz (RD 560/1995 anexo I; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01",
+     "nota": "44 cm en las divisiones CIEM 8a y 8b, también en pesca recreativa (nota *** del anexo I)."
+    },
+    {
+     "jurisdiccion": "UE-SWW",
+     "valor_cm": 36,
+     "ambito": "UE, aguas suroccidentales (Reg. 2019/1241 anexo VII parte A): referencia para la pesca profesional; a la recreativa no se aplica por sí sola (art. 2.2)",
+     "ambito_corto": "UE, referencia profesional (Reg. 2019/1241)",
+     "fuente": "ue_2019_1241",
+     "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2019-07-25"
+    },
+    {
+     "jurisdiccion": "ES-RD560-II",
+     "valor_cm": 23,
+     "ambito": "España, aguas exteriores del Mediterráneo (RD 560/1995 anexo II; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01",
+     "nota": "El Reglamento (UE) 2019/1241 da 25 cm en el Mediterráneo: discrepancia por resolver con el texto consolidado."
+    },
+    {
+     "jurisdiccion": "UE-MED",
+     "valor_cm": 25,
+     "ambito": "UE, Mediterráneo (Reg. 2019/1241 anexo IX parte A): referencia para la pesca profesional; a la recreativa no se aplica por sí sola (art. 2.2)",
+     "ambito_corto": "UE, referencia profesional (Reg. 2019/1241)",
+     "fuente": "ue_2019_1241",
+     "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2019-07-25"
+    },
+    {
+     "jurisdiccion": "ES-RD560-III",
+     "valor_cm": 22,
+     "ambito": "España, aguas exteriores de Canarias (RD 560/1995 anexo III; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01"
+    },
+    {
+     "jurisdiccion": "PT",
+     "valor_cm": 36,
+     "ambito": "Portugal continental (tabla DGRM)",
+     "ambito_corto": "Portugal (DGRM)",
+     "fuente": "dgrm_tmc_2025",
+     "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-10-30"
+    }
+   ],
+   "reglas": {
+    "luz": {
+     "preferencia": {
+      "alba": 1,
+      "ocaso": 1,
+      "noche": 0.4,
+      "dia": -0.2
+     },
+     "tipo": "heuristica_experta",
+     "criterio": "Más activa al amanecer y anochecer (notas de la app, guías de pesca recreativa)."
+    },
+    "marea": {
+     "peso": 12,
+     "preferencia": {
+      "subiendo": 1,
+      "bajando": 0.5,
+      "repunte": -0.2
+     },
+     "tipo": "heuristica_experta",
+     "criterio": "Entra con la marea a comer en rompientes y desembocaduras (heurística de pesca recreativa)."
+    },
+    "oleaje": {
+     "optimo_m": [
+      0.5,
+      1.5
+     ],
+     "valor_bajo_minimo": -0.5,
+     "tipo": "heuristica_experta",
+     "criterio": "Le favorece algo de mar con espuma; con el mar plano y agua clara desconfía (heurística)."
+    },
+    "turbidez": {
+     "peso": 6,
+     "preferencia": {
+      "no turbia": -0.3,
+      "turbia": 1,
+      "muy turbia": -0.5
+     },
+     "tipo": "heuristica_experta",
+     "criterio": "Agua algo tomada la ayuda a cazar sin ser vista; muy turbia ya no (heurística)."
+    }
+   },
+   "pendiente": [
+    "freza Galicia y Mediterráneo",
+    "confirmar licencia ICES o sustituir fuente de freza",
+    "nombre gallego",
+    "rango de temperatura no-NC",
+    "tallas de aguas interiores de cada comunidad"
+   ]
+  },
+  {
+   "id": "sargo",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Sargo",
+    "eu": null,
+    "ca": null,
+    "gl": null,
+    "pt": "Sargo legítimo"
+   },
+   "nombres_fuentes": [
+    "dgrm_tmc_2025"
+   ],
+   "cientifico": "Diplodus sargus",
+   "habitat": {
+    "valor": "Arrecifes rocosos sublitorales (de los peces más abundantes en el Mediterráneo); los juveniles en calas muy someras (<2 m).",
+    "fuentes": [
+     "plos_dsargus_2018"
+    ],
+    "verificado": true
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false,
+    "nota": "Sin rango de adultos en la fuente."
+   },
+   "presencia": {
+    "cantabrico": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false
+    },
+    "atlantico_norte": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false,
+     "nota": "La app usa para Galicia y Portugal la misma lista que para el Cantábrico; sin fuente regional propia todavía."
+    },
+    "portugal": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false,
+     "nota": "La app usa para Galicia y Portugal la misma lista que para el Cantábrico; sin fuente regional propia todavía."
+    },
+    "golfo_cadiz": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false
+    },
+    "mediterraneo": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false
+    },
+    "baleares": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false,
+     "nota": "La app usa para Baleares la lista del Mediterráneo; sin fuente propia de Baleares todavía."
+    }
+   },
+   "freza": {
+    "temperatura_c": {
+     "valor": [
+      15,
+      17
+     ],
+     "fuentes": [
+      "plos_dsargus_2018"
+     ],
+     "verificado": true,
+     "nota": "'In the Atlantic, white sea breams spawn from March to June at temperatures between 15 and 17 °C'."
+    },
+    "por_region": {
+     "cantabrico": {
+      "meses": [
+       3,
+       4,
+       5,
+       6
+      ],
+      "fuentes": [
+       "plos_dsargus_2018"
+      ],
+      "verificado": true,
+      "nota": "Dato para 'el Atlántico' en general, no específico del Cantábrico."
+     },
+     "atlantico_norte": {
+      "meses": [
+       3,
+       4,
+       5,
+       6
+      ],
+      "fuentes": [
+       "plos_dsargus_2018"
+      ],
+      "verificado": true,
+      "nota": "Dato para 'el Atlántico' en general."
+     },
+     "portugal": {
+      "meses": [
+       3,
+       4,
+       5,
+       6
+      ],
+      "fuentes": [
+       "plos_dsargus_2018"
+      ],
+      "verificado": true,
+      "nota": "Dato para 'el Atlántico' en general."
+     },
+     "golfo_cadiz": {
+      "meses": [
+       3,
+       4,
+       5,
+       6
+      ],
+      "fuentes": [
+       "plos_dsargus_2018"
+      ],
+      "verificado": true,
+      "nota": "Dato para 'el Atlántico' en general."
+     },
+     "mediterraneo": {
+      "meses": [
+       5
+      ],
+      "fuentes": [
+       "plos_dsargus_2018"
+      ],
+      "verificado": true,
+      "nota": "'In the Mediterranean, spawning occurs slightly later, mostly in early May'."
+     },
+     "baleares": {
+      "meses": [
+       5
+      ],
+      "fuentes": [
+       "plos_dsargus_2018"
+      ],
+      "verificado": true,
+      "nota": "Dato del Mediterráneo occidental."
+     }
+    }
+   },
+   "actividad": {
+    "valor": "Muy diurno; en rompientes con espuma.",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": [
+     15,
+     24
+    ],
+    "fuentes": [
+     "fishbase_nc"
+    ],
+    "verificado": false,
+    "fuente_pendiente": "Rango 15-24 °C citado en index.html como 'FishBase, n=400' (CC BY-NC). Sustituir.",
+    "excluir_del_calculo": true
+   },
+   "alimentacion": {
+    "valor": "Mejillones, percebes, erizos, otros moluscos y crustáceos de fondo rocoso.",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "ES-RD560-II",
+     "valor_cm": 15,
+     "ambito": "España, aguas exteriores del Mediterráneo (RD 560/1995 anexo II; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01",
+     "nota": "El anexo II dice 'Sargo (Diplodus spp) 15'; el Reglamento (UE) 2019/1241 da 23 cm para D. sargus en el Mediterráneo."
+    },
+    {
+     "jurisdiccion": "UE-MED",
+     "valor_cm": 23,
+     "ambito": "UE, Mediterráneo (Reg. 2019/1241 anexo IX parte A): referencia para la pesca profesional; a la recreativa no se aplica por sí sola (art. 2.2)",
+     "ambito_corto": "UE, referencia profesional (Reg. 2019/1241)",
+     "fuente": "ue_2019_1241",
+     "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2019-07-25"
+    },
+    {
+     "jurisdiccion": "ES-RD560-III",
+     "valor_cm": 22,
+     "ambito": "España, aguas exteriores de Canarias (RD 560/1995 anexo III; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01"
+    },
+    {
+     "jurisdiccion": "PT",
+     "valor_cm": 17,
+     "ambito": "Portugal continental (tabla DGRM)",
+     "ambito_corto": "Portugal (DGRM)",
+     "fuente": "dgrm_tmc_2025",
+     "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-10-30"
+    }
+   ],
+   "reglas": {
+    "luz": {
+     "preferencia": {
+      "alba": 1,
+      "ocaso": 0.6,
+      "dia": 0.6,
+      "noche": -0.6
+     },
+     "tipo": "heuristica_experta",
+     "criterio": "Muy diurno (notas de la app)."
+    },
+    "oleaje": {
+     "optimo_m": [
+      0.5,
+      1.5
+     ],
+     "tipo": "heuristica_experta",
+     "criterio": "Come en la rompiente removida (heurística)."
+    },
+    "turbidez": {
+     "peso": 4,
+     "preferencia": {
+      "no turbia": 0,
+      "turbia": 0.6,
+      "muy turbia": -0.5
+     },
+     "tipo": "heuristica_experta",
+     "criterio": "Algo de espuma/turbidez en la rompiente le favorece (heurística)."
+    }
+   },
+   "pendiente": [
+    "talla del sargo en el Cantábrico (no aparece en el anexo I del RD 560/1995)",
+    "nombres eu/gl/ca",
+    "rango de temperatura no-NC"
+   ]
+  },
+  {
+   "id": "dorada",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Dorada",
+    "eu": null,
+    "ca": null,
+    "gl": null,
+    "pt": "Dourada"
+   },
+   "nombres_fuentes": [
+    "dgrm_tmc_2025"
+   ],
+   "cientifico": "Sparus aurata",
+   "habitat": {
+    "valor": "Costera; en el Golfo de León se desplaza sobre todo por aguas someras (<30 m) y usa las lagunas costeras para alimentarse.",
+    "fuentes": [
+     "movecol_saurata_2026"
+    ],
+    "verificado": true
+   },
+   "profundidad_m": {
+    "valor": [
+     0,
+     30
+    ],
+    "fuentes": [
+     "movecol_saurata_2026"
+    ],
+    "verificado": true,
+    "nota": "Profundidad de sus desplazamientos por la costa (Golfo de León), no un límite de la especie."
+   },
+   "presencia": {
+    "mediterraneo": {
+     "meses": [
+      3,
+      4,
+      5,
+      9,
+      10,
+      11
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false
+    },
+    "baleares": {
+     "meses": [
+      3,
+      4,
+      5,
+      9,
+      10,
+      11
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false,
+     "nota": "La app usa para Baleares la lista del Mediterráneo; sin fuente propia de Baleares todavía."
+    },
+    "golfo_cadiz": {
+     "meses": [
+      9,
+      10,
+      11
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false,
+     "nota": "Guía local de Rota (heredado)."
+    }
+   },
+   "freza": {
+    "por_region": {
+     "mediterraneo": {
+      "meses": [
+       10,
+       11,
+       12,
+       1,
+       2,
+       3
+      ],
+      "fuentes": [
+       "movecol_saurata_2026"
+      ],
+      "verificado": true,
+      "nota": "Freza en el mar de octubre a marzo, pico 1 nov-31 ene (Golfo de León)."
+     },
+     "baleares": {
+      "meses": [
+       10,
+       11,
+       12,
+       1,
+       2,
+       3
+      ],
+      "fuentes": [
+       "movecol_saurata_2026"
+      ],
+      "verificado": true,
+      "nota": "Dato del Golfo de León, extrapolado."
+     }
+    }
+   },
+   "actividad": {
+    "valor": "Cauta: mordisquea el cebo; en Rota, sobre todo con la marea subiendo.",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": [
+     12,
+     21
+    ],
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false,
+    "fuente_pendiente": "Heredado de index.html sin cita concreta (posible FishBase). Sustituir."
+   },
+   "alimentacion": {
+    "valor": "Moluscos y crustáceos (mejillones, almejas, cangrejos) y gusanos marinos.",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "ES-RD560-I",
+     "valor_cm": 19,
+     "ambito": "España, aguas exteriores del Cantábrico-Noroeste y Golfo de Cádiz (RD 560/1995 anexo I; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01"
+    },
+    {
+     "jurisdiccion": "ES-RD560-II",
+     "valor_cm": 20,
+     "ambito": "España, aguas exteriores del Mediterráneo (RD 560/1995 anexo II; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01"
+    },
+    {
+     "jurisdiccion": "UE-MED",
+     "valor_cm": 20,
+     "ambito": "UE, Mediterráneo (Reg. 2019/1241 anexo IX parte A): referencia para la pesca profesional; a la recreativa no se aplica por sí sola (art. 2.2)",
+     "ambito_corto": "UE, referencia profesional (Reg. 2019/1241)",
+     "fuente": "ue_2019_1241",
+     "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2019-07-25"
+    },
+    {
+     "jurisdiccion": "ES-RD560-III",
+     "valor_cm": 19,
+     "ambito": "España, aguas exteriores de Canarias (RD 560/1995 anexo III; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01"
+    },
+    {
+     "jurisdiccion": "PT",
+     "valor_cm": 19,
+     "ambito": "Portugal continental (tabla DGRM)",
+     "ambito_corto": "Portugal (DGRM)",
+     "fuente": "dgrm_tmc_2025",
+     "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-10-30"
+    }
+   ],
+   "reglas": {
+    "marea": {
+     "peso": 12,
+     "preferencia": {
+      "subiendo": 1,
+      "bajando": 0.3,
+      "repunte": -0.3
+     },
+     "tipo": "heuristica_experta",
+     "criterio": "En Rota se pesca sobre todo con la marea subiendo (guía local heredada)."
+    }
+   },
+   "pendiente": [
+    "presencia en Cantábrico/Galicia/Portugal",
+    "freza en el Atlántico",
+    "nombres eu/gl/ca"
+   ]
+  },
+  {
+   "id": "salmonete",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Salmonete de roca",
+    "eu": null,
+    "ca": null,
+    "gl": null,
+    "pt": "Salmonete-legítimo"
+   },
+   "nombres_fuentes": [
+    "boe_rd560",
+    "dgrm_tmc_2025"
+   ],
+   "cientifico": "Mullus surmuletus",
+   "habitat": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {},
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "alimentacion": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "ES-RD560-I",
+     "valor_cm": 15,
+     "ambito": "España, aguas exteriores del Cantábrico-Noroeste y Golfo de Cádiz (RD 560/1995 anexo I; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01"
+    },
+    {
+     "jurisdiccion": "ES-RD560-II",
+     "valor_cm": 11,
+     "ambito": "España, aguas exteriores del Mediterráneo (RD 560/1995 anexo II; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01",
+     "nota": "Mullus spp."
+    },
+    {
+     "jurisdiccion": "UE-MED",
+     "valor_cm": 11,
+     "ambito": "UE, Mediterráneo (Reg. 2019/1241 anexo IX parte A): referencia para la pesca profesional; a la recreativa no se aplica por sí sola (art. 2.2)",
+     "ambito_corto": "UE, referencia profesional (Reg. 2019/1241)",
+     "fuente": "ue_2019_1241",
+     "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2019-07-25",
+     "nota": "Mullus spp."
+    },
+    {
+     "jurisdiccion": "ES-RD560-III",
+     "valor_cm": 15,
+     "ambito": "España, aguas exteriores de Canarias (RD 560/1995 anexo III; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01",
+     "nota": "Mullus spp."
+    },
+    {
+     "jurisdiccion": "PT",
+     "valor_cm": 18,
+     "ambito": "Portugal continental (tabla DGRM)",
+     "ambito_corto": "Portugal (DGRM)",
+     "fuente": "dgrm_tmc_2025",
+     "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-10-30"
+    }
+   ],
+   "reglas": {},
+   "pendiente": [
+    "hábitat, profundidad, presencia, freza, temperatura y alimentación con fuente no-NC"
+   ]
+  },
+  {
+   "id": "jurel",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Jurel / chicharro",
+    "eu": "Txitxarro",
+    "ca": null,
+    "gl": null,
+    "pt": "Carapau"
+   },
+   "nombres_fuentes": [
+    "pv_tallas_cupos",
+    "dgrm_tmc_2025"
+   ],
+   "cientifico": "Trachurus trachurus",
+   "nombres_nota": "'Txitxarro' es el nombre de uso en la costa vasca (la app lo usa así); falta fuente lingüística (Euskalterm).",
+   "habitat": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "cantabrico": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "pv_tallas_cupos"
+     ],
+     "verificado": true,
+     "nota": "Gobierno Vasco: 'casi todo el año, pero especialmente en otoño'."
+    },
+    "atlantico_norte": {
+     "meses": [
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false,
+     "nota": "Heredado de la ficha conjunta 'Txitxarro / verdel' de la app."
+    },
+    "portugal": {
+     "meses": [
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false,
+     "nota": "Heredado de la ficha conjunta 'Txitxarro / verdel' de la app."
+    }
+   },
+   "freza": {
+    "por_region": {
+     "cantabrico": {
+      "meses": [
+       5,
+       6,
+       7
+      ],
+      "fuentes": [
+       "ices_hom_sa"
+      ],
+      "verificado": true,
+      "nota": "ICES: freza larga con pico a finales de primavera-principios de verano, principal zona el Golfo de Bizkaia. 'Mayo-julio' es nuestra traducción de ese pico."
+     }
+    }
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "alimentacion": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "ES-RD560-I",
+     "valor_cm": 15,
+     "ambito": "España, aguas exteriores del Cantábrico-Noroeste y Golfo de Cádiz (RD 560/1995 anexo I; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01"
+    },
+    {
+     "jurisdiccion": "UE-SWW",
+     "valor_cm": 15,
+     "ambito": "UE, aguas suroccidentales (Reg. 2019/1241 anexo VII parte A): referencia para la pesca profesional; a la recreativa no se aplica por sí sola (art. 2.2)",
+     "ambito_corto": "UE, referencia profesional (Reg. 2019/1241)",
+     "fuente": "ue_2019_1241",
+     "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2019-07-25",
+     "nota": "Excepciones: hasta un 5 % entre 12 y 15 cm; sin talla para T. picturatus en Azores."
+    },
+    {
+     "jurisdiccion": "ES-RD560-II",
+     "valor_cm": 12,
+     "ambito": "España, aguas exteriores del Mediterráneo (RD 560/1995 anexo II; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01",
+     "nota": "Trachurus spp."
+    },
+    {
+     "jurisdiccion": "UE-MED",
+     "valor_cm": 15,
+     "ambito": "UE, Mediterráneo (Reg. 2019/1241 anexo IX parte A): referencia para la pesca profesional; a la recreativa no se aplica por sí sola (art. 2.2)",
+     "ambito_corto": "UE, referencia profesional (Reg. 2019/1241)",
+     "fuente": "ue_2019_1241",
+     "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2019-07-25"
+    },
+    {
+     "jurisdiccion": "ES-RD560-III",
+     "valor_cm": 12,
+     "ambito": "España, aguas exteriores de Canarias (RD 560/1995 anexo III; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01",
+     "nota": "'Jureles (Trachurus spp) — Chicharro'."
+    },
+    {
+     "jurisdiccion": "PT",
+     "valor_cm": 15,
+     "ambito": "Portugal continental (tabla DGRM)",
+     "ambito_corto": "Portugal (DGRM)",
+     "fuente": "dgrm_tmc_2025",
+     "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-10-30"
+    }
+   ],
+   "reglas": {
+    "marea": {
+     "peso": 4,
+     "tipo": "heuristica_experta",
+     "criterio": "Pelágico de banco: la marea le afecta menos que a los de rompiente (heurística)."
+    },
+    "turbidez": {
+     "peso": 3,
+     "preferencia": {
+      "no turbia": 0.5,
+      "turbia": 0,
+      "muy turbia": -0.5
+     },
+     "tipo": "heuristica_experta",
+     "criterio": "Caza a vista (heurística)."
+    }
+   },
+   "pendiente": [
+    "hábitat, profundidad, temperatura, alimentación",
+    "freza fuera del Golfo de Bizkaia"
+   ]
+  },
+  {
+   "id": "caballa",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Caballa / verdel",
+    "eu": "Berdel",
+    "ca": null,
+    "gl": null,
+    "pt": "Sarda, cavala"
+   },
+   "nombres_fuentes": [
+    "pv_tallas_cupos",
+    "dgrm_tmc_2025"
+   ],
+   "cientifico": "Scomber scombrus",
+   "nombres_nota": "'Verdel' es el nombre que usa el Gobierno Vasco; 'berdel' en euskera sin fuente lingüística verificada.",
+   "habitat": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "cantabrico": {
+     "meses": [
+      4,
+      5
+     ],
+     "fuentes": [
+      "pv_tallas_cupos"
+     ],
+     "verificado": true,
+     "nota": "Gobierno Vasco: 'abril y mayo (se pueden capturar ejemplares aislados durante todo el año)'."
+    },
+    "atlantico_norte": {
+     "meses": [
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false,
+     "nota": "Heredado de la ficha conjunta 'Txitxarro / verdel' de la app."
+    },
+    "portugal": {
+     "meses": [
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false,
+     "nota": "Heredado de la ficha conjunta 'Txitxarro / verdel' de la app."
+    }
+   },
+   "freza": {
+    "por_region": {
+     "cantabrico": {
+      "meses": [
+       1,
+       2,
+       3,
+       4
+      ],
+      "fuentes": [
+       "ices_mac_sa"
+      ],
+      "verificado": true,
+      "nota": "ICES: en aguas ibéricas empieza en enero/febrero; en el componente sur 'mainly occurs in April'; en el Cantábrico se ha adelantado a enero-febrero algunos años."
+     },
+     "atlantico_norte": {
+      "meses": [
+       1,
+       2,
+       3
+      ],
+      "fuentes": [
+       "ices_mac_sa"
+      ],
+      "verificado": true,
+      "nota": "ICES: 'Spanish and Portuguese waters in January to March'."
+     },
+     "portugal": {
+      "meses": [
+       1,
+       2,
+       3
+      ],
+      "fuentes": [
+       "ices_mac_sa"
+      ],
+      "verificado": true,
+      "nota": "ICES: 'Spanish and Portuguese waters in January to March'."
+     }
+    }
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "nota": "La ficha conjunta de la app daba 15-20 °C para el banco 'txitxarro/verdel' sin separar especies; no se traslada."
+   },
+   "alimentacion": {
+    "valor": "En primavera zooplancton y luego sardina y anchoa pequeña (parrotxa).",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "ES-RD560-I",
+     "valor_cm": 20,
+     "ambito": "España, aguas exteriores del Cantábrico-Noroeste y Golfo de Cádiz (RD 560/1995 anexo I; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01",
+     "nota": "Scomber spp."
+    },
+    {
+     "jurisdiccion": "UE-SWW",
+     "valor_cm": 20,
+     "ambito": "UE, aguas suroccidentales (Reg. 2019/1241 anexo VII parte A): referencia para la pesca profesional; a la recreativa no se aplica por sí sola (art. 2.2)",
+     "ambito_corto": "UE, referencia profesional (Reg. 2019/1241)",
+     "fuente": "ue_2019_1241",
+     "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2019-07-25"
+    },
+    {
+     "jurisdiccion": "ES-RD560-II",
+     "valor_cm": 18,
+     "ambito": "España, aguas exteriores del Mediterráneo (RD 560/1995 anexo II; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01"
+    },
+    {
+     "jurisdiccion": "UE-MED",
+     "valor_cm": 18,
+     "ambito": "UE, Mediterráneo (Reg. 2019/1241 anexo IX parte A): referencia para la pesca profesional; a la recreativa no se aplica por sí sola (art. 2.2)",
+     "ambito_corto": "UE, referencia profesional (Reg. 2019/1241)",
+     "fuente": "ue_2019_1241",
+     "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2019-07-25"
+    },
+    {
+     "jurisdiccion": "PT",
+     "valor_cm": 20,
+     "ambito": "Portugal continental (tabla DGRM)",
+     "ambito_corto": "Portugal (DGRM)",
+     "fuente": "dgrm_tmc_2025",
+     "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-10-30"
+    }
+   ],
+   "reglas": {
+    "marea": {
+     "peso": 4,
+     "tipo": "heuristica_experta",
+     "criterio": "Pelágico de banco (heurística)."
+    },
+    "turbidez": {
+     "peso": 3,
+     "preferencia": {
+      "no turbia": 0.5,
+      "turbia": 0,
+      "muy turbia": -0.5
+     },
+     "tipo": "heuristica_experta",
+     "criterio": "Caza a vista (heurística)."
+    }
+   },
+   "pendiente": [
+    "hábitat, profundidad, temperatura",
+    "presencia en Mediterráneo"
+   ]
+  },
+  {
+   "id": "faneca",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Faneca",
+    "eu": null,
+    "ca": null,
+    "gl": null,
+    "pt": "Faneca"
+   },
+   "nombres_fuentes": [
+    "boe_rd560",
+    "dgrm_tmc_2025"
+   ],
+   "cientifico": "Trisopterus luscus",
+   "habitat": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "cantabrico": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "pv_tallas_cupos"
+     ],
+     "verificado": true,
+     "nota": "Gobierno Vasco: 'Durdos, Julias, Txistus, Fanecas, etc. — todo el año'."
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "alimentacion": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "ES-RD560-I",
+     "valor_cm": null,
+     "ambito": "España, aguas exteriores del Cantábrico-Noroeste y Golfo de Cádiz (RD 560/1995 anexo I; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01",
+     "nota": "El anexo I la lista como 'talla por determinar'."
+    },
+    {
+     "jurisdiccion": "PT",
+     "valor_cm": 17,
+     "ambito": "Portugal continental (tabla DGRM)",
+     "ambito_corto": "Portugal (DGRM)",
+     "fuente": "dgrm_tmc_2025",
+     "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-10-30"
+    }
+   ],
+   "reglas": {},
+   "pendiente": [
+    "casi todo: hábitat, freza, temperatura, alimentación"
+   ]
+  },
+  {
+   "id": "congrio",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Congrio",
+    "eu": null,
+    "ca": null,
+    "gl": null,
+    "pt": "Congro, safio"
+   },
+   "nombres_fuentes": [
+    "dgrm_tmc_2025"
+   ],
+   "cientifico": "Conger conger",
+   "habitat": {
+    "valor": "Cuevas y grietas de fondo rocoso.",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "cantabrico": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false
+    },
+    "atlantico_norte": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false,
+     "nota": "La app usa para Galicia y Portugal la misma lista que para el Cantábrico; sin fuente regional propia todavía."
+    },
+    "portugal": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false,
+     "nota": "La app usa para Galicia y Portugal la misma lista que para el Cantábrico; sin fuente regional propia todavía."
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": "Caza de noche.",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": [
+     4,
+     14
+    ],
+    "fuentes": [
+     "fishbase_nc"
+    ],
+    "verificado": false,
+    "fuente_pendiente": "Rango 4-14 °C citado en index.html 'según FishBase' (CC BY-NC). Sustituir.",
+    "excluir_del_calculo": true
+   },
+   "alimentacion": {
+    "valor": "Jurel, sardina, calamar y crustáceos.",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "ES-RD560-I",
+     "valor_cm": 58,
+     "ambito": "España, aguas exteriores del Cantábrico-Noroeste y Golfo de Cádiz (RD 560/1995 anexo I; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01"
+    },
+    {
+     "jurisdiccion": "PT",
+     "valor_cm": 58,
+     "ambito": "Portugal continental (tabla DGRM)",
+     "ambito_corto": "Portugal (DGRM)",
+     "fuente": "dgrm_tmc_2025",
+     "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-10-30"
+    }
+   ],
+   "reglas": {
+    "luz": {
+     "preferencia": {
+      "noche": 1,
+      "ocaso": 0.6,
+      "alba": 0.3,
+      "dia": -0.6
+     },
+     "tipo": "heuristica_experta",
+     "criterio": "Caza de noche (notas de la app)."
+    },
+    "oleaje": {
+     "optimo_m": [
+      0,
+      1.5
+     ],
+     "valor_bajo_minimo": 0,
+     "tipo": "heuristica_experta",
+     "criterio": "De fondo: el mar plano no le afecta (heurística)."
+    }
+   },
+   "pendiente": [
+    "freza",
+    "rango de temperatura no-NC"
+   ]
+  },
+  {
+   "id": "pulpo",
+   "grupo": "cefalopodo",
+   "nombres": {
+    "es": "Pulpo",
+    "eu": null,
+    "ca": null,
+    "gl": null,
+    "pt": "Polvo-vulgar"
+   },
+   "nombres_fuentes": [
+    "boe_rd560",
+    "dgrm_tmc_2025"
+   ],
+   "cientifico": "Octopus vulgaris",
+   "habitat": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {},
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "alimentacion": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "ES-RD560-I",
+     "valor_cm": null,
+     "peso_g": 1000,
+     "ambito": "España, aguas exteriores del Cantábrico-Noroeste y Golfo de Cádiz (RD 560/1995 anexo I; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01",
+     "nota": "1 kg."
+    },
+    {
+     "jurisdiccion": "UE-SWW",
+     "valor_cm": null,
+     "peso_g": 750,
+     "ambito": "UE, aguas suroccidentales (Reg. 2019/1241 anexo VII parte A): referencia para la pesca profesional; a la recreativa no se aplica por sí sola (art. 2.2)",
+     "ambito_corto": "UE, referencia profesional (Reg. 2019/1241)",
+     "fuente": "ue_2019_1241",
+     "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2019-07-25"
+    },
+    {
+     "jurisdiccion": "ES-RD560-II",
+     "valor_cm": null,
+     "peso_g": 1000,
+     "ambito": "España, aguas exteriores del Mediterráneo (RD 560/1995 anexo II; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01",
+     "nota": "No se aplica en aguas interiores y plataforma de Baleares."
+    },
+    {
+     "jurisdiccion": "ES-RD560-III",
+     "valor_cm": null,
+     "peso_g": 1000,
+     "ambito": "España, aguas exteriores de Canarias (RD 560/1995 anexo III; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01"
+    },
+    {
+     "jurisdiccion": "PT",
+     "valor_cm": null,
+     "peso_g": 750,
+     "ambito": "Portugal continental (tabla DGRM)",
+     "ambito_corto": "Portugal (DGRM)",
+     "fuente": "dgrm_tmc_2025",
+     "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-10-30"
+    }
+   ],
+   "reglas": {
+    "oleaje": {
+     "optimo_m": [
+      0,
+      1.0
+     ],
+     "valor_bajo_minimo": 0,
+     "tipo": "heuristica_experta",
+     "criterio": "Se pesca mejor con el mar en calma (heurística)."
+    }
+   },
+   "pendiente": [
+    "freza Galicia/Portugal (hay estudios; falta uno con licencia abierta verificada)",
+    "vedas autonómicas (Galicia, Asturias)",
+    "¿es especie autorizada en recreativa en cada CCAA?"
+   ]
+  },
+  {
+   "id": "sepia",
+   "grupo": "cefalopodo",
+   "nombres": {
+    "es": "Sepia / choco",
+    "eu": null,
+    "ca": null,
+    "gl": null,
+    "pt": "Choco-vulgar"
+   },
+   "nombres_fuentes": [
+    "dgrm_tmc_2025"
+   ],
+   "cientifico": "Sepia officinalis",
+   "habitat": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "mediterraneo": {
+     "meses": [
+      10,
+      11,
+      12,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false
+    },
+    "baleares": {
+     "meses": [
+      10,
+      11,
+      12,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false,
+     "nota": "La app usa para Baleares la lista del Mediterráneo; sin fuente propia de Baleares todavía."
+    },
+    "golfo_cadiz": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": "Caza al acecho, camuflada en el fondo.",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": [
+     12,
+     18
+    ],
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false,
+    "nota": "En index.html: 'más del 70 % de ~12.000 capturas registradas en España con el agua entre 12-18 °C' (fuente no identificada)."
+   },
+   "alimentacion": {
+    "valor": "Crustáceos y peces pequeños.",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "ES-RD560-I",
+     "valor_cm": null,
+     "ambito": "España, aguas exteriores del Cantábrico-Noroeste y Golfo de Cádiz (RD 560/1995 anexo I; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01",
+     "nota": "Jibias (Sepia spp): 'talla por determinar'."
+    },
+    {
+     "jurisdiccion": "PT",
+     "valor_cm": 10,
+     "medida": "longitud dorsal del manto",
+     "ambito": "Portugal continental (tabla DGRM)",
+     "ambito_corto": "Portugal (DGRM)",
+     "fuente": "dgrm_tmc_2025",
+     "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-10-30"
+    }
+   ],
+   "reglas": {
+    "oleaje": {
+     "optimo_m": [
+      0,
+      1.0
+     ],
+     "valor_bajo_minimo": 0,
+     "tipo": "heuristica_experta",
+     "criterio": "Cefalópodo: mejor con mar en calma (heurística)."
+    },
+    "turbidez": {
+     "peso": 5,
+     "preferencia": {
+      "no turbia": 0.8,
+      "turbia": -0.3,
+      "muy turbia": -1
+     },
+     "tipo": "heuristica_experta",
+     "criterio": "Caza a vista: agua clara (heurística)."
+    }
+   },
+   "pendiente": [
+    "freza",
+    "presencia Cantábrico/Atlántico",
+    "fuente de las 12.000 capturas"
+   ]
+  },
+  {
+   "id": "calamar",
+   "grupo": "cefalopodo",
+   "nombres": {
+    "es": "Calamar / chipirón",
+    "eu": "Txipiroi",
+    "ca": null,
+    "gl": null,
+    "pt": "Lula-vulgar"
+   },
+   "nombres_fuentes": [
+    "pv_tallas_cupos",
+    "dgrm_tmc_2025"
+   ],
+   "cientifico": "Loligo vulgaris",
+   "nombres_nota": "'Txipiroi/txipirón' es uso local (la app lo trata como sinónimo); sin fuente lingüística verificada.",
+   "habitat": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "cantabrico": {
+     "meses": [
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "pv_tallas_cupos"
+     ],
+     "verificado": true,
+     "nota": "Gobierno Vasco: 'Chipirón — mayo a diciembre (aunque se puede pescar todo el año)'. La lista de index.html dice sept-feb."
+    },
+    "atlantico_norte": {
+     "meses": [
+      9,
+      10,
+      11,
+      12,
+      1,
+      2
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false,
+     "nota": "La app usa para Galicia y Portugal la misma lista que para el Cantábrico; sin fuente regional propia todavía."
+    },
+    "portugal": {
+     "meses": [
+      9,
+      10,
+      11,
+      12,
+      1,
+      2
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false,
+     "nota": "La app usa para Galicia y Portugal la misma lista que para el Cantábrico; sin fuente regional propia todavía."
+    },
+    "mediterraneo": {
+     "meses": [
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false
+    },
+    "baleares": {
+     "meses": [
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false,
+     "nota": "La app usa para Baleares la lista del Mediterráneo; sin fuente propia de Baleares todavía."
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": "Mejor de noche o al atardecer.",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": [
+     13,
+     20
+    ],
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false,
+    "fuente_pendiente": "Heredado de index.html sin cita concreta. Sustituir."
+   },
+   "alimentacion": {
+    "valor": "Peces pequeños, cangrejos y camarones; los jóvenes, plancton.",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "ES-RD560-I",
+     "valor_cm": null,
+     "ambito": "España, aguas exteriores del Cantábrico-Noroeste y Golfo de Cádiz (RD 560/1995 anexo I; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01",
+     "nota": "'Talla por determinar'."
+    },
+    {
+     "jurisdiccion": "PT",
+     "valor_cm": 10,
+     "medida": "longitud dorsal del manto",
+     "ambito": "Portugal continental (tabla DGRM)",
+     "ambito_corto": "Portugal (DGRM)",
+     "fuente": "dgrm_tmc_2025",
+     "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-10-30"
+    }
+   ],
+   "reglas": {
+    "luz": {
+     "preferencia": {
+      "ocaso": 1,
+      "noche": 0.8,
+      "alba": 0.4,
+      "dia": -0.5
+     },
+     "tipo": "heuristica_experta",
+     "criterio": "Mejor de noche o al atardecer (notas de la app). OJO: atraer con luces está prohibido en recreativa (RD 347/2011 art. 6)."
+    },
+    "oleaje": {
+     "optimo_m": [
+      0,
+      0.8
+     ],
+     "max_seguro_m": 2.0,
+     "valor_bajo_minimo": 0,
+     "tipo": "heuristica_experta",
+     "criterio": "Eging en puertos y espigones con mar en calma (heurística)."
+    },
+    "turbidez": {
+     "peso": 6,
+     "preferencia": {
+      "no turbia": 0.8,
+      "turbia": -0.3,
+      "muy turbia": -1
+     },
+     "tipo": "heuristica_experta",
+     "criterio": "Caza a vista: agua clara (heurística)."
+    },
+    "marea": {
+     "peso": 5,
+     "tipo": "heuristica_experta",
+     "criterio": "Le afecta menos la marea que a los peces de rompiente (heurística)."
+    }
+   },
+   "pendiente": [
+    "freza",
+    "rango de temperatura no-NC"
+   ]
+  },
+  {
+   "id": "abadejo",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Abadejo",
+    "eu": null,
+    "ca": null,
+    "gl": null,
+    "pt": "Juliana, paloco"
+   },
+   "nombres_fuentes": [
+    "boe_rd560",
+    "dgrm_tmc_2025"
+   ],
+   "cientifico": "Pollachius pollachius",
+   "habitat": {
+    "valor": "Bentopelágico, cerca de costa sobre fondo duro; le gustan los pecios y la roca.",
+    "fuentes": [
+     "ices_pol_sa"
+    ],
+    "verificado": true
+   },
+   "profundidad_m": {
+    "valor": [
+     40,
+     100
+    ],
+    "fuentes": [
+     "ices_pol_sa"
+    ],
+    "verificado": true,
+    "nota": "Normalmente 40-100 m, hasta 200 m; en el Cantábrico y Galicia sobre todo entre 50 y 150 m."
+   },
+   "presencia": {
+    "cantabrico": {
+     "meses": [
+      9,
+      10,
+      11,
+      12,
+      1,
+      2
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false
+    },
+    "atlantico_norte": {
+     "meses": [
+      9,
+      10,
+      11,
+      12,
+      1,
+      2
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false,
+     "nota": "La app usa para Galicia y Portugal la misma lista que para el Cantábrico; sin fuente regional propia todavía."
+    },
+    "portugal": {
+     "meses": [
+      9,
+      10,
+      11,
+      12,
+      1,
+      2
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false,
+     "nota": "La app usa para Galicia y Portugal la misma lista que para el Cantábrico; sin fuente regional propia todavía."
+    }
+   },
+   "freza": {
+    "por_region": {
+     "cantabrico": {
+      "meses": [
+       2,
+       3
+      ],
+      "fuentes": [
+       "ices_pol_sa"
+      ],
+      "verificado": true,
+      "nota": "ICES (citando a Cohen et al. 1990): febrero en España y marzo en el Golfo de Bizkaia; a unos 100 m."
+     },
+     "atlantico_norte": {
+      "meses": [
+       2
+      ],
+      "fuentes": [
+       "ices_pol_sa"
+      ],
+      "verificado": true,
+      "nota": "ICES: febrero en España."
+     }
+    }
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": [
+     7,
+     12
+    ],
+    "fuentes": [
+     "fishbase_nc"
+    ],
+    "verificado": false,
+    "fuente_pendiente": "Rango 7-12 °C citado en index.html 'según FishBase' (CC BY-NC). Sustituir.",
+    "excluir_del_calculo": true
+   },
+   "alimentacion": {
+    "valor": "Sobre todo peces; a veces crustáceos y cefalópodos.",
+    "fuentes": [
+     "ices_pol_sa"
+    ],
+    "verificado": true
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "ES-RD560-I",
+     "valor_cm": 30,
+     "ambito": "España, aguas exteriores del Cantábrico-Noroeste y Golfo de Cádiz (RD 560/1995 anexo I; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01"
+    },
+    {
+     "jurisdiccion": "UE-SWW",
+     "valor_cm": 30,
+     "ambito": "UE, aguas suroccidentales (Reg. 2019/1241 anexo VII parte A): referencia para la pesca profesional; a la recreativa no se aplica por sí sola (art. 2.2)",
+     "ambito_corto": "UE, referencia profesional (Reg. 2019/1241)",
+     "fuente": "ue_2019_1241",
+     "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2019-07-25",
+     "nota": "Texto original de 2019. ICES (2025, CC BY) dice que el Reg. (UE) 2025/202 la subió a 42 cm."
+    },
+    {
+     "jurisdiccion": "PT",
+     "valor_cm": 46,
+     "ambito": "Portugal continental (tabla DGRM)",
+     "ambito_corto": "Portugal (DGRM)",
+     "fuente": "dgrm_tmc_2025",
+     "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-10-30",
+     "nota": "La tabla DGRM de 30-10-2025 ya da 46 cm."
+    }
+   ],
+   "vedas": [
+    {
+     "jurisdiccion": "UE",
+     "ambito": "pesca recreativa, CIEM 8 y 9a",
+     "texto": "Según ICES (2025), el Reg. (UE) 2025/202 cerró la pesca recreativa del 1 de enero al 30 de abril y limitó a 2 ejemplares/día el resto del año. Para 2026 rige el Reg. (UE) 2026/249 (art. 12): NO verificado en su texto.",
+     "fuente": "ices_pol_sa",
+     "verificado": false
+    }
+   ],
+   "reglas": {},
+   "pendiente": [
+    "verificar Reg. (UE) 2026/249 (veda y cupo recreativo 2026) y la talla UE vigente",
+    "rango de temperatura no-NC"
+   ]
+  },
+  {
+   "id": "bonito_norte",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Bonito del norte / atún blanco",
+    "eu": null,
+    "ca": null,
+    "gl": null,
+    "pt": null
+   },
+   "nombres_fuentes": [
+    "pv_tallas_cupos"
+   ],
+   "cientifico": "Thunnus alalunga",
+   "habitat": {
+    "valor": "Pelágico de mar abierto.",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "cantabrico": {
+     "meses": [
+      7,
+      8,
+      9,
+      10
+     ],
+     "fuentes": [
+      "pv_tallas_cupos"
+     ],
+     "verificado": true,
+     "nota": "Gobierno Vasco: túnidos 'primeros de julio y octubre (fechas variables)'."
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": [
+     16,
+     19
+    ],
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false,
+    "fuente_pendiente": "Heredado (index.html cita ICCAT/FishBase en general). Sustituir por ICCAT con cita concreta."
+   },
+   "alimentacion": {
+    "valor": "Bancos de sardina, anchoa, caballa y jurel; también calamar.",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "talla_minima": [],
+   "cupos": [
+    {
+     "jurisdiccion": "ES-PV",
+     "texto": "5 piezas por licencia y día, máximo 20 por embarcación con 4 o más tripulantes con licencia; exige autorización expresa de la Secretaría General de Pesca Marítima y declaración de desembarque.",
+     "fuente": "pv_tallas_cupos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/especies_tallas_cupos/es_def/index.shtml",
+     "fecha_revision": "2026-10-07"
+    }
+   ],
+   "reglas": {
+    "marea": {
+     "peso": 0,
+     "tipo": "heuristica_experta",
+     "criterio": "Mar adentro: la marea costera no aplica."
+    },
+    "luz": {
+     "peso": 5
+    }
+   },
+   "pendiente": [
+    "talla ICCAT/UE si existe",
+    "freza",
+    "nombres eu/pt"
+   ]
+  },
+  {
+   "id": "lisa",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Lisa / mújol",
+    "eu": "Hondoetako korrokoia",
+    "ca": "Llissa vera",
+    "gl": null,
+    "pt": "Tainhas"
+   },
+   "nombres_fuentes": [
+    "miteco_peces",
+    "dgrm_tmc_2025"
+   ],
+   "cientifico": "Mugilidae (Chelon labrosus, Mugil spp.)",
+   "nombres_nota": "Nombres eu/ca de MITECO para Chelon labrosus.",
+   "habitat": {
+    "valor": "Playas, puertos y estuarios.",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "mediterraneo": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false
+    },
+    "baleares": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false,
+     "nota": "La app usa para Baleares la lista del Mediterráneo; sin fuente propia de Baleares todavía."
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": [
+     8,
+     24
+    ],
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false,
+    "fuente_pendiente": "Heredado sin cita concreta."
+   },
+   "alimentacion": {
+    "valor": "Detritos, diatomeas, algas y materia orgánica del fondo.",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "ES-RD560-I",
+     "valor_cm": 20,
+     "ambito": "España, aguas exteriores del Cantábrico-Noroeste y Golfo de Cádiz (RD 560/1995 anexo I; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01",
+     "nota": "Mugil spp."
+    },
+    {
+     "jurisdiccion": "ES-RD560-II",
+     "valor_cm": 16,
+     "ambito": "España, aguas exteriores del Mediterráneo (RD 560/1995 anexo II; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01"
+    },
+    {
+     "jurisdiccion": "ES-RD560-III",
+     "valor_cm": 14,
+     "ambito": "España, aguas exteriores de Canarias (RD 560/1995 anexo III; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01",
+     "nota": "Mugil auratus, 'lisa amarilla'."
+    },
+    {
+     "jurisdiccion": "PT",
+     "valor_cm": 20,
+     "ambito": "Portugal continental (tabla DGRM)",
+     "ambito_corto": "Portugal (DGRM)",
+     "fuente": "dgrm_tmc_2025",
+     "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-10-30"
+    }
+   ],
+   "reglas": {},
+   "pendiente": [
+    "freza",
+    "temperatura"
+   ]
+  },
+  {
+   "id": "breca",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Breca",
+    "eu": null,
+    "ca": null,
+    "gl": null,
+    "pt": "Bica"
+   },
+   "nombres_fuentes": [
+    "boe_rd560",
+    "dgrm_tmc_2025"
+   ],
+   "cientifico": "Pagellus erythrinus",
+   "habitat": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "mediterraneo": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false,
+     "nota": "DIGIPESCA/RiuNet 2021 (lonjas catalanas), heredado."
+    },
+    "baleares": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false,
+     "nota": "La app usa para Baleares la lista del Mediterráneo; sin fuente propia de Baleares todavía."
+    },
+    "canarias": {
+     "meses": [
+      12,
+      1,
+      2,
+      3,
+      4,
+      6,
+      7
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false,
+     "nota": "Extrapolado de guías peninsulares (heredado)."
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": [
+     12,
+     21
+    ],
+    "fuentes": [
+     "fishbase_nc"
+    ],
+    "verificado": false,
+    "fuente_pendiente": "Citado en index.html como 'FishBase, n=492'. Sustituir.",
+    "excluir_del_calculo": true
+   },
+   "alimentacion": {
+    "valor": "Invertebrados bentónicos y peces pequeños.",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "ES-RD560-II",
+     "valor_cm": 12,
+     "ambito": "España, aguas exteriores del Mediterráneo (RD 560/1995 anexo II; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01",
+     "nota": "'Pagel, besugo (Pagellus spp)'."
+    },
+    {
+     "jurisdiccion": "UE-MED",
+     "valor_cm": 15,
+     "ambito": "UE, Mediterráneo (Reg. 2019/1241 anexo IX parte A): referencia para la pesca profesional; a la recreativa no se aplica por sí sola (art. 2.2)",
+     "ambito_corto": "UE, referencia profesional (Reg. 2019/1241)",
+     "fuente": "ue_2019_1241",
+     "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2019-07-25"
+    },
+    {
+     "jurisdiccion": "ES-RD560-III",
+     "valor_cm": 22,
+     "ambito": "España, aguas exteriores de Canarias (RD 560/1995 anexo III; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01"
+    },
+    {
+     "jurisdiccion": "PT",
+     "valor_cm": 15,
+     "ambito": "Portugal continental (tabla DGRM)",
+     "ambito_corto": "Portugal (DGRM)",
+     "fuente": "dgrm_tmc_2025",
+     "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-10-30"
+    }
+   ],
+   "reglas": {},
+   "pendiente": [
+    "freza",
+    "temperatura no-NC"
+   ]
+  },
+  {
+   "id": "lenguado",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Lenguado",
+    "eu": null,
+    "ca": null,
+    "gl": null,
+    "pt": "Linguado"
+   },
+   "nombres_fuentes": [
+    "boe_rd560",
+    "dgrm_tmc_2025"
+   ],
+   "cientifico": "Solea spp.",
+   "habitat": {
+    "valor": "Arena fina.",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "golfo_cadiz": {
+     "meses": [
+      10,
+      11,
+      12,
+      1,
+      2,
+      3,
+      4
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": "Se pesca de noche, a gusano.",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": [
+     8,
+     24
+    ],
+    "fuentes": [
+     "fishbase_nc"
+    ],
+    "verificado": false,
+    "fuente_pendiente": "Citado en index.html 'adultos según FishBase'. Sustituir.",
+    "excluir_del_calculo": true
+   },
+   "alimentacion": {
+    "valor": "Peces pequeños, crustáceos e invertebrados de fondo.",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "ES-RD560-I",
+     "valor_cm": 24,
+     "ambito": "España, aguas exteriores del Cantábrico-Noroeste y Golfo de Cádiz (RD 560/1995 anexo I; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01",
+     "nota": "Solea vulgaris."
+    },
+    {
+     "jurisdiccion": "UE-SWW",
+     "valor_cm": 24,
+     "ambito": "UE, aguas suroccidentales (Reg. 2019/1241 anexo VII parte A): referencia para la pesca profesional; a la recreativa no se aplica por sí sola (art. 2.2)",
+     "ambito_corto": "UE, referencia profesional (Reg. 2019/1241)",
+     "fuente": "ue_2019_1241",
+     "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2019-07-25"
+    },
+    {
+     "jurisdiccion": "ES-RD560-II",
+     "valor_cm": 20,
+     "ambito": "España, aguas exteriores del Mediterráneo (RD 560/1995 anexo II; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01"
+    },
+    {
+     "jurisdiccion": "UE-MED",
+     "valor_cm": 20,
+     "ambito": "UE, Mediterráneo (Reg. 2019/1241 anexo IX parte A): referencia para la pesca profesional; a la recreativa no se aplica por sí sola (art. 2.2)",
+     "ambito_corto": "UE, referencia profesional (Reg. 2019/1241)",
+     "fuente": "ue_2019_1241",
+     "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2019-07-25"
+    },
+    {
+     "jurisdiccion": "PT",
+     "valor_cm": 24,
+     "ambito": "Portugal continental (tabla DGRM)",
+     "ambito_corto": "Portugal (DGRM)",
+     "fuente": "dgrm_tmc_2025",
+     "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-10-30"
+    }
+   ],
+   "reglas": {
+    "luz": {
+     "preferencia": {
+      "noche": 1,
+      "ocaso": 0.6,
+      "alba": 0.3,
+      "dia": -0.5
+     },
+     "tipo": "heuristica_experta",
+     "criterio": "Se pesca de noche (notas de la app)."
+    }
+   },
+   "pendiente": [
+    "freza (ICES tiene stock annex de Solea solea 8c9a)",
+    "temperatura no-NC"
+   ]
+  },
+  {
+   "id": "corvina",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Corvina",
+    "eu": null,
+    "ca": null,
+    "gl": null,
+    "pt": "Corvina-legítima"
+   },
+   "nombres_fuentes": [
+    "dgrm_tmc_2025"
+   ],
+   "cientifico": "Argyrosomus regius",
+   "habitat": {
+    "valor": "Desembocaduras.",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "mediterraneo": {
+     "meses": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false
+    },
+    "golfo_cadiz": {
+     "meses": [
+      6,
+      7,
+      8
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false
+    }
+   },
+   "freza": {
+    "temperatura_c": {
+     "valor": [
+      17,
+      22
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false,
+     "nota": "Heredado sin cita concreta."
+    },
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": "Con los cambios de marea y al anochecer; en Rota, noches de verano.",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "alimentacion": {
+    "valor": "Crustáceos, moluscos, gusanos y peces.",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "PT",
+     "valor_cm": 42,
+     "ambito": "Portugal continental (tabla DGRM)",
+     "ambito_corto": "Portugal (DGRM)",
+     "fuente": "dgrm_tmc_2025",
+     "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-10-30"
+    }
+   ],
+   "reglas": {
+    "luz": {
+     "preferencia": {
+      "ocaso": 1,
+      "noche": 0.8,
+      "alba": 0.3,
+      "dia": -0.3
+     },
+     "tipo": "heuristica_experta",
+     "criterio": "Al anochecer y de noche (notas de la app)."
+    },
+    "marea": {
+     "preferencia": {
+      "subiendo": 0.8,
+      "bajando": 0.6,
+      "repunte": 0.6
+     },
+     "tipo": "heuristica_experta",
+     "criterio": "Pica con los cambios de marea (notas de la app)."
+    }
+   },
+   "pendiente": [
+    "talla en España (no aparece en el RD 560/1995)",
+    "freza con fuente"
+   ]
+  },
+  {
+   "id": "denton",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Dentón",
+    "eu": null,
+    "ca": null,
+    "gl": null,
+    "pt": null
+   },
+   "nombres_fuentes": [],
+   "cientifico": "Dentex dentex",
+   "habitat": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "mediterraneo": {
+     "meses": [
+      3,
+      4,
+      5,
+      6,
+      9,
+      10
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false
+    },
+    "baleares": {
+     "meses": [
+      3,
+      4,
+      5,
+      6,
+      9,
+      10
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false,
+     "nota": "La app usa para Baleares la lista del Mediterráneo; sin fuente propia de Baleares todavía."
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": "Solitario y territorial; caza al amanecer y al anochecer.",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": [
+     13,
+     21
+    ],
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false,
+    "fuente_pendiente": "Heredado sin cita concreta."
+   },
+   "alimentacion": {
+    "valor": "Peces medianos, cefalópodos y crustáceos.",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "talla_minima": [],
+   "reglas": {
+    "luz": {
+     "preferencia": {
+      "alba": 1,
+      "ocaso": 1,
+      "dia": -0.2,
+      "noche": -0.3
+     },
+     "tipo": "heuristica_experta",
+     "criterio": "Caza al amanecer y anochecer (notas de la app)."
+    }
+   },
+   "pendiente": [
+    "hábitat, profundidad, freza y temperatura con fuente no-NC",
+    "talla mínima (no aparece en RD 560/1995 ni en el anexo IX)"
+   ],
+   "cientifico_nota": "Nombre científico no cotejado aún con una lista oficial."
+  },
+  {
+   "id": "urta",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Urta",
+    "eu": null,
+    "ca": null,
+    "gl": null,
+    "pt": null
+   },
+   "nombres_fuentes": [],
+   "cientifico": null,
+   "habitat": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "golfo_cadiz": {
+     "meses": [
+      3,
+      4,
+      5,
+      9,
+      10,
+      11
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": [
+     14,
+     27
+    ],
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false,
+    "fuente_pendiente": "Heredado sin cita concreta."
+   },
+   "alimentacion": {
+    "valor": "Moluscos, incluidos cefalópodos, y crustáceos.",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "talla_minima": [],
+   "reglas": {},
+   "pendiente": [
+    "hábitat, profundidad, freza y temperatura con fuente no-NC",
+    "nombre científico",
+    "talla mínima"
+   ],
+   "cientifico_nota": "La app no da nombre científico y no se ha verificado (probablemente Pagrus auriga)."
+  },
+  {
+   "id": "bocinegro",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Bocinegro / pargo",
+    "eu": null,
+    "ca": null,
+    "gl": null,
+    "pt": "Pargo-legítimo"
+   },
+   "nombres_fuentes": [
+    "dgrm_tmc_2025"
+   ],
+   "cientifico": "Pagrus pagrus",
+   "habitat": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "golfo_cadiz": {
+     "meses": [
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": [
+     16,
+     28
+    ],
+    "fuentes": [
+     "fishbase_nc"
+    ],
+    "verificado": false,
+    "fuente_pendiente": "Citado en index.html 'FishBase, n=1356'. Sustituir.",
+    "excluir_del_calculo": true
+   },
+   "alimentacion": {
+    "valor": "Crustáceos, sobre todo camarones, percebes y nécoras pequeñas.",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "ES-RD560-I",
+     "valor_cm": 15,
+     "ambito": "España, aguas exteriores del Cantábrico-Noroeste y Golfo de Cádiz (RD 560/1995 anexo I; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01",
+     "nota": "'Pargo (Pagrus pagrus)'."
+    },
+    {
+     "jurisdiccion": "ES-RD560-II",
+     "valor_cm": 18,
+     "ambito": "España, aguas exteriores del Mediterráneo (RD 560/1995 anexo II; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01"
+    },
+    {
+     "jurisdiccion": "UE-MED",
+     "valor_cm": 18,
+     "ambito": "UE, Mediterráneo (Reg. 2019/1241 anexo IX parte A): referencia para la pesca profesional; a la recreativa no se aplica por sí sola (art. 2.2)",
+     "ambito_corto": "UE, referencia profesional (Reg. 2019/1241)",
+     "fuente": "ue_2019_1241",
+     "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2019-07-25"
+    },
+    {
+     "jurisdiccion": "ES-RD560-III",
+     "valor_cm": 28,
+     "ambito": "España, aguas exteriores de Canarias (RD 560/1995 anexo III; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01",
+     "nota": "Nombre local canario: 'Bocinegro'."
+    },
+    {
+     "jurisdiccion": "PT",
+     "valor_cm": 20,
+     "ambito": "Portugal continental (tabla DGRM)",
+     "ambito_corto": "Portugal (DGRM)",
+     "fuente": "dgrm_tmc_2025",
+     "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-10-30"
+    }
+   ],
+   "reglas": {},
+   "pendiente": [
+    "hábitat, profundidad, freza y temperatura con fuente no-NC"
+   ]
+  },
+  {
+   "id": "vieja",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Vieja",
+    "eu": null,
+    "ca": null,
+    "gl": null,
+    "pt": null
+   },
+   "nombres_fuentes": [],
+   "cientifico": "Sparisoma cretense",
+   "habitat": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "canarias": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": [
+     15,
+     20
+    ],
+    "fuentes": [
+     "fishbase_nc"
+    ],
+    "verificado": false,
+    "fuente_pendiente": "Citado en index.html 'FishBase, n=34'. Sustituir.",
+    "excluir_del_calculo": true
+   },
+   "alimentacion": {
+    "valor": "Algas y pequeños invertebrados.",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "ES-RD560-III",
+     "valor_cm": 22,
+     "ambito": "España, aguas exteriores de Canarias (RD 560/1995 anexo III; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01",
+     "nota": "'Vieja colorada (Sparisoma cretense)'."
+    }
+   ],
+   "reglas": {},
+   "pendiente": [
+    "hábitat, profundidad, freza y temperatura con fuente no-NC"
+   ]
+  },
+  {
+   "id": "sama",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Sama",
+    "eu": null,
+    "ca": null,
+    "gl": null,
+    "pt": null
+   },
+   "nombres_fuentes": [],
+   "cientifico": "Dentex filosus",
+   "habitat": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "canarias": {
+     "meses": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "alimentacion": {
+    "valor": "Camarones, percebes y nécoras pequeñas; de adulta, carnívora.",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "ES-RD560-III",
+     "valor_cm": 35,
+     "ambito": "España, aguas exteriores de Canarias (RD 560/1995 anexo III; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01"
+    }
+   ],
+   "reglas": {},
+   "pendiente": [
+    "hábitat, profundidad, freza y temperatura con fuente no-NC"
+   ],
+   "cientifico_nota": "RD 560/1995 anexo III: 'Sama de pluma (Dentex filosus) — Sama, serruda, pargo macho'. Falta confirmar que es la 'sama' de la app."
+  },
+  {
+   "id": "medregal",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Medregal",
+    "eu": null,
+    "ca": null,
+    "gl": null,
+    "pt": null
+   },
+   "nombres_fuentes": [],
+   "cientifico": null,
+   "habitat": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "canarias": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "alimentacion": {
+    "valor": "Crustáceos, cefalópodos y peces pequeños.",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "talla_minima": [],
+   "reglas": {},
+   "pendiente": [
+    "hábitat, profundidad, freza y temperatura con fuente no-NC",
+    "nombre científico",
+    "talla"
+   ],
+   "cientifico_nota": "Sin verificar (género Seriola)."
+  },
+  {
+   "id": "bicuda",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Bicuda",
+    "eu": null,
+    "ca": null,
+    "gl": null,
+    "pt": null
+   },
+   "nombres_fuentes": [],
+   "cientifico": null,
+   "habitat": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "canarias": {
+     "meses": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": [
+     15,
+     22
+    ],
+    "fuentes": [
+     "fishbase_nc"
+    ],
+    "verificado": false,
+    "fuente_pendiente": "Citado en index.html 'según FishBase (n=230)'. Sustituir.",
+    "excluir_del_calculo": true
+   },
+   "alimentacion": {
+    "valor": "Cefalópodos, crustáceos y peces.",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "talla_minima": [],
+   "reglas": {},
+   "pendiente": [
+    "hábitat, profundidad, freza y temperatura con fuente no-NC",
+    "nombre científico",
+    "talla"
+   ],
+   "cientifico_nota": "Sin verificar (género Sphyraena)."
+  },
+  {
+   "id": "chicharro_canario",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Chicharro (Canarias)",
+    "eu": null,
+    "ca": null,
+    "gl": null,
+    "pt": null
+   },
+   "nombres_fuentes": [],
+   "cientifico": "Trachurus spp.",
+   "habitat": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "canarias": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "alimentacion": {
+    "valor": "Zooplancton, crustáceos, moluscos y peces pequeños.",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "ES-RD560-III",
+     "valor_cm": 12,
+     "ambito": "España, aguas exteriores de Canarias (RD 560/1995 anexo III; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01"
+    }
+   ],
+   "reglas": {},
+   "pendiente": [
+    "hábitat, profundidad, freza y temperatura con fuente no-NC"
+   ],
+   "cientifico_nota": "RD 560/1995 anexo III: 'Jureles (Trachurus spp) — Chicharro'. Especie concreta sin verificar."
+  },
+  {
+   "id": "salema",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Salema",
+    "eu": null,
+    "ca": null,
+    "gl": null,
+    "pt": "Salema"
+   },
+   "nombres_fuentes": [
+    "dgrm_tmc_2025"
+   ],
+   "cientifico": "Sarpa salpa",
+   "habitat": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "canarias": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": [
+     18,
+     25
+    ],
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false,
+    "fuente_pendiente": "Heredado (fichas de acuario según la propia app). Sustituir."
+   },
+   "alimentacion": {
+    "valor": "Casi exclusivamente algas.",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "ES-RD560-I",
+     "valor_cm": 15,
+     "ambito": "España, aguas exteriores del Cantábrico-Noroeste y Golfo de Cádiz (RD 560/1995 anexo I; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01"
+    },
+    {
+     "jurisdiccion": "ES-RD560-II",
+     "valor_cm": 15,
+     "ambito": "España, aguas exteriores del Mediterráneo (RD 560/1995 anexo II; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01"
+    },
+    {
+     "jurisdiccion": "ES-RD560-III",
+     "valor_cm": 24,
+     "ambito": "España, aguas exteriores de Canarias (RD 560/1995 anexo III; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01"
+    },
+    {
+     "jurisdiccion": "PT",
+     "valor_cm": 18,
+     "ambito": "Portugal continental (tabla DGRM)",
+     "ambito_corto": "Portugal (DGRM)",
+     "fuente": "dgrm_tmc_2025",
+     "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-10-30"
+    }
+   ],
+   "reglas": {},
+   "pendiente": [
+    "hábitat, profundidad, freza y temperatura con fuente no-NC"
+   ]
+  },
+  {
+   "id": "cabrilla",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Cabrilla",
+    "eu": null,
+    "ca": null,
+    "gl": null,
+    "pt": null
+   },
+   "nombres_fuentes": [],
+   "cientifico": "Serranus cabrilla",
+   "habitat": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "canarias": {
+     "meses": [
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": [
+     16,
+     19
+    ],
+    "fuentes": [
+     "fishbase_nc"
+    ],
+    "verificado": false,
+    "fuente_pendiente": "Citado en index.html 'FishBase, n=26'. Sustituir.",
+    "excluir_del_calculo": true
+   },
+   "alimentacion": {
+    "valor": "Peces pequeños e invertebrados.",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "ES-RD560-III",
+     "valor_cm": 19,
+     "ambito": "España, aguas exteriores de Canarias (RD 560/1995 anexo III; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-07",
+     "fecha_documento": "2025-11-01"
+    }
+   ],
+   "reglas": {},
+   "pendiente": [
+    "hábitat, profundidad, freza y temperatura con fuente no-NC"
+   ]
+  },
+  {
+   "id": "palometa",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Palometa",
+    "eu": null,
+    "ca": null,
+    "gl": null,
+    "pt": null
+   },
+   "nombres_fuentes": [],
+   "cientifico": null,
+   "habitat": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "mediterraneo": {
+     "meses": [
+      6,
+      7,
+      8,
+      9
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false
+    },
+    "baleares": {
+     "meses": [
+      6,
+      7,
+      8,
+      9
+     ],
+     "fuentes": [
+      "app_index"
+     ],
+     "verificado": false,
+     "nota": "La app usa para Baleares la lista del Mediterráneo; sin fuente propia de Baleares todavía."
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "alimentacion": {
+    "valor": "Pequeños crustáceos, moluscos y gusanos (dato genérico).",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false
+   },
+   "talla_minima": [],
+   "reglas": {},
+   "pendiente": [
+    "hábitat, profundidad, freza y temperatura con fuente no-NC",
+    "nombre científico",
+    "talla"
+   ],
+   "cientifico_nota": "Sin verificar (la app usa un dato genérico de género)."
+  }
+ ]
+}
