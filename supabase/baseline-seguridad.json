@@ -251,6 +251,11 @@
       "policies": []
     },
     {
+      "tablename": "invitaciones",
+      "rls_enabled": true,
+      "policies": []
+    },
+    {
       "tablename": "invitaciones_grupo",
       "rls_enabled": true,
       "policies": [

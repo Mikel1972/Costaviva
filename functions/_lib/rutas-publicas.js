@@ -75,6 +75,10 @@ const ARCHIVOS_PUBLICOS = new Set([
   "/viento-campo",
   "/crear-checkout-stripe",
   "/crear-portal-stripe",
+  // Invitaciones con descuento (2026-10-08): admin-invitaciones exige
+  // es_admin() en el servidor; canjear-invitacion, la sesión del invitado.
+  "/admin-invitaciones",
+  "/canjear-invitacion",
   "/stripe-webhook",
   "/notificar-altas",
   "/avisar-fin-prueba",

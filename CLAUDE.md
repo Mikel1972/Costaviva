@@ -1333,6 +1333,8 @@ explicación.
 | `/registrar-presion` | `registrar-presion.js` | POST: guarda la presión real de cada spot en `presion_historico` (Fase 4) | Sin sesión de usuario — protegido con secreto compartido (`X-Cron-Secret` / `CRON_SECRET`) |
 | `/crear-checkout-stripe` | `crear-checkout-stripe.js` | POST: crea una Stripe Checkout Session (suscripción mensual/anual, con prueba) para el usuario que llama | **Requiere** `Authorization: Bearer <token de sesión>` |
 | `/crear-portal-stripe` | `crear-portal-stripe.js` | POST: crea una sesión del Billing Portal de Stripe para gestionar/cancelar la suscripción propia | **Requiere** `Authorization: Bearer <token de sesión>` |
+| `/admin-invitaciones` | `admin-invitaciones.js` | GET/POST: lista, crea (cupón de Stripe + email), reenvía y anula invitaciones | **Admin**: token + `es_admin()` comprobados en el servidor antes de `service_role` |
+| `/canjear-invitacion` | `canjear-invitacion.js` | POST: canjea un código de invitación para el email de la sesión, una sola vez | **Requiere** `Authorization: Bearer <token de sesión>` |
 | `/stripe-webhook` | `stripe-webhook.js` | POST: recibe eventos de Stripe (checkout/suscripción/`invoice.payment_failed`) y actualiza `suscripciones`; idempotente por `event.id` (tabla `stripe_eventos`, 2026-10-07) | Sin sesión — verifica la firma `Stripe-Signature` con `STRIPE_WEBHOOK_SECRET` |
 
 Ninguno de los cuatro primeros toca tablas de usuario en Supabase.
@@ -1710,6 +1712,8 @@ condiciones, efecto, fuente, estado y cualquier error de forma.
    luna (fracción iluminada 0-1, `iluminacionLunar`) y coeficiente_marea
    (20-120, `coeficienteMareaAstronomico`, ajustado a los coeficientes
    reales de CALIBRACION.jsonl). Las dos se calculan en el motor, sin red.
+   Y de batimetría (EMODnet, ver "Batimetría"): profundidad, prof_max_5km y
+   dist_fondo_10_30m_km.
    Agregados: media, min, max, suma, delta, fraccion (con `cumple`).
    Operadores: `<`, `<=`, `>`, `>=`, `==`, `!=`, `en`, `entre`, `sector`.
    Ventanas hacia atrás de hasta 5 días (120 h): es lo que trae la serie.
@@ -1743,6 +1747,65 @@ regla, la fiabilidad y el ranking de especies) para calibrar.
 **Migración `20261008120000_indice_pesca_salida.sql`, SIN APLICAR**: hasta
 aplicarla, `guardarSalida` reintenta sin esas columnas si PostgREST responde
 PGRST204.
+
+## Batimetría: profundidad de los spots e isóbatas (2026-10-08, aprobado por Mikel)
+
+**Fuentes y licencias** (verificadas, detalle en
+`datos-robots/fuentes/BATIMETRIA.md`): **EMODnet Bathymetry DTM 2024**, CC BY
+4.0 (uso comercial con atribución; DOI 10.12770/cf51df64-56f9-4a99-b1aa-36b8d7b743a1),
+y de respaldo **GEBCO_2026** (dominio público, atribución pedida, "no para
+navegar"). Atribución visible en el mapa al encender "Fondo" o las isóbatas.
+No quitarla.
+
+**Profundidad por spot** (`assets/datos/profundidad-spots.json`, sin IA):
+`node scripts/batimetria/profundidad-spots.mjs` pide al WCS de EMODnet
+(`emodnet__mean`, text/plain, ~115 m) una caja de ~11 km por spot de `SPOTS`
+(`functions/prevision.js`). Todo se mide desde la **orilla** (la celda de mar
+más cercana al spot: muchos spots caen en la playa, el puerto o tierra
+adentro): `zona_m` (mediana del fondo a 1 km), `prof_max_5km_m` (fondo más
+profundo a 5 km o menos) y `dist_10_30m_m` (distancia al fondo de 10-30 m más
+cercano), además de distancias desde el spot a 10/20/30/40/50/100 m. El cálculo
+puro está en `assets/js/batimetria-calculo.js` (lo usan el script y el
+navegador). GEBCO solo si EMODnet falla o no tiene mar a 1 km (OPeNDAP de
+CEDA). El DTM no cambia: regenerar al añadir spots o con un DTM nuevo (y
+actualizar el DOI). Puntos propios: el navegador pide al WCS de EMODnet (CORS
+abierto, sin clave) una caja de ~6 km y hace el mismo cálculo (en un punto en
+el mar, la orilla es el propio punto); repinta el índice al llegar.
+
+**Índice: profundidad ALCANZABLE** (decisión de Mikel, 2026-10-08: "usa la
+profundidad alcanzable"; un barco que sale de Pasaia o Hondarribia pesca
+fuera del puerto). Variables de contexto de las reglas expertas
+`prof_max_5km` (m) y `dist_fondo_10_30m_km` (km), más `profundidad`
+(= `zona_m`, informativa), desde `contexto.batimetria` (las estadísticas;
+`window.Batimetria.batimetria(s)` en `index.html`, `contextoReglas` las
+traduce). Tres reglas de Mikel (`mikel_campo_bizkaia`, embarcación,
+pargo/dorada/dentón, fuera de Canarias, Azores y Madeira, confianza 0,5):
+agua ≥ 18 °C y fondo de 10-30 m a 5 km o menos suma; agua ≤ 15 °C y más de
+40 m a 5 km o menos suma, si no resta; entre 15 y 18 °C no aplica. El
+"verano/invierno" va por la temperatura del agua de la hora, no por meses.
+El radio era 3 km; Mikel lo subió a 5 km (2026-10-08) para que Mundaka, cuya
+orilla está dentro de la ría (27 m a 3 km), cuente con el fondo de fuera. Con
+los datos de hoy, en invierno Mundaka (59 m a 5 km), Hondarribia (73 m),
+Pasaia (72 m) y Bakio (79 m) suman; 38 de los 105 spots no llegan a 40 m y
+restan.
+Texto para el usuario sin números ("profundidad adecuada para la época").
+
+**Mapa**: `assets/js/capa-batimetria.js` (módulo, `window.Batimetria`).
+Isóbatas en dos ficheros para no cargar de golpe uno enorme (Mikel: "si
+tenemos a mayor profundidad, hasta donde tengamos"):
+`assets/datos/isobatas-profundas.json` (150, 200, 300, 500, 750, 1000, 1500,
+2000, 3000, 4000 y 5000 m; rejilla de ~460 m, también mar abierto: golfo de
+Bizkaia, llanura abisal, Alborán, Baleares, Canarias, Madeira y Azores; < 1 MB;
+a cualquier zoom) y `assets/datos/isobatas.json` (20, 50 y 100 m, ~115 m,
+solo costa; desde zoom 8). `node scripts/batimetria/isobatas.mjs profundas`
+y `... someras` (~10 min cada uno; GEBCO si EMODnet no tiene un cuadro). El
+WMS `emodnet:contours` no tiene la de 20 m. Colores discretos de claro a
+oscuro y leyenda abajo a la izquierda; etiquetas "200 m" en puntos
+precalculados (`etiquetas` de cada nivel) que caen en pantalla, las
+profundas desde zoom 6 y las someras desde zoom 10, 120 como mucho. Se
+encienden solas en la pestaña Embarcación (`porModalidad`) y a mano con el
+botón "Isób."; cada fichero se pide la primera vez que hace falta. Tests:
+`test/batimetria.test.js` (en tests.yml).
 
 ## Triggers / rutinas automatizadas
 
@@ -3229,6 +3292,41 @@ El botón **Rayos** pinta dos capas sobre el propio mapa (la imagen nacional de 
 - **Descartado**: Blitzortung/LightningMaps prohíben el uso comercial (Costaviva es de pago). El endpoint `lightning/within` (consulta por caja, para toda la costa) exige el plan Enterprise de Xweather.
 - Claves en Cloudflare Pages: `XWEATHER_CLIENT_ID`, `XWEATHER_CLIENT_SECRET` (nunca en el repo ni en el chat). Atribución obligatoria "Vaisala Xweather" (se añade al control de atribución del mapa al activar la capa).
 
+## Invitaciones con descuento (2026-10-08, aprobado por Mikel)
+
+`admin.html` → "Invitar / dar descuento": email, descuento 0-100 %, duración
+(1/3/6/12 meses, para siempre o hasta una fecha), caducidad (30 días por
+defecto) y nota interna. Lista con estado y acciones reenviar/anular.
+
+- **Tabla** `public.invitaciones` (migración `20261008170000_invitaciones.sql`):
+  RLS sin policies, solo `service_role` y funciones definer. El estado
+  (enviada/inscrito/caducada/terminada/anulada) no se guarda: lo deduce
+  `estadoInvitacion()` de las fechas (`functions/_lib/invitaciones.js`).
+- **Endpoints**: `/admin-invitaciones` (GET lista; POST crear/reenviar/anular)
+  exige sesión + `es_admin()` en el servidor (`functions/_lib/admin.js`) antes
+  de usar `service_role`. `/canjear-invitacion` lo llama `login.html` en cuanto
+  hay sesión: el email sale del token, nunca del cuerpo; un solo uso con un
+  UPDATE condicionado a `user_id is null`.
+- **Código**: 12 caracteres sin I/O/0/1 (60 bits), en la URL del email
+  (`/login?alta=1&invitacion=...`), recordado en `localStorage` y en el
+  metadato del alta por si confirma el email en otro navegador.
+- **100 %**: sin tarjeta. Al canjear se fija `acceso_hasta` (null = siempre) y
+  `mi_estado_suscripcion()` devuelve `estado: 'invitacion'`. Queda fuera del
+  ciclo de fin de prueba para siempre; 7 días antes del final le llega el
+  aviso "suscríbete" (paso "fin de invitación" de `avisar-fin-prueba.js`, mismo
+  cron sin IA de `notificar-altas.yml`, con `AUTOMATION_PAUSED`).
+- **1-99 %**: al crear la invitación se crea un **cupón** de Stripe
+  (`max_redemptions=1`, `redeem_by` = caducidad, `forever` o `repeating`; "hasta
+  una fecha" = meses redondeados hacia arriba). No hay código de promoción: el
+  cupón lo aplica `crear-checkout-stripe.js` solo si `mi_invitacion_descuento()`
+  (con el token de quien paga) lo devuelve, así que no se puede usar desde otra
+  cuenta. En anual solo se aplica si dura 12 meses o más (el año se cobra de
+  una vez). El webhook marca `descuento_aplicado_en` con `metadata.invitacion_id`.
+  Al acabar el descuento Stripe cobra el precio normal solo.
+- **Ojo test/live (trampa 2)**: un cupón creado con la clave de test no existe
+  en live. Las invitaciones con cupón creadas en preview con clave de test no
+  valen en producción.
+
 ## Acceso permanente sin suscripción: tabla `accesos_permanentes` (2026-10-01)
 
 Para dar acceso completo para siempre a una cuenta concreta sin hacerla admin (primer caso: `maetxe2018@gmail.com`, pedido del usuario). Por email, así que vale aunque la persona aún no se haya dado de alta. `mi_estado_suscripcion()` devuelve `estado: 'permanente'` y `con_acceso: true`, y `fin_prueba_fuera_de_ciclo()` la excluye de recordatorio y desactivación. Para añadir o quitar a alguien: migración nueva con `insert`/`delete` en `public.accesos_permanentes` (email en minúsculas). Sin políticas RLS: solo la leen funciones security definer. Al añadir a alguien le llega solo, una vez, el email "¡Tienes enchufe!" (paso "acceso permanente" de `avisar-fin-prueba.js`, columna `avisado_en`).
@@ -3368,9 +3466,9 @@ los casos malos.
   se quiere cubrir también ese camino, hace falta antes un modo de
   prueba explícito en `sos-alerta.js` que nunca llame a Resend de verdad
   para una cuenta marcada como test — decidirlo aparte, no asumirlo.
-- No existen todavía código de invitación/descuento ni cuentas
-  compartidas tipo "tripulación" — no hay nada que blindar ahí hasta que
-  esas features existan.
+- Códigos de invitación/descuento: existen desde el 2026-10-08 (ver
+  "Invitaciones con descuento"). Cuentas compartidas tipo "tripulación":
+  todavía no.
 
 ## Trampas compartidas y regla de coste (2026-10-07)
 

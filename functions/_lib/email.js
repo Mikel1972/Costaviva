@@ -13,7 +13,7 @@
 const RESEND_URL = "https://api.resend.com/emails";
 export const REMITENTE_AVISOS = "Costaviva <avisos@costaviva.org>";
 
-export async function enviarEmail(env, { from = REMITENTE_AVISOS, to, subject, text, html } = {}) {
+export async function enviarEmail(env, { from = REMITENTE_AVISOS, to, subject, text, html, replyTo } = {}) {
   const apiKey = env?.RESEND_API_KEY;
   if (!apiKey) {
     console.error("[email] RESEND_API_KEY no configurada; no se envía:", subject);
@@ -22,6 +22,7 @@ export async function enviarEmail(env, { from = REMITENTE_AVISOS, to, subject, t
   const payload = { from, to: Array.isArray(to) ? to : [to], subject };
   if (text) payload.text = text;
   if (html) payload.html = html;
+  if (replyTo) payload.reply_to = replyTo;
 
   try {
     const res = await fetch(RESEND_URL, {
