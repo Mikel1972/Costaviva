@@ -19,6 +19,7 @@ import { spotsDeIndex, analizarOrilla, analizarFondo } from "../scripts/fondo/ti
 import { calcularVentana } from "../assets/js/ventana-actividad.js";
 import { validarRegla, VARIABLES_CONTEXTO } from "../assets/js/reglas-expertas.js";
 
+import * as TFmod from "../assets/js/capa-tipo-fondo.js";
 const DATOS = JSON.parse(readFileSync(new URL("../assets/datos/especies.json", import.meta.url), "utf8"));
 const FONDO = JSON.parse(readFileSync(new URL("../assets/datos/tipo-fondo.json", import.meta.url), "utf8"));
 const HTML = readFileSync(new URL("../index.html", import.meta.url), "utf8");
@@ -141,8 +142,12 @@ test("capa: grupo de todas las escalas, visible desde la plataforma, con atribuc
   assert.match(ATRIBUCION_SUSTRATO, /EMODnet Seabed Habitats/);
   assert.match(ATRIBUCION_SUSTRATO, /CC BY 4\.0/);
   assert.ok(LEYENDA_SUSTRATO.length >= 5);
-  assert.match(HTML, /id="toggleSustrato"[^>]*>🪨<span class="capa-label">Sustr\.<\/span>/);
+  assert.match(HTML, /capas: \{ profundidad: B, tipo: TF \}/, "se enciende desde el selector del botón Fondo");
   assert.match(HTML, /id="panelFondo"/);
+  // Sin mapa montado, ponerVisible no hace nada y no rompe.
+  assert.equal(TFmod.visible(), false);
+  assert.doesNotThrow(() => TFmod.ponerVisible(true));
+  assert.equal(TFmod.visible(), false);
 });
 
 // ---------------------------------------------------------------------------
