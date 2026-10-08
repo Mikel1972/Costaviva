@@ -79,18 +79,21 @@ export function construirCsp(nonce) {
     // el estándar solo prohíbe 'unsafe-inline' en scripts.
     "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
-    // Teselas de mapas (ArcGIS, EMODnet, EUMETSAT, RainViewer), iconos de
-    // Leaflet, fotos firmadas de Supabase Storage, snapshots de webcams.
+    // Teselas raster (EMODnet, EUMETSAT, natural_earth de OpenFreeMap), iconos
+    // de Leaflet, fotos firmadas de Supabase Storage, snapshots de webcams.
     "img-src 'self' data: blob: https:",
     // Vídeo de portada (self) y HLS de webcams: hls.js usa MediaSource
     // (blob:); Safari reproduce el .m3u8 directamente desde el host remoto.
     "media-src 'self' blob: https:",
-    // fetch/XHR: Supabase (REST, auth, storage y realtime por wss),
+    // fetch/XHR: Supabase (REST, auth, storage y realtime por wss), el mapa
+    // base vectorial (estilo, teselas, letras y sprites de
+    // tiles.openfreemap.org, pedidos desde el worker de MapLibre),
     // RainViewer, EUMETSAT, playlists y segmentos HLS, beacon de Cloudflare.
     // Open-Meteo YA NO (2026-10-08): el navegador pide a /meteo/<api> ('self'),
     // que guarda la API key comercial en el servidor (functions/meteo/[api].js).
     `connect-src 'self' https: ${SUPABASE_URL.replace("https://", "wss://")}`,
-    // hls.js arranca su worker desde un blob:.
+    // hls.js y MapLibre GL (mapa base, 2026-10-08) arrancan su worker desde
+    // un blob:.
     "worker-src 'self' blob:",
     // Turnstile (login.html).
     "frame-src https://challenges.cloudflare.com",

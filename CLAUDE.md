@@ -5,6 +5,103 @@ cambian las convenciones — no es un historial (para eso está `ROBOT.md`).
 Si algo de aquí queda desactualizado, corrígelo en el momento en que lo
 detectes, no lo dejes para luego.
 
+## Aspecto "Amanecer de pesca" (2026-10-08, elegido por Mikel)
+
+Mikel pidió algo "visualmente atractivo, no frío" y eligió, entre tres
+propuestas, **Amanecer**: degradado de amanecer (naranja → magenta → violeta)
+sobre azul de mar profundo, con letra Unbounded (títulos) y Manrope (texto).
+Regla suya: **el degradado solo donde da emoción** (cabecera y logo, botón y
+pestaña activa, la nota del índice y su "sol", llamadas a la acción, posts de
+Instagram) y **sobrio donde hay datos** (cifras, motivos ▲▼, textos
+pequeños: tinta oscura sobre claro, contraste AA).
+
+- **Todo vive en `assets/css/costaviva.css`**: los tokens (`--mar`, `--fondo`,
+  `--tinta`, `--acento`, `--degradado`, `--degradado-fuerte`, `--nivel-*`,
+  `--ok/--peligro/--aviso-*`, `--f-titulo`, `--f-texto`) y lo común a todas
+  las páginas (cabecera, logo `.marca-logo` + `.logotipo`, menú de cuenta,
+  menú inferior `.tabs-nav`, `.nota-nivel`). Cada página lo carga antes de su
+  `<style>` propio, que ya solo usa `var(--...)`: **no metas colores sueltos
+  en las páginas, añade un token**. El contraste de cada par está anotado en
+  la cabecera del CSS.
+- `--degradado` (claro) es solo decorativo; si lleva texto encima, usar
+  `--degradado-fuerte` (blanco encima ≥ 5,2:1).
+- **Índices por nivel** (`assets/js/nivel-indice.js`, test
+  `test/nivel-indice.test.js`): verde bueno, amarillo sol regular, coral malo.
+  Los dos índices van AL REVÉS: en el de mar alto = mar movido = malo; en el
+  de pesca alto = bueno. Hasta el 2026-10-08 el de pesca se pintaba con la
+  escala del de mar y un 77 salía en el color de "malo". El texto ⓘ del
+  índice de mar decía "cuanto más alto, mejor pinta", al revés que la
+  fórmula y la leyenda: corregido el texto (la fórmula no se tocó).
+- La alarma SOS va en rojo sólido, no con el degradado: seguridad ≠ emoción.
+- **Mapa base (2026-10-08, decidido por Mikel): OpenFreeMap en vez de Esri.**
+  La ficha de Esri (`World_Ocean_Base`, item 1e126e7520f9466c9ca28b8f28b5e500)
+  va con el Esri Master License Agreement y su resumen
+  (https://www.esri.com/content/dam/arcgisonline/docs/tou_summary.pdf) exige
+  suscripción de ArcGIS y prohíbe el uso comercial de Living Atlas sin
+  licencia. Ahora: `assets/js/mapa-base.js` (test `test/mapa-base.test.js`)
+  monta OpenFreeMap "Liberty" (https://openfreemap.org: "Is commercial usage
+  allowed? Yes"; atribución obligatoria "OpenFreeMap © OpenMapTiles Data from
+  OpenStreetMap") con MapLibre GL 5.24.0 (cdnjs, SRI) + el plugin oficial
+  `@maplibre/maplibre-gl-leaflet@0.1.4` (jsdelivr, SRI). Los colores Amanecer
+  van EN EL ESTILO (`retocarEstilo`), no con filtros. Encima, hasta zoom 11, el
+  relieve `emodnet:mean_atlas_land` de EMODnet (CC BY 4.0) al 45 % con
+  `mix-blend-mode: multiply`. Base y relieve van en paneles propios por debajo
+  de `tilePane`, así que lluvia, rayos, batimetría, isóbatas, viento, cámaras y
+  spots quedan siempre encima. Sin WebGL o sin OpenFreeMap, el relieve de
+  EMODnet hace de mapa base opaco. MapLibre 6 no se usa: solo se publica como
+  módulo ES con worker aparte (más frágil con la CSP); la 5.x trae el worker
+  como blob: (`worker-src blob:` ya estaba por hls.js).
+
+## Instagram en estilo Amanecer: posts, stories y reels sin IA (2026-10-08)
+
+Mikel: "imágenes/vídeos como los de Fizk son mil veces mejores que las
+nuestras". Sustituidas las plantillas SVG+sharp (crema y dorado, letras del
+sistema, emoji rotos y **fotogramas de webcams de terceros**, que Skyline,
+YouTube o MEO no dejan republicar) por piezas en el estilo de la app.
+
+- **Plantilla única**: `scripts/marketing/plantillas/pieza.html`, pintada con
+  Playwright (Chromium). Letras dentro del repo (`scripts/marketing/fuentes/`,
+  Unbounded y Manrope con su OFL): no depende de la red ni de las fuentes del
+  runner. `render.mjs` hace post (1080x1350), story (1080x1920) y reel.
+- **Lógica pura** en `pieza-datos.mjs` (test `test/pieza-datos.test.js`):
+  índice del día con la MISMA cuenta que la ficha (`indiceSpot` +
+  `calcularVentana` sobre `serieHoraria`), motivos ▲▼, mejor tramo, tarjetas,
+  guion del reel, rotación, ganchos y claims. Datos reales en
+  `obtener-datos.mjs` (endpoints públicos `/prevision`, `/meteo/*`,
+  `/viento-campo`; minimapa de batimetría de EMODnet).
+- **Posts** (`robot-marketing-instagram.yml`, L/X/V): igual que antes,
+  borrador + Issue + publicación manual. Ahora también deja la story en
+  `assets/marketing/*-story.png` (para subirla a mano).
+- **Reels** (`robot-reel-instagram.yml`, sábados, workflow propio): 10,5 s =
+  gancho (3,5 s, vídeo + pregunta) + datos animados (5,5 s: índice contando,
+  ventana creciendo, viento real en partículas; o una pantalla real de la app
+  en un marco de móvil) + cierre (1,5 s, claim y CTA). Rotación
+  `ROTACION_REELS`: condiciones, diario, condiciones, grupos, especie,
+  alarma (estado en `rotacion-reels.json`). MP4 H.264 + audio mudo, < 8 MB;
+  en el árbol solo quedan los 4 últimos. ~10 min de Actions por reel
+  (el de ejemplo: 10,5 s, 1,8 MB).
+  `publicar-borrador-instagram.mjs reel-pendiente.json` crea el contenedor
+  `REELS` y espera a `status_code=FINISHED`; se publica con el mismo
+  workflow manual "Publicar post de Instagram".
+- **Clips del gancho**: `scripts/marketing/clips/propios/` (los que grabe
+  Mikel; tienen prioridad) y `clips/stock/` (solo con su `.licencia.json`
+  al lado: URL, cita y fecha). `scripts/` no se sirve en la web, así que los
+  clips en bruto no quedan públicos. Hoy hay uno de Coverr (licencia
+  comprobada el 2026-10-08: uso comercial y modificación permitidos, sin
+  atribución obligatoria; sin caras). Pexels y Pixabay no se pudieron
+  verificar (su web devuelve el reto anti-bots de Cloudflare a la sesión):
+  no usar nada suyo sin verificar su licencia. Nunca YouTube, webcams de
+  terceros ni Instagram de otros.
+- **Pantallas de la app** en las piezas de funciones: `capturas-app.mjs`
+  sirve el repo en local con un doble de Supabase y datos de demostración
+  inventados (nunca datos de usuarios ni producción).
+- **Textos**: nada indemostrable ("la primera app..." se quitó del texto de
+  los posts: Ley General de Publicidad). La app NO tiene "tipo de fondo"
+  (roca/arena), tiene batimetría: se dice "profundidad del fondo". Alarma:
+  el SOS manda un email con la ubicación a tus contactos y la detección de
+  caída es experimental y SOLO con la app abierta y la pantalla visible;
+  nada de "te salva la vida" ni segundo plano. El test lo comprueba.
+
 ## Cámaras de terceros: solo como su dueño lo permita (2026-10-08)
 
 `assets/js/camaras-externas.js` lista cámaras de otros (SkylineWebcams,

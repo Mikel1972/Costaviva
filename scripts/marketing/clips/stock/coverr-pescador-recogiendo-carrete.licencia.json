@@ -1,0 +1,13 @@
+{
+  "clip": "coverr-pescador-recogiendo-carrete.mp4",
+  "origen": "https://coverr.co/videos/a-fisherman-reeling-his-fishing-rod-hwhkdgnght",
+  "fichero_original": "https://cdn.coverr.co/videos/coverr-a-fisherman-reeling-his-fishing-rod-6141/1080p.mp4",
+  "licencia_url": "https://coverr.co/license",
+  "licencia_comprobada": "2026-10-08",
+  "cita_licencia": "Coverr.co grants you an irrevocable, non-exclusive, worldwide copyright license to download, copy, modify, perform, and use videos and music from Coverr.co for free, including for commercial purposes, without needing permission from the content creator or Coverr.co.",
+  "atribucion": "No obligatoria (\"You are not required to add an attribution credit\"); se cita igualmente en el texto del reel.",
+  "prohibido": "Montar un servicio que compita con Coverr; usarlo para entrenar IA; usar marcas que salgan en el vídeo.",
+  "personas": "Solo manos, carrete y caña; no se ve ninguna cara (revisado fotograma a fotograma a 0,5, 4, 7, 10 y 12 s). Coverr dice que obtiene autorizaciones de las personas que aparecen, pero no las entrega.",
+  "edicion": "Primeros 4 s, recorte vertical (crop=608:1080:300:0) a 1080x1920, 30 fps, sin audio.",
+  "por_que_no_pexels_ni_pixabay": "Sus páginas de licencia y de búsqueda devolvían el reto anti-bots de Cloudflare (403 \"Just a moment...\") desde la sesión, así que no se pudo verificar su licencia actual; no se usa nada de ellos sin verificarla."
+}
