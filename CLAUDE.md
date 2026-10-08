@@ -52,6 +52,25 @@ pequeños: tinta oscura sobre claro, contraste AA).
   módulo ES con worker aparte (más frágil con la CSP); la 5.x trae el worker
   como blob: (`worker-src blob:` ya estaba por hls.js).
 
+## Alarma: lista de WhatsApp (2026-10-08, pedido de Mikel)
+
+"En las alarmas, también debiera haber una lista prefijada para los
+WhatsApp." Coste cero: **nada de la API de WhatsApp Business** (de pago y con
+aprobación de Meta). Cada contacto de emergencia puede tener email, WhatsApp
+(columna `whatsapp`, E.164) o los dos. Tras el SOS, o tras la cuenta atrás de
+la caída, `alarma.html` enseña un botón grande por contacto con WhatsApp que
+abre `https://wa.me/<número>?text=<mensaje>` con la ubicación ya escrita; **la
+persona tiene que pulsar Enviar** y la pantalla lo dice. El email sigue
+saliendo solo (`sos-alerta.js`, ahora solo a contactos con email). Los grupos
+no tienen número: "Compartir en un grupo" usa `navigator.share` y, sin él,
+`wa.me/?text=`. El nombre del mensaje se guarda solo en el teléfono
+(localStorage). Lógica en `assets/js/sos-whatsapp.js`, test
+`test/sos-whatsapp.test.js`. Migración
+`20261008200000_contactos_whatsapp.sql` **SIN APLICAR** (baseline ya
+actualizado); sin ella la página dice que el WhatsApp aún no está activado y
+el email funciona como antes. En textos de marketing: "te prepara el
+WhatsApp", nunca "manda un WhatsApp automático".
+
 ## Instagram en estilo Amanecer: posts, stories y reels sin IA (2026-10-08)
 
 Mikel: "imágenes/vídeos como los de Fizk son mil veces mejores que las
