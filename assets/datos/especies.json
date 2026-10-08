@@ -6609,7 +6609,8 @@
    "operadores": "<, <=, >, >=, ==, !=, en (lista), entre ([a, b]), sector ([desde°, hasta°], admite cruzar el norte)",
    "efecto": "{ logodds: número (±2 como mucho; 0,4 ≈ 10 puntos cerca de 50), escala?: { var, agregado?, desde_h?, hasta_h?, de, a, minimo } para graduarlo }",
    "sustituye": "factores base (presion, oleaje, marea...) que la regla reemplaza en su ámbito, para no contar lo mismo dos veces",
-   "sin_dato": "si una condición no tiene dato (menos del 60 % de horas en la ventana, río desconocido...) la regla no aplica y baja la cobertura de datos de la fiabilidad"
+   "sin_dato": "si una condición no tiene dato (menos del 60 % de horas en la ventana, río desconocido...) la regla no aplica y baja la cobertura de datos de la fiabilidad",
+   "variable": "variable principal que puntúa la regla (ola, presion, viento_dir...). Cada variable cuenta UNA vez por hora: si coincide con la de un factor base (oleaje=ola, presion=presion, marea=nivel_mar, temperatura=temp_agua, viento=viento, turbidez, lluvia, caudal_rio), la regla debe sustituirlo con 'sustituye'; y dos reglas de la misma variable tienen que ser excluyentes (condiciones que no se solapan). Lo comprueba test/indice-pesca-v2.test.js. Si mira otra ventana de tiempo de la misma variable (p. ej. los días previos), se distingue con '@': 'viento_dir@dias_previos'."
   },
   "grupos_especies": {
    "depredadores_costeros": {
@@ -6644,6 +6645,7 @@
     "fuente": "mikel_experiencia_local",
     "tipo": "heuristica_experta_local",
     "estado": "por_validar",
+    "variable": "presion",
     "validacion": "Calibrar con las salidas del diario (salidas_pesca.indice_factores) antes de subir la confianza o darla por buena.",
     "id": "presion_bajando_6h",
     "nombre": "Comen antes del temporal (6 h)",
@@ -6689,6 +6691,7 @@
     "fuente": "mikel_experiencia_local",
     "tipo": "heuristica_experta_local",
     "estado": "por_validar",
+    "variable": "presion",
     "validacion": "Calibrar con las salidas del diario (salidas_pesca.indice_factores) antes de subir la confianza o darla por buena.",
     "id": "presion_bajando_24h",
     "nombre": "Frente acercándose (24 h)",
@@ -6711,6 +6714,22 @@
       "hasta_h": 0,
       "op": "<=",
       "valor": -4
+     },
+     {
+      "var": "presion",
+      "agregado": "delta",
+      "desde_h": -6,
+      "hasta_h": 0,
+      "op": ">",
+      "valor": -1
+     },
+     {
+      "var": "presion",
+      "agregado": "delta",
+      "desde_h": -6,
+      "hasta_h": 0,
+      "op": "<",
+      "valor": 1
      }
     ],
     "efecto": {
@@ -6719,12 +6738,13 @@
     "sustituye": [
      "presion"
     ],
-    "nota": "Tendencia de 12-24 h de la misma regla de Mikel: una caída de 4 hPa o más en 24 h."
+    "nota": "Tendencia de 12-24 h de la misma regla de Mikel: una caída de 4 hPa o más en 24 h. Solo cuando las últimas 6 h no se mueven (entre -1 y +1 hPa): si está cayendo ahora ya actúa la regla de 6 h, y así la presión cuenta una sola vez."
    },
    {
     "fuente": "mikel_experiencia_local",
     "tipo": "heuristica_experta_local",
     "estado": "por_validar",
+    "variable": "presion",
     "validacion": "Calibrar con las salidas del diario (salidas_pesca.indice_factores) antes de subir la confianza o darla por buena.",
     "id": "presion_subiendo_tras_frente",
     "nombre": "Tras el frente",
@@ -6769,6 +6789,7 @@
     "fuente": "mikel_experiencia_local",
     "tipo": "heuristica_experta_local",
     "estado": "por_validar",
+    "variable": "ola",
     "validacion": "Calibrar con las salidas del diario (salidas_pesca.indice_factores) antes de subir la confianza o darla por buena.",
     "id": "mar_movida_depredadores_costa",
     "nombre": "Mar movida desde costa",
@@ -6795,12 +6816,87 @@
     "efecto": {
      "logodds": 0.5
     },
-    "nota": "Mikel: 'el mar algo revuelto ayuda a la lubina, el sargo... a encontrar comida desde costa'. Banda 1-2,5 m, siempre por debajo del tope de seguridad desde costa (más de 2,5 m: tope 20 y aviso, que sigue mandando)."
+    "nota": "Mikel: 'el mar algo revuelto ayuda a la lubina, el sargo... a encontrar comida desde costa'. Banda 1-2,5 m. Sustituye al factor de oleaje por defecto en su ámbito (desde costa, depredadores costeros) para que la ola cuente una sola vez; el resto de la escala de ola la cubren mar_plana_depredadores_costa y mar_poca_depredadores_costa. El tope de seguridad (más de 2,5 m: máximo 20 y aviso) va aparte y sigue mandando.",
+    "sustituye": [
+     "oleaje"
+    ]
+   },
+   {
+    "id": "mar_poca_depredadores_costa",
+    "nombre": "Algo de mar desde costa",
+    "fuente": "app_index",
+    "texto": "algo de mar (0,5-1 m): suficiente espuma para cazar",
+    "tipo": "heuristica_experta",
+    "estado": "por_validar",
+    "variable": "ola",
+    "validacion": "Calibrar con las salidas del diario (salidas_pesca.indice_factores) antes de subir la confianza o darla por buena.",
+    "confianza": 0.6,
+    "ambito": {
+     "modalidades": [
+      "costa"
+     ],
+     "especies": [
+      "@depredadores_costeros"
+     ]
+    },
+    "sustituye": [
+     "oleaje"
+    ],
+    "condiciones": [
+     {
+      "var": "ola",
+      "op": ">=",
+      "valor": 0.5
+     },
+     {
+      "var": "ola",
+      "op": "<",
+      "valor": 1.0
+     }
+    ],
+    "efecto": {
+     "logodds": 0.3
+    },
+    "nota": "Completa la escala de ola de los depredadores costeros cuando mar_movida_depredadores_costa sustituye al factor de oleaje: es el óptimo que ya tenían la lubina y el sargo (optimo_m 0,5-1,5, heurística heredada de la app), con menos peso que la banda de Mikel."
+   },
+   {
+    "id": "mar_plana_depredadores_costa",
+    "nombre": "Mar plana desde costa",
+    "fuente": "app_index",
+    "texto": "mar casi plana (<0,5 m): sin espuma y con el agua clara desconfían",
+    "tipo": "heuristica_experta",
+    "estado": "por_validar",
+    "variable": "ola",
+    "validacion": "Calibrar con las salidas del diario (salidas_pesca.indice_factores) antes de subir la confianza o darla por buena.",
+    "confianza": 0.6,
+    "ambito": {
+     "modalidades": [
+      "costa"
+     ],
+     "especies": [
+      "@depredadores_costeros"
+     ]
+    },
+    "sustituye": [
+     "oleaje"
+    ],
+    "condiciones": [
+     {
+      "var": "ola",
+      "op": "<",
+      "valor": 0.5
+     }
+    ],
+    "efecto": {
+     "logodds": -0.3
+    },
+    "nota": "Completa la escala de ola (ver mar_poca_depredadores_costa): el valor_bajo_minimo negativo que ya tenía la lubina (heurística heredada de la app)."
    },
    {
     "fuente": "mikel_experiencia_local",
     "tipo": "heuristica_experta_local",
     "estado": "por_validar",
+    "variable": "caudal_rio",
     "validacion": "Calibrar con las salidas del diario (salidas_pesca.indice_factores) antes de subir la confianza o darla por buena.",
     "id": "rio_crecido_lubina_desembocadura",
     "nombre": "Río crecido: lubina a la desembocadura",
@@ -6830,12 +6926,16 @@
     "efecto": {
      "logodds": 0.6
     },
-    "nota": "Mikel: con mucho caudal el río aporta comida y la lubina se acerca a las desembocaduras. Solo en spots con río asociado (RIOS de index.html, distancia a la desembocadura <= 3 km) y caudal real con umbrales oficiales; sin dato no aplica. En submarina ya resta el caudal alto (turbidez) y esta regla no aplica."
+    "nota": "Mikel: con mucho caudal el río aporta comida y la lubina se acerca a las desembocaduras. Solo en spots con río asociado (RIOS de index.html, distancia a la desembocadura <= 3 km) y caudal real con umbrales oficiales; sin dato no aplica. En submarina ya resta el caudal alto (turbidez) y esta regla no aplica.",
+    "sustituye": [
+     "caudal_rio"
+    ]
    },
    {
     "fuente": "mikel_experiencia_local",
     "tipo": "heuristica_experta_local",
     "estado": "por_validar",
+    "variable": "caudal_rio",
     "validacion": "Calibrar con las salidas del diario (salidas_pesca.indice_factores) antes de subir la confianza o darla por buena.",
     "id": "rio_crecido_salinidad_resto",
     "nombre": "Río crecido: el resto se aparta",
@@ -6866,12 +6966,16 @@
     "efecto": {
      "logodds": -0.5
     },
-    "nota": "Mikel: otras especies se alejan por la bajada de salinidad. Se excluyen la lubina (regla anterior) y la lisa (tolera bien el agua salobre)."
+    "nota": "Mikel: otras especies se alejan por la bajada de salinidad. Se excluyen la lubina (regla anterior) y la lisa (tolera bien el agua salobre).",
+    "sustituye": [
+     "caudal_rio"
+    ]
    },
    {
     "fuente": "mikel_experiencia_local",
     "tipo": "heuristica_experta_local",
     "estado": "por_validar",
+    "variable": "viento_dir",
     "validacion": "Calibrar con las salidas del diario (salidas_pesca.indice_factores) antes de subir la confianza o darla por buena.",
     "id": "levante_cantabrico",
     "nombre": "Levante en el Cantábrico",
@@ -6921,6 +7025,7 @@
     "fuente": "mikel_experiencia_local",
     "tipo": "heuristica_experta_local",
     "estado": "por_validar",
+    "variable": "viento_dir@dias_previos",
     "validacion": "Calibrar con las salidas del diario (salidas_pesca.indice_factores) antes de subir la confianza o darla por buena.",
     "id": "bonito_temporales_oeste",
     "nombre": "Bonito tras temporales del oeste",

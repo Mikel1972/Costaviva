@@ -27,7 +27,8 @@
 //               "especies_excluidas": [...], "meses": [...] },
 //   "condiciones": [ { "var": "viento", "op": ">=", "valor": 8 }, ... ],  // todas (Y)
 //   "efecto": { "logodds": -0.4, "escala": { ...valor..., "de": x0, "a": x1, "minimo": 0.3 } },
-//   "sustituye": ["presion"]               // factores base que esta regla reemplaza en su ámbito
+//   "variable": "presion",                 // la variable que puntúa (una vez por variable)
+//   "sustituye": ["presion"]               // factores base de esa variable que reemplaza en su ámbito
 // }
 // Una condición sin dato (serie vacía, río desconocido...) hace que la regla
 // NO aplique (nunca se inventa): queda en `sinDato` para la fiabilidad.
@@ -193,7 +194,7 @@ export function evaluarReglas(reglas, horas, i, ctx = {}) {
     if (!e.lo) continue;
     terminos.push({
       factor: `regla:${r.id}`, texto: r.texto, lo: e.lo,
-      regla: { id: r.id, fuente: r.fuente, tipo: r.tipo, confianza: r.confianza, estado: r.estado },
+      regla: { id: r.id, fuente: r.fuente, tipo: r.tipo, confianza: r.confianza, estado: r.estado, variable: r.variable },
     });
   }
   return { terminos, sinDato, evaluadas: reglas.length };
@@ -209,6 +210,8 @@ export function validarRegla(r, { fuentes = {}, especies = [], regiones = [], gr
   if (!r.tipo) p.push("sin tipo");
   if (!(r.confianza > 0 && r.confianza <= 1)) p.push("confianza fuera de (0, 1]");
   if (!r.estado) p.push("sin estado");
+  const vp = String(r.variable || "").split("@")[0];
+  if (!(vp in VARIABLES_HORARIAS) && !VARIABLES_CONTEXTO.includes(vp)) p.push(`variable principal desconocida: ${r.variable}`);
   if (typeof r.efecto?.logodds !== "number" || Math.abs(r.efecto.logodds) > 2) p.push("efecto.logodds ausente o mayor que ±2");
   const a = r.ambito || {};
   for (const reg of a.regiones || []) if (!regiones.includes(reg)) p.push(`región desconocida: ${reg}`);
