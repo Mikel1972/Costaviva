@@ -1,2 +1,4 @@
 # Dependencias de descargar-ibi.py (workflow fuentes-gratuitas.yml). Versión fija.
 copernicusmarine==2.5.0
+# descargar-era5.py lee el Zarr público de ARCO-ERA5 a mano (blosc/lz4).
+numcodecs==0.16.5

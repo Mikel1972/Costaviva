@@ -28,8 +28,10 @@
     copernicus: 'Datos de mar: <a href="https://marine.copernicus.eu/" target="_blank" rel="noopener">Generated using E.U. Copernicus Marine Service Information</a>; ' +
       '<a href="https://doi.org/10.48670/moi-00025" target="_blank" rel="noopener">10.48670/moi-00025</a>, ' +
       '<a href="https://doi.org/10.48670/moi-00027" target="_blank" rel="noopener">10.48670/moi-00027</a>',
+    era5: 'Tiempo pasado: <a href="https://doi.org/10.24381/cds.adbb2d47" target="_blank" rel="noopener">ERA5</a>, ' +
+      'contiene información modificada del Servicio de Cambio Climático de Copernicus (C3S) (' + CC_BY + ')',
   };
-  var ORDEN = ["openmeteo", "metno", "copernicus"];
+  var ORDEN = ["openmeteo", "metno", "era5", "copernicus"];
   // Hasta que llegue la primera respuesta se cita Open-Meteo, la fuente por
   // defecto (el HTML ya lo trae escrito así).
   var vistas = { openmeteo: true };
@@ -58,9 +60,20 @@
   function urlMeteo(api, consulta) {
     return "/meteo/" + api + "?" + String(consulta || "").replace(/^\?/, "");
   }
-  function pedirMeteo(api, consulta) {
-    return fetch(urlMeteo(api, consulta)).then(function (r) { return r.json(); }).then(function (d) {
-      if (d && d.fuentes_datos) registrarFuentesMeteo(d.fuentes_datos);
+  // opciones (solo el selector de administrador del panel de spot, 2026-10-08):
+  //   { fuente: "openmeteo" | "gratuitas", token: <JWT de la sesión> }
+  // El proxy comprueba en el servidor que el token es de un admin; si no,
+  // responde 403. Esas respuestas no cambian la atribución de la página.
+  function pedirMeteo(api, consulta, opciones) {
+    var o = opciones || {};
+    var url = urlMeteo(api, consulta);
+    var init;
+    if (o.fuente) {
+      url += "&fuente=" + encodeURIComponent(o.fuente);
+      init = { headers: { Authorization: "Bearer " + (o.token || "") }, cache: "no-store" };
+    }
+    return fetch(url, init).then(function (r) { return r.json(); }).then(function (d) {
+      if (d && d.fuentes_datos && !o.fuente) registrarFuentesMeteo(d.fuentes_datos);
       return d;
     });
   }

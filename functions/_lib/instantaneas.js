@@ -36,14 +36,15 @@ export function vaciarMemoriaInstantaneas() {
 }
 
 // Devuelve el JSON, o null si no existe (404). Lanza si está caducada o si
-// el almacén falla.
-export async function leerInstantanea(ruta, { env = {}, fetchImpl = fetch, ahora = Date.now() } = {}) {
+// el almacén falla. `maxEdadHoras`: Infinity para datos del pasado (ERA5),
+// que no caducan; `cacheTtl`: segundos en la caché del edge.
+export async function leerInstantanea(ruta, { env = {}, fetchImpl = fetch, ahora = Date.now(), maxEdadHoras = MAX_EDAD_HORAS, cacheTtl = 900 } = {}) {
   const url = `${baseInstantaneas(env)}/${ruta}`;
   const m = memoria.get(url);
-  if (m && ahora - m.t < MEMORIA_MS) return comprobarEdad(m.datos, ruta, ahora);
+  if (m && ahora - m.t < MEMORIA_MS) return comprobarEdad(m.datos, ruta, ahora, maxEdadHoras);
   let resp;
   try {
-    resp = await fetchImpl(url, { cf: { cacheTtl: 900, cacheEverything: true } });
+    resp = await fetchImpl(url, { cf: { cacheTtl, cacheEverything: true } });
   } catch (e) {
     throw new Error(`instantánea ${ruta} sin respuesta: ${String(e?.message || e)}`);
   }
@@ -58,13 +59,14 @@ export async function leerInstantanea(ruta, { env = {}, fetchImpl = fetch, ahora
   }
   const datos = await resp.json();
   memoria.set(url, { t: ahora, datos });
-  return comprobarEdad(datos, ruta, ahora);
+  return comprobarEdad(datos, ruta, ahora, maxEdadHoras);
 }
 
-function comprobarEdad(datos, ruta, ahora) {
+function comprobarEdad(datos, ruta, ahora, maxEdadHoras = MAX_EDAD_HORAS) {
   if (!datos) return null;
+  if (maxEdadHoras === Infinity) return datos;
   const t = Date.parse(datos.generado_en || "");
-  if (!Number.isFinite(t) || ahora - t > MAX_EDAD_HORAS * 3600 * 1000) {
+  if (!Number.isFinite(t) || ahora - t > maxEdadHoras * 3600 * 1000) {
     const err = new Error(`instantánea ${ruta} caducada (generada ${datos.generado_en || "?"})`);
     err.codigo = "caducada";
     throw err;
