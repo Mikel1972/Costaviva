@@ -53,6 +53,7 @@ import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { WEBCAMS } from "../../functions/webcam/[slug].js";
+import { CAMARAS_EXTERNAS, claveSalud } from "../../assets/js/camaras-externas.js";
 
 const BASE_URL = "https://costaviva.org";
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
@@ -163,6 +164,58 @@ async function comprobarVideo(url) {
 // Vive aparte de comprobarImagen/comprobarVideo porque necesita el estado
 // previo (que esas funciones no conocen) para poder comparar el hash y
 // contar fallos consecutivos.
+// Cámaras de terceros (assets/js/camaras-externas.js, 2026-10-08). Sus
+// dueños prohíben descargar o analizar sus fotogramas, así que aquí NO se
+// baja su imagen: solo se pregunta si sigue publicada. Imagen oficial de
+// SkylineWebcams: HEAD de la imagen de inserción (cabeceras, sin cuerpo).
+// YouTube: su oEmbed público (200 = el vídeo existe y admite inserción; no
+// dice si está emitiendo, para eso haría falta la Data API y la regla es
+// "sin API"). Resto (MEO Beachcam): HEAD de la página del dueño.
+// Con curl y no con fetch: MEO Beachcam responde 403 a fetch de Node (filtra
+// por la huella TLS del cliente, no por el User-Agent; con curl y el mismo
+// User-Agent honesto responde 200). Visto el 2026-10-08.
+function pedirSinCuerpo(url) {
+  const pedir = (metodo) => {
+    const args = ["-sS", "-L", "--max-time", "20", "-o", "/dev/null", "-A", "CostaVivaCamarasBot/1.0", "-w", "%{http_code} %{content_type}"];
+    if (metodo === "HEAD") args.push("-I");
+    const [codigo, tipo = ""] = execFileSync("curl", [...args, url], { encoding: "utf8", timeout: 25000 }).trim().split(" ");
+    const status = Number(codigo);
+    return { ok: status >= 200 && status < 300, status, headers: { get: () => tipo } };
+  };
+  const r = pedir("HEAD");
+  return r.status === 405 || r.status === 403 ? pedir("GET") : r;
+}
+
+async function comprobarExterna(camara, pedir = pedirSinCuerpo) {
+  let url = camara.url;
+  if (camara.modo === "imagen_oficial") url = camara.imagen;
+  else if (camara.youtube_id) url = `https://www.youtube.com/oembed?format=json&url=${encodeURIComponent(camara.url)}`;
+  try {
+    const resp = pedir(url);
+    if (!resp.ok) return { ok: false, motivo: `http_${resp.status}` };
+    if (camara.modo === "imagen_oficial" && !(resp.headers.get("content-type") || "").startsWith("image/")) {
+      return { ok: false, motivo: "no_es_imagen" };
+    }
+    return { ok: true };
+  } catch {
+    return { ok: false, motivo: "sin_respuesta" };
+  }
+}
+
+function construirLecturaExterna(clave, bruto, previo, ahora) {
+  const fallosSeguidos = bruto.ok ? 0 : (previo?.fallosSeguidos ?? 0) + 1;
+  return {
+    spot: clave,
+    sinSenal: fallosSeguidos >= UMBRAL_FALLOS_SEGUIDOS,
+    motivo: bruto.ok ? "ok" : bruto.motivo,
+    ultimaSenalEn: bruto.ok ? ahora : (previo?.ultimaSenalEn ?? null),
+    fallosSeguidos,
+    hashFrame: null,
+    hashDesde: null,
+    fuenteUsada: 0,
+  };
+}
+
 function decidirEstado(bruto, previo, ahoraISO) {
   if (!bruto.ok) {
     // No se pudo ni descargar/decodificar — se conserva el hash previo tal
@@ -261,6 +314,13 @@ async function main() {
     const lectura = construirLectura(slug, bruto, previo[slug], ahora);
     lecturas.push(lectura);
     console.log(`${lectura.sinSenal ? "✗" : "✓"} ${slug} (vídeo): ${lectura.motivo}`);
+  }
+
+  for (const camara of CAMARAS_EXTERNAS) {
+    const clave = claveSalud(camara);
+    const lectura = construirLecturaExterna(clave, await comprobarExterna(camara), previo[clave], ahora);
+    lecturas.push(lectura);
+    console.log(`${lectura.sinSenal ? "✗" : "✓"} ${clave} (externa, ${camara.modo}): ${lectura.motivo}`);
   }
 
   if (!lecturas.length) {
