@@ -437,6 +437,8 @@
   .capa-mar-panel .barra { height: 10px; border-radius: 5px; margin-top: 6px; }
   .capa-mar-panel .extremos { display: flex; justify-content: space-between; font-size: 9.5px; color: var(--tinta-2); margin-top: 2px; }
   .capa-mar-panel .explica { font-size: 10.5px; color: var(--tinta-2); margin-top: 8px; }
+  .capa-mar-panel .explica summary { cursor: pointer; font-weight: 700; color: var(--tinta); }
+  .capa-mar-panel .explica div { margin-top: 4px; }
   .capa-mar-panel .credito { font-size: 9px; line-height: 1.35; color: var(--tinta-2); margin-top: 8px; border-top: 1px solid var(--linea); padding-top: 6px; }
   .capa-mar-panel .credito a { color: inherit; }
   /* Selector de fuentes, solo administradores (2026-10-08). */
@@ -613,7 +615,9 @@
     .sustrato-toggle { top: 234px; right: 66px; }
     .clorofila-toggle { top: 290px; right: 66px; }
     .tempagua-toggle { top: 346px; right: 66px; }
-    .capa-mar-panel { right: 124px; width: 180px; }
+    /* En el móvil, abajo a la izquierda y compacta (la explicación, plegada). */
+    .capa-mar-panel { left: 10px; right: auto; bottom: 118px; width: 196px; padding: 8px 10px; }
+    .capa-mar-panel .credito { font-size: 8.5px; }
     /* Leyenda del sustrato compacta, por encima del botón ⓘ y de los créditos. */
     .leyenda-sustrato { font-size: 10px; padding: 5px 8px; max-width: 128px; margin-bottom: 52px !important; }
     .leyenda-sustrato .titulo { font-size: 10px; }
@@ -885,7 +889,7 @@
       <div class="fecha" id="capaMarFecha"></div>
       <div class="barra" id="capaMarBarra"></div>
       <div class="extremos"><span id="capaMarMin"></span><span id="capaMarMax"></span></div>
-      <div class="explica" id="capaMarExplica"></div>
+      <details class="explica" id="capaMarDetalle"><summary id="capaMarResumen"></summary><div id="capaMarExplica"></div></details>
       <div class="credito" id="capaMarCredito"></div>
     </div>
     <div class="viento-slider-panel" id="vientoSliderPanel" hidden>
@@ -1979,7 +1983,8 @@ const CAPAS_MAR = {
     paradas: ["#0B2D6B", "#1F6FA8", "#2E9C8F", "#6CBF4B", "#D9D23B", "#F2A23A"],
     extremos: ["0,03 mg/m³", "10+ mg/m³"],
     formato: (v) => `${v < 1 ? v.toFixed(2) : v.toFixed(1)} mg/m³ de clorofila`,
-    explica: "Más clorofila = más plancton = más alimento para peces. Los pequeños se juntan donde hay comida y detrás llegan los depredadores. " +
+    resumen: "Más clorofila = más plancton = más alimento para peces.",
+    explica: "Los pequeños se juntan donde hay comida y detrás llegan los depredadores. " +
       "Pegado a la costa y en las desembocaduras el barro del agua puede subir el dato del satélite. Toca el mapa para ver el valor.",
     fecha: (d) => `Satélite, ${fechaCorta(d.fecha)} (los huecos por nubes los rellena Copernicus)`,
     maxDias: 7,
@@ -1991,7 +1996,8 @@ const CAPAS_MAR = {
     paradas: ["#2B3A8C", "#2F7FC1", "#4FB7C9", "#9AD27A", "#F2D04B", "#F28C38", "#C9372C"],
     extremos: ["10 °C", "28+ °C"],
     formato: (v) => `${v.toFixed(1)} °C en superficie`,
-    explica: "Temperatura de la superficie del mar según el modelo IBI de Copernicus. Cada especie tiene su rango: los frentes entre agua fría y templada suelen juntar pescado. Toca el mapa para ver el valor.",
+    resumen: "Temperatura de la superficie del mar (modelo IBI de Copernicus).",
+    explica: "Cada especie tiene su rango: los frentes entre agua fría y templada suelen juntar pescado. Toca el mapa para ver el valor.",
     fecha: (d) => `Modelo IBI, ${fechaCorta(d.fecha)} a las 12:00 UTC`,
     maxDias: 3,
   },
@@ -2079,7 +2085,10 @@ async function alternarCapaMar(nombre) {
     `linear-gradient(90deg, ${def.paradas.join(", ")})`;
   document.getElementById("capaMarMin").textContent = def.extremos[0];
   document.getElementById("capaMarMax").textContent = def.extremos[1];
+  document.getElementById("capaMarResumen").textContent = def.resumen;
   document.getElementById("capaMarExplica").textContent = def.explica;
+  // Abierta en escritorio; plegada en el móvil para no tapar el mapa.
+  document.getElementById("capaMarDetalle").open = !window.matchMedia("(max-width: 720px)").matches;
   document.getElementById("capaMarCredito").innerHTML = credito;
   document.getElementById("capaMarPanel").hidden = false;
   registrarEvento(`ver_capa_${nombre.replace("-", "_")}`);
