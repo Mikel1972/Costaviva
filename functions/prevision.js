@@ -13,7 +13,9 @@
 
 // Fuente por variable (Open-Meteo por defecto; MET Norway / Copernicus si se
 // activan FUENTE_* — ver functions/_lib/fuentes.js, 2026-10-08).
-import { pedirDatosMeteo, fuentesUsadas } from "./_lib/fuentes.js";
+import { pedirDatosMeteo, fuentesUsadas, fuenteDeVariable } from "./_lib/fuentes.js";
+// Mar abierto frente a "en la playa" para spots abrigados (2026-10-08).
+import { oleajeCostero, zonaOleaje } from "./_lib/oleaje-costero.js";
 
 export const SPOTS = [
   { slug: "lekeitio", nombre: "Lekeitio", lat: 43.3647, lon: -2.5089 },
@@ -612,9 +614,19 @@ async function fetchJSON(url) {
 // Mutriku: es Bizkaia, y hacia ese lado está justamente la boya que NO
 // muestra sesgo (Bilbao-Vizcaya). Ante la duda, no corregir: un dato sin
 // tocar es honesto, uno corregido de más no.
+//
+// QUÉ CORRIGE Y QUÉ NO (2026-10-08, caso Hondarribia): la boya Pasaia II es
+// una boya EXTERIOR, en mar abierto. El ×1,38 corrige el valor de MAR
+// ABIERTO del modelo, y solo eso. No dice nada de lo que llega a una playa
+// abrigada: eso lo aplica después el coeficiente de abrigo
+// (functions/_lib/oleaje-costero.js), sobre este mar abierto ya corregido.
+// Y solo vale para Open-Meteo, que es el modelo con el que se calibró: si
+// algún día FUENTE_OLEAJE pasa a copernicus (otra rejilla, otro sesgo), el
+// factor deja de aplicarse hasta recalibrar contra la boya.
 const CAJA_OLEAJE_GIPUZKOA = { latMin: 43.20, latMax: 43.50, lonMin: -2.40, lonMax: -1.70 };
 const FACTOR_OLEAJE_GIPUZKOA = 1.38;
-function factorOleaje(lat, lon) {
+export function factorOleaje(lat, lon, fuente = "openmeteo") {
+  if (fuente !== "openmeteo") return 1;
   const c = CAJA_OLEAJE_GIPUZKOA;
   const dentro = lat >= c.latMin && lat <= c.latMax && lon >= c.lonMin && lon <= c.lonMax;
   return dentro ? FACTOR_OLEAJE_GIPUZKOA : 1;
@@ -646,14 +658,15 @@ async function previsionTodosSpots(spots, env = {}) {
   // coordenada, mismo orden que se pidió) en vez de un único objeto.
   const fuentes = [...new Set([...fuentesUsadas(marinos), ...fuentesUsadas(vientos)])];
   const soloOpenMeteo = fuentes.length === 1 && fuentes[0] === "openmeteo";
+  const fuenteOleaje = fuenteDeVariable("marine", "wave_height", env);
   return spots.map((spot, i) => {
-    const r = procesarSpot(spot, marinos[i], vientos[i], historicoPresion, coeficientes);
+    const r = procesarSpot(spot, marinos[i], vientos[i], historicoPresion, coeficientes, fuenteOleaje);
     if (!soloOpenMeteo) r.fuente = `${fuentes.join(" + ")} — cálculo propio`;
     return { ...r, fuentesDatos: fuentes };
   });
 }
 
-function procesarSpot(spot, marino, viento, historicoPresion, coeficientes) {
+export function procesarSpot(spot, marino, viento, historicoPresion, coeficientes, fuenteOleaje = "openmeteo") {
   const tempAguaPorHoraISO = Object.fromEntries(
     (marino.hourly?.time || []).map((t, i) => [t, marino.hourly.sea_surface_temperature?.[i] ?? null])
   );
@@ -699,10 +712,11 @@ function procesarSpot(spot, marino, viento, historicoPresion, coeficientes) {
     const h = horaLocalDesdeISO(horasOla[i]);
     if (!(h in HORAS_BLOQUE)) continue;
 
-    // Altura del modelo, corregida si este spot tiene factor (ver
-    // factorOleaje() arriba). Fuera de esa zona el factor es 1 y no toca nada.
+    // Altura del modelo = MAR ABIERTO (la celda del modelo está a varios km
+    // de la costa), corregida si este spot tiene factor (ver factorOleaje()
+    // arriba). Fuera de esa zona el factor es 1 y no toca nada.
     const alturaCruda = marino.hourly.wave_height[i];
-    const factor = factorOleaje(spot.lat, spot.lon);
+    const factor = factorOleaje(spot.lat, spot.lon, fuenteOleaje);
     const alturaOla = alturaCruda === null || alturaCruda === undefined ? alturaCruda : alturaCruda * factor;
     const periodoOla = marino.hourly.wave_period[i];
     const dirOlaGrados = marino.hourly.wave_direction[i];
@@ -713,12 +727,19 @@ function procesarSpot(spot, marino, viento, historicoPresion, coeficientes) {
     const tempAgua = tempAguaPorHoraISO[horasOla[i]];
     const c = corrientePorHoraISO[horasOla[i]];
 
+    // El modelo da un único valor de altura (Hs total: mar de fondo + mar
+    // de viento juntos); mostramos un rango pequeño en torno a él (±10%)
+    // para mantener el mismo formato que antes en el panel ("0.3–0.5m") en
+    // vez de un número seco. `altura` es lo que se espera EN EL SPOT: en los
+    // spots abrigados (oleaje-costero.js) es la estimación en la playa, y
+    // `alturaMarAbierto` es siempre el valor de mar abierto del modelo.
+    const ola = oleajeCostero(spot.slug, alturaOla, dirOlaGrados);
+
     bloques.push({
       hora: HORAS_BLOQUE[h],
-      // El modelo da un único valor de altura; mostramos un rango pequeño
-      // en torno a él (±10%) para mantener el mismo formato que antes en
-      // el panel ("0.3–0.5m") en vez de un número seco.
-      altura: [Math.max(0, +(alturaOla * 0.9).toFixed(1)), +(alturaOla * 1.1).toFixed(1)],
+      altura: ola.altura,
+      alturaMarAbierto: ola.alturaMarAbierto,
+      coefAbrigo: ola.coefAbrigo,
       periodo: periodoOla === null ? null : Math.round(periodoOla),
       dirOla: dirOlaGrados === null ? null : `${rumboDesdeGrados(dirOlaGrados)} ${Math.round(dirOlaGrados)}°`,
       viento: v ? Math.round(v.viento) : null,
@@ -740,6 +761,8 @@ function procesarSpot(spot, marino, viento, historicoPresion, coeficientes) {
     actualizado: new Date().toISOString(),
     marea,
     presion,
+    // Mar abierto / zona abrigada y dónde cae la celda del modelo.
+    zonaOleaje: zonaOleaje(spot, marino.latitude, marino.longitude),
     bloques,
   };
 }

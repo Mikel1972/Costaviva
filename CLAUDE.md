@@ -5,6 +5,84 @@ cambian las convenciones — no es un historial (para eso está `ROBOT.md`).
 Si algo de aquí queda desactualizado, corrígelo en el momento en que lo
 detectes, no lo dejes para luego.
 
+## Oleaje costero: mar abierto frente a "en la playa" (2026-10-08)
+
+**Caso real (Mikel, 2026-10-08):** Hondarribia salía con "3.7–4.5 m" y su
+webcam enseñaba la bahía de Txingudi casi en calma. Diagnóstico con los
+números de ese día (11:57 hora de Madrid):
+- La celda de Open-Meteo Marine que toca a Hondarribia está en
+  43.458, -1.792: **~9,4 km mar adentro**, frente a la costa francesa. En el
+  Cantábrico la rejilla es de ~9 km y TODAS las celdas de los spots caen a
+  6-19 km de la costa (Mundaka 15 km, Ribadeo 19 km). El modelo da 2,98 m
+  (Hs total, mar de fondo 2,84 m del NW 322° + mar de viento).
+- ×1,38 de Gipuzkoa → 4,11 m; el "rango" es ±10 % artificial alrededor de ese
+  único valor → 3,7–4,5 m. No es swell + mar de viento ni una incertidumbre.
+- La boya Pasaia II medía 3,5-3,8 m (máx. 6,7 m) del NW: **el mar abierto
+  era de verdad de ~3,6 m**. El número no estaba mal calculado; estaba mal
+  rotulado: es mar abierto, y Hondarribia está detrás del cabo Higuer.
+- A la misma hora, las webcams: Zarautz y Deba rompiendo en varias líneas,
+  Orio y Zurriola rompiente moderada, Mutriku dentro del puerto en calma,
+  Hondarribia con una orilla de espuma mínima.
+- Además, la celda de Hondarribia (fila 43.458) es más exterior que la de
+  Pasaia (43.375) con la que se calibró el ×1,38: ese día 2,98×1,38 = 4,1 m
+  frente a 3,6 m de la boya (+14 %). Un solo dato: no se ha tocado el factor.
+
+**Qué se cambió (`functions/_lib/oleaje-costero.js`, tests en
+`test/oleaje-costero.test.js`):**
+- `/prevision` devuelve en cada bloque `alturaMarAbierto` (lo del modelo, con
+  el ×1,38 si toca) y `altura` = lo esperado en el spot; y por spot
+  `zonaOleaje` (abrigada/abierta, parámetros, criterio y a cuántos km está la
+  celda del modelo).
+- **Spots claramente abrigados** (`ABRIGO_SPOTS`): Hondarribia, Pasaia,
+  Getxo (Ereaga), Santander (bahía), Santoña, Ribadeo y Faro/Olhão.
+  Coeficiente por dirección de llegada: ventana abierta (`centro`,
+  `semiancho`) con `coefAbierto`, fuera `coefAbrigado`, transición lineal de
+  30°; sin dirección, el mayor. Son **estimaciones por geometría**, elegidas
+  por el lado alto (subestimar una ola es lo peligroso). Criterio para entrar:
+  el spot está dentro de bahía/puerto/ría/laguna con un obstáculo físico claro
+  Y la celda del modelo está en mar abierto. Por eso NO están Cangas,
+  Vigo/Cíes, Sanxenxo ni Portosín (sus celdas ya están dentro de la ría y el
+  modelo ya da 0,6-0,9 m: corregir otra vez sería contar dos veces).
+  Candidatos dudosos, sin tocar a propósito: Mundaka, Plentzia, Laredo,
+  Camariñas, Getaria, Mutriku, Donostia (la coordenada cae entre La Concha y
+  Zurriola, y su cámara es Zurriola, expuesta), Palma, Platja de Muro.
+- En el panel (`pintarOleajePanel()` en `index.html`): spot abrigado →
+  "~0,6–0,7 m" + "en la playa (zona muy abrigada, estimación) · mar abierto:
+  3,7–4,5 m"; resto → el valor + "mar abierto (modelo a ~N km de la costa);
+  en la orilla puede ser menos". El índice de mar y la ventana de actividad
+  usan la altura en la playa (la ventana recibe los parámetros de
+  `zonaOleaje` y aplica la copia de `coeficienteAbrigoDesdeParametros()`; un
+  test comprueba que la copia es idéntica).
+- **×1,38 (d):** corrige el MAR ABIERTO (la boya Pasaia II es exterior); el
+  abrigo se aplica después, sobre ese valor. Y solo se aplica si el oleaje
+  viene de Open-Meteo (`factorOleaje(lat, lon, fuente)`): con
+  `FUENTE_OLEAJE=copernicus` no, hasta recalibrarlo contra la boya.
+- Pendiente: `diario.html` (contexto de la salida) y las ubicaciones
+  personalizadas siguen guardando/enseñando el mar abierto sin coeficiente.
+
+**Calibración por cámara, sin IA (`scripts/oleaje-camaras/`,
+`espuma-camaras.yml`, 4 veces al día con luz):** fracción de píxeles de
+espuma (claros y casi sin color) en un ROI de mar fijado a mano para las 6
+cámaras de vídeo de la Diputación, junto con el mar abierto del modelo, la
+dirección, el nivel del mar y la boya Pasaia II → `datos-robots/
+oleaje-camaras/espuma.jsonl`. No cambia nada de la app. Con semanas de
+datos: `umbralRotura()` (altura de mar abierto a la que la mitad de las
+lecturas ya ven espuma) por cámara y sector de dirección, y
+`coeficienteRelativo()` frente a Zarautz (expuesta). Los coeficientes
+calibrados se enseñan a Mikel antes de sustituir los estimados.
+Trampas ya vistas el primer día:
+- **Las cámaras de la Diputación hacen ronda de encuadres** (Hondarribia
+  cambia de plano general a primer plano; Deba barre la playa). Por eso cada
+  cámara tiene `referencias/<spot>.jpg` y solo se miden frames con similitud
+  ≥ 0,8 (huella en gris de la mitad inferior); si en ~5 min no pasa por el
+  encuadre, la línea queda `otro_encuadre`. Ese día Zarautz, Deba y Mutriku
+  no volvieron al suyo en 2,5 min: si pasa a menudo, añadir más encuadres de
+  referencia por cámara.
+- Arena con bruma y espuma con luz cálida tienen el mismo color: el ROI no
+  debe tocar la orilla en ninguna marea (revisar con bajamar y pleamar).
+- La lección de 2026-09-15 sigue en pie: nada de contar bordes, y nunca
+  comparar una cámara con otra en absoluto.
+
 ## Open-Meteo: licencia comercial, API key y proxy `/meteo/` (2026-10-08)
 
 **Situación de la licencia.** Costaviva tiene suscripciones de pago, así que
