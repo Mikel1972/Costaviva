@@ -1560,7 +1560,7 @@ condiciones, efecto, fuente, estado y cualquier error de forma.
    luna (fracción iluminada 0-1, `iluminacionLunar`) y coeficiente_marea
    (20-120, `coeficienteMareaAstronomico`, ajustado a los coeficientes
    reales de CALIBRACION.jsonl). Las dos se calculan en el motor, sin red.
-   Y de batimetría (EMODnet, ver "Batimetría"): profundidad, prof_max_3km y
+   Y de batimetría (EMODnet, ver "Batimetría"): profundidad, prof_max_5km y
    dist_fondo_10_30m_km.
    Agregados: media, min, max, suma, delta, fraccion (con `cumple`).
    Operadores: `<`, `<=`, `>`, `>=`, `==`, `!=`, `en`, `entre`, `sector`.
@@ -1607,32 +1607,35 @@ No quitarla.
 
 **Profundidad por spot** (`assets/datos/profundidad-spots.json`, sin IA):
 `node scripts/batimetria/profundidad-spots.mjs` pide al WCS de EMODnet
-(`emodnet__mean`, text/plain, ~115 m) una caja de ~9 km por spot de `SPOTS`
+(`emodnet__mean`, text/plain, ~115 m) una caja de ~11 km por spot de `SPOTS`
 (`functions/prevision.js`). Todo se mide desde la **orilla** (la celda de mar
 más cercana al spot: muchos spots caen en la playa, el puerto o tierra
-adentro): `zona_m` (mediana del fondo a 1 km), `prof_max_3km_m` (fondo más
-profundo a 3 km o menos) y `dist_10_30m_m` (distancia al fondo de 10-30 m más
+adentro): `zona_m` (mediana del fondo a 1 km), `prof_max_5km_m` (fondo más
+profundo a 5 km o menos) y `dist_10_30m_m` (distancia al fondo de 10-30 m más
 cercano), además de distancias desde el spot a 10/20/30/40/50/100 m. El cálculo
 puro está en `assets/js/batimetria-calculo.js` (lo usan el script y el
 navegador). GEBCO solo si EMODnet falla o no tiene mar a 1 km (OPeNDAP de
 CEDA). El DTM no cambia: regenerar al añadir spots o con un DTM nuevo (y
 actualizar el DOI). Puntos propios: el navegador pide al WCS de EMODnet (CORS
-abierto, sin clave) una caja de ~4 km y hace el mismo cálculo (en un punto en
+abierto, sin clave) una caja de ~6 km y hace el mismo cálculo (en un punto en
 el mar, la orilla es el propio punto); repinta el índice al llegar.
 
 **Índice: profundidad ALCANZABLE** (decisión de Mikel, 2026-10-08: "usa la
 profundidad alcanzable"; un barco que sale de Pasaia o Hondarribia pesca
 fuera del puerto). Variables de contexto de las reglas expertas
-`prof_max_3km` (m) y `dist_fondo_10_30m_km` (km), más `profundidad`
+`prof_max_5km` (m) y `dist_fondo_10_30m_km` (km), más `profundidad`
 (= `zona_m`, informativa), desde `contexto.batimetria` (las estadísticas;
 `window.Batimetria.batimetria(s)` en `index.html`, `contextoReglas` las
 traduce). Tres reglas de Mikel (`mikel_campo_bizkaia`, embarcación,
 pargo/dorada/dentón, fuera de Canarias, Azores y Madeira, confianza 0,5):
-agua ≥ 18 °C y fondo de 10-30 m a 3 km o menos suma; agua ≤ 15 °C y más de
-40 m a 3 km o menos suma, si no resta; entre 15 y 18 °C no aplica. El
+agua ≥ 18 °C y fondo de 10-30 m a 5 km o menos suma; agua ≤ 15 °C y más de
+40 m a 5 km o menos suma, si no resta; entre 15 y 18 °C no aplica. El
 "verano/invierno" va por la temperatura del agua de la hora, no por meses.
-Con los datos de hoy, en invierno Hondarribia (41 m), Pasaia (60 m) y Bakio
-(55 m) suman y Mundaka (27 m desde su orilla, dentro de la ría) resta.
+El radio era 3 km; Mikel lo subió a 5 km (2026-10-08) para que Mundaka, cuya
+orilla está dentro de la ría (27 m a 3 km), cuente con el fondo de fuera. Con
+los datos de hoy, en invierno Mundaka (59 m a 5 km), Hondarribia (73 m),
+Pasaia (72 m) y Bakio (79 m) suman; 38 de los 105 spots no llegan a 40 m y
+restan.
 Texto para el usuario sin números ("profundidad adecuada para la época").
 
 **Mapa**: `assets/js/capa-batimetria.js` (módulo, `window.Batimetria`).

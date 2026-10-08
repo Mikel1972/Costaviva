@@ -1,7 +1,7 @@
 // scripts/batimetria/profundidad-spots.mjs
 //
 // Profundidad del mar delante de cada spot (sin IA). Pide a EMODnet
-// Bathymetry (WCS, DTM 2024) una caja de ~9 km alrededor de cada spot de
+// Bathymetry (WCS, DTM 2024) una caja de ~11 km alrededor de cada spot de
 // `SPOTS` (functions/prevision.js) y guarda en assets/datos/profundidad-spots.json
 // las estadísticas de `estadisticasPunto` (batimetria.mjs). Si EMODnet falla
 // o no tiene mar en 1 km, usa GEBCO_2026 (OPeNDAP de CEDA).
@@ -17,8 +17,8 @@ import { SPOTS } from "../../functions/prevision.js";
 import { rejillaEmodnet, rejillaGebco, estadisticasPunto, cajaAlrededor, RADIO_ZONA_M, RADIO_ALCANCE_M } from "./batimetria.mjs";
 
 const SALIDA = new URL("../../assets/datos/profundidad-spots.json", import.meta.url);
-// ~9 km a cada lado: hay spots a 4-5 km del agua y se miran 3 km más desde la orilla.
-const RADIO_CAJA_M = 9000;
+// ~11 km a cada lado: hay spots a 4-5 km del agua y se miran 5 km más desde la orilla.
+const RADIO_CAJA_M = 11000;
 
 export async function profundidadPunto(lat, lon) {
   const caja = cajaAlrededor(lat, lon, RADIO_CAJA_M);
@@ -70,7 +70,7 @@ async function principal() {
         licencia: "dominio público (atribución pedida)", atribucion: "GEBCO Compilation Group (2026) GEBCO_2026 Grid",
       },
     },
-    metodo: `Profundidades en metros positivos respecto al nivel de referencia del DTM. orilla = celda de mar más cercana al spot (a dist_mar_m); zona_m = mediana de las celdas de mar a ${RADIO_ZONA_M} m o menos de la orilla; profundidad alcanzable desde embarcación (la que usan las reglas por temporada): prof_max_3km_m = fondo más profundo a ${RADIO_ALCANCE_M} m o menos de la orilla y dist_10_30m_m = distancia de la orilla al fondo de 10-30 m más cercano; punto_m = la celda del propio spot (null si cae en tierra); min/media/max_500m_m = celdas de mar a 500 m o menos de la orilla; max_1km_m; dist_Xm_m = distancia en metros a la celda más cercana de X m de fondo o más (null si no hay en la caja de ~9 km). Orientativo: no sirve para navegar.`,
+    metodo: `Profundidades en metros positivos respecto al nivel de referencia del DTM. orilla = celda de mar más cercana al spot (a dist_mar_m); zona_m = mediana de las celdas de mar a ${RADIO_ZONA_M} m o menos de la orilla; profundidad alcanzable desde embarcación (la que usan las reglas por temporada): prof_max_5km_m = fondo más profundo a ${RADIO_ALCANCE_M} m o menos de la orilla y dist_10_30m_m = distancia de la orilla al fondo de 10-30 m más cercano; punto_m = la celda del propio spot (null si cae en tierra); min/media/max_500m_m = celdas de mar a 500 m o menos de la orilla; max_1km_m; dist_Xm_m = distancia en metros a la celda más cercana de X m de fondo o más (null si no hay en la caja de ~11 km). Orientativo: no sirve para navegar.`,
     spots: ordenado,
   };
   writeFileSync(SALIDA, JSON.stringify(salida, null, 1) + "\n");

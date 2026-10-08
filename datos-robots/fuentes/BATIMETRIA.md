@@ -1,7 +1,7 @@
 # Batimetría: fuentes, licencias y atribución (verificado 2026-10-08)
 
-Para qué: profundidad del mar delante de cada spot (índice de pesca,
-reglas de embarcación) e isóbatas de 20, 50 y 100 m en el mapa.
+Para qué: profundidad del mar delante de cada spot y la alcanzable a 5 km
+(índice de pesca, reglas de embarcación) e isóbatas de 20, 50 y 100 m en el mapa.
 
 ## EMODnet Bathymetry: fuente principal
 
@@ -33,7 +33,7 @@ reglas de embarcación) e isóbatas de 20, 50 y 100 m en el mapa.
 - **Servicios usados** (públicos, sin clave):
   - WCS 2.0.1 `https://ows.emodnet-bathymetry.eu/wcs`, cobertura
     `emodnet__mean`, `FORMAT=text/plain` (scripts de `scripts/batimetria/`).
-    El navegador pide al mismo WCS una caja de ~4 km para los puntos propios
+    El navegador pide al mismo WCS una caja de ~6 km para los puntos propios
     (CORS abierto: `access-control-allow-origin: *`).
   - REST `https://rest.emodnet-bathymetry.eu/depth_sample?geom=POINT(lon lat)`
     (devuelve `avg`, elevación media de la celda; negativo = mar): comprobado

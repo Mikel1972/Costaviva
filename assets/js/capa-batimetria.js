@@ -4,8 +4,8 @@
 // (2026-10-08, aprobado por Mikel). Dos cosas:
 //   1. Fondo de cada spot para el índice de pesca: las estadísticas de
 //      `estadisticasPunto` (batimetria-calculo.js), que las reglas expertas
-//      leen como `profundidad`, `prof_max_3km` y `dist_fondo_10_30m_km`
-//      (profundidad ALCANZABLE desde embarcación a 3 km de la orilla).
+//      leen como `profundidad`, `prof_max_5km` y `dist_fondo_10_30m_km`
+//      (profundidad ALCANZABLE desde embarcación a 5 km de la orilla).
 //      Spots fijos: assets/datos/profundidad-spots.json
 //      (scripts/batimetria/profundidad-spots.mjs). Puntos propios: el mismo
 //      cálculo en el navegador sobre una caja de ~4 km pedida al WCS de
@@ -78,9 +78,9 @@ export function batimetriaDeSpot(datos, slug) {
   return datos?.spots?.[slug] || null;
 }
 
-// Caja que se pide para un punto propio: 3 km de alcance + margen por si el
+// Caja que se pide para un punto propio: 5 km de alcance + margen por si el
 // punto está en tierra a algo de distancia del agua.
-export const RADIO_CAJA_PUNTO_M = 4000;
+export const RADIO_CAJA_PUNTO_M = 6000;
 
 // ¿Se debe ver la capa? Encendida a mano, o sola en la pestaña Embarcación.
 export function capaVisible({ manual, modalidad }) {
@@ -115,7 +115,7 @@ export function batimetria(s) {
     .then((r) => (r.ok ? r.text() : Promise.reject(new Error(`WCS HTTP ${r.status}`))))
     .then((t) => {
       const st = estadisticasPunto(parsearWcsTexto(t), +s.lat, +s.lon);
-      if (st.zona_m === null && st.prof_max_3km_m === null) return;
+      if (st.zona_m === null && st.prof_max_5km_m === null) return;
       entrada.valor = st;
       alCambiar(s);
     })

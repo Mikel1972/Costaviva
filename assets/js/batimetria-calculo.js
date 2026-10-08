@@ -56,7 +56,7 @@ export function parsearWcsTexto(texto) {
 // desde la ORILLA: la celda de mar más cercana al punto (para un punto propio
 // en el mar, el propio punto).
 //   zona_m: mediana del fondo a 1 km de la orilla (el fondo de delante).
-//   prof_max_3km_m: el fondo más profundo a 3 km o menos de la orilla.
+//   prof_max_5km_m: el fondo más profundo a 5 km o menos de la orilla.
 //   dist_10_30m_m: distancia de la orilla al fondo de 10-30 m más cercano.
 // Las dos últimas son la "profundidad alcanzable" desde embarcación que usan
 // las reglas por temporada (decisión de Mikel, 2026-10-08: "usa la
@@ -64,7 +64,7 @@ export function parsearWcsTexto(texto) {
 // ría, no en su puerto.
 // ---------------------------------------------------------------------------
 export const RADIO_ZONA_M = 1000;
-export const RADIO_ALCANCE_M = 3000;
+export const RADIO_ALCANCE_M = 5000; // Mikel, 2026-10-08: de 3 a 5 km
 export const ISOBATAS_DISTANCIA = [10, 20, 30, 40, 50, 100];
 
 function mediana(xs) {
@@ -91,7 +91,7 @@ export function estadisticasPunto(g, lat, lon) {
       for (const p of ISOBATAS_DISTANCIA) if (-e >= p && d < distIso[p]) distIso[p] = d;
     }
   }
-  // 2) Desde la orilla: zona (500 m y 1 km) y alcance (3 km).
+  // 2) Desde la orilla: zona (500 m y 1 km) y alcance (5 km).
   const r500 = [], r1k = [];
   let maxAlcance = null, dist1030 = Infinity;
   if (orilla) {
@@ -114,7 +114,7 @@ export function estadisticasPunto(g, lat, lon) {
     en_tierra: Number.isFinite(elevPunto) ? elevPunto >= 0 : null,
     dist_mar_m: dist(distMar),
     zona_m: r1(mediana(r1k)),
-    prof_max_3km_m: r1(maxAlcance),
+    prof_max_5km_m: r1(maxAlcance),
     dist_10_30m_m: dist(dist1030),
     min_500m_m: r500.length ? r1(Math.min(...r500)) : null,
     media_500m_m: r500.length ? r1(r500.reduce((s, x) => s + x, 0) / r500.length) : null,
@@ -126,13 +126,13 @@ export function estadisticasPunto(g, lat, lon) {
 }
 
 // Variables de contexto de las reglas expertas a partir de las estadísticas
-// (o null sin dato): profundidad (zona_m), prof_max_3km (m) y
+// (o null sin dato): profundidad (zona_m), prof_max_5km (m) y
 // dist_fondo_10_30m_km (km).
 export function contextoReglas(st) {
   const num = (x) => (Number.isFinite(x) ? x : null);
   return {
     profundidad: num(st?.zona_m),
-    prof_max_3km: num(st?.prof_max_3km_m),
+    prof_max_5km: num(st?.prof_max_5km_m),
     dist_fondo_10_30m_km: Number.isFinite(st?.dist_10_30m_m) ? st.dist_10_30m_m / 1000 : null,
   };
 }

@@ -330,7 +330,7 @@ function rangoOlaTexto(h) {
 //   caudalRio: "bajo"|"normal"|"alto"|null (río asociado al spot, solo hoy),
 //   rio: { nombre, distancia_desembocadura_km } | null (null = sin río conocido),
 //   batimetria: estadísticas de fondo del spot (estadisticasPunto de
-//     batimetria-calculo.js: zona_m, prof_max_3km_m, dist_10_30m_m) | null,
+//     batimetria-calculo.js: zona_m, prof_max_5km_m, dist_10_30m_m) | null,
 //   horaActual: "AAAA-MM-DDTHH:00" (para la fiabilidad: horizonte de previsión),
 //   b0: término independiente en log-odds (especies.json.indice.b0_logodds, 0 = 50),
 //   soloIndice: i (opcional: calcula solo esa hora; las demás salen null) }
