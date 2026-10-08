@@ -462,7 +462,11 @@ function todasLasEspecies() {
 // Técnicas con señuelo (artificial) -> se pide "tipo de señuelo" en vez de
 // "aparejo" (que es para las técnicas de cebo con plomo/corcho). Lista
 // verificada contra fuentes de pesca en España, no solo de memoria.
-const TECNICAS = ["Surfcasting", "Spinning", "Jigging", "Curricán", "Fondo", "Flotador/Corcheo", "Popping", "Eging", "Otra"];
+// Submarina (2026-10-08): la modalidad de la captura ya la guarda la salida
+// (salidas_pesca.tipo_salida = costa/embarcacion/submarinismo); aquí solo se
+// añaden las técnicas de la pesca submarina. `tecnica` es texto libre en la
+// base de datos: no hace falta migración.
+const TECNICAS = ["Surfcasting", "Spinning", "Jigging", "Curricán", "Fondo", "Flotador/Corcheo", "Popping", "Eging", "Submarina: espera", "Submarina: agachón", "Submarina: rececho", "Otra"];
 const TECNICAS_CON_SENUELO = new Set(["Spinning", "Jigging", "Curricán", "Popping", "Eging"]);
 
 const MESES = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
