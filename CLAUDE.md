@@ -2196,6 +2196,40 @@ escrita. Si aun así hay dudas,
 `gh run list --workflow=<lo-que-sea>.yml` y mirar la duración: ~20s es
 saldo o configuración, varios minutos es trabajo real.
 
+## Identificación por foto: Haiku 5.5 y límites (2026-10-08)
+
+Aprobado por Mikel para bajar el coste de `/identificar-captura` sin perder
+calidad.
+
+- **Modelo `claude-haiku-5-5`** (antes `claude-haiku-4-5-20251001`), esfuerzo
+  `low`, `max_tokens` 1024 (Haiku 5.5 piensa por defecto y el pensamiento
+  cuenta dentro de `max_tokens`; con 300 se cortaría). Sin `temperature` ni
+  prefill (400 en Haiku 5.5). El texto se lee de los bloques `type: "text"`,
+  no de `content[0]`. `stop_reason: "refusal"` → `422 rechazada` (aviso
+  neutro, sin reintento; Haiku 5.5 no tiene fallback en servidor). JSON mal
+  formado queda en `uso_claude` como `respuesta_invalida`.
+- **Evaluación** (`scripts/eval-identificacion/evaluar.mjs`, misma petición
+  del endpoint, 15 especies con la foto principal de su artículo de
+  Wikipedia): Haiku 4.5 acertó 8/15 a 0,0019 USD/foto; Haiku 5.5, 10/15 a
+  0,00033 USD/foto (≈1.790 tokens de entrada y ≈300 de salida, máximo 515).
+  Fallan los dos en dorada, faneca, rodaballo y chopa. El workflow que la
+  lanzó se borró; el script se queda para repetirla a mano.
+- **Foto**: a la IA se manda una copia de 1000 px en el lado largo
+  (`redimensionarParaIdentificar()` en `diario.html`). La que se guarda con
+  la captura sigue a 1600 px.
+- **Límites en el servidor**: (1) suscripción, llamando a
+  `mi_estado_suscripcion()` con el token del usuario, así que admin, accesos
+  permanentes, prueba y `trialing`/`active` son la misma regla del paywall
+  (`403 sin_suscripcion`; si la RPC falla, se deja pasar); (2) 30 llamadas
+  en 24 h (`limite_diario`); (3) 100 identificaciones buenas (`ok = true`)
+  por mes natural en hora de Madrid (`429 limite_mensual`). La respuesta
+  buena trae `limite_mes` y `restantes_mes`; `diario.html` avisa desde 80
+  usadas y al llegar a 100 dice que la captura se guarda a mano. Sin SQL
+  nuevo: todo sale de `uso_claude` y de la RPC que ya existía.
+- **Smoke test**: `limite_mensual` y `sin_suscripcion` cuentan como
+  degradación (aviso, no rojo). Si sale `sin_suscripcion`, la cuenta de
+  `SMOKE_TEST_EMAIL` no tiene acceso y conviene darle acceso permanente.
+
 ## Token de Instagram: por qué murió en una hora y cómo regenerarlo (2026-09-25)
 
 **Diagnóstico real, no "caducó a los 60 días".** El secret

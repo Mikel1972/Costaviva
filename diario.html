@@ -624,6 +624,21 @@ async function redimensionarImagen(file, maxAncho = 1600, calidad = 0.8) {
   return new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", calidad));
 }
 
+// Copia más pequeña SOLO para mandarla a identificar (2026-10-08, pedido de
+// Mikel para bajar el coste de la IA): 1000 px en el lado más largo. La
+// foto que se guarda con la captura sigue saliendo de redimensionarImagen()
+// a 1600 px, sin cambios. Los tokens de una imagen crecen con sus píxeles y
+// para reconocer la especie sobra con esto.
+async function redimensionarParaIdentificar(file, ladoMax = 1000, calidad = 0.8) {
+  const bitmap = await createImageBitmap(file);
+  const escala = Math.min(1, ladoMax / Math.max(bitmap.width, bitmap.height));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.round(bitmap.width * escala);
+  canvas.height = Math.round(bitmap.height * escala);
+  canvas.getContext("2d").drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  return new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", calidad));
+}
+
 // Selector de hora: dos <select> nativos (hora, minuto) — sustituye a
 // <input type="time"> (su desplegable nativo, en algunos navegadores/
 // móviles, solo deja ver unas pocas horas a la vez) y a un primer
@@ -1598,6 +1613,14 @@ function aplicarEspecieIdentificada(nombreEspecie) {
   }
 }
 
+// Aviso suave del cupo mensual de identificaciones: solo desde 80 usadas
+// (quedan 20 o menos). null = el servidor no pudo contarlo: no se dice nada.
+function avisoCupoMes(restantes) {
+  if (typeof restantes !== "number" || restantes > 20) return "";
+  if (restantes === 0) return " ℹ️ Era tu última identificación automática de este mes; el día 1 vuelves a tenerlas.";
+  return ` ℹ️ Te ${restantes === 1 ? "queda 1 identificación" : `quedan ${restantes} identificaciones`} automáticas este mes.`;
+}
+
 async function identificarFotoDesdeArchivo(file) {
   const mensajeEl = document.getElementById("mensajeIdentificarFoto");
   mensajeEl.className = "mensaje info";
@@ -1605,7 +1628,7 @@ async function identificarFotoDesdeArchivo(file) {
   try {
     const blob = await redimensionarImagen(file);
     anadirArchivoAInputFotos(new File([blob], "captura.jpg", { type: "image/jpeg" }));
-    const imagenBase64 = await archivoABase64(blob);
+    const imagenBase64 = await archivoABase64(await redimensionarParaIdentificar(file));
     const { data: sesion } = await supabase.auth.getSession();
     const resp = await fetch("/identificar-captura", {
       method: "POST",
@@ -1622,7 +1645,18 @@ async function identificarFotoDesdeArchivo(file) {
     // se avisa en tono neutro y se invita a rellenar a mano. Añadido
     // 2026-09-25 tras el incidente real del 2026-09-24, en el que se
     // mostraba el error de facturación del proveedor en crudo.
-    const NO_DISPONIBLE = ["sin_credito", "saturado", "sin_configurar", "limite_diario"];
+    //
+    // Topes (2026-10-08): 30 al día y 100 al mes por usuario. Al llegar al
+    // del mes se dice claro y con el mismo recordatorio de que la captura se
+    // guarda a mano igual. "rechazada" = el filtro de seguridad del modelo
+    // no ha querido analizar esa foto; "sin_suscripcion" no debería verse
+    // (la página ya manda a suscripcion.html), pero si pasa, en tono neutro.
+    const NO_DISPONIBLE = ["sin_credito", "saturado", "sin_configurar", "limite_diario", "limite_mensual", "rechazada", "sin_suscripcion"];
+    if (!resp.ok && resultado.codigo === "limite_mensual") {
+      mensajeEl.className = "mensaje info";
+      mensajeEl.textContent = `ℹ️ Has usado las ${resultado.limite_mes || 100} identificaciones automáticas de este mes; el día 1 vuelves a tenerlas. La foto ya está añadida: escribe la especie y la talla a mano y guarda la captura con normalidad.`;
+      return;
+    }
     if (!resp.ok && NO_DISPONIBLE.includes(resultado.codigo)) {
       // "info" (ámbar), no "error" (rojo): las únicas clases reales son
       // error/ok/info, y .mensaje es display:none sin una de ellas.
@@ -1647,7 +1681,7 @@ async function identificarFotoDesdeArchivo(file) {
     }
     mensajeEl.className = "mensaje info";
     mensajeEl.textContent = `🤖 Estimado por IA a partir de la foto (confianza: ${resultado.confianza || "desconocida"}) — revisa y corrige antes de guardar.` +
-      (partes.length ? ` (${partes.join("; ")})` : "") + sugerencia;
+      (partes.length ? ` (${partes.join("; ")})` : "") + sugerencia + avisoCupoMes(resultado.restantes_mes);
   } catch (e) {
     mensajeEl.className = "mensaje error";
     mensajeEl.textContent = `No se ha podido identificar la foto: ${e.message}`;
