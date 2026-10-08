@@ -5,7 +5,7 @@
   "formula": "P = 100 · σ(b0 + Σ peso_lo · f), f ∈ [-1, 1]; σ(x) = 1/(1+e^-x)",
   "b0_logodds": 0,
   "puntos_por_logodds": 25,
-  "criterio": "Escala logística acordada con Mikel el 2026-10-08. Los pesos están en log-odds (peso_lo = peso antiguo en puntos / 25): cerca de 50 un factor aporta casi los mismos puntos que antes, y lejos de 50 la curva se satura sola sin recortar. El porqué se enseña en puntos (P - 50 repartido en proporción al log-odds de cada factor). Filtros fuera de la fórmula: veda (la especie no entra), freza (aviso, nunca suma), topes de seguridad por modalidad, submarina de noche = 0 y datos caducados = S/D. Índice del spot = la mejor especie de temporada de esa modalidad en esa hora, con su nombre.",
+  "criterio": "Escala logística acordada con Mikel el 2026-10-08. Los pesos están en log-odds (peso_lo = peso antiguo en puntos / 25): cerca de 50 un factor aporta casi los mismos puntos que antes, y lejos de 50 la curva se satura sola sin recortar. El porqué se enseña en puntos (P - 50 repartido en proporción al log-odds de cada factor). Filtros fuera de la fórmula: veda (la especie no entra), freza (aviso, nunca suma), tope por viento en embarcación (kayak / embarcación pequeña), aviso de ola peligrosa (nota aparte, sin tope: decisión de Mikel del 2026-10-08), submarina de noche = 0 y datos caducados = S/D. Índice del spot = la mejor especie de temporada de esa modalidad en esa hora, con su nombre.",
   "temperatura": "gaussiana: óptimo = centro del rango, sigma = media anchura"
  },
  "descripcion": "Fichas de especies de Costaviva y reglas de la ventana de actividad. Mantenido a mano y por la rutina semanal de especies (scripts/saldo/rutina-buscador-fuentes.txt, jueves). Reglas del fichero: nunca inventar un valor (null + nota); solo fuentes oficiales o abiertas NO-NC; FishBase, FAO, SeaLifeBase y similares (CC BY-NC) prohibidos; cada dato con su fuente (ids de 'fuentes') y cada talla con url + fecha_revision.",
@@ -499,6 +499,23 @@
    "licencia": "ODbL 1.0 (© OpenStreetMap contributors; base de datos derivada bajo ODbL)",
    "fecha_consulta": "2026-10-08",
    "nota": "Orilla a 50 m del punto de costa de cada spot (assets/datos/tipo-fondo.json)."
+  },
+  "udyawer_2013": {
+   "titulo": "Udyawer et al. (2013). Variable response of coastal sharks to severe tropical storms: environmental cues and changes in space use. MEPS 480: 171-183.",
+   "url": "https://int-res.com/abstracts/meps/v480/p171-183",
+   "tipo": "cientifico",
+   "licencia": "solo se cita el dato (sin copiar texto); licencia del documento no revisada",
+   "fecha_consulta": "2026-10-08",
+   "leido": "resumen"
+  },
+  "bss_flota_decisiones_2022": {
+   "titulo": "Factors affecting fisher decisions: the case of the inshore fishery for European sea bass (PLoS ONE, 2022).",
+   "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8970468/",
+   "tipo": "cientifico",
+   "licencia": "CC BY 4.0",
+   "fecha_consulta": "2026-10-08",
+   "leido": "resumen",
+   "nota": "Flota artesanal inglesa: con más ola salen menos barcos y el éxito por salida (kg de lubina) baja."
   }
  },
  "jurisdicciones": {
@@ -644,10 +661,9 @@
     1.5
    ],
    "max_seguro_m": 2.5,
-   "tope_si_peligrosa": 20,
    "valor_bajo_minimo": -0.3,
    "tipo": "criterio_de_diseno",
-   "criterio": "Seguridad desde costa primero: por encima de 2,5 m la puntuación se limita a 20 y se avisa. El tramo óptimo por especie es una heurística experta (p. ej. a la lubina le gusta la espuma de la rompiente)."
+   "criterio": "Seguridad desde costa primero: por encima de 2,5 m se avisa ('⚠️ Ola peligrosa desde costa'), sin tope en la nota (decisión de Mikel, 2026-10-08; antes, máximo 20); el factor de oleaje sigue restando. El tramo óptimo por especie es una heurística experta (p. ej. a la lubina le gusta la espuma de la rompiente)."
   },
   "viento": {
    "peso_lo": 0.24,
@@ -13396,11 +13412,10 @@
      1.0
     ],
     "max_seguro_m": 2.5,
-    "tope_si_peligrosa": 15,
     "valor_bajo_minimo": 0,
     "texto_peligro": "peligrosa para salir en embarcación de recreo",
     "tipo": "criterio_de_diseno",
-    "criterio": "Con mar de más de 1 m se pesca peor y se navega peor; más de 2,5 m: tope 15 y aviso. Criterio de diseño, sin umbral oficial."
+    "criterio": "Con mar de más de 1 m se pesca peor y se navega peor; más de 2,5 m: aviso de ola peligrosa, sin tope en la nota desde el 2026-10-08 (antes, máximo 15). Criterio de diseño, sin umbral oficial."
    },
    "viento": {
     "peso_lo": 0.4,
@@ -13415,7 +13430,7 @@
    },
    "seguridad": {
     "tipo": "criterio_de_diseno",
-    "criterio": "Avisos de seguridad propios de Costaviva, sin umbral oficial: kayak por encima de 20 km/h de viento o 1,5 m de ola; embarcación pequeña por encima de 30 km/h o 2,5 m. Consulta siempre el aviso de AEMET/IPMA y la Capitanía.",
+    "criterio": "Avisos de seguridad propios de Costaviva, sin umbral oficial: kayak por encima de 20 km/h de viento o 1,5 m de ola; embarcación pequeña por encima de 30 km/h o 2,5 m. Desde el 2026-10-08 (Mikel) el tope de cada nivel solo lo pone el viento; la ola solo avisa. Consulta siempre el aviso de AEMET/IPMA y la Capitanía.",
     "niveles": [
      {
       "id": "embarcacion_pequena",
@@ -13468,11 +13483,10 @@
      0.5
     ],
     "max_seguro_m": 1.5,
-    "tope_si_peligrosa": 15,
     "valor_bajo_minimo": 0,
     "texto_peligro": "peligrosa para bucear",
     "tipo": "heuristica_experta",
-    "criterio": "Mar en calma = buena visibilidad y entrada/salida seguras; el mar de fondo levanta arena. Más de 1,5 m: tope 15 y aviso (criterio de diseño)."
+    "criterio": "Mar en calma = buena visibilidad y entrada/salida seguras; el mar de fondo levanta arena. Más de 1,5 m: aviso de ola peligrosa, sin tope en la nota desde el 2026-10-08 (antes, máximo 15) (criterio de diseño)."
    },
    "viento": {
     "peso_lo": 0.24,
@@ -13802,7 +13816,7 @@
    "variables_de_contexto": "caudal_rio (bajo/normal/alto, solo con dato real), rio_desembocadura_km (null si el spot no tiene río asociado), turbidez, mes, hora_local, luz (alba/ocaso/dia/noche), luna (fracción iluminada 0-1, calculada en el motor), coeficiente_marea (20-120, índice astronómico calculado en el motor; mareas vivas ≥ 90), profundidad (m, mediana del fondo a 1 km de la orilla del spot), prof_max_5km (m, fondo más profundo a 5 km o menos de la orilla) y dist_fondo_10_30m_km (km, de la orilla al fondo de 10-30 m más cercano): EMODnet, assets/datos/profundidad-spots.json; null sin dato",
    "agregados": "media, min, max, suma (en la ventana [desde_h, hasta_h] relativa a la hora, p. ej. -6..0), delta (valor en hasta_h - valor en desde_h), fraccion (parte de las horas que cumplen 'cumple', un test o una lista de tests {var, op, valor})",
    "operadores": "<, <=, >, >=, ==, !=, en (lista), entre ([a, b]), sector ([desde°, hasta°], admite cruzar el norte)",
-   "efecto": "{ logodds: número (±2 como mucho; 0,4 ≈ 10 puntos cerca de 50), escala?: { var, agregado?, desde_h?, hasta_h?, de, a, minimo } para graduarlo }",
+   "efecto": "{ logodds: número (±2 como mucho; 0,4 ≈ 10 puntos cerca de 50), escala?: { var, agregado?, desde_h?, hasta_h?, de, a, minimo } para graduarlo (recta: 0 en 'de', 1 en 'a', nunca por debajo de 'minimo'), atenua?: { var, de, a } que lo apaga de forma continua (1 en 'a', 0 en 'de'; sin dato no atenúa) }",
    "sustituye": "factores base (presion, oleaje, marea...) que la regla reemplaza en su ámbito, para no contar lo mismo dos veces",
    "sin_dato": "si una condición no tiene dato (menos del 60 % de horas en la ventana, río desconocido...) la regla no aplica y baja la cobertura de datos de la fiabilidad",
    "variable": "variable principal que puntúa la regla (ola, presion, viento_dir...). Cada variable cuenta UNA vez por hora: si coincide con la de un factor base (oleaje=ola, presion=presion, marea=nivel_mar, temperatura=temp_agua, viento=viento, turbidez, lluvia, caudal_rio), la regla debe sustituirlo con 'sustituye'; y dos reglas de la misma variable tienen que ser excluyentes (condiciones que no se solapan). Lo comprueba test/indice-pesca-v2.test.js. Si mira otra ventana de tiempo de la misma variable (p. ej. los días previos), se distingue con '@': 'viento_dir@dias_previos'.",
@@ -13885,10 +13899,15 @@
       "de": 0.3,
       "a": 1.5,
       "minimo": 0.5
+     },
+     "atenua": {
+      "var": "ola",
+      "de": 3.0,
+      "a": 2.5
      }
     },
     "variable": "orilla_tipo",
-    "nota": "Aprobado por Mikel el 2026-10-08 (roca + espuma: lubina, sargo, maragota, pulpo, congrio...). Orilla de OSM a 50 m del punto de costa. Con la mar plana cuenta la mitad; con 1,5 m o más, entero (el tope de seguridad va aparte). Sargo y maragota de roca: plos_dsargus_2018, ieo_labrus_galicia_2018."
+    "nota": "Aprobado por Mikel el 2026-10-08 (roca + espuma: lubina, sargo, maragota, pulpo, congrio...). Orilla de OSM a 50 m del punto de costa. Con la mar plana cuenta la mitad; de 1,5 a 2,5 m, entero; de 2,5 a 3 m se apaga hasta 0 (con mar grande se apartan, 2026-10-08) (el aviso de ola peligrosa va aparte). Sargo y maragota de roca: plos_dsargus_2018, ieo_labrus_galicia_2018."
    },
    {
     "id": "orilla_playa_arena",
@@ -14254,9 +14273,15 @@
      }
     ],
     "efecto": {
-     "logodds": 0.5
+     "logodds": 0.5,
+     "escala": {
+      "var": "ola",
+      "de": 2.5,
+      "a": 2.2,
+      "minimo": 0
+     }
     },
-    "nota": "Mikel: 'el mar algo revuelto ayuda a la lubina, el sargo... a encontrar comida desde costa'. Banda 1-2,5 m. Sustituye al factor de oleaje por defecto en su ámbito (desde costa, depredadores costeros) para que la ola cuente una sola vez; el resto de la escala de ola la cubren mar_plana_depredadores_costa y mar_poca_depredadores_costa. El tope de seguridad (más de 2,5 m: máximo 20 y aviso) va aparte y sigue mandando.",
+    "nota": "Mikel: 'el mar algo revuelto ayuda a la lubina, el sargo... a encontrar comida desde costa'. Banda 1-2,5 m; desde 2,2 m se va apagando hasta 0 a 2,5 m (2026-10-08, para que la nota baje sin escalones hacia mar_grande_depredadores). Sustituye al factor de oleaje por defecto en su ámbito (desde costa, depredadores costeros) para que la ola cuente una sola vez; el resto de la escala de ola la cubren mar_plana_depredadores_costa y mar_poca_depredadores_costa. Por encima de 2,5 m resta mar_grande_depredadores y sale aparte el aviso de ola peligrosa (sin tope en la nota desde el 2026-10-08).",
     "sustituye": [
      "oleaje"
     ]
@@ -14331,6 +14356,52 @@
      "logodds": -0.3
     },
     "nota": "Completa la escala de ola (ver mar_poca_depredadores_costa): el valor_bajo_minimo negativo que ya tenía la lubina (heurística heredada de la app)."
+   },
+   {
+    "id": "mar_grande_depredadores",
+    "nombre": "Mar demasiado grande desde costa",
+    "texto": "mar demasiado grande: se apartan de la orilla",
+    "fuente": "bacheler_2019",
+    "fuentes_adicionales": [
+     "udyawer_2013",
+     "bss_flota_decisiones_2022",
+     "mikel_experiencia_local"
+    ],
+    "tipo": "cientifica",
+    "estado": "por_validar",
+    "variable": "ola",
+    "sustituye": [
+     "oleaje"
+    ],
+    "validacion": "Calibrar con las salidas del diario (salidas_pesca.indice_factores) antes de subir la confianza o darla por buena.",
+    "confianza": 0.8,
+    "ambito": {
+     "modalidades": [
+      "costa"
+     ],
+     "especies": [
+      "@depredadores_costeros"
+     ]
+    },
+    "condiciones": [
+     {
+      "var": "ola",
+      "op": ">",
+      "valor": 2.5
+     }
+    ],
+    "efecto": {
+     "logodds": -2.0,
+     "escala": {
+      "var": "ola",
+      "de": 2.5,
+      "a": 4.0,
+      "minimo": 0
+     }
+    },
+    "mecanismo": "con temporal los peces de poco fondo se van a aguas más profundas; la flota de lubina pesca menos con más ola",
+    "nota": "Cierra el hueco de la escala de ola de los depredadores costeros desde costa: mar_plana (< 0,5 m), mar_poca (0,5-1 m) y mar_movida (1-2,5 m) sustituyen al factor de oleaje, y por encima de 2,5 m no restaba nada desde que la ola dejó de poner tope (2026-10-08). Evidencia (EVIDENCIA_FACTORES.md, regla 2 de Mikel: 'respaldada en franja moderada; con mar grande se van'): temporales y emigración a lo profundo (Bacheler 2019, Udyawer 2013) y menos lubina por salida con más ola (flota inglesa, 2022). Efecto real = -2,0 x intensidad x 0,8: casi 0 justo por encima de 2,5 m y crece en línea recta hasta -1,6 log-odds a 4 m o más (sin escalón en 2,5 m: mar_movida se apaga entre 2,2 y 2,5 m). El aviso de ola peligrosa va aparte.",
+    "activada": "2026-10-08: pedida por Mikel al quitar el tope de ola (sesión del aviso de ola peligrosa)."
    },
    {
     "fuente": "mikel_experiencia_local",
@@ -15054,14 +15125,6 @@
     "leido": "resumen",
     "nota": "Sin adhesión consistente a frentes de SST; posible asociación con frentes de clorofila en agosto-septiembre."
    },
-   "udyawer_2013": {
-    "titulo": "Udyawer et al. (2013). Variable response of coastal sharks to severe tropical storms: environmental cues and changes in space use. MEPS 480: 171-183.",
-    "url": "https://int-res.com/abstracts/meps/v480/p171-183",
-    "tipo": "cientifico",
-    "licencia": "solo se cita el dato (sin copiar texto); licencia del documento no revisada",
-    "fecha_consulta": "2026-10-08",
-    "leido": "resumen"
-   },
    "doyle_2017_bss": {
     "titulo": "Doyle et al. (2017). Localised residency and inter-annual fidelity to coastal foraging areas may place sea bass at risk to local depletion. Scientific Reports 7: 45841.",
     "url": "https://doi.org/10.1038/srep45841",
@@ -15097,15 +15160,6 @@
     "fecha_consulta": "2026-10-08",
     "leido": "resumen",
     "nota": "GLM por estuario con caudal del río, SST, clorofila y depredadores: los motores difieren entre estuarios; el caudal no tiene un efecto general."
-   },
-   "bss_flota_decisiones_2022": {
-    "titulo": "Factors affecting fisher decisions: the case of the inshore fishery for European sea bass (PLoS ONE, 2022).",
-    "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8970468/",
-    "tipo": "cientifico",
-    "licencia": "CC BY 4.0",
-    "fecha_consulta": "2026-10-08",
-    "leido": "resumen",
-    "nota": "Flota artesanal inglesa: con más ola salen menos barcos y el éxito por salida (kg de lubina) baja."
    },
    "otero_2008_pulpo": {
     "titulo": "Otero et al. (2008). Bottom-up and top-down control of Octopus vulgaris in the Galician upwelling system. MEPS 362: 181-192.",
@@ -15341,6 +15395,12 @@
     "fecha": "2026-10-08",
     "aprobada_por": "Mikel",
     "destino": "reglas_por_defecto.presion.peso_lo = 0,12"
+   },
+   {
+    "id": "mar_grande_depredadores",
+    "fecha": "2026-10-08",
+    "aprobada_por": "Mikel",
+    "destino": "reglas_expertas.reglas[mar_grande_depredadores]"
    }
   ]
  }

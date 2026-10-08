@@ -61,6 +61,39 @@ pequeños: tinta oscura sobre claro, contraste AA).
   escritorio siempre abiertos, con la esquina inferior derecha empezando a
   76 px (a la derecha del ⓘ) y la leyenda del ⓘ abriéndose por encima de
   ellos. Ningún crédito se quita: no usar `attributionControl.remove()`.
+- **Tarjetas del mapa en un dock (2026-10-08, bug aprobado por Mikel).** En
+  el móvil la tarjeta de rayos (antes control de Leaflet `bottomright`) tapaba
+  la lluvia animada y la leyenda del ⓘ abierta. Ahora todas las tarjetas de
+  abajo viven en `#tarjetasMapa` (index.html) y se apilan con `order`, de
+  arriba a abajo: rayos, lluvia (lluvia-animada.js la mete ahí vía
+  `contenedor`), clorofila / temperatura, viento y la leyenda del ⓘ. Nunca se
+  pisan. `assets/js/tarjetas-mapa.js` (test `test/tarjetas-mapa.test.js`)
+  pone el `bottom` del dock por encima de lo que tenga debajo en su columna
+  (ⓘ, créditos abiertos, leyendas de Leaflet de abajo a la izquierda) y el
+  `max-height` sin tapar el zoom ni las leyendas de arriba; si no cabe,
+  scroll (en escritorio, segunda columna). Acaba a la izquierda de los
+  botones de capas. Con la lluvia abierta, rayos se queda en su frase (sin la
+  línea de leyenda). Una tarjeta nueva sobre el mapa: dentro del dock, con
+  su `order`; nada de `position: absolute` suelto abajo.
+
+## Alarma: lista de WhatsApp (2026-10-08, pedido de Mikel)
+
+"En las alarmas, también debiera haber una lista prefijada para los
+WhatsApp." Coste cero: **nada de la API de WhatsApp Business** (de pago y con
+aprobación de Meta). Cada contacto de emergencia puede tener email, WhatsApp
+(columna `whatsapp`, E.164) o los dos. Tras el SOS, o tras la cuenta atrás de
+la caída, `alarma.html` enseña un botón grande por contacto con WhatsApp que
+abre `https://wa.me/<número>?text=<mensaje>` con la ubicación ya escrita; **la
+persona tiene que pulsar Enviar** y la pantalla lo dice. El email sigue
+saliendo solo (`sos-alerta.js`, ahora solo a contactos con email). Los grupos
+no tienen número: "Compartir en un grupo" usa `navigator.share` y, sin él,
+`wa.me/?text=`. El nombre del mensaje se guarda solo en el teléfono
+(localStorage). Lógica en `assets/js/sos-whatsapp.js`, test
+`test/sos-whatsapp.test.js`. Migración
+`20261008200000_contactos_whatsapp.sql` **SIN APLICAR** (baseline ya
+actualizado); sin ella la página dice que el WhatsApp aún no está activado y
+el email funciona como antes. En textos de marketing: "te prepara el
+WhatsApp", nunca "manda un WhatsApp automático".
 
 ## Instagram en estilo Amanecer: posts, stories y reels sin IA (2026-10-08)
 
@@ -1667,7 +1700,8 @@ pestaña en la hora actual. Hereda la vigencia por spot del punto anterior
   (`reglas_por_defecto` + `reglas` por especie) con `criterio`/`fuente` y
   `tipo: heuristica_experta` cuando lo son. **La marea se escala con el rango
   local** (máx-mín en ±12 h del nivel del mar del propio spot frente a 2,5 m):
-  en el Mediterráneo no cuenta. Mar > 2,5 m: tope 20 y aviso. Luna: peso 0.
+  en el Mediterráneo no cuenta. Mar > 2,5 m: aviso de ola peligrosa aparte,
+  sin tope (ver "Ola peligrosa: aviso aparte"). Luna: peso 0.
 - **UI**: tarjeta "Ventana de actividad por horas" del panel del spot
   (`pintarVentanaActividad` en `index.html`): selector de especie (las que
   tienen presencia en la región del spot, en temporada primero), Hoy/Mañana,
@@ -1720,10 +1754,12 @@ pestaña en la hora actual. Hereda la vigencia por spot del punto anterior
     se muestra). Recupera la división costa/mar adentro que tenía la lista
     antigua de `index.html` (fuente `app_index_zona`), con matices (txitxarro y
     verdel también desde espigón). `reglas_por_modalidad`: costa = lo de
-    siempre; embarcación = viento > 20 km/h y ola > 1 m restan, aviso y tope 35
-    para kayak (> 20 km/h o > 1,5 m) y tope 15 para embarcación pequeña
-    (> 30 km/h o > 2,5 m), marea peso 4; submarina = turbidez peso 20 (clara
-    suma, turbia resta), mar en calma (óptimo < 0,5 m, > 1,5 m tope 15), lluvia
+    siempre; embarcación = viento > 20 km/h y ola > 1 m restan, aviso para kayak
+    (> 20 km/h o > 1,5 m) y para embarcación pequeña (> 30 km/h o > 2,5 m),
+    con tope 35 / 15 **solo si lo supera el viento** (la ola solo avisa desde
+    el 2026-10-08), marea peso 4; submarina = turbidez peso 20 (clara
+    suma, turbia resta), mar en calma (óptimo < 0,5 m, > 1,5 m aviso de ola
+    peligrosa, sin tope), lluvia
     de las 24 h previas y caudal alto del río del spot restan, y **de noche
     puntúa 0** (prohibida: RD 347/2011 art. 16.d, Portaria 14/2014 art. 8.3).
     En las modalidades distintas de costa, oleaje/viento/turbidez (y marea en
@@ -1831,7 +1867,8 @@ franja costera. Sin IA y sin coste.
   `reglas_expertas.reglas`, todas `por_validar`, confianza 0,5-0,55, nunca en
   embarcación): `orilla_roca_espuma` (costa, orilla de acantilado/roca/escollera:
   lubina, sargo, sargo picudo, maragota, pulpo, congrio, cabracho, rascacio;
-  la mitad con mar plana, entera desde 1,5 m), `orilla_playa_arena` (costa,
+  la mitad con mar plana, entera de 1,5 a 2,5 m y se apaga hasta 0 a 3 m
+con `efecto.atenua`: con mar grande se apartan), `orilla_playa_arena` (costa,
   playa: rodaballo, lenguado, raya; `mikel_campo_bizkaia`),
   `dorada_arena_con_roca` (costa y submarina, arena ≥ 30 % y roca ≥ 10 %),
   `fondo_roca_submarina` (submarina, roca ≥ 35 %, graduada) y `posidonia_cerca`
@@ -1867,9 +1904,38 @@ anchura; +1 en el centro, ~+0,2 en los bordes, tiende a -1). Rangos solo de
 FishBase siguen sin puntuar.
 
 **Filtros fuera de la fórmula**: veda (la especie no entra), freza (aviso
-"si lo pescas, devuélvelo", nunca suma), topes de seguridad por modalidad (se
-aplican al final y salen como un motivo "tope de seguridad"), submarina de
-noche = 0, datos caducados = S/D (`spotVigente`).
+"si lo pescas, devuélvelo", nunca suma), tope por viento en embarcación
+(kayak 35 / embarcación pequeña 15; se aplica al final y sale como un motivo
+"tope de seguridad"), submarina de noche = 0, datos caducados = S/D
+(`spotVigente`).
+
+**Ola peligrosa: aviso aparte, sin tope (decisión de Mikel, 2026-10-08).**
+Antes la altura de ola recortaba la nota ("tope de seguridad (mar de 2,5-3 m,
+peligrosa desde costa: máximo 20)"). Ahora la nota se calcula sin ese tope (el
+factor de oleaje sigue puntuando como siempre) y el resultado lleva
+`avisoOla` (`avisoOlaPeligrosa` en `ventana-actividad.js`): "⚠️ Ola peligrosa
+desde costa (2,5-3 m): extrema la precaución". **No es un motivo con
+flecha**: se pinta como nota aparte con la clase `.aviso-ola` de
+`costaviva.css` (tokens `--peligro-*`). Umbral = `oleaje.max_seguro_m` de la
+modalidad, estrictamente por encima: costa 2,5 m ("desde costa"), embarcación
+2,5 m ("para salir en embarcación de recreo"), submarina 1,5 m ("para
+bucear"); `tope_si_peligrosa` desapareció del JSON. Dónde sale: índice del
+spot (encima de los motivos), ventana (franja con las horas con aviso, el
+detalle de la hora y "⚠️ ola peligrosa" en las mejores ventanas), diario
+(`indice_factores.aviso_ola`) y piezas de Instagram (`resumenDelDia().avisoOla`,
+en la plantilla y en el texto del post y del reel). En embarcación, los
+avisos de kayak / embarcación pequeña siguen saliendo también por ola, pero su
+tope solo lo pone el viento. Desde costa, en los depredadores costeros el
+factor de oleaje lo sustituyen las reglas de mar plana/poca/movida (hasta
+2,5 m); por encima, `mar_grande_depredadores` ("mar demasiado grande: se
+apartan de la orilla", `tipo: cientifica`, Bacheler 2019, Udyawer 2013 y la
+flota de lubina 2022; casi 0 justo por encima de 2,5 m y en línea recta hasta
+-1,6 log-odds a 4 m) cierra el hueco que dejó quitar el tope, y "mar algo
+movida" se apaga entre 2,2 y 2,5 m: la nota baja sin escalones (test de
+continuidad de 2,0 a 4,0 m, pasos de 0,1, ninguno de más de 8 puntos). Dorada
+de la captura de prueba (Bakio): 78 / 72 / 70 / 57 / 34 a 2,0 / 2,5 / 2,6 /
+3,1 / 4,0 m (con tope daba 72 a 3,1 m). En embarcación y submarina ninguna
+regla sustituye al oleaje, así que no hay hueco (un test lo vigila).
 
 **Índice del spot** (`indiceSpot`): la mejor especie de temporada (sin vedas)
 de la pestaña en la hora actual, con su nombre y su porqué; es exactamente la
@@ -1903,18 +1969,31 @@ preview: salían "+ mar algo movida" y "− mar de 2-2,5 m" a la vez): cada regl
 declara su `variable`; si es la de un factor base, lo sustituye
 (`sustituye`), y las reglas de una misma variable tienen condiciones
 excluyentes (las de presión: 6 h si cae ahora, 24 h solo si las últimas 6 h
-están quietas, subida tras el frente). Los topes de seguridad van aparte y se
-aplican aunque el factor esté sustituido. Un test recorre especies,
+están quietas, subida tras el frente). El aviso de ola peligrosa va aparte y
+sale aunque el factor esté sustituido. Un test recorre especies,
 modalidades y escenarios y falla si una variable puntúa dos veces.
 **Presentación (decisión de Mikel, 2026-10-08)**: la nota y una lista de
 motivos, cada uno con una flecha por dirección y peso (▲▲ / ▲ / ▼ / ▼▼, el
 doble desde 6 puntos) y el concepto en lenguaje llano, ordenados por impacto.
 Para el usuario, ningún número por factor (ni en tooltip) ni etiqueta de
-fuente ("regla de Mikel", "por validar"...). Igual en la ventana, el índice
+fuente ("regla de Mikel", "por validar"...).
+**Solo motivos con flecha y avisos útiles (Mikel, 2026-10-08)**: lo neutro
+(aporte 0, antes con "·": "pleno día", "marea casi nula: no cuenta", "agua a
+20 °C (rango pendiente de fuente abierta: no cuenta)"), lo interno y la
+fiabilidad van solo al "Detalle (admin)". El filtro es `paraUsuario`
+(`ventana-actividad.js`, regex `TEXTO_INTERNO`), y lo usan la ficha, la
+ventana, las mejores ventanas, el diario (misma regex en línea) y los posts
+(`motivosDestacados`). Avisos útiles = notas `legal` (submarina) y
+`seguridad` (kayak / embarcación pequeña), con la clase `.aviso-nota`; el de
+ola peligrosa va en `avisoOla`. También para admin: "Técnicas habituales
+(práctica, sin fuente citable)", "Talla mínima: sin dato verificado" y
+"Pendiente de revisar" de la normativa. Un test de `indice-pesca-v2` falla
+si la salida de usuario tiene "·", "pendiente", "no cuenta" o "fuente". La presentación es igual en la ventana, el índice
 del spot y la línea del diario. El admin (`window.esAdminCostaviva`,
 cosmético) tiene un desplegable "Detalle (admin)" con puntos, fuente, estado,
 confianza y la fiabilidad; la tabla de `admin.html` sigue listando las reglas.
-Hoy hay 18 reglas: 11 de Mikel (fuente `mikel_experiencia_local`, tipo
+Hoy hay 18 reglas (más las de fondo y orilla y `mar_grande_depredadores`,
+ver arriba): 11 de Mikel (fuente `mikel_experiencia_local`, tipo
 `heuristica_experta_local`, estado `por_validar`; los umbrales son la
 traducción de Claude de lo que contó Mikel; y 2 que completan la escala de
 ola de los depredadores costeros con la heurística que ya tenía la app,
@@ -1927,7 +2006,7 @@ cientifica`, del top 10 de evidencia que aprobó Mikel, ver más abajo):
    esas especies (`sustituye: ["presion"]`).
 2. Mar algo movida (1-2,5 m) desde costa: suma a esos depredadores y
    sustituye al factor de oleaje (con las dos reglas de escala de arriba);
-   por encima de 2,5 m manda el tope de seguridad.
+   por encima de 2,5 m sale el aviso de ola peligrosa (sin tope).
 3. Río crecido (caudal "alto" con umbral oficial) a ≤ 3 km de la
    desembocadura: suma a la lubina y resta al resto (salvo la lisa). Río del
    spot = `RIOS[].spotCosta` de `index.html` (`rioDeSpot`); spot sin río
@@ -1972,7 +2051,8 @@ condiciones, efecto, fuente, estado y cualquier error de forma.
    `confianza` (0-1), `estado: "por_validar"`, `validacion`, `ambito`
    (regiones, modalidades, especies o `@grupo`, especies_excluidas, meses),
    `condiciones` (todas deben cumplirse), `efecto.logodds` (±2 como mucho;
-   0,4 ≈ 10 puntos), `variable` (la que puntúa; `nombre@etiqueta` si mira
+   0,4 ≈ 10 puntos; `escala` lo gradúa y `atenua: { var, de, a }` lo apaga de
+   forma continua, 1 en `a` y 0 en `de`), `variable` (la que puntúa; `nombre@etiqueta` si mira
    otra ventana de tiempo) y, si es la de un factor base, `sustituye`. Dos
    reglas de la misma variable deben ser excluyentes.
 2. Condiciones: `{ "var": "presion", "agregado": "delta", "desde_h": -6,
@@ -3562,8 +3642,8 @@ de AEMET con scroll y + / −. Ahora:
   era < 7, se consulta `/rayos-cerca` en ESE punto y, la primera vez que hay
   rayos, el mapa se encuadra con la referencia y la tormenta más cercana
   (punto de borde oscuro + línea discontinua hasta el rayo).
-- Tarjeta abajo (`#rayosHoja`, metida como control de Leaflet `bottomright`,
-  así se apila sobre la atribución y no la tapa): una frase
+- Tarjeta abajo (`#rayosHoja`, la primera del dock de tarjetas del mapa,
+  ver "Tarjetas del mapa en un dock"; no tapa la atribución): una frase
   ("⚡ Rayo más cercano: 12 km al NO de ti · hace 3 min" / "Sin rayos a menos
   de 100 km en los últimos 5 min"), color por distancia (≤15 km rojo, ≤40
   ámbar), leyenda de una línea y un ⓘ con el conteo, la hora del satélite,

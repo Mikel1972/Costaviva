@@ -164,6 +164,8 @@ export function resumenIndice(ind, { estimada = false } = {}) {
       reglas: r.reglasAplicadas, sin_dato: r.sinDato, cobertura: r.cobertura,
       fiabilidad: ind.fiabilidad ? { estrellas: ind.fiabilidad.estrellas, etiqueta: ind.fiabilidad.etiqueta } : null,
       freza: !!ind.freza,
+      // Ola peligrosa (2026-10-08): nota aparte, no motivo ni tope.
+      aviso_ola: ind.avisoOla?.texto ?? null,
       ranking: ind.ranking.map((x) => ({ id: x.id, p: x.puntuacion })),
     },
   };
