@@ -3,7 +3,7 @@ on:
   push:
     branches: ["claude/prueba-copernicus"]
 permissions:
-  contents: read
+  contents: write
 jobs:
   capas:
     runs-on: ubuntu-latest
@@ -20,4 +20,6 @@ jobs:
           COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_PASSWORD }}
         run: |
           python -I scripts/fuentes/descargar-capas.py --salida /tmp/c 2>&1 | grep capa
-          for f in clorofila temperatura-agua; do gzip -9c /tmp/c/capas/$f.json | base64 -w 8000 | sed "s/^/VOLCADO $f /"; done
+          mkdir -p tmp-capas && cp /tmp/c/capas/*.json tmp-capas/
+          git config user.name "prueba" && git config user.email "noreply@anthropic.com"
+          git add tmp-capas && git commit -qm "Capas reales de prueba (temporal) [skip ci]" && git push -q origin HEAD:claude/prueba-copernicus
