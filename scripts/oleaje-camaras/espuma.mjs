@@ -28,30 +28,13 @@
 //   - Si el proveedor mueve la cámara, el ROI deja de valer: hay que
 //     revisarlo (camaras-salud ya avisa de cámaras congeladas o caídas).
 
-// ROI en fracciones del encuadre (x0, y0, x1, y1), fijadas mirando los
-// frames reales del 2026-10-08 hacia las 11:57 (hora de Madrid). Solo las 6
-// cámaras de vídeo de la Diputación Foral de Gipuzkoa por ahora: mismo
-// proveedor, frames de 1280x720 o 1920x1080, y un tramo de costa con boya
-// exterior (Pasaia II) para tener la referencia de mar abierto.
-export const ROI_CAMARAS = {
-  // Bahía de Txingudi, franja de agua bajo los barcos fondeados (los barcos
-  // blancos cuentan como "espuma": el ROI empieza justo debajo) y lejos de
-  // la orilla de la izquierda, que con la marea mete arena en el recorte. La
-  // arena con bruma y la espuma con luz cálida tienen el MISMO color (medido
-  // el 2026-10-08 en Hondarribia y Deba), así que la única defensa es que el
-  // ROI no toque la orilla en ninguna marea: revisar con bajamar y pleamar.
-  hondarribia: { x0: 0.56, y0: 0.375, x1: 0.98, y1: 0.42, url: "https://58f14c0895a20.streamlock.net/camaramar/GIP_hondarribia_169.stream/playlist.m3u8" },
-  // Zurriola: mar a la derecha del encuadre, a la altura del rompiente.
-  donostia: { x0: 0.78, y0: 0.38, x1: 1.0, y1: 0.48, url: "https://58f14c0895a20.streamlock.net/camaramar/GIP_zurriola_169.stream/playlist.m3u8" },
-  // Orio: desembocadura, mar a la derecha del monte y del espigón.
-  orio: { x0: 0.46, y0: 0.55, x1: 1.0, y1: 0.68, url: "https://58f14c0895a20.streamlock.net/camaramar/GIP_orio_169.stream/playlist.m3u8" },
-  // Zarautz: playa expuesta, toda la franja de rompiente bajo el horizonte.
-  zarautz: { x0: 0.0, y0: 0.24, x1: 1.0, y1: 0.62, url: "https://58f14c0895a20.streamlock.net/camaramar/GIP_zarautz_169.stream/playlist.m3u8" },
-  // Deba: rompiente entre el horizonte y las rocas (sin el mirador de la dcha.).
-  deba: { x0: 0.0, y0: 0.41, x1: 0.86, y1: 0.56, url: "https://58f14c0895a20.streamlock.net/camaramar/GIP_deba_169.stream/playlist.m3u8" },
-  // Mutriku: mar abierto a la derecha, por fuera del dique y de la escollera.
-  mutriku: { x0: 0.60, y0: 0.37, x1: 1.0, y1: 0.44, url: "https://58f14c0895a20.streamlock.net/camaramar/GIP_mutrikukaia_169.stream/playlist.m3u8" },
-};
+// ROI por cámara y encuadre: scripts/oleaje-camaras/camaras.mjs (desde el
+// 2026-10-08 son 13 cámaras y varios encuadres por cámara). ROI_CAMARAS se
+// mantiene (el encuadre principal de cada una) por compatibilidad.
+import { CAMARAS } from "./camaras.mjs";
+export const ROI_CAMARAS = Object.fromEntries(
+  Object.entries(CAMARAS).filter(([, c]) => c.encuadres.length).map(([id, c]) => [id, { ...c.encuadres[0].roi, url: c.url }])
+);
 
 // Umbrales probados con los 6 frames del 2026-10-08 11:57. La cámara de
 // Zurriola tiene la lente velada: su espuma no pasa de brillo 0,6, pero sí se
@@ -60,14 +43,41 @@ export const ROI_CAMARAS = {
 // un mínimo absoluto bajo, y no un brillo absoluto alto.
 export const UMBRAL_SATURACION_ESPUMA = 0.15; // espuma: casi sin color
 export const UMBRAL_BRILLO_MIN = 0.45; // mínimo absoluto (descarta sombras grises)
-export const MARGEN_SOBRE_MEDIANA = 0.08; // más clara que la mediana del recorte
+export const MARGEN_SOBRE_MEDIANA = 0.08; // más clara que la mediana del recorte...
+// ...o que el cuartil bajo (agua entre la espuma) + MARGEN_SOBRE_AGUA, lo que
+// sea MENOR (2026-10-08): con la zona llena de espuma (Bakio, Sopela con
+// 3-4 m) la mediana ya ES espuma y "más clara que la mediana" dejaba fuera
+// casi toda; el cuartil bajo sigue siendo agua.
+export const MARGEN_SOBRE_AGUA = 0.15;
 export const UMBRAL_BRILLANTE = 0.62; // "blanco brillante", solo para detectar reflejo/niebla
 export const BRILLO_MIN_CON_LUZ = 0.12; // por debajo: noche o imagen negra
-export const FRACCION_BRILLANTE_DUDOSA = 0.6; // más de esto "blanco": sol/niebla/sobreexpuesta
+export const FRACCION_BRILLANTE_DUDOSA = 0.6; // más de esto "blanco": sol/niebla/sobreexpuesta...
+// ...pero solo si además el recorte es casi UNIFORME: una zona llena de
+// espuma de verdad (Bakio con 3-4 m, 2026-10-08: 97 % blanco) tiene textura
+// (desviación del brillo ~0,09); un reflejo o una niebla, no.
+export const DESVIACION_MAX_DUDOSA = 0.06;
+// Guarda de la orilla (2026-10-08): la arena (seca o mojada) tiene tono
+// cálido (amarillo-naranja, 15-55°) y algo de color; el agua del Cantábrico
+// es azul-verde-gris. Si más de FRACCION_ARENA_MAX del ROI es "arena", la
+// orilla ha entrado en la zona medida (bajamar fuerte, o la cámara se ha
+// movido) y la lectura se marca `orilla` y no cuenta.
+export const TONO_ARENA_MIN = 15;
+export const TONO_ARENA_MAX = 55;
+export const SATURACION_ARENA_MIN = 0.3;
+export const BRILLO_ARENA_MIN = 0.25;
+export const FRACCION_ARENA_MAX = 0.15;
 
 function hsv(r, g, b) {
   const max = Math.max(r, g, b), min = Math.min(r, g, b);
-  return { s: max === 0 ? 0 : (max - min) / max, v: max / 255 };
+  const d = max - min;
+  let h = 0;
+  if (d > 0) {
+    if (max === r) h = 60 * (((g - b) / d) % 6);
+    else if (max === g) h = 60 * ((b - r) / d + 2);
+    else h = 60 * ((r - g) / d + 4);
+    if (h < 0) h += 360;
+  }
+  return { h, s: max === 0 ? 0 : d / max, v: max / 255 };
 }
 
 function mediana(valores) {
@@ -78,26 +88,31 @@ function mediana(valores) {
 }
 
 // `data`: RGB planos (3 bytes por píxel, sin alfa), `width`x`height`.
-// Devuelve { espuma (0-1), brilloMedio, medianaBrillo, pixeles, estado }
-// con estado "ok" | "sin_luz" | "dudosa".
+// Devuelve { espuma (0-1), brilloMedio, medianaBrillo, arena, pixeles, estado }
+// con estado "ok" | "sin_luz" | "dudosa" | "orilla".
 export function medirEspuma(data, width, height, roi) {
   const x0 = Math.max(0, Math.floor(roi.x0 * width)), x1 = Math.min(width, Math.ceil(roi.x1 * width));
   const y0 = Math.max(0, Math.floor(roi.y0 * height)), y1 = Math.min(height, Math.ceil(roi.y1 * height));
   const brillos = [];
   const sats = [];
+  let arena = 0;
   for (let y = y0; y < y1; y++) {
     for (let x = x0; x < x1; x++) {
       const p = (y * width + x) * 3;
-      const { s, v } = hsv(data[p], data[p + 1], data[p + 2]);
+      const { h, s, v } = hsv(data[p], data[p + 1], data[p + 2]);
       brillos.push(v);
       sats.push(s);
+      if (h >= TONO_ARENA_MIN && h <= TONO_ARENA_MAX && s >= SATURACION_ARENA_MIN && v >= BRILLO_ARENA_MIN) arena++;
     }
   }
   const n = brillos.length;
-  if (!n) return { espuma: null, brilloMedio: null, medianaBrillo: null, pixeles: 0, estado: "dudosa" };
+  if (!n) return { espuma: null, brilloMedio: null, medianaBrillo: null, arena: null, desviacion: null, pixeles: 0, estado: "dudosa" };
   const brilloMedio = brillos.reduce((a, b) => a + b, 0) / n;
-  const med = mediana(brillos);
-  const umbral = Math.max(UMBRAL_BRILLO_MIN, med + MARGEN_SOBRE_MEDIANA);
+  const desviacion = Math.sqrt(brillos.reduce((a, b) => a + (b - brilloMedio) ** 2, 0) / n);
+  const ordenados = [...brillos].sort((a, b) => a - b);
+  const med = ordenados.length % 2 ? ordenados[(ordenados.length - 1) / 2] : (ordenados[ordenados.length / 2 - 1] + ordenados[ordenados.length / 2]) / 2;
+  const p25 = ordenados[Math.floor(ordenados.length * 0.25)];
+  const umbral = Math.max(UMBRAL_BRILLO_MIN, Math.min(med + MARGEN_SOBRE_MEDIANA, p25 + MARGEN_SOBRE_AGUA));
   let blancos = 0, brillantes = 0;
   for (let i = 0; i < n; i++) {
     if (brillos[i] >= UMBRAL_BRILLANTE && sats[i] <= UMBRAL_SATURACION_ESPUMA) brillantes++;
@@ -105,11 +120,14 @@ export function medirEspuma(data, width, height, roi) {
   }
   let estado = "ok";
   if (brilloMedio < BRILLO_MIN_CON_LUZ) estado = "sin_luz";
-  else if (brillantes / n > FRACCION_BRILLANTE_DUDOSA) estado = "dudosa";
+  else if (brillantes / n > FRACCION_BRILLANTE_DUDOSA && desviacion < DESVIACION_MAX_DUDOSA) estado = "dudosa";
+  else if (arena / n > FRACCION_ARENA_MAX) estado = "orilla";
   return {
     espuma: +(blancos / n).toFixed(4),
     brilloMedio: +brilloMedio.toFixed(3),
     medianaBrillo: +med.toFixed(3),
+    arena: +(arena / n).toFixed(3),
+    desviacion: +desviacion.toFixed(3),
     pixeles: n,
     estado,
   };
@@ -203,4 +221,88 @@ export function coeficienteRelativo(muestrasSpot, muestrasReferencia, opciones) 
   const r = umbralRotura(muestrasReferencia, opciones);
   if (!u || !r) return null;
   return +Math.min(1, r / u).toFixed(2);
+}
+
+// ---------------------------------------------------------------------------
+// Zona de medida DINÁMICA (2026-10-08), para cámaras que barren sin repetir
+// encuadre. Caso real: la de Zarautz pasó por 15 planos distintos en 7
+// minutos sin repetir ninguno, así que una imagen de referencia casi nunca
+// coincide. En vez de un ROI fijo, en cada fotograma y en 8 franjas
+// verticales se busca el tramo de MAR: filas seguidas de píxeles "de mar"
+// (azul-verde-gris, o blancos de espuma) por encima de una orilla (filas que
+// ya no son mar: arena seca o mojada), y por debajo del horizonte o de la
+// tierra (el salto de brillo cielo/mar más fuerte dentro del tramo). Se mide
+// entre ambos, dejando un 15 % de margen bajo el horizonte y un 30 % sobre
+// la orilla: la zona se mueve con la marea y con la cámara y nunca toca la
+// orilla. Con menos de 4 franjas válidas, el fotograma no se mide.
+// Límite conocido: el agua verdosa al sol (Zurriola) tiene el tono de la
+// arena mojada; por eso solo se usa en Zarautz.
+export const FRANJAS_DINAMICO = 8;
+export const MIN_FRANJAS_DINAMICO = 4;
+
+function hsvPixel(data, p) {
+  return hsv(data[p], data[p + 1], data[p + 2]);
+}
+// Píxel "de mar": espuma (casi sin color) o agua azul-verde-gris; nunca
+// arena (seca o mojada: tono cálido con algo de color), vegetación ni sombra.
+function esMar({ h, s, v }) {
+  if (v < 0.22) return false;
+  if (s <= UMBRAL_SATURACION_ESPUMA) return true;
+  return h >= 150 && h <= 260;
+}
+
+export function zonasDinamicas(data, width, height) {
+  const zonas = [];
+  const anchoFranja = Math.floor(width / FRANJAS_DINAMICO);
+  for (let k = 0; k < FRANJAS_DINAMICO; k++) {
+    const xa = k * anchoFranja, xb = k === FRANJAS_DINAMICO - 1 ? width : xa + anchoFranja;
+    const mar = [], brillo = [];
+    for (let y = 0; y < height; y++) {
+      let sm = 0, sv = 0;
+      for (let x = xa; x < xb; x++) {
+        const c = hsvPixel(data, (y * width + x) * 3);
+        if (esMar(c)) sm++;
+        sv += c.v;
+      }
+      mar.push(sm / (xb - xa) >= 0.85);
+      brillo.push(sv / (xb - xa));
+    }
+    // Tramo de mar más bajo con orilla debajo (no puede llegar al borde).
+    let fin = -1;
+    for (let y = height - 1; y >= 0; y--) if (mar[y]) { fin = y; break; }
+    if (fin < 0 || fin >= height - 3) continue;
+    let ini = fin;
+    while (ini > 0 && mar[ini - 1]) ini--;
+    // Cielo y mar pueden quedar en el mismo tramo: se corta por el salto de
+    // brillo más fuerte (horizonte) si lo hay.
+    let corte = ini, salto = 0.06;
+    for (let y = ini + 3; y < fin - 3; y++) {
+      const d = (brillo[y - 1] + brillo[y - 2] + brillo[y - 3]) / 3 - (brillo[y + 1] + brillo[y + 2] + brillo[y + 3]) / 3;
+      if (d > salto) { salto = d; corte = y; }
+    }
+    if (fin - corte < height * 0.12) continue;
+    const y0 = Math.round(corte + 0.15 * (fin - corte)), y1 = Math.round(fin - 0.3 * (fin - corte));
+    if (y1 - y0 < 3) continue;
+    zonas.push({ x0: xa / width, y0: y0 / height, x1: xb / width, y1: y1 / height });
+  }
+  return zonas;
+}
+
+// Espuma en las zonas dinámicas: media ponderada por píxeles de cada franja.
+export function medirEspumaDinamica(data, width, height) {
+  const zonas = zonasDinamicas(data, width, height);
+  if (zonas.length < MIN_FRANJAS_DINAMICO) return { espuma: null, zonas: zonas.length, estado: "otro_encuadre" };
+  const medidas = zonas.map((z) => medirEspuma(data, width, height, z));
+  const total = medidas.reduce((a, m) => a + m.pixeles, 0);
+  const media = (k) => medidas.reduce((a, m) => a + (m[k] ?? 0) * m.pixeles, 0) / total;
+  const estados = medidas.map((m) => m.estado);
+  const estado = estados.includes("sin_luz") ? "sin_luz" : estados.filter((e) => e !== "ok").length > zonas.length / 2 ? "dudosa" : "ok";
+  return {
+    espuma: +media("espuma").toFixed(4),
+    brilloMedio: +media("brilloMedio").toFixed(3),
+    arena: +media("arena").toFixed(3),
+    pixeles: total,
+    zonas: zonas.length,
+    estado,
+  };
 }

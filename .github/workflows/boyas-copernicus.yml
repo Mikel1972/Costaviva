@@ -1,0 +1,47 @@
+name: Boyas del mapa (Copernicus Marine In Situ)
+
+# 2026-10-08: las boyas del mapa de la app dejan de pedirse a Puertos del
+# Estado (sus condiciones no permiten uso comercial sin autorización
+# escrita, pendiente). Son las mismas boyas, redistribuidas por Copernicus
+# Marine In Situ TAC (licencia comercial con atribución, doi
+# 10.48670/moi-00043). Cada 2 h se descargan sus últimas medidas
+# (scripts/oleaje-camaras/boyas-copernicus.py, sin cuenta, sin IA) y se
+# deja boyas/copernicus.json en el bucket público fuentes-gratuitas, que es
+# lo que lee /prevision. Copernicus publica con 1-3 h de retraso: pedirlo
+# más a menudo no daría datos más nuevos.
+#
+# Minutos de Actions: ~40 s por ejecución (1 min facturado) × 12 al día ×
+# 30 ≈ 360 min/mes (repo público: gratis igualmente).
+
+on:
+  schedule:
+    - cron: "13 */2 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: boyas-copernicus
+  cancel-in-progress: true
+
+jobs:
+  boyas:
+    if: ${{ vars.AUTOMATION_PAUSED != 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: netCDF4
+        run: pip install --quiet netCDF4==1.7.2
+      - name: Últimas medidas de las boyas
+        run: |
+          mkdir -p /tmp/boyas
+          python3 scripts/oleaje-camaras/boyas-copernicus.py --salida /tmp/boyas/copernicus.json --horas 6
+      - name: Subir a Supabase Storage (bucket fuentes-gratuitas)
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node scripts/fuentes/subir-storage.mjs /tmp/boyas boyas
