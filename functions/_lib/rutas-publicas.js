@@ -82,6 +82,10 @@ const ARCHIVOS_PUBLICOS = new Set([
   // exactas, no el prefijo /meteo/: solo existen estas dos APIs.
   "/meteo/forecast",
   "/meteo/marine",
+  // Radar de lluvia EUMETNET OPERA para el navegador (functions/lluvia/):
+  // listado de tomas y teselas de una toma. Rutas exactas.
+  "/lluvia/tomas",
+  "/lluvia/toma",
 ]);
 
 // Prefijos públicos:

@@ -857,7 +857,7 @@
       </div>
     </div>
     <button class="batimetria-toggle" id="toggleBatimetria" title="Batimetría (profundidad del mar)" aria-label="Mostrar/ocultar batimetría">📏<span class="capa-label">Fondo</span></button>
-    <button class="nubes-toggle" id="toggleNubes" title="Lluvia de las últimas 3 horas, animada (satélite EUMETSAT)" aria-label="Mostrar/ocultar la lluvia de las últimas 3 horas">☁️<span class="capa-label">Lluvia</span></button>
+    <button class="nubes-toggle" id="toggleNubes" title="Radar de lluvia de las últimas 3 horas, animado (EUMETNET OPERA)" aria-label="Mostrar/ocultar la lluvia de las últimas 3 horas">☁️<span class="capa-label">Lluvia</span></button>
     <button class="anadir-ubicacion-toggle" id="toggleAnadirUbicacion" title="Añadir una ubicación nueva" aria-label="Añadir ubicación">➕</button>
     <button class="estaciones-toggle" id="toggleEstaciones" title="Estaciones meteorológicas reales (AEMET)" aria-label="Mostrar/ocultar estaciones meteorológicas">🌧<span class="capa-label">Estac.</span></button>
     <button class="viento-toggle" id="toggleViento" title="Viento en directo, estilo Windy (partículas animadas)" aria-label="Mostrar/ocultar capa de viento">💨<span class="capa-label">Viento</span></button>
@@ -3903,8 +3903,9 @@ document.getElementById("toggleLuna").addEventListener("click", () => {
 
 // Lluvia de las últimas 3 horas, animada (2026-10-08, pedido de Mikel). Toda
 // la lógica vive en assets/js/lluvia-animada.js (fuente, licencia, tests);
-// aquí solo se engancha al botón. Sustituye a la imagen fija de RainViewer:
-// su API gratuita solo da 2 h y no cubre uso comercial (Costaviva es de pago).
+// aquí solo se engancha al botón. Radar EUMETNET OPERA cada 5 min (vía
+// functions/lluvia/) con satélite H SAF de respaldo. Sustituye a la imagen
+// fija de RainViewer: solo daba 2 h y no cubre uso comercial.
 let lluviaAnimada = null;
 function prepararLluviaAnimada() {
   if (!lluviaAnimada && window.LluviaAnimada) {

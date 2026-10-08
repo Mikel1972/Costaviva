@@ -853,25 +853,41 @@ captura" con normalidad. **Probado en real por el usuario en producción
 2026-09-13**: abrir una entrada, ir añadiendo capturas y concluir la
 jornada funciona bien.
 
-## Lluvia: últimas 3 horas animadas con EUMETSAT H SAF (2026-10-08)
+## Lluvia: radar OPERA de las últimas 3 horas, animado (2026-10-08)
 
-Pedido de Mikel: el botón **Lluvia** enseña la evolución de las últimas 3 h,
-en bucle por defecto, con botón de pausa/play y la hora de Madrid de cada
-toma (la última se queda más tiempo). Todo en `assets/js/lluvia-animada.js`
-(lógica pura probada en `test/lluvia-animada.test.js`, en `tests.yml`);
-`index.html` solo lo importa y lo engancha al botón.
-- **Fuente**: capa WMS `msg_fes:h60b` de EUMETView (lluvia estimada por
-  satélite, EUMETSAT H SAF H60B), una toma cada 15 min, ~45 min de retraso,
-  ~5 km de resolución. Cubre el mar abierto. Sin API key ni coste.
-- **Licencia**: H SAF es CC BY 4.0, uso comercial permitido; EUMETView
-  declara Fees/AccessConstraints "none". Atribución obligatoria en el mapa:
-  "Lluvia: EUMETSAT H SAF (H60B), CC BY 4.0".
-- **RainViewer, retirado**: su API gratuita solo da 2 h de historia y su FAQ
-  (2026-10-08) excluye la "commercial integration" sin acuerdo aparte.
-  **AEMET descartado**: OpenData solo da la última imagen de radar.
-- Las 13 tomas se precargan como capas invisibles (opacidad 0); la
-  animación salta las que no han cargado o fallaron. Cada 5 min mira si hay
-  una toma nueva. TIME siempre explícito (cache-control de 7 días).
+Pedidos de Mikel: el botón **Lluvia** enseña la evolución de las últimas 3 h,
+en bucle por defecto, con pausa/play y la hora de Madrid de cada toma (la
+última dura más), y **"es imprescindible que sea lo más cercano en tiempo"**:
+el panel dice siempre el retraso de la última toma ("hace 6 min"; en rojo si
+pasa de 20 min).
+- **Fuente principal: radar EUMETNET OPERA** (composición europea DBZH con
+  los radares de AEMET, IPMA y Météo-France). Una toma cada 5 min (37 en 3 h),
+  publicada ~4-5 min después de su hora: retraso visto en la app 5-10 min.
+  Bucket S3 público de 24 h `s3.waw3-1.cloudferro.com/openradar-24h`, sin
+  clave ni coste. **Licencia CC BY 4.0** ("EUMETNET ... has decided to
+  distribute these products under the CC BY 4.0 license",
+  github.com/EUMETNET/openradardata-documentation). Atribución en el mapa.
+- **Respaldo: satélite EUMETSAT H SAF H60B** (WMS de EUMETView, CC BY 4.0,
+  cada 15 min, ~45 min de retraso) solo donde el radar no llega (mar
+  abierto, Canarias, radares caídos: el de A Coruña no daba datos el
+  2026-10-08), más tenue y dicho en el panel. Si el radar entero falla, se
+  anima solo el satélite.
+- **Cómo llega**: el bucket no manda CORS. `functions/lluvia/tomas.js` lista
+  las tomas (caché del edge 60 s) y `functions/lluvia/toma.js` lee la cabecera
+  del GeoTIFF y reenvía SIN descomprimir las 2 teselas de la vista de 4 km
+  que cubren la Península (caché del edge 24 h, inmutable). El navegador las
+  descomprime (`DecompressionStream`), reproyecta de Lambert azimutal (lat0
+  55, lon0 10) a Mercator y pinta un canvas por toma
+  (`assets/js/lluvia-animada.js`). Nada se guarda en Supabase ni en GitHub.
+- **Coste**: 0 €. Unas 38 invocaciones de Functions al abrir la capa y 1 por
+  minuto mientras está abierta; ~7 MB de descarga para las 37 tomas (luego
+  quedan en la caché del navegador 24 h). Si pesa demasiado en móvil, se
+  puede espaciar a 10 min en la animación.
+- Descartados: RainViewer (2 h y sin uso comercial), AEMET OpenData (solo la
+  última imagen, GIF con mapa de fondo, clave), Météo-France (clave; sus
+  radares ya están en OPERA), IPMA (radar "solo informativo"), Rain Alarm
+  (app cerrada, sin API).
+- Tests: `test/lluvia-animada.test.js` (en `tests.yml`).
 
 ## Bug corregido (histórico, ya no se usa RainViewer) — radar de lluvia mostraba "Zoom Level Not Supported" (2026-09-13)
 
