@@ -390,7 +390,7 @@ test("workflow y migración: sin IA, lanzado por pg_cron y con la lista cerrada 
   const dir = new URL("../supabase/migrations/", import.meta.url);
   const ultima = readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes("create or replace function public.lanzar_workflow_github")).sort().pop();
   const sql = readFileSync(new URL(ultima, dir), "utf8");
-  for (const w of ["camaras-salud.yml", "notificar-altas.yml", "espuma-camaras.yml", "aprendizaje-semanal.yml"]) assert.ok(sql.includes(`'${w}'`), w);
+  for (const w of ["camaras-salud.yml", "notificar-altas.yml", "espuma-camaras.yml", "robot-marketing-instagram.yml", "robot-reel-instagram.yml", "aprendizaje-semanal.yml"]) assert.ok(sql.includes(`'${w}'`), w);
   assert.ok(!/aplicar-migraciones\.yml'/.test(sql));
 });
 

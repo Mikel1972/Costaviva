@@ -2237,9 +2237,7 @@ el modo "antigua" podrá usarlo. Además se rellenan `presion_tendencia` y
 Cada salida guarda el índice v2 a su hora (`indice_version`,
 `indice_puntuacion`, `indice_especie`, `indice_factores` con cada factor y
 regla, la fiabilidad y el ranking de especies) para calibrar.
-**Migración `20261008120000_indice_pesca_salida.sql`, SIN APLICAR**: hasta
-aplicarla, `guardarSalida` reintenta sin esas columnas si PostgREST responde
-PGRST204.
+**Migración `20261008120000_indice_pesca_salida.sql`: aplicada en producción** (confirmado el 2026-10-09). `guardarSalida` sigue reintentando sin esas columnas si PostgREST responde PGRST204 (inofensivo).
 
 ## Aprendizaje autónomo del índice (2026-10-09, pedido de Mikel)
 
@@ -2293,7 +2291,7 @@ su rutina, o una sesión) copia cada sí/no a `aprendizaje/decisiones.json`.
   - `semanal.mjs`: la pasada completa; `probar-retador.mjs`: banco de
     pruebas público (sin datos privados) para la rutina.
 - `.github/workflows/aprendizaje-semanal.yml`: lunes 04:41 UTC, lo lanza
-  pg_cron (`20261009100000_programador_aprendizaje.sql`, **SIN APLICAR**; el
+  pg_cron (`20261009140000_programador_aprendizaje.sql`, **SIN APLICAR**; el
   `schedule:` queda de respaldo, trampa 15). Service_role solo GET. Falla en
   rojo sin el secret. **Sin caché de Actions** (la leerían las PR de forks:
   fecha + lugar de una salida es dato personal). Segundo trabajo: al subir
@@ -2354,10 +2352,10 @@ referencia. Sembrados el 2026-10-09 con lo no activado de
 llena. Activar uno aceptado: moverlo a especies.json y poner el retador en
 `promovido`.
 
-**Estado a 2026-10-09:** sin casos todavía (la migración
-`20261008120000_indice_pesca_salida.sql` sigue sin aplicar, así que el diario
-no guarda `indice_factores`; con `OPEN_METEO_API_KEY` el banco de pruebas
-recalcula igual a partir de lugar, fecha y hora). Los ficheros de
+**Estado a 2026-10-09:** la migración `20261008120000_indice_pesca_salida.sql`
+está aplicada, así que cada salida nueva del diario guarda `indice_factores`
+y entra en el banco de pruebas; con `OPEN_METEO_API_KEY` también se
+recalculan las antiguas a partir de lugar, fecha y hora. Los ficheros de
 `aprendizaje/` y `datos-robots/aprendizaje/` del repo salen de una pasada
 local sin Supabase (`senales.json` en `error` hasta la primera ejecución del
 workflow). Ideas no hechas: `ideas` de `aprendizaje/config.json` (salen en
@@ -3117,7 +3115,7 @@ GitHub trata los `schedule:` como "cuando pueda": `camaras-salud.yml` y `notific
 - La clave de GitHub (fine-grained, solo este repo, permiso Actions: Read and write) vive en Supabase Vault como `github_lanzar_workflows`. Se guarda con `guardar-token-programador.yml` desde el secret `PROGRAMADOR_GITHUB_TOKEN`; ese workflow hace además una prueba real (204 = funciona). **Si la clave caduca o se rota, actualizar el secret y relanzarlo.** Nunca pegarla en el chat ni en el editor SQL.
 - El `schedule:` de los dos workflows se queda como respaldo, con `concurrency` para que dos ejecuciones no se solapen.
 - Para añadir otra tarea: añadir su fichero a la lista de `lanzar_workflow_github()` y un `cron.schedule` nuevo, en una migración.
-- **Estado a 2026-10-08: no funciona.** `guardar-token-programador.yml` no se ha ejecutado nunca, así que no hay clave en Vault y pg_cron no lanza nada (camaras-salud.yml: 50 ejecuciones por `schedule` y 6 manuales en 10 días, en vez de ~480). Falta que Mikel cree el secret `PROGRAMADOR_GITHUB_TOKEN` y lance ese workflow. `espuma-camaras.yml` se añade a la lista en `20261008210000_programador_espuma_camaras.sql` y `aprendizaje-semanal.yml` en `20261009100000_programador_aprendizaje.sql` (las dos SIN APLICAR; la segunda redefine la lista completa, así que el orden da igual).
+- **Clave en Vault desde el 2026-10-08** (`guardar-token-programador.yml`, prueba real 204 a las 16:09 UTC). Antes no había clave y pg_cron no lanzaba nada (camaras-salud.yml: 50 ejecuciones por `schedule` y 6 manuales en 10 días, en vez de ~480). `espuma-camaras.yml` se añade a la lista en `20261008210000_programador_espuma_camaras.sql`, los de marketing en `20261009130000_programador_marketing.sql` (PR #142) y `aprendizaje-semanal.yml` en `20261009140000_programador_aprendizaje.sql` (SIN APLICAR; redefine la lista completa con todos, así que el orden da igual).
 
 ## Cámaras caídas: fuera de la vista a las 24 h, e IPCamLive resuelto en vivo (2026-09-28)
 

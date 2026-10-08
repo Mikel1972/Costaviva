@@ -63,9 +63,10 @@ export async function leerDiario({ url, key, emailsPrueba = [] }) {
   try {
     salidas = await leerTodo(url, key, "salidas_pesca", `${COLS_SALIDA},${COLS_INDICE}`);
   } catch (e) {
-    // Sin la migración 20261008120000 (columnas indice_*): se sigue sin ellas.
+    // Las columnas indice_* (migración 20261008120000, aplicada): si un día
+    // faltaran (trampa 10), se sigue sin ellas y se avisa.
     if (e.status !== 400) throw e;
-    errores.push("salidas_pesca sin las columnas indice_* (migración 20261008120000 sin aplicar): solo se puede recalcular con series");
+    errores.push("salidas_pesca sin las columnas indice_* (migración 20261008120000): solo se puede recalcular con series");
     salidas = await leerTodo(url, key, "salidas_pesca", COLS_SALIDA);
   }
   const capturas = await leerTodo(url, key, "capturas", "salida_id,especie,creado_en");

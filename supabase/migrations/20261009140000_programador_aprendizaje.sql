@@ -11,17 +11,16 @@
 --
 -- Qué cambia:
 --   1. lanzar_workflow_github() admite 'aprendizaje-semanal.yml' en su lista
---      cerrada. La lista incluye TODOS los anteriores (también
---      espuma-camaras.yml de 20261008210000): si esta migración se aplica
---      antes o después que aquella, el resultado es el mismo.
+--      cerrada. La lista incluye TODOS los demás (espuma-camaras.yml de
+--      20261008210000 y los dos de marketing de 20261009130000, PR #142): se
+--      apliquen en el orden que sea, la lista final es la misma.
 --   2. Un trabajo de pg_cron los lunes a las 04:41 UTC (el mismo minuto que
 --      el `schedule:` de respaldo del workflow; el workflow lleva
 --      `concurrency` para no solaparse).
 --
--- REQUISITO: la clave 'github_lanzar_workflows' en Vault (la guarda
--- guardar-token-programador.yml desde el secret PROGRAMADOR_GITHUB_TOKEN).
--- A 2026-10-09 todavía no se ha guardado: hasta entonces la función avisa y
--- sale, y queda el `schedule:` de respaldo.
+-- La clave 'github_lanzar_workflows' ya está en Vault (guardar-token-
+-- programador.yml, prueba real 204 el 2026-10-08 a las 16:09 UTC): al
+-- aplicar esta migración, el lunes siguiente ya lo lanza pg_cron.
 --
 -- Estándares (comun estandares/supabase.md): security definer con
 -- search_path vacío, sin EXECUTE para public, anon ni authenticated
@@ -38,7 +37,9 @@ declare
   token text;
   peticion bigint;
 begin
-  if workflow not in ('camaras-salud.yml', 'notificar-altas.yml', 'espuma-camaras.yml', 'aprendizaje-semanal.yml') then
+  if workflow not in ('camaras-salud.yml', 'notificar-altas.yml', 'espuma-camaras.yml',
+                      'robot-marketing-instagram.yml', 'robot-reel-instagram.yml',
+                      'aprendizaje-semanal.yml') then
     raise exception 'Workflow no permitido: %', workflow;
   end if;
 

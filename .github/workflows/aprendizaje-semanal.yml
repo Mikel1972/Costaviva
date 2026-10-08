@@ -9,7 +9,7 @@ name: Aprendizaje semanal del índice (sin IA)
 #   1. `semanal` (lunes de madrugada): banco de pruebas, ajuste de pesos con
 #      barreras, retadores en la sombra, vigilancia de datos y propuestas.
 #      Lo lanza pg_cron con lanzar_workflow_github() (migración
-#      20261009100000_programador_aprendizaje.sql): el `schedule:` de GitHub
+#      20261009140000_programador_aprendizaje.sql): el `schedule:` de GitHub
 #      se salta ejecuciones en este repo (trampa 15 de comun) y se queda de
 #      respaldo. Si hay cambios automáticos (pequeños y validados), abre una
 #      PR, corre los mismos tests que tests.yml y la fusiona SOLO si pasan;
