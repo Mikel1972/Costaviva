@@ -2,12 +2,15 @@
 //
 // Batimetría gratuita de EMODnet (DTM 2024, CC BY 4.0) en la app
 // (2026-10-08, aprobado por Mikel). Dos cosas:
-//   1. Profundidad del fondo de cada spot para el índice de pesca (variable
-//      de contexto `profundidad` de las reglas expertas). Spots fijos:
-//      assets/datos/profundidad-spots.json (scripts/batimetria/profundidad-spots.mjs,
-//      `zona_m`). Puntos propios: el fondo del propio punto, pedido en vivo a
-//      la API REST de EMODnet (`depth_sample`, sin clave, CORS abierto) y
-//      guardado en memoria; mientras no llega, null (la regla no aplica).
+//   1. Fondo de cada spot para el índice de pesca: las estadísticas de
+//      `estadisticasPunto` (batimetria-calculo.js), que las reglas expertas
+//      leen como `profundidad`, `prof_max_3km` y `dist_fondo_10_30m_km`
+//      (profundidad ALCANZABLE desde embarcación a 3 km de la orilla).
+//      Spots fijos: assets/datos/profundidad-spots.json
+//      (scripts/batimetria/profundidad-spots.mjs). Puntos propios: el mismo
+//      cálculo en el navegador sobre una caja de ~4 km pedida al WCS de
+//      EMODnet (sin clave, CORS abierto), guardado en memoria; mientras no
+//      llega, null (las reglas de profundidad no aplican).
 //   2. Capa de isóbatas de 20, 50 y 100 m (assets/datos/isobatas.json,
 //      scripts/batimetria/isobatas.mjs). Se enciende sola con la pestaña
 //      Embarcación y con su botón ("Isób.") a mano; se carga solo la
@@ -16,6 +19,8 @@
 //
 // Las funciones puras (sin DOM ni red) tienen tests en test/batimetria.test.js;
 // lo demás solo se usa en el navegador (index.html: window.Batimetria).
+
+import { estadisticasPunto, parsearWcsTexto, urlWcs, cajaAlrededor } from "./batimetria-calculo.js";
 
 export const ATRIBUCION_ISOBATAS =
   'Isóbatas: <a href="https://doi.org/10.12770/cf51df64-56f9-4a99-b1aa-36b8d7b743a1" target="_blank" rel="noopener">EMODnet Bathymetry Consortium (DTM 2024)</a>, '
@@ -27,24 +32,14 @@ export const ESTILO_ISOBATA = {
   100: { color: "#16476A", weight: 1.3, opacity: 0.7, dashArray: "2 4" },
 };
 
-// Profundidad (m, positiva) de un spot fijo según profundidad-spots.json, o null.
-export function profundidadDeSpot(datos, slug) {
-  const v = datos?.spots?.[slug]?.zona_m;
-  return Number.isFinite(v) ? v : null;
+// Estadísticas de fondo de un spot fijo según profundidad-spots.json, o null.
+export function batimetriaDeSpot(datos, slug) {
+  return datos?.spots?.[slug] || null;
 }
 
-// Respuesta de https://rest.emodnet-bathymetry.eu/depth_sample: `avg` es la
-// ELEVACIÓN media de la celda (negativa = mar). Profundidad positiva o null
-// (tierra o sin dato).
-export function profundidadDeRest(json) {
-  const e = json?.avg;
-  if (!Number.isFinite(e) || e >= 0) return null;
-  return Math.round(-e * 10) / 10;
-}
-
-export function urlDepthSample(lat, lon) {
-  return `https://rest.emodnet-bathymetry.eu/depth_sample?geom=POINT(${(+lon).toFixed(5)}%20${(+lat).toFixed(5)})`;
-}
+// Caja que se pide para un punto propio: 3 km de alcance + margen por si el
+// punto está en tierra a algo de distancia del agua.
+export const RADIO_CAJA_PUNTO_M = 4000;
 
 // ¿Se debe ver la capa? Encendida a mano, o sola en la pestaña Embarcación.
 export function capaVisible({ manual, modalidad }) {
@@ -68,18 +63,20 @@ export function iniciar({ onProfundidad } = {}) {
 
 // Síncrona (el contexto del índice lo es): devuelve lo que haya y, para un
 // punto propio sin dato aún, lo pide y avisa con onProfundidad(s) al llegar.
-export function profundidad(s) {
+export function batimetria(s) {
   if (!s) return null;
-  if (!s.esUsuario) return profundidadDeSpot(datosSpots, s.slug);
+  if (!s.esUsuario) return batimetriaDeSpot(datosSpots, s.slug);
   const c = vivos.get(s.slug);
   if (c) return c.valor;
   const entrada = { valor: null };
   vivos.set(s.slug, entrada);
-  fetch(urlDepthSample(s.lat, s.lon))
-    .then((r) => (r.ok ? r.json() : null))
-    .then((j) => {
-      entrada.valor = profundidadDeRest(j);
-      if (entrada.valor !== null) alCambiar(s);
+  fetch(urlWcs(cajaAlrededor(+s.lat, +s.lon, RADIO_CAJA_PUNTO_M)))
+    .then((r) => (r.ok ? r.text() : Promise.reject(new Error(`WCS HTTP ${r.status}`))))
+    .then((t) => {
+      const st = estadisticasPunto(parsearWcsTexto(t), +s.lat, +s.lon);
+      if (st.zona_m === null && st.prof_max_3km_m === null) return;
+      entrada.valor = st;
+      alCambiar(s);
     })
     .catch(() => { vivos.delete(s.slug); });
   return null;

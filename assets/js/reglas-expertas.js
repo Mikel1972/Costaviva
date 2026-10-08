@@ -45,7 +45,9 @@ export const VARIABLES_CONTEXTO = [
   "mes", "hora_local", "luz",
   "luna",                  // fracción iluminada de la luna (0 = nueva, 1 = llena), calculada aquí (iluminacionLunar)
   "coeficiente_marea",     // coeficiente de marea 20-120 (mareas vivas altas), calculado aquí (coeficienteMareaAstronomico)
-  "profundidad",           // m de fondo de la zona del spot (EMODnet, assets/datos/profundidad-spots.json; punto propio: el del punto); null sin dato
+  "profundidad",           // m: mediana del fondo a 1 km de la orilla del spot (EMODnet, assets/datos/profundidad-spots.json); null sin dato
+  "prof_max_3km",          // m: fondo más profundo alcanzable a 3 km o menos de la orilla (embarcación); null sin dato
+  "dist_fondo_10_30m_km",  // km: de la orilla al fondo de 10-30 m más cercano; null sin dato
 ];
 export const AGREGADOS = ["media", "min", "max", "suma", "delta", "fraccion"];
 export const OPERADORES = ["<", "<=", ">", ">=", "==", "!=", "en", "entre", "sector"];

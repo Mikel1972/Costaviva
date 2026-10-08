@@ -33,9 +33,11 @@ reglas de embarcación) e isóbatas de 20, 50 y 100 m en el mapa.
 - **Servicios usados** (públicos, sin clave):
   - WCS 2.0.1 `https://ows.emodnet-bathymetry.eu/wcs`, cobertura
     `emodnet__mean`, `FORMAT=text/plain` (scripts de `scripts/batimetria/`).
+    El navegador pide al mismo WCS una caja de ~4 km para los puntos propios
+    (CORS abierto: `access-control-allow-origin: *`).
   - REST `https://rest.emodnet-bathymetry.eu/depth_sample?geom=POINT(lon lat)`
-    (devuelve `avg`, elevación media de la celda; negativo = mar). Lo usa el
-    navegador para los puntos propios (CORS abierto a costaviva.org).
+    (devuelve `avg`, elevación media de la celda; negativo = mar): comprobado
+    que funciona, no se usa (hace falta el fondo alrededor, no el de un punto).
   - WMS `https://ows.emodnet-bathymetry.eu/wms`: capa "Fondo" ya existente
     (`emodnet:mean` + `emodnet:contours`). Ojo: `emodnet:contours` solo tiene
     50, 100, 200, 500, 1000, 2000 y 5000 m ("Generalised bathymetric contour

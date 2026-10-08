@@ -10,9 +10,10 @@ import assert from "node:assert/strict";
 import { readFileSync, statSync } from "node:fs";
 import {
   parsearWcsTexto, parsearDapAscii, estadisticasPunto, isolineas, encadenar, simplificar, longitudM,
+  contextoReglas, cajaAlrededor, urlWcs,
 } from "../scripts/batimetria/batimetria.mjs";
 import {
-  profundidadDeSpot, profundidadDeRest, urlDepthSample, capaVisible, ESTILO_ISOBATA, ATRIBUCION_ISOBATAS,
+  batimetriaDeSpot, capaVisible, ESTILO_ISOBATA, ATRIBUCION_ISOBATAS, RADIO_CAJA_PUNTO_M,
 } from "../assets/js/capa-batimetria.js";
 import { calcularVentana } from "../assets/js/ventana-actividad.js";
 import { validarRegla, VARIABLES_CONTEXTO } from "../assets/js/reglas-expertas.js";
@@ -98,6 +99,25 @@ test("estadisticasPunto: orilla, zona a 1 km de la orilla y distancia a cada is�
   assert.equal(st.dist_100m_m, null, "no hay 100 m en la caja");
   assert.ok(st.dist_20m_m > st.dist_10m_m);
   assert.ok(st.celdas_mar_1km > 0);
+  // Alcance desde la orilla (columna 3): en 21 columnas el fondo llega a 36 m;
+  // 10-30 m empieza en la columna 7 (~4 celdas = ~330 m de la orilla).
+  assert.equal(st.prof_max_3km_m, 36);
+  assert.ok(st.dist_10_30m_m >= 300 && st.dist_10_30m_m <= 360, `dist 10-30 ${st.dist_10_30m_m}`);
+  assert.deepEqual(contextoReglas(st), { profundidad: st.zona_m, prof_max_3km: 36, dist_fondo_10_30m_km: st.dist_10_30m_m / 1000 });
+});
+
+test("estadisticasPunto: el alcance se cuenta desde la orilla y solo hasta 3 km", () => {
+  // Rejilla de 0,005° (~400 m E-O): costa en la columna 2, 10 m más por celda.
+  const g = rejilla({ cols: 31, f: (r, c) => (c < 2 ? 5 : -(c - 1) * 10) });
+  g.dlon = 0.005;
+  const st = estadisticasPunto(g, 43.0, -3.0);
+  // 3 km desde la orilla = ~7 celdas de ~407 m: hasta la columna 9 (80 m).
+  assert.equal(st.prof_max_3km_m, 80);
+  // Punto propio en el mar: la orilla es el propio punto.
+  const enMar = estadisticasPunto(g, 43.0, -3.0 + 0.005 * 20);
+  assert.equal(enMar.en_tierra, false);
+  assert.equal(enMar.dist_mar_m, 0);
+  assert.equal(enMar.prof_max_3km_m, 260); // columna 27
 });
 
 test("estadisticasPunto: sin mar en la caja = todo null, sin inventar", () => {
@@ -105,6 +125,17 @@ test("estadisticasPunto: sin mar en la caja = todo null, sin inventar", () => {
   assert.equal(st.zona_m, null);
   assert.equal(st.dist_mar_m, null);
   assert.equal(st.dist_20m_m, null);
+  assert.equal(st.prof_max_3km_m, null);
+  assert.deepEqual(contextoReglas(st), { profundidad: null, prof_max_3km: null, dist_fondo_10_30m_km: null });
+  assert.deepEqual(contextoReglas(null), { profundidad: null, prof_max_3km: null, dist_fondo_10_30m_km: null });
+});
+
+test("cajaAlrededor y urlWcs: caja de ~radio metros y petición text/plain al WCS", () => {
+  const c = cajaAlrededor(43.4, -2.8, 4000);
+  assert.ok(Math.abs((c.norte - c.sur) * 111320 - 8000) < 30);
+  assert.ok(Math.abs((c.este - c.oeste) * 111320 * Math.cos((43.4 * Math.PI) / 180) - 8000) < 30);
+  assert.match(urlWcs(c), /^https:\/\/ows\.emodnet-bathymetry\.eu\/wcs\?.*COVERAGEID=emodnet__mean&SUBSET=Lat\(43\.36\d*,43\.43\d*\).*FORMAT=text\/plain$/);
+  assert.ok(RADIO_CAJA_PUNTO_M >= 3000);
 });
 
 // ---------------------------------------------------------------------------
@@ -146,12 +177,20 @@ test("profundidad-spots.json: todos los SPOTS, con fuente, fecha y valores razon
     const p = PROF.spots[s.slug];
     assert.ok(p, `falta ${s.slug}`);
     assert.ok(p.zona_m === null || (p.zona_m >= 0 && p.zona_m < 500), `${s.slug}: ${p.zona_m}`);
+    assert.ok(p.prof_max_3km_m === null || p.prof_max_3km_m >= (p.zona_m ?? 0), `${s.slug}: alcance < zona`);
+    assert.ok("dist_10_30m_m" in p && "dist_40m_m" in p);
     if (p.zona_m !== null) assert.ok(["emodnet_dtm_2024", "gebco_2026"].includes(p.fuente));
   }
   // Bakio, a 1 km de la playa: fondo de arena de unos 15 m (carta náutica: 10-20 m).
   assert.ok(PROF.spots.bakio.zona_m > 8 && PROF.spots.bakio.zona_m < 25);
-  // Mundaka: dentro de la ría, poco fondo.
+  // Mundaka: dentro de la ría, poco fondo delante; y desde su orilla (en la
+  // ría) no hay más de 40 m en 3 km. Hondarribia y Pasaia: puerto o bahía con
+  // poco fondo delante, pero más de 40 m a 3 km (embarcación).
   assert.ok(PROF.spots.mundaka.zona_m < 8);
+  assert.ok(PROF.spots.mundaka.prof_max_3km_m <= 40);
+  assert.ok(PROF.spots.hondarribia.zona_m < 8);
+  assert.ok(PROF.spots.hondarribia.prof_max_3km_m > 40);
+  assert.ok(PROF.spots.pasaia.prof_max_3km_m > 40);
 });
 
 test("isobatas.json: 20, 50 y 100 m, con fuente CC BY y tamaño contenido", () => {
@@ -172,13 +211,9 @@ test("isobatas.json: 20, 50 y 100 m, con fuente CC BY y tamaño contenido", () =
 // Capa del mapa (funciones puras)
 // ---------------------------------------------------------------------------
 test("capa: profundidad de un spot, de la API REST y visibilidad por pestaña", () => {
-  assert.equal(profundidadDeSpot(PROF, "bakio"), PROF.spots.bakio.zona_m);
-  assert.equal(profundidadDeSpot(PROF, "no-existe"), null);
-  assert.equal(profundidadDeSpot(null, "bakio"), null);
-  assert.equal(profundidadDeRest({ avg: -936.2 }), 936.2);
-  assert.equal(profundidadDeRest({ avg: 4.6 }), null, "tierra");
-  assert.equal(profundidadDeRest({}), null);
-  assert.match(urlDepthSample(43.43, -2.81), /depth_sample\?geom=POINT\(-2\.81000%2043\.43000\)$/);
+  assert.equal(batimetriaDeSpot(PROF, "bakio"), PROF.spots.bakio);
+  assert.equal(batimetriaDeSpot(PROF, "no-existe"), null);
+  assert.equal(batimetriaDeSpot(null, "bakio"), null);
   assert.equal(capaVisible({ manual: null, modalidad: "embarcacion" }), true);
   assert.equal(capaVisible({ manual: null, modalidad: "costa" }), false);
   assert.equal(capaVisible({ manual: false, modalidad: "embarcacion" }), false);
@@ -203,16 +238,18 @@ function serie(tempAgua, n = 72) {
   return h;
 }
 const BAKIO = { lat: 43.4297, lon: -2.8103, slug: "bakio" };
-function reglasProf(id, { tempAgua, profundidad, modalidad = "embarcacion", lugar = BAKIO }) {
+// fondo: { max3km, dist1030 } (m) -> estadísticas como las de profundidad-spots.json
+function reglasProf(id, { tempAgua, max3km, dist1030 = 1000, batimetria, modalidad = "embarcacion", lugar = BAKIO }) {
   const h = serie(tempAgua);
+  const b = batimetria !== undefined ? batimetria : { zona_m: 5, prof_max_3km_m: max3km, dist_10_30m_m: dist1030 };
   const r = calcularVentana(especie(id), DATOS.reglas_por_defecto, h, {
-    ...lugar, modalidad, profundidad, reglasModalidad: DATOS.reglas_por_modalidad, reglasExpertas: DATOS.reglas_expertas,
+    ...lugar, modalidad, batimetria: b, reglasModalidad: DATOS.reglas_por_modalidad, reglasExpertas: DATOS.reglas_expertas,
   })[48];
   return r.razones.filter((x) => String(x.factor).startsWith("regla:profundidad_"));
 }
 
 test("reglas de profundidad: bien formadas, de Mikel, activas y con variable de contexto", () => {
-  assert.ok(VARIABLES_CONTEXTO.includes("profundidad"));
+  for (const v of ["profundidad", "prof_max_3km", "dist_fondo_10_30m_km"]) assert.ok(VARIABLES_CONTEXTO.includes(v), v);
   const reglas = DATOS.reglas_expertas.reglas.filter((r) => r.variable === "profundidad");
   assert.deepEqual(reglas.map((r) => r.id).sort(), ["profundidad_invierno_profunda", "profundidad_invierno_somera", "profundidad_verano_somera"]);
   const opciones = {
@@ -227,35 +264,48 @@ test("reglas de profundidad: bien formadas, de Mikel, activas y con variable de 
   }
 });
 
-test("verano (agua ≥ 18 °C): fondo de 10-30 m suma a pargo, dorada y dentón", () => {
+test("verano (agua ≥ 18 °C): fondo de 10-30 m a 3 km o menos suma a pargo, dorada y dentón", () => {
   for (const id of ["bocinegro", "dorada", "denton"]) {
-    const rs = reglasProf(id, { tempAgua: 21, profundidad: 18 });
+    const rs = reglasProf(id, { tempAgua: 21, max3km: 60, dist1030: 1200 });
     assert.equal(rs.length, 1, id);
     assert.equal(rs[0].factor, "regla:profundidad_verano_somera");
     assert.ok(rs[0].aporte > 0);
     assert.equal(rs[0].texto, "profundidad adecuada para la época");
   }
-  assert.equal(reglasProf("dorada", { tempAgua: 21, profundidad: 45 }).length, 0, "verano y fondo hondo: no dice nada");
-  assert.equal(reglasProf("dorada", { tempAgua: 21, profundidad: 5 }).length, 0);
+  assert.equal(reglasProf("dorada", { tempAgua: 21, max3km: 60, dist1030: 3500 }).length, 0, "10-30 m demasiado lejos");
+  assert.equal(reglasProf("dorada", { tempAgua: 21, max3km: 8, dist1030: null }).length, 0, "sin fondo de 10-30 m");
 });
 
-test("invierno (agua ≤ 15 °C): poco fondo resta, más de 40 m suma; transición no aplica", () => {
-  const somero = reglasProf("denton", { tempAgua: 13, profundidad: 12 });
+test("invierno (agua ≤ 15 °C): más de 40 m a 3 km suma, si no resta; transición no aplica", () => {
+  const somero = reglasProf("denton", { tempAgua: 13, max3km: 27 });
   assert.equal(somero.length, 1);
   assert.equal(somero[0].factor, "regla:profundidad_invierno_somera");
   assert.ok(somero[0].aporte < 0);
-  const profundo = reglasProf("bocinegro", { tempAgua: 13, profundidad: 60 });
+  const profundo = reglasProf("bocinegro", { tempAgua: 13, max3km: 60 });
   assert.equal(profundo[0].factor, "regla:profundidad_invierno_profunda");
   assert.ok(profundo[0].aporte > 0);
-  assert.equal(reglasProf("bocinegro", { tempAgua: 13, profundidad: 30 }).length, 0, "25-40 m: nada");
-  assert.equal(reglasProf("bocinegro", { tempAgua: 16.5, profundidad: 12 }).length, 0, "15-18 °C: transición");
+  assert.equal(reglasProf("bocinegro", { tempAgua: 13, max3km: 40 })[0].factor, "regla:profundidad_invierno_somera", "40 m justos: no es > 40");
+  assert.equal(reglasProf("bocinegro", { tempAgua: 16.5, max3km: 12 }).length, 0, "15-18 °C: transición");
+});
+
+test("invierno con los datos reales: Hondarribia y Pasaia ya no restan (hay > 40 m cerca); Mundaka sí", () => {
+  const regla = (slug) => reglasProf("dorada", { tempAgua: 13, batimetria: PROF.spots[slug] })[0]?.factor;
+  assert.equal(regla("hondarribia"), "regla:profundidad_invierno_profunda");
+  assert.equal(regla("pasaia"), "regla:profundidad_invierno_profunda");
+  assert.equal(regla("mundaka"), "regla:profundidad_invierno_somera");
+  assert.equal(regla("bakio"), "regla:profundidad_invierno_profunda");
+  // Verano: los cuatro tienen fondos de 10-30 m a menos de 3 km.
+  for (const slug of ["hondarribia", "pasaia", "mundaka", "bakio"]) {
+    assert.equal(reglasProf("dorada", { tempAgua: 21, batimetria: PROF.spots[slug] })[0]?.factor, "regla:profundidad_verano_somera", slug);
+  }
 });
 
 test("reglas de profundidad: solo embarcación, solo esas especies, y sin dato no aplican", () => {
-  assert.equal(reglasProf("dorada", { tempAgua: 21, profundidad: 18, modalidad: "costa" }).length, 0);
-  assert.equal(reglasProf("lubina", { tempAgua: 21, profundidad: 18 }).length, 0);
-  assert.equal(reglasProf("dorada", { tempAgua: 21, profundidad: null }).length, 0);
-  assert.equal(reglasProf("dorada", { tempAgua: 21, profundidad: undefined }).length, 0);
+  assert.equal(reglasProf("dorada", { tempAgua: 21, max3km: 60, modalidad: "costa" }).length, 0);
+  assert.equal(reglasProf("lubina", { tempAgua: 21, max3km: 60 }).length, 0);
+  assert.equal(reglasProf("dorada", { tempAgua: 21, batimetria: null }).length, 0);
+  assert.equal(reglasProf("dorada", { tempAgua: 13, batimetria: null }).length, 0);
+  assert.equal(reglasProf("dorada", { tempAgua: 13, max3km: null }).length, 0);
   const tenerife = { lat: 28.46, lon: -16.25, slug: "santacruztenerife" };
-  assert.equal(reglasProf("dorada", { tempAgua: 21, profundidad: 18, lugar: tenerife }).length, 0, "fuera de Canarias");
+  assert.equal(reglasProf("dorada", { tempAgua: 21, max3km: 60, lugar: tenerife }).length, 0, "fuera de Canarias");
 });

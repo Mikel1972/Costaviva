@@ -54,6 +54,7 @@
 // test/indice-pesca-v2.test.js en node --test.
 
 import { reglasEnAmbito, evaluarReglas, iluminacionLunar, coeficienteMareaAstronomico } from "./reglas-expertas.js";
+import { contextoReglas } from "./batimetria-calculo.js";
 
 export const VERSION = "2026-10-08";
 // Se guarda en cada salida del diario (salidas_pesca.indice_version) para
@@ -328,7 +329,8 @@ function rangoOlaTexto(h) {
 //   region (si no, por coordenadas),
 //   caudalRio: "bajo"|"normal"|"alto"|null (río asociado al spot, solo hoy),
 //   rio: { nombre, distancia_desembocadura_km } | null (null = sin río conocido),
-//   profundidad: m de fondo de la zona del spot (EMODnet; ver capa-batimetria.js) | null,
+//   batimetria: estadísticas de fondo del spot (estadisticasPunto de
+//     batimetria-calculo.js: zona_m, prof_max_3km_m, dist_10_30m_m) | null,
 //   horaActual: "AAAA-MM-DDTHH:00" (para la fiabilidad: horizonte de previsión),
 //   b0: término independiente en log-odds (especies.json.indice.b0_logodds, 0 = 50),
 //   soloIndice: i (opcional: calcula solo esa hora; las demás salen null) }
@@ -537,7 +539,7 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
       caudal_rio: contexto.caudalRio ?? null,
       rio_desembocadura_km: contexto.rio?.distancia_desembocadura_km ?? null,
       turbidez: contexto.turbidez ?? null,
-      profundidad: Number.isFinite(contexto.profundidad) ? contexto.profundidad : null,
+      ...contextoReglas(contexto.batimetria),
       mes, hora_local: Number(h.hora.slice(11, 13)), luz,
       luna: iluminacionLunar(msUTC),
       coeficiente_marea: coeficienteMareaAstronomico(msUTC),

@@ -16,48 +16,17 @@
 // Las funciones de análisis (parsear, estadisticasPunto, isolineas,
 // simplificar) son puras y tienen tests en test/batimetria.test.js.
 
-export const EMODNET_WCS = "https://ows.emodnet-bathymetry.eu/wcs";
 export const GEBCO_DAP = "https://dap.ceda.ac.uk/thredds/dodsC/bodc/gebco/global/gebco_2026/ice_surface_elevation/netcdf/GEBCO_2026.nc";
 export const UA = "Costaviva-batimetria/1.0 (+https://costaviva.org; datos@costaviva.org)";
 
-const M_POR_GRADO = 111320;
-
-// ---------------------------------------------------------------------------
-// Rejilla: { lat0, lon0, dlat, dlon, filas, cols, v: Float64Array (fila mayor) }
-// lat0/lon0 = centro de la celda [0][0]; dlat suele ser negativo (de N a S).
-// ---------------------------------------------------------------------------
-export function valorRejilla(g, f, c) {
-  if (f < 0 || c < 0 || f >= g.filas || c >= g.cols) return NaN;
-  return g.v[f * g.cols + c];
-}
-export const latFila = (g, f) => g.lat0 + f * g.dlat;
-export const lonCol = (g, c) => g.lon0 + c * g.dlon;
-
-// Respuesta text/plain del WCS de EMODnet (GeoServer): cabecera con
-// "Grid range: GridEnvelope2D[0..C, 0..F]" y la transformación afín
-// (elt_0_0 = dlon, elt_0_2 = lon del centro de la primera columna,
-// elt_1_1 = dlat, elt_1_2 = lat del centro de la primera fila), luego
-// "Band 0:" y una fila de valores por línea.
-export function parsearWcsTexto(texto) {
-  const num = (k) => {
-    const m = texto.match(new RegExp(`"${k}",\\s*(-?[\\d.eE+-]+)`));
-    if (!m) throw new Error(`WCS: falta ${k} en la cabecera`);
-    return Number(m[1]);
-  };
-  const dlon = num("elt_0_0"), lon0 = num("elt_0_2"), dlat = num("elt_1_1"), lat0 = num("elt_1_2");
-  const i = texto.indexOf("Band 0:");
-  if (i < 0) throw new Error("WCS: respuesta sin 'Band 0:' (" + texto.slice(0, 120).replace(/\s+/g, " ") + ")");
-  const lineas = texto.slice(i + 7).split("\n").map((l) => l.trim()).filter(Boolean);
-  const filas = lineas.length;
-  const cols = lineas[0].split(/\s+/).length;
-  const v = new Float64Array(filas * cols);
-  lineas.forEach((l, f) => {
-    const p = l.split(/\s+/);
-    if (p.length !== cols) throw new Error(`WCS: fila ${f} con ${p.length} valores (esperados ${cols})`);
-    for (let c = 0; c < cols; c++) v[f * cols + c] = p[c] === "NaN" ? NaN : Number(p[c]);
-  });
-  return { lat0, lon0, dlat, dlon, filas, cols, v };
-}
+import {
+  EMODNET_WCS, M_POR_GRADO, valorRejilla, latFila, lonCol, parsearWcsTexto, urlWcs,
+} from "../../assets/js/batimetria-calculo.js";
+// Lo puro vive en assets/js/batimetria-calculo.js (lo usa también el navegador).
+export {
+  EMODNET_WCS, valorRejilla, latFila, lonCol, parsearWcsTexto, urlWcs,
+  estadisticasPunto, contextoReglas, cajaAlrededor, RADIO_ZONA_M, RADIO_ALCANCE_M, ISOBATAS_DISTANCIA,
+} from "../../assets/js/batimetria-calculo.js";
 
 // Respuesta .ascii de OPeNDAP (GEBCO): bloques "lon[n]", "lat[n]" y
 // "elevation.elevation[F][C]" con filas "[k], v1, v2...". Latitudes de S a N.
@@ -97,10 +66,7 @@ async function pedir(url, intentos = 4) {
 
 // Caja { sur, norte, oeste, este } de EMODnet. escala (0-1) = SCALEFACTOR.
 export async function rejillaEmodnet(caja, escala = 1) {
-  const url = `${EMODNET_WCS}?SERVICE=WCS&REQUEST=GetCoverage&VERSION=2.0.1&COVERAGEID=emodnet__mean`
-    + `&SUBSET=Lat(${caja.sur},${caja.norte})&SUBSET=Long(${caja.oeste},${caja.este})`
-    + (escala !== 1 ? `&SCALEFACTOR=${escala}` : "") + "&FORMAT=text/plain";
-  return parsearWcsTexto(await pedir(url));
+  return parsearWcsTexto(await pedir(urlWcs(caja, escala)));
 }
 
 // Misma caja en GEBCO_2026 (15", índices de celda: (lat+90)·240, (lon+180)·240).
@@ -110,71 +76,6 @@ export async function rejillaGebco(caja) {
   const r = `[${f0}:1:${f1}][${c0}:1:${c1}]`;
   const url = `${GEBCO_DAP}.ascii?elevation${encodeURIComponent(r)},lat${encodeURIComponent(`[${f0}:1:${f1}]`)},lon${encodeURIComponent(`[${c0}:1:${c1}]`)}`;
   return parsearDapAscii(await pedir(url));
-}
-
-// ---------------------------------------------------------------------------
-// Estadísticas de profundidad alrededor de un punto de la costa.
-// Profundidades en metros positivos; celdas de tierra (elevación >= 0) o sin
-// dato no cuentan. El punto de un spot suele caer en la playa, el puerto o
-// incluso tierra adentro (algunos, a 1-4 km del agua), así que la zona se
-// mide desde la ORILLA: la celda de mar más cercana al spot. `zona_m` (la que
-// usa el índice de pesca) es la mediana de las celdas de mar a 1 km o menos
-// de esa orilla: el fondo de la zona que tiene delante el spot.
-// ---------------------------------------------------------------------------
-export const RADIO_ZONA_M = 1000;
-export const ISOBATAS_DISTANCIA = [10, 20, 30, 50, 100];
-
-function mediana(xs) {
-  if (!xs.length) return null;
-  const s = [...xs].sort((a, b) => a - b), k = s.length >> 1;
-  return s.length % 2 ? s[k] : (s[k - 1] + s[k]) / 2;
-}
-const r1 = (x) => (x === null || x === undefined ? null : Math.round(x * 10) / 10);
-
-export function estadisticasPunto(g, lat, lon) {
-  const cosLat = Math.cos((lat * Math.PI) / 180);
-  const fPunto = Math.round((lat - g.lat0) / g.dlat), cPunto = Math.round((lon - g.lon0) / g.dlon);
-  const elevPunto = valorRejilla(g, fPunto, cPunto);
-  const distDesde = (la, lo, f, c) => Math.hypot((lonCol(g, c) - lo) * M_POR_GRADO * cosLat, (latFila(g, f) - la) * M_POR_GRADO);
-  // 1) Orilla: celda de mar más cercana al spot; distancias a cada isóbata.
-  let distMar = Infinity, orilla = null;
-  const distIso = Object.fromEntries(ISOBATAS_DISTANCIA.map((p) => [p, Infinity]));
-  for (let f = 0; f < g.filas; f++) {
-    for (let c = 0; c < g.cols; c++) {
-      const e = g.v[f * g.cols + c];
-      if (!(e < 0)) continue; // tierra o NaN
-      const d = distDesde(lat, lon, f, c);
-      if (d < distMar) { distMar = d; orilla = [f, c]; }
-      for (const p of ISOBATAS_DISTANCIA) if (-e >= p && d < distIso[p]) distIso[p] = d;
-    }
-  }
-  // 2) Zona: celdas de mar a 500 m y a 1 km de la orilla.
-  const r500 = [], r1k = [];
-  if (orilla) {
-    const [la, lo] = [latFila(g, orilla[0]), lonCol(g, orilla[1])];
-    for (let f = 0; f < g.filas; f++) {
-      for (let c = 0; c < g.cols; c++) {
-        const e = g.v[f * g.cols + c];
-        if (!(e < 0)) continue;
-        const d = distDesde(la, lo, f, c);
-        if (d <= 500) r500.push(-e);
-        if (d <= RADIO_ZONA_M) r1k.push(-e);
-      }
-    }
-  }
-  const dist = (d) => (Number.isFinite(d) ? Math.round(d / 10) * 10 : null);
-  return {
-    punto_m: Number.isFinite(elevPunto) && elevPunto < 0 ? r1(-elevPunto) : null,
-    en_tierra: Number.isFinite(elevPunto) ? elevPunto >= 0 : null,
-    dist_mar_m: dist(distMar),
-    zona_m: r1(mediana(r1k)),
-    min_500m_m: r500.length ? r1(Math.min(...r500)) : null,
-    media_500m_m: r500.length ? r1(r500.reduce((s, x) => s + x, 0) / r500.length) : null,
-    max_500m_m: r500.length ? r1(Math.max(...r500)) : null,
-    max_1km_m: r1k.length ? r1(Math.max(...r1k)) : null,
-    ...Object.fromEntries(ISOBATAS_DISTANCIA.map((p) => [`dist_${p}m_m`, dist(distIso[p])])),
-    celdas_mar_1km: r1k.length,
-  };
 }
 
 // ---------------------------------------------------------------------------

@@ -3227,7 +3227,7 @@ function contextoIndiceSpot(s, datos, modalidad, dia = 0) {
     turbidez: dia === 0 ? (TURBIDEZ[s.slug]?.etiqueta || null) : null,
     caudalRio: dia === 0 ? caudalRioSpot(s) : null,
     rio: VA.rioDeSpot(s, RIOS),
-    profundidad: window.Batimetria?.profundidad(s) ?? null,
+    batimetria: window.Batimetria?.batimetria(s) ?? null,
     horaActual: horaActualMadridISO(),
   };
 }
