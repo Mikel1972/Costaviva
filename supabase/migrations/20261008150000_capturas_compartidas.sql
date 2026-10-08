@@ -20,7 +20,8 @@
 --     (ni con la anon key ni con sesión). Solo se expone por funciones de
 --     AGREGADOS con k-anonimato: un grupo solo sale si lo forman capturas de
 --     al menos 5 USUARIOS DISTINTOS (no 5 capturas: 5 capturas de una misma
---     persona siguen siendo una persona). Espejo en JS: agregarK() de
+--     persona siguen siendo una persona). De momento solo las puede llamar
+--     el backend (service_role); la app no las usa aún. Espejo en JS: agregarK() de
 --     scripts/observaciones/lib.mjs, probado en test/observaciones.test.js.
 --
 -- Por qué una tabla de marcas y no una columna en capturas: capturas no tiene
@@ -47,7 +48,7 @@ create or replace function public.celda_difuminada(p_lat double precision, p_lon
 returns table (celda text, celda_lat numeric, celda_lon numeric)
 language sql
 immutable
-set search_path = public
+set search_path = public, extensions
 as $$
   with f as (
     select floor(p_lat / (p_km / 111.32)) as fila, p_km / 111.32 as paso_lat
@@ -135,7 +136,7 @@ create or replace function public.copiar_captura_a_comunidad(p_captura_id uuid)
 returns uuid
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_id uuid;
@@ -179,7 +180,7 @@ create or replace function public.al_compartir_captura()
 returns trigger
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 begin
   new.comunidad_id := public.copiar_captura_a_comunidad(new.captura_id);
@@ -192,7 +193,7 @@ create or replace function public.al_retirar_captura_compartida()
 returns trigger
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 begin
   if old.comunidad_id is not null then
@@ -208,7 +209,7 @@ create or replace function public.al_editar_captura_compartida()
 returns trigger
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_viejo uuid;
@@ -252,7 +253,7 @@ create or replace function public.comunidad_capturas_por_zona(p_especie text def
 returns table (especie text, celda text, celda_lat numeric, celda_lon numeric, mes int, franja text, capturas int, talla_media_cm numeric)
 language sql
 security definer
-set search_path = public
+set search_path = public, extensions
 stable
 as $$
   select cc.especie, cc.celda, cc.celda_lat, cc.celda_lon, cc.mes,
@@ -275,7 +276,7 @@ create or replace function public.comunidad_capturas_por_condiciones(p_especie t
 returns table (especie text, mes int, marea_tendencia text, presion_tendencia text, oleaje_tramo text, capturas int)
 language sql
 security definer
-set search_path = public
+set search_path = public, extensions
 stable
 as $$
   select cc.especie, cc.mes, cc.marea_tendencia, cc.presion_tendencia,
@@ -297,7 +298,11 @@ revoke execute on function public.copiar_captura_a_comunidad(uuid) from public, 
 revoke execute on function public.al_compartir_captura() from public, anon, authenticated;
 revoke execute on function public.al_retirar_captura_compartida() from public, anon, authenticated;
 revoke execute on function public.al_editar_captura_compartida() from public, anon, authenticated;
-revoke execute on function public.comunidad_capturas_por_zona(text) from public, anon;
-revoke execute on function public.comunidad_capturas_por_condiciones(text) from public, anon;
-grant execute on function public.comunidad_capturas_por_zona(text) to authenticated;
-grant execute on function public.comunidad_capturas_por_condiciones(text) to authenticated;
+-- Las dos de agregados tampoco se conceden a authenticated mientras la app no
+-- las llame (D10: a authenticated solo si lo necesita). Se concede
+-- EXECUTE to authenticated en la migración que las use desde el cliente.
+-- Mientras tanto solo el backend (service_role) puede llamarlas.
+revoke execute on function public.comunidad_capturas_por_zona(text) from public, anon, authenticated;
+revoke execute on function public.comunidad_capturas_por_condiciones(text) from public, anon, authenticated;
+grant execute on function public.comunidad_capturas_por_zona(text) to service_role;
+grant execute on function public.comunidad_capturas_por_condiciones(text) to service_role;

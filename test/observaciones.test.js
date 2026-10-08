@@ -260,11 +260,14 @@ test("migración: anónima de verdad, sin lectura directa y con k >= 5", () => {
   assert.equal(/for update/.test(MIGRACION), false);
   assert.equal(/disable row level security/i.test(MIGRACION), false);
   // comun D9/D10: search_path fijo y EXECUTE revocado.
-  for (const f of MIGRACION.match(/security definer\s*\n\s*set search_path = public/g) || []) assert.ok(f);
-  assert.equal((MIGRACION.match(/security definer/g) || []).length, (MIGRACION.match(/security definer\s*\n\s*set search_path = public/g) || []).length);
-  for (const fn of ["copiar_captura_a_comunidad", "al_compartir_captura", "al_retirar_captura_compartida", "al_editar_captura_compartida"]) {
+  for (const f of MIGRACION.match(/security definer\s*\n\s*set search_path = public, extensions\n/g) || []) assert.ok(f);
+  assert.equal((MIGRACION.match(/security definer/g) || []).length, (MIGRACION.match(/security definer\s*\n\s*set search_path = public, extensions\n/g) || []).length);
+  assert.equal(/set search_path = public\n/.test(MIGRACION), false);
+  for (const fn of ["celda_difuminada", "copiar_captura_a_comunidad", "al_compartir_captura", "al_retirar_captura_compartida", "al_editar_captura_compartida", "comunidad_capturas_por_zona", "comunidad_capturas_por_condiciones"]) {
     assert.match(MIGRACION, new RegExp(`revoke execute on function public\\.${fn}\\([^)]*\\) from public, anon, authenticated`));
   }
+  // D10: nada se concede a authenticated mientras la app no llame a los agregados.
+  assert.equal(/grant execute[^;]*to authenticated/.test(MIGRACION), false);
 });
 
 // ---------------------------------------------------------------------------
