@@ -239,7 +239,7 @@
    "licencia": "propio (aportación de Mikel a Costaviva)",
    "fecha_documento": "2026-10-08",
    "fecha_consulta": "2026-10-08",
-   "nota": "Capturas y observaciones propias en playas y costa de Bizkaia (Bakio, Armintza), contadas el 2026-10-08. Confianza media: experiencia de una persona en una zona; calibrar con el diario."
+   "nota": "Capturas y observaciones propias en Bizkaia, desde playa y costa (Bakio, Armintza) y desde embarcación, contadas el 2026-10-08. Confianza media: experiencia de una persona en una zona; calibrar con el diario."
   },
   "boe_rd46_2019": {
    "titulo": "Real Decreto 46/2019, por el que se regula la pesquería de atún rojo en el Atlántico Oriental y el Mediterráneo (texto consolidado)",
@@ -1402,7 +1402,16 @@
      "tipo_fuente": "heuristica_experta",
      "criterio": "Se pesca también desde embarcación (fondo, curricán o jigging según la especie): práctica habitual de pesca recreativa.",
      "profundidad_m": null,
-     "zona": null
+     "zona": null,
+     "profundidad_temporada": {
+      "verano": "a unos 20 m",
+      "invierno": "más profundo",
+      "fuentes": [
+       "mikel_campo_bizkaia"
+      ],
+      "tipo_fuente": "heuristica_experta_local",
+      "nota": "Mikel (embarcación): en verano se acerca a fondos de unos 20 m; en invierno, al enfriarse el agua, baja a más profundidad. Observación de campo, confianza media; sin fuente abierta para el rango de invierno."
+     }
     },
     "submarina": {
      "aplica": true,
@@ -4625,7 +4634,16 @@
      "tipo_fuente": "heuristica_experta",
      "criterio": "Se pesca también desde embarcación (fondo, curricán o jigging según la especie): práctica habitual de pesca recreativa.",
      "profundidad_m": null,
-     "zona": null
+     "zona": null,
+     "profundidad_temporada": {
+      "verano": "a unos 20 m",
+      "invierno": "más profundo",
+      "fuentes": [
+       "mikel_campo_bizkaia"
+      ],
+      "tipo_fuente": "heuristica_experta_local",
+      "nota": "Mikel (embarcación): en verano se acerca a fondos de unos 20 m; en invierno, al enfriarse el agua, baja a más profundidad. Observación de campo, confianza media; sin fuente abierta para el rango de invierno."
+     }
     },
     "submarina": {
      "aplica": true,
@@ -4914,7 +4932,17 @@
      "tipo_fuente": "heuristica_experta",
      "criterio": "Se pesca también desde embarcación (fondo, curricán o jigging según la especie): práctica habitual de pesca recreativa.",
      "profundidad_m": null,
-     "zona": null
+     "zona": null,
+     "profundidad_temporada": {
+      "verano": "a unos 20 m",
+      "invierno": "más profundo",
+      "fuentes": [
+       "mikel_campo_bizkaia",
+       "gencat_guia_pr_2021"
+      ],
+      "tipo_fuente": "heuristica_experta_local",
+      "nota": "Mikel (embarcación): el pargo se acerca en verano a fondos de unos 20 m y en invierno baja a más profundidad. Lo confirma la guía de la Generalitat: en verano en aguas poco profundas (menos de 50 m), en invierno migra a profundidad y en primavera vuelve a subir para reproducirse. Sin rango numérico de invierno con fuente."
+     }
     },
     "submarina": {
      "aplica": null,

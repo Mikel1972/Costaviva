@@ -278,6 +278,15 @@ export function aplicaModalidad(especie, modalidad, region = null) {
   return true;
 }
 
+// Consejo corto de profundidad por temporada de una modalidad (hoy solo
+// embarcación: pargo, dorada y dentón, observación de campo de Mikel):
+// "Verano: a unos 20 m · Invierno: más profundo", o null sin dato.
+export function consejoProfundidad(especie, modalidad) {
+  const p = especie?.modalidades?.[modalidad]?.profundidad_temporada;
+  if (!p || (!p.verano && !p.invierno)) return null;
+  return [p.verano && `Verano: ${p.verano}`, p.invierno && `Invierno: ${p.invierno}`].filter(Boolean).join(" · ");
+}
+
 // Reglas efectivas de una especie en una modalidad:
 //   reglas_por_defecto <- reglas_por_modalidad[m] <- reglas de la especie
 // salvo en los `factores_de_modalidad` (oleaje, viento, turbidez...), donde

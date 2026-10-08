@@ -10,7 +10,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import {
   MODALIDADES, aplicaModalidad, especiesParaModalidad, especiesDeTemporada, cebosParaRegion,
-  modalidadesDeCebo, calcularVentana, reglasParaModalidad, normativaModalidad, solDelDia, minutosMadrid,
+  modalidadesDeCebo, calcularVentana, reglasParaModalidad, normativaModalidad, solDelDia, minutosMadrid, consejoProfundidad,
 } from "../assets/js/ventana-actividad.js";
 import { elegirEspeciePost, modalidadDelPost } from "../scripts/marketing/especie-post.mjs";
 
@@ -268,4 +268,17 @@ test("atún rojo: nunca de temporada (solo captura y suelta en España, prohibid
   assert.ok(n.especie.some((x) => /captura y suelta/.test(x.texto)));
   const pv = normativaModalidad(DATOS, "embarcacion", "cantabrico", { euskadi: true, especie: especie("atun_rojo") });
   assert.ok(pv.especie.some((x) => x.jurisdiccion === "ES-PV" && /prohibida/.test(x.texto)));
+});
+
+test("profundidad por temporada (Mikel, embarcación): pargo, dorada y dentón; consejo corto y solo en embarcación", () => {
+  for (const id of ["bocinegro", "dorada", "denton"]) {
+    assert.equal(consejoProfundidad(especie(id), "embarcacion"), "Verano: a unos 20 m · Invierno: más profundo");
+    assert.equal(consejoProfundidad(especie(id), "costa"), null);
+    const p = especie(id).modalidades.embarcacion.profundidad_temporada;
+    assert.ok(p.fuentes.every((f) => DATOS.fuentes[f]));
+  }
+  assert.equal(consejoProfundidad(especie("lubina"), "embarcacion"), null);
+  const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
+  assert.ok(/consejoProfundidad\(especie, vaEstado\.modalidad\)/.test(html));
+  assert.ok(!/hondo/.test(JSON.stringify(DATOS)));
 });

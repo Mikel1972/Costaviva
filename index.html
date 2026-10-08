@@ -3333,6 +3333,8 @@ function pintarTiraVA(especie, region, fecha, datos) {
     ? `🪝 <b>Cebos típicos:</b> ${[naturales && `${naturales} (natural)`, artificiales && `${artificiales} (artificial)`].filter(Boolean).join(" · ")}`
       + `<span class="va-nota" style="display:block; margin-top:2px;">${conFuente.length ? `Según <a href="${escVA(conFuente[0].url)}" target="_blank" rel="noopener">${escVA((datos.fuentes[conFuente[0].fuente]?.editor || "la fuente").split(",")[0])}</a>` : "Práctica habitual"}${conFuente.length && conFuente.length < cebos.length ? " y práctica habitual de pesca" : ""}. Revisa la normativa de cebos de tu comunidad.</span>`
     : "";
+  const consejoProf = VA.consejoProfundidad ? VA.consejoProfundidad(especie, vaEstado.modalidad) : null;
+  if (consejoProf) document.getElementById("vaCebos").innerHTML += `<span class="va-nota" style="display:block; margin-top:2px;">⬇ <b>Profundidad:</b> ${escVA(consejoProf)}</span>`;
 
   const tallas = VA.tallasParaRegion(especie, region, VA.enEuskadi(vaEstado.s.lat, vaEstado.s.lon));
   const t = tallas.find((x) => x.valor_cm !== null || x.peso_g !== undefined);
