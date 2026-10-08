@@ -342,7 +342,8 @@ con lectura vigente, manda su cámara.
    factor (peso 0,5), por el coeficiente PREVIO del sitio que ve la cámara
    (1 en las expuestas); etiquetas de Mikel sobre fotos (peso 5) y "ola
    real que veo" (peso 3, emparejada con la lectura de la cámara propia en
-   ±45 min). Ajuste en logaritmos; p fijo en 1 hasta tener ≥ 12 muestras
+   ±45 min); etiquetas de Claude mirando el fotograma (peso 2, ver
+   "Etiquetas de Claude" abajo). Ajuste en logaritmos; p fijo en 1 hasta tener ≥ 12 muestras
    con alturas que varíen ×1,8. Se calibra SIN la lectura actual.
 2. Incertidumbre: exp(rms log) - 1, con mínimo ±50 % mientras no haya 3
    días distintos y alturas que varíen ×1,5. **Hoy (un solo estado de mar)
@@ -362,7 +363,8 @@ con lectura vigente, manda su cámara.
    calibracion.mjs). Ruido = mediana de la variación de la espuma entre
    lecturas `ok` del mismo encuadre separadas ≤ 45 min. Si es > ±30 % o aún
    no hay 3 pares para medirlo, la cámara solo sustituye al modelo con ≥ 5
-   etiquetas o ≥ 3 días con alturas variadas. Mientras tanto se mide, se
+   etiquetas (o su equivalente con las de Claude: 8 en ≥ 2 franjas) o ≥ 3
+   días con alturas variadas. Mientras tanto se mide, se
    guarda y calibra, pero la fila sale con `sustituye_modelo = false` y
    /prevision no la usa (ni para el spot, ni para la previsión, ni para las
    vecinas). Con los datos del 2026-10-08 ninguna cámara pasa todavía
@@ -430,6 +432,51 @@ fuerte (se dibujaron con marea media subiendo; la guarda de arena cubre la
 arena con color, no la arena gris con bruma); Orio caída; cuando haya
 semanas de datos y etiquetas, revisar `calibracion.json` y los coeficientes
 estimados de `ABRIGO_SPOTS` con los de las cámaras.
+
+**Etiquetas de Claude (2026-10-08, Mikel: "puedes calibrar tú la cámara.
+Debes, de hecho"):** Claude mira fotogramas de las cámaras (en una sesión o
+en una rutina del plan de Claude, NUNCA con la API ni `claude -p`) y anota la
+banda de ola que ve en `datos-robots/oleaje-camaras/etiquetas-claude.jsonl`
+(cámara, encuadre, fecha UTC, banda o `no_se_sabe`, confianza, motivo,
+espuma medida con el mismo código del robot, hash del fotograma; sin
+imágenes). Procedimiento y texto de la rutina diaria:
+`scripts/oleaje-camaras/RUTINA_ETIQUETADO.md`; lote con
+`preparar-lote-etiquetado.mjs` (captura o miniaturas del bucket, y
+`--anotar`); recalcular con `medir-espuma.mjs --solo-calibrar` (el robot
+también las lee en cada ejecución). La rutina sube a
+`robot/etiquetas-olas-AAAA-MM-DD` y `robot-diseno-pr.yml` le abre la PR.
+**Pendiente (Mikel):** crear la rutina en claude.ai/code/routines con el
+texto del final de `RUTINA_ETIQUETADO.md` (diaria, con luz, p. ej. 14:00
+UTC).
+- Peso 2 (1 si la confianza es `baja`): menos que Mikel (5) y "ola real"
+  (3), más que las automáticas (1 / 0,5). `no_se_sabe` no cuenta. Solo
+  calibran fotogramas `ok`, o `otro_encuadre` con `encuadreVerificado`
+  (Claude comprobó con `<id>-roi.jpg` que es el encuadre de la referencia y
+  el ROI cae en la rompiente; lo que falló fue la huella por marea o luz).
+- `camaraSustituyeModelo()`: una etiqueta de Claude vale 5/8 de una de
+  personas (8 solas, o 3 de Mikel + 4 de Claude) y además tienen que venir
+  de ≥ 2 franjas de 2 h UTC (`franjaHoraria()`): mirar 8 veces el mismo mar
+  no basta. Y la calibración de algún encuadre con esas etiquetas tiene que
+  cuadrar con ellas (errorRel ≤ 75 %, `ERROR_MAXIMO_CLAUDE`): Berria tenía 9
+  etiquetas en 2 franjas el primer día pero ±100 % (boya 3,1 m, etiquetas
+  1,5 m, zona dinámica que cambia con el zoom) y NO sustituye.
+- `p` (exponente) solo se ajusta con muestras de ≥ 2 días: en un día, la
+  "variedad" de alturas puede venir solo de que boya y etiquetas discrepan
+  para el mismo mar (daba p = 0,5 en Berria). `nEtiquetas` sigue contando solo las de personas;
+  `nEtiquetasClaude` y `franjasClaude` van aparte en `calibracion.json`,
+  que ahora lleva también `sustitucion` por cámara.
+- Trampas vistas el primer día (15:45-17:25 UTC): por la tarde la mayoría
+  de las cámaras de la Diputación están en planos que no son los de
+  referencia (Mutriku mira al puerto, Deba y Zurriola a otro sitio) y salen
+  `otro_encuadre`; **Sopela (Detectia) cambia de encuadre**: la foto es
+  horaria (hh:04) y salió con tres planos distintos (la referencia de las
+  10:20 UTC, uno más cerrado a las 15:04 y otro inclinado a las 16:04 y
+  17:04); en los dos nuevos el ROI cae en mar abierto detrás de la
+  rompiente (espuma 0,002-0,14) y no calibra. Parecía la marea y no lo era.
+  Falta saber si son posiciones fijas (entonces, una referencia y un ROI
+  por posición) o la cámara se mueve sola; Bakio a contraluz tiene brillos del
+  sol dentro del ROI; con luz cálida la espuma tiene color de arena y la
+  guarda la marca `orilla` (Mundaka 17:50 local).
 
 ## Open-Meteo: licencia comercial, API key y proxy `/meteo/` (2026-10-08)
 

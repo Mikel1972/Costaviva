@@ -1,16 +1,36 @@
 {
- "fecha": "2026-10-08T16:37:48.093Z",
- "lineasHistorial": 59,
- "etiquetas": 0,
+ "fecha": "2026-10-08T17:26:52.965Z",
+ "lineasHistorial": 71,
+ "etiquetas": 43,
+ "etiquetasClaude": 43,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 16.0237,
+   "a": 30.4645,
+   "p": 1,
+   "n": 4,
+   "nEtiquetas": 0,
+   "nEtiquetasClaude": 3,
+   "franjasClaude": [
+    "2026-10-08T16"
+   ],
+   "dias": 1,
+   "hMin": 0.3,
+   "hMax": 0.54,
+   "errorRel": 1,
+   "pocosDatos": true
+  },
+  "hondarribia/bocana": {
+   "a": 10.3448,
    "p": 1,
    "n": 1,
    "nEtiquetas": 0,
+   "nEtiquetasClaude": 1,
+   "franjasClaude": [
+    "2026-10-08T16"
+   ],
    "dias": 1,
-   "hMin": 0.54,
-   "hMax": 0.54,
+   "hMin": 0.3,
+   "hMax": 0.3,
    "errorRel": 0.5,
    "pocosDatos": true
   },
@@ -19,6 +39,8 @@
    "p": 1,
    "n": 3,
    "nEtiquetas": 0,
+   "nEtiquetasClaude": 0,
+   "franjasClaude": [],
    "dias": 1,
    "hMin": 3.51,
    "hMax": 3.59,
@@ -26,12 +48,17 @@
    "pocosDatos": true
   },
   "zarautz/dinamico": {
-   "a": 20.232,
+   "a": 16.9005,
    "p": 1,
-   "n": 5,
+   "n": 13,
    "nEtiquetas": 0,
+   "nEtiquetasClaude": 7,
+   "franjasClaude": [
+    "2026-10-08T14",
+    "2026-10-08T16"
+   ],
    "dias": 1,
-   "hMin": 2.85,
+   "hMin": 2.5,
    "hMax": 3.59,
    "errorRel": 0.5,
    "pocosDatos": true
@@ -41,6 +68,8 @@
    "p": 1,
    "n": 3,
    "nEtiquetas": 0,
+   "nEtiquetasClaude": 0,
+   "franjasClaude": [],
    "dias": 1,
    "hMin": 3.59,
    "hMax": 3.59,
@@ -48,47 +77,65 @@
    "pocosDatos": true
   },
   "zumaia/a": {
-   "a": 16.3516,
+   "a": 24.3116,
    "p": 1,
-   "n": 4,
+   "n": 7,
    "nEtiquetas": 0,
+   "nEtiquetasClaude": 2,
+   "franjasClaude": [
+    "2026-10-08T14",
+    "2026-10-08T16"
+   ],
    "dias": 1,
-   "hMin": 3.51,
+   "hMin": 2.5,
    "hMax": 3.59,
-   "errorRel": 0.5,
+   "errorRel": 1,
    "pocosDatos": true
   },
   "deba/rompiente": {
-   "a": 28.4797,
+   "a": 23.5657,
    "p": 1,
-   "n": 4,
+   "n": 8,
    "nEtiquetas": 0,
+   "nEtiquetasClaude": 3,
+   "franjasClaude": [
+    "2026-10-08T16"
+   ],
    "dias": 1,
-   "hMin": 3.51,
+   "hMin": 1.5,
    "hMax": 3.59,
-   "errorRel": 0.513,
+   "errorRel": 1,
    "pocosDatos": true
   },
   "mundaka/principal": {
-   "a": 5.9143,
+   "a": 12.0463,
    "p": 1,
-   "n": 1,
+   "n": 5,
    "nEtiquetas": 0,
+   "nEtiquetasClaude": 3,
+   "franjasClaude": [
+    "2026-10-08T14",
+    "2026-10-08T16"
+   ],
    "dias": 1,
-   "hMin": 2.18,
+   "hMin": 1.5,
    "hMax": 2.18,
-   "errorRel": 0.5,
+   "errorRel": 0.952,
    "pocosDatos": true
   },
   "bakio/principal": {
-   "a": 12.9618,
+   "a": 14.8215,
    "p": 1,
-   "n": 2,
+   "n": 3,
    "nEtiquetas": 0,
+   "nEtiquetasClaude": 1,
+   "franjasClaude": [
+    "2026-10-08T16"
+   ],
    "dias": 1,
-   "hMin": 2.81,
+   "hMin": 1.5,
    "hMax": 3.12,
-   "errorRel": 0.882,
+   "errorRel": 0.733,
    "pocosDatos": true
   },
   "sopelana/principal": {
@@ -96,6 +143,8 @@
    "p": 1,
    "n": 2,
    "nEtiquetas": 0,
+   "nEtiquetasClaude": 0,
+   "franjasClaude": [],
    "dias": 1,
    "hMin": 3.12,
    "hMax": 3.12,
@@ -107,6 +156,8 @@
    "p": 1,
    "n": 1,
    "nEtiquetas": 0,
+   "nEtiquetasClaude": 0,
+   "franjasClaude": [],
    "dias": 1,
    "hMin": 3.12,
    "hMax": 3.12,
@@ -118,6 +169,8 @@
    "p": 1,
    "n": 1,
    "nEtiquetas": 0,
+   "nEtiquetasClaude": 0,
+   "franjasClaude": [],
    "dias": 1,
    "hMin": 3.12,
    "hMax": 3.12,
@@ -125,14 +178,19 @@
    "pocosDatos": true
   },
   "berria/dinamico": {
-   "a": 8.9054,
+   "a": 9.2535,
    "p": 1,
-   "n": 2,
+   "n": 12,
    "nEtiquetas": 0,
+   "nEtiquetasClaude": 9,
+   "franjasClaude": [
+    "2026-10-08T14",
+    "2026-10-08T16"
+   ],
    "dias": 1,
-   "hMin": 2.81,
+   "hMin": 1.5,
    "hMax": 3.12,
-   "errorRel": 0.5,
+   "errorRel": 1,
    "pocosDatos": true
   },
   "mutriku/principal": {
@@ -140,11 +198,119 @@
    "p": 1,
    "n": 1,
    "nEtiquetas": 0,
+   "nEtiquetasClaude": 0,
+   "franjasClaude": [],
    "dias": 1,
    "hMin": 3.51,
    "hMax": 3.51,
    "errorRel": 0.5,
    "pocosDatos": true
+  }
+ },
+ "sustitucion": {
+  "hondarribia": {
+   "sustituye": false,
+   "motivo": "ruido aún sin medir (0 pares de lecturas cercanas); 4 etiquetas de Claude en 1 franjas (faltan)",
+   "ruido": {
+    "ruido": null,
+    "pares": 0
+   }
+  },
+  "donostia": {
+   "sustituye": false,
+   "motivo": "ruido aún sin medir (2 pares de lecturas cercanas)",
+   "ruido": {
+    "ruido": 2.301,
+    "pares": 2
+   }
+  },
+  "orio": {
+   "sustituye": false,
+   "motivo": "ruido aún sin medir (0 pares de lecturas cercanas)",
+   "ruido": {
+    "ruido": null,
+    "pares": 0
+   }
+  },
+  "zarautz": {
+   "sustituye": false,
+   "motivo": "ruidosa (±49 %) y sin calibrar; 7 etiquetas de Claude en 2 franjas (faltan)",
+   "ruido": {
+    "ruido": 0.492,
+    "pares": 3
+   }
+  },
+  "getaria": {
+   "sustituye": false,
+   "motivo": "ruido aún sin medir (0 pares de lecturas cercanas)",
+   "ruido": {
+    "ruido": null,
+    "pares": 0
+   }
+  },
+  "zumaia": {
+   "sustituye": false,
+   "motivo": "ruidosa (±43 %) y sin calibrar; 2 etiquetas de Claude en 2 franjas (faltan)",
+   "ruido": {
+    "ruido": 0.426,
+    "pares": 5
+   }
+  },
+  "deba": {
+   "sustituye": false,
+   "motivo": "ruidosa (±103 %) y sin calibrar; 3 etiquetas de Claude en 1 franjas (faltan)",
+   "ruido": {
+    "ruido": 1.029,
+    "pares": 3
+   }
+  },
+  "mutriku": {
+   "sustituye": false,
+   "motivo": "ruido aún sin medir (0 pares de lecturas cercanas)",
+   "ruido": {
+    "ruido": null,
+    "pares": 0
+   }
+  },
+  "mundaka": {
+   "sustituye": false,
+   "motivo": "ruido aún sin medir (0 pares de lecturas cercanas); 3 etiquetas de Claude en 2 franjas (faltan)",
+   "ruido": {
+    "ruido": null,
+    "pares": 0
+   }
+  },
+  "bakio": {
+   "sustituye": false,
+   "motivo": "ruido aún sin medir (1 pares de lecturas cercanas); 1 etiquetas de Claude en 1 franjas (faltan)",
+   "ruido": {
+    "ruido": 2.19,
+    "pares": 1
+   }
+  },
+  "sopelana": {
+   "sustituye": false,
+   "motivo": "ruido aún sin medir (0 pares de lecturas cercanas)",
+   "ruido": {
+    "ruido": null,
+    "pares": 0
+   }
+  },
+  "berria": {
+   "sustituye": false,
+   "motivo": "ruido aún sin medir (1 pares de lecturas cercanas); 9 etiquetas de Claude en 2 franjas, pero la calibración no cuadra con ellas (±100 %)",
+   "ruido": {
+    "ruido": 0.016,
+    "pares": 1
+   }
+  },
+  "castrourdiales": {
+   "sustituye": false,
+   "motivo": "ruido aún sin medir (0 pares de lecturas cercanas)",
+   "ruido": {
+    "ruido": null,
+    "pares": 0
+   }
   }
  }
 }

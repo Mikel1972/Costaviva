@@ -15,7 +15,9 @@ import {
 import {
   ajustarCalibracion, estimarAltura, referenciaLectura, muestrasPorCamara, emparejarEtiquetaSpot, calibrarTodo,
   elevacionSolar, ERROR_MINIMO_POCOS_DATOS, PESO_ETIQUETA_FOTO, ruidoCamara, camaraSustituyeModelo,
+  PESO_ETIQUETA_SPOT, PESO_ETIQUETA_CLAUDE, PESO_ETIQUETA_CLAUDE_BAJA, PESO_BOYA, pesoEtiqueta, etiquetasClaudeParaCalibrar, franjaHoraria,
 } from "../scripts/oleaje-camaras/calibracion.mjs";
+import { sinEtiquetar, lineaEtiqueta, filtroRoi } from "../scripts/oleaje-camaras/preparar-lote-etiquetado.mjs";
 import { medirEspuma, zonasDinamicas, medirEspumaDinamica } from "../scripts/oleaje-camaras/espuma.mjs";
 import { CAMARAS } from "../scripts/oleaje-camaras/camaras.mjs";
 import { combinar } from "../scripts/oleaje-camaras/medir-espuma.mjs";
@@ -368,4 +370,138 @@ test("espuma-camaras: el cron cubre toda la luz del año y pg_cron usa el mismo"
   assert.ok(!/GITHUB_EVENT_NAME === "workflow_dispatch"/.test(yml), "workflow_dispatch (pg_cron) también respeta la luz");
   const sql = readFileSync(new URL("../supabase/migrations/20261008210000_programador_espuma_camaras.sql", import.meta.url), "utf8");
   assert.ok(sql.includes(`'lanzar-espuma-camaras', '${cron}'`), "pg_cron con el mismo horario que el schedule");
+});
+
+// ---------------------------------------------------------------------------
+// Etiquetas de Claude (2026-10-08): peso 2, por debajo de Mikel y "ola real".
+const BANDAS_IDS = BANDAS_OLA.map((b) => b.id);
+const lineaClaude = (extra = {}) => ({
+  por: "claude", camara: "sopelana", encuadre: "principal", fecha: "2026-10-08T15:30:00Z", banda: "2-3", confianza: "media",
+  espuma: 0.2, estado: "ok", hash: Math.random().toString(16).slice(2), ...extra,
+});
+
+test("etiquetas de Claude: peso 2 (1 con confianza baja), entre Mikel/ola real y las automáticas", () => {
+  assert.equal(PESO_ETIQUETA_CLAUDE, 2);
+  assert.ok(PESO_ETIQUETA_CLAUDE < PESO_ETIQUETA_SPOT && PESO_ETIQUETA_SPOT < PESO_ETIQUETA_FOTO);
+  assert.ok(PESO_ETIQUETA_CLAUDE > PESO_BOYA);
+  assert.equal(pesoEtiqueta({ origen: "claude" }), 2);
+  assert.equal(pesoEtiqueta({ origen: "claude", confianza: "baja" }), PESO_ETIQUETA_CLAUDE_BAJA);
+  assert.equal(pesoEtiqueta({ origen: "foto" }), 5);
+  assert.equal(pesoEtiqueta({ origen: "spot" }), 3);
+  assert.equal(pesoEtiqueta({ origen: "otra" }), 0);
+  const et = etiquetasClaudeParaCalibrar([lineaClaude()], BANDAS_IDS);
+  const m = muestrasPorCamara([], et, centro)["sopelana/principal"];
+  assert.equal(m.length, 1);
+  assert.equal(m[0].peso, 2);
+  assert.equal(m[0].altura, 2.5);
+  assert.equal(m[0].claude, true);
+  assert.equal(m[0].franja, "2026-10-08T14");
+});
+
+test("etiquetas de Claude: fuera 'no_se_sabe', sin espuma y otro encuadre no verificado; la repetida vale una vez", () => {
+  const filas = [
+    lineaClaude({ banda: "no_se_sabe" }),
+    lineaClaude({ espuma: null }),
+    lineaClaude({ estado: "otro_encuadre" }),
+    lineaClaude({ estado: "otro_encuadre", encuadreVerificado: true, hash: "a1" }),
+    lineaClaude({ estado: "orilla", encuadreVerificado: true, hash: "a2" }),
+    lineaClaude({ hash: "b2", banda: "1-2" }),
+    lineaClaude({ hash: "b2", banda: "2-3" }),
+  ];
+  const et = etiquetasClaudeParaCalibrar(filas, BANDAS_IDS);
+  assert.equal(et.length, 2);
+  assert.equal(et.find((e) => e.banda === "2-3").origen, "claude", "la última etiqueta del fotograma b2 manda");
+  const cal = calibrarTodo([], et, centro)["sopelana/principal"];
+  assert.equal(cal.nEtiquetas, 0, "las de Claude no cuentan como de personas");
+  assert.equal(cal.nEtiquetasClaude, 2);
+});
+
+test("sustituye al modelo con etiquetas de Claude: 8 en 2 franjas; 7, o todas en una franja, no", () => {
+  const ruidosa = { ruido: 0.9, pares: 5 };
+  const conClaude = (n, franjas, errorRel = 0.5) => ({ nEtiquetas: 0, nEtiquetasClaude: n, franjasClaude: franjas, pocosDatos: true, errorRel });
+  assert.equal(camaraSustituyeModelo(ruidosa, [conClaude(8, ["2026-10-08T14", "2026-10-08T16"])]).sustituye, true);
+  assert.equal(camaraSustituyeModelo(ruidosa, [conClaude(7, ["2026-10-08T14", "2026-10-08T16"])]).sustituye, false);
+  assert.equal(camaraSustituyeModelo(ruidosa, [conClaude(12, ["2026-10-08T14"])]).sustituye, false, "todas del mismo rato");
+  // Mezcla: 3 de Mikel + 4 de Claude (3 + 4·5/8 = 5,5) sí; 2 + 4 (4,5) no.
+  assert.equal(camaraSustituyeModelo(ruidosa, [{ ...conClaude(4, ["a", "b"]), nEtiquetas: 3 }]).sustituye, true);
+  assert.equal(camaraSustituyeModelo(ruidosa, [{ ...conClaude(4, ["a", "b"]), nEtiquetas: 2 }]).sustituye, false);
+  // Las franjas se juntan entre encuadres de la misma cámara.
+  assert.equal(camaraSustituyeModelo(ruidosa, [conClaude(4, ["a"]), conClaude(4, ["b"])]).sustituye, true);
+  // 5 de Mikel siguen bastando solas.
+  assert.equal(camaraSustituyeModelo(ruidosa, [{ nEtiquetas: 5, pocosDatos: true }]).sustituye, true);
+  assert.match(camaraSustituyeModelo(ruidosa, [conClaude(3, ["a"])]).motivo, /3 etiquetas de Claude/);
+  // Si la calibración no cuadra con las etiquetas (Berria, ±100 %), no basta.
+  const noCuadra = camaraSustituyeModelo(ruidosa, [conClaude(9, ["a", "b"], 1)]);
+  assert.equal(noCuadra.sustituye, false);
+  assert.match(noCuadra.motivo, /no cuadra/);
+  assert.equal(camaraSustituyeModelo(ruidosa, [conClaude(9, ["a", "b"], 0.75)]).sustituye, true);
+});
+
+test("de extremo a extremo: 8 etiquetas de Claude en dos franjas hacen que Sopela sustituya al modelo", () => {
+  const filas = [];
+  for (let i = 0; i < 8; i++) {
+    const h = i < 4 ? 13 : 16;
+    filas.push(lineaClaude({ fecha: `2026-10-08T${h}:${String(i * 7).padStart(2, "0")}:00Z`, espuma: 0.15 + i * 0.01, hash: `h${i}` }));
+  }
+  const cal = calibrarTodo([], etiquetasClaudeParaCalibrar(filas, BANDAS_IDS), centro);
+  const d = camaraSustituyeModelo({ ruido: null, pares: 0 }, [cal["sopelana/principal"]]);
+  assert.equal(d.sustituye, true);
+  assert.match(d.motivo, /8 etiquetas de Claude en 2 franjas/);
+});
+
+test("p solo se ajusta con muestras de ≥ 2 días (un día con boya y etiquetas que discrepan no da p)", () => {
+  const m = [];
+  for (let i = 0; i < 14; i++) {
+    const h = 0.4 + i * 0.15;
+    m.push({ espuma: (h / 8) ** (1 / 1.3), altura: h, peso: 1, dia: "2026-10-08" });
+  }
+  assert.equal(ajustarCalibracion(m).p, 1, "un solo día: p fijo");
+  m.forEach((x, i) => (x.dia = i % 2 ? "2026-10-08" : "2026-10-09"));
+  assert.ok(Math.abs(ajustarCalibracion(m).p - 1.3) < 0.01, "dos días: p ajustado");
+});
+
+test("franjaHoraria: bloques de 2 h UTC", () => {
+  assert.equal(franjaHoraria("2026-10-08T15:59:00Z"), "2026-10-08T14");
+  assert.equal(franjaHoraria("2026-10-08T16:01:00Z"), "2026-10-08T16");
+  assert.equal(franjaHoraria("no"), null);
+});
+
+test("preparar-lote: solo miniaturas ok que Claude no ha etiquetado", () => {
+  const lecturas = [
+    { miniatura: "2026-10-08/sopelana-principal-1530.jpg", estado: "ok" },
+    { miniatura: "2026-10-08/bakio-principal-1530.jpg", estado: "ok" },
+    { miniatura: "2026-10-08/deba-principal-1530.jpg", estado: "orilla" },
+    { miniatura: null, estado: "ok" },
+  ];
+  const r = sinEtiquetar(lecturas, [{ miniatura: "2026-10-08/bakio-principal-1530.jpg" }]);
+  assert.deepEqual(r.map((x) => x.miniatura), ["2026-10-08/sopelana-principal-1530.jpg"]);
+});
+
+test("etiquetas-claude.jsonl, si existe, es JSONL válido con los campos que usa la calibración", () => {
+  const f = new URL("../datos-robots/oleaje-camaras/etiquetas-claude.jsonl", import.meta.url);
+  if (!existsSync(f)) return;
+  const validas = [...BANDAS_IDS, "no_se_sabe"];
+  for (const linea of readFileSync(f, "utf8").split("\n").filter(Boolean)) {
+    const l = JSON.parse(linea);
+    assert.ok(CAMARAS[l.camara], `cámara desconocida: ${l.camara}`);
+    assert.ok(validas.includes(l.banda), `banda desconocida: ${l.banda}`);
+    assert.ok(["alta", "media", "baja"].includes(l.confianza), `confianza: ${l.confianza}`);
+    assert.ok(Number.isFinite(Date.parse(l.fecha)));
+    assert.ok(l.hash || l.miniatura, "sin hash ni miniatura");
+    assert.ok(typeof l.motivo === "string" && l.motivo.length > 0);
+  }
+});
+
+test("preparar-lote --anotar: la línea lleva lo que necesita la calibración y rechaza bandas raras", () => {
+  const entrada = { id: "x", camara: "mundaka", encuadre: "principal", fecha: "2026-10-08T15:21:02.000Z", estado: "otro_encuadre", espuma: 0.19, similitud: 0.59, hash: "abc", boya: { nombre: "Bilbao II", hs: 2.54, hora: "2026-10-08T13:00:00Z" }, modeloCamara: 1.62 };
+  const l = lineaEtiqueta(entrada, { banda: "1-2", confianza: "media", motivo: "barra", verificado: true }, new Date("2026-10-08T16:00:00Z"));
+  assert.equal(l.encuadreVerificado, true);
+  assert.equal(l.por, "claude");
+  assert.equal(l.referencia.boya.hs, 2.54);
+  assert.equal(etiquetasClaudeParaCalibrar([l], BANDAS_IDS).length, 1);
+  assert.equal(lineaEtiqueta(entrada, { banda: "1-2", confianza: "media", motivo: "m" }).encuadreVerificado, undefined);
+  assert.throws(() => lineaEtiqueta(entrada, { banda: "1,5", confianza: "media", motivo: "m" }));
+  assert.throws(() => lineaEtiqueta(entrada, { banda: "1-2", confianza: "segura", motivo: "m" }));
+  assert.throws(() => lineaEtiqueta(entrada, { banda: "1-2", confianza: "alta", motivo: "" }));
+  assert.equal(filtroRoi({ x0: 0.5, y0: 0.25, x1: 1, y1: 0.5 }), "scale=640:360,drawbox=x=320:y=90:w=320:h=90:color=red:t=2");
 });
