@@ -1,0 +1,30 @@
+{
+ "app": "Costaviva",
+ "generado": "2026-10-08T22:01:32.396Z",
+ "ventana_dias": 0,
+ "estado": "error",
+ "error": "sin SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY: pasada sin casos",
+ "nota": "Sin salidas del diario con índice todavía: se vigilan las fuentes y el panel, y se aprende cuando las haya.",
+ "metricas": {
+  "casos": 0,
+  "reglas_activas": 27,
+  "reglas_sin_uso": 0,
+  "reglas_ajustadas_auto": 0,
+  "cambios_automaticos_semana": 0,
+  "retadores_en_sombra": 3,
+  "propuestas_abiertas": 0,
+  "fuentes_no_ok": 2,
+  "avisos_deriva": 3,
+  "boyas_sesgo_max_pct": 22,
+  "camaras_error_medio_pct": 76,
+  "panel_indice_medio": 52.1,
+  "observaciones_abiertas": 0,
+  "fotogramas_para_etiquetar": 12
+ },
+ "prioridades": {
+  "tasa_aceptacion_por_tipo": {},
+  "no_volver_a_proponer": [],
+  "en_espera_por_tope_semanal": [],
+  "reglas_bloqueadas_para_auto": []
+ }
+}

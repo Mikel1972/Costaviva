@@ -1,0 +1,127 @@
+{
+ "generado_en": "2026-10-08T22:01:32.396Z",
+ "semana": "2026-W41",
+ "nota": "Fotogramas que más enseñarían a la calibración de las cámaras si se etiquetan (etiquetar-olas.html o la rutina de etiquetado).",
+ "fotogramas": [
+  {
+   "camara": "berria",
+   "encuadre": "dinamico",
+   "fecha": "2026-10-08T16:37:12.000Z",
+   "espuma": 0.0037,
+   "estimacion": 0.03,
+   "modelo": 2,
+   "ganancia": 5.3,
+   "motivo": "cámara y modelo discrepan mucho"
+  },
+  {
+   "camara": "donostia",
+   "encuadre": "principal",
+   "fecha": "2026-10-08T11:02:30.264Z",
+   "espuma": 0.0365,
+   "estimacion": 0.47,
+   "modelo": 3.28,
+   "ganancia": 3.943,
+   "motivo": "cámara y modelo discrepan mucho"
+  },
+  {
+   "camara": "mundaka",
+   "encuadre": "principal",
+   "fecha": "2026-10-08T16:21:01.000Z",
+   "espuma": 0.0626,
+   "estimacion": 0.37,
+   "modelo": 1.57,
+   "ganancia": 2.695,
+   "motivo": "cámara y modelo discrepan mucho"
+  },
+  {
+   "camara": "zumaia",
+   "encuadre": "c",
+   "fecha": "2026-10-08T11:10:40.734Z",
+   "espuma": 0.3454,
+   "estimacion": 5.38,
+   "modelo": 2.95,
+   "ganancia": 2.601,
+   "motivo": "cámara y modelo discrepan mucho"
+  },
+  {
+   "camara": "bakio",
+   "encuadre": "principal",
+   "fecha": "2026-10-08T11:10:03.000Z",
+   "espuma": 0.408,
+   "estimacion": 4.68,
+   "modelo": 2.32,
+   "ganancia": 2.202,
+   "motivo": "cámara y modelo discrepan mucho"
+  },
+  {
+   "camara": "sopelana",
+   "encuadre": "principal",
+   "fecha": "2026-10-08T11:04:19.000Z",
+   "espuma": 0.2869,
+   "estimacion": 2.18,
+   "modelo": 2.42,
+   "ganancia": 2,
+   "motivo": "ola fuera del rango ya calibrado"
+  },
+  {
+   "camara": "deba",
+   "encuadre": "rompiente",
+   "fecha": "2026-10-08T16:37:48.093Z",
+   "espuma": 0.1819,
+   "estimacion": 5.18,
+   "modelo": 2.48,
+   "ganancia": 1.987,
+   "motivo": "cámara y modelo discrepan mucho"
+  },
+  {
+   "camara": "zarautz",
+   "encuadre": "dinamico",
+   "fecha": "2026-10-08T16:37:48.093Z",
+   "espuma": 0.08585000000000001,
+   "estimacion": 1.74,
+   "modelo": 2.57,
+   "ganancia": 1.125,
+   "motivo": "ola fuera del rango ya calibrado"
+  },
+  {
+   "camara": "berria",
+   "encuadre": "principal",
+   "fecha": "2026-10-08T11:01:36.000Z",
+   "espuma": 0.042,
+   "estimacion": null,
+   "modelo": 2.36,
+   "ganancia": 1,
+   "motivo": "pocas etiquetas en este encuadre"
+  },
+  {
+   "camara": "castrourdiales",
+   "encuadre": "principal",
+   "fecha": "2026-10-08T11:02:04.000Z",
+   "espuma": 0.0034,
+   "estimacion": null,
+   "modelo": 2.2,
+   "ganancia": 1,
+   "motivo": "pocas etiquetas en este encuadre"
+  },
+  {
+   "camara": "mutriku",
+   "encuadre": "principal",
+   "fecha": "2026-10-08T11:24:17.006Z",
+   "espuma": 0.0117,
+   "estimacion": null,
+   "modelo": 2.95,
+   "ganancia": 1,
+   "motivo": "pocas etiquetas en este encuadre"
+  },
+  {
+   "camara": "deba",
+   "encuadre": "rompiente",
+   "fecha": "2026-10-08T11:24:17.006Z",
+   "espuma": 0.0696,
+   "estimacion": 1.64,
+   "modelo": 2.95,
+   "ganancia": 0.837,
+   "motivo": "cámara y modelo discrepan mucho"
+  }
+ ]
+}

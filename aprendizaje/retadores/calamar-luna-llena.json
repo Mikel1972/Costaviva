@@ -1,0 +1,70 @@
+{
+ "id": "calamar-luna-llena",
+ "titulo": "Calamar: mejor con luna llena de noche",
+ "explicacion_llana": "Un estudio del calamar común pescado con potera encontró más capturas con luna llena; la pesca tradicional dice lo mismo. Como en otros calamares es al revés, va con poca confianza y solo de noche, en la sombra, hasta comprobarlo con el diario.",
+ "estado": "sombra",
+ "fecha": "2026-10-09",
+ "autor": "sesión 2026-10-09 (de propuestas_evidencia.ajustes: la variable luna ya existe en el motor)",
+ "fuentes": [
+  "ulas_2011_calamar"
+ ],
+ "cambios": [
+  {
+   "op": "anadir_fuente",
+   "id": "ulas_2011_calamar",
+   "fuente": {
+    "titulo": "Ulaş A., Aydın İ. (2011). The effects of jig color and lunar bright on coastal squid jigging. African Journal of Biotechnology 10(9): 1721-1726.",
+    "url": "https://ajol.info/index.php/ajb/article/view/92991",
+    "tipo": "cientifico",
+    "licencia": "CC BY (AJOL, por confirmar)",
+    "fecha_consulta": "2026-10-08",
+    "leido": "resumen",
+    "nota": "Loligo vulgaris, Egeo: la luna llena aumenta las capturas al jigging (p<0,01); el jig rojo es el más eficaz."
+   }
+  },
+  {
+   "op": "anadir_regla",
+   "regla": {
+    "id": "calamar_luna_llena",
+    "nombre": "Calamar con luna llena",
+    "texto": "luna llena de noche: el calamar sube y entra mejor a la potera",
+    "fuente": "ulas_2011_calamar",
+    "tipo": "cientifica",
+    "estado": "por_validar",
+    "confianza": 0.4,
+    "validacion": "Retador en la sombra (aprendizaje semanal): se activa solo con el sí de Mikel.",
+    "ambito": {
+     "especies": [
+      "calamar"
+     ],
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    },
+    "condiciones": [
+     {
+      "var": "luz",
+      "op": "==",
+      "valor": "noche"
+     },
+     {
+      "var": "luna",
+      "op": ">=",
+      "valor": 0.8
+     }
+    ],
+    "efecto": {
+     "logodds": 0.3,
+     "escala": {
+      "var": "luna",
+      "de": 0.8,
+      "a": 1,
+      "minimo": 0.5
+     }
+    },
+    "variable": "luna"
+   }
+  }
+ ]
+}

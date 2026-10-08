@@ -1,0 +1,47 @@
+{
+ "generado_en": "2026-10-08T22:01:32.396Z",
+ "semana": "2026-W41",
+ "nota": "Solo agregados de 5 usuarios distintos o más (o solo del dueño). p = índice/100 de la mejor especie a la hora de la salida; y = se pescó algo. Sin ids, fechas, horas, spots ni coordenadas.",
+ "datos": {
+  "casos": 0,
+  "por_fuente": {
+   "recalculado": 0,
+   "guardado": 0,
+   "sin_indice": 0
+  },
+  "descartes": {},
+  "aviso_series": "sin OPEN_METEO_API_KEY: no se recalcula con series (solo términos guardados)",
+  "errores": [
+   "sin SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY: pasada sin casos"
+  ]
+ },
+ "campeon": {
+  "version": "v2-logistica-2026-10-08",
+  "global": {
+   "oculto": true,
+   "motivo": "sin casos"
+  },
+  "por_modalidad": {},
+  "por_region": {},
+  "acierto_especie": {
+   "oculto": true,
+   "motivo": "sin casos"
+  }
+ },
+ "unidades": {},
+ "ajuste": {
+  "casos_ajuste": 0,
+  "casos_prueba": 0,
+  "b0": null,
+  "automaticos": [],
+  "no_aplicados": null,
+  "validacion": null,
+  "panel": null,
+  "descartados": []
+ },
+ "comunidad": {
+  "error": "sin Supabase",
+  "filas_k5": 0,
+  "por_condiciones": []
+ }
+}

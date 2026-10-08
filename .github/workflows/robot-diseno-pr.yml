@@ -22,6 +22,7 @@ on:
       # Etiquetas de olas de Claude mirando las cámaras (rutina diaria, ver
       # scripts/oleaje-camaras/RUTINA_ETIQUETADO.md). Añadido 2026-10-08.
       - "robot/etiquetas-olas-**"
+      - "robot/aprendizaje-**"
 
 permissions:
   contents: read
@@ -49,6 +50,7 @@ jobs:
           case "$RAMA" in
             robot/especies-*-factores) TIPO="Factores"; INTRO="Propuestas de la rutina de los viernes: reglas o pesos del índice de pesca sacados de estudios (cada uno con su fuente), contrastes con tus reglas locales (confirma/refuta/matiza, sin cambiarlas) y, si los hay, concursos con resultados reutilizables. Revisa la evidencia y la confianza de cada regla antes de aprobar." ;;
             robot/etiquetas-olas-*) TIPO="Etiquetas de olas"; INTRO="Etiquetas de la rutina diaria de Claude mirando las cámaras (datos-robots/oleaje-camaras/etiquetas-claude.jsonl) y la calibración recalculada. Revisa qué cámaras pasan a sustituir al modelo en el panel y las cámaras movidas o ROIs que la rutina haya visto mal." ;;
+            robot/aprendizaje-*) TIPO="Aprendizaje"; INTRO="Ideas de la rutina \"Costaviva - Investigador semanal\" para el índice de pesca, ya probadas con el banco de pruebas: retadores en aprendizaje/retadores/ (se calculan en la sombra, no cambian lo que ve nadie) y propuestas en aprendizaje/propuestas.json para tu sí/no del Issue semanal de comun. La evaluación con los datos del diario (solo agregados) la deja el workflow en aprendizaje/evaluacion-retadores.json. Fusionar esta PR NO activa ninguna regla." ;;
             robot/especies-*) TIPO="Especies"; INTRO="Actualización de las fichas de especies (assets/datos/especies.json) de la rutina de los jueves. Revisa sobre todo las tallas y vedas: cada una debe llevar su URL oficial." ;;
             *) TIPO="Diseño"; INTRO="Propuesta de diseño del robot de SEO y diseño (rutina en la nube)." ;;
           esac

@@ -1,0 +1,123 @@
+{
+ "generado_en": "2026-10-08T22:01:32.396Z",
+ "semana": "2026-W41",
+ "retadores": [
+  {
+   "fichero": "calamar-luna-llena.json",
+   "id": "calamar-luna-llena",
+   "titulo": "Calamar: mejor con luna llena de noche",
+   "problemas": [],
+   "panel": {
+    "n": 3024,
+    "cambiados": 0,
+    "media_abs": 0,
+    "max_abs": 0,
+    "peores": [
+     {
+      "clave": "cantabrico|1|0.4|8/300|estable|08h|costa",
+      "d": 0
+     },
+     {
+      "clave": "cantabrico|1|0.4|8/300|estable|08h|embarcacion",
+      "d": 0
+     },
+     {
+      "clave": "cantabrico|1|0.4|8/300|estable|08h|submarina",
+      "d": 0
+     },
+     {
+      "clave": "cantabrico|1|0.4|8/300|estable|23h|costa",
+      "d": 0
+     },
+     {
+      "clave": "cantabrico|1|0.4|8/300|estable|23h|embarcacion",
+      "d": 0
+     }
+    ]
+   },
+   "n_casos": 0,
+   "metricas": {
+    "oculto": true,
+    "motivo": "sin casos evaluables"
+   }
+  },
+  {
+   "fichero": "levante-confianza-05.json",
+   "id": "levante-confianza-05",
+   "titulo": "Levante en el Cantábrico con menos peso (0,7 → 0,5)",
+   "problemas": [],
+   "panel": {
+    "n": 3024,
+    "cambiados": 120,
+    "media_abs": 0.09,
+    "max_abs": 3,
+    "peores": [
+     {
+      "clave": "cantabrico|1|0.4|12/90|estable|08h|embarcacion",
+      "d": 3
+     },
+     {
+      "clave": "cantabrico|1|1.4|12/90|estable|08h|embarcacion",
+      "d": 3
+     },
+     {
+      "clave": "cantabrico|1|1.4|12/90|estable|08h|submarina",
+      "d": 3
+     },
+     {
+      "clave": "cantabrico|1|1.4|12/90|bajando|08h|embarcacion",
+      "d": 3
+     },
+     {
+      "clave": "cantabrico|1|1.4|12/90|bajando|08h|submarina",
+      "d": 3
+     }
+    ]
+   },
+   "n_casos": 0,
+   "metricas": {
+    "oculto": true,
+    "motivo": "sin casos evaluables"
+   }
+  },
+  {
+   "fichero": "lisa-rio-crecido.json",
+   "id": "lisa-rio-crecido",
+   "titulo": "Río crecido: la lisa entra en la desembocadura",
+   "problemas": [],
+   "panel": {
+    "n": 3024,
+    "cambiados": 0,
+    "media_abs": 0,
+    "max_abs": 0,
+    "peores": [
+     {
+      "clave": "cantabrico|1|0.4|8/300|estable|08h|costa",
+      "d": 0
+     },
+     {
+      "clave": "cantabrico|1|0.4|8/300|estable|08h|embarcacion",
+      "d": 0
+     },
+     {
+      "clave": "cantabrico|1|0.4|8/300|estable|08h|submarina",
+      "d": 0
+     },
+     {
+      "clave": "cantabrico|1|0.4|8/300|estable|23h|costa",
+      "d": 0
+     },
+     {
+      "clave": "cantabrico|1|0.4|8/300|estable|23h|embarcacion",
+      "d": 0
+     }
+    ]
+   },
+   "n_casos": 0,
+   "metricas": {
+    "oculto": true,
+    "motivo": "sin casos evaluables"
+   }
+  }
+ ]
+}

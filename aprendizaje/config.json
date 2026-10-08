@@ -1,0 +1,51 @@
+{
+ "descripcion": "Configuración del aprendizaje semanal del índice de pesca (scripts/aprendizaje/semanal.mjs). La lee el workflow aprendizaje-semanal.yml. Cambiar un número aquí cambia las barreras de seguridad: hazlo solo con el sí de Mikel. Detalle en CLAUDE.md, 'Aprendizaje autónomo del índice'.",
+ "ajuste": {
+  "auto_aplicar": true,
+  "tau_prior": 0.25,
+  "min_casos_total": 80,
+  "min_positivos": 15,
+  "min_negativos": 15,
+  "min_casos_unidad": 30,
+  "min_usuarios_unidad": 5,
+  "paso_max_semana": 0.2,
+  "deriva_max_desde_experto": 0.5,
+  "max_cambios_semana": 3,
+  "mejora_min_logloss": 0.002,
+  "max_caida_auc": 0.01,
+  "panel_max_media_puntos": 3,
+  "panel_max_puntos": 10
+ },
+ "retadores": {
+  "semanas_min_para_promover": 4,
+  "victorias_min_ultimas_4": 3,
+  "prob_mejora_min": 0.9
+ },
+ "series": {
+  "max_llamadas_open_meteo": 120
+ },
+ "fuentes_repo": [
+  { "nombre": "Oleaje por cámara (espuma)", "ruta": "datos-robots/oleaje-camaras/espuma.jsonl", "cadencia_h": 24 },
+  { "nombre": "Calibración de cámaras", "ruta": "datos-robots/oleaje-camaras/calibracion.json", "cadencia_h": 24 },
+  { "nombre": "Etiquetas de olas de Claude (rutina diaria)", "ruta": "datos-robots/oleaje-camaras/etiquetas-claude.jsonl", "cadencia_h": 48 },
+  { "nombre": "Salud de las cámaras", "ruta": "datos-robots/camaras-estado.json", "cadencia_h": 6 },
+  { "nombre": "Patrones de uso (viernes)", "ruta": "datos-robots/patrones-uso/ultima.json", "cadencia_h": 168 },
+  { "nombre": "Experiencia de usuario (domingo)", "ruta": "datos-robots/experiencia/ultima.json", "cadencia_h": 168 },
+  { "nombre": "Observaciones abiertas GBIF (martes)", "ruta": "datos-robots/observaciones/recuento.json", "cadencia_h": 168 },
+  { "nombre": "Síntesis del informe diario", "ruta": "datos-robots/sintesis-informe.md", "cadencia_h": 24 }
+ ],
+ "fuentes_tablas": [
+  { "nombre": "Presión real por spot (cada hora)", "tabla": "presion_historico", "columna": "medido_en", "cadencia_h": 2 },
+  { "nombre": "Turbidez de las webcams (diaria)", "tabla": "turbidez_historico", "columna": "creado_en", "cadencia_h": 24 },
+  { "nombre": "Lecturas de oleaje por cámara", "tabla": "oleaje_camara_lecturas", "columna": "fecha", "cadencia_h": 24 }
+ ],
+ "ideas": [
+  "Botón '¿Acertó el índice hoy?' en el panel del spot para quien no usa el diario (necesita una tabla nueva con RLS y probarlo en la preview).",
+  "Calcular los retadores también en vivo al guardar cada salida (indice_factores.sombra), no solo al rejugar los sábados.",
+  "Calibración isotónica del número que se enseña (índice → probabilidad real de pescar) cuando haya 300 salidas o más.",
+  "Ajustar también umbrales de las reglas (no solo su peso) con una búsqueda acotada y el mismo banco de pruebas.",
+  "Validar la temporada con desembarcos oficiales de lonja (cuarta estrella de fiabilidad).",
+  "Pesar menos las salidas con hora estimada (sin hora de inicio) o con condiciones parciales.",
+  "Elegir qué retador probar primero con muestreo de Thompson cuando haya muchos."
+ ]
+}

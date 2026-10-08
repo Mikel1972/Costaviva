@@ -1,0 +1,244 @@
+{
+ "generado_en": "2026-10-08T22:01:32.396Z",
+ "semana": "2026-W41",
+ "fuentes": [
+  {
+   "nombre": "Oleaje por cámara (espuma)",
+   "estado": "ok",
+   "horas": 5,
+   "cadencia_h": 24
+  },
+  {
+   "nombre": "Calibración de cámaras",
+   "estado": "ok",
+   "horas": 5,
+   "cadencia_h": 24
+  },
+  {
+   "nombre": "Etiquetas de olas de Claude (rutina diaria)",
+   "estado": "ok",
+   "horas": 5,
+   "cadencia_h": 48
+  },
+  {
+   "nombre": "Salud de las cámaras",
+   "estado": "retrasada",
+   "horas": 14,
+   "cadencia_h": 6
+  },
+  {
+   "nombre": "Patrones de uso (viernes)",
+   "estado": "ok",
+   "horas": 6,
+   "cadencia_h": 168
+  },
+  {
+   "nombre": "Experiencia de usuario (domingo)",
+   "estado": "ok",
+   "horas": 6,
+   "cadencia_h": 168
+  },
+  {
+   "nombre": "Observaciones abiertas GBIF (martes)",
+   "estado": "sin_datos",
+   "horas": null,
+   "cadencia_h": 168
+  },
+  {
+   "nombre": "Síntesis del informe diario",
+   "estado": "ok",
+   "horas": 16,
+   "cadencia_h": 24
+  }
+ ],
+ "boyas": [
+  {
+   "boya": "Bilbao-coast-buoy",
+   "nombre": "Bilbao II (costera)",
+   "semana": "2026-W41",
+   "n": 19,
+   "modelo_entre_boya": 0.782,
+   "corregido_entre_boya": 0.782
+  },
+  {
+   "boya": "PasaiaII-coast-buoy",
+   "nombre": "Pasaia II (costera)",
+   "semana": "2026-W41",
+   "n": 21,
+   "modelo_entre_boya": 0.674,
+   "corregido_entre_boya": 0.93
+  }
+ ],
+ "avisos_boyas": [
+  {
+   "boya": "Bilbao-coast-buoy",
+   "nombre": "Bilbao II (costera)",
+   "semana": "2026-W41",
+   "tipo": "sesgo",
+   "valor": 0.782,
+   "texto": "el modelo da -22 % frente a la boya Bilbao II (costera) (19 lecturas)"
+  }
+ ],
+ "camaras": [
+  {
+   "camara": "bakio/principal",
+   "n": 3,
+   "etiquetas": 1,
+   "dias": 1,
+   "error": 0.733,
+   "error_antes": null,
+   "empeora": false
+  },
+  {
+   "camara": "berria/dinamico",
+   "n": 12,
+   "etiquetas": 9,
+   "dias": 1,
+   "error": 1,
+   "error_antes": null,
+   "empeora": false
+  },
+  {
+   "camara": "berria/principal",
+   "n": 1,
+   "etiquetas": 0,
+   "dias": 1,
+   "error": 0.5,
+   "error_antes": null,
+   "empeora": false
+  },
+  {
+   "camara": "castrourdiales/principal",
+   "n": 1,
+   "etiquetas": 0,
+   "dias": 1,
+   "error": 0.5,
+   "error_antes": null,
+   "empeora": false
+  },
+  {
+   "camara": "deba/rompiente",
+   "n": 8,
+   "etiquetas": 3,
+   "dias": 1,
+   "error": 1,
+   "error_antes": null,
+   "empeora": false
+  },
+  {
+   "camara": "donostia/principal",
+   "n": 3,
+   "etiquetas": 0,
+   "dias": 1,
+   "error": 1,
+   "error_antes": null,
+   "empeora": false
+  },
+  {
+   "camara": "hondarribia/bocana",
+   "n": 1,
+   "etiquetas": 1,
+   "dias": 1,
+   "error": 0.5,
+   "error_antes": null,
+   "empeora": false
+  },
+  {
+   "camara": "hondarribia/principal",
+   "n": 4,
+   "etiquetas": 3,
+   "dias": 1,
+   "error": 1,
+   "error_antes": null,
+   "empeora": false
+  },
+  {
+   "camara": "mundaka/principal",
+   "n": 5,
+   "etiquetas": 3,
+   "dias": 1,
+   "error": 0.952,
+   "error_antes": null,
+   "empeora": false
+  },
+  {
+   "camara": "mutriku/principal",
+   "n": 1,
+   "etiquetas": 0,
+   "dias": 1,
+   "error": 0.5,
+   "error_antes": null,
+   "empeora": false
+  },
+  {
+   "camara": "sopelana/principal",
+   "n": 2,
+   "etiquetas": 0,
+   "dias": 1,
+   "error": 0.5,
+   "error_antes": null,
+   "empeora": false
+  },
+  {
+   "camara": "zarautz/dinamico",
+   "n": 13,
+   "etiquetas": 7,
+   "dias": 1,
+   "error": 0.5,
+   "error_antes": null,
+   "empeora": false
+  },
+  {
+   "camara": "zumaia/a",
+   "n": 7,
+   "etiquetas": 2,
+   "dias": 1,
+   "error": 1,
+   "error_antes": null,
+   "empeora": false
+  },
+  {
+   "camara": "zumaia/c",
+   "n": 3,
+   "etiquetas": 0,
+   "dias": 1,
+   "error": 1,
+   "error_antes": null,
+   "empeora": false
+  }
+ ],
+ "panel": {
+  "hist": [
+   540,
+   0,
+   0,
+   337,
+   95,
+   267,
+   796,
+   809,
+   180,
+   0
+  ],
+  "psi_semana_anterior": null
+ },
+ "vivo": null,
+ "diario": {
+  "oculto": true,
+  "motivo": "menos de 5 usuarios distintos en alguna de las dos ventanas"
+ },
+ "avisos": [
+  {
+   "tipo": "fuente",
+   "texto": "Salud de las cámaras: último dato hace 14 h (se espera cada 6 h)"
+  },
+  {
+   "tipo": "fuente",
+   "texto": "Observaciones abiertas GBIF (martes): sin datos"
+  },
+  {
+   "tipo": "boya",
+   "texto": "el modelo da -22 % frente a la boya Bilbao II (costera) (19 lecturas)"
+  }
+ ]
+}
