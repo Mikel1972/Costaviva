@@ -16,13 +16,23 @@
 // aparte, publicar-post-instagram.yml, disparado a mano con ese ID) --
 // pedido explícito del usuario: nunca se publica nada en Instagram sin
 // aprobación humana.
+//
+// Desde el 2026-10-09 la misma pieza va también a la Página de Facebook: el
+// Issue lleva los dos textos (cada uno con su enlace UTM) y la pieza entera
+// en un bloque invisible (pieza-issue.mjs). En Facebook NO se crea nada
+// aquí (su API no guarda borradores de Página): se publica solo al aprobar,
+// con publicar-pieza.mjs.
 
 import { readFileSync, writeFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
+import { captionParaRed, campanaDePieza, textoCuando } from "./calendario.mjs";
+import { cuerpoIssue } from "./pieza-issue.mjs";
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const PAGE_ID = process.env.META_PAGE_ID || "";
 
 const PAGE_ACCESS_TOKEN = process.env.META_PAGE_ACCESS_TOKEN;
 const IG_BUSINESS_ACCOUNT_ID = process.env.META_IG_BUSINESS_ACCOUNT_ID;
@@ -116,31 +126,26 @@ async function esperarProcesado(id, intentosMax = 30, esperaMs = 10000) {
   throw new Error("Instagram no terminó de procesar el reel en 5 minutos");
 }
 
-function crearIssue({ tipo, caption, publicUrl, creationId }) {
-  const titulo = `${tipo.startsWith("reel") ? "🎬 Propuesta de reel" : "📸 Propuesta de post"} Instagram — ${tipo} — ${new Date().toISOString().slice(0, 10)}`;
-  const cuerpo = [
-    `Contenedor creado en Instagram (borrador, sin publicar todavía) -- caduca solo en 24h si no se aprueba.`,
-    "",
-    publicUrl.endsWith(".mp4") ? `🎬 Vídeo: ${publicUrl}` : `![preview](${publicUrl})`,
-    "",
-    "**Texto propuesto:**",
-    "",
-    "```",
-    caption,
-    "```",
-    "",
-    "---",
-    "",
-    "### Para publicarlo de verdad",
-    "",
-    "Ve a la pestaña **Actions** de este repo → workflow **\"Publicar post de Instagram\"** → **\"Run workflow\"** → pega estos datos:",
-    "",
-    `- \`creation_id\`: \`${creationId}\``,
-    `- \`issue_number\`: (el número de este mismo Issue, para que se comente aquí cuando se publique)`,
-    "",
-    "Si no lo apruebas, no hace falta hacer nada -- el contenedor caduca solo.",
-  ].join("\n");
+// ¿Se podrá publicar en Facebook? (2026-10-09) Hace falta el id de la
+// Página (variable META_PAGE_ID) y el permiso pages_manage_posts en el
+// token. Solo se mira: aquí NUNCA se publica nada en Facebook.
+async function facebookListo() {
+  if (!PAGE_ID) return false;
+  try {
+    const r = await fetch(`https://graph.facebook.com/v21.0/debug_token?input_token=${encodeURIComponent(PAGE_ACCESS_TOKEN)}&access_token=${encodeURIComponent(PAGE_ACCESS_TOKEN)}`);
+    const d = await r.json();
+    return (d?.data?.scopes || []).includes("pages_manage_posts");
+  } catch {
+    return false;
+  }
+}
 
+function crearIssue({ pieza, previa, facebook }) {
+  const esReel = !!pieza.esReel;
+  const cuando = pieza.fecha && pieza.hora ? textoCuando(pieza) : "hoy";
+  const caduca = new Date(Date.now() + 24 * 3600 * 1000).toLocaleString("es-ES", { timeZone: "Europe/Madrid", weekday: "long", hour: "2-digit", minute: "2-digit" });
+  const titulo = `${esReel ? "🎬 Reel" : "📸 Post"} Instagram + Facebook — ${pieza.tipo} — ${cuando}`;
+  const cuerpo = cuerpoIssue({ pieza, previa, cuando, caduca: `el ${caduca}`, facebookListo: facebook });
   const salida = execFileSync("gh", ["issue", "create", "--title", titulo, "--body", cuerpo, "--label", "marketing"], {
     encoding: "utf8",
   });
@@ -151,14 +156,22 @@ async function main() {
   // post-pendiente.json (robot de posts) o reel-pendiente.json (robot de reels).
   const rutaPendiente = join(__dirname, process.argv[2] || "post-pendiente.json");
   const pendiente = JSON.parse(readFileSync(rutaPendiente, "utf8"));
-  const { tipo, caption, publicUrl } = pendiente;
+  const { tipo, publicUrl } = pendiente;
+  // Un texto por red con su enlace UTM (2026-10-09, calendario.mjs).
+  const campana = pendiente.campana || campanaDePieza(pendiente.fecha || new Date().toISOString().slice(0, 10), tipo);
+  const captionInstagram = captionParaRed(pendiente.caption, "instagram", campana);
+  const captionFacebook = captionParaRed(pendiente.caption, "facebook", campana);
 
   await esperarUrlPublica(publicUrl);
 
-  const creationId = await crearContenedor(pendiente);
+  const creationId = await crearContenedor({ ...pendiente, caption: captionInstagram });
   console.log(`✓ Contenedor creado en Instagram, id: ${creationId}`);
 
-  crearIssue({ tipo, caption, publicUrl, creationId });
+  const pieza = {
+    tipo, esReel: !!pendiente.esReel, publicUrl, campana, fecha: pendiente.fecha || null, hora: pendiente.hora || null, dia: pendiente.dia || null,
+    creationId, captionInstagram, captionFacebook, creadoEn: new Date().toISOString(),
+  };
+  crearIssue({ pieza, previa: publicUrl, facebook: await facebookListo() });
 
   writeFileSync(rutaPendiente, JSON.stringify({ ...pendiente, creationId }, null, 2));
 }

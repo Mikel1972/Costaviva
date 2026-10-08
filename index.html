@@ -942,14 +942,10 @@
     document.getElementById("cuentaMenuDropdown").classList.toggle("visible");
   });
   document.addEventListener("click", () => document.getElementById("cuentaMenuDropdown").classList.remove("visible"));
-  document.getElementById("btnInvitarAmigo").addEventListener("click", async () => {
-    const texto = "Échale un ojo a Costaviva, la app de condiciones costeras y diario de pesca que estoy usando: https://costaviva.org/";
-    if (navigator.share) {
-      try { await navigator.share({ text: texto }); } catch (e) { /* usuario canceló */ }
-    } else {
-      await navigator.clipboard.writeText(texto);
-      alert("Tu navegador no soporta compartir directamente — el texto se copió al portapapeles.");
-    }
+  // "Invita a un amigo" (2026-10-09): el enlace personal (con el que se gana
+  // 1 mes gratis por amigo que pague) está en suscripcion.html.
+  document.getElementById("btnInvitarAmigo").addEventListener("click", () => {
+    window.location.href = "/suscripcion.html#amigo";
   });
 </script>
 
@@ -962,7 +958,7 @@
     <div class="cuenta-menu-wrap">
       <button class="cuenta-menu-btn" id="btnCuentaMenu" type="button" aria-label="Cuenta">👤</button>
       <div class="cuenta-menu-dropdown" id="cuentaMenuDropdown">
-        <button type="button" id="btnInvitarAmigo">📤 Invitar a un amigo</button>
+        <button type="button" id="btnInvitarAmigo">🎁 Invita a un amigo: 1 mes gratis</button>
         <button type="button" id="btnMiSuscripcion">💳 Mi suscripción</button>
         <button type="button" id="btnCerrarSesion">🚪 Cerrar sesión</button>
       </div>

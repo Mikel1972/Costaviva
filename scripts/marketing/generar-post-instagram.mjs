@@ -1,7 +1,12 @@
 // scripts/marketing/generar-post-instagram.mjs
-// Corrido por .github/workflows/robot-marketing-instagram.yml (lunes/
-// miércoles/viernes). Pedido de Mikel (2026-09-19): marketing orgánico en
-// Instagram para captar usuarios, sin anuncios de pago.
+// Corrido por .github/workflows/robot-marketing-instagram.yml. Pedido de
+// Mikel (2026-09-19): marketing orgánico en Instagram para captar usuarios,
+// sin anuncios de pago. Desde el 2026-10-09 (fase de captación) sigue el
+// calendario de calendario.mjs: la víspera por la tarde prepara el post del
+// día siguiente (martes especie, jueves función de la app, viernes
+// condiciones) con los datos de la HORA DE PUBLICACIÓN, y el texto lleva un
+// enlace con UTM a costaviva.org/empieza (hueco {ENLACE}, lo rellena
+// publicar-borrador-instagram.mjs para cada red). También va a Facebook.
 //
 // Desde el 2026-10-08 las piezas salen en el estilo "Amanecer" de la app
 // (plantillas/pieza.html, renderizada con Playwright; fuentes Unbounded y
@@ -20,14 +25,16 @@
 // post-pendiente.json, y publicar-borrador-instagram.mjs crea el borrador en
 // Instagram y abre el Issue de revisión. Publicar es un paso manual aparte
 // (aprobación humana, pedido explícito de Mikel).
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, appendFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { textoMeses, NOMBRE_REGION } from "../../assets/js/ventana-actividad.js";
 import { regionDelPost, postEnEuskadi, elegirEspeciePost, leerEspeciesJson, modalidadDelPost } from "./especie-post.mjs";
-import { CLAIMS } from "./pieza-datos.mjs";
-import { BASE_URL, previsionDeSpot, resumenDeSpot, mapaDeSpot, nombreSpot, datosTarjetas, fechaLegible, leerEspecies, FUENTES_TEXTO } from "./obtener-datos.mjs";
+import { CLAIMS, FUNCIONES, bloqueParaHora, mareaDelDia, tarjetaMareaFutura, tarjetasCondiciones } from "./pieza-datos.mjs";
+import { BASE_URL, previsionDeSpot, resumenDeSpot, mapaDeSpot, nombreSpot, datosTarjetas, fechaLegible, leerEspecies, FUENTES_TEXTO, ahoraMadridISO } from "./obtener-datos.mjs";
 import { abrirNavegador, renderImagen } from "./render.mjs";
+import { servirRepo, capturarPantalla } from "./capturas-app.mjs";
+import { piezaAPreparar, apuntarGenerada, siguienteFuncion, instanteMadrid, campanaDePieza, MARCA_ENLACE } from "./calendario.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const RAIZ_REPO = join(__dirname, "..", "..");
@@ -108,37 +115,45 @@ function paginaMareas(slug) {
     : "costaviva.org/mareas";
 }
 
-// Datos de la pieza de condiciones (los usa también el reel).
-export async function datosCondiciones(spotForzado = "") {
+// Datos de la pieza de condiciones (los usa también el reel). `objetivo`
+// (2026-10-09): { fecha: "AAAA-MM-DD", hora: "08:00" } = cuándo se publica;
+// el índice, la ola, el viento y la marea son los de ese momento. Sin él,
+// los de ahora.
+export async function datosCondiciones(spotForzado = "", objetivo = null) {
   const { slug, spot } = await elegirSpot(spotForzado);
-  const { resumen } = await resumenDeSpot(slug, leerEspecies());
-  if (!resumen) throw new Error(`Sin índice de pesca para ${slug} ahora mismo`);
+  const objetivoISO = objetivo ? `${objetivo.fecha}T${objetivo.hora.slice(0, 2)}:00` : ahoraMadridISO();
+  const { resumen, horas } = await resumenDeSpot(slug, leerEspecies(), objetivoISO);
+  if (!resumen) throw new Error(`Sin índice de pesca para ${slug} a las ${objetivoISO}`);
   const nombre = nombreSpot(slug);
+  const tarjetas = objetivo
+    ? [...tarjetasCondiciones(bloqueParaHora(spot.bloques, objetivoISO), null).slice(0, 2), tarjetaMareaFutura(mareaDelDia(horas, objetivo.fecha), objetivo.hora)]
+    : datosTarjetas(spot);
   return {
-    slug, nombre, spot, resumen,
+    slug, nombre, spot, resumen, tarjetas,
     pieza: {
-      tipo: "condiciones", spot: nombre, fecha: fechaLegible(), modalidad: "desde costa",
-      resumen, tarjetas: datosTarjetas(spot), mapa: await mapaDeSpot(slug), fuentes: FUENTES_TEXTO.replace("<br>", " · "),
+      tipo: "condiciones", spot: nombre, fecha: fechaLegible(objetivo ? instanteMadrid(objetivo.fecha, objetivo.hora) : new Date()), modalidad: "desde costa",
+      resumen, tarjetas, mapa: await mapaDeSpot(slug), fuentes: FUENTES_TEXTO.replace("<br>", " · "),
     },
   };
 }
 
-async function generarCondiciones() {
-  const { slug, nombre, spot, resumen, pieza } = await datosCondiciones();
-  const [ola, viento] = pieza.tarjetas;
+async function generarCondiciones(objetivo) {
+  const { slug, nombre, resumen, tarjetas, pieza } = await datosCondiciones("", objetivo);
+  const [ola, viento, marea] = tarjetas;
   const caption = [
     `🎣 ${nombre} hoy: índice de pesca ${resumen.puntuacion}/100 desde costa`,
-    `Mejor especie ahora: ${resumen.especie}${resumen.mejorTramo ? ` · mejores horas: ${resumen.mejorTramo.texto}` : ""}`,
+    `Mejor especie: ${resumen.especie}${resumen.mejorTramo ? ` · mejores horas: ${resumen.mejorTramo.texto}` : ""}`,
     "",
     ...resumen.motivos.map((m) => `${m.flecha} ${m.texto}`),
     ...(resumen.avisoOla ? ["", resumen.avisoOla] : []),
     "",
     `🌊 Ola: ${ola.val} (${ola.sub})`,
     `💨 Viento: ${viento.val} ${viento.sub}`,
-    `🌙 Marea: ${spot.marea?.tendencia || "—"}${spot.marea?.coeficiente != null ? ` (coef. ${spot.marea.coeficiente})` : ""}`,
+    `🌙 Marea: ${marea.val}${marea.sub ? ` (${marea.sub})` : ""}`,
     "",
     CLAIMS[1],
-    `🔗 Marea y oleaje de ${nombre}, gratis y sin cuenta: ${paginaMareas(slug)}`,
+    `🔗 Mira tu spot y pruébala 7 días gratis: ${MARCA_ENLACE}`,
+    `Marea y oleaje de ${nombre}, gratis y sin cuenta: ${paginaMareas(slug)}`,
     "El índice es una orientación con reglas públicas, no una garantía.",
     "",
     "Datos: Open-Meteo (CC BY 4.0) · Batimetría: EMODnet",
@@ -148,11 +163,12 @@ async function generarCondiciones() {
   return { tipo: "condiciones", pieza, caption, slug: `condiciones-${slug}` };
 }
 
-export function datosEspecie() {
-  const mesActual = new Date().getMonth() + 1;
+export function datosEspecie(objetivo = null) {
+  const cuando = objetivo ? instanteMadrid(objetivo.fecha, objetivo.hora) : new Date();
+  const mesActual = Number((objetivo?.fecha || ahoraMadridISO()).slice(5, 7));
   const rotacion = leerRotacion();
   const region = regionDelPost(rotacion);
-  const elegida = elegirEspeciePost(leerEspeciesJson(RAIZ_REPO), region, mesActual, diaDelAnio(new Date()), { euskadi: postEnEuskadi(rotacion), modalidad: modalidadDelPost() });
+  const elegida = elegirEspeciePost(leerEspeciesJson(RAIZ_REPO), region, mesActual, diaDelAnio(cuando), { euskadi: postEnEuskadi(rotacion), modalidad: modalidadDelPost() });
   if (!elegida) throw new Error(`Ninguna especie de temporada (y fuera de veda) en ${region} para el mes ${mesActual}`);
   const { nota, talla, freza, cebos } = elegida;
   const especie = { ...elegida.especie, nombre: elegida.especie.nombres.es };
@@ -161,7 +177,7 @@ export function datosEspecie() {
   return {
     especie, nota, cebos, textoTalla, textoFreza,
     pieza: {
-      tipo: "especie", fecha: fechaLegible(),
+      tipo: "especie", fecha: fechaLegible(cuando),
       especie: {
         nombre: especie.nombre, region: NOMBRE_REGION[region] || region, nota,
         cebos: cebos.length ? cebos.join(", ") : null, talla: textoTalla, freza: textoFreza,
@@ -171,8 +187,8 @@ export function datosEspecie() {
   };
 }
 
-function generarEspecies() {
-  const { especie, nota, cebos, textoTalla, textoFreza, pieza } = datosEspecie();
+function generarEspecies(objetivo) {
+  const { especie, nota, cebos, textoTalla, textoFreza, pieza } = datosEspecie(objetivo);
   console.log(`Especie del post: ${especie.nombre}`);
   const caption = [
     `${especie.emoji} ${especie.nombre}: de temporada ahora mismo`,
@@ -183,7 +199,8 @@ function generarEspecies() {
     ...(cebos.length ? [`🪝 Cebos típicos: ${cebos.join(", ")}`, ""] : []),
     ...(textoFreza ? [`🥚 ${textoFreza}`, ""] : []),
     ...(textoTalla ? [`📏 Talla mínima: ${textoTalla}. Manda siempre la norma publicada.`, ""] : []),
-    `En Costaviva ves su índice de pesca hora a hora en tu spot. 🔗 ${paginaMareas(null)}`,
+    `En Costaviva ves su índice de pesca hora a hora en tu spot.`,
+    `🔗 Pruébala 7 días gratis: ${MARCA_ENLACE}`,
     "",
     "#pesca #fishing #pescarecreativa #pescadeportiva #costaviva #pescaenespaña",
   ].join("\n");
@@ -191,29 +208,95 @@ function generarEspecies() {
   return { tipo: "especies", pieza, caption, slug: `especies-${slug}` };
 }
 
-async function main() {
-  // Miércoles especies; lunes y viernes condiciones (cron L/X/V del workflow).
-  const generador = new Date().getDay() === 3 ? generarEspecies : generarCondiciones;
-  const { tipo, pieza, caption, slug } = await generador();
-
-  const fecha = new Date().toISOString().slice(0, 10);
-  mkdirSync(join(RAIZ_REPO, "assets", "marketing"), { recursive: true });
-  const rutaRelativa = `assets/marketing/${fecha}-${slug}.png`;
-  const rutaStory = `assets/marketing/${fecha}-${slug}-story.png`;
-  const navegador = await abrirNavegador();
+// Post de una función de la app (2026-10-09, jueves): captura real de la
+// pantalla con datos de demostración (capturas-app.mjs), igual que el reel.
+export async function datosFuncion(nombre, navegador, objetivo = null) {
+  const f = FUNCIONES[nombre];
+  if (!f) throw new Error(`Función desconocida: ${nombre}`);
+  const servidor = await servirRepo();
+  let captura;
   try {
+    captura = await capturarPantalla(navegador, f.pagina, { puerto: servidor.address().port });
+  } finally {
+    servidor.close();
+  }
+  const cuando = objetivo ? instanteMadrid(objetivo.fecha, objetivo.hora) : new Date();
+  return { tipo: "funcion", fecha: fechaLegible(cuando), claim: f.claim, funcion: { ...f, captura: `data:image/png;base64,${captura.toString("base64")}` } };
+}
+
+async function generarFuncion(objetivo, navegador, nombre) {
+  const f = FUNCIONES[nombre];
+  const pieza = await datosFuncion(nombre, navegador, objetivo);
+  const caption = [
+    `📱 ${f.titulo}`,
+    "",
+    f.frase,
+    "",
+    ...f.puntos.map((p) => `✅ ${p}`),
+    ...(f.aviso ? ["", f.aviso] : []),
+    "",
+    `🔗 Pruébala 7 días gratis: ${MARCA_ENLACE}`,
+    "",
+    "#pesca #fishing #pescadeportiva #diariodepesca #costaviva #pescaenespaña",
+  ].join("\n");
+  return { tipo: `funcion-${nombre}`, pieza, caption, slug: `funcion-${nombre}` };
+}
+
+const RUTA_ESTADO = join(__dirname, "calendario-estado.json");
+function leerEstado() {
+  try { return JSON.parse(readFileSync(RUTA_ESTADO, "utf8")); } catch { return {}; }
+}
+
+// Avisa al workflow (GITHUB_OUTPUT) de si hay pieza nueva.
+function salidaWorkflow(clave, valor) {
+  if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, `${clave}=${valor}\n`);
+}
+
+async function main() {
+  const estado = leerEstado();
+  const objetivo = piezaAPreparar({
+    formato: "post", fechaForzada: process.env.FECHA_PIEZA || "", tipoForzado: process.env.TIPO_PIEZA || "", estado,
+  });
+  if (!objetivo) {
+    console.log("Mañana no toca post (o ya está preparado). Nada que hacer.");
+    salidaWorkflow("generada", "false");
+    return;
+  }
+  console.log(`Post para el ${objetivo.dia} ${objetivo.fecha} a las ${objetivo.hora}: ${objetivo.tipo}`);
+
+  const navegador = await abrirNavegador();
+  let resultado, nombreFuncion = null;
+  try {
+    if (objetivo.tipo === "especie") resultado = generarEspecies(objetivo);
+    else if (objetivo.tipo === "funcion" || FUNCIONES[objetivo.tipo]) {
+      nombreFuncion = FUNCIONES[objetivo.tipo] ? objetivo.tipo : siguienteFuncion(estado.ultimaFuncion);
+      resultado = await generarFuncion(objetivo, navegador, nombreFuncion);
+    } else resultado = await generarCondiciones(objetivo);
+
+    const { tipo, pieza, caption, slug } = resultado;
+    mkdirSync(join(RAIZ_REPO, "assets", "marketing"), { recursive: true });
+    const rutaRelativa = `assets/marketing/${objetivo.fecha}-${slug}.png`;
+    const rutaStory = `assets/marketing/${objetivo.fecha}-${slug}-story.png`;
     for (const [formato, ruta] of [["post", rutaRelativa], ["story", rutaStory]]) {
       const cabe = await renderImagen(navegador, { ...pieza, formato }, join(RAIZ_REPO, ruta));
       if (!cabe) console.warn(`::warning::La ${formato} de ${slug} se sale del lienzo; revísala antes de aprobarla.`);
       console.log(`✓ ${formato}: ${ruta}`);
     }
+
+    const campana = campanaDePieza(objetivo.fecha, slug);
+    const pendiente = {
+      tipo, caption, rutaRelativa, publicUrl: `${BASE_URL}/${rutaRelativa}`, storyUrl: `${BASE_URL}/${rutaStory}`,
+      fecha: objetivo.fecha, hora: objetivo.hora, dia: objetivo.dia, campana,
+    };
+    writeFileSync(join(__dirname, "post-pendiente.json"), JSON.stringify(pendiente, null, 2));
+    let nuevo = apuntarGenerada(estado, objetivo.clave, { tipo, campana });
+    if (nombreFuncion) nuevo = { ...nuevo, ultimaFuncion: nombreFuncion };
+    writeFileSync(RUTA_ESTADO, JSON.stringify(nuevo, null, 2) + "\n");
+    console.log(`✓ scripts/marketing/post-pendiente.json escrito (tipo: ${tipo}, campaña: ${campana})`);
+    salidaWorkflow("generada", "true");
   } finally {
     await navegador.close();
   }
-
-  const pendiente = { tipo, caption, rutaRelativa, publicUrl: `${BASE_URL}/${rutaRelativa}`, storyUrl: `${BASE_URL}/${rutaStory}`, fecha };
-  writeFileSync(join(__dirname, "post-pendiente.json"), JSON.stringify(pendiente, null, 2));
-  console.log(`✓ scripts/marketing/post-pendiente.json escrito (tipo: ${tipo})`);
 }
 
 if (process.argv[1] && import.meta.url.endsWith(process.argv[1].split("/").pop())) {

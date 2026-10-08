@@ -24,6 +24,7 @@
 import { esRutaPermitida } from "./_lib/rutas-publicas.js";
 import { decisionIndexacion } from "./_lib/seo/indexacion.js";
 import { htmlNoEncontradaGeneral } from "./_lib/seo/base.js";
+import { visitaAContar, contarVisita, conOrigenEnCta } from "./_lib/visitas.js";
 
 export async function onRequest(context) {
   const { request, next } = context;
@@ -34,7 +35,16 @@ export async function onRequest(context) {
   // páginas privadas con X-Robots-Tag: noindex. Ver _lib/seo/indexacion.js.
   const seo = decisionIndexacion(request.url, request.method);
   if (seo.redirigir) return Response.redirect(seo.redirigir, 301);
-  const respuesta = aplicarCsp(await next(), HTMLRewriter);
+  let original = await next();
+  // Contador propio de visitas a páginas públicas (2026-10-09): un recuento
+  // agregado por día/página/fuente, en segundo plano y sin datos de la
+  // persona (ver _lib/visitas.js). Nunca retrasa ni rompe la respuesta.
+  try {
+    const visita = visitaAContar(request, original);
+    if (visita && context.waitUntil) context.waitUntil(contarVisita(visita, { url: SUPABASE_URL, anonKey: SUPABASE_ANON_KEY }));
+    if (visita) original = conOrigenEnCta(original, visita, HTMLRewriter);
+  } catch { /* el contador nunca rompe la página */ }
+  const respuesta = aplicarCsp(original, HTMLRewriter);
   return seo.noindex ? conNoindex(respuesta) : respuesta;
 }
 
@@ -81,6 +91,10 @@ export function conNoindex(respuesta) {
 // addEventListener.
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
+// Clave anon: pública por diseño (va en todas las páginas). Solo puede
+// llamar a contar_visita_publica(), que suma 1 a un recuento agregado.
+const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
 
 export function generarNonce() {
   const bytes = new Uint8Array(18);

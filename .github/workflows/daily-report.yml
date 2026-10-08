@@ -567,6 +567,34 @@ jobs:
         continue-on-error: true
         # Si falla, queda rastro: ::warning:: en el paso final "Avisar de pasos fallidos" (comun P4).
 
+      - name: Captación (semanal, los lunes)
+        # Añadido 2026-10-09 (fase de captación de Mikel): visitas por
+        # fuente, altas, prueba -> pago (la métrica principal), invitaciones,
+        # amigos y retención. Sin IA: metricas_captacion() + formato en
+        # assets/js/metricas-captacion.js. Solo los lunes (hora de España) o
+        # en una pasada manual; el resto de días no añade nada al informe.
+        id: captacion
+        continue-on-error: true
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          if [ "$(TZ=Europe/Madrid date +%u)" != "1" ] && [ "${{ github.event_name }}" = "schedule" ]; then
+            echo "resultado=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          set +e
+          TEXTO=$(node scripts/captacion/informe-captacion.mjs)
+          CODIGO=$?
+          set -e
+          if [ "$CODIGO" -ne 0 ]; then echo "::warning::Captación: no se pudieron leer las métricas (ver el texto del informe)."; fi
+          echo "$TEXTO"
+          {
+            echo "resultado<<FIN_CAPTACION"
+            echo "$TEXTO"
+            echo "FIN_CAPTACION"
+          } >> "$GITHUB_OUTPUT"
+          exit "$CODIGO"
+
       - name: Reunir lo añadido a ROBOT.md en las últimas 24h
         id: robot24h
         run: |
@@ -740,6 +768,7 @@ jobs:
               `${{ steps.indexacion.outputs.resultado || '  - No se pudo consultar esta pasada (ver el paso de autenticación con Google).' }}`,
               `- Marketing (Instagram):`,
               `${{ steps.marketing.outputs.resultado }}`,
+              ...(`${{ steps.captacion.outputs.resultado }}`.trim() ? [`- Captación (semanal):`, `${{ steps.captacion.outputs.resultado }}`] : []),
               lineaKpi,
               "",
               sintesis,
@@ -805,6 +834,7 @@ jobs:
             indexacion=${{ steps.indexacion.outcome }}
             camaras=${{ steps.camaras.outcome }}
             marketing=${{ steps.marketing.outcome }}
+            captacion=${{ steps.captacion.outcome }}
         run: |
           fallidos=""
           for r in $RESULTADOS; do

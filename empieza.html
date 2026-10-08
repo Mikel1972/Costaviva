@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Prueba Costaviva 7 días gratis</title>
+<meta name="description" content="Índice de pesca, ola, viento y marea de tu spot hora a hora, diario de pesca y grupos con tu cuadrilla. Prueba Costaviva 7 días gratis." />
+<!-- Página de entrada de las campañas (Instagram, Facebook) y de "Invita a
+     un amigo" (2026-10-09). No se indexa: el contenido para buscadores está
+     en /mareas, /spots y /especies. -->
+<meta name="robots" content="noindex" />
+<link rel="canonical" href="https://costaviva.org/empieza" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://costaviva.org/empieza" />
+<meta property="og:title" content="Prueba Costaviva 7 días gratis" />
+<meta property="og:description" content="Índice de pesca, ola, viento y marea de tu spot hora a hora." />
+<meta property="og:image" content="https://costaviva.org/assets/og/costaviva.jpg" />
+<link rel="icon" href="icon.svg" type="image/svg+xml" />
+<meta name="theme-color" content="#0B1E3F" />
+<link rel="preload" href="/assets/fonts/Manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/Unbounded-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/costaviva.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; background: var(--mar); color: var(--blanco); font-family: var(--f-texto); }
+  main { max-width: 620px; margin: 0 auto; padding: 32px 16px 48px; }
+  .marca { font-family: var(--f-titulo); font-weight: 800; font-size: 22px; background: var(--degradado-texto); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  h1 { font-family: var(--f-titulo); font-weight: 700; font-size: clamp(26px, 6vw, 38px); line-height: 1.15; margin: 22px 0 12px; }
+  .entrada { font-size: 18px; line-height: 1.5; color: var(--gris-mar); margin: 0 0 22px; }
+  .regalo { display: none; margin: 0 0 18px; padding: 12px 14px; border-radius: 12px; background: var(--superficie); color: var(--tinta); font-weight: 700; }
+  .regalo.visible { display: block; }
+  ul { list-style: none; padding: 0; margin: 0 0 26px; display: grid; gap: 12px; }
+  li { background: var(--mar-2); border-radius: 14px; padding: 14px 16px; line-height: 1.45; }
+  li strong { display: block; font-size: 17px; margin-bottom: 2px; color: var(--blanco); }
+  li span { color: var(--gris-mar); font-size: 15px; }
+  .cta { display: block; text-align: center; text-decoration: none; padding: 16px 20px; font-size: 18px; }
+  .letra { margin-top: 14px; text-align: center; color: var(--gris-mar); font-size: 14px; line-height: 1.5; }
+  .letra a { color: var(--blanco); }
+  .ya { margin-top: 22px; text-align: center; font-size: 15px; }
+  .ya a { color: var(--blanco); font-weight: 700; }
+</style>
+</head>
+<body>
+<main>
+  <div class="marca">Costaviva</div>
+  <h1>¿Merece la pena ir hoy a pescar?</h1>
+  <p class="entrada">Mira el índice de pesca, la ola, el viento y la marea de tu spot, hora a hora, antes de cargar el coche.</p>
+
+  <p class="regalo" id="regalo">🎁 Te ha invitado un amigo. Crea tu cuenta con este enlace y tendrás tus 7 días de prueba.</p>
+
+  <ul>
+    <li><strong>Índice de pesca de tu spot</strong><span>Una nota de 0 a 100 hora a hora, con los motivos que la suben o la bajan. Es una orientación con reglas públicas, no una garantía.</span></li>
+    <li><strong>Ola, viento, marea y profundidad del fondo</strong><span>Los datos del mar de cada spot, caudal de ríos, turbidez del agua y cámaras en un mismo mapa.</span></li>
+    <li><strong>Tu diario y tu cuadrilla</strong><span>Apunta cada salida y la app guarda el mar que hacía. Grupos privados para compartir ubicaciones y capturas.</span></li>
+  </ul>
+
+  <a class="boton-principal cta" id="cta" href="/login?alta=1">Prueba 7 días gratis</a>
+  <p class="letra">Sin tarjeta para empezar. Después, 3,99 €/mes o 39,99 €/año si te quedas; si no, no se te cobra nada.<br>
+    <a href="/privacidad">Privacidad</a> · <a href="/mareas">Mareas gratis y sin cuenta</a></p>
+  <p class="ya">¿Ya tienes cuenta? <a href="/login">Entra</a></p>
+</main>
+<script type="module">
+// Primer contacto (fuente/campaña de una lista cerrada) y código de amigo:
+// se recuerdan en este navegador hasta que se crea la cuenta. Ver
+// assets/js/origen.js y privacidad.html. Sin cookies ni terceros.
+import { capturarOrigen, normalizarRef } from "/assets/js/origen.js";
+capturarOrigen();
+const ref = normalizarRef(new URLSearchParams(location.search).get("ref"));
+if (ref) {
+  document.getElementById("regalo").classList.add("visible");
+  document.getElementById("cta").href = `/login?alta=1&ref=${ref}`;
+}
+</script>
+</body>
+</html>

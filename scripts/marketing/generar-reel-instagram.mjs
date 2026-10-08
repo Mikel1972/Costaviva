@@ -23,7 +23,7 @@
 //
 // Igual que los posts: solo genera; el borrador + Issue + aprobación manual
 // los hace publicar-borrador-instagram.mjs reel-pendiente.json.
-import { readFileSync, writeFileSync, mkdirSync, readdirSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, readdirSync, existsSync, appendFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { GANCHOS, CLAIMS, FUNCIONES, siguientePieza, escogerClip } from "./pieza-datos.mjs";
@@ -31,6 +31,7 @@ import { BASE_URL, vientoDeSpot, fechaLegible } from "./obtener-datos.mjs";
 import { datosCondiciones, datosEspecie, hashtagsRegionales } from "./generar-post-instagram.mjs";
 import { abrirNavegador, renderReel } from "./render.mjs";
 import { servirRepo, capturarPantalla } from "./capturas-app.mjs";
+import { piezaAPreparar, apuntarGenerada, campanaDePieza, MARCA_ENLACE, instanteMadrid } from "./calendario.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const RAIZ_REPO = join(__dirname, "..", "..");
@@ -51,22 +52,22 @@ export function elegirClip(indice, dir = join(__dirname, "clips"), forzado = pro
   return { ruta, credito: `Vídeo: ${new URL(lic.origen).hostname.replace(/^www\./, "")}` };
 }
 
-async function piezaDelReel(tipo, navegador) {
+async function piezaDelReel(tipo, navegador, objetivo) {
   if (tipo === "condiciones") {
-    const { slug, nombre, resumen, pieza } = await datosCondiciones(process.env.SPOT_REEL || "");
+    const { slug, nombre, resumen, pieza } = await datosCondiciones(process.env.SPOT_REEL || "", objetivo);
     return {
-      datos: { ...pieza, gancho: GANCHOS.condiciones(nombre), claim: CLAIMS[0], viento: await vientoDeSpot(slug), rotuloMapa: "Viento ahora" },
+      datos: { ...pieza, gancho: GANCHOS.condiciones(nombre), claim: CLAIMS[0], viento: await vientoDeSpot(slug, objetivo ? `${objetivo.fecha}T${objetivo.hora.slice(0, 2)}:00` : null), rotuloMapa: objetivo ? `Viento a las ${objetivo.hora}` : "Viento ahora" },
       caption: [`¿Te merece la pena ir hoy a ${nombre}? Índice de pesca ${resumen.puntuacion}/100, mejor especie ahora: ${resumen.especie}.`,
         ...(resumen.avisoOla ? [resumen.avisoOla] : []), "", CLAIMS[0],
-        "El índice es una orientación con reglas públicas, no una garantía.", "", `#pesca #fishing #pescadesdecosta #costaviva ${hashtagsRegionales(slug)}`],
+        "El índice es una orientación con reglas públicas, no una garantía.", `🔗 Pruébala 7 días gratis: ${MARCA_ENLACE}`, "", `#pesca #fishing #pescadesdecosta #costaviva ${hashtagsRegionales(slug)}`],
       nombre: `condiciones-${slug}`,
     };
   }
   if (tipo === "especie") {
-    const { especie, pieza } = datosEspecie();
+    const { especie, pieza } = datosEspecie(objetivo);
     return {
       datos: { ...pieza, gancho: GANCHOS.especie(especie.nombre), claim: CLAIMS[1] },
-      caption: [`${especie.nombre}: de temporada ahora mismo.`, "", CLAIMS[1], "", "#pesca #fishing #pescarecreativa #costaviva #pescaenespaña"],
+      caption: [`${especie.nombre}: de temporada ahora mismo.`, "", CLAIMS[1], `🔗 Pruébala 7 días gratis: ${MARCA_ENLACE}`, "", "#pesca #fishing #pescarecreativa #costaviva #pescaenespaña"],
       nombre: `especie-${especie.id}`,
     };
   }
@@ -81,26 +82,43 @@ async function piezaDelReel(tipo, navegador) {
   }
   return {
     datos: {
-      tipo: "funcion", fecha: fechaLegible(), gancho: GANCHOS[tipo](), claim: f.claim,
+      tipo: "funcion", fecha: fechaLegible(objetivo ? instanteMadrid(objetivo.fecha, objetivo.hora) : new Date()), gancho: GANCHOS[tipo](), claim: f.claim,
       funcion: { ...f, captura: `data:image/png;base64,${captura.toString("base64")}` },
     },
-    caption: [f.frase, "", ...(f.aviso ? [f.aviso, ""] : []), "Pruébala 7 días gratis: enlace en la bio.", "", "#pesca #fishing #pescadeportiva #costaviva"],
+    caption: [f.frase, "", ...(f.aviso ? [f.aviso, ""] : []), `🔗 Pruébala 7 días gratis: ${MARCA_ENLACE}`, "", "#pesca #fishing #pescadeportiva #costaviva"],
     nombre: tipo,
   };
+}
+
+const RUTA_ESTADO = join(__dirname, "calendario-estado.json");
+function salidaWorkflow(clave, valor) {
+  if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, `${clave}=${valor}\n`);
 }
 
 async function main() {
   let rotacion = {};
   try { rotacion = JSON.parse(readFileSync(RUTA_ROTACION, "utf8")); } catch {}
+  let estado = {};
+  try { estado = JSON.parse(readFileSync(RUTA_ESTADO, "utf8")); } catch {}
+  // Calendario (2026-10-09): el reel del sábado se prepara el viernes por la
+  // tarde. Forzar tipo o fecha (inputs del workflow) salta el calendario.
+  const objetivo = piezaAPreparar({
+    formato: "reel", fechaForzada: process.env.FECHA_PIEZA || "", tipoForzado: process.env.TIPO_REEL || "", estado,
+  });
+  if (!objetivo) {
+    console.log("Mañana no toca reel (o ya está preparado). Nada que hacer.");
+    salidaWorkflow("generada", "false");
+    return;
+  }
   const { indice, tipo } = process.env.TIPO_REEL ? { indice: rotacion.ultimoIndice ?? -1, tipo: process.env.TIPO_REEL } : siguientePieza(rotacion.ultimoIndice);
-  console.log(`Reel de esta semana: ${tipo}`);
+  console.log(`Reel para el ${objetivo.dia} ${objetivo.fecha} a las ${objetivo.hora}: ${tipo}`);
 
   const navegador = await abrirNavegador();
   try {
-    const { datos, caption, nombre } = await piezaDelReel(tipo, navegador);
+    const { datos, caption, nombre } = await piezaDelReel(tipo, navegador, objetivo);
     const clip = elegirClip(indice);
     console.log(`Clip del gancho: ${clip ? clip.ruta : "ninguno (fondo de la marca)"}`);
-    const fecha = new Date().toISOString().slice(0, 10);
+    const fecha = objetivo.fecha;
     const rutaRelativa = `assets/marketing/reels/${fecha}-${nombre}.mp4`;
     mkdirSync(join(RAIZ_REPO, "assets/marketing/reels"), { recursive: true });
     let bytes = await renderReel(navegador, datos, { salida: join(RAIZ_REPO, rutaRelativa), clip: clip?.ruta });
@@ -110,8 +128,14 @@ async function main() {
     }
     console.log(`✓ Reel: ${rutaRelativa} (${(bytes / 1e6).toFixed(1)} MB)`);
     const texto = [...caption, ...(clip?.credito ? ["", clip.credito] : [])].join("\n");
-    writeFileSync(join(__dirname, "reel-pendiente.json"), JSON.stringify({ tipo: `reel-${tipo}`, esReel: true, caption: texto, rutaRelativa, publicUrl: `${BASE_URL}/${rutaRelativa}`, fecha }, null, 2));
+    const campana = campanaDePieza(fecha, `reel-${nombre}`);
+    writeFileSync(join(__dirname, "reel-pendiente.json"), JSON.stringify({
+      tipo: `reel-${tipo}`, esReel: true, caption: texto, rutaRelativa, publicUrl: `${BASE_URL}/${rutaRelativa}`,
+      fecha, hora: objetivo.hora, dia: objetivo.dia, campana,
+    }, null, 2));
     if (!process.env.TIPO_REEL) writeFileSync(RUTA_ROTACION, JSON.stringify({ ultimoIndice: indice, ultimoTipo: tipo, fecha: new Date().toISOString() }, null, 2) + "\n");
+    writeFileSync(RUTA_ESTADO, JSON.stringify(apuntarGenerada(estado, objetivo.clave, { tipo: `reel-${tipo}`, campana }), null, 2) + "\n");
+    salidaWorkflow("generada", "true");
   } finally {
     await navegador.close();
   }

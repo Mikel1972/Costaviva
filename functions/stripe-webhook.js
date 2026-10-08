@@ -7,6 +7,12 @@
 //   customer.subscription.updated, customer.subscription.deleted,
 //   invoice.payment_failed
 //
+// Captación (2026-10-09): cuando una suscripción pasa a "active" (primer
+// cobro real tras la prueba) se apunta suscripciones.primer_pago_en (métrica
+// prueba -> pago) y, si esa persona vino con "Invita a un amigo", se da el
+// mes gratis a quien la invitó (_lib/referidos.js). No hace falta ningún
+// evento nuevo en Stripe.
+//
 // Idempotencia (comun, estandares/stripe.md S3, 2026-10-07): cada event.id
 // se guarda en public.stripe_eventos antes de procesarlo; un evento repetido
 // responde 200 sin hacer nada.
@@ -27,6 +33,7 @@
 // aviso-alta.js).
 
 import { calcularFin, uuidValido } from "./_lib/invitaciones.js";
+import { premiarReferido, marcarDiasUsados } from "./_lib/referidos.js";
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 
@@ -173,6 +180,22 @@ async function marcarInvitacionAplicada(serviceRoleKey, invitacionId) {
   if (!u.ok) throw new Error(`marcar invitación HTTP ${u.status}: ${await u.text()}`);
 }
 
+// Primer cobro real (2026-10-09, métricas de captación): la primera vez que
+// la suscripción está "active" se apunta primer_pago_en. El filtro
+// primer_pago_en=is.null hace que solo cuente la primera vez.
+async function apuntarPrimerPago(serviceRoleKey, userId) {
+  if (!uuidValido(userId)) return;
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/suscripciones?user_id=eq.${userId}&primer_pago_en=is.null`, {
+    method: "PATCH",
+    headers: {
+      apikey: serviceRoleKey, Authorization: `Bearer ${serviceRoleKey}`,
+      "content-type": "application/json", Prefer: "return=minimal",
+    },
+    body: JSON.stringify({ primer_pago_en: new Date().toISOString() }),
+  });
+  if (!r.ok) throw new Error(`primer_pago_en HTTP ${r.status}: ${await r.text()}`);
+}
+
 // Si el procesado falla, se borra el registro para que el reintento de
 // Stripe no se tome por repetido.
 async function olvidarEvento(serviceRoleKey, eventoId) {
@@ -239,6 +262,11 @@ export async function onRequestPost(context) {
       if (obj.metadata?.invitacion_id) {
         await marcarInvitacionAplicada(serviceRoleKey, obj.metadata.invitacion_id);
       }
+      // Meses de "Invita a un amigo" usados como días de prueba extra
+      // (crear-checkout-stripe.js los pone en metadata.referidos_dias).
+      if (obj.metadata?.referidos_dias && uuidValido(userId)) {
+        await marcarDiasUsados({ serviceRoleKey, userId, ids: obj.metadata.referidos_dias, sesionId: obj.id });
+      }
     } else if (
       evento.type === "customer.subscription.created" ||
       evento.type === "customer.subscription.updated" ||
@@ -267,6 +295,14 @@ export async function onRequestPost(context) {
           : null,
         actualizado_en: new Date().toISOString(),
       });
+      // Primer cobro real y premio de "Invita a un amigo" (2026-10-09).
+      // "active" = la prueba terminó y Stripe cobró. Si el premio falla en
+      // Stripe se lanza: 500, Stripe reintenta y el amigo sigue "pendiente"
+      // (la clave de idempotencia evita dar dos meses).
+      if (estado === "active" && uuidValido(userId)) {
+        await apuntarPrimerPago(serviceRoleKey, userId);
+        await premiarReferido({ serviceRoleKey, stripeKey: env.STRIPE_SECRET_KEY, userId, customerAmigo: obj.customer });
+      }
     } else if (evento.type === "invoice.payment_failed") {
       // Cobro fallido (comun stripe.md S4). No se toca el estado aquí: Stripe
       // pasa la suscripción a past_due/unpaid y lo comunica con

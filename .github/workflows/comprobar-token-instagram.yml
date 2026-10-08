@@ -15,6 +15,11 @@ name: Comprobar token de Instagram
 #
 # NUNCA imprime el token. Solo los metadatos que devuelve /debug_token.
 
+#
+# Desde el 2026-10-09 comprueba también lo que hace falta para publicar en la
+# Página de Facebook: el permiso pages_manage_posts y que el token da un
+# Page token de la Página META_PAGE_ID (último paso). Nunca publica nada.
+
 on:
   workflow_dispatch: {}
 
@@ -73,6 +78,8 @@ jobs:
                 ["instagram_manage_insights", "alcance, impresiones y guardados"],
                 ["pages_show_list", "localizar la Página"],
                 ["pages_read_engagement", "leer la Página"],
+                // Facebook (2026-10-09): publicar la pieza también en la Página.
+                ["pages_manage_posts", "publicar posts y reels en la Página de Facebook"],
               ];
               for (const [permiso, para] of necesarios) {
                 if (!scopes.includes(permiso)) fallos.push("Falta el permiso " + permiso + " (" + para + ").");
@@ -117,4 +124,33 @@ jobs:
             const linea = "Acceso confirmado a @" + d.username + " (" + d.followers_count + " seguidores).";
             console.log(linea);
             if (process.env.GITHUB_STEP_SUMMARY) fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, "\n- " + linea + "\n");
+          '
+
+      - name: Comprobar que el token sirve para la Página de Facebook
+        if: always()
+        env:
+          META_PAGE_ACCESS_TOKEN: ${{ secrets.META_PAGE_ACCESS_TOKEN }}
+          PAGE_ID: ${{ vars.META_PAGE_ID }}
+        run: |
+          if [ -z "$PAGE_ID" ]; then
+            echo "::error::Falta la variable de repositorio META_PAGE_ID (id de la Página de Facebook). Sin ella no se puede publicar en Facebook."
+            exit 1
+          fi
+          # Lectura inocua: nombre de la Página y si devuelve su Page token
+          # (no se imprime nunca; solo se mira si existe).
+          curl -sS -G "https://graph.facebook.com/v21.0/${PAGE_ID}" \
+            --data-urlencode "fields=name,access_token" \
+            --data-urlencode "access_token=${META_PAGE_ACCESS_TOKEN}" \
+            -o /tmp/pagina.json
+          node -e '
+            const fs = require("fs");
+            const d = JSON.parse(fs.readFileSync("/tmp/pagina.json", "utf8"));
+            if (d.error) {
+              console.log("::error::El token no da acceso a la Página " + process.env.PAGE_ID + ": " + (d.error.message || "sin detalle") + ". Revisa que la Página esté asignada al Usuario del Sistema con control total.");
+              process.exit(1);
+            }
+            const linea = "Página de Facebook: " + d.name + (d.access_token ? " (Page token disponible)" : " (sin Page token: falta asignar la Página con control total)");
+            console.log(linea);
+            if (process.env.GITHUB_STEP_SUMMARY) fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, "\n- " + linea + "\n");
+            if (!d.access_token) process.exit(1);
           '
