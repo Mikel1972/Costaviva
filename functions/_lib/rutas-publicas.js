@@ -48,6 +48,10 @@ const ARCHIVOS_PUBLICOS = new Set([
   // (es_admin() y las funciones security definer), no en ocultar la URL.
   "/admin.html",
   "/admin",
+  // Etiquetado de fotos de las cámaras de oleaje (2026-10-08): igual que
+  // admin.html, la seguridad está en Supabase (es_admin() en la policy).
+  "/etiquetar-olas.html",
+  "/etiquetar-olas",
 
   // Estáticos de la raíz.
   "/icon.svg",

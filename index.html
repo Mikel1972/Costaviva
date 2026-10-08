@@ -651,6 +651,8 @@
     }
     .panel.visible { transform: translateY(0); }
   }
+  .ola-banda { background:#FFFFFF; border:1px solid #DDE2DC; color:#0B2532; border-radius:12px; padding:4px 8px; font-size:11px; cursor:pointer; font-family:'Inter',sans-serif; }
+  .ola-banda:hover { background:#EEF2EF; }
 </style>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "d398d313ac4e4524a1b89af3c9ad6fda"}'></script><!-- End Cloudflare Web Analytics -->
 </head>
@@ -941,6 +943,20 @@
         <div class="val" id="panelOla"></div>
         <div class="etq" id="panelOlaDir"></div>
         <div class="etq" id="panelOlaNota" style="text-transform:none; letter-spacing:0; margin-top:3px;"></div>
+        <!-- "Ola real que veo" (2026-10-08): solo con sesión. La banda que
+             elige el usuario entra en la calibración de las cámaras
+             (oleaje_etiquetas, migración 20261008160000). -->
+        <div id="panelOlaReal" style="display:none; margin-top:6px;">
+          <button type="button" id="panelBtnOlaReal" style="background:#EEF2EF; border:1px solid #DDE2DC; color:#0B2532; border-radius:14px; padding:3px 9px; font-size:11px; cursor:pointer; font-family:'Inter',sans-serif;">🌊 Ola real que veo</button>
+          <div id="panelOlaRealBandas" style="display:none; flex-wrap:wrap; gap:4px; margin-top:5px;">
+            <button type="button" class="ola-banda" data-banda="<0.5">&lt;0,5 m</button>
+            <button type="button" class="ola-banda" data-banda="0.5-1">0,5–1</button>
+            <button type="button" class="ola-banda" data-banda="1-2">1–2</button>
+            <button type="button" class="ola-banda" data-banda="2-3">2–3</button>
+            <button type="button" class="ola-banda" data-banda=">3">&gt;3 m</button>
+          </div>
+          <div class="etq" id="panelOlaRealMsg" style="text-transform:none; letter-spacing:0; margin-top:3px;"></div>
+        </div>
       </div>
       <div class="tarjeta">
         <div class="etq">VIENTO (12h)</div>
@@ -1600,6 +1616,12 @@ async function actualizarDesdeBackend() {
       s.alturaMarAbierto = b.alturaMarAbierto || b.altura;
       s.coefAbrigo = b.coefAbrigo ?? null;
       s.zonaOleaje = sBackend.zonaOleaje || null;
+      // Oleaje por cámara (2026-10-08, functions/_lib/oleaje-camaras.js):
+      // fuenteAltura "camara" = la altura del bloque es la de la cámara;
+      // "modelo_*" = modelo corregido con la cámara (propia o vecina).
+      s.oleajeCamara = sBackend.oleajeCamara || null;
+      s.fuenteAltura = b.fuenteAltura || null;
+      s.alturaModelo = b.alturaModelo || null;
       s.periodo = b.periodo;
       s.dirOla = b.dirOla;
       if (b.viento !== null) { s.viento = b.viento; s.dirViento = b.dirViento; }
@@ -2127,6 +2149,22 @@ function coeficienteAbrigoDesdeParametros(p, dirGrados) {
   if (d >= p.semiancho + 30) return p.coefAbrigado;
   const t = (d - p.semiancho) / 30;
   return +(p.coefAbierto + (p.coefAbrigado - p.coefAbierto) * t).toFixed(3);
+}
+
+// Corrección por cámara de las próximas horas — copia literal de
+// factorCamara() y horasEntreLocales() de functions/_lib/oleaje-camaras.js
+// (allí el criterio; test/oleaje-camaras.test.js comprueba que no se
+// desvían). Los parámetros (cociente, peso, hora de la lectura, horas de
+// decaimiento) llegan de /prevision en s.oleajeCamara.
+function factorCamara(cociente, horas, peso = 1, decaimiento = 18) {
+  if (!Number.isFinite(cociente) || !Number.isFinite(horas)) return 1;
+  const w = Math.max(0, 1 - Math.abs(horas) / decaimiento) * Math.min(1, Math.max(0, peso));
+  return +(1 + (cociente - 1) * w).toFixed(4);
+}
+function horasEntreLocales(a, b) {
+  const pa = Date.parse(`${a.slice(0, 16)}:00Z`), pb = Date.parse(`${b.slice(0, 16)}:00Z`);
+  if (!Number.isFinite(pa) || !Number.isFinite(pb)) return null;
+  return (pb - pa) / 3600e3;
 }
 
 async function datosAmbientalesPunto(lat, lon) {
@@ -2960,16 +2998,59 @@ function pintarOleajePanel(s) {
   const z = s.zonaOleaje;
   const km = z?.celdaModelo?.distanciaKm;
   const dondeModelo = km != null && km >= 1 ? `modelo a ~${Math.round(km)} km de la costa` : "modelo";
+  const cam = s.oleajeCamara;
+  // "Si hay cámara, utiliza nuestro cálculo" (2026-10-08): con lectura de
+  // cámara vigente (< 3 h, con luz y en su encuadre), la altura es la de la
+  // cámara y el mar abierto del modelo va debajo.
+  if (cam && s.fuenteAltura === "camara") {
+    val.textContent = `~${textoRangoOla(s.altura)}`;
+    nota.textContent = `según cámara (${cam.nombre}), ${cam.horaLocal} · mar abierto (modelo): ${textoRangoOla(s.alturaMarAbierto)}`;
+    nota.title = "Estimación a partir de la espuma que se ve en la webcam; la calibración mejora con el tiempo.";
+    return;
+  }
+  const ajuste = cam && s.fuenteAltura && s.fuenteAltura.startsWith("modelo_")
+    ? ` · ajustado con la cámara de ${cam.nombre} (${cam.horaLocal})`
+    : "";
   if (z?.tipo === "abrigada" && s.alturaMarAbierto) {
     val.textContent = `~${textoRangoOla(s.altura)}`;
-    nota.textContent = `en la playa (zona ${z.nivel || "abrigada"}, estimación) · mar abierto: ${textoRangoOla(s.alturaMarAbierto)}`;
+    nota.textContent = `en la playa (zona ${z.nivel || "abrigada"}, estimación) · mar abierto: ${textoRangoOla(s.alturaMarAbierto)}${ajuste}`;
     nota.title = z.criterio || "";
   } else {
     val.textContent = textoRangoOla(s.altura);
-    nota.textContent = s.esUsuario || !z ? "mar abierto (en la orilla puede ser menos)" : `mar abierto (${dondeModelo}); en la orilla puede ser menos`;
+    nota.textContent = (s.esUsuario || !z ? "mar abierto (en la orilla puede ser menos)" : `mar abierto (${dondeModelo}); en la orilla puede ser menos`) + ajuste;
     nota.title = "";
   }
 }
+
+// Botón "ola real que veo" (2026-10-08): solo con sesión y en spots del
+// catálogo. Guarda la banda en oleaje_etiquetas (RLS: cada uno las suyas,
+// solo "ahora" y como mucho una cada 10 min por spot).
+function pintarOlaReal(s) {
+  const caja = document.getElementById("panelOlaReal");
+  const visible = !!(window.supabaseCliente && window.usuarioIdActual && s && !s.esUsuario);
+  caja.style.display = visible ? "block" : "none";
+  document.getElementById("panelOlaRealBandas").style.display = "none";
+  document.getElementById("panelOlaRealMsg").textContent = "";
+}
+document.getElementById("panelBtnOlaReal").addEventListener("click", () => {
+  const b = document.getElementById("panelOlaRealBandas");
+  b.style.display = b.style.display === "flex" ? "none" : "flex";
+});
+document.querySelectorAll("#panelOlaRealBandas .ola-banda").forEach((btn) => {
+  btn.addEventListener("click", async () => {
+    const s = spotAbiertoActual;
+    const msg = document.getElementById("panelOlaRealMsg");
+    if (!s || !window.supabaseCliente) return;
+    msg.textContent = "Guardando…";
+    const { error } = await window.supabaseCliente.from("oleaje_etiquetas").insert({
+      origen: "spot", spot_slug: s.slug, banda: btn.dataset.banda, observado_en: new Date().toISOString(),
+    });
+    document.getElementById("panelOlaRealBandas").style.display = "none";
+    msg.textContent = error
+      ? (/row-level security|policy/i.test(error.message) ? "Ya la apuntaste hace poco: prueba en 10 minutos." : "No se pudo guardar ahora.")
+      : "Gracias: así afinamos la ola de este spot.";
+  });
+});
 
 let spotAbiertoActual = null;
 function abrirPanel(s) {
@@ -2981,6 +3062,7 @@ function abrirPanel(s) {
   document.getElementById("panelEtiquetaComunidad").style.display = s.esUsuario ? "inline" : "none";
   document.getElementById("panelBtnBorrar").style.display = (s.esUsuario && s.propio) ? "inline" : "none";
   pintarOleajePanel(s);
+  pintarOlaReal(s);
   // Bug real visto en Lemoiz (spot personalizado) 2026-09-19: con
   // periodo null salía literalmente "nulls · NW" -- ahora se esconde el
   // periodo si no hay dato, en vez de interpolarlo tal cual en el texto.
@@ -3143,7 +3225,12 @@ async function datosHorariosSpot(s) {
   // Spots abrigados: misma estimación "en la playa" que /prevision
   // (parámetros en s.zonaOleaje, que manda el backend).
   const abrigo = s.zonaOleaje?.parametros || null;
-  if (c && Date.now() - c.t < 60 * 60 * 1000 && c.abrigo === !!abrigo) return c.horas;
+  // Con lectura de cámara, el modelo de las próximas horas se corrige con
+  // el cociente cámara/modelo, que se apaga en ~18 h (oleaje-camaras.js).
+  const cam = s.oleajeCamara && Number.isFinite(s.oleajeCamara.cociente) ? s.oleajeCamara : null;
+  const horaCam = cam ? new Date(cam.fecha).toLocaleString("sv-SE", { timeZone: "Europe/Madrid" }).replace(" ", "T").slice(0, 16) : null;
+  const claveCam = cam ? `${cam.camara}@${cam.fecha}` : "";
+  if (c && Date.now() - c.t < 60 * 60 * 1000 && c.abrigo === !!abrigo && c.cam === claveCam) return c.horas;
   const promesa = (async () => {
     const coord = `latitude=${s.lat}&longitude=${s.lon}&timezone=Europe%2FMadrid`;
     const [marino, tiempo] = await Promise.all([
@@ -3164,9 +3251,10 @@ async function datosHorariosSpot(s) {
     (marino.hourly?.time || []).forEach((t, i) => {
       const ola = marino.hourly.wave_height?.[i];
       const coef = coeficienteAbrigoDesdeParametros(abrigo, marino.hourly.wave_direction?.[i]);
+      const fCam = cam ? factorCamara(cam.cociente, horasEntreLocales(horaCam, t), cam.peso, cam.decaimientoHoras) : 1;
       mar[t] = {
         nivelMar: marino.hourly.sea_level_height_msl?.[i] ?? null,
-        ola: ola === null || ola === undefined ? null : ola * factor * coef,
+        ola: ola === null || ola === undefined ? null : ola * factor * coef * fCam,
         tempAgua: marino.hourly.sea_surface_temperature?.[i] ?? null,
       };
     });
@@ -3180,7 +3268,7 @@ async function datosHorariosSpot(s) {
     }));
     return horas;
   })();
-  vaCacheHoras.set(s.slug, { t: Date.now(), horas: promesa, abrigo: !!abrigo });
+  vaCacheHoras.set(s.slug, { t: Date.now(), horas: promesa, abrigo: !!abrigo, cam: claveCam });
   promesa.catch(() => { if (vaCacheHoras.get(s.slug)?.horas === promesa) vaCacheHoras.delete(s.slug); });
   return promesa;
 }

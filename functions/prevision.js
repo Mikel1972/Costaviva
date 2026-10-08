@@ -16,6 +16,9 @@
 import { pedirDatosMeteo, fuentesUsadas, fuenteDeVariable } from "./_lib/fuentes.js";
 // Mar abierto frente a "en la playa" para spots abrigados (2026-10-08).
 import { oleajeCostero, zonaOleaje } from "./_lib/oleaje-costero.js";
+// "Si hay cámara, utiliza nuestro cálculo" (2026-10-08): altura según la
+// espuma que ven las webcams, y corrección de las próximas horas.
+import { aplicarCamarasASpots, VIGENCIA_LECTURA_HORAS } from "./_lib/oleaje-camaras.js";
 
 export const SPOTS = [
   { slug: "lekeitio", nombre: "Lekeitio", lat: 43.3647, lon: -2.5089 },
@@ -523,6 +526,36 @@ async function datosCamarasPorSpot() {
   }
 }
 
+// Última lectura de oleaje por cámara de las últimas VIGENCIA_LECTURA_HORAS
+// (las escribe espuma-camaras.yml en oleaje_camara_lecturas, migración
+// 20261008160000). Sin tabla (migración sin aplicar) o sin lecturas: {} y
+// la app sigue con modelo × coeficiente, como antes.
+async function datosOleajeCamaras() {
+  try {
+    const desde = new Date(Date.now() - VIGENCIA_LECTURA_HORAS * 3600e3).toISOString();
+    const url =
+      `${SUPABASE_URL}/rest/v1/oleaje_camara_lecturas?select=camara,fecha,estado,encuadre,estimacion_camara_m,rango_min_m,rango_max_m,error_rel,modelo_camara_m` +
+      `&estado=eq.ok&estimacion_camara_m=not.is.null&fecha=gte.${encodeURIComponent(desde)}&order=fecha.desc&limit=300`;
+    const resp = await fetch(url, { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } });
+    if (!resp.ok) return {};
+    const res = {};
+    for (const f of await resp.json()) {
+      if (res[f.camara]) continue; // ya está la más reciente
+      res[f.camara] = {
+        fecha: f.fecha, estado: f.estado, encuadre: f.encuadre,
+        estimacion: Number(f.estimacion_camara_m),
+        rangoMin: f.rango_min_m === null ? null : Number(f.rango_min_m),
+        rangoMax: f.rango_max_m === null ? null : Number(f.rango_max_m),
+        modeloCamara: f.modelo_camara_m === null ? null : Number(f.modelo_camara_m),
+        errorRel: f.error_rel === null ? null : Number(f.error_rel),
+      };
+    }
+    return res;
+  } catch {
+    return {};
+  }
+}
+
 // Precipitación/presión real de estaciones de monte de Euskalmet, para
 // los 6 ríos vascos que no tienen caudal real (URA/Diputación de Bizkaia
 // bloquean el acceso automático a su catálogo, ver RIOS en index.html —
@@ -737,6 +770,9 @@ export function procesarSpot(spot, marino, viento, historicoPresion, coeficiente
 
     bloques.push({
       hora: HORAS_BLOQUE[h],
+      // Hora local del bloque (la usa la corrección por cámara para saber
+      // a cuántas horas está de la lectura).
+      horaISO: horasOla[i],
       altura: ola.altura,
       alturaMarAbierto: ola.alturaMarAbierto,
       coefAbrigo: ola.coefAbrigo,
@@ -1190,7 +1226,7 @@ export async function onRequestGet(context) {
   const cacheada = await cache.match(cacheKey);
   if (cacheada) return cacheada;
 
-  const [resultados, boyasEspana, boyaNazare, rayosNacional, caudales, estacionesAemet, turbidez, camaras, monteRios] = await Promise.all([
+  const [resultadosModelo, boyasEspana, boyaNazare, rayosNacional, caudales, estacionesAemet, turbidez, camaras, monteRios, lecturasOleaje] = await Promise.all([
     previsionTodosSpots(SPOTS, context.env).catch((e) =>
       SPOTS.map((spot) => ({ slug: spot.slug, nombre: spot.nombre, error: String(e) }))
     ),
@@ -1204,8 +1240,12 @@ export async function onRequestGet(context) {
     datosTurbidezPorSpot(),
     datosCamarasPorSpot(),
     datosMonteRios(),
+    datosOleajeCamaras(),
   ]);
   const boyas = [...boyasEspana, boyaNazare];
+  // Con lectura de cámara vigente, la altura del spot sale de la cámara
+  // (y la de las próximas horas, corregida); si no, modelo × coeficiente.
+  const resultados = aplicarCamarasASpots(resultadosModelo, lecturasOleaje);
 
   // Fuentes de los datos de los spots, para que la página muestre su
   // atribución (CC BY de Open-Meteo / MET Norway, Copernicus Marine).

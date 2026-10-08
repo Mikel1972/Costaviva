@@ -43,9 +43,10 @@ números de ese día (11:57 hora de Madrid):
   Y la celda del modelo está en mar abierto. Por eso NO están Cangas,
   Vigo/Cíes, Sanxenxo ni Portosín (sus celdas ya están dentro de la ría y el
   modelo ya da 0,6-0,9 m: corregir otra vez sería contar dos veces).
-  Candidatos dudosos, sin tocar a propósito: Mundaka, Plentzia, Laredo,
+  Candidatos dudosos, sin tocar a propósito: Plentzia, Laredo,
   Camariñas, Getaria, Mutriku, Donostia (la coordenada cae entre La Concha y
   Zurriola, y su cámara es Zurriola, expuesta), Palma, Platja de Muro.
+  Mundaka entró el 2026-10-08 (ver "Oleaje por cámara").
 - En el panel (`pintarOleajePanel()` en `index.html`): spot abrigado →
   "~0,6–0,7 m" + "en la playa (zona muy abrigada, estimación) · mar abierto:
   3,7–4,5 m"; resto → el valor + "mar abierto (modelo a ~N km de la costa);
@@ -61,7 +62,9 @@ números de ese día (11:57 hora de Madrid):
   personalizadas siguen guardando/enseñando el mar abierto sin coeficiente.
 
 **Calibración por cámara, sin IA (`scripts/oleaje-camaras/`,
-`espuma-camaras.yml`, 4 veces al día con luz):** fracción de píxeles de
+`espuma-camaras.yml`; desde el 2026-10-08 cada 30 min, 13 cámaras, y la app
+ya usa el resultado: ver "Oleaje por cámara" justo debajo; lo que sigue es
+la primera versión):** fracción de píxeles de
 espuma (claros y casi sin color) en un ROI de mar fijado a mano para las 6
 cámaras de vídeo de la Diputación, junto con el mar abierto del modelo, la
 dirección, el nivel del mar y la boya Pasaia II → `datos-robots/
@@ -82,6 +85,127 @@ Trampas ya vistas el primer día:
   debe tocar la orilla en ninguna marea (revisar con bajamar y pleamar).
 - La lección de 2026-09-15 sigue en pie: nada de contar bordes, y nunca
   comparar una cámara con otra en absoluto.
+
+## Oleaje por cámara: "si hay cámara, utiliza nuestro cálculo" (2026-10-08)
+
+Pedido de Mikel: "utiliza las cámaras en todos los spots para ajustar la
+ola. Veo que Mundaka también está mal. Si hay cámara, utiliza nuestro
+cálculo". Ampliado el mismo día (aprobado por Mikel): lecturas cada 30 min,
+boyas de Copernicus como verdad de terreno, página para etiquetar fotos y
+botón "ola real que veo". Todo sin IA ni API de pago: píxeles.
+
+**Piezas:**
+- `scripts/oleaje-camaras/camaras.mjs`: inventario (qué cámara sirve, sus
+  encuadres con imagen de referencia y ROI, y `NO_SIRVEN` con el motivo).
+- `scripts/oleaje-camaras/espuma.mjs`: métrica de espuma + guarda de la
+  orilla (si entra arena en el ROI, la lectura es `orilla` y no cuenta) +
+  zona DINÁMICA (busca el mar entre horizonte y orilla en cada fotograma)
+  para las cámaras que barren sin repetir plano (Zarautz, Berria).
+- `scripts/oleaje-camaras/calibracion.mjs`: espuma → metros
+  (`altura = a·espuma^p` por cámara y encuadre), incertidumbre, etiquetas,
+  elevación solar.
+- `scripts/oleaje-camaras/boyas-copernicus.py`: boyas de Copernicus Marine
+  In Situ (Pasaia II, Donostia, Bilbao II, Bilbao-Vizcaya, Gijón, Peñas,
+  Estaca, Langosteira, Villano, Silleiro, Leixões).
+- `scripts/oleaje-camaras/medir-espuma.mjs` + `.github/workflows/
+  espuma-camaras.yml`: cada 30 min de 08:00 a 15:30 UTC (16 ejecuciones, ~3
+  min cada una ≈ 1.440 min/mes de Actions; repo público, así que es gratis
+  igualmente: la cuenta está en el yml). Escribe
+  `datos-robots/oleaje-camaras/espuma.jsonl` (histórico, de ahí sale la
+  calibración) y `calibracion.json`, y con la migración aplicada publica en
+  `oleaje_camara_lecturas` + miniaturas en el bucket `oleaje-camaras`.
+- `functions/_lib/oleaje-camaras.js`: qué cámara usa cada spot, vigencia,
+  corrección de la previsión y `aplicarCamarasASpots()` (lo usa /prevision).
+- `etiquetar-olas.html` (solo admin, enlace en admin.html) y el botón
+  "🌊 Ola real que veo" del panel (con sesión).
+- Migración `supabase/migrations/20261008160000_oleaje_camaras.sql` **SIN
+  APLICAR** (baseline ya actualizado). Sin ella todo funciona como antes:
+  /prevision no encuentra lecturas y sigue con modelo × coeficiente.
+- Tests: `test/oleaje-camaras.test.js` (en tests.yml).
+
+**Inventario (fotogramas del 2026-10-08, 12:20-12:50, mar de fondo NW de
+3,1-4,0 m en las boyas):** sirven 13: Hondarribia, Zurriola, Orio (su
+stream daba 404 todo el día), Zarautz, Getaria (Malkorbe, abrigada: casi
+nunca hay espuma en el ROI; sin etiquetas no calibra), Zumaia, Deba,
+Mutriku (fuera del dique), Mundaka (barra de la ría, KOSTASystem), Bakio
+(imagen velada, la métrica satura pronto), Sopela (foto de Detectia, no el
+vídeo de IPCamLive que tiene gotas), Berria (la playa expuesta de Santoña,
+NO la bahía del spot) y Castro (Ostende, la de reserva de tendsys). No
+sirven (motivo en `NO_SIRVEN`): Lekeitio, Getxo, Pasaia, todas las de
+Galicia (rías y puertos sin rompiente, o mar lejano), las de cantabria.es
+(503 ese día: Suances, Comillas, San Vicente, Santoña fija; Laredo gris) y
+todo el Mediterráneo (la ola rompe en la misma orilla y son miniaturas).
+
+**Encuadres:** las de la Diputación hacen ronda (cambian de plano cada
+~20 s). Cada cámara tiene varias referencias y se mide el fotograma que se
+parece a alguna (≥ 0,8 y ganando a la segunda por 0,05). Zarautz pasó por
+15 planos en 7 min sin repetir: además usa la zona dinámica. Berria cambia
+de zoom cada minuto: solo zona dinámica. Las fotos fijas que no han cambiado
+desde la medida anterior no se guardan dos veces.
+
+**Mundaka (diagnóstico 2026-10-08 12:20):** la celda del modelo cae en
+43.54, -2.71, ~15 km al N por fuera de Matxitxako; 2,78 m del NW (330°).
+Bizkaia no tiene el ×1,38, así que el panel decía "2,5–3,1 m" como si fuera
+la altura en el spot. Las boyas medían 3,1-3,5 m (Bilbao II, Bilbao-Vizcaya:
+el mar abierto del modelo salía BAJO en Bizkaia, -10/-20 %), pero el spot
+está en el pueblo, dentro de la boca de la ría, y la cámara de la barra
+enseñaba series de ~1,5-2,5 m (a ojo). Arreglo: Mundaka entra en
+`ABRIGO_SPOTS` (ventana N-NNW 345° ±25°, 0,70 / 0,35, "semiabrigada") y,
+con lectura vigente, manda su cámara.
+
+**Cálculo "según cámara":**
+1. Espuma en el ROI (o zona dinámica) → `altura = a·espuma^p`. Muestras
+   para ajustar: lecturas automáticas con altura de referencia = boya
+   costera más cercana (Copernicus, < 4 h; peso 1) o el modelo con su
+   factor (peso 0,5), por el coeficiente PREVIO del sitio que ve la cámara
+   (1 en las expuestas); etiquetas de Mikel sobre fotos (peso 5) y "ola
+   real que veo" (peso 3, emparejada con la lectura de la cámara propia en
+   ±45 min). Ajuste en logaritmos; p fijo en 1 hasta tener ≥ 12 muestras
+   con alturas que varíen ×1,8. Se calibra SIN la lectura actual.
+2. Incertidumbre: exp(rms log) - 1, con mínimo ±50 % mientras no haya 3
+   días distintos y alturas que varíen ×1,5. **Hoy (un solo estado de mar)
+   la escala solo reproduce boya × coeficiente de este día: la cámara aporta
+   la variación de ahí en adelante y las etiquetas la corrigen.** Entre dos
+   lecturas a 10 min de distancia la espuma de una misma cámara varió
+   ±30 % (series de olas, encuadre): de ahí que el ±50 % no sea pesimista.
+3. Varios encuadres de una cámara: media geométrica ponderada por 1/error².
+   Sin espuma visible en el ROI no se da altura (la rompiente puede estar
+   fuera del ROI: Castro, 2026-10-08): el spot sigue con modelo ×
+   coeficiente. Con calibración de pocos datos (error ≥ 50 %) el cociente
+   cámara/modelo se acota a 0,6-1,6 (Bakio: la espuma pasó de 0,13 a 0,41
+   en 30 min con el mismo mar, por la exposición de la foto).
+4. En /prevision: lectura `ok`, < 3 h y con estimación → el bloque más
+   cercano a la lectura toma la altura de la cámara (`fuenteAltura:
+   "camara"`), el panel dice "según cámara (Zarautz), 12:30 · mar abierto
+   (modelo): …". Las horas siguientes: modelo × coeficiente × factor, con
+   factor = 1 + (cámara/modelo - 1)·max(0, 1 - Δh/18) (cociente acotado a
+   0,25-3): a las 18 h ya es el modelo con el coeficiente estático. La
+   ventana de actividad de index.html aplica la misma corrección (copia de
+   `factorCamara()`, un test comprueba que no se desvía).
+5. Spots sin cámara: la cámara EXPUESTA más cercana con la misma orientación
+   de costa (±60°, < 60 km; orientación sacada a mano del trazado de costa)
+   corrige su modelo con `peso` (0,8 si está a ≤ 11 km, 0,5 si más lejos);
+   su abrigo propio se mantiene. Panel: "… · ajustado con la cámara de X".
+   Tabla (`FUENTE_POR_SPOT`): Ondarroa ← Mutriku; Lekeitio ← Deba; Pasaia ←
+   Zurriola; Plentzia ← Bakio; Getxo ← Sopela; Santoña, Laredo, Santander,
+   Suances ← Berria. Sin cámara a menos de 60 km (Comillas, San Vicente,
+   Asturias, Galicia, Mediterráneo...): modelo × coeficiente, como antes.
+
+**Copernicus Marine In Situ (licencia):** comprobado el 2026-10-08 en
+marine.copernicus.eu/user-corner/service-commitments-and-licence: licencia
+gratuita, "for any purpose" (incluido comercial) con atribución "Generated
+using E.U. Copernicus Marine Service Information" + DOI (In Situ IBI:
+10.48670/moi-00043). Las boyas de Puertos del Estado llegan redistribuidas
+ahí; la API directa de Puertos del Estado NO está autorizada para uso
+comercial y ya no la usa este robot (/prevision sigue enseñando boyas de
+Puertos del Estado en el mapa: eso es aparte y está pendiente de revisar).
+Los ficheros "latest" se leen sin cuenta del almacenamiento público.
+
+**Pendiente:** aplicar la migración (Mikel); revisar los ROI con bajamar
+fuerte (se dibujaron con marea media subiendo; la guarda de arena cubre la
+arena con color, no la arena gris con bruma); Orio caída; cuando haya
+semanas de datos y etiquetas, revisar `calibracion.json` y los coeficientes
+estimados de `ABRIGO_SPOTS` con los de las cámaras.
 
 ## Open-Meteo: licencia comercial, API key y proxy `/meteo/` (2026-10-08)
 

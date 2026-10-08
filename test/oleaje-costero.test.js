@@ -87,7 +87,9 @@ test("procesarSpot: en Hondarribia `altura` es la playa y `alturaMarAbierto` el 
   const spot = SPOTS.find((s) => s.slug === "hondarribia");
   // Hora local "de ahora" no coincidirá con la serie: procesarSpot cae al
   // índice 0, que basta para probar el cálculo.
-  const horas = ["2026-10-08T12:00", "2026-10-08T13:00"];
+  // Fechas que nunca son "ahora" (con 2026-10-08 el test fallaba ese mismo
+  // día a las 13 h: procesarSpot arrancaba en el índice 1, que no es bloque).
+  const horas = ["2000-01-01T12:00", "2000-01-01T13:00"];
   const marino = {
     latitude: 43.458336, longitude: -1.7916565,
     hourly: { time: horas, wave_height: [2.98, 2.9], wave_period: [8.65, 8.6], wave_direction: [323, 323],
@@ -145,10 +147,10 @@ test("espuma: noche y reflejo/niebla se marcan, no se dan por buenos", () => {
   assert.equal(medirEspuma(imagen(20, 10, () => [240, 240, 240]), 20, 10, ROI).estado, "dudosa");
 });
 
-test("ROI de cámaras: dentro del encuadre y con URL de la Diputación", () => {
+test("ROI de cámaras: dentro del encuadre y con URL https (desde 2026-10-08 no solo de la Diputación)", () => {
   for (const [slug, r] of Object.entries(ROI_CAMARAS)) {
     assert.ok(r.x0 >= 0 && r.x1 <= 1 && r.x0 < r.x1 && r.y0 >= 0 && r.y1 <= 1 && r.y0 < r.y1, slug);
-    assert.match(r.url, /^https:\/\/58f14c0895a20\.streamlock\.net\/camaramar\/GIP_.*\.m3u8$/);
+    assert.match(r.url, /^https:\/\//);
     assert.ok(SPOTS.some((s) => s.slug === slug), slug);
   }
 });

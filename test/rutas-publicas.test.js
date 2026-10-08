@@ -42,6 +42,8 @@ test("las páginas de la app son públicas, en sus dos formas", () => {
     "/suscripcion",
     "/admin.html",
     "/admin",
+    "/etiquetar-olas.html",
+    "/etiquetar-olas",
   ]) {
     assert.equal(esRutaPermitida(ruta), true, `${ruta} debería ser pública`);
   }
