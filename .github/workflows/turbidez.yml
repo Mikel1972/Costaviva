@@ -64,4 +64,7 @@ jobs:
         working-directory: scripts/turbidez
         env:
           CRON_SECRET: ${{ secrets.PRESION_CRON_SECRET }}
+          # Plan comercial de Open-Meteo (2026-10-08). Si el secret no existe,
+          # llega vacío y el script usa el host gratuito.
+          OPEN_METEO_API_KEY: ${{ secrets.OPEN_METEO_API_KEY }}
         run: node medir-turbidez.mjs

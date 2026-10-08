@@ -5,6 +5,61 @@ cambian las convenciones — no es un historial (para eso está `ROBOT.md`).
 Si algo de aquí queda desactualizado, corrígelo en el momento en que lo
 detectes, no lo dejes para luego.
 
+## Open-Meteo: licencia comercial, API key y proxy `/meteo/` (2026-10-08)
+
+**Situación de la licencia.** Costaviva tiene suscripciones de pago, así que
+es una app **comercial** para Open-Meteo ("Subscriptions or ads make a site or
+app commercial", open-meteo.com/en/terms). La API gratuita es solo para uso no
+comercial (10.000/día, 5.000/hora, 600/min, 300.000/mes). Mikel compra el plan
+de pago (Standard, 1M llamadas/mes; Professional, 5M/mes), que da licencia
+comercial y una API key para los hosts `customer-` (`customer-api.open-meteo.com`,
+`customer-marine-api.open-meteo.com`, ...; la key va en `&apikey=`). Los datos
+son CC BY 4.0: **atribución visible obligatoria** ("Datos meteorológicos:
+Open-Meteo.com (CC BY 4.0)", en la atribución del mapa, al pie del panel de
+spot y bajo el contexto ambiental del diario). No quitarla.
+
+**Cuota: Open-Meteo cuenta por ubicación** (ROBOT_REGLAS.md, 2026-09-14): una
+petición con las 105 coordenadas de `SPOTS` gasta ~105 llamadas, y más de 14
+días o más de 10 variables multiplican. Las peticiones de servidor ya agrupan
+spots; lo que se paga es eso, no el número de fetches.
+
+**Cómo está hecho:**
+- `functions/_lib/open-meteo.js` es el único sitio que construye URLs de
+  Open-Meteo (`urlOpenMeteo`, `pedirOpenMeteo`). Con `OPEN_METEO_API_KEY`
+  usa el host comercial y la key; sin ella, el gratuito. Sus errores llevan
+  la URL con la key tapada (`/prevision` devuelve el texto del error en su
+  JSON público). Lo usan `prevision.js`, `viento-campo.js`,
+  `registrar-presion.js` y `scripts/turbidez/medir-turbidez.mjs`.
+- **El navegador nunca habla con Open-Meteo**: usa `pedirMeteo(api, consulta)`
+  de `assets/js/meteo.js`, que pide a `/meteo/forecast` o `/meteo/marine`
+  (`functions/meteo/[api].js`). El proxy NO es abierto: lista blanca de APIs,
+  parámetros y variables (`PROXY_PERMITIDO`), una sola coordenada, ventanas de
+  fechas acotadas; lo demás, 400 sin llamar a nadie. Redondea a 0,01° y
+  cachea en el edge con la Cache API (30 min forecast, 60 min marine, 24 h si
+  todo es pasado), así que usuarios cercanos comparten una llamada. Si una
+  pantalla nueva necesita otra variable, se añade a `PROXY_PERMITIDO` y a
+  `test/open-meteo.test.js`; ese test falla si algún `.html` o `assets/js/*.js`
+  llama a `*api.open-meteo.com` directamente.
+- La CSP no tenía hosts de Open-Meteo (connect-src admite `https:` entero),
+  así que no cambia; las rutas `/meteo/forecast` y `/meteo/marine` están en
+  `rutas-publicas.js` como rutas exactas, no como prefijo.
+
+**Secretos (nombre: `OPEN_METEO_API_KEY` en los dos sitios):**
+- **Cloudflare Pages → costaviva → Settings → Variables and Secrets**, como
+  *Secret*, **en Production Y en Preview** (van por separado: si solo está en
+  Production, las previews de las PR siguen en el host gratuito).
+- **Después hace falta un redeploy** (un commit nuevo o "Retry deployment"
+  del último despliegue de producción): un secret nuevo no llega a lo ya
+  desplegado (trampa 1 de comun).
+- **GitHub → Settings → Secrets and variables → Actions**:
+  `OPEN_METEO_API_KEY`, para `turbidez.yml` (el único workflow que llama a
+  Open-Meteo directamente; `presion-historico.yml` llama a
+  `/registrar-presion`, que usa el secret de Cloudflare). Si el secret no
+  existe, llega vacío y se usa el host gratuito.
+- Para comprobar que ya va por el plan de pago: el panel de cliente de
+  Open-Meteo muestra el consumo; si no sube tras el redeploy, el secret no ha
+  llegado.
+
 ## Informe diario — Search Console real, conteo de cámaras, robot de especies (2026-09-20)
 
 Pedido explícito del usuario: ampliar `daily-report.yml` con (1) cuántas
@@ -802,8 +857,9 @@ Tabla `spots_usuario` (`nombre`, `tipo`, `pais`, `ccaa`, `lat`, `lon`,
 un spot fijo como para uno personalizado). Nunca tienen cámara — nunca
 llevan el punto verde de webcam en directo. Su índice de mar/pesca no
 sale de `/prevision` (que solo conoce su lista fija de siempre) sino de
-una llamada directa a Open-Meteo hecha en el propio `index.html`, igual
-que ya hacía `diario.html` para "mi ubicación actual".
+una llamada a Open-Meteo hecha desde el propio `index.html` (desde el
+2026-10-08, a través del proxy `/meteo/`), igual que ya hacía `diario.html`
+para "mi ubicación actual".
 
 `diario.html` filtra el desplegable "Spot" según el tipo de salida
 elegido (costa/embarcación/submarinismo): los ~90 spots fijos cuentan
@@ -817,6 +873,7 @@ explicación.
 | Ruta | Fichero | Qué hace | Auth |
 |---|---|---|---|
 | `/prevision` | `prevision.js` | Oleaje/viento/marea/corriente (Open-Meteo + boyas Puertos del Estado) + caudal de ríos por spot | No requiere sesión |
+| `/meteo/forecast`, `/meteo/marine` | `meteo/[api].js` | GET: proxy de Open-Meteo para el navegador, con lista blanca de parámetros, coordenadas a 0,01° y caché en el edge; añade la key comercial si existe `OPEN_METEO_API_KEY` (ver sección de Open-Meteo arriba) | No requiere sesión |
 | `/luna` | `luna.js` | Fase y posición lunar por coordenadas (`?lat=&lon=`) | No requiere sesión |
 | `/rayos-imagen` | `rayos-imagen.js` | Proxy del mapa de rayos de AEMET | No requiere sesión |
 | `/webcam/<slug>` | `webcam/[slug].js` | Proxy de imagen de webcam (evita CORS/hotlinking) | No requiere sesión |

@@ -78,6 +78,10 @@ const ARCHIVOS_PUBLICOS = new Set([
   "/informe-diario-email",
   // Índice de las páginas SEO de mareas (functions/mareas/index.js).
   "/mareas",
+  // Proxy de Open-Meteo para el navegador (functions/meteo/[api].js). Rutas
+  // exactas, no el prefijo /meteo/: solo existen estas dos APIs.
+  "/meteo/forecast",
+  "/meteo/marine",
 ]);
 
 // Prefijos públicos:

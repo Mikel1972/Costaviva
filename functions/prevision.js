@@ -4,11 +4,14 @@
 // restricciones de red que sí tuvimos en el sandbox de desarrollo.
 // Alcanzable en /prevision (sin el prefijo /functions/, por convención).
 //
-// Fuente de datos: Open-Meteo (Marine API + Forecast API), gratis y sin
-// API key. Ya no dependemos de scrapear el HTML de Todosurf — pedimos los
+// Fuente de datos: Open-Meteo (Marine API + Forecast API), con el host
+// comercial y la API key si existe el secret OPEN_METEO_API_KEY, o el
+// gratuito si no (functions/_lib/open-meteo.js, 2026-10-08). Ya no dependemos de scrapear el HTML de Todosurf — pedimos los
 // datos crudos de oleaje (altura, periodo, dirección) y viento por
 // coordenadas, y calculamos nosotros mismos todo lo demás (etiquetas de
 // hora, rumbos en texto, y el índice de mar combinado que hace el cliente).
+
+import { pedirOpenMeteo, claveOpenMeteo } from "./_lib/open-meteo.js";
 
 export const SPOTS = [
   { slug: "lekeitio", nombre: "Lekeitio", lat: 43.3647, lon: -2.5089 },
@@ -615,17 +618,24 @@ function factorOleaje(lat, lon) {
   return dentro ? FACTOR_OLEAJE_GIPUZKOA : 1;
 }
 
-async function previsionTodosSpots(spots) {
+async function previsionTodosSpots(spots, apiKey = "") {
   const lats = spots.map((s) => s.lat).join(",");
   const lons = spots.map((s) => s.lon).join(",");
   const paramsComunes = `latitude=${lats}&longitude=${lons}&timezone=Europe%2FMadrid&forecast_days=2`;
 
   const [marinos, vientos, historicoPresion, coeficientes] = await Promise.all([
-    fetchJSON(
-      `https://marine-api.open-meteo.com/v1/marine?${paramsComunes}&hourly=wave_height,wave_period,wave_direction,sea_surface_temperature,ocean_current_velocity,ocean_current_direction,sea_level_height_msl`
+    // Host gratuito o comercial (con key) según OPEN_METEO_API_KEY, ver
+    // functions/_lib/open-meteo.js. Los errores salen sin la key: van al
+    // JSON público de cada spot.
+    pedirOpenMeteo(
+      "marine",
+      `${paramsComunes}&hourly=wave_height,wave_period,wave_direction,sea_surface_temperature,ocean_current_velocity,ocean_current_direction,sea_level_height_msl`,
+      { apiKey }
     ),
-    fetchJSON(
-      `https://api.open-meteo.com/v1/forecast?${paramsComunes}&hourly=windspeed_10m,winddirection_10m,precipitation,cloudcover,pressure_msl&windspeed_unit=kmh`
+    pedirOpenMeteo(
+      "forecast",
+      `${paramsComunes}&hourly=windspeed_10m,winddirection_10m,precipitation,cloudcover,pressure_msl&windspeed_unit=kmh`,
+      { apiKey }
     ),
     historicoPresionPorSpot(),
     coeficienteMareaCache(),
@@ -1141,7 +1151,7 @@ export async function onRequestGet(context) {
   if (cacheada) return cacheada;
 
   const [resultados, boyasEspana, boyaNazare, rayosNacional, caudales, estacionesAemet, turbidez, camaras, monteRios] = await Promise.all([
-    previsionTodosSpots(SPOTS).catch((e) =>
+    previsionTodosSpots(SPOTS, claveOpenMeteo(context.env)).catch((e) =>
       SPOTS.map((spot) => ({ slug: spot.slug, nombre: spot.nombre, error: String(e) }))
     ),
     Promise.all(BOYAS.map((b) => datosBoya(b).catch((e) => ({ ...b, error: String(e) })))),

@@ -35,6 +35,7 @@
 
 import { secretoValido } from "./_lib/secreto.js";
 import { SPOTS, coeficientePorSpot } from "./prevision.js";
+import { pedirOpenMeteo, claveOpenMeteo } from "./_lib/open-meteo.js";
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 // Escrituras con SUPABASE_SERVICE_ROLE_KEY (secreto de Cloudflare Pages, el
@@ -83,11 +84,11 @@ export async function onRequestPost(context) {
   try {
     const lats = SPOTS.map((s) => s.lat).join(",");
     const lons = SPOTS.map((s) => s.lon).join(",");
-    const resp = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${lats}&longitude=${lons}&current=pressure_msl&timezone=Europe%2FMadrid`
+    const datos = await pedirOpenMeteo(
+      "forecast",
+      `latitude=${lats}&longitude=${lons}&current=pressure_msl&timezone=Europe%2FMadrid`,
+      { apiKey: claveOpenMeteo(context.env) }
     );
-    if (!resp.ok) throw new Error(`Open-Meteo HTTP ${resp.status}`);
-    const datos = await resp.json();
     // Con más de una localización, Open-Meteo devuelve un array (uno por
     // coordenada, mismo orden que se pidió) en vez de un único objeto —
     // mismo criterio que previsionTodosSpots() en prevision.js.
@@ -134,11 +135,11 @@ export async function onRequestPost(context) {
       // nadie visitando la web esa hora.
       const lats = spotsLote.map((s) => s.lat).join(",");
       const lons = spotsLote.map((s) => s.lon).join(",");
-      const resp = await fetch(
-        `https://marine-api.open-meteo.com/v1/marine?latitude=${lats}&longitude=${lons}&timezone=Europe%2FMadrid&past_days=8&forecast_days=16&hourly=sea_level_height_msl`
+      const datos = await pedirOpenMeteo(
+        "marine",
+        `latitude=${lats}&longitude=${lons}&timezone=Europe%2FMadrid&past_days=8&forecast_days=16&hourly=sea_level_height_msl`,
+        { apiKey: claveOpenMeteo(context.env) }
       );
-      if (!resp.ok) throw new Error(`Open-Meteo (marine) HTTP ${resp.status}`);
-      const datos = await resp.json();
       const lista = Array.isArray(datos) ? datos : [datos];
       const filas = spotsLote
         .map((spot, i) => ({

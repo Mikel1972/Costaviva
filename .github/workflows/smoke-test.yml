@@ -134,6 +134,20 @@ jobs:
             if [ "$code" != "200" ]; then echo "::error::$ruta devolvió $code"; exit 1; fi
           done
 
+      - name: Proxy de Open-Meteo /meteo responde y no es un proxy abierto
+        # Coordenada fija (Mundaka) para que la respuesta salga de la caché del
+        # edge casi siempre: no gasta cuota de Open-Meteo en cada ejecución.
+        run: |
+          code=$(curl -sS -o /tmp/meteo.json -w "%{http_code}" --max-time 15 \
+            "$PRODUCCION_URL/meteo/marine?latitude=43.41&longitude=-2.70&timezone=Europe%2FMadrid&forecast_days=1&hourly=wave_height")
+          if [ "$code" != "200" ]; then echo "::error::/meteo/marine devolvió $code"; cat /tmp/meteo.json; exit 1; fi
+          if grep -qi "apikey" /tmp/meteo.json; then echo "::error::/meteo/marine devuelve algo con apikey"; exit 1; fi
+          code=$(curl -sS -o /dev/null -w "%{http_code}" --max-time 15 \
+            "$PRODUCCION_URL/meteo/marine?latitude=43.41&longitude=-2.70&hourly=wave_height&format=csv")
+          if [ "$code" != "400" ]; then echo "::error::/meteo/marine con un parámetro no permitido devolvió $code (esperado 400)"; exit 1; fi
+          code=$(curl -sS -o /dev/null -w "%{http_code}" --max-time 15 "$PRODUCCION_URL/meteo/archive?latitude=1&longitude=2")
+          if [ "$code" != "404" ]; then echo "::error::/meteo/archive devolvió $code (esperado 404)"; exit 1; fi
+
       - name: Escribe y borra una salida de pesca de prueba
         env:
           TOKEN: ${{ steps.login.outputs.token }}
