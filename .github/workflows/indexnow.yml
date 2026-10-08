@@ -1,0 +1,82 @@
+name: IndexNow (avisar a Bing y compañía)
+
+# IndexNow (2026-10-08, pedido de Mikel): avisa a Bing, Yandex, Seznam,
+# Naver y Yep de las URLs públicas que cambian, para que las rastreen antes.
+# Sin IA, sin cuenta, sin coste (el repo es público y Actions no cobra).
+# Google no usa IndexNow: para Google sigue el sitemap.xml de Search Console.
+# Detalle en SEO.md; lógica en functions/_lib/seo/indexnow.js.
+#
+# - Al fusionar en main algo que cambia páginas públicas: las URLs afectadas
+#   (la primera vez, con el fichero de la clave nuevo, todas: 284). Espera a
+#   que Cloudflare termine de desplegar antes de avisar.
+# - Una vez al día: /spots/<spot> y /mareas/<spot> (las condiciones de hoy y
+#   las mareas del día cambian cada día de verdad). El `schedule:` diario de
+#   este repo corre todos los días aunque con horas de retraso (comprobado
+#   en daily-report, vigia-esquema y auth-test): para algo diario basta; no
+#   hace falta pg_cron.
+# - A mano (workflow_dispatch): elegir modo, o "probar" para ver qué mandaría.
+# Respuesta esperada: 200 o 202. Otra cosa deja el run en rojo.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "sitemap.xml"
+      - "3ccc16ba30250113574d628e32e874b1.txt"
+      - "functions/spots/**"
+      - "functions/especies/**"
+      - "functions/mareas/**"
+      - "functions/_lib/seo/**"
+      - "assets/datos/especies.json"
+      - "assets/datos/tipo-fondo.json"
+      - "assets/datos/profundidad-spots.json"
+      - "index.html"
+      - "login.html"
+      - "privacidad.html"
+  schedule:
+    - cron: "17 5 * * *"
+  workflow_dispatch:
+    inputs:
+      modo:
+        description: "hoy (spots y mareas), todas (todo el sitemap) o probar (no manda nada)"
+        required: true
+        default: "hoy"
+        type: choice
+        options: [hoy, todas, probar]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: indexnow
+  cancel-in-progress: false
+
+jobs:
+  avisar:
+    # Interruptor de pausa (comun pruebas-y-alertas.md P8).
+    if: ${{ vars.AUTOMATION_PAUSED != 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Avisar a IndexNow
+        env:
+          EVENTO: ${{ github.event_name }}
+          MODO: ${{ github.event.inputs.modo }}
+          ANTES: ${{ github.event.before }}
+          DESPUES: ${{ github.sha }}
+        run: |
+          case "$EVENTO" in
+            push)     node scripts/seo/indexnow.mjs cambios --antes "$ANTES" --despues "$DESPUES" --esperar ;;
+            schedule) node scripts/seo/indexnow.mjs hoy ;;
+            *)
+              if [ "$MODO" = "probar" ]; then node scripts/seo/indexnow.mjs hoy --probar
+              else node scripts/seo/indexnow.mjs "${MODO:-hoy}"; fi ;;
+          esac

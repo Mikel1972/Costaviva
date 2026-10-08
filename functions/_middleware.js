@@ -23,13 +23,12 @@
 // W6, 2026-10-07). Fail-closed: si falla, 500, nunca HTML sin CSP.
 import { esRutaPermitida } from "./_lib/rutas-publicas.js";
 import { decisionIndexacion } from "./_lib/seo/indexacion.js";
+import { htmlNoEncontradaGeneral } from "./_lib/seo/base.js";
 
 export async function onRequest(context) {
   const { request, next } = context;
   const { pathname } = new URL(request.url);
-  if (!esRutaPermitida(pathname)) {
-    return new Response("Not Found", { status: 404 });
-  }
+  if (!esRutaPermitida(pathname)) return respuestaNoEncontrada(HTMLRewriter);
   // Un solo dominio para los buscadores (2026-10-08): http -> https y el
   // alias fishnow-59u.pages.dev -> costaviva.org con 301; previews y
   // páginas privadas con X-Robots-Tag: noindex. Ver _lib/seo/indexacion.js.
@@ -37,6 +36,15 @@ export async function onRequest(context) {
   if (seo.redirigir) return Response.redirect(seo.redirigir, 301);
   const respuesta = aplicarCsp(await next(), HTMLRewriter);
   return seo.noindex ? conNoindex(respuesta) : respuesta;
+}
+
+// 404 con enlaces útiles (2026-10-08), noindex y con la CSP de siempre.
+export function respuestaNoEncontrada(Rewriter) {
+  const respuesta = new Response(htmlNoEncontradaGeneral(), {
+    status: 404,
+    headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "x-robots-tag": "noindex" },
+  });
+  return aplicarCsp(respuesta, Rewriter);
 }
 
 export function conNoindex(respuesta) {
