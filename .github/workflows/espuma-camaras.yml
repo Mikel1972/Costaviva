@@ -16,22 +16,34 @@ name: Oleaje por cámara (espuma de las webcams)
 # Copernicus (licencia comercial con atribución). Todas las cámaras en UNA
 # ejecución (en paralelo) para gastar pocos minutos de Actions.
 #
-# MINUTOS DE ACTIONS (estimación, 2026-10-08): una ejecución tarda ~2,5-3 min
-# (instalar ffmpeg y netCDF4 por pip ~20 s, boyas ~10 s, cámaras ~1,5-2 min
-# esperando sus encuadres) y GitHub cobra por minuto empezado: ~3 min.
-# 16 ejecuciones/día (cada 30 min de 08:00 a 15:30 UTC = 10:00-17:30 en
-# verano, 09:00-16:30 en invierno, horas con luz todo el año) × 3 min × 30
-# días ≈ 1.440 min/mes, por debajo del tope de ~1.500 que pidió Mikel.
-# Antes del amanecer o con el sol a menos de 8° la ejecución termina en
-# segundos sin medir. El repo es PÚBLICO: los runners estándar de GitHub son
-# gratis para repos públicos, así que el tope es una decisión propia; cubrir
-# todo el día con luz (6-18 UTC, 26 ejecuciones) serían ~2.300 min/mes.
-# GitHub no cumple el schedule al minuto; da igual, cada línea lleva su hora.
+# CUÁNDO (2026-10-08, ampliado): cada 30 min de 05:07 a 18:37 UTC, todo el
+# año. Con el sol a ≥ 8° en la costa vasca (43,35 N 2,5 W) hay luz entre
+# ~08:45-15:35 UTC en diciembre y ~05:30-18:55 UTC en junio; el horario
+# anterior (08-15 UTC) se perdía las mañanas y las tardes de primavera a
+# otoño (hoy, 8 de octubre: de 07:10 a 16:50). Fuera de la luz, el paso
+# "¿Hay luz?" corta en ~15 s sin instalar nada. El repo es PÚBLICO: los
+# runners estándar de GitHub son gratis, así que no hay tope que cuidar.
+# test/oleaje-camaras.test.js comprueba que este cron cubre la luz de todo
+# el año.
+#
+# OJO: GitHub trata el `schedule:` como "cuando pueda" y en este repo se
+# salta casi todas las ejecuciones frecuentes (camaras-salud.yml, cada 30
+# min, corre ~4-7 veces al día; esta, en su primer día, ninguna). Lo fiable
+# es que pg_cron la lance por workflow_dispatch (migración
+# 20261008210000_programador_espuma_camaras.sql y CLAUDE.md "Tareas cada 30
+# min"); el `schedule:` queda de respaldo. Por eso el paso "¿Hay luz?" se
+# aplica también a workflow_dispatch: solo se salta marcando forzar_luz.
+# GitHub no cumple la hora al minuto; da igual, cada línea lleva su hora.
 
 on:
   schedule:
-    - cron: "7,37 8-15 * * *"
-  workflow_dispatch: {}
+    - cron: "7,37 5-18 * * *"
+  workflow_dispatch:
+    inputs:
+      forzar_luz:
+        description: "Medir aunque el sol esté bajo (solo para pruebas)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -55,12 +67,14 @@ jobs:
 
       - name: ¿Hay luz?
         id: luz
+        env:
+          FORZAR_LUZ: ${{ inputs.forzar_luz }}
         run: |
           node -e '
             import("./scripts/oleaje-camaras/calibracion.mjs").then(({ elevacionSolar, ELEVACION_MINIMA }) => {
               const e = elevacionSolar(Date.now(), 43.35, -2.5);
               console.log(`Sol a ${e}°`);
-              require("fs").appendFileSync(process.env.GITHUB_OUTPUT, `hay=${e >= ELEVACION_MINIMA || process.env.GITHUB_EVENT_NAME === "workflow_dispatch"}\n`);
+              require("fs").appendFileSync(process.env.GITHUB_OUTPUT, `hay=${e >= ELEVACION_MINIMA || process.env.FORZAR_LUZ === "true"}\n`);
             })'
 
       - name: ffmpeg y netCDF4 (pip, más rápido que apt)
@@ -83,7 +97,8 @@ jobs:
           FUENTE_OLEAJE: ${{ vars.FUENTE_OLEAJE }}
           FUENTE_MAREA: ${{ vars.FUENTE_MAREA }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-        run: node scripts/oleaje-camaras/medir-espuma.mjs --boyas /tmp/boyas.json
+          FORZAR_LUZ: ${{ inputs.forzar_luz }}
+        run: node scripts/oleaje-camaras/medir-espuma.mjs --boyas /tmp/boyas.json $([ "$FORZAR_LUZ" = "true" ] && echo --forzar-luz)
 
       - name: Guardar en el repo
         if: steps.luz.outputs.hay == 'true'
