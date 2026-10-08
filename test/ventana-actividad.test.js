@@ -197,7 +197,7 @@ test("especies.json: meses válidos y regiones conocidas", () => {
   }
 });
 
-test("especies.json: todas las especies (28 originales + 25 del 2026-10-08) tienen cebos, cada uno con fuente o criterio", () => {
+test("especies.json: todas las especies (28 originales + 25 del 2026-10-08, rodaballo incluido) tienen cebos, cada uno con fuente o criterio", () => {
   assert.ok(DATOS.especies.length >= 53, `solo ${DATOS.especies.length} especies`);
   assert.equal(new Set(DATOS.especies.map((e) => e.id)).size, DATOS.especies.length, "ids repetidos");
   for (const e of DATOS.especies) {

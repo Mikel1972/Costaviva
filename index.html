@@ -940,6 +940,7 @@
         <div class="etq">OLEAJE (12h)</div>
         <div class="val" id="panelOla"></div>
         <div class="etq" id="panelOlaDir"></div>
+        <div class="etq" id="panelOlaNota" style="text-transform:none; letter-spacing:0; margin-top:3px;"></div>
       </div>
       <div class="tarjeta">
         <div class="etq">VIENTO (12h)</div>
@@ -1593,6 +1594,12 @@ async function actualizarDesdeBackend() {
       if (!s || sBackend.error || !sBackend.bloques || !sBackend.bloques.length) return;
       const b = bloqueMasCercanoAAhora(sBackend.bloques);
       s.altura = b.altura;
+      // Mar abierto frente a "en la playa" (2026-10-08, functions/_lib/
+      // oleaje-costero.js): en los spots abrigados `altura` es la estimación
+      // en la playa y `alturaMarAbierto` lo que da el modelo mar adentro.
+      s.alturaMarAbierto = b.alturaMarAbierto || b.altura;
+      s.coefAbrigo = b.coefAbrigo ?? null;
+      s.zonaOleaje = sBackend.zonaOleaje || null;
       s.periodo = b.periodo;
       s.dirOla = b.dirOla;
       if (b.viento !== null) { s.viento = b.viento; s.dirViento = b.dirViento; }
@@ -2104,6 +2111,22 @@ function factorOleaje(lat, lon) {
   const c = CAJA_OLEAJE_GIPUZKOA;
   const dentro = lat >= c.latMin && lat <= c.latMax && lon >= c.lonMin && lon <= c.lonMax;
   return dentro ? FACTOR_OLEAJE_GIPUZKOA : 1;
+}
+
+// Coeficiente de abrigo — copia literal de coeficienteDesdeParametros() de
+// functions/_lib/oleaje-costero.js (allí está el criterio y los tests;
+// test/oleaje-costero.test.js comprueba que esta copia no se desvía).
+// Los parámetros por spot NO se copian: llegan de /prevision (zonaOleaje).
+function coeficienteAbrigoDesdeParametros(p, dirGrados) {
+  if (!p) return 1;
+  if (dirGrados === null || dirGrados === undefined || !Number.isFinite(Number(dirGrados))) return p.coefAbierto;
+  const n = (g) => ((g % 360) + 360) % 360;
+  let d = Math.abs(n(Number(dirGrados)) - n(p.centro));
+  if (d > 180) d = 360 - d;
+  if (d <= p.semiancho) return p.coefAbierto;
+  if (d >= p.semiancho + 30) return p.coefAbrigado;
+  const t = (d - p.semiancho) / 30;
+  return +(p.coefAbierto + (p.coefAbrigado - p.coefAbierto) * t).toFixed(3);
 }
 
 async function datosAmbientalesPunto(lat, lon) {
@@ -2917,6 +2940,37 @@ function lineaCamaraSaludHtml(slug) {
   return `<div style="margin-top:4px; font-size:11.5px; color:#A34A35;">${texto}</div>`;
 }
 
+// Oleaje del panel: mar abierto frente a "en la playa" (2026-10-08, caso
+// Hondarribia: "3.7–4.5m" con la bahía en calma en su webcam). El modelo da
+// el oleaje en una celda a varios km mar adentro, así que ese número se
+// rotula siempre como "mar abierto". En los spots abrigados
+// (functions/_lib/oleaje-costero.js) el número grande es la estimación en la
+// playa y debajo va el de mar abierto, para que nunca se pierda.
+function numeroOla(v) {
+  return Number(v).toFixed(1).replace(".", ",");
+}
+function textoRangoOla(r) {
+  if (!r || r[0] == null || r[1] == null) return "S/D";
+  const a = numeroOla(r[0]), b = numeroOla(r[1]);
+  return a === b ? `${a} m` : `${a}–${b} m`;
+}
+function pintarOleajePanel(s) {
+  const val = document.getElementById("panelOla");
+  const nota = document.getElementById("panelOlaNota");
+  const z = s.zonaOleaje;
+  const km = z?.celdaModelo?.distanciaKm;
+  const dondeModelo = km != null && km >= 1 ? `modelo a ~${Math.round(km)} km de la costa` : "modelo";
+  if (z?.tipo === "abrigada" && s.alturaMarAbierto) {
+    val.textContent = `~${textoRangoOla(s.altura)}`;
+    nota.textContent = `en la playa (zona ${z.nivel || "abrigada"}, estimación) · mar abierto: ${textoRangoOla(s.alturaMarAbierto)}`;
+    nota.title = z.criterio || "";
+  } else {
+    val.textContent = textoRangoOla(s.altura);
+    nota.textContent = s.esUsuario || !z ? "mar abierto (en la orilla puede ser menos)" : `mar abierto (${dondeModelo}); en la orilla puede ser menos`;
+    nota.title = "";
+  }
+}
+
 let spotAbiertoActual = null;
 function abrirPanel(s) {
   spotAbiertoActual = s;
@@ -2926,7 +2980,7 @@ function abrirPanel(s) {
   actualizarBotonFavorito(s);
   document.getElementById("panelEtiquetaComunidad").style.display = s.esUsuario ? "inline" : "none";
   document.getElementById("panelBtnBorrar").style.display = (s.esUsuario && s.propio) ? "inline" : "none";
-  document.getElementById("panelOla").textContent = `${s.altura[0]}–${s.altura[1]}m`;
+  pintarOleajePanel(s);
   // Bug real visto en Lemoiz (spot personalizado) 2026-09-19: con
   // periodo null salía literalmente "nulls · NW" -- ahora se esconde el
   // periodo si no hay dato, en vez de interpolarlo tal cual en el texto.
@@ -3086,11 +3140,14 @@ cargarEspeciesDatos().catch((e) => console.warn("especies.json:", e.message));
 // panel y así se hace una sola petición.
 async function datosHorariosSpot(s) {
   const c = vaCacheHoras.get(s.slug);
-  if (c && Date.now() - c.t < 60 * 60 * 1000) return c.horas;
+  // Spots abrigados: misma estimación "en la playa" que /prevision
+  // (parámetros en s.zonaOleaje, que manda el backend).
+  const abrigo = s.zonaOleaje?.parametros || null;
+  if (c && Date.now() - c.t < 60 * 60 * 1000 && c.abrigo === !!abrigo) return c.horas;
   const promesa = (async () => {
     const coord = `latitude=${s.lat}&longitude=${s.lon}&timezone=Europe%2FMadrid`;
     const [marino, tiempo] = await Promise.all([
-      pedirMeteo("marine", `${coord}&past_days=1&forecast_days=2&hourly=wave_height,sea_surface_temperature,sea_level_height_msl`),
+      pedirMeteo("marine", `${coord}&past_days=1&forecast_days=2&hourly=wave_height,wave_direction,sea_surface_temperature,sea_level_height_msl`),
       pedirMeteo("forecast", `${coord}&past_days=5&forecast_days=2&hourly=windspeed_10m,winddirection_10m,pressure_msl,precipitation&windspeed_unit=kmh`),
     ]);
     // Se cruza por la hora exacta, nunca por índice (bug real ya visto entre
@@ -3106,9 +3163,10 @@ async function datosHorariosSpot(s) {
     const mar = {};
     (marino.hourly?.time || []).forEach((t, i) => {
       const ola = marino.hourly.wave_height?.[i];
+      const coef = coeficienteAbrigoDesdeParametros(abrigo, marino.hourly.wave_direction?.[i]);
       mar[t] = {
         nivelMar: marino.hourly.sea_level_height_msl?.[i] ?? null,
-        ola: ola === null || ola === undefined ? null : ola * factor,
+        ola: ola === null || ola === undefined ? null : ola * factor * coef,
         tempAgua: marino.hourly.sea_surface_temperature?.[i] ?? null,
       };
     });
@@ -3122,7 +3180,7 @@ async function datosHorariosSpot(s) {
     }));
     return horas;
   })();
-  vaCacheHoras.set(s.slug, { t: Date.now(), horas: promesa });
+  vaCacheHoras.set(s.slug, { t: Date.now(), horas: promesa, abrigo: !!abrigo });
   promesa.catch(() => { if (vaCacheHoras.get(s.slug)?.horas === promesa) vaCacheHoras.delete(s.slug); });
   return promesa;
 }

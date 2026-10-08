@@ -53,7 +53,7 @@
 // navegador y test/ventana-actividad.test.js, test/modalidades.test.js y
 // test/indice-pesca-v2.test.js en node --test.
 
-import { reglasEnAmbito, evaluarReglas } from "./reglas-expertas.js";
+import { reglasEnAmbito, evaluarReglas, iluminacionLunar, coeficienteMareaAstronomico } from "./reglas-expertas.js";
 
 export const VERSION = "2026-10-08";
 // Se guarda en cada salida del diario (salidas_pesca.indice_version) para
@@ -190,7 +190,8 @@ export function estadoLuz(minutoLocal, sol) {
 
 // ---------------------------------------------------------------------------
 // Luna: fase aproximada (mes sinódico desde una luna nueva conocida). Solo
-// informativa: peso 0 por defecto (ver reglas_por_defecto.luna en el JSON).
+// informativa en el índice base: peso 0 por defecto (ver reglas_por_defecto.luna en el JSON).
+// Las reglas expertas usan la fracción iluminada (iluminacionLunar, variable `luna`).
 // ---------------------------------------------------------------------------
 const LUNA_NUEVA_REF = Date.UTC(2000, 0, 6, 18, 14);
 const MES_SINODICO = 29.530588853;
@@ -529,11 +530,15 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
     }
 
     // Reglas expertas (datos de especies.json, motor genérico)
+    // Hora de Madrid aproximada a UTC (-1 h; en verano son -2): sobra para la luna y el coeficiente.
+    const msUTC = Date.parse(`${h.hora}:00Z`) - 3600000;
     const ctxReglas = {
       caudal_rio: contexto.caudalRio ?? null,
       rio_desembocadura_km: contexto.rio?.distancia_desembocadura_km ?? null,
       turbidez: contexto.turbidez ?? null,
       mes, hora_local: Number(h.hora.slice(11, 13)), luz,
+      luna: iluminacionLunar(msUTC),
+      coeficiente_marea: coeficienteMareaAstronomico(msUTC),
     };
     const ev = evaluarReglas(expertas, horas, i, ctxReglas);
     for (const r of expertas) {

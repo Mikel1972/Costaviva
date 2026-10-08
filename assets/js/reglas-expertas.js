@@ -43,9 +43,53 @@ export const VARIABLES_CONTEXTO = [
   "rio_desembocadura_km",  // distancia del spot a la desembocadura de su río; null si el spot no tiene río asociado
   "turbidez",              // "no turbia" | "turbia" | "muy turbia" | null
   "mes", "hora_local", "luz",
+  "luna",                  // fracción iluminada de la luna (0 = nueva, 1 = llena), calculada aquí (iluminacionLunar)
+  "coeficiente_marea",     // coeficiente de marea 20-120 (mareas vivas altas), calculado aquí (coeficienteMareaAstronomico)
 ];
 export const AGREGADOS = ["media", "min", "max", "suma", "delta", "fraccion"];
 export const OPERADORES = ["<", "<=", ">", ">=", "==", "!=", "en", "entre", "sector"];
+
+// Fracción iluminada de la luna (0-1) en un instante UTC (ms). Fórmula
+// astronómica estándar de baja precisión (Meeus, "Astronomical Algorithms",
+// cap. 48: ángulo de fase a partir de la elongación media y las anomalías
+// del Sol y la Luna). Error de ~0,01, sobra para el índice. Sin red ni API.
+export function iluminacionLunar(ms) {
+  if (esNulo(ms)) return null;
+  const R = Math.PI / 180;
+  const T = (ms / 86400000 + 2440587.5 - 2451545.0) / 36525;
+  const D = (297.8501921 + 445267.1114034 * T) % 360;  // elongación media
+  const M = (357.5291092 + 35999.0502909 * T) % 360;   // anomalía media del Sol
+  const Mp = (134.9633964 + 477198.8675055 * T) % 360; // anomalía media de la Luna
+  const fase = 180 - D
+    - 6.289 * Math.sin(Mp * R) + 2.100 * Math.sin(M * R) - 1.274 * Math.sin((2 * D - Mp) * R)
+    - 0.658 * Math.sin(2 * D * R) - 0.214 * Math.sin(2 * Mp * R) - 0.110 * Math.sin(D * R);
+  return (1 + Math.cos(fase * R)) / 2;
+}
+
+// Coeficiente de marea aproximado (escala francesa/española 20-120: ~45
+// en mareas muertas medias, ~95-100 en vivas medias, 120 en vivas de
+// perigeo). Astronomía pura, sin red: la amplitud semidiurna es la suma
+// de la onda lunar (M2) y la solar (S2) desfasadas el doble de la
+// elongación Sol-Luna, con la onda lunar escalada por la distancia de la
+// Luna (perigeo/apogeo, por su anomalía media). RETRASO_MAREA_DIAS: la
+// marea responde con retraso a la luna nueva/llena. S2/M2 = 0,5 y 1 día
+// de retraso ajustan los coeficientes reales publicados del 5 al 10 de
+// septiembre de 2026 (CALIBRACION.jsonl: 42, 51, 66, 80, 92, 100) con
+// error de 4 puntos o menos. Es un índice nacional (igual en todos los
+// puertos, como el publicado), no el rango de un spot concreto.
+const RETRASO_MAREA_DIAS = 1;
+const S2_M2 = 0.5;
+const EXCENTRICIDAD_M2 = 0.165; // (a/r)³ ≈ 1 + 3·0,0549·cos(anomalía)
+export function coeficienteMareaAstronomico(ms) {
+  if (esNulo(ms)) return null;
+  const R = Math.PI / 180;
+  const T = ((ms - RETRASO_MAREA_DIAS * 86400000) / 86400000 + 2440587.5 - 2451545.0) / 36525;
+  const D = (297.8501921 + 445267.1114034 * T) % 360;
+  const Mp = (134.9633964 + 477198.8675055 * T) % 360;
+  const m2 = 1 + EXCENTRICIDAD_M2 * Math.cos(Mp * R);
+  const amplitud = Math.sqrt(m2 * m2 + S2_M2 * S2_M2 + 2 * m2 * S2_M2 * Math.cos(2 * D * R));
+  return Math.max(20, Math.min(120, Math.round((100 * amplitud) / (1 + S2_M2))));
+}
 
 // Mínimo de horas con dato en una ventana para que el agregado valga.
 const MIN_COBERTURA = 0.6;

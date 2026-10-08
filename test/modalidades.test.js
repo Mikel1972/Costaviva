@@ -254,7 +254,7 @@ test("Mikel (Bizkaia): rodaballo desde playa oct-dic y rayas y pintarroja desde 
     assert.ok(c.includes("raya") && c.includes("pintarroja"), `mes ${mes}`);
   }
   assert.ok(!ids(especiesDeTemporada(DATOS, "cantabrico", 7, "costa")).includes("pintarroja"));
-  assert.deepEqual(especie("rodaballo").freza.por_region.cantabrico.meses, [11]);
+  assert.ok(!("freza" in especie("rodaballo")), "Mikel: sin freza en la ficha del rodaballo");
   for (const id of ["rodaballo", "raya", "pintarroja"]) assert.ok(especie(id).modalidades.costa.fuentes.includes("mikel_campo_bizkaia"));
 });
 
