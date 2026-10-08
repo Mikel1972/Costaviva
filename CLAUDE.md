@@ -116,8 +116,8 @@ sistema, emoji rotos y **fotogramas de webcams de terceros**, que Skyline,
 YouTube o MEO no dejan republicar) por piezas en el estilo de la app.
 
 - **Plantilla única**: `scripts/marketing/plantillas/pieza.html`, pintada con
-  Playwright (Chromium). Letras dentro del repo (`scripts/marketing/fuentes/`,
-  Unbounded y Manrope con su OFL): no depende de la red ni de las fuentes del
+  Playwright (Chromium). Letras dentro del repo (`assets/fonts/`, las mismas
+  que sirve la web; Unbounded y Manrope con su OFL): no depende de la red ni de las fuentes del
   runner. `render.mjs` hace post (1080x1350), story (1080x1920) y reel.
 - **Lógica pura** en `pieza-datos.mjs` (test `test/pieza-datos.test.js`):
   índice del día con la MISMA cuenta que la ficha (`indiceSpot` +
@@ -914,6 +914,26 @@ Detalle y pasos de Search Console/Bing en `SEO.md`.
   noindex`; http → https; páginas privadas de la app con noindex y en
   `robots.txt`. **Nunca noindex en `/` ni `/login`** (ver arriba).
 - Tests: `test/seo-paginas.test.js` (en tests.yml).
+- **Rendimiento (2026-10-08, PageSpeed móvil 87 → objetivo ≥ 95)**: nada
+  bloquea el pintado. Sin Google Fonts en ninguna página: letras propias en
+  `assets/fonts/` (las mismas woff2 variables de Google, latin + latin-ext con
+  sus unicode-range, OFL al lado; caché de un año en `_headers`, así que si
+  cambia un fichero, cambia su nombre). La CSP ya no admite
+  fonts.googleapis.com ni fonts.gstatic.com. Las páginas públicas llevan el
+  CSS **en línea** (`functions/_lib/seo/estilos.js`, GENERADO desde
+  `costaviva.css` + `publico.css` por `generar-sitemap.mjs` /
+  `generar-estilos.mjs`: si tocas un CSS, regenera o el test falla) y
+  precargan los dos "latin" (`FUENTES_PRECARGA` en `base.js`). Ojo con los
+  pesos: la app declara rangos (`costaviva.css`, como pedía a Google) y las
+  públicas pesos sueltos 400/600/800 y 700/800 (`publico.css`), porque así
+  las pedían a Google y un 700 en Manrope se veía a 800; el generador quita
+  las `@font-face` de `costaviva.css` al ponerlo en línea. Test
+  `test/rendimiento-publico.test.js`. Para que el cambio de letra no mueva
+  la página (CLS), `publico.css` trae letras de reserva ("Manrope fallback",
+  "Unbounded fallback": Arial/Liberation con `size-adjust` y overrides
+  medidos con fontTools, y `unicode-range` = los glifos de cada woff2, para
+  que →, ▲ sigan saliendo en system-ui). `/mareas/*` ya iba con estilos en línea
+  y letras del sistema: no se tocó.
 
 ## IndexNow, imágenes OG, PWA y 404 (2026-10-08, pedido de Mikel)
 
@@ -936,7 +956,8 @@ gratuitas"). Todo sin IA ni coste.
   página fuera de la lista blanca. Sin 404.html, Pages devolvía la app con 200
   para cualquier fichero inexistente.
 - `/.well-known/security.txt` caduca el **2027-10-01** (el test falla).
-- `_headers`: caché de 1 día/1 semana solo para imágenes; nunca CSS/JS.
+- `_headers`: caché de 1 día/1 semana para imágenes y de 1 año para
+  `assets/fonts/` (nombres fijos: si cambia, nombre nuevo); nunca CSS/JS.
 - Tests: `test/seo-extra.test.js` (en tests.yml).
 
 ## Observaciones abiertas, concursos y "Comparte tu captura" (2026-10-08, aprobado por Mikel)

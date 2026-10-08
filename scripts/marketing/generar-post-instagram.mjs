@@ -5,7 +5,7 @@
 //
 // Desde el 2026-10-08 las piezas salen en el estilo "Amanecer" de la app
 // (plantillas/pieza.html, renderizada con Playwright; fuentes Unbounded y
-// Manrope incluidas en fuentes/, licencia OFL). Por cada pasada se generan
+// Manrope en assets/fonts, licencia OFL). Por cada pasada se generan
 // el POST (1080x1350, el que va al borrador) y la STORY (1080x1920, para
 // subirla a mano si se quiere). Siempre a partir de datos reales, nunca
 // inventados, y sin IA:
