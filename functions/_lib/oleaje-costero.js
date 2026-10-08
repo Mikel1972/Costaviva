@@ -61,6 +61,29 @@ export const ABRIGO_SPOTS = {
       "2026-10-08 11:57: boya Pasaia II 3,5-3,8 m del NW, la webcam enseña la bahía casi en " +
       "calma con una orilla de espuma mínima, mientras Zarautz y Deba rompen en varias líneas.",
   },
+  mundaka: {
+    // 2026-10-08, "veo que Mundaka también está mal" (Mikel). Diagnóstico con
+    // los números de ese día, 12:20: la celda del modelo cae en 43.54,
+    // -2.71, ~15 km al N, en mar abierto por fuera del cabo Matxitxako; da
+    // 2,78 m del NW (330°) y la app lo enseñaba como "2,5–3,1 m" en el spot.
+    // Las boyas medían 3,1-3,5 m (Bilbao II y Bilbao-Vizcaya): en Bizkaia el
+    // mar abierto del modelo sale algo BAJO (no tiene el ×1,38 de Gipuzkoa).
+    // Pero el spot (43.4047, -2.6989) está en el pueblo, dentro de la boca de
+    // la ría de Urdaibai: la ola llega refractada por Matxitxako e Izaro, y
+    // la cámara de la barra (KOSTASystem) enseñaba series rompiendo que, a
+    // ojo y sin escala en la imagen, eran de ~1,5-2,5 m. La boca mira al
+    // N-NNW: con mar del NW-N entra (así funciona la izquierda de Mundaka);
+    // del W o del NE queda tapado. Coeficiente por el lado alto, como el
+    // resto. Con lectura de cámara vigente, manda la cámara
+    // (functions/_lib/oleaje-camaras.js).
+    centro: 345, semiancho: 25, coefAbierto: 0.7, coefAbrigado: 0.35, nivel: "semiabrigada",
+    criterio:
+      "Mundaka está dentro de la boca de la ría de Urdaibai, que se abre al N-NNW entre " +
+      "Matxitxako e Izaro. La celda del modelo cae ~15 km mar adentro. Con mar del NW-N la ola " +
+      "entra y rompe en la barra, refractada; del W o del NE queda tapada. Contrastado el " +
+      "2026-10-08 12:20 con la cámara de la barra (series de ~1,5-2,5 m a ojo, con 3,1-3,5 m en " +
+      "las boyas de Bilbao).",
+  },
   pasaia: {
     centro: 355, semiancho: 15, coefAbierto: 0.2, coefAbrigado: 0.08, nivel: "muy abrigada",
     criterio:

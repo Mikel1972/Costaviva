@@ -1,26 +1,36 @@
-name: Espuma de las webcams (calibración del oleaje costero)
+name: Oleaje por cámara (espuma de las webcams)
 
-# 2026-10-08, caso Hondarribia ("3.7–4.5 m" con la bahía en calma en su
-# webcam). Registra varias veces al día, con luz, cuánta espuma (agua
-# rompiendo) se ve en una zona fija de mar de las 6 webcams de vídeo de la
-# Diputación Foral de Gipuzkoa, junto con el oleaje de mar abierto del modelo
-# y la boya Pasaia II del mismo momento. Con unas semanas de datos se calcula
-# el coeficiente de exposición de cada spot con cámara (ver
-# scripts/oleaje-camaras/espuma.mjs y CLAUDE.md "Oleaje costero").
+# "Si hay cámara, utiliza nuestro cálculo" (Mikel, 2026-10-08). Cada 30 min
+# con luz mide cuánta espuma (agua rompiendo) se ve en las 13 webcams que
+# sirven (scripts/oleaje-camaras/camaras.mjs), la convierte en metros de ola
+# en el spot con la calibración (calibracion.mjs: boyas de Copernicus Marine
+# In Situ y etiquetas de Mikel) y:
+#   - añade el histórico a datos-robots/oleaje-camaras/espuma.jsonl (de ahí
+#     sale la calibración, que mejora sola con el tiempo) y deja
+#     calibracion.json;
+#   - publica la lectura en Supabase (oleaje_camara_lecturas) para que
+#     /prevision enseñe "según cámara, HH:MM", y la miniatura en el bucket
+#     oleaje-camaras para etiquetar-olas.html.
 #
-# SIN IA (regla de coste de Mikel) y SIN tocar producción: lee streams
-# públicos, Open-Meteo y Puertos del Estado, y añade líneas a
-# datos-robots/oleaje-camaras/espuma.jsonl. No cambia nada de la app: los
-# coeficientes calibrados se proponen a Mikel antes de aplicarlos.
+# SIN IA (regla de coste de Mikel): píxeles, Open-Meteo y boyas de
+# Copernicus (licencia comercial con atribución). Todas las cámaras en UNA
+# ejecución (en paralelo) para gastar pocos minutos de Actions.
 #
-# Horas (UTC): 08, 11, 14 y 16 — con luz todo el año en el Cantábrico (en
-# diciembre amanece ~07:50 UTC... las de las 08 pueden salir "sin_luz" y se
-# descartan solas). GitHub no cumple el schedule al minuto; da igual, cada
-# línea lleva su hora.
+# MINUTOS DE ACTIONS (estimación, 2026-10-08): una ejecución tarda ~2,5-3 min
+# (instalar ffmpeg y netCDF4 por pip ~20 s, boyas ~10 s, cámaras ~1,5-2 min
+# esperando sus encuadres) y GitHub cobra por minuto empezado: ~3 min.
+# 16 ejecuciones/día (cada 30 min de 08:00 a 15:30 UTC = 10:00-17:30 en
+# verano, 09:00-16:30 en invierno, horas con luz todo el año) × 3 min × 30
+# días ≈ 1.440 min/mes, por debajo del tope de ~1.500 que pidió Mikel.
+# Antes del amanecer o con el sol a menos de 8° la ejecución termina en
+# segundos sin medir. El repo es PÚBLICO: los runners estándar de GitHub son
+# gratis para repos públicos, así que el tope es una decisión propia; cubrir
+# todo el día con luz (6-18 UTC, 26 ejecuciones) serían ~2.300 min/mes.
+# GitHub no cumple el schedule al minuto; da igual, cada línea lleva su hora.
 
 on:
   schedule:
-    - cron: "17 8,11,14,16 * * *"
+    - cron: "7,37 8-15 * * *"
   workflow_dispatch: {}
 
 permissions:
@@ -35,7 +45,7 @@ jobs:
     # Interruptor de pausa (comun pruebas-y-alertas.md P8).
     if: ${{ vars.AUTOMATION_PAUSED != 'true' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
@@ -43,28 +53,46 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Comprobar/instalar ffmpeg
+      - name: ¿Hay luz?
+        id: luz
         run: |
-          if ! command -v ffmpeg >/dev/null; then
-            sudo apt-get update && sudo apt-get install -y ffmpeg
-          fi
-          ffmpeg -version | head -1
+          node -e '
+            import("./scripts/oleaje-camaras/calibracion.mjs").then(({ elevacionSolar, ELEVACION_MINIMA }) => {
+              const e = elevacionSolar(Date.now(), 43.35, -2.5);
+              console.log(`Sol a ${e}°`);
+              require("fs").appendFileSync(process.env.GITHUB_OUTPUT, `hay=${e >= ELEVACION_MINIMA || process.env.GITHUB_EVENT_NAME === "workflow_dispatch"}\n`);
+            })'
 
-      - name: Medir espuma
+      - name: ffmpeg y netCDF4 (pip, más rápido que apt)
+        if: steps.luz.outputs.hay == 'true'
+        run: |
+          pip install --quiet imageio-ffmpeg==0.5.1 netCDF4==1.7.2
+          echo "FFMPEG=$(python3 -c 'import imageio_ffmpeg; print(imageio_ffmpeg.get_ffmpeg_exe())')" >> "$GITHUB_ENV"
+
+      - name: Boyas de Copernicus Marine In Situ
+        if: steps.luz.outputs.hay == 'true'
+        # Si Copernicus falla, se sigue: la calibración usa el modelo con menos peso.
+        continue-on-error: true
+        run: python3 scripts/oleaje-camaras/boyas-copernicus.py --salida /tmp/boyas.json
+
+      - name: Medir espuma y estimar la ola
+        if: steps.luz.outputs.hay == 'true'
         env:
           OPEN_METEO_API_KEY: ${{ secrets.OPEN_METEO_API_KEY }}
           FUENTE_MAR: ${{ vars.FUENTE_MAR }}
           FUENTE_OLEAJE: ${{ vars.FUENTE_OLEAJE }}
           FUENTE_MAREA: ${{ vars.FUENTE_MAREA }}
-        run: node scripts/oleaje-camaras/medir-espuma.mjs
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node scripts/oleaje-camaras/medir-espuma.mjs --boyas /tmp/boyas.json
 
       - name: Guardar en el repo
+        if: steps.luz.outputs.hay == 'true'
         run: |
-          F=datos-robots/oleaje-camaras/espuma.jsonl
+          D=datos-robots/oleaje-camaras
           git config user.name "github-actions[bot]"
           git config user.email "noreply@anthropic.com"
-          git add "$F"
+          git add "$D/espuma.jsonl" "$D/calibracion.json"
           if git diff --cached --quiet; then echo "Sin cambios."; exit 0; fi
-          git commit -qm "Espuma de las webcams [skip ci]"
+          git commit -qm "Oleaje por cámara [skip ci]"
           for i in 1 2 3; do git pull -q --rebase origin main && git push -q origin HEAD:main && exit 0; sleep 5; done
-          echo "::warning::No se pudo subir $F"; exit 1
+          echo "::warning::No se pudo subir $D"; exit 1

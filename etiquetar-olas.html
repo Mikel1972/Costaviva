@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="robots" content="noindex" />
+<title>Etiquetar olas — Costaviva</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml" />
+<meta name="theme-color" content="#F7F3E8" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<!--
+  Etiquetado de fotos de las cámaras de oleaje (2026-10-08, aprobado por
+  Mikel). Solo para administradores: la página comprueba es_admin(), y
+  aunque alguien se la saltara, la policy de oleaje_etiquetas solo deja
+  insertar etiquetas de foto a es_admin() (migración 20261008180000).
+  Pensada para el móvil: una foto, cinco botones grandes, un toque y pasa a
+  la siguiente. Las etiquetas entran en la calibración de las cámaras con
+  más peso que las lecturas automáticas (scripts/oleaje-camaras/
+  calibracion.mjs). No se enseña la estimación de la app para no influir.
+-->
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Inter', sans-serif; background: #F7F3E8; color: #0B2532; min-height: 100dvh; }
+  header { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid #DDE2DC; }
+  header h1 { font-size: 17px; margin: 0; flex: 1; }
+  header a { color: #0B2532; text-decoration: none; font-size: 20px; }
+  main { max-width: 640px; margin: 0 auto; padding: 12px 16px 24px; }
+  .info { font-size: 12.5px; color: #5C7680; margin: 0 0 10px; }
+  .foto { width: 100%; aspect-ratio: 16 / 9; background: #DDE2DC; border-radius: 10px; overflow: hidden; }
+  .foto img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .meta { font-size: 13px; margin: 8px 0 12px; display: flex; justify-content: space-between; gap: 8px; }
+  .bandas { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .bandas button { font-family: inherit; font-size: 17px; font-weight: 600; padding: 16px 8px; border-radius: 12px; border: 1px solid #BFCBC4; background: #FFFFFF; color: #0B2532; cursor: pointer; }
+  .bandas button:active { background: #DDE9E2; }
+  .bandas button.saltar { grid-column: 1 / -1; font-size: 14px; font-weight: 500; color: #5C7680; background: #EEF2EF; padding: 12px 8px; }
+  .estado { text-align: center; font-size: 14px; color: #5C7680; margin-top: 40px; }
+  .oculto { display: none; }
+</style>
+</head>
+<body>
+<header>
+  <a href="/admin.html" aria-label="Volver a administración">←</a>
+  <h1>🌊 Etiquetar olas</h1>
+  <span id="contador" class="info" style="margin:0;"></span>
+</header>
+<main>
+  <p class="info">¿Qué altura de ola rompiendo ves en la foto? Un toque y pasa a la siguiente. Si no se ve bien (niebla, sol, otra zona), «No se puede saber».</p>
+  <div id="zonaFoto" class="oculto">
+    <div class="foto"><img id="foto" alt="Fotograma de la cámara" /></div>
+    <div class="meta"><strong id="camara"></strong><span id="hora"></span></div>
+    <div class="bandas" id="bandas">
+      <button type="button" data-banda="<0.5">&lt; 0,5 m</button>
+      <button type="button" data-banda="0.5-1">0,5 – 1 m</button>
+      <button type="button" data-banda="1-2">1 – 2 m</button>
+      <button type="button" data-banda="2-3">2 – 3 m</button>
+      <button type="button" data-banda=">3">&gt; 3 m</button>
+      <button type="button" data-banda="" class="saltar">No se puede saber</button>
+    </div>
+  </div>
+  <div id="estado" class="estado">Comprobando acceso…</div>
+</main>
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const NOMBRES = {
+  hondarribia: "Hondarribia", donostia: "Zurriola", orio: "Orio", zarautz: "Zarautz", getaria: "Getaria (Malkorbe)",
+  zumaia: "Zumaia", deba: "Deba", mutriku: "Mutriku", mundaka: "Mundaka", bakio: "Bakio", sopelana: "Sopela",
+  berria: "Berria (Santoña)", castrourdiales: "Castro Urdiales",
+};
+const estado = document.getElementById("estado");
+const zonaFoto = document.getElementById("zonaFoto");
+const foto = document.getElementById("foto");
+let cola = [];
+let saltadas = new Set();
+
+function mostrar(texto) {
+  zonaFoto.classList.add("oculto");
+  estado.classList.remove("oculto");
+  estado.textContent = texto;
+}
+
+async function cargar() {
+  const { data: sesion } = await supabase.auth.getSession();
+  if (!sesion.session) {
+    window.location.href = "/login.html";
+    return;
+  }
+  const { data: esAdmin } = await supabase.rpc("es_admin");
+  if (esAdmin !== true) {
+    mostrar("Esta página no es para ti.");
+    return;
+  }
+  const [lect, mias] = await Promise.all([
+    supabase.from("oleaje_camara_lecturas")
+      .select("id,fecha,camara,spot_slug,encuadre,miniatura")
+      .eq("estado", "ok").not("miniatura", "is", null)
+      .order("fecha", { ascending: false }).limit(300),
+    supabase.from("oleaje_etiquetas").select("lectura_id").eq("origen", "foto"),
+  ]);
+  if (lect.error) {
+    mostrar("Todavía no hay fotos (¿migración de oleaje sin aplicar?).");
+    return;
+  }
+  const hechas = new Set((mias.data || []).map((e) => e.lectura_id));
+  // Mezcla cámaras y horas: primero una de cada cámara, luego el resto.
+  const pendientes = lect.data.filter((l) => !hechas.has(l.id) && !saltadas.has(l.id));
+  const porCamara = {};
+  for (const l of pendientes) (porCamara[l.camara] ||= []).push(l);
+  cola = [];
+  while (Object.values(porCamara).some((v) => v.length)) {
+    for (const v of Object.values(porCamara)) if (v.length) cola.push(v.shift());
+  }
+  siguiente();
+}
+
+function siguiente() {
+  document.getElementById("contador").textContent = cola.length ? `${cola.length} pendientes` : "";
+  const l = cola[0];
+  if (!l) {
+    mostrar("¡Hecho! No quedan fotos sin etiquetar.");
+    return;
+  }
+  estado.classList.add("oculto");
+  zonaFoto.classList.remove("oculto");
+  foto.src = `${SUPABASE_URL}/storage/v1/object/public/oleaje-camaras/${l.miniatura.split("/").map(encodeURIComponent).join("/")}`;
+  document.getElementById("camara").textContent = NOMBRES[l.camara] || l.camara;
+  document.getElementById("hora").textContent = new Date(l.fecha).toLocaleString("es-ES", { timeZone: "Europe/Madrid", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+}
+
+document.querySelectorAll("#bandas button").forEach((b) => {
+  b.addEventListener("click", async () => {
+    const l = cola.shift();
+    if (!l) return;
+    if (b.dataset.banda) {
+      const { error } = await supabase.from("oleaje_etiquetas").insert({
+        origen: "foto", lectura_id: l.id, spot_slug: l.spot_slug, banda: b.dataset.banda,
+      });
+      if (error && !/duplicate/i.test(error.message)) {
+        cola.unshift(l);
+        mostrar(`No se pudo guardar: ${error.message}`);
+        setTimeout(siguiente, 2500);
+        return;
+      }
+    } else {
+      saltadas.add(l.id);
+    }
+    siguiente();
+  });
+});
+
+cargar().catch((e) => mostrar(`Error: ${e.message}`));
+</script>
+</body>
+</html>
