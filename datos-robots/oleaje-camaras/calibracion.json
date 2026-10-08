@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-08T11:24:17.006Z",
- "lineasHistorial": 35,
+ "fecha": "2026-10-08T15:47:49.463Z",
+ "lineasHistorial": 46,
  "etiquetas": 0,
  "calibracion": {
   "hondarribia/principal": {
@@ -15,23 +15,23 @@
    "pocosDatos": true
   },
   "donostia/principal": {
-   "a": 35.6006,
+   "a": 44.0347,
    "p": 1,
-   "n": 2,
+   "n": 3,
    "nEtiquetas": 0,
    "dias": 1,
-   "hMin": 3.59,
+   "hMin": 3.51,
    "hMax": 3.59,
    "errorRel": 1,
    "pocosDatos": true
   },
   "zarautz/dinamico": {
-   "a": 20.8198,
+   "a": 21.1602,
    "p": 1,
-   "n": 3,
+   "n": 4,
    "nEtiquetas": 0,
    "dias": 1,
-   "hMin": 3.59,
+   "hMin": 3.51,
    "hMax": 3.59,
    "errorRel": 0.5,
    "pocosDatos": true
@@ -48,25 +48,25 @@
    "pocosDatos": true
   },
   "zumaia/a": {
-   "a": 13.5223,
+   "a": 16.3516,
    "p": 1,
-   "n": 3,
+   "n": 4,
    "nEtiquetas": 0,
    "dias": 1,
-   "hMin": 3.59,
+   "hMin": 3.51,
    "hMax": 3.59,
    "errorRel": 0.5,
    "pocosDatos": true
   },
   "deba/rompiente": {
-   "a": 23.5404,
+   "a": 28.4797,
    "p": 1,
-   "n": 3,
+   "n": 4,
    "nEtiquetas": 0,
    "dias": 1,
-   "hMin": 3.59,
+   "hMin": 3.51,
    "hMax": 3.59,
-   "errorRel": 0.5,
+   "errorRel": 0.513,
    "pocosDatos": true
   },
   "mundaka/principal": {
@@ -81,14 +81,14 @@
    "pocosDatos": true
   },
   "bakio/principal": {
-   "a": 24.3941,
+   "a": 12.9618,
    "p": 1,
-   "n": 1,
+   "n": 2,
    "nEtiquetas": 0,
    "dias": 1,
-   "hMin": 3.12,
+   "hMin": 2.81,
    "hMax": 3.12,
-   "errorRel": 0.5,
+   "errorRel": 0.882,
    "pocosDatos": true
   },
   "sopelana/principal": {
@@ -125,13 +125,24 @@
    "pocosDatos": true
   },
   "berria/dinamico": {
-   "a": 9.4603,
+   "a": 8.9054,
+   "p": 1,
+   "n": 2,
+   "nEtiquetas": 0,
+   "dias": 1,
+   "hMin": 2.81,
+   "hMax": 3.12,
+   "errorRel": 0.5,
+   "pocosDatos": true
+  },
+  "mutriku/principal": {
+   "a": 300,
    "p": 1,
    "n": 1,
    "nEtiquetas": 0,
    "dias": 1,
-   "hMin": 3.12,
-   "hMax": 3.12,
+   "hMin": 3.51,
+   "hMax": 3.51,
    "errorRel": 0.5,
    "pocosDatos": true
   }
