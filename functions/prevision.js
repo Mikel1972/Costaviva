@@ -913,30 +913,39 @@ async function datosCaudalCantabrico() {
     body: "action=tabla_caudal",
   });
   if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-  const html = await resp.text();
+  return parsearCaudalCantabrico(await resp.text());
+}
 
-  const re = /data-codigo="(\d+)">.*?primera-columna">([^<]+)<.*?izquierda"> <span class="_texto">([^<]+)<\/span><\/td><td class="td-valor izquierda"> <span class="_texto">([^<]+)<\/span><\/td><td data-color="\d" class="td-valor "><a title="Caudal río "><span class="[a-z]+">([0-9.]+)<\/span>.*?<span>(\d+)<\/span><\/div><\/td><td><div class="agrupacion-valor-campana"><img[^>]+>&nbsp;<span>(\d+)<\/span><\/div><\/td><td><div class="agrupacion-valor-campana"><img[^>]+>&nbsp;<span>(\d+)<\/span>.*?class="td-actualizacion">([^<]+)</g;
-  const filas = [];
-  let m;
-  while ((m = re.exec(html)))
-    filas.push({
-      rio: m[3], estacion: m[4], caudal: parseFloat(m[5]),
-      umbralBajo: parseFloat(m[6]), umbralMedio: parseFloat(m[7]), umbralAlto: parseFloat(m[8]),
-      actualizado: m[9],
-    });
+// Una fila por bloque (cortando en cada `data-codigo=`) y regex simples
+// dentro de cada bloque: un regex único sobre toda la tabla cruzaba de fila
+// cuando una tenía los umbrales en "-" (ROBOT.md 2026-10-08: `sella` daba el
+// caudal del Piloña y `ason` salía null). Hay dos estaciones "Arriondas"
+// (Piloña y Sella), por eso se busca por río + estación.
+export function parsearCaudalCantabrico(html) {
+  const filas = html.split(/(?=<tr[^>]*data-codigo=")/).slice(1).map((b) => {
+    const textos = [...b.matchAll(/<span class="_texto">([^<]+)<\/span>/g)].map((m) => m[1].trim());
+    const caudal = b.match(/title="Caudal río[^"]*"><span class="[a-z]+">([0-9.]+)<\/span>/);
+    const umbrales = [...b.matchAll(/&nbsp;<span>([^<]*)<\/span>/g)].map((m) => (/^\d+(\.\d+)?$/.test(m[1].trim()) ? parseFloat(m[1]) : null));
+    const act = b.match(/class="td-actualizacion">([^<]+)</);
+    return {
+      rio: textos[1], estacion: textos[2], caudal: caudal ? parseFloat(caudal[1]) : null,
+      umbralBajo: umbrales[0] ?? null, umbralAlto: umbrales[2] ?? null,
+      actualizado: act ? act[1].trim() : null,
+    };
+  });
 
-  const buscar = (estacion) => {
-    const f = filas.find((x) => x.estacion === estacion);
+  const buscar = (rio, estacion) => {
+    const f = filas.find((x) => x.rio === rio && x.estacion === estacion && x.caudal != null);
     return f
       ? { caudal: f.caudal, actualizado: f.actualizado, estacion: f.estacion, umbralBajo: f.umbralBajo, umbralAlto: f.umbralAlto }
       : null;
   };
   return {
-    sella: buscar("Arriondas"),
-    besaya: buscar("Puente de Torres"),
-    pas: buscar("Puente Viesgo"),
-    ason: buscar("Ramales de la Victoria"),
-    eo: buscar("A Pontenova"),
+    sella: buscar("Sella", "Arriondas"),
+    besaya: buscar("Besaya", "Puente de Torres"),
+    pas: buscar("Pas", "Puente Viesgo"),
+    ason: buscar("Asón", "Ramales de la Victoria"),
+    eo: buscar("Eo", "A Pontenova"),
   };
 }
 
