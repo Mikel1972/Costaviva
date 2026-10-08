@@ -585,12 +585,11 @@
   .va-eje { display: grid; grid-template-columns: repeat(24, 1fr); font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #5F7981; margin-top: 2px; }
   .va-detalle { margin-top: 8px; font-size: 11.5px; line-height: 1.5; color: #42585F; }
   .va-detalle .mas { color: #3E7D55; } .va-detalle .menos { color: #A34A35; }
-  .va-porque-tit { margin-top: 4px; font-size: 10.5px; color: #5F7981; }
-  .va-porque { list-style: none; margin: 2px 0 0; padding: 0; }
-  .va-porque li { display: flex; align-items: baseline; gap: 4px; padding: 1px 0; flex-wrap: wrap; }
+  .va-porque { list-style: none; margin: 4px 0 0; padding: 0; }
+  .va-porque li { padding: 1px 0; }
   .va-flecha { font-size: 9px; letter-spacing: -1px; min-width: 16px; display: inline-block; }
-  .va-pts { margin-left: auto; padding-left: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; color: #8B9AA0; }
-  .va-origen { font-size: 9.5px; color: #8B9AA0; }
+  .va-admin { margin-top: 4px; font-size: 10px; color: #8B9AA0; }
+  .va-admin ul { margin: 2px 0 0; padding-left: 14px; }
   .va-freza { margin: 4px 0 6px; padding: 6px 8px; border-radius: 6px; background: #FBF3E2; border: 1px solid #D9C08A; color: #7A5A1E; font-size: 11.5px; line-height: 1.4; }
   .va-nota { margin-top: 6px; font-size: 10.5px; color: #5F7981; line-height: 1.4; }
   .va-nota a { color: #A8792A; }
@@ -3196,10 +3195,12 @@ async function pintarIndicePesca(s) {
     pinta(null, `${VA.NOMBRE_MODALIDAD[modalidad]}: ninguna especie de temporada con dato para esta modalidad aquí`);
     return;
   }
-  const porque = ind.resultado.razones.filter((r) => r.aporte !== 0).slice(0, 3)
-    .map((r) => `${flechasPorque(r.aporte).s} ${r.texto}`).join(" · ");
-  pinta(ind.puntuacion, `${VA.NOMBRE_MODALIDAD[modalidad]}: mejor ahora, ${ind.especie.nombre}`
-    + `${ind.freza ? " (en freza: si lo pescas, devuélvelo)" : ""}. ${porque}${porque ? ". " : ""}Fiabilidad ${ind.fiabilidad.etiqueta}.`);
+  // Nota + motivos con flechas (sin puntos ni fuentes), como en la ventana.
+  pinta(ind.puntuacion, "");
+  nota.innerHTML = `${escVA(VA.NOMBRE_MODALIDAD[modalidad])}: mejor ahora, <b>${escVA(ind.especie.nombre)}</b>`
+    + `${ind.freza ? " (en freza: si lo pescas, devuélvelo)" : ""}.`
+    + htmlPorque(ind.resultado.razones.filter((r) => r.aporte !== 0).slice(0, 4))
+    + `<div>Fiabilidad ${escVA(ind.fiabilidad.etiqueta)}</div>`;
 }
 
 async function pintarVentanaActividad(s) {
@@ -3354,35 +3355,32 @@ function pintarNormativaVA(datos, region, especie) {
     + `<div class="va-nota">${escVA(datos.aviso_legal || "Manda siempre la norma publicada.")}</div>`;
 }
 
-// "Por qué esta nota" (2026-10-08, pedido de Mikel: "(+8)" no se entiende).
-// Cada motivo con flechas según su peso (▲▲ / ▲ / ▼ / ▼▼) y los puntos en
-// gris pequeño, ordenados por impacto. Las reglas expertas llevan una
-// etiqueta neutra ("experiencia local"); el origen, el estado y la confianza
-// solo los ve el admin (window.esAdminCostaviva, cosmético).
+// Porqué de la nota (2026-10-08, decisión de Mikel): la nota y debajo una
+// lista de motivos, cada uno con una flecha según dirección y peso
+// (▲▲ / ▲ / ▼ / ▼▼) y el concepto en lenguaje llano. Sin puntos por factor y
+// sin etiquetas de fuente para el usuario. El admin (window.esAdminCostaviva,
+// cosmético) tiene además un desplegable con puntos, fuente y confianza.
 function flechasPorque(aporte) {
   if (aporte >= 6) return { s: "▲▲", c: "mas", t: "sube mucho" };
   if (aporte > 0) return { s: "▲", c: "mas", t: "sube" };
   if (aporte <= -6) return { s: "▼▼", c: "menos", t: "baja mucho" };
   if (aporte < 0) return { s: "▼", c: "menos", t: "baja" };
-  return { s: "·", c: "", t: "no cuenta" };
-}
-function etiquetaRegla(x) {
-  if (!x.regla) return "";
-  if (window.esAdminCostaviva) {
-    const quien = x.regla.fuente === "mikel_experiencia_local" ? "regla de Mikel" : `regla (${x.regla.fuente})`;
-    const conf = x.regla.confianza != null ? `, confianza ${String(x.regla.confianza).replace(".", ",")}` : "";
-    return ` <span class="va-origen">[${escVA(quien)}${x.regla.estado === "por_validar" ? ", por validar" : ""}${conf}]</span>`;
-  }
-  return x.regla.tipo === "heuristica_experta_local" ? ` <span class="va-origen">· experiencia local</span>` : "";
+  return null;
 }
 function htmlPorque(razones) {
   const orden = [...razones].sort((a, b) => Math.abs(b.aporte) - Math.abs(a.aporte));
   const items = orden.map((x) => {
     const f = flechasPorque(x.aporte);
-    const pts = x.aporte ? `<span class="va-pts" title="${x.aporte > 0 ? "+" : ""}${x.aporte} puntos">${x.aporte > 0 ? "+" : "−"}${Math.abs(x.aporte)}</span>` : "";
-    return `<li><span class="va-flecha ${f.c}" aria-label="${f.t}">${f.s}</span> <span>${escVA(x.texto)}</span>${etiquetaRegla(x)}${pts}</li>`;
+    return f
+      ? `<li><span class="va-flecha ${f.c}" aria-label="${f.t}">${f.s}</span> ${escVA(x.texto)}</li>`
+      : `<li><span class="va-flecha" aria-hidden="true">·</span> ${escVA(x.texto)}</li>`;
   });
-  return `<div class="va-porque-tit">Por qué esta nota (a partir de 50):</div><ul class="va-porque">${items.join("")}</ul>`;
+  let admin = "";
+  if (window.esAdminCostaviva) {
+    const fila = (x) => `<li>${x.aporte > 0 ? "+" : ""}${x.aporte} · ${escVA(x.factor)}${x.regla ? ` · ${escVA(x.regla.fuente)}, ${escVA(x.regla.estado)}, confianza ${escVA(x.regla.confianza)}` : ""}</li>`;
+    admin = `<details class="va-admin"><summary>Detalle (admin)</summary><ul>${orden.map(fila).join("")}</ul></details>`;
+  }
+  return `<ul class="va-porque">${items.join("")}</ul>${admin}`;
 }
 
 function pintarDetalleVA() {
