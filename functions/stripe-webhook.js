@@ -26,6 +26,8 @@
 // STRIPE_WEBHOOK_SECRET, SUPABASE_SERVICE_ROLE_KEY (la misma que usa
 // aviso-alta.js).
 
+import { calcularFin, uuidValido } from "./_lib/invitaciones.js";
+
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 
 // Mismo producto/precios que crear-checkout-stripe.js.
@@ -150,6 +152,27 @@ async function registrarEvento(serviceRoleKey, evento) {
   }
 }
 
+// Invitación con descuento usada en este pago (metadata invitacion_id que pone
+// crear-checkout-stripe.js, 2026-10-08). Idempotente: solo marca si aún no
+// estaba marcada. descuento_hasta es aproximado (Stripe cuenta los meses del
+// cupón desde la creación de la suscripción) y solo sirve para el panel.
+async function marcarInvitacionAplicada(serviceRoleKey, invitacionId) {
+  if (!uuidValido(invitacionId)) return;
+  const cab = { apikey: serviceRoleKey, Authorization: `Bearer ${serviceRoleKey}`, "content-type": "application/json" };
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/invitaciones?id=eq.${invitacionId}&select=*`, { headers: cab });
+  if (!r.ok) throw new Error(`invitaciones HTTP ${r.status}: ${await r.text()}`);
+  const inv = (await r.json())[0];
+  if (!inv || inv.descuento_aplicado_en) return;
+  const ahora = new Date();
+  const fin = calcularFin(inv, ahora);
+  const u = await fetch(`${SUPABASE_URL}/rest/v1/invitaciones?id=eq.${invitacionId}&descuento_aplicado_en=is.null`, {
+    method: "PATCH",
+    headers: cab,
+    body: JSON.stringify({ descuento_aplicado_en: ahora.toISOString(), descuento_hasta: fin ? fin.toISOString() : null }),
+  });
+  if (!u.ok) throw new Error(`marcar invitación HTTP ${u.status}: ${await u.text()}`);
+}
+
 // Si el procesado falla, se borra el registro para que el reintento de
 // Stripe no se tome por repetido.
 async function olvidarEvento(serviceRoleKey, eventoId) {
@@ -213,6 +236,9 @@ export async function onRequestPost(context) {
         stripe_subscription_id: obj.subscription,
         actualizado_en: new Date().toISOString(),
       });
+      if (obj.metadata?.invitacion_id) {
+        await marcarInvitacionAplicada(serviceRoleKey, obj.metadata.invitacion_id);
+      }
     } else if (
       evento.type === "customer.subscription.created" ||
       evento.type === "customer.subscription.updated" ||

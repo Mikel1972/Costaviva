@@ -145,10 +145,10 @@ test("espuma: noche y reflejo/niebla se marcan, no se dan por buenos", () => {
   assert.equal(medirEspuma(imagen(20, 10, () => [240, 240, 240]), 20, 10, ROI).estado, "dudosa");
 });
 
-test("ROI de cámaras: dentro del encuadre y con URL de la Diputación", () => {
+test("ROI de cámaras: dentro del encuadre y con URL https (desde 2026-10-08 no solo de la Diputación)", () => {
   for (const [slug, r] of Object.entries(ROI_CAMARAS)) {
     assert.ok(r.x0 >= 0 && r.x1 <= 1 && r.x0 < r.x1 && r.y0 >= 0 && r.y1 <= 1 && r.y0 < r.y1, slug);
-    assert.match(r.url, /^https:\/\/58f14c0895a20\.streamlock\.net\/camaramar\/GIP_.*\.m3u8$/);
+    assert.match(r.url, /^https:\/\//);
     assert.ok(SPOTS.some((s) => s.slug === slug), slug);
   }
 });

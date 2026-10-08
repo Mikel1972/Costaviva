@@ -48,6 +48,10 @@ const ARCHIVOS_PUBLICOS = new Set([
   // (es_admin() y las funciones security definer), no en ocultar la URL.
   "/admin.html",
   "/admin",
+  // Etiquetado de fotos de las cámaras de oleaje (2026-10-08): igual que
+  // admin.html, la seguridad está en Supabase (es_admin() en la policy).
+  "/etiquetar-olas.html",
+  "/etiquetar-olas",
 
   // Estáticos de la raíz.
   "/icon.svg",
@@ -71,6 +75,10 @@ const ARCHIVOS_PUBLICOS = new Set([
   "/viento-campo",
   "/crear-checkout-stripe",
   "/crear-portal-stripe",
+  // Invitaciones con descuento (2026-10-08): admin-invitaciones exige
+  // es_admin() en el servidor; canjear-invitacion, la sesión del invitado.
+  "/admin-invitaciones",
+  "/canjear-invitacion",
   "/stripe-webhook",
   "/notificar-altas",
   "/avisar-fin-prueba",

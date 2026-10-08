@@ -273,28 +273,30 @@ export const contexto = (s, modalidad) => contextoFondo(fondo(s), modalidad);
 
 let capa = null, leyenda = null;
 
+// Leyenda: el estilo (estilo Amanecer, variables de costaviva.css) está en
+// index.html (.leyenda-sustrato); aquí solo la estructura. Los colores de las
+// muestras NO son del tema: copian los del WMS de EMODnet para que casen.
 function crearLeyenda(L) {
   const C = L.Control.extend({
     options: { position: "bottomleft" },
     onAdd() {
       const div = L.DomUtil.create("div", "leyenda-sustrato");
       div.setAttribute("role", "note");
-      div.style.cssText = "background:rgba(255,255,255,0.92);color:#0B2532;border:1px solid #DDE2DC;border-radius:8px;padding:6px 8px;font:11px/1.35 'IBM Plex Mono',monospace;max-width:170px;";
       const tit = document.createElement("div");
+      tit.className = "titulo";
       tit.textContent = "Tipo de fondo";
-      tit.style.cssText = "font-weight:600;margin-bottom:3px;";
       div.appendChild(tit);
       for (const l of LEYENDA_SUSTRATO) {
         const fila = document.createElement("div");
-        const muestra = document.createElement("span");
-        muestra.style.cssText = `display:inline-block;width:10px;height:10px;margin-right:5px;vertical-align:-1px;border:1px solid rgba(0,0,0,0.25);background:${l.color};`;
+        const muestra = document.createElement("i");
+        muestra.style.background = l.color;
         fila.appendChild(muestra);
         fila.appendChild(document.createTextNode(l.texto));
         div.appendChild(fila);
       }
       const nota = document.createElement("div");
+      nota.className = "nota";
       nota.textContent = "Cerca de la orilla, orientativo.";
-      nota.style.cssText = "margin-top:3px;color:#5F7981;font-size:10px;";
       div.appendChild(nota);
       L.DomEvent.disableClickPropagation(div);
       return div;
@@ -307,8 +309,11 @@ function crearLeyenda(L) {
 // decir que hay que acercarse.
 export function montarCapa(map, botonEl, aviso = () => {}) {
   const L = window.L;
+  // Panel por defecto (tilePane, z 200): por encima del mapa base y del
+  // relieve (paneles mapaBase 150 y relieveFondo 160 de mapa-base.js) y por
+  // debajo de overlayPane/markerPane (spots, marcadores, isóbatas).
   capa = L.tileLayer.wms(WMS_EMODNET_SEABED, {
-    layers: CAPA_SUSTRATO, styles: "", format: "image/png", transparent: true,
+    pane: "tilePane", layers: CAPA_SUSTRATO, styles: "", format: "image/png", transparent: true,
     opacity: 0.6, minZoom: ZOOM_MIN_CAPA, attribution: ATRIBUCION_SUSTRATO,
   });
   leyenda = crearLeyenda(L);

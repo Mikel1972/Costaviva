@@ -6,30 +6,32 @@
 <title>Privacidad de tus capturas — Costaviva</title>
 <meta name="description" content="Qué hace Costaviva con las capturas de tu diario de pesca, qué se comparte de forma anónima y cómo retirarlo." />
 <link rel="icon" href="icon.svg" type="image/svg+xml" />
-<meta name="theme-color" content="#F7F3E8" />
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#0B1E3F" />
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/costaviva.css">
 <style>
   * { box-sizing: border-box; }
   body {
-    margin: 0; background: #F7F3E8; color: #0B2532;
-    font-family: 'Inter', sans-serif; line-height: 1.55;
+    margin: 0; background: var(--fondo); color: var(--tinta);
+    font-family: var(--f-texto); line-height: 1.55;
     padding: 24px 16px calc(32px + env(safe-area-inset-bottom));
   }
-  main { max-width: 720px; margin: 0 auto; background: #FFFFFF; border: 1px solid #DDE2DC; border-radius: 14px; padding: 24px 22px; }
-  h1 { font-family: 'Fraunces', serif; font-size: 26px; margin: 0 0 4px; }
-  h2 { font-family: 'Fraunces', serif; font-size: 19px; margin: 26px 0 6px; }
+  main { max-width: 720px; margin: 0 auto; background: var(--superficie); border: 1px solid var(--linea); border-radius: 14px; padding: 24px 22px; }
+  h1 { font-family: var(--f-titulo); font-size: 26px; margin: 0 0 4px; }
+  h2 { font-family: var(--f-titulo); font-size: 19px; margin: 26px 0 6px; }
   p, li { font-size: 14px; }
-  .sub { color: #5C7680; font-size: 13px; margin: 0 0 16px; }
-  .nota { background: rgba(212,162,76,0.10); border: 1px solid #D9C08A; border-radius: 8px; padding: 10px 12px; font-size: 13px; }
-  a { color: #2F6B5E; }
+  .sub { color: var(--tinta-2); font-size: 13px; margin: 0 0 16px; }
+  .nota { background: var(--aviso-fondo); border: 1px solid var(--aviso-borde); border-radius: 8px; padding: 10px 12px; font-size: 13px; }
+  a { color: var(--acento); }
   table { border-collapse: collapse; width: 100%; font-size: 13px; }
-  th, td { border-bottom: 1px solid #DDE2DC; text-align: left; padding: 6px 4px; vertical-align: top; }
+  th, td { border-bottom: 1px solid var(--linea); text-align: left; padding: 6px 4px; vertical-align: top; }
   @media (prefers-color-scheme: dark) {
-    body { background: #0B1A21; color: #E4ECEA; }
-    main { background: #10242D; border-color: #24414C; }
-    .sub { color: #9AB2B8; }
-    th, td { border-color: #24414C; }
-    a { color: #7CC3B1; }
+    body { background: var(--mar); color: var(--blanco); }
+    main { background: var(--mar-2); border-color: var(--mar-3); }
+    .sub { color: var(--gris-mar); }
+    th, td { border-color: var(--mar-3); }
+    a { color: var(--sol); }
+    .nota { background: var(--mar); border-color: var(--mar-3); }
   }
 </style>
 </head>

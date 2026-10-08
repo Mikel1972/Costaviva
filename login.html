@@ -25,15 +25,16 @@
 </script>
 <link rel="manifest" href="manifest.json" />
 <link rel="icon" href="icon.svg" type="image/svg+xml" />
-<meta name="theme-color" content="#F7F3E8" />
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#0B1E3F" />
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/costaviva.css">
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 <style>
   * { box-sizing: border-box; }
   body {
     margin: 0; min-height: 100vh; min-height: 100dvh;
-    background: #0B2532; color: #0B2532;
-    font-family: 'Inter', sans-serif;
+    background: var(--mar); color: var(--tinta);
+    font-family: var(--f-texto);
     overflow-x: hidden;
   }
 
@@ -65,11 +66,11 @@
   }
   .overlay-fondo {
     position: fixed; inset: 0; z-index: -1;
-    background: linear-gradient(100deg, rgba(11,37,50,0.82) 0%, rgba(11,37,50,0.6) 45%, rgba(11,37,50,0.28) 100%);
+    background: linear-gradient(100deg, rgba(11,30,63,0.82) 0%, rgba(11,30,63,0.6) 45%, rgba(11,30,63,0.28) 100%);
   }
   .creditos-video {
     position: fixed; left: 12px; bottom: 8px; z-index: 1;
-    color: rgba(247,243,232,0.55); font-size: 10px; font-family: 'IBM Plex Mono', monospace;
+    color: rgba(255,246,238,0.55); font-size: 10px; font-family: var(--f-texto);
   }
   .creditos-video a { color: inherit; }
 
@@ -79,56 +80,56 @@
     display: flex; align-items: flex-start; justify-content: space-between; gap: 48px;
     padding: 24px 28px;
   }
-  .lado-marketing { flex: 1; min-width: 0; color: #F7F3E8; padding: 16px 0 0; }
+  .lado-marketing { flex: 1; min-width: 0; color: var(--fondo); padding: 16px 0 0; }
   .lado-marketing .marca {
-    font-family: 'Fraunces', serif; font-size: 34px; font-weight: 700; letter-spacing: 0.2px; margin: 0 0 8px;
+    font-family: var(--f-titulo); font-size: 34px; font-weight: 700; letter-spacing: 0.2px; margin: 0 0 8px;
     display: flex; align-items: center; gap: 10px;
   }
   .lado-marketing .eslogan {
-    font-family: 'Fraunces', serif; font-size: 18px; font-weight: 400; color: #F7F3E8;
+    font-family: var(--f-texto); font-size: 18px; font-weight: 600; color: var(--fondo);
     margin: 0 0 6px; max-width: 460px; line-height: 1.35;
   }
   .lado-marketing .submarca {
-    font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 0.3px;
-    color: #D4A24C; text-transform: uppercase; margin: 0 0 20px; max-width: 460px;
+    font-family: var(--f-texto); font-size: 13px; font-weight: 500; letter-spacing: 0.3px;
+    color: var(--sol); text-transform: uppercase; margin: 0 0 20px; max-width: 460px;
   }
   .lista-servicios { list-style: none; margin: 0 0 22px; padding: 0; display: flex; flex-direction: column; gap: 10px; max-width: 460px; }
-  .lista-servicios li { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; line-height: 1.45; color: rgba(247,243,232,0.92); }
+  .lista-servicios li { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; line-height: 1.45; color: rgba(255,246,238,0.92); }
   .lista-servicios .icono-servicio { font-size: 17px; flex-shrink: 0; line-height: 1.3; }
-  .lista-servicios b { color: #FFFFFF; }
+  .lista-servicios b { color: var(--blanco); }
 
   .conseguir-app {
-    max-width: 360px; margin-top: 10px; background: rgba(11,37,50,0.4); border: 1px solid rgba(247,243,232,0.18);
+    max-width: 360px; margin-top: 10px; background: rgba(11,30,63,0.4); border: 1px solid rgba(255,246,238,0.18);
     border-radius: 12px; padding: 10px 14px; backdrop-filter: blur(2px);
   }
-  .conseguir-app-titulo { font-family: 'Fraunces', serif; font-size: 13px; margin: 0 0 5px; color: #FFFFFF; }
+  .conseguir-app-titulo { font-family: var(--f-titulo); font-size: 13px; margin: 0 0 5px; color: var(--blanco); }
   .conseguir-app-fila { display: flex; align-items: center; gap: 12px; }
-  .conseguir-app-fila img.qr { width: 46px; height: 46px; border-radius: 6px; background: #FFFFFF; padding: 3px; flex-shrink: 0; }
-  .conseguir-app-texto { font-size: 11px; color: rgba(247,243,232,0.85); line-height: 1.35; }
+  .conseguir-app-fila img.qr { width: 46px; height: 46px; border-radius: 6px; background: var(--superficie); padding: 3px; flex-shrink: 0; }
+  .conseguir-app-texto { font-size: 11px; color: rgba(255,246,238,0.85); line-height: 1.35; }
   .badges-tienda { display: flex; gap: 6px; margin-top: 6px; }
   .badge-tienda {
     display: inline-flex; align-items: center; gap: 5px; font-size: 10.5px; font-weight: 600;
-    color: rgba(247,243,232,0.6); border: 1px solid rgba(247,243,232,0.3); border-radius: 6px; padding: 5px 9px;
+    color: rgba(255,246,238,0.6); border: 1px solid rgba(255,246,238,0.3); border-radius: 6px; padding: 5px 9px;
     cursor: default;
   }
-  .badge-tienda .puntito { width: 5px; height: 5px; border-radius: 50%; background: #D4A24C; }
+  .badge-tienda .puntito { width: 5px; height: 5px; border-radius: 50%; background: var(--sol); }
 
   /* Enlaces a las páginas públicas de mareas (2026-09-28): la portada es la
      única página con autoridad en Google y no enlazaba a ninguna de ellas,
      por eso 86 de 115 seguían "descubiertas, sin indexar". */
   .mareas-portada { max-width: 460px; margin: 0 0 22px; }
-  .mareas-portada-titulo { font-family: 'Fraunces', serif; font-size: 15px; color: #FFFFFF; margin: 0 0 8px; }
+  .mareas-portada-titulo { font-family: var(--f-titulo); font-size: 15px; color: var(--blanco); margin: 0 0 8px; }
   .mareas-portada ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
   .mareas-portada a {
-    display: inline-block; font-size: 12px; color: #F7F3E8; text-decoration: none;
-    border: 1px solid rgba(247,243,232,0.35); border-radius: 14px; padding: 5px 11px; background: rgba(11,37,50,0.35);
+    display: inline-block; font-size: 12px; color: var(--fondo); text-decoration: none;
+    border: 1px solid rgba(255,246,238,0.35); border-radius: 14px; padding: 5px 11px; background: rgba(11,30,63,0.35);
   }
-  .mareas-portada a:hover { border-color: #D4A24C; color: #D4A24C; }
+  .mareas-portada a:hover { border-color: var(--sol); color: var(--sol); }
 
   .lado-acceso { flex-shrink: 0; width: 100%; max-width: 360px; }
   .caja {
     width: 100%; max-width: 360px;
-    background: #FFFFFF; border: 1px solid #DDE2DC; border-radius: 14px;
+    background: var(--superficie); border: 1px solid var(--linea); border-radius: 14px;
     padding: 16px 20px;
     box-shadow: 0 20px 60px rgba(0,0,0,0.35);
   }
@@ -146,36 +147,36 @@
     .lado-marketing .eslogan { font-size: 17px; margin-bottom: 20px; }
   }
   .caja h1 {
-    font-family: 'Fraunces', serif; font-size: 20px; font-weight: 700; letter-spacing: 0.2px; margin: 0 0 2px;
+    font-family: var(--f-titulo); font-size: 20px; font-weight: 700; letter-spacing: 0.2px; margin: 0 0 2px;
   }
-  .caja p.sub { color: #5C7680; font-size: 11.5px; margin: 0 0 10px; }
-  label { display: block; font-size: 11px; color: #5F7981; margin: 6px 0 3px; font-family: 'Inter', sans-serif; font-weight: 500; }
+  .caja p.sub { color: var(--tinta-2); font-size: 11.5px; margin: 0 0 10px; }
+  label { display: block; font-size: 11px; color: var(--tinta-2); margin: 6px 0 3px; font-family: var(--f-texto); font-weight: 500; }
   input {
     width: 100%; padding: 7px 10px; border-radius: 7px;
-    border: 1px solid #DDE2DC; background: #EEF2EF; color: #0B2532;
-    font-family: 'Inter', sans-serif; font-size: 13px;
+    border: 1px solid var(--linea); background: var(--superficie-2); color: var(--tinta);
+    font-family: var(--f-texto); font-size: 13px;
   }
-  input:focus { outline: none; border-color: #A8792A; }
+  input:focus { outline: none; border-color: var(--acento); }
   button {
     width: 100%; margin-top: 8px; padding: 8px; border-radius: 7px; border: none;
-    background: #D4A24C; color: #0B2532; font-weight: 600; font-size: 13px;
-    cursor: pointer; font-family: 'Inter', sans-serif;
+    background: var(--degradado-fuerte); color: var(--sobre-acento); font-weight: 800; font-size: 13px;
+    cursor: pointer; font-family: var(--f-texto);
   }
   button:disabled { opacity: 0.6; cursor: default; }
-  button.secundario { background: transparent; border: 1px solid #DDE2DC; color: #42585F; margin-top: 6px; }
+  button.secundario { background: transparent; border: 1px solid var(--linea); color: var(--tinta-3); margin-top: 6px; }
   .mensaje { margin-top: 8px; font-size: 12px; padding: 7px 10px; border-radius: 7px; display: none; }
-  .mensaje.error { display: block; background: rgba(163,74,53,0.15); color: #A34A35; border: 1px solid #A34A35; }
-  .mensaje.info { display: block; background: rgba(212,162,76,0.12); color: #6B5530; border: 1px solid #D9C08A; }
-  .mensaje.ok { display: block; background: rgba(79,157,105,0.12); color: #3A6B4C; border: 1px solid #A8D4B8; }
-  .toggle { text-align: center; margin-top: 8px; font-size: 12px; color: #5C7680; }
-  .toggle a { color: #A8792A; cursor: pointer; text-decoration: underline; }
+  .mensaje.error { display: block; background: var(--peligro-fondo); color: var(--peligro-texto); border: 1px solid var(--peligro-borde); }
+  .mensaje.info { display: block; background: var(--aviso-fondo); color: var(--aviso-texto); border: 1px solid var(--aviso-borde); }
+  .mensaje.ok { display: block; background: var(--ok-fondo); color: var(--ok-texto); border: 1px solid var(--ok-borde); }
+  .toggle { text-align: center; margin-top: 8px; font-size: 12px; color: var(--tinta-2); }
+  .toggle a { color: var(--acento); cursor: pointer; text-decoration: underline; }
   .consentimiento { display: none; margin-top: 16px; }
   .consentimiento.visible { display: block; }
   .consentimiento label.checkbox {
     display: flex; align-items: flex-start; gap: 8px; margin: 10px 0 0;
-    font-family: 'Inter', sans-serif; font-weight: 400; font-size: 12px; color: #5F7981; cursor: pointer;
+    font-family: var(--f-texto); font-weight: 400; font-size: 12px; color: var(--tinta-2); cursor: pointer;
   }
-  .consentimiento input[type="checkbox"] { width: auto; margin-top: 2px; accent-color: #A8792A; flex-shrink: 0; }
+  .consentimiento input[type="checkbox"] { width: auto; margin-top: 2px; accent-color: var(--acento); flex-shrink: 0; }
 </style>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "d398d313ac4e4524a1b89af3c9ad6fda"}'></script><!-- End Cloudflare Web Analytics -->
 </head>
@@ -249,6 +250,9 @@
   <h1>Crear cuenta</h1>
   <p class="sub">Te mandaremos un enlace para verificar tu email.</p>
   <div id="mensajeRegistro" class="mensaje"></div>
+  <!-- Invitaciones (2026-10-08): /login?alta=1&invitacion=CODIGO, desde el
+       email que manda admin.html. Ver assets/js/invitacion.js. -->
+  <div id="avisoInvitacion" class="mensaje"></div>
   <form id="formRegistroDatos">
     <label for="emailRegistro">Correo electrónico</label>
     <input type="email" id="emailRegistro" required autocomplete="email" />
@@ -330,6 +334,7 @@
 // ocultar esta clave.
 // ---------------------------------------------------------------------------
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { normalizarCodigo, formatearCodigo, guardarCodigo, leerCodigoGuardado, olvidarCodigo, mensajeCanje, mensajeExito, esDefinitivo, canjear } from "/assets/js/invitacion.js";
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
@@ -352,6 +357,47 @@ const TODAS_LAS_CAJAS = [cajaLogin, cajaRegistroDatos, cajaRegistroEsperando, ca
 
 function mostrarPantalla(caja) {
   TODAS_LAS_CAJAS.forEach((c) => { c.style.display = c === caja ? "block" : "none"; });
+}
+
+// ---------------------------------------------------------------------------
+// Invitaciones (2026-10-08). El código llega en la URL del email
+// (?invitacion=...), se recuerda en este navegador y además viaja como
+// metadato del alta (options.data.codigo_invitacion) por si el enlace de
+// confirmación se abre en otro navegador. Se canjea en cuanto hay sesión
+// (tras crear la contraseña, al entrar, o si ya estaba dentro):
+// /canjear-invitacion comprueba en el servidor que es para ESE email, que no
+// está usado, caducado ni anulado.
+// ---------------------------------------------------------------------------
+const codigoUrl = normalizarCodigo(new URLSearchParams(window.location.search).get("invitacion"));
+if (codigoUrl) guardarCodigo(codigoUrl);
+const codigoInvitacion = () => codigoUrl || leerCodigoGuardado();
+if (codigoInvitacion()) {
+  const aviso = document.getElementById("avisoInvitacion");
+  aviso.textContent = `🎁 Tienes una invitación (código ${formatearCodigo(codigoInvitacion())}). Crea la cuenta con el email en el que la recibiste. Si ya tienes cuenta, pulsa "Ya tengo cuenta" y entra.`;
+  aviso.className = "mensaje ok";
+}
+
+async function entrarTrasCanje(elMensaje) {
+  const { data: { session } } = await supabase.auth.getSession();
+  const codigo = codigoInvitacion() || normalizarCodigo(session?.user?.user_metadata?.codigo_invitacion);
+  if (!session || !codigo) { window.location.href = "/"; return; }
+  if (elMensaje === mensajeEl) mostrarPantalla(cajaLogin);
+  const r = await canjear(session.access_token, codigo);
+  if (esDefinitivo(r.codigo)) olvidarCodigo();
+  if (r.ok) {
+    elMensaje.textContent = mensajeExito(r);
+    elMensaje.className = "mensaje ok";
+    const destino = r.descuento > 0 && r.descuento < 100 ? "/suscripcion?invitacion=1" : "/";
+    setTimeout(() => { window.location.href = destino; }, 1800);
+    return;
+  }
+  // Fallo: se dice claro y se deja seguir a la app (la cuenta ya está bien).
+  elMensaje.textContent = `${mensajeCanje(r.codigo)} `;
+  const seguir = document.createElement("a");
+  seguir.href = "/";
+  seguir.textContent = "Seguir a la app";
+  elMensaje.appendChild(seguir);
+  elMensaje.className = "mensaje error";
 }
 
 const formLogin = document.getElementById("formLogin");
@@ -519,7 +565,7 @@ formNueva.addEventListener("submit", async (e) => {
   // aquí — index.html lo decide solo, consultando
   // perfiles.bienvenida_pendiente (marcado por servidor, funciona igual
   // aunque el enlace del email se abra en otro navegador/dispositivo).
-  window.location.href = "/";
+  await entrarTrasCanje(mensajeNuevaEl);
 });
 
 async function gestionarAccesoInicial() {
@@ -563,7 +609,7 @@ async function gestionarAccesoInicial() {
   }
 
   const { data: { session } } = await supabase.auth.getSession();
-  if (session) window.location.href = "/";
+  if (session) await entrarTrasCanje(mensajeEl);
 }
 
 gestionarAccesoInicial();
@@ -600,7 +646,7 @@ formLogin.addEventListener("submit", async (e) => {
       mostrarMensaje("Tu cuenta no tiene acceso activo ahora mismo.", "info");
       await supabase.auth.signOut();
     } else {
-      window.location.href = "/";
+      await entrarTrasCanje(mensajeEl);
     }
   }
   btnPrincipal.disabled = false;
@@ -657,6 +703,7 @@ formRegistroDatos.addEventListener("submit", async (e) => {
       data: {
         codigo_postal: codigoPostal,
         consiente_uso_datos_capturas: checkDatosCapturas.checked,
+        ...(codigoInvitacion() ? { codigo_invitacion: codigoInvitacion() } : {}),
       },
     },
   });
