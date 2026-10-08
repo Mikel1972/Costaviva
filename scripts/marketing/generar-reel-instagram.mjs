@@ -26,7 +26,7 @@
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { GANCHOS, CLAIMS, FUNCIONES, siguientePieza } from "./pieza-datos.mjs";
+import { GANCHOS, CLAIMS, FUNCIONES, siguientePieza, escogerClip } from "./pieza-datos.mjs";
 import { BASE_URL, vientoDeSpot, fechaLegible } from "./obtener-datos.mjs";
 import { datosCondiciones, datosEspecie, hashtagsRegionales } from "./generar-post-instagram.mjs";
 import { abrirNavegador, renderReel } from "./render.mjs";
@@ -38,21 +38,22 @@ const RUTA_ROTACION = join(__dirname, "rotacion-reels.json");
 const LIMITE_BYTES = 8 * 1024 * 1024;
 
 // Clip del gancho: primero los propios (rotando), luego los de stock con
-// licencia guardada. Devuelve también el crédito para el texto del reel.
-export function elegirClip(indice, dir = join(__dirname, "clips")) {
-  const listar = (sub) => (existsSync(join(dir, sub)) ? readdirSync(join(dir, sub)).filter((f) => f.endsWith(".mp4")).sort() : []);
-  const propios = listar("propios");
-  if (propios.length) return { ruta: join(dir, "propios", propios[indice % propios.length]), credito: null };
+// licencia guardada; CLIP_REEL (input "clip" del workflow) fuerza uno.
+// Devuelve también el crédito para el texto del reel.
+export function elegirClip(indice, dir = join(__dirname, "clips"), forzado = process.env.CLIP_REEL || "") {
+  const listar = (sub) => (existsSync(join(dir, sub)) ? readdirSync(join(dir, sub)).filter((f) => f.endsWith(".mp4")) : []);
   const stock = listar("stock").filter((f) => existsSync(join(dir, "stock", f.replace(/\.mp4$/, ".licencia.json"))));
-  if (!stock.length) return null;
-  const f = stock[indice % stock.length];
-  const lic = JSON.parse(readFileSync(join(dir, "stock", f.replace(/\.mp4$/, ".licencia.json")), "utf8"));
-  return { ruta: join(dir, "stock", f), credito: `Vídeo: ${new URL(lic.origen).hostname.replace(/^www\./, "")}` };
+  const elegido = escogerClip({ propios: listar("propios"), stock, indice, forzado });
+  if (!elegido) return null;
+  const ruta = join(dir, elegido.carpeta, elegido.fichero);
+  if (elegido.carpeta === "propios") return { ruta, credito: null };
+  const lic = JSON.parse(readFileSync(ruta.replace(/\.mp4$/, ".licencia.json"), "utf8"));
+  return { ruta, credito: `Vídeo: ${new URL(lic.origen).hostname.replace(/^www\./, "")}` };
 }
 
 async function piezaDelReel(tipo, navegador) {
   if (tipo === "condiciones") {
-    const { slug, nombre, resumen, pieza } = await datosCondiciones();
+    const { slug, nombre, resumen, pieza } = await datosCondiciones(process.env.SPOT_REEL || "");
     return {
       datos: { ...pieza, gancho: GANCHOS.condiciones(nombre), claim: CLAIMS[0], viento: await vientoDeSpot(slug), rotuloMapa: "Viento ahora" },
       caption: [`¿Te merece la pena ir hoy a ${nombre}? Índice de pesca ${resumen.puntuacion}/100, mejor especie ahora: ${resumen.especie}.`,
@@ -98,6 +99,7 @@ async function main() {
   try {
     const { datos, caption, nombre } = await piezaDelReel(tipo, navegador);
     const clip = elegirClip(indice);
+    console.log(`Clip del gancho: ${clip ? clip.ruta : "ninguno (fondo de la marca)"}`);
     const fecha = new Date().toISOString().slice(0, 10);
     const rutaRelativa = `assets/marketing/reels/${fecha}-${nombre}.mp4`;
     mkdirSync(join(RAIZ_REPO, "assets/marketing/reels"), { recursive: true });

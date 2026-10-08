@@ -116,8 +116,17 @@
   /* Reel, escena 1: gancho grande sobre el vídeo. */
   .gancho { position: absolute; left: 64px; right: 64px; top: 50%; transform: translateY(-50%); font-family: var(--f-titulo); font-weight: 800; font-size: 92px; line-height: 1.02; letter-spacing: -2px; text-shadow: 0 6px 30px rgba(0,0,0,.45); }
   .gancho::after { content: ""; display: block; height: 14px; width: 260px; margin-top: 36px; border-radius: 999px; background: var(--degradado); }
-  .velo { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(11,30,63,.55) 0%, rgba(11,30,63,.1) 40%, rgba(11,30,63,.75) 100%); }
+  /* Velo del gancho (2026-10-08): oscuro arriba (marca y fecha), una banda
+     oscura detrás de la pregunta (que va centrada: 36-64 % del alto) y oscuro
+     abajo; entre medias el vídeo queda limpio para que luzca. Así el texto se
+     lee aunque el clip sea un atardecer con el sol detrás. */
+  .velo { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(6,14,32,.62) 0%, rgba(6,14,32,.08) 18%, rgba(6,14,32,.08) 27%, rgba(6,14,32,.58) 37%, rgba(6,14,32,.62) 63%, rgba(6,14,32,.08) 74%, rgba(6,14,32,.08) 84%, rgba(6,14,32,.6) 100%); }
+  .velo ~ .marca .nombre { background: none; color: var(--blanco); text-shadow: 0 2px 14px rgba(0,0,0,.5); }
+  .velo ~ .marca .fecha { text-shadow: 0 2px 10px rgba(0,0,0,.6); }
   .claim { font-size: 40px; font-weight: 800; line-height: 1.3; text-align: center; }
+  /* Cierre del reel: claim, "gratis 7 días" y la web en grande. */
+  .cierre-web { font-family: var(--f-titulo); font-weight: 800; font-size: 76px; letter-spacing: -1px; text-align: center; background: var(--degradado-texto); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .cierre-marca { font-family: var(--f-titulo); font-weight: 800; font-size: 44px; text-align: center; text-transform: uppercase; letter-spacing: .04em; }
 </style>
 </head>
 <body>
@@ -253,7 +262,7 @@
       } else {
         l.className = "lienzo"; l.style.background = "";
         l.style.justifyContent = "center";
-        l.innerHTML = `${marcaHtml()}<div style="flex:1"></div><p class="claim">${esc(D.claim)}</p><div class="cta">${D.tipo === "condiciones" ? "Mira tu spot en costaviva.org" : "Pruébala gratis en costaviva.org"}</div><div style="flex:1"></div>`;
+        l.innerHTML = `${marcaHtml()}<div style="flex:1"></div><p class="claim">${esc(D.claim)}</p><p class="cierre-marca">Costaviva</p><div class="cta">Gratis 7 días</div><p class="cierre-web">costaviva.org</p><div style="flex:1"></div>`;
       }
     }
     if (escena === "gancho") {
@@ -278,7 +287,7 @@
     const r = cv.parentElement.getBoundingClientRect();
     cv.width = r.width; cv.height = r.height;
     let semilla = 7; const azar = () => (semilla = (semilla * 16807) % 2147483647) / 2147483647;
-    particulas = Array.from({ length: 450 }, () => ({ x: azar() * cv.width, y: azar() * cv.height, vida: azar() * 60, azar }));
+    particulas = Array.from({ length: 260 }, () => ({ x: azar() * cv.width, y: azar() * cv.height, vida: azar() * 60, azar }));
   }
   function vientoEn(px, py, cv) {
     const v = D.viento, m = D.mapa;
@@ -296,7 +305,7 @@
     const cv = $("#viento"); if (!cv || !particulas) return;
     const ctx = cv.getContext("2d");
     ctx.globalCompositeOperation = "destination-in"; ctx.fillStyle = "rgba(0,0,0,0.9)"; ctx.fillRect(0, 0, cv.width, cv.height);
-    ctx.globalCompositeOperation = "source-over"; ctx.strokeStyle = "rgba(255,255,255,0.85)"; ctx.lineWidth = 2.2;
+    ctx.globalCompositeOperation = "source-over"; ctx.strokeStyle = "rgba(255,255,255,0.7)"; ctx.lineWidth = 2;
     for (const p of particulas) {
       const [u, w] = vientoEn(p.x, p.y, cv);
       const nx = p.x + u * 1.6, ny = p.y - w * 1.6;

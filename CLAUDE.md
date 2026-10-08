@@ -141,13 +141,23 @@ YouTube o MEO no dejan republicar) por piezas en el estilo de la app.
   workflow manual "Publicar post de Instagram".
 - **Clips del gancho**: `scripts/marketing/clips/propios/` (los que grabe
   Mikel; tienen prioridad) y `clips/stock/` (solo con su `.licencia.json`
-  al lado: URL, cita y fecha). `scripts/` no se sirve en la web, así que los
-  clips en bruto no quedan públicos. Hoy hay uno de Coverr (licencia
-  comprobada el 2026-10-08: uso comercial y modificación permitidos, sin
-  atribución obligatoria; sin caras). Pexels y Pixabay no se pudieron
-  verificar (su web devuelve el reto anti-bots de Cloudflare a la sesión):
-  no usar nada suyo sin verificar su licencia. Nunca YouTube, webcams de
-  terceros ni Instagram de otros.
+  al lado: URL, cita y fecha; el test lo comprueba). `scripts/` no se sirve
+  en la web, así que los clips en bruto no quedan públicos. Hay 3 de Coverr
+  y 2 de Mixkit (licencias comprobadas el 2026-10-08: uso comercial y
+  modificación permitidos, sin atribución obligatoria; sin caras
+  reconocibles ni marcas), recortados a 5 s, 1080x1920. **Mixkit: solo la
+  "Mixkit Stock Video Free License"**; casi todos sus vídeos de pesca son
+  "Restricted" (solo uso personal) y NO valen. Coverr: solo `isPremium:false`.
+  Pexels, Pixabay y Videvo no se pudieron verificar (reto anti-bots de
+  Cloudflare, 403): no usar nada suyo sin verificar su licencia. Nunca
+  YouTube, webcams de terceros ni Instagram de otros.
+- **Forzar spot y clip** (2026-10-08, para el primer reel que pidió Mikel:
+  pescador en un sitio idílico + datos + CTA): el workflow del reel acepta
+  `spot` (slug, p. ej. `bakio`) y `clip` (fichero de `clips/propios` o
+  `clips/stock`, p. ej. `mixkit-cana-al-atardecer.mp4`) a mano; sin ellos,
+  rotación normal. El spot forzado no toca `rotacion-zonas.json`. El gancho
+  lleva un velo con banda oscura detrás de la pregunta (legible sobre un
+  atardecer) y el cierre dice "Costaviva · Gratis 7 días · costaviva.org".
 - **Pantallas de la app** en las piezas de funciones: `capturas-app.mjs`
   sirve el repo en local con un doble de Supabase y datos de demostración
   inventados (nunca datos de usuarios ni producción).
