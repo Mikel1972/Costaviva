@@ -1,33 +1,42 @@
 name: Publicar post de Instagram
 
-# Segundo paso del robot de marketing (ver robot-marketing-instagram.yml)
-# -- pedido explícito del usuario: la publicación real en Instagram
-# SIEMPRE es manual, nunca automática. Este workflow solo hace el
-# segundo paso de la Content Publishing API (/media_publish) sobre un
-# contenedor ya creado por el robot -- nunca crea contenido nuevo por su
-# cuenta.
+# Segundo paso del robot de marketing (robot-marketing-instagram.yml y
+# robot-reel-instagram.yml). Pedido explícito de Mikel: la publicación real
+# SIEMPRE es manual, nunca automática. Este workflow solo publica una pieza
+# que el robot ya preparó y que Mikel ha revisado en su Issue; nunca crea
+# contenido nuevo.
 #
-# Disparar a mano desde la pestaña Actions → "Run workflow", pegando el
-# creation_id que trae el Issue de revisión que abrió el robot.
+# Desde el 2026-10-09 publica la misma pieza en Instagram y en la Página de
+# Facebook (o solo en una de las dos): basta con el número del Issue, que
+# lleva dentro la pieza, los dos textos y el borrador de Instagram
+# (scripts/marketing/publicar-pieza.mjs). El nombre del workflow no cambia
+# para no despistar.
 #
-# Pedido explícito del usuario (2026-09-19): llevar cuenta de impresiones/
-# alcance de cada post publicado, para ir afinando qué contenido funciona
-# mejor. Este workflow apunta el post recién publicado en
-# scripts/marketing/posts-publicados.jsonl (id, fecha, tipo, issue); un
-# workflow aparte (metricas-instagram.yml) revisa esa lista pasadas 48h
-# (a las métricas de Instagram les hace falta ese margen para asentarse)
-# y guarda el resultado real en CALIBRACION.jsonl, mismo fichero que ya
-# usa el resto de calibraciones del repo.
+# Disparar a mano: Actions → "Publicar post de Instagram" → "Run workflow"
+# → issue_number del Issue de revisión.
+#
+# Métricas: lo publicado en Instagram se apunta en
+# scripts/marketing/posts-publicados.jsonl (metricas-instagram.yml lo mide a
+# las 48 h) y lo de Facebook en scripts/marketing/posts-facebook.jsonl.
 
 on:
   workflow_dispatch:
     inputs:
-      creation_id:
-        description: "ID del contenedor a publicar (viene en el Issue de revisión)"
-        required: true
-        type: string
       issue_number:
-        description: "Número del Issue de revisión, para comentar/cerrarlo al publicar (opcional)"
+        description: "Número del Issue de revisión (lleva dentro la pieza y los dos textos)"
+        required: false
+        type: string
+      redes:
+        description: "Dónde publicar"
+        required: true
+        type: choice
+        default: "instagram y facebook"
+        options:
+          - "instagram y facebook"
+          - "solo instagram"
+          - "solo facebook"
+      creation_id:
+        description: "Solo para Issues antiguos sin pieza: ID del contenedor de Instagram"
         required: false
         type: string
 
@@ -35,39 +44,68 @@ permissions:
   issues: write
   contents: write
 
+concurrency:
+  group: publicar-pieza
+  cancel-in-progress: false
+
 jobs:
   publicar:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Publicar el contenedor en Instagram
-        env:
-          META_PAGE_ACCESS_TOKEN: ${{ secrets.META_PAGE_ACCESS_TOKEN }}
-          META_IG_BUSINESS_ACCOUNT_ID: ${{ vars.META_IG_BUSINESS_ACCOUNT_ID }}
-        run: |
-          RESPUESTA=$(curl -s -X POST "https://graph.facebook.com/v21.0/${META_IG_BUSINESS_ACCOUNT_ID}/media_publish" \
-            --data-urlencode "creation_id=${{ inputs.creation_id }}" \
-            --data-urlencode "access_token=${META_PAGE_ACCESS_TOKEN}")
-          echo "$RESPUESTA"
-          echo "$RESPUESTA" | grep -q '"id"' || { echo "::error::La publicación falló, revisa la respuesta de arriba"; exit 1; }
-          echo "POST_ID=$(echo "$RESPUESTA" | grep -o '"id":"[^"]*"' | head -1 | cut -d'"' -f4)" >> "$GITHUB_ENV"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
 
-      - name: Apuntar el post publicado (para medir métricas más adelante)
-        run: |
-          mkdir -p scripts/marketing
-          LINEA=$(node -e "console.log(JSON.stringify({postId: process.env.POST_ID, fecha: new Date().toISOString(), issueNumber: '${{ inputs.issue_number }}' || null, medido: false}))")
-          echo "$LINEA" >> scripts/marketing/posts-publicados.jsonl
-          git config user.name "Claude (robot Costaviva)"
-          git config user.email "actions@github.com"
-          git add scripts/marketing/posts-publicados.jsonl
-          git commit -m "Robot de marketing: post publicado en Instagram (${POST_ID})"
-          git push
-
-      - name: Comentar y cerrar el Issue de revisión
-        if: ${{ inputs.issue_number != '' }}
+      - name: Publicar la pieza aprobada
+        id: publicar
         env:
           GH_TOKEN: ${{ github.token }}
+          META_PAGE_ACCESS_TOKEN: ${{ secrets.META_PAGE_ACCESS_TOKEN }}
+          META_IG_BUSINESS_ACCOUNT_ID: ${{ vars.META_IG_BUSINESS_ACCOUNT_ID }}
+          META_PAGE_ID: ${{ vars.META_PAGE_ID }}
+          # Los inputs van por entorno, nunca pegados en el script (inyección).
+          ISSUE_NUMBER: ${{ inputs.issue_number }}
+          REDES: ${{ inputs.redes }}
+          CREATION_ID: ${{ inputs.creation_id }}
+        working-directory: scripts/marketing
         run: |
-          gh issue comment "${{ inputs.issue_number }}" --body "✅ Publicado en Instagram (id del post: ${POST_ID}). Las métricas de alcance/impresiones se revisarán automáticamente a las 48h."
-          gh issue close "${{ inputs.issue_number }}"
+          node publicar-pieza.mjs || CODIGO=$?
+          CODIGO=${CODIGO:-0}
+          if [ "$CODIGO" -eq 3 ]; then
+            echo "::error::El token de Meta (META_PAGE_ACCESS_TOKEN) ha caducado o no es válido. Lanza \"Comprobar token de Instagram\"."
+          elif [ "$CODIGO" -eq 4 ]; then
+            echo "::error::Falta configuración de Facebook: variable META_PAGE_ID o permiso pages_manage_posts del token (CLAUDE.md, sección Facebook)."
+          fi
+          exit "$CODIGO"
+
+      - name: Apuntar lo publicado (para medir métricas más adelante)
+        # Aunque una de las dos redes haya fallado: lo que salió, se apunta.
+        if: ${{ always() && steps.publicar.outputs.hechos != '' && steps.publicar.outputs.hechos != '0' }}
+        env:
+          ISSUE_NUMBER: ${{ inputs.issue_number }}
+        run: |
+          git config user.name "Claude (robot Costaviva)"
+          git config user.email "actions@github.com"
+          for f in scripts/marketing/posts-publicados.jsonl scripts/marketing/posts-facebook.jsonl; do
+            [ -f "$f" ] && git add "$f"
+          done
+          if git diff --cached --quiet; then
+            echo "Nada que apuntar."
+          else
+            git commit -m "Robot de marketing: pieza publicada (Issue #${ISSUE_NUMBER:-?})"
+            git pull --rebase --quiet
+            git push
+          fi
+
+      - name: Comentar en el Issue de revisión (y cerrarlo si salió todo)
+        if: ${{ always() && inputs.issue_number != '' && steps.publicar.outputs.resumen != '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ inputs.issue_number }}
+          RESUMEN: ${{ steps.publicar.outputs.resumen }}
+          FALLOS: ${{ steps.publicar.outputs.fallos }}
+        run: |
+          gh issue comment "$ISSUE_NUMBER" --body "$RESUMEN"
+          if [ "$FALLOS" = "0" ]; then gh issue close "$ISSUE_NUMBER"; fi

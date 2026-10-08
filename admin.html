@@ -134,6 +134,17 @@
   <p class="resumen" id="resumenInvitaciones">Cargando invitaciones…</p>
   <div class="lista-invitaciones" id="listaInvitaciones"></div>
 
+  <!-- Captación (2026-10-09): números semanales sin IA, de
+       admin_metricas_captacion() (exige es_admin() en Postgres). -->
+  <h2 style="font-size:15px; margin:0 0 6px;">📈 Captación</h2>
+  <p class="resumen" id="resumenCaptacion">Cargando números de captación…</p>
+  <div style="overflow-x:auto; margin-bottom:24px;">
+    <table>
+      <thead><tr id="cabeceraCaptacion"></tr></thead>
+      <tbody id="filasCaptacion"></tbody>
+    </table>
+  </div>
+
   <h2 style="font-size:15px; margin:0 0 6px;">👥 Usuarios</h2>
   <p class="resumen" id="resumen">Cargando usuarios…</p>
   <p class="resumen" style="margin-top:-8px;">"Última sesión" es aproximada (agrupa eventos con menos de 30 min entre sí) y solo hay datos desde el 17-09-2026.</p>
@@ -208,6 +219,7 @@
 
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { COLUMNAS, filasTabla, textoPct } from "/assets/js/metricas-captacion.js";
 
 // Panel de administrador (2026-09-13), pedido explícito del usuario:
 // ver quién está inscrito, pudiendo pausarlo o eliminarlo — "como en
@@ -540,6 +552,32 @@ async function cargarReglasExpertas() {
   }
 }
 cargarReglasExpertas();
+
+// ---------------------------------------------------------------------------
+// Captación (2026-10-09). Estrella del norte: % de pruebas terminadas que
+// pasan a pago. Solo recuentos, nunca quién.
+async function cargarCaptacion() {
+  const resumenEl = document.getElementById("resumenCaptacion");
+  try {
+    const { data, error } = await supabase.rpc("admin_metricas_captacion", { p_semanas: 8 });
+    if (error || !data) {
+      resumenEl.textContent = "Sin números de captación todavía (¿falta aplicar las migraciones de captación?).";
+      return;
+    }
+    const n = data.norte || {};
+    resumenEl.textContent = `⭐ Prueba → pago (8 semanas): ${textoPct(n.pagan || 0, n.pruebas_terminadas || 0)}. Una prueba cuenta como terminada a los 8 días del alta; no cuentan admin, cuentas de prueba, accesos permanentes ni invitaciones del 100 %. La primera fila es la semana en curso.`;
+    document.getElementById("cabeceraCaptacion").replaceChildren(...COLUMNAS.map((c) => Object.assign(document.createElement("th"), { textContent: c })));
+    document.getElementById("filasCaptacion").replaceChildren(...filasTabla(data).map((fila) => {
+      const tr = document.createElement("tr");
+      tr.replaceChildren(...fila.map((v) => Object.assign(document.createElement("td"), { textContent: v })));
+      return tr;
+    }));
+  } catch (e) {
+    resumenEl.textContent = "No se han podido cargar los números de captación.";
+    console.warn("admin_metricas_captacion:", e);
+  }
+}
+cargarCaptacion();
 </script>
 
 </body>
