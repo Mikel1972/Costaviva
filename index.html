@@ -21,6 +21,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@maplibre/maplibre-gl-leaflet@0.1.4/leaflet-maplibre-gl.js" integrity="sha384-tXYNKOHx4T02jMP7YYCtBxPIv1B5gaA5mcVPBzqMp6d7VzWzxJgI2aWF/nJLrQdS" crossorigin="anonymous"></script>
 <script src="/assets/js/mapa-base.js"></script>
 <script src="/assets/js/creditos-mapa.js"></script>
+<script src="/assets/js/tarjetas-mapa.js"></script>
 <!-- Capa de viento estilo Windy (2026-09-19, pedido explícito del
      usuario) — partículas animadas sobre una rejilla u/v, sin más
      dependencia que Leaflet (ya cargado arriba). cdnjs no aloja este
@@ -237,6 +238,55 @@
   }
   .leyenda.visible { opacity: 1; transform: translateX(0); pointer-events: auto; }
 
+  /* Tarjetas de abajo del mapa en un solo "dock" (2026-10-08, bug aprobado
+     por Mikel: en el móvil la tarjeta de rayos tapaba la lluvia animada y la
+     leyenda del ⓘ abierta). Rayos, lluvia, clorofila / temperatura, viento y
+     la leyenda del ⓘ se apilan en ese orden de arriba a abajo, así que nunca
+     se pisan. assets/js/tarjetas-mapa.js ajusta "bottom" (por encima del ⓘ,
+     de los créditos abiertos y de las leyendas de Leaflet de abajo a la
+     izquierda) y "max-height" (sin tapar el zoom ni las leyendas de arriba);
+     si no cabe, scroll. Acaba a la izquierda de las columnas de botones
+     (138 = 74 + 54 + 10, como el panel de la luna). El padding deja ver la
+     sombra de las tarjetas (left = 16 - 6). */
+  .tarjetas-mapa {
+    position: absolute; left: 10px; right: 132px; bottom: 62px; z-index: 900;
+    display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 6px;
+    max-height: calc(100% - 150px); overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain;
+    pointer-events: none;
+  }
+  .tarjetas-mapa.tarjetas-desborda { pointer-events: auto; }
+  /* En escritorio sobra ancho: si no caben en una columna, pasan a la de al
+     lado en vez de hacer scroll. */
+  @media (min-width: 721px) { .tarjetas-mapa { flex-wrap: wrap; align-content: flex-start; } }
+  .tarjetas-mapa > * {
+    position: static; flex: none; margin: 0; max-width: 100%; box-sizing: border-box;
+    pointer-events: auto; transform: none;
+  }
+  /* Cada tarjeta trae su position: absolute de cuando iba suelta (y la de
+     la lluvia, en un <style> que se añade después): aquí, en el flujo. */
+  .tarjetas-mapa > .rayos-hoja { order: 1; position: static; }
+  .tarjetas-mapa > .lluvia-anim-panel { order: 2; position: static; }
+  .tarjetas-mapa > .capa-mar-panel { order: 3; position: static; }
+  .tarjetas-mapa > .viento-slider-panel { order: 4; position: static; max-height: none; overflow: visible; box-shadow: var(--sombra-tarjeta); }
+  .tarjetas-mapa > .leyenda { order: 5; position: static; max-width: 280px; transition: none; box-shadow: var(--sombra-tarjeta); }
+  .tarjetas-mapa > .leyenda:not(.visible) { display: none; }
+  .tarjetas-mapa > .leyenda.visible { animation: aparecerTarjeta 0.15s ease-out; }
+  @keyframes aparecerTarjeta { from { opacity: 0; transform: translateX(-14px); } to { opacity: 1; transform: none; } }
+  /* Con la lluvia abierta, la tarjeta de rayos se queda en su frase (la
+     leyenda de una línea vuelve al cerrar la lluvia; el ⓘ sigue). */
+  .tarjetas-mapa:has(> .lluvia-anim-panel:not([hidden])) .rayos-leyenda { display: none; }
+  /* El panel de la lluvia (lluvia-animada.js trae su CSS) con los tokens. */
+  .tarjetas-mapa > .lluvia-anim-panel {
+    background: var(--superficie); color: var(--tinta); border-color: var(--linea); border-radius: 10px;
+    box-shadow: var(--sombra-tarjeta); font-family: var(--f-texto);
+  }
+  .tarjetas-mapa > .lluvia-anim-panel .lluvia-anim-boton { background: var(--mar); border-color: var(--mar); color: var(--blanco); }
+  .tarjetas-mapa > .lluvia-anim-panel .lluvia-anim-paso.actual { background: var(--mar); }
+  .tarjetas-mapa > .lluvia-anim-panel .lluvia-anim-sub,
+  .tarjetas-mapa > .lluvia-anim-panel .lluvia-anim-extremos,
+  .tarjetas-mapa > .lluvia-anim-panel .lluvia-anim-nota { color: var(--tinta-2); }
+  .tarjetas-mapa > .lluvia-anim-panel .lluvia-anim-ultima.vieja b { color: var(--peligro); }
+
   /* Panel de rayos (2026-10-08, Mikel: "la pestaña de rayos es poco ágil
      de manejar"). Antes era un panel lateral que tapaba medio mapa en el
      móvil, con la imagen de AEMET y una vista grande aparte con su propio
@@ -247,9 +297,9 @@
      del satélite y el enlace al mapa de AEMET. Los rayos se ven en el mapa
      de siempre, con su zoom y su pellizco nativos. */
   .rayos-hoja {
-    width: min(440px, calc(100vw - 20px)); box-sizing: border-box; clear: both;
+    width: 100%; max-width: 440px; box-sizing: border-box;
     background: var(--superficie); border: 1px solid var(--linea); border-left: 5px solid #9AA9AE; border-radius: 10px;
-    box-shadow: 0 4px 14px rgba(11,30,63,0.18); padding: 7px 8px 7px 10px;
+    box-shadow: var(--sombra-tarjeta); padding: 7px 8px 7px 10px;
     font-family: var(--f-texto); color: var(--tinta); cursor: default;
   }
   .rayos-hoja[hidden] { display: none; }
@@ -348,10 +398,8 @@
      una atribución larga se parte en más líneas en vez de llegar hasta él.
      En el móvil se pliegan en "ⓒ Fuentes" (assets/js/creditos-mapa.js). */
   .leaflet-bottom.leaflet-right { left: 76px; }
-  .leaflet-bottom.leaflet-right .rayos-hoja { max-width: 100%; }
-  /* En escritorio la leyenda del ⓘ se abre por encima de la línea de los
-     créditos (pueden ocupar dos líneas a lo ancho), no detrás de ellos. */
-  @media (min-width: 721px) { .leyenda { bottom: 68px; max-height: calc(100% - 150px); overflow-y: auto; } }
+  /* La leyenda del ⓘ va en el dock de tarjetas (.tarjetas-mapa), que ya se
+     abre por encima de los créditos y del ⓘ. */
   .leaflet-control-attribution.creditos-mapa {
     max-width: 100%; box-sizing: border-box; background: var(--superficie); color: var(--tinta-2);
     font-family: var(--f-texto); border-top-left-radius: 8px;
@@ -565,6 +613,7 @@
   .panel .tarjeta { background: var(--superficie); border-radius: 18px; padding: 12px 14px; box-shadow: 0 4px 14px rgba(26,21,51,0.07); }
   .panel .etq { font-size: 11px; font-weight: 800; letter-spacing: 0.06em; color: var(--tinta-2); }
   .panel .tarjeta .etq + .etq { font-weight: 600; letter-spacing: 0; font-size: 12px; }
+  .panel .ola-camara-ref { font-size: 11.5px; font-weight: 500; color: var(--tinta-2); margin-top: 3px; line-height: 1.35; }
   .atribucion-meteo { margin-top: 12px; font-size: 10.5px; line-height: 1.4; color: var(--tinta-2); text-align: center; }
   .atribucion-meteo a { color: inherit; text-decoration: underline; }
   .panel .tarjeta .val { font-family: var(--f-texto); font-size: 22px; font-weight: 800; letter-spacing: -0.3px; color: var(--tinta); margin-top: 3px; }
@@ -694,9 +743,10 @@
       min-height: 32px; box-shadow: 0 4px 12px rgba(11,30,63,0.22);
     }
     .creditos-plegados .creditos-texto { display: none; }
-    /* La tarjeta de rayos va encima de los créditos: con la píldora plegada
-       su borde inferior queda por encima del ⓘ (que llega a 50 px). */
-    .leaflet-bottom .rayos-hoja { margin-bottom: 16px; }
+    /* Dock de tarjetas: a la izquierda de las columnas de botones (124 =
+       66 + 48 + 10) y encima del ⓘ (10 + 40). */
+    .tarjetas-mapa { left: 4px; right: 118px; bottom: 54px; }
+    .tarjetas-mapa > .leyenda { max-width: 100%; }
     header { padding: 8px 12px 12px; column-gap: 8px; }
     header h1 { font-size: 19px; }
     header .marca-logo { width: 32px; height: 32px; }
@@ -899,32 +949,62 @@
   <div class="mapa-wrap">
     <div id="map"></div>
     <button class="leyenda-toggle" id="toggleLeyenda" title="¿Qué significan los colores del mapa?" aria-label="Mostrar/ocultar leyenda">ⓘ</button>
-    <div class="leyenda" id="leyendaPanel">
-      <div class="titulo">ÍNDICE DE MAR (oleaje + viento + ángulo entre ambos)</div>
-      <div class="fila"><span class="chip" style="background:var(--nivel-bueno)"></span><span>tranquilo</span></div>
-      <div class="fila"><span class="chip" style="background:var(--nivel-medio)"></span><span>moderado</span></div>
-      <div class="fila"><span class="chip" style="background:var(--nivel-malo)"></span><span>agitado</span></div>
-      <div class="nota" style="margin-top:10px; padding-top:8px; border-top:1px solid var(--linea);">◆ RÍOS: 3 puntos por río (cabecera→desembocadura), color por caudal bajo/normal/alto — pasa el cursor por un punto para ver el detalle. Lo que se mide arriba llega a la costa horas después — útil como aviso de tendencia. Posiciones ilustrativas, no las estaciones oficiales exactas. Caudal real solo en Sella, Besaya, Pas, Asón, Eo, Júcar, Turia, Mijares, Segura y Lagares (Confederaciones Hidrográficas + Augas de Galicia) — los ríos vascos siguen sin dato real (URA/Bizkaia bloquea el acceso automático).</div>
+    <!-- Tarjetas de abajo del mapa (assets/js/tarjetas-mapa.js): rayos, lluvia
+         (la mete lluvia-animada.js), clorofila / temperatura, viento y la
+         leyenda del ⓘ, apiladas de arriba a abajo en ese orden y siempre por
+         encima del ⓘ y de los créditos: nunca se pisan. -->
+    <div class="tarjetas-mapa" id="tarjetasMapa">
+      <div class="rayos-hoja" id="rayosHoja" data-nivel="neutro" hidden>
+        <div class="rayos-fila">
+          <button type="button" class="rayos-resumen" id="rayosResumen" aria-live="polite" title="Centrar el mapa en el rayo más cercano">Buscando rayos cerca…</button>
+          <button type="button" class="rayos-mas" id="rayosDetalleBtn" aria-expanded="false" aria-controls="rayosDetalle" aria-label="Fuentes y mapa de AEMET">ⓘ</button>
+        </div>
+        <div class="rayos-leyenda">
+          <span><i class="vivo"></i>rayo · 5 min</span>
+          <span><i class="sat"></i>tormenta (satélite) · 30 min</span>
+        </div>
+        <div class="rayos-detalle" id="rayosDetalle" hidden>
+          <p id="rayosRefTexto">Distancias medidas desde el centro del mapa.</p>
+          <p id="notaRayosSatelite">Cargando el satélite…</p>
+          <p><a href="/rayos-imagen" target="_blank" rel="noopener" id="enlaceAemetRayos">Mapa de rayos de AEMET, toda España, últimas 12 h ↗</a></p>
+          <p>Fuentes: Vaisala Xweather (al momento), EUMETSAT MTG Lightning Imager (CC BY 4.0) y AEMET.</p>
+        </div>
+      </div>
+      <div class="capa-mar-panel" id="capaMarPanel" hidden>
+        <div class="titulo" id="capaMarTitulo"></div>
+        <div class="fecha" id="capaMarFecha"></div>
+        <div class="barra" id="capaMarBarra"></div>
+        <div class="extremos"><span id="capaMarMin"></span><span id="capaMarMax"></span></div>
+        <details class="explica" id="capaMarDetalle"><summary id="capaMarResumen"></summary><div id="capaMarExplica"></div></details>
+        <div class="credito" id="capaMarCredito"></div>
+      </div>
+      <div class="viento-slider-panel" id="vientoSliderPanel" hidden>
+        <div class="titulo">VIENTO — próximas horas</div>
+        <input type="range" id="vientoSlider" min="0" max="23" value="0" step="1" />
+        <!-- Horas reales a lo largo de la barra (pedido explícito del
+             usuario: "pon las horas y no la diferencia en horas") -- unas
+             pocas marcas repartidas, no las 24, para que quepan en el
+             ancho del panel. -->
+        <div class="viento-slider-ticks" id="vientoSliderTicks"></div>
+        <div class="etq" id="vientoSliderHora">ahora</div>
+        <!-- Leyenda de colores (pedido explícito del usuario: "debe
+             aparecer una leyenda de colores para interpretar lo que
+             vemos") -- la barra de degradado se rellena por JS con la
+             misma paleta (VIENTO_COLOR_SCALE) que usa la capa de verdad,
+             nunca a mano en el CSS, para que no se puedan desincronizar. -->
+        <div class="viento-leyenda-titulo">Velocidad del viento</div>
+        <div class="viento-leyenda-barra" id="vientoLeyendaBarra"></div>
+        <div class="viento-leyenda-extremos"><span>0 km/h</span><span>54+ km/h</span></div>
+      </div>
+      <div class="leyenda" id="leyendaPanel">
+        <div class="titulo">ÍNDICE DE MAR (oleaje + viento + ángulo entre ambos)</div>
+        <div class="fila"><span class="chip" style="background:var(--nivel-bueno)"></span><span>tranquilo</span></div>
+        <div class="fila"><span class="chip" style="background:var(--nivel-medio)"></span><span>moderado</span></div>
+        <div class="fila"><span class="chip" style="background:var(--nivel-malo)"></span><span>agitado</span></div>
+        <div class="nota" style="margin-top:10px; padding-top:8px; border-top:1px solid var(--linea);">◆ RÍOS: 3 puntos por río (cabecera→desembocadura), color por caudal bajo/normal/alto — pasa el cursor por un punto para ver el detalle. Lo que se mide arriba llega a la costa horas después — útil como aviso de tendencia. Posiciones ilustrativas, no las estaciones oficiales exactas. Caudal real solo en Sella, Besaya, Pas, Asón, Eo, Júcar, Turia, Mijares, Segura y Lagares (Confederaciones Hidrográficas + Augas de Galicia) — los ríos vascos siguen sin dato real (URA/Bizkaia bloquea el acceso automático).</div>
+      </div>
     </div>
     <button class="rayos-toggle" id="toggleRayos" title="Rayos cerca: al momento y por satélite" aria-label="Mostrar/ocultar rayos en el mapa">⚡<span class="capa-label">Rayos</span></button>
-    <!-- Panel de rayos: se mete como control de Leaflet abajo a la derecha
-         (ver "Rayos en directo sobre el propio mapa" en el JS). -->
-    <div class="rayos-hoja" id="rayosHoja" data-nivel="neutro" hidden>
-      <div class="rayos-fila">
-        <button type="button" class="rayos-resumen" id="rayosResumen" aria-live="polite" title="Centrar el mapa en el rayo más cercano">Buscando rayos cerca…</button>
-        <button type="button" class="rayos-mas" id="rayosDetalleBtn" aria-expanded="false" aria-controls="rayosDetalle" aria-label="Fuentes y mapa de AEMET">ⓘ</button>
-      </div>
-      <div class="rayos-leyenda">
-        <span><i class="vivo"></i>rayo · 5 min</span>
-        <span><i class="sat"></i>tormenta (satélite) · 30 min</span>
-      </div>
-      <div class="rayos-detalle" id="rayosDetalle" hidden>
-        <p id="rayosRefTexto">Distancias medidas desde el centro del mapa.</p>
-        <p id="notaRayosSatelite">Cargando el satélite…</p>
-        <p><a href="/rayos-imagen" target="_blank" rel="noopener" id="enlaceAemetRayos">Mapa de rayos de AEMET, toda España, últimas 12 h ↗</a></p>
-        <p>Fuentes: Vaisala Xweather (al momento), EUMETSAT MTG Lightning Imager (CC BY 4.0) y AEMET.</p>
-      </div>
-    </div>
     <div class="aviso-capa" id="avisoCapa" role="status" hidden></div>
     <button class="luna-toggle" id="toggleLuna" title="Fase y posición de la luna" aria-label="Mostrar/ocultar datos de la luna">🌙<span class="capa-label">Luna</span></button>
     <div class="luna-panel" id="lunaPanel">
@@ -954,32 +1034,6 @@
     <button class="boyas-toggle" id="toggleBoyas" title="Boyas reales (Puertos del Estado vía Copernicus Marine)" aria-label="Mostrar/ocultar boyas">⚓<span class="capa-label">Boyas</span></button>
     <button class="boyas-toggle clorofila-toggle" id="toggleClorofila" title="Clorofila del mar (alimento): satélite de Copernicus" aria-label="Mostrar/ocultar capa de clorofila" aria-pressed="false">🌿<span class="capa-label">Clorof.</span></button>
     <button class="boyas-toggle tempagua-toggle" id="toggleTempAgua" title="Temperatura del agua (modelo IBI de Copernicus)" aria-label="Mostrar/ocultar capa de temperatura del agua" aria-pressed="false">🌡<span class="capa-label">T. agua</span></button>
-    <div class="capa-mar-panel" id="capaMarPanel" hidden>
-      <div class="titulo" id="capaMarTitulo"></div>
-      <div class="fecha" id="capaMarFecha"></div>
-      <div class="barra" id="capaMarBarra"></div>
-      <div class="extremos"><span id="capaMarMin"></span><span id="capaMarMax"></span></div>
-      <details class="explica" id="capaMarDetalle"><summary id="capaMarResumen"></summary><div id="capaMarExplica"></div></details>
-      <div class="credito" id="capaMarCredito"></div>
-    </div>
-    <div class="viento-slider-panel" id="vientoSliderPanel" hidden>
-      <div class="titulo">VIENTO — próximas horas</div>
-      <input type="range" id="vientoSlider" min="0" max="23" value="0" step="1" />
-      <!-- Horas reales a lo largo de la barra (pedido explícito del
-           usuario: "pon las horas y no la diferencia en horas") -- unas
-           pocas marcas repartidas, no las 24, para que quepan en el
-           ancho del panel. -->
-      <div class="viento-slider-ticks" id="vientoSliderTicks"></div>
-      <div class="etq" id="vientoSliderHora">ahora</div>
-      <!-- Leyenda de colores (pedido explícito del usuario: "debe
-           aparecer una leyenda de colores para interpretar lo que
-           vemos") -- la barra de degradado se rellena por JS con la
-           misma paleta (VIENTO_COLOR_SCALE) que usa la capa de verdad,
-           nunca a mano en el CSS, para que no se puedan desincronizar. -->
-      <div class="viento-leyenda-titulo">Velocidad del viento</div>
-      <div class="viento-leyenda-barra" id="vientoLeyendaBarra"></div>
-      <div class="viento-leyenda-extremos"><span>0 km/h</span><span>54+ km/h</span></div>
-    </div>
     <div class="confirmar-ubicacion-panel" id="eligeMetodoPanel">
       <div class="titulo">¿Cómo quieres marcar el punto?</div>
       <div class="botones" style="flex-direction:column; gap:8px;">
@@ -1040,6 +1094,9 @@
         <div class="val" id="panelOla"></div>
         <div class="etq" id="panelOlaDir"></div>
         <div class="etq" id="panelOlaNota" style="text-transform:none; letter-spacing:0; margin-top:3px;"></div>
+        <!-- Referencia de cámara (2026-10-08): la lectura de la cámara propia
+             mientras aún no sustituye al modelo. Dato secundario. -->
+        <div class="ola-camara-ref" id="panelOlaCamara" hidden></div>
         <!-- "Ola real que veo" (2026-10-08): solo con sesión. La banda que
              elige el usuario entra en la calibración de las cámaras
              (oleaje_etiquetas, migración 20261008180000). -->
@@ -1120,7 +1177,7 @@
       <!-- Motivos del índice: bloque propio a lo ancho de la caja (dentro de
            .etq, que es flex, se apretaban en columna: visto por Mikel). -->
       <div class="indice-porque" id="panelIndicePescaPorque"></div>
-      <div class="explicacion-indice" id="explicacionIndicePesca">Es la puntuación de la especie de temporada que mejor está ahora mismo en este punto y con esta modalidad (sin las que están en veda), con las mismas reglas públicas que la ventana de actividad de abajo: luz, marea, temperatura del agua, oleaje, viento, presión, turbidez y las reglas expertas de pesca local. Escala de 0 a 100 en forma de probabilidad (50 = día normal); debajo, lo que más sube (▲) o baja (▼) la nota ahora mismo. Una orientación, no una garantía.</div>
+      <div class="explicacion-indice" id="explicacionIndicePesca">Es la puntuación de la especie de temporada que mejor está ahora mismo en este punto y con esta modalidad (sin las que están en veda), con las mismas reglas públicas que la ventana de actividad de abajo: luz, marea, temperatura del agua, oleaje, viento, presión, turbidez y las reglas expertas de pesca local. Escala de 0 a 100 en forma de probabilidad (50 = día normal); debajo, lo que más sube (▲) o baja (▼) la nota ahora mismo. Si la ola es peligrosa para esta modalidad sale aparte un aviso ⚠️: la nota no la recorta. Una orientación, no una garantía.</div>
     </div>
     <div class="tarjeta" id="ventanaActividadBox" style="margin-top:10px; border: 1px solid var(--linea);">
       <div class="etq">⏱ VENTANA DE ACTIVIDAD POR HORAS</div>
@@ -1771,6 +1828,8 @@ async function actualizarDesdeBackend() {
       s.oleajeCamara = sBackend.oleajeCamara || null;
       s.fuenteAltura = b.fuenteAltura || null;
       s.alturaModelo = b.alturaModelo || null;
+      // Referencia de cámara (cámara propia que aún no sustituye al modelo).
+      s.camaraReferencia = sBackend.camaraReferencia || null;
       s.periodo = b.periodo;
       s.dirOla = b.dirOla;
       if (b.viento !== null) { s.viento = b.viento; s.dirViento = b.dirViento; }
@@ -1860,6 +1919,21 @@ const creditosMapa = window.CreditosMapa
       },
     })
   : null;
+// Tarjetas de abajo del mapa (rayos, lluvia, clorofila / temperatura, viento
+// y la leyenda del ⓘ) apiladas en #tarjetasMapa, siempre por encima del ⓘ,
+// de los créditos y de las leyendas de Leaflet de abajo, y sin subir hasta el
+// zoom ni las leyendas de arriba (assets/js/tarjetas-mapa.js).
+if (window.TarjetasMapa) {
+  const esquinas = map.getContainer().querySelector(".leaflet-control-container");
+  const hijos = (sel) => Array.from(map.getContainer().querySelectorAll(sel));
+  window.TarjetasMapa.montar({
+    dock: document.getElementById("tarjetasMapa"),
+    contenedor: document.getElementById("map").parentElement,
+    abajo: () => [document.getElementById("toggleLeyenda"), ...hijos(".leaflet-bottom > .leaflet-control")],
+    arriba: () => hijos(".leaflet-top.leaflet-left > .leaflet-control"),
+    cambiantes: [esquinas],
+  });
+}
 // Oleaje, viento, marea y corriente del mapa salen de Open-Meteo: su licencia
 // (CC BY 4.0) exige atribución visible, siempre, no solo en el panel.
 map.attributionControl.addAttribution(window.ATRIBUCION_METEO_HTML || "Datos meteorológicos: Open-Meteo.com (CC BY 4.0)");
@@ -3347,7 +3421,30 @@ function textoRangoOla(r) {
   const a = numeroOla(r[0]), b = numeroOla(r[1]);
   return a === b ? `${a} m` : `${a}–${b} m`;
 }
+// Referencia de cámara (2026-10-08, aprobado por Mikel): mientras la cámara
+// propia del spot no sustituye al modelo (ruidosa o sin etiquetas), su
+// lectura va debajo, en secundario: la cifra principal sigue siendo modelo ×
+// coeficiente. /prevision ya filtra (< 3 h, luz, encuadre, espuma, cámara
+// propia); aquí solo se vuelve a mirar la edad, por si la página lleva rato
+// abierta. Redondeo a 0,1 m y "~": no hay más precisión que esa.
+const VIGENCIA_REF_CAMARA_MS = 3 * 3600e3;
+function textoReferenciaCamara(ref, ahoraMs = Date.now()) {
+  if (!ref || !Number.isFinite(ref.altura)) return "";
+  const t = Date.parse(ref.fecha);
+  if (!Number.isFinite(t) || ahoraMs - t > VIGENCIA_REF_CAMARA_MS) return "";
+  const r = Array.isArray(ref.rango) && ref.rango[0] != null && ref.rango[1] != null && ref.rango[0] !== ref.rango[1]
+    ? `${numeroOla(ref.rango[0])}–${numeroOla(ref.rango[1])} m, ` : "";
+  return `La cámara apunta a ~${numeroOla(ref.altura)} m (${r}sin calibrar · ${ref.hora})`;
+}
+function pintarReferenciaCamara(s) {
+  const el = document.getElementById("panelOlaCamara");
+  const txt = s.fuenteAltura === "camara" ? "" : textoReferenciaCamara(s.camaraReferencia);
+  el.textContent = txt;
+  el.hidden = !txt;
+  el.title = txt ? `Lectura de la espuma en la webcam de ${s.camaraReferencia.nombre}. Aún no está calibrada lo bastante para sustituir al modelo: es solo una referencia.` : "";
+}
 function pintarOleajePanel(s) {
+  pintarReferenciaCamara(s);
   const val = document.getElementById("panelOla");
   const nota = document.getElementById("panelOlaNota");
   const z = s.zonaOleaje;
@@ -3772,7 +3869,17 @@ async function pintarIndicePesca(s) {
   // Nota + motivos con flechas (sin puntos ni fuentes), como en la ventana.
   pinta(ind.puntuacion, `${VA.NOMBRE_MODALIDAD[modalidad]} · mejor ahora: ${ind.especie.nombre}`
     + `${ind.freza ? " (en freza: si lo pescas, devuélvelo)" : ""}`);
-  porqueEl.innerHTML = htmlPorque(ind.resultado.razones.filter((r) => r.aporte !== 0).slice(0, 4), ind.fiabilidad);
+  // Ola peligrosa: nota aparte encima de los motivos, nunca un motivo con
+  // flecha ni un tope de la nota (decisión de Mikel, 2026-10-08).
+  porqueEl.innerHTML = htmlAvisoOla(ind.avisoOla)
+    + htmlPorque(ind.resultado.razones, ind.fiabilidad, 4);
+}
+
+// Aviso de ola peligrosa (2026-10-08): "⚠️ Ola peligrosa desde costa
+// (2,5-3 m): extrema la precaución". Viene de VentanaActividad.avisoOlaPeligrosa.
+function htmlAvisoOla(aviso, extra = "") {
+  if (!aviso) return "";
+  return `<div class="aviso-ola" role="note">${escVA(aviso.texto)}${extra ? `<small>${escVA(extra)}</small>` : ""}</div>`;
 }
 
 async function pintarVentanaActividad(s) {
@@ -3865,7 +3972,7 @@ function pintarTiraVA(especie, region, fecha, datos) {
   document.getElementById("vaMejores").innerHTML = vedaHoy
     ? "<b>En veda:</b> no recomendamos ninguna hora para esta especie."
     : mejores.length
-    ? "<b>Mejores ventanas:</b> " + mejores.map((v) => `${v.desde}–${v.hasta} (${v.media}) — ${escVA(v.porque.join(" · "))}`).join("<br>")
+    ? "<b>Mejores ventanas:</b> " + mejores.map((v) => `${v.desde}–${v.hasta} (${v.media})${v.avisoOla ? " ⚠️ ola peligrosa" : ""} — ${escVA(v.porque.join(" · "))}`).join("<br>")
     : `Ninguna hora pasa de 60 ${vaEstado.dia === 0 ? "en lo que queda de hoy" : "mañana"}.`;
 
   const mes = Number(fecha.slice(5, 7));
@@ -3876,6 +3983,12 @@ function pintarTiraVA(especie, region, fecha, datos) {
     : fz?.enFreza
     ? `<div class="va-freza">🥚 <b>En freza en esta zona</b> (${vaTextoMeses(fz.meses)}). Si lo pescas, te recomendamos devolverlo al agua.${fz.nota ? ` <span style="opacity:.8">${escVA(fz.nota)}</span>` : ""}</div>`
     : "";
+  // Ola peligrosa: las horas que quedan con aviso (la peor ola manda el texto).
+  const conOla = res.filter((r) => r.avisoOla && (r.hora.slice(0, 13) >= ahora || vaEstado.dia > 0));
+  if (conOla.length) {
+    const peorOla = conOla.reduce((a, b) => (b.avisoOla.ola > a.avisoOla.ola ? b : a));
+    frezaEl.innerHTML += htmlAvisoOla(peorOla.avisoOla, `${conOla.length} h con ola peligrosa (${conOla[0].hora.slice(11, 16)}–${conOla[conOla.length - 1].hora.slice(11, 16)}).`);
+  }
   // Avisos de seguridad (embarcación): las horas que quedan con aviso.
   const conAviso = res.filter((r) => r.avisos?.length && (r.hora.slice(0, 13) >= ahora || vaEstado.dia > 0));
   if (conAviso.length) {
@@ -3886,7 +3999,7 @@ function pintarTiraVA(especie, region, fecha, datos) {
     const sub = datos.modalidades?.submarina;
     const tecnica = especie.modalidades?.submarina?.tecnica;
     document.getElementById("vaCebos").innerHTML = `🤿 <b>Sin cebos:</b> ${escVA(sub?.sin_cebos || "")}`
-      + `<span class="va-nota" style="display:block; margin-top:2px;">${tecnica ? `Técnica: ${escVA(tecnica)}` : `Técnicas habituales (práctica, sin fuente citable): ${escVA((sub?.tecnicas || []).map((t) => t.nombre).join(", "))}`}.</span>`;
+      + `<span class="va-nota" style="display:block; margin-top:2px;">${tecnica ? `Técnica: ${escVA(tecnica)}` : `Técnicas habituales: ${escVA((sub?.tecnicas || []).map((t) => t.nombre).join(", "))}`}.</span>`;
   }
   const cebos = vaEstado.modalidad === "submarina" ? [] : VA.cebosParaRegion(especie, region, 5, vaEstado.modalidad);
   const grupoCebos = (tipo) => cebos.filter((c) => c.tipo === tipo).map((c) => escVA(c.nombre)).join(", ");
@@ -3894,7 +4007,7 @@ function pintarTiraVA(especie, region, fecha, datos) {
   const conFuente = cebos.filter((c) => c.fuente);
   if (vaEstado.modalidad !== "submarina") document.getElementById("vaCebos").innerHTML = cebos.length
     ? `🪝 <b>Cebos típicos:</b> ${[naturales && `${naturales} (natural)`, artificiales && `${artificiales} (artificial)`].filter(Boolean).join(" · ")}`
-      + `<span class="va-nota" style="display:block; margin-top:2px;">${conFuente.length ? `Según <a href="${escVA(conFuente[0].url)}" target="_blank" rel="noopener">${escVA((datos.fuentes[conFuente[0].fuente]?.editor || "la fuente").split(",")[0])}</a>` : "Práctica habitual"}${conFuente.length && conFuente.length < cebos.length ? " y práctica habitual de pesca" : ""}. Revisa la normativa de cebos de tu comunidad.</span>`
+      + `<span class="va-nota" style="display:block; margin-top:2px;">${conFuente.length ? `Según <a href="${escVA(conFuente[0].url)}" target="_blank" rel="noopener">${escVA((datos.fuentes[conFuente[0].fuente]?.editor || "la referencia").split(",")[0])}</a>` : "Práctica habitual"}${conFuente.length && conFuente.length < cebos.length ? " y práctica habitual de pesca" : ""}. Revisa la normativa de cebos de tu comunidad.</span>`
     : "";
   const consejoProf = VA.consejoProfundidad ? VA.consejoProfundidad(especie, vaEstado.modalidad) : null;
   if (consejoProf) document.getElementById("vaCebos").innerHTML += `<span class="va-nota" style="display:block; margin-top:2px;">⬇ <b>Profundidad:</b> ${escVA(consejoProf)}</span>`;
@@ -3904,8 +4017,8 @@ function pintarTiraVA(especie, region, fecha, datos) {
   const veda = vedaHoy ? null : (especie.vedas || [])[0];
   const fuente = t ? datos.fuentes[t.fuente] : null;
   document.getElementById("vaTalla").innerHTML = (t
-    ? `📏 Talla mínima: <b>${t.valor_cm !== null ? `${t.valor_cm} cm` : `${t.peso_g} g`}</b> — ${escVA(t.ambito_corto || t.ambito)}${t.nota ? `. ${escVA(t.nota)}` : ""} (<a href="${escVA(t.url)}" target="_blank" rel="noopener">${escVA(fuente?.editor || "fuente")}</a>, revisado ${escVA(t.fecha_revision)}).`
-    : "📏 Talla mínima: sin dato verificado para esta zona todavía.")
+    ? `📏 Talla mínima: <b>${t.valor_cm !== null ? `${t.valor_cm} cm` : `${t.peso_g} g`}</b> — ${escVA(t.ambito_corto || t.ambito)}${t.nota ? `. ${escVA(t.nota)}` : ""} (<a href="${escVA(t.url)}" target="_blank" rel="noopener">${escVA(fuente?.editor || "norma oficial")}</a>, revisado ${escVA(t.fecha_revision)}).`
+    : (window.esAdminCostaviva ? "📏 Talla mínima (admin): sin dato verificado para esta zona todavía." : ""))
     + (veda ? `<br>⚠ ${escVA(veda.texto)}` : "")
     + " Manda siempre la norma publicada.";
 }
@@ -3919,13 +4032,13 @@ function pintarNormativaVA(datos, region, especie) {
   const n = VA.normativaModalidad(datos, vaEstado.modalidad, region, { euskadi: VA.enEuskadi(vaEstado.s.lat, vaEstado.s.lon), especie });
   const item = (x) => {
     const f = datos.fuentes[x.fuente];
-    return `<li>${escVA(x.texto)} <span class="va-nota">(<a href="${escVA(x.url)}" target="_blank" rel="noopener">${escVA(x.articulo ? `${x.articulo}, ` : "")}${escVA((f?.editor || "fuente").split(",")[0])}</a>, revisado ${escVA(x.fecha_revision)})</span></li>`;
+    return `<li>${escVA(x.texto)} <span class="va-nota">(<a href="${escVA(x.url)}" target="_blank" rel="noopener">${escVA(x.articulo ? `${x.articulo}, ` : "")}${escVA((f?.editor || "norma oficial").split(",")[0])}</a>, revisado ${escVA(x.fecha_revision)})</span></li>`;
   };
   const NOMBRE_J = { ES: "España (aguas exteriores)", "ES-PV": "Euskadi", "ES-CB": "Cantabria", "ES-AS": "Asturias", "ES-GA": "Galicia", "ES-AN": "Andalucía", "ES-MC": "Murcia", "ES-VC": "C. Valenciana", "ES-CT": "Cataluña", "ES-IB": "Baleares", "ES-CN": "Canarias", PT: "Portugal", "PT-AC": "Azores", "PT-MA": "Madeira" };
   el.className = "va-detalle mod-normativa";
   el.innerHTML = (n.especie.length ? `<b>${escVA(especie.nombres.es)}:</b><ul>${n.especie.map(item).join("")}</ul>` : "")
     + (n.general.length ? `<ul>${n.general.map(item).join("")}</ul>` : "Sin normativa verificada todavía para esta zona.")
-    + (n.pendiente.length ? `<div class="va-nota">Pendiente de revisar: ${n.pendiente.map((p) => escVA(NOMBRE_J[p.jurisdiccion] || p.jurisdiccion)).join(", ")} (en aguas interiores manda cada comunidad).</div>` : "")
+    + (n.pendiente.length && window.esAdminCostaviva ? `<div class="va-nota">(admin) Pendiente de revisar: ${n.pendiente.map((p) => escVA(NOMBRE_J[p.jurisdiccion] || p.jurisdiccion)).join(", ")} (en aguas interiores manda cada comunidad).</div>` : "")
     + `<div class="va-nota">${escVA(datos.aviso_legal || "Manda siempre la norma publicada.")}</div>`;
 }
 
@@ -3934,21 +4047,17 @@ function pintarNormativaVA(datos, region, especie) {
 // (▲▲ / ▲ / ▼ / ▼▼) y el concepto en lenguaje llano. Sin puntos por factor y
 // sin etiquetas de fuente para el usuario. El admin (window.esAdminCostaviva,
 // cosmético) tiene además un desplegable con puntos, fuente y confianza.
-function flechasPorque(aporte) {
-  if (aporte >= 6) return { s: "▲▲", c: "mas", t: "sube mucho" };
-  if (aporte > 0) return { s: "▲", c: "mas", t: "sube" };
-  if (aporte <= -6) return { s: "▼▼", c: "menos", t: "baja mucho" };
-  if (aporte < 0) return { s: "▼", c: "menos", t: "baja" };
-  return null;
-}
-function htmlPorque(razones, fiabilidad = null) {
+// Para el usuario, SOLO motivos con flecha y avisos útiles (legal /
+// seguridad): lo neutro y lo interno ("pendiente de fuente", "no cuenta"...)
+// va solo al desplegable del admin (Mikel, 2026-10-08). El filtro es
+// VentanaActividad.paraUsuario (con test).
+const FLECHA_ETIQUETA = { "▲▲": "sube mucho", "▲": "sube", "▼": "baja", "▼▼": "baja mucho" };
+function htmlPorque(razones, fiabilidad = null, max = Infinity) {
   const orden = [...razones].sort((a, b) => Math.abs(b.aporte) - Math.abs(a.aporte));
-  const items = orden.map((x) => {
-    const f = flechasPorque(x.aporte);
-    return f
-      ? `<li><span class="va-flecha ${f.c}" aria-label="${f.t}">${f.s}</span><span>${escVA(x.texto)}</span></li>`
-      : `<li><span class="va-flecha" aria-hidden="true">·</span><span>${escVA(x.texto)}</span></li>`;
-  });
+  const usuario = window.VentanaActividad.paraUsuario(razones, { max });
+  const items = usuario.motivos.map((m) =>
+    `<li><span class="va-flecha ${m.sube ? "mas" : "menos"}" aria-label="${FLECHA_ETIQUETA[m.flecha]}">${m.flecha}</span><span>${escVA(m.texto)}</span></li>`);
+  const avisos = usuario.avisos.map((t) => `<div class="aviso-nota" role="note">${escVA(t)}</div>`).join("");
   let admin = "";
   if (window.esAdminCostaviva) {
     const fila = (x) => `<li>${x.aporte > 0 ? "+" : ""}${escVA(x.aporte)} · ${escVA(x.texto)} <i>(${escVA(x.factor)}${x.regla ? `; ${escVA(x.regla.fuente)}, ${escVA(x.regla.estado)}, confianza ${escVA(x.regla.confianza)}` : ""})</i></li>`;
@@ -3956,14 +4065,14 @@ function htmlPorque(razones, fiabilidad = null) {
     admin = `<details class="va-admin"><summary>Detalle (admin)</summary><ul>${orden.map(fila).join("")}</ul>`
       + `${fiabilidad ? `<div>Fiabilidad: ${escVA(fiabilidad.etiqueta)}</div>` : ""}</details>`;
   }
-  return `<ul class="va-porque">${items.join("")}</ul>${admin}`;
+  return `${avisos}${items.length ? `<ul class="va-porque">${items.join("")}</ul>` : ""}${admin}`;
 }
 
 function pintarDetalleVA() {
   const r = vaEstado.resultados[vaEstado.idxSel];
   const det = document.getElementById("vaDetalle");
   if (!r) { det.textContent = ""; return; }
-  det.innerHTML = `<b>${r.hora.slice(11, 16)} → ${r.puntuacion}/100</b>${htmlPorque(r.razones, r.fiabilidad)}`;
+  det.innerHTML = `<b>${r.hora.slice(11, 16)} → ${r.puntuacion}/100</b>${htmlAvisoOla(r.avisoOla)}${htmlPorque(r.razones, r.fiabilidad)}`;
   document.querySelectorAll("#vaTira .va-hora").forEach((b, i) => b.classList.toggle("sel", i === vaEstado.idxSel));
 }
 
@@ -3995,6 +4104,8 @@ document.getElementById("panelBtnBorrar").addEventListener("click", () => {
 document.getElementById("toggleLeyenda").addEventListener("click", () => {
   const abierta = document.getElementById("leyendaPanel").classList.toggle("visible");
   document.getElementById("toggleLeyenda").textContent = abierta ? "✕" : "ⓘ";
+  // Va la última del dock de tarjetas: si hay scroll, que se vea al abrirla.
+  if (abierta) document.getElementById("leyendaPanel").scrollIntoView({ block: "nearest" });
   // En el móvil, la leyenda abierta y los créditos abiertos se pisarían.
   if (abierta && creditosMapa) creditosMapa.plegar();
 });
@@ -4105,21 +4216,9 @@ function moduloRayos() {
     ? Promise.resolve(window.Rayos)
     : new Promise((ok) => window.addEventListener("rayos-listo", () => ok(window.Rayos), { once: true }));
 }
-// La tarjeta vive dentro de un control de Leaflet en la esquina inferior
-// derecha: Leaflet apila los controles de abajo por encima de la
-// atribución, así que nunca tapa los créditos (que son obligatorios).
-const ControlRayos = L.Control.extend({
-  options: { position: "bottomright" },
-  onAdd() {
-    const hoja = document.getElementById("rayosHoja");
-    L.DomEvent.disableClickPropagation(hoja);
-    L.DomEvent.disableScrollPropagation(hoja);
-    return hoja;
-  },
-  onRemove() {},
-});
-const controlRayos = new ControlRayos();
-controlRayos.addTo(map);
+// La tarjeta vive en el dock de tarjetas del mapa (#tarjetasMapa, ver
+// assets/js/tarjetas-mapa.js): arriba del todo, encima de la lluvia y de la
+// leyenda del ⓘ, y siempre por encima de los créditos (obligatorios).
 function pintarResumenRayos(R, datos) {
   estadoRayos = datos.estado;
   const { nivel, texto, conteo } = R.resumenRayos({ ...datos, ref: refRayos });
@@ -4406,7 +4505,8 @@ let lluviaAnimada = null;
 function prepararLluviaAnimada() {
   if (!lluviaAnimada && window.LluviaAnimada) {
     lluviaAnimada = window.LluviaAnimada.crearLluviaAnimada({
-      L, map, contenedor: document.getElementById("map").parentElement,
+      // En el dock de tarjetas, debajo de la de rayos (tarjetas-mapa.js).
+      L, map, contenedor: document.getElementById("tarjetasMapa"),
     });
   }
   return lluviaAnimada;

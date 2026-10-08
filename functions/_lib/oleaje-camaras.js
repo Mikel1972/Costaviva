@@ -217,3 +217,131 @@ export function aplicarCamarasASpots(spots, lecturas, ahoraMs = Date.now()) {
     return { ...s, bloques, oleajeCamara: info };
   });
 }
+
+// ---------------------------------------------------------------------------
+// Constantes de la medida (antes en scripts/oleaje-camaras/calibracion.mjs,
+// que las reexporta): /prevision también las necesita para la referencia.
+export const ESPUMA_MINIMA = 0.003; // por debajo: "sin espuma" (ruido, brillos sueltos)
+
+// Elevación del sol en grados (fórmula aproximada de la NOAA, error < 1°:
+// de sobra para decidir si hay luz). Las lecturas con el sol por debajo de
+// ELEVACION_MINIMA no se hacen (oscuro, o sol rasante de cara a la cámara).
+export const ELEVACION_MINIMA = 8;
+export function elevacionSolar(fechaMs, lat, lon) {
+  const d = new Date(fechaMs);
+  const dia = (Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) - Date.UTC(d.getUTCFullYear(), 0, 0)) / 864e5;
+  const horaUTC = d.getUTCHours() + d.getUTCMinutes() / 60 + d.getUTCSeconds() / 3600;
+  const g = ((2 * Math.PI) / 365) * (dia - 1 + (horaUTC - 12) / 24);
+  const decl = 0.006918 - 0.399912 * Math.cos(g) + 0.070257 * Math.sin(g) - 0.006758 * Math.cos(2 * g) + 0.000907 * Math.sin(2 * g) - 0.002697 * Math.cos(3 * g) + 0.00148 * Math.sin(3 * g);
+  const eqt = 229.18 * (0.000075 + 0.001868 * Math.cos(g) - 0.032077 * Math.sin(g) - 0.014615 * Math.cos(2 * g) - 0.040849 * Math.sin(2 * g));
+  const tst = horaUTC * 60 + eqt + 4 * lon;
+  const ha = ((tst / 4 - 180) * Math.PI) / 180;
+  const phi = (lat * Math.PI) / 180;
+  const cosZ = Math.sin(phi) * Math.sin(decl) + Math.cos(phi) * Math.cos(decl) * Math.cos(ha);
+  return +(90 - (Math.acos(Math.min(1, Math.max(-1, cosZ))) * 180) / Math.PI).toFixed(2);
+}
+
+// ---------------------------------------------------------------------------
+// Cámara como REFERENCIA (2026-10-08, aprobado por Mikel): mientras una
+// cámara aún no sustituye al modelo (camaraSustituyeModelo() = false:
+// ruidosa o sin etiquetas/días suficientes), su lectura se enseña debajo del
+// valor del modelo, como dato secundario: "La cámara apunta a ~1,2 m
+// (0,6–1,8 m, sin calibrar · 16:30)". La cifra principal sigue siendo
+// modelo × coeficiente.
+//
+// filasLecturas(): de las filas de oleaje_camara_lecturas (estado ok, de las
+// últimas VIGENCIA_LECTURA_HORAS, más recientes primero) saca
+//   lecturas: { <camara>: la última que SUSTITUYE al modelo } (lo de antes)
+//   medidas:  { <camara>: la última medida, sustituya o no } (para la
+//             referencia; una medida = todas las filas "ok" de esa fecha,
+//             una por encuadre).
+export function filasLecturas(filas) {
+  const lecturas = {}, medidas = {};
+  const num = (v) => (v === null || v === undefined ? null : Number(v));
+  const ordenadas = [...(filas || [])]
+    .filter((f) => f && f.estado === "ok" && f.camara && Number.isFinite(Date.parse(f.fecha)))
+    .sort((a, b) => Date.parse(b.fecha) - Date.parse(a.fecha));
+  for (const f of ordenadas) {
+    const est = num(f.estimacion_camara_m);
+    if (f.sustituye_modelo === true && Number.isFinite(est) && !lecturas[f.camara]) {
+      lecturas[f.camara] = {
+        fecha: f.fecha, estado: f.estado, encuadre: f.encuadre,
+        estimacion: est,
+        rangoMin: num(f.rango_min_m), rangoMax: num(f.rango_max_m),
+        modeloCamara: num(f.modelo_camara_m), errorRel: num(f.error_rel),
+        sustituyeModelo: true,
+      };
+    }
+    const m = medidas[f.camara];
+    if (!m) {
+      medidas[f.camara] = {
+        fecha: f.fecha, estado: "ok",
+        estimacion: Number.isFinite(est) ? est : null,
+        rangoMin: num(f.rango_min_m), rangoMax: num(f.rango_max_m),
+        sustituyeModelo: f.sustituye_modelo === true,
+        espumas: [num(f.espuma)],
+      };
+    } else if (Date.parse(m.fecha) === Date.parse(f.fecha)) {
+      m.espumas.push(num(f.espuma));
+      if (m.estimacion === null && Number.isFinite(est)) {
+        m.estimacion = est; m.rangoMin = num(f.rango_min_m); m.rangoMax = num(f.rango_max_m);
+      }
+    }
+  }
+  for (const m of Object.values(medidas)) {
+    // Sin espuma en NINGÚN encuadre medido: la cámara no ve romper nada.
+    m.sinEspuma = m.espumas.every((e) => Number.isFinite(e) && e <= ESPUMA_MINIMA);
+    delete m.espumas;
+  }
+  return { lecturas, medidas };
+}
+
+const redondeo1 = (v) => Math.round(v * 10) / 10;
+
+// Referencia de cámara para un spot ya pasado por aplicarCamarasASpots().
+// Devuelve { altura, rango:[min,max], hora, fecha, camara, nombre } o null.
+// Solo si:
+//   - el spot tiene cámara PROPIA (nunca la de un vecino; Santoña tampoco,
+//     su cámara está al otro lado del Buciero);
+//   - la cámara NO está sustituyendo ya al modelo en este spot;
+//   - la última medida es "ok" (encuadre de referencia, sin orilla), de
+//     menos de VIGENCIA_LECTURA_HORAS y con el sol ≥ ELEVACION_MINIMA;
+//   - se ve espuma y hay estimación.
+// Sin espuma no se dice nada (decisión 2026-10-08): la rompiente puede estar
+// fuera de la zona medida (Castro, Getaria) y "la cámara no ve rompiente"
+// junto a un modelo de 2 m invitaría a fiarse de una mar más pequeña.
+export function camaraReferenciaDeSpot(spot, medida, ahoraMs = Date.now()) {
+  const fuente = FUENTE_POR_SPOT[spot?.slug];
+  if (!fuente?.propia || !medida) return null;
+  if (spot.oleajeCamara?.propia || spot.bloques?.some((b) => b?.fuenteAltura === "camara")) return null;
+  if (medida.sustituyeModelo === true) return null;
+  if (medida.estado !== "ok" || medida.sinEspuma) return null;
+  const t = Date.parse(medida.fecha);
+  if (!Number.isFinite(t)) return null;
+  const edad = horasEntre(t, ahoraMs);
+  if (edad < -0.25 || edad > VIGENCIA_LECTURA_HORAS) return null;
+  const cam = CAMARAS_OLEAJE[fuente.camara];
+  if (!cam || elevacionSolar(t, cam.lat, cam.lon) < ELEVACION_MINIMA) return null;
+  if (!Number.isFinite(medida.estimacion) || medida.estimacion <= 0) return null;
+  const altura = redondeo1(medida.estimacion);
+  let min = Number.isFinite(medida.rangoMin) ? redondeo1(medida.rangoMin) : redondeo1(medida.estimacion * 0.5);
+  let max = Number.isFinite(medida.rangoMax) ? redondeo1(medida.rangoMax) : redondeo1(medida.estimacion * 1.5);
+  min = Math.min(min, altura); max = Math.max(max, altura);
+  return {
+    altura,
+    rango: [min, max],
+    hora: isoLocalMadrid(t).slice(11, 16),
+    fecha: medida.fecha,
+    camara: fuente.camara,
+    nombre: cam.nombre,
+  };
+}
+
+// Añade `camaraReferencia` a los spots que la tengan (los demás, tal cual).
+export function aplicarReferenciasCamara(spots, medidas, ahoraMs = Date.now()) {
+  return (spots || []).map((s) => {
+    const fuente = FUENTE_POR_SPOT[s?.slug];
+    const ref = fuente?.propia ? camaraReferenciaDeSpot(s, medidas?.[fuente.camara], ahoraMs) : null;
+    return ref ? { ...s, camaraReferencia: ref } : s;
+  });
+}

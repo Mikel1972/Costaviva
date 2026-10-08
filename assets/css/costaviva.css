@@ -67,6 +67,9 @@
   --aviso-fondo: #FFF4DC;
   --aviso-borde: #F2C66B;
 
+  /* Sombra de las tarjetas que flotan sobre el mapa (rayos, lluvia, leyendas) */
+  --sombra-tarjeta: 0 4px 14px rgba(11, 30, 63, 0.18);
+
   --f-titulo: "Unbounded", "Manrope", system-ui, sans-serif;
   --f-texto: "Manrope", system-ui, sans-serif;
 }
@@ -158,3 +161,13 @@ header p { color: var(--gris-mar); font-weight: 600; }
 .enlace-marca { display: flex; flex-shrink: 0; }
 /* Los controles de formulario no heredan la letra por defecto. */
 button, input, select, textarea { font-family: inherit; }
+
+/* ---------- Aviso de ola peligrosa (2026-10-08, decisión de Mikel) ----------
+   Nota aparte, nunca un motivo con flecha: la ola peligrosa ya no pone tope a
+   la nota del índice. Tokens de peligro (texto sobre fondo: 7,8:1). */
+.aviso-ola, .aviso-nota {
+  margin: 8px 0 4px; padding: 7px 10px; border-radius: 10px; text-align: left;
+  background: var(--peligro-fondo); border: 1px solid var(--peligro-borde); color: var(--peligro-texto);
+  font-family: var(--f-texto); font-size: 12.5px; font-weight: 700; line-height: 1.4;
+}
+.aviso-ola small, .aviso-nota small { display: block; font-weight: 600; font-size: 11px; opacity: 0.9; }
