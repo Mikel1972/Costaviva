@@ -286,9 +286,13 @@ botón "ola real que veo". Todo sin IA ni API de pago: píxeles.
   In Situ (Pasaia II, Donostia, Bilbao II, Bilbao-Vizcaya, Gijón, Peñas,
   Estaca, Langosteira, Villano, Silleiro, Leixões).
 - `scripts/oleaje-camaras/medir-espuma.mjs` + `.github/workflows/
-  espuma-camaras.yml`: cada 30 min de 08:00 a 15:30 UTC (16 ejecuciones, ~3
-  min cada una ≈ 1.440 min/mes de Actions; repo público, así que es gratis
-  igualmente: la cuenta está en el yml). Escribe
+  espuma-camaras.yml`: cada 30 min de 05:07 a 18:37 UTC (cubre la luz de
+  todo el año; con el sol < 8° corta en ~15 s; repo público, Actions
+  gratis). El `schedule:` de GitHub casi no corre en este repo (el primer
+  día, ninguna vez): lo fiable es pg_cron (migración
+  `20261008210000_programador_espuma_camaras.sql`, SIN APLICAR, y necesita
+  la clave de "Tareas cada 30 min", que a 2026-10-08 nunca se guardó).
+  workflow_dispatch también respeta la luz salvo con `forzar_luz`. Escribe
   `datos-robots/oleaje-camaras/espuma.jsonl` (histórico, de ahí sale la
   calibración) y `calibracion.json`, y con la migración aplicada publica en
   `oleaje_camara_lecturas` + miniaturas en el bucket `oleaje-camaras`.
@@ -2865,6 +2869,7 @@ GitHub trata los `schedule:` como "cuando pueda": `camaras-salud.yml` y `notific
 - La clave de GitHub (fine-grained, solo este repo, permiso Actions: Read and write) vive en Supabase Vault como `github_lanzar_workflows`. Se guarda con `guardar-token-programador.yml` desde el secret `PROGRAMADOR_GITHUB_TOKEN`; ese workflow hace además una prueba real (204 = funciona). **Si la clave caduca o se rota, actualizar el secret y relanzarlo.** Nunca pegarla en el chat ni en el editor SQL.
 - El `schedule:` de los dos workflows se queda como respaldo, con `concurrency` para que dos ejecuciones no se solapen.
 - Para añadir otra tarea: añadir su fichero a la lista de `lanzar_workflow_github()` y un `cron.schedule` nuevo, en una migración.
+- **Estado a 2026-10-08: no funciona.** `guardar-token-programador.yml` no se ha ejecutado nunca, así que no hay clave en Vault y pg_cron no lanza nada (camaras-salud.yml: 50 ejecuciones por `schedule` y 6 manuales en 10 días, en vez de ~480). Falta que Mikel cree el secret `PROGRAMADOR_GITHUB_TOKEN` y lance ese workflow. `espuma-camaras.yml` se añade a la lista en `20261008210000_programador_espuma_camaras.sql`.
 
 ## Cámaras caídas: fuera de la vista a las 24 h, e IPCamLive resuelto en vivo (2026-09-28)
 
