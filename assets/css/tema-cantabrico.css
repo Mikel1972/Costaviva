@@ -1,0 +1,227 @@
+/* =========================================================================
+   Propuesta de diseño 1 · "Mar Cantábrico" (2026-10-08, solo para comparar)
+   Náutico y de alto contraste: azul abisal, turquesa vivo y coral.
+   Se activa con ?tema=cantabrico (cargador al final del <head> de
+   index.html) y va POR ENCIMA de los estilos de siempre, sin tocarlos.
+   Contraste comprobado (WCAG AA, texto normal >= 4.5:1):
+     espuma #F2FBFA / abismo #0A1F33 15.9 · turquesa #19C3B1 / abismo 7.6
+     coral #FF6B57 / abismo 6.0 · turquesa-texto #0B7A70 / blanco 5.2
+     tinta-2 #3D5A6C / espuma 6.9 · niebla #9FB7C9 / abismo 8.0
+   ========================================================================= */
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap");
+
+:root[data-tema="cantabrico"] {
+  --abismo: #0A1F33;
+  --abismo-2: #12304A;
+  --abismo-3: #1B4262;
+  --turquesa: #19C3B1;
+  --turquesa-vivo: #2EE6C9;
+  --turquesa-texto: #0B7A70;
+  --coral: #FF6B57;
+  --coral-texto: #C2412E;
+  --ambar: #FFC857;
+  --espuma: #F2FBFA;
+  --espuma-2: #E3F4F2;
+  --tinta: #0A1F33;
+  --tinta-2: #3D5A6C;
+  --niebla: #9FB7C9;
+  --linea: #CFE5E2;
+  --f-titulo: "Bricolage Grotesque", "Figtree", system-ui, sans-serif;
+  --f-texto: "Figtree", system-ui, sans-serif;
+  --capa: 52px;
+}
+
+/* ---------- Base ---------- */
+[data-tema="cantabrico"] body { font-family: var(--f-texto); background: var(--abismo); color: var(--tinta); }
+[data-tema="cantabrico"] #map { background: #BFE3EE; }
+/* Mapa base más vivo (solo las teselas de Esri, no las capas de datos). */
+[data-tema="cantabrico"] .capa-base { filter: saturate(1.9) hue-rotate(-8deg) contrast(1.06) brightness(0.97); }
+
+/* ---------- Cabecera ---------- */
+[data-tema="cantabrico"] header {
+  background: var(--abismo); border-bottom: 0; padding: 10px 18px; column-gap: 10px;
+  box-shadow: 0 2px 0 var(--turquesa), 0 6px 18px rgba(10, 31, 51, 0.35); position: relative; z-index: 2;
+}
+[data-tema="cantabrico"] .marca-tema { display: block; width: 36px; height: 36px; flex-shrink: 0; }
+[data-tema="cantabrico"] .marca-fondo { fill: var(--turquesa); }
+[data-tema="cantabrico"] .marca-pez { fill: var(--abismo); }
+[data-tema="cantabrico"] .marca-ojo { fill: var(--turquesa); }
+[data-tema="cantabrico"] .marca-ola { fill: none; stroke: var(--espuma); stroke-width: 2.6; stroke-linecap: round; }
+[data-tema="cantabrico"] header h1 {
+  font-family: var(--f-titulo); font-weight: 800; font-size: 30px; letter-spacing: -0.8px; color: var(--espuma);
+}
+[data-tema="cantabrico"] header p {
+  font-family: var(--f-texto); font-weight: 600; font-size: 12px; color: var(--turquesa);
+  text-transform: uppercase; letter-spacing: 0.12em;
+}
+[data-tema="cantabrico"] header .fecha {
+  font-family: var(--f-texto); font-size: 12px; font-weight: 500; color: var(--niebla);
+  display: inline-flex; align-items: center; gap: 6px;
+}
+[data-tema="cantabrico"] header .fecha::before {
+  content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--turquesa-vivo);
+  box-shadow: 0 0 0 3px rgba(46, 230, 201, 0.25); animation: pulso 1.8s infinite;
+}
+[data-tema="cantabrico"] .cuenta-menu-btn,
+[data-tema="cantabrico"] #enlaceAdmin {
+  background: var(--abismo-2) !important; border: 1.5px solid var(--abismo-3) !important; color: var(--espuma) !important;
+  width: 40px !important; height: 40px !important;
+}
+[data-tema="cantabrico"] .cuenta-menu-dropdown { border-radius: 14px; border-color: var(--linea); }
+[data-tema="cantabrico"] .cuenta-menu-dropdown button { font-family: var(--f-texto); font-size: 14px; color: var(--tinta); }
+
+/* ---------- Marcadores ---------- */
+[data-tema="cantabrico"] .marcador {
+  width: 30px; height: 30px; margin: -3px; border: 2.5px solid #FFFFFF;
+  font-family: var(--f-titulo); font-weight: 800; font-size: 12.5px;
+  box-shadow: 0 3px 8px rgba(10, 31, 51, 0.45);
+}
+[data-tema="cantabrico"] .etiqueta-spot {
+  font-family: var(--f-texto); font-weight: 700; font-size: 12.5px; color: #FFFFFF;
+  text-shadow: 0 1px 2px var(--abismo), 0 0 6px var(--abismo), 0 0 6px var(--abismo);
+}
+
+/* ---------- Controles del mapa ---------- */
+[data-tema="cantabrico"] .leaflet-bar { border: 0; border-radius: 14px; overflow: hidden; box-shadow: 0 4px 14px rgba(10, 31, 51, 0.3); }
+[data-tema="cantabrico"] .leaflet-bar a { background: var(--abismo); color: var(--espuma); border-bottom-color: var(--abismo-3); width: 38px; height: 38px; line-height: 38px; }
+[data-tema="cantabrico"] .leaflet-control-attribution { font-family: var(--f-texto); background: rgba(242, 251, 250, 0.85); }
+
+[data-tema="cantabrico"] .rayos-toggle, [data-tema="cantabrico"] .luna-toggle, [data-tema="cantabrico"] .batimetria-toggle,
+[data-tema="cantabrico"] .nubes-toggle, [data-tema="cantabrico"] .estaciones-toggle, [data-tema="cantabrico"] .viento-toggle,
+[data-tema="cantabrico"] .rios-toggle, [data-tema="cantabrico"] .boyas-toggle,
+[data-tema="cantabrico"] .spots-toggle, [data-tema="cantabrico"] .anadir-ubicacion-toggle {
+  width: var(--capa); height: var(--capa); border-radius: 16px; gap: 3px;
+  background: rgba(10, 31, 51, 0.92); border: 1.5px solid var(--abismo-3); color: var(--espuma);
+  font-size: 19px; box-shadow: 0 4px 12px rgba(10, 31, 51, 0.35);
+  transition: transform 0.12s ease-out, background 0.12s ease-out;
+}
+[data-tema="cantabrico"] .spots-toggle, [data-tema="cantabrico"] .anadir-ubicacion-toggle { height: 46px; font-size: 18px; }
+[data-tema="cantabrico"] .rayos-toggle:active, [data-tema="cantabrico"] .viento-toggle:active { transform: scale(0.94); }
+[data-tema="cantabrico"] .capa-label {
+  font-family: var(--f-texto) !important; font-size: 10.5px !important; font-weight: 700; letter-spacing: 0.01em;
+  color: var(--niebla) !important;
+}
+[data-tema="cantabrico"] .activo .capa-label { color: var(--abismo) !important; }
+[data-tema="cantabrico"] .batimetria-toggle.activo, [data-tema="cantabrico"] .nubes-toggle.activo,
+[data-tema="cantabrico"] .estaciones-toggle.activo, [data-tema="cantabrico"] .viento-toggle.activo,
+[data-tema="cantabrico"] .spots-toggle.activo, [data-tema="cantabrico"] .rios-toggle.activo,
+[data-tema="cantabrico"] .boyas-toggle.activo, [data-tema="cantabrico"] .anadir-ubicacion-toggle.activo,
+[data-tema="cantabrico"] .rayos-toggle.activo, [data-tema="cantabrico"] .luna-toggle.activo {
+  background: var(--turquesa); border-color: var(--turquesa-vivo); color: var(--abismo);
+  box-shadow: 0 0 0 3px rgba(46, 230, 201, 0.35), 0 4px 12px rgba(10, 31, 51, 0.35);
+}
+/* Posiciones recalculadas para botones de 52px con 8px de hueco. */
+[data-tema="cantabrico"] .rayos-toggle { top: 12px; right: 12px; }
+[data-tema="cantabrico"] .luna-toggle { top: 72px; right: 12px; }
+[data-tema="cantabrico"] .batimetria-toggle { top: 132px; right: 12px; }
+[data-tema="cantabrico"] .nubes-toggle { top: 192px; right: 12px; }
+[data-tema="cantabrico"] .estaciones-toggle { top: 252px; right: 12px; }
+[data-tema="cantabrico"] .viento-toggle { top: 312px; right: 12px; }
+[data-tema="cantabrico"] .spots-toggle { top: 12px; right: 72px; border-radius: 16px 16px 0 0; }
+[data-tema="cantabrico"] .anadir-ubicacion-toggle { top: 58px; right: 72px; border-radius: 0 0 16px 16px; border-top: 1px solid var(--abismo-3); }
+[data-tema="cantabrico"] .rios-toggle { top: 116px; right: 72px; }
+[data-tema="cantabrico"] .boyas-toggle { top: 176px; right: 72px; }
+[data-tema="cantabrico"] .viento-slider-panel { right: 134px; }
+[data-tema="cantabrico"] .luna-panel { top: 12px; right: 134px; }
+
+[data-tema="cantabrico"] .leyenda-toggle { width: 42px; height: 42px; border-radius: 14px; background: var(--abismo); color: var(--espuma); border: 0; }
+[data-tema="cantabrico"] .leyenda, [data-tema="cantabrico"] .luna-panel, [data-tema="cantabrico"] .viento-slider-panel,
+[data-tema="cantabrico"] .rayos-hoja {
+  font-family: var(--f-texto); border-radius: 14px; border-color: var(--linea);
+}
+[data-tema="cantabrico"] .rayos-resumen { font-family: var(--f-texto); font-size: 13.5px; }
+
+/* ---------- Menú inferior ---------- */
+[data-tema="cantabrico"] .tabs-nav { background: var(--abismo); border-top: 0; gap: 8px; box-shadow: 0 -2px 0 var(--abismo-3); }
+[data-tema="cantabrico"] .tabs-nav a {
+  background: transparent; color: var(--niebla); font-family: var(--f-texto); font-size: 15px; font-weight: 700; border-radius: 16px;
+}
+[data-tema="cantabrico"] .tabs-nav a .icono { width: 24px; height: 24px; }
+[data-tema="cantabrico"] .ico-mapa { color: #6CC5FF; }
+[data-tema="cantabrico"] .ico-diario { color: var(--turquesa-vivo); }
+[data-tema="cantabrico"] .ico-alarma { color: var(--coral); }
+[data-tema="cantabrico"] .ico-grupos { color: #C7A6FF; }
+[data-tema="cantabrico"] .tabs-nav a.activa { background: var(--turquesa); color: var(--abismo); }
+[data-tema="cantabrico"] .tabs-nav a.activa .icono svg { color: var(--abismo); }
+[data-tema="cantabrico"] .punto-novedades-grupos { background: var(--coral); border-color: var(--abismo); }
+
+/* ---------- Ficha del spot ---------- */
+[data-tema="cantabrico"] .panel { background: var(--espuma); border-left: 0; padding: 22px 20px; box-shadow: -8px 0 24px rgba(10, 31, 51, 0.25); }
+[data-tema="cantabrico"] .panel h2 { font-family: var(--f-titulo); font-weight: 800; font-size: 32px; letter-spacing: -0.8px; color: var(--tinta); line-height: 1.05; }
+[data-tema="cantabrico"] .panel .coords { font-family: var(--f-texto); font-size: 12px; font-weight: 500; color: var(--tinta-2); }
+[data-tema="cantabrico"] .panel .cerrar {
+  width: 40px; height: 40px; padding: 0; margin: -6px -6px 0 0; border-radius: 50%;
+  background: var(--abismo); color: var(--espuma); font-size: 15px;
+}
+[data-tema="cantabrico"] #panelBtnFavorito { color: var(--coral-texto) !important; font-size: 22px !important; }
+[data-tema="cantabrico"] .panel .tarjeta { background: #FFFFFF; border-radius: 16px; padding: 12px 14px; box-shadow: 0 1px 0 var(--linea), 0 0 0 1px var(--linea); }
+[data-tema="cantabrico"] .panel .tarjeta .etq, [data-tema="cantabrico"] .panel .etq {
+  font-family: var(--f-texto); font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: var(--turquesa-texto);
+}
+[data-tema="cantabrico"] .panel .tarjeta .etq + .etq, [data-tema="cantabrico"] #panelOlaDir, [data-tema="cantabrico"] #panelVientoDir,
+[data-tema="cantabrico"] #panelMareaProxima, [data-tema="cantabrico"] #panelCorrienteDir, [data-tema="cantabrico"] #panelOlaNota,
+[data-tema="cantabrico"] #panelPresionNota {
+  color: var(--tinta-2); font-weight: 500; letter-spacing: 0; font-size: 12px;
+}
+[data-tema="cantabrico"] .panel .tarjeta .val {
+  font-family: var(--f-titulo); font-weight: 700; font-size: 24px !important; letter-spacing: -0.4px; color: var(--tinta);
+}
+/* Tarjeta del índice: el número manda. */
+[data-tema="cantabrico"] .panel .indice-box {
+  background: var(--abismo); border-radius: 20px; padding: 16px 16px 14px; position: relative; overflow: hidden;
+  background-image: radial-gradient(120% 80% at 100% 0%, rgba(25, 195, 177, 0.28), transparent 60%);
+}
+[data-tema="cantabrico"] .panel .indice-box .etq { color: var(--niebla); font-size: 11.5px; }
+[data-tema="cantabrico"] .panel .indice-box .num {
+  font-family: var(--f-titulo); font-weight: 800; font-size: 72px; line-height: 1; letter-spacing: -2px; margin: 6px 0 2px;
+}
+[data-tema="cantabrico"] .indice-box .num[data-nivel="bueno"] { color: var(--turquesa-vivo) !important; }
+[data-tema="cantabrico"] .indice-box .num[data-nivel="medio"] { color: var(--ambar) !important; }
+[data-tema="cantabrico"] .indice-box .num[data-nivel="malo"] { color: var(--coral) !important; }
+[data-tema="cantabrico"] .indice-box .num[data-nivel="sd"] { color: var(--niebla) !important; }
+[data-tema="cantabrico"] #panelIndiceNota, [data-tema="cantabrico"] #panelIndicePescaNota { color: var(--espuma); font-size: 12px !important; font-weight: 600; letter-spacing: 0; }
+[data-tema="cantabrico"] .indice-porque { color: #D7E6EE; font-size: 13px; }
+[data-tema="cantabrico"] .indice-porque li { padding: 3px 0; border-top: 1px solid rgba(159, 183, 201, 0.18); }
+[data-tema="cantabrico"] .indice-box .va-flecha { font-size: 12px; flex-basis: 22px; }
+[data-tema="cantabrico"] .indice-box .va-flecha.mas { color: var(--turquesa-vivo); }
+[data-tema="cantabrico"] .indice-box .va-flecha.menos { color: var(--coral); }
+[data-tema="cantabrico"] .va-flecha.mas { color: var(--turquesa-texto); }
+[data-tema="cantabrico"] .va-flecha.menos { color: var(--coral-texto); }
+[data-tema="cantabrico"] .indice-box .explicacion-indice { color: #D7E6EE; border-top-color: rgba(159, 183, 201, 0.3); }
+[data-tema="cantabrico"] .info-btn { background: var(--abismo-3); color: var(--turquesa-vivo); width: 20px; height: 20px; line-height: 20px; font-size: 12px; }
+
+/* Modalidades, días y botones */
+[data-tema="cantabrico"] .mod-tabs { border-bottom: 0; gap: 6px; background: #FFFFFF; padding: 4px; border-radius: 14px; box-shadow: 0 0 0 1px var(--linea); }
+[data-tema="cantabrico"] .mod-tabs [role="tab"] {
+  border: 0; border-radius: 10px; background: transparent; color: var(--tinta-2); font-family: var(--f-texto); font-weight: 600; font-size: 13px;
+}
+[data-tema="cantabrico"] .mod-tabs [role="tab"][aria-selected="true"] { background: var(--abismo); color: var(--espuma); box-shadow: none; }
+[data-tema="cantabrico"] .va-dias button { font-family: var(--f-texto); border-radius: 999px; padding: 6px 12px; font-weight: 600; }
+[data-tema="cantabrico"] .va-dias button.activo { background: var(--turquesa); border-color: var(--turquesa); color: var(--abismo); }
+[data-tema="cantabrico"] .va-hora { border-radius: 5px; }
+[data-tema="cantabrico"] .va-detalle, [data-tema="cantabrico"] .va-nota { font-family: var(--f-texto); }
+[data-tema="cantabrico"] .va-eje { font-family: var(--f-texto); font-weight: 600; }
+[data-tema="cantabrico"] .modal-estacion-contenido { border-radius: 20px; }
+[data-tema="cantabrico"] .modal-estacion-contenido h3 { font-family: var(--f-titulo); font-weight: 800; font-size: 22px; }
+[data-tema="cantabrico"] #modalBienvenida button.primario,
+[data-tema="cantabrico"] .confirmar-ubicacion-panel button.confirmar {
+  background: var(--coral); color: var(--abismo); border-radius: 999px; padding: 12px; font-family: var(--f-texto); font-weight: 800; font-size: 15px;
+  box-shadow: 0 4px 0 #C2412E;
+}
+[data-tema="cantabrico"] #modalBienvenida button.secundario { border-radius: 999px; padding: 11px; font-family: var(--f-texto); font-weight: 600; }
+[data-tema="cantabrico"] .confirmar-ubicacion-panel { border-radius: 16px; border-color: var(--turquesa); font-family: var(--f-texto); }
+[data-tema="cantabrico"] .confirmar-ubicacion-panel .titulo { font-family: var(--f-titulo); font-weight: 800; font-size: 18px; }
+
+@media (max-width: 720px) {
+  [data-tema="cantabrico"] header { padding: 8px 14px; }
+  [data-tema="cantabrico"] header h1 { font-size: 25px; }
+  [data-tema="cantabrico"] .marca-tema { width: 32px; height: 32px; }
+  [data-tema="cantabrico"] header .fecha { font-size: 11.5px; }
+  [data-tema="cantabrico"] .panel { border-top: 0; border-radius: 24px 24px 0 0; box-shadow: 0 -10px 30px rgba(10, 31, 51, 0.35); padding-top: 26px; }
+  [data-tema="cantabrico"] .panel::before {
+    content: ""; position: absolute; top: 9px; left: 50%; width: 44px; height: 5px; margin-left: -22px;
+    border-radius: 3px; background: var(--linea);
+  }
+  [data-tema="cantabrico"] .panel h2 { font-size: 30px; }
+  [data-tema="cantabrico"] .tabs-nav a { font-size: 14px; gap: 6px; }
+}

@@ -5,6 +5,32 @@ cambian las convenciones — no es un historial (para eso está `ROBOT.md`).
 Si algo de aquí queda desactualizado, corrígelo en el momento en que lo
 detectes, no lo dejes para luego.
 
+## Propuestas de diseño con `?tema=` (2026-10-08, rama `claude/diseno-propuestas`)
+
+Mikel: "hay que hacer esto visualmente atractivo; la letra es fría y los
+colores, típicos de Claude". Tres direcciones para comparar sobre la página
+real, sin decidir todavía: `?tema=cantabrico` (azul abisal + turquesa +
+coral, Bricolage Grotesque/Figtree), `?tema=amanecer` (degradado de amanecer
+sobre azul profundo, Unbounded/Manrope) y `?tema=pescador` (amarillo de
+chubasquero + azul marino, estilo pegatina, Baloo 2/Nunito).
+
+- Cada tema es un CSS autónomo en `assets/css/tema-<nombre>.css` que va por
+  encima de los estilos de siempre (`[data-tema=...]`). Lo carga un `<script>`
+  al final del `<head>` de `index.html`, que lo recuerda en `localStorage`
+  (`costaviva-tema`); `?tema=actual` lo quita. Sin `?tema` la página no cambia.
+- Ganchos añadidos para los temas, inertes en el aspecto de siempre: la marca
+  SVG `.marca-tema` de la cabecera (oculta por defecto), `data-nivel`
+  (`bueno`/`medio`/`malo`/`sd`) en `#panelIndice` y `#panelIndicePesca`, y
+  `className: "capa-base"` en las teselas base de Esri (para avivar solo el
+  mapa base con `filter`, nunca las capas de datos como lluvia o batimetría).
+- **Ojo, hallazgo de paso**: el índice de pesca se pinta con
+  `colorIndiceMarCss` (verde = bajo, óxido = alto), pensado para el índice de
+  mar, donde alto = mar movido. En el de pesca alto = mejor, así que un 77
+  sale en óxido, el color de "malo". Los temas lo corrigen con `data-nivel`;
+  el aspecto de siempre sigue igual hasta que Mikel elija.
+- Cuando Mikel elija una dirección, pasarla a los estilos base de las 5
+  páginas y quitar el cargador y los temas que sobren.
+
 ## Oleaje costero: mar abierto frente a "en la playa" (2026-10-08)
 
 **Caso real (Mikel, 2026-10-08):** Hondarribia salía con "3.7–4.5 m" y su
