@@ -83,6 +83,25 @@ jobs:
             exit 1
           fi
 
+      # Desde 2026-10-08 la identificación por foto exige suscripción
+      # (identificar-captura.js). La cuenta de prueba no paga: se le da
+      # acceso permanente aquí, con su email del secret (nunca escrito en el
+      # repo). Idempotente: si ya está, no cambia nada.
+      - name: Acceso permanente para la cuenta de prueba
+        run: |
+          email=$(printf '%s' "$SMOKE_TEST_EMAIL" | tr '[:upper:]' '[:lower:]')
+          codigo=$(curl -sS -o /tmp/acceso.json -w "%{http_code}" -X POST \
+            "$SUPABASE_URL/rest/v1/accesos_permanentes?on_conflict=email" \
+            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
+            -H "Content-Type: application/json" -H "Prefer: resolution=ignore-duplicates,return=minimal" \
+            -d "{\"email\":\"$email\",\"motivo\":\"Cuenta del smoke test (identificación por foto, 2026-10-08)\"}")
+          if [ "$codigo" -ge 300 ]; then
+            echo "::warning::No se pudo asegurar el acceso permanente de la cuenta de prueba (HTTP $codigo)."
+            cat /tmp/acceso.json
+          else
+            echo "Acceso permanente de la cuenta de prueba: OK (HTTP $codigo)."
+          fi
+
       - name: Genera una sesión para la cuenta de prueba (sin password, vía API admin)
         id: login
         run: |
