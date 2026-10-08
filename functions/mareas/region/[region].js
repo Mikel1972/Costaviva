@@ -116,6 +116,7 @@ export async function onRequestGet(context) {
         })
         .join("\n      ")}
     </ul>
+    <p class="cta-sub"><a href="/spots/region/${region.slug}">Qué se pesca en ${nombre}: especies y temporada por spot →</a></p>
   </div>
 </body>
 </html>`;

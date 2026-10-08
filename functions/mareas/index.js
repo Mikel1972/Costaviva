@@ -87,6 +87,8 @@ export async function onRequestGet(context) {
       ${REGIONES.map((r) => `<li><a href="/mareas/region/${r.slug}">${escaparHtml(r.nombre)} (${r.spots.size})</a></li>`).join("\n      ")}
     </ul>
 
+    <p class="intro">¿Qué se pesca en cada sitio? <a href="/spots">Spots de pesca</a> y <a href="/especies">especies, tallas y temporada</a>.</p>
+
     <h2>Todos los spots</h2>
     <ul class="lista">
       ${spots.map((s) => `<li><a href="/mareas/${s.slug}">${escaparHtml(s.nombre)}</a></li>`).join("\n      ")}

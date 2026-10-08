@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 <title>Costaviva, pesca en tiempo real | Mareas y previsión marina</title>
 <meta name="description" content="Previsión marina en tiempo real: mareas, oleaje, viento y actividad de los peces para planificar tu salida de pesca en España y Portugal." />
+<link rel="canonical" href="https://costaviva.org/" />
 <link rel="manifest" href="manifest.json" />
 <link rel="icon" href="icon.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="icon.svg" />
@@ -795,8 +796,13 @@
 </head>
 <body>
 
-<div id="comprobandoAcceso" style="position:fixed; inset:0; background:var(--fondo); z-index:9999; display:flex; align-items:center; justify-content:center; color:var(--tinta-2); font-family:var(--f-texto); font-size:13px;">
-  Comprobando acceso…
+<div id="comprobandoAcceso" style="position:fixed; inset:0; background:var(--fondo); z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; padding:16px; text-align:center; color:var(--tinta-2); font-family:var(--f-texto); font-size:13px;">
+  <!-- Portada en HTML para los buscadores (2026-10-08): mientras se
+       comprueba la sesión, y para quien no ejecuta JavaScript, la portada
+       dice qué es Costaviva y enlaza a las páginas públicas. -->
+  <p style="margin:0;">Comprobando acceso…</p>
+  <p style="margin:0; max-width:420px;"><strong>Costaviva</strong>: pesca en tiempo real en España y Portugal. Mareas, oleaje, viento, índice de pesca por spot, especies de temporada y diario de pesca.</p>
+  <nav aria-label="Páginas públicas" style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;"><a href="/spots">Spots de pesca</a><a href="/especies">Especies</a><a href="/mareas">Mareas hoy</a></nav>
 </div>
 <script type="module">
   import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -818,7 +824,7 @@
 
   const { data } = await supabase.auth.getSession();
   if (!data.session) {
-    window.location.href = "/login.html";
+    window.location.href = "/login"; // directo, sin el 308 de /login.html
   } else {
     // Paywall (2026-09-15, pedido explícito del usuario): 7 días de
     // prueba desde el alta, luego bloqueo total sin suscripción activa
