@@ -10,7 +10,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import {
   MODALIDADES, aplicaModalidad, especiesParaModalidad, especiesDeTemporada, cebosParaRegion,
-  modalidadesDeCebo, calcularVentana, reglasParaModalidad, normativaModalidad, solDelDia, minutosMadrid,
+  modalidadesDeCebo, calcularVentana, reglasParaModalidad, normativaModalidad, solDelDia, minutosMadrid, consejoProfundidad,
 } from "../assets/js/ventana-actividad.js";
 import { elegirEspeciePost, modalidadDelPost } from "../scripts/marketing/especie-post.mjs";
 
@@ -223,4 +223,62 @@ test("post de Instagram: por defecto de costa, nunca con el bonito; en embarcaci
   const salen = new Set();
   for (let dia = 0; dia < 20; dia++) salen.add(elegirEspeciePost(DATOS, "cantabrico", 8, dia, { modalidad: "embarcacion" })?.especie.id);
   assert.ok(salen.has("bonito_norte"));
+});
+
+// Especies añadidas el 2026-10-08 ("¿y el resto de especies? rodaballo, cabracho…").
+test("especies nuevas: cada una en sus pestañas; las de mar adentro nunca en 'Desde costa'", () => {
+  const MAR_ADENTRO = ["besugo", "merluza", "gallo", "rape", "atun_rojo", "llampuga"];
+  for (const region of DATOS.regiones) {
+    const costa = ids(especiesParaModalidad(DATOS, region, "costa"));
+    for (const id of MAR_ADENTRO) assert.ok(!costa.includes(id), `${id} desde costa en ${region}`);
+    for (let mes = 1; mes <= 12; mes++) {
+      const tc = ids(especiesDeTemporada(DATOS, region, mes, "costa"));
+      for (const id of MAR_ADENTRO) assert.ok(!tc.includes(id), `${id} costa ${region} ${mes}`);
+    }
+    assert.ok(!ids(especiesParaModalidad(DATOS, region, "submarina")).includes("atun_rojo"));
+  }
+  const emb = ids(especiesParaModalidad(DATOS, "cantabrico", "embarcacion"));
+  for (const id of ["merluza", "besugo", "gallo", "rape", "rodaballo", "remol", "maragota"]) assert.ok(emb.includes(id), `${id} embarcación`);
+  const med = (m) => ids(especiesParaModalidad(DATOS, "mediterraneo", m));
+  for (const id of ["cabracho", "pez_limon", "sargo_picudo", "mojarra"]) assert.ok(med("submarina").includes(id), `${id} submarina`);
+  for (const id of ["herrera", "raspallon", "oblada", "anjova", "mojarra"]) assert.ok(med("costa").includes(id), `${id} costa`);
+  // El mero no sale en submarina hasta verificar la norma de cada comunidad.
+  assert.ok(!med("submarina").includes("mero"));
+  assert.ok(ids(especiesParaModalidad(DATOS, "canarias", "embarcacion")).includes("abade"));
+});
+
+test("Mikel (Bizkaia): rodaballo desde playa oct-dic y rayas y pintarroja desde costa nov-ene en el Cantábrico", () => {
+  for (const mes of [10, 11, 12]) assert.ok(ids(especiesDeTemporada(DATOS, "cantabrico", mes, "costa")).includes("rodaballo"), `rodaballo ${mes}`);
+  for (const mes of [11, 12, 1]) {
+    const c = ids(especiesDeTemporada(DATOS, "cantabrico", mes, "costa"));
+    assert.ok(c.includes("raya") && c.includes("pintarroja"), `mes ${mes}`);
+  }
+  assert.ok(!ids(especiesDeTemporada(DATOS, "cantabrico", 7, "costa")).includes("pintarroja"));
+  assert.ok(!("freza" in especie("rodaballo")), "Mikel: sin freza en la ficha del rodaballo");
+  for (const id of ["rodaballo", "raya", "pintarroja"]) assert.ok(especie(id).modalidades.costa.fuentes.includes("mikel_campo_bizkaia"));
+});
+
+test("atún rojo: nunca de temporada (solo captura y suelta en España, prohibido en Portugal) y la norma se ve en embarcación", () => {
+  for (const region of DATOS.regiones) {
+    for (let mes = 1; mes <= 12; mes++) {
+      for (const m of MODALIDADES) assert.ok(!ids(especiesDeTemporada(DATOS, region, mes, m)).includes("atun_rojo"), `${region} ${mes} ${m}`);
+    }
+  }
+  const n = normativaModalidad(DATOS, "embarcacion", "mediterraneo", { especie: especie("atun_rojo") });
+  assert.ok(n.especie.some((x) => /captura y suelta/.test(x.texto)));
+  const pv = normativaModalidad(DATOS, "embarcacion", "cantabrico", { euskadi: true, especie: especie("atun_rojo") });
+  assert.ok(pv.especie.some((x) => x.jurisdiccion === "ES-PV" && /prohibida/.test(x.texto)));
+});
+
+test("profundidad por temporada (Mikel, embarcación): pargo, dorada y dentón; consejo corto y solo en embarcación", () => {
+  for (const id of ["bocinegro", "dorada", "denton"]) {
+    assert.equal(consejoProfundidad(especie(id), "embarcacion"), "Verano: a unos 20 m · Invierno: más profundo");
+    assert.equal(consejoProfundidad(especie(id), "costa"), null);
+    const p = especie(id).modalidades.embarcacion.profundidad_temporada;
+    assert.ok(p.fuentes.every((f) => DATOS.fuentes[f]));
+  }
+  assert.equal(consejoProfundidad(especie("lubina"), "embarcacion"), null);
+  const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
+  assert.ok(/consejoProfundidad\(especie, vaEstado\.modalidad\)/.test(html));
+  assert.ok(!/hondo/.test(JSON.stringify(DATOS)));
 });

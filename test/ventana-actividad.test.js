@@ -197,8 +197,9 @@ test("especies.json: meses válidos y regiones conocidas", () => {
   }
 });
 
-test("especies.json: las 29 especies tienen cebos, cada uno con fuente o criterio", () => {
-  assert.equal(DATOS.especies.length, 29); // 29.ª: rodaballo (2026-10-08, regla de mareas vivas de Mikel)
+test("especies.json: todas las especies (28 originales + 25 del 2026-10-08, rodaballo incluido) tienen cebos, cada uno con fuente o criterio", () => {
+  assert.ok(DATOS.especies.length >= 53, `solo ${DATOS.especies.length} especies`);
+  assert.equal(new Set(DATOS.especies.map((e) => e.id)).size, DATOS.especies.length, "ids repetidos");
   for (const e of DATOS.especies) {
     assert.ok(Array.isArray(e.cebos) && e.cebos.length >= 1, `${e.id} sin cebos`);
     for (const c of e.cebos) {

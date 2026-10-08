@@ -1291,6 +1291,42 @@ pestaña en la hora actual. Hereda la vigencia por spot del punto anterior
   - La ventana pide además `precipitation` horaria a Open-Meteo (para la
     lluvia previa de la submarina). Tests: `test/modalidades.test.js` (en
     `tests.yml`).
+- **25 especies más (2026-10-08, pedido de Mikel: "¿y el resto de especies?
+  rodaballo, cabracho…")**: rodaballo, rémol, cabracho, rascacio, maragota,
+  besugo, aligote, mero, gallo, raya, merluza, rape, chopa, mojarra, herrera,
+  raspallón, oblada, sargo picudo, pez limón, bacoreta, atún rojo, llampuga,
+  abade, anjova y pintarroja (53 en total). Tallas del RD 560/1995, Reg. (UE)
+  2019/1241 y la tabla DGRM; nombres del anexo I del RD 347/2011, la DGRM y la
+  guía de especies objetivo de la Generalitat (`gencat_guia_pr_2021`, licencia
+  por confirmar). Presencia por región: la especie figura en la tabla de tallas
+  de ese caladero, en la guía catalana (Mediterráneo) o tiene 20 o más
+  registros de 2 o más conjuntos CC BY/CC0 en OBIS (`obis_cc_by`); los meses
+  son heurísticos (residentes: todo el año). Normas: atún rojo solo captura y
+  suelta (RD 46/2019 art. 7; Euskadi y Portugal lo prohíben) → veda todo el
+  año, nunca de temporada; besugo, merluza y llampuga necesitan autorización
+  (anexo II RD 347/2011); mero y rayas mosaica/bramante prohibidos en
+  Portugal; el mero no sale en submarina hasta verificar cada comunidad.
+  Datos de campo de Mikel en Bizkaia (`mikel_campo_bizkaia`, confianza
+  media): rodaballo desde playa oct-dic, mejor con mareas
+  vivas (coeficientes altos, no oleaje: la regla de coeficiente la pone el
+  motor del índice); rayas y pintarroja desde costa nov-ene (Armintza); pargo
+  (`bocinegro`), dorada y dentón en verano a unos 20 m y en invierno más
+  profundo (`modalidades.embarcacion.profundidad_temporada`, consejo en la
+  pestaña Embarcación con `consejoProfundidad`). La anjova entra en
+  `@depredadores_costeros`.
+- **Presencia por región: criterios A/B/C (2026-10-08)** (descritos en la
+  fuente `obis_cc_by` del JSON). A: OBIS con 20 o más registros de 2 o más
+  conjuntos CC BY/CC0. B: talla en la tabla oficial del caladero + al menos 1
+  registro libre en OBIS. C: publicación regional (guía oficial, estudio CC BY,
+  observación de Mikel) o un conjunto científico CC BY/CC0 con 20 o más
+  registros. Con B se completaron especies antiguas (pargo/`bocinegro` en
+  Cantábrico, Mediterráneo, Canarias, Portugal y Azores; dorada, salmonete,
+  pulpo, lenguado…); maragota en Galicia (estudio IIM-CSIC, CC BY) y oblada
+  en Canarias (CC0). **No se usan los rangos de FishBase ni de la Lista Roja
+  de la UICN** aunque se pidan: sus condiciones prohíben el uso comercial.
+  Pulpo en el Mediterráneo peninsular queda fuera a propósito: la pesca
+  recreativa del pulpo en aguas exteriores del Mediterráneo andaluz está
+  prohibida (Orden APA/973/2002, según la guía catalana; sin leer en el BOE).
 - **Ojo, Open-Meteo**: la API gratuita es solo para uso no comercial; toda la
   app (no solo esto) la usa. Pendiente de decidir con Mikel (plan comercial de
   Open-Meteo o alternativa).
