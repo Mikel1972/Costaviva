@@ -571,7 +571,7 @@ atribución; nunca se inventa un dato (lo que falta sale `null` + `aviso`).
   botones en la columna de ríos/boyas, leyenda con la explicación ("más
   clorofila = más plancton = más alimento para peces"), toque en el mapa =
   valor, y atribución de Copernicus + DOI en el mapa y en la leyenda. Botones
-  en la columna B debajo de Sustr. (322/384 px; 290/346 en móvil), estilo de
+  en la columna B debajo de Boyas (260/322 px; 234/290 en móvil), estilo de
   `.boyas-toggle`; la imagen va en `tilePane` (entre el mapa base y los
   marcadores); leyenda con variables de `costaviva.css`. Una capa a la vez; más vieja de 7 días (clorofila) o 3 (temperatura), no se
   pinta.
@@ -1819,9 +1819,8 @@ franja costera. Sin IA y sin coste.
   arena · orilla de acantilado" (`textoFondo`, sin números). Punto propio: el
   dato del spot fijo a 1,5 km o menos; si no hay, se pregunta en vivo a
   EMODnet el sustrato del propio punto (GetFeatureInfo, sin orilla).
-- **Capa "Sustrato"** (botón 🪨 "Sustr." en la columna de Ríos/Boyas, debajo de Boyas;
-  ojo: "Fondo" es la batimetría e "Isób." las isóbatas de la rama
-  `claude/batimetria`): WMS `eusm_subs_group` de EMODnet Seabed Habitats (el
+- **Capa "Tipo de fondo"** ("Tipo de fondo" en el selector del botón único
+  "Fondo", ver "Botón único Fondo" en la sección de Batimetría): WMS `eusm_subs_group` de EMODnet Seabed Habitats (el
   grupo cambia solo de simplificación según la escala: costa, plataforma y
   talud), opacidad 0,6, desde zoom 7, leyenda propia (roca, arena, grava,
   fango, Posidonia, sin clasificar) y atribución CC BY. La CSP ya admite
@@ -1999,7 +1998,7 @@ PGRST204.
 `datos-robots/fuentes/BATIMETRIA.md`): **EMODnet Bathymetry DTM 2024**, CC BY
 4.0 (uso comercial con atribución; DOI 10.12770/cf51df64-56f9-4a99-b1aa-36b8d7b743a1),
 y de respaldo **GEBCO_2026** (dominio público, atribución pedida, "no para
-navegar"). Atribución visible en el mapa al encender "Fondo" o las isóbatas.
+navegar"). Atribución visible en el mapa al encender las isóbatas.
 No quitarla.
 
 **Profundidad por spot** (`assets/datos/profundidad-spots.json`, sin IA):
@@ -2048,9 +2047,33 @@ WMS `emodnet:contours` no tiene la de 20 m. Colores discretos de claro a
 oscuro y leyenda abajo a la izquierda; etiquetas "200 m" en puntos
 precalculados (`etiquetas` de cada nivel) que caen en pantalla, las
 profundas desde zoom 6 y las someras desde zoom 10, 120 como mucho. Se
-encienden solas en la pestaña Embarcación (`porModalidad`) y a mano con el
-botón "Isób."; cada fichero se pide la primera vez que hace falta. Tests:
-`test/batimetria.test.js` (en tests.yml).
+encienden solas en la pestaña Embarcación (`porModalidad`) y a mano con
+"Profundidad" en el selector del botón "Fondo"; cada fichero se pide la
+primera vez que hace falta. Tests: `test/batimetria.test.js` (en tests.yml).
+
+**Botón único "Fondo" (2026-10-08, Mikel: "Fondos e Isób. muestran lo
+mismo")**. Antes había tres botones: "Fondo" (WMS `emodnet:mean` estilo
+`atlas_land` + `emodnet:contours` al 75 %), "Isób." y "Sustr.". Comprobado
+pidiendo las imágenes al WMS: el "Fondo" viejo era el mismo DTM 2024 que el
+relieve del mapa base (`emodnet:mean_atlas_land`, que además lleva
+sombreado y por eso se ven los cañones), en tinte plano, más las isóbatas de
+EMODnet (sin la de 20 m, peor que las nuestras). No añadía nada: quitado
+(solo se veía por encima de zoom 11, donde el DTM de ~115 m ya no da más
+detalle). Ahora un solo botón 📏 "Fondo" (columna A, donde estaba) abre un
+selector Amanecer (`assets/js/selector-fondo.js`, test
+`test/selector-fondo.test.js`) con dos casillas, "Profundidad" (isóbatas +
+leyenda) y "Tipo de fondo" (sustrato + leyenda), y "Ninguno". **Se pueden
+marcar las dos**: líneas finas encima de manchas al 60 % se leen bien y es
+justo la pregunta del pescador ("¿roca a 30 m?"). Tocar fuera o Escape lo
+cierra; el botón sale activo si hay alguna capa y su `aria-label` dice
+cuáles. Las capas exponen `visible()` / `ponerVisible(v)`;
+`capa-batimetria.js` avisa con `onCambio` cuando la pestaña Embarcación
+enciende o apaga las isóbatas, y el selector se refresca. Seis botones por
+columna (Clorof. y T. agua suben a 260/322 px). Leyendas del fondo: abajo a
+la izquierda por encima del ⓘ en escritorio; **en el móvil arriba a la
+izquierda** (`esquinaLeyenda`), porque abajo las tapaban los créditos.
+Analítica: `ver_capa_isobatas` y `ver_capa_sustrato` (ya no hay
+`ver_capa_batimetria`).
 
 ## Triggers / rutinas automatizadas
 

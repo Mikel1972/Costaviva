@@ -297,12 +297,13 @@
      etiqueta legible de 10px, separados 8px; el activo, con el degradado.
      Columna A (right:12px, pegada al borde): capas de referencia/
      ambiente, de arriba a abajo por lo crítico/frecuente que es cada
-     una — rayos (seguridad), luna, batimetría, lluvia, estaciones,
-     viento (la más nueva, al final).
+     una — rayos (seguridad), luna, fondo (abre el selector de
+     profundidad / tipo de fondo, assets/js/selector-fondo.js), lluvia,
+     estaciones, viento (la más nueva, al final).
      Columna B (right:74px): capas de "cosas en el mapa". Spots + "+"
      van pegados como un único grupo visual (el "+" solo visible con
      spots encendido, ver JS) — debajo, ríos y boyas. */
-  .rayos-toggle, .luna-toggle, .batimetria-toggle, .nubes-toggle, .estaciones-toggle, .viento-toggle,
+  .rayos-toggle, .luna-toggle, .fondo-toggle, .nubes-toggle, .estaciones-toggle, .viento-toggle,
   .rios-toggle, .boyas-toggle, .clorofila-toggle, .tempagua-toggle {
     position: absolute; z-index: 502;
     width: 54px; height: 54px; border-radius: 50%;
@@ -310,24 +311,53 @@
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
     cursor: pointer; font-size: 19px; padding: 2px 0; box-shadow: 0 6px 16px rgba(11,30,63,0.28);
   }
-  .rayos-toggle .capa-label, .luna-toggle .capa-label, .batimetria-toggle .capa-label,
+  .rayos-toggle .capa-label, .luna-toggle .capa-label, .fondo-toggle .capa-label,
   .nubes-toggle .capa-label, .estaciones-toggle .capa-label, .viento-toggle .capa-label,
   .rios-toggle .capa-label, .boyas-toggle .capa-label {
     font-size: 10px; font-family: var(--f-texto); font-weight: 800; line-height: 1; color: var(--tinta-2);
   }
-  .rayos-toggle.activo .capa-label, .luna-toggle.activo .capa-label, .batimetria-toggle.activo .capa-label,
+  .rayos-toggle.activo .capa-label, .luna-toggle.activo .capa-label, .fondo-toggle.activo .capa-label,
   .nubes-toggle.activo .capa-label, .estaciones-toggle.activo .capa-label, .viento-toggle.activo .capa-label,
   .rios-toggle.activo .capa-label, .boyas-toggle.activo .capa-label { color: var(--sobre-acento); }
   .rayos-toggle { top: 12px; right: 12px; }
   .luna-toggle { top: 74px; right: 12px; }
-  .batimetria-toggle { top: 136px; right: 12px; }
+  .fondo-toggle { top: 136px; right: 12px; }
   .nubes-toggle { top: 198px; right: 12px; }
   .estaciones-toggle { top: 260px; right: 12px; }
   .viento-toggle { top: 322px; right: 12px; }
   .rios-toggle { top: 136px; right: 74px; }
   .boyas-toggle { top: 198px; right: 74px; }
-  .isobatas-toggle { top: 384px; right: 12px; } /* isóbatas 20-5000 m (assets/js/capa-batimetria.js); reusa el estilo de .viento-toggle */
-  .sustrato-toggle { top: 260px; right: 74px; } /* tipo de fondo (assets/js/capa-tipo-fondo.js); reusa el estilo de .boyas-toggle */
+  /* Selector del botón "Fondo" (2026-10-08, Mikel: "Fondos e Isób. muestran
+     lo mismo"): un solo botón en vez de Fondo/Isób./Sustr. Sale a la
+     izquierda de las dos columnas (right 138 = 74 + 54 + 10, como la luna),
+     a la altura del botón, por encima de las leyendas de Leaflet (z 1000) y
+     por debajo del menú inferior (1100). Filas de 52px para el pulgar. */
+  .fondo-selector {
+    position: absolute; top: 136px; right: 138px; z-index: 1050; width: 232px;
+    background: var(--superficie); color: var(--tinta); border-radius: 16px; padding: 10px;
+    font-family: var(--f-texto); box-shadow: 0 10px 28px rgba(11,30,63,0.30);
+  }
+  .fondo-selector[hidden] { display: none; }
+  /* Leyendas de Leaflet abajo a la izquierda (profundidad, tipo de fondo,
+     viento): por encima del botón ⓘ (bottom 16 + 44), no encima de él. En el
+     móvil las del fondo van arriba (esquinaLeyenda en capa-batimetria.js). */
+  @media (min-width: 721px) { .leaflet-bottom.leaflet-left { bottom: 56px; } }
+  .fondo-selector .titulo { font-family: var(--f-titulo); font-size: 12px; color: var(--tinta-2); margin: 2px 4px 8px; }
+  .fondo-selector .opcion {
+    display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 6px 10px; margin-bottom: 6px;
+    border: 1.5px solid var(--linea); border-radius: 12px; cursor: pointer;
+  }
+  .fondo-selector .opcion:has(input:checked) { border-color: var(--acento); background: var(--superficie-2); }
+  .fondo-selector .opcion input { width: 20px; height: 20px; margin: 0; accent-color: var(--acento); flex: none; }
+  .fondo-selector .opcion .ico { font-size: 18px; width: 22px; text-align: center; flex: none; }
+  .fondo-selector .opcion .txt { display: flex; flex-direction: column; line-height: 1.25; }
+  .fondo-selector .opcion b { font-size: 13.5px; font-weight: 800; }
+  .fondo-selector .opcion small { font-size: 11px; color: var(--tinta-2); font-weight: 500; }
+  .fondo-selector .ninguno {
+    width: 100%; min-height: 44px; border-radius: 12px; border: 1.5px solid var(--linea);
+    background: transparent; color: var(--tinta-2); font: 700 13px var(--f-texto); cursor: pointer;
+  }
+  .fondo-selector .ninguno:disabled { opacity: 0.5; cursor: default; }
   .leyenda-sustrato {
     background: var(--superficie); color: var(--tinta); border: 1px solid var(--linea); border-radius: 12px;
     padding: 7px 10px; font: 600 11px/1.4 var(--f-texto); max-width: 170px; box-shadow: 0 6px 16px rgba(11,30,63,0.18);
@@ -335,10 +365,10 @@
   .leyenda-sustrato .titulo { font-family: var(--f-titulo); font-size: 11px; margin-bottom: 3px; }
   .leyenda-sustrato i { display: inline-block; width: 10px; height: 10px; margin-right: 6px; vertical-align: -1px; border-radius: 2px; box-shadow: 0 0 0 1px var(--linea); }
   .leyenda-sustrato .nota { margin-top: 3px; color: var(--tinta-2); font-size: 10px; font-weight: 500; }
-  /* Capas de mar de Copernicus (2026-10-08): debajo de Sustr. en la columna
-     B; reusan el estilo de .boyas-toggle (como Sustr.). */
-  .clorofila-toggle { top: 322px; right: 74px; }
-  .tempagua-toggle { top: 384px; right: 74px; }
+  /* Capas de mar de Copernicus (2026-10-08): debajo de Boyas en la columna
+     B; reusan el estilo de .boyas-toggle. */
+  .clorofila-toggle { top: 260px; right: 74px; }
+  .tempagua-toggle { top: 322px; right: 74px; }
   /* Spots + "+" pegados como un único grupo de 2 (pedido explícito del
      usuario: el botón de añadir ubicación debe verse asociado al de
      spots, no como una capa más suelta) — sin hueco entre los dos,
@@ -354,7 +384,7 @@
   }
   .spots-toggle { top: 12px; right: 74px; }
   .anadir-ubicacion-toggle { top: 74px; right: 74px; }
-  .batimetria-toggle.activo, .nubes-toggle.activo, .estaciones-toggle.activo, .viento-toggle.activo,
+  .fondo-toggle.activo, .nubes-toggle.activo, .estaciones-toggle.activo, .viento-toggle.activo,
   .spots-toggle.activo, .rios-toggle.activo, .boyas-toggle.activo, .anadir-ubicacion-toggle.activo, .rayos-toggle.activo,
   .luna-toggle.activo {
     background: var(--degradado-fuerte); color: var(--sobre-acento);
@@ -597,30 +627,31 @@
     .leyenda-toggle { bottom: 10px; left: 10px; width: 40px; height: 40px; }
     .leyenda { bottom: 10px; left: 56px; }
 
-    /* Botones de capa algo más pequeños en el móvil: 7 en la columna A
-       (con Isób.) caben sin bajar hasta la costa. */
-    .rayos-toggle, .luna-toggle, .batimetria-toggle, .nubes-toggle, .estaciones-toggle, .viento-toggle,
+    /* Botones de capa algo más pequeños en el móvil: 6 por columna. */
+    .rayos-toggle, .luna-toggle, .fondo-toggle, .nubes-toggle, .estaciones-toggle, .viento-toggle,
     .rios-toggle, .boyas-toggle, .spots-toggle, .anadir-ubicacion-toggle { width: 48px; height: 48px; font-size: 17px; }
     .rayos-toggle { top: 10px; right: 10px; }
     .luna-toggle { top: 66px; right: 10px; }
-    .batimetria-toggle { top: 122px; right: 10px; }
+    .fondo-toggle { top: 122px; right: 10px; }
     .nubes-toggle { top: 178px; right: 10px; }
     .estaciones-toggle { top: 234px; right: 10px; }
     .viento-toggle { top: 290px; right: 10px; }
-    .isobatas-toggle { top: 346px; right: 10px; }
     .spots-toggle { top: 10px; right: 66px; }
     .anadir-ubicacion-toggle { top: 66px; right: 66px; }
     .rios-toggle { top: 122px; right: 66px; }
     .boyas-toggle { top: 178px; right: 66px; }
-    .sustrato-toggle { top: 234px; right: 66px; }
-    .clorofila-toggle { top: 290px; right: 66px; }
-    .tempagua-toggle { top: 346px; right: 66px; }
+    .clorofila-toggle { top: 234px; right: 66px; }
+    .tempagua-toggle { top: 290px; right: 66px; }
+    .fondo-selector { top: 122px; right: 124px; width: 226px; }
     /* En el móvil, abajo a la izquierda y compacta (la explicación, plegada). */
     .capa-mar-panel { left: 10px; right: auto; bottom: 118px; width: 196px; padding: 8px 10px; }
     .capa-mar-panel .credito { font-size: 8.5px; }
     /* Leyenda del sustrato compacta, por encima del botón ⓘ y de los créditos. */
-    .leyenda-sustrato { font-size: 10px; padding: 5px 8px; max-width: 128px; margin-bottom: 52px !important; }
-    .leyenda-sustrato .titulo { font-size: 10px; }
+    /* Arriba a la izquierda, debajo del zoom (capa-tipo-fondo.js): abajo la
+       tapaban los créditos. En dos columnas para que, con "Profundidad" y
+       "Tipo de fondo" a la vez, las dos leyendas quepan sin tapar spots. */
+    .leyenda-sustrato { display: grid; grid-template-columns: auto auto; column-gap: 12px; font-size: 10px; padding: 5px 8px; max-width: none; }
+    .leyenda-sustrato .titulo { font-size: 10px; grid-column: 1 / -1; }
     .leyenda-sustrato .nota { display: none; }
     .viento-slider-panel { right: 124px; }
     .luna-panel { right: 124px; }
@@ -872,16 +903,15 @@
         <div class="nota">Para el centro del mapa actual. Azimut y altura: cálculo propio (±1°). Horas y fase: Observatorio Naval de EE.UU.</div>
       </div>
     </div>
-    <button class="batimetria-toggle" id="toggleBatimetria" title="Batimetría (profundidad del mar)" aria-label="Mostrar/ocultar batimetría">📏<span class="capa-label">Fondo</span></button>
+    <button class="fondo-toggle" id="toggleFondo" title="Fondo del mar: profundidad y tipo de fondo" aria-label="Fondo del mar: elegir capas">📏<span class="capa-label">Fondo</span></button>
+    <div class="fondo-selector" id="fondoSelector" role="group" aria-label="Capas del fondo del mar" hidden></div>
     <button class="nubes-toggle" id="toggleNubes" title="Radar de lluvia de las últimas 3 horas, animado (EUMETNET OPERA)" aria-label="Mostrar/ocultar la lluvia de las últimas 3 horas">☁️<span class="capa-label">Lluvia</span></button>
     <button class="anadir-ubicacion-toggle" id="toggleAnadirUbicacion" title="Añadir una ubicación nueva" aria-label="Añadir ubicación">➕</button>
     <button class="estaciones-toggle" id="toggleEstaciones" title="Estaciones meteorológicas reales (AEMET)" aria-label="Mostrar/ocultar estaciones meteorológicas">🌧<span class="capa-label">Estac.</span></button>
     <button class="viento-toggle" id="toggleViento" title="Viento en directo, estilo Windy (partículas animadas)" aria-label="Mostrar/ocultar capa de viento">💨<span class="capa-label">Viento</span></button>
-    <button class="viento-toggle isobatas-toggle" id="toggleIsobatas" title="Isóbatas de 20 a 5000 m (EMODnet). Se encienden solas en la pestaña Embarcación" aria-label="Mostrar/ocultar isóbatas de 20 a 5000 m" aria-pressed="false">〰<span class="capa-label">Isób.</span></button>
     <button class="spots-toggle activo" id="toggleSpots" title="Spots" aria-label="Mostrar/ocultar spots">📍</button>
     <button class="rios-toggle" id="toggleRios" title="Ríos" aria-label="Mostrar/ocultar ríos">〰️<span class="capa-label">Ríos</span></button>
     <button class="boyas-toggle" id="toggleBoyas" title="Boyas reales (Puertos del Estado vía Copernicus Marine)" aria-label="Mostrar/ocultar boyas">⚓<span class="capa-label">Boyas</span></button>
-    <button class="boyas-toggle sustrato-toggle" id="toggleSustrato" title="Tipo de fondo marino: roca, arena, fango, Posidonia (EMODnet). No es la batimetría" aria-label="Mostrar/ocultar el tipo de fondo marino" aria-pressed="false">🪨<span class="capa-label">Sustr.</span></button>
     <button class="boyas-toggle clorofila-toggle" id="toggleClorofila" title="Clorofila del mar (alimento): satélite de Copernicus" aria-label="Mostrar/ocultar capa de clorofila" aria-pressed="false">🌿<span class="capa-label">Clorof.</span></button>
     <button class="boyas-toggle tempagua-toggle" id="toggleTempAgua" title="Temperatura del agua (modelo IBI de Copernicus)" aria-label="Mostrar/ocultar capa de temperatura del agua" aria-pressed="false">🌡<span class="capa-label">T. agua</span></button>
     <div class="capa-mar-panel" id="capaMarPanel" hidden>
@@ -1153,6 +1183,13 @@
   import * as TipoFondo from "/assets/js/capa-tipo-fondo.js";
   window.TipoFondo = TipoFondo;
   window.dispatchEvent(new Event("tipo-fondo-listo"));
+</script>
+<script type="module">
+  // Un solo botón "Fondo" con selector: profundidad / tipo de fondo / ninguno
+  // (assets/js/selector-fondo.js, tests en test/selector-fondo.test.js).
+  import * as SelectorFondo from "/assets/js/selector-fondo.js";
+  window.SelectorFondo = SelectorFondo;
+  window.dispatchEvent(new Event("selector-fondo-listo"));
 </script>
 <script type="module">
   // Cámaras de terceros (enlace o inserción oficial del dueño), ver
@@ -1852,32 +1889,12 @@ const capaBoyas = L.layerGroup();
 // por debajo de tilePane, así que las demás capas siempre quedan encima.
 window.MapaBase.montar(map, L);
 
-// Batimetría real (EMODnet Bathymetry, WMS público y gratis, sin clave) —
-// capa activable, no puesta por defecto porque tapa bastante el resto del
-// mapa. Resolución ~230m: sirve para ver caídas de profundidad y zonas
-// generales, no el detalle de metros pegados a la orilla que daría una
-// sonda de barco.
-// Color + líneas de profundidad (isóbatas) con su etiqueta en metros, en
-// una sola petición — las líneas solas son blancas y no se ven sin el
-// color debajo, comprobado antes de montarlo así.
-const capaBatimetria = L.tileLayer.wms("https://ows.emodnet-bathymetry.eu/wms", {
-  layers: "emodnet:mean,emodnet:contours",
-  styles: "atlas_land,contours", // tonos azules suaves de atlas náutico, en vez del arcoíris de "multicolour"
-  format: "image/png",
-  transparent: true,
-  opacity: 0.75,
-  attribution: 'Batimetría: <a href="https://doi.org/10.12770/cf51df64-56f9-4a99-b1aa-36b8d7b743a1" target="_blank" rel="noopener">EMODnet Bathymetry Consortium (DTM 2024)</a>, <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>',
-});
-document.getElementById("toggleBatimetria").addEventListener("click", (e) => {
-  if (map.hasLayer(capaBatimetria)) {
-    map.removeLayer(capaBatimetria);
-    e.currentTarget.classList.remove("activo");
-  } else {
-    capaBatimetria.addTo(map);
-    e.currentTarget.classList.add("activo");
-    registrarEvento("ver_capa_batimetria");
-  }
-});
+// Fondo del mar: un solo botón "Fondo" que abre un selector con
+// "Profundidad" (isóbatas, capa-batimetria.js), "Tipo de fondo" (sustrato,
+// capa-tipo-fondo.js) y "Ninguno" (assets/js/selector-fondo.js). Hasta el
+// 2026-10-08 había además una capa WMS emodnet:mean + emodnet:contours de
+// EMODnet: el mismo DTM que el relieve del mapa base, sin sombreado, y unas
+// isóbatas sin la de 20 m. Duplicaba el relieve y las isóbatas: quitada.
 // Isóbatas de 20 a 5000 m y profundidad de cada spot para el índice
 // (assets/js/capa-batimetria.js, módulo: llega después de este script).
 function conBatimetria(fn) {
@@ -1893,7 +1910,7 @@ conBatimetria((B) => {
       if (vaEstado.s?.slug === s.slug) pintarVentanaActividad(vaEstado.s);
     },
   });
-  B.montarCapa(map, document.getElementById("toggleIsobatas"));
+  B.montarCapa(map, { onCambio: () => selectorFondo?.refrescar() });
   B.porModalidad(vaEstado.modalidad);
 });
 let temporizadorAvisoCapa = null;
@@ -1935,9 +1952,21 @@ conTipoFondo((TF) => {
   };
   // Al llegar el JSON (o el dato en vivo de un punto propio), se repinta el spot abierto.
   TF.iniciar({ onFondo: repintar }).then(() => { if (spotAbiertoActual) repintar(spotAbiertoActual); });
-  TF.montarCapa(map, document.getElementById("toggleSustrato"), avisoCapa);
-  document.getElementById("toggleSustrato").addEventListener("click", (e) => {
-    if (e.currentTarget.classList.contains("activo")) registrarEvento("ver_capa_sustrato");
+  TF.montarCapa(map, avisoCapa);
+});
+// Selector del botón "Fondo": cuando las dos capas y el selector ya están.
+let selectorFondo = null;
+Promise.all([
+  new Promise((ok) => conBatimetria(ok)),
+  new Promise((ok) => conTipoFondo(ok)),
+  new Promise((ok) => (window.SelectorFondo ? ok(window.SelectorFondo)
+    : window.addEventListener("selector-fondo-listo", () => ok(window.SelectorFondo), { once: true }))),
+]).then(([B, TF, SF]) => {
+  selectorFondo = SF.montarSelector({
+    boton: document.getElementById("toggleFondo"),
+    panel: document.getElementById("fondoSelector"),
+    capas: { profundidad: B, tipo: TF },
+    alEncender: (id) => registrarEvento(id === "tipo" ? "ver_capa_sustrato" : "ver_capa_isobatas"),
   });
 });
 document.getElementById("toggleRios").addEventListener("click", (e) => {
@@ -1970,7 +1999,7 @@ document.getElementById("toggleBoyas").addEventListener("click", (e) => {
 // fila a fila (la rejilla es de lat/lon regulares). Atribución obligatoria de
 // Copernicus Marine (cláusula 2.4): frase en inglés tal cual + DOI, en el
 // mapa y en la leyenda. Una a la vez (se tapan entre ellas). Van en el panel
-// tilePane (z 200), como Sustr.: encima del mapa base (paneles mapaBase 150 y
+// tilePane (z 200), como el tipo de fondo: encima del mapa base (paneles mapaBase 150 y
 // relieveFondo 160 de assets/js/mapa-base.js) y debajo de los marcadores.
 // ---------------------------------------------------------------------------
 const URL_CAPAS_MAR = "https://imncbmizxkorotpeisic.supabase.co/storage/v1/object/public/fuentes-gratuitas/capas/";

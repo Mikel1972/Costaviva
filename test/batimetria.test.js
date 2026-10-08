@@ -16,6 +16,7 @@ import {
   batimetriaDeSpot, capaVisible, ATRIBUCION_ISOBATAS, RADIO_CAJA_PUNTO_M, colorIsobata, estiloIsobata,
   etiquetasVisibles, NIVELES_SOMEROS, NIVELES_PROFUNDOS, TODOS_LOS_NIVELES, MAX_ETIQUETAS,
 } from "../assets/js/capa-batimetria.js";
+import * as Capa from "../assets/js/capa-batimetria.js";
 import { calcularVentana } from "../assets/js/ventana-actividad.js";
 import { validarRegla, VARIABLES_CONTEXTO } from "../assets/js/reglas-expertas.js";
 import { SPOTS } from "../functions/prevision.js";
@@ -243,6 +244,15 @@ test("capa: profundidad de un spot, de la API REST y visibilidad por pestaña", 
   assert.equal(capaVisible({ manual: false, modalidad: "embarcacion" }), false);
   assert.equal(capaVisible({ manual: true, modalidad: "submarina" }), true);
   assert.match(ATRIBUCION_ISOBATAS, /EMODnet Bathymetry Consortium.*CC BY 4\.0/);
+  // Sin mapa montado (antes de montarCapa) no se ve, y encenderla a mano no rompe.
+  assert.equal(Capa.visible(), false);
+  assert.doesNotThrow(() => Capa.ponerVisible(true));
+  assert.equal(Capa.visible(), true, "a mano manda (selector del botón Fondo)");
+  Capa.ponerVisible(false);
+  assert.equal(Capa.visible(), false);
+  // Leyenda: abajo a la izquierda; en el móvil arriba (abajo la tapaban los créditos).
+  assert.equal(Capa.esquinaLeyenda(390), "topleft");
+  assert.equal(Capa.esquinaLeyenda(1440), "bottomleft");
 });
 
 test("capa: colores y estilos discretos por nivel, de claro (somero) a oscuro (profundo)", () => {

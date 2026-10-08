@@ -17,8 +17,9 @@
 //      100 m, isobatas.json, más detalladas) desde zoom 8. Cada fichero se
 //      pide la primera vez que hace falta. Etiquetas "200 m" en puntos
 //      precalculados (solo las que caen en pantalla, desde cierto zoom) y
-//      leyenda de colores. Se enciende sola con la pestaña Embarcación y con
-//      su botón ("Isób.") a mano.
+//      leyenda de colores. Se enciende sola con la pestaña Embarcación y a
+//      mano con "Profundidad" en el selector del botón "Fondo"
+//      (selector-fondo.js).
 // Licencias y atribución: datos-robots/fuentes/BATIMETRIA.md.
 //
 // Las funciones puras (sin DOM ni red) tienen tests en test/batimetria.test.js;
@@ -123,7 +124,7 @@ export function batimetria(s) {
   return null;
 }
 
-let mapa = null, boton = null, leyenda = null, leyendaPuesta = false, capaEtiquetas = null;
+let mapa = null, avisarCambio = () => {}, leyenda = null, leyendaPuesta = false, capaEtiquetas = null;
 const estado = { manual: null, modalidad: "costa" };
 const juegos = {
   profundas: { url: "/assets/datos/isobatas-profundas.json", zoomMin: 0, capa: null, geo: null, cargando: null },
@@ -165,8 +166,13 @@ function ponerEstilos() {
   document.head.appendChild(st);
 }
 
+// Esquina de las leyendas del fondo: abajo a la izquierda; en el móvil, arriba
+// (debajo del zoom), porque abajo los créditos de las capas ocupan varias
+// líneas y las tapaban. La misma regla en capa-tipo-fondo.js.
+export const esquinaLeyenda = (ancho = globalThis.innerWidth) => (ancho <= 720 ? "topleft" : "bottomleft");
+
 function crearLeyenda(L) {
-  const ctl = L.control({ position: "bottomleft" });
+  const ctl = L.control({ position: esquinaLeyenda() });
   ctl.onAdd = () => {
     const div = L.DomUtil.create("div", "isobatas-leyenda");
     div.setAttribute("role", "img");
@@ -207,8 +213,7 @@ async function aplicar() {
   if (!mapa) return;
   const L = window.L;
   const ver = capaVisible(estado);
-  boton?.classList.toggle("activo", ver);
-  boton?.setAttribute("aria-pressed", ver ? "true" : "false");
+  avisarCambio(ver);
   if (!ver) {
     for (const j of Object.values(juegos)) if (j.capa && mapa.hasLayer(j.capa)) mapa.removeLayer(j.capa);
     if (capaEtiquetas && mapa.hasLayer(capaEtiquetas)) mapa.removeLayer(capaEtiquetas);
@@ -231,17 +236,21 @@ async function aplicar() {
   if (capaVisible(estado)) pintarEtiquetas(L);
 }
 
-// map: el mapa de Leaflet; botonEl: el botón de la capa (opcional).
-export function montarCapa(map, botonEl) {
+// map: el mapa de Leaflet; onCambio(visible): se llama cada vez que se
+// decide si se ve (también cuando la enciende o apaga la pestaña).
+export function montarCapa(map, { onCambio } = {}) {
   mapa = map;
-  boton = botonEl || null;
+  if (onCambio) avisarCambio = onCambio;
   map.on("zoomend moveend", () => { if (capaVisible(estado)) aplicar(); });
-  boton?.addEventListener("click", () => {
-    const visible = capaVisible(estado);
-    // A mano manda sobre la pestaña hasta que se cambie de pestaña.
-    estado.manual = !visible;
-    aplicar();
-  });
+  aplicar();
+}
+
+// Lo que se ve ahora (a mano o por la pestaña).
+export const visible = () => capaVisible(estado);
+
+// A mano (selector "Fondo"): manda sobre la pestaña hasta que se cambie de pestaña.
+export function ponerVisible(v) {
+  estado.manual = !!v;
   aplicar();
 }
 
