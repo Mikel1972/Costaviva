@@ -155,6 +155,24 @@ export function siguientePieza(ultimoIndice) {
   return { indice: i, tipo: ROTACION_REELS[i] };
 }
 
+// Clip del gancho (2026-10-08). `propios` y `stock` son los .mp4 de
+// clips/propios/ y de clips/stock/ que tienen su .licencia.json. Si se pide
+// uno concreto (`forzado`, input "clip" del workflow), solo vale si existe y
+// está en una de las dos listas: nunca un vídeo sin licencia guardada. Si no,
+// los propios tienen prioridad y se rota por índice.
+export function escogerClip({ propios = [], stock = [], indice = 0, forzado = "" } = {}) {
+  const p = [...propios].sort(), s = [...stock].sort();
+  if (forzado) {
+    if (p.includes(forzado)) return { carpeta: "propios", fichero: forzado };
+    if (s.includes(forzado)) return { carpeta: "stock", fichero: forzado };
+    throw new Error(`El clip "${forzado}" no está en clips/propios ni en clips/stock con su .licencia.json`);
+  }
+  const i = Math.max(0, Number.isInteger(indice) ? indice : 0);
+  if (p.length) return { carpeta: "propios", fichero: p[i % p.length] };
+  if (s.length) return { carpeta: "stock", fichero: s[i % s.length] };
+  return null;
+}
+
 // ---------------------------------------------------------------------------
 // Guion del reel: 3 escenas en segundos. gancho (vídeo + texto), datos
 // (animados) y cierre (llamada a la acción). escenaEn(t) dice cuál toca y en

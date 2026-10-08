@@ -7,7 +7,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import {
   resumenDelDia, flecha, motivosDestacados, mejorTramo, tarjetasCondiciones, textoFuerzaViento,
-  GANCHOS, CLAIMS, FUNCIONES, ROTACION_REELS, siguientePieza, GUION_REEL, DURACION_REEL, escenaEn, contar, fotogramas, bboxMercator,
+  GANCHOS, CLAIMS, FUNCIONES, ROTACION_REELS, siguientePieza, escogerClip, GUION_REEL, DURACION_REEL, escenaEn, contar, fotogramas, bboxMercator,
 } from "../scripts/marketing/pieza-datos.mjs";
 import * as VA from "../assets/js/ventana-actividad.js";
 
@@ -116,4 +116,28 @@ test("textos sin afirmaciones indemostrables ni promesas de seguridad", () => {
 test("bboxMercator: el spot queda dentro del recorte", () => {
   const b = bboxMercator(43.4297, -2.8103);
   assert.ok(b.x > b.minx && b.x < b.maxx && b.y > b.miny && b.y < b.maxy);
+});
+
+test("escogerClip: propios primero, stock solo con licencia, y el forzado solo si está en las listas", () => {
+  assert.equal(escogerClip({ propios: [], stock: [] }), null);
+  assert.deepEqual(escogerClip({ propios: ["b.mp4", "a.mp4"], stock: ["s.mp4"], indice: 1 }), { carpeta: "propios", fichero: "b.mp4" });
+  assert.deepEqual(escogerClip({ stock: ["y.mp4", "x.mp4"], indice: 2 }), { carpeta: "stock", fichero: "x.mp4" });
+  assert.deepEqual(escogerClip({ propios: ["a.mp4"], stock: ["s.mp4"], forzado: "s.mp4" }), { carpeta: "stock", fichero: "s.mp4" });
+  // Un fichero que no esté en las listas (p. ej. un stock sin .licencia.json) no se usa nunca.
+  assert.throws(() => escogerClip({ stock: ["s.mp4"], forzado: "sin-licencia.mp4" }), /no está/);
+});
+
+test("clips de stock: cada .mp4 tiene su .licencia.json con origen, URL de licencia, cita y fecha", async () => {
+  const { readdirSync } = await import("node:fs");
+  const dir = new URL("../scripts/marketing/clips/stock/", import.meta.url);
+  const mp4 = readdirSync(dir).filter((f) => f.endsWith(".mp4"));
+  assert.ok(mp4.length >= 1);
+  for (const f of mp4) {
+    const lic = JSON.parse(readFileSync(new URL(f.replace(/\.mp4$/, ".licencia.json"), dir), "utf8"));
+    assert.equal(lic.clip, f);
+    assert.match(lic.origen, /^https:\/\//);
+    assert.match(lic.licencia_url, /^https:\/\//);
+    assert.ok(lic.cita_licencia.length > 40, `${f}: falta la cita de la licencia`);
+    assert.match(lic.licencia_comprobada, /^\d{4}-\d{2}-\d{2}$/);
+  }
 });
