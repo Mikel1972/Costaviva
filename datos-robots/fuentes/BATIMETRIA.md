@@ -38,7 +38,7 @@ Para qué: profundidad del mar delante de cada spot y la alcanzable a 5 km
   - REST `https://rest.emodnet-bathymetry.eu/depth_sample?geom=POINT(lon lat)`
     (devuelve `avg`, elevación media de la celda; negativo = mar): comprobado
     que funciona, no se usa (hace falta el fondo alrededor, no el de un punto).
-  - WMS `https://ows.emodnet-bathymetry.eu/wms`: capa "Fondo" ya existente
+  - WMS `https://ows.emodnet-bathymetry.eu/wms`: la antigua capa "Fondo" (quitada el 2026-10-08: duplicaba el relieve del mapa base y las isóbatas)
     (`emodnet:mean` + `emodnet:contours`). Ojo: `emodnet:contours` solo tiene
     50, 100, 200, 500, 1000, 2000 y 5000 m ("Generalised bathymetric contour
     lines"); la isóbata de 20 m no existe en el WMS y se calcula aquí.

@@ -13,8 +13,8 @@
 //      salen null y ninguna regla de fondo puede aplicar.
 //   3. Capa "Sustrato" del mapa: WMS de EMODnet (EUSeaMap 2025, tipo de
 //      sustrato, todas las escalas: costa, plataforma y talud) con leyenda
-//      y atribución. El botón "Fondo" de siempre es la batimetría; este es
-//      otro.
+//      y atribución. Se enciende con "Tipo de fondo" en el selector del
+//      botón "Fondo" (selector-fondo.js).
 // Puntos propios: si hay un spot con dato a menos de 1,5 km se usa el suyo;
 // si no, se pregunta en vivo a EMODnet el sustrato del propio punto (sin
 // orilla, una sola muestra).
@@ -278,7 +278,9 @@ let capa = null, leyenda = null;
 // muestras NO son del tema: copian los del WMS de EMODnet para que casen.
 function crearLeyenda(L) {
   const C = L.Control.extend({
-    options: { position: "bottomleft" },
+    // En el móvil, arriba a la izquierda (como la de profundidad, ver
+    // esquinaLeyenda en capa-batimetria.js): abajo la tapaban los créditos.
+    options: { position: (globalThis.innerWidth ?? 1000) <= 720 ? "topleft" : "bottomleft" },
     onAdd() {
       const div = L.DomUtil.create("div", "leyenda-sustrato");
       div.setAttribute("role", "note");
@@ -305,10 +307,13 @@ function crearLeyenda(L) {
   return new C();
 }
 
-// map: el mapa de Leaflet; botonEl: el botón de la capa; aviso(texto): para
-// decir que hay que acercarse.
-export function montarCapa(map, botonEl, aviso = () => {}) {
+// map: el mapa de Leaflet; aviso(texto): para decir que hay que acercarse.
+// La enciende y apaga "Tipo de fondo" en el selector del botón "Fondo"
+// (selector-fondo.js) con ponerVisible().
+let mapaCapa = null, avisoZoom = () => {};
+export function montarCapa(map, aviso = () => {}) {
   const L = window.L;
+  mapaCapa = map;
   // Panel por defecto (tilePane, z 200): por encima del mapa base y del
   // relieve (paneles mapaBase 150 y relieveFondo 160 de mapa-base.js) y por
   // debajo de overlayPane/markerPane (spots, marcadores, isóbatas).
@@ -317,15 +322,16 @@ export function montarCapa(map, botonEl, aviso = () => {}) {
     opacity: 0.6, minZoom: ZOOM_MIN_CAPA, attribution: ATRIBUCION_SUSTRATO,
   });
   leyenda = crearLeyenda(L);
-  const avisoZoom = () => {
+  avisoZoom = () => {
     if (map.hasLayer(capa) && map.getZoom() < ZOOM_MIN_CAPA) aviso("Acércate un poco para ver el tipo de fondo.");
   };
-  botonEl?.addEventListener("click", () => {
-    const ver = !map.hasLayer(capa);
-    if (ver) { capa.addTo(map); leyenda.addTo(map); avisoZoom(); }
-    else { map.removeLayer(capa); leyenda.remove(); }
-    botonEl.classList.toggle("activo", ver);
-    botonEl.setAttribute("aria-pressed", ver ? "true" : "false");
-  });
   map.on("zoomend", avisoZoom);
+}
+
+export const visible = () => !!(mapaCapa && capa && mapaCapa.hasLayer(capa));
+
+export function ponerVisible(v) {
+  if (!mapaCapa || !capa || !!v === visible()) return;
+  if (v) { capa.addTo(mapaCapa); leyenda.addTo(mapaCapa); avisoZoom(); }
+  else { mapaCapa.removeLayer(capa); leyenda.remove(); }
 }
