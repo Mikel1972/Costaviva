@@ -5,6 +5,31 @@ cambian las convenciones — no es un historial (para eso está `ROBOT.md`).
 Si algo de aquí queda desactualizado, corrígelo en el momento en que lo
 detectes, no lo dejes para luego.
 
+## Cámaras de terceros: solo como su dueño lo permita (2026-10-08)
+
+`assets/js/camaras-externas.js` lista cámaras de otros (SkylineWebcams,
+canales de YouTube, MEO Beachcam) encontradas en agregadores. **Los permisos
+los pone el dueño real del stream, no el agregador** (webcamera24 y
+webcamtaxi solo reenvían YouTube, in2thebeach, feratel...). Dos modos:
+`imagen_oficial` (el código "Insertar" del dueño tal cual; hoy solo el
+fotograma de Skyline, cada 5 min) y `enlace` (botón que abre su web).
+YouTube va siempre como enlace: sus políticas prohíben cobrar por ver un
+reproductor insertado y Costaviva está tras paywall. Windy Webcams queda
+fuera (exige su API). `analisis_permitido` es `false` en todas: nadie
+permite descargar o analizar sus fotogramas, así que **ninguna entra en
+turbidez, espuma ni posts de Instagram**, y el robot de salud solo hace un
+HEAD/oEmbed (clave `ext-<id>` en `camara_estado`). Águilas salió del proxy
+`/webcam/` y de turbidez por eso. `test/camaras-externas.test.js` exige
+dueño, modo permitido, condiciones con fuente y spot existente.
+
+**Interruptor `SKYLINE_EMBED_AUTORIZADO` (en `camaras-externas.js`, hoy
+`true`).** Mikel ha pedido a SkylineWebcams autorización escrita para el
+uso comercial (2026-10-08) y decidió usar ya la imagen oficial que su FAQ
+ofrece en "Incrustar" mientras contestan. Si Skyline lo niega, se pone a
+`false` y todas (Águilas incluida) pasan a `enlace` sin cargar nada de
+`embed.skylinewebcams.com`; no hay que tocar nada más (el test se adapta al
+valor). Analizar sus fotogramas sigue prohibido en cualquier caso.
+
 ## Oleaje costero: mar abierto frente a "en la playa" (2026-10-08)
 
 **Caso real (Mikel, 2026-10-08):** Hondarribia salía con "3.7–4.5 m" y su
@@ -1014,7 +1039,45 @@ captura" con normalidad. **Probado en real por el usuario en producción
 2026-09-13**: abrir una entrada, ir añadiendo capturas y concluir la
 jornada funciona bien.
 
-## Bug corregido — radar de lluvia mostraba "Zoom Level Not Supported" (2026-09-13)
+## Lluvia: radar OPERA de las últimas 3 horas, animado (2026-10-08)
+
+Pedidos de Mikel: el botón **Lluvia** enseña la evolución de las últimas 3 h,
+en bucle por defecto, con pausa/play y la hora de Madrid de cada toma (la
+última dura más), y **"es imprescindible que sea lo más cercano en tiempo"**:
+el panel dice siempre el retraso de la última toma ("hace 6 min"; en rojo si
+pasa de 20 min).
+- **Fuente principal: radar EUMETNET OPERA** (composición europea DBZH con
+  los radares de AEMET, IPMA y Météo-France). Publica una toma cada 5 min,
+  ~4-5 min después de su hora: retraso visto en la app 5-10 min. La animación
+  usa **una cada 10 min y siempre la última publicada** (decisión de Mikel
+  2026-10-08, `submuestrear()`): ~19 tomas en 3 h; el refresco de cada
+  minuto mete la nueva al momento.
+  Bucket S3 público de 24 h `s3.waw3-1.cloudferro.com/openradar-24h`, sin
+  clave ni coste. **Licencia CC BY 4.0** ("EUMETNET ... has decided to
+  distribute these products under the CC BY 4.0 license",
+  github.com/EUMETNET/openradardata-documentation). Atribución en el mapa.
+- **Respaldo: satélite EUMETSAT H SAF H60B** (WMS de EUMETView, CC BY 4.0,
+  cada 15 min, ~45 min de retraso) solo donde el radar no llega (mar
+  abierto, Canarias, radares caídos: el de A Coruña no daba datos el
+  2026-10-08), más tenue y dicho en el panel. Si el radar entero falla, se
+  anima solo el satélite.
+- **Cómo llega**: el bucket no manda CORS. `functions/lluvia/tomas.js` lista
+  las tomas (caché del edge 60 s) y `functions/lluvia/toma.js` lee la cabecera
+  del GeoTIFF y reenvía SIN descomprimir las 2 teselas de la vista de 4 km
+  que cubren la Península (caché del edge 24 h, inmutable). El navegador las
+  descomprime (`DecompressionStream`), reproyecta de Lambert azimutal (lat0
+  55, lon0 10) a Mercator y pinta un canvas por toma
+  (`assets/js/lluvia-animada.js`). Nada se guarda en Supabase ni en GitHub.
+- **Coste**: 0 €. 1 invocación de Functions por toma al abrir la capa y 1 por
+  minuto mientras está abierta (unas 20 invocaciones al abrir); ~3,5 MB de
+  descarga para las ~19 tomas (luego quedan en la caché del navegador 24 h).
+- Descartados: RainViewer (2 h y sin uso comercial), AEMET OpenData (solo la
+  última imagen, GIF con mapa de fondo, clave), Météo-France (clave; sus
+  radares ya están en OPERA), IPMA (radar "solo informativo"), Rain Alarm
+  (app cerrada, sin API).
+- Tests: `test/lluvia-animada.test.js` (en `tests.yml`).
+
+## Bug corregido (histórico, ya no se usa RainViewer) — radar de lluvia mostraba "Zoom Level Not Supported" (2026-09-13)
 
 Reportado por el usuario: al acercar el mapa de nubes/lluvia
 (`toggleNubes`, capa RainViewer en `index.html`), aparecía el texto
@@ -3105,9 +3168,35 @@ ninguna app: si Costaviva se abandona, no se pierde. `COMPARATIVA_PROYECTOS.md`
 y `SALDO_API.md` también viven allí. El secret `GH_PAT_MULTIPROYECTO` de este
 repo ya no lo usa nadie.
 
+## Rayos: panel sencillo de un toque (2026-10-08)
+
+Mikel: "la pestaña de rayos es poco ágil de manejar". Antes: panel lateral
+que tapaba ~60 % del mapa en el móvil, frase "a 27 km del centro del mapa"
+sin rumbo, botón "Ocultar este panel" y una vista grande aparte de la imagen
+de AEMET con scroll y + / −. Ahora:
+- Un toque en ⚡: se elige la referencia (spot abierto > GPS solo si ya hay
+  permiso, nunca se pregunta > centro del mapa), se acerca ahí si el zoom
+  era < 7, se consulta `/rayos-cerca` en ESE punto y, la primera vez que hay
+  rayos, el mapa se encuadra con la referencia y la tormenta más cercana
+  (punto de borde oscuro + línea discontinua hasta el rayo).
+- Tarjeta abajo (`#rayosHoja`, metida como control de Leaflet `bottomright`,
+  así se apila sobre la atribución y no la tapa): una frase
+  ("⚡ Rayo más cercano: 12 km al NO de ti · hace 3 min" / "Sin rayos a menos
+  de 100 km en los últimos 5 min"), color por distancia (≤15 km rojo, ≤40
+  ámbar), leyenda de una línea y un ⓘ con el conteo, la hora del satélite,
+  las fuentes y el enlace a la imagen de AEMET de 12 h (`/rayos-imagen`, en
+  pestaña nueva: es lo único que añade, el histórico). Tocar la frase
+  vuelve a encuadrar.
+- Coste igual o menor: una consulta al abrir, una por minuto y otra solo si
+  el centro se aleja > 40 km de la referencia (antes, en cada `moveend`).
+- Lógica pura en `assets/js/rayos.js` (vía `window.Rayos`), tests en
+  `test/rayos-resumen.test.js`. La frase dice "5 min" porque es lo que da
+  Xweather: no prometer "la última hora".
+- `#avisoRayos` (banner de riesgo por spot) no cambia.
+
 ## Rayos: tiempo real con Xweather + satélite EUMETSAT de fondo (2026-10-03)
 
-El botón **Rayos** pinta dos capas sobre el propio mapa (antes solo abría la imagen nacional de AEMET, que sigue en el panel como "últimas 12 h"):
+El botón **Rayos** pinta dos capas sobre el propio mapa (la imagen nacional de AEMET de 12 h queda como enlace en el ⓘ, ver la sección de arriba):
 - **Satélite (gratis, ~15 min de retraso)**: WMS de EUMETView `mtg_fd:li_afa` (Lightning Imager de MTG/EUMETSAT), últimos 6 tramos de 5 min. Sin tarifas ni restricciones, CC BY 4.0, CORS abierto. Color = intensidad (amarillo → rojo oscuro), no antigüedad. **TIME siempre explícito**: EUMETView manda `cache-control` de 7 días.
 - **Tiempo real (Vaisala Xweather)**: `functions/rayos-cerca.js`, rayos de los últimos 5 min a menos de 100 km, en morado. Solo con el mapa acercado (zoom ≥ 7), al soltar el mapa y como mucho cada minuto. Exige sesión.
 - **Coste**: cada consulta de rayos a Xweather cuesta 0,006 $ y solo hay 1.500 gratis al mes. El usuario eligió no pasar de lo gratuito: tope `LIMITE_MENSUAL = 1400` en `rayos-cerca.js`, contado de forma atómica en `rayos_xweather_uso` (`reservar_consulta_rayos`) **antes** de llamar, y caché compartida de 60 s por celda de 0,5° en `rayos_xweather_cache`. Al llegar al tope, o sin claves, el endpoint responde `fuente: limite|no_configurado|error` y el mapa se queda con el satélite. Para subir el tope: cambiar `LIMITE_MENSUAL` (y tener tarjeta en Xweather).

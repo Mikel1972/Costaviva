@@ -60,6 +60,8 @@ test("los endpoints de functions/ llegan a su propio código", () => {
   // sesión, X-Cron-Secret, firma de Stripe). Lo que se comprueba es que el
   // middleware no los corta antes de llegar a ella.
   for (const ruta of [
+    "/lluvia/tomas",
+    "/lluvia/toma",
     "/prevision",
     "/luna",
     "/rayos-imagen",

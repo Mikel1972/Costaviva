@@ -119,7 +119,7 @@ const ZONAS = [
   { nombre: "Castellón", hashtags: "#castellon #costaazahar #mediterraneo", spots: ["peniscola", "alcossebre", "benicassim", "oropesa", "burriana", "castellon", "torreblanca", "vinaros", "xilxes"] },
   { nombre: "Valencia", hashtags: "#valencia #mediterraneo", spots: ["valencia", "alboraya", "cullera", "gandia", "oliva", "piles", "canetdeberenguer", "pobladefarnals"] },
   { nombre: "Alicante", hashtags: "#alicante #costablanca #mediterraneo", spots: ["denia", "javea", "calpe", "altea", "benidorm", "vilajoiosa", "alicante", "santapola", "guardamardelsegura", "pilardelahoradada"] },
-  { nombre: "Murcia y Baleares", hashtags: "#mediterraneo", spots: ["aguilas", "calamillor", "sonbou", "muro"] },
+  { nombre: "Murcia y Baleares", hashtags: "#mediterraneo", spots: ["calamillor", "sonbou", "muro"] }, // aguilas fuera (2026-10-08): su cámara es de SkylineWebcams, no se puede republicar su imagen
 ];
 
 // Hashtags regionales del post de condiciones (2026-10-02): antes iban

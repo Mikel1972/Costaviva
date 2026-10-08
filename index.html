@@ -279,33 +279,47 @@
   .leyenda.visible { opacity: 1; transform: translateX(0); pointer-events: auto; }
 
   .rayos-toggle { top: 16px; right: 16px; }
-  /* right:118px, no 64px (2026-10-03, captura del usuario en el móvil: "no
-     veo nada y no puedo interactuar"): en right:64px empieza la segunda
-     columna de botones de capas (📍/+/Ríos/Boyas, z-index 502), que quedaba
-     ENCIMA del panel y tapaba la mitad derecha del mapa y el botón ⤢, lo
-     único que abría la vista grande. Mismo arreglo que .viento-slider-panel
-     (ver su comentario): 118 = 64 + 44 de botón + 10 de hueco. */
-  .rayos-panel {
-    position: absolute; top: 16px; right: 118px; z-index: 501;
-    background: #FFFFFF; border: 1px solid #DDE2DC; border-radius: 8px;
-    padding: 10px; font-size: 11px; font-family: 'IBM Plex Mono', monospace;
-    width: min(220px, calc(100vw - 134px));
-    opacity: 0; transform: translateX(14px); pointer-events: none;
-    transition: opacity 0.15s ease-out, transform 0.15s ease-out;
+  /* Panel de rayos (2026-10-08, Mikel: "la pestaña de rayos es poco ágil
+     de manejar"). Antes era un panel lateral que tapaba medio mapa en el
+     móvil, con la imagen de AEMET y una vista grande aparte con su propio
+     + / −. Ahora es una tarjeta pequeña abajo, encima de los créditos del
+     mapa (es un control de Leaflet en la esquina inferior derecha, así que
+     se apila sobre la atribución y nunca la tapa): una frase con el rayo más
+     cercano, una leyenda de una línea y un ⓘ que despliega fuentes, la hora
+     del satélite y el enlace al mapa de AEMET. Los rayos se ven en el mapa
+     de siempre, con su zoom y su pellizco nativos. */
+  .rayos-hoja {
+    width: min(440px, calc(100vw - 20px)); box-sizing: border-box; clear: both;
+    background: #FFFFFF; border: 1px solid #DDE2DC; border-left: 5px solid #9AA9AE; border-radius: 10px;
+    box-shadow: 0 4px 14px rgba(11,37,50,0.18); padding: 7px 8px 7px 10px;
+    font-family: 'IBM Plex Mono', monospace; color: #0B2532; cursor: default;
   }
-  .rayos-panel.visible { opacity: 1; transform: translateX(0); pointer-events: auto; }
-  .rayos-panel .titulo { color: #5C7680; margin-bottom: 6px; }
-  .rayos-panel .marco-imagen {
-    position: relative; width: 100%; height: 110px; border-radius: 4px; border: 1px solid #DDE2DC;
-    overflow: hidden; cursor: zoom-in;
-    /* Mismo encuadre (bbox) que la imagen de rayos de AEMET, para que
-       encajen una encima de otra: así se ve el contorno de España aunque
-       la capa de rayos esté vacía (sin tormentas). */
-    background-image: url("https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/export?bbox=-18,35,14,47&bboxSR=4326&size=680,246&format=png&transparent=false&f=image");
-    background-size: cover; background-position: center;
+  .rayos-hoja[hidden] { display: none; }
+  .rayos-hoja[data-nivel="peligro"] { border-left-color: #A34A35; background: #FBEAE6; }
+  .rayos-hoja[data-nivel="aviso"] { border-left-color: #D4A24C; }
+  .rayos-hoja[data-nivel="lejos"] { border-left-color: #7B2CBF; }
+  .rayos-hoja[data-nivel="ok"] { border-left-color: #4F9D69; }
+  .rayos-fila { display: flex; align-items: center; gap: 8px; }
+  .rayos-resumen {
+    flex: 1; min-width: 0; text-align: left; font: inherit; font-size: 12.5px; font-weight: 700;
+    line-height: 1.3; color: inherit; background: none; border: 0; padding: 2px 0; cursor: pointer;
   }
-  .rayos-panel img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-  .rayos-panel .nota { color: #42585F; font-size: 9.5px; margin-top: 6px; line-height: 1.4; }
+  .rayos-mas {
+    width: 32px; height: 32px; flex-shrink: 0; border-radius: 6px; padding: 0; cursor: pointer;
+    border: 1px solid #DDE2DC; background: #EEF2EF; color: #42585F; font-size: 15px; line-height: 1;
+  }
+  .rayos-mas[aria-expanded="true"] { background: #D4A24C; color: #0B2532; }
+  .rayos-leyenda { display: flex; flex-wrap: wrap; gap: 2px 12px; margin-top: 3px; font-size: 10px; color: #42585F; }
+  .rayos-leyenda i { display: inline-block; width: 9px; height: 9px; margin-right: 4px; vertical-align: -1px; }
+  .rayos-leyenda i.vivo { background: #7B2CBF; border-radius: 50%; box-shadow: 0 0 0 1.5px #fff, 0 0 0 2.5px #0B2532; }
+  .rayos-leyenda i.sat { width: 18px; border-radius: 2px; background: linear-gradient(90deg,#FFF5B0,#F4A040,#8B0A2A); }
+  .rayos-detalle {
+    margin-top: 6px; padding-top: 6px; border-top: 1px solid #DDE2DC;
+    font-size: 10.5px; line-height: 1.45; color: #42585F;
+  }
+  .rayos-detalle[hidden] { display: none; }
+  .rayos-detalle p { margin: 0 0 4px; }
+  .rayos-detalle a { color: #A8792A; font-weight: 600; }
   /* Aviso breve sobre el mapa (2026-10-03): para cuando una capa se enciende
      pero su fuente no responde, en vez de dejarla vacía sin decir nada. */
   .aviso-capa {
@@ -315,71 +329,6 @@
     box-shadow: 0 6px 20px rgba(0,0,0,0.3); text-align: center;
   }
   .aviso-capa[hidden] { display: none; }
-  .leyenda-rayos-sat { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 10px; color: #42585F; }
-  .leyenda-rayos-sat i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; }
-  .ocultar-panel-rayos {
-    margin-top: 6px; width: 100%; padding: 6px; border-radius: 6px; border: 1px solid #DDE2DC;
-    background: #EEF2EF; color: #42585F; font-family: inherit; font-size: 10px; cursor: pointer;
-  }
-  .expandir-rayos {
-    position: absolute; top: 6px; right: 6px; z-index: 2;
-    width: 24px; height: 24px; border-radius: 4px;
-    background: rgba(11,37,50,0.75); border: 1px solid rgba(232,226,208,0.3); color: #F7F3E8;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; font-size: 13px; padding: 0;
-  }
-  .modal-rayos {
-    position: fixed; inset: 0; z-index: 2000;
-    background: rgba(11,37,50,0.88);
-    display: none; align-items: center; justify-content: center; padding: 32px;
-  }
-  .modal-rayos.visible { display: flex; }
-  /* El fondo del mapa y la imagen de AEMET viven en .lienzo-rayos (mismo
-     encuadre, uno encima de otro). En escritorio el lienzo ocupa todo el
-     contenedor, como antes; en el móvil es más ancho que la pantalla y se
-     arrastra con el dedo (ver @media de abajo), porque a 360 px de ancho
-     toda España no deja ver ningún rayo y el viewport no deja pellizcar. */
-  .modal-rayos-contenido {
-    position: relative; width: min(92vw, 960px);
-    border-radius: 10px; overflow: hidden; border: 1px solid #DDE2DC;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.5); background: #DDE7EC;
-  }
-  .scroll-rayos { width: 100%; max-height: 72vh; overflow: auto; -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y; }
-  .lienzo-rayos {
-    position: relative; width: 100%; aspect-ratio: 680 / 246;
-    background-image: url("https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/export?bbox=-18,35,14,47&bboxSR=4326&size=1360,492&format=png&transparent=false&f=image");
-    background-size: 100% 100%;
-  }
-  .lienzo-rayos img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-  /* Fondo nítido solo de la zona visible (2026-10-03, "¿no se puede hacer
-     más zoom?"): el fondo general es una única imagen de España y ArcGIS no
-     da más de 4096 px, así que a partir de ~4× se veía borroso. Esta imagen
-     se pide al dejar de mover el mapa, con el encuadre exacto de lo que se
-     ve y a la resolución de la pantalla, y se coloca en su sitio dentro del
-     lienzo (por debajo de los rayos). */
-  .lienzo-rayos img.detalle-fondo { inset: auto; width: auto; height: auto; }
-  .pista-rayos { display: none; }
-  /* Zoom con botones (2026-10-03, "no me deja ampliar"): el viewport de la
-     app bloquea el pellizco (user-scalable=no) para que no se amplíe la
-     página entera, así que la vista grande lleva su propio + / −. */
-  .zoom-rayos {
-    position: absolute; top: 8px; left: 8px; z-index: 2;
-    display: flex; flex-direction: column; gap: 6px;
-  }
-  .zoom-rayos button {
-    width: 40px; height: 40px; border-radius: 6px; border: 1px solid rgba(232,226,208,0.4);
-    background: rgba(11,37,50,0.8); color: #F7F3E8; font-size: 22px; line-height: 1;
-    cursor: pointer; padding: 0;
-  }
-  .zoom-rayos button:disabled { opacity: 0.35; cursor: default; }
-  @media (max-width: 720px) {
-    .modal-rayos { padding: 12px; }
-    .modal-rayos-contenido { width: 96vw; }
-    .pista-rayos {
-      display: block; padding: 6px 10px; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px;
-      color: #F7F3E8; background: rgba(11,37,50,0.85); text-align: center;
-    }
-  }
 
   /* Botones de capas en 2 columnas por tipología (2026-09-14, "que se
      vean todos"; rediseñado 2026-09-19, pedido explícito del usuario:
@@ -807,40 +756,26 @@
       <div class="fila"><span class="chip" style="background:#A34A35"></span><span>agitado</span></div>
       <div class="nota" style="margin-top:10px; padding-top:8px; border-top:1px solid #DDE2DC;">◆ RÍOS: 3 puntos por río (cabecera→desembocadura), color por caudal bajo/normal/alto — pasa el cursor por un punto para ver el detalle. Lo que se mide arriba llega a la costa horas después — útil como aviso de tendencia. Posiciones ilustrativas, no las estaciones oficiales exactas. Caudal real solo en Sella, Besaya, Pas, Asón, Eo, Júcar, Turia, Mijares, Segura y Lagares (Confederaciones Hidrográficas + Augas de Galicia) — los ríos vascos siguen sin dato real (URA/Bizkaia bloquea el acceso automático).</div>
     </div>
-    <button class="rayos-toggle" id="toggleRayos" title="Mapa de rayos de España (AEMET)" aria-label="Mostrar/ocultar mapa de rayos">⚡<span class="capa-label">Rayos</span></button>
-    <div class="rayos-panel" id="rayosPanel">
-      <div class="titulo">RAYOS EN EL MAPA</div>
-      <div class="leyenda-rayos-sat">
-        <span><i style="background:#7B2CBF;border:1.5px solid #fff;box-shadow:0 0 0 1px #0B2532;border-radius:50%"></i>tiempo real (5 min)</span>
-        <span><i style="width:22px;background:linear-gradient(90deg,#FFF5B0,#F4A040,#8B0A2A)"></i>satélite (30 min, color = intensidad)</span>
+    <button class="rayos-toggle" id="toggleRayos" title="Rayos cerca: al momento y por satélite" aria-label="Mostrar/ocultar rayos en el mapa">⚡<span class="capa-label">Rayos</span></button>
+    <!-- Panel de rayos: se mete como control de Leaflet abajo a la derecha
+         (ver "Rayos en directo sobre el propio mapa" en el JS). -->
+    <div class="rayos-hoja" id="rayosHoja" data-nivel="neutro" hidden>
+      <div class="rayos-fila">
+        <button type="button" class="rayos-resumen" id="rayosResumen" aria-live="polite" title="Centrar el mapa en el rayo más cercano">Buscando rayos cerca…</button>
+        <button type="button" class="rayos-mas" id="rayosDetalleBtn" aria-expanded="false" aria-controls="rayosDetalle" aria-label="Fuentes y mapa de AEMET">ⓘ</button>
       </div>
-      <div class="nota" id="notaRayosVivo" style="font-weight:600;color:#0B2532;">Buscando rayos en tiempo real…</div>
-      <div class="nota" id="notaRayosSatelite">Cargando rayos del satélite…</div>
-      <button type="button" class="ocultar-panel-rayos" id="ocultarPanelRayos">Ocultar este panel (los rayos siguen en el mapa)</button>
-      <div class="titulo" style="margin-top:10px;">ÚLTIMAS 12 H — AEMET</div>
-      <div class="marco-imagen">
-        <img id="imgRayos" src="/rayos-imagen" alt="Mapa de rayos de España, última hora" />
-        <button class="expandir-rayos" id="expandirRayos" title="Ver en grande" aria-label="Ver mapa de rayos en grande">⤢</button>
+      <div class="rayos-leyenda">
+        <span><i class="vivo"></i>rayo · 5 min</span>
+        <span><i class="sat"></i>tormenta (satélite) · 30 min</span>
       </div>
-      <div class="nota" id="notaRayos">Fuente: AEMET · toca el mapa para ampliar</div>
+      <div class="rayos-detalle" id="rayosDetalle" hidden>
+        <p id="rayosRefTexto">Distancias medidas desde el centro del mapa.</p>
+        <p id="notaRayosSatelite">Cargando el satélite…</p>
+        <p><a href="/rayos-imagen" target="_blank" rel="noopener" id="enlaceAemetRayos">Mapa de rayos de AEMET, toda España, últimas 12 h ↗</a></p>
+        <p>Fuentes: Vaisala Xweather (al momento), EUMETSAT MTG Lightning Imager (CC BY 4.0) y AEMET.</p>
+      </div>
     </div>
     <div class="aviso-capa" id="avisoCapa" role="status" hidden></div>
-    <div class="modal-rayos" id="modalRayos">
-      <div class="modal-rayos-contenido">
-        <button class="cerrar" id="cerrarModalRayos" style="position:absolute; top:8px; right:8px; z-index:2; background:rgba(11,37,50,0.7); color:#F7F3E8; border-radius:4px;">✕</button>
-        <div class="scroll-rayos" id="scrollRayos">
-          <div class="lienzo-rayos">
-            <img class="detalle-fondo" id="detalleFondoRayos" alt="" hidden />
-            <img id="imgRayosGrande" src="/rayos-imagen" alt="Mapa de rayos de España, última hora, en grande" />
-          </div>
-        </div>
-        <div class="zoom-rayos">
-          <button type="button" id="zoomMasRayos" aria-label="Acercar mapa de rayos">+</button>
-          <button type="button" id="zoomMenosRayos" aria-label="Alejar mapa de rayos">−</button>
-        </div>
-        <div class="pista-rayos">Pellizca o usa + / − para acercar · arrastra para moverte</div>
-      </div>
-    </div>
     <button class="luna-toggle" id="toggleLuna" title="Fase y posición de la luna" aria-label="Mostrar/ocultar datos de la luna">🌙<span class="capa-label">Luna</span></button>
     <div class="luna-panel" id="lunaPanel">
       <div class="nota" id="lunaZoomAviso" style="display:none; font-size:11px; color:#5F7981; text-align:center; padding:6px 0;">🔍 Acércate (zoom in) para ver la luna de esa ubicación</div>
@@ -859,7 +794,7 @@
       </div>
     </div>
     <button class="batimetria-toggle" id="toggleBatimetria" title="Batimetría (profundidad del mar)" aria-label="Mostrar/ocultar batimetría">📏<span class="capa-label">Fondo</span></button>
-    <button class="nubes-toggle" id="toggleNubes" title="Radar de lluvia en directo (RainViewer)" aria-label="Mostrar/ocultar radar de lluvia">☁️<span class="capa-label">Lluvia</span></button>
+    <button class="nubes-toggle" id="toggleNubes" title="Radar de lluvia de las últimas 3 horas, animado (EUMETNET OPERA)" aria-label="Mostrar/ocultar la lluvia de las últimas 3 horas">☁️<span class="capa-label">Lluvia</span></button>
     <button class="anadir-ubicacion-toggle" id="toggleAnadirUbicacion" title="Añadir una ubicación nueva" aria-label="Añadir ubicación">➕</button>
     <button class="estaciones-toggle" id="toggleEstaciones" title="Estaciones meteorológicas reales (AEMET)" aria-label="Mostrar/ocultar estaciones meteorológicas">🌧<span class="capa-label">Estac.</span></button>
     <button class="viento-toggle" id="toggleViento" title="Viento en directo, estilo Windy (partículas animadas)" aria-label="Mostrar/ocultar capa de viento">💨<span class="capa-label">Viento</span></button>
@@ -1052,6 +987,7 @@
     <div id="panelWebcamBox" style="margin-top:14px;">
       <div class="etq" style="margin-bottom:6px;">WEBCAM EN DIRECTO</div>
       <div id="panelWebcamContenido"></div>
+      <div id="panelWebcamExternas"></div>
     </div>
     <!-- Atribución obligatoria de Open-Meteo (licencia CC BY 4.0 de sus datos). -->
     <div class="atribucion-meteo">Datos meteorológicos: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a> (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>)</div>
@@ -1082,12 +1018,33 @@
   <div id="contenidoZoomWebcam"></div>
 </div>
 <script type="module">
+  // Lógica pura de la capa de rayos (assets/js/rayos.js, con tests en
+  // test/rayos-resumen.test.js); el script clásico la usa vía window.Rayos.
+  import * as Rayos from "/assets/js/rayos.js";
+  window.Rayos = Rayos;
+  window.dispatchEvent(new Event("rayos-listo"));
+</script>
+<script type="module">
   // Ventana de actividad: módulo puro compartido con los tests
   // (test/ventana-actividad.test.js). El script clásico de abajo lo usa
   // vía window.VentanaActividad cuando se abre un spot.
   import * as VentanaActividad from "/assets/js/ventana-actividad.js";
   window.VentanaActividad = VentanaActividad;
   window.dispatchEvent(new Event("ventana-actividad-lista"));
+</script>
+<script type="module">
+  // Cámaras de terceros (enlace o inserción oficial del dueño), ver
+  // assets/js/camaras-externas.js y test/camaras-externas.test.js.
+  import * as CamarasExternas from "/assets/js/camaras-externas.js";
+  window.CamarasExternas = CamarasExternas;
+  window.dispatchEvent(new Event("camaras-externas-listas"));
+</script>
+<script type="module">
+  // Lluvia animada de las últimas 3 h (assets/js/lluvia-animada.js, con
+  // tests en test/lluvia-animada.test.js). El botón "Lluvia" la usa vía
+  // window.LluviaAnimada.
+  import * as LluviaAnimada from "/assets/js/lluvia-animada.js";
+  window.LluviaAnimada = LluviaAnimada;
 </script>
 <script>
 // ---------------------------------------------------------------------------
@@ -2633,12 +2590,9 @@ const SPOTS_CON_WEBCAM = [
   // la Diputación pero un stream distinto (GIP_zumaia2), verificado en
   // vivo. Primera cámara real de este spot desde que existe en la app.
   "zumaia",
-  // Águilas (SkylineWebcams) — añadida 2026-09-25 por la regla "Cámara con
-  // mar a la vista" de ROBOT_REGLAS.md. Primera cámara de este spot, y de
-  // los 2 que quedaban sin ninguna en Murcia. 3 fuentes con failover, ver
-  // WEBCAMS en functions/webcam/[slug].js para por qué se descartó la
-  // cuarta candidata.
-  "aguilas",
+  // Águilas (SkylineWebcams) salió de aquí el 2026-10-08: sus condiciones
+  // no permiten pasar su imagen por nuestro proxy. Se ve con el código de
+  // inserción oficial, ver assets/js/camaras-externas.js.
 ];
 
 // Webcams en vídeo en directo (HLS) — Diputación Foral de Gipuzkoa,
@@ -2788,13 +2742,62 @@ function cerrarZoomWebcam() {
   }
 }
 
+// Cámaras de terceros (assets/js/camaras-externas.js), 2026-10-08. Van en
+// su propio contenedor, debajo de la cámara propia, para que los fallos y
+// recargas de esta no las borren. Solo dos modos, los que permite su dueño:
+// "imagen_oficial" (el código de "Insertar" del dueño tal cual: su imagen
+// enlazada a su página) y "enlace" (botón que abre su web). Nunca se pasan
+// por nuestro proxy ni se descarga su imagen. Se ocultan igual que las
+// propias si el robot de salud las ve caídas más de 24 h (clave ext-<id>).
+function camarasExternasVisibles(slug) {
+  const CE = window.CamarasExternas;
+  if (!CE) return null;
+  return CE.camarasExternasDeSpot(slug).filter((c) => !camaraRetirada(CE.claveSalud(c)));
+}
+function escaparHtmlCam(t) {
+  return String(t).replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch]);
+}
+function pintarCamarasExternas(slug) {
+  const caja = document.getElementById("panelWebcamExternas");
+  if (!caja) return;
+  const lista = camarasExternasVisibles(slug);
+  if (lista === null) {
+    caja.innerHTML = "";
+    window.addEventListener("camaras-externas-listas", () => { if (spotWebcamActual === slug) pintarCamarasExternas(slug); }, { once: true });
+    return;
+  }
+  if (!lista.length) { caja.innerHTML = ""; return; }
+  const imagenes = lista.filter((c) => c.modo === "imagen_oficial");
+  const enlaces = lista.filter((c) => c.modo === "enlace");
+  const htmlImagenes = imagenes.map((c) => `
+    <figure style="margin:8px 0 0;">
+      <a href="${escaparHtmlCam(c.url)}" target="_blank" rel="noopener"><img src="${escaparHtmlCam(c.imagen)}" alt="${escaparHtmlCam(c.nombre)} | ${escaparHtmlCam(c.dueno)}" loading="lazy" style="width:100%; border-radius:8px; border:1px solid #DDE2DC; display:block;"></a>
+      <figcaption style="font-size:11px; color:#5C7680; margin-top:3px;">${escaparHtmlCam(c.nombre)} · imagen de <a href="${escaparHtmlCam(c.url)}" target="_blank" rel="noopener">${escaparHtmlCam(c.dueno)}</a> (cada 5 min; el vídeo, en su web)</figcaption>
+    </figure>`).join("");
+  const htmlEnlaces = enlaces.length ? `
+    <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;">
+      ${enlaces.map((c) => `<a href="${escaparHtmlCam(c.url)}" target="_blank" rel="noopener" style="font-size:12px; padding:5px 10px; border:1px solid #DDE2DC; border-radius:14px; text-decoration:none; color:#2E7BA0;">Ver cámara: ${escaparHtmlCam(c.nombre)} (${escaparHtmlCam(c.dueno)}) ↗</a>`).join("")}
+    </div>` : "";
+  caja.innerHTML = `
+    <div class="etq" style="margin:12px 0 2px;">OTRAS CÁMARAS DE LA ZONA</div>
+    ${htmlImagenes}
+    ${htmlEnlaces}
+    <p class="nota-final">Cámaras de terceros: se ven en la web de su dueño.</p>`;
+}
+let spotWebcamActual = null;
+
 function pintarWebcam(slug, nombre) {
   pararRefrescoWebcam();
   destruirHlsActivo();
   cerrarZoomWebcam();
+  spotWebcamActual = slug;
+  pintarCamarasExternas(slug);
   const cont = document.getElementById("panelWebcamContenido");
   if (!SPOTS_CON_WEBCAM.includes(slug)) {
-    cont.innerHTML = `<div class="tarjeta" style="text-align:center; color:#42585F; font-size:12px;">Sin webcam identificada para este spot todavía.</div>`;
+    const hayExternas = window.CamarasExternas && window.CamarasExternas.camarasExternasDeSpot(slug).length > 0;
+    cont.innerHTML = hayExternas
+      ? ""
+      : `<div class="tarjeta" style="text-align:center; color:#42585F; font-size:12px;">Sin webcam identificada para este spot todavía.</div>`;
     return;
   }
   if (camaraRetirada(slug)) {
@@ -3599,7 +3602,7 @@ document.getElementById("infoIndicePescaBtn").addEventListener("click", () => {
 //   que se vea el avance de la tormenta.
 // - TIME siempre explícito: EUMETView manda cache-control de 7 días, así
 //   que una URL sin hora se quedaría enseñando rayos viejos.
-// La imagen de AEMET (12 h, toda España) se queda debajo, en el panel.
+// La imagen de AEMET (12 h, toda España) queda como enlace en el ⓘ del panel.
 const RAYOS_SAT_WMS = "https://view.eumetsat.int/geoserver/wms";
 const RAYOS_SAT_TRAMOS = 6;
 let capasRayosSat = [];
@@ -3645,243 +3648,239 @@ async function pintarRayosSat() {
     capasRayosSat.push(capa);
   }
   const hasta = new Date(ultima.getTime() + 5 * 60 * 1000).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Madrid" });
-  nota.textContent = `Rayos de los últimos 30 min hasta las ${hasta}, detectados por el satélite europeo MTG (EUMETSAT). Se actualiza cada 5 min, con unos 15 min de retraso.`;
+  nota.textContent = `Manchas de tormenta: últimos 30 min hasta las ${hasta}, satélite europeo MTG (EUMETSAT), con unos 15 min de retraso.`;
 }
 // Rayos en TIEMPO REAL (Vaisala Xweather, vía functions/rayos-cerca.js)
 // encima de la capa del satélite. Cada consulta cuesta (solo hay 1.500
-// gratis al mes), así que solo se pide con el mapa acercado a una zona
-// (zoom >= 7: con toda España a la vista ya está la capa del satélite), al
-// soltar el mapa y como mucho una vez por minuto mientras la capa esté
-// abierta. El servidor comparte la respuesta por celda de 0,5° durante 60 s
-// y corta al llegar al tope del mes: entonces queda solo el satélite.
-const ZOOM_MIN_RAYOS_VIVO = 7;
+// gratis al mes): una al abrir, otra cada minuto mientras esté abierto y
+// otra solo si se mueve el mapa lejos del punto de referencia. El servidor
+// comparte la respuesta por celda de 0,5° durante 60 s y corta al llegar al
+// tope del mes: entonces queda solo el satélite.
+//
+// Más sencillo de manejar (2026-10-08, Mikel: "la pestaña de rayos es poco
+// ágil de manejar"). Un toque en ⚡ y ya:
+//   - se elige desde dónde medir (spot abierto > tu GPS si ya diste permiso >
+//     centro del mapa) y, si el mapa estaba muy alejado, se acerca ahí;
+//   - arriba de los créditos sale UNA frase: "⚡ Rayo más cercano: 12 km al
+//     NO de ti · hace 2 min" o "Sin rayos a menos de 100 km en los últimos
+//     5 min", con el color según la distancia;
+//   - la primera vez que hay rayos, el mapa se encuadra para que se vean el
+//     punto de referencia y el rayo más cercano, unidos por una línea;
+//   - tocar la frase vuelve a hacer ese encuadre.
+// Sin panel lateral ni vista grande aparte con su propio + / −: el mapa de
+// siempre se pellizca y se mueve como siempre. La imagen de AEMET (12 h,
+// toda España) queda como enlace en el ⓘ, porque es lo único que añade (el
+// histórico de horas atrás). La lógica pura está en assets/js/rayos.js, con
+// tests en test/rayos-resumen.test.js.
 const capaRayosVivo = L.layerGroup();
 let temporizadorRayosVivo = null;
 let esperaMovimientoRayos = null;
+let refRayos = null;           // { lat, lon, de, origen }
+let masCercanoRayos = null;    // último rayo más cercano pintado
+let rayosEncuadre = [];        // los que entran al encuadrar (misma tormenta)
+let encuadrePendienteRayos = false;
+let estadoRayos = "cargando";
 const ATRIBUCION_RAYOS_VIVO = "Rayos en tiempo real: Vaisala Xweather";
-function kmEntre(a, b) {
-  const R = 6371, rad = Math.PI / 180;
-  const dLat = (b.lat - a.lat) * rad, dLon = (b.lon - a.lon) * rad;
-  const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin(dLon / 2) ** 2;
-  return 2 * R * Math.asin(Math.sqrt(h));
+function rayosActivo() {
+  return document.getElementById("toggleRayos").classList.contains("activo");
 }
-async function actualizarRayosVivo() {
-  const nota = document.getElementById("notaRayosVivo");
-  if (!document.getElementById("toggleRayos").classList.contains("activo")) return;
-  if (map.getZoom() < ZOOM_MIN_RAYOS_VIVO) {
-    capaRayosVivo.clearLayers();
-    nota.textContent = "🔍 Acércate a una zona para ver los rayos en tiempo real.";
+function moduloRayos() {
+  return window.Rayos
+    ? Promise.resolve(window.Rayos)
+    : new Promise((ok) => window.addEventListener("rayos-listo", () => ok(window.Rayos), { once: true }));
+}
+// La tarjeta vive dentro de un control de Leaflet en la esquina inferior
+// derecha: Leaflet apila los controles de abajo por encima de la
+// atribución, así que nunca tapa los créditos (que son obligatorios).
+const ControlRayos = L.Control.extend({
+  options: { position: "bottomright" },
+  onAdd() {
+    const hoja = document.getElementById("rayosHoja");
+    L.DomEvent.disableClickPropagation(hoja);
+    L.DomEvent.disableScrollPropagation(hoja);
+    return hoja;
+  },
+  onRemove() {},
+});
+const controlRayos = new ControlRayos();
+controlRayos.addTo(map);
+function pintarResumenRayos(R, datos) {
+  estadoRayos = datos.estado;
+  const { nivel, texto, conteo } = R.resumenRayos({ ...datos, ref: refRayos });
+  document.getElementById("rayosHoja").dataset.nivel = nivel;
+  document.getElementById("rayosResumen").textContent = texto;
+  if (refRayos) {
+    const desde = refRayos.origen === "gps" ? "tu ubicación" : refRayos.origen === "spot" ? refRayos.de.replace(/^de /, "") : "el centro del mapa";
+    document.getElementById("rayosRefTexto").textContent =
+      `${conteo ? conteo + " " : ""}Distancias medidas desde ${desde} (el punto con borde oscuro). Toca la frase para volver a centrar el mapa en el rayo más cercano.`;
+  }
+}
+// Solo si el usuario YA dio permiso de ubicación: abrir los rayos no debe
+// hacer saltar la pregunta del navegador. Como mucho 3 s.
+async function gpsSiHayPermiso() {
+  try {
+    if (!navigator.permissions || !navigator.geolocation) return null;
+    const permiso = await navigator.permissions.query({ name: "geolocation" });
+    if (permiso.state !== "granted") return null;
+    return await new Promise((ok) => {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => ok({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
+        () => ok(null),
+        { timeout: 3000, maximumAge: 10 * 60 * 1000 }
+      );
+    });
+  } catch (e) {
+    return null;
+  }
+}
+function encuadrarRayoMasCercano() {
+  if (!refRayos) return;
+  if (!masCercanoRayos) {
+    map.setView([refRayos.lat, refRayos.lon], Math.max(map.getZoom(), 9));
     return;
   }
-  const centro = map.getCenter();
+  // Márgenes: arriba/derecha van los botones de capas; abajo, esta tarjeta.
+  const puntos = [refRayos, ...rayosEncuadre].map((p) => [p.lat, p.lon]);
+  map.fitBounds(puntos, { paddingTopLeft: [60, 70], paddingBottomRight: [120, 150], maxZoom: 11 });
+  // Nunca por debajo del zoom en que se consulta el tiempo real (con 100 km
+  // de radio no debería pasar ni en una pantalla pequeña, pero por si acaso).
+  if (map.getZoom() < window.Rayos.ZOOM_MIN_VIVO) {
+    map.setView([(refRayos.lat + masCercanoRayos.rayo.lat) / 2, (refRayos.lon + masCercanoRayos.rayo.lon) / 2], window.Rayos.ZOOM_MIN_VIVO);
+  }
+}
+async function actualizarRayosVivo() {
+  if (!rayosActivo() || !refRayos) return;
+  const R = await moduloRayos();
+  if (map.getZoom() < R.ZOOM_MIN_VIVO) {
+    capaRayosVivo.clearLayers();
+    pintarResumenRayos(R, { estado: "lejos" });
+    return;
+  }
+  const ref = refRayos;
   let datos = null;
   try {
     const { data } = window.supabaseCliente ? await window.supabaseCliente.auth.getSession() : { data: null };
     const token = data?.session?.access_token;
-    const resp = await fetch(`/rayos-cerca?lat=${centro.lat.toFixed(4)}&lon=${centro.lng.toFixed(4)}`, {
+    const resp = await fetch(`/rayos-cerca?lat=${ref.lat.toFixed(4)}&lon=${ref.lon.toFixed(4)}`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
     datos = resp.ok ? await resp.json() : null;
   } catch (e) {
     console.log("rayos-cerca:", e.message);
   }
-  if (!document.getElementById("toggleRayos").classList.contains("activo")) return;
+  if (!rayosActivo() || ref !== refRayos) return;
   capaRayosVivo.clearLayers();
   if (datos?.fuente !== "xweather") {
-    nota.textContent = "Tiempo real no disponible ahora mismo: se ven solo los rayos del satélite (≈15 min de retraso).";
+    masCercanoRayos = null;
+    rayosEncuadre = [];
+    pintarResumenRayos(R, { estado: "no_disponible" });
     return;
   }
   const ahora = Date.now() / 1000;
-  const yo = { lat: centro.lat, lon: centro.lng };
-  let masCercano = null;
   for (const r of datos.rayos) {
-    const edadMin = r.ts ? Math.max(0, (ahora - r.ts) / 60) : 5;
-    // Morado, no rojo: la capa del satélite ya usa amarillo→rojo para la
-    // intensidad, y los dos no deben confundirse. Más intenso = más reciente.
-    const color = edadMin < 1 ? "#5A189A" : edadMin < 3 ? "#7B2CBF" : "#B07FE0";
-    L.circleMarker([r.lat, r.lon], { radius: 5, color: "#FFFFFF", weight: 1.5, fillColor: color, fillOpacity: 0.95 })
-      .bindTooltip(`⚡ ${r.tipo === "ic" ? "Rayo entre nubes" : "Rayo a tierra"} · hace ${edadMin < 1 ? "menos de 1" : Math.round(edadMin)} min`)
+    const edadMin = R.edadMinutos(r, ahora);
+    L.circleMarker([r.lat, r.lon], { radius: 6, color: "#FFFFFF", weight: 1.5, fillColor: R.colorPorEdad(edadMin), fillOpacity: 0.95 })
+      .bindTooltip(`⚡ ${r.tipo === "ic" ? "Rayo entre nubes" : "Rayo a tierra"} · ${R.textoEdad(edadMin)}`)
       .addTo(capaRayosVivo);
-    const km = kmEntre(yo, r);
-    if (!masCercano || km < masCercano.km) masCercano = { km, edadMin };
   }
-  nota.textContent = masCercano
-    ? `⚡ ${datos.rayos.length} rayo(s) en los últimos 5 min · el más cercano, a ${Math.round(masCercano.km)} km del centro del mapa, hace ${masCercano.edadMin < 1 ? "menos de 1" : Math.round(masCercano.edadMin)} min.`
-    : "✅ Sin rayos en los últimos 5 min a menos de 100 km del centro del mapa.";
+  masCercanoRayos = R.rayoMasCercano(ref, datos.rayos, ahora);
+  rayosEncuadre = R.rayosParaEncuadre(ref, datos.rayos, masCercanoRayos);
+  // Punto de referencia y línea hasta el rayo más cercano: se ve de un
+  // vistazo de qué está midiendo la frase.
+  L.circleMarker([ref.lat, ref.lon], { radius: 5, color: "#0B2532", weight: 2, fillColor: "#FFFFFF", fillOpacity: 1 })
+    .bindTooltip(`Distancias medidas desde aquí (${ref.de.replace(/^de(l)? /, "")})`)
+    .addTo(capaRayosVivo);
+  if (masCercanoRayos) {
+    L.polyline([[ref.lat, ref.lon], [masCercanoRayos.rayo.lat, masCercanoRayos.rayo.lon]], {
+      color: "#5A189A", weight: 2, dashArray: "6 6", interactive: false,
+    }).addTo(capaRayosVivo);
+  }
+  pintarResumenRayos(R, { estado: "ok", masCercano: masCercanoRayos, total: datos.rayos.length });
+  if (encuadrePendienteRayos && masCercanoRayos) encuadrarRayoMasCercano();
+  encuadrePendienteRayos = false;
 }
-function alMoverMapaRayos() {
+// Al mover el mapa no se vuelve a consultar salvo que el centro se vaya
+// lejos de la referencia (o se vuelva a acercar tras alejarse mucho): el
+// refresco de cada minuto ya mantiene los datos al día.
+async function alMoverMapaRayos() {
   clearTimeout(esperaMovimientoRayos);
-  esperaMovimientoRayos = setTimeout(actualizarRayosVivo, 800);
+  const R = await moduloRayos();
+  esperaMovimientoRayos = setTimeout(() => {
+    if (!rayosActivo()) return;
+    const c = map.getCenter();
+    const centro = { lat: c.lat, lon: c.lng };
+    const zoomOk = map.getZoom() >= R.ZOOM_MIN_VIVO;
+    if (R.debeCambiarReferencia(refRayos, centro, map.getZoom())) {
+      refRayos = R.elegirReferencia({ centro });
+      actualizarRayosVivo();
+    } else if (zoomOk === (estadoRayos === "lejos")) {
+      actualizarRayosVivo();
+    }
+  }, 800);
+}
+async function abrirRayos() {
+  const hoja = document.getElementById("rayosHoja");
+  hoja.hidden = false;
+  const R = await moduloRayos();
+  if (!rayosActivo()) return;
+  refRayos = null;
+  masCercanoRayos = null;
+  pintarResumenRayos(R, { estado: "cargando" });
+  pintarRayosSat();
+  temporizadorRayosSat = setInterval(pintarRayosSat, 5 * 60 * 1000);
+  capaRayosVivo.addTo(map);
+  map.attributionControl.addAttribution(ATRIBUCION_RAYOS_VIVO);
+  const panelSpot = document.getElementById("panel");
+  const spot = panelSpot && panelSpot.classList.contains("visible") ? spotAbiertoActual : null;
+  const gps = spot ? null : await gpsSiHayPermiso();
+  if (!rayosActivo()) return;
+  const c = map.getCenter();
+  refRayos = R.elegirReferencia({ spot, gps, centro: { lat: c.lat, lon: c.lng } });
+  // Si el mapa está muy alejado o la referencia queda fuera de lo que se
+  // ve, se acerca ahí: así no hace falta un segundo gesto para ver rayos.
+  if (map.getZoom() < R.ZOOM_MIN_VIVO || !map.getBounds().contains([refRayos.lat, refRayos.lon])) {
+    map.setView([refRayos.lat, refRayos.lon], Math.max(map.getZoom(), 9));
+  }
+  encuadrePendienteRayos = true;
+  await actualizarRayosVivo();
+  if (!rayosActivo()) return;
+  temporizadorRayosVivo = setInterval(actualizarRayosVivo, 60 * 1000);
+  map.on("moveend", alMoverMapaRayos);
+}
+function cerrarRayos() {
+  document.getElementById("rayosHoja").hidden = true;
+  quitarRayosSat();
+  map.off("moveend", alMoverMapaRayos);
+  clearTimeout(esperaMovimientoRayos);
+  capaRayosVivo.clearLayers();
+  map.removeLayer(capaRayosVivo);
+  map.attributionControl.removeAttribution(ATRIBUCION_RAYOS_VIVO);
+  refRayos = null;
+  masCercanoRayos = null;
+  rayosEncuadre = [];
 }
 document.getElementById("toggleRayos").addEventListener("click", () => {
   const boton = document.getElementById("toggleRayos");
-  const panel = document.getElementById("rayosPanel");
   const activar = !boton.classList.contains("activo");
   boton.classList.toggle("activo", activar);
-  panel.classList.toggle("visible", activar);
   // innerHTML con la etiqueta: con textContent, al cerrar el panel el botón
   // perdía para siempre el rótulo "Rayos" de debajo del icono.
   boton.innerHTML = activar ? "✕" : '⚡<span class="capa-label">Rayos</span>';
   clearInterval(temporizadorRayosSat);
   clearInterval(temporizadorRayosVivo);
   if (activar) {
-    pintarRayosSat();
-    temporizadorRayosSat = setInterval(pintarRayosSat, 5 * 60 * 1000);
-    capaRayosVivo.addTo(map);
-    map.attributionControl.addAttribution(ATRIBUCION_RAYOS_VIVO);
-    actualizarRayosVivo();
-    temporizadorRayosVivo = setInterval(actualizarRayosVivo, 60 * 1000);
-    map.on("moveend", alMoverMapaRayos);
+    abrirRayos();
     registrarEvento("ver_capa_rayos");
   } else {
-    quitarRayosSat();
-    map.off("moveend", alMoverMapaRayos);
-    capaRayosVivo.clearLayers();
-    map.removeLayer(capaRayosVivo);
-    map.attributionControl.removeAttribution(ATRIBUCION_RAYOS_VIVO);
+    cerrarRayos();
   }
 });
-document.getElementById("ocultarPanelRayos").addEventListener("click", () => {
-  document.getElementById("rayosPanel").classList.remove("visible");
-});
-document.getElementById("imgRayos").addEventListener("error", (e) => {
-  e.target.style.display = "none";
-  document.getElementById("notaRayos").textContent = "Fuente: AEMET (no disponible ahora mismo)";
-});
-// Toda la miniatura abre la vista grande, no solo el botón ⤢ (que además
-// es pequeño para un dedo). La vista grande tiene zoom propio con + / −
-// (el viewport bloquea el pellizco): el lienzo crece de ancho y el punto que
-// estabas mirando se queda en el centro. En el móvil se abre ya ampliada
-// 2,6× y centrada en la Península (≈45 % del ancho del encuadre de AEMET).
-const ZOOMS_RAYOS = [1, 1.6, 2.6, 4, 6, 9, 12];
-const ESCALA_MIN_RAYOS = 1, ESCALA_MAX_RAYOS = 12;
-let escalaRayos = 1;
-// Fija la escala del lienzo manteniendo quieto un punto del mapa. "ancla" es
-// ese punto en fracción del lienzo (fx, fy) y dónde debe quedar dentro de la
-// ventana, en píxeles (px, py); por defecto, el centro de lo que se ve. Se
-// hace todo en el mismo frame (leer scrollWidth fuerza el recálculo) para
-// que el pellizco no dé saltos.
-function aplicarEscalaRayos(escala, ancla) {
-  const scroll = document.getElementById("scrollRayos");
-  const lienzo = scroll.querySelector(".lienzo-rayos");
-  const a = ancla || {
-    px: scroll.clientWidth / 2,
-    py: scroll.clientHeight / 2,
-    fx: (scroll.scrollLeft + scroll.clientWidth / 2) / (scroll.scrollWidth || 1),
-    fy: (scroll.scrollTop + scroll.clientHeight / 2) / (scroll.scrollHeight || 1),
-  };
-  escalaRayos = Math.max(ESCALA_MIN_RAYOS, Math.min(ESCALA_MAX_RAYOS, escala));
-  lienzo.style.width = `${escalaRayos * 100}%`;
-  scroll.scrollLeft = Math.max(0, a.fx * scroll.scrollWidth - a.px);
-  scroll.scrollTop = Math.max(0, a.fy * scroll.scrollHeight - a.py);
-  document.getElementById("zoomMasRayos").disabled = escalaRayos >= ESCALA_MAX_RAYOS - 0.01;
-  document.getElementById("zoomMenosRayos").disabled = escalaRayos <= ESCALA_MIN_RAYOS + 0.01;
-  programarDetalleFondoRayos();
-}
-// Encuadre REAL del fondo general sobre el que encajan los rayos: se pide
-// bbox lon -18..14 / lat 35..47 a 680×246 px, pero esa proporción (2,76) no
-// es la de los grados (32/12 = 2,67) y ArcGIS ensancha el encuadre a lo
-// ancho, centrado: 12° × 680/246 = 33,17° de longitud alrededor de -2°. El
-// detalle usa ese mismo encuadre para caer exactamente encima.
-const ANCHO_LON_RAYOS = (12 * 680) / 246;
-const BBOX_RAYOS = { oeste: -2 - ANCHO_LON_RAYOS / 2, este: -2 + ANCHO_LON_RAYOS / 2, sur: 35, norte: 47 };
-let temporizadorDetalleRayos = null;
-function programarDetalleFondoRayos() {
-  clearTimeout(temporizadorDetalleRayos);
-  temporizadorDetalleRayos = setTimeout(pedirDetalleFondoRayos, 300);
-}
-function pedirDetalleFondoRayos() {
-  const scroll = document.getElementById("scrollRayos");
-  const detalle = document.getElementById("detalleFondoRayos");
-  if (!document.getElementById("modalRayos").classList.contains("visible")) return;
-  // Sin zoom, el fondo general ya basta.
-  if (escalaRayos <= 1.6) { detalle.hidden = true; return; }
-  const W = scroll.scrollWidth, H = scroll.scrollHeight;
-  const x0 = scroll.scrollLeft / W, x1 = Math.min(1, (scroll.scrollLeft + scroll.clientWidth) / W);
-  const y0 = scroll.scrollTop / H, y1 = Math.min(1, (scroll.scrollTop + scroll.clientHeight) / H);
-  const b = BBOX_RAYOS;
-  const lon = (f) => (b.oeste + (b.este - b.oeste) * f).toFixed(5);
-  const lat = (f) => (b.norte - (b.norte - b.sur) * f).toFixed(5);
-  const dpr = Math.min(3, window.devicePixelRatio || 1);
-  const ancho = Math.min(4096, Math.round(scroll.clientWidth * dpr));
-  const alto = Math.min(4096, Math.round(scroll.clientHeight * dpr));
-  const url = `https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/export?bbox=${lon(x0)},${lat(y1)},${lon(x1)},${lat(y0)}&bboxSR=4326&size=${ancho},${alto}&format=png&transparent=false&f=image`;
-  const nueva = new Image();
-  nueva.onload = () => {
-    // Se coloca en % del lienzo: sigue en su sitio aunque luego se cambie el zoom.
-    Object.assign(detalle.style, { left: `${x0 * 100}%`, top: `${y0 * 100}%`, width: `${(x1 - x0) * 100}%`, height: `${(y1 - y0) * 100}%` });
-    detalle.src = nueva.src;
-    detalle.hidden = false;
-  };
-  nueva.src = url;
-}
-function abrirRayosGrande() {
-  document.getElementById("imgRayosGrande").src = `/rayos-imagen?_=${Date.now()}`;
-  document.getElementById("modalRayos").classList.add("visible");
-  const movil = window.matchMedia("(max-width: 720px)").matches;
-  requestAnimationFrame(() => {
-    const scroll = document.getElementById("scrollRayos");
-    aplicarEscalaRayos(movil ? 2.6 : 1, { fx: 0.45, fy: 0.5, px: scroll.clientWidth / 2, py: scroll.clientHeight / 2 });
-  });
-}
-document.getElementById("scrollRayos").addEventListener("scroll", programarDetalleFondoRayos, { passive: true });
-// Botones: saltan al siguiente nivel de ZOOMS_RAYOS por encima/debajo de la
-// escala actual (que tras un pellizco puede ser cualquier valor intermedio).
-document.getElementById("zoomMasRayos").addEventListener("click", () => {
-  aplicarEscalaRayos(ZOOMS_RAYOS.find((z) => z > escalaRayos + 0.01) ?? ESCALA_MAX_RAYOS);
-});
-document.getElementById("zoomMenosRayos").addEventListener("click", () => {
-  aplicarEscalaRayos([...ZOOMS_RAYOS].reverse().find((z) => z < escalaRayos - 0.01) ?? ESCALA_MIN_RAYOS);
-});
-
-// Pellizco con dos dedos SOLO dentro del mapa de rayos (2026-10-03, pedido
-// del usuario). El viewport de la app lleva user-scalable=no para que no se
-// amplíe la página entera; aquí se interpreta el gesto a mano. Con un dedo el
-// navegador sigue arrastrando el mapa normal (touch-action: pan-x pan-y en el
-// CSS); con dos, se escala manteniendo bajo los dedos el punto que tocaban.
-(function pellizcoRayos() {
-  const scroll = document.getElementById("scrollRayos");
-  let inicio = null;
-  const distancia = (t) => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
-  scroll.addEventListener("touchstart", (e) => {
-    if (e.touches.length !== 2) return;
-    const caja = scroll.getBoundingClientRect();
-    const mx = (e.touches[0].clientX + e.touches[1].clientX) / 2 - caja.left;
-    const my = (e.touches[0].clientY + e.touches[1].clientY) / 2 - caja.top;
-    inicio = {
-      distancia: distancia(e.touches),
-      escala: escalaRayos,
-      fx: (scroll.scrollLeft + mx) / scroll.scrollWidth,
-      fy: (scroll.scrollTop + my) / scroll.scrollHeight,
-    };
-  }, { passive: true });
-  scroll.addEventListener("touchmove", (e) => {
-    if (!inicio || e.touches.length !== 2) return;
-    e.preventDefault();
-    const caja = scroll.getBoundingClientRect();
-    const mx = (e.touches[0].clientX + e.touches[1].clientX) / 2 - caja.left;
-    const my = (e.touches[0].clientY + e.touches[1].clientY) / 2 - caja.top;
-    aplicarEscalaRayos(inicio.escala * (distancia(e.touches) / inicio.distancia), { fx: inicio.fx, fy: inicio.fy, px: mx, py: my });
-  }, { passive: false });
-  const fin = (e) => { if (e.touches.length < 2) inicio = null; };
-  scroll.addEventListener("touchend", fin);
-  scroll.addEventListener("touchcancel", fin);
-  // Safari (iOS) manda además sus propios eventos de gesto: se anulan dentro
-  // del mapa para que no intente ampliar la página a la vez.
-  for (const tipo of ["gesturestart", "gesturechange"]) {
-    scroll.addEventListener(tipo, (e) => e.preventDefault(), { passive: false });
-  }
-})();
-document.getElementById("expandirRayos").addEventListener("click", (e) => {
-  e.stopPropagation();
-  abrirRayosGrande();
-});
-document.querySelector("#rayosPanel .marco-imagen").addEventListener("click", abrirRayosGrande);
-document.getElementById("cerrarModalRayos").addEventListener("click", () => {
-  document.getElementById("modalRayos").classList.remove("visible");
-});
-document.getElementById("modalRayos").addEventListener("click", (e) => {
-  if (e.target.id === "modalRayos") document.getElementById("modalRayos").classList.remove("visible");
+document.getElementById("rayosResumen").addEventListener("click", encuadrarRayoMasCercano);
+document.getElementById("rayosDetalleBtn").addEventListener("click", () => {
+  const boton = document.getElementById("rayosDetalleBtn");
+  const abrir = boton.getAttribute("aria-expanded") !== "true";
+  boton.setAttribute("aria-expanded", String(abrir));
+  document.getElementById("rayosDetalle").hidden = !abrir;
 });
 document.getElementById("cerrarModalEstacion").addEventListener("click", () => {
   document.getElementById("modalEstacion").classList.remove("visible");
@@ -3982,53 +3981,29 @@ document.getElementById("toggleLuna").addEventListener("click", () => {
   if (lunaAbierta) actualizarLuna();
 });
 
-// Radar de lluvia — capa de teselas real sobre el mapa (no un panel de
-// texto), igual patrón que capaBatimetria más arriba. Fuente: RainViewer
-// (api.rainviewer.com), gratis y sin API key — verificado en vivo
-// 2026-09-09 (weather-maps.json responde con los frames disponibles, y
-// una tesela de ejemplo carga como image/png real). Es radar de
-// PRECIPITACIÓN real, no un mapa genérico de nubosidad — por eso el
-// tooltip del botón dice "radar de lluvia", no "nubes", para no prometer
-// más de lo que es.
-let capaRadarLluvia = null;
-let radarLluviaCargando = false;
-async function prepararCapaRadarLluvia() {
-  if (capaRadarLluvia || radarLluviaCargando) return capaRadarLluvia;
-  radarLluviaCargando = true;
-  try {
-    const resp = await fetch("https://api.rainviewer.com/public/weather-maps.json");
-    const datos = await resp.json();
-    const ultimoFrame = (datos.radar?.past || []).slice(-1)[0];
-    if (!ultimoFrame) throw new Error("sin frames de radar disponibles");
-    capaRadarLluvia = L.tileLayer(`${datos.host}${ultimoFrame.path}/256/{z}/{x}/{y}/2/1_1.png`, {
-      opacity: 0.55,
-      attribution: "Radar de lluvia: RainViewer",
-      // RainViewer documenta que su zoom máximo real es 7 — pedir teselas
-      // de zoom 8+ no da un error HTTP, devuelve una tesela válida con el
-      // texto "Zoom Level Not Supported" dibujado dentro (verificado en
-      // vivo 2026-09-13, bug reportado por el usuario: "me pone zoom
-      // level not supported" al acercar el mapa). maxNativeZoom hace que,
-      // a partir de zoom 8, Leaflet siga pidiendo la tesela de zoom 7 y
-      // la reescale — se sigue pudiendo acercar el mapa, pero sin pedir
-      // teselas que no existen de verdad.
-      maxNativeZoom: 7,
+// Lluvia de las últimas 3 horas, animada (2026-10-08, pedido de Mikel). Toda
+// la lógica vive en assets/js/lluvia-animada.js (fuente, licencia, tests);
+// aquí solo se engancha al botón. Radar EUMETNET OPERA cada 5 min (vía
+// functions/lluvia/) con satélite H SAF de respaldo. Sustituye a la imagen
+// fija de RainViewer: solo daba 2 h y no cubre uso comercial.
+let lluviaAnimada = null;
+function prepararLluviaAnimada() {
+  if (!lluviaAnimada && window.LluviaAnimada) {
+    lluviaAnimada = window.LluviaAnimada.crearLluviaAnimada({
+      L, map, contenedor: document.getElementById("map").parentElement,
     });
-  } catch (e) {
-    console.log("No se pudo cargar el radar de lluvia:", e.message);
-  } finally {
-    radarLluviaCargando = false;
   }
-  return capaRadarLluvia;
+  return lluviaAnimada;
 }
-document.getElementById("toggleNubes").addEventListener("click", async (e) => {
+document.getElementById("toggleNubes").addEventListener("click", (e) => {
   const boton = e.currentTarget;
-  const capa = await prepararCapaRadarLluvia();
-  if (!capa) return;
-  if (map.hasLayer(capa)) {
-    map.removeLayer(capa);
+  const control = prepararLluviaAnimada();
+  if (!control) return;
+  if (control.activo()) {
+    control.desactivar();
     boton.classList.remove("activo");
   } else {
-    capa.addTo(map);
+    control.activar();
     boton.classList.add("activo");
     registrarEvento("ver_capa_radar_lluvia");
   }
