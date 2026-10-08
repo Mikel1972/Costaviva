@@ -133,7 +133,7 @@
    "licencia": "propio",
    "fecha_documento": "2026-09-13",
    "fecha_consulta": "2026-10-07",
-   "nota": "No verificado de nuevo en esta pasada. Por eso cada campo que lo usa lleva verificado:false."
+   "nota": "No verificado de nuevo en esta pasada. Por eso cada campo que lo usa lleva verificado:false. Las listas ESPECIES* se retiraron de index.html el 2026-10-08: este fichero es ahora la única fuente."
   },
   "fishbase_nc": {
    "titulo": "FishBase (citado en index.html)",
@@ -336,64 +336,54 @@
  "cebos_criterio": "Cada cebo lleva fuente (url + fecha_revision) o, si es práctica habitual sin fuente abierta citable, tipo_fuente 'heuristica_experta' con su criterio. Nunca copiar manuales de pago ni contenido de apps competidoras (Fizk).",
  "fishbase_pendientes": [
   {
-   "donde": "index.html ESPECIES",
+   "donde": "antes index.html ESPECIES (retirada 2026-10-08); dato conservado aquí",
    "especie": "Sargo",
    "dato": "rangoTemp 15-24 °C ('FishBase, n=400')"
   },
   {
-   "donde": "index.html ESPECIES",
+   "donde": "antes index.html ESPECIES (retirada 2026-10-08); dato conservado aquí",
    "especie": "Abadejo",
    "dato": "rangoTemp 7-12 °C ('según FishBase'); la profundidad ya se cita a ICES (CC BY)"
   },
   {
-   "donde": "index.html ESPECIES",
+   "donde": "antes index.html ESPECIES (retirada 2026-10-08); dato conservado aquí",
    "especie": "Congrio",
    "dato": "rangoTemp 4-14 °C ('según FishBase')"
   },
   {
-   "donde": "index.html ESPECIES_MEDITERRANEO",
+   "donde": "antes index.html ESPECIES_MEDITERRANEO (retirada 2026-10-08)",
    "especie": "Breca",
    "dato": "rangoTemp 12-21 °C ('FishBase, n=492')"
   },
   {
-   "donde": "index.html ESPECIES_GOLFO_CADIZ",
+   "donde": "antes index.html ESPECIES_GOLFO_CADIZ (retirada 2026-10-08)",
    "especie": "Lenguado",
    "dato": "rangoTemp 8-24 °C ('adultos según FishBase')"
   },
   {
-   "donde": "index.html ESPECIES_GOLFO_CADIZ",
+   "donde": "antes index.html ESPECIES_GOLFO_CADIZ (retirada 2026-10-08)",
    "especie": "Bocinegro",
    "dato": "rangoTemp 16-28 °C ('FishBase, n=1356')"
   },
   {
-   "donde": "index.html ESPECIES_CANARIAS",
+   "donde": "antes index.html ESPECIES_CANARIAS (retirada 2026-10-08)",
    "especie": "Vieja",
    "dato": "rangoTemp 15-20 °C ('FishBase, n=34')"
   },
   {
-   "donde": "index.html ESPECIES_CANARIAS",
+   "donde": "antes index.html ESPECIES_CANARIAS (retirada 2026-10-08)",
    "especie": "Bicuda",
    "dato": "rangoTemp 15-22 °C ('según FishBase (n=230)')"
   },
   {
-   "donde": "index.html ESPECIES_CANARIAS",
+   "donde": "antes index.html ESPECIES_CANARIAS (retirada 2026-10-08)",
    "especie": "Breca",
    "dato": "rangoTemp 12-21 °C ('FishBase, n=492')"
   },
   {
-   "donde": "index.html ESPECIES_CANARIAS",
+   "donde": "antes index.html ESPECIES_CANARIAS (retirada 2026-10-08)",
    "especie": "Cabrilla",
    "dato": "rangoTemp 16-19 °C ('FishBase, n=26')"
-  },
-  {
-   "donde": "index.html (comentarios de cabecera de ESPECIES y de la ampliación nacional)",
-   "especie": "todas",
-   "dato": "FishBase citado como fuente general de temperatura y dieta"
-  },
-  {
-   "donde": "scripts/marketing/generar-post-instagram.mjs (comentario)",
-   "especie": "—",
-   "dato": "cita FishBase como fuente de ESPECIES"
   }
  ],
  "especies": [
@@ -741,6 +731,7 @@
     "rango de temperatura no-NC",
     "tallas de aguas interiores de cada comunidad"
    ],
+   "emoji": "🐟",
    "cebos": [
     {
      "nombre": "Mejillón",
@@ -1131,6 +1122,7 @@
     "nombres eu/gl/ca",
     "rango de temperatura no-NC"
    ],
+   "emoji": "🐟",
    "cebos": [
     {
      "nombre": "Gusana",
@@ -1279,11 +1271,12 @@
     }
    },
    "actividad": {
-    "valor": "Cauta: mordisquea el cebo; en Rota, sobre todo con la marea subiendo.",
+    "valor": "Cauta: mordisquea el cebo y lo prueba antes de tragarlo.",
     "fuentes": [
      "app_index"
     ],
-    "verificado": false
+    "verificado": false,
+    "nota": "En Rota (Golfo de Cádiz) la guía local la da sobre todo con la marea subiendo; eso va en las reglas de marea."
    },
    "temperatura_agua": {
     "rango": [
@@ -1372,6 +1365,7 @@
     "freza en el Atlántico",
     "nombres eu/gl/ca"
    ],
+   "emoji": "🐟",
    "cebos": [
     {
      "nombre": "Almeja",
@@ -1513,6 +1507,7 @@
    "pendiente": [
     "hábitat, profundidad, presencia, freza, temperatura y alimentación con fuente no-NC"
    ],
+   "emoji": "🐟",
    "cebos": [
     {
      "nombre": "Gusana",
@@ -1727,6 +1722,7 @@
     "hábitat, profundidad, temperatura, alimentación",
     "freza fuera del Golfo de Bizkaia"
    ],
+   "emoji": "🐟",
    "cebos": [
     {
      "nombre": "Plumas o sabiki",
@@ -1947,6 +1943,7 @@
     "hábitat, profundidad, temperatura",
     "presencia en Mediterráneo"
    ],
+   "emoji": "🐟",
    "cebos": [
     {
      "nombre": "Plumas o sabiki",
@@ -2067,6 +2064,7 @@
    "pendiente": [
     "casi todo: hábitat, freza, temperatura, alimentación"
    ],
+   "emoji": "🐟",
    "cebos": [
     {
      "nombre": "Mejillón",
@@ -2264,6 +2262,7 @@
     "freza",
     "rango de temperatura no-NC"
    ],
+   "emoji": "🐍",
    "cebos": [
     {
      "nombre": "Caballa o sardina en trozos",
@@ -2405,6 +2404,7 @@
     "vedas autonómicas (Galicia, Asturias)",
     "¿es especie autorizada en recreativa en cada CCAA?"
    ],
+   "emoji": "🐙",
    "cebos": [
     {
      "nombre": "Señuelo para pulpo (pulpera o jibionera)",
@@ -2573,6 +2573,7 @@
     "presencia Cantábrico/Atlántico",
     "fuente de las 12.000 capturas"
    ],
+   "emoji": "🦑",
    "cebos": [
     {
      "nombre": "Jibionera o egi",
@@ -2784,6 +2785,7 @@
     "freza",
     "rango de temperatura no-NC"
    ],
+   "emoji": "🦑",
    "cebos": [
     {
      "nombre": "Egi (potera de eging)",
@@ -2968,6 +2970,20 @@
     {
      "jurisdiccion": "UE",
      "ambito": "pesca recreativa, CIEM 8 y 9a",
+     "tipo": "veda_recreativa",
+     "meses": [
+      1,
+      2,
+      3,
+      4
+     ],
+     "regiones": [
+      "cantabrico",
+      "atlantico_norte",
+      "portugal",
+      "golfo_cadiz"
+     ],
+     "pendiente_verificar": "Reg. (UE) 2026/249, art. 12 (2026)",
      "texto": "Según ICES (2025), el Reg. (UE) 2025/202 cerró la pesca recreativa del 1 de enero al 30 de abril y limitó a 2 ejemplares/día el resto del año. Para 2026 rige el Reg. (UE) 2026/249 (art. 12): NO verificado en su texto.",
      "fuente": "ices_pol_sa",
      "verificado": false
@@ -2978,6 +2994,7 @@
     "verificar Reg. (UE) 2026/249 (veda y cupo recreativo 2026) y la talla UE vigente",
     "rango de temperatura no-NC"
    ],
+   "emoji": "🐟",
    "cebos": [
     {
      "nombre": "Chirla o berberecho",
@@ -3099,6 +3116,7 @@
     "freza",
     "nombres eu/pt"
    ],
+   "emoji": "🐟",
    "cebos": [
     {
      "nombre": "Señuelos de curricán (plumas, pulpitos)",
@@ -3265,6 +3283,7 @@
     "freza",
     "temperatura"
    ],
+   "emoji": "🐟",
    "cebos": [
     {
      "nombre": "Pan o masilla",
@@ -3436,6 +3455,7 @@
     "freza",
     "temperatura no-NC"
    ],
+   "emoji": "🐟",
    "cebos": [
     {
      "nombre": "Gusana",
@@ -3600,6 +3620,7 @@
     "freza (ICES tiene stock annex de Solea solea 8c9a)",
     "temperatura no-NC"
    ],
+   "emoji": "🐟",
    "cebos": [
     {
      "nombre": "Gusana",
@@ -3737,6 +3758,7 @@
     "talla en España (no aparece en el RD 560/1995)",
     "freza con fuente"
    ],
+   "emoji": "🐟",
    "cebos": [
     {
      "nombre": "Cangrejo ermitaño",
@@ -3856,6 +3878,7 @@
     "talla mínima (no aparece en RD 560/1995 ni en el anexo IX)"
    ],
    "cientifico_nota": "Nombre científico no cotejado aún con una lista oficial.",
+   "emoji": "🐟",
    "cebos": [
     {
      "nombre": "Calamar o pulpo",
@@ -3948,6 +3971,7 @@
     "talla mínima"
    ],
    "cientifico_nota": "La app no da nombre científico y no se ha verificado (probablemente Pagrus auriga).",
+   "emoji": "🐟",
    "cebos": [
     {
      "nombre": "Cangrejo",
@@ -4095,6 +4119,7 @@
    "pendiente": [
     "hábitat, profundidad, freza y temperatura con fuente no-NC"
    ],
+   "emoji": "🐟",
    "cebos": [
     {
      "nombre": "Calamar",
@@ -4203,6 +4228,7 @@
    "pendiente": [
     "hábitat, profundidad, freza y temperatura con fuente no-NC"
    ],
+   "emoji": "🐠",
    "cebos": [
     {
      "nombre": "Cangrejo",
@@ -4294,6 +4320,7 @@
     "hábitat, profundidad, freza y temperatura con fuente no-NC"
    ],
    "cientifico_nota": "RD 560/1995 anexo III: 'Sama de pluma (Dentex filosus) — Sama, serruda, pargo macho'. Falta confirmar que es la 'sama' de la app.",
+   "emoji": "🐟",
    "cebos": [
     {
      "nombre": "Calamar",
@@ -4386,6 +4413,7 @@
     "talla"
    ],
    "cientifico_nota": "Sin verificar (género Seriola).",
+   "emoji": "🐟",
    "cebos": [
     {
      "nombre": "Jig",
@@ -4482,6 +4510,7 @@
     "talla"
    ],
    "cientifico_nota": "Sin verificar (género Sphyraena).",
+   "emoji": "🐟",
    "cebos": [
     {
      "nombre": "Señuelo de spinning o curricán",
@@ -4574,6 +4603,7 @@
     "hábitat, profundidad, freza y temperatura con fuente no-NC"
    ],
    "cientifico_nota": "RD 560/1995 anexo III: 'Jureles (Trachurus spp) — Chicharro'. Especie concreta sin verificar.",
+   "emoji": "🐟",
    "cebos": [
     {
      "nombre": "Plumas o sabiki",
@@ -4703,6 +4733,7 @@
    "pendiente": [
     "hábitat, profundidad, freza y temperatura con fuente no-NC"
    ],
+   "emoji": "🐠",
    "cebos": [
     {
      "nombre": "Pan o masilla",
@@ -4803,6 +4834,7 @@
    "pendiente": [
     "hábitat, profundidad, freza y temperatura con fuente no-NC"
    ],
+   "emoji": "🐟",
    "cebos": [
     {
      "nombre": "Gusana",
@@ -4900,6 +4932,7 @@
     "talla"
    ],
    "cientifico_nota": "Sin verificar (la app usa un dato genérico de género).",
+   "emoji": "🐟",
    "cebos": [
     {
      "nombre": "Señuelo pequeño de superficie",

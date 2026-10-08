@@ -978,6 +978,30 @@ Ahora además hereda la vigencia por spot del punto anterior.
   especies" de `ROBOT_REGLAS.md`) sube cambios a `robot/especies-AAAA-MM-DD` y
   `robot-diseno-pr.yml` abre el PR. **Si cambias el .txt, hay que pegar el
   texto nuevo en la rutina de claude.ai/code/routines.**
+- **Fuente única de especies (2026-10-08)**: las listas `ESPECIES`,
+  `ESPECIES_MEDITERRANEO`, `ESPECIES_GOLFO_CADIZ` y `ESPECIES_CANARIAS` se
+  retiraron de `index.html`, junto con la tarjeta "¿Qué esperamos pescar hoy?".
+  Ahora todo lee `especies.json`:
+  - **Índice de pesca** (`pintarIndicePesca` en `index.html`): especies de
+    temporada en la región del spot (`regionPorCoordenadas`), sin las que están
+    en veda (`vedaActiva`); misma fórmula de antes (ratio de especies con el agua
+    en su rango × 70 + presión). Los rangos de FishBase no cuentan; sin ningún
+    rango usable, ratio neutro 0,5 como antes. El JSON se pide al cargar la página.
+  - **Post de Instagram de los miércoles** (`scripts/marketing/especie-post.mjs`):
+    región según la última zona de `rotacion-zonas.json` (por defecto Cantábrico;
+    `REGION_POST` la fuerza), prioriza especies con temporada verificada, nunca
+    una en veda, y el texto se compone con temporada + fuente, actividad,
+    alimentación, cebos, freza y talla. Ya no publica las notas antiguas (algunas
+    citaban FishBase).
+  - **Vedas**: `vedas[].meses` + `regiones` en el JSON. El abadejo lleva la veda
+    recreativa 1 ene–30 abr (Reg. (UE) 2025/202 según ICES), pendiente de
+    verificar para 2026 (Reg. (UE) 2026/249): no aparece como de temporada, ni en
+    el índice ni en los posts, y la ventana de actividad muestra "En veda" sin
+    recomendar horas.
+  - Lo que tenía la lista antigua y no tiene el JSON: la división costa/mar
+    adentro (solo la usaba la tarjeta retirada) y las notas largas (sustituidas
+    por campos con fuente). `diario.html` sigue con su propia `ESPECIES` (solo
+    nombre + científico para el desplegable de capturas): es otra cosa y no se toca.
 - **Ojo, Open-Meteo**: la API gratuita es solo para uso no comercial; toda la
   app (no solo esto) la usa. Pendiente de decidir con Mikel (plan comercial de
   Open-Meteo o alternativa).

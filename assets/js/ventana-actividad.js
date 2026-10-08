@@ -373,3 +373,47 @@ export function cebosParaRegion(especie, region, max = 5) {
     .slice(0, max)
     .map(({ c }) => c);
 }
+
+// ---------------------------------------------------------------------------
+// Especies de temporada (sustituye a las listas ESPECIES* que había en
+// index.html, retiradas el 2026-10-08). Una especie está "de temporada" en
+// una región si su presencia en esa región incluye el mes y NO está en veda.
+// ---------------------------------------------------------------------------
+export const NOMBRE_REGION = {
+  cantabrico: "el Cantábrico", atlantico_norte: "Galicia", portugal: "Portugal",
+  golfo_cadiz: "el Golfo de Cádiz", mediterraneo: "el Mediterráneo", baleares: "Baleares",
+  canarias: "Canarias", azores: "Azores", madeira: "Madeira",
+};
+const MESES_CORTOS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+
+// Veda (p. ej. recreativa) que afecta a esa región ese mes, o null.
+export function vedaActiva(especie, region, mes) {
+  return (especie.vedas || []).find((v) =>
+    Array.isArray(v.meses) && v.meses.includes(mes) && (!v.regiones || v.regiones.includes(region))) || null;
+}
+
+// true/false si hay rango de temperatura usable; null si no hay dato o si el
+// rango solo tiene fuente no comercial (excluir_del_calculo).
+export function coincideTemperatura(especie, tempAgua) {
+  const t = especie.temperatura_agua;
+  if (!t?.rango || t.excluir_del_calculo || tempAgua === null || tempAgua === undefined) return null;
+  return tempAgua >= t.rango[0] && tempAgua <= t.rango[1];
+}
+
+export function especiesDeTemporada(datos, region, mes) {
+  return datos.especies.filter((e) => e.presencia?.[region]?.meses?.includes(mes) && !vedaActiva(e, region, mes));
+}
+
+// "abr–dic", "todo el año" o "ene, mar, may": meses en orden circular.
+export function textoMeses(meses) {
+  if (!meses?.length) return "";
+  if (meses.length === 12) return "todo el año";
+  const set = new Set(meses);
+  const inicio = [...set].find((m) => !set.has(m === 1 ? 12 : m - 1));
+  if (inicio !== undefined) {
+    let fin = inicio, n = 1;
+    while (set.has(fin === 12 ? 1 : fin + 1) && n < set.size) { fin = fin === 12 ? 1 : fin + 1; n++; }
+    if (n === set.size) return `${MESES_CORTOS[inicio - 1]}–${MESES_CORTOS[fin - 1]}`;
+  }
+  return meses.map((m) => MESES_CORTOS[m - 1]).join(", ");
+}
