@@ -890,7 +890,45 @@ captura" con normalidad. **Probado en real por el usuario en producción
 2026-09-13**: abrir una entrada, ir añadiendo capturas y concluir la
 jornada funciona bien.
 
-## Bug corregido — radar de lluvia mostraba "Zoom Level Not Supported" (2026-09-13)
+## Lluvia: radar OPERA de las últimas 3 horas, animado (2026-10-08)
+
+Pedidos de Mikel: el botón **Lluvia** enseña la evolución de las últimas 3 h,
+en bucle por defecto, con pausa/play y la hora de Madrid de cada toma (la
+última dura más), y **"es imprescindible que sea lo más cercano en tiempo"**:
+el panel dice siempre el retraso de la última toma ("hace 6 min"; en rojo si
+pasa de 20 min).
+- **Fuente principal: radar EUMETNET OPERA** (composición europea DBZH con
+  los radares de AEMET, IPMA y Météo-France). Publica una toma cada 5 min,
+  ~4-5 min después de su hora: retraso visto en la app 5-10 min. La animación
+  usa **una cada 10 min y siempre la última publicada** (decisión de Mikel
+  2026-10-08, `submuestrear()`): ~19 tomas en 3 h; el refresco de cada
+  minuto mete la nueva al momento.
+  Bucket S3 público de 24 h `s3.waw3-1.cloudferro.com/openradar-24h`, sin
+  clave ni coste. **Licencia CC BY 4.0** ("EUMETNET ... has decided to
+  distribute these products under the CC BY 4.0 license",
+  github.com/EUMETNET/openradardata-documentation). Atribución en el mapa.
+- **Respaldo: satélite EUMETSAT H SAF H60B** (WMS de EUMETView, CC BY 4.0,
+  cada 15 min, ~45 min de retraso) solo donde el radar no llega (mar
+  abierto, Canarias, radares caídos: el de A Coruña no daba datos el
+  2026-10-08), más tenue y dicho en el panel. Si el radar entero falla, se
+  anima solo el satélite.
+- **Cómo llega**: el bucket no manda CORS. `functions/lluvia/tomas.js` lista
+  las tomas (caché del edge 60 s) y `functions/lluvia/toma.js` lee la cabecera
+  del GeoTIFF y reenvía SIN descomprimir las 2 teselas de la vista de 4 km
+  que cubren la Península (caché del edge 24 h, inmutable). El navegador las
+  descomprime (`DecompressionStream`), reproyecta de Lambert azimutal (lat0
+  55, lon0 10) a Mercator y pinta un canvas por toma
+  (`assets/js/lluvia-animada.js`). Nada se guarda en Supabase ni en GitHub.
+- **Coste**: 0 €. 1 invocación de Functions por toma al abrir la capa y 1 por
+  minuto mientras está abierta (unas 20 invocaciones al abrir); ~3,5 MB de
+  descarga para las ~19 tomas (luego quedan en la caché del navegador 24 h).
+- Descartados: RainViewer (2 h y sin uso comercial), AEMET OpenData (solo la
+  última imagen, GIF con mapa de fondo, clave), Météo-France (clave; sus
+  radares ya están en OPERA), IPMA (radar "solo informativo"), Rain Alarm
+  (app cerrada, sin API).
+- Tests: `test/lluvia-animada.test.js` (en `tests.yml`).
+
+## Bug corregido (histórico, ya no se usa RainViewer) — radar de lluvia mostraba "Zoom Level Not Supported" (2026-09-13)
 
 Reportado por el usuario: al acercar el mapa de nubes/lluvia
 (`toggleNubes`, capa RainViewer en `index.html`), aparecía el texto
