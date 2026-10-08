@@ -41,6 +41,9 @@ const ARCHIVOS_PUBLICOS = new Set([
   "/grupos",
   "/suscripcion.html",
   "/suscripcion",
+  // Privacidad de las capturas y de "Comparte tu captura" (2026-10-08).
+  "/privacidad.html",
+  "/privacidad",
   // admin.html no es secreto: su seguridad real está en Supabase
   // (es_admin() y las funciones security definer), no en ocultar la URL.
   "/admin.html",
@@ -82,6 +85,10 @@ const ARCHIVOS_PUBLICOS = new Set([
   // exactas, no el prefijo /meteo/: solo existen estas dos APIs.
   "/meteo/forecast",
   "/meteo/marine",
+  // Radar de lluvia EUMETNET OPERA para el navegador (functions/lluvia/):
+  // listado de tomas y teselas de una toma. Rutas exactas.
+  "/lluvia/tomas",
+  "/lluvia/toma",
 ]);
 
 // Prefijos públicos:
