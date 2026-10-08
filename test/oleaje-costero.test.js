@@ -87,7 +87,7 @@ test("procesarSpot: en Hondarribia `altura` es la playa y `alturaMarAbierto` el 
   const spot = SPOTS.find((s) => s.slug === "hondarribia");
   // Hora local "de ahora" no coincidirá con la serie: procesarSpot cae al
   // índice 0, que basta para probar el cálculo.
-  const horas = ["2026-10-08T12:00", "2026-10-08T13:00"];
+  const horas = ["2000-01-01T12:00", "2000-01-01T13:00"]; // fecha pasada: nunca coincide con "ahora"
   const marino = {
     latitude: 43.458336, longitude: -1.7916565,
     hourly: { time: horas, wave_height: [2.98, 2.9], wave_period: [8.65, 8.6], wave_direction: [323, 323],
