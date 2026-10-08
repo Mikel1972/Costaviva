@@ -25,7 +25,12 @@
 //
 // Uso: node scripts/oleaje-camaras/medir-espuma.mjs [--boyas boyas.json]
 //        [--salida fichero.jsonl] [--seco] [--forzar-luz] [--miniaturas dir]
+//        [--solo-calibrar]
 //   --miniaturas: guarda también en local las miniaturas (para revisar ROIs)
+//   --solo-calibrar: no mide nada; recalcula calibracion.json con el
+//     histórico y las etiquetas (las de Supabase si hay clave, y las de
+//     Claude de etiquetas-claude.jsonl) y enseña la decisión por cámara.
+//     Es lo que corre la rutina de etiquetado (RUTINA_ETIQUETADO.md).
 
 import { execFileSync } from "node:child_process";
 import { appendFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
@@ -36,7 +41,7 @@ import { medirEspuma, medirEspumaDinamica, huella, similitud, SIMILITUD_MINIMA }
 import { CAMARAS } from "./camaras.mjs";
 import {
   calibrarTodo, estimarAltura, claveCalibracion, emparejarEtiquetaSpot, elevacionSolar, ELEVACION_MINIMA, ERROR_MINIMO_POCOS_DATOS,
-  ruidoCamara, camaraSustituyeModelo,
+  ruidoCamara, camaraSustituyeModelo, etiquetasClaudeParaCalibrar,
 } from "./calibracion.mjs";
 import { CAMARAS_OLEAJE, BANDAS_OLA, FUENTE_POR_SPOT } from "../../functions/_lib/oleaje-camaras.js";
 import { SPOTS, factorOleaje } from "../../functions/prevision.js";
@@ -52,6 +57,8 @@ const DIR_DATOS = join(RAIZ, "datos-robots", "oleaje-camaras");
 const SALIDA = arg("--salida") || join(DIR_DATOS, "espuma.jsonl");
 const FICHERO_BOYAS = arg("--boyas");
 const DIR_MINIATURAS = arg("--miniaturas");
+const SOLO_CALIBRAR = args.includes("--solo-calibrar");
+export const FICHERO_ETIQUETAS_CLAUDE = join(DIR_DATOS, "etiquetas-claude.jsonl");
 const FFMPEG = process.env.FFMPEG || "ffmpeg";
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const CLAVE = (process.env.SUPABASE_SERVICE_ROLE_KEY || "").trim();
@@ -98,7 +105,7 @@ async function ultimoSegmento(url) {
   return Buffer.from(await (await pedir(new URL(seg, urlLista).href, 30000)).arrayBuffer());
 }
 
-function framesDeFichero(fichero, filtros = "", maxFrames = 1) {
+export function framesDeFichero(fichero, filtros = "", maxFrames = 1) {
   const crudo = execFileSync(
     FFMPEG,
     ["-loglevel", "error", "-i", fichero, "-vf", `${filtros}scale=${ANCHO}:${ALTO}`, "-frames:v", String(maxFrames), "-f", "rawvideo", "-pix_fmt", "rgb24", "-"],
@@ -110,7 +117,7 @@ function framesDeFichero(fichero, filtros = "", maxFrames = 1) {
   return frames;
 }
 
-function jpegDeFrame(rgb) {
+export function jpegDeFrame(rgb) {
   return execFileSync(
     FFMPEG,
     ["-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", `${ANCHO}x${ALTO}`, "-i", "-", "-q:v", "6", "-f", "mjpeg", "-"],
@@ -165,7 +172,7 @@ function resumir(porEncuadre, extra = {}) {
   });
 }
 
-async function medirHls(id, cam) {
+export async function medirHls(id, cam) {
   const dir = mkdtempSync(join(tmpdir(), `ola-${id}-`));
   const porEncuadre = {};
   const dinamicas = { medidas: [], frames: [], similitud: null };
@@ -225,7 +232,7 @@ async function urlImagen(cam) {
   return `${address.replace(/^http:/i, "https:").replace(/\/?$/, "/")}streams/${streamid}/snapshot.jpg`;
 }
 
-async function medirImagen(id, cam) {
+export async function medirImagen(id, cam) {
   const r = await pedir(await urlImagen(cam), 30000);
   const lm = Date.parse(r.headers.get("last-modified") || "");
   const fechaFoto = Number.isFinite(lm) ? new Date(lm).toISOString() : null;
@@ -251,7 +258,7 @@ async function medirImagen(id, cam) {
 }
 
 // Mar abierto del modelo en la hora actual en los spots de las cámaras.
-async function marAbiertoPorCamara() {
+export async function marAbiertoPorCamara() {
   const ids = Object.keys(CAMARAS);
   const spots = ids.map((id) => SPOTS.find((s) => s.slug === CAMARAS_OLEAJE[id].spot));
   const datos = await pedirDatosMeteo(
@@ -291,7 +298,7 @@ async function marAbiertoPorCamara() {
   return res;
 }
 
-function boyaDeCamara(cam, boyas) {
+export function boyaDeCamara(cam, boyas) {
   for (const id of cam.boyas || []) {
     const b = boyas?.[id];
     if (b?.ultima && Number.isFinite(b.ultima.hs)) return { id, nombre: b.nombre, ...b.ultima };
@@ -299,11 +306,35 @@ function boyaDeCamara(cam, boyas) {
   return null;
 }
 
-function leerHistorial() {
-  if (!existsSync(SALIDA)) return [];
-  return readFileSync(SALIDA, "utf8").split("\n").filter(Boolean).map((l) => {
+export function leerJsonl(fichero) {
+  if (!existsSync(fichero)) return [];
+  return readFileSync(fichero, "utf8").split("\n").filter(Boolean).map((l) => {
     try { return JSON.parse(l); } catch { return null; }
   }).filter(Boolean);
+}
+const leerHistorial = () => leerJsonl(SALIDA);
+
+// Etiquetas de Claude (datos-robots/oleaje-camaras/etiquetas-claude.jsonl,
+// ver RUTINA_ETIQUETADO.md), listas para calibrar.
+export const leerEtiquetasClaude = (fichero = FICHERO_ETIQUETAS_CLAUDE) =>
+  etiquetasClaudeParaCalibrar(leerJsonl(fichero), BANDAS_OLA.map((b) => b.id));
+
+// Decisión "¿sustituye al modelo?" de cada cámara con el histórico dado.
+export function sustitucionPorCamara(historial, calibracion) {
+  const out = {};
+  for (const id of Object.keys(CAMARAS)) {
+    const ruido = ruidoCamara(historial, id);
+    out[id] = { ...camaraSustituyeModelo(ruido, Object.entries(calibracion).filter(([k]) => k.startsWith(`${id}/`)).map(([, c]) => c)), ruido };
+  }
+  return out;
+}
+
+function escribirCalibracion(fecha, historial, etiquetas, calibracion) {
+  writeFileSync(join(dirname(SALIDA), "calibracion.json"), JSON.stringify({
+    fecha, lineasHistorial: historial.length, etiquetas: etiquetas.length,
+    etiquetasClaude: etiquetas.filter((e) => e.origen === "claude").length,
+    calibracion, sustitucion: sustitucionPorCamara(historial, calibracion),
+  }, null, 1) + "\n");
 }
 
 async function supabase(ruta, opciones = {}) {
@@ -389,6 +420,17 @@ async function limpiarMiniaturas() {
 
 async function main() {
   const ahora = Date.now();
+  if (SOLO_CALIBRAR) {
+    const historial = leerHistorial();
+    const etiquetas = [
+      ...(await leerEtiquetas(historial).catch((e) => (console.log("::warning::Etiquetas de Supabase no disponibles:", e.message), []))),
+      ...leerEtiquetasClaude(),
+    ];
+    const calibracion = calibrarTodo(historial, etiquetas, centroBanda);
+    escribirCalibracion(new Date(ahora).toISOString(), historial, etiquetas, calibracion);
+    for (const [id, d] of Object.entries(sustitucionPorCamara(historial, calibracion))) console.log(`${d.sustituye ? "✓" : "·"} ${id}: ${d.motivo}`);
+    return;
+  }
   const sol = elevacionSolar(ahora, 43.35, -2.5);
   if (sol < ELEVACION_MINIMA && !FORZAR_LUZ) {
     console.log(`Sol a ${sol}° (< ${ELEVACION_MINIMA}°): sin luz para medir. Nada que hacer.`);
@@ -397,7 +439,10 @@ async function main() {
   const boyas = FICHERO_BOYAS && existsSync(FICHERO_BOYAS) ? JSON.parse(readFileSync(FICHERO_BOYAS, "utf8")) : null;
   if (!boyas) console.log("::warning::Sin fichero de boyas: la calibración usará el modelo (con menos peso).");
   const historial = leerHistorial();
-  const etiquetas = await leerEtiquetas(historial).catch((e) => (console.log("::warning::Etiquetas no disponibles:", e.message), []));
+  const etiquetas = [
+    ...(await leerEtiquetas(historial).catch((e) => (console.log("::warning::Etiquetas no disponibles:", e.message), []))),
+    ...leerEtiquetasClaude(),
+  ];
   const calibracion = calibrarTodo(historial, etiquetas, centroBanda);
 
   const ids = Object.keys(CAMARAS);
@@ -444,7 +489,7 @@ async function main() {
         camara: id,
         spot: CAMARAS_OLEAJE[id].spot,
         ...resto,
-        calibracion: cal ? { n: cal.n, nEtiquetas: cal.nEtiquetas, errorRel: cal.errorRel, pocosDatos: cal.pocosDatos } : null,
+        calibracion: cal ? { n: cal.n, nEtiquetas: cal.nEtiquetas, nEtiquetasClaude: cal.nEtiquetasClaude ?? 0, errorRel: cal.errorRel, pocosDatos: cal.pocosDatos } : null,
         estimacionCamara: combinada,
         ruido,
         sustituyeModelo: decision.sustituye,
@@ -477,7 +522,7 @@ async function main() {
       if (frameMiniatura) writeFileSync(join(DIR_MINIATURAS, `${l.camara}-${l.encuadre}-${fecha.slice(11, 16).replace(":", "")}.jpg`), jpegDeFrame(frameMiniatura));
     }
   }
-  writeFileSync(join(dirname(SALIDA), "calibracion.json"), JSON.stringify({ fecha, lineasHistorial: historial.length, etiquetas: etiquetas.length, calibracion }, null, 1) + "\n");
+  escribirCalibracion(fecha, [...historial, ...lineas], etiquetas, calibracion);
   console.log(`${lineas.length} líneas añadidas a ${SALIDA}`);
 
   if (!CLAVE) {
