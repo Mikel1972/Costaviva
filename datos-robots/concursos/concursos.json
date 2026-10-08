@@ -1,0 +1,5 @@
+{
+  "v": 1,
+  "descripcion": "Resultados agregados de concursos de pesca de mar con reutilización permitida o permiso escrito. Sin nombres de participantes. Formato y reglas en LEEME.md; lo valida test/observaciones.test.js.",
+  "concursos": []
+}

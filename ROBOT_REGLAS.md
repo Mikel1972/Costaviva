@@ -1483,6 +1483,9 @@ corren solo 1 vez al día cada una (no 4):
   claro. Propuesta en `ROBOT.md` primero; solo aplicar directo a
   `ESPECIES`/`index.html` cuando el dato esté genuinamente contrastado
   y dentro de los límites de volumen de este fichero.
+  **Desde el 2026-10-08** la pasada de los viernes sigue además la sección
+  "Viernes: estudios sobre factores de pesca → reglas del índice" (más
+  abajo), que manda sobre este párrafo en lo que se solape.
 
 **Fuente DIGIPESCA — acceso real conseguido el 2026-09-15, 1 corrección
 ya aplicada a `ESPECIES_MEDITERRANEO`**: proyecto DIGIPESCA (Universitat
@@ -1706,6 +1709,115 @@ humana); no toques nada fuera de `assets/datos/especies.json`.
 
 Entrada en `ROBOT.md` siempre, aunque sea "sin novedades", con lo que se
 cambió, las fuentes y lo que queda pendiente.
+
+## Viernes: estudios sobre factores de pesca → reglas del índice (añadido 2026-10-08, aprobado por Mikel)
+
+Amplía la pasada de los viernes ("Estudios institucionales/académicos", más
+arriba). Además de lonjas/capturas, busca **estudios y datos que midan cómo
+influye cada factor en la actividad o captura de nuestras especies**, y los
+convierte en propuestas de reglas del índice CON su fuente, que Mikel revisa
+en un PR (mismo mecanismo que la ficha de especies de los jueves).
+
+**Factores** (uno o dos por pasada, rotando; anota en `ROBOT.md` cuál tocó):
+presión atmosférica y su tendencia; marea (fase, coeficiente, corriente de
+marea); turbidez y caudal de ríos / salinidad en desembocaduras y rías;
+viento por región (galerna, nordeste, poniente/levante, terral); temperatura
+del agua y saltos térmicos; afloramiento (*upwelling*: Galicia, Portugal,
+Cantábrico occidental); luz y luna; oleaje y mar de fondo; migraciones y
+temporadas (bonito/atún blanco en el golfo de Bizkaia, jurel, caballa,
+chipirón, lubina en freza...).
+
+**Fuentes válidas**: las mismas que la sección "Fichas de especies" (artículos
+CC BY de PLOS, Frontiers, MDPI, BMC, Scientia Marina; IEO-CSIC, AZTI, ICES
+solo CC BY 4.0, IPMA, universidades, informes de gobiernos y proyectos
+públicos; OBIS/GBIF CC0/CC BY). Prohibidas igual: nada NC, nada de FishBase/
+FAO/AquaMaps ni de apps competidoras. Un hallazgo concreto de un artículo
+científico publicado sin licencia abierta (una relación o un umbral, no una
+tabla ni una base de datos) se puede usar citándolo, sin copiar texto,
+tablas ni figuras; si el artículo o la base de datos es NC, o dudas, propuesta
+solo en `ROBOT.md`. **Comprueba con una petición real** (WebFetch/curl) que el
+estudio dice lo que vas a escribir; si solo tienes el resumen, dilo.
+
+**Qué sale de la pasada:**
+1. **Regla nueva o ajuste de peso** en `assets/datos/especies.json`. Mira
+   primero, con `node -e`, si existe `reglas_expertas` (motor del índice v2,
+   rama `claude/indice-pesca-v2`) y sigue SU `formato` (`id`, `nombre`,
+   `texto`, `fuente`, `tipo`, `confianza` 0-1, `estado`, `ambito`,
+   `condiciones`, `efecto.logodds`, `nota`). Una regla sacada de un estudio
+   entra SIEMPRE con `"tipo": "cientifica"` (u `"oficial"`) y
+   `"estado": "por_validar"`: la valida Mikel en el PR. Si `reglas_expertas`
+   todavía no existe, usa `reglas` / `reglas_por_defecto` (ventana de
+   actividad). En ambos casos cada regla o peso que toques lleva:
+   - `fuente`: id de la tabla `fuentes` (añádela con `titulo`, `url`,
+     `editor`, `tipo: "estudio"`, `licencia`, `doi` si lo hay,
+     `fecha_documento`, `fecha_consulta`);
+   - ámbito regional si el estudio es local (`ambito.regiones` o `region`):
+     un estudio de la ría de Vigo no vale para Cádiz, mismo criterio que los
+     localismos;
+   - en `nota` (o `criterio`): qué mide el estudio (especie, zona, años,
+     tamaño de muestra) y el efecto encontrado, sin exagerarlo;
+   - `confianza`: 0,6-0,8 con varios estudios o uno grande y local; 0,3-0,5
+     con uno solo o de otra zona. Por debajo de 0,3, propuesta solo en
+     `ROBOT.md`, no en el fichero.
+   Nunca conviertas una correlación en un peso fuerte: un ajuste por pasada y
+   como mucho ±0,2 en log-odds (`peso_lo` / `efecto.logodds`; ±5 puntos si
+   el fichero aún usa `peso`).
+2. **Contraste con las reglas locales de Mikel.** Las de `"tipo":
+   "heuristica_experta_local"` (y las `heuristica_experta` de `reglas`) son su
+   conocimiento local: **no cambies su efecto, su confianza ni su estado**. Si
+   un estudio la **confirma**, la **refuta** o la **matiza**, añádelo al final
+   de su `nota` con este formato: `[contraste AAAA-MM-DD: confirma|refuta|matiza
+   — <fuente id>, <región>: <resumen de una frase>]`, y explícalo en el mensaje
+   del commit. Quitar, invertir o subir de confianza una regla de Mikel solo lo
+   decide él en el PR.
+   Esto es la excepción, aprobada por Mikel el 2026-10-08, a "las reglas
+   expertas no las toca la rutina" de la sección de los jueves: solo los
+   viernes, solo reglas NUEVAS `por_validar` con fuente, y siempre por PR.
+3. **Entrada en `ROBOT.md`** siempre (aunque sea "sin novedades"): factores
+   mirados, estudios encontrados (con URL y licencia), qué se propuso y qué
+   se descartó y por qué.
+
+**Dónde va**: rama `robot/especies-AAAA-MM-DD-factores` (nunca `main`);
+`robot-diseno-pr.yml` abre el PR (lo reconoce por el sufijo `-factores`).
+Antes de subirla: `node --test test/ventana-actividad.test.js
+test/modalidades.test.js` y, si existe, `test/indice-pesca-v2.test.js`. Si falla, no subas la rama: propuesta en
+`ROBOT.md`. Como en los jueves, este flujo sustituye al límite de 3
+ficheros/80 líneas solo para `assets/datos/especies.json` y
+`datos-robots/concursos/`; no toques nada más en esa rama.
+
+**Para validar con datos reales** (no para proponer reglas a ciegas): las
+observaciones abiertas de `datos-robots/observaciones/comercial/*.json`
+(GBIF/iNaturalist, con condiciones) sirven para comprobar si una regla
+encaja con lo observado. Nunca uses `no-comercial/` para esto (CC BY-NC: el
+índice es parte del producto de pago). Son observaciones de presencia, no de
+captura: una especie vista con mar plano no dice que "pique" con mar plano.
+Dilo así si lo usas.
+
+## Concursos de pesca — viernes (añadido 2026-10-08, aprobado por Mikel)
+
+Si la pasada de factores termina con margen, revisa **una** federación o club
+de pesca de mar (España o Portugal) que publique resultados (especie, piezas,
+peso, fecha, zona). Formato, reglas y estado de cada fuente en
+`datos-robots/concursos/` (`LEEME.md`, `fuentes.json`, `concursos.json`).
+
+- Anota la fuente en `fuentes.json` aunque no se pueda usar: URL de
+  resultados, URL del aviso legal, cita literal de lo que dice sobre
+  reutilización, `reutilizacion` (`permitida` solo si hay licencia abierta
+  comprobada en la propia web; `no_permitida_sin_permiso` si reserva
+  derechos o no dice nada) y `fecha_revision`. FEPyC y FPPD ya están
+  revisadas (2026-10-08): reservan todos los derechos.
+- **Solo se añade un concurso a `concursos.json` si su fuente está en
+  `permitida` o `permiso`.** El permiso lo pide y lo registra Mikel, nunca el
+  robot (no escribas a nadie).
+- **Sin datos personales**: ni nombres de participantes, ni clasificaciones
+  individuales, ni puestos. Solo totales por especie del concurso.
+  Especie = id de `especies.json` o `null` con `nombre_publicado`; nunca
+  adivinar.
+- Antes de commitear: `node scripts/observaciones/concursos.mjs` (valida
+  fuente, campos prohibidos y especies). Va en la misma rama
+  `robot/especies-AAAA-MM-DD-factores` que lo demás.
+- Nada de Facebook, Instagram ni webs cuyas condiciones prohíban la
+  extracción; una noticia de prensa no es una fuente reutilizable.
 
 ## Red de seguridad de la automatización (añadido 2026-09-12)
 

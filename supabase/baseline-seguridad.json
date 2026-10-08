@@ -98,6 +98,38 @@
       ]
     },
     {
+      "tablename": "capturas_compartidas",
+      "rls_enabled": true,
+      "policies": [
+        {
+          "name": "cada usuario comparte solo sus capturas",
+          "cmd": "a",
+          "roles": [
+            "authenticated"
+          ]
+        },
+        {
+          "name": "cada usuario retira solo sus capturas compartidas",
+          "cmd": "d",
+          "roles": [
+            "authenticated"
+          ]
+        },
+        {
+          "name": "cada usuario ve solo sus capturas compartidas",
+          "cmd": "r",
+          "roles": [
+            "authenticated"
+          ]
+        }
+      ]
+    },
+    {
+      "tablename": "capturas_comunidad",
+      "rls_enabled": true,
+      "policies": []
+    },
+    {
       "tablename": "coeficiente_marea_actual",
       "rls_enabled": true,
       "policies": [

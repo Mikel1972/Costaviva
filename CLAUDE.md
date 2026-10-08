@@ -395,6 +395,43 @@ Decisión del usuario sobre la autonomía:
   Search Console. El robot anota en `SEO_ROBOT.md` (historial, se añade al
   final) los números, lo que cambió y qué espera ver la próxima vez.
 
+## Observaciones abiertas, concursos y "Comparte tu captura" (2026-10-08, aprobado por Mikel)
+
+"Añade todo lo legal". Sin IA en ejecución. Cuatro piezas:
+
+- **Observaciones abiertas** (`.github/workflows/observaciones.yml`, martes,
+  `scripts/observaciones/descargar.mjs` + `lib.mjs`): API de ocurrencias de
+  GBIF para nuestras especies en España y Portugal, a ≤ 25 km de un spot,
+  solo HUMAN_OBSERVATION/OCCURRENCE/MACHINE_OBSERVATION. **iNaturalist se toma
+  de GBIF** (su exportación oficial), no de su API: la API de iNaturalist dice
+  "not data scraping" (detalle y citas en `datos-robots/observaciones/LEEME.md`).
+  Salida en `datos-robots/observaciones/`: `comercial/` (CC0, CC BY) y
+  `no-comercial/` (CC BY-NC, **solo referencia interna: ni en la app ni para
+  calibrar el índice**). Coordenadas ocultadas por iNaturalist (p. ej. lubina)
+  se guardan a 0,2° y marcadas; nunca se afinan. Condiciones del spot:
+  Copernicus (instantánea, ~10 días) y Open-Meteo archive/marine **solo con
+  `OPEN_METEO_API_KEY`** (tope 150 llamadas/pasada). Carga histórica: lanzarlo
+  a mano con `desde` (p. ej. 2010); si tarda más de 15 min, GBIF pide usar su
+  API de descargas (cuenta + DOI).
+- **Concursos** (`datos-robots/concursos/`): FEPyC y FPPD reservan todos los
+  derechos; `concursos.json` vacío hasta que Mikel tenga permiso escrito. Sin
+  nombres de participantes. Lo valida `scripts/observaciones/concursos.mjs`.
+- **Rutina de los viernes** (`ROBOT_REGLAS.md`, "Viernes: estudios sobre
+  factores de pesca" y "Concursos de pesca"): propone reglas/pesos del índice
+  con fuente en `robot/especies-AAAA-MM-DD-factores`; `robot-diseno-pr.yml`
+  abre el PR. **El .txt de la rutina cambió: hay que pegarlo en
+  claude.ai/code/routines.**
+- **Comparte tu captura** (diario): casilla por captura, apagada por defecto
+  (`assets/js/compartir-captura.js`). Migración
+  `20261008150000_capturas_compartidas.sql` (**sin aplicar**; al aplicarla,
+  actualizar `supabase/baseline-seguridad.json`): marca propia en
+  `capturas_compartidas`, copia anónima en `capturas_comunidad` (sin usuario,
+  celda de ~5 km, RLS sin policies) y solo agregados con ≥ 5 usuarios
+  distintos (`comunidad_capturas_por_zona`, `comunidad_capturas_por_condiciones`).
+  Retirar = borrar la marca. Sin la migración, el diario no enseña la casilla.
+  Texto en `privacidad.html` (nueva, en la lista blanca de rutas).
+- Tests: `test/observaciones.test.js` (en `tests.yml`).
+
 ## Analítica de uso propia (`eventos_uso`, añadida 2026-09-17)
 
 Pedido explícito del usuario: entender qué usa de verdad cada usuario

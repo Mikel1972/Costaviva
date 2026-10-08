@@ -41,6 +41,9 @@ const ARCHIVOS_PUBLICOS = new Set([
   "/grupos",
   "/suscripcion.html",
   "/suscripcion",
+  // Privacidad de las capturas y de "Comparte tu captura" (2026-10-08).
+  "/privacidad.html",
+  "/privacidad",
   // admin.html no es secreto: su seguridad real está en Supabase
   // (es_admin() y las funciones security definer), no en ocultar la URL.
   "/admin.html",

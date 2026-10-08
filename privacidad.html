@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Privacidad de tus capturas — Costaviva</title>
+<meta name="description" content="Qué hace Costaviva con las capturas de tu diario de pesca, qué se comparte de forma anónima y cómo retirarlo." />
+<link rel="icon" href="icon.svg" type="image/svg+xml" />
+<meta name="theme-color" content="#F7F3E8" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: #F7F3E8; color: #0B2532;
+    font-family: 'Inter', sans-serif; line-height: 1.55;
+    padding: 24px 16px calc(32px + env(safe-area-inset-bottom));
+  }
+  main { max-width: 720px; margin: 0 auto; background: #FFFFFF; border: 1px solid #DDE2DC; border-radius: 14px; padding: 24px 22px; }
+  h1 { font-family: 'Fraunces', serif; font-size: 26px; margin: 0 0 4px; }
+  h2 { font-family: 'Fraunces', serif; font-size: 19px; margin: 26px 0 6px; }
+  p, li { font-size: 14px; }
+  .sub { color: #5C7680; font-size: 13px; margin: 0 0 16px; }
+  .nota { background: rgba(212,162,76,0.10); border: 1px solid #D9C08A; border-radius: 8px; padding: 10px 12px; font-size: 13px; }
+  a { color: #2F6B5E; }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  th, td { border-bottom: 1px solid #DDE2DC; text-align: left; padding: 6px 4px; vertical-align: top; }
+  @media (prefers-color-scheme: dark) {
+    body { background: #0B1A21; color: #E4ECEA; }
+    main { background: #10242D; border-color: #24414C; }
+    .sub { color: #9AB2B8; }
+    th, td { border-color: #24414C; }
+    a { color: #7CC3B1; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Privacidad de tus capturas</h1>
+  <p class="sub">Qué hacemos con lo que apuntas en el diario de pesca. Última actualización: 8 de octubre de 2026.</p>
+
+  <h2 id="diario">Tu diario es privado</h2>
+  <p>Las salidas, capturas, fotos, notas y ubicaciones que guardas en el diario no se muestran a otros
+  usuarios. La única excepción son los grupos privados a los que te unas, que ven lo que tengas activado para
+  compartir con ellos en cada tipo de salida.</p>
+
+  <h2 id="estadisticas">Estadísticas anónimas (casilla del alta)</h2>
+  <p>Si al crear la cuenta marcaste "Autorizo el uso anónimo de mis capturas", tus capturas en spots del
+  catálogo suman a unos contadores (especie, spot y mes) que no guardan quién pescó qué. Las capturas en tus
+  ubicaciones personales no cuentan nunca.</p>
+
+  <h2 id="comparte-tu-captura">Comparte tu captura</h2>
+  <p>Cada captura tiene una casilla <strong>"Compartir esta captura de forma anónima"</strong>, desmarcada
+  por defecto. Solo si la marcas, guardamos una copia anónima para la comunidad y para mejorar el índice de
+  pesca.</p>
+  <table>
+    <tr><th>Se comparte</th><th>No se comparte nunca</th></tr>
+    <tr>
+      <td>Especie, talla (redondeada al cm), peso (redondeado a 50 g), técnica, tipo de salida (costa,
+      embarcación, submarina), fecha y hora (sin minutos), zona aproximada (una celda de unos 5 km, nunca el
+      punto exacto; si pescaste en un spot del catálogo, ese spot público) y las condiciones de la salida
+      (marea, presión, viento, oleaje, temperatura del agua, luna).</td>
+      <td>Tu nombre, tu email o cualquier dato de tu cuenta; el punto exacto o el nombre de tus ubicaciones
+      personales; las notas, el cebo o el señuelo escritos a mano; las fotos.</td>
+    </tr>
+  </table>
+  <p>La copia anónima no lleva tu usuario. Nadie la lee de una en una: solo se muestran
+  <strong>resúmenes</strong> (por ejemplo, "lubinas en esta zona en octubre por la mañana"), y un resumen solo
+  aparece si lo forman capturas de <strong>al menos 5 personas distintas</strong>. Así no se puede deducir
+  quién pescó algo en un sitio con poca gente.</p>
+  <p>Para poder retirarla cuando quieras, guardamos un enlace interno entre tu captura y su copia anónima. Ese
+  enlace solo lo puedes ver tú y no se usa para nada más.</p>
+
+  <h2 id="retirar">Cómo retirarla</h2>
+  <ul>
+    <li>Edita la captura y desmarca la casilla: la copia anónima se borra en ese momento.</li>
+    <li>Si borras la captura, la salida o tu cuenta, su copia anónima se borra también.</li>
+    <li>Lo que ya se hubiera contado en un resumen deja de contar en cuanto se borra la copia.</li>
+  </ul>
+
+  <h2 id="datos-abiertos">Datos abiertos de otras personas</h2>
+  <p>Para comprobar el índice de pesca usamos también observaciones públicas de peces y cefalópodos
+  publicadas con licencia abierta en <a href="https://www.gbif.org" rel="noopener">GBIF</a> (incluidas las de
+  <a href="https://www.inaturalist.org" rel="noopener">iNaturalist</a>). Solo las que su autor publicó como
+  CC0 o CC BY; las CC BY-NC se guardan aparte como referencia y no se usan en la app. Respetamos la ubicación
+  ocultada que eligió cada observador (nunca la intentamos afinar) y solo guardamos el nombre del autor cuando
+  la licencia obliga a citarlo.</p>
+
+  <p class="nota">Esta página explica el tratamiento de las capturas y de los datos de la comunidad. Para
+  ejercer tus derechos (acceso, rectificación, supresión, oposición) sobre cualquier dato de tu cuenta,
+  contacta con Costaviva.</p>
+  <p><a href="/diario">Volver al diario</a></p>
+</main>
+</body>
+</html>
