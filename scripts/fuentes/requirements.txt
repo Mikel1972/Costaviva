@@ -1,0 +1,2 @@
+# Dependencias de descargar-ibi.py (workflow fuentes-gratuitas.yml). Versión fija.
+copernicusmarine==2.5.0

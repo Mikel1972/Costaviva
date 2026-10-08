@@ -22,7 +22,7 @@ import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { SPOTS } from "../../functions/prevision.js";
-import { pedirOpenMeteo, claveOpenMeteo } from "../../functions/_lib/open-meteo.js";
+import { pedirDatosMeteo } from "../../functions/_lib/fuentes.js";
 
 const BASE_URL = "https://costaviva.org";
 const CRON_SECRET = process.env.CRON_SECRET;
@@ -142,10 +142,10 @@ async function nubosidadPorSpot(slugs) {
   const lons = validos.map((s) => spotsPorSlug.get(s).lon).join(",");
   // OPEN_METEO_API_KEY (secret de GitHub Actions, turbidez.yml): si está,
   // host comercial con key; si no, el gratuito. Ver functions/_lib/open-meteo.js.
-  const datos = await pedirOpenMeteo(
+  const datos = await pedirDatosMeteo(
     "forecast",
     `latitude=${lats}&longitude=${lons}&current=cloud_cover&timezone=Europe%2FMadrid`,
-    { apiKey: claveOpenMeteo(process.env) }
+    { env: process.env }
   );
   const lista = Array.isArray(datos) ? datos : [datos];
   const resultado = {};

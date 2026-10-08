@@ -35,7 +35,7 @@
 
 import { secretoValido } from "./_lib/secreto.js";
 import { SPOTS, coeficientePorSpot } from "./prevision.js";
-import { pedirOpenMeteo, claveOpenMeteo } from "./_lib/open-meteo.js";
+import { pedirDatosMeteo } from "./_lib/fuentes.js";
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 // Escrituras con SUPABASE_SERVICE_ROLE_KEY (secreto de Cloudflare Pages, el
@@ -84,10 +84,10 @@ export async function onRequestPost(context) {
   try {
     const lats = SPOTS.map((s) => s.lat).join(",");
     const lons = SPOTS.map((s) => s.lon).join(",");
-    const datos = await pedirOpenMeteo(
+    const datos = await pedirDatosMeteo(
       "forecast",
       `latitude=${lats}&longitude=${lons}&current=pressure_msl&timezone=Europe%2FMadrid`,
-      { apiKey: claveOpenMeteo(context.env) }
+      { env: context.env }
     );
     // Con más de una localización, Open-Meteo devuelve un array (uno por
     // coordenada, mismo orden que se pidió) en vez de un único objeto —
@@ -135,10 +135,10 @@ export async function onRequestPost(context) {
       // nadie visitando la web esa hora.
       const lats = spotsLote.map((s) => s.lat).join(",");
       const lons = spotsLote.map((s) => s.lon).join(",");
-      const datos = await pedirOpenMeteo(
+      const datos = await pedirDatosMeteo(
         "marine",
         `latitude=${lats}&longitude=${lons}&timezone=Europe%2FMadrid&past_days=8&forecast_days=16&hourly=sea_level_height_msl`,
-        { apiKey: claveOpenMeteo(context.env) }
+        { env: context.env }
       );
       const lista = Array.isArray(datos) ? datos : [datos];
       const filas = spotsLote
