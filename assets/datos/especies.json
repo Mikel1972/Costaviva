@@ -1,5 +1,13 @@
 {
  "version": "2026-10-08",
+ "indice": {
+  "version": "v2-logistica-2026-10-08",
+  "formula": "P = 100 · σ(b0 + Σ peso_lo · f), f ∈ [-1, 1]; σ(x) = 1/(1+e^-x)",
+  "b0_logodds": 0,
+  "puntos_por_logodds": 25,
+  "criterio": "Escala logística acordada con Mikel el 2026-10-08. Los pesos están en log-odds (peso_lo = peso antiguo en puntos / 25): cerca de 50 un factor aporta casi los mismos puntos que antes, y lejos de 50 la curva se satura sola sin recortar. El porqué se enseña en puntos (P - 50 repartido en proporción al log-odds de cada factor). Filtros fuera de la fórmula: veda (la especie no entra), freza (aviso, nunca suma), topes de seguridad por modalidad, submarina de noche = 0 y datos caducados = S/D. Índice del spot = la mejor especie de temporada de esa modalidad en esa hora, con su nombre.",
+  "temperatura": "gaussiana: óptimo = centro del rango, sigma = media anchura"
+ },
  "descripcion": "Fichas de especies de Costaviva y reglas de la ventana de actividad. Mantenido a mano y por la rutina semanal de especies (scripts/saldo/rutina-buscador-fuentes.txt, jueves). Reglas del fichero: nunca inventar un valor (null + nota); solo fuentes oficiales o abiertas NO-NC; FishBase, FAO, SeaLifeBase y similares (CC BY-NC) prohibidos; cada dato con su fuente (ids de 'fuentes') y cada talla con url + fecha_revision.",
  "aviso_legal": "Tallas y vedas orientativas: manda la norma vigente publicada en el boletín oficial correspondiente.",
  "regiones": [
@@ -190,6 +198,16 @@
    "fecha_documento": "2026-09-13",
    "fecha_consulta": "2026-10-08",
    "nota": "Recuperada con git (commit 4e11b45, index.html líneas 1412-1560). Era la división que usaba la tarjeta '¿Qué esperamos pescar hoy?'. Heurística de las guías de pesca citadas allí, no una norma."
+  },
+  "mikel_experiencia_local": {
+   "titulo": "Mikel (experiencia local de pesca)",
+   "url": null,
+   "editor": "Mikel, fundador de Costaviva",
+   "tipo": "heuristica_experta_local",
+   "licencia": "propio (aportación de Mikel a Costaviva)",
+   "fecha_documento": "2026-10-08",
+   "fecha_consulta": "2026-10-08",
+   "nota": "Conocimiento de campo de pesca en el Cantábrico. Cada regla que lo cita es 'por_validar' hasta calibrarla con el diario (salidas_pesca.indice_factores); los umbrales numéricos son la traducción de Claude de lo que contó Mikel, no medidas suyas."
   }
  },
  "jurisdicciones": {
@@ -302,7 +320,7 @@
  },
  "reglas_por_defecto": {
   "luz": {
-   "peso": 10,
+   "peso_lo": 0.4,
    "preferencia": {
     "alba": 1,
     "ocaso": 1,
@@ -313,7 +331,7 @@
    "criterio": "Muchos peces costeros comen más con poca luz (amanecer y atardecer). Heurística de pesca recreativa, la misma que ya recogen las notas de especies de la app; no es una medida científica por especie. Alba/ocaso = ±60 min alrededor del amanecer/anochecer calculado (algoritmo NOAA)."
   },
   "marea": {
-   "peso": 10,
+   "peso_lo": 0.4,
    "preferencia": {
     "subiendo": 1,
     "bajando": 0.4,
@@ -324,12 +342,12 @@
    "criterio": "Con marea en movimiento hay más corriente y más alimento en suspensión; en el repunte (±1 h de pleamar o bajamar) se para. Heurística de pesca recreativa. El aporte se ESCALA con el rango de marea local del spot (máx-mín en ±12 h) frente a 2,5 m: en el Mediterráneo, con unos centímetros, la marea no cuenta (por debajo del 25 % de la referencia se ignora)."
   },
   "temperatura": {
-   "peso": 12,
+   "peso_lo": 0.48,
    "tipo": "regla_de_datos",
-   "criterio": "Si el agua está dentro del rango de temperatura documentado de la especie suma el peso entero; fuera, resta en proporción a la distancia (3 °C fuera = peso entero en negativo). Sin rango documentado no puntúa. El rango y su fuente están en temperatura_agua de cada especie."
+   "criterio": "Curva gaussiana alrededor del óptimo de la especie (centro del rango documentado, sigma = media anchura del rango): vale +1 en el centro, ~+0,2 en los bordes del rango y tiende a -1 lejos de él (v2, 2026-10-08; antes: +1 dentro del rango y resta lineal fuera). Sin rango documentado, o con un rango cuya única fuente es no comercial (FishBase), no puntúa. El rango y su fuente están en temperatura_agua de cada especie."
   },
   "oleaje": {
-   "peso": 8,
+   "peso_lo": 0.32,
    "optimo_m": [
     0.3,
     1.5
@@ -341,13 +359,13 @@
    "criterio": "Seguridad desde costa primero: por encima de 2,5 m la puntuación se limita a 20 y se avisa. El tramo óptimo por especie es una heurística experta (p. ej. a la lubina le gusta la espuma de la rompiente)."
   },
   "viento": {
-   "peso": 6,
+   "peso_lo": 0.24,
    "max_kmh": 30,
    "tipo": "criterio_de_diseno",
    "criterio": "Solo penaliza por encima de 30 km/h, el mismo umbral que ya usa el índice de mar de la app (criterio de diseño, sin fuente oficial)."
   },
   "presion": {
-   "peso": 6,
+   "peso_lo": 0.24,
    "preferencia": {
     "bajando": 1,
     "estable": 0.3,
@@ -357,7 +375,7 @@
    "criterio": "Mismo criterio que el índice de pesca existente: una bajada de presión suele preceder a un cambio de tiempo y coincidir con más actividad; orientativo. Tendencia = diferencia con la presión de 3 h antes, umbral ±1 hPa (igual que /prevision)."
   },
   "turbidez": {
-   "peso": 0,
+   "peso_lo": 0.0,
    "preferencia": {
     "no turbia": 0,
     "turbia": 0,
@@ -367,7 +385,7 @@
    "criterio": "Por defecto no puntúa: solo cuenta en las especies con una preferencia clara (ver sus reglas). El dato es diario por spot, calculado por la app a partir de las webcams frente al propio histórico del spot."
   },
   "luna": {
-   "peso": 0,
+   "peso_lo": 0.0,
    "tipo": "informativo",
    "criterio": "Sin respaldo verificado para darle peso propio; su efecto sobre la marea ya entra por el rango de marea. Solo se muestra como información."
   }
@@ -781,7 +799,7 @@
      "criterio": "Más activa al amanecer y anochecer (notas de la app, guías de pesca recreativa)."
     },
     "marea": {
-     "peso": 12,
+     "peso_lo": 0.48,
      "preferencia": {
       "subiendo": 1,
       "bajando": 0.5,
@@ -800,7 +818,7 @@
      "criterio": "Le favorece algo de mar con espuma; con el mar plano y agua clara desconfía (heurística)."
     },
     "turbidez": {
-     "peso": 6,
+     "peso_lo": 0.24,
      "preferencia": {
       "no turbia": -0.3,
       "turbia": 1,
@@ -1238,7 +1256,7 @@
      "criterio": "Come en la rompiente removida (heurística)."
     },
     "turbidez": {
-     "peso": 4,
+     "peso_lo": 0.16,
      "preferencia": {
       "no turbia": 0,
       "turbia": 0.6,
@@ -1523,7 +1541,7 @@
    ],
    "reglas": {
     "marea": {
-     "peso": 12,
+     "peso_lo": 0.48,
      "preferencia": {
       "subiendo": 1,
       "bajando": 0.3,
@@ -1956,12 +1974,12 @@
    ],
    "reglas": {
     "marea": {
-     "peso": 4,
+     "peso_lo": 0.16,
      "tipo": "heuristica_experta",
      "criterio": "Pelágico de banco: la marea le afecta menos que a los de rompiente (heurística)."
     },
     "turbidez": {
-     "peso": 3,
+     "peso_lo": 0.12,
      "preferencia": {
       "no turbia": 0.5,
       "turbia": 0,
@@ -2216,12 +2234,12 @@
    ],
    "reglas": {
     "marea": {
-     "peso": 4,
+     "peso_lo": 0.16,
      "tipo": "heuristica_experta",
      "criterio": "Pelágico de banco (heurística)."
     },
     "turbidez": {
-     "peso": 3,
+     "peso_lo": 0.12,
      "preferencia": {
       "no turbia": 0.5,
       "turbia": 0,
@@ -3006,7 +3024,7 @@
      "criterio": "Cefalópodo: mejor con mar en calma (heurística)."
     },
     "turbidez": {
-     "peso": 5,
+     "peso_lo": 0.2,
      "preferencia": {
       "no turbia": 0.8,
       "turbia": -0.3,
@@ -3252,7 +3270,7 @@
      "criterio": "Eging en puertos y espigones con mar en calma (heurística)."
     },
     "turbidez": {
-     "peso": 6,
+     "peso_lo": 0.24,
      "preferencia": {
       "no turbia": 0.8,
       "turbia": -0.3,
@@ -3262,7 +3280,7 @@
      "criterio": "Caza a vista: agua clara (heurística)."
     },
     "marea": {
-     "peso": 5,
+     "peso_lo": 0.2,
      "tipo": "heuristica_experta",
      "criterio": "Le afecta menos la marea que a los peces de rompiente (heurística)."
     }
@@ -3697,12 +3715,12 @@
    ],
    "reglas": {
     "marea": {
-     "peso": 0,
+     "peso_lo": 0.0,
      "tipo": "heuristica_experta",
      "criterio": "Mar adentro: la marea costera no aplica."
     },
     "luz": {
-     "peso": 5
+     "peso_lo": 0.2
     }
    },
    "pendiente": [
@@ -6172,12 +6190,12 @@
     "turbidez"
    ],
    "marea": {
-    "peso": 4,
+    "peso_lo": 0.16,
     "tipo": "heuristica_experta",
     "criterio": "Desde barco la marea cuenta menos que en la orilla (se puede ir a buscar el pez); se mantiene algo por la corriente que genera."
    },
    "oleaje": {
-    "peso": 8,
+    "peso_lo": 0.32,
     "optimo_m": [
      0,
      1.0
@@ -6190,13 +6208,13 @@
     "criterio": "Con mar de más de 1 m se pesca peor y se navega peor; más de 2,5 m: tope 15 y aviso. Criterio de diseño, sin umbral oficial."
    },
    "viento": {
-    "peso": 10,
+    "peso_lo": 0.4,
     "max_kmh": 20,
     "tipo": "criterio_de_diseno",
     "criterio": "Penaliza por encima de 20 km/h (fuerza 4 de la escala Beaufort, 20-28 km/h, empieza a levantar marejadilla); criterio de diseño."
    },
    "turbidez": {
-    "peso": 0,
+    "peso_lo": 0.0,
     "tipo": "regla_de_datos",
     "criterio": "La turbidez de la webcam es de la orilla: no dice nada del agua donde se pesca desde barco."
    },
@@ -6239,7 +6257,7 @@
     "criterio": "Prohibida 'en horario nocturno, desde el ocaso al orto' (art. 16.d RD 347/2011); en Portugal 'entre o pôr-do-sol e o nascer do sol' (art. 8.3 Portaria 14/2014); en Euskadi 'del orto al ocaso'. Una hora que cae entera de noche puntúa 0."
    },
    "turbidez": {
-    "peso": 20,
+    "peso_lo": 0.8,
     "preferencia": {
      "no turbia": 1,
      "turbia": -0.6,
@@ -6249,7 +6267,7 @@
     "criterio": "Sin visibilidad no hay pesca submarina: el agua clara es el factor que más pesa. Dato diario de la webcam del spot frente a su propio histórico."
    },
    "oleaje": {
-    "peso": 15,
+    "peso_lo": 0.6,
     "optimo_m": [
      0,
      0.5
@@ -6262,13 +6280,13 @@
     "criterio": "Mar en calma = buena visibilidad y entrada/salida seguras; el mar de fondo levanta arena. Más de 1,5 m: tope 15 y aviso (criterio de diseño)."
    },
    "viento": {
-    "peso": 6,
+    "peso_lo": 0.24,
     "max_kmh": 25,
     "tipo": "criterio_de_diseno",
     "criterio": "El viento fuerte riza la superficie, mueve la boya y complica la vuelta; criterio de diseño."
    },
    "marea": {
-    "peso": 4,
+    "peso_lo": 0.16,
     "preferencia": {
      "subiendo": 0.5,
      "bajando": -0.3,
@@ -6279,7 +6297,7 @@
     "criterio": "Con la marea entrante el agua suele llegar más limpia y en el repunte hay menos corriente; la vaciante saca el agua turbia de rías y puertos. Heurística; escalada con el rango local igual que desde costa."
    },
    "lluvia": {
-    "peso": 8,
+    "peso_lo": 0.32,
     "umbral_mm_24h": [
      2,
      15
@@ -6288,7 +6306,7 @@
     "criterio": "La lluvia de las 24 h anteriores arrastra tierra al mar y quita visibilidad: desde 2 mm empieza a restar, con 15 mm o más resta el peso entero."
    },
    "caudal_rio": {
-    "peso": 8,
+    "peso_lo": 0.32,
     "preferencia": {
      "bajo": 0,
      "normal": -0.3,
@@ -6298,7 +6316,7 @@
     "criterio": "Un río crecido cerca del spot enturbia el agua. Usa el caudal real del río asociado al spot (Confederaciones/Augas de Galicia), solo para hoy y solo donde hay dato."
    },
    "temperatura_buceador": {
-    "peso": 0,
+    "peso_lo": 0.0,
     "tipo": "informativo",
     "criterio": "La temperatura del agua se muestra para el buceador, sin recomendar traje (no hay fuente)."
    }
@@ -6572,5 +6590,393 @@
     "Madeira: pesca lúdica y submarina (JORAM)"
    ]
   }
+ },
+ "reglas_expertas": {
+  "descripcion": "Reglas expertas del índice de pesca: conocimiento local convertido en datos. Las aplica el motor genérico assets/js/reglas-expertas.js (sin tocar código para añadir más). Cada regla suma su efecto en log-odds como un factor más del índice y se enseña al usuario con su texto. Guía: CLAUDE.md, 'Cómo añadir una regla experta'.",
+  "formato": {
+   "id": "único, sin espacios",
+   "nombre": "nombre corto (página de admin)",
+   "texto": "lo que ve el usuario cuando la regla actúa",
+   "fuente": "id de 'fuentes' (p. ej. mikel_experiencia_local)",
+   "tipo": "heuristica_experta_local | heuristica_experta | cientifica | oficial (cientifica/oficial cuentan para la segunda estrella)",
+   "confianza": "0-1; el efecto aplicado es efecto.logodds × intensidad × confianza",
+   "estado": "por_validar | validada | retirada (retirada = no se aplica)",
+   "ambito": "regiones, modalidades, especies (o '@grupo' de grupos_especies), especies_excluidas, meses; lo que falta = sin restricción",
+   "condiciones": "lista (todas deben cumplirse) de { var, agregado?, desde_h?, hasta_h?, cumple?, op, valor }",
+   "variables_horarias": "ola (m), viento (km/h), viento_dir (grados, de dónde viene), presion (hPa), temp_agua (°C), lluvia (mm/h), nivel_mar (m)",
+   "variables_de_contexto": "caudal_rio (bajo/normal/alto, solo con dato real), rio_desembocadura_km (null si el spot no tiene río asociado), turbidez, mes, hora_local, luz (alba/ocaso/dia/noche)",
+   "agregados": "media, min, max, suma (en la ventana [desde_h, hasta_h] relativa a la hora, p. ej. -6..0), delta (valor en hasta_h - valor en desde_h), fraccion (parte de las horas que cumplen 'cumple', un test o una lista de tests {var, op, valor})",
+   "operadores": "<, <=, >, >=, ==, !=, en (lista), entre ([a, b]), sector ([desde°, hasta°], admite cruzar el norte)",
+   "efecto": "{ logodds: número (±2 como mucho; 0,4 ≈ 10 puntos cerca de 50), escala?: { var, agregado?, desde_h?, hasta_h?, de, a, minimo } para graduarlo }",
+   "sustituye": "factores base (presion, oleaje, marea...) que la regla reemplaza en su ámbito, para no contar lo mismo dos veces",
+   "sin_dato": "si una condición no tiene dato (menos del 60 % de horas en la ventana, río desconocido...) la regla no aplica y baja la cobertura de datos de la fiabilidad"
+  },
+  "grupos_especies": {
+   "depredadores_costeros": {
+    "especies": [
+     "lubina",
+     "sargo",
+     "dorada",
+     "corvina",
+     "denton",
+     "palometa",
+     "bicuda",
+     "medregal",
+     "urta"
+    ],
+    "fuente": "mikel_experiencia_local",
+    "criterio": "Peces que cazan o comen pegados a la costa y que, según Mikel, se activan con el mar movido y antes del temporal ('lubina, sargo…'). Lista ampliada por Claude con los equivalentes de otras costas: revisar."
+   }
+  },
+  "sectores_viento": {
+   "este": [
+    33.75,
+    146.25
+   ],
+   "oeste_noroeste": [
+    236.25,
+    326.25
+   ],
+   "criterio": "Rosa de 16 rumbos: cada rumbo ocupa ±11,25° alrededor de su centro. 'este' = NE, ENE, E, ESE, SE; 'oeste_noroeste' = WSW, W, WNW, NW. Grados de donde viene el viento (convención meteorológica, la de Open-Meteo)."
+  },
+  "reglas": [
+   {
+    "fuente": "mikel_experiencia_local",
+    "tipo": "heuristica_experta_local",
+    "estado": "por_validar",
+    "validacion": "Calibrar con las salidas del diario (salidas_pesca.indice_factores) antes de subir la confianza o darla por buena.",
+    "id": "presion_bajando_6h",
+    "nombre": "Comen antes del temporal (6 h)",
+    "texto": "presión bajando en las últimas 6 h: comen antes del temporal",
+    "confianza": 0.6,
+    "ambito": {
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ],
+     "especies": [
+      "@depredadores_costeros"
+     ]
+    },
+    "condiciones": [
+     {
+      "var": "presion",
+      "agregado": "delta",
+      "desde_h": -6,
+      "hasta_h": 0,
+      "op": "<=",
+      "valor": -1
+     }
+    ],
+    "efecto": {
+     "logodds": 0.6,
+     "escala": {
+      "var": "presion",
+      "agregado": "delta",
+      "desde_h": -6,
+      "hasta_h": 0,
+      "de": -1,
+      "a": -4,
+      "minimo": 0.3
+     }
+    },
+    "sustituye": [
+     "presion"
+    ],
+    "nota": "Mikel: 'cuando baja la presión (empeora el tiempo) los peces comen más; comen antes del temporal'. Sustituye a la tendencia de presión de 3 h por defecto en estas especies para no contarla dos veces. Más bajada (hasta 4 hPa en 6 h), más efecto."
+   },
+   {
+    "fuente": "mikel_experiencia_local",
+    "tipo": "heuristica_experta_local",
+    "estado": "por_validar",
+    "validacion": "Calibrar con las salidas del diario (salidas_pesca.indice_factores) antes de subir la confianza o darla por buena.",
+    "id": "presion_bajando_24h",
+    "nombre": "Frente acercándose (24 h)",
+    "texto": "presión cayendo desde ayer (frente acercándose): suelen comer más",
+    "confianza": 0.5,
+    "ambito": {
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ],
+     "especies": [
+      "@depredadores_costeros"
+     ]
+    },
+    "condiciones": [
+     {
+      "var": "presion",
+      "agregado": "delta",
+      "desde_h": -24,
+      "hasta_h": 0,
+      "op": "<=",
+      "valor": -4
+     }
+    ],
+    "efecto": {
+     "logodds": 0.4
+    },
+    "sustituye": [
+     "presion"
+    ],
+    "nota": "Tendencia de 12-24 h de la misma regla de Mikel: una caída de 4 hPa o más en 24 h."
+   },
+   {
+    "fuente": "mikel_experiencia_local",
+    "tipo": "heuristica_experta_local",
+    "estado": "por_validar",
+    "validacion": "Calibrar con las salidas del diario (salidas_pesca.indice_factores) antes de subir la confianza o darla por buena.",
+    "id": "presion_subiendo_tras_frente",
+    "nombre": "Tras el frente",
+    "texto": "presión subiendo tras el paso del frente: suelen quedarse más parados",
+    "confianza": 0.5,
+    "ambito": {
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ],
+     "especies": [
+      "@depredadores_costeros"
+     ]
+    },
+    "condiciones": [
+     {
+      "var": "presion",
+      "agregado": "delta",
+      "desde_h": -6,
+      "hasta_h": 0,
+      "op": ">=",
+      "valor": 1
+     },
+     {
+      "var": "presion",
+      "agregado": "delta",
+      "desde_h": -24,
+      "hasta_h": -6,
+      "op": "<=",
+      "valor": -2
+     }
+    ],
+    "efecto": {
+     "logodds": -0.3
+    },
+    "sustituye": [
+     "presion"
+    ],
+    "nota": "Mikel: subiendo después de un frente, ligeramente negativo. 'Después de un frente' = bajó 2 hPa o más entre hace 24 y hace 6 h y ahora sube 1 hPa o más en 6 h."
+   },
+   {
+    "fuente": "mikel_experiencia_local",
+    "tipo": "heuristica_experta_local",
+    "estado": "por_validar",
+    "validacion": "Calibrar con las salidas del diario (salidas_pesca.indice_factores) antes de subir la confianza o darla por buena.",
+    "id": "mar_movida_depredadores_costa",
+    "nombre": "Mar movida desde costa",
+    "texto": "mar algo movida (1-2,5 m): los depredadores costeros encuentran comida en la espuma",
+    "confianza": 0.6,
+    "ambito": {
+     "modalidades": [
+      "costa"
+     ],
+     "especies": [
+      "@depredadores_costeros"
+     ]
+    },
+    "condiciones": [
+     {
+      "var": "ola",
+      "op": "entre",
+      "valor": [
+       1.0,
+       2.5
+      ]
+     }
+    ],
+    "efecto": {
+     "logodds": 0.5
+    },
+    "nota": "Mikel: 'el mar algo revuelto ayuda a la lubina, el sargo... a encontrar comida desde costa'. Banda 1-2,5 m, siempre por debajo del tope de seguridad desde costa (más de 2,5 m: tope 20 y aviso, que sigue mandando)."
+   },
+   {
+    "fuente": "mikel_experiencia_local",
+    "tipo": "heuristica_experta_local",
+    "estado": "por_validar",
+    "validacion": "Calibrar con las salidas del diario (salidas_pesca.indice_factores) antes de subir la confianza o darla por buena.",
+    "id": "rio_crecido_lubina_desembocadura",
+    "nombre": "Río crecido: lubina a la desembocadura",
+    "texto": "río crecido cerca: trae comida y la lubina se arrima a la desembocadura",
+    "confianza": 0.6,
+    "ambito": {
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ],
+     "especies": [
+      "lubina"
+     ]
+    },
+    "condiciones": [
+     {
+      "var": "caudal_rio",
+      "op": "==",
+      "valor": "alto"
+     },
+     {
+      "var": "rio_desembocadura_km",
+      "op": "<=",
+      "valor": 3
+     }
+    ],
+    "efecto": {
+     "logodds": 0.6
+    },
+    "nota": "Mikel: con mucho caudal el río aporta comida y la lubina se acerca a las desembocaduras. Solo en spots con río asociado (RIOS de index.html, distancia a la desembocadura <= 3 km) y caudal real con umbrales oficiales; sin dato no aplica. En submarina ya resta el caudal alto (turbidez) y esta regla no aplica."
+   },
+   {
+    "fuente": "mikel_experiencia_local",
+    "tipo": "heuristica_experta_local",
+    "estado": "por_validar",
+    "validacion": "Calibrar con las salidas del diario (salidas_pesca.indice_factores) antes de subir la confianza o darla por buena.",
+    "id": "rio_crecido_salinidad_resto",
+    "nombre": "Río crecido: el resto se aparta",
+    "texto": "río crecido cerca: el agua menos salada aparta a muchas especies de la desembocadura",
+    "confianza": 0.5,
+    "ambito": {
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ],
+     "especies_excluidas": [
+      "lubina",
+      "lisa"
+     ]
+    },
+    "condiciones": [
+     {
+      "var": "caudal_rio",
+      "op": "==",
+      "valor": "alto"
+     },
+     {
+      "var": "rio_desembocadura_km",
+      "op": "<=",
+      "valor": 3
+     }
+    ],
+    "efecto": {
+     "logodds": -0.5
+    },
+    "nota": "Mikel: otras especies se alejan por la bajada de salinidad. Se excluyen la lubina (regla anterior) y la lisa (tolera bien el agua salobre)."
+   },
+   {
+    "fuente": "mikel_experiencia_local",
+    "tipo": "heuristica_experta_local",
+    "estado": "por_validar",
+    "validacion": "Calibrar con las salidas del diario (salidas_pesca.indice_factores) antes de subir la confianza o darla por buena.",
+    "id": "levante_cantabrico",
+    "nombre": "Levante en el Cantábrico",
+    "texto": "viento de levante (NE-E-SE): en el Cantábrico se pesca peor",
+    "confianza": 0.7,
+    "ambito": {
+     "regiones": [
+      "cantabrico"
+     ],
+     "modalidades": [
+      "costa",
+      "embarcacion",
+      "submarina"
+     ]
+    },
+    "condiciones": [
+     {
+      "var": "viento_dir",
+      "agregado": "fraccion",
+      "desde_h": -6,
+      "hasta_h": 0,
+      "cumple": {
+       "op": "sector",
+       "valor": [
+        33.75,
+        146.25
+       ]
+      },
+      "op": ">=",
+      "valor": 0.5
+     },
+     {
+      "var": "viento",
+      "agregado": "media",
+      "desde_h": -6,
+      "hasta_h": 0,
+      "op": ">=",
+      "valor": 8
+     }
+    ],
+    "efecto": {
+     "logodds": -0.5
+    },
+    "nota": "Mikel: en el Cantábrico los vientos del este son malos para pescar. Sector 'este' = rumbos NE, ENE, E, ESE y SE de la rosa de 16 (33,75°-146,25°, dirección de donde viene el viento); al menos la mitad de las últimas 6 h y con 8 km/h o más de media (con calma la dirección no significa nada)."
+   },
+   {
+    "fuente": "mikel_experiencia_local",
+    "tipo": "heuristica_experta_local",
+    "estado": "por_validar",
+    "validacion": "Calibrar con las salidas del diario (salidas_pesca.indice_factores) antes de subir la confianza o darla por buena.",
+    "id": "bonito_temporales_oeste",
+    "nombre": "Bonito tras temporales del oeste",
+    "texto": "temporal del oeste en los últimos días: a veces mete el bonito en el golfo («cuando toca»)",
+    "confianza": 0.3,
+    "ambito": {
+     "regiones": [
+      "cantabrico"
+     ],
+     "modalidades": [
+      "embarcacion"
+     ],
+     "especies": [
+      "bonito_norte"
+     ],
+     "meses": [
+      6,
+      7,
+      8,
+      9
+     ]
+    },
+    "condiciones": [
+     {
+      "var": "viento_dir",
+      "agregado": "fraccion",
+      "desde_h": -120,
+      "hasta_h": -24,
+      "cumple": [
+       {
+        "var": "viento_dir",
+        "op": "sector",
+        "valor": [
+         236.25,
+         326.25
+        ]
+       },
+       {
+        "var": "viento",
+        "op": ">=",
+        "valor": 25
+       }
+      ],
+      "op": ">=",
+      "valor": 0.25
+     }
+    ],
+    "efecto": {
+     "logodds": 0.6
+    },
+    "nota": "Mikel: en verano los temporales del oeste meten el bonito en el golfo de Bizkaia 'cuando toca'. Retardo de 1 a 5 días: al menos el 25 % de las horas entre hace 5 días y hace 1 día con viento de WSW-W-WNW-NW (236,25°-326,25°) de 25 km/h o más. Confianza baja a propósito."
+   }
+  ]
+ },
+ "validacion_fiabilidad": {
+  "descripcion": "Estrellas de fiabilidad por especie × modalidad × región. ★ = solo criterio experto; ★★ = la mayor parte del peso con mecanismo científico u oficial citado (se calcula solo); ★★★ = validado con el diario; ★★★★ = temporada confirmada con desembarcos. Las dos últimas se marcan aquí a mano cuando haya calibración: clave 'especie|modalidad|region', valor { diario: true, desembarcos: true, fecha, nota }. Rebajas por calidad de datos (previsión > 48 h, menos del 60 % del peso con dato, modelo y no medido) en ventana-actividad.js.",
+  "por_combinacion": {}
  }
 }

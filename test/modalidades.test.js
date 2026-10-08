@@ -141,7 +141,10 @@ test("submarina: de noche puntúa 0 y se dice por qué (art. 16.d RD 347/2011)",
 test("submarina: el agua clara suma y la turbia resta (aunque a la lubina desde costa le guste turbia)", () => {
   const clara = hora(ventana("lubina", "submarina", serie(), { turbidez: "no turbia" }), "13");
   const turbia = hora(ventana("lubina", "submarina", serie(), { turbidez: "turbia" }), "13");
-  assert.ok(clara.puntuacion - turbia.puntuacion >= 25, `${clara.puntuacion} vs ${turbia.puntuacion}`);
+  // Escala logística v2: lejos de 50 la curva se satura, así que la misma
+  // diferencia en log-odds da algo menos de puntos que con la suma lineal
+  // antigua (antes se pedían 25).
+  assert.ok(clara.puntuacion - turbia.puntuacion >= 20, `${clara.puntuacion} vs ${turbia.puntuacion}`);
   const costaClara = hora(ventana("lubina", "costa", serie(), { turbidez: "no turbia" }), "13");
   const costaTurbia = hora(ventana("lubina", "costa", serie(), { turbidez: "turbia" }), "13");
   assert.ok(costaTurbia.puntuacion > costaClara.puntuacion);
