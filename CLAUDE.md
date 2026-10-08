@@ -395,6 +395,43 @@ Decisión del usuario sobre la autonomía:
   Search Console. El robot anota en `SEO_ROBOT.md` (historial, se añade al
   final) los números, lo que cambió y qué espera ver la próxima vez.
 
+## Observaciones abiertas, concursos y "Comparte tu captura" (2026-10-08, aprobado por Mikel)
+
+"Añade todo lo legal". Sin IA en ejecución. Cuatro piezas:
+
+- **Observaciones abiertas** (`.github/workflows/observaciones.yml`, martes,
+  `scripts/observaciones/descargar.mjs` + `lib.mjs`): API de ocurrencias de
+  GBIF para nuestras especies en España y Portugal, a ≤ 25 km de un spot,
+  solo HUMAN_OBSERVATION/OCCURRENCE/MACHINE_OBSERVATION. **iNaturalist se toma
+  de GBIF** (su exportación oficial), no de su API: la API de iNaturalist dice
+  "not data scraping" (detalle y citas en `datos-robots/observaciones/LEEME.md`).
+  Salida en `datos-robots/observaciones/`: `comercial/` (CC0, CC BY) y
+  `no-comercial/` (CC BY-NC, **solo referencia interna: ni en la app ni para
+  calibrar el índice**). Coordenadas ocultadas por iNaturalist (p. ej. lubina)
+  se guardan a 0,2° y marcadas; nunca se afinan. Condiciones del spot:
+  Copernicus (instantánea, ~10 días) y Open-Meteo archive/marine **solo con
+  `OPEN_METEO_API_KEY`** (tope 150 llamadas/pasada). Carga histórica: lanzarlo
+  a mano con `desde` (p. ej. 2010); si tarda más de 15 min, GBIF pide usar su
+  API de descargas (cuenta + DOI).
+- **Concursos** (`datos-robots/concursos/`): FEPyC y FPPD reservan todos los
+  derechos; `concursos.json` vacío hasta que Mikel tenga permiso escrito. Sin
+  nombres de participantes. Lo valida `scripts/observaciones/concursos.mjs`.
+- **Rutina de los viernes** (`ROBOT_REGLAS.md`, "Viernes: estudios sobre
+  factores de pesca" y "Concursos de pesca"): propone reglas/pesos del índice
+  con fuente en `robot/especies-AAAA-MM-DD-factores`; `robot-diseno-pr.yml`
+  abre el PR. **El .txt de la rutina cambió: hay que pegarlo en
+  claude.ai/code/routines.**
+- **Comparte tu captura** (diario): casilla por captura, apagada por defecto
+  (`assets/js/compartir-captura.js`). Migración
+  `20261008150000_capturas_compartidas.sql` (**sin aplicar**; al aplicarla,
+  actualizar `supabase/baseline-seguridad.json`): marca propia en
+  `capturas_compartidas`, copia anónima en `capturas_comunidad` (sin usuario,
+  celda de ~5 km, RLS sin policies) y solo agregados con ≥ 5 usuarios
+  distintos (`comunidad_capturas_por_zona`, `comunidad_capturas_por_condiciones`).
+  Retirar = borrar la marca. Sin la migración, el diario no enseña la casilla.
+  Texto en `privacidad.html` (nueva, en la lista blanca de rutas).
+- Tests: `test/observaciones.test.js` (en `tests.yml`).
+
 ## Analítica de uso propia (`eventos_uso`, añadida 2026-09-17)
 
 Pedido explícito del usuario: entender qué usa de verdad cada usuario
@@ -2982,9 +3019,35 @@ ninguna app: si Costaviva se abandona, no se pierde. `COMPARATIVA_PROYECTOS.md`
 y `SALDO_API.md` también viven allí. El secret `GH_PAT_MULTIPROYECTO` de este
 repo ya no lo usa nadie.
 
+## Rayos: panel sencillo de un toque (2026-10-08)
+
+Mikel: "la pestaña de rayos es poco ágil de manejar". Antes: panel lateral
+que tapaba ~60 % del mapa en el móvil, frase "a 27 km del centro del mapa"
+sin rumbo, botón "Ocultar este panel" y una vista grande aparte de la imagen
+de AEMET con scroll y + / −. Ahora:
+- Un toque en ⚡: se elige la referencia (spot abierto > GPS solo si ya hay
+  permiso, nunca se pregunta > centro del mapa), se acerca ahí si el zoom
+  era < 7, se consulta `/rayos-cerca` en ESE punto y, la primera vez que hay
+  rayos, el mapa se encuadra con la referencia y la tormenta más cercana
+  (punto de borde oscuro + línea discontinua hasta el rayo).
+- Tarjeta abajo (`#rayosHoja`, metida como control de Leaflet `bottomright`,
+  así se apila sobre la atribución y no la tapa): una frase
+  ("⚡ Rayo más cercano: 12 km al NO de ti · hace 3 min" / "Sin rayos a menos
+  de 100 km en los últimos 5 min"), color por distancia (≤15 km rojo, ≤40
+  ámbar), leyenda de una línea y un ⓘ con el conteo, la hora del satélite,
+  las fuentes y el enlace a la imagen de AEMET de 12 h (`/rayos-imagen`, en
+  pestaña nueva: es lo único que añade, el histórico). Tocar la frase
+  vuelve a encuadrar.
+- Coste igual o menor: una consulta al abrir, una por minuto y otra solo si
+  el centro se aleja > 40 km de la referencia (antes, en cada `moveend`).
+- Lógica pura en `assets/js/rayos.js` (vía `window.Rayos`), tests en
+  `test/rayos-resumen.test.js`. La frase dice "5 min" porque es lo que da
+  Xweather: no prometer "la última hora".
+- `#avisoRayos` (banner de riesgo por spot) no cambia.
+
 ## Rayos: tiempo real con Xweather + satélite EUMETSAT de fondo (2026-10-03)
 
-El botón **Rayos** pinta dos capas sobre el propio mapa (antes solo abría la imagen nacional de AEMET, que sigue en el panel como "últimas 12 h"):
+El botón **Rayos** pinta dos capas sobre el propio mapa (la imagen nacional de AEMET de 12 h queda como enlace en el ⓘ, ver la sección de arriba):
 - **Satélite (gratis, ~15 min de retraso)**: WMS de EUMETView `mtg_fd:li_afa` (Lightning Imager de MTG/EUMETSAT), últimos 6 tramos de 5 min. Sin tarifas ni restricciones, CC BY 4.0, CORS abierto. Color = intensidad (amarillo → rojo oscuro), no antigüedad. **TIME siempre explícito**: EUMETView manda `cache-control` de 7 días.
 - **Tiempo real (Vaisala Xweather)**: `functions/rayos-cerca.js`, rayos de los últimos 5 min a menos de 100 km, en morado. Solo con el mapa acercado (zoom ≥ 7), al soltar el mapa y como mucho cada minuto. Exige sesión.
 - **Coste**: cada consulta de rayos a Xweather cuesta 0,006 $ y solo hay 1.500 gratis al mes. El usuario eligió no pasar de lo gratuito: tope `LIMITE_MENSUAL = 1400` en `rayos-cerca.js`, contado de forma atómica en `rayos_xweather_uso` (`reservar_consulta_rayos`) **antes** de llamar, y caché compartida de 60 s por celda de 0,5° en `rayos_xweather_cache`. Al llegar al tope, o sin claves, el endpoint responde `fuente: limite|no_configurado|error` y el mapa se queda con el satélite. Para subir el tope: cambiar `LIMITE_MENSUAL` (y tener tarjeta en Xweather).
