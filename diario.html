@@ -1244,8 +1244,12 @@ function contextoHTML(salida) {
   const notaIndice = salida.indice_puntuacion != null
     ? `<div class="detalle" style="font-size:11px; color:var(--tinta-3); margin-top:4px;">🎣 Índice de pesca a esa hora: <b class="nota-nivel" data-nivel="${window.NivelIndice ? NivelIndice.nivelPesca(salida.indice_puntuacion) : "sd"}">${esc(salida.indice_puntuacion)}</b>/100${f?.especie_nombre ? ` (mejor especie: ${esc(f.especie_nombre)})` : ""}${f?.hora_estimada ? ", estimado a mediodía (sin hora de inicio)" : ""}.`
       // Motivos con flechas (▲▲/▲/▼/▼▼), sin puntos ni fuentes (decisión de Mikel).
-      + `<ul style="list-style:none; margin:2px 0 0; padding:0;">${(f?.razones || []).filter((x) => x.aporte).sort((a, b) => Math.abs(b.aporte) - Math.abs(a.aporte)).slice(0, 4)
-        .map((x) => `<li><span style="display:inline-block; min-width:20px; font-size:11px; color:${x.aporte > 0 ? "var(--ok-texto)" : "var(--peligro)"};">${x.aporte >= 6 ? "▲▲" : x.aporte > 0 ? "▲" : x.aporte <= -6 ? "▼▼" : "▼"}</span>${esc(x.texto)}</li>`).join("")}</ul></div>`
+      // Solo motivos con flecha y nada interno ("pendiente de fuente", "no
+      // cuenta"...): mismo filtro que la ficha (VentanaActividad.paraUsuario).
+      + `<ul style="list-style:none; margin:2px 0 0; padding:0;">${(f?.razones || []).filter((x) => x.aporte && x.factor !== "legal" && x.factor !== "seguridad" && !/pendiente|no cuenta|fuente|por validar|fiabilidad|sin dato/i.test(x.texto || "")).sort((a, b) => Math.abs(b.aporte) - Math.abs(a.aporte)).slice(0, 4)
+        .map((x) => `<li><span style="display:inline-block; min-width:20px; font-size:11px; color:${x.aporte > 0 ? "var(--ok-texto)" : "var(--peligro)"};">${x.aporte >= 6 ? "▲▲" : x.aporte > 0 ? "▲" : x.aporte <= -6 ? "▼▼" : "▼"}</span>${esc(x.texto)}</li>`).join("")}</ul>`
+      // Ola peligrosa: nota aparte, no un motivo (decisión de Mikel, 2026-10-08).
+      + `${f?.aviso_ola ? `<div class="aviso-ola" role="note">${esc(f.aviso_ola)}</div>` : ""}</div>`
     : "";
   const TEXTO_ESTADO = {
     sin_dato_fecha_antigua: "Sin condiciones guardadas: la fecha es de hace más de 90 días y la fuente de previsión no llega tan atrás (mejor vacío que datos de otro día).",
