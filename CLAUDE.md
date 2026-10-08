@@ -5,31 +5,48 @@ cambian las convenciones — no es un historial (para eso está `ROBOT.md`).
 Si algo de aquí queda desactualizado, corrígelo en el momento en que lo
 detectes, no lo dejes para luego.
 
-## Propuestas de diseño con `?tema=` (2026-10-08, rama `claude/diseno-propuestas`)
+## Aspecto "Amanecer de pesca" (2026-10-08, elegido por Mikel)
 
-Mikel: "hay que hacer esto visualmente atractivo; la letra es fría y los
-colores, típicos de Claude". Tres direcciones para comparar sobre la página
-real, sin decidir todavía: `?tema=cantabrico` (azul abisal + turquesa +
-coral, Bricolage Grotesque/Figtree), `?tema=amanecer` (degradado de amanecer
-sobre azul profundo, Unbounded/Manrope) y `?tema=pescador` (amarillo de
-chubasquero + azul marino, estilo pegatina, Baloo 2/Nunito).
+Mikel pidió algo "visualmente atractivo, no frío" y eligió, entre tres
+propuestas, **Amanecer**: degradado de amanecer (naranja → magenta → violeta)
+sobre azul de mar profundo, con letra Unbounded (títulos) y Manrope (texto).
+Regla suya: **el degradado solo donde da emoción** (cabecera y logo, botón y
+pestaña activa, la nota del índice y su "sol", llamadas a la acción, posts de
+Instagram) y **sobrio donde hay datos** (cifras, motivos ▲▼, textos
+pequeños: tinta oscura sobre claro, contraste AA).
 
-- Cada tema es un CSS autónomo en `assets/css/tema-<nombre>.css` que va por
-  encima de los estilos de siempre (`[data-tema=...]`). Lo carga un `<script>`
-  al final del `<head>` de `index.html`, que lo recuerda en `localStorage`
-  (`costaviva-tema`); `?tema=actual` lo quita. Sin `?tema` la página no cambia.
-- Ganchos añadidos para los temas, inertes en el aspecto de siempre: la marca
-  SVG `.marca-tema` de la cabecera (oculta por defecto), `data-nivel`
-  (`bueno`/`medio`/`malo`/`sd`) en `#panelIndice` y `#panelIndicePesca`, y
-  `className: "capa-base"` en las teselas base de Esri (para avivar solo el
-  mapa base con `filter`, nunca las capas de datos como lluvia o batimetría).
-- **Ojo, hallazgo de paso**: el índice de pesca se pinta con
-  `colorIndiceMarCss` (verde = bajo, óxido = alto), pensado para el índice de
-  mar, donde alto = mar movido. En el de pesca alto = mejor, así que un 77
-  sale en óxido, el color de "malo". Los temas lo corrigen con `data-nivel`;
-  el aspecto de siempre sigue igual hasta que Mikel elija.
-- Cuando Mikel elija una dirección, pasarla a los estilos base de las 5
-  páginas y quitar el cargador y los temas que sobren.
+- **Todo vive en `assets/css/costaviva.css`**: los tokens (`--mar`, `--fondo`,
+  `--tinta`, `--acento`, `--degradado`, `--degradado-fuerte`, `--nivel-*`,
+  `--ok/--peligro/--aviso-*`, `--f-titulo`, `--f-texto`) y lo común a todas
+  las páginas (cabecera, logo `.marca-logo` + `.logotipo`, menú de cuenta,
+  menú inferior `.tabs-nav`, `.nota-nivel`). Cada página lo carga antes de su
+  `<style>` propio, que ya solo usa `var(--...)`: **no metas colores sueltos
+  en las páginas, añade un token**. El contraste de cada par está anotado en
+  la cabecera del CSS.
+- `--degradado` (claro) es solo decorativo; si lleva texto encima, usar
+  `--degradado-fuerte` (blanco encima ≥ 5,2:1).
+- **Índices por nivel** (`assets/js/nivel-indice.js`, test
+  `test/nivel-indice.test.js`): verde bueno, amarillo sol regular, coral malo.
+  Los dos índices van AL REVÉS: en el de mar alto = mar movido = malo; en el
+  de pesca alto = bueno. Hasta el 2026-10-08 el de pesca se pintaba con la
+  escala del de mar y un 77 salía en el color de "malo". El texto ⓘ del
+  índice de mar decía "cuanto más alto, mejor pinta", al revés que la
+  fórmula y la leyenda: corregido el texto (la fórmula no se tocó).
+- La alarma SOS va en rojo sólido, no con el degradado: seguridad ≠ emoción.
+- **Mapa base de Esri: sin filtros y con un problema de licencia abierto.**
+  La ficha del servicio (`World_Ocean_Base`, item 1e126e7520f9466c9ca28b8f28b5e500
+  de ArcGIS Online) dice "licensed under the Esri Master License Agreement", y
+  el resumen de condiciones de Esri
+  (https://www.esri.com/content/dam/arcgisonline/docs/tou_summary.pdf, abril
+  de 2025) exige "Use with Esri software ... If you do not have Esri software,
+  you must purchase an ArcGIS Online subscription" y prohíbe "Use content
+  from ArcGIS Living Atlas for commercial use in your application or product"
+  sin licencia de Esri. Así que no se aplica ningún filtro a sus teselas, y
+  el uso actual en una app de pago está pendiente de decidir (pasarse a
+  EMODnet Bathymetry, que en su GetCapabilities declara `Fees: None` y
+  `AccessConstraints: None`, o a OpenFreeMap, que permite uso comercial con
+  atribución OSM). Decisión de Mikel.
+
 ## Cámaras de terceros: solo como su dueño lo permita (2026-10-08)
 
 `assets/js/camaras-externas.js` lista cámaras de otros (SkylineWebcams,

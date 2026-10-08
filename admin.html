@@ -5,74 +5,62 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 <title>Administración — Costaviva</title>
 <link rel="icon" href="icon.svg" type="image/svg+xml" />
-<meta name="theme-color" content="#F7F3E8" />
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#0B1E3F" />
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/costaviva.css">
 <style>
   * { box-sizing: border-box; }
   body {
-    margin: 0; font-family: 'Inter', sans-serif; background: #F7F3E8; color: #0B2532;
+    margin: 0; font-family: var(--f-texto); background: var(--fondo); color: var(--tinta);
     min-height: 100vh; min-height: 100dvh; padding: 0 0 32px;
   }
-  header { padding: 16px 20px; border-bottom: 1px solid #DDE2DC; display: flex; align-items: center; gap: 12px; }
-  header h1 { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700; margin: 0; flex: 1; }
+  header { padding: 16px 20px; display: flex; align-items: center; gap: 12px; }
+  header h1 { font-size: 20px; margin: 0; flex: 1; }
+  @media (max-width: 420px) { header h1 { font-size: 17px; } }
 
   a.volver-btn {
-    background: #EEF2EF; border: 1px solid #DDE2DC; color: #0B2532; width: 34px; height: 34px;
+    background: var(--mar-2); border: 0; box-shadow: inset 0 0 0 2px var(--mar-3); color: var(--blanco); width: 40px; height: 40px;
     border-radius: 50%; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;
     text-decoration: none; flex-shrink: 0;
   }
-  .cuenta-menu-wrap { position: relative; flex-shrink: 0; }
-  .cuenta-menu-btn {
-    background: #EEF2EF; border: 1px solid #DDE2DC; color: #0B2532; width: 34px; height: 34px;
-    border-radius: 50%; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center;
-  }
-  .cuenta-menu-dropdown {
-    display: none; position: absolute; top: 42px; right: 0; background: #FFFFFF; border: 1px solid #DDE2DC;
-    border-radius: 10px; padding: 6px; min-width: 180px; z-index: 900; box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-  }
-  .cuenta-menu-dropdown.visible { display: block; }
-  .cuenta-menu-dropdown button {
-    display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; background: none; border: none;
-    color: #0B2532; font-family: 'Inter', sans-serif; font-size: 13px; padding: 9px 10px; border-radius: 6px; cursor: pointer;
-  }
-  .cuenta-menu-dropdown button:hover { background: #EEF2EF; }
 
   .contenido { max-width: 760px; margin: 0 auto; padding: 20px 16px; }
-  .resumen { font-size: 12.5px; color: #5C7680; margin-bottom: 14px; }
+  .resumen { font-size: 12.5px; color: var(--tinta-2); margin-bottom: 14px; }
 
-  table { width: 100%; border-collapse: collapse; background: #FFFFFF; border: 1px solid #DDE2DC; border-radius: 10px; overflow: hidden; font-size: 13px; }
-  thead th { text-align: left; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.4px; color: #42585F; background: #EEF2EF; padding: 9px 12px; }
-  tbody td { padding: 10px 12px; border-top: 1px solid #DDE2DC; vertical-align: middle; }
-  tbody tr:hover { background: #FBF9F3; }
-  .email { font-family: 'IBM Plex Mono', monospace; font-size: 12px; word-break: break-all; }
-  .fecha { color: #5C7680; font-size: 12px; white-space: nowrap; }
+  table { width: 100%; border-collapse: collapse; background: var(--superficie); border: 1px solid var(--linea); border-radius: 10px; overflow: hidden; font-size: 13px; }
+  thead th { text-align: left; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.4px; color: var(--tinta-3); background: var(--superficie-2); padding: 9px 12px; }
+  tbody td { padding: 10px 12px; border-top: 1px solid var(--linea); vertical-align: middle; }
+  tbody tr:hover { background: var(--superficie-2); }
+  .email { font-family: var(--f-texto); font-size: 12px; word-break: break-all; }
+  .fecha { color: var(--tinta-2); font-size: 12px; white-space: nowrap; }
   .estado { display: inline-block; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-  .estado.activo { background: rgba(79,157,105,0.15); color: #3A6B4C; }
-  .estado.pausado { background: rgba(212,162,76,0.18); color: #8A6A1E; }
+  .estado.activo { background: var(--ok-fondo); color: var(--ok-texto); }
+  .estado.pausado { background: var(--aviso-fondo); color: var(--aviso-texto); }
   .fila-botones { display: flex; gap: 6px; flex-wrap: wrap; }
   .fila-botones button {
-    border: 1px solid #DDE2DC; background: #FFFFFF; color: #0B2532; border-radius: 6px;
-    padding: 5px 10px; font-size: 11.5px; cursor: pointer; font-family: 'Inter', sans-serif;
+    border: 1px solid var(--linea); background: var(--superficie); color: var(--tinta); border-radius: 6px;
+    padding: 5px 10px; font-size: 11.5px; cursor: pointer; font-family: var(--f-texto);
   }
-  .fila-botones button:hover { background: #EEF2EF; }
-  .fila-botones button.pausar { color: #8A6A1E; border-color: #D9C08A; }
-  .fila-botones button.eliminar { color: #A34A35; border-color: #A34A35; }
+  .fila-botones button:hover { background: var(--superficie-2); }
+  .fila-botones button.pausar { color: var(--aviso-texto); border-color: var(--aviso-borde); }
+  .fila-botones button.eliminar { color: var(--peligro); border-color: var(--peligro); }
 
   .mensaje { margin: 0 0 14px; font-size: 12.5px; padding: 10px 12px; border-radius: 8px; display: none; }
-  .mensaje.error { display: block; background: rgba(163,74,53,0.15); color: #A34A35; border: 1px solid #A34A35; }
-  .mensaje.ok { display: block; background: rgba(79,157,105,0.12); color: #3A6B4C; border: 1px solid #A8D4B8; }
+  .mensaje.error { display: block; background: var(--peligro-fondo); color: var(--peligro-texto); border: 1px solid var(--peligro-borde); }
+  .mensaje.ok { display: block; background: var(--ok-fondo); color: var(--ok-texto); border: 1px solid var(--ok-borde); }
 
-  .no-admin { max-width: 420px; margin: 80px auto; text-align: center; font-size: 14px; color: #5C7680; }
+  .no-admin { max-width: 420px; margin: 80px auto; text-align: center; font-size: 14px; color: var(--tinta-2); }
 </style>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "d398d313ac4e4524a1b89af3c9ad6fda"}'></script><!-- End Cloudflare Web Analytics -->
 </head>
 <body>
 
-<div id="comprobandoAcceso" style="position:fixed; inset:0; background:#F7F3E8; z-index:9999; display:flex; align-items:center; justify-content:center; color:#5C7680; font-family:'IBM Plex Mono',monospace; font-size:13px;">
+<div id="comprobandoAcceso" style="position:fixed; inset:0; background:var(--fondo); z-index:9999; display:flex; align-items:center; justify-content:center; color:var(--tinta-2); font-family:var(--f-texto); font-size:13px;">
   Comprobando acceso…
 </div>
 
 <header style="display:none;" id="cabecera">
+  <a href="/" class="enlace-marca" aria-label="Costaviva, ir al mapa"><svg class="marca-logo" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><circle class="marca-fondo" cx="20" cy="20" r="19"/><path class="marca-pez" d="M9 17c4-6.5 14-6.5 19 0-5 6.5-15 6.5-19 0z"/><path class="marca-pez" d="M27.5 17l6-4.5v9z"/><circle class="marca-ojo" cx="13.5" cy="16" r="1.4"/><path class="marca-ola" d="M5 28c3.5-3.2 6.5-3.2 10 0s6.5 3.2 10 0 6.5-3.2 10 0"/></svg></a>
   <h1>⚙️ Administración</h1>
   <a class="volver-btn" href="/" title="Volver al mapa" aria-label="Volver al mapa">←</a>
   <div class="cuenta-menu-wrap">
@@ -223,7 +211,7 @@ async function cargarUsuarios() {
     const duracion = sesion ? formatoDuracion(new Date(sesion.fin) - new Date(sesion.inicio), sesion.eventos) : "—";
     return `
     <tr data-id="${u.id}">
-      <td class="email">${u.email || "—"}${u.nombre ? `<br><span style="color:#5C7680;">${u.nombre}</span>` : ""}</td>
+      <td class="email">${u.email || "—"}${u.nombre ? `<br><span style="color:var(--tinta-2);">${u.nombre}</span>` : ""}</td>
       <td class="fecha">${formateador.format(new Date(u.creado_en))}</td>
       <td class="fecha">${u.ultimo_acceso ? formateadorHora.format(new Date(u.ultimo_acceso)) : "Nunca"}</td>
       <td class="fecha">${duracion}</td>
@@ -281,7 +269,7 @@ async function cargarReglasExpertas() {
       const problemas = validarRegla(r, { fuentes: datos.fuentes, especies: datos.especies.map((e) => e.id), regiones: datos.regiones, grupos: b.grupos_especies });
       const a = r.ambito || {};
       return `<tr>
-        <td><b>${esc(r.nombre || r.id)}</b><br><span style="color:#5C7680;">${esc(r.texto)}</span>${problemas.length ? `<br><span style="color:#A34A35;">⚠ ${esc(problemas.join("; "))}</span>` : ""}</td>
+        <td><b>${esc(r.nombre || r.id)}</b><br><span style="color:var(--tinta-2);">${esc(r.texto)}</span>${problemas.length ? `<br><span style="color:var(--peligro);">⚠ ${esc(problemas.join("; "))}</span>` : ""}</td>
         <td>regiones: ${esc(lista(a.regiones))}<br>modalidades: ${esc(lista(a.modalidades))}<br>especies: ${esc(lista(a.especies))}${a.especies_excluidas ? `<br>salvo: ${esc(lista(a.especies_excluidas))}` : ""}${a.meses ? `<br>meses: ${esc(lista(a.meses))}` : ""}</td>
         <td>${(r.condiciones || []).map((c) => esc(cond(c))).join("<br>")}</td>
         <td>${esc(r.efecto?.logodds)} × ${esc(r.confianza)} = ${esc(((r.efecto?.logodds || 0) * (r.confianza ?? 1)).toFixed(2))}${r.sustituye ? `<br>sustituye: ${esc(r.sustituye.join(", "))}` : ""}</td>
