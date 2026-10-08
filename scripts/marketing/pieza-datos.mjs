@@ -45,6 +45,8 @@ export function resumenDelDia(especiesDatos, horas, { lat, lon, ahoraISO, modali
     especieId: ind.especie.id,
     emoji: especie.emoji || "🐟",
     freza: !!ind.freza,
+    // Ola peligrosa (2026-10-08): nota aparte, nunca un motivo con flecha.
+    avisoOla: ind.avisoOla?.texto ?? null,
     motivos: motivosDestacados(ind.resultado.razones),
     barras,
     mejorTramo: mejorTramo(barras),
@@ -52,19 +54,11 @@ export function resumenDelDia(especiesDatos, horas, { lat, lon, ahoraISO, modali
 }
 
 // Los motivos con más peso, como en la ficha (▲▲ sube mucho ... ▼▼ baja mucho).
-export function flecha(aporte) {
-  if (aporte >= 6) return "▲▲";
-  if (aporte > 0) return "▲";
-  if (aporte <= -6) return "▼▼";
-  if (aporte < 0) return "▼";
-  return "";
-}
+// Mismo filtro que la ficha (VA.paraUsuario): solo motivos con flecha, nada
+// neutro ni interno ("pendiente de fuente", "no cuenta"...).
+export const flecha = VA.flechaDeAporte;
 export function motivosDestacados(razones, max = 3) {
-  return [...(razones || [])]
-    .filter((r) => r.aporte)
-    .sort((a, b) => Math.abs(b.aporte) - Math.abs(a.aporte))
-    .slice(0, max)
-    .map((r) => ({ texto: r.texto, flecha: flecha(r.aporte), sube: r.aporte > 0 }));
+  return VA.paraUsuario(razones, { max }).motivos.map(({ texto, flecha: f, sube }) => ({ texto, flecha: f, sube }));
 }
 
 // Tramo de 3 horas con la media más alta de la tira (empates: el primero).

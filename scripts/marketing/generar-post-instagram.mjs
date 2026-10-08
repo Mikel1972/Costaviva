@@ -126,6 +126,7 @@ async function generarCondiciones() {
     `Mejor especie ahora: ${resumen.especie}${resumen.mejorTramo ? ` · mejores horas: ${resumen.mejorTramo.texto}` : ""}`,
     "",
     ...resumen.motivos.map((m) => `${m.flecha} ${m.texto}`),
+    ...(resumen.avisoOla ? ["", resumen.avisoOla] : []),
     "",
     `🌊 Ola: ${ola.val} (${ola.sub})`,
     `💨 Viento: ${viento.val} ${viento.sub}`,
