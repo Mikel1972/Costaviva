@@ -1268,10 +1268,14 @@ excluyentes (las de presión: 6 h si cae ahora, 24 h solo si las últimas 6 h
 están quietas, subida tras el frente). Los topes de seguridad van aparte y se
 aplican aunque el factor esté sustituido. Un test recorre especies,
 modalidades y escenarios y falla si una variable puntúa dos veces.
-**Etiquetas**: el usuario ve "· experiencia local"; "[regla de Mikel, por
-validar, confianza…]" solo el admin (`window.esAdminCostaviva`, cosmético).
-El porqué se pinta como "Por qué esta nota (a partir de 50):" con ▲▲/▲/▼/▼▼
-según el peso y los puntos en gris pequeño, ordenado por impacto.
+**Presentación (decisión de Mikel, 2026-10-08)**: la nota y una lista de
+motivos, cada uno con una flecha por dirección y peso (▲▲ / ▲ / ▼ / ▼▼, el
+doble desde 6 puntos) y el concepto en lenguaje llano, ordenados por impacto.
+Para el usuario, ningún número por factor (ni en tooltip) ni etiqueta de
+fuente ("regla de Mikel", "por validar"...). Igual en la ventana, el índice
+del spot y la línea del diario. El admin (`window.esAdminCostaviva`,
+cosmético) tiene un desplegable "Detalle (admin)" con puntos, fuente, estado
+y confianza; la tabla de `admin.html` sigue listando las reglas.
 Hoy hay 10 reglas (8 de Mikel, fuente `mikel_experiencia_local`, tipo
 `heuristica_experta_local`, estado `por_validar`; los umbrales son la
 traducción de Claude de lo que contó Mikel; y 2 que completan la escala de
