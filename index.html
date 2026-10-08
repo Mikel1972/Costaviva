@@ -589,6 +589,17 @@
   .va-nota { margin-top: 6px; font-size: 10.5px; color: #5F7981; line-height: 1.4; }
   .va-nota a { color: #A8792A; }
 
+  /* Modalidades de pesca (2026-10-08): pestañas costa / embarcación / submarina */
+  .pesca-modalidades { margin-top: 10px; }
+  .mod-tabs { display: flex; gap: 4px; border-bottom: 1px solid #DDE2DC; }
+  .mod-tabs [role="tab"] { flex: 1; min-width: 0; font: inherit; font-size: 12px; padding: 8px 4px; border: 1px solid #DDE2DC; border-bottom: none; border-radius: 8px 8px 0 0; background: #F4F6F3; color: #42585F; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mod-tabs [role="tab"][aria-selected="true"] { background: #FFFFFF; color: #0B2532; font-weight: 600; box-shadow: inset 0 3px 0 #D4A24C; }
+  .mod-tabs [role="tab"]:focus-visible { outline: 2px solid #0B2532; outline-offset: -2px; }
+  .mod-desc { font-size: 11px; color: #5F7981; margin: 6px 2px 0; line-height: 1.4; }
+  .mod-normativa li { margin-bottom: 4px; }
+  .mod-normativa ul { margin: 4px 0 6px; padding-left: 18px; }
+  .va-aviso { margin: 4px 0 6px; padding: 6px 8px; border-radius: 6px; background: #FBEAE6; border: 1px solid #E2A99C; color: #8A3A2A; font-size: 11.5px; line-height: 1.4; }
+
   /* ---- Móvil ---- */
   @media (max-width: 720px) {
     .leyenda-toggle { bottom: 10px; left: 10px; width: 34px; height: 34px; }
@@ -960,6 +971,17 @@
       <div class="val" id="panelPresion" style="font-size:15px;">sin datos</div>
       <div class="etq" id="panelPresionNota"></div>
     </div>
+    <!-- Modalidades de pesca (2026-10-08, pedido de Mikel): una pestaña por
+         modalidad; el índice de pesca, la ventana de actividad y la normativa
+         de abajo se recalculan con la pestaña elegida. Sin on*= (CSP). -->
+    <div class="pesca-modalidades" id="pescaModalidades">
+    <div class="mod-tabs" role="tablist" aria-label="Modalidad de pesca">
+      <button type="button" role="tab" id="modTab-costa" data-modalidad="costa" aria-controls="modPanel" aria-selected="true" tabindex="0">🪨 Desde costa</button>
+      <button type="button" role="tab" id="modTab-embarcacion" data-modalidad="embarcacion" aria-controls="modPanel" aria-selected="false" tabindex="-1">🚤 Embarcación</button>
+      <button type="button" role="tab" id="modTab-submarina" data-modalidad="submarina" aria-controls="modPanel" aria-selected="false" tabindex="-1">🤿 Submarina</button>
+    </div>
+    <div id="modPanel" role="tabpanel" aria-labelledby="modTab-costa">
+    <div class="mod-desc" id="modDesc">Surfcasting, roca y spinning desde la orilla o el espigón.</div>
     <div class="indice-box">
       <div class="etq">🎣 ÍNDICE DE PESCA (estimación)
         <button class="info-btn" id="infoIndicePescaBtn" type="button" aria-label="¿Qué significa este número?">ⓘ</button>
@@ -984,7 +1006,13 @@
       <div id="vaMejores" class="va-detalle"></div>
       <div id="vaCebos" class="va-detalle"></div>
       <div id="vaTalla" class="va-nota"></div>
-      <div class="va-nota">Puntuación 0-100 con reglas fijas y públicas (marea, luz, temperatura del agua, oleaje, viento, presión y turbidez); toca una hora para ver el porqué. Orientativa: no es una garantía.</div>
+      <div class="va-nota" id="vaNotaReglas">Puntuación 0-100 con reglas fijas y públicas (marea, luz, temperatura del agua, oleaje, viento, presión y turbidez); toca una hora para ver el porqué. Orientativa: no es una garantía.</div>
+    </div>
+    <div class="tarjeta" id="modNormativaBox" style="margin-top:10px; border: 1px solid #DDE2DC;">
+      <div class="etq">⚖ NORMATIVA DE ESTA MODALIDAD</div>
+      <div id="modNormativa" class="va-detalle">Cargando…</div>
+    </div>
+    </div>
     </div>
     <div id="panelWebcamBox" style="margin-top:14px;">
       <div class="etq" style="margin-bottom:6px;">WEBCAM EN DIRECTO</div>
@@ -2925,6 +2953,7 @@ function abrirPanel(s) {
     document.getElementById("panelPresionNota").textContent = "";
   }
 
+  prepararModalidad(s);
   pintarIndicePesca(s);
 
   pintarWebcam(s.slug, s.nombre);
@@ -2943,7 +2972,75 @@ function abrirPanel(s) {
 // ---------------------------------------------------------------------------
 let especiesDatos = null; // contenido de especies.json, se carga una vez
 const vaCacheHoras = new Map(); // slug -> { t, horas }
-let vaEstado = { s: null, dia: 0, especieId: null, resultados: [], idxSel: null };
+let vaEstado = { s: null, dia: 0, especieId: null, resultados: [], idxSel: null, modalidad: "costa" };
+
+// ---- Pestañas de modalidad (2026-10-08) ----
+// Al abrir un spot: un punto propio de embarcación o buceo abre su pestaña;
+// si no, la última que eligió este usuario (localStorage, solo comodidad);
+// si no, "Desde costa". La lista de especies, el índice de pesca, las reglas
+// de la ventana y la normativa dependen de la pestaña.
+const MOD_DESC = {
+  costa: "Surfcasting, roca y spinning desde la orilla o el espigón.",
+  embarcacion: "Fondo, curricán, jigging y kayak de pesca. Primero la seguridad: viento y ola mandan.",
+  submarina: "Pesca submarina a pulmón (sin botella). Manda la visibilidad; solo de día.",
+};
+const MOD_NOTA = {
+  costa: "Puntuación 0-100 con reglas fijas y públicas (marea, luz, temperatura del agua, oleaje, viento, presión y turbidez); toca una hora para ver el porqué. Orientativa: no es una garantía.",
+  embarcacion: "Puntuación 0-100 desde embarcación: viento y ola pesan más y avisan (kayak por encima de 20 km/h o 1,5 m; embarcación pequeña por encima de 30 km/h o 2,5 m); la marea pesa menos. Avisos propios, no oficiales: consulta AEMET/IPMA y Capitanía.",
+  submarina: "Puntuación 0-100 para pesca submarina: agua clara y mar en calma suman mucho; mar de fondo, lluvia de las últimas 24 h y río crecido restan. De noche no hay puntuación: está prohibida. Orientativa: no es una garantía.",
+};
+let modalidadSpotSlug = null;
+function prepararModalidad(s) {
+  if (modalidadSpotSlug === s.slug) return pintarPestanasModalidad();
+  modalidadSpotSlug = s.slug;
+  let guardada = null;
+  try { guardada = localStorage.getItem("va_modalidad"); } catch (e) { /* sin almacenamiento */ }
+  vaEstado.modalidad = s.tipo === "embarcacion" ? "embarcacion" : s.tipo === "buceo" ? "submarina"
+    : ["costa", "embarcacion", "submarina"].includes(guardada) ? guardada : "costa";
+  pintarPestanasModalidad();
+}
+function pintarPestanasModalidad() {
+  document.querySelectorAll('#pescaModalidades [role="tab"]').forEach((b) => {
+    const activa = b.dataset.modalidad === vaEstado.modalidad;
+    b.setAttribute("aria-selected", activa ? "true" : "false");
+    b.tabIndex = activa ? 0 : -1;
+  });
+  document.getElementById("modPanel").setAttribute("aria-labelledby", `modTab-${vaEstado.modalidad}`);
+  document.getElementById("modDesc").textContent = MOD_DESC[vaEstado.modalidad];
+  document.getElementById("vaNotaReglas").textContent = MOD_NOTA[vaEstado.modalidad];
+}
+function elegirModalidad(m, foco) {
+  if (m === vaEstado.modalidad) return;
+  vaEstado.modalidad = m;
+  vaEstado.idxSel = null;
+  try { localStorage.setItem("va_modalidad", m); } catch (e) { /* sin almacenamiento */ }
+  pintarPestanasModalidad();
+  if (foco) document.getElementById(`modTab-${m}`).focus();
+  if (spotAbiertoActual) pintarIndicePesca(spotAbiertoActual);
+  if (vaEstado.s) pintarVentanaActividad(vaEstado.s);
+}
+document.querySelectorAll('#pescaModalidades [role="tab"]').forEach((b) => {
+  b.addEventListener("click", () => elegirModalidad(b.dataset.modalidad, false));
+  b.addEventListener("keydown", (ev) => {
+    const orden = ["costa", "embarcacion", "submarina"];
+    const i = orden.indexOf(b.dataset.modalidad);
+    const destino = { ArrowRight: orden[(i + 1) % 3], ArrowLeft: orden[(i + 2) % 3], Home: orden[0], End: orden[2] }[ev.key];
+    if (!destino) return;
+    ev.preventDefault();
+    elegirModalidad(destino, true);
+    document.getElementById(`modTab-${destino}`).focus();
+  });
+});
+
+// Caudal del río asociado al spot (bajo/normal/alto), solo si hay dato real
+// con umbrales oficiales; si no, null (no se inventa).
+function caudalRioSpot(s) {
+  const r = RIOS.find((x) => x.spotCosta === s.slug);
+  const p = r?.puntos.find((x) => x.caudal != null && x.umbralBajo != null && x.umbralAlto != null);
+  if (!p) return null;
+  const e = categoriaCaudal(p.caudal, p.umbralBajo, p.umbralAlto).etiqueta;
+  return ["bajo", "normal", "alto"].includes(e) ? e : null;
+}
 const VA_MESES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
 
 // Se piden al cargar la página (el índice de pesca las necesita en cuanto se
@@ -2969,13 +3066,13 @@ async function datosHorariosSpot(s) {
   const base = `latitude=${s.lat}&longitude=${s.lon}&timezone=Europe%2FMadrid&past_days=1&forecast_days=2`;
   const [marino, tiempo] = await Promise.all([
     pedirMeteo("marine", `${base}&hourly=wave_height,sea_surface_temperature,sea_level_height_msl`),
-    pedirMeteo("forecast", `${base}&hourly=windspeed_10m,pressure_msl&windspeed_unit=kmh`),
+    pedirMeteo("forecast", `${base}&hourly=windspeed_10m,pressure_msl,precipitation&windspeed_unit=kmh`),
   ]);
   // Se cruza por la hora exacta, nunca por índice (bug real ya visto entre
   // las dos APIs, ver datosAmbientalesPunto).
   const porHora = {};
   (tiempo.hourly?.time || []).forEach((t, i) => {
-    porHora[t] = { viento: tiempo.hourly.windspeed_10m?.[i] ?? null, presion: tiempo.hourly.pressure_msl?.[i] ?? null };
+    porHora[t] = { viento: tiempo.hourly.windspeed_10m?.[i] ?? null, presion: tiempo.hourly.pressure_msl?.[i] ?? null, lluvia: tiempo.hourly.precipitation?.[i] ?? null };
   });
   const factor = factorOleaje(s.lat, s.lon);
   const horas = (marino.hourly?.time || []).map((t, i) => {
@@ -2987,6 +3084,7 @@ async function datosHorariosSpot(s) {
       tempAgua: marino.hourly.sea_surface_temperature?.[i] ?? null,
       viento: porHora[t]?.viento ?? null,
       presion: porHora[t]?.presion ?? null,
+      lluvia: porHora[t]?.lluvia ?? null,
     };
   });
   if (!horas.length) throw new Error("sin datos horarios");
@@ -3036,7 +3134,8 @@ function pintarIndicePesca(s) {
   }
   const region = VA.regionPorCoordenadas(s.lat, s.lon);
   const mes = Number(horaActualMadridISO().slice(5, 7));
-  const deTemporada = VA.especiesDeTemporada(especiesDatos, region, mes)
+  const modalidad = vaEstado.modalidad;
+  const deTemporada = VA.especiesDeTemporada(especiesDatos, region, mes, modalidad)
     .map((e) => ({ e, coincide: VA.coincideTemperatura(e, s.tempAgua) }));
   const conDatoTemp = deTemporada.filter((x) => x.coincide !== null);
   const ratioTemp = conDatoTemp.length ? conDatoTemp.filter((x) => x.coincide).length / conDatoTemp.length : 0.5;
@@ -3047,8 +3146,8 @@ function pintarIndicePesca(s) {
   nota.textContent = !spotVigente(s)
     ? textoVigencia(s)
     : conDatoTemp.length
-      ? `${conDatoTemp.filter((x) => x.coincide).length}/${conDatoTemp.length} especies de temporada con su agua ideal ahora, presión ${s.presion?.tendencia || "sin datos"}`
-      : `sin especies de temporada con rango de temperatura documentado hoy — basado solo en la presión (${s.presion?.tendencia || "sin datos"})`;
+      ? `${VA.NOMBRE_MODALIDAD[modalidad]}: ${conDatoTemp.filter((x) => x.coincide).length}/${conDatoTemp.length} especies de temporada con su agua ideal ahora, presión ${s.presion?.tendencia || "sin datos"}`
+      : `${VA.NOMBRE_MODALIDAD[modalidad]}: ${deTemporada.length ? "sin especies de temporada con rango de temperatura documentado hoy" : "ninguna especie de temporada con dato para esta modalidad aquí"} — basado solo en la presión (${s.presion?.tendencia || "sin datos"})`;
 }
 
 async function pintarVentanaActividad(s) {
@@ -3066,12 +3165,23 @@ async function pintarVentanaActividad(s) {
     if (vaEstado.s !== s) return;
     const region = VA.regionPorCoordenadas(s.lat, s.lon);
     const mes = Number(vaFechaDia(vaEstado.dia).slice(5, 7));
-    const candidatas = datos.especies.filter((e) => e.presencia?.[region]?.meses?.length);
-    if (!candidatas.length) {
+    const modalidad = vaEstado.modalidad;
+    pintarNormativaVA(datos, region, null);
+    if (!datos.especies.some((e) => e.presencia?.[region]?.meses?.length)) {
       caja.style.display = "none";
       return;
     }
     caja.style.display = "";
+    // Solo las especies que se pescan con la modalidad de la pestaña (una
+    // especie puede estar en varias: la lubina, en las tres).
+    const candidatas = VA.especiesParaModalidad(datos, region, modalidad);
+    const sel0 = document.getElementById("vaEspecie");
+    if (!candidatas.length) {
+      sel0.innerHTML = "";
+      for (const id of ["vaTira", "vaEje", "vaFreza", "vaMejores", "vaCebos", "vaTalla"]) document.getElementById(id).innerHTML = "";
+      det.textContent = `Todavía no tenemos especies con dato para «${VA.NOMBRE_MODALIDAD[modalidad]}» en esta zona.`;
+      return;
+    }
     // En temporada primero; dentro de cada grupo, el orden del JSON (lubina primero).
     const orden = (e) => datos.especies.indexOf(e);
     const util = (e) => e.presencia[region].meses.includes(mes) && !VA.vedaActiva(e, region, mes);
@@ -3090,10 +3200,15 @@ async function pintarVentanaActividad(s) {
     const especie = datos.especies.find((e) => e.id === vaEstado.especieId);
     // La turbidez es una lectura diaria de la webcam: solo vale para hoy.
     const turbidez = vaEstado.dia === 0 ? (TURBIDEZ[s.slug]?.etiqueta || null) : null;
-    const todos = VA.calcularVentana(especie, datos.reglas_por_defecto, horas, { lat: s.lat, lon: s.lon, turbidez });
+    const caudalRio = vaEstado.dia === 0 ? caudalRioSpot(s) : null;
+    const todos = VA.calcularVentana(especie, datos.reglas_por_defecto, horas, {
+      lat: s.lat, lon: s.lon, turbidez, caudalRio, modalidad, reglasModalidad: datos.reglas_por_modalidad,
+    });
     const fecha = vaFechaDia(vaEstado.dia);
     vaEstado.resultados = todos.filter((r) => r.hora.startsWith(fecha));
+    if (vaEstado.s !== s || vaEstado.modalidad !== modalidad) return;
     pintarTiraVA(especie, region, fecha, datos);
+    pintarNormativaVA(datos, region, especie);
   } catch (e) {
     console.warn("Ventana de actividad no disponible:", e.message);
     if (vaEstado.s === s) {
@@ -3115,7 +3230,7 @@ function pintarTiraVA(especie, region, fecha, datos) {
     vaEstado.idxSel = iAhora >= 0 ? iAhora : res.reduce((m, r, i) => (r.puntuacion > res[m].puntuacion ? i : m), 0);
   }
   document.getElementById("vaTira").innerHTML = res.map((r, i) =>
-    `<button type="button" class="va-hora${r.hora.slice(0, 13) < ahora ? " pasada" : ""}${i === vaEstado.idxSel ? " sel" : ""}" data-va-idx="${i}" style="background:${vaColor(r.puntuacion)};" aria-label="${r.hora.slice(11, 16)}: ${r.puntuacion} de 100"></button>`).join("");
+    `<button type="button" class="va-hora${r.hora.slice(0, 13) < ahora ? " pasada" : ""}${i === vaEstado.idxSel ? " sel" : ""}" data-va-idx="${i}" style="background:${vaColor(r.puntuacion)};" aria-label="${r.hora.slice(11, 16)}: ${r.prohibida ? "prohibida de noche" : `${r.puntuacion} de 100`}"></button>`).join("");
   document.getElementById("vaEje").innerHTML = res.map((r, i) => `<span>${i % 3 === 0 ? r.hora.slice(11, 13) : ""}</span>`).join("");
   pintarDetalleVA();
 
@@ -3136,12 +3251,23 @@ function pintarTiraVA(especie, region, fecha, datos) {
     : fz?.enFreza
     ? `<div class="va-freza">🥚 <b>En freza en esta zona</b> (${vaTextoMeses(fz.meses)}). Si lo pescas, te recomendamos devolverlo al agua.${fz.nota ? ` <span style="opacity:.8">${escVA(fz.nota)}</span>` : ""}</div>`
     : "";
-
-  const cebos = VA.cebosParaRegion(especie, region, 5);
+  // Avisos de seguridad (embarcación): las horas que quedan con aviso.
+  const conAviso = res.filter((r) => r.avisos?.length && (r.hora.slice(0, 13) >= ahora || vaEstado.dia > 0));
+  if (conAviso.length) {
+    const peor = conAviso.find((r) => r.avisos[0].nivel === "embarcacion_pequena") || conAviso[0];
+    frezaEl.innerHTML += `<div class="va-aviso">⚠ <b>${escVA(peor.avisos[0].texto)}</b> — ${conAviso.length} h con aviso (${conAviso[0].hora.slice(11, 16)}–${conAviso[conAviso.length - 1].hora.slice(11, 16)}). Aviso propio orientativo: mira siempre AEMET/IPMA y Capitanía.</div>`;
+  }
+  if (vaEstado.modalidad === "submarina") {
+    const sub = datos.modalidades?.submarina;
+    const tecnica = especie.modalidades?.submarina?.tecnica;
+    document.getElementById("vaCebos").innerHTML = `🤿 <b>Sin cebos:</b> ${escVA(sub?.sin_cebos || "")}`
+      + `<span class="va-nota" style="display:block; margin-top:2px;">${tecnica ? `Técnica: ${escVA(tecnica)}` : `Técnicas habituales (práctica, sin fuente citable): ${escVA((sub?.tecnicas || []).map((t) => t.nombre).join(", "))}`}.</span>`;
+  }
+  const cebos = vaEstado.modalidad === "submarina" ? [] : VA.cebosParaRegion(especie, region, 5, vaEstado.modalidad);
   const grupoCebos = (tipo) => cebos.filter((c) => c.tipo === tipo).map((c) => escVA(c.nombre)).join(", ");
   const naturales = grupoCebos("natural"), artificiales = grupoCebos("artificial");
   const conFuente = cebos.filter((c) => c.fuente);
-  document.getElementById("vaCebos").innerHTML = cebos.length
+  if (vaEstado.modalidad !== "submarina") document.getElementById("vaCebos").innerHTML = cebos.length
     ? `🪝 <b>Cebos típicos:</b> ${[naturales && `${naturales} (natural)`, artificiales && `${artificiales} (artificial)`].filter(Boolean).join(" · ")}`
       + `<span class="va-nota" style="display:block; margin-top:2px;">${conFuente.length ? `Según <a href="${escVA(conFuente[0].url)}" target="_blank" rel="noopener">${escVA((datos.fuentes[conFuente[0].fuente]?.editor || "la fuente").split(",")[0])}</a>` : "Práctica habitual"}${conFuente.length && conFuente.length < cebos.length ? " y práctica habitual de pesca" : ""}. Revisa la normativa de cebos de tu comunidad.</span>`
     : "";
@@ -3155,6 +3281,25 @@ function pintarTiraVA(especie, region, fecha, datos) {
     : "📏 Talla mínima: sin dato verificado para esta zona todavía.")
     + (veda ? `<br>⚠ ${escVA(veda.texto)}` : "")
     + " Manda siempre la norma publicada.";
+}
+
+// "Normativa de esta modalidad": lo verificado (con enlace y fecha) para la
+// jurisdicción del spot, lo propio de la especie y lo que falta por revisar.
+function pintarNormativaVA(datos, region, especie) {
+  const VA = window.VentanaActividad;
+  const el = document.getElementById("modNormativa");
+  if (!datos.normativa_modalidades) { el.textContent = "Sin datos de normativa todavía."; return; }
+  const n = VA.normativaModalidad(datos, vaEstado.modalidad, region, { euskadi: VA.enEuskadi(vaEstado.s.lat, vaEstado.s.lon), especie });
+  const item = (x) => {
+    const f = datos.fuentes[x.fuente];
+    return `<li>${escVA(x.texto)} <span class="va-nota">(<a href="${escVA(x.url)}" target="_blank" rel="noopener">${escVA(x.articulo ? `${x.articulo}, ` : "")}${escVA((f?.editor || "fuente").split(",")[0])}</a>, revisado ${escVA(x.fecha_revision)})</span></li>`;
+  };
+  const NOMBRE_J = { ES: "España (aguas exteriores)", "ES-PV": "Euskadi", "ES-CB": "Cantabria", "ES-AS": "Asturias", "ES-GA": "Galicia", "ES-AN": "Andalucía", "ES-MC": "Murcia", "ES-VC": "C. Valenciana", "ES-CT": "Cataluña", "ES-IB": "Baleares", "ES-CN": "Canarias", PT: "Portugal", "PT-AC": "Azores", "PT-MA": "Madeira" };
+  el.className = "va-detalle mod-normativa";
+  el.innerHTML = (n.especie.length ? `<b>${escVA(especie.nombres.es)}:</b><ul>${n.especie.map(item).join("")}</ul>` : "")
+    + (n.general.length ? `<ul>${n.general.map(item).join("")}</ul>` : "Sin normativa verificada todavía para esta zona.")
+    + (n.pendiente.length ? `<div class="va-nota">Pendiente de revisar: ${n.pendiente.map((p) => escVA(NOMBRE_J[p.jurisdiccion] || p.jurisdiccion)).join(", ")} (en aguas interiores manda cada comunidad).</div>` : "")
+    + `<div class="va-nota">${escVA(datos.aviso_legal || "Manda siempre la norma publicada.")}</div>`;
 }
 
 function pintarDetalleVA() {

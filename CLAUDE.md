@@ -1181,6 +1181,39 @@ Ahora además hereda la vigencia por spot del punto anterior.
     adentro (solo la usaba la tarjeta retirada) y las notas largas (sustituidas
     por campos con fuente). `diario.html` sigue con su propia `ESPECIES` (solo
     nombre + científico para el desplegable de capturas): es otra cosa y no se toca.
+- **Modalidades de pesca (2026-10-08, pedido de Mikel)**: "debemos separar
+  pesca de costa de pesca de embarcación o submarinismo; no se pesca lo mismo"
+  y "no tiene sentido poner Mundaka y que me aparezca bonito". El panel del
+  spot tiene tres pestañas accesibles (`role=tablist`, flechas/Inicio/Fin)
+  encima del índice de pesca: **Desde costa**, **Embarcación** y
+  **Submarina**. Abre la del tipo del punto propio (embarcación/buceo), si no
+  la última elegida (`localStorage.va_modalidad`, solo comodidad), si no
+  costa. La pestaña filtra el desplegable de especies de la ventana de
+  actividad, las especies del índice de pesca, los cebos (submarina: sin
+  cebos) y la normativa; el post de Instagram es de costa por defecto
+  (`MODALIDAD_POST` lo cambia) y nunca saca una especie de mar adentro.
+  - Datos: `modalidades` por especie en `especies.json` (muchos-a-muchos:
+    lubina en las tres, bonito solo embarcación; `aplica: null` = sin dato, no
+    se muestra). Recupera la división costa/mar adentro que tenía la lista
+    antigua de `index.html` (fuente `app_index_zona`), con matices (txitxarro y
+    verdel también desde espigón). `reglas_por_modalidad`: costa = lo de
+    siempre; embarcación = viento > 20 km/h y ola > 1 m restan, aviso y tope 35
+    para kayak (> 20 km/h o > 1,5 m) y tope 15 para embarcación pequeña
+    (> 30 km/h o > 2,5 m), marea peso 4; submarina = turbidez peso 20 (clara
+    suma, turbia resta), mar en calma (óptimo < 0,5 m, > 1,5 m tope 15), lluvia
+    de las 24 h previas y caudal alto del río del spot restan, y **de noche
+    puntúa 0** (prohibida: RD 347/2011 art. 16.d, Portaria 14/2014 art. 8.3).
+    En las modalidades distintas de costa, oleaje/viento/turbidez (y marea en
+    submarina) los fija la modalidad, no la especie.
+  - Normativa: `normativa_modalidades` con artículo, url y fecha (RD 347/2011,
+    Gobierno Vasco, Portaria 14/2014 y FAQ DGRM 2026) y `pendiente` por
+    jurisdicción; tarjeta "Normativa de esta modalidad" del panel.
+  - Diario: la modalidad ya se guarda por salida (`salidas_pesca.tipo_salida`);
+    solo se añadieron técnicas de submarina (espera/agachón/rececho) al
+    desplegable de técnica (texto libre: sin migración).
+  - La ventana pide además `precipitation` horaria a Open-Meteo (para la
+    lluvia previa de la submarina). Tests: `test/modalidades.test.js` (en
+    `tests.yml`).
 - **Ojo, Open-Meteo**: la API gratuita es solo para uso no comercial; toda la
   app (no solo esto) la usa. Pendiente de decidir con Mikel (plan comercial de
   Open-Meteo o alternativa).
