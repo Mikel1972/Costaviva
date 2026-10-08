@@ -1641,7 +1641,8 @@ pestaña en la hora actual. Hereda la vigencia por spot del punto anterior
   (`reglas_por_defecto` + `reglas` por especie) con `criterio`/`fuente` y
   `tipo: heuristica_experta` cuando lo son. **La marea se escala con el rango
   local** (máx-mín en ±12 h del nivel del mar del propio spot frente a 2,5 m):
-  en el Mediterráneo no cuenta. Mar > 2,5 m: tope 20 y aviso. Luna: peso 0.
+  en el Mediterráneo no cuenta. Mar > 2,5 m: aviso de ola peligrosa aparte,
+  sin tope (ver "Ola peligrosa: aviso aparte"). Luna: peso 0.
 - **UI**: tarjeta "Ventana de actividad por horas" del panel del spot
   (`pintarVentanaActividad` en `index.html`): selector de especie (las que
   tienen presencia en la región del spot, en temporada primero), Hoy/Mañana,
@@ -1694,10 +1695,12 @@ pestaña en la hora actual. Hereda la vigencia por spot del punto anterior
     se muestra). Recupera la división costa/mar adentro que tenía la lista
     antigua de `index.html` (fuente `app_index_zona`), con matices (txitxarro y
     verdel también desde espigón). `reglas_por_modalidad`: costa = lo de
-    siempre; embarcación = viento > 20 km/h y ola > 1 m restan, aviso y tope 35
-    para kayak (> 20 km/h o > 1,5 m) y tope 15 para embarcación pequeña
-    (> 30 km/h o > 2,5 m), marea peso 4; submarina = turbidez peso 20 (clara
-    suma, turbia resta), mar en calma (óptimo < 0,5 m, > 1,5 m tope 15), lluvia
+    siempre; embarcación = viento > 20 km/h y ola > 1 m restan, aviso para kayak
+    (> 20 km/h o > 1,5 m) y para embarcación pequeña (> 30 km/h o > 2,5 m),
+    con tope 35 / 15 **solo si lo supera el viento** (la ola solo avisa desde
+    el 2026-10-08), marea peso 4; submarina = turbidez peso 20 (clara
+    suma, turbia resta), mar en calma (óptimo < 0,5 m, > 1,5 m aviso de ola
+    peligrosa, sin tope), lluvia
     de las 24 h previas y caudal alto del río del spot restan, y **de noche
     puntúa 0** (prohibida: RD 347/2011 art. 16.d, Portaria 14/2014 art. 8.3).
     En las modalidades distintas de costa, oleaje/viento/turbidez (y marea en
@@ -1841,9 +1844,30 @@ anchura; +1 en el centro, ~+0,2 en los bordes, tiende a -1). Rangos solo de
 FishBase siguen sin puntuar.
 
 **Filtros fuera de la fórmula**: veda (la especie no entra), freza (aviso
-"si lo pescas, devuélvelo", nunca suma), topes de seguridad por modalidad (se
-aplican al final y salen como un motivo "tope de seguridad"), submarina de
-noche = 0, datos caducados = S/D (`spotVigente`).
+"si lo pescas, devuélvelo", nunca suma), tope por viento en embarcación
+(kayak 35 / embarcación pequeña 15; se aplica al final y sale como un motivo
+"tope de seguridad"), submarina de noche = 0, datos caducados = S/D
+(`spotVigente`).
+
+**Ola peligrosa: aviso aparte, sin tope (decisión de Mikel, 2026-10-08).**
+Antes la altura de ola recortaba la nota ("tope de seguridad (mar de 2,5-3 m,
+peligrosa desde costa: máximo 20)"). Ahora la nota se calcula sin ese tope (el
+factor de oleaje sigue puntuando como siempre) y el resultado lleva
+`avisoOla` (`avisoOlaPeligrosa` en `ventana-actividad.js`): "⚠️ Ola peligrosa
+desde costa (2,5-3 m): extrema la precaución". **No es un motivo con
+flecha**: se pinta como nota aparte con la clase `.aviso-ola` de
+`costaviva.css` (tokens `--peligro-*`). Umbral = `oleaje.max_seguro_m` de la
+modalidad, estrictamente por encima: costa 2,5 m ("desde costa"), embarcación
+2,5 m ("para salir en embarcación de recreo"), submarina 1,5 m ("para
+bucear"); `tope_si_peligrosa` desapareció del JSON. Dónde sale: índice del
+spot (encima de los motivos), ventana (franja con las horas con aviso, el
+detalle de la hora y "⚠️ ola peligrosa" en las mejores ventanas), diario
+(`indice_factores.aviso_ola`) y piezas de Instagram (`resumenDelDia().avisoOla`,
+en la plantilla y en el texto del post y del reel). En embarcación, los
+avisos de kayak / embarcación pequeña siguen saliendo también por ola, pero su
+tope solo lo pone el viento. Ojo: desde costa, en los depredadores costeros
+el factor de oleaje lo sustituyen las reglas de mar plana/poca/movida (hasta
+2,5 m), así que por encima de 2,5 m la ola no resta nada a su nota.
 
 **Índice del spot** (`indiceSpot`): la mejor especie de temporada (sin vedas)
 de la pestaña en la hora actual, con su nombre y su porqué; es exactamente la
@@ -1877,8 +1901,8 @@ preview: salían "+ mar algo movida" y "− mar de 2-2,5 m" a la vez): cada regl
 declara su `variable`; si es la de un factor base, lo sustituye
 (`sustituye`), y las reglas de una misma variable tienen condiciones
 excluyentes (las de presión: 6 h si cae ahora, 24 h solo si las últimas 6 h
-están quietas, subida tras el frente). Los topes de seguridad van aparte y se
-aplican aunque el factor esté sustituido. Un test recorre especies,
+están quietas, subida tras el frente). El aviso de ola peligrosa va aparte y
+sale aunque el factor esté sustituido. Un test recorre especies,
 modalidades y escenarios y falla si una variable puntúa dos veces.
 **Presentación (decisión de Mikel, 2026-10-08)**: la nota y una lista de
 motivos, cada uno con una flecha por dirección y peso (▲▲ / ▲ / ▼ / ▼▼, el
@@ -1901,7 +1925,7 @@ cientifica`, del top 10 de evidencia que aprobó Mikel, ver más abajo):
    esas especies (`sustituye: ["presion"]`).
 2. Mar algo movida (1-2,5 m) desde costa: suma a esos depredadores y
    sustituye al factor de oleaje (con las dos reglas de escala de arriba);
-   por encima de 2,5 m manda el tope de seguridad.
+   por encima de 2,5 m sale el aviso de ola peligrosa (sin tope).
 3. Río crecido (caudal "alto" con umbral oficial) a ≤ 3 km de la
    desembocadura: suma a la lubina y resta al resto (salvo la lisa). Río del
    spot = `RIOS[].spotCosta` de `index.html` (`rioDeSpot`); spot sin río

@@ -45,6 +45,8 @@ export function resumenDelDia(especiesDatos, horas, { lat, lon, ahoraISO, modali
     especieId: ind.especie.id,
     emoji: especie.emoji || "🐟",
     freza: !!ind.freza,
+    // Ola peligrosa (2026-10-08): nota aparte, nunca un motivo con flecha.
+    avisoOla: ind.avisoOla?.texto ?? null,
     motivos: motivosDestacados(ind.resultado.razones),
     barras,
     mejorTramo: mejorTramo(barras),

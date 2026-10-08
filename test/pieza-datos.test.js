@@ -38,6 +38,20 @@ test("resumenDelDia: misma nota que indiceSpot y 24 barras de hoy", () => {
   assert.ok(r.motivos.length <= 3);
 });
 
+test("resumenDelDia: ola peligrosa como aviso aparte, no como motivo ni tope", () => {
+  const ahoraISO = "2026-10-08T13:00", lat = 43.4297, lon = -2.8103;
+  const tranquila = resumenDelDia(especies, serie(), { lat, lon, ahoraISO });
+  assert.equal(tranquila.avisoOla, null);
+  const horas = serie().map((h) => ({ ...h, ola: 3.2 }));
+  const r = resumenDelDia(especies, horas, { lat, lon, ahoraISO });
+  assert.equal(r.avisoOla, "⚠️ Ola peligrosa desde costa (3-3,5 m): extrema la precaución");
+  assert.ok(!r.motivos.some((m) => /peligros|tope/i.test(m.texto)));
+  const i = horas.findIndex((h) => h.hora === ahoraISO);
+  const ind = VA.indiceSpot(especies, horas, i, { lat, lon, modalidad: "costa", horaActual: ahoraISO });
+  assert.equal(r.puntuacion, Math.round(ind.puntuacion));
+  assert.ok(!ind.resultado.razones.some((x) => x.factor === "tope"));
+});
+
 test("resumenDelDia: sin la hora actual en la serie, null (no se inventa)", () => {
   assert.equal(resumenDelDia(especies, serie(), { lat: 43.4, lon: -2.8, ahoraISO: "2030-01-01T10:00" }), null);
 });

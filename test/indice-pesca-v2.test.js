@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import {
   sigmoide, repartirAportes, pesoLogOdds, factorTemperatura, calcularVentana, indiceSpot, fiabilidad,
-  reglasParaModalidad, rioDeSpot, distanciaKm, INDICE_VERSION, VARIABLE_DE_FACTOR,
+  reglasParaModalidad, rioDeSpot, distanciaKm, INDICE_VERSION, VARIABLE_DE_FACTOR, avisoOlaPeligrosa,
 } from "../assets/js/ventana-actividad.js";
 import {
   enSector, valorExpresion, evaluarCondicion, enAmbito, reglasEnAmbito, efectoRegla, validarRegla,
@@ -159,12 +159,66 @@ test("filtro: la freza avisa (devuélvelo) y nunca suma", () => {
   assert.ok(!("freza" in DATOS.reglas_por_defecto));
 });
 
-test("filtro: tope de seguridad aplicado al final, explicado y la suma sigue cuadrando", () => {
+// Ola peligrosa (decisión de Mikel, 2026-10-08): fuera de la nota. Antes,
+// "tope de seguridad (mar de 3-3,5 m, peligrosa desde costa: máximo 20)".
+test("ola peligrosa: la nota no tiene tope por ola y la suma sigue cuadrando", () => {
   const s = serie(() => ({ ola: 3.2 }));
-  const r = enHora("lubina", s, HOY);
-  assert.ok(r.puntuacion <= 20 && r.marPeligrosa);
-  assert.ok(razon(r, "tope"));
-  assert.equal(50 + r.razones.reduce((a, x) => a + x.aporte, 0), r.puntuacion);
+  for (const id of ["lubina", "calamar", "sargo"]) {
+    const r = enHora(id, s, HOY);
+    assert.ok(r.marPeligrosa && r.avisoOla, id);
+    assert.ok(!razon(r, "tope"), `${id}: sin motivo de tope`);
+    assert.equal(50 + r.razones.reduce((a, x) => a + x.aporte, 0), r.puntuacion, id);
+  }
+  // La lubina desde costa con 3,2 m: el factor de oleaje lo sustituyen las
+  // reglas de mar movida (que no llegan a 3,2 m), así que la nota es la de
+  // los demás factores, muy por encima del antiguo tope de 20.
+  assert.ok(enHora("lubina", s, HOY).puntuacion > 20);
+  // Misma nota que si la regla de oleaje no tuviera umbral de aviso con el
+  // factor saturado a -1 (lo que pasa por encima de max_seguro_m).
+  const sinAviso = structuredClone(DATOS.reglas_por_defecto);
+  sinAviso.oleaje.max_seguro_m = 1.6; // -(3,2-1,5)/0,1 => satura en -1 igual que antes
+  const calamar = enHora("calamar", s, HOY);
+  const calamarSinAviso = calcularVentana(especie("calamar"), sinAviso, s, ctxBase())[idx(s, HOY)];
+  assert.equal(calamar.puntuacion, calamarSinAviso.puntuacion);
+});
+
+test("ola peligrosa: aviso aparte, no es un motivo con flecha", () => {
+  const r = enHora("calamar", serie(() => ({ ola: 3.2 })), HOY);
+  assert.equal(r.avisoOla.texto, "⚠️ Ola peligrosa desde costa (3-3,5 m): extrema la precaución");
+  assert.ok(!r.razones.some((x) => /peligros|precauci/i.test(x.texto)), "el aviso no está entre los motivos");
+  assert.equal(razon(r, "oleaje").texto, "mar de 3-3,5 m");
+  const ind = indiceSpot(DATOS, serie(() => ({ ola: 3.2 })), idx(serie(), HOY), { ...MUNDAKA, modalidad: "costa" });
+  assert.equal(ind.avisoOla.texto, ind.resultado.avisoOla.texto);
+  assert.equal(indiceSpot(DATOS, serie(), idx(serie(), HOY), { ...MUNDAKA, modalidad: "costa" }).avisoOla, null);
+});
+
+test("ola peligrosa: umbrales por modalidad (costa 2,5, embarcación 2,5, submarina 1,5), estrictamente por encima", () => {
+  const umbrales = {
+    costa: DATOS.reglas_por_defecto.oleaje,
+    embarcacion: DATOS.reglas_por_modalidad.embarcacion.oleaje,
+    submarina: DATOS.reglas_por_modalidad.submarina.oleaje,
+  };
+  assert.equal(umbrales.costa.max_seguro_m, 2.5);
+  assert.equal(umbrales.embarcacion.max_seguro_m, 2.5);
+  assert.equal(umbrales.submarina.max_seguro_m, 1.5);
+  for (const o of Object.values(umbrales)) assert.ok(!("tope_si_peligrosa" in o), "ya no hay tope por ola");
+  // Función pura, en el umbral y justo por encima.
+  assert.equal(avisoOlaPeligrosa(2.5, umbrales.costa), null);
+  assert.match(avisoOlaPeligrosa(2.51, umbrales.costa).texto, /^⚠️ Ola peligrosa desde costa \(2,5-3 m\): extrema la precaución$/);
+  assert.equal(avisoOlaPeligrosa(2.5, umbrales.embarcacion), null);
+  assert.match(avisoOlaPeligrosa(2.6, umbrales.embarcacion).texto, /^⚠️ Ola peligrosa para salir en embarcación de recreo \(2,5-3 m\)/);
+  assert.equal(avisoOlaPeligrosa(1.5, umbrales.submarina), null);
+  assert.match(avisoOlaPeligrosa(1.6, umbrales.submarina).texto, /^⚠️ Ola peligrosa para bucear \(1,5-2 m\)/);
+  assert.equal(avisoOlaPeligrosa(null, umbrales.costa), null);
+  // En el cálculo de cada modalidad.
+  const casos = [["costa", 2.5, 2.6], ["embarcacion", 2.5, 2.6], ["submarina", 1.5, 1.6]];
+  for (const [modalidad, en, encima] of casos) {
+    const a = enHora("lubina", serie(() => ({ ola: en })), HOY, { modalidad });
+    const b = enHora("lubina", serie(() => ({ ola: encima })), HOY, { modalidad });
+    assert.equal(a.avisoOla, null, `${modalidad} ${en} m: sin aviso`);
+    assert.ok(b.avisoOla && b.marPeligrosa, `${modalidad} ${encima} m: con aviso`);
+    assert.ok(!razon(b, "tope"), `${modalidad}: sin tope por ola`);
+  }
 });
 
 test("filtro: submarina de noche = 0", () => {
@@ -349,7 +403,7 @@ test("Mikel 1: presión bajando (6 h y 24 h) suma a los depredadores costeros; s
   assert.ok(!razon(enHora("lubina", baja, HOY, { modalidad: "submarina" }), "regla:presion_bajando_6h"));
 });
 
-test("Mikel 2: mar algo movida (1-2,5 m) suma desde costa, sin saltarse el tope de seguridad", () => {
+test("Mikel 2: mar algo movida (1-2,5 m) suma desde costa, y por encima avisa de ola peligrosa", () => {
   const r = enHora("sargo", serie(() => ({ ola: 1.8 })), HOY);
   assert.ok(razon(r, "regla:mar_movida_depredadores_costa").aporte > 0);
   // Sustituye al factor de oleaje: un solo motivo de ola (antes salían
@@ -366,8 +420,9 @@ test("Mikel 2: mar algo movida (1-2,5 m) suma desde costa, sin saltarse el tope 
   assert.ok(!razon(enHora("sargo", serie(() => ({ ola: 0.4 })), HOY), "regla:mar_movida_depredadores_costa"));
   assert.ok(!razon(enHora("sargo", serie(() => ({ ola: 1.8 })), HOY, { modalidad: "embarcacion" }), "regla:mar_movida_depredadores_costa"));
   const peligro = enHora("lubina", serie(() => ({ ola: 2.8 })), HOY);
-  assert.ok(peligro.puntuacion <= 20 && peligro.marPeligrosa, "el tope va aparte aunque el factor esté sustituido");
-  assert.match(razon(peligro, "tope").texto, /peligrosa/);
+  assert.ok(peligro.marPeligrosa && peligro.avisoOla, "el aviso va aparte aunque el factor esté sustituido");
+  assert.match(peligro.avisoOla.texto, /Ola peligrosa desde costa \(2,5-3 m\)/);
+  assert.ok(!razon(peligro, "tope"), "la ola ya no pone tope");
   assert.ok(!razon(peligro, "regla:mar_movida_depredadores_costa"));
 });
 
@@ -721,6 +776,12 @@ test("diario: la serie junta mar y atmósfera por la hora y el resumen guarda ve
   assert.ok(res.indice_factores.razones.every((r) => typeof r.aporte === "number"));
   assert.ok(res.indice_factores.ranking.length >= 2);
   assert.ok(JSON.stringify(res).length < 6000, "compacto");
+  // Ola peligrosa: se guarda como nota aparte (aviso_ola), no como motivo.
+  assert.equal(res.indice_factores.aviso_ola, null);
+  const serieOla = serie(() => ({ ola: 3.2 }), { inicio: Date.UTC(2026, 8, 28) });
+  const resOla = resumenIndice(indiceSpot(DATOS, serieOla, i, { ...MUNDAKA, modalidad: "costa", horaActual: "2026-10-08T13" }));
+  assert.match(resOla.indice_factores.aviso_ola, /^⚠️ Ola peligrosa desde costa/);
+  assert.ok(!resOla.indice_factores.razones.some((r) => r.factor === "tope"));
   assert.equal(resumenIndice({ puntuacion: null, motivo: "sin_especies", version: INDICE_VERSION }).indice_puntuacion, null);
 });
 

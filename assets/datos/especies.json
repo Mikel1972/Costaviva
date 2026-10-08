@@ -5,7 +5,7 @@
   "formula": "P = 100 · σ(b0 + Σ peso_lo · f), f ∈ [-1, 1]; σ(x) = 1/(1+e^-x)",
   "b0_logodds": 0,
   "puntos_por_logodds": 25,
-  "criterio": "Escala logística acordada con Mikel el 2026-10-08. Los pesos están en log-odds (peso_lo = peso antiguo en puntos / 25): cerca de 50 un factor aporta casi los mismos puntos que antes, y lejos de 50 la curva se satura sola sin recortar. El porqué se enseña en puntos (P - 50 repartido en proporción al log-odds de cada factor). Filtros fuera de la fórmula: veda (la especie no entra), freza (aviso, nunca suma), topes de seguridad por modalidad, submarina de noche = 0 y datos caducados = S/D. Índice del spot = la mejor especie de temporada de esa modalidad en esa hora, con su nombre.",
+  "criterio": "Escala logística acordada con Mikel el 2026-10-08. Los pesos están en log-odds (peso_lo = peso antiguo en puntos / 25): cerca de 50 un factor aporta casi los mismos puntos que antes, y lejos de 50 la curva se satura sola sin recortar. El porqué se enseña en puntos (P - 50 repartido en proporción al log-odds de cada factor). Filtros fuera de la fórmula: veda (la especie no entra), freza (aviso, nunca suma), tope por viento en embarcación (kayak / embarcación pequeña), aviso de ola peligrosa (nota aparte, sin tope: decisión de Mikel del 2026-10-08), submarina de noche = 0 y datos caducados = S/D. Índice del spot = la mejor especie de temporada de esa modalidad en esa hora, con su nombre.",
   "temperatura": "gaussiana: óptimo = centro del rango, sigma = media anchura"
  },
  "descripcion": "Fichas de especies de Costaviva y reglas de la ventana de actividad. Mantenido a mano y por la rutina semanal de especies (scripts/saldo/rutina-buscador-fuentes.txt, jueves). Reglas del fichero: nunca inventar un valor (null + nota); solo fuentes oficiales o abiertas NO-NC; FishBase, FAO, SeaLifeBase y similares (CC BY-NC) prohibidos; cada dato con su fuente (ids de 'fuentes') y cada talla con url + fecha_revision.",
@@ -644,10 +644,9 @@
     1.5
    ],
    "max_seguro_m": 2.5,
-   "tope_si_peligrosa": 20,
    "valor_bajo_minimo": -0.3,
    "tipo": "criterio_de_diseno",
-   "criterio": "Seguridad desde costa primero: por encima de 2,5 m la puntuación se limita a 20 y se avisa. El tramo óptimo por especie es una heurística experta (p. ej. a la lubina le gusta la espuma de la rompiente)."
+   "criterio": "Seguridad desde costa primero: por encima de 2,5 m se avisa ('⚠️ Ola peligrosa desde costa'), sin tope en la nota (decisión de Mikel, 2026-10-08; antes, máximo 20); el factor de oleaje sigue restando. El tramo óptimo por especie es una heurística experta (p. ej. a la lubina le gusta la espuma de la rompiente)."
   },
   "viento": {
    "peso_lo": 0.24,
@@ -13396,11 +13395,10 @@
      1.0
     ],
     "max_seguro_m": 2.5,
-    "tope_si_peligrosa": 15,
     "valor_bajo_minimo": 0,
     "texto_peligro": "peligrosa para salir en embarcación de recreo",
     "tipo": "criterio_de_diseno",
-    "criterio": "Con mar de más de 1 m se pesca peor y se navega peor; más de 2,5 m: tope 15 y aviso. Criterio de diseño, sin umbral oficial."
+    "criterio": "Con mar de más de 1 m se pesca peor y se navega peor; más de 2,5 m: aviso de ola peligrosa, sin tope en la nota desde el 2026-10-08 (antes, máximo 15). Criterio de diseño, sin umbral oficial."
    },
    "viento": {
     "peso_lo": 0.4,
@@ -13415,7 +13413,7 @@
    },
    "seguridad": {
     "tipo": "criterio_de_diseno",
-    "criterio": "Avisos de seguridad propios de Costaviva, sin umbral oficial: kayak por encima de 20 km/h de viento o 1,5 m de ola; embarcación pequeña por encima de 30 km/h o 2,5 m. Consulta siempre el aviso de AEMET/IPMA y la Capitanía.",
+    "criterio": "Avisos de seguridad propios de Costaviva, sin umbral oficial: kayak por encima de 20 km/h de viento o 1,5 m de ola; embarcación pequeña por encima de 30 km/h o 2,5 m. Desde el 2026-10-08 (Mikel) el tope de cada nivel solo lo pone el viento; la ola solo avisa. Consulta siempre el aviso de AEMET/IPMA y la Capitanía.",
     "niveles": [
      {
       "id": "embarcacion_pequena",
@@ -13468,11 +13466,10 @@
      0.5
     ],
     "max_seguro_m": 1.5,
-    "tope_si_peligrosa": 15,
     "valor_bajo_minimo": 0,
     "texto_peligro": "peligrosa para bucear",
     "tipo": "heuristica_experta",
-    "criterio": "Mar en calma = buena visibilidad y entrada/salida seguras; el mar de fondo levanta arena. Más de 1,5 m: tope 15 y aviso (criterio de diseño)."
+    "criterio": "Mar en calma = buena visibilidad y entrada/salida seguras; el mar de fondo levanta arena. Más de 1,5 m: aviso de ola peligrosa, sin tope en la nota desde el 2026-10-08 (antes, máximo 15) (criterio de diseño)."
    },
    "viento": {
     "peso_lo": 0.24,
@@ -13888,7 +13885,7 @@
      }
     },
     "variable": "orilla_tipo",
-    "nota": "Aprobado por Mikel el 2026-10-08 (roca + espuma: lubina, sargo, maragota, pulpo, congrio...). Orilla de OSM a 50 m del punto de costa. Con la mar plana cuenta la mitad; con 1,5 m o más, entero (el tope de seguridad va aparte). Sargo y maragota de roca: plos_dsargus_2018, ieo_labrus_galicia_2018."
+    "nota": "Aprobado por Mikel el 2026-10-08 (roca + espuma: lubina, sargo, maragota, pulpo, congrio...). Orilla de OSM a 50 m del punto de costa. Con la mar plana cuenta la mitad; con 1,5 m o más, entero (el aviso de ola peligrosa va aparte). Sargo y maragota de roca: plos_dsargus_2018, ieo_labrus_galicia_2018."
    },
    {
     "id": "orilla_playa_arena",
@@ -14256,7 +14253,7 @@
     "efecto": {
      "logodds": 0.5
     },
-    "nota": "Mikel: 'el mar algo revuelto ayuda a la lubina, el sargo... a encontrar comida desde costa'. Banda 1-2,5 m. Sustituye al factor de oleaje por defecto en su ámbito (desde costa, depredadores costeros) para que la ola cuente una sola vez; el resto de la escala de ola la cubren mar_plana_depredadores_costa y mar_poca_depredadores_costa. El tope de seguridad (más de 2,5 m: máximo 20 y aviso) va aparte y sigue mandando.",
+    "nota": "Mikel: 'el mar algo revuelto ayuda a la lubina, el sargo... a encontrar comida desde costa'. Banda 1-2,5 m. Sustituye al factor de oleaje por defecto en su ámbito (desde costa, depredadores costeros) para que la ola cuente una sola vez; el resto de la escala de ola la cubren mar_plana_depredadores_costa y mar_poca_depredadores_costa. Por encima de 2,5 m sale aparte el aviso de ola peligrosa (sin tope en la nota desde el 2026-10-08).",
     "sustituye": [
      "oleaje"
     ]

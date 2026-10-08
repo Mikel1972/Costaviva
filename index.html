@@ -1080,7 +1080,7 @@
       <!-- Motivos del índice: bloque propio a lo ancho de la caja (dentro de
            .etq, que es flex, se apretaban en columna: visto por Mikel). -->
       <div class="indice-porque" id="panelIndicePescaPorque"></div>
-      <div class="explicacion-indice" id="explicacionIndicePesca">Es la puntuación de la especie de temporada que mejor está ahora mismo en este punto y con esta modalidad (sin las que están en veda), con las mismas reglas públicas que la ventana de actividad de abajo: luz, marea, temperatura del agua, oleaje, viento, presión, turbidez y las reglas expertas de pesca local. Escala de 0 a 100 en forma de probabilidad (50 = día normal); debajo, lo que más sube (▲) o baja (▼) la nota ahora mismo. Una orientación, no una garantía.</div>
+      <div class="explicacion-indice" id="explicacionIndicePesca">Es la puntuación de la especie de temporada que mejor está ahora mismo en este punto y con esta modalidad (sin las que están en veda), con las mismas reglas públicas que la ventana de actividad de abajo: luz, marea, temperatura del agua, oleaje, viento, presión, turbidez y las reglas expertas de pesca local. Escala de 0 a 100 en forma de probabilidad (50 = día normal); debajo, lo que más sube (▲) o baja (▼) la nota ahora mismo. Si la ola es peligrosa para esta modalidad sale aparte un aviso ⚠️: la nota no la recorta. Una orientación, no una garantía.</div>
     </div>
     <div class="tarjeta" id="ventanaActividadBox" style="margin-top:10px; border: 1px solid var(--linea);">
       <div class="etq">⏱ VENTANA DE ACTIVIDAD POR HORAS</div>
@@ -3720,7 +3720,17 @@ async function pintarIndicePesca(s) {
   // Nota + motivos con flechas (sin puntos ni fuentes), como en la ventana.
   pinta(ind.puntuacion, `${VA.NOMBRE_MODALIDAD[modalidad]} · mejor ahora: ${ind.especie.nombre}`
     + `${ind.freza ? " (en freza: si lo pescas, devuélvelo)" : ""}`);
-  porqueEl.innerHTML = htmlPorque(ind.resultado.razones.filter((r) => r.aporte !== 0).slice(0, 4), ind.fiabilidad);
+  // Ola peligrosa: nota aparte encima de los motivos, nunca un motivo con
+  // flecha ni un tope de la nota (decisión de Mikel, 2026-10-08).
+  porqueEl.innerHTML = htmlAvisoOla(ind.avisoOla)
+    + htmlPorque(ind.resultado.razones.filter((r) => r.aporte !== 0).slice(0, 4), ind.fiabilidad);
+}
+
+// Aviso de ola peligrosa (2026-10-08): "⚠️ Ola peligrosa desde costa
+// (2,5-3 m): extrema la precaución". Viene de VentanaActividad.avisoOlaPeligrosa.
+function htmlAvisoOla(aviso, extra = "") {
+  if (!aviso) return "";
+  return `<div class="aviso-ola" role="note">${escVA(aviso.texto)}${extra ? `<small>${escVA(extra)}</small>` : ""}</div>`;
 }
 
 async function pintarVentanaActividad(s) {
@@ -3813,7 +3823,7 @@ function pintarTiraVA(especie, region, fecha, datos) {
   document.getElementById("vaMejores").innerHTML = vedaHoy
     ? "<b>En veda:</b> no recomendamos ninguna hora para esta especie."
     : mejores.length
-    ? "<b>Mejores ventanas:</b> " + mejores.map((v) => `${v.desde}–${v.hasta} (${v.media}) — ${escVA(v.porque.join(" · "))}`).join("<br>")
+    ? "<b>Mejores ventanas:</b> " + mejores.map((v) => `${v.desde}–${v.hasta} (${v.media})${v.avisoOla ? " ⚠️ ola peligrosa" : ""} — ${escVA(v.porque.join(" · "))}`).join("<br>")
     : `Ninguna hora pasa de 60 ${vaEstado.dia === 0 ? "en lo que queda de hoy" : "mañana"}.`;
 
   const mes = Number(fecha.slice(5, 7));
@@ -3824,6 +3834,12 @@ function pintarTiraVA(especie, region, fecha, datos) {
     : fz?.enFreza
     ? `<div class="va-freza">🥚 <b>En freza en esta zona</b> (${vaTextoMeses(fz.meses)}). Si lo pescas, te recomendamos devolverlo al agua.${fz.nota ? ` <span style="opacity:.8">${escVA(fz.nota)}</span>` : ""}</div>`
     : "";
+  // Ola peligrosa: las horas que quedan con aviso (la peor ola manda el texto).
+  const conOla = res.filter((r) => r.avisoOla && (r.hora.slice(0, 13) >= ahora || vaEstado.dia > 0));
+  if (conOla.length) {
+    const peorOla = conOla.reduce((a, b) => (b.avisoOla.ola > a.avisoOla.ola ? b : a));
+    frezaEl.innerHTML += htmlAvisoOla(peorOla.avisoOla, `${conOla.length} h con ola peligrosa (${conOla[0].hora.slice(11, 16)}–${conOla[conOla.length - 1].hora.slice(11, 16)}).`);
+  }
   // Avisos de seguridad (embarcación): las horas que quedan con aviso.
   const conAviso = res.filter((r) => r.avisos?.length && (r.hora.slice(0, 13) >= ahora || vaEstado.dia > 0));
   if (conAviso.length) {
@@ -3911,7 +3927,7 @@ function pintarDetalleVA() {
   const r = vaEstado.resultados[vaEstado.idxSel];
   const det = document.getElementById("vaDetalle");
   if (!r) { det.textContent = ""; return; }
-  det.innerHTML = `<b>${r.hora.slice(11, 16)} → ${r.puntuacion}/100</b>${htmlPorque(r.razones, r.fiabilidad)}`;
+  det.innerHTML = `<b>${r.hora.slice(11, 16)} → ${r.puntuacion}/100</b>${htmlAvisoOla(r.avisoOla)}${htmlPorque(r.razones, r.fiabilidad)}`;
   document.querySelectorAll("#vaTira .va-hora").forEach((b, i) => b.classList.toggle("sel", i === vaEstado.idxSel));
 }
 
