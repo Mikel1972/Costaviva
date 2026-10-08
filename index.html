@@ -973,6 +973,7 @@
     <div id="panelWebcamBox" style="margin-top:14px;">
       <div class="etq" style="margin-bottom:6px;">WEBCAM EN DIRECTO</div>
       <div id="panelWebcamContenido"></div>
+      <div id="panelWebcamExternas"></div>
     </div>
     <!-- Atribución obligatoria de Open-Meteo (licencia CC BY 4.0 de sus datos). -->
     <div class="atribucion-meteo">Datos meteorológicos: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a> (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>)</div>
@@ -1022,6 +1023,13 @@
   import * as Batimetria from "/assets/js/capa-batimetria.js";
   window.Batimetria = Batimetria;
   window.dispatchEvent(new Event("batimetria-lista"));
+</script>
+<script type="module">
+  // Cámaras de terceros (enlace o inserción oficial del dueño), ver
+  // assets/js/camaras-externas.js y test/camaras-externas.test.js.
+  import * as CamarasExternas from "/assets/js/camaras-externas.js";
+  window.CamarasExternas = CamarasExternas;
+  window.dispatchEvent(new Event("camaras-externas-listas"));
 </script>
 <script type="module">
   // Lluvia animada de las últimas 3 h (assets/js/lluvia-animada.js, con
@@ -2570,12 +2578,9 @@ const SPOTS_CON_WEBCAM = [
   // la Diputación pero un stream distinto (GIP_zumaia2), verificado en
   // vivo. Primera cámara real de este spot desde que existe en la app.
   "zumaia",
-  // Águilas (SkylineWebcams) — añadida 2026-09-25 por la regla "Cámara con
-  // mar a la vista" de ROBOT_REGLAS.md. Primera cámara de este spot, y de
-  // los 2 que quedaban sin ninguna en Murcia. 3 fuentes con failover, ver
-  // WEBCAMS en functions/webcam/[slug].js para por qué se descartó la
-  // cuarta candidata.
-  "aguilas",
+  // Águilas (SkylineWebcams) salió de aquí el 2026-10-08: sus condiciones
+  // no permiten pasar su imagen por nuestro proxy. Se ve con el código de
+  // inserción oficial, ver assets/js/camaras-externas.js.
 ];
 
 // Webcams en vídeo en directo (HLS) — Diputación Foral de Gipuzkoa,
@@ -2725,13 +2730,62 @@ function cerrarZoomWebcam() {
   }
 }
 
+// Cámaras de terceros (assets/js/camaras-externas.js), 2026-10-08. Van en
+// su propio contenedor, debajo de la cámara propia, para que los fallos y
+// recargas de esta no las borren. Solo dos modos, los que permite su dueño:
+// "imagen_oficial" (el código de "Insertar" del dueño tal cual: su imagen
+// enlazada a su página) y "enlace" (botón que abre su web). Nunca se pasan
+// por nuestro proxy ni se descarga su imagen. Se ocultan igual que las
+// propias si el robot de salud las ve caídas más de 24 h (clave ext-<id>).
+function camarasExternasVisibles(slug) {
+  const CE = window.CamarasExternas;
+  if (!CE) return null;
+  return CE.camarasExternasDeSpot(slug).filter((c) => !camaraRetirada(CE.claveSalud(c)));
+}
+function escaparHtmlCam(t) {
+  return String(t).replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch]);
+}
+function pintarCamarasExternas(slug) {
+  const caja = document.getElementById("panelWebcamExternas");
+  if (!caja) return;
+  const lista = camarasExternasVisibles(slug);
+  if (lista === null) {
+    caja.innerHTML = "";
+    window.addEventListener("camaras-externas-listas", () => { if (spotWebcamActual === slug) pintarCamarasExternas(slug); }, { once: true });
+    return;
+  }
+  if (!lista.length) { caja.innerHTML = ""; return; }
+  const imagenes = lista.filter((c) => c.modo === "imagen_oficial");
+  const enlaces = lista.filter((c) => c.modo === "enlace");
+  const htmlImagenes = imagenes.map((c) => `
+    <figure style="margin:8px 0 0;">
+      <a href="${escaparHtmlCam(c.url)}" target="_blank" rel="noopener"><img src="${escaparHtmlCam(c.imagen)}" alt="${escaparHtmlCam(c.nombre)} | ${escaparHtmlCam(c.dueno)}" loading="lazy" style="width:100%; border-radius:8px; border:1px solid #DDE2DC; display:block;"></a>
+      <figcaption style="font-size:11px; color:#5C7680; margin-top:3px;">${escaparHtmlCam(c.nombre)} · imagen de <a href="${escaparHtmlCam(c.url)}" target="_blank" rel="noopener">${escaparHtmlCam(c.dueno)}</a> (cada 5 min; el vídeo, en su web)</figcaption>
+    </figure>`).join("");
+  const htmlEnlaces = enlaces.length ? `
+    <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;">
+      ${enlaces.map((c) => `<a href="${escaparHtmlCam(c.url)}" target="_blank" rel="noopener" style="font-size:12px; padding:5px 10px; border:1px solid #DDE2DC; border-radius:14px; text-decoration:none; color:#2E7BA0;">Ver cámara: ${escaparHtmlCam(c.nombre)} (${escaparHtmlCam(c.dueno)}) ↗</a>`).join("")}
+    </div>` : "";
+  caja.innerHTML = `
+    <div class="etq" style="margin:12px 0 2px;">OTRAS CÁMARAS DE LA ZONA</div>
+    ${htmlImagenes}
+    ${htmlEnlaces}
+    <p class="nota-final">Cámaras de terceros: se ven en la web de su dueño.</p>`;
+}
+let spotWebcamActual = null;
+
 function pintarWebcam(slug, nombre) {
   pararRefrescoWebcam();
   destruirHlsActivo();
   cerrarZoomWebcam();
+  spotWebcamActual = slug;
+  pintarCamarasExternas(slug);
   const cont = document.getElementById("panelWebcamContenido");
   if (!SPOTS_CON_WEBCAM.includes(slug)) {
-    cont.innerHTML = `<div class="tarjeta" style="text-align:center; color:#42585F; font-size:12px;">Sin webcam identificada para este spot todavía.</div>`;
+    const hayExternas = window.CamarasExternas && window.CamarasExternas.camarasExternasDeSpot(slug).length > 0;
+    cont.innerHTML = hayExternas
+      ? ""
+      : `<div class="tarjeta" style="text-align:center; color:#42585F; font-size:12px;">Sin webcam identificada para este spot todavía.</div>`;
     return;
   }
   if (camaraRetirada(slug)) {

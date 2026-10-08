@@ -5,6 +5,31 @@ cambian las convenciones — no es un historial (para eso está `ROBOT.md`).
 Si algo de aquí queda desactualizado, corrígelo en el momento en que lo
 detectes, no lo dejes para luego.
 
+## Cámaras de terceros: solo como su dueño lo permita (2026-10-08)
+
+`assets/js/camaras-externas.js` lista cámaras de otros (SkylineWebcams,
+canales de YouTube, MEO Beachcam) encontradas en agregadores. **Los permisos
+los pone el dueño real del stream, no el agregador** (webcamera24 y
+webcamtaxi solo reenvían YouTube, in2thebeach, feratel...). Dos modos:
+`imagen_oficial` (el código "Insertar" del dueño tal cual; hoy solo el
+fotograma de Skyline, cada 5 min) y `enlace` (botón que abre su web).
+YouTube va siempre como enlace: sus políticas prohíben cobrar por ver un
+reproductor insertado y Costaviva está tras paywall. Windy Webcams queda
+fuera (exige su API). `analisis_permitido` es `false` en todas: nadie
+permite descargar o analizar sus fotogramas, así que **ninguna entra en
+turbidez, espuma ni posts de Instagram**, y el robot de salud solo hace un
+HEAD/oEmbed (clave `ext-<id>` en `camara_estado`). Águilas salió del proxy
+`/webcam/` y de turbidez por eso. `test/camaras-externas.test.js` exige
+dueño, modo permitido, condiciones con fuente y spot existente.
+
+**Interruptor `SKYLINE_EMBED_AUTORIZADO` (en `camaras-externas.js`, hoy
+`true`).** Mikel ha pedido a SkylineWebcams autorización escrita para el
+uso comercial (2026-10-08) y decidió usar ya la imagen oficial que su FAQ
+ofrece en "Incrustar" mientras contestan. Si Skyline lo niega, se pone a
+`false` y todas (Águilas incluida) pasan a `enlace` sin cargar nada de
+`embed.skylinewebcams.com`; no hay que tocar nada más (el test se adapta al
+valor). Analizar sus fotogramas sigue prohibido en cualquier caso.
+
 ## Oleaje costero: mar abierto frente a "en la playa" (2026-10-08)
 
 **Caso real (Mikel, 2026-10-08):** Hondarribia salía con "3.7–4.5 m" y su
