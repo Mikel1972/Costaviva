@@ -67,6 +67,9 @@
   --aviso-fondo: #FFF4DC;
   --aviso-borde: #F2C66B;
 
+  /* Sombra de las tarjetas que flotan sobre el mapa (rayos, lluvia, leyendas) */
+  --sombra-tarjeta: 0 4px 14px rgba(11, 30, 63, 0.18);
+
   --f-titulo: "Unbounded", "Manrope", system-ui, sans-serif;
   --f-texto: "Manrope", system-ui, sans-serif;
 }

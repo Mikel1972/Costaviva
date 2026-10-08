@@ -21,6 +21,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@maplibre/maplibre-gl-leaflet@0.1.4/leaflet-maplibre-gl.js" integrity="sha384-tXYNKOHx4T02jMP7YYCtBxPIv1B5gaA5mcVPBzqMp6d7VzWzxJgI2aWF/nJLrQdS" crossorigin="anonymous"></script>
 <script src="/assets/js/mapa-base.js"></script>
 <script src="/assets/js/creditos-mapa.js"></script>
+<script src="/assets/js/tarjetas-mapa.js"></script>
 <!-- Capa de viento estilo Windy (2026-09-19, pedido explícito del
      usuario) — partículas animadas sobre una rejilla u/v, sin más
      dependencia que Leaflet (ya cargado arriba). cdnjs no aloja este
@@ -237,6 +238,55 @@
   }
   .leyenda.visible { opacity: 1; transform: translateX(0); pointer-events: auto; }
 
+  /* Tarjetas de abajo del mapa en un solo "dock" (2026-10-08, bug aprobado
+     por Mikel: en el móvil la tarjeta de rayos tapaba la lluvia animada y la
+     leyenda del ⓘ abierta). Rayos, lluvia, clorofila / temperatura, viento y
+     la leyenda del ⓘ se apilan en ese orden de arriba a abajo, así que nunca
+     se pisan. assets/js/tarjetas-mapa.js ajusta "bottom" (por encima del ⓘ,
+     de los créditos abiertos y de las leyendas de Leaflet de abajo a la
+     izquierda) y "max-height" (sin tapar el zoom ni las leyendas de arriba);
+     si no cabe, scroll. Acaba a la izquierda de las columnas de botones
+     (138 = 74 + 54 + 10, como el panel de la luna). El padding deja ver la
+     sombra de las tarjetas (left = 16 - 6). */
+  .tarjetas-mapa {
+    position: absolute; left: 10px; right: 132px; bottom: 62px; z-index: 900;
+    display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 6px;
+    max-height: calc(100% - 150px); overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain;
+    pointer-events: none;
+  }
+  .tarjetas-mapa.tarjetas-desborda { pointer-events: auto; }
+  /* En escritorio sobra ancho: si no caben en una columna, pasan a la de al
+     lado en vez de hacer scroll. */
+  @media (min-width: 721px) { .tarjetas-mapa { flex-wrap: wrap; align-content: flex-start; } }
+  .tarjetas-mapa > * {
+    position: static; flex: none; margin: 0; max-width: 100%; box-sizing: border-box;
+    pointer-events: auto; transform: none;
+  }
+  /* Cada tarjeta trae su position: absolute de cuando iba suelta (y la de
+     la lluvia, en un <style> que se añade después): aquí, en el flujo. */
+  .tarjetas-mapa > .rayos-hoja { order: 1; position: static; }
+  .tarjetas-mapa > .lluvia-anim-panel { order: 2; position: static; }
+  .tarjetas-mapa > .capa-mar-panel { order: 3; position: static; }
+  .tarjetas-mapa > .viento-slider-panel { order: 4; position: static; max-height: none; overflow: visible; box-shadow: var(--sombra-tarjeta); }
+  .tarjetas-mapa > .leyenda { order: 5; position: static; max-width: 280px; transition: none; box-shadow: var(--sombra-tarjeta); }
+  .tarjetas-mapa > .leyenda:not(.visible) { display: none; }
+  .tarjetas-mapa > .leyenda.visible { animation: aparecerTarjeta 0.15s ease-out; }
+  @keyframes aparecerTarjeta { from { opacity: 0; transform: translateX(-14px); } to { opacity: 1; transform: none; } }
+  /* Con la lluvia abierta, la tarjeta de rayos se queda en su frase (la
+     leyenda de una línea vuelve al cerrar la lluvia; el ⓘ sigue). */
+  .tarjetas-mapa:has(> .lluvia-anim-panel:not([hidden])) .rayos-leyenda { display: none; }
+  /* El panel de la lluvia (lluvia-animada.js trae su CSS) con los tokens. */
+  .tarjetas-mapa > .lluvia-anim-panel {
+    background: var(--superficie); color: var(--tinta); border-color: var(--linea); border-radius: 10px;
+    box-shadow: var(--sombra-tarjeta); font-family: var(--f-texto);
+  }
+  .tarjetas-mapa > .lluvia-anim-panel .lluvia-anim-boton { background: var(--mar); border-color: var(--mar); color: var(--blanco); }
+  .tarjetas-mapa > .lluvia-anim-panel .lluvia-anim-paso.actual { background: var(--mar); }
+  .tarjetas-mapa > .lluvia-anim-panel .lluvia-anim-sub,
+  .tarjetas-mapa > .lluvia-anim-panel .lluvia-anim-extremos,
+  .tarjetas-mapa > .lluvia-anim-panel .lluvia-anim-nota { color: var(--tinta-2); }
+  .tarjetas-mapa > .lluvia-anim-panel .lluvia-anim-ultima.vieja b { color: var(--peligro); }
+
   /* Panel de rayos (2026-10-08, Mikel: "la pestaña de rayos es poco ágil
      de manejar"). Antes era un panel lateral que tapaba medio mapa en el
      móvil, con la imagen de AEMET y una vista grande aparte con su propio
@@ -247,9 +297,9 @@
      del satélite y el enlace al mapa de AEMET. Los rayos se ven en el mapa
      de siempre, con su zoom y su pellizco nativos. */
   .rayos-hoja {
-    width: min(440px, calc(100vw - 20px)); box-sizing: border-box; clear: both;
+    width: 100%; max-width: 440px; box-sizing: border-box;
     background: var(--superficie); border: 1px solid var(--linea); border-left: 5px solid #9AA9AE; border-radius: 10px;
-    box-shadow: 0 4px 14px rgba(11,30,63,0.18); padding: 7px 8px 7px 10px;
+    box-shadow: var(--sombra-tarjeta); padding: 7px 8px 7px 10px;
     font-family: var(--f-texto); color: var(--tinta); cursor: default;
   }
   .rayos-hoja[hidden] { display: none; }
@@ -348,10 +398,8 @@
      una atribución larga se parte en más líneas en vez de llegar hasta él.
      En el móvil se pliegan en "ⓒ Fuentes" (assets/js/creditos-mapa.js). */
   .leaflet-bottom.leaflet-right { left: 76px; }
-  .leaflet-bottom.leaflet-right .rayos-hoja { max-width: 100%; }
-  /* En escritorio la leyenda del ⓘ se abre por encima de la línea de los
-     créditos (pueden ocupar dos líneas a lo ancho), no detrás de ellos. */
-  @media (min-width: 721px) { .leyenda { bottom: 68px; max-height: calc(100% - 150px); overflow-y: auto; } }
+  /* La leyenda del ⓘ va en el dock de tarjetas (.tarjetas-mapa), que ya se
+     abre por encima de los créditos y del ⓘ. */
   .leaflet-control-attribution.creditos-mapa {
     max-width: 100%; box-sizing: border-box; background: var(--superficie); color: var(--tinta-2);
     font-family: var(--f-texto); border-top-left-radius: 8px;
@@ -694,9 +742,10 @@
       min-height: 32px; box-shadow: 0 4px 12px rgba(11,30,63,0.22);
     }
     .creditos-plegados .creditos-texto { display: none; }
-    /* La tarjeta de rayos va encima de los créditos: con la píldora plegada
-       su borde inferior queda por encima del ⓘ (que llega a 50 px). */
-    .leaflet-bottom .rayos-hoja { margin-bottom: 16px; }
+    /* Dock de tarjetas: a la izquierda de las columnas de botones (124 =
+       66 + 48 + 10) y encima del ⓘ (10 + 40). */
+    .tarjetas-mapa { left: 4px; right: 118px; bottom: 54px; }
+    .tarjetas-mapa > .leyenda { max-width: 100%; }
     header { padding: 8px 12px 12px; column-gap: 8px; }
     header h1 { font-size: 19px; }
     header .marca-logo { width: 32px; height: 32px; }
@@ -899,32 +948,62 @@
   <div class="mapa-wrap">
     <div id="map"></div>
     <button class="leyenda-toggle" id="toggleLeyenda" title="¿Qué significan los colores del mapa?" aria-label="Mostrar/ocultar leyenda">ⓘ</button>
-    <div class="leyenda" id="leyendaPanel">
-      <div class="titulo">ÍNDICE DE MAR (oleaje + viento + ángulo entre ambos)</div>
-      <div class="fila"><span class="chip" style="background:var(--nivel-bueno)"></span><span>tranquilo</span></div>
-      <div class="fila"><span class="chip" style="background:var(--nivel-medio)"></span><span>moderado</span></div>
-      <div class="fila"><span class="chip" style="background:var(--nivel-malo)"></span><span>agitado</span></div>
-      <div class="nota" style="margin-top:10px; padding-top:8px; border-top:1px solid var(--linea);">◆ RÍOS: 3 puntos por río (cabecera→desembocadura), color por caudal bajo/normal/alto — pasa el cursor por un punto para ver el detalle. Lo que se mide arriba llega a la costa horas después — útil como aviso de tendencia. Posiciones ilustrativas, no las estaciones oficiales exactas. Caudal real solo en Sella, Besaya, Pas, Asón, Eo, Júcar, Turia, Mijares, Segura y Lagares (Confederaciones Hidrográficas + Augas de Galicia) — los ríos vascos siguen sin dato real (URA/Bizkaia bloquea el acceso automático).</div>
+    <!-- Tarjetas de abajo del mapa (assets/js/tarjetas-mapa.js): rayos, lluvia
+         (la mete lluvia-animada.js), clorofila / temperatura, viento y la
+         leyenda del ⓘ, apiladas de arriba a abajo en ese orden y siempre por
+         encima del ⓘ y de los créditos: nunca se pisan. -->
+    <div class="tarjetas-mapa" id="tarjetasMapa">
+      <div class="rayos-hoja" id="rayosHoja" data-nivel="neutro" hidden>
+        <div class="rayos-fila">
+          <button type="button" class="rayos-resumen" id="rayosResumen" aria-live="polite" title="Centrar el mapa en el rayo más cercano">Buscando rayos cerca…</button>
+          <button type="button" class="rayos-mas" id="rayosDetalleBtn" aria-expanded="false" aria-controls="rayosDetalle" aria-label="Fuentes y mapa de AEMET">ⓘ</button>
+        </div>
+        <div class="rayos-leyenda">
+          <span><i class="vivo"></i>rayo · 5 min</span>
+          <span><i class="sat"></i>tormenta (satélite) · 30 min</span>
+        </div>
+        <div class="rayos-detalle" id="rayosDetalle" hidden>
+          <p id="rayosRefTexto">Distancias medidas desde el centro del mapa.</p>
+          <p id="notaRayosSatelite">Cargando el satélite…</p>
+          <p><a href="/rayos-imagen" target="_blank" rel="noopener" id="enlaceAemetRayos">Mapa de rayos de AEMET, toda España, últimas 12 h ↗</a></p>
+          <p>Fuentes: Vaisala Xweather (al momento), EUMETSAT MTG Lightning Imager (CC BY 4.0) y AEMET.</p>
+        </div>
+      </div>
+      <div class="capa-mar-panel" id="capaMarPanel" hidden>
+        <div class="titulo" id="capaMarTitulo"></div>
+        <div class="fecha" id="capaMarFecha"></div>
+        <div class="barra" id="capaMarBarra"></div>
+        <div class="extremos"><span id="capaMarMin"></span><span id="capaMarMax"></span></div>
+        <details class="explica" id="capaMarDetalle"><summary id="capaMarResumen"></summary><div id="capaMarExplica"></div></details>
+        <div class="credito" id="capaMarCredito"></div>
+      </div>
+      <div class="viento-slider-panel" id="vientoSliderPanel" hidden>
+        <div class="titulo">VIENTO — próximas horas</div>
+        <input type="range" id="vientoSlider" min="0" max="23" value="0" step="1" />
+        <!-- Horas reales a lo largo de la barra (pedido explícito del
+             usuario: "pon las horas y no la diferencia en horas") -- unas
+             pocas marcas repartidas, no las 24, para que quepan en el
+             ancho del panel. -->
+        <div class="viento-slider-ticks" id="vientoSliderTicks"></div>
+        <div class="etq" id="vientoSliderHora">ahora</div>
+        <!-- Leyenda de colores (pedido explícito del usuario: "debe
+             aparecer una leyenda de colores para interpretar lo que
+             vemos") -- la barra de degradado se rellena por JS con la
+             misma paleta (VIENTO_COLOR_SCALE) que usa la capa de verdad,
+             nunca a mano en el CSS, para que no se puedan desincronizar. -->
+        <div class="viento-leyenda-titulo">Velocidad del viento</div>
+        <div class="viento-leyenda-barra" id="vientoLeyendaBarra"></div>
+        <div class="viento-leyenda-extremos"><span>0 km/h</span><span>54+ km/h</span></div>
+      </div>
+      <div class="leyenda" id="leyendaPanel">
+        <div class="titulo">ÍNDICE DE MAR (oleaje + viento + ángulo entre ambos)</div>
+        <div class="fila"><span class="chip" style="background:var(--nivel-bueno)"></span><span>tranquilo</span></div>
+        <div class="fila"><span class="chip" style="background:var(--nivel-medio)"></span><span>moderado</span></div>
+        <div class="fila"><span class="chip" style="background:var(--nivel-malo)"></span><span>agitado</span></div>
+        <div class="nota" style="margin-top:10px; padding-top:8px; border-top:1px solid var(--linea);">◆ RÍOS: 3 puntos por río (cabecera→desembocadura), color por caudal bajo/normal/alto — pasa el cursor por un punto para ver el detalle. Lo que se mide arriba llega a la costa horas después — útil como aviso de tendencia. Posiciones ilustrativas, no las estaciones oficiales exactas. Caudal real solo en Sella, Besaya, Pas, Asón, Eo, Júcar, Turia, Mijares, Segura y Lagares (Confederaciones Hidrográficas + Augas de Galicia) — los ríos vascos siguen sin dato real (URA/Bizkaia bloquea el acceso automático).</div>
+      </div>
     </div>
     <button class="rayos-toggle" id="toggleRayos" title="Rayos cerca: al momento y por satélite" aria-label="Mostrar/ocultar rayos en el mapa">⚡<span class="capa-label">Rayos</span></button>
-    <!-- Panel de rayos: se mete como control de Leaflet abajo a la derecha
-         (ver "Rayos en directo sobre el propio mapa" en el JS). -->
-    <div class="rayos-hoja" id="rayosHoja" data-nivel="neutro" hidden>
-      <div class="rayos-fila">
-        <button type="button" class="rayos-resumen" id="rayosResumen" aria-live="polite" title="Centrar el mapa en el rayo más cercano">Buscando rayos cerca…</button>
-        <button type="button" class="rayos-mas" id="rayosDetalleBtn" aria-expanded="false" aria-controls="rayosDetalle" aria-label="Fuentes y mapa de AEMET">ⓘ</button>
-      </div>
-      <div class="rayos-leyenda">
-        <span><i class="vivo"></i>rayo · 5 min</span>
-        <span><i class="sat"></i>tormenta (satélite) · 30 min</span>
-      </div>
-      <div class="rayos-detalle" id="rayosDetalle" hidden>
-        <p id="rayosRefTexto">Distancias medidas desde el centro del mapa.</p>
-        <p id="notaRayosSatelite">Cargando el satélite…</p>
-        <p><a href="/rayos-imagen" target="_blank" rel="noopener" id="enlaceAemetRayos">Mapa de rayos de AEMET, toda España, últimas 12 h ↗</a></p>
-        <p>Fuentes: Vaisala Xweather (al momento), EUMETSAT MTG Lightning Imager (CC BY 4.0) y AEMET.</p>
-      </div>
-    </div>
     <div class="aviso-capa" id="avisoCapa" role="status" hidden></div>
     <button class="luna-toggle" id="toggleLuna" title="Fase y posición de la luna" aria-label="Mostrar/ocultar datos de la luna">🌙<span class="capa-label">Luna</span></button>
     <div class="luna-panel" id="lunaPanel">
@@ -954,32 +1033,6 @@
     <button class="boyas-toggle" id="toggleBoyas" title="Boyas reales (Puertos del Estado vía Copernicus Marine)" aria-label="Mostrar/ocultar boyas">⚓<span class="capa-label">Boyas</span></button>
     <button class="boyas-toggle clorofila-toggle" id="toggleClorofila" title="Clorofila del mar (alimento): satélite de Copernicus" aria-label="Mostrar/ocultar capa de clorofila" aria-pressed="false">🌿<span class="capa-label">Clorof.</span></button>
     <button class="boyas-toggle tempagua-toggle" id="toggleTempAgua" title="Temperatura del agua (modelo IBI de Copernicus)" aria-label="Mostrar/ocultar capa de temperatura del agua" aria-pressed="false">🌡<span class="capa-label">T. agua</span></button>
-    <div class="capa-mar-panel" id="capaMarPanel" hidden>
-      <div class="titulo" id="capaMarTitulo"></div>
-      <div class="fecha" id="capaMarFecha"></div>
-      <div class="barra" id="capaMarBarra"></div>
-      <div class="extremos"><span id="capaMarMin"></span><span id="capaMarMax"></span></div>
-      <details class="explica" id="capaMarDetalle"><summary id="capaMarResumen"></summary><div id="capaMarExplica"></div></details>
-      <div class="credito" id="capaMarCredito"></div>
-    </div>
-    <div class="viento-slider-panel" id="vientoSliderPanel" hidden>
-      <div class="titulo">VIENTO — próximas horas</div>
-      <input type="range" id="vientoSlider" min="0" max="23" value="0" step="1" />
-      <!-- Horas reales a lo largo de la barra (pedido explícito del
-           usuario: "pon las horas y no la diferencia en horas") -- unas
-           pocas marcas repartidas, no las 24, para que quepan en el
-           ancho del panel. -->
-      <div class="viento-slider-ticks" id="vientoSliderTicks"></div>
-      <div class="etq" id="vientoSliderHora">ahora</div>
-      <!-- Leyenda de colores (pedido explícito del usuario: "debe
-           aparecer una leyenda de colores para interpretar lo que
-           vemos") -- la barra de degradado se rellena por JS con la
-           misma paleta (VIENTO_COLOR_SCALE) que usa la capa de verdad,
-           nunca a mano en el CSS, para que no se puedan desincronizar. -->
-      <div class="viento-leyenda-titulo">Velocidad del viento</div>
-      <div class="viento-leyenda-barra" id="vientoLeyendaBarra"></div>
-      <div class="viento-leyenda-extremos"><span>0 km/h</span><span>54+ km/h</span></div>
-    </div>
     <div class="confirmar-ubicacion-panel" id="eligeMetodoPanel">
       <div class="titulo">¿Cómo quieres marcar el punto?</div>
       <div class="botones" style="flex-direction:column; gap:8px;">
@@ -1860,6 +1913,21 @@ const creditosMapa = window.CreditosMapa
       },
     })
   : null;
+// Tarjetas de abajo del mapa (rayos, lluvia, clorofila / temperatura, viento
+// y la leyenda del ⓘ) apiladas en #tarjetasMapa, siempre por encima del ⓘ,
+// de los créditos y de las leyendas de Leaflet de abajo, y sin subir hasta el
+// zoom ni las leyendas de arriba (assets/js/tarjetas-mapa.js).
+if (window.TarjetasMapa) {
+  const esquinas = map.getContainer().querySelector(".leaflet-control-container");
+  const hijos = (sel) => Array.from(map.getContainer().querySelectorAll(sel));
+  window.TarjetasMapa.montar({
+    dock: document.getElementById("tarjetasMapa"),
+    contenedor: document.getElementById("map").parentElement,
+    abajo: () => [document.getElementById("toggleLeyenda"), ...hijos(".leaflet-bottom > .leaflet-control")],
+    arriba: () => hijos(".leaflet-top.leaflet-left > .leaflet-control"),
+    cambiantes: [esquinas],
+  });
+}
 // Oleaje, viento, marea y corriente del mapa salen de Open-Meteo: su licencia
 // (CC BY 4.0) exige atribución visible, siempre, no solo en el panel.
 map.attributionControl.addAttribution(window.ATRIBUCION_METEO_HTML || "Datos meteorológicos: Open-Meteo.com (CC BY 4.0)");
@@ -3995,6 +4063,8 @@ document.getElementById("panelBtnBorrar").addEventListener("click", () => {
 document.getElementById("toggleLeyenda").addEventListener("click", () => {
   const abierta = document.getElementById("leyendaPanel").classList.toggle("visible");
   document.getElementById("toggleLeyenda").textContent = abierta ? "✕" : "ⓘ";
+  // Va la última del dock de tarjetas: si hay scroll, que se vea al abrirla.
+  if (abierta) document.getElementById("leyendaPanel").scrollIntoView({ block: "nearest" });
   // En el móvil, la leyenda abierta y los créditos abiertos se pisarían.
   if (abierta && creditosMapa) creditosMapa.plegar();
 });
@@ -4105,21 +4175,9 @@ function moduloRayos() {
     ? Promise.resolve(window.Rayos)
     : new Promise((ok) => window.addEventListener("rayos-listo", () => ok(window.Rayos), { once: true }));
 }
-// La tarjeta vive dentro de un control de Leaflet en la esquina inferior
-// derecha: Leaflet apila los controles de abajo por encima de la
-// atribución, así que nunca tapa los créditos (que son obligatorios).
-const ControlRayos = L.Control.extend({
-  options: { position: "bottomright" },
-  onAdd() {
-    const hoja = document.getElementById("rayosHoja");
-    L.DomEvent.disableClickPropagation(hoja);
-    L.DomEvent.disableScrollPropagation(hoja);
-    return hoja;
-  },
-  onRemove() {},
-});
-const controlRayos = new ControlRayos();
-controlRayos.addTo(map);
+// La tarjeta vive en el dock de tarjetas del mapa (#tarjetasMapa, ver
+// assets/js/tarjetas-mapa.js): arriba del todo, encima de la lluvia y de la
+// leyenda del ⓘ, y siempre por encima de los créditos (obligatorios).
 function pintarResumenRayos(R, datos) {
   estadoRayos = datos.estado;
   const { nivel, texto, conteo } = R.resumenRayos({ ...datos, ref: refRayos });
@@ -4406,7 +4464,8 @@ let lluviaAnimada = null;
 function prepararLluviaAnimada() {
   if (!lluviaAnimada && window.LluviaAnimada) {
     lluviaAnimada = window.LluviaAnimada.crearLluviaAnimada({
-      L, map, contenedor: document.getElementById("map").parentElement,
+      // En el dock de tarjetas, debajo de la de rayos (tarjetas-mapa.js).
+      L, map, contenedor: document.getElementById("tarjetasMapa"),
     });
   }
   return lluviaAnimada;
