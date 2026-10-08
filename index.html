@@ -327,6 +327,14 @@
   .rios-toggle { top: 136px; right: 74px; }
   .boyas-toggle { top: 198px; right: 74px; }
   .isobatas-toggle { top: 384px; right: 12px; } /* isóbatas 20-5000 m (assets/js/capa-batimetria.js); reusa el estilo de .viento-toggle */
+  .sustrato-toggle { top: 260px; right: 74px; } /* tipo de fondo (assets/js/capa-tipo-fondo.js); reusa el estilo de .boyas-toggle */
+  .leyenda-sustrato {
+    background: var(--superficie); color: var(--tinta); border: 1px solid var(--linea); border-radius: 12px;
+    padding: 7px 10px; font: 600 11px/1.4 var(--f-texto); max-width: 170px; box-shadow: 0 6px 16px rgba(11,30,63,0.18);
+  }
+  .leyenda-sustrato .titulo { font-family: var(--f-titulo); font-size: 11px; margin-bottom: 3px; }
+  .leyenda-sustrato i { display: inline-block; width: 10px; height: 10px; margin-right: 6px; vertical-align: -1px; border-radius: 2px; box-shadow: 0 0 0 1px var(--linea); }
+  .leyenda-sustrato .nota { margin-top: 3px; color: var(--tinta-2); font-size: 10px; font-weight: 500; }
   /* Spots + "+" pegados como un único grupo de 2 (pedido explícito del
      usuario: el botón de añadir ubicación debe verse asociado al de
      spots, no como una capa más suelta) — sin hueco entre los dos,
@@ -470,6 +478,8 @@
     background: var(--mar); margin: 0 -18px; padding: 0 18px 14px;
     border-bottom: 4px solid var(--magenta); border-image: var(--degradado) 1;
   }
+  /* Línea del tipo de fondo (capa-tipo-fondo.js): dato sobrio bajo la banda de mar. */
+  .panel .fondo-ficha { margin-top: 10px; font-family: var(--f-texto); font-size: 12.5px; font-weight: 700; color: var(--tinta-3); }
   .panel .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
   .panel .tarjeta { background: var(--superficie); border-radius: 18px; padding: 12px 14px; box-shadow: 0 4px 14px rgba(26,21,51,0.07); }
   .panel .etq { font-size: 11px; font-weight: 800; letter-spacing: 0.06em; color: var(--tinta-2); }
@@ -571,6 +581,11 @@
     .anadir-ubicacion-toggle { top: 66px; right: 66px; }
     .rios-toggle { top: 122px; right: 66px; }
     .boyas-toggle { top: 178px; right: 66px; }
+    .sustrato-toggle { top: 234px; right: 66px; }
+    /* Leyenda del sustrato compacta, por encima del botón ⓘ y de los créditos. */
+    .leyenda-sustrato { font-size: 10px; padding: 5px 8px; max-width: 128px; margin-bottom: 52px !important; }
+    .leyenda-sustrato .titulo { font-size: 10px; }
+    .leyenda-sustrato .nota { display: none; }
     .viento-slider-panel { right: 124px; }
     .luna-panel { right: 124px; }
     /* Créditos obligatorios del mapa: en letra pequeña pero siempre visibles. */
@@ -819,6 +834,7 @@
     <button class="spots-toggle activo" id="toggleSpots" title="Spots" aria-label="Mostrar/ocultar spots">📍</button>
     <button class="rios-toggle" id="toggleRios" title="Ríos" aria-label="Mostrar/ocultar ríos">〰️<span class="capa-label">Ríos</span></button>
     <button class="boyas-toggle" id="toggleBoyas" title="Boyas reales (Puertos del Estado vía Copernicus Marine)" aria-label="Mostrar/ocultar boyas">⚓<span class="capa-label">Boyas</span></button>
+    <button class="boyas-toggle sustrato-toggle" id="toggleSustrato" title="Tipo de fondo marino: roca, arena, fango, Posidonia (EMODnet). No es la batimetría" aria-label="Mostrar/ocultar el tipo de fondo marino" aria-pressed="false">🪨<span class="capa-label">Sustr.</span></button>
     <div class="viento-slider-panel" id="vientoSliderPanel" hidden>
       <div class="titulo">VIENTO — próximas horas</div>
       <input type="range" id="vientoSlider" min="0" max="23" value="0" step="1" />
@@ -885,6 +901,7 @@
     <button class="cerrar" id="cerrarPanel">✕</button>
     <h2 id="panelNombre"></h2>
     <div class="coords" id="panelCoords"></div>
+    <div class="fondo-ficha" id="panelFondo" hidden></div>
     <div style="display:flex; align-items:center; gap:10px; margin:6px 0 2px;">
       <button id="panelBtnFavorito" title="Marcar/quitar de favoritos" style="background:none; border:none; cursor:pointer; font-size:18px; padding:0; color:var(--tinta-3); line-height:1;">☆</button>
       <span id="panelEtiquetaComunidad" style="display:none; font-size:10.5px; color:var(--tinta-2);">📍 ubicación de un usuario, sin cámara</span>
@@ -1056,6 +1073,13 @@
   import * as Batimetria from "/assets/js/capa-batimetria.js";
   window.Batimetria = Batimetria;
   window.dispatchEvent(new Event("batimetria-lista"));
+</script>
+<script type="module">
+  // Tipo de fondo y orilla de cada spot + capa "Sustrato" (EMODnet, OSM):
+  // assets/js/capa-tipo-fondo.js, tests en test/tipo-fondo.test.js.
+  import * as TipoFondo from "/assets/js/capa-tipo-fondo.js";
+  window.TipoFondo = TipoFondo;
+  window.dispatchEvent(new Event("tipo-fondo-listo"));
 </script>
 <script type="module">
   // Cámaras de terceros (enlace o inserción oficial del dueño), ver
@@ -1823,6 +1847,25 @@ document.getElementById("toggleEstaciones").addEventListener("click", (e) => {
       avisoCapa("Las estaciones de AEMET no responden ahora mismo. Vuelve a probar en unos minutos.");
     }
   }
+});
+// Tipo de fondo (assets/js/capa-tipo-fondo.js, módulo: llega después de este script).
+function conTipoFondo(fn) {
+  if (window.TipoFondo) fn(window.TipoFondo);
+  else window.addEventListener("tipo-fondo-listo", () => fn(window.TipoFondo), { once: true });
+}
+conTipoFondo((TF) => {
+  const repintar = (s) => {
+    if (!spotAbiertoActual || spotAbiertoActual.slug !== s.slug) return;
+    pintarFondoPanel(s);
+    pintarIndicePesca(s);
+    if (vaEstado.s?.slug === s.slug) pintarVentanaActividad(vaEstado.s);
+  };
+  // Al llegar el JSON (o el dato en vivo de un punto propio), se repinta el spot abierto.
+  TF.iniciar({ onFondo: repintar }).then(() => { if (spotAbiertoActual) repintar(spotAbiertoActual); });
+  TF.montarCapa(map, document.getElementById("toggleSustrato"), avisoCapa);
+  document.getElementById("toggleSustrato").addEventListener("click", (e) => {
+    if (e.currentTarget.classList.contains("activo")) registrarEvento("ver_capa_sustrato");
+  });
 });
 document.getElementById("toggleRios").addEventListener("click", (e) => {
   if (map.hasLayer(capaRios)) {
@@ -3063,11 +3106,19 @@ document.querySelectorAll("#panelOlaRealBandas .ola-banda").forEach((btn) => {
 });
 
 let spotAbiertoActual = null;
+// Línea "Fondo: roca y arena · orilla de acantilado" (capa-tipo-fondo.js).
+function pintarFondoPanel(s) {
+  const el = document.getElementById("panelFondo");
+  const t = window.TipoFondo?.texto(s) || null;
+  el.textContent = t || "";
+  el.hidden = !t;
+}
 function abrirPanel(s) {
   spotAbiertoActual = s;
   document.getElementById("panel").classList.add("visible");
   document.getElementById("panelNombre").textContent = s.nombre;
   document.getElementById("panelCoords").textContent = `${s.lat.toFixed(4)}°N, ${Math.abs(s.lon).toFixed(4)}°W`;
+  pintarFondoPanel(s);
   actualizarBotonFavorito(s);
   document.getElementById("panelEtiquetaComunidad").style.display = s.esUsuario ? "inline" : "none";
   document.getElementById("panelBtnBorrar").style.display = (s.esUsuario && s.propio) ? "inline" : "none";
@@ -3293,6 +3344,8 @@ function contextoIndiceSpot(s, datos, modalidad, dia = 0) {
     lat: s.lat, lon: s.lon, modalidad,
     reglasModalidad: datos.reglas_por_modalidad, reglasExpertas: datos.reglas_expertas,
     b0: datos.indice?.b0_logodds ?? 0,
+    // Fondo y orilla del spot (solo costa y submarina; en embarcación, null).
+    fondo: window.TipoFondo?.contexto(s, modalidad) ?? null,
     // La turbidez (webcam) y el caudal son lecturas de hoy: mañana no valen.
     turbidez: dia === 0 ? (TURBIDEZ[s.slug]?.etiqueta || null) : null,
     caudalRio: dia === 0 ? caudalRioSpot(s) : null,
