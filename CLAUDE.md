@@ -179,8 +179,77 @@ Marine y los secrets `COPERNICUSMARINE_USERNAME`/`COPERNICUSMARINE_PASSWORD`
 empresa, nunca personal). Por defecto se usa `datos@costaviva.org` (decidido por Mikel, 2026-10-08); `METNO_CONTACTO` (variable de
 repositorio y de Cloudflare); aprobar y aplicar la migración del bucket;
 `FUENTES_GRATUITAS=true`. Antes de quitar Open-Meteo del todo: el diario
-retroactivo (fechas pasadas) y la ventana de actividad (`past_days=1`) no
-tienen atmósfera pasada con MET.
+retroactivo ya tiene atmósfera pasada con ERA5 (fase 2, abajo) salvo los
+últimos ~6 días, y la ventana de actividad (`past_days=1`) sigue sin pasado
+con MET.
+
+### Fase 2 (2026-10-08, aprobada por Mikel): costa entera, capas, pasado y selector de admin
+
+Sin IA en tiempo de ejecución; todo gratuito y válido para uso comercial con
+atribución; nunca se inventa un dato (lo que falta sale `null` + `aviso`).
+
+- **Franja costera de Copernicus** (`scripts/fuentes/descargar-ibi.py`,
+  `celdas_costeras`): además de spots y boyas, se guardan las celdas de mar a
+  menos de ~20 km de tierra en España y Portugal (península, Baleares, Ceuta,
+  Melilla, Canarias, Madeira; se recortan Francia, Marruecos atlántico y
+  Argelia), una por cuadro de 3x3 celdas (~8 km), la más pegada a la costa.
+  Mismo formato `mar/celdas/<k>.json` (cajas de 0,5°), con el campo `anillo`.
+  `copernicus-mar.js` busca en las cajas a menos de 0,2° y se queda con la
+  celda más cercana de verdad; más de 20 km (`MAX_KM_CELDA`) -> `null` +
+  `aviso`. **Medido en real (2026-10-08)**: 131 spots/boyas + 2.933 celdas
+  costeras en 203 cajas, 59,4 MB en total (12,9 MB con gzip), caja mayor
+  0,64 MB (límite 30 MB), 222 + 219 bloques, 23,5 min y 1,1 GB de RAM en un
+  runner de GitHub. Distancia a la celda guardada más cercana en 32 puntos de
+  costa (de Hondarribia a El Hierro, Funchal y Porto Santo): de 0,3 a 8,2 km.
+  **Descarga**: indexado vectorial por tandas de 30 bloques; pedir bloque a
+  bloque en hilos fue ~10 veces más lento (125 de 172 bloques en 49 min)
+  porque se volvían a bajar trozos ya bajados. Ojo con `EXCLUSIONES`: un
+  recorte de "Marruecos atlántico" sin límite oeste se comió Canarias y
+  Madeira; ahora el script falla en rojo si alguna zona sale sin celdas.
+- **Capas del mapa 🌿 Clorofila y 🌡 Temperatura del agua**
+  (`scripts/fuentes/descargar-capas.py`, en el job `mar`):
+  `capas/clorofila.json` = satélite `OCEANCOLOUR_ATL_BGC_L4_NRT_009_116`
+  (dataset `cmems_obs-oc_atl_bgc-plankton_nrt_l4-gapfree-multi-1km_P1D`,
+  `CHL`, DOI 10.48670/moi-00288; "gapfree": los huecos por nubes los
+  interpola el productor y la leyenda lo dice) a 1/24°;
+  `capas/temperatura-agua.json` = `thetao` de IBI físico (DOI
+  10.48670/moi-00027) de hoy a las 12 UTC, a 1/18°. Un byte por celda en
+  base64 (255 = sin dato; escala log10 o lineal en el propio JSON) porque el
+  bucket **solo admite JSON** (no PNG). Medido en real: 369 kB y 208 kB
+  (66 kB y 38 kB con gzip), 21 s. `index.html` las pinta en un `<canvas>`
+  re-muestreado a Mercator (`assets/js/capas-mar.js`, puro y con tests),
+  botones en la columna de ríos/boyas, leyenda con la explicación ("más
+  clorofila = más plancton = más alimento para peces"), toque en el mapa =
+  valor, y atribución de Copernicus + DOI en el mapa y en la leyenda. Una
+  capa a la vez; más vieja de 7 días (clorofila) o 3 (temperatura), no se
+  pinta.
+- **Pasado para el diario (ERA5)**: `functions/_lib/era5.js`. Si la
+  atmósfera va por MET Norway (`metno`) y la consulta es ENTERA del pasado
+  (`ventanaPasada`), `fuentes.js` la manda a ERA5 (`fuentes_datos: ["era5"]`).
+  Datos de la copia pública ARCO-ERA5 de Google (Zarr, **sin cuenta ni
+  clave**), job `pasado` (`scripts/fuentes/descargar-era5.py`, 08:13 UTC):
+  `pasado/<día UTC>/<floor(lat)_floor(lon)>.json` con las celdas de 0,25° de
+  las 90 cajas de 1° con costa; celda más cercana, sin interpolar. Medido en
+  real: ~5 s y ~1 MB por día. ERA5T llega con **~6 días de retraso**: el
+  diario de los últimos días sale en blanco con `aviso` (con Open-Meteo no
+  pasa). Relleno histórico: `workflow_dispatch` con `parte=pasado` y
+  `dias_pasado` (máx. 120 días por ejecución). Licencia: catálogo del CDS
+  `"license": "CC-BY-4.0"` (DOI 10.24381/cds.adbb2d47); desde el 2-7-2025 la
+  licencia de productos Copernicus del CDS es CC BY 4.0 (foro de ECMWF); el
+  README de ARCO-ERA5: "Yes, you can use our ERA5 data according to the terms
+  of the Copernicus license". Crédito en `ATRIBUCIONES_HTML.era5` y en
+  `assets/js/meteo.js`.
+- **Selector de fuentes, solo admin**: en el panel de spot
+  (`#adminFuentes`), "Previsión (admin): la normal / Open-Meteo / Gratuitas /
+  Las dos, lado a lado" -> tabla aparte con ola, viento, agua, marea,
+  corriente, presión, nubes y lluvia. Se enseña solo si
+  `supabase.rpc("es_admin")` da `true`. El proxy `/meteo/` honra
+  `&fuente=openmeteo|gratuitas` SOLO tras `esAdminServidor`
+  (`functions/_lib/admin.js`: RPC `es_admin` con el JWT del usuario y la anon
+  key; PostgREST valida la firma). Cualquier otro -> 403 antes de mirar la
+  caché y sin pedir datos; sin `fuente` no se llama a Supabase. Respuesta
+  forzada: `private, no-store`.
+- Tests: `test/fuentes-fase2.test.js` (en `tests.yml`).
 
 ## Informe diario — Search Console real, conteo de cámaras, robot de especies (2026-09-20)
 
