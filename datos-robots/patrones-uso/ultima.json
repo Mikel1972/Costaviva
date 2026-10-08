@@ -1,0 +1,483 @@
+{
+ "generado_en": "2026-10-08T16:09:56.131Z",
+ "nota": "Solo agregados. Un valor aparece si lo usan al menos 2 usuarios distintos; el resto va en \"otros\". Sin cuentas de prueba.",
+ "perfiles": {
+  "total": 4,
+  "aprobados": 4,
+  "altas_7d": 0,
+  "altas_28d": 3
+ },
+ "usuarios_activos": {
+  "7d": 2,
+  "28d": 2
+ },
+ "abandono": {
+  "perfiles_con_mas_de_7_dias": 4,
+  "nunca_activos": 2,
+  "sin_actividad_en_7_dias": 0,
+  "activos_en_7_dias": 2
+ },
+ "eventos_uso": {
+  "7d": {
+   "filas": 65,
+   "usuarios": 2
+  },
+  "28d": {
+   "filas": 280,
+   "usuarios": 2
+  },
+  "total": {
+   "filas": 280,
+   "usuarios": 2
+  },
+  "primero": "2026-09-17T17:29:34.481857+00:00",
+  "por_tipo": {
+   "crear_salida": {
+    "7d": {
+     "filas": 0,
+     "usuarios": 0
+    },
+    "28d": {
+     "filas": 6,
+     "usuarios": 1
+    },
+    "total": {
+     "filas": 6,
+     "usuarios": 1
+    },
+    "primero": "2026-09-19T13:44:35.849044+00:00",
+    "ultimo": "2026-09-20T22:47:04.317396+00:00",
+    "detalle": {
+     "tipo_salida": {
+      "valores": [],
+      "otros_con_menos_de_2_usuarios": {
+       "valores": 1,
+       "veces": 6
+      }
+     }
+    }
+   },
+   "iniciar_checkout": {
+    "7d": {
+     "filas": 0,
+     "usuarios": 0
+    },
+    "28d": {
+     "filas": 11,
+     "usuarios": 2
+    },
+    "total": {
+     "filas": 11,
+     "usuarios": 2
+    },
+    "primero": "2026-09-25T14:59:51.403378+00:00",
+    "ultimo": "2026-09-25T15:46:07.676539+00:00",
+    "detalle": {
+     "plan": {
+      "valores": [
+       {
+        "valor": "annual",
+        "veces": 6,
+        "usuarios": 2
+       },
+       {
+        "valor": "monthly",
+        "veces": 5,
+        "usuarios": 2
+       }
+      ],
+      "otros_con_menos_de_2_usuarios": {
+       "valores": 0,
+       "veces": 0
+      }
+     }
+    }
+   },
+   "marcar_favorito": {
+    "7d": {
+     "filas": 0,
+     "usuarios": 0
+    },
+    "28d": {
+     "filas": 1,
+     "usuarios": 1
+    },
+    "total": {
+     "filas": 1,
+     "usuarios": 1
+    },
+    "primero": "2026-09-19T14:39:10.587843+00:00",
+    "ultimo": "2026-09-19T14:39:10.587843+00:00",
+    "detalle": {
+     "slug": {
+      "valores": [],
+      "otros_con_menos_de_2_usuarios": {
+       "valores": 1,
+       "veces": 1
+      }
+     }
+    }
+   },
+   "pulsar_sos": {
+    "7d": {
+     "filas": 1,
+     "usuarios": 1
+    },
+    "28d": {
+     "filas": 1,
+     "usuarios": 1
+    },
+    "total": {
+     "filas": 1,
+     "usuarios": 1
+    },
+    "primero": "2026-10-08T15:48:05.247718+00:00",
+    "ultimo": "2026-10-08T15:48:05.247718+00:00",
+    "detalle": {
+     "tipo": {
+      "valores": [],
+      "otros_con_menos_de_2_usuarios": {
+       "valores": 1,
+       "veces": 1
+      }
+     }
+    }
+   },
+   "sos_whatsapp": {
+    "7d": {
+     "filas": 1,
+     "usuarios": 1
+    },
+    "28d": {
+     "filas": 1,
+     "usuarios": 1
+    },
+    "total": {
+     "filas": 1,
+     "usuarios": 1
+    },
+    "primero": "2026-10-08T15:48:09.285961+00:00",
+    "ultimo": "2026-10-08T15:48:09.285961+00:00",
+    "detalle": {
+     "tipo": {
+      "valores": [],
+      "otros_con_menos_de_2_usuarios": {
+       "valores": 1,
+       "veces": 1
+      }
+     }
+    }
+   },
+   "unirse_grupo": {
+    "7d": {
+     "filas": 0,
+     "usuarios": 0
+    },
+    "28d": {
+     "filas": 1,
+     "usuarios": 1
+    },
+    "total": {
+     "filas": 1,
+     "usuarios": 1
+    },
+    "primero": "2026-09-18T17:39:39.175799+00:00",
+    "ultimo": "2026-09-18T17:39:39.175799+00:00"
+   },
+   "ver_capa_batimetria": {
+    "7d": {
+     "filas": 5,
+     "usuarios": 1
+    },
+    "28d": {
+     "filas": 6,
+     "usuarios": 2
+    },
+    "total": {
+     "filas": 6,
+     "usuarios": 2
+    },
+    "primero": "2026-09-18T17:37:35.681418+00:00",
+    "ultimo": "2026-10-08T13:09:51.367616+00:00"
+   },
+   "ver_capa_boyas": {
+    "7d": {
+     "filas": 1,
+     "usuarios": 1
+    },
+    "28d": {
+     "filas": 12,
+     "usuarios": 2
+    },
+    "total": {
+     "filas": 12,
+     "usuarios": 2
+    },
+    "primero": "2026-09-17T17:58:05.339+00:00",
+    "ultimo": "2026-10-08T10:32:53.816252+00:00"
+   },
+   "ver_capa_clorofila": {
+    "7d": {
+     "filas": 1,
+     "usuarios": 1
+    },
+    "28d": {
+     "filas": 1,
+     "usuarios": 1
+    },
+    "total": {
+     "filas": 1,
+     "usuarios": 1
+    },
+    "primero": "2026-10-08T15:29:54.719875+00:00",
+    "ultimo": "2026-10-08T15:29:54.719875+00:00"
+   },
+   "ver_capa_estaciones": {
+    "7d": {
+     "filas": 6,
+     "usuarios": 1
+    },
+    "28d": {
+     "filas": 15,
+     "usuarios": 2
+    },
+    "total": {
+     "filas": 15,
+     "usuarios": 2
+    },
+    "primero": "2026-09-17T17:59:59.237725+00:00",
+    "ultimo": "2026-10-08T10:29:09.127418+00:00"
+   },
+   "ver_capa_isobatas": {
+    "7d": {
+     "filas": 1,
+     "usuarios": 1
+    },
+    "28d": {
+     "filas": 1,
+     "usuarios": 1
+    },
+    "total": {
+     "filas": 1,
+     "usuarios": 1
+    },
+    "primero": "2026-10-08T15:27:37.248271+00:00",
+    "ultimo": "2026-10-08T15:27:37.248271+00:00"
+   },
+   "ver_capa_radar_lluvia": {
+    "7d": {
+     "filas": 3,
+     "usuarios": 1
+    },
+    "28d": {
+     "filas": 12,
+     "usuarios": 2
+    },
+    "total": {
+     "filas": 12,
+     "usuarios": 2
+    },
+    "primero": "2026-09-17T17:58:01.387596+00:00",
+    "ultimo": "2026-10-08T10:29:44.340967+00:00"
+   },
+   "ver_capa_rayos": {
+    "7d": {
+     "filas": 4,
+     "usuarios": 1
+    },
+    "28d": {
+     "filas": 4,
+     "usuarios": 1
+    },
+    "total": {
+     "filas": 4,
+     "usuarios": 1
+    },
+    "primero": "2026-10-08T10:31:19.442829+00:00",
+    "ultimo": "2026-10-08T15:31:25.162407+00:00"
+   },
+   "ver_capa_rios": {
+    "7d": {
+     "filas": 6,
+     "usuarios": 1
+    },
+    "28d": {
+     "filas": 15,
+     "usuarios": 2
+    },
+    "total": {
+     "filas": 15,
+     "usuarios": 2
+    },
+    "primero": "2026-09-18T09:05:41.084389+00:00",
+    "ultimo": "2026-10-08T11:02:26.923395+00:00"
+   },
+   "ver_capa_sustrato": {
+    "7d": {
+     "filas": 2,
+     "usuarios": 1
+    },
+    "28d": {
+     "filas": 2,
+     "usuarios": 1
+    },
+    "total": {
+     "filas": 2,
+     "usuarios": 1
+    },
+    "primero": "2026-10-08T13:09:16.060554+00:00",
+    "ultimo": "2026-10-08T15:27:38.868306+00:00"
+   },
+   "ver_capa_temperatura_agua": {
+    "7d": {
+     "filas": 1,
+     "usuarios": 1
+    },
+    "28d": {
+     "filas": 1,
+     "usuarios": 1
+    },
+    "total": {
+     "filas": 1,
+     "usuarios": 1
+    },
+    "primero": "2026-10-08T15:30:20.40891+00:00",
+    "ultimo": "2026-10-08T15:30:20.40891+00:00"
+   },
+   "ver_capa_viento": {
+    "7d": {
+     "filas": 2,
+     "usuarios": 1
+    },
+    "28d": {
+     "filas": 27,
+     "usuarios": 1
+    },
+    "total": {
+     "filas": 27,
+     "usuarios": 1
+    },
+    "primero": "2026-09-19T15:16:58.541035+00:00",
+    "ultimo": "2026-10-08T10:28:52.778084+00:00"
+   },
+   "ver_mapa": {
+    "7d": {
+     "filas": 30,
+     "usuarios": 2
+    },
+    "28d": {
+     "filas": 146,
+     "usuarios": 2
+    },
+    "total": {
+     "filas": 146,
+     "usuarios": 2
+    },
+    "primero": "2026-09-17T17:29:34.481857+00:00",
+    "ultimo": "2026-10-08T15:49:41.484512+00:00"
+   },
+   "ver_suscripcion": {
+    "7d": {
+     "filas": 1,
+     "usuarios": 1
+    },
+    "28d": {
+     "filas": 17,
+     "usuarios": 2
+    },
+    "total": {
+     "filas": 17,
+     "usuarios": 2
+    },
+    "primero": "2026-09-23T15:55:06.435739+00:00",
+    "ultimo": "2026-10-02T14:05:49.110035+00:00"
+   }
+  },
+  "por_dia_28d": {
+   "2026-09-17": 8,
+   "2026-09-18": 55,
+   "2026-09-19": 81,
+   "2026-09-20": 11,
+   "2026-09-21": 2,
+   "2026-09-22": 2,
+   "2026-09-23": 4,
+   "2026-09-24": 2,
+   "2026-09-25": 38,
+   "2026-09-27": 9,
+   "2026-09-28": 1,
+   "2026-09-30": 1,
+   "2026-10-01": 1,
+   "2026-10-02": 3,
+   "2026-10-03": 14,
+   "2026-10-04": 3,
+   "2026-10-07": 3,
+   "2026-10-08": 42
+  }
+ },
+ "capturas": {
+  "7d": {
+   "filas": 0,
+   "usuarios": 0
+  },
+  "28d": {
+   "filas": 0,
+   "usuarios": 0
+  },
+  "total": {
+   "filas": 0,
+   "usuarios": 0
+  },
+  "especie": {
+   "valores": [],
+   "otros_con_menos_de_2_usuarios": {
+    "valores": 0,
+    "veces": 0
+   }
+  }
+ },
+ "salidas_pesca": {
+  "7d": {
+   "filas": 0,
+   "usuarios": 0
+  },
+  "28d": {
+   "filas": 3,
+   "usuarios": 1
+  },
+  "total": {
+   "filas": 3,
+   "usuarios": 1
+  },
+  "tipo_salida": {
+   "valores": [],
+   "otros_con_menos_de_2_usuarios": {
+    "valores": 1,
+    "veces": 3
+   }
+  },
+  "spot_slug": {
+   "valores": [],
+   "otros_con_menos_de_2_usuarios": {
+    "valores": 1,
+    "veces": 3
+   }
+  }
+ },
+ "spots_favoritos": {
+  "total": 2,
+  "de_spots_de_usuario": 1,
+  "spot_slug": {
+   "valores": [],
+   "otros_con_menos_de_2_usuarios": {
+    "valores": 1,
+    "veces": 1
+   }
+  }
+ },
+ "spots_usuario": {
+  "total": 1,
+  "usuarios": 1
+ },
+ "cuentas_de_prueba_excluidas": 2,
+ "errores": []
+}
