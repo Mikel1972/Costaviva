@@ -32,7 +32,7 @@ async function usuarioDesdeToken(token) {
 
 async function contactosDelUsuario(token) {
   const resp = await fetch(
-    `${SUPABASE_URL}/rest/v1/contactos_emergencia?select=nombre,email`,
+    `${SUPABASE_URL}/rest/v1/contactos_emergencia?select=nombre,email&email=not.is.null`,
     { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${token}` } }
   );
   if (!resp.ok) throw new Error("no se pudieron leer los contactos de emergencia");
@@ -98,7 +98,7 @@ export async function onRequestPost(context) {
     const usuario = await usuarioDesdeToken(token);
     const contactos = await contactosDelUsuario(token);
     if (!contactos.length) {
-      return new Response(JSON.stringify({ error: "no tienes ningún contacto de emergencia registrado", enviados: 0 }), {
+      return new Response(JSON.stringify({ error: "no tienes ningún contacto de emergencia con email", enviados: 0 }), {
         status: 200,
         headers: { "content-type": "application/json" },
       });
