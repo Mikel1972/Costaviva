@@ -419,6 +419,16 @@
    "fecha_consulta": "2026-10-08",
    "nota": "Criterios de presencia por región (2026-10-08). A: 20 o más registros de 2 o más conjuntos de datos con licencia libre (polígonos de cada región de la app). B: la especie tiene talla en la tabla oficial de ese caladero (RD 560/1995 anexo I para Cantábrico, Galicia y Cádiz; anexo II o Reg. (UE) 2019/1241 anexo IX para Mediterráneo y Baleares; anexo III para Canarias; DGRM para Portugal) y al menos 1 registro con licencia libre en la región. C: publicación regional (guía oficial, estudio CC BY, observación de campo) o 20 o más registros de un solo conjunto científico CC BY/CC0. Los rangos de distribución de FishBase y de la Lista Roja de la UICN NO se usan: sus condiciones prohíben el uso comercial. OBIS no dice nada de estacionalidad y le faltan muchos datos libres de Galicia, Portugal y Cádiz: la ausencia NO significa ausencia real."
   },
+  "emodnet_dtm_2024": {
+   "titulo": "EMODnet Digital Bathymetry (DTM 2024)",
+   "url": "https://doi.org/10.12770/cf51df64-56f9-4a99-b1aa-36b8d7b743a1",
+   "editor": "EMODnet Bathymetry Consortium",
+   "tipo": "oficial",
+   "licencia": "CC BY 4.0 (uso comercial permitido con atribución)",
+   "fecha_documento": "2024",
+   "fecha_consulta": "2026-10-08",
+   "nota": "Profundidad de cada spot (assets/datos/profundidad-spots.json, scripts/batimetria/). Condiciones: datos-robots/fuentes/BATIMETRIA.md."
+  },
   "mikel_campo_bizkaia": {
    "titulo": "Observación de campo (Mikel), Bizkaia",
    "url": null,
@@ -13748,7 +13758,7 @@
    "ambito": "regiones, modalidades, especies (o '@grupo' de grupos_especies), especies_excluidas, meses; lo que falta = sin restricción",
    "condiciones": "lista (todas deben cumplirse) de { var, agregado?, desde_h?, hasta_h?, cumple?, op, valor }",
    "variables_horarias": "ola (m), viento (km/h), viento_dir (grados, de dónde viene), presion (hPa), temp_agua (°C), lluvia (mm/h), nivel_mar (m)",
-   "variables_de_contexto": "caudal_rio (bajo/normal/alto, solo con dato real), rio_desembocadura_km (null si el spot no tiene río asociado), turbidez, mes, hora_local, luz (alba/ocaso/dia/noche), luna (fracción iluminada 0-1, calculada en el motor), coeficiente_marea (20-120, índice astronómico calculado en el motor; mareas vivas ≥ 90)",
+   "variables_de_contexto": "caudal_rio (bajo/normal/alto, solo con dato real), rio_desembocadura_km (null si el spot no tiene río asociado), turbidez, mes, hora_local, luz (alba/ocaso/dia/noche), luna (fracción iluminada 0-1, calculada en el motor), coeficiente_marea (20-120, índice astronómico calculado en el motor; mareas vivas ≥ 90), profundidad (m, mediana del fondo a 1 km de la orilla del spot), prof_max_5km (m, fondo más profundo a 5 km o menos de la orilla) y dist_fondo_10_30m_km (km, de la orilla al fondo de 10-30 m más cercano): EMODnet, assets/datos/profundidad-spots.json; null sin dato",
    "agregados": "media, min, max, suma (en la ventana [desde_h, hasta_h] relativa a la hora, p. ej. -6..0), delta (valor en hasta_h - valor en desde_h), fraccion (parte de las horas que cumplen 'cumple', un test o una lista de tests {var, op, valor})",
    "operadores": "<, <=, >, >=, ==, !=, en (lista), entre ([a, b]), sector ([desde°, hasta°], admite cruzar el norte)",
    "efecto": "{ logodds: número (±2 como mucho; 0,4 ≈ 10 puntos cerca de 50), escala?: { var, agregado?, desde_h?, hasta_h?, de, a, minimo } para graduarlo }",
@@ -14621,6 +14631,141 @@
      }
     },
     "nota": "Mikel (experiencia de campo, 2026-10-08): el rodaballo desde playa en noviembre (por ejemplo en Bakio) se pesca sobre todo con mareas vivas. Refuerzo a propósito sobre coeficientes_altos para esta especie y estación (por eso 'coeficiente_marea@rodaballo_otono': es un término de interacción, no el mismo dato contado dos veces por error). Meses 10-12 = traducción de Claude de 'noviembre'."
+   },
+   {
+    "fuente": "mikel_campo_bizkaia",
+    "tipo": "heuristica_experta_local",
+    "estado": "por_validar",
+    "variable": "profundidad",
+    "validacion": "Calibrar con las salidas del diario (salidas_pesca.indice_factores) antes de subir la confianza o darla por buena.",
+    "id": "profundidad_verano_somera",
+    "nombre": "Verano: fondos de 10-30 m cerca",
+    "texto": "profundidad adecuada para la época",
+    "confianza": 0.5,
+    "ambito": {
+     "regiones": [
+      "cantabrico",
+      "atlantico_norte",
+      "portugal",
+      "golfo_cadiz",
+      "mediterraneo",
+      "baleares"
+     ],
+     "modalidades": [
+      "embarcacion"
+     ],
+     "especies": [
+      "bocinegro",
+      "dorada",
+      "denton"
+     ]
+    },
+    "condiciones": [
+     {
+      "var": "temp_agua",
+      "op": ">=",
+      "valor": 18
+     },
+     {
+      "var": "dist_fondo_10_30m_km",
+      "op": "<=",
+      "valor": 5
+     }
+    ],
+    "efecto": {
+     "logodds": 0.5
+    },
+    "nota": "Mikel (embarcación, Bizkaia, 2026-10-08): en verano, con el agua caliente, el pargo, la dorada y el dentón se acercan a fondos de unos 20 m. Suma si hay fondo de 10-30 m a 5 km o menos de la orilla. Profundidad ALCANZABLE desde embarcación (decisión de Mikel, 2026-10-08: \"usa la profundidad alcanzable\"): se mide desde la orilla del spot (la celda de mar más cercana; en un punto propio en el mar, el propio punto) hasta 5 km (Mikel subió el radio de 3 a 5 km el 2026-10-08), con EMODnet DTM 2024 (assets/datos/profundidad-spots.json; puntos propios: WCS de EMODnet en vivo). Así un barco que sale de un puerto o una ría (Pasaia, Hondarribia) cuenta con el fondo de fuera. 'Verano/invierno' va por la temperatura del agua de esa hora, no por meses: 18 °C o más = verano, 15 °C o menos = invierno; entre 15 y 18 (transición) no se aplica. Umbrales (10-30 m, 40 m, 15/18 °C) = traducción de Claude de lo que contó Mikel. Fuera Canarias, Azores y Madeira: allí el agua casi nunca baja de 18 °C y la observación es del Cantábrico. Las tres reglas de 'profundidad' son excluyentes."
+   },
+   {
+    "fuente": "mikel_campo_bizkaia",
+    "tipo": "heuristica_experta_local",
+    "estado": "por_validar",
+    "variable": "profundidad",
+    "validacion": "Calibrar con las salidas del diario (salidas_pesca.indice_factores) antes de subir la confianza o darla por buena.",
+    "id": "profundidad_invierno_somera",
+    "nombre": "Invierno: sin fondo profundo cerca",
+    "texto": "poco fondo cerca para la época: con el agua fría bajan más profundo",
+    "confianza": 0.5,
+    "ambito": {
+     "regiones": [
+      "cantabrico",
+      "atlantico_norte",
+      "portugal",
+      "golfo_cadiz",
+      "mediterraneo",
+      "baleares"
+     ],
+     "modalidades": [
+      "embarcacion"
+     ],
+     "especies": [
+      "bocinegro",
+      "dorada",
+      "denton"
+     ]
+    },
+    "condiciones": [
+     {
+      "var": "temp_agua",
+      "op": "<=",
+      "valor": 15
+     },
+     {
+      "var": "prof_max_5km",
+      "op": "<=",
+      "valor": 40
+     }
+    ],
+    "efecto": {
+     "logodds": -0.5
+    },
+    "nota": "Mikel (embarcación, Bizkaia, 2026-10-08): en invierno, al enfriarse el agua, el pargo, la dorada y el dentón bajan a más profundidad. Resta si a 5 km de la orilla no hay más de 40 m. Profundidad ALCANZABLE desde embarcación (decisión de Mikel, 2026-10-08: \"usa la profundidad alcanzable\"): se mide desde la orilla del spot (la celda de mar más cercana; en un punto propio en el mar, el propio punto) hasta 5 km (Mikel subió el radio de 3 a 5 km el 2026-10-08), con EMODnet DTM 2024 (assets/datos/profundidad-spots.json; puntos propios: WCS de EMODnet en vivo). Así un barco que sale de un puerto o una ría (Pasaia, Hondarribia) cuenta con el fondo de fuera. 'Verano/invierno' va por la temperatura del agua de esa hora, no por meses: 18 °C o más = verano, 15 °C o menos = invierno; entre 15 y 18 (transición) no se aplica. Umbrales (10-30 m, 40 m, 15/18 °C) = traducción de Claude de lo que contó Mikel. Fuera Canarias, Azores y Madeira: allí el agua casi nunca baja de 18 °C y la observación es del Cantábrico. Las tres reglas de 'profundidad' son excluyentes."
+   },
+   {
+    "fuente": "mikel_campo_bizkaia",
+    "tipo": "heuristica_experta_local",
+    "estado": "por_validar",
+    "variable": "profundidad",
+    "validacion": "Calibrar con las salidas del diario (salidas_pesca.indice_factores) antes de subir la confianza o darla por buena.",
+    "id": "profundidad_invierno_profunda",
+    "nombre": "Invierno: fondo profundo cerca",
+    "texto": "profundidad adecuada para la época",
+    "confianza": 0.5,
+    "ambito": {
+     "regiones": [
+      "cantabrico",
+      "atlantico_norte",
+      "portugal",
+      "golfo_cadiz",
+      "mediterraneo",
+      "baleares"
+     ],
+     "modalidades": [
+      "embarcacion"
+     ],
+     "especies": [
+      "bocinegro",
+      "dorada",
+      "denton"
+     ]
+    },
+    "condiciones": [
+     {
+      "var": "temp_agua",
+      "op": "<=",
+      "valor": 15
+     },
+     {
+      "var": "prof_max_5km",
+      "op": ">",
+      "valor": 40
+     }
+    ],
+    "efecto": {
+     "logodds": 0.5
+    },
+    "nota": "Mikel (embarcación, Bizkaia, 2026-10-08): en invierno, con el agua fría, están más profundos. Suma si hay más de 40 m a 5 km o menos de la orilla. Profundidad ALCANZABLE desde embarcación (decisión de Mikel, 2026-10-08: \"usa la profundidad alcanzable\"): se mide desde la orilla del spot (la celda de mar más cercana; en un punto propio en el mar, el propio punto) hasta 5 km (Mikel subió el radio de 3 a 5 km el 2026-10-08), con EMODnet DTM 2024 (assets/datos/profundidad-spots.json; puntos propios: WCS de EMODnet en vivo). Así un barco que sale de un puerto o una ría (Pasaia, Hondarribia) cuenta con el fondo de fuera. 'Verano/invierno' va por la temperatura del agua de esa hora, no por meses: 18 °C o más = verano, 15 °C o menos = invierno; entre 15 y 18 (transición) no se aplica. Umbrales (10-30 m, 40 m, 15/18 °C) = traducción de Claude de lo que contó Mikel. Fuera Canarias, Azores y Madeira: allí el agua casi nunca baja de 18 °C y la observación es del Cantábrico. Las tres reglas de 'profundidad' son excluyentes."
    }
   ]
  },
