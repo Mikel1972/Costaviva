@@ -12,6 +12,7 @@
 // STRIPE_SECRET_KEY.
 
 import { descuentoAplicaAPlan } from "./_lib/invitaciones.js";
+import { diasExtraPorReferidos } from "./_lib/referidos.js";
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const SUPABASE_ANON_KEY =
@@ -65,6 +66,28 @@ async function invitacionConDescuento(token) {
   } catch (e) {
     console.error("crear-checkout-stripe: mi_invitacion_descuento falló:", e);
     return null;
+  }
+}
+
+// Meses ganados con "Invita a un amigo" que aún no se han usado (2026-10-09):
+// los decide Postgres con el token de quien paga (solo los suyos, máx. 3).
+// Si la función no responde, se cobra sin ellos (siguen pendientes).
+async function mesesDeAmigosPendientes(token) {
+  try {
+    const resp = await fetch(`${SUPABASE_URL}/rest/v1/rpc/mis_recompensas_referido_pendientes`, {
+      method: "POST",
+      headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${token}`, "content-type": "application/json" },
+      body: "{}",
+    });
+    if (!resp.ok) {
+      if (resp.status !== 404) console.error(`crear-checkout-stripe: mis_recompensas_referido_pendientes HTTP ${resp.status}`);
+      return [];
+    }
+    const ids = await resp.json();
+    return Array.isArray(ids) ? ids.filter((x) => typeof x === "string").slice(0, 3) : [];
+  } catch (e) {
+    console.error("crear-checkout-stripe: mis_recompensas_referido_pendientes falló:", e);
+    return [];
   }
 }
 
@@ -129,10 +152,15 @@ export async function onRequestPost(context) {
     params.append("mode", "subscription");
     params.append("line_items[0][price]", PRECIOS[plan]);
     params.append("line_items[0][quantity]", "1");
+    // Meses gratis por amigos invitados que pagaron antes de que esta
+    // persona se suscribiera: 30 días de prueba más por cada uno (máx. 3).
+    // El webhook los marca como usados al completar el checkout.
+    const mesesAmigos = await mesesDeAmigosPendientes(token);
     params.append(
       "subscription_data[trial_period_days]",
-      String(diasDePruebaRestantes(usuario.created_at))
+      String(diasDePruebaRestantes(usuario.created_at) + diasExtraPorReferidos(mesesAmigos.length))
     );
+    if (mesesAmigos.length) params.append("metadata[referidos_dias]", mesesAmigos.join(","));
     // Imprescindible para que el user_id llegue a los eventos
     // customer.subscription.* del webhook — el objeto Subscription no
     // hereda el metadata/client_reference_id de nivel superior de la

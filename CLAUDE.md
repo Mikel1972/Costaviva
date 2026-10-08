@@ -5,6 +5,82 @@ cambian las convenciones — no es un historial (para eso está `ROBOT.md`).
 Si algo de aquí queda desactualizado, corrígelo en el momento en que lo
 detectes, no lo dejes para luego.
 
+## Captación: redes, calendario, métricas e "Invita a un amigo" (2026-10-09)
+
+Fase decidida por Mikel: todo a conseguir usuarios (0 suscriptores el
+2026-10-09). Cuatro piezas, todas sin IA y a coste 0:
+
+1. **Instagram + Facebook, mismo flujo de aprobación.** Los robots
+   (`robot-marketing-instagram.yml`, `robot-reel-instagram.yml`) crean el
+   borrador de Instagram y abren UN Issue (etiqueta `marketing`) con los dos
+   textos y la pieza entera en un bloque invisible
+   (`scripts/marketing/pieza-issue.mjs`). En Facebook no se crea nada antes del
+   OK (la API de Páginas no guarda borradores). Publicar: Actions →
+   **Publicar post de Instagram** → `issue_number` y `redes` (las dos, solo
+   Instagram o solo Facebook) → `scripts/marketing/publicar-pieza.mjs`.
+   Instagram: `/media_publish`. Facebook: Page token sacado del token del
+   Usuario del Sistema (`/{page}?fields=access_token`); foto con
+   `/{page}/photos`, reel con `/{page}/video_reels` (start, subida por URL a
+   `rupload.facebook.com`, finish). Lo publicado en Facebook se apunta en
+   `posts-facebook.jsonl` (el de Instagram sigue en `posts-publicados.jsonl`).
+   Códigos de salida: 3 token caducado, 4 falta permiso/`META_PAGE_ID`.
+   **Facebook (pasos de Mikel, 2026-10-09):** el token actual (Usuario del
+   Sistema "Costaviva", no caduca) NO tiene `pages_manage_posts`. Hay que
+   generar uno nuevo con ese permiso además de los 5 de siempre (ver "Token de
+   Instagram", paso 4) y guardarlo con `gh secret set META_PAGE_ACCESS_TOKEN`
+   (nunca por chat). `comprobar-token-instagram.yml` ya exige
+   `pages_manage_posts` y que la Página `META_PAGE_ID` devuelva su Page token.
+2. **Calendario fiable** (`scripts/marketing/calendario.mjs`): martes 08:00
+   especie, jueves 13:00 función de la app (diario → grupos → alarma),
+   viernes 08:00 condiciones, sábado 09:00 reel. La pieza se prepara la
+   VÍSPERA a las ~19:30 con los datos de la hora de publicación (índice,
+   bloque de `/prevision`, pleamar/bajamar del día desde `nivelMar`) para
+   que Mikel solo apruebe por la mañana (el contenedor de Instagram caduca a
+   las 24 h). Reloj: pg_cron (`20261009130000_programador_marketing.sql`:
+   L/X/J 17:30 UTC posts, V 17:10 UTC reel); el `schedule:` de GitHub es el
+   respaldo una hora después y no repite (`calendario-estado.json`). A mano:
+   inputs `fecha` y `tipo`. Cada texto lleva `{ENLACE}`, que
+   `publicar-borrador-instagram.mjs` cambia por
+   `costaviva.org/empieza?utm_source=instagram|facebook&utm_medium=social&utm_campaign=<AAAAMMDD-pieza>`.
+   Enlace de la bio de Instagram (a mano, Mikel):
+   `https://costaviva.org/empieza?utm_source=instagram&utm_medium=social&utm_campaign=bio`.
+3. **Métricas sin IA.** `/empieza` (`empieza.html`, noindex) es la entrada
+   de campañas y amigos y lleva a `/login?alta=1`. Primer contacto:
+   `assets/js/origen.js` (UTM o dominio del referrer, solo listas cerradas,
+   localStorage 90 días) viaja en el metadato del alta (`origen`, `ref`) y el
+   trigger `registrar_origen_alta()` lo copia a `origen_altas`. Visitas:
+   `functions/_middleware.js` + `_lib/visitas.js` suman en segundo plano un
+   recuento por día/página/fuente/campaña (`contar_visita_publica`, la única
+   función con EXECUTE para anon, marcada anon-ok); sin IP, navegador ni
+   cookies; los botones "Empieza gratis" de /mareas, /spots y /especies llevan
+   la fuente de quien llega de fuera. `metricas_captacion()` (service_role) y
+   `admin_metricas_captacion()` (es_admin): visitas por fuente, altas (y por
+   fuente), invitaciones canjeadas, amigos, **prueba → pago** (estrella del
+   norte: altas confirmadas sin admin/pruebas/permanentes/invitación 100 %,
+   terminadas = 8 días; paga = `suscripciones.primer_pago_en`, que pone el
+   webhook la primera vez que ve `active`) y retención semana 2/4 (eventos_uso
+   en días 7-13 / 21-27). Se ven en admin.html ("📈 Captación") y en el
+   informe diario de los lunes (paso "Captación", `scripts/captacion/`).
+   `privacidad.html` lo explica.
+4. **"Invita a un amigo"** (aprobado por Mikel, ACTIVADO por defecto;
+   interruptor `ajustes_app.referidos_activo`). Enlace en suscripcion.html
+   (y "🎁 Invita a un amigo" del menú de cuenta): `/empieza?ref=CODIGO`. Si
+   el amigo paga de verdad (suscripción `active`), quien invita gana 1 mes:
+   saldo a favor de 3,99 € en Stripe si ya está suscrito
+   (`balance_transactions`, Idempotency-Key por amigo) o +30 días de prueba
+   al suscribirse (`crear-checkout-stripe.js`, máx. 3, metadata
+   `referidos_dias`). Protecciones: un amigo una vez en la vida (hash del
+   email normalizado), nada de autoinvitarse (Gmail sin puntos ni +alias),
+   misma tarjeta que quien invita o repetida entre sus amigos = sin premio
+   (huella de Stripe, guardada como hash), máx. 12 meses/año, >10 altas en
+   24 h con un código = no cuentan. Lógica en
+   `20261009110000_invita_a_un_amigo.sql` y `functions/_lib/referidos.js`.
+
+Migraciones `20261009100000`-`20261009130000` **sin aplicar** (esperan el sí
+de Mikel); el baseline del vigía ya lleva las 5 tablas nuevas, así que el
+vigía saldrá en rojo hasta aplicarlas. Tests: `test/captacion.test.js`,
+`test/calendario-marketing.test.js`.
+
 ## Aspecto "Amanecer de pesca" (2026-10-08, elegido por Mikel)
 
 Mikel pidió algo "visualmente atractivo, no frío" y eligió, entre tres
@@ -125,10 +201,11 @@ YouTube o MEO no dejan republicar) por piezas en el estilo de la app.
   guion del reel, rotación, ganchos y claims. Datos reales en
   `obtener-datos.mjs` (endpoints públicos `/prevision`, `/meteo/*`,
   `/viento-campo`; minimapa de batimetría de EMODnet).
-- **Posts** (`robot-marketing-instagram.yml`, L/X/V): igual que antes,
-  borrador + Issue + publicación manual. Ahora también deja la story en
+- **Posts** (`robot-marketing-instagram.yml`; desde el 2026-10-09 la víspera
+  de M/J/V, ver "Captación"): borrador + Issue + publicación manual, también
+  en Facebook. Ahora también deja la story en
   `assets/marketing/*-story.png` (para subirla a mano).
-- **Reels** (`robot-reel-instagram.yml`, sábados, workflow propio): 10,5 s =
+- **Reels** (`robot-reel-instagram.yml`, para el sábado, preparado el viernes): 10,5 s =
   gancho (3,5 s, vídeo + pregunta) + datos animados (5,5 s: índice contando,
   ventana creciendo, viento real en partículas; o una pantalla real de la app
   en un marco de móvil) + cierre (1,5 s, claim y CTA). Rotación
@@ -3015,7 +3092,7 @@ GitHub trata los `schedule:` como "cuando pueda": `camaras-salud.yml` y `notific
 - La clave de GitHub (fine-grained, solo este repo, permiso Actions: Read and write) vive en Supabase Vault como `github_lanzar_workflows`. Se guarda con `guardar-token-programador.yml` desde el secret `PROGRAMADOR_GITHUB_TOKEN`; ese workflow hace además una prueba real (204 = funciona). **Si la clave caduca o se rota, actualizar el secret y relanzarlo.** Nunca pegarla en el chat ni en el editor SQL.
 - El `schedule:` de los dos workflows se queda como respaldo, con `concurrency` para que dos ejecuciones no se solapen.
 - Para añadir otra tarea: añadir su fichero a la lista de `lanzar_workflow_github()` y un `cron.schedule` nuevo, en una migración.
-- **Estado a 2026-10-08: no funciona.** `guardar-token-programador.yml` no se ha ejecutado nunca, así que no hay clave en Vault y pg_cron no lanza nada (camaras-salud.yml: 50 ejecuciones por `schedule` y 6 manuales en 10 días, en vez de ~480). Falta que Mikel cree el secret `PROGRAMADOR_GITHUB_TOKEN` y lance ese workflow. `espuma-camaras.yml` se añade a la lista en `20261008210000_programador_espuma_camaras.sql`.
+- **Estado:** hasta el 2026-10-08 no funcionaba (sin clave en Vault: camaras-salud.yml corrió 50 veces por `schedule` y 6 a mano en 10 días, en vez de ~480). La clave ya está guardada (prueba 204 del 2026-10-08, 16:09 UTC); cada trabajo nuevo de pg_cron solo empieza a correr cuando se aplica su migración. `espuma-camaras.yml` se añade a la lista en `20261008210000_programador_espuma_camaras.sql`, y `robot-marketing-instagram.yml`/`robot-reel-instagram.yml` en `20261009130000_programador_marketing.sql` (calendario de redes; misma lista de seis que `20261009140000_programador_aprendizaje.sql`, que añade `aprendizaje-semanal.yml`). La clave ya está en Vault (prueba 204 del 2026-10-08, 16:09 UTC).
 
 ## Cámaras caídas: fuera de la vista a las 24 h, e IPCamLive resuelto en vivo (2026-09-28)
 
@@ -3701,7 +3778,8 @@ para automatización:
    `comprobar-token-instagram.yml` existe justo para cazar eso.
 4. *Generar nuevo token* → elegir la App → marcar `instagram_basic`,
    `instagram_content_publish`, `instagram_manage_insights`,
-   `pages_show_list`, `pages_read_engagement`.
+   `pages_show_list`, `pages_read_engagement` y, desde el 2026-10-09 (para
+   publicar también en la Página de Facebook), `pages_manage_posts`.
 5. Guardarlo: `gh secret set META_PAGE_ACCESS_TOKEN` (lo pide por stdin, así
    no pasa por ningún chat ni queda en el historial de comandos).
 6. Actions → **Comprobar token de Instagram** → *Run workflow*. Tiene que

@@ -73,12 +73,16 @@ export async function mapaDeSpot(slug, ancho = 1080, alto = 670) {
 }
 
 // Viento de la hora actual en rejilla (bandas U/V), para las partículas.
-export async function vientoDeSpot(slug) {
+// `objetivoISO` (2026-10-09): para un reel preparado la víspera, la rejilla
+// de la hora de publicación si viene entre las próximas 24 h; si no, ahora.
+export async function vientoDeSpot(slug, objetivoISO = null) {
   const s = SPOTS.find((x) => x.slug === slug);
   try {
     const d = await json(`${BASE_URL}/viento-campo?bbox=${s.lat - 1},${s.lon - 1},${s.lat + 1},${s.lon + 1}`);
     // { bbox, snapshots: [{ hora, data: [U, V] }] }, la primera es "ahora".
-    const [u, v] = d.snapshots?.[0]?.data || [];
+    const snaps = d.snapshots || [];
+    const elegido = (objetivoISO && snaps.find((x) => String(x.hora || "").slice(0, 13) === objetivoISO.slice(0, 13))) || snaps[0];
+    const [u, v] = elegido?.data || [];
     if (!u?.header || !v?.data) throw new Error("formato inesperado");
     return { u: { header: u.header, data: u.data }, v: { header: v.header, data: v.data } };
   } catch (e) {
