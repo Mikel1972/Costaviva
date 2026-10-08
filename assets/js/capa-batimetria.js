@@ -154,14 +154,14 @@ function ponerEstilos() {
   st.textContent = `
   .isobata-etq { background: none; border: none; }
   .isobata-etq span { display: inline-block; transform: translate(-50%, -50%); white-space: nowrap;
-    font: 600 10px 'IBM Plex Mono', monospace; color: #0B2532; background: rgba(255,255,255,0.8);
-    border-radius: 3px; padding: 0 3px; border-left: 3px solid var(--c); }
-  .isobatas-leyenda { background: #FFFFFF; border: 1px solid #DDE2DC; border-radius: 8px; padding: 6px 8px;
-    font: 10px 'IBM Plex Mono', monospace; color: #0B2532; }
-  .isobatas-leyenda .tit { color: #5C7680; margin-bottom: 4px; }
+    font: 700 10.5px var(--f-texto); color: var(--tinta); background: rgba(255,255,255,0.85);
+    border-radius: 4px; padding: 0 4px; border-left: 3px solid var(--c); }
+  .isobatas-leyenda { background: var(--superficie); border: 0; border-radius: 14px; padding: 8px 10px;
+    font: 600 10.5px var(--f-texto); color: var(--tinta); box-shadow: 0 6px 16px rgba(11,30,63,0.2); }
+  .isobatas-leyenda .tit { color: var(--tinta-2); margin-bottom: 4px; }
   .isobatas-leyenda .barra { display: grid; grid-template-columns: repeat(14, 14px); }
   .isobatas-leyenda .barra i { height: 10px; }
-  .isobatas-leyenda .ext { display: flex; justify-content: space-between; color: #5C7680; margin-top: 2px; }`;
+  .isobatas-leyenda .ext { display: flex; justify-content: space-between; color: var(--tinta-2); margin-top: 2px; }`;
   document.head.appendChild(st);
 }
 

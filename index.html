@@ -14,6 +14,12 @@
 <meta name="apple-mobile-web-app-title" content="Costaviva" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<!-- Mapa base vectorial (2026-10-08): MapLibre GL + el plugin oficial para
+     Leaflet, versiones fijas con SRI. Ver assets/js/mapa-base.js. -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/5.24.0/maplibre-gl.min.css" integrity="sha512-KIMsMWIdnoG9OwZa+oaIafmbDonqck1UCmq+/zcUi2aaZ97N9QE6TqpTM+n36EO40HGh64hU/375zxtjx7WTyQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/5.24.0/maplibre-gl.min.js" integrity="sha512-hoXlvOdSmh58mppUyZHZsscHkR/yXl6zLpTMTNwA6IZ61DpeaCNjosRu1WJ2DeIpkfW5MsJJ9H89zjV4IBGqRw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.jsdelivr.net/npm/@maplibre/maplibre-gl-leaflet@0.1.4/leaflet-maplibre-gl.js" integrity="sha384-tXYNKOHx4T02jMP7YYCtBxPIv1B5gaA5mcVPBzqMp6d7VzWzxJgI2aWF/nJLrQdS" crossorigin="anonymous"></script>
+<script src="/assets/js/mapa-base.js"></script>
 <!-- Capa de viento estilo Windy (2026-09-19, pedido explícito del
      usuario) — partículas animadas sobre una rejilla u/v, sin más
      dependencia que Leaflet (ya cargado arriba). cdnjs no aloja este
@@ -61,7 +67,11 @@
 
   .main { display: flex; flex: 1; min-height: 0; }
   .mapa-wrap { flex: 1; position: relative; }
-  #map { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #BFDDEE; }
+  #map { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: var(--fondo); }
+  /* Relieve de EMODnet sobre el mapa base vectorial: "multiplica" en vez de
+     tapar, así se ven los cañones del fondo y el relieve de la costa sin
+     perder los colores ni los nombres del mapa. */
+  .relieve-emodnet { mix-blend-mode: multiply; }
 
   .marcador-envoltorio { position: relative; width: 24px; height: 24px; }
   .marcador {
@@ -546,6 +556,25 @@
     .leyenda-toggle { bottom: 10px; left: 10px; width: 40px; height: 40px; }
     .leyenda { bottom: 10px; left: 56px; }
 
+    /* Botones de capa algo más pequeños en el móvil: 7 en la columna A
+       (con Isób.) caben sin bajar hasta la costa. */
+    .rayos-toggle, .luna-toggle, .batimetria-toggle, .nubes-toggle, .estaciones-toggle, .viento-toggle,
+    .rios-toggle, .boyas-toggle, .spots-toggle, .anadir-ubicacion-toggle { width: 48px; height: 48px; font-size: 17px; }
+    .rayos-toggle { top: 10px; right: 10px; }
+    .luna-toggle { top: 66px; right: 10px; }
+    .batimetria-toggle { top: 122px; right: 10px; }
+    .nubes-toggle { top: 178px; right: 10px; }
+    .estaciones-toggle { top: 234px; right: 10px; }
+    .viento-toggle { top: 290px; right: 10px; }
+    .isobatas-toggle { top: 346px; right: 10px; }
+    .spots-toggle { top: 10px; right: 66px; }
+    .anadir-ubicacion-toggle { top: 66px; right: 66px; }
+    .rios-toggle { top: 122px; right: 66px; }
+    .boyas-toggle { top: 178px; right: 66px; }
+    .viento-slider-panel { right: 124px; }
+    .luna-panel { right: 124px; }
+    /* Créditos obligatorios del mapa: en letra pequeña pero siempre visibles. */
+    .leaflet-control-attribution { font-size: 9.5px; line-height: 1.3; max-width: 100vw; }
     header { padding: 8px 12px 12px; column-gap: 8px; }
     header h1 { font-size: 19px; }
     header .marca-logo { width: 32px; height: 32px; }
@@ -1622,10 +1651,9 @@ const map = L.map("map", {
   center: [43.51, -2.82],
   zoom: 10,
   minZoom: 5,
-  // Tope en 16: es hasta donde Esri tiene teselas propias en esta zona de
-  // mar abierto — más allá se ve borroso (ampliado digitalmente), así que
-  // mejor bloquear el zoom ahí que dejar llegar a un mapa que se ve mal.
-  maxZoom: 16,
+  // Tope en 17: el mapa base vectorial (OpenFreeMap) tiene detalle de sobra;
+  // más cerca ya no aporta nada para pescar.
+  maxZoom: 17,
   // La animación de zoom de Leaflet puede quedarse "atascada" si el evento
   // CSS transitionend no llega a disparar (pasa en algunos navegadores/
   // entornos automatizados) — a partir de ahí deja de responder a más
@@ -1642,7 +1670,7 @@ const map = L.map("map", {
 });
 // Quita solo el prefijo "Leaflet" (pedido explícito del usuario: "quita
 // la leyenda del mapa, la de leaflet") -- los créditos reales de datos
-// (Esri/GEBCO/NOAA/EMODnet/RainViewer, ver attribution de cada capa) se
+// (OpenFreeMap/OpenStreetMap/EMODnet, ver attribution de cada capa) se
 // quedan, esos sí son una condición real de uso de esos servicios
 // gratuitos, no solo un logo de la librería.
 map.attributionControl.setPrefix(false);
@@ -1720,41 +1748,12 @@ const capaSpots = L.layerGroup();
 const capaRios = L.layerGroup();
 const capaBoyas = L.layerGroup();
 
-// Esri Ocean Basemap: gratis, sin API key, mar en azul de verdad. PERO
-// solo tiene teselas reales hasta zoom 10 en esta zona — a partir de ahí
-// devuelve un aviso "Map data not yet available" en vez de mapa (lo vimos
-// al comprobarlo tesela a tesela). Por eso solo se usa hasta zoom 10, y
-// de ahí en adelante se cambia a World Street Map (sí tiene detalle real
-// hasta zoom 16, agua también en azul aunque con otro estilo).
-//
-// El cambio de capa se hace a mano (añadir/quitar en vez de dejarlo a los
-// minZoom/maxZoom propios de cada capa) porque con la animación de zoom
-// desactivada, Leaflet no siempre "despierta" una capa nueva al cruzar su
-// rango de zoom — se queda en blanco hasta que se le pide un redibujado.
-const capaOceanoBase = L.tileLayer("https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}", {
-  attribution: "Tiles &copy; Esri &mdash; Sources: GEBCO, NOAA, National Geographic, DeLorme, HERE, Geonames.org",
-});
-const capaOceanoRef = L.tileLayer("https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Reference/MapServer/tile/{z}/{y}/{x}", {
-  opacity: 0.9,
-});
-const capaCalles = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", {
-  attribution: "Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom",
-});
-const ZOOM_CAMBIO_MAPA_BASE = 10; // hasta aquí, Ocean; a partir de aquí, calles
-
-function actualizarMapaBaseSegunZoom() {
-  if (map.getZoom() <= ZOOM_CAMBIO_MAPA_BASE) {
-    if (map.hasLayer(capaCalles)) map.removeLayer(capaCalles);
-    if (!map.hasLayer(capaOceanoBase)) capaOceanoBase.addTo(map);
-    if (!map.hasLayer(capaOceanoRef)) capaOceanoRef.addTo(map);
-  } else {
-    if (map.hasLayer(capaOceanoBase)) map.removeLayer(capaOceanoBase);
-    if (map.hasLayer(capaOceanoRef)) map.removeLayer(capaOceanoRef);
-    if (!map.hasLayer(capaCalles)) capaCalles.addTo(map);
-  }
-}
-actualizarMapaBaseSegunZoom();
-map.on("zoomend", actualizarMapaBaseSegunZoom);
+// Mapa base: OpenFreeMap (vectorial, uso comercial permitido con
+// atribución) con el relieve de EMODnet encima a zoom bajo y medio. Hasta el
+// 2026-10-08 eran teselas de Esri, cuya licencia no cubre una app de pago
+// sin suscripción de ArcGIS. Todo en assets/js/mapa-base.js; va en paneles
+// por debajo de tilePane, así que las demás capas siempre quedan encima.
+window.MapaBase.montar(map, L);
 
 // Batimetría real (EMODnet Bathymetry, WMS público y gratis, sin clave) —
 // capa activable, no puesta por defecto porque tapa bastante el resto del

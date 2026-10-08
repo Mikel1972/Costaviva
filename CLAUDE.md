@@ -33,19 +33,24 @@ pequeños: tinta oscura sobre claro, contraste AA).
   índice de mar decía "cuanto más alto, mejor pinta", al revés que la
   fórmula y la leyenda: corregido el texto (la fórmula no se tocó).
 - La alarma SOS va en rojo sólido, no con el degradado: seguridad ≠ emoción.
-- **Mapa base de Esri: sin filtros y con un problema de licencia abierto.**
-  La ficha del servicio (`World_Ocean_Base`, item 1e126e7520f9466c9ca28b8f28b5e500
-  de ArcGIS Online) dice "licensed under the Esri Master License Agreement", y
-  el resumen de condiciones de Esri
-  (https://www.esri.com/content/dam/arcgisonline/docs/tou_summary.pdf, abril
-  de 2025) exige "Use with Esri software ... If you do not have Esri software,
-  you must purchase an ArcGIS Online subscription" y prohíbe "Use content
-  from ArcGIS Living Atlas for commercial use in your application or product"
-  sin licencia de Esri. Así que no se aplica ningún filtro a sus teselas, y
-  el uso actual en una app de pago está pendiente de decidir (pasarse a
-  EMODnet Bathymetry, que en su GetCapabilities declara `Fees: None` y
-  `AccessConstraints: None`, o a OpenFreeMap, que permite uso comercial con
-  atribución OSM). Decisión de Mikel.
+- **Mapa base (2026-10-08, decidido por Mikel): OpenFreeMap en vez de Esri.**
+  La ficha de Esri (`World_Ocean_Base`, item 1e126e7520f9466c9ca28b8f28b5e500)
+  va con el Esri Master License Agreement y su resumen
+  (https://www.esri.com/content/dam/arcgisonline/docs/tou_summary.pdf) exige
+  suscripción de ArcGIS y prohíbe el uso comercial de Living Atlas sin
+  licencia. Ahora: `assets/js/mapa-base.js` (test `test/mapa-base.test.js`)
+  monta OpenFreeMap "Liberty" (https://openfreemap.org: "Is commercial usage
+  allowed? Yes"; atribución obligatoria "OpenFreeMap © OpenMapTiles Data from
+  OpenStreetMap") con MapLibre GL 5.24.0 (cdnjs, SRI) + el plugin oficial
+  `@maplibre/maplibre-gl-leaflet@0.1.4` (jsdelivr, SRI). Los colores Amanecer
+  van EN EL ESTILO (`retocarEstilo`), no con filtros. Encima, hasta zoom 11, el
+  relieve `emodnet:mean_atlas_land` de EMODnet (CC BY 4.0) al 45 % con
+  `mix-blend-mode: multiply`. Base y relieve van en paneles propios por debajo
+  de `tilePane`, así que lluvia, rayos, batimetría, isóbatas, viento, cámaras y
+  spots quedan siempre encima. Sin WebGL o sin OpenFreeMap, el relieve de
+  EMODnet hace de mapa base opaco. MapLibre 6 no se usa: solo se publica como
+  módulo ES con worker aparte (más frágil con la CSP); la 5.x trae el worker
+  como blob: (`worker-src blob:` ya estaba por hls.js).
 
 ## Instagram en estilo Amanecer: posts, stories y reels sin IA (2026-10-08)
 
