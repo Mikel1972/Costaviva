@@ -197,8 +197,8 @@ test("especies.json: meses válidos y regiones conocidas", () => {
   }
 });
 
-test("especies.json: las 28 especies tienen cebos, cada uno con fuente o criterio", () => {
-  assert.equal(DATOS.especies.length, 28);
+test("especies.json: las 29 especies tienen cebos, cada uno con fuente o criterio", () => {
+  assert.equal(DATOS.especies.length, 29); // 29.ª: rodaballo (2026-10-08, regla de mareas vivas de Mikel)
   for (const e of DATOS.especies) {
     assert.ok(Array.isArray(e.cebos) && e.cebos.length >= 1, `${e.id} sin cebos`);
     for (const c of e.cebos) {
