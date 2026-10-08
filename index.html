@@ -3201,11 +3201,18 @@ function cerrarZoomWebcam() {
 // "imagen_oficial" (el código de "Insertar" del dueño tal cual: su imagen
 // enlazada a su página) y "enlace" (botón que abre su web). Nunca se pasan
 // por nuestro proxy ni se descarga su imagen. Se ocultan igual que las
-// propias si el robot de salud las ve caídas más de 24 h (clave ext-<id>).
+// propias si el robot de salud las ve caídas más de 24 h (clave ext-<id>),
+// pero solo por un fallo real: un enlace cuyo dueño bloquea las
+// comprobaciones automáticas (MEO Beachcam da 403 a los runners de GitHub,
+// 2026-10-08) es "no verificable" y se enseña siempre
+// (externaCuentaComoCaida en camaras-externas.js).
 function camarasExternasVisibles(slug) {
   const CE = window.CamarasExternas;
   if (!CE) return null;
-  return CE.camarasExternasDeSpot(slug).filter((c) => !camaraRetirada(CE.claveSalud(c)));
+  return CE.camarasExternasDeSpot(slug).filter((c) => {
+    const clave = CE.claveSalud(c);
+    return !(CE.externaCuentaComoCaida(c, CAMARAS[clave]) && camaraRetirada(clave));
+  });
 }
 function escaparHtmlCam(t) {
   return String(t).replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch]);

@@ -312,13 +312,18 @@ jobs:
               .then((filas) => {
                 const caidas = filas.filter((f) => f.sin_senal);
                 const conReserva = filas.filter((f) => !f.sin_senal && f.fuente_usada > 0);
+                // Externas cuyo dueño bloquea las comprobaciones automáticas
+                // (MEO Beachcam da 403 a los runners, 2026-10-08): ni sanas
+                // ni caídas, se siguen enseñando como enlace.
+                const noVerificables = filas.filter((f) => !f.sin_senal && String(f.motivo || "").startsWith("no_verificable"));
                 const total = filas.length;
-                const funcionanBien = total - caidas.length - conReserva.length;
+                const funcionanBien = total - caidas.length - conReserva.length - noVerificables.length;
                 // Conteo agregado (pedido explícito del usuario, 2026-09-20:
                 // "cuántas cámaras funcionan correctamente y cuántas no") —
                 // antes solo se listaban las caídas/con reserva, sin un
                 // total con el que compararlas.
                 const lineas = [`  - ${funcionanBien} de ${total} cámaras funcionan correctamente (fuente principal, sin fallos).`];
+                if (noVerificables.length) lineas.push(`  - ℹ️ ${noVerificables.length} cámaras de terceros no se pueden comprobar de forma automática (su dueño bloquea robots); no cuentan como caídas y se siguen enseñando.`);
                 if (caidas.length || conReserva.length) {
                   for (const f of caidas) lineas.push(`  - ❌ ${f.spot_slug}: sin señal (${f.motivo})`);
                   for (const f of conReserva) lineas.push(`  - ⚠️ ${f.spot_slug}: funcionando con fuente de reserva #${f.fuente_usada} (la principal está fallando)`);

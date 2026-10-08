@@ -5,7 +5,10 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { CAMARAS_EXTERNAS, CONDICIONES, SKYLINE_EMBED_AUTORIZADO, camarasExternasDeSpot, claveSalud } from "../assets/js/camaras-externas.js";
+import {
+  CAMARAS_EXTERNAS, CONDICIONES, SKYLINE_EMBED_AUTORIZADO, camarasExternasDeSpot, claveSalud,
+  resultadoComprobacionExterna, lecturaSaludExterna, externaCuentaComoCaida,
+} from "../assets/js/camaras-externas.js";
 
 const MODOS = ["imagen_oficial", "enlace"];
 const spotsPrevision = new Set(
@@ -77,4 +80,67 @@ test("ayudantes: por spot y clave de salud con prefijo", () => {
   assert.ok(camarasExternasDeSpot("nazare").length >= 1);
   assert.deepEqual(camarasExternasDeSpot("no-existe"), []);
   for (const c of CAMARAS_EXTERNAS) assert.match(claveSalud(c), /^ext-/);
+});
+
+// Caso real 2026-10-08 21:04 UTC: las 30 de MEO Beachcam salían sin_senal
+// con http_403 porque MEO bloquea los runners de GitHub (anti-bots). A las
+// 24 h la app habría escondido todos los enlaces de Portugal.
+const meo = CAMARAS_EXTERNAS.find((c) => c.condiciones === "meo_beachcam");
+const imagen = { modo: "imagen_oficial" };
+
+test("un 403/429/401 en una cámara de enlace es 'no verificable', no caída", () => {
+  for (const status of [401, 403, 429]) {
+    const r = resultadoComprobacionExterna(meo, status);
+    assert.equal(r.noVerificable, true, String(status));
+    assert.equal(r.motivo, `no_verificable_${status}`);
+  }
+  assert.deepEqual(resultadoComprobacionExterna(meo, 200, "text/html"), { ok: true });
+  assert.deepEqual(resultadoComprobacionExterna(meo, 404), { ok: false, motivo: "http_404" });
+  assert.deepEqual(resultadoComprobacionExterna(meo, 0), { ok: false, motivo: "sin_respuesta" });
+});
+
+test("en imagen_oficial un 403 sí es fallo (la imagen la carga la app)", () => {
+  assert.deepEqual(resultadoComprobacionExterna(imagen, 403), { ok: false, motivo: "http_403" });
+  assert.deepEqual(resultadoComprobacionExterna(imagen, 200, "text/html"), { ok: false, motivo: "no_es_imagen" });
+  assert.deepEqual(resultadoComprobacionExterna(imagen, 200, "image/jpeg"), { ok: true });
+});
+
+test("no verificable: sin_senal=false, sin fallos, conserva la última señal", () => {
+  const previo = { ultimaSenalEn: "2026-10-08T10:00:00Z", fallosSeguidos: 5 };
+  const l = lecturaSaludExterna("ext-x", resultadoComprobacionExterna(meo, 403), previo, "2026-10-08T21:04:00Z");
+  assert.equal(l.sinSenal, false);
+  assert.equal(l.fallosSeguidos, 0);
+  assert.equal(l.motivo, "no_verificable_403");
+  assert.equal(l.ultimaSenalEn, "2026-10-08T10:00:00Z");
+  // Lo que lee el robot de cámaras caídas: sin_senal=true o fallos_seguidos>=1.
+  assert.ok(!(l.sinSenal || l.fallosSeguidos >= 1), "el robot de cámaras caídas la tomaría por rota");
+});
+
+test("un fallo real sigue contando y a la 2.ª pasada marca sin señal", () => {
+  const ahora = "2026-10-08T21:04:00Z";
+  const l1 = lecturaSaludExterna("ext-x", resultadoComprobacionExterna(meo, 404), undefined, ahora);
+  assert.equal(l1.sinSenal, false);
+  assert.equal(l1.fallosSeguidos, 1);
+  const l2 = lecturaSaludExterna("ext-x", resultadoComprobacionExterna(meo, 404), l1, ahora);
+  assert.equal(l2.sinSenal, true);
+  assert.equal(l2.motivo, "http_404");
+  const ok = lecturaSaludExterna("ext-x", { ok: true }, l2, ahora);
+  assert.deepEqual([ok.sinSenal, ok.fallosSeguidos, ok.motivo, ok.ultimaSenalEn], [false, 0, "ok", ahora]);
+});
+
+test("la app nunca esconde un enlace por un bloqueo anti-bots (ni con filas viejas)", () => {
+  assert.equal(externaCuentaComoCaida(meo, { sinSenal: true, motivo: "http_403", ultimaSenalEn: null }), false);
+  assert.equal(externaCuentaComoCaida(meo, { sinSenal: true, motivo: "http_429" }), false);
+  assert.equal(externaCuentaComoCaida(meo, { sinSenal: false, motivo: "no_verificable_403" }), false);
+  assert.equal(externaCuentaComoCaida(meo, { sinSenal: true, motivo: "http_404" }), true);
+  assert.equal(externaCuentaComoCaida(imagen, { sinSenal: true, motivo: "http_403" }), true);
+  assert.equal(externaCuentaComoCaida(meo, undefined), false);
+});
+
+test("index.html filtra las externas con externaCuentaComoCaida y el robot usa la lógica compartida", () => {
+  const index = readFileSync(new URL("../index.html", import.meta.url), "utf8");
+  assert.match(index, /CE\.externaCuentaComoCaida\(c, CAMARAS\[clave\]\) && camaraRetirada\(clave\)/);
+  const robot = readFileSync(new URL("../scripts/camaras/comprobar-camaras.mjs", import.meta.url), "utf8");
+  assert.match(robot, /resultadoComprobacionExterna\(camara, status, tipo\)/);
+  assert.match(robot, /lecturaSaludExterna\(clave,/);
 });

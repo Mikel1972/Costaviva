@@ -185,6 +185,19 @@ HEAD/oEmbed (clave `ext-<id>` en `camara_estado`). Águilas salió del proxy
 `/webcam/` y de turbidez por eso. `test/camaras-externas.test.js` exige
 dueño, modo permitido, condiciones con fuente y spot existente.
 
+**"No verificable" no es "caída" (2026-10-08).** Caso real (21:04 UTC):
+las 30 de MEO Beachcam salían en `camara_estado` con `sin_senal=true` y
+`http_403`; MEO bloquea las peticiones de los runners de GitHub (anti-bots),
+no la cámara. A las 24 h la app habría escondido todos los enlaces de
+Portugal. Ahora, en modo `enlace`, un 401/403/429 se guarda como
+`no_verificable_<código>` con `sin_senal=false` y sin sumar fallos
+(`resultadoComprobacionExterna` y `lecturaSaludExterna` en
+`camaras-externas.js`, que usa el robot de salud), y la app solo esconde
+una externa si `externaCuentaComoCaida` (también ignora filas viejas con
+`http_403`). El robot de cámaras caídas no las ve (lee `sin_senal` o
+`fallos_seguidos>=1`) y el informe diario las cuenta aparte. No se intenta
+esquivar su protección. En `imagen_oficial` un 403 sí es fallo.
+
 **Interruptor `SKYLINE_EMBED_AUTORIZADO` (en `camaras-externas.js`, hoy
 `true`).** Mikel ha pedido a SkylineWebcams autorización escrita para el
 uso comercial (2026-10-08) y decidió usar ya la imagen oficial que su FAQ
