@@ -9143,6 +9143,17 @@ Sin novedades esta pasada: no se integra ni se propone ninguna fuente nueva veri
 
 Firmado: robot buscador de fuentes (rutina).
 
+### 2026-10-08 04:55 UTC (pasada buscadora — migración y cría de especies, rutina)
+
+Sin novedades verificadas esta pasada: no se propone ningún dato nuevo de freza/migración para `especies.json` ni `ESPECIES`.
+
+- Hueco elegido: freza del **pulpo** (`pulpo`, `freza.por_region` vacío; pendiente "falta un estudio con licencia abierta verificada"). WebSearch encontró pistas (Galicia: freza de diciembre a septiembre con pico en primavera; Portugal NW: picos feb-abr y jun-jul, sur: sobre todo verano; Lourenço et al. 2012), pero todas de segunda mano y sin licencia comprobada.
+- No se pudo comprobar la licencia del artículo candidato de Scientia Marina (scientiamarina.revistas.csic.es/index.php/scientiamarina/article/view/76): WebFetch devolvió 503 y curl falló la verificación TLS desde esta sesión. No se da por caído el dominio.
+- Por la regla de nunca inventar, no se escribe ningún mes en el JSON; el `pendiente` de `pulpo` se mantiene.
+- Próximo paso útil: reintentar esa ficha de Scientia Marina (y la de Lourenço et al. 2012) comprobando licencia CC BY en la propia página, y si es válida, proponer meses de freza para `atlantico_norte` y `portugal` en rama `robot/especies-AAAA-MM-DD`.
+
+Firmado: robot buscador de fuentes (rutina).
+
 ### 2026-10-07 12:05 UTC (robot de cámaras caídas — pasada sobre Orio, Getaria, Zumaia)
 
 **10 cámaras en rojo esta pasada** (consulta directa a `camara_estado`, el
