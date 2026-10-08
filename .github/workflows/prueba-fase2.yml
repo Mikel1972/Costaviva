@@ -1,0 +1,23 @@
+name: Prueba fase 2 capas (temporal, se borra)
+on:
+  push:
+    branches: ["claude/prueba-copernicus"]
+permissions:
+  contents: read
+jobs:
+  capas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install --quiet -r scripts/fuentes/requirements.txt
+      - name: Capas reales (sin subir), volcadas al log en trozos
+        env:
+          COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_USERNAME }}
+          COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_PASSWORD }}
+        run: |
+          python -I scripts/fuentes/descargar-capas.py --salida /tmp/c 2>&1 | grep capa
+          for f in clorofila temperatura-agua; do gzip -9c /tmp/c/capas/$f.json | base64 -w 8000 | sed "s/^/VOLCADO $f /"; done
