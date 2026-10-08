@@ -1,0 +1,139 @@
+{
+ "fecha": "2026-10-08T11:24:17.006Z",
+ "lineasHistorial": 35,
+ "etiquetas": 0,
+ "calibracion": {
+  "hondarribia/principal": {
+   "a": 16.0237,
+   "p": 1,
+   "n": 1,
+   "nEtiquetas": 0,
+   "dias": 1,
+   "hMin": 0.54,
+   "hMax": 0.54,
+   "errorRel": 0.5,
+   "pocosDatos": true
+  },
+  "donostia/principal": {
+   "a": 35.6006,
+   "p": 1,
+   "n": 2,
+   "nEtiquetas": 0,
+   "dias": 1,
+   "hMin": 3.59,
+   "hMax": 3.59,
+   "errorRel": 1,
+   "pocosDatos": true
+  },
+  "zarautz/dinamico": {
+   "a": 20.8198,
+   "p": 1,
+   "n": 3,
+   "nEtiquetas": 0,
+   "dias": 1,
+   "hMin": 3.59,
+   "hMax": 3.59,
+   "errorRel": 0.5,
+   "pocosDatos": true
+  },
+  "zumaia/c": {
+   "a": 29.5098,
+   "p": 1,
+   "n": 3,
+   "nEtiquetas": 0,
+   "dias": 1,
+   "hMin": 3.59,
+   "hMax": 3.59,
+   "errorRel": 1,
+   "pocosDatos": true
+  },
+  "zumaia/a": {
+   "a": 13.5223,
+   "p": 1,
+   "n": 3,
+   "nEtiquetas": 0,
+   "dias": 1,
+   "hMin": 3.59,
+   "hMax": 3.59,
+   "errorRel": 0.5,
+   "pocosDatos": true
+  },
+  "deba/rompiente": {
+   "a": 23.5404,
+   "p": 1,
+   "n": 3,
+   "nEtiquetas": 0,
+   "dias": 1,
+   "hMin": 3.59,
+   "hMax": 3.59,
+   "errorRel": 0.5,
+   "pocosDatos": true
+  },
+  "mundaka/principal": {
+   "a": 5.9143,
+   "p": 1,
+   "n": 1,
+   "nEtiquetas": 0,
+   "dias": 1,
+   "hMin": 2.18,
+   "hMax": 2.18,
+   "errorRel": 0.5,
+   "pocosDatos": true
+  },
+  "bakio/principal": {
+   "a": 24.3941,
+   "p": 1,
+   "n": 1,
+   "nEtiquetas": 0,
+   "dias": 1,
+   "hMin": 3.12,
+   "hMax": 3.12,
+   "errorRel": 0.5,
+   "pocosDatos": true
+  },
+  "sopelana/principal": {
+   "a": 9.0848,
+   "p": 1,
+   "n": 2,
+   "nEtiquetas": 0,
+   "dias": 1,
+   "hMin": 3.12,
+   "hMax": 3.12,
+   "errorRel": 0.5,
+   "pocosDatos": true
+  },
+  "berria/principal": {
+   "a": 74.2857,
+   "p": 1,
+   "n": 1,
+   "nEtiquetas": 0,
+   "dias": 1,
+   "hMin": 3.12,
+   "hMax": 3.12,
+   "errorRel": 0.5,
+   "pocosDatos": true
+  },
+  "castrourdiales/principal": {
+   "a": 917.6471,
+   "p": 1,
+   "n": 1,
+   "nEtiquetas": 0,
+   "dias": 1,
+   "hMin": 3.12,
+   "hMax": 3.12,
+   "errorRel": 0.5,
+   "pocosDatos": true
+  },
+  "berria/dinamico": {
+   "a": 9.4603,
+   "p": 1,
+   "n": 1,
+   "nEtiquetas": 0,
+   "dias": 1,
+   "hMin": 3.12,
+   "hMax": 3.12,
+   "errorRel": 0.5,
+   "pocosDatos": true
+  }
+ }
+}
