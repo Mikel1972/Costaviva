@@ -36,6 +36,7 @@
 
 import { secretoValido } from "./_lib/secreto.js";
 import { enviarEmail } from "./_lib/email.js";
+import { emailFinInvitacion } from "./_lib/invitaciones.js";
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const LIMITE_POR_PASADA = 10;
@@ -192,14 +193,16 @@ export async function onRequestPost(context) {
     }
   }
 
-  const resultado = { bienvenidas: 0, recordados: 0, desactivados: 0, permanentes: 0, fallos: 0 };
+  const resultado = { bienvenidas: 0, recordados: 0, desactivados: 0, permanentes: 0, invitaciones: 0, fallos: 0 };
   const errores = [];
 
   // Un paso: pide la lista a Postgres, aplica la guarda de volumen si toca,
   // y para cada persona manda el email y SOLO entonces marca.
   // argsMarcar: los pasos de prueba marcan por user_id; el de acceso
   // permanente, por email (la persona puede no tener cuenta aún).
-  async function paso({ nombre, lista, limitar, email, marcar, contador, argsMarcar = (u) => ({ p_user_id: u.user_id }) }) {
+  // opcional: si la función de la lista aún no existe (migración sin aplicar,
+  // HTTP 404 de PostgREST), se avisa en el log y no se pone en rojo.
+  async function paso({ nombre, lista, limitar, email, marcar, contador, argsMarcar = (u) => ({ p_user_id: u.user_id }), opcional = false }) {
     try {
       const pendientes = (await rpc(lista)) || [];
       if (limitar && pendientes.length > LIMITE_POR_PASADA) {
@@ -227,6 +230,10 @@ export async function onRequestPost(context) {
       }
       return hechos;
     } catch (e) {
+      if (opcional && /HTTP 404/.test(String(e))) {
+        console.warn(`avisar-fin-prueba: ${nombre}: ${lista}() no existe todavía; paso omitido`);
+        return [];
+      }
       errores.push(`${nombre}: ${String(e)}`);
       return [];
     }
@@ -277,6 +284,24 @@ export async function onRequestPost(context) {
     marcar: "marcar_acceso_permanente_avisado",
     contador: "permanentes",
     argsMarcar: (u) => ({ p_email: u.email }),
+  });
+
+  // Fin del acceso gratis por invitación (100 %, 2026-10-08, migración
+  // 20261008170000): 7 días antes, una vez, invitando a suscribirse. Lo decide
+  // invitaciones_pendiente_aviso_fin(). Con guarda de volumen, como el resto
+  // de pasos que escriben a usuarios por una fecha.
+  await paso({
+    nombre: "fin de invitación",
+    lista: "invitaciones_pendiente_aviso_fin",
+    limitar: true,
+    email: (u) => {
+      const e = emailFinInvitacion(u);
+      return { asunto: e.asunto, cuerpo: e.texto };
+    },
+    marcar: "marcar_invitacion_aviso_fin",
+    contador: "invitaciones",
+    argsMarcar: (u) => ({ p_id: u.id }),
+    opcional: true,
   });
 
   // Un error de paso (una rpc que no responde, la guarda de volumen) pone el

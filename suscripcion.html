@@ -98,7 +98,8 @@
       </label>
       <button type="button" id="btnAnual" disabled>Suscribirme anual</button>
     </div>
-    <p class="nota-legal">¿Tienes un código de descuento? Podrás introducirlo en la propia pantalla de pago de Stripe.</p>
+    <p class="nota-legal" id="notaInvitacion" hidden></p>
+    <p class="nota-legal" id="notaCodigoStripe">¿Tienes un código de descuento? Podrás introducirlo en la propia pantalla de pago de Stripe.</p>
     <p class="gestionar"><a id="linkGestionar">Gestionar, cambiar o cancelar mi suscripción</a></p>
   </div>
 
@@ -258,6 +259,11 @@ async function iniciar() {
   const estado = await comprobarEstado();
   if (estado && estado.estado === "admin") {
     subEstadoEl.textContent = "Tienes acceso de administrador, sin necesidad de suscripción.";
+  } else if (estado && estado.estado === "invitacion") {
+    // Invitación del 100 % canjeada (2026-10-08, migración 20261008170000).
+    subEstadoEl.textContent = estado.acceso_hasta
+      ? `Tienes Costaviva gratis por invitación hasta el ${formatearFecha(new Date(new Date(estado.acceso_hasta).getTime() - 1))}. Después, si quieres seguir, puedes suscribirte aquí.`
+      : "Tienes Costaviva gratis por invitación, para siempre.";
   } else if (estado && estado.estado === "permanente") {
     // Cuentas de public.accesos_permanentes (2026-10-01).
     subEstadoEl.textContent = "Tienes acceso permanente a Costaviva, sin necesidad de suscripción.";
@@ -272,6 +278,33 @@ async function iniciar() {
     subEstadoEl.textContent = `Estás en tu semana de prueba gratuita, hasta el ${formatearFecha(estado.prueba_termina_en)}. Si para entonces no te has suscrito, tu cuenta quedará desactivada.`;
   } else {
     subEstadoEl.textContent = "Tu prueba gratuita ha terminado y tu cuenta está desactivada. Tus datos siguen guardados: suscríbete para recuperarlo todo.";
+  }
+  await mostrarDescuentoInvitacion();
+}
+
+// Descuento por invitación (< 100 %, 2026-10-08). Solo informa: el cupón lo
+// aplica crear-checkout-stripe.js en el servidor, sin que haya que teclearlo.
+// En anual solo vale si dura 12 meses o más (el año se cobra de una vez).
+async function mostrarDescuentoInvitacion() {
+  try {
+    const { data: inv, error } = await supabase.rpc("mi_invitacion_descuento");
+    if (error || !inv || !inv.descuento) return;
+    // Mismo cálculo que mesesDeDescuento() de functions/_lib/invitaciones.js.
+    const hoy = new Date();
+    const [fa, fm, fd] = String(inv.duracion_hasta || "").split("-").map(Number);
+    const meses = inv.duracion_tipo === "meses" ? inv.duracion_meses
+      : inv.duracion_tipo === "hasta_fecha" ? Math.max(1, (fa - hoy.getUTCFullYear()) * 12 + (fm - 1 - hoy.getUTCMonth()) + (fd > hoy.getUTCDate() ? 1 : 0))
+      : null;
+    const duracion = inv.duracion_tipo === "siempre" ? "para siempre"
+      : inv.duracion_tipo === "meses" ? (meses === 1 ? "durante 1 mes" : `durante ${meses} meses`)
+      : `hasta el ${formatearFecha(inv.duracion_hasta + "T12:00:00")}`;
+    const soloMensual = meses !== null && meses < 12;
+    const nota = document.getElementById("notaInvitacion");
+    nota.textContent = `🎁 Tienes un ${inv.descuento} % de descuento por invitación ${duracion}${soloMensual ? ", en el plan mensual" : ""}. Se aplica solo al pagar; úsalo antes del ${formatearFecha(inv.caduca_en)}.`;
+    nota.hidden = false;
+    document.getElementById("notaCodigoStripe").hidden = true;
+  } catch (e) {
+    console.warn("mi_invitacion_descuento:", e);
   }
 }
 

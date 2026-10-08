@@ -249,6 +249,9 @@
   <h1>Crear cuenta</h1>
   <p class="sub">Te mandaremos un enlace para verificar tu email.</p>
   <div id="mensajeRegistro" class="mensaje"></div>
+  <!-- Invitaciones (2026-10-08): /login?alta=1&invitacion=CODIGO, desde el
+       email que manda admin.html. Ver assets/js/invitacion.js. -->
+  <div id="avisoInvitacion" class="mensaje"></div>
   <form id="formRegistroDatos">
     <label for="emailRegistro">Correo electrónico</label>
     <input type="email" id="emailRegistro" required autocomplete="email" />
@@ -330,6 +333,7 @@
 // ocultar esta clave.
 // ---------------------------------------------------------------------------
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { normalizarCodigo, formatearCodigo, guardarCodigo, leerCodigoGuardado, olvidarCodigo, mensajeCanje, mensajeExito, esDefinitivo, canjear } from "/assets/js/invitacion.js";
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
@@ -352,6 +356,47 @@ const TODAS_LAS_CAJAS = [cajaLogin, cajaRegistroDatos, cajaRegistroEsperando, ca
 
 function mostrarPantalla(caja) {
   TODAS_LAS_CAJAS.forEach((c) => { c.style.display = c === caja ? "block" : "none"; });
+}
+
+// ---------------------------------------------------------------------------
+// Invitaciones (2026-10-08). El código llega en la URL del email
+// (?invitacion=...), se recuerda en este navegador y además viaja como
+// metadato del alta (options.data.codigo_invitacion) por si el enlace de
+// confirmación se abre en otro navegador. Se canjea en cuanto hay sesión
+// (tras crear la contraseña, al entrar, o si ya estaba dentro):
+// /canjear-invitacion comprueba en el servidor que es para ESE email, que no
+// está usado, caducado ni anulado.
+// ---------------------------------------------------------------------------
+const codigoUrl = normalizarCodigo(new URLSearchParams(window.location.search).get("invitacion"));
+if (codigoUrl) guardarCodigo(codigoUrl);
+const codigoInvitacion = () => codigoUrl || leerCodigoGuardado();
+if (codigoInvitacion()) {
+  const aviso = document.getElementById("avisoInvitacion");
+  aviso.textContent = `🎁 Tienes una invitación (código ${formatearCodigo(codigoInvitacion())}). Crea la cuenta con el email en el que la recibiste. Si ya tienes cuenta, pulsa "Ya tengo cuenta" y entra.`;
+  aviso.className = "mensaje ok";
+}
+
+async function entrarTrasCanje(elMensaje) {
+  const { data: { session } } = await supabase.auth.getSession();
+  const codigo = codigoInvitacion() || normalizarCodigo(session?.user?.user_metadata?.codigo_invitacion);
+  if (!session || !codigo) { window.location.href = "/"; return; }
+  if (elMensaje === mensajeEl) mostrarPantalla(cajaLogin);
+  const r = await canjear(session.access_token, codigo);
+  if (esDefinitivo(r.codigo)) olvidarCodigo();
+  if (r.ok) {
+    elMensaje.textContent = mensajeExito(r);
+    elMensaje.className = "mensaje ok";
+    const destino = r.descuento > 0 && r.descuento < 100 ? "/suscripcion?invitacion=1" : "/";
+    setTimeout(() => { window.location.href = destino; }, 1800);
+    return;
+  }
+  // Fallo: se dice claro y se deja seguir a la app (la cuenta ya está bien).
+  elMensaje.textContent = `${mensajeCanje(r.codigo)} `;
+  const seguir = document.createElement("a");
+  seguir.href = "/";
+  seguir.textContent = "Seguir a la app";
+  elMensaje.appendChild(seguir);
+  elMensaje.className = "mensaje error";
 }
 
 const formLogin = document.getElementById("formLogin");
@@ -519,7 +564,7 @@ formNueva.addEventListener("submit", async (e) => {
   // aquí — index.html lo decide solo, consultando
   // perfiles.bienvenida_pendiente (marcado por servidor, funciona igual
   // aunque el enlace del email se abra en otro navegador/dispositivo).
-  window.location.href = "/";
+  await entrarTrasCanje(mensajeNuevaEl);
 });
 
 async function gestionarAccesoInicial() {
@@ -563,7 +608,7 @@ async function gestionarAccesoInicial() {
   }
 
   const { data: { session } } = await supabase.auth.getSession();
-  if (session) window.location.href = "/";
+  if (session) await entrarTrasCanje(mensajeEl);
 }
 
 gestionarAccesoInicial();
@@ -600,7 +645,7 @@ formLogin.addEventListener("submit", async (e) => {
       mostrarMensaje("Tu cuenta no tiene acceso activo ahora mismo.", "info");
       await supabase.auth.signOut();
     } else {
-      window.location.href = "/";
+      await entrarTrasCanje(mensajeEl);
     }
   }
   btnPrincipal.disabled = false;
@@ -657,6 +702,7 @@ formRegistroDatos.addEventListener("submit", async (e) => {
       data: {
         codigo_postal: codigoPostal,
         consiente_uso_datos_capturas: checkDatosCapturas.checked,
+        ...(codigoInvitacion() ? { codigo_invitacion: codigoInvitacion() } : {}),
       },
     },
   });
