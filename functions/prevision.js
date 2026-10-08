@@ -528,7 +528,7 @@ async function datosCamarasPorSpot() {
 
 // Última lectura de oleaje por cámara de las últimas VIGENCIA_LECTURA_HORAS
 // (las escribe espuma-camaras.yml en oleaje_camara_lecturas, migración
-// 20261008160000). Sin tabla (migración sin aplicar) o sin lecturas: {} y
+// 20261008170000). Sin tabla (migración sin aplicar) o sin lecturas: {} y
 // la app sigue con modelo × coeficiente, como antes.
 async function datosOleajeCamaras() {
   try {

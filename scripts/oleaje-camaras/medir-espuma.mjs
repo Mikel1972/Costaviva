@@ -505,7 +505,7 @@ async function main() {
     if (borradas) console.log(`${borradas} miniaturas viejas sin etiquetar borradas.`);
   } catch (e) {
     // Migración sin aplicar o Supabase caído: el histórico ya está guardado.
-    console.log(`::warning::No se pudieron publicar las lecturas en Supabase (¿migración 20261008160000 sin aplicar?): ${e.message}`);
+    console.log(`::warning::No se pudieron publicar las lecturas en Supabase (¿migración 20261008170000 sin aplicar?): ${e.message}`);
   }
 }
 

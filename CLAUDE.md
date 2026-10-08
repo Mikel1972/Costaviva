@@ -118,7 +118,7 @@ botón "ola real que veo". Todo sin IA ni API de pago: píxeles.
   corrección de la previsión y `aplicarCamarasASpots()` (lo usa /prevision).
 - `etiquetar-olas.html` (solo admin, enlace en admin.html) y el botón
   "🌊 Ola real que veo" del panel (con sesión).
-- Migración `supabase/migrations/20261008160000_oleaje_camaras.sql` **SIN
+- Migración `supabase/migrations/20261008170000_oleaje_camaras.sql` **SIN
   APLICAR** (baseline ya actualizado). Sin ella todo funciona como antes:
   /prevision no encuentra lecturas y sigue con modelo × coeficiente.
 - Tests: `test/oleaje-camaras.test.js` (en tests.yml).
