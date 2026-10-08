@@ -114,6 +114,8 @@
   .contexto-ambiental .dato { background: #EEF2EF; border-radius: 8px; padding: 8px; text-align: center; }
   .contexto-ambiental .dato .etq { font-size: 9px; color: #42585F; }
   .contexto-ambiental .dato .val { font-family: 'IBM Plex Mono', monospace; font-size: 13px; margin-top: 2px; }
+  .atribucion-meteo { margin-top: 6px; font-size: 10.5px; line-height: 1.4; color: #42585F; }
+  .atribucion-meteo a { color: inherit; text-decoration: underline; }
 
   .mensaje { margin-top: 10px; font-size: 12px; padding: 8px 10px; border-radius: 8px; display: none; }
   .mensaje.error { display: block; background: rgba(163,74,53,0.15); color: #A34A35; border: 1px solid #A34A35; }
@@ -248,6 +250,8 @@
 </nav>
 
 <script src="/assets/js/errores.js"></script>
+<!-- Open-Meteo siempre por nuestro proxy /meteo/, ver assets/js/meteo.js. -->
+<script src="/assets/js/meteo.js"></script>
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -854,8 +858,8 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha, horaF
     nubosidad: null, precipitacion: null, boya_usada: null };
   try {
     const [marino, viento, luna] = await Promise.all([
-      fetch(`https://marine-api.open-meteo.com/v1/marine?${paramsMarea}&hourly=wave_height,sea_level_height_msl,sea_surface_temperature`).then((r) => r.json()),
-      fetch(`https://api.open-meteo.com/v1/forecast?${paramsComunes}&hourly=windspeed_10m,winddirection_10m,pressure_msl,cloudcover,precipitation&windspeed_unit=kmh`).then((r) => r.json()),
+      pedirMeteo("marine", `${paramsMarea}&hourly=wave_height,sea_level_height_msl,sea_surface_temperature`),
+      pedirMeteo("forecast", `${paramsComunes}&hourly=windspeed_10m,winddirection_10m,pressure_msl,cloudcover,precipitation&windspeed_unit=kmh`),
       fetch(`/luna?lat=${lat}&lon=${lon}`).then((r) => r.json()),
     ]);
     const horas = marino.hourly?.time || [];
@@ -1028,8 +1032,7 @@ async function mareaEnMomento(lat, lon, hora, fecha) {
   if (!hora || !Number.isFinite(lat) || !Number.isFinite(lon)) return { altura: null, tendencia: null };
   try {
     const rangoFechas = fecha ? `start_date=${fecha}&end_date=${fecha}` : "forecast_days=1";
-    const url = `https://marine-api.open-meteo.com/v1/marine?latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&${rangoFechas}&hourly=sea_level_height_msl`;
-    const marino = await fetch(url).then((r) => r.json());
+    const marino = await pedirMeteo("marine", `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&${rangoFechas}&hourly=sea_level_height_msl`);
     const horas = marino.hourly?.time || [];
     const serie = marino.hourly?.sea_level_height_msl || [];
     const validas = serie.filter((v) => v !== null && v !== undefined);
@@ -1061,8 +1064,7 @@ async function mareaDeConclusion(lat, lon, horaInicio, horaFin, fecha) {
   if (!horaInicio || !horaFin || !fecha || !Number.isFinite(lat) || !Number.isFinite(lon)) return vacio;
   try {
     const manana = (() => { const d = new Date(fecha + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + 1); return d.toISOString().slice(0, 10); })();
-    const url = `https://marine-api.open-meteo.com/v1/marine?latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&start_date=${fecha}&end_date=${manana}&hourly=sea_level_height_msl`;
-    const marino = await fetch(url).then((r) => r.json());
+    const marino = await pedirMeteo("marine", `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&start_date=${fecha}&end_date=${manana}&hourly=sea_level_height_msl`);
     const horas = marino.hourly?.time || [];
     const serie = marino.hourly?.sea_level_height_msl || [];
     const validas = serie.filter((v) => v !== null && v !== undefined);
@@ -1260,7 +1262,9 @@ function contextoHTML(salida) {
   const notaCoef = salida.marea_coeficiente != null
     ? `<div class="detalle" style="font-size:11px; color:#42585F; margin-top:4px;">🌊 El coeficiente de marea es propio de este spot (compara la marea de ese día contra el máximo/mínimo real de ese mismo sitio) — no es el índice nacional que usan otras webs de mareas, así que no tiene por qué coincidir con ellas.</div>`
     : "";
-  return `<div class="contexto-ambiental">${filas.map(([e, v]) => `<div class="dato"><div class="etq">${e}</div><div class="val">${v}</div></div>`).join("")}</div>${notaBoya}${notaCoef}`;
+  // Atribución obligatoria de Open-Meteo (CC BY 4.0) junto a sus datos.
+  const notaMeteo = `<div class="atribucion-meteo">${window.ATRIBUCION_METEO_HTML || "Datos meteorológicos: Open-Meteo.com (CC BY 4.0)"}</div>`;
+  return `<div class="contexto-ambiental">${filas.map(([e, v]) => `<div class="dato"><div class="etq">${e}</div><div class="val">${v}</div></div>`).join("")}</div>${notaBoya}${notaCoef}${notaMeteo}`;
 }
 
 async function tarjetaCapturaHTML(captura) {
