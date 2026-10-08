@@ -10,7 +10,16 @@
 // functions/mareas/** (2026-09-19) siguen con su propio HTML: las toca el
 // robot de SEO y no hay que romperle el terreno.
 
+import { CSS_PUBLICO } from "./estilos.js";
+
 export const DOMINIO = "https://costaviva.org";
+// Rendimiento (2026-10-08, PageSpeed móvil de /spots/bakio: 87, "solicitudes
+// que bloquean el renderizado, 1,9 s"): nada bloquea el pintado. El CSS
+// (costaviva.css + publico.css) va en línea (estilos.js, generado por
+// scripts/seo/generar-estilos.mjs) y las letras son propias (/assets/fonts,
+// sin Google Fonts). Se precargan los dos ficheros "latin", los que usa
+// cualquier página en español; latin-ext solo se baja si hace falta.
+export const FUENTES_PRECARGA = ["/assets/fonts/Manrope-latin.woff2", "/assets/fonts/Unbounded-latin.woff2"];
 // Imágenes para compartir (1200x630, sin IA): una por sección y una por
 // región, hechas con scripts/seo/generar-imagenes.py (assets/og/*.jpg).
 export const IMAGEN_OG = `${DOMINIO}/assets/og/costaviva.jpg`;
@@ -101,11 +110,8 @@ ${noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" hr
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/assets/iconos/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.json">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800&family=Manrope:wght@400;600;800&display=swap">
-<link rel="stylesheet" href="/assets/css/costaviva.css">
-<link rel="stylesheet" href="/assets/css/publico.css">
+${FUENTES_PRECARGA.map((f) => `<link rel="preload" href="${f}" as="font" type="font/woff2" crossorigin>`).join("\n")}
+<style>${CSS_PUBLICO}</style>
 ${ld.map(jsonLd).join("\n")}
 </head>
 <body class="publica">

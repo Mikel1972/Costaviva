@@ -27,10 +27,26 @@ name: Robot de marketing — Instagram
 # Probar a mano (workflow_dispatch) antes de fiarse del schedule, mismo
 # criterio que el resto de rutinas programadas de este repo.
 
+# Calendario (2026-10-09, fase de captación): la víspera por la tarde se
+# prepara el post del día siguiente (martes especie, jueves función de la
+# app, viernes condiciones; scripts/marketing/calendario.mjs) para que Mikel
+# solo tenga que aprobarlo por la mañana, en Instagram y en Facebook. Lo
+# lanza pg_cron (migración 20261009130000_programador_marketing.sql, lunes,
+# miércoles y jueves 17:30 UTC); este `schedule:` es el respaldo una hora
+# después: si la pieza ya está hecha, no hace nada (calendario-estado.json).
 on:
   schedule:
-    - cron: "0 9 * * 1,3,5"
-  workflow_dispatch: {}
+    - cron: "40 18 * * 1,3,4"
+  workflow_dispatch:
+    inputs:
+      fecha:
+        description: "Fecha de publicación AAAA-MM-DD (vacío = mañana)"
+        required: false
+        type: string
+      tipo:
+        description: "Forzar tipo: condiciones, especie, funcion, diario, grupos o alarma (vacío = el del calendario)"
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -60,16 +76,21 @@ jobs:
 
       # Las piezas se pintan con Chromium (plantillas/pieza.html, estilo
       # "Amanecer", 2026-10-08). Las letras van dentro del repo
-      # (scripts/marketing/fuentes); los emoji solo en el texto del post.
+      # (assets/fonts); los emoji solo en el texto del post.
       - name: Instalar Chromium para Playwright
         working-directory: scripts/marketing
         run: npx playwright install --with-deps chromium
 
       - name: Generar imagen y texto del post
+        id: generar
         working-directory: scripts/marketing
+        env:
+          FECHA_PIEZA: ${{ inputs.fecha }}
+          TIPO_PIEZA: ${{ inputs.tipo }}
         run: node generar-post-instagram.mjs
 
       - name: Comitear y subir la imagen generada
+        if: steps.generar.outputs.generada == 'true'
         run: |
           git config user.name "Claude (robot Costaviva)"
           git config user.email "actions@github.com"
@@ -77,7 +98,7 @@ jobs:
           # sean COMPLETOS (ver ZONAS en generar-post-instagram.mjs). Sin
           # comitearlo, cada pasada empezaría de cero y publicaría siempre la
           # primera zona. Añadido 2026-09-25 junto con la rotación.
-          git add assets/marketing/ scripts/marketing/rotacion-zonas.json
+          git add assets/marketing/ scripts/marketing/rotacion-zonas.json scripts/marketing/calendario-estado.json
           # Bug real visto en producción 2026-09-19: si se relanza el robot
           # el mismo día para el mismo spot/especie y los datos no han
           # cambiado (p.ej. una prueba manual poco después de la pasada
@@ -87,21 +108,25 @@ jobs:
           if git diff --cached --quiet; then
             echo "La imagen ya existía sin cambios, no hace falta comitear."
           else
-            git commit -m "Robot de marketing: nueva imagen para Instagram"
+            git commit -m "Robot de marketing: nueva pieza para Instagram y Facebook"
+            git pull --rebase --quiet
             git push
           fi
 
       - name: Asegurar que existe la etiqueta "marketing"
+        if: steps.generar.outputs.generada == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh label create marketing --color FFD700 --description "Propuestas de marketing (Instagram, etc.)" --force
 
-      - name: Crear borrador en Instagram y abrir Issue de revisión
+      - name: Crear borrador en Instagram y abrir Issue de revisión (Instagram + Facebook)
+        if: steps.generar.outputs.generada == 'true'
         working-directory: scripts/marketing
         env:
           GH_TOKEN: ${{ github.token }}
           META_PAGE_ACCESS_TOKEN: ${{ secrets.META_PAGE_ACCESS_TOKEN }}
           META_IG_BUSINESS_ACCOUNT_ID: ${{ vars.META_IG_BUSINESS_ACCOUNT_ID }}
+          META_PAGE_ID: ${{ vars.META_PAGE_ID }}
         run: |
           # Guardarraíl de credencial (añadido 2026-09-25). El script sale con
           # código 3 cuando Meta responde que el token no vale (error 190). Un

@@ -11,6 +11,11 @@
       "policies": []
     },
     {
+      "tablename": "ajustes_app",
+      "rls_enabled": true,
+      "policies": []
+    },
+    {
       "tablename": "alertas_sos",
       "rls_enabled": true,
       "policies": [
@@ -126,6 +131,11 @@
     },
     {
       "tablename": "capturas_comunidad",
+      "rls_enabled": true,
+      "policies": []
+    },
+    {
+      "tablename": "codigos_referido",
       "rls_enabled": true,
       "policies": []
     },
@@ -351,6 +361,11 @@
       ]
     },
     {
+      "tablename": "origen_altas",
+      "rls_enabled": true,
+      "policies": []
+    },
+    {
       "tablename": "perfiles",
       "rls_enabled": true,
       "policies": [
@@ -390,6 +405,11 @@
     },
     {
       "tablename": "rayos_xweather_uso",
+      "rls_enabled": true,
+      "policies": []
+    },
+    {
+      "tablename": "referidos",
       "rls_enabled": true,
       "policies": []
     },
@@ -548,6 +568,11 @@
     },
     {
       "tablename": "uso_claude",
+      "rls_enabled": true,
+      "policies": []
+    },
+    {
+      "tablename": "visitas_publicas",
       "rls_enabled": true,
       "policies": []
     }

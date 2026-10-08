@@ -4,7 +4,9 @@
 // functions/prevision.js, regiones de functions/mareas/_regiones.js y
 // especies de assets/datos/especies.json. Sin IA ni red.
 //
-// También escribe 404.html (la página de "no encontrada" de base.js).
+// También escribe 404.html (la página de "no encontrada" de base.js) y,
+// antes, functions/_lib/seo/estilos.js (el CSS en línea de las páginas
+// públicas, scripts/seo/generar-estilos.mjs), del que depende 404.html.
 //
 //   node scripts/seo/generar-sitemap.mjs          # reescribe sitemap.xml y 404.html
 //   node scripts/seo/generar-sitemap.mjs --check  # falla si está desfasado
@@ -16,9 +18,21 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { urlsSitemap, xmlSitemap } from "../../functions/_lib/seo/sitemap.js";
-import { htmlNoEncontradaGeneral } from "../../functions/_lib/seo/base.js";
-import { SPOTS } from "../../functions/prevision.js";
+import { escribirEstilos, RUTA_ESTILOS } from "./generar-estilos.mjs";
+
+// Primero el CSS en línea; functions/ se importa después (import dinámico)
+// para que 404.html salga ya con el estilos.js nuevo.
+const comprobar = process.argv.includes("--check");
+let desfasado = false;
+if (!escribirEstilos({ comprobar })) {
+  if (comprobar) {
+    console.error(`${RUTA_ESTILOS} está desfasado: ejecuta node scripts/seo/generar-sitemap.mjs`);
+    desfasado = true;
+  } else console.log(`${RUTA_ESTILOS} escrito`);
+}
+const { htmlNoEncontradaGeneral } = await import("../../functions/_lib/seo/base.js");
+const { urlsSitemap, xmlSitemap } = await import("../../functions/_lib/seo/sitemap.js");
+const { SPOTS } = await import("../../functions/prevision.js");
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const leer = (r) => JSON.parse(readFileSync(join(RAIZ, r), "utf8"));
@@ -31,10 +45,9 @@ const ficheros = [
   // 404.html (2026-10-08): la misma página que da el middleware.
   ["404.html", `${htmlNoEncontradaGeneral()}\n`],
 ];
-let desfasado = false;
 for (const [nombre, contenido] of ficheros) {
   const destino = join(RAIZ, nombre);
-  if (process.argv.includes("--check")) {
+  if (comprobar) {
     let actual = "";
     try { actual = readFileSync(destino, "utf8"); } catch { /* no existe */ }
     if (actual !== contenido) {

@@ -27,9 +27,10 @@
 <link rel="icon" href="icon.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="/assets/iconos/apple-touch-icon.png" />
 <meta name="theme-color" content="#0B1E3F" />
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<!-- Letras propias (/assets/fonts, @font-face en costaviva.css), sin Google
+     Fonts desde 2026-10-08: se precargan los dos ficheros "latin". -->
+<link rel="preload" href="/assets/fonts/Manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/Unbounded-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/css/costaviva.css">
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 <style>
@@ -343,6 +344,13 @@
 // ---------------------------------------------------------------------------
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { normalizarCodigo, formatearCodigo, guardarCodigo, leerCodigoGuardado, olvidarCodigo, mensajeCanje, mensajeExito, esDefinitivo, canjear } from "/assets/js/invitacion.js";
+import { capturarOrigen, leerPrimerContacto, leerRef } from "/assets/js/origen.js";
+
+// Captación (2026-10-09): de dónde llega quien se da de alta (primer
+// contacto, solo fuente/medio/campaña de listas cerradas) y el código de
+// "Invita a un amigo" (?ref=). Viajan como metadato del alta y la base de
+// datos los copia (origen_altas, referidos). Ver assets/js/origen.js.
+capturarOrigen();
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
@@ -712,6 +720,8 @@ formRegistroDatos.addEventListener("submit", async (e) => {
         codigo_postal: codigoPostal,
         consiente_uso_datos_capturas: checkDatosCapturas.checked,
         ...(codigoInvitacion() ? { codigo_invitacion: codigoInvitacion() } : {}),
+        ...(leerPrimerContacto() ? { origen: leerPrimerContacto() } : {}),
+        ...(leerRef() ? { ref: leerRef() } : {}),
       },
     },
   });

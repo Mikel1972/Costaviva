@@ -57,9 +57,10 @@
 <!-- Webcams en vídeo en directo de Gipuzkoa (2026-09-14) — HLS, no hace
      falta en Safari (soporte nativo) pero sí en Chrome/Firefox/Edge. -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.6.15/hls.min.js"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<!-- Letras propias (/assets/fonts, @font-face en costaviva.css), sin Google
+     Fonts desde 2026-10-08: se precargan los dos ficheros "latin". -->
+<link rel="preload" href="/assets/fonts/Manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/Unbounded-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/css/costaviva.css">
 <style>
   * { box-sizing: border-box; }
@@ -941,14 +942,10 @@
     document.getElementById("cuentaMenuDropdown").classList.toggle("visible");
   });
   document.addEventListener("click", () => document.getElementById("cuentaMenuDropdown").classList.remove("visible"));
-  document.getElementById("btnInvitarAmigo").addEventListener("click", async () => {
-    const texto = "Échale un ojo a Costaviva, la app de condiciones costeras y diario de pesca que estoy usando: https://costaviva.org/";
-    if (navigator.share) {
-      try { await navigator.share({ text: texto }); } catch (e) { /* usuario canceló */ }
-    } else {
-      await navigator.clipboard.writeText(texto);
-      alert("Tu navegador no soporta compartir directamente — el texto se copió al portapapeles.");
-    }
+  // "Invita a un amigo" (2026-10-09): el enlace personal (con el que se gana
+  // 1 mes gratis por amigo que pague) está en suscripcion.html.
+  document.getElementById("btnInvitarAmigo").addEventListener("click", () => {
+    window.location.href = "/suscripcion.html#amigo";
   });
 </script>
 
@@ -961,7 +958,7 @@
     <div class="cuenta-menu-wrap">
       <button class="cuenta-menu-btn" id="btnCuentaMenu" type="button" aria-label="Cuenta">👤</button>
       <div class="cuenta-menu-dropdown" id="cuentaMenuDropdown">
-        <button type="button" id="btnInvitarAmigo">📤 Invitar a un amigo</button>
+        <button type="button" id="btnInvitarAmigo">🎁 Invita a un amigo: 1 mes gratis</button>
         <button type="button" id="btnMiSuscripcion">💳 Mi suscripción</button>
         <button type="button" id="btnCerrarSesion">🚪 Cerrar sesión</button>
       </div>

@@ -24,3 +24,12 @@
   Cache-Control: public, max-age=604800
 /assets/marketing/*
   Cache-Control: public, max-age=604800
+
+# Letras propias (2026-10-08, rendimiento: fuera Google Fonts). Un año e
+# immutable: los ficheros no cambian nunca. Si hay que cambiar uno, cambia su
+# nombre (y las URL de costaviva.css y de FUENTES_PRECARGA en
+# functions/_lib/seo/base.js), o los navegadores seguirán con el viejo.
+# El CSS sigue sin caché: va en línea en las páginas públicas y en la app no
+# lleva versión en el nombre.
+/assets/fonts/*
+  Cache-Control: public, max-age=31536000, immutable

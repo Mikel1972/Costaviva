@@ -4,7 +4,7 @@
 Imágenes para compartir (Open Graph, 1200x630) y los iconos de la app (PWA),
 dibujadas con Pillow a partir del logo y los colores "Amanecer"
 (assets/css/costaviva.css) y las letras Unbounded y Manrope del robot de
-Instagram (scripts/marketing/fuentes, licencia OFL). Sin IA y sin red.
+Instagram (assets/fonts, licencia OFL). Sin IA y sin red.
 
     python3 scripts/seo/generar-imagenes.py
 
@@ -18,7 +18,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
 RAIZ = Path(__file__).resolve().parents[2]
-FUENTES = RAIZ / "scripts" / "marketing" / "fuentes"
+FUENTES = RAIZ / "assets" / "fonts"
 OG = RAIZ / "assets" / "og"
 ICONOS = RAIZ / "assets" / "iconos"
 

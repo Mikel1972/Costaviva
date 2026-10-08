@@ -8,7 +8,6 @@
 <link rel="icon" href="icon.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="/assets/iconos/apple-touch-icon.png" />
 <meta name="theme-color" content="#0B1E3F" />
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/css/costaviva.css">
 <style>
   * { box-sizing: border-box; }
@@ -67,6 +66,13 @@
   .gestionar a { color: var(--acento); cursor: pointer; text-decoration: underline; }
   .volver { text-align: center; margin-top: 14px; font-size: 12px; }
   .volver a { color: var(--tinta-2); text-decoration: none; }
+  .amigo { border-top: 1px solid var(--linea); margin-top: 18px; padding-top: 16px; }
+  .amigo h2 { font-family: var(--f-titulo); font-size: 17px; margin: 0 0 6px; }
+  .amigo .detalle { font-size: 12.5px; color: var(--tinta-2); line-height: 1.45; margin: 0 0 10px; }
+  .amigo input { width: 100%; padding: 9px 10px; border: 1px solid var(--linea); border-radius: 7px; font-size: 12px; color: var(--tinta); background: var(--superficie-2); margin-bottom: 8px; }
+  .botones-amigo { display: flex; gap: 8px; margin-bottom: 10px; }
+  .boton-wa { flex: 1; display: flex; align-items: center; justify-content: center; border-radius: 7px; border: 1px solid var(--ok-borde); background: var(--ok-fondo); color: var(--ok-texto); font-weight: 800; font-size: 13.5px; text-decoration: none; }
+  .amigo .reglas { font-size: 11px; color: var(--tinta-2); line-height: 1.45; padding-left: 16px; margin: 0; }
   .confirmando { text-align: center; padding: 20px 0; font-family: var(--f-texto); font-size: 13px; color: var(--tinta-2); }
 </style>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "d398d313ac4e4524a1b89af3c9ad6fda"}'></script><!-- End Cloudflare Web Analytics -->
@@ -105,11 +111,26 @@
     <p class="gestionar"><a id="linkGestionar">Gestionar, cambiar o cancelar mi suscripción</a></p>
   </div>
 
+  <!-- "Invita a un amigo" (2026-10-09, aprobado por Mikel). Se rellena con
+       mi_invitar_amigo(); si la función no está o está apagada, no se ve. -->
+  <div id="bloqueAmigo" class="amigo" hidden>
+    <h2>🎁 Invita a un amigo</h2>
+    <p class="detalle">Cuando un amigo se apunte con tu enlace y pague su suscripción, tú ganas 1 mes gratis.</p>
+    <input type="text" id="enlaceAmigo" readonly aria-label="Tu enlace para invitar" />
+    <div class="botones-amigo">
+      <button type="button" id="btnCopiarAmigo">Compartir enlace</button>
+      <a class="boton-wa" id="btnWhatsappAmigo" target="_blank" rel="noopener">WhatsApp</a>
+    </div>
+    <p class="detalle" id="resumenAmigo"></p>
+    <ul class="reglas" id="reglasAmigo"></ul>
+  </div>
+
   <p class="volver"><a href="/">← Volver al mapa</a></p>
 </div>
 
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { enlaceAmigo, enlaceWhatsapp, mensajeParaCompartir, textoResumen, REGLAS } from "/assets/js/invitar-amigo.js";
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
@@ -282,6 +303,33 @@ async function iniciar() {
     subEstadoEl.textContent = "Tu prueba gratuita ha terminado y tu cuenta está desactivada. Tus datos siguen guardados: suscríbete para recuperarlo todo.";
   }
   await mostrarDescuentoInvitacion();
+  await mostrarInvitarAmigo();
+}
+
+// "Invita a un amigo" (2026-10-09). Nunca rompe la página si falla.
+async function mostrarInvitarAmigo() {
+  try {
+    const { data, error } = await supabase.rpc("mi_invitar_amigo");
+    if (error || !data || !data.activo) return;
+    const enlace = enlaceAmigo(data.codigo, window.location.origin);
+    if (!enlace) return;
+    document.getElementById("enlaceAmigo").value = enlace;
+    document.getElementById("btnWhatsappAmigo").href = enlaceWhatsapp(enlace);
+    document.getElementById("resumenAmigo").textContent = textoResumen(data);
+    const ul = document.getElementById("reglasAmigo");
+    ul.replaceChildren(...REGLAS.map((t) => Object.assign(document.createElement("li"), { textContent: t })));
+    document.getElementById("btnCopiarAmigo").addEventListener("click", async (e) => {
+      try {
+        if (navigator.share) await navigator.share({ title: "Costaviva", text: mensajeParaCompartir(enlace) });
+        else { await navigator.clipboard.writeText(enlace); e.target.textContent = "¡Copiado!"; }
+      } catch { /* cancelado */ }
+      registrarEvento("compartir_enlace_amigo");
+    });
+    document.getElementById("bloqueAmigo").hidden = false;
+    if (window.location.hash === "#amigo") document.getElementById("bloqueAmigo").scrollIntoView({ behavior: "smooth" });
+  } catch (e) {
+    console.warn("mi_invitar_amigo:", e);
+  }
 }
 
 // Descuento por invitación (< 100 %, 2026-10-08). Solo informa: el cupón lo

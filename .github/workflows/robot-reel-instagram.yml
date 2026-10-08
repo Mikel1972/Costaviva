@@ -21,12 +21,20 @@ name: Robot de marketing — reel de Instagram
 # de costaviva.org). Se dejan solo los 4 últimos en el árbol; el historial de
 # git sí los conserva (~0,25 GB al año a uno por semana).
 
+# Calendario (2026-10-09): el reel del sábado (09:00) se prepara el viernes
+# por la tarde para que Mikel lo apruebe por la mañana. Lo lanza pg_cron
+# (20261009130000_programador_marketing.sql, viernes 17:10 UTC); este
+# `schedule:` es el respaldo y no repite si ya está hecho
+# (calendario-estado.json).
 on:
   schedule:
-    # Sábados 07:47 UTC.
-    - cron: "47 7 * * 6"
+    - cron: "20 18 * * 5"
   workflow_dispatch:
     inputs:
+      fecha:
+        description: "Fecha de publicación AAAA-MM-DD (vacío = mañana; si mañana no es sábado, pon también un tipo)"
+        required: false
+        type: string
       tipo:
         description: "Forzar un tipo (condiciones, especie, diario, grupos, alarma); vacío = el siguiente de la rotación"
         required: false
@@ -72,37 +80,44 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Generar el reel
+        id: generar
         working-directory: scripts/marketing
         env:
+          FECHA_PIEZA: ${{ inputs.fecha }}
           TIPO_REEL: ${{ inputs.tipo }}
           SPOT_REEL: ${{ inputs.spot }}
           CLIP_REEL: ${{ inputs.clip }}
         run: node generar-reel-instagram.mjs
 
       - name: Comitear el reel (y dejar solo los 4 últimos)
+        if: steps.generar.outputs.generada == 'true'
         run: |
           git config user.name "Claude (robot Costaviva)"
           git config user.email "actions@github.com"
           ls -1 assets/marketing/reels/*.mp4 | sort | head -n -4 | xargs -r git rm -q --
-          git add assets/marketing/reels/ scripts/marketing/rotacion-reels.json scripts/marketing/rotacion-zonas.json
+          git add assets/marketing/reels/ scripts/marketing/rotacion-reels.json scripts/marketing/rotacion-zonas.json scripts/marketing/calendario-estado.json
           if git diff --cached --quiet; then
             echo "Nada nuevo que comitear."
           else
-            git commit -m "Robot de marketing: nuevo reel para Instagram"
+            git commit -m "Robot de marketing: nuevo reel para Instagram y Facebook"
+            git pull --rebase --quiet
             git push
           fi
 
       - name: Asegurar que existe la etiqueta "marketing"
+        if: steps.generar.outputs.generada == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh label create marketing --color FFD700 --description "Propuestas de marketing (Instagram, etc.)" --force
 
-      - name: Crear borrador del reel en Instagram y abrir Issue de revisión
+      - name: Crear borrador del reel en Instagram y abrir Issue de revisión (Instagram + Facebook)
+        if: steps.generar.outputs.generada == 'true'
         working-directory: scripts/marketing
         env:
           GH_TOKEN: ${{ github.token }}
           META_PAGE_ACCESS_TOKEN: ${{ secrets.META_PAGE_ACCESS_TOKEN }}
           META_IG_BUSINESS_ACCOUNT_ID: ${{ vars.META_IG_BUSINESS_ACCOUNT_ID }}
+          META_PAGE_ID: ${{ vars.META_PAGE_ID }}
         run: |
           # Código 3 = token de Meta caducado (mismo guardarraíl que los posts).
           node publicar-borrador-instagram.mjs reel-pendiente.json || CODIGO=$?

@@ -211,3 +211,46 @@ export function bboxMercator(lat, lon, anchoKm = 60, proporcion = 0.62) {
   const ancho = anchoKm * 1000 * k, alto = ancho * proporcion;
   return { minx: x - ancho / 2, miny: y - alto * 0.62, maxx: x + ancho / 2, maxy: y + alto * 0.38, x, y };
 }
+
+// ---------------------------------------------------------------------------
+// Piezas preparadas la víspera (calendario.mjs, 2026-10-09): los datos son
+// los de la HORA DE PUBLICACIÓN, no los de cuando corre el robot.
+
+// Bloque de /prevision (cada 3 h, con su horaISO local) más cercano a la hora
+// objetivo sin pasarse; si todos son anteriores, el último.
+export function bloqueParaHora(bloques, objetivoISO) {
+  const lista = (bloques || []).filter((b) => b && b.horaISO);
+  if (!lista.length) return (bloques || [])[0] || null;
+  let elegido = null;
+  for (const b of lista) if (b.horaISO.slice(0, 13) <= objetivoISO.slice(0, 13)) elegido = b;
+  return elegido || lista[0];
+}
+
+// Pleamares y bajamares de un día a partir de la serie horaria (nivelMar de
+// Open-Meteo, el mismo dato que la ficha). Máximos/mínimos locales; con
+// resolución horaria, la hora es aproximada (± 30 min).
+export function mareaDelDia(horas, fechaISO) {
+  const serie = (horas || []).filter((h) => h.nivelMar !== null && h.nivelMar !== undefined);
+  const out = [];
+  for (let i = 1; i < serie.length - 1; i++) {
+    const h = serie[i];
+    if (h.hora.slice(0, 10) !== fechaISO) continue;
+    const a = serie[i - 1].nivelMar, b = h.nivelMar, c = serie[i + 1].nivelMar;
+    if (b > a && b >= c) out.push({ tipo: "pleamar", hora: h.hora.slice(11, 16), altura: b });
+    else if (b < a && b <= c) out.push({ tipo: "bajamar", hora: h.hora.slice(11, 16), altura: b });
+  }
+  return out;
+}
+
+// Tarjeta de marea para una hora futura: la próxima pleamar/bajamar desde esa
+// hora y la siguiente.
+export function tarjetaMareaFutura(extremos, horaHHMM) {
+  const desde = (extremos || []).filter((e) => e.hora >= horaHHMM);
+  const [p1, p2] = desde.length ? desde : (extremos || []).slice(-2);
+  if (!p1) return { icono: "marea", etq: "Marea", val: "—", sub: "" };
+  return {
+    icono: "marea", etq: "Marea",
+    val: `${p1.tipo === "pleamar" ? "↑" : "↓"} ${p1.hora}`,
+    sub: [p1.tipo, p2 ? `luego ${p2.tipo} ${p2.hora}` : ""].filter(Boolean).join(", "),
+  };
+}
