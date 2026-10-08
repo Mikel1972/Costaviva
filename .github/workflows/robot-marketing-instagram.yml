@@ -60,7 +60,7 @@ jobs:
 
       # Las piezas se pintan con Chromium (plantillas/pieza.html, estilo
       # "Amanecer", 2026-10-08). Las letras van dentro del repo
-      # (scripts/marketing/fuentes); los emoji solo en el texto del post.
+      # (assets/fonts); los emoji solo en el texto del post.
       - name: Instalar Chromium para Playwright
         working-directory: scripts/marketing
         run: npx playwright install --with-deps chromium
