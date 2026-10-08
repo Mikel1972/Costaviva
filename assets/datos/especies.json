@@ -228,7 +228,7 @@
    "licencia": "CC BY 4.0 / CC0: solo se cuentan los conjuntos de datos con esas licencias; los que tienen restricción de uso comercial se descartan",
    "fecha_documento": "2026-10-08",
    "fecha_consulta": "2026-10-08",
-   "nota": "Indicio de presencia: una región se da por buena solo con 20 o más registros de 2 o más conjuntos de datos con licencia libre (polígonos de cada región de la app). No dice nada de estacionalidad. Faltan muchos datos de Galicia, Portugal y Cádiz con licencia libre: la ausencia aquí NO significa ausencia real."
+   "nota": "Criterios de presencia por región (2026-10-08). A: 20 o más registros de 2 o más conjuntos de datos con licencia libre (polígonos de cada región de la app). B: la especie tiene talla en la tabla oficial de ese caladero (RD 560/1995 anexo I para Cantábrico, Galicia y Cádiz; anexo II o Reg. (UE) 2019/1241 anexo IX para Mediterráneo y Baleares; anexo III para Canarias; DGRM para Portugal) y al menos 1 registro con licencia libre en la región. C: publicación regional (guía oficial, estudio CC BY, observación de campo) o 20 o más registros de un solo conjunto científico CC BY/CC0. Los rangos de distribución de FishBase y de la Lista Roja de la UICN NO se usan: sus condiciones prohíben el uso comercial. OBIS no dice nada de estacionalidad y le faltan muchos datos libres de Galicia, Portugal y Cádiz: la ausencia NO significa ausencia real."
   },
   "mikel_campo_bizkaia": {
    "titulo": "Observación de campo (Mikel), Bizkaia",
@@ -249,6 +249,16 @@
    "licencia": "BOE (reutilizable citando la fuente)",
    "fecha_documento": "2026-05-01",
    "fecha_consulta": "2026-10-08"
+  },
+  "ieo_labrus_galicia_2018": {
+   "titulo": "Villegas-Ríos D., Saborido-Rey F. (2018). Spatial behaviour of the ballan wrasse Labrus bergylta in Galicia, NW Spain (Artevigo, 2011-2012)",
+   "url": "https://marineinfo.org/doc/dataset/6199",
+   "editor": "IIM-CSIC / VLIZ (marineinfo.org)",
+   "tipo": "cientifico",
+   "licencia": "CC BY 4.0",
+   "fecha_documento": "2018",
+   "fecha_consulta": "2026-10-08",
+   "nota": "Conjunto de datos de telemetría acústica de la maragota en Galicia; 'species targeted by the artisanal fishery in Galicia'. Solo se usa como prueba de presencia en Galicia."
   }
  },
  "jurisdicciones": {
@@ -661,6 +671,30 @@
      ],
      "verificado": false,
      "nota": "La app usa para Baleares la lista del Mediterráneo; sin fuente propia de Baleares todavía."
+    },
+    "canarias": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio B: con talla en la tabla oficial de la zona (RD 560/1995 anexo III) y 3 registros con licencia libre en OBIS en la región (consulta 2026-10-08)."
     }
    },
    "freza": {
@@ -1119,6 +1153,30 @@
      ],
      "verificado": false,
      "nota": "La app usa para Baleares la lista del Mediterráneo; sin fuente propia de Baleares todavía."
+    },
+    "canarias": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio B: con talla en la tabla oficial de la zona (RD 560/1995 anexo III) y 280 registros con licencia libre en OBIS en la región (consulta 2026-10-08)."
     }
    },
    "freza": {
@@ -1475,6 +1533,102 @@
      ],
      "verificado": false,
      "nota": "Guía local de Rota (heredado)."
+    },
+    "cantabrico": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio B: con talla en la tabla oficial de la zona (RD 560/1995 anexo I) y 20 registros con licencia libre en OBIS en la región (consulta 2026-10-08)."
+    },
+    "atlantico_norte": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio B: con talla en la tabla oficial de la zona (RD 560/1995 anexo I) y 1 registro con licencia libre en OBIS en la región (consulta 2026-10-08)."
+    },
+    "canarias": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio B: con talla en la tabla oficial de la zona (RD 560/1995 anexo III) y 2 registros con licencia libre en OBIS en la región (consulta 2026-10-08)."
+    },
+    "portugal": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "dgrm_tmc_2025",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio B: con talla en la tabla oficial de la zona (tabla DGRM) y 15 registros con licencia libre en OBIS en la región (consulta 2026-10-08)."
     }
    },
    "freza": {
@@ -1710,7 +1864,128 @@
     "fuentes": [],
     "verificado": false
    },
-   "presencia": {},
+   "presencia": {
+    "cantabrico": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio B: con talla en la tabla oficial de la zona (RD 560/1995 anexo I) y 359 registros con licencia libre en OBIS en la región (consulta 2026-10-08)."
+    },
+    "mediterraneo": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio B: con talla en la tabla oficial de la zona (RD 560/1995 anexo II / Reg. (UE) 2019/1241 anexo IX) y 31504 registros con licencia libre en OBIS en la región (consulta 2026-10-08)."
+    },
+    "baleares": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio B: con talla en la tabla oficial de la zona (RD 560/1995 anexo II / Reg. (UE) 2019/1241 anexo IX) y 125 registros con licencia libre en OBIS en la región (consulta 2026-10-08)."
+    },
+    "canarias": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio B: con talla en la tabla oficial de la zona (RD 560/1995 anexo III) y 115 registros con licencia libre en OBIS en la región (consulta 2026-10-08)."
+    },
+    "portugal": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "dgrm_tmc_2025",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio B: con talla en la tabla oficial de la zona (tabla DGRM) y 4 registros con licencia libre en OBIS en la región (consulta 2026-10-08)."
+    }
+   },
    "freza": {
     "por_region": {}
    },
@@ -1924,6 +2199,78 @@
      ],
      "verificado": false,
      "nota": "Heredado de la ficha conjunta 'Txitxarro / verdel' de la app."
+    },
+    "golfo_cadiz": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio B: con talla en la tabla oficial de la zona (RD 560/1995 anexo I) y 308 registros con licencia libre en OBIS en la región (consulta 2026-10-08)."
+    },
+    "mediterraneo": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio B: con talla en la tabla oficial de la zona (RD 560/1995 anexo II / Reg. (UE) 2019/1241 anexo IX) y 1823 registros con licencia libre en OBIS en la región (consulta 2026-10-08)."
+    },
+    "baleares": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio B: con talla en la tabla oficial de la zona (RD 560/1995 anexo II / Reg. (UE) 2019/1241 anexo IX) y 124 registros con licencia libre en OBIS en la región (consulta 2026-10-08)."
     }
    },
    "freza": {
@@ -2168,6 +2515,78 @@
      ],
      "verificado": false,
      "nota": "Heredado de la ficha conjunta 'Txitxarro / verdel' de la app."
+    },
+    "golfo_cadiz": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio B: con talla en la tabla oficial de la zona (RD 560/1995 anexo I) y 91 registros con licencia libre en OBIS en la región (consulta 2026-10-08)."
+    },
+    "mediterraneo": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio B: con talla en la tabla oficial de la zona (RD 560/1995 anexo II / Reg. (UE) 2019/1241 anexo IX) y 1142 registros con licencia libre en OBIS en la región (consulta 2026-10-08)."
+    },
+    "baleares": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio B: con talla en la tabla oficial de la zona (RD 560/1995 anexo II / Reg. (UE) 2019/1241 anexo IX) y 3 registros con licencia libre en OBIS en la región (consulta 2026-10-08)."
     }
    },
    "freza": {
@@ -2416,6 +2835,30 @@
      ],
      "verificado": true,
      "nota": "Gobierno Vasco: 'Durdos, Julias, Txistus, Fanecas, etc. — todo el año'."
+    },
+    "portugal": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "dgrm_tmc_2025",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio B: con talla en la tabla oficial de la zona (tabla DGRM) y 13 registros con licencia libre en OBIS en la región (consulta 2026-10-08)."
     }
    },
    "freza": {
@@ -2789,7 +3232,80 @@
     "fuentes": [],
     "verificado": false
    },
-   "presencia": {},
+   "presencia": {
+    "cantabrico": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio B: con talla en la tabla oficial de la zona (RD 560/1995 anexo I) y 7 registros con licencia libre en OBIS en la región (consulta 2026-10-08)."
+    },
+    "baleares": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio B: con talla en la tabla oficial de la zona (RD 560/1995 anexo II / Reg. (UE) 2019/1241 anexo IX) y 67 registros con licencia libre en OBIS en la región (consulta 2026-10-08). En Baleares la talla del RD 560/1995 no se aplica en aguas interiores y plataforma (nota del anexo II): manda la norma balear."
+    },
+    "canarias": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio B: con talla en la tabla oficial de la zona (RD 560/1995 anexo III) y 6 registros con licencia libre en OBIS en la región (consulta 2026-10-08)."
+    }
+   },
    "freza": {
     "por_region": {}
    },
@@ -3904,6 +4420,78 @@
      ],
      "verificado": false,
      "nota": "La app usa para Baleares la lista del Mediterráneo; sin fuente propia de Baleares todavía."
+    },
+    "cantabrico": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio B: con talla en la tabla oficial de la zona (RD 560/1995 anexo I) y 5 registros con licencia libre en OBIS en la región (consulta 2026-10-08)."
+    },
+    "canarias": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio B: con talla en la tabla oficial de la zona (RD 560/1995 anexo III) y 1 registro con licencia libre en OBIS en la región (consulta 2026-10-08)."
+    },
+    "portugal": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "dgrm_tmc_2025",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio B: con talla en la tabla oficial de la zona (tabla DGRM) y 11 registros con licencia libre en OBIS en la región (consulta 2026-10-08)."
     }
    },
    "freza": {
@@ -4110,6 +4698,30 @@
      ],
      "verificado": false,
      "nota": "Extrapolado de guías peninsulares (heredado)."
+    },
+    "portugal": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "dgrm_tmc_2025",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio B: con talla en la tabla oficial de la zona (tabla DGRM) y 6 registros con licencia libre en OBIS en la región (consulta 2026-10-08)."
     }
    },
    "freza": {
@@ -4300,6 +4912,102 @@
       "app_index"
      ],
      "verificado": false
+    },
+    "cantabrico": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio B: con talla en la tabla oficial de la zona (RD 560/1995 anexo I) y 47 registros con licencia libre en OBIS en la región (consulta 2026-10-08)."
+    },
+    "mediterraneo": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio B: con talla en la tabla oficial de la zona (RD 560/1995 anexo II / Reg. (UE) 2019/1241 anexo IX) y 989 registros con licencia libre en OBIS en la región (consulta 2026-10-08)."
+    },
+    "baleares": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio B: con talla en la tabla oficial de la zona (RD 560/1995 anexo II / Reg. (UE) 2019/1241 anexo IX) y 1 registro con licencia libre en OBIS en la región (consulta 2026-10-08)."
+    },
+    "portugal": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "dgrm_tmc_2025",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio B: con talla en la tabla oficial de la zona (tabla DGRM) y 2 registros con licencia libre en OBIS en la región (consulta 2026-10-08)."
     }
    },
    "freza": {
@@ -4500,6 +5208,30 @@
       "app_index"
      ],
      "verificado": false
+    },
+    "portugal": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "dgrm_tmc_2025",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio B: con talla en la tabla oficial de la zona (tabla DGRM) y 1 registro con licencia libre en OBIS en la región (consulta 2026-10-08)."
     }
    },
    "freza": {
@@ -4975,6 +5707,150 @@
       "app_index"
      ],
      "verificado": false
+    },
+    "cantabrico": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "obis_cc_by",
+      "mikel_campo_bizkaia"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Pargo (Pagrus pagrus): con talla en el RD 560/1995 anexo I ('Pargo (Pagrus pagrus) 15 cm'), 36 registros con licencia libre en OBIS en la región (consulta 2026-10-08) y Mikel lo pesca desde embarcación en Bizkaia (observación de campo, confianza media)."
+    },
+    "mediterraneo": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio B: con talla en la tabla oficial de la zona (RD 560/1995 anexo II / Reg. (UE) 2019/1241 anexo IX) y 219 registros con licencia libre en OBIS en la región (consulta 2026-10-08)."
+    },
+    "baleares": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio B: con talla en la tabla oficial de la zona (RD 560/1995 anexo II / Reg. (UE) 2019/1241 anexo IX) y 1 registro con licencia libre en OBIS en la región (consulta 2026-10-08)."
+    },
+    "canarias": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio B: con talla en la tabla oficial de la zona (RD 560/1995 anexo III) y 41 registros con licencia libre en OBIS en la región (consulta 2026-10-08). Bocinegro es su nombre canario (RD 560/1995 anexo III: 'Pargo (Pagrus pagrus) — Bocinegro')."
+    },
+    "portugal": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "dgrm_tmc_2025",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio B: con talla en la tabla oficial de la zona (tabla DGRM) y 5 registros con licencia libre en OBIS en la región (consulta 2026-10-08)."
+    },
+    "azores": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio A: OBIS, 301 registros de 4 conjuntos de datos con licencia libre en la región (consulta 2026-10-08)."
     }
    },
    "freza": {
@@ -5814,6 +6690,30 @@
       "app_index"
      ],
      "verificado": false
+    },
+    "mediterraneo": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio B: con talla en la tabla oficial de la zona (RD 560/1995 anexo II / Reg. (UE) 2019/1241 anexo IX) y 419 registros con licencia libre en OBIS en la región (consulta 2026-10-08)."
     }
    },
    "freza": {
@@ -7242,6 +8142,29 @@
      "tipo_fuente": "heuristica_experta",
      "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
      "nota": "OBIS: 184 registros de 2 conjuntos de datos con licencia libre en la región (consulta 2026-10-08)."
+    },
+    "atlantico_norte": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "ieo_labrus_galicia_2018"
+     ],
+     "verificado": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio C (publicación regional): estudio de telemetría del IIM-CSIC en Galicia sobre la maragota, especie objetivo de la flota artesanal gallega (CC BY 4.0)."
     }
    },
    "freza": {
@@ -10563,6 +11486,29 @@
      "tipo_fuente": "heuristica_experta",
      "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
      "nota": "Especie objetivo de la pesca recreativa en Cataluña (guía DGPMPS/ICATMAR 2021)."
+    },
+    "canarias": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Criterio C: OBIS, 175 registros CC0 del proyecto 'Canarias por una Costa Viva' (censos de peces), un solo conjunto de datos (consulta 2026-10-08)."
     }
    },
    "freza": {

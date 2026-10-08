@@ -1236,6 +1236,19 @@ pestaña en la hora actual. Hereda la vigencia por spot del punto anterior
   profundo (`modalidades.embarcacion.profundidad_temporada`, consejo en la
   pestaña Embarcación con `consejoProfundidad`). La anjova entra en
   `@depredadores_costeros`.
+- **Presencia por región: criterios A/B/C (2026-10-08)** (descritos en la
+  fuente `obis_cc_by` del JSON). A: OBIS con 20 o más registros de 2 o más
+  conjuntos CC BY/CC0. B: talla en la tabla oficial del caladero + al menos 1
+  registro libre en OBIS. C: publicación regional (guía oficial, estudio CC BY,
+  observación de Mikel) o un conjunto científico CC BY/CC0 con 20 o más
+  registros. Con B se completaron especies antiguas (pargo/`bocinegro` en
+  Cantábrico, Mediterráneo, Canarias, Portugal y Azores; dorada, salmonete,
+  pulpo, lenguado…); maragota en Galicia (estudio IIM-CSIC, CC BY) y oblada
+  en Canarias (CC0). **No se usan los rangos de FishBase ni de la Lista Roja
+  de la UICN** aunque se pidan: sus condiciones prohíben el uso comercial.
+  Pulpo en el Mediterráneo peninsular queda fuera a propósito: la pesca
+  recreativa del pulpo en aguas exteriores del Mediterráneo andaluz está
+  prohibida (Orden APA/973/2002, según la guía catalana; sin leer en el BOE).
 - **Ojo, Open-Meteo**: la API gratuita es solo para uso no comercial; toda la
   app (no solo esto) la usa. Pendiente de decidir con Mikel (plan comercial de
   Open-Meteo o alternativa).
