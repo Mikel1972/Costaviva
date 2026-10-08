@@ -448,6 +448,47 @@
    "fecha_documento": "2018",
    "fecha_consulta": "2026-10-08",
    "nota": "Conjunto de datos de telemetría acústica de la maragota en Galicia; 'species targeted by the artisanal fishery in Galicia'. Solo se usa como prueba de presencia en Galicia."
+  },
+  "cheminee_2021_nurseries": {
+   "titulo": "Cheminée A. et al. (2021). All shallow coastal habitats matter as nurseries for Mediterranean juvenile fish. Scientific Reports 11.",
+   "url": "https://doi.org/10.1038/s41598-021-93557-2",
+   "editor": "Springer Nature (Scientific Reports)",
+   "tipo": "cientifico",
+   "licencia": "CC BY 4.0",
+   "fecha_documento": "2021",
+   "fecha_consulta": "2026-10-08",
+   "leido": "resumen",
+   "nota": "Censos visuales en la costa SE de Francia, 14 tipos de hábitat somero: los más ricos en especies y abundancia son la roca natural y los bordes de las praderas de Posidonia; Sarpa salpa (salema/salpa) y varios Diplodus entre los juveniles más abundantes. Son juveniles: se usa como apoyo del hábitat, no de capturas."
+  },
+  "marco_mendez_2016_salpa": {
+   "titulo": "Marco-Méndez C. et al. (2016). Lack of Impact of Posidonia oceanica Leaf Nutrient Enrichment on Sarpa salpa Herbivory. PLoS ONE 11(12): e0168398.",
+   "url": "https://doi.org/10.1371/journal.pone.0168398",
+   "editor": "PLOS",
+   "tipo": "cientifico",
+   "licencia": "CC BY 4.0",
+   "fecha_documento": "2016",
+   "fecha_consulta": "2026-10-08",
+   "leido": "resumen",
+   "nota": "Sarpa salpa es uno de los principales macroherbívoros del Mediterráneo occidental y come en las praderas de Posidonia oceanica."
+  },
+  "emodnet_euseamap_2025": {
+   "titulo": "EMODnet Seabed Habitats — EUSeaMap 2025 Broad-Scale Predictive Habitat Map for Europe (sustrato, EUNIS 2019) y Seagrass cover (EOV) 2025",
+   "url": "https://emodnet.ec.europa.eu/geonetwork/srv/eng/catalog.search#/metadata/cec07b5e-3a9c-4492-b115-126a17c08697",
+   "editor": "EMODnet Seabed Habitats (Comisión Europea)",
+   "tipo": "oficial",
+   "licencia": "CC BY 4.0 ('Licensed under CC-BY 4.0 from the European Marine Observation and Data Network (EMODnet) Seabed Habitats initiative ... funded by the European Commission.')",
+   "fecha_documento": "2025",
+   "fecha_consulta": "2026-10-08",
+   "nota": "Dato del fondo de cada spot (assets/datos/tipo-fondo.json). Escala amplia: celdas de ~100 m junto a la costa; los primeros 50-100 m casi nunca están resueltos."
+  },
+  "osm_orilla": {
+   "titulo": "OpenStreetMap — tipo de orilla (natural=beach/cliff/bare_rock/..., man_made=breakwater/pier, puertos)",
+   "url": "https://www.openstreetmap.org/copyright",
+   "editor": "OpenStreetMap contributors",
+   "tipo": "datos_abiertos",
+   "licencia": "ODbL 1.0 (© OpenStreetMap contributors; base de datos derivada bajo ODbL)",
+   "fecha_consulta": "2026-10-08",
+   "nota": "Orilla a 50 m del punto de costa de cada spot (assets/datos/tipo-fondo.json)."
   }
  },
  "jurisdicciones": {
@@ -13754,7 +13795,8 @@
    "efecto": "{ logodds: número (±2 como mucho; 0,4 ≈ 10 puntos cerca de 50), escala?: { var, agregado?, desde_h?, hasta_h?, de, a, minimo } para graduarlo }",
    "sustituye": "factores base (presion, oleaje, marea...) que la regla reemplaza en su ámbito, para no contar lo mismo dos veces",
    "sin_dato": "si una condición no tiene dato (menos del 60 % de horas en la ventana, río desconocido...) la regla no aplica y baja la cobertura de datos de la fiabilidad",
-   "variable": "variable principal que puntúa la regla (ola, presion, viento_dir...). Cada variable cuenta UNA vez por hora: si coincide con la de un factor base (oleaje=ola, presion=presion, marea=nivel_mar, temperatura=temp_agua, viento=viento, turbidez, lluvia, caudal_rio), la regla debe sustituirlo con 'sustituye'; y dos reglas de la misma variable tienen que ser excluyentes (condiciones que no se solapan). Lo comprueba test/indice-pesca-v2.test.js. Si mira otra ventana de tiempo de la misma variable (p. ej. los días previos), se distingue con '@': 'viento_dir@dias_previos'."
+   "variable": "variable principal que puntúa la regla (ola, presion, viento_dir...). Cada variable cuenta UNA vez por hora: si coincide con la de un factor base (oleaje=ola, presion=presion, marea=nivel_mar, temperatura=temp_agua, viento=viento, turbidez, lluvia, caudal_rio), la regla debe sustituirlo con 'sustituye'; y dos reglas de la misma variable tienen que ser excluyentes (condiciones que no se solapan). Lo comprueba test/indice-pesca-v2.test.js. Si mira otra ventana de tiempo de la misma variable (p. ej. los días previos), se distingue con '@': 'viento_dir@dias_previos'.",
+   "variables_de_contexto_fondo": "orilla_tipo (acantilado/roca/escollera/playa_arena/playa_cantos/playa/puerto, OSM a 50 m del punto de costa), fondo_roca, fondo_arena, fondo_fango, fondo_grava, posidonia, algas (fracción 0-1 del fondo a 500 m, EUSeaMap 2025): solo costa y submarina, null en embarcación"
   },
   "grupos_especies": {
    "depredadores_costeros": {
@@ -13786,6 +13828,231 @@
    "criterio": "Rosa de 16 rumbos: cada rumbo ocupa ±11,25° alrededor de su centro. 'este' = NE, ENE, E, ESE, SE; 'oeste_noroeste' = WSW, W, WNW, NW. Grados de donde viene el viento (convención meteorológica, la de Open-Meteo)."
   },
   "reglas": [
+   {
+    "id": "orilla_roca_espuma",
+    "nombre": "Orilla de roca (con espuma, mejor)",
+    "texto": "orilla de roca: sitio de peces de roca, mejor con algo de espuma",
+    "fuente": "mikel_experiencia_local",
+    "fuentes_adicionales": [
+     "plos_dsargus_2018",
+     "ieo_labrus_galicia_2018",
+     "osm_orilla"
+    ],
+    "tipo": "heuristica_experta_local",
+    "estado": "por_validar",
+    "confianza": 0.55,
+    "validacion": "Calibrar con las salidas del diario (salidas_pesca.indice_factores) antes de subir la confianza o darla por buena.",
+    "ambito": {
+     "modalidades": [
+      "costa"
+     ],
+     "especies": [
+      "lubina",
+      "sargo",
+      "sargo_picudo",
+      "maragota",
+      "pulpo",
+      "congrio",
+      "cabracho",
+      "rascacio"
+     ]
+    },
+    "condiciones": [
+     {
+      "var": "orilla_tipo",
+      "op": "en",
+      "valor": [
+       "acantilado",
+       "roca",
+       "escollera"
+      ]
+     }
+    ],
+    "efecto": {
+     "logodds": 0.4,
+     "escala": {
+      "var": "ola",
+      "de": 0.3,
+      "a": 1.5,
+      "minimo": 0.5
+     }
+    },
+    "variable": "orilla_tipo",
+    "nota": "Aprobado por Mikel el 2026-10-08 (roca + espuma: lubina, sargo, maragota, pulpo, congrio...). Orilla de OSM a 50 m del punto de costa. Con la mar plana cuenta la mitad; con 1,5 m o más, entero (el tope de seguridad va aparte). Sargo y maragota de roca: plos_dsargus_2018, ieo_labrus_galicia_2018."
+   },
+   {
+    "id": "orilla_playa_arena",
+    "nombre": "Playa de arena: peces de fondo blando",
+    "texto": "playa de arena: terreno de rodaballo, lenguado y raya",
+    "fuente": "mikel_campo_bizkaia",
+    "fuentes_adicionales": [
+     "osm_orilla"
+    ],
+    "tipo": "heuristica_experta_local",
+    "estado": "por_validar",
+    "confianza": 0.55,
+    "validacion": "Calibrar con las salidas del diario (salidas_pesca.indice_factores) antes de subir la confianza o darla por buena.",
+    "ambito": {
+     "modalidades": [
+      "costa"
+     ],
+     "especies": [
+      "rodaballo",
+      "lenguado",
+      "raya"
+     ]
+    },
+    "condiciones": [
+     {
+      "var": "orilla_tipo",
+      "op": "en",
+      "valor": [
+       "playa_arena",
+       "playa"
+      ]
+     }
+    ],
+    "efecto": {
+     "logodds": 0.4
+    },
+    "variable": "orilla_tipo",
+    "nota": "Rodaballo desde playa (Bakio) y rayas desde costa (Armintza), observación de Mikel. 'playa' = playa de OSM sin superficie: en el Cantábrico casi siempre arena."
+   },
+   {
+    "id": "dorada_arena_con_roca",
+    "nombre": "Dorada: arena con algo de roca",
+    "texto": "fondo de arena con algo de roca: le gusta a la dorada",
+    "fuente": "mikel_experiencia_local",
+    "fuentes_adicionales": [
+     "cheminee_2021_nurseries",
+     "emodnet_euseamap_2025"
+    ],
+    "tipo": "heuristica_experta_local",
+    "estado": "por_validar",
+    "confianza": 0.5,
+    "validacion": "Calibrar con las salidas del diario (salidas_pesca.indice_factores) antes de subir la confianza o darla por buena.",
+    "ambito": {
+     "modalidades": [
+      "costa",
+      "submarina"
+     ],
+     "especies": [
+      "dorada"
+     ]
+    },
+    "condiciones": [
+     {
+      "var": "fondo_arena",
+      "op": ">=",
+      "valor": 0.3
+     },
+     {
+      "var": "fondo_roca",
+      "op": ">=",
+      "valor": 0.1
+     }
+    ],
+    "efecto": {
+     "logodds": 0.35
+    },
+    "variable": "fondo_arena",
+    "nota": "Aprobado por Mikel el 2026-10-08. Fondo a 500 m del punto de costa (EUSeaMap 2025). Los bordes entre hábitats son de los más ricos (cheminee_2021_nurseries, juveniles)."
+   },
+   {
+    "id": "fondo_roca_submarina",
+    "nombre": "Submarina: fondo de roca cerca",
+    "texto": "fondo de roca cerca: buen sitio para peces de roca",
+    "fuente": "plos_dsargus_2018",
+    "fuentes_adicionales": [
+     "ieo_labrus_galicia_2018",
+     "cheminee_2021_nurseries",
+     "emodnet_euseamap_2025",
+     "mikel_experiencia_local"
+    ],
+    "tipo": "heuristica_experta",
+    "estado": "por_validar",
+    "confianza": 0.55,
+    "validacion": "Calibrar con las salidas del diario (salidas_pesca.indice_factores) antes de subir la confianza o darla por buena.",
+    "ambito": {
+     "modalidades": [
+      "submarina"
+     ],
+     "especies": [
+      "sargo",
+      "sargo_picudo",
+      "maragota",
+      "pulpo",
+      "lubina",
+      "cabracho",
+      "rascacio",
+      "corvina",
+      "denton",
+      "vieja",
+      "chopa",
+      "abadejo"
+     ]
+    },
+    "condiciones": [
+     {
+      "var": "fondo_roca",
+      "op": ">=",
+      "valor": 0.35
+     }
+    ],
+    "efecto": {
+     "logodds": 0.4,
+     "escala": {
+      "var": "fondo_roca",
+      "de": 0.35,
+      "a": 0.8,
+      "minimo": 0.5
+     }
+    },
+    "variable": "fondo_roca",
+    "nota": "Parte de roca del fondo a 500 m del punto de costa (EUSeaMap 2025). Sargo de arrecife rocoso (plos_dsargus_2018), maragota (ieo_labrus_galicia_2018), roca natural = hábitat más rico (cheminee_2021_nurseries)."
+   },
+   {
+    "id": "posidonia_cerca",
+    "nombre": "Pradera de Posidonia cerca (Mediterráneo)",
+    "texto": "pradera de posidonia cerca: zona de sepia, dorada y salpa",
+    "fuente": "cheminee_2021_nurseries",
+    "fuentes_adicionales": [
+     "marco_mendez_2016_salpa",
+     "guerra_2006_sepia",
+     "emodnet_euseamap_2025"
+    ],
+    "tipo": "heuristica_experta",
+    "estado": "por_validar",
+    "confianza": 0.55,
+    "validacion": "Calibrar con las salidas del diario (salidas_pesca.indice_factores) antes de subir la confianza o darla por buena.",
+    "ambito": {
+     "regiones": [
+      "mediterraneo",
+      "baleares"
+     ],
+     "modalidades": [
+      "costa",
+      "submarina"
+     ],
+     "especies": [
+      "sepia",
+      "dorada",
+      "salema"
+     ]
+    },
+    "condiciones": [
+     {
+      "var": "posidonia",
+      "op": ">=",
+      "valor": 0.15
+     }
+    ],
+    "efecto": {
+     "logodds": 0.4
+    },
+    "variable": "posidonia",
+    "nota": "Aprobado por Mikel el 2026-10-08. Posidonia de EUSeaMap 2025 (MB252) y de las praderas de EMODnet a 500 m. Salpa (salema): herbívoro de la pradera (marco_mendez_2016_salpa); sepia: desova en poca agua (guerra_2006_sepia)."
+   },
    {
     "fuente": "mikel_experiencia_local",
     "tipo": "heuristica_experta_local",
