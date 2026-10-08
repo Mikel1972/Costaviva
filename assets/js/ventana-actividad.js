@@ -324,6 +324,14 @@ function rangoOlaTexto(h) {
 // Devuelve un array paralelo a `horas` con { hora, puntuacion, razones, ... }.
 // ---------------------------------------------------------------------------
 const TIPOS_CIENTIFICOS = new Set(["cientifica", "oficial"]);
+// Variable que puntúa cada factor base. Una regla experta declara la suya en
+// `variable`; si coincide con la de un factor base, debe sustituirlo
+// (`sustituye`), y dos reglas de la misma variable deben ser excluyentes:
+// cada variable cuenta UNA vez (test/indice-pesca-v2.test.js lo comprueba).
+export const VARIABLE_DE_FACTOR = {
+  luz: "luz", marea: "nivel_mar", temperatura: "temp_agua", oleaje: "ola", viento: "viento",
+  presion: "presion", turbidez: "turbidez", lluvia: "lluvia", caudal_rio: "caudal_rio",
+};
 
 export function calcularVentana(especie, reglasDefecto, horas, contexto) {
   const modalidad = contexto.modalidad || "costa";
@@ -434,19 +442,26 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
       if (modalidad === "submarina" && hayTemp) terminos.push({ factor: "temperatura", texto: `agua a ${fmt1(h.tempAgua)} °C`, lo: 0 });
     }
 
-    // Oleaje
+    // Oleaje. El tope de seguridad va APARTE del factor: se aplica siempre,
+    // también cuando una regla experta sustituye el factor de oleaje (p. ej.
+    // "mar algo movida" para los depredadores costeros desde costa).
     let marPeligrosa = false;
-    if (cuenta("oleaje", h.ola !== null && h.ola !== undefined) && pesoLogOdds(reglas.oleaje)) {
+    const hayOla = h.ola !== null && h.ola !== undefined;
+    const peligro = reglas.oleaje?.texto_peligro || "peligrosa desde costa";
+    if (hayOla && reglas.oleaje && h.ola > (reglas.oleaje.max_seguro_m || 2.5)) {
+      marPeligrosa = true;
+      const tope = reglas.oleaje.tope_si_peligrosa ?? 20;
+      topes.push({ tope, texto: `${rangoOlaTexto(h.ola)}, ${peligro}: máximo ${tope}` });
+    }
+    if (cuenta("oleaje", hayOla) && pesoLogOdds(reglas.oleaje)) {
       const [omin, omax] = reglas.oleaje.optimo_m || [0, 1.5];
       const maxSeguro = reglas.oleaje.max_seguro_m || 2.5;
       let v;
-      if (h.ola > maxSeguro) { v = -1; marPeligrosa = true; }
+      if (marPeligrosa) v = -1;
       else if (h.ola > omax) v = -(h.ola - omax) / Math.max(0.1, maxSeguro - omax);
       else if (h.ola < omin) v = reglas.oleaje.valor_bajo_minimo ?? -0.3;
       else v = 1;
-      const peligro = reglas.oleaje.texto_peligro || "peligrosa desde costa";
       anota("oleaje", v, marPeligrosa ? `${rangoOlaTexto(h.ola)}: ${peligro}` : rangoOlaTexto(h.ola));
-      if (marPeligrosa) topes.push({ tope: reglas.oleaje.tope_si_peligrosa ?? 20, texto: `${peligro}: máximo ${reglas.oleaje.tope_si_peligrosa ?? 20}` });
     }
 
     // Viento: solo penaliza por encima del máximo cómodo
@@ -525,6 +540,7 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
     const rep = repartirAportes(terminos.map((t) => t.lo), b0);
     const razones = terminos.map((t, k) => ({
       factor: t.factor, texto: t.texto, aporte: rep.aportes[k], lo: +t.lo.toFixed(3),
+      variable: t.regla ? t.regla.variable : VARIABLE_DE_FACTOR[t.factor],
       ...(t.regla ? { regla: t.regla } : {}),
     }));
     razones.push(...notas);

@@ -1259,18 +1259,32 @@ spot guarda la promesa).
 
 Conocimiento local convertido en datos; el motor genérico
 (`assets/js/reglas-expertas.js`) las aplica sin tocar código. Cada regla suma
-`efecto.logodds × intensidad × confianza` como un factor más, con su texto (en
-la ventana sale marcado "[regla de Mikel, por validar]"). Hoy hay 8, todas de
-Mikel (fuente `mikel_experiencia_local`, tipo `heuristica_experta_local`,
-estado `por_validar`; los umbrales son la traducción de Claude de lo que
-contó Mikel):
+`efecto.logodds × intensidad × confianza` como un factor más, con su texto.
+**Cada variable cuenta una sola vez por hora** (feedback de Mikel en la
+preview: salían "+ mar algo movida" y "− mar de 2-2,5 m" a la vez): cada regla
+declara su `variable`; si es la de un factor base, lo sustituye
+(`sustituye`), y las reglas de una misma variable tienen condiciones
+excluyentes (las de presión: 6 h si cae ahora, 24 h solo si las últimas 6 h
+están quietas, subida tras el frente). Los topes de seguridad van aparte y se
+aplican aunque el factor esté sustituido. Un test recorre especies,
+modalidades y escenarios y falla si una variable puntúa dos veces.
+**Etiquetas**: el usuario ve "· experiencia local"; "[regla de Mikel, por
+validar, confianza…]" solo el admin (`window.esAdminCostaviva`, cosmético).
+El porqué se pinta como "Por qué esta nota (a partir de 50):" con ▲▲/▲/▼/▼▼
+según el peso y los puntos en gris pequeño, ordenado por impacto.
+Hoy hay 10 reglas (8 de Mikel, fuente `mikel_experiencia_local`, tipo
+`heuristica_experta_local`, estado `por_validar`; los umbrales son la
+traducción de Claude de lo que contó Mikel; y 2 que completan la escala de
+ola de los depredadores costeros con la heurística que ya tenía la app,
+`mar_poca_` 0,5-1 m y `mar_plana_` < 0,5 m):
 1. Presión bajando en 6 h (graduada, de -1 a -4 hPa) y en 24 h (≤ -4 hPa):
    suma a los depredadores costeros (`@depredadores_costeros`: lubina, sargo,
    dorada, corvina, dentón, palometa, bicuda, medregal, urta); subiendo tras
    el frente, resta un poco. Sustituyen a la tendencia de 3 h por defecto en
    esas especies (`sustituye: ["presion"]`).
-2. Mar algo movida (1-2,5 m) desde costa: suma a esos depredadores, siempre
-   por debajo del tope de seguridad.
+2. Mar algo movida (1-2,5 m) desde costa: suma a esos depredadores y
+   sustituye al factor de oleaje (con las dos reglas de escala de arriba);
+   por encima de 2,5 m manda el tope de seguridad.
 3. Río crecido (caudal "alto" con umbral oficial) a ≤ 3 km de la
    desembocadura: suma a la lubina y resta al resto (salvo la lisa). Río del
    spot = `RIOS[].spotCosta` de `index.html` (`rioDeSpot`); spot sin río
@@ -1293,7 +1307,9 @@ condiciones, efecto, fuente, estado y cualquier error de forma.
    `confianza` (0-1), `estado: "por_validar"`, `validacion`, `ambito`
    (regiones, modalidades, especies o `@grupo`, especies_excluidas, meses),
    `condiciones` (todas deben cumplirse), `efecto.logodds` (±2 como mucho;
-   0,4 ≈ 10 puntos) y, si reemplaza a un factor base, `sustituye`.
+   0,4 ≈ 10 puntos), `variable` (la que puntúa; `nombre@etiqueta` si mira
+   otra ventana de tiempo) y, si es la de un factor base, `sustituye`. Dos
+   reglas de la misma variable deben ser excluyentes.
 2. Condiciones: `{ "var": "presion", "agregado": "delta", "desde_h": -6,
    "hasta_h": 0, "op": "<=", "valor": -1 }`. Variables horarias: ola, viento,
    viento_dir, presion, temp_agua, lluvia, nivel_mar; de contexto:

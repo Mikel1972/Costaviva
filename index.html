@@ -585,6 +585,12 @@
   .va-eje { display: grid; grid-template-columns: repeat(24, 1fr); font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #5F7981; margin-top: 2px; }
   .va-detalle { margin-top: 8px; font-size: 11.5px; line-height: 1.5; color: #42585F; }
   .va-detalle .mas { color: #3E7D55; } .va-detalle .menos { color: #A34A35; }
+  .va-porque-tit { margin-top: 4px; font-size: 10.5px; color: #5F7981; }
+  .va-porque { list-style: none; margin: 2px 0 0; padding: 0; }
+  .va-porque li { display: flex; align-items: baseline; gap: 4px; padding: 1px 0; flex-wrap: wrap; }
+  .va-flecha { font-size: 9px; letter-spacing: -1px; min-width: 16px; display: inline-block; }
+  .va-pts { margin-left: auto; padding-left: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; color: #8B9AA0; }
+  .va-origen { font-size: 9.5px; color: #8B9AA0; }
   .va-freza { margin: 4px 0 6px; padding: 6px 8px; border-radius: 6px; background: #FBF3E2; border: 1px solid #D9C08A; color: #7A5A1E; font-size: 11.5px; line-height: 1.4; }
   .va-nota { margin-top: 6px; font-size: 10.5px; color: #5F7981; line-height: 1.4; }
   .va-nota a { color: #A8792A; }
@@ -699,6 +705,10 @@
       // esto es solo para no mostrar el icono a nadie más.
       if (data.session.user.email === "etxebe2005@gmail.com") {
         document.getElementById("enlaceAdmin").style.display = "flex";
+        // Solo cosmético (2026-10-08): el admin ve el origen y la confianza
+        // de las reglas expertas en el porqué de la ventana de actividad; el
+        // resto de usuarios ve una etiqueta neutra. No protege nada.
+        window.esAdminCostaviva = true;
       }
       // El resto de la app vive en un <script> clásico más abajo (por el
       // mapa de Leaflet, sin módulos) — se expone aquí lo que necesita de
@@ -3187,7 +3197,7 @@ async function pintarIndicePesca(s) {
     return;
   }
   const porque = ind.resultado.razones.filter((r) => r.aporte !== 0).slice(0, 3)
-    .map((r) => `${r.aporte > 0 ? "+" : "−"} ${r.texto}`).join(" · ");
+    .map((r) => `${flechasPorque(r.aporte).s} ${r.texto}`).join(" · ");
   pinta(ind.puntuacion, `${VA.NOMBRE_MODALIDAD[modalidad]}: mejor ahora, ${ind.especie.nombre}`
     + `${ind.freza ? " (en freza: si lo pescas, devuélvelo)" : ""}. ${porque}${porque ? ". " : ""}Fiabilidad ${ind.fiabilidad.etiqueta}.`);
 }
@@ -3344,18 +3354,42 @@ function pintarNormativaVA(datos, region, especie) {
     + `<div class="va-nota">${escVA(datos.aviso_legal || "Manda siempre la norma publicada.")}</div>`;
 }
 
+// "Por qué esta nota" (2026-10-08, pedido de Mikel: "(+8)" no se entiende).
+// Cada motivo con flechas según su peso (▲▲ / ▲ / ▼ / ▼▼) y los puntos en
+// gris pequeño, ordenados por impacto. Las reglas expertas llevan una
+// etiqueta neutra ("experiencia local"); el origen, el estado y la confianza
+// solo los ve el admin (window.esAdminCostaviva, cosmético).
+function flechasPorque(aporte) {
+  if (aporte >= 6) return { s: "▲▲", c: "mas", t: "sube mucho" };
+  if (aporte > 0) return { s: "▲", c: "mas", t: "sube" };
+  if (aporte <= -6) return { s: "▼▼", c: "menos", t: "baja mucho" };
+  if (aporte < 0) return { s: "▼", c: "menos", t: "baja" };
+  return { s: "·", c: "", t: "no cuenta" };
+}
+function etiquetaRegla(x) {
+  if (!x.regla) return "";
+  if (window.esAdminCostaviva) {
+    const quien = x.regla.fuente === "mikel_experiencia_local" ? "regla de Mikel" : `regla (${x.regla.fuente})`;
+    const conf = x.regla.confianza != null ? `, confianza ${String(x.regla.confianza).replace(".", ",")}` : "";
+    return ` <span class="va-origen">[${escVA(quien)}${x.regla.estado === "por_validar" ? ", por validar" : ""}${conf}]</span>`;
+  }
+  return x.regla.tipo === "heuristica_experta_local" ? ` <span class="va-origen">· experiencia local</span>` : "";
+}
+function htmlPorque(razones) {
+  const orden = [...razones].sort((a, b) => Math.abs(b.aporte) - Math.abs(a.aporte));
+  const items = orden.map((x) => {
+    const f = flechasPorque(x.aporte);
+    const pts = x.aporte ? `<span class="va-pts" title="${x.aporte > 0 ? "+" : ""}${x.aporte} puntos">${x.aporte > 0 ? "+" : "−"}${Math.abs(x.aporte)}</span>` : "";
+    return `<li><span class="va-flecha ${f.c}" aria-label="${f.t}">${f.s}</span> <span>${escVA(x.texto)}</span>${etiquetaRegla(x)}${pts}</li>`;
+  });
+  return `<div class="va-porque-tit">Por qué esta nota (a partir de 50):</div><ul class="va-porque">${items.join("")}</ul>`;
+}
+
 function pintarDetalleVA() {
   const r = vaEstado.resultados[vaEstado.idxSel];
   const det = document.getElementById("vaDetalle");
   if (!r) { det.textContent = ""; return; }
-  // Las reglas expertas llevan su origen ("regla de Mikel, por validar").
-  const origen = (x) => (x.regla ? ` <span class="va-nota">[${x.regla.fuente === "mikel_experiencia_local" ? "regla de Mikel" : "regla experta"}${x.regla.estado === "por_validar" ? ", por validar" : ""}]</span>` : "");
-  const items = r.razones.map((x) => {
-    if (x.aporte > 0) return `<span class="mas">+ ${escVA(x.texto)} (+${x.aporte})</span>${origen(x)}`;
-    if (x.aporte < 0) return `<span class="menos">− ${escVA(x.texto)} (${x.aporte})</span>${origen(x)}`;
-    return `<span>· ${escVA(x.texto)}</span>${origen(x)}`;
-  });
-  det.innerHTML = `<b>${r.hora.slice(11, 16)} → ${r.puntuacion}/100</b><br>${items.join(" · ")}`
+  det.innerHTML = `<b>${r.hora.slice(11, 16)} → ${r.puntuacion}/100</b>${htmlPorque(r.razones)}`
     + (r.fiabilidad ? `<div class="va-nota" style="margin-top:4px;">Fiabilidad: ${escVA(r.fiabilidad.etiqueta)}</div>` : "");
   document.querySelectorAll("#vaTira .va-hora").forEach((b, i) => b.classList.toggle("sel", i === vaEstado.idxSel));
 }

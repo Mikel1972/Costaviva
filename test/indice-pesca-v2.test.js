@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import {
   sigmoide, repartirAportes, pesoLogOdds, factorTemperatura, calcularVentana, indiceSpot, fiabilidad,
-  reglasParaModalidad, rioDeSpot, distanciaKm, INDICE_VERSION,
+  reglasParaModalidad, rioDeSpot, distanciaKm, INDICE_VERSION, VARIABLE_DE_FACTOR,
 } from "../assets/js/ventana-actividad.js";
 import {
   enSector, valorExpresion, evaluarCondicion, enAmbito, reglasEnAmbito, efectoRegla, validarRegla,
@@ -278,7 +278,14 @@ test("Mikel 1: presión bajando (6 h y 24 h) suma a los depredadores costeros; s
   const baja = serie((i) => ({ presion: 1020 - Math.max(0, i - 114) * 0.5 })); // -3 hPa en 6 h, -5 en 24 h
   const r = enHora("lubina", baja, HOY);
   assert.ok(razon(r, "regla:presion_bajando_6h").aporte > 0);
-  assert.ok(razon(r, "regla:presion_bajando_24h").aporte > 0);
+  // Excluyentes: si está cayendo ahora, la de 24 h no suma otra vez.
+  assert.ok(!razon(r, "regla:presion_bajando_24h"));
+  // Caída lenta: -5 hPa en 24 h pero quieta en las últimas 6 h -> la de 24 h.
+  const i24 = idx(serie(), HOY);
+  const lenta = serie((i) => ({ presion: i <= i24 - 24 ? 1020 : i <= i24 - 6 ? 1020 - (i - (i24 - 24)) * (5 / 18) : 1015 }));
+  const rl = enHora("lubina", lenta, HOY);
+  assert.ok(razon(rl, "regla:presion_bajando_24h").aporte > 0);
+  assert.ok(!razon(rl, "regla:presion_bajando_6h"));
   const estable = enHora("lubina", serie(), HOY);
   assert.ok(r.puntuacion > estable.puntuacion);
   // Tras el frente: bajó 4 hPa entre -24 h y -6 h y ahora sube 2 en 6 h.
@@ -293,10 +300,22 @@ test("Mikel 1: presión bajando (6 h y 24 h) suma a los depredadores costeros; s
 test("Mikel 2: mar algo movida (1-2,5 m) suma desde costa, sin saltarse el tope de seguridad", () => {
   const r = enHora("sargo", serie(() => ({ ola: 1.8 })), HOY);
   assert.ok(razon(r, "regla:mar_movida_depredadores_costa").aporte > 0);
+  // Sustituye al factor de oleaje: un solo motivo de ola (antes salían
+  // "+ mar algo movida" y "− mar de 2-2,5 m" a la vez, visto por Mikel).
+  const r2 = enHora("lubina", serie(() => ({ ola: 2.2 })), HOY);
+  assert.equal(r2.razones.filter((x) => x.variable === "ola").length, 1);
+  assert.ok(!razon(r2, "oleaje"));
+  // El resto de la escala, también con un solo motivo.
+  assert.ok(razon(enHora("lubina", serie(() => ({ ola: 0.7 })), HOY), "regla:mar_poca_depredadores_costa").aporte > 0);
+  assert.ok(razon(enHora("lubina", serie(() => ({ ola: 0.2 })), HOY), "regla:mar_plana_depredadores_costa").aporte < 0);
+  // Otras especies desde costa y los depredadores en embarcación: factor base.
+  assert.ok(razon(enHora("calamar", serie(() => ({ ola: 2.2 })), HOY), "oleaje"));
+  assert.ok(razon(enHora("lubina", serie(() => ({ ola: 2.2 })), HOY, { modalidad: "embarcacion" }), "oleaje"));
   assert.ok(!razon(enHora("sargo", serie(() => ({ ola: 0.4 })), HOY), "regla:mar_movida_depredadores_costa"));
   assert.ok(!razon(enHora("sargo", serie(() => ({ ola: 1.8 })), HOY, { modalidad: "embarcacion" }), "regla:mar_movida_depredadores_costa"));
   const peligro = enHora("lubina", serie(() => ({ ola: 2.8 })), HOY);
-  assert.ok(peligro.puntuacion <= 20);
+  assert.ok(peligro.puntuacion <= 20 && peligro.marPeligrosa, "el tope va aparte aunque el factor esté sustituido");
+  assert.match(razon(peligro, "tope").texto, /peligrosa/);
   assert.ok(!razon(peligro, "regla:mar_movida_depredadores_costa"));
 });
 
@@ -354,6 +373,38 @@ test("Mikel 5: bonito, 1-5 días después de temporales del oeste en verano (emb
   const corta = serie(() => ({}), { inicio: Date.UTC(2026, 7, 15), n: 24 });
   const rc = enHora("bonito_norte", corta, hora, ctx);
   assert.ok(rc.sinDato.includes("bonito_temporales_oeste"));
+});
+
+
+test("cada variable cuenta una sola vez por hora (factores base y reglas expertas)", () => {
+  const i0 = idx(serie(), HOY);
+  const escenarios = [
+    serie(),
+    serie((i) => ({ presion: 1020 - Math.max(0, i - 114) * 0.5, ola: 1.8, vientoDir: 90, viento: 20 })),
+    serie((i) => ({ presion: i < i0 - 24 ? 1012 : i <= i0 - 6 ? 1012 - (i - (i0 - 24)) * (6 / 18) : 1006 + (i - (i0 - 6)) / 3, ola: 2.4 })),
+    serie(() => ({ ola: 0.2, vientoDir: 120, viento: 35 })),
+    serie(() => ({ ola: 3 })),
+    serie((i) => (i < 72 ? { viento: 35, vientoDir: 280 } : { vientoDir: 90, viento: 15 }), { inicio: Date.UTC(2026, 7, 10) }),
+  ];
+  const rio = rioDeSpot(MUNDAKA, RIOS);
+  for (const s of escenarios) {
+    for (const modalidad of ["costa", "embarcacion", "submarina"]) {
+      for (const e of DATOS.especies) {
+        for (const extra of [{}, { caudalRio: "alto", rio, turbidez: "turbia" }]) {
+          const res = calcularVentana(e, DATOS.reglas_por_defecto, s, ctxBase({ modalidad, ...extra }));
+          for (const r of res) {
+            const vars = r.razones.filter((x) => x.aporte !== 0 && x.variable).map((x) => x.variable);
+            assert.equal(new Set(vars).size, vars.length, `${e.id}/${modalidad} ${r.hora}: ${vars.join(", ")}`);
+          }
+        }
+      }
+    }
+  }
+  // Y por construcción: una regla con la variable de un factor base lo sustituye.
+  for (const r of DATOS.reglas_expertas.reglas) {
+    const base = Object.entries(VARIABLE_DE_FACTOR).find(([, v]) => v === r.variable)?.[0];
+    if (base) assert.ok((r.sustituye || []).includes(base), `${r.id} puntúa ${r.variable} sin sustituir ${base}`);
+  }
 });
 
 // ---------------------------------------------------------------------------
