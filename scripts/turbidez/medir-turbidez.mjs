@@ -22,6 +22,7 @@ import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { SPOTS } from "../../functions/prevision.js";
+import { pedirOpenMeteo, claveOpenMeteo } from "../../functions/_lib/open-meteo.js";
 
 const BASE_URL = "https://costaviva.org";
 const CRON_SECRET = process.env.CRON_SECRET;
@@ -139,11 +140,13 @@ async function nubosidadPorSpot(slugs) {
   if (!validos.length) return {};
   const lats = validos.map((s) => spotsPorSlug.get(s).lat).join(",");
   const lons = validos.map((s) => spotsPorSlug.get(s).lon).join(",");
-  const resp = await fetch(
-    `https://api.open-meteo.com/v1/forecast?latitude=${lats}&longitude=${lons}&current=cloud_cover&timezone=Europe%2FMadrid`
+  // OPEN_METEO_API_KEY (secret de GitHub Actions, turbidez.yml): si está,
+  // host comercial con key; si no, el gratuito. Ver functions/_lib/open-meteo.js.
+  const datos = await pedirOpenMeteo(
+    "forecast",
+    `latitude=${lats}&longitude=${lons}&current=cloud_cover&timezone=Europe%2FMadrid`,
+    { apiKey: claveOpenMeteo(process.env) }
   );
-  if (!resp.ok) throw new Error(`Open-Meteo HTTP ${resp.status}`);
-  const datos = await resp.json();
   const lista = Array.isArray(datos) ? datos : [datos];
   const resultado = {};
   validos.forEach((slug, i) => { resultado[slug] = lista[i]?.current?.cloud_cover ?? null; });

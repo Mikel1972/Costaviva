@@ -21,6 +21,9 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-velocity@2.1.4/dist/leaflet-velocity.min.css" />
 <script src="/assets/js/leaflet-velocity.js"></script>
 <script src="/assets/js/errores.js"></script>
+<!-- Open-Meteo siempre por nuestro proxy /meteo/ (la API key comercial no
+     puede llegar al navegador), ver assets/js/meteo.js. -->
+<script src="/assets/js/meteo.js"></script>
 <!-- Webcams en vídeo en directo de Gipuzkoa (2026-09-14) — HLS, no hace
      falta en Safari (soporte nativo) pero sí en Chrome/Firefox/Edge. -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.6.15/hls.min.js"></script>
@@ -551,6 +554,8 @@
   .panel .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
   .panel .tarjeta { background: #EEF2EF; border-radius: 8px; padding: 10px 12px; }
   .panel .tarjeta .etq { color: #5C7680; font-size: 10px; }
+  .atribucion-meteo { margin-top: 12px; font-size: 10.5px; line-height: 1.4; color: #5C7680; text-align: center; }
+  .atribucion-meteo a { color: inherit; text-decoration: underline; }
   .panel .tarjeta .val { font-family: 'IBM Plex Mono', monospace; font-size: 16px; margin-top: 3px; }
   .panel .indice-box { margin-top: 14px; background: #EEF2EF; border-radius: 8px; padding: 12px; text-align: center; }
   .panel .indice-box .num { font-family: 'IBM Plex Mono', monospace; font-size: 30px; font-weight: 700; }
@@ -1013,6 +1018,8 @@
       <div class="etq" style="margin-bottom:6px;">WEBCAM EN DIRECTO</div>
       <div id="panelWebcamContenido"></div>
     </div>
+    <!-- Atribución obligatoria de Open-Meteo (licencia CC BY 4.0 de sus datos). -->
+    <div class="atribucion-meteo">Datos meteorológicos: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a> (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>)</div>
   </div>
 </div>
 
@@ -1644,6 +1651,9 @@ const map = L.map("map", {
 // quedan, esos sí son una condición real de uso de esos servicios
 // gratuitos, no solo un logo de la librería.
 map.attributionControl.setPrefix(false);
+// Oleaje, viento, marea y corriente del mapa salen de Open-Meteo: su licencia
+// (CC BY 4.0) exige atribución visible, siempre, no solo en el panel.
+map.attributionControl.addAttribution(window.ATRIBUCION_METEO_HTML || "Datos meteorológicos: Open-Meteo.com (CC BY 4.0)");
 if (window.supabaseCliente) {
   registrarEvento("ver_mapa");
 } else {
@@ -2077,8 +2087,8 @@ async function datosAmbientalesPunto(lat, lon) {
   // (oleaje/viento/etc.) se queda con la ventana de siempre.
   const paramsMarea = `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&forecast_days=2`;
   const [marino, tiempo] = await Promise.all([
-    fetch(`https://marine-api.open-meteo.com/v1/marine?${paramsMarea}&hourly=wave_height,wave_period,wave_direction,sea_surface_temperature,sea_level_height_msl,ocean_current_velocity,ocean_current_direction`).then((r) => r.json()),
-    fetch(`https://api.open-meteo.com/v1/forecast?${params}&hourly=windspeed_10m,winddirection_10m,pressure_msl,cloudcover,precipitation&windspeed_unit=kmh`).then((r) => r.json()),
+    pedirMeteo("marine", `${paramsMarea}&hourly=wave_height,wave_period,wave_direction,sea_surface_temperature,sea_level_height_msl,ocean_current_velocity,ocean_current_direction`),
+    pedirMeteo("forecast", `${params}&hourly=windspeed_10m,winddirection_10m,pressure_msl,cloudcover,precipitation&windspeed_unit=kmh`),
   ]);
   const horas = marino.hourly?.time || [];
   // Open-Meteo (timezone=Europe/Madrid) etiqueta las horas en local, no en
@@ -3045,8 +3055,8 @@ async function datosHorariosSpot(s) {
   if (c && Date.now() - c.t < 60 * 60 * 1000) return c.horas;
   const base = `latitude=${s.lat}&longitude=${s.lon}&timezone=Europe%2FMadrid&past_days=1&forecast_days=2`;
   const [marino, tiempo] = await Promise.all([
-    fetch(`https://marine-api.open-meteo.com/v1/marine?${base}&hourly=wave_height,sea_surface_temperature,sea_level_height_msl`).then((r) => r.json()),
-    fetch(`https://api.open-meteo.com/v1/forecast?${base}&hourly=windspeed_10m,pressure_msl,precipitation&windspeed_unit=kmh`).then((r) => r.json()),
+    pedirMeteo("marine", `${base}&hourly=wave_height,sea_surface_temperature,sea_level_height_msl`),
+    pedirMeteo("forecast", `${base}&hourly=windspeed_10m,pressure_msl,precipitation&windspeed_unit=kmh`),
   ]);
   // Se cruza por la hora exacta, nunca por índice (bug real ya visto entre
   // las dos APIs, ver datosAmbientalesPunto).
