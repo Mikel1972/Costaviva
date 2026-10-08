@@ -1908,7 +1908,19 @@ modalidades y escenarios y falla si una variable puntúa dos veces.
 motivos, cada uno con una flecha por dirección y peso (▲▲ / ▲ / ▼ / ▼▼, el
 doble desde 6 puntos) y el concepto en lenguaje llano, ordenados por impacto.
 Para el usuario, ningún número por factor (ni en tooltip) ni etiqueta de
-fuente ("regla de Mikel", "por validar"...). Igual en la ventana, el índice
+fuente ("regla de Mikel", "por validar"...).
+**Solo motivos con flecha y avisos útiles (Mikel, 2026-10-08)**: lo neutro
+(aporte 0, antes con "·": "pleno día", "marea casi nula: no cuenta", "agua a
+20 °C (rango pendiente de fuente abierta: no cuenta)"), lo interno y la
+fiabilidad van solo al "Detalle (admin)". El filtro es `paraUsuario`
+(`ventana-actividad.js`, regex `TEXTO_INTERNO`), y lo usan la ficha, la
+ventana, las mejores ventanas, el diario (misma regex en línea) y los posts
+(`motivosDestacados`). Avisos útiles = notas `legal` (submarina) y
+`seguridad` (kayak / embarcación pequeña), con la clase `.aviso-nota`; el de
+ola peligrosa va en `avisoOla`. También para admin: "Técnicas habituales
+(práctica, sin fuente citable)", "Talla mínima: sin dato verificado" y
+"Pendiente de revisar" de la normativa. Un test de `indice-pesca-v2` falla
+si la salida de usuario tiene "·", "pendiente", "no cuenta" o "fuente". Igual en la ventana, el índice
 del spot y la línea del diario. El admin (`window.esAdminCostaviva`,
 cosmético) tiene un desplegable "Detalle (admin)" con puntos, fuente, estado,
 confianza y la fiabilidad; la tabla de `admin.html` sigue listando las reglas.

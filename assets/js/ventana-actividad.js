@@ -328,6 +328,33 @@ export function avisoOlaPeligrosa(ola, reglasOleaje) {
   return { texto: `⚠️ Ola ${peligro} (${rango}): extrema la precaución`, umbral_m: umbral, ola: +ola.toFixed(1) };
 }
 
+// Lo que ve el USUARIO del porqué (Mikel, 2026-10-08): solo los motivos con
+// flecha (▲▲ / ▲ / ▼ / ▼▼, el doble desde 6 puntos) y los avisos útiles
+// (legal: submarina de noche o a caballo del orto/ocaso; seguridad: kayak /
+// embarcación pequeña). Lo neutro (aporte 0, el "·"), lo interno ("pendiente
+// de fuente", "no cuenta", fuentes, fiabilidad...) va solo al "Detalle
+// (admin)". El aviso de ola peligrosa va aparte (`avisoOla`).
+const FACTORES_AVISO_USUARIO = new Set(["legal", "seguridad"]);
+export const TEXTO_INTERNO = /pendiente|no cuenta|fuente|por validar|fiabilidad|sin dato/i;
+export function flechaDeAporte(aporte) {
+  if (aporte >= 6) return "▲▲";
+  if (aporte > 0) return "▲";
+  if (aporte <= -6) return "▼▼";
+  if (aporte < 0) return "▼";
+  return "";
+}
+export function paraUsuario(razones, { max = Infinity } = {}) {
+  const limpias = (razones || []).filter((r) => r && r.texto && !TEXTO_INTERNO.test(r.texto));
+  const motivos = limpias
+    .filter((r) => r.aporte && !FACTORES_AVISO_USUARIO.has(r.factor))
+    .sort((a, b) => Math.abs(b.aporte) - Math.abs(a.aporte))
+    .slice(0, max)
+    .map((r) => ({ texto: r.texto, aporte: r.aporte, flecha: flechaDeAporte(r.aporte), sube: r.aporte > 0 }));
+  const avisos = [...new Set(limpias.filter((r) => FACTORES_AVISO_USUARIO.has(r.factor))
+    .map((r) => `⚠️ ${r.texto.replace(/^⚠\uFE0F?\s*/, "")}`))];
+  return { motivos, avisos };
+}
+
 function rangoOlaTexto(h) {
   if (h < 0.5) return "mar casi plana (<0,5 m)";
   const a = Math.floor(h * 2) / 2;
@@ -720,7 +747,7 @@ export function mejoresVentanas(resultados, { umbral = 60, margen = 10, max = 3 
         media,
         maxima: mejor.puntuacion,
         avisoOla: horas.some((r) => r.avisoOla),
-        porque: mejor.razones.filter((r) => r.aporte > 0).slice(0, 4).map((r) => r.texto),
+        porque: paraUsuario(mejor.razones).motivos.filter((r) => r.sube).slice(0, 4).map((r) => r.texto),
       };
     })
     .sort((a, b) => b.media - a.media)

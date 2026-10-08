@@ -10,6 +10,7 @@ import { readFileSync } from "node:fs";
 import {
   sigmoide, repartirAportes, pesoLogOdds, factorTemperatura, calcularVentana, indiceSpot, fiabilidad,
   reglasParaModalidad, rioDeSpot, distanciaKm, INDICE_VERSION, VARIABLE_DE_FACTOR, avisoOlaPeligrosa,
+  paraUsuario, TEXTO_INTERNO,
 } from "../assets/js/ventana-actividad.js";
 import {
   enSector, valorExpresion, evaluarCondicion, enAmbito, reglasEnAmbito, efectoRegla, validarRegla,
@@ -809,4 +810,75 @@ test("la fiabilidad no se enseña al usuario: solo en el detalle del admin", () 
   assert.ok(!/fiabilidad \$\{/.test(diario), "diario.html no la pinta");
   // Ni números por factor ni etiquetas de fuente para el usuario.
   assert.ok(!/regla de Mikel|experiencia local|va-pts/.test(fuera.replace(/<!--[\s\S]*?-->/g, "").replace(/\/\/.*$/gm, "")));
+});
+
+// Lo que ve el usuario (Mikel, 2026-10-08): solo motivos con flecha y avisos
+// útiles. Nada neutro "·", ni "pendiente", "no cuenta" o "fuente": eso va
+// solo al "Detalle (admin)".
+const PROHIBIDO_USUARIO = /·|pendiente|no cuenta|fuente/i;
+test("usuario: solo motivos con flecha y avisos útiles, nada interno (ficha, ventana, diario, posts)", async () => {
+  const escenarios = [
+    ["cantábrico", serie(), MUNDAKA],
+    ["mediterráneo (marea que no cuenta)", serie((i) => ({ nivelMar: 0.03 * Math.sin(i) })), VALENCIA],
+    ["ola peligrosa y viento", serie(() => ({ ola: 3.2, viento: 35 })), MUNDAKA],
+    ["agua fría", serie(() => ({ tempAgua: 11 })), MUNDAKA],
+  ];
+  let internosVistos = 0, neutrosVistos = 0, avisosVistos = 0;
+  for (const [nombre, s, spot] of escenarios) {
+    for (const modalidad of ["costa", "embarcacion", "submarina"]) {
+      for (const e of DATOS.especies) {
+        const res = calcularVentana(e, DATOS.reglas_por_defecto, s, ctxBase({ ...spot, modalidad }));
+        for (const hh of ["06", "07", "13", "19", "23"]) {
+          const r = res[idx(s, `2026-10-08T${hh}:00`)];
+          if (!r) continue;
+          internosVistos += r.razones.filter((x) => TEXTO_INTERNO.test(x.texto)).length;
+          neutrosVistos += r.razones.filter((x) => !x.aporte).length;
+          const u = paraUsuario(r.razones);
+          avisosVistos += u.avisos.length;
+          for (const m of u.motivos) {
+            assert.ok(["▲▲", "▲", "▼", "▼▼"].includes(m.flecha), `${nombre}/${modalidad}/${e.id}: ${m.texto}`);
+            assert.ok(!PROHIBIDO_USUARIO.test(m.texto), `${nombre}/${modalidad}/${e.id}: "${m.texto}"`);
+          }
+          for (const a of u.avisos) {
+            assert.match(a, /^⚠️ /);
+            assert.ok(!PROHIBIDO_USUARIO.test(a), `${nombre}/${modalidad}/${e.id}: "${a}"`);
+          }
+          if (r.avisoOla) assert.ok(!PROHIBIDO_USUARIO.test(r.avisoOla.texto));
+        }
+      }
+    }
+  }
+  // El test tiene sentido: había texto interno y neutro que se ha quedado fuera.
+  assert.ok(internosVistos > 0 && neutrosVistos > 0 && avisosVistos > 0, `${internosVistos}/${neutrosVistos}/${avisosVistos}`);
+
+  // La ficha y la ventana (index.html): el HTML de usuario de htmlPorque.
+  const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
+  const extrae = (ini) => { const a = html.indexOf(ini); let i = html.indexOf("{", html.indexOf(")", a)), d = 0; for (; ; i++) { if (html[i] === "{") d++; if (html[i] === "}" && --d === 0) break; } return html.slice(a, i + 1); };
+  const consts = html.match(/const FLECHA_ETIQUETA = [^\n]+/)[0];
+  const window = { VentanaActividad: { paraUsuario }, esAdminCostaviva: false };
+  const htmlPorque = new Function("window", `${extrae("function escVA(")}\n${consts}\n${extrae("function htmlPorque(")}\nreturn htmlPorque;`)(window);
+  const conTodo = [
+    { factor: "temperatura", texto: "agua a 20 °C (rango de la especie pendiente de fuente abierta: no cuenta)", aporte: 0 },
+    { factor: "marea", texto: "marea casi nula aquí (0,1 m): no cuenta", aporte: 0 },
+    { factor: "luz", texto: "pleno día", aporte: 0 },
+    { factor: "presion", texto: "presión bajando", aporte: 4 },
+    { factor: "oleaje", texto: "mar de 2-2,5 m", aporte: -7 },
+    { factor: "legal", texto: "legal solo desde la salida del sol (08:12)", aporte: 0 },
+  ];
+  const usuario = htmlPorque(conTodo, { etiqueta: "★ criterio experto" });
+  assert.ok(!PROHIBIDO_USUARIO.test(usuario), usuario);
+  assert.ok(!/criterio experto|Detalle \(admin\)/.test(usuario), "ni fiabilidad ni detalle para el usuario");
+  assert.match(usuario, /▼▼<\/span><span>mar de 2-2,5 m/);
+  assert.match(usuario, /⚠️ legal solo desde la salida del sol/);
+  window.esAdminCostaviva = true;
+  const admin = htmlPorque(conTodo, { etiqueta: "★ criterio experto" });
+  assert.match(admin, /Detalle \(admin\)[\s\S]*pendiente de fuente abierta/);
+  assert.match(admin, /Fiabilidad: ★ criterio experto/);
+  // Diario: el mismo filtro de texto interno que paraUsuario.
+  const diario = readFileSync(new URL("../diario.html", import.meta.url), "utf8");
+  assert.ok(diario.includes(`!/${TEXTO_INTERNO.source}/i.test(x.texto || "")`), "diario.html filtra lo interno igual que la ficha");
+  // Posts y reels: motivosDestacados usa el mismo filtro.
+  const { motivosDestacados } = await import("../scripts/marketing/pieza-datos.mjs");
+  const posts = motivosDestacados(conTodo, 10);
+  assert.deepEqual(posts.map((m) => m.texto), ["mar de 2-2,5 m", "presión bajando"]);
 });
