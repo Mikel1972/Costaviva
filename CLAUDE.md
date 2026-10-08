@@ -61,6 +61,20 @@ pequeños: tinta oscura sobre claro, contraste AA).
   escritorio siempre abiertos, con la esquina inferior derecha empezando a
   76 px (a la derecha del ⓘ) y la leyenda del ⓘ abriéndose por encima de
   ellos. Ningún crédito se quita: no usar `attributionControl.remove()`.
+- **Tarjetas del mapa en un dock (2026-10-08, bug aprobado por Mikel).** En
+  el móvil la tarjeta de rayos (antes control de Leaflet `bottomright`) tapaba
+  la lluvia animada y la leyenda del ⓘ abierta. Ahora todas las tarjetas de
+  abajo viven en `#tarjetasMapa` (index.html) y se apilan con `order`, de
+  arriba a abajo: rayos, lluvia (lluvia-animada.js la mete ahí vía
+  `contenedor`), clorofila / temperatura, viento y la leyenda del ⓘ. Nunca se
+  pisan. `assets/js/tarjetas-mapa.js` (test `test/tarjetas-mapa.test.js`)
+  pone el `bottom` del dock por encima de lo que tenga debajo en su columna
+  (ⓘ, créditos abiertos, leyendas de Leaflet de abajo a la izquierda) y el
+  `max-height` sin tapar el zoom ni las leyendas de arriba; si no cabe,
+  scroll (en escritorio, segunda columna). Acaba a la izquierda de los
+  botones de capas. Con la lluvia abierta, rayos se queda en su frase (sin la
+  línea de leyenda). Una tarjeta nueva sobre el mapa: dentro del dock, con
+  su `order`; nada de `position: absolute` suelto abajo.
 
 ## Alarma: lista de WhatsApp (2026-10-08, pedido de Mikel)
 
@@ -3612,8 +3626,8 @@ de AEMET con scroll y + / −. Ahora:
   era < 7, se consulta `/rayos-cerca` en ESE punto y, la primera vez que hay
   rayos, el mapa se encuadra con la referencia y la tormenta más cercana
   (punto de borde oscuro + línea discontinua hasta el rayo).
-- Tarjeta abajo (`#rayosHoja`, metida como control de Leaflet `bottomright`,
-  así se apila sobre la atribución y no la tapa): una frase
+- Tarjeta abajo (`#rayosHoja`, la primera del dock de tarjetas del mapa,
+  ver "Tarjetas del mapa en un dock"; no tapa la atribución): una frase
   ("⚡ Rayo más cercano: 12 km al NO de ti · hace 3 min" / "Sin rayos a menos
   de 100 km en los últimos 5 min"), color por distancia (≤15 km rojo, ≤40
   ámbar), leyenda de una línea y un ⓘ con el conteo, la hora del satélite,
