@@ -208,6 +208,47 @@
    "fecha_documento": "2026-10-08",
    "fecha_consulta": "2026-10-08",
    "nota": "Conocimiento de campo de pesca en el Cantábrico. Cada regla que lo cita es 'por_validar' hasta calibrarla con el diario (salidas_pesca.indice_factores); los umbrales numéricos son la traducción de Claude de lo que contó Mikel, no medidas suyas."
+  },
+  "gencat_guia_pr_2021": {
+   "titulo": "Generalitat de Catalunya (DGPMPS, asesoramiento científico ICATMAR) — Guia de les espècies objectiu de la pesca marítima recreativa (65 especies, desembre 2021)",
+   "url": "https://agricultura.gencat.cat/web/.content/08-pesca/pesca-recreativa/enllacos-documents/fitxers-binaris/guia-especies-pr.pdf",
+   "editor": "Departament d'Agricultura, Ramaderia, Pesca i Alimentació (Generalitat de Catalunya); coordinación Ariadna Purroy y Arnau L. Dedeu",
+   "tipo": "oficial",
+   "licencia": "información del sector público (Generalitat de Catalunya); la guía no indica licencia: condiciones de reutilización por confirmar",
+   "licencia_por_confirmar": true,
+   "fecha_documento": "2021-12",
+   "fecha_consulta": "2026-10-08",
+   "nota": "Se usa solo para: que la especie es objetivo de la pesca recreativa en Cataluña (y por tanto presente en el Mediterráneo español), su nombre catalán y frases cortas de hábitat. Los meses de reproducción y las modalidades de la guía van en gráficos que no se han podido leer como texto: pendientes."
+  },
+  "obis_cc_by": {
+   "titulo": "OBIS (Ocean Biodiversity Information System) — recuento de registros por especie y región (API v3, /dataset)",
+   "url": "https://api.obis.org/v3/dataset",
+   "editor": "IOC-UNESCO / OBIS",
+   "tipo": "cientifico",
+   "licencia": "CC BY 4.0 / CC0: solo se cuentan los conjuntos de datos con esas licencias; los que tienen restricción de uso comercial se descartan",
+   "fecha_documento": "2026-10-08",
+   "fecha_consulta": "2026-10-08",
+   "nota": "Indicio de presencia: una región se da por buena solo con 20 o más registros de 2 o más conjuntos de datos con licencia libre (polígonos de cada región de la app). No dice nada de estacionalidad. Faltan muchos datos de Galicia, Portugal y Cádiz con licencia libre: la ausencia aquí NO significa ausencia real."
+  },
+  "mikel_campo_bizkaia": {
+   "titulo": "Observación de campo (Mikel), Bizkaia",
+   "url": null,
+   "editor": "Mikel, fundador de Costaviva",
+   "tipo": "heuristica_experta_local",
+   "confianza": "media",
+   "licencia": "propio (aportación de Mikel a Costaviva)",
+   "fecha_documento": "2026-10-08",
+   "fecha_consulta": "2026-10-08",
+   "nota": "Capturas y observaciones propias en playas y costa de Bizkaia (Bakio, Armintza), contadas el 2026-10-08. Confianza media: experiencia de una persona en una zona; calibrar con el diario."
+  },
+  "boe_rd46_2019": {
+   "titulo": "Real Decreto 46/2019, por el que se regula la pesquería de atún rojo en el Atlántico Oriental y el Mediterráneo (texto consolidado)",
+   "url": "https://www.boe.es/eli/es/rd/2019/02/08/46/con",
+   "editor": "BOE",
+   "tipo": "oficial",
+   "licencia": "BOE (reutilizable citando la fuente)",
+   "fecha_documento": "2026-05-01",
+   "fecha_consulta": "2026-10-08"
   }
  },
  "jurisdicciones": {
@@ -6109,6 +6150,5939 @@
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+  },
+  {
+   "id": "rodaballo",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Rodaballo",
+    "eu": null,
+    "ca": null,
+    "gl": null,
+    "pt": "Pregado"
+   },
+   "nombres_fuentes": [
+    "boe_rd347",
+    "boe_rd560",
+    "dgrm_tmc_2025"
+   ],
+   "cientifico": "Scophthalmus maximus",
+   "habitat": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "fuentes": [
+      "mikel_campo_bizkaia"
+     ],
+     "tipo_fuente": "heuristica_experta_local",
+     "criterio": "Pez plano de fondos de arena: se pesca a fondo desde playa. En Bizkaia (Bakio) entra a las playas de arena hacia noviembre; desde la orilla es mejor con mareas vivas (coeficientes de marea altos) (observación de campo de Mikel, confianza media).",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Fondo o deriva sobre arena desde embarcación: práctica habitual de pesca recreativa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin dato de que sea pieza habitual de la pesca submarina: no se muestra en esa pestaña hasta tener fuente.",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "cantabrico": {
+     "meses": [
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mikel_campo_bizkaia",
+      "boe_rd560"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta_local",
+     "criterio": "Temporada buena desde costa en Bizkaia: octubre-diciembre, con el pico en noviembre, cuando entra a frezar a las playas de arena; mejor con mareas vivas / coeficientes altos (Mikel, Bakio; confianza media). Desde embarcación se pesca más meses: sin fuente todavía.",
+     "nota": "Figura además en el anexo I del RD 560/1995 (pesquería en la zona)."
+    },
+    "atlantico_norte": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Figura en el anexo I del RD 560/1995 (caladero Cantábrico-Noroeste y Golfo de Cádiz): especie con pesquería en la zona."
+    },
+    "golfo_cadiz": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Figura en el anexo I del RD 560/1995 (caladero Cantábrico-Noroeste y Golfo de Cádiz): especie con pesquería en la zona."
+    },
+    "portugal": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "dgrm_tmc_2025"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Con talla mínima en la tabla de la DGRM (Portugal continental)."
+    }
+   },
+   "freza": {
+    "por_region": {
+     "cantabrico": {
+      "meses": [
+       11
+      ],
+      "fuentes": [
+       "mikel_campo_bizkaia"
+      ],
+      "verificado": false,
+      "tipo_fuente": "heuristica_experta_local",
+      "nota": "Mikel (Bakio): entra a frezar a las playas de arena hacia noviembre. Observación de campo, confianza media; falta fuente científica."
+     }
+    }
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "nota": "Sin rango verificado con fuente abierta de uso comercial: no puntúa."
+   },
+   "alimentacion": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "ES-RD560-I",
+     "valor_cm": 30,
+     "ambito": "España, aguas exteriores del Cantábrico-Noroeste y Golfo de Cádiz (RD 560/1995 anexo I; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2025-11-01",
+     "nota": "'Rodaballo (Psetta maxima)'."
+    },
+    {
+     "jurisdiccion": "PT",
+     "valor_cm": 30,
+     "ambito": "Portugal continental (tabla DGRM)",
+     "ambito_corto": "Portugal (DGRM)",
+     "fuente": "dgrm_tmc_2025",
+     "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2025-10-30",
+     "nota": "'Pregado (Psetta maxima)'."
+    }
+   ],
+   "reglas": {},
+   "pendiente": [
+    "freza por región (la guía de la Generalitat la da en un gráfico ilegible como texto)",
+    "temperatura no-NC",
+    "actividad y alimentación con fuente",
+    "nombres eu/gl con fuente oficial",
+    "modalidades sin dato (aplica: null): submarina",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)",
+    "presencia en el Mediterráneo: no figura en el anexo II; OBIS da registros, revisar si es pieza recreativa allí",
+    "Mikel: desde playa en noviembre, mejor con mareas vivas (coeficientes altos); la regla general de coeficiente de marea (variable coeficiente_marea) la añade otra tarea en el motor del índice"
+   ],
+   "cientifico_nota": "En el RD 560/1995 y la tabla DGRM figura como Psetta maxima (sinónimo).",
+   "emoji": "🐟",
+   "cebos": [
+    {
+     "nombre": "Mejillón",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "El Gobierno Vasco lo cita expresamente para el rodaballo.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Sardina",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Eficaz en líneas a la deriva, aparejos flotantes y de fondo; no cita al rodaballo en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Tira de calamar",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "'Cebo muy efectivo para cualquier clase de peces'; no cita al rodaballo en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Pez pequeño entero (boga, jurel, lanzón)",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+  },
+  {
+   "id": "remol",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Rémol",
+    "eu": null,
+    "ca": null,
+    "gl": null,
+    "pt": "Rodovalho"
+   },
+   "nombres_fuentes": [
+    "boe_rd347",
+    "boe_rd560",
+    "dgrm_tmc_2025"
+   ],
+   "cientifico": "Scophthalmus rhombus",
+   "nombres_nota": "El RD 347/2011 lo llama 'rémol' y el RD 560/1995 'ramal'.",
+   "habitat": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pez plano de arena, como el rodaballo: a fondo desde playa (heurística experta).",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Fondo o deriva sobre arena desde embarcación: práctica habitual de pesca recreativa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin dato de que sea pieza habitual de la pesca submarina: no se muestra en esa pestaña hasta tener fuente.",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "cantabrico": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Figura en el anexo I del RD 560/1995 (caladero Cantábrico-Noroeste y Golfo de Cádiz): especie con pesquería en la zona."
+    },
+    "atlantico_norte": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Figura en el anexo I del RD 560/1995 (caladero Cantábrico-Noroeste y Golfo de Cádiz): especie con pesquería en la zona."
+    },
+    "golfo_cadiz": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Figura en el anexo I del RD 560/1995 (caladero Cantábrico-Noroeste y Golfo de Cádiz): especie con pesquería en la zona."
+    },
+    "portugal": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "dgrm_tmc_2025"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Con talla mínima en la tabla de la DGRM (Portugal continental)."
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "nota": "Sin rango verificado con fuente abierta de uso comercial: no puntúa."
+   },
+   "alimentacion": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "ES-RD560-I",
+     "valor_cm": 30,
+     "ambito": "España, aguas exteriores del Cantábrico-Noroeste y Golfo de Cádiz (RD 560/1995 anexo I; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2025-11-01",
+     "nota": "'Ramal (Scophthalmus rhombus)'."
+    },
+    {
+     "jurisdiccion": "PT",
+     "valor_cm": 30,
+     "ambito": "Portugal continental (tabla DGRM)",
+     "ambito_corto": "Portugal (DGRM)",
+     "fuente": "dgrm_tmc_2025",
+     "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2025-10-30",
+     "nota": "'Rodovalho (Scophthalmus rhombus)'."
+    }
+   ],
+   "reglas": {},
+   "pendiente": [
+    "freza por región (la guía de la Generalitat la da en un gráfico ilegible como texto)",
+    "temperatura no-NC",
+    "actividad y alimentación con fuente",
+    "nombres eu/gl con fuente oficial",
+    "modalidades sin dato (aplica: null): submarina",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)"
+   ],
+   "emoji": "🐟",
+   "cebos": [
+    {
+     "nombre": "Mejillón",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "El Gobierno Vasco lo cita para el rodaballo (pariente cercano), no para el rémol.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Sardina",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Eficaz en líneas a la deriva, aparejos flotantes y de fondo; no cita al rémol en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Tira de calamar",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "'Cebo muy efectivo para cualquier clase de peces'; no cita al rémol en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+  },
+  {
+   "id": "cabracho",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Cabracho",
+    "eu": null,
+    "ca": "Escórpora de cap roig",
+    "gl": null,
+    "pt": null
+   },
+   "nombres_fuentes": [
+    "boe_rd347",
+    "gencat_guia_pr_2021"
+   ],
+   "cientifico": "Scorpaena scrofa",
+   "habitat": {
+    "valor": "Fondos de roca; en Cataluña sobre todo en la Costa Brava y el Cap de Creus. Espinas venenosas: picadura muy dolorosa.",
+    "fuentes": [
+     "gencat_guia_pr_2021"
+    ],
+    "verificado": false,
+    "nota": "Guía de la Generalitat (licencia por confirmar), resumido."
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin dato de que se pesque de forma habitual desde costa: no se muestra hasta tener fuente.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Fondo sobre roca desde embarcación: práctica habitual de pesca recreativa (heurística experta).",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pez de roca, quieto y de buen tamaño: pieza habitual de la pesca submarina (heurística experta).",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "mediterraneo": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "gencat_guia_pr_2021"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Especie objetivo de la pesca recreativa en Cataluña (guía DGPMPS/ICATMAR 2021)."
+    },
+    "baleares": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "OBIS: 61 registros de 3 conjuntos de datos con licencia libre en la región (consulta 2026-10-08)."
+    },
+    "cantabrico": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "OBIS: 30 registros de 2 conjuntos de datos con licencia libre en la región (consulta 2026-10-08)."
+    },
+    "azores": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "OBIS: 110 registros de 3 conjuntos de datos con licencia libre en la región (consulta 2026-10-08)."
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "nota": "Sin rango verificado con fuente abierta de uso comercial: no puntúa."
+   },
+   "alimentacion": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "talla_minima": [],
+   "reglas": {},
+   "pendiente": [
+    "talla mínima: no figura en RD 560/1995, Reg. (UE) 2019/1241 ni en la tabla DGRM; revisar normativa autonómica",
+    "freza por región (la guía de la Generalitat la da en un gráfico ilegible como texto)",
+    "temperatura no-NC",
+    "actividad y alimentación con fuente",
+    "nombres eu/gl con fuente oficial",
+    "modalidades sin dato (aplica: null): costa",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)",
+    "presencia en Galicia, Portugal, Cádiz y Canarias: sin fuente abierta todavía"
+   ],
+   "emoji": "🐟",
+   "cebos": [
+    {
+     "nombre": "Tira de calamar",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "'Cebo muy efectivo para cualquier clase de peces'; no cita al cabracho en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Sardina",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Eficaz en líneas a la deriva, aparejos flotantes y de fondo; no cita al cabracho en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Cangrejo (mejor el ermitaño)",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "'El mejor cebo que se puede ofrecer a cualquier clase de peces'; no cita al cabracho en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+  },
+  {
+   "id": "rascacio",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Rascacio",
+    "eu": null,
+    "ca": "Escórpora",
+    "gl": null,
+    "pt": null
+   },
+   "nombres_fuentes": [
+    "boe_rd347",
+    "gencat_guia_pr_2021"
+   ],
+   "cientifico": "Scorpaena porcus",
+   "habitat": {
+    "valor": "Fondos de roca; tan venenoso como el cabracho. Más común en el sur de Cataluña.",
+    "fuentes": [
+     "gencat_guia_pr_2021"
+    ],
+    "verificado": false,
+    "nota": "Guía de la Generalitat (licencia por confirmar), resumido."
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pez de roca de poca profundidad: entra a fondo desde escollera y roca (heurística experta).",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Fondo sobre roca desde embarcación: práctica habitual de pesca recreativa (heurística experta).",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pez de roca, quieto: pieza habitual de la pesca submarina (heurística experta).",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "mediterraneo": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "gencat_guia_pr_2021"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Especie objetivo de la pesca recreativa en Cataluña (guía DGPMPS/ICATMAR 2021)."
+    },
+    "baleares": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "OBIS: 27 registros de 3 conjuntos de datos con licencia libre en la región (consulta 2026-10-08)."
+    },
+    "cantabrico": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "OBIS: 47 registros de 2 conjuntos de datos con licencia libre en la región (consulta 2026-10-08)."
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "nota": "Sin rango verificado con fuente abierta de uso comercial: no puntúa."
+   },
+   "alimentacion": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "talla_minima": [],
+   "reglas": {},
+   "pendiente": [
+    "talla mínima: no figura en RD 560/1995, Reg. (UE) 2019/1241 ni en la tabla DGRM; revisar normativa autonómica",
+    "freza por región (la guía de la Generalitat la da en un gráfico ilegible como texto)",
+    "temperatura no-NC",
+    "actividad y alimentación con fuente",
+    "nombres eu/gl con fuente oficial",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)",
+    "presencia en Galicia, Portugal, Cádiz y Canarias: sin fuente abierta todavía"
+   ],
+   "emoji": "🐟",
+   "cebos": [
+    {
+     "nombre": "Tira de calamar",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "'Cebo muy efectivo para cualquier clase de peces'; no cita al rascacio en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Sardina",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Eficaz en líneas a la deriva, aparejos flotantes y de fondo; no cita al rascacio en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Cangrejo (mejor el ermitaño)",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "'El mejor cebo que se puede ofrecer a cualquier clase de peces'; no cita al rascacio en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+  },
+  {
+   "id": "maragota",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Maragota",
+    "eu": null,
+    "ca": null,
+    "gl": null,
+    "pt": "Bodião"
+   },
+   "nombres_fuentes": [
+    "boe_rd347",
+    "pv_tallas_cupos",
+    "dgrm_faq_ludica_2026"
+   ],
+   "cientifico": "Labrus bergylta",
+   "nombres_nota": "Durdo en Euskadi (así la llama el Gobierno Vasco). 'Maragota' es el nombre del RD 347/2011.",
+   "habitat": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "fuentes": [
+      "pv_tallas_cupos"
+     ],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pez de roca y algas: se pesca a fondo y con flotador desde roca; el Gobierno Vasco la cita entre las especies de todo el año (heurística experta).",
+     "profundidad_m": null,
+     "zona": null,
+     "normativa": [
+      {
+       "jurisdiccion": "PT",
+       "texto": "Parque Natural del Sudoeste Alentejano y Costa Vicentina: en pesca lúdica a pie, defeso del bodião del 1 de marzo al 31 de mayo (el de la pesca profesional a pie, Portaria 372/2024/1).",
+       "fuente": "dgrm_faq_ludica_2026",
+       "url": "https://dgrm.pt/documents/20143/121104/FAQ-Pesca+Ludica+2026.pdf/586f6137-df78-25e7-e7ad-8a3dcc1f9ffc",
+       "fecha_revision": "2026-10-08"
+      }
+     ]
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Fondo sobre roca desde embarcación: práctica habitual de pesca recreativa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pez de roca de aguas someras: pieza habitual de la pesca submarina en el Cantábrico (heurística experta).",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "cantabrico": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "pv_tallas_cupos"
+     ],
+     "verificado": true,
+     "nota": "Gobierno Vasco: 'Durdos, Julias, Txistus, Fanecas, etc. - todo el año'."
+    },
+    "portugal": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "dgrm_faq_ludica_2026"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "La DGRM le fija un defeso en la costa del Alentejo y Vicentina: está en la zona."
+    },
+    "azores": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "OBIS: 184 registros de 2 conjuntos de datos con licencia libre en la región (consulta 2026-10-08)."
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "nota": "Sin rango verificado con fuente abierta de uso comercial: no puntúa."
+   },
+   "alimentacion": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "talla_minima": [],
+   "reglas": {},
+   "pendiente": [
+    "talla mínima: no figura en RD 560/1995, Reg. (UE) 2019/1241 ni en la tabla DGRM; revisar normativa autonómica",
+    "freza por región (la guía de la Generalitat la da en un gráfico ilegible como texto)",
+    "temperatura no-NC",
+    "actividad y alimentación con fuente",
+    "nombres eu/gl con fuente oficial",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)",
+    "presencia en Galicia (seguro que está: es su nombre gallego) sin fuente abierta todavía",
+    "talla mínima en Galicia/Asturias/Cantabria (aguas interiores)"
+   ],
+   "emoji": "🐟",
+   "cebos": [
+    {
+     "nombre": "Cangrejo (mejor el ermitaño)",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "'El mejor cebo que se puede ofrecer a cualquier clase de peces'; no cita a la maragota en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Gusana",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Los gusanos de mar son de eficacia casi general; no cita a la maragota en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Camarón, quisquilla o gamba",
+     "tipo": "natural",
+     "modalidad": "flotador",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Buen cebo con flotador, a la deriva y en fondo; no cita a la maragota en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+  },
+  {
+   "id": "besugo",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Besugo",
+    "eu": null,
+    "ca": "Besuc de la piga",
+    "gl": null,
+    "pt": "Goraz"
+   },
+   "nombres_fuentes": [
+    "boe_rd347",
+    "boe_rd560",
+    "dgrm_tmc_2025",
+    "gencat_guia_pr_2021"
+   ],
+   "cientifico": "Pagellus bogaraveo",
+   "habitat": {
+    "valor": "Aguas profundas: frecuenta veriles y cañones submarinos.",
+    "fuentes": [
+     "gencat_guia_pr_2021"
+    ],
+    "verificado": false,
+    "nota": "Guía de la Generalitat (licencia por confirmar), resumido."
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": false,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Vive en fondos profundos de la plataforma o el talud, lejos del alcance de la pesca desde costa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [
+      "boe_rd347"
+     ],
+     "tipo_fuente": "oficial",
+     "criterio": "Fondo profundo desde embarcación. En España es especie de protección diferenciada: la embarcación necesita autorización específica.",
+     "profundidad_m": null,
+     "zona": null,
+     "normativa": [
+      {
+       "jurisdiccion": "ES",
+       "texto": "Especie de protección diferenciada (anexo II del RD 347/2011): para capturar o tener a bordo besugo en aguas exteriores, la embarcación necesita una autorización específica de la Secretaría General de Pesca (art. 10).",
+       "fuente": "boe_rd347",
+       "url": "https://www.boe.es/eli/es/rd/2011/03/11/347/con",
+       "fecha_revision": "2026-10-08"
+      }
+     ]
+    },
+    "submarina": {
+     "aplica": false,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pelágico de mar abierto o de fondo profundo: no es pieza de pesca submarina a pulmón.",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "cantabrico": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Figura en el anexo I del RD 560/1995 (caladero Cantábrico-Noroeste y Golfo de Cádiz): especie con pesquería en la zona."
+    },
+    "atlantico_norte": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Figura en el anexo I del RD 560/1995 (caladero Cantábrico-Noroeste y Golfo de Cádiz): especie con pesquería en la zona."
+    },
+    "golfo_cadiz": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Figura en el anexo I del RD 560/1995 (caladero Cantábrico-Noroeste y Golfo de Cádiz): especie con pesquería en la zona."
+    },
+    "mediterraneo": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "ue_2019_1241"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Con talla en el caladero mediterráneo (RD 560/1995 anexo II o Reg. (UE) 2019/1241 anexo IX), que incluye Baleares."
+    },
+    "baleares": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "ue_2019_1241"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Con talla en el caladero mediterráneo (RD 560/1995 anexo II o Reg. (UE) 2019/1241 anexo IX), que incluye Baleares."
+    },
+    "portugal": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "dgrm_tmc_2025"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Con talla mínima en la tabla de la DGRM (Portugal continental)."
+    },
+    "azores": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "OBIS: 574 registros de 6 conjuntos de datos con licencia libre en la región (consulta 2026-10-08)."
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "nota": "Sin rango verificado con fuente abierta de uso comercial: no puntúa."
+   },
+   "alimentacion": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "ES-RD560-I",
+     "valor_cm": 25,
+     "ambito": "España, aguas exteriores del Cantábrico-Noroeste y Golfo de Cádiz (RD 560/1995 anexo I; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2025-11-01",
+     "nota": "El Reglamento (UE) 2019/1241 da 33 cm en aguas suroccidentales: discrepancia por resolver con el texto consolidado."
+    },
+    {
+     "jurisdiccion": "UE-SWW",
+     "valor_cm": 33,
+     "ambito": "UE, aguas suroccidentales (Reg. 2019/1241 anexo VII parte A): referencia para la pesca profesional; a la recreativa no se aplica por sí sola (art. 2.2)",
+     "ambito_corto": "UE, referencia profesional (Reg. 2019/1241)",
+     "fuente": "ue_2019_1241",
+     "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2019-07-25"
+    },
+    {
+     "jurisdiccion": "ES-RD560-II",
+     "valor_cm": 12,
+     "ambito": "España, aguas exteriores del Mediterráneo (RD 560/1995 anexo II; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2025-11-01",
+     "nota": "'Pagel, besugo (Pagellus spp)'. El Reglamento (UE) 2019/1241 da 33 cm para el besugo en el Mediterráneo."
+    },
+    {
+     "jurisdiccion": "UE-MED",
+     "valor_cm": 33,
+     "ambito": "UE, Mediterráneo (Reg. 2019/1241 anexo IX parte A): referencia para la pesca profesional; a la recreativa no se aplica por sí sola (art. 2.2)",
+     "ambito_corto": "UE, referencia profesional (Reg. 2019/1241)",
+     "fuente": "ue_2019_1241",
+     "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2019-07-25"
+    },
+    {
+     "jurisdiccion": "PT",
+     "valor_cm": 33,
+     "ambito": "Portugal continental (tabla DGRM)",
+     "ambito_corto": "Portugal (DGRM)",
+     "fuente": "dgrm_tmc_2025",
+     "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2025-10-30",
+     "nota": "'Goraz (Pagellus bogaraveo)'."
+    }
+   ],
+   "reglas": {},
+   "pendiente": [
+    "freza por región (la guía de la Generalitat la da en un gráfico ilegible como texto)",
+    "temperatura no-NC",
+    "actividad y alimentación con fuente",
+    "nombres eu/gl con fuente oficial",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)",
+    "cupo y condiciones de la autorización de protección diferenciada (RD 347/2011 art. 10)",
+    "medidas especiales del besugo en el Estrecho (Reg. 2019/1241 anexo IX parte C, pesca profesional)"
+   ],
+   "emoji": "🐟",
+   "cebos": [
+    {
+     "nombre": "Tira de calamar",
+     "tipo": "natural",
+     "modalidad": "embarcación",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "'Cebo muy efectivo para cualquier clase de peces'; no cita al besugo en concreto.",
+     "modalidades": [
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Sardina",
+     "tipo": "natural",
+     "modalidad": "embarcación",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Eficaz en líneas a la deriva, aparejos flotantes y de fondo; no cita al besugo en concreto.",
+     "modalidades": [
+      "embarcacion"
+     ]
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+  },
+  {
+   "id": "aligote",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Aligote",
+    "eu": null,
+    "ca": "Besuc blanc",
+    "gl": null,
+    "pt": "Besugo"
+   },
+   "nombres_fuentes": [
+    "boe_rd347",
+    "boe_rd560",
+    "dgrm_tmc_2025",
+    "gencat_guia_pr_2021"
+   ],
+   "cientifico": "Pagellus acarne",
+   "nombres_nota": "OJO: en Portugal 'besugo' es esta especie (P. acarne); el besugo español es el 'goraz'. En Cataluña también 'calet'.",
+   "habitat": {
+    "valor": "Fondos de arena y fango del litoral.",
+    "fuentes": [
+     "gencat_guia_pr_2021"
+    ],
+    "verificado": false,
+    "nota": "Guía de la Generalitat (licencia por confirmar), resumido."
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin dato de que sea pieza habitual desde costa: no se muestra hasta tener fuente.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde embarcación (fondo, curricán o jigging según la especie): práctica habitual de pesca recreativa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin dato de que sea pieza habitual de la pesca submarina: no se muestra en esa pestaña hasta tener fuente.",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "mediterraneo": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "ue_2019_1241"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Con talla en el caladero mediterráneo (RD 560/1995 anexo II o Reg. (UE) 2019/1241 anexo IX), que incluye Baleares."
+    },
+    "baleares": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "ue_2019_1241"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Con talla en el caladero mediterráneo (RD 560/1995 anexo II o Reg. (UE) 2019/1241 anexo IX), que incluye Baleares."
+    },
+    "canarias": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Figura en el anexo III del RD 560/1995 (caladero canario)."
+    },
+    "portugal": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "dgrm_tmc_2025"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Con talla mínima en la tabla de la DGRM (Portugal continental)."
+    },
+    "cantabrico": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "OBIS: 407 registros de 2 conjuntos de datos con licencia libre en la región (consulta 2026-10-08)."
+    },
+    "azores": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "OBIS: 236 registros de 4 conjuntos de datos con licencia libre en la región (consulta 2026-10-08)."
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "nota": "Sin rango verificado con fuente abierta de uso comercial: no puntúa."
+   },
+   "alimentacion": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "ES-RD560-II",
+     "valor_cm": 12,
+     "ambito": "España, aguas exteriores del Mediterráneo (RD 560/1995 anexo II; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2025-11-01",
+     "nota": "'Pagel, besugo (Pagellus spp)'. El Reglamento (UE) 2019/1241 da 17 cm para el aligote en el Mediterráneo."
+    },
+    {
+     "jurisdiccion": "UE-MED",
+     "valor_cm": 17,
+     "ambito": "UE, Mediterráneo (Reg. 2019/1241 anexo IX parte A): referencia para la pesca profesional; a la recreativa no se aplica por sí sola (art. 2.2)",
+     "ambito_corto": "UE, referencia profesional (Reg. 2019/1241)",
+     "fuente": "ue_2019_1241",
+     "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2019-07-25"
+    },
+    {
+     "jurisdiccion": "ES-RD560-III",
+     "valor_cm": 20,
+     "ambito": "España, aguas exteriores de Canarias (RD 560/1995 anexo III; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2025-11-01",
+     "nota": "'Aligote (Pagellus acarne) — Besuguito aligote'."
+    },
+    {
+     "jurisdiccion": "PT",
+     "valor_cm": 18,
+     "ambito": "Portugal continental (tabla DGRM)",
+     "ambito_corto": "Portugal (DGRM)",
+     "fuente": "dgrm_tmc_2025",
+     "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2025-10-30",
+     "nota": "En la tabla DGRM figura como 'Besugo (Pagellus acarne)'."
+    }
+   ],
+   "reglas": {},
+   "pendiente": [
+    "freza por región (la guía de la Generalitat la da en un gráfico ilegible como texto)",
+    "temperatura no-NC",
+    "actividad y alimentación con fuente",
+    "nombres eu/gl con fuente oficial",
+    "modalidades sin dato (aplica: null): costa, submarina",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)"
+   ],
+   "emoji": "🐟",
+   "cebos": [
+    {
+     "nombre": "Gusana",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Los gusanos de mar son de eficacia casi general; no cita al aligote en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Tira de calamar",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "'Cebo muy efectivo para cualquier clase de peces'; no cita al aligote en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+  },
+  {
+   "id": "mero",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Mero",
+    "eu": null,
+    "ca": "Anfós",
+    "gl": null,
+    "pt": "Mero"
+   },
+   "nombres_fuentes": [
+    "boe_rd347",
+    "boe_rd560",
+    "dgrm_faq_ludica_2026",
+    "gencat_guia_pr_2021"
+   ],
+   "cientifico": "Epinephelus marginatus",
+   "nombres_nota": "En Cataluña también 'nero'.",
+   "habitat": {
+    "valor": "Residente habitual de las reservas marinas; muy vulnerable a la pesca porque no se reproduce hasta los 5 años.",
+    "fuentes": [
+     "gencat_guia_pr_2021"
+    ],
+    "verificado": false,
+    "nota": "Guía de la Generalitat (licencia por confirmar), resumido."
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin dato de que se pesque de forma habitual desde costa: no se muestra hasta tener fuente.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Fondo sobre roca desde embarcación (heurística experta). Varias comunidades limitan su captura con cupos: revisa la norma local.",
+     "profundidad_m": null,
+     "zona": null,
+     "regiones_excluidas": [
+      "portugal"
+     ]
+    },
+    "submarina": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Muchas comunidades autónomas restringen o prohíben el mero en pesca submarina y Portugal prohíbe capturarlo: no se muestra en esta pestaña hasta verificar la norma de cada una.",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "mediterraneo": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "ue_2019_1241"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Con talla en el caladero mediterráneo (RD 560/1995 anexo II o Reg. (UE) 2019/1241 anexo IX), que incluye Baleares."
+    },
+    "baleares": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "ue_2019_1241"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Con talla en el caladero mediterráneo (RD 560/1995 anexo II o Reg. (UE) 2019/1241 anexo IX), que incluye Baleares."
+    },
+    "canarias": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Figura en el anexo III del RD 560/1995 (caladero canario)."
+    },
+    "azores": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "OBIS: 64 registros de 3 conjuntos de datos con licencia libre en la región (consulta 2026-10-08)."
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "nota": "Sin rango verificado con fuente abierta de uso comercial: no puntúa."
+   },
+   "alimentacion": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "ES-RD560-II",
+     "valor_cm": 45,
+     "ambito": "España, aguas exteriores del Mediterráneo (RD 560/1995 anexo II; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2025-11-01",
+     "nota": "'Mero (Epinephelus spp)'."
+    },
+    {
+     "jurisdiccion": "UE-MED",
+     "valor_cm": 45,
+     "ambito": "UE, Mediterráneo (Reg. 2019/1241 anexo IX parte A): referencia para la pesca profesional; a la recreativa no se aplica por sí sola (art. 2.2)",
+     "ambito_corto": "UE, referencia profesional (Reg. 2019/1241)",
+     "fuente": "ue_2019_1241",
+     "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2019-07-25",
+     "nota": "Epinephelus spp."
+    },
+    {
+     "jurisdiccion": "ES-RD560-III",
+     "valor_cm": 45,
+     "ambito": "España, aguas exteriores de Canarias (RD 560/1995 anexo III; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2025-11-01",
+     "nota": "'Mero (Epinephelus marginatus)'."
+    }
+   ],
+   "vedas": [
+    {
+     "jurisdiccion": "PT",
+     "ambito": "pesca lúdica, Portugal continental",
+     "tipo": "prohibida",
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "regiones": [
+      "portugal"
+     ],
+     "texto": "Portugal prohíbe capturar y retener meros (género Epinephelus) en la pesca lúdica.",
+     "fuente": "dgrm_faq_ludica_2026",
+     "url": "https://dgrm.pt/documents/20143/121104/FAQ-Pesca+Ludica+2026.pdf/586f6137-df78-25e7-e7ad-8a3dcc1f9ffc",
+     "fecha_revision": "2026-10-08",
+     "verificado": true
+    }
+   ],
+   "reglas": {},
+   "pendiente": [
+    "freza por región (la guía de la Generalitat la da en un gráfico ilegible como texto)",
+    "temperatura no-NC",
+    "actividad y alimentación con fuente",
+    "nombres eu/gl con fuente oficial",
+    "modalidades sin dato (aplica: null): costa, submarina",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)",
+    "normativa autonómica del mero en pesca submarina y cupos (Baleares, Cataluña, C. Valenciana, Murcia, Andalucía, Canarias): según prensa, Baleares 1 ejemplar/persona/día; sin verificar en boletín",
+    "Azores y Madeira: normativa regional del mero"
+   ],
+   "emoji": "🐟",
+   "cebos": [
+    {
+     "nombre": "Calamar, sepia o pulpo",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "'Cebo muy efectivo para cualquier clase de peces'; no cita al mero en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Pez vivo (boga, chucla, caballa pequeña)",
+     "tipo": "natural",
+     "modalidad": "embarcación",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta). Ojo: algunas comunidades prohíben el cebo vivo.",
+     "modalidades": [
+      "embarcacion"
+     ]
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+  },
+  {
+   "id": "gallo",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Gallo",
+    "eu": null,
+    "ca": null,
+    "gl": null,
+    "pt": "Areeiro"
+   },
+   "nombres_fuentes": [
+    "boe_rd347",
+    "boe_rd560",
+    "dgrm_tmc_2025"
+   ],
+   "cientifico": "Lepidorhombus spp. (L. whiffiagonis, L. boscii)",
+   "nombres_nota": "Dos especies: gallo del Norte (L. whiffiagonis) y gallo (L. boscii), según el RD 347/2011.",
+   "habitat": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": false,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Vive en fondos profundos de la plataforma o el talud, lejos del alcance de la pesca desde costa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pez plano de fondos blandos profundos: fondo desde embarcación (heurística experta).",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": false,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pelágico de mar abierto o de fondo profundo: no es pieza de pesca submarina a pulmón.",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "cantabrico": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Figura en el anexo I del RD 560/1995 (caladero Cantábrico-Noroeste y Golfo de Cádiz): especie con pesquería en la zona."
+    },
+    "atlantico_norte": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Figura en el anexo I del RD 560/1995 (caladero Cantábrico-Noroeste y Golfo de Cádiz): especie con pesquería en la zona."
+    },
+    "golfo_cadiz": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Figura en el anexo I del RD 560/1995 (caladero Cantábrico-Noroeste y Golfo de Cádiz): especie con pesquería en la zona."
+    },
+    "mediterraneo": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "ue_2019_1241"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Con talla en el caladero mediterráneo (RD 560/1995 anexo II o Reg. (UE) 2019/1241 anexo IX), que incluye Baleares."
+    },
+    "baleares": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "ue_2019_1241"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Con talla en el caladero mediterráneo (RD 560/1995 anexo II o Reg. (UE) 2019/1241 anexo IX), que incluye Baleares."
+    },
+    "portugal": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "dgrm_tmc_2025"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Con talla mínima en la tabla de la DGRM (Portugal continental)."
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "nota": "Sin rango verificado con fuente abierta de uso comercial: no puntúa."
+   },
+   "alimentacion": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "ES-RD560-I",
+     "valor_cm": 20,
+     "ambito": "España, aguas exteriores del Cantábrico-Noroeste y Golfo de Cádiz (RD 560/1995 anexo I; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2025-11-01",
+     "nota": "'Gallos (Lepidorhombus spp)'."
+    },
+    {
+     "jurisdiccion": "UE-SWW",
+     "valor_cm": 20,
+     "ambito": "UE, aguas suroccidentales (Reg. 2019/1241 anexo VII parte A): referencia para la pesca profesional; a la recreativa no se aplica por sí sola (art. 2.2)",
+     "ambito_corto": "UE, referencia profesional (Reg. 2019/1241)",
+     "fuente": "ue_2019_1241",
+     "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2019-07-25"
+    },
+    {
+     "jurisdiccion": "ES-RD560-II",
+     "valor_cm": 15,
+     "ambito": "España, aguas exteriores del Mediterráneo (RD 560/1995 anexo II; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2025-11-01",
+     "nota": "'Gallo (Lepidorhombus spp)'."
+    },
+    {
+     "jurisdiccion": "PT",
+     "valor_cm": 20,
+     "ambito": "Portugal continental (tabla DGRM)",
+     "ambito_corto": "Portugal (DGRM)",
+     "fuente": "dgrm_tmc_2025",
+     "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2025-10-30",
+     "nota": "'Areeiros (todas las especies del género Lepidorhombus)'."
+    }
+   ],
+   "reglas": {},
+   "pendiente": [
+    "freza por región (la guía de la Generalitat la da en un gráfico ilegible como texto)",
+    "temperatura no-NC",
+    "actividad y alimentación con fuente",
+    "nombres eu/gl con fuente oficial",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)"
+   ],
+   "emoji": "🐟",
+   "cebos": [
+    {
+     "nombre": "Tira de calamar",
+     "tipo": "natural",
+     "modalidad": "embarcación",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "'Cebo muy efectivo para cualquier clase de peces'; no cita al gallo en concreto.",
+     "modalidades": [
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Sardina",
+     "tipo": "natural",
+     "modalidad": "embarcación",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Eficaz en líneas a la deriva, aparejos flotantes y de fondo; no cita al gallo en concreto.",
+     "modalidades": [
+      "embarcacion"
+     ]
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+  },
+  {
+   "id": "raya",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Raya",
+    "eu": null,
+    "ca": null,
+    "gl": null,
+    "pt": "Raia"
+   },
+   "nombres_fuentes": [
+    "boe_rd347",
+    "dgrm_tmc_2025"
+   ],
+   "cientifico": "Raja spp. (sobre todo Raja clavata)",
+   "habitat": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "fuentes": [
+      "mikel_campo_bizkaia"
+     ],
+     "tipo_fuente": "heuristica_experta_local",
+     "criterio": "Se pesca a fondo desde costa sobre arena. En Bizkaia (Armintza), Mikel las pesca desde costa en noviembre, diciembre y enero (observación de campo, confianza media).",
+     "profundidad_m": null,
+     "zona": null,
+     "normativa": [
+      {
+       "jurisdiccion": "PT",
+       "texto": "Prohibido capturar y retener la raia curva (Raja undulata) y la raia tairoga (Rostroraja alba) en pesca lúdica.",
+       "fuente": "dgrm_faq_ludica_2026",
+       "url": "https://dgrm.pt/documents/20143/121104/FAQ-Pesca+Ludica+2026.pdf/586f6137-df78-25e7-e7ad-8a3dcc1f9ffc",
+       "fecha_revision": "2026-10-08"
+      }
+     ]
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Fondo sobre arena desde embarcación: práctica habitual de pesca recreativa.",
+     "profundidad_m": null,
+     "zona": null,
+     "normativa": [
+      {
+       "jurisdiccion": "PT",
+       "texto": "Prohibido capturar y retener la raia curva (Raja undulata) y la raia tairoga (Rostroraja alba) en pesca lúdica.",
+       "fuente": "dgrm_faq_ludica_2026",
+       "url": "https://dgrm.pt/documents/20143/121104/FAQ-Pesca+Ludica+2026.pdf/586f6137-df78-25e7-e7ad-8a3dcc1f9ffc",
+       "fecha_revision": "2026-10-08"
+      }
+     ]
+    },
+    "submarina": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin dato de que sea pieza habitual de la pesca submarina: no se muestra en esa pestaña hasta tener fuente.",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "portugal": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "dgrm_tmc_2025"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Con talla mínima en la tabla de la DGRM (Portugal continental)."
+    },
+    "cantabrico": {
+     "meses": [
+      11,
+      12,
+      1
+     ],
+     "fuentes": [
+      "mikel_campo_bizkaia",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta_local",
+     "criterio": "Temporada buena desde costa en Bizkaia: noviembre-enero (Mikel, Armintza; confianza media).",
+     "nota": "OBIS: 42 registros de 2 conjuntos de datos con licencia libre en la región."
+    },
+    "mediterraneo": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "OBIS: 32 registros de 3 conjuntos de datos con licencia libre en la región (consulta 2026-10-08)."
+    },
+    "azores": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "OBIS: 289 registros de 3 conjuntos de datos con licencia libre en la región (consulta 2026-10-08)."
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "nota": "Sin rango verificado con fuente abierta de uso comercial: no puntúa."
+   },
+   "alimentacion": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "PT",
+     "valor_cm": 60,
+     "ambito": "Portugal continental (tabla DGRM)",
+     "ambito_corto": "Portugal (DGRM)",
+     "fuente": "dgrm_tmc_2025",
+     "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2025-10-30",
+     "nota": "'Raias (Raja spp. e Leucoraja spp.)'. La raia curva (R. undulata) tiene 78 cm mínimo y 97 cm máximo en la pesca profesional, pero en la lúdica está prohibida."
+    }
+   ],
+   "reglas": {},
+   "pendiente": [
+    "freza por región (la guía de la Generalitat la da en un gráfico ilegible como texto)",
+    "temperatura no-NC",
+    "actividad y alimentación con fuente",
+    "nombres eu/gl con fuente oficial",
+    "modalidades sin dato (aplica: null): submarina",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)",
+    "España: rayas prohibidas o con cupo cero por la normativa de la UE (posibilidades de pesca anuales) y estatus de Raja undulata; sin verificar",
+    "presencia en Galicia y Cádiz sin fuente abierta"
+   ],
+   "cientifico_nota": "Ficha de género. NO incluye la raya mosaica (Raja undulata) ni la raya bramante (Rostroraja alba), prohibidas en la pesca lúdica de Portugal.",
+   "emoji": "🐟",
+   "cebos": [
+    {
+     "nombre": "Sardina",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Eficaz en líneas a la deriva, aparejos flotantes y de fondo; no cita a la raya en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Tira de calamar",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "'Cebo muy efectivo para cualquier clase de peces'; no cita a la raya en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Gusana",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Los gusanos de mar son de eficacia casi general; no cita a la raya en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+  },
+  {
+   "id": "merluza",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Merluza",
+    "eu": null,
+    "ca": null,
+    "gl": null,
+    "pt": "Pescada-branca"
+   },
+   "nombres_fuentes": [
+    "boe_rd347",
+    "boe_rd560",
+    "dgrm_tmc_2025"
+   ],
+   "cientifico": "Merluccius merluccius",
+   "habitat": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": false,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Vive en fondos profundos de la plataforma o el talud, lejos del alcance de la pesca desde costa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [
+      "boe_rd347",
+      "pv_tallas_cupos"
+     ],
+     "tipo_fuente": "oficial",
+     "criterio": "Fondo profundo desde embarcación. En España es especie de protección diferenciada: la embarcación necesita autorización específica.",
+     "profundidad_m": null,
+     "zona": null,
+     "normativa": [
+      {
+       "jurisdiccion": "ES",
+       "texto": "Especie de protección diferenciada (anexo II del RD 347/2011): para capturar o tener a bordo merluza en aguas exteriores, la embarcación necesita una autorización específica de la Secretaría General de Pesca (art. 10).",
+       "fuente": "boe_rd347",
+       "url": "https://www.boe.es/eli/es/rd/2011/03/11/347/con",
+       "fecha_revision": "2026-10-08"
+      },
+      {
+       "jurisdiccion": "ES-PV",
+       "texto": "Euskadi: merluza, 5 piezas por licencia y día, con un máximo de 20 cuando son 4 o más tripulantes con licencia; declaración de desembarque obligatoria.",
+       "fuente": "pv_tallas_cupos",
+       "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/especies_tallas_cupos/es_def/index.shtml",
+       "fecha_revision": "2026-10-08"
+      }
+     ]
+    },
+    "submarina": {
+     "aplica": false,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pelágico de mar abierto o de fondo profundo: no es pieza de pesca submarina a pulmón.",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "cantabrico": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Figura en el anexo I del RD 560/1995 (caladero Cantábrico-Noroeste y Golfo de Cádiz): especie con pesquería en la zona."
+    },
+    "atlantico_norte": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Figura en el anexo I del RD 560/1995 (caladero Cantábrico-Noroeste y Golfo de Cádiz): especie con pesquería en la zona."
+    },
+    "golfo_cadiz": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Figura en el anexo I del RD 560/1995 (caladero Cantábrico-Noroeste y Golfo de Cádiz): especie con pesquería en la zona."
+    },
+    "mediterraneo": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "ue_2019_1241"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Con talla en el caladero mediterráneo (RD 560/1995 anexo II o Reg. (UE) 2019/1241 anexo IX), que incluye Baleares."
+    },
+    "baleares": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "ue_2019_1241"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Con talla en el caladero mediterráneo (RD 560/1995 anexo II o Reg. (UE) 2019/1241 anexo IX), que incluye Baleares."
+    },
+    "portugal": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "dgrm_tmc_2025"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Con talla mínima en la tabla de la DGRM (Portugal continental)."
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "nota": "Sin rango verificado con fuente abierta de uso comercial: no puntúa."
+   },
+   "alimentacion": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "ES-RD560-I",
+     "valor_cm": 27,
+     "ambito": "España, aguas exteriores del Cantábrico-Noroeste y Golfo de Cádiz (RD 560/1995 anexo I; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2025-11-01"
+    },
+    {
+     "jurisdiccion": "UE-SWW",
+     "valor_cm": 27,
+     "ambito": "UE, aguas suroccidentales (Reg. 2019/1241 anexo VII parte A): referencia para la pesca profesional; a la recreativa no se aplica por sí sola (art. 2.2)",
+     "ambito_corto": "UE, referencia profesional (Reg. 2019/1241)",
+     "fuente": "ue_2019_1241",
+     "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2019-07-25"
+    },
+    {
+     "jurisdiccion": "ES-RD560-II",
+     "valor_cm": 20,
+     "ambito": "España, aguas exteriores del Mediterráneo (RD 560/1995 anexo II; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2025-11-01"
+    },
+    {
+     "jurisdiccion": "UE-MED",
+     "valor_cm": 20,
+     "ambito": "UE, Mediterráneo (Reg. 2019/1241 anexo IX parte A): referencia para la pesca profesional; a la recreativa no se aplica por sí sola (art. 2.2)",
+     "ambito_corto": "UE, referencia profesional (Reg. 2019/1241)",
+     "fuente": "ue_2019_1241",
+     "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2019-07-25"
+    },
+    {
+     "jurisdiccion": "PT",
+     "valor_cm": 27,
+     "ambito": "Portugal continental (tabla DGRM)",
+     "ambito_corto": "Portugal (DGRM)",
+     "fuente": "dgrm_tmc_2025",
+     "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2025-10-30",
+     "nota": "'Pescada-branca (Merluccius merluccius)'."
+    }
+   ],
+   "cupos": [
+    {
+     "jurisdiccion": "ES-PV",
+     "texto": "5 piezas por licencia y día, máximo 20 por embarcación con 4 o más tripulantes con licencia; exige autorización expresa de la Secretaría General de Pesca Marítima y declaración de desembarque.",
+     "fuente": "pv_tallas_cupos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/especies_tallas_cupos/es_def/index.shtml",
+     "fecha_revision": "2026-10-08"
+    }
+   ],
+   "reglas": {},
+   "pendiente": [
+    "freza por región (la guía de la Generalitat la da en un gráfico ilegible como texto)",
+    "temperatura no-NC",
+    "actividad y alimentación con fuente",
+    "nombres eu/gl con fuente oficial",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)"
+   ],
+   "emoji": "🐟",
+   "cebos": [
+    {
+     "nombre": "Sardina",
+     "tipo": "natural",
+     "modalidad": "embarcación",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Eficaz en líneas a la deriva, aparejos flotantes y de fondo; no cita a la merluza en concreto.",
+     "modalidades": [
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Jig o vinilo de fondo",
+     "tipo": "artificial",
+     "modalidad": "jigging",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
+     "modalidades": [
+      "embarcacion"
+     ]
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+  },
+  {
+   "id": "rape",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Rape",
+    "eu": null,
+    "ca": null,
+    "gl": null,
+    "pt": null
+   },
+   "nombres_fuentes": [
+    "boe_rd347",
+    "boe_rd560"
+   ],
+   "cientifico": "Lophius spp. (L. piscatorius, L. budegassa)",
+   "nombres_nota": "Rape blanco (L. piscatorius) y rape negro (L. budegassa), según el RD 347/2011.",
+   "habitat": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": false,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Vive en fondos profundos de la plataforma o el talud, lejos del alcance de la pesca desde costa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Fondo sobre arena y fango desde embarcación (heurística experta).",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin dato de que sea pieza habitual de la pesca submarina: no se muestra en esa pestaña hasta tener fuente.",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "cantabrico": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Figura en el anexo I del RD 560/1995 (caladero Cantábrico-Noroeste y Golfo de Cádiz): especie con pesquería en la zona."
+    },
+    "atlantico_norte": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Figura en el anexo I del RD 560/1995 (caladero Cantábrico-Noroeste y Golfo de Cádiz): especie con pesquería en la zona."
+    },
+    "golfo_cadiz": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Figura en el anexo I del RD 560/1995 (caladero Cantábrico-Noroeste y Golfo de Cádiz): especie con pesquería en la zona."
+    },
+    "mediterraneo": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "ue_2019_1241"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Con talla en el caladero mediterráneo (RD 560/1995 anexo II o Reg. (UE) 2019/1241 anexo IX), que incluye Baleares."
+    },
+    "baleares": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "ue_2019_1241"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Con talla en el caladero mediterráneo (RD 560/1995 anexo II o Reg. (UE) 2019/1241 anexo IX), que incluye Baleares."
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "nota": "Sin rango verificado con fuente abierta de uso comercial: no puntúa."
+   },
+   "alimentacion": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "ES-RD560-I",
+     "valor_cm": null,
+     "ambito": "España, aguas exteriores del Cantábrico-Noroeste y Golfo de Cádiz (RD 560/1995 anexo I; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2025-11-01",
+     "nota": "El anexo I dice 'Rape (Lophius piscatorius, L. Budegassa) — talla por determinar'."
+    },
+    {
+     "jurisdiccion": "ES-RD560-II",
+     "valor_cm": 30,
+     "ambito": "España, aguas exteriores del Mediterráneo (RD 560/1995 anexo II; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2025-11-01",
+     "nota": "'Rape (Lophius spp)'."
+    }
+   ],
+   "reglas": {},
+   "pendiente": [
+    "freza por región (la guía de la Generalitat la da en un gráfico ilegible como texto)",
+    "temperatura no-NC",
+    "actividad y alimentación con fuente",
+    "nombres eu/gl con fuente oficial",
+    "modalidades sin dato (aplica: null): submarina",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)",
+    "Portugal: no figura en la tabla DGRM",
+    "presencia en Portugal sin fuente abierta"
+   ],
+   "emoji": "🐟",
+   "cebos": [
+    {
+     "nombre": "Sardina",
+     "tipo": "natural",
+     "modalidad": "embarcación",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Eficaz en líneas a la deriva, aparejos flotantes y de fondo; no cita al rape en concreto.",
+     "modalidades": [
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Tira de calamar",
+     "tipo": "natural",
+     "modalidad": "embarcación",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "'Cebo muy efectivo para cualquier clase de peces'; no cita al rape en concreto.",
+     "modalidades": [
+      "embarcacion"
+     ]
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+  },
+  {
+   "id": "chopa",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Chopa",
+    "eu": null,
+    "ca": "Càntera",
+    "gl": null,
+    "pt": "Choupa"
+   },
+   "nombres_fuentes": [
+    "boe_rd347",
+    "boe_rd560",
+    "dgrm_tmc_2025",
+    "gencat_guia_pr_2021"
+   ],
+   "cientifico": "Spondyliosoma cantharus",
+   "habitat": {
+    "valor": "Diurna, de aguas medias; hace nidos en forma de volcán en el fondo, que el macho protege.",
+    "fuentes": [
+     "gencat_guia_pr_2021"
+    ],
+    "verificado": false,
+    "nota": "Guía de la Generalitat (licencia por confirmar), resumido."
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Espárido de roca y fondos mixtos: se pesca desde roca y escollera (heurística experta).",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde embarcación (fondo, curricán o jigging según la especie): práctica habitual de pesca recreativa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Espárido de roca, como el sargo: pieza habitual de la pesca submarina (heurística experta).",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "cantabrico": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Figura en el anexo I del RD 560/1995 (caladero Cantábrico-Noroeste y Golfo de Cádiz): especie con pesquería en la zona."
+    },
+    "atlantico_norte": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Figura en el anexo I del RD 560/1995 (caladero Cantábrico-Noroeste y Golfo de Cádiz): especie con pesquería en la zona."
+    },
+    "golfo_cadiz": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Figura en el anexo I del RD 560/1995 (caladero Cantábrico-Noroeste y Golfo de Cádiz): especie con pesquería en la zona."
+    },
+    "canarias": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Figura en el anexo III del RD 560/1995 (caladero canario)."
+    },
+    "portugal": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "dgrm_tmc_2025"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Con talla mínima en la tabla de la DGRM (Portugal continental)."
+    },
+    "mediterraneo": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "gencat_guia_pr_2021"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Especie objetivo de la pesca recreativa en Cataluña (guía DGPMPS/ICATMAR 2021)."
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "nota": "Sin rango verificado con fuente abierta de uso comercial: no puntúa."
+   },
+   "alimentacion": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "ES-RD560-I",
+     "valor_cm": 23,
+     "ambito": "España, aguas exteriores del Cantábrico-Noroeste y Golfo de Cádiz (RD 560/1995 anexo I; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2025-11-01"
+    },
+    {
+     "jurisdiccion": "ES-RD560-III",
+     "valor_cm": 23,
+     "ambito": "España, aguas exteriores de Canarias (RD 560/1995 anexo III; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2025-11-01",
+     "nota": "'Chopa (Spondyliosoma cantharus) — Chopa, negrón'."
+    },
+    {
+     "jurisdiccion": "PT",
+     "valor_cm": 23,
+     "ambito": "Portugal continental (tabla DGRM)",
+     "ambito_corto": "Portugal (DGRM)",
+     "fuente": "dgrm_tmc_2025",
+     "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2025-10-30",
+     "nota": "'Choupa (Spondyliosoma cantharus)'."
+    }
+   ],
+   "reglas": {},
+   "pendiente": [
+    "freza por región (la guía de la Generalitat la da en un gráfico ilegible como texto)",
+    "temperatura no-NC",
+    "actividad y alimentación con fuente",
+    "nombres eu/gl con fuente oficial",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)",
+    "Mediterráneo: sin talla en el RD 560/1995 anexo II ni en el Reg. (UE) 2019/1241"
+   ],
+   "emoji": "🐟",
+   "cebos": [
+    {
+     "nombre": "Gusana",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Los gusanos de mar son de eficacia casi general; no cita a la chopa en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Tira de calamar",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "'Cebo muy efectivo para cualquier clase de peces'; no cita a la chopa en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Cangrejo (mejor el ermitaño)",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "'El mejor cebo que se puede ofrecer a cualquier clase de peces'; no cita a la chopa en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+  },
+  {
+   "id": "mojarra",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Mojarra",
+    "eu": null,
+    "ca": "Variada",
+    "gl": null,
+    "pt": "Sargo-safia"
+   },
+   "nombres_fuentes": [
+    "boe_rd347",
+    "boe_rd560",
+    "ue_2019_1241",
+    "dgrm_tmc_2025",
+    "gencat_guia_pr_2021"
+   ],
+   "cientifico": "Diplodus vulgaris",
+   "nombres_nota": "También 'sargo mojarra' o 'sargo común'; en Canarias 'seifío' (RD 560/1995 anexo III).",
+   "habitat": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Espárido de roca: se pesca desde roca, escollera y puerto, como el sargo (heurística experta).",
+     "profundidad_m": null,
+     "zona": null,
+     "normativa": [
+      {
+       "jurisdiccion": "PT",
+       "texto": "Parque Natural del Sudoeste Alentejano y Costa Vicentina: en pesca lúdica a pie, defeso de los sargos (D. sargus y D. vulgaris) del 1 al 28 de febrero.",
+       "fuente": "dgrm_faq_ludica_2026",
+       "url": "https://dgrm.pt/documents/20143/121104/FAQ-Pesca+Ludica+2026.pdf/586f6137-df78-25e7-e7ad-8a3dcc1f9ffc",
+       "fecha_revision": "2026-10-08"
+      }
+     ]
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde embarcación (fondo, curricán o jigging según la especie): práctica habitual de pesca recreativa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Espárido de roca, como el sargo: pieza habitual de la pesca submarina (heurística experta).",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "mediterraneo": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "ue_2019_1241"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Con talla en el caladero mediterráneo (RD 560/1995 anexo II o Reg. (UE) 2019/1241 anexo IX), que incluye Baleares."
+    },
+    "baleares": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "ue_2019_1241"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Con talla en el caladero mediterráneo (RD 560/1995 anexo II o Reg. (UE) 2019/1241 anexo IX), que incluye Baleares."
+    },
+    "canarias": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Figura en el anexo III del RD 560/1995 (caladero canario)."
+    },
+    "portugal": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "dgrm_tmc_2025"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Con talla mínima en la tabla de la DGRM (Portugal continental)."
+    },
+    "cantabrico": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "OBIS: 27 registros de 2 conjuntos de datos con licencia libre en la región (consulta 2026-10-08)."
+    },
+    "azores": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "OBIS: 52 registros de 2 conjuntos de datos con licencia libre en la región (consulta 2026-10-08)."
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "nota": "Sin rango verificado con fuente abierta de uso comercial: no puntúa."
+   },
+   "alimentacion": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "ES-RD560-II",
+     "valor_cm": 15,
+     "ambito": "España, aguas exteriores del Mediterráneo (RD 560/1995 anexo II; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2025-11-01",
+     "nota": "'Sargo (Diplodus spp)'. El Reglamento (UE) 2019/1241 da 18 cm para la mojarra en el Mediterráneo."
+    },
+    {
+     "jurisdiccion": "UE-MED",
+     "valor_cm": 18,
+     "ambito": "UE, Mediterráneo (Reg. 2019/1241 anexo IX parte A): referencia para la pesca profesional; a la recreativa no se aplica por sí sola (art. 2.2)",
+     "ambito_corto": "UE, referencia profesional (Reg. 2019/1241)",
+     "fuente": "ue_2019_1241",
+     "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2019-07-25",
+     "nota": "'Sargo mojarra (Diplodus vulgaris)'."
+    },
+    {
+     "jurisdiccion": "ES-RD560-III",
+     "valor_cm": 22,
+     "ambito": "España, aguas exteriores de Canarias (RD 560/1995 anexo III; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2025-11-01",
+     "nota": "'Mojarra (Diplodus vulgaris) — Seifia, seifio'."
+    },
+    {
+     "jurisdiccion": "PT",
+     "valor_cm": 17,
+     "ambito": "Portugal continental (tabla DGRM)",
+     "ambito_corto": "Portugal (DGRM)",
+     "fuente": "dgrm_tmc_2025",
+     "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2025-10-30",
+     "nota": "'Sargo safia (Diplodus vulgaris)'."
+    }
+   ],
+   "reglas": {},
+   "pendiente": [
+    "freza por región (la guía de la Generalitat la da en un gráfico ilegible como texto)",
+    "temperatura no-NC",
+    "actividad y alimentación con fuente",
+    "nombres eu/gl con fuente oficial",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)",
+    "Cantábrico, Galicia y Cádiz: sin talla en el RD 560/1995 anexo I"
+   ],
+   "emoji": "🐟",
+   "cebos": [
+    {
+     "nombre": "Gusana",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Los gusanos de mar son de eficacia casi general; no cita a la mojarra en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Cangrejo (mejor el ermitaño)",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "'El mejor cebo que se puede ofrecer a cualquier clase de peces'; no cita a la mojarra en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Tira de calamar",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "'Cebo muy efectivo para cualquier clase de peces'; no cita a la mojarra en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+  },
+  {
+   "id": "herrera",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Herrera",
+    "eu": null,
+    "ca": "Mabre",
+    "gl": null,
+    "pt": "Ferreira"
+   },
+   "nombres_fuentes": [
+    "boe_rd347",
+    "ue_2019_1241",
+    "dgrm_tmc_2025",
+    "gencat_guia_pr_2021"
+   ],
+   "cientifico": "Lithognathus mormyrus",
+   "nombres_nota": "El Reglamento (UE) 2019/1241 la llama 'herrero'; en Cataluña también 'marbre'.",
+   "habitat": {
+    "valor": "Fondos de arena de poca profundidad; sufre mucha presión pesquera.",
+    "fuentes": [
+     "gencat_guia_pr_2021"
+    ],
+    "verificado": false,
+    "nota": "Guía de la Generalitat (licencia por confirmar), resumido."
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Espárido de arena somera: pieza típica del surfcasting en playa (heurística experta).",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin dato de que se busque desde embarcación de forma habitual: no se muestra hasta tener fuente.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin dato de que sea pieza habitual de la pesca submarina: no se muestra en esa pestaña hasta tener fuente.",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "mediterraneo": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "ue_2019_1241"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Con talla en el caladero mediterráneo (RD 560/1995 anexo II o Reg. (UE) 2019/1241 anexo IX), que incluye Baleares."
+    },
+    "baleares": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "ue_2019_1241"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Con talla en el caladero mediterráneo (RD 560/1995 anexo II o Reg. (UE) 2019/1241 anexo IX), que incluye Baleares."
+    },
+    "portugal": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "dgrm_tmc_2025"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Con talla mínima en la tabla de la DGRM (Portugal continental)."
+    },
+    "cantabrico": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "OBIS: 33 registros de 2 conjuntos de datos con licencia libre en la región (consulta 2026-10-08)."
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "nota": "Sin rango verificado con fuente abierta de uso comercial: no puntúa."
+   },
+   "alimentacion": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "UE-MED",
+     "valor_cm": 20,
+     "ambito": "UE, Mediterráneo (Reg. 2019/1241 anexo IX parte A): referencia para la pesca profesional; a la recreativa no se aplica por sí sola (art. 2.2)",
+     "ambito_corto": "UE, referencia profesional (Reg. 2019/1241)",
+     "fuente": "ue_2019_1241",
+     "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2019-07-25",
+     "nota": "'Herrero (Lithognathus mormyrus)'. No figura en el RD 560/1995 anexo II."
+    },
+    {
+     "jurisdiccion": "PT",
+     "valor_cm": 15,
+     "ambito": "Portugal continental (tabla DGRM)",
+     "ambito_corto": "Portugal (DGRM)",
+     "fuente": "dgrm_tmc_2025",
+     "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2025-10-30",
+     "nota": "'Ferreira (Lithognathus mormyrus)'."
+    }
+   ],
+   "reglas": {},
+   "pendiente": [
+    "freza por región (la guía de la Generalitat la da en un gráfico ilegible como texto)",
+    "temperatura no-NC",
+    "actividad y alimentación con fuente",
+    "nombres eu/gl con fuente oficial",
+    "modalidades sin dato (aplica: null): embarcacion, submarina",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)",
+    "presencia en Cádiz y Canarias sin fuente abierta"
+   ],
+   "emoji": "🐟",
+   "cebos": [
+    {
+     "nombre": "Gusana",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Los gusanos de mar son de eficacia casi general; no cita a la herrera en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Navaja o muergo",
+     "tipo": "natural",
+     "modalidad": "surfcasting",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "'Para todos los peces en general'; no cita a la herrera en concreto.",
+     "modalidades": [
+      "costa"
+     ]
+    },
+    {
+     "nombre": "Tira de calamar",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "'Cebo muy efectivo para cualquier clase de peces'; no cita a la herrera en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+  },
+  {
+   "id": "raspallon",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Raspallón",
+    "eu": null,
+    "ca": "Esparrall",
+    "gl": null,
+    "pt": "Sargo-alcorraz"
+   },
+   "nombres_fuentes": [
+    "boe_rd347",
+    "ue_2019_1241",
+    "dgrm_tmc_2025",
+    "gencat_guia_pr_2021"
+   ],
+   "cientifico": "Diplodus annularis",
+   "nombres_nota": "La tabla DGRM lo llama 'sargo mucharra alcorraz'.",
+   "habitat": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Espárido pequeño de roca, puerto y pradera: muy común desde costa (heurística experta).",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde embarcación (fondo, curricán o jigging según la especie): práctica habitual de pesca recreativa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin dato de que sea pieza habitual de la pesca submarina: no se muestra en esa pestaña hasta tener fuente.",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "mediterraneo": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "ue_2019_1241"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Con talla en el caladero mediterráneo (RD 560/1995 anexo II o Reg. (UE) 2019/1241 anexo IX), que incluye Baleares."
+    },
+    "baleares": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "ue_2019_1241"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Con talla en el caladero mediterráneo (RD 560/1995 anexo II o Reg. (UE) 2019/1241 anexo IX), que incluye Baleares."
+    },
+    "portugal": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "dgrm_tmc_2025"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Con talla mínima en la tabla de la DGRM (Portugal continental)."
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "nota": "Sin rango verificado con fuente abierta de uso comercial: no puntúa."
+   },
+   "alimentacion": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "ES-RD560-II",
+     "valor_cm": 15,
+     "ambito": "España, aguas exteriores del Mediterráneo (RD 560/1995 anexo II; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2025-11-01",
+     "nota": "'Sargo (Diplodus spp)'. El Reglamento (UE) 2019/1241 da 12 cm para el raspallón."
+    },
+    {
+     "jurisdiccion": "UE-MED",
+     "valor_cm": 12,
+     "ambito": "UE, Mediterráneo (Reg. 2019/1241 anexo IX parte A): referencia para la pesca profesional; a la recreativa no se aplica por sí sola (art. 2.2)",
+     "ambito_corto": "UE, referencia profesional (Reg. 2019/1241)",
+     "fuente": "ue_2019_1241",
+     "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2019-07-25"
+    },
+    {
+     "jurisdiccion": "PT",
+     "valor_cm": 14,
+     "ambito": "Portugal continental (tabla DGRM)",
+     "ambito_corto": "Portugal (DGRM)",
+     "fuente": "dgrm_tmc_2025",
+     "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2025-10-30",
+     "nota": "'Sargo mucharra alcorraz (Diplodus annularis)'."
+    }
+   ],
+   "reglas": {},
+   "pendiente": [
+    "freza por región (la guía de la Generalitat la da en un gráfico ilegible como texto)",
+    "temperatura no-NC",
+    "actividad y alimentación con fuente",
+    "nombres eu/gl con fuente oficial",
+    "modalidades sin dato (aplica: null): submarina",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)"
+   ],
+   "emoji": "🐟",
+   "cebos": [
+    {
+     "nombre": "Gusana",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Los gusanos de mar son de eficacia casi general; no cita al raspallón en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Camarón, quisquilla o gamba",
+     "tipo": "natural",
+     "modalidad": "flotador",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Buen cebo con flotador, a la deriva y en fondo; no cita al raspallón en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Tira de calamar",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "'Cebo muy efectivo para cualquier clase de peces'; no cita al raspallón en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+  },
+  {
+   "id": "oblada",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Oblada",
+    "eu": null,
+    "ca": "Oblada",
+    "gl": null,
+    "pt": null
+   },
+   "nombres_fuentes": [
+    "boe_rd347",
+    "gencat_guia_pr_2021"
+   ],
+   "cientifico": "Oblada melanura",
+   "habitat": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Espárido de media agua en roca y puerto: típica del flotador desde costa (heurística experta).",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde embarcación (fondo, curricán o jigging según la especie): práctica habitual de pesca recreativa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin dato de que sea pieza habitual de la pesca submarina: no se muestra en esa pestaña hasta tener fuente.",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "mediterraneo": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "gencat_guia_pr_2021"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Especie objetivo de la pesca recreativa en Cataluña (guía DGPMPS/ICATMAR 2021)."
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "nota": "Sin rango verificado con fuente abierta de uso comercial: no puntúa."
+   },
+   "alimentacion": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "talla_minima": [],
+   "reglas": {},
+   "pendiente": [
+    "talla mínima: no figura en RD 560/1995, Reg. (UE) 2019/1241 ni en la tabla DGRM; revisar normativa autonómica",
+    "freza por región (la guía de la Generalitat la da en un gráfico ilegible como texto)",
+    "temperatura no-NC",
+    "actividad y alimentación con fuente",
+    "nombres eu/gl con fuente oficial",
+    "modalidades sin dato (aplica: null): submarina",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)",
+    "presencia en Baleares, Canarias y Portugal sin fuente abierta (OBIS: un solo conjunto de datos en Canarias)"
+   ],
+   "emoji": "🐟",
+   "cebos": [
+    {
+     "nombre": "Camarón, quisquilla o gamba",
+     "tipo": "natural",
+     "modalidad": "flotador",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Buen cebo con flotador, a la deriva y en fondo; no cita a la oblada en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Cebo compuesto (engodo)",
+     "tipo": "natural",
+     "modalidad": "flotador",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Para cebar la zona; algunos se usan como cebo de anzuelo.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Gusana",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Los gusanos de mar son de eficacia casi general; no cita a la oblada en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+  },
+  {
+   "id": "sargo_picudo",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Sargo picudo",
+    "eu": null,
+    "ca": "Morruda",
+    "gl": null,
+    "pt": "Sargo-bicudo"
+   },
+   "nombres_fuentes": [
+    "boe_rd347",
+    "ue_2019_1241",
+    "dgrm_tmc_2025",
+    "gencat_guia_pr_2021"
+   ],
+   "cientifico": "Diplodus puntazzo",
+   "habitat": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Espárido de roca: se pesca desde roca y escollera, como el sargo (heurística experta).",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde embarcación (fondo, curricán o jigging según la especie): práctica habitual de pesca recreativa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Espárido de roca, como el sargo: pieza habitual de la pesca submarina (heurística experta).",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "mediterraneo": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "ue_2019_1241"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Con talla en el caladero mediterráneo (RD 560/1995 anexo II o Reg. (UE) 2019/1241 anexo IX), que incluye Baleares."
+    },
+    "baleares": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560",
+      "ue_2019_1241"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Con talla en el caladero mediterráneo (RD 560/1995 anexo II o Reg. (UE) 2019/1241 anexo IX), que incluye Baleares."
+    },
+    "portugal": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "dgrm_tmc_2025"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Con talla mínima en la tabla de la DGRM (Portugal continental)."
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "nota": "Sin rango verificado con fuente abierta de uso comercial: no puntúa."
+   },
+   "alimentacion": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "ES-RD560-II",
+     "valor_cm": 15,
+     "ambito": "España, aguas exteriores del Mediterráneo (RD 560/1995 anexo II; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2025-11-01",
+     "nota": "'Sargo (Diplodus spp)'. El Reglamento (UE) 2019/1241 da 18 cm para el sargo picudo."
+    },
+    {
+     "jurisdiccion": "UE-MED",
+     "valor_cm": 18,
+     "ambito": "UE, Mediterráneo (Reg. 2019/1241 anexo IX parte A): referencia para la pesca profesional; a la recreativa no se aplica por sí sola (art. 2.2)",
+     "ambito_corto": "UE, referencia profesional (Reg. 2019/1241)",
+     "fuente": "ue_2019_1241",
+     "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2019-07-25"
+    },
+    {
+     "jurisdiccion": "PT",
+     "valor_cm": 22,
+     "ambito": "Portugal continental (tabla DGRM)",
+     "ambito_corto": "Portugal (DGRM)",
+     "fuente": "dgrm_tmc_2025",
+     "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2025-10-30",
+     "nota": "'Sargo bicudo (Diplodus puntazzo)'."
+    }
+   ],
+   "reglas": {},
+   "pendiente": [
+    "freza por región (la guía de la Generalitat la da en un gráfico ilegible como texto)",
+    "temperatura no-NC",
+    "actividad y alimentación con fuente",
+    "nombres eu/gl con fuente oficial",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)"
+   ],
+   "emoji": "🐟",
+   "cebos": [
+    {
+     "nombre": "Gusana",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Los gusanos de mar son de eficacia casi general; no cita al sargo picudo en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Cangrejo (mejor el ermitaño)",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "'El mejor cebo que se puede ofrecer a cualquier clase de peces'; no cita al sargo picudo en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Tira de calamar",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "'Cebo muy efectivo para cualquier clase de peces'; no cita al sargo picudo en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+  },
+  {
+   "id": "pez_limon",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Pez limón",
+    "eu": null,
+    "ca": "Círvia",
+    "gl": null,
+    "pt": null
+   },
+   "nombres_fuentes": [
+    "boe_rd347",
+    "gencat_guia_pr_2021"
+   ],
+   "cientifico": "Seriola dumerili",
+   "nombres_nota": "También 'serviola'; 'pez de limón' en el RD 347/2011. En Canarias, 'medregal' (la ficha 'medregal' de Canarias es del mismo género, sin especie verificada).",
+   "habitat": {
+    "valor": "Los juveniles se acercan a la costa en verano; la guía recomienda no capturarlos.",
+    "fuentes": [
+     "gencat_guia_pr_2021"
+    ],
+    "verificado": false,
+    "nota": "Guía de la Generalitat (licencia por confirmar), resumido."
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin dato verificable de que se pesque habitualmente desde costa: no se muestra hasta tener fuente.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Gran depredador pelágico-costero: curricán, jigging y pez vivo desde embarcación (heurística experta).",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pieza clásica de la pesca submarina en el Mediterráneo (heurística experta).",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "mediterraneo": {
+     "meses": [
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+     ],
+     "fuentes": [
+      "gencat_guia_pr_2021"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pelágico de temporada cálida: de mayo a noviembre (heurística experta, sin fuente abierta de estacionalidad).",
+     "nota": "Especie objetivo de la pesca recreativa en Cataluña (guía DGPMPS/ICATMAR 2021)."
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "nota": "Sin rango verificado con fuente abierta de uso comercial: no puntúa."
+   },
+   "alimentacion": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "talla_minima": [],
+   "reglas": {},
+   "pendiente": [
+    "talla mínima: no figura en RD 560/1995, Reg. (UE) 2019/1241 ni en la tabla DGRM; revisar normativa autonómica",
+    "freza por región (la guía de la Generalitat la da en un gráfico ilegible como texto)",
+    "temperatura no-NC",
+    "actividad y alimentación con fuente",
+    "nombres eu/gl con fuente oficial",
+    "modalidades sin dato (aplica: null): costa",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)",
+    "Canarias: unir o separar de la ficha 'medregal' cuando se verifique su especie",
+    "estacionalidad con fuente"
+   ],
+   "emoji": "🐟",
+   "cebos": [
+    {
+     "nombre": "Pez vivo (boga, caballa, jurel)",
+     "tipo": "natural",
+     "modalidad": "embarcación",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta). Ojo: algunas comunidades prohíben el cebo vivo.",
+     "modalidades": [
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Jig metálico",
+     "tipo": "artificial",
+     "modalidad": "jigging",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
+     "modalidades": [
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Señuelo de curricán",
+     "tipo": "artificial",
+     "modalidad": "curricán",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
+     "modalidades": [
+      "embarcacion"
+     ]
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+  },
+  {
+   "id": "bacoreta",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Bacoreta",
+    "eu": null,
+    "ca": "Bacoreta",
+    "gl": null,
+    "pt": null
+   },
+   "nombres_fuentes": [
+    "boe_rd347",
+    "gencat_guia_pr_2021"
+   ],
+   "cientifico": "Euthynnus alletteratus",
+   "habitat": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin dato verificable de que se pesque habitualmente desde costa: no se muestra hasta tener fuente.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Túnido pequeño: curricán y spinning desde embarcación sobre bancos (heurística experta).",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin dato de que sea pieza habitual de la pesca submarina: no se muestra en esa pestaña hasta tener fuente.",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "mediterraneo": {
+     "meses": [
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+     ],
+     "fuentes": [
+      "gencat_guia_pr_2021"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Túnido de aguas cálidas: de junio a noviembre (heurística experta, sin fuente abierta de estacionalidad).",
+     "nota": "Especie objetivo de la pesca recreativa en Cataluña (guía DGPMPS/ICATMAR 2021)."
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "nota": "Sin rango verificado con fuente abierta de uso comercial: no puntúa."
+   },
+   "alimentacion": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "talla_minima": [],
+   "reglas": {},
+   "pendiente": [
+    "talla mínima: no figura en RD 560/1995, Reg. (UE) 2019/1241 ni en la tabla DGRM; revisar normativa autonómica",
+    "freza por región (la guía de la Generalitat la da en un gráfico ilegible como texto)",
+    "temperatura no-NC",
+    "actividad y alimentación con fuente",
+    "nombres eu/gl con fuente oficial",
+    "modalidades sin dato (aplica: null): costa, submarina",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)",
+    "estacionalidad con fuente"
+   ],
+   "emoji": "🐟",
+   "cebos": [
+    {
+     "nombre": "Señuelo de curricán pequeño",
+     "tipo": "artificial",
+     "modalidad": "curricán",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
+     "modalidades": [
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Jig metálico ligero",
+     "tipo": "artificial",
+     "modalidad": "jigging",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
+     "modalidades": [
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Sardina",
+     "tipo": "natural",
+     "modalidad": "embarcación",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Eficaz en líneas a la deriva, aparejos flotantes y de fondo; no cita a la bacoreta en concreto.",
+     "modalidades": [
+      "embarcacion"
+     ]
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+  },
+  {
+   "id": "atun_rojo",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Atún rojo",
+    "eu": null,
+    "ca": "Tonyina",
+    "gl": null,
+    "pt": "Atum-rabilho"
+   },
+   "nombres_fuentes": [
+    "boe_rd347",
+    "dgrm_tmc_2025",
+    "gencat_guia_pr_2021"
+   ],
+   "cientifico": "Thunnus thynnus",
+   "habitat": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": false,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pelágico de mar abierto: no se pesca desde costa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [
+      "boe_rd347",
+      "boe_rd46_2019",
+      "pv_tallas_cupos",
+      "dgrm_faq_ludica_2026"
+     ],
+     "tipo_fuente": "oficial",
+     "criterio": "Solo captura y suelta, con autorización de la embarcación y cuota disponible: se muestra para informar de la norma, nunca para retenerlo.",
+     "profundidad_m": null,
+     "zona": null,
+     "normativa": [
+      {
+       "jurisdiccion": "ES",
+       "texto": "Especie de protección diferenciada (anexo II del RD 347/2011): para capturar o tener a bordo atún rojo en aguas exteriores, la embarcación necesita una autorización específica de la Secretaría General de Pesca (art. 10).",
+       "fuente": "boe_rd347",
+       "url": "https://www.boe.es/eli/es/rd/2011/03/11/347/con",
+       "fecha_revision": "2026-10-08"
+      },
+      {
+       "jurisdiccion": "ES",
+       "texto": "Pesca recreativa solo con cuota disponible y devolviendo vivos los atunes (captura y suelta). Si muere uno, hay que dejar de pescar, declararlo y desembarcarlo entero; prohibido venderlo (RD 46/2019, art. 7).",
+       "fuente": "boe_rd46_2019",
+       "url": "https://www.boe.es/eli/es/rd/2019/02/08/46/con",
+       "fecha_revision": "2026-10-08"
+      },
+      {
+       "jurisdiccion": "ES-PV",
+       "texto": "Euskadi: 'Atún rojo (Thunnus thynnus) - prohibida su pesca' (Gobierno Vasco).",
+       "fuente": "pv_tallas_cupos",
+       "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/especies_tallas_cupos/es_def/index.shtml",
+       "fecha_revision": "2026-10-08"
+      },
+      {
+       "jurisdiccion": "PT",
+       "texto": "Prohibido capturarlo y retenerlo en pesca lúdica. Solo se permite retener, en total 500 kg al año para toda la pesca lúdica y ejemplares de 115 cm o más, a bordo de embarcaciones de pesca-turística autorizadas por la DGRM. Desde 2026 hay que comunicar las capturas en la app RecFishing.",
+       "fuente": "dgrm_faq_ludica_2026",
+       "url": "https://dgrm.pt/documents/20143/121104/FAQ-Pesca+Ludica+2026.pdf/586f6137-df78-25e7-e7ad-8a3dcc1f9ffc",
+       "fecha_revision": "2026-10-08"
+      }
+     ]
+    },
+    "submarina": {
+     "aplica": false,
+     "fuentes": [
+      "boe_rd46_2019"
+     ],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pelágico de mar abierto y, en España, solo captura y suelta: incompatible con el arpón.",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "cantabrico": {
+     "meses": [
+      7,
+      8,
+      9,
+      10
+     ],
+     "fuentes": [
+      "pv_tallas_cupos"
+     ],
+     "verificado": false,
+     "nota": "Gobierno Vasco: 'Túnidos - primeros de julio y octubre (fechas variables)'."
+    },
+    "mediterraneo": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "gencat_guia_pr_2021"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin fuente abierta de estacionalidad; da igual a efectos prácticos: no se puede retener (veda todo el año).",
+     "nota": "Especie objetivo de la pesca recreativa en Cataluña (guía DGPMPS/ICATMAR 2021)."
+    },
+    "portugal": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "dgrm_tmc_2025"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Con talla mínima en la tabla de la DGRM (Portugal continental)."
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "nota": "Sin rango verificado con fuente abierta de uso comercial: no puntúa."
+   },
+   "alimentacion": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "PT",
+     "valor_cm": 115,
+     "ambito": "Portugal continental (tabla DGRM)",
+     "ambito_corto": "Portugal (DGRM)",
+     "fuente": "dgrm_tmc_2025",
+     "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2025-10-30",
+     "nota": "'30 kg o 115 cm'. Solo vale para la pesca-turística autorizada: en la pesca lúdica está prohibido retenerlo."
+    }
+   ],
+   "vedas": [
+    {
+     "jurisdiccion": "ES",
+     "ambito": "pesca recreativa, aguas españolas",
+     "tipo": "solo_captura_y_suelta",
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "regiones": [
+      "cantabrico",
+      "atlantico_norte",
+      "golfo_cadiz",
+      "mediterraneo",
+      "baleares",
+      "canarias"
+     ],
+     "texto": "No se puede retener: solo captura y suelta, con autorización de la embarcación (especie de protección diferenciada, RD 347/2011) y cuota disponible (RD 46/2019, art. 7). En Euskadi el Gobierno Vasco dice 'prohibida su pesca'.",
+     "fuente": "boe_rd46_2019",
+     "url": "https://www.boe.es/eli/es/rd/2019/02/08/46/con",
+     "fecha_revision": "2026-10-08",
+     "verificado": true
+    },
+    {
+     "jurisdiccion": "PT",
+     "ambito": "pesca lúdica, Portugal continental",
+     "tipo": "prohibida",
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "regiones": [
+      "portugal"
+     ],
+     "texto": "Prohibido capturarlo y retenerlo en pesca lúdica (solo pesca-turística autorizada por la DGRM).",
+     "fuente": "dgrm_faq_ludica_2026",
+     "url": "https://dgrm.pt/documents/20143/121104/FAQ-Pesca+Ludica+2026.pdf/586f6137-df78-25e7-e7ad-8a3dcc1f9ffc",
+     "fecha_revision": "2026-10-08",
+     "verificado": true
+    }
+   ],
+   "reglas": {},
+   "pendiente": [
+    "freza por región (la guía de la Generalitat la da en un gráfico ilegible como texto)",
+    "temperatura no-NC",
+    "actividad y alimentación con fuente",
+    "nombres eu/gl con fuente oficial",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)",
+    "periodo y cuota de la pesca recreativa de cada año (resolución anual de la Secretaría General de Pesca): sin verificar para 2026",
+    "tallas UE del plan plurianual (Reg. (UE) 2016/1627 y modificaciones): el RD 560/1995 da 6,4 kg (anexos I y III) y 80 cm o 10 kg (anexo II), superadas; no se muestran"
+   ],
+   "emoji": "🐟",
+   "cebos": [
+    {
+     "nombre": "Sardina",
+     "tipo": "natural",
+     "modalidad": "embarcación",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Eficaz en líneas a la deriva, aparejos flotantes y de fondo; no cita al atún rojo en concreto.",
+     "modalidades": [
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Señuelo de curricán",
+     "tipo": "artificial",
+     "modalidad": "curricán",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
+     "modalidades": [
+      "embarcacion"
+     ]
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+  },
+  {
+   "id": "llampuga",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Llampuga",
+    "eu": null,
+    "ca": "Llampuga",
+    "gl": null,
+    "pt": null
+   },
+   "nombres_fuentes": [
+    "boe_rd347",
+    "gencat_guia_pr_2021"
+   ],
+   "cientifico": "Coryphaena hippurus",
+   "nombres_nota": "'Lampuga' en el anexo II del RD 347/2011; dorado en otras zonas.",
+   "habitat": {
+    "valor": "Pelágico; los juveniles, inmaduros, se acercan a la costa en verano.",
+    "fuentes": [
+     "gencat_guia_pr_2021"
+    ],
+    "verificado": false,
+    "nota": "Guía de la Generalitat (licencia por confirmar), resumido."
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": false,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pelágico de mar abierto: no se pesca desde costa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [
+      "boe_rd347"
+     ],
+     "tipo_fuente": "oficial",
+     "criterio": "Pelágico: curricán desde embarcación. En España es especie de protección diferenciada: la embarcación necesita autorización específica.",
+     "profundidad_m": null,
+     "zona": null,
+     "normativa": [
+      {
+       "jurisdiccion": "ES",
+       "texto": "Especie de protección diferenciada (anexo II del RD 347/2011): para capturar o tener a bordo llampuga en aguas exteriores, la embarcación necesita una autorización específica de la Secretaría General de Pesca (art. 10).",
+       "fuente": "boe_rd347",
+       "url": "https://www.boe.es/eli/es/rd/2011/03/11/347/con",
+       "fecha_revision": "2026-10-08"
+      }
+     ]
+    },
+    "submarina": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin dato de que sea pieza habitual de la pesca submarina: no se muestra en esa pestaña hasta tener fuente.",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "mediterraneo": {
+     "meses": [
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "gencat_guia_pr_2021"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pelágico de final de verano y otoño: de agosto a diciembre (heurística experta, sin fuente abierta de estacionalidad).",
+     "nota": "Especie objetivo de la pesca recreativa en Cataluña (guía DGPMPS/ICATMAR 2021)."
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "nota": "Sin rango verificado con fuente abierta de uso comercial: no puntúa."
+   },
+   "alimentacion": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "talla_minima": [],
+   "reglas": {},
+   "pendiente": [
+    "talla mínima: no figura en RD 560/1995, Reg. (UE) 2019/1241 ni en la tabla DGRM; revisar normativa autonómica",
+    "freza por región (la guía de la Generalitat la da en un gráfico ilegible como texto)",
+    "temperatura no-NC",
+    "actividad y alimentación con fuente",
+    "nombres eu/gl con fuente oficial",
+    "modalidades sin dato (aplica: null): submarina",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)",
+    "Baleares (pesquería tradicional) y Canarias: presencia sin fuente abierta (OBIS: un solo registro libre)",
+    "estacionalidad con fuente"
+   ],
+   "emoji": "🐟",
+   "cebos": [
+    {
+     "nombre": "Señuelo de curricán",
+     "tipo": "artificial",
+     "modalidad": "curricán",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
+     "modalidades": [
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Pez vivo pequeño",
+     "tipo": "natural",
+     "modalidad": "embarcación",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta). Ojo: algunas comunidades prohíben el cebo vivo.",
+     "modalidades": [
+      "embarcacion"
+     ]
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+  },
+  {
+   "id": "abade",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Abade",
+    "eu": null,
+    "ca": null,
+    "gl": null,
+    "pt": null
+   },
+   "nombres_fuentes": [
+    "boe_rd560"
+   ],
+   "cientifico": "Mycteroperca fusca",
+   "nombres_nota": "RD 560/1995 anexo III: 'Gitano (Mycteroperca fusca) — Abade, abadejo'. OJO: el 'gitano' del RD 347/2011 es otra especie (M. rubra) y el 'abadejo' peninsular es Pollachius pollachius.",
+   "habitat": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin dato verificable de que se pesque habitualmente desde costa: no se muestra hasta tener fuente.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Serránido de roca: fondo desde embarcación (heurística experta).",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin verificar la normativa canaria de pesca submarina para los serránidos: no se muestra hasta tenerla.",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "canarias": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "boe_rd560"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "Figura en el anexo III del RD 560/1995 (caladero canario)."
+    },
+    "azores": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "OBIS: 44 registros de 2 conjuntos de datos con licencia libre en la región (consulta 2026-10-08)."
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "nota": "Sin rango verificado con fuente abierta de uso comercial: no puntúa."
+   },
+   "alimentacion": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "ES-RD560-III",
+     "valor_cm": 35,
+     "ambito": "España, aguas exteriores de Canarias (RD 560/1995 anexo III; obligatoria en recreativa por el art. 4 del RD 347/2011)",
+     "ambito_corto": "España, aguas exteriores (RD 560/1995)",
+     "fuente": "boe_rd560",
+     "url": "https://www.boe.es/eli/es/rd/1995/04/07/560/con",
+     "fecha_revision": "2026-10-08",
+     "fecha_documento": "2025-11-01",
+     "nota": "'Gitano (Mycteroperca fusca) — Abade, abadejo'."
+    }
+   ],
+   "reglas": {},
+   "pendiente": [
+    "freza por región (la guía de la Generalitat la da en un gráfico ilegible como texto)",
+    "temperatura no-NC",
+    "actividad y alimentación con fuente",
+    "nombres eu/gl con fuente oficial",
+    "modalidades sin dato (aplica: null): costa, submarina",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)",
+    "Canarias (BOC): normativa de pesca recreativa del abade, cupos y submarina",
+    "Madeira: presencia sin fuente abierta"
+   ],
+   "emoji": "🐟",
+   "cebos": [
+    {
+     "nombre": "Tira de calamar",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "'Cebo muy efectivo para cualquier clase de peces'; no cita al abade en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Sardina",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Eficaz en líneas a la deriva, aparejos flotantes y de fondo; no cita al abade en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Pez vivo (boga, chicharro pequeño)",
+     "tipo": "natural",
+     "modalidad": "embarcación",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
+     "modalidades": [
+      "embarcacion"
+     ]
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+  },
+  {
+   "id": "anjova",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Anjova",
+    "eu": null,
+    "ca": "Tallahams",
+    "gl": null,
+    "pt": null
+   },
+   "nombres_fuentes": [
+    "boe_rd347",
+    "gencat_guia_pr_2021"
+   ],
+   "cientifico": "Pomatomus saltatrix",
+   "nombres_nota": "En catalán también 'lliri' (guía de la Generalitat); en otras costas 'chova'.",
+   "habitat": {
+    "valor": "Depredador voraz que forma bancos a poca profundidad: playas, estuarios y puertos.",
+    "fuentes": [
+     "gencat_guia_pr_2021"
+    ],
+    "verificado": false,
+    "nota": "Guía de la Generalitat (licencia por confirmar), resumido."
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "fuentes": [
+      "gencat_guia_pr_2021"
+     ],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Caza en bancos en playas, estuarios y puertos: spinning y cebo desde costa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Curricán y spinning desde embarcación (heurística experta).",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin dato de que sea pieza habitual de la pesca submarina: no se muestra en esa pestaña hasta tener fuente.",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "mediterraneo": {
+     "meses": [
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+     ],
+     "fuentes": [
+      "gencat_guia_pr_2021"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Más activa con agua templada: de abril a noviembre (heurística experta, sin fuente abierta de estacionalidad).",
+     "nota": "Especie objetivo de la pesca recreativa en Cataluña (guía DGPMPS/ICATMAR 2021)."
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "nota": "Sin rango verificado con fuente abierta de uso comercial: no puntúa."
+   },
+   "alimentacion": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "talla_minima": [],
+   "reglas": {},
+   "pendiente": [
+    "talla mínima: no figura en RD 560/1995, Reg. (UE) 2019/1241 ni en la tabla DGRM; revisar normativa autonómica",
+    "freza por región (la guía de la Generalitat la da en un gráfico ilegible como texto)",
+    "temperatura no-NC",
+    "actividad y alimentación con fuente",
+    "nombres eu/gl con fuente oficial",
+    "modalidades sin dato (aplica: null): submarina",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)",
+    "presencia en Cádiz, Portugal y Canarias sin fuente abierta",
+    "estacionalidad con fuente"
+   ],
+   "emoji": "🐟",
+   "cebos": [
+    {
+     "nombre": "Cucharilla o vinilo",
+     "tipo": "artificial",
+     "modalidad": "spinning",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
+     "modalidades": [
+      "costa"
+     ]
+    },
+    {
+     "nombre": "Sardina",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Eficaz en líneas a la deriva, aparejos flotantes y de fondo; no cita a la anjova en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Señuelo de curricán",
+     "tipo": "artificial",
+     "modalidad": "curricán",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
+     "modalidades": [
+      "embarcacion"
+     ]
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+  },
+  {
+   "id": "pintarroja",
+   "grupo": "pez",
+   "nombres": {
+    "es": "Pintarroja",
+    "eu": null,
+    "ca": null,
+    "gl": null,
+    "pt": null
+   },
+   "nombres_fuentes": [
+    "boe_rd347"
+   ],
+   "cientifico": "Scyliorhinus canicula",
+   "nombres_nota": "RD 347/2011: 'Scyliorhinus spp. — Pintarroja, alital'. También 'tiburón gato' o 'gato'.",
+   "habitat": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "fuentes": [
+      "mikel_campo_bizkaia"
+     ],
+     "tipo_fuente": "heuristica_experta_local",
+     "criterio": "Pequeño tiburón de fondo: se pesca a fondo desde costa. En Bizkaia (Armintza), Mikel la pesca desde costa en noviembre, diciembre y enero (observación de campo, confianza media).",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Fondo sobre arena y fango desde embarcación: captura habitual de la pesca de fondo (heurística experta).",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin dato de que sea pieza habitual de la pesca submarina: no se muestra en esa pestaña hasta tener fuente.",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "presencia": {
+    "cantabrico": {
+     "meses": [
+      11,
+      12,
+      1
+     ],
+     "fuentes": [
+      "mikel_campo_bizkaia",
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta_local",
+     "criterio": "Temporada buena desde costa en Bizkaia: noviembre-enero (Mikel, Armintza; confianza media).",
+     "nota": "OBIS: 2268 registros de 2 conjuntos de datos con licencia libre en la región."
+    },
+    "portugal": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "OBIS: 105 registros de 2 conjuntos de datos con licencia libre en la región (consulta 2026-10-08)."
+    },
+    "mediterraneo": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "OBIS: 704 registros de 4 conjuntos de datos con licencia libre en la región (consulta 2026-10-08)."
+    },
+    "baleares": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "obis_cc_by"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Especie residente: sin fuente abierta de estacionalidad para la pesca recreativa, se muestra todo el año (heurística experta). La fuente solo respalda que está en la región.",
+     "nota": "OBIS: 160 registros de 2 conjuntos de datos con licencia libre en la región (consulta 2026-10-08)."
+    }
+   },
+   "freza": {
+    "por_region": {}
+   },
+   "actividad": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "nota": "Sin rango verificado con fuente abierta de uso comercial: no puntúa."
+   },
+   "alimentacion": {
+    "valor": null,
+    "fuentes": [],
+    "verificado": false
+   },
+   "talla_minima": [],
+   "reglas": {},
+   "pendiente": [
+    "talla mínima: no figura en RD 560/1995, Reg. (UE) 2019/1241 ni en la tabla DGRM; revisar normativa autonómica",
+    "freza por región (la guía de la Generalitat la da en un gráfico ilegible como texto)",
+    "temperatura no-NC",
+    "actividad y alimentación con fuente",
+    "nombres eu/gl con fuente oficial",
+    "modalidades sin dato (aplica: null): submarina",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)",
+    "presencia en Galicia y Cádiz sin fuente abierta suficiente (OBIS: un solo conjunto o pocos registros)"
+   ],
+   "emoji": "🐟",
+   "cebos": [
+    {
+     "nombre": "Sardina",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Eficaz en líneas a la deriva, aparejos flotantes y de fondo; no cita a la pintarroja en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    },
+    {
+     "nombre": "Tira de calamar",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "'Cebo muy efectivo para cualquier clase de peces'; no cita a la pintarroja en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
   }
  ],
  "modalidades": {
@@ -6623,7 +12597,8 @@
      "palometa",
      "bicuda",
      "medregal",
-     "urta"
+     "urta",
+     "anjova"
     ],
     "fuente": "mikel_experiencia_local",
     "criterio": "Peces que cazan o comen pegados a la costa y que, según Mikel, se activan con el mar movido y antes del temporal ('lubina, sargo…'). Lista ampliada por Claude con los equivalentes de otras costas: revisar."
