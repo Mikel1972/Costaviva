@@ -67,4 +67,10 @@ jobs:
           # Plan comercial de Open-Meteo (2026-10-08). Si el secret no existe,
           # llega vacío y el script usa el host gratuito.
           OPEN_METEO_API_KEY: ${{ secrets.OPEN_METEO_API_KEY }}
+          # Fuentes gratuitas (2026-10-08, functions/_lib/fuentes.js): vacías,
+          # todo sigue en Open-Meteo. La nubosidad cambia de fuente con las
+          # variables de repositorio FUENTE_NUBES_LLUVIA o FUENTE_ATMOSFERA.
+          FUENTE_ATMOSFERA: ${{ vars.FUENTE_ATMOSFERA }}
+          FUENTE_NUBES_LLUVIA: ${{ vars.FUENTE_NUBES_LLUVIA }}
+          METNO_CONTACTO: ${{ vars.METNO_CONTACTO }}
         run: node medir-turbidez.mjs

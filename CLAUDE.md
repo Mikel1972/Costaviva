@@ -29,7 +29,9 @@ spots; lo que se paga es eso, no el número de fetches.
   usa el host comercial y la key; sin ella, el gratuito. Sus errores llevan
   la URL con la key tapada (`/prevision` devuelve el texto del error en su
   JSON público). Lo usan `prevision.js`, `viento-campo.js`,
-  `registrar-presion.js` y `scripts/turbidez/medir-turbidez.mjs`.
+  `registrar-presion.js` y `scripts/turbidez/medir-turbidez.mjs`, desde el
+  2026-10-08 a través de `pedirDatosMeteo` de `functions/_lib/fuentes.js`
+  (interruptor por variable, ver "Fuentes gratuitas" abajo).
 - **El navegador nunca habla con Open-Meteo**: usa `pedirMeteo(api, consulta)`
   de `assets/js/meteo.js`, que pide a `/meteo/forecast` o `/meteo/marine`
   (`functions/meteo/[api].js`). El proxy NO es abierto: lista blanca de APIs,
@@ -59,6 +61,126 @@ spots; lo que se paga es eso, no el número de fetches.
 - Para comprobar que ya va por el plan de pago: el panel de cliente de
   Open-Meteo muestra el consumo; si no sube tras el redeploy, el secret no ha
   llegado.
+
+## Fuentes gratuitas: MET Norway y Copernicus Marine en paralelo (2026-10-08)
+
+Decisión de Mikel: "por ahora gratis". Se montan dos fuentes gratuitas y
+válidas para uso comercial **en paralelo** a Open-Meteo, se comparan contra
+las boyas y se cambia **variable a variable** solo cuando Mikel vea la
+comparativa. **Hoy producción sigue entera en Open-Meteo** (interruptores
+apagados).
+
+**Condiciones verificadas (2026-10-08):**
+- **MET Norway Locationforecast 2.0** (api.met.no/doc/TermsOfService):
+  "All requests must (if possible) include an identifying User Agent-string
+  (UA)" con "a company email address or a link to the company website";
+  "If we cannot contact you in case of problems, you risk being blocked
+  without warning". "Anything over 20 requests/second per application (total,
+  not per client) requires special agreement". "don't repeat requests until
+  the time indicated in the `Expires` response header" y "use the
+  `If-Modified-Since` request header". "truncate all coordinates to max 4
+  decimals" (5+ da 403). No se puede usar "Yr" en el nombre del servicio.
+  Licencia (api.met.no/doc/License): "licensed under the Norwegian Licence for
+  Open Government Data (NLOD) 2.0" y "Creative Commons 4.0 BY International";
+  crédito: "Data from MET Norway" / "Based on data from MET Norway". CC BY 4.0
+  permite uso comercial; exige crédito, enlace a la licencia e indicar
+  cambios (por eso el texto dice "adaptados").
+- **Copernicus Marine** (marine.copernicus.eu/user-corner/service-commitments-and-licence):
+  licencia "worldwide, non exclusive, royalty free, perpetual"; cláusula
+  2.2(b): crear y distribuir productos derivados "for any purpose"
+  (comercial incluido). Cláusula 2.4(a): crédito "Generated using E.U.
+  Copernicus Marine Service Information" + DOI, "clearly visible on the home
+  page of the Licensee's website or at least on the page allowing to access to
+  the products". Cuenta personal obligatoria (2.7: usuario y contraseña
+  "personal to the signatory ... non-transferable"); 2.6 pide guardar
+  registro del uso (el workflow y este fichero lo son).
+  Productos (IDs comprobados con `copernicusmarine describe`):
+  `IBI_ANALYSISFORECAST_WAV_005_005` (DOI 10.48670/moi-00025), dataset
+  `cmems_mod_ibi_wav_anfc_0.027deg_PT1H-i`: VHM0, VMDR, VTM10, VTPK.
+  `IBI_ANALYSISFORECAST_PHY_005_001` (DOI 10.48670/moi-00027), dataset
+  `cmems_mod_ibi_phy_anfc_0.027deg-2D_PT1H-m`: thetao, zos (CON marea; hay
+  datasets aparte `..._detided`), uo, vo. Rejilla 1/36°, 10 días de
+  previsión, dominio 26-56 N y 19 W-5 E: cubre los 105 spots (península,
+  Baleares, Canarias); **no cubre Azores**.
+- **Mareas de Puertos del Estado: NO se pueden reutilizar.** Su manual de
+  descarga (bancodatos.puertos.es/BD/peticiones/Manual_Usuario_Descargaportus.pdf):
+  "Puertos del Estado solo autoriza el uso de los datos para el propósito
+  específico de la descarga, y, en ningún caso, se permite la transferencia de
+  los datos a terceros"; el aviso legal de puertos.es exige "autorización
+  escrita previa" para reproducir o distribuir. Parado. La comparativa con sus
+  boyas es uso interno de validación (no se redistribuye).
+- **Tablas de marea del Instituto Hidrográfico (PT): NO.** "© Copyright
+  Instituto Hidrográfico 2025" sin licencia abierta; su aviso legal remite a
+  fichas de metadatos por producto y al contacto centrodados@hidrografico.pt.
+  Parado. La marea sale de `zos` de IBI (Copernicus), que sí se puede usar.
+
+**Cómo está hecho:**
+- `functions/_lib/fuentes.js`: `pedirDatosMeteo(api, consulta, { env })`
+  sustituye a `pedirOpenMeteo` en `prevision.js`, `viento-campo.js`,
+  `registrar-presion.js`, `scripts/turbidez/medir-turbidez.mjs` y el proxy
+  `/meteo/`. Sin interruptores hace **exactamente** la llamada de siempre a
+  Open-Meteo. Con ellos, reparte las variables por fuente, pide cada parte a
+  la suya y las junta por etiqueta de hora. Cada respuesta lleva
+  `fuentes_datos` (y `/prevision`, `fuentesDatos`).
+- `functions/_lib/eje-horario.js`: eje de horas idéntico al de Open-Meteo.
+  Ojo, comprobado en real: Open-Meteo usa **un único desfase** para toda la
+  respuesta (el de la zona en el momento de pedir) y siempre 24 horas por día.
+- `functions/_lib/met-norway.js`: Locationforecast compact -> forma de
+  Open-Meteo Forecast (windspeed/winddirection_10m, pressure_msl, cloudcover,
+  temperature_2m, precipitation = `next_1_hours` de la hora anterior). Un
+  punto (el proxy del navegador) va en vivo con caché en el edge que respeta
+  Expires/If-Modified-Since; muchos puntos leen la instantánea
+  `atmosfera/todos.json` (spots + rejilla de 1° que `viento-campo` interpola
+  por componentes u/v). MET da horario ~60 h y luego cada 6 h, y **no tiene
+  pasado**: esas horas salen `null`.
+- `functions/_lib/copernicus-mar.js`: instantáneas `mar/spots.json` (spots y
+  boyas) y `mar/celdas/<k>.json` (celdas de mar alrededor de cada spot, cajas
+  de 0,5°) -> forma de Open-Meteo Marine (wave_height, wave_direction,
+  wave_period = VTM10, wave_peak_period = VTPK, sea_surface_temperature,
+  sea_level_height_msl = zos, ocean_current_velocity en km/h,
+  ocean_current_direction hacia donde va). Ventana guardada: 10 días atrás y
+  10 adelante. Ubicaciones personalizadas a más de 15 km de una celda
+  guardada: `null` + `aviso`.
+- `functions/_lib/instantaneas.js`: lee de Supabase Storage, bucket público
+  `fuentes-gratuitas` (migración `20261008100000_bucket_fuentes_gratuitas.sql`,
+  **sin aplicar**). Más de 36 h de antigüedad -> error, nunca una previsión
+  vieja con aspecto de actual.
+- `.github/workflows/fuentes-gratuitas.yml` (sin IA): `atmosfera` cada 3 h
+  (`scripts/fuentes/instantanea-met.mjs`, 293 puntos, ~75 s, ~0,85 MB), `mar`
+  una vez al día a las 04:47 UTC (`scripts/fuentes/descargar-ibi.py`, toolbox
+  `copernicusmarine==2.5.0`, servicio arco-time-series: solo los bloques de
+  16x16 celdas donde caen los puntos; `--prueba` genera datos sintéticos sin
+  cuenta) y `comparativa` a diario. Los `schedule` solo actúan con la
+  variable de repositorio `FUENTES_GRATUITAS=true`; a mano corre siempre.
+- **Comparativa**: `scripts/fuentes/comparar-boyas.mjs` archiva cada día lo
+  que cada fuente prevé para las 24 h siguientes en las 26 boyas de `BOYAS`
+  (`datos-robots/fuentes/pronosticos/`, 45 días) y lo cruza con lo medido
+  (solo marca de calidad 1) en `datos-robots/fuentes/COMPARATIVA.md`: sesgo,
+  MAE y RMSE por variable, **en las mismas horas para todas las fuentes**.
+  Es aparte de la rutina nocturna "Calibración y salud nocturna" (que sigue
+  con Open-Meteo en `CALIBRACION.jsonl`); esa rutina puede leer este fichero.
+- Atribución: `assets/js/meteo.js` cambia el texto de `.atribucion-meteo` y
+  del mapa a las fuentes que de verdad se pintan (mismos textos que
+  `ATRIBUCIONES_HTML` de `fuentes.js`; lo comprueba
+  `test/fuentes-gratuitas.test.js`). Copernicus exige su frase en inglés tal
+  cual y los DOI; no traducirla.
+
+**Interruptores** (Cloudflare Pages → Settings → Variables, **Production y
+Preview por separado, y redeploy**, trampa 1; para `turbidez.yml`, variables
+de repositorio): `FUENTE_ATMOSFERA=openmeteo|metno`, `FUENTE_MAR=openmeteo|copernicus`
+y, por encima, por grupo: `FUENTE_VIENTO`, `FUENTE_PRESION`,
+`FUENTE_NUBES_LLUVIA`, `FUENTE_TEMPERATURA`, `FUENTE_OLEAJE`,
+`FUENTE_TEMP_AGUA`, `FUENTE_MAREA`, `FUENTE_CORRIENTE`. Probar primero en
+**Preview**. Con `metno` hace falta `METNO_CONTACTO` en el mismo entorno.
+
+**Pendiente de Mikel antes de activar nada:** cuenta gratuita de Copernicus
+Marine y los secrets `COPERNICUSMARINE_USERNAME`/`COPERNICUSMARINE_PASSWORD`
+(GitHub Actions); decidir el contacto del User-Agent de MET (web o email de
+empresa, nunca personal). Por defecto se usa `datos@costaviva.org` (decidido por Mikel, 2026-10-08); `METNO_CONTACTO` (variable de
+repositorio y de Cloudflare); aprobar y aplicar la migración del bucket;
+`FUENTES_GRATUITAS=true`. Antes de quitar Open-Meteo del todo: el diario
+retroactivo (fechas pasadas) y la ventana de actividad (`past_days=1`) no
+tienen atmósfera pasada con MET.
 
 ## Informe diario — Search Console real, conteo de cámaras, robot de especies (2026-09-20)
 
@@ -873,7 +995,7 @@ explicación.
 | Ruta | Fichero | Qué hace | Auth |
 |---|---|---|---|
 | `/prevision` | `prevision.js` | Oleaje/viento/marea/corriente (Open-Meteo + boyas Puertos del Estado) + caudal de ríos por spot | No requiere sesión |
-| `/meteo/forecast`, `/meteo/marine` | `meteo/[api].js` | GET: proxy de Open-Meteo para el navegador, con lista blanca de parámetros, coordenadas a 0,01° y caché en el edge; añade la key comercial si existe `OPEN_METEO_API_KEY` (ver sección de Open-Meteo arriba) | No requiere sesión |
+| `/meteo/forecast`, `/meteo/marine` | `meteo/[api].js` | GET: proxy de Open-Meteo para el navegador, con lista blanca de parámetros, coordenadas a 0,01° y caché en el edge; añade la key comercial si existe `OPEN_METEO_API_KEY`; con los interruptores `FUENTE_*` sirve MET Norway / Copernicus con la misma forma (ver secciones de Open-Meteo y de fuentes gratuitas arriba) | No requiere sesión |
 | `/luna` | `luna.js` | Fase y posición lunar por coordenadas (`?lat=&lon=`) | No requiere sesión |
 | `/rayos-imagen` | `rayos-imagen.js` | Proxy del mapa de rayos de AEMET | No requiere sesión |
 | `/webcam/<slug>` | `webcam/[slug].js` | Proxy de imagen de webcam (evita CORS/hotlinking) | No requiere sesión |

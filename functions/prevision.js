@@ -11,7 +11,9 @@
 // coordenadas, y calculamos nosotros mismos todo lo demás (etiquetas de
 // hora, rumbos en texto, y el índice de mar combinado que hace el cliente).
 
-import { pedirOpenMeteo, claveOpenMeteo } from "./_lib/open-meteo.js";
+// Fuente por variable (Open-Meteo por defecto; MET Norway / Copernicus si se
+// activan FUENTE_* — ver functions/_lib/fuentes.js, 2026-10-08).
+import { pedirDatosMeteo, fuentesUsadas } from "./_lib/fuentes.js";
 
 export const SPOTS = [
   { slug: "lekeitio", nombre: "Lekeitio", lat: 43.3647, lon: -2.5089 },
@@ -618,7 +620,7 @@ function factorOleaje(lat, lon) {
   return dentro ? FACTOR_OLEAJE_GIPUZKOA : 1;
 }
 
-async function previsionTodosSpots(spots, apiKey = "") {
+async function previsionTodosSpots(spots, env = {}) {
   const lats = spots.map((s) => s.lat).join(",");
   const lons = spots.map((s) => s.lon).join(",");
   const paramsComunes = `latitude=${lats}&longitude=${lons}&timezone=Europe%2FMadrid&forecast_days=2`;
@@ -627,22 +629,28 @@ async function previsionTodosSpots(spots, apiKey = "") {
     // Host gratuito o comercial (con key) según OPEN_METEO_API_KEY, ver
     // functions/_lib/open-meteo.js. Los errores salen sin la key: van al
     // JSON público de cada spot.
-    pedirOpenMeteo(
+    pedirDatosMeteo(
       "marine",
       `${paramsComunes}&hourly=wave_height,wave_period,wave_direction,sea_surface_temperature,ocean_current_velocity,ocean_current_direction,sea_level_height_msl`,
-      { apiKey }
+      { env }
     ),
-    pedirOpenMeteo(
+    pedirDatosMeteo(
       "forecast",
       `${paramsComunes}&hourly=windspeed_10m,winddirection_10m,precipitation,cloudcover,pressure_msl&windspeed_unit=kmh`,
-      { apiKey }
+      { env }
     ),
     historicoPresionPorSpot(),
     coeficienteMareaCache(),
   ]);
   // Con más de una localización, Open-Meteo devuelve un array (uno por
   // coordenada, mismo orden que se pidió) en vez de un único objeto.
-  return spots.map((spot, i) => procesarSpot(spot, marinos[i], vientos[i], historicoPresion, coeficientes));
+  const fuentes = [...new Set([...fuentesUsadas(marinos), ...fuentesUsadas(vientos)])];
+  const soloOpenMeteo = fuentes.length === 1 && fuentes[0] === "openmeteo";
+  return spots.map((spot, i) => {
+    const r = procesarSpot(spot, marinos[i], vientos[i], historicoPresion, coeficientes);
+    if (!soloOpenMeteo) r.fuente = `${fuentes.join(" + ")} — cálculo propio`;
+    return { ...r, fuentesDatos: fuentes };
+  });
 }
 
 function procesarSpot(spot, marino, viento, historicoPresion, coeficientes) {
@@ -744,7 +752,7 @@ function procesarSpot(spot, marino, viento, historicoPresion, coeficientes) {
 // oficialmente desde 2006. Fuente de la lista de códigos: tablas oficiales
 // REDCOS (bancodatos.puertos.es/BD/informes/INT_1.pdf) y REDEXT
 // (.../INT_2.pdf).
-const BOYAS = [
+export const BOYAS = [
   // REDCOS (costeras, <100m de profundidad)
   { codigo: 1117, nombre: "Gijón", lat: 43.62, lon: -5.66 },
   { codigo: 1101, nombre: "Pasaia II", lat: 43.36, lon: -1.89 },
@@ -1160,7 +1168,7 @@ export async function onRequestGet(context) {
   if (cacheada) return cacheada;
 
   const [resultados, boyasEspana, boyaNazare, rayosNacional, caudales, estacionesAemet, turbidez, camaras, monteRios] = await Promise.all([
-    previsionTodosSpots(SPOTS, claveOpenMeteo(context.env)).catch((e) =>
+    previsionTodosSpots(SPOTS, context.env).catch((e) =>
       SPOTS.map((spot) => ({ slug: spot.slug, nombre: spot.nombre, error: String(e) }))
     ),
     Promise.all(BOYAS.map((b) => datosBoya(b).catch((e) => ({ ...b, error: String(e) })))),
@@ -1176,7 +1184,10 @@ export async function onRequestGet(context) {
   ]);
   const boyas = [...boyasEspana, boyaNazare];
 
-  const respuesta = new Response(JSON.stringify({ spots: resultados, boyas, rayosNacional, caudales, estacionesAemet, turbidez, camaras, monteRios }, null, 2), {
+  // Fuentes de los datos de los spots, para que la página muestre su
+  // atribución (CC BY de Open-Meteo / MET Norway, Copernicus Marine).
+  const fuentesDatos = [...new Set(resultados.flatMap((r) => r.fuentesDatos || []))];
+  const respuesta = new Response(JSON.stringify({ spots: resultados, fuentesDatos, boyas, rayosNacional, caudales, estacionesAemet, turbidez, camaras, monteRios }, null, 2), {
     headers: {
       "content-type": "application/json; charset=utf-8",
       // El modelo de Open-Meteo se actualiza varias horas, no hace falta

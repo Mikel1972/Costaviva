@@ -1563,6 +1563,8 @@ async function actualizarDesdeBackend() {
     const resp = await fetch("/prevision", { cache: "no-store" });
     if (!resp.ok) throw new Error("sin backend desplegado todavía");
     const datos = await resp.json();
+    // Atribución de las fuentes de los datos de los spots (ver assets/js/meteo.js).
+    if (window.registrarFuentesMeteo) window.registrarFuentesMeteo(datos.fuentesDatos);
     // Se marca vigente ANTES de recalcular los índices de cada spot, para
     // que indiceMar() de este mismo fetch ya vea los datos como "del
     // momento" (si se marcara después, el primer cálculo de cada carga
@@ -1654,6 +1656,14 @@ map.attributionControl.setPrefix(false);
 // Oleaje, viento, marea y corriente del mapa salen de Open-Meteo: su licencia
 // (CC BY 4.0) exige atribución visible, siempre, no solo en el panel.
 map.attributionControl.addAttribution(window.ATRIBUCION_METEO_HTML || "Datos meteorológicos: Open-Meteo.com (CC BY 4.0)");
+// Si los datos pasan a salir de otra fuente (MET Norway, Copernicus Marine:
+// interruptores FUENTE_* de functions/_lib/fuentes.js), assets/js/meteo.js
+// avisa con este evento y se cambia el texto del mapa por el de las fuentes
+// que de verdad se están pintando.
+window.addEventListener("meteo-atribucion", (e) => {
+  map.attributionControl.removeAttribution(e.detail.antes);
+  map.attributionControl.addAttribution(e.detail.ahora);
+});
 if (window.supabaseCliente) {
   registrarEvento("ver_mapa");
 } else {
