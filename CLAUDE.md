@@ -892,6 +892,30 @@ Detalle y pasos de Search Console/Bing en `SEO.md`.
   `robots.txt`. **Nunca noindex en `/` ni `/login`** (ver arriba).
 - Tests: `test/seo-paginas.test.js` (en tests.yml).
 
+## IndexNow, imágenes OG, PWA y 404 (2026-10-08, pedido de Mikel)
+
+Detalle y lo que le queda a Mikel en `SEO.md` ("IndexNow y mejoras
+gratuitas"). Todo sin IA ni coste.
+- **IndexNow** (Bing, Yandex, Seznam, Naver, Yep; Google no):
+  `.github/workflows/indexnow.yml` avisa al fusionar en main de las URLs
+  afectadas (espera al despliegue) y una vez al día de `/spots/<spot>` y
+  `/mareas/<spot>`. Clave pública en `/<clave>.txt` (raíz, lista blanca);
+  lógica en `functions/_lib/seo/indexnow.js`, script `scripts/seo/indexnow.mjs`.
+  Espera 200/202; otra cosa, run en rojo. Sin pg_cron: los `schedule:`
+  diarios sí corren cada día aquí.
+- **Imágenes OG** por sección y región en `assets/og/` (sin IA:
+  `python3 scripts/seo/generar-imagenes.py`); `documento()` acepta `imagen`.
+  Una región nueva necesita su imagen (el test avisa).
+- **PWA**: iconos PNG en `assets/iconos/` (192, 512, maskable, apple-touch
+  180); `icon.svg` es ya el logo Amanecer.
+- **404**: `404.html` (lo genera `generar-sitemap.mjs` desde
+  `htmlNoEncontradaGeneral()` de `base.js`) y el middleware da la misma
+  página fuera de la lista blanca. Sin 404.html, Pages devolvía la app con 200
+  para cualquier fichero inexistente.
+- `/.well-known/security.txt` caduca el **2027-10-01** (el test falla).
+- `_headers`: caché de 1 día/1 semana solo para imágenes; nunca CSS/JS.
+- Tests: `test/seo-extra.test.js` (en tests.yml).
+
 ## Observaciones abiertas, concursos y "Comparte tu captura" (2026-10-08, aprobado por Mikel)
 
 "Añade todo lo legal". Sin IA en ejecución. Cuatro piezas:

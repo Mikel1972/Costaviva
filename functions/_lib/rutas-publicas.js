@@ -58,6 +58,11 @@ const ARCHIVOS_PUBLICOS = new Set([
   "/manifest.json",
   "/robots.txt",
   "/sitemap.xml",
+  // Clave de IndexNow (2026-10-08): el buscador la lee aquí para comprobar
+  // que el dominio es nuestro. No es secreta. Ver _lib/seo/indexnow.js.
+  "/3ccc16ba30250113574d628e32e874b1.txt",
+  // Contacto para avisos de seguridad (RFC 9116), 2026-10-08.
+  "/.well-known/security.txt",
 
   // Endpoints de functions/*.js. Listarlos aquí NO los hace públicos: cada
   // uno gestiona su propia autenticación (token de sesión en /sos-alerta o

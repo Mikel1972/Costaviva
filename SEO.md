@@ -70,6 +70,98 @@ Una URL de spot o especie que no existe da **404 de verdad** con `noindex`.
 `index.html` y `login.html` (enlaces y canonical), `functions/mareas/**`
 (enlaces a las nuevas), `test/seo-paginas.test.js` (en `tests.yml`).
 
+## IndexNow y mejoras gratuitas (2026-10-08, rama `claude/indexnow-seo-extra`)
+
+Pedido de Mikel: "móntalo (IndexNow), y todo lo que encuentres, gratuito, que
+nos ayude, también". Todo sin IA, sin cuentas y sin coste.
+
+### IndexNow
+
+Protocolo abierto (https://www.indexnow.org/documentation) con el que se avisa
+a **Bing, Yandex, Seznam, Naver y Yep** (Bing alimenta también a DuckDuckGo y
+Ecosia) de qué URLs han cambiado, para que las rastreen en horas y no en
+semanas. **Google no lo usa**: para Google sigue el `sitemap.xml`.
+
+- **Clave**: `3ccc16ba30250113574d628e32e874b1`, servida en
+  `https://costaviva.org/3ccc16ba30250113574d628e32e874b1.txt` (fichero en la
+  raíz del repo, en la lista blanca, `text/plain`). No es secreta: es como el
+  buscador comprueba que el dominio es nuestro. Si se cambia, cambiar a la vez
+  el nombre y el contenido del fichero, la constante de
+  `functions/_lib/seo/indexnow.js` y el `paths:` del workflow (el test avisa).
+- **`.github/workflows/indexnow.yml`** (sin IA, sin secretos):
+  - **Al fusionar en main** algo que cambia páginas públicas: las URLs
+    afectadas (reglas en `urlsDeCambios`: plantilla común → todas; datos de
+    especies → spots y especies; `functions/mareas/**` → mareas; nuevas o con
+    `lastmod` distinto en el sitemap...). Los CSS no cuentan: un cambio de
+    aspecto no es contenido nuevo. **La primera vez** (el push que trae el
+    fichero de la clave) avisa de las 284. Antes de avisar espera a que
+    `costaviva.org` sirva la clave y el mismo `sitemap.xml` que el repo (el
+    despliegue de Cloudflare ha terminado).
+  - **Una vez al día** (`17 5 * * *` UTC; GitHub lo arranca con horas de
+    retraso, pero los diarios de este repo corren todos los días): las 210
+    páginas que cambian cada día de verdad, `/spots/<spot>` (condiciones e
+    índice de hoy) y `/mareas/<spot>` (mareas del día). Ni índices ni
+    especies. No hace falta pg_cron ni migración.
+  - **A mano**: *Actions → IndexNow → Run workflow* con `hoy`, `todas` o
+    `probar` (enseña lo que mandaría sin mandar nada).
+  - Respuesta esperada **200 o 202** (en el resumen del run). 403 = el
+    buscador no encuentra la clave; 422 = URL de otro host; 429 = demasiadas
+    peticiones. Cualquiera de esas deja el run en rojo.
+- Código: `functions/_lib/seo/indexnow.js` (lógica pura) y
+  `scripts/seo/indexnow.mjs`. Tests: `test/seo-extra.test.js`.
+
+### Lo demás que se ha hecho
+
+- **Imágenes para compartir (Open Graph)** propias, sin IA: 1200x630 con el
+  logo, la letra y los colores Amanecer. Una por sección (`costaviva`,
+  `spots`, `especies`, `mareas`) y **una por región** (`region-<región>`),
+  en `assets/og/*.jpg` (~55 KB cada una). Las usan `/spots/<spot>` (la de su
+  región), `/spots/region/*`, `/mareas/**`, `/especies/**`, la portada y
+  `login.html`, con `og:image:width/height/alt` y `twitter:image`. Antes todas
+  usaban la foto del vídeo de portada (350 KB). Se regeneran con
+  `python3 scripts/seo/generar-imagenes.py` (Pillow) si cambia una región o
+  el logo.
+- **La portada real (`/` sirve `index.html`) no tenía Open Graph ni
+  JSON-LD**: solo los tenía `login.html`. Ahora los dos llevan Open Graph,
+  `WebSite` y `Organization` (logo PNG de 512, que es lo que Google pide).
+- **App instalable (PWA)**: `manifest.json` con iconos PNG 192, 512 y
+  *maskable* (Android ya no tiene que inventarse uno a partir del SVG),
+  `apple-touch-icon` PNG de 180 (iOS ignora los SVG, y en el iPhone salía una
+  captura de la página), `id`, `scope`, `lang`, nombre actualizado (seguía
+  "Lekeitio a Bilbao") y `theme_color` igual que las páginas (`#0B1E3F`).
+  **`icon.svg` pasa a ser el logo Amanecer** de la cabecera (era el icono
+  antiguo, verde y dorado): favicon, iconos de la app y logo de Google
+  iguales.
+- **404 de verdad**: sin `404.html`, Cloudflare Pages trataba el sitio como
+  una SPA y respondía **200 con la app entera** a cualquier fichero que no
+  existía (`/assets/no-existe.png`, comprobado en producción): un *soft 404*
+  para Google. Ahora `404.html` (status 404, `noindex`, enlaces a spots,
+  especies, mareas y la app) y el middleware da la misma página, con CSP,
+  para lo que no está en la lista blanca (antes, texto "Not Found").
+  `node scripts/seo/generar-sitemap.mjs` reescribe también `404.html`.
+- **`/.well-known/security.txt`** (RFC 9116): contacto
+  `datos@costaviva.org` (ya reenvía al correo de Mikel). **Caduca el
+  2027-10-01**: renovarlo antes (el test falla si caduca).
+- **Caché del navegador para imágenes** (`_headers`): imágenes OG, iconos y
+  `icon.svg` 1 día; vídeo/póster de portada e imágenes de Instagram 1 semana.
+  Antes cada visita revalidaba cada imagen. CSS y JS no: no llevan versión en
+  el nombre.
+- `preconnect` a `fonts.gstatic.com` en la portada y en `login.html` (las
+  letras empiezan a bajar antes).
+
+### Lo que se ha mirado y NO se ha hecho (a propósito)
+
+- **hreflang / versión en portugués**: no hay contenido en portugués real (las
+  páginas de Portugal están en castellano). Poner hreflang sin traducción
+  sería falso.
+- **RSS de condiciones diarias**: nadie se suscribe a un feed de oleaje y
+  serían 105 entradas nuevas al día casi iguales; no ayuda a posicionar.
+- **Imagen OG por spot (105)**: unos 6 MB más en el repo para ganar poco
+  frente a la de la región. Se puede hacer si las de región funcionan bien en
+  redes.
+- Altas masivas en directorios, intercambio de enlaces o páginas "puerta":
+  spam, penaliza.
+
 ## Qué le queda a Mikel
 
 La propiedad `sc-domain:costaviva.org` ya está verificada (registro TXT en
@@ -131,3 +223,42 @@ En Cloudflare → `costaviva.org` → **SSL/TLS → Edge Certificates**:
   (`TEXTO_INTERNO_PUBLICO` en `functions/_lib/seo/datos.js` lo vigila).
 - Las cámaras de terceros solo salen como enlace a la web de su dueño; nada se
   inserta ni se descarga en las páginas públicas.
+
+## Qué le queda a Mikel tras IndexNow (2026-10-08)
+
+Todo gratis. Ordenado por lo que más ayuda.
+
+1. **Comprobar IndexNow tras fusionar** (2 min, sin cuenta): *GitHub → Actions
+   → "IndexNow (avisar a Bing y compañía)"*: el run del merge tiene que acabar
+   en verde con "HTTP 200" o "HTTP 202" en el resumen. Si sale 403, abre
+   https://costaviva.org/3ccc16ba30250113574d628e32e874b1.txt: debe enseñar
+   la clave.
+2. **Bing Webmaster Tools** (punto 3 de arriba, si no está hecho): además del
+   sitemap, en su menú **IndexNow** se ven las URLs que le llegan cada día.
+   Bing también alimenta a DuckDuckGo, Ecosia y Yahoo.
+3. **Ahrefs Webmaster Tools** (gratis, 10 min): https://ahrefs.com/webmaster-tools
+   → *Sign up for free* → *Import from Google Search Console* (sin tocar DNS)
+   → `costaviva.org`. Hace una **auditoría técnica** del sitio cada semana
+   (enlaces rotos, títulos duplicados, páginas lentas) y enseña **quién nos
+   enlaza**, que Search Console da muy limitado. Si saca errores, pásamelos.
+4. **Enlace a costaviva.org en Instagram y Facebook** (2 min): Instagram →
+   *Editar perfil* → *Enlaces* → *Añadir enlace externo* →
+   `https://costaviva.org/spots`. Facebook (página) → *Información* →
+   *Sitio web*. No sube el ranking directamente (son `nofollow`), pero Google
+   relaciona la marca con el dominio y trae visitas reales.
+5. **PageSpeed Insights** (5 min, sin cuenta): https://pagespeed.web.dev →
+   analiza `https://costaviva.org/spots/bakio` y `https://costaviva.org/` en
+   *Móvil*. Mira "Core Web Vitals" (LCP, INP, CLS) y pásame el enlace del
+   informe si algo sale en rojo.
+6. **Prueba de resultados enriquecidos** (2 min, sin cuenta):
+   https://search.google.com/test/rich-results con
+   `https://costaviva.org/spots/bakio`: debe detectar "Rutas de navegación"
+   sin errores.
+7. **Refrescar la vista previa en redes** (opcional): Facebook guarda la
+   imagen vieja de `costaviva.org` unas semanas. En
+   https://developers.facebook.com/tools/debug/ (con tu cuenta de Facebook)
+   pega `https://costaviva.org/` y pulsa *Volver a extraer*.
+8. **Google Business Profile: no.** Es para negocios con local o que atienden
+   en persona en una zona; Costaviva es solo online y Google suspende esas
+   fichas.
+

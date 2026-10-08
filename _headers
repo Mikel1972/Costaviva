@@ -9,3 +9,18 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Strict-Transport-Security: max-age=31536000; includeSubDomains
+
+# Caché del navegador para imágenes que casi nunca cambian (2026-10-08, SEO y
+# velocidad). Por defecto Pages manda max-age=0 y el navegador revalida cada
+# imagen en cada visita. CSS y JS NO van aquí: no llevan versión en el nombre
+# y un despliegue podría dejar HTML nuevo con JS viejo.
+/assets/og/*
+  Cache-Control: public, max-age=86400
+/assets/iconos/*
+  Cache-Control: public, max-age=86400
+/icon.svg
+  Cache-Control: public, max-age=86400
+/assets/hero-peces*
+  Cache-Control: public, max-age=604800
+/assets/marketing/*
+  Cache-Control: public, max-age=604800

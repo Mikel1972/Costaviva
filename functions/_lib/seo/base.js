@@ -11,7 +11,11 @@
 // robot de SEO y no hay que romperle el terreno.
 
 export const DOMINIO = "https://costaviva.org";
-export const IMAGEN_OG = `${DOMINIO}/assets/hero-peces-poster.jpg`;
+// Imágenes para compartir (1200x630, sin IA): una por sección y una por
+// región, hechas con scripts/seo/generar-imagenes.py (assets/og/*.jpg).
+export const IMAGEN_OG = `${DOMINIO}/assets/og/costaviva.jpg`;
+export const imagenOg = (nombre) => `${DOMINIO}/assets/og/${nombre}.jpg`;
+export const imagenOgRegion = (region) => imagenOg(region ? `region-${region.slug}` : "spots");
 // Caché de las páginas con datos de hoy (spot) y de las fijas (especies,
 // índices). /prevision se refresca cada 30 min: no tiene sentido ir más fresco.
 export const TTL_CON_DATOS_S = 1800;
@@ -68,7 +72,7 @@ export function cta(titulo = "Prueba Costaviva 7 días gratis") {
 }
 
 // Documento completo. `ruta` es la canónica (sin dominio).
-export function documento({ titulo, descripcion, ruta, cuerpo, ld = [], ogTipo = "website", noindex = false }) {
+export function documento({ titulo, descripcion, ruta, cuerpo, ld = [], ogTipo = "website", noindex = false, imagen = IMAGEN_OG, imagenAlt = "Costaviva: condiciones de pesca en tiempo real" }) {
   const url = `${DOMINIO}${ruta}`;
   return `<!doctype html>
 <html lang="es">
@@ -83,14 +87,20 @@ ${noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" hr
 <meta property="og:url" content="${esc(url)}">
 <meta property="og:title" content="${esc(titulo)}">
 <meta property="og:description" content="${esc(descripcion)}">
-<meta property="og:image" content="${IMAGEN_OG}">
+<meta property="og:image" content="${esc(imagen)}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="${esc(imagenAlt)}">
 <meta property="og:locale" content="es_ES">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${esc(titulo)}">
 <meta name="twitter:description" content="${esc(descripcion)}">
-<meta name="twitter:image" content="${IMAGEN_OG}">
+<meta name="twitter:image" content="${esc(imagen)}">
+<meta name="twitter:image:alt" content="${esc(imagenAlt)}">
 <meta name="theme-color" content="#0B1E3F">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/iconos/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800&family=Manrope:wght@400;600;800&display=swap">
@@ -135,6 +145,25 @@ export function html404({ que = "página", volver = "/spots", volverTexto = "Ver
   });
   return { html, status: 404, ttl: TTL_SIN_DATOS_S, noindex: true };
 }
+// 404 general del sitio (2026-10-08): la usa el middleware para las rutas
+// fuera de la lista blanca y está copiada en /404.html, que Cloudflare Pages
+// sirve con status 404 para cualquier fichero que no exista. Sin 404.html,
+// Pages trataba el sitio como una SPA y devolvía la portada con 200 (un
+// "soft 404" para Google: /assets/no-existe.png daba la app entera).
+// scripts/seo/generar-sitemap.mjs reescribe 404.html con esto.
+export function htmlNoEncontradaGeneral() {
+  return documento({
+    titulo: "Página no encontrada | Costaviva",
+    descripcion: "Esta página no existe en Costaviva. Mira los spots de pesca, las especies o las mareas de hoy.",
+    ruta: "/",
+    noindex: true,
+    cuerpo: `<h1>No encontramos esta página</h1>
+<p class="intro">Puede que el enlace esté mal escrito o que la página ya no exista. Quizá buscabas:</p>
+<ul class="chips"><li><a href="/spots">Spots de pesca</a></li><li><a href="/especies">Especies, tallas y vedas</a></li><li><a href="/mareas">Mareas hoy</a></li><li><a href="/">La app de Costaviva</a></li></ul>
+${cta()}`,
+  });
+}
+
 export function pagina404(opciones) {
   const { html, status, ttl, noindex } = html404(opciones);
   return respuestaHtml(html, { status, ttl, noindex });

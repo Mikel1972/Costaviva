@@ -4,7 +4,9 @@
 // functions/prevision.js, regiones de functions/mareas/_regiones.js y
 // especies de assets/datos/especies.json. Sin IA ni red.
 //
-//   node scripts/seo/generar-sitemap.mjs          # reescribe sitemap.xml
+// También escribe 404.html (la página de "no encontrada" de base.js).
+//
+//   node scripts/seo/generar-sitemap.mjs          # reescribe sitemap.xml y 404.html
 //   node scripts/seo/generar-sitemap.mjs --check  # falla si está desfasado
 //
 // Volver a ejecutarlo al añadir spots, especies o regiones (el test
@@ -15,6 +17,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { urlsSitemap, xmlSitemap } from "../../functions/_lib/seo/sitemap.js";
+import { htmlNoEncontradaGeneral } from "../../functions/_lib/seo/base.js";
 import { SPOTS } from "../../functions/prevision.js";
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -23,15 +26,24 @@ const especies = leer("assets/datos/especies.json");
 const tipoFondo = leer("assets/datos/tipo-fondo.json");
 const profundidad = leer("assets/datos/profundidad-spots.json");
 
-const xml = xmlSitemap(urlsSitemap({ spots: SPOTS, especies, tipoFondo, profundidad }));
-const destino = join(RAIZ, "sitemap.xml");
-if (process.argv.includes("--check")) {
-  if (readFileSync(destino, "utf8") !== xml) {
-    console.error("sitemap.xml está desfasado: ejecuta node scripts/seo/generar-sitemap.mjs");
-    process.exit(1);
+const ficheros = [
+  ["sitemap.xml", xmlSitemap(urlsSitemap({ spots: SPOTS, especies, tipoFondo, profundidad }))],
+  // 404.html (2026-10-08): la misma página que da el middleware.
+  ["404.html", `${htmlNoEncontradaGeneral()}\n`],
+];
+let desfasado = false;
+for (const [nombre, contenido] of ficheros) {
+  const destino = join(RAIZ, nombre);
+  if (process.argv.includes("--check")) {
+    let actual = "";
+    try { actual = readFileSync(destino, "utf8"); } catch { /* no existe */ }
+    if (actual !== contenido) {
+      console.error(`${nombre} está desfasado: ejecuta node scripts/seo/generar-sitemap.mjs`);
+      desfasado = true;
+    } else console.log(`${nombre} al día`);
+  } else {
+    writeFileSync(destino, contenido);
+    console.log(nombre === "sitemap.xml" ? `sitemap.xml: ${(contenido.match(/<loc>/g) || []).length} URLs` : `${nombre} escrito`);
   }
-  console.log("sitemap.xml al día");
-} else {
-  writeFileSync(destino, xml);
-  console.log(`sitemap.xml: ${(xml.match(/<loc>/g) || []).length} URLs`);
 }
+if (desfasado) process.exit(1);

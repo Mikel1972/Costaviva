@@ -1,18 +1,21 @@
 {
-  "name": "Costaviva — Lekeitio a Bilbao",
+  "id": "/",
+  "name": "Costaviva — pesca en tiempo real",
   "short_name": "Costaviva",
-  "description": "Cockpit de decisión para pesca de costa: oleaje, viento, ríos y rayos en un vistazo",
+  "description": "Condiciones de pesca desde costa en tiempo real: oleaje, viento, mareas, índice de pesca, webcams, rayos y diario de pesca en España y Portugal.",
+  "lang": "es",
+  "dir": "ltr",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#0B2532",
-  "theme_color": "#0B2532",
+  "background_color": "#0B1E3F",
+  "theme_color": "#0B1E3F",
   "orientation": "portrait",
+  "categories": ["sports", "weather", "navigation"],
   "icons": [
-    {
-      "src": "icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any"
-    }
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/assets/iconos/icono-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/iconos/icono-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/iconos/icono-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }

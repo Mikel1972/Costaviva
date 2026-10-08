@@ -8,7 +8,7 @@
 // las condiciones de hoy, con enlace a /mareas/<spot> para la tabla de
 // mareas. Cada una con su canonical.
 
-import { DOMINIO, esc, documento, migasHtml, migasJsonLd, cta } from "./base.js";
+import { DOMINIO, esc, documento, migasHtml, migasJsonLd, cta, imagenOg, imagenOgRegion } from "./base.js";
 import {
   especiesDeSpot, fondoDeSpot, profundidadDeSpot, camarasPublicasDeSpot, rioDeSpot, spotsCercanos, introSpot,
   nombreCortoSpot, regionDeSlug, REGIONES_MAREAS, fichaEspecie, introEspecie, slugEspecie, mesLargo,
@@ -17,7 +17,7 @@ import {
 import { NOMBRE_MODALIDAD, MODALIDADES } from "../../../assets/js/ventana-actividad.js";
 
 const nombreRegion = (r) => r.nombre.split(" (")[0];
-const ORG_LD = { "@type": "Organization", name: "Costaviva", url: `${DOMINIO}/`, logo: `${DOMINIO}/icon.svg` };
+const ORG_LD = { "@type": "Organization", name: "Costaviva", url: `${DOMINIO}/`, logo: `${DOMINIO}/assets/iconos/icono-512.png` };
 
 // ---------------------------------------------------------------------------
 // /spots/<slug>
@@ -111,7 +111,7 @@ ${cta(`Pesca mejor en ${nombre}`)}
 ${region ? `<p><a href="/spots/region/${esc(region.slug)}">Todos los spots de ${esc(nombreRegion(region))} →</a></p>` : ""}
 </section>`;
 
-  return { titulo, html: documento({ titulo, descripcion, ruta, cuerpo, ld }) };
+  return { titulo, html: documento({ titulo, descripcion, ruta, cuerpo, ld, imagen: imagenOgRegion(region), imagenAlt: `Pesca en ${region ? nombreRegion(region) : nombre} con Costaviva` }) };
 }
 
 // ---------------------------------------------------------------------------
@@ -142,7 +142,7 @@ ${REGIONES_MAREAS.map((r) => {
   return `<section aria-labelledby="t-${r.slug}"><h2 id="t-${r.slug}"><a href="/spots/region/${r.slug}">${esc(nombreRegion(r))}</a> <small>(${del.length})</small></h2>${listaSpots(del)}</section>`;
 }).join("\n")}
 ${cta()}`;
-  return { titulo, html: documento({ titulo, descripcion, ruta, cuerpo, ld }) };
+  return { titulo, html: documento({ titulo, descripcion, ruta, cuerpo, ld, imagen: imagenOg("spots"), imagenAlt: "Spots de pesca de Costaviva" }) };
 }
 
 export function paginaRegionSpots(region, spots, especiesDatos, mes) {
@@ -170,7 +170,7 @@ ${listaSpots(del)}
 <ul class="chips">${deTemporada.map((e) => `<li><a href="/especies/${esc(e.slug)}">${esc(e.nombre)}</a></li>`).join("")}</ul></section>
 ${cta()}
 <p><a href="/spots">Todas las regiones →</a></p>`;
-  return { titulo, html: documento({ titulo, descripcion, ruta, cuerpo, ld }) };
+  return { titulo, html: documento({ titulo, descripcion, ruta, cuerpo, ld, imagen: imagenOgRegion(region), imagenAlt: `Pesca en ${nombre} con Costaviva` }) };
 }
 
 // ---------------------------------------------------------------------------
@@ -225,7 +225,7 @@ ${f.porRegion.length ? `<section aria-labelledby="t-donde"><h2 id="t-donde">Dón
 ${f.porRegion.map((r) => `<h3><a href="/spots/region/${esc(r.slug)}">${esc(r.nombre)}</a></h3><ul class="chips">${r.spots.map((s) => `<li><a href="/spots/${esc(s.slug)}">${esc(s.nombre)}</a></li>`).join("")}</ul>`).join("")}
 </section>` : ""}
 <p><a href="/especies">Todas las especies →</a></p>`;
-  return { titulo, html: documento({ titulo, descripcion, ruta, cuerpo, ld, ogTipo: "article" }) };
+  return { titulo, html: documento({ titulo, descripcion, ruta, cuerpo, ld, ogTipo: "article", imagen: imagenOg("especies"), imagenAlt: "Especies de pesca: tallas, vedas y temporada" }) };
 }
 
 export function paginaIndiceEspecies(especiesDatos, mes) {
@@ -249,5 +249,5 @@ export function paginaIndiceEspecies(especiesDatos, mes) {
 <section aria-labelledby="t-todas"><h2 id="t-todas">Todas las especies</h2>
 <ul class="lista-especies">${lista.map((e) => `<li><a href="/especies/${esc(e.slug)}"><span aria-hidden="true">${esc(e.emoji)}</span> ${esc(e.nombre)}</a>${e.cientifico ? ` <em class="nota">${esc(e.cientifico)}</em>` : ""}</li>`).join("")}</ul></section>
 ${cta()}`;
-  return { titulo, html: documento({ titulo, descripcion, ruta, cuerpo, ld }) };
+  return { titulo, html: documento({ titulo, descripcion, ruta, cuerpo, ld, imagen: imagenOg("especies"), imagenAlt: "Especies de pesca: tallas, vedas y temporada" }) };
 }
