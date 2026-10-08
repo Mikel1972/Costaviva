@@ -7,140 +7,126 @@
 <link rel="manifest" href="manifest.json" />
 <link rel="icon" href="icon.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="icon.svg" />
-<meta name="theme-color" content="#F7F3E8" />
+<meta name="theme-color" content="#0B1E3F" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 <meta name="apple-mobile-web-app-title" content="Costaviva" />
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/costaviva.css">
+<script src="/assets/js/nivel-indice.js"></script>
 <style>
   * { box-sizing: border-box; }
-  @keyframes pulso { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
   body {
-    margin: 0; font-family: 'Inter', sans-serif; background: #F7F3E8; color: #0B2532;
+    margin: 0; font-family: var(--f-texto); background: var(--fondo); color: var(--tinta);
     display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; padding-bottom: calc(72px + env(safe-area-inset-bottom));
   }
-  header { padding: 10px 20px; border-bottom: 1px solid #DDE2DC; flex-shrink: 0; display: flex; align-items: center; gap: 12px; }
+  header { padding: 10px 20px; flex-shrink: 0; display: flex; align-items: center; gap: 12px; }
   header .titulos { flex: 1; min-width: 0; }
-  header h1 { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 700; letter-spacing: 0.2px; margin: 0; }
-  @media (max-width: 380px) { header h1 { font-size: 20px; } }
-  header p { margin: 2px 0 0; color: #5C7680; font-size: 11px; }
+  header h1 { font-size: 20px; margin: 0; }
+  @media (max-width: 420px) { header h1 { font-size: 17px; } }
+  header p { margin: 2px 0 0; font-size: 11px; }
 
-  .cuenta-menu-wrap { position: relative; flex-shrink: 0; }
-  .cuenta-menu-btn {
-    background: #EEF2EF; border: 1px solid #DDE2DC; color: #0B2532; width: 34px; height: 34px;
-    border-radius: 50%; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center;
-  }
-  .cuenta-menu-dropdown {
-    display: none; position: absolute; top: 42px; right: 0; background: #FFFFFF; border: 1px solid #DDE2DC;
-    border-radius: 10px; padding: 6px; min-width: 200px; z-index: 900; box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-  }
-  .cuenta-menu-dropdown.visible { display: block; }
-  .cuenta-menu-dropdown button {
-    display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; background: none; border: none;
-    color: #0B2532; font-family: 'Inter', sans-serif; font-size: 13px; padding: 9px 10px; border-radius: 6px; cursor: pointer;
-  }
-  .cuenta-menu-dropdown button:hover { background: #EEF2EF; }
 
   .contenido { flex: 1; min-height: 0; overflow-y: auto; padding: 16px; }
 
   .cabecera-mes { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 14px; }
   .cabecera-mes button {
-    background: #EEF2EF; border: 1px solid #DDE2DC; color: #0B2532; border-radius: 8px;
+    background: var(--superficie-2); border: 1px solid var(--linea); color: var(--tinta); border-radius: 8px;
     width: 32px; height: 32px; font-size: 16px; cursor: pointer;
   }
-  .cabecera-mes .mes-nombre { font-family: 'Fraunces', serif; font-size: 17px; text-transform: capitalize; }
+  .cabecera-mes .mes-nombre { font-family: var(--f-titulo); font-size: 17px; text-transform: capitalize; }
 
   .calendario { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; max-width: 480px; margin: 0 auto; }
-  .dia-semana { text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #42585F; padding-bottom: 4px; }
+  .dia-semana { text-align: center; font-family: var(--f-texto); font-size: 10px; color: var(--tinta-3); padding-bottom: 4px; }
   .dia {
-    aspect-ratio: 1; border-radius: 8px; background: #FFFFFF; border: 1px solid #DDE2DC;
+    aspect-ratio: 1; border-radius: 8px; background: var(--superficie); border: 1px solid var(--linea);
     display: flex; align-items: center; justify-content: center;
-    font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #5F7981; cursor: pointer; position: relative;
+    font-family: var(--f-texto); font-size: 13px; color: var(--tinta-2); cursor: pointer; position: relative;
   }
   .dia.vacio { visibility: hidden; cursor: default; }
-  .dia.hoy { border-color: #A8792A; }
-  .dia.rojo { background: rgba(163,74,53,0.28); border-color: #A34A35; color: #8C3826; }
-  .dia.verde { background: rgba(79,157,105,0.28); border-color: #4F9D69; color: #D9F0E1; }
+  .dia.hoy { border-color: var(--acento); }
+  .dia.rojo { background: var(--peligro-fondo); border-color: var(--peligro); color: var(--peligro-texto); }
+  .dia.verde { background: var(--ok-fondo); border-color: var(--ok); color: var(--ok-texto); }
   .dia:active { transform: scale(0.94); }
 
-  .leyenda-dias { display: flex; justify-content: center; gap: 18px; margin-top: 14px; font-size: 11px; color: #5C7680; }
+  .leyenda-dias { display: flex; justify-content: center; gap: 18px; margin-top: 14px; font-size: 11px; color: var(--tinta-2); }
   .leyenda-dias span { display: inline-flex; align-items: center; gap: 5px; }
   .chip { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
 
   .aviso-consentimiento {
-    max-width: 480px; margin: 0 auto 16px; background: #FFFFFF; border: 1px solid #DDE2DC; border-radius: 10px;
-    padding: 12px 14px; font-size: 12px; color: #5F7981; line-height: 1.5;
+    max-width: 480px; margin: 0 auto 16px; background: var(--superficie); border: 1px solid var(--linea); border-radius: 10px;
+    padding: 12px 14px; font-size: 12px; color: var(--tinta-2); line-height: 1.5;
   }
-  .aviso-consentimiento a { color: #A8792A; }
+  .aviso-consentimiento a { color: var(--acento); }
 
   /* Panel de detalle del día — hoja deslizante desde abajo, igual patrón que index.html */
   .panel-dia {
     display: none; position: fixed; left: 0; right: 0; bottom: 54px; max-height: 78vh;
-    background: #FFFFFF; border-top: 1px solid #DDE2DC; border-radius: 16px 16px 0 0;
+    background: var(--superficie); border-top: 1px solid var(--linea); border-radius: 16px 16px 0 0;
     padding: 20px; overflow-y: auto; z-index: 1000; box-shadow: 0 -8px 24px rgba(0,0,0,0.4);
   }
   .panel-dia.visible { display: block; }
-  .panel-dia h2 { font-family: 'Fraunces', serif; font-size: 19px; margin: 0 0 12px; text-transform: capitalize; }
-  .panel-dia .cerrar { position: absolute; top: 14px; right: 16px; background: none; border: none; color: #5C7680; font-size: 16px; cursor: pointer; }
+  .panel-dia h2 { font-family: var(--f-titulo); font-size: 19px; margin: 0 0 12px; text-transform: capitalize; }
+  .panel-dia .cerrar { position: absolute; top: 14px; right: 16px; background: none; border: none; color: var(--tinta-2); font-size: 16px; cursor: pointer; }
 
-  label { display: block; font-size: 12px; color: #5F7981; margin: 12px 0 5px; font-family: 'Inter', sans-serif; font-weight: 500; }
+  label { display: block; font-size: 12px; color: var(--tinta-2); margin: 12px 0 5px; font-family: var(--f-texto); font-weight: 500; }
   input, select, textarea {
-    width: 100%; padding: 9px 11px; border-radius: 8px; border: 1px solid #DDE2DC; background: #EEF2EF;
-    color: #0B2532; font-family: 'Inter', sans-serif; font-size: 14px;
+    width: 100%; padding: 9px 11px; border-radius: 8px; border: 1px solid var(--linea); background: var(--superficie-2);
+    color: var(--tinta); font-family: var(--f-texto); font-size: 14px;
   }
   textarea { resize: vertical; min-height: 60px; }
-  input:focus, select:focus, textarea:focus { outline: none; border-color: #A8792A; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--acento); }
   button.principal {
     width: 100%; margin-top: 16px; padding: 11px; border-radius: 8px; border: none;
-    background: #D4A24C; color: #0B2532; font-weight: 600; font-size: 14px; cursor: pointer;
+    background: var(--degradado-fuerte); color: var(--sobre-acento); font-weight: 800; font-size: 14px; cursor: pointer;
   }
   button.principal:disabled { opacity: 0.6; }
   button.secundario {
-    width: 100%; margin-top: 8px; padding: 10px; border-radius: 8px; border: 1px solid #DDE2DC;
-    background: transparent; color: #5F7981; font-size: 13px; cursor: pointer;
+    width: 100%; margin-top: 8px; padding: 10px; border-radius: 8px; border: 1px solid var(--linea);
+    background: transparent; color: var(--tinta-2); font-size: 13px; cursor: pointer;
   }
 
-  .tarjeta-captura { background: #EEF2EF; border-radius: 10px; padding: 12px; margin-top: 10px; }
+  .tarjeta-captura { background: var(--superficie-2); border-radius: 10px; padding: 12px; margin-top: 10px; }
   .tarjeta-captura .fila-titulo { display: flex; justify-content: space-between; align-items: baseline; }
   .tarjeta-captura .especie { font-weight: 600; font-size: 14px; }
-  .tarjeta-captura .detalle { font-size: 12px; color: #5F7981; margin-top: 2px; }
+  .tarjeta-captura .detalle { font-size: 12px; color: var(--tinta-2); margin-top: 2px; }
   .galeria-fotos { display: flex; gap: 6px; margin-top: 8px; overflow-x: auto; }
   .galeria-fotos img { width: 76px; height: 76px; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
   .tarjeta-captura button.borrar-captura {
-    background: none; border: none; color: #A34A35; font-size: 11px; cursor: pointer; margin-top: 6px; padding: 0;
+    background: none; border: none; color: var(--peligro); font-size: 11px; cursor: pointer; margin-top: 6px; padding: 0;
   }
 
   .contexto-ambiental { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0 4px; }
-  .contexto-ambiental .dato { background: #EEF2EF; border-radius: 8px; padding: 8px; text-align: center; }
-  .contexto-ambiental .dato .etq { font-size: 9px; color: #42585F; }
-  .contexto-ambiental .dato .val { font-family: 'IBM Plex Mono', monospace; font-size: 13px; margin-top: 2px; }
-  .atribucion-meteo { margin-top: 6px; font-size: 10.5px; line-height: 1.4; color: #42585F; }
+  .contexto-ambiental .dato { background: var(--superficie-2); border-radius: 8px; padding: 8px; text-align: center; }
+  .contexto-ambiental .dato .etq { font-size: 9px; color: var(--tinta-3); }
+  .contexto-ambiental .dato .val { font-family: var(--f-texto); font-size: 13px; margin-top: 2px; }
+  .atribucion-meteo { margin-top: 6px; font-size: 10.5px; line-height: 1.4; color: var(--tinta-3); }
   .atribucion-meteo a { color: inherit; text-decoration: underline; }
 
   .mensaje { margin-top: 10px; font-size: 12px; padding: 8px 10px; border-radius: 8px; display: none; }
-  .mensaje.error { display: block; background: rgba(163,74,53,0.15); color: #A34A35; border: 1px solid #A34A35; }
-  .mensaje.ok { display: block; background: rgba(79,157,105,0.12); color: #3A6B4C; border: 1px solid #A8D4B8; }
-  .mensaje.info { display: block; background: rgba(212,162,76,0.1); color: #6B5530; border: 1px solid #D9C08A; }
+  .mensaje.error { display: block; background: var(--peligro-fondo); color: var(--peligro-texto); border: 1px solid var(--peligro-borde); }
+  .mensaje.ok { display: block; background: var(--ok-fondo); color: var(--ok-texto); border: 1px solid var(--ok-borde); }
+  .mensaje.info { display: block; background: var(--aviso-fondo); color: var(--aviso-texto); border: 1px solid var(--aviso-borde); }
 
   /* Modal "¿cómo quieres añadir la foto?" — identificación de captura
      por IA (2026-09-13). Overlay simple centrado, no una hoja deslizante
      como .panel-dia (esto es una elección puntual de dos botones, no un
      formulario). */
   .modal-elegir-foto {
-    display: none; position: fixed; inset: 0; background: rgba(11,37,50,0.75); z-index: 1500;
+    display: none; position: fixed; inset: 0; background: rgba(11,30,63,0.75); z-index: 1500;
     align-items: center; justify-content: center; padding: 24px;
   }
   .modal-elegir-foto.visible { display: flex; }
   .modal-elegir-foto .caja {
-    background: #FFFFFF; border: 1px solid #DDE2DC; border-radius: 14px; padding: 20px; width: 100%; max-width: 320px;
+    background: var(--superficie); border: 1px solid var(--linea); border-radius: 14px; padding: 20px; width: 100%; max-width: 320px;
   }
-  .modal-elegir-foto .titulo { font-family: 'Fraunces', serif; font-size: 16px; margin-bottom: 14px; text-align: center; }
+  .modal-elegir-foto .titulo { font-family: var(--f-titulo); font-size: 16px; margin-bottom: 14px; text-align: center; }
   .modal-elegir-foto button {
-    width: 100%; margin-top: 8px; padding: 12px; border-radius: 8px; border: 1px solid #DDE2DC;
-    background: #EEF2EF; color: #0B2532; font-size: 14px; cursor: pointer; text-align: left;
+    width: 100%; margin-top: 8px; padding: 12px; border-radius: 8px; border: 1px solid var(--linea);
+    background: var(--superficie-2); color: var(--tinta); font-size: 14px; cursor: pointer; text-align: left;
   }
   .modal-elegir-foto button:first-of-type { margin-top: 0; }
-  .modal-elegir-foto button.cancelar { background: transparent; color: #5F7981; text-align: center; }
+  .modal-elegir-foto button.cancelar { background: transparent; color: var(--tinta-2); text-align: center; }
 
   /* Selector de hora: dos <select> nativos (hora, minuto) — el propio
      desplegable del navegador ya trae scroll cuando tiene muchas
@@ -153,52 +139,27 @@
   */
   .hora-select { display: flex; align-items: center; gap: 6px; margin: 4px 0 10px; }
   .hora-select select {
-    width: auto; padding: 8px 10px; border-radius: 8px; border: 1px solid #DDE2DC;
-    background: #EEF2EF; color: #0B2532; font-family: 'IBM Plex Mono', monospace; font-size: 14px;
+    width: auto; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--linea);
+    background: var(--superficie-2); color: var(--tinta); font-family: var(--f-texto); font-size: 14px;
   }
-  .hora-select-sep { font-family: 'Fraunces', serif; font-size: 16px; color: #5F7981; }
+  .hora-select-sep { font-family: var(--f-titulo); font-size: 16px; color: var(--tinta-2); }
 
-  /* Menú inferior rediseñado 2026-09-15 (pedido explícito del usuario: "muy
-     feo... más grandes, con las palabras en una línea") — icono y texto en
-     fila (antes apilados en dos líneas) dentro de una píldora, la pestaña
-     activa con relleno dorado sólido en vez de solo un tinte del icono. */
-  .tabs-nav {
-    position: fixed; left: 0; right: 0; bottom: 0; height: calc(72px + env(safe-area-inset-bottom));
-    background: #FFFFFF; border-top: 1px solid #DDE2DC; display: flex; gap: 12px; padding: 10px 10px calc(10px + env(safe-area-inset-bottom)) 10px; z-index: 700;
-  }
-  .tabs-nav a {
-    flex: 1; display: flex; flex-direction: row; align-items: center; justify-content: center;
-    gap: 7px; text-decoration: none; color: #42585F; border-radius: 14px; background: rgba(212,162,76,0.12);
-    font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; white-space: nowrap;
-  }
-  .tabs-nav a .icono { width: 22px; height: 22px; display: flex; flex-shrink: 0; position: relative; }
-  .punto-novedades-grupos {
-    position: absolute; top: -3px; right: -3px; width: 9px; height: 9px;
-    border-radius: 50%; background: #4F9D69; border: 2px solid #FFFFFF;
-    animation: pulso 1.6s infinite;
-  }
-  .tabs-nav a .icono svg { width: 100%; height: 100%; }
-  .ico-mapa { color: #3E7CB1; }
-  .ico-diario { color: #4F9D69; }
-  .ico-alarma { color: #A34A35; }
-  .ico-grupos { color: #8B6BB1; }
-  .tabs-nav a.activa .icono svg { color: #FFFFFF; }
-  .tabs-nav a.activa { color: #FFFFFF; background: #A8792A; }
 </style>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "d398d313ac4e4524a1b89af3c9ad6fda"}'></script><!-- End Cloudflare Web Analytics -->
 </head>
 <body>
 
-<div id="comprobandoAcceso" style="position:fixed; inset:0; background:#F7F3E8; z-index:9999; display:flex; align-items:center; justify-content:center; color:#5C7680; font-family:'IBM Plex Mono',monospace; font-size:13px;">
+<div id="comprobandoAcceso" style="position:fixed; inset:0; background:var(--fondo); z-index:9999; display:flex; align-items:center; justify-content:center; color:var(--tinta-2); font-family:var(--f-texto); font-size:13px;">
   Comprobando acceso…
 </div>
 
 <header>
+  <a href="/" class="enlace-marca" aria-label="Costaviva, ir al mapa"><svg class="marca-logo" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><circle class="marca-fondo" cx="20" cy="20" r="19"/><path class="marca-pez" d="M9 17c4-6.5 14-6.5 19 0-5 6.5-15 6.5-19 0z"/><path class="marca-pez" d="M27.5 17l6-4.5v9z"/><circle class="marca-ojo" cx="13.5" cy="16" r="1.4"/><path class="marca-ola" d="M5 28c3.5-3.2 6.5-3.2 10 0s6.5 3.2 10 0 6.5-3.2 10 0"/></svg></a>
   <div class="titulos">
     <h1>🎣 Diario de capturas</h1>
     <p>Agenda privada — solo la ves tú. Rojo: saliste sin captura. Verde: con captura declarada.</p>
   </div>
-  <a id="enlaceAdmin" href="/admin.html" title="Admin" aria-label="Administración" style="display:none; background:#EEF2EF; border:1px solid #DDE2DC; color:#0B2532; width:34px; height:34px; border-radius:50%; font-size:15px; cursor:pointer; align-items:center; justify-content:center; text-decoration:none;">⚙️</a>
+  <a id="enlaceAdmin" class="cuenta-menu-btn" href="/admin.html" title="Admin" aria-label="Administración" style="display:none;">⚙️</a>
   <div class="cuenta-menu-wrap">
     <button class="cuenta-menu-btn" id="btnCuentaMenu" type="button" aria-label="Cuenta">👤</button>
     <div class="cuenta-menu-dropdown" id="cuentaMenuDropdown">
@@ -219,9 +180,9 @@
   <div class="calendario" id="calendario"></div>
 
   <div class="leyenda-dias">
-    <span><span class="chip" style="background:#A34A35;"></span>sin captura</span>
-    <span><span class="chip" style="background:#4F9D69;"></span>con captura</span>
-    <span><span class="chip" style="background:#FFFFFF; border:1px solid #DDE2DC;"></span>sin registrar</span>
+    <span><span class="chip" style="background:var(--peligro);"></span>sin captura</span>
+    <span><span class="chip" style="background:var(--ok);"></span>con captura</span>
+    <span><span class="chip" style="background:var(--superficie); border:1px solid var(--linea);"></span>sin registrar</span>
   </div>
 </div>
 
@@ -254,6 +215,10 @@
 <script src="/assets/js/meteo.js"></script>
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { cargarCompartidas, htmlCasillaCompartir, htmlEtiquetaCompartida, sincronizarCompartida } from "/assets/js/compartir-captura.js";
+// Índice de pesca v2 y condiciones por fecha de la salida (2026-10-08).
+import * as VentanaActividad from "/assets/js/ventana-actividad.js";
+import * as CondSalida from "/assets/js/condiciones-salida.js";
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
@@ -478,6 +443,7 @@ const DIAS_SEMANA = ["L","M","X","J","V","S","D"];
 
 let cursor = new Date();
 cursor.setDate(1);
+let compartidas = { disponible: false, ids: new Set() }; // capturas compartidas de forma anónima
 let salidasPorFecha = {}; // "YYYY-MM-DD" -> { salida, capturas: [...] }
 
 // Instancias activas de los selectores de hora "de rueda" del formulario
@@ -553,6 +519,8 @@ async function cargarDatos() {
       (capturasPorSalida[c.salida_id] = capturasPorSalida[c.salida_id] || []).push(c);
     });
   }
+  // "Comparte tu captura" (assets/js/compartir-captura.js).
+  compartidas = await cargarCompartidas(supabase);
 
   // Varias entradas por día (pedido explícito del usuario: puede pescar
   // en varios spots el mismo día, o ir en barco por la mañana y de
@@ -828,178 +796,162 @@ function factorOleaje(lat, lon) {
 }
 
 async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha, horaFinSalida) {
-  // Bug real encontrado 2026-09-13 (el usuario cazó el del coeficiente
-  // de marea y llevó a revisar el resto): con forecast_days=1 esto
-  // pedía siempre el pronóstico de "ahora mismo", sin importar la fecha
-  // real de la salida — una entrada guardada/editada un día distinto al
-  // que ocurrió (registro retroactivo) se guardaba con el oleaje/
-  // viento/presión/nubosidad/temperatura de HOY, no de su propia fecha.
-  // start_date=end_date=fecha lo pide para el día correcto (verificado
-  // en real que Open-Meteo lo sirve así para fechas pasadas recientes);
-  // sin fecha (no debería pasar, pero por si acaso) cae de vuelta al
-  // comportamiento de siempre.
-  const rangoFechas = fecha ? `start_date=${fecha}&end_date=${fecha}` : "forecast_days=1";
-  const paramsComunes = `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&${rangoFechas}`;
-  // La Marine API pide una ventana más ancha que el resto (±8 días
-  // alrededor de la fecha, ~17 días — cubre un ciclo vivas-muertas
-  // completo, ~14.77 días) para poder calcular coeficientePorSpot(): el
-  // rango de marea de esa fecha en concreto normalizado contra el
-  // mínimo/máximo rango real de ese mismo spot. Sin fecha, cae de vuelta
-  // a la ventana corta de siempre.
-  const sumarDias = (iso, dias) => {
-    const d = new Date(iso + "T00:00:00Z");
-    d.setUTCDate(d.getUTCDate() + dias);
-    return d.toISOString().slice(0, 10);
-  };
-  const paramsMarea = fecha
-    ? `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&start_date=${sumarDias(fecha, -8)}&end_date=${sumarDias(fecha, 8)}`
-    : paramsComunes;
+  // Condiciones de la FECHA Y HORA de la salida, nunca las de hoy (Fase 0 del
+  // índice v2, 2026-10-08; ver assets/js/condiciones-salida.js). Historia:
+  // el 2026-09-13 se pasó de forecast_days=1 a start_date=end_date=fecha,
+  // pero quedaban cuatro fugas de "hoy" en una entrada retroactiva: sin hora
+  // de inicio se usaba la hora de AHORA (y la serie de mar, de ±8 días, sí
+  // la contiene: oleaje/temp. agua/marea de hoy), la boya de embarcación era
+  // la de ahora mismo, la luna era la de hoy, y 23:40 caía en las 00 del
+  // mismo día. Ahora: la hora sale siempre de la fecha de la salida
+  // (mediodía si no hay hora, marcado como estimado), boya y /luna solo si
+  // la salida es de hoy (si no, luna calculada para esa fecha), y una fecha
+  // fuera del alcance de Open-Meteo (más de 90 días atrás o más de 15
+  // adelante) deja las condiciones a null con condiciones_estado diciendo
+  // por qué, en vez de pedir y guardar otra cosa.
+  // La Marine API pide una ventana más ancha (±8 días alrededor de la fecha,
+  // ~17 días — un ciclo vivas-muertas completo, ~14.77 días) para calcular
+  // coeficientePorSpot(); la atmósfera, de 5 días antes al día siguiente
+  // (tendencias y retardos de las reglas expertas del índice).
+  const hoy = horaActualMadridISO().slice(0, 10);
+  const plan = CondSalida.planCondiciones(fecha, hoy);
+  const fechaRef = fecha || hoy;
   const resultado = { marea_altura: null, marea_tendencia: null, marea_altura_fin: null, marea_tendencia_fin: null,
     marea_pico_tipo: null, marea_pico_hora: null,
     marea_coeficiente: null, presion_valor: null, presion_tendencia: null,
     luna_fase: null, luna_iluminacion: null, viento_kmh: null, viento_dir: null,
     oleaje_altura_min: null, oleaje_altura_max: null, temp_agua: null,
-    nubosidad: null, precipitacion: null, boya_usada: null };
+    nubosidad: null, precipitacion: null, boya_usada: null,
+    condiciones_estado: plan.estado || "ok",
+    indice_version: VentanaActividad.INDICE_VERSION, indice_puntuacion: null, indice_especie: null, indice_factores: null };
+
+  // La luna y el coeficiente astronómico valen para cualquier fecha.
+  const lunaLocal = CondSalida.lunaDeFecha(fechaRef, horaElegida || "12:00");
+  resultado.luna_fase = lunaLocal.fase;
+  resultado.luna_iluminacion = lunaLocal.iluminacion;
+  if (!plan.pedir) {
+    resultado.marea_coeficiente = coeficienteMarea(new Date(fechaRef + "T12:00:00"));
+    return resultado;
+  }
+
+  const v = CondSalida.ventanasConsulta(fechaRef, hoy);
+  const coord = `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid`;
+  const RUMBOS = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
   try {
-    const [marino, viento, luna] = await Promise.all([
-      pedirMeteo("marine", `${paramsMarea}&hourly=wave_height,sea_level_height_msl,sea_surface_temperature`),
-      pedirMeteo("forecast", `${paramsComunes}&hourly=windspeed_10m,winddirection_10m,pressure_msl,cloudcover,precipitation&windspeed_unit=kmh`),
-      fetch(`/luna?lat=${lat}&lon=${lon}`).then((r) => r.json()),
+    const [marino, viento, luna, datosEspecies] = await Promise.all([
+      pedirMeteo("marine", `${coord}&start_date=${v.mar.inicio}&end_date=${v.mar.fin}&hourly=wave_height,sea_level_height_msl,sea_surface_temperature`),
+      pedirMeteo("forecast", `${coord}&start_date=${v.atmosfera.inicio}&end_date=${v.atmosfera.fin}&hourly=windspeed_10m,winddirection_10m,pressure_msl,cloudcover,precipitation&windspeed_unit=kmh`),
+      // /luna calcula siempre la de hoy: solo sirve para salidas de hoy.
+      plan.modo === "hoy" || plan.modo === "sin_fecha"
+        ? fetch(`/luna?lat=${lat}&lon=${lon}`).then((r) => r.json()).catch(() => null)
+        : Promise.resolve(null),
+      cargarEspeciesIndice().catch(() => null),
     ]);
+    if (marino?.error || viento?.error) resultado.condiciones_estado = "parcial";
     const horas = marino.hourly?.time || [];
-    // Sin hora elegida: la hora de ahora (comportamiento de siempre). Con
-    // hora elegida (HH:MM, de la hora de inicio del selector de rueda): la hora en punto
-    // más cercana — Open-Meteo da el dato por hora, no por minuto, así
-    // que los minutos son solo para el registro, no cambian qué bloque
-    // horario se usa. Redondea a la hora más cercana (no trunca hacia
-    // abajo) para que 07:40 use el bloque de las 8h, más representativo
-    // que el de las 7h. `horas` ahora puede traer ±8 días de más (por la
-    // ventana ancha del coeficiente) — hay que exigir también que la
-    // FECHA coincida con la de la salida, no solo la hora del día, o se
-    // colaría la primera de los ±8 días que tenga esa misma hora.
-    // Extraído a función 2026-09-15: el índice se necesita DOS veces, una
-    // vez para `horas` (marino.hourly.time — ventana ancha de ±8 días
-    // cuando hay fecha, para el coeficiente de marea) y otra para
-    // viento.hourly.time (siempre un único día, start_date=end_date=fecha)
-    // — son arrays de longitud distinta. Bug real encontrado por el
-    // usuario 2026-09-15: se calculaba un único `idx` sobre `horas` y se
-    // reutilizaba tal cual para leer viento.hourly.windspeed_10m/
-    // pressure_msl/cloudcover/precipitation — con fecha puesta, ese índice
-    // (dentro de la ventana ancha) caía muy por encima de las 24 horas del
-    // array corto de viento, así que esos 4 campos salían siempre
-    // `undefined`/"—", aunque marea/oleaje/temp. agua (que sí usan el
-    // array correcto) se vieran bien.
-    // horaObjetivo y fechaObjetivo parametrizadas (no por closure) desde
-    // 2026-09-19 — hace falta buscar el índice de DOS horas distintas
-    // (inicio y fin de la salida) sobre la misma serie ya descargada, ver
-    // marea_altura_fin más abajo, y la de fin puede caer en el día
-    // SIGUIENTE si la salida cruza medianoche (fechaObjetivo distinta de
-    // `fecha`) — bug real encontrado al diseñar el pico de marea: antes
-    // esto siempre buscaba dentro del mismo `fecha` de la salida, así que
-    // una hora_fin de madrugada (ej. 02:00 de una salida que empezó a las
-    // 23:00) nunca se encontraba de verdad y caía en uno de los
-    // respaldos (mediodía del día de inicio, dato incorrecto).
-    const buscarIndiceHora = (listaHoras, horaObjetivo0 = horaElegida, fechaObjetivo = fecha) => {
-      let i = -1;
-      if (horaObjetivo0) {
-        const [h, m] = horaObjetivo0.split(":").map(Number);
-        const horaObjetivo = m >= 30 ? (h + 1) % 24 : h;
-        i = listaHoras.findIndex((hs) => (!fechaObjetivo || hs.startsWith(fechaObjetivo)) && +hs.slice(11, 13) === horaObjetivo);
-      }
-      if (i === -1) {
-        i = listaHoras.findIndex((hs) => hs.slice(0, 13) === horaActualMadridISO());
-      }
-      // Sin hora elegida y la fecha no es hoy (registro retroactivo): la
-      // hora de ahora no significa nada para un día distinto — mediodía
-      // es una referencia más representativa de la jornada que
-      // medianoche (el índice 0 al que caería si no se afina esto).
-      if (i === -1) i = listaHoras.findIndex((hs) => (!fecha || hs.startsWith(fecha)) && +hs.slice(11, 13) === 12);
-      if (i === -1) i = fecha ? Math.max(0, listaHoras.findIndex((hs) => hs.startsWith(fecha))) : 0;
-      return i;
-    };
-    const idx = buscarIndiceHora(horas);
-    const idxViento = buscarIndiceHora(viento.hourly?.time || []);
+    const horasViento = viento.hourly?.time || [];
+    const opcionesHora = { hoy, horaActual: horaActualMadridISO() };
+    // Bug real encontrado por el usuario 2026-09-15: las dos series tienen
+    // longitudes distintas; cada una busca su propio índice por fecha+hora.
+    const { i: idx, estimada } = CondSalida.indiceHoraSalida(horas, fechaRef, horaElegida, opcionesHora);
+    const { i: idxViento } = CondSalida.indiceHoraSalida(horasViento, fechaRef, horaElegida, opcionesHora);
+    if (idx < 0 && idxViento < 0) resultado.condiciones_estado = "sin_dato_hora";
 
-    const alturaCruda = marino.hourly?.wave_height?.[idx];
-    const alturaOla =
-      alturaCruda === undefined || alturaCruda === null ? alturaCruda : alturaCruda * factorOleaje(lat, lon);
-    if (alturaOla !== undefined && alturaOla !== null) {
-      resultado.oleaje_altura_min = +(alturaOla * 0.9).toFixed(1);
-      resultado.oleaje_altura_max = +(alturaOla * 1.1).toFixed(1);
+    if (idx >= 0) {
+      const alturaCruda = marino.hourly?.wave_height?.[idx];
+      const alturaOla =
+        alturaCruda === undefined || alturaCruda === null ? alturaCruda : alturaCruda * factorOleaje(lat, lon);
+      if (alturaOla !== undefined && alturaOla !== null) {
+        resultado.oleaje_altura_min = +(alturaOla * 0.9).toFixed(1);
+        resultado.oleaje_altura_max = +(alturaOla * 1.1).toFixed(1);
+      }
+      resultado.temp_agua = marino.hourly?.sea_surface_temperature?.[idx] ?? null;
     }
-    resultado.temp_agua = marino.hourly?.sea_surface_temperature?.[idx] ?? null;
-    // sea_level_height_msl es una anomalía respecto al nivel medio del
-    // mar (puede salir negativa) — se re-referencia contra el mínimo de
-    // la propia ventana de datos para mostrar la altura de marea de
-    // forma intuitiva (siempre ≥ 0), no un dato oceanográfico confuso.
-    // Mismo criterio que functions/prevision.js (calcularMarea).
+    // sea_level_height_msl es una anomalía respecto al nivel medio del mar
+    // (puede salir negativa): se re-referencia contra el mínimo de la propia
+    // ventana para mostrar la altura de forma intuitiva (siempre ≥ 0). Mismo
+    // criterio que functions/prevision.js (calcularMarea).
     const serieAltura = marino.hourly?.sea_level_height_msl || [];
-    const validasAltura = serieAltura.filter((v) => v !== null && v !== undefined);
+    const validasAltura = serieAltura.filter((x) => x !== null && x !== undefined);
     const minAltura = validasAltura.length ? Math.min(...validasAltura) : 0;
-    const alturaMarea = serieAltura[idx];
-    const alturaMareaSig = serieAltura[idx + 1];
-    resultado.marea_altura = alturaMarea != null ? +(alturaMarea - minAltura).toFixed(2) : null;
-    resultado.marea_tendencia = alturaMarea != null && alturaMareaSig != null ? (alturaMareaSig > alturaMarea ? "subiendo" : "bajando") : null;
-
-    // Marea a la hora de FIN de la salida (2026-09-19, pedido explícito
-    // del usuario: saber si subía o bajaba tanto al llegar como al irse)
-    // — reutiliza la misma serie horaria ya descargada (`horas`/
-    // `serieAltura`), así que no hace falta ninguna petición extra a
-    // Open-Meteo, solo mirar un índice distinto.
-    let idxFin = idx;
-    if (horaFinSalida) {
-      // Si hora_fin <= hora_inicio, la salida cruza medianoche (mismo
-      // criterio ya usado para aceptar el dato sin bloquear el guardado)
-      // — la hora de fin cae en el día SIGUIENTE, no en `fecha`.
-      const fechaFin = fecha && horaFinSalida <= horaElegida
-        ? (() => { const d = new Date(fecha + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + 1); return d.toISOString().slice(0, 10); })()
-        : fecha;
-      idxFin = buscarIndiceHora(horas, horaFinSalida, fechaFin);
-      const alturaMareaFin = serieAltura[idxFin];
-      const alturaMareaFinSig = serieAltura[idxFin + 1];
-      resultado.marea_altura_fin = alturaMareaFin != null ? +(alturaMareaFin - minAltura).toFixed(2) : null;
-      resultado.marea_tendencia_fin = alturaMareaFin != null && alturaMareaFinSig != null
-        ? (alturaMareaFinSig > alturaMareaFin ? "subiendo" : "bajando")
-        : null;
+    if (idx >= 0) {
+      const alturaMarea = serieAltura[idx];
+      const alturaMareaSig = serieAltura[idx + 1];
+      resultado.marea_altura = alturaMarea != null ? +(alturaMarea - minAltura).toFixed(2) : null;
+      resultado.marea_tendencia = alturaMarea != null && alturaMareaSig != null ? (alturaMareaSig > alturaMarea ? "subiendo" : "bajando") : null;
     }
 
-    // Próximo pico de marea (pleamar/bajamar) de la SALIDA, no un número
-    // de altura suelto (2026-09-19, pedido explícito del usuario: "el
-    // dato de marea no tiene mucha lógica tal cual" — una altura relativa
-    // no dice nada útil por sí sola). Un único pico para toda la salida,
-    // no uno por hora_inicio y otro por hora_fin: el que caiga DENTRO del
-    // intervalo [hora_inicio, hora_fin]; si no hay ninguno dentro (sesión
-    // corta durante una subida/bajada sin girar), el más cercano por
-    // fuera del intervalo.
-    const picoMarea = picoDeMareaEnIntervalo(serieAltura, horas, idx, idxFin);
-    resultado.marea_pico_tipo = picoMarea?.tipo ?? null;
-    resultado.marea_pico_hora = picoMarea?.hora ?? null;
+    // Marea a la hora de FIN de la salida (2026-09-19): misma serie, otro
+    // índice. Si hora_fin <= hora_inicio, la salida cruza medianoche y el
+    // fin cae en el día siguiente.
+    let idxFin = idx;
+    if (horaFinSalida && idx >= 0) {
+      const fechaFin = horaElegida && horaFinSalida <= horaElegida ? CondSalida.sumarDias(fechaRef, 1) : fechaRef;
+      idxFin = CondSalida.indiceHoraSalida(horas, fechaFin, horaFinSalida, opcionesHora).i;
+      if (idxFin >= 0) {
+        const alturaMareaFin = serieAltura[idxFin];
+        const alturaMareaFinSig = serieAltura[idxFin + 1];
+        resultado.marea_altura_fin = alturaMareaFin != null ? +(alturaMareaFin - minAltura).toFixed(2) : null;
+        resultado.marea_tendencia_fin = alturaMareaFin != null && alturaMareaFinSig != null
+          ? (alturaMareaFinSig > alturaMareaFin ? "subiendo" : "bajando")
+          : null;
+      } else idxFin = idx;
+    }
 
-    // Bug real reportado por el usuario (2026-09-13): esto usaba
-    // new Date() (el momento de guardar), no la fecha real de la
-    // salida — una salida del 7 de septiembre guardada/editada más
-    // tarde mostraba el coeficiente de HOY, no el del 7 de septiembre.
-    // Ahora usa coeficientePorSpot() (real, por spot — ver el comentario
-    // largo más arriba) con la fecha real, y solo si esa ventana no trae
-    // datos suficientes cae de vuelta a la fórmula astronómica genérica.
+    // Pico de marea (pleamar/bajamar) de la salida: el que caiga dentro de
+    // [hora_inicio, hora_fin], o el más cercano por fuera (2026-09-19).
+    if (idx >= 0) {
+      const picoMarea = picoDeMareaEnIntervalo(serieAltura, horas, idx, idxFin);
+      resultado.marea_pico_tipo = picoMarea?.tipo ?? null;
+      resultado.marea_pico_hora = picoMarea?.hora ?? null;
+    }
+
+    // Coeficiente real por spot con la fecha de la salida (bug del
+    // 2026-09-13: usaba new Date()); sin datos, la fórmula astronómica.
     resultado.marea_coeficiente =
-      coeficientePorSpot(horas, serieAltura, idx) ??
-      coeficienteMarea(fecha ? new Date(fecha + "T12:00:00") : new Date());
+      (idx >= 0 ? coeficientePorSpot(horas, serieAltura, idx) : null) ??
+      coeficienteMarea(new Date(fechaRef + "T12:00:00"));
 
-    resultado.viento_kmh = viento.hourly?.windspeed_10m?.[idxViento] != null ? Math.round(viento.hourly.windspeed_10m[idxViento]) : null;
-    resultado.presion_valor = viento.hourly?.pressure_msl?.[idxViento] != null ? Math.round(viento.hourly.pressure_msl[idxViento]) : null;
-    resultado.nubosidad = viento.hourly?.cloudcover?.[idxViento] != null ? Math.round(viento.hourly.cloudcover[idxViento]) : null;
-    resultado.precipitacion = viento.hourly?.precipitation?.[idxViento] != null ? viento.hourly.precipitation[idxViento] : null;
+    if (idxViento >= 0) {
+      const hv = viento.hourly;
+      resultado.viento_kmh = hv?.windspeed_10m?.[idxViento] != null ? Math.round(hv.windspeed_10m[idxViento]) : null;
+      resultado.viento_dir = hv?.winddirection_10m?.[idxViento] != null ? RUMBOS[Math.round(hv.winddirection_10m[idxViento] / 22.5) % 16] : null;
+      resultado.presion_valor = hv?.pressure_msl?.[idxViento] != null ? Math.round(hv.pressure_msl[idxViento]) : null;
+      resultado.presion_tendencia = CondSalida.tendenciaPresion(hv?.pressure_msl || [], idxViento);
+      resultado.nubosidad = hv?.cloudcover?.[idxViento] != null ? Math.round(hv.cloudcover[idxViento]) : null;
+      resultado.precipitacion = hv?.precipitation?.[idxViento] != null ? hv.precipitation[idxViento] : null;
+    }
 
-    resultado.luna_fase = luna?.fase ?? null;
-    resultado.luna_iluminacion = luna?.iluminacion ?? null;
+    if (luna && !luna.error && luna.fase) {
+      resultado.luna_fase = luna.fase;
+      resultado.luna_iluminacion = luna.iluminacion ?? resultado.luna_iluminacion;
+    }
 
-    // Solo embarcación: la boya real más cercana (Puertos del Estado, vía
-    // /prevision) es un dato medido de mar abierto, mejor que el modelo
-    // por coordenadas ahí — pero el submarinismo se hace cerca de costa
-    // (igual que "costa"), donde la boya de mar abierto no es
-    // representativa, así que sigue usando el modelo por coordenadas.
-    if (tipoSalida === "embarcacion") {
+    // Índice de pesca v2 a la hora de la salida (para calibrarlo después con
+    // lo que de verdad se pescó): mejor especie de temporada de esa modalidad,
+    // con cada factor y regla guardados en indice_factores.
+    if (datosEspecies) {
+      try {
+        const serie = CondSalida.serieHoraria(marino, viento, factorOleaje(lat, lon));
+        const r = CondSalida.indiceHoraSalida(serie.map((h) => h.hora), fechaRef, horaElegida, opcionesHora);
+        if (r.i >= 0) {
+          const modalidad = CondSalida.TIPO_SALIDA_A_MODALIDAD[tipoSalida] || "costa";
+          const ind = VentanaActividad.indiceSpot(datosEspecies, serie, r.i, {
+            lat, lon, modalidad, horaActual: horaActualMadridISO(),
+          });
+          Object.assign(resultado, CondSalida.resumenIndice(ind, { estimada: r.estimada }));
+        }
+      } catch (e) {
+        console.warn("No se pudo calcular el índice de la salida:", e.message);
+      }
+    }
+    if (estimada && resultado.indice_factores) resultado.indice_factores.hora_estimada = true;
+
+    // Solo embarcación Y solo si la salida es de hoy: la boya real más
+    // cercana (Puertos del Estado, vía /prevision) es un dato medido de mar
+    // abierto, pero es el de AHORA: para otra fecha sería un dato falso. El
+    // submarinismo se hace cerca de costa y sigue con el modelo.
+    if (tipoSalida === "embarcacion" && (plan.modo === "hoy" || plan.modo === "sin_fecha")) {
       try {
         const prevision = await fetch("/prevision", { cache: "no-store" }).then((r) => r.json());
         const boyas = (prevision.boyas || []).filter(
@@ -1021,8 +973,18 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha, horaF
     }
   } catch (e) {
     console.warn("No se pudo obtener contexto ambiental:", e.message);
+    resultado.condiciones_estado = "error";
   }
   return resultado;
+}
+
+// especies.json para el índice de la salida (una vez por página).
+let especiesIndicePromesa = null;
+function cargarEspeciesIndice() {
+  especiesIndicePromesa ||= fetch("/assets/datos/especies.json", { cache: "no-cache" })
+    .then((r) => { if (!r.ok) throw new Error(`especies.json HTTP ${r.status}`); return r.json(); })
+    .catch((e) => { especiesIndicePromesa = null; throw e; });
+  return especiesIndicePromesa;
 }
 
 // Marea suelta (altura + tendencia) en un momento concreto — versión
@@ -1035,16 +997,18 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha, horaF
 async function mareaEnMomento(lat, lon, hora, fecha) {
   if (!hora || !Number.isFinite(lat) || !Number.isFinite(lon)) return { altura: null, tendencia: null };
   try {
-    const rangoFechas = fecha ? `start_date=${fecha}&end_date=${fecha}` : "forecast_days=1";
+    // Dos días (fecha y la siguiente) por si la hora redondeada cruza medianoche.
+    const rangoFechas = fecha ? `start_date=${fecha}&end_date=${CondSalida.sumarDias(fecha, 1)}` : "forecast_days=2";
     const marino = await pedirMeteo("marine", `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&${rangoFechas}&hourly=sea_level_height_msl`);
     const horas = marino.hourly?.time || [];
     const serie = marino.hourly?.sea_level_height_msl || [];
     const validas = serie.filter((v) => v !== null && v !== undefined);
     const min = validas.length ? Math.min(...validas) : 0;
-    const [h, m] = hora.split(":").map(Number);
-    const horaObjetivo = m >= 30 ? (h + 1) % 24 : h;
-    let idx = horas.findIndex((hs) => (!fecha || hs.startsWith(fecha)) && +hs.slice(11, 13) === horaObjetivo);
-    if (idx === -1) idx = fecha ? Math.max(0, horas.findIndex((hs) => hs.startsWith(fecha))) : 0;
+    // Hora de la FECHA de la captura (23:40 -> 00 del día siguiente); sin
+    // esa hora en la serie, null antes que la marea de otra hora.
+    const fechaRef = fecha || horaActualMadridISO().slice(0, 10);
+    const { i: idx } = CondSalida.indiceHoraSalida(horas, fechaRef, hora);
+    if (idx < 0) return { altura: null, tendencia: null };
     const altura = serie[idx];
     const alturaSig = serie[idx + 1];
     return {
@@ -1068,17 +1032,14 @@ async function mareaDeConclusion(lat, lon, horaInicio, horaFin, fecha) {
   if (!horaInicio || !horaFin || !fecha || !Number.isFinite(lat) || !Number.isFinite(lon)) return vacio;
   try {
     const manana = (() => { const d = new Date(fecha + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + 1); return d.toISOString().slice(0, 10); })();
-    const marino = await pedirMeteo("marine", `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&start_date=${fecha}&end_date=${manana}&hourly=sea_level_height_msl`);
+    const marino = await pedirMeteo("marine", `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&start_date=${fecha}&end_date=${CondSalida.sumarDias(fecha, 2)}&hourly=sea_level_height_msl`);
     const horas = marino.hourly?.time || [];
     const serie = marino.hourly?.sea_level_height_msl || [];
     const validas = serie.filter((v) => v !== null && v !== undefined);
     const min = validas.length ? Math.min(...validas) : 0;
     const indiceDe = (hora, fechaObjetivo) => {
-      const [h, m] = hora.split(":").map(Number);
-      const horaObjetivo = m >= 30 ? (h + 1) % 24 : h;
-      let i = horas.findIndex((hs) => hs.startsWith(fechaObjetivo) && +hs.slice(11, 13) === horaObjetivo);
-      if (i === -1) i = Math.max(0, horas.findIndex((hs) => hs.startsWith(fechaObjetivo)));
-      return i;
+      const { i } = CondSalida.indiceHoraSalida(horas, fechaObjetivo, hora);
+      return i >= 0 ? i : Math.max(0, horas.findIndex((hs) => hs.startsWith(fechaObjetivo)));
     };
     const idxInicio = indiceDe(horaInicio, fecha);
     const fechaFin = horaFin <= horaInicio ? manana : fecha;
@@ -1122,7 +1083,7 @@ function opcionesSpotsPara(tipoSalida) {
 // vs update) — así no hay que mantener dos plantillas casi iguales.
 function formularioSalida() {
   return `
-    <p style="font-size:12px; color:#5F7981;">Rellena estos datos y guarda — luego se abre el menú para añadir capturas (especie, técnica, cebo…) de esta entrada.</p>
+    <p style="font-size:12px; color:var(--tinta-2);">Rellena estos datos y guarda — luego se abre el menú para añadir capturas (especie, técnica, cebo…) de esta entrada.</p>
     <label for="salidaTipo">Tipo de salida</label>
     <select id="salidaTipo">
       <option value="costa">🪨 Costa</option>
@@ -1150,10 +1111,10 @@ function formularioSalida() {
 // Flecha de tendencia de marea (2026-09-19, pedido explícito del
 // usuario): verde subiendo, roja bajando, nada si no hay dato. Mismos
 // colores que ya usa el resto de la app para éxito/error
-// (#3A6B4C / #A34A35).
+// (--ok-texto / --peligro de assets/css/costaviva.css).
 function flechaMareaHtml(tendencia) {
-  if (tendencia === "subiendo") return `<span style="color:#3A6B4C;" title="Marea subiendo">▲</span>`;
-  if (tendencia === "bajando") return `<span style="color:#A34A35;" title="Marea bajando">▼</span>`;
+  if (tendencia === "subiendo") return `<span style="color:var(--ok-texto);" title="Marea subiendo">▲</span>`;
+  if (tendencia === "bajando") return `<span style="color:var(--peligro);" title="Marea bajando">▼</span>`;
   return "";
 }
 
@@ -1223,9 +1184,19 @@ async function guardarSalida(fecha, idExistente) {
   // editar una ya existente no se toca concluida — así corregir una
   // nota o el spot de una jornada ya cerrada no la vuelve a abrir.
   if (!idExistente) datos.concluida = false;
-  const { error } = idExistente
-    ? await supabase.from("salidas_pesca").update(datos).eq("id", idExistente)
-    : await supabase.from("salidas_pesca").insert(datos);
+  const escribir = (d) => (idExistente
+    ? supabase.from("salidas_pesca").update(d).eq("id", idExistente)
+    : supabase.from("salidas_pesca").insert(d));
+  let { error } = await escribir(datos);
+  // Columnas del índice v2 (migración 20261008120000_indice_pesca_salida.sql):
+  // hasta que se aplique en producción, PostgREST rechaza el insert entero
+  // ("Could not find the 'indice_factores' column", PGRST204). Se reintenta
+  // sin ellas para no perder la salida.
+  if (error && (error.code === "PGRST204" || /indice_|condiciones_estado/.test(error.message || ""))) {
+    const sinIndice = { ...datos };
+    for (const k of ["indice_version", "indice_puntuacion", "indice_especie", "indice_factores", "condiciones_estado"]) delete sinIndice[k];
+    ({ error } = await escribir(sinIndice));
+  }
   if (error) {
     mensajeEl.className = "mensaje error";
     mensajeEl.textContent = traducirError(error, "No se ha podido guardar la salida. Inténtalo de nuevo.");
@@ -1257,18 +1228,37 @@ function contextoHTML(salida) {
     ["LLUVIA", salida.precipitacion != null ? `${salida.precipitacion} mm/h` : "—"],
   ];
   const notaBoya = salida.boya_usada
-    ? `<div class="detalle" style="font-size:11px; color:#42585F; margin-top:4px;">⚓ Oleaje y temperatura de la boya real de ${salida.boya_usada} (Puertos del Estado), no del modelo por coordenadas.</div>`
+    ? `<div class="detalle" style="font-size:11px; color:var(--tinta-3); margin-top:4px;">⚓ Oleaje y temperatura de la boya real de ${salida.boya_usada} (Puertos del Estado), no del modelo por coordenadas.</div>`
     : "";
   // Coeficiente real por spot, no el índice "nacional" de tides4fishing y
   // similares (ver CLAUDE.md, 2026-09-13) — se explica siempre que se
   // muestre, para que no parezca un error si alguien lo compara con otra
   // web/app de mareas.
   const notaCoef = salida.marea_coeficiente != null
-    ? `<div class="detalle" style="font-size:11px; color:#42585F; margin-top:4px;">🌊 El coeficiente de marea es propio de este spot (compara la marea de ese día contra el máximo/mínimo real de ese mismo sitio) — no es el índice nacional que usan otras webs de mareas, así que no tiene por qué coincidir con ellas.</div>`
+    ? `<div class="detalle" style="font-size:11px; color:var(--tinta-3); margin-top:4px;">🌊 El coeficiente de marea es propio de este spot (compara la marea de ese día contra el máximo/mínimo real de ese mismo sitio) — no es el índice nacional que usan otras webs de mareas, así que no tiene por qué coincidir con ellas.</div>`
+    : "";
+  // Índice de pesca v2 a la hora de la salida y, si no hay condiciones, por
+  // qué (2026-10-08): nunca datos de otro día en su lugar.
+  const esc = (t) => String(t ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const f = salida.indice_factores;
+  const notaIndice = salida.indice_puntuacion != null
+    ? `<div class="detalle" style="font-size:11px; color:var(--tinta-3); margin-top:4px;">🎣 Índice de pesca a esa hora: <b class="nota-nivel" data-nivel="${window.NivelIndice ? NivelIndice.nivelPesca(salida.indice_puntuacion) : "sd"}">${esc(salida.indice_puntuacion)}</b>/100${f?.especie_nombre ? ` (mejor especie: ${esc(f.especie_nombre)})` : ""}${f?.hora_estimada ? ", estimado a mediodía (sin hora de inicio)" : ""}.`
+      // Motivos con flechas (▲▲/▲/▼/▼▼), sin puntos ni fuentes (decisión de Mikel).
+      + `<ul style="list-style:none; margin:2px 0 0; padding:0;">${(f?.razones || []).filter((x) => x.aporte).sort((a, b) => Math.abs(b.aporte) - Math.abs(a.aporte)).slice(0, 4)
+        .map((x) => `<li><span style="display:inline-block; min-width:20px; font-size:11px; color:${x.aporte > 0 ? "var(--ok-texto)" : "var(--peligro)"};">${x.aporte >= 6 ? "▲▲" : x.aporte > 0 ? "▲" : x.aporte <= -6 ? "▼▼" : "▼"}</span>${esc(x.texto)}</li>`).join("")}</ul></div>`
+    : "";
+  const TEXTO_ESTADO = {
+    sin_dato_fecha_antigua: "Sin condiciones guardadas: la fecha es de hace más de 90 días y la fuente de previsión no llega tan atrás (mejor vacío que datos de otro día).",
+    sin_prevision_fecha_lejana: "Sin condiciones: todavía no hay previsión para esa fecha.",
+    sin_dato_hora: "Sin condiciones para esa hora en la fuente de datos.",
+    error: "No se pudieron obtener las condiciones de esa fecha.",
+  };
+  const notaEstado = TEXTO_ESTADO[salida.condiciones_estado]
+    ? `<div class="detalle" style="font-size:11px; color:var(--peligro-texto); margin-top:4px;">⚠ ${TEXTO_ESTADO[salida.condiciones_estado]}</div>`
     : "";
   // Atribución obligatoria de Open-Meteo (CC BY 4.0) junto a sus datos.
   const notaMeteo = `<div class="atribucion-meteo">${window.ATRIBUCION_METEO_HTML || "Datos meteorológicos: Open-Meteo.com (CC BY 4.0)"}</div>`;
-  return `<div class="contexto-ambiental">${filas.map(([e, v]) => `<div class="dato"><div class="etq">${e}</div><div class="val">${v}</div></div>`).join("")}</div>${notaBoya}${notaCoef}${notaMeteo}`;
+  return `<div class="contexto-ambiental">${filas.map(([e, v]) => `<div class="dato"><div class="etq">${e}</div><div class="val">${v}</div></div>`).join("")}</div>${notaEstado}${notaIndice}${notaBoya}${notaCoef}${notaMeteo}`;
 }
 
 async function tarjetaCapturaHTML(captura) {
@@ -1280,10 +1270,11 @@ async function tarjetaCapturaHTML(captura) {
       ${captura.tecnica ? `<div class="detalle">🎣 ${captura.tecnica}</div>` : ""}
       ${captura.cebo || captura.aparejo || captura.senuelo ? `<div class="detalle">${captura.cebo ? "Cebo: " + captura.cebo : ""} ${captura.aparejo ? "· Aparejo: " + captura.aparejo : ""} ${captura.senuelo ? "· Señuelo: " + captura.senuelo : ""}</div>` : ""}
       ${captura.notas ? `<div class="detalle">${captura.notas}</div>` : ""}
+      ${compartidas.ids.has(captura.id) ? htmlEtiquetaCompartida() : ""}
       ${urls.length ? `<div class="galeria-fotos">${urls.map((u) => `<img src="${u}" alt="Foto de ${captura.especie}" />`).join("")}</div>` : ""}
       <div style="display:flex; gap:12px; margin-top:6px;">
-        <button class="editar-captura" data-id="${captura.id}" style="background:none; border:none; color:#5F7981; font-size:11px; cursor:pointer; padding:0;">✏️ Editar</button>
-        <button class="borrar-captura" data-id="${captura.id}" style="background:none; border:none; color:#A34A35; font-size:11px; cursor:pointer; padding:0;">🗑 Borrar</button>
+        <button class="editar-captura" data-id="${captura.id}" style="background:none; border:none; color:var(--tinta-2); font-size:11px; cursor:pointer; padding:0;">✏️ Editar</button>
+        <button class="borrar-captura" data-id="${captura.id}" style="background:none; border:none; color:var(--peligro); font-size:11px; cursor:pointer; padding:0;">🗑 Borrar</button>
       </div>
     </div>
   `;
@@ -1295,7 +1286,7 @@ function formularioCaptura() {
     .join("");
   const opcionesTecnicas = TECNICAS.map((t) => `<option value="${t}">${t}</option>`).join("");
   return `
-    <div class="tarjeta-captura" style="border:1px dashed #DDE2DC;">
+    <div class="tarjeta-captura" style="border:1px dashed var(--linea);">
       <button type="button" class="secundario" id="btnIdentificarFoto" style="margin-top:0;">📷 Identificar con una foto</button>
       <div class="mensaje" id="mensajeIdentificarFoto"></div>
       <label for="capturaEspecie">Especie</label>
@@ -1334,6 +1325,7 @@ function formularioCaptura() {
       <textarea id="capturaNotas"></textarea>
       <label for="capturaFotos">Fotos nuevas (puedes elegir varias — las que ya hubiera se quedan)</label>
       <input type="file" id="capturaFotos" accept="image/*" capture="environment" multiple />
+      ${compartidas.disponible ? htmlCasillaCompartir(false) : ""}
       <div style="display:flex; gap:8px;">
         <button class="secundario" id="btnCancelarCaptura" style="margin-top:0; flex:1;">Cancelar</button>
         <button class="principal" id="btnGuardarCaptura" style="margin-top:0; flex:1;">Añadir captura</button>
@@ -1423,6 +1415,14 @@ async function guardarCaptura(salidaId, fecha, idExistente, ordenFotoBase) {
   // se guardó).
   if (avisoFueraDeRango) alert(`Captura guardada${avisoFueraDeRango}.`);
 
+  const casillaCompartir = document.getElementById("capturaCompartir");
+  if (casillaCompartir) {
+    const res = await sincronizarCompartida(supabase, {
+      capturaId, userId: usuario.id, compartir: casillaCompartir.checked, yaCompartida: compartidas.ids.has(capturaId),
+    });
+    if (!res.ok) { console.error(res.error); alert("La captura se guardó, pero no se pudo cambiar si se comparte. Inténtalo de nuevo desde Editar."); }
+  }
+
   for (let i = 0; i < archivos.length; i++) {
     try {
       const blob = await redimensionarImagen(archivos[i]);
@@ -1452,22 +1452,22 @@ async function resumenEntradaHTML(entrada, idx) {
   // color de acento) para que se note de un vistazo cuál sigue abierta.
   const enCurso = salida.concluida === false;
   return `
-    <div class="tarjeta-captura" style="margin-top:0; margin-bottom:14px; border:1px solid ${enCurso ? "#D4A24C" : "#DDE2DC"};">
+    <div class="tarjeta-captura" style="margin-top:0; margin-bottom:14px; border:1px solid ${enCurso ? "var(--acento)" : "var(--linea)"};">
       <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
-        <div class="detalle" style="font-size:12px; color:#5F7981; flex:1;">
-          ${enCurso ? `<span style="color:#A8792A; font-weight:600;">🟢 En curso</span> · ` : ""}📍 ${salida.spot_nombre || "Ubicación actual"}
+        <div class="detalle" style="font-size:12px; color:var(--tinta-2); flex:1;">
+          ${enCurso ? `<span style="color:var(--acento); font-weight:600;">🟢 En curso</span> · ` : ""}📍 ${salida.spot_nombre || "Ubicación actual"}
           ${salida.tipo_salida ? ` · ${etiquetaTipoSalida[salida.tipo_salida] || salida.tipo_salida}` : ""}
           ${horaRangoTexto(salida)}
         </div>
         <div style="display:flex; gap:10px; flex-shrink:0;">
-          <button class="editar-entrada" data-idx="${idx}" style="background:none; border:none; color:#5F7981; font-size:11px; cursor:pointer; padding:0;">✏️ Editar</button>
-          <button class="borrar-entrada" data-idx="${idx}" style="background:none; border:none; color:#A34A35; font-size:11px; cursor:pointer; padding:0;">🗑 Borrar</button>
+          <button class="editar-entrada" data-idx="${idx}" style="background:none; border:none; color:var(--tinta-2); font-size:11px; cursor:pointer; padding:0;">✏️ Editar</button>
+          <button class="borrar-entrada" data-idx="${idx}" style="background:none; border:none; color:var(--peligro); font-size:11px; cursor:pointer; padding:0;">🗑 Borrar</button>
         </div>
       </div>
       ${salida.notas ? `<p style="font-size:13px; margin-top:8px;">${salida.notas}</p>` : ""}
       ${contextoHTML(salida)}
-      <div style="margin-top:14px; font-family:'Inter',sans-serif; font-weight:500; font-size:11px; color:#42585F;">CAPTURAS (${capturas.length})</div>
-      ${tarjetas.join("") || `<p style="font-size:12px; color:#42585F;">Ninguna todavía.</p>`}
+      <div style="margin-top:14px; font-family:var(--f-texto); font-weight:500; font-size:11px; color:var(--tinta-3);">CAPTURAS (${capturas.length})</div>
+      ${tarjetas.join("") || `<p style="font-size:12px; color:var(--tinta-3);">Ninguna todavía.</p>`}
       <div style="display:flex; gap:8px; margin-top:10px;">
         <button class="secundario anadir-captura" data-idx="${idx}" style="margin-top:0; flex:1;">➕ Añadir captura</button>
         ${enCurso ? `<button class="principal concluir-entrada" data-idx="${idx}" style="margin-top:0; flex:1;">✅ Concluir jornada</button>` : ""}
@@ -1724,6 +1724,8 @@ async function mostrarFormularioEditarCaptura(iso, salidaId, captura) {
   else document.getElementById("capturaAparejo").value = captura.aparejo || "";
   document.getElementById("capturaCebo").value = captura.cebo || "";
   document.getElementById("capturaNotas").value = captura.notas || "";
+  const casillaCompartir = document.getElementById("capturaCompartir");
+  if (casillaCompartir) casillaCompartir.checked = compartidas.ids.has(captura.id);
   document.getElementById("btnGuardarCaptura").textContent = "Guardar cambios";
   const { count } = await supabase.from("captura_fotos").select("id", { count: "exact", head: true }).eq("captura_id", captura.id);
   engancharFormularioCaptura(iso, salidaId, captura.id, count || 0);
@@ -1739,7 +1741,7 @@ async function abrirDia(iso, fechaObj) {
   const entradas = salidasPorFecha[iso] || [];
   const resumenes = await Promise.all(entradas.map((e, idx) => resumenEntradaHTML(e, idx)));
   contEl.innerHTML =
-    (resumenes.join("") || `<p style="font-size:12px; color:#5F7981;">Todavía no hay nada registrado este día.</p>`) +
+    (resumenes.join("") || `<p style="font-size:12px; color:var(--tinta-2);">Todavía no hay nada registrado este día.</p>`) +
     `<div id="zonaFormulario"></div>` +
     `<button class="secundario" id="btnAnadirEntrada">➕ Añadir ${entradas.length ? "otra " : ""}entrada este día</button>`;
 

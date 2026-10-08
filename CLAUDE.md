@@ -5,6 +5,356 @@ cambian las convenciones — no es un historial (para eso está `ROBOT.md`).
 Si algo de aquí queda desactualizado, corrígelo en el momento en que lo
 detectes, no lo dejes para luego.
 
+## Aspecto "Amanecer de pesca" (2026-10-08, elegido por Mikel)
+
+Mikel pidió algo "visualmente atractivo, no frío" y eligió, entre tres
+propuestas, **Amanecer**: degradado de amanecer (naranja → magenta → violeta)
+sobre azul de mar profundo, con letra Unbounded (títulos) y Manrope (texto).
+Regla suya: **el degradado solo donde da emoción** (cabecera y logo, botón y
+pestaña activa, la nota del índice y su "sol", llamadas a la acción, posts de
+Instagram) y **sobrio donde hay datos** (cifras, motivos ▲▼, textos
+pequeños: tinta oscura sobre claro, contraste AA).
+
+- **Todo vive en `assets/css/costaviva.css`**: los tokens (`--mar`, `--fondo`,
+  `--tinta`, `--acento`, `--degradado`, `--degradado-fuerte`, `--nivel-*`,
+  `--ok/--peligro/--aviso-*`, `--f-titulo`, `--f-texto`) y lo común a todas
+  las páginas (cabecera, logo `.marca-logo` + `.logotipo`, menú de cuenta,
+  menú inferior `.tabs-nav`, `.nota-nivel`). Cada página lo carga antes de su
+  `<style>` propio, que ya solo usa `var(--...)`: **no metas colores sueltos
+  en las páginas, añade un token**. El contraste de cada par está anotado en
+  la cabecera del CSS.
+- `--degradado` (claro) es solo decorativo; si lleva texto encima, usar
+  `--degradado-fuerte` (blanco encima ≥ 5,2:1).
+- **Índices por nivel** (`assets/js/nivel-indice.js`, test
+  `test/nivel-indice.test.js`): verde bueno, amarillo sol regular, coral malo.
+  Los dos índices van AL REVÉS: en el de mar alto = mar movido = malo; en el
+  de pesca alto = bueno. Hasta el 2026-10-08 el de pesca se pintaba con la
+  escala del de mar y un 77 salía en el color de "malo". El texto ⓘ del
+  índice de mar decía "cuanto más alto, mejor pinta", al revés que la
+  fórmula y la leyenda: corregido el texto (la fórmula no se tocó).
+- La alarma SOS va en rojo sólido, no con el degradado: seguridad ≠ emoción.
+- **Mapa base (2026-10-08, decidido por Mikel): OpenFreeMap en vez de Esri.**
+  La ficha de Esri (`World_Ocean_Base`, item 1e126e7520f9466c9ca28b8f28b5e500)
+  va con el Esri Master License Agreement y su resumen
+  (https://www.esri.com/content/dam/arcgisonline/docs/tou_summary.pdf) exige
+  suscripción de ArcGIS y prohíbe el uso comercial de Living Atlas sin
+  licencia. Ahora: `assets/js/mapa-base.js` (test `test/mapa-base.test.js`)
+  monta OpenFreeMap "Liberty" (https://openfreemap.org: "Is commercial usage
+  allowed? Yes"; atribución obligatoria "OpenFreeMap © OpenMapTiles Data from
+  OpenStreetMap") con MapLibre GL 5.24.0 (cdnjs, SRI) + el plugin oficial
+  `@maplibre/maplibre-gl-leaflet@0.1.4` (jsdelivr, SRI). Los colores Amanecer
+  van EN EL ESTILO (`retocarEstilo`), no con filtros. Encima, hasta zoom 11, el
+  relieve `emodnet:mean_atlas_land` de EMODnet (CC BY 4.0) al 45 % con
+  `mix-blend-mode: multiply`. Base y relieve van en paneles propios por debajo
+  de `tilePane`, así que lluvia, rayos, batimetría, isóbatas, viento, cámaras y
+  spots quedan siempre encima. Sin WebGL o sin OpenFreeMap, el relieve de
+  EMODnet hace de mapa base opaco. MapLibre 6 no se usa: solo se publica como
+  módulo ES con worker aparte (más frágil con la CSP); la 5.x trae el worker
+  como blob: (`worker-src blob:` ya estaba por hls.js).
+
+## Instagram en estilo Amanecer: posts, stories y reels sin IA (2026-10-08)
+
+Mikel: "imágenes/vídeos como los de Fizk son mil veces mejores que las
+nuestras". Sustituidas las plantillas SVG+sharp (crema y dorado, letras del
+sistema, emoji rotos y **fotogramas de webcams de terceros**, que Skyline,
+YouTube o MEO no dejan republicar) por piezas en el estilo de la app.
+
+- **Plantilla única**: `scripts/marketing/plantillas/pieza.html`, pintada con
+  Playwright (Chromium). Letras dentro del repo (`scripts/marketing/fuentes/`,
+  Unbounded y Manrope con su OFL): no depende de la red ni de las fuentes del
+  runner. `render.mjs` hace post (1080x1350), story (1080x1920) y reel.
+- **Lógica pura** en `pieza-datos.mjs` (test `test/pieza-datos.test.js`):
+  índice del día con la MISMA cuenta que la ficha (`indiceSpot` +
+  `calcularVentana` sobre `serieHoraria`), motivos ▲▼, mejor tramo, tarjetas,
+  guion del reel, rotación, ganchos y claims. Datos reales en
+  `obtener-datos.mjs` (endpoints públicos `/prevision`, `/meteo/*`,
+  `/viento-campo`; minimapa de batimetría de EMODnet).
+- **Posts** (`robot-marketing-instagram.yml`, L/X/V): igual que antes,
+  borrador + Issue + publicación manual. Ahora también deja la story en
+  `assets/marketing/*-story.png` (para subirla a mano).
+- **Reels** (`robot-reel-instagram.yml`, sábados, workflow propio): 10,5 s =
+  gancho (3,5 s, vídeo + pregunta) + datos animados (5,5 s: índice contando,
+  ventana creciendo, viento real en partículas; o una pantalla real de la app
+  en un marco de móvil) + cierre (1,5 s, claim y CTA). Rotación
+  `ROTACION_REELS`: condiciones, diario, condiciones, grupos, especie,
+  alarma (estado en `rotacion-reels.json`). MP4 H.264 + audio mudo, < 8 MB;
+  en el árbol solo quedan los 4 últimos. ~10 min de Actions por reel
+  (el de ejemplo: 10,5 s, 1,8 MB).
+  `publicar-borrador-instagram.mjs reel-pendiente.json` crea el contenedor
+  `REELS` y espera a `status_code=FINISHED`; se publica con el mismo
+  workflow manual "Publicar post de Instagram".
+- **Clips del gancho**: `scripts/marketing/clips/propios/` (los que grabe
+  Mikel; tienen prioridad) y `clips/stock/` (solo con su `.licencia.json`
+  al lado: URL, cita y fecha). `scripts/` no se sirve en la web, así que los
+  clips en bruto no quedan públicos. Hoy hay uno de Coverr (licencia
+  comprobada el 2026-10-08: uso comercial y modificación permitidos, sin
+  atribución obligatoria; sin caras). Pexels y Pixabay no se pudieron
+  verificar (su web devuelve el reto anti-bots de Cloudflare a la sesión):
+  no usar nada suyo sin verificar su licencia. Nunca YouTube, webcams de
+  terceros ni Instagram de otros.
+- **Pantallas de la app** en las piezas de funciones: `capturas-app.mjs`
+  sirve el repo en local con un doble de Supabase y datos de demostración
+  inventados (nunca datos de usuarios ni producción).
+- **Textos**: nada indemostrable ("la primera app..." se quitó del texto de
+  los posts: Ley General de Publicidad). La app NO tiene "tipo de fondo"
+  (roca/arena), tiene batimetría: se dice "profundidad del fondo". Alarma:
+  el SOS manda un email con la ubicación a tus contactos y la detección de
+  caída es experimental y SOLO con la app abierta y la pantalla visible;
+  nada de "te salva la vida" ni segundo plano. El test lo comprueba.
+
+## Cámaras de terceros: solo como su dueño lo permita (2026-10-08)
+
+`assets/js/camaras-externas.js` lista cámaras de otros (SkylineWebcams,
+canales de YouTube, MEO Beachcam) encontradas en agregadores. **Los permisos
+los pone el dueño real del stream, no el agregador** (webcamera24 y
+webcamtaxi solo reenvían YouTube, in2thebeach, feratel...). Dos modos:
+`imagen_oficial` (el código "Insertar" del dueño tal cual; hoy solo el
+fotograma de Skyline, cada 5 min) y `enlace` (botón que abre su web).
+YouTube va siempre como enlace: sus políticas prohíben cobrar por ver un
+reproductor insertado y Costaviva está tras paywall. Windy Webcams queda
+fuera (exige su API). `analisis_permitido` es `false` en todas: nadie
+permite descargar o analizar sus fotogramas, así que **ninguna entra en
+turbidez, espuma ni posts de Instagram**, y el robot de salud solo hace un
+HEAD/oEmbed (clave `ext-<id>` en `camara_estado`). Águilas salió del proxy
+`/webcam/` y de turbidez por eso. `test/camaras-externas.test.js` exige
+dueño, modo permitido, condiciones con fuente y spot existente.
+
+**Interruptor `SKYLINE_EMBED_AUTORIZADO` (en `camaras-externas.js`, hoy
+`true`).** Mikel ha pedido a SkylineWebcams autorización escrita para el
+uso comercial (2026-10-08) y decidió usar ya la imagen oficial que su FAQ
+ofrece en "Incrustar" mientras contestan. Si Skyline lo niega, se pone a
+`false` y todas (Águilas incluida) pasan a `enlace` sin cargar nada de
+`embed.skylinewebcams.com`; no hay que tocar nada más (el test se adapta al
+valor). Analizar sus fotogramas sigue prohibido en cualquier caso.
+
+## Oleaje costero: mar abierto frente a "en la playa" (2026-10-08)
+
+**Caso real (Mikel, 2026-10-08):** Hondarribia salía con "3.7–4.5 m" y su
+webcam enseñaba la bahía de Txingudi casi en calma. Diagnóstico con los
+números de ese día (11:57 hora de Madrid):
+- La celda de Open-Meteo Marine que toca a Hondarribia está en
+  43.458, -1.792: **~9,4 km mar adentro**, frente a la costa francesa. En el
+  Cantábrico la rejilla es de ~9 km y TODAS las celdas de los spots caen a
+  6-19 km de la costa (Mundaka 15 km, Ribadeo 19 km). El modelo da 2,98 m
+  (Hs total, mar de fondo 2,84 m del NW 322° + mar de viento).
+- ×1,38 de Gipuzkoa → 4,11 m; el "rango" es ±10 % artificial alrededor de ese
+  único valor → 3,7–4,5 m. No es swell + mar de viento ni una incertidumbre.
+- La boya Pasaia II medía 3,5-3,8 m (máx. 6,7 m) del NW: **el mar abierto
+  era de verdad de ~3,6 m**. El número no estaba mal calculado; estaba mal
+  rotulado: es mar abierto, y Hondarribia está detrás del cabo Higuer.
+- A la misma hora, las webcams: Zarautz y Deba rompiendo en varias líneas,
+  Orio y Zurriola rompiente moderada, Mutriku dentro del puerto en calma,
+  Hondarribia con una orilla de espuma mínima.
+- Además, la celda de Hondarribia (fila 43.458) es más exterior que la de
+  Pasaia (43.375) con la que se calibró el ×1,38: ese día 2,98×1,38 = 4,1 m
+  frente a 3,6 m de la boya (+14 %). Un solo dato: no se ha tocado el factor.
+
+**Qué se cambió (`functions/_lib/oleaje-costero.js`, tests en
+`test/oleaje-costero.test.js`):**
+- `/prevision` devuelve en cada bloque `alturaMarAbierto` (lo del modelo, con
+  el ×1,38 si toca) y `altura` = lo esperado en el spot; y por spot
+  `zonaOleaje` (abrigada/abierta, parámetros, criterio y a cuántos km está la
+  celda del modelo).
+- **Spots claramente abrigados** (`ABRIGO_SPOTS`): Hondarribia, Pasaia,
+  Getxo (Ereaga), Santander (bahía), Santoña, Ribadeo y Faro/Olhão.
+  Coeficiente por dirección de llegada: ventana abierta (`centro`,
+  `semiancho`) con `coefAbierto`, fuera `coefAbrigado`, transición lineal de
+  30°; sin dirección, el mayor. Son **estimaciones por geometría**, elegidas
+  por el lado alto (subestimar una ola es lo peligroso). Criterio para entrar:
+  el spot está dentro de bahía/puerto/ría/laguna con un obstáculo físico claro
+  Y la celda del modelo está en mar abierto. Por eso NO están Cangas,
+  Vigo/Cíes, Sanxenxo ni Portosín (sus celdas ya están dentro de la ría y el
+  modelo ya da 0,6-0,9 m: corregir otra vez sería contar dos veces).
+  Candidatos dudosos, sin tocar a propósito: Plentzia, Laredo,
+  Camariñas, Getaria, Mutriku, Donostia (la coordenada cae entre La Concha y
+  Zurriola, y su cámara es Zurriola, expuesta), Palma, Platja de Muro.
+  Mundaka entró el 2026-10-08 (ver "Oleaje por cámara").
+- En el panel (`pintarOleajePanel()` en `index.html`): spot abrigado →
+  "~0,6–0,7 m" + "en la playa (zona muy abrigada, estimación) · mar abierto:
+  3,7–4,5 m"; resto → el valor + "mar abierto (modelo a ~N km de la costa);
+  en la orilla puede ser menos". El índice de mar y la ventana de actividad
+  usan la altura en la playa (la ventana recibe los parámetros de
+  `zonaOleaje` y aplica la copia de `coeficienteAbrigoDesdeParametros()`; un
+  test comprueba que la copia es idéntica).
+- **×1,38 (d):** corrige el MAR ABIERTO (la boya Pasaia II es exterior); el
+  abrigo se aplica después, sobre ese valor. Y solo se aplica si el oleaje
+  viene de Open-Meteo (`factorOleaje(lat, lon, fuente)`): con
+  `FUENTE_OLEAJE=copernicus` no, hasta recalibrarlo contra la boya.
+- Pendiente: `diario.html` (contexto de la salida) y las ubicaciones
+  personalizadas siguen guardando/enseñando el mar abierto sin coeficiente.
+
+**Calibración por cámara, sin IA (`scripts/oleaje-camaras/`,
+`espuma-camaras.yml`; desde el 2026-10-08 cada 30 min, 13 cámaras, y la app
+ya usa el resultado: ver "Oleaje por cámara" justo debajo; lo que sigue es
+la primera versión):** fracción de píxeles de
+espuma (claros y casi sin color) en un ROI de mar fijado a mano para las 6
+cámaras de vídeo de la Diputación, junto con el mar abierto del modelo, la
+dirección, el nivel del mar y la boya Pasaia II → `datos-robots/
+oleaje-camaras/espuma.jsonl`. No cambia nada de la app. Con semanas de
+datos: `umbralRotura()` (altura de mar abierto a la que la mitad de las
+lecturas ya ven espuma) por cámara y sector de dirección, y
+`coeficienteRelativo()` frente a Zarautz (expuesta). Los coeficientes
+calibrados se enseñan a Mikel antes de sustituir los estimados.
+Trampas ya vistas el primer día:
+- **Las cámaras de la Diputación hacen ronda de encuadres** (Hondarribia
+  cambia de plano general a primer plano; Deba barre la playa). Por eso cada
+  cámara tiene `referencias/<spot>.jpg` y solo se miden frames con similitud
+  ≥ 0,8 (huella en gris de la mitad inferior); si en ~5 min no pasa por el
+  encuadre, la línea queda `otro_encuadre`. Ese día Zarautz, Deba y Mutriku
+  no volvieron al suyo en 2,5 min: si pasa a menudo, añadir más encuadres de
+  referencia por cámara.
+- Arena con bruma y espuma con luz cálida tienen el mismo color: el ROI no
+  debe tocar la orilla en ninguna marea (revisar con bajamar y pleamar).
+- La lección de 2026-09-15 sigue en pie: nada de contar bordes, y nunca
+  comparar una cámara con otra en absoluto.
+
+## Oleaje por cámara: "si hay cámara, utiliza nuestro cálculo" (2026-10-08)
+
+Pedido de Mikel: "utiliza las cámaras en todos los spots para ajustar la
+ola. Veo que Mundaka también está mal. Si hay cámara, utiliza nuestro
+cálculo". Ampliado el mismo día (aprobado por Mikel): lecturas cada 30 min,
+boyas de Copernicus como verdad de terreno, página para etiquetar fotos y
+botón "ola real que veo". Todo sin IA ni API de pago: píxeles.
+
+**Piezas:**
+- `scripts/oleaje-camaras/camaras.mjs`: inventario (qué cámara sirve, sus
+  encuadres con imagen de referencia y ROI, y `NO_SIRVEN` con el motivo).
+- `scripts/oleaje-camaras/espuma.mjs`: métrica de espuma + guarda de la
+  orilla (si entra arena en el ROI, la lectura es `orilla` y no cuenta) +
+  zona DINÁMICA (busca el mar entre horizonte y orilla en cada fotograma)
+  para las cámaras que barren sin repetir plano (Zarautz, Berria).
+- `scripts/oleaje-camaras/calibracion.mjs`: espuma → metros
+  (`altura = a·espuma^p` por cámara y encuadre), incertidumbre, etiquetas,
+  elevación solar.
+- `scripts/oleaje-camaras/boyas-copernicus.py`: boyas de Copernicus Marine
+  In Situ (Pasaia II, Donostia, Bilbao II, Bilbao-Vizcaya, Gijón, Peñas,
+  Estaca, Langosteira, Villano, Silleiro, Leixões).
+- `scripts/oleaje-camaras/medir-espuma.mjs` + `.github/workflows/
+  espuma-camaras.yml`: cada 30 min de 08:00 a 15:30 UTC (16 ejecuciones, ~3
+  min cada una ≈ 1.440 min/mes de Actions; repo público, así que es gratis
+  igualmente: la cuenta está en el yml). Escribe
+  `datos-robots/oleaje-camaras/espuma.jsonl` (histórico, de ahí sale la
+  calibración) y `calibracion.json`, y con la migración aplicada publica en
+  `oleaje_camara_lecturas` + miniaturas en el bucket `oleaje-camaras`.
+- `functions/_lib/oleaje-camaras.js`: qué cámara usa cada spot, vigencia,
+  corrección de la previsión y `aplicarCamarasASpots()` (lo usa /prevision).
+- `etiquetar-olas.html` (solo admin, enlace en admin.html) y el botón
+  "🌊 Ola real que veo" del panel (con sesión).
+- Migración `supabase/migrations/20261008180000_oleaje_camaras.sql` **SIN
+  APLICAR** (baseline ya actualizado). Sin ella todo funciona como antes:
+  /prevision no encuentra lecturas y sigue con modelo × coeficiente.
+- Tests: `test/oleaje-camaras.test.js` (en tests.yml).
+
+**Inventario (fotogramas del 2026-10-08, 12:20-12:50, mar de fondo NW de
+3,1-4,0 m en las boyas):** sirven 13: Hondarribia, Zurriola, Orio (su
+stream daba 404 todo el día), Zarautz, Getaria (Malkorbe, abrigada: casi
+nunca hay espuma en el ROI; sin etiquetas no calibra), Zumaia, Deba,
+Mutriku (fuera del dique), Mundaka (barra de la ría, KOSTASystem), Bakio
+(imagen velada, la métrica satura pronto), Sopela (foto de Detectia, no el
+vídeo de IPCamLive que tiene gotas), Berria (la playa expuesta de Santoña,
+NO la bahía del spot) y Castro (Ostende, la de reserva de tendsys). No
+sirven (motivo en `NO_SIRVEN`): Lekeitio, Getxo, Pasaia, todas las de
+Galicia (rías y puertos sin rompiente, o mar lejano), las de cantabria.es
+(503 ese día: Suances, Comillas, San Vicente, Santoña fija; Laredo gris) y
+todo el Mediterráneo (la ola rompe en la misma orilla y son miniaturas).
+
+**Encuadres:** las de la Diputación hacen ronda (cambian de plano cada
+~20 s). Cada cámara tiene varias referencias y se mide el fotograma que se
+parece a alguna (≥ 0,8 y ganando a la segunda por 0,05). Zarautz pasó por
+15 planos en 7 min sin repetir: además usa la zona dinámica. Berria cambia
+de zoom cada minuto: solo zona dinámica. Las fotos fijas que no han cambiado
+desde la medida anterior no se guardan dos veces.
+
+**Mundaka (diagnóstico 2026-10-08 12:20):** la celda del modelo cae en
+43.54, -2.71, ~15 km al N por fuera de Matxitxako; 2,78 m del NW (330°).
+Bizkaia no tiene el ×1,38, así que el panel decía "2,5–3,1 m" como si fuera
+la altura en el spot. Las boyas medían 3,1-3,5 m (Bilbao II, Bilbao-Vizcaya:
+el mar abierto del modelo salía BAJO en Bizkaia, -10/-20 %), pero el spot
+está en el pueblo, dentro de la boca de la ría, y la cámara de la barra
+enseñaba series de ~1,5-2,5 m (a ojo). Arreglo: Mundaka entra en
+`ABRIGO_SPOTS` (ventana N-NNW 345° ±25°, 0,70 / 0,35, "semiabrigada") y,
+con lectura vigente, manda su cámara.
+
+**Cálculo "según cámara":**
+1. Espuma en el ROI (o zona dinámica) → `altura = a·espuma^p`. Muestras
+   para ajustar: lecturas automáticas con altura de referencia = boya
+   costera más cercana (Copernicus, < 4 h; peso 1) o el modelo con su
+   factor (peso 0,5), por el coeficiente PREVIO del sitio que ve la cámara
+   (1 en las expuestas); etiquetas de Mikel sobre fotos (peso 5) y "ola
+   real que veo" (peso 3, emparejada con la lectura de la cámara propia en
+   ±45 min). Ajuste en logaritmos; p fijo en 1 hasta tener ≥ 12 muestras
+   con alturas que varíen ×1,8. Se calibra SIN la lectura actual.
+2. Incertidumbre: exp(rms log) - 1, con mínimo ±50 % mientras no haya 3
+   días distintos y alturas que varíen ×1,5. **Hoy (un solo estado de mar)
+   la escala solo reproduce boya × coeficiente de este día: la cámara aporta
+   la variación de ahí en adelante y las etiquetas la corrigen.** Entre dos
+   lecturas a 10 min de distancia la espuma de una misma cámara varió
+   ±30 % (series de olas, encuadre): de ahí que el ±50 % no sea pesimista.
+3. Varios encuadres de una cámara: media geométrica ponderada por 1/error².
+   Sin espuma visible en el ROI no se da altura (la rompiente puede estar
+   fuera del ROI: Castro, 2026-10-08): el spot sigue con modelo ×
+   coeficiente. Con calibración de pocos datos (error ≥ 50 %) el cociente
+   cámara/modelo se acota a 0,6-1,6 (Bakio: la espuma pasó de 0,13 a 0,41
+   en 30 min con el mismo mar, por la exposición de la foto).
+   **Cámaras ruidosas no sustituyen al modelo** (pedido de Mikel,
+   2026-10-08, "no quiero enseñar 4,7 m en Bakio con el modelo a 2 m sin
+   calibrar"): por cámara y automático (`camaraSustituyeModelo()` en
+   calibracion.mjs). Ruido = mediana de la variación de la espuma entre
+   lecturas `ok` del mismo encuadre separadas ≤ 45 min. Si es > ±30 % o aún
+   no hay 3 pares para medirlo, la cámara solo sustituye al modelo con ≥ 5
+   etiquetas o ≥ 3 días con alturas variadas. Mientras tanto se mide, se
+   guarda y calibra, pero la fila sale con `sustituye_modelo = false` y
+   /prevision no la usa (ni para el spot, ni para la previsión, ni para las
+   vecinas). Con los datos del 2026-10-08 ninguna cámara pasa todavía
+   (Zarautz ±49 %, Zumaia ±43 %, Deba ±103 %, Zurriola ±230 %, Bakio ±219 %;
+   el resto sin pares suficientes): hoy el panel sigue con modelo ×
+   coeficiente en todos los spots, y las cámaras empezarán a mandar con las
+   etiquetas de Mikel.
+4. En /prevision: lectura `ok`, < 3 h y con estimación → el bloque más
+   cercano a la lectura toma la altura de la cámara (`fuenteAltura:
+   "camara"`), el panel dice "según cámara (Zarautz), 12:30 · mar abierto
+   (modelo): …". Las horas siguientes: modelo × coeficiente × factor, con
+   factor = 1 + (cámara/modelo - 1)·max(0, 1 - Δh/18) (cociente acotado a
+   0,25-3): a las 18 h ya es el modelo con el coeficiente estático. La
+   ventana de actividad de index.html aplica la misma corrección (copia de
+   `factorCamara()`, un test comprueba que no se desvía).
+5. Spots sin cámara: la cámara EXPUESTA más cercana con la misma orientación
+   de costa (±60°, < 60 km; orientación sacada a mano del trazado de costa)
+   corrige su modelo con `peso` (0,8 si está a ≤ 11 km, 0,5 si más lejos);
+   su abrigo propio se mantiene. Panel: "… · ajustado con la cámara de X".
+   Tabla (`FUENTE_POR_SPOT`): Ondarroa ← Mutriku; Lekeitio ← Deba; Pasaia ←
+   Zurriola; Plentzia ← Bakio; Getxo ← Sopela; Santoña, Laredo, Santander,
+   Suances ← Berria. Sin cámara a menos de 60 km (Comillas, San Vicente,
+   Asturias, Galicia, Mediterráneo...): modelo × coeficiente, como antes.
+
+**Copernicus Marine In Situ (licencia):** comprobado el 2026-10-08 en
+marine.copernicus.eu/user-corner/service-commitments-and-licence: licencia
+gratuita, "for any purpose" (incluido comercial) con atribución "Generated
+using E.U. Copernicus Marine Service Information" + DOI (In Situ IBI:
+10.48670/moi-00043). Las boyas de Puertos del Estado llegan redistribuidas
+ahí; la API directa de Puertos del Estado NO está autorizada para uso
+comercial: ya no la usa este robot ni el mapa de la app (abajo).
+Los ficheros "latest" se leen sin cuenta del almacenamiento público.
+
+**Boyas del mapa vía Copernicus (2026-10-08, pedido de Mikel):** las 26
+boyas de `BOYAS` (prevision.js) llevan su id de Copernicus (`copernicus`,
+comprobado con el `platform_name` de cada NetCDF; todas están en el producto
+IBI, también las del Mediterráneo y Canarias). `boyas-copernicus.yml` (cada 2
+h, ~360 min/mes) corre `boyas-copernicus.py` y sube `boyas/copernicus.json`
+al bucket `fuentes-gratuitas`; /prevision lo lee (`boyaDesdeCopernicus()`,
+descarta medidas de más de 6 h). Ya no se llama a poem.puertos.es desde la
+app. Atribución visible: tooltip de cada boya y línea bajo el panel ("Boyas:
+Puertos del Estado vía E.U. Copernicus Marine Service … doi:10.48670/
+moi-00043"). Nazaré (Instituto Hidrográfico) sigue igual. Queda
+`scripts/fuentes/comparar-boyas.mjs` (comparativa interna) llamando a
+Puertos del Estado directamente: pendiente de pasar también.
+
+**Pendiente:** aplicar la migración (Mikel); revisar los ROI con bajamar
+fuerte (se dibujaron con marea media subiendo; la guarda de arena cubre la
+arena con color, no la arena gris con bruma); Orio caída; cuando haya
+semanas de datos y etiquetas, revisar `calibracion.json` y los coeficientes
+estimados de `ABRIGO_SPOTS` con los de las cámaras.
+
 ## Open-Meteo: licencia comercial, API key y proxy `/meteo/` (2026-10-08)
 
 **Situación de la licencia.** Costaviva tiene suscripciones de pago, así que
@@ -220,8 +570,10 @@ atribución; nunca se inventa un dato (lo que falta sale `null` + `aviso`).
   re-muestreado a Mercator (`assets/js/capas-mar.js`, puro y con tests),
   botones en la columna de ríos/boyas, leyenda con la explicación ("más
   clorofila = más plancton = más alimento para peces"), toque en el mapa =
-  valor, y atribución de Copernicus + DOI en el mapa y en la leyenda. Una
-  capa a la vez; más vieja de 7 días (clorofila) o 3 (temperatura), no se
+  valor, y atribución de Copernicus + DOI en el mapa y en la leyenda. Botones
+  en la columna B debajo de Sustr. (322/384 px; 290/346 en móvil), estilo de
+  `.boyas-toggle`; la imagen va en `tilePane` (entre el mapa base y los
+  marcadores); leyenda con variables de `costaviva.css`. Una capa a la vez; más vieja de 7 días (clorofila) o 3 (temperatura), no se
   pinta.
 - **Pasado para el diario (ERA5)**: `functions/_lib/era5.js`. Si la
   atmósfera va por MET Norway (`metno`) y la consulta es ENTERA del pasado
@@ -244,9 +596,9 @@ atribución; nunca se inventa un dato (lo que falta sale `null` + `aviso`).
   Las dos, lado a lado" -> tabla aparte con ola, viento, agua, marea,
   corriente, presión, nubes y lluvia. Se enseña solo si
   `supabase.rpc("es_admin")` da `true`. El proxy `/meteo/` honra
-  `&fuente=openmeteo|gratuitas` SOLO tras `esAdminServidor`
-  (`functions/_lib/admin.js`: RPC `es_admin` con el JWT del usuario y la anon
-  key; PostgREST valida la firma). Cualquier otro -> 403 antes de mirar la
+  `&fuente=openmeteo|gratuitas` SOLO tras `requireAdmin` de
+  `functions/_lib/admin.js` (el mismo de invitaciones: JWT validado en
+  `/auth/v1/user` y luego RPC `es_admin` con ese token). Cualquier otro -> 403 antes de mirar la
   caché y sin pedir datos; sin `fuente` no se llama a Supabase. Respuesta
   forzada: `private, no-store`.
 - Tests: `test/fuentes-fase2.test.js` (en `tests.yml`).
@@ -385,6 +737,43 @@ Decisión del usuario sobre la autonomía:
   posición por página y búsqueda de 28 días), porque la rutina no llega a
   Search Console. El robot anota en `SEO_ROBOT.md` (historial, se añade al
   final) los números, lo que cambió y qué espera ver la próxima vez.
+
+## Observaciones abiertas, concursos y "Comparte tu captura" (2026-10-08, aprobado por Mikel)
+
+"Añade todo lo legal". Sin IA en ejecución. Cuatro piezas:
+
+- **Observaciones abiertas** (`.github/workflows/observaciones.yml`, martes,
+  `scripts/observaciones/descargar.mjs` + `lib.mjs`): API de ocurrencias de
+  GBIF para nuestras especies en España y Portugal, a ≤ 25 km de un spot,
+  solo HUMAN_OBSERVATION/OCCURRENCE/MACHINE_OBSERVATION. **iNaturalist se toma
+  de GBIF** (su exportación oficial), no de su API: la API de iNaturalist dice
+  "not data scraping" (detalle y citas en `datos-robots/observaciones/LEEME.md`).
+  Salida en `datos-robots/observaciones/`: `comercial/` (CC0, CC BY) y
+  `no-comercial/` (CC BY-NC, **solo referencia interna: ni en la app ni para
+  calibrar el índice**). Coordenadas ocultadas por iNaturalist (p. ej. lubina)
+  se guardan a 0,2° y marcadas; nunca se afinan. Condiciones del spot:
+  Copernicus (instantánea, ~10 días) y Open-Meteo archive/marine **solo con
+  `OPEN_METEO_API_KEY`** (tope 150 llamadas/pasada). Carga histórica: lanzarlo
+  a mano con `desde` (p. ej. 2010); si tarda más de 15 min, GBIF pide usar su
+  API de descargas (cuenta + DOI).
+- **Concursos** (`datos-robots/concursos/`): FEPyC y FPPD reservan todos los
+  derechos; `concursos.json` vacío hasta que Mikel tenga permiso escrito. Sin
+  nombres de participantes. Lo valida `scripts/observaciones/concursos.mjs`.
+- **Rutina de los viernes** (`ROBOT_REGLAS.md`, "Viernes: estudios sobre
+  factores de pesca" y "Concursos de pesca"): propone reglas/pesos del índice
+  con fuente en `robot/especies-AAAA-MM-DD-factores`; `robot-diseno-pr.yml`
+  abre el PR. **El .txt de la rutina cambió: hay que pegarlo en
+  claude.ai/code/routines.**
+- **Comparte tu captura** (diario): casilla por captura, apagada por defecto
+  (`assets/js/compartir-captura.js`). Migración
+  `20261008150000_capturas_compartidas.sql` (**sin aplicar**; al aplicarla,
+  actualizar `supabase/baseline-seguridad.json`): marca propia en
+  `capturas_compartidas`, copia anónima en `capturas_comunidad` (sin usuario,
+  celda de ~5 km, RLS sin policies) y solo agregados con ≥ 5 usuarios
+  distintos (`comunidad_capturas_por_zona`, `comunidad_capturas_por_condiciones`).
+  Retirar = borrar la marca. Sin la migración, el diario no enseña la casilla.
+  Texto en `privacidad.html` (nueva, en la lista blanca de rutas).
+- Tests: `test/observaciones.test.js` (en `tests.yml`).
 
 ## Analítica de uso propia (`eventos_uso`, añadida 2026-09-17)
 
@@ -844,7 +1233,45 @@ captura" con normalidad. **Probado en real por el usuario en producción
 2026-09-13**: abrir una entrada, ir añadiendo capturas y concluir la
 jornada funciona bien.
 
-## Bug corregido — radar de lluvia mostraba "Zoom Level Not Supported" (2026-09-13)
+## Lluvia: radar OPERA de las últimas 3 horas, animado (2026-10-08)
+
+Pedidos de Mikel: el botón **Lluvia** enseña la evolución de las últimas 3 h,
+en bucle por defecto, con pausa/play y la hora de Madrid de cada toma (la
+última dura más), y **"es imprescindible que sea lo más cercano en tiempo"**:
+el panel dice siempre el retraso de la última toma ("hace 6 min"; en rojo si
+pasa de 20 min).
+- **Fuente principal: radar EUMETNET OPERA** (composición europea DBZH con
+  los radares de AEMET, IPMA y Météo-France). Publica una toma cada 5 min,
+  ~4-5 min después de su hora: retraso visto en la app 5-10 min. La animación
+  usa **una cada 10 min y siempre la última publicada** (decisión de Mikel
+  2026-10-08, `submuestrear()`): ~19 tomas en 3 h; el refresco de cada
+  minuto mete la nueva al momento.
+  Bucket S3 público de 24 h `s3.waw3-1.cloudferro.com/openradar-24h`, sin
+  clave ni coste. **Licencia CC BY 4.0** ("EUMETNET ... has decided to
+  distribute these products under the CC BY 4.0 license",
+  github.com/EUMETNET/openradardata-documentation). Atribución en el mapa.
+- **Respaldo: satélite EUMETSAT H SAF H60B** (WMS de EUMETView, CC BY 4.0,
+  cada 15 min, ~45 min de retraso) solo donde el radar no llega (mar
+  abierto, Canarias, radares caídos: el de A Coruña no daba datos el
+  2026-10-08), más tenue y dicho en el panel. Si el radar entero falla, se
+  anima solo el satélite.
+- **Cómo llega**: el bucket no manda CORS. `functions/lluvia/tomas.js` lista
+  las tomas (caché del edge 60 s) y `functions/lluvia/toma.js` lee la cabecera
+  del GeoTIFF y reenvía SIN descomprimir las 2 teselas de la vista de 4 km
+  que cubren la Península (caché del edge 24 h, inmutable). El navegador las
+  descomprime (`DecompressionStream`), reproyecta de Lambert azimutal (lat0
+  55, lon0 10) a Mercator y pinta un canvas por toma
+  (`assets/js/lluvia-animada.js`). Nada se guarda en Supabase ni en GitHub.
+- **Coste**: 0 €. 1 invocación de Functions por toma al abrir la capa y 1 por
+  minuto mientras está abierta (unas 20 invocaciones al abrir); ~3,5 MB de
+  descarga para las ~19 tomas (luego quedan en la caché del navegador 24 h).
+- Descartados: RainViewer (2 h y sin uso comercial), AEMET OpenData (solo la
+  última imagen, GIF con mapa de fondo, clave), Météo-France (clave; sus
+  radares ya están en OPERA), IPMA (radar "solo informativo"), Rain Alarm
+  (app cerrada, sin API).
+- Tests: `test/lluvia-animada.test.js` (en `tests.yml`).
+
+## Bug corregido (histórico, ya no se usa RainViewer) — radar de lluvia mostraba "Zoom Level Not Supported" (2026-09-13)
 
 Reportado por el usuario: al acercar el mapa de nubes/lluvia
 (`toggleNubes`, capa RainViewer en `index.html`), aparecía el texto
@@ -1074,6 +1501,8 @@ explicación.
 | `/registrar-presion` | `registrar-presion.js` | POST: guarda la presión real de cada spot en `presion_historico` (Fase 4) | Sin sesión de usuario — protegido con secreto compartido (`X-Cron-Secret` / `CRON_SECRET`) |
 | `/crear-checkout-stripe` | `crear-checkout-stripe.js` | POST: crea una Stripe Checkout Session (suscripción mensual/anual, con prueba) para el usuario que llama | **Requiere** `Authorization: Bearer <token de sesión>` |
 | `/crear-portal-stripe` | `crear-portal-stripe.js` | POST: crea una sesión del Billing Portal de Stripe para gestionar/cancelar la suscripción propia | **Requiere** `Authorization: Bearer <token de sesión>` |
+| `/admin-invitaciones` | `admin-invitaciones.js` | GET/POST: lista, crea (cupón de Stripe + email), reenvía y anula invitaciones | **Admin**: token + `es_admin()` comprobados en el servidor antes de `service_role` |
+| `/canjear-invitacion` | `canjear-invitacion.js` | POST: canjea un código de invitación para el email de la sesión, una sola vez | **Requiere** `Authorization: Bearer <token de sesión>` |
 | `/stripe-webhook` | `stripe-webhook.js` | POST: recibe eventos de Stripe (checkout/suscripción/`invoice.payment_failed`) y actualiza `suscripciones`; idempotente por `event.id` (tabla `stripe_eventos`, 2026-10-07) | Sin sesión — verifica la firma `Stripe-Signature` con `STRIPE_WEBHOOK_SECRET` |
 
 Ninguno de los cuatro primeros toca tablas de usuario en Supabase.
@@ -1180,11 +1609,10 @@ render; no se ha hecho porque el bug real y crítico (mostrar un índice
 con aspecto fiable calculado con datos de horas/días atrás) ya queda
 cerrado con la vigencia por spot.
 
-**`indicePesca` (línea ~1553) ya usaba un patrón parecido de "no
-inventar"**: cuando no hay ninguna especie con rango de temperatura
-documentado, usa un valor neutro (`0.5`) en vez de 0 o 1, y el texto dice
-explícitamente "sin especies con rango de temperatura documentado hoy".
-Ahora además hereda la vigencia por spot del punto anterior.
+**Índice de pesca**: desde el 2026-10-08 es el índice v2 (ver "Índice de
+pesca v2" más abajo): la puntuación de la mejor especie de temporada de la
+pestaña en la hora actual. Hereda la vigencia por spot del punto anterior
+(sin datos de la última hora, S/D).
 
 ## Fichas de especies y ventana de actividad (2026-10-07, aprobado por Mikel)
 
@@ -1205,8 +1633,9 @@ Ahora además hereda la vigencia por spot del punto anterior.
   (`excluir_del_calculo`). Tampoco FAO (CC BY-NC-SA) ni contenido de apps
   competidoras (Fizk).
 - **`assets/js/ventana-actividad.js`**: módulo ES puro (sin DOM ni red, con
-  tests en `test/ventana-actividad.test.js`). Puntuación por hora =
-  `50 + Σ peso × valor` con un motivo y su aporte por cada factor (luz con
+  tests en `test/ventana-actividad.test.js`). Puntuación por hora con la
+  escala logística v2 (`100·σ(Σ peso_lo × valor)`, ver "Índice de pesca v2"),
+  con un motivo y su aporte en puntos por cada factor (luz con
   amanecer/anochecer calculados, marea, temperatura del agua, oleaje, viento,
   tendencia de presión ±1 hPa/3 h, turbidez). Los pesos están en el JSON
   (`reglas_por_defecto` + `reglas` por especie) con `criterio`/`fuente` y
@@ -1230,11 +1659,10 @@ Ahora además hereda la vigencia por spot del punto anterior.
   `ESPECIES_MEDITERRANEO`, `ESPECIES_GOLFO_CADIZ` y `ESPECIES_CANARIAS` se
   retiraron de `index.html`, junto con la tarjeta "¿Qué esperamos pescar hoy?".
   Ahora todo lee `especies.json`:
-  - **Índice de pesca** (`pintarIndicePesca` en `index.html`): especies de
-    temporada en la región del spot (`regionPorCoordenadas`), sin las que están
-    en veda (`vedaActiva`); misma fórmula de antes (ratio de especies con el agua
-    en su rango × 70 + presión). Los rangos de FishBase no cuentan; sin ningún
-    rango usable, ratio neutro 0,5 como antes. El JSON se pide al cargar la página.
+  - **Índice de pesca** (`pintarIndicePesca` en `index.html`): desde el
+    2026-10-08, índice v2 (sección propia más abajo). El ratio de especies con
+    el agua en su rango × 70 + presión quedó retirado. El JSON se pide al cargar
+    la página.
   - **Post de Instagram de los miércoles** (`scripts/marketing/especie-post.mjs`):
     región según la última zona de `rotacion-zonas.json` (por defecto Cantábrico;
     `REGION_POST` la fuerza), prioriza especies con temporada verificada, nunca
@@ -1283,9 +1711,346 @@ Ahora además hereda la vigencia por spot del punto anterior.
   - La ventana pide además `precipitation` horaria a Open-Meteo (para la
     lluvia previa de la submarina). Tests: `test/modalidades.test.js` (en
     `tests.yml`).
+- **25 especies más (2026-10-08, pedido de Mikel: "¿y el resto de especies?
+  rodaballo, cabracho…")**: rodaballo, rémol, cabracho, rascacio, maragota,
+  besugo, aligote, mero, gallo, raya, merluza, rape, chopa, mojarra, herrera,
+  raspallón, oblada, sargo picudo, pez limón, bacoreta, atún rojo, llampuga,
+  abade, anjova y pintarroja (53 en total). Tallas del RD 560/1995, Reg. (UE)
+  2019/1241 y la tabla DGRM; nombres del anexo I del RD 347/2011, la DGRM y la
+  guía de especies objetivo de la Generalitat (`gencat_guia_pr_2021`, licencia
+  por confirmar). Presencia por región: la especie figura en la tabla de tallas
+  de ese caladero, en la guía catalana (Mediterráneo) o tiene 20 o más
+  registros de 2 o más conjuntos CC BY/CC0 en OBIS (`obis_cc_by`); los meses
+  son heurísticos (residentes: todo el año). Normas: atún rojo solo captura y
+  suelta (RD 46/2019 art. 7; Euskadi y Portugal lo prohíben) → veda todo el
+  año, nunca de temporada; besugo, merluza y llampuga necesitan autorización
+  (anexo II RD 347/2011); mero y rayas mosaica/bramante prohibidos en
+  Portugal; el mero no sale en submarina hasta verificar cada comunidad.
+  Datos de campo de Mikel en Bizkaia (`mikel_campo_bizkaia`, confianza
+  media): rodaballo desde playa oct-dic, mejor con mareas
+  vivas (coeficientes altos, no oleaje: la regla de coeficiente la pone el
+  motor del índice); rayas y pintarroja desde costa nov-ene (Armintza); pargo
+  (`bocinegro`), dorada y dentón en verano a unos 20 m y en invierno más
+  profundo (`modalidades.embarcacion.profundidad_temporada`, consejo en la
+  pestaña Embarcación con `consejoProfundidad`). La anjova entra en
+  `@depredadores_costeros`.
+- **Presencia por región: criterios A/B/C (2026-10-08)** (descritos en la
+  fuente `obis_cc_by` del JSON). A: OBIS con 20 o más registros de 2 o más
+  conjuntos CC BY/CC0. B: talla en la tabla oficial del caladero + al menos 1
+  registro libre en OBIS. C: publicación regional (guía oficial, estudio CC BY,
+  observación de Mikel) o un conjunto científico CC BY/CC0 con 20 o más
+  registros. Con B se completaron especies antiguas (pargo/`bocinegro` en
+  Cantábrico, Mediterráneo, Canarias, Portugal y Azores; dorada, salmonete,
+  pulpo, lenguado…); maragota en Galicia (estudio IIM-CSIC, CC BY) y oblada
+  en Canarias (CC0). **No se usan los rangos de FishBase ni de la Lista Roja
+  de la UICN** aunque se pidan: sus condiciones prohíben el uso comercial.
+  Pulpo en el Mediterráneo peninsular queda fuera a propósito: la pesca
+  recreativa del pulpo en aguas exteriores del Mediterráneo andaluz está
+  prohibida (Orden APA/973/2002, según la guía catalana; sin leer en el BOE).
 - **Ojo, Open-Meteo**: la API gratuita es solo para uso no comercial; toda la
   app (no solo esto) la usa. Pendiente de decidir con Mikel (plan comercial de
   Open-Meteo o alternativa).
+
+## Tipo de fondo y orilla (2026-10-08, aprobado por Mikel)
+
+Pedido de Mikel: saber el tipo de fondo de cada spot, sobre todo los primeros
+~50 m desde la costa, usarlo **solo** desde costa y en submarina, y verlo como
+capa del mapa al acercarse. Después pidió que la capa llegue "a mayor
+profundidad, hasta donde tengamos": cubre plataforma y talud, no solo la
+franja costera. Sin IA y sin coste.
+
+- **Datos por spot** (`assets/datos/tipo-fondo.json`, ~30 KB, lo genera a mano
+  `scripts/fondo/tipo-fondo.mjs`, Node sin dependencias; ver su cabecera):
+  punto de costa más cercano al spot sobre `natural=coastline` de OSM; tipo de
+  orilla a 50 m o menos de ese punto (`acantilado`, `roca`, `escollera`,
+  `playa_arena`, `playa_cantos`, `playa` = playa de OSM sin superficie,
+  `puerto`); fondo a 500 m y 1 km (fracciones de roca, arena, grava, fango,
+  Posidonia, pradera, biogénico y `algas` = roca infralitoral) muestreando cada
+  50 m EUSeaMap 2025 (EUNIS 2019, WFS de EMODnet) y las praderas de EMODnet;
+  `cobertura` y `primer_dato_m` (a qué distancia de la orilla empieza el dato).
+  Se re-ejecuta si cambian los spots (`--solo slug1,slug2` fusiona; `--punto
+  "Nombre,lat,lon"` imprime un punto sin guardar). Overpass público: la
+  principal (overpass-api.de) no respondía desde la nube el 2026-10-08; se usó
+  la réplica `OVERPASS_URL=https://maps.mail.ru/osm/tools/overpass/api/interpreter`
+  (da 504 a ratos: el script reintenta).
+- **Licencias (verificadas el 2026-10-08)**:
+  - OSM: "You are free to copy, distribute, transmit and adapt our data, as long
+    as you credit OpenStreetMap and its contributors. If you alter or build upon
+    our data, you may distribute the result only under the same license."
+    (https://www.openstreetmap.org/copyright). `tipo-fondo.json` es base de
+    datos derivada: queda bajo ODbL 1.0 (lo dice el propio JSON).
+  - EUSeaMap 2025 (EMODnet Seabed Habitats): "Available under the Creative
+    Commons Attribution (CC-BY) License v4.0 ... Credit: Licensed under CC-BY 4.0
+    from the European Marine Observation and Data Network (EMODnet) Seabed
+    Habitats initiative (https://emodnet.ec.europa.eu/en/seabed-habitats), funded
+    by the European Commission." (metadatos ICES/EMODnet 4c810e39... y
+    cec07b5e...). Praderas (Seagrass EOV 2025): el subconjunto europeo es CC BY
+    4.0 (el del Caribe es CC BY-NC: no se usa).
+  - EMODnet Geology (sustrato multiescala, Folk): "Creative Commons BY 4.0"
+    (metadatos europe-geology.eu). No se pide directamente: EUSeaMap ya lo
+    integra.
+  - MITECO Ecocartografías (1:1 000-1:5 000, roca/arena/Posidonia): el aviso
+    legal de MITECO permite reutilizar "sin necesidad de autorización expresa
+    ... siempre que se cite la fuente" (Ley 37/2007), pero solo hay KMZ por
+    provincia (Mediterráneo, Andalucía, Baleares, Canarias; nada del
+    Cantábrico) y no se encontró un WMS verificable (wms.mapama.gob.es no
+    respondía con TLS válido desde la nube). **No integrado**; candidato para
+    el detalle de Posidonia en el Mediterráneo.
+- **Calidad cerca de la orilla**: EUSeaMap es un modelo de escala amplia
+  (celdas de ~100 m junto a la costa); los primeros 50-100 m casi nunca
+  están resueltos (`primer_dato_m` típico 50-300 m) y en puertos y estuarios
+  puede no haber dato. Para la orilla manda OSM. Orientativo, nunca para
+  navegar.
+- **Índice** (`especies.json`, 5 reglas nuevas al principio de
+  `reglas_expertas.reglas`, todas `por_validar`, confianza 0,5-0,55, nunca en
+  embarcación): `orilla_roca_espuma` (costa, orilla de acantilado/roca/escollera:
+  lubina, sargo, sargo picudo, maragota, pulpo, congrio, cabracho, rascacio;
+  la mitad con mar plana, entera desde 1,5 m), `orilla_playa_arena` (costa,
+  playa: rodaballo, lenguado, raya; `mikel_campo_bizkaia`),
+  `dorada_arena_con_roca` (costa y submarina, arena ≥ 30 % y roca ≥ 10 %),
+  `fondo_roca_submarina` (submarina, roca ≥ 35 %, graduada) y `posidonia_cerca`
+  (Mediterráneo y Baleares, costa y submarina, Posidonia ≥ 15 %: sepia, dorada,
+  salema/salpa). Variables de contexto nuevas: `orilla_tipo`, `fondo_roca`,
+  `fondo_arena`, `fondo_fango`, `fondo_grava`, `posidonia`, `algas`
+  (`contexto.fondo` de `calcularVentana`; en embarcación el motor las pone a
+  null aunque lleguen). Fuentes nuevas: `cheminee_2021_nurseries` y
+  `marco_mendez_2016_salpa` (CC BY 4.0), `emodnet_euseamap_2025`, `osm_orilla`.
+- **Ficha del spot**: línea `panelFondo` bajo las coordenadas, "Fondo: roca y
+  arena · orilla de acantilado" (`textoFondo`, sin números). Punto propio: el
+  dato del spot fijo a 1,5 km o menos; si no hay, se pregunta en vivo a
+  EMODnet el sustrato del propio punto (GetFeatureInfo, sin orilla).
+- **Capa "Sustrato"** (botón 🪨 "Sustr." en la columna de Ríos/Boyas, debajo de Boyas;
+  ojo: "Fondo" es la batimetría e "Isób." las isóbatas de la rama
+  `claude/batimetria`): WMS `eusm_subs_group` de EMODnet Seabed Habitats (el
+  grupo cambia solo de simplificación según la escala: costa, plataforma y
+  talud), opacidad 0,6, desde zoom 7, leyenda propia (roca, arena, grava,
+  fango, Posidonia, sin clasificar) y atribución CC BY. La CSP ya admite
+  `https:` en img-src y connect-src: no hubo que tocarla.
+- Tests: `test/tipo-fondo.test.js` (en `tests.yml`).
+
+## Índice de pesca v2: escala logística y reglas expertas (2026-10-08, aprobado por Mikel)
+
+**Fórmula** (`assets/js/ventana-actividad.js`, `INDICE_VERSION =
+"v2-logistica-2026-10-08"`): `P = 100·σ(b0 + Σ peso_lo·f)`, `f ∈ [-1, 1]`,
+`b0 = 0` (`especies.json.indice`). Los pesos están en log-odds (`peso_lo` =
+puntos antiguos / 25; cerca de 50 un factor aporta casi lo mismo que antes:
+los tests comparan con la v1 y no se mueve más de 8 puntos). El porqué sigue
+en puntos: `P - 50` se reparte en proporción al log-odds de cada factor
+(`repartirAportes`), así que 50 + la suma de los aportes da la puntuación.
+Temperatura del agua: gaussiana alrededor del centro del rango (σ = media
+anchura; +1 en el centro, ~+0,2 en los bordes, tiende a -1). Rangos solo de
+FishBase siguen sin puntuar.
+
+**Filtros fuera de la fórmula**: veda (la especie no entra), freza (aviso
+"si lo pescas, devuélvelo", nunca suma), topes de seguridad por modalidad (se
+aplican al final y salen como un motivo "tope de seguridad"), submarina de
+noche = 0, datos caducados = S/D (`spotVigente`).
+
+**Índice del spot** (`indiceSpot`): la mejor especie de temporada (sin vedas)
+de la pestaña en la hora actual, con su nombre y su porqué; es exactamente la
+puntuación de la ventana de esa especie. Sustituye al antiguo "ratio de
+especies con agua en rango × 70 + presión" (que daba 85-95 casi siempre en el
+Cantábrico en otoño; el v2 da ~70 con un día normal).
+
+**Fiabilidad** (`fiabilidad`): ★ solo criterio experto (lo normal hoy); ★★ si
+más de la mitad del log-odds viene de factores con mecanismo científico u
+oficial citado (regla `tipo: cientifica/oficial` o rango de temperatura
+verificado con fuente propia); ★★★ validado con el diario y ★★★★ temporada
+confirmada con desembarcos, marcados a mano en
+`validacion_fiabilidad.por_combinacion["especie|modalidad|region"]`. Rebajas:
+previsión a más de 48 h (-1), menos del 60 % del peso con dato (-1), modelo y
+no medido (-0,5); nunca baja de ★, pero las rebajas se dicen en el texto. **El usuario no ve
+la fiabilidad** (decisión de Mikel, 2026-10-08): se calcula, se guarda en
+`indice_factores` y solo sale en el desplegable "Detalle (admin)".
+
+**Datos**: la ventana y el índice piden a `/meteo/forecast` 5 días hacia
+atrás (`past_days=5`, para tendencias y retardos de las reglas) y la dirección
+del viento; una sola petición compartida por índice y ventana (la caché por
+spot guarda la promesa).
+
+### Reglas expertas (`reglas_expertas` en `especies.json`)
+
+Conocimiento local convertido en datos; el motor genérico
+(`assets/js/reglas-expertas.js`) las aplica sin tocar código. Cada regla suma
+`efecto.logodds × intensidad × confianza` como un factor más, con su texto.
+**Cada variable cuenta una sola vez por hora** (feedback de Mikel en la
+preview: salían "+ mar algo movida" y "− mar de 2-2,5 m" a la vez): cada regla
+declara su `variable`; si es la de un factor base, lo sustituye
+(`sustituye`), y las reglas de una misma variable tienen condiciones
+excluyentes (las de presión: 6 h si cae ahora, 24 h solo si las últimas 6 h
+están quietas, subida tras el frente). Los topes de seguridad van aparte y se
+aplican aunque el factor esté sustituido. Un test recorre especies,
+modalidades y escenarios y falla si una variable puntúa dos veces.
+**Presentación (decisión de Mikel, 2026-10-08)**: la nota y una lista de
+motivos, cada uno con una flecha por dirección y peso (▲▲ / ▲ / ▼ / ▼▼, el
+doble desde 6 puntos) y el concepto en lenguaje llano, ordenados por impacto.
+Para el usuario, ningún número por factor (ni en tooltip) ni etiqueta de
+fuente ("regla de Mikel", "por validar"...). Igual en la ventana, el índice
+del spot y la línea del diario. El admin (`window.esAdminCostaviva`,
+cosmético) tiene un desplegable "Detalle (admin)" con puntos, fuente, estado,
+confianza y la fiabilidad; la tabla de `admin.html` sigue listando las reglas.
+Hoy hay 18 reglas: 11 de Mikel (fuente `mikel_experiencia_local`, tipo
+`heuristica_experta_local`, estado `por_validar`; los umbrales son la
+traducción de Claude de lo que contó Mikel; y 2 que completan la escala de
+ola de los depredadores costeros con la heurística que ya tenía la app,
+`mar_poca_` 0,5-1 m y `mar_plana_` < 0,5 m; y 5 científicas, `tipo:
+cientifica`, del top 10 de evidencia que aprobó Mikel, ver más abajo):
+1. Presión bajando en 6 h (graduada, de -1 a -4 hPa) y en 24 h (≤ -4 hPa):
+   suma a los depredadores costeros (`@depredadores_costeros`: lubina, sargo,
+   dorada, corvina, dentón, palometa, bicuda, medregal, urta); subiendo tras
+   el frente, resta un poco. Sustituyen a la tendencia de 3 h por defecto en
+   esas especies (`sustituye: ["presion"]`).
+2. Mar algo movida (1-2,5 m) desde costa: suma a esos depredadores y
+   sustituye al factor de oleaje (con las dos reglas de escala de arriba);
+   por encima de 2,5 m manda el tope de seguridad.
+3. Río crecido (caudal "alto" con umbral oficial) a ≤ 3 km de la
+   desembocadura: suma a la lubina y resta al resto (salvo la lisa). Río del
+   spot = `RIOS[].spotCosta` de `index.html` (`rioDeSpot`); spot sin río
+   asociado o río sin caudal real (los vascos) = sin dato, no aplica.
+4. Levante en el Cantábrico (al menos media ventana de 6 h con viento del
+   sector 33,75°-146,25° = NE..SE, y 8 km/h o más de media): resta.
+5. Bonito (embarcación, Cantábrico, junio-septiembre): al menos el 25 % de
+   las horas de hace 5 a hace 1 día con viento WSW-NW de 25 km/h o más suma
+   un poco (confianza 0,3), **solo si el viento ya ha calmado** (media de
+   las últimas 12 h < 20 km/h; evidencia: la mar agitada baja las capturas).
+6. Congrio con luna llena (`congrio_luna_llena`, observación de campo de
+   Mikel): de noche, con la luna iluminada al 80 % o más, resta (más cuanto
+   más llena; costa y embarcación).
+7. Mareas vivas (`coeficientes_altos`, coeficiente ≥ 90, solo desde costa,
+   nunca en embarcación): suma a todas las especies; refuerzo
+   `rodaballo_mareas_vivas_otono` para el rodaballo de playa de octubre a
+   diciembre (Bakio). Es la amplitud de la marea, no el oleaje. El
+   rodaballo entró como especie 29 con solo lo que contó Mikel (Cantábrico,
+   costa, octubre-diciembre); talla, nombres y demás, pendientes de fuente.
+
+**Evidencia científica aprobada (2026-10-08)**: de
+`datos-robots/evidencia/EVIDENCIA_FACTORES.md` y
+`especies.json → propuestas_evidencia`, Mikel aprobó el top 10 (más la mitad
+de peso de la presión por defecto). Activo: `rio_crecido_cefalopodos`
+(-1,0; pulpo, sepia y calamar salen de la regla general del río, y también
+la dorada), `lluvia_fuerte_pulpo`, `enfriamiento_brusco_agua`,
+`bonito_mar_agitada_previa`, `lubina_noche_invierno`; confianza de las 3 de
+presión 0,4/0,35/0,3 y `reglas_por_defecto.presion.peso_lo` 0,12; bonito
+16-18 °C y pulpo 16-21 °C. Lo activado queda anotado en
+`propuestas_evidencia.activadas`; el resto (lisa, levante a 0,5, luna del
+calamar y del congrio en cuartos, sepia) sigue sin activar.
+
+La página de admin (`admin.html`) lista las reglas con su ámbito,
+condiciones, efecto, fuente, estado y cualquier error de forma.
+
+### Cómo añadir una regla experta
+
+1. Añade un objeto a `reglas_expertas.reglas` de `assets/datos/especies.json`
+   (el formato completo está en `reglas_expertas.formato` del propio JSON):
+   `id` único, `nombre`, `texto` (lo que verá el usuario), `fuente` (un id de
+   `fuentes`; si es nueva, añádela con `licencia` y `fecha_consulta`), `tipo`,
+   `confianza` (0-1), `estado: "por_validar"`, `validacion`, `ambito`
+   (regiones, modalidades, especies o `@grupo`, especies_excluidas, meses),
+   `condiciones` (todas deben cumplirse), `efecto.logodds` (±2 como mucho;
+   0,4 ≈ 10 puntos), `variable` (la que puntúa; `nombre@etiqueta` si mira
+   otra ventana de tiempo) y, si es la de un factor base, `sustituye`. Dos
+   reglas de la misma variable deben ser excluyentes.
+2. Condiciones: `{ "var": "presion", "agregado": "delta", "desde_h": -6,
+   "hasta_h": 0, "op": "<=", "valor": -1 }`. Variables horarias: ola, viento,
+   viento_dir, presion, temp_agua, lluvia, nivel_mar; de contexto:
+   caudal_rio, rio_desembocadura_km, turbidez, mes, hora_local, luz,
+   luna (fracción iluminada 0-1, `iluminacionLunar`) y coeficiente_marea
+   (20-120, `coeficienteMareaAstronomico`, ajustado a los coeficientes
+   reales de CALIBRACION.jsonl). Las dos se calculan en el motor, sin red.
+   Y de batimetría (EMODnet, ver "Batimetría"): profundidad, prof_max_5km y
+   dist_fondo_10_30m_km.
+   Agregados: media, min, max, suma, delta, fraccion (con `cumple`).
+   Operadores: `<`, `<=`, `>`, `>=`, `==`, `!=`, `en`, `entre`, `sector`.
+   Ventanas hacia atrás de hasta 5 días (120 h): es lo que trae la serie.
+3. Sin dato (menos del 60 % de horas, río desconocido...) la regla no
+   aplica: nunca se inventa.
+4. `node --test test/indice-pesca-v2.test.js` valida la forma de todas las
+   reglas (`validarRegla`); añade un test con un caso real si la regla es
+   nueva. Para retirarla sin borrarla: `estado: "retirada"`.
+5. Cuando haya salidas suficientes en el diario, calibrar: subir o bajar
+   `confianza` y pasar a `validada`.
+
+### Fase 0: condiciones de las salidas del diario por su fecha
+
+`assets/js/condiciones-salida.js` (puro, con tests). Una entrada retroactiva
+guardaba datos de HOY en cuatro casos: sin hora de inicio usaba la hora de
+ahora (y la serie de mar de ±8 días sí la contiene), la boya de embarcación
+era la de ahora, `/luna` siempre es la de hoy y 23:40 caía en las 00 del
+mismo día. Ahora la hora sale siempre de la fecha (mediodía si no hay hora,
+marcado `hora_estimada`), boya y `/luna` solo para salidas de hoy (si no, luna
+calculada para la fecha), y fuera del alcance de Open-Meteo (más de 90 días
+atrás o más de 15 adelante) las condiciones quedan a null con
+`condiciones_estado` (`sin_dato_fecha_antigua`, `sin_prevision_fecha_lejana`).
+Las ventanas (atmósfera de fecha-5 a fecha+1; mar ±8 días) caben en el proxy
+(≤ 31 días). Cuando exista el histórico ERA5 de la rama de fuentes gratuitas,
+el modo "antigua" podrá usarlo. Además se rellenan `presion_tendencia` y
+`viento_dir`, que nunca se guardaban.
+
+Cada salida guarda el índice v2 a su hora (`indice_version`,
+`indice_puntuacion`, `indice_especie`, `indice_factores` con cada factor y
+regla, la fiabilidad y el ranking de especies) para calibrar.
+**Migración `20261008120000_indice_pesca_salida.sql`, SIN APLICAR**: hasta
+aplicarla, `guardarSalida` reintenta sin esas columnas si PostgREST responde
+PGRST204.
+
+## Batimetría: profundidad de los spots e isóbatas (2026-10-08, aprobado por Mikel)
+
+**Fuentes y licencias** (verificadas, detalle en
+`datos-robots/fuentes/BATIMETRIA.md`): **EMODnet Bathymetry DTM 2024**, CC BY
+4.0 (uso comercial con atribución; DOI 10.12770/cf51df64-56f9-4a99-b1aa-36b8d7b743a1),
+y de respaldo **GEBCO_2026** (dominio público, atribución pedida, "no para
+navegar"). Atribución visible en el mapa al encender "Fondo" o las isóbatas.
+No quitarla.
+
+**Profundidad por spot** (`assets/datos/profundidad-spots.json`, sin IA):
+`node scripts/batimetria/profundidad-spots.mjs` pide al WCS de EMODnet
+(`emodnet__mean`, text/plain, ~115 m) una caja de ~11 km por spot de `SPOTS`
+(`functions/prevision.js`). Todo se mide desde la **orilla** (la celda de mar
+más cercana al spot: muchos spots caen en la playa, el puerto o tierra
+adentro): `zona_m` (mediana del fondo a 1 km), `prof_max_5km_m` (fondo más
+profundo a 5 km o menos) y `dist_10_30m_m` (distancia al fondo de 10-30 m más
+cercano), además de distancias desde el spot a 10/20/30/40/50/100 m. El cálculo
+puro está en `assets/js/batimetria-calculo.js` (lo usan el script y el
+navegador). GEBCO solo si EMODnet falla o no tiene mar a 1 km (OPeNDAP de
+CEDA). El DTM no cambia: regenerar al añadir spots o con un DTM nuevo (y
+actualizar el DOI). Puntos propios: el navegador pide al WCS de EMODnet (CORS
+abierto, sin clave) una caja de ~6 km y hace el mismo cálculo (en un punto en
+el mar, la orilla es el propio punto); repinta el índice al llegar.
+
+**Índice: profundidad ALCANZABLE** (decisión de Mikel, 2026-10-08: "usa la
+profundidad alcanzable"; un barco que sale de Pasaia o Hondarribia pesca
+fuera del puerto). Variables de contexto de las reglas expertas
+`prof_max_5km` (m) y `dist_fondo_10_30m_km` (km), más `profundidad`
+(= `zona_m`, informativa), desde `contexto.batimetria` (las estadísticas;
+`window.Batimetria.batimetria(s)` en `index.html`, `contextoReglas` las
+traduce). Tres reglas de Mikel (`mikel_campo_bizkaia`, embarcación,
+pargo/dorada/dentón, fuera de Canarias, Azores y Madeira, confianza 0,5):
+agua ≥ 18 °C y fondo de 10-30 m a 5 km o menos suma; agua ≤ 15 °C y más de
+40 m a 5 km o menos suma, si no resta; entre 15 y 18 °C no aplica. El
+"verano/invierno" va por la temperatura del agua de la hora, no por meses.
+El radio era 3 km; Mikel lo subió a 5 km (2026-10-08) para que Mundaka, cuya
+orilla está dentro de la ría (27 m a 3 km), cuente con el fondo de fuera. Con
+los datos de hoy, en invierno Mundaka (59 m a 5 km), Hondarribia (73 m),
+Pasaia (72 m) y Bakio (79 m) suman; 38 de los 105 spots no llegan a 40 m y
+restan.
+Texto para el usuario sin números ("profundidad adecuada para la época").
+
+**Mapa**: `assets/js/capa-batimetria.js` (módulo, `window.Batimetria`).
+Isóbatas en dos ficheros para no cargar de golpe uno enorme (Mikel: "si
+tenemos a mayor profundidad, hasta donde tengamos"):
+`assets/datos/isobatas-profundas.json` (150, 200, 300, 500, 750, 1000, 1500,
+2000, 3000, 4000 y 5000 m; rejilla de ~460 m, también mar abierto: golfo de
+Bizkaia, llanura abisal, Alborán, Baleares, Canarias, Madeira y Azores; < 1 MB;
+a cualquier zoom) y `assets/datos/isobatas.json` (20, 50 y 100 m, ~115 m,
+solo costa; desde zoom 8). `node scripts/batimetria/isobatas.mjs profundas`
+y `... someras` (~10 min cada uno; GEBCO si EMODnet no tiene un cuadro). El
+WMS `emodnet:contours` no tiene la de 20 m. Colores discretos de claro a
+oscuro y leyenda abajo a la izquierda; etiquetas "200 m" en puntos
+precalculados (`etiquetas` de cada nivel) que caen en pantalla, las
+profundas desde zoom 6 y las someras desde zoom 10, 120 como mucho. Se
+encienden solas en la pestaña Embarcación (`porModalidad`) y a mano con el
+botón "Isób."; cada fichero se pide la primera vez que hace falta. Tests:
+`test/batimetria.test.js` (en tests.yml).
 
 ## Triggers / rutinas automatizadas
 
@@ -2737,14 +3502,75 @@ ninguna app: si Costaviva se abandona, no se pierde. `COMPARATIVA_PROYECTOS.md`
 y `SALDO_API.md` también viven allí. El secret `GH_PAT_MULTIPROYECTO` de este
 repo ya no lo usa nadie.
 
+## Rayos: panel sencillo de un toque (2026-10-08)
+
+Mikel: "la pestaña de rayos es poco ágil de manejar". Antes: panel lateral
+que tapaba ~60 % del mapa en el móvil, frase "a 27 km del centro del mapa"
+sin rumbo, botón "Ocultar este panel" y una vista grande aparte de la imagen
+de AEMET con scroll y + / −. Ahora:
+- Un toque en ⚡: se elige la referencia (spot abierto > GPS solo si ya hay
+  permiso, nunca se pregunta > centro del mapa), se acerca ahí si el zoom
+  era < 7, se consulta `/rayos-cerca` en ESE punto y, la primera vez que hay
+  rayos, el mapa se encuadra con la referencia y la tormenta más cercana
+  (punto de borde oscuro + línea discontinua hasta el rayo).
+- Tarjeta abajo (`#rayosHoja`, metida como control de Leaflet `bottomright`,
+  así se apila sobre la atribución y no la tapa): una frase
+  ("⚡ Rayo más cercano: 12 km al NO de ti · hace 3 min" / "Sin rayos a menos
+  de 100 km en los últimos 5 min"), color por distancia (≤15 km rojo, ≤40
+  ámbar), leyenda de una línea y un ⓘ con el conteo, la hora del satélite,
+  las fuentes y el enlace a la imagen de AEMET de 12 h (`/rayos-imagen`, en
+  pestaña nueva: es lo único que añade, el histórico). Tocar la frase
+  vuelve a encuadrar.
+- Coste igual o menor: una consulta al abrir, una por minuto y otra solo si
+  el centro se aleja > 40 km de la referencia (antes, en cada `moveend`).
+- Lógica pura en `assets/js/rayos.js` (vía `window.Rayos`), tests en
+  `test/rayos-resumen.test.js`. La frase dice "5 min" porque es lo que da
+  Xweather: no prometer "la última hora".
+- `#avisoRayos` (banner de riesgo por spot) no cambia.
+
 ## Rayos: tiempo real con Xweather + satélite EUMETSAT de fondo (2026-10-03)
 
-El botón **Rayos** pinta dos capas sobre el propio mapa (antes solo abría la imagen nacional de AEMET, que sigue en el panel como "últimas 12 h"):
+El botón **Rayos** pinta dos capas sobre el propio mapa (la imagen nacional de AEMET de 12 h queda como enlace en el ⓘ, ver la sección de arriba):
 - **Satélite (gratis, ~15 min de retraso)**: WMS de EUMETView `mtg_fd:li_afa` (Lightning Imager de MTG/EUMETSAT), últimos 6 tramos de 5 min. Sin tarifas ni restricciones, CC BY 4.0, CORS abierto. Color = intensidad (amarillo → rojo oscuro), no antigüedad. **TIME siempre explícito**: EUMETView manda `cache-control` de 7 días.
 - **Tiempo real (Vaisala Xweather)**: `functions/rayos-cerca.js`, rayos de los últimos 5 min a menos de 100 km, en morado. Solo con el mapa acercado (zoom ≥ 7), al soltar el mapa y como mucho cada minuto. Exige sesión.
 - **Coste**: cada consulta de rayos a Xweather cuesta 0,006 $ y solo hay 1.500 gratis al mes. El usuario eligió no pasar de lo gratuito: tope `LIMITE_MENSUAL = 1400` en `rayos-cerca.js`, contado de forma atómica en `rayos_xweather_uso` (`reservar_consulta_rayos`) **antes** de llamar, y caché compartida de 60 s por celda de 0,5° en `rayos_xweather_cache`. Al llegar al tope, o sin claves, el endpoint responde `fuente: limite|no_configurado|error` y el mapa se queda con el satélite. Para subir el tope: cambiar `LIMITE_MENSUAL` (y tener tarjeta en Xweather).
 - **Descartado**: Blitzortung/LightningMaps prohíben el uso comercial (Costaviva es de pago). El endpoint `lightning/within` (consulta por caja, para toda la costa) exige el plan Enterprise de Xweather.
 - Claves en Cloudflare Pages: `XWEATHER_CLIENT_ID`, `XWEATHER_CLIENT_SECRET` (nunca en el repo ni en el chat). Atribución obligatoria "Vaisala Xweather" (se añade al control de atribución del mapa al activar la capa).
+
+## Invitaciones con descuento (2026-10-08, aprobado por Mikel)
+
+`admin.html` → "Invitar / dar descuento": email, descuento 0-100 %, duración
+(1/3/6/12 meses, para siempre o hasta una fecha), caducidad (30 días por
+defecto) y nota interna. Lista con estado y acciones reenviar/anular.
+
+- **Tabla** `public.invitaciones` (migración `20261008170000_invitaciones.sql`):
+  RLS sin policies, solo `service_role` y funciones definer. El estado
+  (enviada/inscrito/caducada/terminada/anulada) no se guarda: lo deduce
+  `estadoInvitacion()` de las fechas (`functions/_lib/invitaciones.js`).
+- **Endpoints**: `/admin-invitaciones` (GET lista; POST crear/reenviar/anular)
+  exige sesión + `es_admin()` en el servidor (`functions/_lib/admin.js`) antes
+  de usar `service_role`. `/canjear-invitacion` lo llama `login.html` en cuanto
+  hay sesión: el email sale del token, nunca del cuerpo; un solo uso con un
+  UPDATE condicionado a `user_id is null`.
+- **Código**: 12 caracteres sin I/O/0/1 (60 bits), en la URL del email
+  (`/login?alta=1&invitacion=...`), recordado en `localStorage` y en el
+  metadato del alta por si confirma el email en otro navegador.
+- **100 %**: sin tarjeta. Al canjear se fija `acceso_hasta` (null = siempre) y
+  `mi_estado_suscripcion()` devuelve `estado: 'invitacion'`. Queda fuera del
+  ciclo de fin de prueba para siempre; 7 días antes del final le llega el
+  aviso "suscríbete" (paso "fin de invitación" de `avisar-fin-prueba.js`, mismo
+  cron sin IA de `notificar-altas.yml`, con `AUTOMATION_PAUSED`).
+- **1-99 %**: al crear la invitación se crea un **cupón** de Stripe
+  (`max_redemptions=1`, `redeem_by` = caducidad, `forever` o `repeating`; "hasta
+  una fecha" = meses redondeados hacia arriba). No hay código de promoción: el
+  cupón lo aplica `crear-checkout-stripe.js` solo si `mi_invitacion_descuento()`
+  (con el token de quien paga) lo devuelve, así que no se puede usar desde otra
+  cuenta. En anual solo se aplica si dura 12 meses o más (el año se cobra de
+  una vez). El webhook marca `descuento_aplicado_en` con `metadata.invitacion_id`.
+  Al acabar el descuento Stripe cobra el precio normal solo.
+- **Ojo test/live (trampa 2)**: un cupón creado con la clave de test no existe
+  en live. Las invitaciones con cupón creadas en preview con clave de test no
+  valen en producción.
 
 ## Acceso permanente sin suscripción: tabla `accesos_permanentes` (2026-10-01)
 
@@ -2885,9 +3711,9 @@ los casos malos.
   se quiere cubrir también ese camino, hace falta antes un modo de
   prueba explícito en `sos-alerta.js` que nunca llame a Resend de verdad
   para una cuenta marcada como test — decidirlo aparte, no asumirlo.
-- No existen todavía código de invitación/descuento ni cuentas
-  compartidas tipo "tripulación" — no hay nada que blindar ahí hasta que
-  esas features existan.
+- Códigos de invitación/descuento: existen desde el 2026-10-08 (ver
+  "Invitaciones con descuento"). Cuentas compartidas tipo "tripulación":
+  todavía no.
 
 ## Trampas compartidas y regla de coste (2026-10-07)
 

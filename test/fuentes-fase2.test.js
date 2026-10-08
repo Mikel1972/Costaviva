@@ -18,7 +18,7 @@ import { pedirCopernicusMar, claveCaja, cajasCercanas, MAX_KM_CELDA } from "../f
 import { vaciarMemoriaInstantaneas } from "../functions/_lib/instantaneas.js";
 import { pedirDatosMeteo, envConFuenteForzada, ATRIBUCIONES_HTML } from "../functions/_lib/fuentes.js";
 import { pedirEra5, ventanaPasada, celdaEra5, claveCajaEra5, serieDesdeEra5, MAX_FICHEROS_ERA5 } from "../functions/_lib/era5.js";
-import { esAdminServidor } from "../functions/_lib/admin.js";
+import { requireAdmin } from "../functions/_lib/admin.js";
 import { onRequestGet } from "../functions/meteo/[api].js";
 import { bytesDeBase64, valorByte, valorEnPunto, filaDeDatos, pixelesCapa, colorPaleta } from "../assets/js/capas-mar.js";
 
@@ -165,13 +165,17 @@ async function conFetch(doble, fn) {
 }
 const QS = "latitude=43.40&longitude=-2.70&hourly=windspeed_10m&timezone=Europe/Madrid&forecast_days=1&fuente=gratuitas";
 
-test("admin: sin sesión o con token raro -> 403 sin pedir nada ni mirar la caché", async () => {
-  for (const auth of [null, "Bearer", "Bearer x", "Basic abc", `Bearer ${TOKEN}&x`]) {
+const ES_SUPABASE_AUTH = (u) => /\/auth\/v1\/user$|\/rest\/v1\/rpc\/es_admin$/.test(u);
+
+test("admin: sin sesión o con token falso -> 403 sin pedir datos ni mirar la caché", async () => {
+  for (const auth of [null, "Bearer", "Basic abc", "Bearer x"]) {
     const pedidas = [];
-    await conFetch(async (u) => { pedidas.push(String(u)); return json(true); }, async (miradas) => {
+    // Supabase Auth rechaza el token (401).
+    await conFetch(async (u) => { pedidas.push(String(u)); return json({ msg: "bad jwt" }, 401); }, async (miradas) => {
       const r = await pedirProxy(QS, { auth });
       assert.equal(r.status, 403, String(auth));
-      assert.deepEqual(pedidas, []);
+      assert.ok(pedidas.every(ES_SUPABASE_AUTH), pedidas.join());
+      assert.ok(!pedidas.some((u) => u.includes("/rpc/es_admin")));
       assert.deepEqual(miradas, []);
     });
   }
@@ -180,12 +184,15 @@ test("admin: sin sesión o con token raro -> 403 sin pedir nada ni mirar la cach
 test("admin: usuario normal (es_admin false) o token no válido (401) -> 403", async () => {
   for (const respuesta of [() => json(false), () => json({ message: "JWT expired" }, 401), () => json(null)]) {
     const pedidas = [];
-    await conFetch(async (u, init) => { pedidas.push({ u: String(u), init }); return respuesta(); }, async (miradas) => {
+    await conFetch(async (u, init) => {
+      pedidas.push({ u: String(u), init });
+      return String(u).endsWith("/auth/v1/user") ? json({ id: "u1" }) : respuesta();
+    }, async (miradas) => {
       const r = await pedirProxy(QS, { auth: `Bearer ${TOKEN}` });
       assert.equal(r.status, 403);
-      assert.equal(pedidas.length, 1);
-      assert.match(pedidas[0].u, /\/rest\/v1\/rpc\/es_admin$/);
-      assert.equal(pedidas[0].init.headers.Authorization, `Bearer ${TOKEN}`);
+      assert.equal(pedidas.length, 2);
+      assert.match(pedidas[1].u, /\/rest\/v1\/rpc\/es_admin$/);
+      assert.equal(pedidas[1].init.headers.Authorization, `Bearer ${TOKEN}`);
       assert.deepEqual(miradas, []);
     });
   }
@@ -203,6 +210,7 @@ test("admin: con es_admin true se honra la fuente y no se cachea en el navegador
   const pedidas = [];
   await conFetch(async (u) => {
     pedidas.push(String(u));
+    if (String(u).endsWith("/auth/v1/user")) return json({ id: "admin" });
     if (String(u).includes("/rpc/es_admin")) return json(true);
     if (String(u).includes("api.met.no")) return json(MET);
     if (String(u).includes("open-meteo.com")) return json({ hourly: { time: ["2026-10-08T00:00"], windspeed_10m: [5] } });
@@ -232,7 +240,12 @@ test("admin: sin `fuente` el proxy no llama a Supabase (usuarios normales, como 
     assert.equal(r.status, 200);
     assert.ok(!pedidas.some((u) => u.includes("supabase")));
   });
-  assert.equal(await esAdminServidor(new Request("https://x/", { headers: { Authorization: `Bearer ${TOKEN}` } }), { fetchImpl: async () => { throw new Error("red"); } }), false);
+  // Red caída al comprobar: nunca es admin (fail-closed).
+  await conFetch(async () => { throw new Error("red"); }, async () => {
+    const r = await requireAdmin(new Request("https://x/", { headers: { Authorization: `Bearer ${TOKEN}` } }));
+    assert.equal(r.ok, false);
+    assert.equal((await pedirProxy(QS, { auth: `Bearer ${TOKEN}` })).status, 403);
+  });
 });
 
 test("admin: index.html solo enseña el selector si es_admin() lo dice, y manda el JWT", () => {

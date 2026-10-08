@@ -98,6 +98,38 @@
       ]
     },
     {
+      "tablename": "capturas_compartidas",
+      "rls_enabled": true,
+      "policies": [
+        {
+          "name": "cada usuario comparte solo sus capturas",
+          "cmd": "a",
+          "roles": [
+            "authenticated"
+          ]
+        },
+        {
+          "name": "cada usuario retira solo sus capturas compartidas",
+          "cmd": "d",
+          "roles": [
+            "authenticated"
+          ]
+        },
+        {
+          "name": "cada usuario ve solo sus capturas compartidas",
+          "cmd": "r",
+          "roles": [
+            "authenticated"
+          ]
+        }
+      ]
+    },
+    {
+      "tablename": "capturas_comunidad",
+      "rls_enabled": true,
+      "policies": []
+    },
+    {
       "tablename": "coeficiente_marea_actual",
       "rls_enabled": true,
       "policies": [
@@ -219,6 +251,11 @@
       "policies": []
     },
     {
+      "tablename": "invitaciones",
+      "rls_enabled": true,
+      "policies": []
+    },
+    {
       "tablename": "invitaciones_grupo",
       "rls_enabled": true,
       "policies": [
@@ -261,6 +298,47 @@
           "cmd": "r",
           "roles": [
             "-"
+          ]
+        }
+      ]
+    },
+    {
+      "tablename": "oleaje_camara_lecturas",
+      "rls_enabled": true,
+      "policies": [
+        {
+          "name": "lectura pública de las lecturas de oleaje por cámara",
+          "cmd": "r",
+          "roles": [
+            "anon",
+            "authenticated"
+          ]
+        }
+      ]
+    },
+    {
+      "tablename": "oleaje_etiquetas",
+      "rls_enabled": true,
+      "policies": [
+        {
+          "name": "cada usuario borra solo sus etiquetas de oleaje",
+          "cmd": "d",
+          "roles": [
+            "authenticated"
+          ]
+        },
+        {
+          "name": "cada usuario ve solo sus etiquetas de oleaje",
+          "cmd": "r",
+          "roles": [
+            "authenticated"
+          ]
+        },
+        {
+          "name": "etiquetas de oleaje propias, de ahora o de foto si es admin",
+          "cmd": "a",
+          "roles": [
+            "authenticated"
           ]
         }
       ]

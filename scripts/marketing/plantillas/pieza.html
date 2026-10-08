@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Pieza Costaviva</title>
+<!-- Plantilla de las piezas de Instagram en estilo "Amanecer" (2026-10-08).
+     La rellenan generar-post-instagram.mjs y generar-reel-instagram.mjs con
+     Playwright: window.pintar(datos) para post/story y
+     window.fotograma(t) para cada fotograma del reel. Sin red: las fuentes
+     van en ../fuentes (OFL) y las imágenes llegan como data: URL. -->
+<style>
+  @font-face { font-family: "Unbounded"; src: url("../fuentes/Unbounded-latin.woff2") format("woff2"); font-weight: 200 900; }
+  @font-face { font-family: "Manrope"; src: url("../fuentes/Manrope-latin.woff2") format("woff2"); font-weight: 200 800; }
+  :root {
+    --mar: #0B1E3F; --mar-2: #13305E; --gris-mar: #C9CFE3; --blanco: #FFFFFF; --sol: #FFC24B;
+    --nivel-bueno: #4ADE80; --nivel-medio: #FFC24B; --nivel-malo: #FF6B6B; --nivel-sd: #A9B4D0;
+    --degradado: linear-gradient(100deg, #FF8A3D 0%, #E8467C 55%, #7B3FE4 100%);
+    --degradado-fuerte: linear-gradient(100deg, #C2410C 0%, #BE185D 55%, #6D28D9 100%);
+    --degradado-texto: linear-gradient(100deg, #FFB067 0%, #FF7FA8 60%, #B79BFF 100%);
+    --f-titulo: "Unbounded", sans-serif; --f-texto: "Manrope", sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: var(--alto, 1350px); overflow: hidden; background: transparent; }
+  body { font-family: var(--f-texto); color: var(--blanco); }
+  .lienzo {
+    position: relative; width: 1080px; height: var(--alto, 1350px); overflow: hidden;
+    display: flex; flex-direction: column; gap: 24px; padding: var(--arriba, 56px) 64px var(--abajo, 48px);
+    background: radial-gradient(90% 38% at 50% 0%, rgba(255,138,61,.75) 0%, rgba(232,70,124,.45) 45%, transparent 75%), var(--mar);
+  }
+  .lienzo.transparente { background: transparent; }
+  .oculto { display: none !important; }
+
+  .marca { display: flex; align-items: center; gap: 16px; }
+  .marca svg { width: 64px; height: 64px; flex-shrink: 0; }
+  .marca .nombre { font-family: var(--f-titulo); font-weight: 800; font-size: 38px; text-transform: uppercase; background: var(--degradado-texto); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .marca .fecha { margin-left: auto; font-weight: 700; font-size: 25px; text-align: right; line-height: 1.25; color: var(--blanco); }
+  .titulo { font-family: var(--f-titulo); font-weight: 800; font-size: 80px; line-height: .95; letter-spacing: -2px; text-transform: uppercase; overflow-wrap: anywhere; }
+  .titulo small { display: block; font-family: var(--f-texto); font-size: 32px; letter-spacing: .08em; color: var(--sol); margin-bottom: 8px; }
+
+  .heroe { display: flex; align-items: center; gap: 40px; }
+  /* Anillo de amanecer (emoción) y cifra en el color de su nivel (dato). */
+  .nota {
+    width: 264px; height: 264px; flex-shrink: 0; border-radius: 50%; border: 14px solid transparent;
+    background: linear-gradient(var(--mar), var(--mar)) padding-box, conic-gradient(#FF8A3D, #E8467C, #7B3FE4, #FF8A3D) border-box;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .nota b { font-family: var(--f-titulo); font-weight: 800; font-size: 104px; line-height: .9; letter-spacing: -5px; color: var(--nivel-sd); }
+  .nota[data-nivel="bueno"] b { color: var(--nivel-bueno); }
+  .nota[data-nivel="medio"] b { color: var(--nivel-medio); }
+  .nota[data-nivel="malo"] b { color: var(--nivel-malo); }
+  .nota span { font-weight: 800; font-size: 21px; letter-spacing: .06em; text-transform: uppercase; margin-top: 6px; }
+  .lado { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+  .que { font-weight: 800; font-size: 26px; letter-spacing: .06em; text-transform: uppercase; color: var(--sol); }
+  .estrella { font-family: var(--f-titulo); font-weight: 800; font-size: 46px; line-height: 1.05; background: var(--degradado-texto); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .motivos { list-style: none; display: flex; flex-direction: column; gap: 6px; font-size: 25px; font-weight: 700; }
+  .motivos i { font-style: normal; display: inline-block; min-width: 46px; font-size: 20px; }
+  .motivos i.sube { color: var(--nivel-bueno); } .motivos i.baja { color: var(--nivel-malo); }
+
+  .datos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .dato { border-radius: 26px; padding: 18px 20px; background: rgba(255,255,255,.09); }
+  .dato svg { width: 42px; height: 42px; color: #FF8A3D; }
+  .dato .etq { font-weight: 800; font-size: 21px; letter-spacing: .08em; text-transform: uppercase; color: var(--sol); margin-top: 6px; }
+  .dato .val { font-family: var(--f-texto); font-weight: 800; font-size: 40px; letter-spacing: -.5px; line-height: 1.1; margin-top: 2px; }
+  .dato .sub { font-weight: 700; font-size: 21px; color: var(--gris-mar); margin-top: 2px; }
+
+  .ventana { border-radius: 26px; padding: 18px 22px 14px; background: rgba(255,255,255,.09); }
+  .ventana .cab { display: flex; justify-content: space-between; align-items: baseline; font-weight: 800; font-size: 22px; letter-spacing: .06em; text-transform: uppercase; color: var(--sol); }
+  .ventana .cab em { font-style: normal; font-family: var(--f-titulo); font-size: 30px; letter-spacing: -.5px; text-transform: none; color: var(--blanco); }
+  .barras { display: grid; grid-template-columns: repeat(24, 1fr); gap: 6px; align-items: end; height: 110px; margin-top: 10px; }
+  .barras div { border-radius: 8px 8px 4px 4px; background: #3A4F80; }
+  .barras div.media { background: #E8467C; } .barras div.alta { background: #FF8A3D; }
+  .barras div.mejor { outline: 4px solid var(--blanco); outline-offset: 3px; }
+  .eje { display: grid; grid-template-columns: repeat(8, 1fr); font-weight: 800; font-size: 18px; color: var(--gris-mar); margin-top: 8px; }
+
+  .mapa { position: relative; border-radius: 26px; overflow: hidden; flex: 1; min-height: 170px; background: #9ECFEA center / cover no-repeat; }
+  .mapa::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(11,30,63,0) 55%, rgba(11,30,63,.5)); }
+  .mapa canvas { position: absolute; inset: 0; z-index: 1; }
+  .mapa .pin { position: absolute; z-index: 2; transform: translate(-50%, -100%); display: flex; flex-direction: column; align-items: center; }
+  .mapa .pin b { font-family: var(--f-titulo); font-weight: 800; font-size: 28px; padding: 6px 16px; border-radius: 999px; background: var(--degradado-fuerte); white-space: nowrap; }
+  .mapa .pin i { width: 22px; height: 22px; border-radius: 50%; background: #E8467C; border: 5px solid #fff; margin-top: 6px; box-shadow: 0 0 0 10px rgba(255,255,255,.35); }
+  .mapa .credito { position: absolute; z-index: 3; right: 14px; bottom: 10px; font-size: 16px; font-weight: 700; color: #12355B; background: rgba(255,255,255,.8); padding: 3px 10px; border-radius: 8px; }
+  .mapa .rotulo { position: absolute; z-index: 3; left: 16px; top: 14px; font-weight: 800; font-size: 20px; padding: 4px 12px; border-radius: 999px; background: rgba(11,30,63,.75); }
+
+  .pie { display: flex; justify-content: space-between; align-items: center; }
+  .pie .url { font-family: var(--f-titulo); font-weight: 800; font-size: 34px; }
+  .pie .fuentes { font-size: 16px; font-weight: 700; opacity: .85; text-align: right; line-height: 1.3; }
+  .cta { display: flex; align-items: center; justify-content: center; border-radius: 999px; padding: 28px; font-family: var(--f-titulo); font-weight: 800; font-size: 40px; background: var(--degradado-fuerte); }
+
+  /* Especie de temporada. */
+  .chip { align-self: flex-start; font-weight: 800; font-size: 24px; letter-spacing: .08em; text-transform: uppercase; padding: 10px 22px; border-radius: 999px; background: var(--degradado-fuerte); }
+  .ficha { display: flex; flex-direction: column; gap: 18px; border-radius: 26px; padding: 26px 28px; background: rgba(255,255,255,.09); }
+  .ficha p { font-size: 30px; font-weight: 600; line-height: 1.35; }
+  .ficha dl { display: grid; grid-template-columns: auto 1fr; gap: 10px 20px; font-size: 26px; }
+  .ficha dt { font-weight: 800; color: var(--sol); text-transform: uppercase; letter-spacing: .06em; font-size: 21px; padding-top: 4px; }
+  .ficha dd { font-weight: 700; }
+  .aviso-freza { font-size: 24px; font-weight: 700; color: var(--nivel-medio); }
+  /* Funciones de la app: captura real dentro de un marco de móvil. */
+  .funcion { display: flex; gap: 36px; align-items: center; flex: 1; min-height: 0; }
+  .movil { width: 430px; flex-shrink: 0; border-radius: 56px; padding: 16px; background: #05101F; box-shadow: 0 0 0 3px #2A3D63, 0 30px 60px rgba(0,0,0,.45); }
+  .movil img { display: block; width: 100%; border-radius: 42px; }
+  .funcion .texto { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+  .funcion .frase { font-size: 32px; font-weight: 700; line-height: 1.3; }
+  .funcion ul { list-style: none; display: flex; flex-direction: column; gap: 12px; font-size: 27px; font-weight: 800; }
+  .funcion li::before { content: ""; display: inline-block; width: 14px; height: 14px; border-radius: 50%; background: var(--degradado); margin-right: 12px; vertical-align: 2px; }
+  .funcion .aviso { font-size: 20px; font-weight: 600; color: var(--gris-mar); line-height: 1.35; }
+  [data-formato="story"] .funcion { flex-direction: column; gap: 28px; }
+  [data-formato="story"] .movil { width: 470px; }
+  [data-formato="story"] .movil img { height: 760px; object-fit: cover; object-position: top; }
+  [data-formato="reel"] .movil img { height: 820px; object-fit: cover; object-position: top; }
+  [data-formato="reel"] .funcion { flex-direction: column; gap: 28px; }
+
+  /* Reel, escena 1: gancho grande sobre el vídeo. */
+  .gancho { position: absolute; left: 64px; right: 64px; top: 50%; transform: translateY(-50%); font-family: var(--f-titulo); font-weight: 800; font-size: 92px; line-height: 1.02; letter-spacing: -2px; text-shadow: 0 6px 30px rgba(0,0,0,.45); }
+  .gancho::after { content: ""; display: block; height: 14px; width: 260px; margin-top: 36px; border-radius: 999px; background: var(--degradado); }
+  .velo { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(11,30,63,.55) 0%, rgba(11,30,63,.1) 40%, rgba(11,30,63,.75) 100%); }
+  .claim { font-size: 40px; font-weight: 800; line-height: 1.3; text-align: center; }
+</style>
+</head>
+<body>
+<div class="lienzo" id="lienzo"></div>
+<script>
+  const MARCA = '<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="19" fill="#FF8A3D"/><path fill="#fff" d="M9 17c4-6.5 14-6.5 19 0-5 6.5-15 6.5-19 0z"/><path fill="#fff" d="M27.5 17l6-4.5v9z"/><circle fill="#E8467C" cx="13.5" cy="16" r="1.4"/><path fill="none" stroke="#0B1E3F" stroke-width="3" stroke-linecap="round" d="M5 28c3.5-3.2 6.5-3.2 10 0s6.5 3.2 10 0 6.5-3.2 10 0"/></svg>';
+  const ICONOS = {
+    ola: '<path d="M2 15c3-3 6-3 9 0s6 3 9 0M2 20c3-3 6-3 9 0s6 3 9 0M5 10c2-5 9-6 12-1-3-1-5 0-6 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+    viento: '<path d="M3 8h11a3 3 0 1 0-3-3M3 13h16a3 3 0 1 1-3 3M3 18h8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+    marea: '<path d="M12 3v11M8 7l4-4 4 4M2 18c3-3 6-3 9 0s6 3 9 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+  };
+  const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const $ = (sel) => document.querySelector(sel);
+  let D = null;
+
+  function marcaHtml() {
+    return `<div class="marca">${MARCA}<span class="nombre">Costaviva</span><span class="fecha">${D.fecha || ""}</span></div>`;
+  }
+  function claseBarra(v) { return v >= 70 ? "alta" : v >= 55 ? "media" : ""; }
+  function barrasHtml(altura = 1) {
+    const r = D.resumen;
+    return r.barras.map((v, i) => `<div class="${claseBarra(v)}${r.mejorTramo && i === r.mejorTramo.desde + 1 ? " mejor" : ""}" style="height:${Math.max(10, v * altura)}%"></div>`).join("");
+  }
+  function condicionesHtml(conCta) {
+    const r = D.resumen;
+    return `${marcaHtml()}
+      <h1 class="titulo" style="font-size:${D.spot.length > 22 ? 52 : D.spot.length > 12 ? 64 : 80}px"><small>Hoy en</small>${esc(D.spot)}</h1>
+      <div class="heroe">
+        <div class="nota" data-nivel="${r.nivel}"><b id="nota">${r.puntuacion}</b><span>sobre 100</span></div>
+        <div class="lado">
+          <div class="que">Índice de pesca · ${esc(D.modalidad || "desde costa")}</div>
+          <div class="estrella">${esc(r.especie)}</div>
+          <ul class="motivos">${r.motivos.map((m) => `<li><i class="${m.sube ? "sube" : "baja"}">${m.flecha}</i>${esc(m.texto)}</li>`).join("")}</ul>
+        </div>
+      </div>
+      <div class="datos">${D.tarjetas.map((d) => `<div class="dato"><svg viewBox="0 0 22 22">${ICONOS[d.icono]}</svg><div class="etq">${esc(d.etq)}</div><div class="val">${esc(d.val)}</div><div class="sub">${esc(d.sub)}</div></div>`).join("")}</div>
+      <div class="ventana"><div class="cab"><span>Ventana del día · ${esc(r.especie)}</span><em>${r.mejorTramo ? "mejor: " + r.mejorTramo.texto : ""}</em></div>
+        <div class="barras" id="barras">${barrasHtml()}</div>
+        <div class="eje"><span>00</span><span>03</span><span>06</span><span>09</span><span>12</span><span>15</span><span>18</span><span>21</span></div></div>
+      ${mapaHtml()}
+      ${conCta ? `<div class="cta">Mira tu spot en costaviva.org</div>` : `<div class="pie"><span class="url">costaviva.org</span><span class="fuentes">${esc(D.fuentes)}</span></div>`}`;
+  }
+  function mapaHtml() {
+    if (!D.mapa) return "";
+    return `<div class="mapa" id="mapa" style="background-image:url('${D.mapa.imagen}')">
+      <canvas id="viento"></canvas>
+      ${D.rotuloMapa ? `<span class="rotulo">${esc(D.rotuloMapa)}</span>` : ""}
+      <div class="pin" id="pin"><b>${esc(D.spot)}</b><i></i></div><span class="credito">Batimetría: EMODnet</span></div>`;
+  }
+  // El pin del spot sobre la imagen en "cover" (centrada).
+  function colocarPin() {
+    const caja = $("#mapa"); if (!caja) return;
+    const r = caja.getBoundingClientRect(), m = D.mapa;
+    const s = Math.max(r.width / m.ancho, r.height / m.alto);
+    const offX = (r.width - m.ancho * s) / 2, offY = (r.height - m.alto * s) / 2;
+    const pin = $("#pin");
+    pin.style.left = `${offX + m.fx * m.ancho * s}px`;
+    const y = offY + m.fy * m.alto * s;
+    // Si el punto cae muy arriba, la etiqueta va debajo para que no se corte.
+    if (y < 90) { pin.style.flexDirection = "column-reverse"; pin.style.transform = "translate(-50%, -22px)"; pin.style.top = `${y}px`; }
+    else pin.style.top = `${y + 22}px`;
+  }
+  function funcionHtml(conCta) {
+    const f = D.funcion;
+    return `${marcaHtml()}
+      <h1 class="titulo" style="font-size:72px">${esc(f.titulo)}</h1>
+      <div class="funcion"><div class="movil"><img src="${f.captura}" alt=""></div>
+        <div class="texto"><p class="frase">${esc(f.frase)}</p><ul>${f.puntos.map((p) => `<li>${esc(p)}</li>`).join("")}</ul>${f.aviso ? `<p class="aviso">${esc(f.aviso)}</p>` : ""}</div></div>
+      ${conCta ? `<div class="cta">Pruébala en costaviva.org</div>` : `<div class="pie"><span class="url">costaviva.org</span><span class="fuentes">7 días gratis</span></div>`}`;
+  }
+  function especieHtml(conCta) {
+    const e = D.especie;
+    return `${marcaHtml()}
+      <span class="chip">De temporada ahora · ${esc(e.region)}</span>
+      <h1 class="titulo" style="font-size:96px">${esc(e.nombre)}</h1>
+      <div class="ficha"><p>${esc(e.nota)}</p>
+        <dl>${e.cebos ? `<dt>Cebos</dt><dd>${esc(e.cebos)}</dd>` : ""}${e.talla ? `<dt>Talla mín.</dt><dd>${esc(e.talla)}</dd>` : ""}${e.alimentacion ? `<dt>Come</dt><dd>${esc(e.alimentacion)}</dd>` : ""}</dl>
+        ${e.freza ? `<p class="aviso-freza">${esc(e.freza)}</p>` : ""}</div>
+      <div style="flex:1"></div>
+      ${conCta ? `<div class="cta">Su índice de pesca, hora a hora, en costaviva.org</div>` : `<div class="pie"><span class="url">costaviva.org</span><span class="fuentes">${esc(e.fuente || "")}</span></div>`}`;
+  }
+  function cuerpoHtml(conCta) {
+    return D.tipo === "funcion" ? funcionHtml(conCta) : D.tipo === "especie" ? especieHtml(conCta) : condicionesHtml(conCta);
+  }
+  function dimensionar(formato) {
+    const r = document.documentElement;
+    const alto = formato === "post" ? 1350 : 1920;
+    r.dataset.formato = formato;
+    r.style.setProperty("--alto", alto + "px");
+    // Zonas seguras de story/reel: arriba y abajo los tapa Instagram.
+    r.style.setProperty("--arriba", formato === "post" ? "56px" : "170px");
+    r.style.setProperty("--abajo", formato === "post" ? "48px" : "230px");
+  }
+
+  // ---- Post y story ----
+  window.pintar = function (datos) {
+    D = datos; dimensionar(D.formato);
+    const l = $("#lienzo"); l.className = "lienzo";
+    l.innerHTML = cuerpoHtml(D.formato !== "post");
+    colocarPin();
+    // ¿Cabe todo? Nada por debajo del lienzo y ningún bloque desbordado
+    // (los que recortan a propósito, como la foto del móvil, no cuentan).
+    return document.fonts.ready.then(() => {
+      const fondo = l.getBoundingClientRect().bottom + 1;
+      window.__desbordan = [...l.querySelectorAll("*")].filter((e) => {
+        const r = e.getBoundingClientRect(), cs = getComputedStyle(e);
+        return r.bottom > fondo || (cs.overflow === "visible" && e.children.length > 0 && e.clientHeight > 0 && e.scrollHeight > e.clientHeight + 12);
+      }).map((e) => e.className || e.tagName);
+      return window.__desbordan.length === 0;
+    });
+  };
+
+  // ---- Reel: un fotograma por instante, siempre en orden. La escena, su
+  // progreso (0..1) y la cifra del índice los calcula pieza-datos.mjs
+  // (escenaEn, contar), que es lo que se prueba en test/pieza-datos.test.js. ----
+  let escenaPintada = null, particulas = null;
+  window.prepararReel = function (datos) {
+    D = datos; dimensionar("reel"); escenaPintada = null; particulas = null;
+    return document.fonts.ready;
+  };
+  window.fotograma = function ({ escena, progreso, nota, fondo }) {
+    const l = $("#lienzo");
+    if (escena !== escenaPintada) {
+      escenaPintada = escena;
+      if (escena === "gancho") {
+        l.className = "lienzo transparente"; l.style.backgroundColor = "#0B1E3F";
+        l.innerHTML = `<div class="velo"></div>${marcaHtml()}<div class="gancho" id="gancho">${esc(D.gancho)}</div>`;
+      } else if (escena === "datos") {
+        l.className = "lienzo"; l.style.background = "";
+        l.innerHTML = cuerpoHtml(false);
+        colocarPin(); iniciarViento();
+      } else {
+        l.className = "lienzo"; l.style.background = "";
+        l.style.justifyContent = "center";
+        l.innerHTML = `${marcaHtml()}<div style="flex:1"></div><p class="claim">${esc(D.claim)}</p><div class="cta">${D.tipo === "condiciones" ? "Mira tu spot en costaviva.org" : "Pruébala gratis en costaviva.org"}</div><div style="flex:1"></div>`;
+      }
+    }
+    if (escena === "gancho") {
+      l.style.background = fondo ? `url("${fondo}") center / cover` : "var(--mar)";
+      const g = $("#gancho"); const p = Math.min(1, progreso * 3);
+      g.style.opacity = p; g.style.transform = `translateY(calc(-50% + ${(1 - p) * 60}px))`;
+    } else if (escena === "datos" && D.tipo === "condiciones") {
+      $("#nota").textContent = nota;
+      const barras = $("#barras").children, pb = Math.min(1, Math.max(0, (progreso - 0.15) / 0.5));
+      D.resumen.barras.forEach((v, i) => { barras[i].style.height = `${Math.max(4, v * Math.min(1, Math.max(0, pb * 1.6 - i / 40)))}%`; });
+      pasoViento();
+    } else if (escena === "datos" && D.tipo === "funcion") {
+      const img = $(".movil img"); img.style.transform = `scale(${1 + progreso * 0.04})`;
+    }
+  };
+
+  // Partículas de viento con la rejilla real de /viento-campo (formato
+  // wind-js: bandas U y V en m/s). Aleatorio con semilla: el mismo reel sale
+  // igual cada vez.
+  function iniciarViento() {
+    const cv = $("#viento"); if (!cv || !D.viento) return;
+    const r = cv.parentElement.getBoundingClientRect();
+    cv.width = r.width; cv.height = r.height;
+    let semilla = 7; const azar = () => (semilla = (semilla * 16807) % 2147483647) / 2147483647;
+    particulas = Array.from({ length: 450 }, () => ({ x: azar() * cv.width, y: azar() * cv.height, vida: azar() * 60, azar }));
+  }
+  function vientoEn(px, py, cv) {
+    const v = D.viento, m = D.mapa;
+    // Píxel del canvas -> lon/lat del recorte (Mercator) -> celda de la rejilla.
+    const r = cv.getBoundingClientRect(); const s = Math.max(r.width / m.ancho, r.height / m.alto);
+    const ix = (px - (r.width - m.ancho * s) / 2) / (m.ancho * s), iy = (py - (r.height - m.alto * s) / 2) / (m.alto * s);
+    const xm = m.bbox.minx + ix * (m.bbox.maxx - m.bbox.minx), ym = m.bbox.maxy - iy * (m.bbox.maxy - m.bbox.miny);
+    const lon = xm / 6378137 * 180 / Math.PI, lat = (2 * Math.atan(Math.exp(ym / 6378137)) - Math.PI / 2) * 180 / Math.PI;
+    const h = v.u.header;
+    const i = Math.round((lon - h.lo1) / h.dx), j = Math.round((h.la1 - lat) / h.dy);
+    const ii = Math.max(0, Math.min(h.nx - 1, i)), jj = Math.max(0, Math.min(h.ny - 1, j));
+    return [v.u.data[jj * h.nx + ii], v.v.data[jj * h.nx + ii]];
+  }
+  function pasoViento() {
+    const cv = $("#viento"); if (!cv || !particulas) return;
+    const ctx = cv.getContext("2d");
+    ctx.globalCompositeOperation = "destination-in"; ctx.fillStyle = "rgba(0,0,0,0.9)"; ctx.fillRect(0, 0, cv.width, cv.height);
+    ctx.globalCompositeOperation = "source-over"; ctx.strokeStyle = "rgba(255,255,255,0.85)"; ctx.lineWidth = 2.2;
+    for (const p of particulas) {
+      const [u, w] = vientoEn(p.x, p.y, cv);
+      const nx = p.x + u * 1.6, ny = p.y - w * 1.6;
+      ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(nx, ny); ctx.stroke();
+      p.x = nx; p.y = ny; p.vida++;
+      if (p.vida > 70 || nx < 0 || ny < 0 || nx > cv.width || ny > cv.height) { p.x = p.azar() * cv.width; p.y = p.azar() * cv.height; p.vida = 0; }
+    }
+  }
+</script>
+</body>
+</html>
