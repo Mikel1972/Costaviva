@@ -138,13 +138,10 @@ test("MET Norway: forma de Open-Meteo, unidades y precipitación de la hora ante
   assert.ok(pasado.hourly.pressure_msl.every((v) => v === null));
 });
 
-test("MET Norway: sin contacto no se llama; User-Agent y coordenadas de sus condiciones", async () => {
-  assert.throws(() => userAgentMetNorway({}), /METNO_CONTACTO/);
+test("MET Norway: User-Agent con el contacto del proyecto por defecto y coordenadas de sus condiciones", async () => {
+  assert.equal(userAgentMetNorway({}), "Costaviva/1.0 datos@costaviva.org");
   assert.equal(userAgentMetNorway(CONTACTO), "Costaviva/1.0 https://costaviva.org/contacto");
   assert.equal(urlMetNorway(43.40471, -2.69891), "https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=43.40&lon=-2.70");
-  let llamadas = 0;
-  await assert.rejects(pedirMetNorway(43.4, -2.7, { env: {}, fetchImpl: async () => { llamadas++; return respuestaJSON(MET); } }), /METNO_CONTACTO/);
-  assert.equal(llamadas, 0);
 });
 
 test("MET Norway: respeta Expires y repregunta con If-Modified-Since", async () => {

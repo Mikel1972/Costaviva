@@ -54,9 +54,14 @@ const VARIABLES = {
 };
 export const VARIABLES_MET_NORWAY = new Set(Object.keys(VARIABLES));
 
+// Contacto del proyecto (Mikel, 2026-10-08): dirección de Costaviva, no
+// personal; llega al buzón del proyecto por Cloudflare Email Routing.
+// METNO_CONTACTO lo sustituye si se define.
+export const CONTACTO_METNO_POR_DEFECTO = "datos@costaviva.org";
+
 export function contactoMetNorway(env) {
   const v = env && typeof env.METNO_CONTACTO === "string" ? env.METNO_CONTACTO.trim() : "";
-  return v;
+  return v || CONTACTO_METNO_POR_DEFECTO;
 }
 
 export function userAgentMetNorway(env) {

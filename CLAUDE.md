@@ -176,7 +176,7 @@ y, por encima, por grupo: `FUENTE_VIENTO`, `FUENTE_PRESION`,
 **Pendiente de Mikel antes de activar nada:** cuenta gratuita de Copernicus
 Marine y los secrets `COPERNICUSMARINE_USERNAME`/`COPERNICUSMARINE_PASSWORD`
 (GitHub Actions); decidir el contacto del User-Agent de MET (web o email de
-empresa, nunca personal) y ponerlo como `METNO_CONTACTO` (variable de
+empresa, nunca personal). Por defecto se usa `datos@costaviva.org` (decidido por Mikel, 2026-10-08); `METNO_CONTACTO` (variable de
 repositorio y de Cloudflare); aprobar y aplicar la migración del bucket;
 `FUENTES_GRATUITAS=true`. Antes de quitar Open-Meteo del todo: el diario
 retroactivo (fechas pasadas) y la ventana de actividad (`past_days=1`) no
