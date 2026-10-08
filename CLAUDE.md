@@ -1278,11 +1278,12 @@ fuente ("regla de Mikel", "por validar"...). Igual en la ventana, el índice
 del spot y la línea del diario. El admin (`window.esAdminCostaviva`,
 cosmético) tiene un desplegable "Detalle (admin)" con puntos, fuente, estado,
 confianza y la fiabilidad; la tabla de `admin.html` sigue listando las reglas.
-Hoy hay 10 reglas (8 de Mikel, fuente `mikel_experiencia_local`, tipo
+Hoy hay 18 reglas: 11 de Mikel (fuente `mikel_experiencia_local`, tipo
 `heuristica_experta_local`, estado `por_validar`; los umbrales son la
 traducción de Claude de lo que contó Mikel; y 2 que completan la escala de
 ola de los depredadores costeros con la heurística que ya tenía la app,
-`mar_poca_` 0,5-1 m y `mar_plana_` < 0,5 m):
+`mar_poca_` 0,5-1 m y `mar_plana_` < 0,5 m; y 5 científicas, `tipo:
+cientifica`, del top 10 de evidencia que aprobó Mikel, ver más abajo):
 1. Presión bajando en 6 h (graduada, de -1 a -4 hPa) y en 24 h (≤ -4 hPa):
    suma a los depredadores costeros (`@depredadores_costeros`: lubina, sargo,
    dorada, corvina, dentón, palometa, bicuda, medregal, urta); subiendo tras
@@ -1299,7 +1300,29 @@ ola de los depredadores costeros con la heurística que ya tenía la app,
    sector 33,75°-146,25° = NE..SE, y 8 km/h o más de media): resta.
 5. Bonito (embarcación, Cantábrico, junio-septiembre): al menos el 25 % de
    las horas de hace 5 a hace 1 día con viento WSW-NW de 25 km/h o más suma
-   un poco (confianza 0,3).
+   un poco (confianza 0,3), **solo si el viento ya ha calmado** (media de
+   las últimas 12 h < 20 km/h; evidencia: la mar agitada baja las capturas).
+6. Congrio con luna llena (`congrio_luna_llena`, observación de campo de
+   Mikel): de noche, con la luna iluminada al 80 % o más, resta (más cuanto
+   más llena; costa y embarcación).
+7. Mareas vivas (`coeficientes_altos`, coeficiente ≥ 90, solo desde costa,
+   nunca en embarcación): suma a todas las especies; refuerzo
+   `rodaballo_mareas_vivas_otono` para el rodaballo de playa de octubre a
+   diciembre (Bakio). Es la amplitud de la marea, no el oleaje. El
+   rodaballo entró como especie 29 con solo lo que contó Mikel (Cantábrico,
+   costa, octubre-diciembre); talla, nombres y demás, pendientes de fuente.
+
+**Evidencia científica aprobada (2026-10-08)**: de
+`datos-robots/evidencia/EVIDENCIA_FACTORES.md` y
+`especies.json → propuestas_evidencia`, Mikel aprobó el top 10 (más la mitad
+de peso de la presión por defecto). Activo: `rio_crecido_cefalopodos`
+(-1,0; pulpo, sepia y calamar salen de la regla general del río, y también
+la dorada), `lluvia_fuerte_pulpo`, `enfriamiento_brusco_agua`,
+`bonito_mar_agitada_previa`, `lubina_noche_invierno`; confianza de las 3 de
+presión 0,4/0,35/0,3 y `reglas_por_defecto.presion.peso_lo` 0,12; bonito
+16-18 °C y pulpo 16-21 °C. Lo activado queda anotado en
+`propuestas_evidencia.activadas`; el resto (lisa, levante a 0,5, luna del
+calamar y del congrio en cuartos, sepia) sigue sin activar.
 
 La página de admin (`admin.html`) lista las reglas con su ámbito,
 condiciones, efecto, fuente, estado y cualquier error de forma.
@@ -1319,7 +1342,10 @@ condiciones, efecto, fuente, estado y cualquier error de forma.
 2. Condiciones: `{ "var": "presion", "agregado": "delta", "desde_h": -6,
    "hasta_h": 0, "op": "<=", "valor": -1 }`. Variables horarias: ola, viento,
    viento_dir, presion, temp_agua, lluvia, nivel_mar; de contexto:
-   caudal_rio, rio_desembocadura_km, turbidez, mes, hora_local, luz.
+   caudal_rio, rio_desembocadura_km, turbidez, mes, hora_local, luz,
+   luna (fracción iluminada 0-1, `iluminacionLunar`) y coeficiente_marea
+   (20-120, `coeficienteMareaAstronomico`, ajustado a los coeficientes
+   reales de CALIBRACION.jsonl). Las dos se calculan en el motor, sin red.
    Agregados: media, min, max, suma, delta, fraccion (con `cumple`).
    Operadores: `<`, `<=`, `>`, `>=`, `==`, `!=`, `en`, `entre`, `sector`.
    Ventanas hacia atrás de hasta 5 días (120 h): es lo que trae la serie.

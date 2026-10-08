@@ -237,6 +237,12 @@ rango de temperatura (`bonito_rango_temperatura`).
 
 ## Top 10 de propuestas por impacto
 
+**Activadas el 2026-10-08 (aprobadas por Mikel)**, junto con
+`presion_defecto_peso` (0,24 → 0,12). Ya viven en `reglas_expertas`,
+`reglas_por_defecto` y las fichas de especies; quedan anotadas en
+`propuestas_evidencia.activadas`. Las "Otras" siguen sin activar
+(`levante_cantabrico` sigue con confianza 0,7).
+
 Detalle completo (condiciones, efecto, fuentes) en
 `especies.json → propuestas_evidencia`.
 

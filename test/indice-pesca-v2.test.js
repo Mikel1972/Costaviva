@@ -13,6 +13,7 @@ import {
 } from "../assets/js/ventana-actividad.js";
 import {
   enSector, valorExpresion, evaluarCondicion, enAmbito, reglasEnAmbito, efectoRegla, validarRegla,
+  iluminacionLunar, coeficienteMareaAstronomico,
 } from "../assets/js/reglas-expertas.js";
 import {
   planCondiciones, ventanasConsulta, indiceHoraSalida, horaRedondeada, lunaDeFecha, tendenciaPresion,
@@ -100,8 +101,15 @@ const V1 = [
 test("v2 frente a v1: sin cambios bruscos en las puntuaciones típicas (≤ 8 puntos)", () => {
   const s = serie((i) => ({ nivelMar: 1.8 * Math.sin((2 * Math.PI * i) / 12.42), ola: 1.0, viento: 10, tempAgua: 18, presion: 1015 - i * 0.2, vientoDir: null }),
     { inicio: Date.UTC(2026, 9, 7), n: 48 });
+  // Mide solo el cambio de FÓRMULA: con los datos de antes de los ajustes de
+  // evidencia que aprobó Mikel el 2026-10-08 (bonito 16-19 °C, presión por
+  // defecto 0,24). Esos ajustes mueven la nota a propósito (test aparte).
+  const defectoAntes = { ...DATOS.reglas_por_defecto, presion: { ...DATOS.reglas_por_defecto.presion, peso_lo: 0.24 } };
+  const especieAntes = (id) => (id === "bonito_norte"
+    ? { ...especie(id), temperatura_agua: { ...especie(id).temperatura_agua, rango: [16, 19], fuentes: ["app_index"], verificado: false } }
+    : especie(id));
   for (const [id, modalidad, antes] of V1) {
-    const r = calcularVentana(especie(id), DATOS.reglas_por_defecto, s, { lat: 43.40, lon: -2.70, modalidad, reglasModalidad: DATOS.reglas_por_modalidad });
+    const r = calcularVentana(especieAntes(id), defectoAntes, s, { lat: 43.40, lon: -2.70, modalidad, reglasModalidad: DATOS.reglas_por_modalidad });
     r.forEach((x, i) => assert.ok(Math.abs(x.puntuacion - antes[i]) <= 8, `${id}/${modalidad} ${x.hora}: ${antes[i]} -> ${x.puntuacion}`));
   }
 });
@@ -204,10 +212,10 @@ test("reglas: todas las del JSON están bien formadas (fuente, ámbito, variable
   assert.equal(DATOS.fuentes.mikel_experiencia_local.titulo, "Mikel (experiencia local de pesca)");
 });
 
-test("propuestas_evidencia: bien formadas, con fuente y SIN activar", () => {
-  // Bloque de propuestas con fuente científica (2026-10-08). No lo lee el
-  // índice: solo se comprueba que, si Mikel aprueba una, se puede mover tal
-  // cual a reglas_expertas.reglas.
+test("propuestas_evidencia: lo que queda, bien formado y SIN activar; el top 10, activado", () => {
+  // Bloque de propuestas con fuente científica (2026-10-08). El índice no lo
+  // lee. Mikel aprobó el top 10 (y presion_defecto_peso) el mismo día: están
+  // en `activadas` y ya no en `reglas`/`ajustes`.
   const p = DATOS.propuestas_evidencia;
   assert.ok(p && p.estado === "pendiente_de_aprobacion");
   const fuentes = { ...DATOS.fuentes, ...p.fuentes };
@@ -231,8 +239,21 @@ test("propuestas_evidencia: bien formadas, con fuente y SIN activar", () => {
     assert.ok(a.id && a.objetivo && a.motivo && fuentes[a.fuente], `ajuste ${a.id} incompleto`);
     ids.add(a.id);
   }
+  const activadas = new Set(p.activadas.map((a) => a.id));
   assert.equal(p.top10.length, 10);
-  for (const id of p.top10) assert.ok(ids.has(id), `top10: ${id} no existe`);
+  for (const id of p.top10) {
+    assert.ok(activadas.has(id), `top10: ${id} sin activar`);
+    assert.ok(!ids.has(id), `top10: ${id} sigue también como propuesta`);
+  }
+  // Lo que no aprobó: sigue como propuesta.
+  for (const id of ["lisa_rio_crecido", "levante_cantabrico_confianza", "calamar_luna_llena", "congrio_luna_cuartos", "sepia_fuente_temperatura"]) {
+    assert.ok(ids.has(id) && !activadas.has(id), id);
+  }
+  assert.equal(DATOS.reglas_expertas.reglas.find((r) => r.id === "levante_cantabrico").confianza, 0.7);
+  // Toda fuente citada por una regla activa está en `fuentes`.
+  for (const r of DATOS.reglas_expertas.reglas) {
+    for (const f of [r.fuente, ...(r.fuentes_adicionales || [])]) assert.ok(DATOS.fuentes[f], `${r.id}: ${f} no está en fuentes`);
+  }
 });
 
 test("reglas: sector circular, también cruzando el norte", () => {
@@ -406,6 +427,155 @@ test("Mikel 5: bonito, 1-5 días después de temporales del oeste en verano (emb
   assert.ok(rc.sinDato.includes("bonito_temporales_oeste"));
 });
 
+
+// ---------------------------------------------------------------------------
+// Luna y coeficiente de marea (astronomía local, sin red)
+// ---------------------------------------------------------------------------
+test("luna: fracción iluminada con fechas conocidas (llena 26-10-2026, nueva 10-10-2026, cuarto 18-10-2026)", () => {
+  assert.ok(iluminacionLunar(Date.UTC(2026, 9, 26, 4, 12)) > 0.99);
+  assert.ok(iluminacionLunar(Date.UTC(2026, 9, 10, 15, 50)) < 0.01);
+  assert.ok(Math.abs(iluminacionLunar(Date.UTC(2026, 9, 18, 16, 13)) - 0.5) < 0.03);
+  assert.ok(iluminacionLunar(Date.UTC(2026, 10, 24, 15)) > 0.99, "llena del 24-11-2026");
+  // Coherente con la fase de la app (faseLunar) el día de la llena.
+  assert.ok(iluminacionLunar(Date.UTC(2026, 9, 26, 6)) > 0.98);
+});
+
+test("coeficiente de marea: reales de sept. 2026 (±5), vivas en nueva/llena, muertas en cuartos, escala 20-120", () => {
+  const reales = { 5: 42, 6: 51, 7: 66, 8: 80, 9: 92, 10: 100 }; // CALIBRACION.jsonl (tides4fishing, igual en todos los puertos)
+  for (const [d, v] of Object.entries(reales)) {
+    const c = coeficienteMareaAstronomico(Date.UTC(2026, 8, Number(d), 12));
+    assert.ok(Math.abs(c - v) <= 5, `${d}-9: ${c} frente a ${v}`);
+  }
+  const c = (m, d) => coeficienteMareaAstronomico(Date.UTC(2026, m - 1, d, 12));
+  assert.ok(c(10, 11) >= 90 && c(10, 27) >= 100, "vivas tras la nueva (10-10) y la llena (26-10)");
+  assert.ok(c(10, 4) < 50 && c(10, 19) < 40, "muertas tras los cuartos");
+  for (let d = 0; d < 400; d++) {
+    const x = coeficienteMareaAstronomico(Date.UTC(2026, 0, 1) + d * 86400000);
+    assert.ok(Number.isInteger(x) && x >= 20 && x <= 120);
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Ajustes de evidencia aprobados por Mikel (2026-10-08) y reglas nuevas
+// ---------------------------------------------------------------------------
+const regla = (id) => DATOS.reglas_expertas.reglas.find((r) => r.id === id);
+
+test("evidencia: presión con menos confianza y la mitad de peso por defecto; rangos del bonito y del pulpo", () => {
+  assert.deepEqual(["presion_bajando_6h", "presion_bajando_24h", "presion_subiendo_tras_frente"].map((id) => regla(id).confianza), [0.4, 0.35, 0.3]);
+  assert.equal(DATOS.reglas_por_defecto.presion.peso_lo, 0.12);
+  assert.deepEqual(especie("bonito_norte").temperatura_agua.rango, [16, 18]);
+  assert.deepEqual(especie("pulpo").temperatura_agua.rango, [16, 21]);
+  // El pulpo ya puntúa la temperatura: con 18,5 °C suma, con 12 °C resta.
+  assert.ok(razon(enHora("pulpo", serie(() => ({ tempAgua: 18.5 })), HOY), "temperatura").aporte > 0);
+  assert.ok(razon(enHora("pulpo", serie(() => ({ tempAgua: 12 })), HOY), "temperatura").aporte < 0);
+});
+
+test("evidencia 1 y 7: río crecido: los cefalópodos con regla propia y más fuerte; la dorada ya no resta", () => {
+  const rio = rioDeSpot(MUNDAKA, RIOS), s = serie(), ctx = { caudalRio: "alto", rio };
+  for (const id of ["pulpo", "sepia", "calamar"]) {
+    const r = enHora(id, s, HOY, ctx);
+    assert.ok(razon(r, "regla:rio_crecido_cefalopodos").aporte < 0, id);
+    assert.ok(!razon(r, "regla:rio_crecido_salinidad_resto"), id);
+  }
+  const sargo = razon(enHora("sargo", s, HOY, ctx), "regla:rio_crecido_salinidad_resto");
+  assert.ok(Math.abs(razon(enHora("pulpo", s, HOY, ctx), "regla:rio_crecido_cefalopodos").lo) > Math.abs(sargo.lo));
+  const dorada = enHora("dorada", s, HOY, ctx);
+  assert.ok(!dorada.razones.some((x) => x.factor.startsWith("regla:rio_crecido")));
+  assert.ok(!razon(enHora("pulpo", s, HOY, { caudalRio: "normal", rio }), "regla:rio_crecido_cefalopodos"));
+});
+
+test("evidencia 10: lluvia fuerte (≥ 40 mm en 48 h) aleja al pulpo y la sepia", () => {
+  const i0 = idx(serie(), HOY);
+  const lluvia = serie((i) => ({ lluvia: i > i0 - 48 && i <= i0 ? 1.5 : 0 })); // 72 mm
+  for (const id of ["pulpo", "sepia"]) assert.ok(razon(enHora(id, lluvia, HOY), "regla:lluvia_fuerte_pulpo").aporte < 0, id);
+  assert.ok(!razon(enHora("lubina", lluvia, HOY), "regla:lluvia_fuerte_pulpo"));
+  const poca = serie((i) => ({ lluvia: i > i0 - 48 && i <= i0 ? 0.5 : 0 })); // 24 mm
+  assert.ok(!razon(enHora("pulpo", poca, HOY), "regla:lluvia_fuerte_pulpo"));
+});
+
+test("evidencia 6: agua enfriada de golpe (≥ 1,5 °C en 48 h) resta a los depredadores costeros", () => {
+  const i0 = idx(serie(), HOY);
+  const frio = serie((i) => ({ tempAgua: i <= i0 - 48 ? 18 : 18 - ((i - (i0 - 48)) / 48) * 2.5 }));
+  assert.ok(razon(enHora("lubina", frio, HOY), "regla:enfriamiento_brusco_agua").aporte < 0);
+  assert.ok(razon(enHora("sargo", frio, HOY, { modalidad: "embarcacion" }), "regla:enfriamiento_brusco_agua").aporte < 0);
+  assert.ok(!razon(enHora("calamar", frio, HOY), "regla:enfriamiento_brusco_agua"));
+  assert.ok(!razon(enHora("lubina", serie(), HOY), "regla:enfriamiento_brusco_agua"));
+});
+
+test("evidencia 3 y 5: bonito: resta con mar muy agitada la víspera; el oeste solo suma ya calmado", () => {
+  const inicio = Date.UTC(2026, 7, 10), hora = "2026-08-15T13:00", ctx = { modalidad: "embarcacion" };
+  const i0 = idx(serie(() => ({}), { inicio }), hora);
+  const agitada = serie((i) => ({ tempAgua: 17, ola: i >= i0 - 36 && i <= i0 - 6 ? 3 : 1 }), { inicio });
+  assert.ok(razon(enHora("bonito_norte", agitada, hora, ctx), "regla:bonito_mar_agitada_previa").aporte < 0);
+  assert.ok(!razon(enHora("bonito_norte", serie(() => ({ tempAgua: 17 }), { inicio }), hora, ctx), "regla:bonito_mar_agitada_previa"));
+  // Temporal del oeste hace 2-5 días pero con viento fuerte todavía ahora: no suma.
+  const sigue = serie((i) => (i < 72 ? { viento: 35, vientoDir: 280 } : { viento: 28, vientoDir: 0 }), { inicio });
+  assert.ok(!razon(enHora("bonito_norte", sigue, hora, ctx), "regla:bonito_temporales_oeste"));
+  // Ya calmado (10 km/h): suma (lo comprueba también "Mikel 5").
+  const calmado = serie((i) => (i < 72 ? { viento: 35, vientoDir: 280 } : {}), { inicio });
+  assert.ok(razon(enHora("bonito_norte", calmado, hora, ctx), "regla:bonito_temporales_oeste").aporte > 0);
+  // 16-18 °C: con el agua a 19 °C ya está fuera de su rango.
+  assert.ok(razon(enHora("bonito_norte", serie(() => ({ tempAgua: 19 }), { inicio }), hora, ctx), "temperatura").aporte < 0);
+});
+
+test("evidencia 9: lubina de noche en invierno desde costa", () => {
+  const inv = serie(() => ({}), { inicio: Date.UTC(2026, 11, 1), n: 72 });
+  assert.ok(razon(enHora("lubina", inv, "2026-12-02T02:00"), "regla:lubina_noche_invierno").aporte > 0);
+  assert.ok(!razon(enHora("lubina", inv, "2026-12-02T13:00"), "regla:lubina_noche_invierno"), "de día no");
+  assert.ok(!razon(enHora("lubina", serie(), "2026-10-07T02:00"), "regla:lubina_noche_invierno"), "en octubre no");
+  assert.ok(!razon(enHora("lubina", inv, "2026-12-02T02:00", { modalidad: "embarcacion" }), "regla:lubina_noche_invierno"));
+});
+
+test("Mikel 6: el congrio no entra con luna llena (de noche)", () => {
+  assert.equal(regla("congrio_luna_llena").fuente, "mikel_experiencia_local");
+  const llena = serie(() => ({}), { inicio: Date.UTC(2026, 9, 24), n: 96 });
+  const r = enHora("congrio", llena, "2026-10-26T02:00");
+  assert.ok(razon(r, "regla:congrio_luna_llena").aporte < 0);
+  assert.equal(razon(r, "regla:congrio_luna_llena").texto, "luna llena: el congrio entra poco");
+  assert.ok(razon(enHora("congrio", llena, "2026-10-26T02:00", { modalidad: "embarcacion" }), "regla:congrio_luna_llena").aporte < 0);
+  assert.ok(!razon(enHora("congrio", llena, "2026-10-26T13:00"), "regla:congrio_luna_llena"), "de día no");
+  assert.ok(!razon(enHora("lubina", llena, "2026-10-26T02:00"), "regla:congrio_luna_llena"), "solo el congrio");
+  const nueva = serie(() => ({}), { inicio: Date.UTC(2026, 9, 9), n: 72 });
+  assert.ok(!razon(enHora("congrio", nueva, "2026-10-10T23:00"), "regla:congrio_luna_llena"), "luna nueva");
+  // Más llena, más efecto (escala de 0,8 a 1).
+  const casi = serie(() => ({}), { inicio: Date.UTC(2026, 9, 21), n: 72 });
+  const rc = razon(enHora("congrio", casi, "2026-10-22T23:00"), "regla:congrio_luna_llena");
+  assert.ok(rc && Math.abs(rc.lo) < Math.abs(razon(r, "regla:congrio_luna_llena").lo));
+});
+
+test("Mikel 7: mareas vivas (coeficiente ≥ 90) suman desde costa; refuerzo del rodaballo de playa en otoño", () => {
+  const vivas = serie(() => ({}), { inicio: Date.UTC(2026, 9, 25), n: 72 }); // ~104-106
+  const muertas = serie(() => ({}), { inicio: Date.UTC(2026, 9, 17), n: 72 }); // ~23-44
+  const r = enHora("lubina", vivas, "2026-10-27T13:00");
+  assert.ok(razon(r, "regla:coeficientes_altos").aporte > 0);
+  assert.equal(razon(r, "regla:coeficientes_altos").texto.split(":")[0], "mareas vivas");
+  assert.ok(!razon(enHora("lubina", muertas, "2026-10-19T13:00"), "regla:coeficientes_altos"));
+  assert.ok(!razon(enHora("lubina", vivas, "2026-10-27T13:00", { modalidad: "embarcacion" }), "regla:coeficientes_altos"));
+  assert.ok(!razon(enHora("bonito_norte", vivas, "2026-10-27T13:00", { modalidad: "embarcacion" }), "regla:coeficientes_altos"));
+  // Rodaballo desde playa (Bakio) en noviembre con vivas: general + refuerzo.
+  const BAKIO = { lat: 43.43, lon: -2.81, slug: "bakio" };
+  const nov = serie(() => ({}), { inicio: Date.UTC(2026, 10, 23), n: 72 });
+  const rod = enHora("rodaballo", nov, "2026-11-25T13:00", BAKIO);
+  assert.ok(razon(rod, "regla:coeficientes_altos").aporte > 0);
+  assert.ok(razon(rod, "regla:rodaballo_mareas_vivas_otono").aporte > 0);
+  // Con muertas en noviembre, nada de las dos.
+  const novM = serie(() => ({}), { inicio: Date.UTC(2026, 10, 16), n: 72 });
+  const rodM = enHora("rodaballo", novM, "2026-11-17T13:00", BAKIO);
+  assert.ok(!rodM.razones.some((x) => /coeficientes_altos|rodaballo_mareas/.test(x.factor)));
+  // El rodaballo está de temporada en el Cantábrico en otoño y solo desde costa.
+  assert.deepEqual(especie("rodaballo").presencia.cantabrico.meses, [10, 11, 12]);
+  assert.equal(especie("rodaballo").modalidades.costa.aplica, true);
+});
+
+test("textos de las reglas nuevas: cortos y sin números de puntos ni nombres de fuente", () => {
+  const nuevas = ["rio_crecido_cefalopodos", "lluvia_fuerte_pulpo", "enfriamiento_brusco_agua", "bonito_mar_agitada_previa",
+    "lubina_noche_invierno", "congrio_luna_llena", "coeficientes_altos", "rodaballo_mareas_vivas_otono"];
+  for (const id of nuevas) {
+    const t = regla(id).texto;
+    assert.ok(t.length <= 80, `${id}: ${t}`);
+    assert.doesNotMatch(t, /mikel|regla|fiabilidad|confianza|log-odds|puntos|\(|_/i, id);
+  }
+});
 
 test("cada variable cuenta una sola vez por hora (factores base y reglas expertas)", () => {
   const i0 = idx(serie(), HOY);
