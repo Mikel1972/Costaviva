@@ -57,11 +57,43 @@
     background: transparent; color: var(--tinta-2); font-size: 13px; cursor: pointer;
   }
 
-  .contacto { display: flex; align-items: center; justify-content: space-between; background: var(--superficie-2); border-radius: 8px; padding: 10px 12px; margin-top: 8px; }
-  .contacto .info { font-size: 13px; }
+  .contacto { background: var(--superficie-2); border-radius: 8px; padding: 10px 12px; margin-top: 8px; }
+  .contacto .fila { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+  .contacto .info { font-size: 13px; min-width: 0; overflow-wrap: anywhere; }
   .contacto .info .nombre { font-weight: 600; }
-  .contacto .info .email { font-size: 11px; color: var(--tinta-2); }
-  .contacto button { background: none; border: none; color: var(--peligro); font-size: 12px; cursor: pointer; }
+  .contacto .info .email, .contacto .info .wa { font-size: 12px; color: var(--tinta-2); margin-top: 2px; }
+  .contacto .acciones { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+  .contacto .acciones button { background: none; border: none; font-size: 13px; cursor: pointer; padding: 6px 2px; min-height: 32px; font-family: var(--f-texto); }
+  .contacto .acciones .borrar { color: var(--peligro); }
+  .contacto .acciones .editar-wa { color: var(--ok-texto); font-weight: 700; }
+  .contacto .editor-wa { margin-top: 8px; }
+  .contacto .editor-wa .botones { display: flex; gap: 8px; margin-top: 8px; }
+  .contacto .editor-wa .botones button { flex: 1; padding: 10px; border-radius: 999px; font-weight: 700; font-size: 13px; cursor: pointer; font-family: var(--f-texto); }
+  .contacto .editor-wa .guardar { border: 0; background: var(--ok); color: var(--blanco); }
+  .contacto .editor-wa .cancelar { border: 1px solid var(--linea); background: transparent; color: var(--tinta-2); }
+
+  .ayuda { font-size: 11.5px; color: var(--tinta-2); margin-top: 5px; line-height: 1.45; }
+  .ayuda.ok { color: var(--ok-texto); }
+  .ayuda.error { color: var(--peligro-texto); }
+  .subtitulo { font-family: var(--f-titulo); font-size: 13px; margin: 18px 0 2px; }
+
+  /* WhatsApp tras el SOS: verde sólido (--ok, blanco encima 5,0:1), botones
+     grandes para pulsar con prisa o con guantes. */
+  .panel-whatsapp { margin-top: 14px; border: 2px solid var(--ok-borde); background: var(--ok-fondo); border-radius: 14px; padding: 14px; }
+  .panel-whatsapp[hidden] { display: none; }
+  .panel-whatsapp h3 { font-family: var(--f-titulo); font-size: 15px; margin: 0 0 6px; color: var(--ok-texto); }
+  .panel-whatsapp .nota { font-size: 12.5px; color: var(--tinta); line-height: 1.5; margin: 0 0 10px; }
+  a.boton-wa, button.boton-wa {
+    display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 56px;
+    margin-top: 10px; padding: 14px 16px; border-radius: 14px; border: 0; background: var(--ok); color: var(--blanco);
+    font-family: var(--f-titulo); font-size: 16px; font-weight: 700; text-align: center; text-decoration: none; cursor: pointer;
+    box-shadow: 0 4px 0 var(--ok-texto);
+  }
+  a.boton-wa:active, button.boton-wa:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--ok-texto); }
+  a.boton-wa.enviado { background: var(--superficie); color: var(--ok-texto); box-shadow: inset 0 0 0 2px var(--ok); }
+  button.boton-wa.grupo { background: var(--superficie); color: var(--ok-texto); box-shadow: inset 0 0 0 2px var(--ok); }
+  a.boton-wa:focus-visible, button.boton-wa:focus-visible { outline: 3px solid var(--tinta); outline-offset: 2px; }
+  .panel-whatsapp .vacio { font-size: 12.5px; color: var(--tinta-2); margin: 6px 0 0; }
 
   label { display: block; font-size: 12px; color: var(--tinta-2); margin: 10px 0 5px; font-family: var(--f-texto); }
   input {
@@ -102,6 +134,7 @@
   }
   .cuenta-atras-overlay.visible { display: flex; }
   .cuenta-atras-overlay .numero { font-family: var(--f-titulo); font-size: 64px; color: var(--peligro); }
+  .cuenta-atras-overlay .nota-cuenta-atras { max-width: 340px; font-size: 13px; line-height: 1.5; color: var(--blanco); opacity: 0.85; margin: 0; }
   .cuenta-atras-overlay button.cancelar {
     padding: 16px 32px; border-radius: 12px; border: 2px solid var(--ok); background: var(--ok-fondo);
     color: var(--ok-texto); font-size: 16px; font-weight: 700; cursor: pointer;
@@ -136,11 +169,18 @@
 <div class="contenido">
   <div class="seccion">
     <h2>Activar SOS</h2>
-    <p class="explicacion">Manda tu ubicación por email a tus contactos de emergencia registrados abajo.</p>
+    <p class="explicacion">Manda tu ubicación por email a tus contactos de emergencia registrados abajo y te prepara un WhatsApp para cada contacto de tu lista.</p>
     <button class="sos" id="btnSOS">🆘 Activar SOS</button>
     <div class="coords-actuales" id="coordsActuales">Ubicación no obtenida todavía</div>
     <button class="compartir" id="btnCompartir">📤 Compartir ubicación por WhatsApp/SMS/email</button>
-    <div class="mensaje" id="mensajeSOS"></div>
+    <div class="mensaje" id="mensajeSOS" role="status" aria-live="polite"></div>
+
+    <div class="panel-whatsapp" id="panelWhatsapp" hidden>
+      <h3 id="tituloPanelWhatsapp" tabindex="-1">Avisa también por WhatsApp</h3>
+      <p class="nota">El email sale solo. <b>WhatsApp no:</b> cada botón abre WhatsApp con el mensaje y tu ubicación ya escritos, y tienes que pulsar <b>Enviar</b>. Vuelve aquí para el siguiente.</p>
+      <div id="botonesWhatsapp"></div>
+      <button type="button" class="boton-wa grupo" id="btnWhatsappGrupo">👥 Compartir en un grupo de WhatsApp</button>
+    </div>
 
     <a class="llamar112" href="tel:112">📞 Llamar al 112</a>
     <p class="explicacion" style="margin-top:8px; margin-bottom:0;">Esto abre el marcador de tu teléfono — no es una llamada ni un aviso automático. No existe forma de avisar al 112 en silencio desde una web: solo lo puede integrar quien tenga acuerdo oficial con el servicio de emergencias.</p>
@@ -148,14 +188,23 @@
 
   <div class="seccion">
     <h2>Contactos de emergencia</h2>
-    <p class="explicacion">Reciben un email con tu ubicación cuando pulsas "Activar SOS".</p>
+    <p class="explicacion">Con email, reciben un email con tu ubicación en cuanto pulsas "Activar SOS". Con WhatsApp, forman tu lista de WhatsApp: tras el SOS te sale un botón para cada uno con el mensaje preparado (lo envías tú).</p>
     <div id="listaContactos"></div>
+    <h3 class="subtitulo">Añadir contacto</h3>
     <label for="contactoNombre">Nombre</label>
-    <input type="text" id="contactoNombre" />
-    <label for="contactoEmail">Email</label>
-    <input type="email" id="contactoEmail" />
+    <input type="text" id="contactoNombre" autocomplete="off" maxlength="60" />
+    <label for="contactoEmail">Email (opcional si pones WhatsApp)</label>
+    <input type="email" id="contactoEmail" autocomplete="off" />
+    <label for="contactoWhatsapp">WhatsApp (opcional si pones email)</label>
+    <input type="tel" id="contactoWhatsapp" inputmode="tel" autocomplete="off" placeholder="612 34 56 78" aria-describedby="ayudaWhatsapp" />
+    <div class="ayuda" id="ayudaWhatsapp" aria-live="polite">Sin prefijo se entiende España (+34). De otro país, empieza por + y su prefijo (+33…).</div>
     <button class="principal" id="btnAnadirContacto">Añadir contacto</button>
-    <div class="mensaje" id="mensajeContacto"></div>
+    <div class="mensaje" id="mensajeContacto" role="status" aria-live="polite"></div>
+
+    <h3 class="subtitulo">Tu nombre en el WhatsApp</h3>
+    <label for="nombreFirma">Así empieza el mensaje: "🆘 SOS de …"</label>
+    <input type="text" id="nombreFirma" autocomplete="name" maxlength="40" placeholder="Tu nombre" />
+    <div class="ayuda">Se guarda solo en este teléfono. Si lo dejas vacío, va tu email.</div>
   </div>
 
   <div class="seccion">
@@ -177,6 +226,7 @@
   <div>Se ha detectado un posible golpe.<br>¿Estás bien?</div>
   <div class="numero" id="numeroCuentaAtras">15</div>
   <button class="cancelar" id="btnCancelarSOS">Estoy bien, cancelar</button>
+  <p class="nota-cuenta-atras">Si no cancelas, sale solo el email con tu ubicación a tus contactos. Los WhatsApp de tu lista quedan preparados en pantalla, pero hay que pulsar Enviar en cada uno.</p>
 </div>
 
 <nav class="tabs-nav">
@@ -187,6 +237,7 @@
 </nav>
 
 <script src="/assets/js/errores.js"></script>
+<script src="/assets/js/sos-whatsapp.js"></script>
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -270,12 +321,13 @@ document.getElementById("btnInvitarAmigo").addEventListener("click", async () =>
 });
 
 let ultimaPosicion = null;
+const posicionDe = (pos) => ({ lat: pos.coords.latitude, lon: pos.coords.longitude, precision: pos.coords.accuracy });
 
 function actualizarUbicacion() {
   if (!navigator.geolocation) return;
   navigator.geolocation.getCurrentPosition(
     (pos) => {
-      ultimaPosicion = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+      ultimaPosicion = posicionDe(pos);
       document.getElementById("coordsActuales").textContent = `${ultimaPosicion.lat.toFixed(5)}°N, ${ultimaPosicion.lon.toFixed(5)}°`;
     },
     (err) => {
@@ -295,14 +347,18 @@ async function dispararSOS(tipo) {
   if (!ultimaPosicion) {
     try {
       const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, { timeout: 8000, enableHighAccuracy: true }));
-      ultimaPosicion = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+      ultimaPosicion = posicionDe(pos);
     } catch (e) {
       mensajeEl.className = "mensaje error";
-      mensajeEl.textContent = "No se pudo obtener tu ubicación. Revisa el permiso de localización del navegador.";
+      mensajeEl.textContent = "No se pudo obtener tu ubicación, así que no ha salido el email. Revisa el permiso de localización del navegador. Puedes avisar por WhatsApp sin ubicación o llamar al 112.";
       btn.disabled = false;
+      mostrarPanelWhatsapp(tipo, null);
       return;
     }
   }
+
+  // Los botones de WhatsApp salen YA, sin esperar a que se mande el email.
+  mostrarPanelWhatsapp(tipo, ultimaPosicion);
 
   await supabase.from("alertas_sos").insert({ user_id: usuario.id, lat: ultimaPosicion.lat, lon: ultimaPosicion.lon, tipo });
   registrarEvento("pulsar_sos", { tipo });
@@ -315,11 +371,16 @@ async function dispararSOS(tipo) {
     });
     const datos = await resp.json();
     if (!resp.ok) throw new Error(datos.error || "fallo al enviar el aviso");
-    mensajeEl.className = "mensaje ok";
-    mensajeEl.textContent = `Aviso enviado a ${datos.enviados ?? 0} contacto(s).`;
+    if (!datos.enviados && datos.error) {
+      mensajeEl.className = "mensaje error";
+      mensajeEl.textContent = `No ha salido ningún email: ${datos.error}.`;
+    } else {
+      mensajeEl.className = "mensaje ok";
+      mensajeEl.textContent = `Email enviado a ${datos.enviados ?? 0} contacto(s).`;
+    }
   } catch (e) {
     mensajeEl.className = "mensaje error";
-    mensajeEl.textContent = "No se pudo enviar el email automático (" + e.message + "). Usa 'Compartir ubicación' o llama al 112.";
+    mensajeEl.textContent = "No se pudo enviar el email automático (" + e.message + "). Usa los botones de WhatsApp, 'Compartir ubicación' o llama al 112.";
   }
   btn.disabled = false;
 }
@@ -341,46 +402,218 @@ document.getElementById("btnCompartir").addEventListener("click", async () => {
 });
 
 // ---------------------------------------------------------------------------
-// Contactos de emergencia
+// WhatsApp tras el SOS (assets/js/sos-whatsapp.js, 2026-10-08). Enlaces wa.me,
+// sin la API de pago: abren WhatsApp con el texto escrito y la persona pulsa
+// Enviar. Los grupos no tienen número: van por la hoja de compartir.
 // ---------------------------------------------------------------------------
+const { normalizarTelefono, formatearTelefono, mensajeSOS, urlWhatsApp, contactosConWhatsapp } = window.SosWhatsapp;
+const CLAVE_FIRMA = "costaviva.sos.firma";
+let contactos = [];
+let textoWhatsappActual = "";
+
+function leerFirma() {
+  try { return localStorage.getItem(CLAVE_FIRMA) || ""; } catch (e) { return ""; }
+}
+const campoFirma = document.getElementById("nombreFirma");
+campoFirma.value = leerFirma();
+campoFirma.addEventListener("change", () => {
+  try { localStorage.setItem(CLAVE_FIRMA, campoFirma.value.trim()); } catch (e) { /* sin almacenamiento: va el email */ }
+});
+function nombreParaMensaje() {
+  return campoFirma.value.trim() || leerFirma() || usuario.email || "";
+}
+
+function mostrarPanelWhatsapp(tipo, posicion) {
+  textoWhatsappActual = mensajeSOS({ nombre: nombreParaMensaje(), tipo, posicion, fecha: Date.now() });
+  const panel = document.getElementById("panelWhatsapp");
+  const cont = document.getElementById("botonesWhatsapp");
+  cont.replaceChildren();
+  const lista = contactosConWhatsapp(contactos);
+  if (!lista.length) {
+    const p = document.createElement("p");
+    p.className = "vacio";
+    p.textContent = "No tienes contactos con WhatsApp en tu lista. Añádelos abajo, en \"Contactos de emergencia\". Mientras tanto, compártelo en un chat o grupo:";
+    cont.appendChild(p);
+  }
+  for (const c of lista) {
+    const a = document.createElement("a");
+    a.className = "boton-wa";
+    a.href = urlWhatsApp(c.whatsapp, textoWhatsappActual);
+    a.target = "_blank";
+    a.rel = "noopener";
+    a.textContent = `💬 Enviar a ${c.nombre} por WhatsApp`;
+    a.setAttribute("aria-label", `Abrir WhatsApp con el mensaje de SOS para ${c.nombre}, ${formatearTelefono(c.whatsapp)}. Tendrás que pulsar Enviar.`);
+    a.addEventListener("click", () => {
+      a.classList.add("enviado");
+      a.textContent = `✓ Abierto para ${c.nombre}: pulsa Enviar en WhatsApp`;
+      registrarEvento("sos_whatsapp", { tipo });
+    });
+    cont.appendChild(a);
+  }
+  panel.hidden = false;
+  panel.scrollIntoView({ behavior: "smooth", block: "start" });
+  document.getElementById("tituloPanelWhatsapp").focus({ preventScroll: true });
+}
+
+document.getElementById("btnWhatsappGrupo").addEventListener("click", async () => {
+  const texto = textoWhatsappActual || mensajeSOS({ nombre: nombreParaMensaje(), posicion: ultimaPosicion, fecha: Date.now() });
+  registrarEvento("sos_whatsapp_grupo", null);
+  if (navigator.share) {
+    try { await navigator.share({ text: texto }); return; } catch (e) {
+      if (e && e.name === "AbortError") return; // la persona cerró la hoja de compartir
+    }
+  }
+  // Sin hoja de compartir: wa.me sin número deja elegir chat o grupo.
+  window.open(urlWhatsApp(null, texto), "_blank", "noopener");
+});
+
+// ---------------------------------------------------------------------------
+// Contactos de emergencia (email y/o WhatsApp). Se pintan con textContent:
+// el nombre lo escribe la persona y no debe interpretarse como HTML.
+// ---------------------------------------------------------------------------
+function mensaje(el, clase, texto) {
+  el.className = clase ? `mensaje ${clase}` : "mensaje";
+  el.textContent = texto || "";
+}
+
+// Antes de aplicar la migración 20261008200000_contactos_whatsapp.sql la
+// columna no existe (PGRST204) y el email sigue siendo obligatorio (23502).
+function errorContacto(error, porDefecto) {
+  const texto = `${error?.code || ""} ${error?.message || ""}`;
+  if (/PGRST204|whatsapp|23502|23514/i.test(texto)) {
+    return "Guardar WhatsApp aún no está activado en el servidor. De momento guarda el contacto solo con email.";
+  }
+  return traducirError(error, porDefecto);
+}
+
+function ayudaTelefono(input, ayuda) {
+  const valor = input.value.trim();
+  if (!valor) {
+    ayuda.className = "ayuda";
+    ayuda.textContent = "Sin prefijo se entiende España (+34). De otro país, empieza por + y su prefijo (+33…).";
+    return;
+  }
+  const r = normalizarTelefono(valor);
+  ayuda.className = r.ok ? "ayuda ok" : "ayuda error";
+  ayuda.textContent = r.ok ? `Se guardará como ${formatearTelefono(r.e164)}` : r.error;
+}
+const inputWhatsapp = document.getElementById("contactoWhatsapp");
+const ayudaWhatsapp = document.getElementById("ayudaWhatsapp");
+inputWhatsapp.addEventListener("input", () => ayudaTelefono(inputWhatsapp, ayudaWhatsapp));
+
+function crear(etiqueta, clase, texto) {
+  const el = document.createElement(etiqueta);
+  if (clase) el.className = clase;
+  if (texto != null) el.textContent = texto;
+  return el;
+}
+
+function editorWhatsapp(c, tarjeta) {
+  if (tarjeta.querySelector(".editor-wa")) return;
+  const caja = crear("div", "editor-wa");
+  const idCampo = `wa-${c.id}`;
+  const label = crear("label", null, `WhatsApp de ${c.nombre}`);
+  label.htmlFor = idCampo;
+  const input = crear("input");
+  input.type = "tel";
+  input.id = idCampo;
+  input.inputMode = "tel";
+  input.placeholder = "612 34 56 78";
+  input.value = c.whatsapp ? formatearTelefono(c.whatsapp) : "";
+  const ayuda = crear("div", "ayuda");
+  ayuda.setAttribute("aria-live", "polite");
+  input.addEventListener("input", () => ayudaTelefono(input, ayuda));
+  ayudaTelefono(input, ayuda);
+  const botones = crear("div", "botones");
+  const guardar = crear("button", "guardar", "Guardar");
+  guardar.type = "button";
+  const cancelar = crear("button", "cancelar", "Cancelar");
+  cancelar.type = "button";
+  botones.append(guardar, cancelar);
+  if (c.whatsapp && c.email) {
+    const quitar = crear("button", "cancelar", "Quitar");
+    quitar.type = "button";
+    quitar.addEventListener("click", () => guardarWhatsapp(c, null, ayuda));
+    botones.append(quitar);
+  }
+  caja.append(label, input, ayuda, botones);
+  tarjeta.appendChild(caja);
+  cancelar.addEventListener("click", () => caja.remove());
+  guardar.addEventListener("click", () => {
+    const r = normalizarTelefono(input.value);
+    if (!r.ok) { ayuda.className = "ayuda error"; ayuda.textContent = r.error; input.focus(); return; }
+    guardarWhatsapp(c, r.e164, ayuda);
+  });
+  input.focus();
+}
+
+async function guardarWhatsapp(c, e164, ayuda) {
+  const { error } = await supabase.from("contactos_emergencia").update({ whatsapp: e164 }).eq("id", c.id);
+  if (error) {
+    ayuda.className = "ayuda error";
+    ayuda.textContent = errorContacto(error, "No se ha podido guardar el WhatsApp. Inténtalo de nuevo.");
+    return;
+  }
+  cargarContactos();
+}
+
 async function cargarContactos() {
   const { data, error } = await supabase.from("contactos_emergencia").select("*").order("creado_en");
   const cont = document.getElementById("listaContactos");
-  if (error) { cont.innerHTML = ""; const p = document.createElement("p"); p.className = "explicacion"; p.textContent = traducirError(error, "No se han podido cargar tus contactos. Recarga la página."); cont.appendChild(p); return; }
-  if (!data.length) { cont.innerHTML = `<p class="explicacion">Todavía no has añadido ningún contacto.</p>`; return; }
-  cont.innerHTML = data.map((c) => `
-    <div class="contacto" data-id="${c.id}">
-      <div class="info"><div class="nombre">${c.nombre}</div><div class="email">${c.email}</div></div>
-      <button data-id="${c.id}">Borrar</button>
-    </div>
-  `).join("");
-  cont.querySelectorAll("button[data-id]").forEach((btn) => {
-    btn.addEventListener("click", async () => {
-      await supabase.from("contactos_emergencia").delete().eq("id", btn.dataset.id);
+  cont.replaceChildren();
+  if (error) { cont.appendChild(crear("p", "explicacion", traducirError(error, "No se han podido cargar tus contactos. Recarga la página."))); return; }
+  contactos = data || [];
+  if (!contactos.length) { cont.appendChild(crear("p", "explicacion", "Todavía no has añadido ningún contacto.")); return; }
+  for (const c of contactos) {
+    const tarjeta = crear("div", "contacto");
+    const fila = crear("div", "fila");
+    const info = crear("div", "info");
+    info.appendChild(crear("div", "nombre", c.nombre));
+    if (c.email) info.appendChild(crear("div", "email", `✉️ ${c.email}`));
+    if (c.whatsapp) info.appendChild(crear("div", "wa", `💬 ${formatearTelefono(c.whatsapp)}`));
+    const acciones = crear("div", "acciones");
+    const editar = crear("button", "editar-wa", c.whatsapp ? "Cambiar WhatsApp" : "+ WhatsApp");
+    editar.type = "button";
+    editar.setAttribute("aria-label", `${c.whatsapp ? "Cambiar" : "Añadir"} el WhatsApp de ${c.nombre}`);
+    editar.addEventListener("click", () => editorWhatsapp(c, tarjeta));
+    const borrar = crear("button", "borrar", "Borrar");
+    borrar.type = "button";
+    borrar.setAttribute("aria-label", `Borrar a ${c.nombre}`);
+    borrar.addEventListener("click", async () => {
+      if (!confirm(`¿Borrar a ${c.nombre} de tus contactos de emergencia?`)) return;
+      await supabase.from("contactos_emergencia").delete().eq("id", c.id);
       cargarContactos();
     });
-  });
+    acciones.append(editar, borrar);
+    fila.append(info, acciones);
+    tarjeta.appendChild(fila);
+    cont.appendChild(tarjeta);
+  }
 }
 
 document.getElementById("btnAnadirContacto").addEventListener("click", async () => {
   const mensajeEl = document.getElementById("mensajeContacto");
   const nombre = document.getElementById("contactoNombre").value.trim();
   const email = document.getElementById("contactoEmail").value.trim();
-  if (!nombre || !email) {
-    mensajeEl.className = "mensaje error";
-    mensajeEl.textContent = "Rellena nombre y email.";
-    return;
+  const telefono = inputWhatsapp.value.trim();
+  if (!nombre) { mensaje(mensajeEl, "error", "Escribe el nombre del contacto."); return; }
+  if (!email && !telefono) { mensaje(mensajeEl, "error", "Pon al menos un email o un WhatsApp."); return; }
+  const fila = { user_id: usuario.id, nombre, email: email || null };
+  if (telefono) {
+    const r = normalizarTelefono(telefono);
+    if (!r.ok) { mensaje(mensajeEl, "error", r.error); inputWhatsapp.focus(); return; }
+    fila.whatsapp = r.e164;
   }
-  const { error } = await supabase.from("contactos_emergencia").insert({ user_id: usuario.id, nombre, email });
+  const { error } = await supabase.from("contactos_emergencia").insert(fila);
   if (error) {
-    mensajeEl.className = "mensaje error";
-    mensajeEl.textContent = traducirError(error, "No se ha podido guardar el contacto. Inténtalo de nuevo.");
+    mensaje(mensajeEl, "error", errorContacto(error, "No se ha podido guardar el contacto. Inténtalo de nuevo."));
     return;
   }
   document.getElementById("contactoNombre").value = "";
   document.getElementById("contactoEmail").value = "";
-  mensajeEl.className = "mensaje ok";
-  mensajeEl.textContent = "Contacto añadido.";
+  inputWhatsapp.value = "";
+  ayudaTelefono(inputWhatsapp, ayudaWhatsapp);
+  mensaje(mensajeEl, "ok", "Contacto añadido.");
   cargarContactos();
 });
 

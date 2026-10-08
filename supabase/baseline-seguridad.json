@@ -154,6 +154,13 @@
           ]
         },
         {
+          "name": "cada usuario actualiza solo sus contactos",
+          "cmd": "w",
+          "roles": [
+            "authenticated"
+          ]
+        },
+        {
           "name": "cada usuario inserta solo sus contactos",
           "cmd": "a",
           "roles": [
