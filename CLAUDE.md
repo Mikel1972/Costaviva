@@ -1111,11 +1111,10 @@ render; no se ha hecho porque el bug real y crítico (mostrar un índice
 con aspecto fiable calculado con datos de horas/días atrás) ya queda
 cerrado con la vigencia por spot.
 
-**`indicePesca` (línea ~1553) ya usaba un patrón parecido de "no
-inventar"**: cuando no hay ninguna especie con rango de temperatura
-documentado, usa un valor neutro (`0.5`) en vez de 0 o 1, y el texto dice
-explícitamente "sin especies con rango de temperatura documentado hoy".
-Ahora además hereda la vigencia por spot del punto anterior.
+**Índice de pesca**: desde el 2026-10-08 es el índice v2 (ver "Índice de
+pesca v2" más abajo): la puntuación de la mejor especie de temporada de la
+pestaña en la hora actual. Hereda la vigencia por spot del punto anterior
+(sin datos de la última hora, S/D).
 
 ## Fichas de especies y ventana de actividad (2026-10-07, aprobado por Mikel)
 
@@ -1136,8 +1135,9 @@ Ahora además hereda la vigencia por spot del punto anterior.
   (`excluir_del_calculo`). Tampoco FAO (CC BY-NC-SA) ni contenido de apps
   competidoras (Fizk).
 - **`assets/js/ventana-actividad.js`**: módulo ES puro (sin DOM ni red, con
-  tests en `test/ventana-actividad.test.js`). Puntuación por hora =
-  `50 + Σ peso × valor` con un motivo y su aporte por cada factor (luz con
+  tests en `test/ventana-actividad.test.js`). Puntuación por hora con la
+  escala logística v2 (`100·σ(Σ peso_lo × valor)`, ver "Índice de pesca v2"),
+  con un motivo y su aporte en puntos por cada factor (luz con
   amanecer/anochecer calculados, marea, temperatura del agua, oleaje, viento,
   tendencia de presión ±1 hPa/3 h, turbidez). Los pesos están en el JSON
   (`reglas_por_defecto` + `reglas` por especie) con `criterio`/`fuente` y
@@ -1161,11 +1161,10 @@ Ahora además hereda la vigencia por spot del punto anterior.
   `ESPECIES_MEDITERRANEO`, `ESPECIES_GOLFO_CADIZ` y `ESPECIES_CANARIAS` se
   retiraron de `index.html`, junto con la tarjeta "¿Qué esperamos pescar hoy?".
   Ahora todo lee `especies.json`:
-  - **Índice de pesca** (`pintarIndicePesca` en `index.html`): especies de
-    temporada en la región del spot (`regionPorCoordenadas`), sin las que están
-    en veda (`vedaActiva`); misma fórmula de antes (ratio de especies con el agua
-    en su rango × 70 + presión). Los rangos de FishBase no cuentan; sin ningún
-    rango usable, ratio neutro 0,5 como antes. El JSON se pide al cargar la página.
+  - **Índice de pesca** (`pintarIndicePesca` en `index.html`): desde el
+    2026-10-08, índice v2 (sección propia más abajo). El ratio de especies con
+    el agua en su rango × 70 + presión quedó retirado. El JSON se pide al cargar
+    la página.
   - **Post de Instagram de los miércoles** (`scripts/marketing/especie-post.mjs`):
     región según la última zona de `rotacion-zonas.json` (por defecto Cantábrico;
     `REGION_POST` la fuerza), prioriza especies con temporada verificada, nunca
@@ -1217,6 +1216,121 @@ Ahora además hereda la vigencia por spot del punto anterior.
 - **Ojo, Open-Meteo**: la API gratuita es solo para uso no comercial; toda la
   app (no solo esto) la usa. Pendiente de decidir con Mikel (plan comercial de
   Open-Meteo o alternativa).
+
+## Índice de pesca v2: escala logística y reglas expertas (2026-10-08, aprobado por Mikel)
+
+**Fórmula** (`assets/js/ventana-actividad.js`, `INDICE_VERSION =
+"v2-logistica-2026-10-08"`): `P = 100·σ(b0 + Σ peso_lo·f)`, `f ∈ [-1, 1]`,
+`b0 = 0` (`especies.json.indice`). Los pesos están en log-odds (`peso_lo` =
+puntos antiguos / 25; cerca de 50 un factor aporta casi lo mismo que antes:
+los tests comparan con la v1 y no se mueve más de 8 puntos). El porqué sigue
+en puntos: `P - 50` se reparte en proporción al log-odds de cada factor
+(`repartirAportes`), así que 50 + la suma de los aportes da la puntuación.
+Temperatura del agua: gaussiana alrededor del centro del rango (σ = media
+anchura; +1 en el centro, ~+0,2 en los bordes, tiende a -1). Rangos solo de
+FishBase siguen sin puntuar.
+
+**Filtros fuera de la fórmula**: veda (la especie no entra), freza (aviso
+"si lo pescas, devuélvelo", nunca suma), topes de seguridad por modalidad (se
+aplican al final y salen como un motivo "tope de seguridad"), submarina de
+noche = 0, datos caducados = S/D (`spotVigente`).
+
+**Índice del spot** (`indiceSpot`): la mejor especie de temporada (sin vedas)
+de la pestaña en la hora actual, con su nombre y su porqué; es exactamente la
+puntuación de la ventana de esa especie. Sustituye al antiguo "ratio de
+especies con agua en rango × 70 + presión" (que daba 85-95 casi siempre en el
+Cantábrico en otoño; el v2 da ~70 con un día normal).
+
+**Fiabilidad** (`fiabilidad`): ★ solo criterio experto (lo normal hoy); ★★ si
+más de la mitad del log-odds viene de factores con mecanismo científico u
+oficial citado (regla `tipo: cientifica/oficial` o rango de temperatura
+verificado con fuente propia); ★★★ validado con el diario y ★★★★ temporada
+confirmada con desembarcos, marcados a mano en
+`validacion_fiabilidad.por_combinacion["especie|modalidad|region"]`. Rebajas:
+previsión a más de 48 h (-1), menos del 60 % del peso con dato (-1), modelo y
+no medido (-0,5); nunca baja de ★, pero las rebajas se dicen en el texto.
+
+**Datos**: la ventana y el índice piden a `/meteo/forecast` 5 días hacia
+atrás (`past_days=5`, para tendencias y retardos de las reglas) y la dirección
+del viento; una sola petición compartida por índice y ventana (la caché por
+spot guarda la promesa).
+
+### Reglas expertas (`reglas_expertas` en `especies.json`)
+
+Conocimiento local convertido en datos; el motor genérico
+(`assets/js/reglas-expertas.js`) las aplica sin tocar código. Cada regla suma
+`efecto.logodds × intensidad × confianza` como un factor más, con su texto (en
+la ventana sale marcado "[regla de Mikel, por validar]"). Hoy hay 8, todas de
+Mikel (fuente `mikel_experiencia_local`, tipo `heuristica_experta_local`,
+estado `por_validar`; los umbrales son la traducción de Claude de lo que
+contó Mikel):
+1. Presión bajando en 6 h (graduada, de -1 a -4 hPa) y en 24 h (≤ -4 hPa):
+   suma a los depredadores costeros (`@depredadores_costeros`: lubina, sargo,
+   dorada, corvina, dentón, palometa, bicuda, medregal, urta); subiendo tras
+   el frente, resta un poco. Sustituyen a la tendencia de 3 h por defecto en
+   esas especies (`sustituye: ["presion"]`).
+2. Mar algo movida (1-2,5 m) desde costa: suma a esos depredadores, siempre
+   por debajo del tope de seguridad.
+3. Río crecido (caudal "alto" con umbral oficial) a ≤ 3 km de la
+   desembocadura: suma a la lubina y resta al resto (salvo la lisa). Río del
+   spot = `RIOS[].spotCosta` de `index.html` (`rioDeSpot`); spot sin río
+   asociado o río sin caudal real (los vascos) = sin dato, no aplica.
+4. Levante en el Cantábrico (al menos media ventana de 6 h con viento del
+   sector 33,75°-146,25° = NE..SE, y 8 km/h o más de media): resta.
+5. Bonito (embarcación, Cantábrico, junio-septiembre): al menos el 25 % de
+   las horas de hace 5 a hace 1 día con viento WSW-NW de 25 km/h o más suma
+   un poco (confianza 0,3).
+
+La página de admin (`admin.html`) lista las reglas con su ámbito,
+condiciones, efecto, fuente, estado y cualquier error de forma.
+
+### Cómo añadir una regla experta
+
+1. Añade un objeto a `reglas_expertas.reglas` de `assets/datos/especies.json`
+   (el formato completo está en `reglas_expertas.formato` del propio JSON):
+   `id` único, `nombre`, `texto` (lo que verá el usuario), `fuente` (un id de
+   `fuentes`; si es nueva, añádela con `licencia` y `fecha_consulta`), `tipo`,
+   `confianza` (0-1), `estado: "por_validar"`, `validacion`, `ambito`
+   (regiones, modalidades, especies o `@grupo`, especies_excluidas, meses),
+   `condiciones` (todas deben cumplirse), `efecto.logodds` (±2 como mucho;
+   0,4 ≈ 10 puntos) y, si reemplaza a un factor base, `sustituye`.
+2. Condiciones: `{ "var": "presion", "agregado": "delta", "desde_h": -6,
+   "hasta_h": 0, "op": "<=", "valor": -1 }`. Variables horarias: ola, viento,
+   viento_dir, presion, temp_agua, lluvia, nivel_mar; de contexto:
+   caudal_rio, rio_desembocadura_km, turbidez, mes, hora_local, luz.
+   Agregados: media, min, max, suma, delta, fraccion (con `cumple`).
+   Operadores: `<`, `<=`, `>`, `>=`, `==`, `!=`, `en`, `entre`, `sector`.
+   Ventanas hacia atrás de hasta 5 días (120 h): es lo que trae la serie.
+3. Sin dato (menos del 60 % de horas, río desconocido...) la regla no
+   aplica: nunca se inventa.
+4. `node --test test/indice-pesca-v2.test.js` valida la forma de todas las
+   reglas (`validarRegla`); añade un test con un caso real si la regla es
+   nueva. Para retirarla sin borrarla: `estado: "retirada"`.
+5. Cuando haya salidas suficientes en el diario, calibrar: subir o bajar
+   `confianza` y pasar a `validada`.
+
+### Fase 0: condiciones de las salidas del diario por su fecha
+
+`assets/js/condiciones-salida.js` (puro, con tests). Una entrada retroactiva
+guardaba datos de HOY en cuatro casos: sin hora de inicio usaba la hora de
+ahora (y la serie de mar de ±8 días sí la contiene), la boya de embarcación
+era la de ahora, `/luna` siempre es la de hoy y 23:40 caía en las 00 del
+mismo día. Ahora la hora sale siempre de la fecha (mediodía si no hay hora,
+marcado `hora_estimada`), boya y `/luna` solo para salidas de hoy (si no, luna
+calculada para la fecha), y fuera del alcance de Open-Meteo (más de 90 días
+atrás o más de 15 adelante) las condiciones quedan a null con
+`condiciones_estado` (`sin_dato_fecha_antigua`, `sin_prevision_fecha_lejana`).
+Las ventanas (atmósfera de fecha-5 a fecha+1; mar ±8 días) caben en el proxy
+(≤ 31 días). Cuando exista el histórico ERA5 de la rama de fuentes gratuitas,
+el modo "antigua" podrá usarlo. Además se rellenan `presion_tendencia` y
+`viento_dir`, que nunca se guardaban.
+
+Cada salida guarda el índice v2 a su hora (`indice_version`,
+`indice_puntuacion`, `indice_especie`, `indice_factores` con cada factor y
+regla, la fiabilidad y el ranking de especies) para calibrar.
+**Migración `20261008120000_indice_pesca_salida.sql`, SIN APLICAR**: hasta
+aplicarla, `guardarSalida` reintenta sin esas columnas si PostgREST responde
+PGRST204.
 
 ## Triggers / rutinas automatizadas
 

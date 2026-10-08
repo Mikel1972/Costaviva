@@ -254,6 +254,9 @@
 <script src="/assets/js/meteo.js"></script>
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+// Índice de pesca v2 y condiciones por fecha de la salida (2026-10-08).
+import * as VentanaActividad from "/assets/js/ventana-actividad.js";
+import * as CondSalida from "/assets/js/condiciones-salida.js";
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
@@ -828,178 +831,162 @@ function factorOleaje(lat, lon) {
 }
 
 async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha, horaFinSalida) {
-  // Bug real encontrado 2026-09-13 (el usuario cazó el del coeficiente
-  // de marea y llevó a revisar el resto): con forecast_days=1 esto
-  // pedía siempre el pronóstico de "ahora mismo", sin importar la fecha
-  // real de la salida — una entrada guardada/editada un día distinto al
-  // que ocurrió (registro retroactivo) se guardaba con el oleaje/
-  // viento/presión/nubosidad/temperatura de HOY, no de su propia fecha.
-  // start_date=end_date=fecha lo pide para el día correcto (verificado
-  // en real que Open-Meteo lo sirve así para fechas pasadas recientes);
-  // sin fecha (no debería pasar, pero por si acaso) cae de vuelta al
-  // comportamiento de siempre.
-  const rangoFechas = fecha ? `start_date=${fecha}&end_date=${fecha}` : "forecast_days=1";
-  const paramsComunes = `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&${rangoFechas}`;
-  // La Marine API pide una ventana más ancha que el resto (±8 días
-  // alrededor de la fecha, ~17 días — cubre un ciclo vivas-muertas
-  // completo, ~14.77 días) para poder calcular coeficientePorSpot(): el
-  // rango de marea de esa fecha en concreto normalizado contra el
-  // mínimo/máximo rango real de ese mismo spot. Sin fecha, cae de vuelta
-  // a la ventana corta de siempre.
-  const sumarDias = (iso, dias) => {
-    const d = new Date(iso + "T00:00:00Z");
-    d.setUTCDate(d.getUTCDate() + dias);
-    return d.toISOString().slice(0, 10);
-  };
-  const paramsMarea = fecha
-    ? `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&start_date=${sumarDias(fecha, -8)}&end_date=${sumarDias(fecha, 8)}`
-    : paramsComunes;
+  // Condiciones de la FECHA Y HORA de la salida, nunca las de hoy (Fase 0 del
+  // índice v2, 2026-10-08; ver assets/js/condiciones-salida.js). Historia:
+  // el 2026-09-13 se pasó de forecast_days=1 a start_date=end_date=fecha,
+  // pero quedaban cuatro fugas de "hoy" en una entrada retroactiva: sin hora
+  // de inicio se usaba la hora de AHORA (y la serie de mar, de ±8 días, sí
+  // la contiene: oleaje/temp. agua/marea de hoy), la boya de embarcación era
+  // la de ahora mismo, la luna era la de hoy, y 23:40 caía en las 00 del
+  // mismo día. Ahora: la hora sale siempre de la fecha de la salida
+  // (mediodía si no hay hora, marcado como estimado), boya y /luna solo si
+  // la salida es de hoy (si no, luna calculada para esa fecha), y una fecha
+  // fuera del alcance de Open-Meteo (más de 90 días atrás o más de 15
+  // adelante) deja las condiciones a null con condiciones_estado diciendo
+  // por qué, en vez de pedir y guardar otra cosa.
+  // La Marine API pide una ventana más ancha (±8 días alrededor de la fecha,
+  // ~17 días — un ciclo vivas-muertas completo, ~14.77 días) para calcular
+  // coeficientePorSpot(); la atmósfera, de 5 días antes al día siguiente
+  // (tendencias y retardos de las reglas expertas del índice).
+  const hoy = horaActualMadridISO().slice(0, 10);
+  const plan = CondSalida.planCondiciones(fecha, hoy);
+  const fechaRef = fecha || hoy;
   const resultado = { marea_altura: null, marea_tendencia: null, marea_altura_fin: null, marea_tendencia_fin: null,
     marea_pico_tipo: null, marea_pico_hora: null,
     marea_coeficiente: null, presion_valor: null, presion_tendencia: null,
     luna_fase: null, luna_iluminacion: null, viento_kmh: null, viento_dir: null,
     oleaje_altura_min: null, oleaje_altura_max: null, temp_agua: null,
-    nubosidad: null, precipitacion: null, boya_usada: null };
+    nubosidad: null, precipitacion: null, boya_usada: null,
+    condiciones_estado: plan.estado || "ok",
+    indice_version: VentanaActividad.INDICE_VERSION, indice_puntuacion: null, indice_especie: null, indice_factores: null };
+
+  // La luna y el coeficiente astronómico valen para cualquier fecha.
+  const lunaLocal = CondSalida.lunaDeFecha(fechaRef, horaElegida || "12:00");
+  resultado.luna_fase = lunaLocal.fase;
+  resultado.luna_iluminacion = lunaLocal.iluminacion;
+  if (!plan.pedir) {
+    resultado.marea_coeficiente = coeficienteMarea(new Date(fechaRef + "T12:00:00"));
+    return resultado;
+  }
+
+  const v = CondSalida.ventanasConsulta(fechaRef, hoy);
+  const coord = `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid`;
+  const RUMBOS = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
   try {
-    const [marino, viento, luna] = await Promise.all([
-      pedirMeteo("marine", `${paramsMarea}&hourly=wave_height,sea_level_height_msl,sea_surface_temperature`),
-      pedirMeteo("forecast", `${paramsComunes}&hourly=windspeed_10m,winddirection_10m,pressure_msl,cloudcover,precipitation&windspeed_unit=kmh`),
-      fetch(`/luna?lat=${lat}&lon=${lon}`).then((r) => r.json()),
+    const [marino, viento, luna, datosEspecies] = await Promise.all([
+      pedirMeteo("marine", `${coord}&start_date=${v.mar.inicio}&end_date=${v.mar.fin}&hourly=wave_height,sea_level_height_msl,sea_surface_temperature`),
+      pedirMeteo("forecast", `${coord}&start_date=${v.atmosfera.inicio}&end_date=${v.atmosfera.fin}&hourly=windspeed_10m,winddirection_10m,pressure_msl,cloudcover,precipitation&windspeed_unit=kmh`),
+      // /luna calcula siempre la de hoy: solo sirve para salidas de hoy.
+      plan.modo === "hoy" || plan.modo === "sin_fecha"
+        ? fetch(`/luna?lat=${lat}&lon=${lon}`).then((r) => r.json()).catch(() => null)
+        : Promise.resolve(null),
+      cargarEspeciesIndice().catch(() => null),
     ]);
+    if (marino?.error || viento?.error) resultado.condiciones_estado = "parcial";
     const horas = marino.hourly?.time || [];
-    // Sin hora elegida: la hora de ahora (comportamiento de siempre). Con
-    // hora elegida (HH:MM, de la hora de inicio del selector de rueda): la hora en punto
-    // más cercana — Open-Meteo da el dato por hora, no por minuto, así
-    // que los minutos son solo para el registro, no cambian qué bloque
-    // horario se usa. Redondea a la hora más cercana (no trunca hacia
-    // abajo) para que 07:40 use el bloque de las 8h, más representativo
-    // que el de las 7h. `horas` ahora puede traer ±8 días de más (por la
-    // ventana ancha del coeficiente) — hay que exigir también que la
-    // FECHA coincida con la de la salida, no solo la hora del día, o se
-    // colaría la primera de los ±8 días que tenga esa misma hora.
-    // Extraído a función 2026-09-15: el índice se necesita DOS veces, una
-    // vez para `horas` (marino.hourly.time — ventana ancha de ±8 días
-    // cuando hay fecha, para el coeficiente de marea) y otra para
-    // viento.hourly.time (siempre un único día, start_date=end_date=fecha)
-    // — son arrays de longitud distinta. Bug real encontrado por el
-    // usuario 2026-09-15: se calculaba un único `idx` sobre `horas` y se
-    // reutilizaba tal cual para leer viento.hourly.windspeed_10m/
-    // pressure_msl/cloudcover/precipitation — con fecha puesta, ese índice
-    // (dentro de la ventana ancha) caía muy por encima de las 24 horas del
-    // array corto de viento, así que esos 4 campos salían siempre
-    // `undefined`/"—", aunque marea/oleaje/temp. agua (que sí usan el
-    // array correcto) se vieran bien.
-    // horaObjetivo y fechaObjetivo parametrizadas (no por closure) desde
-    // 2026-09-19 — hace falta buscar el índice de DOS horas distintas
-    // (inicio y fin de la salida) sobre la misma serie ya descargada, ver
-    // marea_altura_fin más abajo, y la de fin puede caer en el día
-    // SIGUIENTE si la salida cruza medianoche (fechaObjetivo distinta de
-    // `fecha`) — bug real encontrado al diseñar el pico de marea: antes
-    // esto siempre buscaba dentro del mismo `fecha` de la salida, así que
-    // una hora_fin de madrugada (ej. 02:00 de una salida que empezó a las
-    // 23:00) nunca se encontraba de verdad y caía en uno de los
-    // respaldos (mediodía del día de inicio, dato incorrecto).
-    const buscarIndiceHora = (listaHoras, horaObjetivo0 = horaElegida, fechaObjetivo = fecha) => {
-      let i = -1;
-      if (horaObjetivo0) {
-        const [h, m] = horaObjetivo0.split(":").map(Number);
-        const horaObjetivo = m >= 30 ? (h + 1) % 24 : h;
-        i = listaHoras.findIndex((hs) => (!fechaObjetivo || hs.startsWith(fechaObjetivo)) && +hs.slice(11, 13) === horaObjetivo);
-      }
-      if (i === -1) {
-        i = listaHoras.findIndex((hs) => hs.slice(0, 13) === horaActualMadridISO());
-      }
-      // Sin hora elegida y la fecha no es hoy (registro retroactivo): la
-      // hora de ahora no significa nada para un día distinto — mediodía
-      // es una referencia más representativa de la jornada que
-      // medianoche (el índice 0 al que caería si no se afina esto).
-      if (i === -1) i = listaHoras.findIndex((hs) => (!fecha || hs.startsWith(fecha)) && +hs.slice(11, 13) === 12);
-      if (i === -1) i = fecha ? Math.max(0, listaHoras.findIndex((hs) => hs.startsWith(fecha))) : 0;
-      return i;
-    };
-    const idx = buscarIndiceHora(horas);
-    const idxViento = buscarIndiceHora(viento.hourly?.time || []);
+    const horasViento = viento.hourly?.time || [];
+    const opcionesHora = { hoy, horaActual: horaActualMadridISO() };
+    // Bug real encontrado por el usuario 2026-09-15: las dos series tienen
+    // longitudes distintas; cada una busca su propio índice por fecha+hora.
+    const { i: idx, estimada } = CondSalida.indiceHoraSalida(horas, fechaRef, horaElegida, opcionesHora);
+    const { i: idxViento } = CondSalida.indiceHoraSalida(horasViento, fechaRef, horaElegida, opcionesHora);
+    if (idx < 0 && idxViento < 0) resultado.condiciones_estado = "sin_dato_hora";
 
-    const alturaCruda = marino.hourly?.wave_height?.[idx];
-    const alturaOla =
-      alturaCruda === undefined || alturaCruda === null ? alturaCruda : alturaCruda * factorOleaje(lat, lon);
-    if (alturaOla !== undefined && alturaOla !== null) {
-      resultado.oleaje_altura_min = +(alturaOla * 0.9).toFixed(1);
-      resultado.oleaje_altura_max = +(alturaOla * 1.1).toFixed(1);
+    if (idx >= 0) {
+      const alturaCruda = marino.hourly?.wave_height?.[idx];
+      const alturaOla =
+        alturaCruda === undefined || alturaCruda === null ? alturaCruda : alturaCruda * factorOleaje(lat, lon);
+      if (alturaOla !== undefined && alturaOla !== null) {
+        resultado.oleaje_altura_min = +(alturaOla * 0.9).toFixed(1);
+        resultado.oleaje_altura_max = +(alturaOla * 1.1).toFixed(1);
+      }
+      resultado.temp_agua = marino.hourly?.sea_surface_temperature?.[idx] ?? null;
     }
-    resultado.temp_agua = marino.hourly?.sea_surface_temperature?.[idx] ?? null;
-    // sea_level_height_msl es una anomalía respecto al nivel medio del
-    // mar (puede salir negativa) — se re-referencia contra el mínimo de
-    // la propia ventana de datos para mostrar la altura de marea de
-    // forma intuitiva (siempre ≥ 0), no un dato oceanográfico confuso.
-    // Mismo criterio que functions/prevision.js (calcularMarea).
+    // sea_level_height_msl es una anomalía respecto al nivel medio del mar
+    // (puede salir negativa): se re-referencia contra el mínimo de la propia
+    // ventana para mostrar la altura de forma intuitiva (siempre ≥ 0). Mismo
+    // criterio que functions/prevision.js (calcularMarea).
     const serieAltura = marino.hourly?.sea_level_height_msl || [];
-    const validasAltura = serieAltura.filter((v) => v !== null && v !== undefined);
+    const validasAltura = serieAltura.filter((x) => x !== null && x !== undefined);
     const minAltura = validasAltura.length ? Math.min(...validasAltura) : 0;
-    const alturaMarea = serieAltura[idx];
-    const alturaMareaSig = serieAltura[idx + 1];
-    resultado.marea_altura = alturaMarea != null ? +(alturaMarea - minAltura).toFixed(2) : null;
-    resultado.marea_tendencia = alturaMarea != null && alturaMareaSig != null ? (alturaMareaSig > alturaMarea ? "subiendo" : "bajando") : null;
-
-    // Marea a la hora de FIN de la salida (2026-09-19, pedido explícito
-    // del usuario: saber si subía o bajaba tanto al llegar como al irse)
-    // — reutiliza la misma serie horaria ya descargada (`horas`/
-    // `serieAltura`), así que no hace falta ninguna petición extra a
-    // Open-Meteo, solo mirar un índice distinto.
-    let idxFin = idx;
-    if (horaFinSalida) {
-      // Si hora_fin <= hora_inicio, la salida cruza medianoche (mismo
-      // criterio ya usado para aceptar el dato sin bloquear el guardado)
-      // — la hora de fin cae en el día SIGUIENTE, no en `fecha`.
-      const fechaFin = fecha && horaFinSalida <= horaElegida
-        ? (() => { const d = new Date(fecha + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + 1); return d.toISOString().slice(0, 10); })()
-        : fecha;
-      idxFin = buscarIndiceHora(horas, horaFinSalida, fechaFin);
-      const alturaMareaFin = serieAltura[idxFin];
-      const alturaMareaFinSig = serieAltura[idxFin + 1];
-      resultado.marea_altura_fin = alturaMareaFin != null ? +(alturaMareaFin - minAltura).toFixed(2) : null;
-      resultado.marea_tendencia_fin = alturaMareaFin != null && alturaMareaFinSig != null
-        ? (alturaMareaFinSig > alturaMareaFin ? "subiendo" : "bajando")
-        : null;
+    if (idx >= 0) {
+      const alturaMarea = serieAltura[idx];
+      const alturaMareaSig = serieAltura[idx + 1];
+      resultado.marea_altura = alturaMarea != null ? +(alturaMarea - minAltura).toFixed(2) : null;
+      resultado.marea_tendencia = alturaMarea != null && alturaMareaSig != null ? (alturaMareaSig > alturaMarea ? "subiendo" : "bajando") : null;
     }
 
-    // Próximo pico de marea (pleamar/bajamar) de la SALIDA, no un número
-    // de altura suelto (2026-09-19, pedido explícito del usuario: "el
-    // dato de marea no tiene mucha lógica tal cual" — una altura relativa
-    // no dice nada útil por sí sola). Un único pico para toda la salida,
-    // no uno por hora_inicio y otro por hora_fin: el que caiga DENTRO del
-    // intervalo [hora_inicio, hora_fin]; si no hay ninguno dentro (sesión
-    // corta durante una subida/bajada sin girar), el más cercano por
-    // fuera del intervalo.
-    const picoMarea = picoDeMareaEnIntervalo(serieAltura, horas, idx, idxFin);
-    resultado.marea_pico_tipo = picoMarea?.tipo ?? null;
-    resultado.marea_pico_hora = picoMarea?.hora ?? null;
+    // Marea a la hora de FIN de la salida (2026-09-19): misma serie, otro
+    // índice. Si hora_fin <= hora_inicio, la salida cruza medianoche y el
+    // fin cae en el día siguiente.
+    let idxFin = idx;
+    if (horaFinSalida && idx >= 0) {
+      const fechaFin = horaElegida && horaFinSalida <= horaElegida ? CondSalida.sumarDias(fechaRef, 1) : fechaRef;
+      idxFin = CondSalida.indiceHoraSalida(horas, fechaFin, horaFinSalida, opcionesHora).i;
+      if (idxFin >= 0) {
+        const alturaMareaFin = serieAltura[idxFin];
+        const alturaMareaFinSig = serieAltura[idxFin + 1];
+        resultado.marea_altura_fin = alturaMareaFin != null ? +(alturaMareaFin - minAltura).toFixed(2) : null;
+        resultado.marea_tendencia_fin = alturaMareaFin != null && alturaMareaFinSig != null
+          ? (alturaMareaFinSig > alturaMareaFin ? "subiendo" : "bajando")
+          : null;
+      } else idxFin = idx;
+    }
 
-    // Bug real reportado por el usuario (2026-09-13): esto usaba
-    // new Date() (el momento de guardar), no la fecha real de la
-    // salida — una salida del 7 de septiembre guardada/editada más
-    // tarde mostraba el coeficiente de HOY, no el del 7 de septiembre.
-    // Ahora usa coeficientePorSpot() (real, por spot — ver el comentario
-    // largo más arriba) con la fecha real, y solo si esa ventana no trae
-    // datos suficientes cae de vuelta a la fórmula astronómica genérica.
+    // Pico de marea (pleamar/bajamar) de la salida: el que caiga dentro de
+    // [hora_inicio, hora_fin], o el más cercano por fuera (2026-09-19).
+    if (idx >= 0) {
+      const picoMarea = picoDeMareaEnIntervalo(serieAltura, horas, idx, idxFin);
+      resultado.marea_pico_tipo = picoMarea?.tipo ?? null;
+      resultado.marea_pico_hora = picoMarea?.hora ?? null;
+    }
+
+    // Coeficiente real por spot con la fecha de la salida (bug del
+    // 2026-09-13: usaba new Date()); sin datos, la fórmula astronómica.
     resultado.marea_coeficiente =
-      coeficientePorSpot(horas, serieAltura, idx) ??
-      coeficienteMarea(fecha ? new Date(fecha + "T12:00:00") : new Date());
+      (idx >= 0 ? coeficientePorSpot(horas, serieAltura, idx) : null) ??
+      coeficienteMarea(new Date(fechaRef + "T12:00:00"));
 
-    resultado.viento_kmh = viento.hourly?.windspeed_10m?.[idxViento] != null ? Math.round(viento.hourly.windspeed_10m[idxViento]) : null;
-    resultado.presion_valor = viento.hourly?.pressure_msl?.[idxViento] != null ? Math.round(viento.hourly.pressure_msl[idxViento]) : null;
-    resultado.nubosidad = viento.hourly?.cloudcover?.[idxViento] != null ? Math.round(viento.hourly.cloudcover[idxViento]) : null;
-    resultado.precipitacion = viento.hourly?.precipitation?.[idxViento] != null ? viento.hourly.precipitation[idxViento] : null;
+    if (idxViento >= 0) {
+      const hv = viento.hourly;
+      resultado.viento_kmh = hv?.windspeed_10m?.[idxViento] != null ? Math.round(hv.windspeed_10m[idxViento]) : null;
+      resultado.viento_dir = hv?.winddirection_10m?.[idxViento] != null ? RUMBOS[Math.round(hv.winddirection_10m[idxViento] / 22.5) % 16] : null;
+      resultado.presion_valor = hv?.pressure_msl?.[idxViento] != null ? Math.round(hv.pressure_msl[idxViento]) : null;
+      resultado.presion_tendencia = CondSalida.tendenciaPresion(hv?.pressure_msl || [], idxViento);
+      resultado.nubosidad = hv?.cloudcover?.[idxViento] != null ? Math.round(hv.cloudcover[idxViento]) : null;
+      resultado.precipitacion = hv?.precipitation?.[idxViento] != null ? hv.precipitation[idxViento] : null;
+    }
 
-    resultado.luna_fase = luna?.fase ?? null;
-    resultado.luna_iluminacion = luna?.iluminacion ?? null;
+    if (luna && !luna.error && luna.fase) {
+      resultado.luna_fase = luna.fase;
+      resultado.luna_iluminacion = luna.iluminacion ?? resultado.luna_iluminacion;
+    }
 
-    // Solo embarcación: la boya real más cercana (Puertos del Estado, vía
-    // /prevision) es un dato medido de mar abierto, mejor que el modelo
-    // por coordenadas ahí — pero el submarinismo se hace cerca de costa
-    // (igual que "costa"), donde la boya de mar abierto no es
-    // representativa, así que sigue usando el modelo por coordenadas.
-    if (tipoSalida === "embarcacion") {
+    // Índice de pesca v2 a la hora de la salida (para calibrarlo después con
+    // lo que de verdad se pescó): mejor especie de temporada de esa modalidad,
+    // con cada factor y regla guardados en indice_factores.
+    if (datosEspecies) {
+      try {
+        const serie = CondSalida.serieHoraria(marino, viento, factorOleaje(lat, lon));
+        const r = CondSalida.indiceHoraSalida(serie.map((h) => h.hora), fechaRef, horaElegida, opcionesHora);
+        if (r.i >= 0) {
+          const modalidad = CondSalida.TIPO_SALIDA_A_MODALIDAD[tipoSalida] || "costa";
+          const ind = VentanaActividad.indiceSpot(datosEspecies, serie, r.i, {
+            lat, lon, modalidad, horaActual: horaActualMadridISO(),
+          });
+          Object.assign(resultado, CondSalida.resumenIndice(ind, { estimada: r.estimada }));
+        }
+      } catch (e) {
+        console.warn("No se pudo calcular el índice de la salida:", e.message);
+      }
+    }
+    if (estimada && resultado.indice_factores) resultado.indice_factores.hora_estimada = true;
+
+    // Solo embarcación Y solo si la salida es de hoy: la boya real más
+    // cercana (Puertos del Estado, vía /prevision) es un dato medido de mar
+    // abierto, pero es el de AHORA: para otra fecha sería un dato falso. El
+    // submarinismo se hace cerca de costa y sigue con el modelo.
+    if (tipoSalida === "embarcacion" && (plan.modo === "hoy" || plan.modo === "sin_fecha")) {
       try {
         const prevision = await fetch("/prevision", { cache: "no-store" }).then((r) => r.json());
         const boyas = (prevision.boyas || []).filter(
@@ -1021,8 +1008,18 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha, horaF
     }
   } catch (e) {
     console.warn("No se pudo obtener contexto ambiental:", e.message);
+    resultado.condiciones_estado = "error";
   }
   return resultado;
+}
+
+// especies.json para el índice de la salida (una vez por página).
+let especiesIndicePromesa = null;
+function cargarEspeciesIndice() {
+  especiesIndicePromesa ||= fetch("/assets/datos/especies.json", { cache: "no-cache" })
+    .then((r) => { if (!r.ok) throw new Error(`especies.json HTTP ${r.status}`); return r.json(); })
+    .catch((e) => { especiesIndicePromesa = null; throw e; });
+  return especiesIndicePromesa;
 }
 
 // Marea suelta (altura + tendencia) en un momento concreto — versión
@@ -1035,16 +1032,18 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha, horaF
 async function mareaEnMomento(lat, lon, hora, fecha) {
   if (!hora || !Number.isFinite(lat) || !Number.isFinite(lon)) return { altura: null, tendencia: null };
   try {
-    const rangoFechas = fecha ? `start_date=${fecha}&end_date=${fecha}` : "forecast_days=1";
+    // Dos días (fecha y la siguiente) por si la hora redondeada cruza medianoche.
+    const rangoFechas = fecha ? `start_date=${fecha}&end_date=${CondSalida.sumarDias(fecha, 1)}` : "forecast_days=2";
     const marino = await pedirMeteo("marine", `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&${rangoFechas}&hourly=sea_level_height_msl`);
     const horas = marino.hourly?.time || [];
     const serie = marino.hourly?.sea_level_height_msl || [];
     const validas = serie.filter((v) => v !== null && v !== undefined);
     const min = validas.length ? Math.min(...validas) : 0;
-    const [h, m] = hora.split(":").map(Number);
-    const horaObjetivo = m >= 30 ? (h + 1) % 24 : h;
-    let idx = horas.findIndex((hs) => (!fecha || hs.startsWith(fecha)) && +hs.slice(11, 13) === horaObjetivo);
-    if (idx === -1) idx = fecha ? Math.max(0, horas.findIndex((hs) => hs.startsWith(fecha))) : 0;
+    // Hora de la FECHA de la captura (23:40 -> 00 del día siguiente); sin
+    // esa hora en la serie, null antes que la marea de otra hora.
+    const fechaRef = fecha || horaActualMadridISO().slice(0, 10);
+    const { i: idx } = CondSalida.indiceHoraSalida(horas, fechaRef, hora);
+    if (idx < 0) return { altura: null, tendencia: null };
     const altura = serie[idx];
     const alturaSig = serie[idx + 1];
     return {
@@ -1068,17 +1067,14 @@ async function mareaDeConclusion(lat, lon, horaInicio, horaFin, fecha) {
   if (!horaInicio || !horaFin || !fecha || !Number.isFinite(lat) || !Number.isFinite(lon)) return vacio;
   try {
     const manana = (() => { const d = new Date(fecha + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + 1); return d.toISOString().slice(0, 10); })();
-    const marino = await pedirMeteo("marine", `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&start_date=${fecha}&end_date=${manana}&hourly=sea_level_height_msl`);
+    const marino = await pedirMeteo("marine", `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&start_date=${fecha}&end_date=${CondSalida.sumarDias(fecha, 2)}&hourly=sea_level_height_msl`);
     const horas = marino.hourly?.time || [];
     const serie = marino.hourly?.sea_level_height_msl || [];
     const validas = serie.filter((v) => v !== null && v !== undefined);
     const min = validas.length ? Math.min(...validas) : 0;
     const indiceDe = (hora, fechaObjetivo) => {
-      const [h, m] = hora.split(":").map(Number);
-      const horaObjetivo = m >= 30 ? (h + 1) % 24 : h;
-      let i = horas.findIndex((hs) => hs.startsWith(fechaObjetivo) && +hs.slice(11, 13) === horaObjetivo);
-      if (i === -1) i = Math.max(0, horas.findIndex((hs) => hs.startsWith(fechaObjetivo)));
-      return i;
+      const { i } = CondSalida.indiceHoraSalida(horas, fechaObjetivo, hora);
+      return i >= 0 ? i : Math.max(0, horas.findIndex((hs) => hs.startsWith(fechaObjetivo)));
     };
     const idxInicio = indiceDe(horaInicio, fecha);
     const fechaFin = horaFin <= horaInicio ? manana : fecha;
@@ -1223,9 +1219,19 @@ async function guardarSalida(fecha, idExistente) {
   // editar una ya existente no se toca concluida — así corregir una
   // nota o el spot de una jornada ya cerrada no la vuelve a abrir.
   if (!idExistente) datos.concluida = false;
-  const { error } = idExistente
-    ? await supabase.from("salidas_pesca").update(datos).eq("id", idExistente)
-    : await supabase.from("salidas_pesca").insert(datos);
+  const escribir = (d) => (idExistente
+    ? supabase.from("salidas_pesca").update(d).eq("id", idExistente)
+    : supabase.from("salidas_pesca").insert(d));
+  let { error } = await escribir(datos);
+  // Columnas del índice v2 (migración 20261008120000_indice_pesca_salida.sql):
+  // hasta que se aplique en producción, PostgREST rechaza el insert entero
+  // ("Could not find the 'indice_factores' column", PGRST204). Se reintenta
+  // sin ellas para no perder la salida.
+  if (error && (error.code === "PGRST204" || /indice_|condiciones_estado/.test(error.message || ""))) {
+    const sinIndice = { ...datos };
+    for (const k of ["indice_version", "indice_puntuacion", "indice_especie", "indice_factores", "condiciones_estado"]) delete sinIndice[k];
+    ({ error } = await escribir(sinIndice));
+  }
   if (error) {
     mensajeEl.className = "mensaje error";
     mensajeEl.textContent = traducirError(error, "No se ha podido guardar la salida. Inténtalo de nuevo.");
@@ -1266,9 +1272,25 @@ function contextoHTML(salida) {
   const notaCoef = salida.marea_coeficiente != null
     ? `<div class="detalle" style="font-size:11px; color:#42585F; margin-top:4px;">🌊 El coeficiente de marea es propio de este spot (compara la marea de ese día contra el máximo/mínimo real de ese mismo sitio) — no es el índice nacional que usan otras webs de mareas, así que no tiene por qué coincidir con ellas.</div>`
     : "";
+  // Índice de pesca v2 a la hora de la salida y, si no hay condiciones, por
+  // qué (2026-10-08): nunca datos de otro día en su lugar.
+  const esc = (t) => String(t ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const f = salida.indice_factores;
+  const notaIndice = salida.indice_puntuacion != null
+    ? `<div class="detalle" style="font-size:11px; color:#42585F; margin-top:4px;">🎣 Índice de pesca a esa hora: <b>${esc(salida.indice_puntuacion)}/100</b>${f?.especie_nombre ? ` (mejor especie: ${esc(f.especie_nombre)})` : ""}${f?.hora_estimada ? ", estimado a mediodía (sin hora de inicio)" : ""}${f?.fiabilidad?.etiqueta ? ` · fiabilidad ${esc(f.fiabilidad.etiqueta)}` : ""}.</div>`
+    : "";
+  const TEXTO_ESTADO = {
+    sin_dato_fecha_antigua: "Sin condiciones guardadas: la fecha es de hace más de 90 días y la fuente de previsión no llega tan atrás (mejor vacío que datos de otro día).",
+    sin_prevision_fecha_lejana: "Sin condiciones: todavía no hay previsión para esa fecha.",
+    sin_dato_hora: "Sin condiciones para esa hora en la fuente de datos.",
+    error: "No se pudieron obtener las condiciones de esa fecha.",
+  };
+  const notaEstado = TEXTO_ESTADO[salida.condiciones_estado]
+    ? `<div class="detalle" style="font-size:11px; color:#8A3A2A; margin-top:4px;">⚠ ${TEXTO_ESTADO[salida.condiciones_estado]}</div>`
+    : "";
   // Atribución obligatoria de Open-Meteo (CC BY 4.0) junto a sus datos.
   const notaMeteo = `<div class="atribucion-meteo">${window.ATRIBUCION_METEO_HTML || "Datos meteorológicos: Open-Meteo.com (CC BY 4.0)"}</div>`;
-  return `<div class="contexto-ambiental">${filas.map(([e, v]) => `<div class="dato"><div class="etq">${e}</div><div class="val">${v}</div></div>`).join("")}</div>${notaBoya}${notaCoef}${notaMeteo}`;
+  return `<div class="contexto-ambiental">${filas.map(([e, v]) => `<div class="dato"><div class="etq">${e}</div><div class="val">${v}</div></div>`).join("")}</div>${notaEstado}${notaIndice}${notaBoya}${notaCoef}${notaMeteo}`;
 }
 
 async function tarjetaCapturaHTML(captura) {

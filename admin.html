@@ -96,6 +96,19 @@
       <tbody id="filasUsuarios"></tbody>
     </table>
   </div>
+  <!-- Reglas expertas del índice de pesca (2026-10-08): solo lectura, salen
+       de assets/datos/especies.json (reglas_expertas). Se añaden editando ese
+       JSON; guía en CLAUDE.md, "Cómo añadir una regla experta". -->
+  <h2 style="font-size:15px; margin:28px 0 6px;">🎣 Reglas expertas del índice de pesca</h2>
+  <p class="resumen" id="resumenReglas">Cargando reglas…</p>
+  <div style="overflow-x:auto;">
+    <table>
+      <thead>
+        <tr><th>Regla</th><th>Ámbito</th><th>Condiciones</th><th>Efecto</th><th>Fuente / estado</th></tr>
+      </thead>
+      <tbody id="filasReglas"></tbody>
+    </table>
+  </div>
 </div>
 
 <div class="no-admin" id="zonaNoAdmin" style="display:none;">
@@ -249,6 +262,38 @@ async function cargarUsuarios() {
 }
 
 await cargarUsuarios();
+
+// Reglas expertas (solo lectura). Un fallo aquí no afecta a lo de arriba.
+async function cargarReglasExpertas() {
+  const resumen = document.getElementById("resumenReglas");
+  try {
+    const [datos, { validarRegla }] = await Promise.all([
+      fetch("/assets/datos/especies.json", { cache: "no-cache" }).then((r) => r.json()),
+      import("/assets/js/reglas-expertas.js"),
+    ]);
+    const b = datos.reglas_expertas || { reglas: [] };
+    const esc = (t) => String(t ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const lista = (x) => (Array.isArray(x) && x.length ? x.join(", ") : "todas");
+    const cond = (c) => `${c.var}${c.agregado ? ` ${c.agregado} [${c.desde_h ?? 0} h, ${c.hasta_h ?? 0} h]` : ""}${c.cumple ? ` (${[].concat(c.cumple).map((t) => `${t.var || c.var} ${t.op} ${JSON.stringify(t.valor)}`).join(" y ")})` : ""} ${c.op} ${JSON.stringify(c.valor)}`;
+    const activas = b.reglas.filter((r) => r.estado !== "retirada");
+    resumen.textContent = `${activas.length} activas de ${b.reglas.length}. Efecto aplicado = log-odds × confianza (0,4 log-odds ≈ 10 puntos cerca de 50).`;
+    document.getElementById("filasReglas").innerHTML = b.reglas.map((r) => {
+      const problemas = validarRegla(r, { fuentes: datos.fuentes, especies: datos.especies.map((e) => e.id), regiones: datos.regiones, grupos: b.grupos_especies });
+      const a = r.ambito || {};
+      return `<tr>
+        <td><b>${esc(r.nombre || r.id)}</b><br><span style="color:#5C7680;">${esc(r.texto)}</span>${problemas.length ? `<br><span style="color:#A34A35;">⚠ ${esc(problemas.join("; "))}</span>` : ""}</td>
+        <td>regiones: ${esc(lista(a.regiones))}<br>modalidades: ${esc(lista(a.modalidades))}<br>especies: ${esc(lista(a.especies))}${a.especies_excluidas ? `<br>salvo: ${esc(lista(a.especies_excluidas))}` : ""}${a.meses ? `<br>meses: ${esc(lista(a.meses))}` : ""}</td>
+        <td>${(r.condiciones || []).map((c) => esc(cond(c))).join("<br>")}</td>
+        <td>${esc(r.efecto?.logodds)} × ${esc(r.confianza)} = ${esc(((r.efecto?.logodds || 0) * (r.confianza ?? 1)).toFixed(2))}${r.sustituye ? `<br>sustituye: ${esc(r.sustituye.join(", "))}` : ""}</td>
+        <td>${esc(datos.fuentes[r.fuente]?.titulo || r.fuente)}<br>${esc(r.tipo)} · <b>${esc(r.estado)}</b></td>
+      </tr>`;
+    }).join("");
+  } catch (e) {
+    resumen.textContent = "No se pudieron cargar las reglas expertas.";
+    console.warn("reglas expertas:", e);
+  }
+}
+cargarReglasExpertas();
 </script>
 
 </body>
