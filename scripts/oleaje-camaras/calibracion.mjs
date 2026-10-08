@@ -38,7 +38,11 @@
 // distintos y alturas que varíen ×1,5: con un solo estado de mar, la escala
 // `a` solo reproduce la referencia de ese día y no dice nada de otros.
 
-export const ESPUMA_MINIMA = 0.003; // por debajo: "sin espuma" (ruido, brillos sueltos)
+// ESPUMA_MINIMA, ELEVACION_MINIMA y elevacionSolar() viven en
+// functions/_lib/oleaje-camaras.js desde el 2026-10-08 (las usa también
+// /prevision para la "referencia de cámara"); aquí se reexportan.
+import { ESPUMA_MINIMA, ELEVACION_MINIMA, elevacionSolar } from "../../functions/_lib/oleaje-camaras.js";
+export { ESPUMA_MINIMA, ELEVACION_MINIMA, elevacionSolar };
 export const PESO_BOYA = 1;
 export const PESO_MODELO = 0.5;
 export const PESO_ETIQUETA_FOTO = 5;
@@ -198,24 +202,6 @@ export function calibrarTodo(historial, etiquetas, centroBanda) {
     if (c) cal[k] = c;
   }
   return cal;
-}
-
-// Elevación del sol en grados (fórmula aproximada de la NOAA, error < 1°:
-// de sobra para decidir si hay luz). Las lecturas con el sol por debajo de
-// ELEVACION_MINIMA no se hacen (oscuro, o sol rasante de cara a la cámara).
-export const ELEVACION_MINIMA = 8;
-export function elevacionSolar(fechaMs, lat, lon) {
-  const d = new Date(fechaMs);
-  const dia = (Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) - Date.UTC(d.getUTCFullYear(), 0, 0)) / 864e5;
-  const horaUTC = d.getUTCHours() + d.getUTCMinutes() / 60 + d.getUTCSeconds() / 3600;
-  const g = ((2 * Math.PI) / 365) * (dia - 1 + (horaUTC - 12) / 24);
-  const decl = 0.006918 - 0.399912 * Math.cos(g) + 0.070257 * Math.sin(g) - 0.006758 * Math.cos(2 * g) + 0.000907 * Math.sin(2 * g) - 0.002697 * Math.cos(3 * g) + 0.00148 * Math.sin(3 * g);
-  const eqt = 229.18 * (0.000075 + 0.001868 * Math.cos(g) - 0.032077 * Math.sin(g) - 0.014615 * Math.cos(2 * g) - 0.040849 * Math.sin(2 * g));
-  const tst = horaUTC * 60 + eqt + 4 * lon;
-  const ha = ((tst / 4 - 180) * Math.PI) / 180;
-  const phi = (lat * Math.PI) / 180;
-  const cosZ = Math.sin(phi) * Math.sin(decl) + Math.cos(phi) * Math.cos(decl) * Math.cos(ha);
-  return +(90 - (Math.acos(Math.min(1, Math.max(-1, cosZ))) * 180) / Math.PI).toFixed(2);
 }
 
 // ---------------------------------------------------------------------------
