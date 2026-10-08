@@ -72,6 +72,33 @@
   .contacto .editor-wa .guardar { border: 0; background: var(--ok); color: var(--blanco); }
   .contacto .editor-wa .cancelar { border: 1px solid var(--linea); background: transparent; color: var(--tinta-2); }
 
+  /* Elegir de la agenda (Contact Picker API, 2026-10-08). Botón de borde
+     acento y tinta oscura: es una ayuda, no una llamada a la emoción. */
+  button.agenda-boton {
+    width: 100%; margin-top: 8px; padding: 12px; border-radius: 999px; border: 2px solid var(--acento);
+    background: var(--superficie); color: var(--acento); font-weight: 800; font-size: 14px; cursor: pointer;
+    font-family: var(--f-texto); min-height: 44px;
+  }
+  button.agenda-boton[hidden], .revision-agenda[hidden], #notaAgenda[hidden], #oManual[hidden] { display: none; }
+  .revision-agenda { margin-top: 12px; border: 1px solid var(--linea); border-radius: 12px; padding: 12px; background: var(--fondo); }
+  .revision-agenda h4 { font-family: var(--f-titulo); font-size: 13px; margin: 0 0 4px; }
+  .revision-agenda .ayuda { margin-top: 0; }
+  .elegido { background: var(--superficie); border: 1px solid var(--linea); border-radius: 10px; padding: 10px 12px; margin-top: 10px; }
+  .elegido.apagado > :not(.cabeza):not(.aviso-dup):not(.error) { opacity: 0.6; }
+  .elegido .cabeza { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--tinta); margin: 0; }
+  .elegido .cabeza input { width: 20px; height: 20px; accent-color: var(--acento); margin: 0; flex-shrink: 0; }
+  .elegido fieldset { border: 0; padding: 0; margin: 10px 0 0; min-width: 0; }
+  .elegido legend { font-size: 12px; color: var(--tinta-2); padding: 0; margin-bottom: 4px; }
+  .elegido .opcion { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--tinta); margin: 0; padding: 6px 0; min-height: 32px; overflow-wrap: anywhere; }
+  .elegido .opcion input { width: 18px; height: 18px; accent-color: var(--acento); margin: 0; flex-shrink: 0; }
+  .elegido .opcion.no-valida { color: var(--tinta-2); font-size: 12px; }
+  .elegido .sin-datos { font-size: 12px; color: var(--tinta-2); margin: 2px 0 0; }
+  .elegido .aviso-dup { font-size: 11.5px; color: var(--aviso-texto); background: var(--aviso-fondo); border: 1px solid var(--aviso-borde); border-radius: 6px; padding: 5px 8px; margin-top: 8px; }
+  .revision-agenda .botones { display: flex; gap: 8px; margin-top: 12px; }
+  .revision-agenda .botones button.principal { margin-top: 0; flex: 2; }
+  .revision-agenda .botones button.descartar { flex: 1; padding: 12px; border-radius: 999px; border: 1px solid var(--linea); background: transparent; color: var(--tinta-2); font-weight: 700; font-size: 13px; cursor: pointer; font-family: var(--f-texto); }
+  .principal:disabled { opacity: 0.5; cursor: default; }
+
   .ayuda { font-size: 11.5px; color: var(--tinta-2); margin-top: 5px; line-height: 1.45; }
   .ayuda.ok { color: var(--ok-texto); }
   .ayuda.error { color: var(--peligro-texto); }
@@ -191,6 +218,19 @@
     <p class="explicacion">Con email, reciben un email con tu ubicación en cuanto pulsas "Activar SOS". Con WhatsApp, forman tu lista de WhatsApp: tras el SOS te sale un botón para cada uno con el mensaje preparado (lo envías tú).</p>
     <div id="listaContactos"></div>
     <h3 class="subtitulo">Añadir contacto</h3>
+    <button type="button" class="agenda-boton" id="btnAgenda" hidden>📇 Elegir de la agenda</button>
+    <p class="ayuda" id="notaAgenda" hidden>Tu navegador no deja abrir la agenda: escribe el contacto a mano.</p>
+    <div class="revision-agenda" id="revisionAgenda" hidden>
+      <h4 id="tituloRevisionAgenda" tabindex="-1">Revisa antes de guardar</h4>
+      <p class="ayuda">Solo se guarda lo que dejes marcado: el nombre, un email y un WhatsApp de cada contacto.</p>
+      <div id="listaElegidos"></div>
+      <div class="mensaje" id="mensajeAgenda" role="status" aria-live="polite"></div>
+      <div class="botones">
+        <button type="button" class="principal" id="btnGuardarElegidos">Guardar</button>
+        <button type="button" class="descartar" id="btnDescartarElegidos">Descartar</button>
+      </div>
+    </div>
+    <p class="ayuda" id="oManual" hidden>Solo llegan a Costaviva los contactos que marques en la agenda. O escríbelo a mano:</p>
     <label for="contactoNombre">Nombre</label>
     <input type="text" id="contactoNombre" autocomplete="off" maxlength="60" />
     <label for="contactoEmail">Email (opcional si pones WhatsApp)</label>
@@ -238,6 +278,7 @@
 
 <script src="/assets/js/errores.js"></script>
 <script src="/assets/js/sos-whatsapp.js"></script>
+<script src="/assets/js/agenda-contactos.js"></script>
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -618,6 +659,186 @@ document.getElementById("btnAnadirContacto").addEventListener("click", async () 
 });
 
 await cargarContactos();
+
+// ---------------------------------------------------------------------------
+// Elegir de la agenda (assets/js/agenda-contactos.js, 2026-10-08). Contact
+// Picker API: solo Chrome de Android. El selector lo abre el sistema y solo
+// llegan los contactos que la persona marca; aquí se revisan y nada se
+// guarda hasta pulsar "Guardar".
+// ---------------------------------------------------------------------------
+const { agendaDisponible, propiedadesAPedir, contactosAFilas, yaGuardado, filaParaGuardar } = window.AgendaContactos;
+const btnAgenda = document.getElementById("btnAgenda");
+const revisionAgenda = document.getElementById("revisionAgenda");
+const listaElegidos = document.getElementById("listaElegidos");
+const mensajeAgenda = document.getElementById("mensajeAgenda");
+const btnGuardarElegidos = document.getElementById("btnGuardarElegidos");
+let elegidos = []; // [{ fila, tarjeta, check, nombre, email(), whatsapp(), error }]
+let propiedadesAgenda = ["name", "email", "tel"];
+
+if (agendaDisponible({ navigator, window, isSecureContext: window.isSecureContext })) {
+  btnAgenda.hidden = false;
+  document.getElementById("oManual").hidden = false;
+  // Se pregunta ya (no al tocar) para no gastar el gesto de la persona
+  // esperando: select() tiene que llamarse justo tras el toque.
+  try {
+    navigator.contacts.getProperties().then((p) => { propiedadesAgenda = propiedadesAPedir(p); }).catch(() => {});
+  } catch (e) { /* algunos navegadores no traen getProperties: se piden las tres */ }
+} else {
+  document.getElementById("notaAgenda").hidden = false;
+}
+
+btnAgenda.addEventListener("click", async () => {
+  mensaje(mensajeAgenda, null, "");
+  if (!propiedadesAgenda.length) {
+    mensaje(document.getElementById("mensajeContacto"), "error", "Tu teléfono no comparte nombre, email ni teléfono de la agenda. Escribe el contacto a mano.");
+    return;
+  }
+  let seleccion;
+  try {
+    seleccion = await navigator.contacts.select(propiedadesAgenda, { multiple: true });
+  } catch (e) {
+    mensaje(document.getElementById("mensajeContacto"), "error", "No se ha podido abrir la agenda. Escribe el contacto a mano.");
+    return;
+  }
+  if (!seleccion || !seleccion.length) return; // ha cerrado la agenda sin elegir
+  registrarEvento("contactos_agenda", { elegidos: seleccion.length });
+  mostrarElegidos(contactosAFilas(seleccion));
+});
+
+function grupoOpciones(nombreGrupo, leyenda, opciones, marcada, textoNinguna) {
+  const fs = crear("fieldset");
+  fs.appendChild(crear("legend", null, leyenda));
+  const radios = [];
+  for (const op of opciones) {
+    const label = crear("label", op.valida ? "opcion" : "opcion no-valida");
+    const input = crear("input");
+    input.type = "radio";
+    input.name = nombreGrupo;
+    input.value = op.valor || "";
+    input.disabled = !op.valida;
+    input.checked = op.valida && op.valor === marcada;
+    label.append(input, document.createTextNode(op.texto));
+    fs.appendChild(label);
+    if (op.valida) radios.push(input);
+  }
+  if (radios.length) {
+    const label = crear("label", "opcion");
+    const input = crear("input");
+    input.type = "radio";
+    input.name = nombreGrupo;
+    input.value = "";
+    input.checked = !marcada;
+    label.append(input, document.createTextNode(textoNinguna));
+    fs.appendChild(label);
+    radios.push(input);
+  }
+  return { fs, valor: () => (radios.find((r) => r.checked)?.value || null) };
+}
+
+function contarMarcados() {
+  const n = elegidos.filter((e) => e.check.checked).length;
+  btnGuardarElegidos.disabled = n === 0;
+  btnGuardarElegidos.textContent = n === 1 ? "Guardar 1 contacto" : `Guardar ${n} contactos`;
+}
+
+function mostrarElegidos(filas) {
+  listaElegidos.replaceChildren();
+  elegidos = filas.map((fila, i) => {
+    const tarjeta = crear("div", "elegido");
+    const cabeza = crear("label", "cabeza");
+    const check = crear("input");
+    check.type = "checkbox";
+    const duplicado = yaGuardado(fila, contactos);
+    const guardable = !!(fila.email || fila.whatsapp);
+    check.checked = guardable && !duplicado;
+    cabeza.append(check, document.createTextNode("Guardar este contacto"));
+    tarjeta.appendChild(cabeza);
+
+    const idNombre = `agendaNombre${i}`;
+    const lNombre = crear("label", null, "Nombre");
+    lNombre.htmlFor = idNombre;
+    const nombre = crear("input");
+    nombre.type = "text";
+    nombre.id = idNombre;
+    nombre.maxLength = 60;
+    nombre.autocomplete = "off";
+    nombre.value = fila.nombre;
+    tarjeta.append(lNombre, nombre);
+
+    let email = () => null;
+    if (fila.emails.length) {
+      const g = grupoOpciones(`agendaEmail${i}`, fila.emails.length > 1 ? "Email (elige uno)" : "Email",
+        fila.emails.map((e) => ({ valor: e, texto: e, valida: true })), fila.email, "Sin email");
+      tarjeta.appendChild(g.fs);
+      email = g.valor;
+    } else {
+      tarjeta.appendChild(crear("p", "sin-datos", "Sin email en la agenda."));
+    }
+
+    let whatsapp = () => null;
+    const validos = fila.telefonos.filter((t) => t.ok).length;
+    if (fila.telefonos.length) {
+      const g = grupoOpciones(`agendaTel${i}`, validos > 1 ? "WhatsApp (elige el móvil)" : "WhatsApp",
+        fila.telefonos.map((t) => ({
+          valor: t.e164,
+          valida: t.ok,
+          texto: t.ok ? formatearTelefono(t.e164) : `${t.original} — ${t.error}`,
+        })), fila.whatsapp, "Sin WhatsApp");
+      tarjeta.appendChild(g.fs);
+      whatsapp = g.valor;
+    } else {
+      tarjeta.appendChild(crear("p", "sin-datos", "Sin teléfono en la agenda."));
+    }
+
+    if (duplicado) tarjeta.appendChild(crear("div", "aviso-dup", "Ya está en tu lista de contactos. Márcalo solo si quieres guardarlo otra vez."));
+    if (!guardable) tarjeta.appendChild(crear("div", "aviso-dup", "No tiene email ni un teléfono válido: añádelo a mano."));
+    const error = crear("div", "ayuda error");
+    error.setAttribute("aria-live", "polite");
+    tarjeta.appendChild(error);
+
+    const actualizar = () => { tarjeta.classList.toggle("apagado", !check.checked); contarMarcados(); };
+    check.addEventListener("change", actualizar);
+    tarjeta.classList.toggle("apagado", !check.checked);
+    listaElegidos.appendChild(tarjeta);
+    return { fila, check, nombre, email, whatsapp, error };
+  });
+  contarMarcados();
+  revisionAgenda.hidden = false;
+  document.getElementById("tituloRevisionAgenda").focus({ preventScroll: false });
+}
+
+function cerrarRevision() {
+  elegidos = [];
+  listaElegidos.replaceChildren();
+  mensaje(mensajeAgenda, null, "");
+  revisionAgenda.hidden = true;
+}
+document.getElementById("btnDescartarElegidos").addEventListener("click", cerrarRevision);
+
+btnGuardarElegidos.addEventListener("click", async () => {
+  const filas = [];
+  let primerError = null;
+  for (const e of elegidos) {
+    e.error.textContent = "";
+    if (!e.check.checked) continue;
+    const r = filaParaGuardar(e.fila, { nombre: e.nombre.value, email: e.email(), whatsapp: e.whatsapp() }, usuario.id);
+    if (!r.ok) { e.error.textContent = r.error; primerError = primerError || e; continue; }
+    filas.push(r.fila);
+  }
+  if (primerError) { mensaje(mensajeAgenda, "error", "Revisa los contactos marcados en rojo."); primerError.nombre.focus(); return; }
+  if (!filas.length) return;
+  btnGuardarElegidos.disabled = true;
+  const { error } = await supabase.from("contactos_emergencia").insert(filas);
+  if (error) {
+    btnGuardarElegidos.disabled = false;
+    mensaje(mensajeAgenda, "error", errorContacto(error, "No se han podido guardar los contactos. Inténtalo de nuevo."));
+    return;
+  }
+  cerrarRevision();
+  mensaje(document.getElementById("mensajeContacto"), "ok", filas.length === 1 ? "Contacto añadido." : `${filas.length} contactos añadidos.`);
+  cargarContactos();
+});
+
 
 // ---------------------------------------------------------------------------
 // Detección de caída — heurística simple por acelerómetro: una caída libre

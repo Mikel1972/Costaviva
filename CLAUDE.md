@@ -61,6 +61,20 @@ pequeños: tinta oscura sobre claro, contraste AA).
   escritorio siempre abiertos, con la esquina inferior derecha empezando a
   76 px (a la derecha del ⓘ) y la leyenda del ⓘ abriéndose por encima de
   ellos. Ningún crédito se quita: no usar `attributionControl.remove()`.
+- **Tarjetas del mapa en un dock (2026-10-08, bug aprobado por Mikel).** En
+  el móvil la tarjeta de rayos (antes control de Leaflet `bottomright`) tapaba
+  la lluvia animada y la leyenda del ⓘ abierta. Ahora todas las tarjetas de
+  abajo viven en `#tarjetasMapa` (index.html) y se apilan con `order`, de
+  arriba a abajo: rayos, lluvia (lluvia-animada.js la mete ahí vía
+  `contenedor`), clorofila / temperatura, viento y la leyenda del ⓘ. Nunca se
+  pisan. `assets/js/tarjetas-mapa.js` (test `test/tarjetas-mapa.test.js`)
+  pone el `bottom` del dock por encima de lo que tenga debajo en su columna
+  (ⓘ, créditos abiertos, leyendas de Leaflet de abajo a la izquierda) y el
+  `max-height` sin tapar el zoom ni las leyendas de arriba; si no cabe,
+  scroll (en escritorio, segunda columna). Acaba a la izquierda de los
+  botones de capas. Con la lluvia abierta, rayos se queda en su frase (sin la
+  línea de leyenda). Una tarjeta nueva sobre el mapa: dentro del dock, con
+  su `order`; nada de `position: absolute` suelto abajo.
 
 ## Alarma: lista de WhatsApp (2026-10-08, pedido de Mikel)
 
@@ -80,6 +94,19 @@ no tienen número: "Compartir en un grupo" usa `navigator.share` y, sin él,
 actualizado); sin ella la página dice que el WhatsApp aún no está activado y
 el email funciona como antes. En textos de marketing: "te prepara el
 WhatsApp", nunca "manda un WhatsApp automático".
+
+**Contactos desde la agenda (2026-10-08, pedido de Mikel).** En "Añadir
+contacto", el botón "📇 Elegir de la agenda" usa la Contact Picker API
+(`navigator.contacts.select(['name','email','tel'], {multiple: true})`): solo
+existe en Chrome/Chromium de Android, en https y tras un toque. Donde no está
+(iPhone/Safari, escritorio) el botón no sale y la página dice "Tu navegador no
+deja abrir la agenda: escribe el contacto a mano". La web no lee la agenda:
+el sistema abre su selector y solo llegan los contactos marcados; después se
+revisan (si hay varios emails o teléfonos se elige uno, los teléfonos no
+válidos salen con el motivo, los repetidos van desmarcados) y nada se guarda
+hasta pulsar "Guardar N contactos". Lógica en `assets/js/agenda-contactos.js`
+(usa `normalizarTelefono` de `sos-whatsapp.js`), test
+`test/agenda-contactos.test.js`.
 
 ## Instagram en estilo Amanecer: posts, stories y reels sin IA (2026-10-08)
 
@@ -259,9 +286,13 @@ botón "ola real que veo". Todo sin IA ni API de pago: píxeles.
   In Situ (Pasaia II, Donostia, Bilbao II, Bilbao-Vizcaya, Gijón, Peñas,
   Estaca, Langosteira, Villano, Silleiro, Leixões).
 - `scripts/oleaje-camaras/medir-espuma.mjs` + `.github/workflows/
-  espuma-camaras.yml`: cada 30 min de 08:00 a 15:30 UTC (16 ejecuciones, ~3
-  min cada una ≈ 1.440 min/mes de Actions; repo público, así que es gratis
-  igualmente: la cuenta está en el yml). Escribe
+  espuma-camaras.yml`: cada 30 min de 05:07 a 18:37 UTC (cubre la luz de
+  todo el año; con el sol < 8° corta en ~15 s; repo público, Actions
+  gratis). El `schedule:` de GitHub casi no corre en este repo (el primer
+  día, ninguna vez): lo fiable es pg_cron (migración
+  `20261008210000_programador_espuma_camaras.sql`, SIN APLICAR, y necesita
+  la clave de "Tareas cada 30 min", que a 2026-10-08 nunca se guardó).
+  workflow_dispatch también respeta la luz salvo con `forzar_luz`. Escribe
   `datos-robots/oleaje-camaras/espuma.jsonl` (histórico, de ahí sale la
   calibración) y `calibracion.json`, y con la migración aplicada publica en
   `oleaje_camara_lecturas` + miniaturas en el bucket `oleaje-camaras`.
@@ -347,6 +378,22 @@ con lectura vigente, manda su cámara.
    0,25-3): a las 18 h ya es el modelo con el coeficiente estático. La
    ventana de actividad de index.html aplica la misma corrección (copia de
    `factorCamara()`, un test comprueba que no se desvía).
+4b. **Cámara como referencia (2026-10-08, aprobado por Mikel).** Mientras
+   la cámara PROPIA del spot no sustituye al modelo, /prevision añade por
+   spot `camaraReferencia: {altura, rango, hora, fecha, camara, nombre}`
+   (`filasLecturas()` + `camaraReferenciaDeSpot()` en
+   `_lib/oleaje-camaras.js`; ahora /prevision lee todas las filas `ok` de
+   3 h, sustituyan o no). Condiciones: última medida `ok` (encuadre, sin
+   orilla), < 3 h, sol ≥ 8° a la hora de la lectura, con espuma y
+   estimación, cámara propia (nunca vecina; Santoña tampoco) y que la
+   cámara no esté ya mandando en el spot. Panel, en secundario debajo del
+   modelo: "La cámara apunta a ~1,2 m (0,8–1,9 m, sin calibrar · 16:30)"
+   (redondeo a 0,1 m; el navegador lo oculta si pasa de 3 h). Sin espuma no
+   se dice nada (decidido: la rompiente puede estar fuera del ROI, Castro y
+   Getaria, y "no ve rompiente" junto a un modelo de 2 m invitaría a fiarse).
+   No entra en las piezas de Instagram. Tests:
+   `test/camara-referencia.test.js`. `elevacionSolar`, `ELEVACION_MINIMA` y
+   `ESPUMA_MINIMA` viven ahora en el lib (calibracion.mjs las reexporta).
 5. Spots sin cámara: la cámara EXPUESTA más cercana con la misma orientación
    de costa (±60°, < 60 km; orientación sacada a mano del trazado de costa)
    corrige su modelo con `peso` (0,8 si está a ≤ 11 km, 0,5 si más lejos);
@@ -1670,7 +1717,8 @@ pestaña en la hora actual. Hereda la vigencia por spot del punto anterior
   (`reglas_por_defecto` + `reglas` por especie) con `criterio`/`fuente` y
   `tipo: heuristica_experta` cuando lo son. **La marea se escala con el rango
   local** (máx-mín en ±12 h del nivel del mar del propio spot frente a 2,5 m):
-  en el Mediterráneo no cuenta. Mar > 2,5 m: tope 20 y aviso. Luna: peso 0.
+  en el Mediterráneo no cuenta. Mar > 2,5 m: aviso de ola peligrosa aparte,
+  sin tope (ver "Ola peligrosa: aviso aparte"). Luna: peso 0.
 - **UI**: tarjeta "Ventana de actividad por horas" del panel del spot
   (`pintarVentanaActividad` en `index.html`): selector de especie (las que
   tienen presencia en la región del spot, en temporada primero), Hoy/Mañana,
@@ -1723,10 +1771,12 @@ pestaña en la hora actual. Hereda la vigencia por spot del punto anterior
     se muestra). Recupera la división costa/mar adentro que tenía la lista
     antigua de `index.html` (fuente `app_index_zona`), con matices (txitxarro y
     verdel también desde espigón). `reglas_por_modalidad`: costa = lo de
-    siempre; embarcación = viento > 20 km/h y ola > 1 m restan, aviso y tope 35
-    para kayak (> 20 km/h o > 1,5 m) y tope 15 para embarcación pequeña
-    (> 30 km/h o > 2,5 m), marea peso 4; submarina = turbidez peso 20 (clara
-    suma, turbia resta), mar en calma (óptimo < 0,5 m, > 1,5 m tope 15), lluvia
+    siempre; embarcación = viento > 20 km/h y ola > 1 m restan, aviso para kayak
+    (> 20 km/h o > 1,5 m) y para embarcación pequeña (> 30 km/h o > 2,5 m),
+    con tope 35 / 15 **solo si lo supera el viento** (la ola solo avisa desde
+    el 2026-10-08), marea peso 4; submarina = turbidez peso 20 (clara
+    suma, turbia resta), mar en calma (óptimo < 0,5 m, > 1,5 m aviso de ola
+    peligrosa, sin tope), lluvia
     de las 24 h previas y caudal alto del río del spot restan, y **de noche
     puntúa 0** (prohibida: RD 347/2011 art. 16.d, Portaria 14/2014 art. 8.3).
     En las modalidades distintas de costa, oleaje/viento/turbidez (y marea en
@@ -1834,7 +1884,8 @@ franja costera. Sin IA y sin coste.
   `reglas_expertas.reglas`, todas `por_validar`, confianza 0,5-0,55, nunca en
   embarcación): `orilla_roca_espuma` (costa, orilla de acantilado/roca/escollera:
   lubina, sargo, sargo picudo, maragota, pulpo, congrio, cabracho, rascacio;
-  la mitad con mar plana, entera desde 1,5 m), `orilla_playa_arena` (costa,
+  la mitad con mar plana, entera de 1,5 a 2,5 m y se apaga hasta 0 a 3 m
+con `efecto.atenua`: con mar grande se apartan), `orilla_playa_arena` (costa,
   playa: rodaballo, lenguado, raya; `mikel_campo_bizkaia`),
   `dorada_arena_con_roca` (costa y submarina, arena ≥ 30 % y roca ≥ 10 %),
   `fondo_roca_submarina` (submarina, roca ≥ 35 %, graduada) y `posidonia_cerca`
@@ -1870,9 +1921,38 @@ anchura; +1 en el centro, ~+0,2 en los bordes, tiende a -1). Rangos solo de
 FishBase siguen sin puntuar.
 
 **Filtros fuera de la fórmula**: veda (la especie no entra), freza (aviso
-"si lo pescas, devuélvelo", nunca suma), topes de seguridad por modalidad (se
-aplican al final y salen como un motivo "tope de seguridad"), submarina de
-noche = 0, datos caducados = S/D (`spotVigente`).
+"si lo pescas, devuélvelo", nunca suma), tope por viento en embarcación
+(kayak 35 / embarcación pequeña 15; se aplica al final y sale como un motivo
+"tope de seguridad"), submarina de noche = 0, datos caducados = S/D
+(`spotVigente`).
+
+**Ola peligrosa: aviso aparte, sin tope (decisión de Mikel, 2026-10-08).**
+Antes la altura de ola recortaba la nota ("tope de seguridad (mar de 2,5-3 m,
+peligrosa desde costa: máximo 20)"). Ahora la nota se calcula sin ese tope (el
+factor de oleaje sigue puntuando como siempre) y el resultado lleva
+`avisoOla` (`avisoOlaPeligrosa` en `ventana-actividad.js`): "⚠️ Ola peligrosa
+desde costa (2,5-3 m): extrema la precaución". **No es un motivo con
+flecha**: se pinta como nota aparte con la clase `.aviso-ola` de
+`costaviva.css` (tokens `--peligro-*`). Umbral = `oleaje.max_seguro_m` de la
+modalidad, estrictamente por encima: costa 2,5 m ("desde costa"), embarcación
+2,5 m ("para salir en embarcación de recreo"), submarina 1,5 m ("para
+bucear"); `tope_si_peligrosa` desapareció del JSON. Dónde sale: índice del
+spot (encima de los motivos), ventana (franja con las horas con aviso, el
+detalle de la hora y "⚠️ ola peligrosa" en las mejores ventanas), diario
+(`indice_factores.aviso_ola`) y piezas de Instagram (`resumenDelDia().avisoOla`,
+en la plantilla y en el texto del post y del reel). En embarcación, los
+avisos de kayak / embarcación pequeña siguen saliendo también por ola, pero su
+tope solo lo pone el viento. Desde costa, en los depredadores costeros el
+factor de oleaje lo sustituyen las reglas de mar plana/poca/movida (hasta
+2,5 m); por encima, `mar_grande_depredadores` ("mar demasiado grande: se
+apartan de la orilla", `tipo: cientifica`, Bacheler 2019, Udyawer 2013 y la
+flota de lubina 2022; casi 0 justo por encima de 2,5 m y en línea recta hasta
+-1,6 log-odds a 4 m) cierra el hueco que dejó quitar el tope, y "mar algo
+movida" se apaga entre 2,2 y 2,5 m: la nota baja sin escalones (test de
+continuidad de 2,0 a 4,0 m, pasos de 0,1, ninguno de más de 8 puntos). Dorada
+de la captura de prueba (Bakio): 78 / 72 / 70 / 57 / 34 a 2,0 / 2,5 / 2,6 /
+3,1 / 4,0 m (con tope daba 72 a 3,1 m). En embarcación y submarina ninguna
+regla sustituye al oleaje, así que no hay hueco (un test lo vigila).
 
 **Índice del spot** (`indiceSpot`): la mejor especie de temporada (sin vedas)
 de la pestaña en la hora actual, con su nombre y su porqué; es exactamente la
@@ -1906,18 +1986,31 @@ preview: salían "+ mar algo movida" y "− mar de 2-2,5 m" a la vez): cada regl
 declara su `variable`; si es la de un factor base, lo sustituye
 (`sustituye`), y las reglas de una misma variable tienen condiciones
 excluyentes (las de presión: 6 h si cae ahora, 24 h solo si las últimas 6 h
-están quietas, subida tras el frente). Los topes de seguridad van aparte y se
-aplican aunque el factor esté sustituido. Un test recorre especies,
+están quietas, subida tras el frente). El aviso de ola peligrosa va aparte y
+sale aunque el factor esté sustituido. Un test recorre especies,
 modalidades y escenarios y falla si una variable puntúa dos veces.
 **Presentación (decisión de Mikel, 2026-10-08)**: la nota y una lista de
 motivos, cada uno con una flecha por dirección y peso (▲▲ / ▲ / ▼ / ▼▼, el
 doble desde 6 puntos) y el concepto en lenguaje llano, ordenados por impacto.
 Para el usuario, ningún número por factor (ni en tooltip) ni etiqueta de
-fuente ("regla de Mikel", "por validar"...). Igual en la ventana, el índice
+fuente ("regla de Mikel", "por validar"...).
+**Solo motivos con flecha y avisos útiles (Mikel, 2026-10-08)**: lo neutro
+(aporte 0, antes con "·": "pleno día", "marea casi nula: no cuenta", "agua a
+20 °C (rango pendiente de fuente abierta: no cuenta)"), lo interno y la
+fiabilidad van solo al "Detalle (admin)". El filtro es `paraUsuario`
+(`ventana-actividad.js`, regex `TEXTO_INTERNO`), y lo usan la ficha, la
+ventana, las mejores ventanas, el diario (misma regex en línea) y los posts
+(`motivosDestacados`). Avisos útiles = notas `legal` (submarina) y
+`seguridad` (kayak / embarcación pequeña), con la clase `.aviso-nota`; el de
+ola peligrosa va en `avisoOla`. También para admin: "Técnicas habituales
+(práctica, sin fuente citable)", "Talla mínima: sin dato verificado" y
+"Pendiente de revisar" de la normativa. Un test de `indice-pesca-v2` falla
+si la salida de usuario tiene "·", "pendiente", "no cuenta" o "fuente". La presentación es igual en la ventana, el índice
 del spot y la línea del diario. El admin (`window.esAdminCostaviva`,
 cosmético) tiene un desplegable "Detalle (admin)" con puntos, fuente, estado,
 confianza y la fiabilidad; la tabla de `admin.html` sigue listando las reglas.
-Hoy hay 18 reglas: 11 de Mikel (fuente `mikel_experiencia_local`, tipo
+Hoy hay 18 reglas (más las de fondo y orilla y `mar_grande_depredadores`,
+ver arriba): 11 de Mikel (fuente `mikel_experiencia_local`, tipo
 `heuristica_experta_local`, estado `por_validar`; los umbrales son la
 traducción de Claude de lo que contó Mikel; y 2 que completan la escala de
 ola de los depredadores costeros con la heurística que ya tenía la app,
@@ -1930,7 +2023,7 @@ cientifica`, del top 10 de evidencia que aprobó Mikel, ver más abajo):
    esas especies (`sustituye: ["presion"]`).
 2. Mar algo movida (1-2,5 m) desde costa: suma a esos depredadores y
    sustituye al factor de oleaje (con las dos reglas de escala de arriba);
-   por encima de 2,5 m manda el tope de seguridad.
+   por encima de 2,5 m sale el aviso de ola peligrosa (sin tope).
 3. Río crecido (caudal "alto" con umbral oficial) a ≤ 3 km de la
    desembocadura: suma a la lubina y resta al resto (salvo la lisa). Río del
    spot = `RIOS[].spotCosta` de `index.html` (`rioDeSpot`); spot sin río
@@ -1975,7 +2068,8 @@ condiciones, efecto, fuente, estado y cualquier error de forma.
    `confianza` (0-1), `estado: "por_validar"`, `validacion`, `ambito`
    (regiones, modalidades, especies o `@grupo`, especies_excluidas, meses),
    `condiciones` (todas deben cumplirse), `efecto.logodds` (±2 como mucho;
-   0,4 ≈ 10 puntos), `variable` (la que puntúa; `nombre@etiqueta` si mira
+   0,4 ≈ 10 puntos; `escala` lo gradúa y `atenua: { var, de, a }` lo apaga de
+   forma continua, 1 en `a` y 0 en `de`), `variable` (la que puntúa; `nombre@etiqueta` si mira
    otra ventana de tiempo) y, si es la de un factor base, `sustituye`. Dos
    reglas de la misma variable deben ser excluyentes.
 2. Condiciones: `{ "var": "presion", "agregado": "delta", "desde_h": -6,
@@ -2775,6 +2869,7 @@ GitHub trata los `schedule:` como "cuando pueda": `camaras-salud.yml` y `notific
 - La clave de GitHub (fine-grained, solo este repo, permiso Actions: Read and write) vive en Supabase Vault como `github_lanzar_workflows`. Se guarda con `guardar-token-programador.yml` desde el secret `PROGRAMADOR_GITHUB_TOKEN`; ese workflow hace además una prueba real (204 = funciona). **Si la clave caduca o se rota, actualizar el secret y relanzarlo.** Nunca pegarla en el chat ni en el editor SQL.
 - El `schedule:` de los dos workflows se queda como respaldo, con `concurrency` para que dos ejecuciones no se solapen.
 - Para añadir otra tarea: añadir su fichero a la lista de `lanzar_workflow_github()` y un `cron.schedule` nuevo, en una migración.
+- **Estado a 2026-10-08: no funciona.** `guardar-token-programador.yml` no se ha ejecutado nunca, así que no hay clave en Vault y pg_cron no lanza nada (camaras-salud.yml: 50 ejecuciones por `schedule` y 6 manuales en 10 días, en vez de ~480). Falta que Mikel cree el secret `PROGRAMADOR_GITHUB_TOKEN` y lance ese workflow. `espuma-camaras.yml` se añade a la lista en `20261008210000_programador_espuma_camaras.sql`.
 
 ## Cámaras caídas: fuera de la vista a las 24 h, e IPCamLive resuelto en vivo (2026-09-28)
 
@@ -3565,8 +3660,8 @@ de AEMET con scroll y + / −. Ahora:
   era < 7, se consulta `/rayos-cerca` en ESE punto y, la primera vez que hay
   rayos, el mapa se encuadra con la referencia y la tormenta más cercana
   (punto de borde oscuro + línea discontinua hasta el rayo).
-- Tarjeta abajo (`#rayosHoja`, metida como control de Leaflet `bottomright`,
-  así se apila sobre la atribución y no la tapa): una frase
+- Tarjeta abajo (`#rayosHoja`, la primera del dock de tarjetas del mapa,
+  ver "Tarjetas del mapa en un dock"; no tapa la atribución): una frase
   ("⚡ Rayo más cercano: 12 km al NO de ti · hace 3 min" / "Sin rayos a menos
   de 100 km en los últimos 5 min"), color por distancia (≤15 km rojo, ≤40
   ámbar), leyenda de una línea y un ⓘ con el conteo, la hora del satélite,

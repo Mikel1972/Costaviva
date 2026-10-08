@@ -9,7 +9,8 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import {
   sigmoide, repartirAportes, pesoLogOdds, factorTemperatura, calcularVentana, indiceSpot, fiabilidad,
-  reglasParaModalidad, rioDeSpot, distanciaKm, INDICE_VERSION, VARIABLE_DE_FACTOR,
+  reglasParaModalidad, rioDeSpot, distanciaKm, INDICE_VERSION, VARIABLE_DE_FACTOR, avisoOlaPeligrosa,
+  paraUsuario, TEXTO_INTERNO,
 } from "../assets/js/ventana-actividad.js";
 import {
   enSector, valorExpresion, evaluarCondicion, enAmbito, reglasEnAmbito, efectoRegla, validarRegla,
@@ -159,12 +160,66 @@ test("filtro: la freza avisa (devuélvelo) y nunca suma", () => {
   assert.ok(!("freza" in DATOS.reglas_por_defecto));
 });
 
-test("filtro: tope de seguridad aplicado al final, explicado y la suma sigue cuadrando", () => {
+// Ola peligrosa (decisión de Mikel, 2026-10-08): fuera de la nota. Antes,
+// "tope de seguridad (mar de 3-3,5 m, peligrosa desde costa: máximo 20)".
+test("ola peligrosa: la nota no tiene tope por ola y la suma sigue cuadrando", () => {
   const s = serie(() => ({ ola: 3.2 }));
-  const r = enHora("lubina", s, HOY);
-  assert.ok(r.puntuacion <= 20 && r.marPeligrosa);
-  assert.ok(razon(r, "tope"));
-  assert.equal(50 + r.razones.reduce((a, x) => a + x.aporte, 0), r.puntuacion);
+  for (const id of ["lubina", "calamar", "sargo"]) {
+    const r = enHora(id, s, HOY);
+    assert.ok(r.marPeligrosa && r.avisoOla, id);
+    assert.ok(!razon(r, "tope"), `${id}: sin motivo de tope`);
+    assert.equal(50 + r.razones.reduce((a, x) => a + x.aporte, 0), r.puntuacion, id);
+  }
+  // La lubina desde costa con 3,2 m: el factor de oleaje lo sustituyen las
+  // reglas de mar movida (que no llegan a 3,2 m), así que la nota es la de
+  // los demás factores, muy por encima del antiguo tope de 20.
+  assert.ok(enHora("lubina", s, HOY).puntuacion > 20);
+  // Misma nota que si la regla de oleaje no tuviera umbral de aviso con el
+  // factor saturado a -1 (lo que pasa por encima de max_seguro_m).
+  const sinAviso = structuredClone(DATOS.reglas_por_defecto);
+  sinAviso.oleaje.max_seguro_m = 1.6; // -(3,2-1,5)/0,1 => satura en -1 igual que antes
+  const calamar = enHora("calamar", s, HOY);
+  const calamarSinAviso = calcularVentana(especie("calamar"), sinAviso, s, ctxBase())[idx(s, HOY)];
+  assert.equal(calamar.puntuacion, calamarSinAviso.puntuacion);
+});
+
+test("ola peligrosa: aviso aparte, no es un motivo con flecha", () => {
+  const r = enHora("calamar", serie(() => ({ ola: 3.2 })), HOY);
+  assert.equal(r.avisoOla.texto, "⚠️ Ola peligrosa desde costa (3-3,5 m): extrema la precaución");
+  assert.ok(!r.razones.some((x) => /peligros|precauci/i.test(x.texto)), "el aviso no está entre los motivos");
+  assert.equal(razon(r, "oleaje").texto, "mar de 3-3,5 m");
+  const ind = indiceSpot(DATOS, serie(() => ({ ola: 3.2 })), idx(serie(), HOY), { ...MUNDAKA, modalidad: "costa" });
+  assert.equal(ind.avisoOla.texto, ind.resultado.avisoOla.texto);
+  assert.equal(indiceSpot(DATOS, serie(), idx(serie(), HOY), { ...MUNDAKA, modalidad: "costa" }).avisoOla, null);
+});
+
+test("ola peligrosa: umbrales por modalidad (costa 2,5, embarcación 2,5, submarina 1,5), estrictamente por encima", () => {
+  const umbrales = {
+    costa: DATOS.reglas_por_defecto.oleaje,
+    embarcacion: DATOS.reglas_por_modalidad.embarcacion.oleaje,
+    submarina: DATOS.reglas_por_modalidad.submarina.oleaje,
+  };
+  assert.equal(umbrales.costa.max_seguro_m, 2.5);
+  assert.equal(umbrales.embarcacion.max_seguro_m, 2.5);
+  assert.equal(umbrales.submarina.max_seguro_m, 1.5);
+  for (const o of Object.values(umbrales)) assert.ok(!("tope_si_peligrosa" in o), "ya no hay tope por ola");
+  // Función pura, en el umbral y justo por encima.
+  assert.equal(avisoOlaPeligrosa(2.5, umbrales.costa), null);
+  assert.match(avisoOlaPeligrosa(2.51, umbrales.costa).texto, /^⚠️ Ola peligrosa desde costa \(2,5-3 m\): extrema la precaución$/);
+  assert.equal(avisoOlaPeligrosa(2.5, umbrales.embarcacion), null);
+  assert.match(avisoOlaPeligrosa(2.6, umbrales.embarcacion).texto, /^⚠️ Ola peligrosa para salir en embarcación de recreo \(2,5-3 m\)/);
+  assert.equal(avisoOlaPeligrosa(1.5, umbrales.submarina), null);
+  assert.match(avisoOlaPeligrosa(1.6, umbrales.submarina).texto, /^⚠️ Ola peligrosa para bucear \(1,5-2 m\)/);
+  assert.equal(avisoOlaPeligrosa(null, umbrales.costa), null);
+  // En el cálculo de cada modalidad.
+  const casos = [["costa", 2.5, 2.6], ["embarcacion", 2.5, 2.6], ["submarina", 1.5, 1.6]];
+  for (const [modalidad, en, encima] of casos) {
+    const a = enHora("lubina", serie(() => ({ ola: en })), HOY, { modalidad });
+    const b = enHora("lubina", serie(() => ({ ola: encima })), HOY, { modalidad });
+    assert.equal(a.avisoOla, null, `${modalidad} ${en} m: sin aviso`);
+    assert.ok(b.avisoOla && b.marPeligrosa, `${modalidad} ${encima} m: con aviso`);
+    assert.ok(!razon(b, "tope"), `${modalidad}: sin tope por ola`);
+  }
 });
 
 test("filtro: submarina de noche = 0", () => {
@@ -349,7 +404,7 @@ test("Mikel 1: presión bajando (6 h y 24 h) suma a los depredadores costeros; s
   assert.ok(!razon(enHora("lubina", baja, HOY, { modalidad: "submarina" }), "regla:presion_bajando_6h"));
 });
 
-test("Mikel 2: mar algo movida (1-2,5 m) suma desde costa, sin saltarse el tope de seguridad", () => {
+test("Mikel 2: mar algo movida (1-2,5 m) suma desde costa, y por encima avisa de ola peligrosa", () => {
   const r = enHora("sargo", serie(() => ({ ola: 1.8 })), HOY);
   assert.ok(razon(r, "regla:mar_movida_depredadores_costa").aporte > 0);
   // Sustituye al factor de oleaje: un solo motivo de ola (antes salían
@@ -366,8 +421,9 @@ test("Mikel 2: mar algo movida (1-2,5 m) suma desde costa, sin saltarse el tope 
   assert.ok(!razon(enHora("sargo", serie(() => ({ ola: 0.4 })), HOY), "regla:mar_movida_depredadores_costa"));
   assert.ok(!razon(enHora("sargo", serie(() => ({ ola: 1.8 })), HOY, { modalidad: "embarcacion" }), "regla:mar_movida_depredadores_costa"));
   const peligro = enHora("lubina", serie(() => ({ ola: 2.8 })), HOY);
-  assert.ok(peligro.puntuacion <= 20 && peligro.marPeligrosa, "el tope va aparte aunque el factor esté sustituido");
-  assert.match(razon(peligro, "tope").texto, /peligrosa/);
+  assert.ok(peligro.marPeligrosa && peligro.avisoOla, "el aviso va aparte aunque el factor esté sustituido");
+  assert.match(peligro.avisoOla.texto, /Ola peligrosa desde costa \(2,5-3 m\)/);
+  assert.ok(!razon(peligro, "tope"), "la ola ya no pone tope");
   assert.ok(!razon(peligro, "regla:mar_movida_depredadores_costa"));
 });
 
@@ -721,6 +777,12 @@ test("diario: la serie junta mar y atmósfera por la hora y el resumen guarda ve
   assert.ok(res.indice_factores.razones.every((r) => typeof r.aporte === "number"));
   assert.ok(res.indice_factores.ranking.length >= 2);
   assert.ok(JSON.stringify(res).length < 6000, "compacto");
+  // Ola peligrosa: se guarda como nota aparte (aviso_ola), no como motivo.
+  assert.equal(res.indice_factores.aviso_ola, null);
+  const serieOla = serie(() => ({ ola: 3.2 }), { inicio: Date.UTC(2026, 8, 28) });
+  const resOla = resumenIndice(indiceSpot(DATOS, serieOla, i, { ...MUNDAKA, modalidad: "costa", horaActual: "2026-10-08T13" }));
+  assert.match(resOla.indice_factores.aviso_ola, /^⚠️ Ola peligrosa desde costa/);
+  assert.ok(!resOla.indice_factores.razones.some((r) => r.factor === "tope"));
   assert.equal(resumenIndice({ puntuacion: null, motivo: "sin_especies", version: INDICE_VERSION }).indice_puntuacion, null);
 });
 
@@ -748,4 +810,150 @@ test("la fiabilidad no se enseña al usuario: solo en el detalle del admin", () 
   assert.ok(!/fiabilidad \$\{/.test(diario), "diario.html no la pinta");
   // Ni números por factor ni etiquetas de fuente para el usuario.
   assert.ok(!/regla de Mikel|experiencia local|va-pts/.test(fuera.replace(/<!--[\s\S]*?-->/g, "").replace(/\/\/.*$/gm, "")));
+});
+
+// Lo que ve el usuario (Mikel, 2026-10-08): solo motivos con flecha y avisos
+// útiles. Nada neutro "·", ni "pendiente", "no cuenta" o "fuente": eso va
+// solo al "Detalle (admin)".
+const PROHIBIDO_USUARIO = /·|pendiente|no cuenta|fuente/i;
+test("usuario: solo motivos con flecha y avisos útiles, nada interno (ficha, ventana, diario, posts)", async () => {
+  const escenarios = [
+    ["cantábrico", serie(), MUNDAKA],
+    ["mediterráneo (marea que no cuenta)", serie((i) => ({ nivelMar: 0.03 * Math.sin(i) })), VALENCIA],
+    ["ola peligrosa y viento", serie(() => ({ ola: 3.2, viento: 35 })), MUNDAKA],
+    ["agua fría", serie(() => ({ tempAgua: 11 })), MUNDAKA],
+  ];
+  let internosVistos = 0, neutrosVistos = 0, avisosVistos = 0;
+  for (const [nombre, s, spot] of escenarios) {
+    for (const modalidad of ["costa", "embarcacion", "submarina"]) {
+      for (const e of DATOS.especies) {
+        const res = calcularVentana(e, DATOS.reglas_por_defecto, s, ctxBase({ ...spot, modalidad }));
+        for (const hh of ["06", "07", "13", "19", "23"]) {
+          const r = res[idx(s, `2026-10-08T${hh}:00`)];
+          if (!r) continue;
+          internosVistos += r.razones.filter((x) => TEXTO_INTERNO.test(x.texto)).length;
+          neutrosVistos += r.razones.filter((x) => !x.aporte).length;
+          const u = paraUsuario(r.razones);
+          avisosVistos += u.avisos.length;
+          for (const m of u.motivos) {
+            assert.ok(["▲▲", "▲", "▼", "▼▼"].includes(m.flecha), `${nombre}/${modalidad}/${e.id}: ${m.texto}`);
+            assert.ok(!PROHIBIDO_USUARIO.test(m.texto), `${nombre}/${modalidad}/${e.id}: "${m.texto}"`);
+          }
+          for (const a of u.avisos) {
+            assert.match(a, /^⚠️ /);
+            assert.ok(!PROHIBIDO_USUARIO.test(a), `${nombre}/${modalidad}/${e.id}: "${a}"`);
+          }
+          if (r.avisoOla) assert.ok(!PROHIBIDO_USUARIO.test(r.avisoOla.texto));
+        }
+      }
+    }
+  }
+  // El test tiene sentido: había texto interno y neutro que se ha quedado fuera.
+  assert.ok(internosVistos > 0 && neutrosVistos > 0 && avisosVistos > 0, `${internosVistos}/${neutrosVistos}/${avisosVistos}`);
+
+  // La ficha y la ventana (index.html): el HTML de usuario de htmlPorque.
+  const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
+  const extrae = (ini) => { const a = html.indexOf(ini); let i = html.indexOf("{", html.indexOf(")", a)), d = 0; for (; ; i++) { if (html[i] === "{") d++; if (html[i] === "}" && --d === 0) break; } return html.slice(a, i + 1); };
+  const consts = html.match(/const FLECHA_ETIQUETA = [^\n]+/)[0];
+  const window = { VentanaActividad: { paraUsuario }, esAdminCostaviva: false };
+  const htmlPorque = new Function("window", `${extrae("function escVA(")}\n${consts}\n${extrae("function htmlPorque(")}\nreturn htmlPorque;`)(window);
+  const conTodo = [
+    { factor: "temperatura", texto: "agua a 20 °C (rango de la especie pendiente de fuente abierta: no cuenta)", aporte: 0 },
+    { factor: "marea", texto: "marea casi nula aquí (0,1 m): no cuenta", aporte: 0 },
+    { factor: "luz", texto: "pleno día", aporte: 0 },
+    { factor: "presion", texto: "presión bajando", aporte: 4 },
+    { factor: "oleaje", texto: "mar de 2-2,5 m", aporte: -7 },
+    { factor: "legal", texto: "legal solo desde la salida del sol (08:12)", aporte: 0 },
+  ];
+  const usuario = htmlPorque(conTodo, { etiqueta: "★ criterio experto" });
+  assert.ok(!PROHIBIDO_USUARIO.test(usuario), usuario);
+  assert.ok(!/criterio experto|Detalle \(admin\)/.test(usuario), "ni fiabilidad ni detalle para el usuario");
+  assert.match(usuario, /▼▼<\/span><span>mar de 2-2,5 m/);
+  assert.match(usuario, /⚠️ legal solo desde la salida del sol/);
+  window.esAdminCostaviva = true;
+  const admin = htmlPorque(conTodo, { etiqueta: "★ criterio experto" });
+  assert.match(admin, /Detalle \(admin\)[\s\S]*pendiente de fuente abierta/);
+  assert.match(admin, /Fiabilidad: ★ criterio experto/);
+  // Diario: el mismo filtro de texto interno que paraUsuario.
+  const diario = readFileSync(new URL("../diario.html", import.meta.url), "utf8");
+  assert.ok(diario.includes(`!/${TEXTO_INTERNO.source}/i.test(x.texto || "")`), "diario.html filtra lo interno igual que la ficha");
+  // Posts y reels: motivosDestacados usa el mismo filtro.
+  const { motivosDestacados } = await import("../scripts/marketing/pieza-datos.mjs");
+  const posts = motivosDestacados(conTodo, 10);
+  assert.deepEqual(posts.map((m) => m.texto), ["mar de 2-2,5 m", "presión bajando"]);
+});
+
+// Mar grande desde costa (2026-10-08): sin el tope de ola, por encima de
+// 2,5 m la ola no restaba nada a los depredadores costeros (sus reglas de
+// mar plana/poca/movida sustituyen al factor de oleaje y acaban en 2,5 m).
+test("mar_grande_depredadores: cierra el hueco de más de 2,5 m desde costa; la ola cuenta una vez", () => {
+  // El escenario de la captura del aviso: dorada en Bakio a las 12:00 con 3,1 m.
+  const bakio = (ola) => {
+    const h = [];
+    for (let i = 0; i < 72; i++) {
+      const d = new Date(Date.UTC(2026, 9, 7) + i * 3600e3);
+      h.push({ hora: d.toISOString().slice(0, 13) + ":00", nivelMar: 1.6 * Math.sin((2 * Math.PI * i) / 12.42), ola: i < 24 ? 1.6 : ola,
+        viento: 18, vientoDir: 300, tempAgua: 18.5, presion: 1012 - Math.max(0, i - 30) * 0.25, lluvia: 0 });
+    }
+    return h;
+  };
+  const dorada = (ola, modalidad = "costa", id = "dorada", fondo = null) => enHora(id, bakio(ola), "2026-10-08T12:00", { lat: 43.4297, lon: -2.8103, modalidad, fondo });
+  const r = dorada(3.1);
+  assert.equal(r.puntuacion, 57, "antes daba 72");
+  const ola = r.razones.filter((x) => x.variable === "ola");
+  assert.equal(ola.length, 1, "la ola cuenta una sola vez");
+  assert.equal(ola[0].factor, "regla:mar_grande_depredadores");
+  assert.equal(ola[0].texto, "mar demasiado grande: se apartan de la orilla");
+  assert.ok(ola[0].aporte <= -6, "▼▼");
+  assert.deepEqual([2.0, 2.5, 2.6, 3.1, 4.0].map((o) => dorada(o).puntuacion), [78, 72, 70, 57, 34]);
+  assert.ok(r.avisoOla, "y el aviso aparte");
+  // Crece con la altura hasta ~4 m; en 2,5 m justos manda todavía mar movida.
+  assert.ok(dorada(4).puntuacion < r.puntuacion);
+  assert.equal(dorada(5).puntuacion, dorada(4).puntuacion);
+  assert.ok(razon(dorada(2.4), "regla:mar_movida_depredadores_costa").aporte > 0);
+  assert.ok(!razon(dorada(2.5), "regla:mar_grande_depredadores"));
+
+  // Continuidad (2026-10-08): de 2,0 a 4,0 m en pasos de 0,1 la nota nunca
+  // sube y ningún paso baja más de 8 puntos (sin escalón en 2,5 m), con y
+  // sin orilla de roca.
+  for (const id of ["dorada", "lubina", "sargo"]) {
+    for (const fondo of [null, { orilla_tipo: "roca" }]) {
+      let previa = null;
+      for (let k = 20; k <= 40; k++) {
+        const p = dorada(k / 10, "costa", id, fondo).puntuacion;
+        if (previa !== null) {
+          assert.ok(p <= previa, `${id}${fondo ? " roca" : ""} ${(k / 10).toFixed(1)} m: sube (${previa} → ${p})`);
+          assert.ok(previa - p <= 8, `${id}${fondo ? " roca" : ""} ${(k / 10).toFixed(1)} m: escalón de ${previa - p}`);
+        }
+        previa = p;
+      }
+    }
+  }
+  // "Mar algo movida" no suma por encima de 2,2 m sin ir bajando: entero a 2,2, nada a 2,5.
+  const movida = (o) => razon(dorada(o), "regla:mar_movida_depredadores_costa")?.lo ?? 0;
+  assert.ok(movida(2.2) > movida(2.35) && movida(2.35) > 0 && movida(2.5) === 0);
+  // Embarcación y submarina: el factor de oleaje no está sustituido, así que
+  // ya resta con mar grande (sin hueco) y la regla nueva no aplica.
+  for (const modalidad of ["embarcacion", "submarina"]) {
+    const m = dorada(3.1, modalidad);
+    if (m.prohibida) continue;
+    assert.ok(!razon(m, "regla:mar_grande_depredadores"), modalidad);
+    assert.ok(razon(m, "oleaje").aporte < 0, `${modalidad}: el factor de oleaje resta`);
+  }
+  // Ninguna regla experta sustituye al oleaje fuera de costa.
+  for (const rg of DATOS.reglas_expertas.reglas) {
+    if ((rg.sustituye || []).includes("oleaje")) assert.deepEqual(rg.ambito.modalidades, ["costa"], rg.id);
+  }
+});
+
+test("orilla_roca_espuma: bonus entero de 1,5 a 2,5 m y se apaga hasta 0 a 3 m (con mar grande se apartan)", () => {
+  const fondo = { orilla_tipo: "roca" };
+  const lo = (ola) => razon(enHora("lubina", serie(() => ({ ola })), HOY, { fondo }), "regla:orilla_roca_espuma")?.lo ?? 0;
+  const entero = 0.4 * 0.55;
+  assert.ok(Math.abs(lo(0.2) - entero / 2) < 0.01, "mar plana: la mitad (como lo aprobó Mikel)");
+  for (const o of [1.5, 2.0, 2.5]) assert.ok(Math.abs(lo(o) - entero) < 0.01, `${o} m: entero`);
+  assert.ok(Math.abs(lo(2.75) - entero / 2) < 0.01, "2,75 m: la mitad");
+  for (const o of [3.0, 3.5]) assert.equal(lo(o), 0, `${o} m: nada`);
+  // Sin dato de ola no atenúa (no se inventa).
+  assert.ok(Math.abs(lo(null) - entero / 2) < 0.01);
 });

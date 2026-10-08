@@ -341,3 +341,31 @@ test("boyas del mapa: todas vía Copernicus In Situ (no Puertos del Estado direc
   const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
   assert.ok(html.includes("Generated using E.U. Copernicus Marine Service Information"), "atribución visible");
 });
+
+// El horario de espuma-camaras.yml (y el de pg_cron, que es el mismo) tiene
+// que cubrir toda la luz del año: el primero era 08-15 UTC y se perdía las
+// mañanas y tardes de primavera a otoño (2026-10-08).
+test("espuma-camaras: el cron cubre toda la luz del año y pg_cron usa el mismo", () => {
+  const yml = readFileSync(new URL("../.github/workflows/espuma-camaras.yml", import.meta.url), "utf8");
+  const cron = yml.match(/cron:\s*"([^"]+)"/)[1];
+  const [min, hora] = cron.split(/\s+/);
+  const expandir = (campo) => campo.split(",").flatMap((p) => {
+    const [a, b] = p.split("-").map(Number);
+    return b === undefined ? [a] : Array.from({ length: b - a + 1 }, (_, i) => a + i);
+  });
+  const ejecuciones = expandir(hora).flatMap((h) => expandir(min).map((m) => h * 60 + m)).sort((x, y) => x - y);
+  for (let i = 1; i < ejecuciones.length; i++) assert.ok(ejecuciones[i] - ejecuciones[i - 1] <= 30, "huecos de más de 30 min");
+  for (let d = 0; d < 365; d += 3) {
+    const dia = Date.UTC(2026, 0, 1) + d * 864e5;
+    let primero = null, ultimo = null;
+    for (let m = 0; m < 1440; m += 5) {
+      if (elevacionSolar(dia + m * 6e4, 43.35, -2.5) >= 8) { primero ??= m; ultimo = m; }
+    }
+    const fecha = new Date(dia).toISOString().slice(0, 10);
+    assert.ok(ejecuciones.some((t) => t >= primero && t <= primero + 30), `${fecha}: sin ejecución en la primera media hora de luz`);
+    assert.ok(ejecuciones.some((t) => t <= ultimo && t >= ultimo - 30), `${fecha}: sin ejecución en la última media hora de luz`);
+  }
+  assert.ok(!/GITHUB_EVENT_NAME === "workflow_dispatch"/.test(yml), "workflow_dispatch (pg_cron) también respeta la luz");
+  const sql = readFileSync(new URL("../supabase/migrations/20261008210000_programador_espuma_camaras.sql", import.meta.url), "utf8");
+  assert.ok(sql.includes(`'lanzar-espuma-camaras', '${cron}'`), "pg_cron con el mismo horario que el schedule");
+});
