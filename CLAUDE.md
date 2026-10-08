@@ -5,6 +5,84 @@ cambian las convenciones — no es un historial (para eso está `ROBOT.md`).
 Si algo de aquí queda desactualizado, corrígelo en el momento en que lo
 detectes, no lo dejes para luego.
 
+## Oleaje costero: mar abierto frente a "en la playa" (2026-10-08)
+
+**Caso real (Mikel, 2026-10-08):** Hondarribia salía con "3.7–4.5 m" y su
+webcam enseñaba la bahía de Txingudi casi en calma. Diagnóstico con los
+números de ese día (11:57 hora de Madrid):
+- La celda de Open-Meteo Marine que toca a Hondarribia está en
+  43.458, -1.792: **~9,4 km mar adentro**, frente a la costa francesa. En el
+  Cantábrico la rejilla es de ~9 km y TODAS las celdas de los spots caen a
+  6-19 km de la costa (Mundaka 15 km, Ribadeo 19 km). El modelo da 2,98 m
+  (Hs total, mar de fondo 2,84 m del NW 322° + mar de viento).
+- ×1,38 de Gipuzkoa → 4,11 m; el "rango" es ±10 % artificial alrededor de ese
+  único valor → 3,7–4,5 m. No es swell + mar de viento ni una incertidumbre.
+- La boya Pasaia II medía 3,5-3,8 m (máx. 6,7 m) del NW: **el mar abierto
+  era de verdad de ~3,6 m**. El número no estaba mal calculado; estaba mal
+  rotulado: es mar abierto, y Hondarribia está detrás del cabo Higuer.
+- A la misma hora, las webcams: Zarautz y Deba rompiendo en varias líneas,
+  Orio y Zurriola rompiente moderada, Mutriku dentro del puerto en calma,
+  Hondarribia con una orilla de espuma mínima.
+- Además, la celda de Hondarribia (fila 43.458) es más exterior que la de
+  Pasaia (43.375) con la que se calibró el ×1,38: ese día 2,98×1,38 = 4,1 m
+  frente a 3,6 m de la boya (+14 %). Un solo dato: no se ha tocado el factor.
+
+**Qué se cambió (`functions/_lib/oleaje-costero.js`, tests en
+`test/oleaje-costero.test.js`):**
+- `/prevision` devuelve en cada bloque `alturaMarAbierto` (lo del modelo, con
+  el ×1,38 si toca) y `altura` = lo esperado en el spot; y por spot
+  `zonaOleaje` (abrigada/abierta, parámetros, criterio y a cuántos km está la
+  celda del modelo).
+- **Spots claramente abrigados** (`ABRIGO_SPOTS`): Hondarribia, Pasaia,
+  Getxo (Ereaga), Santander (bahía), Santoña, Ribadeo y Faro/Olhão.
+  Coeficiente por dirección de llegada: ventana abierta (`centro`,
+  `semiancho`) con `coefAbierto`, fuera `coefAbrigado`, transición lineal de
+  30°; sin dirección, el mayor. Son **estimaciones por geometría**, elegidas
+  por el lado alto (subestimar una ola es lo peligroso). Criterio para entrar:
+  el spot está dentro de bahía/puerto/ría/laguna con un obstáculo físico claro
+  Y la celda del modelo está en mar abierto. Por eso NO están Cangas,
+  Vigo/Cíes, Sanxenxo ni Portosín (sus celdas ya están dentro de la ría y el
+  modelo ya da 0,6-0,9 m: corregir otra vez sería contar dos veces).
+  Candidatos dudosos, sin tocar a propósito: Mundaka, Plentzia, Laredo,
+  Camariñas, Getaria, Mutriku, Donostia (la coordenada cae entre La Concha y
+  Zurriola, y su cámara es Zurriola, expuesta), Palma, Platja de Muro.
+- En el panel (`pintarOleajePanel()` en `index.html`): spot abrigado →
+  "~0,6–0,7 m" + "en la playa (zona muy abrigada, estimación) · mar abierto:
+  3,7–4,5 m"; resto → el valor + "mar abierto (modelo a ~N km de la costa);
+  en la orilla puede ser menos". El índice de mar y la ventana de actividad
+  usan la altura en la playa (la ventana recibe los parámetros de
+  `zonaOleaje` y aplica la copia de `coeficienteAbrigoDesdeParametros()`; un
+  test comprueba que la copia es idéntica).
+- **×1,38 (d):** corrige el MAR ABIERTO (la boya Pasaia II es exterior); el
+  abrigo se aplica después, sobre ese valor. Y solo se aplica si el oleaje
+  viene de Open-Meteo (`factorOleaje(lat, lon, fuente)`): con
+  `FUENTE_OLEAJE=copernicus` no, hasta recalibrarlo contra la boya.
+- Pendiente: `diario.html` (contexto de la salida) y las ubicaciones
+  personalizadas siguen guardando/enseñando el mar abierto sin coeficiente.
+
+**Calibración por cámara, sin IA (`scripts/oleaje-camaras/`,
+`espuma-camaras.yml`, 4 veces al día con luz):** fracción de píxeles de
+espuma (claros y casi sin color) en un ROI de mar fijado a mano para las 6
+cámaras de vídeo de la Diputación, junto con el mar abierto del modelo, la
+dirección, el nivel del mar y la boya Pasaia II → `datos-robots/
+oleaje-camaras/espuma.jsonl`. No cambia nada de la app. Con semanas de
+datos: `umbralRotura()` (altura de mar abierto a la que la mitad de las
+lecturas ya ven espuma) por cámara y sector de dirección, y
+`coeficienteRelativo()` frente a Zarautz (expuesta). Los coeficientes
+calibrados se enseñan a Mikel antes de sustituir los estimados.
+Trampas ya vistas el primer día:
+- **Las cámaras de la Diputación hacen ronda de encuadres** (Hondarribia
+  cambia de plano general a primer plano; Deba barre la playa). Por eso cada
+  cámara tiene `referencias/<spot>.jpg` y solo se miden frames con similitud
+  ≥ 0,8 (huella en gris de la mitad inferior); si en ~5 min no pasa por el
+  encuadre, la línea queda `otro_encuadre`. Ese día Zarautz, Deba y Mutriku
+  no volvieron al suyo en 2,5 min: si pasa a menudo, añadir más encuadres de
+  referencia por cámara.
+- Arena con bruma y espuma con luz cálida tienen el mismo color: el ROI no
+  debe tocar la orilla en ninguna marea (revisar con bajamar y pleamar).
+- La lección de 2026-09-15 sigue en pie: nada de contar bordes, y nunca
+  comparar una cámara con otra en absoluto.
+
 ## Open-Meteo: licencia comercial, API key y proxy `/meteo/` (2026-10-08)
 
 **Situación de la licencia.** Costaviva tiene suscripciones de pago, así que
@@ -1229,13 +1307,26 @@ pestaña en la hora actual. Hereda la vigencia por spot del punto anterior
   (anexo II RD 347/2011); mero y rayas mosaica/bramante prohibidos en
   Portugal; el mero no sale en submarina hasta verificar cada comunidad.
   Datos de campo de Mikel en Bizkaia (`mikel_campo_bizkaia`, confianza
-  media): rodaballo desde playa oct-dic, freza en noviembre, mejor con mareas
+  media): rodaballo desde playa oct-dic, mejor con mareas
   vivas (coeficientes altos, no oleaje: la regla de coeficiente la pone el
   motor del índice); rayas y pintarroja desde costa nov-ene (Armintza); pargo
   (`bocinegro`), dorada y dentón en verano a unos 20 m y en invierno más
   profundo (`modalidades.embarcacion.profundidad_temporada`, consejo en la
   pestaña Embarcación con `consejoProfundidad`). La anjova entra en
   `@depredadores_costeros`.
+- **Presencia por región: criterios A/B/C (2026-10-08)** (descritos en la
+  fuente `obis_cc_by` del JSON). A: OBIS con 20 o más registros de 2 o más
+  conjuntos CC BY/CC0. B: talla en la tabla oficial del caladero + al menos 1
+  registro libre en OBIS. C: publicación regional (guía oficial, estudio CC BY,
+  observación de Mikel) o un conjunto científico CC BY/CC0 con 20 o más
+  registros. Con B se completaron especies antiguas (pargo/`bocinegro` en
+  Cantábrico, Mediterráneo, Canarias, Portugal y Azores; dorada, salmonete,
+  pulpo, lenguado…); maragota en Galicia (estudio IIM-CSIC, CC BY) y oblada
+  en Canarias (CC0). **No se usan los rangos de FishBase ni de la Lista Roja
+  de la UICN** aunque se pidan: sus condiciones prohíben el uso comercial.
+  Pulpo en el Mediterráneo peninsular queda fuera a propósito: la pesca
+  recreativa del pulpo en aguas exteriores del Mediterráneo andaluz está
+  prohibida (Orden APA/973/2002, según la guía catalana; sin leer en el BOE).
 - **Ojo, Open-Meteo**: la API gratuita es solo para uso no comercial; toda la
   app (no solo esto) la usa. Pendiente de decidir con Mikel (plan comercial de
   Open-Meteo o alternativa).
@@ -1301,11 +1392,12 @@ fuente ("regla de Mikel", "por validar"...). Igual en la ventana, el índice
 del spot y la línea del diario. El admin (`window.esAdminCostaviva`,
 cosmético) tiene un desplegable "Detalle (admin)" con puntos, fuente, estado,
 confianza y la fiabilidad; la tabla de `admin.html` sigue listando las reglas.
-Hoy hay 10 reglas (8 de Mikel, fuente `mikel_experiencia_local`, tipo
+Hoy hay 18 reglas: 11 de Mikel (fuente `mikel_experiencia_local`, tipo
 `heuristica_experta_local`, estado `por_validar`; los umbrales son la
 traducción de Claude de lo que contó Mikel; y 2 que completan la escala de
 ola de los depredadores costeros con la heurística que ya tenía la app,
-`mar_poca_` 0,5-1 m y `mar_plana_` < 0,5 m):
+`mar_poca_` 0,5-1 m y `mar_plana_` < 0,5 m; y 5 científicas, `tipo:
+cientifica`, del top 10 de evidencia que aprobó Mikel, ver más abajo):
 1. Presión bajando en 6 h (graduada, de -1 a -4 hPa) y en 24 h (≤ -4 hPa):
    suma a los depredadores costeros (`@depredadores_costeros`: lubina, sargo,
    dorada, corvina, dentón, palometa, bicuda, medregal, urta); subiendo tras
@@ -1322,7 +1414,29 @@ ola de los depredadores costeros con la heurística que ya tenía la app,
    sector 33,75°-146,25° = NE..SE, y 8 km/h o más de media): resta.
 5. Bonito (embarcación, Cantábrico, junio-septiembre): al menos el 25 % de
    las horas de hace 5 a hace 1 día con viento WSW-NW de 25 km/h o más suma
-   un poco (confianza 0,3).
+   un poco (confianza 0,3), **solo si el viento ya ha calmado** (media de
+   las últimas 12 h < 20 km/h; evidencia: la mar agitada baja las capturas).
+6. Congrio con luna llena (`congrio_luna_llena`, observación de campo de
+   Mikel): de noche, con la luna iluminada al 80 % o más, resta (más cuanto
+   más llena; costa y embarcación).
+7. Mareas vivas (`coeficientes_altos`, coeficiente ≥ 90, solo desde costa,
+   nunca en embarcación): suma a todas las especies; refuerzo
+   `rodaballo_mareas_vivas_otono` para el rodaballo de playa de octubre a
+   diciembre (Bakio). Es la amplitud de la marea, no el oleaje. El
+   rodaballo entró como especie 29 con solo lo que contó Mikel (Cantábrico,
+   costa, octubre-diciembre); talla, nombres y demás, pendientes de fuente.
+
+**Evidencia científica aprobada (2026-10-08)**: de
+`datos-robots/evidencia/EVIDENCIA_FACTORES.md` y
+`especies.json → propuestas_evidencia`, Mikel aprobó el top 10 (más la mitad
+de peso de la presión por defecto). Activo: `rio_crecido_cefalopodos`
+(-1,0; pulpo, sepia y calamar salen de la regla general del río, y también
+la dorada), `lluvia_fuerte_pulpo`, `enfriamiento_brusco_agua`,
+`bonito_mar_agitada_previa`, `lubina_noche_invierno`; confianza de las 3 de
+presión 0,4/0,35/0,3 y `reglas_por_defecto.presion.peso_lo` 0,12; bonito
+16-18 °C y pulpo 16-21 °C. Lo activado queda anotado en
+`propuestas_evidencia.activadas`; el resto (lisa, levante a 0,5, luna del
+calamar y del congrio en cuartos, sepia) sigue sin activar.
 
 La página de admin (`admin.html`) lista las reglas con su ámbito,
 condiciones, efecto, fuente, estado y cualquier error de forma.
@@ -1342,7 +1456,10 @@ condiciones, efecto, fuente, estado y cualquier error de forma.
 2. Condiciones: `{ "var": "presion", "agregado": "delta", "desde_h": -6,
    "hasta_h": 0, "op": "<=", "valor": -1 }`. Variables horarias: ola, viento,
    viento_dir, presion, temp_agua, lluvia, nivel_mar; de contexto:
-   caudal_rio, rio_desembocadura_km, turbidez, mes, hora_local, luz.
+   caudal_rio, rio_desembocadura_km, turbidez, mes, hora_local, luz,
+   luna (fracción iluminada 0-1, `iluminacionLunar`) y coeficiente_marea
+   (20-120, `coeficienteMareaAstronomico`, ajustado a los coeficientes
+   reales de CALIBRACION.jsonl). Las dos se calculan en el motor, sin red.
    Agregados: media, min, max, suma, delta, fraccion (con `cumple`).
    Operadores: `<`, `<=`, `>`, `>=`, `==`, `!=`, `en`, `entre`, `sector`.
    Ventanas hacia atrás de hasta 5 días (120 h): es lo que trae la serie.
