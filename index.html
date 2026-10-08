@@ -567,16 +567,6 @@
   }
   .explicacion-indice.visible { display: block; }
 
-  .especie-desplegable {
-    background: #FFFFFF; border: 1px solid #DDE2DC; border-radius: 8px; margin-bottom: 6px; overflow: hidden;
-  }
-  .especie-desplegable summary {
-    padding: 8px 10px; cursor: pointer; list-style: none; display: flex; align-items: center; gap: 6px;
-  }
-  .especie-desplegable summary::-webkit-details-marker { display: none; }
-  .especie-desplegable summary::after { content: "›"; margin-left: auto; color: #42585F; transform: rotate(90deg); font-size: 16px; }
-  .especie-desplegable[open] summary::after { transform: rotate(-90deg); }
-  .especie-desplegable .especie-detalle { padding: 0 10px 10px; color: #5F7981; line-height: 1.5; }
   /* Ventana de actividad por horas (2026-10-07, assets/js/ventana-actividad.js) */
   .va-controles { display: flex; gap: 8px; align-items: center; margin: 6px 0 8px; flex-wrap: wrap; }
   .va-controles select { flex: 1; min-width: 0; font: inherit; font-size: 12px; padding: 5px 6px; border: 1px solid #DDE2DC; border-radius: 6px; background: #FFFFFF; color: #0B2532; }
@@ -593,7 +583,6 @@
   .va-freza { margin: 4px 0 6px; padding: 6px 8px; border-radius: 6px; background: #FBF3E2; border: 1px solid #D9C08A; color: #7A5A1E; font-size: 11.5px; line-height: 1.4; }
   .va-nota { margin-top: 6px; font-size: 10.5px; color: #5F7981; line-height: 1.4; }
   .va-nota a { color: #A8792A; }
-  .especie-zona-titulo { color: #5C7680; font-weight: 600; margin-bottom: 6px; font-size: 11.5px; }
 
   /* ---- Móvil ---- */
   @media (max-width: 720px) {
@@ -974,10 +963,6 @@
       <div class="etq" id="panelIndicePescaNota" style="margin-top:4px; font-size:10px; line-height:1.4;"></div>
       <div class="explicacion-indice" id="explicacionIndicePesca">Con nuestro propio algoritmo (temperatura del agua ideal para las especies de temporada + tendencia de la presión), este número es nuestra estimación, en una escala de 0 a 100, de qué probabilidad hay de que hoy sea un buen día de pesca en este punto — una orientación, no una garantía.</div>
     </div>
-    <div class="tarjeta" style="margin-top:10px; border: 1px solid #DDE2DC;">
-      <div class="etq">🎣 ¿Qué esperamos pescar hoy?</div>
-      <div id="panelEspecies" style="font-size:12px; margin-top:4px; line-height:1.5;"></div>
-    </div>
     <div class="tarjeta" id="ventanaActividadBox" style="margin-top:10px; border: 1px solid #DDE2DC;">
       <div class="etq">⏱ VENTANA DE ACTIVIDAD POR HORAS</div>
       <div class="va-controles">
@@ -992,6 +977,7 @@
       <div id="vaEje" class="va-eje"></div>
       <div id="vaDetalle" class="va-detalle">Cargando previsión por horas…</div>
       <div id="vaMejores" class="va-detalle"></div>
+      <div id="vaCebos" class="va-detalle"></div>
       <div id="vaTalla" class="va-nota"></div>
       <div class="va-nota">Puntuación 0-100 con reglas fijas y públicas (marea, luz, temperatura del agua, oleaje, viento, presión y turbidez); toca una hora para ver el porqué. Orientativa: no es una garantía.</div>
     </div>
@@ -3153,27 +3139,10 @@ function abrirPanel(s) {
   }
 
   const { costa, marAdentro } = especiesPorZona(s.tempAgua, s.slug, s.esUsuario ? s.zonaAprox : undefined);
-  const listaEspecie = (e) => {
-    let franja = "";
-    if (e.rangoTemp) {
-      const [min, max] = e.rangoTemp;
-      const color = e.coincide ? "#4F9D69" : "#42585F";
-      franja = ` <span style="color:${color};">[${min}-${max}°C${e.coincide ? " ✓ ahora mismo pega bien" : ""}]</span>`;
-    }
-    // <details> nativo: desplegable sin JS propio, más limpio que mostrar
-    // las 5-6 especies siempre expandidas de golpe (pedido explícito del
-    // usuario, 2026-09-13).
-    return `<details class="especie-desplegable">
-      <summary>${e.emoji} <b>${e.nombre}</b>${franja}</summary>
-      <div class="especie-detalle">${e.nota}<br><span style="color:#5F7981;">🍽 ${e.alimento}</span></div>
-    </details>`;
-  };
-  const bloqueZona = (titulo, lista) =>
-    `<div style="margin-bottom:10px;"><div class="especie-zona-titulo">${titulo}</div>` +
-    (lista.length ? lista.map(listaEspecie).join("") : `<span style="color:#42585F;">ninguna de temporada ahora</span>`) +
-    `</div>`;
-  document.getElementById("panelEspecies").innerHTML =
-    bloqueZona("🪨 COSTA", costa) + bloqueZona("🌊 MAR ADENTRO", marAdentro);
+  // La tarjeta "¿Qué esperamos pescar hoy?" se quitó el 2026-10-08 (pedido de
+  // Mikel): la sustituye la tarjeta "Ventana de actividad por horas". Las
+  // listas costa/marAdentro se siguen calculando porque el índice de pesca de
+  // abajo las usa.
 
   // Índice de pesca: mismo estilo que el índice de mar (un número orientativo,
   // no una promesa), pero construido a partir de dos cosas reales que sí
@@ -3326,6 +3295,7 @@ async function pintarVentanaActividad(s) {
       document.getElementById("vaTira").innerHTML = "";
       document.getElementById("vaEje").innerHTML = "";
       document.getElementById("vaMejores").textContent = "";
+      document.getElementById("vaCebos").textContent = "";
       det.textContent = "Sin datos por horas ahora mismo para este punto.";
     }
   }
@@ -3354,6 +3324,15 @@ function pintarTiraVA(especie, region, fecha, datos) {
   const frezaEl = document.getElementById("vaFreza");
   frezaEl.innerHTML = fz?.enFreza
     ? `<div class="va-freza">🥚 <b>En freza en esta zona</b> (${vaTextoMeses(fz.meses)}). Si lo pescas, te recomendamos devolverlo al agua.${fz.nota ? ` <span style="opacity:.8">${escVA(fz.nota)}</span>` : ""}</div>`
+    : "";
+
+  const cebos = VA.cebosParaRegion(especie, region, 5);
+  const grupoCebos = (tipo) => cebos.filter((c) => c.tipo === tipo).map((c) => escVA(c.nombre)).join(", ");
+  const naturales = grupoCebos("natural"), artificiales = grupoCebos("artificial");
+  const conFuente = cebos.filter((c) => c.fuente);
+  document.getElementById("vaCebos").innerHTML = cebos.length
+    ? `🪝 <b>Cebos típicos:</b> ${[naturales && `${naturales} (natural)`, artificiales && `${artificiales} (artificial)`].filter(Boolean).join(" · ")}`
+      + `<span class="va-nota" style="display:block; margin-top:2px;">${conFuente.length ? `Según <a href="${escVA(conFuente[0].url)}" target="_blank" rel="noopener">${escVA((datos.fuentes[conFuente[0].fuente]?.editor || "la fuente").split(",")[0])}</a>` : "Práctica habitual"}${conFuente.length && conFuente.length < cebos.length ? " y práctica habitual de pesca" : ""}. Revisa la normativa de cebos de tu comunidad.</span>`
     : "";
 
   const tallas = VA.tallasParaRegion(especie, region, VA.enEuskadi(vaEstado.s.lat, vaEstado.s.lon));

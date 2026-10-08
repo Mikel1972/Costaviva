@@ -362,3 +362,14 @@ export function tallasParaRegion(especie, region, enEuskadi = false) {
 export function enEuskadi(lat, lon) {
   return lat >= 43.25 && lat <= 43.5 && lon >= -3.45 && lon <= -1.75;
 }
+
+// Cebos típicos de una especie para una región: primero los que tienen
+// fuente, luego las heurísticas; los marcados con otra región se descartan.
+export function cebosParaRegion(especie, region, max = 5) {
+  return (especie.cebos || [])
+    .filter((c) => !c.region || c.region === region)
+    .map((c, i) => ({ c, i }))
+    .sort((a, b) => (!!b.c.fuente - !!a.c.fuente) || a.i - b.i)
+    .slice(0, max)
+    .map(({ c }) => c);
+}

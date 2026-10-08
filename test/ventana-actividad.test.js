@@ -7,7 +7,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import {
   regionPorCoordenadas, solDelDia, minutosMadrid, analizarMarea,
-  calcularVentana, mejoresVentanas, estadoFreza, tallasParaRegion, enEuskadi, faseLunar,
+  calcularVentana, mejoresVentanas, estadoFreza, tallasParaRegion, enEuskadi, faseLunar, cebosParaRegion,
 } from "../assets/js/ventana-actividad.js";
 
 const DATOS = JSON.parse(readFileSync(new URL("../assets/datos/especies.json", import.meta.url), "utf8"));
@@ -195,4 +195,30 @@ test("especies.json: meses válidos y regiones conocidas", () => {
       assert.ok(p.meses.every((m) => Number.isInteger(m) && m >= 1 && m <= 12), `${e.id} ${reg}: mes inválido`);
     }
   }
+});
+
+test("especies.json: las 28 especies tienen cebos, cada uno con fuente o criterio", () => {
+  assert.equal(DATOS.especies.length, 28);
+  for (const e of DATOS.especies) {
+    assert.ok(Array.isArray(e.cebos) && e.cebos.length >= 1, `${e.id} sin cebos`);
+    for (const c of e.cebos) {
+      assert.ok(c.nombre && ["natural", "artificial"].includes(c.tipo) && c.modalidad, `${e.id}: cebo mal formado`);
+      if (c.fuente) {
+        assert.ok(DATOS.fuentes[c.fuente], `${e.id}: fuente ${c.fuente} desconocida`);
+        assert.match(c.url || "", /^https:\/\//);
+        assert.match(c.fecha_revision || "", /^\d{4}-\d{2}-\d{2}$/);
+      } else {
+        assert.equal(c.tipo_fuente, "heuristica_experta", `${e.id}: ${c.nombre} sin fuente ni marca de heurística`);
+        assert.ok(c.criterio, `${e.id}: ${c.nombre} sin criterio`);
+      }
+      if (c.region) assert.ok(DATOS.regiones.includes(c.region));
+    }
+  }
+});
+
+test("cebos por región: primero los que tienen fuente, máximo 5", () => {
+  const c = cebosParaRegion(especie("lubina"), "cantabrico");
+  assert.ok(c.length <= 5 && c[0].fuente);
+  const idxHeur = c.findIndex((x) => !x.fuente);
+  if (idxHeur >= 0) assert.ok(c.slice(idxHeur).every((x) => !x.fuente));
 });

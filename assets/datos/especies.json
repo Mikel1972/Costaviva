@@ -142,6 +142,15 @@
    "licencia": "CC BY-NC 4.0 — NO usable en Costaviva (comercial)",
    "fecha_consulta": "2026-10-07",
    "nota": "Solo aparece para marcar datos heredados que hay que sustituir. No añadir datos nuevos de aquí."
+  },
+  "pv_cebos": {
+   "titulo": "Gobierno Vasco — La alimentación de las especies y los cebos a utilizar en la pesca marítima recreativa",
+   "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+   "editor": "Gobierno Vasco, Dpto. de Alimentación, Desarrollo Rural, Agricultura y Pesca",
+   "tipo": "oficial",
+   "licencia": "información del sector público (reutilizable citando la fuente)",
+   "fecha_documento": "2018-01-18",
+   "fecha_consulta": "2026-10-08"
   }
  },
  "jurisdicciones": {
@@ -214,7 +223,8 @@
   "ES-CT": {
    "estado": "pendiente",
    "pendiente": [
-    "Cataluña (DOGC)"
+    "Cataluña (DOGC): nuevo modelo de pesca recreativa desde el 1/9/2025 (tallas, cupos, vedas de 44 especies y, según prensa, prohibición del cebo vivo) — sin verificar en el DOGC",
+    "posible fuente de freza/talla de madurez: guía de especies de pesca recreativa de la DGPMPS (Generalitat)"
    ]
   },
   "ES-IB": {
@@ -323,6 +333,7 @@
    "criterio": "Sin respaldo verificado para darle peso propio; su efecto sobre la marea ya entra por el rango de marea. Solo se muestra como información."
   }
  },
+ "cebos_criterio": "Cada cebo lleva fuente (url + fecha_revision) o, si es práctica habitual sin fuente abierta citable, tipo_fuente 'heuristica_experta' con su criterio. Nunca copiar manuales de pago ni contenido de apps competidoras (Fizk).",
  "fishbase_pendientes": [
   {
    "donde": "index.html ESPECIES",
@@ -729,7 +740,53 @@
     "nombre gallego",
     "rango de temperatura no-NC",
     "tallas de aguas interiores de cada comunidad"
-   ]
+   ],
+   "cebos": [
+    {
+     "nombre": "Mejillón",
+     "tipo": "natural",
+     "modalidad": "roca",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "El Gobierno Vasco lo cita expresamente para la lubina."
+    },
+    {
+     "nombre": "Almeja",
+     "tipo": "natural",
+     "modalidad": "roca",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Citada para pescados de roca, la dorada y el róbalo (lubina)."
+    },
+    {
+     "nombre": "Cangrejo (mejor el ermitaño)",
+     "tipo": "natural",
+     "modalidad": "surfcasting",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "'El mejor cebo que se puede ofrecer a cualquier clase de peces'."
+    },
+    {
+     "nombre": "Quisquilla o camarón",
+     "tipo": "natural",
+     "modalidad": "flotador",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Buen cebo para flotador o líneas a la deriva."
+    },
+    {
+     "nombre": "Vinilo o minnow",
+     "tipo": "artificial",
+     "modalidad": "spinning",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
   },
   {
    "id": "sargo",
@@ -1073,7 +1130,44 @@
     "talla del sargo en el Cantábrico (no aparece en el anexo I del RD 560/1995)",
     "nombres eu/gl/ca",
     "rango de temperatura no-NC"
-   ]
+   ],
+   "cebos": [
+    {
+     "nombre": "Gusana",
+     "tipo": "natural",
+     "modalidad": "roca",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "'Especialmente para pescados de roca'; que el sargo entra en ese grupo es nuestra lectura."
+    },
+    {
+     "nombre": "Lapa",
+     "tipo": "natural",
+     "modalidad": "roca",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "'Eficaz para peces de roca pero no para grandes piezas'."
+    },
+    {
+     "nombre": "Mejillón",
+     "tipo": "natural",
+     "modalidad": "roca",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Coherente con su alimentación (campo alimentacion de esta ficha); sin fuente oficial que lo cite como cebo (heurística experta)."
+    },
+    {
+     "nombre": "Cangrejo",
+     "tipo": "natural",
+     "modalidad": "roca",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Cebo de eficacia casi general."
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
   },
   {
    "id": "dorada",
@@ -1277,7 +1371,44 @@
     "presencia en Cantábrico/Galicia/Portugal",
     "freza en el Atlántico",
     "nombres eu/gl/ca"
-   ]
+   ],
+   "cebos": [
+    {
+     "nombre": "Almeja",
+     "tipo": "natural",
+     "modalidad": "surfcasting",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Citada expresamente para la dorada."
+    },
+    {
+     "nombre": "Mejillón",
+     "tipo": "natural",
+     "modalidad": "roca",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Citado expresamente para la dorada."
+    },
+    {
+     "nombre": "Cangrejo",
+     "tipo": "natural",
+     "modalidad": "surfcasting",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Cebo de eficacia casi general."
+    },
+    {
+     "nombre": "Gusana",
+     "tipo": "natural",
+     "modalidad": "surfcasting",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
   },
   {
    "id": "salmonete",
@@ -1381,7 +1512,26 @@
    "reglas": {},
    "pendiente": [
     "hábitat, profundidad, presencia, freza, temperatura y alimentación con fuente no-NC"
-   ]
+   ],
+   "cebos": [
+    {
+     "nombre": "Gusana",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Los gusanos de mar son de eficacia casi general; no cita al salmonete en concreto."
+    },
+    {
+     "nombre": "Tira de calamar",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
   },
   {
    "id": "jurel",
@@ -1576,7 +1726,26 @@
    "pendiente": [
     "hábitat, profundidad, temperatura, alimentación",
     "freza fuera del Golfo de Bizkaia"
-   ]
+   ],
+   "cebos": [
+    {
+     "nombre": "Plumas o sabiki",
+     "tipo": "artificial",
+     "modalidad": "puerto/embarcación",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+    },
+    {
+     "nombre": "Tira de sardina",
+     "tipo": "natural",
+     "modalidad": "flotador",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "La sardina es 'muy eficaz' en líneas a la deriva y aparejos flotantes."
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
   },
   {
    "id": "caballa",
@@ -1777,7 +1946,33 @@
    "pendiente": [
     "hábitat, profundidad, temperatura",
     "presencia en Mediterráneo"
-   ]
+   ],
+   "cebos": [
+    {
+     "nombre": "Plumas o sabiki",
+     "tipo": "artificial",
+     "modalidad": "puerto/embarcación",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+    },
+    {
+     "nombre": "Cucharilla",
+     "tipo": "artificial",
+     "modalidad": "spinning",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+    },
+    {
+     "nombre": "Tira de sardina",
+     "tipo": "natural",
+     "modalidad": "flotador",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "La sardina es 'muy eficaz' en líneas a la deriva y aparejos flotantes."
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
   },
   {
    "id": "faneca",
@@ -1871,7 +2066,37 @@
    "reglas": {},
    "pendiente": [
     "casi todo: hábitat, freza, temperatura, alimentación"
-   ]
+   ],
+   "cebos": [
+    {
+     "nombre": "Mejillón",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Citado expresamente para la faneca."
+    },
+    {
+     "nombre": "Gusana",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Cebo de eficacia casi general."
+    },
+    {
+     "nombre": "Tira de calamar",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "'Calamares, jibias y pulpo: cebo muy efectivo para cualquier clase de peces'."
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
   },
   {
    "id": "congrio",
@@ -2038,7 +2263,28 @@
    "pendiente": [
     "freza",
     "rango de temperatura no-NC"
-   ]
+   ],
+   "cebos": [
+    {
+     "nombre": "Caballa o sardina en trozos",
+     "tipo": "natural",
+     "modalidad": "fondo nocturno",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Pescado azul oleoso: 'desprende un olor que atrae a la pesca'."
+    },
+    {
+     "nombre": "Calamar o jibia",
+     "tipo": "natural",
+     "modalidad": "fondo nocturno",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Cebo muy efectivo para cualquier pez."
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
   },
   {
    "id": "pulpo",
@@ -2158,7 +2404,24 @@
     "freza Galicia/Portugal (hay estudios; falta uno con licencia abierta verificada)",
     "vedas autonómicas (Galicia, Asturias)",
     "¿es especie autorizada en recreativa en cada CCAA?"
-   ]
+   ],
+   "cebos": [
+    {
+     "nombre": "Señuelo para pulpo (pulpera o jibionera)",
+     "tipo": "artificial",
+     "modalidad": "puerto/embarcación",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta). Comprueba antes si la comunidad autónoma permite el pulpo en recreativa."
+    },
+    {
+     "nombre": "Cangrejo atado",
+     "tipo": "natural",
+     "modalidad": "puerto",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
   },
   {
    "id": "sepia",
@@ -2309,7 +2572,24 @@
     "freza",
     "presencia Cantábrico/Atlántico",
     "fuente de las 12.000 capturas"
-   ]
+   ],
+   "cebos": [
+    {
+     "nombre": "Jibionera o egi",
+     "tipo": "artificial",
+     "modalidad": "eging",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+    },
+    {
+     "nombre": "Pez pequeño muerto en potera",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
   },
   {
    "id": "calamar",
@@ -2503,7 +2783,24 @@
    "pendiente": [
     "freza",
     "rango de temperatura no-NC"
-   ]
+   ],
+   "cebos": [
+    {
+     "nombre": "Egi (potera de eging)",
+     "tipo": "artificial",
+     "modalidad": "eging",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Recogido en las notas de especies de la app (guías de pesca recreativa citadas en index.html); sin fuente oficial todavía (heurística experta). Ojo: atraer con luces está prohibido en recreativa (RD 347/2011, art. 6)."
+    },
+    {
+     "nombre": "Potera con sardina",
+     "tipo": "natural",
+     "modalidad": "embarcación",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
   },
   {
    "id": "abadejo",
@@ -2680,7 +2977,35 @@
    "pendiente": [
     "verificar Reg. (UE) 2026/249 (veda y cupo recreativo 2026) y la talla UE vigente",
     "rango de temperatura no-NC"
-   ]
+   ],
+   "cebos": [
+    {
+     "nombre": "Chirla o berberecho",
+     "tipo": "natural",
+     "modalidad": "embarcación",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Citados expresamente 'para el abadejo'."
+    },
+    {
+     "nombre": "Mejillón",
+     "tipo": "natural",
+     "modalidad": "embarcación",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Citado expresamente para abadejos."
+    },
+    {
+     "nombre": "Vinilo o jig",
+     "tipo": "artificial",
+     "modalidad": "embarcación",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
   },
   {
    "id": "bonito_norte",
@@ -2773,7 +3098,26 @@
     "talla ICCAT/UE si existe",
     "freza",
     "nombres eu/pt"
-   ]
+   ],
+   "cebos": [
+    {
+     "nombre": "Señuelos de curricán (plumas, pulpitos)",
+     "tipo": "artificial",
+     "modalidad": "embarcación",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+    },
+    {
+     "nombre": "Sardina (brumeo y anzuelo)",
+     "tipo": "natural",
+     "modalidad": "embarcación",
+     "fuente": "boe_rd347",
+     "url": "https://www.boe.es/eli/es/rd/2011/03/11/347/con",
+     "fecha_revision": "2026-10-08",
+     "nota": "El RD 347/2011 (art. 6) prohíbe atraer peces salvo el brumeo con pequeños pelágicos."
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
   },
   {
    "id": "lisa",
@@ -2920,7 +3264,17 @@
    "pendiente": [
     "freza",
     "temperatura"
-   ]
+   ],
+   "cebos": [
+    {
+     "nombre": "Pan o masilla",
+     "tipo": "natural",
+     "modalidad": "flotador/puerto",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
   },
   {
    "id": "breca",
@@ -3081,7 +3435,28 @@
    "pendiente": [
     "freza",
     "temperatura no-NC"
-   ]
+   ],
+   "cebos": [
+    {
+     "nombre": "Gusana",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Cebo de eficacia casi general."
+    },
+    {
+     "nombre": "Tira de calamar",
+     "tipo": "natural",
+     "modalidad": "fondo",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Cebo muy efectivo para cualquier pez."
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
   },
   {
    "id": "lenguado",
@@ -3224,7 +3599,17 @@
    "pendiente": [
     "freza (ICES tiene stock annex de Solea solea 8c9a)",
     "temperatura no-NC"
-   ]
+   ],
+   "cebos": [
+    {
+     "nombre": "Gusana",
+     "tipo": "natural",
+     "modalidad": "surfcasting nocturno",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Recogido en las notas de especies de la app (guías de pesca recreativa citadas en index.html); sin fuente oficial todavía (heurística experta)."
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
   },
   {
    "id": "corvina",
@@ -3351,7 +3736,26 @@
    "pendiente": [
     "talla en España (no aparece en el RD 560/1995)",
     "freza con fuente"
-   ]
+   ],
+   "cebos": [
+    {
+     "nombre": "Cangrejo ermitaño",
+     "tipo": "natural",
+     "modalidad": "surfcasting nocturno",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "El Gobierno Vasco lo da como el mejor cebo en general; la app ya lo citaba para la corvina en Rota."
+    },
+    {
+     "nombre": "Vinilo grande",
+     "tipo": "artificial",
+     "modalidad": "spinning",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
   },
   {
    "id": "denton",
@@ -3451,7 +3855,26 @@
     "hábitat, profundidad, freza y temperatura con fuente no-NC",
     "talla mínima (no aparece en RD 560/1995 ni en el anexo IX)"
    ],
-   "cientifico_nota": "Nombre científico no cotejado aún con una lista oficial."
+   "cientifico_nota": "Nombre científico no cotejado aún con una lista oficial.",
+   "cebos": [
+    {
+     "nombre": "Calamar o pulpo",
+     "tipo": "natural",
+     "modalidad": "embarcación",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Cebo muy efectivo para cualquier pez."
+    },
+    {
+     "nombre": "Jig o vinilo",
+     "tipo": "artificial",
+     "modalidad": "embarcación",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
   },
   {
    "id": "urta",
@@ -3524,7 +3947,26 @@
     "nombre científico",
     "talla mínima"
    ],
-   "cientifico_nota": "La app no da nombre científico y no se ha verificado (probablemente Pagrus auriga)."
+   "cientifico_nota": "La app no da nombre científico y no se ha verificado (probablemente Pagrus auriga).",
+   "cebos": [
+    {
+     "nombre": "Cangrejo",
+     "tipo": "natural",
+     "modalidad": "roca/embarcación",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Cebo de eficacia casi general."
+    },
+    {
+     "nombre": "Choco o calamar",
+     "tipo": "natural",
+     "modalidad": "embarcación",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Coherente con su alimentación (campo alimentacion de esta ficha); sin fuente oficial que lo cite como cebo (heurística experta)."
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
   },
   {
    "id": "bocinegro",
@@ -3652,7 +4094,26 @@
    "reglas": {},
    "pendiente": [
     "hábitat, profundidad, freza y temperatura con fuente no-NC"
-   ]
+   ],
+   "cebos": [
+    {
+     "nombre": "Calamar",
+     "tipo": "natural",
+     "modalidad": "embarcación",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Cebo muy efectivo para cualquier pez."
+    },
+    {
+     "nombre": "Gamba o camarón",
+     "tipo": "natural",
+     "modalidad": "embarcación",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Coherente con su alimentación (campo alimentacion de esta ficha); sin fuente oficial que lo cite como cebo (heurística experta)."
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
   },
   {
    "id": "vieja",
@@ -3741,7 +4202,19 @@
    "reglas": {},
    "pendiente": [
     "hábitat, profundidad, freza y temperatura con fuente no-NC"
-   ]
+   ],
+   "cebos": [
+    {
+     "nombre": "Cangrejo",
+     "tipo": "natural",
+     "modalidad": "roca",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Cebo de eficacia casi general."
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
   },
   {
    "id": "sama",
@@ -3820,7 +4293,26 @@
    "pendiente": [
     "hábitat, profundidad, freza y temperatura con fuente no-NC"
    ],
-   "cientifico_nota": "RD 560/1995 anexo III: 'Sama de pluma (Dentex filosus) — Sama, serruda, pargo macho'. Falta confirmar que es la 'sama' de la app."
+   "cientifico_nota": "RD 560/1995 anexo III: 'Sama de pluma (Dentex filosus) — Sama, serruda, pargo macho'. Falta confirmar que es la 'sama' de la app.",
+   "cebos": [
+    {
+     "nombre": "Calamar",
+     "tipo": "natural",
+     "modalidad": "embarcación",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Cebo muy efectivo para cualquier pez."
+    },
+    {
+     "nombre": "Camarón",
+     "tipo": "natural",
+     "modalidad": "embarcación",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Coherente con su alimentación (campo alimentacion de esta ficha); sin fuente oficial que lo cite como cebo (heurística experta)."
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
   },
   {
    "id": "medregal",
@@ -3893,7 +4385,26 @@
     "nombre científico",
     "talla"
    ],
-   "cientifico_nota": "Sin verificar (género Seriola)."
+   "cientifico_nota": "Sin verificar (género Seriola).",
+   "cebos": [
+    {
+     "nombre": "Jig",
+     "tipo": "artificial",
+     "modalidad": "embarcación",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+    },
+    {
+     "nombre": "Calamar",
+     "tipo": "natural",
+     "modalidad": "embarcación",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Cebo muy efectivo para cualquier pez."
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
   },
   {
    "id": "bicuda",
@@ -3970,7 +4481,17 @@
     "nombre científico",
     "talla"
    ],
-   "cientifico_nota": "Sin verificar (género Sphyraena)."
+   "cientifico_nota": "Sin verificar (género Sphyraena).",
+   "cebos": [
+    {
+     "nombre": "Señuelo de spinning o curricán",
+     "tipo": "artificial",
+     "modalidad": "spinning/embarcación",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
   },
   {
    "id": "chicharro_canario",
@@ -4052,7 +4573,17 @@
    "pendiente": [
     "hábitat, profundidad, freza y temperatura con fuente no-NC"
    ],
-   "cientifico_nota": "RD 560/1995 anexo III: 'Jureles (Trachurus spp) — Chicharro'. Especie concreta sin verificar."
+   "cientifico_nota": "RD 560/1995 anexo III: 'Jureles (Trachurus spp) — Chicharro'. Especie concreta sin verificar.",
+   "cebos": [
+    {
+     "nombre": "Plumas o sabiki",
+     "tipo": "artificial",
+     "modalidad": "puerto/embarcación",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
   },
   {
    "id": "salema",
@@ -4171,7 +4702,26 @@
    "reglas": {},
    "pendiente": [
     "hábitat, profundidad, freza y temperatura con fuente no-NC"
-   ]
+   ],
+   "cebos": [
+    {
+     "nombre": "Pan o masilla",
+     "tipo": "natural",
+     "modalidad": "flotador",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+    },
+    {
+     "nombre": "Alga",
+     "tipo": "natural",
+     "modalidad": "flotador",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "El Gobierno Vasco cita los cebos vegetales; que la salema come casi solo algas viene de su ficha."
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
   },
   {
    "id": "cabrilla",
@@ -4252,7 +4802,26 @@
    "reglas": {},
    "pendiente": [
     "hábitat, profundidad, freza y temperatura con fuente no-NC"
-   ]
+   ],
+   "cebos": [
+    {
+     "nombre": "Gusana",
+     "tipo": "natural",
+     "modalidad": "roca/embarcación",
+     "fuente": "pv_cebos",
+     "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
+     "fecha_revision": "2026-10-08",
+     "nota": "Cebo de eficacia casi general."
+    },
+    {
+     "nombre": "Gamba",
+     "tipo": "natural",
+     "modalidad": "roca/embarcación",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Coherente con su alimentación (campo alimentacion de esta ficha); sin fuente oficial que lo cite como cebo (heurística experta)."
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
   },
   {
    "id": "palometa",
@@ -4330,7 +4899,17 @@
     "nombre científico",
     "talla"
    ],
-   "cientifico_nota": "Sin verificar (la app usa un dato genérico de género)."
+   "cientifico_nota": "Sin verificar (la app usa un dato genérico de género).",
+   "cebos": [
+    {
+     "nombre": "Señuelo pequeño de superficie",
+     "tipo": "artificial",
+     "modalidad": "spinning",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta). Especie de la app sin nombre científico verificado."
+    }
+   ],
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
   }
  ]
 }

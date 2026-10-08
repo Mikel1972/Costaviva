@@ -943,7 +943,7 @@ Ahora además hereda la vigencia por spot del punto anterior.
 - **`assets/datos/especies.json`**: ficha versionada de cada especie para toda
   España y Portugal (nombres es/eu/gl/ca/pt, científico, hábitat, profundidad,
   presencia por región, freza por región, actividad, temperatura, alimentación,
-  tallas mínimas y vedas por jurisdicción) con **fuente por campo** (ids de la
+  tallas mínimas y vedas por jurisdicción, cebos típicos) con **fuente por campo** (ids de la
   tabla `fuentes`, cada una con licencia y fecha) y la lista `pendiente` de lo
   que falta. `jurisdicciones` dice qué normativa está revisada y cuál no (UE,
   Estado, cada comunidad autónoma, Portugal, Azores, Madeira). Vive en
@@ -1356,7 +1356,9 @@ móvil:
   que explica en una frase qué representa cada número (0-100, según
   nuestro propio algoritmo). "Qué se puede pescar" pasa a `<details>`
   por especie bajo el titular "¿Qué esperamos pescar hoy?", en vez de
-  mostrar las 5-6 especies siempre expandidas de golpe.
+  mostrar las 5-6 especies siempre expandidas de golpe. **Quitada el
+  2026-10-08** (pedido de Mikel): la sustituye la tarjeta "Ventana de
+  actividad por horas" (ver "Fichas de especies y ventana de actividad").
 
 **3 bugs reales encontrados y corregidos probando en real en un iPhone
 (PWA instalada), el mismo día del rediseño de arriba** — ninguno se

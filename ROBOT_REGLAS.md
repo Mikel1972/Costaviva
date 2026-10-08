@@ -1648,6 +1648,15 @@ cosa "non-commercial", y el contenido de apps competidoras (Fizk: su manual,
 su Academia, su Fizk Score; tampoco Fishbrain, Tides4fishing...). Una guía de
 pesca o una web de divulgación puede servir de pista, nunca de fuente.
 
+**Cebos típicos** (`cebos` de cada especie, añadido 2026-10-08): cada cebo
+lleva `nombre`, `tipo` (`natural`/`artificial`), `modalidad` y, opcional,
+`region`. Con fuente: `fuente` + `url` + `fecha_revision` (guías de
+gobiernos autonómicos o de Portugal, federaciones, universidades, IEO-CSIC).
+Sin fuente abierta citable: `tipo_fuente: "heuristica_experta"` + `criterio`.
+Sustituye heurísticas por fuentes cuando las encuentres y vigila normas de
+cebos (p. ej. cebo vivo prohibido en alguna comunidad). Nunca copies manuales
+de pago ni contenido de apps competidoras (Fizk).
+
 **Reglas de la ventana de actividad** (`reglas` y `reglas_por_defecto`): cada
 peso o preferencia lleva `fuente` o `criterio`, y si es una heurística de
 pescadores se marca `"tipo": "heuristica_experta"`. La marea se escala con el
