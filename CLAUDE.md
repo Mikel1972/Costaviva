@@ -73,7 +73,8 @@ YouTube o MEO no dejan republicar) por piezas en el estilo de la app.
   en un marco de móvil) + cierre (1,5 s, claim y CTA). Rotación
   `ROTACION_REELS`: condiciones, diario, condiciones, grupos, especie,
   alarma (estado en `rotacion-reels.json`). MP4 H.264 + audio mudo, < 8 MB;
-  en el árbol solo quedan los 4 últimos. ~7 min de Actions por reel.
+  en el árbol solo quedan los 4 últimos. ~10 min de Actions por reel
+  (el de ejemplo: 10,5 s, 1,8 MB).
   `publicar-borrador-instagram.mjs reel-pendiente.json` crea el contenedor
   `REELS` y espera a `status_code=FINISHED`; se publica con el mismo
   workflow manual "Publicar post de Instagram".
