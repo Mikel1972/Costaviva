@@ -613,6 +613,7 @@
   .panel .tarjeta { background: var(--superficie); border-radius: 18px; padding: 12px 14px; box-shadow: 0 4px 14px rgba(26,21,51,0.07); }
   .panel .etq { font-size: 11px; font-weight: 800; letter-spacing: 0.06em; color: var(--tinta-2); }
   .panel .tarjeta .etq + .etq { font-weight: 600; letter-spacing: 0; font-size: 12px; }
+  .panel .ola-camara-ref { font-size: 11.5px; font-weight: 500; color: var(--tinta-2); margin-top: 3px; line-height: 1.35; }
   .atribucion-meteo { margin-top: 12px; font-size: 10.5px; line-height: 1.4; color: var(--tinta-2); text-align: center; }
   .atribucion-meteo a { color: inherit; text-decoration: underline; }
   .panel .tarjeta .val { font-family: var(--f-texto); font-size: 22px; font-weight: 800; letter-spacing: -0.3px; color: var(--tinta); margin-top: 3px; }
@@ -1093,6 +1094,9 @@
         <div class="val" id="panelOla"></div>
         <div class="etq" id="panelOlaDir"></div>
         <div class="etq" id="panelOlaNota" style="text-transform:none; letter-spacing:0; margin-top:3px;"></div>
+        <!-- Referencia de cámara (2026-10-08): la lectura de la cámara propia
+             mientras aún no sustituye al modelo. Dato secundario. -->
+        <div class="ola-camara-ref" id="panelOlaCamara" hidden></div>
         <!-- "Ola real que veo" (2026-10-08): solo con sesión. La banda que
              elige el usuario entra en la calibración de las cámaras
              (oleaje_etiquetas, migración 20261008180000). -->
@@ -1824,6 +1828,8 @@ async function actualizarDesdeBackend() {
       s.oleajeCamara = sBackend.oleajeCamara || null;
       s.fuenteAltura = b.fuenteAltura || null;
       s.alturaModelo = b.alturaModelo || null;
+      // Referencia de cámara (cámara propia que aún no sustituye al modelo).
+      s.camaraReferencia = sBackend.camaraReferencia || null;
       s.periodo = b.periodo;
       s.dirOla = b.dirOla;
       if (b.viento !== null) { s.viento = b.viento; s.dirViento = b.dirViento; }
@@ -3415,7 +3421,30 @@ function textoRangoOla(r) {
   const a = numeroOla(r[0]), b = numeroOla(r[1]);
   return a === b ? `${a} m` : `${a}–${b} m`;
 }
+// Referencia de cámara (2026-10-08, aprobado por Mikel): mientras la cámara
+// propia del spot no sustituye al modelo (ruidosa o sin etiquetas), su
+// lectura va debajo, en secundario: la cifra principal sigue siendo modelo ×
+// coeficiente. /prevision ya filtra (< 3 h, luz, encuadre, espuma, cámara
+// propia); aquí solo se vuelve a mirar la edad, por si la página lleva rato
+// abierta. Redondeo a 0,1 m y "~": no hay más precisión que esa.
+const VIGENCIA_REF_CAMARA_MS = 3 * 3600e3;
+function textoReferenciaCamara(ref, ahoraMs = Date.now()) {
+  if (!ref || !Number.isFinite(ref.altura)) return "";
+  const t = Date.parse(ref.fecha);
+  if (!Number.isFinite(t) || ahoraMs - t > VIGENCIA_REF_CAMARA_MS) return "";
+  const r = Array.isArray(ref.rango) && ref.rango[0] != null && ref.rango[1] != null && ref.rango[0] !== ref.rango[1]
+    ? `${numeroOla(ref.rango[0])}–${numeroOla(ref.rango[1])} m, ` : "";
+  return `La cámara apunta a ~${numeroOla(ref.altura)} m (${r}sin calibrar · ${ref.hora})`;
+}
+function pintarReferenciaCamara(s) {
+  const el = document.getElementById("panelOlaCamara");
+  const txt = s.fuenteAltura === "camara" ? "" : textoReferenciaCamara(s.camaraReferencia);
+  el.textContent = txt;
+  el.hidden = !txt;
+  el.title = txt ? `Lectura de la espuma en la webcam de ${s.camaraReferencia.nombre}. Aún no está calibrada lo bastante para sustituir al modelo: es solo una referencia.` : "";
+}
 function pintarOleajePanel(s) {
+  pintarReferenciaCamara(s);
   const val = document.getElementById("panelOla");
   const nota = document.getElementById("panelOlaNota");
   const z = s.zonaOleaje;
