@@ -7,10 +7,12 @@
 // propio repo -- nunca inventa nada, mismo criterio que el resto de robots:
 //   - "condiciones": oleaje/viento/marea reales de un spot destacado, tal
 //     cual los devuelve /prevision (el mismo endpoint que usa la app).
-//   - "especies": una especie de temporada ahora mismo, con el texto ya
-//     documentado y sourced en index.html (ESPECIES, campo "nota" -- ver el
-//     comentario de esa constante para las fuentes: FishBase, aipeces.com,
-//     etc.). Se reutiliza ese texto casi literal, no se genera con un LLM.
+//   - "especies": una especie de temporada ahora mismo en la región de la
+//     zona que toca, con los datos de assets/datos/especies.json (temporada
+//     por región con su fuente, freza, talla mínima, cebos). Desde el
+//     2026-10-08 ya no lee la lista ESPECIES de index.html (retirada): nunca
+//     publica datos de FishBase (CC BY-NC) y nunca una especie en veda. El
+//     texto se compone con plantilla, no con un LLM.
 //
 // Este script SOLO genera la imagen (PNG) y el texto -- no publica nada.
 // Escribe scripts/marketing/post-pendiente.json con lo generado; un
@@ -23,6 +25,8 @@
 // público.
 
 import sharp from "sharp";
+import { textoMeses } from "../../assets/js/ventana-actividad.js";
+import { regionDelPost, postEnEuskadi, elegirEspeciePost, leerEspeciesJson } from "./especie-post.mjs";
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
@@ -244,7 +248,7 @@ const ICONOS = {
     <path d="M84 64 V74 A8 8 0 1 1 70 70" fill="none" stroke="${c}" stroke-width="5" stroke-linecap="round" />`,
 };
 
-// Qué icono corresponde al emoji de cada especie en index.html (ESPECIES).
+// Qué icono corresponde al emoji de cada especie (campo emoji de especies.json).
 // Un emoji que no esté aquí sale como pez, que es la inmensa mayoría.
 const ICONO_POR_EMOJI = { "🐟": "pez", "🐠": "pez", "🦑": "calamar", "🐙": "calamar", "🐍": "anguila" };
 
@@ -369,10 +373,6 @@ async function generarCondiciones() {
   return { tipo: "condiciones", pngBuffer, caption, slug: `condiciones-${slug}` };
 }
 
-// Lee ESPECIES directamente de index.html en vez de mantener una copia --
-// mismo criterio que evitar datos duplicados/desincronizados en el resto
-// del repo. Es un array literal plano (sin referencias externas), seguro
-// de evaluar así.
 // Página pública de mareas de un spot, para citarla en el texto del post
 // (pedido del usuario, 2026-09-28: que cada post lleve a la página concreta
 // de su spot, que es lo que Google tiene que acabar indexando). Solo se
@@ -386,27 +386,17 @@ function paginaMareas(slug) {
     : "costaviva.org/mareas";
 }
 
-function extraerEspecies() {
-  const html = readFileSync(join(RAIZ_REPO, "index.html"), "utf8");
-  const marcadorInicio = "const ESPECIES = [";
-  const inicio = html.indexOf(marcadorInicio);
-  if (inicio === -1) throw new Error("No se encontró \"const ESPECIES\" en index.html");
-  const finMarcador = "\n];";
-  const fin = html.indexOf(finMarcador, inicio);
-  if (fin === -1) throw new Error("No se encontró el cierre de ESPECIES en index.html");
-  const bloque = html.slice(inicio, fin + finMarcador.length);
-  const fn = new Function(`${bloque}\nreturn ESPECIES;`);
-  return fn();
-}
-
 async function generarEspecies() {
   const mesActual = new Date().getMonth() + 1;
-  const especies = extraerEspecies().filter((e) => e.meses.includes(mesActual));
-  if (!especies.length) throw new Error(`Ninguna especie documentada para el mes ${mesActual}`);
-  const dia = diaDelAnio(new Date());
-  const especie = especies[dia % especies.length];
+  const rotacion = leerRotacion();
+  const region = regionDelPost(rotacion);
+  const elegida = elegirEspeciePost(leerEspeciesJson(RAIZ_REPO), region, mesActual, diaDelAnio(new Date()), { euskadi: postEnEuskadi(rotacion) });
+  if (!elegida) throw new Error(`Ninguna especie de temporada (y fuera de veda) en ${region} para el mes ${mesActual}`);
+  const { nota, talla, freza, cebos } = elegida;
+  const especie = { ...elegida.especie, nombre: elegida.especie.nombres.es };
+  console.log(`Especie del post: ${especie.nombre} (${region})`);
 
-  const lineasNota = envolverTexto(especie.nota, 46);
+  const lineasNota = envolverTexto(nota, 46);
   const notaSvg = lineasNota
     .map((linea, i) => `<tspan x="540" dy="${i === 0 ? 0 : 42}">${escaparXml(linea)}</tspan>`)
     .join("");
@@ -429,10 +419,12 @@ async function generarEspecies() {
     "",
     `${especie.emoji} ${especie.nombre} — de temporada ahora mismo`,
     "",
-    especie.nota.charAt(0).toUpperCase() + especie.nota.slice(1) + ".",
+    nota,
     "",
-    `🍽️ Se alimenta de: ${especie.alimento}`,
-    "",
+    ...(especie.alimentacion?.valor ? [`🍽️ Se alimenta de: ${especie.alimentacion.valor}`, ""] : []),
+    ...(cebos.length ? [`🪝 Cebos típicos: ${cebos.join(", ")}`, ""] : []),
+    ...(freza?.enFreza ? [`🥚 Está en freza (${textoMeses(freza.meses)}): si lo pescas, devuélvelo al agua.`, ""] : []),
+    ...(talla ? [`📏 Talla mínima: ${talla.valor_cm !== null ? `${talla.valor_cm} cm` : `${talla.peso_g} g`} (${talla.ambito_corto}). Manda siempre la norma publicada.`, ""] : []),
     `🔗 Marea y oleaje de tu spot en tiempo real, gratis y sin cuenta: ${paginaMareas(null)}`,
     "",
     "Consulta las condiciones reales de tu spot y muchos más datos para que incrementes tus posibilidades de pesca -- enlace en la bio 🎣",
