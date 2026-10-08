@@ -361,6 +361,22 @@ con lectura vigente, manda su cámara.
    0,25-3): a las 18 h ya es el modelo con el coeficiente estático. La
    ventana de actividad de index.html aplica la misma corrección (copia de
    `factorCamara()`, un test comprueba que no se desvía).
+4b. **Cámara como referencia (2026-10-08, aprobado por Mikel).** Mientras
+   la cámara PROPIA del spot no sustituye al modelo, /prevision añade por
+   spot `camaraReferencia: {altura, rango, hora, fecha, camara, nombre}`
+   (`filasLecturas()` + `camaraReferenciaDeSpot()` en
+   `_lib/oleaje-camaras.js`; ahora /prevision lee todas las filas `ok` de
+   3 h, sustituyan o no). Condiciones: última medida `ok` (encuadre, sin
+   orilla), < 3 h, sol ≥ 8° a la hora de la lectura, con espuma y
+   estimación, cámara propia (nunca vecina; Santoña tampoco) y que la
+   cámara no esté ya mandando en el spot. Panel, en secundario debajo del
+   modelo: "La cámara apunta a ~1,2 m (0,8–1,9 m, sin calibrar · 16:30)"
+   (redondeo a 0,1 m; el navegador lo oculta si pasa de 3 h). Sin espuma no
+   se dice nada (decidido: la rompiente puede estar fuera del ROI, Castro y
+   Getaria, y "no ve rompiente" junto a un modelo de 2 m invitaría a fiarse).
+   No entra en las piezas de Instagram. Tests:
+   `test/camara-referencia.test.js`. `elevacionSolar`, `ELEVACION_MINIMA` y
+   `ESPUMA_MINIMA` viven ahora en el lib (calibracion.mjs las reexporta).
 5. Spots sin cámara: la cámara EXPUESTA más cercana con la misma orientación
    de costa (±60°, < 60 km; orientación sacada a mano del trazado de costa)
    corrige su modelo con `peso` (0,8 si está a ≤ 11 km, 0,5 si más lejos);
