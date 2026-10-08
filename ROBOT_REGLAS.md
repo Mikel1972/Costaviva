@@ -1734,30 +1734,39 @@ estudio dice lo que vas a escribir; si solo tienes el resumen, dilo.
 
 **Qué sale de la pasada:**
 1. **Regla nueva o ajuste de peso** en `assets/datos/especies.json`. Mira
-   primero, con `node -e`, si existe `reglas_expertas` (motor nuevo del
-   índice, rama `claude/indice-pesca-v2`) y sigue SU esquema; si todavía no
-   existe, usa `reglas` / `reglas_por_defecto` (la ventana de actividad). En
-   ambos casos cada regla o peso que toques lleva:
+   primero, con `node -e`, si existe `reglas_expertas` (motor del índice v2,
+   rama `claude/indice-pesca-v2`) y sigue SU `formato` (`id`, `nombre`,
+   `texto`, `fuente`, `tipo`, `confianza` 0-1, `estado`, `ambito`,
+   `condiciones`, `efecto.logodds`, `nota`). Una regla sacada de un estudio
+   entra SIEMPRE con `"tipo": "cientifica"` (u `"oficial"`) y
+   `"estado": "por_validar"`: la valida Mikel en el PR. Si `reglas_expertas`
+   todavía no existe, usa `reglas` / `reglas_por_defecto` (ventana de
+   actividad). En ambos casos cada regla o peso que toques lleva:
    - `fuente`: id de la tabla `fuentes` (añádela con `titulo`, `url`,
      `editor`, `tipo: "estudio"`, `licencia`, `doi` si lo hay,
      `fecha_documento`, `fecha_consulta`);
-   - `region` / `regiones` si el estudio es local (un estudio de la ría de
-     Vigo no vale para Cádiz: mismo criterio que los localismos);
-   - `evidencia`: una frase con lo que mide el estudio (especie, zona, años,
+   - ámbito regional si el estudio es local (`ambito.regiones` o `region`):
+     un estudio de la ría de Vigo no vale para Cádiz, mismo criterio que los
+     localismos;
+   - en `nota` (o `criterio`): qué mide el estudio (especie, zona, años,
      tamaño de muestra) y el efecto encontrado, sin exagerarlo;
-   - `confianza`: `"alta"` (varios estudios o uno grande y local),
-     `"media"` o `"baja"` (un estudio pequeño, otra zona). Con `"baja"`,
-     propuesta solo en `ROBOT.md`, no en el fichero.
-   Nunca conviertas una correlación en un peso fuerte: un ajuste de peso por
-   pasada y como mucho ±5 puntos sobre el actual.
-2. **Contraste con las reglas locales de Mikel.** Las reglas marcadas
-   `"tipo": "heuristica_experta"` (o las que `reglas_expertas` marque como de
-   Mikel) son su conocimiento local. Si un estudio la **confirma**, la
-   **refuta** o la **matiza**, NO la cambies: añade a esa regla
-   `contrastes: [{ "fuente": "<id>", "resultado": "confirma"|"refuta"|"matiza",
-   "resumen": "...", "region": "...", "fecha_revision": "AAAA-MM-DD" }]` y
-   explícalo en el mensaje del commit. Quitar o invertir una regla de Mikel
-   solo lo decide él en el PR.
+   - `confianza`: 0,6-0,8 con varios estudios o uno grande y local; 0,3-0,5
+     con uno solo o de otra zona. Por debajo de 0,3, propuesta solo en
+     `ROBOT.md`, no en el fichero.
+   Nunca conviertas una correlación en un peso fuerte: un ajuste por pasada y
+   como mucho ±0,2 en log-odds (`peso_lo` / `efecto.logodds`; ±5 puntos si
+   el fichero aún usa `peso`).
+2. **Contraste con las reglas locales de Mikel.** Las de `"tipo":
+   "heuristica_experta_local"` (y las `heuristica_experta` de `reglas`) son su
+   conocimiento local: **no cambies su efecto, su confianza ni su estado**. Si
+   un estudio la **confirma**, la **refuta** o la **matiza**, añádelo al final
+   de su `nota` con este formato: `[contraste AAAA-MM-DD: confirma|refuta|matiza
+   — <fuente id>, <región>: <resumen de una frase>]`, y explícalo en el mensaje
+   del commit. Quitar, invertir o subir de confianza una regla de Mikel solo lo
+   decide él en el PR.
+   Esto es la excepción, aprobada por Mikel el 2026-10-08, a "las reglas
+   expertas no las toca la rutina" de la sección de los jueves: solo los
+   viernes, solo reglas NUEVAS `por_validar` con fuente, y siempre por PR.
 3. **Entrada en `ROBOT.md`** siempre (aunque sea "sin novedades"): factores
    mirados, estudios encontrados (con URL y licencia), qué se propuso y qué
    se descartó y por qué.
@@ -1765,8 +1774,7 @@ estudio dice lo que vas a escribir; si solo tienes el resumen, dilo.
 **Dónde va**: rama `robot/especies-AAAA-MM-DD-factores` (nunca `main`);
 `robot-diseno-pr.yml` abre el PR (lo reconoce por el sufijo `-factores`).
 Antes de subirla: `node --test test/ventana-actividad.test.js
-test/modalidades.test.js` y, si existe, el test del índice nuevo
-(`ls test/ | grep -i indice`). Si falla, no subas la rama: propuesta en
+test/modalidades.test.js` y, si existe, `test/indice-pesca-v2.test.js`. Si falla, no subas la rama: propuesta en
 `ROBOT.md`. Como en los jueves, este flujo sustituye al límite de 3
 ficheros/80 líneas solo para `assets/datos/especies.json` y
 `datos-robots/concursos/`; no toques nada más en esa rama.
