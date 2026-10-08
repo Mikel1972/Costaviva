@@ -1,0 +1,32 @@
+{
+  "v": 1,
+  "descripcion": "Clubes y federaciones que publican resultados de concursos de pesca de mar (España y Portugal) y si se pueden reutilizar. Un concurso solo entra en concursos.json si su fuente tiene reutilizacion 'permitida' (licencia abierta comprobada) o 'permiso' (autorización escrita guardada). Ver LEEME.md y ROBOT_REGLAS.md, 'Concursos de pesca'.",
+  "fuentes": [
+    {
+      "id": "fepyc",
+      "nombre": "Federación Española de Pesca y Casting (FEPyC)",
+      "ambito": "España (campeonatos de España y selecciones; Mar-Costa, Mar-Embarcación, Corcheo Mar...)",
+      "url_resultados": "https://www.fepyc.es/competiciones-oficiales",
+      "que_publica": "Ficha por competición (p. ej. https://www.fepyc.es/25MC01) con convocatoria y enlace a clasificaciones; las clasificaciones llevan nombres de deportistas.",
+      "aviso_legal": "https://www.fepyc.es/gdpr",
+      "reutilizacion": "no_permitida_sin_permiso",
+      "cita_aviso": "Mediante el presente Aviso Legal no se cede ningún derecho de propiedad intelectual o industrial sobre el sitio web ni sobre ninguno de sus elementos integrantes [...] quedando reservados todos los derechos sobre los mismos",
+      "contacto": "fepyc@fepyc.es",
+      "fecha_revision": "2026-10-08",
+      "permiso": null
+    },
+    {
+      "id": "fppd",
+      "nombre": "Federação Portuguesa de Pesca Desportiva (FPPD)",
+      "ambito": "Portugal (campeonatos nacionales de mar, por divisiones)",
+      "url_resultados": "https://www.fppd.pt/classificacao-de-competicoes/",
+      "que_publica": "Clasificaciones de competiciones y reglamentos (p. ej. Regulamento Especifico - Camp Nac 1 Divisao Mar 2024).",
+      "aviso_legal": "https://www.fppd.pt/termos-e-condicoes/",
+      "reutilizacion": "no_permitida_sin_permiso",
+      "cita_aviso": "A reprodução, distribuição ou qualquer outro uso dos conteúdos do site sem autorização prévia por escrito da FPPD é estritamente proibida.",
+      "contacto": null,
+      "fecha_revision": "2026-10-08",
+      "permiso": null
+    }
+  ]
+}
