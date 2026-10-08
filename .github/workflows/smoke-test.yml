@@ -83,6 +83,25 @@ jobs:
             exit 1
           fi
 
+      # Desde 2026-10-08 la identificación por foto exige suscripción
+      # (identificar-captura.js). La cuenta de prueba no paga: se le da
+      # acceso permanente aquí, con su email del secret (nunca escrito en el
+      # repo). Idempotente: si ya está, no cambia nada.
+      - name: Acceso permanente para la cuenta de prueba
+        run: |
+          email=$(printf '%s' "$SMOKE_TEST_EMAIL" | tr '[:upper:]' '[:lower:]')
+          codigo=$(curl -sS -o /tmp/acceso.json -w "%{http_code}" -X POST \
+            "$SUPABASE_URL/rest/v1/accesos_permanentes?on_conflict=email" \
+            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
+            -H "Content-Type: application/json" -H "Prefer: resolution=ignore-duplicates,return=minimal" \
+            -d "{\"email\":\"$email\",\"motivo\":\"Cuenta del smoke test (identificación por foto, 2026-10-08)\"}")
+          if [ "$codigo" -ge 300 ]; then
+            echo "::warning::No se pudo asegurar el acceso permanente de la cuenta de prueba (HTTP $codigo)."
+            cat /tmp/acceso.json
+          else
+            echo "Acceso permanente de la cuenta de prueba: OK (HTTP $codigo)."
+          fi
+
       - name: Genera una sesión para la cuenta de prueba (sin password, vía API admin)
         id: login
         run: |
@@ -170,7 +189,11 @@ jobs:
             let r;
             try { r = JSON.parse(fs.readFileSync('/tmp/identificacion.json', 'utf8')); }
             catch (e) { console.error('JSON inválido en la respuesta: ' + e.message); process.exit(1); }
-            const DEGRADADO = ['sin_credito', 'saturado', 'sin_configurar', 'limite_diario'];
+            // limite_mensual y sin_suscripcion (2026-10-08): topes y control de
+            // suscripción en el servidor. Si sale sin_suscripcion, la cuenta de
+            // SMOKE_TEST_EMAIL no tiene acceso: darle acceso permanente
+            // (accesos_permanentes) para que esta prueba vuelva a cubrir la IA.
+            const DEGRADADO = ['sin_credito', 'saturado', 'sin_configurar', 'limite_diario', 'limite_mensual', 'sin_suscripcion'];
             if (DEGRADADO.includes(r.codigo)) { console.log('DEGRADADO ' + r.codigo); process.exit(0); }
             if (r.error) { console.error('El endpoint devolvió un error: ' + r.error); process.exit(1); }
             for (const k of ['especie', 'talla_cm', 'peso_g', 'confianza']) {
