@@ -585,11 +585,17 @@
   .va-eje { display: grid; grid-template-columns: repeat(24, 1fr); font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #5F7981; margin-top: 2px; }
   .va-detalle { margin-top: 8px; font-size: 11.5px; line-height: 1.5; color: #42585F; }
   .va-detalle .mas { color: #3E7D55; } .va-detalle .menos { color: #A34A35; }
+  .indice-porque { text-align: left; margin-top: 8px; font-size: 11.5px; line-height: 1.45; color: #42585F; }
+  .indice-porque:empty { display: none; }
   .va-porque { list-style: none; margin: 4px 0 0; padding: 0; }
-  .va-porque li { padding: 1px 0; }
-  .va-flecha { font-size: 9px; letter-spacing: -1px; min-width: 16px; display: inline-block; }
-  .va-admin { margin-top: 4px; font-size: 10px; color: #8B9AA0; }
-  .va-admin ul { margin: 2px 0 0; padding-left: 14px; }
+  .va-porque li { display: flex; gap: 6px; align-items: baseline; padding: 1px 0; list-style: none; }
+  .va-porque li > span:last-child { flex: 1; min-width: 0; }
+  .va-flecha { flex: 0 0 18px; font-size: 9px; letter-spacing: -1px; }
+  .va-flecha.mas { color: #3E7D55; } .va-flecha.menos { color: #A34A35; }
+  .va-admin { margin-top: 4px; font-size: 10px; color: #5F7981; text-align: left; }
+  .va-admin summary { cursor: pointer; }
+  .va-admin ul { list-style: none; margin: 2px 0 0; padding: 0; }
+  .va-admin li { padding: 1px 0; color: #5F7981; }
   .va-freza { margin: 4px 0 6px; padding: 6px 8px; border-radius: 6px; background: #FBF3E2; border: 1px solid #D9C08A; color: #7A5A1E; font-size: 11.5px; line-height: 1.4; }
   .va-nota { margin-top: 6px; font-size: 10.5px; color: #5F7981; line-height: 1.4; }
   .va-nota a { color: #A8792A; }
@@ -997,7 +1003,10 @@
       </div>
       <div class="num" id="panelIndicePesca"></div>
       <div class="etq" id="panelIndicePescaNota" style="margin-top:4px; font-size:10px; line-height:1.4;"></div>
-      <div class="explicacion-indice" id="explicacionIndicePesca">Es la puntuación de la especie de temporada que mejor está ahora mismo en este punto y con esta modalidad (sin las que están en veda), con las mismas reglas públicas que la ventana de actividad de abajo: luz, marea, temperatura del agua, oleaje, viento, presión, turbidez y las reglas expertas de pesca local. Escala de 0 a 100 en forma de probabilidad (50 = día normal); las estrellas dicen cuánto nos fiamos: ★ solo criterio experto, ★★ con base científica, ★★★ validado con el diario, ★★★★ confirmado con desembarcos. Una orientación, no una garantía.</div>
+      <!-- Motivos del índice: bloque propio a lo ancho de la caja (dentro de
+           .etq, que es flex, se apretaban en columna: visto por Mikel). -->
+      <div class="indice-porque" id="panelIndicePescaPorque"></div>
+      <div class="explicacion-indice" id="explicacionIndicePesca">Es la puntuación de la especie de temporada que mejor está ahora mismo en este punto y con esta modalidad (sin las que están en veda), con las mismas reglas públicas que la ventana de actividad de abajo: luz, marea, temperatura del agua, oleaje, viento, presión, turbidez y las reglas expertas de pesca local. Escala de 0 a 100 en forma de probabilidad (50 = día normal); debajo, lo que más sube (▲) o baja (▼) la nota ahora mismo. Una orientación, no una garantía.</div>
     </div>
     <div class="tarjeta" id="ventanaActividadBox" style="margin-top:10px; border: 1px solid #DDE2DC;">
       <div class="etq">⏱ VENTANA DE ACTIVIDAD POR HORAS</div>
@@ -3164,10 +3173,12 @@ async function pintarIndicePesca(s) {
   const el = document.getElementById("panelIndicePesca");
   const nota = document.getElementById("panelIndicePescaNota");
   const VA = window.VentanaActividad;
+  const porqueEl = document.getElementById("panelIndicePescaPorque");
   const pinta = (valor, texto) => {
     el.textContent = textoIndice(valor);
     el.style.color = colorIndiceMarCss(valor);
     nota.textContent = texto;
+    porqueEl.innerHTML = "";
   };
   if (!especiesDatos || !VA) {
     pinta(null, "cargando especies…");
@@ -3196,11 +3207,9 @@ async function pintarIndicePesca(s) {
     return;
   }
   // Nota + motivos con flechas (sin puntos ni fuentes), como en la ventana.
-  pinta(ind.puntuacion, "");
-  nota.innerHTML = `${escVA(VA.NOMBRE_MODALIDAD[modalidad])}: mejor ahora, <b>${escVA(ind.especie.nombre)}</b>`
-    + `${ind.freza ? " (en freza: si lo pescas, devuélvelo)" : ""}.`
-    + htmlPorque(ind.resultado.razones.filter((r) => r.aporte !== 0).slice(0, 4))
-    + `<div>Fiabilidad ${escVA(ind.fiabilidad.etiqueta)}</div>`;
+  pinta(ind.puntuacion, `${VA.NOMBRE_MODALIDAD[modalidad]} · mejor ahora: ${ind.especie.nombre}`
+    + `${ind.freza ? " (en freza: si lo pescas, devuélvelo)" : ""}`);
+  porqueEl.innerHTML = htmlPorque(ind.resultado.razones.filter((r) => r.aporte !== 0).slice(0, 4), ind.fiabilidad);
 }
 
 async function pintarVentanaActividad(s) {
@@ -3367,18 +3376,20 @@ function flechasPorque(aporte) {
   if (aporte < 0) return { s: "▼", c: "menos", t: "baja" };
   return null;
 }
-function htmlPorque(razones) {
+function htmlPorque(razones, fiabilidad = null) {
   const orden = [...razones].sort((a, b) => Math.abs(b.aporte) - Math.abs(a.aporte));
   const items = orden.map((x) => {
     const f = flechasPorque(x.aporte);
     return f
-      ? `<li><span class="va-flecha ${f.c}" aria-label="${f.t}">${f.s}</span> ${escVA(x.texto)}</li>`
-      : `<li><span class="va-flecha" aria-hidden="true">·</span> ${escVA(x.texto)}</li>`;
+      ? `<li><span class="va-flecha ${f.c}" aria-label="${f.t}">${f.s}</span><span>${escVA(x.texto)}</span></li>`
+      : `<li><span class="va-flecha" aria-hidden="true">·</span><span>${escVA(x.texto)}</span></li>`;
   });
   let admin = "";
   if (window.esAdminCostaviva) {
-    const fila = (x) => `<li>${x.aporte > 0 ? "+" : ""}${x.aporte} · ${escVA(x.factor)}${x.regla ? ` · ${escVA(x.regla.fuente)}, ${escVA(x.regla.estado)}, confianza ${escVA(x.regla.confianza)}` : ""}</li>`;
-    admin = `<details class="va-admin"><summary>Detalle (admin)</summary><ul>${orden.map(fila).join("")}</ul></details>`;
+    const fila = (x) => `<li>${x.aporte > 0 ? "+" : ""}${escVA(x.aporte)} · ${escVA(x.texto)} <i>(${escVA(x.factor)}${x.regla ? `; ${escVA(x.regla.fuente)}, ${escVA(x.regla.estado)}, confianza ${escVA(x.regla.confianza)}` : ""})</i></li>`;
+    // La fiabilidad (estrellas) solo la ve el admin (decisión de Mikel).
+    admin = `<details class="va-admin"><summary>Detalle (admin)</summary><ul>${orden.map(fila).join("")}</ul>`
+      + `${fiabilidad ? `<div>Fiabilidad: ${escVA(fiabilidad.etiqueta)}</div>` : ""}</details>`;
   }
   return `<ul class="va-porque">${items.join("")}</ul>${admin}`;
 }
@@ -3387,8 +3398,7 @@ function pintarDetalleVA() {
   const r = vaEstado.resultados[vaEstado.idxSel];
   const det = document.getElementById("vaDetalle");
   if (!r) { det.textContent = ""; return; }
-  det.innerHTML = `<b>${r.hora.slice(11, 16)} → ${r.puntuacion}/100</b>${htmlPorque(r.razones)}`
-    + (r.fiabilidad ? `<div class="va-nota" style="margin-top:4px;">Fiabilidad: ${escVA(r.fiabilidad.etiqueta)}</div>` : "");
+  det.innerHTML = `<b>${r.hora.slice(11, 16)} → ${r.puntuacion}/100</b>${htmlPorque(r.razones, r.fiabilidad)}`;
   document.querySelectorAll("#vaTira .va-hora").forEach((b, i) => b.classList.toggle("sel", i === vaEstado.idxSel));
 }
 

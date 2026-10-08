@@ -1248,7 +1248,9 @@ verificado con fuente propia); ★★★ validado con el diario y ★★★★ t
 confirmada con desembarcos, marcados a mano en
 `validacion_fiabilidad.por_combinacion["especie|modalidad|region"]`. Rebajas:
 previsión a más de 48 h (-1), menos del 60 % del peso con dato (-1), modelo y
-no medido (-0,5); nunca baja de ★, pero las rebajas se dicen en el texto.
+no medido (-0,5); nunca baja de ★, pero las rebajas se dicen en el texto. **El usuario no ve
+la fiabilidad** (decisión de Mikel, 2026-10-08): se calcula, se guarda en
+`indice_factores` y solo sale en el desplegable "Detalle (admin)".
 
 **Datos**: la ventana y el índice piden a `/meteo/forecast` 5 días hacia
 atrás (`past_days=5`, para tendencias y retardos de las reglas) y la dirección
@@ -1274,8 +1276,8 @@ doble desde 6 puntos) y el concepto en lenguaje llano, ordenados por impacto.
 Para el usuario, ningún número por factor (ni en tooltip) ni etiqueta de
 fuente ("regla de Mikel", "por validar"...). Igual en la ventana, el índice
 del spot y la línea del diario. El admin (`window.esAdminCostaviva`,
-cosmético) tiene un desplegable "Detalle (admin)" con puntos, fuente, estado
-y confianza; la tabla de `admin.html` sigue listando las reglas.
+cosmético) tiene un desplegable "Detalle (admin)" con puntos, fuente, estado,
+confianza y la fiabilidad; la tabla de `admin.html` sigue listando las reglas.
 Hoy hay 10 reglas (8 de Mikel, fuente `mikel_experiencia_local`, tipo
 `heuristica_experta_local`, estado `por_validar`; los umbrales son la
 traducción de Claude de lo que contó Mikel; y 2 que completan la escala de

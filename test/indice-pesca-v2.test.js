@@ -535,3 +535,16 @@ test("diario.html: boya y /luna solo para salidas de hoy, sin fallback a forecas
   // Sin columnas aún en producción: reintenta sin ellas.
   assert.match(html, /PGRST204/);
 });
+
+test("la fiabilidad no se enseña al usuario: solo en el detalle del admin", () => {
+  const index = readFileSync(new URL("../index.html", import.meta.url), "utf8");
+  const diario = readFileSync(new URL("../diario.html", import.meta.url), "utf8");
+  const ini = index.indexOf("function htmlPorque(");
+  const admin = index.slice(ini, index.indexOf("\n}\n", ini));
+  const fuera = index.replace(admin, "");
+  assert.ok(/Fiabilidad/.test(admin), "el admin la ve en su desplegable");
+  assert.ok(!/[>`"]Fiabilidad/.test(fuera), "index.html no la pinta fuera del detalle del admin");
+  assert.ok(!/fiabilidad \$\{/.test(diario), "diario.html no la pinta");
+  // Ni números por factor ni etiquetas de fuente para el usuario.
+  assert.ok(!/regla de Mikel|experiencia local|va-pts/.test(fuera.replace(/<!--[\s\S]*?-->/g, "").replace(/\/\/.*$/gm, "")));
+});
