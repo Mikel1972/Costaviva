@@ -10,7 +10,8 @@
 //
 // Uso: ANTHROPIC_API_KEY=... node scripts/eval-identificacion/evaluar.mjs
 // No es una prueba automática: gasta (poco) saldo de la API. Se lanzó una
-// vez desde un workflow temporal y ese disparador se quitó después.
+// vez (2026-10-08) desde un workflow temporal, que se borró después para que
+// no vuelva a correr solo. Para repetirla, a mano y con la clave en el entorno.
 
 import { cuerpoPeticion, interpretarRespuesta } from "../../functions/identificar-captura.js";
 
