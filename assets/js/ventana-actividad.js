@@ -29,7 +29,7 @@
 // Módulo ES puro (sin DOM ni red): lo usa index.html en el navegador y
 // test/ventana-actividad.test.js en node --test.
 
-export const VERSION = "2026-10-07";
+export const VERSION = "2026-10-08";
 
 // ---------------------------------------------------------------------------
 // Regiones. Cajas aproximadas por coordenadas, igual de honestas que
@@ -177,6 +177,42 @@ function fusionarReglas(defecto, especie) {
   return r;
 }
 
+// ---------------------------------------------------------------------------
+// Modalidades de pesca (2026-10-08, pedido de Mikel): "Desde costa",
+// "Embarcación" y "Submarina". Una especie puede estar en varias (la lubina,
+// en las tres; el bonito, solo en embarcación): es muchos-a-muchos, no una
+// clasificación exclusiva. Datos en especies.json: `modalidades` de cada
+// especie (aplica true/false/null con fuente o criterio), `reglas_por_modalidad`
+// (pesos propios de cada pestaña) y `normativa_modalidades`.
+// ---------------------------------------------------------------------------
+export const MODALIDADES = ["costa", "embarcacion", "submarina"];
+export const NOMBRE_MODALIDAD = { costa: "Desde costa", embarcacion: "Embarcación", submarina: "Submarina" };
+
+// true solo con dato afirmativo: `aplica: null` (sin dato) no se muestra,
+// para no proponer una especie que no se pesca así ("no tiene sentido poner
+// Mundaka y que me aparezca bonito"). `regiones_excluidas` afina por región.
+export function aplicaModalidad(especie, modalidad, region = null) {
+  const m = especie.modalidades?.[modalidad];
+  if (!m || m.aplica !== true) return false;
+  if (region && Array.isArray(m.regiones_excluidas) && m.regiones_excluidas.includes(region)) return false;
+  if (region && Array.isArray(m.regiones) && !m.regiones.includes(region)) return false;
+  return true;
+}
+
+// Reglas efectivas de una especie en una modalidad:
+//   reglas_por_defecto <- reglas_por_modalidad[m] <- reglas de la especie
+// salvo en los `factores_de_modalidad` (oleaje, viento, turbidez...), donde
+// manda la modalidad: que a la lubina le guste el agua tomada desde la orilla
+// no puede hacer que el agua turbia sume buceando.
+export function reglasParaModalidad(reglasDefecto, especie, modalidad = "costa", reglasPorModalidad = null) {
+  const rm = reglasPorModalidad?.[modalidad] || {};
+  const propios = new Set(rm.factores_de_modalidad || []);
+  const deModalidad = Object.fromEntries(Object.entries(rm).filter(([, v]) => v && typeof v === "object" && !Array.isArray(v)));
+  const base = fusionarReglas(reglasDefecto, deModalidad);
+  const deEspecie = Object.fromEntries(Object.entries(especie.reglas || {}).filter(([k]) => !propios.has(k)));
+  return fusionarReglas(base, deEspecie);
+}
+
 const fmt1 = (x) => String(+x.toFixed(1)).replace(".", ",");
 const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 
@@ -194,11 +230,17 @@ function rangoOlaTexto(h) {
 // horas: [{ hora: "AAAA-MM-DDTHH:00", nivelMar, ola, viento, tempAgua, presion }]
 //   (serie continua, hora local de Madrid; puede empezar antes del día que se
 //   quiere pintar para tener la presión de 3 h antes).
-// contexto: { lat, lon, turbidez: "no turbia"|"turbia"|"muy turbia"|null }
+// horas[].lluvia (mm en esa hora) es opcional: solo lo usa la submarina.
+// contexto: { lat, lon, turbidez: "no turbia"|"turbia"|"muy turbia"|null,
+//   modalidad: "costa"|"embarcacion"|"submarina" (por defecto costa),
+//   reglasModalidad: especies.json.reglas_por_modalidad,
+//   caudalRio: "bajo"|"normal"|"alto"|null (río asociado al spot, solo hoy) }
 // Devuelve un array paralelo a `horas` con { hora, puntuacion, razones, ... }.
 // ---------------------------------------------------------------------------
 export function calcularVentana(especie, reglasDefecto, horas, contexto) {
-  const reglas = fusionarReglas(reglasDefecto, especie.reglas);
+  const modalidad = contexto.modalidad || "costa";
+  const reglas = reglasParaModalidad(reglasDefecto, especie, modalidad, contexto.reglasModalidad);
+  const rm = contexto.reglasModalidad?.[modalidad] || {};
   const marea = analizarMarea(horas.map((h) => h.nivelMar ?? null));
   const solCache = {};
   // Un rango cuya única fuente es no comercial (FishBase, CC BY-NC) se
@@ -212,6 +254,7 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
     solCache[dia] ||= solDelDia(dia, contexto.lat, contexto.lon);
     const razones = [];
     let total = 50;
+    const topes = [];
     const anota = (factor, valor, texto) => {
       const r = reglas[factor];
       if (!r || !r.peso) {
@@ -222,6 +265,24 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
       total += aporte;
       if (texto) razones.push({ factor, texto, aporte });
     };
+
+    // Submarina: prohibida de noche (art. 16.d RD 347/2011; art. 8.3
+    // Portaria 14/2014). Una hora entera de noche puntúa 0 y no se calcula
+    // nada más; una hora a caballo lo avisa.
+    let prohibida = false;
+    if (rm.solo_de_dia && solCache[dia]) {
+      const am = minutosMadrid(solCache[dia].amanecer), an = minutosMadrid(solCache[dia].anochecer);
+      const ini = minuto - 30, fin = minuto + 30;
+      if (fin <= am || ini >= an) prohibida = true;
+      else if (ini < am) razones.push({ factor: "legal", texto: `legal solo desde la salida del sol (${textoHora(am)})`, aporte: 0 });
+      else if (fin > an) razones.push({ factor: "legal", texto: `legal solo hasta la puesta del sol (${textoHora(an)})`, aporte: 0 });
+    }
+    if (prohibida) {
+      return {
+        hora: h.hora, puntuacion: 0, luz: "noche", marea: marea[i], marPeligrosa: false, prohibida: true, avisos: [],
+        razones: [{ factor: "legal", texto: "de noche la pesca submarina está prohibida", aporte: 0 }],
+      };
+    }
 
     // Luz
     const luz = estadoLuz(minuto, solCache[dia]);
@@ -254,6 +315,8 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
         const dist = h.tempAgua < tmin ? tmin - h.tempAgua : h.tempAgua - tmax;
         anota("temperatura", -clamp(dist / 3, 0.2, 1), `agua a ${fmt1(h.tempAgua)} °C, fuera de su rango (${tmin}-${tmax})`);
       }
+    } else if (modalidad === "submarina" && h.tempAgua !== null && h.tempAgua !== undefined) {
+      razones.push({ factor: "temperatura", texto: `agua a ${fmt1(h.tempAgua)} °C`, aporte: 0 });
     }
 
     // Oleaje
@@ -266,13 +329,32 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
       else if (h.ola > omax) v = -(h.ola - omax) / Math.max(0.1, maxSeguro - omax);
       else if (h.ola < omin) v = reglas.oleaje.valor_bajo_minimo ?? -0.3;
       else v = 1;
-      anota("oleaje", v, marPeligrosa ? `${rangoOlaTexto(h.ola)}: peligrosa desde costa` : rangoOlaTexto(h.ola));
+      const peligro = reglas.oleaje.texto_peligro || "peligrosa desde costa";
+      anota("oleaje", v, marPeligrosa ? `${rangoOlaTexto(h.ola)}: ${peligro}` : rangoOlaTexto(h.ola));
+      if (marPeligrosa) topes.push(reglas.oleaje.tope_si_peligrosa ?? 20);
     }
 
     // Viento: solo penaliza por encima del máximo cómodo
     if (h.viento !== null && h.viento !== undefined && reglas.viento?.peso) {
       const vmax = reglas.viento.max_kmh || 30;
       if (h.viento > vmax) anota("viento", -clamp((h.viento - vmax) / 20, 0.2, 1), `viento fuerte (${Math.round(h.viento)} km/h)`);
+    }
+
+    // Embarcación: avisos de seguridad (kayak / embarcación pequeña). Se
+    // aplica el nivel más severo que se supere, con su tope.
+    const avisos = [];
+    if (rm.seguridad?.niveles) {
+      for (const nv of rm.seguridad.niveles) {
+        const porViento = h.viento !== null && h.viento !== undefined && h.viento > nv.viento_max_kmh;
+        const porOla = h.ola !== null && h.ola !== undefined && h.ola > nv.ola_max_m;
+        if (porViento || porOla) {
+          const motivo = [porViento && `viento ${Math.round(h.viento)} km/h`, porOla && `ola ${fmt1(h.ola)} m`].filter(Boolean).join(" y ");
+          avisos.push({ nivel: nv.id, texto: `${nv.texto} (${motivo})` });
+          razones.push({ factor: "seguridad", texto: `⚠ ${nv.texto} (${motivo})`, aporte: 0 });
+          topes.push(nv.tope);
+          break;
+        }
+      }
     }
 
     // Tendencia de la presión (mismos umbrales que /prevision: ±1 hPa en 3 h)
@@ -290,10 +372,25 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
       anota("turbidez", reglas.turbidez.preferencia?.[t] ?? 0, txt);
     }
 
+    // Lluvia de las 24 h anteriores (enturbia el agua; solo submarina)
+    if (reglas.lluvia?.peso) {
+      const previas = horas.slice(Math.max(0, i - 24), i).map((x) => x.lluvia).filter((x) => x !== null && x !== undefined);
+      if (previas.length >= 12) {
+        const mm = previas.reduce((a, b) => a + b, 0);
+        const [u0, u1] = reglas.lluvia.umbral_mm_24h || [2, 15];
+        if (mm >= u0) anota("lluvia", -clamp((mm - u0) / Math.max(0.1, u1 - u0), 0.2, 1), `${fmt1(mm)} mm de lluvia en las 24 h anteriores`);
+      }
+    }
+
+    // Caudal del río asociado al spot (solo submarina, solo con dato)
+    if (contexto.caudalRio && reglas.caudal_rio?.peso && reglas.caudal_rio.preferencia?.[contexto.caudalRio] !== undefined) {
+      anota("caudal_rio", reglas.caudal_rio.preferencia[contexto.caudalRio], `río cercano con caudal ${contexto.caudalRio}`);
+    }
+
     let puntuacion = clamp(Math.round(total), 0, 100);
-    if (marPeligrosa) puntuacion = Math.min(puntuacion, reglas.oleaje?.tope_si_peligrosa ?? 20);
+    if (topes.length) puntuacion = Math.min(puntuacion, ...topes);
     razones.sort((a, b) => Math.abs(b.aporte) - Math.abs(a.aporte));
-    return { hora: h.hora, puntuacion, razones, luz, marea: m, marPeligrosa };
+    return { hora: h.hora, puntuacion, razones, luz, marea: m, marPeligrosa, prohibida: false, avisos };
   });
 }
 
@@ -363,15 +460,57 @@ export function enEuskadi(lat, lon) {
   return lat >= 43.25 && lat <= 43.5 && lon >= -3.45 && lon <= -1.75;
 }
 
-// Cebos típicos de una especie para una región: primero los que tienen
-// fuente, luego las heurísticas; los marcados con otra región se descartan.
-export function cebosParaRegion(especie, region, max = 5) {
+// Pestañas en las que vale un cebo: su campo `modalidades` (lo rellena el
+// JSON) o, si falta, deducido de su `modalidad` libre.
+const CEBO_A_MODALIDADES = {
+  surfcasting: ["costa"], roca: ["costa"], spinning: ["costa"], flotador: ["costa"], puerto: ["costa"],
+  "embarcación": ["embarcacion"], jigging: ["embarcacion"], "curricán": ["embarcacion"],
+  fondo: ["costa", "embarcacion"], eging: ["costa", "embarcacion"],
+};
+export function modalidadesDeCebo(c) {
+  if (Array.isArray(c.modalidades)) return c.modalidades;
+  const set = new Set();
+  for (const parte of String(c.modalidad || "").toLowerCase().split(/[/ ]+/)) {
+    for (const m of CEBO_A_MODALIDADES[parte] || []) set.add(m);
+  }
+  return [...set];
+}
+
+// Cebos típicos de una especie para una región (y modalidad, si se da):
+// primero los que tienen fuente, luego las heurísticas; los marcados con otra
+// región se descartan. En submarina no hay cebos (prohibidos en Portugal y sin
+// sentido con arpón): devuelve [].
+export function cebosParaRegion(especie, region, max = 5, modalidad = null) {
+  if (modalidad === "submarina") return [];
   return (especie.cebos || [])
     .filter((c) => !c.region || c.region === region)
+    .filter((c) => !modalidad || modalidadesDeCebo(c).includes(modalidad))
     .map((c, i) => ({ c, i }))
     .sort((a, b) => (!!b.c.fuente - !!a.c.fuente) || a.i - b.i)
     .slice(0, max)
     .map(({ c }) => c);
+}
+
+// Normativa de una modalidad para una región: las entradas verificadas de
+// normativa_modalidades cuya jurisdicción aplica (Estado, Euskadi solo en la
+// costa vasca, Portugal...) más las de la propia especie, y lo pendiente.
+const JURIS_MODALIDAD_POR_REGION = {
+  cantabrico: ["ES", "ES-CB", "ES-AS"], atlantico_norte: ["ES", "ES-GA"], golfo_cadiz: ["ES", "ES-AN"],
+  mediterraneo: ["ES", "ES-AN", "ES-MC", "ES-VC", "ES-CT"], baleares: ["ES", "ES-IB"], canarias: ["ES", "ES-CN"],
+  portugal: ["PT"], azores: ["PT-AC", "PT"], madeira: ["PT-MA", "PT"],
+};
+export function normativaModalidad(datos, modalidad, region, { euskadi = false, especie = null } = {}) {
+  // En la costa vasca, Euskadi en vez de Cantabria/Asturias.
+  const juris = euskadi ? ["ES", "ES-PV"] : [...(JURIS_MODALIDAD_POR_REGION[region] || [])];
+  const vale = (n) => juris.includes(n.jurisdiccion);
+  // Primero la norma autonómica/regional (la más concreta), luego la estatal.
+  const nivel = (n) => (n.jurisdiccion === "ES" || n.jurisdiccion === "PT" ? 1 : 0);
+  const orden = (a, b) => nivel(a) - nivel(b);
+  const general = (datos.normativa_modalidades?.[modalidad] || []).filter(vale);
+  const deEspecie = (especie?.modalidades?.[modalidad]?.normativa || []).filter(vale);
+  const pend = datos.normativa_modalidades?.pendiente || {};
+  const pendiente = juris.filter((j) => pend[j]?.length).map((j) => ({ jurisdiccion: j, pendiente: pend[j] }));
+  return { general: general.sort(orden), especie: deEspecie.sort(orden), pendiente };
 }
 
 // ---------------------------------------------------------------------------
@@ -400,8 +539,16 @@ export function coincideTemperatura(especie, tempAgua) {
   return tempAgua >= t.rango[0] && tempAgua <= t.rango[1];
 }
 
-export function especiesDeTemporada(datos, region, mes) {
-  return datos.especies.filter((e) => e.presencia?.[region]?.meses?.includes(mes) && !vedaActiva(e, region, mes));
+// modalidad opcional: con ella, solo las especies que se pescan así.
+export function especiesDeTemporada(datos, region, mes, modalidad = null) {
+  return datos.especies.filter((e) => e.presencia?.[region]?.meses?.includes(mes) && !vedaActiva(e, region, mes)
+    && (!modalidad || aplicaModalidad(e, modalidad, region)));
+}
+
+// Especies con presencia en la región que se pescan con esa modalidad (de
+// temporada o no): el desplegable de la ventana de actividad de cada pestaña.
+export function especiesParaModalidad(datos, region, modalidad) {
+  return datos.especies.filter((e) => e.presencia?.[region]?.meses?.length && aplicaModalidad(e, modalidad, region));
 }
 
 // "abr–dic", "todo el año" o "ene, mar, may": meses en orden circular.

@@ -1657,6 +1657,32 @@ Sustituye heurísticas por fuentes cuando las encuentres y vigila normas de
 cebos (p. ej. cebo vivo prohibido en alguna comunidad). Nunca copies manuales
 de pago ni contenido de apps competidoras (Fizk).
 
+**Modalidades de pesca** (añadido 2026-10-08, pedido de Mikel: "no se pesca
+lo mismo desde costa que desde embarcación o en submarina"). Cada especie
+lleva `modalidades.costa`, `.embarcacion` y `.submarina` con `aplica`
+(`true`/`false`/`null`), `fuentes` o `tipo_fuente` + `criterio`, y opcionales
+`zona`, `profundidad_m`, `tecnica` (solo submarina), `regiones` /
+`regiones_excluidas` y `normativa` (lista con `jurisdiccion`, `texto`,
+`fuente`, `url`, `fecha_revision`). Es muchos-a-muchos: la lubina va en las
+tres; el bonito solo en embarcación. **`null` = sin dato y NO se muestra en
+esa pestaña**: nunca pongas `true` "porque suele ser"; pon `true` solo con
+fuente o con un criterio honesto marcado `heuristica_experta`, y `false`
+cuando la especie no se pesca así (pelágicos de mar abierto desde costa).
+Cada cebo lleva `modalidades` (costa/embarcacion) derivadas de su
+`modalidad`. En cada pasada, además de lo de arriba:
+- revisa `normativa_modalidades.pendiente` (por jurisdicción: licencias,
+  cupos, distancias, horario, especies prohibidas en submarina como el mero)
+  y añade lo verificado a `normativa_modalidades.<modalidad>` con `articulo`,
+  `url` y `fecha_revision`;
+- sustituye heurísticas de `modalidades` por fuentes (guías oficiales de
+  pesca recreativa de comunidades autónomas o de la DGRM) y rellena `zona`,
+  `profundidad_m` y `tecnica` cuando haya dato;
+- las reglas de `reglas_por_modalidad` (seguridad en embarcación,
+  visibilidad y horario en submarina) siguen la misma norma que las demás:
+  `criterio` o `fuente` en cada factor. La prohibición nocturna de la
+  submarina es legal (RD 347/2011 art. 16.d; Portaria 14/2014 art. 8.3): no
+  la quites.
+
 **Reglas de la ventana de actividad** (`reglas` y `reglas_por_defecto`): cada
 peso o preferencia lleva `fuente` o `criterio`, y si es una heurística de
 pescadores se marca `"tipo": "heuristica_experta"`. La marea se escala con el
@@ -1665,7 +1691,7 @@ rango local: no la conviertas en factor fijo.
 **Dónde va**: rama `robot/especies-AAAA-MM-DD`, nunca `main`. Al subirla,
 `robot-diseno-pr.yml` abre el PR (o un Issue con el enlace si GitHub no deja
 crear PR a Actions) y Mikel decide. Antes de commitear:
-`node --test test/ventana-actividad.test.js` (comprueba que toda fuente citada
+`node --test test/ventana-actividad.test.js test/modalidades.test.js` (comprueba que toda fuente citada
 existe, que ninguna fuente NC sostiene un dato, que cada talla tiene url y
 fecha y que los meses y regiones son válidos). Si falla, no subas la rama:
 déjalo como propuesta en `ROBOT.md`. Este flujo sustituye, solo para este

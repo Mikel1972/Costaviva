@@ -26,7 +26,7 @@
 
 import sharp from "sharp";
 import { textoMeses } from "../../assets/js/ventana-actividad.js";
-import { regionDelPost, postEnEuskadi, elegirEspeciePost, leerEspeciesJson } from "./especie-post.mjs";
+import { regionDelPost, postEnEuskadi, elegirEspeciePost, leerEspeciesJson, modalidadDelPost } from "./especie-post.mjs";
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
@@ -390,7 +390,7 @@ async function generarEspecies() {
   const mesActual = new Date().getMonth() + 1;
   const rotacion = leerRotacion();
   const region = regionDelPost(rotacion);
-  const elegida = elegirEspeciePost(leerEspeciesJson(RAIZ_REPO), region, mesActual, diaDelAnio(new Date()), { euskadi: postEnEuskadi(rotacion) });
+  const elegida = elegirEspeciePost(leerEspeciesJson(RAIZ_REPO), region, mesActual, diaDelAnio(new Date()), { euskadi: postEnEuskadi(rotacion), modalidad: modalidadDelPost() });
   if (!elegida) throw new Error(`Ninguna especie de temporada (y fuera de veda) en ${region} para el mes ${mesActual}`);
   const { nota, talla, freza, cebos } = elegida;
   const especie = { ...elegida.especie, nombre: elegida.especie.nombres.es };
