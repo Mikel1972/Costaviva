@@ -71,10 +71,31 @@ name: Robot de experiencia de usuario
 # 2026-10-07 ya no: un fallo real, incluido quedarse sin turnos, sale en
 # rojo; solo la falta de saldo sale en verde con ::warning::.)
 
+#
+# SIN API DESDE EL 2026-10-08 (Mikel aprobó las propuestas de GASTO.md de
+# comun; patrón de comun estandares/claude-api.md "Dónde va cada cosa"):
+#   1. Este workflow, SIN IA, sondea producción como la cuenta de prueba
+#      (scripts/experiencia/sondear.mjs: /prevision de toda la costa, /luna,
+#      casos límite y una salida del diario que se guarda, se relee, se
+#      comprueba contra la cuenta B y se borra) y deja el CONTENIDO en
+#      datos-robots/experiencia/ultima.json, sin tokens ni user_id. Domingo
+#      por la noche, para que esté listo el lunes por la mañana.
+#   2. La rutina "Costaviva - Experiencia de usuario" del plan de Claude
+#      (scripts/saldo/rutina-experiencia-usuario.txt, lunes) lo lee con
+#      sospecha, lo cruza con el código y escribe los hallazgos en ROBOT.md.
+# El paso de Claude de abajo solo corre a mano, con el input respaldo_api
+# marcado (test/robots-sin-api.test.js lo comprueba). Antes: lunes 05:30 UTC
+# con claude -p contra el saldo de la API.
+
 on:
   schedule:
-    - cron: "30 5 * * 1"
-  workflow_dispatch: {}
+    - cron: "30 21 * * 0" # domingo por la noche: datos para la rutina del lunes
+  workflow_dispatch:
+    inputs:
+      respaldo_api:
+        description: "Respaldo manual: además del sondeo, explorar la app con Claude contra el saldo de la API (lo normal es la rutina del plan)"
+        type: boolean
+        default: false
 
 jobs:
   experiencia:
@@ -134,10 +155,27 @@ jobs:
             echo "dos_usuarios=no" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Sondear producción y guardar el contenido para la rutina (sin IA)
+        env:
+          TOKEN_A_FILE: /tmp/token_usuario_a.txt
+          TOKEN_B_FILE: /tmp/token_usuario_b.txt
+        run: |
+          F=datos-robots/experiencia/ultima.json
+          node scripts/experiencia/sondear.mjs "$F"
+          git config user.name "Costaviva (volcado)"
+          git config user.email "noreply@anthropic.com"
+          git add "$F"
+          if git diff --cached --quiet; then echo "Sin cambios."; exit 0; fi
+          git commit -qm "Sondeo de experiencia de usuario para la rutina [skip ci]"
+          for i in 1 2 3; do git pull -q --rebase origin main && git push -q origin HEAD:main && exit 0; sleep 5; done
+          echo "::error::No se pudo subir $F"; exit 1
+
       - name: Instalar Claude Code CLI
+        if: github.event_name == 'workflow_dispatch' && inputs.respaldo_api == true
         run: npm install -g @anthropic-ai/claude-code
 
       - name: Explorar la app como usuario(s) real(es) (Claude Code, sesión no interactiva)
+        if: github.event_name == 'workflow_dispatch' && inputs.respaldo_api == true
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         # Sin continue-on-error desde 2026-10-07 (comun claude-api.md C15):
