@@ -9212,3 +9212,14 @@ intermitencia de origen con la misma URL vigente, ni Zumaia por no
 encontrarse sustituta verificada).
 
 **Firmado:** robot de cámaras caídas, 2026-10-07 12:05 UTC.
+
+### 2026-10-08 04:42 UTC (robot de cámaras caídas — rutina; Comillas, Alicante, Oliva)
+
+Datos: `datos-robots/camaras-estado.json` generado 2026-10-07T14:55Z (~14 h, aceptable). 13 cámaras con fallos; revisadas 3 por el límite. Sin tocar para la siguiente: `orio`, `sopelana`, `vinaros`, `alboraya`, `cullera` y el grupo cantabria.es/socib (`sanvicente`, `suances`, `muro`, `sonbou`, `calamillor`).
+
+- **oliva**: recuperada sola. `OlivaPuerto/webcam_mini.png` da 200, Last-Modified 2026-10-08 04:00 UTC, imagen vista con Read (puerto deportivo con mar de fondo). Era intermitencia del proveedor; sin cambios de código.
+- **alicante**: `AlicantePuerto/webcam_mini.png` da 404 constante. Probadas variantes de nombre en streaming.comunitatvalenciana.com (AlicantePostiguet, Postiguet, AlicanteSanJuan, AlicanteAlbufereta, Alacant, AlicantePuertoDeportivo, AlicanteMarina, Alicante2…): todas 404 salvo `AlicanteExplanada` (200, vivo), que al mirarla con Read es el paseo de la Explanada sin mar: NO sirve como sustituta. Sin alternativa verificada; probar la web de Turisme Comunitat Valenciana para ver qué ID publica hoy.
+- **comillas**: `www.cantabria.es` rechaza la conexión (curl 35/000, también la portada). Sin verificar: dominio caído o bloqueado por la red de la rutina (cantabria.es). La búsqueda web de alternativa no devolvió resultados útiles en esta sesión; términos probados: "webcam Comillas Cantabria playa en directo".
+- **orio** (comprobada de paso): sigue intermitente en origen (404 en esta lectura), misma conclusión que el 2026-10-07.
+
+**Firmado:** robot de cámaras caídas (rutina), 2026-10-08 04:42 UTC.
