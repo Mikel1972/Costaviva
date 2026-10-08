@@ -96,6 +96,10 @@ name: Robot buscador de fuentes
 # de API y lleva funcionando desde el 2026-09-29. Esta copia duplicaba la
 # pasada contra el saldo y el 2026-10-02 falló por max-turns tras 10 min.
 # Se deja workflow_dispatch para lanzarlo a mano si la rutina falla.
+# Desde el 2026-10-08 (Mikel aprobó las propuestas de GASTO.md de comun),
+# incluso a mano Claude solo arranca con el input respaldo_api marcado: un
+# clic distraído en "Run workflow" no gasta saldo de API
+# (test/robots-sin-api.test.js lo comprueba).
 on:
   workflow_dispatch:
     inputs:
@@ -103,6 +107,10 @@ on:
         description: "Área a investigar (solo para probar a mano)"
         required: false
         default: "cámaras/webcams nuevas para spots sin cámara todavía"
+      respaldo_api:
+        description: "Respaldo manual: ejecutar la pasada con Claude contra el saldo de la API (lo normal es la rutina del plan)"
+        type: boolean
+        default: false
 
 jobs:
   buscar:
@@ -180,16 +188,23 @@ jobs:
           fi
 
           echo "area=$AREA" >> "$GITHUB_OUTPUT"
+          if [ "${{ inputs.respaldo_api }}" != "true" ]; then
+            echo "Sin respaldo_api: no se arranca Claude. Esta pasada la hace la rutina \"Costaviva - Buscador de fuentes\" del plan de Claude."
+            echo "### Sin respaldo_api: no se ha arrancado Claude (lo hace la rutina del plan)" >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Instalar Claude Code CLI
+        if: github.event_name == 'workflow_dispatch' && inputs.respaldo_api == true
         run: npm install -g @anthropic-ai/claude-code
 
       - name: Configurar git para el commit del robot
+        if: github.event_name == 'workflow_dispatch' && inputs.respaldo_api == true
         run: |
           git config user.name "Claude (robot Costaviva)"
           git config user.email "noreply@anthropic.com"
 
       - name: Ejecutar el robot de datos (Claude Code, sesión no interactiva)
+        if: github.event_name == 'workflow_dispatch' && inputs.respaldo_api == true
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           AREA: ${{ steps.area.outputs.area }}

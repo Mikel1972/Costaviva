@@ -23,6 +23,15 @@ name: Robot de cámaras caídas
 # tuvo un incidente real de gasto de API (ver CLAUDE.md, 2026-09-16) y un
 # robot de reparación que se despierta cada día "por si acaso" es justo el
 # patrón que lo provocó.
+#
+# SIN API EN LAS PASADAS PROGRAMADAS (2026-10-08, Mikel aprobó las
+# propuestas de GASTO.md de comun): la reparación la hace la rutina
+# "Costaviva - Cámaras caídas" del plan de Claude
+# (scripts/saldo/rutina-camaras-caidas.txt), que deja la fecha en
+# datos-robots/camaras-rutina-ultima.txt. La pasada programada de aquí ya
+# solo vigila sin IA: si la rutina no ha pasado hoy y hay cámaras en rojo,
+# avisa con ::warning::. Claude solo arranca a mano, con el input
+# respaldo_api marcado (test/robots-sin-api.test.js lo comprueba).
 
 on:
   schedule:
@@ -31,7 +40,12 @@ on:
     # buscador de las 02:47, para que si esa integró cámaras nuevas ya estén
     # reflejadas en camara_estado cuando este mire.
     - cron: "23 5 * * *"
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      respaldo_api:
+        description: "Respaldo manual: si la rutina no ha pasado hoy, reparar con Claude contra el saldo de la API"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -111,19 +125,26 @@ jobs:
           ')
           echo "lista=$LISTA" >> "$GITHUB_OUTPUT"
           echo "Cámaras con fallos ($CUANTAS): $LISTA"
+          if [ "${{ github.event_name }}" != "workflow_dispatch" ] || [ "${{ inputs.respaldo_api }}" != "true" ]; then
+            echo "::warning::La rutina \"Costaviva - Cámaras caídas\" no ha pasado hoy y hay $CUANTAS cámaras con fallos. No se arranca Claude (sin API en las pasadas programadas): revisar la rutina en claude.ai/code/routines, o lanzar este workflow a mano con respaldo_api."
+            {
+              echo "### La rutina no ha pasado hoy"
+              echo "Hay $CUANTAS cámaras con fallos y no se ha arrancado Claude. Revisar la rutina o lanzar a mano con \`respaldo_api\`."
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Instalar Claude Code CLI
-        if: steps.rojas.outputs.cuantas != '0'
+        if: steps.rojas.outputs.cuantas != '0' && github.event_name == 'workflow_dispatch' && inputs.respaldo_api == true
         run: npm install -g @anthropic-ai/claude-code
 
       - name: Configurar git
-        if: steps.rojas.outputs.cuantas != '0'
+        if: steps.rojas.outputs.cuantas != '0' && github.event_name == 'workflow_dispatch' && inputs.respaldo_api == true
         run: |
           git config user.name "Claude (robot Costaviva)"
           git config user.email "noreply@anthropic.com"
 
       - name: Investigar y tratar de levantarlas
-        if: steps.rojas.outputs.cuantas != '0'
+        if: steps.rojas.outputs.cuantas != '0' && github.event_name == 'workflow_dispatch' && inputs.respaldo_api == true
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           ROJAS: ${{ steps.rojas.outputs.lista }}

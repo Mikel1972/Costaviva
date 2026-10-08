@@ -35,6 +35,11 @@ name: Informe diario
 # hora correctamente gestionado — ver el comentario junto a "on:
 # schedule:" más abajo, y el job "decidir_hora" nuevo).
 #
+# SÍNTESIS SIN API (2026-10-08): la redacta la rutina "Costaviva -
+# Síntesis del informe diario" del plan de Claude
+# (scripts/saldo/rutina-sintesis-informe.txt). Una pasada programada nunca
+# llama a la API; el paso de Claude de abajo es solo un respaldo manual
+# (workflow_dispatch con respaldo_api). Para ese respaldo:
 # Necesita el secret ANTHROPIC_API_KEY (el mismo que ya usa
 # robot-buscador-fuentes.yml) para el paso de síntesis — si falta o no
 # tiene crédito, ese paso avisa con ::warning:: y el resto del informe (los
@@ -69,7 +74,12 @@ on:
     # dos informes el mismo día.
     - cron: "13 6 * * *" # 08:13 hora de España cuando rige CEST (verano)
     - cron: "13 7 * * *" # 08:13 hora de España cuando rige CET (invierno)
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      respaldo_api:
+        description: "Respaldo manual: si la rutina no ha dejado la síntesis de hoy, redactarla con Claude contra el saldo de la API"
+        type: boolean
+        default: false
 
 jobs:
   decidir_hora:
@@ -562,9 +572,12 @@ jobs:
 
       # Desde el 2026-10-07 la síntesis la escribe la rutina "Costaviva -
       # Síntesis del informe diario" (suscripción) en
-      # datos-robots/sintesis-informe.md. Si es de hoy se usa, y los dos pasos
-      # siguientes se saltan (así el informe de gasto de comun ve que no se
-      # llamó a la API); si no, se hacen aquí como respaldo (comun C16).
+      # datos-robots/sintesis-informe.md. Si es de hoy se usa. Desde el
+      # 2026-10-08 (Mikel aprobó las propuestas de GASTO.md de comun) una
+      # pasada programada NUNCA llama a la API: si la rutina no ha dejado la
+      # síntesis, el informe sale sin ella y con un aviso. Los dos pasos
+      # siguientes solo corren a mano, con el input respaldo_api marcado
+      # (comun C16; test/robots-sin-api.test.js lo comprueba).
       - name: Síntesis de la rutina
         id: rutina
         run: |
@@ -574,15 +587,18 @@ jobs:
             tail -n +3 "$S" > /tmp/informe-sintesis.txt
             echo "Síntesis de la rutina de hoy: no se llama a la API."
             echo "hay=1" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::La rutina \"Costaviva - Síntesis del informe diario\" no ha dejado la síntesis de hoy en $S. El informe sale sin síntesis; revisar la rutina en claude.ai/code/routines (o relanzar este workflow a mano con respaldo_api)."
+            echo "_(sin síntesis hoy: la rutina «Costaviva - Síntesis del informe diario» no ha dejado la de hoy en \`$S\`. El resto del informe es real y está completo. Revisar la rutina en claude.ai/code/routines.)_" > /tmp/informe-sintesis.txt
           fi
 
       - name: Instalar Claude Code CLI
-        if: steps.rutina.outputs.hay != '1'
+        if: steps.rutina.outputs.hay != '1' && github.event_name == 'workflow_dispatch' && inputs.respaldo_api == true
         run: npm install -g @anthropic-ai/claude-code
 
       - name: Síntesis del día (Claude Code, sesión no interactiva)
         id: sintesis
-        if: steps.rutina.outputs.hay != '1'
+        if: steps.rutina.outputs.hay != '1' && github.event_name == 'workflow_dispatch' && inputs.respaldo_api == true
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         # Sin continue-on-error desde 2026-10-07 (comun claude-api.md C15 y
@@ -644,7 +660,7 @@ jobs:
         with:
           script: |
             const fs = require("fs");
-            let sintesis = "_(síntesis no disponible esta pasada — revisar ANTHROPIC_API_KEY/crédito, o mirar ROBOT.md directamente)_";
+            let sintesis = "_(síntesis no disponible esta pasada — revisar la rutina «Costaviva - Síntesis del informe diario», o mirar ROBOT.md directamente)_";
             try {
               const contenido = fs.readFileSync("/tmp/informe-sintesis.txt", "utf8").trim();
               if (contenido) sintesis = contenido;

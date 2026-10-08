@@ -27,11 +27,30 @@ name: Robot de patrones de uso
 #
 # IMPORTANTE — probar a mano (workflow_dispatch) antes de fiarse del
 # schedule, mismo criterio que el resto de rutinas de este repo.
+#
+# SIN API DESDE EL 2026-10-08 (Mikel aprobó las propuestas de GASTO.md de
+# comun; patrón de comun estandares/claude-api.md "Dónde va cada cosa"):
+#   1. Este workflow, SIN IA, agrega los datos con la service_role
+#      (scripts/patrones-uso/agregar.mjs: solo recuentos, ningún user_id ni
+#      email, valores con menos de 2 usuarios ocultos — el repo es público)
+#      y los deja en datos-robots/patrones-uso/ultima.json. Viernes por la
+#      noche, para que estén listos el sábado.
+#   2. La rutina "Costaviva - Patrones de uso" del plan de Claude
+#      (scripts/saldo/rutina-patrones-uso.txt, sábados) los lee, cruza con el
+#      código y escribe las propuestas en ROBOT.md.
+# El paso de Claude de abajo solo corre a mano, con el input respaldo_api
+# marcado (test/robots-sin-api.test.js lo comprueba). Antes: sábados 09:12
+# UTC con claude -p contra el saldo de la API.
 
 on:
   schedule:
-    - cron: "12 9 * * 6" # semanal, sábado
-  workflow_dispatch: {}
+    - cron: "12 22 * * 5" # semanal, viernes por la noche (agregados para la rutina del sábado)
+  workflow_dispatch:
+    inputs:
+      respaldo_api:
+        description: "Respaldo manual: además de agregar, analizar con Claude contra el saldo de la API (lo normal es la rutina del plan)"
+        type: boolean
+        default: false
 
 jobs:
   analizar:
@@ -47,15 +66,36 @@ jobs:
         with:
           node-version: "20"
 
+      - name: Agregar los datos de uso para la rutina (sin IA)
+        env:
+          SUPABASE_URL: https://imncbmizxkorotpeisic.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          TEST_USER_A_EMAIL: ${{ secrets.TEST_USER_A_EMAIL }}
+          TEST_USER_B_EMAIL: ${{ secrets.TEST_USER_B_EMAIL }}
+        run: |
+          if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then echo "::error::Falta el secret SUPABASE_SERVICE_ROLE_KEY."; exit 1; fi
+          F=datos-robots/patrones-uso/ultima.json
+          node scripts/patrones-uso/agregar.mjs "$F"
+          git config user.name "Costaviva (volcado)"
+          git config user.email "noreply@anthropic.com"
+          git add "$F"
+          if git diff --cached --quiet; then echo "Sin cambios."; exit 0; fi
+          git commit -qm "Patrones de uso agregados para la rutina [skip ci]"
+          for i in 1 2 3; do git pull -q --rebase origin main && git push -q origin HEAD:main && exit 0; sleep 5; done
+          echo "::error::No se pudo subir $F"; exit 1
+
       - name: Instalar Claude Code CLI
+        if: github.event_name == 'workflow_dispatch' && inputs.respaldo_api == true
         run: npm install -g @anthropic-ai/claude-code
 
       - name: Configurar git para el commit del robot
+        if: github.event_name == 'workflow_dispatch' && inputs.respaldo_api == true
         run: |
           git config user.name "Claude (robot Costaviva)"
           git config user.email "noreply@anthropic.com"
 
       - name: Ejecutar el robot de patrones de uso (Claude Code, sesión no interactiva)
+        if: github.event_name == 'workflow_dispatch' && inputs.respaldo_api == true
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}

@@ -3811,6 +3811,28 @@ para no cargar este `CLAUDE.md` en cada turno, fijar `--model` y
 `--max-turns`, y no leer enteros `ROBOT.md` (~470 KB) ni ficheros grandes.
 El auditor lo marcará si no.
 
+**Robots a rutinas, sin API en las pasadas programadas (2026-10-08, Mikel
+aprobó las propuestas de `GASTO.md` de `comun`).** Ninguna pasada programada
+llama ya a la API de Anthropic. El paso de Claude de los 5 workflows solo
+corre a mano con el input `respaldo_api` marcado (por defecto, apagado);
+`test/robots-sin-api.test.js` (en `tests.yml`) falla si un paso con
+`ANTHROPIC_API_KEY` o el CLI de Claude pierde esa condición. Las rutinas las
+crea Mikel en claude.ai/code/routines con el repo conectado (una creada por
+un agente nace sin repo):
+
+| Workflow (sin IA) | Qué deja en el repo | Rutina del plan (prompt) | Cron de la rutina |
+|---|---|---|---|
+| `robot-camaras-caidas.yml` (05:23 UTC, solo vigila y avisa) | lee `datos-robots/camaras-estado.json` de `camaras-salud.yml` | Cámaras caídas (`scripts/saldo/rutina-camaras-caidas.txt`) | la que ya tiene |
+| `daily-report.yml` (sin síntesis si la rutina no la dejó) | usa `datos-robots/sintesis-informe.md` | Síntesis del informe diario (`scripts/saldo/rutina-sintesis-informe.txt`) | la que ya tiene |
+| `robot-buscador-fuentes.yml` (sin schedule) | — | Buscador de fuentes (`scripts/saldo/rutina-buscador-fuentes.txt`) | la que ya tiene |
+| `robot-experiencia-usuario.yml` (domingo 21:30 UTC) | `datos-robots/experiencia/ultima.json` (`scripts/experiencia/sondear.mjs`) | Experiencia de usuario (`scripts/saldo/rutina-experiencia-usuario.txt`) | `CRON_TZ=Europe/Madrid 28 7 * * 1` |
+| `robot-patrones-uso.yml` (viernes 22:12 UTC) | `datos-robots/patrones-uso/ultima.json` (`scripts/patrones-uso/agregar.mjs`, solo agregados) | Patrones de uso (`scripts/saldo/rutina-patrones-uso.txt`) | `CRON_TZ=Europe/Madrid 13 11 * * 6` |
+
+El repo es público: lo que se vuelca a `datos-robots/` va sin tokens, sin
+`user_id` ni emails, y los valores de menos de 2 usuarios se ocultan.
+`datos-robots/` no se sirve en la web (lista blanca de
+`functions/_lib/rutas-publicas.js`).
+
 ## Regla para futuros endpoints con `service_role` (2026-09-25)
 
 Propuesta 5 de la comparativa entre proyectos. **Hoy no hay ningún hueco**:
