@@ -222,3 +222,68 @@ export function camarasExternasDeSpot(slug) {
 export function claveSalud(camara) {
   return `ext-${camara.id}`;
 }
+
+// --- Salud de las externas: "caída" frente a "no verificable" (2026-10-08) ---
+//
+// Caso real (camara_estado, 2026-10-08 21:04 UTC): las 30 cámaras de MEO
+// Beachcam salían sin_senal=true con motivo http_403 y las otras 30
+// (Skyline, YouTube) bien. MEO responde 403 a las peticiones que salen de
+// centros de datos (los runners de GitHub de camaras-salud.yml) por su
+// protección anti-bots, aunque la cámara funcione: desde un navegador
+// normal la página abre. Era un falso "caída", y a las 24 h la app habría
+// escondido todos los enlaces de Portugal.
+//
+// Regla: en una cámara de modo "enlace" (solo abrimos la web del dueño en
+// otra pestaña), un 401/403/429 significa "el dueño no deja comprobarla de
+// forma automática", no "está caída". Se guarda como no_verificable_<código>
+// con sin_senal=false y sin sumar fallos: ni la app la esconde ni el robot
+// de cámaras caídas la toma por rota. No se intenta saltar su protección
+// (sería ir contra sus términos). En "imagen_oficial" sí cuenta como fallo:
+// ahí la imagen la carga la app y, si el dueño la bloquea, no se vería.
+export const CODIGOS_ANTIBOT = [401, 403, 429];
+
+export function esNoVerificable(motivo) {
+  return typeof motivo === "string" && motivo.startsWith("no_verificable");
+}
+
+// Resultado de una comprobación HTTP de una cámara externa (status y
+// content-type de la respuesta; status 0 = sin respuesta).
+export function resultadoComprobacionExterna(camara, status, contentType = "") {
+  if (!status) return { ok: false, motivo: "sin_respuesta" };
+  if (status >= 200 && status < 300) {
+    if (camara.modo === "imagen_oficial" && !String(contentType).startsWith("image/")) return { ok: false, motivo: "no_es_imagen" };
+    return { ok: true };
+  }
+  if (camara.modo === "enlace" && CODIGOS_ANTIBOT.includes(status)) return { ok: null, noVerificable: true, motivo: `no_verificable_${status}` };
+  return { ok: false, motivo: `http_${status}` };
+}
+
+// Lectura para /registrar-estado-camaras a partir del resultado de esta
+// pasada y del estado previo de la misma clave.
+export function lecturaSaludExterna(clave, bruto, previo, ahora, umbral = 2) {
+  const base = { spot: clave, hashFrame: null, hashDesde: null, fuenteUsada: 0 };
+  if (bruto.noVerificable) {
+    // Ni sana ni caída: no se toca ultimaSenalEn (no la hemos visto) y no
+    // suma fallos (no hay ninguno comprobado).
+    return { ...base, sinSenal: false, motivo: bruto.motivo, ultimaSenalEn: previo?.ultimaSenalEn ?? null, fallosSeguidos: 0 };
+  }
+  const fallosSeguidos = bruto.ok ? 0 : (previo?.fallosSeguidos ?? 0) + 1;
+  return {
+    ...base,
+    sinSenal: fallosSeguidos >= umbral,
+    motivo: bruto.ok ? "ok" : bruto.motivo,
+    ultimaSenalEn: bruto.ok ? ahora : (previo?.ultimaSenalEn ?? null),
+    fallosSeguidos,
+  };
+}
+
+// La app solo puede esconder una externa por estar caída si el fallo es
+// real. Cubre también las filas viejas (sin_senal=true, http_403) que
+// quedaron escritas antes de este cambio, hasta que la siguiente pasada
+// del robot de salud las reescriba.
+export function externaCuentaComoCaida(camara, estado) {
+  if (!estado?.sinSenal) return false;
+  if (esNoVerificable(estado.motivo)) return false;
+  if (camara.modo === "enlace" && CODIGOS_ANTIBOT.some((c) => estado.motivo === `http_${c}`)) return false;
+  return true;
+}
