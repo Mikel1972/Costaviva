@@ -11,6 +11,8 @@
 // Environment variables, como "Secret", nunca en el repo):
 // STRIPE_SECRET_KEY.
 
+import { descuentoAplicaAPlan } from "./_lib/invitaciones.js";
+
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
@@ -41,6 +43,29 @@ async function clienteStripeExistente(token, userId) {
   if (!resp.ok) return null;
   const filas = await resp.json();
   return filas[0]?.stripe_customer_id || null;
+}
+
+// Descuento por invitación (< 100 %, 2026-10-08): lo decide Postgres con el
+// token del propio usuario (mi_invitacion_descuento(): canjeada por él, sin
+// anular, sin caducar y sin usar). El cliente nunca manda el cupón. Si la
+// función no responde, se cobra sin descuento y queda en el log.
+async function invitacionConDescuento(token) {
+  try {
+    const resp = await fetch(`${SUPABASE_URL}/rest/v1/rpc/mi_invitacion_descuento`, {
+      method: "POST",
+      headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${token}`, "content-type": "application/json" },
+      body: "{}",
+    });
+    if (!resp.ok) {
+      console.error(`crear-checkout-stripe: mi_invitacion_descuento HTTP ${resp.status}`);
+      return null;
+    }
+    const inv = await resp.json();
+    return inv && inv.stripe_coupon_id ? inv : null;
+  } catch (e) {
+    console.error("crear-checkout-stripe: mi_invitacion_descuento falló:", e);
+    return null;
+  }
 }
 
 // Días de prueba restantes en la app (desde perfiles.creado_en, 7 días
@@ -122,7 +147,18 @@ export async function onRequestPost(context) {
     // con caducidad o límite de usos) se crean y gestionan desde el
     // Dashboard de Stripe (Products → Coupons), no hace falta código
     // nuevo aquí para cada cupón.
-    params.append("allow_promotion_codes", "true");
+    //
+    // Con descuento de invitación, en su lugar va el cupón de esa invitación
+    // (Stripe no admite las dos cosas a la vez). El webhook marca la
+    // invitación como aplicada al completar el pago (metadata invitacion_id).
+    const invitacion = await invitacionConDescuento(token);
+    if (invitacion && descuentoAplicaAPlan(invitacion, plan)) {
+      params.append("discounts[0][coupon]", invitacion.stripe_coupon_id);
+      params.append("metadata[invitacion_id]", invitacion.id);
+      params.append("subscription_data[metadata][invitacion_id]", invitacion.id);
+    } else {
+      params.append("allow_promotion_codes", "true");
+    }
     // "Managed Payments" (activado por defecto en cuentas nuevas de
     // Stripe) exige un tax_code por producto si está activo — no
     // configuramos Stripe Tax a propósito (ver login.html/suscripcion.html,
@@ -188,6 +224,12 @@ export async function onRequestPost(context) {
       // aplicado hoy a /identificar-captura.
       const detalle = await resp.text();
       console.error(`crear-checkout-stripe: Stripe HTTP ${resp.status}: ${detalle}`);
+      if (params.has("discounts[0][coupon]") && /discounts|coupon/i.test(detalle)) {
+        return new Response(JSON.stringify({
+          error: "El descuento de tu invitación ya no es válido en el pago. Escríbenos y lo revisamos.",
+          codigo: "descuento_no_valido",
+        }), { status: 409, headers: { "content-type": "application/json" } });
+      }
       return new Response(JSON.stringify({ error: MENSAJE_GENERICO, codigo: "fallo_stripe" }), {
         status: 502,
         headers: { "content-type": "application/json" },
