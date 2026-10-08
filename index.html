@@ -1120,7 +1120,7 @@
       <!-- Motivos del índice: bloque propio a lo ancho de la caja (dentro de
            .etq, que es flex, se apretaban en columna: visto por Mikel). -->
       <div class="indice-porque" id="panelIndicePescaPorque"></div>
-      <div class="explicacion-indice" id="explicacionIndicePesca">Es la puntuación de la especie de temporada que mejor está ahora mismo en este punto y con esta modalidad (sin las que están en veda), con las mismas reglas públicas que la ventana de actividad de abajo: luz, marea, temperatura del agua, oleaje, viento, presión, turbidez y las reglas expertas de pesca local. Escala de 0 a 100 en forma de probabilidad (50 = día normal); debajo, lo que más sube (▲) o baja (▼) la nota ahora mismo. Una orientación, no una garantía.</div>
+      <div class="explicacion-indice" id="explicacionIndicePesca">Es la puntuación de la especie de temporada que mejor está ahora mismo en este punto y con esta modalidad (sin las que están en veda), con las mismas reglas públicas que la ventana de actividad de abajo: luz, marea, temperatura del agua, oleaje, viento, presión, turbidez y las reglas expertas de pesca local. Escala de 0 a 100 en forma de probabilidad (50 = día normal); debajo, lo que más sube (▲) o baja (▼) la nota ahora mismo. Si la ola es peligrosa para esta modalidad sale aparte un aviso ⚠️: la nota no la recorta. Una orientación, no una garantía.</div>
     </div>
     <div class="tarjeta" id="ventanaActividadBox" style="margin-top:10px; border: 1px solid var(--linea);">
       <div class="etq">⏱ VENTANA DE ACTIVIDAD POR HORAS</div>
@@ -3772,7 +3772,17 @@ async function pintarIndicePesca(s) {
   // Nota + motivos con flechas (sin puntos ni fuentes), como en la ventana.
   pinta(ind.puntuacion, `${VA.NOMBRE_MODALIDAD[modalidad]} · mejor ahora: ${ind.especie.nombre}`
     + `${ind.freza ? " (en freza: si lo pescas, devuélvelo)" : ""}`);
-  porqueEl.innerHTML = htmlPorque(ind.resultado.razones.filter((r) => r.aporte !== 0).slice(0, 4), ind.fiabilidad);
+  // Ola peligrosa: nota aparte encima de los motivos, nunca un motivo con
+  // flecha ni un tope de la nota (decisión de Mikel, 2026-10-08).
+  porqueEl.innerHTML = htmlAvisoOla(ind.avisoOla)
+    + htmlPorque(ind.resultado.razones, ind.fiabilidad, 4);
+}
+
+// Aviso de ola peligrosa (2026-10-08): "⚠️ Ola peligrosa desde costa
+// (2,5-3 m): extrema la precaución". Viene de VentanaActividad.avisoOlaPeligrosa.
+function htmlAvisoOla(aviso, extra = "") {
+  if (!aviso) return "";
+  return `<div class="aviso-ola" role="note">${escVA(aviso.texto)}${extra ? `<small>${escVA(extra)}</small>` : ""}</div>`;
 }
 
 async function pintarVentanaActividad(s) {
@@ -3865,7 +3875,7 @@ function pintarTiraVA(especie, region, fecha, datos) {
   document.getElementById("vaMejores").innerHTML = vedaHoy
     ? "<b>En veda:</b> no recomendamos ninguna hora para esta especie."
     : mejores.length
-    ? "<b>Mejores ventanas:</b> " + mejores.map((v) => `${v.desde}–${v.hasta} (${v.media}) — ${escVA(v.porque.join(" · "))}`).join("<br>")
+    ? "<b>Mejores ventanas:</b> " + mejores.map((v) => `${v.desde}–${v.hasta} (${v.media})${v.avisoOla ? " ⚠️ ola peligrosa" : ""} — ${escVA(v.porque.join(" · "))}`).join("<br>")
     : `Ninguna hora pasa de 60 ${vaEstado.dia === 0 ? "en lo que queda de hoy" : "mañana"}.`;
 
   const mes = Number(fecha.slice(5, 7));
@@ -3876,6 +3886,12 @@ function pintarTiraVA(especie, region, fecha, datos) {
     : fz?.enFreza
     ? `<div class="va-freza">🥚 <b>En freza en esta zona</b> (${vaTextoMeses(fz.meses)}). Si lo pescas, te recomendamos devolverlo al agua.${fz.nota ? ` <span style="opacity:.8">${escVA(fz.nota)}</span>` : ""}</div>`
     : "";
+  // Ola peligrosa: las horas que quedan con aviso (la peor ola manda el texto).
+  const conOla = res.filter((r) => r.avisoOla && (r.hora.slice(0, 13) >= ahora || vaEstado.dia > 0));
+  if (conOla.length) {
+    const peorOla = conOla.reduce((a, b) => (b.avisoOla.ola > a.avisoOla.ola ? b : a));
+    frezaEl.innerHTML += htmlAvisoOla(peorOla.avisoOla, `${conOla.length} h con ola peligrosa (${conOla[0].hora.slice(11, 16)}–${conOla[conOla.length - 1].hora.slice(11, 16)}).`);
+  }
   // Avisos de seguridad (embarcación): las horas que quedan con aviso.
   const conAviso = res.filter((r) => r.avisos?.length && (r.hora.slice(0, 13) >= ahora || vaEstado.dia > 0));
   if (conAviso.length) {
@@ -3886,7 +3902,7 @@ function pintarTiraVA(especie, region, fecha, datos) {
     const sub = datos.modalidades?.submarina;
     const tecnica = especie.modalidades?.submarina?.tecnica;
     document.getElementById("vaCebos").innerHTML = `🤿 <b>Sin cebos:</b> ${escVA(sub?.sin_cebos || "")}`
-      + `<span class="va-nota" style="display:block; margin-top:2px;">${tecnica ? `Técnica: ${escVA(tecnica)}` : `Técnicas habituales (práctica, sin fuente citable): ${escVA((sub?.tecnicas || []).map((t) => t.nombre).join(", "))}`}.</span>`;
+      + `<span class="va-nota" style="display:block; margin-top:2px;">${tecnica ? `Técnica: ${escVA(tecnica)}` : `Técnicas habituales: ${escVA((sub?.tecnicas || []).map((t) => t.nombre).join(", "))}`}.</span>`;
   }
   const cebos = vaEstado.modalidad === "submarina" ? [] : VA.cebosParaRegion(especie, region, 5, vaEstado.modalidad);
   const grupoCebos = (tipo) => cebos.filter((c) => c.tipo === tipo).map((c) => escVA(c.nombre)).join(", ");
@@ -3894,7 +3910,7 @@ function pintarTiraVA(especie, region, fecha, datos) {
   const conFuente = cebos.filter((c) => c.fuente);
   if (vaEstado.modalidad !== "submarina") document.getElementById("vaCebos").innerHTML = cebos.length
     ? `🪝 <b>Cebos típicos:</b> ${[naturales && `${naturales} (natural)`, artificiales && `${artificiales} (artificial)`].filter(Boolean).join(" · ")}`
-      + `<span class="va-nota" style="display:block; margin-top:2px;">${conFuente.length ? `Según <a href="${escVA(conFuente[0].url)}" target="_blank" rel="noopener">${escVA((datos.fuentes[conFuente[0].fuente]?.editor || "la fuente").split(",")[0])}</a>` : "Práctica habitual"}${conFuente.length && conFuente.length < cebos.length ? " y práctica habitual de pesca" : ""}. Revisa la normativa de cebos de tu comunidad.</span>`
+      + `<span class="va-nota" style="display:block; margin-top:2px;">${conFuente.length ? `Según <a href="${escVA(conFuente[0].url)}" target="_blank" rel="noopener">${escVA((datos.fuentes[conFuente[0].fuente]?.editor || "la referencia").split(",")[0])}</a>` : "Práctica habitual"}${conFuente.length && conFuente.length < cebos.length ? " y práctica habitual de pesca" : ""}. Revisa la normativa de cebos de tu comunidad.</span>`
     : "";
   const consejoProf = VA.consejoProfundidad ? VA.consejoProfundidad(especie, vaEstado.modalidad) : null;
   if (consejoProf) document.getElementById("vaCebos").innerHTML += `<span class="va-nota" style="display:block; margin-top:2px;">⬇ <b>Profundidad:</b> ${escVA(consejoProf)}</span>`;
@@ -3904,8 +3920,8 @@ function pintarTiraVA(especie, region, fecha, datos) {
   const veda = vedaHoy ? null : (especie.vedas || [])[0];
   const fuente = t ? datos.fuentes[t.fuente] : null;
   document.getElementById("vaTalla").innerHTML = (t
-    ? `📏 Talla mínima: <b>${t.valor_cm !== null ? `${t.valor_cm} cm` : `${t.peso_g} g`}</b> — ${escVA(t.ambito_corto || t.ambito)}${t.nota ? `. ${escVA(t.nota)}` : ""} (<a href="${escVA(t.url)}" target="_blank" rel="noopener">${escVA(fuente?.editor || "fuente")}</a>, revisado ${escVA(t.fecha_revision)}).`
-    : "📏 Talla mínima: sin dato verificado para esta zona todavía.")
+    ? `📏 Talla mínima: <b>${t.valor_cm !== null ? `${t.valor_cm} cm` : `${t.peso_g} g`}</b> — ${escVA(t.ambito_corto || t.ambito)}${t.nota ? `. ${escVA(t.nota)}` : ""} (<a href="${escVA(t.url)}" target="_blank" rel="noopener">${escVA(fuente?.editor || "norma oficial")}</a>, revisado ${escVA(t.fecha_revision)}).`
+    : (window.esAdminCostaviva ? "📏 Talla mínima (admin): sin dato verificado para esta zona todavía." : ""))
     + (veda ? `<br>⚠ ${escVA(veda.texto)}` : "")
     + " Manda siempre la norma publicada.";
 }
@@ -3919,13 +3935,13 @@ function pintarNormativaVA(datos, region, especie) {
   const n = VA.normativaModalidad(datos, vaEstado.modalidad, region, { euskadi: VA.enEuskadi(vaEstado.s.lat, vaEstado.s.lon), especie });
   const item = (x) => {
     const f = datos.fuentes[x.fuente];
-    return `<li>${escVA(x.texto)} <span class="va-nota">(<a href="${escVA(x.url)}" target="_blank" rel="noopener">${escVA(x.articulo ? `${x.articulo}, ` : "")}${escVA((f?.editor || "fuente").split(",")[0])}</a>, revisado ${escVA(x.fecha_revision)})</span></li>`;
+    return `<li>${escVA(x.texto)} <span class="va-nota">(<a href="${escVA(x.url)}" target="_blank" rel="noopener">${escVA(x.articulo ? `${x.articulo}, ` : "")}${escVA((f?.editor || "norma oficial").split(",")[0])}</a>, revisado ${escVA(x.fecha_revision)})</span></li>`;
   };
   const NOMBRE_J = { ES: "España (aguas exteriores)", "ES-PV": "Euskadi", "ES-CB": "Cantabria", "ES-AS": "Asturias", "ES-GA": "Galicia", "ES-AN": "Andalucía", "ES-MC": "Murcia", "ES-VC": "C. Valenciana", "ES-CT": "Cataluña", "ES-IB": "Baleares", "ES-CN": "Canarias", PT: "Portugal", "PT-AC": "Azores", "PT-MA": "Madeira" };
   el.className = "va-detalle mod-normativa";
   el.innerHTML = (n.especie.length ? `<b>${escVA(especie.nombres.es)}:</b><ul>${n.especie.map(item).join("")}</ul>` : "")
     + (n.general.length ? `<ul>${n.general.map(item).join("")}</ul>` : "Sin normativa verificada todavía para esta zona.")
-    + (n.pendiente.length ? `<div class="va-nota">Pendiente de revisar: ${n.pendiente.map((p) => escVA(NOMBRE_J[p.jurisdiccion] || p.jurisdiccion)).join(", ")} (en aguas interiores manda cada comunidad).</div>` : "")
+    + (n.pendiente.length && window.esAdminCostaviva ? `<div class="va-nota">(admin) Pendiente de revisar: ${n.pendiente.map((p) => escVA(NOMBRE_J[p.jurisdiccion] || p.jurisdiccion)).join(", ")} (en aguas interiores manda cada comunidad).</div>` : "")
     + `<div class="va-nota">${escVA(datos.aviso_legal || "Manda siempre la norma publicada.")}</div>`;
 }
 
@@ -3934,21 +3950,17 @@ function pintarNormativaVA(datos, region, especie) {
 // (▲▲ / ▲ / ▼ / ▼▼) y el concepto en lenguaje llano. Sin puntos por factor y
 // sin etiquetas de fuente para el usuario. El admin (window.esAdminCostaviva,
 // cosmético) tiene además un desplegable con puntos, fuente y confianza.
-function flechasPorque(aporte) {
-  if (aporte >= 6) return { s: "▲▲", c: "mas", t: "sube mucho" };
-  if (aporte > 0) return { s: "▲", c: "mas", t: "sube" };
-  if (aporte <= -6) return { s: "▼▼", c: "menos", t: "baja mucho" };
-  if (aporte < 0) return { s: "▼", c: "menos", t: "baja" };
-  return null;
-}
-function htmlPorque(razones, fiabilidad = null) {
+// Para el usuario, SOLO motivos con flecha y avisos útiles (legal /
+// seguridad): lo neutro y lo interno ("pendiente de fuente", "no cuenta"...)
+// va solo al desplegable del admin (Mikel, 2026-10-08). El filtro es
+// VentanaActividad.paraUsuario (con test).
+const FLECHA_ETIQUETA = { "▲▲": "sube mucho", "▲": "sube", "▼": "baja", "▼▼": "baja mucho" };
+function htmlPorque(razones, fiabilidad = null, max = Infinity) {
   const orden = [...razones].sort((a, b) => Math.abs(b.aporte) - Math.abs(a.aporte));
-  const items = orden.map((x) => {
-    const f = flechasPorque(x.aporte);
-    return f
-      ? `<li><span class="va-flecha ${f.c}" aria-label="${f.t}">${f.s}</span><span>${escVA(x.texto)}</span></li>`
-      : `<li><span class="va-flecha" aria-hidden="true">·</span><span>${escVA(x.texto)}</span></li>`;
-  });
+  const usuario = window.VentanaActividad.paraUsuario(razones, { max });
+  const items = usuario.motivos.map((m) =>
+    `<li><span class="va-flecha ${m.sube ? "mas" : "menos"}" aria-label="${FLECHA_ETIQUETA[m.flecha]}">${m.flecha}</span><span>${escVA(m.texto)}</span></li>`);
+  const avisos = usuario.avisos.map((t) => `<div class="aviso-nota" role="note">${escVA(t)}</div>`).join("");
   let admin = "";
   if (window.esAdminCostaviva) {
     const fila = (x) => `<li>${x.aporte > 0 ? "+" : ""}${escVA(x.aporte)} · ${escVA(x.texto)} <i>(${escVA(x.factor)}${x.regla ? `; ${escVA(x.regla.fuente)}, ${escVA(x.regla.estado)}, confianza ${escVA(x.regla.confianza)}` : ""})</i></li>`;
@@ -3956,14 +3968,14 @@ function htmlPorque(razones, fiabilidad = null) {
     admin = `<details class="va-admin"><summary>Detalle (admin)</summary><ul>${orden.map(fila).join("")}</ul>`
       + `${fiabilidad ? `<div>Fiabilidad: ${escVA(fiabilidad.etiqueta)}</div>` : ""}</details>`;
   }
-  return `<ul class="va-porque">${items.join("")}</ul>${admin}`;
+  return `${avisos}${items.length ? `<ul class="va-porque">${items.join("")}</ul>` : ""}${admin}`;
 }
 
 function pintarDetalleVA() {
   const r = vaEstado.resultados[vaEstado.idxSel];
   const det = document.getElementById("vaDetalle");
   if (!r) { det.textContent = ""; return; }
-  det.innerHTML = `<b>${r.hora.slice(11, 16)} → ${r.puntuacion}/100</b>${htmlPorque(r.razones, r.fiabilidad)}`;
+  det.innerHTML = `<b>${r.hora.slice(11, 16)} → ${r.puntuacion}/100</b>${htmlAvisoOla(r.avisoOla)}${htmlPorque(r.razones, r.fiabilidad)}`;
   document.querySelectorAll("#vaTira .va-hora").forEach((b, i) => b.classList.toggle("sel", i === vaEstado.idxSel));
 }
 
