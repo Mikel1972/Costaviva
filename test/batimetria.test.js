@@ -10,10 +10,11 @@ import assert from "node:assert/strict";
 import { readFileSync, statSync } from "node:fs";
 import {
   parsearWcsTexto, parsearDapAscii, estadisticasPunto, isolineas, encadenar, simplificar, longitudM,
-  contextoReglas, cajaAlrededor, urlWcs,
+  contextoReglas, cajaAlrededor, urlWcs, puntosEtiqueta,
 } from "../scripts/batimetria/batimetria.mjs";
 import {
-  batimetriaDeSpot, capaVisible, ESTILO_ISOBATA, ATRIBUCION_ISOBATAS, RADIO_CAJA_PUNTO_M,
+  batimetriaDeSpot, capaVisible, ATRIBUCION_ISOBATAS, RADIO_CAJA_PUNTO_M, colorIsobata, estiloIsobata,
+  etiquetasVisibles, NIVELES_SOMEROS, NIVELES_PROFUNDOS, TODOS_LOS_NIVELES, MAX_ETIQUETAS,
 } from "../assets/js/capa-batimetria.js";
 import { calcularVentana } from "../assets/js/ventana-actividad.js";
 import { validarRegla, VARIABLES_CONTEXTO } from "../assets/js/reglas-expertas.js";
@@ -24,6 +25,8 @@ const DATOS = leer("../assets/datos/especies.json");
 const PROF = leer("../assets/datos/profundidad-spots.json");
 const ISO_URL = new URL("../assets/datos/isobatas.json", import.meta.url);
 const ISO = JSON.parse(readFileSync(ISO_URL, "utf8"));
+const ISO_P_URL = new URL("../assets/datos/isobatas-profundas.json", import.meta.url);
+const ISO_P = JSON.parse(readFileSync(ISO_P_URL, "utf8"));
 
 // Rejilla sintética: elevación = -(columna · 10) m (de la orilla hacia mar
 // adentro, de oeste a este), celdas de 0,001°.
@@ -160,6 +163,15 @@ test("isolineas: un bajo cerrado da un anillo; NaN corta la línea", () => {
   assert.equal(isolineas(conHueco, -20).length, 2);
 });
 
+test("puntosEtiqueta: uno cada paso a lo largo de la línea; línea corta, uno en la mitad", () => {
+  const linea = [[0, 0], [1, 0]]; // ~111 km en el ecuador
+  const p = puntosEtiqueta(linea, 30000);
+  assert.equal(p.length, 4); // 15, 45, 75 y 105 km
+  assert.ok(Math.abs(p[0][0] - 15000 / 111320) < 1e-6);
+  assert.deepEqual(puntosEtiqueta(linea, 500000).map(([x]) => +x.toFixed(6)), [0.5]);
+  assert.deepEqual(puntosEtiqueta([[0, 0]], 1000), []);
+});
+
 test("encadenar: une segmentos en cualquier orden y sentido", () => {
   const ls = encadenar([[[1, 0], [2, 0]], [[0, 0], [1, 0]], [[3, 0], [2, 0]]]);
   assert.equal(ls.length, 1);
@@ -207,6 +219,18 @@ test("isobatas.json: 20, 50 y 100 m, con fuente CC BY y tamaño contenido", () =
   assert.ok(cerca, "la isóbata de 20 m debería pasar delante de Bakio");
 });
 
+test("isobatas-profundas.json: 150 a 5000 m, también mar abierto, < 1 MB, con etiquetas", () => {
+  assert.deepEqual(ISO_P.features.map((f) => f.properties.profundidad_m), [150, 200, 300, 500, 750, 1000, 1500, 2000, 3000, 4000, 5000]);
+  assert.ok(statSync(ISO_P_URL).size < 1024 * 1024, `isobatas-profundas.json ocupa ${statSync(ISO_P_URL).size} B`);
+  for (const f of ISO_P.features) {
+    assert.ok(f.geometry.coordinates.length > 0, `sin líneas de ${f.properties.profundidad_m} m`);
+    assert.ok(f.properties.etiquetas.length > 0, `sin etiquetas de ${f.properties.profundidad_m} m`);
+  }
+  // Mar abierto: la de 5000 m pasa al oeste de 12° W (llanura abisal ibérica o Azores-Canarias).
+  assert.ok(ISO_P.features.at(-1).geometry.coordinates.flat().some(([lon]) => lon < -12));
+  for (const f of ISO.features) assert.ok(f.properties.etiquetas.length > 0, `someras ${f.properties.profundidad_m} m sin etiquetas`);
+});
+
 // ---------------------------------------------------------------------------
 // Capa del mapa (funciones puras)
 // ---------------------------------------------------------------------------
@@ -218,8 +242,31 @@ test("capa: profundidad de un spot, de la API REST y visibilidad por pestaña", 
   assert.equal(capaVisible({ manual: null, modalidad: "costa" }), false);
   assert.equal(capaVisible({ manual: false, modalidad: "embarcacion" }), false);
   assert.equal(capaVisible({ manual: true, modalidad: "submarina" }), true);
-  assert.deepEqual(Object.keys(ESTILO_ISOBATA), ["20", "50", "100"]);
   assert.match(ATRIBUCION_ISOBATAS, /EMODnet Bathymetry Consortium.*CC BY 4\.0/);
+});
+
+test("capa: colores y estilos discretos por nivel, de claro (somero) a oscuro (profundo)", () => {
+  assert.deepEqual(TODOS_LOS_NIVELES, [...NIVELES_SOMEROS, ...NIVELES_PROFUNDOS]);
+  const colores = TODOS_LOS_NIVELES.map(colorIsobata);
+  assert.equal(new Set(colores).size, colores.length, "un color por nivel");
+  const luz = (hex) => [1, 3, 5].reduce((s, i) => s + parseInt(hex.slice(i, i + 2), 16), 0);
+  for (let i = 1; i < colores.length; i++) assert.ok(luz(colores[i]) < luz(colores[i - 1]), `más oscuro a ${TODOS_LOS_NIVELES[i]} m`);
+  assert.equal(estiloIsobata(20).dashArray, null);
+  assert.equal(estiloIsobata(750).dashArray, "5 4");
+  assert.ok(estiloIsobata(20).weight > estiloIsobata(750).weight);
+});
+
+test("capa: etiquetas solo en pantalla, por zoom, repartidas entre niveles y con tope", () => {
+  const f = (prof, n, lon0 = 0) => ({ properties: { profundidad_m: prof, etiquetas: Array.from({ length: n }, (_, i) => [lon0 + i * 0.01, 43]) } });
+  const caja = { sur: 42, norte: 44, oeste: -1, este: 1 };
+  const feats = [f(20, 5), f(200, 500), f(1000, 500)];
+  assert.equal(etiquetasVisibles(feats, caja, 5).length, 0, "zoom 5: ninguna");
+  const z7 = etiquetasVisibles(feats, caja, 7);
+  assert.ok(z7.every((e) => e.prof !== 20), "las someras, desde zoom 10");
+  assert.equal(z7.length, MAX_ETIQUETAS);
+  assert.ok(z7.some((e) => e.prof === 1000) && z7.some((e) => e.prof === 200), "repartidas");
+  assert.equal(etiquetasVisibles([f(20, 5)], caja, 11).length, 5);
+  assert.equal(etiquetasVisibles([f(20, 5, 5)], caja, 11).length, 0, "fuera de pantalla");
 });
 
 // ---------------------------------------------------------------------------

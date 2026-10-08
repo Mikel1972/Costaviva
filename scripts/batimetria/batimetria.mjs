@@ -183,3 +183,26 @@ export function longitudM(linea) {
   }
   return s;
 }
+
+// Puntos para etiquetar una polilínea: uno cada `cadaM` metros a lo largo de
+// ella, el primero a la mitad de ese paso (una línea más corta que el paso
+// lleva uno, en su mitad). Devuelve [[lon, lat], ...].
+export function puntosEtiqueta(linea, cadaM) {
+  if (linea.length < 2) return [];
+  const total = longitudM(linea);
+  const objetivos = [];
+  if (total < cadaM) objetivos.push(total / 2);
+  else for (let d = cadaM / 2; d < total; d += cadaM) objetivos.push(d);
+  const out = [];
+  let acum = 0, k = 0;
+  for (let i = 1; i < linea.length && k < objetivos.length; i++) {
+    const tramo = longitudM([linea[i - 1], linea[i]]);
+    while (k < objetivos.length && acum + tramo >= objetivos[k]) {
+      const t = tramo ? (objetivos[k] - acum) / tramo : 0;
+      out.push([linea[i - 1][0] + t * (linea[i][0] - linea[i - 1][0]), linea[i - 1][1] + t * (linea[i][1] - linea[i - 1][1])]);
+      k++;
+    }
+    acum += tramo;
+  }
+  return out;
+}

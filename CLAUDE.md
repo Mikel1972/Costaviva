@@ -1635,13 +1635,22 @@ Con los datos de hoy, en invierno Hondarribia (41 m), Pasaia (60 m) y Bakio
 (55 m) suman y Mundaka (27 m desde su orilla, dentro de la ría) resta.
 Texto para el usuario sin números ("profundidad adecuada para la época").
 
-**Mapa**: `assets/js/capa-batimetria.js` (módulo, `window.Batimetria`):
-isóbatas de 20, 50 y 100 m de `assets/datos/isobatas.json`
-(`node scripts/batimetria/isobatas.mjs`, ~10 min: marching squares sobre el DTM
-por cuadros de 1°, simplificadas ~60 m, sin líneas de menos de 2 km). El WMS
-`emodnet:contours` no tiene la de 20 m. Se encienden solas en la pestaña
-Embarcación (`porModalidad`) y a mano con el botón "Isób."; se cargan la
-primera vez que hacen falta. Tests: `test/batimetria.test.js` (en tests.yml).
+**Mapa**: `assets/js/capa-batimetria.js` (módulo, `window.Batimetria`).
+Isóbatas en dos ficheros para no cargar de golpe uno enorme (Mikel: "si
+tenemos a mayor profundidad, hasta donde tengamos"):
+`assets/datos/isobatas-profundas.json` (150, 200, 300, 500, 750, 1000, 1500,
+2000, 3000, 4000 y 5000 m; rejilla de ~460 m, también mar abierto: golfo de
+Bizkaia, llanura abisal, Alborán, Baleares, Canarias, Madeira y Azores; < 1 MB;
+a cualquier zoom) y `assets/datos/isobatas.json` (20, 50 y 100 m, ~115 m,
+solo costa; desde zoom 8). `node scripts/batimetria/isobatas.mjs profundas`
+y `... someras` (~10 min cada uno; GEBCO si EMODnet no tiene un cuadro). El
+WMS `emodnet:contours` no tiene la de 20 m. Colores discretos de claro a
+oscuro y leyenda abajo a la izquierda; etiquetas "200 m" en puntos
+precalculados (`etiquetas` de cada nivel) que caen en pantalla, las
+profundas desde zoom 6 y las someras desde zoom 10, 120 como mucho. Se
+encienden solas en la pestaña Embarcación (`porModalidad`) y a mano con el
+botón "Isób."; cada fichero se pide la primera vez que hace falta. Tests:
+`test/batimetria.test.js` (en tests.yml).
 
 ## Triggers / rutinas automatizadas
 

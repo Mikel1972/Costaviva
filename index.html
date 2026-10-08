@@ -365,7 +365,7 @@
   .nubes-toggle { top: 172px; right: 16px; }
   .estaciones-toggle { top: 224px; right: 16px; }
   .viento-toggle { top: 276px; right: 16px; }
-  .isobatas-toggle { top: 328px; right: 16px; } /* isóbatas 20/50/100 m (assets/js/capa-batimetria.js); reusa el estilo de .viento-toggle */
+  .isobatas-toggle { top: 328px; right: 16px; } /* isóbatas 20-5000 m (assets/js/capa-batimetria.js); reusa el estilo de .viento-toggle */
   .rios-toggle { top: 104px; right: 64px; }
   .boyas-toggle { top: 156px; right: 64px; }
   /* Spots + "+" pegados como un único grupo de 2 (pedido explícito del
@@ -797,7 +797,7 @@
     <button class="anadir-ubicacion-toggle" id="toggleAnadirUbicacion" title="Añadir una ubicación nueva" aria-label="Añadir ubicación">➕</button>
     <button class="estaciones-toggle" id="toggleEstaciones" title="Estaciones meteorológicas reales (AEMET)" aria-label="Mostrar/ocultar estaciones meteorológicas">🌧<span class="capa-label">Estac.</span></button>
     <button class="viento-toggle" id="toggleViento" title="Viento en directo, estilo Windy (partículas animadas)" aria-label="Mostrar/ocultar capa de viento">💨<span class="capa-label">Viento</span></button>
-    <button class="viento-toggle isobatas-toggle" id="toggleIsobatas" title="Isóbatas de 20, 50 y 100 m (EMODnet). Se encienden solas en la pestaña Embarcación" aria-label="Mostrar/ocultar isóbatas de 20, 50 y 100 m" aria-pressed="false">〰<span class="capa-label">Isób.</span></button>
+    <button class="viento-toggle isobatas-toggle" id="toggleIsobatas" title="Isóbatas de 20 a 5000 m (EMODnet). Se encienden solas en la pestaña Embarcación" aria-label="Mostrar/ocultar isóbatas de 20 a 5000 m" aria-pressed="false">〰<span class="capa-label">Isób.</span></button>
     <button class="spots-toggle activo" id="toggleSpots" title="Spots" aria-label="Mostrar/ocultar spots">📍</button>
     <button class="rios-toggle" id="toggleRios" title="Ríos" aria-label="Mostrar/ocultar ríos">〰️<span class="capa-label">Ríos</span></button>
     <button class="boyas-toggle" id="toggleBoyas" title="Boyas reales (Puertos del Estado)" aria-label="Mostrar/ocultar boyas">⚓<span class="capa-label">Boyas</span></button>
@@ -1019,7 +1019,7 @@
   window.dispatchEvent(new Event("ventana-actividad-lista"));
 </script>
 <script type="module">
-  // Batimetría (EMODnet): profundidad de los spots e isóbatas 20/50/100 m.
+  // Batimetría (EMODnet): profundidad de los spots e isóbatas de 20 a 5000 m.
   import * as Batimetria from "/assets/js/capa-batimetria.js";
   window.Batimetria = Batimetria;
   window.dispatchEvent(new Event("batimetria-lista"));
@@ -1779,7 +1779,7 @@ document.getElementById("toggleBatimetria").addEventListener("click", (e) => {
     registrarEvento("ver_capa_batimetria");
   }
 });
-// Isóbatas de 20, 50 y 100 m y profundidad de cada spot para el índice
+// Isóbatas de 20 a 5000 m y profundidad de cada spot para el índice
 // (assets/js/capa-batimetria.js, módulo: llega después de este script).
 function conBatimetria(fn) {
   if (window.Batimetria) fn(window.Batimetria);
