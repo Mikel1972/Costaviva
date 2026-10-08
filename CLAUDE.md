@@ -2312,8 +2312,9 @@ condiciones, efecto, fuente, estado y cualquier error de forma.
 4. `node --test test/indice-pesca-v2.test.js` valida la forma de todas las
    reglas (`validarRegla`); añade un test con un caso real si la regla es
    nueva. Para retirarla sin borrarla: `estado: "retirada"`.
-5. Cuando haya salidas suficientes en el diario, calibrar: subir o bajar
-   `confianza` y pasar a `validada`.
+5. La calibración con el diario es automática desde el 2026-10-09 (ver
+   "Aprendizaje autónomo del índice"): una regla nueva y dudosa entra mejor
+   como retador en `aprendizaje/retadores/` (en la sombra) que directamente.
 
 ### Fase 0: condiciones de las salidas del diario por su fecha
 
@@ -2334,9 +2335,129 @@ el modo "antigua" podrá usarlo. Además se rellenan `presion_tendencia` y
 Cada salida guarda el índice v2 a su hora (`indice_version`,
 `indice_puntuacion`, `indice_especie`, `indice_factores` con cada factor y
 regla, la fiabilidad y el ranking de especies) para calibrar.
-**Migración `20261008120000_indice_pesca_salida.sql`, SIN APLICAR**: hasta
-aplicarla, `guardarSalida` reintenta sin esas columnas si PostgREST responde
-PGRST204.
+**Migración `20261008120000_indice_pesca_salida.sql`: aplicada en producción** (confirmado el 2026-10-09). `guardarSalida` sigue reintentando sin esas columnas si PostgREST responde PGRST204 (inofensivo).
+
+## Aprendizaje autónomo del índice (2026-10-09, pedido de Mikel)
+
+Mikel: que los algoritmos aprendan solos de los resultados, propongan ideas,
+afinen lo conocido y solo le pregunten sí/no una vez por semana ("meros
+opinadores de las ideas, frente a generadores netos"). Contrato común de las
+4 apps: `Mikel1972/comun`, `estandares/aprendizaje.md` (aquí se cumple tal
+cual: `aprendizaje/senales.json`, `propuestas.json` como LISTA con `id`
+estable sin fecha, `decisiones.json` con `propuesta_id`, `RESUMEN.md`). Mikel
+decide en el Issue semanal de comun; `registrar-decisiones.yml` de comun (o
+su rutina, o una sesión) copia cada sí/no a `aprendizaje/decisiones.json`.
+
+**Piezas (todas sin IA salvo la rutina, que va contra el plan):**
+- `scripts/aprendizaje/` (puro salvo `datos.mjs`; tests en
+  `test/aprendizaje.test.js`, en tests.yml):
+  - `casos.mjs`: salidas terminadas del diario → casos (índice guardado en
+    `indice_factores`, ¿se pescó algo?, qué especies). Fuera cuentas de
+    prueba, salidas en curso y condiciones `error`/antiguas.
+  - `rejugar.mjs`: rehace el índice de un caso. Con la serie de su día
+    (Open-Meteo con `OPEN_METEO_API_KEY`; sin key no se pide nada, el plan
+    gratis es no comercial) pasa por `indiceSpot()` con el especies.json que
+    sea; sin serie, rejuega los términos guardados (multiplicar el término de
+    una regla = cambiar su confianza: un test lo comprueba contra el motor).
+    Retadores: `aplicarRetador()` (ops `anadir_regla`, `modificar_regla`,
+    `retirar_regla`, `peso_defecto`, `b0`, `anadir_fuente`; nunca cambia el
+    signo, nunca reglas `oficial`, vedas, tallas ni seguridad; fuentes NC
+    rechazadas; `validarRegla` a todo lo tocado).
+  - `metricas.mjs`: Brier (y habilidad frente a la tasa media), log-loss,
+    AUC, calibración por tramos de 20 puntos, ECE, bootstrap emparejado, PSI.
+  - `ajuste.mjs`: `P = σ(b0 + Σ m_u·L_u)` con prior normal m_u ~ N(1, 0,25²)
+    (encogimiento hacia el criterio experto), Newton + Laplace (± sd).
+  - `deriva.mjs`: frescura de fuentes (git log de datos-robots y última fila
+    de presion_historico, turbidez_historico, oleaje_camara_lecturas),
+    sesgo modelo/boya por semana (de `espuma.jsonl`; el primer día ya avisó:
+    Bilbao II −22 %), error de calibración de cámaras frente a la semana
+    anterior, **panel fijo de 3024 escenarios** (7 regiones × 4 meses × 3
+    olas × 3 vientos × 2 presiones × día/noche × 3 modalidades: si un cambio
+    de pesos lo mueve, se ve) y PSI del índice en 9 spots vigía (48 h, 2
+    llamadas a Open-Meteo con key) y en las salidas de la semana.
+  - `senales.mjs`: reglas que nunca se activan en su ámbito, especialización
+    por región, estacionalidad de las observaciones abiertas (GBIF CC0/CC BY,
+    corregida por el esfuerzo de cada mes) y **aprendizaje activo**: qué
+    fotogramas de cámara etiquetar primero (`datos-robots/aprendizaje/
+    etiquetar.json`: fuera del rango calibrado o cámara/modelo discrepan).
+  - `propuestas.mjs`: contrato y barandillas de comun (no insistir con lo
+    rechazado salvo evidencia ×2, diciéndolo; máximo 5 nuevas por semana por
+    impacto; tasa por tipo (sí+1)/(decididas+2)).
+  - `especies-texto.mjs`: cambia `confianza` en el TEXTO de especies.json
+    (sangría de 1 espacio, no se reescribe) y guarda `confianza_experta` la
+    primera vez (el ancla).
+  - `semanal.mjs`: la pasada completa; `probar-retador.mjs`: banco de
+    pruebas público (sin datos privados) para la rutina.
+- `.github/workflows/aprendizaje-semanal.yml`: lunes 04:41 UTC, lo lanza
+  pg_cron (`20261009140000_programador_aprendizaje.sql`, **SIN APLICAR**; el
+  `schedule:` queda de respaldo, trampa 15). Service_role solo GET. Falla en
+  rojo sin el secret. **Sin caché de Actions** (la leerían las PR de forks:
+  fecha + lugar de una salida es dato personal). Segundo trabajo: al subir
+  una rama `robot/aprendizaje-*` con retadores, los evalúa con los datos del
+  diario ejecutando el código de **main** (de la rama solo lee JSON) y deja
+  `aprendizaje/evaluacion-retadores.json` en la rama.
+- Rutina del plan **"Costaviva - Investigador semanal"**
+  (`scripts/saldo/rutina-investigador-semanal.txt`, cloud, repo Costaviva,
+  sin conectores; sugerido `CRON_TZ=Europe/Madrid 47 8 * * 1`, después del
+  workflow): lee decisiones, señales, backtest y evidencias; propone reglas,
+  factores, especies y fuentes con fuente citable; **cada idea va como
+  retador y pasa por `probar-retador.mjs` antes de proponerse**; escribe en
+  `propuestas.json` (siempre `requiere_si: true`) en una rama
+  `robot/aprendizaje-AAAA-MM-DD` (`robot-diseno-pr.yml` abre la PR). Nunca
+  activa nada. **Pendiente (Mikel): crearla en claude.ai/code/routines.**
+
+**Privacidad (repo público, `privacidad.mjs`):** solo agregados de 5
+usuarios distintos o más, o solo del dueño (tabla `administradores`); nunca
+ids, fechas, horas, spots ni coordenadas de una salida. `comprobarPublicable`
+revisa cada fichero antes de escribir (uuid, email, lat/lon) y aborta.
+`admin.html` enseña la calibración (`assets/datos/aprendizaje-indice.json`),
+una columna "Lo que dicen los datos" por regla (n, peso ×m ± sd, ayuda o
+estorba, valor experto si se ajustó) y, **solo en el navegador del admin**,
+sus 5 salidas donde el índice más falló, para que anote qué pasó.
+
+**Qué se aplica solo y qué no (barreras, `aprendizaje/config.json`):**
+- Solo la `confianza` de reglas expertas. Cada semana ±20 % como mucho,
+  nunca fuera de ±50 % de `confianza_experta`, entre 0,05 y 1, nunca cambia
+  el signo (si los datos piden darle la vuelta o m ≤ 0,3 → propuesta de
+  retirarla). Evidencia: ≥ 80 salidas (≥ 15 con y sin pesca), ≥ 30 con la
+  regla activa y de **≥ 5 personas** (comun L4: nunca una sola, tampoco
+  Mikel solo), y el dato se aleja del prior más que su sd.
+- Validación fuera de muestra: se ajusta con el 70 % más antiguo y en el
+  30 % más reciente el log-loss baja ≥ 0,002, el Brier no sube y el AUC no
+  cae > 0,01. Panel de referencia: ≤ 3 puntos de media y ≤ 10 en cualquier
+  escenario. Máximo 3 cambios por semana. Nunca tipo `oficial` ni reglas con
+  `bloqueo_auto: true`.
+- El workflow corre los tests de tests.yml con el cambio; si pasan, abre la
+  PR `aprendizaje/auto-AAAA-MM-DD` y la fusiona él (squash). Si algo falla
+  (tests, abrir o fusionar la PR) o `auto_aplicar` es false o hay pausa
+  (`AUTOMATION_PAUSED`, `ROBOT_PAUSADO`), el cambio queda como propuesta con
+  `requiere_si: true`. Ojo: comun clasifica los `peso` como "necesita sí";
+  aquí el ajuste automático es la excepción acotada que pidió Mikel y que
+  comun recoge en "Parámetros autoajustables... solo cuando haya volumen".
+  Si Mikel prefiere preguntarlo todo: `"auto_aplicar": false`.
+- Un "no" de Mikel a un cambio aplicado: el lunes siguiente vuelve a
+  `confianza_experta` (aplicado solo) y la regla queda bloqueada.
+- Pesos base, b0 (calibración global), retirar, partir por región, temporada
+  nueva, promover un retador: siempre propuesta.
+
+**Campeón/retadores:** `aprendizaje/retadores/*.json` (estado `sombra`) se
+calculan cada lunes sobre los mismos casos y se apuntan en
+`datos-robots/aprendizaje/historial.jsonl` (no se enseñan a nadie). Con ≥ 4
+semanas, ≥ 3 victorias de las últimas 4 y probabilidad de mejora ≥ 0,9 se
+propone activarlo. Más un retador interno "ajuste-libre" (sin barreras) como
+referencia. Sembrados el 2026-10-09 con lo no activado de
+`propuestas_evidencia`: levante a 0,5, lisa con río crecido, calamar con luna
+llena. Activar uno aceptado: moverlo a especies.json y poner el retador en
+`promovido`.
+
+**Estado a 2026-10-09:** la migración `20261008120000_indice_pesca_salida.sql`
+está aplicada, así que cada salida nueva del diario guarda `indice_factores`
+y entra en el banco de pruebas; con `OPEN_METEO_API_KEY` también se
+recalculan las antiguas a partir de lugar, fecha y hora. Los ficheros de
+`aprendizaje/` y `datos-robots/aprendizaje/` del repo salen de una pasada
+local sin Supabase (`senales.json` en `error` hasta la primera ejecución del
+workflow). Ideas no hechas: `ideas` de `aprendizaje/config.json` (salen en
+RESUMEN.md).
 
 ## Batimetría: profundidad de los spots e isóbatas (2026-10-08, aprobado por Mikel)
 
@@ -4050,6 +4171,7 @@ un agente nace sin repo):
 | `daily-report.yml` (sin síntesis si la rutina no la dejó) | usa `datos-robots/sintesis-informe.md` | Síntesis del informe diario (`scripts/saldo/rutina-sintesis-informe.txt`) | la que ya tiene |
 | `robot-buscador-fuentes.yml` (sin schedule) | — | Buscador de fuentes (`scripts/saldo/rutina-buscador-fuentes.txt`) | la que ya tiene |
 | `robot-experiencia-usuario.yml` (domingo 21:30 UTC) | `datos-robots/experiencia/ultima.json` (`scripts/experiencia/sondear.mjs`) | Experiencia de usuario (`scripts/saldo/rutina-experiencia-usuario.txt`) | `CRON_TZ=Europe/Madrid 28 7 * * 1` |
+| `aprendizaje-semanal.yml` (lunes 04:41 UTC, pg_cron) | `aprendizaje/` y `datos-robots/aprendizaje/` (solo agregados) | Investigador semanal (`scripts/saldo/rutina-investigador-semanal.txt`) | `CRON_TZ=Europe/Madrid 47 8 * * 1` (pendiente de crear) |
 | `robot-patrones-uso.yml` (viernes 22:12 UTC) | `datos-robots/patrones-uso/ultima.json` (`scripts/patrones-uso/agregar.mjs`, solo agregados) | Patrones de uso (`scripts/saldo/rutina-patrones-uso.txt`) | `CRON_TZ=Europe/Madrid 13 11 * * 6` |
 
 El repo es público: lo que se vuelca a `datos-robots/` va sin tokens, sin
