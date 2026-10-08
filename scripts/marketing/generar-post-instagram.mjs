@@ -75,7 +75,12 @@ function leerRotacion() {
 
 // Siguiente zona del ciclo y, dentro de ella, un spot que alterna por ciclo.
 // Si /prevision no trae datos del elegido se prueba el siguiente de la zona.
-export async function elegirSpot() {
+// `forzado`: un spot concreto (input "spot" del reel); no toca la rotación.
+export async function elegirSpot(forzado = "") {
+  if (forzado) {
+    console.log(`Spot forzado: ${forzado}`);
+    return { slug: forzado, ...(await previsionDeSpot(forzado)) };
+  }
   const rotacion = leerRotacion();
   const indice = (rotacion.ultimoIndice + 1) % ZONAS.length;
   const zona = ZONAS[indice];
@@ -104,8 +109,8 @@ function paginaMareas(slug) {
 }
 
 // Datos de la pieza de condiciones (los usa también el reel).
-export async function datosCondiciones() {
-  const { slug, spot } = await elegirSpot();
+export async function datosCondiciones(spotForzado = "") {
+  const { slug, spot } = await elegirSpot(spotForzado);
   const { resumen } = await resumenDeSpot(slug, leerEspecies());
   if (!resumen) throw new Error(`Sin índice de pesca para ${slug} ahora mismo`);
   const nombre = nombreSpot(slug);

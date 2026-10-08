@@ -46,7 +46,8 @@ export async function renderImagen(navegador, datos, ruta) {
 // Reel de DURACION_REEL segundos. `clip` es un vídeo propio o de stock con
 // licencia (ver generar-reel-instagram.mjs); sin clip, el gancho va sobre el
 // fondo de mar de la marca. ffmpeg saca primero los fotogramas del clip
-// (recorte vertical del centro a 1080x1920) y la plantilla los pone de fondo
+// (recorte vertical del centro a 1080x1920, con un pelín más de contraste y
+// color: los clips de stock suelen venir lavados) y la plantilla los pone de fondo
 // del gancho: así ffmpeg solo tiene que codificar una secuencia de imágenes
 // (componer con overlay en ffmpeg se quedaba bloqueado).
 export async function renderReel(navegador, datos, { salida, clip = null, fps = 30, crf = 26 } = {}) {
@@ -55,7 +56,7 @@ export async function renderReel(navegador, datos, { salida, clip = null, fps = 
     const gancho = GUION_REEL[0].dura;
     if (clip) {
       execFileSync("ffmpeg", ["-v", "error", "-y", "-t", String(gancho), "-i", clip,
-        "-vf", `scale=-2:1920,crop=1080:1920,fps=${fps}`, "-q:v", "3", join(dir, "c%04d.jpg")]);
+        "-vf", `scale=-2:1920,crop=1080:1920,fps=${fps},eq=contrast=1.06:saturation=1.12`, "-q:v", "3", join(dir, "c%04d.jpg")]);
     }
     const { ctx, page } = await paginaPlantilla(navegador, 1920);
     await page.evaluate((d) => window.prepararReel(d), datos);

@@ -31,6 +31,14 @@ on:
         description: "Forzar un tipo (condiciones, especie, diario, grupos, alarma); vacío = el siguiente de la rotación"
         required: false
         type: string
+      spot:
+        description: "Forzar un spot en los reels de condiciones (slug, p. ej. bakio); vacío = el de la rotación de zonas"
+        required: false
+        type: string
+      clip:
+        description: "Forzar el clip del gancho (fichero .mp4 de scripts/marketing/clips/propios o stock, p. ej. mixkit-cana-al-atardecer.mp4); vacío = rotación"
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -67,6 +75,8 @@ jobs:
         working-directory: scripts/marketing
         env:
           TIPO_REEL: ${{ inputs.tipo }}
+          SPOT_REEL: ${{ inputs.spot }}
+          CLIP_REEL: ${{ inputs.clip }}
         run: node generar-reel-instagram.mjs
 
       - name: Comitear el reel (y dejar solo los 4 últimos)
