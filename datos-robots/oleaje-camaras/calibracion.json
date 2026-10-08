@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-08T15:47:49.463Z",
- "lineasHistorial": 46,
+ "fecha": "2026-10-08T16:37:48.093Z",
+ "lineasHistorial": 59,
  "etiquetas": 0,
  "calibracion": {
   "hondarribia/principal": {
@@ -26,12 +26,12 @@
    "pocosDatos": true
   },
   "zarautz/dinamico": {
-   "a": 21.1602,
+   "a": 20.232,
    "p": 1,
-   "n": 4,
+   "n": 5,
    "nEtiquetas": 0,
    "dias": 1,
-   "hMin": 3.51,
+   "hMin": 2.85,
    "hMax": 3.59,
    "errorRel": 0.5,
    "pocosDatos": true
