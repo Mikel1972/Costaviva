@@ -9,9 +9,11 @@
 // fuentes-gratuitas.yml, con la cuenta de Copernicus) los descarga una o dos
 // veces al día y deja en Supabase Storage:
 //   mar/spots.json            todos los SPOTS (y las boyas, para la comparativa)
-//   mar/celdas/<k>.json       celdas de mar alrededor de los spots, por cajas
-//                             de 0,5° (k = floor(lat*2)_floor(lon*2)), para
-//                             las ubicaciones personalizadas
+//   mar/celdas/<k>.json       celdas de mar de TODA la franja costera de
+//                             España y Portugal (~20 km mar adentro, una
+//                             celda cada ~8 km, la más pegada a la costa),
+//                             por cajas de 0,5° (k = floor(lat*2)_floor(lon*2)),
+//                             para las ubicaciones personalizadas (fase 2)
 // Formato de cada fichero:
 //   { v: 1, fuente: "copernicus-ibi", generado_en, inicio (ISO UTC), horas,
 //     puntos: [{ id, tipo, lat, lon, wh, wd, wp, wpp, sst, sl, cv, cd }] }
@@ -48,16 +50,22 @@ const VARIABLES = {
 };
 export const VARIABLES_COPERNICUS = new Set(Object.keys(VARIABLES));
 
-// Distancia máxima a una celda de mar para dar dato a un punto suelto.
-export const MAX_KM_CELDA = 15;
+// Distancia máxima a una celda de mar para dar dato a un punto suelto. Con
+// la franja costera (una celda cada ~8 km) cualquier punto de costa tiene
+// una a pocos km; 20 km deja margen para rías y puntos marcados tierra
+// adentro, y más lejos ya no sería el mar de ese punto.
+export const MAX_KM_CELDA = 20;
+// Margen de búsqueda en grados (0,2° ≈ 22 km en latitud). Con cajas de 0,5°
+// lee como mucho 4 ficheros.
+const MARGEN_CAJAS = 0.2;
 
 export function claveCaja(lat, lon) {
   return `${Math.floor(lat * 2)}_${Math.floor(lon * 2)}`;
 }
 
-// Cajas de 0,5° a menos de ~0,15° del punto (como mucho 4).
+// Cajas de 0,5° a menos de MARGEN_CAJAS del punto (como mucho 4).
 export function cajasCercanas(lat, lon) {
-  const m = 0.15;
+  const m = MARGEN_CAJAS;
   const claves = new Set();
   for (const dl of [-m, 0, m]) for (const dn of [-m, 0, m]) claves.add(claveCaja(lat + dl, lon + dn));
   return [...claves];
@@ -105,8 +113,9 @@ export function puntoAOpenMeteo(punto, inicio, sp, { lat, lon, hourly = [], curr
   return salida;
 }
 
-// Celda de mar más cercana en las cajas de alrededor del punto.
-async function celdaCercana(lat, lon, opciones) {
+// Celda de mar más cercana en las cajas de alrededor del punto (la que esté
+// a menos distancia de verdad, haversine; no la primera que aparezca).
+export async function celdaCercana(lat, lon, opciones) {
   const ficheros = await Promise.all(
     cajasCercanas(lat, lon).map((k) => leerInstantanea(`mar/celdas/${k}.json`, opciones))
   );
@@ -154,7 +163,7 @@ export async function pedirCopernicusMar(coords, sp, { hourly = [], current = []
   return coords.map((c, i) => {
     const r = resueltos[i];
     const o = puntoAOpenMeteo(r?.punto || null, r?.inicio ?? 0, sp, { lat: c.lat, lon: c.lon, hourly, current, ahora });
-    if (!r) o.aviso = "sin celda de mar de Copernicus a menos de 15 km";
+    if (!r) o.aviso = `sin celda de mar de Copernicus a menos de ${MAX_KM_CELDA} km`;
     return o;
   });
 }

@@ -303,7 +303,7 @@
      van pegados como un único grupo visual (el "+" solo visible con
      spots encendido, ver JS) — debajo, ríos y boyas. */
   .rayos-toggle, .luna-toggle, .batimetria-toggle, .nubes-toggle, .estaciones-toggle, .viento-toggle,
-  .rios-toggle, .boyas-toggle {
+  .rios-toggle, .boyas-toggle, .clorofila-toggle, .tempagua-toggle {
     position: absolute; z-index: 502;
     width: 54px; height: 54px; border-radius: 50%;
     background: var(--superficie); border: 0; color: var(--tinta);
@@ -335,6 +335,10 @@
   .leyenda-sustrato .titulo { font-family: var(--f-titulo); font-size: 11px; margin-bottom: 3px; }
   .leyenda-sustrato i { display: inline-block; width: 10px; height: 10px; margin-right: 6px; vertical-align: -1px; border-radius: 2px; box-shadow: 0 0 0 1px var(--linea); }
   .leyenda-sustrato .nota { margin-top: 3px; color: var(--tinta-2); font-size: 10px; font-weight: 500; }
+  /* Capas de mar de Copernicus (2026-10-08): debajo de Sustr. en la columna
+     B; reusan el estilo de .boyas-toggle (como Sustr.). */
+  .clorofila-toggle { top: 322px; right: 74px; }
+  .tempagua-toggle { top: 384px; right: 74px; }
   /* Spots + "+" pegados como un único grupo de 2 (pedido explícito del
      usuario: el botón de añadir ubicación debe verse asociado al de
      spots, no como una capa más suelta) — sin hueco entre los dos,
@@ -419,6 +423,33 @@
   }
   .viento-slider-panel[hidden] { display: none; }
   .viento-slider-panel .titulo { color: var(--tinta-2); margin-bottom: 6px; }
+  /* Leyenda de las capas de clorofila / temperatura del agua: mismo sitio
+     que la del viento (no tapa las dos columnas de botones). */
+  .capa-mar-panel {
+    position: absolute; bottom: 90px; right: 138px; z-index: 900;
+    background: var(--superficie); color: var(--tinta); border: 1px solid var(--linea); border-radius: 12px;
+    padding: 10px 14px; font: 500 11px/1.4 var(--f-texto);
+    width: 210px; max-height: calc(100dvh - 150px); overflow-y: auto; box-shadow: 0 6px 16px rgba(11,30,63,0.18);
+  }
+  .capa-mar-panel[hidden] { display: none; }
+  .capa-mar-panel .titulo { font-family: var(--f-titulo); font-size: 12px; color: var(--tinta); margin-bottom: 2px; }
+  .capa-mar-panel .fecha { color: var(--tinta-2); font-size: 10px; }
+  .capa-mar-panel .barra { height: 10px; border-radius: 5px; margin-top: 6px; }
+  .capa-mar-panel .extremos { display: flex; justify-content: space-between; font-size: 9.5px; color: var(--tinta-2); margin-top: 2px; }
+  .capa-mar-panel .explica { font-size: 10.5px; color: var(--tinta-2); margin-top: 8px; }
+  .capa-mar-panel .explica summary { cursor: pointer; font-weight: 700; color: var(--tinta); }
+  .capa-mar-panel .explica div { margin-top: 4px; }
+  .capa-mar-panel .credito { font-size: 9px; line-height: 1.35; color: var(--tinta-2); margin-top: 8px; border-top: 1px solid var(--linea); padding-top: 6px; }
+  .capa-mar-panel .credito a { color: inherit; }
+  /* Selector de fuentes, solo administradores (2026-10-08). */
+  .admin-fuentes { margin-top: 14px; padding: 10px 12px; background: var(--superficie-2); border: 1px dashed var(--acento); border-radius: 12px; font: 500 12px/1.4 var(--f-texto); color: var(--tinta); }
+  .admin-fuentes[hidden] { display: none; }
+  .admin-fuentes label { font-weight: 700; }
+  .admin-fuentes select { font: inherit; margin-top: 4px; width: 100%; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--linea); background: var(--superficie); color: var(--tinta); }
+  .admin-fuentes table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 11px; }
+  .admin-fuentes th { text-align: left; font-family: var(--f-titulo); font-size: 11px; padding: 3px 4px; border-bottom: 1px solid var(--linea); }
+  .admin-fuentes td { text-align: left; padding: 3px 4px; border-bottom: 1px solid var(--linea); vertical-align: top; font-variant-numeric: tabular-nums; }
+  .admin-fuentes .nota { color: var(--tinta-2); font-size: 10px; margin-top: 6px; }
   .viento-slider-panel input[type="range"] { width: 100%; }
   .viento-slider-panel .etq { text-align: center; color: var(--tinta-2); margin-top: 2px; }
   .viento-slider-ticks { display: flex; justify-content: space-between; font-size: 9px; color: var(--tinta-2); margin-top: -2px; }
@@ -582,6 +613,11 @@
     .rios-toggle { top: 122px; right: 66px; }
     .boyas-toggle { top: 178px; right: 66px; }
     .sustrato-toggle { top: 234px; right: 66px; }
+    .clorofila-toggle { top: 290px; right: 66px; }
+    .tempagua-toggle { top: 346px; right: 66px; }
+    /* En el móvil, abajo a la izquierda y compacta (la explicación, plegada). */
+    .capa-mar-panel { left: 10px; right: auto; bottom: 118px; width: 196px; padding: 8px 10px; }
+    .capa-mar-panel .credito { font-size: 8.5px; }
     /* Leyenda del sustrato compacta, por encima del botón ⓘ y de los créditos. */
     .leyenda-sustrato { font-size: 10px; padding: 5px 8px; max-width: 128px; margin-bottom: 52px !important; }
     .leyenda-sustrato .titulo { font-size: 10px; }
@@ -697,6 +733,17 @@
         // resto de usuarios ve una etiqueta neutra. No protege nada.
         window.esAdminCostaviva = true;
       }
+      // Selector de fuentes del panel de spot (2026-10-08): solo si la RPC
+      // es_admin() de Supabase dice true (decisión del servidor, no del
+      // email en el cliente). El proxy /meteo/ lo vuelve a comprobar con el
+      // JWT en cada petición, así que ocultarlo es solo para no enseñarlo.
+      try {
+        const { data: esAdm, error: errAdm } = await supabase.rpc("es_admin");
+        if (!errAdm && esAdm === true) {
+          window.esAdminServidor = true;
+          document.getElementById("adminFuentes").hidden = false;
+        }
+      } catch (e) { /* sin selector */ }
       // El resto de la app vive en un <script> clásico más abajo (por el
       // mapa de Leaflet, sin módulos) — se expone aquí lo que necesita de
       // Supabase para las ubicaciones personalizadas (Fase 2).
@@ -835,6 +882,16 @@
     <button class="rios-toggle" id="toggleRios" title="Ríos" aria-label="Mostrar/ocultar ríos">〰️<span class="capa-label">Ríos</span></button>
     <button class="boyas-toggle" id="toggleBoyas" title="Boyas reales (Puertos del Estado vía Copernicus Marine)" aria-label="Mostrar/ocultar boyas">⚓<span class="capa-label">Boyas</span></button>
     <button class="boyas-toggle sustrato-toggle" id="toggleSustrato" title="Tipo de fondo marino: roca, arena, fango, Posidonia (EMODnet). No es la batimetría" aria-label="Mostrar/ocultar el tipo de fondo marino" aria-pressed="false">🪨<span class="capa-label">Sustr.</span></button>
+    <button class="boyas-toggle clorofila-toggle" id="toggleClorofila" title="Clorofila del mar (alimento): satélite de Copernicus" aria-label="Mostrar/ocultar capa de clorofila" aria-pressed="false">🌿<span class="capa-label">Clorof.</span></button>
+    <button class="boyas-toggle tempagua-toggle" id="toggleTempAgua" title="Temperatura del agua (modelo IBI de Copernicus)" aria-label="Mostrar/ocultar capa de temperatura del agua" aria-pressed="false">🌡<span class="capa-label">T. agua</span></button>
+    <div class="capa-mar-panel" id="capaMarPanel" hidden>
+      <div class="titulo" id="capaMarTitulo"></div>
+      <div class="fecha" id="capaMarFecha"></div>
+      <div class="barra" id="capaMarBarra"></div>
+      <div class="extremos"><span id="capaMarMin"></span><span id="capaMarMax"></span></div>
+      <details class="explica" id="capaMarDetalle"><summary id="capaMarResumen"></summary><div id="capaMarExplica"></div></details>
+      <div class="credito" id="capaMarCredito"></div>
+    </div>
     <div class="viento-slider-panel" id="vientoSliderPanel" hidden>
       <div class="titulo">VIENTO — próximas horas</div>
       <input type="range" id="vientoSlider" min="0" max="23" value="0" step="1" />
@@ -1024,6 +1081,20 @@
       <div id="panelWebcamContenido"></div>
       <div id="panelWebcamExternas"></div>
     </div>
+    <!-- Selector de fuentes para comparar (2026-10-08). Oculto salvo para
+         administradores: se enseña solo si la RPC es_admin() de Supabase dice
+         true, y el proxy /meteo/ vuelve a comprobarlo en el servidor. -->
+    <div class="admin-fuentes" id="adminFuentes" hidden>
+      <label>Previsión (admin):
+        <select id="adminFuenteSel">
+          <option value="">— la normal —</option>
+          <option value="openmeteo">Open-Meteo</option>
+          <option value="gratuitas">Gratuitas (MET Norway + Copernicus)</option>
+          <option value="comparar">Las dos, lado a lado</option>
+        </select>
+      </label>
+      <div id="adminFuentesTabla"></div>
+    </div>
     <!-- Atribución obligatoria de Open-Meteo (licencia CC BY 4.0 de sus datos). -->
     <div class="atribucion-boyas" style="margin-top:6px; font-size:10.5px; line-height:1.4; color:var(--tinta-2); text-align:center;">Boyas: Puertos del Estado vía <a href="https://marine.copernicus.eu/" target="_blank" rel="noopener" style="color:inherit;">E.U. Copernicus Marine Service</a> (Generated using E.U. Copernicus Marine Service Information; <a href="https://doi.org/10.48670/moi-00043" target="_blank" rel="noopener" style="color:inherit;">doi:10.48670/moi-00043</a>)</div>
     <div class="atribucion-meteo">Datos meteorológicos: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a> (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>)</div>
@@ -1065,7 +1136,9 @@
   // (test/ventana-actividad.test.js). El script clásico de abajo lo usa
   // vía window.VentanaActividad cuando se abre un spot.
   import * as VentanaActividad from "/assets/js/ventana-actividad.js";
+  import * as CapasMar from "/assets/js/capas-mar.js";
   window.VentanaActividad = VentanaActividad;
+  window.CapasMar = CapasMar;
   window.dispatchEvent(new Event("ventana-actividad-lista"));
 </script>
 <script type="module">
@@ -1887,6 +1960,142 @@ document.getElementById("toggleBoyas").addEventListener("click", (e) => {
     registrarEvento("ver_capa_boyas");
   }
 });
+// ---------------------------------------------------------------------------
+// Capas de mar de Copernicus (2026-10-08, fase 2 de fuentes gratuitas,
+// aprobado por Mikel): 🌿 clorofila (satélite) y 🌡 temperatura del agua
+// (modelo IBI). Sin IA y sin backend propio: el workflow
+// fuentes-gratuitas.yml deja capas/<nombre>.json en el bucket público
+// (scripts/fuentes/descargar-capas.py, formato documentado allí) y aquí se
+// pintan en un <canvas> como imagen sobre el mapa, re-muestreada a Mercator
+// fila a fila (la rejilla es de lat/lon regulares). Atribución obligatoria de
+// Copernicus Marine (cláusula 2.4): frase en inglés tal cual + DOI, en el
+// mapa y en la leyenda. Una a la vez (se tapan entre ellas). Van en el panel
+// tilePane (z 200), como Sustr.: encima del mapa base (paneles mapaBase 150 y
+// relieveFondo 160 de assets/js/mapa-base.js) y debajo de los marcadores.
+// ---------------------------------------------------------------------------
+const URL_CAPAS_MAR = "https://imncbmizxkorotpeisic.supabase.co/storage/v1/object/public/fuentes-gratuitas/capas/";
+const CAPAS_MAR = {
+  clorofila: {
+    boton: "toggleClorofila",
+    titulo: "🌿 CLOROFILA (ALIMENTO)",
+    // Color por log10(mg/m³) entre 0,03 y 10.
+    valorColor: (v) => (Math.log10(v) + 1.5) / 2.5,
+    paradas: ["#0B2D6B", "#1F6FA8", "#2E9C8F", "#6CBF4B", "#D9D23B", "#F2A23A"],
+    extremos: ["0,03 mg/m³", "10+ mg/m³"],
+    formato: (v) => `${v < 1 ? v.toFixed(2) : v.toFixed(1)} mg/m³ de clorofila`,
+    resumen: "Más clorofila = más plancton = más alimento para peces.",
+    explica: "Los pequeños se juntan donde hay comida y detrás llegan los depredadores. " +
+      "Pegado a la costa y en las desembocaduras el barro del agua puede subir el dato del satélite. Toca el mapa para ver el valor.",
+    fecha: (d) => `Satélite, ${fechaCorta(d.fecha)} (los huecos por nubes los rellena Copernicus)`,
+    maxDias: 7,
+  },
+  "temperatura-agua": {
+    boton: "toggleTempAgua",
+    titulo: "🌡 TEMPERATURA DEL AGUA",
+    valorColor: (v) => (v - 10) / 18,
+    paradas: ["#2B3A8C", "#2F7FC1", "#4FB7C9", "#9AD27A", "#F2D04B", "#F28C38", "#C9372C"],
+    extremos: ["10 °C", "28+ °C"],
+    formato: (v) => `${v.toFixed(1)} °C en superficie`,
+    resumen: "Temperatura de la superficie del mar (modelo IBI de Copernicus).",
+    explica: "Cada especie tiene su rango: los frentes entre agua fría y templada suelen juntar pescado. Toca el mapa para ver el valor.",
+    fecha: (d) => `Modelo IBI, ${fechaCorta(d.fecha)} a las 12:00 UTC`,
+    maxDias: 3,
+  },
+};
+function fechaCorta(iso) {
+  const [a, m, d] = String(iso || "").split("-").map(Number);
+  return a ? `${d} ${VA_MESES[m - 1]}` : "fecha desconocida";
+}
+// Cálculo puro (decodificar, color, Mercator): assets/js/capas-mar.js.
+async function moduloCapasMar() {
+  return window.CapasMar || import("/assets/js/capas-mar.js");
+}
+function lienzoCapaMar(CM, d, def) {
+  const canvas = document.createElement("canvas");
+  canvas.width = d.columnas;
+  canvas.height = d.filas;
+  const ctx = canvas.getContext("2d");
+  const img = ctx.createImageData(d.columnas, d.filas);
+  img.data.set(CM.pixelesCapa(d, d.bytes, def.paradas, def.valorColor));
+  ctx.putImageData(img, 0, 0);
+  return canvas.toDataURL("image/png");
+}
+function creditoCapaMar(d) {
+  return 'Datos: <a href="https://marine.copernicus.eu/" target="_blank" rel="noopener">Generated using E.U. Copernicus Marine Service Information</a>; ' +
+    `<a href="https://doi.org/${escVA(d.doi)}" target="_blank" rel="noopener">${escVA(d.doi)}</a>`;
+}
+const datosCapasMar = {};
+let capaMarActiva = null; // { nombre, overlay, credito }
+async function cargarCapaMar(CM, nombre) {
+  if (datosCapasMar[nombre]) return datosCapasMar[nombre];
+  const r = await fetch(URL_CAPAS_MAR + nombre + ".json", { cache: "no-cache" });
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  const d = await r.json();
+  d.bytes = CM.bytesDeBase64(d.datos);
+  if (d.bytes.length !== d.filas * d.columnas) throw new Error("tamaño inesperado");
+  datosCapasMar[nombre] = d;
+  return d;
+}
+function apagarCapaMar() {
+  if (!capaMarActiva) return;
+  map.removeLayer(capaMarActiva.overlay);
+  map.attributionControl.removeAttribution(capaMarActiva.credito);
+  const b = document.getElementById(CAPAS_MAR[capaMarActiva.nombre].boton);
+  b.classList.remove("activo");
+  b.setAttribute("aria-pressed", "false");
+  document.getElementById("capaMarPanel").hidden = true;
+  capaMarActiva = null;
+}
+async function alternarCapaMar(nombre) {
+  const eraEsta = capaMarActiva?.nombre === nombre;
+  apagarCapaMar();
+  if (eraEsta) return;
+  const def = CAPAS_MAR[nombre];
+  const boton = document.getElementById(def.boton);
+  boton.classList.add("activo");
+  boton.setAttribute("aria-pressed", "true");
+  let d;
+  let CM;
+  try {
+    CM = await moduloCapasMar();
+    d = await cargarCapaMar(CM, nombre);
+  } catch (e) {
+    boton.classList.remove("activo");
+    boton.setAttribute("aria-pressed", "false");
+    avisoCapa("Esta capa aún no está disponible. Vuelve a probar más tarde.");
+    return;
+  }
+  // Nunca un mapa viejo con aspecto de actual.
+  const dias = (Date.now() - Date.parse(d.fecha + "T12:00:00Z")) / 86400000;
+  if (!Number.isFinite(dias) || dias > def.maxDias) {
+    boton.classList.remove("activo");
+    boton.setAttribute("aria-pressed", "false");
+    avisoCapa("Los datos de esta capa están desactualizados; no se muestran.");
+    return;
+  }
+  if (!boton.classList.contains("activo")) return; // la apagaron mientras cargaba
+  const overlay = L.imageOverlay(d.urlImagen ||= lienzoCapaMar(CM, d, def), [[d.sur, d.oeste], [d.norte, d.este]], { opacity: 0.7, interactive: false, pane: "tilePane" });
+  overlay.addTo(map);
+  const credito = creditoCapaMar(d);
+  map.attributionControl.addAttribution(credito);
+  capaMarActiva = { nombre, overlay, credito };
+  document.getElementById("capaMarTitulo").textContent = def.titulo;
+  document.getElementById("capaMarFecha").textContent = def.fecha(d);
+  document.getElementById("capaMarBarra").style.background =
+    `linear-gradient(90deg, ${def.paradas.join(", ")})`;
+  document.getElementById("capaMarMin").textContent = def.extremos[0];
+  document.getElementById("capaMarMax").textContent = def.extremos[1];
+  document.getElementById("capaMarResumen").textContent = def.resumen;
+  document.getElementById("capaMarExplica").textContent = def.explica;
+  // Abierta en escritorio; plegada en el móvil para no tapar el mapa.
+  document.getElementById("capaMarDetalle").open = !window.matchMedia("(max-width: 720px)").matches;
+  document.getElementById("capaMarCredito").innerHTML = credito;
+  document.getElementById("capaMarPanel").hidden = false;
+  registrarEvento(`ver_capa_${nombre.replace("-", "_")}`);
+}
+document.getElementById("toggleClorofila").addEventListener("click", () => alternarCapaMar("clorofila"));
+document.getElementById("toggleTempAgua").addEventListener("click", () => alternarCapaMar("temperatura-agua"));
+
 // Spots es la única capa que, al apagarla, tiene un efecto en cascada: sin
 // spots visibles no tiene sentido poder añadir uno nuevo (pedido explícito
 // del usuario, 2026-09-14) — el botón "+" directamente desaparece (no solo
@@ -2173,7 +2382,9 @@ function horasEntreLocales(a, b) {
   return (pb - pa) / 3600e3;
 }
 
-async function datosAmbientalesPunto(lat, lon) {
+// `opciones` ({ fuente, token }) solo lo usa el selector de administrador
+// del panel (pintarComparativaFuentes); sin él, la llamada de siempre.
+async function datosAmbientalesPunto(lat, lon, opciones) {
   const params = `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&forecast_days=1`;
   // La marea pide forecast_days=2, no 1 (2026-09-19, pedido explícito del
   // usuario: los spots personalizados no traían marea en absoluto) --
@@ -2182,9 +2393,10 @@ async function datosAmbientalesPunto(lat, lon) {
   // (oleaje/viento/etc.) se queda con la ventana de siempre.
   const paramsMarea = `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&forecast_days=2`;
   const [marino, tiempo] = await Promise.all([
-    pedirMeteo("marine", `${paramsMarea}&hourly=wave_height,wave_period,wave_direction,sea_surface_temperature,sea_level_height_msl,ocean_current_velocity,ocean_current_direction`),
-    pedirMeteo("forecast", `${params}&hourly=windspeed_10m,winddirection_10m,pressure_msl,cloudcover,precipitation&windspeed_unit=kmh`),
+    pedirMeteo("marine", `${paramsMarea}&hourly=wave_height,wave_period,wave_direction,sea_surface_temperature,sea_level_height_msl,ocean_current_velocity,ocean_current_direction`, opciones),
+    pedirMeteo("forecast", `${params}&hourly=windspeed_10m,winddirection_10m,pressure_msl,cloudcover,precipitation&windspeed_unit=kmh`, opciones),
   ]);
+  if (opciones && (marino?.error || tiempo?.error)) throw new Error(marino?.reason || tiempo?.reason || "sin datos");
   const horas = marino.hourly?.time || [];
   // Open-Meteo (timezone=Europe/Madrid) etiqueta las horas en local, no en
   // UTC — comparar con new Date().toISOString() (UTC) desplazaba el
@@ -2360,6 +2572,15 @@ document.getElementById("btnMetodoMapa").addEventListener("click", () => {
   cerrarEligeMetodo();
   modoAnadirUbicacion = true;
   document.getElementById("toggleAnadirUbicacion").classList.add("activo");
+});
+map.on("click", (e) => {
+  if (!modoAnadirUbicacion && capaMarActiva) {
+    const d = datosCapasMar[capaMarActiva.nombre];
+    const v = d && window.CapasMar ? window.CapasMar.valorEnPunto(d, d.bytes, e.latlng.lat, e.latlng.lng) : null;
+    L.popup().setLatLng(e.latlng)
+      .setContent(v === null ? "Sin dato aquí (tierra o sin observación)" : CAPAS_MAR[capaMarActiva.nombre].formato(v))
+      .openOn(map);
+  }
 });
 map.on("click", (e) => {
   if (!modoAnadirUbicacion) return;
@@ -3177,7 +3398,53 @@ function abrirPanel(s) {
 
   document.querySelectorAll(".marcador").forEach((m) => m.classList.remove("activo"));
   document.getElementById(`marcador-${s.slug}`).classList.add("activo");
+  if (window.esAdminServidor) pintarComparativaFuentes(s);
 }
+
+// ---------------------------------------------------------------------------
+// Selector de fuentes SOLO para administradores (2026-10-08, fase 2): pide
+// los mismos datos del panel al proxy /meteo/ con &fuente=openmeteo|gratuitas
+// y el JWT de la sesión; el proxy comprueba en el servidor (es_admin()) que
+// es un admin y si no responde 403. No toca los datos normales del panel:
+// pinta una tabla aparte para comparar a ojo.
+// ---------------------------------------------------------------------------
+const ADMIN_FUENTES_FILAS = [
+  ["Ola", (d) => `${d.altura[0].toFixed(1)}–${d.altura[1].toFixed(1)} m`],
+  ["Periodo", (d) => (d.periodo != null ? `${d.periodo} s · ${d.dirOla}` : d.dirOla)],
+  ["Viento", (d) => `${d.viento} km/h ${d.dirViento}`],
+  ["Temp. agua", (d) => (d.tempAgua != null ? `${d.tempAgua} °C` : "—")],
+  ["Marea", (d) => (d.marea && d.marea.altura != null ? `${d.marea.altura} m` : "—")],
+  ["Corriente", (d) => (d.corriente != null ? `${d.corriente} km/h ${d.dirCorriente || ""}` : "—")],
+  ["Presión", (d) => (d.presion ? `${d.presion.valor} hPa ${d.presion.tendencia || ""}` : "—")],
+  ["Nubes", (d) => (d.nubosidad != null ? `${d.nubosidad} %` : "—")],
+  ["Lluvia", (d) => (d.precipitacion != null ? `${d.precipitacion} mm/h` : "—")],
+];
+const ADMIN_FUENTES_NOMBRE = { openmeteo: "Open-Meteo", gratuitas: "Gratuitas" };
+let adminFuentesPeticion = 0;
+async function pintarComparativaFuentes(s) {
+  const caja = document.getElementById("adminFuentesTabla");
+  const modo = document.getElementById("adminFuenteSel").value;
+  if (!modo || !s) { caja.innerHTML = ""; return; }
+  const fuentes = modo === "comparar" ? ["openmeteo", "gratuitas"] : [modo];
+  const yo = ++adminFuentesPeticion;
+  caja.innerHTML = '<div class="nota">Cargando…</div>';
+  let token = "";
+  try { token = (await window.supabaseCliente.auth.getSession()).data.session?.access_token || ""; } catch (e) { /* sin sesión */ }
+  const resultados = await Promise.all(fuentes.map((f) =>
+    datosAmbientalesPunto(s.lat, s.lon, { fuente: f, token }).then((d) => ({ f, d }), (e) => ({ f, error: e.message }))));
+  if (yo !== adminFuentesPeticion || spotAbiertoActual !== s) return;
+  const cab = resultados.map((r) => `<th>${escVA(ADMIN_FUENTES_NOMBRE[r.f])}</th>`).join("");
+  const filas = ADMIN_FUENTES_FILAS.map(([etq, fmt]) =>
+    `<tr><td>${escVA(etq)}</td>${resultados.map((r) => `<td>${r.d ? escVA(fmt(r.d)) : "—"}</td>`).join("")}</tr>`).join("");
+  const errores = resultados.filter((r) => r.error).map((r) => `${ADMIN_FUENTES_NOMBRE[r.f]}: ${r.error}`);
+  caja.innerHTML = `<table><tr><th></th>${cab}</tr>${filas}</table>` +
+    (errores.length ? `<div class="nota">${escVA(errores.join(" · "))}</div>` : "") +
+    '<div class="nota">Hora actual, mismo cálculo que el panel. Las gratuitas: MET Norway (CC BY 4.0, adaptados) y ' +
+    "Generated using E.U. Copernicus Marine Service Information (10.48670/moi-00025, 10.48670/moi-00027).</div>";
+}
+document.getElementById("adminFuenteSel").addEventListener("change", () => {
+  if (spotAbiertoActual) pintarComparativaFuentes(spotAbiertoActual);
+});
 // ---------------------------------------------------------------------------
 // Ventana de actividad por especie y hora (2026-10-07, aprobado por Mikel).
 // Las reglas viven en assets/datos/especies.json y el cálculo en

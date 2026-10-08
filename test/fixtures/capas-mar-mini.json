@@ -1,0 +1,70 @@
+{
+ "clorofila": {
+  "v": 1,
+  "capa": "clorofila",
+  "variable": "CHL",
+  "unidad": "mg/m\u00b3",
+  "origen": "sat\u00e9lite (L4, huecos por nubes interpolados por el productor)",
+  "fecha": "2026-10-07",
+  "generado_en": "2026-10-08T05:00:00Z",
+  "atribucion": "Generated using E.U. Copernicus Marine Service Information",
+  "doi": "10.48670/moi-00288",
+  "producto": "OCEANCOLOUR_ATL_BGC_L4_NRT_009_116",
+  "dataset": "cmems_obs-oc_atl_bgc-plankton_nrt_l4-gapfree-multi-1km_P1D",
+  "norte": 44.0,
+  "sur": 42.0,
+  "oeste": -4.0,
+  "este": -1.0,
+  "paso": 1.0,
+  "filas": 2,
+  "columnas": 3,
+  "escala": {
+   "tipo": "log10",
+   "min": -2.0,
+   "max": 2.0
+  },
+  "datos": "LH//vl7r",
+  "esperado": [
+   0.049999999999999996,
+   1.0,
+   null,
+   10.0,
+   0.29999999999999993,
+   49.99999999999999
+  ]
+ },
+ "temperatura-agua": {
+  "v": 1,
+  "capa": "temperatura-agua",
+  "variable": "thetao",
+  "unidad": "\u00b0C",
+  "origen": "modelo IBI (an\u00e1lisis y previsi\u00f3n), 12:00 UTC",
+  "fecha": "2026-10-07",
+  "generado_en": "2026-10-08T05:00:00Z",
+  "atribucion": "Generated using E.U. Copernicus Marine Service Information",
+  "doi": "10.48670/moi-00027",
+  "producto": "IBI_ANALYSISFORECAST_PHY_005_001",
+  "dataset": "cmems_mod_ibi_phy_anfc_0.027deg-2D_PT1H-m",
+  "norte": 44.0,
+  "sur": 42.0,
+  "oeste": -4.0,
+  "este": -1.0,
+  "paso": 1.0,
+  "filas": 2,
+  "columnas": 3,
+  "escala": {
+   "tipo": "lineal",
+   "min": 0.0,
+   "paso": 0.125
+  },
+  "datos": "Ynj/oAD+",
+  "esperado": [
+   12.3,
+   15.0,
+   null,
+   20.06,
+   0.0,
+   31.9
+  ]
+ }
+}

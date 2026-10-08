@@ -6,13 +6,19 @@ name: Fuentes gratuitas (MET Norway, Copernicus) y comparativa
 # comercial y se comparan contra las boyas de Puertos del Estado antes de
 # cambiar nada en producción (ver CLAUDE.md, "Fuentes gratuitas"). Sin IA.
 #
-# Tres partes:
+# Cuatro partes:
 #   atmosfera   cada 3 h: instantánea de MET Norway Locationforecast para los
 #               spots y una rejilla de 1° -> Supabase Storage
 #               fuentes-gratuitas/atmosfera/todos.json
 #   mar         1 vez al día (tras la pasada de las 02:00 UTC de IBI):
 #               modelo IBI de Copernicus Marine para spots y boyas ->
 #               fuentes-gratuitas/mar/spots.json y mar/celdas/*.json
+#               + franja costera de España y Portugal (fase 2) ->
+#               mar/celdas/*.json, y capas del mapa de clorofila (satélite)
+#               y temperatura del agua -> capas/*.json
+#   pasado      1 vez al día: reanálisis ERA5 (copia pública ARCO-ERA5 de
+#               Google, SIN cuenta) para el diario de días pasados ->
+#               pasado/<fecha>/<caja>.json (fase 2)
 #   comparativa 1 vez al día: archiva lo que prevé cada fuente para las
 #               boyas y compara lo archivado con lo medido ->
 #               datos-robots/fuentes/COMPARATIVA.md (commit en main)
@@ -39,12 +45,17 @@ on:
     - cron: "23 */3 * * *"   # atmosfera
     - cron: "47 4 * * *"     # mar
     - cron: "37 6 * * *"     # comparativa
+    - cron: "13 8 * * *"     # pasado
   workflow_dispatch:
     inputs:
       parte:
-        description: "atmosfera, mar, comparativa o todo"
+        description: "atmosfera, mar, pasado, comparativa o todo"
         required: true
         default: "todo"
+      dias_pasado:
+        description: "pasado: días hacia atrás desde el último de ERA5T (relleno histórico, como mucho 120 por ejecución; ~5 s, ~1 MB y 90 ficheros por día)"
+        required: false
+        default: "30"
 
 permissions:
   contents: read
@@ -83,7 +94,7 @@ jobs:
         (github.event_name == 'schedule' && github.event.schedule == '47 4 * * *' && vars.FUENTES_GRATUITAS == 'true') ||
         (github.event_name == 'workflow_dispatch' && (inputs.parte == 'mar' || inputs.parte == 'todo')))
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -94,8 +105,9 @@ jobs:
           python-version: "3.11"
       - name: Instalar el toolbox de Copernicus Marine
         run: pip install --quiet -r scripts/fuentes/requirements.txt
-      - name: Descargar IBI (oleaje y física) para spots y boyas
+      - name: Descargar IBI (oleaje y física) para spots, boyas y franja costera
         env:
+          PYTHONUNBUFFERED: "1"
           COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_USERNAME }}
           COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_PASSWORD }}
         run: |
@@ -106,6 +118,48 @@ jobs:
         env:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: node scripts/fuentes/subir-storage.mjs /tmp/instantanea
+      # Las capas van aparte (otro directorio y otra subida): si fallan, el
+      # job sale en rojo pero los datos de mar de los spots ya están subidos.
+      - name: Capas del mapa (clorofila y temperatura del agua)
+        env:
+          COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_USERNAME }}
+          COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_PASSWORD }}
+        run: python -I scripts/fuentes/descargar-capas.py --salida /tmp/capas
+      - name: Subir las capas a Supabase Storage
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node scripts/fuentes/subir-storage.mjs /tmp/capas
+
+  pasado:
+    if: >-
+      vars.AUTOMATION_PAUSED != 'true' && (
+        (github.event_name == 'schedule' && github.event.schedule == '13 8 * * *' && vars.FUENTES_GRATUITAS == 'true') ||
+        (github.event_name == 'workflow_dispatch' && (inputs.parte == 'pasado' || inputs.parte == 'todo')))
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Instalar dependencias
+        run: pip install --quiet -r scripts/fuentes/requirements.txt
+      - name: ERA5 de días pasados (ARCO-ERA5 público, sin cuenta)
+        env:
+          DIAS: ${{ inputs.dias_pasado }}
+        run: |
+          case "${DIAS:-30}" in ''|*[!0-9]*) echo "::error::dias_pasado debe ser un número"; exit 1;; esac
+          python -I scripts/fuentes/descargar-era5.py --salida /tmp/pasado \
+            --indice-url https://imncbmizxkorotpeisic.supabase.co/storage/v1/object/public/fuentes-gratuitas/pasado/indice.json \
+            --dias "${DIAS:-30}" --max-dias 120
+          du -sh /tmp/pasado
+      - name: Subir a Supabase Storage
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node scripts/fuentes/subir-storage.mjs /tmp/pasado
 
   comparativa:
     needs: [mar]

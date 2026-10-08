@@ -267,7 +267,7 @@ test("Copernicus: un punto -> celda de mar más cercana; varios -> spots.json", 
   vaciarMemoriaInstantaneas();
   const [lejos] = await pedirCopernicusMar([{ lat: 40, lon: -20 }], sp, { hourly: ["wave_height"], fetchImpl: fetchCopernicus(), ahora: AHORA_COP });
   assert.ok(lejos.hourly.wave_height.every((v) => v === null));
-  assert.match(lejos.aviso, /15 km/);
+  assert.match(lejos.aviso, /20 km/);
   // Varios spots (prevision.js): spots.json por coordenada.
   vaciarMemoriaInstantaneas();
   const d = await pedirDatosMeteo("marine", "latitude=43.3647,43.4047&longitude=-2.5089,-2.6989&timezone=GMT&start_date=2026-09-28&end_date=2026-09-28&hourly=wave_height,sea_level_height_msl", {
