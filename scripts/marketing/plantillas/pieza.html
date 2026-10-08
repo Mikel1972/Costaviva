@@ -13,6 +13,8 @@
   @font-face { font-family: "Manrope"; src: url("../fuentes/Manrope-latin.woff2") format("woff2"); font-weight: 200 800; }
   :root {
     --mar: #0B1E3F; --mar-2: #13305E; --gris-mar: #C9CFE3; --blanco: #FFFFFF; --sol: #FFC24B;
+    /* Aviso de ola peligrosa: los mismos que --peligro-* de assets/css/costaviva.css. */
+    --peligro-texto: #8F1D13; --peligro-fondo: #FDECEA; --peligro-borde: #F0B3AB;
     --nivel-bueno: #4ADE80; --nivel-medio: #FFC24B; --nivel-malo: #FF6B6B; --nivel-sd: #A9B4D0;
     --degradado: linear-gradient(100deg, #FF8A3D 0%, #E8467C 55%, #7B3FE4 100%);
     --degradado-fuerte: linear-gradient(100deg, #C2410C 0%, #BE185D 55%, #6D28D9 100%);
@@ -93,6 +95,8 @@
   .ficha dl { display: grid; grid-template-columns: auto 1fr; gap: 10px 20px; font-size: 26px; }
   .ficha dt { font-weight: 800; color: var(--sol); text-transform: uppercase; letter-spacing: .06em; font-size: 21px; padding-top: 4px; }
   .ficha dd { font-weight: 700; }
+  /* Ola peligrosa (2026-10-08): nota aparte, no un motivo. */
+  .aviso-ola { margin-top: 10px; padding: 10px 16px; border-radius: 16px; font-size: 23px; font-weight: 800; line-height: 1.3; background: var(--peligro-fondo); border: 2px solid var(--peligro-borde); color: var(--peligro-texto); }
   .aviso-freza { font-size: 24px; font-weight: 700; color: var(--nivel-medio); }
   /* Funciones de la app: captura real dentro de un marco de móvil. */
   .funcion { display: flex; gap: 36px; align-items: center; flex: 1; min-height: 0; }
@@ -147,6 +151,7 @@
           <div class="que">Índice de pesca · ${esc(D.modalidad || "desde costa")}</div>
           <div class="estrella">${esc(r.especie)}</div>
           <ul class="motivos">${r.motivos.map((m) => `<li><i class="${m.sube ? "sube" : "baja"}">${m.flecha}</i>${esc(m.texto)}</li>`).join("")}</ul>
+          ${r.avisoOla ? `<p class="aviso-ola">${esc(r.avisoOla)}</p>` : ""}
         </div>
       </div>
       <div class="datos">${D.tarjetas.map((d) => `<div class="dato"><svg viewBox="0 0 22 22">${ICONOS[d.icono]}</svg><div class="etq">${esc(d.etq)}</div><div class="val">${esc(d.val)}</div><div class="sub">${esc(d.sub)}</div></div>`).join("")}</div>

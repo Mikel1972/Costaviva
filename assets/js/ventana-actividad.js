@@ -25,9 +25,18 @@
 // misma para todos: conserva el signo de cada factor y la suma exacta).
 //
 // Filtros duros, FUERA de la fórmula: veda (la especie no entra), freza
-// (aviso "devuélvelo", nunca suma), topes de seguridad por modalidad (se
-// aplican al final y se enseñan como un motivo más), submarina de noche = 0,
-// y datos caducados -> S/D (lo decide quien llama, con la vigencia del spot).
+// (aviso "devuélvelo", nunca suma), tope de seguridad por VIENTO en
+// embarcación (kayak / embarcación pequeña; se aplica al final y se enseña
+// como un motivo más), submarina de noche = 0, y datos caducados -> S/D (lo
+// decide quien llama, con la vigencia del spot).
+//
+// Ola peligrosa (decisión de Mikel, 2026-10-08): la altura de ola ya NO pone
+// tope a la nota. La nota se calcula igual (el factor de oleaje sigue
+// puntuando) y, aparte, el resultado lleva `avisoOla` ("⚠️ Ola peligrosa
+// desde costa (2,5-3 m): extrema la precaución"), que NO es un motivo con
+// flecha: se pinta como una nota de aviso separada. Umbrales (estrictamente
+// por encima de `oleaje.max_seguro_m` de la modalidad): costa 2,5 m,
+// embarcación 2,5 m, submarina 1,5 m.
 //
 // Reglas expertas (assets/js/reglas-expertas.js + `reglas_expertas` del
 // JSON): suman su efecto en log-odds como un factor más, con su texto y su
@@ -306,6 +315,46 @@ export function reglasParaModalidad(reglasDefecto, especie, modalidad = "costa",
 const fmt1 = (x) => String(+x.toFixed(1)).replace(".", ",");
 const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 
+// Aviso de ola peligrosa (2026-10-08, decisión de Mikel): nota aparte, nunca
+// motivo con flecha ni tope. Salta estrictamente por encima del
+// `max_seguro_m` de la modalidad (costa 2,5 m, embarcación 2,5 m, submarina
+// 1,5 m). Devuelve null si la ola no llega o no hay regla de oleaje.
+export function avisoOlaPeligrosa(ola, reglasOleaje) {
+  if (ola === null || ola === undefined || !reglasOleaje) return null;
+  const umbral = reglasOleaje.max_seguro_m || 2.5;
+  if (!(ola > umbral)) return null;
+  const peligro = reglasOleaje.texto_peligro || "peligrosa desde costa";
+  const rango = rangoOlaTexto(ola).replace(/^mar de /, "");
+  return { texto: `⚠️ Ola ${peligro} (${rango}): extrema la precaución`, umbral_m: umbral, ola: +ola.toFixed(1) };
+}
+
+// Lo que ve el USUARIO del porqué (Mikel, 2026-10-08): solo los motivos con
+// flecha (▲▲ / ▲ / ▼ / ▼▼, el doble desde 6 puntos) y los avisos útiles
+// (legal: submarina de noche o a caballo del orto/ocaso; seguridad: kayak /
+// embarcación pequeña). Lo neutro (aporte 0, el "·"), lo interno ("pendiente
+// de fuente", "no cuenta", fuentes, fiabilidad...) va solo al "Detalle
+// (admin)". El aviso de ola peligrosa va aparte (`avisoOla`).
+const FACTORES_AVISO_USUARIO = new Set(["legal", "seguridad"]);
+export const TEXTO_INTERNO = /pendiente|no cuenta|fuente|por validar|fiabilidad|sin dato/i;
+export function flechaDeAporte(aporte) {
+  if (aporte >= 6) return "▲▲";
+  if (aporte > 0) return "▲";
+  if (aporte <= -6) return "▼▼";
+  if (aporte < 0) return "▼";
+  return "";
+}
+export function paraUsuario(razones, { max = Infinity } = {}) {
+  const limpias = (razones || []).filter((r) => r && r.texto && !TEXTO_INTERNO.test(r.texto));
+  const motivos = limpias
+    .filter((r) => r.aporte && !FACTORES_AVISO_USUARIO.has(r.factor))
+    .sort((a, b) => Math.abs(b.aporte) - Math.abs(a.aporte))
+    .slice(0, max)
+    .map((r) => ({ texto: r.texto, aporte: r.aporte, flecha: flechaDeAporte(r.aporte), sube: r.aporte > 0 }));
+  const avisos = [...new Set(limpias.filter((r) => FACTORES_AVISO_USUARIO.has(r.factor))
+    .map((r) => `⚠️ ${r.texto.replace(/^⚠\uFE0F?\s*/, "")}`))];
+  return { motivos, avisos };
+}
+
 function rangoOlaTexto(h) {
   if (h < 0.5) return "mar casi plana (<0,5 m)";
   const a = Math.floor(h * 2) / 2;
@@ -413,7 +462,7 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
     }
     if (prohibida) {
       return {
-        hora: h.hora, puntuacion: 0, luz: "noche", marea: marea[i], marPeligrosa: false, prohibida: true, avisos: [],
+        hora: h.hora, puntuacion: 0, luz: "noche", marea: marea[i], marPeligrosa: false, avisoOla: null, prohibida: true, avisos: [],
         razones: [{ factor: "legal", texto: "de noche la pesca submarina está prohibida", aporte: 0 }],
         cobertura: 1, reglasAplicadas: [], sinDato: [],
       };
@@ -460,17 +509,13 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
       if (modalidad === "submarina" && hayTemp) terminos.push({ factor: "temperatura", texto: `agua a ${fmt1(h.tempAgua)} °C`, lo: 0 });
     }
 
-    // Oleaje. El tope de seguridad va APARTE del factor: se aplica siempre,
-    // también cuando una regla experta sustituye el factor de oleaje (p. ej.
-    // "mar algo movida" para los depredadores costeros desde costa).
-    let marPeligrosa = false;
+    // Oleaje. El aviso de ola peligrosa va APARTE del factor y no toca la
+    // nota (sin tope desde el 2026-10-08): se da siempre, también cuando una
+    // regla experta sustituye el factor de oleaje (p. ej. "mar algo movida"
+    // para los depredadores costeros desde costa).
     const hayOla = h.ola !== null && h.ola !== undefined;
-    const peligro = reglas.oleaje?.texto_peligro || "peligrosa desde costa";
-    if (hayOla && reglas.oleaje && h.ola > (reglas.oleaje.max_seguro_m || 2.5)) {
-      marPeligrosa = true;
-      const tope = reglas.oleaje.tope_si_peligrosa ?? 20;
-      topes.push({ tope, texto: `${rangoOlaTexto(h.ola)}, ${peligro}: máximo ${tope}` });
-    }
+    const avisoOla = hayOla ? avisoOlaPeligrosa(h.ola, reglas.oleaje) : null;
+    const marPeligrosa = !!avisoOla;
     if (cuenta("oleaje", hayOla) && pesoLogOdds(reglas.oleaje)) {
       const [omin, omax] = reglas.oleaje.optimo_m || [0, 1.5];
       const maxSeguro = reglas.oleaje.max_seguro_m || 2.5;
@@ -479,7 +524,7 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
       else if (h.ola > omax) v = -(h.ola - omax) / Math.max(0.1, maxSeguro - omax);
       else if (h.ola < omin) v = reglas.oleaje.valor_bajo_minimo ?? -0.3;
       else v = 1;
-      anota("oleaje", v, marPeligrosa ? `${rangoOlaTexto(h.ola)}: ${peligro}` : rangoOlaTexto(h.ola));
+      anota("oleaje", v, rangoOlaTexto(h.ola));
     }
 
     // Viento: solo penaliza por encima del máximo cómodo
@@ -489,17 +534,23 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
     }
 
     // Embarcación: avisos de seguridad (kayak / embarcación pequeña). Se
-    // aplica el nivel más severo que se supere, con su tope.
+    // avisa del nivel más severo que se supere (por viento o por ola). El
+    // tope solo lo pone el VIENTO: el nivel más severo que supere el viento
+    // (la ola ya no pone tope: decisión de Mikel, 2026-10-08; para la ola
+    // está `avisoOla`).
     const avisos = [];
     if (rm.seguridad?.niveles) {
+      const hayViento = h.viento !== null && h.viento !== undefined;
       for (const nv of rm.seguridad.niveles) {
-        const porViento = h.viento !== null && h.viento !== undefined && h.viento > nv.viento_max_kmh;
-        const porOla = h.ola !== null && h.ola !== undefined && h.ola > nv.ola_max_m;
-        if (porViento || porOla) {
+        const porViento = hayViento && h.viento > nv.viento_max_kmh;
+        const porOla = hayOla && h.ola > nv.ola_max_m;
+        if ((porViento || porOla) && !avisos.length) {
           const motivo = [porViento && `viento ${Math.round(h.viento)} km/h`, porOla && `ola ${fmt1(h.ola)} m`].filter(Boolean).join(" y ");
           avisos.push({ nivel: nv.id, texto: `${nv.texto} (${motivo})` });
           notas.push({ factor: "seguridad", texto: `⚠ ${nv.texto} (${motivo})`, aporte: 0 });
-          topes.push({ tope: nv.tope, texto: `${nv.texto}: máximo ${nv.tope}` });
+        }
+        if (porViento) {
+          topes.push({ tope: nv.tope, texto: `${nv.texto}, viento ${Math.round(h.viento)} km/h: máximo ${nv.tope}` });
           break;
         }
       }
@@ -581,7 +632,7 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
     const loTotal = terminos.reduce((s, t) => s + Math.abs(t.lo), 0);
     const loCientifico = terminos.filter((t) => t.cientifico).reduce((s, t) => s + Math.abs(t.lo), 0);
     return {
-      hora: h.hora, puntuacion, razones, luz, marea: m, marPeligrosa, prohibida: false, avisos,
+      hora: h.hora, puntuacion, razones, luz, marea: m, marPeligrosa, avisoOla, prohibida: false, avisos,
       probabilidad: +rep.probabilidad.toFixed(2), base: rep.base,
       cobertura: cobertura.total ? +(cobertura.conDato / cobertura.total).toFixed(2) : 1,
       fraccionCientifica: loTotal ? +(loCientifico / loTotal).toFixed(2) : 0,
@@ -657,6 +708,9 @@ export function indiceSpot(datos, horas, i, contexto) {
     puntuacion: mejor.r.puntuacion,
     especie: { id: mejor.e.id, nombre: mejor.e.nombres.es },
     resultado: mejor.r,
+    // Ola peligrosa: nota aparte (no motivo, no tope). Igual para todas las
+    // especies de la modalidad.
+    avisoOla: mejor.r.avisoOla || null,
     fiabilidad: fiabilidad(mejor.r, { especieId: mejor.e.id, modalidad, region, validacion: datos.validacion_fiabilidad, horaActual: contexto.horaActual, datosMedidos: contexto.datosMedidos }),
     // Freza: solo aviso, nunca suma.
     freza: fz?.enFreza ? { texto: "en freza en esta zona: si lo pescas, devuélvelo al agua", meses: fz.meses } : null,
@@ -692,7 +746,8 @@ export function mejoresVentanas(resultados, { umbral = 60, margen = 10, max = 3 
         hasta: `${String(finH).padStart(2, "0")}:00`,
         media,
         maxima: mejor.puntuacion,
-        porque: mejor.razones.filter((r) => r.aporte > 0).slice(0, 4).map((r) => r.texto),
+        avisoOla: horas.some((r) => r.avisoOla),
+        porque: paraUsuario(mejor.razones).motivos.filter((r) => r.sube).slice(0, 4).map((r) => r.texto),
       };
     })
     .sort((a, b) => b.media - a.media)

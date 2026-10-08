@@ -55,7 +55,8 @@ async function piezaDelReel(tipo, navegador) {
     const { slug, nombre, resumen, pieza } = await datosCondiciones();
     return {
       datos: { ...pieza, gancho: GANCHOS.condiciones(nombre), claim: CLAIMS[0], viento: await vientoDeSpot(slug), rotuloMapa: "Viento ahora" },
-      caption: [`¿Te merece la pena ir hoy a ${nombre}? Índice de pesca ${resumen.puntuacion}/100, mejor especie ahora: ${resumen.especie}.`, "", CLAIMS[0],
+      caption: [`¿Te merece la pena ir hoy a ${nombre}? Índice de pesca ${resumen.puntuacion}/100, mejor especie ahora: ${resumen.especie}.`,
+        ...(resumen.avisoOla ? [resumen.avisoOla] : []), "", CLAIMS[0],
         "El índice es una orientación con reglas públicas, no una garantía.", "", `#pesca #fishing #pescadesdecosta #costaviva ${hashtagsRegionales(slug)}`],
       nombre: `condiciones-${slug}`,
     };

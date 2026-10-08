@@ -78,17 +78,24 @@ test("la puntuación es 50 + la suma de los aportes mostrados (sin caja negra)",
   const r = calcularVentana(especie("lubina"), DATOS.reglas_por_defecto, serie(1.8), { lat: 43.40, lon: -2.70, turbidez: "turbia" });
   for (const h of r) {
     const suma = 50 + h.razones.reduce((s, x) => s + x.aporte, 0);
-    if (suma >= 0 && suma <= 100 && !h.marPeligrosa) assert.equal(h.puntuacion, suma, h.hora);
+    if (suma >= 0 && suma <= 100) assert.equal(h.puntuacion, suma, h.hora);
     assert.ok(h.puntuacion >= 0 && h.puntuacion <= 100);
   }
 });
 
-test("mar peligrosa desde costa: tope y aviso", () => {
+test("mar peligrosa desde costa: aviso aparte, sin tope en la nota (Mikel, 2026-10-08)", () => {
   const r = calcularVentana(especie("lubina"), DATOS.reglas_por_defecto, serie(1.8, { ola: 3.2 }), { lat: 43.40, lon: -2.70 });
   for (const h of r) {
-    assert.ok(h.puntuacion <= 20);
-    assert.ok(h.razones.some((x) => /peligrosa/.test(x.texto)));
+    assert.equal(h.avisoOla.texto, "⚠️ Ola peligrosa desde costa (3-3,5 m): extrema la precaución");
+    assert.ok(!h.razones.some((x) => x.factor === "tope" || /peligrosa/.test(x.texto)));
+    assert.equal(h.puntuacion, 50 + h.razones.reduce((s, x) => s + x.aporte, 0));
   }
+  assert.ok(r.some((h) => h.puntuacion > 20), "la ola ya no limita a 20");
+  // Las mejores ventanas marcan si tienen horas con ola peligrosa.
+  assert.ok(mejoresVentanas(r, { umbral: 0 }).every((v) => v.avisoOla === true));
+  const calma = calcularVentana(especie("lubina"), DATOS.reglas_por_defecto, serie(1.8), { lat: 43.40, lon: -2.70 });
+  assert.ok(calma.every((h) => h.avisoOla === null));
+  assert.ok(mejoresVentanas(calma, { umbral: 0 }).every((v) => v.avisoOla === false));
 });
 
 test("sin rango de temperatura no se inventa nada", () => {

@@ -231,6 +231,14 @@ export function efectoRegla(regla, horas, i, ctx = {}) {
       intensidad = Math.max(ef.escala.minimo ?? 0, Math.min(1, t));
     } else intensidad = ef.escala.minimo ?? 0;
   }
+  // `atenua` (2026-10-08): segundo tramo que apaga el efecto de forma
+  // continua, con la misma recta que `escala` sin mínimo: vale 1 en `a` y 0
+  // en `de` (p. ej. { var: "ola", de: 3, a: 2.5 }: entero hasta 2,5 m, nada
+  // desde 3 m). Sin dato de esa variable no atenúa (no se inventa).
+  if (ef.atenua) {
+    const v = valorExpresion(ef.atenua, horas, i, ctx);
+    if (v !== null) intensidad *= Math.max(0, Math.min(1, (v - ef.atenua.de) / (ef.atenua.a - ef.atenua.de)));
+  }
   const confianza = regla.confianza ?? 1;
   return { lo: (ef.logodds || 0) * intensidad * confianza, intensidad };
 }
@@ -273,7 +281,10 @@ export function validarRegla(r, { fuentes = {}, especies = [], regiones = [], gr
     if (typeof e === "string" && e.startsWith("@")) { if (!grupos[e.slice(1)]) p.push(`grupo desconocido: ${e}`); }
     else if (!especies.includes(e)) p.push(`especie desconocida: ${e}`);
   }
-  const exprs = [...(r.condiciones || []), ...(r.efecto?.escala ? [r.efecto.escala] : [])];
+  const exprs = [...(r.condiciones || []), ...(r.efecto?.escala ? [r.efecto.escala] : []), ...(r.efecto?.atenua ? [r.efecto.atenua] : [])];
+  for (const e of [r.efecto?.escala, r.efecto?.atenua].filter(Boolean)) {
+    if (!Number.isFinite(e.de) || !Number.isFinite(e.a) || e.de === e.a) p.push(`escala/atenua de ${e.var} sin tramo (de/a)`);
+  }
   for (const c of exprs) {
     if (!(c.var in VARIABLES_HORARIAS) && !VARIABLES_CONTEXTO.includes(c.var)) p.push(`variable desconocida: ${c.var}`);
     if (c.agregado && !AGREGADOS.includes(c.agregado)) p.push(`agregado desconocido: ${c.agregado}`);

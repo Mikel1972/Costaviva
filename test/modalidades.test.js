@@ -160,11 +160,13 @@ test("submarina: mar de fondo, lluvia previa y río crecido restan", () => {
   const lluvia = hora(ventana("sargo", "submarina", serie((i) => ({ lluvia: i < 12 ? 2 : 0 }))), "13");
   const rio = hora(ventana("sargo", "submarina", serie(), { caudalRio: "alto" }), "13").puntuacion;
   assert.ok(fondo < base && rio < base && lluvia.puntuacion < base);
-  assert.ok(peligrosa.marPeligrosa && peligrosa.puntuacion <= 15);
+  // Ola peligrosa para bucear (> 1,5 m): aviso aparte, sin tope (Mikel, 2026-10-08).
+  assert.ok(peligrosa.marPeligrosa && /^⚠️ Ola peligrosa para bucear/.test(peligrosa.avisoOla.texto));
+  assert.ok(!peligrosa.razones.some((x) => x.factor === "tope"));
   assert.ok(lluvia.razones.some((x) => x.factor === "lluvia" && /24 h/.test(x.texto)));
 });
 
-test("embarcación: avisos de kayak y de embarcación pequeña con tope", () => {
+test("embarcación: avisos de kayak y de embarcación pequeña; el tope solo por viento", () => {
   const tranquila = hora(ventana("lubina", "embarcacion", serie()), "13");
   assert.equal(tranquila.avisos.length, 0);
   const kayak = hora(ventana("lubina", "embarcacion", serie({ viento: 25 })), "13");
@@ -175,6 +177,18 @@ test("embarcación: avisos de kayak y de embarcación pequeña con tope", () => 
   assert.ok(pequena.puntuacion <= 15);
   const olaKayak = hora(ventana("lubina", "embarcacion", serie({ ola: 1.8 })), "13");
   assert.equal(olaKayak.avisos[0].nivel, "kayak");
+  // La ola avisa pero ya no pone tope (decisión de Mikel, 2026-10-08).
+  assert.ok(!olaKayak.razones.some((x) => x.factor === "tope"));
+  const olaGrande = hora(ventana("lubina", "embarcacion", serie({ ola: 3 })), "13");
+  assert.equal(olaGrande.avisos[0].nivel, "embarcacion_pequena");
+  assert.ok(olaGrande.avisoOla && !olaGrande.razones.some((x) => x.factor === "tope"));
+  // Ola de embarcación pequeña + viento de kayak: avisa del peor nivel y el
+  // tope es el del viento (35).
+  const mixto = hora(ventana("lubina", "embarcacion", serie({ ola: 3, viento: 25 })), "13");
+  assert.equal(mixto.avisos[0].nivel, "embarcacion_pequena");
+  assert.ok(mixto.puntuacion <= 35);
+  const topeMixto = mixto.razones.find((x) => x.factor === "tope");
+  if (topeMixto) assert.match(topeMixto.texto, /kayak, viento 25 km\/h: máximo 35/);
   // Desde costa, 25 km/h no da aviso ni tope.
   const costa = hora(ventana("lubina", "costa", serie({ viento: 25 })), "13");
   assert.equal(costa.avisos.length, 0);
