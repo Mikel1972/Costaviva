@@ -22,10 +22,13 @@
 -- aplicar-migraciones.yml ni publicar-post-instagram.yml (publicar SIEMPRE
 -- es manual, con el OK de Mikel).
 --
--- REQUISITO: la clave 'github_lanzar_workflows' en Vault (secret
--- PROGRAMADOR_GITHUB_TOKEN + workflow guardar-token-programador.yml). A
--- 2026-10-09 no está guardada: hasta entonces la función avisa y sale, y
--- solo corre el respaldo de GitHub.
+-- La lista cerrada lleva también aprendizaje-semanal.yml, igual que
+-- 20261009140000_programador_aprendizaje.sql (PR #143): las dos migraciones
+-- redefinen la función con los MISMOS seis workflows, así que el orden en que
+-- se apliquen no importa.
+--
+-- La clave 'github_lanzar_workflows' ya está en Vault (prueba real con 204
+-- el 2026-10-08 a las 16:09 UTC).
 --
 -- Estándares: security definer con search_path vacío, sin EXECUTE para
 -- public, anon ni authenticated (D9-D11).
@@ -40,8 +43,11 @@ declare
   token text;
   peticion bigint;
 begin
+  -- Misma lista que 20261009140000_programador_aprendizaje.sql (PR #143):
+  -- así da igual cuál de las dos migraciones se aplique antes.
   if workflow not in ('camaras-salud.yml', 'notificar-altas.yml', 'espuma-camaras.yml',
-                      'robot-marketing-instagram.yml', 'robot-reel-instagram.yml') then
+                      'robot-marketing-instagram.yml', 'robot-reel-instagram.yml',
+                      'aprendizaje-semanal.yml') then
     raise exception 'Workflow no permitido: %', workflow;
   end if;
 

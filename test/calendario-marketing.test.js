@@ -121,8 +121,12 @@ test("publicar sigue siendo solo manual y pg_cron no puede lanzarlo", () => {
   assert.match(pub, /ISSUE_NUMBER: \$\{\{ inputs\.issue_number \}\}/, "inputs por entorno, no pegados en el script");
   const sql = leer("supabase/migrations/20261009130000_programador_marketing.sql");
   const lista = sql.match(/if workflow not in \(([^)]*)\)/)[1];
-  assert.match(lista, /robot-marketing-instagram\.yml/);
-  assert.match(lista, /robot-reel-instagram\.yml/);
+  // Los mismos seis que 20261009140000_programador_aprendizaje.sql (PR #143),
+  // para que el orden de aplicación no importe.
+  assert.deepEqual([...lista.matchAll(/'([^']+)'/g)].map((m) => m[1]).sort(), [
+    "aprendizaje-semanal.yml", "camaras-salud.yml", "espuma-camaras.yml",
+    "notificar-altas.yml", "robot-marketing-instagram.yml", "robot-reel-instagram.yml",
+  ]);
   assert.doesNotMatch(lista, /publicar-post-instagram|aplicar-migraciones/);
   for (const w of ["robot-marketing-instagram.yml", "robot-reel-instagram.yml"]) {
     const t = leer(`.github/workflows/${w}`);
