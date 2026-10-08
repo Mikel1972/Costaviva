@@ -11,7 +11,7 @@
 //   node scripts/batimetria/profundidad-spots.mjs --punto "Armintza,43.4335,-2.9036"   # solo imprime
 // El batímetro no cambia de un día para otro: se regenera a mano cuando
 // salga una versión nueva del DTM (EMODnet publica cada ~2 años) o se añadan
-// spots. Sin red a EMODnet: .github/workflows/batimetria.yml lo hace igual.
+// spots (los dos servicios son públicos y sin clave).
 import { writeFileSync } from "node:fs";
 import { SPOTS } from "../../functions/prevision.js";
 import { rejillaEmodnet, rejillaGebco, estadisticasPunto, RADIO_ZONA_M } from "./batimetria.mjs";

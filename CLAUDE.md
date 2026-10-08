@@ -1460,6 +1460,7 @@ condiciones, efecto, fuente, estado y cualquier error de forma.
    luna (fracción iluminada 0-1, `iluminacionLunar`) y coeficiente_marea
    (20-120, `coeficienteMareaAstronomico`, ajustado a los coeficientes
    reales de CALIBRACION.jsonl). Las dos se calculan en el motor, sin red.
+   Y profundidad (m de fondo de la zona del spot, EMODnet; ver "Batimetría").
    Agregados: media, min, max, suma, delta, fraccion (con `cumple`).
    Operadores: `<`, `<=`, `>`, `>=`, `==`, `!=`, `en`, `entre`, `sector`.
    Ventanas hacia atrás de hasta 5 días (120 h): es lo que trae la serie.
@@ -1493,6 +1494,45 @@ regla, la fiabilidad y el ranking de especies) para calibrar.
 **Migración `20261008120000_indice_pesca_salida.sql`, SIN APLICAR**: hasta
 aplicarla, `guardarSalida` reintenta sin esas columnas si PostgREST responde
 PGRST204.
+
+## Batimetría: profundidad de los spots e isóbatas (2026-10-08, aprobado por Mikel)
+
+**Fuentes y licencias** (verificadas, detalle en
+`datos-robots/fuentes/BATIMETRIA.md`): **EMODnet Bathymetry DTM 2024**, CC BY
+4.0 (uso comercial con atribución; DOI 10.12770/cf51df64-56f9-4a99-b1aa-36b8d7b743a1),
+y de respaldo **GEBCO_2026** (dominio público, atribución pedida, "no para
+navegar"). Atribución visible en el mapa al encender "Fondo" o las isóbatas.
+No quitarla.
+
+**Profundidad por spot** (`assets/datos/profundidad-spots.json`, sin IA):
+`node scripts/batimetria/profundidad-spots.mjs` pide al WCS de EMODnet
+(`emodnet__mean`, text/plain, ~115 m) una caja de ~5 km por spot de `SPOTS`
+(`functions/prevision.js`) y guarda distancias a 10/20/30/50/100 m, fondo a
+500 m y `zona_m` = mediana del fondo a 1 km de la **orilla** (la celda de mar
+más cercana al spot: muchos spots caen en la playa, el puerto o tierra
+adentro). Ojo: un spot en un puerto o una ría (Pasaia, Mundaka, Hondarribia)
+da poco fondo aunque el barco salga a 20 m. GEBCO solo si EMODnet falla o no
+tiene mar a 1 km (OPeNDAP de CEDA). El DTM no cambia: regenerar al añadir
+spots o con un DTM nuevo (y actualizar el DOI). Puntos propios: el navegador
+pide el fondo del propio punto a `rest.emodnet-bathymetry.eu/depth_sample`
+(CORS abierto, sin clave) y repinta el índice al llegar.
+
+**Índice**: variable de contexto `profundidad` de las reglas expertas
+(`contexto.profundidad` en `calcularVentana`, sale de
+`window.Batimetria.profundidad(s)`). Tres reglas de Mikel
+(`mikel_campo_bizkaia`, embarcación, pargo/dorada/dentón, fuera de Canarias,
+Azores y Madeira, confianza 0,5): agua ≥ 18 °C y fondo 10-30 m suma; agua
+≤ 15 °C y fondo < 25 m resta, > 40 m suma; entre 15 y 18 °C no aplica. El
+"verano/invierno" va por la temperatura del agua de la hora, no por meses.
+Texto para el usuario sin números ("profundidad adecuada para la época").
+
+**Mapa**: `assets/js/capa-batimetria.js` (módulo, `window.Batimetria`):
+isóbatas de 20, 50 y 100 m de `assets/datos/isobatas.json`
+(`node scripts/batimetria/isobatas.mjs`, ~10 min: marching squares sobre el DTM
+por cuadros de 1°, simplificadas ~60 m, sin líneas de menos de 2 km). El WMS
+`emodnet:contours` no tiene la de 20 m. Se encienden solas en la pestaña
+Embarcación (`porModalidad`) y a mano con el botón "Isób."; se cargan la
+primera vez que hacen falta. Tests: `test/batimetria.test.js` (en tests.yml).
 
 ## Triggers / rutinas automatizadas
 
