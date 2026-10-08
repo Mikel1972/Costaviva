@@ -1183,6 +1183,8 @@ explicación.
 | `/registrar-presion` | `registrar-presion.js` | POST: guarda la presión real de cada spot en `presion_historico` (Fase 4) | Sin sesión de usuario — protegido con secreto compartido (`X-Cron-Secret` / `CRON_SECRET`) |
 | `/crear-checkout-stripe` | `crear-checkout-stripe.js` | POST: crea una Stripe Checkout Session (suscripción mensual/anual, con prueba) para el usuario que llama | **Requiere** `Authorization: Bearer <token de sesión>` |
 | `/crear-portal-stripe` | `crear-portal-stripe.js` | POST: crea una sesión del Billing Portal de Stripe para gestionar/cancelar la suscripción propia | **Requiere** `Authorization: Bearer <token de sesión>` |
+| `/admin-invitaciones` | `admin-invitaciones.js` | GET/POST: lista, crea (cupón de Stripe + email), reenvía y anula invitaciones | **Admin**: token + `es_admin()` comprobados en el servidor antes de `service_role` |
+| `/canjear-invitacion` | `canjear-invitacion.js` | POST: canjea un código de invitación para el email de la sesión, una sola vez | **Requiere** `Authorization: Bearer <token de sesión>` |
 | `/stripe-webhook` | `stripe-webhook.js` | POST: recibe eventos de Stripe (checkout/suscripción/`invoice.payment_failed`) y actualiza `suscripciones`; idempotente por `event.id` (tabla `stripe_eventos`, 2026-10-07) | Sin sesión — verifica la firma `Stripe-Signature` con `STRIPE_WEBHOOK_SECRET` |
 
 Ninguno de los cuatro primeros toca tablas de usuario en Supabase.
@@ -3079,6 +3081,41 @@ El botón **Rayos** pinta dos capas sobre el propio mapa (la imagen nacional de 
 - **Descartado**: Blitzortung/LightningMaps prohíben el uso comercial (Costaviva es de pago). El endpoint `lightning/within` (consulta por caja, para toda la costa) exige el plan Enterprise de Xweather.
 - Claves en Cloudflare Pages: `XWEATHER_CLIENT_ID`, `XWEATHER_CLIENT_SECRET` (nunca en el repo ni en el chat). Atribución obligatoria "Vaisala Xweather" (se añade al control de atribución del mapa al activar la capa).
 
+## Invitaciones con descuento (2026-10-08, aprobado por Mikel)
+
+`admin.html` → "Invitar / dar descuento": email, descuento 0-100 %, duración
+(1/3/6/12 meses, para siempre o hasta una fecha), caducidad (30 días por
+defecto) y nota interna. Lista con estado y acciones reenviar/anular.
+
+- **Tabla** `public.invitaciones` (migración `20261008170000_invitaciones.sql`):
+  RLS sin policies, solo `service_role` y funciones definer. El estado
+  (enviada/inscrito/caducada/terminada/anulada) no se guarda: lo deduce
+  `estadoInvitacion()` de las fechas (`functions/_lib/invitaciones.js`).
+- **Endpoints**: `/admin-invitaciones` (GET lista; POST crear/reenviar/anular)
+  exige sesión + `es_admin()` en el servidor (`functions/_lib/admin.js`) antes
+  de usar `service_role`. `/canjear-invitacion` lo llama `login.html` en cuanto
+  hay sesión: el email sale del token, nunca del cuerpo; un solo uso con un
+  UPDATE condicionado a `user_id is null`.
+- **Código**: 12 caracteres sin I/O/0/1 (60 bits), en la URL del email
+  (`/login?alta=1&invitacion=...`), recordado en `localStorage` y en el
+  metadato del alta por si confirma el email en otro navegador.
+- **100 %**: sin tarjeta. Al canjear se fija `acceso_hasta` (null = siempre) y
+  `mi_estado_suscripcion()` devuelve `estado: 'invitacion'`. Queda fuera del
+  ciclo de fin de prueba para siempre; 7 días antes del final le llega el
+  aviso "suscríbete" (paso "fin de invitación" de `avisar-fin-prueba.js`, mismo
+  cron sin IA de `notificar-altas.yml`, con `AUTOMATION_PAUSED`).
+- **1-99 %**: al crear la invitación se crea un **cupón** de Stripe
+  (`max_redemptions=1`, `redeem_by` = caducidad, `forever` o `repeating`; "hasta
+  una fecha" = meses redondeados hacia arriba). No hay código de promoción: el
+  cupón lo aplica `crear-checkout-stripe.js` solo si `mi_invitacion_descuento()`
+  (con el token de quien paga) lo devuelve, así que no se puede usar desde otra
+  cuenta. En anual solo se aplica si dura 12 meses o más (el año se cobra de
+  una vez). El webhook marca `descuento_aplicado_en` con `metadata.invitacion_id`.
+  Al acabar el descuento Stripe cobra el precio normal solo.
+- **Ojo test/live (trampa 2)**: un cupón creado con la clave de test no existe
+  en live. Las invitaciones con cupón creadas en preview con clave de test no
+  valen en producción.
+
 ## Acceso permanente sin suscripción: tabla `accesos_permanentes` (2026-10-01)
 
 Para dar acceso completo para siempre a una cuenta concreta sin hacerla admin (primer caso: `maetxe2018@gmail.com`, pedido del usuario). Por email, así que vale aunque la persona aún no se haya dado de alta. `mi_estado_suscripcion()` devuelve `estado: 'permanente'` y `con_acceso: true`, y `fin_prueba_fuera_de_ciclo()` la excluye de recordatorio y desactivación. Para añadir o quitar a alguien: migración nueva con `insert`/`delete` en `public.accesos_permanentes` (email en minúsculas). Sin políticas RLS: solo la leen funciones security definer. Al añadir a alguien le llega solo, una vez, el email "¡Tienes enchufe!" (paso "acceso permanente" de `avisar-fin-prueba.js`, columna `avisado_en`).
@@ -3218,9 +3255,9 @@ los casos malos.
   se quiere cubrir también ese camino, hace falta antes un modo de
   prueba explícito en `sos-alerta.js` que nunca llame a Resend de verdad
   para una cuenta marcada como test — decidirlo aparte, no asumirlo.
-- No existen todavía código de invitación/descuento ni cuentas
-  compartidas tipo "tripulación" — no hay nada que blindar ahí hasta que
-  esas features existan.
+- Códigos de invitación/descuento: existen desde el 2026-10-08 (ver
+  "Invitaciones con descuento"). Cuentas compartidas tipo "tripulación":
+  todavía no.
 
 ## Trampas compartidas y regla de coste (2026-10-07)
 
