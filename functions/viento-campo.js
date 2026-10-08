@@ -25,6 +25,8 @@
 // una petición nueva cada vez (mismo motivo que la caché real de
 // /prevision, ver el comentario largo ahí).
 
+import { pedirOpenMeteo, claveOpenMeteo } from "./_lib/open-meteo.js";
+
 const RESOLUCION_GRADOS = 1; // tamaño de celda de la rejilla redondeada
 const PUNTOS_POR_LADO = 16; // 16x16 = 256 puntos, de sobra para que la interpolación bilineal de leaflet-velocity se vea suave
 const EXTENSION_MAXIMA_GRADOS = 20; // límite de seguridad si el bbox pedido es enorme (usuario con el mapa muy alejado)
@@ -95,15 +97,16 @@ export async function onRequestGet(context) {
 
   let datos;
   try {
-    const resp = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${lats.join(",")}&longitude=${lons.join(",")}` +
+    // Host gratuito o comercial según OPEN_METEO_API_KEY (_lib/open-meteo.js).
+    datos = await pedirOpenMeteo(
+      "forecast",
+      `latitude=${lats.join(",")}&longitude=${lons.join(",")}` +
         // forecast_days=2, no 1: si "ahora" cae tarde en el día, con solo
         // el día de hoy no quedarían 24h reales por delante para la
         // barra deslizante (ver el recorte por idxAhora más abajo).
-        `&hourly=windspeed_10m,winddirection_10m&wind_speed_unit=ms&forecast_days=2&timezone=UTC`
+        `&hourly=windspeed_10m,winddirection_10m&wind_speed_unit=ms&forecast_days=2&timezone=UTC`,
+      { apiKey: claveOpenMeteo(context.env) }
     );
-    if (!resp.ok) throw new Error(`Open-Meteo respondió ${resp.status}`);
-    datos = await resp.json();
   } catch (e) {
     return new Response(JSON.stringify({ error: `no se pudo obtener el viento: ${String(e)}` }), {
       status: 502,

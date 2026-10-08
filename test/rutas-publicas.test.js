@@ -76,8 +76,16 @@ test("los endpoints de functions/ llegan a su propio código", () => {
     "/actualizar-euskalmet-rios",
     "/informe-diario-email",
     "/mareas",
+    "/meteo/forecast",
+    "/meteo/marine",
   ]) {
     assert.equal(esRutaPermitida(ruta), true, `${ruta} debería llegar a su función`);
+  }
+});
+
+test("el proxy de Open-Meteo solo abre sus dos rutas, no el prefijo /meteo/", () => {
+  for (const ruta of ["/meteo", "/meteo/", "/meteo/archive", "/meteo/air-quality", "/meteo/forecast/x", "/functions/meteo/[api].js"]) {
+    assert.equal(esRutaPermitida(ruta), false, `${ruta} no debería servirse`);
   }
 });
 

@@ -85,8 +85,10 @@ export function construirCsp(nonce) {
     // Vídeo de portada (self) y HLS de webcams: hls.js usa MediaSource
     // (blob:); Safari reproduce el .m3u8 directamente desde el host remoto.
     "media-src 'self' blob: https:",
-    // fetch/XHR: Supabase (REST, auth, storage y realtime por wss), Open-Meteo,
+    // fetch/XHR: Supabase (REST, auth, storage y realtime por wss),
     // RainViewer, EUMETSAT, playlists y segmentos HLS, beacon de Cloudflare.
+    // Open-Meteo YA NO (2026-10-08): el navegador pide a /meteo/<api> ('self'),
+    // que guarda la API key comercial en el servidor (functions/meteo/[api].js).
     `connect-src 'self' https: ${SUPABASE_URL.replace("https://", "wss://")}`,
     // hls.js arranca su worker desde un blob:.
     "worker-src 'self' blob:",
