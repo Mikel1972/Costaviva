@@ -16,6 +16,8 @@
 import { pedirDatosMeteo, fuentesUsadas, fuenteDeVariable } from "./_lib/fuentes.js";
 // Mar abierto frente a "en la playa" para spots abrigados (2026-10-08).
 import { oleajeCostero, zonaOleaje } from "./_lib/oleaje-costero.js";
+// Boyas del mapa vía Copernicus Marine In Situ (instantánea en Storage).
+import { leerInstantanea } from "./_lib/instantaneas.js";
 // "Si hay cámara, utiliza nuestro cálculo" (2026-10-08): altura según la
 // espuma que ven las webcams, y corrección de las próximas horas.
 import { aplicarCamarasASpots, VIGENCIA_LECTURA_HORAS } from "./_lib/oleaje-camaras.js";
@@ -528,14 +530,14 @@ async function datosCamarasPorSpot() {
 
 // Última lectura de oleaje por cámara de las últimas VIGENCIA_LECTURA_HORAS
 // (las escribe espuma-camaras.yml en oleaje_camara_lecturas, migración
-// 20261008170000). Sin tabla (migración sin aplicar) o sin lecturas: {} y
+// 20261008180000). Sin tabla (migración sin aplicar) o sin lecturas: {} y
 // la app sigue con modelo × coeficiente, como antes.
 async function datosOleajeCamaras() {
   try {
     const desde = new Date(Date.now() - VIGENCIA_LECTURA_HORAS * 3600e3).toISOString();
     const url =
       `${SUPABASE_URL}/rest/v1/oleaje_camara_lecturas?select=camara,fecha,estado,encuadre,estimacion_camara_m,rango_min_m,rango_max_m,error_rel,modelo_camara_m` +
-      `&estado=eq.ok&estimacion_camara_m=not.is.null&fecha=gte.${encodeURIComponent(desde)}&order=fecha.desc&limit=300`;
+      `&estado=eq.ok&sustituye_modelo=is.true&estimacion_camara_m=not.is.null&fecha=gte.${encodeURIComponent(desde)}&order=fecha.desc&limit=300`;
     const resp = await fetch(url, { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } });
     if (!resp.ok) return {};
     const res = {};
@@ -548,6 +550,7 @@ async function datosOleajeCamaras() {
         rangoMax: f.rango_max_m === null ? null : Number(f.rango_max_m),
         modeloCamara: f.modelo_camara_m === null ? null : Number(f.modelo_camara_m),
         errorRel: f.error_rel === null ? null : Number(f.error_rel),
+        sustituyeModelo: true,
       };
     }
     return res;
@@ -813,78 +816,70 @@ export function procesarSpot(spot, marino, viento, historicoPresion, coeficiente
 // (.../INT_2.pdf).
 export const BOYAS = [
   // REDCOS (costeras, <100m de profundidad)
-  { codigo: 1117, nombre: "Gijón", lat: 43.62, lon: -5.66 },
-  { codigo: 1101, nombre: "Pasaia II", lat: 43.36, lon: -1.89 },
-  { codigo: 1103, nombre: "AP Bilbao", lat: 43.40, lon: -3.13 },
-  { codigo: 1239, nombre: "Langosteira (A Coruña)", lat: 43.35, lon: -8.56 },
-  { codigo: 1414, nombre: "Las Palmas Este", lat: 28.05, lon: -15.39 },
-  { codigo: 1421, nombre: "Sta. Cruz de Tenerife", lat: 28.46, lon: -16.23 },
-  { codigo: 1500, nombre: "Tarifa", lat: 36.00, lon: -5.59 },
-  { codigo: 1504, nombre: "Algeciras-Pta. Carnero", lat: 36.07, lon: -5.42 },
-  { codigo: 1512, nombre: "Ceuta", lat: 35.90, lon: -5.33 },
-  { codigo: 1514, nombre: "Málaga", lat: 36.69, lon: -4.42 },
-  { codigo: 1712, nombre: "Tarragona", lat: 41.07, lon: 1.19 },
-  { codigo: 1731, nombre: "Barcelona II", lat: 41.32, lon: 2.20 },
+  { codigo: 1117, nombre: "Gijón", lat: 43.62, lon: -5.66, copernicus: "Gijon-coast-buoy" },
+  { codigo: 1101, nombre: "Pasaia II", lat: 43.36, lon: -1.89, copernicus: "PasaiaII-coast-buoy" },
+  { codigo: 1103, nombre: "AP Bilbao", lat: 43.40, lon: -3.13, copernicus: "Bilbao-coast-buoy" },
+  { codigo: 1239, nombre: "Langosteira (A Coruña)", lat: 43.35, lon: -8.56, copernicus: "6201070" },
+  { codigo: 1414, nombre: "Las Palmas Este", lat: 28.05, lon: -15.39, copernicus: "LasPalmas-coast-buoy" },
+  { codigo: 1421, nombre: "Sta. Cruz de Tenerife", lat: 28.46, lon: -16.23, copernicus: "Tenerife-coast-buoy" },
+  { codigo: 1500, nombre: "Tarifa", lat: 36.00, lon: -5.59, copernicus: "Tarifa-coast-buoy" },
+  { codigo: 1504, nombre: "Algeciras-Pta. Carnero", lat: 36.07, lon: -5.42, copernicus: "6101404" },
+  { codigo: 1512, nombre: "Ceuta", lat: 35.90, lon: -5.33, copernicus: "Ceuta-coast-buoy" },
+  { codigo: 1514, nombre: "Málaga", lat: 36.69, lon: -4.42, copernicus: "Malaga-coast-buoy" },
+  { codigo: 1712, nombre: "Tarragona", lat: 41.07, lon: 1.19, copernicus: "Tarragona-coast-buoy" },
+  { codigo: 1731, nombre: "Barcelona II", lat: 41.32, lon: 2.20, copernicus: "Barcelona-coast-buoy" },
 
   // REDEXT (exteriores, >200m de profundidad). Coordenadas aproximadas de
   // la zona/cabo homónimo — el PDF oficial trae el fondeo exacto pero no
   // se extrajo en esta pasada; el código de boya (lo único que importa
   // para pedir datos reales a la API) sí está verificado uno a uno.
-  { codigo: 2136, nombre: "Bilbao-Vizcaya", lat: 43.64, lon: -3.04 },
-  { codigo: 2242, nombre: "Cabo Peñas", lat: 43.72, lon: -6.16 },
-  { codigo: 2244, nombre: "Estaca de Bares", lat: 43.79, lon: -7.69 },
-  { codigo: 2246, nombre: "Villano-Sisargas", lat: 43.16, lon: -9.21 },
-  { codigo: 2248, nombre: "Cabo Silleiro", lat: 42.11, lon: -8.90 },
-  { codigo: 2342, nombre: "Golfo de Cádiz", lat: 36.48, lon: -7.00 },
-  { codigo: 2442, nombre: "Gran Canaria", lat: 28.00, lon: -15.60 },
-  { codigo: 2446, nombre: "Tenerife Sur", lat: 28.00, lon: -16.60 },
-  { codigo: 2548, nombre: "Cabo de Gata", lat: 36.72, lon: -2.19 },
-  { codigo: 2610, nombre: "Cabo de Palos", lat: 37.63, lon: -0.70 },
-  { codigo: 2720, nombre: "Tarragona (exterior)", lat: 40.68, lon: 1.47 },
-  { codigo: 2798, nombre: "Cabo de Begur", lat: 41.95, lon: 3.23 },
-  { codigo: 2820, nombre: "Dragonera (Mallorca)", lat: 39.58, lon: 2.32 },
-  { codigo: 2838, nombre: "Mahón (Menorca)", lat: 39.87, lon: 4.29 },
+  { codigo: 2136, nombre: "Bilbao-Vizcaya", lat: 43.64, lon: -3.04, copernicus: "6200024" },
+  { codigo: 2242, nombre: "Cabo Peñas", lat: 43.72, lon: -6.16, copernicus: "6200025" },
+  { codigo: 2244, nombre: "Estaca de Bares", lat: 43.79, lon: -7.69, copernicus: "6200082" },
+  { codigo: 2246, nombre: "Villano-Sisargas", lat: 43.16, lon: -9.21, copernicus: "6200083" },
+  { codigo: 2248, nombre: "Cabo Silleiro", lat: 42.11, lon: -8.90, copernicus: "6200084" },
+  { codigo: 2342, nombre: "Golfo de Cádiz", lat: 36.48, lon: -7.00, copernicus: "6200085" },
+  { codigo: 2442, nombre: "Gran Canaria", lat: 28.00, lon: -15.60, copernicus: "1300130" },
+  { codigo: 2446, nombre: "Tenerife Sur", lat: 28.00, lon: -16.60, copernicus: "1300131" },
+  { codigo: 2548, nombre: "Cabo de Gata", lat: 36.72, lon: -2.19, copernicus: "6100198" },
+  { codigo: 2610, nombre: "Cabo de Palos", lat: 37.63, lon: -0.70, copernicus: "6100417" },
+  { codigo: 2720, nombre: "Tarragona (exterior)", lat: 40.68, lon: 1.47, copernicus: "6100280" },
+  { codigo: 2798, nombre: "Cabo de Begur", lat: 41.95, lon: 3.23, copernicus: "6100196" },
+  { codigo: 2820, nombre: "Dragonera (Mallorca)", lat: 39.58, lon: 2.32, copernicus: "6100430" },
+  { codigo: 2838, nombre: "Mahón (Menorca)", lat: 39.87, lon: 4.29, copernicus: "6100197" },
 ];
 
-function fechaParaBoya(d) {
-  const p2 = (n) => String(n).padStart(2, "0");
-  return `${d.getUTCFullYear()}${p2(d.getUTCMonth() + 1)}${p2(d.getUTCDate())}@${p2(d.getUTCHours())}${p2(d.getUTCMinutes())}`;
-}
+// Desde 2026-10-08 las boyas del mapa NO se piden a Puertos del Estado:
+// sus condiciones no permiten el uso comercial sin autorización escrita
+// (pendiente). Son las MISMAS boyas, redistribuidas por Copernicus Marine
+// In Situ (licencia comercial con atribución, DOI 10.48670/moi-00043): el
+// workflow boyas-copernicus.yml deja cada 2 h la instantánea
+// "boyas/copernicus.json" en el bucket público fuentes-gratuitas
+// (scripts/oleaje-camaras/boyas-copernicus.py), y aquí solo se lee. Copernicus
+// publica con 1-3 h de retraso: el tooltip enseña la hora de la medida.
+export const ATRIBUCION_BOYAS = "Puertos del Estado vía E.U. Copernicus Marine Service (In Situ TAC, doi:10.48670/moi-00043)";
+export const BOYA_MAX_EDAD_HORAS = 6;
 
-async function datosBoya(boya) {
-  const ahora = new Date();
-  const desde = new Date(ahora.getTime() - 6 * 3600 * 1000);
-  const url =
-    `https://poem.puertos.es/portus/StationData?code=${boya.codigo}` +
-    `&params=Hm0,Tp,MeanDir,WaterTemp&from=${fechaParaBoya(desde)}&to=${fechaParaBoya(ahora)}`;
-  const datos = await fetchJSON(url);
-  const cabeceras = datos[0]; // ["UTC", "Hm0 (m)", "Tp (s)", "MeanDir (º)", "WaterTemp (ºC)"] — el orden puede variar
-  const filas = datos[1];
-  if (!filas || !filas.length) throw new Error("boya sin datos recientes");
-  const ultima = filas[filas.length - 1];
-
-  const indice = (nombreCorto) => cabeceras.findIndex((c) => c.startsWith(nombreCorto));
-  const valor = (nombreCorto) => {
-    const i = indice(nombreCorto);
-    if (i === -1 || !ultima[i]) return null;
-    // La API de Puertos del Estado no siempre da el número como number —
-    // a veces llega como string. Number(null)/Number(undefined) darían 0/NaN
-    // de forma engañosa, así que esos casos ya se filtran arriba.
-    const n = Number(ultima[i][0]);
-    return Number.isFinite(n) ? n : null;
-  };
-
+export function boyaDesdeCopernicus(boya, inst, ahora = Date.now()) {
+  const b = inst?.[boya.copernicus];
+  const u = b?.ultima;
+  if (!u || !Number.isFinite(u.hs)) throw new Error("boya sin datos recientes en Copernicus");
+  if (ahora - Date.parse(u.hora) > BOYA_MAX_EDAD_HORAS * 3600e3) throw new Error(`boya sin datos de las últimas ${BOYA_MAX_EDAD_HORAS} h`);
   return {
     ...boya,
-    actualizado: new Date(ultima[0] * 1000).toISOString(),
-    alturaSignificativa: valor("Hm0"),
-    periodoPico: valor("Tp"),
-    dirOla: (() => {
-      const g = valor("MeanDir");
-      return g === null ? null : `${rumboDesdeGrados(g)} ${Math.round(g)}°`;
-    })(),
-    tempAgua: valor("WaterTemp"),
+    actualizado: u.hora,
+    alturaSignificativa: u.hs,
+    periodoPico: Number.isFinite(u.tp) ? u.tp : null,
+    dirOla: Number.isFinite(u.dir) ? `${rumboDesdeGrados(u.dir)} ${Math.round(u.dir)}°` : null,
+    tempAgua: Number.isFinite(u.temp) ? u.temp : null,
+    fuente: ATRIBUCION_BOYAS,
   };
+}
+
+async function datosBoyasCopernicus(env) {
+  const inst = await leerInstantanea("boyas/copernicus.json", { env });
+  if (!inst) throw new Error("instantánea de boyas de Copernicus aún no publicada");
+  return inst;
 }
 
 // Boya real de Nazaré costeira (Instituto Hidrográfico de Portugal, red
@@ -1230,7 +1225,10 @@ export async function onRequestGet(context) {
     previsionTodosSpots(SPOTS, context.env).catch((e) =>
       SPOTS.map((spot) => ({ slug: spot.slug, nombre: spot.nombre, error: String(e) }))
     ),
-    Promise.all(BOYAS.map((b) => datosBoya(b).catch((e) => ({ ...b, error: String(e) })))),
+    datosBoyasCopernicus(context.env).then(
+      (inst) => BOYAS.map((b) => { try { return boyaDesdeCopernicus(b, inst); } catch (e) { return { ...b, error: String(e) }; } }),
+      (e) => BOYAS.map((b) => ({ ...b, error: String(e) }))
+    ),
     datosBoyaNazare().catch((e) => ({
       codigo: "PT-nazare-costeira", nombre: "Nazaré (costeira, PT)", lat: 39.560, lon: -9.210, error: String(e),
     })),

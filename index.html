@@ -800,7 +800,7 @@
     <button class="viento-toggle" id="toggleViento" title="Viento en directo, estilo Windy (partículas animadas)" aria-label="Mostrar/ocultar capa de viento">💨<span class="capa-label">Viento</span></button>
     <button class="spots-toggle activo" id="toggleSpots" title="Spots" aria-label="Mostrar/ocultar spots">📍</button>
     <button class="rios-toggle" id="toggleRios" title="Ríos" aria-label="Mostrar/ocultar ríos">〰️<span class="capa-label">Ríos</span></button>
-    <button class="boyas-toggle" id="toggleBoyas" title="Boyas reales (Puertos del Estado)" aria-label="Mostrar/ocultar boyas">⚓<span class="capa-label">Boyas</span></button>
+    <button class="boyas-toggle" id="toggleBoyas" title="Boyas reales (Puertos del Estado vía Copernicus Marine)" aria-label="Mostrar/ocultar boyas">⚓<span class="capa-label">Boyas</span></button>
     <div class="viento-slider-panel" id="vientoSliderPanel" hidden>
       <div class="titulo">VIENTO — próximas horas</div>
       <input type="range" id="vientoSlider" min="0" max="23" value="0" step="1" />
@@ -880,7 +880,7 @@
         <div class="etq" id="panelOlaNota" style="text-transform:none; letter-spacing:0; margin-top:3px;"></div>
         <!-- "Ola real que veo" (2026-10-08): solo con sesión. La banda que
              elige el usuario entra en la calibración de las cámaras
-             (oleaje_etiquetas, migración 20261008170000). -->
+             (oleaje_etiquetas, migración 20261008180000). -->
         <div id="panelOlaReal" style="display:none; margin-top:6px;">
           <button type="button" id="panelBtnOlaReal" style="background:#EEF2EF; border:1px solid #DDE2DC; color:#0B2532; border-radius:14px; padding:3px 9px; font-size:11px; cursor:pointer; font-family:'Inter',sans-serif;">🌊 Ola real que veo</button>
           <div id="panelOlaRealBandas" style="display:none; flex-wrap:wrap; gap:4px; margin-top:5px;">
@@ -990,6 +990,7 @@
       <div id="panelWebcamExternas"></div>
     </div>
     <!-- Atribución obligatoria de Open-Meteo (licencia CC BY 4.0 de sus datos). -->
+    <div class="atribucion-boyas" style="margin-top:6px; font-size:10.5px; line-height:1.4; color:#5C7680; text-align:center;">Boyas: Puertos del Estado vía <a href="https://marine.copernicus.eu/" target="_blank" rel="noopener" style="color:inherit;">E.U. Copernicus Marine Service</a> (Generated using E.U. Copernicus Marine Service Information; <a href="https://doi.org/10.48670/moi-00043" target="_blank" rel="noopener" style="color:inherit;">doi:10.48670/moi-00043</a>)</div>
     <div class="atribucion-meteo">Datos meteorológicos: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a> (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>)</div>
   </div>
 </div>
@@ -2502,9 +2503,10 @@ function crearMarcadorBoya(boya) {
 
   const llamada = `
     <div class="rio-nombre">⚓ Boya ${boya.nombre}</div>
-    <div class="rio-tramo">Mar abierto · dato medido (Puertos del Estado)</div>
+    <div class="rio-tramo">Mar abierto · dato medido${boya.actualizado ? ` a las ${new Date(boya.actualizado).toLocaleTimeString("es-ES", { timeZone: "Europe/Madrid", hour: "2-digit", minute: "2-digit" })}` : ""}</div>
     <div class="rio-caudal">Oleaje: ${boya.alturaSignificativa}m${boya.periodoPico ? ` · ${Math.round(boya.periodoPico)}s` : ""}${boya.dirOla ? ` · ${boya.dirOla}` : ""}</div>
-    ${boya.tempAgua !== null ? `<div class="rio-caudal">🌡 Agua: ${boya.tempAgua}°C</div>` : ""}
+    ${boya.tempAgua !== null && boya.tempAgua !== undefined ? `<div class="rio-caudal">🌡 Agua: ${boya.tempAgua}°C</div>` : ""}
+    ${boya.codigo === "PT-nazare-costeira" ? "" : `<div class="rio-tramo" style="font-size:10px;">Puertos del Estado vía E.U. Copernicus Marine Service · Generated using E.U. Copernicus Marine Service Information (doi:10.48670/moi-00043)</div>`}
   `;
   marker.bindTooltip(llamada, { direction: "top", offset: [0, -10], className: "llamada-rio", opacity: 1 });
 }

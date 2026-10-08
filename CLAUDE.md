@@ -143,7 +143,7 @@ botón "ola real que veo". Todo sin IA ni API de pago: píxeles.
   corrección de la previsión y `aplicarCamarasASpots()` (lo usa /prevision).
 - `etiquetar-olas.html` (solo admin, enlace en admin.html) y el botón
   "🌊 Ola real que veo" del panel (con sesión).
-- Migración `supabase/migrations/20261008170000_oleaje_camaras.sql` **SIN
+- Migración `supabase/migrations/20261008180000_oleaje_camaras.sql` **SIN
   APLICAR** (baseline ya actualizado). Sin ella todo funciona como antes:
   /prevision no encuentra lecturas y sigue con modelo × coeficiente.
 - Tests: `test/oleaje-camaras.test.js` (en tests.yml).
@@ -199,6 +199,20 @@ con lectura vigente, manda su cámara.
    coeficiente. Con calibración de pocos datos (error ≥ 50 %) el cociente
    cámara/modelo se acota a 0,6-1,6 (Bakio: la espuma pasó de 0,13 a 0,41
    en 30 min con el mismo mar, por la exposición de la foto).
+   **Cámaras ruidosas no sustituyen al modelo** (pedido de Mikel,
+   2026-10-08, "no quiero enseñar 4,7 m en Bakio con el modelo a 2 m sin
+   calibrar"): por cámara y automático (`camaraSustituyeModelo()` en
+   calibracion.mjs). Ruido = mediana de la variación de la espuma entre
+   lecturas `ok` del mismo encuadre separadas ≤ 45 min. Si es > ±30 % o aún
+   no hay 3 pares para medirlo, la cámara solo sustituye al modelo con ≥ 5
+   etiquetas o ≥ 3 días con alturas variadas. Mientras tanto se mide, se
+   guarda y calibra, pero la fila sale con `sustituye_modelo = false` y
+   /prevision no la usa (ni para el spot, ni para la previsión, ni para las
+   vecinas). Con los datos del 2026-10-08 ninguna cámara pasa todavía
+   (Zarautz ±49 %, Zumaia ±43 %, Deba ±103 %, Zurriola ±230 %, Bakio ±219 %;
+   el resto sin pares suficientes): hoy el panel sigue con modelo ×
+   coeficiente en todos los spots, y las cámaras empezarán a mandar con las
+   etiquetas de Mikel.
 4. En /prevision: lectura `ok`, < 3 h y con estimación → el bloque más
    cercano a la lectura toma la altura de la cámara (`fuenteAltura:
    "camara"`), el panel dice "según cámara (Zarautz), 12:30 · mar abierto
@@ -222,9 +236,21 @@ gratuita, "for any purpose" (incluido comercial) con atribución "Generated
 using E.U. Copernicus Marine Service Information" + DOI (In Situ IBI:
 10.48670/moi-00043). Las boyas de Puertos del Estado llegan redistribuidas
 ahí; la API directa de Puertos del Estado NO está autorizada para uso
-comercial y ya no la usa este robot (/prevision sigue enseñando boyas de
-Puertos del Estado en el mapa: eso es aparte y está pendiente de revisar).
+comercial: ya no la usa este robot ni el mapa de la app (abajo).
 Los ficheros "latest" se leen sin cuenta del almacenamiento público.
+
+**Boyas del mapa vía Copernicus (2026-10-08, pedido de Mikel):** las 26
+boyas de `BOYAS` (prevision.js) llevan su id de Copernicus (`copernicus`,
+comprobado con el `platform_name` de cada NetCDF; todas están en el producto
+IBI, también las del Mediterráneo y Canarias). `boyas-copernicus.yml` (cada 2
+h, ~360 min/mes) corre `boyas-copernicus.py` y sube `boyas/copernicus.json`
+al bucket `fuentes-gratuitas`; /prevision lo lee (`boyaDesdeCopernicus()`,
+descarta medidas de más de 6 h). Ya no se llama a poem.puertos.es desde la
+app. Atribución visible: tooltip de cada boya y línea bajo el panel ("Boyas:
+Puertos del Estado vía E.U. Copernicus Marine Service … doi:10.48670/
+moi-00043"). Nazaré (Instituto Hidrográfico) sigue igual. Queda
+`scripts/fuentes/comparar-boyas.mjs` (comparativa interna) llamando a
+Puertos del Estado directamente: pendiente de pasar también.
 
 **Pendiente:** aplicar la migración (Mikel); revisar los ROI con bajamar
 fuerte (se dibujaron con marea media subiendo; la guarda de arena cubre la

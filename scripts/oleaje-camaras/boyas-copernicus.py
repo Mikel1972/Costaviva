@@ -41,6 +41,10 @@ BASE = ("https://s3.waw3-1.cloudferro.com/mdl-native-03/native/"
 # id de plataforma en Copernicus -> nombre y posición (la del propio NetCDF
 # manda; esta es solo para el log). Las "coast" son costeras (<100 m), las
 # numéricas 6200xxx de Puertos del Estado son exteriores (aguas profundas).
+# Desde 2026-10-08 también son las boyas del MAPA de la app (BOYAS de
+# functions/prevision.js, campo `copernicus`): las 26 de Puertos del Estado,
+# todas redistribuidas en este producto IBI (incluidas las del Mediterráneo
+# y Canarias, comprobado una a una con platform_name).
 BOYAS = {
     "PasaiaII-coast-buoy": "Pasaia II (costera)",
     "Donostia-buoy": "Donostia (Euskalmet, exterior)",
@@ -53,6 +57,23 @@ BOYAS = {
     "6200083": "Villano-Sisargas (exterior)",
     "6200084": "Cabo Silleiro (exterior)",
     "Leixoes-coast-buoy": "Leixões (costera)",
+    "6200085": "Golfo de Cádiz (exterior)",
+    "Tarifa-coast-buoy": "Tarifa (costera)",
+    "6101404": "Algeciras-Pta. Carnero (costera)",
+    "Ceuta-coast-buoy": "Ceuta (costera)",
+    "Malaga-coast-buoy": "Málaga (costera)",
+    "6100198": "Cabo de Gata (exterior)",
+    "6100417": "Cabo de Palos (exterior)",
+    "6100280": "Tarragona (exterior)",
+    "Tarragona-coast-buoy": "Tarragona (costera)",
+    "Barcelona-coast-buoy": "Barcelona II (costera)",
+    "6100196": "Cabo de Begur (exterior)",
+    "6100430": "Dragonera (exterior)",
+    "6100197": "Mahón (exterior)",
+    "LasPalmas-coast-buoy": "Las Palmas Este (costera)",
+    "Tenerife-coast-buoy": "Santa Cruz de Tenerife (costera)",
+    "1300130": "Gran Canaria (exterior)",
+    "1300131": "Tenerife Sur (exterior)",
 }
 
 UA = {"User-Agent": "CostavivaBoyasBot/1.0 (+https://costaviva.org)"}
@@ -87,7 +108,7 @@ def leer(fichero, horas):
     nc = netCDF4.Dataset(fichero)
     t = netCDF4.num2date(nc.variables["TIME"][:], nc.variables["TIME"].units, only_use_cftime_datetimes=False)
     n = len(t)
-    hs, dr, tp = serie(nc, "VHM0", n), serie(nc, "VMDR", n), serie(nc, "VTPK", n)
+    hs, dr, tp, te = serie(nc, "VHM0", n), serie(nc, "VMDR", n), serie(nc, "VTPK", n), serie(nc, "TEMP", n)
     lat = float(nc.variables["LATITUDE"][:].mean())
     lon = float(nc.variables["LONGITUDE"][:].mean())
     limite = datetime.now(timezone.utc) - timedelta(hours=horas)
@@ -95,7 +116,7 @@ def leer(fichero, horas):
     for i in range(n):
         ti = t[i].replace(tzinfo=timezone.utc)
         if ti >= limite and hs[i] is not None:
-            puntos.append({"hora": ti.isoformat().replace("+00:00", "Z"), "hs": hs[i], "dir": dr[i], "tp": tp[i]})
+            puntos.append({"hora": ti.isoformat().replace("+00:00", "Z"), "hs": hs[i], "dir": dr[i], "tp": tp[i], "temp": te[i]})
     return {"lat": round(lat, 4), "lon": round(lon, 4), "serie": puntos}
 
 
@@ -125,10 +146,11 @@ def main():
             salida[pid] = res
             u = res["ultima"]
             print(f"{'✓' if u else '✗'} {nombre}: {u['hs'] if u else '-'} m {u['hora'] if u else ''}")
+    salida["generado_en"] = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
     salida["_atribucion"] = "Generated using E.U. Copernicus Marine Service Information; https://doi.org/10.48670/moi-00043"
     with open(args.salida, "w", encoding="utf-8") as f:
         json.dump(salida, f, ensure_ascii=False)
-    if not any(v.get("ultima") for k, v in salida.items() if not k.startswith("_")):
+    if not any(isinstance(v, dict) and v.get("ultima") for k, v in salida.items() if not k.startswith("_")):
         print("::warning::Ninguna boya de Copernicus con dato reciente")
 
 

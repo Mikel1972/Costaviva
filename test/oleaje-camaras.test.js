@@ -14,12 +14,12 @@ import {
 } from "../functions/_lib/oleaje-camaras.js";
 import {
   ajustarCalibracion, estimarAltura, referenciaLectura, muestrasPorCamara, emparejarEtiquetaSpot, calibrarTodo,
-  elevacionSolar, ERROR_MINIMO_POCOS_DATOS, PESO_ETIQUETA_FOTO,
+  elevacionSolar, ERROR_MINIMO_POCOS_DATOS, PESO_ETIQUETA_FOTO, ruidoCamara, camaraSustituyeModelo,
 } from "../scripts/oleaje-camaras/calibracion.mjs";
 import { medirEspuma, zonasDinamicas, medirEspumaDinamica } from "../scripts/oleaje-camaras/espuma.mjs";
 import { CAMARAS } from "../scripts/oleaje-camaras/camaras.mjs";
 import { combinar } from "../scripts/oleaje-camaras/medir-espuma.mjs";
-import { SPOTS } from "../functions/prevision.js";
+import { SPOTS, BOYAS, boyaDesdeCopernicus, ATRIBUCION_BOYAS } from "../functions/prevision.js";
 
 const H = 3600e3;
 const centro = (id) => BANDAS_OLA.find((b) => b.id === id)?.centro ?? null;
@@ -294,4 +294,50 @@ test("la copia de factorCamara()/horasEntreLocales() de index.html se comporta i
     assert.equal(copia.factorCamara(c, h, p, DECAIMIENTO_HORAS), factorCamara(c, h, p), `c=${c} h=${h} p=${p}`);
   }
   assert.equal(copia.horasEntreLocales("2026-10-08T12:30", "2026-10-09T03:00"), horasEntreLocales("2026-10-08T12:30", "2026-10-09T03:00"));
+});
+
+test("cámara ruidosa sin calibrar (Bakio) no sustituye al modelo; con 5 etiquetas o 3 días variados, sí", () => {
+  const l = (min, e) => ({ fecha: new Date(Date.parse("2026-10-08T10:00:00Z") + min * 60e3).toISOString(), camara: "bakio", encuadre: "principal", estado: "ok", espuma: e });
+  // Caso real del 2026-10-08: 0,13 -> 0,41 en 30 min con el mismo mar.
+  const ruidosa = [l(0, 0.13), l(30, 0.41), l(60, 0.15), l(90, 0.4)];
+  const r = ruidoCamara(ruidosa, "bakio");
+  assert.equal(r.pares, 3);
+  assert.ok(r.ruido > 0.3);
+  const sinCal = { nEtiquetas: 0, pocosDatos: true };
+  assert.equal(camaraSustituyeModelo(r, [sinCal]).sustituye, false);
+  assert.equal(camaraSustituyeModelo(r, [{ nEtiquetas: 5, pocosDatos: true }]).sustituye, true);
+  assert.equal(camaraSustituyeModelo(r, [{ nEtiquetas: 0, pocosDatos: false }]).sustituye, true);
+  // Estable (±10 %) con 3 pares: sustituye aunque esté sin calibrar.
+  const estable = ruidoCamara([l(0, 0.3), l(30, 0.33), l(60, 0.3), l(90, 0.32)], "bakio");
+  assert.equal(camaraSustituyeModelo(estable, [sinCal]).sustituye, true);
+  // Sin pares suficientes: no se fía.
+  assert.equal(camaraSustituyeModelo(ruidoCamara([l(0, 0.3), l(30, 0.31)], "bakio"), [sinCal]).sustituye, false);
+  // Y /prevision no la usa: lectura con sustituyeModelo=false no es vigente.
+  const ahora = Date.parse("2026-10-08T10:40:00Z");
+  const lect = { bakio: { fecha: "2026-10-08T10:30:00Z", estado: "ok", estimacion: 4.7, modeloCamara: 2, sustituyeModelo: false } };
+  const entrada = [spotPrueba("bakio"), spotPrueba("plentzia")];
+  assert.deepEqual(aplicarCamarasASpots(entrada, lect, ahora), entrada);
+});
+
+test("boyas del mapa: todas vía Copernicus In Situ (no Puertos del Estado directo), con atribución", () => {
+  const py = readFileSync(new URL("../scripts/oleaje-camaras/boyas-copernicus.py", import.meta.url), "utf8");
+  for (const b of BOYAS) {
+    assert.ok(b.copernicus, `${b.nombre} sin id de Copernicus`);
+    assert.ok(py.includes(`"${b.copernicus}":`), `${b.copernicus} no se descarga en boyas-copernicus.py`);
+  }
+  const prev = readFileSync(new URL("../functions/prevision.js", import.meta.url), "utf8");
+  assert.ok(!/fetch[^\n]*poem\.puertos\.es|`https:\/\/poem\.puertos\.es/.test(prev), "prevision.js no debe llamar a Puertos del Estado");
+  const ahora = Date.parse("2026-10-08T12:00:00Z");
+  const inst = { "PasaiaII-coast-buoy": { ultima: { hora: "2026-10-08T09:00:00Z", hs: 3.51, dir: 317, tp: 10.4, temp: 18.2 } } };
+  const pasaia = BOYAS.find((b) => b.codigo === 1101);
+  const r = boyaDesdeCopernicus(pasaia, inst, ahora);
+  assert.equal(r.alturaSignificativa, 3.51);
+  assert.equal(r.dirOla, "NW 317°");
+  assert.equal(r.tempAgua, 18.2);
+  assert.equal(r.fuente, ATRIBUCION_BOYAS);
+  assert.match(ATRIBUCION_BOYAS, /Copernicus/);
+  assert.throws(() => boyaDesdeCopernicus(pasaia, inst, Date.parse("2026-10-08T20:00:00Z")), /últimas 6 h/);
+  assert.throws(() => boyaDesdeCopernicus(BOYAS.find((b) => b.codigo === 1117), inst, ahora));
+  const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
+  assert.ok(html.includes("Generated using E.U. Copernicus Marine Service Information"), "atribución visible");
 });

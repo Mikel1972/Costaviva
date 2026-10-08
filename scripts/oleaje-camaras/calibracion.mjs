@@ -217,3 +217,59 @@ export function elevacionSolar(fechaMs, lat, lon) {
   const cosZ = Math.sin(phi) * Math.sin(decl) + Math.cos(phi) * Math.cos(decl) * Math.cos(ha);
   return +(90 - (Math.acos(Math.min(1, Math.max(-1, cosZ))) * 180) / Math.PI).toFixed(2);
 }
+
+// ---------------------------------------------------------------------------
+// ¿Puede la cámara SUSTITUIR al modelo en el panel? (2026-10-08, pedido de
+// Mikel tras ver Bakio a 4,7 m con el modelo a 2 m: "no quiero enseñar eso
+// sin calibrar"). Criterio automático, por cámara:
+//   - RUIDO: entre lecturas `ok` del mismo encuadre separadas ≤ 45 min (el
+//     mar no cambia tanto en ese tiempo), la variación típica de la espuma
+//     (mediana de |ln(e2/e1)|, pasada a %). Si supera ±30 %, o si aún no
+//     hay 3 pares de lecturas para medirlo, la cámara es "ruidosa".
+//   - Una cámara ruidosa solo sustituye al modelo cuando su calibración
+//     tiene ≥ 5 etiquetas de Mikel (fotos) o ≥ 3 días con alturas variadas
+//     (`pocosDatos` = false). Hasta entonces se sigue midiendo y guardando
+//     (calibra igual), pero /prevision enseña modelo × coeficiente y no la
+//     usa para corregir la previsión ni a las vecinas.
+export const RUIDO_MAXIMO = 0.3;
+export const VENTANA_RUIDO_MIN = 45;
+export const ETIQUETAS_PARA_FIARSE = 5;
+export const PARES_MINIMOS_RUIDO = 3; // con menos pares, el ruido no está medido
+
+export function ruidoCamara(historial, camara) {
+  const porEnc = {};
+  for (const raw of historial || []) {
+    const l = normalizarLinea(raw);
+    if (!l || l.camara !== camara || l.estado !== "ok" || !(l.espuma > ESPUMA_MINIMA)) continue;
+    (porEnc[l.encuadre] ||= []).push({ t: Date.parse(l.fecha), e: l.espuma });
+  }
+  const difs = [];
+  for (const v of Object.values(porEnc)) {
+    v.sort((a, b) => a.t - b.t);
+    for (let i = 1; i < v.length; i++) {
+      if (v[i].t - v[i - 1].t <= VENTANA_RUIDO_MIN * 60e3 && v[i].t > v[i - 1].t) difs.push(Math.abs(Math.log(v[i].e / v[i - 1].e)));
+    }
+  }
+  if (!difs.length) return { ruido: null, pares: 0 };
+  difs.sort((a, b) => a - b);
+  const m = difs.length % 2 ? difs[(difs.length - 1) / 2] : (difs[difs.length / 2 - 1] + difs[difs.length / 2]) / 2;
+  return { ruido: +(Math.exp(m) - 1).toFixed(3), pares: difs.length };
+}
+
+// calibraciones: las de los encuadres de esa cámara (objetos de
+// ajustarCalibracion). Devuelve { sustituye, motivo }.
+export function camaraSustituyeModelo(ruido, calibraciones) {
+  const cals = (calibraciones || []).filter(Boolean);
+  const etiquetas = cals.reduce((a, c) => a + (c.nEtiquetas || 0), 0);
+  const variada = cals.some((c) => c.pocosDatos === false);
+  const ruidosa = !ruido || ruido.ruido === null || ruido.pares < PARES_MINIMOS_RUIDO || ruido.ruido > RUIDO_MAXIMO;
+  if (!ruidosa) return { sustituye: true, motivo: `estable (±${Math.round(ruido.ruido * 100)} % entre lecturas cercanas)` };
+  if (etiquetas >= ETIQUETAS_PARA_FIARSE) return { sustituye: true, motivo: `${etiquetas} etiquetas` };
+  if (variada) return { sustituye: true, motivo: "≥ 3 días con alturas variadas" };
+  return {
+    sustituye: false,
+    motivo: ruido?.ruido == null || ruido.pares < PARES_MINIMOS_RUIDO
+      ? `ruido aún sin medir (${ruido?.pares || 0} pares de lecturas cercanas)`
+      : `ruidosa (±${Math.round(ruido.ruido * 100)} %) y sin calibrar`,
+  };
+}

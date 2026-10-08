@@ -113,6 +113,9 @@ function horasEntre(aMs, bMs) {
 
 export function lecturaVigente(lectura, ahoraMs = Date.now()) {
   if (!lectura || lectura.estado !== "ok") return false;
+  // Cámara ruidosa aún sin calibrar (calibracion.mjs, camaraSustituyeModelo):
+  // se mide y se guarda, pero no sustituye ni corrige al modelo.
+  if (lectura.sustituyeModelo === false) return false;
   if (!Number.isFinite(lectura.estimacion)) return false;
   const t = Date.parse(lectura.fecha);
   if (!Number.isFinite(t)) return false;

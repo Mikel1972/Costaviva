@@ -36,6 +36,7 @@ import { medirEspuma, medirEspumaDinamica, huella, similitud, SIMILITUD_MINIMA }
 import { CAMARAS } from "./camaras.mjs";
 import {
   calibrarTodo, estimarAltura, claveCalibracion, emparejarEtiquetaSpot, elevacionSolar, ELEVACION_MINIMA, ERROR_MINIMO_POCOS_DATOS,
+  ruidoCamara, camaraSustituyeModelo,
 } from "./calibracion.mjs";
 import { CAMARAS_OLEAJE, BANDAS_OLA, FUENTE_POR_SPOT } from "../../functions/_lib/oleaje-camaras.js";
 import { SPOTS, factorOleaje } from "../../functions/prevision.js";
@@ -433,6 +434,9 @@ async function main() {
       return { ...r, cal, estimacion: est?.altura ?? null, errorRel: cal?.errorRel ?? null };
     });
     const combinada = combinar(porEncuadre);
+    // Ruido medido con el histórico + esta medida.
+    const ruido = ruidoCamara([...historial, ...porEncuadre.map((r) => ({ ...r, camara: id, fecha: r.fechaFoto && cam.tipo !== "hls" ? r.fechaFoto : new Date(ahora).toISOString() }))], id);
+    const decision = camaraSustituyeModelo(ruido, Object.entries(calibracion).filter(([k]) => k.startsWith(`${id}/`)).map(([, c]) => c));
     for (const r of porEncuadre) {
       const { frameMiniatura, cal, ...resto } = r;
       const linea = {
@@ -442,6 +446,9 @@ async function main() {
         ...resto,
         calibracion: cal ? { n: cal.n, nEtiquetas: cal.nEtiquetas, errorRel: cal.errorRel, pocosDatos: cal.pocosDatos } : null,
         estimacionCamara: combinada,
+        ruido,
+        sustituyeModelo: decision.sustituye,
+        motivoSustitucion: decision.motivo,
         marAbierto: mar[id] ?? null,
         coefPrior: mar[id]?.coefPrior ?? null,
         modeloCamara: mar[id]?.modeloCamara ?? null,
@@ -451,7 +458,7 @@ async function main() {
       filas.push({ linea, frameMiniatura });
     }
     const resumen = m.map((r) => `${r.encuadre ?? "-"}:${r.espuma ?? "-"}(${r.estado})`).join(" ");
-    console.log(`✓ ${id}: ${resumen} → ${combinada ? `${combinada.estimacion} m (${combinada.rangoMin}-${combinada.rangoMax})` : "sin estimación"}; modelo ${mar[id]?.modeloCamara ?? "?"} m; boya ${boya ? `${boya.nombre} ${boya.hs} m` : "-"}`);
+    console.log(`✓ ${id}: ${resumen} → ${combinada ? `${combinada.estimacion} m (${combinada.rangoMin}-${combinada.rangoMax})${decision.sustituye ? "" : " [NO sustituye: " + decision.motivo + "]"}` : "sin estimación"}; modelo ${mar[id]?.modeloCamara ?? "?"} m; boya ${boya ? `${boya.nombre} ${boya.hs} m` : "-"}`);
   }
   if (!lineas.length) {
     console.error("Ninguna cámara se pudo medir.");
@@ -491,6 +498,7 @@ async function main() {
         espuma: l.espuma, estimacion_m: l.estimacion, estimacion_camara_m: l.estimacionCamara?.estimacion ?? null,
         rango_min_m: l.estimacionCamara?.rangoMin ?? null, rango_max_m: l.estimacionCamara?.rangoMax ?? null,
         error_rel: l.estimacionCamara?.errorRel ?? null,
+        sustituye_modelo: !!l.sustituyeModelo,
         modelo_camara_m: l.modeloCamara, mar_abierto_m: l.marAbierto?.hsCorregida ?? null, dir_ola: l.marAbierto?.dir ?? null,
         boya: l.boya?.nombre ?? null, boya_hs_m: l.boya?.hs ?? null, miniatura,
       });
@@ -505,7 +513,7 @@ async function main() {
     if (borradas) console.log(`${borradas} miniaturas viejas sin etiquetar borradas.`);
   } catch (e) {
     // Migración sin aplicar o Supabase caído: el histórico ya está guardado.
-    console.log(`::warning::No se pudieron publicar las lecturas en Supabase (¿migración 20261008170000 sin aplicar?): ${e.message}`);
+    console.log(`::warning::No se pudieron publicar las lecturas en Supabase (¿migración 20261008180000 sin aplicar?): ${e.message}`);
   }
 }
 

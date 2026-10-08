@@ -47,6 +47,7 @@ create table if not exists public.oleaje_camara_lecturas (
   rango_min_m numeric,
   rango_max_m numeric,
   error_rel numeric,             -- error relativo típico de la calibración (0,5 = ±50 %)
+  sustituye_modelo boolean not null default false, -- false: cámara ruidosa sin calibrar, la app no la usa
   modelo_camara_m numeric,       -- modelo (con su factor) × coeficiente previo del sitio que ve la cámara
   mar_abierto_m numeric,
   dir_ola numeric,
