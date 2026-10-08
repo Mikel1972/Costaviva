@@ -47,6 +47,55 @@ pequeños: tinta oscura sobre claro, contraste AA).
   `AccessConstraints: None`, o a OpenFreeMap, que permite uso comercial con
   atribución OSM). Decisión de Mikel.
 
+## Instagram en estilo Amanecer: posts, stories y reels sin IA (2026-10-08)
+
+Mikel: "imágenes/vídeos como los de Fizk son mil veces mejores que las
+nuestras". Sustituidas las plantillas SVG+sharp (crema y dorado, letras del
+sistema, emoji rotos y **fotogramas de webcams de terceros**, que Skyline,
+YouTube o MEO no dejan republicar) por piezas en el estilo de la app.
+
+- **Plantilla única**: `scripts/marketing/plantillas/pieza.html`, pintada con
+  Playwright (Chromium). Letras dentro del repo (`scripts/marketing/fuentes/`,
+  Unbounded y Manrope con su OFL): no depende de la red ni de las fuentes del
+  runner. `render.mjs` hace post (1080x1350), story (1080x1920) y reel.
+- **Lógica pura** en `pieza-datos.mjs` (test `test/pieza-datos.test.js`):
+  índice del día con la MISMA cuenta que la ficha (`indiceSpot` +
+  `calcularVentana` sobre `serieHoraria`), motivos ▲▼, mejor tramo, tarjetas,
+  guion del reel, rotación, ganchos y claims. Datos reales en
+  `obtener-datos.mjs` (endpoints públicos `/prevision`, `/meteo/*`,
+  `/viento-campo`; minimapa de batimetría de EMODnet).
+- **Posts** (`robot-marketing-instagram.yml`, L/X/V): igual que antes,
+  borrador + Issue + publicación manual. Ahora también deja la story en
+  `assets/marketing/*-story.png` (para subirla a mano).
+- **Reels** (`robot-reel-instagram.yml`, sábados, workflow propio): 10,5 s =
+  gancho (3,5 s, vídeo + pregunta) + datos animados (5,5 s: índice contando,
+  ventana creciendo, viento real en partículas; o una pantalla real de la app
+  en un marco de móvil) + cierre (1,5 s, claim y CTA). Rotación
+  `ROTACION_REELS`: condiciones, diario, condiciones, grupos, especie,
+  alarma (estado en `rotacion-reels.json`). MP4 H.264 + audio mudo, < 8 MB;
+  en el árbol solo quedan los 4 últimos. ~7 min de Actions por reel.
+  `publicar-borrador-instagram.mjs reel-pendiente.json` crea el contenedor
+  `REELS` y espera a `status_code=FINISHED`; se publica con el mismo
+  workflow manual "Publicar post de Instagram".
+- **Clips del gancho**: `scripts/marketing/clips/propios/` (los que grabe
+  Mikel; tienen prioridad) y `clips/stock/` (solo con su `.licencia.json`
+  al lado: URL, cita y fecha). `scripts/` no se sirve en la web, así que los
+  clips en bruto no quedan públicos. Hoy hay uno de Coverr (licencia
+  comprobada el 2026-10-08: uso comercial y modificación permitidos, sin
+  atribución obligatoria; sin caras). Pexels y Pixabay no se pudieron
+  verificar (su web devuelve el reto anti-bots de Cloudflare a la sesión):
+  no usar nada suyo sin verificar su licencia. Nunca YouTube, webcams de
+  terceros ni Instagram de otros.
+- **Pantallas de la app** en las piezas de funciones: `capturas-app.mjs`
+  sirve el repo en local con un doble de Supabase y datos de demostración
+  inventados (nunca datos de usuarios ni producción).
+- **Textos**: nada indemostrable ("la primera app..." se quitó del texto de
+  los posts: Ley General de Publicidad). La app NO tiene "tipo de fondo"
+  (roca/arena), tiene batimetría: se dice "profundidad del fondo". Alarma:
+  el SOS manda un email con la ubicación a tus contactos y la detección de
+  caída es experimental y SOLO con la app abierta y la pantalla visible;
+  nada de "te salva la vida" ni segundo plano. El test lo comprueba.
+
 ## Cámaras de terceros: solo como su dueño lo permita (2026-10-08)
 
 `assets/js/camaras-externas.js` lista cámaras de otros (SkylineWebcams,

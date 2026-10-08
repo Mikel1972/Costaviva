@@ -1,0 +1,102 @@
+name: Robot de marketing — reel de Instagram
+
+# Reel semanal (aprobado por Mikel, 2026-10-08). Sin IA y a coste 0: la
+# plantilla scripts/marketing/plantillas/pieza.html se pinta fotograma a
+# fotograma con Playwright y ffmpeg monta un MP4 de ~10 s (1080x1920, H.264,
+# < 8 MB). Rota entre condiciones de un spot, una especie y las funciones de
+# la app (diario, grupos, alarma): ver ROTACION_REELS en pieza-datos.mjs.
+#
+# Mismo flujo que los posts: este workflow NUNCA publica. Crea el borrador
+# (contenedor REELS de la Content Publishing API, espera a que Instagram lo
+# procese) y abre un Issue; publicar es el workflow manual "Publicar post de
+# Instagram" con ese creation_id. Aprobación humana siempre.
+#
+# Minutos de Actions estimados por reel: ~7 (instalar Chromium y ffmpeg ~2,5;
+# 300 fotogramas ~1,5; ffmpeg ~0,5; esperar el despliegue de Cloudflare ~1-2;
+# procesado de Instagram ~1-2). Una vez por semana: ~30 min al mes.
+#
+# Tamaño del repo: cada MP4 pesa 2-6 MB y se comitea (Instagram lo descarga
+# de costaviva.org). Se dejan solo los 4 últimos en el árbol; el historial de
+# git sí los conserva (~0,25 GB al año a uno por semana).
+
+on:
+  schedule:
+    # Sábados 07:47 UTC.
+    - cron: "47 7 * * 6"
+  workflow_dispatch:
+    inputs:
+      tipo:
+        description: "Forzar un tipo (condiciones, especie, diario, grupos, alarma); vacío = el siguiente de la rotación"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: robot-marketing-instagram
+  cancel-in-progress: false
+
+jobs:
+  generar-y-proponer:
+    if: ${{ vars.AUTOMATION_PAUSED != 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Instalar ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: Instalar dependencias del script
+        working-directory: scripts/marketing
+        run: npm ci --no-audit --no-fund
+
+      - name: Instalar Chromium para Playwright
+        working-directory: scripts/marketing
+        run: npx playwright install --with-deps chromium
+
+      - name: Generar el reel
+        working-directory: scripts/marketing
+        env:
+          TIPO_REEL: ${{ inputs.tipo }}
+        run: node generar-reel-instagram.mjs
+
+      - name: Comitear el reel (y dejar solo los 4 últimos)
+        run: |
+          git config user.name "Claude (robot Costaviva)"
+          git config user.email "actions@github.com"
+          ls -1 assets/marketing/reels/*.mp4 | sort | head -n -4 | xargs -r git rm -q --
+          git add assets/marketing/reels/ scripts/marketing/rotacion-reels.json scripts/marketing/rotacion-zonas.json
+          if git diff --cached --quiet; then
+            echo "Nada nuevo que comitear."
+          else
+            git commit -m "Robot de marketing: nuevo reel para Instagram"
+            git push
+          fi
+
+      - name: Asegurar que existe la etiqueta "marketing"
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh label create marketing --color FFD700 --description "Propuestas de marketing (Instagram, etc.)" --force
+
+      - name: Crear borrador del reel en Instagram y abrir Issue de revisión
+        working-directory: scripts/marketing
+        env:
+          GH_TOKEN: ${{ github.token }}
+          META_PAGE_ACCESS_TOKEN: ${{ secrets.META_PAGE_ACCESS_TOKEN }}
+          META_IG_BUSINESS_ACCOUNT_ID: ${{ vars.META_IG_BUSINESS_ACCOUNT_ID }}
+        run: |
+          # Código 3 = token de Meta caducado (mismo guardarraíl que los posts).
+          node publicar-borrador-instagram.mjs reel-pendiente.json || CODIGO=$?
+          CODIGO=${CODIGO:-0}
+          if [ "$CODIGO" -eq 3 ]; then
+            echo "::warning::El token de Instagram (META_PAGE_ACCESS_TOKEN) ha caducado o no es válido. Esta pasada no ha hecho nada."
+            exit 0
+          fi
+          exit "$CODIGO"
