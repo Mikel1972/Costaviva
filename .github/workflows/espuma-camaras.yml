@@ -1,0 +1,70 @@
+name: Espuma de las webcams (calibración del oleaje costero)
+
+# 2026-10-08, caso Hondarribia ("3.7–4.5 m" con la bahía en calma en su
+# webcam). Registra varias veces al día, con luz, cuánta espuma (agua
+# rompiendo) se ve en una zona fija de mar de las 6 webcams de vídeo de la
+# Diputación Foral de Gipuzkoa, junto con el oleaje de mar abierto del modelo
+# y la boya Pasaia II del mismo momento. Con unas semanas de datos se calcula
+# el coeficiente de exposición de cada spot con cámara (ver
+# scripts/oleaje-camaras/espuma.mjs y CLAUDE.md "Oleaje costero").
+#
+# SIN IA (regla de coste de Mikel) y SIN tocar producción: lee streams
+# públicos, Open-Meteo y Puertos del Estado, y añade líneas a
+# datos-robots/oleaje-camaras/espuma.jsonl. No cambia nada de la app: los
+# coeficientes calibrados se proponen a Mikel antes de aplicarlos.
+#
+# Horas (UTC): 08, 11, 14 y 16 — con luz todo el año en el Cantábrico (en
+# diciembre amanece ~07:50 UTC... las de las 08 pueden salir "sin_luz" y se
+# descartan solas). GitHub no cumple el schedule al minuto; da igual, cada
+# línea lleva su hora.
+
+on:
+  schedule:
+    - cron: "17 8,11,14,16 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: espuma-camaras
+  cancel-in-progress: false
+
+jobs:
+  medir:
+    # Interruptor de pausa (comun pruebas-y-alertas.md P8).
+    if: ${{ vars.AUTOMATION_PAUSED != 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Comprobar/instalar ffmpeg
+        run: |
+          if ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update && sudo apt-get install -y ffmpeg
+          fi
+          ffmpeg -version | head -1
+
+      - name: Medir espuma
+        env:
+          OPEN_METEO_API_KEY: ${{ secrets.OPEN_METEO_API_KEY }}
+          FUENTE_MAR: ${{ vars.FUENTE_MAR }}
+          FUENTE_OLEAJE: ${{ vars.FUENTE_OLEAJE }}
+          FUENTE_MAREA: ${{ vars.FUENTE_MAREA }}
+        run: node scripts/oleaje-camaras/medir-espuma.mjs
+
+      - name: Guardar en el repo
+        run: |
+          F=datos-robots/oleaje-camaras/espuma.jsonl
+          git config user.name "github-actions[bot]"
+          git config user.email "noreply@anthropic.com"
+          git add "$F"
+          if git diff --cached --quiet; then echo "Sin cambios."; exit 0; fi
+          git commit -qm "Espuma de las webcams [skip ci]"
+          for i in 1 2 3; do git pull -q --rebase origin main && git push -q origin HEAD:main && exit 0; sleep 5; done
+          echo "::warning::No se pudo subir $F"; exit 1
