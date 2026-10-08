@@ -141,7 +141,7 @@ test("capa: grupo de todas las escalas, visible desde la plataforma, con atribuc
   assert.match(ATRIBUCION_SUSTRATO, /EMODnet Seabed Habitats/);
   assert.match(ATRIBUCION_SUSTRATO, /CC BY 4\.0/);
   assert.ok(LEYENDA_SUSTRATO.length >= 5);
-  assert.match(HTML, /id="toggleSustrato"[^>]*>🪨<span class="capa-label">Sustrato<\/span>/);
+  assert.match(HTML, /id="toggleSustrato"[^>]*>🪨<span class="capa-label">Sustr\.<\/span>/);
   assert.match(HTML, /id="panelFondo"/);
 });
 

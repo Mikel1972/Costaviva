@@ -478,6 +478,8 @@
     background: var(--mar); margin: 0 -18px; padding: 0 18px 14px;
     border-bottom: 4px solid var(--magenta); border-image: var(--degradado) 1;
   }
+  /* Línea del tipo de fondo (capa-tipo-fondo.js): dato sobrio bajo la banda de mar. */
+  .panel .fondo-ficha { margin-top: 10px; font-family: var(--f-texto); font-size: 12.5px; font-weight: 700; color: var(--tinta-3); }
   .panel .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
   .panel .tarjeta { background: var(--superficie); border-radius: 18px; padding: 12px 14px; box-shadow: 0 4px 14px rgba(26,21,51,0.07); }
   .panel .etq { font-size: 11px; font-weight: 800; letter-spacing: 0.06em; color: var(--tinta-2); }
@@ -580,6 +582,10 @@
     .rios-toggle { top: 122px; right: 66px; }
     .boyas-toggle { top: 178px; right: 66px; }
     .sustrato-toggle { top: 234px; right: 66px; }
+    /* Leyenda del sustrato compacta, por encima del botón ⓘ y de los créditos. */
+    .leyenda-sustrato { font-size: 10px; padding: 5px 8px; max-width: 128px; margin-bottom: 52px !important; }
+    .leyenda-sustrato .titulo { font-size: 10px; }
+    .leyenda-sustrato .nota { display: none; }
     .viento-slider-panel { right: 124px; }
     .luna-panel { right: 124px; }
     /* Créditos obligatorios del mapa: en letra pequeña pero siempre visibles. */
@@ -828,7 +834,7 @@
     <button class="spots-toggle activo" id="toggleSpots" title="Spots" aria-label="Mostrar/ocultar spots">📍</button>
     <button class="rios-toggle" id="toggleRios" title="Ríos" aria-label="Mostrar/ocultar ríos">〰️<span class="capa-label">Ríos</span></button>
     <button class="boyas-toggle" id="toggleBoyas" title="Boyas reales (Puertos del Estado vía Copernicus Marine)" aria-label="Mostrar/ocultar boyas">⚓<span class="capa-label">Boyas</span></button>
-    <button class="boyas-toggle sustrato-toggle" id="toggleSustrato" title="Tipo de fondo marino: roca, arena, fango, Posidonia (EMODnet). No es la batimetría" aria-label="Mostrar/ocultar el tipo de fondo marino" aria-pressed="false">🪨<span class="capa-label">Sustrato</span></button>
+    <button class="boyas-toggle sustrato-toggle" id="toggleSustrato" title="Tipo de fondo marino: roca, arena, fango, Posidonia (EMODnet). No es la batimetría" aria-label="Mostrar/ocultar el tipo de fondo marino" aria-pressed="false">🪨<span class="capa-label">Sustr.</span></button>
     <div class="viento-slider-panel" id="vientoSliderPanel" hidden>
       <div class="titulo">VIENTO — próximas horas</div>
       <input type="range" id="vientoSlider" min="0" max="23" value="0" step="1" />
@@ -895,7 +901,7 @@
     <button class="cerrar" id="cerrarPanel">✕</button>
     <h2 id="panelNombre"></h2>
     <div class="coords" id="panelCoords"></div>
-    <div class="coords" id="panelFondo" hidden></div>
+    <div class="fondo-ficha" id="panelFondo" hidden></div>
     <div style="display:flex; align-items:center; gap:10px; margin:6px 0 2px;">
       <button id="panelBtnFavorito" title="Marcar/quitar de favoritos" style="background:none; border:none; cursor:pointer; font-size:18px; padding:0; color:var(--tinta-3); line-height:1;">☆</button>
       <span id="panelEtiquetaComunidad" style="display:none; font-size:10.5px; color:var(--tinta-2);">📍 ubicación de un usuario, sin cámara</span>

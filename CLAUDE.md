@@ -1748,7 +1748,7 @@ franja costera. Sin IA y sin coste.
   arena · orilla de acantilado" (`textoFondo`, sin números). Punto propio: el
   dato del spot fijo a 1,5 km o menos; si no hay, se pregunta en vivo a
   EMODnet el sustrato del propio punto (GetFeatureInfo, sin orilla).
-- **Capa "Sustrato"** (botón 🪨 en la columna de Ríos/Boyas, `top: 208px`;
+- **Capa "Sustrato"** (botón 🪨 "Sustr." en la columna de Ríos/Boyas, debajo de Boyas;
   ojo: "Fondo" es la batimetría e "Isób." las isóbatas de la rama
   `claude/batimetria`): WMS `eusm_subs_group` de EMODnet Seabed Habitats (el
   grupo cambia solo de simplificación según la escala: costa, plataforma y
