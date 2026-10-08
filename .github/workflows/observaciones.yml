@@ -1,0 +1,79 @@
+name: Observaciones abiertas (GBIF / iNaturalist)
+
+# 2026-10-08, aprobado por Mikel ("añade todo lo legal"). Sin IA.
+#
+# Una vez a la semana descarga de la API de GBIF las observaciones de
+# nuestras especies (assets/datos/especies.json) en las costas de España y
+# Portugal, incluidas las de iNaturalist (que llegan a GBIF como su
+# exportación oficial "iNaturalist Research-grade Observations"), y las cruza
+# con las condiciones de mar del spot más cercano para validar el índice de
+# pesca más adelante. Resultado: datos-robots/observaciones/ (commit en main).
+#
+#   comercial/AAAA.json     CC0 y CC BY: se pueden usar en Costaviva (BY con
+#                           atribución, ver ATRIBUCION.md).
+#   no-comercial/AAAA.json  CC BY-NC: SOLO referencia interna. Nunca en la
+#                           app ni en nada que se venda (tampoco para
+#                           calibrar el índice, que es parte del producto).
+#   ATRIBUCION.md           conjuntos de datos, publicadores y licencias.
+#
+# Condiciones de uso verificadas y citadas en datos-robots/observaciones/LEEME.md.
+# Las condiciones de mar: instantánea de Copernicus (si fuentes-gratuitas.yml
+# ya la deja) y Open-Meteo archive/marine SOLO con OPEN_METEO_API_KEY (plan
+# comercial); sin la key no se cruza con Open-Meteo.
+#
+# Respeta AUTOMATION_PAUSED (comun, pruebas-y-alertas.md P8). Si GBIF falla o
+# devuelve 429, el job sale en ROJO (P4).
+
+on:
+  schedule:
+    - cron: "41 5 * * 2"   # martes 05:41 UTC
+  workflow_dispatch:
+    inputs:
+      desde:
+        description: "Primer año (vacío = año anterior). Para la carga inicial, p. ej. 2010."
+        required: false
+        default: ""
+      hasta:
+        description: "Último año (vacío = año actual)"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: observaciones-abiertas
+  cancel-in-progress: false
+
+jobs:
+  descargar:
+    if: vars.AUTOMATION_PAUSED != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Descargar y cruzar
+        env:
+          OBSERVACIONES_CONTACTO: ${{ vars.METNO_CONTACTO }}
+          OPEN_METEO_API_KEY: ${{ secrets.OPEN_METEO_API_KEY }}
+          DESDE: ${{ inputs.desde }}
+          HASTA: ${{ inputs.hasta }}
+        run: |
+          ARGS=""
+          if [ -n "$DESDE" ]; then ARGS="$ARGS --desde $DESDE"; fi
+          if [ -n "$HASTA" ]; then ARGS="$ARGS --hasta $HASTA"; fi
+          node scripts/observaciones/descargar.mjs $ARGS
+      - name: Guardar en el repo
+        run: |
+          git config user.name "Costaviva (observaciones abiertas)"
+          git config user.email "noreply@anthropic.com"
+          git add datos-robots/observaciones
+          if git diff --cached --quiet; then echo "Sin cambios."; exit 0; fi
+          git commit -qm "Observaciones abiertas (GBIF/iNaturalist) [skip ci]"
+          for i in 1 2 3; do git pull -q --rebase origin main && git push -q origin HEAD:main && exit 0; sleep 5; done
+          echo "::error::No se pudieron subir las observaciones"; exit 1

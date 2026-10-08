@@ -42,6 +42,8 @@ test("las páginas de la app son públicas, en sus dos formas", () => {
     "/suscripcion",
     "/admin.html",
     "/admin",
+    "/etiquetar-olas.html",
+    "/etiquetar-olas",
   ]) {
     assert.equal(esRutaPermitida(ruta), true, `${ruta} debería ser pública`);
   }
@@ -58,6 +60,8 @@ test("los endpoints de functions/ llegan a su propio código", () => {
   // sesión, X-Cron-Secret, firma de Stripe). Lo que se comprueba es que el
   // middleware no los corta antes de llegar a ella.
   for (const ruta of [
+    "/lluvia/tomas",
+    "/lluvia/toma",
     "/prevision",
     "/luna",
     "/rayos-imagen",
@@ -67,6 +71,8 @@ test("los endpoints de functions/ llegan a su propio código", () => {
     "/viento-campo",
     "/crear-checkout-stripe",
     "/crear-portal-stripe",
+    "/admin-invitaciones",
+    "/canjear-invitacion",
     "/stripe-webhook",
     "/notificar-altas",
     "/avisar-fin-prueba",

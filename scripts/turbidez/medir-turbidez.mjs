@@ -43,10 +43,8 @@ const SPOTS_IMAGEN = [
   "xilxes", "oropesa", "torreblanca", "vinaros", "alboraya", "pobladefarnals",
   "oliva", "piles",
   "calamillor", "sonbou", "muro",
-  // Águilas, añadida 2026-09-25 junto con su cámara. Empieza a acumular
-  // histórico desde hoy: necesita 14 lecturas (TURBIDEZ_MIN_LECTURAS) antes
-  // de poder clasificar nada, así que hasta ~2026-10-09 mostrará S/D.
-  "aguilas",
+  // Águilas salió el 2026-10-08: su cámara es de SkylineWebcams, que prohíbe
+  // descargar o analizar sus fotogramas (ver assets/js/camaras-externas.js).
 ];
 
 // Mismas URLs que WEBCAMS_HLS en index.html — mantener sincronizado a mano.

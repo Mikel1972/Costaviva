@@ -44,6 +44,7 @@ jobs:
           fi
           TITULO=$(git log -1 --format=%s)
           case "$RAMA" in
+            robot/especies-*-factores) TIPO="Factores"; INTRO="Propuestas de la rutina de los viernes: reglas o pesos del índice de pesca sacados de estudios (cada uno con su fuente), contrastes con tus reglas locales (confirma/refuta/matiza, sin cambiarlas) y, si los hay, concursos con resultados reutilizables. Revisa la evidencia y la confianza de cada regla antes de aprobar." ;;
             robot/especies-*) TIPO="Especies"; INTRO="Actualización de las fichas de especies (assets/datos/especies.json) de la rutina de los jueves. Revisa sobre todo las tallas y vedas: cada una debe llevar su URL oficial." ;;
             *) TIPO="Diseño"; INTRO="Propuesta de diseño del robot de SEO y diseño (rutina en la nube)." ;;
           esac

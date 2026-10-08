@@ -28,12 +28,12 @@
 // Selector de administrador (2026-10-08, fase 2): `&fuente=openmeteo` o
 // `&fuente=gratuitas` fuerza las fuentes de esa petición, SOLO si el JWT de
 // la cabecera Authorization es de un administrador (es_admin() en Supabase,
-// comprobado aquí en el servidor, functions/_lib/admin.js). Para cualquier
+// comprobado aquí en el servidor con requireAdmin de functions/_lib/admin.js). Para cualquier
 // otro: 403 sin pedir nada a nadie y antes de mirar la caché. Sin `fuente`,
 // nada cambia (no se llama a Supabase).
 import { validarConsultaProxy, claveCacheProxy } from "../_lib/open-meteo.js";
 import { pedirDatosMeteo, firmaFuentes, envConFuenteForzada, FUENTES_FORZABLES } from "../_lib/fuentes.js";
-import { esAdminServidor } from "../_lib/admin.js";
+import { requireAdmin } from "../_lib/admin.js";
 
 function json(cuerpo, status, extra = {}) {
   return new Response(JSON.stringify(cuerpo), {
@@ -56,7 +56,10 @@ export async function onRequestGet(context) {
     if (forzadas.length > 1 || !FUENTES_FORZABLES.has(forzadas[0])) {
       return json({ error: true, reason: "fuente no válida" }, 400, { "cache-control": "no-store" });
     }
-    if (!(await esAdminServidor(request))) {
+    // requireAdmin (functions/_lib/admin.js, el mismo de invitaciones): valida
+    // el JWT en /auth/v1/user y luego es_admin() con ese token. Cualquier
+    // "no" (sin sesión, token malo, no admin, red caída) -> 403 aquí.
+    if (!(await requireAdmin(request)).ok) {
       return json({ error: true, reason: "solo administradores" }, 403, { "cache-control": "no-store" });
     }
     forzada = forzadas[0];
