@@ -1,5 +1,5 @@
 {
- "version": "2026-10-07",
+ "version": "2026-10-08",
  "descripcion": "Fichas de especies de Costaviva y reglas de la ventana de actividad. Mantenido a mano y por la rutina semanal de especies (scripts/saldo/rutina-buscador-fuentes.txt, jueves). Reglas del fichero: nunca inventar un valor (null + nota); solo fuentes oficiales o abiertas NO-NC; FishBase, FAO, SeaLifeBase y similares (CC BY-NC) prohibidos; cada dato con su fuente (ids de 'fuentes') y cada talla con url + fecha_revision.",
  "aviso_legal": "Tallas y vedas orientativas: manda la norma vigente publicada en el boletín oficial correspondiente.",
  "regiones": [
@@ -151,6 +151,45 @@
    "licencia": "información del sector público (reutilizable citando la fuente)",
    "fecha_documento": "2018-01-18",
    "fecha_consulta": "2026-10-08"
+  },
+  "pv_horarios_distancias": {
+   "titulo": "Gobierno Vasco — Horarios de actividad, zonas prohibidas y distancias mínimas de pesca recreativa",
+   "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_periodo/es_10845/index.shtml",
+   "editor": "Gobierno Vasco, Dpto. de Alimentación, Desarrollo Rural, Agricultura y Pesca",
+   "tipo": "oficial",
+   "licencia": "información del sector público (reutilizable citando la fuente)",
+   "fecha_documento": "2018-01-18",
+   "fecha_consulta": "2026-10-08"
+  },
+  "pt_portaria_14_2014": {
+   "titulo": "Portaria n.º 14/2014, de 23 de janeiro — condiciones de la pesca lúdica (Diário da República, 1.ª série, n.º 16)",
+   "url": "https://diariodarepublica.pt/dr/detalhe/portaria/14-2014-571046",
+   "url_copia_leida": "https://ccdr-lvt.pt/wp-content/uploads/2024/12/Portaria-14-2014.pdf",
+   "editor": "Diário da República (Portugal)",
+   "tipo": "oficial",
+   "licencia": "legislación publicada (reutilizable citando la fuente)",
+   "fecha_documento": "2014-01-23",
+   "fecha_consulta": "2026-10-08",
+   "nota": "Leído el texto ORIGINAL de 2014 (copia de la CCDR-LVT). La FAQ de la DGRM de 2026 sigue citando los mismos artículos; falta leer la versión consolidada en diariodarepublica.pt por si hay cambios posteriores."
+  },
+  "dgrm_faq_ludica_2026": {
+   "titulo": "DGRM — Perguntas frequentes sobre pesca lúdica (2026)",
+   "url": "https://dgrm.pt/documents/20143/121104/FAQ-Pesca+Ludica+2026.pdf/586f6137-df78-25e7-e7ad-8a3dcc1f9ffc",
+   "editor": "Direção-Geral de Recursos Naturais, Segurança e Serviços Marítimos (Portugal)",
+   "tipo": "oficial",
+   "licencia": "información del sector público portugués (citar la fuente)",
+   "fecha_documento": "2026",
+   "fecha_consulta": "2026-10-08",
+   "nota": "La propia DGRM advierte que no sustituye a la lectura de los textos legales."
+  },
+  "app_index_zona": {
+   "titulo": "Clasificación 'costa' / 'mar adentro' de las listas ESPECIES* de index.html (retiradas el 2026-10-08)",
+   "url": null,
+   "tipo": "heredado",
+   "licencia": "propio",
+   "fecha_documento": "2026-09-13",
+   "fecha_consulta": "2026-10-08",
+   "nota": "Recuperada con git (commit 4e11b45, index.html líneas 1412-1560). Era la división que usaba la tarjeta '¿Qué esperamos pescar hoy?'. Heurística de las guías de pesca citadas allí, no una norma."
   }
  },
  "jurisdicciones": {
@@ -410,6 +449,53 @@
     ],
     "verificado": false,
     "nota": "Fuente ICES con licencia por confirmar; la parte de puertos/desembocaduras es heredada de la app."
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "fuentes": [
+      "app_index_zona"
+     ],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "La lista antigua de la app la clasificaba como especie de 'costa'. Rompientes, desembocaduras, puertos y escolleras.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca también desde embarcación (fondo, curricán o jigging según la especie): práctica habitual de pesca recreativa.",
+     "normativa": [
+      {
+       "jurisdiccion": "ES",
+       "texto": "Especie de protección diferenciada (anexo II del RD 347/2011): para capturarla o tenerla a bordo en aguas exteriores, la embarcación necesita una autorización específica de la Secretaría General de Pesca (art. 10).",
+       "fuente": "boe_rd347",
+       "url": "https://www.boe.es/eli/es/rd/2011/03/11/347/con",
+       "fecha_revision": "2026-10-08"
+      }
+     ],
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pieza habitual de la pesca submarina a pulmón en aguas someras de roca o arena (práctica habitual, sin fuente abierta citable todavía).",
+     "normativa": [
+      {
+       "jurisdiccion": "ES-PV",
+       "texto": "Euskadi: en pesca submarina el tope de capturas es de 5 kg (página de tallas y cupos del Gobierno Vasco; de Santa Clara hacia el este, 1 lubina por licencia y día).",
+       "fuente": "pv_tallas_cupos",
+       "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/especies_tallas_cupos/es_def/index.shtml",
+       "fecha_revision": "2026-10-08"
+      }
+     ],
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
    },
    "profundidad_m": {
     "valor": null,
@@ -729,7 +815,8 @@
     "confirmar licencia ICES o sustituir fuente de freza",
     "nombre gallego",
     "rango de temperatura no-NC",
-    "tallas de aguas interiores de cada comunidad"
+    "tallas de aguas interiores de cada comunidad",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)"
    ],
    "emoji": "🐟",
    "cebos": [
@@ -740,7 +827,10 @@
      "fuente": "pv_cebos",
      "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
      "fecha_revision": "2026-10-08",
-     "nota": "El Gobierno Vasco lo cita expresamente para la lubina."
+     "nota": "El Gobierno Vasco lo cita expresamente para la lubina.",
+     "modalidades": [
+      "costa"
+     ]
     },
     {
      "nombre": "Almeja",
@@ -749,7 +839,10 @@
      "fuente": "pv_cebos",
      "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
      "fecha_revision": "2026-10-08",
-     "nota": "Citada para pescados de roca, la dorada y el róbalo (lubina)."
+     "nota": "Citada para pescados de roca, la dorada y el róbalo (lubina).",
+     "modalidades": [
+      "costa"
+     ]
     },
     {
      "nombre": "Cangrejo (mejor el ermitaño)",
@@ -758,7 +851,10 @@
      "fuente": "pv_cebos",
      "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
      "fecha_revision": "2026-10-08",
-     "nota": "'El mejor cebo que se puede ofrecer a cualquier clase de peces'."
+     "nota": "'El mejor cebo que se puede ofrecer a cualquier clase de peces'.",
+     "modalidades": [
+      "costa"
+     ]
     },
     {
      "nombre": "Quisquilla o camarón",
@@ -767,14 +863,20 @@
      "fuente": "pv_cebos",
      "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
      "fecha_revision": "2026-10-08",
-     "nota": "Buen cebo para flotador o líneas a la deriva."
+     "nota": "Buen cebo para flotador o líneas a la deriva.",
+     "modalidades": [
+      "costa"
+     ]
     },
     {
      "nombre": "Vinilo o minnow",
      "tipo": "artificial",
      "modalidad": "spinning",
      "tipo_fuente": "heuristica_experta",
-     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
+     "modalidades": [
+      "costa"
+     ]
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -799,6 +901,35 @@
      "plos_dsargus_2018"
     ],
     "verificado": true
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "fuentes": [
+      "app_index_zona"
+     ],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "La lista antigua de la app la clasificaba como especie de 'costa'.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca también desde embarcación (fondo, curricán o jigging según la especie): práctica habitual de pesca recreativa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pieza habitual de la pesca submarina a pulmón en aguas someras de roca o arena (práctica habitual, sin fuente abierta citable todavía).",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
    },
    "profundidad_m": {
     "valor": null,
@@ -1120,7 +1251,8 @@
    "pendiente": [
     "talla del sargo en el Cantábrico (no aparece en el anexo I del RD 560/1995)",
     "nombres eu/gl/ca",
-    "rango de temperatura no-NC"
+    "rango de temperatura no-NC",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)"
    ],
    "emoji": "🐟",
    "cebos": [
@@ -1131,7 +1263,10 @@
      "fuente": "pv_cebos",
      "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
      "fecha_revision": "2026-10-08",
-     "nota": "'Especialmente para pescados de roca'; que el sargo entra en ese grupo es nuestra lectura."
+     "nota": "'Especialmente para pescados de roca'; que el sargo entra en ese grupo es nuestra lectura.",
+     "modalidades": [
+      "costa"
+     ]
     },
     {
      "nombre": "Lapa",
@@ -1140,14 +1275,20 @@
      "fuente": "pv_cebos",
      "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
      "fecha_revision": "2026-10-08",
-     "nota": "'Eficaz para peces de roca pero no para grandes piezas'."
+     "nota": "'Eficaz para peces de roca pero no para grandes piezas'.",
+     "modalidades": [
+      "costa"
+     ]
     },
     {
      "nombre": "Mejillón",
      "tipo": "natural",
      "modalidad": "roca",
      "tipo_fuente": "heuristica_experta",
-     "criterio": "Coherente con su alimentación (campo alimentacion de esta ficha); sin fuente oficial que lo cite como cebo (heurística experta)."
+     "criterio": "Coherente con su alimentación (campo alimentacion de esta ficha); sin fuente oficial que lo cite como cebo (heurística experta).",
+     "modalidades": [
+      "costa"
+     ]
     },
     {
      "nombre": "Cangrejo",
@@ -1156,7 +1297,10 @@
      "fuente": "pv_cebos",
      "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
      "fecha_revision": "2026-10-08",
-     "nota": "Cebo de eficacia casi general."
+     "nota": "Cebo de eficacia casi general.",
+     "modalidades": [
+      "costa"
+     ]
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -1181,6 +1325,35 @@
      "movecol_saurata_2026"
     ],
     "verificado": true
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "fuentes": [
+      "app_index_zona"
+     ],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "La lista antigua de la app la clasificaba como especie de 'costa'.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca también desde embarcación (fondo, curricán o jigging según la especie): práctica habitual de pesca recreativa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pieza habitual de la pesca submarina a pulmón en aguas someras de roca o arena (práctica habitual, sin fuente abierta citable todavía).",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
    },
    "profundidad_m": {
     "valor": [
@@ -1363,7 +1536,8 @@
    "pendiente": [
     "presencia en Cantábrico/Galicia/Portugal",
     "freza en el Atlántico",
-    "nombres eu/gl/ca"
+    "nombres eu/gl/ca",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)"
    ],
    "emoji": "🐟",
    "cebos": [
@@ -1374,7 +1548,10 @@
      "fuente": "pv_cebos",
      "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
      "fecha_revision": "2026-10-08",
-     "nota": "Citada expresamente para la dorada."
+     "nota": "Citada expresamente para la dorada.",
+     "modalidades": [
+      "costa"
+     ]
     },
     {
      "nombre": "Mejillón",
@@ -1383,7 +1560,10 @@
      "fuente": "pv_cebos",
      "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
      "fecha_revision": "2026-10-08",
-     "nota": "Citado expresamente para la dorada."
+     "nota": "Citado expresamente para la dorada.",
+     "modalidades": [
+      "costa"
+     ]
     },
     {
      "nombre": "Cangrejo",
@@ -1392,14 +1572,20 @@
      "fuente": "pv_cebos",
      "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
      "fecha_revision": "2026-10-08",
-     "nota": "Cebo de eficacia casi general."
+     "nota": "Cebo de eficacia casi general.",
+     "modalidades": [
+      "costa"
+     ]
     },
     {
      "nombre": "Gusana",
      "tipo": "natural",
      "modalidad": "surfcasting",
      "tipo_fuente": "heuristica_experta",
-     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
+     "modalidades": [
+      "costa"
+     ]
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -1423,6 +1609,33 @@
     "valor": null,
     "fuentes": [],
     "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "No estaba en la lista antigua de la app; práctica habitual de pesca recreativa. Surfcasting y fondo sobre arena.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca también desde embarcación (fondo, curricán o jigging según la especie): práctica habitual de pesca recreativa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin dato de que sea pieza habitual de la pesca submarina: no se muestra en esa pestaña hasta tener fuente.",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
    },
    "profundidad_m": {
     "valor": null,
@@ -1505,7 +1718,9 @@
    ],
    "reglas": {},
    "pendiente": [
-    "hábitat, profundidad, presencia, freza, temperatura y alimentación con fuente no-NC"
+    "hábitat, profundidad, presencia, freza, temperatura y alimentación con fuente no-NC",
+    "modalidades sin dato (aplica: null): submarina",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)"
    ],
    "emoji": "🐟",
    "cebos": [
@@ -1516,14 +1731,22 @@
      "fuente": "pv_cebos",
      "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
      "fecha_revision": "2026-10-08",
-     "nota": "Los gusanos de mar son de eficacia casi general; no cita al salmonete en concreto."
+     "nota": "Los gusanos de mar son de eficacia casi general; no cita al salmonete en concreto.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
     },
     {
      "nombre": "Tira de calamar",
      "tipo": "natural",
      "modalidad": "fondo",
      "tipo_fuente": "heuristica_experta",
-     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -1548,6 +1771,36 @@
     "valor": null,
     "fuentes": [],
     "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "fuentes": [
+      "app_index_zona",
+      "pv_tallas_cupos"
+     ],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "La lista antigua la ponía como 'mar adentro', pero el txitxarro se pesca a menudo desde puertos y espigones cuando entran los bancos (el Gobierno Vasco lo cita entre las especies del Cantábrico sin limitarlo a embarcación). Heurística: revisar con fuente.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca también desde embarcación (fondo, curricán o jigging según la especie): práctica habitual de pesca recreativa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin dato de que sea pieza habitual de la pesca submarina: no se muestra en esa pestaña hasta tener fuente.",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
    },
    "profundidad_m": {
     "valor": null,
@@ -1720,7 +1973,9 @@
    },
    "pendiente": [
     "hábitat, profundidad, temperatura, alimentación",
-    "freza fuera del Golfo de Bizkaia"
+    "freza fuera del Golfo de Bizkaia",
+    "modalidades sin dato (aplica: null): submarina",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)"
    ],
    "emoji": "🐟",
    "cebos": [
@@ -1729,7 +1984,11 @@
      "tipo": "artificial",
      "modalidad": "puerto/embarcación",
      "tipo_fuente": "heuristica_experta",
-     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
     },
     {
      "nombre": "Tira de sardina",
@@ -1738,7 +1997,10 @@
      "fuente": "pv_cebos",
      "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
      "fecha_revision": "2026-10-08",
-     "nota": "La sardina es 'muy eficaz' en líneas a la deriva y aparejos flotantes."
+     "nota": "La sardina es 'muy eficaz' en líneas a la deriva y aparejos flotantes.",
+     "modalidades": [
+      "costa"
+     ]
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -1763,6 +2025,36 @@
     "valor": null,
     "fuentes": [],
     "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "fuentes": [
+      "app_index_zona",
+      "pv_tallas_cupos"
+     ],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "La lista antigua la ponía como 'mar adentro' (verdel), pero en primavera se pesca mucho desde puertos y espigones. Heurística: revisar con fuente.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca también desde embarcación (fondo, curricán o jigging según la especie): práctica habitual de pesca recreativa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin dato de que sea pieza habitual de la pesca submarina: no se muestra en esa pestaña hasta tener fuente.",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
    },
    "profundidad_m": {
     "valor": null,
@@ -1941,7 +2233,9 @@
    },
    "pendiente": [
     "hábitat, profundidad, temperatura",
-    "presencia en Mediterráneo"
+    "presencia en Mediterráneo",
+    "modalidades sin dato (aplica: null): submarina",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)"
    ],
    "emoji": "🐟",
    "cebos": [
@@ -1950,14 +2244,21 @@
      "tipo": "artificial",
      "modalidad": "puerto/embarcación",
      "tipo_fuente": "heuristica_experta",
-     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
     },
     {
      "nombre": "Cucharilla",
      "tipo": "artificial",
      "modalidad": "spinning",
      "tipo_fuente": "heuristica_experta",
-     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
+     "modalidades": [
+      "costa"
+     ]
     },
     {
      "nombre": "Tira de sardina",
@@ -1966,7 +2267,10 @@
      "fuente": "pv_cebos",
      "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
      "fecha_revision": "2026-10-08",
-     "nota": "La sardina es 'muy eficaz' en líneas a la deriva y aparejos flotantes."
+     "nota": "La sardina es 'muy eficaz' en líneas a la deriva y aparejos flotantes.",
+     "modalidades": [
+      "costa"
+     ]
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -1990,6 +2294,33 @@
     "valor": null,
     "fuentes": [],
     "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "No estaba en la lista antigua de la app; práctica habitual de pesca recreativa. Fondo desde puertos y escolleras.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca también desde embarcación (fondo, curricán o jigging según la especie): práctica habitual de pesca recreativa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin dato de que sea pieza habitual de la pesca submarina: no se muestra en esa pestaña hasta tener fuente.",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
    },
    "profundidad_m": {
     "valor": null,
@@ -2062,7 +2393,9 @@
    ],
    "reglas": {},
    "pendiente": [
-    "casi todo: hábitat, freza, temperatura, alimentación"
+    "casi todo: hábitat, freza, temperatura, alimentación",
+    "modalidades sin dato (aplica: null): submarina",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)"
    ],
    "emoji": "🐟",
    "cebos": [
@@ -2073,7 +2406,11 @@
      "fuente": "pv_cebos",
      "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
      "fecha_revision": "2026-10-08",
-     "nota": "Citado expresamente para la faneca."
+     "nota": "Citado expresamente para la faneca.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
     },
     {
      "nombre": "Gusana",
@@ -2082,7 +2419,11 @@
      "fuente": "pv_cebos",
      "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
      "fecha_revision": "2026-10-08",
-     "nota": "Cebo de eficacia casi general."
+     "nota": "Cebo de eficacia casi general.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
     },
     {
      "nombre": "Tira de calamar",
@@ -2091,7 +2432,11 @@
      "fuente": "pv_cebos",
      "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
      "fecha_revision": "2026-10-08",
-     "nota": "'Calamares, jibias y pulpo: cebo muy efectivo para cualquier clase de peces'."
+     "nota": "'Calamares, jibias y pulpo: cebo muy efectivo para cualquier clase de peces'.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -2116,6 +2461,35 @@
      "app_index"
     ],
     "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "fuentes": [
+      "app_index_zona"
+     ],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "La lista antigua de la app la clasificaba como especie de 'costa'. De noche, desde roca y puertos.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca también desde embarcación (fondo, curricán o jigging según la especie): práctica habitual de pesca recreativa. Fondo sobre roca y pecios.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin dato de que sea pieza habitual de la pesca submarina: no se muestra en esa pestaña hasta tener fuente.",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
    },
    "profundidad_m": {
     "valor": null,
@@ -2260,7 +2634,9 @@
    },
    "pendiente": [
     "freza",
-    "rango de temperatura no-NC"
+    "rango de temperatura no-NC",
+    "modalidades sin dato (aplica: null): submarina",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)"
    ],
    "emoji": "🐍",
    "cebos": [
@@ -2271,7 +2647,11 @@
      "fuente": "pv_cebos",
      "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
      "fecha_revision": "2026-10-08",
-     "nota": "Pescado azul oleoso: 'desprende un olor que atrae a la pesca'."
+     "nota": "Pescado azul oleoso: 'desprende un olor que atrae a la pesca'.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
     },
     {
      "nombre": "Calamar o jibia",
@@ -2280,7 +2660,11 @@
      "fuente": "pv_cebos",
      "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
      "fecha_revision": "2026-10-08",
-     "nota": "Cebo muy efectivo para cualquier pez."
+     "nota": "Cebo muy efectivo para cualquier pez.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -2304,6 +2688,33 @@
     "valor": null,
     "fuentes": [],
     "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "No estaba en la lista antigua de la app; práctica habitual de pesca recreativa. Desde roca y puertos.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca también desde embarcación (fondo, curricán o jigging según la especie): práctica habitual de pesca recreativa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pieza habitual de la pesca submarina a pulmón en aguas someras de roca o arena (práctica habitual, sin fuente abierta citable todavía).",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
    },
    "profundidad_m": {
     "valor": null,
@@ -2402,7 +2813,8 @@
    "pendiente": [
     "freza Galicia/Portugal (hay estudios; falta uno con licencia abierta verificada)",
     "vedas autonómicas (Galicia, Asturias)",
-    "¿es especie autorizada en recreativa en cada CCAA?"
+    "¿es especie autorizada en recreativa en cada CCAA?",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)"
    ],
    "emoji": "🐙",
    "cebos": [
@@ -2411,14 +2823,21 @@
      "tipo": "artificial",
      "modalidad": "puerto/embarcación",
      "tipo_fuente": "heuristica_experta",
-     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta). Comprueba antes si la comunidad autónoma permite el pulpo en recreativa."
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta). Comprueba antes si la comunidad autónoma permite el pulpo en recreativa.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
     },
     {
      "nombre": "Cangrejo atado",
      "tipo": "natural",
      "modalidad": "puerto",
      "tipo_fuente": "heuristica_experta",
-     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
+     "modalidades": [
+      "costa"
+     ]
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -2441,6 +2860,35 @@
     "valor": null,
     "fuentes": [],
     "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "fuentes": [
+      "app_index_zona"
+     ],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "La lista antigua de la app la clasificaba como especie de 'costa'. (choco)",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca también desde embarcación (fondo, curricán o jigging según la especie): práctica habitual de pesca recreativa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pieza habitual de la pesca submarina a pulmón en aguas someras de roca o arena (práctica habitual, sin fuente abierta citable todavía).",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
    },
    "profundidad_m": {
     "valor": null,
@@ -2571,7 +3019,8 @@
    "pendiente": [
     "freza",
     "presencia Cantábrico/Atlántico",
-    "fuente de las 12.000 capturas"
+    "fuente de las 12.000 capturas",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)"
    ],
    "emoji": "🦑",
    "cebos": [
@@ -2580,14 +3029,22 @@
      "tipo": "artificial",
      "modalidad": "eging",
      "tipo_fuente": "heuristica_experta",
-     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
     },
     {
      "nombre": "Pez pequeño muerto en potera",
      "tipo": "natural",
      "modalidad": "fondo",
      "tipo_fuente": "heuristica_experta",
-     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -2612,6 +3069,35 @@
     "valor": null,
     "fuentes": [],
     "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "fuentes": [
+      "app_index_zona"
+     ],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "La lista antigua de la app la clasificaba como especie de 'costa'. Eging desde puertos y escolleras.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca también desde embarcación (fondo, curricán o jigging según la especie): práctica habitual de pesca recreativa. Potera y eging.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin dato de que sea pieza habitual de la pesca submarina: no se muestra en esa pestaña hasta tener fuente.",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
    },
    "profundidad_m": {
     "valor": null,
@@ -2783,7 +3269,9 @@
    },
    "pendiente": [
     "freza",
-    "rango de temperatura no-NC"
+    "rango de temperatura no-NC",
+    "modalidades sin dato (aplica: null): submarina",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)"
    ],
    "emoji": "🦑",
    "cebos": [
@@ -2792,14 +3280,21 @@
      "tipo": "artificial",
      "modalidad": "eging",
      "tipo_fuente": "heuristica_experta",
-     "criterio": "Recogido en las notas de especies de la app (guías de pesca recreativa citadas en index.html); sin fuente oficial todavía (heurística experta). Ojo: atraer con luces está prohibido en recreativa (RD 347/2011, art. 6)."
+     "criterio": "Recogido en las notas de especies de la app (guías de pesca recreativa citadas en index.html); sin fuente oficial todavía (heurística experta). Ojo: atraer con luces está prohibido en recreativa (RD 347/2011, art. 6).",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
     },
     {
      "nombre": "Potera con sardina",
      "tipo": "natural",
      "modalidad": "embarcación",
      "tipo_fuente": "heuristica_experta",
-     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
+     "modalidades": [
+      "embarcacion"
+     ]
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -2825,6 +3320,44 @@
      "ices_pol_sa"
     ],
     "verificado": true
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "fuentes": [
+      "app_index_zona"
+     ],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "La lista antigua de la app la clasificaba como especie de 'costa'.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca también desde embarcación (fondo, curricán o jigging según la especie): práctica habitual de pesca recreativa.",
+     "normativa": [
+      {
+       "jurisdiccion": "ES",
+       "texto": "Especie de protección diferenciada (anexo II del RD 347/2011): para capturarla o tenerla a bordo en aguas exteriores, la embarcación necesita una autorización específica de la Secretaría General de Pesca (art. 10).",
+       "fuente": "boe_rd347",
+       "url": "https://www.boe.es/eli/es/rd/2011/03/11/347/con",
+       "fecha_revision": "2026-10-08"
+      }
+     ],
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pieza habitual de la pesca submarina a pulmón en aguas someras de roca o arena (práctica habitual, sin fuente abierta citable todavía). Fondo duro y pecios.",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
    },
    "profundidad_m": {
     "valor": [
@@ -2992,7 +3525,8 @@
    "reglas": {},
    "pendiente": [
     "verificar Reg. (UE) 2026/249 (veda y cupo recreativo 2026) y la talla UE vigente",
-    "rango de temperatura no-NC"
+    "rango de temperatura no-NC",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)"
    ],
    "emoji": "🐟",
    "cebos": [
@@ -3003,7 +3537,10 @@
      "fuente": "pv_cebos",
      "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
      "fecha_revision": "2026-10-08",
-     "nota": "Citados expresamente 'para el abadejo'."
+     "nota": "Citados expresamente 'para el abadejo'.",
+     "modalidades": [
+      "embarcacion"
+     ]
     },
     {
      "nombre": "Mejillón",
@@ -3012,14 +3549,20 @@
      "fuente": "pv_cebos",
      "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
      "fecha_revision": "2026-10-08",
-     "nota": "Citado expresamente para abadejos."
+     "nota": "Citado expresamente para abadejos.",
+     "modalidades": [
+      "embarcacion"
+     ]
     },
     {
      "nombre": "Vinilo o jig",
      "tipo": "artificial",
      "modalidad": "embarcación",
      "tipo_fuente": "heuristica_experta",
-     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
+     "modalidades": [
+      "embarcacion"
+     ]
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -3044,6 +3587,57 @@
      "app_index"
     ],
     "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": false,
+     "fuentes": [
+      "app_index_zona"
+     ],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "La lista antigua de la app la clasificaba como 'mar adentro': no se muestra en 'Desde costa'. Pelágico de mar abierto: no se pesca desde costa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [
+      "app_index_zona",
+      "boe_rd347",
+      "pv_tallas_cupos"
+     ],
+     "tipo_fuente": "oficial",
+     "criterio": "Pelágico de mar abierto, curricán desde embarcación. En España es especie de protección diferenciada: hace falta autorización específica para la embarcación.",
+     "normativa": [
+      {
+       "jurisdiccion": "ES",
+       "texto": "Especie de protección diferenciada (anexo II del RD 347/2011): para capturarla o tenerla a bordo en aguas exteriores, la embarcación necesita una autorización específica de la Secretaría General de Pesca (art. 10).",
+       "fuente": "boe_rd347",
+       "url": "https://www.boe.es/eli/es/rd/2011/03/11/347/con",
+       "fecha_revision": "2026-10-08"
+      },
+      {
+       "jurisdiccion": "ES-PV",
+       "texto": "Euskadi: atún blanco, 5 piezas por licencia y día, con un máximo de 20 cuando son 4 o más tripulantes con licencia; declaración de desembarque obligatoria.",
+       "fuente": "pv_tallas_cupos",
+       "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/especies_tallas_cupos/es_def/index.shtml",
+       "fecha_revision": "2026-10-08"
+      }
+     ],
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": false,
+     "fuentes": [
+      "app_index_zona"
+     ],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pelágico de mar abierto: no es pieza de pesca submarina a pulmón.",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
    },
    "profundidad_m": {
     "valor": null,
@@ -3114,7 +3708,8 @@
    "pendiente": [
     "talla ICCAT/UE si existe",
     "freza",
-    "nombres eu/pt"
+    "nombres eu/pt",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)"
    ],
    "emoji": "🐟",
    "cebos": [
@@ -3123,7 +3718,10 @@
      "tipo": "artificial",
      "modalidad": "embarcación",
      "tipo_fuente": "heuristica_experta",
-     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
+     "modalidades": [
+      "embarcacion"
+     ]
     },
     {
      "nombre": "Sardina (brumeo y anzuelo)",
@@ -3132,7 +3730,10 @@
      "fuente": "boe_rd347",
      "url": "https://www.boe.es/eli/es/rd/2011/03/11/347/con",
      "fecha_revision": "2026-10-08",
-     "nota": "El RD 347/2011 (art. 6) prohíbe atraer peces salvo el brumeo con pequeños pelágicos."
+     "nota": "El RD 347/2011 (art. 6) prohíbe atraer peces salvo el brumeo con pequeños pelágicos.",
+     "modalidades": [
+      "embarcacion"
+     ]
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -3159,6 +3760,35 @@
      "app_index"
     ],
     "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "fuentes": [
+      "app_index_zona"
+     ],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "La lista antigua de la app la clasificaba como especie de 'costa'. Playas, puertos y estuarios.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin dato de que se busque desde embarcación: no se muestra hasta tener fuente.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin dato de que sea pieza habitual de la pesca submarina: no se muestra en esa pestaña hasta tener fuente.",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
    },
    "profundidad_m": {
     "valor": null,
@@ -3281,7 +3911,9 @@
    "reglas": {},
    "pendiente": [
     "freza",
-    "temperatura"
+    "temperatura",
+    "modalidades sin dato (aplica: null): embarcacion, submarina",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)"
    ],
    "emoji": "🐟",
    "cebos": [
@@ -3290,7 +3922,10 @@
      "tipo": "natural",
      "modalidad": "flotador/puerto",
      "tipo_fuente": "heuristica_experta",
-     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
+     "modalidades": [
+      "costa"
+     ]
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -3314,6 +3949,35 @@
     "valor": null,
     "fuentes": [],
     "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "fuentes": [
+      "app_index_zona"
+     ],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "La lista antigua de la app la clasificaba como especie de 'costa'.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca también desde embarcación (fondo, curricán o jigging según la especie): práctica habitual de pesca recreativa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin dato de que sea pieza habitual de la pesca submarina: no se muestra en esa pestaña hasta tener fuente.",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
    },
    "profundidad_m": {
     "valor": null,
@@ -3453,7 +4117,9 @@
    "reglas": {},
    "pendiente": [
     "freza",
-    "temperatura no-NC"
+    "temperatura no-NC",
+    "modalidades sin dato (aplica: null): submarina",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)"
    ],
    "emoji": "🐟",
    "cebos": [
@@ -3464,7 +4130,11 @@
      "fuente": "pv_cebos",
      "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
      "fecha_revision": "2026-10-08",
-     "nota": "Cebo de eficacia casi general."
+     "nota": "Cebo de eficacia casi general.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
     },
     {
      "nombre": "Tira de calamar",
@@ -3473,7 +4143,11 @@
      "fuente": "pv_cebos",
      "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
      "fecha_revision": "2026-10-08",
-     "nota": "Cebo muy efectivo para cualquier pez."
+     "nota": "Cebo muy efectivo para cualquier pez.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -3499,6 +4173,44 @@
      "app_index"
     ],
     "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "fuentes": [
+      "app_index_zona"
+     ],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "La lista antigua de la app la clasificaba como especie de 'costa'. Surfcasting sobre arena fina.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca también desde embarcación (fondo, curricán o jigging según la especie): práctica habitual de pesca recreativa.",
+     "normativa": [
+      {
+       "jurisdiccion": "ES",
+       "texto": "Especie de protección diferenciada (anexo II del RD 347/2011): para capturarla o tenerla a bordo en aguas exteriores, la embarcación necesita una autorización específica de la Secretaría General de Pesca (art. 10).",
+       "fuente": "boe_rd347",
+       "url": "https://www.boe.es/eli/es/rd/2011/03/11/347/con",
+       "fecha_revision": "2026-10-08"
+      }
+     ],
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin dato de que sea pieza habitual de la pesca submarina: no se muestra en esa pestaña hasta tener fuente.",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
    },
    "profundidad_m": {
     "valor": null,
@@ -3618,7 +4330,9 @@
    },
    "pendiente": [
     "freza (ICES tiene stock annex de Solea solea 8c9a)",
-    "temperatura no-NC"
+    "temperatura no-NC",
+    "modalidades sin dato (aplica: null): submarina",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)"
    ],
    "emoji": "🐟",
    "cebos": [
@@ -3627,7 +4341,10 @@
      "tipo": "natural",
      "modalidad": "surfcasting nocturno",
      "tipo_fuente": "heuristica_experta",
-     "criterio": "Recogido en las notas de especies de la app (guías de pesca recreativa citadas en index.html); sin fuente oficial todavía (heurística experta)."
+     "criterio": "Recogido en las notas de especies de la app (guías de pesca recreativa citadas en index.html); sin fuente oficial todavía (heurística experta).",
+     "modalidades": [
+      "costa"
+     ]
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -3652,6 +4369,35 @@
      "app_index"
     ],
     "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "fuentes": [
+      "app_index_zona"
+     ],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "La lista antigua de la app la clasificaba como especie de 'costa'. Desembocaduras.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca también desde embarcación (fondo, curricán o jigging según la especie): práctica habitual de pesca recreativa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pieza habitual de la pesca submarina a pulmón en aguas someras de roca o arena (práctica habitual, sin fuente abierta citable todavía).",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
    },
    "profundidad_m": {
     "valor": null,
@@ -3756,7 +4502,8 @@
    },
    "pendiente": [
     "talla en España (no aparece en el RD 560/1995)",
-    "freza con fuente"
+    "freza con fuente",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)"
    ],
    "emoji": "🐟",
    "cebos": [
@@ -3767,14 +4514,20 @@
      "fuente": "pv_cebos",
      "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
      "fecha_revision": "2026-10-08",
-     "nota": "El Gobierno Vasco lo da como el mejor cebo en general; la app ya lo citaba para la corvina en Rota."
+     "nota": "El Gobierno Vasco lo da como el mejor cebo en general; la app ya lo citaba para la corvina en Rota.",
+     "modalidades": [
+      "costa"
+     ]
     },
     {
      "nombre": "Vinilo grande",
      "tipo": "artificial",
      "modalidad": "spinning",
      "tipo_fuente": "heuristica_experta",
-     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
+     "modalidades": [
+      "costa"
+     ]
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -3795,6 +4548,35 @@
     "valor": null,
     "fuentes": [],
     "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": false,
+     "fuentes": [
+      "app_index_zona"
+     ],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "La lista antigua de la app la clasificaba como 'mar adentro': no se muestra en 'Desde costa'.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca también desde embarcación (fondo, curricán o jigging según la especie): práctica habitual de pesca recreativa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pieza habitual de la pesca submarina a pulmón en aguas someras de roca o arena (práctica habitual, sin fuente abierta citable todavía).",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
    },
    "profundidad_m": {
     "valor": null,
@@ -3875,7 +4657,8 @@
    },
    "pendiente": [
     "hábitat, profundidad, freza y temperatura con fuente no-NC",
-    "talla mínima (no aparece en RD 560/1995 ni en el anexo IX)"
+    "talla mínima (no aparece en RD 560/1995 ni en el anexo IX)",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)"
    ],
    "cientifico_nota": "Nombre científico no cotejado aún con una lista oficial.",
    "emoji": "🐟",
@@ -3887,14 +4670,20 @@
      "fuente": "pv_cebos",
      "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
      "fecha_revision": "2026-10-08",
-     "nota": "Cebo muy efectivo para cualquier pez."
+     "nota": "Cebo muy efectivo para cualquier pez.",
+     "modalidades": [
+      "embarcacion"
+     ]
     },
     {
      "nombre": "Jig o vinilo",
      "tipo": "artificial",
      "modalidad": "embarcación",
      "tipo_fuente": "heuristica_experta",
-     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
+     "modalidades": [
+      "embarcacion"
+     ]
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -3915,6 +4704,35 @@
     "valor": null,
     "fuentes": [],
     "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": null,
+     "fuentes": [
+      "app_index_zona"
+     ],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "La lista antigua la ponía como 'mar adentro'; en Cádiz también se busca desde las piedras, pero sin fuente citable: no se muestra en 'Desde costa' hasta verificarlo.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca también desde embarcación (fondo, curricán o jigging según la especie): práctica habitual de pesca recreativa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin dato de que sea pieza habitual de la pesca submarina: no se muestra en esa pestaña hasta tener fuente.",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
    },
    "profundidad_m": {
     "valor": null,
@@ -3968,7 +4786,9 @@
    "pendiente": [
     "hábitat, profundidad, freza y temperatura con fuente no-NC",
     "nombre científico",
-    "talla mínima"
+    "talla mínima",
+    "modalidades sin dato (aplica: null): costa, submarina",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)"
    ],
    "cientifico_nota": "La app no da nombre científico y no se ha verificado (probablemente Pagrus auriga).",
    "emoji": "🐟",
@@ -3980,14 +4800,21 @@
      "fuente": "pv_cebos",
      "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
      "fecha_revision": "2026-10-08",
-     "nota": "Cebo de eficacia casi general."
+     "nota": "Cebo de eficacia casi general.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
     },
     {
      "nombre": "Choco o calamar",
      "tipo": "natural",
      "modalidad": "embarcación",
      "tipo_fuente": "heuristica_experta",
-     "criterio": "Coherente con su alimentación (campo alimentacion de esta ficha); sin fuente oficial que lo cite como cebo (heurística experta)."
+     "criterio": "Coherente con su alimentación (campo alimentacion de esta ficha); sin fuente oficial que lo cite como cebo (heurística experta).",
+     "modalidades": [
+      "embarcacion"
+     ]
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -4010,6 +4837,35 @@
     "valor": null,
     "fuentes": [],
     "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": false,
+     "fuentes": [
+      "app_index_zona"
+     ],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "La lista antigua de la app la clasificaba como 'mar adentro': no se muestra en 'Desde costa'.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca también desde embarcación (fondo, curricán o jigging según la especie): práctica habitual de pesca recreativa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin dato de que sea pieza habitual de la pesca submarina: no se muestra en esa pestaña hasta tener fuente.",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
    },
    "profundidad_m": {
     "valor": null,
@@ -4117,7 +4973,9 @@
    ],
    "reglas": {},
    "pendiente": [
-    "hábitat, profundidad, freza y temperatura con fuente no-NC"
+    "hábitat, profundidad, freza y temperatura con fuente no-NC",
+    "modalidades sin dato (aplica: null): submarina",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)"
    ],
    "emoji": "🐟",
    "cebos": [
@@ -4128,14 +4986,20 @@
      "fuente": "pv_cebos",
      "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
      "fecha_revision": "2026-10-08",
-     "nota": "Cebo muy efectivo para cualquier pez."
+     "nota": "Cebo muy efectivo para cualquier pez.",
+     "modalidades": [
+      "embarcacion"
+     ]
     },
     {
      "nombre": "Gamba o camarón",
      "tipo": "natural",
      "modalidad": "embarcación",
      "tipo_fuente": "heuristica_experta",
-     "criterio": "Coherente con su alimentación (campo alimentacion de esta ficha); sin fuente oficial que lo cite como cebo (heurística experta)."
+     "criterio": "Coherente con su alimentación (campo alimentacion de esta ficha); sin fuente oficial que lo cite como cebo (heurística experta).",
+     "modalidades": [
+      "embarcacion"
+     ]
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -4156,6 +5020,35 @@
     "valor": null,
     "fuentes": [],
     "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "fuentes": [
+      "app_index_zona"
+     ],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "La lista antigua de la app la clasificaba como especie de 'costa'.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca también desde embarcación (fondo, curricán o jigging según la especie): práctica habitual de pesca recreativa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pieza habitual de la pesca submarina a pulmón en aguas someras de roca o arena (práctica habitual, sin fuente abierta citable todavía).",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
    },
    "profundidad_m": {
     "valor": null,
@@ -4226,7 +5119,8 @@
    ],
    "reglas": {},
    "pendiente": [
-    "hábitat, profundidad, freza y temperatura con fuente no-NC"
+    "hábitat, profundidad, freza y temperatura con fuente no-NC",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)"
    ],
    "emoji": "🐠",
    "cebos": [
@@ -4237,7 +5131,10 @@
      "fuente": "pv_cebos",
      "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
      "fecha_revision": "2026-10-08",
-     "nota": "Cebo de eficacia casi general."
+     "nota": "Cebo de eficacia casi general.",
+     "modalidades": [
+      "costa"
+     ]
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -4258,6 +5155,35 @@
     "valor": null,
     "fuentes": [],
     "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": false,
+     "fuentes": [
+      "app_index_zona"
+     ],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "La lista antigua de la app la clasificaba como 'mar adentro': no se muestra en 'Desde costa'.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca también desde embarcación (fondo, curricán o jigging según la especie): práctica habitual de pesca recreativa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pieza habitual de la pesca submarina a pulmón en aguas someras de roca o arena (práctica habitual, sin fuente abierta citable todavía).",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
    },
    "profundidad_m": {
     "valor": null,
@@ -4317,7 +5243,8 @@
    ],
    "reglas": {},
    "pendiente": [
-    "hábitat, profundidad, freza y temperatura con fuente no-NC"
+    "hábitat, profundidad, freza y temperatura con fuente no-NC",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)"
    ],
    "cientifico_nota": "RD 560/1995 anexo III: 'Sama de pluma (Dentex filosus) — Sama, serruda, pargo macho'. Falta confirmar que es la 'sama' de la app.",
    "emoji": "🐟",
@@ -4329,14 +5256,20 @@
      "fuente": "pv_cebos",
      "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
      "fecha_revision": "2026-10-08",
-     "nota": "Cebo muy efectivo para cualquier pez."
+     "nota": "Cebo muy efectivo para cualquier pez.",
+     "modalidades": [
+      "embarcacion"
+     ]
     },
     {
      "nombre": "Camarón",
      "tipo": "natural",
      "modalidad": "embarcación",
      "tipo_fuente": "heuristica_experta",
-     "criterio": "Coherente con su alimentación (campo alimentacion de esta ficha); sin fuente oficial que lo cite como cebo (heurística experta)."
+     "criterio": "Coherente con su alimentación (campo alimentacion de esta ficha); sin fuente oficial que lo cite como cebo (heurística experta).",
+     "modalidades": [
+      "embarcacion"
+     ]
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -4357,6 +5290,35 @@
     "valor": null,
     "fuentes": [],
     "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": false,
+     "fuentes": [
+      "app_index_zona"
+     ],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "La lista antigua de la app la clasificaba como 'mar adentro': no se muestra en 'Desde costa'.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca también desde embarcación (fondo, curricán o jigging según la especie): práctica habitual de pesca recreativa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pieza habitual de la pesca submarina a pulmón en aguas someras de roca o arena (práctica habitual, sin fuente abierta citable todavía).",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
    },
    "profundidad_m": {
     "valor": null,
@@ -4410,7 +5372,8 @@
    "pendiente": [
     "hábitat, profundidad, freza y temperatura con fuente no-NC",
     "nombre científico",
-    "talla"
+    "talla",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)"
    ],
    "cientifico_nota": "Sin verificar (género Seriola).",
    "emoji": "🐟",
@@ -4420,7 +5383,10 @@
      "tipo": "artificial",
      "modalidad": "embarcación",
      "tipo_fuente": "heuristica_experta",
-     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
+     "modalidades": [
+      "embarcacion"
+     ]
     },
     {
      "nombre": "Calamar",
@@ -4429,7 +5395,10 @@
      "fuente": "pv_cebos",
      "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
      "fecha_revision": "2026-10-08",
-     "nota": "Cebo muy efectivo para cualquier pez."
+     "nota": "Cebo muy efectivo para cualquier pez.",
+     "modalidades": [
+      "embarcacion"
+     ]
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -4450,6 +5419,35 @@
     "valor": null,
     "fuentes": [],
     "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": false,
+     "fuentes": [
+      "app_index_zona"
+     ],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "La lista antigua de la app la clasificaba como 'mar adentro': no se muestra en 'Desde costa'.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca también desde embarcación (fondo, curricán o jigging según la especie): práctica habitual de pesca recreativa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin dato de que sea pieza habitual de la pesca submarina: no se muestra en esa pestaña hasta tener fuente.",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
    },
    "profundidad_m": {
     "valor": null,
@@ -4507,7 +5505,9 @@
    "pendiente": [
     "hábitat, profundidad, freza y temperatura con fuente no-NC",
     "nombre científico",
-    "talla"
+    "talla",
+    "modalidades sin dato (aplica: null): submarina",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)"
    ],
    "cientifico_nota": "Sin verificar (género Sphyraena).",
    "emoji": "🐟",
@@ -4517,7 +5517,11 @@
      "tipo": "artificial",
      "modalidad": "spinning/embarcación",
      "tipo_fuente": "heuristica_experta",
-     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -4538,6 +5542,35 @@
     "valor": null,
     "fuentes": [],
     "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": false,
+     "fuentes": [
+      "app_index_zona"
+     ],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "La lista antigua de la app la clasificaba como 'mar adentro': no se muestra en 'Desde costa'.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca también desde embarcación (fondo, curricán o jigging según la especie): práctica habitual de pesca recreativa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin dato de que sea pieza habitual de la pesca submarina: no se muestra en esa pestaña hasta tener fuente.",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
    },
    "profundidad_m": {
     "valor": null,
@@ -4600,7 +5633,9 @@
    ],
    "reglas": {},
    "pendiente": [
-    "hábitat, profundidad, freza y temperatura con fuente no-NC"
+    "hábitat, profundidad, freza y temperatura con fuente no-NC",
+    "modalidades sin dato (aplica: null): submarina",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)"
    ],
    "cientifico_nota": "RD 560/1995 anexo III: 'Jureles (Trachurus spp) — Chicharro'. Especie concreta sin verificar.",
    "emoji": "🐟",
@@ -4610,7 +5645,11 @@
      "tipo": "artificial",
      "modalidad": "puerto/embarcación",
      "tipo_fuente": "heuristica_experta",
-     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -4633,6 +5672,35 @@
     "valor": null,
     "fuentes": [],
     "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "fuentes": [
+      "app_index_zona"
+     ],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "La lista antigua de la app la clasificaba como especie de 'costa'.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca también desde embarcación (fondo, curricán o jigging según la especie): práctica habitual de pesca recreativa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pieza habitual de la pesca submarina a pulmón en aguas someras de roca o arena (práctica habitual, sin fuente abierta citable todavía).",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
    },
    "profundidad_m": {
     "valor": null,
@@ -4731,7 +5799,8 @@
    ],
    "reglas": {},
    "pendiente": [
-    "hábitat, profundidad, freza y temperatura con fuente no-NC"
+    "hábitat, profundidad, freza y temperatura con fuente no-NC",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)"
    ],
    "emoji": "🐠",
    "cebos": [
@@ -4740,7 +5809,10 @@
      "tipo": "natural",
      "modalidad": "flotador",
      "tipo_fuente": "heuristica_experta",
-     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta)."
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta).",
+     "modalidades": [
+      "costa"
+     ]
     },
     {
      "nombre": "Alga",
@@ -4749,7 +5821,10 @@
      "fuente": "pv_cebos",
      "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
      "fecha_revision": "2026-10-08",
-     "nota": "El Gobierno Vasco cita los cebos vegetales; que la salema come casi solo algas viene de su ficha."
+     "nota": "El Gobierno Vasco cita los cebos vegetales; que la salema come casi solo algas viene de su ficha.",
+     "modalidades": [
+      "costa"
+     ]
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -4770,6 +5845,35 @@
     "valor": null,
     "fuentes": [],
     "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "fuentes": [
+      "app_index_zona"
+     ],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "La lista antigua de la app la clasificaba como especie de 'costa'.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca también desde embarcación (fondo, curricán o jigging según la especie): práctica habitual de pesca recreativa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin dato de que sea pieza habitual de la pesca submarina: no se muestra en esa pestaña hasta tener fuente.",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
    },
    "profundidad_m": {
     "valor": null,
@@ -4832,7 +5936,9 @@
    ],
    "reglas": {},
    "pendiente": [
-    "hábitat, profundidad, freza y temperatura con fuente no-NC"
+    "hábitat, profundidad, freza y temperatura con fuente no-NC",
+    "modalidades sin dato (aplica: null): submarina",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)"
    ],
    "emoji": "🐟",
    "cebos": [
@@ -4843,14 +5949,22 @@
      "fuente": "pv_cebos",
      "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_cebos/es_11051/index.shtml",
      "fecha_revision": "2026-10-08",
-     "nota": "Cebo de eficacia casi general."
+     "nota": "Cebo de eficacia casi general.",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
     },
     {
      "nombre": "Gamba",
      "tipo": "natural",
      "modalidad": "roca/embarcación",
      "tipo_fuente": "heuristica_experta",
-     "criterio": "Coherente con su alimentación (campo alimentacion de esta ficha); sin fuente oficial que lo cite como cebo (heurística experta)."
+     "criterio": "Coherente con su alimentación (campo alimentacion de esta ficha); sin fuente oficial que lo cite como cebo (heurística experta).",
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ]
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
@@ -4871,6 +5985,35 @@
     "valor": null,
     "fuentes": [],
     "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "fuentes": [
+      "app_index_zona"
+     ],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "La lista antigua de la app la clasificaba como especie de 'costa'. Se acerca a la orilla en verano y otoño.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca también desde embarcación (fondo, curricán o jigging según la especie): práctica habitual de pesca recreativa.",
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": null,
+     "fuentes": [],
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Sin dato de que sea pieza habitual de la pesca submarina: no se muestra en esa pestaña hasta tener fuente.",
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
    },
    "profundidad_m": {
     "valor": null,
@@ -4929,7 +6072,9 @@
    "pendiente": [
     "hábitat, profundidad, freza y temperatura con fuente no-NC",
     "nombre científico",
-    "talla"
+    "talla",
+    "modalidades sin dato (aplica: null): submarina",
+    "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)"
    ],
    "cientifico_nota": "Sin verificar (la app usa un dato genérico de género).",
    "emoji": "🐟",
@@ -4939,10 +6084,493 @@
      "tipo": "artificial",
      "modalidad": "spinning",
      "tipo_fuente": "heuristica_experta",
-     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta). Especie de la app sin nombre científico verificado."
+     "criterio": "Práctica habitual de pesca recreativa en España y Portugal, sin fuente abierta citable todavía (heurística experta). Especie de la app sin nombre científico verificado.",
+     "modalidades": [
+      "costa"
+     ]
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
   }
- ]
+ ],
+ "modalidades": {
+  "costa": {
+   "nombre": "Desde costa",
+   "incluye": [
+    "surfcasting",
+    "roca",
+    "spinning desde orilla o espigón",
+    "flotador",
+    "puerto",
+    "eging desde puerto"
+   ],
+   "definicion_legal": "Pesca marítima de recreo 'desde tierra' (art. 3.a del RD 347/2011); en Portugal, 'pesca apeada' (Portaria 14/2014).",
+   "fuentes": [
+    "boe_rd347",
+    "pt_portaria_14_2014"
+   ]
+  },
+  "embarcacion": {
+   "nombre": "Embarcación",
+   "incluye": [
+    "fondo",
+    "curricán",
+    "jigging",
+    "spinning desde barco",
+    "kayak de pesca"
+   ],
+   "definicion_legal": "Pesca marítima de recreo 'desde embarcación' (art. 3.b del RD 347/2011); en Portugal, 'pesca embarcada'. El kayak de pesca cuenta como embarcación.",
+   "fuentes": [
+    "boe_rd347",
+    "pt_portaria_14_2014"
+   ]
+  },
+  "submarina": {
+   "nombre": "Submarina",
+   "incluye": [
+    "pesca submarina a pulmón (apnea)"
+   ],
+   "definicion_legal": "'Se practica buceando a pulmón libre, sin utilizar ningún tipo de elemento que permita la respiración en inmersión ni de medios mecánicos de propulsión' (art. 3.c del RD 347/2011). En Portugal, solo en apnea (Portaria 14/2014, art. 2 y 3).",
+   "fuentes": [
+    "boe_rd347",
+    "pt_portaria_14_2014"
+   ],
+   "sin_cebos": "No se usan cebos: en Portugal están prohibidos iscos y engodos en la pesca submarina (Portaria 14/2014, art. 5.3) y en España se prohíbe cualquier medio de atracción salvo el brumeo con pequeños pelágicos (arts. 12.d y 16 del RD 347/2011).",
+   "tecnicas": [
+    {
+     "nombre": "Espera",
+     "descripcion": "Inmóvil en el fondo o a media agua esperando que el pez se acerque.",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Término habitual de la pesca submarina en España; sin fuente abierta citable todavía."
+    },
+    {
+     "nombre": "Agachón",
+     "descripcion": "Bajada sigilosa y aproximación escondido tras rocas o algas.",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Término habitual de la pesca submarina en España; sin fuente abierta citable todavía."
+    },
+    {
+     "nombre": "Rececho / a la caída",
+     "descripcion": "Búsqueda activa por grietas y cuevas o desde la superficie.",
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Término habitual de la pesca submarina en España; sin fuente abierta citable todavía."
+    }
+   ]
+  }
+ },
+ "cebos_modalidades_criterio": "Cada cebo lleva `modalidades` (pestañas donde aplica), derivado de su `modalidad`: surfcasting, roca, spinning, flotador y puerto → costa; embarcación, jigging y curricán → embarcacion; fondo y eging se hacen desde costa y desde barco → las dos. La pesca submarina no usa cebos (ver modalidades.submarina.sin_cebos).",
+ "reglas_por_modalidad": {
+  "costa": {
+   "descripcion": "Las reglas de siempre: reglas_por_defecto + las de cada especie.",
+   "factores_de_modalidad": []
+  },
+  "embarcacion": {
+   "descripcion": "Seguridad primero: viento y ola mandan; la marea pesa menos que desde costa.",
+   "factores_de_modalidad": [
+    "oleaje",
+    "viento",
+    "turbidez"
+   ],
+   "marea": {
+    "peso": 4,
+    "tipo": "heuristica_experta",
+    "criterio": "Desde barco la marea cuenta menos que en la orilla (se puede ir a buscar el pez); se mantiene algo por la corriente que genera."
+   },
+   "oleaje": {
+    "peso": 8,
+    "optimo_m": [
+     0,
+     1.0
+    ],
+    "max_seguro_m": 2.5,
+    "tope_si_peligrosa": 15,
+    "valor_bajo_minimo": 0,
+    "texto_peligro": "peligrosa para salir en embarcación de recreo",
+    "tipo": "criterio_de_diseno",
+    "criterio": "Con mar de más de 1 m se pesca peor y se navega peor; más de 2,5 m: tope 15 y aviso. Criterio de diseño, sin umbral oficial."
+   },
+   "viento": {
+    "peso": 10,
+    "max_kmh": 20,
+    "tipo": "criterio_de_diseno",
+    "criterio": "Penaliza por encima de 20 km/h (fuerza 4 de la escala Beaufort, 20-28 km/h, empieza a levantar marejadilla); criterio de diseño."
+   },
+   "turbidez": {
+    "peso": 0,
+    "tipo": "regla_de_datos",
+    "criterio": "La turbidez de la webcam es de la orilla: no dice nada del agua donde se pesca desde barco."
+   },
+   "seguridad": {
+    "tipo": "criterio_de_diseno",
+    "criterio": "Avisos de seguridad propios de Costaviva, sin umbral oficial: kayak por encima de 20 km/h de viento o 1,5 m de ola; embarcación pequeña por encima de 30 km/h o 2,5 m. Consulta siempre el aviso de AEMET/IPMA y la Capitanía.",
+    "niveles": [
+     {
+      "id": "embarcacion_pequena",
+      "viento_max_kmh": 30,
+      "ola_max_m": 2.5,
+      "tope": 15,
+      "texto": "peligroso para embarcaciones pequeñas"
+     },
+     {
+      "id": "kayak",
+      "viento_max_kmh": 20,
+      "ola_max_m": 1.5,
+      "tope": 35,
+      "texto": "no recomendable en kayak"
+     }
+    ]
+   }
+  },
+  "submarina": {
+   "descripcion": "La visibilidad manda: agua clara y mar en calma; lluvia y ríos crecidos la enturbian. Solo de día: de noche está prohibida.",
+   "factores_de_modalidad": [
+    "oleaje",
+    "viento",
+    "turbidez",
+    "marea"
+   ],
+   "solo_de_dia": {
+    "tipo": "oficial",
+    "fuentes": [
+     "boe_rd347",
+     "pt_portaria_14_2014",
+     "pv_horarios_distancias"
+    ],
+    "criterio": "Prohibida 'en horario nocturno, desde el ocaso al orto' (art. 16.d RD 347/2011); en Portugal 'entre o pôr-do-sol e o nascer do sol' (art. 8.3 Portaria 14/2014); en Euskadi 'del orto al ocaso'. Una hora que cae entera de noche puntúa 0."
+   },
+   "turbidez": {
+    "peso": 20,
+    "preferencia": {
+     "no turbia": 1,
+     "turbia": -0.6,
+     "muy turbia": -1
+    },
+    "tipo": "heuristica_experta",
+    "criterio": "Sin visibilidad no hay pesca submarina: el agua clara es el factor que más pesa. Dato diario de la webcam del spot frente a su propio histórico."
+   },
+   "oleaje": {
+    "peso": 15,
+    "optimo_m": [
+     0,
+     0.5
+    ],
+    "max_seguro_m": 1.5,
+    "tope_si_peligrosa": 15,
+    "valor_bajo_minimo": 0,
+    "texto_peligro": "peligrosa para bucear",
+    "tipo": "heuristica_experta",
+    "criterio": "Mar en calma = buena visibilidad y entrada/salida seguras; el mar de fondo levanta arena. Más de 1,5 m: tope 15 y aviso (criterio de diseño)."
+   },
+   "viento": {
+    "peso": 6,
+    "max_kmh": 25,
+    "tipo": "criterio_de_diseno",
+    "criterio": "El viento fuerte riza la superficie, mueve la boya y complica la vuelta; criterio de diseño."
+   },
+   "marea": {
+    "peso": 4,
+    "preferencia": {
+     "subiendo": 0.5,
+     "bajando": -0.3,
+     "repunte": 0.5
+    },
+    "rango_referencia_m": 2.5,
+    "tipo": "heuristica_experta",
+    "criterio": "Con la marea entrante el agua suele llegar más limpia y en el repunte hay menos corriente; la vaciante saca el agua turbia de rías y puertos. Heurística; escalada con el rango local igual que desde costa."
+   },
+   "lluvia": {
+    "peso": 8,
+    "umbral_mm_24h": [
+     2,
+     15
+    ],
+    "tipo": "heuristica_experta",
+    "criterio": "La lluvia de las 24 h anteriores arrastra tierra al mar y quita visibilidad: desde 2 mm empieza a restar, con 15 mm o más resta el peso entero."
+   },
+   "caudal_rio": {
+    "peso": 8,
+    "preferencia": {
+     "bajo": 0,
+     "normal": -0.3,
+     "alto": -1
+    },
+    "tipo": "heuristica_experta",
+    "criterio": "Un río crecido cerca del spot enturbia el agua. Usa el caudal real del río asociado al spot (Confederaciones/Augas de Galicia), solo para hoy y solo donde hay dato."
+   },
+   "temperatura_buceador": {
+    "peso": 0,
+    "tipo": "informativo",
+    "criterio": "La temperatura del agua se muestra para el buceador, sin recomendar traje (no hay fuente)."
+   }
+  }
+ },
+ "normativa_modalidades": {
+  "criterio": "Resumen de lo verificado, con artículo y enlace. Manda siempre la norma publicada. España: el RD 347/2011 rige en aguas exteriores; en aguas interiores manda cada comunidad autónoma. Las tallas mínimas (RD 560/1995 y normas autonómicas) son las mismas en las tres modalidades salvo donde se indica.",
+  "costa": [
+   {
+    "jurisdiccion": "ES",
+    "texto": "Licencia de pesca recreativa desde tierra expedida por la comunidad autónoma del litoral.",
+    "fuente": "boe_rd347",
+    "url": "https://www.boe.es/eli/es/rd/2011/03/11/347/con",
+    "fecha_revision": "2026-10-08",
+    "articulo": "art. 8"
+   },
+   {
+    "jurisdiccion": "ES",
+    "texto": "El Ministerio puede fijar cupos diarios por zona y modalidad; prohibido el transbordo de capturas.",
+    "fuente": "boe_rd347",
+    "url": "https://www.boe.es/eli/es/rd/2011/03/11/347/con",
+    "fecha_revision": "2026-10-08",
+    "articulo": "art. 5"
+   },
+   {
+    "jurisdiccion": "ES-PV",
+    "texto": "Euskadi: prohibido pescar en puertos durante la entrada o salida de barcos, en canales de navegación al paso de buques y a menos de 100 m de zonas de baño señalizadas; también en zonas de veda y reservas.",
+    "fuente": "pv_horarios_distancias",
+    "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_periodo/es_10845/index.shtml",
+    "fecha_revision": "2026-10-08"
+   },
+   {
+    "jurisdiccion": "ES-PV",
+    "texto": "Euskadi: 5 kg (o una pieza si la supera) por licencia y día. La página del Gobierno Vasco lo pone junto a la lubina: pendiente confirmar si es general.",
+    "fuente": "pv_tallas_cupos",
+    "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/especies_tallas_cupos/es_def/index.shtml",
+    "fecha_revision": "2026-10-08"
+   },
+   {
+    "jurisdiccion": "PT",
+    "texto": "Licencia 'apeada' (o 'geral'): 2 €/día, 4 €/mes, 8 €/año.",
+    "fuente": "dgrm_faq_ludica_2026",
+    "url": "https://dgrm.pt/documents/20143/121104/FAQ-Pesca+Ludica+2026.pdf/586f6137-df78-25e7-e7ad-8a3dcc1f9ffc",
+    "fecha_revision": "2026-10-08"
+   },
+   {
+    "jurisdiccion": "PT",
+    "texto": "Máximo 10 kg por pescador y día sin contar el ejemplar mayor; cada pieza se marca con un corte en la aleta caudal antes de irse.",
+    "fuente": "pt_portaria_14_2014",
+    "url": "https://diariodarepublica.pt/dr/detalhe/portaria/14-2014-571046",
+    "fecha_revision": "2026-10-08",
+    "articulo": "art. 12.1 y 12.9"
+   },
+   {
+    "jurisdiccion": "PT",
+    "texto": "5 m de distancia mínima con otros pescadores desde tierra; prohibido en las zonas de baño de las concesiones y a menos de 100 m de desagües señalizados.",
+    "fuente": "pt_portaria_14_2014",
+    "url": "https://diariodarepublica.pt/dr/detalhe/portaria/14-2014-571046",
+    "fecha_revision": "2026-10-08",
+    "articulo": "arts. 6.1 y 8.1"
+   }
+  ],
+  "embarcacion": [
+   {
+    "jurisdiccion": "ES",
+    "texto": "Licencia por embarcación expedida por la comunidad autónoma del litoral.",
+    "fuente": "boe_rd347",
+    "url": "https://www.boe.es/eli/es/rd/2011/03/11/347/con",
+    "fecha_revision": "2026-10-08",
+    "articulo": "art. 9"
+   },
+   {
+    "jurisdiccion": "ES",
+    "texto": "Especies de protección diferenciada (anexo II: atún rojo, atún blanco o bonito del norte, patudo, pez espada, marlines, merluza, besugo, lubina, bacalao, abadejo, lenguado, lampuga...): autorización específica de la embarcación.",
+    "fuente": "boe_rd347",
+    "url": "https://www.boe.es/eli/es/rd/2011/03/11/347/con",
+    "fecha_revision": "2026-10-08",
+    "articulo": "art. 10 y anexo II"
+   },
+   {
+    "jurisdiccion": "ES",
+    "texto": "Aparejos: línea de mano, caña, curricán, volantín y potera; como mucho 2 carretes eléctricos por barco.",
+    "fuente": "boe_rd347",
+    "url": "https://www.boe.es/eli/es/rd/2011/03/11/347/con",
+    "fecha_revision": "2026-10-08",
+    "articulo": "arts. 11 y 12.c"
+   },
+   {
+    "jurisdiccion": "ES",
+    "texto": "Distancias: 300 m a barcos de pesca profesional (500 m si pescan túnidos con caña), 148 m a sus artes caladas y 200 m a instalaciones de acuicultura. Prohibido atraer con luces; solo se permite el brumeo con pequeños pelágicos.",
+    "fuente": "boe_rd347",
+    "url": "https://www.boe.es/eli/es/rd/2011/03/11/347/con",
+    "fecha_revision": "2026-10-08",
+    "articulo": "art. 12.b y 12.d"
+   },
+   {
+    "jurisdiccion": "ES-PV",
+    "texto": "Euskadi: desde embarcación, solo del orto al ocaso; 100 m a barcos profesionales y artes fijas, 300 m a cerco y 500 m a túnidos con caña.",
+    "fuente": "pv_horarios_distancias",
+    "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_periodo/es_10845/index.shtml",
+    "fecha_revision": "2026-10-08"
+   },
+   {
+    "jurisdiccion": "ES-PV",
+    "texto": "Euskadi: con 5 o más tripulantes con licencia, máximo 25 kg por embarcación y día (página de tallas y cupos, junto a la lubina: pendiente confirmar si es general).",
+    "fuente": "pv_tallas_cupos",
+    "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/especies_tallas_cupos/es_def/index.shtml",
+    "fecha_revision": "2026-10-08"
+   },
+   {
+    "jurisdiccion": "PT",
+    "texto": "Licencia 'embarcada' (incluye la apeada): 5 €/día, 12 €/mes, 50 €/año.",
+    "fuente": "dgrm_faq_ludica_2026",
+    "url": "https://dgrm.pt/documents/20143/121104/FAQ-Pesca+Ludica+2026.pdf/586f6137-df78-25e7-e7ad-8a3dcc1f9ffc",
+    "fecha_revision": "2026-10-08"
+   },
+   {
+    "jurisdiccion": "PT",
+    "texto": "10 kg por pescador y día; con más de 3 pescadores a bordo, máximo 25 kg por barco (sin contar el mayor de cada uno). Chaleco salvavidas obligatorio para todos.",
+    "fuente": "pt_portaria_14_2014",
+    "url": "https://diariodarepublica.pt/dr/detalhe/portaria/14-2014-571046",
+    "fecha_revision": "2026-10-08",
+    "articulo": "arts. 12.1, 12.5 y 4.3"
+   },
+   {
+    "jurisdiccion": "PT",
+    "texto": "50 m a otras embarcaciones, buceadores y artes caladas; prohibido en canales de navegación y bocanas de puertos y ríos.",
+    "fuente": "pt_portaria_14_2014",
+    "url": "https://diariodarepublica.pt/dr/detalhe/portaria/14-2014-571046",
+    "fecha_revision": "2026-10-08",
+    "articulo": "arts. 6.2, 7.6 y 8.2"
+   }
+  ],
+  "submarina": [
+   {
+    "jurisdiccion": "ES",
+    "texto": "Solo a pulmón libre: sin ningún equipo que permita respirar bajo el agua ni propulsión mecánica. Prohibido llevar a la vez en el barco arpón y equipos de respiración.",
+    "fuente": "boe_rd347",
+    "url": "https://www.boe.es/eli/es/rd/2011/03/11/347/con",
+    "fecha_revision": "2026-10-08",
+    "articulo": "arts. 3.c y 14.2"
+   },
+   {
+    "jurisdiccion": "ES",
+    "texto": "Licencia de pesca submarina expedida por la comunidad autónoma del litoral.",
+    "fuente": "boe_rd347",
+    "url": "https://www.boe.es/eli/es/rd/2011/03/11/347/con",
+    "fecha_revision": "2026-10-08",
+    "articulo": "art. 13"
+   },
+   {
+    "jurisdiccion": "ES",
+    "texto": "Solo arpón manual o impulsado por medios mecánicos (una o varias puntas).",
+    "fuente": "boe_rd347",
+    "url": "https://www.boe.es/eli/es/rd/2011/03/11/347/con",
+    "fecha_revision": "2026-10-08",
+    "articulo": "art. 14.1"
+   },
+   {
+    "jurisdiccion": "ES",
+    "texto": "Boya de señalización bien visible: no alejarse más de 25 m de ella.",
+    "fuente": "boe_rd347",
+    "url": "https://www.boe.es/eli/es/rd/2011/03/11/347/con",
+    "fecha_revision": "2026-10-08",
+    "articulo": "art. 15"
+   },
+   {
+    "jurisdiccion": "ES",
+    "texto": "Prohibido de noche (del ocaso al orto), tener el fusil cargado fuera del agua, puntas explosivas o eléctricas, focos (salvo linterna de mano) y scooters o hidrodeslizadores.",
+    "fuente": "boe_rd347",
+    "url": "https://www.boe.es/eli/es/rd/2011/03/11/347/con",
+    "fecha_revision": "2026-10-08",
+    "articulo": "art. 16"
+   },
+   {
+    "jurisdiccion": "ES-PV",
+    "texto": "Euskadi: solo del orto al ocaso; nunca a menos de 250 m de zonas delimitadas de baño o deportes náuticos.",
+    "fuente": "pv_horarios_distancias",
+    "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/lic_recreo_periodo/es_10845/index.shtml",
+    "fecha_revision": "2026-10-08"
+   },
+   {
+    "jurisdiccion": "ES-PV",
+    "texto": "Euskadi: tope de 5 kg en pesca submarina (página de tallas y cupos, junto a la lubina: pendiente confirmar si es general).",
+    "fuente": "pv_tallas_cupos",
+    "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/especies_tallas_cupos/es_def/index.shtml",
+    "fecha_revision": "2026-10-08"
+   },
+   {
+    "jurisdiccion": "PT",
+    "texto": "Solo en apnea; licencia 'submarina' (3 €/día, 10 €/mes, 25 €/año) o 'geral'.",
+    "fuente": "dgrm_faq_ludica_2026",
+    "url": "https://dgrm.pt/documents/20143/121104/FAQ-Pesca+Ludica+2026.pdf/586f6137-df78-25e7-e7ad-8a3dcc1f9ffc",
+    "fecha_revision": "2026-10-08"
+   },
+   {
+    "jurisdiccion": "PT",
+    "texto": "Señalización en superficie a no más de 30 m del buceador; 20 m entre buceadores; los barcos guardan 50 m a la boya o a la bandera Alfa.",
+    "fuente": "pt_portaria_14_2014",
+    "url": "https://diariodarepublica.pt/dr/detalhe/portaria/14-2014-571046",
+    "fecha_revision": "2026-10-08",
+    "articulo": "arts. 4.2, 6.3 y 7.6"
+   },
+   {
+    "jurisdiccion": "PT",
+    "texto": "Prohibida entre la puesta y la salida del sol, y en canales de navegación y bocanas.",
+    "fuente": "pt_portaria_14_2014",
+    "url": "https://diariodarepublica.pt/dr/detalhe/portaria/14-2014-571046",
+    "fecha_revision": "2026-10-08",
+    "articulo": "art. 8.2 y 8.3"
+   },
+   {
+    "jurisdiccion": "PT",
+    "texto": "Sin cebos ni engodos; máximo 15 kg por día sin contar el ejemplar mayor.",
+    "fuente": "pt_portaria_14_2014",
+    "url": "https://diariodarepublica.pt/dr/detalhe/portaria/14-2014-571046",
+    "fecha_revision": "2026-10-08",
+    "articulo": "arts. 5.3 y 12.1"
+   },
+   {
+    "jurisdiccion": "PT",
+    "texto": "Especies de captura prohibida en submarina (anexo I): meros (Epinephelus), langostas (Palinurus), bogavante, atún rojo, caballitos de mar, entre otras.",
+    "fuente": "pt_portaria_14_2014",
+    "url": "https://diariodarepublica.pt/dr/detalhe/portaria/14-2014-571046",
+    "fecha_revision": "2026-10-08",
+    "articulo": "art. 10.1 y anexo I"
+   }
+  ],
+  "pendiente": {
+   "ES": [
+    "cupos diarios por zona y modalidad desarrollados del art. 5 del RD 347/2011 (orden ministerial)",
+    "mapa.gob.es no se pudo leer automáticamente (certificado): revisar su resumen de prohibiciones"
+   ],
+   "ES-PV": [
+    "leer el Decreto 198/2000 (BOPV) consolidado: confirmar a qué modalidades se aplican los cupos de 5 kg/25 kg y la distancia de 250 m"
+   ],
+   "ES-CB": [
+    "Cantabria: pesca submarina y cupos en aguas interiores (BOC)"
+   ],
+   "ES-AS": [
+    "Asturias: pesca submarina y cupos en aguas interiores (BOPA)"
+   ],
+   "ES-GA": [
+    "Galicia: pesca submarina (zonas, especies, pulpo) y cupos (DOG)"
+   ],
+   "ES-AN": [
+    "Andalucía: pesca submarina y cupos (BOJA)"
+   ],
+   "ES-MC": [
+    "Murcia: pesca submarina (BORM)"
+   ],
+   "ES-VC": [
+    "Comunitat Valenciana: pesca submarina (DOGV)"
+   ],
+   "ES-CT": [
+    "Cataluña: nuevo modelo desde el 1/9/2025, también para submarina (DOGC)"
+   ],
+   "ES-IB": [
+    "Baleares: pesca submarina (p. ej. especies protegidas como el mero) y reservas marinas (BOIB)"
+   ],
+   "ES-CN": [
+    "Canarias: pesca submarina y cupos (BOC)"
+   ],
+   "PT": [
+    "leer la Portaria 14/2014 consolidada en diariodarepublica.pt (aquí se leyó el texto de 2014)"
+   ],
+   "PT-AC": [
+    "Azores: pesca lúdica y submarina (Jornal Oficial)"
+   ],
+   "PT-MA": [
+    "Madeira: pesca lúdica y submarina (JORAM)"
+   ]
+  }
+ }
 }

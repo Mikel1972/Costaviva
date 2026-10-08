@@ -7,7 +7,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
-  especiesDeTemporada, tallasParaRegion, estadoFreza, cebosParaRegion, textoMeses, NOMBRE_REGION,
+  especiesDeTemporada, tallasParaRegion, estadoFreza, cebosParaRegion, textoMeses, NOMBRE_REGION, MODALIDADES, NOMBRE_MODALIDAD,
 } from "../../assets/js/ventana-actividad.js";
 
 // Región de las fichas de especies para el post: la de la última zona del
@@ -33,11 +33,19 @@ export function leerEspeciesJson(raizRepo) {
   return JSON.parse(readFileSync(join(raizRepo, "assets", "datos", "especies.json"), "utf8"));
 }
 
+// Modalidad del post (2026-10-08): por defecto "costa" — un post de costa
+// nunca saca una especie de mar adentro (el bonito solo sale en un post de
+// embarcación). MODALIDAD_POST en el entorno la cambia.
+export function modalidadDelPost(env = process.env) {
+  return MODALIDADES.includes(env.MODALIDAD_POST) ? env.MODALIDAD_POST : "costa";
+}
+
 // Elige la especie y compone el texto. Exportada para los tests.
 // Prioriza las especies cuya temporada en esa región está verificada con
-// fuente (no heredada de la lista antigua); nunca devuelve una en veda.
-export function elegirEspeciePost(datos, region, mes, dia, { euskadi = false } = {}) {
-  const candidatas = especiesDeTemporada(datos, region, mes);
+// fuente (no heredada de la lista antigua); nunca devuelve una en veda ni una
+// que no se pesque con la modalidad del post.
+export function elegirEspeciePost(datos, region, mes, dia, { euskadi = false, modalidad = "costa" } = {}) {
+  const candidatas = especiesDeTemporada(datos, region, mes, modalidad);
   const verificadas = candidatas.filter((e) => e.presencia[region].verificado !== false);
   const lista = verificadas.length ? verificadas : candidatas;
   if (!lista.length) return null;
@@ -46,12 +54,12 @@ export function elegirEspeciePost(datos, region, mes, dia, { euskadi = false } =
   const fuenteTemporada = p.fuentes?.map((f) => datos.fuentes[f]).find((f) => f?.tipo === "oficial" || f?.tipo === "cientifico");
   const talla = tallasParaRegion(e, region, euskadi && region === "cantabrico").find((t) => t.valor_cm !== null || t.peso_g !== undefined);
   const freza = estadoFreza(e, region, mes);
-  const cebos = cebosParaRegion(e, region, 3).map((c) => c.nombre.toLowerCase());
+  const cebos = cebosParaRegion(e, region, 3, modalidad).map((c) => c.nombre.toLowerCase());
   const lineas = [
-    `Temporada en ${NOMBRE_REGION[region]}: ${textoMeses(p.meses)}${fuenteTemporada ? ` (${fuenteTemporada.editor.split(",")[0]})` : ""}.`,
+    `${NOMBRE_MODALIDAD[modalidad]}. Temporada en ${NOMBRE_REGION[region]}: ${textoMeses(p.meses)}${fuenteTemporada ? ` (${fuenteTemporada.editor.split(",")[0]})` : ""}.`,
   ];
   if (e.actividad?.valor) lineas.push(e.actividad.valor);
   const nota = lineas.join(" ");
-  return { especie: e, nota, talla, freza, cebos };
+  return { especie: e, nota, talla, freza, cebos, modalidad };
 }
 
