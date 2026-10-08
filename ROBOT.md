@@ -6148,6 +6148,188 @@ sin sumarse todavía a ese grupo.
 
 **Firmado:** robot de calibración nocturna, 2026-10-07 01:20 UTC.
 
+### 2026-10-08 (pasada nocturna corta — calibración + salud de datos)
+
+**Calibración — trigésimo quinto punto para las 3 boyas obligatorias, octavo
+punto para 2820 Dragonera** (rotación de esta noche: era la candidata con
+más noches sin repetirse, último turno el 2026-10-02). Mismo método de
+siempre: `curl` a `poem.puertos.es/portus/StationData` para la altura real,
+Open-Meteo Marine en las coordenadas exactas de cada boya para la altura
+calculada, emparejando por la hora UTC exacta del último dato real de cada
+boya (las 4 peticiones a ambas fuentes respondieron bien a la primera, sin
+reintentos):
+
+| boya | hora UTC | altura medida | altura calculada | diferencia | % |
+|---|---|---|---|---|---|
+| 2136 Bilbao-Vizcaya | 01:00 | 3.28 m | 3.04 m | −0.24 m | −7.3% |
+| 1117 Gijón | 00:00 | 3.17 m | 2.98 m | −0.19 m | −6.0% |
+| 1101 Pasaia II | 00:00 | 3.03 m | 1.94 m | −1.09 m | −36.0% |
+| 2820 Dragonera | 01:00 | 1.05 m | 0.76 m | −0.29 m | −27.6% |
+
+Mar con oleaje notable esta noche en el Cantábrico (las tres boyas
+obligatorias por encima de 3 m, el valor más alto que se ha visto en varias
+pasadas para Bilbao-Vizcaya y Gijón) — no afecta a la metodología, solo
+hace notar que los puntos de esta noche pesan algo más que los de noches en
+calma.
+
+Historial actualizado de la metodología `boya_vs_openmeteo_mismo_punto`
+(medias recalculadas sobre todos los puntos reales de `CALIBRACION.jsonl`,
+no aproximadas):
+
+- **2136 Bilbao-Vizcaya**: 35 puntos, media ≈ **+1.2%** — sigue sin patrón
+  sistemático (18/35 negativos, signo mixto).
+- **1117 Gijón**: 35 puntos, media ≈ **−0.2%** — sigue alternando
+  signo/magnitud pasada a pasada (21/35 negativos), sin patrón sólido.
+- **1101 Pasaia II**: **35 puntos, confirma la tendencia negativa de
+  siempre** (34/35 negativos, media ≈ **−26.8%**, estable). El factor x1.38
+  ya aplicado en producción sigue siendo razonable: 1.94 × 1.38 = 2.68,
+  algo por debajo del medido real (3.03) esta noche — con oleaje alto el
+  error absoluto crece aunque el error relativo se mantenga, esperable de
+  un factor multiplicativo simple, no indica que haya que revisarlo.
+- **2820 Dragonera**: 8 puntos (antes 7), 7 de 8 negativos (media ≈
+  **−30.3%**, antes ≈ −30.7%) — sigue siendo, tras Pasaia II, la boya con
+  la desviación más sólida y consistente de las que aún no llegan al
+  mínimo. Le siguen faltando 7 puntos para el mínimo de 15.
+- Resto de boyas (1731 Barcelona II, 1514 Málaga, 2242 Cabo Peñas, 2246
+  Villano-Sisargas, 2548 Cabo de Gata): sin cambios desde su última pasada,
+  no les tocaba rotación esta noche.
+
+**Ningún factor de corrección nuevo propuesto** — mismo motivo que las
+noches anteriores: Pasaia II sigue siendo la única boya con suficiente
+historial (35 puntos) y desviación sistemática grande, y su factor x1.38
+ya está aplicado en producción. Entre las que todavía no llegan a 15
+puntos, Barcelona II (8 puntos, 8/8 negativo, media −28.8%) sigue siendo la
+candidata más sólida tras Pasaia II, seguida de Dragonera y Cabo Peñas
+(7/7, media −17.8%). Para la próxima rotación nocturna, la candidata con
+más noches sin repetirse es **1731 Barcelona II** (su último turno en esta
+rutina nocturna fue el 2026-10-03, antes que Villano-Sisargas el
+2026-10-04, Málaga el 2026-10-05, Cabo Peñas el 2026-10-06 y Cabo de Gata
+el 2026-10-07).
+
+**Salud de datos — esta noche la sesión tuvo salida de red real hacia
+dominios que las últimas ~20 pasadas tenían bloqueados por la política de
+egress de aquel entorno concreto**, lo que permitió por fin ampliar la
+comprobación más allá de las boyas y las webcams del País Vasco, tal como
+se venía pidiendo noche tras noche en esta misma sección. Verificado en
+vivo con `curl`:
+
+- Las 4 boyas de la tabla de arriba: `200`, forma `[cabeceras, filas]`
+  correcta, datos reales de la última hora — sin novedad.
+- **Boya de Nazaré** (`monican.hidrografico.pt/json/boia.graph.php`):
+  `200`, serie horaria real hasta las 02:00 hora de Lisboa (Hs 2.0 m) — sin
+  novedad, primera comprobación real en bastantes noches.
+- **Las 4 fuentes de caudal de río**: las 4 responden `200` con la forma
+  esperada, pero al reproducir el *parsing* exacto de `functions/prevision.js`
+  salieron **dos bugs reales en `datosCaudalCantabrico()`** (detalle y
+  severidad más abajo, es la pieza más importante de esta pasada). Júcar,
+  Segura y Galicia parsean bien sus valores reales (Júcar 20.25/3.70/2.43
+  m³/s para Júcar/Turia/Mijares, Segura 1.43 m³/s en A.Rojales, Lagares
+  0 m³/s en Vigo — este último es un valor real de la propia página, no un
+  fallo de parsing, comprobado mirando el HTML de origen).
+- **Muestra de webcams ampliada a 6, en 6 regiones distintas** (en vez de
+  las 3-5 del País Vasco de siempre): `mundaka` (OK, 62.9 KB), `acoruna`
+  vía `meteogalicia.gal` (OK, 318 KB), `calpe` vía
+  `streaming.comunitatvalenciana.com` (OK, 252 KB), `aguilas` vía
+  `cdn.skylinewebcams.com` (OK, 9.2 KB, acorde a la resolución reducida ya
+  documentada de este proveedor), `calamillor` vía `apps.socib.es` (OK,
+  redirección 307 a un JPEG real de 20 KB — ver nota siguiente),
+  `castrourdiales` (fuente principal `www.cantabria.es` con *timeout* SSL
+  puro, pero su reserva `rswc.tendsys.net` respondió `200` con 91 KB real —
+  el failover de dos fuentes por spot, documentado en este fichero el
+  2026-09-19, está funcionando exactamente como se diseñó: quien abra la
+  app ve igual una imagen real).
+- **`apps.socib.es` parece recuperado**: este mismo fichero documentó el
+  2026-09-25 que el host de destino de la redirección de SOCIB
+  (`images.socib.es`) daba *timeout* puro para `calamillor`/`sonbou`/`muro`.
+  Esta noche `calamillor` respondió con una imagen real sin problema — es
+  la primera confirmación en bastantes noches de que ese grupo volvió, pero
+  una sola comprobación no basta para darlo por cerrado del todo (mismo
+  criterio ya escrito en este fichero sobre no fiarse de una única prueba
+  en preview) — si una próxima pasada vuelve a tener acceso a
+  `apps.socib.es`, confirmarlo otra vez antes de darlo por bueno sin más.
+- **`www.cantabria.es` sigue caído** (`suances`, `comillas`, `sanvicente`,
+  sin ninguna fuente de reserva, y la fuente principal de
+  `castrourdiales`/`laredo`): *timeout* de conexión SSL puro en los cuatro
+  intentos. No es una novedad — es el mismo patrón que este fichero lleva
+  documentando desde el 2026-09-25 (CLAUDE.md también lo recoge: "llevan
+  días caídos"), así que no se trata como hallazgo nuevo, solo se confirma
+  que persiste. Las tres sin reserva seguirán ocultándose solas a las 24h
+  sin señal (`camaraRetirada()`), como ya hacen.
+
+**Bug real encontrado — `datosCaudalCantabrico()` confunde filas cuando dos
+estaciones comparten nombre y la tabla de umbrales trae guiones (`-`) en
+vez de números.** Al reproducir en Node exactamente el *regex* de
+`functions/prevision.js` contra el HTML real de
+`visor.saichcantabrico.es` de esta noche, comparado fila a fila contra el
+HTML real:
+
+- **`sella` (río Sella en Arriondas) devuelve el caudal de OTRO río.** La
+  tabla tiene DOS estaciones distintas llamadas "Arriondas" (el Sella,
+  código 1292, caudal real 279.82 m³/s; y el Piloña, código 1301, caudal
+  real 39.89 m³/s, con sus tres umbrales de aviso en "-" en vez de un
+  número). El *regex* usa `.*?` (perezoso) entre el caudal y los tres
+  `<span>(\d+)</span>` de los umbrales — cuando una fila tiene "-" en sus
+  umbrales (no es `\d+`), el *regex* no se detiene ahí: sigue buscando
+  hacia delante y cruza a la fila SIGUIENTE para encontrar tres números,
+  devorando de paso la fila del Sella/Arriondas real. El resultado:
+  `buscar("Arriondas")` encuentra primero la fila del Piloña (con su
+  propio caudal real, 39.89) y nunca llega a producir una coincidencia
+  independiente para la fila del Sella — así que `sella` muestra
+  **39.89 m³/s de un río que no es el Sella**, con toda la apariencia de
+  un dato correcto. Confirmado letra por letra contra el HTML real (ver
+  `/tmp/claude.../test-rios3.mjs` de esta sesión, no persistido en el
+  repo).
+- **`ason` (río Asón en Ramales de la Victoria) devuelve `null` pese a que
+  el dato real SÍ está en la página** (92.35 m³/s, actualizado a las
+  03:10 de hoy). Mismo mecanismo: la fila de Ramales de la Victoria
+  también tiene sus tres umbrales en "-", así que el *regex* nunca produce
+  una coincidencia independiente para ella — queda devorada dentro de la
+  coincidencia (anormalmente larga) de la fila anterior, y
+  `buscar("Ramales de la Victoria")` no encuentra nada.
+- **Por qué no es un *fix* trivial** (URL movida o campo renombrado): el
+  *regex* en sí sigue siendo válido contra la estructura HTML de siempre,
+  el problema es que no está anclado a los límites de cada `<tr>` — con
+  `.*?` perezoso puede cruzar de una fila a la siguiente en cuanto una
+  columna no coincide con el patrón esperado (aquí, un umbral en "-"). La
+  forma correcta de arreglarlo es dividir el HTML en bloques por fila
+  (p.ej. por `</tr>` o por `data-codigo="..."` sucesivos) y aplicar un
+  *regex* más simple DENTRO de cada bloque, en vez de uno largo que
+  atraviesa toda la tabla de una vez — eso toca la lógica de parsing
+  entera de esta función, no una constante o una URL, y esta función
+  corre cada hora en producción (`presion-historico.yml` no, pero sí
+  `/prevision` en cada visita), así que un cambio mal probado podría
+  romper `besaya`/`pas`/`eo` (que hoy sí parsean bien) en vez de solo
+  arreglar `sella`/`ason`. Se deja para que el usuario lo revise con
+  tiempo, no para esta pasada corta.
+- **Severidad: media** — no es la boya principal ni un corte total de un
+  río (`ason` muestra S/D, que es el comportamiento correcto de "nunca
+  inventar" cuando falta un dato), pero `sella` es **peor que un S/D**:
+  muestra un número real y plausible que no es el del Sella, sin ningún
+  indicio visible de que esté mal. No se ha tocado nada en `functions/` en
+  esta pasada — queda aquí documentado con la reproducción completa para
+  que se corrija con calma.
+- No se ha comprobado si esto afecta también a Júcar/Segura/Galicia (sus
+  *parsers* son distintos, sin el mismo patrón de umbrales en guión) ni si
+  lleva tiempo pasando — no hay ninguna entrada anterior en este fichero
+  sobre `sella`/`ason`, así que podría llevar varias noches sin detectarse
+  (esta es la primera pasada con acceso de red real a
+  `visor.saichcantabrico.es` en bastante tiempo).
+
+**Resumen de severidad para el usuario**: nada roto en las boyas (las 4 de
+esta noche, incluida Dragonera) ni en la boya de Nazaré. Severidad media
+nueva: `datosCaudalCantabrico()` muestra el caudal del Piloña como si
+fuera el del Sella (dato real pero mal atribuido) y pierde el dato real del
+Asón (muestra S/D) — root cause y reproducción completa arriba, no
+aplicado directamente por no ser un *fix* trivial. Severidad baja/ya
+conocida: `www.cantabria.es` sigue caído (sin cambios); en cambio
+`apps.socib.es` parece haberse recuperado, a confirmar en próximas
+pasadas. Sin propuesta de factor de corrección nueva — Pasaia II sigue con
+su factor ya aplicado (confirmado esta noche con oleaje alto); Barcelona
+II (8/8 negativo, −28.8%) sigue siendo la siguiente candidata más sólida,
+seguida de Dragonera (7/8, −30.3%) y Cabo Peñas (7/7, −17.8%).
+
+**Firmado:** robot de calibración nocturna, 2026-10-08 01:25 UTC.
+
 ---
 
 ## Robot de experiencia de usuario
@@ -9030,3 +9212,14 @@ intermitencia de origen con la misma URL vigente, ni Zumaia por no
 encontrarse sustituta verificada).
 
 **Firmado:** robot de cámaras caídas, 2026-10-07 12:05 UTC.
+
+### 2026-10-08 04:42 UTC (robot de cámaras caídas — rutina; Comillas, Alicante, Oliva)
+
+Datos: `datos-robots/camaras-estado.json` generado 2026-10-07T14:55Z (~14 h, aceptable). 13 cámaras con fallos; revisadas 3 por el límite. Sin tocar para la siguiente: `orio`, `sopelana`, `vinaros`, `alboraya`, `cullera` y el grupo cantabria.es/socib (`sanvicente`, `suances`, `muro`, `sonbou`, `calamillor`).
+
+- **oliva**: recuperada sola. `OlivaPuerto/webcam_mini.png` da 200, Last-Modified 2026-10-08 04:00 UTC, imagen vista con Read (puerto deportivo con mar de fondo). Era intermitencia del proveedor; sin cambios de código.
+- **alicante**: `AlicantePuerto/webcam_mini.png` da 404 constante. Probadas variantes de nombre en streaming.comunitatvalenciana.com (AlicantePostiguet, Postiguet, AlicanteSanJuan, AlicanteAlbufereta, Alacant, AlicantePuertoDeportivo, AlicanteMarina, Alicante2…): todas 404 salvo `AlicanteExplanada` (200, vivo), que al mirarla con Read es el paseo de la Explanada sin mar: NO sirve como sustituta. Sin alternativa verificada; probar la web de Turisme Comunitat Valenciana para ver qué ID publica hoy.
+- **comillas**: `www.cantabria.es` rechaza la conexión (curl 35/000, también la portada). Sin verificar: dominio caído o bloqueado por la red de la rutina (cantabria.es). La búsqueda web de alternativa no devolvió resultados útiles en esta sesión; términos probados: "webcam Comillas Cantabria playa en directo".
+- **orio** (comprobada de paso): sigue intermitente en origen (404 en esta lectura), misma conclusión que el 2026-10-07.
+
+**Firmado:** robot de cámaras caídas (rutina), 2026-10-08 04:42 UTC.
