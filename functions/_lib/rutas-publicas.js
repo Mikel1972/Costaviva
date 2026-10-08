@@ -89,6 +89,11 @@ const ARCHIVOS_PUBLICOS = new Set([
   "/informe-diario-email",
   // Índice de las páginas SEO de mareas (functions/mareas/index.js).
   "/mareas",
+  // Páginas públicas de pesca (2026-10-08): índices de spots y especies
+  // (functions/spots/index.js, functions/especies/index.js). "/spots/" y
+  // "/especies/" entran por el prefijo y redirigen a la forma sin barra.
+  "/spots",
+  "/especies",
   // Proxy de Open-Meteo para el navegador (functions/meteo/[api].js). Rutas
   // exactas, no el prefijo /meteo/: solo existen estas dos APIs.
   "/meteo/forecast",
@@ -106,7 +111,9 @@ const ARCHIVOS_PUBLICOS = new Set([
 //               el borrador del post, así que bloquearlas rompería el robot.
 //   /webcam/  — proxy de imagen por spot (functions/webcam/[slug].js).
 //   /mareas/  — páginas SEO por spot y por región (functions/mareas/...).
-const PREFIJOS_PUBLICOS = ["/assets/", "/webcam/", "/mareas/"];
+//   /spots/, /especies/ — páginas públicas de pesca por spot, región y
+//               especie (functions/spots/..., functions/especies/...).
+const PREFIJOS_PUBLICOS = ["/assets/", "/webcam/", "/mareas/", "/spots/", "/especies/"];
 
 export function esRutaPermitida(pathname) {
   if (ARCHIVOS_PUBLICOS.has(pathname)) return true;
