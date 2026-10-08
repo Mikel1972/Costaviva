@@ -1,0 +1,28 @@
+name: Evaluación identificación por foto (temporal)
+
+# Temporal (2026-10-08): compara Haiku 4.5 y 5.5 una sola vez con
+# scripts/eval-identificacion/evaluar.mjs. Gasto: céntimos. Solo se dispara
+# por push a esta rama y solo si cambian los ficheros de la evaluación.
+on:
+  push:
+    branches: ["claude/identificacion-foto-coste"]
+    paths:
+      - "scripts/eval-identificacion/**"
+      - ".github/workflows/eval-identificacion.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  evaluar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Evaluar Haiku 4.5 frente a 5.5
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: node scripts/eval-identificacion/evaluar.mjs

@@ -21,13 +21,40 @@ import { registrarUsoClaude } from "./_lib/uso-claude.js";
 
 // Registro del gasto en public.uso_claude (comun, estandares/claude-api.md C5).
 const FUNCION_USO = "identificar-captura";
-const MODELO = "claude-haiku-4-5-20251001";
-const MAX_TOKENS = 300;
-// Tope por usuario y 24 h (comun, estandares/claude-api.md C6, 2026-10-07).
-// Generoso para el uso real (una foto por captura) pero corta el abuso de
-// una cuenta que se ponga a mandar fotos en bucle. Se cuenta sobre
+
+// Modelo (2026-10-08, aprobado por Mikel): Claude Haiku 5.5 en vez de Haiku
+// 4.5. Cuesta una décima parte por token (0,10/0,50 USD por millón frente a
+// 1/5) y en la evaluación de scripts/eval-identificacion/ acertó al menos
+// igual (resultados en CLAUDE.md, sección "Identificación por foto: Haiku
+// 5.5 y límites"). AJUSTES_MODELO se exporta porque el script de evaluación
+// usa exactamente esta petición para los dos modelos.
+//
+// Haiku 5.5 piensa por defecto (pensamiento adaptativo, esfuerzo "medium") y
+// ese pensamiento cuenta dentro de max_tokens. Para una clasificación corta
+// basta con esfuerzo "low" (skill claude-api, migración a Haiku 5.5: se baja
+// el esfuerzo, no se desactiva el pensamiento), y max_tokens sube de 300 a
+// 1024 para que el pensamiento no deje la respuesta cortada. Sin temperature
+// ni prefill: en Haiku 5.5 los dos dan un 400.
+export const MODELO = "claude-haiku-5-5";
+export const AJUSTES_MODELO = {
+  "claude-haiku-5-5": { maxTokens: 1024, esfuerzo: "low" },
+  // Solo para la evaluación (el modelo anterior, tal como estaba).
+  "claude-haiku-4-5-20251001": { maxTokens: 300, esfuerzo: null },
+};
+const MAX_TOKENS = AJUSTES_MODELO[MODELO].maxTokens;
+
+// Topes por usuario (comun, estandares/claude-api.md C6). Se cuentan sobre
 // public.uso_claude, que ya registra cada llamada con su user_id.
+//  * 30 llamadas en 24 h (2026-10-07): corta el abuso de una cuenta que se
+//    ponga a mandar fotos en bucle. Cuenta todas las llamadas, también las
+//    fallidas.
+//  * 100 identificaciones por mes natural, hora de Madrid (2026-10-08,
+//    pedido de Mikel). Cuenta solo las que salieron bien (ok = true): una
+//    caída del proveedor no le gasta el cupo a nadie. Desde 80 usadas la
+//    app avisa de cuántas quedan; al llegar a 100 la captura se sigue
+//    guardando a mano.
 const LIMITE_DIARIO = 30;
+export const LIMITE_MENSUAL = 100;
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
@@ -88,17 +115,19 @@ function clasificarFalloProveedor(status, textoCrudo) {
     error: "La identificación automática ha fallado." };
 }
 
-// Llamadas de este usuario a este endpoint en las últimas 24 h, o null si
+// Llamadas de este usuario a este endpoint desde `desde` (ISO), o null si
 // no se puede saber (sin service_role, tabla sin crear, red). Con null se
-// deja pasar y se avisa en el log: el tope es un freno de coste, no puede
-// tumbar la identificación de todos si falla el contador.
-async function usosUltimas24h(env, userId) {
+// deja pasar y se avisa en el log: los topes son un freno de coste, no
+// pueden tumbar la identificación de todos si falla el contador. `userId`
+// sale del JWT verificado por Supabase y aun así se codifica (supabase.md
+// D14).
+async function contarUsos(env, userId, desde, { soloOk = false } = {}) {
   if (!userId || !env.SUPABASE_SERVICE_ROLE_KEY) return null;
   try {
-    const desde = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
     const resp = await fetch(
       `${SUPABASE_URL}/rest/v1/uso_claude?select=id&funcion=eq.${FUNCION_USO}` +
-        `&user_id=eq.${encodeURIComponent(userId)}&creado_en=gte.${encodeURIComponent(desde)}`,
+        `&user_id=eq.${encodeURIComponent(userId)}&creado_en=gte.${encodeURIComponent(desde)}` +
+        (soloOk ? "&ok=eq.true" : ""),
       {
         method: "HEAD",
         headers: {
@@ -116,8 +145,127 @@ async function usosUltimas24h(env, userId) {
   }
 }
 
+// Partes de fecha/hora de `fecha` en hora de Madrid.
+function partesMadrid(fecha) {
+  const p = {};
+  for (const { type, value } of new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/Madrid", hourCycle: "h23",
+    year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", second: "2-digit",
+  }).formatToParts(fecha)) p[type] = Number(value);
+  return p;
+}
+
+// Instante (Date) en que empezó el mes natural en curso en Madrid: el día 1
+// a las 00:00 hora de Madrid (CET o CEST según la fecha). Exportada para el
+// test.
+export function inicioMesMadrid(ahora = new Date()) {
+  const { year, month } = partesMadrid(ahora);
+  // Primera aproximación: medianoche UTC del día 1; se corrige con el
+  // desfase que tenga Madrid en ese momento (1 o 2 horas).
+  const aprox = Date.UTC(year, month - 1, 1);
+  const m = partesMadrid(new Date(aprox));
+  const desfase = Date.UTC(m.year, m.month - 1, m.day, m.hour, m.minute, m.second) - aprox;
+  return new Date(aprox - desfase);
+}
+
+// Mismo criterio de acceso que el paywall de la app: se llama a la propia
+// mi_estado_suscripcion() con el token del usuario (no con service_role),
+// así que el bypass del admin, los accesos permanentes, los 7 días de
+// prueba y las suscripciones trialing/active son exactamente los mismos y
+// no hay una segunda copia de la regla que pueda divergir. Devuelve true,
+// false, o null si no se pudo saber (red, RPC caída): con null se deja
+// pasar, igual que hace diario.html, y quedan los topes como freno.
+async function tieneAcceso(token) {
+  try {
+    const resp = await fetch(`${SUPABASE_URL}/rest/v1/rpc/mi_estado_suscripcion`, {
+      method: "POST",
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${token}`,
+        "content-type": "application/json",
+      },
+      body: "{}",
+    });
+    if (!resp.ok) return null;
+    const estado = await resp.json();
+    if (estado?.con_acceso === true) return true;
+    if (estado?.con_acceso === false) return false;
+    return null;
+  } catch (e) {
+    return null;
+  }
+}
+
 function json(status, obj) {
   return new Response(JSON.stringify(obj), { status, headers: { "content-type": "application/json" } });
+}
+
+export const PROMPT_IDENTIFICACION = `Eres un asistente de pesca recreativa en España. Te doy una foto de un pez recién pescado.
+
+Identifica, si puedes:
+- "especie": el nombre común en español más probable (ej. "Lubina", "Sargo", "Congrio", "Calamar / chipirón"). Si no estás razonablemente seguro de la especie, pon "" (cadena vacía) — no adivines al azar.
+- "talla_cm": longitud aproximada en centímetros, SOLO si en la foto hay algo que sirva de referencia real de escala (una mano, un aparejo o cebo de tamaño reconocible, el suelo con baldosas, etc.). Si no hay ninguna referencia de escala fiable en la imagen, pon null — nunca inventes un número de talla sin base real en la foto.
+- "peso_g": peso aproximado en gramos, estimado a partir de la especie y la talla — pon null si talla_cm es null o la especie es incierta.
+- "confianza": "alta", "media" o "baja", tu propia confianza en el conjunto de la estimación.
+
+Responde ÚNICAMENTE con el JSON, sin texto antes ni después:
+{"especie": "...", "talla_cm": ..., "peso_g": ..., "confianza": "..."}`;
+
+// Cuerpo de la petición a la API de mensajes. Lo usan este endpoint y el
+// script de evaluación (scripts/eval-identificacion/evaluar.mjs), para que
+// la comparación entre modelos sea con la petición real.
+export function cuerpoPeticion({ imagenBase64, tipoMime, modelo = MODELO }) {
+  const ajustes = AJUSTES_MODELO[modelo];
+  if (!ajustes) throw new Error(`modelo sin ajustes: ${modelo}`);
+  const cuerpo = {
+    model: modelo,
+    max_tokens: ajustes.maxTokens,
+    messages: [
+      {
+        role: "user",
+        content: [
+          { type: "image", source: { type: "base64", media_type: tipoMime || "image/jpeg", data: imagenBase64 } },
+          { type: "text", text: PROMPT_IDENTIFICACION },
+        ],
+      },
+    ],
+  };
+  // effort no existe en Haiku 4.5 (daría error); en Haiku 5.5 es el mando
+  // del pensamiento.
+  if (ajustes.esfuerzo) cuerpo.output_config = { effort: ajustes.esfuerzo };
+  return cuerpo;
+}
+
+// Interpreta una respuesta 200 de la API. stop_reason primero (comun
+// claude-api.md C4): "max_tokens" = JSON incompleto, "refusal" = el filtro
+// de seguridad de Haiku 5.5 rechazó la petición (HTTP 200 con el contenido
+// vacío o parcial; Haiku 5.5 no tiene fallback en servidor). En los dos
+// casos el contenido no vale. Si no, el texto se lee de los bloques de tipo
+// "text": con pensamiento adaptativo la respuesta puede empezar por bloques
+// "thinking", así que content[0] ya no es necesariamente la respuesta.
+export function interpretarRespuesta(datos) {
+  if (datos?.stop_reason === "max_tokens") return { codigo: "respuesta_cortada" };
+  if (datos?.stop_reason === "refusal") return { codigo: "rechazada" };
+  const texto = (datos?.content || [])
+    .filter((b) => b?.type === "text" && typeof b.text === "string")
+    .map((b) => b.text)
+    .join("\n");
+  const match = texto.match(/\{[\s\S]*\}/);
+  let r = {};
+  try {
+    r = match ? JSON.parse(match[0]) : {};
+  } catch (e) {
+    return { codigo: "respuesta_invalida" };
+  }
+  return {
+    resultado: {
+      especie: typeof r.especie === "string" && r.especie.trim() ? r.especie.trim() : null,
+      talla_cm: typeof r.talla_cm === "number" ? r.talla_cm : null,
+      peso_g: typeof r.peso_g === "number" ? r.peso_g : null,
+      confianza: r.confianza || null,
+    },
+  };
 }
 
 export async function onRequestPost(context) {
@@ -129,8 +277,8 @@ export async function onRequestPost(context) {
     headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${token}` },
   });
   if (!verifResp.ok) return json(401, { error: "sesión no válida" });
-  // Solo para atribuir el gasto de Claude al usuario; si no se puede leer,
-  // se registra sin user_id (nunca cambia la respuesta).
+  // Para atribuir el gasto de Claude al usuario y contar sus topes; si no se
+  // puede leer, se registra sin user_id (nunca cambia la respuesta).
   let userId = null;
   try {
     userId = (await verifResp.json())?.id || null;
@@ -147,12 +295,33 @@ export async function onRequestPost(context) {
       error: "La identificación automática no está configurada." });
   }
 
-  const usos = await usosUltimas24h(context.env, userId);
-  if (usos === null) {
+  const [acceso, usosDia, usosMes] = await Promise.all([
+    tieneAcceso(token),
+    contarUsos(context.env, userId, new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()),
+    contarUsos(context.env, userId, inicioMesMadrid().toISOString(), { soloOk: true }),
+  ]);
+
+  // Sin suscripción activa (ni prueba, ni admin, ni acceso permanente): la
+  // app ya le manda a suscripcion.html, pero el endpoint no puede fiarse de
+  // eso — es quien gasta.
+  if (acceso === false) {
+    return json(403, { codigo: "sin_suscripcion", disponible: false,
+      error: "La identificación automática es parte de la suscripción." });
+  }
+  if (acceso === null) console.warn("identificar-captura: no se pudo comprobar la suscripción; se deja pasar");
+
+  if (usosDia === null) {
     console.warn("identificar-captura: no se pudo contar el uso diario; se deja pasar");
-  } else if (usos >= LIMITE_DIARIO) {
+  } else if (usosDia >= LIMITE_DIARIO) {
     return json(429, { codigo: "limite_diario", disponible: false,
       error: "Has llegado al límite diario de identificaciones automáticas." });
+  }
+  if (usosMes === null) {
+    console.warn("identificar-captura: no se pudo contar el uso del mes; se deja pasar");
+  } else if (usosMes >= LIMITE_MENSUAL) {
+    return json(429, { codigo: "limite_mensual", disponible: false,
+      limite_mes: LIMITE_MENSUAL, restantes_mes: 0,
+      error: `Has usado las ${LIMITE_MENSUAL} identificaciones automáticas de este mes.` });
   }
 
   let cuerpo;
@@ -164,17 +333,6 @@ export async function onRequestPost(context) {
   const { imagenBase64, tipoMime } = cuerpo;
   if (!imagenBase64) return json(400, { error: "falta la imagen" });
 
-  const prompt = `Eres un asistente de pesca recreativa en España. Te doy una foto de un pez recién pescado.
-
-Identifica, si puedes:
-- "especie": el nombre común en español más probable (ej. "Lubina", "Sargo", "Congrio", "Calamar / chipirón"). Si no estás razonablemente seguro de la especie, pon "" (cadena vacía) — no adivines al azar.
-- "talla_cm": longitud aproximada en centímetros, SOLO si en la foto hay algo que sirva de referencia real de escala (una mano, un aparejo o cebo de tamaño reconocible, el suelo con baldosas, etc.). Si no hay ninguna referencia de escala fiable en la imagen, pon null — nunca inventes un número de talla sin base real en la foto.
-- "peso_g": peso aproximado en gramos, estimado a partir de la especie y la talla — pon null si talla_cm es null o la especie es incierta.
-- "confianza": "alta", "media" o "baja", tu propia confianza en el conjunto de la estimación.
-
-Responde ÚNICAMENTE con el JSON, sin texto antes ni después:
-{"especie": "...", "talla_cm": ..., "peso_g": ..., "confianza": "..."}`;
-
   let usoRegistrado = false;
   try {
     const resp = await fetch("https://api.anthropic.com/v1/messages", {
@@ -184,19 +342,7 @@ Responde ÚNICAMENTE con el JSON, sin texto antes ni después:
         "anthropic-version": "2023-06-01",
         "content-type": "application/json",
       },
-      body: JSON.stringify({
-        model: MODELO,
-        max_tokens: MAX_TOKENS,
-        messages: [
-          {
-            role: "user",
-            content: [
-              { type: "image", source: { type: "base64", media_type: tipoMime || "image/jpeg", data: imagenBase64 } },
-              { type: "text", text: prompt },
-            ],
-          },
-        ],
-      }),
+      body: JSON.stringify(cuerpoPeticion({ imagenBase64, tipoMime })),
     });
     if (!resp.ok) {
       const textoCrudo = await resp.text();
@@ -212,30 +358,38 @@ Responde ÚNICAMENTE con el JSON, sin texto antes ni después:
       return json(c.status, { codigo: c.codigo, disponible: false, error: c.error });
     }
     const datos = await resp.json();
-    // stop_reason (comun claude-api.md C4): si se cortó por max_tokens, el
-    // JSON está incompleto. Es un fallo propio y con nombre, no un "JSON mal
-    // formado" que acabaría en el catch genérico.
-    const cortada = datos?.stop_reason === "max_tokens";
+    const interpretado = interpretarRespuesta(datos);
     usoRegistrado = true;
     await registrarUsoClaude(context.env, context, {
       funcion: FUNCION_USO, modelo: datos?.model || MODELO, usage: datos?.usage,
       maxTokens: MAX_TOKENS, userId,
-      ...(cortada ? { ok: false, codigo: "respuesta_cortada" } : {}),
+      ...(interpretado.codigo ? { ok: false, codigo: interpretado.codigo } : {}),
     });
-    if (cortada) {
+    if (interpretado.codigo === "respuesta_cortada") {
       console.error(`identificar-captura: respuesta cortada por max_tokens (${MAX_TOKENS})`);
       return json(502, { codigo: "respuesta_cortada", disponible: false,
         error: "La identificación automática ha fallado." });
     }
-    const textoRespuesta = datos.content?.[0]?.text || "{}";
-    const match = textoRespuesta.match(/\{[\s\S]*\}/);
-    const resultado = match ? JSON.parse(match[0]) : {};
+    if (interpretado.codigo === "rechazada") {
+      // Rechazo del filtro de seguridad: no es un fallo de la app ni se
+      // reintenta (C8); se dice en tono neutro y se rellena a mano.
+      console.warn(`identificar-captura: rechazada (${datos?.stop_details?.category ?? "sin categoría"})`);
+      return json(422, { codigo: "rechazada", disponible: false,
+        error: "No se ha podido analizar esta foto." });
+    }
+    if (interpretado.codigo) {
+      // respuesta_invalida: JSON mal formado. Queda en uso_claude con su
+      // nombre; al cliente, el fallo genérico de siempre.
+      return json(502, { codigo: "fallo_proveedor", disponible: false,
+        error: "La identificación automática ha fallado." });
+    }
 
     return json(200, {
-      especie: typeof resultado.especie === "string" && resultado.especie.trim() ? resultado.especie.trim() : null,
-      talla_cm: typeof resultado.talla_cm === "number" ? resultado.talla_cm : null,
-      peso_g: typeof resultado.peso_g === "number" ? resultado.peso_g : null,
-      confianza: resultado.confianza || null,
+      ...interpretado.resultado,
+      limite_mes: LIMITE_MENSUAL,
+      // Contando la de ahora (aún no está en uso_claude: se escribe con
+      // waitUntil). null si no se pudo contar.
+      restantes_mes: usosMes === null ? null : Math.max(0, LIMITE_MENSUAL - usosMes - 1),
     });
   } catch (e) {
     // Fallo de red/parseo por nuestro lado: mismo criterio, el detalle al
