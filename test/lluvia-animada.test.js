@@ -11,7 +11,7 @@ import {
   horaMadrid, estadoCarga, crearEstado, alternarReproduccion, siguienteIndice,
   ultimoIndiceListo, retardo, avanzar, RETARDO_FRAME_MS, RETARDO_ULTIMO_MS, ATRIBUCION,
   textoRetraso, satelitePara, laea, pixelOpera, REGIONES, altoRegion, indiceRegion, desempaquetar,
-  inflar, rellenarRejilla, dbzAMmh, colorLluvia, componer, SIN_DATO, VENTANA_RADAR, sello as selloCliente,
+  inflar, rellenarRejilla, submuestrear, PASO_ANIMACION_MIN, dbzAMmh, colorLluvia, componer, SIN_DATO, VENTANA_RADAR, sello as selloCliente,
 } from "../assets/js/lluvia-animada.js";
 import {
   VENTANA, sello, desdeSello, claveToma, prefijosDia, parsearListado, tomasVentana,
@@ -317,4 +317,25 @@ test("composición: radar donde hay cobertura, satélite tenue solo donde no", (
   assert.deepEqual([...rgba.slice(12, 16)], [4, 5, 6, 60]);
   // Sin radar (modo satélite / Canarias): todo satélite.
   assert.equal(componer({ ancho: 4, alto: 1, indice: null, rejilla: null, satelite: sat }).pxSatelite, 4);
+});
+
+test("submuestreo a 10 min, siempre con la última toma publicada", () => {
+  const cada5 = (desde, n) => Array.from({ length: n }, (_, i) => new Date(Date.parse(desde) + i * 5 * 60000).toISOString().replace(".000Z", "Z"));
+  assert.equal(PASO_ANIMACION_MIN, 10);
+  // 3 h de tomas cada 5 min acabando en múltiplo de 10: 19 tomas.
+  const a = submuestrear(cada5("2026-10-08T07:40:00Z", 37));
+  assert.equal(a.length, 19);
+  assert.equal(a[0], "2026-10-08T07:40:00Z");
+  assert.equal(a[18], "2026-10-08T10:40:00Z");
+  // Acabando en :45, la última entra aunque no sea múltiplo de 10.
+  const b = submuestrear(cada5("2026-10-08T07:45:00Z", 37));
+  assert.equal(b[b.length - 1], "2026-10-08T10:45:00Z");
+  assert.equal(b[b.length - 2], "2026-10-08T10:40:00Z");
+  assert.equal(b.length, 19);
+  // Al llegar la de :50, la de :45 sobra y la nueva entra.
+  const c = submuestrear(cada5("2026-10-08T07:50:00Z", 37));
+  assert.ok(!c.includes("2026-10-08T10:45:00Z"));
+  assert.equal(c[c.length - 1], "2026-10-08T10:50:00Z");
+  assert.deepEqual(submuestrear([]), []);
+  assert.deepEqual(submuestrear(["2026-10-08T10:35:00Z"]), ["2026-10-08T10:35:00Z"]);
 });

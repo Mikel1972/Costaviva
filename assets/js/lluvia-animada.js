@@ -6,8 +6,8 @@
 // hora de cada toma" y "es imprescindible que sea lo más cercano en tiempo").
 //
 // FUENTE PRINCIPAL — radar EUMETNET OPERA (composición europea de
-// reflectividad con los radares de AEMET, IPMA y Météo-France): una toma cada
-// 5 min, publicada ~4-5 min después de su hora (medido 2026-10-08: la de las
+// reflectividad con los radares de AEMET, IPMA y Météo-France): publica una
+// toma cada 5 min (la animación usa una cada 10 y siempre la última), publicada ~4-5 min después de su hora (medido 2026-10-08: la de las
 // 10:35 UTC estaba en el bucket a las 10:39:15). Licencia CC BY 4.0, uso
 // comercial permitido. Llega por functions/lluvia/tomas.js y toma.js (el
 // bucket no manda CORS); aquí se descomprime, se reproyecta de Lambert
@@ -152,6 +152,23 @@ export function avanzar(estado, listas) {
 }
 
 // ===========================================================================
+
+// --- Submuestreo -------------------------------------------------------------
+// OPERA publica una toma cada 5 min; la animación usa una cada 10 (decisión
+// de Mikel, 2026-10-08: la mitad de descarga, ~3,5 MB) pero SIEMPRE con la
+// última publicada, aunque no caiga en múltiplo de 10, para no perder
+// actualidad.
+export const PASO_ANIMACION_MIN = 10;
+export function submuestrear(tomasIso, pasoMin = PASO_ANIMACION_MIN) {
+  if (!tomasIso.length) return [];
+  const ultima = tomasIso[tomasIso.length - 1];
+  const out = tomasIso.filter((t) => {
+    const ms = Date.parse(t);
+    return Number.isFinite(ms) && (ms / MIN) % pasoMin === 0;
+  });
+  if (out[out.length - 1] !== ultima) out.push(ultima);
+  return out;
+}
 
 // --- Retraso -----------------------------------------------------------------
 // "hace 6 min", "hace 1 h 5 min", "ahora".
@@ -448,7 +465,7 @@ export function crearLluviaAnimada({ L, map, contenedor, fetchFn = (...a) => fet
     ultimaEl.classList.toggle("vieja", !!ult && ahora() - Date.parse(ult) > 20 * MIN);
     const sat = fuentes[estado.indice]?.satelite;
     notaEl.textContent = modo === "radar"
-      ? `Radar EUMETNET OPERA, una toma cada 5 min.${sat ? ` Donde no llega el radar (más tenue): satélite H SAF de las ${horaMadrid(horaWms(sat))}.` : ""} CC BY 4.0.`
+      ? `Radar EUMETNET OPERA, una toma cada 10 min y la última.${sat ? ` Donde no llega el radar (más tenue): satélite H SAF de las ${horaMadrid(horaWms(sat))}.` : ""} CC BY 4.0.`
       : "Radar no disponible ahora: lluvia estimada por satélite EUMETSAT H SAF (cada 15 min, ~45 min de retraso). CC BY 4.0.";
     boton.textContent = estado.reproduciendo ? "⏸" : "▶";
     boton.setAttribute("aria-label", estado.reproduciendo ? "Pausar" : "Reproducir");
@@ -626,7 +643,7 @@ export function crearLluviaAnimada({ L, map, contenedor, fetchFn = (...a) => fet
     const nuevoModo = radar.length ? "radar" : "satelite";
     if (nuevoModo !== modo) { tomas.forEach((_, j) => quitar(j)); tomas = []; capas = []; estados = []; fuentes = []; }
     modo = nuevoModo;
-    actualizarTomas(modo === "radar" ? radar : framesEnVentana(dim));
+    actualizarTomas(modo === "radar" ? submuestrear(radar) : framesEnVentana(dim));
     pintar();
     await cargarPendientes(g);
   }

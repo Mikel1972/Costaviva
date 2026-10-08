@@ -861,8 +861,11 @@ en bucle por defecto, con pausa/play y la hora de Madrid de cada toma (la
 el panel dice siempre el retraso de la última toma ("hace 6 min"; en rojo si
 pasa de 20 min).
 - **Fuente principal: radar EUMETNET OPERA** (composición europea DBZH con
-  los radares de AEMET, IPMA y Météo-France). Una toma cada 5 min (37 en 3 h),
-  publicada ~4-5 min después de su hora: retraso visto en la app 5-10 min.
+  los radares de AEMET, IPMA y Météo-France). Publica una toma cada 5 min,
+  ~4-5 min después de su hora: retraso visto en la app 5-10 min. La animación
+  usa **una cada 10 min y siempre la última publicada** (decisión de Mikel
+  2026-10-08, `submuestrear()`): ~19 tomas en 3 h; el refresco de cada
+  minuto mete la nueva al momento.
   Bucket S3 público de 24 h `s3.waw3-1.cloudferro.com/openradar-24h`, sin
   clave ni coste. **Licencia CC BY 4.0** ("EUMETNET ... has decided to
   distribute these products under the CC BY 4.0 license",
@@ -879,10 +882,9 @@ pasa de 20 min).
   descomprime (`DecompressionStream`), reproyecta de Lambert azimutal (lat0
   55, lon0 10) a Mercator y pinta un canvas por toma
   (`assets/js/lluvia-animada.js`). Nada se guarda en Supabase ni en GitHub.
-- **Coste**: 0 €. Unas 38 invocaciones de Functions al abrir la capa y 1 por
-  minuto mientras está abierta; ~7 MB de descarga para las 37 tomas (luego
-  quedan en la caché del navegador 24 h). Si pesa demasiado en móvil, se
-  puede espaciar a 10 min en la animación.
+- **Coste**: 0 €. 1 invocación de Functions por toma al abrir la capa y 1 por
+  minuto mientras está abierta (unas 20 invocaciones al abrir); ~3,5 MB de
+  descarga para las ~19 tomas (luego quedan en la caché del navegador 24 h).
 - Descartados: RainViewer (2 h y sin uso comercial), AEMET OpenData (solo la
   última imagen, GIF con mapa de fondo, clave), Météo-France (clave; sus
   radares ya están en OPERA), IPMA (radar "solo informativo"), Rain Alarm
