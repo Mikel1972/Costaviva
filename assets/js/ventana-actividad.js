@@ -327,6 +327,7 @@ function rangoOlaTexto(h) {
 //   region (si no, por coordenadas),
 //   caudalRio: "bajo"|"normal"|"alto"|null (río asociado al spot, solo hoy),
 //   rio: { nombre, distancia_desembocadura_km } | null (null = sin río conocido),
+//   profundidad: m de fondo de la zona del spot (EMODnet; ver capa-batimetria.js) | null,
 //   horaActual: "AAAA-MM-DDTHH:00" (para la fiabilidad: horizonte de previsión),
 //   b0: término independiente en log-odds (especies.json.indice.b0_logodds, 0 = 50),
 //   soloIndice: i (opcional: calcula solo esa hora; las demás salen null) }
@@ -533,6 +534,7 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
       caudal_rio: contexto.caudalRio ?? null,
       rio_desembocadura_km: contexto.rio?.distancia_desembocadura_km ?? null,
       turbidez: contexto.turbidez ?? null,
+      profundidad: Number.isFinite(contexto.profundidad) ? contexto.profundidad : null,
       mes, hora_local: Number(h.hora.slice(11, 13)), luz,
     };
     const ev = evaluarReglas(expertas, horas, i, ctxReglas);

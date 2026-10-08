@@ -42,6 +42,7 @@ export const VARIABLES_CONTEXTO = [
   "caudal_rio",            // "bajo" | "normal" | "alto" | null (río asociado al spot, solo con dato real)
   "rio_desembocadura_km",  // distancia del spot a la desembocadura de su río; null si el spot no tiene río asociado
   "turbidez",              // "no turbia" | "turbia" | "muy turbia" | null
+  "profundidad",           // m de fondo del spot (EMODnet, assets/datos/profundidad-spots.json; punto propio: el del punto); null sin dato
   "mes", "hora_local", "luz",
 ];
 export const AGREGADOS = ["media", "min", "max", "suma", "delta", "fraccion"];
