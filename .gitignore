@@ -2,3 +2,4 @@
 node_modules/
 .dev.vars
 scripts/marketing/post-pendiente.json
+__pycache__/

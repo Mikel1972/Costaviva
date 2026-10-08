@@ -24,8 +24,16 @@
 // grupo, ver functions/_lib/fuentes.js) algunas variables salen de MET Norway
 // o de Copernicus Marine con la misma forma. La firma de fuentes entra en la
 // clave de caché (vacía si todo va por Open-Meteo: la clave no cambia).
+//
+// Selector de administrador (2026-10-08, fase 2): `&fuente=openmeteo` o
+// `&fuente=gratuitas` fuerza las fuentes de esa petición, SOLO si el JWT de
+// la cabecera Authorization es de un administrador (es_admin() en Supabase,
+// comprobado aquí en el servidor, functions/_lib/admin.js). Para cualquier
+// otro: 403 sin pedir nada a nadie y antes de mirar la caché. Sin `fuente`,
+// nada cambia (no se llama a Supabase).
 import { validarConsultaProxy, claveCacheProxy } from "../_lib/open-meteo.js";
-import { pedirDatosMeteo, firmaFuentes } from "../_lib/fuentes.js";
+import { pedirDatosMeteo, firmaFuentes, envConFuenteForzada, FUENTES_FORZABLES } from "../_lib/fuentes.js";
+import { esAdminServidor } from "../_lib/admin.js";
 
 function json(cuerpo, status, extra = {}) {
   return new Response(JSON.stringify(cuerpo), {
@@ -35,11 +43,28 @@ function json(cuerpo, status, extra = {}) {
 }
 
 export async function onRequestGet(context) {
-  const { request, env, params } = context;
+  const { request, params } = context;
+  let { env } = context;
   const api = String(params.api || "");
   const url = new URL(request.url);
+  const consulta = new URLSearchParams(url.searchParams);
 
-  const v = validarConsultaProxy(api, url.searchParams);
+  // Fuente forzada: solo administradores, comprobado antes que nada más.
+  const forzadas = consulta.getAll("fuente");
+  let forzada = null;
+  if (forzadas.length) {
+    if (forzadas.length > 1 || !FUENTES_FORZABLES.has(forzadas[0])) {
+      return json({ error: true, reason: "fuente no válida" }, 400, { "cache-control": "no-store" });
+    }
+    if (!(await esAdminServidor(request))) {
+      return json({ error: true, reason: "solo administradores" }, 403, { "cache-control": "no-store" });
+    }
+    forzada = forzadas[0];
+    consulta.delete("fuente");
+    env = envConFuenteForzada(env, forzada);
+  }
+
+  const v = validarConsultaProxy(api, consulta);
   if (!v.ok) return json({ error: true, reason: v.error }, 400, { "cache-control": "no-store" });
 
   const cache = typeof caches !== "undefined" ? caches.default : null;
@@ -64,7 +89,9 @@ export async function onRequestGet(context) {
     });
   }
 
-  const respuesta = json(datos, 200, { "cache-control": `public, max-age=${v.ttlSeg}` });
+  // Lo forzado por un admin no se queda en la caché del navegador (puede
+  // cambiar de fuente al momento); en la del edge sí, con su firma.
+  const respuesta = json(datos, 200, { "cache-control": forzada ? "private, no-store" : `public, max-age=${v.ttlSeg}` });
   if (cache) context.waitUntil(cache.put(cacheKey, respuesta.clone()));
   return respuesta;
 }

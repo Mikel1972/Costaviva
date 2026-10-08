@@ -31,6 +31,7 @@ import {
 } from "./met-norway.js";
 import { pedirCopernicusMar, VARIABLES_COPERNICUS, ATRIBUCION_COPERNICUS, ATRIBUCION_COPERNICUS_HTML } from "./copernicus-mar.js";
 import { leerInstantanea, mismoPunto } from "./instantaneas.js";
+import { pedirEra5, ventanaPasada, ATRIBUCION_ERA5, ATRIBUCION_ERA5_HTML } from "./era5.js";
 
 export const GRUPOS = {
   forecast: {
@@ -54,6 +55,7 @@ export const ATRIBUCIONES = {
   openmeteo: ATRIBUCION_OPEN_METEO,
   metno: ATRIBUCION_MET_NORWAY,
   copernicus: `Datos de mar: ${ATRIBUCION_COPERNICUS}`,
+  era5: ATRIBUCION_ERA5,
 };
 export const ATRIBUCIONES_HTML = {
   openmeteo:
@@ -61,6 +63,7 @@ export const ATRIBUCIONES_HTML = {
     '(<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>)',
   metno: ATRIBUCION_MET_NORWAY_HTML,
   copernicus: ATRIBUCION_COPERNICUS_HTML,
+  era5: ATRIBUCION_ERA5_HTML,
 };
 
 function leerFuente(env, nombre, api) {
@@ -143,6 +146,9 @@ async function seriesMetNorway(coords, opciones) {
 }
 
 async function pedirAdaptador(api, fuente, coords, sp, hourly, current, opciones) {
+  if (api === "forecast" && fuente === "era5") {
+    return pedirEra5(coords, sp, { ...opciones, hourly, current });
+  }
   if (api === "forecast" && fuente === "metno") {
     const series = await seriesMetNorway(coords, opciones);
     return coords.map((c, i) =>
@@ -197,6 +203,14 @@ export async function pedirDatosMeteo(api, consulta, { env = {}, fetchImpl = fet
     }
   }
 
+  // Pata "pasado" (2026-10-08, fase 2): MET Norway no tiene pasado. Si la
+  // consulta es ENTERA de horas ya pasadas (el diario de otro día), lo que
+  // iba a MET sale del reanálisis ERA5 (functions/_lib/era5.js).
+  if (api === "forecast" && reparto.has("metno") && ventanaPasada(sp, ahora)) {
+    reparto.set("era5", reparto.get("metno"));
+    reparto.delete("metno");
+  }
+
   const soloOpenMeteo = !GRUPOS[api] || reparto.size === 0 || (reparto.size === 1 && reparto.has("openmeteo"));
   if (soloOpenMeteo) {
     // Exactamente lo de siempre (producción hoy).
@@ -236,4 +250,18 @@ export function fuentesUsadas(datos) {
   const s = new Set();
   for (const o of Array.isArray(datos) ? datos : [datos]) for (const f of o?.fuentes_datos || []) s.add(f);
   return [...s];
+}
+
+// Fuente forzada por el selector de administrador del panel de spot
+// (2026-10-08, fase 2): solo la honra el proxy /meteo/ DESPUÉS de comprobar
+// en el servidor que quien llama es admin (functions/_lib/admin.js). Quita
+// los interruptores por grupo y pone los generales.
+export const FUENTES_FORZABLES = new Set(["openmeteo", "gratuitas"]);
+export function envConFuenteForzada(env, forzada) {
+  if (!FUENTES_FORZABLES.has(forzada)) throw new Error(`fuente forzada no válida: ${forzada}`);
+  const e = { ...env };
+  for (const api of Object.keys(GRUPOS)) for (const g of Object.keys(GRUPOS[api])) delete e[`FUENTE_${g.toUpperCase()}`];
+  e.FUENTE_ATMOSFERA = forzada === "gratuitas" ? "metno" : "openmeteo";
+  e.FUENTE_MAR = forzada === "gratuitas" ? "copernicus" : "openmeteo";
+  return e;
 }
