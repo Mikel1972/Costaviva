@@ -9223,3 +9223,13 @@ Datos: `datos-robots/camaras-estado.json` generado 2026-10-07T14:55Z (~14 h, ace
 - **orio** (comprobada de paso): sigue intermitente en origen (404 en esta lectura), misma conclusión que el 2026-10-07.
 
 **Firmado:** robot de cámaras caídas (rutina), 2026-10-08 04:42 UTC.
+
+### 2026-10-08 10:45 UTC (pasada buscadora — fichas de especies, jueves, rutina)
+
+Sin cambios en `especies.json` esta pasada: nada verificable con fuente oficial legible desde esta sesión.
+
+- **Cataluña (ES-CT, prioridad por consecuencias reales)**: la prensa (ARA, 13/08/2025) habla de un nuevo modelo desde el 1/9/2025 con tallas, cupos y vedas de 44 especies, cupo de 5 kg y cebo vivo prohibido. Pero la página oficial de la Generalitat (`agricultura.gencat.cat/ca/ambits/pesca/pesca-recreativa/especies-pesca/`, consultada hoy, 200) sigue citando el Decret 109/1995 con **10 kg de peces, 5 kg de cefalópodos y 150 garotas por licencia y día** en aguas interiores. Las dos cosas se contradicen y no encontré el texto del DOGC: no se escribe ninguna talla ni cupo de Cataluña. `ES-CT` sigue pendiente; hay que leer el DOGC desde una sesión con acceso (dogc.gencat.cat responde 301 pero no se siguió).
+- **Cantabria (ES-CB)**: marco localizado por búsqueda (Ley 1/2021; Decreto 45/2002 modificado por 99/2019; órdenes anuales de vedas y tallas, la última hallada Orden DES/14/2024, BOC 22/04/2024). `boc.cantabria.es` no responde desde esta sesión (sin respuesta HTTP; no se da por caído). No se encontró la orden vigente ni cupos recreativos. Sigue pendiente.
+- Nada que añadir a ROBOT_REGLAS.md.
+
+Firmado: robot buscador de fuentes (rutina).
