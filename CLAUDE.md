@@ -51,6 +51,16 @@ pequeños: tinta oscura sobre claro, contraste AA).
   EMODnet hace de mapa base opaco. MapLibre 6 no se usa: solo se publica como
   módulo ES con worker aparte (más frágil con la CSP); la 5.x trae el worker
   como blob: (`worker-src blob:` ya estaba por hls.js).
+- **Créditos del mapa sin tapar el ⓘ (2026-10-08, aprobado por Mikel).** En el
+  móvil la atribución (3 líneas) tapaba el botón ⓘ de la leyenda, y en
+  escritorio también cuando ocupaba dos líneas. `assets/js/creditos-mapa.js`
+  (test `test/creditos-mapa.test.js`) hace como la atribución "compacta" de
+  MapLibre: en el móvil se ven enteros al cargar y al primer toque/arrastre
+  del mapa (o a los 6 s) se pliegan en la píldora "ⓒ Fuentes", siempre
+  visible; tocarla los abre (sin pasar del ⓘ) y cierra la leyenda. En
+  escritorio siempre abiertos, con la esquina inferior derecha empezando a
+  76 px (a la derecha del ⓘ) y la leyenda del ⓘ abriéndose por encima de
+  ellos. Ningún crédito se quita: no usar `attributionControl.remove()`.
 
 ## Instagram en estilo Amanecer: posts, stories y reels sin IA (2026-10-08)
 
