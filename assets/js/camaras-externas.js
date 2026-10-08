@@ -36,11 +36,19 @@
 // "enlace". test/camaras-externas.test.js comprueba que cada entrada tiene
 // dueño, modo, condiciones con fuente y un spot que existe.
 
+// INTERRUPTOR ÚNICO (2026-10-08). Mikel ha pedido a SkylineWebcams
+// autorización escrita para usar su fotograma oficial en una app de pago.
+// Mientras no contesten: false = todas las de Skyline (Águilas incluida) van
+// como "enlace" y la app no carga nada de embed.skylinewebcams.com. Cuando
+// autoricen por escrito: ponerlo a true y pasan solas a "imagen_oficial"
+// (su código de "Insertar" tal cual). Nada más que tocar.
+export const SKYLINE_EMBED_AUTORIZADO = false;
+
 export const CONDICIONES = {
   skyline: {
     dueno: "SkylineWebcams (VisioRay S.r.l., Italia)",
     tipo_dueno: "privado",
-    modos_permitidos: ["imagen_oficial", "enlace"],
+    modos_permitidos: SKYLINE_EMBED_AUTORIZADO ? ["imagen_oficial", "enlace"] : ["enlace"],
     analisis_permitido: false,
     fuentes: [
       "https://www.skylinewebcams.com/es/support/faq.html",
@@ -85,9 +93,10 @@ const sky = (spot, nombre, pagina, imagenId, rompiente) => ({
   nombre,
   dueno: "SkylineWebcams",
   condiciones: "skyline",
-  modo: "imagen_oficial",
+  modo: SKYLINE_EMBED_AUTORIZADO ? "imagen_oficial" : "enlace",
   url: `https://www.skylinewebcams.com/es/webcam/${pagina}.html`,
-  imagen: `https://embed.skylinewebcams.com/img/${imagenId}.jpg`,
+  ...(SKYLINE_EMBED_AUTORIZADO ? { imagen: `https://embed.skylinewebcams.com/img/${imagenId}.jpg` } : {}),
+  skyline_id: imagenId,
   rompiente,
   analisis_permitido: false,
   visto_en: "skylinewebcams.com",
@@ -143,7 +152,7 @@ const LISTA = [
   yt("nerja-balcon", "nerja", "Nerja, Balcón de Europa", "meteo365es", "liW4_fLCE5A", false, "webcamera24.com"),
   // Águilas: hasta el 2026-10-08 se pasaban por nuestro proxy
   // (functions/webcam/[slug].js) y se medía su turbidez; las condiciones de
-  // SkylineWebcams no lo permiten, así que ahora van con su código oficial.
+  // SkylineWebcams no lo permiten (ver SKYLINE_EMBED_AUTORIZADO).
   // Orden: la bahía primero (mar abierto); la marina está siempre en calma.
   sky("aguilas", "Águilas, Bahía de Levante", "espana/region-de-murcia/murcia/aguilas-bahia-de-levante", 5963, true),
   sky("aguilas", "Águilas Yacht Club", "espana/region-de-murcia/murcia/aguilas-yacht-club", 260, false),

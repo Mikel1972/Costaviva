@@ -22,6 +22,14 @@ HEAD/oEmbed (clave `ext-<id>` en `camara_estado`). Águilas salió del proxy
 `/webcam/` y de turbidez por eso. `test/camaras-externas.test.js` exige
 dueño, modo permitido, condiciones con fuente y spot existente.
 
+**Interruptor `SKYLINE_EMBED_AUTORIZADO` (en `camaras-externas.js`, hoy
+`false`).** Mikel ha pedido a SkylineWebcams autorización escrita para el
+uso comercial (2026-10-08). Mientras esté a `false`, todas las de Skyline
+(Águilas incluida) van como `enlace` y la app no carga nada de
+`embed.skylinewebcams.com`. Cuando llegue la autorización por escrito, se
+pone a `true` y pasan solas a `imagen_oficial`; no hay que tocar nada más
+(el test se adapta al valor). Sin autorización, no cambiarlo.
+
 ## Oleaje costero: mar abierto frente a "en la playa" (2026-10-08)
 
 **Caso real (Mikel, 2026-10-08):** Hondarribia salía con "3.7–4.5 m" y su

@@ -163,7 +163,8 @@ export const WEBCAMS = {
   // generados por cámaras web [...] capturas de pantalla o cualquier otro
   // dispositivo", skylinewebcams.com/es/terms-of-use.html). Solo permiten
   // insertar su fotograma oficial cada 5 min con su código de "Insertar".
-  // Ahora va en assets/js/camaras-externas.js con ese código, tal cual.
+  // Ahora va en assets/js/camaras-externas.js (enlace a su página hasta que
+  // autoricen por escrito, ver SKYLINE_EMBED_AUTORIZADO).
   // No volver a añadir aquí cdn.skylinewebcams.com.
 };
 

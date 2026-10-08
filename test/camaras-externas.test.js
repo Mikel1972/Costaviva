@@ -5,7 +5,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { CAMARAS_EXTERNAS, CONDICIONES, camarasExternasDeSpot, claveSalud } from "../assets/js/camaras-externas.js";
+import { CAMARAS_EXTERNAS, CONDICIONES, SKYLINE_EMBED_AUTORIZADO, camarasExternasDeSpot, claveSalud } from "../assets/js/camaras-externas.js";
 
 const MODOS = ["imagen_oficial", "enlace"];
 const spotsPrevision = new Set(
@@ -53,6 +53,18 @@ test("las de SkylineWebcams usan su código de inserción, nunca el CDN interno"
     if (c.modo === "imagen_oficial") assert.match(c.imagen, /^https:\/\/embed\.skylinewebcams\.com\/img\/\d+\.jpg$/);
   }
   assert.doesNotMatch(webcamsProxy, /^\s*"https:\/\/cdn\.skylinewebcams\.com/m, "el proxy no debe servir imágenes de SkylineWebcams");
+});
+
+test("sin autorización escrita de Skyline, sus cámaras solo se enlazan", () => {
+  const sky = CAMARAS_EXTERNAS.filter((c) => c.condiciones === "skyline");
+  assert.ok(sky.length > 0);
+  for (const c of sky) {
+    assert.equal(c.modo, SKYLINE_EMBED_AUTORIZADO ? "imagen_oficial" : "enlace", c.id);
+    assert.match(c.url, /^https:\/\/www\.skylinewebcams\.com\//, c.id);
+  }
+  if (!SKYLINE_EMBED_AUTORIZADO) {
+    assert.ok(!JSON.stringify(CAMARAS_EXTERNAS).includes("embed.skylinewebcams.com"), "no se debe cargar embed.skylinewebcams.com");
+  }
 });
 
 test("las de YouTube y MEO Beachcam solo se enlazan", () => {
