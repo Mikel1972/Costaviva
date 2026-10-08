@@ -204,6 +204,37 @@ test("reglas: todas las del JSON están bien formadas (fuente, ámbito, variable
   assert.equal(DATOS.fuentes.mikel_experiencia_local.titulo, "Mikel (experiencia local de pesca)");
 });
 
+test("propuestas_evidencia: bien formadas, con fuente y SIN activar", () => {
+  // Bloque de propuestas con fuente científica (2026-10-08). No lo lee el
+  // índice: solo se comprueba que, si Mikel aprueba una, se puede mover tal
+  // cual a reglas_expertas.reglas.
+  const p = DATOS.propuestas_evidencia;
+  assert.ok(p && p.estado === "pendiente_de_aprobacion");
+  const fuentes = { ...DATOS.fuentes, ...p.fuentes };
+  for (const [id, f] of Object.entries(p.fuentes)) {
+    assert.ok(!DATOS.fuentes[id], `fuente de propuesta duplicada en fuentes: ${id}`);
+    assert.match(f.url || "", /^https:\/\//, `${id} sin url`);
+    assert.ok(f.licencia && f.fecha_consulta, `${id} sin licencia o fecha_consulta`);
+  }
+  const activas = new Set(DATOS.reglas_expertas.reglas.map((r) => r.id));
+  const ids = new Set();
+  for (const r of p.reglas) {
+    assert.ok(!activas.has(r.id) && !ids.has(r.id), `id repetido ${r.id}`); ids.add(r.id);
+    assert.equal(r.tipo, "cientifica");
+    assert.equal(r.estado, "por_validar");
+    for (const fx of r.fuentes_adicionales || []) assert.ok(fuentes[fx], `${r.id}: fuente desconocida ${fx}`);
+    assert.deepEqual(validarRegla(r, {
+      fuentes, especies: DATOS.especies.map((e) => e.id), regiones: DATOS.regiones, grupos: DATOS.reglas_expertas.grupos_especies,
+    }), [], r.id);
+  }
+  for (const a of p.ajustes) {
+    assert.ok(a.id && a.objetivo && a.motivo && fuentes[a.fuente], `ajuste ${a.id} incompleto`);
+    ids.add(a.id);
+  }
+  assert.equal(p.top10.length, 10);
+  for (const id of p.top10) assert.ok(ids.has(id), `top10: ${id} no existe`);
+});
+
 test("reglas: sector circular, también cruzando el norte", () => {
   assert.equal(enSector(90, [33.75, 146.25]), true);
   assert.equal(enSector(200, [33.75, 146.25]), false);

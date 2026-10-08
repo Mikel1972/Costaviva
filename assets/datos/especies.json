@@ -7083,5 +7083,765 @@
  "validacion_fiabilidad": {
   "descripcion": "Estrellas de fiabilidad por especie × modalidad × región. ★ = solo criterio experto; ★★ = la mayor parte del peso con mecanismo científico u oficial citado (se calcula solo); ★★★ = validado con el diario; ★★★★ = temporada confirmada con desembarcos. Las dos últimas se marcan aquí a mano cuando haya calibración: clave 'especie|modalidad|region', valor { diario: true, desembarcos: true, fecha, nota }. Rebajas por calidad de datos (previsión > 48 h, menos del 60 % del peso con dato, modelo y no medido) en ventana-actividad.js.",
   "por_combinacion": {}
+ },
+ "propuestas_evidencia": {
+  "descripcion": "Propuestas de reglas y ajustes con fuente científica (investigación del 2026-10-08, sin API). NO ACTIVAS: el índice no lee este bloque. Detalle y tabla especie × factor en datos-robots/evidencia/EVIDENCIA_FACTORES.md. Para activar una regla: moverla a reglas_expertas.reglas y su fuente (y las adicionales) a fuentes, con el visto bueno de Mikel.",
+  "estado": "pendiente_de_aprobacion",
+  "fecha": "2026-10-08",
+  "fuentes": {
+   "sagarminaga_2010_alb": {
+    "titulo": "Sagarminaga Y., Arrizabalaga H. (2010). Spatio-temporal distribution of albacore (Thunnus alalunga) catches in the northeastern Atlantic: relationship with the thermal environment. Fisheries Oceanography 19(2).",
+    "url": "https://doi.org/10.1111/j.1365-2419.2010.00532.x",
+    "tipo": "cientifico",
+    "licencia": "solo se cita el dato (sin copiar texto); licencia del documento no revisada",
+    "fecha_consulta": "2026-10-08",
+    "leido": "resumen",
+    "nota": "Cuadernos de pesca española 1987-2003 + SST satélite. Ventana preferente de SST 16-18 °C; sin relación con los gradientes térmicos (frentes)."
+   },
+   "sagarminaga_2014_alb_frentes": {
+    "titulo": "Sagarminaga Y., Arrizabalaga H. (2014). Relationship of Northeast Atlantic albacore juveniles with surface thermal and chlorophyll-a fronts. Deep-Sea Research II (registro AZTI).",
+    "url": "https://dspace.aztidata.es/handle/24689/329",
+    "tipo": "cientifico",
+    "licencia": "solo se cita el dato (sin copiar texto); licencia del documento no revisada",
+    "fecha_consulta": "2026-10-08",
+    "leido": "resumen",
+    "nota": "Sin adhesión consistente a frentes de SST; posible asociación con frentes de clorofila en agosto-septiembre."
+   },
+   "goni_2015_alb": {
+    "titulo": "Goñi et al. (2015). Effect of oceanographic parameters on daily albacore catches in the Northeast Atlantic. Deep-Sea Research II 113: 73-80.",
+    "url": "https://doi.org/10.1016/j.dsr2.2015.01.012",
+    "tipo": "cientifico",
+    "licencia": "solo se cita el dato (sin copiar texto); licencia del documento no revisada",
+    "fecha_consulta": "2026-10-08",
+    "leido": "resumen",
+    "nota": "GAM sobre capturas diarias (cebo vivo, curricán, arrastre pelágico) con ROMS: la mezcla superficial resta en las artes de superficie y suma en arrastre."
+   },
+   "iccat_2013_alb": {
+    "titulo": "ICCAT (2013). Report of the 2013 ICCAT North and South Atlantic albacore stock assessment meeting.",
+    "url": "https://archimer.ifremer.fr/doc/00166/27702/25894.pdf",
+    "tipo": "oficial",
+    "licencia": "solo se cita el dato (sin copiar texto); licencia del documento no revisada",
+    "fecha_consulta": "2026-10-08",
+    "leido": "resumen",
+    "nota": "Recoge la correlación negativa entre la profundidad de la capa de mezcla y la capturabilidad del bonito (flota vasca)."
+   },
+   "hegaluze_2010_alb": {
+    "titulo": "Ongoing albacore research in the Bay of Biscay (Northeast Atlantic): the Hegaluze 2010 project (AZTI, documento ICCAT SCRS; autoría por confirmar).",
+    "url": "https://www.researchgate.net/publication/285661325_Ongoing_albacore_research_in_the_Bay_of_Biscay_Northeast_Atlantic_the_Hegaluze_2010_project",
+    "tipo": "cientifico",
+    "licencia": "solo se cita el dato (sin copiar texto); licencia del documento no revisada",
+    "fecha_consulta": "2026-10-08",
+    "leido": "resumen",
+    "nota": "CPUE de bonito de 2 años (curricán y cebo vivo) con relación negativa con la agitación media del mar y la insolación; sin relación clara con SST, lluvia, NAO o Gulf Stream."
+   },
+   "lavin_2007_hom_alb": {
+    "titulo": "Lavín A., Moreno-Ventas X., Ortiz de Zárate V., Abaunza P., Cabanas J.M. (2007). Environmental variability in the North Atlantic and Iberian waters and its influence on horse mackerel (Trachurus trachurus) and albacore (Thunnus alalunga) in the Bay of Biscay. ICES J. Mar. Sci. 64: 425-438.",
+    "url": "https://doi.org/10.1093/icesjms/fsl042",
+    "tipo": "cientifico",
+    "licencia": "solo se cita el dato (sin copiar texto); licencia del documento no revisada",
+    "fecha_consulta": "2026-10-08",
+    "leido": "resumen",
+    "nota": "Escala anual. Reclutamiento de jurel ligado al eje térmico/afloramiento (r=0,78); disponibilidad del bonito explicada por SST, PEA y la componente zonal (oeste-este) del viento. No da efectos día a día."
+   },
+   "ices_afloramiento_biscay": {
+    "titulo": "Aspects concerning the occurrence of summer upwelling along the southern Bay of Biscay during 1993-2000 (ICES CM).",
+    "url": "https://ices-library.figshare.com/articles/report/Aspects_concerning_the_occurrence_of_summer_upwelling_along_the_southern_Bay_of_Biscay_during_1993-2000/19271861/1",
+    "tipo": "cientifico",
+    "licencia": "solo se cita el dato (sin copiar texto); licencia del documento no revisada",
+    "fecha_consulta": "2026-10-08",
+    "leido": "resumen",
+    "nota": "Afloramiento costero intermitente en el sur del golfo con vientos del este (primavera-verano); los vientos del oeste empujan agua cálida hacia la costa e invierten las corrientes de plataforma."
+   },
+   "alvarez_afloramiento_cantabrico": {
+    "titulo": "Álvarez et al. Upwelling in the western/central Cantabrian coast (EPhysLab, Universidade de Vigo).",
+    "url": "https://ephyslab.uvigo.es/publica/documents/file_1JMS_Upwelling_Cantabrico_Ines_10.pdf",
+    "tipo": "cientifico",
+    "licencia": "solo se cita el dato (sin copiar texto); licencia del documento no revisada",
+    "fecha_consulta": "2026-10-08",
+    "leido": "resumen",
+    "nota": "1967-2007: más días favorables al afloramiento de junio a septiembre (12-14 días/mes); SST satélite con agua fría pegada a la costa con viento favorable."
+   },
+   "stoner_2004": {
+    "titulo": "Stoner A.W. (2004). Effects of environmental variables on fish feeding ecology: implications for the performance of baited fishing gear and stock assessment. Journal of Fish Biology 65: 1445-1471.",
+    "url": "https://doi.org/10.1111/j.0022-1112.2004.00593.x",
+    "tipo": "cientifico",
+    "licencia": "solo se cita el dato (sin copiar texto); licencia del documento no revisada",
+    "fecha_consulta": "2026-10-08",
+    "leido": "resumen",
+    "nota": "Revisión: temperatura, luz, corriente y densidad de presas son las variables con más efecto en la capturabilidad (hasta ×10 en CPUE). Presión atmosférica: sin experimentos controlados; solo correlaciones en agua dulce."
+   },
+   "heupel_2003": {
+    "titulo": "Heupel M.R., Simpfendorfer C.A., Hueter R.E. (2003). Running before the storm: blacktip sharks respond to falling barometric pressure associated with Tropical Storm Gabrielle. Journal of Fish Biology 63: 1357-1363.",
+    "url": "https://doi.org/10.1046/j.1095-8649.2003.00241.x",
+    "tipo": "cientifico",
+    "licencia": "solo se cita el dato (sin copiar texto); licencia del documento no revisada",
+    "fecha_consulta": "2026-10-08",
+    "leido": "resumen",
+    "nota": "Telemetría acústica: los tiburones juveniles dejan el bajo y se van a aguas profundas al caer la presión antes del temporal."
+   },
+   "bacheler_2019": {
+    "titulo": "Bacheler et al. (2019). Tropical storms influence the movement behavior of a demersal oceanic fish species. Scientific Reports.",
+    "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6365635/",
+    "tipo": "cientifico",
+    "licencia": "CC BY 4.0",
+    "fecha_consulta": "2026-10-08",
+    "leido": "resumen",
+    "nota": "Pez ballesta: movimiento +100 % y emigración ×25 en temporales; explicado por la velocidad orbital del oleaje en el fondo mucho mejor que por la presión."
+   },
+   "udyawer_2013": {
+    "titulo": "Udyawer et al. (2013). Variable response of coastal sharks to severe tropical storms: environmental cues and changes in space use. MEPS 480: 171-183.",
+    "url": "https://int-res.com/abstracts/meps/v480/p171-183",
+    "tipo": "cientifico",
+    "licencia": "solo se cita el dato (sin copiar texto); licencia del documento no revisada",
+    "fecha_consulta": "2026-10-08",
+    "leido": "resumen"
+   },
+   "vanderweyst_2014": {
+    "titulo": "VanderWeyst D. (2014). The effect of barometric pressure on feeding activity of yellow perch. Bemidji State University.",
+    "url": "https://faculty.bemidjistate.edu/ahafs/wp-content/uploads/sites/2/2024/10/2014-VanderWeyst-D.-The-effect-of-barometric-pressure-on-feeding-activity-of-yellow-perch.pdf",
+    "tipo": "tesis",
+    "licencia": "solo se cita el dato (sin copiar texto); licencia del documento no revisada",
+    "fecha_consulta": "2026-10-08",
+    "leido": "texto",
+    "nota": "Laboratorio, 12 ensayos: sin efecto significativo de la presión (subiendo, bajando o estable) en lo que comen. Muestra muy pequeña."
+   },
+   "doyle_2017_bss": {
+    "titulo": "Doyle et al. (2017). Localised residency and inter-annual fidelity to coastal foraging areas may place sea bass at risk to local depletion. Scientific Reports 7: 45841.",
+    "url": "https://doi.org/10.1038/srep45841",
+    "tipo": "cientifico",
+    "licencia": "CC BY 4.0",
+    "fecha_consulta": "2026-10-08",
+    "leido": "resumen",
+    "nota": "Cork Harbour (Irlanda), telemetría acústica: residencia media 167 días, 93 % de retorno interanual, áreas de 1-3 km; salen en octubre-noviembre y vuelven en mayo-junio."
+   },
+   "pawson_2007_bss": {
+    "titulo": "Pawson M.G., Pickett G.D., Leballeur J., Brown M., Fritsch M. (2007). Migrations, fishery interactions, and management units of sea bass (Dicentrarchus labrax) in Northwest Europe. ICES J. Mar. Sci. 64: 332-345.",
+    "url": "https://fishbase.ca/references/FBRefSummary.php?id=90070",
+    "tipo": "cientifico",
+    "licencia": "solo se cita el dato (sin copiar texto); licencia del documento no revisada",
+    "fecha_consulta": "2026-10-08",
+    "leido": "resumen",
+    "nota": "Marcado 2000-2005: de mayo a octubre los adultos se recapturan a menos de 16 km; desde noviembre se dispersan hacia zonas de freza en alta mar."
+   },
+   "begout_1997_bss": {
+    "titulo": "Bégout Anras M.L., Lagardère J.P., Lafaye J.Y. (1997). Diel activity rhythm of seabass tracked in a natural environment. Can. J. Fish. Aquat. Sci. 54: 162-168.",
+    "url": "https://doi.org/10.1139/f96-253",
+    "tipo": "cientifico",
+    "licencia": "solo se cita el dato (sin copiar texto); licencia del documento no revisada",
+    "fecha_consulta": "2026-10-08",
+    "leido": "resumen",
+    "nota": "Marisma atlántica francesa (La Rochelle): lubinas solas sobre todo nocturnas; en grupo, diurnas."
+   },
+   "azzaydi_1998_bss": {
+    "titulo": "Azzaydi M., Martínez F.J., Zamora S., Sánchez-Vázquez F.J., Madrid J.A. (1998). Annual rhythms of demand-feeding activity in sea bass: seasonal inversion of the daily feeding pattern. Chronobiology International.",
+    "url": "https://doi.org/10.3109/07420529808993197",
+    "tipo": "cientifico",
+    "licencia": "solo se cita el dato (sin copiar texto); licencia del documento no revisada",
+    "fecha_consulta": "2026-10-08",
+    "leido": "resumen",
+    "nota": "La lubina pasa a comer de noche en invierno y vuelve a comer de día en primavera (autoalimentación, cautividad)."
+   },
+   "faucher_2006_bss": {
+    "titulo": "Faucher et al. (2006). No efficiency of the lateral system on nocturnal feeding in the European sea bass (Dicentrarchus labrax L.). Aquaculture 252: 462-475.",
+    "url": "https://archimer.ifremer.fr/doc/00000/2267",
+    "tipo": "cientifico",
+    "licencia": "solo se cita el dato (sin copiar texto); licencia del documento no revisada",
+    "fecha_consulta": "2026-10-08",
+    "leido": "resumen",
+    "nota": "Come de noche sin línea lateral: la quimiorrecepción toma el relevo. Apoya que el agua turbia o la oscuridad no le impiden comer."
+   },
+   "bss_temperatura_med": {
+    "titulo": "Effects of temperature on growth and metabolism in a Mediterranean population of European sea bass, Dicentrarchus labrax (Ifremer, Archimer).",
+    "url": "https://archimer.ifremer.fr/doc/00000/626",
+    "tipo": "cientifico",
+    "licencia": "solo se cita el dato (sin copiar texto); licencia del documento no revisada",
+    "fecha_consulta": "2026-10-08",
+    "leido": "resumen",
+    "nota": "Juveniles mediterráneos: crecimiento máximo hacia 26 °C e ingesta máxima hacia 27,5 °C (laboratorio; población mediterránea)."
+   },
+   "frontiers_2023_bss_estuarios": {
+    "titulo": "Juvenile sea bass abundance drivers in seven estuaries of the northern stock (Frontiers in Marine Science, 2023).",
+    "url": "https://doi.org/10.3389/fmars.2023.1209311",
+    "tipo": "cientifico",
+    "licencia": "CC BY 4.0",
+    "fecha_consulta": "2026-10-08",
+    "leido": "resumen",
+    "nota": "GLM por estuario con caudal del río, SST, clorofila y depredadores: los motores difieren entre estuarios; el caudal no tiene un efecto general."
+   },
+   "bss_flota_decisiones_2022": {
+    "titulo": "Factors affecting fisher decisions: the case of the inshore fishery for European sea bass (PLoS ONE, 2022).",
+    "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8970468/",
+    "tipo": "cientifico",
+    "licencia": "CC BY 4.0",
+    "fecha_consulta": "2026-10-08",
+    "leido": "resumen",
+    "nota": "Flota artesanal inglesa: con más ola salen menos barcos y el éxito por salida (kg de lubina) baja."
+   },
+   "otero_2008_pulpo": {
+    "titulo": "Otero et al. (2008). Bottom-up and top-down control of Octopus vulgaris in the Galician upwelling system. MEPS 362: 181-192.",
+    "url": "https://int-res.com/abstracts/meps/v362/p181-192",
+    "tipo": "cientifico",
+    "licencia": "solo se cita el dato (sin copiar texto); licencia del documento no revisada",
+    "fecha_consulta": "2026-10-08",
+    "leido": "resumen",
+    "nota": "Escala anual: el viento (afloramiento) en primavera-verano y otoño-invierno explica hasta el 85 % de la variación interanual de capturas de pulpo en Galicia."
+   },
+   "sobrino_2020_pulpo": {
+    "titulo": "Sobrino et al. (2020). Abundance prediction and influence of environmental parameters in the abundance of Octopus vulgaris in the Gulf of Cadiz.",
+    "url": "https://agris.fao.org/search/fr/records/679ba4d4969e37f4376eee94",
+    "tipo": "cientifico",
+    "licencia": "solo se cita el dato (sin copiar texto); licencia del documento no revisada",
+    "fecha_consulta": "2026-10-08",
+    "leido": "resumen",
+    "nota": "Relación negativa significativa entre la abundancia de pulpo y la lluvia del año anterior (escala anual)."
+   },
+   "iglesias_2016_pulpo_salinidad": {
+    "titulo": "Iglesias et al. (2016). Effect of low salinity on survival and ingested food of the common octopus, Octopus vulgaris. Journal of Applied Aquaculture.",
+    "url": "https://produccioncientifica.ugr.es/documentos/64fffc67ab53484a60024ee5",
+    "tipo": "cientifico",
+    "licencia": "solo se cita el dato (sin copiar texto); licencia del documento no revisada",
+    "fecha_consulta": "2026-10-08",
+    "leido": "resumen",
+    "nota": "A 20 psu dejan de comer y mueren el primer día; a 25 y 30 psu sobreviven comiendo menos. Proponen 30 psu como límite."
+   },
+   "aguado_2002_pulpo": {
+    "titulo": "Aguado Giménez F., García García B. (2002). Growth and food intake models in Octopus vulgaris: influence of body weight, temperature, sex and diet. Aquaculture International 10: 361-377.",
+    "url": "https://marineinfo.org/doc/publication/34847",
+    "tipo": "cientifico",
+    "licencia": "solo se cita el dato (sin copiar texto); licencia del documento no revisada",
+    "fecha_consulta": "2026-10-08",
+    "leido": "resumen",
+    "nota": "13-28 °C: óptimo de crecimiento 17,5 °C e ingesta máxima a 20 °C; por encima de ~23 °C pierden peso (resumen secundario)."
+   },
+   "guerra_2006_sepia": {
+    "titulo": "Guerra Á. (2006). Ecology of Sepia officinalis. Vie et Milieu 56(2).",
+    "url": "https://wwwphp.obs-banyuls.fr/Viemilieu/index.php/volume-56-2006/56-issue-2/562-article-4/download.html",
+    "tipo": "cientifico",
+    "licencia": "solo se cita el dato (sin copiar texto); licencia del documento no revisada",
+    "fecha_consulta": "2026-10-08",
+    "leido": "resumen",
+    "nota": "Tolera bien cambios de salinidad (lagunas a 27; sobrevive a 18±2 si se aclimata despacio); en la ría de Vigo vive en toda la ría (20-35,5) pero prefiere las cuencas media y externa; desove en primavera-verano a 12-15 °C en poca agua; invierno en 100-200 m. Los huevos no eclosionan por debajo de ~24 de salinidad (Paulij et al. 1990)."
+   },
+   "cardona_2006_mugilidos": {
+    "titulo": "Cardona L. (2006). Habitat selection by grey mullets (Osteichthyes: Mugilidae) in Mediterranean estuaries: the role of salinity. Scientia Marina 70(3).",
+    "url": "https://scientiamarina.revistas.csic.es/index.php/scientiamarina/article/view/96",
+    "tipo": "cientifico",
+    "licencia": "CC BY 4.0",
+    "fecha_consulta": "2026-10-08",
+    "leido": "resumen",
+    "nota": "Menorca: Liza ramada y Mugil cephalus prefieren salinidad < 15 en primavera-verano; Chelon labrosus las usa sin efecto en el crecimiento; L. aurata y L. saliens evitan el agua dulce."
+   },
+   "mercier_2012_dorada": {
+    "titulo": "Mercier et al. (2012). Multi-element otolith fingerprints unravel sea-lagoon lifetime migrations of gilthead sea bream Sparus aurata. MEPS 444: 175-194.",
+    "url": "https://int-res.com/abstracts/meps/v444/p175-194",
+    "tipo": "cientifico",
+    "licencia": "solo se cita el dato (sin copiar texto); licencia del documento no revisada",
+    "fecha_consulta": "2026-10-08",
+    "leido": "resumen",
+    "nota": "Las doradas adultas usan lagunas costeras salobres hasta 11 meses al año, también en invierno."
+   },
+   "ulas_2011_calamar": {
+    "titulo": "Ulaş A., Aydın İ. (2011). The effects of jig color and lunar bright on coastal squid jigging. African Journal of Biotechnology 10(9): 1721-1726.",
+    "url": "https://ajol.info/index.php/ajb/article/view/92991",
+    "tipo": "cientifico",
+    "licencia": "CC BY (AJOL, por confirmar)",
+    "fecha_consulta": "2026-10-08",
+    "leido": "resumen",
+    "nota": "Loligo vulgaris, Egeo: la luna llena aumenta las capturas al jigging (p<0,01); el jig rojo es el más eficaz."
+   },
+   "pereira_2017_congrio": {
+    "titulo": "Pereira et al. (2017). Assessing the size adequacy of a small no-take marine protected area (MPA) for Mediterranean moray and European conger. MEPS 584: 213-227.",
+    "url": "https://doi.org/10.3354/meps12379",
+    "tipo": "cientifico",
+    "licencia": "solo se cita el dato (sin copiar texto); licencia del documento no revisada",
+    "fecha_consulta": "2026-10-08",
+    "leido": "resumen",
+    "nota": "Telemetría (6 congrios, verano, SW de Portugal): activos el 12 % del tiempo, sobre todo de noche y en cuartos de luna."
+   },
+   "pita_freire_2011": {
+    "titulo": "Pita P., Freire J. (2011). Movements of three large coastal predatory fishes in the northeast Atlantic: a preliminary telemetry study. Scientia Marina 75(4).",
+    "url": "https://scientiamarina.revistas.csic.es/index.php/scientiamarina/article/view/1298",
+    "tipo": "cientifico",
+    "licencia": "CC BY 4.0",
+    "fecha_consulta": "2026-10-08",
+    "leido": "resumen",
+    "nota": "A Coruña: el congrio sale del refugio al anochecer o de noche; la lubina se detecta de día y de noche y es la de mayor área."
+   },
+   "belo_2016_sargo": {
+    "titulo": "Belo et al. (2016). Movimientos de Diplodus sargus en la reserva integral de la isla do Pessegueiro (marcado y telemetría acústica). Marine Environmental Research 114: 80-94.",
+    "url": "https://rdpc.uevora.pt/handle/10174/19554",
+    "tipo": "cientifico",
+    "licencia": "solo se cita el dato (sin copiar texto); licencia del documento no revisada",
+    "fecha_consulta": "2026-10-08",
+    "leido": "resumen",
+    "nota": "19 sargos, 60 días: más movimiento (y más variable) de día y en mareas muertas; interacción marea × hora del día."
+   },
+   "puerto_sargo_rompiente": {
+    "titulo": "Puerto-Martínez D. et al. Diplodus sargus en la zona de rompiente de playas de Cádiz (póster, Universidad de Cádiz).",
+    "url": "https://ccmaryambientales.uca.es/wp-content/uploads/2023/05/P1-Daniel_Puerto-Martinez.pdf",
+    "tipo": "tesis",
+    "licencia": "solo se cita el dato (sin copiar texto); licencia del documento no revisada",
+    "fecha_consulta": "2026-10-08",
+    "leido": "resumen",
+    "nota": "La altura de ola, la temperatura y el viento son los mejores predictores de la abundancia de sargo en la rompiente (el resumen no da el signo)."
+   },
+   "macy_1998_caballa": {
+    "titulo": "Macy W.K., Sutherland S.J., Durbin E.G. (1998). Effects of zooplankton size and concentration and light intensity on the feeding behavior of Atlantic mackerel. MEPS 172: 89-100.",
+    "url": "https://int-res.com/abstracts/meps/v172/p89-100",
+    "tipo": "cientifico",
+    "licencia": "solo se cita el dato (sin copiar texto); licencia del documento no revisada",
+    "fecha_consulta": "2026-10-08",
+    "leido": "resumen",
+    "nota": "Umbral de luz muy bajo para comer: la caballa puede alimentarse de noche cerca de la superficie."
+   },
+   "deia_2025_bonito": {
+    "titulo": "Deia (2025-08-07). La flota vasca ha capturado más de 7.100 toneladas de bonito.",
+    "url": "https://www.deia.eus/economia/2025/08/07/flota-vasca-capturado-7-100-9960840.html",
+    "tipo": "prensa",
+    "licencia": "solo se cita el hecho",
+    "fecha_consulta": "2026-10-08",
+    "leido": "resumen",
+    "nota": "Literatura gris: con el agua muy caliente en el golfo los cardúmenes estaban lejos de la costa."
+   }
+  },
+  "reglas": [
+   {
+    "id": "rio_crecido_cefalopodos",
+    "nombre": "Río crecido: cefalópodos fuera",
+    "texto": "río crecido cerca: el agua dulce aparta (o mata) a pulpos, sepias y calamares de la desembocadura",
+    "fuente": "iglesias_2016_pulpo_salinidad",
+    "fuentes_adicionales": [
+     "guerra_2006_sepia",
+     "sobrino_2020_pulpo"
+    ],
+    "tipo": "cientifica",
+    "estado": "por_validar",
+    "confianza": 0.7,
+    "validacion": "Propuesta de evidencia (2026-10-08): no activa. Si Mikel la aprueba, moverla a reglas_expertas.reglas (y su fuente a fuentes) y calibrar con el diario.",
+    "ambito": {
+     "modalidades": [
+      "costa",
+      "embarcacion",
+      "submarina"
+     ],
+     "especies": [
+      "pulpo",
+      "sepia",
+      "calamar"
+     ]
+    },
+    "condiciones": [
+     {
+      "var": "caudal_rio",
+      "op": "==",
+      "valor": "alto"
+     },
+     {
+      "var": "rio_desembocadura_km",
+      "op": "<=",
+      "valor": 3
+     }
+    ],
+    "efecto": {
+     "logodds": -1.0
+    },
+    "variable": "caudal_rio",
+    "nota": "Los cefalópodos son los que peor llevan el agua dulce: el pulpo deja de comer y muere a 20 psu en un día (Iglesias 2016), hay mortandades de pulpo tras lluvias torrenciales en Portugal, y la sepia prefiere la parte salada de la ría y sus huevos no eclosionan por debajo de ~24. Más fuerte que la regla general de Mikel (-0,5). Si se activa, añadir pulpo, sepia y calamar a especies_excluidas de rio_crecido_salinidad_resto para que sean excluyentes.",
+    "sustituye": [
+     "caudal_rio"
+    ],
+    "mecanismo": "osmorregulación: estenohalinos marinos"
+   },
+   {
+    "id": "lluvia_fuerte_pulpo",
+    "nombre": "Lluvia torrencial: pulpo",
+    "texto": "lluvia muy fuerte en las últimas 48 h: el agua dulce de escorrentía aparta al pulpo de la orilla",
+    "fuente": "iglesias_2016_pulpo_salinidad",
+    "fuentes_adicionales": [
+     "sobrino_2020_pulpo",
+     "guerra_2006_sepia"
+    ],
+    "tipo": "cientifica",
+    "estado": "por_validar",
+    "confianza": 0.4,
+    "validacion": "Propuesta de evidencia (2026-10-08): no activa. Si Mikel la aprueba, moverla a reglas_expertas.reglas (y su fuente a fuentes) y calibrar con el diario.",
+    "ambito": {
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ],
+     "especies": [
+      "pulpo",
+      "sepia"
+     ]
+    },
+    "condiciones": [
+     {
+      "var": "lluvia",
+      "agregado": "suma",
+      "desde_h": -48,
+      "hasta_h": 0,
+      "op": ">=",
+      "valor": 40
+     }
+    ],
+    "efecto": {
+     "logodds": -0.5,
+     "escala": {
+      "var": "lluvia",
+      "agregado": "suma",
+      "desde_h": -48,
+      "hasta_h": 0,
+      "de": 40,
+      "a": 100,
+      "minimo": 0.5
+     }
+    },
+    "variable": "lluvia",
+    "nota": "Complementa la regla del río para los spots sin río asociado: escorrentía local en calas y rías. El umbral de 40 mm en 48 h es una traducción de Claude (no viene de la fuente); calibrar con el diario. En submarina ya resta la lluvia por visibilidad, por eso no se incluye.",
+    "mecanismo": "bajada brusca de salinidad superficial"
+   },
+   {
+    "id": "lisa_rio_crecido",
+    "nombre": "Río crecido: la lisa entra",
+    "texto": "río crecido cerca: la lisa tolera y busca el agua salobre de la desembocadura",
+    "fuente": "cardona_2006_mugilidos",
+    "fuentes_adicionales": [],
+    "tipo": "cientifica",
+    "estado": "por_validar",
+    "confianza": 0.4,
+    "validacion": "Propuesta de evidencia (2026-10-08): no activa. Si Mikel la aprueba, moverla a reglas_expertas.reglas (y su fuente a fuentes) y calibrar con el diario.",
+    "ambito": {
+     "modalidades": [
+      "costa"
+     ],
+     "especies": [
+      "lisa"
+     ]
+    },
+    "condiciones": [
+     {
+      "var": "caudal_rio",
+      "op": "==",
+      "valor": "alto"
+     },
+     {
+      "var": "rio_desembocadura_km",
+      "op": "<=",
+      "valor": 3
+     }
+    ],
+    "efecto": {
+     "logodds": 0.3
+    },
+    "variable": "caudal_rio",
+    "nota": "Liza ramada (la lisa de río) prefiere salinidad < 15 y crece mejor en agua oligomesohalina; Chelon labrosus la tolera. Coherente con que Mikel ya excluye la lisa de la regla negativa.",
+    "sustituye": [
+     "caudal_rio"
+    ],
+    "mecanismo": "eurihalina, prefiere agua salobre"
+   },
+   {
+    "id": "enfriamiento_brusco_agua",
+    "nombre": "Bajón de temperatura del agua",
+    "texto": "el agua se ha enfriado de golpe (afloramiento o temporal): los peces costeros comen menos",
+    "fuente": "stoner_2004",
+    "fuentes_adicionales": [
+     "ices_afloramiento_biscay",
+     "alvarez_afloramiento_cantabrico"
+    ],
+    "tipo": "cientifica",
+    "estado": "por_validar",
+    "confianza": 0.4,
+    "validacion": "Propuesta de evidencia (2026-10-08): no activa. Si Mikel la aprueba, moverla a reglas_expertas.reglas (y su fuente a fuentes) y calibrar con el diario.",
+    "ambito": {
+     "modalidades": [
+      "costa",
+      "embarcacion"
+     ],
+     "especies": [
+      "@depredadores_costeros"
+     ]
+    },
+    "condiciones": [
+     {
+      "var": "temp_agua",
+      "agregado": "delta",
+      "desde_h": -48,
+      "hasta_h": 0,
+      "op": "<=",
+      "valor": -1.5
+     }
+    ],
+    "efecto": {
+     "logodds": -0.4,
+     "escala": {
+      "var": "temp_agua",
+      "agregado": "delta",
+      "desde_h": -48,
+      "hasta_h": 0,
+      "de": -1.5,
+      "a": -4,
+      "minimo": 0.5
+     }
+    },
+    "variable": "temp_agua@delta_48h",
+    "nota": "La temperatura es de las variables que más mueven la capturabilidad (Stoner 2004). En el Cantábrico, el viento del este en primavera-verano provoca afloramientos que enfrían la costa en 1-2 días: es el mecanismo físico más probable detrás de la regla de levante de Mikel. Esta regla mira el efecto (el agua fría) en vez del viento. El umbral de -1,5 °C en 48 h es una traducción de Claude.",
+    "mecanismo": "metabolismo y apetito dependen de la temperatura"
+   },
+   {
+    "id": "bonito_mar_agitada_previa",
+    "nombre": "Bonito: mar revuelta (mezcla)",
+    "texto": "mar muy agitada el último día: la mezcla del agua dispersa el bonito en superficie",
+    "fuente": "goni_2015_alb",
+    "fuentes_adicionales": [
+     "iccat_2013_alb",
+     "hegaluze_2010_alb"
+    ],
+    "tipo": "cientifica",
+    "estado": "por_validar",
+    "confianza": 0.5,
+    "validacion": "Propuesta de evidencia (2026-10-08): no activa. Si Mikel la aprueba, moverla a reglas_expertas.reglas (y su fuente a fuentes) y calibrar con el diario.",
+    "ambito": {
+     "modalidades": [
+      "embarcacion"
+     ],
+     "especies": [
+      "bonito_norte"
+     ],
+     "meses": [
+      6,
+      7,
+      8,
+      9,
+      10
+     ]
+    },
+    "condiciones": [
+     {
+      "var": "ola",
+      "agregado": "media",
+      "desde_h": -36,
+      "hasta_h": -6,
+      "op": ">=",
+      "valor": 2.5
+     }
+    ],
+    "efecto": {
+     "logodds": -0.4
+    },
+    "variable": "ola@mezcla_previa",
+    "nota": "Tres fuentes de la pesquería vasca coinciden: la mezcla superficial resta en curricán y cebo vivo (Goñi 2015), la capa de mezcla profunda baja la capturabilidad (ICCAT 2013) y la CPUE de los de 2 años baja con la agitación del mar (Hegaluze 2010). Mira las horas anteriores a la salida (no la ola de ahora, que ya cuenta en el factor de oleaje de embarcación).",
+    "mecanismo": "capa de mezcla más profunda: el bonito baja y se dispersa"
+   },
+   {
+    "id": "lubina_noche_invierno",
+    "nombre": "Lubina: de noche en invierno",
+    "texto": "en invierno la lubina come más de noche",
+    "fuente": "azzaydi_1998_bss",
+    "fuentes_adicionales": [
+     "begout_1997_bss",
+     "faucher_2006_bss"
+    ],
+    "tipo": "cientifica",
+    "estado": "por_validar",
+    "confianza": 0.4,
+    "validacion": "Propuesta de evidencia (2026-10-08): no activa. Si Mikel la aprueba, moverla a reglas_expertas.reglas (y su fuente a fuentes) y calibrar con el diario.",
+    "ambito": {
+     "modalidades": [
+      "costa"
+     ],
+     "especies": [
+      "lubina"
+     ],
+     "meses": [
+      11,
+      12,
+      1,
+      2,
+      3
+     ]
+    },
+    "condiciones": [
+     {
+      "var": "luz",
+      "op": "==",
+      "valor": "noche"
+     }
+    ],
+    "efecto": {
+     "logodds": 0.3
+    },
+    "variable": "luz@invierno",
+    "nota": "Inversión estacional del ritmo de alimentación (nocturno en invierno, diurno en primavera) medida en cautividad; en libertad las lubinas solas son nocturnas (Bégout Anras 1997) y de noche localizan la comida por el olfato (Faucher 2006). Se suma a la preferencia de luz de la especie (noche 0,4) solo en invierno.",
+    "mecanismo": "ritmo circadiano con inversión estacional"
+   }
+  ],
+  "ajustes": [
+   {
+    "id": "bonito_rango_temperatura",
+    "objetivo": "especies[bonito_norte].temperatura_agua.rango",
+    "actual": [
+     16,
+     19
+    ],
+    "propuesto": [
+     16,
+     18
+    ],
+    "fuente": "sagarminaga_2010_alb",
+    "fuentes_adicionales": [
+     "deia_2025_bonito"
+    ],
+    "tipo": "cientifica",
+    "confianza": 0.7,
+    "motivo": "Ventana de SST preferente 16-18 °C, estadísticamente significativa con 17 años de cuadernos de pesca del golfo. Sustituye a la fuente heredada sin cita (app_index). Con el agua más caliente el bonito se aleja (literatura gris 2025)."
+   },
+   {
+    "id": "pulpo_rango_temperatura",
+    "objetivo": "especies[pulpo].temperatura_agua.rango",
+    "actual": null,
+    "propuesto": [
+     16,
+     21
+    ],
+    "fuente": "aguado_2002_pulpo",
+    "tipo": "cientifica",
+    "confianza": 0.5,
+    "motivo": "Óptimo de crecimiento 17,5 °C e ingesta máxima 20 °C (laboratorio, 13-28 °C); por encima de ~23 °C pierden peso. Hoy el pulpo no puntúa temperatura."
+   },
+   {
+    "id": "presion_confianza_baja",
+    "objetivo": "reglas_expertas.reglas[presion_bajando_6h|presion_bajando_24h|presion_subiendo_tras_frente].confianza",
+    "actual": [
+     0.6,
+     0.5,
+     0.5
+    ],
+    "propuesto": [
+     0.4,
+     0.35,
+     0.3
+    ],
+    "fuente": "stoner_2004",
+    "fuentes_adicionales": [
+     "heupel_2003",
+     "bacheler_2019",
+     "vanderweyst_2014"
+    ],
+    "tipo": "cientifica",
+    "confianza": 0.6,
+    "motivo": "No hay ningún experimento controlado que muestre que la presión dispare la alimentación en peces marinos (Stoner 2004); el único ensayo de laboratorio encontrado no ve efecto; en telemetría los peces de poco fondo se van a aguas profundas cuando cae la presión antes de un temporal (Heupel 2003) y el movimiento en temporales lo explica mejor el oleaje que la presión (Bacheler 2019). Mantener las reglas de Mikel (son su experiencia), pero con menos peso hasta que el diario las confirme."
+   },
+   {
+    "id": "presion_defecto_peso",
+    "objetivo": "reglas_por_defecto.presion.peso_lo",
+    "actual": 0.24,
+    "propuesto": 0.12,
+    "fuente": "stoner_2004",
+    "tipo": "cientifica",
+    "confianza": 0.6,
+    "motivo": "Mismo motivo: la tendencia de 3 h por defecto no tiene respaldo; la mitad de peso hasta calibrar."
+   },
+   {
+    "id": "bonito_temporales_oeste_calma",
+    "objetivo": "reglas_expertas.reglas[bonito_temporales_oeste]",
+    "actual": "solo mira el viento W-NW de hace 1-5 días",
+    "propuesto": "añadir la condición { var: viento, agregado: media, desde_h: -12, hasta_h: 0, op: <, valor: 20 } (que ya haya calmado) y dejar la confianza en 0,3",
+    "fuente": "goni_2015_alb",
+    "fuentes_adicionales": [
+     "iccat_2013_alb",
+     "hegaluze_2010_alb",
+     "ices_afloramiento_biscay",
+     "lavin_2007_hom_alb"
+    ],
+    "tipo": "cientifica",
+    "confianza": 0.5,
+    "motivo": "Durante y justo después del temporal la mezcla baja las capturas de superficie (contradice un efecto inmediato). El mecanismo que sí podría apoyar a Mikel: el viento del oeste empuja agua oceánica cálida hacia la costa cantábrica (transporte de Ekman hacia el sur) y la disponibilidad anual del bonito se relaciona con la componente zonal del viento (Lavín 2007), pero no hay estudio a escala de días."
+   },
+   {
+    "id": "rio_crecido_resto_excluir_dorada",
+    "objetivo": "reglas_expertas.reglas[rio_crecido_salinidad_resto].ambito.especies_excluidas",
+    "actual": [
+     "lubina",
+     "lisa"
+    ],
+    "propuesto": [
+     "lubina",
+     "lisa",
+     "dorada",
+     "pulpo",
+     "sepia",
+     "calamar"
+    ],
+    "fuente": "mercier_2012_dorada",
+    "fuentes_adicionales": [
+     "iglesias_2016_pulpo_salinidad"
+    ],
+    "tipo": "cientifica",
+    "confianza": 0.5,
+    "motivo": "La dorada es eurihalina y vive en lagunas salobres hasta 11 meses al año: no se aparta por la salinidad como el resto. Los cefalópodos salen de esta regla porque pasan a la suya, más fuerte (rio_crecido_cefalopodos)."
+   },
+   {
+    "id": "levante_cantabrico_confianza",
+    "objetivo": "reglas_expertas.reglas[levante_cantabrico].confianza",
+    "actual": 0.7,
+    "propuesto": 0.5,
+    "fuente": "ices_afloramiento_biscay",
+    "fuentes_adicionales": [
+     "alvarez_afloramiento_cantabrico"
+    ],
+    "tipo": "cientifica",
+    "confianza": 0.4,
+    "motivo": "No hay estudio de capturas con viento del este en el Cantábrico. El mecanismo físico plausible (afloramiento: agua más fría y clara en primavera-verano) lo cubre mejor la regla enfriamiento_brusco_agua; en invierno no hay mecanismo documentado. Bajar la confianza hasta calibrar."
+   },
+   {
+    "id": "calamar_luna_llena",
+    "objetivo": "reglas_por_defecto.luna / especies[calamar]",
+    "actual": "luna sin peso (informativa)",
+    "propuesto": "dar a la luna llena +0,3 en log-odds al calamar de noche cuando exista una variable 'luna' (fracción iluminada) en el motor de reglas; hoy no existe",
+    "fuente": "ulas_2011_calamar",
+    "tipo": "cientifica",
+    "confianza": 0.4,
+    "requiere_variable_nueva": "luna",
+    "motivo": "Único estudio específico de Loligo vulgaris al jigging: la luna llena aumenta las capturas (p<0,01); la pesquería tradicional de calamar a mano también dice pescar mejor con luna llena (FAO). En otras especies de calamar el efecto es el contrario: confianza baja."
+   },
+   {
+    "id": "congrio_luna_cuartos",
+    "objetivo": "especies[congrio]",
+    "actual": "sin luna",
+    "propuesto": "anotar en el criterio de luz que es nocturno (confirmado por telemetría) y, si se crea la variable 'luna', +0,2 en cuartos",
+    "fuente": "pereira_2017_congrio",
+    "fuentes_adicionales": [
+     "pita_freire_2011"
+    ],
+    "tipo": "cientifica",
+    "confianza": 0.3,
+    "requiere_variable_nueva": "luna",
+    "motivo": "La preferencia nocturna del congrio ya está en sus reglas; la telemetría la confirma y añade más actividad en cuartos de luna (6 peces, 2 meses: muestra pequeña)."
+   },
+   {
+    "id": "sepia_fuente_temperatura",
+    "objetivo": "especies[sepia].temperatura_agua",
+    "actual": "rango [12, 18] de app_index",
+    "propuesto": "mantener [12, 18] y añadir guerra_2006_sepia como fuente (desove costero a 12-15 °C)",
+    "fuente": "guerra_2006_sepia",
+    "tipo": "cientifica",
+    "confianza": 0.5,
+    "motivo": "El rango heredado es coherente con la temperatura de desove en aguas someras (12-15 °C) de la ría de Vigo."
+   }
+  ],
+  "top10": [
+   "rio_crecido_cefalopodos",
+   "presion_confianza_baja",
+   "bonito_mar_agitada_previa",
+   "bonito_rango_temperatura",
+   "bonito_temporales_oeste_calma",
+   "enfriamiento_brusco_agua",
+   "rio_crecido_resto_excluir_dorada",
+   "pulpo_rango_temperatura",
+   "lubina_noche_invierno",
+   "lluvia_fuerte_pulpo"
+  ]
  }
 }
