@@ -1,0 +1,182 @@
+name: Aprendizaje semanal del índice (sin IA)
+
+# Pedido de Mikel (2026-10-09): que el índice de pesca aprenda solo de lo que
+# se pesca, proponga ideas y solo le pregunte sí/no una vez por semana.
+# SIN IA: todo es estadística (scripts/aprendizaje/, detalle en CLAUDE.md,
+# "Aprendizaje autónomo del índice").
+#
+# Dos trabajos:
+#   1. `semanal` (lunes de madrugada): banco de pruebas, ajuste de pesos con
+#      barreras, retadores en la sombra, vigilancia de datos y propuestas.
+#      Lo lanza pg_cron con lanzar_workflow_github() (migración
+#      20261009100000_programador_aprendizaje.sql): el `schedule:` de GitHub
+#      se salta ejecuciones en este repo (trampa 15 de comun) y se queda de
+#      respaldo. Si hay cambios automáticos (pequeños y validados), abre una
+#      PR, corre los mismos tests que tests.yml y la fusiona SOLO si pasan;
+#      si algo falla, los cambios se quedan como propuestas para el sí/no.
+#   2. `retadores-rama`: cuando la rutina "Costaviva - Investigador semanal"
+#      sube una rama robot/aprendizaje-* con retadores nuevos, los evalúa con
+#      los datos privados del diario (solo agregados k ≥ 5) y deja el
+#      resultado en aprendizaje/evaluacion-retadores.json de esa rama. El
+#      código que corre es el de main: de la rama solo se leen los JSON.
+#
+# Datos: service_role en SOLO LECTURA (salidas_pesca, capturas, perfiles,
+# administradores) y Open-Meteo con OPEN_METEO_API_KEY. El repo es público:
+# solo se escriben agregados (scripts/aprendizaje/privacidad.mjs) y nada se
+# guarda en la caché de Actions (la leerían las PR de forks).
+
+on:
+  schedule:
+    - cron: "41 4 * * 1" # respaldo: lunes 04:41 UTC (lo normal es pg_cron)
+  workflow_dispatch:
+    inputs:
+      aplicar:
+        description: "Permitir cambios automáticos dentro de las barreras (si no, todo queda como propuesta)"
+        type: boolean
+        default: true
+  push:
+    branches:
+      - "robot/aprendizaje-**"
+    paths:
+      - "aprendizaje/retadores/**"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: aprendizaje-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  semanal:
+    # Interruptor de pausa (comun pruebas-y-alertas.md P8).
+    if: ${{ github.event_name != 'push' && vars.AUTOMATION_PAUSED != 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0 # la frescura de las fuentes sale de git log
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Aprender (sin IA)
+        id: aprender
+        env:
+          SUPABASE_URL: https://imncbmizxkorotpeisic.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          OPEN_METEO_API_KEY: ${{ secrets.OPEN_METEO_API_KEY }}
+          TEST_USER_A_EMAIL: ${{ secrets.TEST_USER_A_EMAIL }}
+          TEST_USER_B_EMAIL: ${{ secrets.TEST_USER_B_EMAIL }}
+          APLICAR: ${{ github.event_name != 'workflow_dispatch' || inputs.aplicar }}
+        run: |
+          if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then echo "::error::Falta el secret SUPABASE_SERVICE_ROLE_KEY."; exit 1; fi
+          if [ -z "$OPEN_METEO_API_KEY" ]; then echo "::warning::Sin OPEN_METEO_API_KEY: el banco de pruebas solo usa los términos guardados por el diario."; fi
+          if [ "$APLICAR" = "true" ]; then node scripts/aprendizaje/semanal.mjs; else node scripts/aprendizaje/semanal.mjs --no-aplicar; fi
+          cat aprendizaje/RESUMEN.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Tests (los mismos que tests.yml) si hay cambios automáticos
+        id: tests
+        if: steps.aprender.outputs.cambios != '0'
+        run: |
+          CMD=$(grep -o 'node --test .*' .github/workflows/tests.yml | head -1)
+          if [ -z "$CMD" ]; then echo "ok=false" >> "$GITHUB_OUTPUT"; echo "::warning::No se encontró la orden de tests.yml."; exit 0; fi
+          if eval "$CMD"; then echo "ok=true" >> "$GITHUB_OUTPUT"; else echo "ok=false" >> "$GITHUB_OUTPUT"; echo "::warning::Los tests fallan con los cambios automáticos: quedan como propuesta."; fi
+
+      - name: Subir resultados (y la PR de cambios automáticos si todo pasa)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CAMBIOS: ${{ steps.aprender.outputs.cambios }}
+          TESTS_OK: ${{ steps.tests.outputs.ok }}
+          REPO: ${{ github.repository }}
+        run: |
+          git config user.name "Costaviva (aprendizaje)"
+          git config user.email "noreply@anthropic.com"
+          FECHA=$(date -u +%F)
+          SALIDAS="aprendizaje datos-robots/aprendizaje assets/datos/aprendizaje-indice.json"
+          subir_main() {
+            git add $SALIDAS
+            if git diff --cached --quiet; then echo "Sin cambios."; return 0; fi
+            git commit -qm "Aprendizaje semanal $FECHA: banco de pruebas, vigilancia y propuestas [skip ci]"
+            for i in 1 2 3; do git pull -q --rebase origin main && git push -q origin HEAD:main && return 0; sleep 5; done
+            echo "::error::No se pudieron subir los resultados"; return 1
+          }
+          RAMA=""
+          degradar() {
+            echo "::warning::$1"
+            git checkout -q main
+            # Si ya había rama, sus resultados vuelven a main (sin el cambio de especies.json).
+            if [ -n "$RAMA" ]; then git checkout "$RAMA" -- $SALIDAS; fi
+            git checkout HEAD -- assets/datos/especies.json
+            node scripts/aprendizaje/semanal.mjs --degradar-auto "$1"
+            subir_main
+          }
+          if [ "${CAMBIOS:-0}" = "0" ]; then subir_main; exit $?; fi
+          if [ "$TESTS_OK" != "true" ]; then degradar "los tests no pasan con el cambio"; exit $?; fi
+          RAMA="aprendizaje/auto-$FECHA"
+          git checkout -q -b "$RAMA"
+          git add $SALIDAS assets/datos/especies.json
+          git commit -qm "Aprendizaje: ajuste automático de pesos ($FECHA)" -m "Cambios dentro de las barreras de aprendizaje/config.json, validados con las salidas más recientes y con los tests de tests.yml. Detalle en aprendizaje/RESUMEN.md."
+          if ! git push -q -f origin "$RAMA"; then degradar "no se pudo subir la rama $RAMA"; exit $?; fi
+          CUERPO=$(printf 'Ajuste automático semanal del índice de pesca (sin IA).\n\nSolo cambia la `confianza` de reglas expertas dentro de las barreras (±20 %% por semana, ±50 %% del valor experto, validado con las salidas recientes y el panel de referencia). Los tests de tests.yml han pasado en el propio workflow antes de fusionar.\n\nResumen: aprendizaje/RESUMEN.md. Para deshacerlo, di "no" a la propuesta en el Issue semanal: el siguiente lunes se revierte solo.\n')
+          PR=$(gh api "repos/$REPO/pulls" -f title="Aprendizaje: ajuste automático de pesos ($FECHA)" -f head="$RAMA" -f base=main -f body="$CUERPO" --jq .number 2>/dev/null) || PR=""
+          if [ -z "$PR" ]; then
+            degradar "no se pudo abrir la PR (Settings → Actions → General → Allow GitHub Actions to create and approve pull requests); la rama $RAMA está subida: https://github.com/$REPO/compare/main...$RAMA?expand=1"
+            exit $?
+          fi
+          node scripts/aprendizaje/semanal.mjs --poner-pr "$PR"
+          git add aprendizaje/propuestas.json
+          git commit -qm "Aprendizaje: enlaza la PR #$PR en las propuestas"
+          git push -q origin "$RAMA"
+          if gh api -X PUT "repos/$REPO/pulls/$PR/merge" -f merge_method=squash >/dev/null; then
+            echo "PR #$PR fusionada."
+          else
+            degradar "no se pudo fusionar la PR #$PR (protección de rama u otro motivo); queda abierta: fusionarla es decir que sí"
+          fi
+
+  retadores-rama:
+    if: ${{ github.event_name == 'push' && github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Rama con los retadores (solo se leen sus JSON)
+        uses: actions/checkout@v4
+        with:
+          path: rama
+
+      - name: Código de main (es el que se ejecuta)
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: principal
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Evaluar los retadores con los datos del diario (agregados)
+        env:
+          SUPABASE_URL: https://imncbmizxkorotpeisic.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          OPEN_METEO_API_KEY: ${{ secrets.OPEN_METEO_API_KEY }}
+          TEST_USER_A_EMAIL: ${{ secrets.TEST_USER_A_EMAIL }}
+          TEST_USER_B_EMAIL: ${{ secrets.TEST_USER_B_EMAIL }}
+        run: |
+          if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then echo "::error::Falta el secret SUPABASE_SERVICE_ROLE_KEY."; exit 1; fi
+          node principal/scripts/aprendizaje/semanal.mjs --solo-retadores rama/aprendizaje/retadores --salida-evaluacion rama/aprendizaje/evaluacion-retadores.json
+
+      - name: Dejar la evaluación en la rama
+        env:
+          RAMA: ${{ github.ref_name }}
+        run: |
+          cd rama
+          git config user.name "Costaviva (aprendizaje)"
+          git config user.email "noreply@anthropic.com"
+          git add aprendizaje/evaluacion-retadores.json
+          if git diff --cached --quiet; then echo "Sin cambios."; exit 0; fi
+          git commit -qm "Evaluación de los retadores con los datos del diario (agregados)"
+          git push -q origin "HEAD:$RAMA"

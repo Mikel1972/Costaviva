@@ -152,12 +152,25 @@
   <!-- Etiquetado de fotos de las cámaras de oleaje (2026-10-08). -->
   <h2 style="font-size:15px; margin:28px 0 6px;">🌊 Olas de las cámaras</h2>
   <p class="resumen"><a href="/etiquetar-olas.html">Etiquetar fotos de las cámaras</a>: un toque por foto; afina la altura "según cámara" de los spots.</p>
+  <!-- Aprendizaje del índice (2026-10-09): lo que dice el aprendizaje semanal
+       (assets/datos/aprendizaje-indice.json, solo agregados) y, privado en
+       este navegador, tus salidas donde el índice más se equivocó. -->
+  <h2 style="font-size:15px; margin:28px 0 6px;">🧠 Aprendizaje del índice</h2>
+  <p class="resumen" id="resumenAprendizaje">Cargando…</p>
+  <div style="overflow-x:auto;">
+    <table>
+      <thead><tr><th>Índice</th><th>Salidas</th><th>Se pescó algo</th></tr></thead>
+      <tbody id="filasCalibracion"></tbody>
+    </table>
+  </div>
+  <p class="resumen" id="resumenMisSalidas" style="margin-top:12px;"></p>
+  <ul id="listaMisSalidas" style="font-size:13px; margin:4px 0 0; padding-left:18px;"></ul>
   <h2 style="font-size:15px; margin:28px 0 6px;">🎣 Reglas expertas del índice de pesca</h2>
   <p class="resumen" id="resumenReglas">Cargando reglas…</p>
   <div style="overflow-x:auto;">
     <table>
       <thead>
-        <tr><th>Regla</th><th>Ámbito</th><th>Condiciones</th><th>Efecto</th><th>Fuente / estado</th></tr>
+        <tr><th>Regla</th><th>Ámbito</th><th>Condiciones</th><th>Efecto</th><th>Fuente / estado</th><th>Lo que dicen los datos</th></tr>
       </thead>
       <tbody id="filasReglas"></tbody>
     </table>
@@ -514,10 +527,21 @@ cargarInvitaciones();
 async function cargarReglasExpertas() {
   const resumen = document.getElementById("resumenReglas");
   try {
-    const [datos, { validarRegla }] = await Promise.all([
+    const [datos, { validarRegla }, aprendizaje] = await Promise.all([
       fetch("/assets/datos/especies.json", { cache: "no-cache" }).then((r) => r.json()),
       import("/assets/js/reglas-expertas.js"),
+      fetch("/assets/datos/aprendizaje-indice.json", { cache: "no-cache" }).then((r) => (r.ok ? r.json() : null)).catch(() => null),
     ]);
+    const unidades = aprendizaje?.unidades || {};
+    // Incertidumbre de cada regla según el aprendizaje semanal (solo agregados de 5 personas o más).
+    const datosRegla = (r) => {
+      const u = unidades[`regla:${r.id}`];
+      const experta = r.confianza_experta != null && r.confianza_experta !== r.confianza ? `<br>ajustada por los datos (la tuya: ${esc(r.confianza_experta)})` : "";
+      if (!u) return `sin salidas todavía${experta}`;
+      if (u.oculto) return `${esc(u.motivo)}${experta}`;
+      const m = u.multiplicador != null ? `peso ×${esc(u.multiplicador)} ± ${esc(u.sd)}` : "aún sin ajuste";
+      return `${esc(u.n)} salidas · ${m}<br>${u.ablacion_logloss > 0 ? "ayuda" : u.ablacion_logloss < 0 ? "estorba" : "neutra"}${experta}`;
+    };
     const b = datos.reglas_expertas || { reglas: [] };
     const esc = (t) => String(t ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
     const lista = (x) => (Array.isArray(x) && x.length ? x.join(", ") : "todas");
@@ -533,6 +557,7 @@ async function cargarReglasExpertas() {
         <td>${(r.condiciones || []).map((c) => esc(cond(c))).join("<br>")}</td>
         <td>${esc(r.efecto?.logodds)} × ${esc(r.confianza)} = ${esc(((r.efecto?.logodds || 0) * (r.confianza ?? 1)).toFixed(2))}${r.sustituye ? `<br>sustituye: ${esc(r.sustituye.join(", "))}` : ""}</td>
         <td>${esc(datos.fuentes[r.fuente]?.titulo || r.fuente)}<br>${esc(r.tipo)} · <b>${esc(r.estado)}</b></td>
+        <td>${datosRegla(r)}</td>
       </tr>`;
     }).join("");
   } catch (e) {
@@ -541,6 +566,49 @@ async function cargarReglasExpertas() {
   }
 }
 cargarReglasExpertas();
+
+// Aprendizaje del índice (2026-10-09). Arriba, la calibración que publica el
+// aprendizaje semanal (agregada, repo público). Abajo, SOLO en este navegador
+// y solo con tus propias salidas (RLS: cada uno ve las suyas): las salidas en
+// las que el índice más se equivocó, para que cuentes en su nota qué pasó
+// (aprendizaje activo: son las que más enseñan). Nunca salen del navegador.
+async function cargarAprendizaje() {
+  const resumen = document.getElementById("resumenAprendizaje");
+  const esc = (t) => String(t ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  try {
+    const a = await fetch("/assets/datos/aprendizaje-indice.json", { cache: "no-cache" }).then((r) => (r.ok ? r.json() : null));
+    const g = a?.global;
+    if (!a) resumen.textContent = "El aprendizaje semanal todavía no ha publicado nada.";
+    else if (!g || g.oculto || !g.n) resumen.textContent = `Semana ${a.semana}: ${g?.oculto ? "hay salidas, pero de menos de 5 personas: no se publican sus números" : "todavía no hay salidas con índice para aprender"}.`;
+    else {
+      resumen.textContent = `Semana ${a.semana}: ${g.n} salidas. Se pescó algo en el ${Math.round(g.tasa * 100)} %. AUC ${g.auc ?? "—"} (0,5 = al azar), error de calibración ${g.ece_puntos} puntos. Cambios automáticos esta semana: ${(a.automaticos || []).length}.`;
+      document.getElementById("filasCalibracion").innerHTML = g.calibracion.filter((b) => b.n).map((b) => `<tr><td>${esc(b.desde)}-${esc(b.hasta)}</td><td>${esc(b.n)}</td><td>${esc(b.tasa_real)} %</td></tr>`).join("");
+    }
+  } catch (e) {
+    resumen.textContent = "No se pudo cargar el aprendizaje del índice.";
+  }
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    const { data: salidas, error } = await supabase.from("salidas_pesca")
+      .select("id,fecha,spot_nombre,indice_puntuacion,concluida")
+      .eq("user_id", session.user.id).not("indice_puntuacion", "is", null).order("fecha", { ascending: false }).limit(200);
+    if (error) throw error;
+    const terminadas = (salidas || []).filter((x) => x.concluida !== false);
+    if (!terminadas.length) { document.getElementById("resumenMisSalidas").textContent = "Tus salidas con índice aparecerán aquí."; return; }
+    const { data: caps } = await supabase.from("capturas").select("salida_id").in("salida_id", terminadas.map((x) => x.id));
+    const conPesca = new Set((caps || []).map((c) => c.salida_id));
+    const fallos = terminadas.map((x) => ({ ...x, pesca: conPesca.has(x.id), error: Math.abs(x.indice_puntuacion / 100 - (conPesca.has(x.id) ? 1 : 0)) }))
+      .filter((x) => x.error >= 0.5).sort((p, q) => q.error - p.error).slice(0, 5);
+    document.getElementById("resumenMisSalidas").textContent = fallos.length
+      ? "Tus salidas donde el índice más falló (solo las ves tú). Si recuerdas por qué (agua turbia, mar de fondo, cebo...), apúntalo en la nota de la salida en el diario: es lo que más enseña al índice."
+      : "En tus salidas el índice no ha fallado por mucho.";
+    document.getElementById("listaMisSalidas").innerHTML = fallos.map((x) => `<li>${esc(x.fecha)} · ${esc(x.spot_nombre || "ubicación propia")}: índice ${esc(x.indice_puntuacion)} y ${x.pesca ? "pescaste" : "no pescaste nada"}.</li>`).join("");
+  } catch (e) {
+    document.getElementById("resumenMisSalidas").textContent = "";
+    console.warn("salidas para aprender:", e);
+  }
+}
+cargarAprendizaje();
 </script>
 
 </body>

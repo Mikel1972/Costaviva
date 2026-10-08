@@ -1,0 +1,21 @@
+{
+ "id": "levante-confianza-05",
+ "titulo": "Levante en el Cantábrico con menos peso (0,7 → 0,5)",
+ "explicacion_llana": "La regla de Mikel que resta con viento de levante no tiene ningún estudio de capturas detrás; el efecto físico (agua más fría y clara en verano) ya lo cubre la regla de enfriamiento brusco del agua. Probamos en la sombra a darle menos peso hasta que el diario diga quién tiene razón.",
+ "estado": "sombra",
+ "fecha": "2026-10-09",
+ "autor": "sesión 2026-10-09 (de propuestas_evidencia.ajustes, no activado)",
+ "fuentes": [
+  "ices_afloramiento_biscay",
+  "alvarez_afloramiento_cantabrico"
+ ],
+ "cambios": [
+  {
+   "op": "modificar_regla",
+   "id": "levante_cantabrico",
+   "campos": {
+    "confianza": 0.5
+   }
+  }
+ ]
+}

@@ -1,0 +1,69 @@
+{
+ "id": "lisa-rio-crecido",
+ "titulo": "Río crecido: la lisa entra en la desembocadura",
+ "explicacion_llana": "La lisa aguanta y busca el agua salobre: con el río crecido cerca de su desembocadura, la regla suma un poco a la lisa desde costa (las demás especies ya restan). Solo actúa en spots con caudal real del río.",
+ "estado": "sombra",
+ "fecha": "2026-10-09",
+ "autor": "sesión 2026-10-09 (de propuestas_evidencia.reglas, no activada)",
+ "fuentes": [
+  "cardona_2006_mugilidos"
+ ],
+ "cambios": [
+  {
+   "op": "anadir_fuente",
+   "id": "cardona_2006_mugilidos",
+   "fuente": {
+    "titulo": "Cardona L. (2006). Habitat selection by grey mullets (Osteichthyes: Mugilidae) in Mediterranean estuaries: the role of salinity. Scientia Marina 70(3).",
+    "url": "https://scientiamarina.revistas.csic.es/index.php/scientiamarina/article/view/96",
+    "tipo": "cientifico",
+    "licencia": "CC BY 4.0",
+    "fecha_consulta": "2026-10-08",
+    "leido": "resumen",
+    "nota": "Menorca: Liza ramada y Mugil cephalus prefieren salinidad < 15 en primavera-verano; Chelon labrosus las usa sin efecto en el crecimiento; L. aurata y L. saliens evitan el agua dulce."
+   }
+  },
+  {
+   "op": "anadir_regla",
+   "regla": {
+    "id": "lisa_rio_crecido",
+    "nombre": "Río crecido: la lisa entra",
+    "texto": "río crecido cerca: la lisa tolera y busca el agua salobre de la desembocadura",
+    "fuente": "cardona_2006_mugilidos",
+    "fuentes_adicionales": [],
+    "tipo": "cientifica",
+    "estado": "por_validar",
+    "confianza": 0.4,
+    "ambito": {
+     "modalidades": [
+      "costa"
+     ],
+     "especies": [
+      "lisa"
+     ]
+    },
+    "condiciones": [
+     {
+      "var": "caudal_rio",
+      "op": "==",
+      "valor": "alto"
+     },
+     {
+      "var": "rio_desembocadura_km",
+      "op": "<=",
+      "valor": 3
+     }
+    ],
+    "efecto": {
+     "logodds": 0.3
+    },
+    "variable": "caudal_rio",
+    "nota": "Liza ramada (la lisa de río) prefiere salinidad < 15 y crece mejor en agua oligomesohalina; Chelon labrosus la tolera. Coherente con que Mikel ya excluye la lisa de la regla negativa.",
+    "sustituye": [
+     "caudal_rio"
+    ],
+    "mecanismo": "eurihalina, prefiere agua salobre",
+    "validacion": "Retador en la sombra (aprendizaje semanal): se activa solo con el sí de Mikel."
+   }
+  }
+ ]
+}
