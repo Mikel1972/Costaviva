@@ -1689,12 +1689,18 @@ Cada cebo lleva `modalidades` (costa/embarcacion) derivadas de su
 **Reglas de la ventana de actividad** (`reglas` y `reglas_por_defecto`): cada
 peso o preferencia lleva `fuente` o `criterio`, y si es una heurística de
 pescadores se marca `"tipo": "heuristica_experta"`. La marea se escala con el
-rango local: no la conviertas en factor fijo.
+rango local: no la conviertas en factor fijo. Desde la v2 (2026-10-08) los
+pesos van en log-odds, campo `peso_lo` (= los puntos de antes / 25; 0,4 ≈ 10
+puntos cerca de 50): no escribas `peso`. Las **reglas expertas**
+(`reglas_expertas.reglas`) no las toca la rutina: las añade Mikel o una sesión
+con él (guía en CLAUDE.md, "Cómo añadir una regla experta"); si una fuente
+abierta confirma o contradice una, apúntalo en su `nota`, sin cambiar el
+efecto ni la confianza.
 
 **Dónde va**: rama `robot/especies-AAAA-MM-DD`, nunca `main`. Al subirla,
 `robot-diseno-pr.yml` abre el PR (o un Issue con el enlace si GitHub no deja
 crear PR a Actions) y Mikel decide. Antes de commitear:
-`node --test test/ventana-actividad.test.js test/modalidades.test.js` (comprueba que toda fuente citada
+`node --test test/ventana-actividad.test.js test/modalidades.test.js test/indice-pesca-v2.test.js` (comprueba que toda fuente citada
 existe, que ninguna fuente NC sostiene un dato, que cada talla tiene url y
 fecha y que los meses y regiones son válidos). Si falla, no subas la rama:
 déjalo como propuesta en `ROBOT.md`. Este flujo sustituye, solo para este

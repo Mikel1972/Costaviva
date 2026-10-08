@@ -17,7 +17,7 @@
 //     afinar: se redondean aún más (0,2°), no menos.
 //   - El difuminado de las capturas compartidas por usuarios (rejilla ~5 km)
 //     y el umbral k-anónimo (k ≥ 5 usuarios distintos), espejo exacto de lo
-//     que hace la migración 20261008120000_capturas_compartidas.sql.
+//     que hace la migración 20261008150000_capturas_compartidas.sql.
 
 // ---------------------------------------------------------------------------
 // Licencias
