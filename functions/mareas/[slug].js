@@ -163,9 +163,14 @@ function renderizarPagina(spot, todos) {
 <meta property="og:url" content="${url}" />
 <meta property="og:title" content="${escaparHtml(titulo)}" />
 <meta property="og:description" content="${escaparHtml(descripcion)}" />
-<meta property="og:image" content="https://costaviva.org/assets/hero-peces-poster.jpg" />
+<meta property="og:image" content="${region ? `https://costaviva.org/assets/og/region-${region.slug}.jpg` : "https://costaviva.org/assets/og/mareas.jpg"}" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
 <meta property="og:locale" content="es_ES" />
 <meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="${region ? `https://costaviva.org/assets/og/region-${region.slug}.jpg` : "https://costaviva.org/assets/og/mareas.jpg"}" />
+<link rel="icon" href="/icon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="/assets/iconos/apple-touch-icon.png" />
 <meta name="twitter:title" content="${escaparHtml(titulo)}" />
 <meta name="twitter:description" content="${escaparHtml(descripcion)}" />
 <script type="application/ld+json">${jsonLd}</script>
