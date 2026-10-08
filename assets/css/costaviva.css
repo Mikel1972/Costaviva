@@ -1,0 +1,160 @@
+/* =========================================================================
+   Costaviva · aspecto "Amanecer de pesca" (elegido por Mikel, 2026-10-08)
+   -------------------------------------------------------------------------
+   Regla de uso (decisión de Mikel):
+   - El DEGRADADO de amanecer solo donde da emoción: cabecera y logo, botón y
+     pestaña activa, la nota del índice y su "sol", llamadas a la acción y
+     los posts de Instagram.
+   - Donde hay DATOS (cifras de ola/viento/marea, motivos ▲▼, textos
+     pequeños), sobrio: tinta oscura sobre fondo claro, buen contraste al sol.
+   - Índice por nivel: verde = bueno, amarillo sol = regular, coral = malo
+     (ver assets/js/nivel-indice.js). Nunca sobre el degradado.
+   Contraste comprobado (WCAG AA, texto normal >= 4.5:1):
+     tinta #1A1533 / fondo #FFF6EE 16.4 · tinta-2 #5A4E6B / superficie-2 6.7
+     acento #BE185D / fondo 5.7 · blanco / degradado-fuerte (peor punto
+     #C2410C) 5.2 · ok #15803D / blanco 5.0 · peligro #B42318 / blanco 6.6
+     mar #0B1E3F sobre nivel-bueno 9.5, nivel-medio 10.3, nivel-malo 6.0
+   Cada página carga este fichero antes de su <style> propio, que usa estas
+   variables: no poner colores sueltos en las páginas, añadir aquí un token.
+   ========================================================================= */
+
+:root {
+  /* Azul de mar profundo: cromo de la app (cabecera, menú, tarjeta del índice) */
+  --mar: #0B1E3F;
+  --mar-2: #13305E;
+  --mar-3: #1E4380;
+  --gris-mar: #A9B4D0;
+
+  /* Superficies claras donde se leen los datos */
+  --fondo: #FFF6EE;
+  --superficie: #FFFFFF;
+  --superficie-2: #FBEEE4;
+  --linea: #EBD9CC;
+
+  /* Texto */
+  --tinta: #1A1533;
+  --tinta-2: #5A4E6B;
+  --tinta-3: #463B57;
+  --blanco: #FFFFFF;
+
+  /* Amanecer */
+  --naranja: #FF8A3D;
+  --magenta: #E8467C;
+  --violeta: #7B3FE4;
+  --sol: #FFC24B;
+  --degradado: linear-gradient(100deg, #FF8A3D 0%, #E8467C 55%, #7B3FE4 100%);        /* solo decorativo, sin texto encima */
+  --degradado-fuerte: linear-gradient(100deg, #C2410C 0%, #BE185D 55%, #6D28D9 100%); /* lleva texto blanco */
+  --degradado-texto: linear-gradient(100deg, #FFB067 0%, #FF7FA8 60%, #B79BFF 100%);  /* letras sobre --mar */
+  --acento: #BE185D;
+  --sobre-acento: #FFFFFF;
+
+  /* Niveles del índice (rellenos o cifras sobre --mar) */
+  --nivel-bueno: #4ADE80;
+  --nivel-medio: #FFC24B;
+  --nivel-malo: #FF6B6B;
+  --nivel-sd: #A9B4D0;
+
+  /* Mensajes */
+  --ok: #15803D;
+  --ok-texto: #166534;
+  --ok-fondo: #E8F6EC;
+  --ok-borde: #A8D4B8;
+  --peligro: #B42318;
+  --peligro-texto: #8F1D13;
+  --peligro-fondo: #FDECEA;
+  --peligro-borde: #F0B3AB;
+  --aviso-texto: #8A4B08;
+  --aviso-fondo: #FFF4DC;
+  --aviso-borde: #F2C66B;
+
+  --f-titulo: "Unbounded", "Manrope", system-ui, sans-serif;
+  --f-texto: "Manrope", system-ui, sans-serif;
+}
+
+@keyframes pulso { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+
+body { font-family: var(--f-texto); color: var(--tinta); }
+
+/* ---------- Cabecera común ---------- */
+header {
+  background: var(--mar); color: var(--blanco); border-bottom: 0; position: relative; z-index: 2;
+  padding-bottom: 12px;
+}
+header::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: var(--degradado); }
+header h1 {
+  font-family: var(--f-titulo); font-weight: 800; letter-spacing: -0.5px; color: var(--blanco);
+}
+header p { color: var(--gris-mar); font-weight: 600; }
+/* Logotipo: marca (pez + ola) y nombre en mayúsculas con el degradado. */
+.marca-logo { display: block; width: 36px; height: 36px; flex-shrink: 0; }
+.marca-logo .marca-fondo { fill: var(--naranja); }
+.marca-logo .marca-pez { fill: var(--blanco); }
+.marca-logo .marca-ojo { fill: var(--magenta); }
+.marca-logo .marca-ola { fill: none; stroke: var(--mar); stroke-width: 3; stroke-linecap: round; }
+.logotipo {
+  font-family: var(--f-titulo); font-weight: 800; text-transform: uppercase;
+  background: var(--degradado-texto); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+/* Menú de cuenta (y el enlace de admin, que usa la misma clase) */
+.cuenta-menu-wrap { position: relative; flex-shrink: 0; }
+.cuenta-menu-btn {
+  background: var(--mar-2); border: 0; box-shadow: inset 0 0 0 2px var(--mar-3); color: var(--blanco);
+  width: 40px; height: 40px; border-radius: 50%; font-size: 16px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; text-decoration: none;
+}
+.cuenta-menu-dropdown {
+  display: none; position: absolute; top: 48px; right: 0; background: var(--superficie); border: 1px solid var(--linea);
+  border-radius: 16px; padding: 6px; min-width: 210px; z-index: 900; box-shadow: 0 12px 32px rgba(11, 30, 63, 0.3);
+}
+.cuenta-menu-dropdown.visible { display: block; }
+.cuenta-menu-dropdown button {
+  display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; background: none; border: none;
+  color: var(--tinta); font-family: var(--f-texto); font-weight: 600; font-size: 14px; padding: 10px 12px; border-radius: 10px; cursor: pointer;
+}
+.cuenta-menu-dropdown button:hover { background: var(--superficie-2); }
+
+/* ---------- Menú inferior ---------- */
+.tabs-nav {
+  position: fixed; left: 0; right: 0; bottom: 0; height: calc(72px + env(safe-area-inset-bottom));
+  background: var(--mar); display: flex; gap: 6px; padding: 8px 10px calc(10px + env(safe-area-inset-bottom));
+  /* Siempre por encima de la ficha de un spot (z-index 1000), pedido de
+     Mikel 2026-09-13: el menú se ve SIEMPRE. */
+  z-index: 1100;
+}
+.tabs-nav a {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px; text-decoration: none; white-space: nowrap;
+  color: var(--blanco); background: var(--mar-2); border-radius: 999px;
+  font-family: var(--f-texto); font-size: 14.5px; font-weight: 800;
+}
+.tabs-nav a .icono { width: 22px; height: 22px; display: flex; flex-shrink: 0; position: relative; }
+.tabs-nav a .icono svg { width: 100%; height: 100%; }
+.ico-mapa { color: #7CC4FF; }
+.ico-diario { color: var(--nivel-bueno); }
+.ico-alarma { color: var(--nivel-malo); }
+.ico-grupos { color: #C4B1FF; }
+.tabs-nav a.activa { background: var(--degradado-fuerte); color: var(--blanco); box-shadow: 0 4px 16px rgba(190, 24, 93, 0.45); }
+.tabs-nav a.activa .icono svg { color: var(--blanco); }
+.punto-novedades-grupos {
+  position: absolute; top: -3px; right: -3px; width: 9px; height: 9px; border-radius: 50%;
+  background: var(--nivel-bueno); border: 2px solid var(--mar); animation: pulso 1.6s infinite;
+}
+@media (max-width: 720px) { .tabs-nav a { font-size: 13.5px; gap: 6px; } }
+
+/* ---------- Botón principal (emoción: degradado) ---------- */
+.boton-principal {
+  background: var(--degradado-fuerte); color: var(--sobre-acento); border: 0; border-radius: 999px;
+  font-family: var(--f-texto); font-weight: 800; cursor: pointer; box-shadow: 0 6px 18px rgba(190, 24, 93, 0.3);
+}
+
+/* ---------- Nota del índice por nivel (diario, grupos...) ---------- */
+.nota-nivel {
+  display: inline-block; min-width: 2.4em; padding: 1px 8px; border-radius: 999px; text-align: center;
+  font-family: var(--f-titulo); font-weight: 700; color: var(--mar); background: var(--nivel-sd);
+}
+.nota-nivel[data-nivel="bueno"] { background: var(--nivel-bueno); }
+.nota-nivel[data-nivel="medio"] { background: var(--nivel-medio); }
+.nota-nivel[data-nivel="malo"] { background: var(--nivel-malo); }
+.enlace-marca { display: flex; flex-shrink: 0; }
+/* Los controles de formulario no heredan la letra por defecto. */
+button, input, select, textarea { font-family: inherit; }

@@ -6,72 +6,73 @@
 <title>Mi suscripción — Costaviva</title>
 <link rel="manifest" href="manifest.json" />
 <link rel="icon" href="icon.svg" type="image/svg+xml" />
-<meta name="theme-color" content="#F7F3E8" />
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#0B1E3F" />
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/costaviva.css">
 <style>
   * { box-sizing: border-box; }
   body {
     margin: 0; min-height: 100vh; min-height: 100dvh;
     display: flex; align-items: center; justify-content: center;
-    background: #F7F3E8; color: #0B2532;
-    font-family: 'Inter', sans-serif;
+    background: var(--fondo); color: var(--tinta);
+    font-family: var(--f-texto);
     padding: 24px calc(24px) calc(24px + env(safe-area-inset-bottom));
   }
   .caja {
     width: 100%; max-width: 440px;
-    background: #FFFFFF; border: 1px solid #DDE2DC; border-radius: 14px;
+    background: var(--superficie); border: 1px solid var(--linea); border-radius: 14px;
     padding: 28px 26px;
   }
   .caja h1 {
-    font-family: 'Fraunces', serif; font-size: 26px; font-weight: 700; letter-spacing: 0.2px; margin: 0 0 4px;
+    font-family: var(--f-titulo); font-size: 26px; font-weight: 700; letter-spacing: 0.2px; margin: 0 0 4px;
   }
-  .caja p.sub { color: #5C7680; font-size: 13px; margin: 0 0 20px; line-height: 1.4; }
+  .caja p.sub { color: var(--tinta-2); font-size: 13px; margin: 0 0 20px; line-height: 1.4; }
   .mensaje { margin-bottom: 16px; font-size: 12.5px; padding: 10px 12px; border-radius: 8px; }
-  .mensaje.info { background: rgba(212,162,76,0.12); color: #6B5530; border: 1px solid #D9C08A; }
-  .mensaje.ok { background: rgba(79,157,105,0.12); color: #3A6B4C; border: 1px solid #A8D4B8; }
-  .mensaje.error { background: rgba(163,74,53,0.15); color: #A34A35; border: 1px solid #A34A35; }
+  .mensaje.info { background: var(--aviso-fondo); color: var(--aviso-texto); border: 1px solid var(--aviso-borde); }
+  .mensaje.ok { background: var(--ok-fondo); color: var(--ok-texto); border: 1px solid var(--ok-borde); }
+  .mensaje.error { background: var(--peligro-fondo); color: var(--peligro-texto); border: 1px solid var(--peligro-borde); }
   .plan {
-    border: 1px solid #DDE2DC; border-radius: 10px; padding: 14px 16px; margin-bottom: 14px;
+    border: 1px solid var(--linea); border-radius: 10px; padding: 14px 16px; margin-bottom: 14px;
   }
-  .plan.actual { border-color: #A8792A; border-width: 2px; background: rgba(212,162,76,0.06); }
-  .plan .precio { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 700; margin: 0 0 2px; }
+  .plan.actual { border-color: var(--acento); border-width: 2px; background: rgba(190,24,93,0.06); }
+  .plan .precio { font-family: var(--f-titulo); font-size: 20px; font-weight: 700; margin: 0 0 2px; }
   .badge-actual {
-    display: inline-block; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 10.5px;
-    color: #6B5530; background: rgba(212,162,76,0.18); border-radius: 5px; padding: 2px 7px; vertical-align: middle; margin-left: 4px;
+    display: inline-block; font-family: var(--f-texto); font-weight: 600; font-size: 10.5px;
+    color: var(--aviso-texto); background: var(--aviso-fondo); border-radius: 5px; padding: 2px 7px; vertical-align: middle; margin-left: 4px;
   }
   /* Bug real encontrado 2026-09-17: "display: inline-block" de arriba
      gana por especificidad al comportamiento por defecto del atributo
      hidden — sin esta regla, la insignia se ve SIEMPRE (en las dos
      tarjetas a la vez si nadie tiene plan activo), esté oculta o no. */
   .badge-actual[hidden] { display: none; }
-  .plan .detalle { font-size: 12px; color: #5C7680; margin: 0 0 10px; line-height: 1.4; }
+  .plan .detalle { font-size: 12px; color: var(--tinta-2); margin: 0 0 10px; line-height: 1.4; }
   .plan label.checkbox {
     display: flex; align-items: flex-start; gap: 8px; margin: 0 0 10px;
-    font-family: 'Inter', sans-serif; font-weight: 400; font-size: 11.5px; color: #5F7981; cursor: pointer; line-height: 1.4;
+    font-family: var(--f-texto); font-weight: 400; font-size: 11.5px; color: var(--tinta-2); cursor: pointer; line-height: 1.4;
   }
-  .plan input[type="checkbox"] { width: auto; margin-top: 2px; accent-color: #A8792A; flex-shrink: 0; }
+  .plan input[type="checkbox"] { width: auto; margin-top: 2px; accent-color: var(--acento); flex-shrink: 0; }
   button {
     width: 100%; padding: 10px; border-radius: 7px; border: none;
-    background: #D4A24C; color: #0B2532; font-weight: 600; font-size: 13.5px;
-    cursor: pointer; font-family: 'Inter', sans-serif;
+    background: var(--degradado-fuerte); color: var(--sobre-acento); font-weight: 800; font-size: 13.5px;
+    cursor: pointer; font-family: var(--f-texto);
   }
   button:disabled { opacity: 0.5; cursor: default; }
   .nota-legal {
-    font-size: 11px; color: #5F7981; line-height: 1.45; margin: 4px 0 20px;
+    font-size: 11px; color: var(--tinta-2); line-height: 1.45; margin: 4px 0 20px;
   }
   .gestionar {
     text-align: center; margin-top: 6px; font-size: 12.5px;
   }
-  .gestionar a { color: #A8792A; cursor: pointer; text-decoration: underline; }
+  .gestionar a { color: var(--acento); cursor: pointer; text-decoration: underline; }
   .volver { text-align: center; margin-top: 14px; font-size: 12px; }
-  .volver a { color: #5C7680; text-decoration: none; }
-  .confirmando { text-align: center; padding: 20px 0; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #5C7680; }
+  .volver a { color: var(--tinta-2); text-decoration: none; }
+  .confirmando { text-align: center; padding: 20px 0; font-family: var(--f-texto); font-size: 13px; color: var(--tinta-2); }
 </style>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "d398d313ac4e4524a1b89af3c9ad6fda"}'></script><!-- End Cloudflare Web Analytics -->
 </head>
 <body>
 
-<div id="comprobandoAcceso" style="position:fixed; inset:0; background:#F7F3E8; z-index:9999; display:flex; align-items:center; justify-content:center; color:#5C7680; font-family:'IBM Plex Mono',monospace; font-size:13px;">
+<div id="comprobandoAcceso" style="position:fixed; inset:0; background:var(--fondo); z-index:9999; display:flex; align-items:center; justify-content:center; color:var(--tinta-2); font-family:var(--f-texto); font-size:13px;">
   Comprobando acceso…
 </div>
 

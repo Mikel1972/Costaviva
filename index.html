@@ -8,12 +8,18 @@
 <link rel="manifest" href="manifest.json" />
 <link rel="icon" href="icon.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="icon.svg" />
-<meta name="theme-color" content="#F7F3E8" />
+<meta name="theme-color" content="#0B1E3F" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 <meta name="apple-mobile-web-app-title" content="Costaviva" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<!-- Mapa base vectorial (2026-10-08): MapLibre GL + el plugin oficial para
+     Leaflet, versiones fijas con SRI. Ver assets/js/mapa-base.js. -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/5.24.0/maplibre-gl.min.css" integrity="sha512-KIMsMWIdnoG9OwZa+oaIafmbDonqck1UCmq+/zcUi2aaZ97N9QE6TqpTM+n36EO40HGh64hU/375zxtjx7WTyQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/5.24.0/maplibre-gl.min.js" integrity="sha512-hoXlvOdSmh58mppUyZHZsscHkR/yXl6zLpTMTNwA6IZ61DpeaCNjosRu1WJ2DeIpkfW5MsJJ9H89zjV4IBGqRw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.jsdelivr.net/npm/@maplibre/maplibre-gl-leaflet@0.1.4/leaflet-maplibre-gl.js" integrity="sha384-tXYNKOHx4T02jMP7YYCtBxPIv1B5gaA5mcVPBzqMp6d7VzWzxJgI2aWF/nJLrQdS" crossorigin="anonymous"></script>
+<script src="/assets/js/mapa-base.js"></script>
 <!-- Capa de viento estilo Windy (2026-09-19, pedido explícito del
      usuario) — partículas animadas sobre una rejilla u/v, sin más
      dependencia que Leaflet (ya cargado arriba). cdnjs no aloja este
@@ -24,19 +30,20 @@
 <!-- Open-Meteo siempre por nuestro proxy /meteo/ (la API key comercial no
      puede llegar al navegador), ver assets/js/meteo.js. -->
 <script src="/assets/js/meteo.js"></script>
+<script src="/assets/js/nivel-indice.js"></script>
 <!-- Webcams en vídeo en directo de Gipuzkoa (2026-09-14) — HLS, no hace
      falta en Safari (soporte nativo) pero sí en Chrome/Firefox/Edge. -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.6.15/hls.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/costaviva.css">
 <style>
   * { box-sizing: border-box; }
-  @keyframes pulso { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
   body {
     margin: 0;
-    font-family: 'Inter', sans-serif;
-    background: #F7F3E8;
-    color: #0B2532;
+    font-family: var(--f-texto);
+    background: var(--fondo);
+    color: var(--tinta);
     display: flex;
     flex-direction: column;
     height: 100vh;
@@ -44,88 +51,39 @@
     overflow: hidden;
     padding-bottom: calc(72px + env(safe-area-inset-bottom)); /* deja hueco fijo para .tabs-nav, incluida la franja del home indicator en PWA instalada */
   }
-  /* Menú inferior rediseñado 2026-09-15 (pedido explícito del usuario: "muy
-     feo... más grandes, con las palabras en una línea") — icono y texto en
-     fila (antes apilados en dos líneas) dentro de una píldora, la pestaña
-     activa con relleno dorado sólido en vez de solo un tinte del icono. */
-  .tabs-nav {
-    position: fixed; left: 0; right: 0; bottom: 0;
-    height: calc(72px + env(safe-area-inset-bottom));
-    background: #FFFFFF; border-top: 1px solid #DDE2DC;
-    display: flex; gap: 12px; padding: 10px 10px calc(10px + env(safe-area-inset-bottom)) 10px;
-    /* Por encima del panel de spot (z-index 1000) a propósito: pedido
-       explícito del usuario (2026-09-13) — el menú Mapa/Diario/Alarma/
-       Grupos debe verse SIEMPRE, incluso con la ficha de un spot abierta
-       debajo. El panel ya reserva este hueco con su "bottom" offset, pero
-       esto lo garantiza pase lo que pase con la altura real del panel en
-       cada dispositivo. */
-    z-index: 1100;
-  }
-  .tabs-nav a {
-    flex: 1; display: flex; flex-direction: row; align-items: center; justify-content: center;
-    gap: 7px; text-decoration: none; color: #42585F; border-radius: 14px; background: rgba(212,162,76,0.12);
-    font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; white-space: nowrap;
-  }
-  .tabs-nav a .icono { width: 22px; height: 22px; display: flex; flex-shrink: 0; position: relative; }
-  .punto-novedades-grupos {
-    position: absolute; top: -3px; right: -3px; width: 9px; height: 9px;
-    border-radius: 50%; background: #4F9D69; border: 2px solid #FFFFFF;
-    animation: pulso 1.6s infinite;
-  }
-  .tabs-nav a .icono svg { width: 100%; height: 100%; }
-  .ico-mapa { color: #3E7CB1; }
-  .ico-diario { color: #4F9D69; }
-  .ico-alarma { color: #A34A35; }
-  .ico-grupos { color: #8B6BB1; }
-  .tabs-nav a.activa .icono svg { color: #FFFFFF; }
-  .tabs-nav a.activa { color: #FFFFFF; background: #A8792A; }
 
-  .cuenta-menu-wrap { position: relative; margin-left: auto; }
-  .cuenta-menu-btn {
-    background: #EEF2EF; border: 1px solid #DDE2DC; color: #0B2532; width: 34px; height: 34px;
-    border-radius: 50%; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center;
-  }
-  .cuenta-menu-dropdown {
-    display: none; position: absolute; top: 42px; right: 0; background: #FFFFFF; border: 1px solid #DDE2DC;
-    border-radius: 10px; padding: 6px; min-width: 200px; z-index: 900; box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-  }
-  .cuenta-menu-dropdown.visible { display: block; }
-  .cuenta-menu-dropdown button {
-    display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; background: none; border: none;
-    color: #0B2532; font-family: 'Inter', sans-serif; font-size: 13px; padding: 9px 10px; border-radius: 6px; cursor: pointer;
-  }
-  .cuenta-menu-dropdown button:hover { background: #EEF2EF; }
 
-  header { padding: 8px 20px; border-bottom: 1px solid #DDE2DC; flex-shrink: 0; display: flex; align-items: center; flex-wrap: wrap; column-gap: 12px; row-gap: 2px; }
-  header h1 {
-    font-family: 'Fraunces', serif;
-    font-size: 30px;
-    font-weight: 700;
-    letter-spacing: 0.2px;
-    margin: 0;
-    display: inline-block;
-  }
+  header { padding: 10px 18px 14px; flex-shrink: 0; display: flex; align-items: center; column-gap: 10px; }
+  header h1 { font-size: 26px; margin: 0; flex-shrink: 0; }
+  header p { margin: 0; font-size: 12px; color: var(--sol); max-width: 520px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   header .fecha {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10.5px;
-    color: #5C7680;
+    font-size: 12px; font-weight: 700; color: var(--blanco); background: var(--mar-2); padding: 4px 10px; border-radius: 999px;
+    min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
   }
-  header p { margin: 0; color: #5C7680; font-size: 11px; max-width: 520px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  header .fecha::before {
+    content: ""; display: inline-block; width: 7px; height: 7px; margin-right: 6px; vertical-align: 1px;
+    border-radius: 50%; background: var(--nivel-bueno); animation: pulso 1.8s infinite;
+  }
 
   .main { display: flex; flex: 1; min-height: 0; }
   .mapa-wrap { flex: 1; position: relative; }
-  #map { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #F7F3E8; }
+  #map { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: var(--fondo); }
+  /* Relieve de EMODnet sobre el mapa base vectorial: "multiplica" en vez de
+     tapar, así se ven los cañones del fondo y el relieve de la costa sin
+     perder los colores ni los nombres del mapa. */
+  .relieve-emodnet { mix-blend-mode: multiply; }
 
   .marcador-envoltorio { position: relative; width: 24px; height: 24px; }
   .marcador {
     position: relative; z-index: 2;
-    width: 24px; height: 24px; border-radius: 50%;
-    background: #F7F3E8; border: 2px solid #0B2532;
+    width: 30px; height: 30px; margin: -3px; border-radius: 50%;
+    background: var(--nivel-sd); border: 3px solid var(--blanco);
     display: flex; align-items: center; justify-content: center;
-    font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 700; color: #0B2532;
+    font-family: var(--f-titulo); font-size: 11px; font-weight: 700; color: var(--mar);
+    box-shadow: 0 0 0 2px var(--mar), 0 4px 10px rgba(11,30,63,0.45);
     cursor: pointer;
   }
-  .marcador.activo { border-width: 3px; box-shadow: 0 0 0 3px rgba(232,226,208,0.25); }
+  .marcador.activo { box-shadow: 0 0 0 3px var(--mar), 0 0 0 7px rgba(255,255,255,0.6); }
   .anillo-pulso {
     position: absolute; inset: 0; border-radius: 50%; z-index: 1;
     animation: pulsoAnillo 2.2s ease-out infinite;
@@ -135,40 +93,40 @@
     75%, 100% { transform: scale(2.6); opacity: 0; }
   }
   .etiqueta-spot {
-    font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; color: #F5F1E6;
-    text-shadow: 0 0 4px #0B2532, 0 0 4px #0B2532, 0 0 4px #0B2532;
+    font-family: var(--f-texto); font-size: 12.5px; font-weight: 800; color: var(--blanco);
+    text-shadow: 0 1px 2px var(--mar), 0 0 6px var(--mar), 0 0 8px var(--mar);
     white-space: nowrap; pointer-events: none;
   }
   .punto-webcam-viva {
     display: inline-block; width: 7px; height: 7px; margin-left: 4px;
-    border-radius: 50%; background: #4F9D69; vertical-align: middle;
-    box-shadow: 0 0 4px #0B2532, 0 0 4px #0B2532;
+    border-radius: 50%; background: var(--ok); vertical-align: middle;
+    box-shadow: 0 0 4px var(--tinta), 0 0 4px var(--tinta);
     animation: pulso 1.6s ease-in-out infinite;
   }
   /* Sin señal detectada (ver CAMARAS/datosCamarasPorSpot) — mismo punto,
      rojo y sin el pulso de "en directo", para no sugerir que se está
      viendo algo que en realidad no llega. */
   .punto-webcam-viva.sin-senal {
-    background: #A34A35; animation: none;
+    background: var(--peligro); animation: none;
   }
   .rio-marcador {
     width: 10px; height: 10px; transform: rotate(45deg);
-    border: 1.5px solid #0B2532;
+    border: 1.5px solid var(--tinta);
     transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
   }
   .rio-marcador:hover {
     transform: rotate(45deg) scale(2);
-    box-shadow: 0 0 0 4px rgba(232,226,208,0.2);
+    box-shadow: 0 0 0 4px rgba(255,246,238,0.2);
   }
   .marcador-boya {
     min-width: 34px; padding: 2px 7px; border-radius: 6px;
-    background: #EEF2EF; border: 2px solid #2E7BA0; color: #0B2532;
-    font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 700;
+    background: var(--superficie-2); border: 2px solid #2E7BA0; color: var(--tinta);
+    font-family: var(--f-texto); font-size: 10px; font-weight: 700;
     text-align: center; white-space: nowrap;
   }
   .marcador-estacion-icono {
     width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
-    background: #FFFFFF; border: 2px solid #8B5E3C;
+    background: var(--superficie); border: 2px solid #8B5E3C;
     display: flex; align-items: center; justify-content: center;
     font-size: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.25);
   }
@@ -177,28 +135,28 @@
      clara, mismo lenguaje visual que el resto de la app. */
   .modal-estacion {
     position: fixed; inset: 0; z-index: 2000;
-    background: rgba(11,37,50,0.72);
+    background: rgba(11,30,63,0.72);
     display: none; align-items: center; justify-content: center; padding: 24px;
   }
   .modal-estacion.visible { display: flex; }
   .modal-estacion-contenido {
-    background: #FFFFFF; border-radius: 14px; border: 1px solid #DDE2DC;
+    background: var(--superficie); border-radius: 14px; border: 1px solid var(--linea);
     max-width: 360px; width: 100%; padding: 22px 22px 18px; position: relative;
     box-shadow: 0 12px 40px rgba(0,0,0,0.4);
   }
   .modal-estacion-contenido h3 {
-    font-family: 'Fraunces', serif; margin: 0 22px 4px 0; color: #0B2532; font-size: 19px;
+    font-family: var(--f-titulo); margin: 0 22px 4px 0; color: var(--tinta); font-size: 19px;
   }
   .fila-estacion {
     display: flex; justify-content: space-between; gap: 12px;
-    padding: 7px 0; border-bottom: 1px solid #EEF2EF;
-    font-family: 'Inter', sans-serif; font-size: 12.5px; color: #42585F;
+    padding: 7px 0; border-bottom: 1px solid var(--superficie-2);
+    font-family: var(--f-texto); font-size: 12.5px; color: var(--tinta-3);
   }
-  .fila-estacion strong { color: #0B2532; font-family: 'IBM Plex Mono', monospace; }
+  .fila-estacion strong { color: var(--tinta); font-family: var(--f-texto); }
   .fila-estacion:last-child { border-bottom: none; }
   .modal-estacion .cerrar {
     position: absolute; top: 14px; right: 14px;
-    background: transparent; border: none; color: #5F7981; font-size: 16px; cursor: pointer;
+    background: transparent; border: none; color: var(--tinta-2); font-size: 16px; cursor: pointer;
     padding: 6px; margin: -6px;
   }
 
@@ -206,17 +164,17 @@
      solo tras crear la contraseña justo después del alta (nunca tras
      recuperar una contraseña olvidada, ver el parámetro ?bienvenida=1
      que pone login.html), mismo lenguaje visual que modal-estacion. */
-  #modalBienvenida p { font-family: 'Inter', sans-serif; font-size: 13px; color: #42585F; line-height: 1.5; margin: 0 0 16px; }
+  #modalBienvenida p { font-family: var(--f-texto); font-size: 13px; color: var(--tinta-3); line-height: 1.5; margin: 0 0 16px; }
   #modalBienvenida .botones-bienvenida { display: flex; flex-direction: column; gap: 8px; }
   #modalBienvenida button.primario {
     width: 100%; padding: 9px; border-radius: 7px; border: none;
-    background: #D4A24C; color: #0B2532; font-weight: 600; font-size: 13px;
-    cursor: pointer; font-family: 'Inter', sans-serif;
+    background: var(--degradado-fuerte); color: var(--sobre-acento); font-weight: 800; font-size: 13px;
+    cursor: pointer; font-family: var(--f-texto);
   }
   #modalBienvenida button.secundario {
-    width: 100%; padding: 9px; border-radius: 7px; border: 1px solid #DDE2DC;
-    background: transparent; color: #42585F; font-size: 13px;
-    cursor: pointer; font-family: 'Inter', sans-serif;
+    width: 100%; padding: 9px; border-radius: 7px; border: 1px solid var(--linea);
+    background: transparent; color: var(--tinta-3); font-size: 13px;
+    cursor: pointer; font-family: var(--f-texto);
   }
 
   /* Pop-up de zoom para la foto/vídeo de la webcam (2026-09-15) — fondo
@@ -224,13 +182,13 @@
      destaque, sin tarjeta blanca alrededor. */
   .modal-zoom-webcam {
     position: fixed; inset: 0; z-index: 2100;
-    background: rgba(11,37,50,0.94);
+    background: rgba(11,30,63,0.94);
     display: none; align-items: center; justify-content: center;
   }
   .modal-zoom-webcam.visible { display: flex; }
   .modal-zoom-webcam .cerrar {
     position: absolute; top: 14px; right: 14px; z-index: 2;
-    background: rgba(11,37,50,0.7); border: none; color: #F7F3E8; font-size: 20px; cursor: pointer;
+    background: rgba(11,30,63,0.7); border: none; color: var(--fondo); font-size: 20px; cursor: pointer;
     width: 40px; height: 40px; border-radius: 50%;
   }
   #contenidoZoomWebcam {
@@ -248,37 +206,36 @@
   /* Llamada de caudal: tooltip de Leaflet restilizado para que se note que
      el marcador de río se puede "abrir" al pasar el cursor por encima. */
   .llamada-rio {
-    background: #FFFFFF !important; border: 1px solid #DDE2DC !important;
-    color: #0B2532 !important; border-radius: 8px !important;
-    padding: 8px 11px !important; font-family: 'Inter', sans-serif; font-size: 12px;
+    background: var(--superficie) !important; border: 1px solid var(--linea) !important;
+    color: var(--tinta) !important; border-radius: 8px !important;
+    padding: 8px 11px !important; font-family: var(--f-texto); font-size: 12px;
     box-shadow: 0 4px 14px rgba(0,0,0,0.35) !important;
     transform-origin: bottom center;
     animation: expandirLlamada 0.14s ease-out;
   }
   @keyframes expandirLlamada { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
-  .leaflet-tooltip.llamada-rio::before { border-top-color: #DDE2DC !important; }
-  .llamada-rio .rio-nombre { font-weight: 600; color: #0B2532; margin-bottom: 2px; }
-  .llamada-rio .rio-tramo { color: #5F7981; font-size: 10.5px; }
-  .llamada-rio .rio-caudal { margin-top: 3px; display: flex; align-items: center; gap: 5px; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; }
+  .leaflet-tooltip.llamada-rio::before { border-top-color: var(--linea) !important; }
+  .llamada-rio .rio-nombre { font-weight: 600; color: var(--tinta); margin-bottom: 2px; }
+  .llamada-rio .rio-tramo { color: var(--tinta-2); font-size: 10.5px; }
+  .llamada-rio .rio-caudal { margin-top: 3px; display: flex; align-items: center; gap: 5px; font-family: var(--f-texto); font-size: 10.5px; }
 
   .leyenda-toggle {
     position: absolute; bottom: 16px; left: 16px; z-index: 502;
-    width: 38px; height: 38px; border-radius: 8px;
-    background: #FFFFFF; border: 1px solid #DDE2DC; color: #0B2532;
+    width: 44px; height: 44px; border-radius: 50%; box-shadow: 0 6px 16px rgba(11,30,63,0.28);
+    background: var(--superficie); border: 0; color: var(--tinta);
     display: flex; align-items: center; justify-content: center;
     cursor: pointer; font-size: 16px; padding: 0;
   }
   .leyenda {
     position: absolute; bottom: 16px; left: 64px; z-index: 500;
-    background: #FFFFFF; border: 1px solid #DDE2DC; border-radius: 8px;
-    padding: 12px 16px; font-size: 12px; font-family: 'IBM Plex Mono', monospace;
+    background: var(--superficie); border: 1px solid var(--linea); border-radius: 8px;
+    padding: 12px 16px; font-size: 12px; font-family: var(--f-texto);
     max-width: 240px;
     opacity: 0; transform: translateX(-14px); pointer-events: none;
     transition: opacity 0.15s ease-out, transform 0.15s ease-out;
   }
   .leyenda.visible { opacity: 1; transform: translateX(0); pointer-events: auto; }
 
-  .rayos-toggle { top: 16px; right: 16px; }
   /* Panel de rayos (2026-10-08, Mikel: "la pestaña de rayos es poco ágil
      de manejar"). Antes era un panel lateral que tapaba medio mapa en el
      móvil, con la imagen de AEMET y una vista grande aparte con su propio
@@ -290,15 +247,15 @@
      de siempre, con su zoom y su pellizco nativos. */
   .rayos-hoja {
     width: min(440px, calc(100vw - 20px)); box-sizing: border-box; clear: both;
-    background: #FFFFFF; border: 1px solid #DDE2DC; border-left: 5px solid #9AA9AE; border-radius: 10px;
-    box-shadow: 0 4px 14px rgba(11,37,50,0.18); padding: 7px 8px 7px 10px;
-    font-family: 'IBM Plex Mono', monospace; color: #0B2532; cursor: default;
+    background: var(--superficie); border: 1px solid var(--linea); border-left: 5px solid #9AA9AE; border-radius: 10px;
+    box-shadow: 0 4px 14px rgba(11,30,63,0.18); padding: 7px 8px 7px 10px;
+    font-family: var(--f-texto); color: var(--tinta); cursor: default;
   }
   .rayos-hoja[hidden] { display: none; }
-  .rayos-hoja[data-nivel="peligro"] { border-left-color: #A34A35; background: #FBEAE6; }
-  .rayos-hoja[data-nivel="aviso"] { border-left-color: #D4A24C; }
+  .rayos-hoja[data-nivel="peligro"] { border-left-color: var(--peligro); background: var(--peligro-fondo); }
+  .rayos-hoja[data-nivel="aviso"] { border-left-color: var(--acento); }
   .rayos-hoja[data-nivel="lejos"] { border-left-color: #7B2CBF; }
-  .rayos-hoja[data-nivel="ok"] { border-left-color: #4F9D69; }
+  .rayos-hoja[data-nivel="ok"] { border-left-color: var(--ok); }
   .rayos-fila { display: flex; align-items: center; gap: 8px; }
   .rayos-resumen {
     flex: 1; min-width: 0; text-align: left; font: inherit; font-size: 12.5px; font-weight: 700;
@@ -306,26 +263,26 @@
   }
   .rayos-mas {
     width: 32px; height: 32px; flex-shrink: 0; border-radius: 6px; padding: 0; cursor: pointer;
-    border: 1px solid #DDE2DC; background: #EEF2EF; color: #42585F; font-size: 15px; line-height: 1;
+    border: 1px solid var(--linea); background: var(--superficie-2); color: var(--tinta-3); font-size: 15px; line-height: 1;
   }
-  .rayos-mas[aria-expanded="true"] { background: #D4A24C; color: #0B2532; }
-  .rayos-leyenda { display: flex; flex-wrap: wrap; gap: 2px 12px; margin-top: 3px; font-size: 10px; color: #42585F; }
+  .rayos-mas[aria-expanded="true"] { background: var(--degradado-fuerte); color: var(--sobre-acento); }
+  .rayos-leyenda { display: flex; flex-wrap: wrap; gap: 2px 12px; margin-top: 3px; font-size: 10px; color: var(--tinta-3); }
   .rayos-leyenda i { display: inline-block; width: 9px; height: 9px; margin-right: 4px; vertical-align: -1px; }
-  .rayos-leyenda i.vivo { background: #7B2CBF; border-radius: 50%; box-shadow: 0 0 0 1.5px #fff, 0 0 0 2.5px #0B2532; }
+  .rayos-leyenda i.vivo { background: #7B2CBF; border-radius: 50%; box-shadow: 0 0 0 1.5px #fff, 0 0 0 2.5px var(--tinta); }
   .rayos-leyenda i.sat { width: 18px; border-radius: 2px; background: linear-gradient(90deg,#FFF5B0,#F4A040,#8B0A2A); }
   .rayos-detalle {
-    margin-top: 6px; padding-top: 6px; border-top: 1px solid #DDE2DC;
-    font-size: 10.5px; line-height: 1.45; color: #42585F;
+    margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--linea);
+    font-size: 10.5px; line-height: 1.45; color: var(--tinta-3);
   }
   .rayos-detalle[hidden] { display: none; }
   .rayos-detalle p { margin: 0 0 4px; }
-  .rayos-detalle a { color: #A8792A; font-weight: 600; }
+  .rayos-detalle a { color: var(--acento); font-weight: 600; }
   /* Aviso breve sobre el mapa (2026-10-03): para cuando una capa se enciende
      pero su fuente no responde, en vez de dejarla vacía sin decir nada. */
   .aviso-capa {
     position: fixed; left: 50%; bottom: 96px; transform: translateX(-50%); z-index: 1200;
     max-width: min(92vw, 420px); padding: 10px 14px; border-radius: 10px;
-    background: rgba(11,37,50,0.92); color: #F7F3E8; font-size: 13px; line-height: 1.4;
+    background: rgba(11,30,63,0.92); color: var(--fondo); font-size: 13px; line-height: 1.4;
     box-shadow: 0 6px 20px rgba(0,0,0,0.3); text-align: center;
   }
   .aviso-capa[hidden] { display: none; }
@@ -336,57 +293,60 @@
      capa de viento -- cada botón lleva ahora una etiqueta corta debajo
      del icono, no solo un title/tooltip que en móvil no se ve nunca sin
      mantener pulsado.
-     Columna A (right:16px, pegada al borde): capas de referencia/
+     Rediseño "Amanecer" (2026-10-08): botones redondos de 54px con
+     etiqueta legible de 10px, separados 8px; el activo, con el degradado.
+     Columna A (right:12px, pegada al borde): capas de referencia/
      ambiente, de arriba a abajo por lo crítico/frecuente que es cada
      una — rayos (seguridad), luna, batimetría, lluvia, estaciones,
      viento (la más nueva, al final).
-     Columna B (right:64px): capas de "cosas en el mapa". Spots + "+"
+     Columna B (right:74px): capas de "cosas en el mapa". Spots + "+"
      van pegados como un único grupo visual (el "+" solo visible con
      spots encendido, ver JS) — debajo, ríos y boyas. */
   .rayos-toggle, .luna-toggle, .batimetria-toggle, .nubes-toggle, .estaciones-toggle, .viento-toggle,
   .rios-toggle, .boyas-toggle {
     position: absolute; z-index: 502;
-    width: 44px; height: 44px; border-radius: 8px;
-    background: #FFFFFF; border: 1px solid #DDE2DC; color: #0B2532;
+    width: 54px; height: 54px; border-radius: 50%;
+    background: var(--superficie); border: 0; color: var(--tinta);
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
-    cursor: pointer; font-size: 15px; padding: 2px 0;
+    cursor: pointer; font-size: 19px; padding: 2px 0; box-shadow: 0 6px 16px rgba(11,30,63,0.28);
   }
   .rayos-toggle .capa-label, .luna-toggle .capa-label, .batimetria-toggle .capa-label,
   .nubes-toggle .capa-label, .estaciones-toggle .capa-label, .viento-toggle .capa-label,
   .rios-toggle .capa-label, .boyas-toggle .capa-label {
-    font-size: 7.5px; font-family: 'IBM Plex Mono', monospace; line-height: 1; color: #5F7981;
+    font-size: 10px; font-family: var(--f-texto); font-weight: 800; line-height: 1; color: var(--tinta-2);
   }
   .rayos-toggle.activo .capa-label, .luna-toggle.activo .capa-label, .batimetria-toggle.activo .capa-label,
   .nubes-toggle.activo .capa-label, .estaciones-toggle.activo .capa-label, .viento-toggle.activo .capa-label,
-  .rios-toggle.activo .capa-label, .boyas-toggle.activo .capa-label { color: #0B2532; }
-  .rayos-toggle { top: 16px; right: 16px; }
-  .luna-toggle { top: 68px; right: 16px; }
-  .batimetria-toggle { top: 120px; right: 16px; }
-  .nubes-toggle { top: 172px; right: 16px; }
-  .estaciones-toggle { top: 224px; right: 16px; }
-  .viento-toggle { top: 276px; right: 16px; }
-  .isobatas-toggle { top: 328px; right: 16px; } /* isóbatas 20-5000 m (assets/js/capa-batimetria.js); reusa el estilo de .viento-toggle */
-  .rios-toggle { top: 104px; right: 64px; }
-  .boyas-toggle { top: 156px; right: 64px; }
+  .rios-toggle.activo .capa-label, .boyas-toggle.activo .capa-label { color: var(--sobre-acento); }
+  .rayos-toggle { top: 12px; right: 12px; }
+  .luna-toggle { top: 74px; right: 12px; }
+  .batimetria-toggle { top: 136px; right: 12px; }
+  .nubes-toggle { top: 198px; right: 12px; }
+  .estaciones-toggle { top: 260px; right: 12px; }
+  .viento-toggle { top: 322px; right: 12px; }
+  .rios-toggle { top: 136px; right: 74px; }
+  .boyas-toggle { top: 198px; right: 74px; }
+  .isobatas-toggle { top: 384px; right: 12px; } /* isóbatas 20-5000 m (assets/js/capa-batimetria.js); reusa el estilo de .viento-toggle */
   /* Spots + "+" pegados como un único grupo de 2 (pedido explícito del
      usuario: el botón de añadir ubicación debe verse asociado al de
      spots, no como una capa más suelta) — sin hueco entre los dos,
      esquinas redondeadas solo por fuera y una línea fina de separación
      en vez del borde completo, como un control segmentado. Se quedan sin
-     etiqueta (son un grupo de acción/selección, no una capa suelta) y
-     con el tamaño compacto de siempre. */
+     etiqueta (son un grupo de acción/selección, no una capa suelta). */
   .spots-toggle, .anadir-ubicacion-toggle {
     position: absolute; z-index: 502;
-    width: 38px; height: 38px; border-radius: 8px;
-    background: #FFFFFF; border: 1px solid #DDE2DC; color: #0B2532;
+    width: 54px; height: 54px; border-radius: 50%;
+    background: var(--superficie); border: 0; color: var(--tinta);
     display: flex; align-items: center; justify-content: center;
-    cursor: pointer; font-size: 16px; padding: 0;
+    cursor: pointer; font-size: 19px; padding: 0; box-shadow: 0 6px 16px rgba(11,30,63,0.28);
   }
-  .spots-toggle { top: 16px; right: 64px; border-radius: 8px 8px 0 0; }
-  .anadir-ubicacion-toggle { top: 54px; right: 64px; border-radius: 0 0 8px 8px; border-top: none; }
+  .spots-toggle { top: 12px; right: 74px; }
+  .anadir-ubicacion-toggle { top: 74px; right: 74px; }
   .batimetria-toggle.activo, .nubes-toggle.activo, .estaciones-toggle.activo, .viento-toggle.activo,
-  .spots-toggle.activo, .rios-toggle.activo, .boyas-toggle.activo, .anadir-ubicacion-toggle.activo, .rayos-toggle.activo {
-    background: #D4A24C; color: #0B2532;
+  .spots-toggle.activo, .rios-toggle.activo, .boyas-toggle.activo, .anadir-ubicacion-toggle.activo, .rayos-toggle.activo,
+  .luna-toggle.activo {
+    background: var(--degradado-fuerte); color: var(--sobre-acento);
+    box-shadow: 0 0 0 3px var(--blanco), 0 6px 18px rgba(190,24,93,0.45);
   }
   /* El display:flex de arriba (regla de autor) gana por defecto al
      display:none del atributo [hidden] (regla de user-agent) — sin esto,
@@ -394,26 +354,26 @@
   .anadir-ubicacion-toggle[hidden] { display: none; }
   .confirmar-ubicacion-panel {
     display: none; position: absolute; top: 64px; left: 50%; transform: translateX(-50%);
-    z-index: 900; background: #FFFFFF; border: 1px solid #D4A24C; border-radius: 10px;
+    z-index: 900; background: var(--superficie); border: 1px solid var(--acento); border-radius: 10px;
     padding: 14px 16px; width: 260px; box-shadow: 0 6px 18px rgba(0,0,0,0.4);
   }
   .confirmar-ubicacion-panel.visible { display: block; }
-  .confirmar-ubicacion-panel .titulo { font-family: 'Fraunces', serif; font-size: 15px; margin-bottom: 4px; }
-  .confirmar-ubicacion-panel .nombre-resuelto { font-size: 14px; color: #A8792A; margin-bottom: 10px; }
-  .confirmar-ubicacion-panel .error { font-size: 12px; color: #A34A35; margin-bottom: 10px; }
+  .confirmar-ubicacion-panel .titulo { font-family: var(--f-titulo); font-size: 15px; margin-bottom: 4px; }
+  .confirmar-ubicacion-panel .nombre-resuelto { font-size: 14px; color: var(--acento); margin-bottom: 10px; }
+  .confirmar-ubicacion-panel .error { font-size: 12px; color: var(--peligro); margin-bottom: 10px; }
   .confirmar-ubicacion-panel .visibilidad { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: 12.5px; margin-bottom: 12px; }
   .confirmar-ubicacion-panel .visibilidad label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
   .confirmar-ubicacion-panel .botones { display: flex; gap: 8px; }
   .confirmar-ubicacion-panel button {
-    flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #DDE2DC; cursor: pointer; font-size: 12.5px;
+    flex: 1; padding: 8px; border-radius: 8px; border: 1px solid var(--linea); cursor: pointer; font-size: 12.5px;
   }
-  .confirmar-ubicacion-panel button.confirmar { background: #D4A24C; color: #0B2532; border: none; font-weight: 600; }
-  .confirmar-ubicacion-panel button.cancelar { background: transparent; color: #5F7981; }
+  .confirmar-ubicacion-panel button.confirmar { background: var(--degradado-fuerte); color: var(--sobre-acento); border: none; font-weight: 600; }
+  .confirmar-ubicacion-panel button.cancelar { background: transparent; color: var(--tinta-2); }
   .confirmar-ubicacion-panel button.secundario-ubicacion {
-    width: 100%; text-align: left; padding: 10px 12px; border-radius: 8px; border: 1px solid #DDE2DC;
-    background: #EEF2EF; color: #0B2532; cursor: pointer; font-size: 13px;
+    width: 100%; text-align: left; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--linea);
+    background: var(--superficie-2); color: var(--tinta); cursor: pointer; font-size: 13px;
   }
-  .confirmar-ubicacion-panel button.secundario-ubicacion:hover { border-color: #A8792A; }
+  .confirmar-ubicacion-panel button.secundario-ubicacion:hover { border-color: var(--acento); }
   /* Barra deslizante de "próximas horas" para la capa de viento
      (2026-09-19) -- mismo estilo de panel lateral que rayos/luna, pero
      sin el fade-in (aparece/desaparece junto con la propia capa, no hay
@@ -439,29 +399,29 @@
        justo en right:64px, exactamente donde empieza esa segunda
        columna, así que su borde izquierdo del panel (con 190px de
        ancho) se comía Ríos/Boyas por debajo (z-index 502, menor que el
-       901 del panel). 118px = 64 + 44 (ancho de un botón) + 10 de hueco,
-       deja las dos columnas completamente libres.
+       901 del panel). 138px = 74 + 54 (ancho de un botón) + 10 de hueco
+       (botones de 54px desde 2026-10-08), deja las dos columnas libres.
     */
-    position: absolute; bottom: 90px; right: 118px; z-index: 900;
-    background: #FFFFFF; border: 1px solid #DDE2DC; border-radius: 8px;
-    padding: 10px 14px; font-size: 11px; font-family: 'IBM Plex Mono', monospace;
+    position: absolute; bottom: 90px; right: 138px; z-index: 900;
+    background: var(--superficie); border: 1px solid var(--linea); border-radius: 8px;
+    padding: 10px 14px; font-size: 11px; font-family: var(--f-texto);
     width: 190px;
     max-height: calc(100dvh - 150px);
     overflow-y: auto;
   }
   .viento-slider-panel[hidden] { display: none; }
-  .viento-slider-panel .titulo { color: #5C7680; margin-bottom: 6px; }
+  .viento-slider-panel .titulo { color: var(--tinta-2); margin-bottom: 6px; }
   .viento-slider-panel input[type="range"] { width: 100%; }
-  .viento-slider-panel .etq { text-align: center; color: #5C7680; margin-top: 2px; }
-  .viento-slider-ticks { display: flex; justify-content: space-between; font-size: 9px; color: #5C7680; margin-top: -2px; }
-  .viento-leyenda-titulo { font-size: 9.5px; color: #5C7680; margin-top: 10px; border-top: 1px solid #DDE2DC; padding-top: 8px; }
+  .viento-slider-panel .etq { text-align: center; color: var(--tinta-2); margin-top: 2px; }
+  .viento-slider-ticks { display: flex; justify-content: space-between; font-size: 9px; color: var(--tinta-2); margin-top: -2px; }
+  .viento-leyenda-titulo { font-size: 9.5px; color: var(--tinta-2); margin-top: 10px; border-top: 1px solid var(--linea); padding-top: 8px; }
   .viento-leyenda-barra { height: 10px; border-radius: 4px; margin-top: 4px; }
-  .viento-leyenda-extremos { display: flex; justify-content: space-between; font-size: 9px; color: #5C7680; margin-top: 2px; }
+  .viento-leyenda-extremos { display: flex; justify-content: space-between; font-size: 9px; color: var(--tinta-2); margin-top: 2px; }
 
   .luna-panel {
-    position: absolute; top: 64px; right: 64px; z-index: 501;
-    background: #FFFFFF; border: 1px solid #DDE2DC; border-radius: 8px;
-    padding: 12px 14px; font-size: 11.5px; font-family: 'IBM Plex Mono', monospace;
+    position: absolute; top: 12px; right: 138px; z-index: 501;
+    background: var(--superficie); border: 1px solid var(--linea); border-radius: 8px;
+    padding: 12px 14px; font-size: 11.5px; font-family: var(--f-texto);
     width: 210px;
     opacity: 0; transform: translateX(14px); pointer-events: none;
     transition: opacity 0.15s ease-out, transform 0.15s ease-out;
@@ -469,105 +429,156 @@
   .luna-panel.visible { opacity: 1; transform: translateX(0); pointer-events: auto; }
   .luna-panel .fase-fila { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
   .luna-panel .fase-emoji { font-size: 26px; }
-  .luna-panel .fase-nombre { font-family: 'Inter', sans-serif; color: #0B2532; font-size: 13px; }
-  .luna-panel .fase-iluminacion { color: #5C7680; font-size: 10.5px; }
-  .luna-panel .fila-dato { display: flex; justify-content: space-between; margin-top: 4px; color: #5F7981; }
-  .luna-panel .fila-dato b { color: #0B2532; font-weight: 700; }
-  .luna-panel .nota { color: #42585F; font-size: 9.5px; margin-top: 8px; line-height: 1.4; }
-  .leyenda .titulo { color: #5C7680; margin-bottom: 6px; }
+  .luna-panel .fase-nombre { font-family: var(--f-texto); color: var(--tinta); font-size: 13px; }
+  .luna-panel .fase-iluminacion { color: var(--tinta-2); font-size: 10.5px; }
+  .luna-panel .fila-dato { display: flex; justify-content: space-between; margin-top: 4px; color: var(--tinta-2); }
+  .luna-panel .fila-dato b { color: var(--tinta); font-weight: 700; }
+  .luna-panel .nota { color: var(--tinta-3); font-size: 9.5px; margin-top: 8px; line-height: 1.4; }
+  .leyenda .titulo { color: var(--tinta-2); margin-bottom: 6px; }
   .leyenda .fila { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
   .leyenda .chip { width: 10px; height: 10px; border-radius: 2px; }
-  .leyenda .nota { color: #42585F; font-size: 10px; margin-top: 8px; }
+  .leyenda .nota { color: var(--tinta-3); font-size: 10px; margin-top: 8px; }
 
   .panel {
-    width: 320px; border-left: 1px solid #DDE2DC; background: #FFFFFF;
-    padding: 22px; overflow-y: auto; display: none; flex-shrink: 0;
+    width: 340px; background: var(--fondo); box-shadow: -8px 0 24px rgba(11,30,63,0.18);
+    padding: 0 18px 22px; overflow-y: auto; display: none; flex-shrink: 0;
   }
   .panel.visible { display: block; }
-  .panel h2 { font-family: 'Fraunces', serif; font-size: 20px; margin: 0 0 4px; font-weight: 600; }
+  /* Cabecera de la ficha: banda azul de mar con el nombre y una línea de
+     amanecer debajo (emoción); el resto de la ficha, datos sobrios. */
+  .panel h2 {
+    font-family: var(--f-titulo); font-weight: 800; font-size: 26px; letter-spacing: -0.5px; text-transform: uppercase;
+    color: var(--blanco); background: var(--mar); margin: 0 -18px; padding: 24px 18px 4px;
+  }
   .panel .cerrar {
-    float: right; border: none; color: #5C7680; cursor: pointer; font-size: 16px;
+    float: right; border: none; color: var(--blanco); cursor: pointer; font-size: 15px;
     /* Zona de toque real de al menos 44x44 (mínimo recomendado en iOS/Android)
        sin mover el icono visualmente — el padding amplía el área pulsable y el
        margen negativo la compensa para que siga pegada a la esquina de siempre.
        Bug real reportado por el usuario en su iPhone: el botón "✕" no
        respondía al toque, solo al ratón en escritorio (2026-09-13). */
-    padding: 14px; margin: -14px -14px 0 0; line-height: 1;
+    width: 44px; height: 44px; padding: 0; margin: 14px -6px 0 0; line-height: 1; border-radius: 50%;
     /* Segundo bug real, mismo hilo: el panel es más alto que la pantalla de
        un móvil y hay que bajar el scroll para ver toda la ficha (marea,
        corriente, índices...) — sin "sticky" el botón de cerrar se iba con el
        scroll y dejaba de estar donde el usuario lo buscaba. Con position:sticky
        se queda siempre a la vista, arriba del todo, aunque se haga scroll. */
-    position: sticky; top: 0; z-index: 5; background: #FFFFFF;
+    position: sticky; top: 0; z-index: 5; background: var(--mar-2); box-shadow: 0 0 0 2px rgba(255,255,255,0.25);
   }
-  .panel .coords { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #5C7680; }
+  .panel .coords {
+    font-family: var(--f-texto); font-size: 12px; font-weight: 600; color: var(--gris-mar);
+    background: var(--mar); margin: 0 -18px; padding: 0 18px 14px;
+    border-bottom: 4px solid var(--magenta); border-image: var(--degradado) 1;
+  }
   .panel .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
-  .panel .tarjeta { background: #EEF2EF; border-radius: 8px; padding: 10px 12px; }
-  .panel .tarjeta .etq { color: #5C7680; font-size: 10px; }
-  .atribucion-meteo { margin-top: 12px; font-size: 10.5px; line-height: 1.4; color: #5C7680; text-align: center; }
+  .panel .tarjeta { background: var(--superficie); border-radius: 18px; padding: 12px 14px; box-shadow: 0 4px 14px rgba(26,21,51,0.07); }
+  .panel .etq { font-size: 11px; font-weight: 800; letter-spacing: 0.06em; color: var(--tinta-2); }
+  .panel .tarjeta .etq + .etq { font-weight: 600; letter-spacing: 0; font-size: 12px; }
+  .atribucion-meteo { margin-top: 12px; font-size: 10.5px; line-height: 1.4; color: var(--tinta-2); text-align: center; }
   .atribucion-meteo a { color: inherit; text-decoration: underline; }
-  .panel .tarjeta .val { font-family: 'IBM Plex Mono', monospace; font-size: 16px; margin-top: 3px; }
-  .panel .indice-box { margin-top: 14px; background: #EEF2EF; border-radius: 8px; padding: 12px; text-align: center; }
-  .panel .indice-box .num { font-family: 'IBM Plex Mono', monospace; font-size: 30px; font-weight: 700; }
-  .panel .nota-final { font-size: 11px; color: #42585F; margin-top: 16px; line-height: 1.5; }
+  .panel .tarjeta .val { font-family: var(--f-texto); font-size: 22px; font-weight: 800; letter-spacing: -0.3px; color: var(--tinta); margin-top: 3px; }
+  /* Tarjeta del índice: la nota es la emoción (cifra grande sobre azul de mar
+     con un "sol" de amanecer que asoma por abajo); su color dice el nivel
+     (verde bueno, sol regular, coral malo; data-nivel lo pone el JS). */
+  .panel .indice-box {
+    margin-top: 14px; border-radius: 24px; padding: 16px 16px 14px; text-align: center; color: var(--blanco);
+    background:
+      radial-gradient(90% 60% at 50% 125%, rgba(232,70,124,0.5), transparent 70%),
+      radial-gradient(60% 40% at 50% 118%, rgba(255,138,61,0.65), transparent 70%),
+      var(--mar);
+  }
+  .panel .indice-box .etq { color: var(--sol); font-size: 11.5px; }
+  .panel .indice-box .num {
+    font-family: var(--f-titulo); font-size: 64px; font-weight: 800; line-height: 1; letter-spacing: -2px; margin: 8px 0 4px;
+  }
+  .indice-box .num[data-nivel="bueno"] { color: var(--nivel-bueno) !important; }
+  .indice-box .num[data-nivel="medio"] { color: var(--nivel-medio) !important; }
+  .indice-box .num[data-nivel="malo"] { color: var(--nivel-malo) !important; }
+  .indice-box .num[data-nivel="sd"] { color: var(--nivel-sd) !important; font-size: 40px; }
+  #panelIndiceNota, #panelIndicePescaNota { color: var(--blanco) !important; font-size: 12.5px !important; font-weight: 700; letter-spacing: 0; }
+  .panel .nota-final { font-size: 11px; color: var(--tinta-3); margin-top: 16px; line-height: 1.5; }
 
   .info-btn {
-    background: rgba(232,226,208,0.12); border: none; color: #A8792A; width: 16px; height: 16px;
-    border-radius: 50%; font-size: 11px; line-height: 16px; padding: 0; cursor: pointer; flex-shrink: 0;
+    background: rgba(255,255,255,0.15); border: none; color: var(--blanco); width: 22px; height: 22px;
+    border-radius: 50%; font-size: 12px; line-height: 22px; padding: 0; cursor: pointer; flex-shrink: 0;
   }
   .indice-box .etq { display: flex; align-items: center; justify-content: center; gap: 6px; }
   .explicacion-indice {
-    display: none; text-align: left; font-size: 11px; color: #5F7981; line-height: 1.5;
-    margin-top: 8px; padding-top: 8px; border-top: 1px solid #DDE2DC;
+    display: none; text-align: left; font-size: 11px; color: var(--tinta-2); line-height: 1.5;
+    margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--linea);
   }
   .explicacion-indice.visible { display: block; }
 
   /* Ventana de actividad por horas (2026-10-07, assets/js/ventana-actividad.js) */
   .va-controles { display: flex; gap: 8px; align-items: center; margin: 6px 0 8px; flex-wrap: wrap; }
-  .va-controles select { flex: 1; min-width: 0; font: inherit; font-size: 12px; padding: 5px 6px; border: 1px solid #DDE2DC; border-radius: 6px; background: #FFFFFF; color: #0B2532; }
+  .va-controles select { flex: 1; min-width: 0; font: inherit; font-size: 12px; padding: 5px 6px; border: 1px solid var(--linea); border-radius: 6px; background: var(--superficie); color: var(--tinta); }
   .va-dias { display: flex; gap: 4px; }
-  .va-dias button { font: inherit; font-size: 11px; padding: 4px 9px; border: 1px solid #DDE2DC; border-radius: 12px; background: #FFFFFF; color: #42585F; cursor: pointer; }
-  .va-dias button.activo { background: #D4A24C; border-color: #D4A24C; color: #0B2532; font-weight: 600; }
+  .va-dias button { font: inherit; font-size: 12px; font-weight: 700; padding: 6px 12px; border: 1px solid var(--linea); border-radius: 12px; background: var(--superficie); color: var(--tinta-3); cursor: pointer; }
+  .va-dias button.activo { background: var(--mar); border-color: var(--mar); color: var(--blanco); }
   .va-tira { display: grid; grid-template-columns: repeat(24, 1fr); gap: 2px; margin-top: 4px; }
-  .va-hora { height: 28px; border: none; border-radius: 3px; padding: 0; cursor: pointer; }
+  .va-hora { height: 28px; border: none; border-radius: 6px; padding: 0; cursor: pointer; }
   .va-hora.pasada { opacity: 0.35; }
-  .va-hora.sel { outline: 2px solid #0B2532; outline-offset: 1px; }
-  .va-eje { display: grid; grid-template-columns: repeat(24, 1fr); font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #5F7981; margin-top: 2px; }
-  .va-detalle { margin-top: 8px; font-size: 11.5px; line-height: 1.5; color: #42585F; }
-  .va-detalle .mas { color: #3E7D55; } .va-detalle .menos { color: #A34A35; }
-  .indice-porque { text-align: left; margin-top: 8px; font-size: 11.5px; line-height: 1.45; color: #42585F; }
+  .va-hora.sel { outline: 2px solid var(--tinta); outline-offset: 1px; }
+  .va-eje { display: grid; grid-template-columns: repeat(24, 1fr); font-family: var(--f-texto); font-size: 9px; color: var(--tinta-2); margin-top: 2px; }
+  .va-detalle { margin-top: 8px; font-size: 11.5px; line-height: 1.5; color: var(--tinta-3); }
+  .va-detalle .mas { color: var(--ok-texto); } .va-detalle .menos { color: var(--peligro); }
+  .indice-porque { text-align: left; margin-top: 10px; font-size: 13px; font-weight: 600; line-height: 1.4; color: var(--blanco); }
+  .indice-porque li { padding: 6px 0; border-top: 1px solid rgba(255,255,255,0.14); }
+  .indice-box .va-flecha.mas { color: var(--nivel-bueno); } .indice-box .va-flecha.menos { color: var(--nivel-malo); }
+  .indice-box .explicacion-indice { color: var(--blanco); border-top-color: rgba(255,255,255,0.2); }
   .indice-porque:empty { display: none; }
   .va-porque { list-style: none; margin: 4px 0 0; padding: 0; }
   .va-porque li { display: flex; gap: 6px; align-items: baseline; padding: 1px 0; list-style: none; }
   .va-porque li > span:last-child { flex: 1; min-width: 0; }
-  .va-flecha { flex: 0 0 18px; font-size: 9px; letter-spacing: -1px; }
-  .va-flecha.mas { color: #3E7D55; } .va-flecha.menos { color: #A34A35; }
-  .va-admin { margin-top: 4px; font-size: 10px; color: #5F7981; text-align: left; }
+  .va-flecha { flex: 0 0 20px; font-size: 11px; letter-spacing: -1px; }
+  .va-flecha.mas { color: var(--ok-texto); } .va-flecha.menos { color: var(--peligro); }
+  .va-admin { margin-top: 4px; font-size: 10px; color: var(--tinta-2); text-align: left; }
   .va-admin summary { cursor: pointer; }
   .va-admin ul { list-style: none; margin: 2px 0 0; padding: 0; }
-  .va-admin li { padding: 1px 0; color: #5F7981; }
-  .va-freza { margin: 4px 0 6px; padding: 6px 8px; border-radius: 6px; background: #FBF3E2; border: 1px solid #D9C08A; color: #7A5A1E; font-size: 11.5px; line-height: 1.4; }
-  .va-nota { margin-top: 6px; font-size: 10.5px; color: #5F7981; line-height: 1.4; }
-  .va-nota a { color: #A8792A; }
+  .va-admin li { padding: 1px 0; color: var(--tinta-2); }
+  .va-freza { margin: 4px 0 6px; padding: 6px 8px; border-radius: 6px; background: var(--aviso-fondo); border: 1px solid var(--aviso-borde); color: var(--aviso-texto); font-size: 11.5px; line-height: 1.4; }
+  .va-nota { margin-top: 6px; font-size: 10.5px; color: var(--tinta-2); line-height: 1.4; }
+  .va-nota a { color: var(--acento); }
 
   /* Modalidades de pesca (2026-10-08): pestañas costa / embarcación / submarina */
   .pesca-modalidades { margin-top: 10px; }
-  .mod-tabs { display: flex; gap: 4px; border-bottom: 1px solid #DDE2DC; }
-  .mod-tabs [role="tab"] { flex: 1; min-width: 0; font: inherit; font-size: 12px; padding: 8px 4px; border: 1px solid #DDE2DC; border-bottom: none; border-radius: 8px 8px 0 0; background: #F4F6F3; color: #42585F; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .mod-tabs [role="tab"][aria-selected="true"] { background: #FFFFFF; color: #0B2532; font-weight: 600; box-shadow: inset 0 3px 0 #D4A24C; }
-  .mod-tabs [role="tab"]:focus-visible { outline: 2px solid #0B2532; outline-offset: -2px; }
-  .mod-desc { font-size: 11px; color: #5F7981; margin: 6px 2px 0; line-height: 1.4; }
+  .mod-tabs { display: flex; gap: 6px; }
+  .mod-tabs [role="tab"] { flex: 1; min-width: 0; font: inherit; font-size: 12px; padding: 9px 4px; border: 0; border-radius: 999px; background: var(--superficie); color: var(--tinta-3); font-weight: 700; box-shadow: 0 2px 8px rgba(26,21,51,0.06); cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mod-tabs [role="tab"][aria-selected="true"] { background: var(--degradado-fuerte); color: var(--sobre-acento); box-shadow: 0 4px 14px rgba(190,24,93,0.3); }
+  .mod-tabs [role="tab"]:focus-visible { outline: 2px solid var(--tinta); outline-offset: -2px; }
+  .mod-desc { font-size: 11px; color: var(--tinta-2); margin: 6px 2px 0; line-height: 1.4; }
   .mod-normativa li { margin-bottom: 4px; }
   .mod-normativa ul { margin: 4px 0 6px; padding-left: 18px; }
-  .va-aviso { margin: 4px 0 6px; padding: 6px 8px; border-radius: 6px; background: #FBEAE6; border: 1px solid #E2A99C; color: #8A3A2A; font-size: 11.5px; line-height: 1.4; }
+  .va-aviso { margin: 4px 0 6px; padding: 6px 8px; border-radius: 6px; background: var(--peligro-fondo); border: 1px solid var(--peligro-borde); color: var(--peligro-texto); font-size: 11.5px; line-height: 1.4; }
 
   /* ---- Móvil ---- */
   @media (max-width: 720px) {
-    .leyenda-toggle { bottom: 10px; left: 10px; width: 34px; height: 34px; }
+    .leyenda-toggle { bottom: 10px; left: 10px; width: 40px; height: 40px; }
     .leyenda { bottom: 10px; left: 56px; }
 
-    header { padding: 6px 14px; }
-    header h1 { font-size: 22px; }
+    /* Botones de capa algo más pequeños en el móvil: 7 en la columna A
+       (con Isób.) caben sin bajar hasta la costa. */
+    .rayos-toggle, .luna-toggle, .batimetria-toggle, .nubes-toggle, .estaciones-toggle, .viento-toggle,
+    .rios-toggle, .boyas-toggle, .spots-toggle, .anadir-ubicacion-toggle { width: 48px; height: 48px; font-size: 17px; }
+    .rayos-toggle { top: 10px; right: 10px; }
+    .luna-toggle { top: 66px; right: 10px; }
+    .batimetria-toggle { top: 122px; right: 10px; }
+    .nubes-toggle { top: 178px; right: 10px; }
+    .estaciones-toggle { top: 234px; right: 10px; }
+    .viento-toggle { top: 290px; right: 10px; }
+    .isobatas-toggle { top: 346px; right: 10px; }
+    .spots-toggle { top: 10px; right: 66px; }
+    .anadir-ubicacion-toggle { top: 66px; right: 66px; }
+    .rios-toggle { top: 122px; right: 66px; }
+    .boyas-toggle { top: 178px; right: 66px; }
+    .viento-slider-panel { right: 124px; }
+    .luna-panel { right: 124px; }
+    /* Créditos obligatorios del mapa: en letra pequeña pero siempre visibles. */
+    .leaflet-control-attribution { font-size: 9.5px; line-height: 1.3; max-width: 100vw; }
+    header { padding: 8px 12px 12px; column-gap: 8px; }
+    header h1 { font-size: 19px; }
+    header .marca-logo { width: 32px; height: 32px; }
+    header .fecha { font-size: 11px; padding: 4px 9px; }
     header p { display: none; }
 
     #avisoRayos { padding: 6px 16px; font-size: 10.5px; }
@@ -591,24 +602,28 @@
       left: 0; right: 0; bottom: calc(72px + env(safe-area-inset-bottom));
       width: auto;
       max-height: 65vh;
-      border-left: none;
-      border-top: 1px solid #DDE2DC;
-      border-radius: 16px 16px 0 0;
+      border-radius: 26px 26px 0 0;
       transform: translateY(100%);
       transition: transform 0.25s ease-out;
       z-index: 1000;
-      box-shadow: 0 -8px 24px rgba(0,0,0,0.4);
+      box-shadow: 0 -10px 30px rgba(11,30,63,0.4);
     }
     .panel.visible { transform: translateY(0); }
+    /* Asa de la hoja deslizante. */
+    .panel::before {
+      content: ""; position: absolute; top: 9px; left: 50%; width: 44px; height: 5px; margin-left: -22px; z-index: 6;
+      border-radius: 3px; background: rgba(255,255,255,0.35);
+    }
+    .panel h2 { font-size: 23px; }
   }
-  .ola-banda { background:#FFFFFF; border:1px solid #DDE2DC; color:#0B2532; border-radius:12px; padding:4px 8px; font-size:11px; cursor:pointer; font-family:'Inter',sans-serif; }
-  .ola-banda:hover { background:#EEF2EF; }
+  .ola-banda { background:var(--superficie); border:1px solid var(--linea); color:var(--tinta); border-radius:12px; padding:4px 8px; font-size:11px; cursor:pointer; font-family:var(--f-texto); }
+  .ola-banda:hover { background:var(--superficie-2); }
 </style>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "d398d313ac4e4524a1b89af3c9ad6fda"}'></script><!-- End Cloudflare Web Analytics -->
 </head>
 <body>
 
-<div id="comprobandoAcceso" style="position:fixed; inset:0; background:#F7F3E8; z-index:9999; display:flex; align-items:center; justify-content:center; color:#5C7680; font-family:'IBM Plex Mono',monospace; font-size:13px;">
+<div id="comprobandoAcceso" style="position:fixed; inset:0; background:var(--fondo); z-index:9999; display:flex; align-items:center; justify-content:center; color:var(--tinta-2); font-family:var(--f-texto); font-size:13px;">
   Comprobando acceso…
 </div>
 <script type="module">
@@ -729,9 +744,10 @@
 
 
 <header>
-  <h1>Costaviva</h1><p>pesca en tiempo real</p><span class="fecha"><span id="estadoVigenciaGlobal">cargando…</span></span>
+  <svg class="marca-logo" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><circle class="marca-fondo" cx="20" cy="20" r="19"/><path class="marca-pez" d="M9 17c4-6.5 14-6.5 19 0-5 6.5-15 6.5-19 0z"/><path class="marca-pez" d="M27.5 17l6-4.5v9z"/><circle class="marca-ojo" cx="13.5" cy="16" r="1.4"/><path class="marca-ola" d="M5 28c3.5-3.2 6.5-3.2 10 0s6.5 3.2 10 0 6.5-3.2 10 0"/></svg>
+  <h1 class="logotipo">Costaviva</h1><p>pesca en tiempo real</p><span class="fecha"><span id="estadoVigenciaGlobal">cargando…</span></span>
   <div style="display:flex; align-items:center; gap:8px; margin-left:auto;">
-    <a id="enlaceAdmin" href="/admin.html" title="Admin" aria-label="Administración" style="display:none; background:#EEF2EF; border:1px solid #DDE2DC; color:#0B2532; width:34px; height:34px; border-radius:50%; font-size:15px; cursor:pointer; align-items:center; justify-content:center; text-decoration:none;">⚙️</a>
+    <a id="enlaceAdmin" class="cuenta-menu-btn" href="/admin.html" title="Admin" aria-label="Administración" style="display:none;">⚙️</a>
     <div class="cuenta-menu-wrap">
       <button class="cuenta-menu-btn" id="btnCuentaMenu" type="button" aria-label="Cuenta">👤</button>
       <div class="cuenta-menu-dropdown" id="cuentaMenuDropdown">
@@ -743,7 +759,7 @@
   </div>
 </header>
 
-<div id="avisoRayos" style="display:none; background:#A34A35; color:#F5F1E6; padding:8px 28px; font-family:'IBM Plex Mono', monospace; font-size:12px; font-weight:700; flex-shrink:0;">
+<div id="avisoRayos" style="display:none; background:var(--peligro); color:var(--blanco); padding:8px 28px; font-family:var(--f-texto); font-size:12px; font-weight:700; flex-shrink:0;">
   ⚡ RIESGO DE RAYOS DETECTADO EN LA ZONA — no salir a roca/muelle hasta que pase
 </div>
 <div class="main">
@@ -752,10 +768,10 @@
     <button class="leyenda-toggle" id="toggleLeyenda" title="¿Qué significan los colores del mapa?" aria-label="Mostrar/ocultar leyenda">ⓘ</button>
     <div class="leyenda" id="leyendaPanel">
       <div class="titulo">ÍNDICE DE MAR (oleaje + viento + ángulo entre ambos)</div>
-      <div class="fila"><span class="chip" style="background:#4F9D69"></span><span>tranquilo</span></div>
-      <div class="fila"><span class="chip" style="background:#D4A24C"></span><span>moderado</span></div>
-      <div class="fila"><span class="chip" style="background:#A34A35"></span><span>agitado</span></div>
-      <div class="nota" style="margin-top:10px; padding-top:8px; border-top:1px solid #DDE2DC;">◆ RÍOS: 3 puntos por río (cabecera→desembocadura), color por caudal bajo/normal/alto — pasa el cursor por un punto para ver el detalle. Lo que se mide arriba llega a la costa horas después — útil como aviso de tendencia. Posiciones ilustrativas, no las estaciones oficiales exactas. Caudal real solo en Sella, Besaya, Pas, Asón, Eo, Júcar, Turia, Mijares, Segura y Lagares (Confederaciones Hidrográficas + Augas de Galicia) — los ríos vascos siguen sin dato real (URA/Bizkaia bloquea el acceso automático).</div>
+      <div class="fila"><span class="chip" style="background:var(--nivel-bueno)"></span><span>tranquilo</span></div>
+      <div class="fila"><span class="chip" style="background:var(--nivel-medio)"></span><span>moderado</span></div>
+      <div class="fila"><span class="chip" style="background:var(--nivel-malo)"></span><span>agitado</span></div>
+      <div class="nota" style="margin-top:10px; padding-top:8px; border-top:1px solid var(--linea);">◆ RÍOS: 3 puntos por río (cabecera→desembocadura), color por caudal bajo/normal/alto — pasa el cursor por un punto para ver el detalle. Lo que se mide arriba llega a la costa horas después — útil como aviso de tendencia. Posiciones ilustrativas, no las estaciones oficiales exactas. Caudal real solo en Sella, Besaya, Pas, Asón, Eo, Júcar, Turia, Mijares, Segura y Lagares (Confederaciones Hidrográficas + Augas de Galicia) — los ríos vascos siguen sin dato real (URA/Bizkaia bloquea el acceso automático).</div>
     </div>
     <button class="rayos-toggle" id="toggleRayos" title="Rayos cerca: al momento y por satélite" aria-label="Mostrar/ocultar rayos en el mapa">⚡<span class="capa-label">Rayos</span></button>
     <!-- Panel de rayos: se mete como control de Leaflet abajo a la derecha
@@ -779,7 +795,7 @@
     <div class="aviso-capa" id="avisoCapa" role="status" hidden></div>
     <button class="luna-toggle" id="toggleLuna" title="Fase y posición de la luna" aria-label="Mostrar/ocultar datos de la luna">🌙<span class="capa-label">Luna</span></button>
     <div class="luna-panel" id="lunaPanel">
-      <div class="nota" id="lunaZoomAviso" style="display:none; font-size:11px; color:#5F7981; text-align:center; padding:6px 0;">🔍 Acércate (zoom in) para ver la luna de esa ubicación</div>
+      <div class="nota" id="lunaZoomAviso" style="display:none; font-size:11px; color:var(--tinta-2); text-align:center; padding:6px 0;">🔍 Acércate (zoom in) para ver la luna de esa ubicación</div>
       <div id="lunaContenido">
         <div class="fase-fila">
           <span class="fase-emoji" id="lunaEmoji">🌙</span>
@@ -834,10 +850,10 @@
     </div>
     <div class="confirmar-ubicacion-panel" id="coordsManualPanel">
       <div class="titulo">Coordenadas</div>
-      <label style="display:block; font-size:11.5px; color:#5F7981; margin-bottom:3px;">Latitud</label>
-      <input type="number" id="coordsManualLat" step="0.0001" min="-90" max="90" placeholder="ej. 43.4123" style="width:100%; padding:7px 9px; border-radius:6px; border:1px solid #DDE2DC; background:#EEF2EF; color:#0B2532; font-family:'IBM Plex Mono',monospace; margin-bottom:8px;" />
-      <label style="display:block; font-size:11.5px; color:#5F7981; margin-bottom:3px;">Longitud</label>
-      <input type="number" id="coordsManualLon" step="0.0001" min="-180" max="180" placeholder="ej. -2.6789" style="width:100%; padding:7px 9px; border-radius:6px; border:1px solid #DDE2DC; background:#EEF2EF; color:#0B2532; font-family:'IBM Plex Mono',monospace; margin-bottom:10px;" />
+      <label style="display:block; font-size:11.5px; color:var(--tinta-2); margin-bottom:3px;">Latitud</label>
+      <input type="number" id="coordsManualLat" step="0.0001" min="-90" max="90" placeholder="ej. 43.4123" style="width:100%; padding:7px 9px; border-radius:6px; border:1px solid var(--linea); background:var(--superficie-2); color:var(--tinta); font-family:var(--f-texto); margin-bottom:8px;" />
+      <label style="display:block; font-size:11.5px; color:var(--tinta-2); margin-bottom:3px;">Longitud</label>
+      <input type="number" id="coordsManualLon" step="0.0001" min="-180" max="180" placeholder="ej. -2.6789" style="width:100%; padding:7px 9px; border-radius:6px; border:1px solid var(--linea); background:var(--superficie-2); color:var(--tinta); font-family:var(--f-texto); margin-bottom:10px;" />
       <div id="coordsManualError" class="error" style="display:none;"></div>
       <div class="botones">
         <button class="cancelar" id="btnCancelarCoordsManual">Cancelar</button>
@@ -870,9 +886,9 @@
     <h2 id="panelNombre"></h2>
     <div class="coords" id="panelCoords"></div>
     <div style="display:flex; align-items:center; gap:10px; margin:6px 0 2px;">
-      <button id="panelBtnFavorito" title="Marcar/quitar de favoritos" style="background:none; border:none; cursor:pointer; font-size:18px; padding:0; color:#42585F; line-height:1;">☆</button>
-      <span id="panelEtiquetaComunidad" style="display:none; font-size:10.5px; color:#5C7680;">📍 ubicación de un usuario, sin cámara</span>
-      <button id="panelBtnBorrar" style="display:none; margin-left:auto; background:none; border:none; color:#A34A35; font-size:11px; cursor:pointer;">🗑 Borrar</button>
+      <button id="panelBtnFavorito" title="Marcar/quitar de favoritos" style="background:none; border:none; cursor:pointer; font-size:18px; padding:0; color:var(--tinta-3); line-height:1;">☆</button>
+      <span id="panelEtiquetaComunidad" style="display:none; font-size:10.5px; color:var(--tinta-2);">📍 ubicación de un usuario, sin cámara</span>
+      <button id="panelBtnBorrar" style="display:none; margin-left:auto; background:none; border:none; color:var(--peligro); font-size:11px; cursor:pointer;">🗑 Borrar</button>
     </div>
     <div class="grid2">
       <div class="tarjeta">
@@ -884,7 +900,7 @@
              elige el usuario entra en la calibración de las cámaras
              (oleaje_etiquetas, migración 20261008180000). -->
         <div id="panelOlaReal" style="display:none; margin-top:6px;">
-          <button type="button" id="panelBtnOlaReal" style="background:#EEF2EF; border:1px solid #DDE2DC; color:#0B2532; border-radius:14px; padding:3px 9px; font-size:11px; cursor:pointer; font-family:'Inter',sans-serif;">🌊 Ola real que veo</button>
+          <button type="button" id="panelBtnOlaReal" style="background:var(--superficie-2); border:1px solid var(--linea); color:var(--tinta); border-radius:14px; padding:3px 9px; font-size:11px; cursor:pointer; font-family:var(--f-texto);">🌊 Ola real que veo</button>
           <div id="panelOlaRealBandas" style="display:none; flex-wrap:wrap; gap:4px; margin-top:5px;">
             <button type="button" class="ola-banda" data-banda="<0.5">&lt;0,5 m</button>
             <button type="button" class="ola-banda" data-banda="0.5-1">0,5–1</button>
@@ -919,7 +935,7 @@
       </div>
       <div class="num" id="panelIndice"></div>
       <div class="etq" id="panelIndiceNota" style="margin-top:4px; font-size:10px; line-height:1.4;"></div>
-      <div class="explicacion-indice" id="explicacionIndiceMar">Con nuestra propia fórmula (oleaje, viento y el ángulo entre ambos), este número resume en una escala de 0 a 100 qué tan buenas pintan las condiciones del mar para salir hoy en este punto — cuanto más alto, mejor pinta.</div>
+      <div class="explicacion-indice" id="explicacionIndiceMar">Con nuestra propia fórmula (oleaje, viento y el ángulo entre ambos), este número resume en una escala de 0 a 100 cómo de movido está el mar hoy en este punto: cuanto más alto, más agitado y peor para salir (verde, tranquilo; amarillo, moderado; coral, agitado). Al revés que el índice de pesca, donde más alto es mejor.</div>
     </div>
     <div class="tarjeta" style="margin-top:10px; text-align:center;">
       <div class="etq">TEMPERATURA DEL AGUA</div>
@@ -962,7 +978,7 @@
       <div class="indice-porque" id="panelIndicePescaPorque"></div>
       <div class="explicacion-indice" id="explicacionIndicePesca">Es la puntuación de la especie de temporada que mejor está ahora mismo en este punto y con esta modalidad (sin las que están en veda), con las mismas reglas públicas que la ventana de actividad de abajo: luz, marea, temperatura del agua, oleaje, viento, presión, turbidez y las reglas expertas de pesca local. Escala de 0 a 100 en forma de probabilidad (50 = día normal); debajo, lo que más sube (▲) o baja (▼) la nota ahora mismo. Una orientación, no una garantía.</div>
     </div>
-    <div class="tarjeta" id="ventanaActividadBox" style="margin-top:10px; border: 1px solid #DDE2DC;">
+    <div class="tarjeta" id="ventanaActividadBox" style="margin-top:10px; border: 1px solid var(--linea);">
       <div class="etq">⏱ VENTANA DE ACTIVIDAD POR HORAS</div>
       <div class="va-controles">
         <select id="vaEspecie" aria-label="Especie"></select>
@@ -980,7 +996,7 @@
       <div id="vaTalla" class="va-nota"></div>
       <div class="va-nota" id="vaNotaReglas">Puntuación 0-100 con reglas fijas y públicas (marea, luz, temperatura del agua, oleaje, viento, presión, turbidez y reglas expertas de pesca local); toca una hora para ver el porqué. Orientativa: no es una garantía.</div>
     </div>
-    <div class="tarjeta" id="modNormativaBox" style="margin-top:10px; border: 1px solid #DDE2DC;">
+    <div class="tarjeta" id="modNormativaBox" style="margin-top:10px; border: 1px solid var(--linea);">
       <div class="etq">⚖ NORMATIVA DE ESTA MODALIDAD</div>
       <div id="modNormativa" class="va-detalle">Cargando…</div>
     </div>
@@ -992,7 +1008,7 @@
       <div id="panelWebcamExternas"></div>
     </div>
     <!-- Atribución obligatoria de Open-Meteo (licencia CC BY 4.0 de sus datos). -->
-    <div class="atribucion-boyas" style="margin-top:6px; font-size:10.5px; line-height:1.4; color:#5C7680; text-align:center;">Boyas: Puertos del Estado vía <a href="https://marine.copernicus.eu/" target="_blank" rel="noopener" style="color:inherit;">E.U. Copernicus Marine Service</a> (Generated using E.U. Copernicus Marine Service Information; <a href="https://doi.org/10.48670/moi-00043" target="_blank" rel="noopener" style="color:inherit;">doi:10.48670/moi-00043</a>)</div>
+    <div class="atribucion-boyas" style="margin-top:6px; font-size:10.5px; line-height:1.4; color:var(--tinta-2); text-align:center;">Boyas: Puertos del Estado vía <a href="https://marine.copernicus.eu/" target="_blank" rel="noopener" style="color:inherit;">E.U. Copernicus Marine Service</a> (Generated using E.U. Copernicus Marine Service Information; <a href="https://doi.org/10.48670/moi-00043" target="_blank" rel="noopener" style="color:inherit;">doi:10.48670/moi-00043</a>)</div>
     <div class="atribucion-meteo">Datos meteorológicos: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a> (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>)</div>
   </div>
 </div>
@@ -1535,18 +1551,11 @@ function indiceMar(s) {
   return Math.round(Math.min(100, alturaNorm * 40 + vientoNorm * 35 + factorOposicion * 25));
 }
 
-function colorGradiente(valor, min, max) {
-  let t = Math.max(0, Math.min(1, (valor - min) / (max - min)));
-  const verde = [79, 157, 105], ambar = [212, 162, 76], oxido = [163, 74, 53];
-  let c1, c2, tt;
-  if (t < 0.5) { c1 = verde; c2 = ambar; tt = t / 0.5; }
-  else { c1 = ambar; c2 = oxido; tt = (t - 0.5) / 0.5; }
-  return c1.map((v, i) => Math.round(v + (c2[i] - v) * tt));
-}
+// Color del índice de mar por nivel (assets/js/nivel-indice.js): más alto =
+// mar más movido = peor. Tres niveles claros en vez del degradado continuo de
+// antes, con los mismos colores que la leyenda y la ficha.
 function colorIndiceMarCss(valor) {
-  if (valor === null || valor === undefined) return "#42585F"; // sin datos vigentes — gris neutro, no un color de la escala
-  const [r, g, b] = colorGradiente(valor, 0, 100);
-  return `rgb(${r},${g},${b})`;
+  return NivelIndice.colorNivel(NivelIndice.nivelMar(valor));
 }
 function textoIndice(valor) {
   return (valor === null || valor === undefined) ? "S/D" : String(valor);
@@ -1642,10 +1651,9 @@ const map = L.map("map", {
   center: [43.51, -2.82],
   zoom: 10,
   minZoom: 5,
-  // Tope en 16: es hasta donde Esri tiene teselas propias en esta zona de
-  // mar abierto — más allá se ve borroso (ampliado digitalmente), así que
-  // mejor bloquear el zoom ahí que dejar llegar a un mapa que se ve mal.
-  maxZoom: 16,
+  // Tope en 17: el mapa base vectorial (OpenFreeMap) tiene detalle de sobra;
+  // más cerca ya no aporta nada para pescar.
+  maxZoom: 17,
   // La animación de zoom de Leaflet puede quedarse "atascada" si el evento
   // CSS transitionend no llega a disparar (pasa en algunos navegadores/
   // entornos automatizados) — a partir de ahí deja de responder a más
@@ -1662,7 +1670,7 @@ const map = L.map("map", {
 });
 // Quita solo el prefijo "Leaflet" (pedido explícito del usuario: "quita
 // la leyenda del mapa, la de leaflet") -- los créditos reales de datos
-// (Esri/GEBCO/NOAA/EMODnet/RainViewer, ver attribution de cada capa) se
+// (OpenFreeMap/OpenStreetMap/EMODnet, ver attribution de cada capa) se
 // quedan, esos sí son una condición real de uso de esos servicios
 // gratuitos, no solo un logo de la librería.
 map.attributionControl.setPrefix(false);
@@ -1740,41 +1748,12 @@ const capaSpots = L.layerGroup();
 const capaRios = L.layerGroup();
 const capaBoyas = L.layerGroup();
 
-// Esri Ocean Basemap: gratis, sin API key, mar en azul de verdad. PERO
-// solo tiene teselas reales hasta zoom 10 en esta zona — a partir de ahí
-// devuelve un aviso "Map data not yet available" en vez de mapa (lo vimos
-// al comprobarlo tesela a tesela). Por eso solo se usa hasta zoom 10, y
-// de ahí en adelante se cambia a World Street Map (sí tiene detalle real
-// hasta zoom 16, agua también en azul aunque con otro estilo).
-//
-// El cambio de capa se hace a mano (añadir/quitar en vez de dejarlo a los
-// minZoom/maxZoom propios de cada capa) porque con la animación de zoom
-// desactivada, Leaflet no siempre "despierta" una capa nueva al cruzar su
-// rango de zoom — se queda en blanco hasta que se le pide un redibujado.
-const capaOceanoBase = L.tileLayer("https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}", {
-  attribution: "Tiles &copy; Esri &mdash; Sources: GEBCO, NOAA, National Geographic, DeLorme, HERE, Geonames.org",
-});
-const capaOceanoRef = L.tileLayer("https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Reference/MapServer/tile/{z}/{y}/{x}", {
-  opacity: 0.9,
-});
-const capaCalles = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", {
-  attribution: "Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom",
-});
-const ZOOM_CAMBIO_MAPA_BASE = 10; // hasta aquí, Ocean; a partir de aquí, calles
-
-function actualizarMapaBaseSegunZoom() {
-  if (map.getZoom() <= ZOOM_CAMBIO_MAPA_BASE) {
-    if (map.hasLayer(capaCalles)) map.removeLayer(capaCalles);
-    if (!map.hasLayer(capaOceanoBase)) capaOceanoBase.addTo(map);
-    if (!map.hasLayer(capaOceanoRef)) capaOceanoRef.addTo(map);
-  } else {
-    if (map.hasLayer(capaOceanoBase)) map.removeLayer(capaOceanoBase);
-    if (map.hasLayer(capaOceanoRef)) map.removeLayer(capaOceanoRef);
-    if (!map.hasLayer(capaCalles)) capaCalles.addTo(map);
-  }
-}
-actualizarMapaBaseSegunZoom();
-map.on("zoomend", actualizarMapaBaseSegunZoom);
+// Mapa base: OpenFreeMap (vectorial, uso comercial permitido con
+// atribución) con el relieve de EMODnet encima a zoom bajo y medio. Hasta el
+// 2026-10-08 eran teselas de Esri, cuya licencia no cubre una app de pago
+// sin suscripción de ArcGIS. Todo en assets/js/mapa-base.js; va en paneles
+// por debajo de tilePane, así que las demás capas siempre quedan encima.
+window.MapaBase.montar(map, L);
 
 // Batimetría real (EMODnet Bathymetry, WMS público y gratis, sin clave) —
 // capa activable, no puesta por defecto porque tapa bastante el resto del
@@ -1945,10 +1924,10 @@ function crearMarcadorSpot(s) {
       <div style="display:flex; align-items:center; gap:3px;">
         ${iconoFlecha(gradosDesdeTexto(s.dirOla), "#2E7BA0")}
         ${iconoFlecha(gradosDesdeTexto(s.dirViento), "#D4A24C")}
-        <span style="font-family:'IBM Plex Mono',monospace; font-size:9px; font-weight:700; color:#A8792A; text-shadow:0 0 3px #0B2532,0 0 3px #0B2532;">${s.viento}</span>
+        <span style="font-family:var(--f-texto); font-size:9px; font-weight:700; color:var(--acento); text-shadow:0 0 3px var(--tinta),0 0 3px var(--tinta);">${s.viento}</span>
         <div class="marcador-envoltorio">
           <div class="anillo-pulso" style="background:${color};"></div>
-          <div class="marcador" id="marcador-${s.slug}" style="background:${color}; color:#0B2532;">${textoIndice(s.indice)}</div>
+          <div class="marcador" id="marcador-${s.slug}" style="background:${color}; color:var(--tinta);">${textoIndice(s.indice)}</div>
         </div>
       </div>
     </div>`;
@@ -2493,7 +2472,7 @@ function actualizarBotonFavorito(s) {
   const btn = document.getElementById("panelBtnFavorito");
   const esFavorito = favoritosClaves.has(claveFavorito(s));
   btn.textContent = esFavorito ? "★" : "☆";
-  btn.style.color = esFavorito ? "#D4A24C" : "#42585F";
+  btn.style.color = esFavorito ? "var(--acento)" : "var(--tinta-3)";
 }
 
 async function borrarSpotPersonalizado(s) {
@@ -2799,12 +2778,12 @@ function pintarCamarasExternas(slug) {
   const enlaces = lista.filter((c) => c.modo === "enlace");
   const htmlImagenes = imagenes.map((c) => `
     <figure style="margin:8px 0 0;">
-      <a href="${escaparHtmlCam(c.url)}" target="_blank" rel="noopener"><img src="${escaparHtmlCam(c.imagen)}" alt="${escaparHtmlCam(c.nombre)} | ${escaparHtmlCam(c.dueno)}" loading="lazy" style="width:100%; border-radius:8px; border:1px solid #DDE2DC; display:block;"></a>
-      <figcaption style="font-size:11px; color:#5C7680; margin-top:3px;">${escaparHtmlCam(c.nombre)} · imagen de <a href="${escaparHtmlCam(c.url)}" target="_blank" rel="noopener">${escaparHtmlCam(c.dueno)}</a> (cada 5 min; el vídeo, en su web)</figcaption>
+      <a href="${escaparHtmlCam(c.url)}" target="_blank" rel="noopener"><img src="${escaparHtmlCam(c.imagen)}" alt="${escaparHtmlCam(c.nombre)} | ${escaparHtmlCam(c.dueno)}" loading="lazy" style="width:100%; border-radius:8px; border:1px solid var(--linea); display:block;"></a>
+      <figcaption style="font-size:11px; color:var(--tinta-2); margin-top:3px;">${escaparHtmlCam(c.nombre)} · imagen de <a href="${escaparHtmlCam(c.url)}" target="_blank" rel="noopener">${escaparHtmlCam(c.dueno)}</a> (cada 5 min; el vídeo, en su web)</figcaption>
     </figure>`).join("");
   const htmlEnlaces = enlaces.length ? `
     <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;">
-      ${enlaces.map((c) => `<a href="${escaparHtmlCam(c.url)}" target="_blank" rel="noopener" style="font-size:12px; padding:5px 10px; border:1px solid #DDE2DC; border-radius:14px; text-decoration:none; color:#2E7BA0;">Ver cámara: ${escaparHtmlCam(c.nombre)} (${escaparHtmlCam(c.dueno)}) ↗</a>`).join("")}
+      ${enlaces.map((c) => `<a href="${escaparHtmlCam(c.url)}" target="_blank" rel="noopener" style="font-size:12px; padding:5px 10px; border:1px solid var(--linea); border-radius:14px; text-decoration:none; color:#2E7BA0;">Ver cámara: ${escaparHtmlCam(c.nombre)} (${escaparHtmlCam(c.dueno)}) ↗</a>`).join("")}
     </div>` : "";
   caja.innerHTML = `
     <div class="etq" style="margin:12px 0 2px;">OTRAS CÁMARAS DE LA ZONA</div>
@@ -2825,11 +2804,11 @@ function pintarWebcam(slug, nombre) {
     const hayExternas = window.CamarasExternas && window.CamarasExternas.camarasExternasDeSpot(slug).length > 0;
     cont.innerHTML = hayExternas
       ? ""
-      : `<div class="tarjeta" style="text-align:center; color:#42585F; font-size:12px;">Sin webcam identificada para este spot todavía.</div>`;
+      : `<div class="tarjeta" style="text-align:center; color:var(--tinta-3); font-size:12px;">Sin webcam identificada para este spot todavía.</div>`;
     return;
   }
   if (camaraRetirada(slug)) {
-    cont.innerHTML = `<div class="tarjeta" style="text-align:center; color:#42585F; font-size:12px;">
+    cont.innerHTML = `<div class="tarjeta" style="text-align:center; color:var(--tinta-3); font-size:12px;">
       La webcam de ${nombre} no está emitiendo ahora mismo (el problema es de su proveedor).<br>
       Volverá a aparecer aquí en cuanto vuelva a emitir.
     </div>`;
@@ -2845,7 +2824,7 @@ function pintarWebcam(slug, nombre) {
   cont.innerHTML = `
     <div style="position:relative;">
       <img id="imgWebcam" crossorigin="anonymous" src="/webcam/${slug}?_=${Date.now()}" alt="Webcam en directo de ${nombre}"
-           style="width:100%; border-radius:8px; border:1px solid #DDE2DC; display:block; cursor:zoom-in;" />
+           style="width:100%; border-radius:8px; border:1px solid var(--linea); display:block; cursor:zoom-in;" />
       ${badgeWebcamHtml(slug)}
     </div>
     ${lineaCamaraSaludHtml(slug)}
@@ -2856,7 +2835,7 @@ function pintarWebcam(slug, nombre) {
   img.addEventListener("click", () => abrirZoomImagen(img.src, img.alt));
   img.addEventListener("error", () => {
     pararRefrescoWebcam();
-    cont.innerHTML = `<div class="tarjeta" style="text-align:center; color:#42585F; font-size:12px;">
+    cont.innerHTML = `<div class="tarjeta" style="text-align:center; color:var(--tinta-3); font-size:12px;">
       No se pudo cargar la webcam de ${nombre} ahora mismo<br>
       (solo funciona una vez desplegado en Cloudflare Pages — no en este archivo abierto suelto).
     </div>`;
@@ -2878,7 +2857,7 @@ function pintarWebcamHls(slug, nombre) {
   cont.innerHTML = `
     <div style="position:relative;" id="wrapperVideoWebcam">
       <video id="videoWebcam" crossorigin="anonymous" muted autoplay playsinline
-             style="width:100%; border-radius:8px; border:1px solid #DDE2DC; display:block; background:#0B2532; aspect-ratio:16/9; cursor:zoom-in;"></video>
+             style="width:100%; border-radius:8px; border:1px solid var(--linea); display:block; background:var(--tinta); aspect-ratio:16/9; cursor:zoom-in;"></video>
       ${badgeWebcamHtml(slug)}
     </div>
     ${lineaCamaraSaludHtml(slug)}
@@ -2892,7 +2871,7 @@ function pintarWebcamHls(slug, nombre) {
   const fallo = () => {
     pararRefrescoWebcam();
     destruirHlsActivo();
-    cont.innerHTML = `<div class="tarjeta" style="text-align:center; color:#42585F; font-size:12px;">
+    cont.innerHTML = `<div class="tarjeta" style="text-align:center; color:var(--tinta-3); font-size:12px;">
       No se pudo cargar la webcam de ${nombre} ahora mismo.
     </div>`;
   };
@@ -2914,7 +2893,7 @@ function pintarWebcamHls(slug, nombre) {
     video.src = url;
     video.addEventListener("error", fallo, { once: true });
   } else {
-    cont.innerHTML = `<div class="tarjeta" style="text-align:center; color:#42585F; font-size:12px;">Tu navegador no soporta vídeo en directo (HLS).</div>`;
+    cont.innerHTML = `<div class="tarjeta" style="text-align:center; color:var(--tinta-3); font-size:12px;">Tu navegador no soporta vídeo en directo (HLS).</div>`;
   }
 }
 
@@ -2934,7 +2913,7 @@ function lineaMonteRiosHtml(rio, tramo) {
   if (d.temperaturaC != null) partes.push(`${d.temperaturaC}°C${d.humedadPct != null ? ` / ${Math.round(d.humedadPct)}% hum.` : ""}`);
   if (d.vientoVelKmh != null) partes.push(`💨 ${d.vientoVelKmh} km/h${d.vientoDirGrados != null ? ` ${textoRumbo(d.vientoDirGrados)}` : ""}`);
   if (d.presionHpa != null) partes.push(`${d.presionHpa} hPa (${d.estacionPresion})`);
-  return `<div class="rio-caudal" style="margin-top:2px; color:#5C7680;">${partes.join(" · ")}</div>`;
+  return `<div class="rio-caudal" style="margin-top:2px; color:var(--tinta-2);">${partes.join(" · ")}</div>`;
 }
 
 const COLOR_TURBIDEZ = { "no turbia": "#4F9D69", "turbia": "#D4A24C", "muy turbia": "#A34A35" };
@@ -2942,7 +2921,7 @@ function lineaTurbidezHtml(slug) {
   const t = TURBIDEZ[slug];
   if (!t) return "";
   const color = COLOR_TURBIDEZ[t.etiqueta] || "#5C7680";
-  return `<div style="margin-top:4px; font-size:11.5px; color:#5C7680;">💧 Agua <span style="color:${color};">${t.etiqueta}</span> (relativo a este mismo punto, 1 lectura/día)</div>`;
+  return `<div style="margin-top:4px; font-size:11.5px; color:var(--tinta-2);">💧 Agua <span style="color:${color};">${t.etiqueta}</span> (relativo a este mismo punto, 1 lectura/día)</div>`;
 }
 
 // Desde cuándo (texto corto) una marca de tiempo ISO viene sucediendo —
@@ -2965,17 +2944,17 @@ function badgeWebcamHtml(slug) {
   if (c?.sinSenal) {
     return `
       <span style="position:absolute; top:8px; left:8px; display:flex; align-items:center; gap:5px;
-                    background:rgba(11,37,50,0.75); padding:3px 8px; border-radius:12px;
-                    font-family:'IBM Plex Mono',monospace; font-size:10px; color:#F5F1E6;">
-        <span style="width:7px; height:7px; border-radius:50%; background:#A34A35;"></span>
+                    background:rgba(11,30,63,0.75); padding:3px 8px; border-radius:12px;
+                    font-family:var(--f-texto); font-size:10px; color:var(--blanco);">
+        <span style="width:7px; height:7px; border-radius:50%; background:var(--peligro);"></span>
         SIN SEÑAL
       </span>`;
   }
   return `
     <span style="position:absolute; top:8px; left:8px; display:flex; align-items:center; gap:5px;
-                  background:rgba(11,37,50,0.75); padding:3px 8px; border-radius:12px;
-                  font-family:'IBM Plex Mono',monospace; font-size:10px; color:#F5F1E6;">
-      <span style="width:7px; height:7px; border-radius:50%; background:#A34A35; animation:pulso 1.6s infinite;"></span>
+                  background:rgba(11,30,63,0.75); padding:3px 8px; border-radius:12px;
+                  font-family:var(--f-texto); font-size:10px; color:var(--blanco);">
+      <span style="width:7px; height:7px; border-radius:50%; background:var(--peligro); animation:pulso 1.6s infinite;"></span>
       EN DIRECTO
     </span>`;
 }
@@ -3006,7 +2985,7 @@ function lineaCamaraSaludHtml(slug) {
   const texto = c.motivo === "frame_congelado"
     ? `⚠ Esta imagen no se actualiza ${desde} (el proveedor podría haberse quedado colgado)`
     : `⚠ Sin señal detectada ${desde} (puede ser que ahora mismo sea de noche, o que la cámara/el proveedor esté caído)`;
-  return `<div style="margin-top:4px; font-size:11.5px; color:#A34A35;">${texto}</div>`;
+  return `<div style="margin-top:4px; font-size:11.5px; color:var(--peligro);">${texto}</div>`;
 }
 
 // Oleaje del panel: mar abierto frente a "en la playa" (2026-10-08, caso
@@ -3123,6 +3102,7 @@ function abrirPanel(s) {
   const indiceEl = document.getElementById("panelIndice");
   indiceEl.textContent = textoIndice(s.indice);
   indiceEl.style.color = colorIndiceMarCss(s.indice);
+  indiceEl.dataset.nivel = NivelIndice.nivelMar(s.indice); // el color lo pone el CSS por nivel
   document.getElementById("panelIndiceNota").textContent = textoVigencia(s);
 
   document.getElementById("panelTempAgua").textContent = (s.tempAgua === null || s.tempAgua === undefined) ? "sin datos" : `${s.tempAgua}°C`;
@@ -3323,10 +3303,10 @@ function contextoIndiceSpot(s, datos, modalidad, dia = 0) {
 }
 
 function vaColor(p) {
-  if (p >= 70) return "#4F9D69";
-  if (p >= 55) return "#D4A24C";
-  if (p >= 40) return "#C9C3AE";
-  return "#DDE2DC";
+  if (p >= 70) return "#22C55E";
+  if (p >= 55) return "#FFC24B";
+  if (p >= 40) return "#F3D9BE";
+  return "#EBD9CC";
 }
 
 function vaFechaDia(offset) {
@@ -3355,7 +3335,10 @@ async function pintarIndicePesca(s) {
   const porqueEl = document.getElementById("panelIndicePescaPorque");
   const pinta = (valor, texto) => {
     el.textContent = textoIndice(valor);
-    el.style.color = colorIndiceMarCss(valor);
+    // Índice de pesca: más alto = MEJOR, al revés que el de mar (antes se
+    // pintaba con la escala del de mar y un 77 salía en el color de "malo").
+    el.style.color = NivelIndice.colorNivel(NivelIndice.nivelPesca(valor));
+    el.dataset.nivel = NivelIndice.nivelPesca(valor);
     nota.textContent = texto;
     porqueEl.innerHTML = "";
   };
@@ -3488,7 +3471,7 @@ function pintarTiraVA(especie, region, fecha, datos) {
   const fz = VA.estadoFreza(especie, region, mes);
   const frezaEl = document.getElementById("vaFreza");
   frezaEl.innerHTML = vedaHoy
-    ? `<div class="va-freza" style="background:#FBEAE6; border-color:#E2A99C; color:#8A3A2A;">🚫 <b>En veda en esta zona</b> (${escVA(VA.textoMeses(vedaHoy.meses))}): ${escVA(vedaHoy.texto)}</div>`
+    ? `<div class="va-freza" style="background:var(--peligro-fondo); border-color:var(--peligro-borde); color:var(--peligro-texto);">🚫 <b>En veda en esta zona</b> (${escVA(VA.textoMeses(vedaHoy.meses))}): ${escVA(vedaHoy.texto)}</div>`
     : fz?.enFreza
     ? `<div class="va-freza">🥚 <b>En freza en esta zona</b> (${vaTextoMeses(fz.meses)}). Si lo pescas, te recomendamos devolverlo al agua.${fz.nota ? ` <span style="opacity:.8">${escVA(fz.nota)}</span>` : ""}</div>`
     : "";
@@ -3817,7 +3800,7 @@ async function actualizarRayosVivo() {
   rayosEncuadre = R.rayosParaEncuadre(ref, datos.rayos, masCercanoRayos);
   // Punto de referencia y línea hasta el rayo más cercano: se ve de un
   // vistazo de qué está midiendo la frase.
-  L.circleMarker([ref.lat, ref.lon], { radius: 5, color: "#0B2532", weight: 2, fillColor: "#FFFFFF", fillOpacity: 1 })
+  L.circleMarker([ref.lat, ref.lon], { radius: 5, color: "#0B1E3F", weight: 2, fillColor: "#FFFFFF", fillOpacity: 1 })
     .bindTooltip(`Distancias medidas desde aquí (${ref.de.replace(/^de(l)? /, "")})`)
     .addTo(capaRayosVivo);
   if (masCercanoRayos) {

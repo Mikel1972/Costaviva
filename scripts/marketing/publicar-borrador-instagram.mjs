@@ -85,12 +85,13 @@ function abortarPorTokenCaducado(datos) {
   process.exit(SALIDA_TOKEN_CADUCADO);
 }
 
-async function crearContenedor(imageUrl, caption) {
-  const params = new URLSearchParams({
-    image_url: imageUrl,
-    caption,
-    access_token: PAGE_ACCESS_TOKEN,
-  });
+// Imagen: un paso. Reel (2026-10-08): media_type=REELS con video_url, y hay
+// que esperar a que Instagram termine de procesar el vídeo (status_code
+// FINISHED) antes de que /media_publish lo acepte.
+async function crearContenedor({ publicUrl, caption, esReel }) {
+  const params = new URLSearchParams(esReel
+    ? { media_type: "REELS", video_url: publicUrl, caption, share_to_feed: "true", access_token: PAGE_ACCESS_TOKEN }
+    : { image_url: publicUrl, caption, access_token: PAGE_ACCESS_TOKEN });
   const resp = await fetch(`https://graph.facebook.com/v21.0/${IG_BUSINESS_ACCOUNT_ID}/media`, {
     method: "POST",
     body: params,
@@ -99,15 +100,28 @@ async function crearContenedor(imageUrl, caption) {
   if (!resp.ok && esTokenCaducado(datos)) abortarPorTokenCaducado(datos);
   if (!resp.ok) throw new Error(`Graph API /media falló: ${JSON.stringify(datos)}`);
   if (!datos.id) throw new Error(`Graph API /media no devolvió id: ${JSON.stringify(datos)}`);
+  if (esReel) await esperarProcesado(datos.id);
   return datos.id;
 }
 
+async function esperarProcesado(id, intentosMax = 30, esperaMs = 10000) {
+  for (let intento = 1; intento <= intentosMax; intento++) {
+    const r = await fetch(`https://graph.facebook.com/v21.0/${id}?fields=status_code,status&access_token=${encodeURIComponent(PAGE_ACCESS_TOKEN)}`);
+    const d = await r.json();
+    if (d.status_code === "FINISHED") { console.log(`✓ Vídeo procesado por Instagram (intento ${intento})`); return; }
+    if (d.status_code === "ERROR" || d.status_code === "EXPIRED") throw new Error(`Instagram no pudo procesar el reel: ${JSON.stringify(d)}`);
+    console.log(`… Instagram procesando el reel (${d.status_code || "?"}), ${intento}/${intentosMax}`);
+    await new Promise((res) => setTimeout(res, esperaMs));
+  }
+  throw new Error("Instagram no terminó de procesar el reel en 5 minutos");
+}
+
 function crearIssue({ tipo, caption, publicUrl, creationId }) {
-  const titulo = `📸 Propuesta de post Instagram — ${tipo} — ${new Date().toISOString().slice(0, 10)}`;
+  const titulo = `${tipo.startsWith("reel") ? "🎬 Propuesta de reel" : "📸 Propuesta de post"} Instagram — ${tipo} — ${new Date().toISOString().slice(0, 10)}`;
   const cuerpo = [
     `Contenedor creado en Instagram (borrador, sin publicar todavía) -- caduca solo en 24h si no se aprueba.`,
     "",
-    `![preview](${publicUrl})`,
+    publicUrl.endsWith(".mp4") ? `🎬 Vídeo: ${publicUrl}` : `![preview](${publicUrl})`,
     "",
     "**Texto propuesto:**",
     "",
@@ -134,13 +148,14 @@ function crearIssue({ tipo, caption, publicUrl, creationId }) {
 }
 
 async function main() {
-  const rutaPendiente = join(__dirname, "post-pendiente.json");
+  // post-pendiente.json (robot de posts) o reel-pendiente.json (robot de reels).
+  const rutaPendiente = join(__dirname, process.argv[2] || "post-pendiente.json");
   const pendiente = JSON.parse(readFileSync(rutaPendiente, "utf8"));
   const { tipo, caption, publicUrl } = pendiente;
 
   await esperarUrlPublica(publicUrl);
 
-  const creationId = await crearContenedor(publicUrl, caption);
+  const creationId = await crearContenedor(pendiente);
   console.log(`✓ Contenedor creado en Instagram, id: ${creationId}`);
 
   crearIssue({ tipo, caption, publicUrl, creationId });
