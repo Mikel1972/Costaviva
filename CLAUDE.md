@@ -905,7 +905,11 @@ Detalle y pasos de Search Console/Bing en `SEO.md`.
   públicas pesos sueltos 400/600/800 y 700/800 (`publico.css`), porque así
   las pedían a Google y un 700 en Manrope se veía a 800; el generador quita
   las `@font-face` de `costaviva.css` al ponerlo en línea. Test
-  `test/rendimiento-publico.test.js`. `/mareas/*` ya iba con estilos en línea
+  `test/rendimiento-publico.test.js`. Para que el cambio de letra no mueva
+  la página (CLS), `publico.css` trae letras de reserva ("Manrope fallback",
+  "Unbounded fallback": Arial/Liberation con `size-adjust` y overrides
+  medidos con fontTools, y `unicode-range` = los glifos de cada woff2, para
+  que →, ▲ sigan saliendo en system-ui). `/mareas/*` ya iba con estilos en línea
   y letras del sistema: no se tocó.
 
 ## IndexNow, imágenes OG, PWA y 404 (2026-10-08, pedido de Mikel)

@@ -80,7 +80,8 @@ test("letras: ficheros y licencias OFL en assets/fonts, @font-face con swap y si
   }
   for (const f of ["OFL-Manrope.txt", "OFL-Unbounded.txt"]) assert.match(leer(`assets/fonts/${f}`), /SIL OPEN FONT LICENSE/i, f);
   for (const hoja of ["assets/css/costaviva.css", "assets/css/publico.css"]) {
-    const reglas = leer(hoja).match(/@font-face\s*\{[^}]*\}/g) || [];
+    // Las de reserva ("... fallback", solo local()) no bajan nada.
+    const reglas = (leer(hoja).match(/@font-face\s*\{[^}]*\}/g) || []).filter((r) => !/fallback"/.test(r));
     assert.ok(reglas.length >= 4, `${hoja}: sin @font-face`);
     for (const r of reglas) {
       assert.match(r, /font-display:\s*swap/, `${hoja}: @font-face sin swap`);
@@ -93,6 +94,12 @@ test("letras: ficheros y licencias OFL en assets/fonts, @font-face con swap y si
   // Google), no los rangos de la app: un 700 en Manrope se sigue viendo a 800.
   const pesos = (cssEnLinea().match(/font-weight: ?[\d ]+;font-display/g) || []).map((x) => x.match(/[\d ]+(?=;)/)[0].trim());
   assert.deepEqual([...new Set(pesos)].sort(), ["400", "600", "700", "800"]);
+  // Letras de reserva con medidas ajustadas (sin CLS al cambiar de letra).
+  const css = cssEnLinea();
+  for (const f of ["Manrope fallback", "Unbounded fallback"]) {
+    assert.match(css, new RegExp(`@font-face\\{font-family: "${f}";[^}]*src: local\\([^}]*size-adjust:`), `${f} sin medidas`);
+  }
+  assert.match(css, /--f-texto: "Manrope", "Manrope fallback"/);
 });
 
 test("app: ninguna página .html pide Google Fonts; index y login precargan las letras", () => {
