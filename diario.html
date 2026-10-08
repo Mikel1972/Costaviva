@@ -254,6 +254,7 @@
 <script src="/assets/js/meteo.js"></script>
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { cargarCompartidas, htmlCasillaCompartir, htmlEtiquetaCompartida, sincronizarCompartida } from "/assets/js/compartir-captura.js";
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
@@ -478,6 +479,7 @@ const DIAS_SEMANA = ["L","M","X","J","V","S","D"];
 
 let cursor = new Date();
 cursor.setDate(1);
+let compartidas = { disponible: false, ids: new Set() }; // capturas compartidas de forma anónima
 let salidasPorFecha = {}; // "YYYY-MM-DD" -> { salida, capturas: [...] }
 
 // Instancias activas de los selectores de hora "de rueda" del formulario
@@ -553,6 +555,8 @@ async function cargarDatos() {
       (capturasPorSalida[c.salida_id] = capturasPorSalida[c.salida_id] || []).push(c);
     });
   }
+  // "Comparte tu captura" (assets/js/compartir-captura.js).
+  compartidas = await cargarCompartidas(supabase);
 
   // Varias entradas por día (pedido explícito del usuario: puede pescar
   // en varios spots el mismo día, o ir en barco por la mañana y de
@@ -1280,6 +1284,7 @@ async function tarjetaCapturaHTML(captura) {
       ${captura.tecnica ? `<div class="detalle">🎣 ${captura.tecnica}</div>` : ""}
       ${captura.cebo || captura.aparejo || captura.senuelo ? `<div class="detalle">${captura.cebo ? "Cebo: " + captura.cebo : ""} ${captura.aparejo ? "· Aparejo: " + captura.aparejo : ""} ${captura.senuelo ? "· Señuelo: " + captura.senuelo : ""}</div>` : ""}
       ${captura.notas ? `<div class="detalle">${captura.notas}</div>` : ""}
+      ${compartidas.ids.has(captura.id) ? htmlEtiquetaCompartida() : ""}
       ${urls.length ? `<div class="galeria-fotos">${urls.map((u) => `<img src="${u}" alt="Foto de ${captura.especie}" />`).join("")}</div>` : ""}
       <div style="display:flex; gap:12px; margin-top:6px;">
         <button class="editar-captura" data-id="${captura.id}" style="background:none; border:none; color:#5F7981; font-size:11px; cursor:pointer; padding:0;">✏️ Editar</button>
@@ -1334,6 +1339,7 @@ function formularioCaptura() {
       <textarea id="capturaNotas"></textarea>
       <label for="capturaFotos">Fotos nuevas (puedes elegir varias — las que ya hubiera se quedan)</label>
       <input type="file" id="capturaFotos" accept="image/*" capture="environment" multiple />
+      ${compartidas.disponible ? htmlCasillaCompartir(false) : ""}
       <div style="display:flex; gap:8px;">
         <button class="secundario" id="btnCancelarCaptura" style="margin-top:0; flex:1;">Cancelar</button>
         <button class="principal" id="btnGuardarCaptura" style="margin-top:0; flex:1;">Añadir captura</button>
@@ -1422,6 +1428,14 @@ async function guardarCaptura(salidaId, fecha, idExistente, ordenFotoBase) {
   // el alert() para este aviso puntual (no bloquea nada, la captura ya
   // se guardó).
   if (avisoFueraDeRango) alert(`Captura guardada${avisoFueraDeRango}.`);
+
+  const casillaCompartir = document.getElementById("capturaCompartir");
+  if (casillaCompartir) {
+    const res = await sincronizarCompartida(supabase, {
+      capturaId, userId: usuario.id, compartir: casillaCompartir.checked, yaCompartida: compartidas.ids.has(capturaId),
+    });
+    if (!res.ok) { console.error(res.error); alert("La captura se guardó, pero no se pudo cambiar si se comparte. Inténtalo de nuevo desde Editar."); }
+  }
 
   for (let i = 0; i < archivos.length; i++) {
     try {
@@ -1724,6 +1738,8 @@ async function mostrarFormularioEditarCaptura(iso, salidaId, captura) {
   else document.getElementById("capturaAparejo").value = captura.aparejo || "";
   document.getElementById("capturaCebo").value = captura.cebo || "";
   document.getElementById("capturaNotas").value = captura.notas || "";
+  const casillaCompartir = document.getElementById("capturaCompartir");
+  if (casillaCompartir) casillaCompartir.checked = compartidas.ids.has(captura.id);
   document.getElementById("btnGuardarCaptura").textContent = "Guardar cambios";
   const { count } = await supabase.from("captura_fotos").select("id", { count: "exact", head: true }).eq("captura_id", captura.id);
   engancharFormularioCaptura(iso, salidaId, captura.id, count || 0);
