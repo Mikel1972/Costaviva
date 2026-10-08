@@ -853,7 +853,27 @@ captura" con normalidad. **Probado en real por el usuario en producción
 2026-09-13**: abrir una entrada, ir añadiendo capturas y concluir la
 jornada funciona bien.
 
-## Bug corregido — radar de lluvia mostraba "Zoom Level Not Supported" (2026-09-13)
+## Lluvia: últimas 3 horas animadas con EUMETSAT H SAF (2026-10-08)
+
+Pedido de Mikel: el botón **Lluvia** enseña la evolución de las últimas 3 h,
+en bucle por defecto, con botón de pausa/play y la hora de Madrid de cada
+toma (la última se queda más tiempo). Todo en `assets/js/lluvia-animada.js`
+(lógica pura probada en `test/lluvia-animada.test.js`, en `tests.yml`);
+`index.html` solo lo importa y lo engancha al botón.
+- **Fuente**: capa WMS `msg_fes:h60b` de EUMETView (lluvia estimada por
+  satélite, EUMETSAT H SAF H60B), una toma cada 15 min, ~45 min de retraso,
+  ~5 km de resolución. Cubre el mar abierto. Sin API key ni coste.
+- **Licencia**: H SAF es CC BY 4.0, uso comercial permitido; EUMETView
+  declara Fees/AccessConstraints "none". Atribución obligatoria en el mapa:
+  "Lluvia: EUMETSAT H SAF (H60B), CC BY 4.0".
+- **RainViewer, retirado**: su API gratuita solo da 2 h de historia y su FAQ
+  (2026-10-08) excluye la "commercial integration" sin acuerdo aparte.
+  **AEMET descartado**: OpenData solo da la última imagen de radar.
+- Las 13 tomas se precargan como capas invisibles (opacidad 0); la
+  animación salta las que no han cargado o fallaron. Cada 5 min mira si hay
+  una toma nueva. TIME siempre explícito (cache-control de 7 días).
+
+## Bug corregido (histórico, ya no se usa RainViewer) — radar de lluvia mostraba "Zoom Level Not Supported" (2026-09-13)
 
 Reportado por el usuario: al acercar el mapa de nubes/lluvia
 (`toggleNubes`, capa RainViewer en `index.html`), aparecía el texto
