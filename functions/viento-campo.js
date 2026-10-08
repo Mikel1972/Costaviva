@@ -25,7 +25,7 @@
 // una petición nueva cada vez (mismo motivo que la caché real de
 // /prevision, ver el comentario largo ahí).
 
-import { pedirOpenMeteo, claveOpenMeteo } from "./_lib/open-meteo.js";
+import { pedirDatosMeteo } from "./_lib/fuentes.js";
 
 const RESOLUCION_GRADOS = 1; // tamaño de celda de la rejilla redondeada
 const PUNTOS_POR_LADO = 16; // 16x16 = 256 puntos, de sobra para que la interpolación bilineal de leaflet-velocity se vea suave
@@ -97,15 +97,17 @@ export async function onRequestGet(context) {
 
   let datos;
   try {
-    // Host gratuito o comercial según OPEN_METEO_API_KEY (_lib/open-meteo.js).
-    datos = await pedirOpenMeteo(
+    // Open-Meteo (gratuito o comercial según OPEN_METEO_API_KEY) o MET Norway
+    // si FUENTE_VIENTO/FUENTE_ATMOSFERA=metno (_lib/fuentes.js): con muchos
+    // puntos, MET se lee de la instantánea y se interpola.
+    datos = await pedirDatosMeteo(
       "forecast",
       `latitude=${lats.join(",")}&longitude=${lons.join(",")}` +
         // forecast_days=2, no 1: si "ahora" cae tarde en el día, con solo
         // el día de hoy no quedarían 24h reales por delante para la
         // barra deslizante (ver el recorte por idxAhora más abajo).
         `&hourly=windspeed_10m,winddirection_10m&wind_speed_unit=ms&forecast_days=2&timezone=UTC`,
-      { apiKey: claveOpenMeteo(context.env) }
+      { env: context.env }
     );
   } catch (e) {
     return new Response(JSON.stringify({ error: `no se pudo obtener el viento: ${String(e)}` }), {

@@ -1,0 +1,140 @@
+name: Fuentes gratuitas (MET Norway, Copernicus) y comparativa
+
+# 2026-10-08, aprobado por Mikel ("por ahora gratis"): Costaviva tiene
+# suscripciones y la API gratuita de Open-Meteo es solo para uso no
+# comercial. Se montan EN PARALELO dos fuentes gratuitas válidas para uso
+# comercial y se comparan contra las boyas de Puertos del Estado antes de
+# cambiar nada en producción (ver CLAUDE.md, "Fuentes gratuitas"). Sin IA.
+#
+# Tres partes:
+#   atmosfera   cada 3 h: instantánea de MET Norway Locationforecast para los
+#               spots y una rejilla de 1° -> Supabase Storage
+#               fuentes-gratuitas/atmosfera/todos.json
+#   mar         1 vez al día (tras la pasada de las 02:00 UTC de IBI):
+#               modelo IBI de Copernicus Marine para spots y boyas ->
+#               fuentes-gratuitas/mar/spots.json y mar/celdas/*.json
+#   comparativa 1 vez al día: archiva lo que prevé cada fuente para las
+#               boyas y compara lo archivado con lo medido ->
+#               datos-robots/fuentes/COMPARATIVA.md (commit en main)
+#
+# NADA DE ESTO CAMBIA LO QUE VE EL USUARIO: la app sigue en Open-Meteo hasta
+# que se pongan FUENTE_ATMOSFERA / FUENTE_MAR (o por grupo) en Cloudflare.
+#
+# Activación: los `schedule` solo hacen algo con la variable de repositorio
+# FUENTES_GRATUITAS=true (Settings -> Secrets and variables -> Actions ->
+# Variables). Una vez activada, si falta algo el job sale en ROJO (comun
+# pruebas-y-alertas.md P4, web-y-despliegue.md W9). A mano
+# (workflow_dispatch) corre siempre. Respeta AUTOMATION_PAUSED (P8).
+#
+# Necesita:
+#   vars.METNO_CONTACTO                 contacto del User-Agent de MET Norway
+#                                       (web o email de empresa, no personal)
+#   secrets.COPERNICUSMARINE_USERNAME   cuenta gratuita de Copernicus Marine
+#   secrets.COPERNICUSMARINE_PASSWORD
+#   secrets.SUPABASE_SERVICE_ROLE_KEY   ya existe (auth-test, smoke-test)
+#   el bucket de la migración 20261008100000_bucket_fuentes_gratuitas.sql
+
+on:
+  schedule:
+    - cron: "23 */3 * * *"   # atmosfera
+    - cron: "47 4 * * *"     # mar
+    - cron: "37 6 * * *"     # comparativa
+  workflow_dispatch:
+    inputs:
+      parte:
+        description: "atmosfera, mar, comparativa o todo"
+        required: true
+        default: "todo"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fuentes-gratuitas-${{ github.event.schedule || inputs.parte }}
+  cancel-in-progress: false
+
+jobs:
+  atmosfera:
+    if: >-
+      vars.AUTOMATION_PAUSED != 'true' && (
+        (github.event_name == 'schedule' && github.event.schedule == '23 */3 * * *' && vars.FUENTES_GRATUITAS == 'true') ||
+        (github.event_name == 'workflow_dispatch' && (inputs.parte == 'atmosfera' || inputs.parte == 'todo')))
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Instantánea de MET Norway
+        env:
+          METNO_CONTACTO: ${{ vars.METNO_CONTACTO }}
+        run: |
+          mkdir -p /tmp/instantanea/atmosfera
+          node scripts/fuentes/instantanea-met.mjs /tmp/instantanea/atmosfera/todos.json
+      - name: Subir a Supabase Storage
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node scripts/fuentes/subir-storage.mjs /tmp/instantanea
+
+  mar:
+    if: >-
+      vars.AUTOMATION_PAUSED != 'true' && (
+        (github.event_name == 'schedule' && github.event.schedule == '47 4 * * *' && vars.FUENTES_GRATUITAS == 'true') ||
+        (github.event_name == 'workflow_dispatch' && (inputs.parte == 'mar' || inputs.parte == 'todo')))
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Instalar el toolbox de Copernicus Marine
+        run: pip install --quiet -r scripts/fuentes/requirements.txt
+      - name: Descargar IBI (oleaje y física) para spots y boyas
+        env:
+          COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_USERNAME }}
+          COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_PASSWORD }}
+        run: |
+          node scripts/fuentes/puntos.mjs > /tmp/puntos.json
+          python -I scripts/fuentes/descargar-ibi.py --puntos /tmp/puntos.json --salida /tmp/instantanea
+          du -sh /tmp/instantanea/mar
+      - name: Subir a Supabase Storage
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node scripts/fuentes/subir-storage.mjs /tmp/instantanea
+
+  comparativa:
+    needs: [mar]
+    # Corre aunque `mar` se haya saltado (otra hora de cron) o haya fallado:
+    # la comparativa de Open-Meteo frente a MET Norway no depende de él.
+    if: >-
+      always() && vars.AUTOMATION_PAUSED != 'true' && (
+        (github.event_name == 'schedule' && github.event.schedule == '37 6 * * *' && vars.FUENTES_GRATUITAS == 'true') ||
+        (github.event_name == 'workflow_dispatch' && (inputs.parte == 'comparativa' || inputs.parte == 'todo')))
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Archivar pronósticos y comparar con las boyas
+        env:
+          METNO_CONTACTO: ${{ vars.METNO_CONTACTO }}
+          OPEN_METEO_API_KEY: ${{ secrets.OPEN_METEO_API_KEY }}
+        run: node scripts/fuentes/comparar-boyas.mjs ambos --dias 14
+      - name: Guardar la comparativa en el repo
+        run: |
+          git config user.name "Costaviva (comparativa de fuentes)"
+          git config user.email "noreply@anthropic.com"
+          git add datos-robots/fuentes
+          if git diff --cached --quiet; then echo "Sin cambios."; exit 0; fi
+          git commit -qm "Comparativa de fuentes contra boyas [skip ci]"
+          for i in 1 2 3; do git pull -q --rebase origin main && git push -q origin HEAD:main && exit 0; sleep 5; done
+          echo "::error::No se pudo subir la comparativa"; exit 1
