@@ -68,11 +68,11 @@ export async function capturarPantalla(navegador, pagina, { puerto, alto = 844 }
   await ctx.route("**/*", (route) => {
     const u = new URL(route.request().url());
     if (u.hostname === "127.0.0.1" && u.pathname.startsWith("/__fuentes/")) {
-      return route.fulfill({ status: 200, contentType: "font/woff2", body: readFileSync(join(RAIZ_REPO, "scripts/marketing/fuentes", u.pathname.slice(11))), headers: { "access-control-allow-origin": "*" } });
+      return route.fulfill({ status: 200, contentType: "font/woff2", body: readFileSync(join(RAIZ_REPO, "assets/fonts", u.pathname.slice(11))), headers: { "access-control-allow-origin": "*" } });
     }
     if (u.hostname === "127.0.0.1") return route.continue();
     if (u.hostname === "esm.sh" && u.pathname.includes("supabase")) return route.fulfill({ status: 200, contentType: "text/javascript", body: supabaseFalso() });
-    // Las letras de la app (Unbounded y Manrope) salen de fuentes/, sin red.
+    // Las letras de la app (Unbounded y Manrope) salen de assets/fonts, sin red.
     if (u.hostname === "fonts.googleapis.com") return route.fulfill({ status: 200, contentType: "text/css", body: CSS_FUENTES });
     return route.abort();
   });

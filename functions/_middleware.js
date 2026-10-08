@@ -98,8 +98,11 @@ export function construirCsp(nonce) {
     `script-src 'nonce-${nonce}' 'strict-dynamic' https:`,
     // Los estilos inline (atributos style= y <style>) sí pueden quedarse:
     // el estándar solo prohíbe 'unsafe-inline' en scripts.
-    "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://fonts.googleapis.com",
-    "font-src 'self' https://fonts.gstatic.com",
+    "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net",
+    // Letras propias en /assets/fonts (2026-10-08): ya no se usa Google
+    // Fonts en ninguna página, así que fuera fonts.googleapis.com y
+    // fonts.gstatic.com.
+    "font-src 'self'",
     // Teselas raster (EMODnet, EUMETSAT, natural_earth de OpenFreeMap), iconos
     // de Leaflet, fotos firmadas de Supabase Storage, snapshots de webcams.
     "img-src 'self' data: blob: https:",
