@@ -38,11 +38,10 @@
 
 // INTERRUPTOR ÚNICO (2026-10-08). Mikel ha pedido a SkylineWebcams
 // autorización escrita para usar su fotograma oficial en una app de pago.
-// Mientras no contesten: false = todas las de Skyline (Águilas incluida) van
-// como "enlace" y la app no carga nada de embed.skylinewebcams.com. Cuando
-// autoricen por escrito: ponerlo a true y pasan solas a "imagen_oficial"
-// (su código de "Insertar" tal cual). Nada más que tocar.
-export const SKYLINE_EMBED_AUTORIZADO = false;
+// Decisión de Mikel (2026-10-08): true mientras contestan (su FAQ ofrece el
+// código de "Insertar" a cualquier web). Si lo niegan: false y todas pasan a
+// "enlace" sin cargar nada de embed.skylinewebcams.com. Nada más que tocar.
+export const SKYLINE_EMBED_AUTORIZADO = true;
 
 export const CONDICIONES = {
   skyline: {

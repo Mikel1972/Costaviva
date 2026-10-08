@@ -23,12 +23,12 @@ HEAD/oEmbed (clave `ext-<id>` en `camara_estado`). Águilas salió del proxy
 dueño, modo permitido, condiciones con fuente y spot existente.
 
 **Interruptor `SKYLINE_EMBED_AUTORIZADO` (en `camaras-externas.js`, hoy
-`false`).** Mikel ha pedido a SkylineWebcams autorización escrita para el
-uso comercial (2026-10-08). Mientras esté a `false`, todas las de Skyline
-(Águilas incluida) van como `enlace` y la app no carga nada de
-`embed.skylinewebcams.com`. Cuando llegue la autorización por escrito, se
-pone a `true` y pasan solas a `imagen_oficial`; no hay que tocar nada más
-(el test se adapta al valor). Sin autorización, no cambiarlo.
+`true`).** Mikel ha pedido a SkylineWebcams autorización escrita para el
+uso comercial (2026-10-08) y decidió usar ya la imagen oficial que su FAQ
+ofrece en "Incrustar" mientras contestan. Si Skyline lo niega, se pone a
+`false` y todas (Águilas incluida) pasan a `enlace` sin cargar nada de
+`embed.skylinewebcams.com`; no hay que tocar nada más (el test se adapta al
+valor). Analizar sus fotogramas sigue prohibido en cualquier caso.
 
 ## Oleaje costero: mar abierto frente a "en la playa" (2026-10-08)
 
