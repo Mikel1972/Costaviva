@@ -2344,7 +2344,11 @@ document.getElementById("toggleBoyas").addEventListener("click", (e) => {
 // tilePane (z 200), como el tipo de fondo: encima del mapa base (paneles mapaBase 150 y
 // relieveFondo 160 de assets/js/mapa-base.js) y debajo de los marcadores.
 // ---------------------------------------------------------------------------
-const URL_CAPAS_MAR = "https://imncbmizxkorotpeisic.supabase.co/storage/v1/object/public/fuentes-gratuitas/capas/";
+// Vista previa de Nueva Zelanda (/?region=nz, fase 2 de NZ): las capas de
+// NZ (capas/nz/, Copernicus GLOBAL; scripts/fuentes/descargar-capas.py
+// --region nz). Sin el parámetro, las de siempre.
+const URL_CAPAS_MAR = "https://imncbmizxkorotpeisic.supabase.co/storage/v1/object/public/fuentes-gratuitas/capas/" +
+  (/[?&]region=nz(&|$)/i.test(window.location.search) ? "nz/" : "");
 const CAPAS_MAR = {
   clorofila: {
     boton: "toggleClorofila",

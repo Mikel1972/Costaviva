@@ -1283,6 +1283,31 @@ pidan a la vez (`cargandoCapasMar`), y las imágenes se guardan por capa.
   `leyendaVariasCapas()` / `globoCapasMar()` en `index.html`. Tests:
   `test/capas-combinadas.test.js` (en tests.yml).
 
+## Capas del mar de Nueva Zelanda (2026-10-09, fase 2 de NZ, OCULTAS)
+
+- `descargar-capas.py --region nz` genera `capas/nz/{clorofila,temperatura-agua,frentes}.json`
+  (+ `capas/nz/historico/frentes-AAAA-MM-DD.json`) con **Copernicus GLOBAL**
+  en la caja 165-179 E, 48-34 S (sin cruzar el antimeridiano): GLO PHY 1/12°
+  (`cmems_mod_glo_phy_anfc_0.083deg_PT1H-m` thetao a las 00 UTC = mediodía
+  en NZ; `cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m` uo/vo de 0-1 m: GLO no
+  tiene marea, su corriente diaria ya va "sin marea") y OCEANCOLOUR GLO 4 km
+  (`cmems_obs-oc_glo_bgc-plankton_nrt_l4-gapfree-multi-4km_P1D`, flags 2 =
+  INTERPOLATED como la ATL). Coberturas comprobadas con `copernicusmarine
+  describe` (trampa 19), anotadas en `REGIONES["nz"]` del script.
+- Mismo cálculo (`calcular_frentes`); umbrales a 2/3 de los de España por
+  la malla de 1/12° (0,02 log10 CHL/km, 0,053 °C/km, 0,067·|f|), franja
+  costera de 8 km, flecha cada 2 celdas. **Provisionales**: revisarlos con
+  el primer día real, como se hizo en España. La convergencia usa |f| (en el
+  sur f < 0; en España no cambia nada).
+- Sin `--region` la pasada de España sale byte a byte igual (comprobado
+  contra main con `--prueba`). `--desde` con `--region nz`: error (sin
+  histórico hacia atrás todavía).
+- Workflow: `fuentes-gratuitas.yml`, parte **`capas_nz`**, solo a mano (ni
+  cron ni "todo"). El mapa solo las pide en la vista previa (`/?region=nz`
+  → `capas/nz/`). El bucket es público: una vez subidas, quien sepa la URL
+  puede leerlas (son datos de Copernicus, sin nada de usuarios).
+- Tests: `test/capas_nz_test.py` (Python) y `test/capas-nz.test.js`.
+
 ## Informe diario — Search Console real, conteo de cámaras, robot de especies (2026-09-20)
 
 Pedido explícito del usuario: ampliar `daily-report.yml` con (1) cuántas
