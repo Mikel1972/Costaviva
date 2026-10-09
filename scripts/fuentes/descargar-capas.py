@@ -42,6 +42,18 @@ Formato (compacto, sin PNG: el bucket solo admite JSON):
 Uso:
   python descargar-capas.py --salida dir
   python descargar-capas.py --prueba --salida dir   (sintético, sin red)
+  python descargar-capas.py --desde 2026-01-01 --hasta 2026-10-08 --salida dir
+      HISTÓRICO HACIA ATRÁS (2026-10-09): solo escribe
+      capas/historico/frentes-AAAA-MM-DD.json de cada día del rango, con el
+      MISMO cálculo (calcular_frentes, mismas máscaras y umbrales) y los
+      mismos datasets NRT, que guardan días pasados (comprobado en el STAC el
+      2026-10-09: clorofila desde 2025-10-04, ventana móvil de ~1 año; IBI
+      temperatura y corriente sin marea desde 2022-11-22). Nunca toca las capas
+      del día (clorofila.json, temperatura-agua.json, frentes.json). Por
+      bloques de --bloque días (una apertura de cada dataset por bloque,
+      recortada a CAJA), con tope de --max-dias y --max-minutos por ejecución,
+      y salta los días que ya están en --existentes-url (bucket público).
+      Con --prueba, días sintéticos sin red.
 """
 import argparse
 import base64
@@ -194,11 +206,21 @@ def clorofila_real():
         print(f"::warning::clorofila: no se pudo pedir `flags` ({e}); frentes sin máscara de nubes")
         ds = abrir(d["dataset"], d["variable"], *rango)
         con_flags = False
-    tiempos = ds["time"].values
+    r = elegir_clorofila(ds, ds["time"].values[::-1], con_flags)
+    if r is None:
+        raise SystemExit("::error::clorofila: ningún día reciente con datos")
+    return r
+
+
+def elegir_clorofila(ds, tiempos_desc, con_flags):
+    """Días de clorofila del compuesto a partir de los tiempos del dataset del
+    más nuevo al más viejo (la pasada diaria: hasta hoy; el histórico: hasta
+    el día D). Devuelve (fecha, lats, lons, CHL, observado, previos) o None."""
+    d = CAPAS["clorofila"]
     # El último día con datos de verdad (el NRT a veces publica el día con
     # casi todo vacío): se baja hasta 5 días si hace falta. Nunca se rellena.
     dias = []
-    for i, t in enumerate(tiempos[::-1][:5 + FRENTES["dias_clorofila"]]):
+    for i, t in enumerate(tiempos_desc[:5 + FRENTES["dias_clorofila"]]):
         if not dias and i >= 5:
             break  # el primer día con datos, como mucho 5 días atrás
         da = superficie(ds[d["variable"]]).sel(time=t).load()
@@ -212,7 +234,7 @@ def clorofila_real():
             if not con_flags or len(dias) >= FRENTES["dias_clorofila"]:
                 break
     if not dias:
-        raise SystemExit("::error::clorofila: ningún día reciente con datos")
+        return None
     fecha, da, v, obs = dias[0]
     # Solo días dentro de la ventana (no más viejos que dias_clorofila - 1
     # días antes del primero): un frente de hace una semana ya se ha movido.
@@ -588,14 +610,200 @@ def historico_frentes(j, u, v, cfg=FRENTES):
     return h
 
 
+def construir_frentes(r_chl, r_temp, r_corr, es_prueba):
+    """De las tres entradas nativas (clorofila con su máscara de nubes y los
+    días previos del compuesto, temperatura y corriente) a (frentes.json,
+    histórico, estadísticas). La usan la pasada diaria y el histórico hacia
+    atrás: un único cálculo (compuesto de clorofila de hasta
+    FRENTES["dias_clorofila"] días, umbrales y filtro de frentes pequeños de
+    calcular_frentes)."""
+    paso = FRENTES["paso"]
+    fc, la, lo, chl_n, obs_n, previos_n = r_chl
+    ft, lat_t, lon_t, t_n = r_temp
+    fu, lat_u, lon_u, u_n, v_n = r_corr
+    chl = rejilla(la, lo, chl_n, paso, log=True)
+    obs = None if obs_n is None else rejilla(la, lo, obs_n, paso)
+    temp = rejilla(lat_t, lon_t, t_n, paso)
+    u = rejilla(lat_u, lon_u, u_n, paso)
+    v = rejilla(lat_u, lon_u, v_n, paso)
+    filas = chl.shape[0]
+    lats = CAJA["norte"] - (np.arange(filas) + 0.5) * paso
+    previos = [(rejilla(la, lo, c_p, paso, log=True), rejilla(la, lo, o_p, paso)) for _, c_p, o_p in previos_n]
+    cod, est = calcular_frentes(chl, obs, temp, u, v, lats, previos=previos)
+    desde = previos_n[est["dias_clorofila"] - 2][0] if est["dias_clorofila"] > 1 else fc
+    j = salida_frentes({"clorofila": fc, "clorofila_desde": desde, "temperatura": ft, "corriente": fu}, cod, u, v, est, obs is None)
+    j["prueba"] = bool(es_prueba)
+    h = historico_frentes(j, u, v)
+    if es_prueba:
+        h["prueba"] = True
+    return j, h, est
+
+
+# ---------------------------------------------------------------------------
+# Histórico hacia atrás (2026-10-09, pedido de Mikel: "sin esto el
+# aprendizaje tarda meses"). Mismos datasets NRT que la pasada diaria, que
+# guardan los días pasados; para cada día D:
+#   clorofila: el compuesto de la pasada diaria (elegir_clorofila, la misma
+#     función): el día D o, si viene casi vacío, el último con datos hasta 5
+#     días antes, y los días previos de la ventana de FRENTES["dias_clorofila"]
+#     (D-1 ... D-4), nunca días posteriores a D; temperatura: thetao de D a
+#     las 12 UTC; corriente: media del día D sin marea.
+# Diferencia con la pasada diaria: ahí "el día D" es el último publicado
+# (1-2 días antes por el retraso del satélite); aquí es el de la salida.
+# fecha_clorofila y fecha_clorofila_desde lo dicen.
+# ---------------------------------------------------------------------------
+def dias_rango(desde, hasta):
+    d0 = datetime.strptime(desde, "%Y-%m-%d").date()
+    d1 = datetime.strptime(hasta, "%Y-%m-%d").date()
+    if d1 < d0:
+        raise SystemExit("::error::--hasta es anterior a --desde")
+    return [(d0 + timedelta(days=k)).isoformat() for k in range((d1 - d0).days + 1)]
+
+
+def ya_existe(base_url, fecha):
+    """¿Está ya frentes-AAAA-MM-DD.json en el bucket público? (HEAD, sin clave)."""
+    if not base_url:
+        return False
+    import urllib.request
+    try:
+        req = urllib.request.Request(f"{base_url.rstrip('/')}/frentes-{fecha}.json", method="HEAD")
+        with urllib.request.urlopen(req, timeout=20) as r:
+            return r.status == 200
+    except Exception:  # noqa: BLE001 — 400/404 = no está
+        return False
+
+
+def prueba_dia(nombre, fecha, k):
+    """Datos sintéticos de un día (los de prueba() con el frente desplazado
+    un poco cada día, para que los días no salgan idénticos). La clorofila
+    trae el día anterior como previo, con su fecha y su desplazamiento."""
+    r = prueba(nombre)
+    if nombre == "corrientes":
+        return (fecha, *r[1:])
+    rodar = lambda x, kk: np.roll(x, int(round(0.05 * kk * 96)), axis=1)  # noqa: E731
+    _, lats, lons, v = r[:4]
+    if nombre != "clorofila":
+        return (fecha, lats, lons, rodar(v, k))
+    obs, previos = r[4], r[5]
+    ayer = (datetime.strptime(fecha, "%Y-%m-%d") - timedelta(days=1)).strftime("%Y-%m-%d")
+    previos = [(ayer, rodar(vp, k - 1), op) for _, vp, op in previos]
+    return (fecha, lats, lons, rodar(v, k), obs, previos)
+
+
+class BloqueReal:
+    """Una apertura de cada dataset para un bloque de días (recortada a CAJA;
+    perezosa: solo se baja lo que se usa de cada día)."""
+
+    def __init__(self, dias):
+        # Como la pasada diaria: hasta 5 días atrás para el primero con datos
+        # y FRENTES["dias_clorofila"] - 1 más para el compuesto.
+        ini = datetime.strptime(dias[0], "%Y-%m-%d") - timedelta(days=5 + FRENTES["dias_clorofila"])
+        fin = datetime.strptime(dias[-1], "%Y-%m-%d")
+        c = CAPAS["clorofila"]
+        try:
+            self.chl = abrir(c["dataset"], [c["variable"], "flags"], ini.strftime("%Y-%m-%dT00:00:00"), fin.strftime("%Y-%m-%dT00:00:00"))
+            self.con_flags = True
+        except Exception as e:  # noqa: BLE001
+            print(f"::warning::histórico: clorofila sin `flags` ({e}); frentes sin máscara de nubes")
+            self.chl = abrir(c["dataset"], c["variable"], ini.strftime("%Y-%m-%dT00:00:00"), fin.strftime("%Y-%m-%dT00:00:00"))
+            self.con_flags = False
+        t = CAPAS["temperatura-agua"]
+        self.temp = abrir(t["dataset"], t["variable"], f"{dias[0]}T12:00:00", f"{dias[-1]}T12:00:00")
+        self.corr = abrir(CORRIENTE["dataset"], ["uo_detided", "vo_detided"], f"{dias[0]}T00:00:00", f"{dias[-1]}T00:00:00")
+
+    def clorofila(self, fecha):
+        """Lo mismo que clorofila_real() si se hubiera ejecutado el día D:
+        el día D (o el último con datos hasta 5 días antes) y los previos del
+        compuesto, nunca días posteriores a D."""
+        dia = np.datetime64(fecha)
+        tiempos = np.array([t for t in self.chl["time"].values if np.datetime64(t, "D") <= dia])[::-1]
+        return elegir_clorofila(self.chl, tiempos, self.con_flags)
+
+    def temperatura(self, fecha):
+        d = CAPAS["temperatura-agua"]
+        da = superficie(self.temp[d["variable"]]).sel(time=np.datetime64(f"{fecha}T12:00:00")).load()
+        v = da.values
+        if np.isfinite(v).mean() < 0.2:
+            return None
+        return fecha, da["latitude"].values, da["longitude"].values, v
+
+    def corrientes(self, fecha):
+        t = np.datetime64(f"{fecha}T00:00:00")
+        u = superficie(self.corr["uo_detided"]).sel(time=t).load()
+        v = superficie(self.corr["vo_detided"]).sel(time=t).load().values
+        if np.isfinite(u.values).mean() < 0.2:
+            return None
+        return fecha, u["latitude"].values, u["longitude"].values, u.values, v
+
+
+def historico(a):
+    dias = dias_rango(a.desde, a.hasta)
+    t_ini = time.time()
+    dir_h = os.path.join(a.salida, "capas", "historico")
+    os.makedirs(dir_h, exist_ok=True)
+    pendientes = [d for d in dias if not ya_existe(a.existentes_url, d)]
+    print(f"histórico de frentes: {len(dias)} días de {dias[0]} a {dias[-1]}; "
+          f"{len(dias) - len(pendientes)} ya estaban en el bucket; {len(pendientes)} por hacer "
+          f"(tope {a.max_dias} por ejecución)")
+    pendientes = pendientes[:a.max_dias]
+    hechos, fallidos, bytes_total = [], [], 0
+    for b0 in range(0, len(pendientes), a.bloque):
+        if (time.time() - t_ini) / 60 > a.max_minutos:
+            print(f"::warning::histórico: tope de {a.max_minutos} min; quedan {len(pendientes) - b0} días para otra ejecución")
+            break
+        bloque = pendientes[b0:b0 + a.bloque]
+        fuente = None if a.prueba else BloqueReal(bloque)
+        for k, fecha in enumerate(bloque):
+            t0 = time.time()
+            try:
+                if a.prueba:
+                    k2 = b0 + k
+                    rc, rt, ru = prueba_dia("clorofila", fecha, k2), prueba_dia("temperatura-agua", fecha, k2), prueba_dia("corrientes", fecha, k2)
+                else:
+                    rc, rt, ru = fuente.clorofila(fecha), fuente.temperatura(fecha), fuente.corrientes(fecha)
+                if rc is None or rt is None or ru is None:
+                    falta = [n for n, r in (("clorofila", rc), ("temperatura", rt), ("corriente", ru)) if r is None]
+                    print(f"::warning::histórico {fecha}: sin datos de {', '.join(falta)}; se salta (nunca se rellena)")
+                    fallidos.append(fecha)
+                    continue
+                _, h, est = construir_frentes(rc, rt, ru, a.prueba)
+                ruta = os.path.join(dir_h, f"frentes-{fecha}.json")
+                with open(ruta, "w", encoding="utf-8") as fh:
+                    json.dump(h, fh, separators=(",", ":"))
+                tam = os.path.getsize(ruta)
+                bytes_total += tam
+                hechos.append(fecha)
+                print(f"  {fecha} (clorofila {h['fecha_clorofila_desde']} a {h['fecha_clorofila']}): {tam / 1e3:.0f} kB, "
+                      f"frente chl {est['pct_frente_clorofila']} %, térmico {est['pct_frente_termico']} %, "
+                      f"nubes {est['pct_nubes']} %, {time.time() - t0:.0f} s")
+            except Exception as e:  # noqa: BLE001 — un día malo no tumba el resto
+                print(f"::warning::histórico {fecha}: {e}")
+                fallidos.append(fecha)
+    print(f"histórico: {len(hechos)} días escritos ({bytes_total / 1e6:.1f} MB), {len(fallidos)} fallidos, "
+          f"{(time.time() - t_ini) / 60:.1f} min")
+    if fallidos and not hechos:
+        raise SystemExit("::error::histórico: no se pudo escribir ningún día")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--salida", required=True)
     ap.add_argument("--prueba", action="store_true")
+    ap.add_argument("--desde", help="histórico hacia atrás: primer día AAAA-MM-DD")
+    ap.add_argument("--hasta", help="histórico hacia atrás: último día AAAA-MM-DD (incluido)")
+    ap.add_argument("--bloque", type=int, default=10, help="días por apertura de los datasets")
+    ap.add_argument("--max-dias", type=int, default=150, help="tope de días por ejecución")
+    ap.add_argument("--max-minutos", type=float, default=300, help="no empieza un bloque nuevo pasado este tiempo")
+    ap.add_argument("--existentes-url", default=None, help="URL pública de capas/historico/ para saltar los días que ya están")
     a = ap.parse_args()
     if not a.prueba and not (os.environ.get("COPERNICUSMARINE_SERVICE_USERNAME") and os.environ.get("COPERNICUSMARINE_SERVICE_PASSWORD")):
         print("::error::Faltan COPERNICUSMARINE_SERVICE_USERNAME / _PASSWORD (cuenta gratuita de Copernicus Marine)")
         raise SystemExit(1)
+    if bool(a.desde) != bool(a.hasta):
+        raise SystemExit("::error::--desde y --hasta van juntos")
+    if a.desde:
+        historico(a)
+        return
     os.makedirs(os.path.join(a.salida, "capas", "historico"), exist_ok=True)
     nativos = {}
     for nombre, fuente in (("clorofila", clorofila_real), ("temperatura-agua", temperatura_real)):
@@ -617,26 +825,12 @@ def main():
     # escritas (el workflow las sube igual) y el paso sale en rojo.
     try:
         t0 = time.time()
-        paso = FRENTES["paso"]
-        fc, la, lo, chl_n, obs_n, previos_n = nativos["clorofila"]
-        ft, lat_t, lon_t, t_n = nativos["temperatura-agua"]
-        fu, lat_u, lon_u, u_n, v_n = prueba("corrientes") if a.prueba else corrientes_real()
-        chl = rejilla(la, lo, chl_n, paso, log=True)
-        obs = None if obs_n is None else rejilla(la, lo, obs_n, paso)
-        temp = rejilla(lat_t, lon_t, t_n, paso)
-        u = rejilla(lat_u, lon_u, u_n, paso)
-        v = rejilla(lat_u, lon_u, v_n, paso)
-        filas = chl.shape[0]
-        lats = CAJA["norte"] - (np.arange(filas) + 0.5) * paso
-        previos = [(rejilla(la, lo, c_p, paso, log=True), rejilla(la, lo, o_p, paso)) for _, c_p, o_p in previos_n]
-        cod, est = calcular_frentes(chl, obs, temp, u, v, lats, previos=previos)
-        desde = previos_n[est["dias_clorofila"] - 2][0] if est["dias_clorofila"] > 1 else fc
-        j = salida_frentes({"clorofila": fc, "clorofila_desde": desde, "temperatura": ft, "corriente": fu}, cod, u, v, est, obs is None)
-        j["prueba"] = bool(a.prueba)
+        r_corr = prueba("corrientes") if a.prueba else corrientes_real()
+        j, h, est = construir_frentes(nativos["clorofila"], nativos["temperatura-agua"], r_corr, a.prueba)
+        fu, fc, desde = j["fecha"], j["fecha_clorofila"], j["fecha_clorofila_desde"]
         ruta = os.path.join(a.salida, "capas", "frentes.json")
         with open(ruta, "w", encoding="utf-8") as fh:
             json.dump(j, fh, separators=(",", ":"))
-        h = historico_frentes(j, u, v)
         ruta_h = os.path.join(a.salida, "capas", "historico", f"frentes-{fu}.json")
         with open(ruta_h, "w", encoding="utf-8") as fh:
             json.dump(h, fh, separators=(",", ":"))

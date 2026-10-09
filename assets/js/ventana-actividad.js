@@ -62,7 +62,7 @@
 // navegador y test/ventana-actividad.test.js, test/modalidades.test.js y
 // test/indice-pesca-v2.test.js en node --test.
 
-import { reglasEnAmbito, evaluarReglas, iluminacionLunar, coeficienteMareaAstronomico } from "./reglas-expertas.js";
+import { reglasEnAmbito, evaluarReglas, iluminacionLunar, coeficienteMareaAstronomico, usaFrentes } from "./reglas-expertas.js";
 import { contextoReglas } from "./batimetria-calculo.js";
 
 export const VERSION = "2026-10-08";
@@ -381,6 +381,9 @@ function rangoOlaTexto(h) {
 //   rio: { nombre, distancia_desembocadura_km } | null (null = sin río conocido),
 //   batimetria: estadísticas de fondo del spot (estadisticasPunto de
 //     batimetria-calculo.js: zona_m, prof_max_5km_m, dist_10_30m_m) | null,
+//   frentes: { fecha, frente_km, frente_clorofila_km, clorofila_nivel, corriente_ms } | null
+//     (〰 Frentes del día en el spot, contextoFrentes de frentes.js; solo vale
+//     para las horas de su fecha y del día siguiente, ver frentesDelDia),
 //   horaActual: "AAAA-MM-DDTHH:00" (para la fiabilidad: horizonte de previsión),
 //   b0: término independiente en log-odds (especies.json.indice.b0_logodds, 0 = 50),
 //   soloIndice: i (opcional: calcula solo esa hora; las demás salen null) }
@@ -399,6 +402,20 @@ export const VARIABLE_DE_FACTOR = {
 // Variables de fondo y orilla que puede traer `contexto.fondo` (ver
 // capa-tipo-fondo.js, contextoFondo). Nunca en embarcación.
 const VARIABLES_FONDO_REGLAS = ["orilla_tipo", "fondo_roca", "fondo_arena", "fondo_fango", "fondo_grava", "posidonia", "algas"];
+
+// Contexto de 〰 Frentes para una hora: solo si la capa es de ese día o del
+// anterior (la clorofila del satélite llega con 1-2 días de retraso; el
+// fichero se rehace cada mañana). Otro día = sin dato.
+export function frentesDelDia(f, dia) {
+  const vacio = { frente_km: null, frente_clorofila_km: null, clorofila_nivel: null, corriente_ms: null };
+  if (!f || !f.fecha || !dia) return vacio;
+  const dias = (Date.parse(`${dia}T12:00:00Z`) - Date.parse(`${f.fecha}T12:00:00Z`)) / 86400000;
+  if (!(dias >= 0 && dias <= 1)) return vacio;
+  return {
+    frente_km: f.frente_km ?? null, frente_clorofila_km: f.frente_clorofila_km ?? null,
+    clorofila_nivel: f.clorofila_nivel ?? null, corriente_ms: f.corriente_ms ?? null,
+  };
+}
 
 export function calcularVentana(especie, reglasDefecto, horas, contexto) {
   const modalidad = contexto.modalidad || "costa";
@@ -599,11 +616,16 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
       mes, hora_local: Number(h.hora.slice(11, 13)), luz,
       luna: iluminacionLunar(msUTC),
       coeficiente_marea: coeficienteMareaAstronomico(msUTC),
+      // 〰 Frentes del día (contexto.frentes = contextoFrentes de frentes.js,
+      // solo el día de la capa): sin capa, todo null y esas reglas no aplican.
+      ...frentesDelDia(contexto.frentes, dia),
     };
     // Fondo y orilla (capa-tipo-fondo.js): solo costa y submarina.
     for (const k of VARIABLES_FONDO_REGLAS) ctxReglas[k] = modalidad === "embarcacion" ? null : (contexto.fondo?.[k] ?? null);
     const ev = evaluarReglas(expertas, horas, i, ctxReglas);
     for (const r of expertas) {
+      // Sin capa de frentes la regla no aplica y tampoco rebaja la cobertura.
+      if (ev.sinDato.includes(r.id) && usaFrentes(r)) continue;
       const w = Math.abs((r.efecto?.logodds || 0) * (r.confianza ?? 1));
       cobertura.total += w;
       if (!ev.sinDato.includes(r.id)) cobertura.conDato += w;

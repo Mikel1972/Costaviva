@@ -1,5 +1,5 @@
 {
- "descripcion": "Hipótesis previas de la bibliografía abierta sobre frentes, clorofila y corrientes por grupo de especies (2026-10-09). SOLO DOCUMENTADAS: la evaluación en la sombra (scripts/aprendizaje/frentes-sombra.mjs) usa un prior centrado en 0 para todas las combinaciones y no las activa nunca. Se citan en la propuesta si los datos llegan a superar las barreras, para que Mikel compare.",
+ "descripcion": "Hipótesis previas de la bibliografía abierta sobre frentes, clorofila y corrientes por grupo de especies (2026-10-09). SOLO DOCUMENTADAS: la evaluación en la sombra (scripts/aprendizaje/frentes-sombra.mjs) usa un prior centrado en 0 para todas las combinaciones y no las activa nunca. Se citan en la propuesta si los datos llegan a superar las barreras, para que Mikel compare. ACTUALIZACIÓN 2026-10-09 (frentes en el índice): donde la bibliografía abierta da apoyo hay ya una regla experta con peso pequeño y confianza 0,4 en especies.json (`reglas_en_indice` de cada grupo), que el aprendizaje ajusta y propone retirar si los datos dicen lo contrario o nada; lo demás sigue solo en la sombra.",
  "fuentes": {
   "sagarminaga_arrizabalaga_2014": {
    "titulo": "Sagarminaga Y., Arrizabalaga H. (2014). Relationship of Northeast Atlantic albacore juveniles with surface thermal and chlorophyll-a fronts. Deep-Sea Research II 107: 54-63.",
@@ -31,7 +31,8 @@
    "variables": ["frente_clorofila", "frente_termico", "frente_ambos", "frente_y_corriente"],
    "signo_previo": "incierto (quizá + con frentes de clorofila a finales de verano)",
    "hipotesis": "para el bonito del norte juvenil del golfo de Bizkaia no hubo relación consistente con los frentes térmicos y quizá sí con los de clorofila en agosto-septiembre (Sagarminaga y Arrizabalaga 2014).",
-   "fuente": "sagarminaga_arrizabalaga_2014"
+   "fuente": "sagarminaga_arrizabalaga_2014",
+   "reglas_en_indice": ["frente_cerca_tunidos (atún rojo y bacoreta, frente de clorofila o térmico a ≤ 20 km, embarcación)", "frente_clorofila_bonito (bonito del norte, borde de clorofila a ≤ 20 km, agosto-septiembre, embarcación)"]
   },
   {
    "id": "pelagicos_costeros",
@@ -39,7 +40,9 @@
    "variables": ["frente_clorofila", "frente_ambos", "convergencia", "frente_y_corriente"],
    "signo_previo": "+ (hipótesis, sin estudio propio)",
    "hipotesis": "los bordes de clorofila y donde la corriente junta el agua acumulan alimento (D'Asaro et al. 2018 para la acumulación; la relación con estas especies es la hipótesis del texto de Mikel, sin estudio que la mida aquí).",
-   "fuente": "dasaro_2018_convergencia"
+   "fuente": "dasaro_2018_convergencia",
+   "reglas_en_indice": [],
+   "sin_regla": "sin estudio abierto que lo mida para caballa, jurel o lubina: solo en la sombra"
   },
   {
    "id": "visuales_agua_turbia",
@@ -47,7 +50,9 @@
    "variables": ["clorofila_alta"],
    "signo_previo": "- (hipótesis)",
    "hipotesis": "con mucha clorofila (floración) el agua se enturbia y no implica más peces; los que cazan a la vista podrían entrar peor (texto de Mikel, sin estudio que lo mida aquí).",
-   "fuente": "texto_mikel_2026_10_09"
+   "fuente": "texto_mikel_2026_10_09",
+   "reglas_en_indice": ["clorofila_alta_submarina (todas las especies, solo submarina: visibilidad)"],
+   "sin_regla": "desde costa con señuelo no: el índice no sabe la técnica y pegado a la costa no hay clorofila fiable"
   },
   {
    "id": "demersales_y_cefalopodos",
@@ -55,7 +60,8 @@
    "variables": [],
    "signo_previo": "sin hipótesis (0)",
    "hipotesis": "no se encontró bibliografía abierta que relacione los frentes de superficie con la pesca recreativa de fondo o de cefalópodos: se evalúa igual, sin prior.",
-   "fuente": null
+   "fuente": null,
+   "reglas_en_indice": ["corriente_fuerte_fondo (corriente ≥ 0,5 m/s, embarcación; Stoner 2004)"]
   }
  ]
 }

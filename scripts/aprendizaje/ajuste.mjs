@@ -175,6 +175,14 @@ export function cambiosSeguros({ ajuste, estadisticas, datos, config = CONFIG_PO
         propuesto: datos.reglas_por_defecto?.[u]?.peso_lo != null ? +(datos.reglas_por_defecto[u].peso_lo * Math.max(1 - cfg.paso_max_semana, Math.min(1 + cfg.paso_max_semana, m))).toFixed(3) : null });
       continue;
     }
+    // Reglas de 〰 Frentes (`retirar_si_nulo`, 2026-10-09): entran con peso
+    // pequeño "a prueba"; si con las barreras cumplidas los datos tiran hacia
+    // abajo y no se distinguen de cero (m < 0,7 y m - 2·sd ≤ 0), se propone
+    // desactivarla (sí/no de Mikel) en vez de irla rebajando semana a semana.
+    if (regla.retirar_si_nulo === true && m > 0.3 && m < 0.7 && m - 2 * sd <= 0) {
+      a_preguntar.push({ u, tipo: "retirar", regla: regla.id, m, sd, motivo: "con los datos del diario la regla no se distingue de no tenerla (efecto nulo)" });
+      continue;
+    }
     if (m <= 0.3) {
       // Los datos dicen que la regla casi no sirve (o va al revés): retirarla
       // o darle la vuelta no es un ajuste de peso, lo decide Mikel.

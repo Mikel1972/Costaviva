@@ -16,7 +16,7 @@
 // Puro salvo zlib (sin red): la descarga la hace datos.mjs.
 
 import { inflateSync } from "node:zlib";
-import { rasgosPunto } from "../../assets/js/frentes.js";
+import { rasgosPunto, contextoFrentes } from "../../assets/js/frentes.js";
 import { sigmoide } from "../../assets/js/ventana-actividad.js";
 import { publicable } from "./privacidad.mjs";
 
@@ -68,6 +68,18 @@ export function rasgosCaso(hist, caso) {
     clorofila_alta: nivel === null ? null : b(nivel === "alta"),
     corriente_fuerte: r.corriente_ms === null ? null : b(r.corriente_ms >= CORRIENTE_FUERTE_MS),
   };
+}
+
+// Contexto de las reglas de frentes del índice para cada caso (Map ref ->
+// { fecha, frente_km, ... }), con la capa de su día. Sin capa, no entra.
+export function contextosFrentesCasos(casos, mapaHistorico) {
+  const m = new Map();
+  for (const c of casos) {
+    const h = mapaHistorico?.get(c.fecha);
+    if (!h) continue;
+    m.set(c.ref, { fecha: c.fecha, ...contextoFrentes(h.d, h.bytes, c.lat, c.lon, { vel: h.vel }) });
+  }
+  return m;
 }
 
 // ---------------------------------------------------------------------------

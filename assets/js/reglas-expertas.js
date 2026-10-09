@@ -53,7 +53,21 @@ export const VARIABLES_CONTEXTO = [
   "profundidad",           // m: mediana del fondo a 1 km de la orilla del spot (EMODnet, assets/datos/profundidad-spots.json); null sin dato
   "prof_max_5km",          // m: fondo más profundo alcanzable a 5 km o menos de la orilla (embarcación); null sin dato
   "dist_fondo_10_30m_km",  // km: de la orilla al fondo de 10-30 m más cercano; null sin dato
+  // 〰 Frentes del día (capas/frentes.json, assets/js/frentes.js contextoFrentes;
+  // 2026-10-09). Solo para hoy; sin capa, nubes o costa = null (no aplica).
+  "frente_km",             // km al frente de clorofila o térmico más cercano (99 = ninguno a 30 km)
+  "frente_clorofila_km",   // km al borde de clorofila más cercano (99 = ninguno; null = sin clorofila fiable)
+  "clorofila_nivel",       // "baja" | "moderada" | "alta" (posible floración) | null
+  "corriente_ms",          // m/s, corriente media del día sin marea junto al spot | null
 ];
+// Variables que vienen de 〰 Frentes: si faltan, la regla no aplica y además
+// no rebaja la cobertura de la fiabilidad (la capa es un extra: el índice no
+// se "degrada" los días sin capa).
+export const VARIABLES_FRENTES = ["frente_km", "frente_clorofila_km", "clorofila_nivel", "corriente_ms"];
+export function usaFrentes(regla) {
+  const exprs = [...(regla.condiciones || []), regla.efecto?.escala, regla.efecto?.atenua].filter(Boolean);
+  return exprs.some((c) => VARIABLES_FRENTES.includes(c.var));
+}
 export const AGREGADOS = ["media", "min", "max", "suma", "delta", "fraccion"];
 export const OPERADORES = ["<", "<=", ">", ">=", "==", "!=", "en", "entre", "sector"];
 
