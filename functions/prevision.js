@@ -21,6 +21,8 @@ import { leerInstantanea } from "./_lib/instantaneas.js";
 // "Si hay cámara, utiliza nuestro cálculo" (2026-10-08): altura según la
 // espuma que ven las webcams, y corrección de las próximas horas.
 import { aplicarCamarasASpots, aplicarReferenciasCamara, filasLecturas, VIGENCIA_LECTURA_HORAS } from "./_lib/oleaje-camaras.js";
+// Interruptor de regiones: los spots de NZ existen pero no entran hasta activarla.
+import { spotsRegionesActivas } from "./_lib/regiones-activas.js";
 
 export const SPOTS = [
   { slug: "lekeitio", nombre: "Lekeitio", lat: 43.3647, lon: -2.5089 },
@@ -155,6 +157,10 @@ export const SPOTS = [
   { slug: "calamillor", nombre: "Cala Millor (Mallorca)", lat: 39.593, lon: 3.383 },
   { slug: "sonbou", nombre: "Son Bou (Menorca)", lat: 39.917, lon: 4.083 },
   { slug: "muro", nombre: "Platja de Muro (Mallorca)", lat: 39.762, lon: 3.108 },
+
+  // Regiones nuevas (Nueva Zelanda, 2026-10-09): solo si están en
+  // REGIONES_ACTIVAS (functions/_lib/regiones-activas.js). Hoy, ninguna.
+  ...spotsRegionesActivas(),
 ];
 
 // Bloques de 3h que queremos mostrar, igual que el formato anterior
