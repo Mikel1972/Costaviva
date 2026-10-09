@@ -176,6 +176,7 @@ async function main() {
     if (!spot) {
       d.hecho = false; d.motivo = "/prevision no trajo ningún spot sin error";
     } else {
+      // Hora de Madrid a propósito (ZONA_NEGOCIO): fecha del sondeo semanal del robot.
       const enviado = salidaDesdePrevision(spot, typeof luna === "object" ? luna : null, new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Madrid" }));
       const creada = await pedir(`${SB}/rest/v1/salidas_pesca`, { method: "POST", headers: { ...cab(tokenA), Prefer: "return=representation" }, body: JSON.stringify({ ...enviado, user_id: idA }) });
       const id = Array.isArray(creada.json) ? creada.json[0]?.id : null;

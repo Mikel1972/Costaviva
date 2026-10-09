@@ -13,6 +13,8 @@
 // una posición lunar aproximada (fórmula compacta estándar, precisión
 // ~0.3-1°, de sobra para saber hacia dónde mirar).
 
+import { desfaseMinutos, fechaLocalISO, zonaPorCoordenadas } from "../assets/js/regiones.js";
+
 const RUMBOS = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
 function rumboDesdeGrados(grados) {
   const idx = Math.round((((grados % 360) + 360) % 360) / 22.5) % 16;
@@ -83,19 +85,13 @@ function altAzLuna(fecha, latObs, lonObs) {
   return { altitud: +((alt * 180) / Math.PI).toFixed(1), azimut: +az.toFixed(1) };
 }
 
-function fechaMadridActual() {
-  const ahora = new Date();
-  const partes = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Europe/Madrid",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).formatToParts(ahora);
-  const fecha = `${partes.find((p) => p.type === "year").value}-${partes.find((p) => p.type === "month").value}-${partes.find((p) => p.type === "day").value}`;
-  const enMadrid = new Date(ahora.toLocaleString("en-US", { timeZone: "Europe/Madrid" }));
-  const enUTC = new Date(ahora.toLocaleString("en-US", { timeZone: "UTC" }));
-  const offsetHoras = Math.round((enMadrid.getTime() - enUTC.getTime()) / 3600000);
-  return { fecha, offsetHoras };
+// Fecha de hoy y desfase (horas enteras) en la zona del punto (regiones.js):
+// Madrid en la Península y Portugal, Atlantic/Canary en Canarias,
+// Pacific/Auckland en Nueva Zelanda. La USNO devuelve las horas en ese desfase.
+function fechaLocalActual(lat, lon) {
+  const zona = zonaPorCoordenadas(lat, lon);
+  const ahora = Date.now();
+  return { fecha: fechaLocalISO(zona, new Date(ahora)), offsetHoras: Math.round(desfaseMinutos(ahora, zona) / 60) };
 }
 
 async function fetchJSON(url) {
@@ -109,7 +105,7 @@ async function datosLuna(lat, lon) {
   // string concatena en vez de sumar y da NaN en todos los cálculos.
   lat = Number(lat);
   lon = Number(lon);
-  const { fecha, offsetHoras } = fechaMadridActual();
+  const { fecha, offsetHoras } = fechaLocalActual(lat, lon);
   const url = `https://aa.usno.navy.mil/api/rstt/oneday?date=${fecha}&coords=${lat.toFixed(4)},${lon.toFixed(4)}&tz=${offsetHoras}`;
   const datos = await fetchJSON(url);
   const p = datos?.properties?.data;
