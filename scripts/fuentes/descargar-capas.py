@@ -45,10 +45,12 @@ Uso:
   python descargar-capas.py --desde 2026-01-01 --hasta 2026-10-08 --salida dir
       HISTÓRICO HACIA ATRÁS (2026-10-09): solo escribe
       capas/historico/frentes-AAAA-MM-DD.json de cada día del rango, con el
-      MISMO cálculo (calcular_frentes, mismas máscaras y umbrales) y los
-      mismos datasets NRT, que guardan días pasados (comprobado en el STAC el
-      2026-10-09: clorofila desde 2025-10-04, ventana móvil de ~1 año; IBI
-      temperatura y corriente sin marea desde 2022-11-22). Nunca toca las capas
+      MISMO cálculo (calcular_frentes, mismas máscaras y umbrales). Para cada
+      día y variable, el primer dataset de HISTORICO_DATASETS que lo cubre
+      según su cobertura REAL (copernicusmarine.describe del dataset, no del
+      producto): el NRT de la pasada diaria si cubre, y si no el archivo (la
+      clorofila NRT solo guarda ~10 días; antes, el MY reprocesado). Lo que no
+      cubre ningún dataset se salta con un aviso. Nunca toca las capas
       del día (clorofila.json, temperatura-agua.json, frentes.json). Por
       bloques de --bloque días (una apertura de cada dataset por bloque,
       recortada a CAJA), con tope de --max-dias y --max-minutos por ejecución,
@@ -690,47 +692,183 @@ def prueba_dia(nombre, fecha, k):
     return (fecha, lats, lons, rodar(v, k), obs, previos)
 
 
-class BloqueReal:
-    """Una apertura de cada dataset para un bloque de días (recortada a CAJA;
-    perezosa: solo se baja lo que se usa de cada día)."""
+# Datasets del histórico, por variable y en orden de preferencia (2026-10-09,
+# tras el primer lanzamiento real: el NRT de clorofila solo guarda ~10 días
+# en el servicio ARCO aunque el STAC del PRODUCTO dijera "desde 2025-10-04").
+# Cobertura comprobada con `copernicusmarine describe --dataset-id` el
+# 2026-10-09 (servicio arco-geo-series, coordenada time):
+#   clorofila NRT  cmems_obs-oc_atl_bgc-plankton_nrt_l4-gapfree-multi-1km_P1D  2026-09-29 .. 2026-10-08 (ventana móvil)
+#   clorofila MY   cmems_obs-oc_atl_bgc-plankton_my_l4-gapfree-multi-1km_P1D   1997-10-01 .. 2026-10-01
+#                  (OCEANCOLOUR_ATL_BGC_L4_MY_009_118, DOI 10.48670/moi-00289:
+#                  misma malla de 1/96°, mismas variables CHL y flags, misma
+#                  máscara 2 = INTERPOLATED; es la serie reprocesada)
+#   temperatura    cmems_mod_ibi_phy_anfc_0.027deg-2D_PT1H-m (thetao)          2024-10-18 .. +10 días
+#   temperatura MY cmems_mod_ibi_phy-temp_my_0.027deg_PT1H-m (thetao)          1993-01-01 .. 2026-06-16
+#                  (IBI_MULTIYEAR_PHY_005_002, DOI 10.48670/moi-00029, misma malla 1/36°)
+#   corriente      cmems_mod_ibi_phy-cur_anfc_detided-0.027deg_P1D-m           2024-10-15 .. +10 días
+#   corriente MY   cmems_mod_ibi_phy-cur_my_detided-0.027deg_P1D-m             1993-01-01 .. 2026-06-15
+# Para cada día se usa el PRIMERO de la lista que cubra lo que hace falta
+# (la clorofila, los días del compuesto; si ninguno cubre la ventana entera,
+# el primero que cubra el propio día). Así lo que cubre el NRT sale idéntico
+# a la pasada diaria, y lo anterior, del archivo con el mismo cálculo. La
+# cobertura se mira ANTES de pedir datos (copernicusmarine.describe, sin
+# cuenta); un día que no cubre ningún dataset se salta con un aviso.
+HISTORICO_DATASETS = {
+    "clorofila": [
+        {"dataset": CAPAS["clorofila"]["dataset"], "producto": CAPAS["clorofila"]["producto"], "doi": CAPAS["clorofila"]["doi"]},
+        {"dataset": "cmems_obs-oc_atl_bgc-plankton_my_l4-gapfree-multi-1km_P1D", "producto": "OCEANCOLOUR_ATL_BGC_L4_MY_009_118", "doi": "10.48670/moi-00289"},
+    ],
+    "temperatura": [
+        {"dataset": CAPAS["temperatura-agua"]["dataset"], "producto": CAPAS["temperatura-agua"]["producto"], "doi": CAPAS["temperatura-agua"]["doi"]},
+        {"dataset": "cmems_mod_ibi_phy-temp_my_0.027deg_PT1H-m", "producto": "IBI_MULTIYEAR_PHY_005_002", "doi": "10.48670/moi-00029"},
+    ],
+    "corriente": [
+        {"dataset": CORRIENTE["dataset"], "producto": CORRIENTE["producto"], "doi": CORRIENTE["doi"]},
+        {"dataset": "cmems_mod_ibi_phy-cur_my_detided-0.027deg_P1D-m", "producto": "IBI_MULTIYEAR_PHY_005_002", "doi": "10.48670/moi-00029"},
+    ],
+}
+# Días hacia atrás que necesita cada variable para el día D (la clorofila:
+# hasta 5 días para el primero con datos y el resto del compuesto).
+DIAS_ATRAS = {"clorofila": 4 + FRENTES["dias_clorofila"], "temperatura": 0, "corriente": 0}
 
-    def __init__(self, dias):
-        # Como la pasada diaria: hasta 5 días atrás para el primero con datos
-        # y FRENTES["dias_clorofila"] - 1 más para el compuesto.
-        ini = datetime.strptime(dias[0], "%Y-%m-%d") - timedelta(days=5 + FRENTES["dias_clorofila"])
-        fin = datetime.strptime(dias[-1], "%Y-%m-%d")
-        c = CAPAS["clorofila"]
-        try:
-            self.chl = abrir(c["dataset"], [c["variable"], "flags"], ini.strftime("%Y-%m-%dT00:00:00"), fin.strftime("%Y-%m-%dT00:00:00"))
-            self.con_flags = True
-        except Exception as e:  # noqa: BLE001
-            print(f"::warning::histórico: clorofila sin `flags` ({e}); frentes sin máscara de nubes")
-            self.chl = abrir(c["dataset"], c["variable"], ini.strftime("%Y-%m-%dT00:00:00"), fin.strftime("%Y-%m-%dT00:00:00"))
-            self.con_flags = False
-        t = CAPAS["temperatura-agua"]
-        self.temp = abrir(t["dataset"], t["variable"], f"{dias[0]}T12:00:00", f"{dias[-1]}T12:00:00")
-        self.corr = abrir(CORRIENTE["dataset"], ["uo_detided", "vo_detided"], f"{dias[0]}T00:00:00", f"{dias[-1]}T00:00:00")
+_COBERTURAS = {}
+
+
+def cobertura_real(dataset_id):
+    """(primer día, último día) "AAAA-MM-DD" del dataset en el servicio que se
+    usa (arco-geo-series), leído de sus metadatos (copernicusmarine.describe,
+    sin cuenta); None si no se puede saber (y entonces no se usa)."""
+    if dataset_id in _COBERTURAS:
+        return _COBERTURAS[dataset_id]
+    r = None
+    try:
+        import copernicusmarine
+        cat = copernicusmarine.describe(dataset_id=dataset_id, disable_progress_bar=True)
+        ini, fin = [], []
+        for prod in cat.products:
+            for ds in prod.datasets:
+                if ds.dataset_id != dataset_id:
+                    continue
+                for ver in ds.versions:
+                    for part in ver.parts:
+                        for srv in part.services:
+                            if srv.service_name != "arco-geo-series":
+                                continue
+                            for var in srv.variables:
+                                for co in var.coordinates:
+                                    if co.coordinate_id != "time":
+                                        continue
+                                    vals = co.values or []
+                                    lo = vals[0] if vals else co.minimum_value
+                                    hi = vals[-1] if vals else co.maximum_value
+                                    if lo is not None and hi is not None:
+                                        ini.append(float(lo))
+                                        fin.append(float(hi))
+        if ini:
+            dia = lambda ms: datetime.fromtimestamp(ms / 1000, timezone.utc).strftime("%Y-%m-%d")  # noqa: E731
+            r = (dia(min(ini)), dia(max(fin)))
+    except Exception as e:  # noqa: BLE001
+        print(f"::warning::cobertura de {dataset_id}: {e}")
+    _COBERTURAS[dataset_id] = r
+    print(f"cobertura {dataset_id}: {r[0]} a {r[1]}" if r else f"::warning::cobertura de {dataset_id}: desconocida (no se usa)")
+    return r
+
+
+def _menos(fecha, dias):
+    return (datetime.strptime(fecha, "%Y-%m-%d") - timedelta(days=dias)).strftime("%Y-%m-%d")
+
+
+def elegir_dataset(var, fecha, cobertura=None):
+    """La entrada de HISTORICO_DATASETS para `var` el día `fecha`: la primera
+    que cubra toda la ventana que hace falta y, si ninguna, la primera que
+    cubra el propio día; None si ninguna lo cubre."""
+    cobertura = cobertura or cobertura_real
+    cands = HISTORICO_DATASETS[var]
+    desde = _menos(fecha, DIAS_ATRAS[var])
+    for exigir in (desde, fecha):
+        for c in cands:
+            cov = cobertura(c["dataset"])
+            if cov and cov[0] <= exigir and fecha <= cov[1]:
+                return c
+    return None
+
+
+class BloqueReal:
+    """Las aperturas de los datasets para un bloque de días (recortadas a
+    CAJA y a la cobertura de cada dataset; perezosas: solo se baja lo que se
+    usa de cada día). Un día que no cubre ningún dataset queda en `sin`."""
+
+    def __init__(self, dias, cobertura=None):
+        cobertura = cobertura or cobertura_real
+        self.abiertos = {}   # (var, fecha) -> (dataset abierto, con_flags, entrada)
+        self.sin = {}        # fecha -> [variables sin dataset]
+        for var in ("clorofila", "temperatura", "corriente"):
+            grupos = {}
+            for d in dias:
+                c = elegir_dataset(var, d, cobertura)
+                if c is None:
+                    self.sin.setdefault(d, []).append(var)
+                    continue
+                grupos.setdefault(c["dataset"], (c, []))[1].append(d)
+            for dsid, (c, ds_dias) in grupos.items():
+                cov = cobertura(dsid)
+                ini = max(cov[0], _menos(ds_dias[0], DIAS_ATRAS[var]))
+                fin = ds_dias[-1]
+                try:
+                    abierto, con_flags = self._abrir(var, dsid, ini, fin)
+                except Exception as e:  # noqa: BLE001 — se saltan esos días, no la pasada
+                    print(f"::warning::histórico: {var} de {dsid} ({ini} a {fin}): {e}")
+                    for d in ds_dias:
+                        self.sin.setdefault(d, []).append(var)
+                    continue
+                for d in ds_dias:
+                    self.abiertos[(var, d)] = (abierto, con_flags, c)
+
+    @staticmethod
+    def _abrir(var, dsid, ini, fin):
+        if var == "clorofila":
+            v = CAPAS["clorofila"]["variable"]
+            try:
+                return abrir(dsid, [v, "flags"], f"{ini}T00:00:00", f"{fin}T00:00:00"), True
+            except Exception as e:  # noqa: BLE001
+                print(f"::warning::histórico: {dsid} sin `flags` ({e}); frentes sin máscara de nubes")
+                return abrir(dsid, v, f"{ini}T00:00:00", f"{fin}T00:00:00"), False
+        if var == "temperatura":
+            return abrir(dsid, CAPAS["temperatura-agua"]["variable"], f"{ini}T12:00:00", f"{fin}T12:00:00"), False
+        return abrir(dsid, ["uo_detided", "vo_detided"], f"{ini}T00:00:00", f"{fin}T00:00:00"), False
+
+    def datasets(self, fecha):
+        return {var: self.abiertos[(var, fecha)][2]["dataset"] for var in ("clorofila", "temperatura", "corriente") if (var, fecha) in self.abiertos}
 
     def clorofila(self, fecha):
         """Lo mismo que clorofila_real() si se hubiera ejecutado el día D:
         el día D (o el último con datos hasta 5 días antes) y los previos del
         compuesto, nunca días posteriores a D."""
+        if ("clorofila", fecha) not in self.abiertos:
+            return None
+        ds, con_flags, _ = self.abiertos[("clorofila", fecha)]
         dia = np.datetime64(fecha)
-        tiempos = np.array([t for t in self.chl["time"].values if np.datetime64(t, "D") <= dia])[::-1]
-        return elegir_clorofila(self.chl, tiempos, self.con_flags)
+        tiempos = np.array([t for t in ds["time"].values if np.datetime64(t, "D") <= dia])[::-1]
+        return elegir_clorofila(ds, tiempos, con_flags)
 
     def temperatura(self, fecha):
+        if ("temperatura", fecha) not in self.abiertos:
+            return None
+        ds = self.abiertos[("temperatura", fecha)][0]
         d = CAPAS["temperatura-agua"]
-        da = superficie(self.temp[d["variable"]]).sel(time=np.datetime64(f"{fecha}T12:00:00")).load()
+        da = superficie(ds[d["variable"]]).sel(time=np.datetime64(f"{fecha}T12:00:00")).load()
         v = da.values
         if np.isfinite(v).mean() < 0.2:
             return None
         return fecha, da["latitude"].values, da["longitude"].values, v
 
     def corrientes(self, fecha):
+        if ("corriente", fecha) not in self.abiertos:
+            return None
+        ds = self.abiertos[("corriente", fecha)][0]
         t = np.datetime64(f"{fecha}T00:00:00")
-        u = superficie(self.corr["uo_detided"]).sel(time=t).load()
-        v = superficie(self.corr["vo_detided"]).sel(time=t).load().values
+        u = superficie(ds["uo_detided"]).sel(time=t).load()
+        v = superficie(ds["vo_detided"]).sel(time=t).load().values
         if np.isfinite(u.values).mean() < 0.2:
             return None
         return fecha, u["latitude"].values, u["longitude"].values, u.values, v
@@ -752,7 +890,12 @@ def historico(a):
             print(f"::warning::histórico: tope de {a.max_minutos} min; quedan {len(pendientes) - b0} días para otra ejecución")
             break
         bloque = pendientes[b0:b0 + a.bloque]
-        fuente = None if a.prueba else BloqueReal(bloque)
+        try:
+            fuente = None if a.prueba else BloqueReal(bloque)
+        except Exception as e:  # noqa: BLE001 — un bloque malo no tumba la pasada
+            print(f"::warning::histórico: bloque {bloque[0]} a {bloque[-1]}: {e}; se salta")
+            fallidos.extend(bloque)
+            continue
         for k, fecha in enumerate(bloque):
             t0 = time.time()
             try:
@@ -760,6 +903,10 @@ def historico(a):
                     k2 = b0 + k
                     rc, rt, ru = prueba_dia("clorofila", fecha, k2), prueba_dia("temperatura-agua", fecha, k2), prueba_dia("corrientes", fecha, k2)
                 else:
+                    if fecha in fuente.sin:
+                        print(f"::warning::histórico {fecha}: ningún dataset cubre {', '.join(fuente.sin[fecha])}; se salta")
+                        fallidos.append(fecha)
+                        continue
                     rc, rt, ru = fuente.clorofila(fecha), fuente.temperatura(fecha), fuente.corrientes(fecha)
                 if rc is None or rt is None or ru is None:
                     falta = [n for n, r in (("clorofila", rc), ("temperatura", rt), ("corriente", ru)) if r is None]
@@ -767,6 +914,9 @@ def historico(a):
                     fallidos.append(fecha)
                     continue
                 _, h, est = construir_frentes(rc, rt, ru, a.prueba)
+                if fuente is not None:
+                    # De qué dataset salió cada variable ese día (archivo o NRT).
+                    h["datasets_historico"] = fuente.datasets(fecha)
                 ruta = os.path.join(dir_h, f"frentes-{fecha}.json")
                 with open(ruta, "w", encoding="utf-8") as fh:
                     json.dump(h, fh, separators=(",", ":"))
