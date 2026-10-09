@@ -78,3 +78,11 @@ test("páginas con menú inferior: hueco abajo y safe-area arriba", () => {
     assert.match(h, /viewport-fit=cover/, f);
   }
 });
+
+test("captura: nombre científico solo por nombre exacto y escapado", () => {
+  const d = html("diario.html");
+  assert.match(d, /async function cientificoDe\(nombre\)/);
+  assert.match(d, /const cientifico = await cientificoDe\(captura\.especie\)/);
+  assert.match(d, /<i class="cientifico">\$\{escNombre\(cientifico\)\}<\/i>/);
+  assert.match(d, /\.tarjeta-captura \.especie \.cientifico \{/);
+});
