@@ -194,11 +194,15 @@ test("especies.json: cada regla por defecto y cada override explica su porqué",
 });
 
 test("especies.json: meses válidos y regiones conocidas", () => {
+  // Las de NZ (áreas de MPI, fase 2c) solo en especies de NZ, y al revés.
   const regiones = new Set(DATOS.regiones);
+  const regionesNZ = new Set(DATOS.regiones_nz);
   for (const e of DATOS.especies) {
     assert.ok(e.id && e.nombres?.es, "falta id o nombre");
+    const validas = e.pais === "nz" ? regionesNZ : regiones;
+    for (const reg of [...Object.keys(e.presencia || {}), ...Object.keys(e.freza?.por_region || {})]) assert.ok(validas.has(reg), `${e.id}: región ${reg} de otro país`);
     for (const [reg, p] of [...Object.entries(e.presencia || {}), ...Object.entries(e.freza?.por_region || {})]) {
-      assert.ok(regiones.has(reg), `${e.id}: región ${reg} desconocida`);
+      assert.ok(regiones.has(reg) || regionesNZ.has(reg), `${e.id}: región ${reg} desconocida`);
       assert.ok(p.meses.every((m) => Number.isInteger(m) && m >= 1 && m <= 12), `${e.id} ${reg}: mes inválido`);
     }
   }
@@ -208,6 +212,8 @@ test("especies.json: todas las especies (28 originales + 25 del 2026-10-08, roda
   assert.ok(DATOS.especies.length >= 53, `solo ${DATOS.especies.length} especies`);
   assert.equal(new Set(DATOS.especies.map((e) => e.id)).size, DATOS.especies.length, "ids repetidos");
   for (const e of DATOS.especies) {
+    // Las 17 de NZ (fase 2c) aún sin cebos con fuente: lista vacía y nota.
+    if (e.pais === "nz") { assert.deepEqual(e.cebos, []); assert.ok(e.cebos_nota); continue; }
     assert.ok(Array.isArray(e.cebos) && e.cebos.length >= 1, `${e.id} sin cebos`);
     for (const c of e.cebos) {
       assert.ok(c.nombre && ["natural", "artificial"].includes(c.tipo) && c.modalidad, `${e.id}: cebo mal formado`);

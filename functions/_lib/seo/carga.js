@@ -9,10 +9,13 @@ import { cargarJson, pedirConLimite, ahoraMadridISO } from "./base.js";
 import { consultasMeteo, serieHorariaSpot, indiceDeHoy, condicionesDePrevision } from "./indice-hoy.js";
 import { rioDeSpot } from "./datos.js";
 import { horaLocalISO, zonaDeSpot } from "../../../assets/js/regiones.js";
+import { datosEspeciesVisibles } from "../regiones-activas.js";
 
 export { SPOTS };
 
-export const cargarEspecies = (context) => cargarJson(context, "/assets/datos/especies.json");
+// Sin las especies de regiones ocultas (NZ, fase 2c): ni /especies, ni sus
+// fichas, ni el índice de las páginas de spot las ven.
+export const cargarEspecies = (context) => cargarJson(context, "/assets/datos/especies.json").then((d) => datosEspeciesVisibles(d));
 
 // Mes en curso para las páginas de especies (todas de la Península por
 // ahora): hora de Madrid a propósito. Nueva Zelanda tendrá las suyas (fase 5).

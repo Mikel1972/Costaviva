@@ -976,6 +976,16 @@
   "mapa.panel.normativa_nz": "Normas de pesca de esta zona ({area}): página oficial de MPI ↗",
   "mapa.panel.normativa_app": "Consulta la app gratuita NZ Fishing Rules antes de pescar ↗",
   "mapa.panel.rahui": "Los iwi o hapū locales pueden poner un rāhui (cierre temporal). Respeta las señales y avisos locales.",
-  "mapa.marea.puerto_linz": "Puerto LINZ: {puerto} ({km} km)"
+  "mapa.marea.puerto_linz": "Puerto LINZ: {puerto} ({km} km)",
+  "va.region.nz_auckland_kermadec": "Auckland / Kermadec (NZ)",
+  "va.region.nz_central": "Central (NZ)",
+  "va.region.nz_challenger": "Challenger (NZ)",
+  "va.region.nz_south_east": "South-East (NZ)",
+  "va.region.nz_kaikoura": "Kaikōura (NZ)",
+  "va.region.nz_southland": "Southland (NZ)",
+  "va.region.nz_fiordland": "Fiordland (NZ)",
+  "mapa.va.normas_nz": "Tallas y cupos: página oficial de MPI ({area}) ↗",
+  "mapa.va.app_mpi": "app gratuita NZ Fishing Rules ↗",
+  "mapa.va.rahui": "Los iwi o hapū locales pueden poner un rāhui (cierre temporal). Respeta las señales y avisos locales."
 }
 ; })(typeof window !== "undefined" ? window : globalThis);

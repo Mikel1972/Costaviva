@@ -2583,6 +2583,39 @@ pestaña en la hora actual. Hereda la vigencia por spot del punto anterior
   app (no solo esto) la usa. Pendiente de decidir con Mikel (plan comercial de
   Open-Meteo o alternativa).
 
+## Especies de Nueva Zelanda (2026-10-09, fase 2c de NZ, OCULTAS)
+
+- 17 fichas en `especies.json` con `pais: "nz"` e id `nz-…` (nz-snapper,
+  nz-kingfish…; el prefijo hace que cualquier fuga a una URL pública se vea
+  en los tests de "oculto"). Nombres `en`/`mi` (y un `es` orientativo,
+  `nombres_nota`), hábitat y profundidad con `valor_en`, presencia y freza
+  **propias del hemisferio sur** por área de MPI (`regiones_nz`:
+  nz_auckland_kermadec, nz_central, nz_challenger, nz_south_east,
+  nz_kaikoura, nz_southland, nz_fiordland). Fuentes: MPI/Fisheries NZ (CC BY
+  4.0: `mpi_popular_fish`, `fnz_plenary_2025`, documentos por especie) y un
+  artículo CC BY de PMC (hāpuku). **Nunca FishBase ni Te Ara** (NC).
+- La presencia es `heuristica_experta` (residentes, todo el año; la pota,
+  enero-mayo): OBIS casi no tiene registros costeros de NZ con licencia libre
+  (snapper: 3, uno mal identificado; consulta 2026-10-09). La temperatura,
+  `rango: null` (no puntúa; el índice lo tolera). Cebos: `[]` con nota.
+- Normativa: `talla_minima` con `valor_cm: null` y la URL de la página de MPI
+  de cada área (jurisdicciones `NZ-AKE`…`NZ-FIO`); la ficha de la ventana de
+  actividad enseña solo ese enlace, la app NZ Fishing Rules y el aviso de
+  rāhui. Reglas sin cifras citadas de MPI (pāua sin botella; langostas con
+  huevos o en muda) en `modalidades.*.normativa` con jurisdicción `NZ`.
+- Región de PESCA: `regionPescaPorCoordenadas` (regiones.js) = la de siempre
+  en España; en NZ, el área de MPI por coordenadas (`areaPescaNZ`, límites
+  aproximados que coinciden con las 60 asignadas a mano). `VA.regionPorCoordenadas`
+  (ventana-actividad.js, la que usan el mapa, el SEO y los scripts de
+  especies) es ahora esa; `regiones.js` sigue dando "nueva_zelanda" para hora
+  e idioma. `nz_*` cuentan como hemisferio sur (`usaDatosGenerales` false).
+- Separación por país: `especiesDeTemporada`/`especiesParaModalidad` solo
+  dan especies del país de la región (`paisEspecie`, `paisDeRegion`); una
+  regla experta sin `regiones` solo aplica en España/Portugal.
+- Oculto: `especiesVisibles` (regiones-activas.js) quita las de NZ de
+  /especies, sus fichas, el sitemap y el índice de las páginas de spot
+  mientras "nz" no esté activa. Tests: `test/nz-especies.test.js`.
+
 ## Tipo de fondo y orilla (2026-10-08, aprobado por Mikel)
 
 Pedido de Mikel: saber el tipo de fondo de cada spot, sobre todo los primeros

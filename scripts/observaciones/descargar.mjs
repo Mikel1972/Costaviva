@@ -265,7 +265,9 @@ async function main() {
 
   // 1) Especies -> taxonKey de GBIF.
   const taxones = [];
-  for (const e of especies.especies) {
+  // Solo las de España y Portugal: las de NZ (fase 2c) no tienen spots aquí
+  // y pedirlas a GBIF sería gastar consultas para nada.
+  for (const e of especies.especies.filter((x) => (x.pais || "es") === "es")) {
     const claves = [];
     for (const p of patronesDeEspecie(e)) {
       const rango = p.tipo === "especie" ? "SPECIES" : p.tipo === "genero" ? "GENUS" : "FAMILY";

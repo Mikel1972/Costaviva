@@ -21,11 +21,14 @@ import * as rutaSpots from "../functions/spots/index.js";
 import * as rutaRegion from "../functions/spots/region/[region].js";
 import * as rutaEspecies from "../functions/especies/index.js";
 import * as rutaEspecie from "../functions/especies/[slug].js";
+import { datosEspeciesVisibles } from "../functions/_lib/regiones-activas.js";
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), "..");
 const leer = (r) => readFileSync(join(RAIZ, r), "utf8");
 const json = (r) => JSON.parse(leer(r));
-const especies = json("assets/datos/especies.json");
+// Solo las especies públicas: las de NZ (región oculta, fase 2c) no tienen
+// página ni entran en el sitemap (test/nz-especies.test.js lo comprueba).
+const especies = datosEspeciesVisibles(json("assets/datos/especies.json"));
 const prevision = json("test/fixtures/seo-prevision.json");
 const marino = json("test/fixtures/seo-marine-bakio.json");
 const tiempo = json("test/fixtures/seo-forecast-bakio.json");
