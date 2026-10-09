@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-09T07:08:03.345Z",
- "lineasHistorial": 84,
+ "fecha": "2026-10-09T07:37:55.631Z",
+ "lineasHistorial": 95,
  "etiquetas": 43,
  "etiquetasClaude": 43,
  "calibracion": {
@@ -108,19 +108,19 @@
    "pocosDatos": true
   },
   "mundaka/principal": {
-   "a": 12.0463,
+   "a": 12.5413,
    "p": 1,
-   "n": 5,
+   "n": 6,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 3,
    "franjasClaude": [
     "2026-10-08T14",
     "2026-10-08T16"
    ],
-   "dias": 1,
-   "hMin": 1.5,
+   "dias": 2,
+   "hMin": 1.06,
    "hMax": 2.18,
-   "errorRel": 0.952,
+   "errorRel": 0.942,
    "pocosDatos": true
   },
   "bakio/principal": {
@@ -165,16 +165,16 @@
    "pocosDatos": true
   },
   "castrourdiales/principal": {
-   "a": 917.6471,
+   "a": 233.4228,
    "p": 1,
-   "n": 1,
+   "n": 2,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
-   "dias": 1,
-   "hMin": 3.12,
+   "dias": 2,
+   "hMin": 1.24,
    "hMax": 3.12,
-   "errorRel": 0.5,
+   "errorRel": 1,
    "pocosDatos": true
   },
   "berria/dinamico": {
@@ -274,10 +274,10 @@
   },
   "mundaka": {
    "sustituye": false,
-   "motivo": "ruido aún sin medir (0 pares de lecturas cercanas); 3 etiquetas de Claude en 2 franjas (faltan)",
+   "motivo": "ruido aún sin medir (1 pares de lecturas cercanas); 3 etiquetas de Claude en 2 franjas (faltan)",
    "ruido": {
-    "ruido": null,
-    "pares": 0
+    "ruido": 1.235,
+    "pares": 1
    }
   },
   "bakio": {
@@ -306,10 +306,10 @@
   },
   "castrourdiales": {
    "sustituye": false,
-   "motivo": "ruido aún sin medir (0 pares de lecturas cercanas)",
+   "motivo": "ruido aún sin medir (1 pares de lecturas cercanas)",
    "ruido": {
-    "ruido": null,
-    "pares": 0
+    "ruido": 0.588,
+    "pares": 1
    }
   }
  }
