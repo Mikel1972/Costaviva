@@ -1498,7 +1498,7 @@
 // Zona horaria de un spot, boya o estación (2026-10-09, assets/js/regiones.js
 // vía window.Regiones): la que manda /prevision (s.zona) o la de sus
 // coordenadas. Si el módulo aún no ha cargado, la de /prevision o Madrid
-// (por defecto a propósito: lo de siempre en la Península y Portugal).
+// (por defecto a propósito: la de la Península).
 const ZONA_POR_DEFECTO = "Europe/Madrid";
 function zonaSpot(s) {
   if (window.Regiones) return window.Regiones.zonaDeSpot(s);
@@ -1514,7 +1514,7 @@ function zonaSpot(s) {
 // si consultabas la app por la tarde/noche, veías el dato de mediodía
 // disfrazado de "actualizado ahora mismo". Ahora se coge el bloque de 3h
 // más cercano a la hora real del spot (su zona, 2026-10-09: Madrid en la
-// Península y Portugal, Canarias en Canarias; ver assets/js/regiones.js).
+// Península, Canarias en Canarias, Lisboa en Portugal; ver assets/js/regiones.js).
 const HORAS_BLOQUE_POR_NUM = { 0: "12am", 3: "3am", 6: "6am", 9: "9am", 12: "12pm", 15: "3pm", 18: "6pm", 21: "9pm" };
 function bloqueMasCercanoAAhora(bloques, zona = ZONA_POR_DEFECTO) {
   const horaLocal = parseInt(horaActualISO(zona).slice(11, 13), 10);

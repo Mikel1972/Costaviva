@@ -219,13 +219,13 @@
     "proximas": [
      {
       "tipo": "pleamar",
-      "hora": "16:00",
+      "hora": "15:00",
       "altura": 2.95,
       "manana": false
      },
      {
       "tipo": "bajamar",
-      "hora": "22:00",
+      "hora": "21:00",
       "altura": 0.01,
       "manana": false
      }
@@ -278,15 +278,15 @@
     "proximas": [
      {
       "tipo": "pleamar",
-      "hora": "04:00",
+      "hora": "03:00",
       "altura": 2.99,
-      "manana": false
+      "manana": true
      },
      {
       "tipo": "bajamar",
-      "hora": "10:00",
+      "hora": "09:00",
       "altura": 0,
-      "manana": false
+      "manana": true
      }
     ],
     "coeficiente": 102

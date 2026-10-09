@@ -32,32 +32,124 @@ const LAS_PALMAS = SPOTS.find((s) => s.slug === "laspalmas");
 // ---------------------------------------------------------------------------
 // 1. No regresión en España y Portugal
 // ---------------------------------------------------------------------------
-test("España y Portugal: mismo sol, luna, eje, mareas y horas de /prevision que con Madrid fijo", async () => {
+// El fixture salió de main con Madrid fijo; desde el 2026-10-09 (Portugal en
+// su hora) solo cambian en él los dos casos de Peniche: sus pleamares y
+// bajamares, una hora antes en hora de Lisboa (y "mañana" a las 23:40 de
+// Lisboa, que en Madrid ya eran las 00:40 del día siguiente).
+test("España: mismo sol, luna, eje, mareas y horas de /prevision que con Madrid fijo", async () => {
   const antes = JSON.parse(readFileSync(new URL("./fixtures/zona-horaria-espana.json", import.meta.url), "utf8"));
   const ahora = await foto(RAIZ, { soloHora: true });
   assert.deepEqual(ahora, antes);
 });
 
-test("España y Portugal: el índice hora a hora con la zona deducida = con Madrid explícito", async () => {
+const ZONA_ESPERADA = { peniche: "Europe/Lisbon", azores: "Atlantic/Azores", madeira: "Atlantic/Madeira" };
+test("índice hora a hora: España igual que con Madrid fijo; Portugal en su zona", async () => {
   const deducida = await foto(RAIZ);
   const madrid = await foto(RAIZ, { zona: "Europe/Madrid" });
-  assert.deepEqual(deducida.indices, madrid.indices);
+  const esperada = await foto(RAIZ, { zona: (n) => ZONA_ESPERADA[n] || "Europe/Madrid" });
+  assert.deepEqual(deducida.indices, esperada.indices);
+  for (const k of Object.keys(madrid.indices)) {
+    const nom = k.split("|")[0];
+    if (!ZONA_ESPERADA[nom]) assert.equal(deducida.indices[k], madrid.indices[k], k);
+  }
   assert.equal(deducida.ventanaLubina, madrid.ventanaLubina);
   // Y con otra zona sí cambia (el test no es trivial).
   const canarias = await foto(RAIZ, { zona: "Atlantic/Canary" });
   assert.notDeepEqual(canarias.indices, madrid.indices);
 });
 
-test("todos los spots fijos: Madrid salvo los 4 de Canarias; Portugal sigue en Madrid a propósito", () => {
+const SPOTS_PT = ["aveiro", "cascais", "costadacaparica", "ericeira", "faro", "figueiradafoz", "lagos", "matosinhos", "milfontes",
+  "moledo", "nazare", "peniche", "povoadevarzim", "sagres", "sines", "troia", "vianadocastelo"];
+test("todos los spots fijos: Madrid, salvo Canarias (Atlantic/Canary) y Portugal (Europe/Lisbon)", () => {
   const porZona = {};
   for (const s of SPOTS) (porZona[R.zonaDeSpot(s)] ||= []).push(s.slug);
-  assert.deepEqual(Object.keys(porZona).sort(), ["Atlantic/Canary", "Europe/Madrid"]);
+  assert.deepEqual(Object.keys(porZona).sort(), ["Atlantic/Canary", "Europe/Lisbon", "Europe/Madrid"]);
   assert.deepEqual(porZona["Atlantic/Canary"].sort(), ["corralejo", "elmedano", "laspalmas", "santacruztenerife"]);
-  for (const id of ["portugal", "azores", "madeira"]) {
-    assert.equal(R.REGIONES[id].zona, "Europe/Madrid", id);
-    assert.notEqual(R.REGIONES[id].zonaOficial, "Europe/Madrid", id);
+  assert.deepEqual(porZona["Europe/Lisbon"].sort(), SPOTS_PT);
+  // Los de la raya se quedan en España.
+  for (const slug of ["aguarda", "baiona", "puntaumbria"]) {
+    const s = SPOTS.find((x) => x.slug === slug);
+    if (s) assert.equal(R.zonaDeSpot(s), "Europe/Madrid", slug);
+  }
+  assert.deepEqual(["portugal", "azores", "madeira"].map((id) => R.REGIONES[id].zona), ["Europe/Lisbon", "Atlantic/Azores", "Atlantic/Madeira"]);
+});
+
+// ---------------------------------------------------------------------------
+// Portugal en su hora (Lisboa, Azores, Madeira)
+// ---------------------------------------------------------------------------
+test("Lisboa: una hora menos que Madrid todo el año, también en los cambios de hora", () => {
+  // Los dos cambian a la vez (último domingo de marzo y de octubre, a la 01:00 UTC).
+  for (const [t, lis, mad] of [
+    [Date.UTC(2026, 2, 29, 0, 59), "2026-03-29T00", "2026-03-29T01"], // WET / CET
+    [Date.UTC(2026, 2, 29, 1, 0), "2026-03-29T02", "2026-03-29T03"], // WEST / CEST
+    [Date.UTC(2026, 9, 25, 0, 59), "2026-10-25T01", "2026-10-25T02"], // WEST / CEST
+    [Date.UTC(2026, 9, 25, 1, 0), "2026-10-25T01", "2026-10-25T02"], // WET / CET: la 01 se repite
+    [Date.UTC(2026, 9, 9, 22, 40), "2026-10-09T23", "2026-10-10T00"], // aún es el 9 en Lisboa
+  ]) {
+    assert.equal(R.horaLocalISO("Europe/Lisbon", new Date(t)), lis, new Date(t).toISOString());
+    assert.equal(R.horaLocalISO("Europe/Madrid", new Date(t)), mad, new Date(t).toISOString());
+  }
+  assert.equal(R.desfaseEstandarMinutos("Europe/Lisbon"), 0);
+  assert.equal(R.desfaseEstandarMinutos("Atlantic/Madeira"), 0);
+  // Madeira lleva la hora de Lisboa.
+  for (const t of [Date.UTC(2026, 0, 15, 12), Date.UTC(2026, 6, 15, 12), Date.UTC(2026, 9, 25, 1)]) {
+    assert.equal(R.horaLocalISO("Atlantic/Madeira", new Date(t)), R.horaLocalISO("Europe/Lisbon", new Date(t)));
   }
 });
+
+test("Azores: UTC-1 en invierno y UTC+0 en verano, cambiando a la misma hora UTC que Lisboa", () => {
+  assert.equal(R.zonaPorCoordenadas(37.74, -25.67), "Atlantic/Azores"); // Ponta Delgada
+  assert.equal(R.zonaPorCoordenadas(32.64, -16.92), "Atlantic/Madeira"); // Funchal
+  assert.equal(R.zonaPorCoordenadas(38.72, -9.14), "Europe/Lisbon"); // Lisboa
+  assert.equal(R.horaLocalISO("Atlantic/Azores", new Date(Date.UTC(2026, 2, 29, 0, 59))), "2026-03-28T23");
+  assert.equal(R.horaLocalISO("Atlantic/Azores", new Date(Date.UTC(2026, 2, 29, 1, 0))), "2026-03-29T01");
+  assert.equal(R.horaLocalISO("Atlantic/Azores", new Date(Date.UTC(2026, 9, 25, 0, 59))), "2026-10-25T00");
+  assert.equal(R.horaLocalISO("Atlantic/Azores", new Date(Date.UTC(2026, 9, 25, 1, 0))), "2026-10-25T00"); // la 00 se repite
+  assert.equal(R.desfaseMinutos(Date.UTC(2026, 9, 25, 0, 59), "Atlantic/Azores"), 0);
+  assert.equal(R.desfaseMinutos(Date.UTC(2026, 9, 25, 1, 0), "Atlantic/Azores"), -60);
+  assert.equal(R.desfaseEstandarMinutos("Atlantic/Azores"), -60);
+  // Etiqueta local de las 00:00 del 10 en Azores (desfase estándar -1) = 01:00 UTC.
+  assert.equal(R.msAproxDeEtiqueta("2026-10-10T00:00", "Atlantic/Azores"), Date.UTC(2026, 9, 10, 1));
+  const sol = VA.solDelDia("2026-10-09", 37.74, -25.67);
+  const am = R.minutosLocales(sol.amanecer, "Atlantic/Azores");
+  assert.ok(am > 7 * 60 + 15 && am < 7 * 60 + 50, `amanecer en Ponta Delgada ${am}`); // ~07:30
+});
+
+test("Peniche: /prevision da las mareas en hora de Lisboa (una hora menos que antes)", () => {
+  const peniche = SPOTS.find((s) => s.slug === "peniche");
+  assert.equal(R.zonaDeSpot(peniche), "Europe/Lisbon");
+  assert.match(consultasMeteo(peniche).marine, /timezone=Europe%2FLisbon/);
+  // Mismo mar (valores por instante), pedido en las dos zonas.
+  const ahora = Date.UTC(2026, 9, 9, 10, 17);
+  const serie = (zona) => {
+    const eje = ejeHorario({ timezone: zona, start_date: "2026-10-09", end_date: "2026-10-10" }, ahora);
+    const k = eje.horas.map((h) => Math.round((h.ms - Date.UTC(2026, 9, 8, 22)) / 3600000));
+    const f = (g) => k.map(g);
+    return {
+      marino: { hourly: { time: eje.horas.map((h) => h.etiqueta), wave_height: f(() => 1), wave_period: f(() => 9), wave_direction: f(() => 300), sea_surface_temperature: f(() => 18), ocean_current_velocity: f(() => 0.1), ocean_current_direction: f(() => 0), sea_level_height_msl: f((i) => 1.5 * Math.sin((2 * Math.PI * i) / 12.42)) } },
+      viento: { hourly: { time: eje.horas.map((h) => h.etiqueta), windspeed_10m: f(() => 10), winddirection_10m: f(() => 0), precipitation: f(() => 0), cloudcover: f(() => 0), pressure_msl: f((i) => 1000 + i) } },
+    };
+  };
+  const RealDate = Date;
+  globalThis.Date = class extends RealDate {
+    constructor(...a) { if (a.length) super(...a); else super(ahora); }
+    static now() { return ahora; }
+  };
+  let lisboa, madrid;
+  try {
+    const sl = serie("Europe/Lisbon"), sm = serie("Europe/Madrid");
+    lisboa = procesarSpot(peniche, sl.marino, sl.viento, {}, {}, "openmeteo");
+    madrid = procesarSpot({ ...peniche, zona: "Europe/Madrid" }, sm.marino, sm.viento, {}, {}, "openmeteo");
+  } finally {
+    globalThis.Date = RealDate;
+  }
+  assert.equal(lisboa.zona, "Europe/Lisbon");
+  assert.deepEqual(madrid.marea.proximas.map((e) => e.hora), ["16:00", "22:00"]);
+  assert.deepEqual(lisboa.marea.proximas.map((e) => e.hora), ["15:00", "21:00"]);
+  assert.equal(lisboa.marea.altura, madrid.marea.altura); // mismo instante, misma agua
+  assert.equal(lisboa.presion.valor, madrid.presion.valor);
+});
+
 
 test("regionPorCoordenadas sigue igual en la Península e islas", () => {
   const casos = [[43.407, -2.698, "cantabrico"], [42.26, -8.78, "atlantico_norte"], [36.53, -6.3, "golfo_cadiz"],
@@ -129,7 +221,7 @@ test("Canarias: /prevision coge el bloque y la marea de la hora de Canarias", ()
 });
 
 test("pedirPorZona: una consulta por zona y la respuesta en el orden de los spots", async () => {
-  const lista = [SPOTS.find((s) => s.slug === "mundaka"), LAS_PALMAS, SPOTS.find((s) => s.slug === "cadiz"), SPOTS.find((s) => s.slug === "corralejo")];
+  const lista = [SPOTS.find((s) => s.slug === "mundaka"), LAS_PALMAS, SPOTS.find((s) => s.slug === "cadiz"), SPOTS.find((s) => s.slug === "corralejo"), SPOTS.find((s) => s.slug === "nazare")];
   const urls = [];
   const fetchImpl = async (url) => {
     urls.push(String(url));
@@ -138,8 +230,8 @@ test("pedirPorZona: una consulta por zona y la respuesta en el orden de los spot
     return new Response(JSON.stringify(lats.map((lat) => ({ latitude: +lat, timezone: sp.get("timezone"), hourly: { time: [] } }))), { status: 200, headers: { "content-type": "application/json" } });
   };
   const r = await pedirPorZona(lista, "marine", "forecast_days=2&hourly=wave_height", { env: {}, fetchImpl });
-  assert.equal(urls.length, 2);
-  assert.deepEqual(r.map((x) => x.timezone), ["Europe/Madrid", "Atlantic/Canary", "Europe/Madrid", "Atlantic/Canary"]);
+  assert.equal(urls.length, 3);
+  assert.deepEqual(r.map((x) => x.timezone), ["Europe/Madrid", "Atlantic/Canary", "Europe/Madrid", "Atlantic/Canary", "Europe/Lisbon"]);
   assert.deepEqual(r.map((x) => x.latitude), lista.map((s) => s.lat));
 });
 

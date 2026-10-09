@@ -101,7 +101,7 @@ export async function ultimaFila({ url, key }, tabla, columna) {
 
 // ---------------------------------------------------------------------------
 // Open-Meteo: serie horaria (hora local del punto, ver assets/js/regiones.js:
-// Madrid en la Península y Portugal, Canarias en Canarias) de la fecha de un
+// Madrid en la Península, Canarias, Lisboa, Azores o Madeira) de la fecha de un
 // caso. Es la misma zona con la que el diario busca la hora de la salida.
 // ---------------------------------------------------------------------------
 const sumarDias = (iso, d) => new Date(Date.parse(`${iso}T12:00:00Z`) + d * 86400e3).toISOString().slice(0, 10);

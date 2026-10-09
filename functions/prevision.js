@@ -662,8 +662,8 @@ export function factorOleaje(lat, lon, fuente = "openmeteo") {
 }
 
 // Una consulta por zona horaria (Open-Meteo etiqueta TODA la respuesta con
-// una sola zona): en la Península y Portugal, una sola como siempre; Canarias
-// va aparte (Atlantic/Canary). Devuelve la lista en el orden de `spots`.
+// una sola zona): una para la Península, otra para Canarias (Atlantic/Canary)
+// y otra para Portugal (Europe/Lisbon). Devuelve la lista en el orden de `spots`.
 export async function pedirPorZona(spots, api, resto, opciones) {
   const grupos = agruparPorZona(spots);
   const respuestas = await Promise.all(grupos.map((g) => pedirDatosMeteo(

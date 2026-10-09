@@ -86,7 +86,7 @@ function altAzLuna(fecha, latObs, lonObs) {
 }
 
 // Fecha de hoy y desfase (horas enteras) en la zona del punto (regiones.js):
-// Madrid en la Península y Portugal, Atlantic/Canary en Canarias,
+// Madrid en la Península, Atlantic/Canary en Canarias, Europe/Lisbon en Portugal,
 // Pacific/Auckland en Nueva Zelanda. La USNO devuelve las horas en ese desfase.
 function fechaLocalActual(lat, lon) {
   const zona = zonaPorCoordenadas(lat, lon);
