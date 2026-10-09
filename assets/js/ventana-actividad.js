@@ -822,6 +822,10 @@ const JURISDICCIONES_POR_REGION = {
   portugal: ["PT"],
   azores: ["PT-AC", "PT"],
   madeira: ["PT-MA", "PT"],
+  // Nueva Zelanda (fase 2c): una jurisdicción por área de MPI, solo con el
+  // enlace a su página oficial (valor_cm null: ninguna cifra en la app).
+  nz_auckland_kermadec: ["NZ-AKE"], nz_central: ["NZ-CEN"], nz_challenger: ["NZ-CHA"], nz_south_east: ["NZ-SE"],
+  nz_kaikoura: ["NZ-KAI"], nz_southland: ["NZ-SOU"], nz_fiordland: ["NZ-FIO"],
 };
 export function tallasParaRegion(especie, region, enEuskadi = false) {
   const orden = JURISDICCIONES_POR_REGION[region] || [];
@@ -873,6 +877,7 @@ const JURIS_MODALIDAD_POR_REGION = {
   cantabrico: ["ES", "ES-CB", "ES-AS"], atlantico_norte: ["ES", "ES-GA"], golfo_cadiz: ["ES", "ES-AN"],
   mediterraneo: ["ES", "ES-AN", "ES-MC", "ES-VC", "ES-CT"], baleares: ["ES", "ES-IB"], canarias: ["ES", "ES-CN"],
   portugal: ["PT"], azores: ["PT-AC", "PT"], madeira: ["PT-MA", "PT"],
+  ...Object.fromEntries(AREAS_NZ.map((a) => [a, ["NZ"]])),
 };
 export function normativaModalidad(datos, modalidad, region, { euskadi = false, especie = null } = {}) {
   // En la costa vasca, Euskadi en vez de Cantabria/Asturias.

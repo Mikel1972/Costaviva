@@ -5021,6 +5021,16 @@ function pintarTiraVA(especie, region, fecha, datos) {
   if (consejoProf) document.getElementById("vaCebos").innerHTML += `<span class="va-nota" style="display:block; margin-top:2px;">${I18n.t("mapa.va.profundidad_html")} ${escVA(consejoProf)}</span>`;
 
   const tallas = VA.tallasParaRegion(especie, region, VA.enEuskadi(vaEstado.s.lat, vaEstado.s.lon));
+  // Nueva Zelanda (fase 2c): solo el enlace a la página oficial de MPI del
+  // área, la app oficial y el aviso de rāhui. Ninguna talla ni cupo.
+  const enlaceNZ = tallas.find((x) => /^NZ-/.test(x.jurisdiccion) && x.url);
+  if (enlaceNZ) {
+    document.getElementById("vaTalla").innerHTML =
+      `📏 <a href="${escVA(enlaceNZ.url)}" target="_blank" rel="noopener">${escVA(I18n.t("mapa.va.normas_nz", { area: enlaceNZ.ambito_corto || "" }))}</a>`
+      + ` · <a href="https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/nz-fishing-rules-app/" target="_blank" rel="noopener">${escVA(I18n.t("mapa.va.app_mpi"))}</a>`
+      + `<br><span class="va-nota">${escVA(I18n.t("mapa.va.rahui"))}</span>`;
+    return;
+  }
   const t = tallas.find((x) => x.valor_cm !== null || x.peso_g !== undefined);
   const veda = vedaHoy ? null : (especie.vedas || [])[0];
   const fuente = t ? datos.fuentes[t.fuente] : null;
