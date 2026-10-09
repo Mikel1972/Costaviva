@@ -85,7 +85,7 @@ test("cada página: pantalla de inicio con foto, marca e indicador, tras costavi
     assert.doesNotMatch(b, /\son[a-z]+\s*=/i, `${p}: on*= en la pantalla de inicio (CSP)`);
     assert.doesNotMatch(b, /style="/, `${p}: estilos sueltos; van en pantalla-inicio.css`);
     // El script de la página la sigue quitando al tener acceso.
-    assert.match(html, /getElementById\("comprobandoAcceso"\)\.remove\(\)/, `${p}: nadie quita la pantalla`);
+    assert.match(html, /window\.quitarPantallaInicio\(\);/, `${p}: nadie quita la pantalla`);
   }
 });
 
@@ -140,4 +140,16 @@ test("manifest y caché: fondo y tema en --mar, /assets/inicio/* con una semana 
   assert.equal(m.background_color.toUpperCase(), mar.toUpperCase());
   assert.equal(m.theme_color.toUpperCase(), mar.toUpperCase());
   assert.match(leer("_headers"), /^\/assets\/inicio\/\*\n\s+Cache-Control: public, max-age=604800$/m);
+});
+
+test("pantalla de inicio: 2 s más la primera vez de la sesión y salida suave", () => {
+  const js = readFileSync(new URL("../assets/js/pantalla-inicio.js", import.meta.url), "utf8");
+  assert.match(js, /const EXTRA_MS = 2000;/);
+  assert.match(js, /sessionStorage/);
+  for (const f of ["admin", "alarma", "diario", "grupos", "index", "suscripcion"]) {
+    const h = readFileSync(new URL(`../${f}.html`, import.meta.url), "utf8");
+    assert.match(h, /<script src="\/assets\/js\/pantalla-inicio\.js"><\/script>\s*<div id="comprobandoAcceso"/, f);
+    assert.match(h, /window\.quitarPantallaInicio\(\);/, f);
+    assert.doesNotMatch(h, /getElementById\("comprobandoAcceso"\)\.remove\(\)/, f);
+  }
 });
