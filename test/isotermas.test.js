@@ -1,4 +1,4 @@
-// Test de las isotermas y la escala adaptativa de 🌡 T. agua (2026-10-09,
+// Test de las isotermas y la escala fija por grados de 🌡 T. agua (2026-10-09,
 // assets/js/isotermas.js). Campos sintéticos con el formato de
 // capas/temperatura-agua.json (un byte por celda, 255 = tierra o sin dato,
 // escala lineal de 0,125 °C). Sin red ni DOM: corre en tests.yml.
@@ -6,8 +6,10 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { pixelesCapa } from "../assets/js/capas-mar.js";
 import {
-  ventanaMalla, percentilesVisibles, escalaAdaptativa, intervaloIsotermas, nivelesIsotermas,
+  ventanaMalla, percentilesVisibles, intervaloIsotermas, nivelesIsotermas,
+  PALETA_TEMP_AGUA, TEMP_MIN, TEMP_MAX, bandaTemperatura, colorTemperatura, valorColorBandas, degradadoBandas, bandasVisibles, tintaSobre,
   contornos, isotermasVisibles, etiquetasIsotermas, textoGrados, textoExtremo, textoToque, textoIntervalo,
 } from "../assets/js/isotermas.js";
 
@@ -82,35 +84,114 @@ test("ruido de una celda: se descarta (largo mínimo)", () => {
   assert.deepEqual(isotermasVisibles(d, bytes, todo(d), [19]), []);
 });
 
-test("escala adaptativa: percentiles 2-98 del mar VISIBLE, redondeados a medio grado", () => {
+test("percentiles 2-98 del mar VISIBLE (para la leyenda y el intervalo)", () => {
   // Oeste 14 °C, este de 17 a 20 °C; tierra en una franja.
   const { d, bytes } = malla(50, 100, (f, c) => (c < 50 ? 14 : c < 55 ? null : 17 + (3 * (c - 55)) / 44));
   const este = { norte: d.norte, sur: d.sur, oeste: -5 + 5.5, este: d.este };
   const pct = percentilesVisibles(d, bytes, este);
   assert.ok(pct.bajo >= 17 && pct.bajo < 17.25, `bajo ${pct.bajo}`);
   assert.ok(pct.alto > 19.75 && pct.alto <= 20, `alto ${pct.alto}`);
-  assert.deepEqual(escalaAdaptativa(pct), { min: 17, max: 20 });
-  // Toda la malla: el oeste frío entra en la escala.
-  assert.equal(escalaAdaptativa(percentilesVisibles(d, bytes, todo(d))).min, 14);
-  // Sin mar a la vista (solo la franja de tierra): null, se queda la escala anterior.
+  assert.equal(bandasVisibles(pct)[0], 17);
+  assert.ok(bandasVisibles(pct).includes(19));
+  assert.equal(percentilesVisibles(d, bytes, todo(d)).bajo, 14);
+  // Sin mar a la vista (solo la franja de tierra) o fuera de la malla: null.
   assert.equal(percentilesVisibles(d, bytes, { norte: 45, sur: 40, oeste: 0.05, este: 0.4 }), null);
-  // Fuera de la malla.
   assert.equal(percentilesVisibles(d, bytes, { norte: 60, sur: 55, oeste: 0, este: 1 }), null);
+  // 1 % de celdas a 5 °C (ruido junto a la costa) no cuenta.
+  const r = malla(10, 100, (f, c) => (f === 0 && c < 10 ? 5 : 18 + c / 50));
+  assert.equal(percentilesVisibles(r.d, r.bytes, todo(r.d)).bajo >= 18, true);
 });
 
-test("escala adaptativa: un percentil 2 % fuera de rango no estira la escala", () => {
-  // 1 % de celdas a 5 °C (ruido junto a la costa): no deben contar.
-  const { d, bytes } = malla(10, 100, (f, c) => (f === 0 && c < 10 ? 5 : 18 + c / 50));
-  const esc = escalaAdaptativa(percentilesVisibles(d, bytes, todo(d)));
-  assert.equal(esc.min, 18);
+test("escala fija: el mismo valor da el mismo color en dos vistas y dos mares distintos", () => {
+  // Una celda a 18,375 °C rodeada de agua fría (Galicia) y otra rodeada de
+  // agua cálida (Canarias): mismo color en la imagen, venga de donde venga.
+  const frio = malla(10, 10, (f, c) => (f === 5 && c === 5 ? 18.375 : 12 + c * 0.2));
+  const calido = malla(10, 10, (f, c) => (f === 5 && c === 5 ? 18.375 : 24 + f * 0.3));
+  const pixel = ({ d, bytes }) => {
+    const px = pixelesCapa(d, bytes, PALETA_TEMP_AGUA, valorColorBandas);
+    // Mercator re-muestreado: buscar la fila de imagen que cae en la fila 5.
+    for (let r = 0; r < d.filas; r++) {
+      const o = (r * d.columnas + 5) * 4;
+      const hex = "#" + [px[o], px[o + 1], px[o + 2]].map((x) => x.toString(16).padStart(2, "0")).join("").toUpperCase();
+      if (hex === colorTemperatura(18.375)) return hex;
+    }
+    return null;
+  };
+  assert.equal(pixel(frio), "#6CCF49");
+  assert.equal(pixel(calido), "#6CCF49");
+  // Y la vista (percentiles) no entra en el color: dos vistas, mismos colores.
+  const vistaA = bandasVisibles({ bajo: 17.2, alto: 20.9 }), vistaB = bandasVisibles({ bajo: 18.1, alto: 26 });
+  for (const g of vistaA.filter((x) => vistaB.includes(x))) assert.equal(colorTemperatura(g + 0.5), colorTemperatura(g));
+  // index.html ya no reescala la imagen al mover el mapa.
+  const html = readFileSync("index.html", "utf8");
+  assert.doesNotMatch(html, /escalaAdaptativa|urlEscalas|setUrl\(/);
+  assert.doesNotMatch(html, /se ajustan a lo que ves/);
+  assert.match(html, /Cada color es un grado/);
 });
 
-test("escala adaptativa: ancho mínimo de 2 °C con el mar casi uniforme", () => {
-  const esc = escalaAdaptativa({ bajo: 18.25, alto: 18.5 });
-  assert.equal(esc.max - esc.min, 2);
-  assert.ok(esc.min <= 18.25 && esc.max >= 18.5);
-  assert.deepEqual(escalaAdaptativa({ bajo: 16.1, alto: 20.9 }), { min: 16, max: 21 });
-  assert.equal(escalaAdaptativa(null), null);
+test("escala fija: un color por grado de 8 a 30 °C, recortada en los extremos", () => {
+  assert.equal(PALETA_TEMP_AGUA.length, TEMP_MAX - TEMP_MIN + 1);
+  assert.equal(new Set(PALETA_TEMP_AGUA).size, PALETA_TEMP_AGUA.length, "sin colores repetidos");
+  assert.equal(bandaTemperatura(18), 18);
+  assert.equal(bandaTemperatura(18.99), 18);
+  assert.equal(bandaTemperatura(3), 8);
+  assert.equal(bandaTemperatura(33), 30);
+  assert.equal(colorTemperatura(18.0), colorTemperatura(18.875));
+  assert.notEqual(colorTemperatura(18.875), colorTemperatura(19));
+  // valorColorBandas cae justo en la parada (sin mezclar con la vecina).
+  for (let g = TEMP_MIN; g <= TEMP_MAX; g++) {
+    const t = valorColorBandas(g + 0.4) * (PALETA_TEMP_AGUA.length - 1);
+    assert.ok(Math.abs(t - (g - TEMP_MIN)) < 1e-9);
+  }
+  assert.equal((degradadoBandas().match(/#/g) || []).length, PALETA_TEMP_AGUA.length);
+  assert.equal(tintaSobre("#95FE98"), "#10203a");
+  assert.equal(tintaSobre("#3C48B5"), "#ffffff");
+});
+
+// CIEDE2000 y deuteranopía (Machado, Oliveira y Fernandes 2009, severidad 1).
+const lin = (c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+const gam = (c) => (c <= 0.0031308 ? 12.92 * c : 1.055 * c ** (1 / 2.4) - 0.055);
+const rgb = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16) / 255);
+function lab(c) {
+  const [r, g, b] = c.map(lin);
+  const f = (t) => (t > 0.008856 ? Math.cbrt(t) : 7.787 * t + 16 / 116);
+  const X = (0.4124 * r + 0.3576 * g + 0.1805 * b) / 0.95047, Y = 0.2126 * r + 0.7152 * g + 0.0722 * b, Z = (0.0193 * r + 0.1192 * g + 0.9505 * b) / 1.08883;
+  return [116 * f(Y) - 16, 500 * (f(X) - f(Y)), 200 * (f(Y) - f(Z))];
+}
+function de2000([L1, a1, b1], [L2, a2, b2]) {
+  const rad = Math.PI / 180, Cm = (Math.hypot(a1, b1) + Math.hypot(a2, b2)) / 2;
+  const G = 0.5 * (1 - Math.sqrt(Cm ** 7 / (Cm ** 7 + 25 ** 7)));
+  const a1p = a1 * (1 + G), a2p = a2 * (1 + G), C1p = Math.hypot(a1p, b1), C2p = Math.hypot(a2p, b2);
+  const ang = (b, a) => { const x = Math.atan2(b, a) / rad; return x < 0 ? x + 360 : x; };
+  const h1 = ang(b1, a1p), h2 = ang(b2, a2p);
+  let dh = C1p * C2p === 0 ? 0 : h2 - h1; if (dh > 180) dh -= 360; else if (dh < -180) dh += 360;
+  const dL = L2 - L1, dC = C2p - C1p, dH = 2 * Math.sqrt(C1p * C2p) * Math.sin((dh / 2) * rad);
+  const Lm = (L1 + L2) / 2, Cmp = (C1p + C2p) / 2;
+  let hm = h1 + h2; if (C1p * C2p !== 0) { if (Math.abs(h1 - h2) > 180) hm += h1 + h2 < 360 ? 360 : -360; hm /= 2; }
+  const T = 1 - 0.17 * Math.cos((hm - 30) * rad) + 0.24 * Math.cos(2 * hm * rad) + 0.32 * Math.cos((3 * hm + 6) * rad) - 0.2 * Math.cos((4 * hm - 63) * rad);
+  const SL = 1 + (0.015 * (Lm - 50) ** 2) / Math.sqrt(20 + (Lm - 50) ** 2), SC = 1 + 0.045 * Cmp, SH = 1 + 0.015 * Cmp * T;
+  const RT = -2 * Math.sqrt(Cmp ** 7 / (Cmp ** 7 + 25 ** 7)) * Math.sin(60 * Math.exp(-(((hm - 275) / 25) ** 2)) * rad);
+  return Math.sqrt((dL / SL) ** 2 + (dC / SC) ** 2 + (dH / SH) ** 2 + RT * (dC / SC) * (dH / SH));
+}
+const MD = [[0.367322, 0.860646, -0.227968], [0.280085, 0.672501, 0.047413], [-0.01182, 0.04294, 0.968881]];
+const deutan = (c) => { const l = c.map(lin); return MD.map((f) => gam(Math.max(0, Math.min(1, f[0] * l[0] + f[1] * l[1] + f[2] * l[2])))); };
+
+test("contraste entre grados vecinos: ΔE2000 ≥ 10 en visión normal y ≥ 10 con deuteranopía", () => {
+  for (let k = 1; k < PALETA_TEMP_AGUA.length; k++) {
+    const a = rgb(PALETA_TEMP_AGUA[k - 1]), b = rgb(PALETA_TEMP_AGUA[k]);
+    const g = `${TEMP_MIN + k - 1}→${TEMP_MIN + k} °C`;
+    assert.ok(de2000(lab(a), lab(b)) >= 10, `${g} normal ${de2000(lab(a), lab(b)).toFixed(1)}`);
+    assert.ok(de2000(lab(deutan(a)), lab(deutan(b))) >= 10, `${g} deutan ${de2000(lab(deutan(a)), lab(deutan(b))).toFixed(1)}`);
+  }
+});
+
+test("leyenda: grados visibles, mínimo 3 y uno de cada dos si son muchos", () => {
+  assert.deepEqual(bandasVisibles({ bajo: 18.5, alto: 20.875 }), [18, 19, 20]);
+  assert.deepEqual(bandasVisibles({ bajo: 19.5, alto: 19.9 }), [18, 19, 20]);
+  assert.deepEqual(bandasVisibles({ bajo: 16.1, alto: 21 }), [16, 17, 18, 19, 20, 21]);
+  assert.deepEqual(bandasVisibles({ bajo: 14, alto: 26 }), [14, 16, 18, 20, 22, 24, 26]);
+  assert.deepEqual(bandasVisibles({ bajo: 5, alto: 7 }), [8, 9, 10]);
+  assert.deepEqual(bandasVisibles(null), []);
 });
 
 test("intervalo: 1 °C normal, 0,5 °C si el rango es estrecho, 2 °C muy alejado, como mucho 10 líneas", () => {

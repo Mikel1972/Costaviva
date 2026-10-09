@@ -8,19 +8,23 @@
 // (formato en assets/js/capas-mar.js).
 //
 // Dos piezas:
-//   1. Escala de color ADAPTATIVA: la paleta de siempre, estirada al rango
-//      del mar que se ve en pantalla (percentiles 2-98). Con la escala fija
-//      de 10 a 28 °C, el Cantábrico de octubre (17-20 °C) salía todo del
-//      mismo verde. Se eligió adaptativa y no fija por región porque la malla
-//      va de Canarias al Golfo de Bizkaia y el usuario se mueve y hace zoom:
-//      una escala por región obliga a trazar fronteras arbitrarias y deja sin
-//      contraste un zoom a una ría (0,5 °C de diferencia). El precio, que el
-//      mismo color no es la misma temperatura en dos vistas, lo pagan las
-//      isotermas con su número y la leyenda con los extremos reales.
+//   1. Escala de color FIJA por bandas de 1 °C (2026-10-09, Mikel tras ver la
+//      escala adaptativa de la PR #158: "El color debiera ser el mismo"). La
+//      misma temperatura tiene siempre el mismo color, en cualquier zona y
+//      con cualquier zoom, como en los mapas del tiempo: cada grado entero
+//      de 8 a 30 °C tiene el suyo (por debajo, el de 8; por encima, el de
+//      30). Tono de turbo (Google, 2019) de azul a rojo y luminosidad
+//      alterna entre grados contiguos: así 17, 18, 19, 20 y 21 °C se
+//      distinguen a simple vista también con deuteranopía (ΔE2000 entre
+//      grados vecinos ≥ 12 normal y ≥ 11 simulando deutan, Machado 2009;
+//      lo comprueba test/isotermas.test.js). Con la escala continua de
+//      10 a 28 °C de antes, el Cantábrico de octubre salía todo del mismo
+//      verde. La escala adaptativa de la #158 se quitó.
 //   2. ISOTERMAS: marching squares sobre los centros de celda (campo
 //      suavizado 3x3 para que la cuantización de 0,125 °C no dibuje
 //      escaleras), solo lo visible, sin tierra ni celdas sin dato. Etiquetas
-//      "18°" sobre la línea, separadas y como mucho 8 en pantalla.
+//      "18°" sobre la línea, separadas y como mucho 8 en pantalla. El
+//      intervalo sí se adapta a lo visible (0,5, 1 o 2 °C).
 
 import { valorByte } from "./capas-mar.js";
 
@@ -63,21 +67,49 @@ export function percentilesVisibles(d, bytes, lim, pInf = 0.02, pSup = 0.98, min
   return { bajo: buscar(pInf), alto: buscar(pSup), n };
 }
 
-// Extremos de la escala de color a partir de los percentiles: redondeados
-// hacia fuera a medio grado (números limpios en la leyenda) y con un ancho
-// mínimo para no exagerar diferencias de décimas como si fueran frentes.
-export const ANCHO_MINIMO_ESCALA = 2;
-export function escalaAdaptativa(pct, anchoMinimo = ANCHO_MINIMO_ESCALA) {
-  if (!pct) return null;
-  let min = Math.floor(pct.bajo * 2) / 2;
-  let max = Math.ceil(pct.alto * 2) / 2;
-  if (max - min < anchoMinimo) {
-    const centro = (pct.bajo + pct.alto) / 2;
-    min = Math.floor((centro - anchoMinimo / 2) * 2) / 2;
-    max = min + anchoMinimo;
-    if (max < pct.alto) { max = Math.ceil(pct.alto * 2) / 2; min = max - anchoMinimo; }
-  }
-  return { min, max };
+// Paleta fija: un color por grado entero, de 8 a 30 °C (23 bandas).
+export const TEMP_MIN = 8;
+export const TEMP_MAX = 30;
+export const PALETA_TEMP_AGUA = [
+  "#3C48B5", "#7A9DF7", "#2C74CC", "#6BC1F5", "#1F9BB8", "#67DFDA", "#25BA92", "#76F4B8", // 8-15
+  "#41CC6A", "#95FE98", "#6CCF49", "#BEFA80", "#9DC333", "#E5E971", "#C4A925", "#FFCE68", // 16-23
+  "#D1831C", "#FFAA62", "#CF5815", "#F2855B", "#AF2E0D", "#D16553", "#871102", // 24-30
+];
+// Grado entero (banda) de un valor, recortado a 8-30.
+export function bandaTemperatura(v) {
+  return Math.min(TEMP_MAX, Math.max(TEMP_MIN, Math.floor(v + 1e-9)));
+}
+// Color "#RRGGBB" de un valor: solo depende del valor, nunca de la vista.
+export function colorTemperatura(v) {
+  return PALETA_TEMP_AGUA[bandaTemperatura(v) - TEMP_MIN];
+}
+// Para pixelesCapa/colorPaleta de capas-mar.js con PALETA_TEMP_AGUA como
+// paradas: cae justo en la parada de la banda (sin mezclar con la vecina).
+export function valorColorBandas(v) {
+  return (bandaTemperatura(v) - TEMP_MIN) / (PALETA_TEMP_AGUA.length - 1);
+}
+// Degradado CSS de bandas duras para la barra de la leyenda (8 a 30 °C).
+export function degradadoBandas() {
+  const n = PALETA_TEMP_AGUA.length;
+  const pc = (k) => `${((100 * k) / n).toFixed(2)}%`;
+  return `linear-gradient(90deg, ${PALETA_TEMP_AGUA.map((c, k) => `${c} ${pc(k)} ${pc(k + 1)}`).join(", ")})`;
+}
+// Grados enteros que se ven (de los percentiles 2-98 del mar visible), para
+// los números de la leyenda: como mínimo 3 y como mucho `max` (si hay más,
+// uno de cada dos). [] sin mar a la vista.
+export function bandasVisibles(pct, max = 10) {
+  if (!pct) return [];
+  let a = bandaTemperatura(pct.bajo), b = bandaTemperatura(pct.alto);
+  while (b - a < 2) { if (a > TEMP_MIN) a--; if (b - a < 2 && b < TEMP_MAX) b++; }
+  const paso = b - a + 1 > max ? 2 : 1;
+  const out = [];
+  for (let g = a; g <= b; g += paso) out.push(g);
+  return out;
+}
+// Texto (blanco u oscuro) legible sobre el color de una banda.
+export function tintaSobre(hex) {
+  const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b > 0.5 ? "#10203a" : "#ffffff";
 }
 
 // Intervalo entre isotermas (°C): 2 con el zoom muy alejado (5, el mínimo del mapa), 0,5 si el mar

@@ -1018,18 +1018,21 @@ atribución; nunca se inventa un dato (lo que falta sale `null` + `aviso`).
   forzada: `private, no-store`.
 - Tests: `test/fuentes-fase2.test.js` (en `tests.yml`).
 
-## 🌡 T. agua: escala adaptativa e isotermas (2026-10-09, captura de Mikel)
+## 🌡 T. agua: escala fija por grados e isotermas (2026-10-09, capturas de Mikel)
 
-Con la escala fija de 10 a 28 °C el Cantábrico (17-21 °C) salía todo del mismo
-verde. Ahora, sin IA ni peticiones nuevas (mismo `capas/temperatura-agua.json`):
+Con la escala continua de 10 a 28 °C el Cantábrico (17-21 °C) salía todo del
+mismo verde. La PR #158 estiró la paleta al mar visible; Mikel la rechazó ("El
+color debiera ser el mismo"): **la misma temperatura, siempre el mismo color,
+en cualquier zona y zoom. No volver a proponer una escala adaptativa.** Ahora,
+sin IA ni peticiones nuevas (mismo `capas/temperatura-agua.json`):
 
-- **Escala adaptativa**: la paleta de siempre estirada a los percentiles 2-98
-  del mar visible, redondeados a medio grado y con 2 °C de ancho mínimo. La
-  leyenda muestra esos extremos reales ("18,5 °C … 21 °C") y cambia en
-  `moveend`. Elegida frente a una escala fija por región porque la malla va de
-  Canarias a Bizkaia y el usuario hace zoom; el precio (mismo color ≠ misma
-  temperatura en dos vistas) lo pagan las isotermas con número. El ⓘ y la
-  tarjeta lo dicen en una frase.
+- **Escala fija por bandas de 1 °C**, de 8 a 30 °C (`PALETA_TEMP_AGUA` en
+  `assets/js/isotermas.js`): tono de turbo de azul a rojo y luminosidad
+  alterna entre grados vecinos. ΔE2000 entre vecinos ≥ 12 en visión normal y
+  ≥ 11 simulando deuteranopía (lo comprueba el test, umbral 10). Leyenda:
+  barra fija 8-30 °C con el tramo visible recuadrado y una casilla por grado
+  visible con su número. Opacidad 0,8. Frase del ⓘ y de la tarjeta: "Cada
+  color es un grado…; las líneas marcan el grado exacto".
 - **Isotermas**: marching squares sobre el campo suavizado 3x3, solo lo
   visible, sin tierra ni celdas sin dato; cada 1 °C, 0,5 °C si el rango
   visible es < 2,5 °C, 2 °C a zoom 5; como mucho 10 niveles. Etiquetas "18°"
@@ -1037,9 +1040,8 @@ verde. Ahora, sin IA ni peticiones nuevas (mismo `capas/temperatura-agua.json`):
   móvil (pane `isotermasEtiquetas`, z 450, debajo de los spots).
 - Al tocar: "18,4 °C en superficie" (coma decimal).
 - Código: `assets/js/isotermas.js` (puro, `test/isotermas.test.js`) y
-  `pintarIsotermas()` en `index.html`. Coste medido en Chromium con el fichero
-  real: ~3 ms por movimiento (más ~10-20 ms la primera vez que aparece una
-  escala nueva, que repinta la imagen; caché de 12 escalas).
+  `pintarIsotermas()`/`leyendaBandas()` en `index.html`. La imagen se pinta
+  una vez; mover el mapa cuesta ~3 ms en Chromium con el fichero real.
 
 ## Informe diario — Search Console real, conteo de cámaras, robot de especies (2026-09-20)
 
