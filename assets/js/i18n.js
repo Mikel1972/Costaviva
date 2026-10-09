@@ -224,7 +224,7 @@
   // línea en las páginas públicas (functions/_lib/seo/estilos.js) y el
   // selector solo existe en la app.
   var CSS_SELECTOR = ".i18n-selector{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px;padding:8px 12px 6px;border-top:1px solid var(--linea,#EBD9CC);font-size:13px;font-weight:600;color:var(--tinta-2,#5A4E6B)}"
-    + ".i18n-selector__opciones{display:flex;gap:4px}"
+    + ".i18n-selector__etq{white-space:nowrap}.i18n-selector__opciones{display:flex;gap:4px}"
     + ".i18n-selector .i18n-selector__opcion{display:inline-flex;width:auto;padding:6px 10px;font-size:13px;font-weight:700;border:1px solid var(--linea,#EBD9CC);border-radius:999px;background:none;color:var(--tinta,#1A1533);cursor:pointer}"
     + ".i18n-selector .i18n-selector__opcion[aria-pressed=\"true\"]{background:var(--mar,#0B1E3F);border-color:var(--mar,#0B1E3F);color:var(--blanco,#fff)}";
   function estiloSelector() {
