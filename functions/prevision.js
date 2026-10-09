@@ -925,28 +925,34 @@ async function fetchJSONPost(url, body) {
   return resp.json();
 }
 
-async function datosBoyaNazare() {
-  const ahora = new Date();
-  const dtime = `${ahora.toISOString().slice(0, 10)} ${String(ahora.getUTCHours()).padStart(2, "0")}:${String(ahora.getUTCMinutes()).padStart(2, "0")}`;
-  const url = "https://monican.hidrografico.pt/json/boia.graph.php";
-  const comunes = "id_est=2&id_eqp=2&gmt=GMT&dtz=Europe%2FLisbon&dbn=monican&per=1";
-  const cuerpo = (par) => `${comunes}&par=${par}&dtime=${encodeURIComponent(dtime)}`;
+// ZONA HORARIA DE SDATA (comprobado en real el 2026-10-09 a las 20:45 UTC): el
+// visor devuelve las horas en la zona de `dtz`, sin sufijo. Con
+// dtz=Europe/Lisbon la última era "2026-10-09 21:00" (hora de Lisboa, = 20:00
+// UTC); con dtz=UTC, "20:00"; con dtz=Europe/Madrid, "22:00" (mismo dato,
+// misma temperatura). La web dice que tablas y gráficos van en UTC, pero eso
+// es con el dtz que pone ella. Hasta este día se pedía Europe/Lisbon y se
+// pasaba la hora sin zona al navegador, que la leía en la suya: en España,
+// una hora antes de la real. Ahora se pide en UTC y se devuelve con "Z".
+export const CONSULTA_NAZARE = "id_est=2&id_eqp=2&gmt=GMT&dtz=UTC&dbn=monican&per=1";
 
-  const [alturas, periodos, direcciones, temps] = await Promise.all([
-    fetchJSONPost(url, cuerpo(1)),
-    fetchJSONPost(url, cuerpo(2)),
-    fetchJSONPost(url, cuerpo(3)),
-    fetchJSONPost(url, cuerpo(4)),
-  ]);
+// "2026-10-09 20:00" (UTC, por dtz=UTC) -> "2026-10-09T20:00:00Z", o null.
+export function sdataAUtcISO(sdata) {
+  const m = /^(\d{4}-\d{2}-\d{2})[ T](\d{2}):(\d{2})/.exec(String(sdata || ""));
+  return m ? `${m[1]}T${m[2]}:${m[3]}:00Z` : null;
+}
 
+// Las cuatro series del visor -> boya del mapa (misma forma que las de
+// Copernicus). Misma edad máxima que ellas: una lectura vieja no se enseña.
+export function boyaDesdeNazare(alturas, periodos, direcciones, temps, ahora = Date.now()) {
   const ultimoValido = (serie, campo) => {
-    for (let i = serie.length - 1; i >= 0; i--) {
+    for (let i = (serie || []).length - 1; i >= 0; i--) {
       // El visor de Nazaré manda los números como string en el JSON — de
       // ahí el Number() antes de comprobar si es válido (si no, un "1.99"
       // pasaba el filtro pero luego rompía el .toFixed() del cliente, que
       // sí espera number).
       const n = Number(serie[i][campo]);
-      if (Number.isFinite(n)) return { valor: n, sdata: serie[i].SDATA };
+      const hora = sdataAUtcISO(serie[i].SDATA);
+      if (Number.isFinite(n) && hora) return { valor: n, hora };
     }
     return null;
   };
@@ -956,18 +962,38 @@ async function datosBoyaNazare() {
   const dir = ultimoValido(direcciones, "THTP");
   const temp = ultimoValido(temps, "TEMP");
   if (!hs) throw new Error("boya de Nazaré sin datos recientes");
+  if (ahora - Date.parse(hs.hora) > BOYA_MAX_EDAD_HORAS * 3600e3) throw new Error(`boya de Nazaré sin datos de las últimas ${BOYA_MAX_EDAD_HORAS} h`);
+  // Periodo, dirección o temperatura de más de 1 h antes o después que la
+  // altura: no se mezclan en la misma lectura.
+  const misma = (x) => (x && Math.abs(Date.parse(x.hora) - Date.parse(hs.hora)) <= 3600e3 ? x.valor : null);
 
   return {
     codigo: "PT-nazare-costeira",
     nombre: "Nazaré (costeira, PT)",
     lat: 39.560,
     lon: -9.210,
-    actualizado: hs.sdata,
+    actualizado: hs.hora,
     alturaSignificativa: hs.valor,
-    periodoPico: tp ? tp.valor : null,
-    dirOla: dir ? `${rumboDesdeGrados(dir.valor)} ${Math.round(dir.valor)}°` : null,
-    tempAgua: temp ? temp.valor : null,
+    periodoPico: misma(tp),
+    dirOla: misma(dir) !== null ? `${rumboDesdeGrados(dir.valor)} ${Math.round(dir.valor)}°` : null,
+    tempAgua: misma(temp),
   };
+}
+
+async function datosBoyaNazare() {
+  const ahora = new Date();
+  // dtime en UTC, como dtz.
+  const dtime = `${ahora.toISOString().slice(0, 10)} ${String(ahora.getUTCHours()).padStart(2, "0")}:${String(ahora.getUTCMinutes()).padStart(2, "0")}`;
+  const url = "https://monican.hidrografico.pt/json/boia.graph.php";
+  const cuerpo = (par) => `${CONSULTA_NAZARE}&par=${par}&dtime=${encodeURIComponent(dtime)}`;
+
+  const [alturas, periodos, direcciones, temps] = await Promise.all([
+    fetchJSONPost(url, cuerpo(1)),
+    fetchJSONPost(url, cuerpo(2)),
+    fetchJSONPost(url, cuerpo(3)),
+    fetchJSONPost(url, cuerpo(4)),
+  ]);
+  return boyaDesdeNazare(alturas, periodos, direcciones, temps, ahora.getTime());
 }
 
 // Luna: movida a functions/luna.js (endpoint propio /luna?lat=&lon=) — su

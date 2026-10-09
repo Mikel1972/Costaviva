@@ -28,7 +28,7 @@
 
 import { faseLunar } from "./ventana-actividad.js";
 import { t, I18n } from "./i18n-modulo.js";
-import { desfaseEstandarMinutos, ZONA_POR_DEFECTO } from "./regiones.js";
+import { desfaseEstandarMinutos, msDeEtiqueta, ZONA_POR_DEFECTO } from "./regiones.js";
 
 // Open-Meteo Forecast/Marine sirven como mucho ~92 días hacia atrás
 // (past_days ≤ 92) y 16 hacia delante. Margen de 2 días por la zona horaria.
@@ -190,6 +190,20 @@ export function boyaMasCercana(boyas, lat, lon) {
   if (!validas.length) return null;
   const d = (b) => Math.hypot(b.lat - lat, b.lon - lon);
   return validas.reduce((mejor, b) => (d(b) < d(mejor) ? b : mejor));
+}
+
+// ¿Es la lectura de la boya de la hora de la salida? (2026-10-09) La boya de
+// /prevision es la ÚLTIMA lectura; antes se pegaba a la hora de la salida
+// fuera cual fuera su hora (una salida de las 07:00 apuntada a las 20:00 se
+// guardaba con la boya de las 20:00). `etiqueta`: hora de la salida en la
+// serie ("AAAA-MM-DDTHH:00", hora local de `zona`); `boya.actualizado`, ISO
+// con zona. Sin hora conocida, no vale.
+export const MARGEN_BOYA_HORAS = 2;
+export function boyaDeLaHora(boya, etiqueta, zona = ZONA_POR_DEFECTO, margenHoras = MARGEN_BOYA_HORAS) {
+  if (!boya || !etiqueta) return false;
+  const t = Date.parse(boya.actualizado);
+  if (!Number.isFinite(t) || !/(Z|[+-]\d{2}:?\d{2})$/.test(String(boya.actualizado))) return false;
+  return Math.abs(t - msDeEtiqueta(etiqueta, zona)) <= margenHoras * 3600e3;
 }
 
 // Pone la ola y la temperatura medidas por la boya en la hora i de la serie
