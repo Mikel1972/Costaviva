@@ -88,3 +88,10 @@ except Exception:
     traceback.print_exc()
 np.savez_compressed(os.path.join(salida, "frentes-diag.npz"), **out)
 print("claves:", list(out))
+import base64
+raw = open(os.path.join(salida, "frentes-diag.npz"), "rb").read()
+b = base64.b64encode(raw).decode("ascii")
+print("NPZ-INICIO")
+for i in range(0, len(b), 60000):
+    print("NPZ " + b[i:i + 60000])
+print("NPZ-FIN")
