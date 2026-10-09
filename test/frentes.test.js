@@ -223,7 +223,9 @@ test("frentes: Python usa la máscara de nubes del producto, corrientes sin mare
   assert.match(py, /cmems_mod_ibi_phy-cur_anfc_detided-0\.027deg_P1D-m/);
   assert.match(py, /"uo_detided", "vo_detided"/);
   assert.match(py, /"umbral_chl_log10_km": 0\.03/);
-  assert.match(py, /"umbral_temp_c_km": 0\.05/);
+  assert.match(py, /"umbral_temp_c_km": 0\.08/);
+  assert.match(py, /"dias_clorofila": 5/);
+  assert.match(py, /"min_celdas_frente": 3/);
   assert.match(py, /"umbral_convergencia_f": 0\.1/);
   assert.match(py, /"costa_km": 5\.0/);
   assert.match(py, /Belkin y O'Reilly 2009/);
@@ -244,5 +246,8 @@ test("frentes: index.html tiene el botón, la leyenda y los textos corregidos de
   assert.match(html, /map\.off\("moveend", capaMarActiva\.alMover\)/, "al apagar se deja de redibujar flechas");
   // Ninguna cifra de umbral para el usuario.
   const def = html.slice(html.indexOf("  frentes: {"), html.indexOf("const COLORES_FRENTES"));
-  assert.doesNotMatch(def, /0,03|0,05|log10|°C\/km/);
+  assert.doesNotMatch(def, /0,03|0,05|0,08|log10|°C\/km/);
+  // Clorofila de varios días: la tarjeta dice de qué días es.
+  assert.match(def, /d\.fecha_clorofila_desde !== d\.fecha_clorofila/);
+  assert.match(def, /lo último sin nubes/);
 });
