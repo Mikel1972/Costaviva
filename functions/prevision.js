@@ -23,9 +23,17 @@ import { leerInstantanea } from "./_lib/instantaneas.js";
 // espuma que ven las webcams, y corrección de las próximas horas.
 import { aplicarCamarasASpots, aplicarReferenciasCamara, filasLecturas, VIGENCIA_LECTURA_HORAS } from "./_lib/oleaje-camaras.js";
 // Interruptor de regiones: los spots de NZ existen pero no entran hasta activarla.
-import { spotsRegionesActivas } from "./_lib/regiones-activas.js";
+import { spotsRegionesActivas, spotsDeRegion } from "./_lib/regiones-activas.js";
+// /prevision por región y vista previa de las regiones ocultas (fase 2 de NZ).
+import { autorizarRegion, noEncontrado, regionDeUrl } from "./_lib/vista-previa.js";
+import { cargarDatosLinz, completarSpotNZ, ATRIBUCION_LINZ, AVISO_LINZ } from "./_lib/nz/prevision-nz.js";
 
-export const SPOTS = [
+// Spots de España y Portugal (región "es"): los únicos que pide /prevision
+// sin parámetro. Cada región nueva pide los suyos con ?region=<id> y su
+// propia caché (fase 2 de NZ, 2026-10-09): si cada centro de datos de
+// Cloudflare pidiera todos los spots de todas las regiones, la cuota de
+// Open-Meteo se iría a ~1,2 M/mes (ver CLAUDE.md, "Cuota de Open-Meteo").
+export const SPOTS_ES = [
   { slug: "lekeitio", nombre: "Lekeitio", lat: 43.3647, lon: -2.5089 },
   { slug: "mundaka", nombre: "Mundaka", lat: 43.4047, lon: -2.6989 },
   { slug: "bakio", nombre: "Bakio", lat: 43.4297, lon: -2.8103 },
@@ -158,11 +166,13 @@ export const SPOTS = [
   { slug: "calamillor", nombre: "Cala Millor (Mallorca)", lat: 39.593, lon: 3.383 },
   { slug: "sonbou", nombre: "Son Bou (Menorca)", lat: 39.917, lon: 4.083 },
   { slug: "muro", nombre: "Platja de Muro (Mallorca)", lat: 39.762, lon: 3.108 },
-
-  // Regiones nuevas (Nueva Zelanda, 2026-10-09): solo si están en
-  // REGIONES_ACTIVAS (functions/_lib/regiones-activas.js). Hoy, ninguna.
-  ...spotsRegionesActivas(),
 ];
+
+// Todos los spots publicados: los de España más los de las regiones nuevas
+// que estén en REGIONES_ACTIVAS (functions/_lib/regiones-activas.js; hoy,
+// ninguna). Es lo que leen /spots, el sitemap, /registrar-presion y los
+// scripts. /prevision NO lo usa entero: pide región a región.
+export const SPOTS = [...SPOTS_ES, ...spotsRegionesActivas()];
 
 // Bloques de 3h que queremos mostrar, igual que el formato anterior
 // (Todosurf), para no tener que tocar el resto de la app.
@@ -683,7 +693,11 @@ export async function pedirPorZona(spots, api, resto, opciones) {
   return salida;
 }
 
-async function previsionTodosSpots(spots, env = {}) {
+// Variables de Open-Meteo Marine. En NZ sin sea_level_height_msl: la marea
+// sale de LINZ (functions/_lib/nz/prevision-nz.js).
+const VARIABLES_MARINE = "wave_height,wave_period,wave_direction,sea_surface_temperature,ocean_current_velocity,ocean_current_direction";
+
+async function previsionTodosSpots(spots, env = {}, { mareaOpenMeteo = true } = {}) {
   const [marinos, vientos, historicoPresion, coeficientes] = await Promise.all([
     // Host gratuito o comercial (con key) según OPEN_METEO_API_KEY, ver
     // functions/_lib/open-meteo.js. Los errores salen sin la key: van al
@@ -691,7 +705,7 @@ async function previsionTodosSpots(spots, env = {}) {
     pedirPorZona(
       spots,
       "marine",
-      "forecast_days=2&hourly=wave_height,wave_period,wave_direction,sea_surface_temperature,ocean_current_velocity,ocean_current_direction,sea_level_height_msl",
+      `forecast_days=2&hourly=${VARIABLES_MARINE}${mareaOpenMeteo ? ",sea_level_height_msl" : ""}`,
       { env }
     ),
     pedirPorZona(
@@ -701,7 +715,7 @@ async function previsionTodosSpots(spots, env = {}) {
       { env }
     ),
     historicoPresionPorSpot(),
-    coeficienteMareaCache(),
+    mareaOpenMeteo ? coeficienteMareaCache() : Promise.resolve({}),
   ]);
   const fuentes = [...new Set([...fuentesUsadas(marinos), ...fuentesUsadas(vientos)])];
   const soloOpenMeteo = fuentes.length === 1 && fuentes[0] === "openmeteo";
@@ -1222,8 +1236,77 @@ async function metaRayos() {
   return { actualizado: bloques[bloques.length - 1].fecha };
 }
 
+// /prevision?region=nz (fase 2 de NZ): solo los spots de NZ, con la marea de
+// LINZ y el enlace a la normativa de su área. Sin boyas, ríos, estaciones,
+// cámaras ni turbidez (en NZ aún no hay fuentes con licencia). Con
+// ?lista=1, solo la lista de spots (el diario la usa para su desplegable),
+// sin gastar Open-Meteo.
+export function listaSpotsRegion(spots) {
+  return spots.map((s) => ({
+    slug: s.slug, nombre: s.nombre, lat: s.lat, lon: s.lon, pais: s.pais, region: s.region,
+    zona: zonaDeSpot(s), zonaGeografica: s.zona, modalidades: s.modalidades,
+  }));
+}
+
+export async function previsionRegionNZ(spots, env, origen, ahora = Date.now()) {
+  const [resultados, linz] = await Promise.all([
+    previsionTodosSpots(spots, env, { mareaOpenMeteo: false }).catch((e) =>
+      spots.map((spot) => ({ slug: spot.slug, nombre: spot.nombre, lat: spot.lat, lon: spot.lon, error: String(e) }))
+    ),
+    cargarDatosLinz(env, origen, ahora),
+  ]);
+  const porSlug = new Map(spots.map((s) => [s.slug, s]));
+  const conMarea = resultados.map((r) => completarSpotNZ(r, porSlug.get(r.slug), linz, ahora));
+  return {
+    region: "nz",
+    spots: conMarea,
+    fuentesDatos: [...new Set(conMarea.flatMap((r) => r.fuentesDatos || []))],
+    atribuciones: { marea: ATRIBUCION_LINZ, avisoMarea: AVISO_LINZ, mareaDisponible: Boolean(linz.catalogo && linz.anios.length) },
+    boyas: [],
+  };
+}
+
+async function responderRegion(context, region) {
+  const { request, env } = context;
+  const auth = await autorizarRegion(request, env, region);
+  if (!auth.ok) return noEncontrado();
+  const url = new URL(request.url);
+  const spots = spotsDeRegion(region);
+  const lista = url.searchParams.get("lista") === "1";
+  // La vista previa no se guarda en cachés compartidas del navegador ni de
+  // proxies; sí en la Cache API, con una clave sin la clave secreta y
+  // separada de la pública (solo se consulta tras autorizar, arriba).
+  const cacheControl = auth.publica ? "public, max-age=1800" : "private, no-store";
+  if (lista) {
+    return new Response(JSON.stringify({ region, spots: listaSpotsRegion(spots) }), {
+      headers: { "content-type": "application/json; charset=utf-8", "cache-control": cacheControl },
+    });
+  }
+  const cache = caches.default;
+  const cacheKey = new Request(`${url.origin}/prevision?region=${region}${auth.publica ? "" : "&vista-previa=1"}`);
+  const cacheada = await cache.match(cacheKey);
+  if (cacheada) {
+    return new Response(cacheada.body, { headers: { "content-type": "application/json; charset=utf-8", "cache-control": cacheControl } });
+  }
+  const datos = await previsionRegionNZ(spots, env, url.origin);
+  const cuerpo = JSON.stringify(datos, null, 2);
+  const conError = datos.spots.filter((s) => s.error).length;
+  if (conError < datos.spots.length / 2) {
+    context.waitUntil(cache.put(cacheKey, new Response(cuerpo, {
+      headers: { "content-type": "application/json; charset=utf-8", "cache-control": "public, max-age=1800" },
+    })));
+  }
+  return new Response(cuerpo, { headers: { "content-type": "application/json; charset=utf-8", "cache-control": cacheControl } });
+}
+
 export async function onRequestGet(context) {
   const { request } = context;
+
+  // Región (fase 2 de NZ, 2026-10-09). Sin parámetro (o ?region=es), España
+  // exactamente como antes, con la misma clave de caché.
+  const region = regionDeUrl(new URL(request.url));
+  if (region === null) return noEncontrado();
+  if (region !== "es") return responderRegion(context, region);
 
   // Caché real en el edge de Cloudflare (2026-09-14) — encontrado en real
   // que la cabecera "cache-control" de más abajo, por sí sola, NO hace
@@ -1239,8 +1322,8 @@ export async function onRequestGet(context) {
   if (cacheada) return cacheada;
 
   const [resultadosModelo, boyasEspana, boyaNazare, rayosNacional, caudales, estacionesAemet, turbidez, camaras, monteRios, lecturasOleaje] = await Promise.all([
-    previsionTodosSpots(SPOTS, context.env).catch((e) =>
-      SPOTS.map((spot) => ({ slug: spot.slug, nombre: spot.nombre, error: String(e) }))
+    previsionTodosSpots(SPOTS_ES, context.env).catch((e) =>
+      SPOTS_ES.map((spot) => ({ slug: spot.slug, nombre: spot.nombre, error: String(e) }))
     ),
     datosBoyasCopernicus(context.env).then(
       (inst) => BOYAS.map((b) => { try { return boyaDesdeCopernicus(b, inst); } catch (e) { return { ...b, error: String(e) }; } }),
