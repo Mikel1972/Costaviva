@@ -42,7 +42,7 @@ import { tmpdir } from "node:os";
 
 import { resumen, logLoss, brier, auc, bootstrapMejora, histograma, psi } from "./metricas.mjs";
 import { casosDesdeDiario, particionTemporal, aciertoEspecie } from "./casos.mjs";
-import { probTerminos, recalcular, aplicarRetador, validarRetador } from "./rejugar.mjs";
+import { probTerminos, recalcular, aplicarRetador, validarRetador, terminosFrentes } from "./rejugar.mjs";
 import {
   ajustarMultiplicadores, estadisticasUnidades, ablacion, cambiosSeguros, validarEnPrueba,
   CONFIG_POR_DEFECTO, B0,
@@ -53,7 +53,7 @@ import { reglasSinUso, estacionalidad, etiquetarCamaras, especializacionRegional
 import { propuesta, fusionar, tasasAceptacion, reglasBloqueadas, validarPropuesta } from "./propuestas.mjs";
 import { cambiarConfianzas } from "./especies-texto.mjs";
 import { indiceSpot } from "../../assets/js/ventana-actividad.js";
-import { evaluarSombra, publicarSombra, VARIABLES_SOMBRA, RADIO_KM, decodificarHistorico, rasgosCaso } from "./frentes-sombra.mjs";
+import { evaluarSombra, publicarSombra, VARIABLES_SOMBRA, RADIO_KM, decodificarHistorico, rasgosCaso, contextosFrentesCasos } from "./frentes-sombra.mjs";
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 export const RUTAS = {
@@ -94,7 +94,10 @@ export function prepararCasos(casosBase, { datos, series = new Map(), extras = {
     let ind = serie ? recalcular(datos, c, serie, extras) : null;
     let fuente = "recalculado";
     if (!ind && c.guardado?.terminos?.length) {
-      ind = { p: c.guardado.p, especie: c.guardado.especie, terminos: c.guardado.terminos, ranking: c.guardado.ranking };
+      // El diario no lee 〰 Frentes: sus reglas se añaden con la capa del día.
+      const ya = new Set(c.guardado.terminos.map((t) => t.u));
+      const extra = terminosFrentes(datos, c, extras.frentesPorRef?.get(c.ref), c.guardado.especie).filter((t) => !ya.has(t.u));
+      ind = { p: c.guardado.p, especie: c.guardado.especie, terminos: [...c.guardado.terminos, ...extra], ranking: c.guardado.ranking };
       fuente = "guardado";
     }
     if (!ind) { fuentes.sin_indice++; continue; }
@@ -751,6 +754,9 @@ async function main() {
       const { mapa, aviso } = await leerHistoricoFrentes(casosBase.map((c) => c.fecha), { decodificar: decodificarHistorico });
       avisoFrentes = aviso;
       for (const c of casosBase) { const r = rasgosCaso(mapa.get(c.fecha), c); if (r) rasgosFrentes.set(c.ref, r); }
+      // Contexto de las reglas de frentes del índice (las mismas variables que
+      // en vivo): el índice de cada salida se rejuega con la capa de su día.
+      extras.frentesPorRef = contextosFrentesCasos(casosBase, mapa);
     } catch (e) { avisoFrentes = `capa de frentes: ${e.message}`; }
   }
 

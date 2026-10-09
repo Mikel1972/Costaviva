@@ -127,5 +127,87 @@ class Salida(unittest.TestCase):
         self.assertEqual(dc.historico_frentes(j, u, v)["fecha_clorofila_desde"], "2026-10-06")
 
 
+class _Campo:
+    """Mínimo de un DataArray de xarray para elegir_clorofila (sin xarray)."""
+    dims = ()
+
+    def __init__(self, por_dia, lats, lons):
+        self.por_dia, self.lats, self.lons = por_dia, lats, lons
+        self.values = None
+
+    def sel(self, time):
+        c = _Campo(self.por_dia, self.lats, self.lons)
+        c.values = self.por_dia[str(np.datetime_as_string(time, unit="D"))]
+        return c
+
+    def load(self):
+        return self
+
+    def __getitem__(self, k):
+        return type("V", (), {"values": self.lats if k == "latitude" else self.lons})
+
+
+class _DS(dict):
+    pass
+
+
+def _ds(dias, vacios=()):
+    """Clorofila sintética de varios días (vacío = casi todo NaN) con flags."""
+    lats, lons = LATS, np.arange(C) * P
+    chl, fl = {}, {}
+    for k, d in enumerate(dias):
+        v = mar(0.3 + 0.1 * k)
+        if d in vacios:
+            v[:] = np.nan
+        chl[d], fl[d] = v, np.zeros((F, C))
+    ds = _DS(CHL=_Campo(chl, lats, lons), flags=_Campo(fl, lats, lons))
+    ds["time"] = type("T", (), {"values": np.array([np.datetime64(f"{d}T00:00:00") for d in dias])})
+    return ds
+
+
+class Historico(unittest.TestCase):
+    """El histórico hacia atrás (--desde/--hasta) elige los días de
+    clorofila igual que la pasada diaria de ese día: el día D (o el último con
+    datos hasta 5 días antes) y los previos del compuesto, nunca días
+    posteriores a D."""
+
+    DIAS = ["2026-03-%02d" % d for d in range(1, 16)]
+
+    def diaria(self, ds, d):
+        # La pasada diaria del día D solo veía hasta D.
+        t = ds["time"].values
+        return dc.elegir_clorofila(ds, t[t <= np.datetime64(f"{d}T00:00:00")][::-1], True)
+
+    def historico(self, ds, d):
+        b = dc.BloqueReal.__new__(dc.BloqueReal)
+        b.chl, b.con_flags = ds, True
+        return b.clorofila(d)
+
+    def test_igual_que_la_pasada_diaria(self):
+        ds = _ds(self.DIAS, vacios={"2026-03-10"})
+        for d in ("2026-03-08", "2026-03-10", "2026-03-12"):
+            h, q = self.historico(ds, d), self.diaria(ds, d)
+            self.assertEqual(h[0], q[0], d)
+            self.assertEqual([p[0] for p in h[5]], [p[0] for p in q[5]], d)
+        h = self.historico(ds, "2026-03-12")
+        self.assertEqual(h[0], "2026-03-12")
+        self.assertEqual([p[0] for p in h[5]], ["2026-03-11", "2026-03-09", "2026-03-08"])
+        # Día vacío: el último con datos, y nunca uno posterior.
+        h = self.historico(ds, "2026-03-10")
+        self.assertEqual(h[0], "2026-03-09")
+        self.assertTrue(all(p[0] < "2026-03-10" for p in h[5]))
+        self.assertEqual(len(h[5]) + 1, dc.FRENTES["dias_clorofila"])
+
+    def test_construir_frentes_es_el_calculo_de_la_pasada_diaria(self):
+        hoy = dc.prueba_dia("clorofila", "2026-03-05", 4)
+        j, h, est = dc.construir_frentes(hoy, dc.prueba_dia("temperatura-agua", "2026-03-05", 4),
+                                         dc.prueba_dia("corrientes", "2026-03-05", 4), True)
+        self.assertEqual(j["fecha_clorofila"], "2026-03-05")
+        self.assertEqual(j["fecha_clorofila_desde"], "2026-03-04" if est["dias_clorofila"] > 1 else "2026-03-05")
+        self.assertEqual(h["fecha_clorofila_desde"], j["fecha_clorofila_desde"])
+        self.assertEqual(j["umbrales"]["umbral_temp_c_km"], dc.FRENTES["umbral_temp_c_km"])
+        self.assertIn("min_celdas_frente", j["umbrales"])
+
+
 if __name__ == "__main__":
     unittest.main()
