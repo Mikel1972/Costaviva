@@ -365,7 +365,10 @@ document.getElementById("btnInvitarAmigo").addEventListener("click", async () =>
 // ---------------------------------------------------------------------------
 // Copia reducida (slug, nombre, lat, lon) de SPOTS de index.html/prevision.js
 // — solo para rellenar el <select> de spot y resolver lat/lon al guardar una
-// salida. Si se añaden spots nuevos allí, replicar aquí también.
+// salida. Si se añaden spots nuevos allí, replicar aquí también
+// (test/listas-spots.test.js falla si las tres listas se separan). Los de
+// regiones nuevas (NZ) NO van aquí: llegan del servidor en la vista previa
+// (cargarSpotsRegionPrevia, más abajo) o cuando la región esté activa.
 // ---------------------------------------------------------------------------
 const SPOTS = [
   ["lekeitio", "Lekeitio", 43.3647, -2.5089],
@@ -374,6 +377,19 @@ const SPOTS = [
   ["sopelana", "Sopelana", 43.3878, -2.9975],
   ["plentzia", "Plentzia", 43.4053, -2.9436],
   ["getxo", "Getxo (Ereaga)", 43.3489, -3.0119],
+  // Gipuzkoa: estaban en prevision.js e index.html desde el 2026-09-14 pero
+  // faltaban aquí (no se podían elegir en el diario). Lo vigila
+  // test/listas-spots.test.js desde el 2026-10-09.
+  ["ondarroa", "Ondarroa", 43.3225, -2.4200],
+  ["mutriku", "Mutriku", 43.3167, -2.3833],
+  ["deba", "Deba", 43.2917, -2.3550],
+  ["zumaia", "Zumaia", 43.2967, -2.2617],
+  ["getaria", "Getaria", 43.3050, -2.2017],
+  ["zarautz", "Zarautz", 43.2833, -2.1667],
+  ["orio", "Orio", 43.2833, -2.1300],
+  ["donostia", "Donostia/San Sebastián", 43.3183, -1.9812],
+  ["pasaia", "Pasaia", 43.3283, -1.9283],
+  ["hondarribia", "Hondarribia", 43.3736, -1.7964],
   ["baiona", "Baiona", 42.117, -8.850],
   ["aguarda", "A Guarda", 41.900, -8.867],
   ["cangas", "Cangas", 42.266, -8.786],
@@ -545,6 +561,34 @@ async function cargarSpotsUsuario() {
   favoritosClaves = new Set((favs || []).map((f) => f.spot_slug || f.spot_usuario_id));
 }
 
+// Vista previa de una región oculta (fase 2 de NZ, 2026-10-09): con
+// /diario.html?region=nz (y &clave=... si no es admin) se suman sus spots al
+// desplegable. La lista sale de /prevision?region=nz&lista=1, que solo
+// responde a un admin o con la clave (functions/_lib/vista-previa.js) y no
+// gasta Open-Meteo. Sin el parámetro, nada cambia.
+async function cargarSpotsRegionPrevia() {
+  try {
+    const p = new URLSearchParams(window.location.search);
+    const region = (p.get("region") || "").toLowerCase();
+    if (!/^[a-z]{2,8}$/.test(region) || region === "es") return;
+    const params = new URLSearchParams({ region, lista: "1" });
+    if (p.get("clave")) params.set("clave", p.get("clave"));
+    const { data: sesion } = await supabase.auth.getSession();
+    const token = sesion?.session?.access_token;
+    const resp = await fetch(`/prevision?${params}`, { cache: "no-store", headers: token ? { Authorization: `Bearer ${token}` } : {} });
+    if (!resp.ok) return;
+    const datos = await resp.json();
+    for (const s of datos.spots || []) {
+      if (SPOTS.some((x) => x.slug === s.slug)) continue;
+      // Spots solo de barco (modalidades sin "costa") van como embarcación.
+      const tipo = (s.modalidades || []).includes("costa") ? "costa" : "embarcacion";
+      SPOTS.push({ slug: s.slug, nombre: s.nombre, lat: s.lat, lon: s.lon, zona: s.zona, tipo });
+    }
+  } catch (e) {
+    console.warn("Vista previa de región no disponible:", e.message);
+  }
+}
+
 // Todos los spots elegibles en el desplegable del diario: los fijos +
 // los personalizados, cada uno con su slug (uuid para los
 // personalizados) y marcados esUsuario para poder resolver lat/lon igual
@@ -554,7 +598,7 @@ function todosLosSpotsDiario() {
   // clasificado por tipo porque hasta ahora no hacía falta. Los
   // personalizados sí llevan su tipo (costa/embarcacion/buceo, elegido
   // al crearlos en el mapa, ver index.html).
-  const fijos = SPOTS.map((s) => ({ ...s, esUsuario: false, tipo: "costa" }));
+  const fijos = SPOTS.map((s) => ({ ...s, esUsuario: false, tipo: s.tipo || "costa" }));
   const personalizados = spotsUsuario.map((f) => ({ slug: f.id, nombre: f.nombre, lat: f.lat, lon: f.lon, esUsuario: true, tipo: f.tipo }));
   return [...fijos, ...personalizados];
 }
@@ -1923,6 +1967,7 @@ async function abrirDia(iso, fechaObj) {
 
 await cargarDatos();
 await cargarSpotsUsuario();
+await cargarSpotsRegionPrevia();
 await cargarEspeciesComunidad();
 renderCalendario();
 </script>

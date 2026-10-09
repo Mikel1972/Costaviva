@@ -1112,6 +1112,9 @@
 <div id="avisoRayos" style="display:none; background:var(--peligro); color:var(--blanco); padding:8px 28px; font-family:var(--f-texto); font-size:12px; font-weight:700; flex-shrink:0;" data-i18n="mapa.aviso_rayos">
   ⚡ RIESGO DE RAYOS DETECTADO EN LA ZONA — no salir a roca/muelle hasta que pase
 </div>
+<!-- Vista previa de una región oculta (fase 2 de NZ): solo admin o con la
+     clave; el texto lo pone cargarRegionPrevia(). -->
+<div id="avisoVistaPrevia" hidden style="background:var(--acento); color:var(--tinta); padding:6px 28px; font-family:var(--f-texto); font-size:12px; font-weight:700; flex-shrink:0;"></div>
 <div class="main">
   <div class="mapa-wrap">
     <div id="map"></div>
@@ -1275,6 +1278,8 @@
     <h2 id="panelNombre"></h2>
     <div class="coords" id="panelCoords"></div>
     <div class="fondo-ficha" id="panelFondo" hidden></div>
+    <!-- Spots de NZ con el punto aún en el centro del pueblo (revisar_ubicacion). -->
+    <div class="fondo-ficha" id="panelUbicacionRevisar" hidden></div>
     <div style="display:flex; align-items:center; gap:10px; margin:6px 0 2px;">
       <button id="panelBtnFavorito" title="Marcar/quitar de favoritos" style="background:none; border:none; cursor:pointer; font-size:18px; padding:0; color:var(--tinta-3); line-height:1;" data-i18n-title="mapa.panel.favorito">☆</button>
       <span id="panelEtiquetaComunidad" style="display:none; font-size:10.5px; color:var(--tinta-2);" data-i18n="mapa.panel.ubic_usuario">📍 ubicación de un usuario, sin cámara</span>
@@ -1315,12 +1320,21 @@
         <div class="etq" data-i18n="mapa.panel.marea">MAREA</div>
         <div class="val" id="panelMarea" style="font-size:15px;" data-i18n="mapa.sin_datos">sin datos</div>
         <div class="etq" id="panelMareaProxima"></div>
+        <!-- Marea de LINZ (NZ): puerto, atribución CC BY 4.0 y aviso obligatorio. -->
+        <div class="etq" id="panelMareaFuente" hidden style="text-transform:none; letter-spacing:0; font-size:9.5px; line-height:1.35; margin-top:3px;"></div>
       </div>
       <div class="tarjeta">
         <div class="etq" data-i18n="mapa.panel.corriente">CORRIENTE</div>
         <div class="val" id="panelCorriente" style="font-size:15px;" data-i18n="mapa.sin_datos">sin datos</div>
         <div class="etq" id="panelCorrienteDir"></div>
       </div>
+    </div>
+    <!-- Normativa NZ (fase 2): SOLO el enlace a la página oficial de MPI del
+         área, la app oficial y el aviso de rāhui. Ninguna cifra. -->
+    <div class="tarjeta" id="panelNormativaNZ" hidden style="margin-top:10px; font-family:var(--f-texto); font-size:12px; line-height:1.45;">
+      <a id="panelNormativaEnlace" href="#" target="_blank" rel="noopener"></a>
+      <div id="panelNormativaApp" style="margin-top:4px;"></div>
+      <div id="panelNormativaRahui" style="margin-top:4px; color:var(--tinta-2);"></div>
     </div>
     <div class="indice-box">
       <div class="etq"><span data-i18n="mapa.panel.indice_mar">ÍNDICE DE MAR COMBINADO</span>
@@ -1510,6 +1524,19 @@
 // coordenadas. Si el módulo aún no ha cargado, la de /prevision o Madrid
 // (por defecto a propósito: la de la Península).
 const ZONA_POR_DEFECTO = "Europe/Madrid";
+
+// Vista previa de una región OCULTA (fase 2 de NZ, 2026-10-09): /?region=nz
+// (más &clave=... si no se entra como admin). El servidor decide
+// (functions/_lib/vista-previa.js): a quien no es admin ni trae la clave le
+// responde 404 y aquí solo sale un aviso. Sin el parámetro, nada cambia.
+const VISTA_PREVIA = (() => {
+  try {
+    const p = new URLSearchParams(window.location.search);
+    const region = (p.get("region") || "").toLowerCase();
+    return /^[a-z]{2,8}$/.test(region) && region !== "es" ? { region, clave: p.get("clave") || "" } : null;
+  } catch (e) { return null; }
+})();
+
 function zonaSpot(s) {
   if (window.Regiones) return window.Regiones.zonaDeSpot(s);
   return s?.zona || ZONA_POR_DEFECTO;
@@ -2006,6 +2033,40 @@ function textoIndice(valor) {
 
 SPOTS.forEach((s) => (s.indice = indiceMar(s)));
 
+// Copia en un spot de SPOTS lo que manda /prevision (España o, en la vista
+// previa, otra región) para el bloque de 3 h más cercano a su hora local.
+function aplicarSpotBackend(s, sBackend) {
+  // Zona horaria de sus horas (la manda /prevision).
+  if (sBackend.zona) s.zona = sBackend.zona;
+  const b = bloqueMasCercanoAAhora(sBackend.bloques, zonaSpot(s));
+  s.altura = b.altura;
+  // Mar abierto frente a "en la playa" (2026-10-08, functions/_lib/
+  // oleaje-costero.js): en los spots abrigados `altura` es la estimación
+  // en la playa y `alturaMarAbierto` lo que da el modelo mar adentro.
+  s.alturaMarAbierto = b.alturaMarAbierto || b.altura;
+  s.coefAbrigo = b.coefAbrigo ?? null;
+  s.zonaOleaje = sBackend.zonaOleaje || null;
+  // Oleaje por cámara (2026-10-08, functions/_lib/oleaje-camaras.js):
+  // fuenteAltura "camara" = la altura del bloque es la de la cámara;
+  // "modelo_*" = modelo corregido con la cámara (propia o vecina).
+  s.oleajeCamara = sBackend.oleajeCamara || null;
+  s.fuenteAltura = b.fuenteAltura || null;
+  s.alturaModelo = b.alturaModelo || null;
+  // Referencia de cámara (cámara propia que aún no sustituye al modelo).
+  s.camaraReferencia = sBackend.camaraReferencia || null;
+  s.periodo = b.periodo;
+  s.dirOla = b.dirOla;
+  if (b.viento !== null) { s.viento = b.viento; s.dirViento = b.dirViento; }
+  if (b.tempAgua !== undefined) s.tempAgua = b.tempAgua;
+  if (b.precipitacion !== undefined) s.precipitacion = b.precipitacion;
+  if (b.nubosidad !== undefined) s.nubosidad = b.nubosidad;
+  if (b.corriente !== undefined) { s.corriente = b.corriente; s.dirCorriente = b.dirCorriente; }
+  if (sBackend.marea) s.marea = sBackend.marea;
+  if (sBackend.presion) s.presion = sBackend.presion;
+  s.actualizadoEn = ultimaActualizacionOk;
+  s.indice = indiceMar(s);
+}
+
 // Intenta traer datos reales de la función de backend (/prevision, ver
 // functions/prevision.js) — solo funciona una vez desplegado en Cloudflare
 // Pages, no en este archivo abierto suelto. Si falla (aún no desplegado,
@@ -2026,35 +2087,7 @@ async function actualizarDesdeBackend() {
     datos.spots.forEach((sBackend) => {
       const s = SPOTS.find((x) => x.slug === sBackend.slug);
       if (!s || sBackend.error || !sBackend.bloques || !sBackend.bloques.length) return;
-      // Zona horaria de sus horas (la manda /prevision).
-      if (sBackend.zona) s.zona = sBackend.zona;
-      const b = bloqueMasCercanoAAhora(sBackend.bloques, zonaSpot(s));
-      s.altura = b.altura;
-      // Mar abierto frente a "en la playa" (2026-10-08, functions/_lib/
-      // oleaje-costero.js): en los spots abrigados `altura` es la estimación
-      // en la playa y `alturaMarAbierto` lo que da el modelo mar adentro.
-      s.alturaMarAbierto = b.alturaMarAbierto || b.altura;
-      s.coefAbrigo = b.coefAbrigo ?? null;
-      s.zonaOleaje = sBackend.zonaOleaje || null;
-      // Oleaje por cámara (2026-10-08, functions/_lib/oleaje-camaras.js):
-      // fuenteAltura "camara" = la altura del bloque es la de la cámara;
-      // "modelo_*" = modelo corregido con la cámara (propia o vecina).
-      s.oleajeCamara = sBackend.oleajeCamara || null;
-      s.fuenteAltura = b.fuenteAltura || null;
-      s.alturaModelo = b.alturaModelo || null;
-      // Referencia de cámara (cámara propia que aún no sustituye al modelo).
-      s.camaraReferencia = sBackend.camaraReferencia || null;
-      s.periodo = b.periodo;
-      s.dirOla = b.dirOla;
-      if (b.viento !== null) { s.viento = b.viento; s.dirViento = b.dirViento; }
-      if (b.tempAgua !== undefined) s.tempAgua = b.tempAgua;
-      if (b.precipitacion !== undefined) s.precipitacion = b.precipitacion;
-      if (b.nubosidad !== undefined) s.nubosidad = b.nubosidad;
-      if (b.corriente !== undefined) { s.corriente = b.corriente; s.dirCorriente = b.dirCorriente; }
-      if (sBackend.marea) s.marea = sBackend.marea;
-      if (sBackend.presion) s.presion = sBackend.presion;
-      s.actualizadoEn = ultimaActualizacionOk;
-      s.indice = indiceMar(s);
+      aplicarSpotBackend(s, sBackend);
     });
     (datos.boyas || []).forEach((bBackend) => {
       if (bBackend.error) return;
@@ -2089,6 +2122,106 @@ async function actualizarDesdeBackend() {
   }
 }
 
+
+// ---------------------------------------------------------------------------
+// Vista previa de una región oculta (fase 2 de NZ, 2026-10-09). Pide
+// /prevision?region=<id> con el JWT de la sesión (o la clave de la URL), mete
+// sus spots en SPOTS y les crea marcador. Cada región tiene su propia
+// petición y su propia caché en el servidor (cuota de Open-Meteo).
+// ---------------------------------------------------------------------------
+let marcadoresListos = false;
+let vistaPreviaCentrada = false;
+async function cabeceraSesion() {
+  try {
+    const { data } = await window.supabaseCliente.auth.getSession();
+    const token = data?.session?.access_token;
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  } catch (e) { return {}; }
+}
+async function cargarRegionPrevia() {
+  if (!VISTA_PREVIA) return;
+  const aviso = document.getElementById("avisoVistaPrevia");
+  const params = new URLSearchParams({ region: VISTA_PREVIA.region });
+  if (VISTA_PREVIA.clave) params.set("clave", VISTA_PREVIA.clave);
+  try {
+    const headers = window.supabaseCliente ? await cabeceraSesion() : {};
+    const resp = await fetch(`/prevision?${params}`, { cache: "no-store", headers });
+    if (!resp.ok) {
+      aviso.textContent = I18n.t("mapa.previa.no_disponible");
+      aviso.hidden = false;
+      return;
+    }
+    const datos = await resp.json();
+    if (window.registrarFuentesMeteo) window.registrarFuentesMeteo(datos.fuentesDatos);
+    ultimaActualizacionOk = Date.now();
+    let conDatos = 0;
+    for (const sb of datos.spots || []) {
+      // Sin datos de Open-Meteo no se pinta (no hay respaldo fijo para NZ).
+      if (sb.error || !sb.bloques || !sb.bloques.length) continue;
+      let s = SPOTS.find((x) => x.slug === sb.slug);
+      const nuevo = !s;
+      if (nuevo) {
+        s = {
+          slug: sb.slug, nombre: sb.nombre, lat: sb.lat, lon: sb.lon,
+          viento: null, dirViento: "", dirOla: "", nubosidad: null, precipitacion: null, tempAgua: null,
+          rayosCerca: null, corriente: null, dirCorriente: null, marea: null, presion: null,
+        };
+        SPOTS.push(s);
+      }
+      s.pais = sb.pais || null;
+      s.region = sb.region || null;
+      s.normativa = sb.normativa || null;
+      s.revisarUbicacion = Boolean(sb.revisarUbicacion);
+      s.modalidades = sb.modalidades || null;
+      aplicarSpotBackend(s, sb);
+      // La marea de LINZ puede faltar (datos sin cargar): no se deja la vieja.
+      s.marea = sb.marea || null;
+      conDatos++;
+      if (nuevo && marcadoresListos) crearMarcadorSpot(s);
+    }
+    aviso.textContent = I18n.t("mapa.previa.aviso", { region: I18n.t(`mapa.previa.region_${VISTA_PREVIA.region}`), n: conDatos });
+    aviso.hidden = false;
+    const conCoords = (datos.spots || []).filter((x) => Number.isFinite(x.lat) && Number.isFinite(x.lon));
+    if (!vistaPreviaCentrada && conCoords.length) {
+      vistaPreviaCentrada = true;
+      map.fitBounds(L.latLngBounds(conCoords.map((x) => [x.lat, x.lon])), { padding: [20, 20] });
+    }
+  } catch (e) {
+    console.warn("Vista previa no disponible:", e.message);
+  }
+}
+
+// Ficha de un spot de otra región: punto por revisar y normativa (solo el
+// enlace oficial de MPI, la app oficial y el aviso de rāhui; ninguna cifra).
+function pintarRegionPanel(s) {
+  const revisar = document.getElementById("panelUbicacionRevisar");
+  revisar.textContent = s.revisarUbicacion ? I18n.t("mapa.panel.ubicacion_revisar") : "";
+  revisar.hidden = !s.revisarUbicacion;
+  const caja = document.getElementById("panelNormativaNZ");
+  const n = s.normativa;
+  caja.hidden = !n;
+  if (!n) return;
+  const enlace = document.getElementById("panelNormativaEnlace");
+  enlace.href = n.url;
+  enlace.textContent = I18n.t("mapa.panel.normativa_nz", { area: n.area });
+  const app = document.createElement("a");
+  app.href = n.app;
+  app.target = "_blank";
+  app.rel = "noopener";
+  app.textContent = I18n.t("mapa.panel.normativa_app");
+  document.getElementById("panelNormativaApp").replaceChildren(app);
+  document.getElementById("panelNormativaRahui").textContent = I18n.t("mapa.panel.rahui");
+}
+
+// Marea de LINZ (NZ): puerto de referencia, atribución y aviso obligatorio.
+function pintarFuenteMarea(s) {
+  const el = document.getElementById("panelMareaFuente");
+  const m = s.marea;
+  if (!m || !m.atribucion) { el.textContent = ""; el.hidden = true; return; }
+  const puerto = m.puerto ? I18n.t("mapa.marea.puerto_linz", { puerto: m.puerto.nombre, km: m.puerto.km }) : "";
+  el.textContent = [puerto, m.atribucion, m.aviso].filter(Boolean).join(" · ");
+  el.hidden = false;
+}
 
 // ---------------------------------------------------------------------------
 // Mapa real (Leaflet + OpenStreetMap), sin interacción -> vista fija para
@@ -2189,6 +2322,8 @@ async function registrarEvento(tipo, detalle) {
 // geocodificación falla por lo que sea, se queda la vista fija de
 // siempre; nunca bloquea ni retrasa el resto de la carga del mapa.
 async function centrarMapaEnCodigoPostal() {
+  // En la vista previa de otra región el mapa se centra en ella.
+  if (VISTA_PREVIA) return;
   try {
     const { data: perfil, error } = await window.supabaseCliente
       .from("perfiles")
@@ -4345,7 +4480,9 @@ function abrirPanel(s) {
   I18n.recordarPosicion(s.lat, s.lon);
   document.getElementById("panel").classList.add("visible");
   document.getElementById("panelNombre").textContent = s.nombre;
-  document.getElementById("panelCoords").textContent = `${s.lat.toFixed(4)}°N, ${Math.abs(s.lon).toFixed(4)}°W`;
+  // °S/°E en Nueva Zelanda (antes "°N, °W" fijo).
+  document.getElementById("panelCoords").textContent = formatoCoordenadas(s.lat, s.lon);
+  pintarRegionPanel(s);
   pintarFondoPanel(s);
   actualizarBotonFavorito(s);
   document.getElementById("panelEtiquetaComunidad").style.display = s.esUsuario ? "inline" : "none";
@@ -4375,6 +4512,7 @@ function abrirPanel(s) {
     document.getElementById("panelMarea").textContent = I18n.t("mapa.sin_datos");
     document.getElementById("panelMareaProxima").textContent = "";
   }
+  pintarFuenteMarea(s);
   document.getElementById("panelCorriente").textContent = (s.corriente === null || s.corriente === undefined) ? I18n.t("mapa.sin_datos") : `${s.corriente} km/h`;
   document.getElementById("panelCorrienteDir").textContent = s.dirCorriente || "";
 
@@ -5595,6 +5733,12 @@ map.whenReady(async () => {
   capaSpots.addTo(map);
   await actualizarDesdeBackend();
   crearMarcadores();
+  marcadoresListos = true;
+  // Vista previa de otra región: con clave, ya; como admin, con la sesión.
+  if (VISTA_PREVIA) {
+    if (VISTA_PREVIA.clave || window.supabaseCliente) cargarRegionPrevia();
+    else window.addEventListener("supabase-listo", () => cargarRegionPrevia(), { once: true });
+  }
   comprobarAvisoRayos();
   refrescarIndicesVisibles();
   if (window.supabaseCliente) {
@@ -5624,6 +5768,7 @@ map.whenReady(async () => {
     // esta rama se quedó sin arreglar. La función es idempotente (ya quita
     // sus marcadores antes de repintar), así que llamarla aquí es seguro.
     await cargarSpotsPersonalizados();
+    await cargarRegionPrevia();
     refrescarIndicesVisibles();
     comprobarAvisoRayos();
   }, VIGENCIA_MAX_MS);

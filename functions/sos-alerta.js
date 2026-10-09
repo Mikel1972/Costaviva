@@ -17,7 +17,7 @@
 // pasa a ser de ese dominio real.
 
 import { enviarEmail as enviarConResend, esc } from "./_lib/email.js";
-import { zonaPorCoordenadas } from "../assets/js/regiones.js";
+import { regionPorCoordenadas, zonaPorCoordenadas } from "../assets/js/regiones.js";
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const SUPABASE_ANON_KEY =
@@ -40,6 +40,12 @@ async function contactosDelUsuario(token) {
   return resp.json();
 }
 
+// 111 en Nueva Zelanda, 112 en el resto (fase 2 de NZ, 2026-10-09). Por la
+// posición del SOS, no por el idioma: es donde está la persona.
+export function numeroEmergencias(lat, lon) {
+  return regionPorCoordenadas(lat, lon) === "nueva_zelanda" ? "111" : "112";
+}
+
 async function enviarEmail(env, destinatario, nombreUsuario, lat, lon, tipo, horaLocal) {
   const enlaceMapa = `https://maps.google.com/?q=${lat},${lon}`;
   const motivo = tipo === "caida_detectada" ? "una posible caída detectada por su teléfono" : "un aviso manual";
@@ -48,7 +54,7 @@ async function enviarEmail(env, destinatario, nombreUsuario, lat, lon, tipo, hor
     <p><b>${esc(nombreUsuario)}</b> ha activado una alarma en Costaviva (${motivo}) a las ${horaLocal}.</p>
     <p>Última ubicación conocida:</p>
     <p><a href="${esc(enlaceMapa)}">${esc(enlaceMapa)}</a></p>
-    <p style="color:#888; font-size:12px;">Este es un aviso automático. Si no puedes contactar con ${esc(nombreUsuario)}, considera llamar al 112.</p>
+    <p style="color:#888; font-size:12px;">Este es un aviso automático. Si no puedes contactar con ${esc(nombreUsuario)}, considera llamar al ${numeroEmergencias(lat, lon)}.</p>
   `;
   const envio = await enviarConResend(env, {
     from: "Costaviva SOS <sos@costaviva.org>",
