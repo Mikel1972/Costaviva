@@ -21,6 +21,8 @@ name: Fuentes gratuitas (MET Norway, Copernicus) y comparativa
 #   pasado      1 vez al día: reanálisis ERA5 (copia pública ARCO-ERA5 de
 #               Google, SIN cuenta) para el diario de días pasados ->
 #               pasado/<fecha>/<caja>.json (fase 2)
+#   capas_nz    solo a mano (workflow_dispatch): capas del mar de Nueva
+#               Zelanda con Copernicus GLOBAL -> capas/nz/*.json (región oculta)
 #   historico_frentes  solo a mano (workflow_dispatch): histórico hacia atrás
 #               de 〰 Frentes para el aprendizaje, un fichero por día
 #               capas/historico/frentes-AAAA-MM-DD.json con el mismo cálculo
@@ -56,7 +58,7 @@ on:
   workflow_dispatch:
     inputs:
       parte:
-        description: "atmosfera, mar, pasado, comparativa, todo o historico_frentes (este solo a mano y nunca con todo)"
+        description: "atmosfera, mar, pasado, comparativa, todo, historico_frentes o capas_nz (estos dos solo a mano y nunca con todo)"
         required: true
         default: "todo"
       dias_pasado:
@@ -227,6 +229,43 @@ jobs:
         run: |
           if [ ! -d /tmp/historico/capas ]; then echo "Nada que subir."; exit 0; fi
           node scripts/fuentes/subir-storage.mjs /tmp/historico
+
+  capas_nz:
+    # Capas del mar de Nueva Zelanda (2026-10-09, fase 2 de NZ, región aún
+    # OCULTA): clorofila, temperatura del agua y 〰 frentes con Copernicus
+    # GLOBAL en la caja de NZ -> capas/nz/*.json (+ capas/nz/historico/).
+    # Solo a mano (parte = capas_nz), nunca con "todo" ni con el cron, hasta
+    # que Mikel active NZ. Lanzar DESDE main. Respeta AUTOMATION_PAUSED.
+    if: >-
+      vars.AUTOMATION_PAUSED != 'true' &&
+      github.event_name == 'workflow_dispatch' && inputs.parte == 'capas_nz'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Instalar el toolbox de Copernicus Marine
+        run: pip install --quiet -r scripts/fuentes/requirements.txt
+      - name: Capas de NZ (Copernicus GLOBAL)
+        env:
+          PYTHONUNBUFFERED: "1"
+          COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_USERNAME }}
+          COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_PASSWORD }}
+        run: |
+          python -I scripts/fuentes/descargar-capas.py --region nz --salida /tmp/capas-nz
+          du -sh /tmp/capas-nz
+      - name: Subir las capas de NZ a Supabase Storage
+        if: ${{ !cancelled() }}
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          if [ ! -d /tmp/capas-nz/capas/nz ]; then echo "Nada que subir."; exit 0; fi
+          node scripts/fuentes/subir-storage.mjs /tmp/capas-nz
 
   comparativa:
     needs: [mar]
