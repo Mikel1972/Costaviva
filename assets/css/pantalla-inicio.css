@@ -1,0 +1,86 @@
+/* =========================================================================
+   Pantalla de inicio (2026-10-09, pedido de Mikel con captura del iPhone)
+   -------------------------------------------------------------------------
+   Mientras la app comprueba la sesión (#comprobandoAcceso) salía una
+   pantalla crema casi vacía con "Comprobando acceso…" y los enlaces azules
+   del navegador. Ahora: foto de una rompiente a pantalla completa, degradado
+   de --mar para el contraste, la marca en estilo Amanecer y un indicador
+   discreto. En index.html el texto y los enlaces para los buscadores siguen
+   en el DOM (abajo, en claro sobre la foto): no quitarlos.
+   Foto: fotograma de "A young man fishing on a rocky beach" de Coverr
+   (https://coverr.co/videos/a-young-man-fishing-on-a-rocky-beach-pcrpoqlvon),
+   licencia de Coverr (https://coverr.co/license: uso comercial, sin atribución
+   obligatoria; detalle en scripts/inicio/LICENCIA.json), generada con
+   scripts/inicio/generar-pantallas-inicio.mjs. Cada página carga
+   esta hoja después de costaviva.css (usa sus tokens).
+   Los rgba(11, 30, 63, x) son --mar con transparencia, como en costaviva.css.
+   ========================================================================= */
+.pantalla-inicio {
+  position: fixed; inset: 0; z-index: 9999; overflow: hidden;
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 28px;
+  padding: max(24px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right))
+           calc(28px + env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
+  background: var(--mar); color: var(--blanco); font-family: var(--f-texto); text-align: center;
+}
+.pantalla-inicio picture,
+.pantalla-inicio__foto { position: absolute; inset: 0; width: 100%; height: 100%; }
+.pantalla-inicio__foto { display: block; object-fit: cover; object-position: 50% 35%; }
+/* Arriba un velo suave (barra de estado legible), en medio la ola limpia y
+   abajo --mar casi opaco bajo la marca y el texto. */
+.pantalla-inicio::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(180deg,
+    rgba(11, 30, 63, 0.55) 0%, rgba(11, 30, 63, 0) 18%, rgba(11, 30, 63, 0) 38%,
+    rgba(11, 30, 63, 0.7) 60%, rgba(11, 30, 63, 0.94) 82%, rgba(11, 30, 63, 0.97) 100%);
+}
+.pantalla-inicio > :not(picture) { position: relative; z-index: 1; max-width: 460px; }
+
+.pantalla-inicio__marca { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.pantalla-inicio__marca .marca-logo { width: 64px; height: 64px; filter: drop-shadow(0 4px 14px rgba(11, 30, 63, 0.5)); }
+.pantalla-inicio__nombre { margin: 0; font-size: 34px; letter-spacing: 1px; line-height: 1.1; }
+.pantalla-inicio__frase { margin: 0; font-size: 16px; font-weight: 600; color: var(--blanco); }
+.pantalla-inicio__estado {
+  margin: 8px 0 0; display: flex; align-items: center; gap: 8px;
+  font-size: 13px; font-weight: 600; color: var(--gris-mar);
+}
+.pantalla-inicio__girando {
+  width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0;
+  border: 2px solid rgba(255, 255, 255, 0.25); border-top-color: var(--naranja);
+  animation: pantalla-inicio-gira 0.9s linear infinite;
+}
+@keyframes pantalla-inicio-gira { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .pantalla-inicio__girando { animation: pulso 1.6s ease-in-out infinite; }
+}
+
+/* Texto para los buscadores (index.html): legible, sin el azul del navegador. */
+.pantalla-inicio__seo { font-size: 13px; line-height: 1.5; color: var(--gris-mar); }
+.pantalla-inicio__seo p { margin: 0 0 12px; }
+.pantalla-inicio__seo strong { color: var(--blanco); }
+.pantalla-inicio__seo nav { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.pantalla-inicio__seo a {
+  display: inline-flex; align-items: center; min-height: 32px; padding: 0 12px; border-radius: 16px;
+  color: var(--blanco); text-decoration: none; font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.35); background: rgba(11, 30, 63, 0.35);
+}
+.pantalla-inicio__seo a:hover, .pantalla-inicio__seo a:focus-visible { border-color: var(--naranja); }
+
+/* Pantallas bajas (iPhone SE en vertical, móviles en horizontal). */
+@media (max-height: 700px) {
+  .pantalla-inicio { gap: 18px; }
+  .pantalla-inicio__marca .marca-logo { width: 52px; height: 52px; }
+  .pantalla-inicio__nombre { font-size: 28px; }
+}
+/* Móvil en horizontal: la marca cae sobre la espuma, velo más oscuro. */
+@media (max-height: 500px) {
+  .pantalla-inicio { gap: 12px; padding-top: max(12px, env(safe-area-inset-top)); padding-bottom: calc(14px + env(safe-area-inset-bottom)); }
+  .pantalla-inicio::after {
+    background: linear-gradient(180deg, rgba(11, 30, 63, 0.5) 0%, rgba(11, 30, 63, 0.78) 35%, rgba(11, 30, 63, 0.95) 75%);
+  }
+  .pantalla-inicio__marca { gap: 6px; }
+  .pantalla-inicio__marca .marca-logo { width: 40px; height: 40px; }
+  .pantalla-inicio__nombre { font-size: 22px; }
+}
+/* La imagen de arranque de iOS (scripts/inicio/) es esta misma pantalla
+   sin el indicador: así no hay salto al pasar de una a otra. */
+.pantalla-inicio.es-arranque .pantalla-inicio__estado { visibility: hidden; }

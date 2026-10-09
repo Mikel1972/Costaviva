@@ -1,0 +1,16 @@
+{
+  "uso": "Foto de la pantalla de inicio de la app (assets/inicio/rompiente-*.webp|jpg) y de las imágenes de arranque de iOS (assets/inicio/arranque/*.jpg), 2026-10-09.",
+  "fotograma": "scripts/inicio/coverr-rocas-oleaje-6277-0.4s.jpg (segundo 0,4 del original, 1920x1080)",
+  "origen": "https://coverr.co/videos/a-young-man-fishing-on-a-rocky-beach-pcrpoqlvon",
+  "fichero_original": "https://cdn.coverr.co/videos/coverr-a-young-man-fishing-on-a-rocky-beach-6277/1080p.mp4",
+  "autor": "Coverr (contributor: ninguno en la página)",
+  "mismo_clip_que": "scripts/marketing/clips/stock/coverr-pescador-rocas-oleaje.mp4 (reels de Instagram)",
+  "licencia_url": "https://coverr.co/license",
+  "licencia_comprobada": "2026-10-09",
+  "cita_licencia": "Coverr.co grants you an irrevocable, non-exclusive, worldwide copyright license to download, copy, modify, perform, and use videos and music from Coverr.co for free, including for commercial purposes, without needing permission from the content creator or Coverr.co.",
+  "atribucion": "No obligatoria (\"You are not required to add an attribution credit to the original creator or to Coverr.co\").",
+  "fotogramas": "La licencia permite copiar y modificar el vídeo: sacar un fotograma, recortarlo y comprimirlo es una modificación permitida.",
+  "prohibido": "Montar un servicio que compita con Coverr; usarlo para entrenar IA; usar marcas que salgan en el vídeo (no sale ninguna).",
+  "personas": "Pescador de espaldas o de perfil lejano con gorra y gafas de sol; no se le reconoce. Coverr obtiene autorizaciones de las personas que aparecen pero no las entrega.",
+  "premium": "isPremium=false (comprobado el 2026-10-08 en la página del vídeo)."
+}

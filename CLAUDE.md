@@ -178,6 +178,46 @@ pequeños: tinta oscura sobre claro, contraste AA).
   se cierra el valor tocado de la anterior. `assets/js/plegar-tarjeta.js`,
   test `test/plegar-tarjeta.test.js`.
 
+## Pantalla de inicio con foto (2026-10-09, captura de Mikel en el iPhone)
+
+Al abrir la app salía, mientras se comprueba la sesión, una pantalla crema
+casi vacía con "Comprobando acceso…" y el texto para buscadores con enlaces
+azules de navegador. Ahora `#comprobandoAcceso` (index, diario, alarma,
+grupos, admin y suscripcion) es una pantalla a pantalla completa
+(`assets/css/pantalla-inicio.css`, cargada tras `costaviva.css`): foto de
+una rompiente con un pescador, velo de `--mar`, logo + COSTAVIVA en
+`.logotipo`, frase y un indicador discreto ("Comprobando acceso…"). Respeta
+safe-area y `prefers-reduced-motion`. El script de cada página la sigue
+quitando con `.remove()`.
+
+- **SEO:** en index.html el texto "Costaviva: pesca en tiempo real…" y los
+  enlaces a /spots, /especies y /mareas siguen en el DOM, abajo y en claro
+  sobre la foto (enlaces en píldora, sin el azul). No quitarlos. Canonical y
+  metas sin tocar.
+- **Foto:** fotograma (0,4 s) de "A young man fishing on a rocky beach",
+  Coverr, https://coverr.co/videos/a-young-man-fishing-on-a-rocky-beach-pcrpoqlvon
+  (el mismo clip que `coverr-pescador-rocas-oleaje.mp4` de los reels).
+  Licencia de Coverr (https://coverr.co/license, comprobada el 2026-10-09):
+  uso comercial, copiar y modificar, **sin atribución obligatoria**; prohíbe
+  competir con Coverr y entrenar IA. Detalle en `scripts/inicio/LICENCIA.json`.
+  Fotograma original en `scripts/inicio/` (no se sirve).
+- **Ficheros** (`/assets/inicio/`, una semana de caché en `_headers`; si
+  cambia la foto, cambia el nombre): `rompiente-movil.{webp,jpg}` 720x1280
+  para vertical y `rompiente-ancha.{webp,jpg}` 1280x720 para horizontal
+  (`<picture>` por `orientation`), cada una ≤ 80 kB, precargadas en el
+  `<head>` con `fetchpriority="high"`.
+- **iOS:** `apple-touch-startup-image` para 11 tamaños de iPhone en vertical
+  (`assets/inicio/arranque/`), que son esta misma pantalla sin el indicador,
+  declaradas en index.html y login.html entre `<!-- arranque-ios -->`. iOS las
+  guarda al añadir a la pantalla de inicio: quien ya tenía la app instalada
+  tiene que quitarla y volver a añadirla para verlas. El manifest ya tenía
+  `background_color`/`theme_color` = `--mar`.
+- **Regenerar** (sin IA): `node scripts/inicio/generar-pantallas-inicio.mjs`
+  (ffmpeg con libwebp + Playwright de `scripts/marketing`, `npm ci` allí, o
+  `CHROMIUM_PATH`). Rehace fotos, imágenes de arranque y el bloque de `<link>`.
+  Test: `test/pantalla-inicio.test.js` (medidas, pesos, licencia, SEO,
+  safe-area, bloque de arranque al día).
+
 ## Alarma: lista de WhatsApp (2026-10-08, pedido de Mikel)
 
 "En las alarmas, también debiera haber una lista prefijada para los
