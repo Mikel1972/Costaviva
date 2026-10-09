@@ -1,0 +1,77 @@
+{
+ "nota": "Generado con scripts/fuentes/descargar-capas.py (salida_frentes) sobre una malla de 12x12 de 1/18°: corriente hacia el NE de 0,04 m/s (columna 0) a 0,70 m/s (columna 11), +0,06 por columna; tierra en las 2x2 celdas de abajo a la derecha. corriente.velocidad = malla fina; corriente.u/v = malla de flechas (bloques de 3x3).",
+ "ms_por_columna": [
+  0.04,
+  0.1,
+  0.16,
+  0.22,
+  0.28,
+  0.34,
+  0.4,
+  0.46,
+  0.52,
+  0.58,
+  0.64,
+  0.7
+ ],
+ "frentes": {
+  "v": 1,
+  "capa": "frentes",
+  "fecha": "2026-10-09",
+  "fecha_clorofila": "2026-10-08",
+  "fecha_temperatura": "2026-10-09",
+  "generado_en": "2026-10-09T06:00:00Z",
+  "atribucion": "Generated using E.U. Copernicus Marine Service Information",
+  "doi": "10.48670/moi-00288",
+  "dois": [
+   "10.48670/moi-00288",
+   "10.48670/moi-00027"
+  ],
+  "datasets": [
+   "cmems_obs-oc_atl_bgc-plankton_nrt_l4-gapfree-multi-1km_P1D",
+   "cmems_mod_ibi_phy_anfc_0.027deg-2D_PT1H-m",
+   "cmems_mod_ibi_phy-cur_anfc_detided-0.027deg_P1D-m"
+  ],
+  "norte": 44.0,
+  "sur": 43.333333333333336,
+  "oeste": -4.0,
+  "este": -3.3333333333333335,
+  "paso": 0.05555555555555555,
+  "filas": 12,
+  "columnas": 12,
+  "umbrales": {
+   "umbral_chl_log10_km": 0.03,
+   "umbral_temp_c_km": 0.05,
+   "umbral_convergencia_f": 0.1,
+   "costa_km": 5.0,
+   "min_observado": 0.5,
+   "niveles_chl": [
+    0.2,
+    2.0
+   ]
+  },
+  "bits": {
+   "frente_clorofila": 1,
+   "frente_termico": 2,
+   "convergencia": 4,
+   "costa": 32,
+   "nubes": 64,
+   "nivel_desplazamiento": 3
+  },
+  "nubes": "flags",
+  "estadisticas": {
+   "celdas_mar": 140
+  },
+  "datos": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP//AAAAAAAAAAAAAP//",
+  "corriente": {
+   "paso": 0.16666666666666666,
+   "filas": 4,
+   "columnas": 4,
+   "escala_ms": 0.02,
+   "u": "g4mPloOJj5aDiY+Wg4mPlQ==",
+   "v": "g4mPloOJj5aDiY+Wg4mPlQ==",
+   "escala_velocidad_ms": 0.02,
+   "velocidad": "AgUICw4RFBcaHSAjAgUICw4RFBcaHSAjAgUICw4RFBcaHSAjAgUICw4RFBcaHSAjAgUICw4RFBcaHSAjAgUICw4RFBcaHSAjAgUICw4RFBcaHSAjAgUICw4RFBcaHSAjAgUICw4RFBcaHSAjAgUICw4RFBcaHSAjAgUICw4RFBcaHf//AgUICw4RFBcaHf//"
+  }
+ }
+}

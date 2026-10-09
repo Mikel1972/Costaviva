@@ -9,7 +9,8 @@ capas activables (🌿 Clorofila, 🌡 Temperatura del agua):
   capas/clorofila.json         clorofila-a de satélite (último día disponible)
   capas/temperatura-agua.json  temperatura de superficie del modelo IBI (hoy, 12 UTC)
   capas/frentes.json           〰 frentes de clorofila y térmicos, convergencia y flechas
-                               de corriente (ver "Frentes y corrientes" más abajo)
+                               de corriente (ver "Frentes y corrientes" más abajo); también
+                               la capa 🌊 Corriente (corriente.velocidad: fuerza en 1/18°)
   capas/historico/frentes-AAAA-MM-DD.json  copia diaria compacta para el aprendizaje
 
 Productos (IDs comprobados con `copernicusmarine describe`, 2026-10-08):
@@ -422,6 +423,17 @@ def byte_corriente(x, escala):
     return b
 
 
+def bytes_velocidad(u, v, escala):
+    """Fuerza de la corriente (m/s) en la malla entera -> un byte por celda
+    (escala m/s por unidad, 0-254; 255 = tierra o sin dato). La usan la capa
+    🌊 Corriente (manchas, en frentes.json) y el histórico del aprendizaje."""
+    vel = np.hypot(u, v)
+    b = np.full(vel.shape, 255, dtype=np.uint8)
+    ok = np.isfinite(vel)
+    b[ok] = np.clip(np.rint(vel[ok] / escala), 0, 254).astype(np.uint8)
+    return b
+
+
 def bloques(a, k):
     """Media de bloques k x k ignorando NaN (para las flechas)."""
     import warnings
@@ -462,6 +474,11 @@ def salida_frentes(fechas, cod, u, v, est, sin_mascara_nubes, cfg=FRENTES):
             "paso": cfg["paso"] * k, "filas": ub.shape[0], "columnas": ub.shape[1], "escala_ms": esc,
             "u": base64.b64encode(byte_corriente(ub, esc).tobytes()).decode("ascii"),
             "v": base64.b64encode(byte_corriente(vb, esc).tobytes()).decode("ascii"),
+            # 🌊 Corriente (2026-10-09): fuerza en la malla de los códigos
+            # (1/18°, misma paso/filas/columnas que "datos"), para pintar las
+            # manchas con más detalle que las flechas. ~+40 kB con compresión.
+            "escala_velocidad_ms": esc,
+            "velocidad": base64.b64encode(bytes_velocidad(u, v, esc).tobytes()).decode("ascii"),
         },
     }
 
@@ -470,10 +487,7 @@ def historico_frentes(j, u, v, cfg=FRENTES):
     """Copia diaria compacta para el aprendizaje semanal (zlib + base64):
     códigos y velocidad de la corriente en la malla entera. ~50-80 kB/día."""
     import zlib
-    vel = np.hypot(u, v)
-    b = np.full(vel.shape, 255, dtype=np.uint8)
-    ok = np.isfinite(vel)
-    b[ok] = np.clip(np.rint(vel[ok] / cfg["escala_corriente_ms"]), 0, 254).astype(np.uint8)
+    b = bytes_velocidad(u, v, cfg["escala_corriente_ms"])
     cod = base64.b64decode(j["datos"])
     h = {k: j[k] for k in ("v", "fecha", "fecha_clorofila", "fecha_temperatura", "generado_en", "norte", "sur", "oeste", "este", "paso", "filas", "columnas", "umbrales", "bits", "nubes", "estadisticas")}
     h["capa"] = "frentes-historico"

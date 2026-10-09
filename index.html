@@ -43,6 +43,7 @@
 <script src="/assets/js/mapa-base.js"></script>
 <script src="/assets/js/creditos-mapa.js"></script>
 <script src="/assets/js/tarjetas-mapa.js"></script>
+<script src="/assets/js/plegar-tarjeta.js"></script>
 <!-- Capa de viento estilo Windy (2026-09-19, pedido explícito del
      usuario) — partículas animadas sobre una rejilla u/v, sin más
      dependencia que Leaflet (ya cargado arriba). cdnjs no aloja este
@@ -378,7 +379,7 @@
      van pegados como un único grupo visual (el "+" solo visible con
      spots encendido, ver JS) — debajo, ríos y boyas. */
   .rayos-toggle, .luna-toggle, .fondo-toggle, .nubes-toggle, .estaciones-toggle, .viento-toggle,
-  .rios-toggle, .boyas-toggle, .clorofila-toggle, .tempagua-toggle, .frentes-toggle {
+  .rios-toggle, .boyas-toggle, .clorofila-toggle, .tempagua-toggle, .frentes-toggle, .corriente-toggle {
     position: absolute; z-index: 502;
     width: 54px; height: 54px; border-radius: 50%;
     background: var(--superficie); border: 0; color: var(--tinta);
@@ -462,6 +463,8 @@
   .tempagua-toggle { top: 322px; right: 74px; }
   /* 〰 Frentes y corrientes (2026-10-09): debajo de T. agua. */
   .frentes-toggle { top: 384px; right: 74px; }
+  /* 🌊 Corriente (2026-10-09): debajo de Frentes. */
+  .corriente-toggle { top: 446px; right: 74px; }
   /* Spots + "+" pegados como un único grupo de 2 (pedido explícito del
      usuario: el botón de añadir ubicación debe verse asociado al de
      spots, no como una capa más suelta) — sin hueco entre los dos,
@@ -572,6 +575,37 @@
   .capa-mar-panel .barra[hidden], .capa-mar-panel .extremos[hidden] { display: none; }
   /* Flechas de corriente de 〰 Frentes (SVG de Leaflet). */
   .flecha-corriente { stroke: var(--tinta); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; opacity: 0.85; }
+  /* Flechas de 🌊 Corriente: tinta con un halo blanco debajo, para que se
+     lean igual sobre la mancha clara (corriente floja) y la oscura (fuerte). */
+  .flecha-corriente-halo { stroke: var(--blanco); stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; fill: none; opacity: 0.9; }
+  .flecha-corriente-tinta { stroke: var(--tinta); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+  /* Tarjetas de capa que se minimizan (2026-10-09, Mikel: la de Frentes
+     tapaba media pantalla del iPhone). assets/js/plegar-tarjeta.js.
+     Minimizada = una línea de 44 px: icono + nombre corto + colores. */
+  .tarjeta-cabecera { display: flex; align-items: center; gap: 6px; }
+  .tarjeta-cabecera .titulo { flex: 1 1 auto; min-width: 0; margin: 0; }
+  .tarjeta-plegar {
+    flex: none; width: 44px; height: 44px; margin: -12px -14px -12px 0; padding: 0;
+    border: 0; border-radius: 12px; background: transparent; color: var(--tinta);
+    font: 700 15px/1 var(--f-texto); cursor: pointer;
+  }
+  .tarjeta-plegar:focus-visible { outline: 2px solid var(--acento); outline-offset: -4px; }
+  .tarjeta-mini { display: none; }
+  .tarjeta-plegable:not(.plegada) .tarjeta-cabecera { margin-bottom: 4px; }
+  .t-corto { display: none; }
+  .tarjeta-plegable.plegada .tarjeta-cuerpo { display: none; }
+  .tarjeta-plegable.plegada .t-largo { display: none; }
+  .tarjeta-plegable.plegada .t-corto { display: inline; }
+  .tarjeta-plegable.plegada .tarjeta-mini {
+    display: flex; flex: none; width: 64px; height: 10px; border-radius: 5px; overflow: hidden;
+    box-shadow: 0 0 0 1px var(--linea);
+  }
+  .tarjeta-mini i { flex: 1; }
+  .tarjeta-plegable.plegada { padding-top: 0; padding-bottom: 0; padding-right: 0; width: auto; }
+  .tarjeta-plegable.plegada .tarjeta-plegar { margin: 0; }
+  /* "Corriente" no cabe a 10 px en el botón de 48-54 px. */
+  .corriente-toggle .capa-label { font-size: 8px; letter-spacing: -0.2px; }
+  .tarjeta-plegable.plegada .titulo { white-space: nowrap; }
   /* Selector de fuentes, solo administradores (2026-10-08). */
   .admin-fuentes { margin-top: 14px; padding: 10px 12px; background: var(--superficie-2); border: 1px dashed var(--acento); border-radius: 12px; font: 500 12px/1.4 var(--f-texto); color: var(--tinta); }
   .admin-fuentes[hidden] { display: none; }
@@ -745,6 +779,7 @@
     .clorofila-toggle { top: 234px; right: 66px; }
     .tempagua-toggle { top: 290px; right: 66px; }
     .frentes-toggle { top: 346px; right: 66px; }
+    .corriente-toggle { top: 402px; right: 66px; }
     .fondo-selector { top: 122px; right: 124px; width: 226px; }
     /* En el móvil, abajo a la izquierda y compacta (la explicación, plegada). */
     .capa-mar-panel { left: 10px; right: auto; bottom: 118px; width: 196px; padding: 8px 10px; }
@@ -1005,17 +1040,30 @@
           <p>Fuentes: Vaisala Xweather (al momento), EUMETSAT MTG Lightning Imager (CC BY 4.0) y AEMET.</p>
         </div>
       </div>
-      <div class="capa-mar-panel" id="capaMarPanel" hidden>
-        <div class="titulo" id="capaMarTitulo"></div>
-        <div class="fecha" id="capaMarFecha"></div>
-        <div class="barra" id="capaMarBarra"></div>
-        <div class="extremos" id="capaMarExtremos"><span id="capaMarMin"></span><span id="capaMarMax"></span></div>
-        <ul class="leyenda-frentes" id="capaMarLeyenda" hidden></ul>
-        <details class="explica" id="capaMarDetalle"><summary id="capaMarResumen"></summary><div id="capaMarExplica"></div></details>
-        <div class="credito" id="capaMarCredito"></div>
+      <!-- Tarjeta de las capas de mar (clorofila, temperatura, frentes y
+           corriente): se minimiza con el chevron (assets/js/plegar-tarjeta.js). -->
+      <div class="capa-mar-panel tarjeta-plegable" id="capaMarPanel" hidden>
+        <div class="tarjeta-cabecera">
+          <div class="titulo"><span class="t-largo" id="capaMarTitulo"></span><span class="t-corto" id="capaMarCorto"></span></div>
+          <span class="tarjeta-mini" id="capaMarMini" aria-hidden="true"></span>
+          <button type="button" class="tarjeta-plegar" id="capaMarPlegar" aria-expanded="true" aria-controls="capaMarCuerpo" aria-label="Minimizar la leyenda" title="Minimizar">▾</button>
+        </div>
+        <div class="tarjeta-cuerpo" id="capaMarCuerpo">
+          <div class="fecha" id="capaMarFecha"></div>
+          <div class="barra" id="capaMarBarra"></div>
+          <div class="extremos" id="capaMarExtremos"><span id="capaMarMin"></span><span id="capaMarMax"></span></div>
+          <ul class="leyenda-frentes" id="capaMarLeyenda" hidden></ul>
+          <details class="explica" id="capaMarDetalle"><summary id="capaMarResumen"></summary><div id="capaMarExplica"></div></details>
+          <div class="credito" id="capaMarCredito"></div>
+        </div>
       </div>
-      <div class="viento-slider-panel" id="vientoSliderPanel" hidden>
-        <div class="titulo">VIENTO — próximas horas</div>
+      <div class="viento-slider-panel tarjeta-plegable" id="vientoSliderPanel" hidden>
+        <div class="tarjeta-cabecera">
+          <div class="titulo"><span class="t-largo">VIENTO — próximas horas</span><span class="t-corto">💨 Viento</span></div>
+          <span class="tarjeta-mini" id="vientoMini" aria-hidden="true"></span>
+          <button type="button" class="tarjeta-plegar" id="vientoPlegar" aria-expanded="true" aria-controls="vientoCuerpo" aria-label="Minimizar la leyenda" title="Minimizar">▾</button>
+        </div>
+        <div class="tarjeta-cuerpo" id="vientoCuerpo">
         <input type="range" id="vientoSlider" min="0" max="23" value="0" step="1" />
         <!-- Horas reales a lo largo de la barra (pedido explícito del
              usuario: "pon las horas y no la diferencia en horas") -- unas
@@ -1031,6 +1079,7 @@
         <div class="viento-leyenda-titulo">Velocidad del viento</div>
         <div class="viento-leyenda-barra" id="vientoLeyendaBarra"></div>
         <div class="viento-leyenda-extremos"><span>0 km/h</span><span>54+ km/h</span></div>
+        </div>
       </div>
       <div class="leyenda" id="leyendaPanel">
         <div class="titulo">ÍNDICE DE MAR (oleaje + viento + ángulo entre ambos)</div>
@@ -1071,6 +1120,7 @@
     <button class="boyas-toggle clorofila-toggle" id="toggleClorofila" title="Clorofila del mar (plancton): satélite de Copernicus" aria-label="Mostrar/ocultar capa de clorofila" aria-pressed="false">🌿<span class="capa-label">Clorof.</span></button>
     <button class="boyas-toggle tempagua-toggle" id="toggleTempAgua" title="Temperatura del agua (modelo IBI de Copernicus)" aria-label="Mostrar/ocultar capa de temperatura del agua" aria-pressed="false">🌡<span class="capa-label">T. agua</span></button>
     <button class="boyas-toggle frentes-toggle" id="toggleFrentes" title="Frentes (bordes de clorofila y de temperatura) y corrientes: Copernicus" aria-label="Mostrar/ocultar capa de frentes y corrientes" aria-pressed="false">〰<span class="capa-label">Frentes</span></button>
+    <button class="boyas-toggle corriente-toggle" id="toggleCorriente" title="Corriente del mar (media del día, sin marea): fuerza y dirección, modelo IBI de Copernicus" aria-label="Mostrar/ocultar capa de corriente" aria-pressed="false">🌊<span class="capa-label">Corriente</span></button>
     <div class="confirmar-ubicacion-panel" id="eligeMetodoPanel">
       <div class="titulo">¿Cómo quieres marcar el punto?</div>
       <div class="botones" style="flex-direction:column; gap:8px;">
@@ -1302,7 +1352,9 @@
   import * as VentanaActividad from "/assets/js/ventana-actividad.js";
   import * as CapasMar from "/assets/js/capas-mar.js";
   import * as Frentes from "/assets/js/frentes.js";
+  import * as Corriente from "/assets/js/corriente.js";
   window.VentanaActividad = VentanaActividad;
+  window.Corriente = Corriente;
   window.CapasMar = CapasMar;
   window.Frentes = Frentes;
   window.dispatchEvent(new Event("ventana-actividad-lista"));
@@ -2172,6 +2224,7 @@ const CAPAS_MAR = {
   clorofila: {
     boton: "toggleClorofila",
     titulo: "🌿 CLOROFILA (PLANCTON)",
+    corto: "🌿 Clorofila",
     // Color por log10(mg/m³) entre 0,03 y 10.
     valorColor: (v) => (Math.log10(v) + 1.5) / 2.5,
     paradas: ["#0B2D6B", "#1F6FA8", "#2E9C8F", "#6CBF4B", "#D9D23B", "#F2A23A"],
@@ -2189,6 +2242,7 @@ const CAPAS_MAR = {
   "temperatura-agua": {
     boton: "toggleTempAgua",
     titulo: "🌡 TEMPERATURA DEL AGUA",
+    corto: "🌡 T. agua",
     valorColor: (v) => (v - 10) / 18,
     paradas: ["#2B3A8C", "#2F7FC1", "#4FB7C9", "#9AD27A", "#F2D04B", "#F28C38", "#C9372C"],
     extremos: ["10 °C", "28+ °C"],
@@ -2205,6 +2259,7 @@ const CAPAS_MAR = {
   frentes: {
     boton: "toggleFrentes",
     titulo: "〰 FRENTES Y CORRIENTES",
+    corto: "〰 Frentes",
     tipo: "frentes",
     leyenda: [
       ["doble", "Dos señales a la vez: lo más prometedor"],
@@ -2215,10 +2270,27 @@ const CAPAS_MAR = {
     ],
     resumen: "Bordes entre aguas distintas: ahí se suele juntar el alimento.",
     explica: "Morado: dos señales en el mismo sitio (borde de clorofila y de temperatura, o un borde donde la corriente junta el agua). " +
-      "Las flechas dicen hacia dónde va la corriente; cuanto más largas, más fuerte. " +
+      "Las flechas dicen hacia dónde va la corriente; cuanto más largas, más fuerte (la fuerza, por manchas, en 🌊 Corriente). " +
       "Mejor el borde que el centro de una mancha. Es una pista, no una garantía: depende de la especie y la época, y el satélite solo ve la superficie. " +
       "En gris, sin dato fiable: nubes, o pegado a la costa, donde el barro confunde al satélite. Toca el mapa para ver qué hay cerca.",
     fecha: (d) => `Satélite del ${fechaCorta(d.fecha_clorofila)}; temperatura y corriente (media del día, sin marea) del ${fechaCorta(d.fecha)}`,
+    maxDias: 3,
+  },
+  // 🌊 Corriente (2026-10-09, Mikel: "¿La corriente se puede mostrar por
+  // manchas (con direcciones)?"): manchas por fuerza y flechas de dirección.
+  // Mismo fichero que 〰 Frentes (capas/frentes.json, sin fichero nuevo);
+  // cálculo puro en assets/js/corriente.js (window.Corriente).
+  corriente: {
+    boton: "toggleCorriente",
+    fichero: "frentes",
+    titulo: "🌊 CORRIENTE EN SUPERFICIE",
+    corto: "🌊 Corriente",
+    tipo: "corriente",
+    resumen: "Media del día sin la marea: en rías, puertos y pegado a la costa manda la marea.",
+    explica: "El color dice lo fuerte que va la corriente; las flechas, hacia dónde va (más largas, más fuerte). " +
+      "Es la corriente media del día sin la marea, del modelo IBI de Copernicus: cerca de la costa, en rías y puertos la marea manda y el modelo pierde detalle. " +
+      "Toca el mapa para ver la dirección y la fuerza.",
+    fecha: (d) => `Modelo IBI, media del ${fechaCorta(d.fecha)} (sin marea)`,
     maxDias: 3,
   },
 };
@@ -2241,6 +2313,18 @@ async function moduloCapasMar() {
   return window.CapasMar || import("/assets/js/capas-mar.js");
 }
 function lienzoCapaMar(CM, d, def) {
+  if (def.tipo === "corriente") {
+    // Manchas suaves a 3 píxeles por celda (assets/js/corriente.js).
+    const { ancho, alto, px } = window.Corriente.pixelesCorriente(d, 3);
+    const lienzo = document.createElement("canvas");
+    lienzo.width = ancho;
+    lienzo.height = alto;
+    const ctx2 = lienzo.getContext("2d");
+    const im = ctx2.createImageData(ancho, alto);
+    im.data.set(px);
+    ctx2.putImageData(im, 0, 0);
+    return lienzo.toDataURL("image/png");
+  }
   const canvas = document.createElement("canvas");
   canvas.width = d.columnas;
   canvas.height = d.filas;
@@ -2274,9 +2358,34 @@ function pintarFlechasCorriente(grupo, d) {
     L.polyline([ll(ala(1)), ll(punta), ll(ala(-1))], { className: "flecha-corriente", interactive: false }).addTo(grupo);
   }
 }
+// Flechas de 🌊 Corriente: rejilla fija de pantalla (como mucho 12 en el
+// lado largo, nunca a menos de 56 px: legibles en el móvil), dirección de
+// la malla de las flechas y largo según la fuerza. Halo blanco + tinta.
+function pintarFlechasCorrienteRejilla(grupo, d) {
+  grupo.clearLayers();
+  const C = window.Corriente;
+  const t = map.getSize();
+  const puntos = C.rejillaPantalla(t.x, t.y, 12, 56).map((p) => {
+    const ll = map.containerPointToLatLng([p.x, p.y]);
+    return { ...p, lat: ll.lat, lon: ll.lng };
+  });
+  const ll = (x, y) => map.containerPointToLatLng([x, y]);
+  for (const f of C.flechasPantalla(d, d.mallaVel, d.corrU, d.corrV, puntos)) {
+    const px = f.x + f.dx * f.largo / 2, py = f.y + f.dy * f.largo / 2;
+    const cola = ll(f.x - f.dx * f.largo / 2, f.y - f.dy * f.largo / 2), punta = ll(px, py);
+    const ala = (sgn) => ll(px - f.dx * 7 + sgn * f.dy * 5, py - f.dy * 7 - sgn * f.dx * 5);
+    for (const clase of ["flecha-corriente-halo", "flecha-corriente-tinta"]) {
+      L.polyline([cola, punta], { className: clase, interactive: false }).addTo(grupo);
+      L.polyline([ala(1), punta, ala(-1)], { className: clase, interactive: false }).addTo(grupo);
+    }
+  }
+}
+// Datos por fichero (🌊 Corriente reutiliza el de 〰 Frentes).
 const datosCapasMar = {};
+const ficheroCapaMar = (nombre) => CAPAS_MAR[nombre].fichero || nombre;
 let capaMarActiva = null; // { nombre, overlay, credito }
 async function cargarCapaMar(CM, nombre) {
+  nombre = ficheroCapaMar(nombre);
   if (datosCapasMar[nombre]) return datosCapasMar[nombre];
   const r = await fetch(URL_CAPAS_MAR + nombre + ".json", { cache: "no-cache" });
   if (!r.ok) throw new Error(`HTTP ${r.status}`);
@@ -2286,12 +2395,16 @@ async function cargarCapaMar(CM, nombre) {
   if (d.corriente) {
     d.corrU = CM.bytesDeBase64(d.corriente.u);
     d.corrV = CM.bytesDeBase64(d.corriente.v);
+    // Fuerza para las manchas de 🌊 Corriente: la malla fina si el fichero
+    // la trae; si no (ficheros de antes), la de las flechas.
+    d.mallaVel = window.Corriente ? window.Corriente.mallaVelocidad(d, CM.bytesDeBase64) : null;
   }
   datosCapasMar[nombre] = d;
   return d;
 }
 function apagarCapaMar() {
   if (!capaMarActiva) return;
+  map.closePopup(); // el valor tocado era de la capa que se apaga
   map.removeLayer(capaMarActiva.overlay);
   if (capaMarActiva.alMover) map.off("moveend", capaMarActiva.alMover);
   map.attributionControl.removeAttribution(capaMarActiva.credito);
@@ -2330,12 +2443,22 @@ async function alternarCapaMar(nombre) {
   }
   if (!boton.classList.contains("activo")) return; // la apagaron mientras cargaba
   const esFrentes = def.tipo === "frentes";
-  const imagen = L.imageOverlay(d.urlImagen ||= lienzoCapaMar(CM, d, def), [[d.sur, d.oeste], [d.norte, d.este]], { opacity: esFrentes ? 0.9 : 0.7, interactive: false, pane: "tilePane" });
+  const esCorriente = def.tipo === "corriente";
+  if (esCorriente && !d.mallaVel) {
+    boton.classList.remove("activo");
+    boton.setAttribute("aria-pressed", "false");
+    avisoCapa("Esta capa aún no está disponible. Vuelve a probar más tarde.");
+    return;
+  }
+  // La imagen se guarda por capa (Frentes y Corriente comparten datos).
+  const malla = esCorriente ? d.mallaVel : d;
+  d.urlImagenes ||= {};
+  const imagen = L.imageOverlay(d.urlImagenes[nombre] ||= lienzoCapaMar(CM, malla, def), [[malla.sur, malla.oeste], [malla.norte, malla.este]], { opacity: esFrentes ? 0.9 : esCorriente ? 0.75 : 0.7, interactive: false, pane: "tilePane" });
   const overlay = L.layerGroup([imagen]);
   let alMover = null;
-  if (esFrentes && d.corriente) {
+  if ((esFrentes || esCorriente) && d.corriente) {
     const flechas = L.layerGroup().addTo(overlay);
-    alMover = () => pintarFlechasCorriente(flechas, d);
+    alMover = esCorriente ? () => pintarFlechasCorrienteRejilla(flechas, d) : () => pintarFlechasCorriente(flechas, d);
     alMover();
     map.on("moveend", alMover);
   }
@@ -2344,23 +2467,35 @@ async function alternarCapaMar(nombre) {
   map.attributionControl.addAttribution(credito);
   capaMarActiva = { nombre, overlay, credito, alMover };
   document.getElementById("capaMarTitulo").textContent = def.titulo;
+  document.getElementById("capaMarCorto").textContent = def.corto;
   document.getElementById("capaMarFecha").textContent = def.fecha(d);
   const barra = document.getElementById("capaMarBarra");
   const leyenda = document.getElementById("capaMarLeyenda");
-  barra.hidden = esFrentes;
-  document.getElementById("capaMarExtremos").hidden = esFrentes;
-  leyenda.hidden = !esFrentes;
+  const mini = document.getElementById("capaMarMini");
+  const conMuestras = esFrentes || esCorriente;
+  barra.hidden = conMuestras;
+  document.getElementById("capaMarExtremos").hidden = conMuestras;
+  leyenda.hidden = !conMuestras;
   leyenda.replaceChildren();
-  if (esFrentes) {
-    for (const [clase, texto] of def.leyenda) {
+  mini.replaceChildren();
+  mini.style.background = "";
+  if (conMuestras) {
+    // Muestras de color con su texto; minimizada, solo los colores.
+    const filas = esCorriente ? window.Corriente.leyendaTramos()
+      : def.leyenda.map(([clase, texto]) => [rgbaCss(COLORES_FRENTES[clase]), texto]);
+    for (const [color, texto] of filas) {
       const li = document.createElement("li");
       const muestra = document.createElement("i");
-      muestra.style.background = rgbaCss(COLORES_FRENTES[clase]);
+      muestra.style.background = color;
       li.append(muestra, document.createTextNode(texto));
       leyenda.append(li);
+      const m = document.createElement("i");
+      m.style.background = color;
+      mini.append(m);
     }
   } else {
     barra.style.background = `linear-gradient(90deg, ${def.paradas.join(", ")})`;
+    mini.style.background = barra.style.background;
     document.getElementById("capaMarMin").textContent = def.extremos[0];
     document.getElementById("capaMarMax").textContent = def.extremos[1];
   }
@@ -2370,11 +2505,20 @@ async function alternarCapaMar(nombre) {
   document.getElementById("capaMarDetalle").open = !window.matchMedia("(max-width: 720px)").matches;
   document.getElementById("capaMarCredito").innerHTML = credito;
   document.getElementById("capaMarPanel").hidden = false;
+  plegarCapaMar?.alAbrir();
   registrarEvento(`ver_capa_${nombre.replace("-", "_")}`);
 }
+// Tarjeta minimizable (assets/js/plegar-tarjeta.js): una sola para las
+// cuatro capas de mar, recuerda si el usuario la minimizó.
+const plegarCapaMar = window.PlegarTarjeta?.montar({
+  tarjeta: document.getElementById("capaMarPanel"),
+  boton: document.getElementById("capaMarPlegar"),
+  id: "capa_mar",
+});
 document.getElementById("toggleClorofila").addEventListener("click", () => alternarCapaMar("clorofila"));
 document.getElementById("toggleTempAgua").addEventListener("click", () => alternarCapaMar("temperatura-agua"));
 document.getElementById("toggleFrentes").addEventListener("click", () => alternarCapaMar("frentes"));
+document.getElementById("toggleCorriente").addEventListener("click", () => alternarCapaMar("corriente"));
 
 // Spots es la única capa que, al apagarla, tiene un efecto en cascada: sin
 // spots visibles no tiene sentido poder añadir uno nuevo (pedido explícito
@@ -2855,7 +2999,15 @@ document.getElementById("btnMetodoMapa").addEventListener("click", () => {
 });
 map.on("click", (e) => {
   if (!modoAnadirUbicacion && capaMarActiva) {
-    const d = datosCapasMar[capaMarActiva.nombre];
+    const d = datosCapasMar[ficheroCapaMar(capaMarActiva.nombre)];
+    if (CAPAS_MAR[capaMarActiva.nombre].tipo === "corriente") {
+      if (!d || !d.mallaVel || !window.Corriente) return;
+      const C = window.Corriente;
+      const { lat, lng } = e.latlng;
+      const texto = C.textoToque(C.corrienteEnPunto(d, d.mallaVel, d.corrU, d.corrV, lat, lng), C.dentroDeZona(d.mallaVel, lat, lng));
+      L.popup().setLatLng(e.latlng).setContent(escVA(texto)).openOn(map);
+      return;
+    }
     if (CAPAS_MAR[capaMarActiva.nombre].tipo === "frentes") {
       if (!d || !window.Frentes) return;
       const { lat, lng } = e.latlng;
@@ -4788,9 +4940,17 @@ document.getElementById("toggleViento").addEventListener("click", (e) => {
     panel.hidden = false;
     document.getElementById("vientoLeyendaBarra").style.background =
       `linear-gradient(to right, ${VIENTO_COLOR_SCALE.join(", ")})`;
+    document.getElementById("vientoMini").style.background = document.getElementById("vientoLeyendaBarra").style.background;
+    plegarViento?.alAbrir();
     registrarEvento("ver_capa_viento");
     cargarCampoViento();
   }
+});
+// La tarjeta del viento también se minimiza (assets/js/plegar-tarjeta.js).
+const plegarViento = window.PlegarTarjeta?.montar({
+  tarjeta: document.getElementById("vientoSliderPanel"),
+  boton: document.getElementById("vientoPlegar"),
+  id: "viento",
 });
 document.getElementById("vientoSlider").addEventListener("input", (e) => {
   mostrarHoraViento(+e.target.value);
