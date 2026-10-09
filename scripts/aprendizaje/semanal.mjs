@@ -22,6 +22,9 @@
 //   5. Señales: reglas que nunca se activan, especialización por región,
 //      meses de temporada que dicen las observaciones abiertas, y qué fotos de
 //      cámara conviene etiquetar primero.
+//   5b. Frentes, clorofila y corrientes en la sombra (frentes-sombra.mjs):
+//      efecto por modalidad × especie, sin signo supuesto; solo se propone
+//      lo que supera las barreras.
 //   6. Escribe solo AGREGADOS (repo público, k ≥ 5 usuarios, privacidad.mjs)
 //      y el resumen para personas (aprendizaje/RESUMEN.md).
 //
@@ -50,6 +53,7 @@ import { reglasSinUso, estacionalidad, etiquetarCamaras, especializacionRegional
 import { propuesta, fusionar, tasasAceptacion, reglasBloqueadas, validarPropuesta } from "./propuestas.mjs";
 import { cambiarConfianzas } from "./especies-texto.mjs";
 import { indiceSpot } from "../../assets/js/ventana-actividad.js";
+import { evaluarSombra, publicarSombra, VARIABLES_SOMBRA, RADIO_KM, decodificarHistorico, rasgosCaso } from "./frentes-sombra.mjs";
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 export const RUTAS = {
@@ -65,6 +69,8 @@ export const RUTAS = {
   backtest: "datos-robots/aprendizaje/backtest.json",
   deriva: "datos-robots/aprendizaje/deriva.json",
   evalRetadores: "datos-robots/aprendizaje/retadores.json",
+  frentesSombra: "datos-robots/aprendizaje/frentes-sombra.json",
+  frentesHipotesis: "aprendizaje/frentes-hipotesis.json",
   etiquetar: "datos-robots/aprendizaje/etiquetar.json",
   historial: "datos-robots/aprendizaje/historial.jsonl",
   autoCambios: "datos-robots/aprendizaje/auto-cambios.json",
@@ -187,7 +193,7 @@ export function ejecutar(p) {
     datos, textoEspecies, casosBase = [], descartes = {}, series = new Map(), avisoSeries = null, extras = {},
     config = {}, decisiones = [], propuestasExistentes = [], retadores = [], historial = [],
     espuma = [], calibracionCamaras = null, fuentesRepo = [], fuentesTablas = [], vigia = null,
-    observaciones = [], comunidad = { filas: [], error: null }, panelOpciones = {}, hoy, ahora = Date.now(), pausado = false, sinAuto = null, errores = [],
+    observaciones = [], comunidad = { filas: [], error: null }, panelOpciones = {}, rasgosFrentes = new Map(), avisoFrentes = null, hipotesisFrentes = null, hoy, ahora = Date.now(), pausado = false, sinAuto = null, errores = [],
   } = p;
   const cfg = { ...CONFIG_POR_DEFECTO, ...(config.ajuste || {}) };
   const cfgRet = { semanas_min_para_promover: 4, victorias_min_ultimas_4: 3, prob_mejora_min: 0.9, ...(config.retadores || {}) };
@@ -255,6 +261,9 @@ export function ejecutar(p) {
   if (libre.length) {
     evalRetadores.push({ interno: true, ...evaluarRetador({ id: "ajuste-libre", titulo: "Ajuste sin barreras (solo referencia interna)", explicacion_llana: "Lo que pediría el ajuste si no tuviera límites semanales.", estado: "sombra", fuentes: [], cambios: libre }, { datos, casos: prueba, series, extras }) });
   }
+
+  // 3b. Frentes, clorofila y corrientes en la sombra (todas las modalidades y especies)
+  const sombraFrentes = evaluarSombra(casos, rasgosFrentes, datos, cfg, config.frentes || {});
 
   // 4. Vigilancia
   const fr = frescura([...fuentesRepo, ...fuentesTablas], ahora);
@@ -411,6 +420,22 @@ export function ejecutar(p) {
       evidencia: `${r.n_casos} salidas; log-loss ${fmt(r.metricas.campeon.logloss, 3)} → ${fmt(r.metricas.retador.logloss, 3)}; probabilidad de mejora ${pct(r.metricas.mejora_logloss.prob_mejora)}; movería el panel ${fmt(r.panel?.media_abs, 1)} puntos de media`, evidencia_n: r.n_casos,
       riesgo: "medio: cambia el índice que ve la gente", metrica: metricaLL, detalle: { retador: r.id, fuentes: ret?.fuentes || [] } }));
   }
+  // Frentes: solo las combinaciones que superan TODAS las barreras (muestra,
+  // 5 personas, efecto claro, validación en lo reciente). Siempre con sí.
+  for (const k of sombraFrentes.superan) {
+    const e = datos.especies.find((x) => x.id === k.especie);
+    const v = VARIABLES_SOMBRA.find((x) => x.id === k.variable);
+    const ayuda = k.efecto_logodds > 0;
+    const prior = hipotesisFrentes?.grupos?.find((g) => g.especies.includes(k.especie) && g.variables?.includes(k.variable));
+    nuevas.push(propuesta({
+      clave: `frentes-${k.variable}-${k.modalidad}-${k.especie}`, fecha: hoy, tipo: "regla", impacto: 3, esfuerzo: "medio",
+      titulo: `${e?.nombres?.es || k.especie} (${k.modalidad}): «${v?.texto || k.variable}» ${ayuda ? "ayuda" : "estorba"}`,
+      explicacion_llana: `Con las salidas del diario, cuando hay ${v?.texto || k.variable} (a ${RADIO_KM[k.modalidad] ?? 10} km o menos) se pesca ${ayuda ? "más" : "menos"} ${e?.nombres?.es || k.especie} de lo que ya decía el índice. Propuesta: añadirlo al índice de esta especie en ${k.modalidad} (hay que leer la capa 〰 Frentes también en el índice en vivo).${prior ? ` Lo que decía la bibliografía antes de mirar los datos: ${prior.hipotesis}` : ""}`,
+      evidencia: `${k.n} salidas (${k.con_rasgo} con el rasgo, ${k.con_captura} con captura); efecto ${fmt(k.efecto_logodds)} ± ${fmt(k.sd)} log-odds (${fmt(Math.abs(k.z), 1)} desviaciones); log-loss en lo reciente mejora ${fmt(k.mejora_logloss_reciente, 3)}`,
+      evidencia_n: k.n, riesgo: "medio: añade un factor nuevo al índice que ve la gente",
+      detalle: { tipo: "frentes", ...k, radio_km: RADIO_KM[k.modalidad] ?? 10 },
+    }));
+  }
   const { propuestas, silenciadas, enEspera } = fusionar(propuestasExistentes, nuevas, decisiones, { hoy });
   const invalidas = propuestas.filter((x) => x.origen === "aprendizaje-semanal").map((x) => ({ id: x.id, e: validarPropuesta(x) })).filter((x) => x.e.length);
   if (invalidas.length) throw new Error(`propuestas inválidas: ${JSON.stringify(invalidas)}`);
@@ -507,12 +532,17 @@ export function ejecutar(p) {
       reglas_bloqueadas_para_auto: [...bloqueadas],
     },
   };
-  const resumenMd = escribirResumen({ senales, enEspera, semana, hoy, totales, fuentes, backtest, aplicar, reversiones, motivoNoAplicar, seguros, propuestas, deriva, avisosDeriva, evalRetadores, etiquetar, decisiones, silenciadas, config, avisoSeries, errores });
+  const resumenMd = escribirResumen({ sombraFrentes, avisoFrentes, senales, enEspera, semana, hoy, totales, fuentes, backtest, aplicar, reversiones, motivoNoAplicar, seguros, propuestas, deriva, avisosDeriva, evalRetadores, etiquetar, decisiones, silenciadas, config, avisoSeries, errores });
 
   const ficheros = {
     [RUTAS.backtest]: JSON.stringify(backtest, null, 1) + "\n",
     [RUTAS.deriva]: JSON.stringify(deriva, null, 1) + "\n",
     [RUTAS.evalRetadores]: JSON.stringify({ generado_en: new Date(ahora).toISOString(), semana, retadores: evalRetadores }, null, 1) + "\n",
+    [RUTAS.frentesSombra]: JSON.stringify({
+      generado_en: new Date(ahora).toISOString(), semana,
+      nota: "Frentes, clorofila y corrientes EN LA SOMBRA (no tocan el índice en vivo). Efecto en log-odds por encima del índice de cada especie, prior centrado en 0 (sin signo supuesto). Solo agregados de 5 personas o más. Barreras: aprendizaje/config.json (ajuste y frentes). Rasgos: scripts/aprendizaje/frentes-sombra.mjs.",
+      aviso: avisoFrentes, radio_km: RADIO_KM, ...publicarSombra(sombraFrentes),
+    }, null, 1) + "\n",
     [RUTAS.etiquetar]: JSON.stringify({ generado_en: new Date(ahora).toISOString(), semana, nota: "Fotogramas que más enseñarían a la calibración de las cámaras si se etiquetan (etiquetar-olas.html o la rutina de etiquetado).", fotogramas: etiquetar }, null, 1) + "\n",
     [RUTAS.historial]: historialNuevo.map((h) => JSON.stringify(h)).join("\n") + "\n",
     [RUTAS.autoCambios]: JSON.stringify({ semana, cambios: todosCambios.map(({ regla, actual, propuesto, revierte }) => ({ regla, actual, propuesto, ...(revierte ? { revierte } : {}) })) }, null, 1) + "\n",
@@ -588,6 +618,15 @@ export function escribirResumen(r) {
   }
   L.push("");
 
+  if (r.sombraFrentes) {
+    const sf = r.sombraFrentes;
+    L.push("## Frentes, clorofila y corrientes (en la sombra)", "");
+    L.push(`Se mira, para cada modalidad y cada especie, si pescar cerca de un borde de clorofila, de un cambio de temperatura, de una corriente que junta el agua (o con agua azul, verdosa o con floración, o con corriente fuerte) cambia lo que ya decía el índice, sin suponer de antemano si ayuda o estorba. No toca el índice en vivo.`);
+    L.push(`- Salidas con la capa de su día: ${sf.casos_con_capa} de ${sf.casos}.${r.avisoFrentes ? ` ${r.avisoFrentes}.` : ""}`);
+    if (sf.superan.length) for (const k of sf.superan) L.push(`- Supera todas las barreras: ${k.especie} en ${k.modalidad}, «${k.variable}» (${k.efecto_logodds > 0 ? "ayuda" : "estorba"}): va como pregunta.`);
+    else L.push("- Ninguna combinación supera todavía las barreras (80 salidas, 15 con y 15 sin captura, 30 con y 30 sin el rasgo, 5 personas o más, efecto de 3 desviaciones y mejora en las salidas recientes). Todas siguen en la sombra, acumulando salidas.");
+    L.push("");
+  }
   L.push("## Para etiquetar (lo que más enseña)", "");
   if (!r.etiquetar.length) L.push("Nada pendiente.");
   for (const e of r.etiquetar.slice(0, 6)) L.push(`- Cámara ${e.camara} (${e.encuadre}), ${e.fecha.slice(0, 16).replace("T", " ")} UTC: ${e.motivo}.`);
@@ -648,7 +687,7 @@ async function main() {
 
   const datos = leer(RUTAS.especies);
   const extras = { tipoFondo: leer(RUTAS.tipoFondo), profundidad: leer(RUTAS.profundidad) };
-  const { leerDiario, leerComunidad, ultimaFila, seriesDeCasos, seriesVigia, leerJSONL, ultimoCommit, leerObservaciones } = await import("./datos.mjs");
+  const { leerHistoricoFrentes, leerDiario, leerComunidad, ultimaFila, seriesDeCasos, seriesVigia, leerJSONL, ultimoCommit, leerObservaciones } = await import("./datos.mjs");
   const url = process.env.SUPABASE_URL, key = process.env.SUPABASE_SERVICE_ROLE_KEY, apiKey = (process.env.OPEN_METEO_API_KEY || "").trim();
   const config = leer(RUTAS.config, {});
   const cache = process.env.APRENDIZAJE_CACHE || join(process.env.RUNNER_TEMP || tmpdir(), "aprendizaje-cache");
@@ -704,6 +743,17 @@ async function main() {
   try { vigia = await seriesVigia({ apiKey }); } catch (e) { errores.push(`spots vigía: ${e.message}`); }
   const comunidad = url && key ? await leerComunidad({ url, key }) : { filas: [], error: "sin Supabase" };
 
+  // Frentes de la fecha de cada salida (bucket público, sin clave).
+  const rasgosFrentes = new Map();
+  let avisoFrentes = null;
+  if (casosBase.length) {
+    try {
+      const { mapa, aviso } = await leerHistoricoFrentes(casosBase.map((c) => c.fecha), { decodificar: decodificarHistorico });
+      avisoFrentes = aviso;
+      for (const c of casosBase) { const r = rasgosCaso(mapa.get(c.fecha), c); if (r) rasgosFrentes.set(c.ref, r); }
+    } catch (e) { avisoFrentes = `capa de frentes: ${e.message}`; }
+  }
+
   const pausado = existsSync(join(RAIZ, "ROBOT_PAUSADO")) || process.env.AUTOMATION_PAUSED === "true";
   const r = ejecutar({
     datos, textoEspecies: readFileSync(join(RAIZ, RUTAS.especies), "utf8"), casosBase, descartes, series, avisoSeries, extras,
@@ -711,6 +761,7 @@ async function main() {
     retadores: leerRetadores(join(RAIZ, RUTAS.retadores)), historial: leerJSONL(join(RAIZ, RUTAS.historial)),
     espuma: leerJSONL(join(RAIZ, RUTAS.espuma)), calibracionCamaras: leer(RUTAS.calibracionCamaras, null),
     fuentesRepo, fuentesTablas, vigia, observaciones: leerObservaciones(RAIZ), comunidad, hoy, pausado, errores,
+    rasgosFrentes, avisoFrentes, hipotesisFrentes: leer(RUTAS.frentesHipotesis, null),
     sinAuto: args.includes("--no-aplicar") ? "lanzado a mano sin permitir cambios automáticos" : null,
   });
   escribir(r.ficheros);

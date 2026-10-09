@@ -791,13 +791,74 @@ atribución; nunca se inventa un dato (lo que falta sale `null` + `aviso`).
   bucket **solo admite JSON** (no PNG). Medido en real: 369 kB y 208 kB
   (66 kB y 38 kB con gzip), 21 s. `index.html` las pinta en un `<canvas>`
   re-muestreado a Mercator (`assets/js/capas-mar.js`, puro y con tests),
-  botones en la columna de ríos/boyas, leyenda con la explicación ("más
-  clorofila = más plancton = más alimento para peces"), toque en el mapa =
-  valor, y atribución de Copernicus + DOI en el mapa y en la leyenda. Botones
+  botones en la columna de ríos/boyas, leyenda con la explicación
+  (corregida el 2026-10-09 con el texto de Mikel: la clorofila dice dónde
+  el mar es productivo, NO dónde están los peces; azul = poca, verdosa =
+  moderada e interesante, verde intenso = posible floración con agua turbia;
+  lo que vale es el borde verde/azul, mejor con cambio de temperatura;
+  satélite solo superficie, nubes, y la costa y las desembocaduras falsean
+  el dato), toque en el mapa = valor, y atribución de Copernicus + DOI en el mapa y en la leyenda. Botones
   en la columna B debajo de Boyas (260/322 px; 234/290 en móvil), estilo de
   `.boyas-toggle`; la imagen va en `tilePane` (entre el mapa base y los
   marcadores); leyenda con variables de `costaviva.css`. Una capa a la vez; más vieja de 7 días (clorofila) o 3 (temperatura), no se
   pinta.
+- **〰 Frentes y corrientes (2026-10-09, pedido de Mikel; PR pendiente de
+  su sí)**. Sin IA ni APIs de pago: sale de lo que ya baja
+  `descargar-capas.py` más la corriente media del día **sin marea** de IBI
+  (`cmems_mod_ibi_phy-cur_anfc_detided-0.027deg_P1D-m`, `uo_detided` /
+  `vo_detided`, mismo producto y DOI 10.48670/moi-00027; sin marea porque en
+  la plataforma la corriente de marea de una hora tapa la circulación).
+  Fichero `capas/frentes.json` (malla común de 1/18°, ~5-6 km; ~255 kB) y
+  copia diaria `capas/historico/frentes-AAAA-MM-DD.json` (zlib, ~50-80 kB)
+  para el aprendizaje. Mismo bucket, mismo paso del job `mar`; el paso de
+  subida va con `!cancelled()` para que, si fallan los frentes, clorofila y
+  temperatura se suban igual (el job sale en rojo). Cero subrequests de
+  Cloudflare: el navegador lo pide directo al bucket.
+  **Método** (Belkin y O'Reilly 2009, J. Mar. Syst. 78:319-326, DOI
+  10.1016/j.jmarsys.2008.11.018, simplificado): mediana 3x3 + Sobel en
+  unidades físicas; frente de clorofila si |∇log10 CHL| ≥ 0,03 por km (se
+  duplica en ~10 km), térmico si |∇T| ≥ 0,05 °C/km (medio grado en 10 km).
+  Chang y Cornillon 2015 (DSR II 119:40-47, DOI 10.1016/j.dsr2.2013.12.001)
+  llaman fuertes a > 0,2 K/km y débiles a < 0,1 en imágenes de ~1 km; aquí
+  son más bajos porque la malla de ~5 km suaviza. **Umbrales de Claude, por
+  validar con el primer mes real**: el script imprime el % de celdas y avisa
+  si pasa del 25 %. **Primera ejecución real (2026-10-09, rama de la PR):** 81.568
+  celdas de mar; frente de clorofila 0,79 %, térmico 8,64 %, los dos 0,45 %,
+  convergencia 0,23 %, nubes 49,8 %, franja costera 1,7 %; 255 kB + 60 kB de
+  histórico. El térmico sale mucho más que el de clorofila (la mitad del mar
+  estaba bajo nubes ese día): vigilarlo antes de tocar umbrales. Convergencia: -(∂u/∂x + ∂v/∂y) ≥ 0,1·f (|δ|/f, McWilliams
+  2016, Proc. R. Soc. A 472, DOI 10.1098/rspa.2016.0117); lo que converge
+  acumula lo que flota (D'Asaro et al. 2018, PNAS 115:1162-1167, DOI
+  10.1073/pnas.1718453115). IBI va a 1/36° (~2-3 km) y se promedia a 1/18°;
+  cerca de la costa el modelo pierde detalle y las diferencias centradas
+  necesitan vecinos de mar, así que en la primera celda junto a tierra no
+  hay convergencia. **Máscaras**: tierra; franja de 5 km desde tierra donde
+  la clorofila del satélite no es fiable (aguas "caso 2": sedimentos y
+  materia orgánica disuelta de ríos, IOCCG 2000, informe 3; y el efecto de
+  adyacencia de tierra): ahí ni frente ni nivel de clorofila (el térmico y
+  la convergencia sí); y nubes: la variable `flags` del L4 "gapfree"
+  (máscara 2 = INTERPOLATED, 1 = LAND, comprobado en los metadatos STAC del
+  dataset el 2026-10-09) marca lo que el productor rellenó; celda con menos
+  de la mitad observada = nube, sin frente ni nivel. El borde con tierra o
+  con nube nunca da frente (Sobel necesita los 8 vecinos). Nivel de
+  clorofila: baja < 0,2, moderada, alta ≥ 2 mg/m³ (clases de Antoine et al.
+  1996, GBC 10:57-69, DOI 10.1029/95GB02832, adaptadas al Cantábrico).
+  **Mapa**: botón 〰 "Frentes" debajo de T. agua (384/74 px; 346/66 en
+  móvil), una capa de mar a la vez, misma tarjeta del dock con muestras de
+  color en vez de barra: morado = dos señales a la vez (clorofila + térmico,
+  o frente con la corriente juntando el agua en esa celda o al lado), verde
+  = borde de clorofila, naranja = térmico, celeste tenue = la corriente
+  junta, gris = sin dato fiable (nubes o costa). Flechas de corriente
+  (polilíneas SVG, clase `.flecha-corriente`, como mucho 12 por lado de
+  pantalla, largo según la fuerza) que se rehacen en `moveend` (se quita el
+  manejador al apagar). Toque = frase llana ("Borde de clorofila y de
+  temperatura a unos 4 km: lo más prometedor. Corriente hacia el NE: 1,1
+  km/h (0,6 nudos)"), sin cifras de umbral. Cálculo puro en
+  `assets/js/frentes.js` (`window.Frentes`). Analítica: `ver_capa_frentes`.
+  **Índice: NO cambia.** Evaluación en la sombra en el aprendizaje semanal
+  (ver "Aprendizaje autónomo del índice", frentes en la sombra).
+  Tests: `test/frentes.test.js` (en tests.yml; fixture
+  `test/fixtures/frentes-mini.json` generado con las funciones de Python).
 - **Pasado para el diario (ERA5)**: `functions/_lib/era5.js`. Si la
   atmósfera va por MET Norway (`metno`) y la consulta es ENTERA del pasado
   (`ventanaPasada`), `fuentes.js` la manda a ERA5 (`fuentes_datos: ["era5"]`).
@@ -2439,6 +2500,38 @@ sus 5 salidas donde el índice más falló, para que anote qué pasó.
   `confianza_experta` (aplicado solo) y la regla queda bloqueada.
 - Pesos base, b0 (calibración global), retirar, partir por región, temporada
   nueva, promover un retador: siempre propuesta.
+
+**Frentes, clorofila y corrientes en la sombra (2026-10-09, Mikel: "hay que
+validar para todas las artes y especies").** `scripts/aprendizaje/frentes-sombra.mjs`:
+para cada salida, la capa 〰 Frentes de SU día (`datos.mjs`
+`leerHistoricoFrentes`, bucket público, una petición por fecha, tope 200)
+da 9 rasgos binarios: frente de clorofila / térmico / los dos / convergencia
+/ frente con convergencia a ≤ R km (R = 10 km costa y submarina, 20 km
+embarcación: elección de Claude), clorofila baja / moderada / alta y
+corriente fuerte (≥ 0,25 m/s, ~medio nudo). Para CADA modalidad del diario
+(costa, embarcación, submarina; la técnica —spinning, curricán, fondo...—
+solo está en `capturas.tecnica`, sin salidas "sin captura" por técnica, así
+que no se puede evaluar sin sesgo) × CADA especie de especies.json (las
+salidas donde la especie estaba en el ranking del índice o se pescó) ×
+rasgo, ajusta y ~ σ(logit(índice de esa especie) + a + β·x) con β ~ N(0,
+0,5²): **sin signo supuesto** (un bloom puede restar). Barreras: las de
+`config.json → ajuste` (80 salidas, 15 con y 15 sin captura, 30 con y 30 sin
+el rasgo, 5 personas o más con el rasgo, k ≥ 5 para publicar) + `frentes`
+(|β| ≥ 3 desviaciones: hay ~1.400 combinaciones y con 2 saldrían falsos
+positivos por azar; mejora del log-loss ≥ 0,002 en el 30 % más reciente con
+el mismo signo). Lo que supera todo va a `propuestas.json` (siempre
+`requiere_si`, tipo `regla`); el resto se queda acumulando y RESUMEN.md lo
+dice. Público: `datos-robots/aprendizaje/frentes-sombra.json` (solo
+agregados; sin motivos con cifras si hay menos de 5 personas). Hipótesis
+previas por grupo, **solo documentadas, nunca activadas**:
+`aprendizaje/frentes-hipotesis.json` (bonito del norte juvenil: sin relación
+consistente con frentes térmicos y quizá sí con los de clorofila en
+agosto-septiembre, Sagarminaga y Arrizabalaga 2014, DSR II 107:54-63, DOI
+10.1016/j.dsr2.2013.11.006, repositorio con licencia NC: solo se cita).
+Activar una combinación aceptada = leer `frentes.json` también en el índice
+en vivo (variable de contexto nueva en `reglas-expertas.js`) + regla en
+especies.json: trabajo aparte, con su PR. La copia diaria empieza con el
+primer `mar` tras fusionar: las salidas anteriores no tienen capa.
 
 **Campeón/retadores:** `aprendizaje/retadores/*.json` (estado `sombra`) se
 calculan cada lunes sobre los mismos casos y se apuntan en

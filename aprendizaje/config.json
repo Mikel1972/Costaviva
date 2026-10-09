@@ -16,6 +16,13 @@
   "panel_max_media_puntos": 3,
   "panel_max_puntos": 10
  },
+ "frentes": {
+  "descripcion": "Evaluación en la sombra de frentes, clorofila y corrientes (scripts/aprendizaje/frentes-sombra.mjs). Además de las barreras de `ajuste` (muestra y 5 personas): efecto de z_min desviaciones o más (3: hay cientos de combinaciones modalidad × especie × rasgo y con 2 saldrían falsos positivos por azar), prior del efecto N(0, tau_beta²) sin signo supuesto, y mejora en el 30 % más reciente.",
+  "z_min": 3,
+  "tau_beta": 0.5,
+  "tau_a": 1.5,
+  "fraccion_prueba": 0.3
+ },
  "retadores": {
   "semanas_min_para_promover": 4,
   "victorias_min_ultimas_4": 3,

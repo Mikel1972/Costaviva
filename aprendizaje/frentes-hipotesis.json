@@ -1,0 +1,61 @@
+{
+ "descripcion": "Hipótesis previas de la bibliografía abierta sobre frentes, clorofila y corrientes por grupo de especies (2026-10-09). SOLO DOCUMENTADAS: la evaluación en la sombra (scripts/aprendizaje/frentes-sombra.mjs) usa un prior centrado en 0 para todas las combinaciones y no las activa nunca. Se citan en la propuesta si los datos llegan a superar las barreras, para que Mikel compare.",
+ "fuentes": {
+  "sagarminaga_arrizabalaga_2014": {
+   "titulo": "Sagarminaga Y., Arrizabalaga H. (2014). Relationship of Northeast Atlantic albacore juveniles with surface thermal and chlorophyll-a fronts. Deep-Sea Research II 107: 54-63.",
+   "doi": "10.1016/j.dsr2.2013.11.006",
+   "url": "https://dspace.aztidata.es/handle/24689/329",
+   "licencia": "repositorio de AZTI con CC BY-NC-SA 3.0 ES: solo se cita el resultado, no se reutiliza el texto",
+   "fecha_consulta": "2026-10-09",
+   "leido": "resumen",
+   "nota": "Bonito del norte juvenil en el golfo de Bizkaia (cacea y cebo vivo vascos, MODIS 2003-2005, algoritmo de Belkin y O'Reilly). Los frentes térmicos y de clorofila varían mucho y no coinciden; las capturas no siguen de forma consistente a los gradientes térmicos; posible relación con gradientes de clorofila altos en agosto y septiembre."
+  },
+  "dasaro_2018_convergencia": {
+   "titulo": "D'Asaro E.A. et al. (2018). Ocean convergence and the dispersion of flotsam. PNAS 115(6): 1162-1167.",
+   "doi": "10.1073/pnas.1718453115",
+   "licencia": "acceso abierto (PNAS): solo se cita",
+   "fecha_consulta": "2026-10-09",
+   "leido": "resumen",
+   "nota": "Las zonas de convergencia de la corriente superficial concentran lo que flota."
+  },
+  "texto_mikel_2026_10_09": {
+   "titulo": "Explicación sobre clorofila y pesca que pegó Mikel (2026-10-09)",
+   "licencia": "propia",
+   "nota": "La clorofila indica productividad, no peces; lo útil son los bordes entre aguas de distinta clorofila, más si coinciden con un frente térmico o una corriente; un bloom (verde intenso) no implica más peces; depende de especie y época."
+  }
+ },
+ "grupos": [
+  {
+   "id": "pelagicos_oceanicos",
+   "especies": ["bonito_norte", "atun_rojo", "bacoreta", "llampuga", "pez_limon"],
+   "variables": ["frente_clorofila", "frente_termico", "frente_ambos", "frente_y_corriente"],
+   "signo_previo": "incierto (quizá + con frentes de clorofila a finales de verano)",
+   "hipotesis": "para el bonito del norte juvenil del golfo de Bizkaia no hubo relación consistente con los frentes térmicos y quizá sí con los de clorofila en agosto-septiembre (Sagarminaga y Arrizabalaga 2014).",
+   "fuente": "sagarminaga_arrizabalaga_2014"
+  },
+  {
+   "id": "pelagicos_costeros",
+   "especies": ["caballa", "jurel", "chicharro_canario", "anjova", "bicuda", "palometa", "lubina", "herrera", "lisa"],
+   "variables": ["frente_clorofila", "frente_ambos", "convergencia", "frente_y_corriente"],
+   "signo_previo": "+ (hipótesis, sin estudio propio)",
+   "hipotesis": "los bordes de clorofila y donde la corriente junta el agua acumulan alimento (D'Asaro et al. 2018 para la acumulación; la relación con estas especies es la hipótesis del texto de Mikel, sin estudio que la mida aquí).",
+   "fuente": "dasaro_2018_convergencia"
+  },
+  {
+   "id": "visuales_agua_turbia",
+   "especies": ["lubina", "dorada", "sargo", "denton", "bonito_norte", "anjova", "bicuda"],
+   "variables": ["clorofila_alta"],
+   "signo_previo": "- (hipótesis)",
+   "hipotesis": "con mucha clorofila (floración) el agua se enturbia y no implica más peces; los que cazan a la vista podrían entrar peor (texto de Mikel, sin estudio que lo mida aquí).",
+   "fuente": "texto_mikel_2026_10_09"
+  },
+  {
+   "id": "demersales_y_cefalopodos",
+   "especies": ["merluza", "rape", "gallo", "lenguado", "rodaballo", "raya", "congrio", "faneca", "maragota", "pulpo", "sepia", "calamar"],
+   "variables": [],
+   "signo_previo": "sin hipótesis (0)",
+   "hipotesis": "no se encontró bibliografía abierta que relacione los frentes de superficie con la pesca recreativa de fondo o de cefalópodos: se evalúa igual, sin prior.",
+   "fuente": null
+  }
+ ]
+}
