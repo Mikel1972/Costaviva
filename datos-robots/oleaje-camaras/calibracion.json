@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-09T11:37:53.466Z",
- "lineasHistorial": 192,
+ "fecha": "2026-10-09T11:47:28.340Z",
+ "lineasHistorial": 204,
  "etiquetas": 43,
  "etiquetasClaude": 43,
  "calibracion": {
@@ -35,22 +35,22 @@
    "pocosDatos": true
   },
   "donostia/principal": {
-   "a": 44.0347,
+   "a": 39.1759,
    "p": 1,
-   "n": 3,
+   "n": 4,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
-   "dias": 1,
-   "hMin": 3.51,
+   "dias": 2,
+   "hMin": 1.76,
    "hMax": 3.59,
    "errorRel": 1,
    "pocosDatos": true
   },
   "zarautz/dinamico": {
-   "a": 6.2247,
+   "a": 6.2423,
    "p": 0.5,
-   "n": 20,
+   "n": 21,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -178,9 +178,9 @@
    "pocosDatos": true
   },
   "berria/dinamico": {
-   "a": 4.3345,
+   "a": 4.4946,
    "p": 0.5,
-   "n": 14,
+   "n": 15,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 9,
    "franjasClaude": [
@@ -260,10 +260,10 @@
   },
   "zarautz": {
    "sustituye": false,
-   "motivo": "ruidosa (±49 %) y sin calibrar; 7 etiquetas de Claude en 2 franjas (faltan)",
+   "motivo": "ruidosa (±44 %) y sin calibrar; 7 etiquetas de Claude en 2 franjas (faltan)",
    "ruido": {
-    "ruido": 0.492,
-    "pares": 9
+    "ruido": 0.441,
+    "pares": 10
    }
   },
   "getaria": {
