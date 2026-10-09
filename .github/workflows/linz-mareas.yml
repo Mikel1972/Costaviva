@@ -1,0 +1,91 @@
+name: Datos de Nueva Zelanda (mareas LINZ y reservas DOC)
+
+# Fase 1 de NZ (2026-10-09). Solo a mano (workflow_dispatch): las tablas de
+# LINZ salen una vez al año (2025-2029 ya publicadas) y las reservas de DOC
+# cambian muy de vez en cuando. Sin IA, sin claves y sin tocar producción ni
+# el bucket: regenera datos/nz/ con
+#   - scripts/fuentes/linz-mareas.mjs (pleamares y bajamares de LINZ, CC BY 4.0
+#     por la declaración general de LINZ, pendiente de confirmación escrita)
+#   - scripts/fuentes/doc-reservas-marinas.mjs (polígonos de DOC, CC BY 4.0)
+# y sube el resultado a una rama `robot/nz-datos-<run>` con su PR, para que
+# se revise antes de llegar a main. El PR lo abre este mismo workflow; si
+# GitHub no le deja, crea un Issue con el enlace (como robot-diseno-pr.yml).
+#
+# Si `--comprobar` dice que el puerto de algún spot cambiaría, el paso falla:
+# hay que regenerar functions/_lib/nz/spots-nz.js a mano (el test
+# test/nz-mareas.test.js también lo detecta).
+
+on:
+  workflow_dispatch:
+    inputs:
+      anios:
+        description: "Años de las tablas de LINZ, separados por comas (vacío: el actual y el siguiente)"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  datos-nz:
+    if: vars.AUTOMATION_PAUSED != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Comprobar el puerto LINZ de cada spot
+        run: node scripts/fuentes/linz-mareas.mjs --comprobar --cache /tmp/linz
+
+      - name: Descargar mareas de LINZ
+        env:
+          ANIOS: ${{ inputs.anios }}
+        run: |
+          if [ -n "$ANIOS" ]; then
+            node scripts/fuentes/linz-mareas.mjs --cache /tmp/linz --anios "$ANIOS"
+          else
+            node scripts/fuentes/linz-mareas.mjs --cache /tmp/linz
+          fi
+
+      - name: Descargar reservas marinas de DOC
+        run: node scripts/fuentes/doc-reservas-marinas.mjs
+
+      - name: Tests de NZ con los datos nuevos
+        run: node --test test/nz-mareas.test.js test/nz-region.test.js
+
+      - name: Rama y PR con los datos nuevos
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RAMA: robot/nz-datos-${{ github.run_id }}
+        run: |
+          git config user.name "Costaviva (datos de NZ)"
+          git config user.email "noreply@anthropic.com"
+          git add datos/nz
+          if git diff --cached --quiet; then echo "Sin cambios en datos/nz."; exit 0; fi
+          git checkout -q -b "$RAMA"
+          git commit -qm "Datos de NZ: mareas LINZ y reservas DOC regenerados"
+          git push -q origin "$RAMA"
+          {
+            echo "Datos de Nueva Zelanda regenerados a mano (workflow linz-mareas.yml, sin IA)."
+            echo
+            echo "- Mareas: LINZ, \"Sourced from Land Information New Zealand data (CC BY 4.0)\"."
+            echo "- Reservas marinas: DOC, CC BY 4.0."
+            echo
+            echo "La región NZ sigue apagada (REGIONES_ACTIVAS): fusionar esto no cambia nada visible."
+          } > /tmp/cuerpo.md
+          if ! gh pr create --base main --head "$RAMA" --title "Datos de NZ (robot): mareas LINZ y reservas DOC" --body-file /tmp/cuerpo.md; then
+            {
+              echo "El workflow no ha podido abrir el PR (falta activar Settings → Actions → General → *Allow GitHub Actions to create and approve pull requests*)."
+              echo
+              echo "Créalo con un clic: https://github.com/${{ github.repository }}/compare/main...$RAMA?expand=1"
+            } > /tmp/issue.md
+            gh issue create --title "Datos de NZ regenerados: falta abrir el PR" --body-file /tmp/issue.md
+          fi
