@@ -30,6 +30,8 @@ import { valorByte } from "./capas-mar.js";
 
 // Filas y columnas de la malla que cubren unos límites (con margen en
 // celdas), recortadas a la malla. null si no se solapan.
+import { I18n } from "./i18n-modulo.js";
+
 export function ventanaMalla(d, lim, margen = 0) {
   const f0 = Math.max(0, Math.floor((d.norte - lim.norte) / d.paso) - margen);
   const f1 = Math.min(d.filas - 1, Math.floor((d.norte - lim.sur) / d.paso) + margen);
@@ -296,17 +298,17 @@ export function etiquetasIsotermas(lineas, { ancho, alto, max = 8, separacion = 
 
 // "18°", "18,5°" (coma decimal).
 export function textoGrados(n) {
-  return `${Number.isInteger(n) ? n : n.toFixed(1).replace(".", ",")}°`;
+  return `${Number.isInteger(n) ? n : I18n.decimal(n.toFixed(1))}°`;
 }
 // "16 °C", "16,5 °C" (leyenda).
 export function textoExtremo(n) {
-  return `${Number.isInteger(n) ? n : n.toFixed(1).replace(".", ",")} °C`;
+  return `${Number.isInteger(n) ? n : I18n.decimal(n.toFixed(1))} °C`;
 }
 // "18,4 °C en superficie" (al tocar el mapa).
 export function textoToque(v) {
-  return `${v.toFixed(1).replace(".", ",")} °C en superficie`;
+  return I18n.t("capas.tagua.formato", { v: I18n.decimal(v.toFixed(1)) });
 }
 // "Líneas cada 1 °C", "cada 0,5 °C".
 export function textoIntervalo(paso) {
-  return `Líneas cada ${String(paso).replace(".", ",")} °C`;
+  return I18n.t("iso.intervalo", { v: I18n.decimal(String(paso)) });
 }

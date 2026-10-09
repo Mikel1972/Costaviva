@@ -16,9 +16,11 @@
 //
 // Lo puro (sin DOM) tiene tests en test/selector-fondo.test.js.
 
+import { I18n } from "./i18n-modulo.js";
+
 export const OPCIONES = [
-  { id: "profundidad", icono: "〰", texto: "Profundidad", detalle: "Isóbatas 20–5000 m" },
-  { id: "tipo", icono: "🪨", texto: "Tipo de fondo", detalle: "Roca, arena, fango, Posidonia" },
+  { id: "profundidad", icono: "〰", texto: I18n.t("selfondo.profundidad"), detalle: I18n.t("selfondo.profundidad_det") },
+  { id: "tipo", icono: "🪨", texto: I18n.t("fondo.tipo"), detalle: I18n.t("selfondo.tipo_det") },
 ];
 
 export const NINGUNO = Object.freeze({ profundidad: false, tipo: false });
@@ -37,7 +39,7 @@ export function resumen(estado) {
   const activas = OPCIONES.filter((o) => estado[o.id]).map((o) => o.texto.toLowerCase());
   return {
     activo: activas.length > 0,
-    texto: activas.length ? `Fondo del mar: ${activas.join(" y ")}` : "Fondo del mar: ninguna capa",
+    texto: activas.length ? I18n.t("selfondo.resumen", { capas: activas.join(I18n.t("va.seg.y")) }) : I18n.t("selfondo.ninguna"),
   };
 }
 
@@ -54,7 +56,7 @@ export function montarSelector({ boton, panel, capas, alEncender = () => {} }) {
 
   const tit = document.createElement("div");
   tit.className = "titulo";
-  tit.textContent = "Fondo del mar";
+  tit.textContent = I18n.t("selfondo.titulo");
   panel.appendChild(tit);
   for (const o of OPCIONES) {
     const label = document.createElement("label");
@@ -81,7 +83,7 @@ export function montarSelector({ boton, panel, capas, alEncender = () => {} }) {
   const ninguno = document.createElement("button");
   ninguno.type = "button";
   ninguno.className = "ninguno";
-  ninguno.textContent = "Ninguno";
+  ninguno.textContent = I18n.t("selfondo.ninguno");
   panel.appendChild(ninguno);
   ninguno.addEventListener("click", () => { aplicar(elegir(estado(), "ninguno")); cerrar(); });
 
@@ -99,7 +101,7 @@ export function montarSelector({ boton, panel, capas, alEncender = () => {} }) {
     const r = resumen(e);
     boton.classList.toggle("activo", r.activo);
     boton.setAttribute("title", r.texto);
-    boton.setAttribute("aria-label", `${r.texto}. Elegir capas del fondo`);
+    boton.setAttribute("aria-label", I18n.t("selfondo.aria", { texto: r.texto }));
     ninguno.disabled = !r.activo;
   }
 

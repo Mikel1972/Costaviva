@@ -17,6 +17,7 @@ import {
 import { comprobarPublicable } from "../scripts/aprendizaje/privacidad.mjs";
 import { ejecutar, RUTAS } from "../scripts/aprendizaje/semanal.mjs";
 import { validarPropuesta } from "../scripts/aprendizaje/propuestas.mjs";
+import { fuenteEs } from "./i18n-html.js";
 
 const X = JSON.parse(readFileSync("test/fixtures/frentes-mini.json", "utf8"));
 const D = X.frentes;
@@ -233,7 +234,7 @@ test("frentes: Python usa la máscara de nubes del producto, corrientes sin mare
 });
 
 test("frentes: index.html tiene el botón, la leyenda y los textos corregidos de la clorofila", () => {
-  const html = readFileSync("index.html", "utf8");
+  const html = fuenteEs(readFileSync("index.html", "utf8"));
   assert.match(html, /id="toggleFrentes"/);
   assert.match(html, /\.frentes-toggle \{ top: 384px; right: 74px; \}/);
   assert.match(html, /\.frentes-toggle \{ top: 346px; right: 66px; \}/);

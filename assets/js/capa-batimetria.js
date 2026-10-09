@@ -26,10 +26,9 @@
 // lo demás solo se usa en el navegador (index.html: window.Batimetria).
 
 import { estadisticasPunto, parsearWcsTexto, urlWcs, cajaAlrededor } from "./batimetria-calculo.js";
+import { I18n } from "./i18n-modulo.js";
 
-export const ATRIBUCION_ISOBATAS =
-  'Isóbatas: <a href="https://doi.org/10.12770/cf51df64-56f9-4a99-b1aa-36b8d7b743a1" target="_blank" rel="noopener">EMODnet Bathymetry Consortium (DTM 2024)</a>, '
-  + '<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>, calculadas por Costaviva. No sirven para navegar.';
+export const ATRIBUCION_ISOBATAS = I18n.t("bati.atribucion");
 
 export const NIVELES_SOMEROS = [20, 50, 100];
 export const NIVELES_PROFUNDOS = [150, 200, 300, 500, 750, 1000, 1500, 2000, 3000, 4000, 5000];
@@ -176,9 +175,9 @@ function crearLeyenda(L) {
   ctl.onAdd = () => {
     const div = L.DomUtil.create("div", "isobatas-leyenda");
     div.setAttribute("role", "img");
-    div.setAttribute("aria-label", `Isóbatas de ${TODOS_LOS_NIVELES[0]} a ${TODOS_LOS_NIVELES.at(-1)} m: más oscuro, más profundo`);
+    div.setAttribute("aria-label", I18n.t("bati.leyenda_aria", { min: TODOS_LOS_NIVELES[0], max: TODOS_LOS_NIVELES.at(-1) }));
     const tit = L.DomUtil.create("div", "tit", div);
-    tit.textContent = "Profundidad (m)";
+    tit.textContent = I18n.t("bati.profundidad_m");
     const barra = L.DomUtil.create("div", "barra", div);
     for (const n of TODOS_LOS_NIVELES) {
       const i = L.DomUtil.create("i", "", barra);

@@ -27,10 +27,12 @@
 // test/capas-combinadas.test.js.
 
 // Orden de los botones, de las filas de la leyenda y de las líneas del globo.
+import { I18n } from "./i18n-modulo.js";
+
 export const CAPAS = ["clorofila", "temperatura-agua", "frentes", "corriente"];
 export const PRIORIDAD_FONDO = ["clorofila", "temperatura-agua", "corriente", "frentes"];
 export const ICONOS = { clorofila: "🌿", "temperatura-agua": "🌡", frentes: "〰", corriente: "🌊" };
-export const NOMBRES = { clorofila: "Clorofila", "temperatura-agua": "Temperatura del agua", frentes: "Frentes", corriente: "Corriente" };
+export const NOMBRES = { clorofila: I18n.t("cc.nombre.clorofila"), "temperatura-agua": I18n.t("cc.nombre.tagua"), frentes: I18n.t("cc.nombre.frentes"), corriente: I18n.t("cc.nombre.corriente") };
 // Líneas de clorofila cuando no es el fondo (mg/m³): las clases baja <
 // 0,2 ≤ moderada < 2 ≤ alta de la leyenda y del índice, y 0,5 en medio.
 export const NIVELES_CLOROFILA = [0.2, 0.5, 2];
@@ -101,7 +103,7 @@ export function guardarEstado(almacen, estado) {
 // ---------------------------------------------------------------------------
 // Textos (coma decimal, lenguaje llano, sin cifras de umbrales).
 // ---------------------------------------------------------------------------
-const coma = (x, dec = 1) => String(+x.toFixed(dec)).replace(".", ",");
+const coma = (x, dec = 1) => I18n.decimal(String(+x.toFixed(dec)));
 
 // "Clorofila moderada (0,45 mg/m³)"; null = sin dato.
 export function nivelClorofila(v) {
@@ -110,28 +112,28 @@ export function nivelClorofila(v) {
 }
 export function textoClorofila(v) {
   const n = nivelClorofila(v);
-  if (!n) return "Clorofila: sin dato aquí (nubes o costa)";
-  const extra = n === "baja" ? "agua limpia" : n === "alta" ? "posible floración, agua turbia" : null;
-  return `Clorofila ${n} (${coma(v, v < 1 ? 2 : 1)} mg/m³${extra ? `: ${extra}` : ""})`;
+  if (!n) return I18n.t("cc.clorofila.sin_dato");
+  const extra = n === "baja" ? I18n.t("cc.clorofila.extra_baja") : n === "alta" ? I18n.t("cc.clorofila.extra_alta") : null;
+  return I18n.t(`cc.clorofila.${n}`, { v: coma(v, v < 1 ? 2 : 1), extra: extra ? `: ${extra}` : "" });
 }
 export function textoTemperatura(v) {
-  if (v === null || v === undefined || !Number.isFinite(v)) return "Temperatura: sin dato aquí";
-  return `${coma(v)} °C en superficie`;
+  if (v === null || v === undefined || !Number.isFinite(v)) return I18n.t("cc.temp.sin_dato");
+  return I18n.t("capas.tagua.formato", { v: coma(v) });
 }
 
 // Resumen de 〰 Frentes para una línea del globo, a partir de los rasgos de
 // frentes.js (rasgosPunto, radio 10 km). null = fuera de la malla.
 export function textoFrentes(r) {
-  if (!r) return "Frentes: sin dato aquí";
-  const dist = (k) => (r[`dist_${k}_km`] <= 3 ? "aquí mismo" : `a unos ${Math.round(r[`dist_${k}_km`])} km`);
-  if (r.frente_ambos) return `Borde de clorofila y de temperatura ${dist("frente_ambos")}: lo más prometedor`;
-  if (r.frente_y_corriente) return `Borde donde la corriente junta el agua ${dist("frente_y_corriente")}`;
+  if (!r) return I18n.t("cc.frentes.sin_dato");
+  const dist = (k) => (r[`dist_${k}_km`] <= 3 ? I18n.t("frentes.aqui_mismo") : I18n.t("frentes.a_unos", { km: Math.round(r[`dist_${k}_km`]) }));
+  if (r.frente_ambos) return I18n.t("cc.frentes.ambos", { dist: dist("frente_ambos") });
+  if (r.frente_y_corriente) return I18n.t("cc.frentes.y_corriente", { dist: dist("frente_y_corriente") });
   const partes = [];
-  if (r.frente_clorofila) partes.push(`borde de agua verde y azul ${dist("frente_clorofila")}`);
-  if (r.frente_termico) partes.push(`cambio de temperatura ${dist("frente_termico")}`);
-  if (partes.length) return partes.join(" y ").replace(/^./, (c) => c.toUpperCase());
-  if (r.convergencia) return `La corriente junta el agua ${dist("convergencia")}`;
-  return r.frente_clorofila === null ? "Sin cambios de temperatura a menos de 10 km" : "Sin frentes a menos de 10 km";
+  if (r.frente_clorofila) partes.push(I18n.t("cc.frentes.clorofila", { dist: dist("frente_clorofila") }));
+  if (r.frente_termico) partes.push(I18n.t("cc.frentes.termico", { dist: dist("frente_termico") }));
+  if (partes.length) return partes.join(I18n.t("va.seg.y")).replace(/^./, (c) => c.toUpperCase());
+  if (r.convergencia) return I18n.t("cc.frentes.convergencia", { dist: dist("convergencia") });
+  return r.frente_clorofila === null ? I18n.t("frentes.sin_cambios_temp") : I18n.t("frentes.sin_frentes");
 }
 
 // Globo combinado: una línea por capa, en el orden de CAPAS, con su icono.
@@ -143,13 +145,13 @@ export function lineasGlobo(partes) {
 // Texto corto de la leyenda conjunta para cada fila (lo que se ve en el
 // mapa), una línea en el móvil.
 export function textoFila(nombre, modo, { intervalo = null } = {}) {
-  const cada = intervalo ? `, cada ${coma(intervalo)} °C` : "";
-  if (nombre === "clorofila") return modo.relleno ? "azul, poca · verde · amarillo, mucha" : "líneas verdes, en mg/m³";
-  if (nombre === "temperatura-agua") return modo.relleno ? `un color por grado; líneas${cada}` : `líneas con su número${cada}`;
-  if (nombre === "corriente") return modo.relleno ? "más oscuro, más fuerte; flechas: hacia dónde va" : "flechas: hacia dónde va (más largas, más fuerte)";
-  if (nombre === "frentes") return modo.trazos ? "" : "bordes entre aguas distintas";
+  const cada = intervalo ? I18n.t("cc.fila.cada", { v: coma(intervalo) }) : "";
+  if (nombre === "clorofila") return modo.relleno ? I18n.t("cc.fila.clorofila_relleno") : I18n.t("cc.fila.clorofila_lineas");
+  if (nombre === "temperatura-agua") return modo.relleno ? I18n.t("cc.fila.tagua_relleno", { cada }) : I18n.t("cc.fila.tagua_lineas", { cada });
+  if (nombre === "corriente") return modo.relleno ? I18n.t("cc.fila.corriente_relleno") : I18n.t("cc.fila.corriente_flechas");
+  if (nombre === "frentes") return modo.trazos ? "" : I18n.t("cc.fila.frentes");
   return "";
 }
 
 // Etiquetas cortas de las muestras de 〰 Frentes en la fila.
-export const ETIQUETAS_TRAZO = { doble: "dos señales", clorofila: "clorofila", termico: "temperatura" };
+export const ETIQUETAS_TRAZO = { doble: I18n.t("cc.trazo.doble"), clorofila: I18n.t("cc.trazo.clorofila"), termico: I18n.t("cc.trazo.termico") };

@@ -14,6 +14,8 @@ import {
   ESPUMA_MINIMA, ELEVACION_MINIMA, elevacionSolar,
 } from "../functions/_lib/oleaje-camaras.js";
 import * as calibracion from "../scripts/oleaje-camaras/calibracion.mjs";
+// Las funciones copiadas de index.html usan I18n (textos en español por defecto).
+import "../assets/js/i18n-modulo.js";
 
 const H = 3600e3;
 // 16:40 en Madrid (14:40 UTC), a plena luz en octubre.

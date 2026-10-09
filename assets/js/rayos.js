@@ -12,6 +12,8 @@
 // celda de 0,5°. La frase lo dice tal cual: no promete "la última hora"
 // porque no es lo que se consulta.
 
+import { I18n } from "./i18n-modulo.js";
+
 export const RADIO_KM = 100;
 export const VENTANA_MIN = 5;
 // Por debajo de este zoom no se consulta el tiempo real (cada consulta
@@ -39,8 +41,8 @@ export function rumbo(a, b) {
   return (Math.atan2(y, x) / RAD + 360) % 360;
 }
 
-// Ocho rumbos, en castellano (O de oeste, no W).
-const CARDINALES = ["N", "NE", "E", "SE", "S", "SO", "O", "NO"];
+// Ocho rumbos, en castellano (O de oeste, no W); en inglés, W (2026-10-09).
+const CARDINALES = I18n.t("rayos.cardinales").split(",");
 export function puntoCardinal(grados) {
   const g = ((Number(grados) % 360) + 360) % 360;
   return CARDINALES[Math.round(g / 45) % 8];
@@ -52,7 +54,7 @@ export function edadMinutos(rayo, ahoraSeg) {
 }
 
 export function textoEdad(min) {
-  return min < 1 ? "ahora mismo" : `hace ${Math.round(min)} min`;
+  return min < 1 ? I18n.t("rayos.ahora_mismo") : I18n.t("rayos.hace_min", { n: Math.round(min) });
 }
 
 // El más cercano a "ref" (empate: el más reciente). null si no hay ninguno.
@@ -76,12 +78,16 @@ export function rayoMasCercano(ref, rayos, ahoraSeg) {
 // mapa. "de" es cómo se nombra en la frase.
 export function elegirReferencia({ spot, gps, centro }) {
   if (spot && Number.isFinite(spot.lat) && Number.isFinite(spot.lon)) {
-    return { lat: spot.lat, lon: spot.lon, de: spot.nombre ? `de ${spot.nombre}` : "del spot", origen: "spot" };
+    return {
+      lat: spot.lat, lon: spot.lon, origen: "spot",
+      de: spot.nombre ? I18n.t("rayos.de_spot", { nombre: spot.nombre }) : I18n.t("rayos.del_spot"),
+      lugar: spot.nombre || I18n.t("rayos.lugar_spot"),
+    };
   }
   if (gps && Number.isFinite(gps.lat) && Number.isFinite(gps.lon)) {
-    return { lat: gps.lat, lon: gps.lon, de: "de ti", origen: "gps" };
+    return { lat: gps.lat, lon: gps.lon, de: I18n.t("rayos.de_ti"), lugar: I18n.t("rayos.lugar_ti"), origen: "gps" };
   }
-  return { lat: centro.lat, lon: centro.lon, de: "del centro", origen: "centro" };
+  return { lat: centro.lat, lon: centro.lon, de: I18n.t("rayos.del_centro"), lugar: I18n.t("rayos.lugar_centro"), origen: "centro" };
 }
 
 // Con el panel abierto, al mover el mapa solo se vuelve a consultar si el
@@ -95,20 +101,20 @@ export function debeCambiarReferencia(ref, centro, zoom, umbralKm = 40) {
 // Frase de una línea y su nivel (para el color):
 //   estado "cargando" | "lejos" (zoom bajo) | "no_disponible" | "ok"
 export function resumenRayos({ estado, masCercano, total = 0, ref }) {
-  if (estado === "cargando") return { nivel: "neutro", texto: "Buscando rayos cerca…" };
-  if (estado === "lejos") return { nivel: "neutro", texto: "Acerca el mapa a una zona para ver los rayos al momento" };
+  if (estado === "cargando") return { nivel: "neutro", texto: I18n.t("mapa.rayos.buscando") };
+  if (estado === "lejos") return { nivel: "neutro", texto: I18n.t("rayos.acerca") };
   if (estado !== "ok") {
-    return { nivel: "neutro", texto: "Tiempo real no disponible · se ven las tormentas del satélite (≈15 min de retraso)" };
+    return { nivel: "neutro", texto: I18n.t("rayos.no_disponible") };
   }
   if (!masCercano) {
-    return { nivel: "ok", texto: `Sin rayos a menos de ${RADIO_KM} km en los últimos ${VENTANA_MIN} min` };
+    return { nivel: "ok", texto: I18n.t("rayos.sin_rayos", { km: RADIO_KM, min: VENTANA_MIN }) };
   }
-  const km = masCercano.km < 1 ? "menos de 1" : String(Math.round(masCercano.km));
+  const km = masCercano.km < 1 ? I18n.t("rayos.menos_de_1") : String(Math.round(masCercano.km));
   const de = ref?.de ? ` ${ref.de}` : "";
   const nivel = masCercano.km <= KM_PELIGRO ? "peligro" : masCercano.km <= KM_AVISO ? "aviso" : "lejos";
   // El total va aparte (en el ⓘ): la frase tiene que caber en el móvil.
-  const conteo = `${total} ${total === 1 ? "rayo" : "rayos"} en los últimos ${VENTANA_MIN} min a menos de ${RADIO_KM} km.`;
-  return { nivel, conteo, texto: `⚡ Rayo más cercano: ${km} km al ${masCercano.cardinal}${de} · ${textoEdad(masCercano.edadMin)}` };
+  const conteo = I18n.t("rayos.conteo", { n: total, min: VENTANA_MIN, km: RADIO_KM });
+  return { nivel, conteo, texto: I18n.t("rayos.mas_cercano", { km, cardinal: masCercano.cardinal, de, edad: textoEdad(masCercano.edadMin) }) };
 }
 
 // Rayos que entran en el encuadre automático: el más cercano y los que

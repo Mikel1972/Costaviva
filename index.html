@@ -3,7 +3,11 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-<title>Costaviva, pesca en tiempo real | Mareas y previsión marina</title>
+<!-- Idiomas (2026-10-09): diccionarios y I18n.t(); en español no cambia nada. Ver assets/js/i18n.js. -->
+<script src="/assets/i18n/es.js"></script>
+<script src="/assets/i18n/en.js"></script>
+<script src="/assets/js/i18n.js"></script>
+<title data-i18n="mapa.titulo_pagina">Costaviva, pesca en tiempo real | Mareas y previsión marina</title>
 <meta name="description" content="Previsión marina en tiempo real: mareas, oleaje, viento y actividad de los peces para planificar tu salida de pesca en España y Portugal." />
 <link rel="canonical" href="https://costaviva.org/" />
 <!-- Para compartir y para los buscadores (2026-10-08): "/" sirve este
@@ -676,6 +680,10 @@
   .tarjeta-plegable.plegada .tarjeta-plegar { margin: 0; }
   /* "Corriente" no cabe a 10 px en el botón de 48-54 px. */
   .corriente-toggle .capa-label { font-size: 8px; letter-spacing: -0.2px; }
+  /* Inglés (2026-10-09): "Lightning", "Stations" y "Water T." son más largos
+     que "Rayos", "Estac." y "T. agua"; en español no cambia nada. */
+  html[lang="en"] .rayos-toggle .capa-label, html[lang="en"] .estaciones-toggle .capa-label,
+  html[lang="en"] .tempagua-toggle .capa-label { font-size: 8px; letter-spacing: -0.2px; }
   .tarjeta-plegable.plegada .titulo { white-space: nowrap; }
   /* Selector de fuentes, solo administradores (2026-10-08). */
   .admin-fuentes { margin-top: 14px; padding: 10px 12px; background: var(--superficie-2); border: 1px dashed var(--acento); border-radius: 12px; font: 500 12px/1.4 var(--f-texto); color: var(--tinta); }
@@ -942,23 +950,24 @@
     <source media="(orientation: landscape)" srcset="/assets/inicio/rompiente-ancha.webp" type="image/webp">
     <source media="(orientation: landscape)" srcset="/assets/inicio/rompiente-ancha.jpg">
     <source srcset="/assets/inicio/rompiente-movil.webp" type="image/webp">
-    <img class="pantalla-inicio__foto" src="/assets/inicio/rompiente-movil.jpg" width="720" height="1280" fetchpriority="high" alt="Ola rompiendo contra una costa rocosa mientras un pescador lanza su caña">
+    <img class="pantalla-inicio__foto" src="/assets/inicio/rompiente-movil.jpg" width="720" height="1280" fetchpriority="high" alt="Ola rompiendo contra una costa rocosa mientras un pescador lanza su caña" data-i18n-alt="comun.inicio.alt_foto">
   </picture>
   <div class="pantalla-inicio__marca">
     <svg class="marca-logo" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><circle class="marca-fondo" cx="20" cy="20" r="19"/><path class="marca-pez" d="M9 17c4-6.5 14-6.5 19 0-5 6.5-15 6.5-19 0z"/><path class="marca-pez" d="M27.5 17l6-4.5v9z"/><circle class="marca-ojo" cx="13.5" cy="16" r="1.4"/><path class="marca-ola" d="M5 28c3.5-3.2 6.5-3.2 10 0s6.5 3.2 10 0 6.5-3.2 10 0"/></svg>
     <p class="pantalla-inicio__nombre logotipo">Costaviva</p>
-    <p class="pantalla-inicio__frase">El mar de hoy, antes de salir a pescar</p>
-    <p class="pantalla-inicio__estado" role="status"><span class="pantalla-inicio__girando" aria-hidden="true"></span>Comprobando acceso…</p>
+    <p class="pantalla-inicio__frase" data-i18n="comun.inicio.frase">El mar de hoy, antes de salir a pescar</p>
+    <p class="pantalla-inicio__estado" role="status"><span class="pantalla-inicio__girando" aria-hidden="true"></span><span data-i18n="comun.inicio.comprobando">Comprobando acceso…</span></p>
   </div>
   <!-- Portada en HTML para los buscadores (2026-10-08): mientras se
        comprueba la sesión, y para quien no ejecuta JavaScript, la portada
        dice qué es Costaviva y enlaza a las páginas públicas. No quitar. -->
   <div class="pantalla-inicio__seo">
-    <p><strong>Costaviva</strong>: pesca en tiempo real en España y Portugal. Mareas, oleaje, viento, índice de pesca por spot, especies de temporada y diario de pesca.</p>
-    <nav aria-label="Páginas públicas"><a href="/spots">Spots de pesca</a><a href="/especies">Especies</a><a href="/mareas">Mareas hoy</a></nav>
+    <p data-i18n-html="mapa.seo.texto"><strong>Costaviva</strong>: pesca en tiempo real en España y Portugal. Mareas, oleaje, viento, índice de pesca por spot, especies de temporada y diario de pesca.</p>
+    <nav aria-label="Páginas públicas" data-i18n-aria-label="mapa.seo.nav"><a href="/spots" data-i18n="mapa.seo.spots">Spots de pesca</a><a href="/especies" data-i18n="mapa.seo.especies">Especies</a><a href="/mareas" data-i18n="mapa.seo.mareas">Mareas hoy</a></nav>
   </div>
 </div>
 <!-- /pantalla-inicio -->
+<script>I18n.aplicarInicio();</script>
 <script type="module">
   import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
   const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
@@ -1085,27 +1094,28 @@
 
 <header>
   <svg class="marca-logo" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><circle class="marca-fondo" cx="20" cy="20" r="19"/><path class="marca-pez" d="M9 17c4-6.5 14-6.5 19 0-5 6.5-15 6.5-19 0z"/><path class="marca-pez" d="M27.5 17l6-4.5v9z"/><circle class="marca-ojo" cx="13.5" cy="16" r="1.4"/><path class="marca-ola" d="M5 28c3.5-3.2 6.5-3.2 10 0s6.5 3.2 10 0 6.5-3.2 10 0"/></svg>
-  <h1 class="logotipo">Costaviva</h1><p>pesca en tiempo real</p><span class="fecha"><span id="estadoVigenciaGlobal">cargando…</span></span>
+  <h1 class="logotipo">Costaviva</h1><p data-i18n="comun.cabecera.lema">pesca en tiempo real</p><span class="fecha"><span id="estadoVigenciaGlobal" data-i18n="comun.cargando_min">cargando…</span></span>
   <div style="display:flex; align-items:center; gap:8px; margin-left:auto;">
-    <a id="enlaceAdmin" class="cuenta-menu-btn" href="/admin.html" title="Admin" aria-label="Administración" style="display:none;">⚙️</a>
+    <a id="enlaceAdmin" class="cuenta-menu-btn" href="/admin.html" title="Admin" aria-label="Administración" style="display:none;" data-i18n-aria-label="comun.administracion" data-i18n-title="comun.admin">⚙️</a>
     <div class="cuenta-menu-wrap">
-      <button class="cuenta-menu-btn" id="btnCuentaMenu" type="button" aria-label="Cuenta">👤</button>
+      <button class="cuenta-menu-btn" id="btnCuentaMenu" type="button" aria-label="Cuenta" data-i18n-aria-label="comun.cuenta">👤</button>
       <div class="cuenta-menu-dropdown" id="cuentaMenuDropdown">
-        <button type="button" id="btnInvitarAmigo">🎁 Invita a un amigo: 1 mes gratis</button>
-        <button type="button" id="btnMiSuscripcion">💳 Mi suscripción</button>
-        <button type="button" id="btnCerrarSesion">🚪 Cerrar sesión</button>
+        <button type="button" id="btnInvitarAmigo" data-i18n="comun.menu.invitar">🎁 Invita a un amigo: 1 mes gratis</button>
+        <button type="button" id="btnMiSuscripcion" data-i18n="comun.menu.suscripcion">💳 Mi suscripción</button>
+        <button type="button" id="btnCerrarSesion" data-i18n="comun.menu.cerrar_sesion">🚪 Cerrar sesión</button>
+        <div data-i18n-selector></div>
       </div>
     </div>
   </div>
 </header>
 
-<div id="avisoRayos" style="display:none; background:var(--peligro); color:var(--blanco); padding:8px 28px; font-family:var(--f-texto); font-size:12px; font-weight:700; flex-shrink:0;">
+<div id="avisoRayos" style="display:none; background:var(--peligro); color:var(--blanco); padding:8px 28px; font-family:var(--f-texto); font-size:12px; font-weight:700; flex-shrink:0;" data-i18n="mapa.aviso_rayos">
   ⚡ RIESGO DE RAYOS DETECTADO EN LA ZONA — no salir a roca/muelle hasta que pase
 </div>
 <div class="main">
   <div class="mapa-wrap">
     <div id="map"></div>
-    <button class="leyenda-toggle" id="toggleLeyenda" title="¿Qué significan los colores del mapa?" aria-label="Mostrar/ocultar leyenda">ⓘ</button>
+    <button class="leyenda-toggle" id="toggleLeyenda" title="¿Qué significan los colores del mapa?" aria-label="Mostrar/ocultar leyenda" data-i18n-aria-label="mapa.leyenda.boton_aria" data-i18n-title="mapa.leyenda.boton_title">ⓘ</button>
     <!-- Tarjetas de abajo del mapa (assets/js/tarjetas-mapa.js): rayos, lluvia
          (la mete lluvia-animada.js), clorofila / temperatura, viento y la
          leyenda del ⓘ, apiladas de arriba a abajo en ese orden y siempre por
@@ -1113,18 +1123,18 @@
     <div class="tarjetas-mapa" id="tarjetasMapa">
       <div class="rayos-hoja" id="rayosHoja" data-nivel="neutro" hidden>
         <div class="rayos-fila">
-          <button type="button" class="rayos-resumen" id="rayosResumen" aria-live="polite" title="Centrar el mapa en el rayo más cercano">Buscando rayos cerca…</button>
-          <button type="button" class="rayos-mas" id="rayosDetalleBtn" aria-expanded="false" aria-controls="rayosDetalle" aria-label="Fuentes y mapa de AEMET">ⓘ</button>
+          <button type="button" class="rayos-resumen" id="rayosResumen" aria-live="polite" title="Centrar el mapa en el rayo más cercano" data-i18n-title="mapa.rayos.centrar" data-i18n="mapa.rayos.buscando">Buscando rayos cerca…</button>
+          <button type="button" class="rayos-mas" id="rayosDetalleBtn" aria-expanded="false" aria-controls="rayosDetalle" aria-label="Fuentes y mapa de AEMET" data-i18n-aria-label="mapa.rayos.fuentes_aria">ⓘ</button>
         </div>
         <div class="rayos-leyenda">
-          <span><i class="vivo"></i>rayo · 5 min</span>
-          <span><i class="sat"></i>tormenta (satélite) · 30 min</span>
+          <span><i class="vivo"></i><span data-i18n="mapa.rayos.leyenda_vivo">rayo · 5 min</span></span>
+          <span><i class="sat"></i><span data-i18n="mapa.rayos.leyenda_sat">tormenta (satélite) · 30 min</span></span>
         </div>
         <div class="rayos-detalle" id="rayosDetalle" hidden>
-          <p id="rayosRefTexto">Distancias medidas desde el centro del mapa.</p>
-          <p id="notaRayosSatelite">Cargando el satélite…</p>
-          <p><a href="/rayos-imagen" target="_blank" rel="noopener" id="enlaceAemetRayos">Mapa de rayos de AEMET, toda España, últimas 12 h ↗</a></p>
-          <p>Fuentes: Vaisala Xweather (al momento), EUMETSAT MTG Lightning Imager (CC BY 4.0) y AEMET.</p>
+          <p id="rayosRefTexto" data-i18n="mapa.rayos.distancias">Distancias medidas desde el centro del mapa.</p>
+          <p id="notaRayosSatelite" data-i18n="mapa.rayos.cargando_satelite">Cargando el satélite…</p>
+          <p><a href="/rayos-imagen" target="_blank" rel="noopener" id="enlaceAemetRayos" data-i18n="mapa.rayos.enlace_aemet">Mapa de rayos de AEMET, toda España, últimas 12 h ↗</a></p>
+          <p data-i18n="mapa.rayos.fuentes">Fuentes: Vaisala Xweather (al momento), EUMETSAT MTG Lightning Imager (CC BY 4.0) y AEMET.</p>
         </div>
       </div>
       <!-- Tarjeta de las capas de mar (clorofila, temperatura, frentes y
@@ -1135,7 +1145,7 @@
         <div class="tarjeta-cabecera">
           <div class="titulo"><span class="t-largo" id="capaMarTitulo"></span><span class="t-corto" id="capaMarCorto"></span></div>
           <span class="tarjeta-mini" id="capaMarMini" aria-hidden="true"></span>
-          <button type="button" class="tarjeta-plegar" id="capaMarPlegar" aria-expanded="true" aria-controls="capaMarCuerpo" aria-label="Minimizar la leyenda" title="Minimizar">▾</button>
+          <button type="button" class="tarjeta-plegar" id="capaMarPlegar" aria-expanded="true" aria-controls="capaMarCuerpo" aria-label="Minimizar la leyenda" title="Minimizar" data-i18n-aria-label="comun.minimizar_leyenda" data-i18n-title="comun.minimizar">▾</button>
         </div>
         <div class="tarjeta-cuerpo" id="capaMarCuerpo">
           <div class="fecha" id="capaMarFecha"></div>
@@ -1153,9 +1163,9 @@
       </div>
       <div class="viento-slider-panel tarjeta-plegable" id="vientoSliderPanel" hidden>
         <div class="tarjeta-cabecera">
-          <div class="titulo"><span class="t-largo">VIENTO — próximas horas</span><span class="t-corto">💨 Viento</span></div>
+          <div class="titulo"><span class="t-largo" data-i18n="mapa.viento.titulo">VIENTO — próximas horas</span><span class="t-corto" data-i18n="mapa.viento.corto">💨 Viento</span></div>
           <span class="tarjeta-mini" id="vientoMini" aria-hidden="true"></span>
-          <button type="button" class="tarjeta-plegar" id="vientoPlegar" aria-expanded="true" aria-controls="vientoCuerpo" aria-label="Minimizar la leyenda" title="Minimizar">▾</button>
+          <button type="button" class="tarjeta-plegar" id="vientoPlegar" aria-expanded="true" aria-controls="vientoCuerpo" aria-label="Minimizar la leyenda" title="Minimizar" data-i18n-aria-label="comun.minimizar_leyenda" data-i18n-title="comun.minimizar">▾</button>
         </div>
         <div class="tarjeta-cuerpo" id="vientoCuerpo">
         <input type="range" id="vientoSlider" min="0" max="23" value="0" step="1" />
@@ -1164,31 +1174,31 @@
              pocas marcas repartidas, no las 24, para que quepan en el
              ancho del panel. -->
         <div class="viento-slider-ticks" id="vientoSliderTicks"></div>
-        <div class="etq" id="vientoSliderHora">ahora</div>
+        <div class="etq" id="vientoSliderHora" data-i18n="mapa.viento.ahora">ahora</div>
         <!-- Leyenda de colores (pedido explícito del usuario: "debe
              aparecer una leyenda de colores para interpretar lo que
              vemos") -- la barra de degradado se rellena por JS con la
              misma paleta (VIENTO_COLOR_SCALE) que usa la capa de verdad,
              nunca a mano en el CSS, para que no se puedan desincronizar. -->
-        <div class="viento-leyenda-titulo">Velocidad del viento</div>
+        <div class="viento-leyenda-titulo" data-i18n="mapa.viento.velocidad">Velocidad del viento</div>
         <div class="viento-leyenda-barra" id="vientoLeyendaBarra"></div>
         <div class="viento-leyenda-extremos"><span>0 km/h</span><span>54+ km/h</span></div>
         </div>
       </div>
       <div class="leyenda" id="leyendaPanel">
-        <div class="titulo">ÍNDICE DE MAR (oleaje + viento + ángulo entre ambos)</div>
-        <div class="fila"><span class="chip" style="background:var(--nivel-bueno)"></span><span>tranquilo</span></div>
-        <div class="fila"><span class="chip" style="background:var(--nivel-medio)"></span><span>moderado</span></div>
-        <div class="fila"><span class="chip" style="background:var(--nivel-malo)"></span><span>agitado</span></div>
-        <div class="nota" style="margin-top:10px; padding-top:8px; border-top:1px solid var(--linea);">◆ RÍOS: 3 puntos por río (cabecera→desembocadura), color por caudal bajo/normal/alto — pasa el cursor por un punto para ver el detalle. Lo que se mide arriba llega a la costa horas después — útil como aviso de tendencia. Posiciones ilustrativas, no las estaciones oficiales exactas. Caudal real solo en Sella, Besaya, Pas, Asón, Eo, Júcar, Turia, Mijares, Segura y Lagares (Confederaciones Hidrográficas + Augas de Galicia) — los ríos vascos siguen sin dato real (URA/Bizkaia bloquea el acceso automático).</div>
-        <div class="nota" style="margin-top:8px; padding-top:8px; border-top:1px solid var(--linea);">🌡 T. AGUA: cada color es un grado, siempre el mismo en todo el mapa (del azul frío al rojo cálido); las líneas marcan el grado exacto.</div>
+        <div class="titulo" data-i18n="mapa.leyenda.titulo">ÍNDICE DE MAR (oleaje + viento + ángulo entre ambos)</div>
+        <div class="fila"><span class="chip" style="background:var(--nivel-bueno)"></span><span data-i18n="mapa.leyenda.tranquilo">tranquilo</span></div>
+        <div class="fila"><span class="chip" style="background:var(--nivel-medio)"></span><span data-i18n="mapa.leyenda.moderado">moderado</span></div>
+        <div class="fila"><span class="chip" style="background:var(--nivel-malo)"></span><span data-i18n="mapa.leyenda.agitado">agitado</span></div>
+        <div class="nota" style="margin-top:10px; padding-top:8px; border-top:1px solid var(--linea);" data-i18n="mapa.leyenda.rios">◆ RÍOS: 3 puntos por río (cabecera→desembocadura), color por caudal bajo/normal/alto — pasa el cursor por un punto para ver el detalle. Lo que se mide arriba llega a la costa horas después — útil como aviso de tendencia. Posiciones ilustrativas, no las estaciones oficiales exactas. Caudal real solo en Sella, Besaya, Pas, Asón, Eo, Júcar, Turia, Mijares, Segura y Lagares (Confederaciones Hidrográficas + Augas de Galicia) — los ríos vascos siguen sin dato real (URA/Bizkaia bloquea el acceso automático).</div>
+        <div class="nota" style="margin-top:8px; padding-top:8px; border-top:1px solid var(--linea);" data-i18n="mapa.leyenda.tagua">🌡 T. AGUA: cada color es un grado, siempre el mismo en todo el mapa (del azul frío al rojo cálido); las líneas marcan el grado exacto.</div>
       </div>
     </div>
-    <button class="rayos-toggle" id="toggleRayos" title="Rayos cerca: al momento y por satélite" aria-label="Mostrar/ocultar rayos en el mapa">⚡<span class="capa-label">Rayos</span></button>
+    <button class="rayos-toggle" id="toggleRayos" title="Rayos cerca: al momento y por satélite" aria-label="Mostrar/ocultar rayos en el mapa" data-i18n-aria-label="mapa.capa.rayos_aria" data-i18n-title="mapa.capa.rayos_title">⚡<span class="capa-label" data-i18n="mapa.capa.rayos">Rayos</span></button>
     <div class="aviso-capa" id="avisoCapa" role="status" hidden></div>
-    <button class="luna-toggle" id="toggleLuna" title="Fase y posición de la luna" aria-label="Mostrar/ocultar datos de la luna">🌙<span class="capa-label">Luna</span></button>
+    <button class="luna-toggle" id="toggleLuna" title="Fase y posición de la luna" aria-label="Mostrar/ocultar datos de la luna" data-i18n-aria-label="mapa.capa.luna_aria" data-i18n-title="mapa.capa.luna_title">🌙<span class="capa-label" data-i18n="mapa.capa.luna">Luna</span></button>
     <div class="luna-panel" id="lunaPanel">
-      <div class="nota" id="lunaZoomAviso" style="display:none; font-size:11px; color:var(--tinta-2); text-align:center; padding:6px 0;">🔍 Acércate (zoom in) para ver la luna de esa ubicación</div>
+      <div class="nota" id="lunaZoomAviso" style="display:none; font-size:11px; color:var(--tinta-2); text-align:center; padding:6px 0;" data-i18n="mapa.luna.zoom">🔍 Acércate (zoom in) para ver la luna de esa ubicación</div>
       <div id="lunaContenido">
         <div class="fase-fila">
           <span class="fase-emoji" id="lunaEmoji">🌙</span>
@@ -1197,65 +1207,65 @@
             <div class="fase-iluminacion" id="lunaIluminacion"></div>
           </div>
         </div>
-        <div class="fila-dato"><span>Sale</span><b id="lunaSalida">—</b></div>
-        <div class="fila-dato"><span>Se pone</span><b id="lunaPuesta">—</b></div>
-        <div class="fila-dato"><span>Altura máx.</span><b id="lunaAltura">—</b></div>
-        <div class="nota">Para el centro del mapa actual. Azimut y altura: cálculo propio (±1°). Horas y fase: Observatorio Naval de EE.UU.</div>
+        <div class="fila-dato"><span data-i18n="mapa.luna.sale">Sale</span><b id="lunaSalida">—</b></div>
+        <div class="fila-dato"><span data-i18n="mapa.luna.se_pone">Se pone</span><b id="lunaPuesta">—</b></div>
+        <div class="fila-dato"><span data-i18n="mapa.luna.altura">Altura máx.</span><b id="lunaAltura">—</b></div>
+        <div class="nota" data-i18n="mapa.luna.nota">Para el centro del mapa actual. Azimut y altura: cálculo propio (±1°). Horas y fase: Observatorio Naval de EE.UU.</div>
       </div>
     </div>
-    <button class="fondo-toggle" id="toggleFondo" title="Fondo del mar: profundidad y tipo de fondo" aria-label="Fondo del mar: elegir capas">📏<span class="capa-label">Fondo</span></button>
-    <div class="fondo-selector" id="fondoSelector" role="group" aria-label="Capas del fondo del mar" hidden></div>
-    <button class="nubes-toggle" id="toggleNubes" title="Radar de lluvia de las últimas 3 horas, animado (EUMETNET OPERA)" aria-label="Mostrar/ocultar la lluvia de las últimas 3 horas">☁️<span class="capa-label">Lluvia</span></button>
-    <button class="anadir-ubicacion-toggle" id="toggleAnadirUbicacion" title="Añadir una ubicación nueva" aria-label="Añadir ubicación">➕</button>
-    <button class="estaciones-toggle" id="toggleEstaciones" title="Estaciones meteorológicas reales (AEMET)" aria-label="Mostrar/ocultar estaciones meteorológicas">🌧<span class="capa-label">Estac.</span></button>
-    <button class="viento-toggle" id="toggleViento" title="Viento en directo, estilo Windy (partículas animadas)" aria-label="Mostrar/ocultar capa de viento">💨<span class="capa-label">Viento</span></button>
-    <button class="spots-toggle activo" id="toggleSpots" title="Spots" aria-label="Mostrar/ocultar spots">📍</button>
-    <button class="rios-toggle" id="toggleRios" title="Ríos" aria-label="Mostrar/ocultar ríos">〰️<span class="capa-label">Ríos</span></button>
-    <button class="boyas-toggle" id="toggleBoyas" title="Boyas reales (Puertos del Estado vía Copernicus Marine)" aria-label="Mostrar/ocultar boyas">⚓<span class="capa-label">Boyas</span></button>
-    <button class="boyas-toggle clorofila-toggle" id="toggleClorofila" title="Clorofila del mar (plancton): satélite de Copernicus" aria-label="Mostrar/ocultar capa de clorofila" aria-pressed="false">🌿<span class="capa-label">Clorof.</span></button>
-    <button class="boyas-toggle tempagua-toggle" id="toggleTempAgua" title="Temperatura del agua (modelo IBI de Copernicus)" aria-label="Mostrar/ocultar capa de temperatura del agua" aria-pressed="false">🌡<span class="capa-label">T. agua</span></button>
-    <button class="boyas-toggle frentes-toggle" id="toggleFrentes" title="Frentes (bordes de clorofila y de temperatura) y corrientes: Copernicus" aria-label="Mostrar/ocultar capa de frentes y corrientes" aria-pressed="false">〰<span class="capa-label">Frentes</span></button>
-    <button class="boyas-toggle corriente-toggle" id="toggleCorriente" title="Corriente del mar (media del día, sin marea): fuerza y dirección, modelo IBI de Copernicus" aria-label="Mostrar/ocultar capa de corriente" aria-pressed="false">🌊<span class="capa-label">Corriente</span></button>
+    <button class="fondo-toggle" id="toggleFondo" title="Fondo del mar: profundidad y tipo de fondo" aria-label="Fondo del mar: elegir capas" data-i18n-aria-label="mapa.capa.fondo_aria" data-i18n-title="mapa.capa.fondo_title">📏<span class="capa-label" data-i18n="mapa.capa.fondo">Fondo</span></button>
+    <div class="fondo-selector" id="fondoSelector" role="group" aria-label="Capas del fondo del mar" hidden data-i18n-aria-label="mapa.capa.fondo_grupo"></div>
+    <button class="nubes-toggle" id="toggleNubes" title="Radar de lluvia de las últimas 3 horas, animado (EUMETNET OPERA)" aria-label="Mostrar/ocultar la lluvia de las últimas 3 horas" data-i18n-aria-label="mapa.capa.lluvia_aria" data-i18n-title="mapa.capa.lluvia_title">☁️<span class="capa-label" data-i18n="mapa.capa.lluvia">Lluvia</span></button>
+    <button class="anadir-ubicacion-toggle" id="toggleAnadirUbicacion" title="Añadir una ubicación nueva" aria-label="Añadir ubicación" data-i18n-aria-label="mapa.capa.anadir_aria" data-i18n-title="mapa.capa.anadir_title">➕</button>
+    <button class="estaciones-toggle" id="toggleEstaciones" title="Estaciones meteorológicas reales (AEMET)" aria-label="Mostrar/ocultar estaciones meteorológicas" data-i18n-aria-label="mapa.capa.estac_aria" data-i18n-title="mapa.capa.estac_title">🌧<span class="capa-label" data-i18n="mapa.capa.estac">Estac.</span></button>
+    <button class="viento-toggle" id="toggleViento" title="Viento en directo, estilo Windy (partículas animadas)" aria-label="Mostrar/ocultar capa de viento" data-i18n-aria-label="mapa.capa.viento_aria" data-i18n-title="mapa.capa.viento_title">💨<span class="capa-label" data-i18n="mapa.capa.viento">Viento</span></button>
+    <button class="spots-toggle activo" id="toggleSpots" title="Spots" aria-label="Mostrar/ocultar spots" data-i18n-aria-label="mapa.capa.spots_aria" data-i18n-title="mapa.capa.spots">📍</button>
+    <button class="rios-toggle" id="toggleRios" title="Ríos" aria-label="Mostrar/ocultar ríos" data-i18n-aria-label="mapa.capa.rios_aria" data-i18n-title="mapa.capa.rios">〰️<span class="capa-label" data-i18n="mapa.capa.rios">Ríos</span></button>
+    <button class="boyas-toggle" id="toggleBoyas" title="Boyas reales (Puertos del Estado vía Copernicus Marine)" aria-label="Mostrar/ocultar boyas" data-i18n-aria-label="mapa.capa.boyas_aria" data-i18n-title="mapa.capa.boyas_title">⚓<span class="capa-label" data-i18n="mapa.capa.boyas">Boyas</span></button>
+    <button class="boyas-toggle clorofila-toggle" id="toggleClorofila" title="Clorofila del mar (plancton): satélite de Copernicus" aria-label="Mostrar/ocultar capa de clorofila" aria-pressed="false" data-i18n-aria-label="mapa.capa.clorof_aria" data-i18n-title="mapa.capa.clorof_title">🌿<span class="capa-label" data-i18n="mapa.capa.clorof">Clorof.</span></button>
+    <button class="boyas-toggle tempagua-toggle" id="toggleTempAgua" title="Temperatura del agua (modelo IBI de Copernicus)" aria-label="Mostrar/ocultar capa de temperatura del agua" aria-pressed="false" data-i18n-aria-label="mapa.capa.tagua_aria" data-i18n-title="mapa.capa.tagua_title">🌡<span class="capa-label" data-i18n="mapa.capa.tagua">T. agua</span></button>
+    <button class="boyas-toggle frentes-toggle" id="toggleFrentes" title="Frentes (bordes de clorofila y de temperatura) y corrientes: Copernicus" aria-label="Mostrar/ocultar capa de frentes y corrientes" aria-pressed="false" data-i18n-aria-label="mapa.capa.frentes_aria" data-i18n-title="mapa.capa.frentes_title">〰<span class="capa-label" data-i18n="mapa.capa.frentes">Frentes</span></button>
+    <button class="boyas-toggle corriente-toggle" id="toggleCorriente" title="Corriente del mar (media del día, sin marea): fuerza y dirección, modelo IBI de Copernicus" aria-label="Mostrar/ocultar capa de corriente" aria-pressed="false" data-i18n-aria-label="mapa.capa.corriente_aria" data-i18n-title="mapa.capa.corriente_title">🌊<span class="capa-label" data-i18n="mapa.capa.corriente">Corriente</span></button>
     <div class="confirmar-ubicacion-panel" id="eligeMetodoPanel">
-      <div class="titulo">¿Cómo quieres marcar el punto?</div>
+      <div class="titulo" data-i18n="mapa.ubic.como_marcar">¿Cómo quieres marcar el punto?</div>
       <div class="botones" style="flex-direction:column; gap:8px;">
-        <button class="secundario-ubicacion" id="btnMetodoGps">📍 Mi GPS actual</button>
-        <button class="secundario-ubicacion" id="btnMetodoMapa">🖱 Elegir en el mapa</button>
-        <button class="secundario-ubicacion" id="btnMetodoCoords">🔢 Introducir coordenadas</button>
+        <button class="secundario-ubicacion" id="btnMetodoGps" data-i18n="mapa.ubic.gps">📍 Mi GPS actual</button>
+        <button class="secundario-ubicacion" id="btnMetodoMapa" data-i18n="mapa.ubic.en_mapa">🖱 Elegir en el mapa</button>
+        <button class="secundario-ubicacion" id="btnMetodoCoords" data-i18n="mapa.ubic.coords">🔢 Introducir coordenadas</button>
       </div>
       <div class="botones" style="margin-top:10px;">
-        <button class="cancelar" id="btnCancelarEligeMetodo">Cancelar</button>
+        <button class="cancelar" id="btnCancelarEligeMetodo" data-i18n="comun.cancelar">Cancelar</button>
       </div>
     </div>
     <div class="confirmar-ubicacion-panel" id="coordsManualPanel">
-      <div class="titulo">Coordenadas</div>
-      <label style="display:block; font-size:11.5px; color:var(--tinta-2); margin-bottom:3px;">Latitud</label>
-      <input type="number" id="coordsManualLat" step="0.0001" min="-90" max="90" placeholder="ej. 43.4123" style="width:100%; padding:7px 9px; border-radius:6px; border:1px solid var(--linea); background:var(--superficie-2); color:var(--tinta); font-family:var(--f-texto); margin-bottom:8px;" />
-      <label style="display:block; font-size:11.5px; color:var(--tinta-2); margin-bottom:3px;">Longitud</label>
-      <input type="number" id="coordsManualLon" step="0.0001" min="-180" max="180" placeholder="ej. -2.6789" style="width:100%; padding:7px 9px; border-radius:6px; border:1px solid var(--linea); background:var(--superficie-2); color:var(--tinta); font-family:var(--f-texto); margin-bottom:10px;" />
+      <div class="titulo" data-i18n="mapa.ubic.coordenadas">Coordenadas</div>
+      <label style="display:block; font-size:11.5px; color:var(--tinta-2); margin-bottom:3px;" data-i18n="mapa.ubic.latitud">Latitud</label>
+      <input type="number" id="coordsManualLat" step="0.0001" min="-90" max="90" placeholder="ej. 43.4123" style="width:100%; padding:7px 9px; border-radius:6px; border:1px solid var(--linea); background:var(--superficie-2); color:var(--tinta); font-family:var(--f-texto); margin-bottom:8px;" data-i18n-placeholder="mapa.ubic.ej_lat" />
+      <label style="display:block; font-size:11.5px; color:var(--tinta-2); margin-bottom:3px;" data-i18n="mapa.ubic.longitud">Longitud</label>
+      <input type="number" id="coordsManualLon" step="0.0001" min="-180" max="180" placeholder="ej. -2.6789" style="width:100%; padding:7px 9px; border-radius:6px; border:1px solid var(--linea); background:var(--superficie-2); color:var(--tinta); font-family:var(--f-texto); margin-bottom:10px;" data-i18n-placeholder="mapa.ubic.ej_lon" />
       <div id="coordsManualError" class="error" style="display:none;"></div>
       <div class="botones">
-        <button class="cancelar" id="btnCancelarCoordsManual">Cancelar</button>
-        <button class="confirmar" id="btnUsarCoordsManual">Usar estas coordenadas</button>
+        <button class="cancelar" id="btnCancelarCoordsManual" data-i18n="comun.cancelar">Cancelar</button>
+        <button class="confirmar" id="btnUsarCoordsManual" data-i18n="mapa.ubic.usar_coords">Usar estas coordenadas</button>
       </div>
     </div>
     <div class="confirmar-ubicacion-panel" id="confirmarUbicacionPanel">
-      <div class="titulo">Nueva ubicación</div>
+      <div class="titulo" data-i18n="mapa.ubic.nueva">Nueva ubicación</div>
       <div id="confirmarUbicacionError" class="error" style="display:none;"></div>
       <div id="confirmarUbicacionContenido" style="display:none;">
         <div class="visibilidad" id="confirmarUbicacionTipo">
-          <label><input type="radio" name="tipoUbicacion" value="costa" checked /> 🪨 Costa</label>
-          <label><input type="radio" name="tipoUbicacion" value="embarcacion" /> 🚤 Embarcación</label>
-          <label><input type="radio" name="tipoUbicacion" value="buceo" /> 🤿 Buceo</label>
+          <label><input type="radio" name="tipoUbicacion" value="costa" checked /> <span data-i18n="mapa.ubic.tipo_costa">🪨 Costa</span></label>
+          <label><input type="radio" name="tipoUbicacion" value="embarcacion" /> <span data-i18n="mapa.ubic.tipo_embarcacion">🚤 Embarcación</span></label>
+          <label><input type="radio" name="tipoUbicacion" value="buceo" /> <span data-i18n="mapa.ubic.tipo_buceo">🤿 Buceo</span></label>
         </div>
         <div class="nombre-resuelto" id="confirmarUbicacionNombre"></div>
         <div class="visibilidad">
-          <label><input type="radio" name="visibilidadUbicacion" value="privada" checked /> Privada</label>
-          <label><input type="radio" name="visibilidadUbicacion" value="publica" /> Pública</label>
+          <label><input type="radio" name="visibilidadUbicacion" value="privada" checked /> <span data-i18n="mapa.ubic.privada">Privada</span></label>
+          <label><input type="radio" name="visibilidadUbicacion" value="publica" /> <span data-i18n="mapa.ubic.publica">Pública</span></label>
         </div>
         <div class="botones">
-          <button class="cancelar" id="btnCancelarUbicacion">Cancelar</button>
-          <button class="confirmar" id="btnConfirmarUbicacion">Confirmar</button>
+          <button class="cancelar" id="btnCancelarUbicacion" data-i18n="comun.cancelar">Cancelar</button>
+          <button class="confirmar" id="btnConfirmarUbicacion" data-i18n="comun.confirmar">Confirmar</button>
         </div>
       </div>
     </div>
@@ -1266,13 +1276,13 @@
     <div class="coords" id="panelCoords"></div>
     <div class="fondo-ficha" id="panelFondo" hidden></div>
     <div style="display:flex; align-items:center; gap:10px; margin:6px 0 2px;">
-      <button id="panelBtnFavorito" title="Marcar/quitar de favoritos" style="background:none; border:none; cursor:pointer; font-size:18px; padding:0; color:var(--tinta-3); line-height:1;">☆</button>
-      <span id="panelEtiquetaComunidad" style="display:none; font-size:10.5px; color:var(--tinta-2);">📍 ubicación de un usuario, sin cámara</span>
-      <button id="panelBtnBorrar" style="display:none; margin-left:auto; background:none; border:none; color:var(--peligro); font-size:11px; cursor:pointer;">🗑 Borrar</button>
+      <button id="panelBtnFavorito" title="Marcar/quitar de favoritos" style="background:none; border:none; cursor:pointer; font-size:18px; padding:0; color:var(--tinta-3); line-height:1;" data-i18n-title="mapa.panel.favorito">☆</button>
+      <span id="panelEtiquetaComunidad" style="display:none; font-size:10.5px; color:var(--tinta-2);" data-i18n="mapa.panel.ubic_usuario">📍 ubicación de un usuario, sin cámara</span>
+      <button id="panelBtnBorrar" style="display:none; margin-left:auto; background:none; border:none; color:var(--peligro); font-size:11px; cursor:pointer;" data-i18n="mapa.panel.borrar">🗑 Borrar</button>
     </div>
     <div class="grid2">
       <div class="tarjeta">
-        <div class="etq">OLEAJE (12h)</div>
+        <div class="etq" data-i18n="mapa.panel.oleaje12">OLEAJE (12h)</div>
         <div class="val" id="panelOla"></div>
         <div class="etq" id="panelOlaDir"></div>
         <div class="etq" id="panelOlaNota" style="text-transform:none; letter-spacing:0; margin-top:3px;"></div>
@@ -1283,110 +1293,110 @@
              elige el usuario entra en la calibración de las cámaras
              (oleaje_etiquetas, migración 20261008180000). -->
         <div id="panelOlaReal" style="display:none; margin-top:6px;">
-          <button type="button" id="panelBtnOlaReal" style="background:var(--superficie-2); border:1px solid var(--linea); color:var(--tinta); border-radius:14px; padding:3px 9px; font-size:11px; cursor:pointer; font-family:var(--f-texto);">🌊 Ola real que veo</button>
+          <button type="button" id="panelBtnOlaReal" style="background:var(--superficie-2); border:1px solid var(--linea); color:var(--tinta); border-radius:14px; padding:3px 9px; font-size:11px; cursor:pointer; font-family:var(--f-texto);" data-i18n="mapa.panel.ola_real">🌊 Ola real que veo</button>
           <div id="panelOlaRealBandas" style="display:none; flex-wrap:wrap; gap:4px; margin-top:5px;">
-            <button type="button" class="ola-banda" data-banda="<0.5">&lt;0,5 m</button>
+            <button type="button" class="ola-banda" data-banda="<0.5" data-i18n="mapa.panel.banda_menos05">&lt;0,5 m</button>
             <button type="button" class="ola-banda" data-banda="0.5-1">0,5–1</button>
             <button type="button" class="ola-banda" data-banda="1-2">1–2</button>
             <button type="button" class="ola-banda" data-banda="2-3">2–3</button>
-            <button type="button" class="ola-banda" data-banda=">3">&gt;3 m</button>
+            <button type="button" class="ola-banda" data-banda=">3" data-i18n="mapa.panel.banda_mas3">&gt;3 m</button>
           </div>
           <div class="etq" id="panelOlaRealMsg" style="text-transform:none; letter-spacing:0; margin-top:3px;"></div>
         </div>
       </div>
       <div class="tarjeta">
-        <div class="etq">VIENTO (12h)</div>
+        <div class="etq" data-i18n="mapa.panel.viento12">VIENTO (12h)</div>
         <div class="val" id="panelViento"></div>
         <div class="etq" id="panelVientoDir"></div>
       </div>
     </div>
     <div class="grid2" style="margin-top:10px;">
       <div class="tarjeta">
-        <div class="etq">MAREA</div>
-        <div class="val" id="panelMarea" style="font-size:15px;">sin datos</div>
+        <div class="etq" data-i18n="mapa.panel.marea">MAREA</div>
+        <div class="val" id="panelMarea" style="font-size:15px;" data-i18n="mapa.sin_datos">sin datos</div>
         <div class="etq" id="panelMareaProxima"></div>
       </div>
       <div class="tarjeta">
-        <div class="etq">CORRIENTE</div>
-        <div class="val" id="panelCorriente" style="font-size:15px;">sin datos</div>
+        <div class="etq" data-i18n="mapa.panel.corriente">CORRIENTE</div>
+        <div class="val" id="panelCorriente" style="font-size:15px;" data-i18n="mapa.sin_datos">sin datos</div>
         <div class="etq" id="panelCorrienteDir"></div>
       </div>
     </div>
     <div class="indice-box">
-      <div class="etq">ÍNDICE DE MAR COMBINADO
-        <button class="info-btn" id="infoIndiceMarBtn" type="button" aria-label="¿Qué significa este número?">ⓘ</button>
+      <div class="etq"><span data-i18n="mapa.panel.indice_mar">ÍNDICE DE MAR COMBINADO</span>
+        <button class="info-btn" id="infoIndiceMarBtn" type="button" aria-label="¿Qué significa este número?" data-i18n-aria-label="mapa.panel.que_significa">ⓘ</button>
       </div>
       <div class="num" id="panelIndice"></div>
       <div class="etq" id="panelIndiceNota" style="margin-top:4px; font-size:10px; line-height:1.4;"></div>
-      <div class="explicacion-indice" id="explicacionIndiceMar">Con nuestra propia fórmula (oleaje, viento y el ángulo entre ambos), este número resume en una escala de 0 a 100 cómo de movido está el mar hoy en este punto: cuanto más alto, más agitado y peor para salir (verde, tranquilo; amarillo, moderado; coral, agitado). Al revés que el índice de pesca, donde más alto es mejor.</div>
+      <div class="explicacion-indice" id="explicacionIndiceMar" data-i18n="mapa.panel.explica_indice_mar">Con nuestra propia fórmula (oleaje, viento y el ángulo entre ambos), este número resume en una escala de 0 a 100 cómo de movido está el mar hoy en este punto: cuanto más alto, más agitado y peor para salir (verde, tranquilo; amarillo, moderado; coral, agitado). Al revés que el índice de pesca, donde más alto es mejor.</div>
     </div>
     <div class="tarjeta" style="margin-top:10px; text-align:center;">
-      <div class="etq">TEMPERATURA DEL AGUA</div>
-      <div class="val" id="panelTempAgua" style="font-size:18px;">sin datos</div>
+      <div class="etq" data-i18n="mapa.panel.temp_agua">TEMPERATURA DEL AGUA</div>
+      <div class="val" id="panelTempAgua" style="font-size:18px;" data-i18n="mapa.sin_datos">sin datos</div>
     </div>
     <div class="grid2" style="margin-top:10px;">
       <div class="tarjeta">
-        <div class="etq">NUBOSIDAD</div>
-        <div class="val" id="panelNubosidad" style="font-size:13px;">sin datos</div>
+        <div class="etq" data-i18n="mapa.panel.nubosidad">NUBOSIDAD</div>
+        <div class="val" id="panelNubosidad" style="font-size:13px;" data-i18n="mapa.sin_datos">sin datos</div>
       </div>
       <div class="tarjeta">
-        <div class="etq">PRECIPITACIÓN</div>
-        <div class="val" id="panelPrecipitacion" style="font-size:13px;">sin datos</div>
+        <div class="etq" data-i18n="mapa.panel.precipitacion">PRECIPITACIÓN</div>
+        <div class="val" id="panelPrecipitacion" style="font-size:13px;" data-i18n="mapa.sin_datos">sin datos</div>
       </div>
     </div>
     <div class="tarjeta" style="margin-top:10px; text-align:center;">
-      <div class="etq">PRESIÓN ATMOSFÉRICA</div>
-      <div class="val" id="panelPresion" style="font-size:15px;">sin datos</div>
+      <div class="etq" data-i18n="mapa.panel.presion">PRESIÓN ATMOSFÉRICA</div>
+      <div class="val" id="panelPresion" style="font-size:15px;" data-i18n="mapa.sin_datos">sin datos</div>
       <div class="etq" id="panelPresionNota"></div>
     </div>
     <!-- Modalidades de pesca (2026-10-08, pedido de Mikel): una pestaña por
          modalidad; el índice de pesca, la ventana de actividad y la normativa
          de abajo se recalculan con la pestaña elegida. Sin on*= (CSP). -->
     <div class="pesca-modalidades" id="pescaModalidades">
-    <div class="mod-tabs" role="tablist" aria-label="Modalidad de pesca">
-      <button type="button" role="tab" id="modTab-costa" data-modalidad="costa" aria-controls="modPanel" aria-selected="true" tabindex="0">🪨 Desde costa</button>
-      <button type="button" role="tab" id="modTab-embarcacion" data-modalidad="embarcacion" aria-controls="modPanel" aria-selected="false" tabindex="-1">🚤 Embarcación</button>
-      <button type="button" role="tab" id="modTab-submarina" data-modalidad="submarina" aria-controls="modPanel" aria-selected="false" tabindex="-1">🤿 Submarina</button>
+    <div class="mod-tabs" role="tablist" aria-label="Modalidad de pesca" data-i18n-aria-label="mapa.mod.grupo">
+      <button type="button" role="tab" id="modTab-costa" data-modalidad="costa" aria-controls="modPanel" aria-selected="true" tabindex="0" data-i18n="mapa.mod.tab_costa">🪨 Desde costa</button>
+      <button type="button" role="tab" id="modTab-embarcacion" data-modalidad="embarcacion" aria-controls="modPanel" aria-selected="false" tabindex="-1" data-i18n="mapa.mod.tab_embarcacion">🚤 Embarcación</button>
+      <button type="button" role="tab" id="modTab-submarina" data-modalidad="submarina" aria-controls="modPanel" aria-selected="false" tabindex="-1" data-i18n="mapa.mod.tab_submarina">🤿 Submarina</button>
     </div>
     <div id="modPanel" role="tabpanel" aria-labelledby="modTab-costa">
-    <div class="mod-desc" id="modDesc">Surfcasting, roca y spinning desde la orilla o el espigón.</div>
+    <div class="mod-desc" id="modDesc" data-i18n="mapa.mod.desc_costa">Surfcasting, roca y spinning desde la orilla o el espigón.</div>
     <div class="indice-box">
-      <div class="etq">🎣 ÍNDICE DE PESCA (estimación)
-        <button class="info-btn" id="infoIndicePescaBtn" type="button" aria-label="¿Qué significa este número?">ⓘ</button>
+      <div class="etq"><span data-i18n="mapa.panel.indice_pesca">🎣 ÍNDICE DE PESCA (estimación)</span>
+        <button class="info-btn" id="infoIndicePescaBtn" type="button" aria-label="¿Qué significa este número?" data-i18n-aria-label="mapa.panel.que_significa">ⓘ</button>
       </div>
       <div class="num" id="panelIndicePesca"></div>
       <div class="etq" id="panelIndicePescaNota" style="margin-top:4px; font-size:10px; line-height:1.4;"></div>
       <!-- Motivos del índice: bloque propio a lo ancho de la caja (dentro de
            .etq, que es flex, se apretaban en columna: visto por Mikel). -->
       <div class="indice-porque" id="panelIndicePescaPorque"></div>
-      <div class="explicacion-indice" id="explicacionIndicePesca">Es la puntuación de la especie de temporada que mejor está ahora mismo en este punto y con esta modalidad (sin las que están en veda), con las mismas reglas públicas que la ventana de actividad de abajo: luz, marea, temperatura del agua, oleaje, viento, presión, turbidez y las reglas expertas de pesca local. Escala de 0 a 100 en forma de probabilidad (50 = día normal); debajo, lo que más sube (▲) o baja (▼) la nota ahora mismo. Si la ola es peligrosa para esta modalidad sale aparte un aviso ⚠️: la nota no la recorta. Una orientación, no una garantía.</div>
+      <div class="explicacion-indice" id="explicacionIndicePesca" data-i18n="mapa.panel.explica_indice_pesca">Es la puntuación de la especie de temporada que mejor está ahora mismo en este punto y con esta modalidad (sin las que están en veda), con las mismas reglas públicas que la ventana de actividad de abajo: luz, marea, temperatura del agua, oleaje, viento, presión, turbidez y las reglas expertas de pesca local. Escala de 0 a 100 en forma de probabilidad (50 = día normal); debajo, lo que más sube (▲) o baja (▼) la nota ahora mismo. Si la ola es peligrosa para esta modalidad sale aparte un aviso ⚠️: la nota no la recorta. Una orientación, no una garantía.</div>
     </div>
     <div class="tarjeta" id="ventanaActividadBox" style="margin-top:10px; border: 1px solid var(--linea);">
-      <div class="etq">⏱ VENTANA DE ACTIVIDAD POR HORAS</div>
+      <div class="etq" data-i18n="mapa.va.titulo">⏱ VENTANA DE ACTIVIDAD POR HORAS</div>
       <div class="va-controles">
-        <select id="vaEspecie" aria-label="Especie"></select>
+        <select id="vaEspecie" aria-label="Especie" data-i18n-aria-label="mapa.va.especie"></select>
         <div class="va-dias">
-          <button type="button" data-va-dia="0" class="activo">Hoy</button>
-          <button type="button" data-va-dia="1">Mañana</button>
+          <button type="button" data-va-dia="0" class="activo" data-i18n="comun.hoy">Hoy</button>
+          <button type="button" data-va-dia="1" data-i18n="comun.manana">Mañana</button>
         </div>
       </div>
       <div id="vaFreza"></div>
       <div id="vaTira" class="va-tira"></div>
       <div id="vaEje" class="va-eje"></div>
-      <div id="vaDetalle" class="va-detalle">Cargando previsión por horas…</div>
+      <div id="vaDetalle" class="va-detalle" data-i18n="mapa.va.cargando">Cargando previsión por horas…</div>
       <div id="vaMejores" class="va-detalle"></div>
       <div id="vaCebos" class="va-detalle"></div>
       <div id="vaTalla" class="va-nota"></div>
-      <div class="va-nota" id="vaNotaReglas">Puntuación 0-100 con reglas fijas y públicas (marea, luz, temperatura del agua, oleaje, viento, presión, turbidez y reglas expertas de pesca local); toca una hora para ver el porqué. Orientativa: no es una garantía.</div>
+      <div class="va-nota" id="vaNotaReglas" data-i18n="mapa.va.nota_reglas">Puntuación 0-100 con reglas fijas y públicas (marea, luz, temperatura del agua, oleaje, viento, presión, turbidez y reglas expertas de pesca local); toca una hora para ver el porqué. Orientativa: no es una garantía.</div>
     </div>
     <div class="tarjeta" id="modNormativaBox" style="margin-top:10px; border: 1px solid var(--linea);">
-      <div class="etq">⚖ NORMATIVA DE ESTA MODALIDAD</div>
-      <div id="modNormativa" class="va-detalle">Cargando…</div>
+      <div class="etq" data-i18n="mapa.mod.normativa_titulo">⚖ NORMATIVA DE ESTA MODALIDAD</div>
+      <div id="modNormativa" class="va-detalle" data-i18n="comun.cargando">Cargando…</div>
     </div>
     </div>
     </div>
     <div id="panelWebcamBox" style="margin-top:14px;">
-      <div class="etq" style="margin-bottom:6px;">WEBCAM EN DIRECTO</div>
+      <div class="etq" style="margin-bottom:6px;" data-i18n="mapa.panel.webcam">WEBCAM EN DIRECTO</div>
       <div id="panelWebcamContenido"></div>
       <div id="panelWebcamExternas"></div>
     </div>
@@ -1394,25 +1404,25 @@
          administradores: se enseña solo si la RPC es_admin() de Supabase dice
          true, y el proxy /meteo/ vuelve a comprobarlo en el servidor. -->
     <div class="admin-fuentes" id="adminFuentes" hidden>
-      <label>Previsión (admin):
+      <label><span data-i18n="mapa.admin.prevision">Previsión (admin):</span>
         <select id="adminFuenteSel">
-          <option value="">— la normal —</option>
+          <option value="" data-i18n="mapa.admin.la_normal">— la normal —</option>
           <option value="openmeteo">Open-Meteo</option>
-          <option value="gratuitas">Gratuitas (MET Norway + Copernicus)</option>
-          <option value="comparar">Las dos, lado a lado</option>
+          <option value="gratuitas" data-i18n="mapa.admin.gratuitas">Gratuitas (MET Norway + Copernicus)</option>
+          <option value="comparar" data-i18n="mapa.admin.las_dos">Las dos, lado a lado</option>
         </select>
       </label>
       <div id="adminFuentesTabla"></div>
     </div>
     <!-- Atribución obligatoria de Open-Meteo (licencia CC BY 4.0 de sus datos). -->
-    <div class="atribucion-boyas" style="margin-top:6px; font-size:10.5px; line-height:1.4; color:var(--tinta-2); text-align:center;">Boyas: Puertos del Estado vía <a href="https://marine.copernicus.eu/" target="_blank" rel="noopener" style="color:inherit;">E.U. Copernicus Marine Service</a> (Generated using E.U. Copernicus Marine Service Information; <a href="https://doi.org/10.48670/moi-00043" target="_blank" rel="noopener" style="color:inherit;">doi:10.48670/moi-00043</a>)</div>
-    <div class="atribucion-meteo">Datos meteorológicos: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a> (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>)</div>
+    <div class="atribucion-boyas" style="margin-top:6px; font-size:10.5px; line-height:1.4; color:var(--tinta-2); text-align:center;" data-i18n-html="mapa.atrib.boyas">Boyas: Puertos del Estado vía <a href="https://marine.copernicus.eu/" target="_blank" rel="noopener" style="color:inherit;">E.U. Copernicus Marine Service</a> (Generated using E.U. Copernicus Marine Service Information; <a href="https://doi.org/10.48670/moi-00043" target="_blank" rel="noopener" style="color:inherit;">doi:10.48670/moi-00043</a>)</div>
+    <div class="atribucion-meteo" data-i18n-html="mapa.atrib.meteo">Datos meteorológicos: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a> (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>)</div>
   </div>
 </div>
 
 <div class="modal-estacion" id="modalEstacion">
   <div class="modal-estacion-contenido">
-    <button class="cerrar" id="cerrarModalEstacion" aria-label="Cerrar">✕</button>
+    <button class="cerrar" id="cerrarModalEstacion" aria-label="Cerrar" data-i18n-aria-label="comun.cerrar">✕</button>
     <h3 id="tituloModalEstacion"></h3>
     <div id="contenidoModalEstacion"></div>
   </div>
@@ -1420,17 +1430,17 @@
 
 <div class="modal-estacion" id="modalBienvenida">
   <div class="modal-estacion-contenido">
-    <h3>🐟 ¡Bienvenido a Costaviva!</h3>
-    <p>Tienes <b>7 días de prueba gratuita</b>. Si cuando terminen no te has suscrito, tu cuenta quedará desactivada, pero tus datos se guardan: al suscribirte lo recuperas todo. Puedes hacerlo cuando quieras desde tu perfil, en <b>«Mi suscripción»</b>; te avisaremos por email dos días antes.</p>
+    <h3 data-i18n="mapa.bienvenida.titulo">🐟 ¡Bienvenido a Costaviva!</h3>
+    <p data-i18n-html="mapa.bienvenida.texto">Tienes <b>7 días de prueba gratuita</b>. Si cuando terminen no te has suscrito, tu cuenta quedará desactivada, pero tus datos se guardan: al suscribirte lo recuperas todo. Puedes hacerlo cuando quieras desde tu perfil, en <b>«Mi suscripción»</b>; te avisaremos por email dos días antes.</p>
     <div class="botones-bienvenida">
-      <button type="button" class="primario" id="btnVerPlanesBienvenida">Ver los planes</button>
-      <button type="button" class="secundario" id="btnCerrarBienvenida">Entendido, ¡a pescar!</button>
+      <button type="button" class="primario" id="btnVerPlanesBienvenida" data-i18n="mapa.bienvenida.ver_planes">Ver los planes</button>
+      <button type="button" class="secundario" id="btnCerrarBienvenida" data-i18n="mapa.bienvenida.entendido">Entendido, ¡a pescar!</button>
     </div>
   </div>
 </div>
 
 <div class="modal-zoom-webcam" id="modalZoomWebcam">
-  <button class="cerrar" id="cerrarModalZoomWebcam" aria-label="Cerrar">✕</button>
+  <button class="cerrar" id="cerrarModalZoomWebcam" aria-label="Cerrar" data-i18n-aria-label="comun.cerrar">✕</button>
   <div id="contenidoZoomWebcam"></div>
 </div>
 <script type="module">
@@ -1900,11 +1910,13 @@ const RIO_PUNTOS = RIOS.flatMap((r) =>
 // (Segura, Lagares), se muestra el número real pero sin colorear como
 // bajo/normal/alto para no inventar una escala.
 function categoriaCaudal(caudal, umbralBajo, umbralAlto) {
-  if (caudal === null || caudal === undefined) return { etiqueta: "sin datos", color: "#8B9AA0" };
+  // `nivel` es el id (bajo/normal/alto) que usan las reglas; `etiqueta`, el
+  // texto en el idioma de la app.
+  if (caudal === null || caudal === undefined) return { etiqueta: I18n.t("mapa.sin_datos"), color: "#8B9AA0" };
   if (umbralBajo == null || umbralAlto == null) return { etiqueta: `${caudal} m³/s`, color: "#5C7680" };
-  if (caudal < umbralBajo) return { etiqueta: "bajo", color: "#4F9D69" };
-  if (caudal < umbralAlto) return { etiqueta: "normal", color: "#D4A24C" };
-  return { etiqueta: "alto", color: "#A34A35" };
+  if (caudal < umbralBajo) return { nivel: "bajo", etiqueta: I18n.t("mapa.caudal.bajo"), color: "#4F9D69" };
+  if (caudal < umbralAlto) return { nivel: "normal", etiqueta: I18n.t("mapa.caudal.normal"), color: "#D4A24C" };
+  return { nivel: "alto", etiqueta: I18n.t("mapa.caudal.alto"), color: "#A34A35" };
 }
 
 // Las listas ESPECIES, ESPECIES_MEDITERRANEO, ESPECIES_GOLFO_CADIZ y
@@ -1959,12 +1971,12 @@ function spotVigente(s) {
 }
 function textoVigencia(s) {
   const marca = s ? s.actualizadoEn : ultimaActualizacionOk;
-  if (!marca) return "sin datos actuales todavía — esperando /prevision";
+  if (!marca) return I18n.t("mapa.vigencia.esperando");
   const minutos = Math.round((Date.now() - marca) / 60000);
   if ((s ? spotVigente(s) : datosVigentes())) {
-    return minutos < 1 ? "actualizado ahora mismo" : `actualizado hace ${minutos} min`;
+    return minutos < 1 ? I18n.t("mapa.vigencia.ahora") : I18n.t("mapa.vigencia.hace", { minutos });
   }
-  return `sin datos actuales (última respuesta hace ${minutos} min, más de 1h)`;
+  return I18n.t("mapa.vigencia.caducado", { minutos });
 }
 function datosVigentes() {
   return ultimaActualizacionOk !== null && (Date.now() - ultimaActualizacionOk) < VIGENCIA_MAX_MS;
@@ -1989,7 +2001,7 @@ function colorIndiceMarCss(valor) {
   return NivelIndice.colorNivel(NivelIndice.nivelMar(valor));
 }
 function textoIndice(valor) {
-  return (valor === null || valor === undefined) ? "S/D" : String(valor);
+  return (valor === null || valor === undefined) ? I18n.t("comun.sd") : String(valor);
 }
 
 SPOTS.forEach((s) => (s.indice = indiceMar(s)));
@@ -2138,7 +2150,7 @@ if (window.TarjetasMapa) {
 }
 // Oleaje, viento, marea y corriente del mapa salen de Open-Meteo: su licencia
 // (CC BY 4.0) exige atribución visible, siempre, no solo en el panel.
-map.attributionControl.addAttribution(window.ATRIBUCION_METEO_HTML || "Datos meteorológicos: Open-Meteo.com (CC BY 4.0)");
+map.attributionControl.addAttribution(window.ATRIBUCION_METEO_HTML || I18n.t("mapa.atrib.meteo_corta"));
 // Si los datos pasan a salir de otra fuente (MET Norway, Copernicus Marine:
 // interruptores FUENTE_* de functions/_lib/fuentes.js), assets/js/meteo.js
 // avisa con este evento y se cambia el texto del mapa por el de las fuentes
@@ -2262,7 +2274,7 @@ document.getElementById("toggleEstaciones").addEventListener("click", (e) => {
     // lecturas guardadas (ver estacionesAemetConRespaldo en
     // functions/prevision.js), la capa sale vacía: se dice, no se calla.
     if (capaEstaciones.getLayers().length === 0) {
-      avisoCapa("Las estaciones de AEMET no responden ahora mismo. Vuelve a probar en unos minutos.");
+      avisoCapa(I18n.t("mapa.estaciones.sin_respuesta"));
     }
   }
 });
@@ -2336,27 +2348,23 @@ const URL_CAPAS_MAR = "https://imncbmizxkorotpeisic.supabase.co/storage/v1/objec
 const CAPAS_MAR = {
   clorofila: {
     boton: "toggleClorofila",
-    titulo: "🌿 CLOROFILA (PLANCTON)",
-    corto: "🌿 Clorofila",
+    titulo: I18n.t("capas.clorofila.titulo"),
+    corto: I18n.t("capas.clorofila.corto"),
     // Color por log10(mg/m³) entre 0,03 y 10.
     valorColor: (v) => (Math.log10(v) + 1.5) / 2.5,
     paradas: ["#0B2D6B", "#1F6FA8", "#2E9C8F", "#6CBF4B", "#D9D23B", "#F2A23A"],
-    extremos: ["0,03 mg/m³", "10+ mg/m³"],
-    formato: (v) => `${v < 1 ? v.toFixed(2) : v.toFixed(1)} mg/m³ de clorofila`,
-    resumen: "Dice dónde el mar está vivo (plancton), no dónde están los peces.",
-    explica: "Azul, poca: agua limpia y menos productiva, aunque puede haber peces de paso. " +
-      "Verdosa, moderada: hay comida en marcha; suele ser lo más interesante. " +
-      "Verde intenso, mucha: puede ser una floración con agua turbia; no significa más peces. " +
-      "Lo que más vale es el borde entre agua verde y azul, mejor si coincide con un cambio de temperatura: míralo en 〰 Frentes. " +
-      "Depende de la especie y de la época. El satélite solo ve la superficie, las nubes lo tapan y pegado a la costa y en las desembocaduras el barro sube el dato. Toca el mapa para ver el valor.",
-    fecha: (d) => `Satélite, ${fechaCorta(d.fecha)} (donde había nubes, el dato es estimado)`,
-    fechaFila: (d) => `Satélite, ${fechaCorta(d.fecha)}`,
+    extremos: [I18n.t("capas.clorofila.min"), "10+ mg/m³"],
+    formato: (v) => I18n.t("capas.clorofila.formato", { v: v < 1 ? v.toFixed(2) : v.toFixed(1) }),
+    resumen: I18n.t("capas.clorofila.resumen"),
+    explica: I18n.t("capas.clorofila.explica"),
+    fecha: (d) => I18n.t("capas.clorofila.fecha", { fecha: fechaCorta(d.fecha) }),
+    fechaFila: (d) => I18n.t("capas.clorofila.fecha_fila", { fecha: fechaCorta(d.fecha) }),
     maxDias: 7,
   },
   "temperatura-agua": {
     boton: "toggleTempAgua",
-    titulo: "🌡 TEMPERATURA DEL AGUA",
-    corto: "🌡 T. agua",
+    titulo: I18n.t("capas.tagua.titulo"),
+    corto: I18n.t("capas.tagua.corto"),
     // Escala FIJA por bandas de 1 °C de 8 a 30 °C (2026-10-09, Mikel: "El
     // color debiera ser el mismo"): cada grado tiene siempre su color, en
     // cualquier zona y zoom (paleta y por qué en assets/js/isotermas.js), e
@@ -2366,12 +2374,11 @@ const CAPAS_MAR = {
     valorColor: (v) => (v - 10) / 18,
     paradas: ["#2B3A8C", "#2F7FC1", "#4FB7C9", "#9AD27A", "#F2D04B", "#F28C38", "#C9372C"],
     extremos: ["10 °C", "28+ °C"],
-    formato: (v) => `${v.toFixed(1).replace(".", ",")} °C en superficie`,
-    resumen: "Temperatura de la superficie del mar (modelo IBI de Copernicus).",
-    explica: "Cada color es un grado, siempre el mismo en todo el mapa (del azul frío al rojo cálido); las líneas marcan el grado exacto. " +
-      "Cada especie tiene su rango. Los cambios bruscos de temperatura (frentes) suelen juntar alimento: míralos en 〰 Frentes. Toca el mapa para ver el valor exacto.",
-    fecha: (d) => `Modelo IBI, ${fechaCorta(d.fecha)} a las 12:00 UTC`,
-    fechaFila: (d) => `Modelo, ${fechaCorta(d.fecha)} a las 12:00 UTC`,
+    formato: (v) => I18n.t("capas.tagua.formato", { v: I18n.num(v, 1) }),
+    resumen: I18n.t("capas.tagua.resumen"),
+    explica: I18n.t("capas.tagua.explica"),
+    fecha: (d) => I18n.t("capas.tagua.fecha", { fecha: fechaCorta(d.fecha) }),
+    fechaFila: (d) => I18n.t("capas.tagua.fecha_fila", { fecha: fechaCorta(d.fecha) }),
     maxDias: 3,
   },
   // 〰 Frentes y corrientes (2026-10-09): bordes de clorofila y de
@@ -2380,25 +2387,27 @@ const CAPAS_MAR = {
   // flechas y toque en assets/js/frentes.js (window.Frentes).
   frentes: {
     boton: "toggleFrentes",
-    titulo: "〰 FRENTES Y CORRIENTES",
-    corto: "〰 Frentes",
+    titulo: I18n.t("capas.frentes.titulo"),
+    corto: I18n.t("capas.frentes.corto"),
     tipo: "frentes",
     leyenda: [
-      ["doble", "Dos señales a la vez: lo más prometedor"],
-      ["clorofila", "Borde de agua verde y azul"],
-      ["termico", "Cambio brusco de temperatura"],
-      ["convergencia", "La corriente junta el agua"],
-      ["sin_dato", "Sin dato fiable (nubes o costa)"],
+      ["doble", I18n.t("capas.frentes.ley_doble")],
+      ["clorofila", I18n.t("capas.frentes.ley_clorofila")],
+      ["termico", I18n.t("capas.frentes.ley_termico")],
+      ["convergencia", I18n.t("capas.frentes.ley_convergencia")],
+      ["sin_dato", I18n.t("capas.frentes.ley_sin_dato")],
     ],
-    resumen: "Bordes entre aguas distintas: ahí se suele juntar el alimento.",
-    explica: "Morado: dos señales en el mismo sitio (borde de clorofila y de temperatura, o un borde donde la corriente junta el agua). " +
-      "Las flechas dicen hacia dónde va la corriente; cuanto más largas, más fuerte (la fuerza, por manchas, en 🌊 Corriente). " +
-      "Mejor el borde que el centro de una mancha. Es una pista, no una garantía: depende de la especie y la época, y el satélite solo ve la superficie. " +
-      "En gris, sin dato fiable: nubes, o pegado a la costa, donde el barro confunde al satélite. Toca el mapa para ver qué hay cerca.",
+    resumen: I18n.t("capas.frentes.resumen"),
+    explica: I18n.t("capas.frentes.explica"),
     // Clorofila de varios días (descargar-capas.py, 3c): en cada celda, lo
     // último que vio el satélite sin nubes.
-    fecha: (d) => `Satélite ${d.fecha_clorofila_desde && d.fecha_clorofila_desde !== d.fecha_clorofila ? `del ${fechaCorta(d.fecha_clorofila_desde)} al ${fechaCorta(d.fecha_clorofila)} (lo último sin nubes)` : `del ${fechaCorta(d.fecha_clorofila)}`}; temperatura y corriente (media del día, sin marea) del ${fechaCorta(d.fecha)}`,
-    fechaFila: (d) => `Satélite hasta el ${fechaCorta(d.fecha_clorofila)}; modelo del ${fechaCorta(d.fecha)}`,
+    fecha: (d) => I18n.t("capas.frentes.fecha", {
+      satelite: d.fecha_clorofila_desde && d.fecha_clorofila_desde !== d.fecha_clorofila
+        ? I18n.t("capas.frentes.sat_rango", { desde: fechaCorta(d.fecha_clorofila_desde), hasta: fechaCorta(d.fecha_clorofila) })
+        : I18n.t("capas.frentes.sat_dia", { fecha: fechaCorta(d.fecha_clorofila) }),
+      fecha: fechaCorta(d.fecha),
+    }),
+    fechaFila: (d) => I18n.t("capas.frentes.fecha_fila", { satelite: fechaCorta(d.fecha_clorofila), fecha: fechaCorta(d.fecha) }),
     maxDias: 3,
   },
   // 🌊 Corriente (2026-10-09, Mikel: "¿La corriente se puede mostrar por
@@ -2408,15 +2417,13 @@ const CAPAS_MAR = {
   corriente: {
     boton: "toggleCorriente",
     fichero: "frentes",
-    titulo: "🌊 CORRIENTE EN SUPERFICIE",
-    corto: "🌊 Corriente",
+    titulo: I18n.t("capas.corriente.titulo"),
+    corto: I18n.t("capas.corriente.corto"),
     tipo: "corriente",
-    resumen: "Media del día sin la marea: en rías, puertos y pegado a la costa manda la marea.",
-    explica: "El color dice lo fuerte que va la corriente; las flechas, hacia dónde va (más largas, más fuerte). " +
-      "Es la corriente media del día sin la marea, del modelo IBI de Copernicus: cerca de la costa, en rías y puertos la marea manda y el modelo pierde detalle. " +
-      "Toca el mapa para ver la dirección y la fuerza.",
-    fecha: (d) => `Modelo IBI, media del ${fechaCorta(d.fecha)} (sin marea)`,
-    fechaFila: (d) => `Media del ${fechaCorta(d.fecha)}, sin marea`,
+    resumen: I18n.t("capas.corriente.resumen"),
+    explica: I18n.t("capas.corriente.explica"),
+    fecha: (d) => I18n.t("capas.corriente.fecha", { fecha: fechaCorta(d.fecha) }),
+    fechaFila: (d) => I18n.t("capas.corriente.fecha_fila", { fecha: fechaCorta(d.fecha) }),
     maxDias: 3,
   },
 };
@@ -2432,7 +2439,7 @@ const COLORES_FRENTES = {
 const rgbaCss = (c) => `rgba(${c[0]}, ${c[1]}, ${c[2]}, ${(c[3] / 255).toFixed(2)})`;
 function fechaCorta(iso) {
   const [a, m, d] = String(iso || "").split("-").map(Number);
-  return a ? `${d} ${VA_MESES[m - 1]}` : "fecha desconocida";
+  return a ? `${d} ${VA_MESES[m - 1]}` : I18n.t("capas.fecha_desconocida");
 }
 // Cálculo puro (decodificar, color, Mercator): assets/js/capas-mar.js.
 async function moduloCapasMar() {
@@ -2466,7 +2473,7 @@ function lienzoCapaMar(CM, d, def) {
 // Créditos de una capa o de varias (DOIs sin repetir).
 function creditoCapaMar(ds) {
   const dois = [...new Set([].concat(ds).flatMap((d) => d.dois || [d.doi]))];
-  return 'Datos: <a href="https://marine.copernicus.eu/" target="_blank" rel="noopener">Generated using E.U. Copernicus Marine Service Information</a>; ' +
+  return I18n.t("capas.credito_datos") + ' <a href="https://marine.copernicus.eu/" target="_blank" rel="noopener">Generated using E.U. Copernicus Marine Service Information</a>; ' +
     dois.map((x) => `<a href="https://doi.org/${escVA(x)}" target="_blank" rel="noopener">${escVA(x)}</a>`).join(", ");
 }
 // Flechas de corriente de 〰 Frentes: como mucho 12 por lado de la pantalla
@@ -2813,10 +2820,10 @@ function muestrasCapaMar(nombre, soloTrazos = false) {
 function leyendaVariasCapas(activas, fondo) {
   const CC = window.CapasCombinadas;
   for (const id of ID_UNA_CAPA) document.getElementById(id).hidden = true;
-  document.getElementById("capaMarTitulo").textContent = "CAPAS DEL MAR";
+  document.getElementById("capaMarTitulo").textContent = I18n.t("capas.varias.titulo");
   // Minimizada: solo los iconos de las capas encendidas (y la escala del fondo).
   document.getElementById("capaMarCorto").textContent = activas.map((n) => CC.ICONOS[n]).join(" ");
-  document.getElementById("capaMarCorto").title = `Capas del mar: ${activas.map((n) => CC.NOMBRES[n].toLowerCase()).join(", ")}`;
+  document.getElementById("capaMarCorto").title = I18n.t("capas.varias.title", { capas: activas.map((n) => CC.NOMBRES[n].toLowerCase()).join(", ") });
   const mini = document.getElementById("capaMarMini");
   mini.replaceChildren();
   mini.style.background = "";
@@ -2838,11 +2845,11 @@ function leyendaVariasCapas(activas, fondo) {
       fila.type = "button";
       fila.dataset.capa = nombre;
       fila.setAttribute("aria-pressed", modo.fondo ? "true" : "false");
-      fila.title = modo.fondo ? "Es el color de fondo" : "Poner esta capa de color de fondo";
+      fila.title = modo.fondo ? I18n.t("capas.varias.es_fondo") : I18n.t("capas.varias.poner_fondo_title");
     }
     const cab = el("span", "fila-cab");
     cab.append(el("span", null, CC.ICONOS[nombre]), el("b", null, CC.NOMBRES[nombre]));
-    cab.append(el("span", "fila-fondo", modo.fondo ? "Fondo" : seleccionable ? "poner de fondo" : "trazos"));
+    cab.append(el("span", "fila-fondo", modo.fondo ? I18n.t("capas.varias.fondo") : seleccionable ? I18n.t("capas.varias.poner_fondo") : I18n.t("capas.varias.trazos")));
     fila.append(cab);
     let fondoMini = null;
     const muestras = el("span", "fila-muestras");
@@ -2859,7 +2866,7 @@ function leyendaVariasCapas(activas, fondo) {
     } else if (nombre === "clorofila") {
       CC.NIVELES_CLOROFILA.forEach((v, k) => {
         const s = el("span");
-        s.append(el("i", `linea n${k}`), document.createTextNode(String(v).replace(".", ",")));
+        s.append(el("i", `linea n${k}`), document.createTextNode(I18n.decimal(String(v))));
         muestras.append(s);
       });
     } else if (nombre === "corriente" && modo.relleno) {
@@ -2891,10 +2898,9 @@ function leyendaVariasCapas(activas, fondo) {
     }
   }
   filas.hidden = false;
-  document.getElementById("capaMarResumen").textContent = "Cómo se leen juntas";
+  document.getElementById("capaMarResumen").textContent = I18n.t("capas.varias.resumen");
   document.getElementById("capaMarExplica").textContent =
-    "Solo una capa pone el color de fondo (la marcada «Fondo»); las demás van en líneas, trazos o flechas para no taparse. " +
-    "Toca otra fila para ponerla de fondo. Toca el mapa para ver todas a la vez en ese punto. " +
+    I18n.t("capas.varias.explica") + " " +
     activas.map((n) => `${CC.ICONOS[n]} ${CAPAS_MAR[n].resumen} (${CAPAS_MAR[n].fechaFila(datosCapasMar[ficheroCapaMar(n)])}.)`).join(" ");
 }
 // Tocar una fila de la leyenda de varias capas: esa capa pasa a ser el fondo.
@@ -2918,17 +2924,17 @@ async function datosCapaMarListos(nombre, silencioso) {
     d = await cargarCapaMar(capasMar.CM, nombre);
   } catch (e) {
     console.warn(`Capa ${nombre} no disponible:`, e && e.message);
-    aviso("Esta capa aún no está disponible. Vuelve a probar más tarde.");
+    aviso(I18n.t("capas.no_disponible"));
     return null;
   }
   // Nunca un mapa viejo con aspecto de actual.
   const dias = (Date.now() - Date.parse(d.fecha + "T12:00:00Z")) / 86400000;
   if (!Number.isFinite(dias) || dias > def.maxDias) {
-    aviso("Los datos de esta capa están desactualizados; no se muestran.");
+    aviso(I18n.t("capas.desactualizada"));
     return null;
   }
   if (def.tipo === "corriente" && !d.mallaVel) {
-    aviso("Esta capa aún no está disponible. Vuelve a probar más tarde.");
+    aviso(I18n.t("capas.no_disponible"));
     return null;
   }
   return d;
@@ -3007,7 +3013,7 @@ function globoCapasMar(lat, lng) {
     if (c) hayMar = true;
     partes.corriente = C.textoToque(c, C.dentroDeZona(dc.mallaVel, lat, lng));
   }
-  if (!hayMar) return ["Tierra o sin dato aquí"];
+  if (!hayMar) return [I18n.t("capas.globo.tierra")];
   return CC.lineasGlobo(partes);
 }
 
@@ -3070,6 +3076,17 @@ function curvaTramo(a, b, semilla) {
 // Grosor de un tramo según su propio caudal (si lo tiene) — así un río con
 // más agua en la desembocadura que en cabecera se ve con un trazo más
 // grueso ahí, en vez de un grosor uniforme de punta a punta.
+// Tramo de un río para enseñar: "Cabecera (Muxika)" -> "Upper reach (Muxika)"
+// en inglés. El nombre de dentro es un dato (fase de datos de cada región);
+// la clave original sigue sirviendo para MONTE_RIOS.
+function textoTramoRio(tramo) {
+  if (I18n.idioma() === "es") return tramo;
+  return String(tramo)
+    .replace(/^Cabecera/, I18n.t("mapa.rio.cabecera"))
+    .replace(/^Medio/, I18n.t("mapa.rio.medio"))
+    .replace(/^Desembocadura/, I18n.t("mapa.rio.desembocadura"))
+    .replace(" — estación ", I18n.t("mapa.rio.estacion", { estacion: "" }));
+}
 function grosorTramo(punto) {
   const GROSOR_BASE = 2, GROSOR_MAX = 7;
   if (punto.caudal == null || punto.umbralAlto == null) return GROSOR_BASE;
@@ -3087,7 +3104,7 @@ function crearMarcadorSpot(s) {
   const tieneWebcam = !s.esUsuario && SPOTS_CON_WEBCAM.includes(s.slug);
   const html = `
     <div style="display:flex; flex-direction:column; align-items:center;">
-      <div class="etiqueta-spot">${s.nombre}${tieneWebcam ? `<span class="punto-webcam-viva" id="webcam-punto-${s.slug}" title="Webcam en directo"></span>` : ""}</div>
+      <div class="etiqueta-spot">${s.nombre}${tieneWebcam ? `<span class="punto-webcam-viva" id="webcam-punto-${s.slug}" title="${I18n.t("mapa.webcam_en_directo")}"></span>` : ""}</div>
       <div style="display:flex; align-items:center; gap:3px;">
         ${iconoFlecha(gradosDesdeTexto(s.dirOla), "#2E7BA0")}
         ${iconoFlecha(gradosDesdeTexto(s.dirViento), "#D4A24C")}
@@ -3146,11 +3163,11 @@ function crearMarcadores() {
       // "Caudal: sin datos" a la vista (nunca lo va a tener, no es un
       // hueco temporal).
       const lineaCaudal = p.caudal != null
-        ? `<div class="rio-caudal"><span class="chip" style="width:8px;height:8px;border-radius:2px;background:${cat.color};"></span>Caudal: ${detalleCaudal}</div>`
+        ? `<div class="rio-caudal"><span class="chip" style="width:8px;height:8px;border-radius:2px;background:${cat.color};"></span>${I18n.t("mapa.rio.caudal", { caudal: detalleCaudal })}</div>`
         : "";
       const llamada = `
         <div class="rio-nombre">${r.rio}</div>
-        <div class="rio-tramo">${p.tramo}${p.estacion ? ` — estación ${p.estacion}` : ""}</div>
+        <div class="rio-tramo">${textoTramoRio(p.tramo)}${p.estacion ? I18n.t("mapa.rio.estacion", { estacion: p.estacion }) : ""}</div>
         ${lineaCaudal}
         ${lineaMonteRiosHtml(r.rio, p.tramo)}
       `;
@@ -3482,7 +3499,7 @@ document.getElementById("btnMetodoGps").addEventListener("click", () => {
   cerrarEligeMetodo();
   navigator.geolocation.getCurrentPosition(
     (pos) => iniciarNuevaUbicacion(pos.coords.latitude, pos.coords.longitude),
-    () => { mostrarErrorUbicacion("No se ha podido obtener tu GPS — revisa los permisos de ubicación del navegador."); },
+    () => { mostrarErrorUbicacion(I18n.t("mapa.ubic.error_gps")); },
     { timeout: 8000 }
   );
 });
@@ -3520,7 +3537,7 @@ map.on("click", (e) => {
   }
   const v = d && window.CapasMar ? window.CapasMar.valorEnPunto(d, d.bytes, lat, lng) : null;
   L.popup().setLatLng(e.latlng)
-    .setContent(v === null ? "Sin dato aquí (tierra o sin observación)" : CAPAS_MAR[nombre].formato(v))
+    .setContent(v === null ? I18n.t("capas.globo.sin_dato") : CAPAS_MAR[nombre].formato(v))
     .openOn(map);
 });
 map.on("click", (e) => {
@@ -3548,7 +3565,7 @@ document.getElementById("btnUsarCoordsManual").addEventListener("click", () => {
   const lon = parseFloat(document.getElementById("coordsManualLon").value);
   const errEl = document.getElementById("coordsManualError");
   if (!Number.isFinite(lat) || !Number.isFinite(lon) || lat < -90 || lat > 90 || lon < -180 || lon > 180) {
-    errEl.textContent = "Introduce una latitud (-90 a 90) y una longitud (-180 a 180) válidas.";
+    errEl.textContent = I18n.t("mapa.ubic.error_coords");
     errEl.style.display = "block";
     return;
   }
@@ -3571,7 +3588,8 @@ function cerrarConfirmarUbicacion() {
 }
 
 function formatoCoordenadas(lat, lon) {
-  return `${lat.toFixed(4)}°N, ${Math.abs(lon).toFixed(4)}°${lon < 0 ? "W" : "E"}`;
+  // Hemisferio sur (Nueva Zelanda): °S en vez de un "-41.2°N".
+  return `${Math.abs(lat).toFixed(4)}°${lat < 0 ? "S" : "N"}, ${Math.abs(lon).toFixed(4)}°${lon < 0 ? "W" : "E"}`;
 }
 const EMOJI_TIPO_UBICACION = { costa: "", embarcacion: "🚤 ", buceo: "🤿 " };
 
@@ -3588,13 +3606,13 @@ function actualizarVistaPreviaUbicacion() {
   const btnConfirmar = document.getElementById("btnConfirmarUbicacion");
   if (tipo === "costa") {
     if (puntoPendiente.errorGeocodificacion) {
-      nombreEl.textContent = "No se ha podido identificar el nombre de esta zona — prueba otro punto, o cámbialo a Embarcación/Buceo si es un punto de mar abierto.";
+      nombreEl.textContent = I18n.t("mapa.ubic.error_nombre");
       btnConfirmar.disabled = true;
     } else if (puntoPendiente.nombreGeocodificado) {
       nombreEl.textContent = puntoPendiente.nombreGeocodificado;
       btnConfirmar.disabled = false;
     } else {
-      nombreEl.textContent = "Buscando el nombre de la zona…";
+      nombreEl.textContent = I18n.t("mapa.ubic.buscando_nombre");
       btnConfirmar.disabled = true;
     }
   } else {
@@ -3641,7 +3659,7 @@ document.getElementById("btnConfirmarUbicacion").addEventListener("click", async
     publica,
   });
   if (error) {
-    mostrarErrorUbicacion(traducirError(error, "No se ha podido guardar la ubicación. Inténtalo de nuevo."));
+    mostrarErrorUbicacion(traducirError(error, I18n.t("mapa.ubic.error_guardar")));
     return;
   }
   cerrarConfirmarUbicacion();
@@ -3682,9 +3700,9 @@ function actualizarBotonFavorito(s) {
 
 async function borrarSpotPersonalizado(s) {
   if (!window.supabaseCliente || !s.esUsuario || !s.propio) return;
-  if (!confirm(`¿Borrar "${s.nombre}"? No se puede deshacer.`)) return;
+  if (!confirm(I18n.t("mapa.ubic.confirmar_borrar", { nombre: s.nombre }))) return;
   const { error } = await window.supabaseCliente.from("spots_usuario").delete().eq("id", s.slug);
-  if (error) { alert(traducirError(error, "No se ha podido borrar. Inténtalo de nuevo.")); return; }
+  if (error) { alert(traducirError(error, I18n.t("comun.error_borrar"))); return; }
   document.getElementById("panel").classList.remove("visible");
   await cargarSpotsPersonalizados();
 }
@@ -3712,10 +3730,10 @@ function crearMarcadorBoya(boya) {
   const marker = L.marker([boya.lat, boya.lon], { icon }).addTo(capaBoyas);
 
   const llamada = `
-    <div class="rio-nombre">⚓ Boya ${boya.nombre}</div>
-    <div class="rio-tramo">Mar abierto · dato medido${boya.actualizado ? ` a las ${new Date(boya.actualizado).toLocaleTimeString("es-ES", { timeZone: zonaSpot(boya), hour: "2-digit", minute: "2-digit" })}` : ""}</div>
-    <div class="rio-caudal">Oleaje: ${boya.alturaSignificativa}m${boya.periodoPico ? ` · ${Math.round(boya.periodoPico)}s` : ""}${boya.dirOla ? ` · ${boya.dirOla}` : ""}</div>
-    ${boya.tempAgua !== null && boya.tempAgua !== undefined ? `<div class="rio-caudal">🌡 Agua: ${boya.tempAgua}°C</div>` : ""}
+    <div class="rio-nombre">${I18n.t("mapa.boya.titulo", { nombre: boya.nombre })}</div>
+    <div class="rio-tramo">${I18n.t("mapa.boya.medido")}${boya.actualizado ? I18n.t("mapa.boya.a_las", { hora: new Date(boya.actualizado).toLocaleTimeString(I18n.locale(), { timeZone: zonaSpot(boya), hour: "2-digit", minute: "2-digit" }) }) : ""}</div>
+    <div class="rio-caudal">${I18n.t("mapa.boya.oleaje")} ${boya.alturaSignificativa}m${boya.periodoPico ? ` · ${Math.round(boya.periodoPico)}s` : ""}${boya.dirOla ? ` · ${boya.dirOla}` : ""}</div>
+    ${boya.tempAgua !== null && boya.tempAgua !== undefined ? `<div class="rio-caudal">${I18n.t("mapa.boya.agua")} ${boya.tempAgua}°C</div>` : ""}
     ${boya.codigo === "PT-nazare-costeira" ? "" : `<div class="rio-tramo" style="font-size:10px;">Puertos del Estado vía E.U. Copernicus Marine Service · Generated using E.U. Copernicus Marine Service Information (doi:10.48670/moi-00043)</div>`}
   `;
   marker.bindTooltip(llamada, { direction: "top", offset: [0, -10], className: "llamada-rio", opacity: 1 });
@@ -3749,20 +3767,20 @@ function filaModalEstacion(etiqueta, valor) {
 
 function abrirModalEstacion(estacion) {
   const hora = estacion.actualizado
-    ? new Date(estacion.actualizado).toLocaleString("es-ES", { timeZone: zonaSpot(estacion), hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit" })
+    ? new Date(estacion.actualizado).toLocaleString(I18n.locale(), { timeZone: zonaSpot(estacion), hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit" })
     : "—";
   document.getElementById("tituloModalEstacion").textContent = `🌧 ${estacion.nombre}`;
   document.getElementById("contenidoModalEstacion").innerHTML = `
-    <div class="rio-tramo" style="margin-bottom:10px;">Estación real AEMET · actualizado ${hora}</div>
-    ${filaModalEstacion("Precipitación (última hora)", Number.isFinite(estacion.prec) ? `${estacion.prec} mm` : null)}
-    ${filaModalEstacion("Presión", Number.isFinite(estacion.pres) ? `${estacion.pres} hPa` : null)}
-    ${filaModalEstacion("Presión a nivel del mar", Number.isFinite(estacion.presNmar) ? `${estacion.presNmar} hPa` : null)}
-    ${filaModalEstacion("Temperatura", Number.isFinite(estacion.ta) ? `${estacion.ta}°C` : null)}
-    ${filaModalEstacion("Mín. / Máx. del día", (Number.isFinite(estacion.tamin) && Number.isFinite(estacion.tamax)) ? `${estacion.tamin}°C / ${estacion.tamax}°C` : null)}
-    ${filaModalEstacion("Humedad relativa", Number.isFinite(estacion.hr) ? `${estacion.hr}%` : null)}
-    ${filaModalEstacion("Viento medio", Number.isFinite(estacion.vv) ? `${estacion.vv} m/s${Number.isFinite(estacion.dv) ? " " + textoRumbo(estacion.dv) : ""}` : null)}
-    ${filaModalEstacion("Racha máxima", Number.isFinite(estacion.vmax) ? `${estacion.vmax} m/s` : null)}
-    ${filaModalEstacion("Temp. del mar (si la mide)", Number.isFinite(estacion.ts) ? `${estacion.ts}°C` : null)}
+    <div class="rio-tramo" style="margin-bottom:10px;">${I18n.t("mapa.estacion.cabecera", { hora })}</div>
+    ${filaModalEstacion(I18n.t("mapa.estacion.prec"), Number.isFinite(estacion.prec) ? `${estacion.prec} mm` : null)}
+    ${filaModalEstacion(I18n.t("mapa.estacion.pres"), Number.isFinite(estacion.pres) ? `${estacion.pres} hPa` : null)}
+    ${filaModalEstacion(I18n.t("mapa.estacion.pres_mar"), Number.isFinite(estacion.presNmar) ? `${estacion.presNmar} hPa` : null)}
+    ${filaModalEstacion(I18n.t("mapa.estacion.temp"), Number.isFinite(estacion.ta) ? `${estacion.ta}°C` : null)}
+    ${filaModalEstacion(I18n.t("mapa.estacion.min_max"), (Number.isFinite(estacion.tamin) && Number.isFinite(estacion.tamax)) ? `${estacion.tamin}°C / ${estacion.tamax}°C` : null)}
+    ${filaModalEstacion(I18n.t("mapa.estacion.humedad"), Number.isFinite(estacion.hr) ? `${estacion.hr}%` : null)}
+    ${filaModalEstacion(I18n.t("mapa.estacion.viento"), Number.isFinite(estacion.vv) ? `${estacion.vv} m/s${Number.isFinite(estacion.dv) ? " " + textoRumbo(estacion.dv) : ""}` : null)}
+    ${filaModalEstacion(I18n.t("mapa.estacion.racha"), Number.isFinite(estacion.vmax) ? `${estacion.vmax} m/s` : null)}
+    ${filaModalEstacion(I18n.t("mapa.estacion.temp_mar"), Number.isFinite(estacion.ts) ? `${estacion.ts}°C` : null)}
   `;
   document.getElementById("modalEstacion").classList.add("visible");
 }
@@ -3991,17 +4009,17 @@ function pintarCamarasExternas(slug) {
   const htmlImagenes = imagenes.map((c) => `
     <figure style="margin:8px 0 0;">
       <a href="${escaparHtmlCam(c.url)}" target="_blank" rel="noopener"><img src="${escaparHtmlCam(c.imagen)}" alt="${escaparHtmlCam(c.nombre)} | ${escaparHtmlCam(c.dueno)}" loading="lazy" style="width:100%; border-radius:8px; border:1px solid var(--linea); display:block;"></a>
-      <figcaption style="font-size:11px; color:var(--tinta-2); margin-top:3px;">${escaparHtmlCam(c.nombre)} · imagen de <a href="${escaparHtmlCam(c.url)}" target="_blank" rel="noopener">${escaparHtmlCam(c.dueno)}</a> (cada 5 min; el vídeo, en su web)</figcaption>
+      <figcaption style="font-size:11px; color:var(--tinta-2); margin-top:3px;">${escaparHtmlCam(c.nombre)} · ${I18n.t("mapa.cam.imagen_de")} <a href="${escaparHtmlCam(c.url)}" target="_blank" rel="noopener">${escaparHtmlCam(c.dueno)}</a> ${I18n.t("mapa.cam.cada_5")}</figcaption>
     </figure>`).join("");
   const htmlEnlaces = enlaces.length ? `
     <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;">
-      ${enlaces.map((c) => `<a href="${escaparHtmlCam(c.url)}" target="_blank" rel="noopener" style="font-size:12px; padding:5px 10px; border:1px solid var(--linea); border-radius:14px; text-decoration:none; color:#2E7BA0;">Ver cámara: ${escaparHtmlCam(c.nombre)} (${escaparHtmlCam(c.dueno)}) ↗</a>`).join("")}
+      ${enlaces.map((c) => `<a href="${escaparHtmlCam(c.url)}" target="_blank" rel="noopener" style="font-size:12px; padding:5px 10px; border:1px solid var(--linea); border-radius:14px; text-decoration:none; color:#2E7BA0;">${I18n.t("mapa.cam.ver")} ${escaparHtmlCam(c.nombre)} (${escaparHtmlCam(c.dueno)}) ↗</a>`).join("")}
     </div>` : "";
   caja.innerHTML = `
-    <div class="etq" style="margin:12px 0 2px;">OTRAS CÁMARAS DE LA ZONA</div>
+    <div class="etq" style="margin:12px 0 2px;">${I18n.t("mapa.cam.otras")}</div>
     ${htmlImagenes}
     ${htmlEnlaces}
-    <p class="nota-final">Cámaras de terceros: se ven en la web de su dueño.</p>`;
+    <p class="nota-final">${I18n.t("mapa.cam.terceros")}</p>`;
 }
 let spotWebcamActual = null;
 
@@ -4016,13 +4034,13 @@ function pintarWebcam(slug, nombre) {
     const hayExternas = window.CamarasExternas && window.CamarasExternas.camarasExternasDeSpot(slug).length > 0;
     cont.innerHTML = hayExternas
       ? ""
-      : `<div class="tarjeta" style="text-align:center; color:var(--tinta-3); font-size:12px;">Sin webcam identificada para este spot todavía.</div>`;
+      : `<div class="tarjeta" style="text-align:center; color:var(--tinta-3); font-size:12px;">${I18n.t("mapa.cam.sin_webcam")}</div>`;
     return;
   }
   if (camaraRetirada(slug)) {
     cont.innerHTML = `<div class="tarjeta" style="text-align:center; color:var(--tinta-3); font-size:12px;">
-      La webcam de ${nombre} no está emitiendo ahora mismo (el problema es de su proveedor).<br>
-      Volverá a aparecer aquí en cuanto vuelva a emitir.
+      ${I18n.t("mapa.cam.retirada", { nombre })}<br>
+      ${I18n.t("mapa.cam.volvera")}
     </div>`;
     return;
   }
@@ -4035,21 +4053,21 @@ function pintarWebcam(slug, nombre) {
   // al cargar estas imágenes directo desde el navegador en el prototipo anterior.
   cont.innerHTML = `
     <div style="position:relative;">
-      <img id="imgWebcam" crossorigin="anonymous" src="/webcam/${slug}?_=${Date.now()}" alt="Webcam en directo de ${nombre}"
+      <img id="imgWebcam" crossorigin="anonymous" src="/webcam/${slug}?_=${Date.now()}" alt="${I18n.t("mapa.cam.alt", { nombre })}"
            style="width:100%; border-radius:8px; border:1px solid var(--linea); display:block; cursor:zoom-in;" />
       ${badgeWebcamHtml(slug)}
     </div>
     ${lineaCamaraSaludHtml(slug)}
     ${lineaTurbidezHtml(slug)}
-    <p class="nota-final" id="notaWebcam">Se actualiza sola cada minuto.</p>
+    <p class="nota-final" id="notaWebcam">${I18n.t("mapa.cam.cada_minuto")}</p>
   `;
   const img = document.getElementById("imgWebcam");
   img.addEventListener("click", () => abrirZoomImagen(img.src, img.alt));
   img.addEventListener("error", () => {
     pararRefrescoWebcam();
     cont.innerHTML = `<div class="tarjeta" style="text-align:center; color:var(--tinta-3); font-size:12px;">
-      No se pudo cargar la webcam de ${nombre} ahora mismo<br>
-      (solo funciona una vez desplegado en Cloudflare Pages — no en este archivo abierto suelto).
+      ${I18n.t("mapa.cam.no_carga_img", { nombre })}<br>
+      ${I18n.t("mapa.cam.solo_desplegado")}
     </div>`;
   });
   intervaloWebcam = setInterval(() => {
@@ -4074,7 +4092,7 @@ function pintarWebcamHls(slug, nombre) {
     </div>
     ${lineaCamaraSaludHtml(slug)}
     ${lineaTurbidezHtml(slug)}
-    <p class="nota-final" id="notaWebcam">Vídeo en directo (${WEBCAMS_HLS_FUENTE[slug] || "fuente externa"}).</p>
+    <p class="nota-final" id="notaWebcam">${I18n.t("mapa.cam.video", { fuente: WEBCAMS_HLS_FUENTE[slug] || I18n.t("mapa.cam.fuente_externa") })}</p>
   `;
   const video = document.getElementById("videoWebcam");
   video.addEventListener("click", () => abrirZoomVideo(video));
@@ -4084,7 +4102,7 @@ function pintarWebcamHls(slug, nombre) {
     pararRefrescoWebcam();
     destruirHlsActivo();
     cont.innerHTML = `<div class="tarjeta" style="text-align:center; color:var(--tinta-3); font-size:12px;">
-      No se pudo cargar la webcam de ${nombre} ahora mismo.
+      ${I18n.t("mapa.cam.no_carga", { nombre })}
     </div>`;
   };
 
@@ -4105,7 +4123,7 @@ function pintarWebcamHls(slug, nombre) {
     video.src = url;
     video.addEventListener("error", fallo, { once: true });
   } else {
-    cont.innerHTML = `<div class="tarjeta" style="text-align:center; color:var(--tinta-3); font-size:12px;">Tu navegador no soporta vídeo en directo (HLS).</div>`;
+    cont.innerHTML = `<div class="tarjeta" style="text-align:center; color:var(--tinta-3); font-size:12px;">${I18n.t("mapa.cam.sin_hls")}</div>`;
   }
 }
 
@@ -4122,18 +4140,24 @@ function lineaMonteRiosHtml(rio, tramo) {
   if (!hayAlgo) return "";
   const partes = [];
   if (d.precipitacionMm != null) partes.push(`🌧 ${d.precipitacionMm} mm/h (${d.estacionPrecip})`);
-  if (d.temperaturaC != null) partes.push(`${d.temperaturaC}°C${d.humedadPct != null ? ` / ${Math.round(d.humedadPct)}% hum.` : ""}`);
+  if (d.temperaturaC != null) partes.push(`${d.temperaturaC}°C${d.humedadPct != null ? I18n.t("mapa.rio.humedad", { pct: Math.round(d.humedadPct) }) : ""}`);
   if (d.vientoVelKmh != null) partes.push(`💨 ${d.vientoVelKmh} km/h${d.vientoDirGrados != null ? ` ${textoRumbo(d.vientoDirGrados)}` : ""}`);
   if (d.presionHpa != null) partes.push(`${d.presionHpa} hPa (${d.estacionPresion})`);
   return `<div class="rio-caudal" style="margin-top:2px; color:var(--tinta-2);">${partes.join(" · ")}</div>`;
 }
 
 const COLOR_TURBIDEZ = { "no turbia": "#4F9D69", "turbia": "#D4A24C", "muy turbia": "#A34A35" };
+// La etiqueta de turbidez llega en español del servidor (y es la clave de las
+// reglas); aquí solo se traduce para enseñarla.
+const CLAVE_TURBIDEZ = { "no turbia": "mapa.turbidez.no_turbia", "turbia": "mapa.turbidez.turbia", "muy turbia": "mapa.turbidez.muy_turbia" };
+function textoTurbidez(etiqueta) {
+  return CLAVE_TURBIDEZ[etiqueta] ? I18n.t(CLAVE_TURBIDEZ[etiqueta]) : etiqueta;
+}
 function lineaTurbidezHtml(slug) {
   const t = TURBIDEZ[slug];
   if (!t) return "";
   const color = COLOR_TURBIDEZ[t.etiqueta] || "#5C7680";
-  return `<div style="margin-top:4px; font-size:11.5px; color:var(--tinta-2);">💧 Agua <span style="color:${color};">${t.etiqueta}</span> (relativo a este mismo punto, 1 lectura/día)</div>`;
+  return `<div style="margin-top:4px; font-size:11.5px; color:var(--tinta-2);">${I18n.t("mapa.turbidez.agua")} <span style="color:${color};">${textoTurbidez(t.etiqueta)}</span> ${I18n.t("mapa.turbidez.relativo")}</div>`;
 }
 
 // Desde cuándo (texto corto) una marca de tiempo ISO viene sucediendo —
@@ -4144,7 +4168,7 @@ function tiempoTranscurridoDesde(iso) {
   if (minutos < 60) return `${minutos} min`;
   const horas = Math.round(minutos / 60);
   if (horas < 48) return `${horas} h`;
-  return `${Math.round(horas / 24)} días`;
+  return I18n.t("comun.n_dias", { n: Math.round(horas / 24) });
 }
 
 // Punto rojo/verde + etiqueta de la webcam (ver CAMARAS/datosCamarasPorSpot
@@ -4159,7 +4183,7 @@ function badgeWebcamHtml(slug) {
                     background:rgba(11,30,63,0.75); padding:3px 8px; border-radius:12px;
                     font-family:var(--f-texto); font-size:10px; color:var(--blanco);">
         <span style="width:7px; height:7px; border-radius:50%; background:var(--peligro);"></span>
-        SIN SEÑAL
+        ${I18n.t("mapa.cam.sin_senal")}
       </span>`;
   }
   return `
@@ -4167,7 +4191,7 @@ function badgeWebcamHtml(slug) {
                   background:rgba(11,30,63,0.75); padding:3px 8px; border-radius:12px;
                   font-family:var(--f-texto); font-size:10px; color:var(--blanco);">
       <span style="width:7px; height:7px; border-radius:50%; background:var(--peligro); animation:pulso 1.6s infinite;"></span>
-      EN DIRECTO
+      ${I18n.t("mapa.cam.en_directo")}
     </span>`;
 }
 // Cámara retirada de la vista (2026-09-28, pedido del usuario): si lleva
@@ -4188,15 +4212,15 @@ function lineaCamaraSaludHtml(slug) {
   const c = CAMARAS[slug];
   if (!c?.sinSenal) return "";
   const desde = c.ultimaSenalEn
-    ? `desde hace ${tiempoTranscurridoDesde(c.ultimaSenalEn)}`
-    : "desde que empezamos a comprobarla";
+    ? I18n.t("mapa.cam.desde_hace", { tiempo: tiempoTranscurridoDesde(c.ultimaSenalEn) })
+    : I18n.t("mapa.cam.desde_siempre");
   // "frame_congelado": la imagen tiene contenido real pero no cambia desde
   // hace horas (ver el hallazgo real documentado en scripts/camaras/
   // comprobar-camaras.mjs) — mensaje distinto porque aquí SÍ se ve algo,
   // solo que es viejo, a diferencia de una imagen realmente en blanco.
   const texto = c.motivo === "frame_congelado"
-    ? `⚠ Esta imagen no se actualiza ${desde} (el proveedor podría haberse quedado colgado)`
-    : `⚠ Sin señal detectada ${desde} (puede ser que ahora mismo sea de noche, o que la cámara/el proveedor esté caído)`;
+    ? I18n.t("mapa.cam.congelada", { desde })
+    : I18n.t("mapa.cam.sin_senal_desde", { desde });
   return `<div style="margin-top:4px; font-size:11.5px; color:var(--peligro);">${texto}</div>`;
 }
 
@@ -4207,10 +4231,10 @@ function lineaCamaraSaludHtml(slug) {
 // (functions/_lib/oleaje-costero.js) el número grande es la estimación en la
 // playa y debajo va el de mar abierto, para que nunca se pierda.
 function numeroOla(v) {
-  return Number(v).toFixed(1).replace(".", ",");
+  return I18n.decimal(Number(v).toFixed(1));
 }
 function textoRangoOla(r) {
-  if (!r || r[0] == null || r[1] == null) return "S/D";
+  if (!r || r[0] == null || r[1] == null) return I18n.t("comun.sd");
   const a = numeroOla(r[0]), b = numeroOla(r[1]);
   return a === b ? `${a} m` : `${a}–${b} m`;
 }
@@ -4227,14 +4251,19 @@ function textoReferenciaCamara(ref, ahoraMs = Date.now()) {
   if (!Number.isFinite(t) || ahoraMs - t > VIGENCIA_REF_CAMARA_MS) return "";
   const r = Array.isArray(ref.rango) && ref.rango[0] != null && ref.rango[1] != null && ref.rango[0] !== ref.rango[1]
     ? `${numeroOla(ref.rango[0])}–${numeroOla(ref.rango[1])} m, ` : "";
-  return `La cámara apunta a ~${numeroOla(ref.altura)} m (${r}sin calibrar · ${ref.hora})`;
+  return I18n.t("mapa.ola.ref_camara", { altura: numeroOla(ref.altura), rango: r, hora: ref.hora });
 }
 function pintarReferenciaCamara(s) {
   const el = document.getElementById("panelOlaCamara");
   const txt = s.fuenteAltura === "camara" ? "" : textoReferenciaCamara(s.camaraReferencia);
   el.textContent = txt;
   el.hidden = !txt;
-  el.title = txt ? `Lectura de la espuma en la webcam de ${s.camaraReferencia.nombre}. Aún no está calibrada lo bastante para sustituir al modelo: es solo una referencia.` : "";
+  el.title = txt ? I18n.t("mapa.ola.ref_camara_title", { nombre: s.camaraReferencia.nombre }) : "";
+}
+// Nivel de abrigo de la zona de oleaje (dato del servidor, en español).
+const CLAVE_ZONA_OLEAJE = { abrigada: "mapa.ola.zona_abrigada", "muy abrigada": "mapa.ola.zona_muy_abrigada", "semiabrigada": "mapa.ola.zona_semiabrigada" };
+function textoZonaOleaje(nivel) {
+  return CLAVE_ZONA_OLEAJE[nivel] ? I18n.t(CLAVE_ZONA_OLEAJE[nivel]) : nivel;
 }
 function pintarOleajePanel(s) {
   pintarReferenciaCamara(s);
@@ -4242,27 +4271,27 @@ function pintarOleajePanel(s) {
   const nota = document.getElementById("panelOlaNota");
   const z = s.zonaOleaje;
   const km = z?.celdaModelo?.distanciaKm;
-  const dondeModelo = km != null && km >= 1 ? `modelo a ~${Math.round(km)} km de la costa` : "modelo";
+  const dondeModelo = km != null && km >= 1 ? I18n.t("mapa.ola.modelo_a", { km: Math.round(km) }) : I18n.t("mapa.ola.modelo");
   const cam = s.oleajeCamara;
   // "Si hay cámara, utiliza nuestro cálculo" (2026-10-08): con lectura de
   // cámara vigente (< 3 h, con luz y en su encuadre), la altura es la de la
   // cámara y el mar abierto del modelo va debajo.
   if (cam && s.fuenteAltura === "camara") {
     val.textContent = `~${textoRangoOla(s.altura)}`;
-    nota.textContent = `según cámara (${cam.nombre}), ${cam.horaLocal} · mar abierto (modelo): ${textoRangoOla(s.alturaMarAbierto)}`;
-    nota.title = "Estimación a partir de la espuma que se ve en la webcam; la calibración mejora con el tiempo.";
+    nota.textContent = I18n.t("mapa.ola.segun_camara", { nombre: cam.nombre, hora: cam.horaLocal, abierto: textoRangoOla(s.alturaMarAbierto) });
+    nota.title = I18n.t("mapa.ola.segun_camara_title");
     return;
   }
   const ajuste = cam && s.fuenteAltura && s.fuenteAltura.startsWith("modelo_")
-    ? ` · ajustado con la cámara de ${cam.nombre} (${cam.horaLocal})`
+    ? I18n.t("mapa.ola.ajustado", { nombre: cam.nombre, hora: cam.horaLocal })
     : "";
   if (z?.tipo === "abrigada" && s.alturaMarAbierto) {
     val.textContent = `~${textoRangoOla(s.altura)}`;
-    nota.textContent = `en la playa (zona ${z.nivel || "abrigada"}, estimación) · mar abierto: ${textoRangoOla(s.alturaMarAbierto)}${ajuste}`;
+    nota.textContent = I18n.t("mapa.ola.en_playa", { zona: textoZonaOleaje(z.nivel || "abrigada"), abierto: textoRangoOla(s.alturaMarAbierto) }) + ajuste;
     nota.title = z.criterio || "";
   } else {
     val.textContent = textoRangoOla(s.altura);
-    nota.textContent = (s.esUsuario || !z ? "mar abierto (en la orilla puede ser menos)" : `mar abierto (${dondeModelo}); en la orilla puede ser menos`) + ajuste;
+    nota.textContent = (s.esUsuario || !z ? I18n.t("mapa.ola.abierto_simple") : I18n.t("mapa.ola.abierto_modelo", { donde: dondeModelo })) + ajuste;
     nota.title = "";
   }
 }
@@ -4286,18 +4315,22 @@ document.querySelectorAll("#panelOlaRealBandas .ola-banda").forEach((btn) => {
     const s = spotAbiertoActual;
     const msg = document.getElementById("panelOlaRealMsg");
     if (!s || !window.supabaseCliente) return;
-    msg.textContent = "Guardando…";
+    msg.textContent = I18n.t("comun.guardando");
     const { error } = await window.supabaseCliente.from("oleaje_etiquetas").insert({
       origen: "spot", spot_slug: s.slug, banda: btn.dataset.banda, observado_en: new Date().toISOString(),
     });
     document.getElementById("panelOlaRealBandas").style.display = "none";
     msg.textContent = error
-      ? (/row-level security|policy/i.test(error.message) ? "Ya la apuntaste hace poco: prueba en 10 minutos." : "No se pudo guardar ahora.")
-      : "Gracias: así afinamos la ola de este spot.";
+      ? (/row-level security|policy/i.test(error.message) ? I18n.t("mapa.ola_real.repetida") : I18n.t("mapa.ola_real.error"))
+      : I18n.t("mapa.ola_real.gracias");
   });
 });
 
 let spotAbiertoActual = null;
+// "pleamar"/"bajamar" llegan así de /prevision y de mareaParaSpotUsuario().
+function textoTipoMarea(tipo) {
+  return tipo === "pleamar" ? I18n.t("mapa.marea.pleamar") : tipo === "bajamar" ? I18n.t("mapa.marea.bajamar") : tipo;
+}
 // Línea "Fondo: roca y arena · orilla de acantilado" (capa-tipo-fondo.js).
 function pintarFondoPanel(s) {
   const el = document.getElementById("panelFondo");
@@ -4307,6 +4340,9 @@ function pintarFondoPanel(s) {
 }
 function abrirPanel(s) {
   spotAbiertoActual = s;
+  // Idioma por región (2026-10-09): la próxima vez que se abra la app sin
+  // idioma elegido, sale en el de la región del último spot abierto.
+  I18n.recordarPosicion(s.lat, s.lon);
   document.getElementById("panel").classList.add("visible");
   document.getElementById("panelNombre").textContent = s.nombre;
   document.getElementById("panelCoords").textContent = `${s.lat.toFixed(4)}°N, ${Math.abs(s.lon).toFixed(4)}°W`;
@@ -4325,7 +4361,7 @@ function abrirPanel(s) {
 
   if (s.marea && s.marea.altura !== null) {
     const flecha = s.marea.tendencia === "subiendo" ? "↑" : s.marea.tendencia === "bajando" ? "↓" : "";
-    const coef = s.marea.coeficiente != null ? ` · coef. ${s.marea.coeficiente}` : "";
+    const coef = s.marea.coeficiente != null ? I18n.t("mapa.marea.coef", { coef: s.marea.coeficiente }) : "";
     document.getElementById("panelMarea").textContent = `${s.marea.altura}m ${flecha}${coef}`;
     const prox = s.marea.proximas && s.marea.proximas[0];
     // Bug real encontrado por el robot de experiencia de usuario (2026-09-17,
@@ -4333,13 +4369,13 @@ function abrirPanel(s) {
     // se distinguía si la próxima marea era hoy o mañana — se podía leer
     // como si ya hubiera pasado.
     document.getElementById("panelMareaProxima").textContent = prox
-      ? `próx. ${prox.tipo} ${prox.hora}${prox.manana ? " (mañana)" : ""}`
+      ? I18n.t("mapa.marea.proxima", { tipo: textoTipoMarea(prox.tipo), hora: prox.hora }) + (prox.manana ? I18n.t("mapa.marea.manana") : "")
       : "";
   } else {
-    document.getElementById("panelMarea").textContent = "sin datos";
+    document.getElementById("panelMarea").textContent = I18n.t("mapa.sin_datos");
     document.getElementById("panelMareaProxima").textContent = "";
   }
-  document.getElementById("panelCorriente").textContent = (s.corriente === null || s.corriente === undefined) ? "sin datos" : `${s.corriente} km/h`;
+  document.getElementById("panelCorriente").textContent = (s.corriente === null || s.corriente === undefined) ? I18n.t("mapa.sin_datos") : `${s.corriente} km/h`;
   document.getElementById("panelCorrienteDir").textContent = s.dirCorriente || "";
 
   const indiceEl = document.getElementById("panelIndice");
@@ -4348,16 +4384,16 @@ function abrirPanel(s) {
   indiceEl.dataset.nivel = NivelIndice.nivelMar(s.indice); // el color lo pone el CSS por nivel
   document.getElementById("panelIndiceNota").textContent = textoVigencia(s);
 
-  document.getElementById("panelTempAgua").textContent = (s.tempAgua === null || s.tempAgua === undefined) ? "sin datos" : `${s.tempAgua}°C`;
-  document.getElementById("panelNubosidad").textContent = s.nubosidad === null ? "sin datos" : `${s.nubosidad}%`;
-  document.getElementById("panelPrecipitacion").textContent = s.precipitacion === null ? "sin datos" : `${s.precipitacion} mm/h`;
+  document.getElementById("panelTempAgua").textContent = (s.tempAgua === null || s.tempAgua === undefined) ? I18n.t("mapa.sin_datos") : `${s.tempAgua}°C`;
+  document.getElementById("panelNubosidad").textContent = s.nubosidad === null ? I18n.t("mapa.sin_datos") : `${s.nubosidad}%`;
+  document.getElementById("panelPrecipitacion").textContent = s.precipitacion === null ? I18n.t("mapa.sin_datos") : `${s.precipitacion} mm/h`;
 
   if (s.presion && s.presion.valor !== null) {
     document.getElementById("panelPresion").textContent = `${s.presion.valor} hPa`;
-    const notas = { bajando: "↓ bajando — buena señal, suelen animarse", subiendo: "↑ subiendo — van a estar más parados 24-48h", estable: "→ estable — bien, mejor si lleva así varios días" };
+    const notas = { bajando: I18n.t("mapa.presion.bajando"), subiendo: I18n.t("mapa.presion.subiendo"), estable: I18n.t("mapa.presion.estable") };
     document.getElementById("panelPresionNota").textContent = s.presion.tendencia ? notas[s.presion.tendencia] : "";
   } else {
-    document.getElementById("panelPresion").textContent = "sin datos";
+    document.getElementById("panelPresion").textContent = I18n.t("mapa.sin_datos");
     document.getElementById("panelPresionNota").textContent = "";
   }
 
@@ -4398,7 +4434,7 @@ async function pintarComparativaFuentes(s) {
   if (!modo || !s) { caja.innerHTML = ""; return; }
   const fuentes = modo === "comparar" ? ["openmeteo", "gratuitas"] : [modo];
   const yo = ++adminFuentesPeticion;
-  caja.innerHTML = '<div class="nota">Cargando…</div>';
+  caja.innerHTML = `<div class="nota">${I18n.t("comun.cargando")}</div>`;
   let token = "";
   try { token = (await window.supabaseCliente.auth.getSession()).data.session?.access_token || ""; } catch (e) { /* sin sesión */ }
   const resultados = await Promise.all(fuentes.map((f) =>
@@ -4434,14 +4470,14 @@ let vaEstado = { s: null, dia: 0, especieId: null, resultados: [], idxSel: null,
 // si no, "Desde costa". La lista de especies, el índice de pesca, las reglas
 // de la ventana y la normativa dependen de la pestaña.
 const MOD_DESC = {
-  costa: "Surfcasting, roca y spinning desde la orilla o el espigón.",
-  embarcacion: "Fondo, curricán, jigging y kayak de pesca. Primero la seguridad: viento y ola mandan.",
-  submarina: "Pesca submarina a pulmón (sin botella). Manda la visibilidad; solo de día.",
+  costa: I18n.t("mapa.mod.desc_costa"),
+  embarcacion: I18n.t("mapa.mod.desc_embarcacion"),
+  submarina: I18n.t("mapa.mod.desc_submarina"),
 };
 const MOD_NOTA = {
-  costa: "Puntuación 0-100 con reglas fijas y públicas (marea, luz, temperatura del agua, oleaje, viento, presión, turbidez y reglas expertas de pesca local); toca una hora para ver el porqué. Orientativa: no es una garantía.",
-  embarcacion: "Puntuación 0-100 desde embarcación: viento y ola pesan más y avisan (kayak por encima de 20 km/h o 1,5 m; embarcación pequeña por encima de 30 km/h o 2,5 m); la marea pesa menos. Avisos propios, no oficiales: consulta AEMET/IPMA y Capitanía.",
-  submarina: "Puntuación 0-100 para pesca submarina: agua clara y mar en calma suman mucho; mar de fondo, lluvia de las últimas 24 h y río crecido restan. De noche no hay puntuación: está prohibida. Orientativa: no es una garantía.",
+  costa: I18n.t("mapa.va.nota_reglas"),
+  embarcacion: I18n.t("mapa.mod.nota_embarcacion"),
+  submarina: I18n.t("mapa.mod.nota_submarina"),
 };
 let modalidadSpotSlug = null;
 function prepararModalidad(s) {
@@ -4493,10 +4529,10 @@ function caudalRioSpot(s) {
   const r = RIOS.find((x) => x.spotCosta === s.slug);
   const p = r?.puntos.find((x) => x.caudal != null && x.umbralBajo != null && x.umbralAlto != null);
   if (!p) return null;
-  const e = categoriaCaudal(p.caudal, p.umbralBajo, p.umbralAlto).etiqueta;
+  const e = categoriaCaudal(p.caudal, p.umbralBajo, p.umbralAlto).nivel;
   return ["bajo", "normal", "alto"].includes(e) ? e : null;
 }
-const VA_MESES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+const VA_MESES = I18n.mesesCortos();
 
 // Se piden al cargar la página (el índice de pesca las necesita en cuanto se
 // abre un spot); si falla, se reintenta al abrir el panel.
@@ -4673,10 +4709,10 @@ async function pintarIndicePesca(s) {
     porqueEl.innerHTML = "";
   };
   if (!especiesDatos || !VA) {
-    pinta(null, "cargando especies…");
+    pinta(null, I18n.t("mapa.ip.cargando_especies"));
     const reintentar = () => { if (spotAbiertoActual === s) pintarIndicePesca(s); };
     if (!VA) window.addEventListener("ventana-actividad-lista", reintentar, { once: true });
-    cargarEspeciesDatos().then(reintentar, () => { if (spotAbiertoActual === s) nota.textContent = "no se pudieron cargar las especies"; });
+    cargarEspeciesDatos().then(reintentar, () => { if (spotAbiertoActual === s) nota.textContent = I18n.t("mapa.ip.error_especies"); });
     return;
   }
   if (!spotVigente(s)) { pinta(null, textoVigencia(s)); return; }
@@ -4686,22 +4722,22 @@ async function pintarIndicePesca(s) {
   try {
     horas = await datosHorariosSpot(s);
   } catch (e) {
-    if (peticion === indicePescaPeticion) pinta(null, "sin datos por horas ahora mismo para este punto");
+    if (peticion === indicePescaPeticion) pinta(null, I18n.t("mapa.ip.sin_horas"));
     return;
   }
   await frentesIndice(modalidad);
   if (peticion !== indicePescaPeticion || spotAbiertoActual !== s || vaEstado.modalidad !== modalidad) return;
   const ahora = horaActualISO(zonaSpot(s));
   const i = horas.findIndex((h) => h.hora.slice(0, 13) === ahora);
-  if (i < 0) { pinta(null, "sin datos de esta hora"); return; }
+  if (i < 0) { pinta(null, I18n.t("mapa.ip.sin_hora")); return; }
   const ind = VA.indiceSpot(especiesDatos, horas, i, contextoIndiceSpot(s, especiesDatos, modalidad));
   if (ind.puntuacion === null) {
-    pinta(null, `${VA.NOMBRE_MODALIDAD[modalidad]}: ninguna especie de temporada con dato para esta modalidad aquí`);
+    pinta(null, I18n.t("mapa.ip.ninguna_especie", { modalidad: VA.NOMBRE_MODALIDAD[modalidad] }));
     return;
   }
   // Nota + motivos con flechas (sin puntos ni fuentes), como en la ventana.
-  pinta(ind.puntuacion, `${VA.NOMBRE_MODALIDAD[modalidad]} · mejor ahora: ${ind.especie.nombre}`
-    + `${ind.freza ? " (en freza: si lo pescas, devuélvelo)" : ""}`);
+  pinta(ind.puntuacion, I18n.t("mapa.ip.mejor_ahora", { modalidad: VA.NOMBRE_MODALIDAD[modalidad], especie: ind.especie.nombre })
+    + `${ind.freza ? I18n.t("mapa.ip.en_freza") : ""}`);
   // Ola peligrosa: nota aparte encima de los motivos, nunca un motivo con
   // flecha ni un tope de la nota (decisión de Mikel, 2026-10-08).
   porqueEl.innerHTML = htmlAvisoOla(ind.avisoOla)
@@ -4744,7 +4780,7 @@ async function pintarVentanaActividad(s) {
     if (!candidatas.length) {
       sel0.innerHTML = "";
       for (const id of ["vaTira", "vaEje", "vaFreza", "vaMejores", "vaCebos", "vaTalla"]) document.getElementById(id).innerHTML = "";
-      det.textContent = `Todavía no tenemos especies con dato para «${VA.NOMBRE_MODALIDAD[modalidad]}» en esta zona.`;
+      det.textContent = I18n.t("mapa.va.sin_especies", { modalidad: VA.NOMBRE_MODALIDAD[modalidad] });
       return;
     }
     // En temporada primero; dentro de cada grupo, el orden del JSON (lubina primero).
@@ -4757,9 +4793,9 @@ async function pintarVentanaActividad(s) {
     if (!ids.includes(vaEstado.especieId)) vaEstado.especieId = ids.includes(preferida) ? preferida : ids[0];
     const sel = document.getElementById("vaEspecie");
     sel.innerHTML = candidatas.map((e) =>
-      `<option value="${escVA(e.id)}"${e.id === vaEstado.especieId ? " selected" : ""}>${escVA(e.nombres.es)}${VA.vedaActiva(e, region, mes) ? " (en veda)" : e.presencia[region].meses.includes(mes) ? "" : " (fuera de temporada)"}</option>`).join("");
+      `<option value="${escVA(e.id)}"${e.id === vaEstado.especieId ? " selected" : ""}>${escVA(I18n.nombre(e))}${VA.vedaActiva(e, region, mes) ? I18n.t("mapa.va.en_veda_opcion") : e.presencia[region].meses.includes(mes) ? "" : I18n.t("mapa.va.fuera_temporada")}</option>`).join("");
 
-    det.textContent = "Cargando previsión por horas…";
+    det.textContent = I18n.t("mapa.va.cargando");
     const horas = await datosHorariosSpot(s);
     if (vaEstado.dia === 0) await frentesIndice(modalidad);
     if (vaEstado.s !== s) return;
@@ -4782,7 +4818,7 @@ async function pintarVentanaActividad(s) {
       document.getElementById("vaEje").innerHTML = "";
       document.getElementById("vaMejores").textContent = "";
       document.getElementById("vaCebos").textContent = "";
-      det.textContent = "Sin datos por horas ahora mismo para este punto.";
+      det.textContent = I18n.t("mapa.va.sin_horas");
     }
   }
 }
@@ -4796,7 +4832,7 @@ function pintarTiraVA(especie, region, fecha, datos) {
     vaEstado.idxSel = iAhora >= 0 ? iAhora : res.reduce((m, r, i) => (r.puntuacion > res[m].puntuacion ? i : m), 0);
   }
   document.getElementById("vaTira").innerHTML = res.map((r, i) =>
-    `<button type="button" class="va-hora${r.hora.slice(0, 13) < ahora ? " pasada" : ""}${i === vaEstado.idxSel ? " sel" : ""}" data-va-idx="${i}" style="background:${vaColor(r.puntuacion)};" aria-label="${r.hora.slice(11, 16)}: ${r.prohibida ? "prohibida de noche" : `${r.puntuacion} de 100`}"></button>`).join("");
+    `<button type="button" class="va-hora${r.hora.slice(0, 13) < ahora ? " pasada" : ""}${i === vaEstado.idxSel ? " sel" : ""}" data-va-idx="${i}" style="background:${vaColor(r.puntuacion)};" aria-label="${r.hora.slice(11, 16)}: ${r.prohibida ? I18n.t("mapa.va.prohibida_noche") : I18n.t("mapa.va.de_100", { n: r.puntuacion })}"></button>`).join("");
   document.getElementById("vaEje").innerHTML = res.map((r, i) => `<span>${i % 3 === 0 ? r.hora.slice(11, 13) : ""}</span>`).join("");
   pintarDetalleVA();
 
@@ -4804,57 +4840,57 @@ function pintarTiraVA(especie, region, fecha, datos) {
   const vedaHoy = VA.vedaActiva(especie, region, mesVeda);
   const mejores = vedaHoy ? [] : VA.mejoresVentanas(res.filter((r) => r.hora.slice(0, 13) >= ahora || vaEstado.dia > 0), { umbral: 60 });
   document.getElementById("vaMejores").innerHTML = vedaHoy
-    ? "<b>En veda:</b> no recomendamos ninguna hora para esta especie."
+    ? I18n.t("mapa.va.en_veda_html")
     : mejores.length
-    ? "<b>Mejores ventanas:</b> " + mejores.map((v) => `${v.desde}–${v.hasta} (${v.media})${v.avisoOla ? " ⚠️ ola peligrosa" : ""} — ${escVA(v.porque.join(" · "))}`).join("<br>")
-    : `Ninguna hora pasa de 60 ${vaEstado.dia === 0 ? "en lo que queda de hoy" : "mañana"}.`;
+    ? I18n.t("mapa.va.mejores_html") + " " + mejores.map((v) => `${v.desde}–${v.hasta} (${v.media})${v.avisoOla ? I18n.t("mapa.va.ola_peligrosa") : ""} — ${escVA(v.porque.join(" · "))}`).join("<br>")
+    : I18n.t(vaEstado.dia === 0 ? "mapa.va.ninguna_hoy" : "mapa.va.ninguna_manana");
 
   const mes = Number(fecha.slice(5, 7));
   const fz = VA.estadoFreza(especie, region, mes);
   const frezaEl = document.getElementById("vaFreza");
   frezaEl.innerHTML = vedaHoy
-    ? `<div class="va-freza" style="background:var(--peligro-fondo); border-color:var(--peligro-borde); color:var(--peligro-texto);">🚫 <b>En veda en esta zona</b> (${escVA(VA.textoMeses(vedaHoy.meses))}): ${escVA(vedaHoy.texto)}</div>`
+    ? `<div class="va-freza" style="background:var(--peligro-fondo); border-color:var(--peligro-borde); color:var(--peligro-texto);">${I18n.t("mapa.va.veda_zona_html")} (${escVA(VA.textoMeses(vedaHoy.meses))}): ${escVA(I18n.dato(vedaHoy, "texto"))}</div>`
     : fz?.enFreza
-    ? `<div class="va-freza">🥚 <b>En freza en esta zona</b> (${vaTextoMeses(fz.meses)}). Si lo pescas, te recomendamos devolverlo al agua.${fz.nota ? ` <span style="opacity:.8">${escVA(fz.nota)}</span>` : ""}</div>`
+    ? `<div class="va-freza">${I18n.t("mapa.va.freza_zona_html")} (${vaTextoMeses(fz.meses)}). ${I18n.t("mapa.va.freza_devolver")}${fz.nota ? ` <span style="opacity:.8">${escVA(I18n.dato(fz, "nota"))}</span>` : ""}</div>`
     : "";
   // Ola peligrosa: las horas que quedan con aviso (la peor ola manda el texto).
   const conOla = res.filter((r) => r.avisoOla && (r.hora.slice(0, 13) >= ahora || vaEstado.dia > 0));
   if (conOla.length) {
     const peorOla = conOla.reduce((a, b) => (b.avisoOla.ola > a.avisoOla.ola ? b : a));
-    frezaEl.innerHTML += htmlAvisoOla(peorOla.avisoOla, `${conOla.length} h con ola peligrosa (${conOla[0].hora.slice(11, 16)}–${conOla[conOla.length - 1].hora.slice(11, 16)}).`);
+    frezaEl.innerHTML += htmlAvisoOla(peorOla.avisoOla, I18n.t("mapa.va.horas_ola", { n: conOla.length, desde: conOla[0].hora.slice(11, 16), hasta: conOla[conOla.length - 1].hora.slice(11, 16) }));
   }
   // Avisos de seguridad (embarcación): las horas que quedan con aviso.
   const conAviso = res.filter((r) => r.avisos?.length && (r.hora.slice(0, 13) >= ahora || vaEstado.dia > 0));
   if (conAviso.length) {
     const peor = conAviso.find((r) => r.avisos[0].nivel === "embarcacion_pequena") || conAviso[0];
-    frezaEl.innerHTML += `<div class="va-aviso">⚠ <b>${escVA(peor.avisos[0].texto)}</b> — ${conAviso.length} h con aviso (${conAviso[0].hora.slice(11, 16)}–${conAviso[conAviso.length - 1].hora.slice(11, 16)}). Aviso propio orientativo: mira siempre AEMET/IPMA y Capitanía.</div>`;
+    frezaEl.innerHTML += `<div class="va-aviso">⚠ <b>${escVA(peor.avisos[0].texto)}</b> — ${I18n.t("mapa.va.horas_aviso", { n: conAviso.length, desde: conAviso[0].hora.slice(11, 16), hasta: conAviso[conAviso.length - 1].hora.slice(11, 16) })}</div>`;
   }
   if (vaEstado.modalidad === "submarina") {
     const sub = datos.modalidades?.submarina;
     const tecnica = especie.modalidades?.submarina?.tecnica;
-    document.getElementById("vaCebos").innerHTML = `🤿 <b>Sin cebos:</b> ${escVA(sub?.sin_cebos || "")}`
-      + `<span class="va-nota" style="display:block; margin-top:2px;">${tecnica ? `Técnica: ${escVA(tecnica)}` : `Técnicas habituales: ${escVA((sub?.tecnicas || []).map((t) => t.nombre).join(", "))}`}.</span>`;
+    document.getElementById("vaCebos").innerHTML = `${I18n.t("mapa.va.sin_cebos_html")} ${escVA(I18n.dato(sub, "sin_cebos") || "")}`
+      + `<span class="va-nota" style="display:block; margin-top:2px;">${tecnica ? `${I18n.t("mapa.va.tecnica")} ${escVA(I18n.dato(especie.modalidades.submarina, "tecnica"))}` : `${I18n.t("mapa.va.tecnicas")} ${escVA((sub?.tecnicas || []).map((t) => I18n.dato(t, "nombre")).join(", "))}`}.</span>`;
   }
   const cebos = vaEstado.modalidad === "submarina" ? [] : VA.cebosParaRegion(especie, region, 5, vaEstado.modalidad);
-  const grupoCebos = (tipo) => cebos.filter((c) => c.tipo === tipo).map((c) => escVA(c.nombre)).join(", ");
+  const grupoCebos = (tipo) => cebos.filter((c) => c.tipo === tipo).map((c) => escVA(I18n.dato(c, "nombre"))).join(", ");
   const naturales = grupoCebos("natural"), artificiales = grupoCebos("artificial");
   const conFuente = cebos.filter((c) => c.fuente);
   if (vaEstado.modalidad !== "submarina") document.getElementById("vaCebos").innerHTML = cebos.length
-    ? `🪝 <b>Cebos típicos:</b> ${[naturales && `${naturales} (natural)`, artificiales && `${artificiales} (artificial)`].filter(Boolean).join(" · ")}`
-      + `<span class="va-nota" style="display:block; margin-top:2px;">${conFuente.length ? `Según <a href="${escVA(conFuente[0].url)}" target="_blank" rel="noopener">${escVA((datos.fuentes[conFuente[0].fuente]?.editor || "la referencia").split(",")[0])}</a>` : "Práctica habitual"}${conFuente.length && conFuente.length < cebos.length ? " y práctica habitual de pesca" : ""}. Revisa la normativa de cebos de tu comunidad.</span>`
+    ? `${I18n.t("mapa.va.cebos_html")} ${[naturales && `${naturales} ${I18n.t("mapa.va.natural")}`, artificiales && `${artificiales} ${I18n.t("mapa.va.artificial")}`].filter(Boolean).join(" · ")}`
+      + `<span class="va-nota" style="display:block; margin-top:2px;">${conFuente.length ? `${I18n.t("mapa.va.segun")} <a href="${escVA(conFuente[0].url)}" target="_blank" rel="noopener">${escVA((datos.fuentes[conFuente[0].fuente]?.editor || I18n.t("mapa.va.la_referencia")).split(",")[0])}</a>` : I18n.t("mapa.va.practica")}${conFuente.length && conFuente.length < cebos.length ? I18n.t("mapa.va.y_practica") : ""}. ${I18n.t("mapa.va.revisa_cebos")}</span>`
     : "";
   const consejoProf = VA.consejoProfundidad ? VA.consejoProfundidad(especie, vaEstado.modalidad) : null;
-  if (consejoProf) document.getElementById("vaCebos").innerHTML += `<span class="va-nota" style="display:block; margin-top:2px;">⬇ <b>Profundidad:</b> ${escVA(consejoProf)}</span>`;
+  if (consejoProf) document.getElementById("vaCebos").innerHTML += `<span class="va-nota" style="display:block; margin-top:2px;">${I18n.t("mapa.va.profundidad_html")} ${escVA(consejoProf)}</span>`;
 
   const tallas = VA.tallasParaRegion(especie, region, VA.enEuskadi(vaEstado.s.lat, vaEstado.s.lon));
   const t = tallas.find((x) => x.valor_cm !== null || x.peso_g !== undefined);
   const veda = vedaHoy ? null : (especie.vedas || [])[0];
   const fuente = t ? datos.fuentes[t.fuente] : null;
   document.getElementById("vaTalla").innerHTML = (t
-    ? `📏 Talla mínima: <b>${t.valor_cm !== null ? `${t.valor_cm} cm` : `${t.peso_g} g`}</b> — ${escVA(t.ambito_corto || t.ambito)}${t.nota ? `. ${escVA(t.nota)}` : ""} (<a href="${escVA(t.url)}" target="_blank" rel="noopener">${escVA(fuente?.editor || "norma oficial")}</a>, revisado ${escVA(t.fecha_revision)}).`
+    ? `${I18n.t("mapa.va.talla")} <b>${t.valor_cm !== null ? `${t.valor_cm} cm` : `${t.peso_g} g`}</b> — ${escVA(I18n.dato(t, "ambito_corto") || I18n.dato(t, "ambito"))}${t.nota ? `. ${escVA(I18n.dato(t, "nota"))}` : ""} (<a href="${escVA(t.url)}" target="_blank" rel="noopener">${escVA(fuente?.editor || I18n.t("mapa.va.norma_oficial"))}</a>, ${I18n.t("mapa.va.revisado")} ${escVA(t.fecha_revision)}).`
     : (window.esAdminCostaviva ? "📏 Talla mínima (admin): sin dato verificado para esta zona todavía." : ""))
-    + (veda ? `<br>⚠ ${escVA(veda.texto)}` : "")
-    + " Manda siempre la norma publicada.";
+    + (veda ? `<br>⚠ ${escVA(I18n.dato(veda, "texto"))}` : "")
+    + " " + I18n.t("mapa.va.manda_norma");
 }
 
 // "Normativa de esta modalidad": lo verificado (con enlace y fecha) para la
@@ -4862,18 +4898,18 @@ function pintarTiraVA(especie, region, fecha, datos) {
 function pintarNormativaVA(datos, region, especie) {
   const VA = window.VentanaActividad;
   const el = document.getElementById("modNormativa");
-  if (!datos.normativa_modalidades) { el.textContent = "Sin datos de normativa todavía."; return; }
+  if (!datos.normativa_modalidades) { el.textContent = I18n.t("mapa.norma.sin_datos"); return; }
   const n = VA.normativaModalidad(datos, vaEstado.modalidad, region, { euskadi: VA.enEuskadi(vaEstado.s.lat, vaEstado.s.lon), especie });
   const item = (x) => {
     const f = datos.fuentes[x.fuente];
-    return `<li>${escVA(x.texto)} <span class="va-nota">(<a href="${escVA(x.url)}" target="_blank" rel="noopener">${escVA(x.articulo ? `${x.articulo}, ` : "")}${escVA((f?.editor || "norma oficial").split(",")[0])}</a>, revisado ${escVA(x.fecha_revision)})</span></li>`;
+    return `<li>${escVA(I18n.dato(x, "texto"))} <span class="va-nota">(<a href="${escVA(x.url)}" target="_blank" rel="noopener">${escVA(x.articulo ? `${x.articulo}, ` : "")}${escVA((f?.editor || I18n.t("mapa.va.norma_oficial")).split(",")[0])}</a>, ${I18n.t("mapa.va.revisado")} ${escVA(x.fecha_revision)})</span></li>`;
   };
   const NOMBRE_J = { ES: "España (aguas exteriores)", "ES-PV": "Euskadi", "ES-CB": "Cantabria", "ES-AS": "Asturias", "ES-GA": "Galicia", "ES-AN": "Andalucía", "ES-MC": "Murcia", "ES-VC": "C. Valenciana", "ES-CT": "Cataluña", "ES-IB": "Baleares", "ES-CN": "Canarias", PT: "Portugal", "PT-AC": "Azores", "PT-MA": "Madeira" };
   el.className = "va-detalle mod-normativa";
-  el.innerHTML = (n.especie.length ? `<b>${escVA(especie.nombres.es)}:</b><ul>${n.especie.map(item).join("")}</ul>` : "")
-    + (n.general.length ? `<ul>${n.general.map(item).join("")}</ul>` : "Sin normativa verificada todavía para esta zona.")
+  el.innerHTML = (n.especie.length ? `<b>${escVA(I18n.nombre(especie))}:</b><ul>${n.especie.map(item).join("")}</ul>` : "")
+    + (n.general.length ? `<ul>${n.general.map(item).join("")}</ul>` : I18n.t("mapa.norma.sin_verificar"))
     + (n.pendiente.length && window.esAdminCostaviva ? `<div class="va-nota">(admin) Pendiente de revisar: ${n.pendiente.map((p) => escVA(NOMBRE_J[p.jurisdiccion] || p.jurisdiccion)).join(", ")} (en aguas interiores manda cada comunidad).</div>` : "")
-    + `<div class="va-nota">${escVA(datos.aviso_legal || "Manda siempre la norma publicada.")}</div>`;
+    + `<div class="va-nota">${escVA(I18n.dato(datos, "aviso_legal") || I18n.t("mapa.va.manda_norma"))}</div>`;
 }
 
 // Porqué de la nota (2026-10-08, decisión de Mikel): la nota y debajo una
@@ -4885,7 +4921,7 @@ function pintarNormativaVA(datos, region, especie) {
 // seguridad): lo neutro y lo interno ("pendiente de fuente", "no cuenta"...)
 // va solo al desplegable del admin (Mikel, 2026-10-08). El filtro es
 // VentanaActividad.paraUsuario (con test).
-const FLECHA_ETIQUETA = { "▲▲": "sube mucho", "▲": "sube", "▼": "baja", "▼▼": "baja mucho" };
+const FLECHA_ETIQUETA = { "▲▲": I18n.t("mapa.flecha.sube_mucho"), "▲": I18n.t("mapa.flecha.sube"), "▼": I18n.t("mapa.flecha.baja"), "▼▼": I18n.t("mapa.flecha.baja_mucho") };
 function htmlPorque(razones, fiabilidad = null, max = Infinity) {
   const orden = [...razones].sort((a, b) => Math.abs(b.aporte) - Math.abs(a.aporte));
   const usuario = window.VentanaActividad.paraUsuario(razones, { max });
@@ -5003,14 +5039,14 @@ async function pintarRayosSat() {
       time: hora,
       opacity: opacidades[i],
       zIndex: 650 - i,
-      attribution: i === 0 ? "Rayos: EUMETSAT (MTG Lightning Imager), CC BY 4.0" : "",
+      attribution: i === 0 ? I18n.t("mapa.rayos.atrib_sat") : "",
     });
     capa.addTo(map);
     capasRayosSat.push(capa);
   }
   // Hora de Madrid a propósito: el satélite MTG de rayos solo cubre Europa y África.
-  const hasta = new Date(ultima.getTime() + 5 * 60 * 1000).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Madrid" });
-  nota.textContent = `Manchas de tormenta: últimos 30 min hasta las ${hasta}, satélite europeo MTG (EUMETSAT), con unos 15 min de retraso.`;
+  const hasta = new Date(ultima.getTime() + 5 * 60 * 1000).toLocaleTimeString(I18n.locale(), { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Madrid" });
+  nota.textContent = I18n.t("mapa.rayos.nota_sat", { hasta });
 }
 // Rayos en TIEMPO REAL (Vaisala Xweather, vía functions/rayos-cerca.js)
 // encima de la capa del satélite. Cada consulta cuesta (solo hay 1.500
@@ -5042,7 +5078,7 @@ let masCercanoRayos = null;    // último rayo más cercano pintado
 let rayosEncuadre = [];        // los que entran al encuadrar (misma tormenta)
 let encuadrePendienteRayos = false;
 let estadoRayos = "cargando";
-const ATRIBUCION_RAYOS_VIVO = "Rayos en tiempo real: Vaisala Xweather";
+const ATRIBUCION_RAYOS_VIVO = I18n.t("mapa.rayos.atrib_vivo");
 function rayosActivo() {
   return document.getElementById("toggleRayos").classList.contains("activo");
 }
@@ -5060,9 +5096,9 @@ function pintarResumenRayos(R, datos) {
   document.getElementById("rayosHoja").dataset.nivel = nivel;
   document.getElementById("rayosResumen").textContent = texto;
   if (refRayos) {
-    const desde = refRayos.origen === "gps" ? "tu ubicación" : refRayos.origen === "spot" ? refRayos.de.replace(/^de /, "") : "el centro del mapa";
+    const desde = refRayos.origen === "gps" ? I18n.t("mapa.rayos.tu_ubicacion") : refRayos.origen === "spot" ? refRayos.lugar : I18n.t("mapa.rayos.el_centro");
     document.getElementById("rayosRefTexto").textContent =
-      `${conteo ? conteo + " " : ""}Distancias medidas desde ${desde} (el punto con borde oscuro). Toca la frase para volver a centrar el mapa en el rayo más cercano.`;
+      `${conteo ? conteo + " " : ""}${I18n.t("mapa.rayos.distancias_desde", { desde })}`;
   }
 }
 // Solo si el usuario YA dio permiso de ubicación: abrir los rayos no debe
@@ -5130,7 +5166,7 @@ async function actualizarRayosVivo() {
   for (const r of datos.rayos) {
     const edadMin = R.edadMinutos(r, ahora);
     L.circleMarker([r.lat, r.lon], { radius: 6, color: "#FFFFFF", weight: 1.5, fillColor: R.colorPorEdad(edadMin), fillOpacity: 0.95 })
-      .bindTooltip(`⚡ ${r.tipo === "ic" ? "Rayo entre nubes" : "Rayo a tierra"} · ${R.textoEdad(edadMin)}`)
+      .bindTooltip(`⚡ ${r.tipo === "ic" ? I18n.t("mapa.rayos.entre_nubes") : I18n.t("mapa.rayos.a_tierra")} · ${R.textoEdad(edadMin)}`)
       .addTo(capaRayosVivo);
   }
   masCercanoRayos = R.rayoMasCercano(ref, datos.rayos, ahora);
@@ -5138,7 +5174,7 @@ async function actualizarRayosVivo() {
   // Punto de referencia y línea hasta el rayo más cercano: se ve de un
   // vistazo de qué está midiendo la frase.
   L.circleMarker([ref.lat, ref.lon], { radius: 5, color: "#0B1E3F", weight: 2, fillColor: "#FFFFFF", fillOpacity: 1 })
-    .bindTooltip(`Distancias medidas desde aquí (${ref.de.replace(/^de(l)? /, "")})`)
+    .bindTooltip(I18n.t("mapa.rayos.desde_aqui", { de: ref.lugar }))
     .addTo(capaRayosVivo);
   if (masCercanoRayos) {
     L.polyline([[ref.lat, ref.lon], [masCercanoRayos.rayo.lat, masCercanoRayos.rayo.lon]], {
@@ -5215,7 +5251,7 @@ document.getElementById("toggleRayos").addEventListener("click", () => {
   boton.classList.toggle("activo", activar);
   // innerHTML con la etiqueta: con textContent, al cerrar el panel el botón
   // perdía para siempre el rótulo "Rayos" de debajo del icono.
-  boton.innerHTML = activar ? "✕" : '⚡<span class="capa-label">Rayos</span>';
+  boton.innerHTML = activar ? "✕" : `⚡<span class="capa-label">${escVA(I18n.t("mapa.capa.rayos"))}</span>`;
   clearInterval(temporizadorRayosSat);
   clearInterval(temporizadorRayosVivo);
   if (activar) {
@@ -5293,6 +5329,15 @@ document.addEventListener("keydown", (e) => {
 const ZOOM_MINIMO_LUNA = 8;
 let lunaAbierta = false;
 
+// /luna devuelve la fase en español (functions/luna.js, FASES_LUNA).
+const CLAVE_FASE_LUNA = {
+  "Luna nueva": "mapa.luna.f_nueva", "Creciente": "mapa.luna.f_creciente", "Cuarto creciente": "mapa.luna.f_cuarto_creciente",
+  "Gibosa creciente": "mapa.luna.f_gibosa_creciente", "Luna llena": "mapa.luna.f_llena", "Gibosa menguante": "mapa.luna.f_gibosa_menguante",
+  "Cuarto menguante": "mapa.luna.f_cuarto_menguante", "Menguante": "mapa.luna.f_menguante",
+};
+function textoFaseLuna(fase) {
+  return CLAVE_FASE_LUNA[fase] ? I18n.t(CLAVE_FASE_LUNA[fase]) : fase;
+}
 async function actualizarLuna() {
   const aviso = document.getElementById("lunaZoomAviso");
   const contenido = document.getElementById("lunaContenido");
@@ -5310,16 +5355,16 @@ async function actualizarLuna() {
     const l = await resp.json();
     if (!resp.ok || l.error) throw new Error(l.error || "sin datos");
     document.getElementById("lunaEmoji").textContent = l.emoji;
-    document.getElementById("lunaFase").textContent = l.fase;
-    document.getElementById("lunaIluminacion").textContent = `${l.iluminacion}% iluminada`;
+    document.getElementById("lunaFase").textContent = textoFaseLuna(l.fase);
+    document.getElementById("lunaIluminacion").textContent = I18n.t("mapa.luna.iluminada", { pct: l.iluminacion });
     document.getElementById("lunaSalida").textContent = l.horaSalida
       ? `${l.horaSalida} · ${l.rumboSalida} (${l.azimutSalida}°)`
-      : "sin datos";
+      : I18n.t("mapa.sin_datos");
     document.getElementById("lunaPuesta").textContent = l.horaPuesta
       ? `${l.horaPuesta} · ${l.rumboPuesta} (${l.azimutPuesta}°)`
-      : "sin datos";
+      : I18n.t("mapa.sin_datos");
     document.getElementById("lunaAltura").textContent =
-      l.alturaMaxima !== null && l.alturaMaxima !== undefined ? `${l.alturaMaxima}° (${l.horaCulminacion})` : "sin datos";
+      l.alturaMaxima !== null && l.alturaMaxima !== undefined ? `${l.alturaMaxima}° (${l.horaCulminacion})` : I18n.t("mapa.sin_datos");
   } catch (e) {
     console.log("No se pudo cargar la luna para esta ubicación:", e.message);
   }
@@ -5411,7 +5456,7 @@ let vientoCargando = false;
 function horaVientoTexto(iso, indice) {
   if (!iso) return "—";
   const hhmm = iso.slice(11, 16);
-  return indice === 0 ? `ahora (${hhmm})` : hhmm;
+  return indice === 0 ? I18n.t("mapa.viento.ahora_hora", { hora: hhmm }) : hhmm;
 }
 
 function mostrarHoraViento(indice) {
@@ -5532,7 +5577,7 @@ function refrescarIndicesVisibles() {
       const sinSenal = !!CAMARAS[s.slug]?.sinSenal;
       puntoWebcam.style.display = camaraRetirada(s.slug) ? "none" : "";
       puntoWebcam.classList.toggle("sin-senal", sinSenal);
-      puntoWebcam.title = sinSenal ? "Sin señal detectada en la webcam" : "Webcam en directo";
+      puntoWebcam.title = sinSenal ? I18n.t("mapa.cam.sin_senal_title") : I18n.t("mapa.webcam_en_directo");
     }
   });
   const estadoEl = document.getElementById("estadoVigenciaGlobal");
@@ -5595,10 +5640,10 @@ function comprobarAvisoRayos() {
 </script>
 
 <nav class="tabs-nav">
-  <a href="/" class="activa"><span class="icono"><svg class="ico-mapa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span>Mapa</a>
-  <a href="/diario.html"><span class="icono"><svg class="ico-diario" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A2 2 0 0 1 6 2.5h14V19H6a2 2 0 0 0-2 2V4.5z"/><path d="M4 19a2 2 0 0 1 2-2h14"/></svg></span>Diario</a>
-  <a href="/alarma.html"><span class="icono"><svg class="ico-alarma" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 2.5 20h19L12 3.2z"/><line x1="12" y1="9.5" x2="12" y2="14"/><circle cx="12" cy="17" r="0.9" fill="currentColor" stroke="none"/></svg></span>Alarma</a>
-  <a href="/grupos.html"><span class="icono"><svg class="ico-grupos" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.3 19.5c0-3.5 2.6-5.7 5.7-5.7s5.7 2.2 5.7 5.7"/><circle cx="17" cy="9" r="2.6"/><path d="M15.3 13.9c2.5.4 4.2 2.3 4.2 5.6"/></svg><span class="punto-novedades-grupos" id="puntoNovedadesGrupos" hidden></span></span>Grupos</a>
+  <a href="/" class="activa"><span class="icono"><svg class="ico-mapa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span><span data-i18n="comun.tab.mapa">Mapa</span></a>
+  <a href="/diario.html"><span class="icono"><svg class="ico-diario" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A2 2 0 0 1 6 2.5h14V19H6a2 2 0 0 0-2 2V4.5z"/><path d="M4 19a2 2 0 0 1 2-2h14"/></svg></span><span data-i18n="comun.tab.diario">Diario</span></a>
+  <a href="/alarma.html"><span class="icono"><svg class="ico-alarma" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 2.5 20h19L12 3.2z"/><line x1="12" y1="9.5" x2="12" y2="14"/><circle cx="12" cy="17" r="0.9" fill="currentColor" stroke="none"/></svg></span><span data-i18n="comun.tab.alarma">Alarma</span></a>
+  <a href="/grupos.html"><span class="icono"><svg class="ico-grupos" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.3 19.5c0-3.5 2.6-5.7 5.7-5.7s5.7 2.2 5.7 5.7"/><circle cx="17" cy="9" r="2.6"/><path d="M15.3 13.9c2.5.4 4.2 2.3 4.2 5.6"/></svg><span class="punto-novedades-grupos" id="puntoNovedadesGrupos" hidden></span></span><span data-i18n="comun.tab.grupos">Grupos</span></a>
 </nav>
 
 </body>

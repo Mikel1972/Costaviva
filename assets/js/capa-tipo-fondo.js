@@ -23,6 +23,8 @@
 // Las funciones puras (sin DOM ni red) tienen tests en test/tipo-fondo.test.js;
 // lo demás solo se usa en el navegador (index.html: window.TipoFondo).
 
+import { I18n } from "./i18n-modulo.js";
+
 export const WMS_EMODNET_SEABED = "https://ows.emodnet-seabedhabitats.eu/geoserver/emodnet_view/wms";
 // Grupo con todas las simplificaciones (800/400/200 m y detalle completo):
 // GeoServer elige la adecuada a cada escala, así que se ve de la costa al talud.
@@ -36,18 +38,16 @@ export const ZOOM_MIN_CAPA = 7;
 // Radio para reutilizar el dato de un spot fijo en un punto propio.
 export const RADIO_SPOT_CERCANO_KM = 1.5;
 
-export const ATRIBUCION_SUSTRATO =
-  'Sustrato: <a href="https://emodnet.ec.europa.eu/en/seabed-habitats" target="_blank" rel="noopener">EMODnet Seabed Habitats</a> (EUSeaMap 2025), '
-  + '<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>, financiado por la Comisión Europea. Orientativo, no sirve para navegar.';
+export const ATRIBUCION_SUSTRATO = I18n.t("fondo.atribucion");
 
 // Leyenda (colores del estilo de EMODnet, GetLegendGraphic de eusm2025_subs_full).
 export const LEYENDA_SUSTRATO = [
-  { clase: "roca", texto: "Roca", color: "#780000" },
-  { clase: "arena", texto: "Arena", color: "#F6F17C" },
-  { clase: "grava", texto: "Grava o mixto", color: "#D1CD6A" },
-  { clase: "fango", texto: "Fango", color: "#95DCFC" },
-  { clase: "posidonia", texto: "Posidonia", color: "#2EA531" },
-  { clase: null, texto: "Sin clasificar", color: "#A5A5A5" },
+  { clase: "roca", texto: I18n.t("fondo.ley.roca"), color: "#780000" },
+  { clase: "arena", texto: I18n.t("fondo.ley.arena"), color: "#F6F17C" },
+  { clase: "grava", texto: I18n.t("fondo.ley.grava"), color: "#D1CD6A" },
+  { clase: "fango", texto: I18n.t("fondo.ley.fango"), color: "#95DCFC" },
+  { clase: "posidonia", texto: I18n.t("fondo.ley.posidonia"), color: "#2EA531" },
+  { clase: null, texto: I18n.t("fondo.ley.sin_clasificar"), color: "#A5A5A5" },
 ];
 
 export const CLASES_FONDO = ["roca", "arena", "grava", "fango", "posidonia", "pradera", "biogenico"];
@@ -134,12 +134,12 @@ export function fracciones(muestras, total) {
 }
 
 const NOMBRE_CLASE = {
-  roca: "roca", arena: "arena", grava: "grava", fango: "fango",
-  posidonia: "posidonia", pradera: "pradera marina",
+  roca: I18n.t("fondo.clase.roca"), arena: I18n.t("fondo.clase.arena"), grava: I18n.t("fondo.clase.grava"), fango: I18n.t("fondo.clase.fango"),
+  posidonia: I18n.t("fondo.clase.posidonia"), pradera: I18n.t("fondo.clase.pradera"),
 };
 const NOMBRE_ORILLA = {
-  acantilado: "orilla de acantilado", roca: "orilla de roca", escollera: "escollera o espigón",
-  playa_arena: "playa de arena", playa_cantos: "playa de cantos", playa: "playa", puerto: "puerto",
+  acantilado: I18n.t("fondo.orilla.acantilado"), roca: I18n.t("fondo.orilla.roca"), escollera: I18n.t("fondo.orilla.escollera"),
+  playa_arena: I18n.t("fondo.orilla.playa_arena"), playa_cantos: I18n.t("fondo.orilla.playa_cantos"), playa: I18n.t("fondo.orilla.playa"), puerto: I18n.t("fondo.orilla.puerto"),
 };
 
 // Fondo cercano (500 m) con dato suficiente, o null.
@@ -157,14 +157,14 @@ export function textoFondo(e) {
   if (f) {
     const clases = Object.keys(NOMBRE_CLASE).filter((c) => (f[c] || 0) >= 0.15).sort((a, b) => f[b] - f[a]).slice(0, 2);
     if (clases.length) {
-      let t = clases.map((c) => NOMBRE_CLASE[c]).join(" y ");
-      if (clases[0] === "roca" && (f.algas || 0) >= 0.5 * f.roca) t = t.replace("roca", "roca con algas");
+      let t = clases.map((c) => NOMBRE_CLASE[c]).join(I18n.t("va.seg.y"));
+      if (clases[0] === "roca" && (f.algas || 0) >= 0.5 * f.roca) t = t.replace(NOMBRE_CLASE.roca, I18n.t("fondo.roca_algas"));
       fondo = t;
     }
   }
   const orilla = e.orilla?.tipo ? NOMBRE_ORILLA[e.orilla.tipo] : null;
   if (!fondo && !orilla) return null;
-  return [`Fondo: ${fondo || "sin dato cerca"}`, orilla].filter(Boolean).join(" · ");
+  return [I18n.t("fondo.texto", { fondo: fondo || I18n.t("fondo.sin_dato") }), orilla].filter(Boolean).join(" · ");
 }
 
 // Variables de contexto para las reglas expertas. En embarcación (o sin
@@ -286,7 +286,7 @@ function crearLeyenda(L) {
       div.setAttribute("role", "note");
       const tit = document.createElement("div");
       tit.className = "titulo";
-      tit.textContent = "Tipo de fondo";
+      tit.textContent = I18n.t("fondo.tipo");
       div.appendChild(tit);
       for (const l of LEYENDA_SUSTRATO) {
         const fila = document.createElement("div");
@@ -298,7 +298,7 @@ function crearLeyenda(L) {
       }
       const nota = document.createElement("div");
       nota.className = "nota";
-      nota.textContent = "Cerca de la orilla, orientativo.";
+      nota.textContent = I18n.t("fondo.nota_orilla");
       div.appendChild(nota);
       L.DomEvent.disableClickPropagation(div);
       return div;
@@ -323,7 +323,7 @@ export function montarCapa(map, aviso = () => {}) {
   });
   leyenda = crearLeyenda(L);
   avisoZoom = () => {
-    if (map.hasLayer(capa) && map.getZoom() < ZOOM_MIN_CAPA) aviso("Acércate un poco para ver el tipo de fondo.");
+    if (map.hasLayer(capa) && map.getZoom() < ZOOM_MIN_CAPA) aviso(I18n.t("fondo.acercate"));
   };
   map.on("zoomend", avisoZoom);
 }

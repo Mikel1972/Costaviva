@@ -24,6 +24,14 @@
 // Script clásico: deja window.PlegarTarjeta. Lo puro (estadoInicial) se
 // prueba en test/plegar-tarjeta.test.js. Sin on*= (CSP).
 (function (raiz) {
+  // Idiomas (2026-10-09): en inglés, el texto de assets/i18n/en.js; en
+  // español (o en páginas sin I18n, como admin.html) el de aquí, que es el
+  // mismo que es.js (test/i18n.test.js lo comprueba).
+  function tr(clave, es) {
+    var I = (typeof window !== "undefined" ? window : globalThis).I18n;
+    return I && I.idioma() !== "es" && I.existe(clave) ? I.t(clave) : es;
+  }
+
   var PREFIJO = "cv_tarjeta_";
   var ANCHO_MOVIL = 600;
 
@@ -59,8 +67,8 @@
     function poner(plegada) {
       tarjeta.classList.toggle("plegada", plegada);
       boton.setAttribute("aria-expanded", plegada ? "false" : "true");
-      boton.setAttribute("aria-label", plegada ? "Expandir la leyenda" : "Minimizar la leyenda");
-      boton.title = plegada ? "Expandir" : "Minimizar";
+      boton.setAttribute("aria-label", plegada ? tr("comun.expandir_leyenda", "Expandir la leyenda") : tr("comun.minimizar_leyenda", "Minimizar la leyenda"));
+      boton.title = plegada ? tr("comun.expandir", "Expandir") : tr("comun.minimizar", "Minimizar");
       boton.textContent = plegada ? "▴" : "▾";
       if (o.alCambiar) o.alCambiar(plegada);
     }

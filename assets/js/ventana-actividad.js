@@ -64,6 +64,14 @@
 
 import { reglasEnAmbito, evaluarReglas, iluminacionLunar, coeficienteMareaAstronomico, usaFrentes } from "./reglas-expertas.js";
 import { contextoReglas } from "./batimetria-calculo.js";
+import { t, I18n } from "./i18n-modulo.js";
+
+// Idiomas (2026-10-09): cada motivo lleva su `clave` y sus `vars` (assets/i18n,
+// "va.*") además del `texto` ya traducido al idioma de la app, y `textoEs`, el
+// mismo motivo en español: es el que se guarda en el diario y el que mira
+// paraUsuario() para separar lo interno. Las reglas expertas traen su texto
+// de los datos (texto, y texto_en cuando la fase de datos lo añada).
+const tx = (clave, vars) => ({ clave, vars: vars || null, texto: t(clave, vars), textoEs: t(clave, vars, "es") });
 import {
   regionPorCoordenadas, zonaPorCoordenadas, minutosLocales, msAproxDeEtiqueta, usaDatosGenerales, ZONA_POR_DEFECTO,
 } from "./regiones.js";
@@ -265,7 +273,7 @@ function fusionarReglas(defecto, especie) {
 // (pesos propios de cada pestaña) y `normativa_modalidades`.
 // ---------------------------------------------------------------------------
 export const MODALIDADES = ["costa", "embarcacion", "submarina"];
-export const NOMBRE_MODALIDAD = { costa: "Desde costa", embarcacion: "Embarcación", submarina: "Submarina" };
+export const NOMBRE_MODALIDAD = { costa: t("va.mod.costa"), embarcacion: t("va.mod.embarcacion"), submarina: t("va.mod.submarina") };
 
 // true solo con dato afirmativo: `aplica: null` (sin dato) no se muestra,
 // para no proponer una especie que no se pesca así ("no tiene sentido poner
@@ -284,7 +292,8 @@ export function aplicaModalidad(especie, modalidad, region = null) {
 export function consejoProfundidad(especie, modalidad) {
   const p = especie?.modalidades?.[modalidad]?.profundidad_temporada;
   if (!p || (!p.verano && !p.invierno)) return null;
-  return [p.verano && `Verano: ${p.verano}`, p.invierno && `Invierno: ${p.invierno}`].filter(Boolean).join(" · ");
+  const verano = I18n.dato(p, "verano"), invierno = I18n.dato(p, "invierno");
+  return [verano && t("va.prof.verano", { texto: verano }), invierno && t("va.prof.invierno", { texto: invierno })].filter(Boolean).join(" · ");
 }
 
 // Reglas efectivas de una especie en una modalidad:
@@ -301,7 +310,8 @@ export function reglasParaModalidad(reglasDefecto, especie, modalidad = "costa",
   return fusionarReglas(base, deEspecie);
 }
 
-const fmt1 = (x) => String(+x.toFixed(1)).replace(".", ",");
+// "1,5" en español, "1.5" en inglés (I18n.num sin decimales fijos).
+const fmt1 = (x, idioma) => I18n.num(x, undefined, idioma);
 const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 
 // Aviso de ola peligrosa (2026-10-08, decisión de Mikel): nota aparte, nunca
@@ -312,9 +322,10 @@ export function avisoOlaPeligrosa(ola, reglasOleaje) {
   if (ola === null || ola === undefined || !reglasOleaje) return null;
   const umbral = reglasOleaje.max_seguro_m || 2.5;
   if (!(ola > umbral)) return null;
-  const peligro = reglasOleaje.texto_peligro || "peligrosa desde costa";
-  const rango = rangoOlaTexto(ola).replace(/^mar de /, "");
-  return { texto: `⚠️ Ola ${peligro} (${rango}): extrema la precaución`, umbral_m: umbral, ola: +ola.toFixed(1) };
+  const peligro = I18n.dato(reglasOleaje, "texto_peligro") || t("va.ola.peligro_defecto");
+  const rango = rangoOla(ola, true);
+  const m = tx("va.ola.aviso", { peligro, rango: rango.texto });
+  return { texto: m.texto, clave: m.clave, vars: m.vars, umbral_m: umbral, ola: +ola.toFixed(1) };
 }
 
 // Lo que ve el USUARIO del porqué (Mikel, 2026-10-08): solo los motivos con
@@ -332,22 +343,26 @@ export function flechaDeAporte(aporte) {
   if (aporte < 0) return "▼";
   return "";
 }
+// Lo interno se reconoce por el texto en español (textoEs), sea cual sea el
+// idioma en que se enseñe.
 export function paraUsuario(razones, { max = Infinity } = {}) {
-  const limpias = (razones || []).filter((r) => r && r.texto && !TEXTO_INTERNO.test(r.texto));
+  const limpias = (razones || []).filter((r) => r && r.texto && !TEXTO_INTERNO.test(r.textoEs || r.texto));
   const motivos = limpias
     .filter((r) => r.aporte && !FACTORES_AVISO_USUARIO.has(r.factor))
     .sort((a, b) => Math.abs(b.aporte) - Math.abs(a.aporte))
     .slice(0, max)
-    .map((r) => ({ texto: r.texto, aporte: r.aporte, flecha: flechaDeAporte(r.aporte), sube: r.aporte > 0 }));
+    .map((r) => ({ texto: r.texto, aporte: r.aporte, flecha: flechaDeAporte(r.aporte), sube: r.aporte > 0, ...(r.clave ? { clave: r.clave, vars: r.vars } : {}) }));
   const avisos = [...new Set(limpias.filter((r) => FACTORES_AVISO_USUARIO.has(r.factor))
     .map((r) => `⚠️ ${r.texto.replace(/^⚠\uFE0F?\s*/, "")}`))];
   return { motivos, avisos };
 }
 
-function rangoOlaTexto(h) {
-  if (h < 0.5) return "mar casi plana (<0,5 m)";
+// Oleaje de una hora como motivo: "mar de 1-1,5 m" / "1-1.5 m sea". soloRango:
+// sin "mar de" (para el aviso de ola peligrosa).
+function rangoOla(h, soloRango = false) {
+  if (h < 0.5) return tx(soloRango ? "va.ola.rango_plana" : "va.ola.plana");
   const a = Math.floor(h * 2) / 2;
-  return `mar de ${fmt1(a)}-${fmt1(a + 0.5)} m`;
+  return tx(soloRango ? "va.ola.rango" : "va.ola.mar_de", { a: fmt1(a), b: fmt1(a + 0.5) });
 }
 
 // ---------------------------------------------------------------------------
@@ -446,15 +461,16 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
       if (hayDato) cobertura.conDato += w;
       return hayDato;
     };
-    const anota = (factor, valor, texto, cientifico = false) => {
+    // m: motivo con clave (tx); se guarda su texto, su texto en español y su clave.
+    const anota = (factor, valor, m, cientifico = false) => {
       if (sustituidos.has(factor)) return;
       const r = reglas[factor];
       const w = pesoLogOdds(r);
       if (!r || !w) {
-        if (texto) terminos.push({ factor, texto, lo: 0 });
+        if (m) terminos.push({ factor, ...m, lo: 0 });
         return;
       }
-      terminos.push({ factor, texto, lo: w * clamp(valor, -1, 1), cientifico: cientifico || TIPOS_CIENTIFICOS.has(r.tipo) });
+      terminos.push({ factor, ...m, lo: w * clamp(valor, -1, 1), cientifico: cientifico || TIPOS_CIENTIFICOS.has(r.tipo) });
     };
 
     // Submarina: prohibida de noche (art. 16.d RD 347/2011; art. 8.3
@@ -466,22 +482,21 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
       const am = minutosLocales(solCache[dia].amanecer, zona), an = minutosLocales(solCache[dia].anochecer, zona);
       const ini = minuto - 30, fin = minuto + 30;
       if (fin <= am || ini >= an) prohibida = true;
-      else if (ini < am) notas.push({ factor: "legal", texto: `legal solo desde la salida del sol (${textoHora(am)})`, aporte: 0 });
-      else if (fin > an) notas.push({ factor: "legal", texto: `legal solo hasta la puesta del sol (${textoHora(an)})`, aporte: 0 });
+      else if (ini < am) notas.push({ factor: "legal", ...tx("va.legal.desde_sol", { hora: textoHora(am) }), aporte: 0 });
+      else if (fin > an) notas.push({ factor: "legal", ...tx("va.legal.hasta_sol", { hora: textoHora(an) }), aporte: 0 });
     }
     if (prohibida) {
       return {
         hora: h.hora, puntuacion: 0, luz: "noche", marea: marea[i], marPeligrosa: false, avisoOla: null, prohibida: true, avisos: [],
-        razones: [{ factor: "legal", texto: "de noche la pesca submarina está prohibida", aporte: 0 }],
+        razones: [{ factor: "legal", ...tx("va.legal.noche"), aporte: 0 }],
         cobertura: 1, reglasAplicadas: [], sinDato: [],
       };
     }
 
     // Luz
     const luz = estadoLuz(minuto, solCache[dia], zona);
-    const textoLuz = { alba: "amanecer", ocaso: "atardecer", dia: "pleno día", noche: "de noche" }[luz];
     cuenta("luz", true);
-    anota("luz", reglas.luz?.preferencia?.[luz] ?? 0, textoLuz);
+    anota("luz", reglas.luz?.preferencia?.[luz] ?? 0, tx(`va.luz.${luz}`));
 
     // Marea (escalada con el rango local)
     const m = marea[i];
@@ -489,12 +504,11 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
       const ref = reglas.marea.rango_referencia_m || 2.5;
       const escala = clamp(m.rango / ref, 0, 1);
       if (escala < 0.25) {
-        terminos.push({ factor: "marea", texto: `marea casi nula aquí (${fmt1(m.rango)} m): no cuenta`, lo: 0 });
+        terminos.push({ factor: "marea", ...tx("va.marea.nula", { rango: fmt1(m.rango) }), lo: 0 });
       } else {
         const estado = m.repunte ? "repunte" : m.tendencia;
         const pref = reglas.marea.preferencia?.[estado] ?? 0;
-        const txt = estado === "repunte" ? "repunte de marea" : `marea ${estado}`;
-        anota("marea", pref * escala, txt);
+        anota("marea", pref * escala, tx(`va.marea.${estado}`));
       }
     }
 
@@ -502,20 +516,19 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
     const hayTemp = h.tempAgua !== null && h.tempAgua !== undefined;
     if (tempExcluida && hayTemp) {
       cuenta("temperatura", false);
-      terminos.push({ factor: "temperatura", texto: `agua a ${fmt1(h.tempAgua)} °C (rango de la especie pendiente de fuente abierta: no cuenta)`, lo: 0 });
+      terminos.push({ factor: "temperatura", ...tx("va.temp.pendiente", { t: fmt1(h.tempAgua) }), lo: 0 });
     } else if (rangoTemp) {
       if (cuenta("temperatura", hayTemp)) {
         const [tmin, tmax] = rangoTemp;
         const f = factorTemperatura(h.tempAgua, rangoTemp);
         const dentro = h.tempAgua >= tmin && h.tempAgua <= tmax;
-        const txt = !dentro ? `agua a ${fmt1(h.tempAgua)} °C, fuera de su rango (${tmin}-${tmax})`
-          : f >= 0.8 ? `agua a ${fmt1(h.tempAgua)} °C, cerca de su óptimo (${tmin}-${tmax})`
-          : `agua a ${fmt1(h.tempAgua)} °C, en su rango (${tmin}-${tmax})`;
+        const v = { t: fmt1(h.tempAgua), min: tmin, max: tmax };
+        const txt = !dentro ? tx("va.temp.fuera", v) : f >= 0.8 ? tx("va.temp.optimo", v) : tx("va.temp.en_rango", v);
         anota("temperatura", f, txt, tempCientifica);
       }
     } else {
       cuenta("temperatura", false);
-      if (modalidad === "submarina" && hayTemp) terminos.push({ factor: "temperatura", texto: `agua a ${fmt1(h.tempAgua)} °C`, lo: 0 });
+      if (modalidad === "submarina" && hayTemp) terminos.push({ factor: "temperatura", ...tx("va.temp.agua", { t: fmt1(h.tempAgua) }), lo: 0 });
     }
 
     // Oleaje. El aviso de ola peligrosa va APARTE del factor y no toca la
@@ -533,13 +546,13 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
       else if (h.ola > omax) v = -(h.ola - omax) / Math.max(0.1, maxSeguro - omax);
       else if (h.ola < omin) v = reglas.oleaje.valor_bajo_minimo ?? -0.3;
       else v = 1;
-      anota("oleaje", v, rangoOlaTexto(h.ola));
+      anota("oleaje", v, rangoOla(h.ola));
     }
 
     // Viento: solo penaliza por encima del máximo cómodo
     if (cuenta("viento", h.viento !== null && h.viento !== undefined) && pesoLogOdds(reglas.viento)) {
       const vmax = reglas.viento.max_kmh || 30;
-      if (h.viento > vmax) anota("viento", -clamp((h.viento - vmax) / 20, 0.2, 1), `viento fuerte (${Math.round(h.viento)} km/h)`);
+      if (h.viento > vmax) anota("viento", -clamp((h.viento - vmax) / 20, 0.2, 1), tx("va.viento.fuerte", { v: Math.round(h.viento) }));
     }
 
     // Embarcación: avisos de seguridad (kayak / embarcación pequeña). Se
@@ -554,12 +567,13 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
         const porViento = hayViento && h.viento > nv.viento_max_kmh;
         const porOla = hayOla && h.ola > nv.ola_max_m;
         if ((porViento || porOla) && !avisos.length) {
-          const motivo = [porViento && `viento ${Math.round(h.viento)} km/h`, porOla && `ola ${fmt1(h.ola)} m`].filter(Boolean).join(" y ");
-          avisos.push({ nivel: nv.id, texto: `${nv.texto} (${motivo})` });
-          notas.push({ factor: "seguridad", texto: `⚠ ${nv.texto} (${motivo})`, aporte: 0 });
+          const motivoEn = (id) => [porViento && t("va.seg.viento", { v: Math.round(h.viento) }, id), porOla && t("va.seg.ola", { v: fmt1(h.ola, id) }, id)].filter(Boolean).join(t("va.seg.y", null, id));
+          const nvTexto = I18n.dato(nv, "texto");
+          avisos.push({ nivel: nv.id, texto: `${nvTexto} (${motivoEn()})` });
+          notas.push({ factor: "seguridad", texto: `⚠ ${nvTexto} (${motivoEn()})`, textoEs: `⚠ ${nv.texto} (${motivoEn("es")})`, aporte: 0 });
         }
         if (porViento) {
-          topes.push({ tope: nv.tope, texto: `${nv.texto}, viento ${Math.round(h.viento)} km/h: máximo ${nv.tope}` });
+          topes.push({ tope: nv.tope, texto: t("va.seg.tope", { nivel: I18n.dato(nv, "texto"), v: Math.round(h.viento), tope: nv.tope }), textoEs: t("va.seg.tope", { nivel: nv.texto, v: Math.round(h.viento), tope: nv.tope }, "es") });
           break;
         }
       }
@@ -570,15 +584,15 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
     const hayPresion = p !== null && p !== undefined && p3 !== null && p3 !== undefined;
     if (cuenta("presion", hayPresion) && pesoLogOdds(reglas.presion)) {
       const d = p - p3;
-      const t = d <= -1 ? "bajando" : d >= 1 ? "subiendo" : "estable";
-      anota("presion", reglas.presion.preferencia?.[t] ?? 0, `presión ${t}`);
+      const tend = d <= -1 ? "bajando" : d >= 1 ? "subiendo" : "estable";
+      anota("presion", reglas.presion.preferencia?.[tend] ?? 0, tx(`va.presion.${tend}`));
     }
 
     // Turbidez (dato diario por spot, de las webcams)
     if (cuenta("turbidez", !!contexto.turbidez) && pesoLogOdds(reglas.turbidez)) {
-      const t = contexto.turbidez;
-      const txt = t === "no turbia" ? "agua clara" : t === "turbia" ? "agua turbia" : "agua muy turbia";
-      anota("turbidez", reglas.turbidez.preferencia?.[t] ?? 0, txt);
+      const tb = contexto.turbidez;
+      const txt = tb === "no turbia" ? tx("va.turbidez.clara") : tb === "turbia" ? tx("va.turbidez.turbia") : tx("va.turbidez.muy_turbia");
+      anota("turbidez", reglas.turbidez.preferencia?.[tb] ?? 0, txt);
     }
 
     // Lluvia de las 24 h anteriores (enturbia el agua; solo submarina)
@@ -587,14 +601,14 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
       if (cuenta("lluvia", previas.length >= 12)) {
         const mm = previas.reduce((a, b) => a + b, 0);
         const [u0, u1] = reglas.lluvia.umbral_mm_24h || [2, 15];
-        if (mm >= u0) anota("lluvia", -clamp((mm - u0) / Math.max(0.1, u1 - u0), 0.2, 1), `${fmt1(mm)} mm de lluvia en las 24 h anteriores`);
+        if (mm >= u0) anota("lluvia", -clamp((mm - u0) / Math.max(0.1, u1 - u0), 0.2, 1), tx("va.lluvia.previa", { mm: fmt1(mm) }));
       }
     }
 
     // Caudal del río asociado al spot (solo submarina, solo con dato)
     if (pesoLogOdds(reglas.caudal_rio) && cuenta("caudal_rio", !!contexto.caudalRio)
       && reglas.caudal_rio.preferencia?.[contexto.caudalRio] !== undefined) {
-      anota("caudal_rio", reglas.caudal_rio.preferencia[contexto.caudalRio], `río cercano con caudal ${contexto.caudalRio}`);
+      anota("caudal_rio", reglas.caudal_rio.preferencia[contexto.caudalRio], tx(`va.rio.${contexto.caudalRio}`));
     }
 
     // Reglas expertas (datos de especies.json, motor genérico)
@@ -623,35 +637,37 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
       cobertura.total += w;
       if (!ev.sinDato.includes(r.id)) cobertura.conDato += w;
     }
-    for (const t of ev.terminos) {
-      terminos.push({ factor: t.factor, texto: t.texto, lo: t.lo, cientifico: TIPOS_CIENTIFICOS.has(t.regla.tipo), regla: t.regla });
+    for (const x of ev.terminos) {
+      terminos.push({ factor: x.factor, texto: I18n.dato(x.regla, "texto") || x.texto, textoEs: x.texto, lo: x.lo, cientifico: TIPOS_CIENTIFICOS.has(x.regla.tipo), regla: x.regla });
     }
 
     // Escala logística y reparto del porqué en puntos
     const rep = repartirAportes(terminos.map((t) => t.lo), b0);
-    const razones = terminos.map((t, k) => ({
-      factor: t.factor, texto: t.texto, aporte: rep.aportes[k], lo: +t.lo.toFixed(3),
-      variable: t.regla ? t.regla.variable : VARIABLE_DE_FACTOR[t.factor],
-      ...(t.regla ? { regla: t.regla } : {}),
+    const razones = terminos.map((x, k) => ({
+      factor: x.factor, texto: x.texto, aporte: rep.aportes[k], lo: +x.lo.toFixed(3),
+      variable: x.regla ? x.regla.variable : VARIABLE_DE_FACTOR[x.factor],
+      ...(x.regla ? { regla: x.regla } : {}),
+      ...(x.textoEs !== undefined ? { textoEs: x.textoEs } : {}),
+      ...(x.clave ? { clave: x.clave, vars: x.vars } : {}),
     }));
     razones.push(...notas);
     let puntuacion = rep.puntuacion;
     if (topes.length) {
       const peor = topes.reduce((a, b) => (b.tope < a.tope ? b : a));
       if (puntuacion > peor.tope) {
-        razones.push({ factor: "tope", texto: `tope de seguridad (${peor.texto})`, aporte: peor.tope - puntuacion });
+        razones.push({ factor: "tope", texto: t("va.seg.tope_razon", { texto: peor.texto }), textoEs: t("va.seg.tope_razon", { texto: peor.textoEs }, "es"), aporte: peor.tope - puntuacion });
         puntuacion = peor.tope;
       }
     }
     razones.sort((a, b) => Math.abs(b.aporte) - Math.abs(a.aporte));
-    const loTotal = terminos.reduce((s, t) => s + Math.abs(t.lo), 0);
-    const loCientifico = terminos.filter((t) => t.cientifico).reduce((s, t) => s + Math.abs(t.lo), 0);
+    const loTotal = terminos.reduce((s, x) => s + Math.abs(x.lo), 0);
+    const loCientifico = terminos.filter((x) => x.cientifico).reduce((s, x) => s + Math.abs(x.lo), 0);
     return {
       hora: h.hora, puntuacion, razones, luz, marea: m, marPeligrosa, avisoOla, prohibida: false, avisos,
       probabilidad: +rep.probabilidad.toFixed(2), base: rep.base,
       cobertura: cobertura.total ? +(cobertura.conDato / cobertura.total).toFixed(2) : 1,
       fraccionCientifica: loTotal ? +(loCientifico / loTotal).toFixed(2) : 0,
-      reglasAplicadas: ev.terminos.map((t) => t.regla.id), sinDato: ev.sinDato,
+      reglasAplicadas: ev.terminos.map((x) => x.regla.id), sinDato: ev.sinDato,
     };
   });
 }
@@ -669,7 +685,7 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
 // (-1), datos de modelo y no medidos (-0,5). Nunca baja de 1 estrella: las
 // rebajas se dicen siempre en el texto.
 // ---------------------------------------------------------------------------
-const NIVEL_TEXTO = { 1: "criterio experto", 2: "con base científica", 3: "validado con el diario", 4: "confirmado con desembarcos" };
+const NIVEL_TEXTO = { 1: t("va.fiab.1"), 2: t("va.fiab.2"), 3: t("va.fiab.3"), 4: t("va.fiab.4") };
 export function fiabilidad(resultado, { especieId, modalidad, region, validacion = null, horaActual = null, datosMedidos = false } = {}) {
   if (!resultado) return null;
   let nivel = (resultado.fraccionCientifica ?? 0) >= 0.5 ? 2 : 1;
@@ -680,10 +696,10 @@ export function fiabilidad(resultado, { especieId, modalidad, region, validacion
   let menos = 0;
   if (horaActual && resultado.hora) {
     const horizonte = (Date.parse(`${resultado.hora}:00Z`) - Date.parse(`${horaActual.slice(0, 13)}:00:00Z`)) / 3600000;
-    if (horizonte > 48) { menos += 1; rebajas.push("previsión a más de 48 h"); }
+    if (horizonte > 48) { menos += 1; rebajas.push(t("va.fiab.mas_48")); }
   }
-  if ((resultado.cobertura ?? 1) < 0.6) { menos += 1; rebajas.push(`solo ${Math.round((resultado.cobertura ?? 0) * 100)} % del peso con dato`); }
-  if (!datosMedidos) { menos += 0.5; rebajas.push("modelo, no medido"); }
+  if ((resultado.cobertura ?? 1) < 0.6) { menos += 1; rebajas.push(t("va.fiab.cobertura", { pct: Math.round((resultado.cobertura ?? 0) * 100) })); }
+  if (!datosMedidos) { menos += 0.5; rebajas.push(t("va.fiab.modelo")); }
   const estrellas = Math.max(1, nivel - menos);
   const llenas = Math.floor(estrellas), media = estrellas - llenas >= 0.5;
   const simbolo = "★".repeat(llenas) + (media ? "½" : "");
@@ -721,15 +737,15 @@ export function indiceSpot(datos, horas, i, contexto) {
   return {
     version: INDICE_VERSION, region, modalidad, hora: h.hora,
     puntuacion: mejor.r.puntuacion,
-    especie: { id: mejor.e.id, nombre: mejor.e.nombres.es },
+    especie: { id: mejor.e.id, nombre: I18n.nombre(mejor.e), nombreEs: mejor.e.nombres.es },
     resultado: mejor.r,
     // Ola peligrosa: nota aparte (no motivo, no tope). Igual para todas las
     // especies de la modalidad.
     avisoOla: mejor.r.avisoOla || null,
     fiabilidad: fiabilidad(mejor.r, { especieId: mejor.e.id, modalidad, region, validacion: datos.validacion_fiabilidad, horaActual: contexto.horaActual, datosMedidos: contexto.datosMedidos }),
     // Freza: solo aviso, nunca suma.
-    freza: fz?.enFreza ? { texto: "en freza en esta zona: si lo pescas, devuélvelo al agua", meses: fz.meses } : null,
-    ranking: ranking.map(({ e, r }) => ({ id: e.id, nombre: e.nombres.es, puntuacion: r.puntuacion })),
+    freza: fz?.enFreza ? { texto: t("va.freza.aviso"), meses: fz.meses } : null,
+    ranking: ranking.map(({ e, r }) => ({ id: e.id, nombre: I18n.nombre(e), puntuacion: r.puntuacion })),
   };
 }
 
@@ -862,11 +878,11 @@ export function normativaModalidad(datos, modalidad, region, { euskadi = false, 
 // una región si su presencia en esa región incluye el mes y NO está en veda.
 // ---------------------------------------------------------------------------
 export const NOMBRE_REGION = {
-  cantabrico: "el Cantábrico", atlantico_norte: "Galicia", portugal: "Portugal",
-  golfo_cadiz: "el Golfo de Cádiz", mediterraneo: "el Mediterráneo", baleares: "Baleares",
-  canarias: "Canarias", azores: "Azores", madeira: "Madeira", nueva_zelanda: "Nueva Zelanda",
+  cantabrico: t("va.region.cantabrico"), atlantico_norte: t("va.region.atlantico_norte"), portugal: t("va.region.portugal"),
+  golfo_cadiz: t("va.region.golfo_cadiz"), mediterraneo: t("va.region.mediterraneo"), baleares: t("va.region.baleares"),
+  canarias: t("va.region.canarias"), azores: t("va.region.azores"), madeira: t("va.region.madeira"), nueva_zelanda: t("va.region.nueva_zelanda"),
 };
-const MESES_CORTOS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+const MESES_CORTOS = I18n.mesesCortos();
 
 // Veda (p. ej. recreativa) que afecta a esa región ese mes, o null. Una veda
 // sin lista de regiones es de la Península: no se aplica en el hemisferio sur.
@@ -899,7 +915,7 @@ export function especiesParaModalidad(datos, region, modalidad) {
 // "abr–dic", "todo el año" o "ene, mar, may": meses en orden circular.
 export function textoMeses(meses) {
   if (!meses?.length) return "";
-  if (meses.length === 12) return "todo el año";
+  if (meses.length === 12) return t("va.todo_el_ano");
   const set = new Set(meses);
   const inicio = [...set].find((m) => !set.has(m === 1 ? 12 : m - 1));
   if (inicio !== undefined) {
