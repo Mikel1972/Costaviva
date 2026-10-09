@@ -55,6 +55,7 @@ export function uuidValido(id) {
 // para < 100 %). "Hasta una fecha" termina al acabar ese día en España.
 // ---------------------------------------------------------------------------
 
+// Hora de Madrid a propósito (ZONA_NEGOCIO, assets/js/regiones.js): las invitaciones son del negocio en España.
 function desfaseMadridMs(instante) {
   const partes = Object.fromEntries(
     new Intl.DateTimeFormat("en-US", {
@@ -258,6 +259,7 @@ export function descuentoAplicaAPlan(inv, plan, ahora = new Date()) {
 // Textos
 // ---------------------------------------------------------------------------
 
+// Hora de Madrid a propósito (ZONA_NEGOCIO), igual que el fin de las invitaciones.
 export function fechaLarga(valor) {
   return new Date(valor).toLocaleDateString("es-ES", {
     day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Madrid",

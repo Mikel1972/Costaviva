@@ -17,6 +17,7 @@
 // pasa a ser de ese dominio real.
 
 import { enviarEmail as enviarConResend, esc } from "./_lib/email.js";
+import { zonaPorCoordenadas } from "../assets/js/regiones.js";
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const SUPABASE_ANON_KEY =
@@ -103,7 +104,9 @@ export async function onRequestPost(context) {
         headers: { "content-type": "application/json" },
       });
     }
-    const horaLocal = new Date().toLocaleString("es-ES", { timeZone: "Europe/Madrid" });
+    // Hora local del sitio donde salta la alarma (Madrid en la Península y
+    // Portugal, Canarias en Canarias, ver assets/js/regiones.js).
+    const horaLocal = new Date().toLocaleString("es-ES", { timeZone: zonaPorCoordenadas(lat, lon) });
     const nombreUsuario = usuario.email || "un usuario de Costaviva";
 
     const resultados = await Promise.allSettled(

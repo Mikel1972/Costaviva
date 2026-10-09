@@ -60,6 +60,7 @@ export async function onRequestPost(context) {
     });
   }
 
+  // Hora de Madrid a propósito: las cámaras de turbidez están en la Península.
   const hoy = new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Madrid" }); // YYYY-MM-DD
   const filas = lecturas
     .filter((l) => l && typeof l.spot === "string" && Number.isFinite(l.saturacion))

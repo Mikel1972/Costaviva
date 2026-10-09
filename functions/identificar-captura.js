@@ -145,11 +145,12 @@ async function contarUsos(env, userId, desde, { soloOk = false } = {}) {
   }
 }
 
+// Hora de Madrid a propósito (ZONA_NEGOCIO): el cupo mensual es del negocio.
 // Partes de fecha/hora de `fecha` en hora de Madrid.
 function partesMadrid(fecha) {
   const p = {};
   for (const { type, value } of new Intl.DateTimeFormat("en-GB", {
-    timeZone: "Europe/Madrid", hourCycle: "h23",
+    timeZone: "Europe/Madrid", hourCycle: "h23", // a propósito (ZONA_NEGOCIO)
     year: "numeric", month: "2-digit", day: "2-digit",
     hour: "2-digit", minute: "2-digit", second: "2-digit",
   }).formatToParts(fecha)) p[type] = Number(value);

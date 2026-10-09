@@ -43,6 +43,7 @@ export function siguienteFuncion(ultima) {
 
 // Fecha de hoy en España, "AAAA-MM-DD".
 export function hoyMadrid(ahora = new Date()) {
+  // Hora de Madrid a propósito (ZONA_NEGOCIO): calendario de publicación en España.
   return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Madrid", year: "numeric", month: "2-digit", day: "2-digit" }).format(ahora);
 }
 export function sumarDias(fechaISO, n) {
@@ -67,6 +68,7 @@ export function instanteMadrid(fechaISO, hora = "08:00") {
   for (const desfase of [2, 1]) {
     const t = new Date(Date.UTC(a, m - 1, d, hh - desfase, mm));
     const p = Object.fromEntries(new Intl.DateTimeFormat("en-CA", {
+      // Hora de Madrid a propósito (ZONA_NEGOCIO): calendario de publicación en España.
       timeZone: "Europe/Madrid", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23",
     }).formatToParts(t).map((x) => [x.type, x.value]));
     if (`${p.year}-${p.month}-${p.day}` === fechaISO && Number(p.hour) === hh) return t;

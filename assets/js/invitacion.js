@@ -52,6 +52,7 @@ export function esDefinitivo(codigo) {
 export function mensajeExito(r) {
   if (r.descuento === 100) {
     return r.acceso_hasta
+      // Hora de Madrid a propósito (ZONA_NEGOCIO): las invitaciones caducan a las 00:00 de Madrid (invitaciones.js).
       ? `Invitación aplicada: tienes Costaviva gratis hasta el ${new Date(new Date(r.acceso_hasta).getTime() - 1).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Madrid" })}.`
       : "Invitación aplicada: tienes Costaviva gratis para siempre.";
   }

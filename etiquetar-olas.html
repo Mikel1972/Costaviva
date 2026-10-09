@@ -128,6 +128,7 @@ function siguiente() {
   zonaFoto.classList.remove("oculto");
   foto.src = `${SUPABASE_URL}/storage/v1/object/public/oleaje-camaras/${l.miniatura.split("/").map(encodeURIComponent).join("/")}`;
   document.getElementById("camara").textContent = NOMBRES[l.camara] || l.camara;
+  // Hora de Madrid a propósito: las cámaras de oleaje están en la Península.
   document.getElementById("hora").textContent = new Date(l.fecha).toLocaleString("es-ES", { timeZone: "Europe/Madrid", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 }
 

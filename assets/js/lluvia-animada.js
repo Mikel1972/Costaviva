@@ -94,6 +94,7 @@ export function ultimaEstimada(ahoraMs, pasoMs = PASO_POR_DEFECTO_MIN * MIN) {
 }
 
 // "HH:MM" en hora de Madrid (CET/CEST según la fecha, no la del navegador).
+// Hora de Madrid a propósito: el radar OPERA y el satélite cubren Europa; NZ tendrá su propia capa (fase 6).
 const FORMATO_MADRID = new Intl.DateTimeFormat("es-ES", {
   hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone: "Europe/Madrid",
 });

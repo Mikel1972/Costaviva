@@ -138,6 +138,7 @@ jobs:
         # Coordenada fija (Mundaka) para que la respuesta salga de la caché del
         # edge casi siempre: no gasta cuota de Open-Meteo en cada ejecución.
         run: |
+          # Europe/Madrid a propósito: Mundaka, y así sale de la caché del edge.
           code=$(curl -sS -o /tmp/meteo.json -w "%{http_code}" --max-time 15 \
             "$PRODUCCION_URL/meteo/marine?latitude=43.41&longitude=-2.70&timezone=Europe%2FMadrid&forecast_days=1&hourly=wave_height")
           if [ "$code" != "200" ]; then echo "::error::/meteo/marine devolvió $code"; cat /tmp/meteo.json; exit 1; fi

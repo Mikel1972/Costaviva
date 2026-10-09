@@ -12,10 +12,12 @@ import { coeficienteDesdeParametros } from "../oleaje-costero.js";
 import { factorCamara, horasEntreLocales } from "../oleaje-camaras.js";
 import { factorOleaje } from "../../prevision.js";
 import { RIOS_SPOT } from "./datos.js";
+import { isoLocal, paramZona, zonaDeSpot } from "../../../assets/js/regiones.js";
 
 // Consultas a /meteo/* iguales que las de la app (datosHorariosSpot).
+// Zona horaria: la del spot (regiones.js), igual que en la app.
 export function consultasMeteo(spot) {
-  const coord = `latitude=${spot.lat}&longitude=${spot.lon}&timezone=Europe%2FMadrid`;
+  const coord = `latitude=${spot.lat}&longitude=${spot.lon}&${paramZona(zonaDeSpot(spot))}`;
   return {
     marine: `/meteo/marine?${coord}&past_days=1&forecast_days=2&hourly=wave_height,wave_direction,sea_surface_temperature,sea_level_height_msl`,
     forecast: `/meteo/forecast?${coord}&past_days=5&forecast_days=2&hourly=windspeed_10m,winddirection_10m,pressure_msl,precipitation&windspeed_unit=kmh`,
@@ -28,7 +30,7 @@ export function consultasMeteo(spot) {
 export function serieHorariaSpot(spotPrev, marino, tiempo) {
   const abrigo = spotPrev?.zonaOleaje?.parametros || null;
   const cam = spotPrev?.oleajeCamara && Number.isFinite(spotPrev.oleajeCamara.cociente) ? spotPrev.oleajeCamara : null;
-  const horaCam = cam ? new Date(cam.fecha).toLocaleString("sv-SE", { timeZone: "Europe/Madrid" }).replace(" ", "T").slice(0, 16) : null;
+  const horaCam = cam ? isoLocal(Date.parse(cam.fecha), zonaDeSpot(spotPrev)) : null;
   const porHora = {};
   (tiempo?.hourly?.time || []).forEach((t, i) => {
     porHora[t] = {

@@ -64,6 +64,7 @@ const CSS_FUENTES = `
 
 // Devuelve un PNG (Buffer) de la página a 390x844 @2x, como un móvil.
 export async function capturarPantalla(navegador, pagina, { puerto, alto = 844 } = {}) {
+  // Hora de Madrid a propósito (ZONA_NEGOCIO): capturas para el marketing en España.
   const ctx = await navegador.newContext({ viewport: { width: 390, height: alto }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, locale: "es-ES", timezoneId: "Europe/Madrid" });
   await ctx.route("**/*", (route) => {
     const u = new URL(route.request().url());

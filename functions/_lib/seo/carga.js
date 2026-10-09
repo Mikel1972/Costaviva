@@ -8,11 +8,14 @@ import { WEBCAMS } from "../../webcam/[slug].js";
 import { cargarJson, pedirConLimite, ahoraMadridISO } from "./base.js";
 import { consultasMeteo, serieHorariaSpot, indiceDeHoy, condicionesDePrevision } from "./indice-hoy.js";
 import { rioDeSpot } from "./datos.js";
+import { horaLocalISO, zonaDeSpot } from "../../../assets/js/regiones.js";
 
 export { SPOTS };
 
 export const cargarEspecies = (context) => cargarJson(context, "/assets/datos/especies.json");
 
+// Mes en curso para las páginas de especies (todas de la Península por
+// ahora): hora de Madrid a propósito. Nueva Zelanda tendrá las suyas (fase 5).
 export function mesMadrid(fecha = new Date()) {
   return Number(ahoraMadridISO(fecha).slice(5, 7));
 }
@@ -30,7 +33,8 @@ export async function datosPaginaSpot(context, spot) {
     pedirConLimite(new URL(q.marine, base).toString(), undefined, context),
     pedirConLimite(new URL(q.forecast, base).toString(), undefined, context),
   ]);
-  const ahoraISO = ahoraMadridISO();
+  // "Ahora" en la hora local del spot (la de su serie de /meteo).
+  const ahoraISO = `${horaLocalISO(zonaDeSpot(spot))}:00`;
   const spotPrev = prevision?.spots?.find((s) => s.slug === spot.slug && !s.error) || null;
   const cond = condicionesDePrevision(spotPrev);
   let indice = null;

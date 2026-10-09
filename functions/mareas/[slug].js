@@ -19,6 +19,7 @@
 // mapa completo, las webcams en directo, el diario de pesca, etc.
 
 import { regionDeSlug } from "./_regiones.js";
+import { zonaDeSpot } from "../../assets/js/regiones.js";
 
 const DORADO = "#A8792A";
 const NAVY = "#0B2532";
@@ -63,7 +64,7 @@ function spotsCercanos(todos, spot, n = 4) {
 }
 
 // "16:42" o "mañana 04:10" -- próximas pleamares/bajamares tal cual las
-// calcula /prevision (hora local de Madrid), sin recalcular nada aquí.
+// calcula /prevision (hora local del spot: Madrid, o Canarias), sin recalcular nada aquí.
 function textoEvento(e) {
   return `${e.manana ? "mañana " : ""}${e.hora} (${e.altura} m)`;
 }
@@ -214,7 +215,7 @@ function renderizarPagina(spot, todos) {
 
     <div class="migas"><a href="/mareas">Todos los spots</a>${region ? ` → <a href="/mareas/region/${region.slug}">${escaparHtml(region.nombre)}</a>` : ""} → ${nombre}</div>
     <h1>Marea hoy en ${nombre}</h1>
-    <div class="actualizado">Datos reales, actualizados: ${new Date(spot.actualizado).toLocaleString("es-ES", { timeZone: "Europe/Madrid" })}</div>
+    <div class="actualizado">Datos reales, actualizados: ${new Date(spot.actualizado).toLocaleString("es-ES", { timeZone: zonaDeSpot(spot) })}</div>
 
     ${
       pleamar || bajamar

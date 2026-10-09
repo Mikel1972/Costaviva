@@ -142,6 +142,7 @@ async function nubosidadPorSpot(slugs) {
   // host comercial con key; si no, el gratuito. Ver functions/_lib/open-meteo.js.
   const datos = await pedirDatosMeteo(
     "forecast",
+    // Europe/Madrid a propósito: solo `current` (la zona no cambia el dato) y las cámaras están en la Península.
     `latitude=${lats}&longitude=${lons}&current=cloud_cover&timezone=Europe%2FMadrid`,
     { env: process.env }
   );
