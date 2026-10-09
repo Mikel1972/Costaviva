@@ -1,10 +1,10 @@
 // Pantalla de inicio (#comprobandoAcceso, la foto de la rompiente).
-// Mikel (2026-10-09): "dale 2 seg más". La primera vez que se abre la app
-// en la sesión, la pantalla se queda 2 s más después de comprobar el
+// Mikel (2026-10-09): "dale 2 seg más", luego "5 seg". La primera vez que se abre la app
+// en la sesión, la pantalla se queda 5 s más después de comprobar el
 // acceso y se funde; al cambiar de pestaña (Mapa, Diario...) se quita en
 // cuanto está lista, para no hacer esperar en cada página.
 (function () {
-  const EXTRA_MS = 2000;
+  const EXTRA_MS = 5000;
   const CLAVE = "cv-inicio-visto";
   function primeraVez() {
     try {

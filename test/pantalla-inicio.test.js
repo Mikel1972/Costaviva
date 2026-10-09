@@ -142,9 +142,9 @@ test("manifest y caché: fondo y tema en --mar, /assets/inicio/* con una semana 
   assert.match(leer("_headers"), /^\/assets\/inicio\/\*\n\s+Cache-Control: public, max-age=604800$/m);
 });
 
-test("pantalla de inicio: 2 s más la primera vez de la sesión y salida suave", () => {
+test("pantalla de inicio: 5 s más la primera vez de la sesión y salida suave", () => {
   const js = readFileSync(new URL("../assets/js/pantalla-inicio.js", import.meta.url), "utf8");
-  assert.match(js, /const EXTRA_MS = 2000;/);
+  assert.match(js, /const EXTRA_MS = 5000;/);
   assert.match(js, /sessionStorage/);
   for (const f of ["admin", "alarma", "diario", "grupos", "index", "suscripcion"]) {
     const h = readFileSync(new URL(`../${f}.html`, import.meta.url), "utf8");
