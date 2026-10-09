@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-09T14:37:59.723Z",
- "lineasHistorial": 272,
+ "fecha": "2026-10-09T15:07:58.645Z",
+ "lineasHistorial": 284,
  "etiquetas": 43,
  "etiquetasClaude": 43,
  "calibracion": {
@@ -48,9 +48,9 @@
    "pocosDatos": true
   },
   "zarautz/dinamico": {
-   "a": 6.1562,
+   "a": 6.2007,
    "p": 0.5,
-   "n": 26,
+   "n": 27,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -178,9 +178,9 @@
    "pocosDatos": true
   },
   "berria/dinamico": {
-   "a": 4.5742,
+   "a": 4.6879,
    "p": 0.5,
-   "n": 17,
+   "n": 18,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 9,
    "franjasClaude": [
@@ -190,7 +190,7 @@
    "dias": 2,
    "hMin": 1.5,
    "hMax": 3.12,
-   "errorRel": 0.948,
+   "errorRel": 0.937,
    "pocosDatos": true
   },
   "mutriku/principal": {
@@ -286,10 +286,10 @@
   },
   "zarautz": {
    "sustituye": false,
-   "motivo": "ruidosa (±44 %) y sin calibrar; 7 etiquetas de Claude en 2 franjas (faltan)",
+   "motivo": "ruidosa (±49 %) y sin calibrar; 7 etiquetas de Claude en 2 franjas (faltan)",
    "ruido": {
-    "ruido": 0.441,
-    "pares": 14
+    "ruido": 0.492,
+    "pares": 15
    }
   },
   "getaria": {
@@ -350,10 +350,10 @@
   },
   "berria": {
    "sustituye": false,
-   "motivo": "ruido aún sin medir (2 pares de lecturas cercanas); 9 etiquetas de Claude en 2 franjas, pero la calibración no cuadra con ellas (±95 %)",
+   "motivo": "ruidosa (±240 %) y sin calibrar; 9 etiquetas de Claude en 2 franjas, pero la calibración no cuadra con ellas (±94 %)",
    "ruido": {
-    "ruido": 0.86,
-    "pares": 2
+    "ruido": 2.405,
+    "pares": 3
    }
   },
   "castrourdiales": {
