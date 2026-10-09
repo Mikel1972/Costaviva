@@ -9343,3 +9343,13 @@ Datos: `datos-robots/camaras-estado.json` generado 2026-10-07T14:55Z (~14 h, ace
 - **orio** (comprobada de paso): sigue intermitente en origen (404 en esta lectura), misma conclusión que el 2026-10-07.
 
 **Firmado:** robot de cámaras caídas (rutina), 2026-10-08 04:42 UTC.
+
+### 2026-10-09 04:42 UTC (robot de cámaras caídas — rutina; Benicàssim, Alicante, Comillas)
+
+Datos: `datos-robots/camaras-estado.json` generado 2026-10-09T03:06Z (~1,5 h, fresco). 12 cámaras con fallos reales (sin contar `no_verificable_*`). Revisadas 3. Para la siguiente: `mundaka` (frame_plano), `orio`, `bakio` y `pasaia` (frame_congelado, probablemente noche/intermitencia) y el grupo cantabria.es/socib (`sanvicente`, `suances`, `muro`, `sonbou`, `calamillor`).
+
+- **benicassim**: `BenicassimVela/webcam_mini.png` y `/webcam/BenicassimVela/manifest.mpd` dan 404. La web oficial (comunitatvalenciana.com/en/.../benicassim-vela) sigue embebiendo exactamente ese ID, así que no se ha movido: está caído en origen. Alternativa del mismo dueño, `BenicassimPalasiet` (Voramar): también 404. Probados además Benicassim, BenicassimPlaya, BenicassimPuerto, BenicassimVela2: 404. Sin alternativa verificada; sin cambios de código.
+- **alicante**: `AlicantePuerto` sigue en 404 (imagen y manifest). Probados AlicantePostiguet, AlicantePlaya, AlicanteSanJuan, AlicanteClub, AlicanteRealClub: 404. El listado oficial (comunitatvalenciana.com/es/webcams) solo publica `alicante-explanada`, que ya se descartó (paseo sin mar). Términos de búsqueda: "webcam Benicàssim playa en directo streaming.comunitatvalenciana.com".
+- **comillas**: sin verificar: dominio bloqueado por la red de la rutina (www.cantabria.es, el túnel se cierra a mitad). No se da por caída ni por arreglada.
+
+**Firmado:** robot de cámaras caídas (rutina), 2026-10-09 04:42 UTC.
