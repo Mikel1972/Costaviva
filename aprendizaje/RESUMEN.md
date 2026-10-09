@@ -40,6 +40,12 @@ Barreras: solo el peso (confianza) de reglas expertas, como mucho ±20 % por sem
 - `levante-confianza-05` (Levante en el Cantábrico con menos peso (0,7 → 0,5)): sin resultado publicable (sin casos evaluables); movería el índice 0,1 puntos de media.
 - `lisa-rio-crecido` (Río crecido: la lisa entra en la desembocadura): sin resultado publicable (sin casos evaluables); movería el índice 0 puntos de media.
 
+## Frentes, clorofila y corrientes (en la sombra)
+
+Se mira, para cada modalidad y cada especie, si pescar cerca de un borde de clorofila, de un cambio de temperatura, de una corriente que junta el agua (o con agua azul, verdosa o con floración, o con corriente fuerte) cambia lo que ya decía el índice, sin suponer de antemano si ayuda o estorba. No toca el índice en vivo.
+- Salidas con la capa de su día: 0 (la copia diaria de la capa 〰 Frentes empieza con la primera descarga tras aprobarla).
+- Ninguna combinación supera todavía las barreras (80 salidas, 15 con y 15 sin captura, 30 con y 30 sin el rasgo, 5 personas o más, efecto de 3 desviaciones y mejora en las salidas recientes). Todas siguen en la sombra, acumulando salidas.
+
 ## Para etiquetar (lo que más enseña)
 
 - Cámara berria (dinamico), 2026-10-08 16:37 UTC: cámara y modelo discrepan mucho.

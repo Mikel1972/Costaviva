@@ -378,7 +378,7 @@
      van pegados como un único grupo visual (el "+" solo visible con
      spots encendido, ver JS) — debajo, ríos y boyas. */
   .rayos-toggle, .luna-toggle, .fondo-toggle, .nubes-toggle, .estaciones-toggle, .viento-toggle,
-  .rios-toggle, .boyas-toggle, .clorofila-toggle, .tempagua-toggle {
+  .rios-toggle, .boyas-toggle, .clorofila-toggle, .tempagua-toggle, .frentes-toggle {
     position: absolute; z-index: 502;
     width: 54px; height: 54px; border-radius: 50%;
     background: var(--superficie); border: 0; color: var(--tinta);
@@ -460,6 +460,8 @@
      B; reusan el estilo de .boyas-toggle. */
   .clorofila-toggle { top: 260px; right: 74px; }
   .tempagua-toggle { top: 322px; right: 74px; }
+  /* 〰 Frentes y corrientes (2026-10-09): debajo de T. agua. */
+  .frentes-toggle { top: 384px; right: 74px; }
   /* Spots + "+" pegados como un único grupo de 2 (pedido explícito del
      usuario: el botón de añadir ubicación debe verse asociado al de
      spots, no como una capa más suelta) — sin hueco entre los dos,
@@ -562,6 +564,14 @@
   .capa-mar-panel .explica div { margin-top: 4px; }
   .capa-mar-panel .credito { font-size: 9px; line-height: 1.35; color: var(--tinta-2); margin-top: 8px; border-top: 1px solid var(--linea); padding-top: 6px; }
   .capa-mar-panel .credito a { color: inherit; }
+  /* Leyenda de 〰 Frentes: muestras de color en vez de la barra. */
+  .capa-mar-panel .leyenda-frentes { list-style: none; margin: 6px 0 0; padding: 0; }
+  .capa-mar-panel .leyenda-frentes[hidden] { display: none; }
+  .capa-mar-panel .leyenda-frentes li { display: flex; align-items: center; gap: 6px; margin-top: 3px; }
+  .capa-mar-panel .leyenda-frentes i { flex: none; width: 12px; height: 12px; border-radius: 3px; box-shadow: 0 0 0 1px var(--linea); }
+  .capa-mar-panel .barra[hidden], .capa-mar-panel .extremos[hidden] { display: none; }
+  /* Flechas de corriente de 〰 Frentes (SVG de Leaflet). */
+  .flecha-corriente { stroke: var(--tinta); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; opacity: 0.85; }
   /* Selector de fuentes, solo administradores (2026-10-08). */
   .admin-fuentes { margin-top: 14px; padding: 10px 12px; background: var(--superficie-2); border: 1px dashed var(--acento); border-radius: 12px; font: 500 12px/1.4 var(--f-texto); color: var(--tinta); }
   .admin-fuentes[hidden] { display: none; }
@@ -734,6 +744,7 @@
     .boyas-toggle { top: 178px; right: 66px; }
     .clorofila-toggle { top: 234px; right: 66px; }
     .tempagua-toggle { top: 290px; right: 66px; }
+    .frentes-toggle { top: 346px; right: 66px; }
     .fondo-selector { top: 122px; right: 124px; width: 226px; }
     /* En el móvil, abajo a la izquierda y compacta (la explicación, plegada). */
     .capa-mar-panel { left: 10px; right: auto; bottom: 118px; width: 196px; padding: 8px 10px; }
@@ -998,7 +1009,8 @@
         <div class="titulo" id="capaMarTitulo"></div>
         <div class="fecha" id="capaMarFecha"></div>
         <div class="barra" id="capaMarBarra"></div>
-        <div class="extremos"><span id="capaMarMin"></span><span id="capaMarMax"></span></div>
+        <div class="extremos" id="capaMarExtremos"><span id="capaMarMin"></span><span id="capaMarMax"></span></div>
+        <ul class="leyenda-frentes" id="capaMarLeyenda" hidden></ul>
         <details class="explica" id="capaMarDetalle"><summary id="capaMarResumen"></summary><div id="capaMarExplica"></div></details>
         <div class="credito" id="capaMarCredito"></div>
       </div>
@@ -1056,8 +1068,9 @@
     <button class="spots-toggle activo" id="toggleSpots" title="Spots" aria-label="Mostrar/ocultar spots">📍</button>
     <button class="rios-toggle" id="toggleRios" title="Ríos" aria-label="Mostrar/ocultar ríos">〰️<span class="capa-label">Ríos</span></button>
     <button class="boyas-toggle" id="toggleBoyas" title="Boyas reales (Puertos del Estado vía Copernicus Marine)" aria-label="Mostrar/ocultar boyas">⚓<span class="capa-label">Boyas</span></button>
-    <button class="boyas-toggle clorofila-toggle" id="toggleClorofila" title="Clorofila del mar (alimento): satélite de Copernicus" aria-label="Mostrar/ocultar capa de clorofila" aria-pressed="false">🌿<span class="capa-label">Clorof.</span></button>
+    <button class="boyas-toggle clorofila-toggle" id="toggleClorofila" title="Clorofila del mar (plancton): satélite de Copernicus" aria-label="Mostrar/ocultar capa de clorofila" aria-pressed="false">🌿<span class="capa-label">Clorof.</span></button>
     <button class="boyas-toggle tempagua-toggle" id="toggleTempAgua" title="Temperatura del agua (modelo IBI de Copernicus)" aria-label="Mostrar/ocultar capa de temperatura del agua" aria-pressed="false">🌡<span class="capa-label">T. agua</span></button>
+    <button class="boyas-toggle frentes-toggle" id="toggleFrentes" title="Frentes (bordes de clorofila y de temperatura) y corrientes: Copernicus" aria-label="Mostrar/ocultar capa de frentes y corrientes" aria-pressed="false">〰<span class="capa-label">Frentes</span></button>
     <div class="confirmar-ubicacion-panel" id="eligeMetodoPanel">
       <div class="titulo">¿Cómo quieres marcar el punto?</div>
       <div class="botones" style="flex-direction:column; gap:8px;">
@@ -1288,8 +1301,10 @@
   // vía window.VentanaActividad cuando se abre un spot.
   import * as VentanaActividad from "/assets/js/ventana-actividad.js";
   import * as CapasMar from "/assets/js/capas-mar.js";
+  import * as Frentes from "/assets/js/frentes.js";
   window.VentanaActividad = VentanaActividad;
   window.CapasMar = CapasMar;
+  window.Frentes = Frentes;
   window.dispatchEvent(new Event("ventana-actividad-lista"));
 </script>
 <script type="module">
@@ -2156,16 +2171,19 @@ const URL_CAPAS_MAR = "https://imncbmizxkorotpeisic.supabase.co/storage/v1/objec
 const CAPAS_MAR = {
   clorofila: {
     boton: "toggleClorofila",
-    titulo: "🌿 CLOROFILA (ALIMENTO)",
+    titulo: "🌿 CLOROFILA (PLANCTON)",
     // Color por log10(mg/m³) entre 0,03 y 10.
     valorColor: (v) => (Math.log10(v) + 1.5) / 2.5,
     paradas: ["#0B2D6B", "#1F6FA8", "#2E9C8F", "#6CBF4B", "#D9D23B", "#F2A23A"],
     extremos: ["0,03 mg/m³", "10+ mg/m³"],
     formato: (v) => `${v < 1 ? v.toFixed(2) : v.toFixed(1)} mg/m³ de clorofila`,
-    resumen: "Más clorofila = más plancton = más alimento para peces.",
-    explica: "Los pequeños se juntan donde hay comida y detrás llegan los depredadores. " +
-      "Pegado a la costa y en las desembocaduras el barro del agua puede subir el dato del satélite. Toca el mapa para ver el valor.",
-    fecha: (d) => `Satélite, ${fechaCorta(d.fecha)} (los huecos por nubes los rellena Copernicus)`,
+    resumen: "Dice dónde el mar está vivo (plancton), no dónde están los peces.",
+    explica: "Azul, poca: agua limpia y menos productiva, aunque puede haber peces de paso. " +
+      "Verdosa, moderada: hay comida en marcha; suele ser lo más interesante. " +
+      "Verde intenso, mucha: puede ser una floración con agua turbia; no significa más peces. " +
+      "Lo que más vale es el borde entre agua verde y azul, mejor si coincide con un cambio de temperatura: míralo en 〰 Frentes. " +
+      "Depende de la especie y de la época. El satélite solo ve la superficie, las nubes lo tapan y pegado a la costa y en las desembocaduras el barro sube el dato. Toca el mapa para ver el valor.",
+    fecha: (d) => `Satélite, ${fechaCorta(d.fecha)} (donde había nubes, el dato es estimado)`,
     maxDias: 7,
   },
   "temperatura-agua": {
@@ -2176,11 +2194,44 @@ const CAPAS_MAR = {
     extremos: ["10 °C", "28+ °C"],
     formato: (v) => `${v.toFixed(1)} °C en superficie`,
     resumen: "Temperatura de la superficie del mar (modelo IBI de Copernicus).",
-    explica: "Cada especie tiene su rango: los frentes entre agua fría y templada suelen juntar pescado. Toca el mapa para ver el valor.",
+    explica: "Cada especie tiene su rango. Los cambios bruscos de temperatura (frentes) suelen juntar alimento: míralos en 〰 Frentes. Toca el mapa para ver el valor.",
     fecha: (d) => `Modelo IBI, ${fechaCorta(d.fecha)} a las 12:00 UTC`,
     maxDias: 3,
   },
+  // 〰 Frentes y corrientes (2026-10-09): bordes de clorofila y de
+  // temperatura, donde la corriente junta el agua y flechas de corriente.
+  // Cálculo en scripts/fuentes/descargar-capas.py; decodificar, colores,
+  // flechas y toque en assets/js/frentes.js (window.Frentes).
+  frentes: {
+    boton: "toggleFrentes",
+    titulo: "〰 FRENTES Y CORRIENTES",
+    tipo: "frentes",
+    leyenda: [
+      ["doble", "Dos señales a la vez: lo más prometedor"],
+      ["clorofila", "Borde de agua verde y azul"],
+      ["termico", "Cambio brusco de temperatura"],
+      ["convergencia", "La corriente junta el agua"],
+      ["sin_dato", "Sin dato fiable (nubes o costa)"],
+    ],
+    resumen: "Bordes entre aguas distintas: ahí se suele juntar el alimento.",
+    explica: "Morado: dos señales en el mismo sitio (borde de clorofila y de temperatura, o un borde donde la corriente junta el agua). " +
+      "Las flechas dicen hacia dónde va la corriente; cuanto más largas, más fuerte. " +
+      "Mejor el borde que el centro de una mancha. Es una pista, no una garantía: depende de la especie y la época, y el satélite solo ve la superficie. " +
+      "En gris, sin dato fiable: nubes, o pegado a la costa, donde el barro confunde al satélite. Toca el mapa para ver qué hay cerca.",
+    fecha: (d) => `Satélite del ${fechaCorta(d.fecha_clorofila)}; temperatura y corriente (media del día, sin marea) del ${fechaCorta(d.fecha)}`,
+    maxDias: 3,
+  },
 };
+// Colores de 〰 Frentes (RGBA): verde y naranja como las paletas de las
+// otras dos capas; morado = lo mejor; celeste tenue = la corriente junta.
+const COLORES_FRENTES = {
+  doble: [214, 51, 108, 255],
+  clorofila: [70, 176, 74, 255],
+  termico: [242, 140, 56, 255],
+  convergencia: [79, 183, 201, 150],
+  sin_dato: [140, 150, 165, 70],
+};
+const rgbaCss = (c) => `rgba(${c[0]}, ${c[1]}, ${c[2]}, ${(c[3] / 255).toFixed(2)})`;
 function fechaCorta(iso) {
   const [a, m, d] = String(iso || "").split("-").map(Number);
   return a ? `${d} ${VA_MESES[m - 1]}` : "fecha desconocida";
@@ -2195,13 +2246,33 @@ function lienzoCapaMar(CM, d, def) {
   canvas.height = d.filas;
   const ctx = canvas.getContext("2d");
   const img = ctx.createImageData(d.columnas, d.filas);
-  img.data.set(CM.pixelesCapa(d, d.bytes, def.paradas, def.valorColor));
+  img.data.set(def.tipo === "frentes" ? window.Frentes.pixelesFrentes(d, d.bytes, COLORES_FRENTES) : CM.pixelesCapa(d, d.bytes, def.paradas, def.valorColor));
   ctx.putImageData(img, 0, 0);
   return canvas.toDataURL("image/png");
 }
 function creditoCapaMar(d) {
   return 'Datos: <a href="https://marine.copernicus.eu/" target="_blank" rel="noopener">Generated using E.U. Copernicus Marine Service Information</a>; ' +
-    `<a href="https://doi.org/${escVA(d.doi)}" target="_blank" rel="noopener">${escVA(d.doi)}</a>`;
+    (d.dois || [d.doi]).map((x) => `<a href="https://doi.org/${escVA(x)}" target="_blank" rel="noopener">${escVA(x)}</a>`).join(", ");
+}
+// Flechas de corriente de 〰 Frentes: como mucho 12 por lado de la pantalla
+// (legibles en el móvil); largo según la fuerza. Se rehacen al mover el mapa.
+function pintarFlechasCorriente(grupo, d) {
+  grupo.clearLayers();
+  const b = map.getBounds();
+  const flechas = window.Frentes.flechasVisibles(d, d.corrU, d.corrV,
+    { norte: b.getNorth(), sur: b.getSouth(), oeste: b.getWest(), este: b.getEast() }, 12);
+  for (const f of flechas) {
+    if (f.ms < 0.03) continue;
+    const p = map.latLngToLayerPoint([f.lat, f.lon]);
+    const largo = 10 + 22 * Math.min(1, f.ms / 0.5);
+    const ux = f.u / f.ms, uy = -f.v / f.ms; // pantalla: y hacia abajo
+    const punta = L.point(p.x + ux * largo / 2, p.y + uy * largo / 2);
+    const cola = L.point(p.x - ux * largo / 2, p.y - uy * largo / 2);
+    const ala = (s) => L.point(punta.x - ux * 6 + s * uy * 4, punta.y - uy * 6 - s * ux * 4);
+    const ll = (q) => map.layerPointToLatLng(q);
+    L.polyline([ll(cola), ll(punta)], { className: "flecha-corriente", interactive: false }).addTo(grupo);
+    L.polyline([ll(ala(1)), ll(punta), ll(ala(-1))], { className: "flecha-corriente", interactive: false }).addTo(grupo);
+  }
 }
 const datosCapasMar = {};
 let capaMarActiva = null; // { nombre, overlay, credito }
@@ -2212,12 +2283,17 @@ async function cargarCapaMar(CM, nombre) {
   const d = await r.json();
   d.bytes = CM.bytesDeBase64(d.datos);
   if (d.bytes.length !== d.filas * d.columnas) throw new Error("tamaño inesperado");
+  if (d.corriente) {
+    d.corrU = CM.bytesDeBase64(d.corriente.u);
+    d.corrV = CM.bytesDeBase64(d.corriente.v);
+  }
   datosCapasMar[nombre] = d;
   return d;
 }
 function apagarCapaMar() {
   if (!capaMarActiva) return;
   map.removeLayer(capaMarActiva.overlay);
+  if (capaMarActiva.alMover) map.off("moveend", capaMarActiva.alMover);
   map.attributionControl.removeAttribution(capaMarActiva.credito);
   const b = document.getElementById(CAPAS_MAR[capaMarActiva.nombre].boton);
   b.classList.remove("activo");
@@ -2253,17 +2329,41 @@ async function alternarCapaMar(nombre) {
     return;
   }
   if (!boton.classList.contains("activo")) return; // la apagaron mientras cargaba
-  const overlay = L.imageOverlay(d.urlImagen ||= lienzoCapaMar(CM, d, def), [[d.sur, d.oeste], [d.norte, d.este]], { opacity: 0.7, interactive: false, pane: "tilePane" });
+  const esFrentes = def.tipo === "frentes";
+  const imagen = L.imageOverlay(d.urlImagen ||= lienzoCapaMar(CM, d, def), [[d.sur, d.oeste], [d.norte, d.este]], { opacity: esFrentes ? 0.9 : 0.7, interactive: false, pane: "tilePane" });
+  const overlay = L.layerGroup([imagen]);
+  let alMover = null;
+  if (esFrentes && d.corriente) {
+    const flechas = L.layerGroup().addTo(overlay);
+    alMover = () => pintarFlechasCorriente(flechas, d);
+    alMover();
+    map.on("moveend", alMover);
+  }
   overlay.addTo(map);
   const credito = creditoCapaMar(d);
   map.attributionControl.addAttribution(credito);
-  capaMarActiva = { nombre, overlay, credito };
+  capaMarActiva = { nombre, overlay, credito, alMover };
   document.getElementById("capaMarTitulo").textContent = def.titulo;
   document.getElementById("capaMarFecha").textContent = def.fecha(d);
-  document.getElementById("capaMarBarra").style.background =
-    `linear-gradient(90deg, ${def.paradas.join(", ")})`;
-  document.getElementById("capaMarMin").textContent = def.extremos[0];
-  document.getElementById("capaMarMax").textContent = def.extremos[1];
+  const barra = document.getElementById("capaMarBarra");
+  const leyenda = document.getElementById("capaMarLeyenda");
+  barra.hidden = esFrentes;
+  document.getElementById("capaMarExtremos").hidden = esFrentes;
+  leyenda.hidden = !esFrentes;
+  leyenda.replaceChildren();
+  if (esFrentes) {
+    for (const [clase, texto] of def.leyenda) {
+      const li = document.createElement("li");
+      const muestra = document.createElement("i");
+      muestra.style.background = rgbaCss(COLORES_FRENTES[clase]);
+      li.append(muestra, document.createTextNode(texto));
+      leyenda.append(li);
+    }
+  } else {
+    barra.style.background = `linear-gradient(90deg, ${def.paradas.join(", ")})`;
+    document.getElementById("capaMarMin").textContent = def.extremos[0];
+    document.getElementById("capaMarMax").textContent = def.extremos[1];
+  }
   document.getElementById("capaMarResumen").textContent = def.resumen;
   document.getElementById("capaMarExplica").textContent = def.explica;
   // Abierta en escritorio; plegada en el móvil para no tapar el mapa.
@@ -2274,6 +2374,7 @@ async function alternarCapaMar(nombre) {
 }
 document.getElementById("toggleClorofila").addEventListener("click", () => alternarCapaMar("clorofila"));
 document.getElementById("toggleTempAgua").addEventListener("click", () => alternarCapaMar("temperatura-agua"));
+document.getElementById("toggleFrentes").addEventListener("click", () => alternarCapaMar("frentes"));
 
 // Spots es la única capa que, al apagarla, tiene un efecto en cascada: sin
 // spots visibles no tiene sentido poder añadir uno nuevo (pedido explícito
@@ -2755,6 +2856,13 @@ document.getElementById("btnMetodoMapa").addEventListener("click", () => {
 map.on("click", (e) => {
   if (!modoAnadirUbicacion && capaMarActiva) {
     const d = datosCapasMar[capaMarActiva.nombre];
+    if (CAPAS_MAR[capaMarActiva.nombre].tipo === "frentes") {
+      if (!d || !window.Frentes) return;
+      const { lat, lng } = e.latlng;
+      const texto = window.Frentes.describirPunto(d, d.bytes, lat, lng, window.Frentes.corrienteEn(d, d.corrU, d.corrV, lat, lng));
+      L.popup().setLatLng(e.latlng).setContent(escVA(texto)).openOn(map);
+      return;
+    }
     const v = d && window.CapasMar ? window.CapasMar.valorEnPunto(d, d.bytes, e.latlng.lat, e.latlng.lng) : null;
     L.popup().setLatLng(e.latlng)
       .setContent(v === null ? "Sin dato aquí (tierra o sin observación)" : CAPAS_MAR[capaMarActiva.nombre].formato(v))

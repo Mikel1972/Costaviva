@@ -15,7 +15,9 @@ name: Fuentes gratuitas (MET Norway, Copernicus) y comparativa
 #               fuentes-gratuitas/mar/spots.json y mar/celdas/*.json
 #               + franja costera de España y Portugal (fase 2) ->
 #               mar/celdas/*.json, y capas del mapa de clorofila (satélite)
-#               y temperatura del agua -> capas/*.json
+#               y temperatura del agua -> capas/*.json; 〰 frentes y
+#               corrientes -> capas/frentes.json y copia diaria
+#               capas/historico/frentes-AAAA-MM-DD.json (aprendizaje)
 #   pasado      1 vez al día: reanálisis ERA5 (copia pública ARCO-ERA5 de
 #               Google, SIN cuenta) para el diario de días pasados ->
 #               pasado/<fecha>/<caja>.json (fase 2)
@@ -120,12 +122,16 @@ jobs:
         run: node scripts/fuentes/subir-storage.mjs /tmp/instantanea
       # Las capas van aparte (otro directorio y otra subida): si fallan, el
       # job sale en rojo pero los datos de mar de los spots ya están subidos.
-      - name: Capas del mapa (clorofila y temperatura del agua)
+      # Clorofila y temperatura se escriben antes que 〰 Frentes: si los
+      # frentes fallan, el paso sale en rojo pero la subida de abajo
+      # (!cancelled()) sube lo que haya llegado a escribirse.
+      - name: Capas del mapa (clorofila, temperatura del agua y frentes)
         env:
           COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_USERNAME }}
           COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_PASSWORD }}
         run: python -I scripts/fuentes/descargar-capas.py --salida /tmp/capas
       - name: Subir las capas a Supabase Storage
+        if: ${{ !cancelled() }}
         env:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: node scripts/fuentes/subir-storage.mjs /tmp/capas
