@@ -257,7 +257,7 @@ test("frentes-indice: histórico hacia atrás en descargar-capas.py y en el work
   assert.match(py, /--existentes-url/);
   assert.match(py, /--max-minutos/);
   // El diario y el histórico usan el mismo cálculo.
-  assert.equal((py.match(/calcular_frentes\(chl, obs, temp, u, v, lats\)/g) || []).length, 1);
+  assert.equal((py.match(/calcular_frentes\(chl, obs, temp, u, v, lats, previos=previos\)/g) || []).length, 1);
   assert.match(py, /if a\.desde:\s+historico\(a\)\s+return/);
   const wf = readFileSync(".github/workflows/fuentes-gratuitas.yml", "utf8");
   assert.match(wf, /historico_frentes:/);

@@ -186,12 +186,16 @@ def superficie(da):
 
 
 def clorofila_real():
-    """Devuelve (fecha, lats, lons, CHL, observado). `observado` = 1 donde el
+    """Devuelve (fecha, lats, lons, CHL, observado, previos). `observado` = 1 donde el
     satélite vio el agua ese día y 0 donde el productor interpoló (nubes),
     sacado de la variable `flags` del mismo dataset (máscara 2 =
     INTERPOLATED, máscara 1 = LAND; metadatos STAC del dataset, consultados
     el 2026-10-09). Si un día faltara `flags`, observado = None y los frentes
-    de clorofila salen sin máscara de nubes (se dice en el JSON)."""
+    de clorofila salen sin máscara de nubes (se dice en el JSON).
+    `previos`: los días anteriores con datos [(fecha, CHL, observado)], del
+    más nuevo al más viejo, hasta completar FRENTES["dias_clorofila"] días
+    contando el primero; solo con `flags` (sin máscara de nubes no hay forma
+    de saber qué día vio cada celda). Los usa el compuesto de 〰 Frentes."""
     d = CAPAS["clorofila"]
     hoy = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
     rango = ((hoy - timedelta(days=10)).strftime("%Y-%m-%dT00:00:00"), hoy.strftime("%Y-%m-%dT00:00:00"))
@@ -202,10 +206,23 @@ def clorofila_real():
         print(f"::warning::clorofila: no se pudo pedir `flags` ({e}); frentes sin máscara de nubes")
         ds = abrir(d["dataset"], d["variable"], *rango)
         con_flags = False
-    tiempos = ds["time"].values
+    r = elegir_clorofila(ds, ds["time"].values[::-1], con_flags)
+    if r is None:
+        raise SystemExit("::error::clorofila: ningún día reciente con datos")
+    return r
+
+
+def elegir_clorofila(ds, tiempos_desc, con_flags):
+    """Días de clorofila del compuesto a partir de los tiempos del dataset del
+    más nuevo al más viejo (la pasada diaria: hasta hoy; el histórico: hasta
+    el día D). Devuelve (fecha, lats, lons, CHL, observado, previos) o None."""
+    d = CAPAS["clorofila"]
     # El último día con datos de verdad (el NRT a veces publica el día con
     # casi todo vacío): se baja hasta 5 días si hace falta. Nunca se rellena.
-    for t in tiempos[::-1][:5]:
+    dias = []
+    for i, t in enumerate(tiempos_desc[:5 + FRENTES["dias_clorofila"]]):
+        if not dias and i >= 5:
+            break  # el primer día con datos, como mucho 5 días atrás
         da = superficie(ds[d["variable"]]).sel(time=t).load()
         v = da.values
         if np.isfinite(v).mean() > 0.2:
@@ -213,8 +230,17 @@ def clorofila_real():
             if con_flags:
                 fl = np.nan_to_num(superficie(ds["flags"]).sel(time=t).load().values, nan=0).astype(np.int64)
                 obs = np.where(np.isfinite(v), ((fl & 2) == 0).astype(np.float64), np.nan)
-            return str(np.datetime_as_string(t, unit="D")), da["latitude"].values, da["longitude"].values, v, obs
-    raise SystemExit("::error::clorofila: ningún día reciente con datos")
+            dias.append((str(np.datetime_as_string(t, unit="D")), da, v, obs))
+            if not con_flags or len(dias) >= FRENTES["dias_clorofila"]:
+                break
+    if not dias:
+        return None
+    fecha, da, v, obs = dias[0]
+    # Solo días dentro de la ventana (no más viejos que dias_clorofila - 1
+    # días antes del primero): un frente de hace una semana ya se ha movido.
+    lim = np.datetime64(fecha) - np.timedelta64(FRENTES["dias_clorofila"] - 1, "D")
+    previos = [(f, v2, o2) for f, _, v2, o2 in dias[1:] if np.datetime64(f) >= lim]
+    return fecha, da["latitude"].values, da["longitude"].values, v, obs, previos
 
 
 def temperatura_real():
@@ -272,7 +298,9 @@ def prueba(nombre):
     if nombre == "clorofila":
         # Una "nube" (interpolado) al oeste de Galicia para probar la máscara.
         obs = np.where(np.isfinite(v), np.where((la2 > 43.5) & (la2 < 44.5) & (lo2 > -12) & (lo2 < -10), 0.0, 1.0), np.nan)
-        return hoy, lats, lons, v, obs
+        # Ayer, el mismo campo visto entero (para el compuesto de frentes).
+        ayer = (datetime.now(timezone.utc) - timedelta(days=1)).strftime("%Y-%m-%d")
+        return hoy, lats, lons, v, obs, [(ayer, v, np.where(np.isfinite(v), 1.0, np.nan))]
     return hoy, lats, lons, v
 
 
@@ -286,11 +314,27 @@ def prueba(nombre):
 #   2. Gradiente de Sobel en unidades físicas (por km): de log10(CHL) para la
 #      clorofila (varía en órdenes de magnitud) y de la temperatura.
 #   3. Umbral: frente de clorofila si |∇log10 CHL| ≥ 0,03 por km (la
-#      clorofila se duplica en ~10 km); frente térmico si |∇T| ≥ 0,05 °C/km
-#      (medio grado en 10 km). Más bajos que en imágenes de 1 km (Chang y
+#      clorofila se duplica en ~10 km); frente térmico si |∇T| ≥ 0,08 °C/km
+#      (0,8 grados en 10 km). Más bajos que en imágenes de 1 km (Chang y
 #      Cornillon 2015 llaman "fuertes" a > 0,2 K/km y "débiles" a < 0,1),
-#      porque la malla de ~5 km suaviza los gradientes. Se afinan con el
-#      primer mes de datos reales (el script imprime el % de celdas).
+#      porque la malla de ~5 km suaviza los gradientes. El térmico empezó en
+#      0,05 y con el primer día real (2026-10-09) marcaba el 8,6 % del mar
+#      (la clorofila, el 0,8 %): en el golfo de Bizkaia salían como frente
+#      los bordes suaves de los filamentos del modelo, en líneas de una celda
+#      que parecían bordes de malla. Con 0,08 queda el 3,4 % y se quedan los
+#      bordes fuertes (afloramiento junto a la costa de Asturias y de las
+#      Landas); la coincidencia con el frente de clorofila sigue siendo 10
+#      veces la del azar (30 % de los frentes de clorofila tienen térmico en
+#      la misma celda, frente al 3 % del mar).
+#   3b. Tamaño mínimo: un frente de menos de 3 celdas unidas (~15 km) es
+#      ruido de píxel, no un frente (Cayula y Cornillon 1992 descartan
+#      igual los segmentos cortos).
+#   3c. Clorofila de varios días: un frente de clorofila se calcula con lo
+#      que el satélite vio ESE día (nunca mezclando días en un mismo
+#      gradiente, que inventaría bordes en la costura) y en cada celda se
+#      toma el día más reciente, de los últimos 5, en que se pudo calcular.
+#      Un solo día dejaba el golfo de Bizkaia casi entero bajo nubes (el
+#      2026-10-07, el 97 % sin observar): nada verde y nada morado.
 #   4. Convergencia de la corriente: -(∂u/∂x + ∂v/∂y) ≥ 0,1·f (f, parámetro
 #      de Coriolis). Donde la corriente converge se acumula lo que flota y
 #      el plancton (D'Asaro et al. 2018, PNAS). |δ|/f es la medida estándar
@@ -316,7 +360,9 @@ CORRIENTE = {
 FRENTES = {
     "paso": 1 / 18,
     "umbral_chl_log10_km": 0.03,
-    "umbral_temp_c_km": 0.05,
+    "umbral_temp_c_km": 0.08,
+    "min_celdas_frente": 3,       # frentes de menos celdas unidas: fuera
+    "dias_clorofila": 5,          # compuesto de clorofila: hasta 5 días
     "umbral_convergencia_f": 0.1,
     "costa_km": 5.0,
     "min_observado": 0.5,
@@ -388,27 +434,77 @@ def cerca_de(mascara, lats, paso, radio_km):
     return salida
 
 
-def calcular_frentes(chl, observado, temp, u, v, lats, cfg=FRENTES):
-    """Todas las entradas en la misma malla (fila 0 = norte). Devuelve
-    (códigos uint8, estadísticas)."""
+def quitar_pequenos(mascara, minimo):
+    """Quita los grupos de menos de `minimo` celdas unidas (8 vecinos)."""
+    if minimo <= 1 or not mascara.any():
+        return mascara
+    f, c = mascara.shape
+    salida = mascara.copy()
+    visto = np.zeros_like(mascara, dtype=bool)
+    for i0, j0 in zip(*np.nonzero(mascara)):
+        if visto[i0, j0]:
+            continue
+        grupo, pila = [], [(i0, j0)]
+        visto[i0, j0] = True
+        while pila:
+            i, j = pila.pop()
+            grupo.append((i, j))
+            for di in (-1, 0, 1):
+                for dj in (-1, 0, 1):
+                    a, b = i + di, j + dj
+                    if 0 <= a < f and 0 <= b < c and mascara[a, b] and not visto[a, b]:
+                        visto[a, b] = True
+                        pila.append((a, b))
+        if len(grupo) < minimo:
+            for i, j in grupo:
+                salida[i, j] = False
+    return salida
+
+
+def clorofila_dia(chl, observado, costa, lats, cfg):
+    """Un día de satélite: (celdas válidas, |∇log10 CHL| por km). Sin
+    frente donde falta algún vecino visto ese mismo día."""
+    obs = np.ones_like(chl) if observado is None else np.nan_to_num(observado, nan=0.0)
+    ok = np.isfinite(chl) & (chl > 0) & ~costa & (obs >= cfg["min_observado"])
+    with np.errstate(divide="ignore", invalid="ignore"):
+        lchl = np.where(ok, np.log10(np.where(ok, chl, 1)), np.nan)
+    return ok, sobel_km(mediana3(lchl), lats, cfg["paso"])
+
+
+def calcular_frentes(chl, observado, temp, u, v, lats, cfg=FRENTES, previos=()):
+    """Todas las entradas en la misma malla (fila 0 = norte). `previos`:
+    clorofila de días anteriores [(chl, observado)], del más nuevo al más
+    viejo, para las celdas que hoy están bajo nubes. Devuelve (códigos
+    uint8, estadísticas)."""
     paso = cfg["paso"]
     tierra_modelo = ~np.isfinite(temp) & ~np.isfinite(u)
     tierra = tierra_modelo & ~np.isfinite(chl)
     costa = cerca_de(tierra_modelo, lats, paso, cfg["costa_km"]) & ~tierra
-    obs = np.ones_like(chl) if observado is None else np.nan_to_num(observado, nan=0.0)
-    nubes = np.isfinite(chl) & ~costa & (obs < cfg["min_observado"])
-    chl_ok = np.isfinite(chl) & (chl > 0) & ~costa & ~nubes
-    with np.errstate(divide="ignore", invalid="ignore"):
-        lchl = np.where(chl_ok, np.log10(np.where(chl_ok, chl, 1)), np.nan)
-    g_chl = sobel_km(mediana3(lchl), lats, paso)
+    # Clorofila: cada celda con el día más reciente que la vio (nivel) y
+    # con el día más reciente en que su gradiente se pudo calcular (frente).
+    chl_ok, g_chl = clorofila_dia(chl, observado, costa, lats, cfg)
+    chl_usada = np.where(chl_ok, chl, np.nan)
+    de_previo = np.zeros_like(chl_ok)
+    dias_usados = 1
+    for k, (chl_p, obs_p) in enumerate(previos):
+        ok_p, g_p = clorofila_dia(chl_p, obs_p, costa, lats, cfg)
+        hueco = ~chl_ok & ok_p
+        if hueco.any() or (~np.isfinite(g_chl) & np.isfinite(g_p)).any():
+            dias_usados = k + 2
+        chl_usada = np.where(hueco, chl_p, chl_usada)
+        de_previo |= hueco
+        chl_ok |= ok_p
+        g_chl = np.where(np.isfinite(g_chl), g_chl, g_p)
+    nubes = np.isfinite(chl) & ~costa & ~chl_ok
     g_t = sobel_km(mediana3(temp), lats, paso)
     conv = convergencia_f(u, v, lats, paso)
     with np.errstate(invalid="ignore"):
-        f_chl = np.nan_to_num(g_chl) >= cfg["umbral_chl_log10_km"]
-        f_t = np.nan_to_num(g_t) >= cfg["umbral_temp_c_km"]
+        f_chl = quitar_pequenos(np.nan_to_num(g_chl) >= cfg["umbral_chl_log10_km"], cfg["min_celdas_frente"])
+        f_t = quitar_pequenos(np.nan_to_num(g_t) >= cfg["umbral_temp_c_km"], cfg["min_celdas_frente"])
         f_conv = np.nan_to_num(conv) >= cfg["umbral_convergencia_f"]
     b1, b2 = cfg["niveles_chl"]
-    nivel = np.where(~chl_ok, 0, np.where(chl < b1, 1, np.where(chl < b2, 2, 3))).astype(np.uint8)
+    with np.errstate(invalid="ignore"):
+        nivel = np.where(~chl_ok, 0, np.where(chl_usada < b1, 1, np.where(chl_usada < b2, 2, 3))).astype(np.uint8)
     cod = (f_chl * BIT["frente_clorofila"] + f_t * BIT["frente_termico"] + f_conv * BIT["convergencia"]
            + (nivel << DESPL_NIVEL) + costa * BIT["costa"] + nubes * BIT["nubes"]).astype(np.uint8)
     cod[tierra] = 255
@@ -422,6 +518,8 @@ def calcular_frentes(chl, observado, temp, u, v, lats, cfg=FRENTES):
         "pct_convergencia": round(100 * float((f_conv & mar).sum()) / n, 2),
         "pct_nubes": round(100 * float(nubes.sum()) / n, 2),
         "pct_costa": round(100 * float(costa.sum()) / n, 2),
+        "pct_clorofila_dias_previos": round(100 * float((de_previo & mar).sum()) / n, 2),
+        "dias_clorofila": dias_usados,
     }
     return cod, est
 
@@ -467,6 +565,9 @@ def salida_frentes(fechas, cod, u, v, est, sin_mascara_nubes, cfg=FRENTES):
         "capa": "frentes",
         "fecha": fechas["corriente"],
         "fecha_clorofila": fechas["clorofila"],
+        # Compuesto de varios días (3c): el día más viejo del que se ha
+        # tomado clorofila; igual que fecha_clorofila si solo hay uno.
+        "fecha_clorofila_desde": fechas.get("clorofila_desde", fechas["clorofila"]),
         "fecha_temperatura": fechas["temperatura"],
         "generado_en": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "atribucion": ATRIBUCION,
@@ -477,7 +578,7 @@ def salida_frentes(fechas, cod, u, v, est, sin_mascara_nubes, cfg=FRENTES):
         "paso": cfg["paso"],
         "filas": filas,
         "columnas": cols,
-        "umbrales": {k2: cfg[k2] for k2 in ("umbral_chl_log10_km", "umbral_temp_c_km", "umbral_convergencia_f", "costa_km", "min_observado", "niveles_chl")},
+        "umbrales": {k2: cfg[k2] for k2 in ("umbral_chl_log10_km", "umbral_temp_c_km", "umbral_convergencia_f", "costa_km", "min_observado", "niveles_chl", "min_celdas_frente", "dias_clorofila")},
         "bits": {**BIT, "nivel_desplazamiento": DESPL_NIVEL},
         "nubes": "sin_mascara" if sin_mascara_nubes else "flags",
         "estadisticas": est,
@@ -501,7 +602,7 @@ def historico_frentes(j, u, v, cfg=FRENTES):
     import zlib
     b = bytes_velocidad(u, v, cfg["escala_corriente_ms"])
     cod = base64.b64decode(j["datos"])
-    h = {k: j[k] for k in ("v", "fecha", "fecha_clorofila", "fecha_temperatura", "generado_en", "norte", "sur", "oeste", "este", "paso", "filas", "columnas", "umbrales", "bits", "nubes", "estadisticas")}
+    h = {k: j[k] for k in ("v", "fecha", "fecha_clorofila", "fecha_clorofila_desde", "fecha_temperatura", "generado_en", "norte", "sur", "oeste", "este", "paso", "filas", "columnas", "umbrales", "bits", "nubes", "estadisticas")}
     h["capa"] = "frentes-historico"
     h["escala_velocidad_ms"] = cfg["escala_corriente_ms"]
     h["codigos_zlib"] = base64.b64encode(zlib.compress(cod, 9)).decode("ascii")
@@ -510,11 +611,14 @@ def historico_frentes(j, u, v, cfg=FRENTES):
 
 
 def construir_frentes(r_chl, r_temp, r_corr, es_prueba):
-    """De las tres entradas nativas (clorofila con su máscara de nubes,
-    temperatura y corriente) a (frentes.json, histórico, estadísticas). La
-    usan la pasada diaria y el histórico hacia atrás: un único cálculo."""
+    """De las tres entradas nativas (clorofila con su máscara de nubes y los
+    días previos del compuesto, temperatura y corriente) a (frentes.json,
+    histórico, estadísticas). La usan la pasada diaria y el histórico hacia
+    atrás: un único cálculo (compuesto de clorofila de hasta
+    FRENTES["dias_clorofila"] días, umbrales y filtro de frentes pequeños de
+    calcular_frentes)."""
     paso = FRENTES["paso"]
-    fc, la, lo, chl_n, obs_n = r_chl
+    fc, la, lo, chl_n, obs_n, previos_n = r_chl
     ft, lat_t, lon_t, t_n = r_temp
     fu, lat_u, lon_u, u_n, v_n = r_corr
     chl = rejilla(la, lo, chl_n, paso, log=True)
@@ -524,8 +628,10 @@ def construir_frentes(r_chl, r_temp, r_corr, es_prueba):
     v = rejilla(lat_u, lon_u, v_n, paso)
     filas = chl.shape[0]
     lats = CAJA["norte"] - (np.arange(filas) + 0.5) * paso
-    cod, est = calcular_frentes(chl, obs, temp, u, v, lats)
-    j = salida_frentes({"clorofila": fc, "temperatura": ft, "corriente": fu}, cod, u, v, est, obs is None)
+    previos = [(rejilla(la, lo, c_p, paso, log=True), rejilla(la, lo, o_p, paso)) for _, c_p, o_p in previos_n]
+    cod, est = calcular_frentes(chl, obs, temp, u, v, lats, previos=previos)
+    desde = previos_n[est["dias_clorofila"] - 2][0] if est["dias_clorofila"] > 1 else fc
+    j = salida_frentes({"clorofila": fc, "clorofila_desde": desde, "temperatura": ft, "corriente": fu}, cod, u, v, est, obs is None)
     j["prueba"] = bool(es_prueba)
     h = historico_frentes(j, u, v)
     if es_prueba:
@@ -537,12 +643,14 @@ def construir_frentes(r_chl, r_temp, r_corr, es_prueba):
 # Histórico hacia atrás (2026-10-09, pedido de Mikel: "sin esto el
 # aprendizaje tarda meses"). Mismos datasets NRT que la pasada diaria, que
 # guardan los días pasados; para cada día D:
-#   clorofila: la del propio día D (si ese día el L4 viene casi vacío, hasta 5
-#     días antes, como la pasada diaria); temperatura: thetao de D a las 12 UTC;
-#   corriente: media del día D sin marea.
-# Diferencia con la pasada diaria, a propósito: ahí la clorofila es "la última
-# publicada" (1-2 días antes por el retraso del satélite); aquí es la del día
-# de la salida, que es lo que se quiere comparar. fecha_clorofila lo dice.
+#   clorofila: el compuesto de la pasada diaria (elegir_clorofila, la misma
+#     función): el día D o, si viene casi vacío, el último con datos hasta 5
+#     días antes, y los días previos de la ventana de FRENTES["dias_clorofila"]
+#     (D-1 ... D-4), nunca días posteriores a D; temperatura: thetao de D a
+#     las 12 UTC; corriente: media del día D sin marea.
+# Diferencia con la pasada diaria: ahí "el día D" es el último publicado
+# (1-2 días antes por el retraso del satélite); aquí es el de la salida.
+# fecha_clorofila y fecha_clorofila_desde lo dicen.
 # ---------------------------------------------------------------------------
 def dias_rango(desde, hasta):
     d0 = datetime.strptime(desde, "%Y-%m-%d").date()
@@ -567,14 +675,19 @@ def ya_existe(base_url, fecha):
 
 def prueba_dia(nombre, fecha, k):
     """Datos sintéticos de un día (los de prueba() con el frente desplazado
-    un poco cada día, para que los días no salgan idénticos)."""
+    un poco cada día, para que los días no salgan idénticos). La clorofila
+    trae el día anterior como previo, con su fecha y su desplazamiento."""
     r = prueba(nombre)
-    desp = 0.05 * k
     if nombre == "corrientes":
         return (fecha, *r[1:])
-    fecha_r, lats, lons, v = r[:4]
-    v = np.roll(v, int(round(desp * 96)), axis=1)
-    return (fecha, lats, lons, v) + tuple(r[4:])
+    rodar = lambda x, kk: np.roll(x, int(round(0.05 * kk * 96)), axis=1)  # noqa: E731
+    _, lats, lons, v = r[:4]
+    if nombre != "clorofila":
+        return (fecha, lats, lons, rodar(v, k))
+    obs, previos = r[4], r[5]
+    ayer = (datetime.strptime(fecha, "%Y-%m-%d") - timedelta(days=1)).strftime("%Y-%m-%d")
+    previos = [(ayer, rodar(vp, k - 1), op) for _, vp, op in previos]
+    return (fecha, lats, lons, rodar(v, k), obs, previos)
 
 
 class BloqueReal:
@@ -582,7 +695,9 @@ class BloqueReal:
     perezosa: solo se baja lo que se usa de cada día)."""
 
     def __init__(self, dias):
-        ini = datetime.strptime(dias[0], "%Y-%m-%d") - timedelta(days=5)
+        # Como la pasada diaria: hasta 5 días atrás para el primero con datos
+        # y FRENTES["dias_clorofila"] - 1 más para el compuesto.
+        ini = datetime.strptime(dias[0], "%Y-%m-%d") - timedelta(days=5 + FRENTES["dias_clorofila"])
         fin = datetime.strptime(dias[-1], "%Y-%m-%d")
         c = CAPAS["clorofila"]
         try:
@@ -597,19 +712,12 @@ class BloqueReal:
         self.corr = abrir(CORRIENTE["dataset"], ["uo_detided", "vo_detided"], f"{dias[0]}T00:00:00", f"{dias[-1]}T00:00:00")
 
     def clorofila(self, fecha):
-        d = CAPAS["clorofila"]
+        """Lo mismo que clorofila_real() si se hubiera ejecutado el día D:
+        el día D (o el último con datos hasta 5 días antes) y los previos del
+        compuesto, nunca días posteriores a D."""
         dia = np.datetime64(fecha)
-        tiempos = [t for t in self.chl["time"].values if np.datetime64(t, "D") <= dia][::-1][:6]
-        for t in tiempos:
-            da = superficie(self.chl[d["variable"]]).sel(time=t).load()
-            v = da.values
-            if np.isfinite(v).mean() > 0.2:
-                obs = None
-                if self.con_flags:
-                    fl = np.nan_to_num(superficie(self.chl["flags"]).sel(time=t).load().values, nan=0).astype(np.int64)
-                    obs = np.where(np.isfinite(v), ((fl & 2) == 0).astype(np.float64), np.nan)
-                return str(np.datetime_as_string(t, unit="D")), da["latitude"].values, da["longitude"].values, v, obs
-        return None
+        tiempos = np.array([t for t in self.chl["time"].values if np.datetime64(t, "D") <= dia])[::-1]
+        return elegir_clorofila(self.chl, tiempos, self.con_flags)
 
     def temperatura(self, fecha):
         d = CAPAS["temperatura-agua"]
@@ -665,7 +773,7 @@ def historico(a):
                 tam = os.path.getsize(ruta)
                 bytes_total += tam
                 hechos.append(fecha)
-                print(f"  {fecha} (clorofila {h['fecha_clorofila']}): {tam / 1e3:.0f} kB, "
+                print(f"  {fecha} (clorofila {h['fecha_clorofila_desde']} a {h['fecha_clorofila']}): {tam / 1e3:.0f} kB, "
                       f"frente chl {est['pct_frente_clorofila']} %, térmico {est['pct_frente_termico']} %, "
                       f"nubes {est['pct_nubes']} %, {time.time() - t0:.0f} s")
             except Exception as e:  # noqa: BLE001 — un día malo no tumba el resto
@@ -719,14 +827,14 @@ def main():
         t0 = time.time()
         r_corr = prueba("corrientes") if a.prueba else corrientes_real()
         j, h, est = construir_frentes(nativos["clorofila"], nativos["temperatura-agua"], r_corr, a.prueba)
-        fu, fc = j["fecha"], j["fecha_clorofila"]
+        fu, fc, desde = j["fecha"], j["fecha_clorofila"], j["fecha_clorofila_desde"]
         ruta = os.path.join(a.salida, "capas", "frentes.json")
         with open(ruta, "w", encoding="utf-8") as fh:
             json.dump(j, fh, separators=(",", ":"))
         ruta_h = os.path.join(a.salida, "capas", "historico", f"frentes-{fu}.json")
         with open(ruta_h, "w", encoding="utf-8") as fh:
             json.dump(h, fh, separators=(",", ":"))
-        print(f"capa frentes: {fu} (clorofila {fc}), {j['filas']}x{j['columnas']}, {est}, "
+        print(f"capa frentes: {fu} (clorofila {desde} a {fc}), {j['filas']}x{j['columnas']}, {est}, "
               f"{os.path.getsize(ruta) / 1e3:.0f} kB + histórico {os.path.getsize(ruta_h) / 1e3:.0f} kB, {time.time() - t0:.0f} s")
         if est["pct_frente_clorofila"] > 25 or est["pct_frente_termico"] > 25:
             print("::warning::frentes: más del 25 % del mar sale como frente; revisar los umbrales (CLAUDE.md, capas)")

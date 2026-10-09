@@ -835,7 +835,8 @@ atribución; nunca se inventa un dato (lo que falta sale `null` + `aviso`).
   **Método** (Belkin y O'Reilly 2009, J. Mar. Syst. 78:319-326, DOI
   10.1016/j.jmarsys.2008.11.018, simplificado): mediana 3x3 + Sobel en
   unidades físicas; frente de clorofila si |∇log10 CHL| ≥ 0,03 por km (se
-  duplica en ~10 km), térmico si |∇T| ≥ 0,05 °C/km (medio grado en 10 km).
+  duplica en ~10 km), térmico si |∇T| ≥ 0,08 °C/km (0,8 grados en 10 km;
+  era 0,05 hasta el 2026-10-09, ver "Ajuste" abajo).
   Chang y Cornillon 2015 (DSR II 119:40-47, DOI 10.1016/j.dsr2.2013.12.001)
   llaman fuertes a > 0,2 K/km y débiles a < 0,1 en imágenes de ~1 km; aquí
   son más bajos porque la malla de ~5 km suaviza. **Umbrales de Claude, por
@@ -844,7 +845,32 @@ atribución; nunca se inventa un dato (lo que falta sale `null` + `aviso`).
   celdas de mar; frente de clorofila 0,79 %, térmico 8,64 %, los dos 0,45 %,
   convergencia 0,23 %, nubes 49,8 %, franja costera 1,7 %; 255 kB + 60 kB de
   histórico. El térmico sale mucho más que el de clorofila (la mitad del mar
-  estaba bajo nubes ese día): vigilarlo antes de tocar umbrales. Convergencia: -(∂u/∂x + ∂v/∂y) ≥ 0,1·f (|δ|/f, McWilliams
+  estaba bajo nubes ese día): vigilarlo antes de tocar umbrales.
+  **Ajuste (2026-10-09, Mikel con captura del iPhone: "no me aparece el
+  combinado de clorofila"; solo salía naranja, en líneas rectas).** Con los
+  campos reales del día bajados por un workflow temporal (sin escribir en el
+  bucket; reproducción del frentes.json de producción al 100 %): (1) la
+  clorofila del 7 oct dejaba el golfo de Bizkaia con el 2,6 % observado (97 %
+  "nubes"): ni verde ni morado posibles. Ahora **compuesto de hasta 5 días**:
+  el gradiente se calcula con cada día por separado (nunca mezclando días en
+  un mismo Sobel, que inventaría bordes en la costura) y cada celda toma el
+  día más reciente en que se pudo calcular; `fecha_clorofila_desde` en el
+  JSON y la tarjeta dice "Satélite del X al Y (lo último sin nubes)". Bizkaia
+  pasa de 3 % a 83 % con clorofila. (2) Las líneas naranjas **no eran un
+  fallo de malla**: IBI y la malla de 1/18° casan 2:1 sin filas vacías, la
+  temperatura media del día da lo mismo que la de las 12 UTC, y el campo
+  tiene esos bordes; eran bordes suaves de filamentos del modelo que pasaban
+  justo el 0,05 en líneas de una celda. Con **0,08 °C/km** el térmico baja
+  del 8,6 % al 3,5 % del mar y quedan los bordes fuertes (afloramiento junto
+  a Asturias y la franja fría junto a las Landas: 17,5-18 °C pegado a la
+  costa frente a 19,5-20 °C a 15 km, que está en el campo de IBI). Además,
+  **frentes de menos de 3 celdas unidas fuera** (ruido; Cayula y Cornillon
+  1992). (3) El morado sale solo donde coinciden de verdad: el 30 % de los
+  frentes de clorofila tiene térmico en la misma celda frente al 3 % del mar
+  (10 veces el azar). Resultado del día real: clorofila 1,03 %, térmico
+  3,53 %, los dos 0,32 %, nubes 1,6 %; en Bizkaia 135 naranjas, 24 verdes y
+  11 morados (antes 344, 0 y 0). Tests: `test/frentes_capas_test.py`
+  (Python, en tests.yml). Convergencia: -(∂u/∂x + ∂v/∂y) ≥ 0,1·f (|δ|/f, McWilliams
   2016, Proc. R. Soc. A 472, DOI 10.1098/rspa.2016.0117); lo que converge
   acumula lo que flota (D'Asaro et al. 2018, PNAS 115:1162-1167, DOI
   10.1073/pnas.1718453115). IBI va a 1/36° (~2-3 km) y se promedia a 1/18°;
@@ -2696,9 +2722,15 @@ mucho (test).
 AAAA-MM-DD`): mismo cálculo (`construir_frentes` → `calcular_frentes`) y
 mismos datasets NRT, que guardan el pasado (STAC, 2026-10-09: clorofila
 L4 NRT desde 2025-10-04, **ventana móvil de ~1 año**; IBI temperatura y
-corriente sin marea desde 2022-11-22). Clorofila del propio día (si viene casi
-vacía, hasta 5 días antes; `fecha_clorofila` lo dice), temperatura a las
-12 UTC, corriente media del día. Solo escribe `capas/historico/`, nunca las
+corriente sin marea desde 2022-11-22). Clorofila: el mismo compuesto de
+hasta 5 días que la pasada diaria (PR #149; `elegir_clorofila` compartida):
+el día D, o el último con datos hasta 5 días antes, más los previos D-1..D-4,
+nunca días posteriores a D (`fecha_clorofila_desde` / `fecha_clorofila` lo
+dicen); mismo umbral térmico (0,08 °C/km) y filtro de frentes de menos de 3
+celdas, porque todo pasa por `construir_frentes` → `calcular_frentes`.
+Temperatura a las 12 UTC, corriente media del día. `test/frentes_capas_test.py`
+(clase `Historico`) comprueba que el histórico elige los mismos días que la
+pasada diaria de ese día. Solo escribe `capas/historico/`, nunca las
 capas del día. Por bloques de 10 días (una apertura de cada dataset por
 bloque, recortada a la caja de siempre), salta lo que ya está en el bucket
 (HEAD público), tope `max_dias` (150) y 290 min por ejecución. Probado con

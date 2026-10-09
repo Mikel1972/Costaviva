@@ -2273,7 +2273,9 @@ const CAPAS_MAR = {
       "Las flechas dicen hacia dónde va la corriente; cuanto más largas, más fuerte (la fuerza, por manchas, en 🌊 Corriente). " +
       "Mejor el borde que el centro de una mancha. Es una pista, no una garantía: depende de la especie y la época, y el satélite solo ve la superficie. " +
       "En gris, sin dato fiable: nubes, o pegado a la costa, donde el barro confunde al satélite. Toca el mapa para ver qué hay cerca.",
-    fecha: (d) => `Satélite del ${fechaCorta(d.fecha_clorofila)}; temperatura y corriente (media del día, sin marea) del ${fechaCorta(d.fecha)}`,
+    // Clorofila de varios días (descargar-capas.py, 3c): en cada celda, lo
+    // último que vio el satélite sin nubes.
+    fecha: (d) => `Satélite ${d.fecha_clorofila_desde && d.fecha_clorofila_desde !== d.fecha_clorofila ? `del ${fechaCorta(d.fecha_clorofila_desde)} al ${fechaCorta(d.fecha_clorofila)} (lo último sin nubes)` : `del ${fechaCorta(d.fecha_clorofila)}`}; temperatura y corriente (media del día, sin marea) del ${fechaCorta(d.fecha)}`,
     maxDias: 3,
   },
   // 🌊 Corriente (2026-10-09, Mikel: "¿La corriente se puede mostrar por
