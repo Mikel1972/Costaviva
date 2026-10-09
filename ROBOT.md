@@ -6330,6 +6330,126 @@ seguida de Dragonera (7/8, −30.3%) y Cabo Peñas (7/7, −17.8%).
 
 **Firmado:** robot de calibración nocturna, 2026-10-08 01:25 UTC.
 
+### 2026-10-09 (pasada nocturna corta — calibración bloqueada, salud de datos)
+
+**Calibración — sin puntos nuevos esta noche.** `poem.puertos.es/portus/
+StationData` (el endpoint real de Puertos del Estado que usa esta rutina
+para la altura MEDIDA, y que `scripts/fuentes/comparar-boyas.mjs` también
+usa para su comparativa interna) devuelve **`500 Internal Server Error`**
+para cualquier consulta con datos de verdad, mientras el resto del
+servicio sigue vivo y respondiendo con normalidad:
+
+- `GET /portus/StationData?code=<boya>` sin `params` → `422` con el JSON de
+  validación esperado ("Field required": `params`) — el router y la
+  validación de entrada funcionan.
+- La misma URL con `code` + `params=Hm0,Tp,MeanDir,WaterTemp` (el formato
+  exacto que usaba `datosBoya()` antes de migrar a Copernicus, y que sigue
+  usando `comparar-boyas.mjs`) + `from`/`to` válidos → `500` con el cuerpo
+  `"Internal Server Error"`, sin más detalle.
+- Reproducido **9 veces** con variaciones para descartar que fuera un
+  problema del formato de esta sesión: 5 boyas distintas (2136 Bilbao-
+  Vizcaya, 1117 Gijón, 1101 Pasaia II, 1731 Barcelona II — la que tocaba
+  rotar esta noche —, y 1103 AP Bilbao de control), con y sin todos los
+  parámetros de la lista (`Hm0` solo, o los 4/7 de siempre), con ventanas
+  de fecha distintas (incluida una completamente en el pasado, 2026-10-06
+  a 2026-10-07, para descartar que fuera por pedir una hora "futura" mal
+  redondeada) y con una espera de 20s entre tandas para descartar
+  limitación de ritmo. Siempre el mismo `500` inmediato (~1-3s). Rutas
+  claramente inexistentes (`/portus/`, `/openapi.json`) sí dan `404` con un
+  mensaje propio del router ("Cant find path... on router portus"),
+  así que el servicio en sí está arriba — es la propia consulta de datos
+  la que rompe en el servidor de Puertos del Estado, no esta sesión ni la
+  red hacia él.
+- **Sin ningún punto real que comparar, no se ha escrito nada en
+  `CALIBRACION.jsonl` esta noche** (nunca inventar un dato) — la rotación
+  de esta noche le tocaba a **1731 Barcelona II** (última vez el
+  2026-10-03) y se queda pendiente para la próxima pasada en que el
+  endpoint responda. El historial sigue exactamente como lo dejó la
+  pasada del 2026-10-08: 2136/1117/1101 en 35 puntos cada una, 2820
+  Dragonera en 8, y el resto sin cambios. **Ningún factor de corrección
+  nuevo** — Pasaia II sigue siendo la única con factor ya aplicado
+  (x1.38), y Barcelona II (8/8 negativo, −28.8%) sigue siendo la
+  siguiente candidata más sólida tras ella, igual que ayer.
+- Esto no afecta a lo que ve un usuario real: desde el 2026-10-08 el mapa
+  ya no llama a `poem.puertos.es` para las boyas (usa la instantánea de
+  Copernicus, `boyaDesdeCopernicus()`), así que esta caída solo bloquea la
+  calibración de esta rutina y la comparativa interna de
+  `comparar-boyas.mjs` — ninguna de las dos se sirve en público.
+- **Severidad: baja/informativa, pero a vigilar** — si sigue en `500`
+  varias noches seguidas, esta rutina se queda ciega para calibrar hasta
+  que Puertos del Estado lo arregle por su cuenta; no hay nada que
+  nosotros podamos corregir en el propio código (el fallo está en su
+  servidor, confirmado con una ruta de control que sí responde bien). No
+  se ha tocado ningún fichero de `functions/` por esto.
+
+**Salud de datos** — comprobado con `curl` real, reproduciendo el *parsing*
+exacto de cada función de `functions/prevision.js`:
+
+- **Boya de Nazaré** (`monican.hidrografico.pt`, POST a `boia.graph.php`):
+  `200` en las 4 variables (altura, periodo, dirección, temperatura),
+  última hora real con Hs 2.4-2.6 m — sin novedad.
+- **Caudal Cantábrico** (`visor.saichcantabrico.es`): `200`, 164 KB reales.
+  Reproducido `parsearCaudalCantabrico()` fila a fila contra el HTML de
+  esta noche: las dos filas "Arriondas" (Piloña 1301 con sus tres umbrales
+  en "-", caudal real 21.18; Sella 1292 con umbrales numéricos, caudal real
+  56.03) se distinguen bien y `sella` devuelve el dato del Sella (56.03,
+  umbrales 438/885), no el del Piloña — **el bug de cruce de filas
+  reportado el 2026-10-08 (`sella` devolvía el caudal del Piloña, `ason`
+  salía `null`) ya está corregido** por el commit `650bbc0` ("Caudal
+  Cantábrico: parsear la tabla fila a fila", ya en `main`), que reemplazó
+  el *regex* único de toda la tabla por un `split` por `<tr data-codigo=`
+  y un *regex* simple dentro de cada bloque — exactamente la solución que
+  esa misma entrada de ROBOT.md proponía. `ason` esta noche da un valor
+  real (35.54 m³/s), no `null`. Este punto queda cerrado, no hace falta
+  seguir vigilándolo salvo que reaparezca.
+- **Caudal Júcar** (`saih.chj.es/mapa-aforos`): `200`, 68 KB, el array
+  `aforos` se extrae y parsea bien — Júcar 19.39, Turia 3.76, Mijares 1.96
+  m³/s, todos reales y con fecha de hoy.
+- **Caudal Segura** (`saihweb.chsegura.es`): `200` con la forma esperada
+  (33 puntos JSON), pero **las 33 estaciones de la red, no solo
+  A.Rojales, traen `UltimoDatoCaudal: "-"` esta noche** — es una caída/
+  mantenimiento del propio servicio SAIH del Segura, no un cambio de
+  formato ni un fallo de *parsing* nuestro (la estructura del JSON es
+  idéntica a la de siempre). `datosCaudalSegura()` hace
+  `parseFloat("-".replace(",", "."))`, que da `NaN` en vez de `null` —
+  pero como la respuesta de `/prevision` pasa por `JSON.stringify()`,
+  `NaN` se serializa igual que `null` (así es como funciona `JSON.stringify`
+  con `NaN`), así que el usuario ve "sin dato" de todas formas, el
+  comportamiento correcto. Severidad **muy baja**: es un acierto accidental,
+  no una garantía explícita en el código — si algún día ese valor se usara
+  en un cálculo intermedio antes de serializarlo (no es el caso hoy),
+  `NaN` se propagaría de forma silenciosa. No se ha tocado el código esta
+  noche (no es más que una nota para no inventar que esto está "a prueba de
+  balas" si se reutiliza en otro sitio) — se deja anotado para que el
+  usuario decida si merece un `Number.isFinite` explícito.
+- **Caudal Galicia** (`servizos.meteogalicia.gal`, río Lagares en Vigo):
+  `200`, el campo se encuentra y da `0 m³/s` — confirmado en el HTML real
+  que es el mismo valor genuino ya documentado el 2026-10-08, no un fallo.
+- **Webcams, muestra de 4 en 4 regiones distintas** (País Vasco, Galicia,
+  Com. Valenciana, Baleares): `mundaka` (OK, JPEG 1024×768, 66 KB),
+  `acoruna` vía `meteogalicia.gal` (OK, JPEG 1920×1080, 295 KB), `calpe`
+  vía `streaming.comunitatvalenciana.com` (OK, PNG 480×270, 240 KB) y
+  `calamillor` vía `apps.socib.es` (OK, JPEG 350×263, 20 KB — segunda noche
+  seguida en que `apps.socib.es` responde bien tras la caída documentada
+  el 2026-09-25, ya hay dos confirmaciones reales seguidas: 2026-10-08 y
+  hoy). Las 4 imágenes son reales (tamaños y cabeceras coherentes con una
+  foto, no una página de error).
+
+**Resumen de severidad para el usuario**: nada roto de cara al usuario
+real. El único hallazgo con severidad real es que `poem.puertos.es` (la
+API de Puertos del Estado que usa esta rutina para comparar, no el mapa en
+producción) está devolviendo `500` para cualquier consulta de datos esta
+noche — bloquea la calibración de hoy, sin punto nuevo ni propuesta de
+factor. Buena noticia aparte: el bug de `sella`/`ason` en el caudal del
+Cantábrico que esta misma rutina reportó el 2026-10-08 ya está corregido
+en `main` (commit `650bbc0`), confirmado volviendo a reproducir el
+*parsing* esta noche. El Segura está caído en origen (las 33 estaciones a
+la vez, no solo la nuestra) pero degrada bien a "sin dato", sin inventar
+nada. Rotación pendiente para la próxima pasada: **1731 Barcelona II**
+(no se pudo completar hoy por el `500`).
+
+**Firmado:** robot de calibración nocturna, 2026-10-09 01:35 UTC.
+
 ---
 
 ## Robot de experiencia de usuario
