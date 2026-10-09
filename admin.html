@@ -6,7 +6,12 @@
 <title>Administración — Costaviva</title>
 <link rel="icon" href="icon.svg" type="image/svg+xml" />
 <meta name="theme-color" content="#0B1E3F" />
+<!-- Foto de la pantalla de inicio (2026-10-09): precargada para que salga
+     al instante; la de la orientación que toque. -->
+<link rel="preload" as="image" href="/assets/inicio/rompiente-movil.webp" type="image/webp" media="(orientation: portrait)" fetchpriority="high">
+<link rel="preload" as="image" href="/assets/inicio/rompiente-ancha.webp" type="image/webp" media="(orientation: landscape)" fetchpriority="high">
 <link rel="stylesheet" href="/assets/css/costaviva.css">
+<link rel="stylesheet" href="/assets/css/pantalla-inicio.css">
 <style>
   * { box-sizing: border-box; }
   body {
@@ -105,9 +110,22 @@
 </head>
 <body>
 
-<div id="comprobandoAcceso" style="position:fixed; inset:0; background:var(--fondo); z-index:9999; display:flex; align-items:center; justify-content:center; color:var(--tinta-2); font-family:var(--f-texto); font-size:13px;">
-  Comprobando acceso…
+<!-- pantalla-inicio: foto + marca mientras se comprueba la sesión (assets/css/pantalla-inicio.css) -->
+<div id="comprobandoAcceso" class="pantalla-inicio">
+  <picture>
+    <source media="(orientation: landscape)" srcset="/assets/inicio/rompiente-ancha.webp" type="image/webp">
+    <source media="(orientation: landscape)" srcset="/assets/inicio/rompiente-ancha.jpg">
+    <source srcset="/assets/inicio/rompiente-movil.webp" type="image/webp">
+    <img class="pantalla-inicio__foto" src="/assets/inicio/rompiente-movil.jpg" width="720" height="1280" fetchpriority="high" alt="Ola rompiendo contra una costa rocosa mientras un pescador lanza su caña">
+  </picture>
+  <div class="pantalla-inicio__marca">
+    <svg class="marca-logo" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><circle class="marca-fondo" cx="20" cy="20" r="19"/><path class="marca-pez" d="M9 17c4-6.5 14-6.5 19 0-5 6.5-15 6.5-19 0z"/><path class="marca-pez" d="M27.5 17l6-4.5v9z"/><circle class="marca-ojo" cx="13.5" cy="16" r="1.4"/><path class="marca-ola" d="M5 28c3.5-3.2 6.5-3.2 10 0s6.5 3.2 10 0 6.5-3.2 10 0"/></svg>
+    <p class="pantalla-inicio__nombre logotipo">Costaviva</p>
+    <p class="pantalla-inicio__frase">El mar de hoy, antes de salir a pescar</p>
+    <p class="pantalla-inicio__estado" role="status"><span class="pantalla-inicio__girando" aria-hidden="true"></span>Comprobando acceso…</p>
+  </div>
 </div>
+<!-- /pantalla-inicio -->
 
 <header style="display:none;" id="cabecera">
   <a href="/" class="enlace-marca" aria-label="Costaviva, ir al mapa"><svg class="marca-logo" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><circle class="marca-fondo" cx="20" cy="20" r="19"/><path class="marca-pez" d="M9 17c4-6.5 14-6.5 19 0-5 6.5-15 6.5-19 0z"/><path class="marca-pez" d="M27.5 17l6-4.5v9z"/><circle class="marca-ojo" cx="13.5" cy="16" r="1.4"/><path class="marca-ola" d="M5 28c3.5-3.2 6.5-3.2 10 0s6.5 3.2 10 0 6.5-3.2 10 0"/></svg></a>
