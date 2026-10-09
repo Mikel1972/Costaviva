@@ -64,14 +64,27 @@
      hoja tapaba la cabecera por arriba y quedaba 52 px bajo el menú, que
      mide 72 px + la franja del indicador de inicio). --cabecera-abajo lo
      pone el script con lo que mide de verdad la cabecera. */
+  /* --menu-alto lo mide el script (alto real del menú inferior en este
+     móvil); el calc es solo el valor de reserva. */
   .panel-dia {
-    display: none; position: fixed; left: 0; right: 0; bottom: calc(72px + env(safe-area-inset-bottom));
-    max-height: min(78dvh, calc(100dvh - var(--cabecera-abajo, 0px) - 72px - env(safe-area-inset-bottom) - 8px));
+    display: none; position: fixed; left: 0; right: 0; bottom: var(--menu-alto, calc(72px + env(safe-area-inset-bottom)));
+    max-height: min(78dvh, calc(100dvh - var(--cabecera-abajo, 0px) - var(--menu-alto, calc(72px + env(safe-area-inset-bottom))) - 8px));
     background: var(--superficie); border-top: 1px solid var(--linea); border-radius: 16px 16px 0 0;
     padding: 20px; overflow-y: auto; z-index: 1000; box-shadow: 0 -8px 24px rgba(0,0,0,0.4);
   }
   .panel-dia.visible { display: block; }
-  .panel-dia h2 { font-family: var(--f-titulo); font-size: 19px; margin: 0 0 12px; text-transform: capitalize; }
+  /* Solo la primera letra en mayúscula ("Jueves, 8 de octubre de 2026"). */
+  .panel-dia h2 { font-family: var(--f-titulo); font-size: 19px; margin: 0 0 12px; }
+  .panel-dia h2::first-letter { text-transform: uppercase; }
+  /* "➕ Añadir entrada" siempre a la vista, pegado al pie de la hoja aunque
+     el día tenga mucho contenido (2026-10-09, Mikel: "se sigue sin ver lo
+     de +añadir entrada"). Mientras hay un formulario abierto sobra. */
+  #btnAnadirEntrada {
+    position: sticky; bottom: -20px; z-index: 2; display: block; width: calc(100% + 40px);
+    margin: 12px -20px -20px; padding: 14px 20px; border-radius: 0; border: none; border-top: 1px solid var(--linea);
+    background: var(--superficie); box-shadow: 0 -6px 14px rgba(0,0,0,0.12);
+  }
+  #zonaFormulario:not(:empty) ~ #btnAnadirEntrada { display: none; }
   .panel-dia .cerrar { position: absolute; top: 14px; right: 16px; background: none; border: none; color: var(--tinta-2); font-size: 16px; cursor: pointer; }
 
   label { display: block; font-size: 12px; color: var(--tinta-2); margin: 12px 0 5px; font-family: var(--f-texto); font-weight: 500; }
@@ -283,6 +296,15 @@ document.getElementById("comprobandoAcceso").remove();
   medir();
   if (window.ResizeObserver) new ResizeObserver(medir).observe(cab);
   window.addEventListener("resize", medir);
+  // Y cuánto mide de verdad el menú inferior, para que la hoja acabe justo
+  // encima (en el iPhone la franja del indicador cambia según el modo).
+  const menu = document.querySelector(".tabs-nav");
+  if (menu) {
+    const medirMenu = () => document.documentElement.style.setProperty("--menu-alto", `${Math.ceil(window.innerHeight - menu.getBoundingClientRect().top)}px`);
+    medirMenu();
+    if (window.ResizeObserver) new ResizeObserver(medirMenu).observe(menu);
+    window.addEventListener("resize", medirMenu);
+  }
 }
 comprobarNovedadesGrupos(supabase);
 if (usuario.email === "etxebe2005@gmail.com") {
