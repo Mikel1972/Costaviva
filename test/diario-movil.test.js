@@ -95,3 +95,10 @@ test("captura: nombre científico solo por nombre exacto y escapado", () => {
   assert.match(d, /<i class="cientifico">\$\{escNombre\(cientifico\)\}<\/i>/);
   assert.match(d, /\.tarjeta-captura \.especie \.cientifico \{/);
 });
+
+test("captura: nombres locales de Bizkaia confirmados por Mikel", () => {
+  const d = html("diario.html");
+  assert.match(d, /"cabra": "Serranus cabrilla"/);
+  assert.match(d, /"cabra de altura": "Helicolenus dactylopterus"/);
+  assert.match(d, /"gallineta": "Helicolenus dactylopterus"/);
+});
