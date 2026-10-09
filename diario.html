@@ -94,6 +94,7 @@
   .tarjeta-captura { background: var(--superficie-2); border-radius: 10px; padding: 12px; margin-top: 10px; }
   .tarjeta-captura .fila-titulo { display: flex; justify-content: space-between; align-items: baseline; }
   .tarjeta-captura .especie { font-weight: 600; font-size: 14px; }
+  .tarjeta-captura .especie .cientifico { display: block; font-weight: 400; font-size: 12px; color: var(--tinta-2); margin-left: 1.4em; }
   .tarjeta-captura .detalle { font-size: 12px; color: var(--tinta-2); margin-top: 2px; }
   .galeria-fotos { display: flex; gap: 6px; margin-top: 8px; overflow-x: auto; }
   .galeria-fotos img { width: 76px; height: 76px; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
@@ -996,6 +997,28 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha, horaF
   return resultado;
 }
 
+// Nombre científico de una captura (2026-10-09, Mikel: "una vez
+// identificado, debiera poner el nombre científico"). Solo por nombre
+// exacto (sin mayúsculas ni tildes) contra la lista del desplegable, las
+// especies de la comunidad y especies.json (nombres en todas las lenguas);
+// si no casa, no se pone nada: nunca se adivina.
+const normNombre = (s) => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").trim().toLowerCase();
+async function cientificoDe(nombre) {
+  const n = normNombre(nombre);
+  if (!n || n === "otra") return null;
+  const lista = todasLasEspecies().find((e) => e.cientifico && (normNombre(e.nombre) === n || e.nombre.split("/").some((p) => normNombre(p) === n)));
+  if (lista) return lista.cientifico;
+  try {
+    const datos = await cargarEspeciesIndice();
+    const especies = Array.isArray(datos) ? datos : datos.especies || [];
+    const e = especies.find((x) => x.cientifico && Object.values(x.nombres || {}).some((v) => v && normNombre(v) === n));
+    return e ? e.cientifico : null;
+  } catch {
+    return null;
+  }
+}
+const escNombre = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
 // especies.json para el índice de la salida (una vez por página).
 let especiesIndicePromesa = null;
 function cargarEspeciesIndice() {
@@ -1288,9 +1311,10 @@ function contextoHTML(salida) {
 async function tarjetaCapturaHTML(captura) {
   const { data: fotos } = await supabase.from("captura_fotos").select("*").eq("captura_id", captura.id).order("orden");
   const urls = await Promise.all((fotos || []).map((f) => urlFirmada(f.foto_path)));
+  const cientifico = await cientificoDe(captura.especie);
   return `
     <div class="tarjeta-captura" data-captura-id="${captura.id}">
-      <div class="fila-titulo"><span class="especie">🐟 ${captura.especie}</span><span class="detalle">${captura.hora ? "🕐 " + captura.hora.slice(0, 5) + " " + flechaMareaHtml(captura.marea_tendencia) + " " : ""}${captura.talla_cm ? captura.talla_cm + " cm" : ""} ${captura.peso_g ? "· " + captura.peso_g + " g" : ""}</span></div>
+      <div class="fila-titulo"><span class="especie">🐟 ${captura.especie}${cientifico ? ` <i class="cientifico">${escNombre(cientifico)}</i>` : ""}</span><span class="detalle">${captura.hora ? "🕐 " + captura.hora.slice(0, 5) + " " + flechaMareaHtml(captura.marea_tendencia) + " " : ""}${captura.talla_cm ? captura.talla_cm + " cm" : ""} ${captura.peso_g ? "· " + captura.peso_g + " g" : ""}</span></div>
       ${captura.tecnica ? `<div class="detalle">🎣 ${captura.tecnica}</div>` : ""}
       ${captura.cebo || captura.aparejo || captura.senuelo ? `<div class="detalle">${CondSalida.textoCeboAparejo(captura)}</div>` : ""}
       ${captura.notas ? `<div class="detalle">${captura.notas}</div>` : ""}
