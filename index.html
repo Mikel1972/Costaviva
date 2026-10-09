@@ -594,6 +594,13 @@
   .capa-mar-panel .leyenda-frentes i { flex: none; width: 12px; height: 12px; border-radius: 3px; box-shadow: 0 0 0 1px var(--linea); }
   .capa-mar-panel .barra[hidden], .capa-mar-panel .extremos[hidden] { display: none; }
   .capa-mar-panel .nota-isotermas { font-size: 9.5px; color: var(--tinta-2); margin-top: 2px; }
+  /* 🌡 T. agua: tramo visible recuadrado sobre la barra fija y una casilla
+     por grado visible con su número (colores fijos, como en el mapa). */
+  .capa-mar-panel .barra { position: relative; }
+  .capa-mar-panel .barra .tramo { position: absolute; top: -3px; bottom: -3px; border: 2px solid var(--tinta); border-radius: 4px; box-sizing: border-box; }
+  .capa-mar-panel .barra .tramo[hidden], .capa-mar-panel .bandas-temp[hidden] { display: none; }
+  .capa-mar-panel .bandas-temp { display: flex; margin-top: 5px; border-radius: 4px; overflow: hidden; box-shadow: 0 0 0 1px var(--linea); }
+  .capa-mar-panel .bandas-temp span { flex: 1; text-align: center; font-size: 10px; font-weight: 800; line-height: 18px; }
   .capa-mar-panel .nota-isotermas[hidden] { display: none; }
   /* Isotermas de 🌡 T. agua: línea fina oscura y número con halo blanco
      (legible sobre cualquier color de la paleta, también en el móvil). */
@@ -1093,8 +1100,9 @@
         </div>
         <div class="tarjeta-cuerpo" id="capaMarCuerpo">
           <div class="fecha" id="capaMarFecha"></div>
-          <div class="barra" id="capaMarBarra"></div>
+          <div class="barra" id="capaMarBarra"><span class="tramo" id="capaMarTramo" hidden></span></div>
           <div class="extremos" id="capaMarExtremos"><span id="capaMarMin"></span><span id="capaMarMax"></span></div>
+          <div class="bandas-temp" id="capaMarBandas" hidden></div>
           <div class="nota-isotermas" id="capaMarNota" hidden></div>
           <ul class="leyenda-frentes" id="capaMarLeyenda" hidden></ul>
           <details class="explica" id="capaMarDetalle"><summary id="capaMarResumen"></summary><div id="capaMarExplica"></div></details>
@@ -1131,7 +1139,7 @@
         <div class="fila"><span class="chip" style="background:var(--nivel-medio)"></span><span>moderado</span></div>
         <div class="fila"><span class="chip" style="background:var(--nivel-malo)"></span><span>agitado</span></div>
         <div class="nota" style="margin-top:10px; padding-top:8px; border-top:1px solid var(--linea);">◆ RÍOS: 3 puntos por río (cabecera→desembocadura), color por caudal bajo/normal/alto — pasa el cursor por un punto para ver el detalle. Lo que se mide arriba llega a la costa horas después — útil como aviso de tendencia. Posiciones ilustrativas, no las estaciones oficiales exactas. Caudal real solo en Sella, Besaya, Pas, Asón, Eo, Júcar, Turia, Mijares, Segura y Lagares (Confederaciones Hidrográficas + Augas de Galicia) — los ríos vascos siguen sin dato real (URA/Bizkaia bloquea el acceso automático).</div>
-        <div class="nota" style="margin-top:8px; padding-top:8px; border-top:1px solid var(--linea);">🌡 T. AGUA: los colores se ajustan al mar que tienes en pantalla (azul, lo más frío; rojo, lo más templado) y las líneas con número marcan la temperatura de verdad; los extremos están en la tarjeta de la capa.</div>
+        <div class="nota" style="margin-top:8px; padding-top:8px; border-top:1px solid var(--linea);">🌡 T. AGUA: cada color es un grado, siempre el mismo en todo el mapa (del azul frío al rojo cálido); las líneas marcan el grado exacto.</div>
       </div>
     </div>
     <button class="rayos-toggle" id="toggleRayos" title="Rayos cerca: al momento y por satélite" aria-label="Mostrar/ocultar rayos en el mapa">⚡<span class="capa-label">Rayos</span></button>
@@ -2290,18 +2298,18 @@ const CAPAS_MAR = {
     boton: "toggleTempAgua",
     titulo: "🌡 TEMPERATURA DEL AGUA",
     corto: "🌡 T. agua",
-    // Escala ADAPTATIVA (2026-10-09, captura de Mikel: con 10-28 °C fijos el
-    // Cantábrico salía todo verde): la paleta se estira al mar visible
-    // (percentiles 2-98) y se dibujan isotermas con su número. Por qué
-    // adaptativa y no fija por región: assets/js/isotermas.js. valorColor y
-    // extremos son la escala de reserva (sin mar a la vista o sin el módulo).
+    // Escala FIJA por bandas de 1 °C de 8 a 30 °C (2026-10-09, Mikel: "El
+    // color debiera ser el mismo"): cada grado tiene siempre su color, en
+    // cualquier zona y zoom (paleta y por qué en assets/js/isotermas.js), e
+    // isotermas con su número. valorColor, paradas y extremos de aquí solo
+    // son la reserva si no llega el módulo.
     tipo: "isotermas",
     valorColor: (v) => (v - 10) / 18,
     paradas: ["#2B3A8C", "#2F7FC1", "#4FB7C9", "#9AD27A", "#F2D04B", "#F28C38", "#C9372C"],
     extremos: ["10 °C", "28+ °C"],
     formato: (v) => `${v.toFixed(1).replace(".", ",")} °C en superficie`,
     resumen: "Temperatura de la superficie del mar (modelo IBI de Copernicus).",
-    explica: "Los colores se ajustan a lo que ves: azul es lo más frío y rojo lo más templado de esta parte del mapa, y cambian al moverte; las líneas con su número marcan la temperatura de verdad. " +
+    explica: "Cada color es un grado, siempre el mismo en todo el mapa (del azul frío al rojo cálido); las líneas marcan el grado exacto. " +
       "Cada especie tiene su rango. Los cambios bruscos de temperatura (frentes) suelen juntar alimento: míralos en 〰 Frentes. Toca el mapa para ver el valor exacto.",
     fecha: (d) => `Modelo IBI, ${fechaCorta(d.fecha)} a las 12:00 UTC`,
     maxDias: 3,
@@ -2368,7 +2376,7 @@ function fechaCorta(iso) {
 async function moduloCapasMar() {
   return window.CapasMar || import("/assets/js/capas-mar.js");
 }
-function lienzoCapaMar(CM, d, def, valorColor = def.valorColor) {
+function lienzoCapaMar(CM, d, def) {
   if (def.tipo === "corriente") {
     // Manchas suaves a 3 píxeles por celda (assets/js/corriente.js).
     const { ancho, alto, px } = window.Corriente.pixelesCorriente(d, 3);
@@ -2386,7 +2394,10 @@ function lienzoCapaMar(CM, d, def, valorColor = def.valorColor) {
   canvas.height = d.filas;
   const ctx = canvas.getContext("2d");
   const img = ctx.createImageData(d.columnas, d.filas);
-  img.data.set(def.tipo === "frentes" ? window.Frentes.pixelesFrentes(d, d.bytes, COLORES_FRENTES) : CM.pixelesCapa(d, d.bytes, def.paradas, valorColor));
+  const I = def.tipo === "isotermas" ? window.Isotermas : null;
+  img.data.set(def.tipo === "frentes" ? window.Frentes.pixelesFrentes(d, d.bytes, COLORES_FRENTES)
+    : I ? CM.pixelesCapa(d, d.bytes, I.PALETA_TEMP_AGUA, I.valorColorBandas)
+    : CM.pixelesCapa(d, d.bytes, def.paradas, def.valorColor));
   ctx.putImageData(img, 0, 0);
   return canvas.toDataURL("image/png");
 }
@@ -2436,30 +2447,17 @@ function pintarFlechasCorrienteRejilla(grupo, d) {
     }
   }
 }
-// 🌡 T. agua (2026-10-09): escala de color estirada al mar visible e
-// isotermas con su número; se rehacen al mover o hacer zoom, como las flechas
-// de 〰 Frentes. Cálculo puro en assets/js/isotermas.js (window.Isotermas).
-// La imagen se repinta solo si cambian los extremos (caché por escala).
-function pintarIsotermas(estado, d, def, CM) {
+// 🌡 T. agua (2026-10-09): isotermas con su número y, en la leyenda, los
+// grados que se ven; se rehacen al mover o hacer zoom, como las flechas de
+// 〰 Frentes. Los COLORES no cambian nunca (escala fija por grados): la
+// imagen se pinta una vez. Cálculo puro en assets/js/isotermas.js.
+function pintarIsotermas(estado, d) {
   const I = window.Isotermas;
   const t0 = performance.now();
   const b = map.getBounds();
   const lim = { norte: b.getNorth(), sur: b.getSouth(), oeste: b.getWest(), este: b.getEast() };
   const pct = I.percentilesVisibles(d, d.bytes, lim);
-  // Sin mar a la vista: se queda la escala de antes (o la fija de reserva).
-  const esc = I.escalaAdaptativa(pct) || estado.escala;
-  if (esc && (!estado.escala || esc.min !== estado.escala.min || esc.max !== estado.escala.max)) {
-    const clave = `${esc.min}/${esc.max}`;
-    d.urlEscalas ||= new Map();
-    if (!d.urlEscalas.has(clave)) {
-      if (d.urlEscalas.size > 12) d.urlEscalas.clear();
-      d.urlEscalas.set(clave, lienzoCapaMar(CM, d, def, (v) => (v - esc.min) / (esc.max - esc.min)));
-    }
-    estado.imagen.setUrl(d.urlEscalas.get(clave));
-    estado.escala = esc;
-    document.getElementById("capaMarMin").textContent = I.textoExtremo(esc.min);
-    document.getElementById("capaMarMax").textContent = I.textoExtremo(esc.max);
-  }
+  leyendaBandas(I, I.bandasVisibles(pct));
   const paso = I.intervaloIsotermas(pct, map.getZoom());
   const iso = I.isotermasVisibles(d, d.bytes, lim, I.nivelesIsotermas(pct, paso));
   estado.lineas.clearLayers();
@@ -2478,6 +2476,27 @@ function pintarIsotermas(estado, d, def, CM) {
     }).addTo(estado.etiquetas);
   }
   estado.ms = performance.now() - t0;
+}
+// Leyenda de 🌡 T. agua: barra fija de 8 a 30 °C con el tramo visible
+// recuadrado y, debajo, una casilla por grado visible con su número (mismos
+// colores que el mapa, siempre).
+function leyendaBandas(I, grados) {
+  const tramo = document.getElementById("capaMarTramo");
+  const fila = document.getElementById("capaMarBandas");
+  fila.replaceChildren();
+  fila.hidden = tramo.hidden = !grados.length;
+  if (!grados.length) return;
+  const n = I.PALETA_TEMP_AGUA.length;
+  tramo.style.left = `${(100 * (grados[0] - I.TEMP_MIN)) / n}%`;
+  tramo.style.width = `${(100 * (grados[grados.length - 1] - grados[0] + 1)) / n}%`;
+  for (const g of grados) {
+    const c = I.colorTemperatura(g);
+    const casilla = document.createElement("span");
+    casilla.style.background = c;
+    casilla.style.color = I.tintaSobre(c);
+    casilla.textContent = `${g}°`;
+    fila.append(casilla);
+  }
 }
 // Etiquetas de las isotermas por encima de las líneas y por debajo de los spots.
 map.createPane("isotermasEtiquetas").style.zIndex = 450;
@@ -2555,13 +2574,13 @@ async function alternarCapaMar(nombre) {
   // La imagen se guarda por capa (Frentes y Corriente comparten datos).
   const malla = esCorriente ? d.mallaVel : d;
   d.urlImagenes ||= {};
-  const imagen = L.imageOverlay(d.urlImagenes[nombre] ||= lienzoCapaMar(CM, malla, def), [[malla.sur, malla.oeste], [malla.norte, malla.este]], { opacity: esFrentes ? 0.9 : esCorriente ? 0.75 : 0.7, interactive: false, pane: "tilePane" });
+  const imagen = L.imageOverlay(d.urlImagenes[nombre] ||= lienzoCapaMar(CM, malla, def), [[malla.sur, malla.oeste], [malla.norte, malla.este]], { opacity: esFrentes ? 0.9 : esCorriente ? 0.75 : def.tipo === "isotermas" ? 0.8 : 0.7, interactive: false, pane: "tilePane" });
   const overlay = L.layerGroup([imagen]);
   let alMover = null;
   let isotermas = null;
   if (def.tipo === "isotermas" && window.Isotermas) {
-    isotermas = { imagen, escala: null, lineas: L.layerGroup().addTo(overlay), etiquetas: L.layerGroup().addTo(overlay) };
-    alMover = () => pintarIsotermas(isotermas, d, def, CM);
+    isotermas = { lineas: L.layerGroup().addTo(overlay), etiquetas: L.layerGroup().addTo(overlay) };
+    alMover = () => pintarIsotermas(isotermas, d);
   }
   if ((esFrentes || esCorriente) && d.corriente) {
     const flechas = L.layerGroup().addTo(overlay);
@@ -2607,7 +2626,14 @@ async function alternarCapaMar(nombre) {
     document.getElementById("capaMarMax").textContent = def.extremos[1];
   }
   document.getElementById("capaMarNota").hidden = true;
+  document.getElementById("capaMarBandas").hidden = true;
+  document.getElementById("capaMarTramo").hidden = true;
   if (isotermas) {
+    // Barra fija por grados (la de reserva, continua, si no llega el módulo).
+    barra.style.background = window.Isotermas.degradadoBandas();
+    mini.style.background = barra.style.background;
+    document.getElementById("capaMarMin").textContent = `${window.Isotermas.TEMP_MIN} °C`;
+    document.getElementById("capaMarMax").textContent = `${window.Isotermas.TEMP_MAX}+ °C`;
     // Con la tarjeta ya montada: extremos reales e isotermas de esta vista.
     alMover();
     map.on("moveend", alMover);
