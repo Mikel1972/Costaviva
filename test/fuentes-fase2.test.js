@@ -133,7 +133,9 @@ test("capas: index.html las pinta con atribución de Copernicus y explicación",
   assert.match(html, /id="toggleClorofila"/);
   assert.match(html, /id="toggleTempAgua"/);
   assert.match(html, /Generated using E\.U\. Copernicus Marine Service Information/);
-  assert.match(html, /Más clorofila = más plancton = más alimento para peces/);
+  // Texto corregido (2026-10-09, Mikel): productividad, no peces; el borde importa.
+  assert.match(html, /no dónde están los peces/);
+  assert.doesNotMatch(html, /Más clorofila = más plancton = más alimento para peces/);
   assert.match(html, /\.clorofila-toggle \{ top: 260px; right: 74px; \}/);
   assert.match(html, /pane: "tilePane"/);
   assert.match(html, /capas\/" \+ nombre|URL_CAPAS_MAR \+ nombre/);

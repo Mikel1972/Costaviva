@@ -1,0 +1,293 @@
+{
+"nota": "Generado con scripts/fuentes/descargar-capas.py (calcular_frentes, salida_frentes, historico_frentes) sobre una malla de 12x12: clorofila 0,1 | 1 mg/m\u00b3 (frente en el centro, columnas), temperatura 16 | 18 \u00b0C (frente en el centro, filas), corriente que converge en el centro, nube arriba a la izquierda y tierra abajo a la derecha.",
+"codigos": [
+[
+64,
+64,
+8,
+8,
+8,
+8,
+16,
+16,
+16,
+16,
+16,
+16
+],
+[
+64,
+64,
+8,
+8,
+8,
+13,
+21,
+16,
+16,
+16,
+16,
+16
+],
+[
+8,
+8,
+8,
+8,
+8,
+13,
+21,
+16,
+16,
+16,
+16,
+16
+],
+[
+8,
+8,
+8,
+8,
+8,
+13,
+21,
+16,
+16,
+16,
+16,
+16
+],
+[
+8,
+8,
+8,
+8,
+8,
+13,
+21,
+16,
+16,
+16,
+16,
+16
+],
+[
+8,
+10,
+10,
+10,
+10,
+15,
+23,
+18,
+18,
+18,
+18,
+16
+],
+[
+8,
+10,
+10,
+10,
+10,
+15,
+23,
+18,
+18,
+18,
+18,
+16
+],
+[
+8,
+8,
+8,
+8,
+8,
+13,
+21,
+16,
+16,
+16,
+16,
+16
+],
+[
+8,
+8,
+8,
+8,
+8,
+13,
+21,
+16,
+16,
+16,
+16,
+16
+],
+[
+8,
+8,
+8,
+8,
+8,
+13,
+21,
+16,
+16,
+16,
+16,
+16
+],
+[
+8,
+8,
+8,
+8,
+8,
+13,
+21,
+16,
+16,
+32,
+255,
+255
+],
+[
+8,
+8,
+8,
+8,
+8,
+8,
+16,
+16,
+16,
+32,
+255,
+255
+]
+],
+"estadisticas": {
+"celdas_mar": 140,
+"pct_frente_clorofila": 14.29,
+"pct_frente_termico": 14.29,
+"pct_ambos": 2.86,
+"pct_convergencia": 14.29,
+"pct_nubes": 2.86,
+"pct_costa": 1.43
+},
+"frentes": {
+"v": 1,
+"capa": "frentes",
+"fecha": "2026-10-09",
+"fecha_clorofila": "2026-10-08",
+"fecha_temperatura": "2026-10-09",
+"generado_en": "2026-10-09T06:12:12Z",
+"atribucion": "Generated using E.U. Copernicus Marine Service Information",
+"doi": "10.48670/moi-00288",
+"dois": [
+"10.48670/moi-00288",
+"10.48670/moi-00027"
+],
+"datasets": [
+"cmems_obs-oc_atl_bgc-plankton_nrt_l4-gapfree-multi-1km_P1D",
+"cmems_mod_ibi_phy_anfc_0.027deg-2D_PT1H-m",
+"cmems_mod_ibi_phy-cur_anfc_detided-0.027deg_P1D-m"
+],
+"norte": 44.0,
+"sur": 43.333333333333336,
+"oeste": -4.0,
+"este": -3.3333333333333335,
+"paso": 0.05555555555555555,
+"filas": 12,
+"columnas": 12,
+"umbrales": {
+"umbral_chl_log10_km": 0.03,
+"umbral_temp_c_km": 0.05,
+"umbral_convergencia_f": 0.1,
+"costa_km": 5.0,
+"min_observado": 0.5,
+"niveles_chl": [
+0.2,
+2.0
+]
+},
+"bits": {
+"frente_clorofila": 1,
+"frente_termico": 2,
+"convergencia": 4,
+"costa": 32,
+"nubes": 64,
+"nivel_desplazamiento": 3
+},
+"nubes": "flags",
+"estadisticas": {
+"celdas_mar": 140,
+"pct_frente_clorofila": 14.29,
+"pct_frente_termico": 14.29,
+"pct_ambos": 2.86,
+"pct_convergencia": 14.29,
+"pct_nubes": 2.86,
+"pct_costa": 1.43
+},
+"datos": "QEAICAgIEBAQEBAQQEAICAgNFRAQEBAQCAgICAgNFRAQEBAQCAgICAgNFRAQEBAQCAgICAgNFRAQEBAQCAoKCgoPFxISEhIQCAoKCgoPFxISEhIQCAgICAgNFRAQEBAQCAgICAgNFRAQEBAQCAgICAgNFRAQEBAQCAgICAgNFRAQIP//CAgICAgIEBAQIP//",
+"corriente": {
+"paso": 0.16666666666666666,
+"filas": 4,
+"columnas": 4,
+"escala_ms": 0.02,
+"u": "jo5wcI6OcHCOjnBwjo5wcA==",
+"v": "f39/f39/f39/f39/f39/fw=="
+}
+},
+"historico": {
+"v": 1,
+"fecha": "2026-10-09",
+"fecha_clorofila": "2026-10-08",
+"fecha_temperatura": "2026-10-09",
+"generado_en": "2026-10-09T06:12:12Z",
+"norte": 44.0,
+"sur": 43.333333333333336,
+"oeste": -4.0,
+"este": -3.3333333333333335,
+"paso": 0.05555555555555555,
+"filas": 12,
+"columnas": 12,
+"umbrales": {
+"umbral_chl_log10_km": 0.03,
+"umbral_temp_c_km": 0.05,
+"umbral_convergencia_f": 0.1,
+"costa_km": 5.0,
+"min_observado": 0.5,
+"niveles_chl": [
+0.2,
+2.0
+]
+},
+"bits": {
+"frente_clorofila": 1,
+"frente_termico": 2,
+"convergencia": 4,
+"costa": 32,
+"nubes": 64,
+"nivel_desplazamiento": 3
+},
+"nubes": "flags",
+"estadisticas": {
+"celdas_mar": 140,
+"pct_frente_clorofila": 14.29,
+"pct_frente_termico": 14.29,
+"pct_ambos": 2.86,
+"pct_convergencia": 14.29,
+"pct_nubes": 2.86,
+"pct_costa": 1.43
+},
+"capa": "frentes-historico",
+"escala_velocidad_ms": 0.02,
+"codigos_zlib": "eNpzcOAAAgEwcACxeUXBbJAoQTYXEPCLCwEBKpuDBHMU/v8Hs0FuALIBoGYMCQ==",
+"velocidad_zlib": "eNrj5x9o8P8/MhsAgIYMMQ=="
+}
+}

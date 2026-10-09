@@ -175,3 +175,27 @@ export function leerObservaciones(raiz) {
     return Array.isArray(d?.filas) ? d.filas : Array.isArray(d) ? d : [];
   });
 }
+
+// ---------------------------------------------------------------------------
+// 〰 Frentes: copia diaria de la capa (bucket público fuentes-gratuitas, sin
+// clave; la deja scripts/fuentes/descargar-capas.py desde el 2026-10-09).
+// Una petición por fecha distinta de salida, con tope. Devuelve
+// Map fecha -> histórico decodificado (frentes-sombra.mjs) y un aviso.
+// ---------------------------------------------------------------------------
+export const URL_HISTORICO_FRENTES = "https://imncbmizxkorotpeisic.supabase.co/storage/v1/object/public/fuentes-gratuitas/capas/historico/";
+export async function leerHistoricoFrentes(fechas, { maxPeticiones = 200, pedir = fetch, decodificar } = {}) {
+  const mapa = new Map();
+  let faltan = 0, peticiones = 0;
+  for (const f of [...new Set(fechas)].sort().reverse()) {
+    if (peticiones >= maxPeticiones) { faltan++; continue; }
+    peticiones++;
+    try {
+      const r = await pedir(`${URL_HISTORICO_FRENTES}frentes-${f}.json`);
+      if (!r.ok) { faltan++; continue; }
+      const h = decodificar(await r.json());
+      if (h) mapa.set(f, h); else faltan++;
+    } catch { faltan++; }
+  }
+  const aviso = faltan ? `${faltan} fechas de salida sin capa de frentes (la copia diaria empezó el 2026-10-09 o falló ese día): esas salidas no cuentan en la sombra de frentes` : null;
+  return { mapa, aviso };
+}
