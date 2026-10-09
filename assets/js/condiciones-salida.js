@@ -27,6 +27,7 @@
 // de fuentes desde aquí: se usa el mismo proxy /meteo/ de siempre.
 
 import { faseLunar } from "./ventana-actividad.js";
+import { t } from "./i18n-modulo.js";
 import { desfaseEstandarMinutos, ZONA_POR_DEFECTO } from "./regiones.js";
 
 // Open-Meteo Forecast/Marine sirven como mucho ~92 días hacia atrás
@@ -161,13 +162,16 @@ export function resumenIndice(ind, { estimada = false } = {}) {
     indice_especie: ind.especie.id,
     indice_factores: {
       version: ind.version, hora: ind.hora, hora_estimada: estimada, modalidad: ind.modalidad, region: ind.region,
-      especie: ind.especie.id, especie_nombre: ind.especie.nombre, puntuacion: ind.puntuacion, probabilidad: r.probabilidad,
-      razones: r.razones.map((x) => ({ factor: x.factor, texto: x.texto, aporte: x.aporte, ...(x.lo !== undefined ? { lo: x.lo } : {}) })),
+      // Lo guardado va siempre en español (texto de siempre, para calibrar y
+      // para el robot de aprendizaje); la clave y sus datos, para enseñarlo en
+      // el idioma de quien lo mire (2026-10-09).
+      especie: ind.especie.id, especie_nombre: ind.especie.nombreEs ?? ind.especie.nombre, puntuacion: ind.puntuacion, probabilidad: r.probabilidad,
+      razones: r.razones.map((x) => ({ factor: x.factor, texto: x.textoEs ?? x.texto, aporte: x.aporte, ...(x.lo !== undefined ? { lo: x.lo } : {}), ...(x.clave ? { clave: x.clave, vars: x.vars } : {}) })),
       reglas: r.reglasAplicadas, sin_dato: r.sinDato, cobertura: r.cobertura,
       fiabilidad: ind.fiabilidad ? { estrellas: ind.fiabilidad.estrellas, etiqueta: ind.fiabilidad.etiqueta } : null,
       freza: !!ind.freza,
       // Ola peligrosa (2026-10-08): nota aparte, no motivo ni tope.
-      aviso_ola: ind.avisoOla?.texto ?? null,
+      aviso_ola: ind.avisoOla ? (ind.avisoOla.clave ? t(ind.avisoOla.clave, ind.avisoOla.vars, "es") : ind.avisoOla.texto) : null,
       ranking: ind.ranking.map((x) => ({ id: x.id, p: x.puntuacion })),
     },
   };

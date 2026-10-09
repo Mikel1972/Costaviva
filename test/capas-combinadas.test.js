@@ -11,8 +11,9 @@ import {
 } from "../assets/js/capas-combinadas.js";
 import { pixelesFrentesTrazo, pixelesFrentes, CLASES_TRAZO, HALO_TRAZO, COLORES_FRENTES } from "../assets/js/frentes.js";
 import { filaDeDatos, filaReal } from "../assets/js/capas-mar.js";
+import { fuenteEs } from "./i18n-html.js";
 
-const HTML = readFileSync("index.html", "utf8");
+const HTML = fuenteEs(readFileSync("index.html", "utf8"));
 const TODAS = ["clorofila", "temperatura-agua", "frentes", "corriente"];
 
 test("una sola capa: se dibuja exactamente como antes", () => {

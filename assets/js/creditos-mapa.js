@@ -25,11 +25,18 @@
     return typeof ancho === "number" && ancho > 0 && ancho <= ANCHO_MOVIL;
   }
 
+  // Idiomas (2026-10-09): en inglés, el texto de assets/i18n/en.js; en
+  // español (o en páginas sin I18n, como admin.html) el de aquí, que es el
+  // mismo que es.js (test/i18n.test.js lo comprueba).
+  function tr(clave, es) {
+    var I = (typeof window !== "undefined" ? window : globalThis).I18n;
+    return I && I.idioma() !== "es" && I.existe(clave) ? I.t(clave) : es;
+  }
   // Texto y etiqueta accesible del botón según el estado.
   function textoBoton(abiertos) {
     return abiertos
-      ? { texto: "✕", etiqueta: "Ocultar las fuentes y créditos del mapa" }
-      : { texto: "ⓒ Fuentes", etiqueta: "Ver las fuentes y créditos del mapa" };
+      ? { texto: "✕", etiqueta: tr("creditos.ocultar", "Ocultar las fuentes y créditos del mapa") }
+      : { texto: tr("creditos.boton", "ⓒ Fuentes"), etiqueta: tr("creditos.ver", "Ver las fuentes y créditos del mapa") };
   }
 
   function montar(map, opciones) {

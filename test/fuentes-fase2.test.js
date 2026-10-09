@@ -21,6 +21,7 @@ import { pedirEra5, ventanaPasada, celdaEra5, claveCajaEra5, serieDesdeEra5, MAX
 import { requireAdmin } from "../functions/_lib/admin.js";
 import { onRequestGet } from "../functions/meteo/[api].js";
 import { bytesDeBase64, valorByte, valorEnPunto, filaDeDatos, pixelesCapa, colorPaleta } from "../assets/js/capas-mar.js";
+import { fuenteEs } from "./i18n-html.js";
 
 const json = (obj, status = 200) => new Response(JSON.stringify(obj), { status, headers: { "content-type": "application/json" } });
 const AHORA = Date.parse("2026-10-08T10:30:00Z");
@@ -129,7 +130,7 @@ test("capas: valor en un punto, fila Mercator y píxeles transparentes sin dato"
 });
 
 test("capas: index.html las pinta con atribución de Copernicus y explicación", () => {
-  const html = readFileSync("index.html", "utf8");
+  const html = fuenteEs(readFileSync("index.html", "utf8"));
   assert.match(html, /id="toggleClorofila"/);
   assert.match(html, /id="toggleTempAgua"/);
   assert.match(html, /Generated using E\.U\. Copernicus Marine Service Information/);
@@ -253,7 +254,7 @@ test("admin: sin `fuente` el proxy no llama a Supabase (usuarios normales, como 
 });
 
 test("admin: index.html solo enseña el selector si es_admin() lo dice, y manda el JWT", () => {
-  const html = readFileSync("index.html", "utf8");
+  const html = fuenteEs(readFileSync("index.html", "utf8"));
   assert.match(html, /<div class="admin-fuentes" id="adminFuentes" hidden>/);
   assert.match(html, /supabase\.rpc\("es_admin"\)/);
   const meteo = readFileSync("assets/js/meteo.js", "utf8");
