@@ -6,6 +6,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { fuenteEs } from "./i18n-html.js";
 
 await import("../assets/js/sos-whatsapp.js");
 await import("../assets/js/agenda-contactos.js");
@@ -133,7 +134,7 @@ test("ya guardado: mismo WhatsApp o mismo email", () => {
 });
 
 test("alarma.html: carga el módulo tras sos-whatsapp.js, botón y nota honesta, sin on*=", () => {
-  const html = readFileSync(new URL("../alarma.html", import.meta.url), "utf8");
+  const html = fuenteEs(readFileSync(new URL("../alarma.html", import.meta.url), "utf8"));
   const iSos = html.indexOf('src="/assets/js/sos-whatsapp.js"');
   const iAgenda = html.indexOf('src="/assets/js/agenda-contactos.js"');
   assert.ok(iSos > 0 && iAgenda > iSos);

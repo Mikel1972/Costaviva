@@ -13,9 +13,9 @@
 // Sin on*= (CSP con nonce): el diario engancha los eventos con
 // addEventListener.
 
-export const TEXTO_CASILLA =
-  "Compartir esta captura de forma anónima (especie, talla, fecha, zona aproximada de ~5 km y condiciones; " +
-  "nunca tu nombre ni el punto exacto). Puedes retirarla cuando quieras.";
+import { I18n } from "./i18n-modulo.js";
+
+export const TEXTO_CASILLA = I18n.t("compartir.casilla");
 
 export async function cargarCompartidas(supabase) {
   try {
@@ -35,12 +35,12 @@ export function htmlCasillaCompartir(marcada = false) {
   return `
       <label class="checkbox" for="capturaCompartir" style="display:flex; gap:8px; align-items:flex-start; font-size:12px; color:#42585F; margin-top:10px;">
         <input type="checkbox" id="capturaCompartir" ${marcada ? "checked" : ""} style="width:auto; margin-top:2px;" />
-        <span>${escaparAtributo(TEXTO_CASILLA)} <a href="/privacidad#comparte-tu-captura" target="_blank" rel="noopener">Qué se comparte</a></span>
+        <span>${escaparAtributo(TEXTO_CASILLA)} <a href="/privacidad#comparte-tu-captura" target="_blank" rel="noopener">${I18n.t("compartir.que")}</a></span>
       </label>`;
 }
 
 export function htmlEtiquetaCompartida() {
-  return `<div class="detalle" style="color:#2F6B5E;">🤝 Compartida de forma anónima</div>`;
+  return `<div class="detalle" style="color:#2F6B5E;">${I18n.t("compartir.etiqueta")}</div>`;
 }
 
 // Deja la marca como pide la casilla. Devuelve { ok, error }.

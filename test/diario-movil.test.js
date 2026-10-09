@@ -6,11 +6,13 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { fuenteEs } from "./i18n-html.js";
 import {
   boyaMasCercana, aplicarBoyaASerie, fmtDecimal, textoOleaje, textoCeboAparejo,
 } from "../assets/js/condiciones-salida.js";
 
-const html = (f) => readFileSync(new URL(`../${f}`, import.meta.url), "utf8");
+// Tal como se lee en español (sin los marcadores de idioma, test/i18n-html.js).
+const html = (f) => fuenteEs(readFileSync(new URL(`../${f}`, import.meta.url), "utf8"));
 
 test("oleaje: un valor de boya sale una vez y con coma", () => {
   assert.equal(textoOleaje(1.9, 1.9), "1,9 m");

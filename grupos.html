@@ -3,7 +3,11 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-<title>Grupos — Costaviva</title>
+<!-- Idiomas (2026-10-09): diccionarios y I18n.t(); en español no cambia nada. Ver assets/js/i18n.js. -->
+<script src="/assets/i18n/es.js"></script>
+<script src="/assets/i18n/en.js"></script>
+<script src="/assets/js/i18n.js"></script>
+<title data-i18n="grupos.titulo_pagina">Grupos — Costaviva</title>
 <link rel="manifest" href="manifest.json" />
 <link rel="icon" href="icon.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="/assets/iconos/apple-touch-icon.png" />
@@ -94,72 +98,74 @@
     <source media="(orientation: landscape)" srcset="/assets/inicio/rompiente-ancha.webp" type="image/webp">
     <source media="(orientation: landscape)" srcset="/assets/inicio/rompiente-ancha.jpg">
     <source srcset="/assets/inicio/rompiente-movil.webp" type="image/webp">
-    <img class="pantalla-inicio__foto" src="/assets/inicio/rompiente-movil.jpg" width="720" height="1280" fetchpriority="high" alt="Ola rompiendo contra una costa rocosa mientras un pescador lanza su caña">
+    <img class="pantalla-inicio__foto" src="/assets/inicio/rompiente-movil.jpg" width="720" height="1280" fetchpriority="high" alt="Ola rompiendo contra una costa rocosa mientras un pescador lanza su caña" data-i18n-alt="comun.inicio.alt_foto">
   </picture>
   <div class="pantalla-inicio__marca">
     <svg class="marca-logo" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><circle class="marca-fondo" cx="20" cy="20" r="19"/><path class="marca-pez" d="M9 17c4-6.5 14-6.5 19 0-5 6.5-15 6.5-19 0z"/><path class="marca-pez" d="M27.5 17l6-4.5v9z"/><circle class="marca-ojo" cx="13.5" cy="16" r="1.4"/><path class="marca-ola" d="M5 28c3.5-3.2 6.5-3.2 10 0s6.5 3.2 10 0 6.5-3.2 10 0"/></svg>
     <p class="pantalla-inicio__nombre logotipo">Costaviva</p>
-    <p class="pantalla-inicio__frase">El mar de hoy, antes de salir a pescar</p>
-    <p class="pantalla-inicio__estado" role="status"><span class="pantalla-inicio__girando" aria-hidden="true"></span>Comprobando acceso…</p>
+    <p class="pantalla-inicio__frase" data-i18n="comun.inicio.frase">El mar de hoy, antes de salir a pescar</p>
+    <p class="pantalla-inicio__estado" role="status"><span class="pantalla-inicio__girando" aria-hidden="true"></span><span data-i18n="comun.inicio.comprobando">Comprobando acceso…</span></p>
   </div>
 </div>
 <!-- /pantalla-inicio -->
+<script>I18n.aplicarInicio();</script>
 
 <header>
-  <a href="/" class="enlace-marca" aria-label="Costaviva, ir al mapa"><svg class="marca-logo" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><circle class="marca-fondo" cx="20" cy="20" r="19"/><path class="marca-pez" d="M9 17c4-6.5 14-6.5 19 0-5 6.5-15 6.5-19 0z"/><path class="marca-pez" d="M27.5 17l6-4.5v9z"/><circle class="marca-ojo" cx="13.5" cy="16" r="1.4"/><path class="marca-ola" d="M5 28c3.5-3.2 6.5-3.2 10 0s6.5 3.2 10 0 6.5-3.2 10 0"/></svg></a>
+  <a href="/" class="enlace-marca" aria-label="Costaviva, ir al mapa" data-i18n-aria-label="comun.ir_al_mapa"><svg class="marca-logo" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><circle class="marca-fondo" cx="20" cy="20" r="19"/><path class="marca-pez" d="M9 17c4-6.5 14-6.5 19 0-5 6.5-15 6.5-19 0z"/><path class="marca-pez" d="M27.5 17l6-4.5v9z"/><circle class="marca-ojo" cx="13.5" cy="16" r="1.4"/><path class="marca-ola" d="M5 28c3.5-3.2 6.5-3.2 10 0s6.5 3.2 10 0 6.5-3.2 10 0"/></svg></a>
   <div class="titulos">
-    <h1>👥 Grupos</h1>
-    <p>Comparte ubicaciones, capturas y calendario con tu cuadrilla — nadie tiene más permisos que nadie.</p>
+    <h1 data-i18n="grupos.titulo">👥 Grupos</h1>
+    <p data-i18n="grupos.subtitulo">Comparte ubicaciones, capturas y calendario con tu cuadrilla — nadie tiene más permisos que nadie.</p>
   </div>
-  <a id="enlaceAdmin" class="cuenta-menu-btn" href="/admin.html" title="Admin" aria-label="Administración" style="display:none;">⚙️</a>
+  <a id="enlaceAdmin" class="cuenta-menu-btn" href="/admin.html" title="Admin" aria-label="Administración" style="display:none;" data-i18n-aria-label="comun.administracion" data-i18n-title="comun.admin">⚙️</a>
   <div class="cuenta-menu-wrap">
-    <button class="cuenta-menu-btn" id="btnCuentaMenu" type="button" aria-label="Cuenta">👤</button>
+    <button class="cuenta-menu-btn" id="btnCuentaMenu" type="button" aria-label="Cuenta" data-i18n-aria-label="comun.cuenta">👤</button>
     <div class="cuenta-menu-dropdown" id="cuentaMenuDropdown">
-      <button type="button" id="btnInvitarAmigo">📤 Invitar a un amigo</button>
-      <button type="button" id="btnMiSuscripcion">💳 Mi suscripción</button>
-      <button type="button" id="btnCerrarSesion">🚪 Cerrar sesión</button>
+      <button type="button" id="btnInvitarAmigo" data-i18n="comun.menu.invitar_amigo">📤 Invitar a un amigo</button>
+      <button type="button" id="btnMiSuscripcion" data-i18n="comun.menu.suscripcion">💳 Mi suscripción</button>
+      <button type="button" id="btnCerrarSesion" data-i18n="comun.menu.cerrar_sesion">🚪 Cerrar sesión</button>
+      <div data-i18n-selector></div>
     </div>
   </div>
 </header>
 
 <div class="contenido">
   <div class="seccion">
-    <h2>Mi apodo</h2>
-    <p class="explicacion">Es lo que ven los demás miembros de tus grupos junto a lo que compartas — nunca tu email.</p>
-    <label for="miApodo">Apodo</label>
-    <input type="text" id="miApodo" placeholder="ej. Mikel" maxlength="40" />
-    <button class="principal" id="btnGuardarApodo">Guardar apodo</button>
+    <h2 data-i18n="grupos.mi_apodo">Mi apodo</h2>
+    <p class="explicacion" data-i18n="grupos.apodo_explica">Es lo que ven los demás miembros de tus grupos junto a lo que compartas — nunca tu email.</p>
+    <label for="miApodo" data-i18n="grupos.apodo">Apodo</label>
+    <input type="text" id="miApodo" placeholder="ej. Mikel" maxlength="40" data-i18n-placeholder="grupos.ej_apodo" />
+    <button class="principal" id="btnGuardarApodo" data-i18n="grupos.guardar_apodo">Guardar apodo</button>
     <div class="mensaje" id="mensajeApodo"></div>
   </div>
 
   <div class="seccion">
-    <h2>Unirse a un grupo</h2>
-    <p class="explicacion">Pega aquí el código o enlace de invitación que te ha pasado alguien de tu cuadrilla.</p>
-    <label for="codigoUnirse">Código de invitación</label>
-    <input type="text" id="codigoUnirse" placeholder="ej. AB12CD34" />
-    <button class="principal" id="btnUnirse">Unirme</button>
+    <h2 data-i18n="grupos.unirse">Unirse a un grupo</h2>
+    <p class="explicacion" data-i18n="grupos.unirse_explica">Pega aquí el código o enlace de invitación que te ha pasado alguien de tu cuadrilla.</p>
+    <label for="codigoUnirse" data-i18n="grupos.codigo">Código de invitación</label>
+    <input type="text" id="codigoUnirse" placeholder="ej. AB12CD34" data-i18n-placeholder="grupos.ej_codigo" />
+    <button class="principal" id="btnUnirse" data-i18n="grupos.unirme">Unirme</button>
     <div class="mensaje" id="mensajeUnirse"></div>
   </div>
 
   <div class="seccion">
-    <h2>Crear un grupo</h2>
-    <label for="nombreGrupo">Nombre del grupo</label>
-    <input type="text" id="nombreGrupo" placeholder="ej. Cuadrilla Mundaka" maxlength="60" />
-    <button class="principal" id="btnCrearGrupo">Crear grupo</button>
+    <h2 data-i18n="grupos.crear_titulo">Crear un grupo</h2>
+    <label for="nombreGrupo" data-i18n="grupos.nombre_grupo">Nombre del grupo</label>
+    <input type="text" id="nombreGrupo" placeholder="ej. Cuadrilla Mundaka" maxlength="60" data-i18n-placeholder="grupos.ej_nombre" />
+    <button class="principal" id="btnCrearGrupo" data-i18n="grupos.crear">Crear grupo</button>
     <div class="mensaje" id="mensajeCrearGrupo"></div>
   </div>
 
   <div class="seccion">
-    <h2>Mis grupos</h2>
-    <div id="listaGrupos"><p style="font-size:12px; color:var(--tinta-3);">Cargando…</p></div>
+    <h2 data-i18n="grupos.mis_grupos">Mis grupos</h2>
+    <div id="listaGrupos"><p style="font-size:12px; color:var(--tinta-3);" data-i18n="comun.cargando">Cargando…</p></div>
   </div>
 </div>
 
 <nav class="tabs-nav">
-  <a href="/"><span class="icono"><svg class="ico-mapa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span>Mapa</a>
-  <a href="/diario.html"><span class="icono"><svg class="ico-diario" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A2 2 0 0 1 6 2.5h14V19H6a2 2 0 0 0-2 2V4.5z"/><path d="M4 19a2 2 0 0 1 2-2h14"/></svg></span>Diario</a>
-  <a href="/alarma.html"><span class="icono"><svg class="ico-alarma" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 2.5 20h19L12 3.2z"/><line x1="12" y1="9.5" x2="12" y2="14"/><circle cx="12" cy="17" r="0.9" fill="currentColor" stroke="none"/></svg></span>Alarma</a>
-  <a href="/grupos.html" class="activa"><span class="icono"><svg class="ico-grupos" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.3 19.5c0-3.5 2.6-5.7 5.7-5.7s5.7 2.2 5.7 5.7"/><circle cx="17" cy="9" r="2.6"/><path d="M15.3 13.9c2.5.4 4.2 2.3 4.2 5.6"/></svg><span class="punto-novedades-grupos" id="puntoNovedadesGrupos" hidden></span></span>Grupos</a>
+  <a href="/"><span class="icono"><svg class="ico-mapa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span><span data-i18n="comun.tab.mapa">Mapa</span></a>
+  <a href="/diario.html"><span class="icono"><svg class="ico-diario" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A2 2 0 0 1 6 2.5h14V19H6a2 2 0 0 0-2 2V4.5z"/><path d="M4 19a2 2 0 0 1 2-2h14"/></svg></span><span data-i18n="comun.tab.diario">Diario</span></a>
+  <a href="/alarma.html"><span class="icono"><svg class="ico-alarma" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 2.5 20h19L12 3.2z"/><line x1="12" y1="9.5" x2="12" y2="14"/><circle cx="12" cy="17" r="0.9" fill="currentColor" stroke="none"/></svg></span><span data-i18n="comun.tab.alarma">Alarma</span></a>
+  <a href="/grupos.html" class="activa"><span class="icono"><svg class="ico-grupos" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.3 19.5c0-3.5 2.6-5.7 5.7-5.7s5.7 2.2 5.7 5.7"/><circle cx="17" cy="9" r="2.6"/><path d="M15.3 13.9c2.5.4 4.2 2.3 4.2 5.6"/></svg><span class="punto-novedades-grupos" id="puntoNovedadesGrupos" hidden></span></span><span data-i18n="comun.tab.grupos">Grupos</span></a>
 </nav>
 
 <script src="/assets/js/errores.js"></script>
@@ -223,12 +229,12 @@ document.getElementById("btnCuentaMenu").addEventListener("click", (e) => {
 });
 document.addEventListener("click", () => document.getElementById("cuentaMenuDropdown").classList.remove("visible"));
 document.getElementById("btnInvitarAmigo").addEventListener("click", async () => {
-  const texto = "Échale un ojo a Costaviva, la app de condiciones costeras y diario de pesca que estoy usando: https://costaviva.org/";
+  const texto = I18n.t("comun.compartir_app");
   if (navigator.share) {
     try { await navigator.share({ text: texto }); } catch (e) { /* usuario canceló */ }
   } else {
     await navigator.clipboard.writeText(texto);
-    alert("Tu navegador no soporta compartir directamente — el texto se copió al portapapeles.");
+    alert(I18n.t("comun.copiado_portapapeles"));
   }
 });
 
@@ -245,9 +251,9 @@ async function cargarApodo() {
 }
 document.getElementById("btnGuardarApodo").addEventListener("click", async () => {
   const nombre = document.getElementById("miApodo").value.trim();
-  if (!nombre) { mostrarMensaje("mensajeApodo", "Escribe un apodo.", "error"); return; }
+  if (!nombre) { mostrarMensaje("mensajeApodo", I18n.t("grupos.escribe_apodo"), "error"); return; }
   const { error } = await supabase.from("perfiles").update({ nombre }).eq("id", usuario.id);
-  if (error) mostrarMensaje("mensajeApodo", traducirError(error, "No se ha podido guardar el apodo. Inténtalo de nuevo."), "error");
+  if (error) mostrarMensaje("mensajeApodo", traducirError(error, I18n.t("grupos.error_apodo")), "error");
   else mostrarMensaje("mensajeApodo", "Apodo guardado.", "ok");
 });
 
@@ -257,9 +263,9 @@ async function unirseConCodigo(codigoBruto) {
   let codigo = codigoBruto.trim();
   const m = codigo.match(/[?&]codigo=([^&]+)/);
   if (m) codigo = decodeURIComponent(m[1]);
-  if (!codigo) { mostrarMensaje("mensajeUnirse", "Pega un código o enlace de invitación.", "error"); return; }
+  if (!codigo) { mostrarMensaje("mensajeUnirse", I18n.t("grupos.pega_codigo"), "error"); return; }
   const { error } = await supabase.rpc("unirse_a_grupo", { p_codigo: codigo });
-  if (error) { mostrarMensaje("mensajeUnirse", traducirError(error, "No se ha podido unir al grupo. Revisa el código e inténtalo de nuevo."), "error"); return; }
+  if (error) { mostrarMensaje("mensajeUnirse", traducirError(error, I18n.t("grupos.error_unirse")), "error"); return; }
   registrarEvento("unirse_grupo");
   mostrarMensaje("mensajeUnirse", "Te has unido al grupo.", "ok");
   document.getElementById("codigoUnirse").value = "";
@@ -270,15 +276,15 @@ document.getElementById("btnUnirse").addEventListener("click", () => unirseConCo
 const codigoDeLaURL = new URLSearchParams(window.location.search).get("codigo");
 if (codigoDeLaURL) {
   document.getElementById("codigoUnirse").value = codigoDeLaURL;
-  if (confirm("¿Unirte al grupo de esta invitación?")) unirseConCodigo(codigoDeLaURL);
+  if (confirm(I18n.t("grupos.confirmar_unirse"))) unirseConCodigo(codigoDeLaURL);
 }
 
 // ---- Crear grupo ----
 document.getElementById("btnCrearGrupo").addEventListener("click", async () => {
   const nombre = document.getElementById("nombreGrupo").value.trim();
-  if (!nombre) { mostrarMensaje("mensajeCrearGrupo", "Ponle un nombre al grupo.", "error"); return; }
+  if (!nombre) { mostrarMensaje("mensajeCrearGrupo", I18n.t("grupos.ponle_nombre"), "error"); return; }
   const { error } = await supabase.rpc("crear_grupo", { p_nombre: nombre });
-  if (error) { mostrarMensaje("mensajeCrearGrupo", traducirError(error, "No se ha podido crear el grupo. Inténtalo de nuevo."), "error"); return; }
+  if (error) { mostrarMensaje("mensajeCrearGrupo", traducirError(error, I18n.t("grupos.error_crear")), "error"); return; }
   registrarEvento("crear_grupo");
   document.getElementById("nombreGrupo").value = "";
   mostrarMensaje("mensajeCrearGrupo", "Grupo creado.", "ok");
@@ -298,7 +304,7 @@ function generarCodigo() {
 async function generarInvitacion(grupoId, contenedorEl) {
   const codigo = generarCodigo();
   const { error } = await supabase.from("invitaciones_grupo").insert({ grupo_id: grupoId, creado_por: usuario.id, codigo });
-  if (error) { alert(traducirError(error, "No se ha podido generar la invitación. Inténtalo de nuevo.")); return; }
+  if (error) { alert(traducirError(error, I18n.t("grupos.error_invitacion"))); return; }
   const enlace = `${window.location.origin}/grupos.html?codigo=${codigo}`;
   contenedorEl.innerHTML = `<div class="invitacion-caja">${enlace}</div>`;
 }
@@ -312,7 +318,7 @@ async function actividadCompartidaHTML(grupoId) {
 
   const filaCalendario = (s) =>
     `<div class="fila-actividad"><span class="autor">${s.autor_nombre}</span> — ${s.fecha}
-      <div class="detalle">📍 ${s.spot_nombre || "Ubicación actual"}${s.tipo_salida ? ` · ${s.tipo_salida}` : ""}</div>
+      <div class="detalle">📍 ${s.spot_nombre || I18n.t("grupos.ubicacion_actual")}${s.tipo_salida ? ` · ${I18n.existe(`comun.tipo_salida.${s.tipo_salida}`) ? I18n.t(`comun.tipo_salida.${s.tipo_salida}`) : s.tipo_salida}` : ""}</div>
     </div>`;
   const filaCaptura = (c) =>
     `<div class="fila-actividad"><span class="autor">${c.autor_nombre}</span> — 🐟 ${c.especie}
@@ -323,12 +329,12 @@ async function actividadCompartidaHTML(grupoId) {
 
   return `
     <div class="actividad-compartida">
-      <h3>📅 Calendario compartido (${calendario?.length || 0})</h3>
-      ${calendario?.length ? calendario.map(filaCalendario).join("") : `<p style="font-size:11.5px; color:var(--tinta-3);">Nada compartido todavía.</p>`}
-      <h3>🐟 Capturas compartidas (${capturas?.length || 0})</h3>
-      ${capturas?.length ? capturas.map(filaCaptura).join("") : `<p style="font-size:11.5px; color:var(--tinta-3);">Nada compartido todavía.</p>`}
-      <h3>📍 Ubicaciones compartidas (${ubicaciones?.length || 0})</h3>
-      ${ubicaciones?.length ? ubicaciones.map(filaUbicacion).join("") : `<p style="font-size:11.5px; color:var(--tinta-3);">Nada compartido todavía.</p>`}
+      <h3>${I18n.t("grupos.calendario_compartido", { n: calendario?.length || 0 })}</h3>
+      ${calendario?.length ? calendario.map(filaCalendario).join("") : `<p style="font-size:11.5px; color:var(--tinta-3);">${I18n.t("grupos.nada_compartido")}</p>`}
+      <h3>${I18n.t("grupos.capturas_compartidas", { n: capturas?.length || 0 })}</h3>
+      ${capturas?.length ? capturas.map(filaCaptura).join("") : `<p style="font-size:11.5px; color:var(--tinta-3);">${I18n.t("grupos.nada_compartido")}</p>`}
+      <h3>${I18n.t("grupos.ubicaciones_compartidas", { n: ubicaciones?.length || 0 })}</h3>
+      ${ubicaciones?.length ? ubicaciones.map(filaUbicacion).join("") : `<p style="font-size:11.5px; color:var(--tinta-3);">${I18n.t("grupos.nada_compartido")}</p>`}
     </div>
   `;
 }
@@ -338,21 +344,21 @@ function tarjetaGrupoHTML(grupo, miembro) {
     <div class="tarjeta-grupo" data-grupo-id="${grupo.id}">
       <div class="nombre-grupo">${grupo.nombre}</div>
       <div class="compartir-toggles">
-        <label><input type="checkbox" class="chk-compartir" data-campo="compartir_ubicaciones" ${miembro.compartir_ubicaciones ? "checked" : ""} /> Compartir mis ubicaciones</label>
-        <label><input type="checkbox" class="chk-compartir chk-capturas-master" data-campo="compartir_capturas" ${miembro.compartir_capturas ? "checked" : ""} /> Compartir mis capturas</label>
+        <label><input type="checkbox" class="chk-compartir" data-campo="compartir_ubicaciones" ${miembro.compartir_ubicaciones ? "checked" : ""} /> ${I18n.t("grupos.compartir_ubicaciones")}</label>
+        <label><input type="checkbox" class="chk-compartir chk-capturas-master" data-campo="compartir_capturas" ${miembro.compartir_capturas ? "checked" : ""} /> ${I18n.t("grupos.compartir_capturas")}</label>
         <div class="sub-toggles-capturas" style="${miembro.compartir_capturas ? "" : "display:none;"}">
-          <label><input type="checkbox" class="chk-compartir" data-campo="compartir_capturas_costa" ${miembro.compartir_capturas_costa ? "checked" : ""} /> 🪨 Costa</label>
-          <label><input type="checkbox" class="chk-compartir" data-campo="compartir_capturas_embarcacion" ${miembro.compartir_capturas_embarcacion ? "checked" : ""} /> 🚤 Embarcación</label>
-          <label><input type="checkbox" class="chk-compartir" data-campo="compartir_capturas_submarinismo" ${miembro.compartir_capturas_submarinismo ? "checked" : ""} /> 🤿 Submarinismo</label>
+          <label><input type="checkbox" class="chk-compartir" data-campo="compartir_capturas_costa" ${miembro.compartir_capturas_costa ? "checked" : ""} /> ${I18n.t("mapa.ubic.tipo_costa")}</label>
+          <label><input type="checkbox" class="chk-compartir" data-campo="compartir_capturas_embarcacion" ${miembro.compartir_capturas_embarcacion ? "checked" : ""} /> ${I18n.t("mapa.ubic.tipo_embarcacion")}</label>
+          <label><input type="checkbox" class="chk-compartir" data-campo="compartir_capturas_submarinismo" ${miembro.compartir_capturas_submarinismo ? "checked" : ""} /> ${I18n.t("grupos.submarinismo")}</label>
         </div>
-        <label><input type="checkbox" class="chk-compartir" data-campo="compartir_calendario" ${miembro.compartir_calendario ? "checked" : ""} /> Compartir mi calendario</label>
+        <label><input type="checkbox" class="chk-compartir" data-campo="compartir_calendario" ${miembro.compartir_calendario ? "checked" : ""} /> ${I18n.t("grupos.compartir_calendario")}</label>
       </div>
       <div class="fila-botones">
-        <button class="secundario btn-invitar">🔗 Invitar</button>
-        <button class="secundario peligro btn-salir-grupo">Salir del grupo</button>
+        <button class="secundario btn-invitar">${I18n.t("grupos.invitar")}</button>
+        <button class="secundario peligro btn-salir-grupo">${I18n.t("grupos.salir")}</button>
       </div>
       <div class="invitacion-zona"></div>
-      <div class="actividad-zona"><p style="font-size:11.5px; color:var(--tinta-3); margin-top:10px;">Cargando actividad compartida…</p></div>
+      <div class="actividad-zona"><p style="font-size:11.5px; color:var(--tinta-3); margin-top:10px;">${I18n.t("grupos.cargando_actividad")}</p></div>
     </div>
   `;
 }
@@ -363,9 +369,9 @@ async function cargarGrupos() {
     .from("miembros_grupo")
     .select("*, grupos(id, nombre)")
     .eq("user_id", usuario.id);
-  if (error) { cont.innerHTML = ""; const p = document.createElement("p"); p.style.cssText = "font-size:12px; color:var(--peligro);"; p.textContent = traducirError(error, "No se han podido cargar tus grupos. Recarga la página."); cont.appendChild(p); return; }
+  if (error) { cont.innerHTML = ""; const p = document.createElement("p"); p.style.cssText = "font-size:12px; color:var(--peligro);"; p.textContent = traducirError(error, I18n.t("grupos.error_cargar")); cont.appendChild(p); return; }
   if (!miembros || !miembros.length) {
-    cont.innerHTML = `<p style="font-size:12px; color:var(--tinta-3);">Todavía no perteneces a ningún grupo — crea uno o únete con un código.</p>`;
+    cont.innerHTML = `<p style="font-size:12px; color:var(--tinta-3);">${I18n.t("grupos.sin_grupos")}</p>`;
     return;
   }
 
@@ -395,7 +401,7 @@ async function cargarGrupos() {
           .update({ [chk.dataset.campo]: chk.checked })
           .eq("grupo_id", grupoId)
           .eq("user_id", usuario.id);
-        if (errUpd) alert(`No se ha podido guardar: ${errUpd.message}`);
+        if (errUpd) alert(I18n.t("comun.error_guardar_detalle", { detalle: errUpd.message }));
       });
     });
 
@@ -412,7 +418,7 @@ async function cargarGrupos() {
     });
 
     tarjetaEl.querySelector(".btn-salir-grupo").addEventListener("click", async () => {
-      if (!confirm("¿Salir de este grupo? Dejarás de ver y de compartir contenido con él.")) return;
+      if (!confirm(I18n.t("grupos.confirmar_salir"))) return;
       await supabase.from("miembros_grupo").delete().eq("grupo_id", grupoId).eq("user_id", usuario.id);
       // Si era el último miembro, esto borra también la fila de grupos —
       // si quedan más, la RPC rechaza el borrado y lo ignoramos aquí sin
