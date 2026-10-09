@@ -98,7 +98,12 @@ jobs:
           # sean COMPLETOS (ver ZONAS en generar-post-instagram.mjs). Sin
           # comitearlo, cada pasada empezaría de cero y publicaría siempre la
           # primera zona. Añadido 2026-09-25 junto con la rotación.
-          git add assets/marketing/ scripts/marketing/rotacion-zonas.json scripts/marketing/calendario-estado.json
+          git add assets/marketing/
+          # Con spot forzado no se escriben todos los ficheros de estado:
+          # añadir solo los que existen (si no, git add falla).
+          for f in scripts/marketing/rotacion-zonas.json scripts/marketing/calendario-estado.json; do
+            if [ -e "$f" ]; then git add "$f"; fi
+          done
           # Bug real visto en producción 2026-09-19: si se relanza el robot
           # el mismo día para el mismo spot/especie y los datos no han
           # cambiado (p.ej. una prueba manual poco después de la pasada
