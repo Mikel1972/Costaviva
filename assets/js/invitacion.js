@@ -46,6 +46,7 @@ export function esDefinitivo(codigo) {
 export function mensajeExito(r) {
   if (r.descuento === 100) {
     return r.acceso_hasta
+      // Hora de Madrid a propósito (ZONA_NEGOCIO): las invitaciones caducan a las 00:00 de Madrid (invitaciones.js).
       ? I18n.t("inv.exito_hasta", { fecha: new Date(new Date(r.acceso_hasta).getTime() - 1).toLocaleDateString(I18n.locale(), { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Madrid" }) })
       : I18n.t("inv.exito_siempre");
   }

@@ -234,7 +234,10 @@ export async function conCache(context, generar) {
   return resp;
 }
 
-// Hora actual de Madrid como "AAAA-MM-DDTHH:00" (formato de Open-Meteo).
+// Hora actual de Madrid como "AAAA-MM-DDTHH:00" (formato de Open-Meteo). Solo
+// para lo que no es de un spot (el mes de las páginas de especies); el "ahora"
+// de un spot va en su zona (carga.js, regiones.js).
+// Hora de Madrid a propósito (ver comentario de arriba).
 export function ahoraMadridISO(fecha = new Date()) {
   const p = Object.fromEntries(
     new Intl.DateTimeFormat("en-CA", {

@@ -34,7 +34,8 @@
 // (Ese riesgo residual ya no se acepta desde 2026-10-07: ver más abajo.)
 
 import { secretoValido } from "./_lib/secreto.js";
-import { SPOTS, coeficientePorSpot } from "./prevision.js";
+import { SPOTS, coeficientePorSpot, pedirPorZona } from "./prevision.js";
+import { zonaDeSpot } from "../assets/js/regiones.js";
 import { pedirDatosMeteo } from "./_lib/fuentes.js";
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
@@ -84,6 +85,9 @@ export async function onRequestPost(context) {
   try {
     const lats = SPOTS.map((s) => s.lat).join(",");
     const lons = SPOTS.map((s) => s.lon).join(",");
+    // Solo `current` (el valor de ahora): la zona no cambia el dato, así que
+    // va una sola consulta para todos los spots, con la de Madrid de siempre
+    // (a propósito).
     const datos = await pedirDatosMeteo(
       "forecast",
       `latitude=${lats}&longitude=${lons}&current=pressure_msl&timezone=Europe%2FMadrid`,
@@ -133,18 +137,18 @@ export async function onRequestPost(context) {
       // Al correr en un cron y no en la petición de cada usuario, un
       // fallo puntual (o que esto tarde más de lo normal) no afecta a
       // nadie visitando la web esa hora.
-      const lats = spotsLote.map((s) => s.lat).join(",");
-      const lons = spotsLote.map((s) => s.lon).join(",");
-      const datos = await pedirDatosMeteo(
+      // Una consulta por zona horaria (los días del coeficiente son días
+      // locales del spot: Canarias va aparte, ver pedirPorZona).
+      const lista = await pedirPorZona(
+        spotsLote,
         "marine",
-        `latitude=${lats}&longitude=${lons}&timezone=Europe%2FMadrid&past_days=8&forecast_days=16&hourly=sea_level_height_msl`,
+        "past_days=8&forecast_days=16&hourly=sea_level_height_msl",
         { env: context.env }
       );
-      const lista = Array.isArray(datos) ? datos : [datos];
       const filas = spotsLote
         .map((spot, i) => ({
           spot_slug: spot.slug,
-          valor: coeficientePorSpot(lista[i]?.hourly?.time || [], lista[i]?.hourly?.sea_level_height_msl || []),
+          valor: coeficientePorSpot(lista[i]?.hourly?.time || [], lista[i]?.hourly?.sea_level_height_msl || [], zonaDeSpot(spot)),
         }))
         .filter((f) => Number.isFinite(f.valor));
 

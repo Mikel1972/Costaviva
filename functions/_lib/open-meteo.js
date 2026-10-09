@@ -20,8 +20,11 @@
 // algunos endpoints (p. ej. /prevision) devuelven el texto del error en su
 // JSON público.
 //
-// Sin dependencias ni APIs de Cloudflare: lo importan las Pages Functions y
-// también scripts de Node (scripts/turbidez/medir-turbidez.mjs) y los tests.
+// Sin APIs de Cloudflare (solo depende de assets/js/regiones.js): lo importan
+// las Pages Functions y también scripts de Node (scripts/turbidez/medir-turbidez.mjs)
+// y los tests.
+
+import { ZONAS_HORARIAS } from "../../assets/js/regiones.js";
 
 export const APIS_OPEN_METEO = {
   forecast: { libre: "api.open-meteo.com", comercial: "customer-api.open-meteo.com", ruta: "/v1/forecast" },
@@ -124,7 +127,7 @@ export const PROXY_PERMITIDO = {
 
 // Si toda la consulta es de días ya pasados, el dato no cambia: caché larga.
 const TTL_PASADO_MIN = 24 * 60;
-const ZONAS_HORARIAS = new Set(["Europe/Madrid", "UTC", "GMT"]);
+// Zonas admitidas: las de las regiones (assets/js/regiones.js) + UTC/GMT.
 const UNIDADES_VIENTO = new Set(["kmh", "ms", "kn"]);
 const RE_FECHA = /^\d{4}-\d{2}-\d{2}$/;
 const RE_NUM = /^-?\d{1,3}(\.\d+)?$/;
@@ -221,8 +224,8 @@ export function validarConsultaProxy(api, searchParams, { hoy = hoyUTC() } = {})
     const span = diasEntre(sd, ed);
     if (span < 0 || span > MAX_DIAS_VENTANA) return { ok: false, error: `ventana de fechas: 0-${MAX_DIAS_VENTANA} días` };
     salida.push(["start_date", sd], ["end_date", ed]);
-    // Margen de un día: con timezone=Europe/Madrid "ayer" en UTC puede ser
-    // todavía hoy en local.
+    // Margen de un día: con una zona por delante de UTC (Madrid, Auckland)
+    // "ayer" en UTC puede ser todavía hoy en local.
     todoPasado = diasEntre(ed, hoy) >= 2;
   }
 

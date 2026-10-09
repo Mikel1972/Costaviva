@@ -28,6 +28,7 @@
 
 import { faseLunar } from "./ventana-actividad.js";
 import { t, I18n } from "./i18n-modulo.js";
+import { desfaseEstandarMinutos, ZONA_POR_DEFECTO } from "./regiones.js";
 
 // Open-Meteo Forecast/Marine sirven como mucho ~92 días hacia atrás
 // (past_days ≤ 92) y 16 hacia delante. Margen de 2 días por la zona horaria.
@@ -84,7 +85,7 @@ export function horaRedondeada(fecha, hhmm) {
   return { fecha, hora: m >= 30 ? h + 1 : h };
 }
 
-// Índice de la serie horaria (etiquetas "AAAA-MM-DDTHH:00", hora de Madrid)
+// Índice de la serie horaria (etiquetas "AAAA-MM-DDTHH:00", hora local del punto)
 // para la salida. Nunca devuelve una hora de otro día distinto del de la
 // salida (o del siguiente, si la hora redondeada cruza medianoche):
 //   - con hora: la hora en punto más cercana de ESA fecha;
@@ -105,10 +106,11 @@ export function indiceHoraSalida(listaHoras, fecha, hhmm, { hoy, horaActual } = 
 
 // Luna de una fecha cualquiera (astronomía pura, ver faseLunar): mismos
 // nombres que /luna (USNO) y la iluminación en %, como luna_iluminacion.
-export function lunaDeFecha(fecha, hhmm = "12:00") {
+// `zona`: la del punto (regiones.js); la hora local se pasa a UTC con su
+// desfase de invierno (en Madrid -1 h, como siempre): sobra para la fase.
+export function lunaDeFecha(fecha, hhmm = "12:00", zona = ZONA_POR_DEFECTO) {
   const [h, m] = (hhmm || "12:00").split(":").map(Number);
-  // Hora de Madrid aproximada a UTC (-1/-2 h): sobra para la fase.
-  const ms = Date.parse(`${fecha}T00:00:00Z`) + ((h - 1) * 60 + m) * 60000;
+  const ms = Date.parse(`${fecha}T00:00:00Z`) + (h * 60 + m - desfaseEstandarMinutos(zona)) * 60000;
   const f = faseLunar(ms);
   const nombre = f.nombre.charAt(0).toUpperCase() + f.nombre.slice(1);
   return { fase: nombre, iluminacion: Math.round(50 * (1 - Math.cos(2 * Math.PI * f.fraccion))) };

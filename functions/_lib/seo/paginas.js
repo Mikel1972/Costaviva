@@ -15,6 +15,7 @@ import {
   NOMBRE_REGION_ESPECIES, regionEspeciesDeSpot, especiesDestacadas,
 } from "./datos.js";
 import { NOMBRE_MODALIDAD, MODALIDADES } from "../../../assets/js/ventana-actividad.js";
+import { zonaDeSpot } from "../../../assets/js/regiones.js";
 
 const nombreRegion = (r) => r.nombre.split(" (")[0];
 const ORG_LD = { "@type": "Organization", name: "Costaviva", url: `${DOMINIO}/`, logo: `${DOMINIO}/assets/iconos/icono-512.png` };
@@ -36,7 +37,7 @@ function bloqueCondiciones(cond, indice, spot) {
   ${indice.freza ? `<p class="nota">Está en freza: si lo pescas, devuélvelo.</p>` : ""}
 </div>`
     : "";
-  const hora = cond?.actualizado ? new Date(cond.actualizado).toLocaleString("es-ES", { timeZone: "Europe/Madrid", hour: "2-digit", minute: "2-digit" }) : null;
+  const hora = cond?.actualizado ? new Date(cond.actualizado).toLocaleString("es-ES", { timeZone: zonaDeSpot(spot), hour: "2-digit", minute: "2-digit" }) : null;
   return `<section class="tarjeta hoy" aria-labelledby="t-hoy">
 <h2 id="t-hoy">Condiciones de hoy${hora ? ` <small>(${hora})</small>` : ""}</h2>
 ${indiceHtml}

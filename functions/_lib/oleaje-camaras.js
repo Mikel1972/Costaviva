@@ -16,6 +16,8 @@
 // Nada de IA ni de API de pago: los números salen de contar píxeles de
 // espuma en GitHub Actions (ver CLAUDE.md, "Oleaje por cámara").
 
+import { isoLocal, zonaDeSpot, ZONA_POR_DEFECTO } from "../../assets/js/regiones.js";
+
 // Bandas de altura que se enseñan y que etiqueta Mikel (página
 // etiquetar-olas.html y botón "ola real que veo" del panel). `centro` es el
 // valor que entra en la calibración para una etiqueta de esa banda.
@@ -144,10 +146,15 @@ export function factorCamara(cociente, horas, peso = 1) {
   return +(1 + (cociente - 1) * w).toFixed(4);
 }
 
-// Hora local de Madrid "YYYY-MM-DDTHH:MM" de un instante (las horas del
-// modelo en /prevision vienen en hora de Madrid sin zona).
+// Hora local "YYYY-MM-DDTHH:MM" de un instante en la zona del spot (las horas
+// del modelo en /prevision vienen en esa hora local, sin zona). Por defecto
+// Madrid: todas las cámaras de oleaje están hoy en la Península.
+export function isoLocalSpot(ms, zona = ZONA_POR_DEFECTO) {
+  return isoLocal(ms, zona);
+}
+// Hora de Madrid a propósito: compatibilidad (tests y lecturas antiguas).
 export function isoLocalMadrid(ms) {
-  return new Date(ms).toLocaleString("sv-SE", { timeZone: "Europe/Madrid" }).replace(" ", "T").slice(0, 16);
+  return isoLocal(ms, "Europe/Madrid");
 }
 
 // Horas entre dos "YYYY-MM-DDTHH:MM" locales (mismo huso, sin zona).
@@ -182,7 +189,7 @@ export function aplicarCamarasASpots(spots, lecturas, ahoraMs = Date.now()) {
     if (!fuente || !s.bloques?.length || !lecturaVigente(lectura, ahoraMs)) return s;
     const cociente = cocienteCamaraModelo(lectura.estimacion, lectura.modeloCamara, lectura.errorRel);
     const peso = fuente.propia ? 1 : fuente.peso ?? 0.5;
-    const horaLectura = isoLocalMadrid(Date.parse(lectura.fecha));
+    const horaLectura = isoLocalSpot(Date.parse(lectura.fecha), zonaDeSpot(s));
     const info = {
       camara: fuente.camara,
       nombre: CAMARAS_OLEAJE[fuente.camara]?.nombre || fuente.camara,
@@ -330,7 +337,7 @@ export function camaraReferenciaDeSpot(spot, medida, ahoraMs = Date.now()) {
   return {
     altura,
     rango: [min, max],
-    hora: isoLocalMadrid(t).slice(11, 16),
+    hora: isoLocalSpot(t, zonaDeSpot(spot)).slice(11, 16),
     fecha: medida.fecha,
     camara: fuente.camara,
     nombre: cam.nombre,

@@ -17,6 +17,7 @@ import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { pedirOpenMeteo } from "../../functions/_lib/open-meteo.js";
 import { factorOleaje, SPOTS } from "../../functions/prevision.js";
+import { agruparPorZona, zonaPorCoordenadas } from "../../assets/js/regiones.js";
 
 export function leerJSON(ruta, defecto = null) {
   try { return JSON.parse(readFileSync(ruta, "utf8")); } catch { return defecto; }
@@ -99,7 +100,9 @@ export async function ultimaFila({ url, key }, tabla, columna) {
 }
 
 // ---------------------------------------------------------------------------
-// Open-Meteo: serie horaria (hora local de Madrid) de la fecha de un caso
+// Open-Meteo: serie horaria (hora local del punto, ver assets/js/regiones.js:
+// Madrid en la Península, Canarias, Lisboa, Azores o Madeira) de la fecha de un
+// caso. Es la misma zona con la que el diario busca la hora de la salida.
 // ---------------------------------------------------------------------------
 const sumarDias = (iso, d) => new Date(Date.parse(`${iso}T12:00:00Z`) + d * 86400e3).toISOString().slice(0, 10);
 
@@ -138,7 +141,7 @@ export async function seriesDeCasos(casos, { apiKey, hoy, maxLlamadas = 120, ped
     const fechas = lista.map((c) => c.fecha).sort();
     const ini = sumarDias(fechas[0], -5), fin = sumarDias(fechas[fechas.length - 1], 1);
     const { lat, lon } = lista[0];
-    const comun = { latitude: lat, longitude: lon, start_date: ini, end_date: fin, timezone: "Europe/Madrid" };
+    const comun = { latitude: lat, longitude: lon, start_date: ini, end_date: fin, timezone: zonaPorCoordenadas(lat, lon) };
     const atmApi = fin < sumarDias(hoy, -7) ? "archive" : "forecast";
     let marino = null, atm = null;
     try { marino = await pedir("marine", { ...comun, hourly: "wave_height,sea_level_height_msl,sea_surface_temperature" }, { apiKey }); } catch (e) { log(`marine ${k}: ${e.message}`); }
@@ -154,16 +157,21 @@ export async function seriesDeCasos(casos, { apiKey, hoy, maxLlamadas = 120, ped
 export const SLUGS_VIGIA = ["mundaka", "zarautz", "llanes", "cangas", "cadiz", "valencia", "palma", "laspalmas", "peniche"];
 export const SPOTS_VIGIA = SPOTS.filter((s) => SLUGS_VIGIA.includes(s.slug));
 
+// Una consulta por zona horaria (Las Palmas va en hora de Canarias).
 export async function seriesVigia({ apiKey, pedir = pedirOpenMeteo }) {
   if (!apiKey) return null;
-  const lat = SPOTS_VIGIA.map((s) => s.lat).join(","), lon = SPOTS_VIGIA.map((s) => s.lon).join(",");
-  const comun = { latitude: lat, longitude: lon, timezone: "Europe/Madrid", past_days: 5, forecast_days: 2 };
-  const [mar, atm] = await Promise.all([
-    pedir("marine", { ...comun, hourly: "wave_height,sea_level_height_msl,sea_surface_temperature" }, { apiKey }),
-    pedir("forecast", { ...comun, hourly: "wind_speed_10m,wind_direction_10m,pressure_msl,precipitation", wind_speed_unit: "kmh" }, { apiKey }),
-  ]);
-  const lm = Array.isArray(mar) ? mar : [mar], la = Array.isArray(atm) ? atm : [atm];
-  return SPOTS_VIGIA.map((s, i) => ({ ...s, serie: serieDesdeOpenMeteo(lm[i], la[i], factorOleaje(s.lat, s.lon)) }));
+  const salida = new Array(SPOTS_VIGIA.length);
+  for (const g of agruparPorZona(SPOTS_VIGIA)) {
+    const lat = g.items.map((s) => s.lat).join(","), lon = g.items.map((s) => s.lon).join(",");
+    const comun = { latitude: lat, longitude: lon, timezone: g.zona, past_days: 5, forecast_days: 2 };
+    const [mar, atm] = await Promise.all([
+      pedir("marine", { ...comun, hourly: "wave_height,sea_level_height_msl,sea_surface_temperature" }, { apiKey }),
+      pedir("forecast", { ...comun, hourly: "wind_speed_10m,wind_direction_10m,pressure_msl,precipitation", wind_speed_unit: "kmh" }, { apiKey }),
+    ]);
+    const lm = Array.isArray(mar) ? mar : [mar], la = Array.isArray(atm) ? atm : [atm];
+    g.items.forEach((s, j) => { salida[g.indices[j]] = { ...s, serie: serieDesdeOpenMeteo(lm[j], la[j], factorOleaje(s.lat, s.lon)) }; });
+  }
+  return salida;
 }
 
 // Filas de observaciones abiertas con licencia comercial (CC0 / CC BY).

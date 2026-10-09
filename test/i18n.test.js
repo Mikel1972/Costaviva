@@ -140,12 +140,39 @@ test("t(): variables, plurales, idioma pedido, respaldo en español y clave desc
   assert.equal(I18n.t("mapa.vigencia.hace", {}), "actualizado hace {minutos} min", "sin la variable se ve el hueco");
 });
 
-test("elegir idioma: guardado > perfil > navegador > español", () => {
-  assert.equal(I18n.elegirIdioma({ guardado: "en", perfil: "es", navegador: "es-ES" }), "en");
-  assert.equal(I18n.elegirIdioma({ guardado: null, perfil: "en", navegador: "es-ES" }), "en");
-  assert.equal(I18n.elegirIdioma({ guardado: "xx", perfil: null, navegador: "en-NZ" }), "en");
-  assert.equal(I18n.elegirIdioma({ navegador: "fr-FR" }), "es");
+test("elegir idioma: a mano > perfil > región > navegador > español", () => {
+  assert.equal(I18n.elegirIdioma({ guardado: "en", perfil: "es", region: "cantabrico", navegador: "es-ES" }), "en");
+  assert.equal(I18n.elegirIdioma({ guardado: null, perfil: "en", region: "cantabrico", navegador: "es-ES" }), "en");
+  assert.equal(I18n.elegirIdioma({ guardado: null, perfil: "es", region: "nueva_zelanda", navegador: "en-NZ" }), "es");
+  // El caso de Mikel: español con el móvil en inglés, en España -> español.
+  assert.equal(I18n.elegirIdioma({ region: "cantabrico", navegador: "en-US" }), "es");
+  assert.equal(I18n.elegirIdioma({ region: "canarias", navegador: "en-GB" }), "es");
+  assert.equal(I18n.elegirIdioma({ region: "portugal", navegador: "pt-PT" }), "es");
+  // Nueva Zelanda en inglés, aunque el navegador diga español.
+  assert.equal(I18n.elegirIdioma({ region: "nueva_zelanda", navegador: "es-ES" }), "en");
+  // Sin región conocida, el navegador; y si no, español.
+  assert.equal(I18n.elegirIdioma({ region: null, navegador: "en-NZ" }), "en");
+  assert.equal(I18n.elegirIdioma({ guardado: "xx", navegador: "fr-FR" }), "es");
   assert.equal(I18n.elegirIdioma({}), "es");
+});
+
+test("región para el idioma: la última conocida > zona horaria del dispositivo; tablas = regiones.js", async () => {
+  assert.equal(I18n.regionInicial({ guardada: "nueva_zelanda", zona: "Europe/Madrid" }), "nueva_zelanda");
+  assert.equal(I18n.regionInicial({ guardada: null, zona: "Europe/Madrid" }), "cantabrico");
+  assert.equal(I18n.regionInicial({ zona: "Atlantic/Canary" }), "canarias");
+  assert.equal(I18n.regionInicial({ zona: "Pacific/Auckland" }), "nueva_zelanda");
+  assert.equal(I18n.regionInicial({ guardada: "marte", zona: "America/New_York" }), null);
+  const { REGIONES, regionPorCoordenadas } = await import("../assets/js/regiones.js");
+  // Cada región de regiones.js con su idioma, y nada más.
+  assert.deepEqual(Object.keys(I18n.IDIOMA_POR_REGION).sort(), Object.keys(REGIONES).sort());
+  for (const [id, r] of Object.entries(REGIONES)) {
+    assert.equal(I18n.IDIOMA_POR_REGION[id], r.idioma, id);
+    for (const z of [r.zona, r.zonaOficial]) assert.equal(I18n.idiomaDeRegion(I18n.REGION_POR_ZONA[z]), r.idioma, `${id}: zona ${z}`);
+  }
+  // Un spot de Nueva Zelanda (Auckland) y uno de Bizkaia.
+  assert.equal(I18n.idiomaDeRegion(regionPorCoordenadas(-36.85, 174.76)), "en");
+  assert.equal(I18n.idiomaDeRegion(regionPorCoordenadas(43.43, -2.81)), "es");
+  assert.equal(I18n.idiomaDeRegion(regionPorCoordenadas(28.14, -15.43)), "es");
 });
 
 test("números y unidades: coma en español, punto en inglés; km/h y nudos; °C; m", () => {

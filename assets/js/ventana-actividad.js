@@ -72,6 +72,9 @@ import { t, I18n } from "./i18n-modulo.js";
 // paraUsuario() para separar lo interno. Las reglas expertas traen su texto
 // de los datos (texto, y texto_en cuando la fase de datos lo añada).
 const tx = (clave, vars) => ({ clave, vars: vars || null, texto: t(clave, vars), textoEs: t(clave, vars, "es") });
+import {
+  regionPorCoordenadas, zonaPorCoordenadas, minutosLocales, msAproxDeEtiqueta, usaDatosGenerales, ZONA_POR_DEFECTO,
+} from "./regiones.js";
 
 export const VERSION = "2026-10-08";
 // Se guarda en cada salida del diario (salidas_pesca.indice_version) para
@@ -124,36 +127,21 @@ export function factorTemperatura(t, [tmin, tmax]) {
 }
 
 // ---------------------------------------------------------------------------
-// Regiones. Cajas aproximadas por coordenadas, igual de honestas que
-// zonaPorCoordenadas() de index.html: no son límites oficiales.
+// Regiones de especies.json (las de la Península e islas). La región de un
+// punto y su zona horaria viven en regiones.js (2026-10-09); se reexporta
+// regionPorCoordenadas para no romper a quien la importa de aquí.
 // ---------------------------------------------------------------------------
 export const REGIONES = [
   "cantabrico", "atlantico_norte", "portugal", "golfo_cadiz",
   "mediterraneo", "baleares", "canarias", "azores", "madeira",
 ];
 
-export function regionPorCoordenadas(lat, lon) {
-  if (lat >= 36.8 && lat <= 39.8 && lon >= -31.5 && lon <= -24.5) return "azores";
-  if (lat >= 32.3 && lat <= 33.2 && lon >= -17.4 && lon <= -16.1) return "madeira";
-  if (lat >= 27 && lat <= 29.6 && lon >= -18.5 && lon <= -13) return "canarias";
-  if (lat >= 38.5 && lat <= 40.3 && lon >= 1.0 && lon <= 4.6) return "baleares";
-  // Golfo de Cádiz español: del Guadiana (-7.4) a Tarifa (-5.6).
-  if (lat >= 35.9 && lat <= 37.5 && lon >= -7.4 && lon <= -5.6) return "golfo_cadiz";
-  // Portugal continental: al sur del Miño (41.87) y al oeste del Guadiana.
-  if (lat < 41.87 && lon < -7.4) return "portugal";
-  // Cantábrico: de Ribadeo (-7.05) a la frontera francesa (y Baiona).
-  if (lat >= 43.0 && lon >= -7.05 && lon <= -1.3) return "cantabrico";
-  // Galicia (Rías Altas y Baixas).
-  if (lat >= 41.87 && lon < -7.05) return "atlantico_norte";
-  if (lon > -5.6 && lat < 43.0) return "mediterraneo";
-  return "cantabrico";
-}
+export { regionPorCoordenadas };
 
 // ---------------------------------------------------------------------------
 // Sol: amanecer y anochecer (algoritmo de la NOAA, precisión ~1 min).
-// Devuelve minutos desde la medianoche en hora de Europe/Madrid, que es la
-// zona en la que Open-Meteo etiqueta las horas (timezone=Europe/Madrid en
-// toda la app, también para Portugal y Canarias).
+// Las horas se comparan en minutos desde la medianoche en la zona del punto
+// (regiones.js), que es la misma con la que se pide a Open-Meteo la serie.
 // ---------------------------------------------------------------------------
 const RAD = Math.PI / 180;
 
@@ -180,13 +168,14 @@ export function solDelDia(fechaISO, lat, lon) {
   return { amanecer: aMs(jTransito - w / 360), anochecer: aMs(jTransito + w / 360) };
 }
 
-const fmtMadrid = typeof Intl !== "undefined"
-  ? new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Madrid", hour: "2-digit", minute: "2-digit", hourCycle: "h23" })
-  : null;
-
+// Minutos desde la medianoche local en `zona` (por defecto la de Madrid).
+export function minutosLocal(ms, zona = ZONA_POR_DEFECTO) {
+  return minutosLocales(ms, zona);
+}
+// Compatibilidad: minutos en hora de Madrid.
+// Hora de Madrid a propósito: compatibilidad con quien la importaba.
 export function minutosMadrid(ms) {
-  const [h, mi] = fmtMadrid.format(new Date(ms)).split(":").map(Number);
-  return h * 60 + mi;
+  return minutosLocales(ms, "Europe/Madrid");
 }
 
 export function textoHora(min) {
@@ -194,12 +183,12 @@ export function textoHora(min) {
   return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 }
 
-// Estado de la luz para una hora local (minuto central de la hora).
+// Estado de la luz para una hora local (minuto central de la hora) en `zona`.
 // alba/ocaso = ±60 min alrededor del amanecer/anochecer.
-export function estadoLuz(minutoLocal, sol) {
+export function estadoLuz(minutoLocal, sol, zona = ZONA_POR_DEFECTO) {
   if (!sol) return "dia";
-  const am = minutosMadrid(sol.amanecer);
-  const an = minutosMadrid(sol.anochecer);
+  const am = minutosLocales(sol.amanecer, zona);
+  const an = minutosLocales(sol.anochecer, zona);
   if (Math.abs(minutoLocal - am) <= 60) return "alba";
   if (Math.abs(minutoLocal - an) <= 60) return "ocaso";
   if (minutoLocal > am && minutoLocal < an) return "dia";
@@ -382,7 +371,7 @@ function rangoOla(h, soloRango = false) {
 // especie: entrada de especies.json (usa .reglas y .temperatura_agua).
 // reglasDefecto: especies.json.reglas_por_defecto.
 // horas: [{ hora: "AAAA-MM-DDTHH:00", nivelMar, ola, viento, vientoDir, tempAgua, presion, lluvia }]
-//   (serie continua, hora local de Madrid; puede empezar días antes del que
+//   (serie continua, hora local de `contexto.zona`; puede empezar días antes del que
 //   se quiere pintar para tener las tendencias y los retardos de las reglas).
 // horas[].lluvia (mm en esa hora) y horas[].vientoDir (grados, de dónde
 // viene) son opcionales: sin ellos, lo que los usa no aplica.
@@ -391,6 +380,8 @@ function rangoOla(h, soloRango = false) {
 //   reglasModalidad: especies.json.reglas_por_modalidad,
 //   reglasExpertas: especies.json.reglas_expertas (opcional),
 //   region (si no, por coordenadas),
+//   zona: zona horaria de las etiquetas de `horas` (si no, la de las
+//     coordenadas, ver regiones.js: Madrid, Canarias, Lisboa, Azores...),
 //   fondo: { orilla_tipo, fondo_roca, ... } | null (capa-tipo-fondo.js; ignorado en embarcación),
 //   caudalRio: "bajo"|"normal"|"alto"|null (río asociado al spot, solo hoy),
 //   rio: { nombre, distancia_desembocadura_km } | null (null = sin río conocido),
@@ -437,6 +428,7 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
   const reglas = reglasParaModalidad(reglasDefecto, especie, modalidad, contexto.reglasModalidad);
   const rm = contexto.reglasModalidad?.[modalidad] || {};
   const region = contexto.region || regionPorCoordenadas(contexto.lat, contexto.lon);
+  const zona = contexto.zona || zonaPorCoordenadas(contexto.lat, contexto.lon);
   const b0 = contexto.b0 ?? 0;
   const marea = analizarMarea(horas.map((h) => h.nivelMar ?? null));
   const solCache = {};
@@ -487,7 +479,7 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
     let prohibida = false;
     const notas = [];
     if (rm.solo_de_dia && solCache[dia]) {
-      const am = minutosMadrid(solCache[dia].amanecer), an = minutosMadrid(solCache[dia].anochecer);
+      const am = minutosLocales(solCache[dia].amanecer, zona), an = minutosLocales(solCache[dia].anochecer, zona);
       const ini = minuto - 30, fin = minuto + 30;
       if (fin <= am || ini >= an) prohibida = true;
       else if (ini < am) notas.push({ factor: "legal", ...tx("va.legal.desde_sol", { hora: textoHora(am) }), aporte: 0 });
@@ -502,7 +494,7 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
     }
 
     // Luz
-    const luz = estadoLuz(minuto, solCache[dia]);
+    const luz = estadoLuz(minuto, solCache[dia], zona);
     cuenta("luz", true);
     anota("luz", reglas.luz?.preferencia?.[luz] ?? 0, tx(`va.luz.${luz}`));
 
@@ -620,8 +612,9 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
     }
 
     // Reglas expertas (datos de especies.json, motor genérico)
-    // Hora de Madrid aproximada a UTC (-1 h; en verano son -2): sobra para la luna y el coeficiente.
-    const msUTC = Date.parse(`${h.hora}:00Z`) - 3600000;
+    // Hora local aproximada a UTC con el desfase de invierno de la zona (en
+    // Madrid -1 h, como siempre; en verano serían -2): sobra para la luna y el coeficiente.
+    const msUTC = msAproxDeEtiqueta(h.hora, zona);
     const ctxReglas = {
       caudal_rio: contexto.caudalRio ?? null,
       rio_desembocadura_km: contexto.rio?.distancia_desembocadura_km ?? null,
@@ -794,8 +787,10 @@ export function mejoresVentanas(resultados, { umbral = 60, margen = 10, max = 3 
 
 // ¿Está la especie en freza en esa región y mes? Devuelve null si no hay
 // dato (nunca "no está en freza" por falta de dato).
+// La freza "general" es de la Península: en el hemisferio sur (Nueva Zelanda)
+// no vale, cada región trae la suya (nunca se desplaza 6 meses).
 export function estadoFreza(especie, region, mes) {
-  const f = especie.freza?.por_region?.[region] ?? especie.freza?.por_region?.general;
+  const f = especie.freza?.por_region?.[region] ?? (usaDatosGenerales(region) ? especie.freza?.por_region?.general : null);
   if (!f || !Array.isArray(f.meses) || !f.meses.length) return null;
   return { enFreza: f.meses.includes(mes), meses: f.meses, fuentes: f.fuentes || [], nota: f.nota || null };
 }
@@ -885,14 +880,16 @@ export function normativaModalidad(datos, modalidad, region, { euskadi = false, 
 export const NOMBRE_REGION = {
   cantabrico: t("va.region.cantabrico"), atlantico_norte: t("va.region.atlantico_norte"), portugal: t("va.region.portugal"),
   golfo_cadiz: t("va.region.golfo_cadiz"), mediterraneo: t("va.region.mediterraneo"), baleares: t("va.region.baleares"),
-  canarias: t("va.region.canarias"), azores: t("va.region.azores"), madeira: t("va.region.madeira"),
+  canarias: t("va.region.canarias"), azores: t("va.region.azores"), madeira: t("va.region.madeira"), nueva_zelanda: t("va.region.nueva_zelanda"),
 };
 const MESES_CORTOS = I18n.mesesCortos();
 
-// Veda (p. ej. recreativa) que afecta a esa región ese mes, o null.
+// Veda (p. ej. recreativa) que afecta a esa región ese mes, o null. Una veda
+// sin lista de regiones es de la Península: no se aplica en el hemisferio sur.
 export function vedaActiva(especie, region, mes) {
   return (especie.vedas || []).find((v) =>
-    Array.isArray(v.meses) && v.meses.includes(mes) && (!v.regiones || v.regiones.includes(region))) || null;
+    Array.isArray(v.meses) && v.meses.includes(mes)
+    && (v.regiones ? v.regiones.includes(region) : usaDatosGenerales(region))) || null;
 }
 
 // true/false si hay rango de temperatura usable; null si no hay dato o si el

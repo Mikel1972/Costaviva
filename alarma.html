@@ -393,6 +393,8 @@ function actualizarUbicacion() {
   navigator.geolocation.getCurrentPosition(
     (pos) => {
       ultimaPosicion = posicionDe(pos);
+      // Idioma por región: la próxima vez, el de donde está el usuario.
+      I18n.recordarPosicion(ultimaPosicion.lat, ultimaPosicion.lon);
       // Hemisferio sur (Nueva Zelanda): °S en vez de un "-41.2°N".
       document.getElementById("coordsActuales").textContent = `${Math.abs(ultimaPosicion.lat).toFixed(5)}°${ultimaPosicion.lat < 0 ? "S" : "N"}, ${ultimaPosicion.lon.toFixed(5)}°`;
     },

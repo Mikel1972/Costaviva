@@ -15,14 +15,20 @@ dependencias (PR "i18n"; los datos de NZ van aparte).
   línea). Los módulos ES importan `assets/js/i18n-modulo.js`. En el `<head>`
   de cada página traducida, **antes de cualquier otro script**: `es.js`,
   `en.js`, `i18n.js`.
-- **Qué idioma**: guardado en este navegador (`localStorage`
-  `costaviva.idioma`) > perfil (`user_metadata.idioma` de la sesión de
-  Supabase, leído de su entrada de localStorage) > `navigator.languages`
-  (el primero que sea es o en) > español. En node (tests, Functions) siempre
-  español. El selector (🌐 Español / English) va en el menú de cuenta 👤
-  (`<div data-i18n-selector>`); guarda, intenta `auth.updateUser({ data: {
-  idioma } })` y recarga. OJO: un español con el móvil en inglés verá la app
-  en inglés hasta que elija Español una vez (lo pide el orden acordado).
+- **Qué idioma** (regla de Mikel, 2026-10-09): elegido a mano en este
+  navegador (`localStorage` `costaviva.idioma`) > perfil
+  (`user_metadata.idioma` de la sesión de Supabase, leído de su entrada de
+  localStorage) > **región** > `navigator.languages` > español. Región:
+  España, Portugal y Canarias en español; Nueva Zelanda en inglés (el
+  `idioma` de cada región de `assets/js/regiones.js`; las tablas de i18n.js
+  se comprueban contra ella en test/i18n.test.js). La región es la última
+  que conoció la app en ese navegador (`I18n.recordarPosicion(lat, lon)` al
+  abrir un spot o con el GPS de la alarma, `costaviva.region`) o, si no, la
+  zona horaria del dispositivo. Así un español con el móvil en inglés ve la
+  app en español. En node (tests, Functions) siempre español. El selector
+  (🌐 Español / English) va en el menú de cuenta 👤 (`<div
+  data-i18n-selector>`) y bajo el formulario de login; guarda, intenta
+  `auth.updateUser({ data: { idioma } })` y recarga.
 - **HTML fijo**: el texto español se queda en el HTML y se marca con
   `data-i18n="clave"` (texto), `data-i18n-html` (con marcado, solo textos
   nuestros) o `data-i18n-title|aria-label|placeholder|alt`. En español no se
@@ -67,6 +73,135 @@ dependencias (PR "i18n"; los datos de NZ van aparte).
   cifras (NZ tiene 4) y `/geocodificar` es de España; el SOS marca el 112
   (en NZ, 111) y los teléfonos sin prefijo se toman como +34; la
   identificación por foto devuelve nombres de especie en español.
+## Zona horaria por región (2026-10-09, fase 0 de Nueva Zelanda)
+
+- **`assets/js/regiones.js`** (módulo ES puro, test `test/zona-horaria.test.js`)
+  es la única fuente: `REGIONES` (id, nombre, país, `zona`, `zonaOficial`,
+  hemisferio, moneda, idioma, bbox), `regionPorCoordenadas` (ventana-actividad.js
+  la reexporta), `zonaDeSpot`/`zonaPorCoordenadas`, `horaLocalISO`,
+  `minutosLocales`, `agruparPorZona`, `paramZona`. El `<script>` clásico de
+  index.html lo usa vía `window.Regiones` (`zonaSpot(s)`, `horaActualISO(zona)`).
+- **Cada serie de Open-Meteo se pide y se lee en la zona del punto**, y su
+  "ahora" también. /prevision manda `zona` por spot y pide una consulta por
+  zona (`pedirPorZona`). Nada de `horaActualMadridISO()` nuevo.
+- Canarias va en `Atlantic/Canary` (hasta el 2026-10-09 salía en hora de
+  Madrid: mareas, bloques e índice una hora desplazados, y el diario buscaba
+  la hora apuntada en la serie equivocada). Portugal (`Europe/Lisbon`, sus 17
+  spots), Azores (`Atlantic/Azores`) y Madeira (`Atlantic/Madeira`) también
+  en su hora desde el 2026-10-09, con el sí de Mikel (antes, hora de Madrid:
+  pleamares una hora tarde, dos en Azores). Nueva Zelanda: `Pacific/Auckland`,
+  hemisferio sur.
+- Lo que es del negocio en España (crons, informes, emails de suscripción,
+  invitaciones, cupos, marketing) va en Madrid (`ZONA_NEGOCIO`). Cada
+  `"Europe/Madrid"` que quede en el código lleva "a propósito" en la línea o
+  en las 4 anteriores: el test falla si no.
+- Spots NZ de la fase 1 (`functions/_lib/nz/spots-nz.js`): su zona horaria va
+  en `tz` (`zona` allí es la geográfica, "Northland"); `zonaDeSpot` mira los
+  dos. Sus regiones MPI `nz_*` aún no están en `REGIONES` de regiones.js (por
+  coordenadas sale `nueva_zelanda`): unificarlo al activar NZ.
+- Freza y vedas "general" de especies.json son de la Península: no valen en
+  el hemisferio sur (`usaDatosGenerales`). NZ traerá sus propios meses; nunca
+  se desplazan 6 meses.
+- No regresión: `test/fixtures/zona-horaria-espana.json` se generó con
+  `test/fixtures/escenarios-zona.mjs` (con Madrid fijo solo difería en
+  Peniche, que ahora va en hora de Lisboa); si un cambio
+  legítimo del índice lo rompe, regenerarlo con ese script y decirlo en la PR.
+
+## Nueva Zelanda, fase 1: mareas LINZ, 60 spots y reservas DOC, todo OCULTO (2026-10-09)
+
+Plan completo de NZ: investigación del 2026-10-09 (fuentes, especies,
+normativa, precio y fases). Esta fase deja los datos y la lógica en el repo
+**sin que nada se vea**: ni mapa, ni /prevision, ni SEO, ni sitemap, ni
+marketing.
+
+**Interruptor:** `REGIONES_ACTIVAS` en `functions/_lib/regiones-activas.js`
+(hoy `["es"]`). Los spots NZ solo entran en `SPOTS` (prevision.js, y con
+ellos /prevision, /spots, sitemap, /registrar-presion y los scripts que leen
+SPOTS) cuando "nz" está en la lista. `test/nz-region.test.js` falla si con
+el interruptor apagado aparece algo de NZ en SPOTS, el sitemap, los `.html`,
+`tarjetas-mapa.js` o los scripts de marketing. **Activarlo es cosa de Mikel**
+y antes falta: zona horaria por spot en /prevision, el proxy y el eje horario
+(hoy `Europe/Madrid` fijo), textos en inglés, añadir los spots al mapa de
+`index.html` y a `diario.html` (tienen su propia copia de la lista), mover
+los spots con `revisar_ubicacion` y separar /prevision por región (ver cuota).
+
+**Spots** (`functions/_lib/nz/spots-nz.js`, 60, slug `nz-…`): `pais: "nz"`,
+`tz: "Pacific/Auckland"`, `region` = área de pesca recreativa de MPI
+(`nz_auckland_kermadec`, `nz_central`, `nz_challenger`, `nz_south_east`,
+`nz_kaikoura`, `nz_southland`, `nz_fiordland`; asignada a mano por la costa,
+hay que cotejarla con la regulación porque la capa de límites de MPI es "for
+internal use only"), `zona` (las 14 del plan), `modalidades`, `osm` y
+`puerto_linz`. **52 de 60 llevan `revisar_ubicacion: true`**: su punto es el
+centro del pueblo, del fiordo o de un edificio (place=*, boundary, bay, peak,
+amenity, tourism), no el pesquero. Chatham y Kermadec, fuera (antimeridiano).
+
+**Mareas LINZ** (`functions/_lib/nz/mareas-linz.js`, lógica pura):
+- Datos en `datos/nz/` (no públicos: `/datos/` no está en la lista blanca de
+  rutas): `linz-puertos.json` (87 tablas con coordenadas, 320 secundarios con
+  diferencias y MHWS/MLWS, y el puerto de cada spot) y `linz-mareas-AAAA.json`
+  (pleamares y bajamares en UTC de las 36 tablas que usan los spots, formato
+  compacto, ~390 KB por año; hoy 2026 y 2027).
+- Puerto de cada spot: el más cercano (`asignarPuerto`), con 1 km de ventaja
+  para los que tienen tabla propia. 36 spots usan tabla propia y 24 se
+  calculan como secundarios (hora + diferencia media; altura =
+  (h − NMM estándar) × razón + NMM secundario, el método de LINZ).
+  Comprobado contra las tablas propias de LINZ en 2026: Leigh desde Auckland,
+  mediana 4 min y 6 cm; Akaroa desde Lyttelton, 5 min y 10 cm; Oamaru desde
+  Timaru, el peor, 25 min y 10 cm.
+- `mareaSpotNZ(spot, catalogo, anios, ahora)` devuelve la misma forma que
+  `calcularMarea()` de España (`altura`, `tendencia`, `proximas`,
+  `coeficiente`) más `puerto`, `fuente`, `atribucion` y `aviso`. Alturas
+  sobre el cero de la carta; interpolación coseno entre extremos; horas de
+  LINZ ("Local Std or Daylight Time") pasadas a UTC con `Pacific/Auckland`.
+- **Coeficiente NZ** (propio, escala 20-120 como el español): 100 × rango de
+  la pleamar / (MHWS − MLWS) del puerto. 100 = marea viva media; las muertas
+  medias quedan en ~65 (en NZ son menos muertas que en Brest). El del día es
+  el mayor de sus pleamares. No es un dato oficial de LINZ.
+- Regenerar: workflow manual `linz-mareas.yml` (sin IA; deja los datos en
+  una rama `robot/nz-datos-<run>` con PR, no toca main ni el bucket) o
+  `node scripts/fuentes/linz-mareas.mjs [--anios 2028,2029] [--cache DIR]`.
+  `--comprobar` falla si el puerto de algún spot cambiaría; entonces hay que
+  regenerar `spots-nz.js`. Tests: `test/nz-mareas.test.js`, con tablas reales
+  de Auckland, Leigh y Lyttelton 2026 en `test/fixtures/linz/`.
+- **Licencia LINZ: CC BY 4.0 por la declaración general de LINZ
+  (linz.govt.nz/copyright), PENDIENTE DE CONFIRMACIÓN por email
+  (customersupport@linz.govt.nz).** La página de mareas solo dice "Crown
+  copyright". Al mostrarla: "Sourced from Land Information New Zealand data
+  (CC BY 4.0)" (`ATRIBUCION_LINZ`) y el aviso "Not official tide tables as
+  specified in Maritime Rules Part 25" (`AVISO_LINZ`). No publicar la marea
+  NZ sin la confirmación.
+
+**Reservas marinas DOC** (`datos/nz/reservas-marinas-doc.geojson`, 49
+reservas, ~185 KB, simplificadas a 0,0005° en el servidor de ArcGIS):
+licencia **CC BY 4.0 verificada** en la ficha del elemento
+`0e74f9682502447c9a14d51340512361`. Atribución: "Marine reserves: Department
+of Conservation (DOC), Crown copyright, CC BY 4.0". Solo para dibujar la capa
+futura, no para decidir al metro si un punto está dentro. Script:
+`scripts/fuentes/doc-reservas-marinas.mjs` (lo lanza el mismo workflow).
+
+**Cuota de Open-Meteo con los 60 spots (estimación, no hay nada activo).**
+Open-Meteo cuenta por ubicación (más de 10 variables o de 14 días
+multiplican). Por spot y día, con la caché actual:
+- /prevision: marine (7 variables, 2 días) + forecast (5 variables) = 2
+  llamadas por spot en cada fallo de caché; la caché es de 30 min **por
+  centro de datos de Cloudflare**: ≥ 48 fallos al día por centro con tráfico
+  → 96 llamadas/spot/día por centro.
+- /registrar-presion cada hora: presión 24/día; coeficiente de España (24
+  días de `sea_level_height_msl`, cuenta 1,7) 41/día. En NZ el coeficiente
+  sale de LINZ, así que esas 41 sobran si se excluyen los spots NZ del lote.
+- Hoy (105 spots, un solo centro de datos): ~105 × 161 ≈ 16.900/día ≈ 507.000
+  al mes. **NZ añadiría ~60 × 120 ≈ 7.200/día ≈ 216.000/mes (+43 %)**, si sus
+  usuarios caen en el mismo centro.
+- Pero los usuarios de NZ entran por Auckland/Sídney, otro centro con su
+  propia caché. Si /prevision sigue pidiendo todos los spots juntos, cada
+  centro pide los 165: ≈ 39.900/día ≈ 1,2 M/mes, por encima del plan Standard
+  (1 M). **Separando /prevision por región** (NZ pide solo los 60): ≈
+  24.100/día ≈ 723.000/mes. Cada centro de datos más de España suma ~10.000
+  al día.
+- Aparte, y según uso: el proxy `/meteo/` (por spot pulsado, caché 30-60 min
+  por centro) y `/viento-campo` (256 puntos por recuadro del mapa cada 30 min).
+- Mikel tiene que mirar en el panel de cliente de Open-Meteo el consumo real
+  antes de activar NZ: estas cifras son el mínimo con tráfico continuo.
 
 ## Captación: redes, calendario, métricas e "Invita a un amigo" (2026-10-09)
 

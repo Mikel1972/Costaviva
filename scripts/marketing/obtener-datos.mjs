@@ -17,12 +17,14 @@ export function leerEspecies() {
 }
 
 // Hora actual de Madrid como "AAAA-MM-DDTHH:00", el formato de Open-Meteo.
+// Hora de Madrid a propósito (ZONA_NEGOCIO): el marketing es de España y todo él (calendario, serie del spot, horas del post) va en hora de España.
 export function ahoraMadridISO(fecha = new Date()) {
   const p = Object.fromEntries(new Intl.DateTimeFormat("en-CA", {
     timeZone: "Europe/Madrid", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", hourCycle: "h23",
   }).formatToParts(fecha).map((x) => [x.type, x.value]));
   return `${p.year}-${p.month}-${p.day}T${p.hour}:00`;
 }
+// Hora de Madrid a propósito (ZONA_NEGOCIO), ver ahoraMadridISO.
 export function fechaLegible(fecha = new Date()) {
   const dia = new Intl.DateTimeFormat("es-ES", { timeZone: "Europe/Madrid", weekday: "long", day: "numeric", month: "short" }).format(fecha);
   const hora = new Intl.DateTimeFormat("es-ES", { timeZone: "Europe/Madrid", hour: "2-digit", minute: "2-digit" }).format(fecha);
@@ -45,6 +47,7 @@ export async function previsionDeSpot(slug) {
 // Mismo cálculo que la ficha de la app: serie horaria de /meteo + índice.
 export async function resumenDeSpot(slug, especiesDatos, ahoraISO = ahoraMadridISO()) {
   const s = SPOTS.find((x) => x.slug === slug);
+  // Hora de Madrid a propósito (ZONA_NEGOCIO): casa con ahoraISO, que es la hora de publicación en España.
   const coord = `latitude=${s.lat}&longitude=${s.lon}&timezone=Europe%2FMadrid`;
   const [marino, tiempo] = await Promise.all([
     json(`${BASE_URL}/meteo/marine?${coord}&past_days=1&forecast_days=2&hourly=wave_height,wave_direction,sea_surface_temperature,sea_level_height_msl`),

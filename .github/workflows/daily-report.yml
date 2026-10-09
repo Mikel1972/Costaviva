@@ -103,6 +103,7 @@ jobs:
           # +0200 = CEST (verano), +0100 = CET (invierno) — tzdata en el
           # runner de Ubuntu ya conoce las fechas reales de cambio de hora
           # de España, no hace falta calcularlas a mano.
+          # Hora de Madrid a propósito (ZONA_NEGOCIO): el informe es del negocio en España.
           offset_hoy=$(TZ="Europe/Madrid" date +%z)
           if { [ "$offset_hoy" = "+0200" ] && [ "${{ github.event.schedule }}" = "13 6 * * *" ]; } || \
              { [ "$offset_hoy" = "+0100" ] && [ "${{ github.event.schedule }}" = "13 7 * * *" ]; }; then
@@ -578,6 +579,7 @@ jobs:
         env:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
+          # Hora de Madrid a propósito (ZONA_NEGOCIO): lunes de España.
           if [ "$(TZ=Europe/Madrid date +%u)" != "1" ] && [ "${{ github.event_name }}" = "schedule" ]; then
             echo "resultado=" >> "$GITHUB_OUTPUT"
             exit 0
@@ -616,6 +618,7 @@ jobs:
         run: |
           git pull -q origin main || true
           S=datos-robots/sintesis-informe.md
+          # Hora de Madrid a propósito (ZONA_NEGOCIO): fecha del informe.
           if [ -f "$S" ] && head -1 "$S" | grep -q "fecha=$(TZ=Europe/Madrid date +%F) "; then
             tail -n +3 "$S" > /tmp/informe-sintesis.txt
             echo "Síntesis de la rutina de hoy: no se llama a la API."

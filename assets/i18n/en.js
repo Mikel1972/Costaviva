@@ -573,6 +573,7 @@
   "meteo.atrib.copernicus": "Marine data: <a href=\"https://marine.copernicus.eu/\" target=\"_blank\" rel=\"noopener\">Generated using E.U. Copernicus Marine Service Information</a>; <a href=\"https://doi.org/10.48670/moi-00025\" target=\"_blank\" rel=\"noopener\">10.48670/moi-00025</a>, <a href=\"https://doi.org/10.48670/moi-00027\" target=\"_blank\" rel=\"noopener\">10.48670/moi-00027</a>",
   "meteo.atrib.era5": "Past weather: <a href=\"https://doi.org/10.24381/cds.adbb2d47\" target=\"_blank\" rel=\"noopener\">ERA5</a>, contains modified Copernicus Climate Change Service information (C3S) (<a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a>)",
   "mapa_base.relieve_prefijo": "Relief:",
+  "va.region.nueva_zelanda": "New Zealand",
   "diario.titulo_pagina": "Log — Costaviva",
   "diario.titulo": "🎣 Catch log",
   "diario.subtitulo": "Private, only you can see it. Red: no catch · Green: with a catch.",
