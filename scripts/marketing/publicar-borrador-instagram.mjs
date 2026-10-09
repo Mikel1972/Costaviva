@@ -143,6 +143,7 @@ async function facebookListo() {
 function crearIssue({ pieza, previa, facebook }) {
   const esReel = !!pieza.esReel;
   const cuando = pieza.fecha && pieza.hora ? textoCuando(pieza) : "hoy";
+  // Hora de Madrid a propósito (ZONA_NEGOCIO): aviso para Mikel.
   const caduca = new Date(Date.now() + 24 * 3600 * 1000).toLocaleString("es-ES", { timeZone: "Europe/Madrid", weekday: "long", hour: "2-digit", minute: "2-digit" });
   const titulo = `${esReel ? "🎬 Reel" : "📸 Post"} Instagram + Facebook — ${pieza.tipo} — ${cuando}`;
   const cuerpo = cuerpoIssue({ pieza, previa, cuando, caduca: `el ${caduca}`, facebookListo: facebook });

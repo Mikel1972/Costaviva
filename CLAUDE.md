@@ -5,6 +5,33 @@ cambian las convenciones — no es un historial (para eso está `ROBOT.md`).
 Si algo de aquí queda desactualizado, corrígelo en el momento en que lo
 detectes, no lo dejes para luego.
 
+## Zona horaria por región (2026-10-09, fase 0 de Nueva Zelanda)
+
+- **`assets/js/regiones.js`** (módulo ES puro, test `test/zona-horaria.test.js`)
+  es la única fuente: `REGIONES` (id, nombre, país, `zona`, `zonaOficial`,
+  hemisferio, moneda, idioma, bbox), `regionPorCoordenadas` (ventana-actividad.js
+  la reexporta), `zonaDeSpot`/`zonaPorCoordenadas`, `horaLocalISO`,
+  `minutosLocales`, `agruparPorZona`, `paramZona`. El `<script>` clásico de
+  index.html lo usa vía `window.Regiones` (`zonaSpot(s)`, `horaActualISO(zona)`).
+- **Cada serie de Open-Meteo se pide y se lee en la zona del punto**, y su
+  "ahora" también. /prevision manda `zona` por spot y pide una consulta por
+  zona (`pedirPorZona`). Nada de `horaActualMadridISO()` nuevo.
+- Canarias va en `Atlantic/Canary` (hasta el 2026-10-09 salía en hora de
+  Madrid: mareas, bloques e índice una hora desplazados, y el diario buscaba
+  la hora apuntada en la serie equivocada). **Portugal, Azores y Madeira siguen
+  en hora de Madrid a propósito** (`zonaOficial` guarda la real): cambiarlo es
+  decisión de Mikel. Nueva Zelanda: `Pacific/Auckland`, hemisferio sur.
+- Lo que es del negocio en España (crons, informes, emails de suscripción,
+  invitaciones, cupos, marketing) va en Madrid (`ZONA_NEGOCIO`). Cada
+  `"Europe/Madrid"` que quede en el código lleva "a propósito" en la línea o
+  en las 4 anteriores: el test falla si no.
+- Freza y vedas "general" de especies.json son de la Península: no valen en
+  el hemisferio sur (`usaDatosGenerales`). NZ traerá sus propios meses; nunca
+  se desplazan 6 meses.
+- No regresión: `test/fixtures/zona-horaria-espana.json` se generó con
+  `test/fixtures/escenarios-zona.mjs` sobre main antes del cambio; si un cambio
+  legítimo del índice lo rompe, regenerarlo con ese script y decirlo en la PR.
+
 ## Captación: redes, calendario, métricas e "Invita a un amigo" (2026-10-09)
 
 Fase decidida por Mikel: todo a conseguir usuarios (0 suscriptores el
