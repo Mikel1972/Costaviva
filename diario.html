@@ -1025,9 +1025,17 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha, horaF
 // especies de la comunidad y especies.json (nombres en todas las lenguas);
 // si no casa, no se pone nada: nunca se adivina.
 const normNombre = (s) => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").trim().toLowerCase();
+// Nombres locales confirmados por Mikel (Bizkaia, 2026-10-09): "cabra" es
+// la cabrilla; "cabra de altura" y "gallineta" son Helicolenus dactylopterus.
+const NOMBRES_LOCALES = {
+  "cabra": "Serranus cabrilla",
+  "cabra de altura": "Helicolenus dactylopterus",
+  "gallineta": "Helicolenus dactylopterus",
+};
 async function cientificoDe(nombre) {
   const n = normNombre(nombre);
   if (!n || n === "otra") return null;
+  if (NOMBRES_LOCALES[n]) return NOMBRES_LOCALES[n];
   const lista = todasLasEspecies().find((e) => e.cientifico && (normNombre(e.nombre) === n || e.nombre.split("/").some((p) => normNombre(p) === n)));
   if (lista) return lista.cientifico;
   try {
