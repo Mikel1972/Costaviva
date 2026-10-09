@@ -25,16 +25,19 @@ const EN = leerDiccionario(new URL("../assets/i18n/en.js", import.meta.url));
 const leer = (r) => readFileSync(new URL(`../${r}`, import.meta.url), "utf8");
 
 // Páginas de la app ya traducidas. admin.html se queda en español a propósito.
-export const PAGINAS_I18N = ["index.html"];
+export const PAGINAS_I18N = ["index.html", "diario.html", "alarma.html", "grupos.html", "login.html", "suscripcion.html"];
+// Sin menú de cuenta: el idioma se cambia desde las demás páginas.
+const SIN_SELECTOR = new Set(["suscripcion.html"]);
 
 // Textos del HTML que se quedan igual en los dos idiomas.
-const EXCEPCIONES = new Set(["Costaviva", "0 km/h", "54+ km/h", "Open-Meteo"]);
+const EXCEPCIONES = new Set(["Costaviva", "0 km/h", "54+ km/h", "Open-Meteo", "WhatsApp", "Pexels"]);
 // Claves cuya traducción inglesa coincide con la española (nombres propios,
 // unidades, palabras iguales en los dos idiomas).
 const IGUALES_PERMITIDOS = new Set([
   "mapa.panel.banda_mas3", "comun.admin", "mapa.capa.spots", "mapa.caudal.normal", "mapa.rio.humedad",
   "mapa.marea.coef", "mapa.va.natural", "va.ola.rango", "va.region.atlantico_norte", "va.region.portugal",
   "va.region.madeira", "rayos.lugar_spot", "lluvia.radar", "corriente.ley_tramo",
+  "login.region.cantabria", "login.region.asturias", "login.region.galicia", "login.region.portugal",
 ]);
 
 const variables = (v) => [...new Set(JSON.stringify(v).match(/\{\w+\}/g) || [])].sort();
@@ -99,7 +102,7 @@ for (const pagina of PAGINAS_I18N) {
     const k = src.indexOf('<script src="/assets/js/i18n.js"></script>');
     assert.ok(i > 0 && i < j && j < k, "orden es.js, en.js, i18n.js");
     assert.equal(src.slice(0, i).indexOf("<script"), -1, "hay un <script> antes de los idiomas");
-    assert.match(src, /<div data-i18n-selector><\/div>/, "falta el selector de idioma en el menú de cuenta");
+    if (!SIN_SELECTOR.has(pagina)) assert.match(src, /<div[^>]* data-i18n-selector><\/div>/, "falta el selector de idioma");
     assert.doesNotMatch(src, /\son[a-z]{3,}\s*=\s*["'`]/i, "sin on*= (CSP)");
   });
 }
@@ -112,7 +115,7 @@ test("toda clave usada en el código existe en es.js", () => {
   for (const f of FICHEROS_JS) {
     const s = leer(f);
     for (const m of s.matchAll(/(?:I18n\.t|\btr|(?<![\w.])t)\("([a-z_]+\.[\w.]*\w)"/g)) if (!(m[1] in ES)) faltan.push(`${f}: ${m[1]}`);
-    for (const m of s.matchAll(/\btr\("([\w.]+)", ("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')\)/g)) {
+    for (const m of s.matchAll(/\btr\("([\w.]+)", ("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')[,)]/g)) {
       assert.equal(ES[m[1]], Function(`return ${m[2]}`)(), `${f}: el respaldo de ${m[1]} no es el texto de es.js`);
     }
   }

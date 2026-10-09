@@ -8,6 +8,8 @@
 
 const CLAVE = "costaviva_invitacion";
 
+import { I18n } from "./i18n-modulo.js";
+
 export function normalizarCodigo(texto) {
   const limpio = String(texto ?? "").toUpperCase().replace(/[\s-]/g, "");
   return /^[A-HJ-NP-Z2-9]{12}$/.test(limpio) ? limpio : null;
@@ -31,17 +33,9 @@ export function olvidarCodigo() {
 // Mensaje para cada `codigo` de /canjear-invitacion. `null` = no hay nada
 // que decir (éxito, que se cuenta aparte).
 export function mensajeCanje(codigo) {
-  return {
-    ok: null,
-    ya_canjeada: null,
-    no_existe: "Ese código de invitación no existe. Revisa que esté bien copiado.",
-    otro_email: "Ese código de invitación es para otro email. Entra con el email en el que recibiste la invitación.",
-    usada: "Ese código de invitación ya se ha usado.",
-    caducada: "Esa invitación ha caducado. Pide una nueva a quien te invitó.",
-    anulada: "Esa invitación ya no es válida (se ha anulado).",
-    email_sin_confirmar: "Confirma primero tu email con el enlace que te hemos enviado.",
-    sin_sesion: "Entra en tu cuenta para usar la invitación.",
-  }[codigo] ?? "No hemos podido aplicar la invitación ahora mismo. Vuelve a intentarlo en unos minutos.";
+  if (codigo === "ok" || codigo === "ya_canjeada") return null;
+  const CONOCIDOS = ["no_existe", "otro_email", "usada", "caducada", "anulada", "email_sin_confirmar", "sin_sesion"];
+  return I18n.t(CONOCIDOS.includes(codigo) ? `inv.${codigo}` : "inv.generico");
 }
 
 // Errores definitivos: no tiene sentido volver a intentarlo con ese código.
@@ -52,11 +46,11 @@ export function esDefinitivo(codigo) {
 export function mensajeExito(r) {
   if (r.descuento === 100) {
     return r.acceso_hasta
-      ? `Invitación aplicada: tienes Costaviva gratis hasta el ${new Date(new Date(r.acceso_hasta).getTime() - 1).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Madrid" })}.`
-      : "Invitación aplicada: tienes Costaviva gratis para siempre.";
+      ? I18n.t("inv.exito_hasta", { fecha: new Date(new Date(r.acceso_hasta).getTime() - 1).toLocaleDateString(I18n.locale(), { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Madrid" }) })
+      : I18n.t("inv.exito_siempre");
   }
-  if (r.descuento > 0) return `Invitación aplicada: tu ${r.descuento} % de descuento se aplicará al suscribirte.`;
-  return "Invitación aplicada.";
+  if (r.descuento > 0) return I18n.t("inv.exito_descuento", { pct: r.descuento });
+  return I18n.t("inv.exito");
 }
 
 export async function canjear(token, codigo, fetchImpl = fetch) {

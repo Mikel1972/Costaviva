@@ -62,7 +62,11 @@ dependencias (PR "i18n"; los datos de NZ van aparte).
   Checkout sin `locale` → idioma del navegador; textos del portal), avisos al
   admin (informe diario, altas: se quedan en español), nombres de spots, ríos,
   boyas, especies, normativa, reglas expertas y zona horaria Europe/Madrid
-  (fase de datos de NZ), coordenadas del panel siempre "°N/°W".
+  (fase de datos de NZ), coordenadas del panel siempre "°N/°W". Además,
+  cosas de región que el idioma no arregla: el alta exige código postal de 5
+  cifras (NZ tiene 4) y `/geocodificar` es de España; el SOS marca el 112
+  (en NZ, 111) y los teléfonos sin prefijo se toman como +34; la
+  identificación por foto devuelve nombres de especie en español.
 
 ## Captación: redes, calendario, métricas e "Invita a un amigo" (2026-10-09)
 

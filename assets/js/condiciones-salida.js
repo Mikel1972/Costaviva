@@ -27,7 +27,7 @@
 // de fuentes desde aquí: se usa el mismo proxy /meteo/ de siempre.
 
 import { faseLunar } from "./ventana-actividad.js";
-import { t } from "./i18n-modulo.js";
+import { t, I18n } from "./i18n-modulo.js";
 
 // Open-Meteo Forecast/Marine sirven como mucho ~92 días hacia atrás
 // (past_days ≤ 92) y 16 hacia delante. Margen de 2 días por la zona horaria.
@@ -202,10 +202,11 @@ export function aplicarBoyaASerie(serie, i, boya) {
   return copia;
 }
 
-// Números con coma decimal, como el resto de la app ("1,9 m", "17,2 °C").
+// Números con coma decimal, como el resto de la app ("1,9 m", "17,2 °C");
+// en inglés, con punto (I18n.decimal).
 export function fmtDecimal(x, decimales = 1) {
   if (x === null || x === undefined || !Number.isFinite(+x)) return null;
-  return String(+(+x).toFixed(decimales)).replace(".", ",");
+  return I18n.decimal(String(+(+x).toFixed(decimales)));
 }
 
 // "1,9 m" si es un solo valor (boya) y "1,7–2,1 m" si es un rango (modelo).
@@ -217,5 +218,5 @@ export function textoOleaje(min, max) {
 
 // "Cebo: Anchoa · Señuelo: Pulpo" sin separadores sueltos si falta alguno.
 export function textoCeboAparejo({ cebo, aparejo, senuelo } = {}) {
-  return [cebo && `Cebo: ${cebo}`, aparejo && `Aparejo: ${aparejo}`, senuelo && `Señuelo: ${senuelo}`].filter(Boolean).join(" · ");
+  return [cebo && t("cs.cebo", { v: cebo }), aparejo && t("cs.aparejo", { v: t(`cs.ap.${aparejo}`) === `cs.ap.${aparejo}` ? aparejo : t(`cs.ap.${aparejo}`) }), senuelo && t("cs.senuelo", { v: senuelo })].filter(Boolean).join(" · ");
 }
