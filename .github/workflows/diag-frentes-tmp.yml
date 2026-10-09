@@ -1,0 +1,31 @@
+name: Diagnóstico de frentes (TEMPORAL, se borra antes de fusionar)
+
+# Solo lee Copernicus y deja un artifact; no escribe en el bucket.
+on:
+  push:
+    branches: ["claude/fix-frentes-movil"]
+    paths: ["scripts/fuentes/diag_frentes_tmp.py", ".github/workflows/diag-frentes-tmp.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install --quiet -r scripts/fuentes/requirements.txt
+      - env:
+          PYTHONUNBUFFERED: "1"
+          COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_USERNAME }}
+          COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_PASSWORD }}
+        run: python -I scripts/fuentes/diag_frentes_tmp.py /tmp/diag
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frentes-diag
+          path: /tmp/diag/frentes-diag.npz
+          retention-days: 3
