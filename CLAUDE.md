@@ -151,6 +151,24 @@ pequeños: tinta oscura sobre claro, contraste AA).
   botones de capas. Con la lluvia abierta, rayos se queda en su frase (sin la
   línea de leyenda). Una tarjeta nueva sobre el mapa: dentro del dock, con
   su `order`; nada de `position: absolute` suelto abajo.
+- **Tarjetas de capa minimizables (2026-10-09, Mikel con captura del iPhone:
+  "Debe poder minimizarse para tener más visión").** La tarjeta de 〰 Frentes
+  ocupaba el 48 % del alto a 375 px y tapaba los spots. Ahora la tarjeta de
+  las capas de mar (`#capaMarPanel`: clorofila, temperatura, frentes,
+  corriente) y la del viento llevan cabecera con un chevron (`.tarjeta-plegar`,
+  44x44 px, `aria-expanded`/`aria-controls`, `addEventListener`, sin on*=).
+  Minimizada = una línea de 46 px (6,9 % del alto a 375x667, medido con
+  Playwright): icono + nombre corto (`corto` en `CAPAS_MAR`) + la escala de
+  colores sin texto. **Estado (decisión de Claude):** lo que elija el usuario
+  se recuerda por tarjeta en localStorage (`cv_tarjeta_plegada_<id>`, con
+  try/catch); si no eligió nada, en el móvil (< 600 px) la primera vez sale
+  entera con la explicación plegada (para que entienda los colores) y desde
+  la segunda vez minimizada (`cv_tarjeta_vista_<id>`); en escritorio, entera.
+  Los créditos de Copernicus siguen en la vista expandida y siempre en los
+  créditos del mapa (ⓒ Fuentes). Rayos ya es una línea y la lluvia trae sus
+  botones de reproducir (lluvia-animada.js): no se tocan. Al cambiar de capa
+  se cierra el valor tocado de la anterior. `assets/js/plegar-tarjeta.js`,
+  test `test/plegar-tarjeta.test.js`.
 
 ## Alarma: lista de WhatsApp (2026-10-08, pedido de Mikel)
 
@@ -859,6 +877,43 @@ atribución; nunca se inventa un dato (lo que falta sale `null` + `aviso`).
   (ver "Aprendizaje autónomo del índice", frentes en la sombra).
   Tests: `test/frentes.test.js` (en tests.yml; fixture
   `test/fixtures/frentes-mini.json` generado con las funciones de Python).
+- **🌊 Corriente (2026-10-09, Mikel: "¿La corriente se puede mostrar por
+  manchas (con direcciones)?"; PR pendiente de su sí)**. Botón 🌊 "Corriente"
+  debajo de 〰 Frentes (446/74 px; 402/66 en móvil; etiqueta a 8 px para que
+  quepa), una capa de mar a la vez, misma tarjeta del dock. **Sin fichero
+  nuevo**: lee `capas/frentes.json`, que desde este cambio trae
+  `corriente.velocidad` (fuerza en m/s en la malla de los códigos, 1/18°, un
+  byte, 0,02 m/s por unidad, 255 = tierra; los mismos bytes que el
+  histórico, `bytes_velocidad` en `descargar-capas.py`; +207 kB en crudo,
+  ~+40 kB con la compresión br del bucket) además de u/v de la malla de las
+  flechas (1/6°). Mismo job `mar`, cero subrequests de Cloudflare. Si el
+  fichero aún no trae `velocidad` (antes de la primera ejecución del job con
+  este cambio), la fuerza sale de u/v de 1/6°: se ve igual, más borroso y
+  pisando algo la costa. **Manchas**: un color por tramo, violeta de un solo
+  tono de claro (floja) a oscuro (fuerte), que no se confunde con el azul
+  del mar del mapa base; imagen a 3 píxeles por celda con la fuerza
+  interpolada entre celdas de mar (bordes curvos, no escalones de 5 km) y
+  re-muestreada a Mercator como clorofila/temperatura; opacidad 0,75.
+  **Tramos** (nudos, km/h en la leyenda): < 0,15 / 0,15-0,3 / 0,3-0,5 / 0,5-1
+  / > 1. Elegidos con el fichero real del 2026-10-09: en el Cantábrico y la
+  fachada atlántica la mediana es ~0,19 nudos, p90 ~0,4 y p99 ~0,6; solo el
+  Estrecho, el Mediterráneo y Canarias pasan de 1 nudo. Con < 0,2 / 0,2-0,5 /
+  0,5-1 / > 1 el Cantábrico salía en dos colores. **Flechas**: rejilla fija
+  de pantalla (como mucho 12 en el lado largo, nunca a menos de 56 px),
+  dirección interpolada de la malla de 1/6°, largo de 12 a 34 px según la
+  fuerza (tope en 1 nudo), tinta con halo blanco (`.flecha-corriente-halo` +
+  `.flecha-corriente-tinta`) para leerse sobre violeta claro y oscuro; solo
+  en el mar; se rehacen en `moveend`. **Toque**: "Corriente hacia el NE, 0,6
+  nudos (1,1 km/h)." (fuerza de la malla fina, la que da el color). Leyenda:
+  la frase visible dice "Media del día sin la marea: en rías, puertos y
+  pegado a la costa manda la marea"; la explicación lo amplía (el modelo
+  pierde detalle cerca de la costa). Créditos de Copernicus + DOI como las
+  demás. **En 〰 Frentes las flechas se quedan** (decisión de Claude): allí
+  explican por qué la corriente junta el agua en un borde; la fuerza por
+  manchas está en 🌊 Corriente y la explicación de Frentes lo dice.
+  Cálculo puro en `assets/js/corriente.js` (`window.Corriente`). Analítica:
+  `ver_capa_corriente`. Tests: `test/corriente.test.js` (en tests.yml;
+  fixture `test/fixtures/corriente-mini.json` generado con `salida_frentes`).
 - **Pasado para el diario (ERA5)**: `functions/_lib/era5.js`. Si la
   atmósfera va por MET Norway (`metno`) y la consulta es ENTERA del pasado
   (`ventanaPasada`), `fuentes.js` la manda a ERA5 (`fuentes_datos: ["era5"]`).
