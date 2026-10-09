@@ -4340,6 +4340,9 @@ function pintarFondoPanel(s) {
 }
 function abrirPanel(s) {
   spotAbiertoActual = s;
+  // Idioma por región (2026-10-09): la próxima vez que se abra la app sin
+  // idioma elegido, sale en el de la región del último spot abierto.
+  I18n.recordarPosicion(s.lat, s.lon);
   document.getElementById("panel").classList.add("visible");
   document.getElementById("panelNombre").textContent = s.nombre;
   document.getElementById("panelCoords").textContent = `${s.lat.toFixed(4)}°N, ${Math.abs(s.lon).toFixed(4)}°W`;

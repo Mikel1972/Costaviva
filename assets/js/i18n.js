@@ -11,8 +11,10 @@
 //   1. el elegido en el selector de este navegador (localStorage, try/catch);
 //   2. el del perfil (user_metadata.idioma de la sesión de Supabase, que se
 //      lee de su propia entrada de localStorage sin esperar a la red);
-//   3. navigator.languages (el primero que sea es o en);
-//   4. español.
+//   3. el de la región (España, Portugal, Canarias: es; Nueva Zelanda: en),
+//      de la última posición conocida o de la zona horaria del dispositivo;
+//   4. navigator.languages (el primero que sea es o en);
+//   5. español.
 // En Node (tests) no hay document: siempre español salvo que se fije a mano.
 //
 // En la página:
@@ -67,13 +69,75 @@
     }
     return null;
   }
-  // Exportada para el test: el orden de preferencia, sin tocar nada.
-  function elegirIdioma(o) {
+  // ---- Región (2026-10-09, decisión de Mikel) ---------------------------
+  // Sin idioma elegido a mano ni en el perfil, manda la REGIÓN: España,
+  // Portugal y Canarias en español; Nueva Zelanda en inglés. Así un español
+  // con el móvil en inglés sigue viendo la app en español. El idioma de cada
+  // región es el de assets/js/regiones.js (REGIONES[id].idioma; el test
+  // comprueba que estas tablas no se separan de allí).
+  // La región sale, por orden: de la última que conoció la app en este
+  // navegador (spot abierto o ubicación del usuario, I18n.recordarPosicion)
+  // y, si no, de la zona horaria del dispositivo. Sin región conocida, el
+  // idioma del navegador.
+  var CLAVE_REGION = "costaviva.region";
+  var IDIOMA_POR_REGION = {
+    cantabrico: "es", atlantico_norte: "es", golfo_cadiz: "es", mediterraneo: "es", baleares: "es",
+    canarias: "es", portugal: "es", azores: "es", madeira: "es", nueva_zelanda: "en",
+  };
+  // Zona horaria del DISPOSITIVO -> región, solo para elegir idioma (no para
+  // calcular horas): "Europe/Madrid" aquí va a propósito.
+  var REGION_POR_ZONA = {
+    "Europe/Madrid": "cantabrico", "Africa/Ceuta": "mediterraneo", "Atlantic/Canary": "canarias",
+    "Europe/Lisbon": "portugal", "Atlantic/Azores": "azores", "Atlantic/Madeira": "madeira",
+    "Pacific/Auckland": "nueva_zelanda", "Pacific/Chatham": "nueva_zelanda",
+  };
+  function regionGuardada() {
+    try {
+      var a = almacen();
+      var r = a ? a.getItem(CLAVE_REGION) : null;
+      return r && IDIOMA_POR_REGION[r] ? r : null;
+    } catch (e) { return null; }
+  }
+  function zonaDispositivo() {
+    try { return Intl.DateTimeFormat().resolvedOptions().timeZone || null; } catch (e) { return null; }
+  }
+  // Exportada para el test: región conocida a partir de lo guardado y de la zona.
+  function regionInicial(o) {
     o = o || {};
-    return normaliza(o.guardado) || normaliza(o.perfil) || normaliza(o.navegador) || "es";
+    if (o.guardada && IDIOMA_POR_REGION[o.guardada]) return o.guardada;
+    return REGION_POR_ZONA[o.zona] || null;
+  }
+  function idiomaDeRegion(id) {
+    return IDIOMA_POR_REGION[id] || null;
   }
 
-  var actual = hayDom ? elegirIdioma({ guardado: guardado(), perfil: dePerfil(), navegador: deNavegador() }) : "es";
+  // Exportada para el test: el orden de preferencia, sin tocar nada.
+  //   elegido a mano > perfil > región > navegador > español
+  function elegirIdioma(o) {
+    o = o || {};
+    return normaliza(o.guardado) || normaliza(o.perfil) || idiomaDeRegion(o.region) || normaliza(o.navegador) || "es";
+  }
+
+  var actual = hayDom
+    ? elegirIdioma({
+      guardado: guardado(), perfil: dePerfil(),
+      region: regionInicial({ guardada: regionGuardada(), zona: zonaDispositivo() }),
+      navegador: deNavegador(),
+    })
+    : "es";
+
+  // La app avisa de dónde está el usuario (spot abierto, GPS): se recuerda la
+  // región para la próxima vez que se abra (no cambia el idioma en marcha).
+  function recordarRegion(id) {
+    if (!IDIOMA_POR_REGION[id]) return;
+    try { var a = almacen(); if (a) a.setItem(CLAVE_REGION, id); } catch (e) { /* nada */ }
+  }
+  function recordarPosicion(lat, lon) {
+    if (!Number.isFinite(Number(lat)) || !Number.isFinite(Number(lon))) return;
+    var con = function (R) { if (R && R.regionPorCoordenadas) recordarRegion(R.regionPorCoordenadas(Number(lat), Number(lon))); };
+    if (raiz.Regiones) { con(raiz.Regiones); return; }
+    try { import("/assets/js/regiones.js").then(con, function () {}); } catch (e) { /* nada */ }
+  }
 
   function plural(v, n, idioma) {
     if (n === 0 && v.zero !== undefined) return v.zero;
@@ -302,6 +366,12 @@
     // Solo para tests y herramientas: no guarda nada.
     fijarIdioma: function (id) { actual = normaliza(id) || "es"; return actual; },
     elegirIdioma: elegirIdioma,
+    regionInicial: regionInicial,
+    idiomaDeRegion: idiomaDeRegion,
+    IDIOMA_POR_REGION: IDIOMA_POR_REGION,
+    REGION_POR_ZONA: REGION_POR_ZONA,
+    recordarRegion: recordarRegion,
+    recordarPosicion: recordarPosicion,
     t: t,
     existe: existe,
     dato: dato,

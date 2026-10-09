@@ -15,14 +15,20 @@ dependencias (PR "i18n"; los datos de NZ van aparte).
   línea). Los módulos ES importan `assets/js/i18n-modulo.js`. En el `<head>`
   de cada página traducida, **antes de cualquier otro script**: `es.js`,
   `en.js`, `i18n.js`.
-- **Qué idioma**: guardado en este navegador (`localStorage`
-  `costaviva.idioma`) > perfil (`user_metadata.idioma` de la sesión de
-  Supabase, leído de su entrada de localStorage) > `navigator.languages`
-  (el primero que sea es o en) > español. En node (tests, Functions) siempre
-  español. El selector (🌐 Español / English) va en el menú de cuenta 👤
-  (`<div data-i18n-selector>`); guarda, intenta `auth.updateUser({ data: {
-  idioma } })` y recarga. OJO: un español con el móvil en inglés verá la app
-  en inglés hasta que elija Español una vez (lo pide el orden acordado).
+- **Qué idioma** (regla de Mikel, 2026-10-09): elegido a mano en este
+  navegador (`localStorage` `costaviva.idioma`) > perfil
+  (`user_metadata.idioma` de la sesión de Supabase, leído de su entrada de
+  localStorage) > **región** > `navigator.languages` > español. Región:
+  España, Portugal y Canarias en español; Nueva Zelanda en inglés (el
+  `idioma` de cada región de `assets/js/regiones.js`; las tablas de i18n.js
+  se comprueban contra ella en test/i18n.test.js). La región es la última
+  que conoció la app en ese navegador (`I18n.recordarPosicion(lat, lon)` al
+  abrir un spot o con el GPS de la alarma, `costaviva.region`) o, si no, la
+  zona horaria del dispositivo. Así un español con el móvil en inglés ve la
+  app en español. En node (tests, Functions) siempre español. El selector
+  (🌐 Español / English) va en el menú de cuenta 👤 (`<div
+  data-i18n-selector>`) y bajo el formulario de login; guarda, intenta
+  `auth.updateUser({ data: { idioma } })` y recarga.
 - **HTML fijo**: el texto español se queda en el HTML y se marca con
   `data-i18n="clave"` (texto), `data-i18n-html` (con marcado, solo textos
   nuestros) o `data-i18n-title|aria-label|placeholder|alt`. En español no se
