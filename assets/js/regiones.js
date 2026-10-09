@@ -13,9 +13,10 @@
 // Decisiones (no cambiar sin Mikel):
 //   - Canarias: Atlantic/Canary. Hasta hoy salía en hora de Madrid (una hora
 //     de más en mareas, "hora actual" del índice y diario): era un fallo.
-//   - Portugal, Azores y Madeira: SIGUEN en hora de Madrid a propósito (fase 0
-//     = ningún cambio visible en la península ni en Portugal). Su zona real va
-//     en `zonaOficial`; pasarlos a ella es una decisión aparte de Mikel.
+//   - Portugal (Europe/Lisbon), Azores (Atlantic/Azores) y Madeira
+//     (Atlantic/Madeira): en su hora desde el 2026-10-09 (Mikel lo autorizó
+//     tras la fase 0; hasta entonces iban en hora de Madrid, una hora de más,
+//     dos en Azores).
 //   - ZONA_NEGOCIO: lo que es del negocio en España (crons, informes, emails
 //     de suscripción, cupos mensuales, marketing) va en hora de Madrid sea
 //     cual sea la región del usuario.
@@ -43,10 +44,11 @@ export const REGIONES = {
   mediterraneo: R("mediterraneo", "Mediterráneo", "ES", "Europe/Madrid"),
   baleares: R("baleares", "Baleares", "ES", "Europe/Madrid", { bbox: [38.5, 40.3, 1.0, 4.6] }),
   canarias: R("canarias", "Canarias", "ES", "Atlantic/Canary", { bbox: [27, 29.6, -18.5, -13] }),
-  // Hora de Madrid a propósito (ver cabecera): su zona real es zonaOficial.
-  portugal: R("portugal", "Portugal", "PT", "Europe/Madrid", { zonaOficial: "Europe/Lisbon" }),
-  azores: R("azores", "Azores", "PT", "Europe/Madrid", { zonaOficial: "Atlantic/Azores", bbox: [36.8, 39.8, -31.5, -24.5] }),
-  madeira: R("madeira", "Madeira", "PT", "Europe/Madrid", { zonaOficial: "Atlantic/Madeira", bbox: [32.3, 33.2, -17.4, -16.1] }),
+  // Portugal en su hora desde el 2026-10-09 (autorizado por Mikel).
+  // Atlantic/Madeira lleva siempre la misma hora que Europe/Lisbon.
+  portugal: R("portugal", "Portugal", "PT", "Europe/Lisbon"),
+  azores: R("azores", "Azores", "PT", "Atlantic/Azores", { bbox: [36.8, 39.8, -31.5, -24.5] }),
+  madeira: R("madeira", "Madeira", "PT", "Atlantic/Madeira", { bbox: [32.3, 33.2, -17.4, -16.1] }),
   // Nueva Zelanda continental (Norte, Sur y Stewart). Chatham (-176,5°, otra
   // zona: Pacific/Chatham) y Kermadec quedan fuera de la primera fase. Las
   // regiones de pesca de MPI (nz_auckland_kermadec...) llegan en la fase 3.

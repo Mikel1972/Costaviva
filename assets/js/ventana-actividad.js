@@ -366,7 +366,7 @@ function rangoOlaTexto(h) {
 //   reglasExpertas: especies.json.reglas_expertas (opcional),
 //   region (si no, por coordenadas),
 //   zona: zona horaria de las etiquetas de `horas` (si no, la de las
-//     coordenadas, ver regiones.js; Madrid en la Península y Portugal),
+//     coordenadas, ver regiones.js: Madrid, Canarias, Lisboa, Azores...),
 //   fondo: { orilla_tipo, fondo_roca, ... } | null (capa-tipo-fondo.js; ignorado en embarcación),
 //   caudalRio: "bajo"|"normal"|"alto"|null (río asociado al spot, solo hoy),
 //   rio: { nombre, distancia_desembocadura_km } | null (null = sin río conocido),
