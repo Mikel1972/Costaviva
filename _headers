@@ -24,6 +24,10 @@
   Cache-Control: public, max-age=604800
 /assets/marketing/*
   Cache-Control: public, max-age=604800
+# Foto e imágenes de arranque de la pantalla de inicio (2026-10-09). Si
+# cambian, cambia el nombre del fichero (scripts/inicio/).
+/assets/inicio/*
+  Cache-Control: public, max-age=604800
 
 # Letras propias (2026-10-08, rendimiento: fuera Google Fonts). Un año e
 # immutable: los ficheros no cambian nunca. Si hay que cambiar uno, cambia su
