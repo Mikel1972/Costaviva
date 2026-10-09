@@ -14,7 +14,7 @@
 // Corriente (flechas): malla más gruesa, u y v en bytes con signo
 // (127 = 0, escala_ms por unidad, 255 = sin dato).
 
-import { filaDeDatos } from "./capas-mar.js";
+import { filaDeDatos, filaReal } from "./capas-mar.js";
 
 export const BITS = { frente_clorofila: 1, frente_termico: 2, convergencia: 4, costa: 32, nubes: 64 };
 export const NIVELES = [null, "baja", "moderada", "alta"];
@@ -82,6 +82,44 @@ export function pixelesFrentes(d, bytes, colores = COLORES_FRENTES) {
     }
   }
   return px;
+}
+
+// Trazos de 〰 Frentes para combinarse con otra capa (2026-10-09, varias
+// capas a la vez): solo los bordes (doble, clorofila, térmico), sin el gris
+// de "sin dato" ni el celeste tenue de la convergencia, que taparían el color
+// de la capa de fondo; `factor` píxeles por celda y un halo blanco de un
+// píxel en el contorno de cada trazo para que se lea sobre cualquier color.
+export const CLASES_TRAZO = ["doble", "clorofila", "termico"];
+export const HALO_TRAZO = [255, 255, 255, 235];
+export function pixelesFrentesTrazo(d, bytes, colores = COLORES_FRENTES, factor = 4, halo = HALO_TRAZO) {
+  const W = d.columnas * factor, H = d.filas * factor;
+  const px = new Uint8ClampedArray(W * H * 4);
+  const clases = new Array(d.filas * d.columnas);
+  const clase = (f, c) => {
+    if (f < 0 || c < 0 || f >= d.filas || c >= d.columnas) return null;
+    const k = f * d.columnas + c;
+    if (clases[k] === undefined) {
+      const cl = claseCelda(d, bytes, f, c);
+      clases[k] = CLASES_TRAZO.includes(cl) ? cl : null;
+    }
+    return clases[k];
+  };
+  const borde = 1 / factor;
+  for (let r = 0; r < H; r++) {
+    const fr = Math.min(d.filas - 1e-9, Math.max(0, filaReal(d, r, H)));
+    const f = Math.floor(fr), sub = fr - f;
+    for (let x = 0; x < W; x++) {
+      const c = Math.floor(x / factor), subc = x - c * factor;
+      const cl = clase(f, c);
+      if (!cl) continue;
+      const enBorde = (subc === 0 && !clase(f, c - 1)) || (subc === factor - 1 && !clase(f, c + 1)) ||
+        (sub < borde && !clase(f - 1, c)) || (sub >= 1 - borde && !clase(f + 1, c));
+      const o = (r * W + x) * 4;
+      px.set(enBorde ? halo : colores[cl], o);
+      if (!enBorde) px[o + 3] = 255;
+    }
+  }
+  return { ancho: W, alto: H, px };
 }
 
 // ---------------------------------------------------------------------------

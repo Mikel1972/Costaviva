@@ -866,7 +866,7 @@ atribución; nunca se inventa un dato (lo que falta sale `null` + `aviso`).
   el dato), toque en el mapa = valor, y atribución de Copernicus + DOI en el mapa y en la leyenda. Botones
   en la columna B debajo de Boyas (260/322 px; 234/290 en móvil), estilo de
   `.boyas-toggle`; la imagen va en `tilePane` (entre el mapa base y los
-  marcadores); leyenda con variables de `costaviva.css`. Una capa a la vez; más vieja de 7 días (clorofila) o 3 (temperatura), no se
+  marcadores); leyenda con variables de `costaviva.css`. Una capa a la vez hasta el 2026-10-09 (ahora varias, ver "Varias capas de mar a la vez"); más vieja de 7 días (clorofila) o 3 (temperatura), no se
   pinta.
 - **〰 Frentes y corrientes (2026-10-09, pedido de Mikel; PR pendiente de
   su sí)**. Sin IA ni APIs de pago: sale de lo que ya baja
@@ -1042,6 +1042,42 @@ sin IA ni peticiones nuevas (mismo `capas/temperatura-agua.json`):
 - Código: `assets/js/isotermas.js` (puro, `test/isotermas.test.js`) y
   `pintarIsotermas()`/`leyendaBandas()` en `index.html`. La imagen se pinta
   una vez; mover el mapa cuesta ~3 ms en Chromium con el fichero real.
+
+## 🌿🌡〰🌊 Varias capas de mar a la vez (2026-10-09, pedido de Mikel)
+
+Mikel: "Debiéramos poder seleccionar varios campos a la vez… y el resumen
+igual debiera ir en otro lugar o en otro formato". Antes, una capa de mar a la
+vez; ahora los cuatro botones son **conmutadores independientes**
+(`aria-pressed`; encender uno no apaga otro). Sin peticiones nuevas: mismos
+ficheros del bucket, una petición por fichero aunque Frentes y Corriente la
+pidan a la vez (`cargandoCapasMar`), y las imágenes se guardan por capa.
+
+- **Con UNA capa, todo como antes** (imagen, isotermas, flechas, tarjeta,
+  globo; la captura de solo T. agua es idéntica píxel a píxel a la de main).
+- **Con VARIAS, solo una pone el color de fondo**: la que el usuario tocó en
+  su fila de la leyenda o, por defecto, clorofila > temperatura > corriente >
+  frentes. 〰 Frentes nunca es el fondo si hay otra. Las demás: 🌡 isotermas
+  con número (halo blanco); 🌿 líneas verdes 0,2 (punteada) · 0,5
+  (discontinua) · 2 mg/m³ (continua); 〰 solo los trazos (doble, clorofila,
+  térmico; sin el gris ni el celeste) con halo blanco, `pixelesFrentesTrazo`,
+  4 px por celda; 🌊 flechas (manchas solo de fondo). Las flechas de Frentes
+  no salen si 🌊 está encendida. Viento (partículas) va aparte y convive.
+- **Leyenda conjunta** "CAPAS DEL MAR" en la misma `#capaMarPanel`: una fila
+  por capa (icono, nombre, mini leyenda, "Fondo" / "poner de fondo"; la fila
+  es un botón de 44 px). Minimizada: los iconos y la escala del fondo. Fechas
+  de cada capa en "Cómo se leen juntas"; créditos de Copernicus con los DOIs
+  de todas en la tarjeta y en ⓒ Fuentes.
+- **Toque**: un globo con una línea por capa ("🌿 Clorofila moderada (0,45
+  mg/m³)", "🌡 19,4 °C en superficie", "〰 Borde de agua verde y azul a unos 3
+  km", "🌊 Corriente hacia el NE, 0,3 nudos (0,6 km/h)"), estrecho (195 px)
+  para no quedar debajo de la columna de botones.
+- **Recuerdo**: `cv_capas_mar` en localStorage (`{activas, fondo}`, try/catch)
+  y se restauran al abrir, cuando ya están los módulos (`ventana-actividad-lista`).
+- Medido (Chromium, 390x844, CPU x4): mover el mapa con las 4 capas ~28 ms;
+  la imagen de trazos, una vez, ~260 ms.
+- Código: `assets/js/capas-combinadas.js` (puro), `componerCapasMar()` /
+  `leyendaVariasCapas()` / `globoCapasMar()` en `index.html`. Tests:
+  `test/capas-combinadas.test.js` (en tests.yml).
 
 ## Informe diario — Search Console real, conteo de cámaras, robot de especies (2026-09-20)
 
