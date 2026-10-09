@@ -115,7 +115,7 @@ test("corriente: flechas en rejilla fija de pantalla, legibles en el móvil", ()
   assert.ok(fl[2].largo <= 34 && fl[0].largo >= 12);
 });
 
-test("corriente: botón en la columna de las capas de mar, una capa a la vez y sin on*=", () => {
+test("corriente: botón en la columna de las capas de mar, conmutador independiente y sin on*=", () => {
   assert.match(HTML, /id="toggleCorriente"[^>]*aria-pressed="false"/);
   assert.match(HTML, /class="boyas-toggle corriente-toggle"/);
   assert.match(HTML, /alternarCapaMar\("corriente"\)/);

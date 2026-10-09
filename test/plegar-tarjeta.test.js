@@ -77,7 +77,7 @@ test("index.html: cabecera con chevron accesible en las tarjetas de capa, crédi
   assert.match(HTML, /<div class="tarjeta-cuerpo" id="capaMarCuerpo">[\s\S]*id="capaMarCredito"/, "créditos de Copernicus en la vista expandida");
   assert.match(HTML, /\.tarjeta-plegar \{[^}]*width: 44px; height: 44px/, "área táctil de 44 px");
   assert.match(HTML, /src="\/assets\/js\/plegar-tarjeta\.js"/);
-  assert.match(HTML, /map\.attributionControl\.addAttribution\(credito\)/, "y siempre en los créditos del mapa");
+  assert.match(HTML, /map\.attributionControl\.addAttribution\(capasMar\.credito\)/, "y siempre en los créditos del mapa");
   assert.doesNotMatch(JS, /\son[a-z]{3,}\s*=/i);
   assert.match(JS, /try \{/);
 });

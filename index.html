@@ -602,12 +602,49 @@
   .capa-mar-panel .bandas-temp { display: flex; margin-top: 5px; border-radius: 4px; overflow: hidden; box-shadow: 0 0 0 1px var(--linea); }
   .capa-mar-panel .bandas-temp span { flex: 1; text-align: center; font-size: 10px; font-weight: 800; line-height: 18px; }
   .capa-mar-panel .nota-isotermas[hidden] { display: none; }
+  /* Varias capas de mar a la vez (2026-10-09): una fila por capa. La de
+     fondo, marcada; tocar otra fila la pone de fondo. */
+  .capa-mar-panel .filas-capas { display: flex; flex-direction: column; gap: 4px; margin-top: 2px; }
+  .capa-mar-panel .filas-capas[hidden] { display: none; }
+  .fila-capa {
+    display: block; width: 100%; box-sizing: border-box; text-align: left; min-height: 44px;
+    padding: 4px 7px; border: 1px solid var(--linea); border-radius: 9px; background: transparent;
+    color: var(--tinta); font: 500 10.5px/1.35 var(--f-texto);
+  }
+  button.fila-capa { cursor: pointer; }
+  button.fila-capa:focus-visible { outline: 2px solid var(--acento); outline-offset: 1px; }
+  .fila-capa.es-fondo { border-color: var(--tinta); box-shadow: inset 3px 0 0 var(--tinta); }
+  .fila-capa > span { display: block; }
+  .fila-capa .fila-cab { display: flex; align-items: center; gap: 5px; font-weight: 800; font-size: 11px; }
+  .fila-capa .fila-cab b { flex: 1; font-weight: 800; }
+  .fila-capa .fila-fondo { flex: none; font-size: 9px; font-weight: 700; color: var(--tinta-2); border: 1px dashed var(--linea); border-radius: 6px; padding: 0 4px; line-height: 15px; }
+  .fila-capa.es-fondo .fila-fondo { border-style: solid; }
+  .fila-capa.es-fondo .fila-fondo { background: var(--tinta); color: var(--superficie); border-color: var(--tinta); }
+  .fila-capa .fila-barra { height: 8px; border-radius: 4px; margin-top: 3px; }
+  .fila-capa .bandas-temp { margin-top: 3px; }
+  .fila-capa .bandas-temp span { line-height: 15px; font-size: 9.5px; }
+  .fila-capa .fila-muestras { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 7px; margin-top: 3px; color: var(--tinta-2); font-size: 9.5px; }
+  .fila-capa .fila-muestras > span { display: inline-flex; align-items: center; gap: 3px; color: var(--tinta-2); font-size: 9.5px; }
+  .fila-capa .fila-muestras i { width: 11px; height: 11px; border-radius: 3px; box-shadow: 0 0 0 1px var(--linea); }
+  .fila-capa .fila-muestras .linea { width: 18px; height: 0; border-radius: 0; box-shadow: none; border-top: 2px solid #1B7A2E; }
+  .fila-capa .fila-muestras .linea.n0 { border-top-style: dotted; }
+  .fila-capa .fila-muestras .linea.n1 { border-top-style: dashed; }
+  .fila-capa .fila-muestras .linea.iso { border-top-color: #10203a; border-top-width: 1.5px; }
+  /* Globo del toque con varias capas: una línea por capa. */
+  .globo-capas div + div { margin-top: 3px; }
   /* Isotermas de 🌡 T. agua: línea fina oscura y número con halo blanco
      (legible sobre cualquier color de la paleta, también en el móvil). */
   .isoterma { stroke: #10203a; stroke-width: 1.1; stroke-opacity: 0.6; fill: none; stroke-linejoin: round; stroke-linecap: round; }
   .isoterma-etiqueta { display: flex; align-items: center; justify-content: center; font-family: var(--f-texto); font-size: 12px; font-weight: 800; color: #10203a; white-space: nowrap;
     text-shadow: 0 0 2px #fff, 0 0 2px #fff, 0 0 3px #fff, 1px 1px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff; }
   /* Flechas de corriente de 〰 Frentes (SVG de Leaflet). */
+  /* Con otra capa de fondo, las isotermas llevan halo blanco y la clorofila
+     va en líneas verdes (punteada 0,2 · discontinua 0,5 · continua 2 mg/m³). */
+  .isoterma-halo { stroke: #fff; stroke-width: 3.2; stroke-opacity: 0.55; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+  .contorno-clorofila-halo { stroke: #fff; stroke-width: 4.5; stroke-opacity: 0.8; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+  .contorno-clorofila { stroke: #1B7A2E; stroke-width: 2; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+  .contorno-clorofila.n0 { stroke-dasharray: 1 4; stroke-width: 2.4; }
+  .contorno-clorofila.n1 { stroke-dasharray: 7 5; }
   .flecha-corriente { stroke: var(--tinta); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; opacity: 0.85; }
   /* Flechas de 🌊 Corriente: tinta con un halo blanco debajo, para que se
      lean igual sobre la mancha clara (corriente floja) y la oscura (fuerte). */
@@ -1091,7 +1128,9 @@
         </div>
       </div>
       <!-- Tarjeta de las capas de mar (clorofila, temperatura, frentes y
-           corriente): se minimiza con el chevron (assets/js/plegar-tarjeta.js). -->
+           corriente): se minimiza con el chevron (assets/js/plegar-tarjeta.js).
+           Con una capa, su leyenda de siempre; con varias, "Capas del mar"
+           con una fila por capa (assets/js/capas-combinadas.js). -->
       <div class="capa-mar-panel tarjeta-plegable" id="capaMarPanel" hidden>
         <div class="tarjeta-cabecera">
           <div class="titulo"><span class="t-largo" id="capaMarTitulo"></span><span class="t-corto" id="capaMarCorto"></span></div>
@@ -1105,6 +1144,9 @@
           <div class="bandas-temp" id="capaMarBandas" hidden></div>
           <div class="nota-isotermas" id="capaMarNota" hidden></div>
           <ul class="leyenda-frentes" id="capaMarLeyenda" hidden></ul>
+          <!-- Varias capas a la vez (2026-10-09): una fila por capa; tocar una
+               fila la pone de color de fondo. -->
+          <div class="filas-capas" id="capaMarFilas" hidden></div>
           <details class="explica" id="capaMarDetalle"><summary id="capaMarResumen"></summary><div id="capaMarExplica"></div></details>
           <div class="credito" id="capaMarCredito"></div>
         </div>
@@ -1407,7 +1449,9 @@
   import * as Frentes from "/assets/js/frentes.js";
   import * as Corriente from "/assets/js/corriente.js";
   import * as Isotermas from "/assets/js/isotermas.js";
+  import * as CapasCombinadas from "/assets/js/capas-combinadas.js";
   window.VentanaActividad = VentanaActividad;
+  window.CapasCombinadas = CapasCombinadas;
   window.Isotermas = Isotermas;
   window.Corriente = Corriente;
   window.CapasMar = CapasMar;
@@ -2270,7 +2314,9 @@ document.getElementById("toggleBoyas").addEventListener("click", (e) => {
 // pintan en un <canvas> como imagen sobre el mapa, re-muestreada a Mercator
 // fila a fila (la rejilla es de lat/lon regulares). Atribución obligatoria de
 // Copernicus Marine (cláusula 2.4): frase en inglés tal cual + DOI, en el
-// mapa y en la leyenda. Una a la vez (se tapan entre ellas). Van en el panel
+// mapa y en la leyenda. Desde el 2026-10-09 se pueden encender varias a la
+// vez: una pone el color de fondo y las demás van en líneas, trazos o
+// flechas (assets/js/capas-combinadas.js, "componerCapasMar"). Van en el panel
 // tilePane (z 200), como el tipo de fondo: encima del mapa base (paneles mapaBase 150 y
 // relieveFondo 160 de assets/js/mapa-base.js) y debajo de los marcadores.
 // ---------------------------------------------------------------------------
@@ -2292,6 +2338,7 @@ const CAPAS_MAR = {
       "Lo que más vale es el borde entre agua verde y azul, mejor si coincide con un cambio de temperatura: míralo en 〰 Frentes. " +
       "Depende de la especie y de la época. El satélite solo ve la superficie, las nubes lo tapan y pegado a la costa y en las desembocaduras el barro sube el dato. Toca el mapa para ver el valor.",
     fecha: (d) => `Satélite, ${fechaCorta(d.fecha)} (donde había nubes, el dato es estimado)`,
+    fechaFila: (d) => `Satélite, ${fechaCorta(d.fecha)}`,
     maxDias: 7,
   },
   "temperatura-agua": {
@@ -2312,6 +2359,7 @@ const CAPAS_MAR = {
     explica: "Cada color es un grado, siempre el mismo en todo el mapa (del azul frío al rojo cálido); las líneas marcan el grado exacto. " +
       "Cada especie tiene su rango. Los cambios bruscos de temperatura (frentes) suelen juntar alimento: míralos en 〰 Frentes. Toca el mapa para ver el valor exacto.",
     fecha: (d) => `Modelo IBI, ${fechaCorta(d.fecha)} a las 12:00 UTC`,
+    fechaFila: (d) => `Modelo, ${fechaCorta(d.fecha)} a las 12:00 UTC`,
     maxDias: 3,
   },
   // 〰 Frentes y corrientes (2026-10-09): bordes de clorofila y de
@@ -2338,6 +2386,7 @@ const CAPAS_MAR = {
     // Clorofila de varios días (descargar-capas.py, 3c): en cada celda, lo
     // último que vio el satélite sin nubes.
     fecha: (d) => `Satélite ${d.fecha_clorofila_desde && d.fecha_clorofila_desde !== d.fecha_clorofila ? `del ${fechaCorta(d.fecha_clorofila_desde)} al ${fechaCorta(d.fecha_clorofila)} (lo último sin nubes)` : `del ${fechaCorta(d.fecha_clorofila)}`}; temperatura y corriente (media del día, sin marea) del ${fechaCorta(d.fecha)}`,
+    fechaFila: (d) => `Satélite hasta el ${fechaCorta(d.fecha_clorofila)}; modelo del ${fechaCorta(d.fecha)}`,
     maxDias: 3,
   },
   // 🌊 Corriente (2026-10-09, Mikel: "¿La corriente se puede mostrar por
@@ -2355,6 +2404,7 @@ const CAPAS_MAR = {
       "Es la corriente media del día sin la marea, del modelo IBI de Copernicus: cerca de la costa, en rías y puertos la marea manda y el modelo pierde detalle. " +
       "Toca el mapa para ver la dirección y la fuerza.",
     fecha: (d) => `Modelo IBI, media del ${fechaCorta(d.fecha)} (sin marea)`,
+    fechaFila: (d) => `Media del ${fechaCorta(d.fecha)}, sin marea`,
     maxDias: 3,
   },
 };
@@ -2401,9 +2451,11 @@ function lienzoCapaMar(CM, d, def) {
   ctx.putImageData(img, 0, 0);
   return canvas.toDataURL("image/png");
 }
-function creditoCapaMar(d) {
+// Créditos de una capa o de varias (DOIs sin repetir).
+function creditoCapaMar(ds) {
+  const dois = [...new Set([].concat(ds).flatMap((d) => d.dois || [d.doi]))];
   return 'Datos: <a href="https://marine.copernicus.eu/" target="_blank" rel="noopener">Generated using E.U. Copernicus Marine Service Information</a>; ' +
-    (d.dois || [d.doi]).map((x) => `<a href="https://doi.org/${escVA(x)}" target="_blank" rel="noopener">${escVA(x)}</a>`).join(", ");
+    dois.map((x) => `<a href="https://doi.org/${escVA(x)}" target="_blank" rel="noopener">${escVA(x)}</a>`).join(", ");
 }
 // Flechas de corriente de 〰 Frentes: como mucho 12 por lado de la pantalla
 // (legibles en el móvil); largo según la fuerza. Se rehacen al mover el mapa.
@@ -2451,22 +2503,29 @@ function pintarFlechasCorrienteRejilla(grupo, d) {
 // grados que se ven; se rehacen al mover o hacer zoom, como las flechas de
 // 〰 Frentes. Los COLORES no cambian nunca (escala fija por grados): la
 // imagen se pinta una vez. Cálculo puro en assets/js/isotermas.js.
+// estado.dom = dónde va la leyenda (tarjeta de una capa o su fila en la de
+// varias); estado.halo = halo blanco bajo las líneas (con otra capa de fondo).
 function pintarIsotermas(estado, d) {
   const I = window.Isotermas;
   const t0 = performance.now();
   const b = map.getBounds();
   const lim = { norte: b.getNorth(), sur: b.getSouth(), oeste: b.getWest(), este: b.getEast() };
   const pct = I.percentilesVisibles(d, d.bytes, lim);
-  leyendaBandas(I, I.bandasVisibles(pct));
+  const dom = estado.dom || {};
+  leyendaBandas(I, I.bandasVisibles(pct), dom);
   const paso = I.intervaloIsotermas(pct, map.getZoom());
   const iso = I.isotermasVisibles(d, d.bytes, lim, I.nivelesIsotermas(pct, paso));
   estado.lineas.clearLayers();
   estado.etiquetas.clearLayers();
-  const nota = document.getElementById("capaMarNota");
-  nota.textContent = iso.length ? I.textoIntervalo(paso) : "";
-  nota.hidden = !iso.length;
+  estado.paso = iso.length ? paso : null;
+  if (dom.nota) {
+    dom.nota.textContent = iso.length ? (dom.textoNota ? dom.textoNota(paso) : I.textoIntervalo(paso)) : "";
+    dom.nota.hidden = !iso.length;
+  }
   if (!iso.length) { estado.ms = performance.now() - t0; return; }
-  L.polyline(iso.flatMap((x) => x.lineas), { className: "isoterma", interactive: false, smoothFactor: 1 }).addTo(estado.lineas);
+  const lineas = iso.flatMap((x) => x.lineas);
+  if (estado.halo) L.polyline(lineas, { className: "isoterma-halo", interactive: false, smoothFactor: 1 }).addTo(estado.lineas);
+  L.polyline(lineas, { className: "isoterma", interactive: false, smoothFactor: 1 }).addTo(estado.lineas);
   const t = map.getSize();
   const enPantalla = iso.flatMap((x) => x.lineas.map((l) => ({ nivel: x.nivel, puntos: l.map((p) => map.latLngToContainerPoint(p)) })));
   for (const e of I.etiquetasIsotermas(enPantalla, { ancho: t.x, alto: t.y, max: 8, margenDerecha: window.matchMedia("(max-width: 720px)").matches ? 120 : 28 })) {
@@ -2479,16 +2538,22 @@ function pintarIsotermas(estado, d) {
 }
 // Leyenda de 🌡 T. agua: barra fija de 8 a 30 °C con el tramo visible
 // recuadrado y, debajo, una casilla por grado visible con su número (mismos
-// colores que el mapa, siempre).
-function leyendaBandas(I, grados) {
-  const tramo = document.getElementById("capaMarTramo");
-  const fila = document.getElementById("capaMarBandas");
-  fila.replaceChildren();
-  fila.hidden = tramo.hidden = !grados.length;
+// colores que el mapa, siempre). dom = { tramo?, fila? } (la fila de la
+// leyenda de varias capas no lleva barra).
+function leyendaBandas(I, grados, dom) {
+  const { tramo, fila } = dom;
+  if (fila) {
+    fila.replaceChildren();
+    fila.hidden = !grados.length;
+  }
+  if (tramo) tramo.hidden = !grados.length;
   if (!grados.length) return;
   const n = I.PALETA_TEMP_AGUA.length;
-  tramo.style.left = `${(100 * (grados[0] - I.TEMP_MIN)) / n}%`;
-  tramo.style.width = `${(100 * (grados[grados.length - 1] - grados[0] + 1)) / n}%`;
+  if (tramo) {
+    tramo.style.left = `${(100 * (grados[0] - I.TEMP_MIN)) / n}%`;
+    tramo.style.width = `${(100 * (grados[grados.length - 1] - grados[0] + 1)) / n}%`;
+  }
+  if (!fila) return;
   for (const g of grados) {
     const c = I.colorTemperatura(g);
     const casilla = document.createElement("span");
@@ -2498,16 +2563,38 @@ function leyendaBandas(I, grados) {
     fila.append(casilla);
   }
 }
+// 🌿 Clorofila cuando otra capa pone el fondo: líneas verdes con halo blanco
+// en 0,2 (punteada), 0,5 (discontinua) y 2 mg/m³ (continua). Mismo cálculo
+// que las isotermas (marching squares sobre lo visible), sin números.
+function pintarContornosClorofila(grupo, d) {
+  grupo.clearLayers();
+  const I = window.Isotermas, CC = window.CapasCombinadas;
+  if (!I || !CC) return;
+  const b = map.getBounds();
+  const lim = { norte: b.getNorth(), sur: b.getSouth(), oeste: b.getWest(), este: b.getEast() };
+  const iso = I.isotermasVisibles(d, d.bytes, lim, CC.NIVELES_CLOROFILA, 4);
+  if (!iso.length) return;
+  L.polyline(iso.flatMap((x) => x.lineas), { className: "contorno-clorofila-halo", interactive: false }).addTo(grupo);
+  for (const x of iso) {
+    const k = CC.NIVELES_CLOROFILA.indexOf(x.nivel);
+    L.polyline(x.lineas, { className: `contorno-clorofila n${k}`, interactive: false }).addTo(grupo);
+  }
+}
 // Etiquetas de las isotermas por encima de las líneas y por debajo de los spots.
 map.createPane("isotermasEtiquetas").style.zIndex = 450;
 map.getPane("isotermasEtiquetas").style.pointerEvents = "none";
 // Datos por fichero (🌊 Corriente reutiliza el de 〰 Frentes).
 const datosCapasMar = {};
 const ficheroCapaMar = (nombre) => CAPAS_MAR[nombre].fichero || nombre;
-let capaMarActiva = null; // { nombre, overlay, credito }
-async function cargarCapaMar(CM, nombre) {
+// Una sola petición por fichero aunque se pida a la vez (〰 Frentes y 🌊
+// Corriente comparten fichero y se restauran juntas).
+const cargandoCapasMar = {};
+function cargarCapaMar(CM, nombre) {
   nombre = ficheroCapaMar(nombre);
-  if (datosCapasMar[nombre]) return datosCapasMar[nombre];
+  if (datosCapasMar[nombre]) return Promise.resolve(datosCapasMar[nombre]);
+  return (cargandoCapasMar[nombre] ||= descargarCapaMar(CM, nombre).finally(() => { delete cargandoCapasMar[nombre]; }));
+}
+async function descargarCapaMar(CM, nombre) {
   const r = await fetch(URL_CAPAS_MAR + nombre + ".json", { cache: "no-cache" });
   if (!r.ok) throw new Error(`HTTP ${r.status}`);
   const d = await r.json();
@@ -2523,77 +2610,142 @@ async function cargarCapaMar(CM, nombre) {
   datosCapasMar[nombre] = d;
   return d;
 }
-function apagarCapaMar() {
-  if (!capaMarActiva) return;
-  map.closePopup(); // el valor tocado era de la capa que se apaga
-  map.removeLayer(capaMarActiva.overlay);
-  if (capaMarActiva.alMover) map.off("moveend", capaMarActiva.alMover);
-  map.attributionControl.removeAttribution(capaMarActiva.credito);
-  const b = document.getElementById(CAPAS_MAR[capaMarActiva.nombre].boton);
-  b.classList.remove("activo");
-  b.setAttribute("aria-pressed", "false");
-  document.getElementById("capaMarPanel").hidden = true;
-  capaMarActiva = null;
+
+// ---------------------------------------------------------------------------
+// Varias capas de mar a la vez (2026-10-09, Mikel: "Debiéramos poder
+// seleccionar varios campos a la vez"). Cada botón es un conmutador
+// independiente; quién pinta el color de fondo y cómo se dibuja cada una al
+// combinarse lo decide assets/js/capas-combinadas.js (puro, con tests). Con
+// una sola capa, todo como antes. Lo encendido y el fondo elegido se
+// recuerdan en localStorage (cv_capas_mar, solo comodidad).
+// ---------------------------------------------------------------------------
+const capasMar = {
+  activas: [],          // en el orden de CapasCombinadas.CAPAS
+  fondo: null,          // la que el usuario puso de fondo (o null)
+  cargando: new Set(),  // pulsadas, esperando a sus datos
+  dibujo: new Map(),    // nombre -> { overlay, movers, isotermas, modo }
+  credito: null,        // atribución de Copernicus en el mapa
+  CM: null,
+};
+async function moduloCombinadas() {
+  // Mismo módulo que deja el <script type="module"> de arriba: si aún no ha
+  // llegado, se importa aquí y se deja en window para el resto del código.
+  return (window.CapasCombinadas ||= await import("/assets/js/capas-combinadas.js"));
 }
-async function alternarCapaMar(nombre) {
-  const eraEsta = capaMarActiva?.nombre === nombre;
-  apagarCapaMar();
-  if (eraEsta) return;
+const almacenLocal = () => { try { return window.localStorage; } catch (e) { return null; } };
+function guardarCapasMar() {
+  window.CapasCombinadas?.guardarEstado(almacenLocal(), { activas: capasMar.activas, fondo: capasMar.fondo });
+}
+function marcarBotonCapaMar(nombre, activo) {
+  const b = document.getElementById(CAPAS_MAR[nombre].boton);
+  b.classList.toggle("activo", activo);
+  b.setAttribute("aria-pressed", activo ? "true" : "false");
+}
+// Imagen de una capa (data URL), guardada en sus datos: relleno = la de
+// siempre; trazos = solo los bordes de 〰 Frentes, con halo.
+function imagenCapaMar(nombre, variante, d) {
   const def = CAPAS_MAR[nombre];
-  const boton = document.getElementById(def.boton);
-  boton.classList.add("activo");
-  boton.setAttribute("aria-pressed", "true");
-  let d;
-  let CM;
-  try {
-    CM = await moduloCapasMar();
-    d = await cargarCapaMar(CM, nombre);
-  } catch (e) {
-    boton.classList.remove("activo");
-    boton.setAttribute("aria-pressed", "false");
-    avisoCapa("Esta capa aún no está disponible. Vuelve a probar más tarde.");
-    return;
-  }
-  // Nunca un mapa viejo con aspecto de actual.
-  const dias = (Date.now() - Date.parse(d.fecha + "T12:00:00Z")) / 86400000;
-  if (!Number.isFinite(dias) || dias > def.maxDias) {
-    boton.classList.remove("activo");
-    boton.setAttribute("aria-pressed", "false");
-    avisoCapa("Los datos de esta capa están desactualizados; no se muestran.");
-    return;
-  }
-  if (!boton.classList.contains("activo")) return; // la apagaron mientras cargaba
-  const esFrentes = def.tipo === "frentes";
-  const esCorriente = def.tipo === "corriente";
-  if (esCorriente && !d.mallaVel) {
-    boton.classList.remove("activo");
-    boton.setAttribute("aria-pressed", "false");
-    avisoCapa("Esta capa aún no está disponible. Vuelve a probar más tarde.");
-    return;
-  }
-  // La imagen se guarda por capa (Frentes y Corriente comparten datos).
-  const malla = esCorriente ? d.mallaVel : d;
   d.urlImagenes ||= {};
-  const imagen = L.imageOverlay(d.urlImagenes[nombre] ||= lienzoCapaMar(CM, malla, def), [[malla.sur, malla.oeste], [malla.norte, malla.este]], { opacity: esFrentes ? 0.9 : esCorriente ? 0.75 : def.tipo === "isotermas" ? 0.8 : 0.7, interactive: false, pane: "tilePane" });
-  const overlay = L.layerGroup([imagen]);
-  let alMover = null;
-  let isotermas = null;
-  if (def.tipo === "isotermas" && window.Isotermas) {
-    isotermas = { lineas: L.layerGroup().addTo(overlay), etiquetas: L.layerGroup().addTo(overlay) };
-    alMover = () => pintarIsotermas(isotermas, d);
+  const clave = variante === "trazos" ? `${nombre}:trazos` : nombre;
+  if (d.urlImagenes[clave]) return d.urlImagenes[clave];
+  if (variante === "trazos") {
+    const { ancho, alto, px } = window.Frentes.pixelesFrentesTrazo(d, d.bytes, COLORES_FRENTES);
+    const lienzo = document.createElement("canvas");
+    lienzo.width = ancho;
+    lienzo.height = alto;
+    const ctx = lienzo.getContext("2d");
+    const im = ctx.createImageData(ancho, alto);
+    im.data.set(px);
+    ctx.putImageData(im, 0, 0);
+    return (d.urlImagenes[clave] = lienzo.toDataURL("image/png"));
   }
-  if ((esFrentes || esCorriente) && d.corriente) {
-    const flechas = L.layerGroup().addTo(overlay);
-    alMover = esCorriente ? () => pintarFlechasCorrienteRejilla(flechas, d) : () => pintarFlechasCorriente(flechas, d);
-    alMover();
-    map.on("moveend", alMover);
+  return (d.urlImagenes[clave] = lienzoCapaMar(capasMar.CM, def.tipo === "corriente" ? d.mallaVel : d, def));
+}
+// Un solo manejador de moveend para todas las capas encendidas.
+function alMoverCapasMar() {
+  for (const x of capasMar.dibujo.values()) for (const f of x.movers) f();
+}
+let moveendCapasMar = false;
+// Quita lo dibujado y lo vuelve a dibujar según las capas encendidas y el
+// fondo. Las imágenes ya están hechas (caché por capa): solo cuesta lo de la
+// vista (isotermas, contornos y flechas).
+function componerCapasMar() {
+  const CC = window.CapasCombinadas;
+  map.closePopup(); // el valor tocado era de otra combinación
+  for (const x of capasMar.dibujo.values()) map.removeLayer(x.overlay);
+  capasMar.dibujo.clear();
+  if (capasMar.credito) map.attributionControl.removeAttribution(capasMar.credito);
+  capasMar.credito = null;
+  const activas = capasMar.activas;
+  const fondo = CC.elegirFondo(activas, capasMar.fondo);
+  for (const nombre of activas) {
+    const def = CAPAS_MAR[nombre];
+    const d = datosCapasMar[ficheroCapaMar(nombre)];
+    const modo = CC.modoCapa(nombre, activas, fondo);
+    const overlay = L.layerGroup();
+    const movers = [];
+    let isotermas = null;
+    if (modo.relleno) {
+      const malla = def.tipo === "corriente" ? d.mallaVel : d;
+      L.imageOverlay(imagenCapaMar(nombre, "relleno", d), [[malla.sur, malla.oeste], [malla.norte, malla.este]], {
+        opacity: def.tipo === "frentes" ? 0.9 : def.tipo === "corriente" ? 0.75 : def.tipo === "isotermas" ? 0.8 : 0.7,
+        interactive: false, pane: "tilePane", zIndex: 1,
+      }).addTo(overlay);
+    }
+    if (modo.trazos) {
+      L.imageOverlay(imagenCapaMar(nombre, "trazos", d), [[d.sur, d.oeste], [d.norte, d.este]], { opacity: 1, interactive: false, pane: "tilePane", zIndex: 3 }).addTo(overlay);
+    }
+    if (def.tipo === "isotermas" && window.Isotermas) {
+      isotermas = { lineas: L.layerGroup().addTo(overlay), etiquetas: L.layerGroup().addTo(overlay), halo: !modo.sola, dom: null };
+      movers.push(() => pintarIsotermas(isotermas, d));
+    }
+    if (nombre === "clorofila" && modo.lineas) {
+      const grupo = L.layerGroup().addTo(overlay);
+      movers.push(() => pintarContornosClorofila(grupo, d));
+    }
+    if (modo.flechas && d.corriente) {
+      const flechas = L.layerGroup().addTo(overlay);
+      movers.push(def.tipo === "corriente" ? () => pintarFlechasCorrienteRejilla(flechas, d) : () => pintarFlechasCorriente(flechas, d));
+    }
+    overlay.addTo(map);
+    capasMar.dibujo.set(nombre, { overlay, movers, isotermas, modo });
   }
-  overlay.addTo(map);
-  const credito = creditoCapaMar(d);
-  map.attributionControl.addAttribution(credito);
-  capaMarActiva = { nombre, overlay, credito, alMover, isotermas };
+  for (const n of Object.keys(CAPAS_MAR)) marcarBotonCapaMar(n, activas.includes(n) || capasMar.cargando.has(n));
+  const panel = document.getElementById("capaMarPanel");
+  if (!activas.length) {
+    panel.hidden = true;
+    if (moveendCapasMar) { map.off("moveend", alMoverCapasMar); moveendCapasMar = false; }
+    return;
+  }
+  const ds = [...new Set(activas.map((n) => datosCapasMar[ficheroCapaMar(n)]))];
+  capasMar.credito = creditoCapaMar(ds);
+  map.attributionControl.addAttribution(capasMar.credito);
+  const eraOculta = panel.hidden;
+  if (activas.length === 1) leyendaUnaCapa(activas[0]);
+  else leyendaVariasCapas(activas, fondo);
+  document.getElementById("capaMarCredito").innerHTML = capasMar.credito;
+  // Abierta en escritorio; plegada en el móvil para no tapar el mapa.
+  document.getElementById("capaMarDetalle").open = !window.matchMedia("(max-width: 720px)").matches;
+  panel.hidden = false;
+  if (eraOculta) plegarCapaMar?.alAbrir();
+  // Con la tarjeta ya montada: isotermas, contornos y flechas de esta vista.
+  alMoverCapasMar();
+  if (!moveendCapasMar) { map.on("moveend", alMoverCapasMar); moveendCapasMar = true; }
+}
+// Partes de la tarjeta que solo usa la leyenda de una capa.
+const ID_UNA_CAPA = ["capaMarFecha", "capaMarBarra", "capaMarExtremos", "capaMarBandas", "capaMarNota", "capaMarLeyenda"];
+// Tarjeta de UNA capa: la de siempre.
+function leyendaUnaCapa(nombre) {
+  const def = CAPAS_MAR[nombre];
+  const d = datosCapasMar[ficheroCapaMar(nombre)];
+  const isotermas = capasMar.dibujo.get(nombre).isotermas;
+  const esFrentes = def.tipo === "frentes", esCorriente = def.tipo === "corriente";
+  document.getElementById("capaMarFilas").hidden = true;
+  document.getElementById("capaMarFilas").replaceChildren();
+  document.getElementById("capaMarFecha").hidden = false;
   document.getElementById("capaMarTitulo").textContent = def.titulo;
   document.getElementById("capaMarCorto").textContent = def.corto;
+  document.getElementById("capaMarCorto").title = "";
   document.getElementById("capaMarFecha").textContent = def.fecha(d);
   const barra = document.getElementById("capaMarBarra");
   const leyenda = document.getElementById("capaMarLeyenda");
@@ -2607,9 +2759,7 @@ async function alternarCapaMar(nombre) {
   mini.style.background = "";
   if (conMuestras) {
     // Muestras de color con su texto; minimizada, solo los colores.
-    const filas = esCorriente ? window.Corriente.leyendaTramos()
-      : def.leyenda.map(([clase, texto]) => [rgbaCss(COLORES_FRENTES[clase]), texto]);
-    for (const [color, texto] of filas) {
+    for (const [color, texto] of muestrasCapaMar(nombre)) {
       const li = document.createElement("li");
       const muestra = document.createElement("i");
       muestra.style.background = color;
@@ -2634,17 +2784,167 @@ async function alternarCapaMar(nombre) {
     mini.style.background = barra.style.background;
     document.getElementById("capaMarMin").textContent = `${window.Isotermas.TEMP_MIN} °C`;
     document.getElementById("capaMarMax").textContent = `${window.Isotermas.TEMP_MAX}+ °C`;
-    // Con la tarjeta ya montada: extremos reales e isotermas de esta vista.
-    alMover();
-    map.on("moveend", alMover);
+    isotermas.dom = { tramo: document.getElementById("capaMarTramo"), fila: document.getElementById("capaMarBandas"), nota: document.getElementById("capaMarNota") };
   }
   document.getElementById("capaMarResumen").textContent = def.resumen;
   document.getElementById("capaMarExplica").textContent = def.explica;
-  // Abierta en escritorio; plegada en el móvil para no tapar el mapa.
-  document.getElementById("capaMarDetalle").open = !window.matchMedia("(max-width: 720px)").matches;
-  document.getElementById("capaMarCredito").innerHTML = credito;
-  document.getElementById("capaMarPanel").hidden = false;
-  plegarCapaMar?.alAbrir();
+}
+// Muestras [color, texto] de 〰 Frentes y 🌊 Corriente.
+function muestrasCapaMar(nombre, soloTrazos = false) {
+  if (CAPAS_MAR[nombre].tipo === "corriente") return window.Corriente.leyendaTramos();
+  const filas = CAPAS_MAR.frentes.leyenda.filter(([clase]) => !soloTrazos || window.Frentes.CLASES_TRAZO.includes(clase));
+  return filas.map(([clase, texto]) => [rgbaCss(COLORES_FRENTES[clase]), texto]);
+}
+// Tarjeta de VARIAS capas: "Capas del mar", una fila por capa (icono, nombre,
+// mini leyenda, de qué día es) y la de fondo marcada. Tocar una fila la pone
+// de fondo. Minimizada: los iconos de las capas encendidas.
+function leyendaVariasCapas(activas, fondo) {
+  const CC = window.CapasCombinadas;
+  for (const id of ID_UNA_CAPA) document.getElementById(id).hidden = true;
+  document.getElementById("capaMarTitulo").textContent = "CAPAS DEL MAR";
+  // Minimizada: solo los iconos de las capas encendidas (y la escala del fondo).
+  document.getElementById("capaMarCorto").textContent = activas.map((n) => CC.ICONOS[n]).join(" ");
+  document.getElementById("capaMarCorto").title = `Capas del mar: ${activas.map((n) => CC.NOMBRES[n].toLowerCase()).join(", ")}`;
+  const mini = document.getElementById("capaMarMini");
+  mini.replaceChildren();
+  mini.style.background = "";
+  const filas = document.getElementById("capaMarFilas");
+  filas.replaceChildren();
+  const el = (tag, clase, texto) => {
+    const x = document.createElement(tag);
+    if (clase) x.className = clase;
+    if (texto != null) x.textContent = texto;
+    return x;
+  };
+  for (const nombre of activas) {
+    const def = CAPAS_MAR[nombre];
+    const d = datosCapasMar[ficheroCapaMar(nombre)];
+    const { modo, isotermas } = capasMar.dibujo.get(nombre);
+    const seleccionable = CC.puedeSerFondo(nombre, activas);
+    const fila = el(seleccionable ? "button" : "div", `fila-capa${modo.fondo ? " es-fondo" : ""}`);
+    if (seleccionable) {
+      fila.type = "button";
+      fila.dataset.capa = nombre;
+      fila.setAttribute("aria-pressed", modo.fondo ? "true" : "false");
+      fila.title = modo.fondo ? "Es el color de fondo" : "Poner esta capa de color de fondo";
+    }
+    const cab = el("span", "fila-cab");
+    cab.append(el("span", null, CC.ICONOS[nombre]), el("b", null, CC.NOMBRES[nombre]));
+    cab.append(el("span", "fila-fondo", modo.fondo ? "Fondo" : seleccionable ? "poner de fondo" : "trazos"));
+    fila.append(cab);
+    let fondoMini = null;
+    const muestras = el("span", "fila-muestras");
+    if (nombre === "temperatura-agua" && modo.relleno) {
+      const bandas = el("span", "bandas-temp");
+      fila.append(bandas);
+      if (isotermas) isotermas.dom = { fila: bandas };
+      fondoMini = window.Isotermas ? window.Isotermas.degradadoBandas() : null;
+    } else if (nombre === "clorofila" && modo.relleno) {
+      const barra = el("span", "fila-barra");
+      barra.style.background = `linear-gradient(90deg, ${def.paradas.join(", ")})`;
+      fila.append(barra);
+      fondoMini = barra.style.background;
+    } else if (nombre === "clorofila") {
+      CC.NIVELES_CLOROFILA.forEach((v, k) => {
+        const s = el("span");
+        s.append(el("i", `linea n${k}`), document.createTextNode(String(v).replace(".", ",")));
+        muestras.append(s);
+      });
+    } else if (nombre === "corriente" && modo.relleno) {
+      const tramos = muestrasCapaMar(nombre);
+      for (const [color] of tramos) { const i = el("i"); i.style.background = color; muestras.append(i); }
+      fondoMini = tramos.map(([c]) => c);
+    } else if (nombre === "frentes") {
+      for (const clase of window.Frentes.CLASES_TRAZO) {
+        const s = el("span");
+        const i = el("i");
+        i.style.background = rgbaCss(COLORES_FRENTES[clase]);
+        s.append(i, document.createTextNode(CC.ETIQUETAS_TRAZO[clase]));
+        muestras.append(s);
+      }
+    }
+    const textoFila = CC.textoFila(nombre, modo);
+    const texto = el("span", null, textoFila);
+    if (textoFila || isotermas) muestras.append(texto);
+    if (muestras.childNodes.length) fila.append(muestras);
+    if (isotermas) {
+      if (!isotermas.dom) isotermas.dom = {};
+      isotermas.dom.nota = texto;
+      isotermas.dom.textoNota = (paso) => CC.textoFila(nombre, modo, { intervalo: paso });
+    }
+    filas.append(fila);
+    if (modo.fondo && fondoMini) {
+      if (Array.isArray(fondoMini)) for (const c of fondoMini) { const i = el("i"); i.style.background = c; mini.append(i); }
+      else mini.style.background = fondoMini;
+    }
+  }
+  filas.hidden = false;
+  document.getElementById("capaMarResumen").textContent = "Cómo se leen juntas";
+  document.getElementById("capaMarExplica").textContent =
+    "Solo una capa pone el color de fondo (la marcada «Fondo»); las demás van en líneas, trazos o flechas para no taparse. " +
+    "Toca otra fila para ponerla de fondo. Toca el mapa para ver todas a la vez en ese punto. " +
+    activas.map((n) => `${CC.ICONOS[n]} ${CAPAS_MAR[n].resumen} (${CAPAS_MAR[n].fechaFila(datosCapasMar[ficheroCapaMar(n)])}.)`).join(" ");
+}
+// Tocar una fila de la leyenda de varias capas: esa capa pasa a ser el fondo.
+document.getElementById("capaMarFilas").addEventListener("click", (e) => {
+  const fila = e.target.closest("button.fila-capa");
+  if (!fila || !capasMar.activas.includes(fila.dataset.capa)) return;
+  capasMar.fondo = fila.dataset.capa;
+  componerCapasMar();
+  guardarCapasMar();
+  document.querySelector(`#capaMarFilas button[data-capa="${fila.dataset.capa}"]`)?.focus();
+});
+// Comprueba y prepara los datos de una capa; null (con aviso, salvo al
+// restaurar lo de la visita anterior) si no se puede mostrar.
+async function datosCapaMarListos(nombre, silencioso) {
+  const def = CAPAS_MAR[nombre];
+  const aviso = (t) => { if (!silencioso) avisoCapa(t); };
+  let d;
+  try {
+    capasMar.CM ||= await moduloCapasMar();
+    await moduloCombinadas();
+    d = await cargarCapaMar(capasMar.CM, nombre);
+  } catch (e) {
+    console.warn(`Capa ${nombre} no disponible:`, e && e.message);
+    aviso("Esta capa aún no está disponible. Vuelve a probar más tarde.");
+    return null;
+  }
+  // Nunca un mapa viejo con aspecto de actual.
+  const dias = (Date.now() - Date.parse(d.fecha + "T12:00:00Z")) / 86400000;
+  if (!Number.isFinite(dias) || dias > def.maxDias) {
+    aviso("Los datos de esta capa están desactualizados; no se muestran.");
+    return null;
+  }
+  if (def.tipo === "corriente" && !d.mallaVel) {
+    aviso("Esta capa aún no está disponible. Vuelve a probar más tarde.");
+    return null;
+  }
+  return d;
+}
+// Botón de una capa de mar: enciende o apaga SOLO esa (las demás siguen).
+async function alternarCapaMar(nombre, { silencioso = false } = {}) {
+  if (capasMar.activas.includes(nombre)) {
+    capasMar.activas = capasMar.activas.filter((n) => n !== nombre);
+    componerCapasMar();
+    guardarCapasMar();
+    return;
+  }
+  if (capasMar.cargando.has(nombre)) {
+    // La apagaron mientras cargaba.
+    capasMar.cargando.delete(nombre);
+    marcarBotonCapaMar(nombre, false);
+    return;
+  }
+  capasMar.cargando.add(nombre);
+  marcarBotonCapaMar(nombre, true);
+  const d = await datosCapaMarListos(nombre, silencioso);
+  if (!capasMar.cargando.has(nombre)) return;
+  capasMar.cargando.delete(nombre);
+  if (!d) { marcarBotonCapaMar(nombre, false); return; }
+  capasMar.activas = window.CapasCombinadas.normalizarActivas([...capasMar.activas, nombre]);
+  componerCapasMar();
+  if (silencioso) return;
+  guardarCapasMar();
   registrarEvento(`ver_capa_${nombre.replace("-", "_")}`);
 }
 // Tarjeta minimizable (assets/js/plegar-tarjeta.js): una sola para las
@@ -2658,6 +2958,46 @@ document.getElementById("toggleClorofila").addEventListener("click", () => alter
 document.getElementById("toggleTempAgua").addEventListener("click", () => alternarCapaMar("temperatura-agua"));
 document.getElementById("toggleFrentes").addEventListener("click", () => alternarCapaMar("frentes"));
 document.getElementById("toggleCorriente").addEventListener("click", () => alternarCapaMar("corriente"));
+// Las capas que el usuario tenía encendidas la última vez (y su fondo).
+async function restaurarCapasMar() {
+  // Con los módulos de cálculo (Frentes, Corriente, Isotermas) ya cargados.
+  if (!window.Frentes) await new Promise((ok) => window.addEventListener("ventana-actividad-lista", ok, { once: true }));
+  const CC = await moduloCombinadas();
+  const guardado = CC.leerEstado(almacenLocal());
+  if (!guardado.activas.length) return;
+  capasMar.fondo = guardado.fondo;
+  await Promise.all(guardado.activas.map((n) => alternarCapaMar(n, { silencioso: true })));
+}
+restaurarCapasMar().catch((e) => console.warn("Capa: no se pudieron restaurar las capas de mar:", e && e.message));
+// Globo del toque con varias capas: una línea por capa encendida (si 〰
+// Frentes dibuja sus flechas, también la corriente).
+function globoCapasMar(lat, lng) {
+  const CC = window.CapasCombinadas, CM = window.CapasMar;
+  const activas = capasMar.activas;
+  const partes = {};
+  let hayMar = false;
+  for (const nombre of activas) {
+    const d = datosCapasMar[ficheroCapaMar(nombre)];
+    if (nombre === "temperatura-agua" || nombre === "clorofila") {
+      const v = CM.valorEnPunto(d, d.bytes, lat, lng);
+      if (v !== null) hayMar = true;
+      partes[nombre] = nombre === "clorofila" ? CC.textoClorofila(v) : CC.textoTemperatura(v);
+    } else if (nombre === "frentes") {
+      const cel = window.Frentes.celdaDe(d, lat, lng);
+      if (cel && d.bytes[cel.f * d.columnas + cel.c] !== 255) hayMar = true;
+      partes.frentes = CC.textoFrentes(window.Frentes.rasgosPunto(d, d.bytes, lat, lng, { radioKm: 10 }));
+    }
+  }
+  const dc = activas.includes("corriente") || capasMar.dibujo.get("frentes")?.modo.flechas ? datosCapasMar.frentes : null;
+  if (dc && dc.mallaVel && window.Corriente) {
+    const C = window.Corriente;
+    const c = C.corrienteEnPunto(dc, dc.mallaVel, dc.corrU, dc.corrV, lat, lng);
+    if (c) hayMar = true;
+    partes.corriente = C.textoToque(c, C.dentroDeZona(dc.mallaVel, lat, lng));
+  }
+  if (!hayMar) return ["Tierra o sin dato aquí"];
+  return CC.lineasGlobo(partes);
+}
 
 // Spots es la única capa que, al apagarla, tiene un efecto en cascada: sin
 // spots visibles no tiene sentido poder añadir uno nuevo (pedido explícito
@@ -3137,28 +3477,35 @@ document.getElementById("btnMetodoMapa").addEventListener("click", () => {
   document.getElementById("toggleAnadirUbicacion").classList.add("activo");
 });
 map.on("click", (e) => {
-  if (!modoAnadirUbicacion && capaMarActiva) {
-    const d = datosCapasMar[ficheroCapaMar(capaMarActiva.nombre)];
-    if (CAPAS_MAR[capaMarActiva.nombre].tipo === "corriente") {
-      if (!d || !d.mallaVel || !window.Corriente) return;
-      const C = window.Corriente;
-      const { lat, lng } = e.latlng;
-      const texto = C.textoToque(C.corrienteEnPunto(d, d.mallaVel, d.corrU, d.corrV, lat, lng), C.dentroDeZona(d.mallaVel, lat, lng));
-      L.popup().setLatLng(e.latlng).setContent(escVA(texto)).openOn(map);
-      return;
-    }
-    if (CAPAS_MAR[capaMarActiva.nombre].tipo === "frentes") {
-      if (!d || !window.Frentes) return;
-      const { lat, lng } = e.latlng;
-      const texto = window.Frentes.describirPunto(d, d.bytes, lat, lng, window.Frentes.corrienteEn(d, d.corrU, d.corrV, lat, lng));
-      L.popup().setLatLng(e.latlng).setContent(escVA(texto)).openOn(map);
-      return;
-    }
-    const v = d && window.CapasMar ? window.CapasMar.valorEnPunto(d, d.bytes, e.latlng.lat, e.latlng.lng) : null;
-    L.popup().setLatLng(e.latlng)
-      .setContent(v === null ? "Sin dato aquí (tierra o sin observación)" : CAPAS_MAR[capaMarActiva.nombre].formato(v))
-      .openOn(map);
+  if (modoAnadirUbicacion || !capasMar.activas.length) return;
+  const { lat, lng } = e.latlng;
+  // Varias capas: un solo globo con una línea por capa.
+  if (capasMar.activas.length > 1) {
+    const lineas = globoCapasMar(lat, lng);
+    // Estrecho y apartado de la columna de botones de la derecha.
+    L.popup({ className: "globo-capas", maxWidth: 195, minWidth: 150, autoPanPaddingTopLeft: [8, 12], autoPanPaddingBottomRight: [132, 12] }).setLatLng(e.latlng).setContent(lineas.map((x) => `<div>${escVA(x)}</div>`).join("")).openOn(map);
+    return;
   }
+  // Una capa: su texto de siempre.
+  const nombre = capasMar.activas[0];
+  const d = datosCapasMar[ficheroCapaMar(nombre)];
+  if (CAPAS_MAR[nombre].tipo === "corriente") {
+    if (!d || !d.mallaVel || !window.Corriente) return;
+    const C = window.Corriente;
+    const texto = C.textoToque(C.corrienteEnPunto(d, d.mallaVel, d.corrU, d.corrV, lat, lng), C.dentroDeZona(d.mallaVel, lat, lng));
+    L.popup().setLatLng(e.latlng).setContent(escVA(texto)).openOn(map);
+    return;
+  }
+  if (CAPAS_MAR[nombre].tipo === "frentes") {
+    if (!d || !window.Frentes) return;
+    const texto = window.Frentes.describirPunto(d, d.bytes, lat, lng, window.Frentes.corrienteEn(d, d.corrU, d.corrV, lat, lng));
+    L.popup().setLatLng(e.latlng).setContent(escVA(texto)).openOn(map);
+    return;
+  }
+  const v = d && window.CapasMar ? window.CapasMar.valorEnPunto(d, d.bytes, lat, lng) : null;
+  L.popup().setLatLng(e.latlng)
+    .setContent(v === null ? "Sin dato aquí (tierra o sin observación)" : CAPAS_MAR[nombre].formato(v))
+    .openOn(map);
 });
 map.on("click", (e) => {
   if (!modoAnadirUbicacion) return;

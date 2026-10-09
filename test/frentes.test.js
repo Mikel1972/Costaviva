@@ -243,7 +243,7 @@ test("frentes: index.html tiene el botón, la leyenda y los textos corregidos de
   assert.match(html, /no dónde están los peces/);
   assert.match(html, /el borde entre agua verde y azul/);
   assert.match(html, /las nubes lo tapan/);
-  assert.match(html, /map\.off\("moveend", capaMarActiva\.alMover\)/, "al apagar se deja de redibujar flechas");
+  assert.match(html, /map\.off\("moveend", alMoverCapasMar\)/, "al apagar todas se deja de redibujar flechas");
   // Ninguna cifra de umbral para el usuario.
   const def = html.slice(html.indexOf("  frentes: {"), html.indexOf("const COLORES_FRENTES"));
   assert.doesNotMatch(def, /0,03|0,05|0,08|log10|°C\/km/);
