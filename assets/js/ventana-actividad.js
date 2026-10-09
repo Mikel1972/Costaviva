@@ -73,7 +73,8 @@ import { t, I18n } from "./i18n-modulo.js";
 // de los datos (texto, y texto_en cuando la fase de datos lo añada).
 const tx = (clave, vars) => ({ clave, vars: vars || null, texto: t(clave, vars), textoEs: t(clave, vars, "es") });
 import {
-  regionPorCoordenadas, zonaPorCoordenadas, minutosLocales, msAproxDeEtiqueta, usaDatosGenerales, ZONA_POR_DEFECTO,
+  regionPescaPorCoordenadas, zonaPorCoordenadas, minutosLocales, msAproxDeEtiqueta, usaDatosGenerales, ZONA_POR_DEFECTO,
+  paisDeRegion, AREAS_NZ,
 } from "./regiones.js";
 
 export const VERSION = "2026-10-08";
@@ -136,7 +137,22 @@ export const REGIONES = [
   "mediterraneo", "baleares", "canarias", "azores", "madeira",
 ];
 
+// Áreas de MPI de Nueva Zelanda (fase 2 de NZ): presencia y freza de las
+// especies de NZ. Aparte de REGIONES para que nada de España las recorra.
+export const REGIONES_NZ = AREAS_NZ;
+
+// Región de PESCA (2026-10-09, fase 2 de NZ): la de siempre en España y
+// Portugal; en NZ, el área de MPI (nz_central...), que es la que llevan las
+// especies de NZ. Se exporta con el nombre de siempre para que el mapa, el
+// SEO y los scripts de especies no cambien.
+const regionPorCoordenadas = regionPescaPorCoordenadas;
 export { regionPorCoordenadas };
+
+// País de una especie (especies.json `pais`; sin él, España/Portugal). El
+// índice de una región solo mira las especies de su país: las de NZ nunca
+// salen en España y al revés.
+export const paisEspecie = (e) => e?.pais || "es";
+const delPais = (e, region) => paisEspecie(e) === paisDeRegion(region);
 
 // ---------------------------------------------------------------------------
 // Sol: amanecer y anochecer (algoritmo de la NOAA, precisión ~1 min).
@@ -881,6 +897,7 @@ export const NOMBRE_REGION = {
   cantabrico: t("va.region.cantabrico"), atlantico_norte: t("va.region.atlantico_norte"), portugal: t("va.region.portugal"),
   golfo_cadiz: t("va.region.golfo_cadiz"), mediterraneo: t("va.region.mediterraneo"), baleares: t("va.region.baleares"),
   canarias: t("va.region.canarias"), azores: t("va.region.azores"), madeira: t("va.region.madeira"), nueva_zelanda: t("va.region.nueva_zelanda"),
+  ...Object.fromEntries(AREAS_NZ.map((a) => [a, t(`va.region.${a}`)])),
 };
 const MESES_CORTOS = I18n.mesesCortos();
 
@@ -902,14 +919,14 @@ export function coincideTemperatura(especie, tempAgua) {
 
 // modalidad opcional: con ella, solo las especies que se pescan así.
 export function especiesDeTemporada(datos, region, mes, modalidad = null) {
-  return datos.especies.filter((e) => e.presencia?.[region]?.meses?.includes(mes) && !vedaActiva(e, region, mes)
+  return datos.especies.filter((e) => delPais(e, region) && e.presencia?.[region]?.meses?.includes(mes) && !vedaActiva(e, region, mes)
     && (!modalidad || aplicaModalidad(e, modalidad, region)));
 }
 
 // Especies con presencia en la región que se pescan con esa modalidad (de
 // temporada o no): el desplegable de la ventana de actividad de cada pestaña.
 export function especiesParaModalidad(datos, region, modalidad) {
-  return datos.especies.filter((e) => e.presencia?.[region]?.meses?.length && aplicaModalidad(e, modalidad, region));
+  return datos.especies.filter((e) => delPais(e, region) && e.presencia?.[region]?.meses?.length && aplicaModalidad(e, modalidad, region));
 }
 
 // "abr–dic", "todo el año" o "ene, mar, may": meses en orden circular.
