@@ -70,8 +70,8 @@ test("referencia: spot abierto > GPS con permiso > centro del mapa", () => {
   const centro = { lat: 43.5, lon: -2.8 };
   const gps = { lat: 43.3, lon: -2.9 };
   const spot = { nombre: "Mundaka", lat: 43.4047, lon: -2.6989 };
-  assert.deepEqual(elegirReferencia({ spot, gps, centro }), { lat: 43.4047, lon: -2.6989, de: "de Mundaka", origen: "spot" });
-  assert.deepEqual(elegirReferencia({ gps, centro }), { lat: 43.3, lon: -2.9, de: "de ti", origen: "gps" });
+  assert.deepEqual(elegirReferencia({ spot, gps, centro }), { lat: 43.4047, lon: -2.6989, de: "de Mundaka", lugar: "Mundaka", origen: "spot" });
+  assert.deepEqual(elegirReferencia({ gps, centro }), { lat: 43.3, lon: -2.9, de: "de ti", lugar: "ti", origen: "gps" });
   assert.equal(elegirReferencia({ spot: null, gps: null, centro }).origen, "centro");
   assert.equal(elegirReferencia({ spot: { nombre: "x" }, centro }).origen, "centro");
 });

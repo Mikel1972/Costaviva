@@ -7,8 +7,9 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { OPCIONES, NINGUNO, elegir, resumen } from "../assets/js/selector-fondo.js";
+import { fuenteEs } from "./i18n-html.js";
 
-const HTML = readFileSync(new URL("../index.html", import.meta.url), "utf8");
+const HTML = fuenteEs(readFileSync(new URL("../index.html", import.meta.url), "utf8"));
 
 test("selector: dos capas que se pueden marcar a la vez y 'Ninguno' las apaga", () => {
   assert.deepEqual(OPCIONES.map((o) => o.id), ["profundidad", "tipo"]);

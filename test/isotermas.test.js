@@ -12,6 +12,7 @@ import {
   PALETA_TEMP_AGUA, TEMP_MIN, TEMP_MAX, bandaTemperatura, colorTemperatura, valorColorBandas, degradadoBandas, bandasVisibles, tintaSobre,
   contornos, isotermasVisibles, etiquetasIsotermas, textoGrados, textoExtremo, textoToque, textoIntervalo,
 } from "../assets/js/isotermas.js";
+import { fuenteEs } from "./i18n-html.js";
 
 const ESCALA = { tipo: "lineal", min: 0, paso: 0.125 };
 // Malla de filas x columnas de 0,1° desde (45 N, -5 E), valor(f, c) en °C o null.
@@ -123,7 +124,7 @@ test("escala fija: el mismo valor da el mismo color en dos vistas y dos mares di
   const vistaA = bandasVisibles({ bajo: 17.2, alto: 20.9 }), vistaB = bandasVisibles({ bajo: 18.1, alto: 26 });
   for (const g of vistaA.filter((x) => vistaB.includes(x))) assert.equal(colorTemperatura(g + 0.5), colorTemperatura(g));
   // index.html ya no reescala la imagen al mover el mapa.
-  const html = readFileSync("index.html", "utf8");
+  const html = fuenteEs(readFileSync("index.html", "utf8"));
   assert.doesNotMatch(html, /escalaAdaptativa|urlEscalas|setUrl\(/);
   assert.doesNotMatch(html, /se ajustan a lo que ves/);
   assert.match(html, /Cada color es un grado/);
@@ -220,7 +221,7 @@ test("etiquetas: dentro de la pantalla, separadas y como mucho `max`", () => {
   assert.equal(e[0].texto, textoGrados(e[0].nivel));
 });
 
-test("textos con coma decimal", () => {
+test("textos con coma decimal", async () => {
   assert.equal(textoGrados(18), "18°");
   assert.equal(textoGrados(18.5), "18,5°");
   assert.equal(textoExtremo(16), "16 °C");
@@ -228,8 +229,11 @@ test("textos con coma decimal", () => {
   assert.equal(textoToque(18.375), "18,4 °C en superficie");
   assert.equal(textoIntervalo(0.5), "Líneas cada 0,5 °C");
   // Y el toque de index.html usa la misma coma.
-  const html = readFileSync("index.html", "utf8");
-  assert.match(html, /formato: \(v\) => `\$\{v\.toFixed\(1\)\.replace\("\.", ","\)\} °C en superficie`/);
+  const html = fuenteEs(readFileSync("index.html", "utf8"));
+  // Desde los idiomas (2026-10-09) la coma la pone I18n.num en español.
+  assert.match(html, /formato: \(v\) => I18n\.t\("\{v\} °C en superficie", \{ v: I18n\.num\(v, 1\) \}\)/);
+  const { I18n } = await import("../assets/js/i18n-modulo.js");
+  assert.equal(I18n.num(18.375, 1), "18,4");
 });
 
 test("ventana de la malla: recorta a la malla y añade margen", () => {

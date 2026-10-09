@@ -19,6 +19,14 @@
 // nada se guarda hasta que la persona lo confirma, y solo el email y el
 // WhatsApp que elija de cada contacto.
 (function (raiz) {
+  // Idiomas (2026-10-09): en inglés, assets/i18n/en.js; en español (y en
+  // los tests sin I18n) el texto de aquí, idéntico a es.js (test/i18n.test.js).
+  function tr(clave, es, vars) {
+    var I = raiz.I18n;
+    var s = I && I.idioma() !== "es" && I.existe(clave) ? I.t(clave) : es;
+    return vars ? s.replace(/\{(\w+)\}/g, function (t, k) { return vars[k] === undefined ? t : String(vars[k]); }) : s;
+  }
+
   var PROPIEDADES_DESEADAS = ["name", "email", "tel"];
   // Un email "con pinta de email": lo mismo que acepta <input type=email>,
   // sin pretender validar más (el servidor no lo exige más estricto).
@@ -155,13 +163,13 @@
     var whatsapp = e.whatsapp === undefined ? fila.whatsapp : e.whatsapp;
     if (email && fila.emails.indexOf(email) === -1) email = null;
     if (whatsapp && !fila.telefonos.some(function (t) { return t.ok && t.e164 === whatsapp; })) whatsapp = null;
-    if (!nombre) return { ok: false, error: "Escribe el nombre del contacto." };
+    if (!nombre) return { ok: false, error: tr("alarma.escribe_nombre", "Escribe el nombre del contacto.") };
     if (!email && !whatsapp) {
       return {
         ok: false,
         error: fila.emails.length || fila.telefonos.some(function (t) { return t.ok; })
-          ? "Elige al menos un email o un WhatsApp."
-          : "Este contacto no tiene email ni un teléfono válido. Añádelo a mano.",
+          ? tr("agenda.elige_uno", "Elige al menos un email o un WhatsApp.")
+          : tr("agenda.no_valido", "Este contacto no tiene email ni un teléfono válido. Añádelo a mano."),
       };
     }
     var salida = { user_id: userId, nombre: nombre, email: email || null };

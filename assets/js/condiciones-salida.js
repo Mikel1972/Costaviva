@@ -27,6 +27,7 @@
 // de fuentes desde aquí: se usa el mismo proxy /meteo/ de siempre.
 
 import { faseLunar } from "./ventana-actividad.js";
+import { t, I18n } from "./i18n-modulo.js";
 import { desfaseEstandarMinutos, msDeEtiqueta, ZONA_POR_DEFECTO } from "./regiones.js";
 
 // Open-Meteo Forecast/Marine sirven como mucho ~92 días hacia atrás
@@ -161,13 +162,16 @@ export function resumenIndice(ind, { estimada = false } = {}) {
     indice_especie: ind.especie.id,
     indice_factores: {
       version: ind.version, hora: ind.hora, hora_estimada: estimada, modalidad: ind.modalidad, region: ind.region,
-      especie: ind.especie.id, especie_nombre: ind.especie.nombre, puntuacion: ind.puntuacion, probabilidad: r.probabilidad,
-      razones: r.razones.map((x) => ({ factor: x.factor, texto: x.texto, aporte: x.aporte, ...(x.lo !== undefined ? { lo: x.lo } : {}) })),
+      // Lo guardado va siempre en español (texto de siempre, para calibrar y
+      // para el robot de aprendizaje); la clave y sus datos, para enseñarlo en
+      // el idioma de quien lo mire (2026-10-09).
+      especie: ind.especie.id, especie_nombre: ind.especie.nombreEs ?? ind.especie.nombre, puntuacion: ind.puntuacion, probabilidad: r.probabilidad,
+      razones: r.razones.map((x) => ({ factor: x.factor, texto: x.textoEs ?? x.texto, aporte: x.aporte, ...(x.lo !== undefined ? { lo: x.lo } : {}), ...(x.clave ? { clave: x.clave, vars: x.vars } : {}) })),
       reglas: r.reglasAplicadas, sin_dato: r.sinDato, cobertura: r.cobertura,
       fiabilidad: ind.fiabilidad ? { estrellas: ind.fiabilidad.estrellas, etiqueta: ind.fiabilidad.etiqueta } : null,
       freza: !!ind.freza,
       // Ola peligrosa (2026-10-08): nota aparte, no motivo ni tope.
-      aviso_ola: ind.avisoOla?.texto ?? null,
+      aviso_ola: ind.avisoOla ? (ind.avisoOla.clave ? t(ind.avisoOla.clave, ind.avisoOla.vars, "es") : ind.avisoOla.texto) : null,
       ranking: ind.ranking.map((x) => ({ id: x.id, p: x.puntuacion })),
     },
   };
@@ -214,10 +218,11 @@ export function aplicarBoyaASerie(serie, i, boya) {
   return copia;
 }
 
-// Números con coma decimal, como el resto de la app ("1,9 m", "17,2 °C").
+// Números con coma decimal, como el resto de la app ("1,9 m", "17,2 °C");
+// en inglés, con punto (I18n.decimal).
 export function fmtDecimal(x, decimales = 1) {
   if (x === null || x === undefined || !Number.isFinite(+x)) return null;
-  return String(+(+x).toFixed(decimales)).replace(".", ",");
+  return I18n.decimal(String(+(+x).toFixed(decimales)));
 }
 
 // "1,9 m" si es un solo valor (boya) y "1,7–2,1 m" si es un rango (modelo).
@@ -229,5 +234,5 @@ export function textoOleaje(min, max) {
 
 // "Cebo: Anchoa · Señuelo: Pulpo" sin separadores sueltos si falta alguno.
 export function textoCeboAparejo({ cebo, aparejo, senuelo } = {}) {
-  return [cebo && `Cebo: ${cebo}`, aparejo && `Aparejo: ${aparejo}`, senuelo && `Señuelo: ${senuelo}`].filter(Boolean).join(" · ");
+  return [cebo && t("cs.cebo", { v: cebo }), aparejo && t("cs.aparejo", { v: t(`cs.ap.${aparejo}`) === `cs.ap.${aparejo}` ? aparejo : t(`cs.ap.${aparejo}`) }), senuelo && t("cs.senuelo", { v: senuelo })].filter(Boolean).join(" · ");
 }

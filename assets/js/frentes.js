@@ -16,6 +16,8 @@
 
 import { filaDeDatos, filaReal } from "./capas-mar.js";
 
+import { I18n } from "./i18n-modulo.js";
+
 export const BITS = { frente_clorofila: 1, frente_termico: 2, convergencia: 4, costa: 32, nubes: 64 };
 export const NIVELES = [null, "baja", "moderada", "alta"];
 
@@ -263,7 +265,7 @@ export function bytesVelocidadDia(d, deBase64) {
 export function componenteByte(b, escala) {
   return b === 255 || b === undefined ? null : (b - 127) * escala;
 }
-const RUMBOS = ["N", "NE", "E", "SE", "S", "SO", "O", "NO"];
+const RUMBOS = I18n.t("rayos.cardinales").split(",");
 // Rumbo HACIA donde va la corriente (u al este, v al norte).
 export function rumbo(u, v) {
   const g = ((Math.atan2(u, v) * 180) / Math.PI + 360) % 360;
@@ -296,12 +298,12 @@ export function flechasVisibles(d, uBytes, vBytes, caja, maxPorLado = 12) {
   return sal;
 }
 
-const fmt1 = (x) => String(+x.toFixed(1)).replace(".", ",");
+const fmt1 = (x) => I18n.num(x);
 export function textoCorriente(u, v) {
   if (u === null || v === null) return null;
   const ms = Math.hypot(u, v);
-  if (ms < 0.03) return "Corriente casi nula";
-  return `Corriente hacia el ${rumbo(u, v)}: ${fmt1(ms * 3.6)} km/h (${fmt1(ms * 1.94384)} nudos)`;
+  if (ms < 0.03) return I18n.t("frentes.corriente_nula");
+  return I18n.t("frentes.corriente", { rumbo: rumbo(u, v), kmh: fmt1(ms * 3.6), kn: fmt1(ms * 1.94384) });
 }
 
 // Corriente (u, v) de la malla gruesa en un punto, o nulls.
@@ -316,23 +318,23 @@ export function corrienteEn(d, uBytes, vBytes, lat, lon) {
 // Texto del toque en el mapa, en lenguaje llano (sin cifras de umbrales).
 export function describirPunto(d, bytes, lat, lon, corr = { u: null, v: null }) {
   const cel = celdaDe(d, lat, lon);
-  if (!cel) return "Fuera de la zona con datos";
+  if (!cel) return I18n.t("frentes.fuera_zona");
   const x = decodificar(bytes[cel.f * d.columnas + cel.c]);
-  if (!x) return "Tierra o sin dato aquí";
+  if (!x) return I18n.t("capas.globo.tierra");
   const r = rasgosPunto(d, bytes, lat, lon, { radioKm: 10 });
   const lineas = [];
-  const cerca = (nombre) => (r[`dist_${nombre}_km`] <= 3 ? "aquí mismo" : `a unos ${Math.round(r[`dist_${nombre}_km`])} km`);
-  if (r.frente_ambos) lineas.push(`Borde de clorofila y de temperatura ${cerca("frente_ambos")}: lo más prometedor`);
-  else if (r.frente_y_corriente) lineas.push(`Frente donde la corriente junta el agua ${cerca("frente_y_corriente")}: muy prometedor`);
+  const cerca = (nombre) => (r[`dist_${nombre}_km`] <= 3 ? I18n.t("frentes.aqui_mismo") : I18n.t("frentes.a_unos", { km: Math.round(r[`dist_${nombre}_km`]) }));
+  if (r.frente_ambos) lineas.push(I18n.t("cc.frentes.ambos", { dist: cerca("frente_ambos") }));
+  else if (r.frente_y_corriente) lineas.push(I18n.t("frentes.y_corriente", { dist: cerca("frente_y_corriente") }));
   else {
-    if (r.frente_clorofila) lineas.push(`Borde de clorofila ${cerca("frente_clorofila")}`);
-    if (r.frente_termico) lineas.push(`Cambio de temperatura ${cerca("frente_termico")}`);
+    if (r.frente_clorofila) lineas.push(I18n.t("frentes.borde_clorofila", { dist: cerca("frente_clorofila") }));
+    if (r.frente_termico) lineas.push(I18n.t("frentes.cambio_temp", { dist: cerca("frente_termico") }));
   }
-  if (!lineas.length && r.convergencia) lineas.push(`La corriente junta el agua ${cerca("convergencia")}`);
+  if (!lineas.length && r.convergencia) lineas.push(I18n.t("cc.frentes.convergencia", { dist: cerca("convergencia") }));
   // Sin clorofila fiable alrededor (nubes o costa) no se puede decir "sin frentes".
-  if (!lineas.length) lineas.push(r.frente_clorofila === null ? "Sin cambios de temperatura a menos de 10 km; la clorofila hoy no se ve" : "Sin frentes a menos de 10 km");
-  if (x.costa) lineas.push("Pegado a la costa la clorofila del satélite no es fiable");
-  else if (x.nubes) lineas.push("Hoy había nubes: sin clorofila fiable aquí");
+  if (!lineas.length) lineas.push(r.frente_clorofila === null ? I18n.t("frentes.sin_cambios_no_clorofila") : I18n.t("frentes.sin_frentes"));
+  if (x.costa) lineas.push(I18n.t("frentes.costa_no_fiable"));
+  else if (x.nubes) lineas.push(I18n.t("frentes.nubes"));
   const tc = textoCorriente(corr.u, corr.v);
   if (tc) lineas.push(tc);
   return lineas.join(". ") + ".";

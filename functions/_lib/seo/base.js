@@ -11,6 +11,7 @@
 // robot de SEO y no hay que romperle el terreno.
 
 import { CSS_PUBLICO } from "./estilos.js";
+import { IDIOMAS_SEO, rutaIdioma, enlacesHreflang } from "./idiomas.js";
 
 export const DOMINIO = "https://costaviva.org";
 // Rendimiento (2026-10-08, PageSpeed móvil de /spots/bakio: 87, "solicitudes
@@ -81,17 +82,21 @@ export function cta(titulo = "Prueba Costaviva 7 días gratis") {
 }
 
 // Documento completo. `ruta` es la canónica (sin dominio).
-export function documento({ titulo, descripcion, ruta, cuerpo, ld = [], ogTipo = "website", noindex = false, imagen = IMAGEN_OG, imagenAlt = "Costaviva: condiciones de pesca en tiempo real" }) {
-  const url = `${DOMINIO}${ruta}`;
+// idioma/alternos: mecanismo de /en/ (idiomas.js), apagado: con los valores
+// por defecto el HTML es el de siempre.
+export function documento({ titulo, descripcion, ruta, cuerpo, ld = [], ogTipo = "website", noindex = false, imagen = IMAGEN_OG, imagenAlt = "Costaviva: condiciones de pesca en tiempo real", idioma = "es", alternos = ["es"] }) {
+  const cfg = IDIOMAS_SEO[idioma] || IDIOMAS_SEO.es;
+  const url = `${DOMINIO}${rutaIdioma(ruta, idioma)}`;
+  const hreflang = noindex ? "" : enlacesHreflang(ruta, DOMINIO, alternos);
   return `<!doctype html>
-<html lang="es">
+<html lang="${cfg.lang}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(titulo)}</title>
 <meta name="description" content="${esc(descripcion)}">
 ${noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" href="${esc(url)}">`}
-<meta property="og:type" content="${ogTipo}">
+${hreflang ? `${hreflang}\n` : ""}<meta property="og:type" content="${ogTipo}">
 <meta property="og:site_name" content="Costaviva">
 <meta property="og:url" content="${esc(url)}">
 <meta property="og:title" content="${esc(titulo)}">
@@ -100,7 +105,7 @@ ${noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" hr
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="${esc(imagenAlt)}">
-<meta property="og:locale" content="es_ES">
+<meta property="og:locale" content="${cfg.ogLocale}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${esc(titulo)}">
 <meta name="twitter:description" content="${esc(descripcion)}">

@@ -6,6 +6,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync, existsSync, statSync } from "node:fs";
+import { fuenteEs } from "./i18n-html.js";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -16,7 +17,8 @@ import {
 import { esRutaPermitida } from "../functions/_lib/rutas-publicas.js";
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), "..");
-const leer = (r) => readFileSync(join(RAIZ, r), "utf8");
+// Tal como se lee en español (sin los marcadores de idioma, test/i18n-html.js).
+const leer = (r) => fuenteEs(readFileSync(join(RAIZ, r), "utf8"));
 const PAGINAS = ["index.html", "diario.html", "alarma.html", "grupos.html", "admin.html", "suscripcion.html"];
 
 // Medidas de un JPEG (marcador SOF) o de un WebP (VP8 / VP8L / VP8X).
