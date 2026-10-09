@@ -111,6 +111,7 @@
 <body>
 
 <!-- pantalla-inicio: foto + marca mientras se comprueba la sesión (assets/css/pantalla-inicio.css) -->
+<script src="/assets/js/pantalla-inicio.js"></script>
 <div id="comprobandoAcceso" class="pantalla-inicio">
   <picture>
     <source media="(orientation: landscape)" srcset="/assets/inicio/rompiente-ancha.webp" type="image/webp">
@@ -292,7 +293,7 @@ try {
   console.error("mi_estado_suscripcion falló, se deja pasar:", e);
 }
 
-document.getElementById("comprobandoAcceso").remove();
+window.quitarPantallaInicio();
 
 document.getElementById("btnMiSuscripcion").addEventListener("click", () => {
   window.location.href = "/suscripcion.html";

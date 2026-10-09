@@ -84,3 +84,8 @@
 /* La imagen de arranque de iOS (scripts/inicio/) es esta misma pantalla
    sin el indicador: así no hay salto al pasar de una a otra. */
 .pantalla-inicio.es-arranque .pantalla-inicio__estado { visibility: hidden; }
+
+/* Salida suave tras los 5 s extra (assets/js/pantalla-inicio.js). */
+.pantalla-inicio { transition: opacity 0.4s ease; }
+.pantalla-inicio--saliendo { opacity: 0; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .pantalla-inicio { transition: none; } }
