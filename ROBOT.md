@@ -9353,3 +9353,15 @@ Datos: `datos-robots/camaras-estado.json` generado 2026-10-09T03:06Z (~1,5 h, fr
 - **comillas**: sin verificar: dominio bloqueado por la red de la rutina (www.cantabria.es, el túnel se cierra a mitad). No se da por caída ni por arreglada.
 
 **Firmado:** robot de cámaras caídas (rutina), 2026-10-09 04:42 UTC.
+
+### 2026-10-09 04:55 UTC (pasada buscadora — viernes: factor afloramiento/upwelling, rutina)
+
+Sin reglas nuevas esta pasada: no se toca `especies.json` ni se crea rama `-factores`.
+
+- **Factor mirado:** afloramiento (upwelling) en Galicia, Portugal y Cantábrico occidental.
+- **Hallazgos (solo resúmenes de búsqueda web, no se abrieron los artículos completos):** Guisande et al. 2001, MEPS 223:243-250 (juveniles de sardina en Vigo 1980-2000; transporte de Ekman y NAO explican el 86 % de la varianza del reclutamiento); ICES, reclutamiento de jurel y upwelling primavera-verano en aguas ibéricas (1967-1997, ~82 % con temperatura del aire); MDPI Water 11(6):1285 (2019, acceso abierto; contexto: pelágicos pequeños fluctúan con el upwelling); IEO, índice de afloramiento (indicedeafloramiento.ieo.es, descripción física: vientos del N en verano, del S en otoño-invierno); Broullón et al. 2023, Limnol. Oceanogr. Letters (respuesta rápida del fitoplancton al viento en las rías).
+- **Por qué no se propone regla:** todos miden reclutamiento anual o biomasa, no captura recreativa ni actividad por hora. Convertirlo en un peso horario sería extrapolar una correlación a otra escala: confianza < 0,3 según ROBOT_REGLAS.md, así que queda solo como propuesta. Licencias de MEPS, ICES y FAO sin verificar.
+- **Idea para Mikel (propuesta, sin implementar):** el viento del N sostenido en Rías Baixas en verano (ya hay serie de viento de 5 días) podría ser una variable de contexto `upwelling_norte` para pelágicos (jurel, sardina, caballa) en Galicia/Portugal, a validar con el diario antes de activarla; mejor como retador en la sombra (`aprendizaje/retadores/`).
+- **Concursos:** no se revisó ninguna federación nueva esta pasada (FEPyC y FPPD ya revisadas el 2026-10-08, reservan derechos).
+
+Firmado: robot buscador de fuentes (rutina).
