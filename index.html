@@ -593,6 +593,13 @@
   .capa-mar-panel .leyenda-frentes li { display: flex; align-items: center; gap: 6px; margin-top: 3px; }
   .capa-mar-panel .leyenda-frentes i { flex: none; width: 12px; height: 12px; border-radius: 3px; box-shadow: 0 0 0 1px var(--linea); }
   .capa-mar-panel .barra[hidden], .capa-mar-panel .extremos[hidden] { display: none; }
+  .capa-mar-panel .nota-isotermas { font-size: 9.5px; color: var(--tinta-2); margin-top: 2px; }
+  .capa-mar-panel .nota-isotermas[hidden] { display: none; }
+  /* Isotermas de 🌡 T. agua: línea fina oscura y número con halo blanco
+     (legible sobre cualquier color de la paleta, también en el móvil). */
+  .isoterma { stroke: #10203a; stroke-width: 1.1; stroke-opacity: 0.6; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+  .isoterma-etiqueta { display: flex; align-items: center; justify-content: center; font-family: var(--f-texto); font-size: 12px; font-weight: 800; color: #10203a; white-space: nowrap;
+    text-shadow: 0 0 2px #fff, 0 0 2px #fff, 0 0 3px #fff, 1px 1px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff; }
   /* Flechas de corriente de 〰 Frentes (SVG de Leaflet). */
   .flecha-corriente { stroke: var(--tinta); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; opacity: 0.85; }
   /* Flechas de 🌊 Corriente: tinta con un halo blanco debajo, para que se
@@ -1088,6 +1095,7 @@
           <div class="fecha" id="capaMarFecha"></div>
           <div class="barra" id="capaMarBarra"></div>
           <div class="extremos" id="capaMarExtremos"><span id="capaMarMin"></span><span id="capaMarMax"></span></div>
+          <div class="nota-isotermas" id="capaMarNota" hidden></div>
           <ul class="leyenda-frentes" id="capaMarLeyenda" hidden></ul>
           <details class="explica" id="capaMarDetalle"><summary id="capaMarResumen"></summary><div id="capaMarExplica"></div></details>
           <div class="credito" id="capaMarCredito"></div>
@@ -1123,6 +1131,7 @@
         <div class="fila"><span class="chip" style="background:var(--nivel-medio)"></span><span>moderado</span></div>
         <div class="fila"><span class="chip" style="background:var(--nivel-malo)"></span><span>agitado</span></div>
         <div class="nota" style="margin-top:10px; padding-top:8px; border-top:1px solid var(--linea);">◆ RÍOS: 3 puntos por río (cabecera→desembocadura), color por caudal bajo/normal/alto — pasa el cursor por un punto para ver el detalle. Lo que se mide arriba llega a la costa horas después — útil como aviso de tendencia. Posiciones ilustrativas, no las estaciones oficiales exactas. Caudal real solo en Sella, Besaya, Pas, Asón, Eo, Júcar, Turia, Mijares, Segura y Lagares (Confederaciones Hidrográficas + Augas de Galicia) — los ríos vascos siguen sin dato real (URA/Bizkaia bloquea el acceso automático).</div>
+        <div class="nota" style="margin-top:8px; padding-top:8px; border-top:1px solid var(--linea);">🌡 T. AGUA: los colores se ajustan al mar que tienes en pantalla (azul, lo más frío; rojo, lo más templado) y las líneas con número marcan la temperatura de verdad; los extremos están en la tarjeta de la capa.</div>
       </div>
     </div>
     <button class="rayos-toggle" id="toggleRayos" title="Rayos cerca: al momento y por satélite" aria-label="Mostrar/ocultar rayos en el mapa">⚡<span class="capa-label">Rayos</span></button>
@@ -1389,7 +1398,9 @@
   import * as CapasMar from "/assets/js/capas-mar.js";
   import * as Frentes from "/assets/js/frentes.js";
   import * as Corriente from "/assets/js/corriente.js";
+  import * as Isotermas from "/assets/js/isotermas.js";
   window.VentanaActividad = VentanaActividad;
+  window.Isotermas = Isotermas;
   window.Corriente = Corriente;
   window.CapasMar = CapasMar;
   window.Frentes = Frentes;
@@ -2279,12 +2290,19 @@ const CAPAS_MAR = {
     boton: "toggleTempAgua",
     titulo: "🌡 TEMPERATURA DEL AGUA",
     corto: "🌡 T. agua",
+    // Escala ADAPTATIVA (2026-10-09, captura de Mikel: con 10-28 °C fijos el
+    // Cantábrico salía todo verde): la paleta se estira al mar visible
+    // (percentiles 2-98) y se dibujan isotermas con su número. Por qué
+    // adaptativa y no fija por región: assets/js/isotermas.js. valorColor y
+    // extremos son la escala de reserva (sin mar a la vista o sin el módulo).
+    tipo: "isotermas",
     valorColor: (v) => (v - 10) / 18,
     paradas: ["#2B3A8C", "#2F7FC1", "#4FB7C9", "#9AD27A", "#F2D04B", "#F28C38", "#C9372C"],
     extremos: ["10 °C", "28+ °C"],
-    formato: (v) => `${v.toFixed(1)} °C en superficie`,
+    formato: (v) => `${v.toFixed(1).replace(".", ",")} °C en superficie`,
     resumen: "Temperatura de la superficie del mar (modelo IBI de Copernicus).",
-    explica: "Cada especie tiene su rango. Los cambios bruscos de temperatura (frentes) suelen juntar alimento: míralos en 〰 Frentes. Toca el mapa para ver el valor.",
+    explica: "Los colores se ajustan a lo que ves: azul es lo más frío y rojo lo más templado de esta parte del mapa, y cambian al moverte; las líneas con su número marcan la temperatura de verdad. " +
+      "Cada especie tiene su rango. Los cambios bruscos de temperatura (frentes) suelen juntar alimento: míralos en 〰 Frentes. Toca el mapa para ver el valor exacto.",
     fecha: (d) => `Modelo IBI, ${fechaCorta(d.fecha)} a las 12:00 UTC`,
     maxDias: 3,
   },
@@ -2350,7 +2368,7 @@ function fechaCorta(iso) {
 async function moduloCapasMar() {
   return window.CapasMar || import("/assets/js/capas-mar.js");
 }
-function lienzoCapaMar(CM, d, def) {
+function lienzoCapaMar(CM, d, def, valorColor = def.valorColor) {
   if (def.tipo === "corriente") {
     // Manchas suaves a 3 píxeles por celda (assets/js/corriente.js).
     const { ancho, alto, px } = window.Corriente.pixelesCorriente(d, 3);
@@ -2368,7 +2386,7 @@ function lienzoCapaMar(CM, d, def) {
   canvas.height = d.filas;
   const ctx = canvas.getContext("2d");
   const img = ctx.createImageData(d.columnas, d.filas);
-  img.data.set(def.tipo === "frentes" ? window.Frentes.pixelesFrentes(d, d.bytes, COLORES_FRENTES) : CM.pixelesCapa(d, d.bytes, def.paradas, def.valorColor));
+  img.data.set(def.tipo === "frentes" ? window.Frentes.pixelesFrentes(d, d.bytes, COLORES_FRENTES) : CM.pixelesCapa(d, d.bytes, def.paradas, valorColor));
   ctx.putImageData(img, 0, 0);
   return canvas.toDataURL("image/png");
 }
@@ -2418,6 +2436,52 @@ function pintarFlechasCorrienteRejilla(grupo, d) {
     }
   }
 }
+// 🌡 T. agua (2026-10-09): escala de color estirada al mar visible e
+// isotermas con su número; se rehacen al mover o hacer zoom, como las flechas
+// de 〰 Frentes. Cálculo puro en assets/js/isotermas.js (window.Isotermas).
+// La imagen se repinta solo si cambian los extremos (caché por escala).
+function pintarIsotermas(estado, d, def, CM) {
+  const I = window.Isotermas;
+  const t0 = performance.now();
+  const b = map.getBounds();
+  const lim = { norte: b.getNorth(), sur: b.getSouth(), oeste: b.getWest(), este: b.getEast() };
+  const pct = I.percentilesVisibles(d, d.bytes, lim);
+  // Sin mar a la vista: se queda la escala de antes (o la fija de reserva).
+  const esc = I.escalaAdaptativa(pct) || estado.escala;
+  if (esc && (!estado.escala || esc.min !== estado.escala.min || esc.max !== estado.escala.max)) {
+    const clave = `${esc.min}/${esc.max}`;
+    d.urlEscalas ||= new Map();
+    if (!d.urlEscalas.has(clave)) {
+      if (d.urlEscalas.size > 12) d.urlEscalas.clear();
+      d.urlEscalas.set(clave, lienzoCapaMar(CM, d, def, (v) => (v - esc.min) / (esc.max - esc.min)));
+    }
+    estado.imagen.setUrl(d.urlEscalas.get(clave));
+    estado.escala = esc;
+    document.getElementById("capaMarMin").textContent = I.textoExtremo(esc.min);
+    document.getElementById("capaMarMax").textContent = I.textoExtremo(esc.max);
+  }
+  const paso = I.intervaloIsotermas(pct, map.getZoom());
+  const iso = I.isotermasVisibles(d, d.bytes, lim, I.nivelesIsotermas(pct, paso));
+  estado.lineas.clearLayers();
+  estado.etiquetas.clearLayers();
+  const nota = document.getElementById("capaMarNota");
+  nota.textContent = iso.length ? I.textoIntervalo(paso) : "";
+  nota.hidden = !iso.length;
+  if (!iso.length) { estado.ms = performance.now() - t0; return; }
+  L.polyline(iso.flatMap((x) => x.lineas), { className: "isoterma", interactive: false, smoothFactor: 1 }).addTo(estado.lineas);
+  const t = map.getSize();
+  const enPantalla = iso.flatMap((x) => x.lineas.map((l) => ({ nivel: x.nivel, puntos: l.map((p) => map.latLngToContainerPoint(p)) })));
+  for (const e of I.etiquetasIsotermas(enPantalla, { ancho: t.x, alto: t.y, max: 8, margenDerecha: window.matchMedia("(max-width: 720px)").matches ? 120 : 28 })) {
+    L.marker(map.containerPointToLatLng([e.x, e.y]), {
+      icon: L.divIcon({ className: "isoterma-etiqueta", html: escVA(e.texto), iconSize: [44, 18], iconAnchor: [22, 9] }),
+      interactive: false, keyboard: false, pane: "isotermasEtiquetas",
+    }).addTo(estado.etiquetas);
+  }
+  estado.ms = performance.now() - t0;
+}
+// Etiquetas de las isotermas por encima de las líneas y por debajo de los spots.
+map.createPane("isotermasEtiquetas").style.zIndex = 450;
+map.getPane("isotermasEtiquetas").style.pointerEvents = "none";
 // Datos por fichero (🌊 Corriente reutiliza el de 〰 Frentes).
 const datosCapasMar = {};
 const ficheroCapaMar = (nombre) => CAPAS_MAR[nombre].fichero || nombre;
@@ -2494,6 +2558,11 @@ async function alternarCapaMar(nombre) {
   const imagen = L.imageOverlay(d.urlImagenes[nombre] ||= lienzoCapaMar(CM, malla, def), [[malla.sur, malla.oeste], [malla.norte, malla.este]], { opacity: esFrentes ? 0.9 : esCorriente ? 0.75 : 0.7, interactive: false, pane: "tilePane" });
   const overlay = L.layerGroup([imagen]);
   let alMover = null;
+  let isotermas = null;
+  if (def.tipo === "isotermas" && window.Isotermas) {
+    isotermas = { imagen, escala: null, lineas: L.layerGroup().addTo(overlay), etiquetas: L.layerGroup().addTo(overlay) };
+    alMover = () => pintarIsotermas(isotermas, d, def, CM);
+  }
   if ((esFrentes || esCorriente) && d.corriente) {
     const flechas = L.layerGroup().addTo(overlay);
     alMover = esCorriente ? () => pintarFlechasCorrienteRejilla(flechas, d) : () => pintarFlechasCorriente(flechas, d);
@@ -2503,7 +2572,7 @@ async function alternarCapaMar(nombre) {
   overlay.addTo(map);
   const credito = creditoCapaMar(d);
   map.attributionControl.addAttribution(credito);
-  capaMarActiva = { nombre, overlay, credito, alMover };
+  capaMarActiva = { nombre, overlay, credito, alMover, isotermas };
   document.getElementById("capaMarTitulo").textContent = def.titulo;
   document.getElementById("capaMarCorto").textContent = def.corto;
   document.getElementById("capaMarFecha").textContent = def.fecha(d);
@@ -2536,6 +2605,12 @@ async function alternarCapaMar(nombre) {
     mini.style.background = barra.style.background;
     document.getElementById("capaMarMin").textContent = def.extremos[0];
     document.getElementById("capaMarMax").textContent = def.extremos[1];
+  }
+  document.getElementById("capaMarNota").hidden = true;
+  if (isotermas) {
+    // Con la tarjeta ya montada: extremos reales e isotermas de esta vista.
+    alMover();
+    map.on("moveend", alMover);
   }
   document.getElementById("capaMarResumen").textContent = def.resumen;
   document.getElementById("capaMarExplica").textContent = def.explica;
