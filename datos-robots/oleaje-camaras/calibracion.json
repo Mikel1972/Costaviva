@@ -1,13 +1,13 @@
 {
- "fecha": "2026-10-09T10:37:59.037Z",
- "lineasHistorial": 169,
+ "fecha": "2026-10-09T11:07:53.399Z",
+ "lineasHistorial": 181,
  "etiquetas": 43,
  "etiquetasClaude": 43,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 17.6663,
+   "a": 14.7184,
    "p": 1,
-   "n": 7,
+   "n": 8,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 3,
    "franjasClaude": [
@@ -48,9 +48,9 @@
    "pocosDatos": true
   },
   "zarautz/dinamico": {
-   "a": 6.5358,
+   "a": 6.3425,
    "p": 0.5,
-   "n": 18,
+   "n": 19,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -77,17 +77,17 @@
    "pocosDatos": true
   },
   "zumaia/a": {
-   "a": 24.3116,
+   "a": 21.1573,
    "p": 1,
-   "n": 7,
+   "n": 8,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 2,
    "franjasClaude": [
     "2026-10-08T14",
     "2026-10-08T16"
    ],
-   "dias": 1,
-   "hMin": 2.5,
+   "dias": 2,
+   "hMin": 1.61,
    "hMax": 3.59,
    "errorRel": 1,
    "pocosDatos": true
@@ -108,9 +108,9 @@
    "pocosDatos": true
   },
   "mundaka/principal": {
-   "a": 4.3015,
+   "a": 4.3316,
    "p": 0.5,
-   "n": 12,
+   "n": 13,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 3,
    "franjasClaude": [
@@ -220,26 +220,26 @@
    "pocosDatos": true
   },
   "getaria/malkorbe": {
-   "a": 42.8191,
+   "a": 25.7587,
    "p": 1,
-   "n": 1,
+   "n": 2,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
    "dias": 1,
    "hMin": 1.61,
    "hMax": 1.61,
-   "errorRel": 0.5,
+   "errorRel": 0.662,
    "pocosDatos": true
   }
  },
  "sustitucion": {
   "hondarribia": {
    "sustituye": false,
-   "motivo": "ruido aún sin medir (2 pares de lecturas cercanas); 4 etiquetas de Claude en 1 franjas (faltan)",
+   "motivo": "ruidosa (±31 %) y sin calibrar; 4 etiquetas de Claude en 1 franjas (faltan)",
    "ruido": {
-    "ruido": 1.538,
-    "pares": 2
+    "ruido": 0.307,
+    "pares": 3
    }
   },
   "donostia": {
@@ -260,10 +260,10 @@
   },
   "zarautz": {
    "sustituye": false,
-   "motivo": "ruidosa (±49 %) y sin calibrar; 7 etiquetas de Claude en 2 franjas (faltan)",
+   "motivo": "ruidosa (±44 %) y sin calibrar; 7 etiquetas de Claude en 2 franjas (faltan)",
    "ruido": {
-    "ruido": 0.492,
-    "pares": 7
+    "ruido": 0.441,
+    "pares": 8
    }
   },
   "getaria": {
@@ -300,10 +300,10 @@
   },
   "mundaka": {
    "sustituye": false,
-   "motivo": "ruidosa (±109 %) y sin calibrar; 3 etiquetas de Claude en 2 franjas (faltan)",
+   "motivo": "ruidosa (±116 %) y sin calibrar; 3 etiquetas de Claude en 2 franjas (faltan)",
    "ruido": {
-    "ruido": 1.093,
-    "pares": 7
+    "ruido": 1.163,
+    "pares": 8
    }
   },
   "bakio": {
