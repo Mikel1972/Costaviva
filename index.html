@@ -4087,8 +4087,44 @@ function contextoIndiceSpot(s, datos, modalidad, dia = 0) {
     caudalRio: dia === 0 ? caudalRioSpot(s) : null,
     rio: VA.rioDeSpot(s, RIOS),
     batimetria: window.Batimetria?.batimetria(s) ?? null,
+    // 〰 Frentes del día en el spot (reglas expertas de frentes, clorofila y
+    // corriente): solo hoy y solo si la capa ya está cargada (frentesIndice).
+    frentes: dia === 0 ? frentesDeSpot(s, modalidad) : null,
     horaActual: horaActualMadridISO(),
   };
+}
+
+// 〰 Frentes en el índice (2026-10-09). Las reglas de frentes, clorofila y
+// corriente solo miran embarcación y submarina, así que desde costa no se
+// pide nada. Es el MISMO fichero y la misma caché que la capa del mapa
+// (cargarCapaMar: una petición por visita, directa al bucket, sin pasar por
+// Cloudflare). Si no llega en 4 s, falla o es de hace más de 1 día, el índice
+// sale sin esas reglas (nunca resta por falta de dato).
+const MODALIDADES_FRENTES = new Set(["embarcacion", "submarina"]);
+let frentesIndicePromesa = null;
+function frentesIndice(modalidad) {
+  if (!MODALIDADES_FRENTES.has(modalidad)) return Promise.resolve(null);
+  frentesIndicePromesa ||= (async () => {
+    const CM = await moduloCapasMar();
+    const d = await cargarCapaMar(CM, "frentes");
+    if (window.Frentes && d.velIndice === undefined) d.velIndice = window.Frentes.bytesVelocidadDia(d, CM.bytesDeBase64);
+    return d;
+  })().catch(() => { frentesIndicePromesa = null; return null; });
+  const tope = new Promise((ok) => setTimeout(() => ok(null), 4000));
+  return Promise.race([frentesIndicePromesa, tope]);
+}
+const frentesSpotCache = new Map();
+function frentesDeSpot(s, modalidad) {
+  if (!MODALIDADES_FRENTES.has(modalidad) || !window.Frentes) return null;
+  const d = datosCapasMar.frentes;
+  if (!d || !d.bytes) return null;
+  const dias = (Date.now() - Date.parse(d.fecha + "T12:00:00Z")) / 86400000;
+  if (!Number.isFinite(dias) || dias > 1.5) return null;
+  const clave = `${s.slug || ""}|${s.lat}|${s.lon}|${d.fecha}`;
+  if (!frentesSpotCache.has(clave)) {
+    frentesSpotCache.set(clave, { fecha: d.fecha, ...window.Frentes.contextoFrentes(d, d.bytes, s.lat, s.lon, { vel: d.velIndice ?? null }) });
+  }
+  return frentesSpotCache.get(clave);
 }
 
 function vaColor(p) {
@@ -4148,6 +4184,7 @@ async function pintarIndicePesca(s) {
     if (peticion === indicePescaPeticion) pinta(null, "sin datos por horas ahora mismo para este punto");
     return;
   }
+  await frentesIndice(modalidad);
   if (peticion !== indicePescaPeticion || spotAbiertoActual !== s || vaEstado.modalidad !== modalidad) return;
   const ahora = horaActualMadridISO();
   const i = horas.findIndex((h) => h.hora.slice(0, 13) === ahora);
@@ -4219,6 +4256,7 @@ async function pintarVentanaActividad(s) {
 
     det.textContent = "Cargando previsión por horas…";
     const horas = await datosHorariosSpot(s);
+    if (vaEstado.dia === 0) await frentesIndice(modalidad);
     if (vaEstado.s !== s) return;
     const especie = datos.especies.find((e) => e.id === vaEstado.especieId);
     // Turbidez y caudal: lecturas de hoy (ver contextoIndiceSpot).

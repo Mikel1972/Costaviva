@@ -178,6 +178,48 @@ export function rasgosPunto(d, bytes, lat, lon, { radioKm = 10, vel = null, radi
 }
 
 // ---------------------------------------------------------------------------
+// Contexto para las reglas expertas del índice (2026-10-09, "frentes en el
+// índice"): variables de contexto de reglas-expertas.js. Mismo cálculo que
+// los rasgos del aprendizaje (rasgosPunto), con un radio de búsqueda fijo de
+// RADIO_CONTEXTO_KM; cada regla pone su distancia en la condición.
+//   frente_km            distancia (km) al frente de clorofila o térmico más
+//                        cercano; SIN_FRENTE_KM si no hay ninguno en el radio;
+//                        null fuera de la malla
+//   frente_clorofila_km  igual, solo bordes de clorofila; null si alrededor no
+//                        hay clorofila fiable (nubes o franja costera)
+//   clorofila_nivel      "baja" | "moderada" | "alta" | null (sin dato fiable)
+//   corriente_ms         fuerza de la corriente media del día sin marea (m/s)
+//                        en la celda de mar más cercana a 10 km o menos; null
+// Sin dato, null: la regla que lo mira NO aplica (nunca penaliza).
+// ---------------------------------------------------------------------------
+export const RADIO_CONTEXTO_KM = 30;
+export const SIN_FRENTE_KM = 99;
+export function contextoFrentes(d, bytes, lat, lon, { vel = null } = {}) {
+  const vacio = { frente_km: null, frente_clorofila_km: null, clorofila_nivel: null, corriente_ms: null };
+  if (!d || !bytes || !Number.isFinite(lat) || !Number.isFinite(lon)) return vacio;
+  const r = rasgosPunto(d, bytes, lat, lon, { radioKm: RADIO_CONTEXTO_KM, vel });
+  if (!r) return vacio;
+  const dist = (nombre) => (r[nombre] === null ? null : r[nombre] ? r[`dist_${nombre}_km`] : SIN_FRENTE_KM);
+  const chl = dist("frente_clorofila"), ter = dist("frente_termico");
+  const frente = [chl, ter].filter((x) => x !== null);
+  return {
+    frente_km: frente.length ? Math.min(...frente) : null,
+    frente_clorofila_km: chl,
+    clorofila_nivel: r.nivel_clorofila,
+    corriente_ms: r.corriente_ms,
+  };
+}
+
+// Velocidad en la malla de los códigos del fichero del día (frentes.json:
+// corriente.velocidad en base64, misma malla) o del histórico (ya decodificada).
+export function bytesVelocidadDia(d, deBase64) {
+  const k = d?.corriente;
+  if (!k?.velocidad || !deBase64) return null;
+  const b = deBase64(k.velocidad);
+  return b.length === d.filas * d.columnas ? b : null;
+}
+
+// ---------------------------------------------------------------------------
 // Corriente: flechas para el mapa y texto del toque
 // ---------------------------------------------------------------------------
 export function componenteByte(b, escala) {

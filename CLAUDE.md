@@ -873,8 +873,10 @@ atribución; nunca se inventa un dato (lo que falta sale `null` + `aviso`).
   temperatura a unos 4 km: lo más prometedor. Corriente hacia el NE: 1,1
   km/h (0,6 nudos)"), sin cifras de umbral. Cálculo puro en
   `assets/js/frentes.js` (`window.Frentes`). Analítica: `ver_capa_frentes`.
-  **Índice: NO cambia.** Evaluación en la sombra en el aprendizaje semanal
-  (ver "Aprendizaje autónomo del índice", frentes en la sombra).
+  **Índice: desde el 2026-10-09 (PR "frentes en el índice") cuatro reglas
+  con fuente y peso pequeño leen esta capa**, ver "〰 Frentes en el índice";
+  el resto sigue en la sombra del aprendizaje semanal (ver "Aprendizaje
+  autónomo del índice", frentes en la sombra).
   Tests: `test/frentes.test.js` (en tests.yml; fixture
   `test/fixtures/frentes-mini.json` generado con las funciones de Python).
 - **🌊 Corriente (2026-10-09, Mikel: "¿La corriente se puede mostrar por
@@ -2419,7 +2421,8 @@ condiciones, efecto, fuente, estado y cualquier error de forma.
    (20-120, `coeficienteMareaAstronomico`, ajustado a los coeficientes
    reales de CALIBRACION.jsonl). Las dos se calculan en el motor, sin red.
    Y de batimetría (EMODnet, ver "Batimetría"): profundidad, prof_max_5km y
-   dist_fondo_10_30m_km.
+   dist_fondo_10_30m_km. Y de 〰 Frentes (solo hoy; ver "〰 Frentes en el
+   índice"): frente_km, frente_clorofila_km, clorofila_nivel y corriente_ms.
    Agregados: media, min, max, suma, delta, fraccion (con `cumple`).
    Operadores: `<`, `<=`, `>`, `>=`, `==`, `!=`, `en`, `entre`, `sector`.
    Ventanas hacia atrás de hasta 5 días (120 h): es lo que trae la serie.
@@ -2583,10 +2586,10 @@ previas por grupo, **solo documentadas, nunca activadas**:
 consistente con frentes térmicos y quizá sí con los de clorofila en
 agosto-septiembre, Sagarminaga y Arrizabalaga 2014, DSR II 107:54-63, DOI
 10.1016/j.dsr2.2013.11.006, repositorio con licencia NC: solo se cita).
-Activar una combinación aceptada = leer `frentes.json` también en el índice
-en vivo (variable de contexto nueva en `reglas-expertas.js`) + regla en
-especies.json: trabajo aparte, con su PR. La copia diaria empieza con el
-primer `mar` tras fusionar: las salidas anteriores no tienen capa.
+Activar una combinación aceptada = una regla en especies.json con las
+variables de contexto de frentes (ya existen, ver "〰 Frentes en el índice").
+La copia diaria empezó el 2026-10-09; las salidas anteriores tienen capa
+cuando se lanza el histórico hacia atrás (`parte=historico_frentes`, ver abajo).
 
 **Campeón/retadores:** `aprendizaje/retadores/*.json` (estado `sombra`) se
 calculan cada lunes sobre los mismos casos y se apuntan en
@@ -2606,6 +2609,109 @@ recalculan las antiguas a partir de lugar, fecha y hora. Los ficheros de
 local sin Supabase (`senales.json` en `error` hasta la primera ejecución del
 workflow). Ideas no hechas: `ideas` de `aprendizaje/config.json` (salen en
 RESUMEN.md).
+
+## 〰 Frentes en el índice y borde de borrasca (2026-10-09, pedido de Mikel; PR pendiente de su sí)
+
+Mikel quería frentes, clorofila y corriente en el índice "sin saber cómo
+ponderarlo". Plan acordado (gasto 0, sin IA ni APIs de pago): **priors
+pequeños con fuente citada que el aprendizaje ajusta solo**, y un histórico
+hacia atrás para que haya datos desde el primer lunes.
+
+**Reglas** (`especies.json → reglas_expertas.reglas`, todas `por_validar`,
+`tipo: cientifica`, **confianza 0,4** = la mínima de las reglas con fuente
+bibliográfica, `retirar_si_nulo: true`; ▲/▼ suaves: ~3 puntos cerca de 50,
+como mucho ~4,5 con la confianza al +50 % que permite el ajuste):
+- `frente_cerca_tunidos` (+0,3 × 0,4): atún rojo y bacoreta, embarcación,
+  frente de clorofila o térmico a ≤ 10 km entero, se apaga hasta 20 km.
+  Royer et al. 2004 (MEPS 269:249-263, DOI 10.3354/meps269249), Belkin 2021
+  (Remote Sensing 13:883, DOI 10.3390/rs13050883, CC BY), Fiedler y Bernard
+  1987 (DOI 10.1016/0278-4343(87)90003-3). "borde de aguas cerca: favorece a
+  los peces de paso".
+- `frente_clorofila_bonito` (+0,3 × 0,4): bonito del norte, embarcación,
+  **solo agosto-septiembre y solo borde de clorofila** (Sagarminaga y
+  Arrizabalaga 2014, DOI 10.1016/j.dsr2.2013.11.006: con los térmicos no hay
+  relación consistente). "borde de aguas verdes y azules cerca: puede juntar
+  al bonito".
+- `clorofila_alta_submarina` (-0,3 × 0,4): submarina, todas las especies,
+  clorofila alta (≥ 2 mg/m³) en la celda fiable más cercana a ≤ 15 km. Morel
+  1988 (DOI 10.1029/JC093iC09p10749) y Utne-Palm 2002 (DOI
+  10.1080/10236240290025644). "agua muy verde (floración): poca visibilidad
+  bajo el agua".
+- `corriente_fuerte_fondo` (-0,3 × 0,4): embarcación, especies de fondo
+  (faneca, congrio, besugo, gallo, rape...), corriente media del día sin marea
+  ≥ 0,5 m/s (~1 nudo; en el Cantábrico casi nunca). Stoner 2004. "corriente
+  fuerte: cuesta pescar a fondo".
+- **Descartadas por falta de fuente (siguen solo en la sombra)**: frente →
+  caballa, jurel, lubina en superficie (hipótesis del texto de Mikel, sin
+  estudio abierto); clorofila alta → spinning desde costa (el índice no sabe
+  la técnica y en la franja de 5 km no hay clorofila fiable); convergencia
+  (D'Asaro 2018 mide lo que flota, no peces); corriente desde costa (manda la
+  marea, el modelo pierde detalle). Las fuentes de Crossref se comprobaron; los
+  PDF de MDPI e Inter-Research no se pudieron abrir desde la sesión (bloqueo
+  anti-robot): `leido` lo dice.
+
+**Regla de Mikel `borde_borrasca_tunidos`** ("para los túnidos, los bordes de
+las borrascas son interesantes"): `heuristica_experta_local`, confianza 0,6
+(la habitual de sus reglas), +0,35 (▲, ~5 puntos), embarcación, bonito del
+norte, atún rojo y bacoreta, `variable: presion@borde_borrasca`. **Definición
+operativa (de Claude, con la serie del spot, sin peticiones nuevas)**: la
+presión ha bajado de 2 a 10 hPa en 24 h (se acerca una borrasca; más de 10 =
+bajada explosiva, el núcleo encima), sigue en 1000 hPa o más (no es el
+centro), viento medio de las últimas 6 h de 10 a 30 km/h (viento de sistema,
+ni calma ni temporal: desde 30 sale el aviso de embarcación pequeña) y ola
+máxima de las últimas 6 h < 2,5 m (nunca con mar peligroso; el aviso de ola
+sigue aparte). Sin bibliografía abierta que lo mida; Goñi 2015 (la mezcla por
+temporal baja el bonito en superficie) justifica excluir núcleo y mar grande.
+En el panel fijo mueve 2 escenarios 1 punto.
+
+**Contexto** (`assets/js/frentes.js → contextoFrentes`, radio 30 km):
+`frente_km`, `frente_clorofila_km` (99 = ningún frente; null = sin dato),
+`clorofila_nivel`, `corriente_ms`: variables de contexto nuevas de
+`reglas-expertas.js` (`VARIABLES_FRENTES`, `usaFrentes`). `ventana-actividad.js`
+las mete con `frentesDelDia(contexto.frentes, día)`: solo el día de la capa o
+el siguiente. **Sin capa, de otro día, nubes o costa: la regla no aplica y
+tampoco rebaja la cobertura de la fiabilidad** (nunca penaliza). En
+`index.html`, `frentesIndice()` carga `capas/frentes.json` **solo en
+embarcación y submarina** (desde costa no hay reglas), con la misma caché y
+petición que la capa del mapa (`cargarCapaMar`, directo al bucket, cero
+subrequests de Cloudflare), tope de 4 s y solo si tiene ≤ 1,5 días;
+`frentesDeSpot()` cachea por spot; solo `dia === 0`. El diario
+(`diario.html`) y la página SEO del índice no leen la capa (sin esas reglas).
+
+**Aprendizaje**: `semanal.mjs` saca el contexto de cada salida del histórico
+de su día (`contextosFrentesCasos`) y lo pasa a `recalcular()`; a los casos
+con solo los términos guardados por el diario les añade los de estas reglas
+(`terminosFrentes`, sin duplicar). Así entran en el ajuste como cualquier
+regla (±20 %/semana, ±50 % del valor inicial, nunca cambia el signo; m ≤ 0,3
+→ propuesta de retirarla) y, por `retirar_si_nulo`, **con las barreras
+cumplidas y efecto nulo (m < 0,7 y m - 2·sd ≤ 0) se propone desactivarla**
+(propuestas.json, sí/no de Mikel). La regla de Mikel no lleva ese flag. La
+sombra de frentes sigue igual (mide lo que queda por encima del índice, que ya
+lleva estas reglas). `aprendizaje/frentes-hipotesis.json` dice en cada grupo
+qué regla hay (`reglas_en_indice`). Panel fijo: sin capa o sin señal, 0 puntos;
+con todas las señales a la vez en todos los escenarios, 0,4 de media y 3 como
+mucho (test).
+
+**Histórico hacia atrás** (`descargar-capas.py --desde AAAA-MM-DD --hasta
+AAAA-MM-DD`): mismo cálculo (`construir_frentes` → `calcular_frentes`) y
+mismos datasets NRT, que guardan el pasado (STAC, 2026-10-09: clorofila
+L4 NRT desde 2025-10-04, **ventana móvil de ~1 año**; IBI temperatura y
+corriente sin marea desde 2022-11-22). Clorofila del propio día (si viene casi
+vacía, hasta 5 días antes; `fecha_clorofila` lo dice), temperatura a las
+12 UTC, corriente media del día. Solo escribe `capas/historico/`, nunca las
+capas del día. Por bloques de 10 días (una apertura de cada dataset por
+bloque, recortada a la caja de siempre), salta lo que ya está en el bucket
+(HEAD público), tope `max_dias` (150) y 290 min por ejecución. Probado con
+`--prueba` y con datasets falsos de xarray (sin cuenta de Copernicus en la
+sesión). **Cómo lanzarlo (desde main, tras fusionar)**: Actions → "Fuentes
+gratuitas" → Run workflow → `parte=historico_frentes`, `desde=2026-01-01`
+(o la fecha de la salida más antigua del diario), `hasta` vacío (= ayer),
+`max_dias=150`; se lanza otra vez para el resto (salta lo subido). ~281 días
+hasta el 2026-10-08, ~50-80 kB por día ≈ 14-22 MB en el bucket. Las salidas
+de antes de 2025-10-04 no pueden tener capa (fuera de la ventana NRT; el
+reanálisis MY tiene otro formato y no se usa).
+
+Tests: `test/frentes-indice.test.js` (en tests.yml).
 
 ## Batimetría: profundidad de los spots e isóbatas (2026-10-08, aprobado por Mikel)
 

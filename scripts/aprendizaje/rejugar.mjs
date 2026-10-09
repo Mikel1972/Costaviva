@@ -14,8 +14,8 @@
 //
 // Puro, sin red: la serie la trae datos.mjs.
 
-import { indiceSpot, sigmoide, regionPorCoordenadas } from "../../assets/js/ventana-actividad.js";
-import { validarRegla } from "../../assets/js/reglas-expertas.js";
+import { indiceSpot, sigmoide, regionPorCoordenadas, frentesDelDia } from "../../assets/js/ventana-actividad.js";
+import { validarRegla, usaFrentes, enAmbito, efectoRegla } from "../../assets/js/reglas-expertas.js";
 import { contextoFondo, entradaDeSpot } from "../../assets/js/capa-tipo-fondo.js";
 
 // Probabilidad con multiplicadores por unidad (factor o "regla:<id>").
@@ -47,6 +47,9 @@ export function recalcular(datos, caso, serie, extras = {}) {
   const ind = indiceSpot(datos, serie, i, {
     lat: caso.lat, lon: caso.lon, modalidad: caso.modalidad,
     region: caso.region || regionPorCoordenadas(caso.lat, caso.lon), fondo, batimetria,
+    // 〰 Frentes de SU día (histórico del bucket, semanal.mjs): las reglas de
+    // frentes se rejuegan igual que en vivo; sin capa, no aplican.
+    frentes: extras.frentesPorRef?.get(caso.ref) ?? null,
   });
   if (!ind || ind.puntuacion === null) return null;
   const r = ind.resultado;
@@ -56,6 +59,29 @@ export function recalcular(datos, caso, serie, extras = {}) {
     ranking: ind.ranking.map((x) => ({ id: x.id, p: x.puntuacion })),
     tope: r.razones.some((x) => x.factor === "tope"),
   };
+}
+
+// Términos de las reglas de 〰 Frentes para un caso que solo trae los
+// términos GUARDADOS por el diario (sin serie): el diario no lee la capa, así
+// que se añaden aquí con la capa de su día, para la especie que guardó el
+// índice. Solo reglas que miran únicamente variables de contexto (las de
+// frentes); nunca duplica un término que ya esté.
+export function terminosFrentes(datos, caso, frentes, especieId) {
+  if (!frentes || !especieId) return [];
+  const bloque = datos.reglas_expertas || {};
+  const mes = Number(String(caso.fecha).slice(5, 7));
+  const region = caso.region || regionPorCoordenadas(caso.lat, caso.lon);
+  const ctx = { ...frentesDelDia(frentes, caso.fecha), mes };
+  const sal = [];
+  for (const r of bloque.reglas || []) {
+    if (r.estado === "retirada" || !usaFrentes(r)) continue;
+    if ((r.condiciones || []).some((c) => c.agregado)) continue; // necesita la serie
+    if (!enAmbito(r, { especieId, modalidad: caso.modalidad, region, mes }, bloque.grupos_especies)) continue;
+    let e;
+    try { e = efectoRegla(r, [], 0, ctx); } catch { continue; }
+    if (e && !e.sinDato && e.lo) sal.push({ u: `regla:${r.id}`, lo: +e.lo.toFixed(3) });
+  }
+  return sal;
 }
 
 // ---------------------------------------------------------------------------
