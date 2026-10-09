@@ -1003,6 +1003,9 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha, horaF
       } catch (e) {
         console.warn("No se pudo obtener la boya real:", e.message);
       }
+      // Solo si la lectura es de la hora de la salida (±2 h): si no, el modelo
+      // de esa hora (antes se usaba la última lectura para cualquier hora).
+      if (boya && !CondSalida.boyaDeLaHora(boya, idx >= 0 ? horas[idx] : null, zona)) boya = null;
     }
     if (boya) {
       if (Number.isFinite(boya.alturaSignificativa)) {

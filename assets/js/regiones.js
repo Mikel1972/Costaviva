@@ -165,6 +165,16 @@ export function desfaseMinutos(ms, zona) {
   return Math.round((comoUTC - Math.floor(ms / 60000) * 60000) / 60000);
 }
 
+// Instante UTC EXACTO de una etiqueta local "AAAA-MM-DDTHH:MM" en `zona`
+// (en la hora que se repite al atrasar el reloj, la primera).
+export function msDeEtiqueta(etiqueta, zona) {
+  const ingenuo = Date.parse(`${etiqueta.slice(0, 16)}:00Z`);
+  const desfases = [desfaseMinutos(ingenuo - 864e5, zona), desfaseMinutos(ingenuo + 864e5, zona), desfaseMinutos(ingenuo, zona)];
+  const validos = desfases.map((d) => ingenuo - d * 60000).filter((t) => isoLocal(t, zona) === etiqueta.slice(0, 16));
+  // En la hora que no existe (al adelantar el reloj), el desfase de antes.
+  return validos.length ? Math.min(...validos) : ingenuo - desfases[0] * 60000;
+}
+
 // Desfase de la hora estándar (la de invierno de cada hemisferio): el menor
 // de enero y julio. Madrid +60, Canarias 0, Auckland +720.
 export function desfaseEstandarMinutos(zona) {
