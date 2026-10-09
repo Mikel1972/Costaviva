@@ -35,10 +35,15 @@ export function valorEnPunto(d, bytes, lat, lon) {
 const mercY = (lat) => Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360));
 const mercLat = (y) => (360 / Math.PI) * Math.atan(Math.exp(y)) - 90;
 export function filaDeDatos(d, r, H = d.filas) {
+  return Math.min(d.filas - 1, Math.max(0, Math.floor(filaReal(d, r, H))));
+}
+// Lo mismo sin redondear (fila 2,7 = 70 % de la celda 2 hacia el sur), para
+// las imágenes con varios píxeles por celda (trazos de 〰 Frentes).
+export function filaReal(d, r, H = d.filas) {
   const yN = mercY(d.norte);
   const yS = mercY(d.sur);
   const lat = mercLat(yN - ((r + 0.5) / H) * (yN - yS));
-  return Math.min(d.filas - 1, Math.max(0, Math.floor((d.norte - lat) / d.paso)));
+  return (d.norte - lat) / d.paso;
 }
 
 function hexRgb(h) {
