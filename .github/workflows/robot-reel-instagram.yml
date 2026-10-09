@@ -95,7 +95,12 @@ jobs:
           git config user.name "Claude (robot Costaviva)"
           git config user.email "actions@github.com"
           ls -1 assets/marketing/reels/*.mp4 | sort | head -n -4 | xargs -r git rm -q --
-          git add assets/marketing/reels/ scripts/marketing/rotacion-reels.json scripts/marketing/rotacion-zonas.json scripts/marketing/calendario-estado.json
+          git add assets/marketing/reels/
+          # Con spot o clip forzados el generador no escribe todos los ficheros
+          # de rotación: añadir solo los que existen (si no, git add falla).
+          for f in scripts/marketing/rotacion-reels.json scripts/marketing/rotacion-zonas.json scripts/marketing/calendario-estado.json; do
+            if [ -e "$f" ]; then git add "$f"; fi
+          done
           if git diff --cached --quiet; then
             echo "Nada nuevo que comitear."
           else
