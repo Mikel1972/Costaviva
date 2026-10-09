@@ -170,3 +170,48 @@ export function resumenIndice(ind, { estimada = false } = {}) {
     },
   };
 }
+
+// ---------------------------------------------------------------------------
+// Boya real y ficha de la salida (2026-10-09, captura de Mikel: la ficha
+// decía "TEMP. AGUA 17.2°C" y "OLEAJE 1.9–1.9m" mientras el índice decía
+// "agua a 20,4 °C" y "mar de 1-1,5 m"). La ficha se pisaba con la boya
+// DESPUÉS de calcular el índice con el modelo: dos fuentes distintas en la
+// misma tarjeta. Ahora el índice se calcula con lo mismo que enseña la ficha.
+
+// La boya más cercana con dato (de /prevision), o null.
+export function boyaMasCercana(boyas, lat, lon) {
+  const validas = (boyas || []).filter((b) => b && !b.error && Number.isFinite(b.lat) && Number.isFinite(b.lon));
+  if (!validas.length) return null;
+  const d = (b) => Math.hypot(b.lat - lat, b.lon - lon);
+  return validas.reduce((mejor, b) => (d(b) < d(mejor) ? b : mejor));
+}
+
+// Pone la ola y la temperatura medidas por la boya en la hora i de la serie
+// (la de la salida), sin tocar el resto. Devuelve una copia.
+export function aplicarBoyaASerie(serie, i, boya) {
+  if (!boya || i < 0 || i >= serie.length) return serie;
+  const copia = serie.slice();
+  const h = { ...copia[i] };
+  if (Number.isFinite(boya.alturaSignificativa)) h.ola = boya.alturaSignificativa;
+  if (Number.isFinite(boya.tempAgua)) h.tempAgua = boya.tempAgua;
+  copia[i] = h;
+  return copia;
+}
+
+// Números con coma decimal, como el resto de la app ("1,9 m", "17,2 °C").
+export function fmtDecimal(x, decimales = 1) {
+  if (x === null || x === undefined || !Number.isFinite(+x)) return null;
+  return String(+(+x).toFixed(decimales)).replace(".", ",");
+}
+
+// "1,9 m" si es un solo valor (boya) y "1,7–2,1 m" si es un rango (modelo).
+export function textoOleaje(min, max) {
+  const a = fmtDecimal(min), b = fmtDecimal(max ?? min);
+  if (a === null) return "—";
+  return a === b || b === null ? `${a} m` : `${a}–${b} m`;
+}
+
+// "Cebo: Anchoa · Señuelo: Pulpo" sin separadores sueltos si falta alguno.
+export function textoCeboAparejo({ cebo, aparejo, senuelo } = {}) {
+  return [cebo && `Cebo: ${cebo}`, aparejo && `Aparejo: ${aparejo}`, senuelo && `Señuelo: ${senuelo}`].filter(Boolean).join(" · ");
+}

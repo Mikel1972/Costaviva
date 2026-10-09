@@ -109,6 +109,14 @@ pequeños: tinta oscura sobre claro, contraste AA).
   índice de mar decía "cuanto más alto, mejor pinta", al revés que la
   fórmula y la leyenda: corregido el texto (la fórmula no se tocó).
 - La alarma SOS va en rojo sólido, no con el degradado: seguridad ≠ emoción.
+- **Menú inferior y hojas fijas (2026-10-09, captura de Mikel en el iPhone):**
+  `.tabs-nav` mide `72px + env(safe-area-inset-bottom)`. Todo lo `fixed` que
+  se apoye abajo (p. ej. `.panel-dia` del diario) va a ese `bottom`, nunca a
+  un número suelto; y su alto máximo se limita con `--cabecera-abajo` (lo
+  mide el script) para no tapar la cabecera. Cabeceras con
+  `padding-top: max(10px, env(safe-area-inset-top))`. Test
+  `test/diario-movil.test.js`, que también vigila que la ficha de la salida
+  y su índice usen el mismo dato (boya o modelo) y los decimales con coma.
 - **Mapa base (2026-10-08, decidido por Mikel): OpenFreeMap en vez de Esri.**
   La ficha de Esri (`World_Ocean_Base`, item 1e126e7520f9466c9ca28b8f28b5e500)
   va con el Esri Master License Agreement y su resumen
