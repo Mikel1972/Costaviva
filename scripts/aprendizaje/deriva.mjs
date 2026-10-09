@@ -142,14 +142,18 @@ function seriePanel(mes, ola, [viento, dir], dPresion) {
 }
 
 // Devuelve { claves: [...], puntuaciones: [...] } en orden fijo.
-export function panelReferencia(datos, { puntos = PUNTOS_PANEL } = {}) {
+// `contexto`: extra para todos los escenarios (objeto, o función del
+// escenario { region, lat, lon, mes, fecha, modalidad }; p. ej. { frentes } en
+// los tests de 〰 Frentes); por defecto ninguno = escenarios SIN capa de frentes.
+export function panelReferencia(datos, { puntos = PUNTOS_PANEL, contexto = {} } = {}) {
   const claves = [], puntuaciones = [];
   for (const pt of puntos) for (const mes of MESES) for (const ola of OLAS) for (const v of VIENTOS) for (const pr of PRESIONES) {
     const serie = seriePanel(mes, ola, v, pr.d);
     for (const hh of HORAS) {
       const i = serie.findIndex((x) => x.hora.endsWith(`T${hh}:00`) && x.hora.slice(8, 10) === "15");
       for (const modalidad of MODALIDADES) {
-        const ind = indiceSpot(datos, serie, i, { lat: pt.lat, lon: pt.lon, region: pt.region, modalidad });
+        const extra = typeof contexto === "function" ? contexto({ ...pt, mes, fecha: serie[i].hora.slice(0, 10), modalidad }) : contexto;
+        const ind = indiceSpot(datos, serie, i, { ...extra, lat: pt.lat, lon: pt.lon, region: pt.region, modalidad });
         claves.push(`${pt.region}|${mes}|${ola}|${v.join("/")}|${pr.id}|${hh}h|${modalidad}`);
         puntuaciones.push(ind?.puntuacion ?? null);
       }

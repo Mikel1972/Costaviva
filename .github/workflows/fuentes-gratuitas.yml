@@ -21,6 +21,11 @@ name: Fuentes gratuitas (MET Norway, Copernicus) y comparativa
 #   pasado      1 vez al día: reanálisis ERA5 (copia pública ARCO-ERA5 de
 #               Google, SIN cuenta) para el diario de días pasados ->
 #               pasado/<fecha>/<caja>.json (fase 2)
+#   historico_frentes  solo a mano (workflow_dispatch): histórico hacia atrás
+#               de 〰 Frentes para el aprendizaje, un fichero por día
+#               capas/historico/frentes-AAAA-MM-DD.json con el mismo cálculo
+#               (descargar-capas.py --desde/--hasta); salta los días que ya
+#               están en el bucket; como mucho `max_dias` por ejecución
 #   comparativa 1 vez al día: archiva lo que prevé cada fuente para las
 #               boyas y compara lo archivado con lo medido ->
 #               datos-robots/fuentes/COMPARATIVA.md (commit en main)
@@ -51,13 +56,25 @@ on:
   workflow_dispatch:
     inputs:
       parte:
-        description: "atmosfera, mar, pasado, comparativa o todo"
+        description: "atmosfera, mar, pasado, comparativa, todo o historico_frentes (este solo a mano y nunca con todo)"
         required: true
         default: "todo"
       dias_pasado:
         description: "pasado: días hacia atrás desde el último de ERA5T (relleno histórico, como mucho 120 por ejecución; ~5 s, ~1 MB y 90 ficheros por día)"
         required: false
         default: "30"
+      desde:
+        description: "historico_frentes: primer día AAAA-MM-DD (la clorofila NRT guarda ~1 año hacia atrás)"
+        required: false
+        default: "2026-01-01"
+      hasta:
+        description: "historico_frentes: último día AAAA-MM-DD (vacío = ayer)"
+        required: false
+        default: ""
+      max_dias:
+        description: "historico_frentes: días como mucho en esta ejecución (~30-60 s y ~60 kB por día)"
+        required: false
+        default: "150"
 
 permissions:
   contents: read
@@ -166,6 +183,50 @@ jobs:
         env:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: node scripts/fuentes/subir-storage.mjs /tmp/pasado
+
+
+  historico_frentes:
+    # Histórico hacia atrás de 〰 Frentes (2026-10-09): solo a mano. Lanzar
+    # DESDE main. Respeta AUTOMATION_PAUSED. Si hay más días que max_dias, o
+    # se acaba el tiempo, se vuelve a lanzar igual: salta lo ya subido.
+    if: >-
+      vars.AUTOMATION_PAUSED != 'true' &&
+      github.event_name == 'workflow_dispatch' && inputs.parte == 'historico_frentes'
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Instalar el toolbox de Copernicus Marine
+        run: pip install --quiet -r scripts/fuentes/requirements.txt
+      - name: Frentes de los días pasados (mismo cálculo que la pasada diaria)
+        env:
+          PYTHONUNBUFFERED: "1"
+          COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUSMARINE_USERNAME }}
+          COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUSMARINE_PASSWORD }}
+          DESDE: ${{ inputs.desde }}
+          HASTA: ${{ inputs.hasta }}
+          MAX_DIAS: ${{ inputs.max_dias }}
+        run: |
+          HASTA="${HASTA:-$(date -u -d yesterday +%F)}"
+          for f in "$DESDE" "$HASTA"; do case "$f" in [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]) ;; *) echo "::error::fecha no válida: $f (AAAA-MM-DD)"; exit 1;; esac; done
+          case "${MAX_DIAS:-150}" in ''|*[!0-9]*) echo "::error::max_dias debe ser un número"; exit 1;; esac
+          python -I scripts/fuentes/descargar-capas.py --salida /tmp/historico \
+            --desde "$DESDE" --hasta "$HASTA" --max-dias "${MAX_DIAS:-150}" --max-minutos 290 --bloque 10 \
+            --existentes-url https://imncbmizxkorotpeisic.supabase.co/storage/v1/object/public/fuentes-gratuitas/capas/historico/
+          du -sh /tmp/historico
+      - name: Subir el histórico a Supabase Storage
+        if: ${{ !cancelled() }}
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          if [ ! -d /tmp/historico/capas ]; then echo "Nada que subir."; exit 0; fi
+          node scripts/fuentes/subir-storage.mjs /tmp/historico
 
   comparativa:
     needs: [mar]

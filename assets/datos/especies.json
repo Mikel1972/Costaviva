@@ -516,6 +516,72 @@
    "fecha_consulta": "2026-10-08",
    "leido": "resumen",
    "nota": "Flota artesanal inglesa: con más ola salen menos barcos y el éxito por salida (kg de lubina) baja."
+  },
+  "belkin_2021_frentes_pesca": {
+   "titulo": "Belkin I.M. (2021). Remote Sensing of Ocean Fronts in Marine Ecology and Fisheries. Remote Sensing 13(5): 883.",
+   "url": "https://doi.org/10.3390/rs13050883",
+   "editor": "MDPI",
+   "tipo": "cientifico",
+   "licencia": "CC BY 4.0",
+   "fecha_documento": "2021-02-26",
+   "fecha_consulta": "2026-10-09",
+   "leido": "referencia y licencia comprobadas en Crossref; el texto no se pudo abrir desde la sesión (bloqueo del editor)",
+   "nota": "Revisión de frentes oceánicos vistos por satélite en ecología y pesca: los frentes concentran plancton, presas y depredadores pelágicos, entre ellos los túnidos."
+  },
+  "royer_2004_atun_rojo_frentes": {
+   "titulo": "Royer F., Fromentin J.-M., Gaspar P. (2004). Association between bluefin tuna schools and oceanic features in the western Mediterranean. Marine Ecology Progress Series 269: 249-263.",
+   "url": "https://doi.org/10.3354/meps269249",
+   "editor": "Inter-Research",
+   "tipo": "cientifico",
+   "licencia": "solo se cita el dato (sin copiar texto); acceso gratuito en la web del editor",
+   "fecha_documento": "2004",
+   "fecha_consulta": "2026-10-09",
+   "leido": "referencia comprobada en Crossref; el PDF no se pudo abrir desde la sesión (bloqueo anti-robot)",
+   "nota": "Bancos de atún rojo detectados desde avioneta en el Mediterráneo occidental, asociados a frentes térmicos de superficie."
+  },
+  "fiedler_bernard_1987_tunidos_frentes": {
+   "titulo": "Fiedler P.C., Bernard H.J. (1987). Tuna aggregation and feeding near fronts observed in satellite imagery. Continental Shelf Research 7(8): 871-881.",
+   "url": "https://doi.org/10.1016/0278-4343(87)90003-3",
+   "editor": "Elsevier",
+   "tipo": "cientifico",
+   "licencia": "solo se cita el dato (sin copiar texto)",
+   "fecha_documento": "1987",
+   "fecha_consulta": "2026-10-09",
+   "leido": "referencia comprobada en Crossref",
+   "nota": "Capturas de túnidos y su alimentación concentradas junto a frentes térmicos vistos por satélite."
+  },
+  "sagarminaga_2014_bonito_frentes": {
+   "titulo": "Sagarminaga Y., Arrizabalaga H. (2014). Relationship of Northeast Atlantic albacore juveniles with surface thermal and chlorophyll-a fronts. Deep-Sea Research II 107: 54-63.",
+   "url": "https://doi.org/10.1016/j.dsr2.2013.11.006",
+   "editor": "Elsevier (registro en el repositorio de AZTI)",
+   "tipo": "cientifico",
+   "licencia": "solo se cita el resultado (sin copiar texto)",
+   "fecha_documento": "2014",
+   "fecha_consulta": "2026-10-09",
+   "leido": "resumen",
+   "nota": "Bonito del norte juvenil en el golfo de Bizkaia: sin relación consistente con los frentes térmicos; posible relación con los bordes de clorofila en agosto y septiembre. Por eso la regla del bonito mira solo la clorofila y solo esos meses."
+  },
+  "morel_1988_luz_clorofila": {
+   "titulo": "Morel A. (1988). Optical modeling of the upper ocean in relation to its biogenous matter content (case I waters). Journal of Geophysical Research: Oceans 93(C9): 10749-10768.",
+   "url": "https://doi.org/10.1029/JC093iC09p10749",
+   "editor": "AGU / Wiley",
+   "tipo": "cientifico",
+   "licencia": "solo se cita el dato (sin copiar texto)",
+   "fecha_documento": "1988-09-15",
+   "fecha_consulta": "2026-10-09",
+   "leido": "referencia comprobada en Crossref",
+   "nota": "En mar abierto la clorofila es lo que más apaga la luz bajo el agua: a más clorofila, menos visibilidad."
+  },
+  "utne_palm_2002_turbidez": {
+   "titulo": "Utne-Palm A.C. (2002). Visual feeding of fish in a turbid environment: physical and behavioural aspects. Marine and Freshwater Behaviour and Physiology 35(1-2): 111-128.",
+   "url": "https://doi.org/10.1080/10236240290025644",
+   "editor": "Taylor & Francis",
+   "tipo": "cientifico",
+   "licencia": "solo se cita el dato (sin copiar texto)",
+   "fecha_documento": "2002",
+   "fecha_consulta": "2026-10-09",
+   "leido": "referencia comprobada en Crossref",
+   "nota": "Revisión: el agua turbia acorta la distancia a la que el pez ve (presas, señuelos) y cambia su comportamiento."
   }
  },
  "jurisdicciones": {
@@ -15104,6 +15170,230 @@
      "logodds": 0.5
     },
     "nota": "Mikel (embarcación, Bizkaia, 2026-10-08): en invierno, con el agua fría, están más profundos. Suma si hay más de 40 m a 5 km o menos de la orilla. Profundidad ALCANZABLE desde embarcación (decisión de Mikel, 2026-10-08: \"usa la profundidad alcanzable\"): se mide desde la orilla del spot (la celda de mar más cercana; en un punto propio en el mar, el propio punto) hasta 5 km (Mikel subió el radio de 3 a 5 km el 2026-10-08), con EMODnet DTM 2024 (assets/datos/profundidad-spots.json; puntos propios: WCS de EMODnet en vivo). Así un barco que sale de un puerto o una ría (Pasaia, Hondarribia) cuenta con el fondo de fuera. 'Verano/invierno' va por la temperatura del agua de esa hora, no por meses: 18 °C o más = verano, 15 °C o menos = invierno; entre 15 y 18 (transición) no se aplica. Umbrales (10-30 m, 40 m, 15/18 °C) = traducción de Claude de lo que contó Mikel. Fuera Canarias, Azores y Madeira: allí el agua casi nunca baja de 18 °C y la observación es del Cantábrico. Las tres reglas de 'profundidad' son excluyentes."
+   },
+   {
+    "id": "frente_cerca_tunidos",
+    "retirar_si_nulo": true,
+    "nombre": "Frente cerca (túnidos)",
+    "texto": "borde de aguas cerca: favorece a los peces de paso",
+    "fuente": "royer_2004_atun_rojo_frentes",
+    "fuentes_adicionales": [
+     "belkin_2021_frentes_pesca",
+     "fiedler_bernard_1987_tunidos_frentes"
+    ],
+    "tipo": "cientifica",
+    "estado": "por_validar",
+    "confianza": 0.4,
+    "validacion": "Calibrar con las salidas del diario (salidas_pesca.indice_factores) antes de subir la confianza o darla por buena.",
+    "ambito": {
+     "modalidades": [
+      "embarcacion"
+     ],
+     "especies": [
+      "atun_rojo",
+      "bacoreta"
+     ]
+    },
+    "condiciones": [
+     {
+      "var": "frente_km",
+      "op": "<=",
+      "valor": 20
+     }
+    ],
+    "efecto": {
+     "logodds": 0.3,
+     "atenua": {
+      "var": "frente_km",
+      "de": 20,
+      "a": 10
+     }
+    },
+    "variable": "frente_km",
+    "nota": "〰 Frentes en el índice (2026-10-09, pedido de Mikel: 'peso pequeño, que lo ajuste el aprendizaje'). Frente de clorofila o térmico (capa 〰 Frentes del día, assets/js/frentes.js contextoFrentes) a 10 km o menos: efecto entero; de 10 a 20 km se apaga en línea recta; más lejos, nada. Sin capa, nubes o costa: no aplica (nunca resta). Solo atún rojo y bacoreta: es lo que sostienen las fuentes (atún rojo en el Mediterráneo occidental, túnidos en general). El bonito del norte tiene su propia regla (solo clorofila, agosto-septiembre). 20 km = lo que se alcanza en una salida normal en barco (mismo radio que la evaluación en la sombra). Confianza 0,4, la mínima de las reglas científicas: el aprendizaje la ajusta (±20 %/semana, ±50 % como mucho) y propone retirarla si los datos dicen lo contrario."
+   },
+   {
+    "id": "frente_clorofila_bonito",
+    "retirar_si_nulo": true,
+    "nombre": "Borde de clorofila (bonito, agosto-septiembre)",
+    "texto": "borde de aguas verdes y azules cerca: puede juntar al bonito",
+    "fuente": "sagarminaga_2014_bonito_frentes",
+    "fuentes_adicionales": [
+     "belkin_2021_frentes_pesca"
+    ],
+    "tipo": "cientifica",
+    "estado": "por_validar",
+    "confianza": 0.4,
+    "validacion": "Calibrar con las salidas del diario (salidas_pesca.indice_factores) antes de subir la confianza o darla por buena.",
+    "ambito": {
+     "modalidades": [
+      "embarcacion"
+     ],
+     "especies": [
+      "bonito_norte"
+     ],
+     "meses": [
+      8,
+      9
+     ]
+    },
+    "condiciones": [
+     {
+      "var": "frente_clorofila_km",
+      "op": "<=",
+      "valor": 20
+     }
+    ],
+    "efecto": {
+     "logodds": 0.3,
+     "atenua": {
+      "var": "frente_clorofila_km",
+      "de": 20,
+      "a": 10
+     }
+    },
+    "variable": "frente_clorofila_km",
+    "nota": "Sagarminaga y Arrizabalaga 2014: el bonito juvenil del golfo de Bizkaia no sigue de forma consistente a los frentes térmicos y quizá sí a los de clorofila en agosto y septiembre. Por eso solo clorofila y solo esos meses, con efecto pequeño. Mismo tramo que frente_cerca_tunidos (entero a 10 km, nada a 20 km). Sin clorofila fiable (nubes, costa): no aplica."
+   },
+   {
+    "id": "clorofila_alta_submarina",
+    "retirar_si_nulo": true,
+    "nombre": "Mucha clorofila (submarina)",
+    "texto": "agua muy verde (floración): poca visibilidad bajo el agua",
+    "fuente": "morel_1988_luz_clorofila",
+    "fuentes_adicionales": [
+     "utne_palm_2002_turbidez"
+    ],
+    "tipo": "cientifica",
+    "estado": "por_validar",
+    "confianza": 0.4,
+    "validacion": "Calibrar con las salidas del diario (salidas_pesca.indice_factores) antes de subir la confianza o darla por buena.",
+    "ambito": {
+     "modalidades": [
+      "submarina"
+     ]
+    },
+    "condiciones": [
+     {
+      "var": "clorofila_nivel",
+      "op": "==",
+      "valor": "alta"
+     }
+    ],
+    "efecto": {
+     "logodds": -0.3
+    },
+    "variable": "clorofila_nivel",
+    "nota": "Clorofila alta (2 mg/m³ o más: posible floración) en la celda fiable más cercana a 15 km o menos (fuera de la franja de 5 km de la costa, donde el satélite no es fiable). La clorofila apaga la luz bajo el agua (Morel 1988) y el agua turbia acorta lo que ve el pez y el buceador (Utne-Palm 2002). Resta poco: el dato es del mar de fuera, no de la orilla; la turbidez de la webcam (factor turbidez) mira la orilla. Desde costa (señuelo a la vista) no se aplica: el índice no sabe la técnica y pegado a la costa no hay clorofila fiable; queda en la evaluación en la sombra."
+   },
+   {
+    "id": "corriente_fuerte_fondo",
+    "retirar_si_nulo": true,
+    "nombre": "Corriente fuerte (fondo desde embarcación)",
+    "texto": "corriente fuerte: cuesta pescar a fondo",
+    "fuente": "stoner_2004",
+    "tipo": "cientifica",
+    "estado": "por_validar",
+    "confianza": 0.4,
+    "validacion": "Calibrar con las salidas del diario (salidas_pesca.indice_factores) antes de subir la confianza o darla por buena.",
+    "ambito": {
+     "modalidades": [
+      "embarcacion"
+     ],
+     "especies": [
+      "faneca",
+      "congrio",
+      "pintarroja",
+      "besugo",
+      "aligote",
+      "breca",
+      "gallo",
+      "raya",
+      "rape",
+      "cabracho",
+      "rascacio",
+      "salmonete",
+      "lenguado",
+      "rodaballo"
+     ]
+    },
+    "condiciones": [
+     {
+      "var": "corriente_ms",
+      "op": ">=",
+      "valor": 0.5
+     }
+    ],
+    "efecto": {
+     "logodds": -0.3
+    },
+    "variable": "corriente_ms",
+    "nota": "Stoner 2004: la corriente es de las variables que más cambian el rendimiento de los aparejos con cebo; con mucha corriente el pez se resguarda y el aparejo no se queda en el fondo. Umbral 0,5 m/s (~1 nudo) de la corriente media del día sin marea de IBI junto al spot: en el Cantábrico casi nunca se llega (p99 ~0,6 nudos), sí en el Estrecho y Canarias. Desde costa no: pegado a la orilla manda la marea y el modelo pierde detalle."
+   },
+   {
+    "id": "borde_borrasca_tunidos",
+    "nombre": "Borde de borrasca (túnidos)",
+    "texto": "borde de borrasca: suele mover a los túnidos",
+    "fuente": "mikel_experiencia_local",
+    "fuentes_adicionales": [
+     "goni_2015_alb"
+    ],
+    "tipo": "heuristica_experta_local",
+    "estado": "por_validar",
+    "confianza": 0.6,
+    "validacion": "Calibrar con las salidas del diario (salidas_pesca.indice_factores) antes de subir la confianza o darla por buena.",
+    "ambito": {
+     "modalidades": [
+      "embarcacion"
+     ],
+     "especies": [
+      "bonito_norte",
+      "atun_rojo",
+      "bacoreta"
+     ]
+    },
+    "condiciones": [
+     {
+      "var": "presion",
+      "agregado": "delta",
+      "desde_h": -24,
+      "hasta_h": 0,
+      "op": "entre",
+      "valor": [
+       -10,
+       -2
+      ]
+     },
+     {
+      "var": "presion",
+      "op": ">=",
+      "valor": 1000
+     },
+     {
+      "var": "viento",
+      "agregado": "media",
+      "desde_h": -6,
+      "hasta_h": 0,
+      "op": "entre",
+      "valor": [
+       10,
+       30
+      ]
+     },
+     {
+      "var": "ola",
+      "agregado": "max",
+      "desde_h": -6,
+      "hasta_h": 0,
+      "op": "<",
+      "valor": 2.5
+     }
+    ],
+    "efecto": {
+     "logodds": 0.35
+    },
+    "variable": "presion@borde_borrasca",
+    "nota": "Mikel (2026-10-09): 'para los túnidos, los bordes de las borrascas son interesantes'. Definición operativa de Claude con lo que ya trae la serie del spot (sin peticiones nuevas): se acerca una borrasca (la presión ha bajado de 2 a 10 hPa en 24 h; más de 10 sería una bajada explosiva, el núcleo encima), todavía no es el centro (presión de 1000 hPa o más) y hay viento moderado de 10 a 30 km/h de media en las últimas 6 h (viento de sistema, no de calma ni de temporal: a partir de 30 km/h sale el aviso de embarcación pequeña). Nunca con mar peligroso: ola máxima de las últimas 6 h por debajo de 2,5 m (el aviso de ola peligrosa sigue aparte). No se encontró bibliografía abierta que lo mida; Goñi et al. 2015 (bonito) ven que la mezcla del agua por el temporal baja las capturas en superficie, por eso se excluyen el núcleo y la mar grande. Confianza 0,6, la habitual de las reglas de Mikel; el aprendizaje la ajusta con barreras y nunca cambia el signo solo."
    }
   ]
  },
