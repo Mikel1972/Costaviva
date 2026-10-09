@@ -372,6 +372,9 @@
     REGION_POR_ZONA: REGION_POR_ZONA,
     recordarRegion: recordarRegion,
     recordarPosicion: recordarPosicion,
+    // Región que conoce la app en este navegador (o null): la usan el SOS
+    // (111 en NZ) y el alta (código postal de 4 cifras), assets/js/region-pais.js.
+    region: function () { return hayDom ? regionInicial({ guardada: regionGuardada(), zona: zonaDispositivo() }) : null; },
     t: t,
     existe: existe,
     dato: dato,

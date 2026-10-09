@@ -962,6 +962,20 @@
   "cs.senuelo": "Lure: {v}",
   "cs.ap.Plomo": "Sinker",
   "cs.ap.Corcho": "Float",
-  "cs.ap.Otro": "Other"
+  "cs.ap.Otro": "Other",
+  "alarma.llamar_num": "📞 Call {num}",
+  "alarma.subtitulo_num": "Alert your contacts and quick-dial {num}.",
+  "alarma.llamar_explica_num": "This opens your phone's dialler — it is not a call or an automatic alert. A website cannot silently alert {num}: only those with an official agreement with the emergency service can integrate it.",
+  "alarma.prefijo_nz": "Without a prefix, New Zealand (+64) is assumed. For another country, start with + and its code (+61…).",
+  "login.cp_4": "The postcode must have 4 digits.",
+  "login.ej_cp_nz": "e.g. 1010",
+  "mapa.previa.aviso": "Preview of {region}: {n} spots, hidden from the public.",
+  "mapa.previa.no_disponible": "The preview of this region is not available (you need to sign in as an administrator or use the key).",
+  "mapa.previa.region_nz": "New Zealand",
+  "mapa.panel.ubicacion_revisar": "📍 Approximate point (town centre): still to be moved to the fishing spot.",
+  "mapa.panel.normativa_nz": "Fishing rules for this area ({area}): official MPI rules ↗",
+  "mapa.panel.normativa_app": "Check the free NZ Fishing Rules app before you fish ↗",
+  "mapa.panel.rahui": "Local iwi or hapū may place a rāhui (temporary closure). Respect local signs and notices.",
+  "mapa.marea.puerto_linz": "LINZ port: {puerto} ({km} km)"
 }
 ; })(typeof window !== "undefined" ? window : globalThis);

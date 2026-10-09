@@ -203,7 +203,7 @@
   <a href="/" class="enlace-marca" aria-label="Costaviva, ir al mapa" data-i18n-aria-label="comun.ir_al_mapa"><svg class="marca-logo" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><circle class="marca-fondo" cx="20" cy="20" r="19"/><path class="marca-pez" d="M9 17c4-6.5 14-6.5 19 0-5 6.5-15 6.5-19 0z"/><path class="marca-pez" d="M27.5 17l6-4.5v9z"/><circle class="marca-ojo" cx="13.5" cy="16" r="1.4"/><path class="marca-ola" d="M5 28c3.5-3.2 6.5-3.2 10 0s6.5 3.2 10 0 6.5-3.2 10 0"/></svg></a>
   <div class="titulos">
     <h1 data-i18n="alarma.titulo">🆘 Alarma</h1>
-    <p data-i18n="alarma.subtitulo">Aviso a tus contactos y llamada rápida al 112.</p>
+    <p id="subtituloAlarma" data-i18n="alarma.subtitulo">Aviso a tus contactos y llamada rápida al 112.</p>
   </div>
   <a id="enlaceAdmin" class="cuenta-menu-btn" href="/admin.html" title="Admin" aria-label="Administración" style="display:none;" data-i18n-aria-label="comun.administracion" data-i18n-title="comun.admin">⚙️</a>
   <div class="cuenta-menu-wrap">
@@ -233,8 +233,8 @@
       <button type="button" class="boton-wa grupo" id="btnWhatsappGrupo" data-i18n="alarma.whatsapp_grupo">👥 Compartir en un grupo de WhatsApp</button>
     </div>
 
-    <a class="llamar112" href="tel:112" data-i18n="alarma.llamar_112">📞 Llamar al 112</a>
-    <p class="explicacion" style="margin-top:8px; margin-bottom:0;" data-i18n="alarma.llamar_explica">Esto abre el marcador de tu teléfono — no es una llamada ni un aviso automático. No existe forma de avisar al 112 en silencio desde una web: solo lo puede integrar quien tenga acuerdo oficial con el servicio de emergencias.</p>
+    <a class="llamar112" id="enlaceLlamarEmergencias" href="tel:112" data-i18n="alarma.llamar_112">📞 Llamar al 112</a>
+    <p class="explicacion" id="explicaLlamarEmergencias" style="margin-top:8px; margin-bottom:0;" data-i18n="alarma.llamar_explica">Esto abre el marcador de tu teléfono — no es una llamada ni un aviso automático. No existe forma de avisar al 112 en silencio desde una web: solo lo puede integrar quien tenga acuerdo oficial con el servicio de emergencias.</p>
   </div>
 
   <div class="seccion">
@@ -302,9 +302,11 @@
 
 <script src="/assets/js/errores.js"></script>
 <script src="/assets/js/sos-whatsapp.js"></script>
+<script src="/assets/js/region-pais.js"></script>
 <script src="/assets/js/agenda-contactos.js"></script>
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { regionPorCoordenadas } from "/assets/js/regiones.js";
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
@@ -385,6 +387,31 @@ document.getElementById("btnInvitarAmigo").addEventListener("click", async () =>
   }
 });
 
+// País del SOS (fase 2 de NZ, 2026-10-09): 111 y prefijo +64 en Nueva
+// Zelanda, 112 y +34 en el resto (assets/js/region-pais.js). La región es la
+// que ya conoce la app (último spot, GPS o zona horaria del dispositivo) y se
+// corrige en cuanto llega la posición del GPS. En España el HTML no cambia.
+let regionSOS = RegionPais.regionActual();
+function aplicarRegionSOS() {
+  const num = RegionPais.numeroEmergencia(regionSOS);
+  const enlace = document.getElementById("enlaceLlamarEmergencias");
+  if (enlace.getAttribute("href") === `tel:${num}`) return;
+  enlace.setAttribute("href", `tel:${num}`);
+  enlace.textContent = I18n.t("alarma.llamar_num", { num });
+  document.getElementById("subtituloAlarma").textContent = I18n.t("alarma.subtitulo_num", { num });
+  document.getElementById("explicaLlamarEmergencias").textContent = I18n.t("alarma.llamar_explica_num", { num });
+  const ayuda = document.getElementById("ayudaWhatsapp");
+  if (ayuda && ayuda.className === "ayuda") ayuda.textContent = textoAyudaPrefijo();
+}
+function textoAyudaPrefijo() {
+  return RegionPais.esNZ(regionSOS) ? I18n.t("alarma.prefijo_nz") : I18n.t("alarma.prefijo");
+}
+// Teléfono escrito sin +: prefijo del país de la región.
+function normalizarTel(valor) {
+  return normalizarTelefono(valor, RegionPais.prefijoTelefono(regionSOS));
+}
+aplicarRegionSOS();
+
 let ultimaPosicion = null;
 const posicionDe = (pos) => ({ lat: pos.coords.latitude, lon: pos.coords.longitude, precision: pos.coords.accuracy });
 
@@ -395,8 +422,10 @@ function actualizarUbicacion() {
       ultimaPosicion = posicionDe(pos);
       // Idioma por región: la próxima vez, el de donde está el usuario.
       I18n.recordarPosicion(ultimaPosicion.lat, ultimaPosicion.lon);
-      // Hemisferio sur (Nueva Zelanda): °S en vez de un "-41.2°N".
-      document.getElementById("coordsActuales").textContent = `${Math.abs(ultimaPosicion.lat).toFixed(5)}°${ultimaPosicion.lat < 0 ? "S" : "N"}, ${ultimaPosicion.lon.toFixed(5)}°`;
+      regionSOS = regionPorCoordenadas(ultimaPosicion.lat, ultimaPosicion.lon);
+      aplicarRegionSOS();
+      // Hemisferio sur y este (Nueva Zelanda): °S y °E en vez de "-41.2°N".
+      document.getElementById("coordsActuales").textContent = `${Math.abs(ultimaPosicion.lat).toFixed(5)}°${ultimaPosicion.lat < 0 ? "S" : "N"}, ${Math.abs(ultimaPosicion.lon).toFixed(5)}°${ultimaPosicion.lon < 0 ? "W" : "E"}`;
     },
     (err) => {
       document.getElementById("coordsActuales").textContent = I18n.t("alarma.sin_ubicacion");
@@ -558,10 +587,10 @@ function ayudaTelefono(input, ayuda) {
   const valor = input.value.trim();
   if (!valor) {
     ayuda.className = "ayuda";
-    ayuda.textContent = I18n.t("alarma.prefijo");
+    ayuda.textContent = textoAyudaPrefijo();
     return;
   }
-  const r = normalizarTelefono(valor);
+  const r = normalizarTel(valor);
   ayuda.className = r.ok ? "ayuda ok" : "ayuda error";
   ayuda.textContent = r.ok ? I18n.t("alarma.se_guardara", { tel: formatearTelefono(r.e164) }) : r.error;
 }
@@ -608,7 +637,7 @@ function editorWhatsapp(c, tarjeta) {
   tarjeta.appendChild(caja);
   cancelar.addEventListener("click", () => caja.remove());
   guardar.addEventListener("click", () => {
-    const r = normalizarTelefono(input.value);
+    const r = normalizarTel(input.value);
     if (!r.ok) { ayuda.className = "ayuda error"; ayuda.textContent = r.error; input.focus(); return; }
     guardarWhatsapp(c, r.e164, ayuda);
   });
@@ -668,7 +697,7 @@ document.getElementById("btnAnadirContacto").addEventListener("click", async () 
   if (!email && !telefono) { mensaje(mensajeEl, "error", I18n.t("alarma.email_o_wa")); return; }
   const fila = { user_id: usuario.id, nombre, email: email || null };
   if (telefono) {
-    const r = normalizarTelefono(telefono);
+    const r = normalizarTel(telefono);
     if (!r.ok) { mensaje(mensajeEl, "error", r.error); inputWhatsapp.focus(); return; }
     fila.whatsapp = r.e164;
   }

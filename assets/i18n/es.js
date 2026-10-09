@@ -962,6 +962,20 @@
   "cs.senuelo": "Señuelo: {v}",
   "cs.ap.Plomo": "Plomo",
   "cs.ap.Corcho": "Corcho",
-  "cs.ap.Otro": "Otro"
+  "cs.ap.Otro": "Otro",
+  "alarma.llamar_num": "📞 Llamar al {num}",
+  "alarma.subtitulo_num": "Aviso a tus contactos y llamada rápida al {num}.",
+  "alarma.llamar_explica_num": "Esto abre el marcador de tu teléfono — no es una llamada ni un aviso automático. No existe forma de avisar al {num} en silencio desde una web: solo lo puede integrar quien tenga acuerdo oficial con el servicio de emergencias.",
+  "alarma.prefijo_nz": "Sin prefijo se entiende Nueva Zelanda (+64). De otro país, empieza por + y su prefijo (+34…).",
+  "login.cp_4": "El código postal debe tener 4 dígitos.",
+  "login.ej_cp_nz": "Ej. 1010",
+  "mapa.previa.aviso": "Vista previa de {region}: {n} spots, oculta al público.",
+  "mapa.previa.no_disponible": "La vista previa de esta región no está disponible (hace falta entrar como administrador o la clave).",
+  "mapa.previa.region_nz": "Nueva Zelanda",
+  "mapa.panel.ubicacion_revisar": "📍 Punto aproximado (centro de la localidad): falta llevarlo al pesquero.",
+  "mapa.panel.normativa_nz": "Normas de pesca de esta zona ({area}): página oficial de MPI ↗",
+  "mapa.panel.normativa_app": "Consulta la app gratuita NZ Fishing Rules antes de pescar ↗",
+  "mapa.panel.rahui": "Los iwi o hapū locales pueden poner un rāhui (cierre temporal). Respeta las señales y avisos locales.",
+  "mapa.marea.puerto_linz": "Puerto LINZ: {puerto} ({km} km)"
 }
 ; })(typeof window !== "undefined" ? window : globalThis);

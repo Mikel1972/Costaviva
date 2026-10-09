@@ -26,12 +26,21 @@ function nombreDesdeDireccion(address) {
   );
 }
 
+// País de Nominatim según la forma del código postal (null si no vale).
+export function paisDeCodigoPostal(cp) {
+  if (/^[0-9]{5}$/.test(cp || "")) return "Spain";
+  if (/^[0-9]{4}$/.test(cp || "")) return "New%20Zealand";
+  return null;
+}
+
 export async function onRequestGet(context) {
   const url = new URL(context.request.url);
   const codigoPostal = url.searchParams.get("cp");
 
   if (codigoPostal !== null) {
-    if (!/^[0-9]{5}$/.test(codigoPostal)) {
+    // 5 cifras = España; 4 cifras = Nueva Zelanda (fase 2 de NZ, 2026-10-09).
+    const pais = paisDeCodigoPostal(codigoPostal);
+    if (!pais) {
       return new Response(JSON.stringify({ error: "código postal inválido" }), {
         status: 400,
         headers: { "content-type": "application/json" },
@@ -39,7 +48,7 @@ export async function onRequestGet(context) {
     }
     try {
       const resp = await fetch(
-        `https://nominatim.openstreetmap.org/search?postalcode=${codigoPostal}&country=Spain&format=jsonv2&limit=1`,
+        `https://nominatim.openstreetmap.org/search?postalcode=${codigoPostal}&country=${pais}&format=jsonv2&limit=1`,
         { headers: { "User-Agent": USER_AGENT } }
       );
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
