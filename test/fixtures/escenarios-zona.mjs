@@ -6,13 +6,12 @@
 // fijo), el eje horario, la hora de las cámaras, el proxy y el índice SEO.
 //
 // test/fixtures/zona-horaria-espana.json se generó con este mismo fichero
-// sobre origin/main ANTES del cambio (Europe/Madrid fijo) y guarda solo lo que
+// sobre main ANTES de regiones.js (Europe/Madrid fijo) y guarda solo lo que
 // depende de la hora (sol, luna, eje, horas de /prevision...), no lo que
-// depende de los datos de especies o del oleaje, que cambian a menudo. Los
-// índices se comparan en el propio test: zona deducida frente a Madrid
-// explícito (`zona`), que debe dar lo mismo en la Península y Portugal.
-// (El 2026-10-09 se comprobó además que los índices completos coincidían
-// con los de main, antes de que existiera `contexto.zona`.)
+// depende de los datos de especies o del oleaje, que cambian a menudo. El
+// 2026-10-09 se regeneró al pasar Portugal a su hora: frente al de Madrid fijo
+// solo cambian los dos casos de Peniche (mareas una hora antes). Los índices
+// se comparan en el propio test frente a una zona explícita por punto.
 import { readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 
@@ -37,6 +36,8 @@ function serie(inicioUTC, n, fase = 0) {
   return horas;
 }
 
+// `zona`: zona explícita para el índice (texto, o función nombre del punto ->
+// zona); sin ella, la que deduzca el código de cada punto.
 export async function foto(raiz, { zona = undefined, soloHora = false } = {}) {
   let FIJO = RealDate.UTC(2026, 9, 9, 10, 17);
   class FakeDate extends RealDate {
@@ -60,7 +61,7 @@ export async function foto(raiz, { zona = undefined, soloHora = false } = {}) {
     for (const [ep, ini] of Object.entries(inicios)) {
       const horas = serie(ini, 96, lat);
       for (const modalidad of VA.MODALIDADES) {
-        const ctx = { lat, lon, zona, modalidad, reglasModalidad: DATOS.reglas_por_modalidad, reglasExpertas: DATOS.reglas_expertas, b0: DATOS.indice?.b0_logodds ?? 0, horaActual: horas[40].hora };
+        const ctx = { lat, lon, zona: typeof zona === "function" ? zona(nom) : zona, modalidad, reglasModalidad: DATOS.reglas_por_modalidad, reglasExpertas: DATOS.reglas_expertas, b0: DATOS.indice?.b0_logodds ?? 0, horaActual: horas[40].hora };
         const r = [];
         for (let i = 30; i < 96; i++) {
           const ind = VA.indiceSpot(DATOS, horas, i, ctx);
@@ -72,7 +73,7 @@ export async function foto(raiz, { zona = undefined, soloHora = false } = {}) {
   }
   const lub = DATOS.especies.find((e) => e.id === "lubina");
   out.ventanaLubina = createHash("sha256").update(JSON.stringify(VA.calcularVentana(lub, DATOS.reglas_por_defecto, serie(inicios.jun, 72), {
-    lat: 43.407, lon: -2.698, zona, modalidad: "submarina", reglasModalidad: DATOS.reglas_por_modalidad, reglasExpertas: DATOS.reglas_expertas,
+    lat: 43.407, lon: -2.698, zona: typeof zona === "function" ? zona("mundaka") : zona, modalidad: "submarina", reglasModalidad: DATOS.reglas_por_modalidad, reglasExpertas: DATOS.reglas_expertas,
   }))).digest("hex");
   out.sol = Object.entries(PUNTOS).map(([n, [lat, lon]]) => {
     const s = VA.solDelDia("2026-10-09", lat, lon);
@@ -81,11 +82,19 @@ export async function foto(raiz, { zona = undefined, soloHora = false } = {}) {
   out.luna = ["2026-10-09", "2026-03-29", "2026-07-01"].map((f) => CS.lunaDeFecha(f, "07:30"));
   out.idxSalida = CS.indiceHoraSalida(serie(inicios.oct, 72).map((h) => h.hora), "2026-10-08", "23:40");
 
-  // /prevision con un "ahora" fijo (mañana y noche).
-  function respuesta() {
-    const eje = EJE.ejeHorario({ timezone: "Europe/Madrid", start_date: "2026-10-09", end_date: "2026-10-10" }, FIJO);
+  // /prevision con un "ahora" fijo (mañana y noche). La serie se etiqueta en
+  // la zona con la que /prevision pide cada spot (antes de regiones.js, Madrid
+  // para todos) y sus valores dependen del instante, no de la etiqueta: el
+  // mismo mar en Madrid y en Lisboa, solo cambia la hora local con que se ve.
+  let R = null;
+  try { R = await import(`${raiz}/assets/js/regiones.js`); } catch { /* main antiguo */ }
+  const zonaDe = (s) => (R ? R.zonaDeSpot(s) : "Europe/Madrid");
+  const BASE = RealDate.UTC(2026, 9, 8, 22); // 9/10 00:00 en Madrid (CEST)
+  function respuesta(zona = "Europe/Madrid") {
+    const eje = EJE.ejeHorario({ timezone: zona, start_date: "2026-10-09", end_date: "2026-10-10" }, FIJO);
     const time = eje.horas.map((h) => h.etiqueta);
-    const f = (g) => time.map((_, i) => g(i));
+    const k = eje.horas.map((h) => Math.round((h.ms - BASE) / 3600000));
+    const f = (g) => k.map((i) => g(i));
     return {
       marino: { hourly: { time, wave_height: f((i) => 0.5 + 0.2 * Math.sin(i / 5)), wave_period: f(() => 9), wave_direction: f(() => 300), sea_surface_temperature: f(() => 18.2), ocean_current_velocity: f(() => 0.3), ocean_current_direction: f(() => 90), sea_level_height_msl: f((i) => 1.5 * Math.sin((2 * Math.PI * i) / 12.42)) } },
       viento: { hourly: { time, windspeed_10m: f((i) => 10 + i), winddirection_10m: f((i) => (i * 13) % 360), precipitation: f(() => 0), cloudcover: f((i) => i % 100), pressure_msl: f((i) => 1015 - i * 0.3) } },
@@ -98,7 +107,7 @@ export async function foto(raiz, { zona = undefined, soloHora = false } = {}) {
       const s = P.SPOTS.find((x) => x.slug === slug);
       for (const t of [RealDate.UTC(2026, 9, 9, 10, 17), RealDate.UTC(2026, 9, 9, 22, 40)]) {
         FIJO = t;
-        const r = respuesta();
+        const r = respuesta(zonaDe(s));
         const p = P.procesarSpot(s, r.marino, r.viento, {}, {}, "openmeteo");
         out.prevision[`${slug}@${t}`] = {
           bloques: p.bloques.map((b) => [b.hora, b.horaISO]), marea: p.marea, presion: p.presion,

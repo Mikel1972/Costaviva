@@ -18,9 +18,11 @@ detectes, no lo dejes para luego.
   zona (`pedirPorZona`). Nada de `horaActualMadridISO()` nuevo.
 - Canarias va en `Atlantic/Canary` (hasta el 2026-10-09 salía en hora de
   Madrid: mareas, bloques e índice una hora desplazados, y el diario buscaba
-  la hora apuntada en la serie equivocada). **Portugal, Azores y Madeira siguen
-  en hora de Madrid a propósito** (`zonaOficial` guarda la real): cambiarlo es
-  decisión de Mikel. Nueva Zelanda: `Pacific/Auckland`, hemisferio sur.
+  la hora apuntada en la serie equivocada). Portugal (`Europe/Lisbon`, sus 17
+  spots), Azores (`Atlantic/Azores`) y Madeira (`Atlantic/Madeira`) también
+  en su hora desde el 2026-10-09, con el sí de Mikel (antes, hora de Madrid:
+  pleamares una hora tarde, dos en Azores). Nueva Zelanda: `Pacific/Auckland`,
+  hemisferio sur.
 - Lo que es del negocio en España (crons, informes, emails de suscripción,
   invitaciones, cupos, marketing) va en Madrid (`ZONA_NEGOCIO`). Cada
   `"Europe/Madrid"` que quede en el código lleva "a propósito" en la línea o
@@ -33,8 +35,10 @@ detectes, no lo dejes para luego.
   el hemisferio sur (`usaDatosGenerales`). NZ traerá sus propios meses; nunca
   se desplazan 6 meses.
 - No regresión: `test/fixtures/zona-horaria-espana.json` se generó con
-  `test/fixtures/escenarios-zona.mjs` sobre main antes del cambio; si un cambio
+  `test/fixtures/escenarios-zona.mjs` (con Madrid fijo solo difería en
+  Peniche, que ahora va en hora de Lisboa); si un cambio
   legítimo del índice lo rompe, regenerarlo con ese script y decirlo en la PR.
+
 ## Nueva Zelanda, fase 1: mareas LINZ, 60 spots y reservas DOC, todo OCULTO (2026-10-09)
 
 Plan completo de NZ: investigación del 2026-10-09 (fuentes, especies,

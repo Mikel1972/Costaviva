@@ -64,7 +64,7 @@ function spotsCercanos(todos, spot, n = 4) {
 }
 
 // "16:42" o "mañana 04:10" -- próximas pleamares/bajamares tal cual las
-// calcula /prevision (hora local del spot: Madrid, o Canarias), sin recalcular nada aquí.
+// calcula /prevision (hora local del spot: Madrid, Canarias, Lisboa...), sin recalcular nada aquí.
 function textoEvento(e) {
   return `${e.manana ? "mañana " : ""}${e.hora} (${e.altura} m)`;
 }
