@@ -6,18 +6,19 @@
 // app (prevision.js, index.html, diario.html...) busca las horas por su
 // etiqueta ("2026-10-08T14:00") y por índice. Este módulo reproduce cómo
 // Open-Meteo arma ese eje:
-//   - timezone=Europe/Madrid -> etiquetas en hora local de Madrid; sin
-//     timezone, UTC/GMT -> etiquetas en UTC.
+//   - timezone=<zona> (Europe/Madrid, Atlantic/Canary, Pacific/Auckland...,
+//     lista cerrada en assets/js/regiones.js) -> etiquetas en esa hora local;
+//     sin timezone, UTC/GMT -> etiquetas en UTC.
 //   - start_date/end_date -> días locales completos, ambos incluidos.
 //   - un único desfase horario para toda la respuesta (ver ejeHorario).
 //   - si no, desde las 00:00 locales de hoy menos past_days (0 por defecto)
 //     durante past_days + forecast_days (7 por defecto) días.
-// Sin dependencias: lo importan las Functions, los scripts y los tests.
+// Solo depende de regiones.js: lo importan las Functions, los scripts y los tests.
+
+import { ZONAS_HORARIAS as ZONAS } from "../../assets/js/regiones.js";
 
 const HORA_MS = 3600 * 1000;
 const DIA_MS = 24 * HORA_MS;
-
-const ZONAS = new Set(["Europe/Madrid", "UTC", "GMT"]);
 
 function zonaDe(tz) {
   return tz && ZONAS.has(tz) && tz !== "GMT" ? tz : "UTC";

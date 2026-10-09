@@ -14,6 +14,7 @@
 // Fuente por variable (Open-Meteo por defecto; MET Norway / Copernicus si se
 // activan FUENTE_* — ver functions/_lib/fuentes.js, 2026-10-08).
 import { pedirDatosMeteo, fuentesUsadas, fuenteDeVariable } from "./_lib/fuentes.js";
+import { agruparPorZona, horaLocalISO, paramZona, zonaDeSpot, ZONA_POR_DEFECTO } from "../assets/js/regiones.js";
 // Mar abierto frente a "en la playa" para spots abrigados (2026-10-08).
 import { oleajeCostero, zonaOleaje } from "./_lib/oleaje-costero.js";
 // Boyas del mapa vía Copernicus Marine In Situ (instantánea en Storage).
@@ -21,6 +22,8 @@ import { leerInstantanea } from "./_lib/instantaneas.js";
 // "Si hay cámara, utiliza nuestro cálculo" (2026-10-08): altura según la
 // espuma que ven las webcams, y corrección de las próximas horas.
 import { aplicarCamarasASpots, aplicarReferenciasCamara, filasLecturas, VIGENCIA_LECTURA_HORAS } from "./_lib/oleaje-camaras.js";
+// Interruptor de regiones: los spots de NZ existen pero no entran hasta activarla.
+import { spotsRegionesActivas } from "./_lib/regiones-activas.js";
 
 export const SPOTS = [
   { slug: "lekeitio", nombre: "Lekeitio", lat: 43.3647, lon: -2.5089 },
@@ -155,6 +158,10 @@ export const SPOTS = [
   { slug: "calamillor", nombre: "Cala Millor (Mallorca)", lat: 39.593, lon: 3.383 },
   { slug: "sonbou", nombre: "Son Bou (Menorca)", lat: 39.917, lon: 4.083 },
   { slug: "muro", nombre: "Platja de Muro (Mallorca)", lat: 39.762, lon: 3.108 },
+
+  // Regiones nuevas (Nueva Zelanda, 2026-10-09): solo si están en
+  // REGIONES_ACTIVAS (functions/_lib/regiones-activas.js). Hoy, ninguna.
+  ...spotsRegionesActivas(),
 ];
 
 // Bloques de 3h que queremos mostrar, igual que el formato anterior
@@ -168,7 +175,7 @@ function rumboDesdeGrados(grados) {
 }
 
 function horaLocalDesdeISO(iso) {
-  // Open-Meteo, con timezone=Europe/Madrid, devuelve "YYYY-MM-DDTHH:00" ya
+  // Open-Meteo, con timezone=<zona del spot>, devuelve "YYYY-MM-DDTHH:00" ya
   // en hora local (sin sufijo Z) — leemos la hora directamente del texto,
   // sin conversiones de zona horaria propias.
   return parseInt(iso.slice(11, 13), 10);
@@ -177,17 +184,13 @@ function horaLocalDesdeISO(iso) {
 // Bug real encontrado 2026-09-12 (el usuario vio nubosidad 100% cuando en
 // realidad no pasaba del 20%): calcularMarea/calcularPresion comparaban
 // `new Date().toISOString()` (UTC) contra el array `horas`, que viene
-// etiquetado en hora LOCAL de Madrid (por el `timezone=Europe/Madrid` de
-// la petición) — con CEST (verano) eso desplazaba el "ahora" 2h hacia
-// atrás, cogiendo el dato de una hora que no era la real. Mismo fallo
-// corregido a la vez en index.html y diario.html (sus propias copias de
-// este mismo cálculo de "ahora").
-function horaActualMadridISO() {
-  const partes = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Europe/Madrid", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", hourCycle: "h23",
-  }).formatToParts(new Date());
-  const val = (t) => partes.find((p) => p.type === t).value;
-  return `${val("year")}-${val("month")}-${val("day")}T${val("hour")}`;
+// etiquetado en hora LOCAL (por el `timezone=` de la petición) — con CEST
+// (verano) eso desplazaba el "ahora" 2h hacia atrás, cogiendo el dato de una
+// hora que no era la real. Mismo fallo corregido a la vez en index.html y
+// diario.html (sus propias copias de este mismo cálculo de "ahora").
+// 2026-10-09: la zona es la del spot (regiones.js), no siempre Madrid.
+function horaActualISO(zona = ZONA_POR_DEFECTO) {
+  return horaLocalISO(zona, new Date());
 }
 
 // Coeficiente de marea: mareas vivas (coeficiente alto) cerca de luna
@@ -273,11 +276,11 @@ function coeficienteMarea(fecha) {
 // datos suficientes se descarta, nunca se usa a medias).
 const HORAS_MINIMAS_POR_DIA = 20;
 
-export function coeficientePorSpot(horas, alturas) {
+export function coeficientePorSpot(horas, alturas, zona = ZONA_POR_DEFECTO) {
   // Índice propio de "ahora" dentro de esta ventana (que es distinta de
   // la ventana corta que usa calcularMarea() para todo lo demás), no se
   // reutiliza el idxAhora de fuera.
-  let idxAhora = horas.findIndex((h) => h.slice(0, 13) === horaActualMadridISO());
+  let idxAhora = horas.findIndex((h) => h.slice(0, 13) === horaActualISO(zona));
   if (idxAhora === -1) idxAhora = 0;
 
   const rangosPorDia = {};
@@ -325,7 +328,7 @@ export function coeficientePorSpot(horas, alturas) {
 // batimétricos reales que no tenemos), solo un número intuitivo — la
 // detección de pleamar/bajamar y la tendencia no cambian, un
 // desplazamiento constante no mueve los máximos/mínimos relativos.
-function calcularMarea(horas, alturas, coeficienteCacheado) {
+function calcularMarea(horas, alturas, coeficienteCacheado, zona = ZONA_POR_DEFECTO) {
   if (!horas.length || !alturas.length) return null;
 
   const validas = alturas.filter((v) => v !== null && v !== undefined);
@@ -361,7 +364,7 @@ function calcularMarea(horas, alturas, coeficienteCacheado) {
     eventos.push(e);
   }
 
-  const ahoraISO = horaActualMadridISO();
+  const ahoraISO = horaActualISO(zona);
   let idxAhora = horas.findIndex((h) => h.slice(0, 13) === ahoraISO);
   if (idxAhora === -1) idxAhora = 0;
   const hoyISO = ahoraISO.slice(0, 10);
@@ -403,9 +406,9 @@ function calcularMarea(horas, alturas, coeficienteCacheado) {
 // todavía no hay historia suficiente (recién desplegado, o el cron
 // llevaba poco corriendo), se cae de vuelta a la comparación dentro del
 // forecast — mejor que no dar tendencia ninguna.
-function calcularPresion(horas, presiones, valorHistorico3h) {
+function calcularPresion(horas, presiones, valorHistorico3h, zona = ZONA_POR_DEFECTO) {
   if (!horas.length || !presiones.length) return null;
-  const ahoraISO = horaActualMadridISO();
+  const ahoraISO = horaActualISO(zona);
   let idxAhora = horas.findIndex((h) => h.slice(0, 13) === ahoraISO);
   if (idxAhora === -1) idxAhora = 0;
 
@@ -658,30 +661,48 @@ export function factorOleaje(lat, lon, fuente = "openmeteo") {
   return dentro ? FACTOR_OLEAJE_GIPUZKOA : 1;
 }
 
-async function previsionTodosSpots(spots, env = {}) {
-  const lats = spots.map((s) => s.lat).join(",");
-  const lons = spots.map((s) => s.lon).join(",");
-  const paramsComunes = `latitude=${lats}&longitude=${lons}&timezone=Europe%2FMadrid&forecast_days=2`;
+// Una consulta por zona horaria (Open-Meteo etiqueta TODA la respuesta con
+// una sola zona): en la Península y Portugal, una sola como siempre; Canarias
+// va aparte (Atlantic/Canary). Devuelve la lista en el orden de `spots`.
+export async function pedirPorZona(spots, api, resto, opciones) {
+  const grupos = agruparPorZona(spots);
+  const respuestas = await Promise.all(grupos.map((g) => pedirDatosMeteo(
+    api,
+    `latitude=${g.items.map((s) => s.lat).join(",")}&longitude=${g.items.map((s) => s.lon).join(",")}&${paramZona(g.zona)}&${resto}`,
+    opciones
+  )));
+  const salida = new Array(spots.length);
+  grupos.forEach((g, k) => {
+    // Con más de una localización, Open-Meteo devuelve un array (uno por
+    // coordenada, mismo orden que se pidió) en vez de un único objeto.
+    const r = respuestas[k];
+    const lista = Array.isArray(r) ? r : g.items.length === 1 ? [r] : null;
+    if (!lista) throw new Error(r?.reason || "Open-Meteo no devolvió una lista");
+    g.indices.forEach((idx, j) => { salida[idx] = lista[j]; });
+  });
+  return salida;
+}
 
+async function previsionTodosSpots(spots, env = {}) {
   const [marinos, vientos, historicoPresion, coeficientes] = await Promise.all([
     // Host gratuito o comercial (con key) según OPEN_METEO_API_KEY, ver
     // functions/_lib/open-meteo.js. Los errores salen sin la key: van al
     // JSON público de cada spot.
-    pedirDatosMeteo(
+    pedirPorZona(
+      spots,
       "marine",
-      `${paramsComunes}&hourly=wave_height,wave_period,wave_direction,sea_surface_temperature,ocean_current_velocity,ocean_current_direction,sea_level_height_msl`,
+      "forecast_days=2&hourly=wave_height,wave_period,wave_direction,sea_surface_temperature,ocean_current_velocity,ocean_current_direction,sea_level_height_msl",
       { env }
     ),
-    pedirDatosMeteo(
+    pedirPorZona(
+      spots,
       "forecast",
-      `${paramsComunes}&hourly=windspeed_10m,winddirection_10m,precipitation,cloudcover,pressure_msl&windspeed_unit=kmh`,
+      "forecast_days=2&hourly=windspeed_10m,winddirection_10m,precipitation,cloudcover,pressure_msl&windspeed_unit=kmh",
       { env }
     ),
     historicoPresionPorSpot(),
     coeficienteMareaCache(),
   ]);
-  // Con más de una localización, Open-Meteo devuelve un array (uno por
-  // coordenada, mismo orden que se pidió) en vez de un único objeto.
   const fuentes = [...new Set([...fuentesUsadas(marinos), ...fuentesUsadas(vientos)])];
   const soloOpenMeteo = fuentes.length === 1 && fuentes[0] === "openmeteo";
   const fuenteOleaje = fuenteDeVariable("marine", "wave_height", env);
@@ -693,6 +714,8 @@ async function previsionTodosSpots(spots, env = {}) {
 }
 
 export function procesarSpot(spot, marino, viento, historicoPresion, coeficientes, fuenteOleaje = "openmeteo") {
+  // Zona del spot (regiones.js): la misma con la que se pidió la serie.
+  const zona = zonaDeSpot(spot);
   const tempAguaPorHoraISO = Object.fromEntries(
     (marino.hourly?.time || []).map((t, i) => [t, marino.hourly.sea_surface_temperature?.[i] ?? null])
   );
@@ -708,9 +731,10 @@ export function procesarSpot(spot, marino, viento, historicoPresion, coeficiente
   const marea = calcularMarea(
     marino.hourly?.time || [],
     marino.hourly?.sea_level_height_msl || [],
-    coeficientes?.[spot.slug]
+    coeficientes?.[spot.slug],
+    zona
   );
-  const presion = calcularPresion(viento.hourly?.time || [], viento.hourly?.pressure_msl || [], historicoPresion?.[spot.slug]);
+  const presion = calcularPresion(viento.hourly?.time || [], viento.hourly?.pressure_msl || [], historicoPresion?.[spot.slug], zona);
   const precipNubesPorHoraISO = Object.fromEntries(
     (viento.hourly?.time || []).map((t, i) => [
       t,
@@ -730,7 +754,7 @@ export function procesarSpot(spot, marino, viento, historicoPresion, coeficiente
   // Empieza en la hora de "ahora", no en el índice 0 — horasOla es la
   // ventana corta de siempre (forecast_days=2), pero calcular esto
   // explícitamente es más robusto que asumir que el índice 0 es "ahora".
-  let idxAhoraOla = horasOla.findIndex((h) => h.slice(0, 13) === horaActualMadridISO());
+  let idxAhoraOla = horasOla.findIndex((h) => h.slice(0, 13) === horaActualISO(zona));
   if (idxAhoraOla === -1) idxAhoraOla = 0;
 
   const bloques = [];
@@ -786,6 +810,9 @@ export function procesarSpot(spot, marino, viento, historicoPresion, coeficiente
     nombre: spot.nombre,
     lat: spot.lat,
     lon: spot.lon,
+    // Zona horaria de las horas de este spot (bloques, mareas): la app la usa
+    // para su "ahora" (index.html, zonaSpot).
+    zona,
     fuente: "Open-Meteo (Marine + Forecast API) — cálculo propio, no Todosurf",
     actualizado: new Date().toISOString(),
     marea,

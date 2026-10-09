@@ -260,6 +260,7 @@ import { cargarCompartidas, htmlCasillaCompartir, htmlEtiquetaCompartida, sincro
 // Índice de pesca v2 y condiciones por fecha de la salida (2026-10-08).
 import * as VentanaActividad from "/assets/js/ventana-actividad.js";
 import * as CondSalida from "/assets/js/condiciones-salida.js";
+import * as Regiones from "/assets/js/regiones.js";
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
@@ -711,17 +712,18 @@ function crearSelectorHora(idContenedor, valorInicial) {
 }
 
 // Bug real encontrado 2026-09-12 (el usuario vio nubosidad 100% cuando en
-// realidad no pasaba del 20%): Open-Meteo (timezone=Europe/Madrid)
-// etiqueta sus horas en local, no en UTC — new Date().toISOString() es
-// UTC y comparado tal cual desplazaba el "ahora" 1-2h según CET/CEST.
+// realidad no pasaba del 20%): Open-Meteo (timezone=<zona>) etiqueta sus
+// horas en local, no en UTC — new Date().toISOString() es UTC y comparado
+// tal cual desplazaba el "ahora" 1-2h según CET/CEST.
 // Mismo fallo corregido a la vez en functions/prevision.js e index.html.
-function horaActualMadridISO() {
-  const partes = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Europe/Madrid", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", hourCycle: "h23",
-  }).formatToParts(new Date());
-  const val = (t) => partes.find((p) => p.type === t).value;
-  return `${val("year")}-${val("month")}-${val("day")}T${val("hour")}`;
+// 2026-10-09: la zona es la del punto de la salida (assets/js/regiones.js):
+// Madrid en la Península y Portugal, Canarias en Canarias. Las horas que
+// apunta el usuario son las de su reloj allí, así que la serie se pide y se
+// lee en esa misma zona.
+function horaActualISO(zona = Regiones.ZONA_POR_DEFECTO) {
+  return Regiones.horaLocalISO(zona);
 }
+const consultaZona = (lat, lon) => Regiones.paramZona(Regiones.zonaPorCoordenadas(lat, lon));
 
 // Coeficiente de marea por spot (2026-09-13, ver el comentario largo en
 // functions/prevision.js): el índice "nacional" por fase lunar (más
@@ -871,7 +873,8 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha, horaF
   // ~17 días — un ciclo vivas-muertas completo, ~14.77 días) para calcular
   // coeficientePorSpot(); la atmósfera, de 5 días antes al día siguiente
   // (tendencias y retardos de las reglas expertas del índice).
-  const hoy = horaActualMadridISO().slice(0, 10);
+  const zona = Regiones.zonaPorCoordenadas(lat, lon);
+  const hoy = horaActualISO(zona).slice(0, 10);
   const plan = CondSalida.planCondiciones(fecha, hoy);
   const fechaRef = fecha || hoy;
   const resultado = { marea_altura: null, marea_tendencia: null, marea_altura_fin: null, marea_tendencia_fin: null,
@@ -884,7 +887,7 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha, horaF
     indice_version: VentanaActividad.INDICE_VERSION, indice_puntuacion: null, indice_especie: null, indice_factores: null };
 
   // La luna y el coeficiente astronómico valen para cualquier fecha.
-  const lunaLocal = CondSalida.lunaDeFecha(fechaRef, horaElegida || "12:00");
+  const lunaLocal = CondSalida.lunaDeFecha(fechaRef, horaElegida || "12:00", zona);
   resultado.luna_fase = lunaLocal.fase;
   resultado.luna_iluminacion = lunaLocal.iluminacion;
   if (!plan.pedir) {
@@ -893,7 +896,7 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha, horaF
   }
 
   const v = CondSalida.ventanasConsulta(fechaRef, hoy);
-  const coord = `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid`;
+  const coord = `latitude=${lat}&longitude=${lon}&${Regiones.paramZona(zona)}`;
   const RUMBOS = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
   try {
     const [marino, viento, luna, datosEspecies] = await Promise.all([
@@ -908,7 +911,7 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha, horaF
     if (marino?.error || viento?.error) resultado.condiciones_estado = "parcial";
     const horas = marino.hourly?.time || [];
     const horasViento = viento.hourly?.time || [];
-    const opcionesHora = { hoy, horaActual: horaActualMadridISO() };
+    const opcionesHora = { hoy, horaActual: horaActualISO(zona) };
     // Bug real encontrado por el usuario 2026-09-15: las dos series tienen
     // longitudes distintas; cada una busca su propio índice por fecha+hora.
     const { i: idx, estimada } = CondSalida.indiceHoraSalida(horas, fechaRef, horaElegida, opcionesHora);
@@ -1021,7 +1024,7 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha, horaF
           serie = CondSalida.aplicarBoyaASerie(serie, r.i, boya);
           const modalidad = CondSalida.TIPO_SALIDA_A_MODALIDAD[tipoSalida] || "costa";
           const ind = VentanaActividad.indiceSpot(datosEspecies, serie, r.i, {
-            lat, lon, modalidad, horaActual: horaActualMadridISO(),
+            lat, lon, zona, modalidad, horaActual: horaActualISO(zona),
           });
           Object.assign(resultado, CondSalida.resumenIndice(ind, { estimada: r.estimada }));
           if (boya && resultado.indice_factores) resultado.indice_factores.con_boya = true;
@@ -1089,14 +1092,14 @@ async function mareaEnMomento(lat, lon, hora, fecha) {
   try {
     // Dos días (fecha y la siguiente) por si la hora redondeada cruza medianoche.
     const rangoFechas = fecha ? `start_date=${fecha}&end_date=${CondSalida.sumarDias(fecha, 1)}` : "forecast_days=2";
-    const marino = await pedirMeteo("marine", `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&${rangoFechas}&hourly=sea_level_height_msl`);
+    const marino = await pedirMeteo("marine", `latitude=${lat}&longitude=${lon}&${consultaZona(lat, lon)}&${rangoFechas}&hourly=sea_level_height_msl`);
     const horas = marino.hourly?.time || [];
     const serie = marino.hourly?.sea_level_height_msl || [];
     const validas = serie.filter((v) => v !== null && v !== undefined);
     const min = validas.length ? Math.min(...validas) : 0;
     // Hora de la FECHA de la captura (23:40 -> 00 del día siguiente); sin
     // esa hora en la serie, null antes que la marea de otra hora.
-    const fechaRef = fecha || horaActualMadridISO().slice(0, 10);
+    const fechaRef = fecha || horaActualISO(Regiones.zonaPorCoordenadas(lat, lon)).slice(0, 10);
     const { i: idx } = CondSalida.indiceHoraSalida(horas, fechaRef, hora);
     if (idx < 0) return { altura: null, tendencia: null };
     const altura = serie[idx];
@@ -1122,7 +1125,7 @@ async function mareaDeConclusion(lat, lon, horaInicio, horaFin, fecha) {
   if (!horaInicio || !horaFin || !fecha || !Number.isFinite(lat) || !Number.isFinite(lon)) return vacio;
   try {
     const manana = (() => { const d = new Date(fecha + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + 1); return d.toISOString().slice(0, 10); })();
-    const marino = await pedirMeteo("marine", `latitude=${lat}&longitude=${lon}&timezone=Europe%2FMadrid&start_date=${fecha}&end_date=${CondSalida.sumarDias(fecha, 2)}&hourly=sea_level_height_msl`);
+    const marino = await pedirMeteo("marine", `latitude=${lat}&longitude=${lon}&${consultaZona(lat, lon)}&start_date=${fecha}&end_date=${CondSalida.sumarDias(fecha, 2)}&hourly=sea_level_height_msl`);
     const horas = marino.hourly?.time || [];
     const serie = marino.hourly?.sea_level_height_msl || [];
     const validas = serie.filter((v) => v !== null && v !== undefined);
@@ -1579,11 +1582,10 @@ function cancelarFormulario() {
 
 // Concluir jornada (pedido explícito del usuario): marca la entrada como
 // terminada y, si no se había puesto ya, rellena la hora de fin con la
-// hora actual — igual que la hora de inicio, es hora LOCAL de Madrid
-// (horaActualMadridISO() da fecha+hora en UTC del sistema, aquí solo
-// hace falta HH:MM).
-function horaActualHHMM() {
-  return new Intl.DateTimeFormat("es-ES", { timeZone: "Europe/Madrid", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(new Date());
+// hora actual — igual que la hora de inicio, es hora LOCAL del punto
+// (horaActualISO(zona) da fecha+hora, aquí solo hace falta HH:MM).
+function horaActualHHMM(zona = Regiones.ZONA_POR_DEFECTO) {
+  return new Intl.DateTimeFormat("es-ES", { timeZone: zona, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(new Date());
 }
 async function concluirEntrada(iso, fechaObj, salida) {
   // Hora de fin obligatoria para concluir (pedido explícito del usuario

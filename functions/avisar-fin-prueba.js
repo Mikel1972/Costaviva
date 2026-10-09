@@ -41,12 +41,13 @@ import { emailFinInvitacion } from "./_lib/invitaciones.js";
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const LIMITE_POR_PASADA = 10;
 
+// Hora de Madrid a propósito (ZONA_NEGOCIO): fechas de la suscripción en los emails.
 function fecha(valor) {
   return new Date(valor).toLocaleDateString("es-ES", {
     day: "numeric",
     month: "long",
     year: "numeric",
-    timeZone: "Europe/Madrid",
+    timeZone: "Europe/Madrid", // a propósito (ZONA_NEGOCIO)
   });
 }
 

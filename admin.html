@@ -410,6 +410,7 @@ await cargarUsuarios();
 // el servidor que la sesión es de un admin (es_admin()) antes de tocar nada.
 // ---------------------------------------------------------------------------
 const ETIQUETA_ESTADO = { enviada: "Enviada", inscrito: "Inscrito", caducada: "Caducada", terminada: "Terminada", anulada: "Anulada" };
+// Hora de Madrid a propósito (ZONA_NEGOCIO, assets/js/regiones.js): fechas de negocio del panel.
 const fechaCorta = (iso) => (iso ? new Date(iso).toLocaleDateString("es-ES", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "Europe/Madrid" }) : "—");
 // Un fin "exclusivo" (00:00 del día siguiente) se enseña como el día anterior.
 const fechaFin = (iso) => (iso ? fechaCorta(new Date(new Date(iso).getTime() - 1)) : "—");
