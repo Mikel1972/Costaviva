@@ -243,9 +243,10 @@ Sigue **todo oculto** (`REGIONES_ACTIVAS = ["es"]`), pero se puede ver.
   → +6421…) y el email del SOS dice 111 según la posición. España sin cambios.
 - **Alta**: en la región NZ el código postal es de 4 cifras (`login.cp_4`);
   `/geocodificar?cp=` busca 4 cifras en New Zealand. **Necesita la migración
-  `20261009190000_codigo_postal_nz.sql`** (CHECK `^[0-9]{4,5}$`): sin ella,
-  un alta de NZ falla al crear el perfil. Aplicarla con
-  `aplicar-migraciones.yml` antes de activar NZ.
+  `20261009190000_codigo_postal_nz.sql`** (CHECK `^[0-9]{4,5}$`, PR aparte
+  sin fusionar para que el vigía de esquema no avise de una migración sin
+  aplicar): sin ella, un alta de NZ falla al crear el perfil. Fusionarla y
+  aplicarla con `aplicar-migraciones.yml` antes de activar NZ.
 - Tests: `test/nz-fase2.test.js` (región oculta → 404 sin Open-Meteo, admin
   y clave → 200 con solo NZ, caché separada, España igual, normativa sin
   cifras, SOS, alta) y `test/listas-spots.test.js`.

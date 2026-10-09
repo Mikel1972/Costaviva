@@ -308,7 +308,7 @@ test("teléfonos de NZ sin prefijo se guardan como +64; España igual que antes"
   assert.match(alarma, /id="enlaceLlamarEmergencias" href="tel:112"/);
 });
 
-test("alta: 4 cifras en NZ, 5 en España; migración y /geocodificar de acuerdo", () => {
+test("alta: 4 cifras en NZ, 5 en España; /geocodificar de acuerdo", () => {
   assert.equal(RegionPais.codigoPostalValido("1010", "nueva_zelanda"), true);
   assert.equal(RegionPais.codigoPostalValido("48001", "nueva_zelanda"), false);
   assert.equal(RegionPais.codigoPostalValido("48001", "cantabrico"), true);
@@ -320,9 +320,6 @@ test("alta: 4 cifras en NZ, 5 en España; migración y /geocodificar de acuerdo"
   assert.match(login, /RegionPais\.codigoPostalValido\(codigoPostal, regionAlta\)/);
   // En España el HTML del campo no cambia.
   assert.match(fuenteEs(login), /pattern="\[0-9\]\{5\}" maxlength="5"/);
-  const migracion = leer("supabase/migrations/20261009190000_codigo_postal_nz.sql");
-  assert.match(migracion, /codigo_postal ~ '\^\[0-9\]\{4,5\}\$'/);
-  assert.doesNotMatch(migracion, /disable row level security/i);
 });
 
 test("i18n: claves nuevas de la fase 2 en es y en", () => {
