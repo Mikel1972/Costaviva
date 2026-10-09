@@ -16,6 +16,14 @@
 // (navigator.share) y, si no existe, con wa.me sin número, que deja elegir
 // el chat o el grupo dentro de WhatsApp.
 (function (raiz) {
+  // Idiomas (2026-10-09): en inglés, assets/i18n/en.js; en español (y en
+  // los tests sin I18n) el texto de aquí, idéntico a es.js (test/i18n.test.js).
+  function tr(clave, es, vars) {
+    var I = raiz.I18n;
+    var s = I && I.idioma() !== "es" && I.existe(clave) ? I.t(clave) : es;
+    return vars ? s.replace(/\{(\w+)\}/g, function (t, k) { return vars[k] === undefined ? t : String(vars[k]); }) : s;
+  }
+
   // E.164: "+", prefijo de país (no empieza por 0) y hasta 15 cifras en total.
   // La misma expresión va en el CHECK de la migración
   // 20261008200000_contactos_whatsapp.sql (el test lo comprueba).
@@ -32,11 +40,11 @@
   function normalizarTelefono(entrada, prefijoPais) {
     var prefijo = String(prefijoPais || "34").replace(/\D/g, "");
     var texto = String(entrada == null ? "" : entrada).trim();
-    if (!texto) return { ok: false, error: "Escribe un número de teléfono." };
-    if (/[a-z]/i.test(texto)) return { ok: false, error: "El teléfono solo puede llevar números (y el + del prefijo)." };
+    if (!texto) return { ok: false, error: tr("sos.tel_vacio", "Escribe un número de teléfono.") };
+    if (/[a-z]/i.test(texto)) return { ok: false, error: tr("sos.tel_letras", "El teléfono solo puede llevar números (y el + del prefijo).") };
     var limpio = texto.replace(/[\s.\-()\/]/g, "");
     if (/[^\d+]/.test(limpio) || limpio.lastIndexOf("+") > 0) {
-      return { ok: false, error: "El teléfono solo puede llevar números (y el + del prefijo)." };
+      return { ok: false, error: tr("sos.tel_letras", "El teléfono solo puede llevar números (y el + del prefijo).") };
     }
     if (limpio.indexOf("00") === 0) limpio = "+" + limpio.slice(2);
     var e164;
@@ -50,13 +58,13 @@
     } else if (prefijo !== "34" && /^\d{6,12}$/.test(limpio)) {
       e164 = "+" + prefijo + limpio.replace(/^0+/, "");
     } else {
-      return { ok: false, error: "Número incompleto. Si no es de España, escríbelo con su prefijo (por ejemplo +33…)." };
+      return { ok: false, error: tr("sos.tel_incompleto", "Número incompleto. Si no es de España, escríbelo con su prefijo (por ejemplo +33…).") };
     }
     if (e164.indexOf("+34") === 0 && !/^\+34[6789]\d{8}$/.test(e164)) {
-      return { ok: false, error: "Un teléfono de España tiene 9 cifras y empieza por 6, 7, 8 o 9." };
+      return { ok: false, error: tr("sos.tel_espana", "Un teléfono de España tiene 9 cifras y empieza por 6, 7, 8 o 9.") };
     }
     if (!esE164(e164)) {
-      return { ok: false, error: "Ese número no parece válido. Revisa el prefijo del país y las cifras." };
+      return { ok: false, error: tr("sos.tel_invalido", "Ese número no parece válido. Revisa el prefijo del país y las cifras.") };
     }
     return { ok: true, e164: e164 };
   }
@@ -78,23 +86,24 @@
   // que la persona no esté en condiciones de contestar.
   function mensajeSOS(opciones) {
     var o = opciones || {};
-    var nombre = String(o.nombre || "").trim() || "un usuario de Costaviva";
-    var inicio = "🆘 SOS de " + nombre + ": ";
+    var nombre = String(o.nombre || "").trim() || tr("sos.un_usuario", "un usuario de Costaviva");
+    var inicio = tr("sos.inicio", "🆘 SOS de {nombre}: ", { nombre: nombre });
     var motivo = o.tipo === "caida_detectada"
-      ? "mi teléfono ha detectado una posible caída y no he respondido. Necesito ayuda."
-      : "necesito ayuda.";
+      ? tr("sos.caida", "mi teléfono ha detectado una posible caída y no he respondido. Necesito ayuda.")
+      : tr("sos.ayuda", "necesito ayuda.");
     var p = o.posicion;
     var lugar;
     if (p && Number.isFinite(p.lat) && Number.isFinite(p.lon)) {
       var detalles = [];
-      if (Number.isFinite(p.precision)) detalles.push("precisión ±" + Math.max(1, Math.round(p.precision)) + " m");
+      if (Number.isFinite(p.precision)) detalles.push(tr("sos.precision", "precisión ±{m} m", { m: Math.max(1, Math.round(p.precision)) }));
       detalles.push(hhmm(o.fecha || Date.now(), o.zonaHoraria));
-      lugar = " Mi ubicación: https://maps.google.com/?q=" + p.lat.toFixed(6) + "," + p.lon.toFixed(6) +
-        " (" + detalles.join(", ") + ").";
+      lugar = tr("sos.mi_ubicacion", " Mi ubicación: {url} ({detalles}).", {
+        url: "https://maps.google.com/?q=" + p.lat.toFixed(6) + "," + p.lon.toFixed(6), detalles: detalles.join(", "),
+      });
     } else {
-      lugar = " No he podido obtener mi ubicación (" + hhmm(o.fecha || Date.now(), o.zonaHoraria) + ").";
+      lugar = tr("sos.sin_ubicacion", " No he podido obtener mi ubicación ({hora}).", { hora: hhmm(o.fecha || Date.now(), o.zonaHoraria) });
     }
-    return inicio + motivo + lugar + " Enviado desde Costaviva.";
+    return inicio + motivo + lugar + tr("sos.firma", " Enviado desde Costaviva.");
   }
 
   // Enlace "click to chat". Sin número (o con uno no válido) abre WhatsApp

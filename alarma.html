@@ -3,7 +3,11 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-<title>Alarma — Costaviva</title>
+<!-- Idiomas (2026-10-09): diccionarios y I18n.t(); en español no cambia nada. Ver assets/js/i18n.js. -->
+<script src="/assets/i18n/es.js"></script>
+<script src="/assets/i18n/en.js"></script>
+<script src="/assets/js/i18n.js"></script>
+<title data-i18n="alarma.titulo_pagina">Alarma — Costaviva</title>
 <link rel="manifest" href="manifest.json" />
 <link rel="icon" href="icon.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="/assets/iconos/apple-touch-icon.png" />
@@ -183,97 +187,99 @@
     <source media="(orientation: landscape)" srcset="/assets/inicio/rompiente-ancha.webp" type="image/webp">
     <source media="(orientation: landscape)" srcset="/assets/inicio/rompiente-ancha.jpg">
     <source srcset="/assets/inicio/rompiente-movil.webp" type="image/webp">
-    <img class="pantalla-inicio__foto" src="/assets/inicio/rompiente-movil.jpg" width="720" height="1280" fetchpriority="high" alt="Ola rompiendo contra una costa rocosa mientras un pescador lanza su caña">
+    <img class="pantalla-inicio__foto" src="/assets/inicio/rompiente-movil.jpg" width="720" height="1280" fetchpriority="high" alt="Ola rompiendo contra una costa rocosa mientras un pescador lanza su caña" data-i18n-alt="comun.inicio.alt_foto">
   </picture>
   <div class="pantalla-inicio__marca">
     <svg class="marca-logo" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><circle class="marca-fondo" cx="20" cy="20" r="19"/><path class="marca-pez" d="M9 17c4-6.5 14-6.5 19 0-5 6.5-15 6.5-19 0z"/><path class="marca-pez" d="M27.5 17l6-4.5v9z"/><circle class="marca-ojo" cx="13.5" cy="16" r="1.4"/><path class="marca-ola" d="M5 28c3.5-3.2 6.5-3.2 10 0s6.5 3.2 10 0 6.5-3.2 10 0"/></svg>
     <p class="pantalla-inicio__nombre logotipo">Costaviva</p>
-    <p class="pantalla-inicio__frase">El mar de hoy, antes de salir a pescar</p>
-    <p class="pantalla-inicio__estado" role="status"><span class="pantalla-inicio__girando" aria-hidden="true"></span>Comprobando acceso…</p>
+    <p class="pantalla-inicio__frase" data-i18n="comun.inicio.frase">El mar de hoy, antes de salir a pescar</p>
+    <p class="pantalla-inicio__estado" role="status"><span class="pantalla-inicio__girando" aria-hidden="true"></span><span data-i18n="comun.inicio.comprobando">Comprobando acceso…</span></p>
   </div>
 </div>
 <!-- /pantalla-inicio -->
+<script>I18n.aplicarInicio();</script>
 
 <header>
-  <a href="/" class="enlace-marca" aria-label="Costaviva, ir al mapa"><svg class="marca-logo" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><circle class="marca-fondo" cx="20" cy="20" r="19"/><path class="marca-pez" d="M9 17c4-6.5 14-6.5 19 0-5 6.5-15 6.5-19 0z"/><path class="marca-pez" d="M27.5 17l6-4.5v9z"/><circle class="marca-ojo" cx="13.5" cy="16" r="1.4"/><path class="marca-ola" d="M5 28c3.5-3.2 6.5-3.2 10 0s6.5 3.2 10 0 6.5-3.2 10 0"/></svg></a>
+  <a href="/" class="enlace-marca" aria-label="Costaviva, ir al mapa" data-i18n-aria-label="comun.ir_al_mapa"><svg class="marca-logo" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><circle class="marca-fondo" cx="20" cy="20" r="19"/><path class="marca-pez" d="M9 17c4-6.5 14-6.5 19 0-5 6.5-15 6.5-19 0z"/><path class="marca-pez" d="M27.5 17l6-4.5v9z"/><circle class="marca-ojo" cx="13.5" cy="16" r="1.4"/><path class="marca-ola" d="M5 28c3.5-3.2 6.5-3.2 10 0s6.5 3.2 10 0 6.5-3.2 10 0"/></svg></a>
   <div class="titulos">
-    <h1>🆘 Alarma</h1>
-    <p>Aviso a tus contactos y llamada rápida al 112.</p>
+    <h1 data-i18n="alarma.titulo">🆘 Alarma</h1>
+    <p data-i18n="alarma.subtitulo">Aviso a tus contactos y llamada rápida al 112.</p>
   </div>
-  <a id="enlaceAdmin" class="cuenta-menu-btn" href="/admin.html" title="Admin" aria-label="Administración" style="display:none;">⚙️</a>
+  <a id="enlaceAdmin" class="cuenta-menu-btn" href="/admin.html" title="Admin" aria-label="Administración" style="display:none;" data-i18n-aria-label="comun.administracion" data-i18n-title="comun.admin">⚙️</a>
   <div class="cuenta-menu-wrap">
-    <button class="cuenta-menu-btn" id="btnCuentaMenu" type="button" aria-label="Cuenta">👤</button>
+    <button class="cuenta-menu-btn" id="btnCuentaMenu" type="button" aria-label="Cuenta" data-i18n-aria-label="comun.cuenta">👤</button>
     <div class="cuenta-menu-dropdown" id="cuentaMenuDropdown">
-      <button type="button" id="btnInvitarAmigo">📤 Invitar a un amigo</button>
-      <button type="button" id="btnMiSuscripcion">💳 Mi suscripción</button>
-      <button type="button" id="btnCerrarSesion">🚪 Cerrar sesión</button>
+      <button type="button" id="btnInvitarAmigo" data-i18n="comun.menu.invitar_amigo">📤 Invitar a un amigo</button>
+      <button type="button" id="btnMiSuscripcion" data-i18n="comun.menu.suscripcion">💳 Mi suscripción</button>
+      <button type="button" id="btnCerrarSesion" data-i18n="comun.menu.cerrar_sesion">🚪 Cerrar sesión</button>
+      <div data-i18n-selector></div>
     </div>
   </div>
 </header>
 
 <div class="contenido">
   <div class="seccion">
-    <h2>Activar SOS</h2>
-    <p class="explicacion">Manda tu ubicación por email a tus contactos de emergencia registrados abajo y te prepara un WhatsApp para cada contacto de tu lista.</p>
-    <button class="sos" id="btnSOS">🆘 Activar SOS</button>
-    <div class="coords-actuales" id="coordsActuales">Ubicación no obtenida todavía</div>
-    <button class="compartir" id="btnCompartir">📤 Compartir ubicación por WhatsApp/SMS/email</button>
+    <h2 data-i18n="alarma.activar_titulo">Activar SOS</h2>
+    <p class="explicacion" data-i18n="alarma.activar_explica">Manda tu ubicación por email a tus contactos de emergencia registrados abajo y te prepara un WhatsApp para cada contacto de tu lista.</p>
+    <button class="sos" id="btnSOS" data-i18n="alarma.activar_boton">🆘 Activar SOS</button>
+    <div class="coords-actuales" id="coordsActuales" data-i18n="alarma.ubicacion_pendiente">Ubicación no obtenida todavía</div>
+    <button class="compartir" id="btnCompartir" data-i18n="alarma.compartir_ubicacion">📤 Compartir ubicación por WhatsApp/SMS/email</button>
     <div class="mensaje" id="mensajeSOS" role="status" aria-live="polite"></div>
 
     <div class="panel-whatsapp" id="panelWhatsapp" hidden>
-      <h3 id="tituloPanelWhatsapp" tabindex="-1">Avisa también por WhatsApp</h3>
-      <p class="nota">El email sale solo. <b>WhatsApp no:</b> cada botón abre WhatsApp con el mensaje y tu ubicación ya escritos, y tienes que pulsar <b>Enviar</b>. Vuelve aquí para el siguiente.</p>
+      <h3 id="tituloPanelWhatsapp" tabindex="-1" data-i18n="alarma.whatsapp_titulo">Avisa también por WhatsApp</h3>
+      <p class="nota" data-i18n-html="alarma.whatsapp_explica">El email sale solo. <b>WhatsApp no:</b> cada botón abre WhatsApp con el mensaje y tu ubicación ya escritos, y tienes que pulsar <b>Enviar</b>. Vuelve aquí para el siguiente.</p>
       <div id="botonesWhatsapp"></div>
-      <button type="button" class="boton-wa grupo" id="btnWhatsappGrupo">👥 Compartir en un grupo de WhatsApp</button>
+      <button type="button" class="boton-wa grupo" id="btnWhatsappGrupo" data-i18n="alarma.whatsapp_grupo">👥 Compartir en un grupo de WhatsApp</button>
     </div>
 
-    <a class="llamar112" href="tel:112">📞 Llamar al 112</a>
-    <p class="explicacion" style="margin-top:8px; margin-bottom:0;">Esto abre el marcador de tu teléfono — no es una llamada ni un aviso automático. No existe forma de avisar al 112 en silencio desde una web: solo lo puede integrar quien tenga acuerdo oficial con el servicio de emergencias.</p>
+    <a class="llamar112" href="tel:112" data-i18n="alarma.llamar_112">📞 Llamar al 112</a>
+    <p class="explicacion" style="margin-top:8px; margin-bottom:0;" data-i18n="alarma.llamar_explica">Esto abre el marcador de tu teléfono — no es una llamada ni un aviso automático. No existe forma de avisar al 112 en silencio desde una web: solo lo puede integrar quien tenga acuerdo oficial con el servicio de emergencias.</p>
   </div>
 
   <div class="seccion">
-    <h2>Contactos de emergencia</h2>
-    <p class="explicacion">Con email, reciben un email con tu ubicación en cuanto pulsas "Activar SOS". Con WhatsApp, forman tu lista de WhatsApp: tras el SOS te sale un botón para cada uno con el mensaje preparado (lo envías tú).</p>
+    <h2 data-i18n="alarma.contactos_titulo">Contactos de emergencia</h2>
+    <p class="explicacion" data-i18n="alarma.contactos_explica">Con email, reciben un email con tu ubicación en cuanto pulsas "Activar SOS". Con WhatsApp, forman tu lista de WhatsApp: tras el SOS te sale un botón para cada uno con el mensaje preparado (lo envías tú).</p>
     <div id="listaContactos"></div>
-    <h3 class="subtitulo">Añadir contacto</h3>
-    <button type="button" class="agenda-boton" id="btnAgenda" hidden>📇 Elegir de la agenda</button>
-    <p class="ayuda" id="notaAgenda" hidden>Tu navegador no deja abrir la agenda: escribe el contacto a mano.</p>
+    <h3 class="subtitulo" data-i18n="alarma.anadir_contacto">Añadir contacto</h3>
+    <button type="button" class="agenda-boton" id="btnAgenda" hidden data-i18n="alarma.agenda">📇 Elegir de la agenda</button>
+    <p class="ayuda" id="notaAgenda" hidden data-i18n="alarma.agenda_no">Tu navegador no deja abrir la agenda: escribe el contacto a mano.</p>
     <div class="revision-agenda" id="revisionAgenda" hidden>
-      <h4 id="tituloRevisionAgenda" tabindex="-1">Revisa antes de guardar</h4>
-      <p class="ayuda">Solo se guarda lo que dejes marcado: el nombre, un email y un WhatsApp de cada contacto.</p>
+      <h4 id="tituloRevisionAgenda" tabindex="-1" data-i18n="alarma.revisa">Revisa antes de guardar</h4>
+      <p class="ayuda" data-i18n="alarma.revisa_explica">Solo se guarda lo que dejes marcado: el nombre, un email y un WhatsApp de cada contacto.</p>
       <div id="listaElegidos"></div>
       <div class="mensaje" id="mensajeAgenda" role="status" aria-live="polite"></div>
       <div class="botones">
-        <button type="button" class="principal" id="btnGuardarElegidos">Guardar</button>
-        <button type="button" class="descartar" id="btnDescartarElegidos">Descartar</button>
+        <button type="button" class="principal" id="btnGuardarElegidos" data-i18n="alarma.guardar">Guardar</button>
+        <button type="button" class="descartar" id="btnDescartarElegidos" data-i18n="alarma.descartar">Descartar</button>
       </div>
     </div>
-    <p class="ayuda" id="oManual" hidden>Solo llegan a Costaviva los contactos que marques en la agenda. O escríbelo a mano:</p>
-    <label for="contactoNombre">Nombre</label>
+    <p class="ayuda" id="oManual" hidden data-i18n="alarma.solo_marcados">Solo llegan a Costaviva los contactos que marques en la agenda. O escríbelo a mano:</p>
+    <label for="contactoNombre" data-i18n="alarma.nombre">Nombre</label>
     <input type="text" id="contactoNombre" autocomplete="off" maxlength="60" />
-    <label for="contactoEmail">Email (opcional si pones WhatsApp)</label>
+    <label for="contactoEmail" data-i18n="alarma.email_opcional">Email (opcional si pones WhatsApp)</label>
     <input type="email" id="contactoEmail" autocomplete="off" />
-    <label for="contactoWhatsapp">WhatsApp (opcional si pones email)</label>
+    <label for="contactoWhatsapp" data-i18n="alarma.whatsapp_opcional">WhatsApp (opcional si pones email)</label>
     <input type="tel" id="contactoWhatsapp" inputmode="tel" autocomplete="off" placeholder="612 34 56 78" aria-describedby="ayudaWhatsapp" />
-    <div class="ayuda" id="ayudaWhatsapp" aria-live="polite">Sin prefijo se entiende España (+34). De otro país, empieza por + y su prefijo (+33…).</div>
-    <button class="principal" id="btnAnadirContacto">Añadir contacto</button>
+    <div class="ayuda" id="ayudaWhatsapp" aria-live="polite" data-i18n="alarma.prefijo">Sin prefijo se entiende España (+34). De otro país, empieza por + y su prefijo (+33…).</div>
+    <button class="principal" id="btnAnadirContacto" data-i18n="alarma.anadir_contacto">Añadir contacto</button>
     <div class="mensaje" id="mensajeContacto" role="status" aria-live="polite"></div>
 
-    <h3 class="subtitulo">Tu nombre en el WhatsApp</h3>
-    <label for="nombreFirma">Así empieza el mensaje: "🆘 SOS de …"</label>
-    <input type="text" id="nombreFirma" autocomplete="name" maxlength="40" placeholder="Tu nombre" />
-    <div class="ayuda">Se guarda solo en este teléfono. Si lo dejas vacío, va tu email.</div>
+    <h3 class="subtitulo" data-i18n="alarma.tu_nombre_titulo">Tu nombre en el WhatsApp</h3>
+    <label for="nombreFirma" data-i18n="alarma.tu_nombre_explica">Así empieza el mensaje: "🆘 SOS de …"</label>
+    <input type="text" id="nombreFirma" autocomplete="name" maxlength="40" placeholder="Tu nombre" data-i18n-placeholder="alarma.tu_nombre_ph" />
+    <div class="ayuda" data-i18n="alarma.tu_nombre_local">Se guarda solo en este teléfono. Si lo dejas vacío, va tu email.</div>
   </div>
 
   <div class="seccion">
     <div class="interruptor-fila">
-      <h2 style="margin:0;">Detección de caída (experimental)</h2>
+      <h2 style="margin:0;" data-i18n="alarma.caida_titulo">Detección de caída (experimental)</h2>
       <label class="interruptor">
         <input type="checkbox" id="checkDeteccionCaida" />
         <span class="pista"></span>
       </label>
     </div>
-    <div class="aviso-caida">
+    <div class="aviso-caida" data-i18n-html="alarma.caida_aviso">
       ⚠️ Solo funciona con esta pantalla abierta y visible, con el teléfono desbloqueado — los navegadores cortan el acceso a los sensores en segundo plano o con la pantalla apagada. <b>No sustituye</b> a la detección de caídas nativa de tu iPhone/Apple Watch o Android — actívala también en los ajustes de tu teléfono, esa sí funciona siempre.
     </div>
     <div class="mensaje" id="mensajeCaida"></div>
@@ -281,17 +287,17 @@
 </div>
 
 <div class="cuenta-atras-overlay" id="overlayCaida">
-  <div>Se ha detectado un posible golpe.<br>¿Estás bien?</div>
+  <div data-i18n-html="alarma.golpe">Se ha detectado un posible golpe.<br>¿Estás bien?</div>
   <div class="numero" id="numeroCuentaAtras">15</div>
-  <button class="cancelar" id="btnCancelarSOS">Estoy bien, cancelar</button>
-  <p class="nota-cuenta-atras">Si no cancelas, sale solo el email con tu ubicación a tus contactos. Los WhatsApp de tu lista quedan preparados en pantalla, pero hay que pulsar Enviar en cada uno.</p>
+  <button class="cancelar" id="btnCancelarSOS" data-i18n="alarma.estoy_bien">Estoy bien, cancelar</button>
+  <p class="nota-cuenta-atras" data-i18n="alarma.golpe_explica">Si no cancelas, sale solo el email con tu ubicación a tus contactos. Los WhatsApp de tu lista quedan preparados en pantalla, pero hay que pulsar Enviar en cada uno.</p>
 </div>
 
 <nav class="tabs-nav">
-  <a href="/"><span class="icono"><svg class="ico-mapa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span>Mapa</a>
-  <a href="/diario.html"><span class="icono"><svg class="ico-diario" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A2 2 0 0 1 6 2.5h14V19H6a2 2 0 0 0-2 2V4.5z"/><path d="M4 19a2 2 0 0 1 2-2h14"/></svg></span>Diario</a>
-  <a href="/alarma.html" class="activa"><span class="icono"><svg class="ico-alarma" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 2.5 20h19L12 3.2z"/><line x1="12" y1="9.5" x2="12" y2="14"/><circle cx="12" cy="17" r="0.9" fill="currentColor" stroke="none"/></svg></span>Alarma</a>
-  <a href="/grupos.html"><span class="icono"><svg class="ico-grupos" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.3 19.5c0-3.5 2.6-5.7 5.7-5.7s5.7 2.2 5.7 5.7"/><circle cx="17" cy="9" r="2.6"/><path d="M15.3 13.9c2.5.4 4.2 2.3 4.2 5.6"/></svg><span class="punto-novedades-grupos" id="puntoNovedadesGrupos" hidden></span></span>Grupos</a>
+  <a href="/"><span class="icono"><svg class="ico-mapa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span><span data-i18n="comun.tab.mapa">Mapa</span></a>
+  <a href="/diario.html"><span class="icono"><svg class="ico-diario" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A2 2 0 0 1 6 2.5h14V19H6a2 2 0 0 0-2 2V4.5z"/><path d="M4 19a2 2 0 0 1 2-2h14"/></svg></span><span data-i18n="comun.tab.diario">Diario</span></a>
+  <a href="/alarma.html" class="activa"><span class="icono"><svg class="ico-alarma" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 2.5 20h19L12 3.2z"/><line x1="12" y1="9.5" x2="12" y2="14"/><circle cx="12" cy="17" r="0.9" fill="currentColor" stroke="none"/></svg></span><span data-i18n="comun.tab.alarma">Alarma</span></a>
+  <a href="/grupos.html"><span class="icono"><svg class="ico-grupos" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.3 19.5c0-3.5 2.6-5.7 5.7-5.7s5.7 2.2 5.7 5.7"/><circle cx="17" cy="9" r="2.6"/><path d="M15.3 13.9c2.5.4 4.2 2.3 4.2 5.6"/></svg><span class="punto-novedades-grupos" id="puntoNovedadesGrupos" hidden></span></span><span data-i18n="comun.tab.grupos">Grupos</span></a>
 </nav>
 
 <script src="/assets/js/errores.js"></script>
@@ -370,12 +376,12 @@ document.getElementById("btnCuentaMenu").addEventListener("click", (e) => {
 });
 document.addEventListener("click", () => document.getElementById("cuentaMenuDropdown").classList.remove("visible"));
 document.getElementById("btnInvitarAmigo").addEventListener("click", async () => {
-  const texto = "Échale un ojo a Costaviva, la app de condiciones costeras y diario de pesca que estoy usando: https://costaviva.org/";
+  const texto = I18n.t("comun.compartir_app");
   if (navigator.share) {
     try { await navigator.share({ text: texto }); } catch (e) { /* usuario canceló */ }
   } else {
     await navigator.clipboard.writeText(texto);
-    alert("Tu navegador no soporta compartir directamente — el texto se copió al portapapeles.");
+    alert(I18n.t("comun.copiado_portapapeles"));
   }
 });
 
@@ -387,10 +393,13 @@ function actualizarUbicacion() {
   navigator.geolocation.getCurrentPosition(
     (pos) => {
       ultimaPosicion = posicionDe(pos);
-      document.getElementById("coordsActuales").textContent = `${ultimaPosicion.lat.toFixed(5)}°N, ${ultimaPosicion.lon.toFixed(5)}°`;
+      // Idioma por región: la próxima vez, el de donde está el usuario.
+      I18n.recordarPosicion(ultimaPosicion.lat, ultimaPosicion.lon);
+      // Hemisferio sur (Nueva Zelanda): °S en vez de un "-41.2°N".
+      document.getElementById("coordsActuales").textContent = `${Math.abs(ultimaPosicion.lat).toFixed(5)}°${ultimaPosicion.lat < 0 ? "S" : "N"}, ${ultimaPosicion.lon.toFixed(5)}°`;
     },
     (err) => {
-      document.getElementById("coordsActuales").textContent = "No se pudo obtener tu ubicación — revisa el permiso de localización.";
+      document.getElementById("coordsActuales").textContent = I18n.t("alarma.sin_ubicacion");
     },
     { enableHighAccuracy: true, timeout: 10000 }
   );
@@ -409,7 +418,7 @@ async function dispararSOS(tipo) {
       ultimaPosicion = posicionDe(pos);
     } catch (e) {
       mensajeEl.className = "mensaje error";
-      mensajeEl.textContent = "No se pudo obtener tu ubicación, así que no ha salido el email. Revisa el permiso de localización del navegador. Puedes avisar por WhatsApp sin ubicación o llamar al 112.";
+      mensajeEl.textContent = I18n.t("alarma.sin_ubicacion_sos");
       btn.disabled = false;
       mostrarPanelWhatsapp(tipo, null);
       return;
@@ -432,14 +441,14 @@ async function dispararSOS(tipo) {
     if (!resp.ok) throw new Error(datos.error || "fallo al enviar el aviso");
     if (!datos.enviados && datos.error) {
       mensajeEl.className = "mensaje error";
-      mensajeEl.textContent = `No ha salido ningún email: ${datos.error}.`;
+      mensajeEl.textContent = I18n.t("alarma.ningun_email", { error: datos.error });
     } else {
       mensajeEl.className = "mensaje ok";
-      mensajeEl.textContent = `Email enviado a ${datos.enviados ?? 0} contacto(s).`;
+      mensajeEl.textContent = I18n.t("alarma.email_enviado", { n: datos.enviados ?? 0 });
     }
   } catch (e) {
     mensajeEl.className = "mensaje error";
-    mensajeEl.textContent = "No se pudo enviar el email automático (" + e.message + "). Usa los botones de WhatsApp, 'Compartir ubicación' o llama al 112.";
+    mensajeEl.textContent = I18n.t("alarma.error_email", { error: e.message });
   }
   btn.disabled = false;
 }
@@ -450,13 +459,13 @@ document.getElementById("btnCompartir").addEventListener("click", async () => {
   if (!ultimaPosicion) actualizarUbicacion();
   const lat = ultimaPosicion?.lat, lon = ultimaPosicion?.lon;
   const texto = lat
-    ? `Necesito ayuda. Mi ubicación: https://maps.google.com/?q=${lat},${lon}`
-    : "Necesito ayuda, no pude obtener mi ubicación exacta.";
+    ? I18n.t("alarma.ayuda_ubicacion", { url: `https://maps.google.com/?q=${lat},${lon}` })
+    : I18n.t("alarma.ayuda_sin_ubicacion");
   if (navigator.share) {
     try { await navigator.share({ text: texto }); } catch (e) { /* usuario canceló */ }
   } else {
     await navigator.clipboard.writeText(texto);
-    alert("Tu navegador no soporta compartir directamente — el texto se copió al portapapeles.");
+    alert(I18n.t("comun.copiado_portapapeles"));
   }
 });
 
@@ -491,7 +500,7 @@ function mostrarPanelWhatsapp(tipo, posicion) {
   if (!lista.length) {
     const p = document.createElement("p");
     p.className = "vacio";
-    p.textContent = "No tienes contactos con WhatsApp en tu lista. Añádelos abajo, en \"Contactos de emergencia\". Mientras tanto, compártelo en un chat o grupo:";
+    p.textContent = I18n.t("alarma.sin_contactos_wa");
     cont.appendChild(p);
   }
   for (const c of lista) {
@@ -500,11 +509,11 @@ function mostrarPanelWhatsapp(tipo, posicion) {
     a.href = urlWhatsApp(c.whatsapp, textoWhatsappActual);
     a.target = "_blank";
     a.rel = "noopener";
-    a.textContent = `💬 Enviar a ${c.nombre} por WhatsApp`;
-    a.setAttribute("aria-label", `Abrir WhatsApp con el mensaje de SOS para ${c.nombre}, ${formatearTelefono(c.whatsapp)}. Tendrás que pulsar Enviar.`);
+    a.textContent = I18n.t("alarma.enviar_a", { nombre: c.nombre });
+    a.setAttribute("aria-label", I18n.t("alarma.enviar_a_aria", { nombre: c.nombre, telefono: formatearTelefono(c.whatsapp) }));
     a.addEventListener("click", () => {
       a.classList.add("enviado");
-      a.textContent = `✓ Abierto para ${c.nombre}: pulsa Enviar en WhatsApp`;
+      a.textContent = I18n.t("alarma.abierto_para", { nombre: c.nombre });
       registrarEvento("sos_whatsapp", { tipo });
     });
     cont.appendChild(a);
@@ -540,7 +549,7 @@ function mensaje(el, clase, texto) {
 function errorContacto(error, porDefecto) {
   const texto = `${error?.code || ""} ${error?.message || ""}`;
   if (/PGRST204|whatsapp|23502|23514/i.test(texto)) {
-    return "Guardar WhatsApp aún no está activado en el servidor. De momento guarda el contacto solo con email.";
+    return I18n.t("alarma.wa_no_activado");
   }
   return traducirError(error, porDefecto);
 }
@@ -549,12 +558,12 @@ function ayudaTelefono(input, ayuda) {
   const valor = input.value.trim();
   if (!valor) {
     ayuda.className = "ayuda";
-    ayuda.textContent = "Sin prefijo se entiende España (+34). De otro país, empieza por + y su prefijo (+33…).";
+    ayuda.textContent = I18n.t("alarma.prefijo");
     return;
   }
   const r = normalizarTelefono(valor);
   ayuda.className = r.ok ? "ayuda ok" : "ayuda error";
-  ayuda.textContent = r.ok ? `Se guardará como ${formatearTelefono(r.e164)}` : r.error;
+  ayuda.textContent = r.ok ? I18n.t("alarma.se_guardara", { tel: formatearTelefono(r.e164) }) : r.error;
 }
 const inputWhatsapp = document.getElementById("contactoWhatsapp");
 const ayudaWhatsapp = document.getElementById("ayudaWhatsapp");
@@ -571,7 +580,7 @@ function editorWhatsapp(c, tarjeta) {
   if (tarjeta.querySelector(".editor-wa")) return;
   const caja = crear("div", "editor-wa");
   const idCampo = `wa-${c.id}`;
-  const label = crear("label", null, `WhatsApp de ${c.nombre}`);
+  const label = crear("label", null, I18n.t("alarma.wa_de", { nombre: c.nombre }));
   label.htmlFor = idCampo;
   const input = crear("input");
   input.type = "tel";
@@ -584,13 +593,13 @@ function editorWhatsapp(c, tarjeta) {
   input.addEventListener("input", () => ayudaTelefono(input, ayuda));
   ayudaTelefono(input, ayuda);
   const botones = crear("div", "botones");
-  const guardar = crear("button", "guardar", "Guardar");
+  const guardar = crear("button", "guardar", I18n.t("alarma.guardar"));
   guardar.type = "button";
-  const cancelar = crear("button", "cancelar", "Cancelar");
+  const cancelar = crear("button", "cancelar", I18n.t("comun.cancelar"));
   cancelar.type = "button";
   botones.append(guardar, cancelar);
   if (c.whatsapp && c.email) {
-    const quitar = crear("button", "cancelar", "Quitar");
+    const quitar = crear("button", "cancelar", I18n.t("alarma.quitar"));
     quitar.type = "button";
     quitar.addEventListener("click", () => guardarWhatsapp(c, null, ayuda));
     botones.append(quitar);
@@ -610,7 +619,7 @@ async function guardarWhatsapp(c, e164, ayuda) {
   const { error } = await supabase.from("contactos_emergencia").update({ whatsapp: e164 }).eq("id", c.id);
   if (error) {
     ayuda.className = "ayuda error";
-    ayuda.textContent = errorContacto(error, "No se ha podido guardar el WhatsApp. Inténtalo de nuevo.");
+    ayuda.textContent = errorContacto(error, I18n.t("alarma.error_wa"));
     return;
   }
   cargarContactos();
@@ -620,9 +629,9 @@ async function cargarContactos() {
   const { data, error } = await supabase.from("contactos_emergencia").select("*").order("creado_en");
   const cont = document.getElementById("listaContactos");
   cont.replaceChildren();
-  if (error) { cont.appendChild(crear("p", "explicacion", traducirError(error, "No se han podido cargar tus contactos. Recarga la página."))); return; }
+  if (error) { cont.appendChild(crear("p", "explicacion", traducirError(error, I18n.t("alarma.error_cargar")))); return; }
   contactos = data || [];
-  if (!contactos.length) { cont.appendChild(crear("p", "explicacion", "Todavía no has añadido ningún contacto.")); return; }
+  if (!contactos.length) { cont.appendChild(crear("p", "explicacion", I18n.t("alarma.sin_contactos"))); return; }
   for (const c of contactos) {
     const tarjeta = crear("div", "contacto");
     const fila = crear("div", "fila");
@@ -631,15 +640,15 @@ async function cargarContactos() {
     if (c.email) info.appendChild(crear("div", "email", `✉️ ${c.email}`));
     if (c.whatsapp) info.appendChild(crear("div", "wa", `💬 ${formatearTelefono(c.whatsapp)}`));
     const acciones = crear("div", "acciones");
-    const editar = crear("button", "editar-wa", c.whatsapp ? "Cambiar WhatsApp" : "+ WhatsApp");
+    const editar = crear("button", "editar-wa", c.whatsapp ? I18n.t("alarma.cambiar_wa") : "+ WhatsApp");
     editar.type = "button";
-    editar.setAttribute("aria-label", `${c.whatsapp ? "Cambiar" : "Añadir"} el WhatsApp de ${c.nombre}`);
+    editar.setAttribute("aria-label", I18n.t(c.whatsapp ? "alarma.cambiar_wa_aria" : "alarma.anadir_wa_aria", { nombre: c.nombre }));
     editar.addEventListener("click", () => editorWhatsapp(c, tarjeta));
-    const borrar = crear("button", "borrar", "Borrar");
+    const borrar = crear("button", "borrar", I18n.t("alarma.borrar"));
     borrar.type = "button";
-    borrar.setAttribute("aria-label", `Borrar a ${c.nombre}`);
+    borrar.setAttribute("aria-label", I18n.t("alarma.borrar_aria", { nombre: c.nombre }));
     borrar.addEventListener("click", async () => {
-      if (!confirm(`¿Borrar a ${c.nombre} de tus contactos de emergencia?`)) return;
+      if (!confirm(I18n.t("alarma.confirmar_borrar", { nombre: c.nombre }))) return;
       await supabase.from("contactos_emergencia").delete().eq("id", c.id);
       cargarContactos();
     });
@@ -655,8 +664,8 @@ document.getElementById("btnAnadirContacto").addEventListener("click", async () 
   const nombre = document.getElementById("contactoNombre").value.trim();
   const email = document.getElementById("contactoEmail").value.trim();
   const telefono = inputWhatsapp.value.trim();
-  if (!nombre) { mensaje(mensajeEl, "error", "Escribe el nombre del contacto."); return; }
-  if (!email && !telefono) { mensaje(mensajeEl, "error", "Pon al menos un email o un WhatsApp."); return; }
+  if (!nombre) { mensaje(mensajeEl, "error", I18n.t("alarma.escribe_nombre")); return; }
+  if (!email && !telefono) { mensaje(mensajeEl, "error", I18n.t("alarma.email_o_wa")); return; }
   const fila = { user_id: usuario.id, nombre, email: email || null };
   if (telefono) {
     const r = normalizarTelefono(telefono);
@@ -665,14 +674,14 @@ document.getElementById("btnAnadirContacto").addEventListener("click", async () 
   }
   const { error } = await supabase.from("contactos_emergencia").insert(fila);
   if (error) {
-    mensaje(mensajeEl, "error", errorContacto(error, "No se ha podido guardar el contacto. Inténtalo de nuevo."));
+    mensaje(mensajeEl, "error", errorContacto(error, I18n.t("alarma.error_contacto")));
     return;
   }
   document.getElementById("contactoNombre").value = "";
   document.getElementById("contactoEmail").value = "";
   inputWhatsapp.value = "";
   ayudaTelefono(inputWhatsapp, ayudaWhatsapp);
-  mensaje(mensajeEl, "ok", "Contacto añadido.");
+  mensaje(mensajeEl, "ok", I18n.t("alarma.contactos_anadidos", { n: 1 }));
   cargarContactos();
 });
 
@@ -708,14 +717,14 @@ if (agendaDisponible({ navigator, window, isSecureContext: window.isSecureContex
 btnAgenda.addEventListener("click", async () => {
   mensaje(mensajeAgenda, null, "");
   if (!propiedadesAgenda.length) {
-    mensaje(document.getElementById("mensajeContacto"), "error", "Tu teléfono no comparte nombre, email ni teléfono de la agenda. Escribe el contacto a mano.");
+    mensaje(document.getElementById("mensajeContacto"), "error", I18n.t("alarma.agenda_sin_datos"));
     return;
   }
   let seleccion;
   try {
     seleccion = await navigator.contacts.select(propiedadesAgenda, { multiple: true });
   } catch (e) {
-    mensaje(document.getElementById("mensajeContacto"), "error", "No se ha podido abrir la agenda. Escribe el contacto a mano.");
+    mensaje(document.getElementById("mensajeContacto"), "error", I18n.t("alarma.agenda_error"));
     return;
   }
   if (!seleccion || !seleccion.length) return; // ha cerrado la agenda sin elegir
@@ -756,7 +765,7 @@ function grupoOpciones(nombreGrupo, leyenda, opciones, marcada, textoNinguna) {
 function contarMarcados() {
   const n = elegidos.filter((e) => e.check.checked).length;
   btnGuardarElegidos.disabled = n === 0;
-  btnGuardarElegidos.textContent = n === 1 ? "Guardar 1 contacto" : `Guardar ${n} contactos`;
+  btnGuardarElegidos.textContent = I18n.t("alarma.guardar_n", { n });
 }
 
 function mostrarElegidos(filas) {
@@ -769,11 +778,11 @@ function mostrarElegidos(filas) {
     const duplicado = yaGuardado(fila, contactos);
     const guardable = !!(fila.email || fila.whatsapp);
     check.checked = guardable && !duplicado;
-    cabeza.append(check, document.createTextNode("Guardar este contacto"));
+    cabeza.append(check, document.createTextNode(I18n.t("alarma.guardar_este")));
     tarjeta.appendChild(cabeza);
 
     const idNombre = `agendaNombre${i}`;
-    const lNombre = crear("label", null, "Nombre");
+    const lNombre = crear("label", null, I18n.t("alarma.nombre"));
     lNombre.htmlFor = idNombre;
     const nombre = crear("input");
     nombre.type = "text";
@@ -785,31 +794,31 @@ function mostrarElegidos(filas) {
 
     let email = () => null;
     if (fila.emails.length) {
-      const g = grupoOpciones(`agendaEmail${i}`, fila.emails.length > 1 ? "Email (elige uno)" : "Email",
-        fila.emails.map((e) => ({ valor: e, texto: e, valida: true })), fila.email, "Sin email");
+      const g = grupoOpciones(`agendaEmail${i}`, fila.emails.length > 1 ? I18n.t("alarma.email_elige") : "Email",
+        fila.emails.map((e) => ({ valor: e, texto: e, valida: true })), fila.email, I18n.t("alarma.sin_email"));
       tarjeta.appendChild(g.fs);
       email = g.valor;
     } else {
-      tarjeta.appendChild(crear("p", "sin-datos", "Sin email en la agenda."));
+      tarjeta.appendChild(crear("p", "sin-datos", I18n.t("alarma.sin_email_agenda")));
     }
 
     let whatsapp = () => null;
     const validos = fila.telefonos.filter((t) => t.ok).length;
     if (fila.telefonos.length) {
-      const g = grupoOpciones(`agendaTel${i}`, validos > 1 ? "WhatsApp (elige el móvil)" : "WhatsApp",
+      const g = grupoOpciones(`agendaTel${i}`, validos > 1 ? I18n.t("alarma.wa_elige") : "WhatsApp",
         fila.telefonos.map((t) => ({
           valor: t.e164,
           valida: t.ok,
           texto: t.ok ? formatearTelefono(t.e164) : `${t.original} — ${t.error}`,
-        })), fila.whatsapp, "Sin WhatsApp");
+        })), fila.whatsapp, I18n.t("alarma.sin_wa"));
       tarjeta.appendChild(g.fs);
       whatsapp = g.valor;
     } else {
-      tarjeta.appendChild(crear("p", "sin-datos", "Sin teléfono en la agenda."));
+      tarjeta.appendChild(crear("p", "sin-datos", I18n.t("alarma.sin_tel_agenda")));
     }
 
-    if (duplicado) tarjeta.appendChild(crear("div", "aviso-dup", "Ya está en tu lista de contactos. Márcalo solo si quieres guardarlo otra vez."));
-    if (!guardable) tarjeta.appendChild(crear("div", "aviso-dup", "No tiene email ni un teléfono válido: añádelo a mano."));
+    if (duplicado) tarjeta.appendChild(crear("div", "aviso-dup", I18n.t("alarma.duplicado")));
+    if (!guardable) tarjeta.appendChild(crear("div", "aviso-dup", I18n.t("alarma.no_guardable")));
     const error = crear("div", "ayuda error");
     error.setAttribute("aria-live", "polite");
     tarjeta.appendChild(error);
@@ -843,17 +852,17 @@ btnGuardarElegidos.addEventListener("click", async () => {
     if (!r.ok) { e.error.textContent = r.error; primerError = primerError || e; continue; }
     filas.push(r.fila);
   }
-  if (primerError) { mensaje(mensajeAgenda, "error", "Revisa los contactos marcados en rojo."); primerError.nombre.focus(); return; }
+  if (primerError) { mensaje(mensajeAgenda, "error", I18n.t("alarma.revisa_rojo")); primerError.nombre.focus(); return; }
   if (!filas.length) return;
   btnGuardarElegidos.disabled = true;
   const { error } = await supabase.from("contactos_emergencia").insert(filas);
   if (error) {
     btnGuardarElegidos.disabled = false;
-    mensaje(mensajeAgenda, "error", errorContacto(error, "No se han podido guardar los contactos. Inténtalo de nuevo."));
+    mensaje(mensajeAgenda, "error", errorContacto(error, I18n.t("alarma.error_contactos")));
     return;
   }
   cerrarRevision();
-  mensaje(document.getElementById("mensajeContacto"), "ok", filas.length === 1 ? "Contacto añadido." : `${filas.length} contactos añadidos.`);
+  mensaje(document.getElementById("mensajeContacto"), "ok", I18n.t("alarma.contactos_anadidos", { n: filas.length }));
   cargarContactos();
 });
 
@@ -919,13 +928,13 @@ document.getElementById("checkDeteccionCaida").addEventListener("change", async 
         const permiso = await DeviceMotionEvent.requestPermission();
         if (permiso !== "granted") {
           mensajeEl.className = "mensaje error";
-          mensajeEl.textContent = "Permiso de sensores de movimiento denegado.";
+          mensajeEl.textContent = I18n.t("alarma.permiso_denegado");
           e.target.checked = false;
           return;
         }
       } catch (err) {
         mensajeEl.className = "mensaje error";
-        mensajeEl.textContent = "Tu navegador no permite pedir este permiso.";
+        mensajeEl.textContent = I18n.t("alarma.permiso_no");
         e.target.checked = false;
         return;
       }
@@ -933,7 +942,7 @@ document.getElementById("checkDeteccionCaida").addEventListener("change", async 
     window.addEventListener("devicemotion", alDetectarMovimiento);
     vigilandoCaida = true;
     mensajeEl.className = "mensaje ok";
-    mensajeEl.textContent = "Detección activa mientras esta pantalla esté abierta.";
+    mensajeEl.textContent = I18n.t("alarma.deteccion_activa");
   } else {
     window.removeEventListener("devicemotion", alDetectarMovimiento);
     vigilandoCaida = false;

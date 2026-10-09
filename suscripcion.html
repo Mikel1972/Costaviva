@@ -3,7 +3,11 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-<title>Mi suscripción — Costaviva</title>
+<!-- Idiomas (2026-10-09): diccionarios y I18n.t(); en español no cambia nada. Ver assets/js/i18n.js. -->
+<script src="/assets/i18n/es.js"></script>
+<script src="/assets/i18n/en.js"></script>
+<script src="/assets/js/i18n.js"></script>
+<title data-i18n="susc.titulo_pagina">Mi suscripción — Costaviva</title>
 <link rel="manifest" href="manifest.json" />
 <link rel="icon" href="icon.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="/assets/iconos/apple-touch-icon.png" />
@@ -91,60 +95,61 @@
     <source media="(orientation: landscape)" srcset="/assets/inicio/rompiente-ancha.webp" type="image/webp">
     <source media="(orientation: landscape)" srcset="/assets/inicio/rompiente-ancha.jpg">
     <source srcset="/assets/inicio/rompiente-movil.webp" type="image/webp">
-    <img class="pantalla-inicio__foto" src="/assets/inicio/rompiente-movil.jpg" width="720" height="1280" fetchpriority="high" alt="Ola rompiendo contra una costa rocosa mientras un pescador lanza su caña">
+    <img class="pantalla-inicio__foto" src="/assets/inicio/rompiente-movil.jpg" width="720" height="1280" fetchpriority="high" alt="Ola rompiendo contra una costa rocosa mientras un pescador lanza su caña" data-i18n-alt="comun.inicio.alt_foto">
   </picture>
   <div class="pantalla-inicio__marca">
     <svg class="marca-logo" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><circle class="marca-fondo" cx="20" cy="20" r="19"/><path class="marca-pez" d="M9 17c4-6.5 14-6.5 19 0-5 6.5-15 6.5-19 0z"/><path class="marca-pez" d="M27.5 17l6-4.5v9z"/><circle class="marca-ojo" cx="13.5" cy="16" r="1.4"/><path class="marca-ola" d="M5 28c3.5-3.2 6.5-3.2 10 0s6.5 3.2 10 0 6.5-3.2 10 0"/></svg>
     <p class="pantalla-inicio__nombre logotipo">Costaviva</p>
-    <p class="pantalla-inicio__frase">El mar de hoy, antes de salir a pescar</p>
-    <p class="pantalla-inicio__estado" role="status"><span class="pantalla-inicio__girando" aria-hidden="true"></span>Comprobando acceso…</p>
+    <p class="pantalla-inicio__frase" data-i18n="comun.inicio.frase">El mar de hoy, antes de salir a pescar</p>
+    <p class="pantalla-inicio__estado" role="status"><span class="pantalla-inicio__girando" aria-hidden="true"></span><span data-i18n="comun.inicio.comprobando">Comprobando acceso…</span></p>
   </div>
 </div>
 <!-- /pantalla-inicio -->
+<script>I18n.aplicarInicio();</script>
 
 <div class="caja" id="caja" style="display:none;">
-  <h1>Tu suscripción</h1>
-  <p class="sub" id="subEstado">Cargando estado de tu cuenta…</p>
+  <h1 data-i18n="susc.titulo">Tu suscripción</h1>
+  <p class="sub" id="subEstado" data-i18n="susc.cargando_estado">Cargando estado de tu cuenta…</p>
 
   <div id="mensajeEstado"></div>
 
-  <div id="bloqueConfirmando" class="confirmando" style="display:none;">Confirmando tu suscripción…</div>
+  <div id="bloqueConfirmando" class="confirmando" style="display:none;" data-i18n="susc.confirmando">Confirmando tu suscripción…</div>
 
   <div id="bloquePaywall" style="display:none;">
     <div class="plan" id="planMensual">
-      <p class="precio">3,99€ / mes <span class="badge-actual" id="badgeMensual" hidden>✓ Tu plan actual</span></p>
-      <p class="detalle">Renovación mensual automática. Puedes cancelar cuando quieras — el acceso sigue activo hasta el final del mes ya pagado, sin devolución de ese importe.</p>
-      <button type="button" id="btnMensual">Suscribirme mensual</button>
+      <p class="precio"><span data-i18n="susc.precio_mes">3,99€ / mes</span> <span class="badge-actual" id="badgeMensual" hidden data-i18n="susc.plan_actual">✓ Tu plan actual</span></p>
+      <p class="detalle" data-i18n="susc.mensual_explica">Renovación mensual automática. Puedes cancelar cuando quieras — el acceso sigue activo hasta el final del mes ya pagado, sin devolución de ese importe.</p>
+      <button type="button" id="btnMensual" data-i18n="susc.suscribirme_mensual">Suscribirme mensual</button>
     </div>
     <div class="plan" id="planAnual">
-      <p class="precio">39,99€ / año <span class="badge-actual" id="badgeAnual" hidden>✓ Tu plan actual</span></p>
-      <p class="detalle">Renovación anual automática. Puedes cancelar cuando quieras — el acceso sigue activo hasta el final del año ya pagado, pero ese importe no es reembolsable.</p>
+      <p class="precio"><span data-i18n="susc.precio_ano">39,99€ / año</span> <span class="badge-actual" id="badgeAnual" hidden data-i18n="susc.plan_actual">✓ Tu plan actual</span></p>
+      <p class="detalle" data-i18n="susc.anual_explica">Renovación anual automática. Puedes cancelar cuando quieras — el acceso sigue activo hasta el final del año ya pagado, pero ese importe no es reembolsable.</p>
       <label class="checkbox" id="labelCheckAnual">
         <input type="checkbox" id="checkAnual" />
-        Entiendo que, al contratar el plan anual, el servicio empieza de inmediato, renuncio a mi derecho de desistimiento de 14 días para esta compra, y el importe del año ya pagado no se reembolsa aunque cancele antes de que termine.
+        <span data-i18n="susc.anual_renuncia">Entiendo que, al contratar el plan anual, el servicio empieza de inmediato, renuncio a mi derecho de desistimiento de 14 días para esta compra, y el importe del año ya pagado no se reembolsa aunque cancele antes de que termine.</span>
       </label>
-      <button type="button" id="btnAnual" disabled>Suscribirme anual</button>
+      <button type="button" id="btnAnual" disabled data-i18n="susc.suscribirme_anual">Suscribirme anual</button>
     </div>
     <p class="nota-legal" id="notaInvitacion" hidden></p>
-    <p class="nota-legal" id="notaCodigoStripe">¿Tienes un código de descuento? Podrás introducirlo en la propia pantalla de pago de Stripe.</p>
-    <p class="gestionar"><a id="linkGestionar">Gestionar, cambiar o cancelar mi suscripción</a></p>
+    <p class="nota-legal" id="notaCodigoStripe" data-i18n="susc.codigo_descuento">¿Tienes un código de descuento? Podrás introducirlo en la propia pantalla de pago de Stripe.</p>
+    <p class="gestionar"><a id="linkGestionar" data-i18n="susc.gestionar">Gestionar, cambiar o cancelar mi suscripción</a></p>
   </div>
 
   <!-- "Invita a un amigo" (2026-10-09, aprobado por Mikel). Se rellena con
        mi_invitar_amigo(); si la función no está o está apagada, no se ve. -->
   <div id="bloqueAmigo" class="amigo" hidden>
-    <h2>🎁 Invita a un amigo</h2>
-    <p class="detalle">Cuando un amigo se apunte con tu enlace y pague su suscripción, tú ganas 1 mes gratis.</p>
-    <input type="text" id="enlaceAmigo" readonly aria-label="Tu enlace para invitar" />
+    <h2 data-i18n="susc.invita">🎁 Invita a un amigo</h2>
+    <p class="detalle" data-i18n="susc.invita_explica">Cuando un amigo se apunte con tu enlace y pague su suscripción, tú ganas 1 mes gratis.</p>
+    <input type="text" id="enlaceAmigo" readonly aria-label="Tu enlace para invitar" data-i18n-aria-label="susc.tu_enlace" />
     <div class="botones-amigo">
-      <button type="button" id="btnCopiarAmigo">Compartir enlace</button>
+      <button type="button" id="btnCopiarAmigo" data-i18n="susc.compartir_enlace">Compartir enlace</button>
       <a class="boton-wa" id="btnWhatsappAmigo" target="_blank" rel="noopener">WhatsApp</a>
     </div>
     <p class="detalle" id="resumenAmigo"></p>
     <ul class="reglas" id="reglasAmigo"></ul>
   </div>
 
-  <p class="volver"><a href="/">← Volver al mapa</a></p>
+  <p class="volver"><a href="/" data-i18n="susc.volver_mapa">← Volver al mapa</a></p>
 </div>
 
 <script type="module">
@@ -187,7 +192,7 @@ async function iniciarCheckout(plan) {
   if (resultado.url) {
     window.location.href = resultado.url;
   } else {
-    mostrarMensaje(resultado.error || "No se pudo iniciar el pago, inténtalo de nuevo.", "error");
+    mostrarMensaje(resultado.error || I18n.t("susc.error_pago"), "error");
   }
 }
 
@@ -199,7 +204,7 @@ async function abrirPortal() {
   });
   const resultado = await resp.json();
   if (resultado.url) window.location.href = resultado.url;
-  else mostrarMensaje(resultado.error || "No se pudo abrir la gestión de la suscripción.", "error");
+  else mostrarMensaje(resultado.error || I18n.t("susc.error_portal"), "error");
 }
 
 const btnMensual = document.getElementById("btnMensual");
@@ -229,19 +234,19 @@ function aplicarPlanActual(periodo) {
   if (periodo === "mensual") {
     document.getElementById("planMensual").classList.add("actual");
     document.getElementById("badgeMensual").hidden = false;
-    btnMensual.textContent = "Tu plan actual";
+    btnMensual.textContent = I18n.t("susc.tu_plan");
     btnMensual.disabled = true;
     document.getElementById("labelCheckAnual").style.display = "none";
-    btnAnual.textContent = "Cambiar a anual";
+    btnAnual.textContent = I18n.t("susc.cambiar_anual");
     btnAnual.disabled = false;
     btnAnual.dataset.accion = "cambiar";
   } else if (periodo === "anual") {
     document.getElementById("planAnual").classList.add("actual");
     document.getElementById("badgeAnual").hidden = false;
     document.getElementById("labelCheckAnual").style.display = "none";
-    btnAnual.textContent = "Tu plan actual";
+    btnAnual.textContent = I18n.t("susc.tu_plan");
     btnAnual.disabled = true;
-    btnMensual.textContent = "Cambiar a mensual";
+    btnMensual.textContent = I18n.t("susc.cambiar_mensual");
     btnMensual.disabled = false;
     btnMensual.dataset.accion = "cambiar";
   }
@@ -249,7 +254,7 @@ function aplicarPlanActual(periodo) {
 
 function formatearFecha(iso) {
   if (!iso) return null;
-  return new Date(iso).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" });
+  return new Date(iso).toLocaleDateString(I18n.locale(), { day: "numeric", month: "long", year: "numeric" });
 }
 
 async function comprobarEstado() {
@@ -274,7 +279,7 @@ async function esperarConfirmacion() {
     await new Promise((r) => setTimeout(r, 1500));
   }
   bloqueConfirmando.style.display = "none";
-  mostrarMensaje("Si ya has pagado, esto puede tardar unos segundos más — recarga la página en un momento.", "info");
+  mostrarMensaje(I18n.t("susc.puede_tardar"), "info");
   bloquePaywall.style.display = "block";
 }
 
@@ -294,32 +299,32 @@ async function iniciar() {
     return;
   }
   if (query.get("cancelado") === "1") {
-    mostrarMensaje("Pago cancelado — no se ha realizado ningún cargo.", "info");
+    mostrarMensaje(I18n.t("susc.pago_cancelado"), "info");
   }
 
   bloquePaywall.style.display = "block";
   const estado = await comprobarEstado();
   if (estado && estado.estado === "admin") {
-    subEstadoEl.textContent = "Tienes acceso de administrador, sin necesidad de suscripción.";
+    subEstadoEl.textContent = I18n.t("susc.admin");
   } else if (estado && estado.estado === "invitacion") {
     // Invitación del 100 % canjeada (2026-10-08, migración 20261008170000).
     subEstadoEl.textContent = estado.acceso_hasta
-      ? `Tienes Costaviva gratis por invitación hasta el ${formatearFecha(new Date(new Date(estado.acceso_hasta).getTime() - 1))}. Después, si quieres seguir, puedes suscribirte aquí.`
-      : "Tienes Costaviva gratis por invitación, para siempre.";
+      ? I18n.t("susc.invitacion_hasta", { fecha: formatearFecha(new Date(new Date(estado.acceso_hasta).getTime() - 1)) })
+      : I18n.t("susc.invitacion_siempre");
   } else if (estado && estado.estado === "permanente") {
     // Cuentas de public.accesos_permanentes (2026-10-01).
-    subEstadoEl.textContent = "Tienes acceso permanente a Costaviva, sin necesidad de suscripción.";
+    subEstadoEl.textContent = I18n.t("susc.permanente");
   } else if (estado && estado.periodo) {
     // Ya pasó por Checkout alguna vez (trialing/active de Stripe, no el
     // trial de la app) — se distingue de "solo en prueba" precisamente
     // porque tiene un periodo real. aplicarPlanActual() marca cuál es
     // y convierte el otro botón en "Cambiar a...".
-    subEstadoEl.textContent = `Tu plan: ${estado.periodo}, próxima renovación el ${formatearFecha(estado.periodo_actual_fin) || "—"}.`;
+    subEstadoEl.textContent = I18n.t("susc.tu_plan_renovacion", { plan: I18n.existe(`susc.periodo.${estado.periodo}`) ? I18n.t(`susc.periodo.${estado.periodo}`) : estado.periodo, fecha: formatearFecha(estado.periodo_actual_fin) || "—" });
     aplicarPlanActual(estado.periodo);
   } else if (estado && estado.con_acceso) {
-    subEstadoEl.textContent = `Estás en tu semana de prueba gratuita, hasta el ${formatearFecha(estado.prueba_termina_en)}. Si para entonces no te has suscrito, tu cuenta quedará desactivada.`;
+    subEstadoEl.textContent = I18n.t("susc.en_prueba", { fecha: formatearFecha(estado.prueba_termina_en) });
   } else {
-    subEstadoEl.textContent = "Tu prueba gratuita ha terminado y tu cuenta está desactivada. Tus datos siguen guardados: suscríbete para recuperarlo todo.";
+    subEstadoEl.textContent = I18n.t("susc.prueba_terminada");
   }
   await mostrarDescuentoInvitacion();
   await mostrarInvitarAmigo();
@@ -340,7 +345,7 @@ async function mostrarInvitarAmigo() {
     document.getElementById("btnCopiarAmigo").addEventListener("click", async (e) => {
       try {
         if (navigator.share) await navigator.share({ title: "Costaviva", text: mensajeParaCompartir(enlace) });
-        else { await navigator.clipboard.writeText(enlace); e.target.textContent = "¡Copiado!"; }
+        else { await navigator.clipboard.writeText(enlace); e.target.textContent = I18n.t("comun.copiado"); }
       } catch { /* cancelado */ }
       registrarEvento("compartir_enlace_amigo");
     });
@@ -364,12 +369,12 @@ async function mostrarDescuentoInvitacion() {
     const meses = inv.duracion_tipo === "meses" ? inv.duracion_meses
       : inv.duracion_tipo === "hasta_fecha" ? Math.max(1, (fa - hoy.getUTCFullYear()) * 12 + (fm - 1 - hoy.getUTCMonth()) + (fd > hoy.getUTCDate() ? 1 : 0))
       : null;
-    const duracion = inv.duracion_tipo === "siempre" ? "para siempre"
-      : inv.duracion_tipo === "meses" ? (meses === 1 ? "durante 1 mes" : `durante ${meses} meses`)
-      : `hasta el ${formatearFecha(inv.duracion_hasta + "T12:00:00")}`;
+    const duracion = inv.duracion_tipo === "siempre" ? I18n.t("susc.dto.siempre")
+      : inv.duracion_tipo === "meses" ? I18n.t("susc.dto.meses", { n: meses })
+      : I18n.t("susc.dto.hasta", { fecha: formatearFecha(inv.duracion_hasta + "T12:00:00") });
     const soloMensual = meses !== null && meses < 12;
     const nota = document.getElementById("notaInvitacion");
-    nota.textContent = `🎁 Tienes un ${inv.descuento} % de descuento por invitación ${duracion}${soloMensual ? ", en el plan mensual" : ""}. Se aplica solo al pagar; úsalo antes del ${formatearFecha(inv.caduca_en)}.`;
+    nota.textContent = I18n.t("susc.dto.nota", { pct: inv.descuento, duracion, mensual: soloMensual ? I18n.t("susc.dto.solo_mensual") : "", caduca: formatearFecha(inv.caduca_en) });
     nota.hidden = false;
     document.getElementById("notaCodigoStripe").hidden = true;
   } catch (e) {

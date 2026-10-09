@@ -3,7 +3,11 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-<title>Diario — Costaviva</title>
+<!-- Idiomas (2026-10-09): diccionarios y I18n.t(); en español no cambia nada. Ver assets/js/i18n.js. -->
+<script src="/assets/i18n/es.js"></script>
+<script src="/assets/i18n/en.js"></script>
+<script src="/assets/js/i18n.js"></script>
+<title data-i18n="diario.titulo_pagina">Diario — Costaviva</title>
 <link rel="manifest" href="manifest.json" />
 <link rel="icon" href="icon.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="/assets/iconos/apple-touch-icon.png" />
@@ -183,47 +187,49 @@
     <source media="(orientation: landscape)" srcset="/assets/inicio/rompiente-ancha.webp" type="image/webp">
     <source media="(orientation: landscape)" srcset="/assets/inicio/rompiente-ancha.jpg">
     <source srcset="/assets/inicio/rompiente-movil.webp" type="image/webp">
-    <img class="pantalla-inicio__foto" src="/assets/inicio/rompiente-movil.jpg" width="720" height="1280" fetchpriority="high" alt="Ola rompiendo contra una costa rocosa mientras un pescador lanza su caña">
+    <img class="pantalla-inicio__foto" src="/assets/inicio/rompiente-movil.jpg" width="720" height="1280" fetchpriority="high" alt="Ola rompiendo contra una costa rocosa mientras un pescador lanza su caña" data-i18n-alt="comun.inicio.alt_foto">
   </picture>
   <div class="pantalla-inicio__marca">
     <svg class="marca-logo" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><circle class="marca-fondo" cx="20" cy="20" r="19"/><path class="marca-pez" d="M9 17c4-6.5 14-6.5 19 0-5 6.5-15 6.5-19 0z"/><path class="marca-pez" d="M27.5 17l6-4.5v9z"/><circle class="marca-ojo" cx="13.5" cy="16" r="1.4"/><path class="marca-ola" d="M5 28c3.5-3.2 6.5-3.2 10 0s6.5 3.2 10 0 6.5-3.2 10 0"/></svg>
     <p class="pantalla-inicio__nombre logotipo">Costaviva</p>
-    <p class="pantalla-inicio__frase">El mar de hoy, antes de salir a pescar</p>
-    <p class="pantalla-inicio__estado" role="status"><span class="pantalla-inicio__girando" aria-hidden="true"></span>Comprobando acceso…</p>
+    <p class="pantalla-inicio__frase" data-i18n="comun.inicio.frase">El mar de hoy, antes de salir a pescar</p>
+    <p class="pantalla-inicio__estado" role="status"><span class="pantalla-inicio__girando" aria-hidden="true"></span><span data-i18n="comun.inicio.comprobando">Comprobando acceso…</span></p>
   </div>
 </div>
 <!-- /pantalla-inicio -->
+<script>I18n.aplicarInicio();</script>
 
 <header>
-  <a href="/" class="enlace-marca" aria-label="Costaviva, ir al mapa"><svg class="marca-logo" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><circle class="marca-fondo" cx="20" cy="20" r="19"/><path class="marca-pez" d="M9 17c4-6.5 14-6.5 19 0-5 6.5-15 6.5-19 0z"/><path class="marca-pez" d="M27.5 17l6-4.5v9z"/><circle class="marca-ojo" cx="13.5" cy="16" r="1.4"/><path class="marca-ola" d="M5 28c3.5-3.2 6.5-3.2 10 0s6.5 3.2 10 0 6.5-3.2 10 0"/></svg></a>
+  <a href="/" class="enlace-marca" aria-label="Costaviva, ir al mapa" data-i18n-aria-label="comun.ir_al_mapa"><svg class="marca-logo" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><circle class="marca-fondo" cx="20" cy="20" r="19"/><path class="marca-pez" d="M9 17c4-6.5 14-6.5 19 0-5 6.5-15 6.5-19 0z"/><path class="marca-pez" d="M27.5 17l6-4.5v9z"/><circle class="marca-ojo" cx="13.5" cy="16" r="1.4"/><path class="marca-ola" d="M5 28c3.5-3.2 6.5-3.2 10 0s6.5 3.2 10 0 6.5-3.2 10 0"/></svg></a>
   <div class="titulos">
-    <h1>🎣 Diario de capturas</h1>
-    <p>Privado, solo lo ves tú. Rojo: sin captura · Verde: con captura.</p>
+    <h1 data-i18n="diario.titulo">🎣 Diario de capturas</h1>
+    <p data-i18n="diario.subtitulo">Privado, solo lo ves tú. Rojo: sin captura · Verde: con captura.</p>
   </div>
-  <a id="enlaceAdmin" class="cuenta-menu-btn" href="/admin.html" title="Admin" aria-label="Administración" style="display:none;">⚙️</a>
+  <a id="enlaceAdmin" class="cuenta-menu-btn" href="/admin.html" title="Admin" aria-label="Administración" style="display:none;" data-i18n-aria-label="comun.administracion" data-i18n-title="comun.admin">⚙️</a>
   <div class="cuenta-menu-wrap">
-    <button class="cuenta-menu-btn" id="btnCuentaMenu" type="button" aria-label="Cuenta">👤</button>
+    <button class="cuenta-menu-btn" id="btnCuentaMenu" type="button" aria-label="Cuenta" data-i18n-aria-label="comun.cuenta">👤</button>
     <div class="cuenta-menu-dropdown" id="cuentaMenuDropdown">
-      <button type="button" id="btnInvitarAmigo">📤 Invitar a un amigo</button>
-      <button type="button" id="btnMiSuscripcion">💳 Mi suscripción</button>
-      <button type="button" id="btnCerrarSesion">🚪 Cerrar sesión</button>
+      <button type="button" id="btnInvitarAmigo" data-i18n="comun.menu.invitar_amigo">📤 Invitar a un amigo</button>
+      <button type="button" id="btnMiSuscripcion" data-i18n="comun.menu.suscripcion">💳 Mi suscripción</button>
+      <button type="button" id="btnCerrarSesion" data-i18n="comun.menu.cerrar_sesion">🚪 Cerrar sesión</button>
+      <div data-i18n-selector></div>
     </div>
   </div>
 </header>
 
 <div class="contenido">
   <div class="cabecera-mes">
-    <button id="btnMesAnterior" aria-label="Mes anterior">‹</button>
+    <button id="btnMesAnterior" aria-label="Mes anterior" data-i18n-aria-label="diario.mes_anterior">‹</button>
     <div class="mes-nombre" id="nombreMes">—</div>
-    <button id="btnMesSiguiente" aria-label="Mes siguiente">›</button>
+    <button id="btnMesSiguiente" aria-label="Mes siguiente" data-i18n-aria-label="diario.mes_siguiente">›</button>
   </div>
 
   <div class="calendario" id="calendario"></div>
 
   <div class="leyenda-dias">
-    <span><span class="chip" style="background:var(--peligro);"></span>sin captura</span>
-    <span><span class="chip" style="background:var(--ok);"></span>con captura</span>
-    <span><span class="chip" style="background:var(--superficie); border:1px solid var(--linea);"></span>sin registrar</span>
+    <span><span class="chip" style="background:var(--peligro);"></span><span data-i18n="diario.leyenda.sin_captura">sin captura</span></span>
+    <span><span class="chip" style="background:var(--ok);"></span><span data-i18n="diario.leyenda.con_captura">con captura</span></span>
+    <span><span class="chip" style="background:var(--superficie); border:1px solid var(--linea);"></span><span data-i18n="diario.leyenda.sin_registrar">sin registrar</span></span>
   </div>
 </div>
 
@@ -237,18 +243,18 @@
 <input type="file" id="inputFotoGaleria" accept="image/*" style="display:none;" />
 <div class="modal-elegir-foto" id="modalElegirFoto">
   <div class="caja">
-    <div class="titulo">¿Cómo quieres añadir la foto?</div>
-    <button type="button" id="btnModalCamara">📷 Sacar foto</button>
-    <button type="button" id="btnModalGaleria">🖼 Elegir de la galería</button>
-    <button type="button" class="cancelar" id="btnModalCancelarFoto">Cancelar</button>
+    <div class="titulo" data-i18n="diario.foto.como">¿Cómo quieres añadir la foto?</div>
+    <button type="button" id="btnModalCamara" data-i18n="diario.foto.sacar">📷 Sacar foto</button>
+    <button type="button" id="btnModalGaleria" data-i18n="diario.foto.galeria">🖼 Elegir de la galería</button>
+    <button type="button" class="cancelar" id="btnModalCancelarFoto" data-i18n="comun.cancelar">Cancelar</button>
   </div>
 </div>
 
 <nav class="tabs-nav">
-  <a href="/"><span class="icono"><svg class="ico-mapa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span>Mapa</a>
-  <a href="/diario.html" class="activa"><span class="icono"><svg class="ico-diario" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A2 2 0 0 1 6 2.5h14V19H6a2 2 0 0 0-2 2V4.5z"/><path d="M4 19a2 2 0 0 1 2-2h14"/></svg></span>Diario</a>
-  <a href="/alarma.html"><span class="icono"><svg class="ico-alarma" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 2.5 20h19L12 3.2z"/><line x1="12" y1="9.5" x2="12" y2="14"/><circle cx="12" cy="17" r="0.9" fill="currentColor" stroke="none"/></svg></span>Alarma</a>
-  <a href="/grupos.html"><span class="icono"><svg class="ico-grupos" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.3 19.5c0-3.5 2.6-5.7 5.7-5.7s5.7 2.2 5.7 5.7"/><circle cx="17" cy="9" r="2.6"/><path d="M15.3 13.9c2.5.4 4.2 2.3 4.2 5.6"/></svg><span class="punto-novedades-grupos" id="puntoNovedadesGrupos" hidden></span></span>Grupos</a>
+  <a href="/"><span class="icono"><svg class="ico-mapa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span><span data-i18n="comun.tab.mapa">Mapa</span></a>
+  <a href="/diario.html" class="activa"><span class="icono"><svg class="ico-diario" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A2 2 0 0 1 6 2.5h14V19H6a2 2 0 0 0-2 2V4.5z"/><path d="M4 19a2 2 0 0 1 2-2h14"/></svg></span><span data-i18n="comun.tab.diario">Diario</span></a>
+  <a href="/alarma.html"><span class="icono"><svg class="ico-alarma" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 2.5 20h19L12 3.2z"/><line x1="12" y1="9.5" x2="12" y2="14"/><circle cx="12" cy="17" r="0.9" fill="currentColor" stroke="none"/></svg></span><span data-i18n="comun.tab.alarma">Alarma</span></a>
+  <a href="/grupos.html"><span class="icono"><svg class="ico-grupos" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.3 19.5c0-3.5 2.6-5.7 5.7-5.7s5.7 2.2 5.7 5.7"/><circle cx="17" cy="9" r="2.6"/><path d="M15.3 13.9c2.5.4 4.2 2.3 4.2 5.6"/></svg><span class="punto-novedades-grupos" id="puntoNovedadesGrupos" hidden></span></span><span data-i18n="comun.tab.grupos">Grupos</span></a>
 </nav>
 
 <script src="/assets/js/errores.js"></script>
@@ -347,12 +353,12 @@ document.getElementById("btnCuentaMenu").addEventListener("click", (e) => {
 });
 document.addEventListener("click", () => document.getElementById("cuentaMenuDropdown").classList.remove("visible"));
 document.getElementById("btnInvitarAmigo").addEventListener("click", async () => {
-  const texto = "Échale un ojo a Costaviva, la app de condiciones costeras y diario de pesca que estoy usando: https://costaviva.org/";
+  const texto = I18n.t("comun.compartir_app");
   if (navigator.share) {
     try { await navigator.share({ text: texto }); } catch (e) { /* usuario canceló */ }
   } else {
     await navigator.clipboard.writeText(texto);
-    alert("Tu navegador no soporta compartir directamente — el texto se copió al portapapeles.");
+    alert(I18n.t("comun.copiado_portapapeles"));
   }
 });
 
@@ -496,9 +502,17 @@ function todasLasEspecies() {
 // base de datos: no hace falta migración.
 const TECNICAS = ["Surfcasting", "Spinning", "Jigging", "Curricán", "Fondo", "Flotador/Corcheo", "Popping", "Eging", "Submarina: espera", "Submarina: agachón", "Submarina: rececho", "Otra"];
 const TECNICAS_CON_SENUELO = new Set(["Spinning", "Jigging", "Curricán", "Popping", "Eging"]);
+// Las técnicas se guardan en español (capturas.tecnica); se traducen al enseñarlas.
+const CLAVE_TECNICA = {
+  "Curricán": "diario.tec.currican", "Fondo": "diario.tec.fondo", "Flotador/Corcheo": "diario.tec.flotador",
+  "Submarina: espera": "diario.tec.sub_espera", "Submarina: agachón": "diario.tec.sub_agachon", "Submarina: rececho": "diario.tec.sub_rececho", "Otra": "diario.otra",
+};
+function textoTecnica(t) {
+  return CLAVE_TECNICA[t] ? I18n.t(CLAVE_TECNICA[t]) : t;
+}
 
-const MESES = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
-const DIAS_SEMANA = ["L","M","X","J","V","S","D"];
+const MESES = I18n.t("diario.meses").split(",");
+const DIAS_SEMANA = I18n.t("diario.dias_semana").split(",");
 
 let cursor = new Date();
 cursor.setDate(1);
@@ -1152,7 +1166,7 @@ async function mareaDeConclusion(lat, lon, horaInicio, horaFin, fecha) {
   }
 }
 
-const etiquetaTipoSalida = { costa: "🪨 Costa", embarcacion: "🚤 Embarcación", submarinismo: "🤿 Submarinismo" };
+const etiquetaTipoSalida = { costa: I18n.t("mapa.ubic.tipo_costa"), embarcacion: I18n.t("mapa.ubic.tipo_embarcacion"), submarinismo: I18n.t("grupos.submarinismo") };
 
 // Los spots encajan según el tipo de salida (los ~90 fijos son todos de
 // costa; los personalizados llevan su propio tipo, ver
@@ -1164,11 +1178,11 @@ function opcionesSpotsPara(tipoSalida) {
   const favoritos = todos.filter((s) => favoritosClaves.has(s.slug));
   const resto = todos.filter((s) => !favoritosClaves.has(s.slug));
   const opcion = (s) => `<option value="${s.slug}">${s.nombre}${s.esUsuario ? " 📍" : ""}</option>`;
-  const bloqueFavoritos = favoritos.length ? `<optgroup label="★ Favoritos">${favoritos.map(opcion).join("")}</optgroup>` : "";
+  const bloqueFavoritos = favoritos.length ? `<optgroup label="${I18n.t("diario.favoritos")}">${favoritos.map(opcion).join("")}</optgroup>` : "";
   const bloqueResto = resto.length
-    ? `<optgroup label="Todos los spots">${resto.map(opcion).join("")}</optgroup>`
-    : `<option value="" disabled>— sin spots de este tipo todavía, añade uno en el mapa —</option>`;
-  return `<option value="">Mi ubicación actual</option>${bloqueFavoritos}${bloqueResto}`;
+    ? `<optgroup label="${I18n.t("diario.todos_spots")}">${resto.map(opcion).join("")}</optgroup>`
+    : `<option value="" disabled>${I18n.t("diario.sin_spots_tipo")}</option>`;
+  return `<option value="">${I18n.t("diario.mi_ubicacion")}</option>${bloqueFavoritos}${bloqueResto}`;
 }
 
 // Un único formulario, reutilizado para crear una entrada nueva y para
@@ -1176,26 +1190,26 @@ function opcionesSpotsPara(tipoSalida) {
 // vs update) — así no hay que mantener dos plantillas casi iguales.
 function formularioSalida() {
   return `
-    <p style="font-size:12px; color:var(--tinta-2);">Rellena estos datos y guarda — luego se abre el menú para añadir capturas (especie, técnica, cebo…) de esta entrada.</p>
-    <label for="salidaTipo">Tipo de salida</label>
+    <p style="font-size:12px; color:var(--tinta-2);">${I18n.t("diario.salida.intro")}</p>
+    <label for="salidaTipo">${I18n.t("diario.salida.tipo")}</label>
     <select id="salidaTipo">
-      <option value="costa">🪨 Costa</option>
-      <option value="embarcacion">🚤 Embarcación</option>
-      <option value="submarinismo">🤿 Submarinismo</option>
+      <option value="costa">${I18n.t("mapa.ubic.tipo_costa")}</option>
+      <option value="embarcacion">${I18n.t("mapa.ubic.tipo_embarcacion")}</option>
+      <option value="submarinismo">${I18n.t("grupos.submarinismo")}</option>
     </select>
     <label for="salidaSpot">Spot</label>
     <select id="salidaSpot">
       ${opcionesSpotsPara("costa")}
     </select>
-    <label>Hora de inicio</label>
+    <label>${I18n.t("diario.salida.hora_inicio")}</label>
     <div class="hora-select" id="ruedaSalidaInicio"></div>
-    <label>Hora de fin</label>
+    <label>${I18n.t("diario.salida.hora_fin")}</label>
     <div class="hora-select" id="ruedaSalidaFin"></div>
-    <label for="salidaNotas">Notas</label>
-    <textarea id="salidaNotas" placeholder="Cómo estuvo la jornada…"></textarea>
+    <label for="salidaNotas">${I18n.t("diario.notas")}</label>
+    <textarea id="salidaNotas" placeholder="${I18n.t("diario.salida.notas_ph")}"></textarea>
     <div style="display:flex; gap:8px; margin-top:16px;">
-      <button class="secundario" id="btnCancelarSalida" style="margin-top:0; flex:1;">Cancelar</button>
-      <button class="principal" id="btnGuardarSalida" style="margin-top:0; flex:1;">Guardar</button>
+      <button class="secundario" id="btnCancelarSalida" style="margin-top:0; flex:1;">${I18n.t("comun.cancelar")}</button>
+      <button class="principal" id="btnGuardarSalida" style="margin-top:0; flex:1;">${I18n.t("alarma.guardar")}</button>
     </div>
     <div class="mensaje" id="mensajeSalida"></div>
   `;
@@ -1206,8 +1220,8 @@ function formularioSalida() {
 // colores que ya usa el resto de la app para éxito/error
 // (--ok-texto / --peligro de assets/css/costaviva.css).
 function flechaMareaHtml(tendencia) {
-  if (tendencia === "subiendo") return `<span style="color:var(--ok-texto);" title="Marea subiendo">▲</span>`;
-  if (tendencia === "bajando") return `<span style="color:var(--peligro);" title="Marea bajando">▼</span>`;
+  if (tendencia === "subiendo") return `<span style="color:var(--ok-texto);" title="${I18n.t("diario.marea_subiendo")}">▲</span>`;
+  if (tendencia === "bajando") return `<span style="color:var(--peligro);" title="${I18n.t("diario.marea_bajando")}">▼</span>`;
   return "";
 }
 
@@ -1220,8 +1234,8 @@ function horaRangoTexto(salida) {
   const inicioHtml = salida.hora_inicio ? `${salida.hora_inicio.slice(0, 5)} ${flechaMareaHtml(salida.marea_tendencia)}` : "";
   const finHtml = salida.hora_fin ? `${salida.hora_fin.slice(0, 5)} ${flechaMareaHtml(salida.marea_tendencia_fin)}` : "";
   if (salida.hora_inicio && salida.hora_fin) return ` · 🕐 ${inicioHtml}–${finHtml}`;
-  if (salida.hora_inicio) return ` · 🕐 desde ${inicioHtml}`;
-  if (salida.hora_fin) return ` · 🕐 hasta ${finHtml}`;
+  if (salida.hora_inicio) return ` · 🕐 ${I18n.t("diario.desde", { hora: inicioHtml })}`;
+  if (salida.hora_fin) return ` · 🕐 ${I18n.t("diario.hasta", { hora: finHtml })}`;
   return "";
 }
 
@@ -1260,7 +1274,7 @@ async function guardarSalida(fecha, idExistente) {
       lat = pos.coords.latitude; lon = pos.coords.longitude;
     } catch (e) {
       mensajeEl.className = "mensaje error";
-      mensajeEl.textContent = "No se pudo obtener tu ubicación — elige un spot de la lista.";
+      mensajeEl.textContent = I18n.t("diario.sin_ubicacion");
       btn.disabled = false;
       return;
     }
@@ -1292,7 +1306,7 @@ async function guardarSalida(fecha, idExistente) {
   }
   if (error) {
     mensajeEl.className = "mensaje error";
-    mensajeEl.textContent = traducirError(error, "No se ha podido guardar la salida. Inténtalo de nuevo.");
+    mensajeEl.textContent = traducirError(error, I18n.t("diario.error_salida"));
     btn.disabled = false;
     return;
   }
@@ -1302,61 +1316,75 @@ async function guardarSalida(fecha, idExistente) {
   abrirDia(fecha, new Date(fecha + "T00:00:00"));
 }
 
+// La fase de la luna se guarda en español (condiciones-salida.js / /luna):
+// se traduce solo para enseñarla (claves de la ficha del mapa).
+const CLAVE_FASE_LUNA = {
+  "Luna nueva": "mapa.luna.f_nueva", "Creciente": "mapa.luna.f_creciente", "Cuarto creciente": "mapa.luna.f_cuarto_creciente",
+  "Gibosa creciente": "mapa.luna.f_gibosa_creciente", "Luna llena": "mapa.luna.f_llena", "Gibosa menguante": "mapa.luna.f_gibosa_menguante",
+  "Cuarto menguante": "mapa.luna.f_cuarto_menguante", "Menguante": "mapa.luna.f_menguante",
+};
+function textoFaseLunaDiario(fase) {
+  return CLAVE_FASE_LUNA[fase] ? I18n.t(CLAVE_FASE_LUNA[fase]) : fase;
+}
+// "Ubicación actual" se guarda tal cual en salidas_pesca.spot_nombre.
+function nombreSpotSalida(nombre) {
+  return !nombre || nombre === "Ubicación actual" ? I18n.t("grupos.ubicacion_actual") : nombre;
+}
 function contextoHTML(salida) {
   const filas = [
     // Pico de marea (pleamar/bajamar + hora), no una altura suelta —
     // pedido explícito del usuario 2026-09-19: "el dato de marea no tiene
     // mucha lógica tal cual", un número de altura relativo no dice nada
     // útil por sí solo. Ver picoDeMareaEnIntervalo().
-    ["MAREA", salida.marea_pico_tipo != null
-      ? `${salida.marea_pico_tipo === "pleamar" ? "🔺 Pleamar" : "🔻 Bajamar"} a las ${salida.marea_pico_hora}`
+    [I18n.t("diario.f.marea"), salida.marea_pico_tipo != null
+      ? I18n.t(salida.marea_pico_tipo === "pleamar" ? "diario.f.pleamar_a" : "diario.f.bajamar_a", { hora: salida.marea_pico_hora })
       : "—"],
-    ["COEF. MAREA", salida.marea_coeficiente != null ? String(salida.marea_coeficiente) : "—"],
-    ["VIENTO", salida.viento_kmh != null ? `${salida.viento_kmh} km/h` : "—"],
-    ["OLEAJE", CondSalida.textoOleaje(salida.oleaje_altura_min, salida.oleaje_altura_max)],
-    ["PRESIÓN", salida.presion_valor != null ? `${salida.presion_valor} hPa` : "—"],
-    ["LUNA", salida.luna_fase ?? "—"],
-    ["TEMP. AGUA", salida.temp_agua != null ? `${CondSalida.fmtDecimal(salida.temp_agua)} °C` : "—"],
-    ["NUBOSIDAD", salida.nubosidad != null ? `${salida.nubosidad}%` : "—"],
-    ["LLUVIA", salida.precipitacion != null ? `${CondSalida.fmtDecimal(salida.precipitacion)} mm/h` : "—"],
+    [I18n.t("diario.f.coef"), salida.marea_coeficiente != null ? String(salida.marea_coeficiente) : "—"],
+    [I18n.t("diario.f.viento"), salida.viento_kmh != null ? `${salida.viento_kmh} km/h` : "—"],
+    [I18n.t("diario.f.oleaje"), CondSalida.textoOleaje(salida.oleaje_altura_min, salida.oleaje_altura_max)],
+    [I18n.t("diario.f.presion"), salida.presion_valor != null ? `${salida.presion_valor} hPa` : "—"],
+    [I18n.t("diario.f.luna"), salida.luna_fase ? textoFaseLunaDiario(salida.luna_fase) : "—"],
+    [I18n.t("diario.f.temp_agua"), salida.temp_agua != null ? `${CondSalida.fmtDecimal(salida.temp_agua)} °C` : "—"],
+    [I18n.t("diario.f.nubosidad"), salida.nubosidad != null ? `${salida.nubosidad}%` : "—"],
+    [I18n.t("diario.f.lluvia"), salida.precipitacion != null ? `${CondSalida.fmtDecimal(salida.precipitacion)} mm/h` : "—"],
   ];
   // Una línea de fuente (2026-10-09). Las salidas guardadas antes de esa
   // fecha calcularon el índice con el modelo aunque la ficha enseñe la boya:
   // se dice para que los dos números no parezcan un error.
   const fIdx = salida.indice_factores;
   const notaBoya = salida.boya_usada
-    ? `<div class="detalle nota-ficha">⚓ Oleaje y temp. del agua: boya ${salida.boya_usada.replace(/[&<>"']/g, "")}, Puertos del Estado${salida.indice_puntuacion != null && !fIdx?.con_boya ? "; el índice se calculó con el modelo de Open-Meteo" : ""}.</div>`
+    ? `<div class="detalle nota-ficha">${I18n.t("diario.nota_boya", { boya: salida.boya_usada.replace(/[&<>"']/g, "") })}${salida.indice_puntuacion != null && !fIdx?.con_boya ? I18n.t("diario.nota_boya_modelo") : ""}.</div>`
     : "";
   // Coeficiente real por spot, no el índice "nacional" de tides4fishing y
   // similares (ver CLAUDE.md, 2026-09-13): plegado tras un ⓘ (2026-10-09).
   const notaCoef = salida.marea_coeficiente != null
-    ? `<details class="nota-ficha nota-plegada"><summary>ⓘ Coeficiente de marea</summary>Calculado con la marea de este sitio; puede no coincidir con el de otras webs de mareas.</details>`
+    ? `<details class="nota-ficha nota-plegada"><summary>${I18n.t("diario.coef_titulo")}</summary>${I18n.t("diario.coef_explica")}</details>`
     : "";
   // Índice de pesca v2 a la hora de la salida y, si no hay condiciones, por
   // qué (2026-10-08): nunca datos de otro día en su lugar.
   const esc = (t) => String(t ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const f = salida.indice_factores;
   const notaIndice = salida.indice_puntuacion != null
-    ? `<div class="detalle" style="font-size:11px; color:var(--tinta-3); margin-top:4px;">🎣 Índice de pesca a esa hora: <b class="nota-nivel" data-nivel="${window.NivelIndice ? NivelIndice.nivelPesca(salida.indice_puntuacion) : "sd"}">${esc(salida.indice_puntuacion)}</b>/100${f?.especie_nombre ? ` (mejor especie: ${esc(f.especie_nombre)})` : ""}${f?.hora_estimada ? ", estimado a mediodía (sin hora de inicio)" : ""}.`
+    ? `<div class="detalle" style="font-size:11px; color:var(--tinta-3); margin-top:4px;">${I18n.t("diario.indice_a_esa_hora")} <b class="nota-nivel" data-nivel="${window.NivelIndice ? NivelIndice.nivelPesca(salida.indice_puntuacion) : "sd"}">${esc(salida.indice_puntuacion)}</b>/100${f?.especie_nombre ? I18n.t("diario.mejor_especie", { especie: esc(f.especie_nombre) }) : ""}${f?.hora_estimada ? I18n.t("diario.estimado_mediodia") : ""}.`
       // Motivos con flechas (▲▲/▲/▼/▼▼), sin puntos ni fuentes (decisión de Mikel).
       // Solo motivos con flecha y nada interno ("pendiente de fuente", "no
       // cuenta"...): mismo filtro que la ficha (VentanaActividad.paraUsuario).
       + `<ul style="list-style:none; margin:2px 0 0; padding:0;">${(f?.razones || []).filter((x) => x.aporte && x.factor !== "legal" && x.factor !== "seguridad" && !/pendiente|no cuenta|fuente|por validar|fiabilidad|sin dato/i.test(x.texto || "")).sort((a, b) => Math.abs(b.aporte) - Math.abs(a.aporte)).slice(0, 4)
-        .map((x) => `<li><span style="display:inline-block; min-width:20px; font-size:11px; color:${x.aporte > 0 ? "var(--ok-texto)" : "var(--peligro)"};">${x.aporte >= 6 ? "▲▲" : x.aporte > 0 ? "▲" : x.aporte <= -6 ? "▼▼" : "▼"}</span>${esc(x.texto)}</li>`).join("")}</ul>`
+        .map((x) => `<li><span style="display:inline-block; min-width:20px; font-size:11px; color:${x.aporte > 0 ? "var(--ok-texto)" : "var(--peligro)"};">${x.aporte >= 6 ? "▲▲" : x.aporte > 0 ? "▲" : x.aporte <= -6 ? "▼▼" : "▼"}</span>${esc(x.clave ? I18n.t(x.clave, x.vars) : x.texto)}</li>`).join("")}</ul>`
       // Ola peligrosa: nota aparte, no un motivo (decisión de Mikel, 2026-10-08).
       + `${f?.aviso_ola ? `<div class="aviso-ola" role="note">${esc(f.aviso_ola)}</div>` : ""}</div>`
     : "";
   const TEXTO_ESTADO = {
-    sin_dato_fecha_antigua: "Sin condiciones guardadas: la fecha es de hace más de 90 días y la fuente de previsión no llega tan atrás (mejor vacío que datos de otro día).",
-    sin_prevision_fecha_lejana: "Sin condiciones: todavía no hay previsión para esa fecha.",
-    sin_dato_hora: "Sin condiciones para esa hora en la fuente de datos.",
-    error: "No se pudieron obtener las condiciones de esa fecha.",
+    sin_dato_fecha_antigua: I18n.t("diario.estado.antigua"),
+    sin_prevision_fecha_lejana: I18n.t("diario.estado.lejana"),
+    sin_dato_hora: I18n.t("diario.estado.sin_hora"),
+    error: I18n.t("diario.estado.error"),
   };
   const notaEstado = TEXTO_ESTADO[salida.condiciones_estado]
     ? `<div class="detalle" style="font-size:11px; color:var(--peligro-texto); margin-top:4px;">⚠ ${TEXTO_ESTADO[salida.condiciones_estado]}</div>`
     : "";
   // Atribución obligatoria de Open-Meteo (CC BY 4.0) junto a sus datos.
-  const notaMeteo = `<div class="atribucion-meteo">${window.ATRIBUCION_METEO_HTML || "Datos meteorológicos: Open-Meteo.com (CC BY 4.0)"}</div>`;
+  const notaMeteo = `<div class="atribucion-meteo">${window.ATRIBUCION_METEO_HTML || I18n.t("mapa.atrib.meteo_corta")}</div>`;
   return `<div class="contexto-ambiental">${filas.map(([e, v]) => `<div class="dato"><div class="etq">${e}</div><div class="val">${v}</div></div>`).join("")}</div>${notaEstado}${notaIndice}${notaBoya}${notaCoef}${notaMeteo}`;
 }
 
@@ -1367,14 +1395,14 @@ async function tarjetaCapturaHTML(captura) {
   return `
     <div class="tarjeta-captura" data-captura-id="${captura.id}">
       <div class="fila-titulo"><span class="especie">🐟 ${captura.especie}${cientifico ? ` <i class="cientifico">${escNombre(cientifico)}</i>` : ""}</span><span class="detalle">${captura.hora ? "🕐 " + captura.hora.slice(0, 5) + " " + flechaMareaHtml(captura.marea_tendencia) + " " : ""}${captura.talla_cm ? captura.talla_cm + " cm" : ""} ${captura.peso_g ? "· " + captura.peso_g + " g" : ""}</span></div>
-      ${captura.tecnica ? `<div class="detalle">🎣 ${captura.tecnica}</div>` : ""}
+      ${captura.tecnica ? `<div class="detalle">🎣 ${textoTecnica(captura.tecnica)}</div>` : ""}
       ${captura.cebo || captura.aparejo || captura.senuelo ? `<div class="detalle">${CondSalida.textoCeboAparejo(captura)}</div>` : ""}
       ${captura.notas ? `<div class="detalle">${captura.notas}</div>` : ""}
       ${compartidas.ids.has(captura.id) ? htmlEtiquetaCompartida() : ""}
-      ${urls.length ? `<div class="galeria-fotos">${urls.map((u) => `<img src="${u}" alt="Foto de ${captura.especie}" />`).join("")}</div>` : ""}
+      ${urls.length ? `<div class="galeria-fotos">${urls.map((u) => `<img src="${u}" alt="${I18n.t("diario.foto_de", { especie: captura.especie })}" />`).join("")}</div>` : ""}
       <div style="display:flex; gap:12px; margin-top:6px;">
-        <button class="editar-captura" data-id="${captura.id}" style="background:none; border:none; color:var(--tinta-2); font-size:11px; cursor:pointer; padding:0;">✏️ Editar</button>
-        <button class="borrar-captura" data-id="${captura.id}" style="background:none; border:none; color:var(--peligro); font-size:11px; cursor:pointer; padding:0;">🗑 Borrar</button>
+        <button class="editar-captura" data-id="${captura.id}" style="background:none; border:none; color:var(--tinta-2); font-size:11px; cursor:pointer; padding:0;">${I18n.t("diario.editar")}</button>
+        <button class="borrar-captura" data-id="${captura.id}" style="background:none; border:none; color:var(--peligro); font-size:11px; cursor:pointer; padding:0;">${I18n.t("mapa.panel.borrar")}</button>
       </div>
     </div>
   `;
@@ -1382,53 +1410,53 @@ async function tarjetaCapturaHTML(captura) {
 
 function formularioCaptura() {
   const opcionesEspecies = todasLasEspecies()
-    .map((e) => `<option value="${e.nombre}">${e.nombre}${e.cientifico ? ` (${e.cientifico})` : ""}</option>`)
+    .map((e) => `<option value="${e.nombre}">${e.nombre === "Otra" ? I18n.t("diario.otra") : e.nombre}${e.cientifico ? ` (${e.cientifico})` : ""}</option>`)
     .join("");
-  const opcionesTecnicas = TECNICAS.map((t) => `<option value="${t}">${t}</option>`).join("");
+  const opcionesTecnicas = TECNICAS.map((t) => `<option value="${t}">${textoTecnica(t)}</option>`).join("");
   return `
     <div class="tarjeta-captura" style="border:1px dashed var(--linea);">
-      <button type="button" class="secundario" id="btnIdentificarFoto" style="margin-top:0;">📷 Identificar con una foto</button>
+      <button type="button" class="secundario" id="btnIdentificarFoto" style="margin-top:0;">${I18n.t("diario.cap.identificar")}</button>
       <div class="mensaje" id="mensajeIdentificarFoto"></div>
-      <label for="capturaEspecie">Especie</label>
+      <label for="capturaEspecie">${I18n.t("mapa.va.especie")}</label>
       <select id="capturaEspecie">${opcionesEspecies}</select>
       <div id="capturaEspecieOtraBox" style="display:none;">
-        <label for="capturaEspecieOtra">¿Cuál?</label>
+        <label for="capturaEspecieOtra">${I18n.t("diario.cap.cual")}</label>
         <input type="text" id="capturaEspecieOtra" />
       </div>
-      <label>Hora</label>
+      <label>${I18n.t("diario.cap.hora")}</label>
       <div class="hora-select" id="ruedaCapturaHora"></div>
-      <label for="capturaTalla">Talla (cm)</label>
+      <label for="capturaTalla">${I18n.t("diario.cap.talla")}</label>
       <input type="number" id="capturaTalla" step="0.5" min="0" />
-      <label for="capturaPeso">Peso (g)</label>
+      <label for="capturaPeso">${I18n.t("diario.cap.peso")}</label>
       <input type="number" id="capturaPeso" step="1" min="0" />
-      <label for="capturaTecnica">Técnica</label>
+      <label for="capturaTecnica">${I18n.t("diario.cap.tecnica")}</label>
       <select id="capturaTecnica">
-        <option value="">Sin especificar</option>
+        <option value="">${I18n.t("diario.cap.sin_especificar")}</option>
         ${opcionesTecnicas}
       </select>
       <div id="capturaSenueloBox" style="display:none;">
-        <label for="capturaSenuelo">Tipo de señuelo</label>
-        <input type="text" id="capturaSenuelo" placeholder="ej. vinilo, cucharilla, jig, potera…" />
+        <label for="capturaSenuelo">${I18n.t("diario.cap.senuelo")}</label>
+        <input type="text" id="capturaSenuelo" placeholder="${I18n.t("diario.cap.senuelo_ph")}" />
       </div>
       <div id="capturaAparejoBox">
-        <label for="capturaAparejo">Aparejo</label>
+        <label for="capturaAparejo">${I18n.t("diario.cap.aparejo")}</label>
         <select id="capturaAparejo">
-          <option value="">Sin especificar</option>
-          <option value="Plomo">Plomo</option>
-          <option value="Corcho">Corcho</option>
-          <option value="Otro">Otro</option>
+          <option value="">${I18n.t("diario.cap.sin_especificar")}</option>
+          <option value="Plomo">${I18n.t("diario.cap.plomo")}</option>
+          <option value="Corcho">${I18n.t("diario.cap.corcho")}</option>
+          <option value="Otro">${I18n.t("diario.cap.otro")}</option>
         </select>
       </div>
-      <label for="capturaCebo">Cebo</label>
+      <label for="capturaCebo">${I18n.t("diario.cap.cebo")}</label>
       <input type="text" id="capturaCebo" />
-      <label for="capturaNotas">Notas</label>
+      <label for="capturaNotas">${I18n.t("diario.notas")}</label>
       <textarea id="capturaNotas"></textarea>
-      <label for="capturaFotos">Fotos nuevas (puedes elegir varias — las que ya hubiera se quedan)</label>
+      <label for="capturaFotos">${I18n.t("diario.cap.fotos")}</label>
       <input type="file" id="capturaFotos" accept="image/*" capture="environment" multiple />
       ${compartidas.disponible ? htmlCasillaCompartir(false) : ""}
       <div style="display:flex; gap:8px;">
-        <button class="secundario" id="btnCancelarCaptura" style="margin-top:0; flex:1;">Cancelar</button>
-        <button class="principal" id="btnGuardarCaptura" style="margin-top:0; flex:1;">Añadir captura</button>
+        <button class="secundario" id="btnCancelarCaptura" style="margin-top:0; flex:1;">${I18n.t("comun.cancelar")}</button>
+        <button class="principal" id="btnGuardarCaptura" style="margin-top:0; flex:1;">${I18n.t("diario.cap.anadir")}</button>
       </div>
       <div class="mensaje" id="mensajeCaptura"></div>
     </div>
@@ -1446,7 +1474,7 @@ async function guardarCaptura(salidaId, fecha, idExistente, ordenFotoBase) {
   const especie = especieSel === "Otra" ? document.getElementById("capturaEspecieOtra").value.trim() : especieSel;
   if (!especie) {
     mensajeEl.className = "mensaje error";
-    mensajeEl.textContent = "Indica la especie.";
+    mensajeEl.textContent = I18n.t("diario.indica_especie");
     btn.disabled = false;
     return;
   }
@@ -1474,7 +1502,7 @@ async function guardarCaptura(salidaId, fecha, idExistente, ordenFotoBase) {
       ? (hora >= inicioHHMM || hora <= finHHMM)
       : (hora >= inicioHHMM && hora <= finHHMM);
     if (!dentroDelRango) {
-      avisoFueraDeRango = ` (fuera del rango de la salida, ${inicioHHMM}–${finHHMM} — se guarda igual, es solo un aviso)`;
+      avisoFueraDeRango = I18n.t("diario.fuera_rango", { inicio: inicioHHMM, fin: finHHMM });
     }
   }
   const talla = document.getElementById("capturaTalla").value;
@@ -1502,10 +1530,10 @@ async function guardarCaptura(salidaId, fecha, idExistente, ordenFotoBase) {
   let capturaId = idExistente;
   if (idExistente) {
     const { error } = await supabase.from("capturas").update(datos).eq("id", idExistente);
-    if (error) { mensajeEl.className = "mensaje error"; mensajeEl.textContent = traducirError(error, "No se ha podido guardar la captura. Inténtalo de nuevo."); btn.disabled = false; return; }
+    if (error) { mensajeEl.className = "mensaje error"; mensajeEl.textContent = traducirError(error, I18n.t("diario.error_captura")); btn.disabled = false; return; }
   } else {
     const { data: captura, error } = await supabase.from("capturas").insert(datos).select().single();
-    if (error) { mensajeEl.className = "mensaje error"; mensajeEl.textContent = traducirError(error, "No se ha podido guardar la captura. Inténtalo de nuevo."); btn.disabled = false; return; }
+    if (error) { mensajeEl.className = "mensaje error"; mensajeEl.textContent = traducirError(error, I18n.t("diario.error_captura")); btn.disabled = false; return; }
     capturaId = captura.id;
     registrarEvento("crear_captura", { especie, tecnica: tecnica || null });
   }
@@ -1513,7 +1541,7 @@ async function guardarCaptura(salidaId, fecha, idExistente, ordenFotoBase) {
   // abajo), así que un mensaje en mensajeEl no llegaría a verse — de ahí
   // el alert() para este aviso puntual (no bloquea nada, la captura ya
   // se guardó).
-  if (avisoFueraDeRango) alert(`Captura guardada${avisoFueraDeRango}.`);
+  if (avisoFueraDeRango) alert(I18n.t("diario.captura_guardada", { aviso: avisoFueraDeRango }));
 
   const casillaCompartir = document.getElementById("capturaCompartir");
   if (casillaCompartir) {
@@ -1555,22 +1583,22 @@ async function resumenEntradaHTML(entrada, idx) {
     <div class="tarjeta-captura" style="margin-top:0; margin-bottom:14px; border:1px solid ${enCurso ? "var(--acento)" : "var(--linea)"};">
       <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
         <div class="detalle" style="font-size:12px; color:var(--tinta-2); flex:1;">
-          ${enCurso ? `<span style="color:var(--acento); font-weight:600;">🟢 En curso</span> · ` : ""}📍 ${salida.spot_nombre || "Ubicación actual"}
+          ${enCurso ? `<span style="color:var(--acento); font-weight:600;">${I18n.t("diario.en_curso")}</span> · ` : ""}📍 ${nombreSpotSalida(salida.spot_nombre)}
           ${salida.tipo_salida ? ` · ${etiquetaTipoSalida[salida.tipo_salida] || salida.tipo_salida}` : ""}
           ${horaRangoTexto(salida)}
         </div>
         <div style="display:flex; gap:10px; flex-shrink:0;">
-          <button class="editar-entrada" data-idx="${idx}" style="background:none; border:none; color:var(--tinta-2); font-size:11px; cursor:pointer; padding:0;">✏️ Editar</button>
-          <button class="borrar-entrada" data-idx="${idx}" style="background:none; border:none; color:var(--peligro); font-size:11px; cursor:pointer; padding:0;">🗑 Borrar</button>
+          <button class="editar-entrada" data-idx="${idx}" style="background:none; border:none; color:var(--tinta-2); font-size:11px; cursor:pointer; padding:0;">${I18n.t("diario.editar")}</button>
+          <button class="borrar-entrada" data-idx="${idx}" style="background:none; border:none; color:var(--peligro); font-size:11px; cursor:pointer; padding:0;">${I18n.t("mapa.panel.borrar")}</button>
         </div>
       </div>
       ${salida.notas ? `<p style="font-size:13px; margin-top:8px;">${salida.notas}</p>` : ""}
       ${contextoHTML(salida)}
-      <div style="margin-top:14px; font-family:var(--f-texto); font-weight:500; font-size:11px; color:var(--tinta-3);">CAPTURAS (${capturas.length})</div>
-      ${tarjetas.join("") || `<p style="font-size:12px; color:var(--tinta-3);">Ninguna todavía.</p>`}
+      <div style="margin-top:14px; font-family:var(--f-texto); font-weight:500; font-size:11px; color:var(--tinta-3);">${I18n.t("diario.capturas_n", { n: capturas.length })}</div>
+      ${tarjetas.join("") || `<p style="font-size:12px; color:var(--tinta-3);">${I18n.t("diario.ninguna")}</p>`}
       <div style="display:flex; gap:8px; margin-top:10px;">
-        <button class="secundario anadir-captura" data-idx="${idx}" style="margin-top:0; flex:1;">➕ Añadir captura</button>
-        ${enCurso ? `<button class="principal concluir-entrada" data-idx="${idx}" style="margin-top:0; flex:1;">✅ Concluir jornada</button>` : ""}
+        <button class="secundario anadir-captura" data-idx="${idx}" style="margin-top:0; flex:1;">${I18n.t("diario.mas_anadir_captura")}</button>
+        ${enCurso ? `<button class="principal concluir-entrada" data-idx="${idx}" style="margin-top:0; flex:1;">${I18n.t("diario.concluir")}</button>` : ""}
       </div>
     </div>
   `;
@@ -1593,10 +1621,10 @@ async function concluirEntrada(iso, fechaObj, salida) {
   // adelante) — ya no se rellena sola con la hora actual en silencio,
   // hay que ponerla a mano editando la entrada antes de concluir.
   if (!salida.hora_fin) {
-    alert("Para concluir la jornada hace falta la hora de fin — edítala (✏️) y ponla antes de concluir.");
+    alert(I18n.t("diario.concluir_sin_fin"));
     return;
   }
-  if (!confirm("¿Concluir esta jornada? Podrás seguir editándola después si hace falta.")) return;
+  if (!confirm(I18n.t("diario.confirmar_concluir"))) return;
   const marea = await mareaDeConclusion(salida.lat, salida.lon, salida.hora_inicio?.slice(0, 5), salida.hora_fin.slice(0, 5), salida.fecha);
   const { error } = await supabase
     .from("salidas_pesca")
@@ -1606,7 +1634,7 @@ async function concluirEntrada(iso, fechaObj, salida) {
       marea_pico_tipo: marea.picoTipo, marea_pico_hora: marea.picoHora,
     })
     .eq("id", salida.id);
-  if (error) { alert(traducirError(error, "No se ha podido concluir la salida. Inténtalo de nuevo.")); return; }
+  if (error) { alert(traducirError(error, I18n.t("diario.error_concluir"))); return; }
   await cargarDatos();
   renderCalendario();
   abrirDia(iso, fechaObj);
@@ -1638,7 +1666,7 @@ function mostrarFormularioEditarEntrada(iso, salida) {
   selectorHoraInicio = crearSelectorHora("ruedaSalidaInicio", salida.hora_inicio ? salida.hora_inicio.slice(0, 5) : null);
   selectorHoraFin = crearSelectorHora("ruedaSalidaFin", salida.hora_fin ? salida.hora_fin.slice(0, 5) : null);
   document.getElementById("salidaNotas").value = salida.notas || "";
-  document.getElementById("btnGuardarSalida").textContent = "Guardar cambios";
+  document.getElementById("btnGuardarSalida").textContent = I18n.t("diario.guardar_cambios");
   engancharFormularioSalida(iso, salida.id);
   zona.scrollIntoView({ behavior: "smooth", block: "end" });
 }
@@ -1720,18 +1748,23 @@ function aplicarEspecieIdentificada(nombreEspecie) {
   }
 }
 
+// La confianza llega en español del servidor (alta/media/baja).
+function textoConfianza(c) {
+  if (!c) return I18n.t("diario.id.conf_desconocida");
+  return I18n.existe(`diario.id.conf_${c}`) ? I18n.t(`diario.id.conf_${c}`) : c;
+}
 // Aviso suave del cupo mensual de identificaciones: solo desde 80 usadas
 // (quedan 20 o menos). null = el servidor no pudo contarlo: no se dice nada.
 function avisoCupoMes(restantes) {
   if (typeof restantes !== "number" || restantes > 20) return "";
-  if (restantes === 0) return " ℹ️ Era tu última identificación automática de este mes; el día 1 vuelves a tenerlas.";
-  return ` ℹ️ Te ${restantes === 1 ? "queda 1 identificación" : `quedan ${restantes} identificaciones`} automáticas este mes.`;
+  if (restantes === 0) return I18n.t("diario.id.ultima");
+  return I18n.t("diario.id.quedan", { n: restantes });
 }
 
 async function identificarFotoDesdeArchivo(file) {
   const mensajeEl = document.getElementById("mensajeIdentificarFoto");
   mensajeEl.className = "mensaje info";
-  mensajeEl.textContent = "🤖 Analizando la foto…";
+  mensajeEl.textContent = I18n.t("diario.id.analizando");
   try {
     const blob = await redimensionarImagen(file);
     anadirArchivoAInputFotos(new File([blob], "captura.jpg", { type: "image/jpeg" }));
@@ -1761,14 +1794,14 @@ async function identificarFotoDesdeArchivo(file) {
     const NO_DISPONIBLE = ["sin_credito", "saturado", "sin_configurar", "limite_diario", "limite_mensual", "rechazada", "sin_suscripcion"];
     if (!resp.ok && resultado.codigo === "limite_mensual") {
       mensajeEl.className = "mensaje info";
-      mensajeEl.textContent = `ℹ️ Has usado las ${resultado.limite_mes || 100} identificaciones automáticas de este mes; el día 1 vuelves a tenerlas. La foto ya está añadida: escribe la especie y la talla a mano y guarda la captura con normalidad.`;
+      mensajeEl.textContent = I18n.t("diario.id.limite", { n: resultado.limite_mes || 100 });
       return;
     }
     if (!resp.ok && NO_DISPONIBLE.includes(resultado.codigo)) {
       // "info" (ámbar), no "error" (rojo): las únicas clases reales son
       // error/ok/info, y .mensaje es display:none sin una de ellas.
       mensajeEl.className = "mensaje info";
-      mensajeEl.textContent = `ℹ️ ${resultado.error || "La identificación automática no está disponible ahora mismo."} La foto ya está añadida: escribe la especie y la talla a mano y guarda la captura con normalidad.`;
+      mensajeEl.textContent = `ℹ️ ${resultado.error || I18n.t("diario.id.no_disponible")} ${I18n.t("diario.id.foto_anadida")}`;
       return;
     }
     if (!resp.ok) throw new Error(resultado.error || `HTTP ${resp.status}`);
@@ -1778,20 +1811,20 @@ async function identificarFotoDesdeArchivo(file) {
     if (resultado.peso_g != null) document.getElementById("capturaPeso").value = resultado.peso_g;
 
     const partes = [];
-    if (!resultado.especie) partes.push("no se identificó la especie con seguridad");
+    if (!resultado.especie) partes.push(I18n.t("diario.id.sin_especie"));
     let sugerencia = "";
     if (resultado.talla_cm == null) {
       // Pedido explícito del usuario: si no hay nada en la foto con lo
       // que comparar el tamaño, proponer explícitamente qué hacer la
       // próxima vez, no solo constatar que faltan datos.
-      sugerencia = " 💡 No se detectó ninguna referencia de tamaño en la foto (una mano, un aparejo, una cinta métrica…) — inclúyela la próxima vez para poder estimar también talla y peso.";
+      sugerencia = I18n.t("diario.id.sin_referencia");
     }
     mensajeEl.className = "mensaje info";
-    mensajeEl.textContent = `🤖 Estimado por IA a partir de la foto (confianza: ${resultado.confianza || "desconocida"}) — revisa y corrige antes de guardar.` +
+    mensajeEl.textContent = I18n.t("diario.id.estimado", { confianza: textoConfianza(resultado.confianza) }) +
       (partes.length ? ` (${partes.join("; ")})` : "") + sugerencia + avisoCupoMes(resultado.restantes_mes);
   } catch (e) {
     mensajeEl.className = "mensaje error";
-    mensajeEl.textContent = `No se ha podido identificar la foto: ${e.message}`;
+    mensajeEl.textContent = I18n.t("diario.id.error", { error: e.message });
   }
 }
 
@@ -1825,7 +1858,7 @@ async function mostrarFormularioEditarCaptura(iso, salidaId, captura) {
   document.getElementById("capturaNotas").value = captura.notas || "";
   const casillaCompartir = document.getElementById("capturaCompartir");
   if (casillaCompartir) casillaCompartir.checked = compartidas.ids.has(captura.id);
-  document.getElementById("btnGuardarCaptura").textContent = "Guardar cambios";
+  document.getElementById("btnGuardarCaptura").textContent = I18n.t("diario.guardar_cambios");
   const { count } = await supabase.from("captura_fotos").select("id", { count: "exact", head: true }).eq("captura_id", captura.id);
   engancharFormularioCaptura(iso, salidaId, captura.id, count || 0);
   zona.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -1835,14 +1868,14 @@ async function abrirDia(iso, fechaObj) {
   const panel = document.getElementById("panelDia");
   const tituloEl = document.getElementById("panelDiaFecha");
   const contEl = document.getElementById("panelDiaContenido");
-  tituloEl.textContent = fechaObj.toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  tituloEl.textContent = fechaObj.toLocaleDateString(I18n.locale(), { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 
   const entradas = salidasPorFecha[iso] || [];
   const resumenes = await Promise.all(entradas.map((e, idx) => resumenEntradaHTML(e, idx)));
   contEl.innerHTML =
-    (resumenes.join("") || `<p style="font-size:12px; color:var(--tinta-2);">Todavía no hay nada registrado este día.</p>`) +
+    (resumenes.join("") || `<p style="font-size:12px; color:var(--tinta-2);">${I18n.t("diario.dia_vacio")}</p>`) +
     `<div id="zonaFormulario"></div>` +
-    `<button class="secundario" id="btnAnadirEntrada">➕ Añadir ${entradas.length ? "otra " : ""}entrada este día</button>`;
+    `<button class="secundario" id="btnAnadirEntrada">${I18n.t(entradas.length ? "diario.anadir_otra_entrada" : "diario.anadir_entrada")}</button>`;
 
   document.getElementById("btnAnadirEntrada").addEventListener("click", () => mostrarFormularioNuevaEntrada(iso));
 
@@ -1851,7 +1884,7 @@ async function abrirDia(iso, fechaObj) {
   });
   contEl.querySelectorAll(".borrar-entrada").forEach((btn) => {
     btn.addEventListener("click", async () => {
-      if (!confirm("¿Borrar esta entrada y todas sus capturas y fotos?")) return;
+      if (!confirm(I18n.t("diario.confirmar_borrar_entrada"))) return;
       await supabase.from("salidas_pesca").delete().eq("id", entradas[+btn.dataset.idx].salida.id);
       await cargarDatos();
       renderCalendario();
@@ -1874,7 +1907,7 @@ async function abrirDia(iso, fechaObj) {
   });
   contEl.querySelectorAll(".borrar-captura").forEach((btn) => {
     btn.addEventListener("click", async () => {
-      if (!confirm("¿Borrar esta captura?")) return;
+      if (!confirm(I18n.t("diario.confirmar_borrar_captura"))) return;
       await supabase.from("capturas").delete().eq("id", btn.dataset.id);
       await cargarDatos();
       renderCalendario();

@@ -3,7 +3,11 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-<title>Costaviva, pesca en tiempo real | Mareas y previsión marina</title>
+<!-- Idiomas (2026-10-09): diccionarios y I18n.t(); en español no cambia nada. Ver assets/js/i18n.js. -->
+<script src="/assets/i18n/es.js"></script>
+<script src="/assets/i18n/en.js"></script>
+<script src="/assets/js/i18n.js"></script>
+<title data-i18n="mapa.titulo_pagina">Costaviva, pesca en tiempo real | Mareas y previsión marina</title>
 <meta name="description" content="Accede a Costaviva: previsión marina en tiempo real, mareas, oleaje, diario de pesca con IA y comunidad de pescadores en España y Portugal." />
 <link rel="canonical" href="https://costaviva.org/" />
 <meta property="og:type" content="website" />
@@ -207,38 +211,38 @@
   <source src="/assets/hero-peces.mp4" type="video/mp4" />
 </video>
 <div class="overlay-fondo"></div>
-<p class="creditos-video">Vídeo: <a href="https://www.pexels.com/video/school-of-fish-in-the-deep-blue-sea-5358755/" target="_blank" rel="noopener">Pexels</a></p>
+<p class="creditos-video" data-i18n-html="login.video">Vídeo: <a href="https://www.pexels.com/video/school-of-fish-in-the-deep-blue-sea-5358755/" target="_blank" rel="noopener">Pexels</a></p>
 
 <div class="landing">
   <div class="lado-marketing">
-    <p class="marca">🐟 Costaviva, pesca en tiempo real</p>
-    <p class="eslogan">Mira tu spot en directo, conoce las condiciones de la mar y la actividad de los peces, antes de salir de casa.</p>
-    <p class="submarca">Desde costa, embarcación o pesca submarina</p>
+    <p class="marca" data-i18n="login.hero_titulo">🐟 Costaviva, pesca en tiempo real</p>
+    <p class="eslogan" data-i18n="login.hero_texto">Mira tu spot en directo, conoce las condiciones de la mar y la actividad de los peces, antes de salir de casa.</p>
+    <p class="submarca" data-i18n="login.hero_modalidades">Desde costa, embarcación o pesca submarina</p>
     <ul class="lista-servicios">
-      <li><span class="icono-servicio">🌊</span><span><b>Condiciones en tiempo real</b> — oleaje, marea, corriente, viento, presión, temperatura del agua, nubosidad, turbidez y caudal de los ríos en cada spot de la costa.</span></li>
-      <li><span class="icono-servicio">📷</span><span><b>Webcams en directo</b> — mira el estado real del mar en tu lugar de pesca (si están disponibles).</span></li>
-      <li><span class="icono-servicio">🎣</span><span><b>Diario de pesca</b> — registra tus salidas y capturas, con fotos e identificación de especies, con todos los datos del momento (lluvia, viento, marea, nubosidad...) para ayudarte a crear patrones.</span></li>
-      <li><span class="icono-servicio">🆘</span><span><b>Alarma SOS</b> — detección de caída y aviso automático a tus contactos con tu ubicación (no disponible todavía).</span></li>
-      <li><span class="icono-servicio">👥</span><span><b>Grupos privados</b> — comparte spots, capturas y calendario con tus amigos.</span></li>
-      <li><span class="icono-servicio">🌙</span><span><b>Luna y especies de temporada</b> — para saber qué esperar antes de tirar el aparejo.</span></li>
+      <li><span class="icono-servicio">🌊</span><span data-i18n-html="login.f_condiciones"><b>Condiciones en tiempo real</b> — oleaje, marea, corriente, viento, presión, temperatura del agua, nubosidad, turbidez y caudal de los ríos en cada spot de la costa.</span></li>
+      <li><span class="icono-servicio">📷</span><span data-i18n-html="login.f_webcams"><b>Webcams en directo</b> — mira el estado real del mar en tu lugar de pesca (si están disponibles).</span></li>
+      <li><span class="icono-servicio">🎣</span><span data-i18n-html="login.f_diario"><b>Diario de pesca</b> — registra tus salidas y capturas, con fotos e identificación de especies, con todos los datos del momento (lluvia, viento, marea, nubosidad...) para ayudarte a crear patrones.</span></li>
+      <li><span class="icono-servicio">🆘</span><span data-i18n-html="login.f_alarma"><b>Alarma SOS</b> — detección de caída y aviso automático a tus contactos con tu ubicación (no disponible todavía).</span></li>
+      <li><span class="icono-servicio">👥</span><span data-i18n-html="login.f_grupos"><b>Grupos privados</b> — comparte spots, capturas y calendario con tus amigos.</span></li>
+      <li><span class="icono-servicio">🌙</span><span data-i18n-html="login.f_luna"><b>Luna y especies de temporada</b> — para saber qué esperar antes de tirar el aparejo.</span></li>
     </ul>
-    <nav class="mareas-portada" aria-label="Mareas hoy por región">
-      <p class="mareas-portada-titulo">Mareas hoy, gratis y sin cuenta</p>
+    <nav class="mareas-portada" aria-label="Mareas hoy por región" data-i18n-aria-label="login.mareas_aria">
+      <p class="mareas-portada-titulo" data-i18n="login.mareas_titulo">Mareas hoy, gratis y sin cuenta</p>
       <ul>
-        <li><a href="/mareas/region/pais-vasco">País Vasco</a></li>
-        <li><a href="/mareas/region/cantabria">Cantabria</a></li>
-        <li><a href="/mareas/region/asturias">Asturias</a></li>
-        <li><a href="/mareas/region/galicia">Galicia</a></li>
-        <li><a href="/mareas/region/portugal">Portugal</a></li>
-        <li><a href="/mareas/region/mediterraneo">Mediterráneo</a></li>
-        <li><a href="/mareas/region/golfo-de-cadiz">Golfo de Cádiz</a></li>
-        <li><a href="/mareas/region/canarias">Canarias</a></li>
-        <li><a href="/mareas">Todos los spots →</a></li>
+        <li><a href="/mareas/region/pais-vasco" data-i18n="login.region.pais_vasco">País Vasco</a></li>
+        <li><a href="/mareas/region/cantabria" data-i18n="login.region.cantabria">Cantabria</a></li>
+        <li><a href="/mareas/region/asturias" data-i18n="login.region.asturias">Asturias</a></li>
+        <li><a href="/mareas/region/galicia" data-i18n="login.region.galicia">Galicia</a></li>
+        <li><a href="/mareas/region/portugal" data-i18n="login.region.portugal">Portugal</a></li>
+        <li><a href="/mareas/region/mediterraneo" data-i18n="login.region.mediterraneo">Mediterráneo</a></li>
+        <li><a href="/mareas/region/golfo-de-cadiz" data-i18n="login.region.golfo_cadiz">Golfo de Cádiz</a></li>
+        <li><a href="/mareas/region/canarias" data-i18n="login.region.canarias">Canarias</a></li>
+        <li><a href="/mareas" data-i18n="login.todos_spots">Todos los spots →</a></li>
       </ul>
-      <p class="mareas-portada-titulo" style="margin-top:14px;">Pesca por spot y por especie</p>
+      <p class="mareas-portada-titulo" style="margin-top:14px;" data-i18n="login.pesca_spot_especie">Pesca por spot y por especie</p>
       <ul>
-        <li><a href="/spots">Spots de pesca</a></li>
-        <li><a href="/especies">Especies, tallas y temporada</a></li>
+        <li><a href="/spots" data-i18n="mapa.seo.spots">Spots de pesca</a></li>
+        <li><a href="/especies" data-i18n="login.especies_tallas">Especies, tallas y temporada</a></li>
       </ul>
     </nav>
   </div>
@@ -246,23 +250,24 @@
   <div class="lado-acceso">
 <div class="caja" id="cajaLogin">
   <h1>Costaviva</h1>
-  <p class="sub">Accede con tu cuenta</p>
+  <p class="sub" data-i18n="login.accede">Accede con tu cuenta</p>
 
   <div id="mensaje" class="mensaje"></div>
 
   <form id="formLogin">
-    <label for="email">Correo electrónico</label>
+    <label for="email" data-i18n="login.correo">Correo electrónico</label>
     <input type="email" id="email" required autocomplete="email" />
-    <label for="password">Contraseña</label>
+    <label for="password" data-i18n="login.contrasena">Contraseña</label>
     <input type="password" id="password" required autocomplete="current-password" />
 
     <div id="turnstileLogin" style="margin-top:8px;"></div>
 
-    <button type="submit" id="btnPrincipal">Entrar</button>
-    <button type="button" class="secundario" id="btnIrARegistro">Crear cuenta · 7 días gratis</button>
+    <button type="submit" id="btnPrincipal" data-i18n="login.entrar">Entrar</button>
+    <button type="button" class="secundario" id="btnIrARegistro" data-i18n="login.crear_cuenta_gratis">Crear cuenta · 7 días gratis</button>
   </form>
 
-  <div class="toggle">¿Olvidaste tu contraseña? <a id="linkRecuperar">Recupérala aquí</a></div>
+  <div class="toggle"><span data-i18n="login.olvidaste">¿Olvidaste tu contraseña?</span> <a id="linkRecuperar" data-i18n="login.recuperala">Recupérala aquí</a></div>
+  <div class="toggle" data-i18n-selector></div>
 </div>
 
 <!-- Paso 1 del alta (2026-09-17, pedido explícito del usuario): email +
@@ -271,41 +276,41 @@
      cuenta con contraseña de una vez. El código postal se usa luego
      para centrar el mapa de index.html la primera vez que entra. -->
 <div class="caja" id="cajaRegistroDatos" style="display:none;">
-  <h1>Crear cuenta</h1>
-  <p class="sub">Te mandaremos un enlace para verificar tu email.</p>
+  <h1 data-i18n="login.crear_cuenta">Crear cuenta</h1>
+  <p class="sub" data-i18n="login.te_mandaremos">Te mandaremos un enlace para verificar tu email.</p>
   <div id="mensajeRegistro" class="mensaje"></div>
   <!-- Invitaciones (2026-10-08): /login?alta=1&invitacion=CODIGO, desde el
        email que manda admin.html. Ver assets/js/invitacion.js. -->
   <div id="avisoInvitacion" class="mensaje"></div>
   <form id="formRegistroDatos">
-    <label for="emailRegistro">Correo electrónico</label>
+    <label for="emailRegistro" data-i18n="login.correo">Correo electrónico</label>
     <input type="email" id="emailRegistro" required autocomplete="email" />
-    <label for="codigoPostal">Código postal</label>
-    <input type="text" id="codigoPostal" required inputmode="numeric" pattern="[0-9]{5}" maxlength="5" placeholder="Ej. 48001" />
+    <label for="codigoPostal" data-i18n="login.codigo_postal">Código postal</label>
+    <input type="text" id="codigoPostal" required inputmode="numeric" pattern="[0-9]{5}" maxlength="5" placeholder="Ej. 48001" data-i18n-placeholder="login.ej_cp" />
 
     <div class="consentimiento visible">
       <label class="checkbox">
         <input type="checkbox" id="checkTerminos" />
-        Acepto los términos de uso y la política de privacidad de Costaviva, incluyendo el tratamiento de mis datos de cuenta para dar el servicio (obligatorio para crear la cuenta).
+        <span data-i18n="login.acepto_terminos">Acepto los términos de uso y la política de privacidad de Costaviva, incluyendo el tratamiento de mis datos de cuenta para dar el servicio (obligatorio para crear la cuenta).</span>
       </label>
       <label class="checkbox">
         <input type="checkbox" id="checkDatosCapturas" />
-        Autorizo el uso anónimo de mis capturas registradas en el diario para mejorar el índice de pesca de Costaviva (opcional — puedes usar la app igualmente si no lo marcas). <a href="/privacidad" target="_blank" rel="noopener">Más información</a>
+        <span data-i18n="login.autorizo_capturas">Autorizo el uso anónimo de mis capturas registradas en el diario para mejorar el índice de pesca de Costaviva (opcional — puedes usar la app igualmente si no lo marcas).</span> <a href="/privacidad" target="_blank" rel="noopener" data-i18n="login.mas_info">Más información</a>
       </label>
     </div>
 
     <div id="turnstileRegistro" style="margin-top:8px;"></div>
 
-    <button type="submit" id="btnContinuarRegistro">Continuar</button>
-    <button type="button" class="secundario" id="btnYaTengoCuenta">Ya tengo cuenta</button>
+    <button type="submit" id="btnContinuarRegistro" data-i18n="login.continuar">Continuar</button>
+    <button type="button" class="secundario" id="btnYaTengoCuenta" data-i18n="login.ya_tengo_cuenta">Ya tengo cuenta</button>
   </form>
 </div>
 
 <!-- Paso 2: esperando a que confirme el email. -->
 <div class="caja" id="cajaRegistroEsperando" style="display:none;">
-  <h1>Revisa tu email</h1>
-  <p class="sub">Te hemos mandado un enlace a tu correo para verificar la cuenta. Ábrelo para continuar y crear tu contraseña.</p>
-  <div class="toggle"><a id="linkVolverDesdeEspera">Volver</a></div>
+  <h1 data-i18n="login.revisa_email">Revisa tu email</h1>
+  <p class="sub" data-i18n="login.enlace_enviado">Te hemos mandado un enlace a tu correo para verificar la cuenta. Ábrelo para continuar y crear tu contraseña.</p>
+  <div class="toggle"><a id="linkVolverDesdeEspera" data-i18n="login.volver">Volver</a></div>
 </div>
 
 <!-- Paso 3 del alta (crear la contraseña, tras verificar el email) y
@@ -317,26 +322,26 @@
      el login mandaba directo al mapa sin dejar nunca cambiar la
      contraseña. -->
 <div class="caja" id="cajaNuevaContrasena" style="display:none;">
-  <h1>Crea tu contraseña</h1>
-  <p class="sub">Mínimo 6 caracteres, con una mayúscula, un número y un símbolo.</p>
+  <h1 data-i18n="login.crea_contrasena">Crea tu contraseña</h1>
+  <p class="sub" data-i18n="login.requisitos">Mínimo 6 caracteres, con una mayúscula, un número y un símbolo.</p>
   <div id="mensajeNueva" class="mensaje"></div>
   <form id="formNuevaContrasena">
-    <label for="passwordNueva">Contraseña</label>
+    <label for="passwordNueva" data-i18n="login.contrasena">Contraseña</label>
     <input type="password" id="passwordNueva" required autocomplete="new-password" minlength="6" />
-    <label for="passwordNuevaRepetir">Repite la contraseña</label>
+    <label for="passwordNuevaRepetir" data-i18n="login.repite">Repite la contraseña</label>
     <input type="password" id="passwordNuevaRepetir" required autocomplete="new-password" minlength="6" />
-    <button type="submit" id="btnGuardarNuevaContrasena">Guardar y entrar</button>
+    <button type="submit" id="btnGuardarNuevaContrasena" data-i18n="login.guardar_entrar">Guardar y entrar</button>
   </form>
 </div>
     <div class="conseguir-app">
-      <p class="conseguir-app-titulo">Llévatela contigo</p>
+      <p class="conseguir-app-titulo" data-i18n="login.llevatela">Llévatela contigo</p>
       <div class="conseguir-app-fila">
-        <img class="qr" src="/assets/qr-costaviva.svg" alt="Código QR para instalar Costaviva" />
+        <img class="qr" src="/assets/qr-costaviva.svg" alt="Código QR para instalar Costaviva" data-i18n-alt="login.qr_alt" />
         <div class="conseguir-app-texto">
-          Escanea con el móvil y pulsa «Añadir a pantalla de inicio» — se instala como una app, al momento.
+          <span data-i18n="login.escanea">Escanea con el móvil y pulsa «Añadir a pantalla de inicio» — se instala como una app, al momento.</span>
           <div class="badges-tienda">
-            <span class="badge-tienda" title="Próximamente"><span class="puntito"></span>App Store — pronto</span>
-            <span class="badge-tienda" title="Próximamente"><span class="puntito"></span>Google Play — pronto</span>
+            <span class="badge-tienda" title="Próximamente" data-i18n-title="login.proximamente"><span class="puntito"></span><span data-i18n="login.app_store">App Store — pronto</span></span>
+            <span class="badge-tienda" title="Próximamente" data-i18n-title="login.proximamente"><span class="puntito"></span><span data-i18n="login.google_play">Google Play — pronto</span></span>
           </div>
         </div>
       </div>
@@ -404,7 +409,7 @@ if (codigoUrl) guardarCodigo(codigoUrl);
 const codigoInvitacion = () => codigoUrl || leerCodigoGuardado();
 if (codigoInvitacion()) {
   const aviso = document.getElementById("avisoInvitacion");
-  aviso.textContent = `🎁 Tienes una invitación (código ${formatearCodigo(codigoInvitacion())}). Crea la cuenta con el email en el que la recibiste. Si ya tienes cuenta, pulsa "Ya tengo cuenta" y entra.`;
+  aviso.textContent = I18n.t("login.aviso_invitacion", { codigo: formatearCodigo(codigoInvitacion()) });
   aviso.className = "mensaje ok";
 }
 
@@ -426,7 +431,7 @@ async function entrarTrasCanje(elMensaje) {
   elMensaje.textContent = `${mensajeCanje(r.codigo)} `;
   const seguir = document.createElement("a");
   seguir.href = "/";
-  seguir.textContent = "Seguir a la app";
+  seguir.textContent = I18n.t("login.seguir_app");
   elMensaje.appendChild(seguir);
   elMensaje.className = "mensaje error";
 }
@@ -497,9 +502,9 @@ document.getElementById("linkVolverDesdeEspera").addEventListener("click", () =>
 
 document.getElementById("linkRecuperar").addEventListener("click", async () => {
   const email = document.getElementById("email").value;
-  if (!email) { mostrarMensaje("Escribe primero tu correo electrónico.", "error"); return; }
+  if (!email) { mostrarMensaje(I18n.t("login.escribe_correo"), "error"); return; }
   const captchaToken = leerTokenTurnstile(widgetLogin);
-  if (!captchaToken) { mostrarMensaje("Completa la verificación de seguridad de más abajo antes de continuar.", "error"); return; }
+  if (!captchaToken) { mostrarMensaje(I18n.t("login.completa_captcha"), "error"); return; }
   // redirectTo explícito: sin esto, Supabase manda al enlace a la "Site
   // URL" configurada en su panel — que, encontrado el 2026-09-13,
   // apuntaba a la raíz de fishnow-59u.pages.dev (sin /login), de antes
@@ -515,8 +520,8 @@ document.getElementById("linkRecuperar").addEventListener("click", async () => {
     redirectTo: `${window.location.origin}/login`,
   });
   reiniciarTurnstile(widgetLogin);
-  if (error) mostrarMensaje(traducirError(error, "No se ha podido enviar el enlace. Inténtalo de nuevo en unos minutos."), "error");
-  else mostrarMensaje("Te hemos enviado un enlace para restablecer la contraseña.", "ok");
+  if (error) mostrarMensaje(traducirError(error, I18n.t("login.error_enlace")), "error");
+  else mostrarMensaje(I18n.t("login.enlace_reset"), "ok");
 });
 
 // ---------------------------------------------------------------------------
@@ -573,12 +578,12 @@ formNueva.addEventListener("submit", async (e) => {
   mensajeNuevaEl.className = "mensaje";
 
   if (nueva !== repetir) {
-    mensajeNuevaEl.textContent = "Las dos contraseñas no coinciden.";
+    mensajeNuevaEl.textContent = I18n.t("login.no_coinciden");
     mensajeNuevaEl.className = "mensaje error";
     return;
   }
   if (!passwordValida(nueva)) {
-    mensajeNuevaEl.textContent = "La contraseña debe tener al menos 6 caracteres, con una mayúscula, un número y un símbolo.";
+    mensajeNuevaEl.textContent = I18n.t("login.requisitos_error");
     mensajeNuevaEl.className = "mensaje error";
     return;
   }
@@ -588,7 +593,7 @@ formNueva.addEventListener("submit", async (e) => {
   btnGuardarNueva.disabled = false;
 
   if (error) {
-    mensajeNuevaEl.textContent = traducirError(error, "No se ha podido cambiar la contraseña. Inténtalo de nuevo.");
+    mensajeNuevaEl.textContent = traducirError(error, I18n.t("login.error_cambiar"));
     mensajeNuevaEl.className = "mensaje error";
     return;
   }
@@ -611,7 +616,7 @@ async function gestionarAccesoInicial() {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     history.replaceState(null, "", window.location.pathname);
     if (error) {
-      mostrarMensaje("El enlace no es válido o ha caducado. Pide uno nuevo.", "error");
+      mostrarMensaje(I18n.t("login.enlace_invalido"), "error");
       return;
     }
     mostrarPantallaNuevaContrasena();
@@ -632,7 +637,7 @@ async function gestionarAccesoInicial() {
     });
     history.replaceState(null, "", window.location.pathname);
     if (error) {
-      mostrarMensaje("El enlace no es válido o ha caducado. Pide uno nuevo.", "error");
+      mostrarMensaje(I18n.t("login.enlace_invalido"), "error");
       return;
     }
     mostrarPantallaNuevaContrasena();
@@ -654,7 +659,7 @@ formLogin.addEventListener("submit", async (e) => {
 
   const captchaToken = leerTokenTurnstile(widgetLogin);
   if (!captchaToken) {
-    mostrarMensaje("Completa la verificación de seguridad de más abajo antes de continuar.", "error");
+    mostrarMensaje(I18n.t("login.completa_captcha"), "error");
     btnPrincipal.disabled = false;
     return;
   }
@@ -662,7 +667,7 @@ formLogin.addEventListener("submit", async (e) => {
   const { data, error } = await supabase.auth.signInWithPassword({ email, password, options: { captchaToken } });
   reiniciarTurnstile(widgetLogin);
   if (error) {
-    mostrarMensaje(traducirError(error, "No se ha podido entrar. Inténtalo de nuevo en unos minutos."), "error");
+    mostrarMensaje(traducirError(error, I18n.t("login.error_entrar")), "error");
   } else {
     // "aprobado" ya no es un gate inicial (las altas se aprueban solas)
     // — solo sirve para bloquear a alguien que el admin haya pausado
@@ -674,7 +679,7 @@ formLogin.addEventListener("submit", async (e) => {
       .single();
 
     if (perfil && perfil.aprobado === false) {
-      mostrarMensaje("Tu cuenta no tiene acceso activo ahora mismo.", "info");
+      mostrarMensaje(I18n.t("login.sin_acceso"), "info");
       await supabase.auth.signOut();
     } else {
       await entrarTrasCanje(mensajeEl);
@@ -709,18 +714,18 @@ formRegistroDatos.addEventListener("submit", async (e) => {
   mensajeRegistroEl.className = "mensaje";
 
   if (!/^[0-9]{5}$/.test(codigoPostal)) {
-    mostrarMensajeRegistro("El código postal debe tener 5 dígitos.", "error");
+    mostrarMensajeRegistro(I18n.t("login.cp_5"), "error");
     btnContinuarRegistro.disabled = false;
     return;
   }
   if (!checkTerminos.checked) {
-    mostrarMensajeRegistro("Tienes que aceptar los términos de uso para crear la cuenta.", "error");
+    mostrarMensajeRegistro(I18n.t("login.acepta_terminos"), "error");
     btnContinuarRegistro.disabled = false;
     return;
   }
   const captchaToken = leerTokenTurnstile(widgetRegistro);
   if (!captchaToken) {
-    mostrarMensajeRegistro("Completa la verificación de seguridad de más abajo antes de continuar.", "error");
+    mostrarMensajeRegistro(I18n.t("login.completa_captcha"), "error");
     btnContinuarRegistro.disabled = false;
     return;
   }
@@ -744,7 +749,7 @@ formRegistroDatos.addEventListener("submit", async (e) => {
   btnContinuarRegistro.disabled = false;
 
   if (error) {
-    mostrarMensajeRegistro(traducirError(error, "No se ha podido crear la cuenta. Inténtalo de nuevo en unos minutos."), "error");
+    mostrarMensajeRegistro(traducirError(error, I18n.t("login.error_crear")), "error");
   } else {
     // El admin se entera solo cuando el email quede confirmado de
     // verdad, sin bloquear a nadie, vía notificar-altas.yml (cron cada

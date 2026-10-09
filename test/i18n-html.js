@@ -173,6 +173,7 @@ let _es = null;
 export function fuenteEs(src) {
   _es ||= leerDiccionario(new URL("../assets/i18n/es.js", import.meta.url));
   return String(src)
+    .replace(/\$\{I18n\.t\("([\w.]+)"\)\}/g, (todo, k) => (typeof _es[k] === "string" ? _es[k] : todo))
     .replace(/I18n\.t\("([\w.]+)"/g, (todo, k) => (typeof _es[k] === "string" ? `I18n.t(${JSON.stringify(_es[k])}` : todo))
     .replace(/<span data-i18n="[\w.]+">([^<]*)<\/span>/g, "$1")
     .replace(/ data-i18n(?:-[a-z-]+)?="[\w.]+"/g, "");
