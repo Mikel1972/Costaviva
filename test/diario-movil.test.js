@@ -62,10 +62,19 @@ test("diario: el índice usa la boya que enseña la ficha", () => {
 test("diario: la hoja del día no se mete bajo el menú ni bajo la cabecera", () => {
   const h = html("diario.html");
   const panel = h.match(/\.panel-dia \{[\s\S]*?\}/)[0];
-  assert.match(panel, /bottom: calc\(72px \+ env\(safe-area-inset-bottom\)\)/);
+  assert.match(panel, /bottom: var\(--menu-alto, calc\(72px \+ env\(safe-area-inset-bottom\)\)\)/);
   assert.match(panel, /var\(--cabecera-abajo/);
   assert.doesNotMatch(panel, /bottom: 54px/);
   assert.match(h, /setProperty\("--cabecera-abajo"/);
+  assert.match(h, /setProperty\("--menu-alto"/);
+});
+
+test("diario: '➕ Añadir entrada' pegado al pie de la hoja y oculto con formulario abierto", () => {
+  const h = html("diario.html");
+  assert.match(h, /#btnAnadirEntrada \{[^}]*position: sticky; bottom: -20px/);
+  assert.match(h, /#zonaFormulario:not\(:empty\) ~ #btnAnadirEntrada \{ display: none; \}/);
+  assert.match(h, /`<div id="zonaFormulario"><\/div>` \+\s*`<button class="secundario" id="btnAnadirEntrada">/);
+  assert.match(h, /\.panel-dia h2::first-letter \{ text-transform: uppercase; \}/);
 });
 
 test("páginas con menú inferior: hueco abajo y safe-area arriba", () => {
