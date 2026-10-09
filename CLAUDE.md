@@ -97,6 +97,12 @@ dependencias (PR "i18n"; los datos de NZ van aparte).
   en `tz` (`zona` allí es la geográfica, "Northland"); `zonaDeSpot` mira los
   dos. Sus regiones MPI `nz_*` aún no están en `REGIONES` de regiones.js (por
   coordenadas sale `nueva_zelanda`): unificarlo al activar NZ.
+- **Horas de boyas (2026-10-09):** `boyas[].actualizado` de /prevision es
+  siempre ISO con zona. Las de Copernicus ya venían en UTC con Z; la de Nazaré
+  (visor MONICAN) devuelve SDATA en la zona de `dtz` y SIN sufijo: se pide con
+  `dtz=UTC` y se pasa a ISO con Z (`sdataAUtcISO`). El diario solo usa la boya
+  si su lectura está a ±2 h de la hora de la salida (`boyaDeLaHora`); si no,
+  el modelo de esa hora. Test `test/boya-hora.test.js`.
 - Freza y vedas "general" de especies.json son de la Península: no valen en
   el hemisferio sur (`usaDatosGenerales`). NZ traerá sus propios meses; nunca
   se desplazan 6 meses.
