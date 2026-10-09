@@ -12,6 +12,7 @@ import os
 import unittest
 
 import numpy as np
+from datetime import datetime, timedelta
 
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 _spec = importlib.util.spec_from_file_location("dc", os.path.join(RAIZ, "scripts", "fuentes", "descargar-capas.py"))
@@ -180,7 +181,7 @@ class Historico(unittest.TestCase):
 
     def historico(self, ds, d):
         b = dc.BloqueReal.__new__(dc.BloqueReal)
-        b.chl, b.con_flags = ds, True
+        b.abiertos, b.sin = {("clorofila", d): (ds, True, {"dataset": "falso"})}, {}
         return b.clorofila(d)
 
     def test_igual_que_la_pasada_diaria(self):
@@ -207,6 +208,139 @@ class Historico(unittest.TestCase):
         self.assertEqual(h["fecha_clorofila_desde"], j["fecha_clorofila_desde"])
         self.assertEqual(j["umbrales"]["umbral_temp_c_km"], dc.FRENTES["umbral_temp_c_km"])
         self.assertIn("min_celdas_frente", j["umbrales"])
+
+
+# ---------------------------------------------------------------------------
+# Histórico: elección de dataset por cobertura real (2026-10-09, primer
+# lanzamiento: el NRT de clorofila solo guardaba ~10 días y la pasada abortó
+# con CoordinatesOutOfDatasetBounds). Sin red: coberturas y datasets falsos.
+# ---------------------------------------------------------------------------
+NRT_CHL = dc.HISTORICO_DATASETS["clorofila"][0]["dataset"]
+MY_CHL = dc.HISTORICO_DATASETS["clorofila"][1]["dataset"]
+ANFC_T = dc.HISTORICO_DATASETS["temperatura"][0]["dataset"]
+MY_T = dc.HISTORICO_DATASETS["temperatura"][1]["dataset"]
+ANFC_C = dc.HISTORICO_DATASETS["corriente"][0]["dataset"]
+MY_C = dc.HISTORICO_DATASETS["corriente"][1]["dataset"]
+# Las coberturas reales del 2026-10-09 (copernicusmarine describe).
+COB = {NRT_CHL: ("2026-09-29", "2026-10-08"), MY_CHL: ("1997-10-01", "2026-10-01"),
+       ANFC_T: ("2024-10-18", "2026-10-18"), MY_T: ("1993-01-01", "2026-06-16"),
+       ANFC_C: ("2024-10-15", "2026-10-17"), MY_C: ("1993-01-01", "2026-06-15")}
+
+
+def cobertura(dsid):
+    return COB.get(dsid)
+
+
+class EleccionDataset(unittest.TestCase):
+    def test_archivo_para_el_pasado_y_nrt_si_cubre(self):
+        e = lambda v, d: (dc.elegir_dataset(v, d, cobertura) or {}).get("dataset")  # noqa: E731
+        self.assertEqual(e("clorofila", "2026-01-01"), MY_CHL)
+        self.assertEqual(e("clorofila", "2026-10-01"), MY_CHL, "el NRT no tiene los días previos del compuesto")
+        self.assertEqual(e("clorofila", "2026-10-08"), NRT_CHL, "solo el NRT cubre el día")
+        self.assertEqual(e("temperatura", "2026-01-01"), ANFC_T, "el análisis de IBI guarda desde 2024-10-18")
+        self.assertEqual(e("temperatura", "2024-01-01"), MY_T)
+        self.assertEqual(e("corriente", "2024-01-01"), MY_C)
+        self.assertIsNone(e("clorofila", "1990-01-01"))
+        self.assertIsNone(e("clorofila", "2026-10-09"), "más allá de todo: ninguno")
+        self.assertIsNone(dc.elegir_dataset("clorofila", "2026-01-01", lambda d: None), "cobertura desconocida: no se usa")
+
+
+def _falso(dias, horas=False, vars_=("CHL", "flags"), n=12):
+    """Dataset falso de pocos puntos (fila 0 = sur, como Copernicus)."""
+    lats = np.linspace(43.0, 45.0, n)
+    lons = np.linspace(-6.0, -2.0, n)
+    campos = {}
+    for v in vars_:
+        por = {}
+        for k, d in enumerate(dias):
+            if v == "flags":
+                por[d] = np.zeros((n, n))
+            elif v == "CHL":
+                x = np.full((n, n), 0.3 + 0.01 * k)
+                x[:, n // 2:] = 1.5
+                por[d] = x
+            elif v == "thetao":
+                por[d] = np.tile(np.linspace(14, 18, n)[:, None], (1, n))
+            else:
+                por[d] = np.full((n, n), 0.1)
+        campos[v] = _Campo(por, lats, lons)
+    ds = _DS(**campos)
+    ds["time"] = type("T", (), {"values": np.array([np.datetime64(f"{d}T{'12' if horas else '00'}:00:00") for d in dias])})
+    return ds
+
+
+class HistoricoSinAbortar(unittest.TestCase):
+    """La pasada mira la cobertura antes de pedir, nunca pide fuera de ella y
+    salta con aviso lo que ningún dataset cubre; lo demás se escribe."""
+
+    def setUp(self):
+        self.pedidos = []
+        self.orig = dc.abrir, dc.cobertura_real
+
+        def abrir(dsid, variable, ini, fin):
+            self.pedidos.append((dsid, ini[:10], fin[:10]))
+            c0, c1 = COB[dsid]
+            if ini[:10] < c0 or fin[:10] > c1:
+                raise RuntimeError(f"CoordinatesOutOfDatasetBounds {dsid} {ini} {fin}")
+            d0 = datetime.strptime(ini[:10], "%Y-%m-%d")
+            n = (datetime.strptime(fin[:10], "%Y-%m-%d") - d0).days + 1
+            dias = [(d0 + timedelta(days=k)).strftime("%Y-%m-%d") for k in range(n)]
+            vs = variable if isinstance(variable, list) else [variable]
+            return _falso(dias, horas=(vs == ["thetao"]), vars_=vs)
+
+        dc.abrir = abrir
+        dc.cobertura_real = cobertura
+
+    def tearDown(self):
+        dc.abrir, dc.cobertura_real = self.orig
+
+    def test_bloque_respeta_cobertura(self):
+        b = dc.BloqueReal(["2026-09-30", "2026-10-01", "2026-10-08", "2026-10-09"], cobertura)
+        for dsid, ini, fin in self.pedidos:
+            self.assertTrue(COB[dsid][0] <= ini and fin <= COB[dsid][1], (dsid, ini, fin))
+        self.assertEqual(b.datasets("2026-10-01")["clorofila"], MY_CHL)
+        self.assertEqual(b.datasets("2026-10-08")["clorofila"], NRT_CHL)
+        self.assertEqual(b.sin.get("2026-10-09"), ["clorofila"])
+        r = b.clorofila("2026-10-01")
+        self.assertEqual(r[0], "2026-10-01")
+        self.assertTrue(all(p[0] < "2026-10-01" for p in r[5]))
+        self.assertIsNone(b.clorofila("2026-10-09"))
+
+    def test_la_pasada_salta_lo_que_no_cubre_y_escribe_lo_demas(self):
+        import contextlib
+        import io
+        import json
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            a = type("A", (), dict(desde="2026-10-07", hasta="2026-10-10", salida=tmp, prueba=False, bloque=10,
+                                   max_dias=150, max_minutos=60, existentes_url=None))
+            out = io.StringIO()
+            with contextlib.redirect_stdout(out):
+                dc.historico(a)
+            log = out.getvalue()
+            hechos = sorted(os.listdir(os.path.join(tmp, "capas", "historico")))
+            self.assertEqual(hechos, ["frentes-2026-10-07.json", "frentes-2026-10-08.json"])
+            self.assertIn("ningún dataset cubre clorofila", log)
+            with open(os.path.join(tmp, "capas", "historico", "frentes-2026-10-07.json")) as fh:
+                h = json.load(fh)
+            self.assertEqual(h["datasets_historico"]["clorofila"], NRT_CHL)
+            self.assertEqual(h["fecha"], "2026-10-07")
+
+    def test_un_bloque_que_falla_no_tumba_la_pasada(self):
+        import contextlib
+        import io
+        import tempfile
+
+        def roto(*_a, **_k):
+            raise RuntimeError("servidor caído")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            dc.abrir = roto
+            a = type("A", (), dict(desde="2026-10-07", hasta="2026-10-08", salida=tmp, prueba=False, bloque=1,
+                                   max_dias=150, max_minutos=60, existentes_url=None))
+            with contextlib.redirect_stdout(io.StringIO()):
+                with self.assertRaises(SystemExit):  # nada escrito: en rojo, pero tras recorrer todo
+                    dc.historico(a)
 
 
 if __name__ == "__main__":

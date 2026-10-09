@@ -64,7 +64,7 @@ on:
         required: false
         default: "30"
       desde:
-        description: "historico_frentes: primer día AAAA-MM-DD (la clorofila NRT guarda ~1 año hacia atrás)"
+        description: "historico_frentes: primer día AAAA-MM-DD (antes de lo que guarda el NRT usa el archivo MY de Copernicus; lo que no cubre ningún dataset se salta)"
         required: false
         default: "2026-01-01"
       hasta:
