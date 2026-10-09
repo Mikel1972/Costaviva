@@ -1,13 +1,13 @@
 {
- "fecha": "2026-10-09T09:07:43.706Z",
- "lineasHistorial": 133,
+ "fecha": "2026-10-09T09:37:53.327Z",
+ "lineasHistorial": 144,
  "etiquetas": 43,
  "etiquetasClaude": 43,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 28.4267,
+   "a": 22.4026,
    "p": 1,
-   "n": 5,
+   "n": 6,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 3,
    "franjasClaude": [
@@ -48,9 +48,9 @@
    "pocosDatos": true
   },
   "zarautz/dinamico": {
-   "a": 6.8265,
+   "a": 6.7539,
    "p": 0.5,
-   "n": 16,
+   "n": 17,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -108,9 +108,9 @@
    "pocosDatos": true
   },
   "mundaka/principal": {
-   "a": 13.2446,
+   "a": 13.2785,
    "p": 1,
-   "n": 9,
+   "n": 10,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 3,
    "franjasClaude": [
@@ -120,13 +120,13 @@
    "dias": 2,
    "hMin": 1.06,
    "hMax": 2.18,
-   "errorRel": 0.831,
+   "errorRel": 0.78,
    "pocosDatos": true
   },
   "bakio/principal": {
-   "a": 11.2168,
+   "a": 10.7253,
    "p": 1,
-   "n": 5,
+   "n": 6,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 1,
    "franjasClaude": [
@@ -135,18 +135,18 @@
    "dias": 2,
    "hMin": 1.5,
    "hMax": 3.12,
-   "errorRel": 0.727,
+   "errorRel": 0.663,
    "pocosDatos": true
   },
   "sopelana/principal": {
-   "a": 9.0848,
+   "a": 11.8477,
    "p": 1,
-   "n": 2,
+   "n": 3,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
-   "dias": 1,
-   "hMin": 3.12,
+   "dias": 2,
+   "hMin": 1.88,
    "hMax": 3.12,
    "errorRel": 0.5,
    "pocosDatos": true
@@ -178,9 +178,9 @@
    "pocosDatos": true
   },
   "berria/dinamico": {
-   "a": 4.0461,
+   "a": 4.3345,
    "p": 0.5,
-   "n": 13,
+   "n": 14,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 9,
    "franjasClaude": [
@@ -190,7 +190,7 @@
    "dias": 2,
    "hMin": 1.5,
    "hMax": 3.12,
-   "errorRel": 0.924,
+   "errorRel": 1,
    "pocosDatos": true
   },
   "mutriku/principal": {
@@ -274,10 +274,10 @@
   },
   "mundaka": {
    "sustituye": false,
-   "motivo": "ruidosa (±76 %) y sin calibrar; 3 etiquetas de Claude en 2 franjas (faltan)",
+   "motivo": "ruidosa (±85 %) y sin calibrar; 3 etiquetas de Claude en 2 franjas (faltan)",
    "ruido": {
-    "ruido": 0.762,
-    "pares": 4
+    "ruido": 0.847,
+    "pares": 5
    }
   },
   "bakio": {
@@ -298,7 +298,7 @@
   },
   "berria": {
    "sustituye": false,
-   "motivo": "ruido aún sin medir (1 pares de lecturas cercanas); 9 etiquetas de Claude en 2 franjas, pero la calibración no cuadra con ellas (±92 %)",
+   "motivo": "ruido aún sin medir (1 pares de lecturas cercanas); 9 etiquetas de Claude en 2 franjas, pero la calibración no cuadra con ellas (±100 %)",
    "ruido": {
     "ruido": 0.016,
     "pares": 1
