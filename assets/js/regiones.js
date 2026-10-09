@@ -80,12 +80,72 @@ export function regionPorCoordenadas(lat, lon) {
   return "cantabrico";
 }
 
+// Áreas de pesca recreativa de MPI en Nueva Zelanda (fase 2 de NZ,
+// 2026-10-09): las claves de `presencia`/`freza` de las especies de NZ en
+// especies.json y la `region` de functions/_lib/nz/spots-nz.js. Todas son de
+// la región "nueva_zelanda" (hora, idioma, hemisferio, país).
+export const AREAS_NZ = [
+  "nz_auckland_kermadec", "nz_central", "nz_challenger", "nz_south_east", "nz_kaikoura", "nz_southland", "nz_fiordland",
+];
+const regionBase = (id) => (typeof id === "string" && id.startsWith("nz_") ? "nueva_zelanda" : id);
+
+// País de una región o área ("es" para España y Portugal, "nz"): el de las
+// especies que valen allí (especies.json `pais`, "es" si falta).
+export function paisDeRegion(id) {
+  return regionBase(id) === "nueva_zelanda" ? "nz" : "es";
+}
+
+// Área de MPI de un punto de NZ por coordenadas. APROXIMADA (como las cajas
+// de arriba, no son los límites oficiales: la capa de MPI es "for internal
+// use only"): Isla Norte o Sur por el estrecho de Cook; en la Norte,
+// Auckland/Kermadec al norte de Tirua Point (38,4 S) por el oeste y de la
+// bahía de Plenty hasta Cape Runaway (178 E) por el este; en la Sur, la línea
+// entre las dos costas separa oeste (Challenger hasta Awarua Point, 44,26 S;
+// Fiordland hasta Sand Hill Point, 46,2 S) y este (Challenger hasta Clarence
+// Point, 42,17 S; Kaikōura hasta el río Conway, 42,62 S; South-East hasta
+// Slope Point, 169 E; Southland al oeste de Slope Point y Stewart).
+// test/nz-especies.test.js la compara con la región asignada a mano a los 60
+// spots.
+export function areaPescaNZ(lat, lon) {
+  const norte = lat >= -41.7 && (lon >= 174.4 || lat >= -40.4);
+  if (norte) {
+    if (lon < 175.5) return lat > -38.4 ? "nz_auckland_kermadec" : "nz_central";
+    return lat > -38.1 && lon < 178.0 ? "nz_auckland_kermadec" : "nz_central";
+  }
+  // Línea entre la costa oeste y la este de la Isla Sur.
+  const tramos = [[-41.5, 172.5], [-44.0, 170.0], [-46.0, 168.0], [-47.5, 167.0]];
+  let corte = 172.5;
+  for (let k = 1; k < tramos.length; k++) {
+    const [la0, lo0] = tramos[k - 1], [la1, lo1] = tramos[k];
+    if (lat <= la0 && lat >= la1) corte = lo0 + ((lat - la0) / (la1 - la0)) * (lo1 - lo0);
+    else if (lat < la1 && k === tramos.length - 1) corte = lo1;
+  }
+  if (lon < corte) {
+    if (lat > -44.26) return "nz_challenger";
+    if (lat > -46.2) return "nz_fiordland";
+    return "nz_southland";
+  }
+  if (lat > -42.17) return "nz_challenger";
+  if (lat > -42.62) return "nz_kaikoura";
+  if (lat < -46.2 && lon < 169.0) return "nz_southland";
+  return "nz_south_east";
+}
+
+// Región de PESCA de un punto: la de regionPorCoordenadas y, en Nueva
+// Zelanda, su área de MPI. Es la que usan las especies (presencia, freza,
+// tallas) y las reglas; ventana-actividad.js la reexporta como
+// regionPorCoordenadas. En España devuelve exactamente lo mismo.
+export function regionPescaPorCoordenadas(lat, lon) {
+  const r = regionPorCoordenadas(lat, lon);
+  return r === "nueva_zelanda" ? areaPescaNZ(lat, lon) : r;
+}
+
 export function zonaDeRegion(id) {
-  return REGIONES[id]?.zona || ZONA_POR_DEFECTO;
+  return REGIONES[regionBase(id)]?.zona || ZONA_POR_DEFECTO;
 }
 
 export function hemisferioDeRegion(id) {
-  return REGIONES[id]?.hemisferio || "norte";
+  return REGIONES[regionBase(id)]?.hemisferio || "norte";
 }
 
 // ¿Valen en esta región los datos "general" de especies.json (freza, vedas

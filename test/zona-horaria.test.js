@@ -240,7 +240,11 @@ test("pedirPorZona: una consulta por zona y la respuesta en el orden de los spot
 // ---------------------------------------------------------------------------
 test("Auckland: región, hemisferio sur, NZD, inglés", () => {
   assert.equal(R.regionPorCoordenadas(AUCKLAND.lat, AUCKLAND.lon), "nueva_zelanda");
-  assert.equal(VA.regionPorCoordenadas(AUCKLAND.lat, AUCKLAND.lon), "nueva_zelanda");
+  // La de ventana-actividad.js es la región de PESCA (fase 2 de NZ): en NZ,
+  // el área de MPI de las especies.
+  assert.equal(VA.regionPorCoordenadas(AUCKLAND.lat, AUCKLAND.lon), "nz_auckland_kermadec");
+  assert.equal(R.hemisferioDeRegion("nz_auckland_kermadec"), "sur");
+  assert.equal(R.zonaDeRegion("nz_southland"), "Pacific/Auckland");
   assert.equal(R.zonaPorCoordenadas(AUCKLAND.lat, AUCKLAND.lon), "Pacific/Auckland");
   // Bluff (Southland) y Cabo Reinga también.
   assert.equal(R.zonaPorCoordenadas(-46.6, 168.35), "Pacific/Auckland");

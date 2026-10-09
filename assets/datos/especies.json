@@ -582,6 +582,171 @@
    "fecha_consulta": "2026-10-09",
    "leido": "referencia comprobada en Crossref",
    "nota": "Revisión: el agua turbia acorta la distancia a la que el pez ve (presas, señuelos) y cambia su comportamiento."
+  },
+  "mpi_popular_fish": {
+   "titulo": "MPI – Information on popular fish in New Zealand",
+   "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/information-on-popular-fish-in-nz/",
+   "editor": "Ministry for Primary Industries (MPI) / Fisheries New Zealand",
+   "tipo": "oficial",
+   "licencia": "CC BY 4.0 (MPI: \"you are free to copy, distribute and adapt the material, as long as you attribute the work to the Crown\"; https://www.mpi.govt.nz/about-this-site/mpi-copyright)",
+   "fecha_consulta": "2026-10-09",
+   "pais": "nz"
+  },
+  "fnz_plenary_2025": {
+   "titulo": "Fisheries Assessment Plenary, May 2025 (informes por especie)",
+   "url": "https://www.mpi.govt.nz/fishing-aquaculture/fisheries-management/fish-stock-status/plenary-reports-for-individual-species/",
+   "editor": "Ministry for Primary Industries (MPI) / Fisheries New Zealand",
+   "tipo": "oficial",
+   "licencia": "CC BY 4.0 (MPI: \"you are free to copy, distribute and adapt the material, as long as you attribute the work to the Crown\"; https://www.mpi.govt.nz/about-this-site/mpi-copyright)",
+   "fecha_consulta": "2026-10-09",
+   "pais": "nz"
+  },
+  "mpi_aebr125": {
+   "titulo": "AEBR 125 – Habitats of particular significance for fisheries management: coastal finfish (Morrison et al.)",
+   "url": "https://www.mpi.govt.nz/dmsdocument/4353",
+   "editor": "Ministry for Primary Industries (MPI) / Fisheries New Zealand",
+   "tipo": "oficial",
+   "licencia": "CC BY 4.0 (MPI: \"you are free to copy, distribute and adapt the material, as long as you attribute the work to the Crown\"; https://www.mpi.govt.nz/about-this-site/mpi-copyright)",
+   "fecha_consulta": "2026-10-09",
+   "pais": "nz"
+  },
+  "mpi_kin3_2024": {
+   "titulo": "Review of sustainability measures for kingfish (KIN 3) 2024/25",
+   "url": "https://www.mpi.govt.nz/dmsdocument/62811",
+   "editor": "Ministry for Primary Industries (MPI) / Fisheries New Zealand",
+   "tipo": "oficial",
+   "licencia": "CC BY 4.0 (MPI: \"you are free to copy, distribute and adapt the material, as long as you attribute the work to the Crown\"; https://www.mpi.govt.nz/about-this-site/mpi-copyright)",
+   "fecha_consulta": "2026-10-09",
+   "pais": "nz"
+  },
+  "mpi_bco": {
+   "titulo": "Review of blue cod (BCO 3, 5, 7, 8) 2022-2025",
+   "url": "https://www.mpi.govt.nz/dmsdocument/70074",
+   "editor": "Ministry for Primary Industries (MPI) / Fisheries New Zealand",
+   "tipo": "oficial",
+   "licencia": "CC BY 4.0 (MPI: \"you are free to copy, distribute and adapt the material, as long as you attribute the work to the Crown\"; https://www.mpi.govt.nz/about-this-site/mpi-copyright)",
+   "fecha_consulta": "2026-10-09",
+   "pais": "nz"
+  },
+  "mpi_cra_2025": {
+   "titulo": "Fisheries Assessment Plenary November 2025: red rock lobster (CRA, CRA 1)",
+   "url": "https://www.mpi.govt.nz/dmsdocument/70907",
+   "editor": "Ministry for Primary Industries (MPI) / Fisheries New Zealand",
+   "tipo": "oficial",
+   "licencia": "CC BY 4.0 (MPI: \"you are free to copy, distribute and adapt the material, as long as you attribute the work to the Crown\"; https://www.mpi.govt.nz/about-this-site/mpi-copyright)",
+   "fecha_consulta": "2026-10-09",
+   "pais": "nz",
+   "nota": "También https://www.mpi.govt.nz/dmsdocument/70899"
+  },
+  "mpi_gur": {
+   "titulo": "Red gurnard (GUR): discussion document",
+   "url": "https://www.mpi.govt.nz/dmsdocument/69933",
+   "editor": "Ministry for Primary Industries (MPI) / Fisheries New Zealand",
+   "tipo": "oficial",
+   "licencia": "CC BY 4.0 (MPI: \"you are free to copy, distribute and adapt the material, as long as you attribute the work to the Crown\"; https://www.mpi.govt.nz/about-this-site/mpi-copyright)",
+   "fecha_consulta": "2026-10-09",
+   "pais": "nz"
+  },
+  "mpi_fla": {
+   "titulo": "Flatfish (FLA): discussion document",
+   "url": "https://www.mpi.govt.nz/dmsdocument/69765",
+   "editor": "Ministry for Primary Industries (MPI) / Fisheries New Zealand",
+   "tipo": "oficial",
+   "licencia": "CC BY 4.0 (MPI: \"you are free to copy, distribute and adapt the material, as long as you attribute the work to the Crown\"; https://www.mpi.govt.nz/about-this-site/mpi-copyright)",
+   "fecha_consulta": "2026-10-09",
+   "pais": "nz"
+  },
+  "mpi_squ": {
+   "titulo": "Arrow squid (SQU): discussion document",
+   "url": "https://www.mpi.govt.nz/dmsdocument/69681",
+   "editor": "Ministry for Primary Industries (MPI) / Fisheries New Zealand",
+   "tipo": "oficial",
+   "licencia": "CC BY 4.0 (MPI: \"you are free to copy, distribute and adapt the material, as long as you attribute the work to the Crown\"; https://www.mpi.govt.nz/about-this-site/mpi-copyright)",
+   "fecha_consulta": "2026-10-09",
+   "pais": "nz"
+  },
+  "mpi_but": {
+   "titulo": "Butterfish (BUT): discussion document",
+   "url": "https://www.mpi.govt.nz/dmsdocument/63690",
+   "editor": "Ministry for Primary Industries (MPI) / Fisheries New Zealand",
+   "tipo": "oficial",
+   "licencia": "CC BY 4.0 (MPI: \"you are free to copy, distribute and adapt the material, as long as you attribute the work to the Crown\"; https://www.mpi.govt.nz/about-this-site/mpi-copyright)",
+   "fecha_consulta": "2026-10-09",
+   "pais": "nz"
+  },
+  "mpi_mok": {
+   "titulo": "Blue moki (MOK): discussion document",
+   "url": "https://www.mpi.govt.nz/dmsdocument/69711",
+   "editor": "Ministry for Primary Industries (MPI) / Fisheries New Zealand",
+   "tipo": "oficial",
+   "licencia": "CC BY 4.0 (MPI: \"you are free to copy, distribute and adapt the material, as long as you attribute the work to the Crown\"; https://www.mpi.govt.nz/about-this-site/mpi-copyright)",
+   "fecha_consulta": "2026-10-09",
+   "pais": "nz"
+  },
+  "mpi_jdo": {
+   "titulo": "John dory (JDO): Fisheries Assessment Report",
+   "url": "https://www.mpi.govt.nz/dmsdocument/4296",
+   "editor": "Ministry for Primary Industries (MPI) / Fisheries New Zealand",
+   "tipo": "oficial",
+   "licencia": "CC BY 4.0 (MPI: \"you are free to copy, distribute and adapt the material, as long as you attribute the work to the Crown\"; https://www.mpi.govt.nz/about-this-site/mpi-copyright)",
+   "fecha_consulta": "2026-10-09",
+   "pais": "nz"
+  },
+  "mpi_tar": {
+   "titulo": "Tarakihi (TAR): review of sustainability measures",
+   "url": "https://www.mpi.govt.nz/dmsdocument/72138",
+   "editor": "Ministry for Primary Industries (MPI) / Fisheries New Zealand",
+   "tipo": "oficial",
+   "licencia": "CC BY 4.0 (MPI: \"you are free to copy, distribute and adapt the material, as long as you attribute the work to the Crown\"; https://www.mpi.govt.nz/about-this-site/mpi-copyright)",
+   "fecha_consulta": "2026-10-09",
+   "pais": "nz"
+  },
+  "mpi_tre": {
+   "titulo": "Trevally (TRE): review of sustainability measures",
+   "url": "https://www.mpi.govt.nz/dmsdocument/49660",
+   "editor": "Ministry for Primary Industries (MPI) / Fisheries New Zealand",
+   "tipo": "oficial",
+   "licencia": "CC BY 4.0 (MPI: \"you are free to copy, distribute and adapt the material, as long as you attribute the work to the Crown\"; https://www.mpi.govt.nz/about-this-site/mpi-copyright)",
+   "fecha_consulta": "2026-10-09",
+   "pais": "nz",
+   "nota": "También https://www.mpi.govt.nz/dmsdocument/60166"
+  },
+  "pmc_hapuku": {
+   "titulo": "Hāpuku (Polyprion oxygeneios): artículo en PMC con licencia CC BY",
+   "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4356959/",
+   "editor": "PLOS ONE (vía PubMed Central)",
+   "tipo": "cientifica",
+   "licencia": "CC BY 4.0 (artículo de acceso abierto)",
+   "fecha_consulta": "2026-10-09",
+   "pais": "nz"
+  },
+  "mpi_fishing_rules": {
+   "titulo": "MPI – Fishing rules por área de pesca recreativa (solo enlace, sin cifras)",
+   "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/",
+   "editor": "Ministry for Primary Industries (MPI) / Fisheries New Zealand",
+   "tipo": "oficial",
+   "licencia": "CC BY 4.0 (MPI: \"you are free to copy, distribute and adapt the material, as long as you attribute the work to the Crown\"; https://www.mpi.govt.nz/about-this-site/mpi-copyright)",
+   "fecha_consulta": "2026-10-09",
+   "pais": "nz"
+  },
+  "nz_amateur_regs": {
+   "titulo": "Fisheries (Amateur Fishing) Regulations 2013",
+   "url": "https://www.legislation.govt.nz/regulation/public/2013/0482/latest/",
+   "editor": "Parlamento de Nueva Zelanda",
+   "tipo": "oficial",
+   "licencia": "Sin copyright (Copyright Act 1994, s27)",
+   "fecha_consulta": "2026-10-09",
+   "pais": "nz"
+  },
+  "obis_nz": {
+   "titulo": "OBIS – registros de especies en Nueva Zelanda",
+   "url": "https://obis.org",
+   "editor": "Ocean Biodiversity Information System",
+   "tipo": "datos",
+   "licencia": "CC0 / CC BY según el conjunto (los CC BY-NC no se usan)",
+   "fecha_consulta": "2026-10-09",
+   "pais": "nz",
+   "nota": "Consulta 2026-10-09: casi sin registros costeros de NZ con licencia libre (snapper: 3, uno mal identificado). No sirve todavía para la presencia ni para la temperatura."
   }
  },
  "jurisdicciones": {
@@ -689,6 +854,101 @@
    "estado": "pendiente",
    "pendiente": [
     "Madeira: normativa regional de pesca lúdica (JORAM)"
+   ]
+  },
+  "NZ-AKE": {
+   "estado": "solo_enlace",
+   "pais": "nz",
+   "area": "Auckland / Kermadec",
+   "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/auckland-kermadec-fishing-rules",
+   "hecho": [
+    "enlace a la página oficial de MPI del área (comprobado por su título, 2026-10-09)"
+   ],
+   "pendiente": [
+    "ninguna cifra hasta cotejarla con las Regulations 2013 y la Notice de 2025, con fecha_revision"
+   ]
+  },
+  "NZ-CEN": {
+   "estado": "solo_enlace",
+   "pais": "nz",
+   "area": "Central",
+   "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/central-fishing-rules",
+   "hecho": [
+    "enlace a la página oficial de MPI del área (comprobado por su título, 2026-10-09)"
+   ],
+   "pendiente": [
+    "ninguna cifra hasta cotejarla con las Regulations 2013 y la Notice de 2025, con fecha_revision"
+   ]
+  },
+  "NZ-CHA": {
+   "estado": "solo_enlace",
+   "pais": "nz",
+   "area": "Challenger",
+   "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/challenger-fishing-rules",
+   "hecho": [
+    "enlace a la página oficial de MPI del área (comprobado por su título, 2026-10-09)"
+   ],
+   "pendiente": [
+    "ninguna cifra hasta cotejarla con las Regulations 2013 y la Notice de 2025, con fecha_revision"
+   ]
+  },
+  "NZ-SE": {
+   "estado": "solo_enlace",
+   "pais": "nz",
+   "area": "South-East",
+   "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/south-east-fishing-rules",
+   "hecho": [
+    "enlace a la página oficial de MPI del área (comprobado por su título, 2026-10-09)"
+   ],
+   "pendiente": [
+    "ninguna cifra hasta cotejarla con las Regulations 2013 y la Notice de 2025, con fecha_revision"
+   ]
+  },
+  "NZ-KAI": {
+   "estado": "solo_enlace",
+   "pais": "nz",
+   "area": "Kaikōura Marine Area",
+   "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/kaikoura-fishing-rules",
+   "hecho": [
+    "enlace a la página oficial de MPI del área (comprobado por su título, 2026-10-09)"
+   ],
+   "pendiente": [
+    "ninguna cifra hasta cotejarla con las Regulations 2013 y la Notice de 2025, con fecha_revision"
+   ]
+  },
+  "NZ-SOU": {
+   "estado": "solo_enlace",
+   "pais": "nz",
+   "area": "Southland",
+   "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/southland-fishing-rules",
+   "hecho": [
+    "enlace a la página oficial de MPI del área (comprobado por su título, 2026-10-09)"
+   ],
+   "pendiente": [
+    "ninguna cifra hasta cotejarla con las Regulations 2013 y la Notice de 2025, con fecha_revision"
+   ]
+  },
+  "NZ-FIO": {
+   "estado": "solo_enlace",
+   "pais": "nz",
+   "area": "Fiordland Marine Area",
+   "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/fiordland-marine-area-fishing-rules",
+   "hecho": [
+    "enlace a la página oficial de MPI del área (comprobado por su título, 2026-10-09)"
+   ],
+   "pendiente": [
+    "ninguna cifra hasta cotejarla con las Regulations 2013 y la Notice de 2025, con fecha_revision"
+   ]
+  },
+  "NZ": {
+   "estado": "solo_enlace",
+   "pais": "nz",
+   "url": "https://www.legislation.govt.nz/regulation/public/2013/0482/latest/",
+   "hecho": [
+    "reglas sin cifras citadas de MPI (pāua sin botella; langostas con huevos o en muda)"
+   ],
+   "pendiente": [
+    "tallas y cupos"
    ]
   }
  },
@@ -13386,6 +13646,5061 @@
     }
    ],
    "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+  },
+  {
+   "id": "nz-snapper",
+   "pais": "nz",
+   "grupo": "pez",
+   "nombres": {
+    "en": "Snapper",
+    "mi": "Tāmure / Kouarea",
+    "es": "Pargo neozelandés (snapper)"
+   },
+   "nombres_fuentes": [
+    "mpi_popular_fish"
+   ],
+   "nombres_nota": "Nombre en español orientativo (traducción de Costaviva; no hay nombre oficial en España). El que verá el usuario de NZ es el inglés.",
+   "cientifico": "Chrysophrys auratus (MPI usa el sinónimo Pagrus auratus)",
+   "habitat": {
+    "valor": "Sobre todo entre 15 y 60 m, hasta unos 200 m; de arrecifes de roca a fondos de arena o fango; más abundante en las aguas templadas del norte, sobre todo en el golfo de Hauraki.",
+    "valor_en": "Mostly 15–60 m, down to about 200 m; from rocky reefs to sandy or muddy seabeds; most common in warmer northern waters, especially the Hauraki Gulf.",
+    "fuentes": [
+     "mpi_popular_fish"
+    ],
+    "verificado": true
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde la costa (roca, playa o muelle) en NZ: práctica habitual de pesca recreativa, sin fuente abierta citable todavía.",
+     "criterio_en": "Fished from the shore (rocks, beaches or wharves) in NZ: common recreational practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde embarcación en NZ: práctica habitual de pesca recreativa, sin fuente abierta citable todavía.",
+     "criterio_en": "Fished from boats in NZ: common recreational practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pieza de pesca submarina a pulmón en NZ: práctica habitual, sin fuente abierta citable todavía.",
+     "criterio_en": "Taken by free-diving spearfishers in NZ: common practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": [
+     15,
+     60
+    ],
+    "maximo": 200,
+    "fuentes": [
+     "mpi_popular_fish"
+    ],
+    "verificado": true
+   },
+   "presencia": {
+    "nz_auckland_kermadec": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_central": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_challenger": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    }
+   },
+   "freza": {
+    "temperatura_c": {
+     "valor": null,
+     "fuentes": [],
+     "verificado": false,
+     "nota": "NIWA (prensa) habla de unos 16 °C en el golfo de Hauraki para empezar a frezar: no es una fuente abierta citable. No puntúa."
+    },
+    "por_region": {
+     "nz_auckland_kermadec": {
+      "meses": [
+       10,
+       11,
+       12,
+       1,
+       2,
+       3
+      ],
+      "fuentes": [
+       "mpi_popular_fish"
+      ],
+      "verificado": false,
+      "nota": "MPI: suelta muchas tandas de huevos durante la primavera y el verano.",
+      "nota_en": "MPI: releases many batches of eggs all through spring and summer."
+     },
+     "nz_central": {
+      "meses": [
+       10,
+       11,
+       12,
+       1,
+       2,
+       3
+      ],
+      "fuentes": [
+       "mpi_popular_fish"
+      ],
+      "verificado": false,
+      "nota": "MPI: suelta muchas tandas de huevos durante la primavera y el verano.",
+      "nota_en": "MPI: releases many batches of eggs all through spring and summer."
+     },
+     "nz_challenger": {
+      "meses": [
+       10,
+       11,
+       12,
+       1,
+       2,
+       3
+      ],
+      "fuentes": [
+       "mpi_popular_fish"
+      ],
+      "verificado": false,
+      "nota": "MPI: suelta muchas tandas de huevos durante la primavera y el verano.",
+      "nota_en": "MPI: releases many batches of eggs all through spring and summer."
+     }
+    }
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "fuente_pendiente": "OBIS × SST de Copernicus GLO (criterio B). OBIS casi no tiene registros costeros de NZ con licencia libre (consulta 2026-10-09): se deja sin rango y no puntúa."
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "NZ-AKE",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Auckland / Kermadec (MPI)",
+     "ambito_en": "New Zealand, Auckland / Kermadec area (MPI)",
+     "ambito_corto": "Auckland / Kermadec",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/auckland-kermadec-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-CEN",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Central (MPI)",
+     "ambito_en": "New Zealand, Central area (MPI)",
+     "ambito_corto": "Central",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/central-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-CHA",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Challenger (MPI)",
+     "ambito_en": "New Zealand, Challenger area (MPI)",
+     "ambito_corto": "Challenger",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/challenger-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    }
+   ],
+   "pendiente": [
+    "temperatura con fuente no-NC (OBIS × Copernicus)",
+    "cebos con fuente o criterio",
+    "presencia por área con fuente (OBIS/MPI)",
+    "nombre māori y español por revisar"
+   ],
+   "emoji": "🐟",
+   "cebos": [],
+   "cebos_nota": "Cebos de NZ pendientes: ninguno sin fuente o criterio todavía.",
+   "cebos_nota_en": "NZ baits pending: none listed until there is a source."
+  },
+  {
+   "id": "nz-kingfish",
+   "pais": "nz",
+   "grupo": "pez",
+   "nombres": {
+    "en": "Yellowtail kingfish",
+    "mi": "Haku",
+    "es": "Seriola (kingfish)"
+   },
+   "nombres_fuentes": [
+    "mpi_kin3_2024"
+   ],
+   "nombres_nota": "Nombre en español orientativo (traducción de Costaviva; no hay nombre oficial en España). El que verá el usuario de NZ es el inglés.",
+   "cientifico": "Seriola lalandi",
+   "habitat": {
+    "valor": "Semipelágico: costa abierta hasta unos 200 m y también bahías someras; va en bancos.",
+    "valor_en": "Semi-pelagic: open coast to about 200 m and also shallow bays; schools.",
+    "fuentes": [
+     "mpi_kin3_2024"
+    ],
+    "verificado": true
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde la costa (roca, playa o muelle) en NZ: práctica habitual de pesca recreativa, sin fuente abierta citable todavía.",
+     "criterio_en": "Fished from the shore (rocks, beaches or wharves) in NZ: common recreational practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde embarcación en NZ: práctica habitual de pesca recreativa, sin fuente abierta citable todavía.",
+     "criterio_en": "Fished from boats in NZ: common recreational practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pieza de pesca submarina a pulmón en NZ: práctica habitual, sin fuente abierta citable todavía.",
+     "criterio_en": "Taken by free-diving spearfishers in NZ: common practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": null,
+    "maximo": 200,
+    "fuentes": [
+     "mpi_kin3_2024"
+    ],
+    "verificado": true,
+    "nota": "Sin rango habitual citado; solo el máximo."
+   },
+   "presencia": {
+    "nz_auckland_kermadec": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_central": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_challenger": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    }
+   },
+   "freza": {
+    "temperatura_c": {
+     "valor": null,
+     "fuentes": [],
+     "verificado": false,
+     "nota": "La freza no se ha observado en NZ (NIWA TR 132, no citable abiertamente): sin meses."
+    },
+    "por_region": {}
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "fuente_pendiente": "OBIS × SST de Copernicus GLO (criterio B). OBIS casi no tiene registros costeros de NZ con licencia libre (consulta 2026-10-09): se deja sin rango y no puntúa."
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "NZ-AKE",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Auckland / Kermadec (MPI)",
+     "ambito_en": "New Zealand, Auckland / Kermadec area (MPI)",
+     "ambito_corto": "Auckland / Kermadec",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/auckland-kermadec-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-CEN",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Central (MPI)",
+     "ambito_en": "New Zealand, Central area (MPI)",
+     "ambito_corto": "Central",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/central-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-CHA",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Challenger (MPI)",
+     "ambito_en": "New Zealand, Challenger area (MPI)",
+     "ambito_corto": "Challenger",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/challenger-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    }
+   ],
+   "pendiente": [
+    "temperatura con fuente no-NC (OBIS × Copernicus)",
+    "cebos con fuente o criterio",
+    "presencia por área con fuente (OBIS/MPI)",
+    "nombre māori y español por revisar"
+   ],
+   "emoji": "🐟",
+   "cebos": [],
+   "cebos_nota": "Cebos de NZ pendientes: ninguno sin fuente o criterio todavía.",
+   "cebos_nota_en": "NZ baits pending: none listed until there is a source."
+  },
+  {
+   "id": "nz-kahawai",
+   "pais": "nz",
+   "grupo": "pez",
+   "nombres": {
+    "en": "Kahawai",
+    "mi": "Kahawai",
+    "es": "Kahawai"
+   },
+   "nombres_fuentes": [
+    "mpi_popular_fish"
+   ],
+   "nombres_nota": "Nombre en español orientativo (traducción de Costaviva; no hay nombre oficial en España). El que verá el usuario de NZ es el inglés.",
+   "cientifico": "Arripis trutta",
+   "habitat": {
+    "valor": "Costero: puertos, estuarios y desembocaduras de ríos; de 0 a 150 m.",
+    "valor_en": "Coastal: harbours, estuaries and river mouths; 0–150 m.",
+    "fuentes": [
+     "mpi_popular_fish"
+    ],
+    "verificado": true
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde la costa (roca, playa o muelle) en NZ: práctica habitual de pesca recreativa, sin fuente abierta citable todavía.",
+     "criterio_en": "Fished from the shore (rocks, beaches or wharves) in NZ: common recreational practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde embarcación en NZ: práctica habitual de pesca recreativa, sin fuente abierta citable todavía.",
+     "criterio_en": "Fished from boats in NZ: common recreational practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pieza de pesca submarina a pulmón en NZ: práctica habitual, sin fuente abierta citable todavía.",
+     "criterio_en": "Taken by free-diving spearfishers in NZ: common practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": [
+     0,
+     150
+    ],
+    "maximo": 150,
+    "fuentes": [
+     "mpi_popular_fish"
+    ],
+    "verificado": true
+   },
+   "presencia": {
+    "nz_auckland_kermadec": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_central": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_challenger": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_south_east": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_kaikoura": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_southland": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    }
+   },
+   "freza": {
+    "temperatura_c": {
+     "valor": null,
+     "fuentes": [],
+     "verificado": false,
+     "nota": "Sin fuente abierta con rango de temperatura para NZ. No puntúa."
+    },
+    "por_region": {
+     "nz_auckland_kermadec": {
+      "meses": [
+       1,
+       2
+      ],
+      "fuentes": [
+       "mpi_popular_fish"
+      ],
+      "verificado": false,
+      "nota": "Hembras en freza en enero y febrero frente al norte de la Isla Norte (MPI).",
+      "nota_en": "Spawning females in January–February off the northern North Island (MPI)."
+     }
+    }
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "fuente_pendiente": "OBIS × SST de Copernicus GLO (criterio B). OBIS casi no tiene registros costeros de NZ con licencia libre (consulta 2026-10-09): se deja sin rango y no puntúa."
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "NZ-AKE",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Auckland / Kermadec (MPI)",
+     "ambito_en": "New Zealand, Auckland / Kermadec area (MPI)",
+     "ambito_corto": "Auckland / Kermadec",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/auckland-kermadec-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-CEN",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Central (MPI)",
+     "ambito_en": "New Zealand, Central area (MPI)",
+     "ambito_corto": "Central",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/central-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-CHA",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Challenger (MPI)",
+     "ambito_en": "New Zealand, Challenger area (MPI)",
+     "ambito_corto": "Challenger",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/challenger-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-SE",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área South-East (MPI)",
+     "ambito_en": "New Zealand, South-East area (MPI)",
+     "ambito_corto": "South-East",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/south-east-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-KAI",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Kaikōura Marine Area (MPI)",
+     "ambito_en": "New Zealand, Kaikōura Marine Area area (MPI)",
+     "ambito_corto": "Kaikōura Marine Area",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/kaikoura-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-SOU",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Southland (MPI)",
+     "ambito_en": "New Zealand, Southland area (MPI)",
+     "ambito_corto": "Southland",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/southland-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    }
+   ],
+   "pendiente": [
+    "temperatura con fuente no-NC (OBIS × Copernicus)",
+    "cebos con fuente o criterio",
+    "presencia por área con fuente (OBIS/MPI)",
+    "nombre māori y español por revisar"
+   ],
+   "emoji": "🐟",
+   "cebos": [],
+   "cebos_nota": "Cebos de NZ pendientes: ninguno sin fuente o criterio todavía.",
+   "cebos_nota_en": "NZ baits pending: none listed until there is a source."
+  },
+  {
+   "id": "nz-trevally",
+   "pais": "nz",
+   "grupo": "pez",
+   "nombres": {
+    "en": "Trevally",
+    "mi": "Araara",
+    "es": "Jurel dentón (trevally)"
+   },
+   "nombres_fuentes": [
+    "mpi_tre"
+   ],
+   "nombres_nota": "Nombre en español orientativo (traducción de Costaviva; no hay nombre oficial en España). El que verá el usuario de NZ es el inglés.",
+   "cientifico": "Pseudocaranx georgianus",
+   "habitat": {
+    "valor": "Bentopelágico, sobre todo en la Isla Norte, hasta unos 250 m; los juveniles en estuarios.",
+    "valor_en": "Bentho-pelagic, mainly around the North Island, down to about 250 m; juveniles in estuaries.",
+    "fuentes": [
+     "mpi_tre"
+    ],
+    "verificado": true
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde la costa (roca, playa o muelle) en NZ: práctica habitual de pesca recreativa, sin fuente abierta citable todavía.",
+     "criterio_en": "Fished from the shore (rocks, beaches or wharves) in NZ: common recreational practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde embarcación en NZ: práctica habitual de pesca recreativa, sin fuente abierta citable todavía.",
+     "criterio_en": "Fished from boats in NZ: common recreational practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pieza de pesca submarina a pulmón en NZ: práctica habitual, sin fuente abierta citable todavía.",
+     "criterio_en": "Taken by free-diving spearfishers in NZ: common practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": null,
+    "maximo": 250,
+    "fuentes": [
+     "mpi_tre"
+    ],
+    "verificado": true
+   },
+   "presencia": {
+    "nz_auckland_kermadec": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_central": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    }
+   },
+   "freza": {
+    "temperatura_c": {
+     "valor": null,
+     "fuentes": [],
+     "verificado": false,
+     "nota": "Sin fuente abierta con rango de temperatura para NZ. No puntúa."
+    },
+    "por_region": {
+     "nz_auckland_kermadec": {
+      "meses": [
+       12,
+       1,
+       2
+      ],
+      "fuentes": [
+       "mpi_tre"
+      ],
+      "verificado": false,
+      "nota": "Freza por tandas durante el verano (MPI).",
+      "nota_en": "Batch spawning over summer (MPI)."
+     },
+     "nz_central": {
+      "meses": [
+       12,
+       1,
+       2
+      ],
+      "fuentes": [
+       "mpi_tre"
+      ],
+      "verificado": false,
+      "nota": "Freza por tandas durante el verano (MPI).",
+      "nota_en": "Batch spawning over summer (MPI)."
+     }
+    }
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "fuente_pendiente": "OBIS × SST de Copernicus GLO (criterio B). OBIS casi no tiene registros costeros de NZ con licencia libre (consulta 2026-10-09): se deja sin rango y no puntúa."
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "NZ-AKE",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Auckland / Kermadec (MPI)",
+     "ambito_en": "New Zealand, Auckland / Kermadec area (MPI)",
+     "ambito_corto": "Auckland / Kermadec",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/auckland-kermadec-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-CEN",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Central (MPI)",
+     "ambito_en": "New Zealand, Central area (MPI)",
+     "ambito_corto": "Central",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/central-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    }
+   ],
+   "pendiente": [
+    "temperatura con fuente no-NC (OBIS × Copernicus)",
+    "cebos con fuente o criterio",
+    "presencia por área con fuente (OBIS/MPI)",
+    "nombre māori y español por revisar"
+   ],
+   "emoji": "🐟",
+   "cebos": [],
+   "cebos_nota": "Cebos de NZ pendientes: ninguno sin fuente o criterio todavía.",
+   "cebos_nota_en": "NZ baits pending: none listed until there is a source."
+  },
+  {
+   "id": "nz-tarakihi",
+   "pais": "nz",
+   "grupo": "pez",
+   "nombres": {
+    "en": "Tarakihi",
+    "mi": "Tarakihi",
+    "es": "Tarakihi"
+   },
+   "nombres_fuentes": [
+    "mpi_tar"
+   ],
+   "nombres_nota": "Nombre en español orientativo (traducción de Costaviva; no hay nombre oficial en España). El que verá el usuario de NZ es el inglés.",
+   "cientifico": "Nemadactylus macropterus",
+   "habitat": {
+    "valor": "Demersal de 10 a 250 m (plataforma y talud superior).",
+    "valor_en": "Demersal, 10–250 m (shelf and upper slope).",
+    "fuentes": [
+     "mpi_tar"
+    ],
+    "verificado": true
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde la costa (roca, playa o muelle) en NZ: práctica habitual de pesca recreativa, sin fuente abierta citable todavía.",
+     "criterio_en": "Fished from the shore (rocks, beaches or wharves) in NZ: common recreational practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde embarcación en NZ: práctica habitual de pesca recreativa, sin fuente abierta citable todavía.",
+     "criterio_en": "Fished from boats in NZ: common recreational practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pieza de pesca submarina a pulmón en NZ: práctica habitual, sin fuente abierta citable todavía.",
+     "criterio_en": "Taken by free-diving spearfishers in NZ: common practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": [
+     10,
+     250
+    ],
+    "maximo": 250,
+    "fuentes": [
+     "mpi_tar"
+    ],
+    "verificado": true
+   },
+   "presencia": {
+    "nz_auckland_kermadec": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_central": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_challenger": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_south_east": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_kaikoura": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    }
+   },
+   "freza": {
+    "temperatura_c": {
+     "valor": null,
+     "fuentes": [],
+     "verificado": false,
+     "nota": "Sin fuente abierta con rango de temperatura para NZ. No puntúa."
+    },
+    "por_region": {
+     "nz_central": {
+      "meses": [
+       12,
+       1,
+       2,
+       3,
+       4,
+       5
+      ],
+      "fuentes": [
+       "mpi_tar"
+      ],
+      "verificado": false,
+      "nota": "Verano y otoño; zonas de freza en East Cape y entre Cape Campbell y Pegasus Bay (MPI).",
+      "nota_en": "Summer–autumn; spawning grounds off East Cape and from Cape Campbell to Pegasus Bay (MPI)."
+     },
+     "nz_south_east": {
+      "meses": [
+       12,
+       1,
+       2,
+       3,
+       4,
+       5
+      ],
+      "fuentes": [
+       "mpi_tar"
+      ],
+      "verificado": false,
+      "nota": "Verano y otoño; zonas de freza en East Cape y entre Cape Campbell y Pegasus Bay (MPI).",
+      "nota_en": "Summer–autumn; spawning grounds off East Cape and from Cape Campbell to Pegasus Bay (MPI)."
+     },
+     "nz_kaikoura": {
+      "meses": [
+       12,
+       1,
+       2,
+       3,
+       4,
+       5
+      ],
+      "fuentes": [
+       "mpi_tar"
+      ],
+      "verificado": false,
+      "nota": "Verano y otoño; zonas de freza en East Cape y entre Cape Campbell y Pegasus Bay (MPI).",
+      "nota_en": "Summer–autumn; spawning grounds off East Cape and from Cape Campbell to Pegasus Bay (MPI)."
+     }
+    }
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "fuente_pendiente": "OBIS × SST de Copernicus GLO (criterio B). OBIS casi no tiene registros costeros de NZ con licencia libre (consulta 2026-10-09): se deja sin rango y no puntúa."
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "NZ-AKE",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Auckland / Kermadec (MPI)",
+     "ambito_en": "New Zealand, Auckland / Kermadec area (MPI)",
+     "ambito_corto": "Auckland / Kermadec",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/auckland-kermadec-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-CEN",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Central (MPI)",
+     "ambito_en": "New Zealand, Central area (MPI)",
+     "ambito_corto": "Central",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/central-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-CHA",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Challenger (MPI)",
+     "ambito_en": "New Zealand, Challenger area (MPI)",
+     "ambito_corto": "Challenger",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/challenger-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-SE",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área South-East (MPI)",
+     "ambito_en": "New Zealand, South-East area (MPI)",
+     "ambito_corto": "South-East",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/south-east-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-KAI",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Kaikōura Marine Area (MPI)",
+     "ambito_en": "New Zealand, Kaikōura Marine Area area (MPI)",
+     "ambito_corto": "Kaikōura Marine Area",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/kaikoura-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    }
+   ],
+   "pendiente": [
+    "temperatura con fuente no-NC (OBIS × Copernicus)",
+    "cebos con fuente o criterio",
+    "presencia por área con fuente (OBIS/MPI)",
+    "nombre māori y español por revisar"
+   ],
+   "emoji": "🐟",
+   "cebos": [],
+   "cebos_nota": "Cebos de NZ pendientes: ninguno sin fuente o criterio todavía.",
+   "cebos_nota_en": "NZ baits pending: none listed until there is a source."
+  },
+  {
+   "id": "nz-blue-cod",
+   "pais": "nz",
+   "grupo": "pez",
+   "nombres": {
+    "en": "Blue cod",
+    "mi": "Rāwaru / Pākirikiri",
+    "es": "Bacalao azul (blue cod)"
+   },
+   "nombres_fuentes": [
+    "mpi_bco"
+   ],
+   "nombres_nota": "Nombre en español orientativo (traducción de Costaviva; no hay nombre oficial en España). El que verá el usuario de NZ es el inglés.",
+   "cientifico": "Parapercis colias",
+   "habitat": {
+    "valor": "Hasta 150 m; bordes de arrecife, grava y arena junto a la roca; más abundante en la Isla Sur.",
+    "valor_en": "Down to 150 m; reef edges, gravel and sand near rock; more common around the South Island.",
+    "fuentes": [
+     "mpi_bco"
+    ],
+    "verificado": true
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde la costa (roca, playa o muelle) en NZ: práctica habitual de pesca recreativa, sin fuente abierta citable todavía.",
+     "criterio_en": "Fished from the shore (rocks, beaches or wharves) in NZ: common recreational practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde embarcación en NZ: práctica habitual de pesca recreativa, sin fuente abierta citable todavía.",
+     "criterio_en": "Fished from boats in NZ: common recreational practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pieza de pesca submarina a pulmón en NZ: práctica habitual, sin fuente abierta citable todavía.",
+     "criterio_en": "Taken by free-diving spearfishers in NZ: common practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": null,
+    "maximo": 150,
+    "fuentes": [
+     "mpi_bco"
+    ],
+    "verificado": true
+   },
+   "presencia": {
+    "nz_central": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_challenger": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_south_east": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_kaikoura": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_southland": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_fiordland": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    }
+   },
+   "freza": {
+    "temperatura_c": {
+     "valor": null,
+     "fuentes": [],
+     "verificado": false,
+     "nota": "Sin fuente abierta con rango de temperatura para NZ. No puntúa."
+    },
+    "por_region": {
+     "nz_central": {
+      "meses": [
+       8,
+       9,
+       10,
+       11
+      ],
+      "fuentes": [
+       "mpi_bco"
+      ],
+      "verificado": false,
+      "nota": "Final del invierno y primavera, con el máximo en septiembre (MPI).",
+      "nota_en": "Late winter to spring, peaking in September (MPI)."
+     },
+     "nz_challenger": {
+      "meses": [
+       8,
+       9,
+       10,
+       11
+      ],
+      "fuentes": [
+       "mpi_bco"
+      ],
+      "verificado": false,
+      "nota": "Final del invierno y primavera, con el máximo en septiembre (MPI).",
+      "nota_en": "Late winter to spring, peaking in September (MPI)."
+     },
+     "nz_south_east": {
+      "meses": [
+       8,
+       9,
+       10,
+       11
+      ],
+      "fuentes": [
+       "mpi_bco"
+      ],
+      "verificado": false,
+      "nota": "Final del invierno y primavera, con el máximo en septiembre (MPI).",
+      "nota_en": "Late winter to spring, peaking in September (MPI)."
+     },
+     "nz_kaikoura": {
+      "meses": [
+       8,
+       9,
+       10,
+       11
+      ],
+      "fuentes": [
+       "mpi_bco"
+      ],
+      "verificado": false,
+      "nota": "Final del invierno y primavera, con el máximo en septiembre (MPI).",
+      "nota_en": "Late winter to spring, peaking in September (MPI)."
+     },
+     "nz_southland": {
+      "meses": [
+       8,
+       9,
+       10,
+       11
+      ],
+      "fuentes": [
+       "mpi_bco"
+      ],
+      "verificado": false,
+      "nota": "Final del invierno y primavera, con el máximo en septiembre (MPI).",
+      "nota_en": "Late winter to spring, peaking in September (MPI)."
+     },
+     "nz_fiordland": {
+      "meses": [
+       8,
+       9,
+       10,
+       11
+      ],
+      "fuentes": [
+       "mpi_bco"
+      ],
+      "verificado": false,
+      "nota": "Final del invierno y primavera, con el máximo en septiembre (MPI).",
+      "nota_en": "Late winter to spring, peaking in September (MPI)."
+     }
+    }
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "fuente_pendiente": "OBIS × SST de Copernicus GLO (criterio B). OBIS casi no tiene registros costeros de NZ con licencia libre (consulta 2026-10-09): se deja sin rango y no puntúa."
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "NZ-CEN",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Central (MPI)",
+     "ambito_en": "New Zealand, Central area (MPI)",
+     "ambito_corto": "Central",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/central-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-CHA",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Challenger (MPI)",
+     "ambito_en": "New Zealand, Challenger area (MPI)",
+     "ambito_corto": "Challenger",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/challenger-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-SE",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área South-East (MPI)",
+     "ambito_en": "New Zealand, South-East area (MPI)",
+     "ambito_corto": "South-East",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/south-east-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-KAI",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Kaikōura Marine Area (MPI)",
+     "ambito_en": "New Zealand, Kaikōura Marine Area area (MPI)",
+     "ambito_corto": "Kaikōura Marine Area",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/kaikoura-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-SOU",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Southland (MPI)",
+     "ambito_en": "New Zealand, Southland area (MPI)",
+     "ambito_corto": "Southland",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/southland-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-FIO",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Fiordland Marine Area (MPI)",
+     "ambito_en": "New Zealand, Fiordland Marine Area area (MPI)",
+     "ambito_corto": "Fiordland Marine Area",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/fiordland-marine-area-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    }
+   ],
+   "pendiente": [
+    "temperatura con fuente no-NC (OBIS × Copernicus)",
+    "cebos con fuente o criterio",
+    "presencia por área con fuente (OBIS/MPI)",
+    "nombre māori y español por revisar"
+   ],
+   "emoji": "🐟",
+   "cebos": [],
+   "cebos_nota": "Cebos de NZ pendientes: ninguno sin fuente o criterio todavía.",
+   "cebos_nota_en": "NZ baits pending: none listed until there is a source."
+  },
+  {
+   "id": "nz-red-gurnard",
+   "pais": "nz",
+   "grupo": "pez",
+   "nombres": {
+    "en": "Red gurnard",
+    "mi": "Kumukumu / Pūwhaiau",
+    "es": "Rubio rojo (red gurnard)"
+   },
+   "nombres_fuentes": [
+    "mpi_gur"
+   ],
+   "nombres_nota": "Nombre en español orientativo (traducción de Costaviva; no hay nombre oficial en España). El que verá el usuario de NZ es el inglés.",
+   "cientifico": "Chelidonichthys kumu",
+   "habitat": {
+    "valor": "De 20 a 180 m, sobre todo en arena o fango a menos de 60 m.",
+    "valor_en": "20–180 m, mostly on sand or mud shallower than 60 m.",
+    "fuentes": [
+     "mpi_gur"
+    ],
+    "verificado": true
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde la costa (roca, playa o muelle) en NZ: práctica habitual de pesca recreativa, sin fuente abierta citable todavía.",
+     "criterio_en": "Fished from the shore (rocks, beaches or wharves) in NZ: common recreational practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde embarcación en NZ: práctica habitual de pesca recreativa, sin fuente abierta citable todavía.",
+     "criterio_en": "Fished from boats in NZ: common recreational practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pieza de pesca submarina a pulmón en NZ: práctica habitual, sin fuente abierta citable todavía.",
+     "criterio_en": "Taken by free-diving spearfishers in NZ: common practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": [
+     20,
+     60
+    ],
+    "maximo": 180,
+    "fuentes": [
+     "mpi_gur"
+    ],
+    "verificado": true
+   },
+   "presencia": {
+    "nz_auckland_kermadec": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_central": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_challenger": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_south_east": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    }
+   },
+   "freza": {
+    "temperatura_c": {
+     "valor": null,
+     "fuentes": [],
+     "verificado": false,
+     "nota": "Sin fuente abierta con rango de temperatura para NZ. No puntúa."
+    },
+    "por_region": {
+     "nz_auckland_kermadec": {
+      "meses": [
+       9,
+       10,
+       11,
+       12,
+       1,
+       2
+      ],
+      "fuentes": [
+       "mpi_gur"
+      ],
+      "verificado": false,
+      "nota": "Primavera y verano, con el máximo a principios del verano (MPI).",
+      "nota_en": "Spring and summer, peaking in early summer (MPI)."
+     },
+     "nz_central": {
+      "meses": [
+       9,
+       10,
+       11,
+       12,
+       1,
+       2
+      ],
+      "fuentes": [
+       "mpi_gur"
+      ],
+      "verificado": false,
+      "nota": "Primavera y verano, con el máximo a principios del verano (MPI).",
+      "nota_en": "Spring and summer, peaking in early summer (MPI)."
+     },
+     "nz_challenger": {
+      "meses": [
+       9,
+       10,
+       11,
+       12,
+       1,
+       2
+      ],
+      "fuentes": [
+       "mpi_gur"
+      ],
+      "verificado": false,
+      "nota": "Primavera y verano, con el máximo a principios del verano (MPI).",
+      "nota_en": "Spring and summer, peaking in early summer (MPI)."
+     },
+     "nz_south_east": {
+      "meses": [
+       9,
+       10,
+       11,
+       12,
+       1,
+       2
+      ],
+      "fuentes": [
+       "mpi_gur"
+      ],
+      "verificado": false,
+      "nota": "Primavera y verano, con el máximo a principios del verano (MPI).",
+      "nota_en": "Spring and summer, peaking in early summer (MPI)."
+     }
+    }
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "fuente_pendiente": "OBIS × SST de Copernicus GLO (criterio B). OBIS casi no tiene registros costeros de NZ con licencia libre (consulta 2026-10-09): se deja sin rango y no puntúa."
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "NZ-AKE",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Auckland / Kermadec (MPI)",
+     "ambito_en": "New Zealand, Auckland / Kermadec area (MPI)",
+     "ambito_corto": "Auckland / Kermadec",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/auckland-kermadec-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-CEN",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Central (MPI)",
+     "ambito_en": "New Zealand, Central area (MPI)",
+     "ambito_corto": "Central",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/central-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-CHA",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Challenger (MPI)",
+     "ambito_en": "New Zealand, Challenger area (MPI)",
+     "ambito_corto": "Challenger",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/challenger-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-SE",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área South-East (MPI)",
+     "ambito_en": "New Zealand, South-East area (MPI)",
+     "ambito_corto": "South-East",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/south-east-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    }
+   ],
+   "pendiente": [
+    "temperatura con fuente no-NC (OBIS × Copernicus)",
+    "cebos con fuente o criterio",
+    "presencia por área con fuente (OBIS/MPI)",
+    "nombre māori y español por revisar"
+   ],
+   "emoji": "🐟",
+   "cebos": [],
+   "cebos_nota": "Cebos de NZ pendientes: ninguno sin fuente o criterio todavía.",
+   "cebos_nota_en": "NZ baits pending: none listed until there is a source."
+  },
+  {
+   "id": "nz-john-dory",
+   "pais": "nz",
+   "grupo": "pez",
+   "nombres": {
+    "en": "John dory",
+    "mi": "Kuparu",
+    "es": "Pez de San Pedro"
+   },
+   "nombres_fuentes": [
+    "mpi_jdo"
+   ],
+   "nombres_nota": "Nombre en español orientativo (traducción de Costaviva; no hay nombre oficial en España). El que verá el usuario de NZ es el inglés.",
+   "cientifico": "Zeus faber",
+   "habitat": {
+    "valor": "Costero en el norte de NZ hasta unos 50 m (en la plataforma, hasta unos 300 m).",
+    "valor_en": "Inshore in northern NZ to about 50 m (on the shelf down to about 300 m).",
+    "fuentes": [
+     "mpi_jdo"
+    ],
+    "verificado": true
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde la costa (roca, playa o muelle) en NZ: práctica habitual de pesca recreativa, sin fuente abierta citable todavía.",
+     "criterio_en": "Fished from the shore (rocks, beaches or wharves) in NZ: common recreational practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde embarcación en NZ: práctica habitual de pesca recreativa, sin fuente abierta citable todavía.",
+     "criterio_en": "Fished from boats in NZ: common recreational practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pieza de pesca submarina a pulmón en NZ: práctica habitual, sin fuente abierta citable todavía.",
+     "criterio_en": "Taken by free-diving spearfishers in NZ: common practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": [
+     0,
+     50
+    ],
+    "maximo": 300,
+    "fuentes": [
+     "mpi_jdo"
+    ],
+    "verificado": true
+   },
+   "presencia": {
+    "nz_auckland_kermadec": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_central": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    }
+   },
+   "freza": {
+    "temperatura_c": {
+     "valor": null,
+     "fuentes": [],
+     "verificado": false,
+     "nota": "Freza prolongada (Coromandel, Kawhia–Manukau, MPI) sin meses concretos citables: sin meses."
+    },
+    "por_region": {}
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "fuente_pendiente": "OBIS × SST de Copernicus GLO (criterio B). OBIS casi no tiene registros costeros de NZ con licencia libre (consulta 2026-10-09): se deja sin rango y no puntúa."
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "NZ-AKE",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Auckland / Kermadec (MPI)",
+     "ambito_en": "New Zealand, Auckland / Kermadec area (MPI)",
+     "ambito_corto": "Auckland / Kermadec",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/auckland-kermadec-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-CEN",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Central (MPI)",
+     "ambito_en": "New Zealand, Central area (MPI)",
+     "ambito_corto": "Central",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/central-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    }
+   ],
+   "pendiente": [
+    "temperatura con fuente no-NC (OBIS × Copernicus)",
+    "cebos con fuente o criterio",
+    "presencia por área con fuente (OBIS/MPI)",
+    "nombre māori y español por revisar"
+   ],
+   "emoji": "🐟",
+   "cebos": [],
+   "cebos_nota": "Cebos de NZ pendientes: ninguno sin fuente o criterio todavía.",
+   "cebos_nota_en": "NZ baits pending: none listed until there is a source."
+  },
+  {
+   "id": "nz-hapuku",
+   "pais": "nz",
+   "grupo": "pez",
+   "nombres": {
+    "en": "Hāpuku / groper",
+    "mi": "Hāpuku",
+    "es": "Cherna neozelandesa (hāpuku)"
+   },
+   "nombres_fuentes": [
+    "pmc_hapuku"
+   ],
+   "nombres_nota": "Nombre en español orientativo (traducción de Costaviva; no hay nombre oficial en España). El que verá el usuario de NZ es el inglés.",
+   "cientifico": "Polyprion oxygeneios",
+   "habitat": {
+    "valor": "Borde de la plataforma, de 200 a 850 m (artículo en PMC, CC BY).",
+    "valor_en": "Shelf edge, 200–850 m (PMC article, CC BY).",
+    "fuentes": [
+     "pmc_hapuku"
+    ],
+    "verificado": true
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde la costa (roca, playa o muelle) en NZ: práctica habitual de pesca recreativa, sin fuente abierta citable todavía.",
+     "criterio_en": "Fished from the shore (rocks, beaches or wharves) in NZ: common recreational practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde embarcación en NZ: práctica habitual de pesca recreativa, sin fuente abierta citable todavía.",
+     "criterio_en": "Fished from boats in NZ: common recreational practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pieza de pesca submarina a pulmón en NZ: práctica habitual, sin fuente abierta citable todavía.",
+     "criterio_en": "Taken by free-diving spearfishers in NZ: common practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": [
+     200,
+     850
+    ],
+    "maximo": 850,
+    "fuentes": [
+     "pmc_hapuku"
+    ],
+    "verificado": true
+   },
+   "presencia": {
+    "nz_auckland_kermadec": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_central": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_challenger": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_south_east": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_kaikoura": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_southland": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_fiordland": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    }
+   },
+   "freza": {
+    "temperatura_c": {
+     "valor": null,
+     "fuentes": [],
+     "verificado": false,
+     "nota": "Sin fuente abierta de freza en NZ: sin meses."
+    },
+    "por_region": {}
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "fuente_pendiente": "OBIS × SST de Copernicus GLO (criterio B). OBIS casi no tiene registros costeros de NZ con licencia libre (consulta 2026-10-09): se deja sin rango y no puntúa."
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "NZ-AKE",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Auckland / Kermadec (MPI)",
+     "ambito_en": "New Zealand, Auckland / Kermadec area (MPI)",
+     "ambito_corto": "Auckland / Kermadec",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/auckland-kermadec-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-CEN",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Central (MPI)",
+     "ambito_en": "New Zealand, Central area (MPI)",
+     "ambito_corto": "Central",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/central-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-CHA",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Challenger (MPI)",
+     "ambito_en": "New Zealand, Challenger area (MPI)",
+     "ambito_corto": "Challenger",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/challenger-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-SE",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área South-East (MPI)",
+     "ambito_en": "New Zealand, South-East area (MPI)",
+     "ambito_corto": "South-East",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/south-east-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-KAI",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Kaikōura Marine Area (MPI)",
+     "ambito_en": "New Zealand, Kaikōura Marine Area area (MPI)",
+     "ambito_corto": "Kaikōura Marine Area",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/kaikoura-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-SOU",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Southland (MPI)",
+     "ambito_en": "New Zealand, Southland area (MPI)",
+     "ambito_corto": "Southland",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/southland-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-FIO",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Fiordland Marine Area (MPI)",
+     "ambito_en": "New Zealand, Fiordland Marine Area area (MPI)",
+     "ambito_corto": "Fiordland Marine Area",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/fiordland-marine-area-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    }
+   ],
+   "pendiente": [
+    "temperatura con fuente no-NC (OBIS × Copernicus)",
+    "cebos con fuente o criterio",
+    "presencia por área con fuente (OBIS/MPI)",
+    "nombre māori y español por revisar"
+   ],
+   "emoji": "🐟",
+   "cebos": [],
+   "cebos_nota": "Cebos de NZ pendientes: ninguno sin fuente o criterio todavía.",
+   "cebos_nota_en": "NZ baits pending: none listed until there is a source."
+  },
+  {
+   "id": "nz-yellowbelly-flounder",
+   "pais": "nz",
+   "grupo": "pez",
+   "nombres": {
+    "en": "Yellowbelly flounder",
+    "mi": "Pātiki",
+    "es": "Platija de vientre amarillo"
+   },
+   "nombres_fuentes": [
+    "mpi_fla"
+   ],
+   "nombres_nota": "Nombre en español orientativo (traducción de Costaviva; no hay nombre oficial en España). El que verá el usuario de NZ es el inglés.",
+   "cientifico": "Rhombosolea leporina",
+   "habitat": {
+    "valor": "Estuarios y llanuras someras de arena o fango (los juveniles, hasta los 2 años).",
+    "valor_en": "Estuaries and shallow sand or mud flats (juveniles up to 2 years).",
+    "fuentes": [
+     "mpi_fla"
+    ],
+    "verificado": true
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde la costa (roca, playa o muelle) en NZ: práctica habitual de pesca recreativa, sin fuente abierta citable todavía.",
+     "criterio_en": "Fished from the shore (rocks, beaches or wharves) in NZ: common recreational practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde embarcación en NZ: práctica habitual de pesca recreativa, sin fuente abierta citable todavía.",
+     "criterio_en": "Fished from boats in NZ: common recreational practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pieza de pesca submarina a pulmón en NZ: práctica habitual, sin fuente abierta citable todavía.",
+     "criterio_en": "Taken by free-diving spearfishers in NZ: common practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": null,
+    "maximo": null,
+    "fuentes": [
+     "mpi_fla"
+    ],
+    "verificado": false,
+    "nota": "Aguas someras; sin rango numérico citado."
+   },
+   "presencia": {
+    "nz_auckland_kermadec": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_central": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_challenger": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    }
+   },
+   "freza": {
+    "temperatura_c": {
+     "valor": null,
+     "fuentes": [],
+     "verificado": false,
+     "nota": "Sin fuente abierta con rango de temperatura para NZ. No puntúa."
+    },
+    "por_region": {
+     "nz_auckland_kermadec": {
+      "meses": [
+       6,
+       7,
+       8,
+       9,
+       10,
+       11
+      ],
+      "fuentes": [
+       "mpi_fla"
+      ],
+      "verificado": false,
+      "nota": "Sale mar adentro a frezar en invierno y primavera (MPI).",
+      "nota_en": "Moves offshore to spawn in winter and spring (MPI)."
+     },
+     "nz_central": {
+      "meses": [
+       6,
+       7,
+       8,
+       9,
+       10,
+       11
+      ],
+      "fuentes": [
+       "mpi_fla"
+      ],
+      "verificado": false,
+      "nota": "Sale mar adentro a frezar en invierno y primavera (MPI).",
+      "nota_en": "Moves offshore to spawn in winter and spring (MPI)."
+     },
+     "nz_challenger": {
+      "meses": [
+       6,
+       7,
+       8,
+       9,
+       10,
+       11
+      ],
+      "fuentes": [
+       "mpi_fla"
+      ],
+      "verificado": false,
+      "nota": "Sale mar adentro a frezar en invierno y primavera (MPI).",
+      "nota_en": "Moves offshore to spawn in winter and spring (MPI)."
+     }
+    }
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "fuente_pendiente": "OBIS × SST de Copernicus GLO (criterio B). OBIS casi no tiene registros costeros de NZ con licencia libre (consulta 2026-10-09): se deja sin rango y no puntúa."
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "NZ-AKE",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Auckland / Kermadec (MPI)",
+     "ambito_en": "New Zealand, Auckland / Kermadec area (MPI)",
+     "ambito_corto": "Auckland / Kermadec",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/auckland-kermadec-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-CEN",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Central (MPI)",
+     "ambito_en": "New Zealand, Central area (MPI)",
+     "ambito_corto": "Central",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/central-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-CHA",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Challenger (MPI)",
+     "ambito_en": "New Zealand, Challenger area (MPI)",
+     "ambito_corto": "Challenger",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/challenger-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    }
+   ],
+   "pendiente": [
+    "temperatura con fuente no-NC (OBIS × Copernicus)",
+    "cebos con fuente o criterio",
+    "presencia por área con fuente (OBIS/MPI)",
+    "nombre māori y español por revisar",
+    "nombre māori pātiki sin verificar"
+   ],
+   "emoji": "🐟",
+   "cebos": [],
+   "cebos_nota": "Cebos de NZ pendientes: ninguno sin fuente o criterio todavía.",
+   "cebos_nota_en": "NZ baits pending: none listed until there is a source."
+  },
+  {
+   "id": "nz-sand-flounder",
+   "pais": "nz",
+   "grupo": "pez",
+   "nombres": {
+    "en": "Sand flounder",
+    "mi": "Pātiki",
+    "es": "Platija de arena"
+   },
+   "nombres_fuentes": [
+    "mpi_fla"
+   ],
+   "nombres_nota": "Nombre en español orientativo (traducción de Costaviva; no hay nombre oficial en España). El que verá el usuario de NZ es el inglés.",
+   "cientifico": "Rhombosolea plebeia",
+   "habitat": {
+    "valor": "Fondos someros de arena, en el mismo complejo de pesquerías que las demás platijas (FLA).",
+    "valor_en": "Shallow sandy bottoms; part of the same flatfish (FLA) complex.",
+    "fuentes": [
+     "mpi_fla"
+    ],
+    "verificado": true
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde la costa (roca, playa o muelle) en NZ: práctica habitual de pesca recreativa, sin fuente abierta citable todavía.",
+     "criterio_en": "Fished from the shore (rocks, beaches or wharves) in NZ: common recreational practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde embarcación en NZ: práctica habitual de pesca recreativa, sin fuente abierta citable todavía.",
+     "criterio_en": "Fished from boats in NZ: common recreational practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pieza de pesca submarina a pulmón en NZ: práctica habitual, sin fuente abierta citable todavía.",
+     "criterio_en": "Taken by free-diving spearfishers in NZ: common practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": null,
+    "maximo": null,
+    "fuentes": [
+     "mpi_fla"
+    ],
+    "verificado": false,
+    "nota": "Aguas someras; sin rango numérico citado."
+   },
+   "presencia": {
+    "nz_auckland_kermadec": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_central": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_challenger": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_south_east": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_kaikoura": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_southland": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    }
+   },
+   "freza": {
+    "temperatura_c": {
+     "valor": null,
+     "fuentes": [],
+     "verificado": false,
+     "nota": "Sin fuente abierta con rango de temperatura para NZ. No puntúa."
+    },
+    "por_region": {
+     "nz_auckland_kermadec": {
+      "meses": [
+       6,
+       7,
+       8,
+       9,
+       10,
+       11
+      ],
+      "fuentes": [
+       "mpi_fla"
+      ],
+      "verificado": false,
+      "nota": "Invierno y primavera (MPI).",
+      "nota_en": "Winter and spring (MPI)."
+     },
+     "nz_central": {
+      "meses": [
+       6,
+       7,
+       8,
+       9,
+       10,
+       11
+      ],
+      "fuentes": [
+       "mpi_fla"
+      ],
+      "verificado": false,
+      "nota": "Invierno y primavera (MPI).",
+      "nota_en": "Winter and spring (MPI)."
+     },
+     "nz_challenger": {
+      "meses": [
+       6,
+       7,
+       8,
+       9,
+       10,
+       11
+      ],
+      "fuentes": [
+       "mpi_fla"
+      ],
+      "verificado": false,
+      "nota": "Invierno y primavera (MPI).",
+      "nota_en": "Winter and spring (MPI)."
+     },
+     "nz_south_east": {
+      "meses": [
+       6,
+       7,
+       8,
+       9,
+       10,
+       11
+      ],
+      "fuentes": [
+       "mpi_fla"
+      ],
+      "verificado": false,
+      "nota": "Invierno y primavera (MPI).",
+      "nota_en": "Winter and spring (MPI)."
+     },
+     "nz_kaikoura": {
+      "meses": [
+       6,
+       7,
+       8,
+       9,
+       10,
+       11
+      ],
+      "fuentes": [
+       "mpi_fla"
+      ],
+      "verificado": false,
+      "nota": "Invierno y primavera (MPI).",
+      "nota_en": "Winter and spring (MPI)."
+     },
+     "nz_southland": {
+      "meses": [
+       6,
+       7,
+       8,
+       9,
+       10,
+       11
+      ],
+      "fuentes": [
+       "mpi_fla"
+      ],
+      "verificado": false,
+      "nota": "Invierno y primavera (MPI).",
+      "nota_en": "Winter and spring (MPI)."
+     }
+    }
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "fuente_pendiente": "OBIS × SST de Copernicus GLO (criterio B). OBIS casi no tiene registros costeros de NZ con licencia libre (consulta 2026-10-09): se deja sin rango y no puntúa."
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "NZ-AKE",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Auckland / Kermadec (MPI)",
+     "ambito_en": "New Zealand, Auckland / Kermadec area (MPI)",
+     "ambito_corto": "Auckland / Kermadec",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/auckland-kermadec-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-CEN",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Central (MPI)",
+     "ambito_en": "New Zealand, Central area (MPI)",
+     "ambito_corto": "Central",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/central-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-CHA",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Challenger (MPI)",
+     "ambito_en": "New Zealand, Challenger area (MPI)",
+     "ambito_corto": "Challenger",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/challenger-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-SE",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área South-East (MPI)",
+     "ambito_en": "New Zealand, South-East area (MPI)",
+     "ambito_corto": "South-East",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/south-east-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-KAI",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Kaikōura Marine Area (MPI)",
+     "ambito_en": "New Zealand, Kaikōura Marine Area area (MPI)",
+     "ambito_corto": "Kaikōura Marine Area",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/kaikoura-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-SOU",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Southland (MPI)",
+     "ambito_en": "New Zealand, Southland area (MPI)",
+     "ambito_corto": "Southland",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/southland-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    }
+   ],
+   "pendiente": [
+    "temperatura con fuente no-NC (OBIS × Copernicus)",
+    "cebos con fuente o criterio",
+    "presencia por área con fuente (OBIS/MPI)",
+    "nombre māori y español por revisar",
+    "nombre māori pātiki sin verificar"
+   ],
+   "emoji": "🐟",
+   "cebos": [],
+   "cebos_nota": "Cebos de NZ pendientes: ninguno sin fuente o criterio todavía.",
+   "cebos_nota_en": "NZ baits pending: none listed until there is a source."
+  },
+  {
+   "id": "nz-arrow-squid",
+   "pais": "nz",
+   "grupo": "cefalopodo",
+   "nombres": {
+    "en": "Arrow squid",
+    "mi": "Ngū",
+    "es": "Pota (arrow squid)"
+   },
+   "nombres_fuentes": [
+    "mpi_squ"
+   ],
+   "nombres_nota": "Nombre en español orientativo (traducción de Costaviva; no hay nombre oficial en España). El que verá el usuario de NZ es el inglés.",
+   "cientifico": "Nototodarus sloanii / Nototodarus gouldi",
+   "habitat": {
+    "valor": "Plataforma hasta 500 m, sobre todo a menos de 300 m; vive alrededor de un año.",
+    "valor_en": "Shelf to 500 m, mostly shallower than 300 m; lives about one year.",
+    "fuentes": [
+     "mpi_squ"
+    ],
+    "verificado": true
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde la costa (roca, playa o muelle) en NZ: práctica habitual de pesca recreativa, sin fuente abierta citable todavía.",
+     "criterio_en": "Fished from the shore (rocks, beaches or wharves) in NZ: common recreational practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde embarcación en NZ: práctica habitual de pesca recreativa, sin fuente abierta citable todavía.",
+     "criterio_en": "Fished from boats in NZ: common recreational practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pieza de pesca submarina a pulmón en NZ: práctica habitual, sin fuente abierta citable todavía.",
+     "criterio_en": "Taken by free-diving spearfishers in NZ: common practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": [
+     0,
+     300
+    ],
+    "maximo": 500,
+    "fuentes": [
+     "mpi_squ"
+    ],
+    "verificado": true
+   },
+   "presencia": {
+    "nz_auckland_kermadec": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "fuentes": [
+      "mpi_squ"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "La pesquería va de enero a mayo (MPI, SQU): se toma como temporada (heurística).",
+     "criterio_en": "The fishery runs January–May (MPI, SQU): taken as the season (heuristic)."
+    },
+    "nz_central": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "fuentes": [
+      "mpi_squ"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "La pesquería va de enero a mayo (MPI, SQU): se toma como temporada (heurística).",
+     "criterio_en": "The fishery runs January–May (MPI, SQU): taken as the season (heuristic)."
+    },
+    "nz_challenger": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "fuentes": [
+      "mpi_squ"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "La pesquería va de enero a mayo (MPI, SQU): se toma como temporada (heurística).",
+     "criterio_en": "The fishery runs January–May (MPI, SQU): taken as the season (heuristic)."
+    },
+    "nz_south_east": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "fuentes": [
+      "mpi_squ"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "La pesquería va de enero a mayo (MPI, SQU): se toma como temporada (heurística).",
+     "criterio_en": "The fishery runs January–May (MPI, SQU): taken as the season (heuristic)."
+    },
+    "nz_kaikoura": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "fuentes": [
+      "mpi_squ"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "La pesquería va de enero a mayo (MPI, SQU): se toma como temporada (heurística).",
+     "criterio_en": "The fishery runs January–May (MPI, SQU): taken as the season (heuristic)."
+    },
+    "nz_southland": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "fuentes": [
+      "mpi_squ"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "La pesquería va de enero a mayo (MPI, SQU): se toma como temporada (heurística).",
+     "criterio_en": "The fishery runs January–May (MPI, SQU): taken as the season (heuristic)."
+    },
+    "nz_fiordland": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "fuentes": [
+      "mpi_squ"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "La pesquería va de enero a mayo (MPI, SQU): se toma como temporada (heurística).",
+     "criterio_en": "The fishery runs January–May (MPI, SQU): taken as the season (heuristic)."
+    }
+   },
+   "freza": {
+    "temperatura_c": {
+     "valor": null,
+     "fuentes": [],
+     "verificado": false,
+     "nota": "Eclosión durante todo el año (MPI): sin meses de freza."
+    },
+    "por_region": {}
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "fuente_pendiente": "OBIS × SST de Copernicus GLO (criterio B). OBIS casi no tiene registros costeros de NZ con licencia libre (consulta 2026-10-09): se deja sin rango y no puntúa."
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "NZ-AKE",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Auckland / Kermadec (MPI)",
+     "ambito_en": "New Zealand, Auckland / Kermadec area (MPI)",
+     "ambito_corto": "Auckland / Kermadec",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/auckland-kermadec-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-CEN",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Central (MPI)",
+     "ambito_en": "New Zealand, Central area (MPI)",
+     "ambito_corto": "Central",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/central-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-CHA",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Challenger (MPI)",
+     "ambito_en": "New Zealand, Challenger area (MPI)",
+     "ambito_corto": "Challenger",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/challenger-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-SE",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área South-East (MPI)",
+     "ambito_en": "New Zealand, South-East area (MPI)",
+     "ambito_corto": "South-East",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/south-east-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-KAI",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Kaikōura Marine Area (MPI)",
+     "ambito_en": "New Zealand, Kaikōura Marine Area area (MPI)",
+     "ambito_corto": "Kaikōura Marine Area",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/kaikoura-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-SOU",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Southland (MPI)",
+     "ambito_en": "New Zealand, Southland area (MPI)",
+     "ambito_corto": "Southland",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/southland-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-FIO",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Fiordland Marine Area (MPI)",
+     "ambito_en": "New Zealand, Fiordland Marine Area area (MPI)",
+     "ambito_corto": "Fiordland Marine Area",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/fiordland-marine-area-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    }
+   ],
+   "pendiente": [
+    "temperatura con fuente no-NC (OBIS × Copernicus)",
+    "cebos con fuente o criterio",
+    "presencia por área con fuente (OBIS/MPI)",
+    "nombre māori y español por revisar",
+    "nombre māori ngū sin verificar"
+   ],
+   "emoji": "🦑",
+   "cebos": [],
+   "cebos_nota": "Cebos de NZ pendientes: ninguno sin fuente o criterio todavía.",
+   "cebos_nota_en": "NZ baits pending: none listed until there is a source."
+  },
+  {
+   "id": "nz-rock-lobster",
+   "pais": "nz",
+   "grupo": "crustaceo",
+   "nombres": {
+    "en": "Red rock lobster (crayfish)",
+    "mi": "Kōura",
+    "es": "Langosta roja (kōura)"
+   },
+   "nombres_fuentes": [
+    "mpi_cra_2025"
+   ],
+   "nombres_nota": "Nombre en español orientativo (traducción de Costaviva; no hay nombre oficial en España). El que verá el usuario de NZ es el inglés.",
+   "cientifico": "Jasus edwardsii",
+   "habitat": {
+    "valor": "Arrecifes hasta 200 m; de día en grietas y de noche sale a comer.",
+    "valor_en": "Reefs down to 200 m; shelters in crevices by day and forages at night.",
+    "fuentes": [
+     "mpi_cra_2025"
+    ],
+    "verificado": true
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde la costa (roca, playa o muelle) en NZ: práctica habitual de pesca recreativa, sin fuente abierta citable todavía.",
+     "criterio_en": "Fished from the shore (rocks, beaches or wharves) in NZ: common recreational practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Con nasas desde embarcación (práctica habitual en NZ).",
+     "criterio_en": "Potting from boats (common practice in NZ).",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null,
+     "normativa": [
+      {
+       "jurisdiccion": "NZ",
+       "texto": "No se pueden coger hembras con huevos ni langostas en muda (MPI).",
+       "texto_en": "Berried females and soft-shelled lobsters cannot be taken (MPI).",
+       "fuente": "mpi_cra_2025",
+       "url": "https://www.mpi.govt.nz/dmsdocument/70907",
+       "fecha_revision": "2026-10-09"
+      }
+     ]
+    },
+    "submarina": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pieza de pesca submarina a pulmón en NZ: práctica habitual, sin fuente abierta citable todavía.",
+     "criterio_en": "Taken by free-diving spearfishers in NZ: common practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null,
+     "normativa": [
+      {
+       "jurisdiccion": "NZ",
+       "texto": "No se pueden coger hembras con huevos ni langostas en muda (MPI).",
+       "texto_en": "Berried females and soft-shelled lobsters cannot be taken (MPI).",
+       "fuente": "mpi_cra_2025",
+       "url": "https://www.mpi.govt.nz/dmsdocument/70907",
+       "fecha_revision": "2026-10-09"
+      }
+     ]
+    }
+   },
+   "profundidad_m": {
+    "valor": null,
+    "maximo": 200,
+    "fuentes": [
+     "mpi_cra_2025"
+    ],
+    "verificado": true
+   },
+   "presencia": {
+    "nz_auckland_kermadec": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_central": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_challenger": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_south_east": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_kaikoura": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_southland": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_fiordland": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    }
+   },
+   "freza": {
+    "temperatura_c": {
+     "valor": null,
+     "fuentes": [],
+     "verificado": false,
+     "nota": "Muda y apareamiento en otoño; huevos 3-6 meses bajo la cola (MPI). Sin meses de freza como tal."
+    },
+    "por_region": {}
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "fuente_pendiente": "OBIS × SST de Copernicus GLO (criterio B). OBIS casi no tiene registros costeros de NZ con licencia libre (consulta 2026-10-09): se deja sin rango y no puntúa."
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "NZ-AKE",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Auckland / Kermadec (MPI)",
+     "ambito_en": "New Zealand, Auckland / Kermadec area (MPI)",
+     "ambito_corto": "Auckland / Kermadec",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/auckland-kermadec-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-CEN",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Central (MPI)",
+     "ambito_en": "New Zealand, Central area (MPI)",
+     "ambito_corto": "Central",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/central-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-CHA",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Challenger (MPI)",
+     "ambito_en": "New Zealand, Challenger area (MPI)",
+     "ambito_corto": "Challenger",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/challenger-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-SE",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área South-East (MPI)",
+     "ambito_en": "New Zealand, South-East area (MPI)",
+     "ambito_corto": "South-East",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/south-east-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-KAI",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Kaikōura Marine Area (MPI)",
+     "ambito_en": "New Zealand, Kaikōura Marine Area area (MPI)",
+     "ambito_corto": "Kaikōura Marine Area",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/kaikoura-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-SOU",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Southland (MPI)",
+     "ambito_en": "New Zealand, Southland area (MPI)",
+     "ambito_corto": "Southland",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/southland-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-FIO",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Fiordland Marine Area (MPI)",
+     "ambito_en": "New Zealand, Fiordland Marine Area area (MPI)",
+     "ambito_corto": "Fiordland Marine Area",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/fiordland-marine-area-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    }
+   ],
+   "pendiente": [
+    "temperatura con fuente no-NC (OBIS × Copernicus)",
+    "cebos con fuente o criterio",
+    "presencia por área con fuente (OBIS/MPI)",
+    "nombre māori y español por revisar"
+   ],
+   "emoji": "🦞",
+   "cebos": [],
+   "cebos_nota": "Cebos de NZ pendientes: ninguno sin fuente o criterio todavía.",
+   "cebos_nota_en": "NZ baits pending: none listed until there is a source."
+  },
+  {
+   "id": "nz-paua",
+   "pais": "nz",
+   "grupo": "molusco",
+   "nombres": {
+    "en": "Pāua (blackfoot)",
+    "mi": "Pāua",
+    "es": "Pāua (oreja de mar)"
+   },
+   "nombres_fuentes": [
+    "mpi_popular_fish"
+   ],
+   "nombres_nota": "Nombre en español orientativo (traducción de Costaviva; no hay nombre oficial en España). El que verá el usuario de NZ es el inglés.",
+   "cientifico": "Haliotis iris",
+   "habitat": {
+    "valor": "A menos de 10 m, en arrecifes con algas.",
+    "valor_en": "Shallower than 10 m, on reefs with seaweed.",
+    "fuentes": [
+     "mpi_popular_fish"
+    ],
+    "verificado": true
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se coge a mano desde la orilla en marea baja (MPI: solo a pulmón o desde la orilla).",
+     "criterio_en": "Gathered by hand from the shore at low tide (MPI: free-diving or shore only).",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null,
+     "normativa": [
+      {
+       "jurisdiccion": "NZ",
+       "texto": "Solo a pulmón o desde la orilla: prohibido con botella (MPI).",
+       "texto_en": "Free-diving or from the shore only: no SCUBA (MPI).",
+       "fuente": "mpi_popular_fish",
+       "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/information-on-popular-fish-in-nz/paua-status-and-information",
+       "fecha_revision": "2026-10-09"
+      }
+     ]
+    },
+    "embarcacion": {
+     "aplica": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde embarcación en NZ: práctica habitual de pesca recreativa, sin fuente abierta citable todavía.",
+     "criterio_en": "Fished from boats in NZ: common recreational practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se coge buceando a pulmón (MPI: prohibido con botella).",
+     "criterio_en": "Gathered by free-diving (MPI: no SCUBA).",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null,
+     "normativa": [
+      {
+       "jurisdiccion": "NZ",
+       "texto": "Solo a pulmón o desde la orilla: prohibido con botella (MPI).",
+       "texto_en": "Free-diving or from the shore only: no SCUBA (MPI).",
+       "fuente": "mpi_popular_fish",
+       "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/information-on-popular-fish-in-nz/paua-status-and-information",
+       "fecha_revision": "2026-10-09"
+      }
+     ]
+    }
+   },
+   "profundidad_m": {
+    "valor": [
+     0,
+     10
+    ],
+    "maximo": 10,
+    "fuentes": [
+     "mpi_popular_fish"
+    ],
+    "verificado": true
+   },
+   "presencia": {
+    "nz_central": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_challenger": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_south_east": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_kaikoura": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_southland": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_fiordland": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_auckland_kermadec": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    }
+   },
+   "freza": {
+    "temperatura_c": {
+     "valor": null,
+     "fuentes": [],
+     "verificado": false,
+     "nota": "Sin fuente abierta con rango de temperatura para NZ. No puntúa."
+    },
+    "por_region": {}
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "fuente_pendiente": "OBIS × SST de Copernicus GLO (criterio B). OBIS casi no tiene registros costeros de NZ con licencia libre (consulta 2026-10-09): se deja sin rango y no puntúa."
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "NZ-CEN",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Central (MPI)",
+     "ambito_en": "New Zealand, Central area (MPI)",
+     "ambito_corto": "Central",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/central-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-CHA",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Challenger (MPI)",
+     "ambito_en": "New Zealand, Challenger area (MPI)",
+     "ambito_corto": "Challenger",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/challenger-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-SE",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área South-East (MPI)",
+     "ambito_en": "New Zealand, South-East area (MPI)",
+     "ambito_corto": "South-East",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/south-east-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-KAI",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Kaikōura Marine Area (MPI)",
+     "ambito_en": "New Zealand, Kaikōura Marine Area area (MPI)",
+     "ambito_corto": "Kaikōura Marine Area",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/kaikoura-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-SOU",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Southland (MPI)",
+     "ambito_en": "New Zealand, Southland area (MPI)",
+     "ambito_corto": "Southland",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/southland-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-FIO",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Fiordland Marine Area (MPI)",
+     "ambito_en": "New Zealand, Fiordland Marine Area area (MPI)",
+     "ambito_corto": "Fiordland Marine Area",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/fiordland-marine-area-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-AKE",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Auckland / Kermadec (MPI)",
+     "ambito_en": "New Zealand, Auckland / Kermadec area (MPI)",
+     "ambito_corto": "Auckland / Kermadec",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/auckland-kermadec-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    }
+   ],
+   "pendiente": [
+    "temperatura con fuente no-NC (OBIS × Copernicus)",
+    "cebos con fuente o criterio",
+    "presencia por área con fuente (OBIS/MPI)",
+    "nombre māori y español por revisar"
+   ],
+   "emoji": "🐚",
+   "cebos": [],
+   "cebos_nota": "Cebos de NZ pendientes: ninguno sin fuente o criterio todavía.",
+   "cebos_nota_en": "NZ baits pending: none listed until there is a source."
+  },
+  {
+   "id": "nz-blue-moki",
+   "pais": "nz",
+   "grupo": "pez",
+   "nombres": {
+    "en": "Blue moki",
+    "mi": "Moki",
+    "es": "Moki azul"
+   },
+   "nombres_fuentes": [
+    "mpi_mok"
+   ],
+   "nombres_nota": "Nombre en español orientativo (traducción de Costaviva; no hay nombre oficial en España). El que verá el usuario de NZ es el inglés.",
+   "cientifico": "Latridopsis ciliaris",
+   "habitat": {
+    "valor": "Los juveniles en arrecifes someros; los adultos van en bancos sobre fondos abiertos.",
+    "valor_en": "Juveniles on shallow reefs; adults school over open bottom.",
+    "fuentes": [
+     "mpi_mok"
+    ],
+    "verificado": true
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde la costa (roca, playa o muelle) en NZ: práctica habitual de pesca recreativa, sin fuente abierta citable todavía.",
+     "criterio_en": "Fished from the shore (rocks, beaches or wharves) in NZ: common recreational practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde embarcación en NZ: práctica habitual de pesca recreativa, sin fuente abierta citable todavía.",
+     "criterio_en": "Fished from boats in NZ: common recreational practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pieza de pesca submarina a pulmón en NZ: práctica habitual, sin fuente abierta citable todavía.",
+     "criterio_en": "Taken by free-diving spearfishers in NZ: common practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": null,
+    "maximo": null,
+    "fuentes": [
+     "mpi_mok"
+    ],
+    "verificado": false,
+    "nota": "Sin rango numérico citado."
+   },
+   "presencia": {
+    "nz_central": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_challenger": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_south_east": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_kaikoura": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_southland": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    }
+   },
+   "freza": {
+    "temperatura_c": {
+     "valor": null,
+     "fuentes": [],
+     "verificado": false,
+     "nota": "Sin fuente abierta con rango de temperatura para NZ. No puntúa."
+    },
+    "por_region": {
+     "nz_central": {
+      "meses": [
+       8,
+       9
+      ],
+      "fuentes": [
+       "mpi_mok"
+      ],
+      "verificado": false,
+      "nota": "Agosto y septiembre entre Mahia y East Cape, la única zona de freza conocida (MPI).",
+      "nota_en": "August–September between Mahia and East Cape, the only known spawning ground (MPI)."
+     }
+    }
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "fuente_pendiente": "OBIS × SST de Copernicus GLO (criterio B). OBIS casi no tiene registros costeros de NZ con licencia libre (consulta 2026-10-09): se deja sin rango y no puntúa."
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "NZ-CEN",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Central (MPI)",
+     "ambito_en": "New Zealand, Central area (MPI)",
+     "ambito_corto": "Central",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/central-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-CHA",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Challenger (MPI)",
+     "ambito_en": "New Zealand, Challenger area (MPI)",
+     "ambito_corto": "Challenger",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/challenger-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-SE",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área South-East (MPI)",
+     "ambito_en": "New Zealand, South-East area (MPI)",
+     "ambito_corto": "South-East",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/south-east-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-KAI",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Kaikōura Marine Area (MPI)",
+     "ambito_en": "New Zealand, Kaikōura Marine Area area (MPI)",
+     "ambito_corto": "Kaikōura Marine Area",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/kaikoura-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-SOU",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Southland (MPI)",
+     "ambito_en": "New Zealand, Southland area (MPI)",
+     "ambito_corto": "Southland",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/southland-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    }
+   ],
+   "pendiente": [
+    "temperatura con fuente no-NC (OBIS × Copernicus)",
+    "cebos con fuente o criterio",
+    "presencia por área con fuente (OBIS/MPI)",
+    "nombre māori y español por revisar"
+   ],
+   "emoji": "🐟",
+   "cebos": [],
+   "cebos_nota": "Cebos de NZ pendientes: ninguno sin fuente o criterio todavía.",
+   "cebos_nota_en": "NZ baits pending: none listed until there is a source."
+  },
+  {
+   "id": "nz-butterfish",
+   "pais": "nz",
+   "grupo": "pez",
+   "nombres": {
+    "en": "Butterfish / greenbone",
+    "mi": "Marari",
+    "es": "Butterfish (marari)"
+   },
+   "nombres_fuentes": [
+    "mpi_but"
+   ],
+   "nombres_nota": "Nombre en español orientativo (traducción de Costaviva; no hay nombre oficial en España). El que verá el usuario de NZ es el inglés.",
+   "cientifico": "Odax pullus",
+   "habitat": {
+    "valor": "De 0 a 20 m (hasta 40 m en el sur), en bosques de algas; herbívoro.",
+    "valor_en": "0–20 m (to 40 m in the south), in kelp beds; herbivore.",
+    "fuentes": [
+     "mpi_but"
+    ],
+    "verificado": true
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde la costa (roca, playa o muelle) en NZ: práctica habitual de pesca recreativa, sin fuente abierta citable todavía.",
+     "criterio_en": "Fished from the shore (rocks, beaches or wharves) in NZ: common recreational practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde embarcación en NZ: práctica habitual de pesca recreativa, sin fuente abierta citable todavía.",
+     "criterio_en": "Fished from boats in NZ: common recreational practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pieza de pesca submarina a pulmón en los bosques de algas (es herbívoro: casi no entra al anzuelo).",
+     "criterio_en": "Taken by free-diving spearfishers in kelp beds (a herbivore that rarely takes a hook).",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": [
+     0,
+     20
+    ],
+    "maximo": 40,
+    "fuentes": [
+     "mpi_but"
+    ],
+    "verificado": true
+   },
+   "presencia": {
+    "nz_central": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_challenger": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_south_east": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_kaikoura": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_southland": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_fiordland": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    }
+   },
+   "freza": {
+    "temperatura_c": {
+     "valor": null,
+     "fuentes": [],
+     "verificado": false,
+     "nota": "Sin fuente abierta con rango de temperatura para NZ. No puntúa."
+    },
+    "por_region": {
+     "nz_central": {
+      "meses": [
+       7,
+       8,
+       9,
+       10,
+       11,
+       12,
+       1,
+       2,
+       3
+      ],
+      "fuentes": [
+       "mpi_but"
+      ],
+      "verificado": false,
+      "nota": "De julio a marzo en el estrecho de Cook, con el máximo en septiembre-octubre (MPI).",
+      "nota_en": "July to March in Cook Strait, peaking in September–October (MPI)."
+     },
+     "nz_south_east": {
+      "meses": [
+       8,
+       9,
+       10,
+       11,
+       12,
+       1
+      ],
+      "fuentes": [
+       "mpi_but"
+      ],
+      "verificado": false,
+      "nota": "De agosto a enero en Otago (MPI).",
+      "nota_en": "August to January in Otago (MPI)."
+     }
+    }
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "fuente_pendiente": "OBIS × SST de Copernicus GLO (criterio B). OBIS casi no tiene registros costeros de NZ con licencia libre (consulta 2026-10-09): se deja sin rango y no puntúa."
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "NZ-CEN",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Central (MPI)",
+     "ambito_en": "New Zealand, Central area (MPI)",
+     "ambito_corto": "Central",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/central-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-CHA",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Challenger (MPI)",
+     "ambito_en": "New Zealand, Challenger area (MPI)",
+     "ambito_corto": "Challenger",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/challenger-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-SE",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área South-East (MPI)",
+     "ambito_en": "New Zealand, South-East area (MPI)",
+     "ambito_corto": "South-East",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/south-east-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-KAI",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Kaikōura Marine Area (MPI)",
+     "ambito_en": "New Zealand, Kaikōura Marine Area area (MPI)",
+     "ambito_corto": "Kaikōura Marine Area",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/kaikoura-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-SOU",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Southland (MPI)",
+     "ambito_en": "New Zealand, Southland area (MPI)",
+     "ambito_corto": "Southland",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/southland-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-FIO",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Fiordland Marine Area (MPI)",
+     "ambito_en": "New Zealand, Fiordland Marine Area area (MPI)",
+     "ambito_corto": "Fiordland Marine Area",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/fiordland-marine-area-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    }
+   ],
+   "pendiente": [
+    "temperatura con fuente no-NC (OBIS × Copernicus)",
+    "cebos con fuente o criterio",
+    "presencia por área con fuente (OBIS/MPI)",
+    "nombre māori y español por revisar"
+   ],
+   "emoji": "🐟",
+   "cebos": [],
+   "cebos_nota": "Cebos de NZ pendientes: ninguno sin fuente o criterio todavía.",
+   "cebos_nota_en": "NZ baits pending: none listed until there is a source."
+  },
+  {
+   "id": "nz-red-cod",
+   "pais": "nz",
+   "grupo": "pez",
+   "nombres": {
+    "en": "Red cod",
+    "mi": "Hoka",
+    "es": "Bacalao rojo (red cod)"
+   },
+   "nombres_fuentes": [
+    "fnz_plenary_2025"
+   ],
+   "nombres_nota": "Nombre en español orientativo (traducción de Costaviva; no hay nombre oficial en España). El que verá el usuario de NZ es el inglés.",
+   "cientifico": "Pseudophycis bachus",
+   "habitat": {
+    "valor": "Plataforma; las mayores densidades entre 200 y 400 m (islas Auckland), los juveniles más someros.",
+    "valor_en": "Shelf; greatest densities at 200–400 m (Auckland Islands), juveniles shallower.",
+    "fuentes": [
+     "fnz_plenary_2025"
+    ],
+    "verificado": false
+   },
+   "modalidades": {
+    "costa": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde la costa (roca, playa o muelle) en NZ: práctica habitual de pesca recreativa, sin fuente abierta citable todavía.",
+     "criterio_en": "Fished from the shore (rocks, beaches or wharves) in NZ: common recreational practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null
+    },
+    "embarcacion": {
+     "aplica": true,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Se pesca desde embarcación en NZ: práctica habitual de pesca recreativa, sin fuente abierta citable todavía.",
+     "criterio_en": "Fished from boats in NZ: common recreational practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null
+    },
+    "submarina": {
+     "aplica": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Pieza de pesca submarina a pulmón en NZ: práctica habitual, sin fuente abierta citable todavía.",
+     "criterio_en": "Taken by free-diving spearfishers in NZ: common practice, no citable open source yet.",
+     "fuentes": [],
+     "profundidad_m": null,
+     "zona": null,
+     "tecnica": null
+    }
+   },
+   "profundidad_m": {
+    "valor": [
+     200,
+     400
+    ],
+    "maximo": null,
+    "fuentes": [
+     "fnz_plenary_2025"
+    ],
+    "verificado": false,
+    "nota": "El plan cita MPI AEBR 204 (número de documento por localizar); aquí, el Plenary 2025."
+   },
+   "presencia": {
+    "nz_central": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_challenger": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_south_east": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_kaikoura": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    },
+    "nz_southland": {
+     "meses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "fuentes": [
+      "mpi_popular_fish"
+     ],
+     "verificado": false,
+     "tipo_fuente": "heuristica_experta",
+     "criterio": "Residente en la zona según la distribución que da MPI; sin fuente abierta de estacionalidad para la pesca recreativa: todo el año (heurística experta).",
+     "criterio_en": "Resident in the area according to MPI's distribution; no open source for recreational seasonality: all year (expert heuristic)."
+    }
+   },
+   "freza": {
+    "temperatura_c": {
+     "valor": null,
+     "fuentes": [],
+     "verificado": false,
+     "nota": "Sin fuente abierta con rango de temperatura para NZ. No puntúa."
+    },
+    "por_region": {
+     "nz_central": {
+      "meses": [
+       8,
+       9,
+       10,
+       11
+      ],
+      "fuentes": [
+       "fnz_plenary_2025"
+      ],
+      "verificado": false,
+      "nota": "Final del invierno y primavera (MPI).",
+      "nota_en": "Late winter to spring (MPI)."
+     },
+     "nz_challenger": {
+      "meses": [
+       8,
+       9,
+       10,
+       11
+      ],
+      "fuentes": [
+       "fnz_plenary_2025"
+      ],
+      "verificado": false,
+      "nota": "Final del invierno y primavera (MPI).",
+      "nota_en": "Late winter to spring (MPI)."
+     },
+     "nz_south_east": {
+      "meses": [
+       8,
+       9,
+       10,
+       11
+      ],
+      "fuentes": [
+       "fnz_plenary_2025"
+      ],
+      "verificado": false,
+      "nota": "Final del invierno y primavera (MPI).",
+      "nota_en": "Late winter to spring (MPI)."
+     },
+     "nz_kaikoura": {
+      "meses": [
+       8,
+       9,
+       10,
+       11
+      ],
+      "fuentes": [
+       "fnz_plenary_2025"
+      ],
+      "verificado": false,
+      "nota": "Final del invierno y primavera (MPI).",
+      "nota_en": "Late winter to spring (MPI)."
+     },
+     "nz_southland": {
+      "meses": [
+       8,
+       9,
+       10,
+       11
+      ],
+      "fuentes": [
+       "fnz_plenary_2025"
+      ],
+      "verificado": false,
+      "nota": "Final del invierno y primavera (MPI).",
+      "nota_en": "Late winter to spring (MPI)."
+     }
+    }
+   },
+   "temperatura_agua": {
+    "rango": null,
+    "fuentes": [],
+    "verificado": false,
+    "fuente_pendiente": "OBIS × SST de Copernicus GLO (criterio B). OBIS casi no tiene registros costeros de NZ con licencia libre (consulta 2026-10-09): se deja sin rango y no puntúa."
+   },
+   "talla_minima": [
+    {
+     "jurisdiccion": "NZ-CEN",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Central (MPI)",
+     "ambito_en": "New Zealand, Central area (MPI)",
+     "ambito_corto": "Central",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/central-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-CHA",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Challenger (MPI)",
+     "ambito_en": "New Zealand, Challenger area (MPI)",
+     "ambito_corto": "Challenger",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/challenger-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-SE",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área South-East (MPI)",
+     "ambito_en": "New Zealand, South-East area (MPI)",
+     "ambito_corto": "South-East",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/south-east-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-KAI",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Kaikōura Marine Area (MPI)",
+     "ambito_en": "New Zealand, Kaikōura Marine Area area (MPI)",
+     "ambito_corto": "Kaikōura Marine Area",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/kaikoura-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    },
+    {
+     "jurisdiccion": "NZ-SOU",
+     "valor_cm": null,
+     "ambito": "Nueva Zelanda, área Southland (MPI)",
+     "ambito_en": "New Zealand, Southland area (MPI)",
+     "ambito_corto": "Southland",
+     "fuente": "mpi_fishing_rules",
+     "url": "https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/fishing-rules/southland-fishing-rules",
+     "fecha_revision": "2026-10-09",
+     "nota": "Solo enlace a la página oficial de MPI: tallas y cupos cambian (Notice de 2025, blue cod 2023-2025). Ninguna cifra en la app.",
+     "nota_en": "Link to the official MPI page only: size and bag limits change. No figures in the app."
+    }
+   ],
+   "pendiente": [
+    "temperatura con fuente no-NC (OBIS × Copernicus)",
+    "cebos con fuente o criterio",
+    "presencia por área con fuente (OBIS/MPI)",
+    "nombre māori y español por revisar",
+    "nombre māori hoka sin verificar",
+    "localizar AEBR 204"
+   ],
+   "emoji": "🐟",
+   "cebos": [],
+   "cebos_nota": "Cebos de NZ pendientes: ninguno sin fuente o criterio todavía.",
+   "cebos_nota_en": "NZ baits pending: none listed until there is a source."
   }
  ],
  "modalidades": {
@@ -15693,5 +21008,14 @@
     "destino": "reglas_expertas.reglas[mar_grande_depredadores]"
    }
   ]
- }
+ },
+ "regiones_nz": [
+  "nz_auckland_kermadec",
+  "nz_central",
+  "nz_challenger",
+  "nz_south_east",
+  "nz_kaikoura",
+  "nz_southland",
+  "nz_fiordland"
+ ]
 }

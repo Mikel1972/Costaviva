@@ -34,6 +34,10 @@
 // NO aplique (nunca se inventa): queda en `sinDato` para la fiabilidad.
 
 // Variables horarias (campo de cada hora de la serie) y de contexto.
+// País de una región (Nueva Zelanda, fase 2): las reglas sin `regiones`
+// solo valen en España y Portugal.
+import { paisDeRegion } from "./regiones.js";
+
 export const VARIABLES_HORARIAS = {
   ola: "ola", viento: "viento", viento_dir: "vientoDir", presion: "presion",
   temp_agua: "tempAgua", lluvia: "lluvia", nivel_mar: "nivelMar",
@@ -213,6 +217,9 @@ export function enAmbito(regla, { especieId, modalidad, region, mes }, grupos = 
   const especies = expandir(a.especies, grupos);
   const excluidas = expandir(a.especies_excluidas, grupos) || [];
   if (a.regiones && !a.regiones.includes(region)) return false;
+  // Una regla sin `regiones` se escribió para España y Portugal: en otra
+  // región (Nueva Zelanda, fase 2) solo aplica si la nombra (2026-10-09).
+  if (!a.regiones && region && paisDeRegion(region) !== "es") return false;
   if (a.modalidades && !a.modalidades.includes(modalidad)) return false;
   if (a.meses && !a.meses.includes(mes)) return false;
   if (especies && !especies.includes(especieId)) return false;

@@ -3,6 +3,7 @@
 // scripts/seo/generar-sitemap.mjs; lógica pura con test).
 import { DOMINIO } from "./base.js";
 import { REGIONES_MAREAS, slugEspecie, fechaDatos } from "./datos.js";
+import { especiesVisibles } from "../regiones-activas.js";
 
 // Fecha de la última revisión de la portada, privacidad y las páginas de
 // mareas (su contenido de datos cambia cada hora, la plantilla no).
@@ -22,7 +23,7 @@ export function urlsSitemap({ spots, especies, tipoFondo, profundidad }) {
     ...REGIONES_MAREAS.map((r) => u(`/mareas/region/${r.slug}`, FECHA_PAGINAS_FIJAS, "daily", "0.75")),
     ...ordenados.map((s) => u(`/spots/${s.slug}`, fSpot, "daily", "0.7")),
     ...ordenados.map((s) => u(`/mareas/${s.slug}`, FECHA_PAGINAS_FIJAS, "hourly", "0.7")),
-    ...[...especies.especies].sort((a, b) => a.id.localeCompare(b.id)).map((e) => u(`/especies/${slugEspecie(e.id)}`, fEsp, "monthly", "0.7")),
+    ...[...especiesVisibles(especies.especies)].sort((a, b) => a.id.localeCompare(b.id)).map((e) => u(`/especies/${slugEspecie(e.id)}`, fEsp, "monthly", "0.7")),
     u("/privacidad", FECHA_PAGINAS_FIJAS, "yearly", "0.2"),
   ];
 }
