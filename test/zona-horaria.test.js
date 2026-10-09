@@ -22,6 +22,7 @@ import { validarConsultaProxy } from "../functions/_lib/open-meteo.js";
 import { isoLocalSpot } from "../functions/_lib/oleaje-camaras.js";
 import { consultasMeteo } from "../functions/_lib/seo/indice-hoy.js";
 import { foto } from "./fixtures/escenarios-zona.mjs";
+import { SPOTS_NZ } from "../functions/_lib/nz/spots-nz.js";
 
 const RAIZ = fileURLToPath(new URL("..", import.meta.url)).replace(/\/$/, "");
 const DATOS = JSON.parse(readFileSync(new URL("../assets/datos/especies.json", import.meta.url), "utf8"));
@@ -243,6 +244,14 @@ test("hemisferio sur: la freza y las vedas 'general' de la Península no se apli
   for (let m = 1; m <= 12; m++) assert.deepEqual(VA.especiesDeTemporada(DATOS, "nueva_zelanda", m), []);
 });
 
+test("los 60 spots NZ (fase 1, ocultos) caen en Pacific/Auckland y en la región nueva_zelanda", () => {
+  assert.ok(SPOTS_NZ.length >= 60);
+  for (const s of SPOTS_NZ) {
+    assert.equal(R.zonaDeSpot(s), "Pacific/Auckland", s.slug);
+    assert.equal(R.zonaPorCoordenadas(s.lat, s.lon), "Pacific/Auckland", s.slug);
+  }
+});
+
 test("agruparPorZona conserva el orden y los índices", () => {
   const g = R.agruparPorZona([{ lat: 43.4, lon: -2.7 }, AUCKLAND, LAS_PALMAS, { lat: 39.4, lon: -0.3 }]);
   assert.deepEqual(g.map((x) => [x.zona, x.indices]), [
@@ -251,6 +260,8 @@ test("agruparPorZona conserva el orden y los índices", () => {
   assert.equal(R.paramZona("Pacific/Auckland"), "timezone=Pacific%2FAuckland");
   assert.equal(R.zonaDeSpot(null), "Europe/Madrid");
   assert.equal(R.zonaDeSpot({ zona: "America/New_York", lat: 28.1, lon: -15.42 }), "Atlantic/Canary");
+  // Spots NZ de la fase 1: `zona` es geográfica ("Northland") y la horaria va en `tz`.
+  assert.equal(R.zonaDeSpot({ zona: "Northland", tz: "Pacific/Auckland", lat: -34.42, lon: 172.68 }), "Pacific/Auckland");
 });
 
 // ---------------------------------------------------------------------------

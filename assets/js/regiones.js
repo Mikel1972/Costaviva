@@ -101,9 +101,11 @@ export function zonaPorCoordenadas(lat, lon) {
 }
 
 // Zona de un spot (fijo o del usuario), una boya o una salida: la que traiga
-// (p. ej. /prevision manda `zona`) o la de sus coordenadas.
+// (/prevision manda `zona`; los spots NZ de functions/_lib/nz/spots-nz.js la
+// llevan en `tz`, y allí `zona` es la zona geográfica) o la de sus coordenadas.
 export function zonaDeSpot(s) {
   if (s?.zona && ZONAS_HORARIAS.has(s.zona)) return s.zona;
+  if (s?.tz && ZONAS_HORARIAS.has(s.tz)) return s.tz;
   return zonaPorCoordenadas(s?.lat, s?.lon);
 }
 
