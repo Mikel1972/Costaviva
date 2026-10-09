@@ -28,3 +28,17 @@ export function regionActiva(region, activas = REGIONES_ACTIVAS) {
 export function spotsRegionesActivas(activas = REGIONES_ACTIVAS) {
   return Object.entries(SPOTS_POR_REGION).flatMap(([region, spots]) => (regionActiva(region, activas) ? spots : []));
 }
+
+// Especies que se pueden enseñar en público (fase 2c de NZ, 2026-10-09):
+// las de España/Portugal siempre; las de otra región (especies.json `pais`)
+// solo con su región activa. Lo usan /especies, /especies/<slug> y el
+// sitemap. El índice de la app no lo necesita: cada región solo mira las
+// especies de su país (ventana-actividad.js).
+export function especiesVisibles(especies, activas = REGIONES_ACTIVAS) {
+  return (especies || []).filter((e) => regionActiva(e.pais || "es", activas));
+}
+
+// El JSON entero de especies.json con solo las especies visibles.
+export function datosEspeciesVisibles(datos, activas = REGIONES_ACTIVAS) {
+  return datos ? { ...datos, especies: especiesVisibles(datos.especies, activas) } : datos;
+}
