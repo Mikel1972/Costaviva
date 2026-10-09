@@ -92,6 +92,7 @@ test("frentes: flechas de corriente legibles y texto del toque sin jerga", () =>
   assert.match(t, /lo más prometedor/);
   assert.match(t, /Corriente hacia el E: 1,1 km\/h \(0,6 nudos\)/);
   assert.match(F.describirPunto(D, BYTES, ...centro(0, 0)), /nubes/);
+  assert.match(F.describirPunto(D, BYTES, ...centro(3, 1)), /^Sin frentes a menos de 10 km/);
   assert.match(F.describirPunto(D, BYTES, ...centro(10, 9)), /costa/);
   assert.match(F.describirPunto(D, BYTES, ...centro(11, 11)), /Tierra/);
   assert.doesNotMatch(t, /log10|gradiente|umbral|convergencia/i);

@@ -249,7 +249,8 @@ export function describirPunto(d, bytes, lat, lon, corr = { u: null, v: null }) 
     if (r.frente_termico) lineas.push(`Cambio de temperatura ${cerca("frente_termico")}`);
   }
   if (!lineas.length && r.convergencia) lineas.push(`La corriente junta el agua ${cerca("convergencia")}`);
-  if (!lineas.length) lineas.push("Sin frentes a menos de 10 km");
+  // Sin clorofila fiable alrededor (nubes o costa) no se puede decir "sin frentes".
+  if (!lineas.length) lineas.push(r.frente_clorofila === null ? "Sin cambios de temperatura a menos de 10 km; la clorofila hoy no se ve" : "Sin frentes a menos de 10 km");
   if (x.costa) lineas.push("Pegado a la costa la clorofila del satélite no es fiable");
   else if (x.nubes) lineas.push("Hoy había nubes: sin clorofila fiable aquí");
   const tc = textoCorriente(corr.u, corr.v);

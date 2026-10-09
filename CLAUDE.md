@@ -822,7 +822,11 @@ atribución; nunca se inventa un dato (lo que falta sale `null` + `aviso`).
   llaman fuertes a > 0,2 K/km y débiles a < 0,1 en imágenes de ~1 km; aquí
   son más bajos porque la malla de ~5 km suaviza. **Umbrales de Claude, por
   validar con el primer mes real**: el script imprime el % de celdas y avisa
-  si pasa del 25 %. Convergencia: -(∂u/∂x + ∂v/∂y) ≥ 0,1·f (|δ|/f, McWilliams
+  si pasa del 25 %. **Primera ejecución real (2026-10-09, rama de la PR):** 81.568
+  celdas de mar; frente de clorofila 0,79 %, térmico 8,64 %, los dos 0,45 %,
+  convergencia 0,23 %, nubes 49,8 %, franja costera 1,7 %; 255 kB + 60 kB de
+  histórico. El térmico sale mucho más que el de clorofila (la mitad del mar
+  estaba bajo nubes ese día): vigilarlo antes de tocar umbrales. Convergencia: -(∂u/∂x + ∂v/∂y) ≥ 0,1·f (|δ|/f, McWilliams
   2016, Proc. R. Soc. A 472, DOI 10.1098/rspa.2016.0117); lo que converge
   acumula lo que flota (D'Asaro et al. 2018, PNAS 115:1162-1167, DOI
   10.1073/pnas.1718453115). IBI va a 1/36° (~2-3 km) y se promedia a 1/18°;
