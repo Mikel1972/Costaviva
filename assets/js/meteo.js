@@ -37,9 +37,16 @@
   var vistas = { openmeteo: true };
   var vistasReales = false;
 
+  // Idiomas (2026-10-09): en inglés, el texto de assets/i18n/en.js; en
+  // español (o en páginas sin I18n, como admin.html) el de aquí, que es el
+  // mismo que es.js (test/i18n.test.js lo comprueba).
+  function tr(clave, es) {
+    var I = (typeof window !== "undefined" ? window : globalThis).I18n;
+    return I && I.idioma() !== "es" && I.existe(clave) ? I.t(clave) : es;
+  }
   function htmlAtribucion() {
     return ORDEN.filter(function (f) { return vistas[f]; })
-      .map(function (f) { return ATRIBUCIONES[f]; })
+      .map(function (f) { return tr("meteo.atrib." + f, ATRIBUCIONES[f]); })
       .join(" · ");
   }
 

@@ -25,12 +25,13 @@
 // Lo de arriba del separador es lógica pura (sin DOM ni red), probada en
 // test/lluvia-animada.test.js. Lo de abajo monta la capa en Leaflet.
 
+import { I18n } from "./i18n-modulo.js";
+
 export const WMS_URL = "https://view.eumetsat.int/geoserver/wms";
 export const CAPABILITIES_URL =
   "https://view.eumetsat.int/geoserver/msg_fes/h60b/wms?service=WMS&version=1.3.0&request=GetCapabilities";
 export const CAPA = "msg_fes:h60b";
-export const ATRIBUCION =
-  'Lluvia: radar <a href="https://www.eumetnet.eu/" target="_blank" rel="noopener">EUMETNET OPERA</a> (AEMET, IPMA, Météo-France) y satélite <a href="https://hsaf.meteoam.it/" target="_blank" rel="noopener">EUMETSAT H SAF</a>, CC BY 4.0';
+export const ATRIBUCION = I18n.t("lluvia.atribucion");
 export const HORAS_VENTANA = 3;
 export const PASO_POR_DEFECTO_MIN = 15;
 export const RETARDO_FRAME_MS = 400;
@@ -176,10 +177,10 @@ export function textoRetraso(tomaIso, ahoraMs) {
   const t = Date.parse(tomaIso);
   if (!Number.isFinite(t)) return "";
   const min = Math.max(0, Math.round((ahoraMs - t) / MIN));
-  if (min < 1) return "ahora";
-  if (min < 60) return `hace ${min} min`;
+  if (min < 1) return I18n.t("lluvia.ahora");
+  if (min < 60) return I18n.t("rayos.hace_min", { n: min });
   const h = Math.floor(min / 60), m = min % 60;
-  return m ? `hace ${h} h ${m} min` : `hace ${h} h`;
+  return m ? I18n.t("lluvia.hace_h_min", { h, m }) : I18n.t("lluvia.hace_h", { h });
 }
 
 // Toma de satélite que acompaña a una de radar: la de su cuarto de hora, o
@@ -390,20 +391,20 @@ function crearPanel(doc) {
   panel.id = "lluviaAnimPanel";
   panel.hidden = true;
   panel.setAttribute("role", "group");
-  panel.setAttribute("aria-label", "Lluvia de las últimas 3 horas");
+  panel.setAttribute("aria-label", I18n.t("lluvia.panel_aria"));
   // Sin on*= (CSP con nonce): los eventos se enganchan con addEventListener.
   panel.innerHTML = `
     <div class="lluvia-anim-fila">
-      <button type="button" class="lluvia-anim-boton" data-accion="lluvia-play-pausa" aria-label="Pausar">⏸</button>
+      <button type="button" class="lluvia-anim-boton" data-accion="lluvia-play-pausa" aria-label="${I18n.t("lluvia.pausar")}">⏸</button>
       <div>
         <div class="lluvia-anim-hora">--:--</div>
-        <div class="lluvia-anim-sub">Cargando…</div>
+        <div class="lluvia-anim-sub">${I18n.t("comun.cargando")}</div>
       </div>
     </div>
     <div class="lluvia-anim-ultima"></div>
     <div class="lluvia-anim-pasos"></div>
     <div class="lluvia-anim-leyenda"></div>
-    <div class="lluvia-anim-extremos"><span>0,2</span><span>2</span><span>10</span><span>50+ mm/h</span></div>
+    <div class="lluvia-anim-extremos"><span>${I18n.decimal("0.2")}</span><span>2</span><span>10</span><span>50+ mm/h</span></div>
     <div class="lluvia-anim-nota"></div>`;
   const ley = panel.querySelector(".lluvia-anim-leyenda");
   ley.style.background = `linear-gradient(90deg, ${ESCALA.map(([, c]) => `rgb(${c.join(",")})`).join(", ")})`;
@@ -457,18 +458,18 @@ export function crearLluviaAnimada({ L, map, contenedor, fetchFn = (...a) => fet
     horaEl.textContent = t ? horaMadrid(t) : "--:--";
     const n = estados.filter((e) => e === "ok").length;
     const pend = estados.filter((e) => e === "pendiente").length;
-    if (!tomas.length) subEl.textContent = activo ? "Cargando…" : "";
-    else if (pend) subEl.textContent = `Cargando ${n}/${tomas.length}…`;
-    else subEl.textContent = `${modo === "radar" ? "Radar" : "Satélite"} · ${textoRetraso(t, ahora())}`;
+    if (!tomas.length) subEl.textContent = activo ? I18n.t("comun.cargando") : "";
+    else if (pend) subEl.textContent = I18n.t("lluvia.cargando_n", { n, total: tomas.length });
+    else subEl.textContent = `${modo === "radar" ? I18n.t("lluvia.radar") : I18n.t("lluvia.satelite")} · ${textoRetraso(t, ahora())}`;
     const ult = tomas[ultimoIndiceListo(listas())] || tomas[tomas.length - 1];
-    ultimaEl.innerHTML = ult ? `Última toma <b>${horaMadrid(ult)}</b> · <b>${textoRetraso(ult, ahora())}</b>` : "";
+    ultimaEl.innerHTML = ult ? I18n.t("lluvia.ultima_html", { hora: horaMadrid(ult), hace: textoRetraso(ult, ahora()) }) : "";
     ultimaEl.classList.toggle("vieja", !!ult && ahora() - Date.parse(ult) > 20 * MIN);
     const sat = fuentes[estado.indice]?.satelite;
     notaEl.textContent = modo === "radar"
-      ? `Radar EUMETNET OPERA, una toma cada 10 min y la última.${sat ? ` Donde no llega el radar (más tenue): satélite H SAF de las ${horaMadrid(horaWms(sat))}.` : ""} CC BY 4.0.`
-      : "Radar no disponible ahora: lluvia estimada por satélite EUMETSAT H SAF (cada 15 min, ~45 min de retraso). CC BY 4.0.";
+      ? `${I18n.t("lluvia.nota_radar")}${sat ? I18n.t("lluvia.nota_sat", { hora: horaMadrid(horaWms(sat)) }) : ""} CC BY 4.0.`
+      : I18n.t("lluvia.nota_sin_radar");
     boton.textContent = estado.reproduciendo ? "⏸" : "▶";
-    boton.setAttribute("aria-label", estado.reproduciendo ? "Pausar" : "Reproducir");
+    boton.setAttribute("aria-label", estado.reproduciendo ? I18n.t("lluvia.pausar") : I18n.t("lluvia.reproducir"));
     [...pasosEl.children].forEach((el, i) => {
       const e = estados[i];
       el.className = "lluvia-anim-paso" + (e === "ok" ? " lista" : "") + (e === "fallo" ? " fallo" : "") + (i === estado.indice ? " actual" : "");
@@ -491,7 +492,7 @@ export function crearLluviaAnimada({ L, map, contenedor, fetchFn = (...a) => fet
       const paso = doc.createElement("button");
       paso.type = "button";
       paso.className = "lluvia-anim-paso";
-      paso.setAttribute("aria-label", `Toma de las ${horaMadrid(t)}`);
+      paso.setAttribute("aria-label", I18n.t("lluvia.toma_de", { hora: horaMadrid(t) }));
       paso.addEventListener("click", () => {
         if (!listas()[i]) return;
         estado = { ...estado, indice: i, reproduciendo: false };

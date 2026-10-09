@@ -20,13 +20,21 @@
 // Script clásico: deja window.MapaBase. La parte pura (retocarEstilo) se
 // prueba en test/mapa-base.test.js.
 (function (raiz) {
+  // Idiomas (2026-10-09): en inglés, el texto de assets/i18n/en.js; en
+  // español (o en páginas sin I18n, como admin.html) el de aquí, que es el
+  // mismo que es.js (test/i18n.test.js lo comprueba).
+  function tr(clave, es) {
+    var I = (typeof window !== "undefined" ? window : globalThis).I18n;
+    return I && I.idioma() !== "es" && I.existe(clave) ? I.t(clave) : es;
+  }
+
   var URL_ESTILO = "https://tiles.openfreemap.org/styles/liberty";
   var ATRIBUCION =
     '<a href="https://openfreemap.org" target="_blank" rel="noopener">OpenFreeMap</a> ' +
     '© <a href="https://www.openmaptiles.org/" target="_blank" rel="noopener">OpenMapTiles</a> ' +
     'Data from © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>';
-  var ATRIBUCION_RELIEVE =
-    'Relieve: <a href="https://doi.org/10.12770/cf51df64-56f9-4a99-b1aa-36b8d7b743a1" target="_blank" rel="noopener">EMODnet Bathymetry Consortium (DTM 2024)</a>, ' +
+  var ATRIBUCION_RELIEVE = tr("mapa_base.relieve_prefijo", "Relieve:") +
+    ' <a href="https://doi.org/10.12770/cf51df64-56f9-4a99-b1aa-36b8d7b743a1" target="_blank" rel="noopener">EMODnet Bathymetry Consortium (DTM 2024)</a>, ' +
     '<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>';
   // Hasta este zoom se ve el relieve de EMODnet (su rejilla es de ~115 m:
   // más cerca se vería borroso y ya manda el detalle de OpenStreetMap).

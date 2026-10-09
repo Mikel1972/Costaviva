@@ -18,6 +18,7 @@
 
 import { valorEnPunto } from "./capas-mar.js";
 import { componenteByte, rumbo } from "./frentes.js";
+import { I18n } from "./i18n-modulo.js";
 
 export const NUDO_MS = 1852 / 3600; // 0,5144 m/s
 // Tramos en nudos, elegidos mirando el fichero real del 2026-10-09 (IBI sin
@@ -40,18 +41,18 @@ export function tramo(ms) {
   return i;
 }
 
-const fmt = (x) => String(+x.toFixed(x < 1 ? 2 : 1)).replace(".", ",");
-const fmt1 = (x) => String(+x.toFixed(1)).replace(".", ",");
+const fmt = (x) => I18n.decimal(String(+x.toFixed(x < 1 ? 2 : 1)));
+const fmt1 = (x) => I18n.num(x);
 
 // Filas de la leyenda: [color, texto], de menos a más.
 export function leyendaTramos() {
   const t = TRAMOS_NUDOS;
   const kmh = (kn) => fmt1(kn * 1.852);
-  const filas = [`Menos de ${fmt(t[0])} nudos (< ${kmh(t[0])} km/h): muy floja`];
+  const filas = [I18n.t("corriente.ley_menos", { kn: fmt(t[0]), kmh: kmh(t[0]) })];
   for (let i = 1; i < t.length; i++) {
-    filas.push(`${fmt(t[i - 1])}-${fmt(t[i])} ${t[i] === 1 ? "nudo" : "nudos"} (${kmh(t[i - 1])}-${kmh(t[i])} km/h)`);
+    filas.push(I18n.t("corriente.ley_tramo", { a: fmt(t[i - 1]), b: fmt(t[i]), nudos: t[i] === 1 ? I18n.t("corriente.nudo") : I18n.t("corriente.nudos"), kmha: kmh(t[i - 1]), kmhb: kmh(t[i]) }));
   }
-  filas.push(`Más de ${fmt(t[t.length - 1])} nudo (> ${kmh(t[t.length - 1])} km/h)`);
+  filas.push(I18n.t("corriente.ley_mas", { kn: fmt(t[t.length - 1]), kmh: kmh(t[t.length - 1]) }));
   return filas.map((texto, i) => [PALETA_CORRIENTE[i], texto]);
 }
 
@@ -121,13 +122,13 @@ export function dentroDeZona(malla, lat, lon) {
 
 // Frase llana del toque: "Corriente hacia el NE, 0,6 nudos (1,1 km/h)."
 export function textoToque(c, dentro = true) {
-  if (!dentro) return "Fuera de la zona con datos.";
-  if (!c) return "Tierra o sin dato aquí.";
+  if (!dentro) return I18n.t("frentes.fuera_zona") + ".";
+  if (!c) return I18n.t("capas.globo.tierra") + ".";
   const kn = nudos(c.ms);
-  if (kn < 0.05) return "Corriente casi parada.";
-  const cifras = `${fmt1(kn)} ${fmt1(kn) === "1" ? "nudo" : "nudos"} (${fmt1(c.ms * 3.6)} km/h)`;
-  if (c.u === null || c.v === null || Math.hypot(c.u, c.v) < 1e-6) return `Corriente de ${cifras}.`;
-  return `Corriente hacia el ${rumbo(c.u, c.v)}, ${cifras}.`;
+  if (kn < 0.05) return I18n.t("corriente.parada");
+  const cifras = `${fmt1(kn)} ${fmt1(kn) === "1" ? I18n.t("corriente.nudo") : I18n.t("corriente.nudos")} (${fmt1(c.ms * 3.6)} km/h)`;
+  if (c.u === null || c.v === null || Math.hypot(c.u, c.v) < 1e-6) return I18n.t("corriente.de", { cifras });
+  return I18n.t("corriente.hacia", { rumbo: rumbo(c.u, c.v), cifras });
 }
 
 // Puntos de una rejilla fija de pantalla (px), como mucho `maxPorLado` en el

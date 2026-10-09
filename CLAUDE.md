@@ -5,6 +5,65 @@ cambian las convenciones — no es un historial (para eso está `ROBOT.md`).
 Si algo de aquí queda desactualizado, corrígelo en el momento en que lo
 detectes, no lo dejes para luego.
 
+## Idiomas: español e inglés (2026-10-09, base para Nueva Zelanda)
+
+Mikel abre Nueva Zelanda para pescadores en inglés. Base de idiomas sin
+dependencias (PR "i18n"; los datos de NZ van aparte).
+
+- **Núcleo**: `assets/js/i18n.js` (`window.I18n`), diccionarios
+  `assets/i18n/es.js` y `en.js` (envoltorio + un objeto JSON, una clave por
+  línea). Los módulos ES importan `assets/js/i18n-modulo.js`. En el `<head>`
+  de cada página traducida, **antes de cualquier otro script**: `es.js`,
+  `en.js`, `i18n.js`.
+- **Qué idioma**: guardado en este navegador (`localStorage`
+  `costaviva.idioma`) > perfil (`user_metadata.idioma` de la sesión de
+  Supabase, leído de su entrada de localStorage) > `navigator.languages`
+  (el primero que sea es o en) > español. En node (tests, Functions) siempre
+  español. El selector (🌐 Español / English) va en el menú de cuenta 👤
+  (`<div data-i18n-selector>`); guarda, intenta `auth.updateUser({ data: {
+  idioma } })` y recarga. OJO: un español con el móvil en inglés verá la app
+  en inglés hasta que elija Español una vez (lo pide el orden acordado).
+- **HTML fijo**: el texto español se queda en el HTML y se marca con
+  `data-i18n="clave"` (texto), `data-i18n-html` (con marcado, solo textos
+  nuestros) o `data-i18n-title|aria-label|placeholder|alt`. En español no se
+  toca nada; en inglés se traduce al cargar (sin destello: el cuerpo se
+  oculta hasta entonces, la pantalla de inicio se traduce antes con
+  `I18n.aplicarInicio()`), y solo si el elemento sigue con el texto español
+  original (lo que ya cambió el JS no se pisa).
+- **Texto del JS**: `I18n.t("clave", { vars })` (plurales: valor
+  `{ "one", "other" }` y `{ n }`). En los módulos se usa `I18n.t`, no un `t`
+  suelto (muchos callbacks usan `t` como variable). Los scripts clásicos que
+  también carga admin.html (errores.js, meteo.js...) usan
+  `tr("clave", "texto español")`: el respaldo debe ser idéntico a es.js.
+- **Números/unidades**: `I18n.num` (coma en es, punto en en), `I18n.decimal`,
+  `I18n.temp`, `I18n.metros`, `I18n.velocidad(kmh, "nudos")`, `I18n.locale()`
+  (es-ES / en-NZ), `I18n.mesesCortos()`.
+- **Motivos del índice** (`ventana-actividad.js`): cada motivo lleva `clave`,
+  `vars`, `texto` (idioma de la app) y `textoEs`. Lo que se guarda en el
+  diario (`resumenIndice`) va en español + clave; `paraUsuario` filtra lo
+  interno por `textoEs`.
+- **Datos por idioma** (fase de datos): `I18n.dato(obj, "texto")` usa
+  `texto_en` si existe; `I18n.nombre(especie)` usa `nombres.en`. Sin ellos,
+  español. Reglas expertas: `texto_en` en la regla.
+- **SEO**: `functions/_lib/seo/idiomas.js` deja preparado `/en/...` con
+  hreflang, **apagado** (`PUBLICAR_EN = false`): mismo HTML, sin rutas /en/,
+  sitemap y canónicas intactos. Los pasos para activarlo están en ese fichero.
+- **Tests**: `test/i18n.test.js` (cobertura de claves, nada sin traducir en
+  las páginas de `PAGINAS_I18N` salvo `EXCEPCIONES`, es.js = texto del HTML,
+  núcleo). Los tests antiguos que buscan textos en index.html leen la fuente
+  con `fuenteEs()` (test/i18n-html.js): `I18n.t("clave"` vuelve a su texto.
+- **Página nueva o texto nuevo**: marca el HTML, añade la clave a es.js Y a
+  en.js. admin.html se queda en español a propósito.
+- **Pendiente (inventario, sin tocar)**: emails (`avisar-fin-prueba.js`:
+  bienvenida, aviso y fin de prueba, enchufe; `_lib/invitaciones.js`:
+  invitación; `sos-alerta.js`: SOS a contactos; plantillas de Supabase Auth
+  —enlace de alta y "olvidé mi contraseña"— en el panel de Supabase, un solo
+  idioma), Stripe (productos y precios en EUR en el panel de Stripe,
+  Checkout sin `locale` → idioma del navegador; textos del portal), avisos al
+  admin (informe diario, altas: se quedan en español), nombres de spots, ríos,
+  boyas, especies, normativa, reglas expertas y zona horaria Europe/Madrid
+  (fase de datos de NZ), coordenadas del panel siempre "°N/°W".
+
 ## Captación: redes, calendario, métricas e "Invita a un amigo" (2026-10-09)
 
 Fase decidida por Mikel: todo a conseguir usuarios (0 suscriptores el
