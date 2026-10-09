@@ -34,7 +34,7 @@
 // (Ese riesgo residual ya no se acepta desde 2026-10-07: ver más abajo.)
 
 import { secretoValido } from "./_lib/secreto.js";
-import { SPOTS, coeficientePorSpot, pedirPorZona } from "./prevision.js";
+import { SPOTS, SPOTS_ES, coeficientePorSpot, pedirPorZona } from "./prevision.js";
 import { zonaDeSpot } from "../assets/js/regiones.js";
 import { pedirDatosMeteo } from "./_lib/fuentes.js";
 
@@ -127,7 +127,10 @@ export async function onRequestPost(context) {
         headers: { "content-type": "application/json" },
       });
     }
-    const spotsLote = SPOTS.filter((_, i) => i % NUM_LOTES_COEFICIENTES === numLote);
+    // Sin los spots de NZ (fase 2 de NZ): allí el coeficiente sale de LINZ
+    // (mareas-linz.js), así que pedir 24 días de Open-Meteo sería gastar
+    // cuota para nada. Con NZ apagada, SPOTS_ES y SPOTS son lo mismo.
+    const spotsLote = SPOTS_ES.filter((_, i) => i % NUM_LOTES_COEFICIENTES === numLote);
 
     try {
       // Ventana ancha (~24 días, cubre un ciclo vivas-muertas completo),

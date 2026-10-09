@@ -68,11 +68,9 @@ dependencias (PR "i18n"; los datos de NZ van aparte).
   Checkout sin `locale` → idioma del navegador; textos del portal), avisos al
   admin (informe diario, altas: se quedan en español), nombres de spots, ríos,
   boyas, especies, normativa, reglas expertas y zona horaria Europe/Madrid
-  (fase de datos de NZ), coordenadas del panel siempre "°N/°W". Además,
-  cosas de región que el idioma no arregla: el alta exige código postal de 5
-  cifras (NZ tiene 4) y `/geocodificar` es de España; el SOS marca el 112
-  (en NZ, 111) y los teléfonos sin prefijo se toman como +34; la
-  identificación por foto devuelve nombres de especie en español.
+  (fase de datos de NZ). Coordenadas °S/°E, SOS 111/+64 y código postal de
+  4 cifras ya van por región (fase 2a de NZ, abajo). La identificación por
+  foto devuelve nombres de especie en español.
 ## Zona horaria por región (2026-10-09, fase 0 de Nueva Zelanda)
 
 - **`assets/js/regiones.js`** (módulo ES puro, test `test/zona-horaria.test.js`)
@@ -126,10 +124,11 @@ ellos /prevision, /spots, sitemap, /registrar-presion y los scripts que leen
 SPOTS) cuando "nz" está en la lista. `test/nz-region.test.js` falla si con
 el interruptor apagado aparece algo de NZ en SPOTS, el sitemap, los `.html`,
 `tarjetas-mapa.js` o los scripts de marketing. **Activarlo es cosa de Mikel**
-y antes falta: zona horaria por spot en /prevision, el proxy y el eje horario
-(hoy `Europe/Madrid` fijo), textos en inglés, añadir los spots al mapa de
-`index.html` y a `diario.html` (tienen su propia copia de la lista), mover
-los spots con `revisar_ubicacion` y separar /prevision por región (ver cuota).
+y antes falta: mover los spots con `revisar_ubicacion`, la confirmación de
+licencia de LINZ, la migración del código postal y mirar la cuota de
+Open-Meteo (la zona horaria, /prevision por región, el mapa y el diario ya
+están: fase 2a, más abajo). Al activar, quitar NZ de las aserciones de
+"oculto" de test/nz-region.test.js.
 
 **Spots** (`functions/_lib/nz/spots-nz.js`, 60, slug `nz-…`): `pais: "nz"`,
 `tz: "Pacific/Auckland"`, `region` = área de pesca recreativa de MPI
@@ -208,6 +207,55 @@ multiplican). Por spot y día, con la caché actual:
   por centro) y `/viento-campo` (256 puntos por recuadro del mapa cada 30 min).
 - Mikel tiene que mirar en el panel de cliente de Open-Meteo el consumo real
   antes de activar NZ: estas cifras son el mínimo con tráfico continuo.
+
+## Nueva Zelanda, fase 2a: /prevision por región, vista previa, ficha, SOS y alta (2026-10-09)
+
+Sigue **todo oculto** (`REGIONES_ACTIVAS = ["es"]`), pero se puede ver.
+
+- **/prevision por región.** Sin parámetro (o `?region=es`): España exactamente
+  como antes, con `SPOTS_ES` (los 105; `SPOTS` = `SPOTS_ES` + regiones
+  activas, lo que leen /spots, sitemap y scripts) y la misma clave de caché.
+  `?region=nz`: solo los 60 de NZ, una consulta por API a Open-Meteo en
+  `Pacific/Auckland` **sin** `sea_level_height_msl` (la marea sale de LINZ),
+  sin boyas/ríos/AEMET/cámaras, con `marea` = `mareaSpotNZ` (atribución y
+  aviso de LINZ), `region`, `normativa`, `revisarUbicacion`. Caché propia
+  (`?region=nz`, o `?region=nz&vista-previa=1` para la previa). `&lista=1`
+  devuelve solo la lista (sin Open-Meteo; la usa el diario). Región
+  desconocida → 404. Los datos de `datos/nz/` se leen con `env.ASSETS.fetch`
+  (no pasan por el middleware; siguen sin ser públicos).
+  `/registrar-presion` pide el coeficiente de Open-Meteo solo para `SPOTS_ES`.
+- **Vista previa** (`functions/_lib/vista-previa.js`): con la región
+  apagada, `/prevision?region=nz` responde solo a un admin (JWT →
+  `requireAdmin`, `es_admin()`) o con `?clave=` igual al secret opcional
+  `VISTA_PREVIA_CLAVE` de Cloudflare Pages (tiempo constante; sin secret, la
+  vía de la clave rechaza). A los demás, 404. La autorización va **antes** de
+  la caché. En la app: **`/?region=nz`** (mapa) y **`/diario.html?region=nz`**
+  (desplegable), logueado como admin, o añadiendo `&clave=...`. Aviso amarillo
+  arriba; el mapa se centra en NZ.
+- **Ficha NZ** (index.html): coordenadas °S/°E (`formatoCoordenadas`, antes
+  "°N, °W" fijo), puerto LINZ + atribución + aviso bajo la marea
+  (`panelMareaFuente`), punto por revisar, y normativa **solo enlace**
+  (`assets/js/normativa-nz.js`: página de MPI de cada área, app NZ Fishing
+  Rules y aviso de rāhui; URLs comprobadas por título en el buscador porque
+  mpi.govt.nz bloquea descargas). Ninguna cifra.
+- **Diario**: le faltaban los 10 spots de Gipuzkoa (arreglado);
+  `test/listas-spots.test.js` mantiene iguales las 3 copias (prevision.js,
+  index.html, diario.html). No se unifican en un fichero: los HTML sin build
+  necesitan la lista antes de la primera respuesta. En el diario la marea de
+  una salida en NZ sale aún de Open-Meteo (aproximada); pasarla a LINZ es
+  pendiente.
+- **SOS** (`assets/js/region-pais.js`, `I18n.region()`): en NZ el botón
+  marca 111 (texto y `tel:`), los teléfonos sin + se toman como +64 ("021…"
+  → +6421…) y el email del SOS dice 111 según la posición. España sin cambios.
+- **Alta**: en la región NZ el código postal es de 4 cifras (`login.cp_4`);
+  `/geocodificar?cp=` busca 4 cifras en New Zealand. **Necesita la migración
+  `20261009190000_codigo_postal_nz.sql`** (CHECK `^[0-9]{4,5}$`, PR aparte
+  sin fusionar para que el vigía de esquema no avise de una migración sin
+  aplicar): sin ella, un alta de NZ falla al crear el perfil. Fusionarla y
+  aplicarla con `aplicar-migraciones.yml` antes de activar NZ.
+- Tests: `test/nz-fase2.test.js` (región oculta → 404 sin Open-Meteo, admin
+  y clave → 200 con solo NZ, caché separada, España igual, normativa sin
+  cifras, SOS, alta) y `test/listas-spots.test.js`.
 
 ## Captación: redes, calendario, métricas e "Invita a un amigo" (2026-10-09)
 

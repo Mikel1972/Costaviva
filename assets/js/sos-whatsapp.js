@@ -34,7 +34,8 @@
   }
 
   // Convierte lo que escribe la persona en E.164. Sin prefijo se entiende
-  // España (+34), que es donde está casi todo el mundo que usa la app.
+  // España (+34), que es donde está casi todo el mundo que usa la app; en
+  // Nueva Zelanda alarma.html pasa "64" (assets/js/region-pais.js).
   // Devuelve { ok: true, e164 } o { ok: false, error } con un texto que se
   // puede enseñar tal cual.
   function normalizarTelefono(entrada, prefijoPais) {
@@ -55,7 +56,11 @@
       e164 = "+" + limpio;
     } else if (prefijo === "34" && /^\d{9}$/.test(limpio)) {
       e164 = "+34" + limpio;
+    } else if (prefijo === "64" && /^64[2-9]\d{7,9}$/.test(limpio)) {
+      // "6421...": prefijo de Nueva Zelanda escrito sin el + (fase 2 de NZ).
+      e164 = "+" + limpio;
     } else if (prefijo !== "34" && /^\d{6,12}$/.test(limpio)) {
+      // Número nacional (en NZ, "021 123 4567"): se quita el 0 de delante.
       e164 = "+" + prefijo + limpio.replace(/^0+/, "");
     } else {
       return { ok: false, error: tr("sos.tel_incompleto", "Número incompleto. Si no es de España, escríbelo con su prefijo (por ejemplo +33…).") };
