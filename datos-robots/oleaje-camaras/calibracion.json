@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-09T07:37:55.631Z",
- "lineasHistorial": 95,
+ "fecha": "2026-10-09T08:08:00.357Z",
+ "lineasHistorial": 108,
  "etiquetas": 43,
  "etiquetasClaude": 43,
  "calibracion": {
@@ -48,17 +48,17 @@
    "pocosDatos": true
   },
   "zarautz/dinamico": {
-   "a": 16.9005,
-   "p": 1,
-   "n": 13,
+   "a": 6.8335,
+   "p": 0.5,
+   "n": 14,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
     "2026-10-08T14",
     "2026-10-08T16"
    ],
-   "dias": 1,
-   "hMin": 2.5,
+   "dias": 2,
+   "hMin": 1.88,
    "hMax": 3.59,
    "errorRel": 0.5,
    "pocosDatos": true
@@ -108,9 +108,9 @@
    "pocosDatos": true
   },
   "mundaka/principal": {
-   "a": 12.5413,
+   "a": 12.3542,
    "p": 1,
-   "n": 6,
+   "n": 7,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 3,
    "franjasClaude": [
@@ -120,7 +120,7 @@
    "dias": 2,
    "hMin": 1.06,
    "hMax": 2.18,
-   "errorRel": 0.942,
+   "errorRel": 0.906,
    "pocosDatos": true
   },
   "bakio/principal": {
@@ -165,9 +165,9 @@
    "pocosDatos": true
   },
   "castrourdiales/principal": {
-   "a": 233.4228,
+   "a": 104.8681,
    "p": 1,
-   "n": 2,
+   "n": 3,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
@@ -234,10 +234,10 @@
   },
   "zarautz": {
    "sustituye": false,
-   "motivo": "ruidosa (±49 %) y sin calibrar; 7 etiquetas de Claude en 2 franjas (faltan)",
+   "motivo": "ruidosa (±51 %) y sin calibrar; 7 etiquetas de Claude en 2 franjas (faltan)",
    "ruido": {
-    "ruido": 0.492,
-    "pares": 3
+    "ruido": 0.514,
+    "pares": 4
    }
   },
   "getaria": {
@@ -274,10 +274,10 @@
   },
   "mundaka": {
    "sustituye": false,
-   "motivo": "ruido aún sin medir (1 pares de lecturas cercanas); 3 etiquetas de Claude en 2 franjas (faltan)",
+   "motivo": "ruido aún sin medir (2 pares de lecturas cercanas); 3 etiquetas de Claude en 2 franjas (faltan)",
    "ruido": {
-    "ruido": 1.235,
-    "pares": 1
+    "ruido": 1.032,
+    "pares": 2
    }
   },
   "bakio": {
@@ -306,10 +306,10 @@
   },
   "castrourdiales": {
    "sustituye": false,
-   "motivo": "ruido aún sin medir (1 pares de lecturas cercanas)",
+   "motivo": "ruido aún sin medir (2 pares de lecturas cercanas)",
    "ruido": {
-    "ruido": 0.588,
-    "pares": 1
+    "ruido": 0.328,
+    "pares": 2
    }
   }
  }
