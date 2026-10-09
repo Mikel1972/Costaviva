@@ -56,9 +56,18 @@ Uso:
       recortada a CAJA), con tope de --max-dias y --max-minutos por ejecución,
       y salta los días que ya están en --existentes-url (bucket público).
       Con --prueba, días sintéticos sin red.
+  python descargar-capas.py --region nz --salida dir   (o con --prueba)
+      NUEVA ZELANDA (2026-10-09, fase 2 de NZ, región aún OCULTA): las mismas
+      tres capas con Copernicus GLOBAL en la caja de NZ (ver REGIONES["nz"]
+      más abajo: datasets, coberturas comprobadas y umbrales adaptados a
+      1/12°). Escribe capas/nz/{clorofila,temperatura-agua,frentes}.json y
+      capas/nz/historico/frentes-AAAA-MM-DD.json. Sin histórico hacia atrás
+      todavía (--desde con --region nz da error). La pasada de España no
+      cambia en nada: sin --region es la de siempre.
 """
 import argparse
 import base64
+import copy
 import json
 import os
 import time
@@ -170,6 +179,10 @@ def salida_capa(nombre, fecha, media):
 
 def abrir(dataset_id, variable, inicio=None, fin=None):
     import copernicusmarine
+    extra = {}
+    if REGION_ACTUAL.get("profundidad_max") is not None:
+        # GLO trae 50 niveles (0,49 a 5.728 m): solo la capa de superficie.
+        extra = {"minimum_depth": 0, "maximum_depth": REGION_ACTUAL["profundidad_max"]}
     return copernicusmarine.open_dataset(
         dataset_id=dataset_id,
         variables=variable if isinstance(variable, list) else [variable],
@@ -177,13 +190,17 @@ def abrir(dataset_id, variable, inicio=None, fin=None):
         minimum_longitude=CAJA["oeste"], maximum_longitude=CAJA["este"],
         start_datetime=inicio, end_datetime=fin,
         service="arco-geo-series",
+        **extra,
     )
 
 
 def superficie(da):
+    """El nivel más somero (en IBI hay uno solo; en GLO la coordenada de
+    profundidad puede venir de fondo a superficie, así que no vale el 0)."""
     for d in ("depth", "elevation"):
         if d in da.dims:
-            da = da.isel({d: 0})
+            prof = np.abs(np.asarray(da[d].values, dtype=np.float64)) if d in da.coords else None
+            da = da.isel({d: int(np.argmin(prof)) if prof is not None and prof.size else 0})
     return da
 
 
@@ -247,7 +264,7 @@ def elegir_clorofila(ds, tiempos_desc, con_flags):
 
 def temperatura_real():
     d = CAPAS["temperatura-agua"]
-    hoy12 = datetime.now(timezone.utc).replace(hour=12, minute=0, second=0, microsecond=0)
+    hoy12 = datetime.now(timezone.utc).replace(hour=REGION_ACTUAL["hora_utc_temperatura"], minute=0, second=0, microsecond=0)
     s = hoy12.strftime("%Y-%m-%dT%H:%M:%S")
     ds = abrir(d["dataset"], d["variable"], s, s)
     da = superficie(ds[d["variable"]]).isel(time=0).load()
@@ -265,41 +282,52 @@ def corrientes_real():
     taparía la circulación que junta el alimento."""
     hoy = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
     s = hoy.strftime("%Y-%m-%dT%H:%M:%S")
-    ds = abrir(CORRIENTE["dataset"], ["uo_detided", "vo_detided"], s, s)
-    u = superficie(ds["uo_detided"]).isel(time=0).load()
-    v = superficie(ds["vo_detided"]).isel(time=0).load().values
+    vu, vv = CORRIENTE["variables"]
+    ds = abrir(CORRIENTE["dataset"], [vu, vv], s, s)
+    u = superficie(ds[vu]).isel(time=0).load()
+    v = superficie(ds[vv]).isel(time=0).load().values
     if np.isfinite(u.values).mean() < 0.2:
         raise SystemExit("::error::corrientes: el modelo no trae datos para hoy")
     return hoy.strftime("%Y-%m-%d"), u["latitude"].values, u["longitude"].values, u.values, v
 
 
 def prueba(nombre):
+    """Datos sintéticos sin red. Las posiciones (tierra, lengua de
+    clorofila, remolino, frente térmico y nube) son las de la región
+    (REGION_ACTUAL["prueba"]); en España, las de siempre."""
     d = CAPAS.get(nombre, {})
-    paso_nativo = 1 / 96 if nombre == "clorofila" else 1 / 36
+    pr = REGION_ACTUAL["prueba"]
+    paso_nativo = pr["paso_nativo_chl"] if nombre == "clorofila" else pr["paso_nativo"]
     lats = np.arange(CAJA["sur"], CAJA["norte"], paso_nativo) + paso_nativo / 2
     lons = np.arange(CAJA["oeste"], CAJA["este"], paso_nativo) + paso_nativo / 2
     la2, lo2 = np.meshgrid(lats, lons, indexing="ij")
-    tierra = (la2 > 37) & (la2 < 43.2) & (lo2 > -8.8) & (lo2 < -0.5)
+    tierra = np.zeros(la2.shape, dtype=bool)
+    for a, b, c, e in pr["tierra"]:
+        tierra |= (la2 > a) & (la2 < b) & (lo2 > c) & (lo2 < e)
+    # Coordenada hacia el polo (en el sur, |lat|): el agua se enfría hacia ella.
+    polo = np.abs(la2)
     hoy = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     if nombre == "clorofila":
-        # Fondo suave + una "lengua" verde al este de 6 O (frente de clorofila).
-        v = 10 ** (np.sin(la2) + np.cos(lo2) * 0.5 - 0.5 + 0.6 * np.tanh((lo2 + 6) / 0.05))
+        # Fondo suave + una "lengua" verde al este de pr["lengua_lon"] (frente de clorofila).
+        v = 10 ** (np.sin(la2) + np.cos(lo2) * 0.5 - 0.5 + 0.6 * np.tanh((lo2 - pr["lengua_lon"]) / 0.05))
     elif nombre == "corrientes":
-        # Remolino ciclónico en el golfo de Bizkaia (centro 45 N, 5 O) más
-        # una deriva al este: hay convergencia y divergencia en sus bordes.
-        dy, dx = la2 - 45.0, (lo2 + 5.0) * np.cos(np.radians(45))
+        # Remolino (en España, golfo de Bizkaia, 45 N 5 O) más una deriva al
+        # este: hay convergencia y divergencia en sus bordes.
+        clat, clon = pr["remolino"]
+        dy, dx = la2 - clat, (lo2 - clon) * np.cos(np.radians(abs(clat)))
         r2 = dx ** 2 + dy ** 2
         k = 0.4 * np.exp(-r2 / 0.5)
         u = np.where(tierra, np.nan, -dy * k + 0.05 - 3 * dx * k)
         v = np.where(tierra, np.nan, dx * k - 3 * dy * k)
         return hoy, lats, lons, u, v
     else:
-        # Gradiente norte-sur + un frente térmico a 44,5 N.
-        v = 30 - (la2 - 26) * 0.6 - 1.5 * np.tanh((la2 - 44.5) / 0.1)
+        # Gradiente hacia el polo + un frente térmico (en España, a 44,5 N).
+        v = 30 - (polo - 26) * 0.6 - 1.5 * np.tanh((polo - abs(pr["frente_lat"])) / 0.1)
     v = np.where(tierra, np.nan, v)
     if nombre == "clorofila":
-        # Una "nube" (interpolado) al oeste de Galicia para probar la máscara.
-        obs = np.where(np.isfinite(v), np.where((la2 > 43.5) & (la2 < 44.5) & (lo2 > -12) & (lo2 < -10), 0.0, 1.0), np.nan)
+        # Una "nube" (interpolado) para probar la máscara (en España, al oeste de Galicia).
+        a, b, c, e = pr["nube"]
+        obs = np.where(np.isfinite(v), np.where((la2 > a) & (la2 < b) & (lo2 > c) & (lo2 < e), 0.0, 1.0), np.nan)
         # Ayer, el mismo campo visto entero (para el compuesto de frentes).
         ayer = (datetime.now(timezone.utc) - timedelta(days=1)).strftime("%Y-%m-%d")
         return hoy, lats, lons, v, obs, [(ayer, v, np.where(np.isfinite(v), 1.0, np.nan))]
@@ -358,6 +386,7 @@ CORRIENTE = {
     "producto": "IBI_ANALYSISFORECAST_PHY_005_001",
     "dataset": "cmems_mod_ibi_phy-cur_anfc_detided-0.027deg_P1D-m",
     "doi": "10.48670/moi-00027",
+    "variables": ["uo_detided", "vo_detided"],
 }
 FRENTES = {
     "paso": 1 / 18,
@@ -414,7 +443,10 @@ def convergencia_f(u, v, lats, paso):
     dx, dy = km_celda(lats, paso)
     dudx = (vu[5] - vu[3]) / (2 * dx * 1000)
     dvdy = (vv[1] - vv[7]) / (2 * dy * 1000)  # fila 0 = norte
-    f = 2 * OMEGA * np.sin(np.radians(lats))[:, None]
+    # |f|: en el hemisferio sur f es negativo y, sin el valor absoluto, la
+    # convergencia saldría con el signo cambiado (NZ, 2026-10-09). En el
+    # norte no cambia nada.
+    f = np.abs(2 * OMEGA * np.sin(np.radians(lats)))[:, None]
     return -(dudx + dvdy) / f
 
 
@@ -642,6 +674,138 @@ def construir_frentes(r_chl, r_temp, r_corr, es_prueba):
 
 
 # ---------------------------------------------------------------------------
+# Regiones (2026-10-09, fase 2 de Nueva Zelanda). "es" es exactamente lo de
+# arriba (no cambia nada); "nz" sustituye caja, datasets y umbrales con
+# usar_region("nz") antes de pedir nada. Las funciones leen CAJA, CAPAS,
+# CORRIENTE y FRENTES, que se actualizan en su sitio.
+#
+# Nueva Zelanda: IBI no la cubre; se usa Copernicus GLOBAL. Coberturas
+# comprobadas con `copernicusmarine describe --dataset-id` (toolbox 2.5.0,
+# 2026-10-09, servicio arco-geo-series):
+#   GLOBAL_ANALYSISFORECAST_PHY_001_024 (DOI 10.48670/moi-00016)
+#     cmems_mod_glo_phy_anfc_0.083deg_PT1H-m  thetao/uo/vo/zos, superficie
+#       (0,494 m), 1/12°, lat -80..90, lon -180..179,92, 2022-06-01 .. +10 días
+#     cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m  uo/vo diarios, 50 niveles
+#       (0,494 a 5.728 m; se pide solo 0-1 m), misma malla y fechas
+#     GLO no simula la marea: su corriente media del día ya va "sin marea"
+#     (lo que en IBI es uo_detided).
+#   OCEANCOLOUR_GLO_BGC_L4_NRT_009_102 (DOI 10.48670/moi-00279)
+#     cmems_obs-oc_glo_bgc-plankton_nrt_l4-gapfree-multi-4km_P1D  CHL y flags,
+#       1/24° (~4 km), global, ventana NRT 2026-09-30 .. 2026-10-08 (~9 días).
+#       flags: flag_masks [1, 2] = "LAND INTERPOLATED" (atributos del zarr
+#       ARCO leídos el 2026-10-09), la misma máscara 2 de la ATL.
+#   GLOBAL_ANALYSISFORECAST_WAV_001_027 (DOI 10.48670/moi-00017)
+#     cmems_mod_glo_wav_anfc_0.083deg_PT3H-i  VHM0/VMDR/VTPK..., 1/12°, cada
+#       3 h, 2022-11-01 .. +10 días. No lo usan estas capas (el oleaje de los
+#       spots sale de Open-Meteo); queda anotado para la capa de olas.
+# Caja: 165-179 E, 48-34 S (Norte, Sur y Stewart; sin Chatham ni Kermadec,
+# que obligarían a cruzar el antimeridiano).
+#
+# Umbrales adaptados a la resolución (malla de los frentes 1/12° ≈ 9,3 km
+# en latitud y 6,4-7,7 km en longitud a 34-48 S, frente a 1/18° ≈ 6 km en
+# España): un borde más estrecho que la celda se reparte en una distancia
+# mayor y su gradiente por km baja más o menos en la razón de los tamaños de
+# celda (6/9 ≈ 2/3). Por eso los umbrales de gradiente y de convergencia
+# son 2/3 de los de España (0,02 log10 CHL/km, 0,053 °C/km y 0,067·|f|).
+# Franja costera de 8 km (una celda; con 5 km y celdas de ~9 km no quedaría
+# ninguna). Frentes de al menos 3 celdas (~25 km). Una flecha cada 2 celdas
+# (1/6°, como en España). SON PROVISIONALES: como en España, se revisan con
+# el primer día real (el aviso de "más del 25 % del mar" sigue valiendo).
+# La temperatura es la de las 00 UTC (mediodía en NZ), no la de las 12 UTC.
+# ---------------------------------------------------------------------------
+REGIONES = {
+    "es": {
+        "caja": copy.deepcopy(CAJA),
+        "capas": copy.deepcopy(CAPAS),
+        "corriente": copy.deepcopy(CORRIENTE),
+        "frentes": copy.deepcopy(FRENTES),
+        "hora_utc_temperatura": 12,
+        "profundidad_max": None,
+        "subdir": "",
+        "prueba": {
+            "paso_nativo": 1 / 36, "paso_nativo_chl": 1 / 96,
+            "tierra": [(37, 43.2, -8.8, -0.5)],
+            "lengua_lon": -6.0, "remolino": (45.0, -5.0), "frente_lat": 44.5,
+            "nube": (43.5, 44.5, -12, -10),
+        },
+    },
+    "nz": {
+        "caja": {"norte": -34.0, "sur": -48.0, "oeste": 165.0, "este": 179.0},
+        "capas": {
+            "clorofila": {
+                "producto": "OCEANCOLOUR_GLO_BGC_L4_NRT_009_102",
+                "dataset": "cmems_obs-oc_glo_bgc-plankton_nrt_l4-gapfree-multi-4km_P1D",
+                "variable": "CHL",
+                "doi": "10.48670/moi-00279",
+                "unidad": "mg/m³",
+                "paso": 1 / 24,          # la nativa (~4,6 km en latitud)
+                "escala": {"tipo": "log10", "min": -2.0, "max": 2.0},
+                "origen": "satélite (L4 global 4 km, huecos por nubes interpolados por el productor)",
+            },
+            "temperatura-agua": {
+                "producto": "GLOBAL_ANALYSISFORECAST_PHY_001_024",
+                "dataset": "cmems_mod_glo_phy_anfc_0.083deg_PT1H-m",
+                "variable": "thetao",
+                "doi": "10.48670/moi-00016",
+                "unidad": "°C",
+                "paso": 1 / 12,          # la nativa (~9 km)
+                "escala": {"tipo": "lineal", "min": 0.0, "paso": 0.125},
+                "origen": "modelo GLOBAL de Copernicus (análisis y previsión, 1/12°), 00:00 UTC",
+            },
+        },
+        "corriente": {
+            "producto": "GLOBAL_ANALYSISFORECAST_PHY_001_024",
+            "dataset": "cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m",
+            "doi": "10.48670/moi-00016",
+            "variables": ["uo", "vo"],
+        },
+        "frentes": {
+            **copy.deepcopy(FRENTES),
+            "paso": 1 / 12,
+            "umbral_chl_log10_km": 0.02,
+            "umbral_temp_c_km": 0.053,
+            "umbral_convergencia_f": 0.067,
+            "costa_km": 8.0,
+            "flechas_cada": 2,
+        },
+        "hora_utc_temperatura": 0,
+        "profundidad_max": 1.0,
+        "subdir": "nz",
+        "prueba": {
+            "paso_nativo": 1 / 12, "paso_nativo_chl": 1 / 24,
+            # Isla Norte y Sur, en rectángulos burdos (solo para la prueba).
+            "tierra": [(-41.6, -36.5, 173.8, 178.4), (-46.6, -40.6, 166.6, 174.2)],
+            "lengua_lon": 171.0, "remolino": (-38.5, 170.0), "frente_lat": -42.0,
+            "nube": (-45.0, -44.0, 168.0, 170.0),
+        },
+    },
+}
+REGION_ACTUAL = REGIONES["es"]
+
+
+def usar_region(rid):
+    """Cambia la caja, los datasets y los umbrales a los de la región."""
+    global REGION_ACTUAL
+    cfg = REGIONES[rid]
+    CAJA.clear()
+    CAJA.update(copy.deepcopy(cfg["caja"]))
+    for nombre in CAPAS:
+        CAPAS[nombre].clear()
+        CAPAS[nombre].update(copy.deepcopy(cfg["capas"][nombre]))
+    CORRIENTE.clear()
+    CORRIENTE.update(copy.deepcopy(cfg["corriente"]))
+    FRENTES.clear()
+    FRENTES.update(copy.deepcopy(cfg["frentes"]))
+    REGION_ACTUAL = cfg
+    return cfg
+
+
+def dir_capas(salida):
+    """capas/ (España) o capas/<región>/ (NZ)."""
+    return os.path.join(salida, "capas", REGION_ACTUAL["subdir"]) if REGION_ACTUAL["subdir"] else os.path.join(salida, "capas")
+
+
+# ---------------------------------------------------------------------------
 # Histórico hacia atrás (2026-10-09, pedido de Mikel: "sin esto el
 # aprendizaje tarda meses"). Mismos datasets NRT que la pasada diaria, que
 # guardan los días pasados; para cada día D:
@@ -835,7 +999,7 @@ class BloqueReal:
                 return abrir(dsid, v, f"{ini}T00:00:00", f"{fin}T00:00:00"), False
         if var == "temperatura":
             return abrir(dsid, CAPAS["temperatura-agua"]["variable"], f"{ini}T12:00:00", f"{fin}T12:00:00"), False
-        return abrir(dsid, ["uo_detided", "vo_detided"], f"{ini}T00:00:00", f"{fin}T00:00:00"), False
+        return abrir(dsid, list(CORRIENTE["variables"]), f"{ini}T00:00:00", f"{fin}T00:00:00"), False
 
     def datasets(self, fecha):
         return {var: self.abiertos[(var, fecha)][2]["dataset"] for var in ("clorofila", "temperatura", "corriente") if (var, fecha) in self.abiertos}
@@ -867,8 +1031,9 @@ class BloqueReal:
             return None
         ds = self.abiertos[("corriente", fecha)][0]
         t = np.datetime64(f"{fecha}T00:00:00")
-        u = superficie(ds["uo_detided"]).sel(time=t).load()
-        v = superficie(ds["vo_detided"]).sel(time=t).load().values
+        vu, vv = CORRIENTE["variables"]
+        u = superficie(ds[vu]).sel(time=t).load()
+        v = superficie(ds[vv]).sel(time=t).load().values
         if np.isfinite(u.values).mean() < 0.2:
             return None
         return fecha, u["latitude"].values, u["longitude"].values, u.values, v
@@ -945,7 +1110,12 @@ def main():
     ap.add_argument("--max-dias", type=int, default=150, help="tope de días por ejecución")
     ap.add_argument("--max-minutos", type=float, default=300, help="no empieza un bloque nuevo pasado este tiempo")
     ap.add_argument("--existentes-url", default=None, help="URL pública de capas/historico/ para saltar los días que ya están")
+    ap.add_argument("--region", default="es", choices=sorted(REGIONES), help="es (por defecto) o nz (Copernicus GLOBAL, capas/nz/)")
     a = ap.parse_args()
+    if a.region != "es":
+        if a.desde:
+            raise SystemExit(f"::error::--desde/--hasta (histórico) aún no está preparado para --region {a.region}")
+        usar_region(a.region)
     if not a.prueba and not (os.environ.get("COPERNICUSMARINE_SERVICE_USERNAME") and os.environ.get("COPERNICUSMARINE_SERVICE_PASSWORD")):
         print("::error::Faltan COPERNICUSMARINE_SERVICE_USERNAME / _PASSWORD (cuenta gratuita de Copernicus Marine)")
         raise SystemExit(1)
@@ -954,7 +1124,8 @@ def main():
     if a.desde:
         historico(a)
         return
-    os.makedirs(os.path.join(a.salida, "capas", "historico"), exist_ok=True)
+    base = dir_capas(a.salida)
+    os.makedirs(os.path.join(base, "historico"), exist_ok=True)
     nativos = {}
     for nombre, fuente in (("clorofila", clorofila_real), ("temperatura-agua", temperatura_real)):
         t0 = time.time()
@@ -964,7 +1135,9 @@ def main():
         media = rejilla(lats, lons, v, CAPAS[nombre]["paso"], log=CAPAS[nombre]["escala"]["tipo"] == "log10")
         j = salida_capa(nombre, fecha, media)
         j["prueba"] = bool(a.prueba)
-        ruta = os.path.join(a.salida, "capas", f"{nombre}.json")
+        if a.region != "es":
+            j["region"] = a.region
+        ruta = os.path.join(base, f"{nombre}.json")
         with open(ruta, "w", encoding="utf-8") as fh:
             json.dump(j, fh, separators=(",", ":"))
         con_dato = float(np.isfinite(media).mean())
@@ -977,11 +1150,13 @@ def main():
         t0 = time.time()
         r_corr = prueba("corrientes") if a.prueba else corrientes_real()
         j, h, est = construir_frentes(nativos["clorofila"], nativos["temperatura-agua"], r_corr, a.prueba)
+        if a.region != "es":
+            j["region"] = h["region"] = a.region
         fu, fc, desde = j["fecha"], j["fecha_clorofila"], j["fecha_clorofila_desde"]
-        ruta = os.path.join(a.salida, "capas", "frentes.json")
+        ruta = os.path.join(base, "frentes.json")
         with open(ruta, "w", encoding="utf-8") as fh:
             json.dump(j, fh, separators=(",", ":"))
-        ruta_h = os.path.join(a.salida, "capas", "historico", f"frentes-{fu}.json")
+        ruta_h = os.path.join(base, "historico", f"frentes-{fu}.json")
         with open(ruta_h, "w", encoding="utf-8") as fh:
             json.dump(h, fh, separators=(",", ":"))
         print(f"capa frentes: {fu} (clorofila {desde} a {fc}), {j['filas']}x{j['columnas']}, {est}, "
