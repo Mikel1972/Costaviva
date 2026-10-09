@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-09T09:37:53.327Z",
- "lineasHistorial": 144,
+ "fecha": "2026-10-09T10:07:50.118Z",
+ "lineasHistorial": 158,
  "etiquetas": 43,
  "etiquetasClaude": 43,
  "calibracion": {
@@ -108,9 +108,9 @@
    "pocosDatos": true
   },
   "mundaka/principal": {
-   "a": 13.2785,
+   "a": 14.0199,
    "p": 1,
-   "n": 10,
+   "n": 11,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 3,
    "franjasClaude": [
@@ -120,7 +120,7 @@
    "dias": 2,
    "hMin": 1.06,
    "hMax": 2.18,
-   "errorRel": 0.78,
+   "errorRel": 0.787,
    "pocosDatos": true
   },
   "bakio/principal": {
@@ -205,6 +205,19 @@
    "hMax": 3.51,
    "errorRel": 0.5,
    "pocosDatos": true
+  },
+  "orio/principal": {
+   "a": 17.0683,
+   "p": 1,
+   "n": 1,
+   "nEtiquetas": 0,
+   "nEtiquetasClaude": 0,
+   "franjasClaude": [],
+   "dias": 1,
+   "hMin": 1.7,
+   "hMax": 1.7,
+   "errorRel": 0.5,
+   "pocosDatos": true
   }
  },
  "sustitucion": {
@@ -274,10 +287,10 @@
   },
   "mundaka": {
    "sustituye": false,
-   "motivo": "ruidosa (±85 %) y sin calibrar; 3 etiquetas de Claude en 2 franjas (faltan)",
+   "motivo": "ruidosa (±97 %) y sin calibrar; 3 etiquetas de Claude en 2 franjas (faltan)",
    "ruido": {
-    "ruido": 0.847,
-    "pares": 5
+    "ruido": 0.966,
+    "pares": 6
    }
   },
   "bakio": {
