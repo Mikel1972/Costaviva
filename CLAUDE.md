@@ -2727,29 +2727,46 @@ con todas las señales a la vez en todos los escenarios, 0,4 de media y 3 como
 mucho (test).
 
 **Histórico hacia atrás** (`descargar-capas.py --desde AAAA-MM-DD --hasta
-AAAA-MM-DD`): mismo cálculo (`construir_frentes` → `calcular_frentes`) y
-mismos datasets NRT, que guardan el pasado (STAC, 2026-10-09: clorofila
-L4 NRT desde 2025-10-04, **ventana móvil de ~1 año**; IBI temperatura y
-corriente sin marea desde 2022-11-22). Clorofila: el mismo compuesto de
+AAAA-MM-DD`): mismo cálculo (`construir_frentes` → `calcular_frentes`).
+**Datasets por cobertura real (corregido el 2026-10-09 tras el primer
+lanzamiento, run 37949198980: `CoordinatesOutOfDatasetBounds`)**: el STAC del
+PRODUCTO decía clorofila NRT "desde 2025-10-04", pero el DATASET en el
+servicio ARCO solo guarda ~10 días (2026-09-29 a 2026-10-08; su
+`admp_valid_start_date` ya lo decía). Ahora, para cada día y variable, el
+primer dataset de `HISTORICO_DATASETS` que lo cubre según
+`copernicusmarine.describe(dataset_id=...)` (sin cuenta; `cobertura_real`,
+se mira ANTES de pedir y las aperturas se recortan a esa cobertura):
+- clorofila: NRT de la pasada diaria si cubre toda la ventana del compuesto;
+  si no, **`cmems_obs-oc_atl_bgc-plankton_my_l4-gapfree-multi-1km_P1D`**
+  (OCEANCOLOUR_ATL_BGC_L4_MY_009_118, DOI 10.48670/moi-00289; 1997-10-01 a
+  2026-10-01 el 2026-10-09): misma malla de 1/96°, mismas variables `CHL` y
+  `flags` y misma máscara 2 = INTERPOLATED, así que el cálculo no cambia; es
+  la serie reprocesada, no la NRT que vio la pasada diaria;
+- temperatura y corriente: el análisis de IBI de la pasada diaria (guarda
+  desde 2024-10-18 / 2024-10-15: cubre 2026 entero); antes, el reanálisis
+  IBI_MULTIYEAR_PHY_005_002 (DOI 10.48670/moi-00029:
+  `cmems_mod_ibi_phy-temp_my_0.027deg_PT1H-m` y
+  `cmems_mod_ibi_phy-cur_my_detided-0.027deg_P1D-m`, misma malla y nombres;
+  hasta 2026-06-15).
+Cada fichero dice qué dataset usó (`datasets_historico`). Un día que no cubre
+ningún dataset, o un bloque que falla al abrir, se salta con aviso y la pasada
+sigue (sale en rojo solo si no escribe nada). Clorofila: el mismo compuesto de
 hasta 5 días que la pasada diaria (PR #149; `elegir_clorofila` compartida):
 el día D, o el último con datos hasta 5 días antes, más los previos D-1..D-4,
 nunca días posteriores a D (`fecha_clorofila_desde` / `fecha_clorofila` lo
 dicen); mismo umbral térmico (0,08 °C/km) y filtro de frentes de menos de 3
-celdas, porque todo pasa por `construir_frentes` → `calcular_frentes`.
-Temperatura a las 12 UTC, corriente media del día. `test/frentes_capas_test.py`
-(clase `Historico`) comprueba que el histórico elige los mismos días que la
-pasada diaria de ese día. Solo escribe `capas/historico/`, nunca las
-capas del día. Por bloques de 10 días (una apertura de cada dataset por
-bloque, recortada a la caja de siempre), salta lo que ya está en el bucket
-(HEAD público), tope `max_dias` (150) y 290 min por ejecución. Probado con
-`--prueba` y con datasets falsos de xarray (sin cuenta de Copernicus en la
-sesión). **Cómo lanzarlo (desde main, tras fusionar)**: Actions → "Fuentes
+celdas. Temperatura a las 12 UTC, corriente media del día.
+`test/frentes_capas_test.py` (clases `Historico`, `EleccionDataset`,
+`HistoricoSinAbortar`, sin red) lo comprueba. Solo escribe
+`capas/historico/`, nunca las capas del día. Por bloques de 10 días, salta lo
+que ya está en el bucket (HEAD público), tope `max_dias` (150) y 290 min por
+ejecución. **Cómo lanzarlo (desde main, tras fusionar)**: Actions → "Fuentes
 gratuitas" → Run workflow → `parte=historico_frentes`, `desde=2026-01-01`
 (o la fecha de la salida más antigua del diario), `hasta` vacío (= ayer),
 `max_dias=150`; se lanza otra vez para el resto (salta lo subido). ~281 días
-hasta el 2026-10-08, ~50-80 kB por día ≈ 14-22 MB en el bucket. Las salidas
-de antes de 2025-10-04 no pueden tener capa (fuera de la ventana NRT; el
-reanálisis MY tiene otro formato y no se usa).
+hasta el 2026-10-08, ~50-80 kB por día ≈ 14-22 MB en el bucket. Trampa
+apuntada en comun (TRAMPAS_COMPARTIDAS.md): la cobertura temporal se
+comprueba en el propio dataset.
 
 Tests: `test/frentes-indice.test.js` (en tests.yml).
 
