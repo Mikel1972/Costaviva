@@ -116,10 +116,15 @@ export function textoClorofila(v) {
   const extra = n === "baja" ? I18n.t("cc.clorofila.extra_baja") : n === "alta" ? I18n.t("cc.clorofila.extra_alta") : null;
   return I18n.t(`cc.clorofila.${n}`, { v: coma(v, v < 1 ? 2 : 1), extra: extra ? `: ${extra}` : "" });
 }
-export function textoTemperatura(v) {
+// km > 0: el valor es de la celda de mar más cercana (≤ 5 km, el modelo no
+// llega a la orilla; capas-mar.js valorCercano).
+export function textoTemperatura(v, km = 0) {
   if (v === null || v === undefined || !Number.isFinite(v)) return I18n.t("cc.temp.sin_dato");
+  if (km > 0) return I18n.t("capas.tagua.formato_cerca", { v: coma(v), km: kmCerca(km) });
   return I18n.t("capas.tagua.formato", { v: coma(v) });
 }
+// Distancia redondeada al km (nunca "a 0 km").
+export const kmCerca = (km) => Math.max(1, Math.round(km));
 
 // Resumen de 〰 Frentes para una línea del globo, a partir de los rasgos de
 // frentes.js (rasgosPunto, radio 10 km). null = fuera de la malla.

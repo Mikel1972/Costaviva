@@ -30,6 +30,42 @@ export function valorEnPunto(d, bytes, lat, lon) {
   return valorByte(bytes[f * d.columnas + c], d.escala);
 }
 
+// Celda vacía cerca de la costa (2026-10-10, sonda de Mikel en Armintza:
+// 19,55 °C medidos y la celda del punto enmascarada por la costa). Si la
+// celda del punto no tiene dato, la celda de mar válida más cercana cuyo
+// CENTRO esté a maxKm o menos. Devuelve { v, km } (km = 0 si el punto cae en
+// una celda con dato) o null. Solo para leer un punto: el pintado del mapa
+// no rellena tierra.
+export const MAX_KM_CELDA_CERCANA = 5;
+const KM_POR_GRADO = 111.2;
+export function valorCercano(d, bytes, lat, lon, maxKm = MAX_KM_CELDA_CERCANA) {
+  const f0 = Math.floor((d.norte - lat) / d.paso);
+  const c0 = Math.floor((lon - d.oeste) / d.paso);
+  const dentro = (f, c) => f >= 0 && c >= 0 && f < d.filas && c < d.columnas;
+  if (dentro(f0, c0)) {
+    const v = valorByte(bytes[f0 * d.columnas + c0], d.escala);
+    if (v !== null) return { v, km: 0 };
+  }
+  if (!(maxKm > 0)) return null;
+  const kmLat = d.paso * KM_POR_GRADO;
+  const kmLon = kmLat * Math.max(0.01, Math.cos((lat * Math.PI) / 180));
+  const rf = Math.ceil(maxKm / kmLat) + 1;
+  const rc = Math.ceil(maxKm / kmLon) + 1;
+  let mejor = null;
+  for (let f = f0 - rf; f <= f0 + rf; f++) {
+    for (let c = c0 - rc; c <= c0 + rc; c++) {
+      if (!dentro(f, c) || (f === f0 && c === c0)) continue;
+      const v = valorByte(bytes[f * d.columnas + c], d.escala);
+      if (v === null) continue;
+      const latC = d.norte - (f + 0.5) * d.paso;
+      const lonC = d.oeste + (c + 0.5) * d.paso;
+      const km = Math.hypot((latC - lat) * KM_POR_GRADO, (lonC - lon) * KM_POR_GRADO * Math.cos((lat * Math.PI) / 180));
+      if (km <= maxKm && (!mejor || km < mejor.km)) mejor = { v, km };
+    }
+  }
+  return mejor;
+}
+
 // Leaflet estira una imagen linealmente en Mercator; la rejilla es de lat/lon
 // regulares. Para la fila r (de H) de la imagen, la fila de datos que le toca.
 const mercY = (lat) => Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360));

@@ -1295,6 +1295,39 @@ sin IA ni peticiones nuevas (mismo `capas/temperatura-agua.json`):
   `pintarIsotermas()`/`leyendaBandas()` en `index.html`. La imagen se pinta
   una vez; mover el mapa cuesta ~3 ms en Chromium con el fichero real.
 
+## 🌡 Celda vacía junto a la costa y sonda en el diario (2026-10-10, pedido de Mikel)
+
+Mikel midió con su sonda Furuno 19,55 °C frente a Armintza (16:26 UTC); la
+app decía 20,3 °C (Open-Meteo) y la capa IBI no tenía dato en el punto (celda
+enmascarada por la costa; a 3,6 km mar adentro, 20,75 °C).
+
+- **Celda vacía**: `valorCercano()` en `assets/js/capas-mar.js`: si la celda
+  del punto no tiene dato, la celda de mar válida cuyo centro esté a ≤ 5 km
+  (`MAX_KM_CELDA_CERCANA`). Se usa al tocar el mapa con 🌡 (sola o con otras
+  capas): "20,8 °C a 4 km, el modelo no llega a la orilla" (clave
+  `capas.tagua.formato_cerca`). Más lejos, sin dato. El pintado no rellena
+  tierra. La ficha y el índice no leen esta capa (van por `/prevision` y
+  `copernicus-mar.js`, que ya busca la celda más cercana a ≤ 20 km).
+- **Sonda en el diario** (opcional, coma o punto, 0-35 °C): se guarda en
+  `salidas_pesca.indice_factores.temp_agua_sonda` (jsonb existente, **sin
+  migración**) con el modelo a esa hora y en ese punto: `open_meteo_c` (serie
+  de mar de la salida antes de cambiarla por la boya; `fuente_serie` dice si
+  era Open-Meteo o Copernicus), `ibi` (capa 🌡 del día, 12:00 UTC, solo
+  salidas de hoy y solo si hay medida) y `boya`. Código puro:
+  `assets/js/temp-agua-sonda.js`. La ficha de la salida lo enseña en una
+  línea.
+- **Aprendizaje**: `scripts/aprendizaje/sesgo-temp-agua.mjs` (sonda − modelo
+  por región y modelo, n y personas) desde `semanal.mjs`; público en
+  `datos-robots/aprendizaje/sesgo-temp-agua.json` **solo con 5 personas o
+  más** (aquí lo del dueño solo NO se publica: lo ve en admin.html, calculado
+  en su navegador). Propuesta (siempre con sí) solo si supera
+  `aprendizaje/config.json → sesgo_temp_agua`: 30 medidas, 5 personas,
+  |sesgo| ≥ 0,3 °C, 3 errores típicos y el mismo signo en el 30 % reciente.
+- Puntos de calibración aportados por el dueño:
+  `datos-robots/calibracion-temp-agua.jsonl` (sin nombre, lat/lon a 0,01°).
+  El primero es el de Armintza.
+- Tests: `test/temp-agua-sonda.test.js` (en tests.yml).
+
 ## 🌿🌡〰🌊 Varias capas de mar a la vez (2026-10-09, pedido de Mikel)
 
 Mikel: "Debiéramos poder seleccionar varios campos a la vez… y el resumen

@@ -23,6 +23,14 @@
   "tau_a": 1.5,
   "fraccion_prueba": 0.3
  },
+ "sesgo_temp_agua": {
+  "descripcion": "Sesgo del modelo de temperatura del agua por zona (scripts/aprendizaje/sesgo-temp-agua.mjs): media de sonda del diario − modelo (Open-Meteo, IBI, boya). Solo se propone corregirlo (siempre con sí, nunca solo) con min_muestras medidas o más de min_personas personas distintas, un sesgo de al menos min_sesgo_c °C, z_min errores típicos y el mismo signo en el fraccion_prueba más reciente.",
+  "min_muestras": 30,
+  "min_personas": 5,
+  "min_sesgo_c": 0.3,
+  "z_min": 3,
+  "fraccion_prueba": 0.3
+ },
  "retadores": {
   "semanas_min_para_promover": 4,
   "victorias_min_ultimas_4": 3,
