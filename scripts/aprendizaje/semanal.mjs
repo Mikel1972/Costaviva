@@ -25,6 +25,9 @@
 //   5b. Frentes, clorofila y corrientes en la sombra (frentes-sombra.mjs):
 //      efecto por modalidad × especie, sin signo supuesto; solo se propone
 //      lo que supera las barreras.
+//   5c. Sesgo del modelo de temperatura del agua por zona (sesgo-temp-agua.mjs):
+//      sonda del diario − Open-Meteo / IBI / boya; solo se propone corregirlo
+//      con muestra suficiente y 5 personas o más.
 //   6. Escribe solo AGREGADOS (repo público, k ≥ 5 usuarios, privacidad.mjs)
 //      y el resumen para personas (aprendizaje/RESUMEN.md).
 //
@@ -53,6 +56,7 @@ import { reglasSinUso, estacionalidad, etiquetarCamaras, especializacionRegional
 import { propuesta, fusionar, tasasAceptacion, reglasBloqueadas, validarPropuesta } from "./propuestas.mjs";
 import { cambiarConfianzas } from "./especies-texto.mjs";
 import { indiceSpot } from "../../assets/js/ventana-actividad.js";
+import { muestrasTempAgua, evaluarSesgo, publicarSesgo, propuestasSesgo } from "./sesgo-temp-agua.mjs";
 import { evaluarSombra, publicarSombra, VARIABLES_SOMBRA, RADIO_KM, decodificarHistorico, rasgosCaso, contextosFrentesCasos } from "./frentes-sombra.mjs";
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -71,6 +75,8 @@ export const RUTAS = {
   evalRetadores: "datos-robots/aprendizaje/retadores.json",
   frentesSombra: "datos-robots/aprendizaje/frentes-sombra.json",
   frentesHipotesis: "aprendizaje/frentes-hipotesis.json",
+  sesgoTempAgua: "datos-robots/aprendizaje/sesgo-temp-agua.json",
+  calibracionTempAgua: "datos-robots/calibracion-temp-agua.jsonl",
   etiquetar: "datos-robots/aprendizaje/etiquetar.json",
   historial: "datos-robots/aprendizaje/historial.jsonl",
   autoCambios: "datos-robots/aprendizaje/auto-cambios.json",
@@ -196,7 +202,7 @@ export function ejecutar(p) {
     datos, textoEspecies, casosBase = [], descartes = {}, series = new Map(), avisoSeries = null, extras = {},
     config = {}, decisiones = [], propuestasExistentes = [], retadores = [], historial = [],
     espuma = [], calibracionCamaras = null, fuentesRepo = [], fuentesTablas = [], vigia = null,
-    observaciones = [], comunidad = { filas: [], error: null }, panelOpciones = {}, rasgosFrentes = new Map(), avisoFrentes = null, hipotesisFrentes = null, hoy, ahora = Date.now(), pausado = false, sinAuto = null, errores = [],
+    observaciones = [], comunidad = { filas: [], error: null }, panelOpciones = {}, rasgosFrentes = new Map(), avisoFrentes = null, hipotesisFrentes = null, muestrasSonda = [], hoy, ahora = Date.now(), pausado = false, sinAuto = null, errores = [],
   } = p;
   const cfg = { ...CONFIG_POR_DEFECTO, ...(config.ajuste || {}) };
   const cfgRet = { semanas_min_para_promover: 4, victorias_min_ultimas_4: 3, prob_mejora_min: 0.9, ...(config.retadores || {}) };
@@ -267,6 +273,8 @@ export function ejecutar(p) {
 
   // 3b. Frentes, clorofila y corrientes en la sombra (todas las modalidades y especies)
   const sombraFrentes = evaluarSombra(casos, rasgosFrentes, datos, cfg, config.frentes || {});
+  // 3c. Sesgo del modelo de temperatura del agua (sonda − modelo) por zona
+  const sesgoTemp = evaluarSesgo(muestrasSonda, config.sesgo_temp_agua || {});
 
   // 4. Vigilancia
   const fr = frescura([...fuentesRepo, ...fuentesTablas], ahora);
@@ -439,6 +447,7 @@ export function ejecutar(p) {
       detalle: { tipo: "frentes", ...k, radio_km: RADIO_KM[k.modalidad] ?? 10 },
     }));
   }
+  nuevas.push(...propuestasSesgo(sesgoTemp, { hoy }));
   const { propuestas, silenciadas, enEspera } = fusionar(propuestasExistentes, nuevas, decisiones, { hoy });
   const invalidas = propuestas.filter((x) => x.origen === "aprendizaje-semanal").map((x) => ({ id: x.id, e: validarPropuesta(x) })).filter((x) => x.e.length);
   if (invalidas.length) throw new Error(`propuestas inválidas: ${JSON.stringify(invalidas)}`);
@@ -517,6 +526,7 @@ export function ejecutar(p) {
     vivo_indice_medio: num(vivo?.media),
     observaciones_abiertas: observaciones.length,
     fotogramas_para_etiquetar: etiquetar.length,
+    temp_agua_medidas_sonda: muestrasSonda.length,
   }).filter(([, v]) => v !== undefined));
   const tasas = tasasAceptacion(decisiones, propuestasExistentes);
   const senales = {
@@ -535,7 +545,7 @@ export function ejecutar(p) {
       reglas_bloqueadas_para_auto: [...bloqueadas],
     },
   };
-  const resumenMd = escribirResumen({ sombraFrentes, avisoFrentes, senales, enEspera, semana, hoy, totales, fuentes, backtest, aplicar, reversiones, motivoNoAplicar, seguros, propuestas, deriva, avisosDeriva, evalRetadores, etiquetar, decisiones, silenciadas, config, avisoSeries, errores });
+  const resumenMd = escribirResumen({ sesgoTemp, muestrasSonda: muestrasSonda.length, sombraFrentes, avisoFrentes, senales, enEspera, semana, hoy, totales, fuentes, backtest, aplicar, reversiones, motivoNoAplicar, seguros, propuestas, deriva, avisosDeriva, evalRetadores, etiquetar, decisiones, silenciadas, config, avisoSeries, errores });
 
   const ficheros = {
     [RUTAS.backtest]: JSON.stringify(backtest, null, 1) + "\n",
@@ -545,6 +555,11 @@ export function ejecutar(p) {
       generado_en: new Date(ahora).toISOString(), semana,
       nota: "Frentes, clorofila y corrientes EN LA SOMBRA (no tocan el índice en vivo). Efecto en log-odds por encima del índice de cada especie, prior centrado en 0 (sin signo supuesto). Solo agregados de 5 personas o más. Barreras: aprendizaje/config.json (ajuste y frentes). Rasgos: scripts/aprendizaje/frentes-sombra.mjs.",
       aviso: avisoFrentes, radio_km: RADIO_KM, ...publicarSombra(sombraFrentes),
+    }, null, 1) + "\n",
+    [RUTAS.sesgoTempAgua]: JSON.stringify({
+      generado_en: new Date(ahora).toISOString(), semana,
+      nota: "Sesgo del modelo de temperatura del agua: media de (sonda − modelo) en °C por zona y modelo (Open-Meteo de la serie de la salida, capa IBI de Copernicus, boya). Solo grupos de 5 personas distintas o más; los del dueño solo, en admin. Barreras: aprendizaje/config.json → sesgo_temp_agua. Código: scripts/aprendizaje/sesgo-temp-agua.mjs.",
+      medidas: muestrasSonda.length, grupos: publicarSesgo(sesgoTemp, config.sesgo_temp_agua || {}),
     }, null, 1) + "\n",
     [RUTAS.etiquetar]: JSON.stringify({ generado_en: new Date(ahora).toISOString(), semana, nota: "Fotogramas que más enseñarían a la calibración de las cámaras si se etiquetan (etiquetar-olas.html o la rutina de etiquetado).", fotogramas: etiquetar }, null, 1) + "\n",
     [RUTAS.historial]: historialNuevo.map((h) => JSON.stringify(h)).join("\n") + "\n",
@@ -630,6 +645,15 @@ export function escribirResumen(r) {
     else L.push("- Ninguna combinación supera todavía las barreras (80 salidas, 15 con y 15 sin captura, 30 con y 30 sin el rasgo, 5 personas o más, efecto de 3 desviaciones y mejora en las salidas recientes). Todas siguen en la sombra, acumulando salidas.");
     L.push("");
   }
+  if (r.sesgoTemp) {
+    L.push("## Temperatura del agua: sonda frente al modelo", "");
+    L.push("Quien mide el agua con su sonda la apunta en el diario. Se compara con lo que decía el modelo a esa hora y en ese punto (Open-Meteo, la capa IBI de Copernicus y la boya si se usó), por zona. No cambia nada solo.");
+    L.push(`- Medidas con sonda: ${r.muestrasSonda}.`);
+    const sup = r.sesgoTemp.filter((g) => g.supera);
+    if (sup.length) for (const g of sup) L.push(`- Supera todas las barreras: ${g.modelo} en ${g.zona}, sonda − modelo ${fmt(g.media)} °C (${g.n} medidas, ${g.personas} personas): va como pregunta.`);
+    else L.push("- Ninguna zona supera todavía las barreras (30 medidas, 5 personas o más, sesgo de 0,3 °C o más, 3 errores típicos y que se mantenga en las medidas recientes).");
+    L.push("");
+  }
   L.push("## Para etiquetar (lo que más enseña)", "");
   if (!r.etiquetar.length) L.push("Nada pendiente.");
   for (const e of r.etiquetar.slice(0, 6)) L.push(`- Cámara ${e.camara} (${e.encuadre}), ${e.fecha.slice(0, 16).replace("T", " ")} UTC: ${e.motivo}.`);
@@ -696,14 +720,17 @@ async function main() {
   const cache = process.env.APRENDIZAJE_CACHE || join(process.env.RUNNER_TEMP || tmpdir(), "aprendizaje-cache");
 
   // Casos (del diario o de un fichero de pruebas)
-  let casosBase = [], descartes = {}, errores = [];
+  let casosBase = [], descartes = {}, errores = [], muestrasSonda = [];
+  const calibracionTemp = leerJSONL(join(RAIZ, RUTAS.calibracionTempAgua));
   if (val("--entrada")) {
     const e = JSON.parse(readFileSync(val("--entrada"), "utf8"));
     ({ casos: casosBase, descartes } = casosDesdeDiario({ ...e, excluir: new Set(e.excluir || []), propios: new Set(e.propios || []), datos, hoy }));
+    muestrasSonda = muestrasTempAgua({ salidas: e.salidas || [], calibracion: calibracionTemp, excluir: new Set(e.excluir || []), propios: new Set(e.propios || []) });
   } else if (url && key) {
     const d = await leerDiario({ url, key, emailsPrueba: [process.env.TEST_USER_A_EMAIL, process.env.TEST_USER_B_EMAIL].filter(Boolean) });
     errores = d.errores;
     ({ casos: casosBase, descartes } = casosDesdeDiario({ ...d, datos, hoy }));
+    muestrasSonda = muestrasTempAgua({ ...d, calibracion: calibracionTemp });
   } else if (!args.includes("--solo-retadores")) {
     errores.push("sin SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY: pasada sin casos");
   }
@@ -768,6 +795,7 @@ async function main() {
     espuma: leerJSONL(join(RAIZ, RUTAS.espuma)), calibracionCamaras: leer(RUTAS.calibracionCamaras, null),
     fuentesRepo, fuentesTablas, vigia, observaciones: leerObservaciones(RAIZ), comunidad, hoy, pausado, errores,
     rasgosFrentes, avisoFrentes, hipotesisFrentes: leer(RUTAS.frentesHipotesis, null),
+    muestrasSonda: muestrasSonda.length ? muestrasSonda : muestrasTempAgua({ calibracion: calibracionTemp }),
     sinAuto: args.includes("--no-aplicar") ? "lanzado a mano sin permitir cambios automáticos" : null,
   });
   escribir(r.ficheros);

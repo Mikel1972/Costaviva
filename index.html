@@ -2513,7 +2513,9 @@ const CAPAS_MAR = {
     valorColor: (v) => (v - 10) / 18,
     paradas: ["#2B3A8C", "#2F7FC1", "#4FB7C9", "#9AD27A", "#F2D04B", "#F28C38", "#C9372C"],
     extremos: ["10 °C", "28+ °C"],
-    formato: (v) => I18n.t("capas.tagua.formato", { v: I18n.num(v, 1) }),
+    formato: (v, km = 0) => (km > 0
+      ? I18n.t("capas.tagua.formato_cerca", { v: I18n.num(v, 1), km: Math.max(1, Math.round(km)) })
+      : I18n.t("capas.tagua.formato", { v: I18n.num(v, 1) })),
     resumen: I18n.t("capas.tagua.resumen"),
     explica: I18n.t("capas.tagua.explica"),
     fecha: (d) => I18n.t("capas.tagua.fecha", { fecha: fechaCorta(d.fecha) }),
@@ -3135,10 +3137,15 @@ function globoCapasMar(lat, lng) {
   let hayMar = false;
   for (const nombre of activas) {
     const d = datosCapasMar[ficheroCapaMar(nombre)];
-    if (nombre === "temperatura-agua" || nombre === "clorofila") {
+    if (nombre === "temperatura-agua") {
+      // Celda vacía junto a la costa: la de mar más cercana a ≤ 5 km, dicho.
+      const r = CM.valorCercano(d, d.bytes, lat, lng);
+      if (r) hayMar = true;
+      partes[nombre] = CC.textoTemperatura(r ? r.v : null, r ? r.km : 0);
+    } else if (nombre === "clorofila") {
       const v = CM.valorEnPunto(d, d.bytes, lat, lng);
       if (v !== null) hayMar = true;
-      partes[nombre] = nombre === "clorofila" ? CC.textoClorofila(v) : CC.textoTemperatura(v);
+      partes[nombre] = CC.textoClorofila(v);
     } else if (nombre === "frentes") {
       const cel = window.Frentes.celdaDe(d, lat, lng);
       if (cel && d.bytes[cel.f * d.columnas + cel.c] !== 255) hayMar = true;
@@ -3674,9 +3681,13 @@ map.on("click", (e) => {
     L.popup().setLatLng(e.latlng).setContent(escVA(texto)).openOn(map);
     return;
   }
-  const v = d && window.CapasMar ? window.CapasMar.valorEnPunto(d, d.bytes, lat, lng) : null;
+  // 🌡: si la celda del punto está enmascarada por la costa, la de mar más
+  // cercana a ≤ 5 km (capas-mar.js valorCercano), diciendo a qué distancia.
+  const r = !d || !window.CapasMar ? null
+    : nombre === "temperatura-agua" ? window.CapasMar.valorCercano(d, d.bytes, lat, lng)
+      : (() => { const v = window.CapasMar.valorEnPunto(d, d.bytes, lat, lng); return v === null ? null : { v, km: 0 }; })();
   L.popup().setLatLng(e.latlng)
-    .setContent(v === null ? I18n.t("capas.globo.sin_dato") : CAPAS_MAR[nombre].formato(v))
+    .setContent(r === null ? I18n.t("capas.globo.sin_dato") : CAPAS_MAR[nombre].formato(r.v, r.km))
     .openOn(map);
 });
 map.on("click", (e) => {

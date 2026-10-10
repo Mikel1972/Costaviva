@@ -267,6 +267,9 @@ import { cargarCompartidas, htmlCasillaCompartir, htmlEtiquetaCompartida, sincro
 import * as VentanaActividad from "/assets/js/ventana-actividad.js";
 import * as CondSalida from "/assets/js/condiciones-salida.js";
 import * as Regiones from "/assets/js/regiones.js";
+// Temperatura del agua medida con sonda (2026-10-10).
+import * as TempSonda from "/assets/js/temp-agua-sonda.js";
+import { bytesDeBase64 } from "/assets/js/capas-mar.js";
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
@@ -986,6 +989,13 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha, horaF
       }
       resultado.temp_agua = marino.hourly?.sea_surface_temperature?.[idx] ?? null;
     }
+    // Modelo de temperatura del agua a la hora de la salida, ANTES de cambiarlo
+    // por la boya: con él se compara la sonda (2026-10-10). No enumerable para
+    // que no viaje en el insert (no es una columna).
+    Object.defineProperty(resultado, "modeloTempAgua", {
+      value: { horaSerie: idx >= 0 ? horas[idx] : null, openMeteo: idx >= 0 ? (marino.hourly?.sea_surface_temperature?.[idx] ?? null) : null, fuenteSerie: marino?.fuentes_datos || null, boya: null },
+      enumerable: false, writable: true,
+    });
     // sea_level_height_msl es una anomalía respecto al nivel medio del mar
     // (puede salir negativa): se re-referencia contra el mínimo de la propia
     // ventana para mostrar la altura de forma intuitiva (siempre ≥ 0). Mismo
@@ -1072,6 +1082,7 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha, horaF
       }
       if (Number.isFinite(boya.tempAgua)) resultado.temp_agua = boya.tempAgua;
       resultado.boya_usada = boya.nombre;
+      if (resultado.modeloTempAgua && Number.isFinite(boya.tempAgua)) resultado.modeloTempAgua.boya = { nombre: boya.nombre, c: boya.tempAgua };
     }
 
     // Índice de pesca v2 a la hora de la salida (para calibrarlo después con
@@ -1252,6 +1263,9 @@ function formularioSalida() {
     <div class="hora-select" id="ruedaSalidaInicio"></div>
     <label>${I18n.t("diario.salida.hora_fin")}</label>
     <div class="hora-select" id="ruedaSalidaFin"></div>
+    <label for="salidaTempSonda">${I18n.t("diario.salida.temp_sonda")}</label>
+    <input type="text" id="salidaTempSonda" inputmode="decimal" autocomplete="off" maxlength="6" placeholder="${I18n.t("diario.salida.temp_sonda_ph")}" />
+    <div class="nota-ficha" style="margin:2px 0 10px;">${I18n.t("diario.salida.temp_sonda_ayuda")}</div>
     <label for="salidaNotas">${I18n.t("diario.notas")}</label>
     <textarea id="salidaNotas" placeholder="${I18n.t("diario.salida.notas_ph")}"></textarea>
     <div style="display:flex; gap:8px; margin-top:16px;">
@@ -1286,6 +1300,21 @@ function horaRangoTexto(salida) {
   return "";
 }
 
+// Capa 🌡 de Copernicus IBI (la del mapa, 12:00 UTC del día): solo para
+// salidas de hoy y solo cuando hay medida de sonda (208 KB, no en cada
+// guardado). Celda vacía junto a la costa → la de mar más cercana a ≤ 5 km.
+const URL_CAPAS_MAR = "https://imncbmizxkorotpeisic.supabase.co/storage/v1/object/public/fuentes-gratuitas/capas/";
+async function ibiDeLaSalida(lat, lon, fecha) {
+  const hoy = horaActualISO(Regiones.zonaPorCoordenadas(lat, lon)).slice(0, 10);
+  if (!fecha || fecha !== hoy) return null;
+  const r = await fetch(`${URL_CAPAS_MAR}${lat < 0 ? "nz/" : ""}temperatura-agua.json`, { cache: "no-cache" });
+  if (!r.ok) return null;
+  const capa = await r.json();
+  const bytes = bytesDeBase64(capa.datos);
+  if (bytes.length !== capa.filas * capa.columnas) return null;
+  return TempSonda.ibiParaSalida(capa, bytes, lat, lon, fecha);
+}
+
 // idExistente null -> crea una entrada nueva ese día; con id -> actualiza
 // la entrada existente (mismo formulario, ver formularioSalida).
 async function guardarSalida(fecha, idExistente) {
@@ -1298,6 +1327,13 @@ async function guardarSalida(fecha, idExistente) {
   const horaFin = selectorHoraFin.valor();
   const tipoSalida = document.getElementById("salidaTipo").value;
   const spot = todosLosSpotsDiario().find((s) => s.slug === spotSlug);
+  const sonda = TempSonda.leerTempSonda(document.getElementById("salidaTempSonda").value);
+  if (!sonda.ok) {
+    mensajeEl.className = "mensaje error";
+    mensajeEl.textContent = I18n.t("diario.salida.temp_sonda_error");
+    btn.disabled = false;
+    return;
+  }
 
   // Las dos horas son opcionales. Bug real reportado por el usuario
   // 2026-09-19: una salida de noche (ej. 23:00 a 02:00) se rechazaba
@@ -1328,6 +1364,15 @@ async function guardarSalida(fecha, idExistente) {
   }
 
   const contexto = await contextoAmbiental(lat, lon, horaInicio, tipoSalida, fecha, horaFin);
+  // Temperatura del agua medida con sonda (opcional, 2026-10-10): se guarda en
+  // indice_factores.temp_agua_sonda (jsonb que ya existe, sin migración) junto
+  // al modelo a esa hora y en ese punto, para el sesgo del aprendizaje semanal.
+  if (sonda.valor !== null) {
+    const m = contexto.modeloTempAgua || {};
+    const ibi = await ibiDeLaSalida(lat, lon, fecha).catch(() => null);
+    const reg = TempSonda.registroSonda({ medida: sonda.valor, horaSerie: m.horaSerie, openMeteo: m.openMeteo, fuenteSerie: m.fuenteSerie, ibi, boya: m.boya });
+    contexto.indice_factores = { ...(contexto.indice_factores || {}), temp_agua_sonda: reg };
+  }
   const datos = {
     user_id: usuario.id, fecha, spot_slug: spot?.slug ?? null, spot_nombre: spot?.nombre ?? "Ubicación actual",
     lat, lon, notas, hora_inicio: horaInicio, hora_fin: horaFin, tipo_salida: tipoSalida, ...contexto,
@@ -1402,6 +1447,18 @@ function contextoHTML(salida) {
   const notaBoya = salida.boya_usada
     ? `<div class="detalle nota-ficha">${I18n.t("diario.nota_boya", { boya: salida.boya_usada.replace(/[&<>"']/g, "") })}${salida.indice_puntuacion != null && !fIdx?.con_boya ? I18n.t("diario.nota_boya_modelo") : ""}.</div>`
     : "";
+  // Temperatura del agua medida con sonda frente al modelo (2026-10-10).
+  const sondaReg = fIdx?.temp_agua_sonda;
+  const notaSonda = sondaReg && Number.isFinite(sondaReg.medida_c)
+    ? `<div class="detalle nota-ficha">${I18n.t("diario.sonda.nota", {
+      v: CondSalida.fmtDecimal(sondaReg.medida_c, 2),
+      modelos: [
+        Number.isFinite(sondaReg.open_meteo_c) ? I18n.t("diario.sonda.serie", { v: CondSalida.fmtDecimal(sondaReg.open_meteo_c) }) : null,
+        Number.isFinite(sondaReg.ibi?.c) ? (sondaReg.ibi.km >= 0.5 ? I18n.t("diario.sonda.ibi_km", { v: CondSalida.fmtDecimal(sondaReg.ibi.c), km: Math.max(1, Math.round(sondaReg.ibi.km)) }) : I18n.t("diario.sonda.ibi", { v: CondSalida.fmtDecimal(sondaReg.ibi.c) })) : null,
+        Number.isFinite(sondaReg.boya?.c) ? I18n.t("diario.sonda.boya", { v: CondSalida.fmtDecimal(sondaReg.boya.c) }) : null,
+      ].filter(Boolean).join(" · ") || I18n.t("diario.sonda.sin_modelo"),
+    })}</div>`
+    : "";
   // Coeficiente real por spot, no el índice "nacional" de tides4fishing y
   // similares (ver CLAUDE.md, 2026-09-13): plegado tras un ⓘ (2026-10-09).
   const notaCoef = salida.marea_coeficiente != null
@@ -1432,7 +1489,7 @@ function contextoHTML(salida) {
     : "";
   // Atribución obligatoria de Open-Meteo (CC BY 4.0) junto a sus datos.
   const notaMeteo = `<div class="atribucion-meteo">${window.ATRIBUCION_METEO_HTML || I18n.t("mapa.atrib.meteo_corta")}</div>`;
-  return `<div class="contexto-ambiental">${filas.map(([e, v]) => `<div class="dato"><div class="etq">${e}</div><div class="val">${v}</div></div>`).join("")}</div>${notaEstado}${notaIndice}${notaBoya}${notaCoef}${notaMeteo}`;
+  return `<div class="contexto-ambiental">${filas.map(([e, v]) => `<div class="dato"><div class="etq">${e}</div><div class="val">${v}</div></div>`).join("")}</div>${notaEstado}${notaIndice}${notaBoya}${notaSonda}${notaCoef}${notaMeteo}`;
 }
 
 async function tarjetaCapturaHTML(captura) {
@@ -1713,6 +1770,7 @@ function mostrarFormularioEditarEntrada(iso, salida) {
   selectorHoraInicio = crearSelectorHora("ruedaSalidaInicio", salida.hora_inicio ? salida.hora_inicio.slice(0, 5) : null);
   selectorHoraFin = crearSelectorHora("ruedaSalidaFin", salida.hora_fin ? salida.hora_fin.slice(0, 5) : null);
   document.getElementById("salidaNotas").value = salida.notas || "";
+  document.getElementById("salidaTempSonda").value = TempSonda.textoCampo(salida.indice_factores?.temp_agua_sonda?.medida_c, I18n.idioma() === "es");
   document.getElementById("btnGuardarSalida").textContent = I18n.t("diario.guardar_cambios");
   engancharFormularioSalida(iso, salida.id);
   zona.scrollIntoView({ behavior: "smooth", block: "end" });

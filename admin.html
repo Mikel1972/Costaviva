@@ -194,6 +194,10 @@
   </div>
   <p class="resumen" id="resumenMisSalidas" style="margin-top:12px;"></p>
   <ul id="listaMisSalidas" style="font-size:13px; margin:4px 0 0; padding-left:18px;"></ul>
+  <!-- Sonda frente al modelo (2026-10-10): solo tus salidas, calculado en
+       este navegador. El agregado público exige 5 personas o más. -->
+  <p class="resumen" id="resumenSondaPropia" style="margin-top:12px;"></p>
+  <ul id="listaSondaPropia" style="font-size:13px; margin:4px 0 0; padding-left:18px;"></ul>
   <h2 style="font-size:15px; margin:28px 0 6px;">🎣 Reglas expertas del índice de pesca</h2>
   <p class="resumen" id="resumenReglas">Cargando reglas…</p>
   <div style="overflow-x:auto;">
@@ -252,6 +256,7 @@
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { COLUMNAS, filasTabla, textoPct } from "/assets/js/metricas-captacion.js";
+import { muestraDeSalida, sesgoPorZona } from "/assets/js/temp-agua-sonda.js";
 
 // Panel de administrador (2026-09-13), pedido explícito del usuario:
 // ver quién está inscrito, pudiendo pausarlo o eliminarlo — "como en
@@ -640,6 +645,32 @@ async function cargarAprendizaje() {
   }
 }
 cargarAprendizaje();
+
+// Tu sonda frente al modelo (2026-10-10): sesgo medio (sonda − modelo) de TUS
+// salidas con temperatura del agua medida. Solo en este navegador (RLS: cada
+// uno ve las suyas); lo público (datos-robots/aprendizaje/sesgo-temp-agua.json)
+// solo enseña zonas con 5 personas o más.
+async function cargarSondaPropia() {
+  const resumen = document.getElementById("resumenSondaPropia");
+  const NOMBRE = { open_meteo: "Previsión (Open-Meteo)", ibi: "Capa IBI de Copernicus", boya: "Boya" };
+  const c = (x) => String(x).replace(".", ",");
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    const { data, error } = await supabase.from("salidas_pesca").select("id,user_id,fecha,lat,lon,indice_factores")
+      .eq("user_id", session.user.id).not("indice_factores", "is", null).order("fecha", { ascending: false }).limit(1000);
+    if (error) throw error;
+    const muestras = (data || []).map((x) => muestraDeSalida(x, { zonaDe: () => "tus salidas" })).filter(Boolean);
+    if (!muestras.length) { resumen.textContent = "🌡 Cuando apuntes en el diario la temperatura del agua medida con tu sonda, aquí verás cuánto se desvía el modelo (solo lo ves tú)."; return; }
+    resumen.textContent = `🌡 Tu sonda frente al modelo (${muestras.length} medidas; solo lo ves tú). Positivo: el agua estaba más caliente de lo que decía el modelo.`;
+    document.getElementById("listaSondaPropia").replaceChildren(...sesgoPorZona(muestras).map((g) => Object.assign(document.createElement("li"), {
+      textContent: `${NOMBRE[g.modelo] || g.modelo}: ${g.media > 0 ? "+" : ""}${c(g.media)} °C de media (${g.n} medida${g.n === 1 ? "" : "s"}${g.sd !== null ? `, ± ${c(g.sd)} °C` : ""}).`,
+    })));
+  } catch (e) {
+    resumen.textContent = "";
+    console.warn("sonda propia:", e);
+  }
+}
+cargarSondaPropia();
 
 // ---------------------------------------------------------------------------
 // Captación (2026-10-09). Estrella del norte: % de pruebas terminadas que
