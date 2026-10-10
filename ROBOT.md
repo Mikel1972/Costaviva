@@ -9460,3 +9460,14 @@ Datos: `datos-robots/camaras-estado.json` generado 2026-10-10T03:04Z (~1,7 h, fr
 Para la siguiente: pasaia (buscar otra cámara para Pasaia), alicante, orio, vinaros, alboraya, cullera.
 
 **Firmado:** robot de cámaras caídas (rutina), 2026-10-10 04:50 UTC.
+
+### Buscador de fuentes — cámaras, zona Asturias — 2026-10-10 05:00 UTC
+
+- Zona de hoy (semana ISO 41, sábado → N=83, 83%10=3): Asturias. Solo hay 2 spots fijos (`llanes`, `ribadesella`), ambos sin cámara.
+- **Gijón (San Lorenzo)**: `enterat.com/servicios/webcams-gijon.php` solo enlaza cámaras de tráfico de la DGT (`etraffic.dgt.es/camarasEtraffic/*.jpg`, no son de mar ni se pueden usar para esto) y dos vídeos de YouTube. No hay spot de Gijón y no se ha verificado ningún encuadre con mar: no se crea nada.
+- **Salinas (Castrillón)**: dos cámaras, solo por YouTube (`A5tyJOvWpsA`, `doNsXrJHErU`, vía enterat.com). YouTube va siempre como enlace (política del repo) y no hay spot en Salinas; no se integra ni se crea spot sin ver el encuadre.
+- **Candás, Luarca, Cudillero**: solo aparecen agregadores genéricos (surf-forecast, webcams.org.ru, windfinder) sin fuente propia verificable.
+- **Reintento pendiente de la pasada anterior**: `ribacam.es` sigue sin responder (HTTP 000, sin DNS); `surfcampribadesella.com` responde 302 (ya no 403), sin seguir la redirección en esta pasada; `webcamsdeasturias.com` responde 200 (sigue siendo el backend `rtsp.me`, sin snapshot).
+- Resultado: sin novedades integrables. Ficheros de código tocados: ninguno.
+
+Firmado: robot buscador de fuentes (rutina), 2026-10-10 05:00 UTC.
