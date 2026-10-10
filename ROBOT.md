@@ -9445,3 +9445,18 @@ Datos: `datos-robots/camaras-estado.json` generado 2026-10-09T03:06Z (~1,5 h, fr
 - **comillas**: sin verificar: dominio bloqueado por la red de la rutina (www.cantabria.es, el túnel se cierra a mitad). No se da por caída ni por arreglada.
 
 **Firmado:** robot de cámaras caídas (rutina), 2026-10-09 04:42 UTC.
+
+### 2026-10-10 04:50 UTC (robot de cámaras caídas — rutina; Mundaka, SOCIB, Pasaia)
+
+Datos: `datos-robots/camaras-estado.json` generado 2026-10-10T03:04Z (~1,7 h, fresco). 10 cámaras en rojo (calamillor, muro, suances, sonbou, alicante, mundaka, comillas, sanvicente, bakio, pasaia). Revisadas 3 grupos por el límite.
+
+- **mundaka** (`frame_plano`): no está rota. La URL da 200 con Last-Modified 2026-10-10 04:21 UTC; la imagen vista con Read es negra (de noche, solo dos luces). Se recuperará con el día. Sin cambios.
+- **bakio** (`frame_congelado`): Last-Modified 2026-10-09 17:40 UTC; la fuente deja de actualizar de noche. Sin cambios.
+- **pasaia** (`frame_congelado`): `detectia.net/img/webcam-pasaia-azti.webp` tiene Last-Modified 2026-10-07 13:05 UTC: **3 días sin actualizarse** (la fuente AZTI/Detectia está parada, no es la noche). Sin alternativa buscada en esta pasada; queda para la siguiente.
+- **calamillor, muro, sonbou (SOCIB)**: hallazgo nuevo respecto a las pasadas anteriores. Desde la red de esta rutina `apps.socib.es/beamon/...` responde 307 → `images.socib.es/convert/...` y ese destino da **200 con imagen real** (calamillor: vista con Read, playa de Ibiza con SOCIB en la marca de agua). Pero el proxy en producción (`/webcam/calamillor|muro|sonbou`) devuelve `HTTP 522 del proveedor`: es el edge de Cloudflare el que no consigue llegar a SOCIB (probable bloqueo de los rangos de Cloudflare por su lado; un cambio de URL no lo arregla). Posibles salidas, a decidir por Mikel: pedir a SOCIB que permita las IPs de Cloudflare, o bajar el fotograma con un workflow de GitHub Actions al bucket `fuentes-gratuitas` y servir esa copia. Sin cambios de código.
+- **suances / comillas / sanvicente (cantabria.es)**: sin verificar: dominio bloqueado por la red de la rutina (`www.cantabria.es`, el túnel se cierra a mitad). El proxy en producción también da 522 para suances. No se da por caída ni por arreglada.
+- **alicante**: sin repetir esta pasada (404 en `AlicantePuerto`, ya probado el 07-08 y 09-10 sin alternativa).
+
+Para la siguiente: pasaia (buscar otra cámara para Pasaia), alicante, orio, vinaros, alboraya, cullera.
+
+**Firmado:** robot de cámaras caídas (rutina), 2026-10-10 04:50 UTC.
