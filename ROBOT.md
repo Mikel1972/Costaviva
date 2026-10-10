@@ -6450,6 +6450,98 @@ nada. Rotación pendiente para la próxima pasada: **1731 Barcelona II**
 
 **Firmado:** robot de calibración nocturna, 2026-10-09 01:35 UTC.
 
+### 2026-10-10 (pasada nocturna corta — calibración bloqueada, salud de datos)
+
+**Calibración — sigue sin puntos nuevos, tercera noche seguida.**
+`poem.puertos.es/portus/StationData` sigue en `500 Internal Server Error`
+para cualquier consulta con datos reales, exactamente el mismo patrón que
+las dos noches anteriores (2026-10-08 fue la última con dato real):
+
+- Las 4 boyas obligatorias de esta rotación (2136 Bilbao-Vizcaya, 1117
+  Gijón, 1101 Pasaia II y 1731 Barcelona II, que le tocaba rotar hoy) → las
+  4, `500` inmediato (~1-2s).
+- Control: `?code=2136` **sin** `params` → `422` con el JSON de validación
+  de siempre ("Field required": `params`) — el router sigue vivo. Ruta
+  inexistente (`/portus/no-existe-esta-ruta`) → `404` ("Cant find path...
+  on router portus"). Boya de control **1103 AP Bilbao** (no usada para
+  calibrar, solo para descartar que sea un problema de una boya concreta) →
+  también `500`. Mismo diagnóstico que el 2026-10-09: el servicio está
+  arriba, es la propia consulta de datos la que rompe en su servidor.
+- **Sin ningún punto real que comparar, no se ha escrito nada en
+  `CALIBRACION.jsonl` esta noche** (nunca inventar un dato). La rotación
+  pendiente sigue siendo **1731 Barcelona II** (su último punto real fue el
+  2026-10-03, hace ya una semana) — queda para la próxima pasada en que el
+  endpoint responda. El historial no cambia desde el 2026-10-08: 2136/1117/
+  1101 en 35 puntos cada una, 2820 Dragonera en 8, Barcelona II en 8 (8/8
+  negativo, −28.8%, la candidata más sólida tras Pasaia II), Cabo Peñas en
+  7 y Cabo de Gata en 8. Ningún factor de corrección nuevo propuesto —
+  Pasaia II sigue siendo la única con factor ya aplicado (x1.38).
+- **Severidad: sube de "baja/informativa" a vigilar más de cerca.** Tres
+  noches seguidas en `500` (2026-10-08 fue el último dato real) empieza a
+  ser un patrón, no un incidente puntual — si sigue así varias noches más,
+  esta rutina se queda ciega para calibrar indefinidamente, y conviene que
+  el usuario lo sepa aunque no afecte a lo que ve un usuario real (el mapa
+  en producción no llama a `poem.puertos.es` desde el 2026-10-08, usa la
+  instantánea de Copernicus). No hay nada que corregir en nuestro código —
+  el fallo está confirmado en el servidor de Puertos del Estado, no en la
+  red ni en el formato de la petición.
+
+**Salud de datos** — comprobado con `curl` real, reproduciendo el *parsing*
+exacto de cada función de `functions/prevision.js` contra la respuesta de
+esta noche:
+
+- **Boya de Nazaré** (`monican.hidrografico.pt`, POST a `boia.graph.php`):
+  `200` en las 4 variables, última hora real (01:00 UTC) con Hs 1.3 m, Tp
+  10.9 s, dirección 333°, temperatura 17.0 °C — sin novedad.
+- **Caudal Cantábrico** (`visor.saichcantabrico.es`): `200`, 164 KB reales.
+  Reproducido `parsearCaudalCantabrico()` fila a fila: las dos filas
+  "Arriondas" se distinguen bien (Piloña 10.28 m³/s con umbrales `null`;
+  Sella 18.37 m³/s con umbrales 438/885) y las 5 estaciones (`sella`,
+  `besaya`, `pas`, `ason`, `eo`) devuelven su valor real propio, ninguna
+  cruzada — el *fix* del commit `650bbc0` (reportado el 2026-10-08,
+  confirmado arreglado el 2026-10-09) sigue sano una noche más.
+- **Caudal Júcar** (`saih.chj.es/mapa-aforos`): `200`, 68 KB, el array
+  `aforos` se extrae y parsea bien — Júcar 18.78, Turia 4.15, Mijares 1.54
+  m³/s, todos reales y con fecha de hoy (03:10).
+- **Caudal Segura** (`saihweb.chsegura.es`): `200`, **recuperado del todo**.
+  La caída documentada ayer (las 33 estaciones de la red con
+  `UltimoDatoCaudal: "-"` a la vez) ya no está: esta noche las 33
+  estaciones, A.Rojales incluida, traen dato real (`1,196` → 1.196 m³/s).
+  Confirma que era una caída/mantenimiento genuino del servicio SAIH del
+  Segura (no algo nuestro), tal como se sospechaba ayer.
+- **Caudal Galicia** (`servizos.meteogalicia.gal`, río Lagares en Vigo):
+  `200`, el campo se encuentra y da `0 m³/s` — mismo valor real ya
+  documentado en pasadas anteriores, no un fallo.
+- **Webcams, muestra de 5 en 5 regiones distintas** (distinta combinación
+  de la de las últimas pasadas, para seguir rotando qué se comprueba):
+  `mundaka` (OK, JPEG 1024×768, 57 KB), `baiona` vía `meteogalicia.gal`
+  (OK, JPEG 1920×1080, 331 KB), `javea` vía
+  `streaming.comunitatvalenciana.com` (OK, PNG 480×270, 190 KB — imagen de
+  noche real del paseo marítimo, vista con `Read`), `muro` vía
+  `apps.socib.es` (OK, JPEG 350×263, 14 KB — imagen de playa real con la
+  marca de agua SOCIB, vista con `Read`) y `santona` vía
+  `www.cantabria.es` (**sin servicio**: `curl -v` muestra el TLS handshake
+  colgándose ~11s y terminando en "Connection reset by peer" — mismo
+  patrón exacto que el bloqueo de `www.cantabria.es` ya documentado desde
+  el 2026-09-25 en este fichero y en CLAUDE.md; no es un hallazgo nuevo,
+  solo se reconfirma que persiste. `santona` no tiene fuente de reserva,
+  así que se oculta sola a las 24h sin señal como ya hace `camaraRetirada()`).
+
+**Resumen de severidad para el usuario**: nada roto de cara a un usuario
+real. El hallazgo con severidad real es que `poem.puertos.es` lleva **tres
+noches seguidas** en `500` para cualquier consulta de datos — bloquea solo
+esta rutina de calibración y `comparar-boyas.mjs` (ninguno de los dos se
+sirve en público), pero conviene vigilarlo: si sigue así, la calibración
+queda parada hasta que Puertos del Estado lo arregle por su cuenta. Buena
+noticia: el Segura, caído ayer entero (33/33 estaciones), se ha recuperado
+solo esta noche — confirma que no era un problema nuestro. El resto (boya
+de Nazaré, Cantábrico ya corregido, Júcar, Galicia, 4 de 5 webcams) sano.
+`www.cantabria.es` sigue caído, sin cambios desde el 2026-09-25. Rotación
+pendiente para la próxima pasada: **1731 Barcelona II** (lleva ya tres
+noches sin poder completarse por el `500`).
+
+**Firmado:** robot de calibración nocturna, 2026-10-10 01:20 UTC.
+
 ---
 
 ## Robot de experiencia de usuario
