@@ -9460,3 +9460,19 @@ Datos: `datos-robots/camaras-estado.json` generado 2026-10-10T03:04Z (~1,7 h, fr
 Para la siguiente: pasaia (buscar otra cámara para Pasaia), alicante, orio, vinaros, alboraya, cullera.
 
 **Firmado:** robot de cámaras caídas (rutina), 2026-10-10 04:50 UTC.
+
+### 2026-10-10 (patrones de uso)
+
+**Datos:** `datos-robots/patrones-uso/ultima.json`, generado 2026-10-10 01:44 UTC (fresco). `errores` vacío; 2 cuentas de prueba excluidas. Muestra **muy pequeña**: 6 perfiles (2 altas en 7 días, 5 en 28), 4 usuarios activos en 7 y en 28 días, 425 eventos desde 2026-09-17 (207 en los últimos 7 días, todos de 4 personas). De los 4 perfiles con más de 7 días, 2 nunca hicieron nada.
+
+**Uso por función (filas/usuarios, 7 días):** ver_mapa 83/4; capas de mar nuevas: temperatura del agua 19/2, clorofila 18/2, corriente 11/2, frentes 20/1 (una sola persona); viento 8/3, rayos 7/3, ríos 7/2, estaciones 8/2, lluvia 4/2, boyas 4/2, sustrato 4/2, isóbatas 3/2, batimetría 5/1. Diario: crear_salida 1/1 (7 en 28 días, 1 persona), crear_captura 2/1. Checkout: 11 inicios en 28 días por 2 usuarios (todos el 25-sep, mitad mensual, mitad anual), 0 en 7 días; ver_suscripcion 17/2 en 28 días. SOS: pulsar_sos 1/1 y sos_whatsapp 1/1 (08-oct). Grupos: unirse_grupo 1/1, nada más.
+
+**Propuestas (todas con la salvedad de n=4):**
+1. **Embudo de pago parado:** 2 personas llegaron al checkout el 25-sep (11 pulsaciones) y desde entonces nadie más lo ha intentado en 15 días, pese a 2 altas nuevas. Con estos números no se puede decir si es fricción o simple falta de gente; propongo mirar cuántas de las 2 altas recientes han visto `suscripcion.html` (ver_suscripcion 0 en 7 días) antes de tocar precios o diseño.
+2. **Activación:** 2 de 4 perfiles con más de una semana no han hecho nada. Considerar medir qué ven al entrar (ver_mapa sí lo registran los activos) y evaluar si falta una guía de primer uso. Sin más datos, solo observar.
+3. **Capas de mar nuevas:** las usan 2 personas (frentes solo 1, 20 pulsaciones). No hay base para quitar nada; recomiendo esperar a ≥ 4 semanas y más usuarios antes de decidir si merecen su sitio en la columna de botones.
+4. **Diario y grupos casi sin uso** (1 persona crea salidas/capturas, 1 se unió a un grupo): no proponer cambios aún; el dato es insuficiente. El SOS no se toca por poco uso.
+
+**Puntos ciegos / agregación:** `registrarEvento` suma 20 tipos distintos en el código; las funciones sin evento propio (lectura de la ventana de actividad, selector de especie/modalidad, ficha de cámara) no se miden, así que no se sabe si la ventana de actividad —la función central del índice— se mira. Propuesta para `scripts/patrones-uso/agregar.mjs`/las páginas (no aplicada): un evento `ver_ventana_actividad` y `cambiar_modalidad`. No me dio tiempo a comparar con semanas anteriores en git log.
+
+**Firmado:** robot de patrones de uso (rutina), 2026-10-10 UTC.
