@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-10T11:37:44.456Z",
- "lineasHistorial": 451,
+ "fecha": "2026-10-10T12:07:43.924Z",
+ "lineasHistorial": 464,
  "etiquetas": 138,
  "etiquetasClaude": 43,
  "calibracion": {
@@ -48,9 +48,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 3.4599,
+   "a": 3.4581,
    "p": 0.5,
-   "n": 57,
+   "n": 58,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -60,7 +60,7 @@
    "dias": 3,
    "hMin": 0.3,
    "hMax": 3.59,
-   "errorRel": 0.679,
+   "errorRel": 0.676,
    "pocosDatos": false
   },
   "zumaia/c": {
@@ -178,9 +178,9 @@
    "pocosDatos": false
   },
   "berria/dinamico": {
-   "a": 4.0585,
+   "a": 4.0455,
    "p": 0.5,
-   "n": 31,
+   "n": 32,
    "nEtiquetas": 8,
    "nEtiquetasClaude": 9,
    "franjasClaude": [
@@ -190,7 +190,7 @@
    "dias": 3,
    "hMin": 0.75,
    "hMax": 3.12,
-   "errorRel": 0.846,
+   "errorRel": 0.839,
    "pocosDatos": false
   },
   "mutriku/principal": {
@@ -207,26 +207,26 @@
    "pocosDatos": true
   },
   "orio/principal": {
-   "a": 8.4379,
+   "a": 8.0518,
    "p": 1,
-   "n": 8,
+   "n": 9,
    "nEtiquetas": 1,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
    "dias": 2,
    "hMin": 0.75,
    "hMax": 1.7,
-   "errorRel": 0.563,
+   "errorRel": 0.582,
    "pocosDatos": true
   },
   "getaria/malkorbe": {
-   "a": 9.7712,
+   "a": 9.6731,
    "p": 1,
-   "n": 6,
+   "n": 7,
    "nEtiquetas": 3,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
-   "dias": 1,
+   "dias": 2,
    "hMin": 0.3,
    "hMax": 1.81,
    "errorRel": 1,
@@ -277,19 +277,19 @@
    }
   },
   "orio": {
-   "sustituye": true,
-   "motivo": "estable (±21 % entre lecturas cercanas)",
+   "sustituye": false,
+   "motivo": "ruidosa (±46 %) y sin calibrar",
    "ruido": {
-    "ruido": 0.213,
-    "pares": 5
+    "ruido": 0.464,
+    "pares": 6
    }
   },
   "zarautz": {
    "sustituye": true,
    "motivo": "18 etiquetas",
    "ruido": {
-    "ruido": 0.531,
-    "pares": 26
+    "ruido": 0.529,
+    "pares": 27
    }
   },
   "getaria": {
