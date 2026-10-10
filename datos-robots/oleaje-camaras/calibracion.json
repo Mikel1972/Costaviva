@@ -1,13 +1,13 @@
 {
- "fecha": "2026-10-10T12:07:43.924Z",
- "lineasHistorial": 464,
+ "fecha": "2026-10-10T12:37:48.027Z",
+ "lineasHistorial": 474,
  "etiquetas": 138,
  "etiquetasClaude": 43,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.2165,
+   "a": 1.211,
    "p": 0.5,
-   "n": 22,
+   "n": 23,
    "nEtiquetas": 7,
    "nEtiquetasClaude": 3,
    "franjasClaude": [
@@ -16,7 +16,7 @@
    "dias": 3,
    "hMin": 0.15,
    "hMax": 0.54,
-   "errorRel": 0.689,
+   "errorRel": 0.683,
    "pocosDatos": false
   },
   "hondarribia/bocana": {
@@ -48,9 +48,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 3.4581,
+   "a": 3.454,
    "p": 0.5,
-   "n": 58,
+   "n": 59,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -60,7 +60,7 @@
    "dias": 3,
    "hMin": 0.3,
    "hMax": 3.59,
-   "errorRel": 0.676,
+   "errorRel": 0.673,
    "pocosDatos": false
   },
   "zumaia/c": {
@@ -108,9 +108,9 @@
    "pocosDatos": false
   },
   "mundaka/principal": {
-   "a": 2.9546,
+   "a": 2.9623,
    "p": 0.5,
-   "n": 37,
+   "n": 38,
    "nEtiquetas": 11,
    "nEtiquetasClaude": 3,
    "franjasClaude": [
@@ -120,7 +120,7 @@
    "dias": 3,
    "hMin": 0.3,
    "hMax": 2.18,
-   "errorRel": 0.577,
+   "errorRel": 0.573,
    "pocosDatos": false
   },
   "bakio/principal": {
@@ -139,16 +139,16 @@
    "pocosDatos": false
   },
   "sopelana/principal": {
-   "a": 3.0063,
+   "a": 3.0516,
    "p": 0.5,
-   "n": 14,
+   "n": 15,
    "nEtiquetas": 4,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
    "dias": 3,
    "hMin": 0.75,
    "hMax": 3.12,
-   "errorRel": 0.694,
+   "errorRel": 0.69,
    "pocosDatos": false
   },
   "berria/principal": {
@@ -207,16 +207,16 @@
    "pocosDatos": true
   },
   "orio/principal": {
-   "a": 8.0518,
+   "a": 8.1208,
    "p": 1,
-   "n": 9,
+   "n": 10,
    "nEtiquetas": 1,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
    "dias": 2,
    "hMin": 0.75,
    "hMax": 1.7,
-   "errorRel": 0.582,
+   "errorRel": 0.558,
    "pocosDatos": true
   },
   "getaria/malkorbe": {
@@ -288,8 +288,8 @@
    "sustituye": true,
    "motivo": "18 etiquetas",
    "ruido": {
-    "ruido": 0.529,
-    "pares": 27
+    "ruido": 0.51,
+    "pares": 28
    }
   },
   "getaria": {
