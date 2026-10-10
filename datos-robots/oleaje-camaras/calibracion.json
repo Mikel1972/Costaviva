@@ -1,13 +1,13 @@
 {
- "fecha": "2026-10-10T10:07:57.121Z",
- "lineasHistorial": 404,
+ "fecha": "2026-10-10T10:37:54.798Z",
+ "lineasHistorial": 415,
  "etiquetas": 138,
  "etiquetasClaude": 43,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.2385,
+   "a": 1.2425,
    "p": 0.5,
-   "n": 19,
+   "n": 20,
    "nEtiquetas": 7,
    "nEtiquetasClaude": 3,
    "franjasClaude": [
@@ -16,7 +16,7 @@
    "dias": 3,
    "hMin": 0.15,
    "hMax": 0.54,
-   "errorRel": 0.695,
+   "errorRel": 0.687,
    "pocosDatos": false
   },
   "hondarribia/bocana": {
@@ -108,9 +108,9 @@
    "pocosDatos": false
   },
   "mundaka/principal": {
-   "a": 2.9491,
+   "a": 2.9416,
    "p": 0.5,
-   "n": 34,
+   "n": 35,
    "nEtiquetas": 11,
    "nEtiquetasClaude": 3,
    "franjasClaude": [
@@ -120,35 +120,35 @@
    "dias": 3,
    "hMin": 0.3,
    "hMax": 2.18,
-   "errorRel": 0.587,
+   "errorRel": 0.583,
    "pocosDatos": false
   },
   "bakio/principal": {
-   "a": 5.208,
+   "a": 5.4577,
    "p": 1,
-   "n": 9,
+   "n": 10,
    "nEtiquetas": 3,
    "nEtiquetasClaude": 1,
    "franjasClaude": [
     "2026-10-08T16"
    ],
-   "dias": 2,
+   "dias": 3,
    "hMin": 0.75,
    "hMax": 3.12,
-   "errorRel": 0.876,
-   "pocosDatos": true
+   "errorRel": 0.918,
+   "pocosDatos": false
   },
   "sopelana/principal": {
-   "a": 2.9763,
+   "a": 2.986,
    "p": 0.5,
-   "n": 12,
+   "n": 13,
    "nEtiquetas": 4,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
    "dias": 3,
    "hMin": 0.75,
    "hMax": 3.12,
-   "errorRel": 0.723,
+   "errorRel": 0.707,
    "pocosDatos": false
   },
   "berria/principal": {
@@ -207,16 +207,16 @@
    "pocosDatos": true
   },
   "orio/principal": {
-   "a": 8.3326,
+   "a": 8.4471,
    "p": 1,
-   "n": 5,
+   "n": 6,
    "nEtiquetas": 1,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
    "dias": 2,
    "hMin": 0.75,
    "hMax": 1.7,
-   "errorRel": 0.671,
+   "errorRel": 0.63,
    "pocosDatos": true
   },
   "getaria/malkorbe": {
@@ -277,11 +277,11 @@
    }
   },
   "orio": {
-   "sustituye": false,
-   "motivo": "ruido aún sin medir (2 pares de lecturas cercanas)",
+   "sustituye": true,
+   "motivo": "estable (±21 % entre lecturas cercanas)",
    "ruido": {
-    "ruido": 0.699,
-    "pares": 2
+    "ruido": 0.213,
+    "pares": 3
    }
   },
   "zarautz": {
@@ -328,8 +328,8 @@
    "sustituye": true,
    "motivo": "11 etiquetas",
    "ruido": {
-    "ruido": 0.68,
-    "pares": 15
+    "ruido": 0.625,
+    "pares": 16
    }
   },
   "bakio": {
