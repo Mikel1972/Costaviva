@@ -84,5 +84,16 @@ test("Search Console para comun: semanas completas y búsquedas con página", ()
   const s = agruparSemanas(dias, "2026-10-09");
   assert.deepEqual(s.map((x) => x.semana), ["2026-09-28"], "la semana del 5/10 no está cerrada el 9/10");
   assert.deepEqual(s[0], { semana: "2026-09-28", clics: 3, impresiones: 50, posicion: 24 });
-  assert.deepEqual(filaConsulta({ keys: ["mareas mundaka", "https://costaviva.org/mareas/mundaka"], clicks: 0, impressions: 3, position: 24.04 }), { query: "mareas mundaka", pagina: "/mareas/mundaka", clics: 0, impresiones: 3, posicion: 24 });
+  assert.deepEqual(filaConsulta({ keys: ["mareas mundaka", "https://costaviva.org/mareas/mundaka"], clicks: 0, impressions: 3, position: 24.04 }), { query: "mareas mundaka", pagina: "/mareas/mundaka", pais: null, clics: 0, impresiones: 3, posicion: 24 });
+});
+
+test("Search Console por país para los informes de comun", async () => {
+  const { semanasPorPais } = await import("../scripts/seo/gsc-palabras.mjs");
+  const filas = [];
+  for (let d = 28; d <= 30; d++) { filas.push({ keys: [`2026-09-${d}`, "esp"], clicks: 1, impressions: 10, position: 10 }); filas.push({ keys: [`2026-09-${d}`, "nzl"], clicks: 0, impressions: 2, position: 40 }); }
+  for (let d = 1; d <= 4; d++) filas.push({ keys: [`2026-10-0${d}`, "esp"], clicks: 0, impressions: 5, position: 20 });
+  const p = semanasPorPais(filas, "2026-10-09");
+  assert.deepEqual(p.esp, [{ semana: "2026-09-28", clics: 3, impresiones: 50, posicion: 14 }]);
+  assert.deepEqual(p.nzl, [{ semana: "2026-09-28", clics: 0, impresiones: 6, posicion: 40 }]);
+  assert.equal(filaConsulta({ keys: ["tide times", "https://costaviva.org/en/tides", "nzl"], clicks: 0, impressions: 1, position: 9 }).pais, "nzl");
 });

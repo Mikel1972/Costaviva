@@ -28,7 +28,7 @@
 //
 // Palabras clave (2026-10-11, un solo cerebro para web y redes): la especie
 // y el spot se eligen, entre los que ya valen, por lo que más se busca y
-// sube (datos-robots/seo/palabras.json, del robot de comun); los hashtags
+// sube en España (datos-robots/seo/palabras-es.json, del robot de comun); los hashtags
 // suman los términos con demanda y el texto enlaza la página web del tema.
 // Sin ese fichero, rotación de siempre (palabras-redes.mjs).
 import { readFileSync, writeFileSync, mkdirSync, appendFileSync } from "node:fs";
@@ -45,10 +45,10 @@ import { leerPalabras, preferenciaEspecie, ordenarSpots, hashtagsDemanda } from 
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const RAIZ_REPO = join(__dirname, "..", "..");
-const PALABRAS = leerPalabras(join(RAIZ_REPO, "datos-robots", "seo", "palabras.json"));
+const PALABRAS = leerPalabras(join(RAIZ_REPO, "datos-robots", "seo", "palabras-es.json"));
 const MES = Number(ahoraMadridISO().slice(5, 7));
 if (PALABRAS) console.log(`Palabras clave de comun del ${PALABRAS.generado.slice(0, 10)}: eligen especie, spot y hashtags.`);
-else console.log("Sin palabras clave recientes (datos-robots/seo/palabras.json): rotación de siempre.");
+else console.log("Sin palabras clave recientes (datos-robots/seo/palabras-es.json): rotación de siempre.");
 
 // ¿La página está en el sitemap? (si no, no se enlaza).
 function paginaPublica(ruta) {

@@ -2,7 +2,8 @@
 // Un solo cerebro para la web y las redes (2026-10-11, Mikel): el calendario
 // de Instagram y Facebook elige tema con las palabras clave que deja cada
 // lunes el robot de comun (Mikel1972/comun, scripts/seo/palabras.mjs, sin
-// IA) en datos-robots/seo/palabras.json. Lógica pura y sin red:
+// IA) en datos-robots/seo/palabras-<país>.json (el calendario de España lee
+// palabras-es.json). Lógica pura y sin red:
 // test/palabras-redes.test.js.
 //
 // Qué decide aquí, y nada más:
@@ -11,7 +12,7 @@
 //   - dentro de la zona que toca en la rotación (regla de Mikel: cada post de
 //     una zona distinta), el spot que más se busca;
 //   - hashtags de los términos con demanda, y la página web del tema.
-// Sin palabras.json (o con más de 21 días) todo sigue como antes: rotación.
+// Sin ese fichero (o con más de 21 días) todo sigue como antes: rotación.
 // Nunca inventa nada: solo ordena opciones que ya salen de datos reales.
 
 import { readFileSync, existsSync } from "node:fs";

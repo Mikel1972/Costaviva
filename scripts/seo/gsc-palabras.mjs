@@ -9,9 +9,11 @@
 // Escribe datos-robots/seo/gsc-consultas.json (privado: datos-robots/ está
 // fuera de la lista blanca de rutas públicas):
 //   semanas: clics, impresiones y posición por semana (lunes a domingo) de
-//            las últimas 16 semanas completas.
-//   consultas: búsqueda + página de los últimos 28 días.
-//   consultas_semana: búsqueda + página de la última semana completa.
+//            las últimas 16 semanas completas; semanas_por_pais, lo mismo
+//            por país de Search Console ("esp", "prt", "nzl"...).
+//   consultas: búsqueda + página + país de los últimos 28 días.
+//   consultas_semana: búsqueda + página + país de la última semana completa.
+// comun hace un informe por país (España, Portugal y Nueva Zelanda).
 // Solo lectura (webmasters.readonly). Lo llama indexacion-google.yml
 // (martes y viernes) después de autenticarse. Nunca sale con error: si falla,
 // lo dice y deja el fichero anterior (comun avisa si está viejo).
@@ -33,10 +35,10 @@ export function lunesDe(fechaISO) {
 
 // Filas diarias {keys:[fecha], clicks, impressions, position} → semanas
 // completas (solo las que tienen sus 7 días cerrados antes de `hasta`).
-export function agruparSemanas(filas, hasta) {
+export function agruparSemanas(filas, hasta, iFecha = 0) {
   const sem = {};
   for (const r of filas) {
-    const s = lunesDe(r.keys[0]);
+    const s = lunesDe(r.keys[iFecha]);
     const x = (sem[s] ||= { semana: s, clics: 0, impresiones: 0, posPond: 0, dias: 0 });
     x.clics += r.clicks; x.impresiones += r.impressions; x.posPond += r.position * r.impressions; x.dias++;
   }
@@ -47,7 +49,14 @@ export function agruparSemanas(filas, hasta) {
 }
 
 const ruta = (u) => String(u).replace(/^https?:\/\/[^/]+/, "").replace(/\/$/, "") || "/";
-export const filaConsulta = (r) => ({ query: r.keys[0], pagina: ruta(r.keys[1]), clics: r.clicks, impresiones: r.impressions, posicion: +r.position.toFixed(1) });
+export const filaConsulta = (r) => ({ query: r.keys[0], pagina: ruta(r.keys[1]), pais: r.keys[2] ?? null, clics: r.clicks, impresiones: r.impressions, posicion: +r.position.toFixed(1) });
+
+// Filas diarias con [fecha, país] → { país: semanas }.
+export function semanasPorPais(filas, hasta) {
+  const por = {};
+  for (const r of filas) (por[r.keys[1]] ||= []).push(r);
+  return Object.fromEntries(Object.entries(por).map(([p, fs]) => [p, agruparSemanas(fs, hasta).slice(-16)]));
+}
 
 async function main() {
   // Import dinámico: así la lógica pura se prueba sin instalar la librería.
@@ -67,11 +76,12 @@ async function main() {
   const hasta = iso(hoy - 3 * DIA); // Google tarda ~2-3 días en asentar
   const diarias = await consulta({ startDate: iso(hoy - 120 * DIA), endDate: hasta, dimensions: ["date"], rowLimit: 200 });
   const semanas = agruparSemanas(diarias, hasta).slice(-16);
-  const consultas = (await consulta({ startDate: iso(hoy - 30 * DIA), endDate: hasta, dimensions: ["query", "page"], rowLimit: 1000 })).map(filaConsulta);
+  const porPais = semanasPorPais(await consulta({ startDate: iso(hoy - 120 * DIA), endDate: hasta, dimensions: ["date", "country"], rowLimit: 5000 }), hasta);
+  const consultas = (await consulta({ startDate: iso(hoy - 30 * DIA), endDate: hasta, dimensions: ["query", "page", "country"], rowLimit: 2000 })).map(filaConsulta);
   const ult = semanas.at(-1)?.semana;
-  const consultasSemana = ult ? (await consulta({ startDate: ult, endDate: iso(Date.parse(`${ult}T00:00:00Z`) + 6 * DIA), dimensions: ["query", "page"], rowLimit: 1000 })).map(filaConsulta) : [];
+  const consultasSemana = ult ? (await consulta({ startDate: ult, endDate: iso(Date.parse(`${ult}T00:00:00Z`) + 6 * DIA), dimensions: ["query", "page", "country"], rowLimit: 2000 })).map(filaConsulta) : [];
   mkdirSync(dirname(SALIDA), { recursive: true });
-  writeFileSync(SALIDA, JSON.stringify({ generado: new Date().toISOString(), propiedad: sitio, hasta, semanas, consultas, consultas_semana: ult ? { semana: ult, filas: consultasSemana } : null }, null, 1) + "\n");
+  writeFileSync(SALIDA, JSON.stringify({ generado: new Date().toISOString(), propiedad: sitio, hasta, semanas, semanas_por_pais: porPais, consultas, consultas_semana: ult ? { semana: ult, filas: consultasSemana } : null }, null, 1) + "\n");
   console.log(`Search Console para palabras clave: ${semanas.length} semanas, ${consultas.length} búsquedas (28 días), ${consultasSemana.length} en la semana ${ult ?? "—"}.`);
 }
 

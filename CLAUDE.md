@@ -1720,22 +1720,25 @@ prompt y reparto de tareas en comun: `rutinas/robot-seo-redes.md` (desde
 ese día `scripts/seo/rutina-seo-diseno.txt` solo apunta allí).
 - `palabras-clave.yml` de **comun** (lunes, sin IA) cruza Search Console,
   Bing y Wikipedia, escribe `seo/palabras/costaviva.md` en comun (top 50,
-  huecos, acumulados semanales de web y redes) y deja aquí
-  `datos-robots/seo/palabras.json` con un commit `[skip ci]`.
+  huecos, acumulados semanales de web y redes), **un informe por país**
+  (`costaviva-es`, `costaviva-pt` en portugués, `costaviva-nz` en inglés), y
+  deja aquí `datos-robots/seo/palabras-<país>.json` con un commit `[skip ci]`.
 - `scripts/seo/gsc-palabras.mjs` (paso de `indexacion-google.yml`, martes y
   viernes) deja `datos-robots/seo/gsc-consultas.json`: búsquedas y semanas
-  de Search Console para comun, que no puede autenticarse aquí (la Workload
+  de Search Console, con el país de cada fila, para comun, que no puede
+  autenticarse aquí (la Workload
   Identity Federation solo acepta este repo).
 - La rutina "Robot de SEO y diseño" (PARTE C) actúa sobre los huecos en
   ramas `robot/palabras-*` (máx. 3 cambios por pasada, solo páginas públicas
-  y metadatos, datos reales); `robot-diseno-pr.yml` abre la PR y la fusiona
+  y metadatos, datos reales; primero el país más alejado de su objetivo en
+  `datos-robots/kpis/objetivos.json`); `robot-diseno-pr.yml` abre la PR y la fusiona
   Mikel. Cada cambio se mide en comun (`seo/palabras/costaviva-cambios.json`).
 - Redes: `scripts/marketing/palabras-redes.mjs` (lógica pura,
   `test/palabras-redes.test.js`) hace que el calendario elija, entre las
   especies que ya valen (temporada, veda, modalidad) y dentro de la zona que
   toca, la especie y el spot que más se buscan y suben; añade hashtags de los
-  términos con demanda y enlaza la ficha web de la especie. Sin
-  `palabras.json` reciente, rotación de siempre. La publicación no cambia:
+  términos con demanda y enlaza la ficha web de la especie. Lee
+  `palabras-es.json`; sin él (o con más de 21 días), rotación de siempre. La publicación no cambia:
   cada pieza sale solo con el OK de Mikel.
 - Métricas comunes: `medir-metricas-instagram.mjs` apunta además una foto
   diaria de seguidores (`instagram_cuenta` en `CALIBRACION.jsonl`); comun
