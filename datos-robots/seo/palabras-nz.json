@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-11T20:31:17.830Z",
+  "generado": "2026-10-11T20:38:32.953Z",
   "semana": "2026-09-28",
   "fuente": "Mikel1972/comun seo/palabras",
   "terminos": [
@@ -7,9 +7,9 @@
       "termino": "tide times",
       "mercado": "nz",
       "grupo": "marea",
-      "puntuacion": 30,
+      "puntuacion": 63,
       "tendencia": "baja",
-      "tendencia_pct": -28,
+      "tendencia_pct": -14,
       "estacionalidad": {
         "indice_mes_actual": 1.21,
         "picos": [
@@ -17,6 +17,36 @@
         ],
         "estacional": false
       },
+      "url": "/en/tides",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "tarakihi",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 57,
+      "tendencia": "baja",
+      "tendencia_pct": -56,
+      "estacionalidad": {
+        "indice_mes_actual": 0.8,
+        "picos": [
+          1,
+          2,
+          3
+        ],
+        "estacional": false
+      },
+      "url": "/en/species/nz-tarakihi",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "high tide today",
+      "mercado": "nz",
+      "grupo": "marea",
+      "puntuacion": 33,
+      "tendencia": "baja",
+      "tendencia_pct": -14,
+      "estacionalidad": null,
       "url": "/en/tides",
       "gsc_posicion": null
     },
@@ -155,25 +185,6 @@
         "estacional": false
       },
       "url": null,
-      "gsc_posicion": null
-    },
-    {
-      "termino": "tarakihi",
-      "mercado": "nz",
-      "grupo": "especie",
-      "puntuacion": 8,
-      "tendencia": "sube",
-      "tendencia_pct": 51,
-      "estacionalidad": {
-        "indice_mes_actual": 0.8,
-        "picos": [
-          1,
-          2,
-          3
-        ],
-        "estacional": false
-      },
-      "url": "/en/species/nz-tarakihi",
       "gsc_posicion": null
     },
     {
@@ -461,17 +472,6 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/en/species/nz-hapuku",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "high tide today",
-      "mercado": "nz",
-      "grupo": "marea",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/tides",
       "gsc_posicion": null
     },
     {
