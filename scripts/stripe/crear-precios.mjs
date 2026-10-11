@@ -168,8 +168,12 @@ for (const e of especificaciones) {
 // los precios vigentes. Los de fundador fuera: tienen cupo.
 if (conPortal && !soloComprobar && !errores.length) {
   try {
-    const confs = await stripe("GET", "/billing_portal/configurations?is_default=true&limit=1");
-    const conf = confs.data[0];
+    // La nuestra (metadata costaviva=portal, o la creada el 2026-10-11 sin
+    // metadatos, con titular "Costaviva") o la por defecto de la cuenta.
+    const confs = await stripe("GET", "/billing_portal/configurations?active=true&limit=100");
+    const conf = confs.data.find((c) => c.metadata?.costaviva === "portal")
+      || confs.data.find((c) => !c.is_default && c.business_profile?.headline === "Costaviva")
+      || confs.data.find((c) => c.is_default);
     const productosPortal = Object.values(config.productos).map((d) => ({
       product: ids[modo].productos[d.clave],
       prices: especificaciones.filter((e) => e.producto === d.clave && !e.fundador).map((e) => ids[modo].precios[e.lookup_key]).filter(Boolean),
@@ -184,9 +188,13 @@ if (conPortal && !soloComprobar && !errores.length) {
         subscription_cancel: { enabled: true, mode: "at_period_end" },
       },
     };
-    if (conf) await stripe("POST", `/billing_portal/configurations/${conf.id}`, cuerpo);
-    else await stripe("POST", "/billing_portal/configurations", { ...cuerpo, business_profile: { headline: "Costaviva" } });
-    resumen.push(`Portal de cliente: ${conf ? "actualizada" : "creada"} la configuración por defecto (cambio de plan + cancelación al final del periodo).`);
+    const final = conf
+      ? await stripe("POST", `/billing_portal/configurations/${conf.id}`, { ...cuerpo, metadata: { costaviva: "portal" } })
+      : await stripe("POST", "/billing_portal/configurations", { ...cuerpo, business_profile: { headline: "Costaviva" }, metadata: { costaviva: "portal" } });
+    // crear-portal-stripe.js la pasa como "configuration" (la creada por API
+    // no es la de por defecto de la cuenta).
+    ids[modo].portal = final.id;
+    resumen.push(`Portal de cliente: ${conf ? "actualizada" : "creada"} la configuración ${final.id}${final.is_default ? " (por defecto)" : ""}: cambio de plan, cambio de tarjeta y cancelación al final del periodo.`);
   } catch (e) {
     resumen.push(`Portal de cliente: NO actualizado (${e.message}).`);
   }
