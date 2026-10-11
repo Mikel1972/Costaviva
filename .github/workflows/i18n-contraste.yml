@@ -1,0 +1,50 @@
+name: Contraste de traducciones con DeepL
+
+# Compara nuestras traducciones (assets/i18n/pt.js o en.js) con la de DeepL
+# API Free del español y deja la lista de claves que difieren de verdad en
+# i18n/contraste-<idioma>.md (artefacto del job, resumen del job y log).
+# Sin IA y sin gasto: plan gratuito de DeepL (500.000 caracteres/mes; una
+# pasada son unos 70.000). Sin el secreto DEEPL_API_KEY avisa y no falla.
+# Solo a mano (o desde la rutina mensual de SEO y redes, ver
+# RUTINAS_CLAUDE.md): no hay ejecución programada.
+# Detalle: scripts/i18n/contraste.mjs y CLAUDE.md ("Idiomas").
+
+on:
+  workflow_dispatch:
+    inputs:
+      idioma:
+        description: "Idioma a contrastar (pt o en)"
+        type: choice
+        options: ["pt", "en"]
+        default: "pt"
+
+permissions:
+  contents: read
+
+jobs:
+  contraste:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Contraste con DeepL
+        env:
+          DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
+        run: |
+          node scripts/i18n/contraste.mjs "${{ inputs.idioma }}"
+          if [ -f "i18n/contraste-${{ inputs.idioma }}.md" ]; then
+            cat "i18n/contraste-${{ inputs.idioma }}.md" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Guardar el informe
+        if: hashFiles(format('i18n/contraste-{0}.md', inputs.idioma)) != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: contraste-${{ inputs.idioma }}
+          path: i18n/contraste-${{ inputs.idioma }}.md
+          retention-days: 30

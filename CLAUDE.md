@@ -5,28 +5,32 @@ cambian las convenciones — no es un historial (para eso está `ROBOT.md`).
 Si algo de aquí queda desactualizado, corrígelo en el momento en que lo
 detectes, no lo dejes para luego.
 
-## Idiomas: español e inglés (2026-10-09, base para Nueva Zelanda)
+## Idiomas: español, inglés y portugués (2026-10-09, base para Nueva Zelanda; portugués europeo desde el 2026-10-11)
 
 Mikel abre Nueva Zelanda para pescadores en inglés. Base de idiomas sin
-dependencias (PR "i18n"; los datos de NZ van aparte).
+dependencias (PR "i18n"; los datos de NZ van aparte). El 2026-10-11 aprueba
+el **portugués europeo (pt-PT)** para Portugal, Azores y Madeira: nunca
+portugués de Brasil (ecrã, telemóvel, utilizador, palavra-passe; "estar a" +
+infinitivo; tratamiento impersonal o "você" con moderación).
 
 - **Núcleo**: `assets/js/i18n.js` (`window.I18n`), diccionarios
-  `assets/i18n/es.js` y `en.js` (envoltorio + un objeto JSON, una clave por
-  línea). Los módulos ES importan `assets/js/i18n-modulo.js`. En el `<head>`
-  de cada página traducida, **antes de cualquier otro script**: `es.js`,
-  `en.js`, `i18n.js`.
+  `assets/i18n/es.js`, `en.js` y `pt.js` (envoltorio + un objeto JSON, una
+  clave por línea). Los módulos ES importan `assets/js/i18n-modulo.js`. En el
+  `<head>` de cada página traducida, **antes de cualquier otro script**:
+  `es.js`, `en.js`, `pt.js`, `i18n.js`.
 - **Qué idioma** (regla de Mikel, 2026-10-09): elegido a mano en este
   navegador (`localStorage` `costaviva.idioma`) > perfil
   (`user_metadata.idioma` de la sesión de Supabase, leído de su entrada de
   localStorage) > **región** > `navigator.languages` > español. Región:
-  España, Portugal y Canarias en español; Nueva Zelanda en inglés (el
+  España y Canarias en español; Portugal, Azores y Madeira en portugués;
+  Nueva Zelanda en inglés (el
   `idioma` de cada región de `assets/js/regiones.js`; las tablas de i18n.js
   se comprueban contra ella en test/i18n.test.js). La región es la última
   que conoció la app en ese navegador (`I18n.recordarPosicion(lat, lon)` al
   abrir un spot o con el GPS de la alarma, `costaviva.region`) o, si no, la
   zona horaria del dispositivo. Así un español con el móvil en inglés ve la
   app en español. En node (tests, Functions) siempre español. El selector
-  (🌐 Español / English) va en el menú de cuenta 👤 (`<div
+  (🌐 Español / English / Português) va en el menú de cuenta 👤 (`<div
   data-i18n-selector>`) y bajo el formulario de login; guarda, intenta
   `auth.updateUser({ data: { idioma } })` y recarga.
 - **HTML fijo**: el texto español se queda en el HTML y se marca con
@@ -41,16 +45,37 @@ dependencias (PR "i18n"; los datos de NZ van aparte).
   suelto (muchos callbacks usan `t` como variable). Los scripts clásicos que
   también carga admin.html (errores.js, meteo.js...) usan
   `tr("clave", "texto español")`: el respaldo debe ser idéntico a es.js.
-- **Números/unidades**: `I18n.num` (coma en es, punto en en), `I18n.decimal`,
-  `I18n.temp`, `I18n.metros`, `I18n.velocidad(kmh, "nudos")`, `I18n.locale()`
-  (es-ES / en-NZ), `I18n.mesesCortos()`.
+- **Números/unidades**: `I18n.num` (coma en es y pt, punto en en),
+  `I18n.decimal`, `I18n.usaComa()`, `I18n.temp`, `I18n.metros`,
+  `I18n.velocidad(kmh, "nudos")` (nudos / kn / nós), `I18n.locale()`
+  (es-ES / en-NZ / pt-PT), `I18n.mesesCortos()`.
 - **Motivos del índice** (`ventana-actividad.js`): cada motivo lleva `clave`,
   `vars`, `texto` (idioma de la app) y `textoEs`. Lo que se guarda en el
   diario (`resumenIndice`) va en español + clave; `paraUsuario` filtra lo
   interno por `textoEs`.
 - **Datos por idioma** (fase de datos): `I18n.dato(obj, "texto")` usa
-  `texto_en` si existe; `I18n.nombre(especie)` usa `nombres.en`. Sin ellos,
-  español. Reglas expertas: `texto_en` en la regla.
+  `texto_en` en inglés; en portugués `texto_pt`, si no `texto_en`, si no el
+  español. `I18n.nombre(especie)` igual con `nombres.pt` / `nombres.en`.
+  Reglas expertas: `texto_en` / `texto_pt` en la regla. En especies.json todo
+  `_en` tiene su `_pt` (lo exige test/i18n.test.js), y en portugués hay además
+  cebos (`nombre_pt`), freza, tallas y normativa de PT/UE, vedas, reglas
+  expertas y `aviso_legal_pt`. Nombres de especie en portugués: los de la
+  tabla DGRM; los que puso Costaviva llevan `nombres_nota_pt`; sin nombre
+  común seguro, el científico (nunca uno inventado). Urta, medregal, bicuda y
+  palometa no tienen científico en los datos: siguen en español.
+- **Portugal en el alta y el SOS** (`assets/js/region-pais.js`): prefijo
+  +351 y las 4 primeras cifras del código postal (CP4; la restricción de la
+  base de datos ya admite 4-5 cifras); emergencias, 112.
+- **Glosario pt** (`i18n/glosario-pt.json`, con su fuente cada término):
+  maré, preia-mar, baixa-mar, ondulação, isco, amostra, pesqueiro,
+  enrocamento, defeso, tamanho mínimo... `test/i18n-glosario.test.js`
+  comprueba que pt.js los usa siempre y que no hay brasileñismos.
+- **Contraste con DeepL** (`scripts/i18n/contraste.mjs`, workflow manual
+  `i18n-contraste.yml`, secreto `DEEPL_API_KEY`, plan gratuito, sin IA):
+  traduce es.js con DeepL (PT-PT o EN-GB) y escribe `i18n/contraste-<idioma>.md`
+  con las claves que difieren mucho (distancia > 0,35) o en términos del
+  glosario. Es una lista para revisar a mano: DeepL no manda sobre el
+  glosario.
 - **SEO**: `functions/_lib/seo/idiomas.js`, **`PUBLICAR_EN = true`** desde el
   lanzamiento de NZ (2026-10-11): las páginas de Nueva Zelanda van SOLO en
   inglés bajo `/en/` con hreflang `en` + `x-default` (ver "Nueva Zelanda:
@@ -59,8 +84,8 @@ dependencias (PR "i18n"; los datos de NZ van aparte).
   las páginas de `PAGINAS_I18N` salvo `EXCEPCIONES`, es.js = texto del HTML,
   núcleo). Los tests antiguos que buscan textos en index.html leen la fuente
   con `fuenteEs()` (test/i18n-html.js): `I18n.t("clave"` vuelve a su texto.
-- **Página nueva o texto nuevo**: marca el HTML, añade la clave a es.js Y a
-  en.js. admin.html se queda en español a propósito.
+- **Página nueva o texto nuevo**: marca el HTML, añade la clave a es.js, a
+  en.js Y a pt.js. admin.html se queda en español a propósito.
 - **Pendiente (inventario, sin tocar)**: emails (`avisar-fin-prueba.js`:
   bienvenida, aviso y fin de prueba, enchufe; `_lib/invitaciones.js`:
   invitación; `sos-alerta.js`: SOS a contactos; plantillas de Supabase Auth

@@ -1,0 +1,30 @@
+{
+  "descripcion": "Términos de pesca y de interfaz fijos en portugués europeo (pt-PT) para assets/i18n/pt.js. Cada término: el español de es.js (regex, sin mayúsculas), el portugués que pt.js tiene que usar en esas claves y las variantes prohibidas (brasileñas, antiguas o castellanas). test/i18n-glosario.test.js lo comprueba; scripts/i18n/contraste.mjs lo usa para marcar diferencias con DeepL.",
+  "fecha": "2026-10-11",
+  "terminos": [
+    { "es": "\\bmareas?\\b", "pt": "maré", "prohibidos": ["marea"], "fuente": "Instituto Hidrográfico (Marinha), Tabela de Marés" },
+    { "es": "\\bpleamar\\b", "pt": "preia-mar", "prohibidos": ["preamar", "maré alta", "maré-cheia"], "fuente": "Instituto Hidrográfico (Marinha), Tabela de Marés" },
+    { "es": "\\bbajamar\\b", "pt": "baixa-mar", "prohibidos": ["baixamar", "maré baixa", "maré-vazia"], "fuente": "Instituto Hidrográfico (Marinha), Tabela de Marés" },
+    { "es": "\\boleaje\\b", "pt": "ondulação", "prohibidos": ["marulhada"], "fuente": "IPMA, previsão do estado do mar (ondulação)" },
+    { "es": "\\bcorrientes?\\b", "pt": "corrente", "prohibidos": ["corriente"], "fuente": "Dicionário Infopédia (Porto Editora)" },
+    { "es": "\\bveda\\b", "pt": "defeso", "prohibidos": ["veda"], "fuente": "DGRM, pesca lúdica (período de defeso)" },
+    { "es": "\\bfreza\\b", "pt": "desova", "prohibidos": ["freza"], "fuente": "Dicionário Infopédia (Porto Editora)" },
+    { "es": "\\btalla m[ií]nima\\b", "pt": "tamanho mínimo", "prohibidos": ["talla", "talha mínima"], "fuente": "DGRM, Tamanhos mínimos de captura (dgrm_tmc_2025 en especies.json)" },
+    { "es": "\\bcebos?\\b", "pt": "isco", "prohibidos": ["isca", "cebo"], "fuente": "Dicionário Infopédia (Porto Editora); encargo de Mikel (2026-10-11)" },
+    { "es": "\\bseñuelos?\\b", "pt": "amostra", "prohibidos": ["isca artificial", "chamariz", "señuelo"], "fuente": "Uso de pesca à linha em Portugal; encargo de Mikel (2026-10-11)" },
+    { "es": "\\bspots?\\b", "pt": "pesqueiro", "prohibidos": ["spot", "spots"], "fuente": "Dicionário Infopédia (Porto Editora): pesqueiro, local onde se pesca; encargo de Mikel (2026-10-11)" },
+    { "es": "\\bescollera\\b", "pt": "enrocamento", "prohibidos": ["escollera"], "fuente": "Dicionário Infopédia (Porto Editora)" },
+    { "es": "\\bespig[oó]n\\b", "pt": "esporão", "prohibidos": ["espigão"], "fuente": "Dicionário Infopédia (Porto Editora)" },
+    { "es": "\\bcurric[aá]n\\b", "pt": "corrico", "prohibidos": ["currica", "trolling"], "fuente": "Dicionário Infopédia (Porto Editora)" },
+    { "es": "\\bboyas?\\b", "pt": "boia", "prohibidos": ["bóia", "boya"], "fuente": "Acordo Ortográfico de 1990 (boia, sem acento)" },
+    { "es": "\\bembarcaci[oó]n\\b", "pt": "embarcação", "prohibidos": ["barco de pesca"], "fuente": "DGRM, pesca lúdica embarcada" },
+    { "es": "\\bpantalla\\b", "pt": "ecrã", "prohibidos": ["tela"], "fuente": "Terminologia da Microsoft (pt-PT)" },
+    { "es": "\\b(m[oó]vil|tel[eé]fono m[oó]vil)\\b", "pt": "telemóvel", "prohibidos": ["celular"], "fuente": "Terminologia da Microsoft (pt-PT)" },
+    { "es": "\\busuarios?\\b", "pt": "utilizador", "prohibidos": ["usuário", "usuários"], "fuente": "Terminologia da Microsoft (pt-PT)" },
+    { "es": "\\bcontraseñas?\\b", "pt": "palavra-passe", "prohibidos": ["senha"], "fuente": "Terminologia da Microsoft (pt-PT)" },
+    { "es": "\\bcontactos?\\b", "pt": "contacto", "prohibidos": ["contato", "contatos"], "fuente": "Norma europeia (contacto, com c)" },
+    { "es": "\\bsuscripci[oó]n\\b", "pt": "subscrição", "prohibidos": ["assinatura"], "fuente": "Terminologia da Microsoft (pt-PT)" },
+    { "es": "\\benlaces?\\b", "pt": "ligação", "prohibidos": ["enlace"], "fuente": "Terminologia da Microsoft (pt-PT)" }
+  ],
+  "brasilenismos": ["tela", "celular", "usuário", "arquivo", "cadastro", "cadastrar", "registrar", "contato", "deletar", "time", "equipe", "ônibus", "trem", "isca", "bóia", "senha", "baixar o app", "parabéns!"]
+}

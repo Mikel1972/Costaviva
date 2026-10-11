@@ -46,9 +46,10 @@ export const REGIONES = {
   canarias: R("canarias", "Canarias", "ES", "Atlantic/Canary", { bbox: [27, 29.6, -18.5, -13] }),
   // Portugal en su hora desde el 2026-10-09 (autorizado por Mikel).
   // Atlantic/Madeira lleva siempre la misma hora que Europe/Lisbon.
-  portugal: R("portugal", "Portugal", "PT", "Europe/Lisbon"),
-  azores: R("azores", "Azores", "PT", "Atlantic/Azores", { bbox: [36.8, 39.8, -31.5, -24.5] }),
-  madeira: R("madeira", "Madeira", "PT", "Atlantic/Madeira", { bbox: [32.3, 33.2, -17.4, -16.1] }),
+  // Portugal, Azores y Madeira en portugués europeo desde el 2026-10-11.
+  portugal: R("portugal", "Portugal", "PT", "Europe/Lisbon", { idioma: "pt" }),
+  azores: R("azores", "Azores", "PT", "Atlantic/Azores", { idioma: "pt", bbox: [36.8, 39.8, -31.5, -24.5] }),
+  madeira: R("madeira", "Madeira", "PT", "Atlantic/Madeira", { idioma: "pt", bbox: [32.3, 33.2, -17.4, -16.1] }),
   // Nueva Zelanda continental (Norte, Sur y Stewart). Chatham (-176,5°, otra
   // zona: Pacific/Chatham) y Kermadec quedan fuera de la primera fase. Las
   // regiones de pesca de MPI (nz_auckland_kermadec...) llegan en la fase 3.
