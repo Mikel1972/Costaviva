@@ -4,7 +4,7 @@
 
 Generado sin IA por `scripts/precios/generar-md.mjs` a partir de `functions/_lib/precios-zonas.json`. No editar a mano.
 
-Versión de precios: `2026_10b` · Mundial = regional de la zona × 1,5 · plazas de fundador: 500 (compartidas entre regional y Mundial). Todos los precios con impuestos incluidos.
+Versión de precios: `2026_10b` · Mundial = regional de la zona × 1,5 · plazas de fundador: 200 (compartidas entre regional y Mundial). Todos los precios con impuestos incluidos.
 
 ## Plan regional · Mensual
 
