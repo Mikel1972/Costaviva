@@ -2236,8 +2236,10 @@ async function cargarRegion(region) {
     if (window.registrarFuentesMeteo) window.registrarFuentesMeteo(datos.fuentesDatos);
     ultimaActualizacionOk = Date.now();
     for (const sb of datos.spots || []) {
-      // Sin datos de Open-Meteo no se pinta (no hay respaldo fijo para NZ).
-      if (sb.error || !sb.bloques || !sb.bloques.length) continue;
+      if (sb.error) continue;
+      // Sin oleaje del modelo (fiordos: Milford Sound, Deep Cove) el spot sale
+      // igual, sin índice (S/D), con su marea de LINZ y su normativa.
+      const conBloques = Boolean(sb.bloques && sb.bloques.length);
       let s = SPOTS.find((x) => x.slug === sb.slug);
       const nuevo = !s;
       if (nuevo) {
@@ -2254,7 +2256,8 @@ async function cargarRegion(region) {
       s.reservas = sb.reservas || [];
       s.revisarUbicacion = Boolean(sb.revisarUbicacion);
       s.modalidades = sb.modalidades || null;
-      aplicarSpotBackend(s, sb);
+      if (conBloques) aplicarSpotBackend(s, sb);
+      else { s.zona = sb.zona || s.zona; s.altura = null; s.actualizadoEn = null; s.indice = null; }
       // La marea de LINZ puede faltar (datos sin cargar): no se deja la vieja.
       s.marea = sb.marea || null;
       if (nuevo && marcadoresListos) crearMarcadorSpot(s);
@@ -3488,7 +3491,7 @@ function crearMarcadorSpot(s) {
       <div style="display:flex; align-items:center; gap:3px;">
         ${iconoFlecha(gradosDesdeTexto(s.dirOla), "#2E7BA0")}
         ${iconoFlecha(gradosDesdeTexto(s.dirViento), "#D4A24C")}
-        <span style="font-family:var(--f-texto); font-size:9px; font-weight:700; color:var(--acento); text-shadow:0 0 3px var(--tinta),0 0 3px var(--tinta);">${s.viento}</span>
+        <span style="font-family:var(--f-texto); font-size:9px; font-weight:700; color:var(--acento); text-shadow:0 0 3px var(--tinta),0 0 3px var(--tinta);">${s.viento ?? ""}</span>
         <div class="marcador-envoltorio">
           <div class="anillo-pulso" style="background:${color};"></div>
           <div class="marcador" id="marcador-${s.slug}" style="background:${color}; color:var(--tinta);">${textoIndice(s.indice)}</div>
