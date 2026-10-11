@@ -187,10 +187,9 @@ abajo sigue valiendo salvo donde dice "oculto".
   Sound fuera** (`activo: false`): sin punto de acceso ni de pesca claro. El
   puerto LINZ de todos sigue siendo el mismo (más cercano; distancias al día
   en `datos/nz/linz-puertos.json`).
-- **Licencia LINZ**: se publica con la declaración general CC BY 4.0 de LINZ,
-  **pendiente aún de su confirmación por escrito**. Si LINZ dijera otra cosa,
-  se quitan las mareas de LINZ (marea de NZ a null en `completarSpotNZ` y
-  fuera las páginas /en/tides).
+- **Licencia LINZ: CC BY 4.0, VERIFICADA el 2026-10-11** (respuesta escrita
+  de LINZ; detalle y fórmula de atribución en "Nueva Zelanda, fase 1", más
+  abajo).
 - **/prevision?region=nz pública** (caché propia, `public, max-age=1800`); la
   vista previa (`vista-previa.js`) queda para regiones aún ocultas. Nunca
   vuelve a pedir todos los spots juntos: el mapa pide cada región SOLO cuando
@@ -227,8 +226,9 @@ abajo sigue valiendo salvo donde dice "oculto".
   UE) para NZ sigue pendiente.
 - **Pendiente tras el lanzamiento**: subir las capas de mar de NZ (workflow
   `fuentes-gratuitas.yml`, parte `capas_nz`; sin ellas las capas de mar en
-  NZ dicen "no disponible"), revisión del inglés por un nativo, enviar el
-  sitemap en Search Console y la confirmación escrita de LINZ.
+  NZ dicen "no disponible"), revisión del inglés por un nativo y enviar el
+  sitemap en Search Console. (La confirmación escrita de LINZ llegó el
+  2026-10-11: licencia verificada.)
 
 ## Cobro: precios por zonas y ámbitos (2026-10-11, precios confirmados por Mikel)
 
@@ -304,8 +304,8 @@ ellos /prevision, /spots, sitemap, /registrar-presion y los scripts que leen
 SPOTS) cuando "nz" está en la lista. `test/nz-region.test.js` falla si con
 el interruptor apagado aparece algo de NZ en SPOTS, el sitemap, los `.html`,
 `tarjetas-mapa.js` o los scripts de marketing. **Activarlo es cosa de Mikel**
-y antes falta: mover los spots con `revisar_ubicacion`, la confirmación de
-licencia de LINZ, la migración del código postal y mirar la cuota de
+y antes falta: mover los spots con `revisar_ubicacion` (la licencia de LINZ
+ya está verificada, 2026-10-11), la migración del código postal y mirar la cuota de
 Open-Meteo (la zona horaria, /prevision por región, el mapa y el diario ya
 están: fase 2a, más abajo). Al activar, quitar NZ de las aserciones de
 "oculto" de test/nz-region.test.js.
@@ -348,13 +348,29 @@ amenity, tourism), no el pesquero. Chatham y Kermadec, fuera (antimeridiano).
   `--comprobar` falla si el puerto de algún spot cambiaría; entonces hay que
   regenerar `spots-nz.js`. Tests: `test/nz-mareas.test.js`, con tablas reales
   de Auckland, Leigh y Lyttelton 2026 en `test/fixtures/linz/`.
-- **Licencia LINZ: CC BY 4.0 por la declaración general de LINZ
-  (linz.govt.nz/copyright), PENDIENTE DE CONFIRMACIÓN por email
-  (customersupport@linz.govt.nz).** La página de mareas solo dice "Crown
-  copyright". Al mostrarla: "Sourced from Land Information New Zealand data
-  (CC BY 4.0)" (`ATRIBUCION_LINZ`) y el aviso "Not official tide tables as
-  specified in Maritime Rules Part 25" (`AVISO_LINZ`). No publicar la marea
-  NZ sin la confirmación.
+- **Licencia LINZ: CC BY 4.0, VERIFICADA el 2026-10-11.** Respuesta escrita
+  de atención al cliente de LINZ (customersupport@linz.govt.nz) a Mikel:
+  "Copyright information is found on our website at the following link:
+  https://www.linz.govt.nz/products-services/tides-and-tidal-streams/tide-predictions".
+  Esa página dice "Crown copyright ©" y enlaza a
+  https://www.linz.govt.nz/copyright, que dice que, salvo indicación en
+  contra, el contenido de LINZ va con licencia Creative Commons Attribution
+  4.0 International (https://creativecommons.org/licenses/by/4.0/, permite
+  uso comercial); no hay excepción para las predicciones de mareas (solo
+  para los datos del LINZ Data Service, que no usamos). Atribución por
+  escrito, sin logos. Somos **obra adaptada** (calculamos las mareas de cada
+  spot a partir de sus tablas y constantes), así que va la fórmula de obra
+  adaptada, literal: "This work is based on Toitū Te Whenua Land Information
+  New Zealand data which are licensed by Toitū Te Whenua Land Information
+  New Zealand for re-use under the Creative Commons Attribution 4.0
+  International licence." (`ATRIBUCION_LINZ`, en `/prevision` y en las
+  páginas /en/ con enlace a la licencia). Donde hay poco sitio (panel y
+  créditos del mapa, en/es/pt) va abreviada, `ATRIBUCION_LINZ_CORTA` y
+  `mapa.atrib.linz`: siempre el nombre completo "Toitū Te Whenua Land
+  Information New Zealand", "based on" y "CC BY 4.0" con enlace
+  (`URL_LICENCIA_LINZ`). Además, el aviso "Not official tide tables as
+  specified in Maritime Rules Part 25" (`AVISO_LINZ`). `test/nz-region.test.js`
+  fija las frases.
 
 **Reservas marinas DOC** (`datos/nz/reservas-marinas-doc.geojson`, 49
 reservas, ~185 KB, simplificadas a 0,0005° en el servidor de ArcGIS):

@@ -28,7 +28,7 @@ import * as rutaMareaEn from "../functions/en/tides/[slug].js";
 import * as rutaMareasEn from "../functions/en/tides/index.js";
 import * as rutaEspecieEn from "../functions/en/species/[slug].js";
 import * as rutaEspeciesEn from "../functions/en/species/index.js";
-import { ATRIBUCION_LINZ, AVISO_LINZ } from "../functions/_lib/nz/mareas-linz.js";
+import { ATRIBUCION_LINZ, ATRIBUCION_LINZ_CORTA, AVISO_LINZ, URL_LICENCIA_LINZ } from "../functions/_lib/nz/mareas-linz.js";
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), "..");
 const leer = (r) => readFileSync(join(RAIZ, r), "utf8");
@@ -203,8 +203,10 @@ test("páginas /en/ de NZ: inglés, canónica /en/, hreflang en + x-default, LIN
     assert.ok(html.includes(`<link rel="alternate" hreflang="en" href="${url}">`), `${url}: hreflang en`);
     assert.ok(html.includes(`<link rel="alternate" hreflang="x-default" href="${url}">`), `${url}: x-default`);
     assert.match(html, /<meta property="og:locale" content="en_NZ">/);
-    // Atribución de LINZ (frase exacta) y aviso, en el pie de todas.
-    assert.ok(html.includes("Sourced from Land Information New Zealand data (CC BY 4.0)"), url);
+    // Atribución de LINZ (fórmula exacta de obra adaptada, con enlace a la
+    // licencia CC BY 4.0) y aviso, en el pie de todas.
+    assert.ok(html.includes(ATRIBUCION_LINZ), url);
+    assert.ok(html.includes('<a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener" target="_blank">CC BY 4.0</a>'), `${url}: enlace a CC BY 4.0`);
     assert.ok(html.includes(AVISO_LINZ), url);
     assert.ok(html.includes("Department of Conservation (DOC), Crown copyright, CC BY 4.0"), url);
     // Nada en español a la vista (salvo el enlace a la versión de España).
@@ -270,10 +272,26 @@ test("diario: la lista de NZ llega del servidor; marketing sin NZ", () => {
   for (const f of ficheros) assert.ok(!/["']nz-[a-z]/.test(leer(f)), `${f} menciona un slug de NZ`);
 });
 
-test("atribuciones de LINZ: la frase exacta y el aviso de que no son tablas oficiales", () => {
-  assert.equal(ATRIBUCION_LINZ, "Sourced from Land Information New Zealand data (CC BY 4.0)");
+// Licencia LINZ verificada por escrito el 2026-10-11: fórmula de obra
+// adaptada de https://www.linz.govt.nz/copyright, literal; en la UI puede ir
+// abreviada con el nombre completo, "based on" y "CC BY 4.0" con enlace.
+test("atribuciones de LINZ: la fórmula exacta de obra adaptada y el aviso de que no son tablas oficiales", () => {
+  assert.equal(ATRIBUCION_LINZ, "This work is based on Toitū Te Whenua Land Information New Zealand data which are licensed by Toitū Te Whenua Land Information New Zealand for re-use under the Creative Commons Attribution 4.0 International licence.");
+  assert.match(ATRIBUCION_LINZ_CORTA, /^Based on Toitū Te Whenua Land Information New Zealand data, CC BY 4\.0$/);
+  assert.equal(URL_LICENCIA_LINZ, "https://creativecommons.org/licenses/by/4.0/");
   assert.match(AVISO_LINZ, /^Not official tide tables as specified in Maritime Rules Part 25/);
-  assert.match(leer("assets/i18n/en.js"), /"mapa\.atrib\.linz": "NZ tides: Sourced from Land Information New Zealand data \(CC BY 4\.0\); not official tide tables"/);
+  for (const idioma of ["en", "es", "pt"]) {
+    const linea = leer(`assets/i18n/${idioma}.js`).split("\n").find((l) => l.includes('"mapa.atrib.linz"'));
+    assert.ok(linea, idioma);
+    assert.ok(linea.includes("based on Toitū Te Whenua Land Information New Zealand data"), idioma);
+    assert.ok(linea.includes('<a href=\\"https://creativecommons.org/licenses/by/4.0/\\" target=\\"_blank\\" rel=\\"noopener\\">CC BY 4.0</a>'), idioma);
+    assert.doesNotMatch(linea, /Sourced from/, idioma);
+  }
+  for (const f of ["datos/nz/linz-puertos.json", "datos/nz/linz-mareas-2026.json", "datos/nz/linz-mareas-2027.json"]) {
+    const d = JSON.parse(leer(f));
+    assert.equal(d.atribucion, ATRIBUCION_LINZ, f);
+    assert.doesNotMatch(d.licencia, /pendiente/, f);
+  }
 });
 
 // Cámaras de NZ (assets/js/camaras-nz.js), conectadas el 2026-10-11: NZ es
