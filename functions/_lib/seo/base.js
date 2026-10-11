@@ -58,8 +58,8 @@ export function migasJsonLd(migas) {
   };
 }
 
-export function migasHtml(migas) {
-  return `<nav class="migas" aria-label="Migas de pan"><ol>${migas
+export function migasHtml(migas, idioma = "es") {
+  return `<nav class="migas" aria-label="${idioma === "en" ? "Breadcrumb" : "Migas de pan"}"><ol>${migas
     .map((m, i) => (i === migas.length - 1 ? `<li aria-current="page">${esc(m.nombre)}</li>` : `<li><a href="${esc(m.ruta)}">${esc(m.nombre)}</a></li>`))
     .join("")}</ol></nav>`;
 }
@@ -81,10 +81,29 @@ export function cta(titulo = "Prueba Costaviva 7 días gratis") {
 </section>`;
 }
 
+// Cabecera y pie de las páginas en inglés (Nueva Zelanda, 2026-10-11): las
+// secciones /en/spots, /en/tides y /en/species, y en el pie los créditos de
+// la región (`pie`, lo pone paginas-en.js: Open-Meteo, LINZ, DOC...).
+function CABECERA_PIE_EN(cuerpo, pie) {
+  return `<header class="cabecera-publica">
+  <a class="enlace-marca" href="/en/spots" aria-label="Costaviva, home">${LOGO}<span class="logotipo">Costaviva</span></a>
+  <nav class="nav-publica" aria-label="Sections">
+    <a href="/en/spots">Spots</a><a href="/en/species">Species</a><a href="/en/tides">Tides</a>
+  </nav>
+</header>
+<main class="contenido">
+${cuerpo}
+</main>
+<footer class="pie-publico">
+  <p><a href="/en/spots">Fishing spots</a> · <a href="/en/species">Species</a> · <a href="/en/tides">Tides today</a> · <a href="/privacidad">Privacy (Spanish)</a> · <a href="/login">Log in</a></p>
+  ${pie ? `<p class="nota">${pie}</p>` : ""}
+</footer>`;
+}
+
 // Documento completo. `ruta` es la canónica (sin dominio).
 // idioma/alternos: mecanismo de /en/ (idiomas.js), apagado: con los valores
 // por defecto el HTML es el de siempre.
-export function documento({ titulo, descripcion, ruta, cuerpo, ld = [], ogTipo = "website", noindex = false, imagen = IMAGEN_OG, imagenAlt = "Costaviva: condiciones de pesca en tiempo real", idioma = "es", alternos = ["es"] }) {
+export function documento({ titulo, descripcion, ruta, cuerpo, ld = [], ogTipo = "website", noindex = false, imagen = IMAGEN_OG, imagenAlt = "Costaviva: condiciones de pesca en tiempo real", idioma = "es", alternos = ["es"], pie = "" }) {
   const cfg = IDIOMAS_SEO[idioma] || IDIOMAS_SEO.es;
   const url = `${DOMINIO}${rutaIdioma(ruta, idioma)}`;
   const hreflang = noindex ? "" : enlacesHreflang(ruta, DOMINIO, alternos);
@@ -120,7 +139,7 @@ ${FUENTES_PRECARGA.map((f) => `<link rel="preload" href="${f}" as="font" type="f
 ${ld.map(jsonLd).join("\n")}
 </head>
 <body class="publica">
-<header class="cabecera-publica">
+${idioma === "en" ? CABECERA_PIE_EN(cuerpo, pie) : `<header class="cabecera-publica">
   <a class="enlace-marca" href="/" aria-label="Costaviva, inicio">${LOGO}<span class="logotipo">Costaviva</span></a>
   <nav class="nav-publica" aria-label="Secciones">
     <a href="/spots">Spots</a><a href="/especies">Especies</a><a href="/mareas">Mareas</a>
@@ -132,7 +151,7 @@ ${cuerpo}
 <footer class="pie-publico">
   <p><a href="/spots">Spots de pesca</a> · <a href="/especies">Especies</a> · <a href="/mareas">Mareas hoy</a> · <a href="/privacidad">Privacidad</a> · <a href="/login">Entrar</a></p>
   <p class="nota">Datos de mar y tiempo: Open-Meteo (CC BY 4.0). Profundidad: EMODnet Bathymetry (CC BY 4.0). Tipo de fondo: EMODnet Seabed Habitats (CC BY 4.0) y © colaboradores de OpenStreetMap (ODbL). Orientativo: no sirve para navegar. Tallas y vedas orientativas: manda la norma vigente publicada en el boletín oficial.</p>
-</footer>
+</footer>`}
 </body>
 </html>`;
 }
@@ -145,6 +164,20 @@ export function respuestaHtml(html, { status = 200, ttl = TTL_FIJA_S, noindex = 
 
 // Página 404 de verdad (status 404 y noindex), con enlaces útiles.
 export function html404({ que = "página", volver = "/spots", volverTexto = "Ver todos los spots" } = {}) {
+  // Páginas de Nueva Zelanda (/en/...): la 404 en inglés.
+  if (volver.startsWith("/en/")) {
+    const html = documento({
+      titulo: "Not found | Costaviva",
+      descripcion: "This page does not exist on Costaviva.",
+      ruta: volver.slice(3),
+      noindex: true,
+      idioma: "en",
+      cuerpo: `<h1>We could not find this page</h1>
+<p class="intro">The link may be mistyped or the page may no longer exist.</p>
+<p><a class="cta-boton" href="${esc(volver)}">${esc(volverTexto)}</a></p>`,
+    });
+    return { html, status: 404, ttl: TTL_SIN_DATOS_S, noindex: true };
+  }
   const html = documento({
     titulo: `No encontrada | Costaviva`,
     descripcion: `Esta ${que} no existe en Costaviva.`,

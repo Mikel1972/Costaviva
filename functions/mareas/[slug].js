@@ -20,6 +20,7 @@
 
 import { regionDeSlug } from "./_regiones.js";
 import { zonaDeSpot } from "../../assets/js/regiones.js";
+import { redireccionNZ } from "../_lib/seo/redireccion-nz.js";
 
 const DORADO = "#A8792A";
 const NAVY = "#0B2532";
@@ -279,6 +280,9 @@ function renderizarPagina(spot, todos) {
 export async function onRequestGet(context) {
   const { request, params } = context;
   const slug = params.slug;
+  // Nueva Zelanda: sus mareas (LINZ) en inglés, /en/tides/<slug>.
+  const nz = redireccionNZ(request, "mareas", slug);
+  if (nz) return nz;
 
   const previsionUrl = new URL("/prevision", request.url).toString();
   let datos;

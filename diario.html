@@ -564,32 +564,38 @@ async function cargarSpotsUsuario() {
   favoritosClaves = new Set((favs || []).map((f) => f.spot_slug || f.spot_usuario_id));
 }
 
-// Vista previa de una región oculta (fase 2 de NZ, 2026-10-09): con
-// /diario.html?region=nz (y &clave=... si no es admin) se suman sus spots al
-// desplegable. La lista sale de /prevision?region=nz&lista=1, que solo
-// responde a un admin o con la clave (functions/_lib/vista-previa.js) y no
-// gasta Open-Meteo. Sin el parámetro, nada cambia.
+// Spots de las otras regiones en el desplegable (Nueva Zelanda, activa desde
+// el 2026-10-11): la lista sale de /prevision?region=nz&lista=1, que no gasta
+// Open-Meteo y está en caché. Con /diario.html?region=<otra> (y &clave=...
+// si no es admin) se suma también la de una región aún oculta (vista previa,
+// functions/_lib/vista-previa.js).
+const REGIONES_DIARIO = ["nz"];
 async function cargarSpotsRegionPrevia() {
+  const p = new URLSearchParams(window.location.search);
+  const extra = (p.get("region") || "").toLowerCase();
+  const regiones = [...new Set([...REGIONES_DIARIO, ...(/^[a-z]{2,8}$/.test(extra) && extra !== "es" ? [extra] : [])])];
+  let token = null;
   try {
-    const p = new URLSearchParams(window.location.search);
-    const region = (p.get("region") || "").toLowerCase();
-    if (!/^[a-z]{2,8}$/.test(region) || region === "es") return;
-    const params = new URLSearchParams({ region, lista: "1" });
-    if (p.get("clave")) params.set("clave", p.get("clave"));
     const { data: sesion } = await supabase.auth.getSession();
-    const token = sesion?.session?.access_token;
-    const resp = await fetch(`/prevision?${params}`, { cache: "no-store", headers: token ? { Authorization: `Bearer ${token}` } : {} });
-    if (!resp.ok) return;
-    const datos = await resp.json();
-    for (const s of datos.spots || []) {
-      if (SPOTS.some((x) => x.slug === s.slug)) continue;
-      // Spots solo de barco (modalidades sin "costa") van como embarcación.
-      const tipo = (s.modalidades || []).includes("costa") ? "costa" : "embarcacion";
-      SPOTS.push({ slug: s.slug, nombre: s.nombre, lat: s.lat, lon: s.lon, zona: s.zona, tipo });
+    token = sesion?.session?.access_token || null;
+  } catch (e) { /* sin sesión: la lista pública sigue */ }
+  await Promise.all(regiones.map(async (region) => {
+    try {
+      const params = new URLSearchParams({ region, lista: "1" });
+      if (region === extra && p.get("clave")) params.set("clave", p.get("clave"));
+      const resp = await fetch(`/prevision?${params}`, { headers: token && region === extra ? { Authorization: `Bearer ${token}` } : {} });
+      if (!resp.ok) return;
+      const datos = await resp.json();
+      for (const s of datos.spots || []) {
+        if (SPOTS.some((x) => x.slug === s.slug)) continue;
+        // Spots solo de barco (modalidades sin "costa") van como embarcación.
+        const tipo = (s.modalidades || []).includes("costa") ? "costa" : "embarcacion";
+        SPOTS.push({ slug: s.slug, nombre: s.nombre, lat: s.lat, lon: s.lon, zona: s.zona, tipo });
+      }
+    } catch (e) {
+      console.warn(`Spots de la región ${region} no disponibles:`, e.message);
     }
-  } catch (e) {
-    console.warn("Vista previa de región no disponible:", e.message);
-  }
+  }));
 }
 
 // Todos los spots elegibles en el desplegable del diario: los fijos +

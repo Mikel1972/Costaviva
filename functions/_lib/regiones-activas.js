@@ -11,16 +11,16 @@
 // tenga VISTA_PREVIA_CLAVE) la ve igualmente con /?region=nz; ver
 // functions/_lib/vista-previa.js.
 //
-// Cómo se activa NZ: añadir "nz" aquí, en un commit que pase los tests y con
-// el sí de Mikel. Antes tienen que estar hechas las partes que el plan de NZ
-// pone en la fase 1 (zona horaria por spot en /prevision y en el proxy, textos
-// en inglés, spots en el mapa de index.html y en diario.html, que tienen su
-// propia copia de la lista) y revisados los spots con `revisar_ubicacion`.
-// test/nz-region.test.js comprueba que con "nz" fuera nada de NZ se ve.
+// Nueva Zelanda ACTIVA desde el 2026-10-11 ("lanza ya", Mikel): sus spots
+// están en SPOTS, /prevision?region=nz es pública (cada región se pide sola,
+// por la cuota de Open-Meteo) y sus páginas públicas van en inglés bajo /en/.
+// Las páginas públicas de España (/spots, /mareas, /especies, en español)
+// siguen solo con España (SPOTS_ES, especiesDePais "es").
+// test/nz-region.test.js comprueba dónde sale NZ y que España no cambia.
 
 import { SPOTS_NZ } from "./nz/spots-nz.js";
 
-export const REGIONES_ACTIVAS = Object.freeze(["es"]);
+export const REGIONES_ACTIVAS = Object.freeze(["es", "nz"]);
 
 const SPOTS_POR_REGION = { nz: SPOTS_NZ };
 
@@ -57,4 +57,15 @@ export function especiesVisibles(especies, activas = REGIONES_ACTIVAS) {
 // El JSON entero de especies.json con solo las especies visibles.
 export function datosEspeciesVisibles(datos, activas = REGIONES_ACTIVAS) {
   return datos ? { ...datos, especies: especiesVisibles(datos.especies, activas) } : datos;
+}
+
+// Especies de UN país (especies.json `pais`, "es" por defecto): las páginas
+// públicas en español solo enseñan las de España/Portugal y las de /en/ solo
+// las de Nueva Zelanda.
+export function especiesDePais(especies, pais) {
+  return (especies || []).filter((e) => (e.pais || "es") === pais);
+}
+
+export function datosEspeciesDePais(datos, pais) {
+  return datos ? { ...datos, especies: especiesDePais(datos.especies, pais) } : datos;
 }

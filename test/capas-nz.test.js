@@ -19,7 +19,10 @@ test("capas_nz: solo a mano, respeta AUTOMATION_PAUSED y escribe capas/nz", () =
   assert.match(job, /subir-storage\.mjs \/tmp\/capas-nz/);
 });
 
-test("mapa: capas/nz/ solo con ?region=nz", () => {
+test("mapa: capas/nz/ cuando se mira Nueva Zelanda, las de siempre en el resto", () => {
   const html = readFileSync("index.html", "utf8");
-  assert.match(html, /\/fuentes-gratuitas\/capas\/" \+\n  \(\/\[\?&\]region=nz\(&\|\$\)\/i\.test\(window\.location\.search\) \? "nz\/" : ""\);/);
+  assert.match(html, /const prefijoCapasMarDe = \(region\) => \(region === "nz" \? "nz\/" : ""\);/);
+  assert.match(html, /fetch\(URL_CAPAS_MAR_BASE \+ prefijo \+ nombre \+ "\.json"/);
+  // Al pasar de una región a otra con capas encendidas, se piden las nuevas.
+  assert.match(html, /map\.on\("moveend", cambioRegionCapasMar\)/);
 });

@@ -3,19 +3,20 @@
 // Coste: los JSON de assets/ salen de env.ASSETS (estáticos, sin cuota);
 // /prevision y /meteo/* ya tienen caché en el edge (30 min y por
 // coordenadas); la página entera se guarda 30-60 min con conCache().
-import { SPOTS } from "../../prevision.js";
+import { SPOTS_ES } from "../../prevision.js";
 import { WEBCAMS } from "../../webcam/[slug].js";
 import { cargarJson, pedirConLimite, ahoraMadridISO } from "./base.js";
 import { consultasMeteo, serieHorariaSpot, indiceDeHoy, condicionesDePrevision } from "./indice-hoy.js";
 import { rioDeSpot } from "./datos.js";
 import { horaLocalISO, zonaDeSpot } from "../../../assets/js/regiones.js";
-import { datosEspeciesVisibles } from "../regiones-activas.js";
+import { datosEspeciesDePais } from "../regiones-activas.js";
 
-export { SPOTS };
+// Las páginas públicas en español son las de España y Portugal: solo sus
+// spots y sus especies. Nueva Zelanda (activa desde el 2026-10-11) tiene las
+// suyas en inglés bajo /en/ (carga-en.js, paginas-en.js).
+export const SPOTS = SPOTS_ES;
 
-// Sin las especies de regiones ocultas (NZ, fase 2c): ni /especies, ni sus
-// fichas, ni el índice de las páginas de spot las ven.
-export const cargarEspecies = (context) => cargarJson(context, "/assets/datos/especies.json").then((d) => datosEspeciesVisibles(d));
+export const cargarEspecies = (context) => cargarJson(context, "/assets/datos/especies.json").then((d) => datosEspeciesDePais(d, "es"));
 
 // Mes en curso para las páginas de especies (todas de la Península por
 // ahora): hora de Madrid a propósito. Nueva Zelanda tendrá las suyas (fase 5).

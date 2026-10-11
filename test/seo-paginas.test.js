@@ -15,20 +15,22 @@ import { decisionIndexacion, PAGINAS_PRIVADAS } from "../functions/_lib/seo/inde
 import { urlsSitemap } from "../functions/_lib/seo/sitemap.js";
 import { RIOS_SPOT, TEXTO_INTERNO_PUBLICO, slugEspecie, REGIONES_MAREAS } from "../functions/_lib/seo/datos.js";
 import { serieHorariaSpot, indiceDeHoy, condicionesDePrevision } from "../functions/_lib/seo/indice-hoy.js";
-import { SPOTS } from "../functions/prevision.js";
+// Las páginas en español son de España/Portugal (NZ va en inglés bajo /en/,
+// test/seo-en.test.js).
+import { SPOTS_ES as SPOTS, SPOTS as SPOTS_TODOS } from "../functions/prevision.js";
 import * as rutaSpot from "../functions/spots/[slug].js";
 import * as rutaSpots from "../functions/spots/index.js";
 import * as rutaRegion from "../functions/spots/region/[region].js";
 import * as rutaEspecies from "../functions/especies/index.js";
 import * as rutaEspecie from "../functions/especies/[slug].js";
-import { datosEspeciesVisibles } from "../functions/_lib/regiones-activas.js";
+import { datosEspeciesDePais } from "../functions/_lib/regiones-activas.js";
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), "..");
 const leer = (r) => readFileSync(join(RAIZ, r), "utf8");
 const json = (r) => JSON.parse(leer(r));
 // Solo las especies públicas: las de NZ (región oculta, fase 2c) no tienen
 // página ni entran en el sitemap (test/nz-especies.test.js lo comprueba).
-const especies = datosEspeciesVisibles(json("assets/datos/especies.json"));
+const especies = datosEspeciesDePais(json("assets/datos/especies.json"), "es");
 const prevision = json("test/fixtures/seo-prevision.json");
 const marino = json("test/fixtures/seo-marine-bakio.json");
 const tiempo = json("test/fixtures/seo-forecast-bakio.json");
@@ -161,7 +163,7 @@ test("sitemap.xml: generado de los datos, válido y solo con URLs públicas", ()
     ...especies.especies.map((e) => `/especies/${slugEspecie(e.id)}`),
   ];
   for (const r of esperadas) assert.ok(locs.includes(`https://costaviva.org${r}`), `falta ${r}`);
-  assert.equal(urlsSitemap({ spots: SPOTS, especies, tipoFondo: null, profundidad: null }).length, locs.length);
+  assert.equal(urlsSitemap({ spots: SPOTS_TODOS, especies: json("assets/datos/especies.json"), tipoFondo: null, profundidad: null }).length, locs.length);
 });
 
 test("robots.txt: permite lo público, bloquea la app y apunta al sitemap", () => {

@@ -17,7 +17,8 @@ import {
 import { REGIONES_MAREAS } from "../functions/_lib/seo/datos.js";
 import { paginaRegionSpots, paginaIndiceSpots, paginaIndiceEspecies } from "../functions/_lib/seo/paginas.js";
 import { htmlNoEncontradaGeneral } from "../functions/_lib/seo/base.js";
-import { SPOTS } from "../functions/prevision.js";
+import { SPOTS_ES as SPOTS } from "../functions/prevision.js";
+import { SPOTS_NZ } from "../functions/_lib/nz/spots-nz.js";
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), "..");
 const leer = (r) => readFileSync(join(RAIZ, r), "utf8");
@@ -90,8 +91,10 @@ test("IndexNow: de ficheros cambiados a URLs públicas afectadas", () => {
 
 test("IndexNow: a diario solo las páginas de cada spot (pesca y marea)", () => {
   const hoy = urlsCondicionesHoy(sitemap).map((u) => new URL(u).pathname);
-  assert.equal(hoy.length, SPOTS.length * 2);
+  // España (pesca y marea) y Nueva Zelanda en inglés (/en/spots y /en/tides).
+  assert.equal(hoy.length, (SPOTS.length + SPOTS_NZ.length) * 2);
   assert.ok(hoy.includes("/spots/bakio") && hoy.includes("/mareas/bakio"));
+  assert.ok(hoy.includes("/en/spots/nz-leigh") && hoy.includes("/en/tides/nz-leigh"));
   assert.ok(!hoy.some((p) => p.includes("/region/") || p.startsWith("/especies") || p === "/spots" || p === "/mareas"));
 });
 
@@ -115,7 +118,7 @@ test("IndexNow: 200 y 202 son éxito; 403, 422 y 429 dejan el run en rojo", () =
 
 test("IndexNow: el script en modo --probar no manda nada", () => {
   const salida = execFileSync(process.execPath, [join(RAIZ, "scripts/seo/indexnow.mjs"), "hoy", "--probar"], { encoding: "utf8", env: { ...process.env, GITHUB_STEP_SUMMARY: "" } });
-  assert.match(salida, new RegExp(`${SPOTS.length * 2} URL\\(s\\) para avisar`));
+  assert.match(salida, new RegExp(`${(SPOTS.length + SPOTS_NZ.length) * 2} URL\\(s\\) para avisar`));
   assert.match(salida, /no se ha mandado nada/);
   const todas = execFileSync(process.execPath, [join(RAIZ, "scripts/seo/indexnow.mjs"), "cambios", "--antes", "0000000000000000000000000000000000000000", "--probar"], { encoding: "utf8", env: { ...process.env, GITHUB_STEP_SUMMARY: "" } });
   assert.match(todas, new RegExp(`${entradasSitemap(sitemap).length} URL\\(s\\)`));

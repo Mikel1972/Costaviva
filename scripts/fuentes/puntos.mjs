@@ -2,7 +2,8 @@
 // Lista de puntos para descargar-ibi.py: los SPOTS de la app y las boyas de
 // Puertos del Estado (estas solo para la comparativa). Sin IA.
 // Uso: node scripts/fuentes/puntos.mjs > puntos.json
-import { SPOTS, BOYAS } from "../../functions/prevision.js";
+// Solo España/Portugal (SPOTS_ES): la fuente de este script es europea; Nueva Zelanda (activa desde 2026-10-11) no entra.
+import { SPOTS_ES as SPOTS, BOYAS } from "../../functions/prevision.js";
 
 export function puntosMar() {
   return [

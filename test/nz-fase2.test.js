@@ -1,7 +1,8 @@
-// Fase 2 de Nueva Zelanda (2026-10-09): /prevision por región, vista previa
-// solo para el admin (o con la clave), marea LINZ en la ficha, normativa por
-// enlace, SOS con el 111 y alta con código postal de 4 cifras. Con "nz"
-// fuera de REGIONES_ACTIVAS, España no cambia y nadie más ve NZ. Sin red.
+// Fase 2 de Nueva Zelanda (2026-10-09) y lanzamiento (2026-10-11):
+// /prevision por región (NZ ya pública, con su propia caché), la vista previa
+// queda para regiones aún ocultas (admin o clave), marea LINZ en la ficha,
+// normativa por enlace, reservas del DOC, SOS con el 111 y alta con código
+// postal de 4 cifras. España no cambia. Sin red.
 
 import { test, after } from "node:test";
 import assert from "node:assert/strict";
@@ -112,15 +113,14 @@ const lats = (u) => new URL(u).searchParams.get("latitude").split(",").map(Numbe
 // ---------------------------------------------------------------------------
 // /prevision por región
 // ---------------------------------------------------------------------------
-test("SPOTS_ES: los 105 de siempre; SPOTS (lo público) no lleva NZ mientras esté apagada", () => {
+test("SPOTS_ES: los 105 de siempre; SPOTS = España + los spots activos de NZ", () => {
   assert.equal(SPOTS_ES.length, 105);
-  assert.deepEqual(SPOTS.map((s) => s.slug), SPOTS_ES.map((s) => s.slug));
+  assert.deepEqual(SPOTS.map((s) => s.slug), [...SPOTS_ES, ...SPOTS_NZ].map((s) => s.slug));
   assert.ok(SPOTS_ES.every((s) => s.lat > 27 && s.lon < 5));
   assert.deepEqual(REGIONES_CONOCIDAS, ["nz"]);
-  assert.equal(spotsDeRegion("nz").length, 60);
+  assert.equal(spotsDeRegion("nz").length, SPOTS_NZ.length);
   assert.deepEqual(spotsDeRegion("xx"), []);
 });
-
 test("región de la URL: es por defecto, nz conocida, el resto no existe", () => {
   assert.equal(regionDeUrl(new URL("https://x/prevision")), "es");
   assert.equal(regionDeUrl(new URL("https://x/prevision?region=ES")), "es");
@@ -146,34 +146,29 @@ test("/prevision sin región: solo España, mismas variables de siempre y caché
   assert.ok(e.guardado.has("https://costaviva.org/prevision"));
 });
 
-test("/prevision?region=nz sin admin ni clave: 404 y ni una llamada a Open-Meteo", async () => {
+test("/prevision?region=nz es pública: sin sesión ni clave; una región inventada sigue en 404", async () => {
   const e = montarEntorno();
-  for (const url of ["https://c.org/prevision?region=nz", "https://c.org/prevision?region=nz&lista=1", "https://c.org/prevision?region=nz&clave=mala"]) {
-    const r = await onRequestGet(e.contexto(url, { env: { VISTA_PREVIA_CLAVE: "buena-clave-larga" } }));
-    assert.equal(r.status, 404, url);
-  }
-  // Con un token que no es de admin, tampoco.
-  const r = await onRequestGet(e.contexto("https://c.org/prevision?region=nz", { headers: { Authorization: "Bearer token-cualquiera" } }));
-  assert.equal(r.status, 404);
+  const r = await onRequestGet(e.contexto("https://c.org/prevision?region=nz&lista=1"));
+  assert.equal(r.status, 200);
+  assert.match(r.headers.get("cache-control"), /public/);
   assert.equal(e.llamadas.openMeteo.length, 0);
-  // Región inventada.
+  assert.equal(e.llamadas.supabase.length, 0, "no hace falta comprobar ningún admin");
   assert.equal((await onRequestGet(e.contexto("https://c.org/prevision?region=au"))).status, 404);
 });
-
-test("/prevision?region=nz como admin: solo los 60 de NZ, hora de Auckland, marea LINZ y normativa", async () => {
-  const e = montarEntorno({ admin: true });
-  const r = await onRequestGet(e.contexto("https://c.org/prevision?region=nz", { headers: { Authorization: "Bearer token-admin" } }));
+test("/prevision?region=nz: solo los spots de NZ, hora de Auckland, marea LINZ, normativa y reservas del DOC", async () => {
+  const e = montarEntorno();
+  const r = await onRequestGet(e.contexto("https://c.org/prevision?region=nz"));
   assert.equal(r.status, 200);
-  assert.match(r.headers.get("cache-control"), /no-store/);
+  assert.match(r.headers.get("cache-control"), /public, max-age=1800/);
   const datos = await r.json();
   assert.equal(datos.region, "nz");
-  assert.equal(datos.spots.length, 60);
+  assert.equal(datos.spots.length, SPOTS_NZ.length);
   assert.deepEqual(datos.boyas, []);
   // Open-Meteo: una consulta por API, solo coordenadas de NZ, sin la marea del modelo.
   assert.equal(e.llamadas.openMeteo.length, 2);
   for (const u of e.llamadas.openMeteo) {
     assert.match(u, /timezone=Pacific%2FAuckland/);
-    assert.equal(lats(u).length, 60);
+    assert.equal(lats(u).length, SPOTS_NZ.length);
     assert.ok(lats(u).every((la) => la < -34));
     assert.doesNotMatch(u, /sea_level_height_msl/);
   }
@@ -186,47 +181,44 @@ test("/prevision?region=nz como admin: solo los 60 de NZ, hora de Auckland, mare
   assert.equal(leigh.marea.puerto.nombre, "Leigh");
   assert.ok(Number.isFinite(leigh.marea.altura));
   assert.equal(leigh.normativa.url, AREAS_MPI.nz_auckland_kermadec.url);
-  assert.equal(leigh.revisarUbicacion, true);
+  assert.equal(leigh.revisarUbicacion, false);
+  // Leigh está junto a la reserva de Goat Island (Cape Rodney-Okakari Point).
+  assert.ok(leigh.reservas.some((x) => /Cape Rodney/.test(x.nombre)), JSON.stringify(leigh.reservas));
+  assert.match(datos.atribuciones.reservas, /Department of Conservation \(DOC\), Crown copyright, CC BY 4\.0/);
   assert.equal(datos.atribuciones.mareaDisponible, true);
   // Ningún spot de España en la respuesta.
   assert.ok(datos.spots.every((s) => s.slug.startsWith("nz-")));
-  // La vista previa se guarda con su propia clave, nunca con la pública.
+  // Caché propia de la región, pública (ya no es vista previa).
   await e.esperar();
-  assert.ok(e.guardado.has("https://c.org/prevision?region=nz&vista-previa=1"));
-  assert.ok(!e.guardado.has("https://c.org/prevision?region=nz"));
+  assert.ok(e.guardado.has("https://c.org/prevision?region=nz"));
+  assert.ok(!e.guardado.has("https://c.org/prevision?region=nz&vista-previa=1"));
 });
 
-test("la caché de la vista previa no se sirve a quien no está autorizado", async () => {
-  const e = montarEntorno({ admin: true });
-  await onRequestGet(e.contexto("https://c.org/prevision?region=nz", { headers: { Authorization: "Bearer token-admin" } }));
-  await e.esperar();
-  const r = await onRequestGet(e.contexto("https://c.org/prevision?region=nz"));
-  assert.equal(r.status, 404);
+test("la vista previa sigue para una región oculta: solo admin o clave, antes de la caché", async () => {
+  const req = (h = {}, q = "") => new Request(`https://c.org/prevision?region=nz${q}`, { headers: h });
+  // Con NZ fuera de las activas (como estaba antes del lanzamiento).
+  assert.equal((await autorizarRegion(req(), {}, "nz", { activas: ["es"] })).ok, false);
+  assert.equal((await autorizarRegion(req({}, "&clave=abc"), { VISTA_PREVIA_CLAVE: "abc" }, "nz", { activas: ["es"] })).ok, true);
 });
-
-test("/prevision?region=nz con la clave secreta (y lista=1 sin gastar Open-Meteo)", async () => {
+test("/prevision?region=nz&lista=1: solo la lista, sin gastar Open-Meteo", async () => {
   const e = montarEntorno();
-  const env = { VISTA_PREVIA_CLAVE: "buena-clave-larga" };
-  const r = await onRequestGet(e.contexto("https://c.org/prevision?region=nz&lista=1&clave=buena-clave-larga", { env }));
+  const r = await onRequestGet(e.contexto("https://c.org/prevision?region=nz&lista=1"));
   assert.equal(r.status, 200);
   const datos = await r.json();
-  assert.equal(datos.spots.length, 60);
+  assert.equal(datos.spots.length, SPOTS_NZ.length);
   assert.equal(e.llamadas.openMeteo.length, 0);
   assert.deepEqual(Object.keys(datos.spots[0]).sort(), ["lat", "lon", "modalidades", "nombre", "pais", "region", "slug", "zona", "zonaGeografica"]);
   assert.equal(datos.spots[0].zona, "Pacific/Auckland");
-  // Sin secret configurado, la vía de la clave siempre rechaza.
-  const sin = await onRequestGet(e.contexto("https://c.org/prevision?region=nz&lista=1&clave=buena-clave-larga"));
-  assert.equal(sin.status, 404);
 });
-
 test("autorizarRegion: activa = pública; si no, admin o clave", async () => {
   const req = (h = {}, q = "") => new Request(`https://c.org/prevision?region=nz${q}`, { headers: h });
   assert.deepEqual(await autorizarRegion(req(), {}, "nz", { activas: ["es", "nz"] }), { ok: true, publica: true });
-  assert.equal((await autorizarRegion(req(), {}, "nz")).ok, false);
+  assert.deepEqual(await autorizarRegion(req(), {}, "nz"), { ok: true, publica: true }, "NZ activa desde el 2026-10-11");
+  assert.equal((await autorizarRegion(req(), {}, "nz", { activas: ["es"] })).ok, false);
   const admin = async () => ({ ok: true });
-  assert.equal((await autorizarRegion(req({ Authorization: "Bearer x" }), {}, "nz", { comprobarAdmin: admin })).via, "admin");
-  assert.equal((await autorizarRegion(req({}, "&clave=abc"), { VISTA_PREVIA_CLAVE: "abc" }, "nz")).via, "clave");
-  assert.equal((await autorizarRegion(req({}, "&clave=abd"), { VISTA_PREVIA_CLAVE: "abc" }, "nz")).ok, false);
+  assert.equal((await autorizarRegion(req({ Authorization: "Bearer x" }), {}, "nz", { comprobarAdmin: admin, activas: ["es"] })).via, "admin");
+  assert.equal((await autorizarRegion(req({}, "&clave=abc"), { VISTA_PREVIA_CLAVE: "abc" }, "nz", { activas: ["es"] })).via, "clave");
+  assert.equal((await autorizarRegion(req({}, "&clave=abd"), { VISTA_PREVIA_CLAVE: "abc" }, "nz", { activas: ["es"] })).ok, false);
 });
 
 test("sin los datos de LINZ la marea sale null y el spot sigue", async () => {
@@ -236,7 +228,7 @@ test("sin los datos de LINZ la marea sale null y el spot sigue", async () => {
   assert.equal(r.normativa.region, s.region);
   assert.deepEqual(aniosNecesarios(Date.UTC(2026, 11, 31)), [2026, 2027]);
   assert.equal(typeof previsionRegionNZ, "function");
-  assert.equal(listaSpotsRegion(SPOTS_NZ).length, 60);
+  assert.equal(listaSpotsRegion(SPOTS_NZ).length, SPOTS_NZ.length);
 });
 
 // ---------------------------------------------------------------------------
@@ -264,7 +256,7 @@ test("ficha del spot en index.html: coordenadas °S/°E, marea LINZ, normativa y
     assert.match(html, new RegExp(`id="${id}"`), id);
   }
   assert.match(html, /mapa\.panel\.rahui/);
-  // La vista previa pide su región con el JWT y solo si hay ?region= en la URL.
+  // Cada región se pide sola (con el JWT si hay sesión, por si estuviera oculta).
   assert.match(html, /fetch\(`\/prevision\?\$\{params\}`/);
   assert.match(html, /Authorization: `Bearer \$\{token\}`/);
   const formato = new Function(`${html.match(/function formatoCoordenadas[\s\S]*?\n}/)[0]}; return formatoCoordenadas;`)();
@@ -272,7 +264,7 @@ test("ficha del spot en index.html: coordenadas °S/°E, marea LINZ, normativa y
   assert.equal(formato(43.3647, -2.5089), "43.3647°N, 2.5089°W");
 });
 
-test("diario: la lista de NZ solo llega del servidor en la vista previa", () => {
+test("diario: la lista de NZ llega del servidor (/prevision?region=nz&lista=1)", () => {
   const html = leer("diario.html");
   assert.match(html, /async function cargarSpotsRegionPrevia/);
   assert.match(html, /lista: "1"/);
