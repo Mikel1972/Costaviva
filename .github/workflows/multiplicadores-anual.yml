@@ -1,0 +1,64 @@
+name: Precios (multiplicadores por renta, anual)
+
+# Una vez al año (el Banco Mundial publica la RNB Atlas del año anterior a
+# principios de julio), sin IA: recalcula el multiplicador por renta de cada
+# país (RNB per cápita Atlas del país / la de España, entre 0,6 y 1,5, a 0,05)
+# y el tipo de cambio de los precios, y ABRE UNA PR. Nada cambia en Stripe
+# hasta que la PR se fusiona y se lanza "Precios de Stripe"; si los importes
+# cambian, version_precios sube y se crean precios nuevos: los clientes
+# existentes se quedan con el suyo (no se migran suscripciones).
+# Los multiplicadores manuales (NZ ×1,40) y los fijos (UE/EEE por ley) no se
+# tocan nunca.
+
+on:
+  schedule:
+    - cron: "41 6 15 7 *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  anual:
+    if: vars.AUTOMATION_PAUSED != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Recalcular
+        run: |
+          node scripts/precios/multiplicadores.mjs | tee /tmp/salida.txt
+          node scripts/precios/generar-md.mjs
+          node --test test/precios.test.js
+      - name: PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RAMA: robot/precios-renta-${{ github.run_id }}
+        run: |
+          git config user.name "Costaviva (precios)"
+          git config user.email "noreply@anthropic.com"
+          git add PRECIOS.md datos/precios-resumen.md functions/_lib/precios-zonas.json
+          if git diff --cached --quiet; then echo "Sin cambios."; exit 0; fi
+          git checkout -q -b "$RAMA"
+          git commit -qm "Precios: recálculo anual de multiplicadores por renta"
+          git push -q origin "$RAMA"
+          {
+            echo "Recálculo anual de los multiplicadores por renta (RNB Atlas del Banco Mundial) y del cambio del BCE. Sin IA."
+            echo
+            echo '```'
+            cat /tmp/salida.txt
+            echo '```'
+            echo
+            echo "Revisa PRECIOS.md. Al fusionar no cambia nada en Stripe: después hay que lanzar **Precios de Stripe** (test y luego live). Los clientes actuales mantienen su precio."
+          } > /tmp/cuerpo.md
+          if ! gh pr create --base main --head "$RAMA" --title "Precios (robot): recálculo anual por renta" --body-file /tmp/cuerpo.md; then
+            echo "Abre el PR a mano: https://github.com/${{ github.repository }}/compare/main...$RAMA?expand=1" > /tmp/issue.md
+            gh issue create --title "Recálculo anual de precios: falta abrir el PR" --body-file /tmp/issue.md
+          fi

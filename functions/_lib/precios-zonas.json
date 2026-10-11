@@ -1,0 +1,1497 @@
+{
+  "_leeme": "Precios de Premium por zonas (2026-10-11). Lo explica CLAUDE.md, 'Cobro: precios por zonas'. Activar un país: añadir/activar su zona aquí, ejecutar 'node scripts/precios/generar-md.mjs' y lanzar el workflow 'Precios de Stripe'. multiplicadores_pais y tipo_cambio los escribe scripts/precios/multiplicadores.mjs: no editarlos a mano.",
+  "version_precios": "2026_10",
+  "factor_mundial": 1.5,
+  "plazas_fundador": 500,
+  "zona_por_defecto": "resto",
+  "planes": {
+    "mensual": {
+      "eur_cent": 399,
+      "intervalo": "month"
+    },
+    "anual": {
+      "eur_cent": 2999,
+      "intervalo": "year"
+    },
+    "fundador_anual": {
+      "eur_cent": 2499,
+      "intervalo": "year",
+      "fundador": true
+    }
+  },
+  "productos": {
+    "regional": {
+      "clave": "costaviva_premium",
+      "nombre": "Costaviva Premium",
+      "descripcion": "Premium en las regiones de tu zona"
+    },
+    "mundial": {
+      "clave": "costaviva_premium_mundial",
+      "nombre": "Costaviva Premium Mundial",
+      "descripcion": "Premium en todas las regiones de Costaviva"
+    }
+  },
+  "renta": {
+    "indicador": "NY.GNP.PCAP.CD",
+    "descripcion": "RNB per cápita, método Atlas, USD corrientes (Banco Mundial, CC BY 4.0)",
+    "pais_referencia": "ES",
+    "minimo": 0.6,
+    "maximo": 1.5,
+    "paso": 0.05,
+    "referencia": {
+      "pais": "ES",
+      "rnb_usd": 37120,
+      "anio": "2025",
+      "fuente": "Banco Mundial, World Development Indicators (CC BY 4.0)"
+    }
+  },
+  "zonas": [
+    {
+      "id": "ue_eee",
+      "nombre": "Unión Europea y EEE",
+      "activa": true,
+      "grupo": "ue_eee",
+      "paises": [
+        "AT",
+        "BE",
+        "BG",
+        "HR",
+        "CY",
+        "CZ",
+        "DK",
+        "EE",
+        "FI",
+        "FR",
+        "DE",
+        "GR",
+        "HU",
+        "IE",
+        "IT",
+        "LV",
+        "LT",
+        "LU",
+        "MT",
+        "NL",
+        "PL",
+        "PT",
+        "RO",
+        "SK",
+        "SI",
+        "ES",
+        "SE",
+        "IS",
+        "LI",
+        "NO"
+      ],
+      "moneda": "EUR",
+      "multiplicador_fijo": 1,
+      "motivo_multiplicador": "Fijo por ley: Reglamento (UE) 2018/302 (geobloqueo), mismas condiciones para todos los clientes de la UE/EEE.",
+      "redondeo": "99",
+      "region_contenido": "es"
+    },
+    {
+      "id": "nz",
+      "nombre": "Nueva Zelanda",
+      "activa": true,
+      "grupo": "renta_alta",
+      "paises": [
+        "NZ"
+      ],
+      "moneda": "NZD",
+      "motivo_multiplicador": "Excepción manual de Mikel (2026-10-11): ×1,40 fijo (\"la renta allí es más alta y no van a compararlo\"). La fórmula de renta (RNB Atlas 2025 NZ 46.630 $ / España 37.120 $) daría 1,25; se deja solo como información. El recálculo anual no toca este valor.",
+      "redondeo": "99",
+      "region_contenido": "nz",
+      "multiplicador_manual": 1.4,
+      "multiplicador_manual_fecha": "2026-10-11",
+      "multiplicador_calculado_info": 1.25
+    },
+    {
+      "id": "au",
+      "nombre": "Australia",
+      "activa": false,
+      "grupo": "renta_alta",
+      "paises": [
+        "AU"
+      ],
+      "moneda": "AUD",
+      "redondeo": "99",
+      "region_contenido": null
+    },
+    {
+      "id": "gb",
+      "nombre": "Reino Unido",
+      "activa": false,
+      "grupo": "renta_alta",
+      "paises": [
+        "GB"
+      ],
+      "moneda": "GBP",
+      "redondeo": "99",
+      "region_contenido": null
+    },
+    {
+      "id": "us",
+      "nombre": "Estados Unidos",
+      "activa": false,
+      "grupo": "renta_alta",
+      "paises": [
+        "US"
+      ],
+      "moneda": "USD",
+      "redondeo": "99",
+      "region_contenido": null
+    },
+    {
+      "id": "ca",
+      "nombre": "Canadá",
+      "activa": false,
+      "grupo": "renta_alta",
+      "paises": [
+        "CA"
+      ],
+      "moneda": "CAD",
+      "redondeo": "99",
+      "region_contenido": null
+    },
+    {
+      "id": "ch",
+      "nombre": "Suiza",
+      "activa": false,
+      "grupo": "renta_alta",
+      "paises": [
+        "CH"
+      ],
+      "moneda": "CHF",
+      "redondeo": "local",
+      "region_contenido": null
+    },
+    {
+      "id": "resto",
+      "nombre": "Resto del mundo",
+      "activa": true,
+      "grupo": "resto",
+      "paises": [],
+      "moneda": "EUR",
+      "multiplicador_fijo": 1,
+      "motivo_multiplicador": "Por defecto: precio de España en EUR.",
+      "redondeo": "99",
+      "region_contenido": "es"
+    }
+  ],
+  "tipo_cambio": {
+    "fuente": "Banco Central Europeo, tipos de cambio de referencia del euro (eurofxref-daily)",
+    "url": "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml",
+    "fecha": "2026-10-09",
+    "eur_a": {
+      "USD": 1.1206,
+      "JPY": 177.34,
+      "CZK": 24.369,
+      "DKK": 7.4751,
+      "GBP": 0.84763,
+      "HUF": 365.08,
+      "PLN": 4.3835,
+      "RON": 5.3406,
+      "SEK": 11.1675,
+      "CHF": 0.9313,
+      "ISK": 136.8,
+      "NOK": 10.7155,
+      "TRY": 55.1033,
+      "AUD": 1.6052,
+      "BRL": 5.6086,
+      "CAD": 1.5942,
+      "CNY": 7.4992,
+      "HKD": 8.794,
+      "IDR": 20036.94,
+      "ILS": 3.426,
+      "INR": 108.3965,
+      "KRW": 1503.27,
+      "MXN": 20.395,
+      "MYR": 4.5777,
+      "NZD": 1.9961,
+      "PHP": 70.397,
+      "SGD": 1.4348,
+      "THB": 37.574,
+      "ZAR": 18.527
+    }
+  },
+  "multiplicadores_pais": {
+    "AD": {
+      "nombre": "Andorra",
+      "rnb_usd": 53230,
+      "anio": "2025",
+      "multiplicador": 1.45
+    },
+    "AE": {
+      "nombre": "United Arab Emirates",
+      "rnb_usd": 51550,
+      "anio": "2024",
+      "multiplicador": 1.4
+    },
+    "AF": {
+      "nombre": "Afghanistan",
+      "rnb_usd": 390,
+      "anio": "2024",
+      "multiplicador": 0.6
+    },
+    "AG": {
+      "nombre": "Antigua and Barbuda",
+      "rnb_usd": 23790,
+      "anio": "2025",
+      "multiplicador": 0.65
+    },
+    "AL": {
+      "nombre": "Albania",
+      "rnb_usd": 12060,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "AM": {
+      "nombre": "Armenia",
+      "rnb_usd": 9020,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "AO": {
+      "nombre": "Angola",
+      "rnb_usd": 2860,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "AR": {
+      "nombre": "Argentina",
+      "rnb_usd": 14650,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "AT": {
+      "nombre": "Austria",
+      "rnb_usd": 60360,
+      "anio": "2025",
+      "multiplicador": 1.5
+    },
+    "AU": {
+      "nombre": "Australia",
+      "rnb_usd": 64120,
+      "anio": "2025",
+      "multiplicador": 1.5
+    },
+    "AW": {
+      "nombre": "Aruba",
+      "rnb_usd": 35200,
+      "anio": "2024",
+      "multiplicador": 0.95
+    },
+    "AZ": {
+      "nombre": "Azerbaijan",
+      "rnb_usd": 7360,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "BA": {
+      "nombre": "Bosnia and Herzegovina",
+      "rnb_usd": 9940,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "BB": {
+      "nombre": "Barbados",
+      "rnb_usd": 27080,
+      "anio": "2025",
+      "multiplicador": 0.75
+    },
+    "BD": {
+      "nombre": "Bangladesh",
+      "rnb_usd": 2840,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "BE": {
+      "nombre": "Belgium",
+      "rnb_usd": 59500,
+      "anio": "2025",
+      "multiplicador": 1.5
+    },
+    "BF": {
+      "nombre": "Burkina Faso",
+      "rnb_usd": 980,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "BG": {
+      "nombre": "Bulgaria",
+      "rnb_usd": 17780,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "BH": {
+      "nombre": "Bahrain",
+      "rnb_usd": 28790,
+      "anio": "2025",
+      "multiplicador": 0.8
+    },
+    "BI": {
+      "nombre": "Burundi",
+      "rnb_usd": 240,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "BJ": {
+      "nombre": "Benin",
+      "rnb_usd": 1600,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "BM": {
+      "nombre": "Bermuda",
+      "rnb_usd": 139370,
+      "anio": "2024",
+      "multiplicador": 1.5
+    },
+    "BN": {
+      "nombre": "Brunei Darussalam",
+      "rnb_usd": 34790,
+      "anio": "2025",
+      "multiplicador": 0.95
+    },
+    "BO": {
+      "nombre": "Bolivia",
+      "rnb_usd": 4420,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "BR": {
+      "nombre": "Brazil",
+      "rnb_usd": 10550,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "BS": {
+      "nombre": "Bahamas, The",
+      "rnb_usd": 37020,
+      "anio": "2024",
+      "multiplicador": 1
+    },
+    "BT": {
+      "nombre": "Bhutan",
+      "rnb_usd": 4310,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "BW": {
+      "nombre": "Botswana",
+      "rnb_usd": 7390,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "BY": {
+      "nombre": "Belarus",
+      "rnb_usd": 9160,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "BZ": {
+      "nombre": "Belize",
+      "rnb_usd": 7530,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "CA": {
+      "nombre": "Canada",
+      "rnb_usd": 56420,
+      "anio": "2025",
+      "multiplicador": 1.5
+    },
+    "CD": {
+      "nombre": "Congo, Dem. Rep.",
+      "rnb_usd": 720,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "CF": {
+      "nombre": "Central African Republic",
+      "rnb_usd": 560,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "CG": {
+      "nombre": "Congo, Rep.",
+      "rnb_usd": 2280,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "CH": {
+      "nombre": "Switzerland",
+      "rnb_usd": 110330,
+      "anio": "2025",
+      "multiplicador": 1.5
+    },
+    "CI": {
+      "nombre": "Cote d'Ivoire",
+      "rnb_usd": 2780,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "CL": {
+      "nombre": "Chile",
+      "rnb_usd": 16960,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "CM": {
+      "nombre": "Cameroon",
+      "rnb_usd": 1860,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "CN": {
+      "nombre": "China",
+      "rnb_usd": 14230,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "CO": {
+      "nombre": "Colombia",
+      "rnb_usd": 7900,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "CR": {
+      "nombre": "Costa Rica",
+      "rnb_usd": 17930,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "CU": {
+      "nombre": "Cuba",
+      "rnb_usd": 9010,
+      "anio": "2019",
+      "multiplicador": 0.6
+    },
+    "CV": {
+      "nombre": "Cabo Verde",
+      "rnb_usd": 5590,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "CW": {
+      "nombre": "Curacao",
+      "rnb_usd": 22570,
+      "anio": "2024",
+      "multiplicador": 0.6
+    },
+    "CY": {
+      "nombre": "Cyprus",
+      "rnb_usd": 36110,
+      "anio": "2025",
+      "multiplicador": 0.95
+    },
+    "CZ": {
+      "nombre": "Czechia",
+      "rnb_usd": 32960,
+      "anio": "2025",
+      "multiplicador": 0.9
+    },
+    "DE": {
+      "nombre": "Germany",
+      "rnb_usd": 60200,
+      "anio": "2025",
+      "multiplicador": 1.5
+    },
+    "DJ": {
+      "nombre": "Djibouti",
+      "rnb_usd": 3960,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "DK": {
+      "nombre": "Denmark",
+      "rnb_usd": 77190,
+      "anio": "2025",
+      "multiplicador": 1.5
+    },
+    "DM": {
+      "nombre": "Dominica",
+      "rnb_usd": 10690,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "DO": {
+      "nombre": "Dominican Republic",
+      "rnb_usd": 10620,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "DZ": {
+      "nombre": "Algeria",
+      "rnb_usd": 5850,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "EC": {
+      "nombre": "Ecuador",
+      "rnb_usd": 6890,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "EE": {
+      "nombre": "Estonia",
+      "rnb_usd": 32310,
+      "anio": "2025",
+      "multiplicador": 0.85
+    },
+    "EG": {
+      "nombre": "Egypt, Arab Rep.",
+      "rnb_usd": 3260,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "ER": {
+      "nombre": "Eritrea",
+      "rnb_usd": 650,
+      "anio": "2011",
+      "multiplicador": 0.6
+    },
+    "ES": {
+      "nombre": "Spain",
+      "rnb_usd": 37120,
+      "anio": "2025",
+      "multiplicador": 1
+    },
+    "ET": {
+      "nombre": "Ethiopia",
+      "rnb_usd": 1110,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "FI": {
+      "nombre": "Finland",
+      "rnb_usd": 55250,
+      "anio": "2025",
+      "multiplicador": 1.5
+    },
+    "FJ": {
+      "nombre": "Fiji",
+      "rnb_usd": 6230,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "FM": {
+      "nombre": "Micronesia, Fed. Sts.",
+      "rnb_usd": 4760,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "FO": {
+      "nombre": "Faroe Islands",
+      "rnb_usd": 73120,
+      "anio": "2024",
+      "multiplicador": 1.5
+    },
+    "FR": {
+      "nombre": "France",
+      "rnb_usd": 48630,
+      "anio": "2025",
+      "multiplicador": 1.3
+    },
+    "GA": {
+      "nombre": "Gabon",
+      "rnb_usd": 8090,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "GB": {
+      "nombre": "United Kingdom",
+      "rnb_usd": 54550,
+      "anio": "2025",
+      "multiplicador": 1.45
+    },
+    "GD": {
+      "nombre": "Grenada",
+      "rnb_usd": 11660,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "GE": {
+      "nombre": "Georgia",
+      "rnb_usd": 8990,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "GH": {
+      "nombre": "Ghana",
+      "rnb_usd": 2630,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "GL": {
+      "nombre": "Greenland",
+      "rnb_usd": 34800,
+      "anio": "2007",
+      "multiplicador": 0.95
+    },
+    "GM": {
+      "nombre": "Gambia, The",
+      "rnb_usd": 930,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "GN": {
+      "nombre": "Guinea",
+      "rnb_usd": 1730,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "GQ": {
+      "nombre": "Equatorial Guinea",
+      "rnb_usd": 5890,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "GR": {
+      "nombre": "Greece",
+      "rnb_usd": 25360,
+      "anio": "2025",
+      "multiplicador": 0.7
+    },
+    "GT": {
+      "nombre": "Guatemala",
+      "rnb_usd": 6360,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "GW": {
+      "nombre": "Guinea-Bissau",
+      "rnb_usd": 1090,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "GY": {
+      "nombre": "Guyana",
+      "rnb_usd": 28470,
+      "anio": "2025",
+      "multiplicador": 0.75
+    },
+    "HK": {
+      "nombre": "Hong Kong SAR, China",
+      "rnb_usd": 62500,
+      "anio": "2025",
+      "multiplicador": 1.5
+    },
+    "HN": {
+      "nombre": "Honduras",
+      "rnb_usd": 3270,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "HR": {
+      "nombre": "Croatia",
+      "rnb_usd": 25360,
+      "anio": "2025",
+      "multiplicador": 0.7
+    },
+    "HT": {
+      "nombre": "Haiti",
+      "rnb_usd": 2010,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "HU": {
+      "nombre": "Hungary",
+      "rnb_usd": 23850,
+      "anio": "2025",
+      "multiplicador": 0.65
+    },
+    "ID": {
+      "nombre": "Indonesia",
+      "rnb_usd": 5120,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "IE": {
+      "nombre": "Ireland",
+      "rnb_usd": 87360,
+      "anio": "2025",
+      "multiplicador": 1.5
+    },
+    "IL": {
+      "nombre": "Israel",
+      "rnb_usd": 56180,
+      "anio": "2025",
+      "multiplicador": 1.5
+    },
+    "IM": {
+      "nombre": "Isle of Man",
+      "rnb_usd": 87030,
+      "anio": "2023",
+      "multiplicador": 1.5
+    },
+    "IN": {
+      "nombre": "India",
+      "rnb_usd": 2760,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "IQ": {
+      "nombre": "Iraq",
+      "rnb_usd": 5690,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "IR": {
+      "nombre": "Iran, Islamic Rep.",
+      "rnb_usd": 4650,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "IS": {
+      "nombre": "Iceland",
+      "rnb_usd": 89220,
+      "anio": "2025",
+      "multiplicador": 1.5
+    },
+    "IT": {
+      "nombre": "Italy",
+      "rnb_usd": 42080,
+      "anio": "2025",
+      "multiplicador": 1.15
+    },
+    "JM": {
+      "nombre": "Jamaica",
+      "rnb_usd": 7790,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "JO": {
+      "nombre": "Jordan",
+      "rnb_usd": 5260,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "JP": {
+      "nombre": "Japan",
+      "rnb_usd": 38340,
+      "anio": "2025",
+      "multiplicador": 1.05
+    },
+    "KE": {
+      "nombre": "Kenya",
+      "rnb_usd": 2200,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "KG": {
+      "nombre": "Kyrgyz Republic",
+      "rnb_usd": 2800,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "KH": {
+      "nombre": "Cambodia",
+      "rnb_usd": 2750,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "KI": {
+      "nombre": "Kiribati",
+      "rnb_usd": 3930,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "KM": {
+      "nombre": "Comoros",
+      "rnb_usd": 1950,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "KN": {
+      "nombre": "St. Kitts and Nevis",
+      "rnb_usd": 24530,
+      "anio": "2025",
+      "multiplicador": 0.65
+    },
+    "KR": {
+      "nombre": "Korea, Rep.",
+      "rnb_usd": 37880,
+      "anio": "2025",
+      "multiplicador": 1
+    },
+    "KW": {
+      "nombre": "Kuwait",
+      "rnb_usd": 41110,
+      "anio": "2024",
+      "multiplicador": 1.1
+    },
+    "KY": {
+      "nombre": "Cayman Islands",
+      "rnb_usd": 81920,
+      "anio": "2024",
+      "multiplicador": 1.5
+    },
+    "KZ": {
+      "nombre": "Kazakhstan",
+      "rnb_usd": 13740,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "LA": {
+      "nombre": "Lao PDR",
+      "rnb_usd": 2150,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "LB": {
+      "nombre": "Lebanon",
+      "rnb_usd": 3560,
+      "anio": "2024",
+      "multiplicador": 0.6
+    },
+    "LC": {
+      "nombre": "St. Lucia",
+      "rnb_usd": 13410,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "LI": {
+      "nombre": "Liechtenstein",
+      "rnb_usd": 116380,
+      "anio": "2009",
+      "multiplicador": 1.5
+    },
+    "LK": {
+      "nombre": "Sri Lanka",
+      "rnb_usd": 4670,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "LR": {
+      "nombre": "Liberia",
+      "rnb_usd": 830,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "LS": {
+      "nombre": "Lesotho",
+      "rnb_usd": 1280,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "LT": {
+      "nombre": "Lithuania",
+      "rnb_usd": 30500,
+      "anio": "2025",
+      "multiplicador": 0.8
+    },
+    "LU": {
+      "nombre": "Luxembourg",
+      "rnb_usd": 95720,
+      "anio": "2025",
+      "multiplicador": 1.5
+    },
+    "LV": {
+      "nombre": "Latvia",
+      "rnb_usd": 24980,
+      "anio": "2025",
+      "multiplicador": 0.65
+    },
+    "LY": {
+      "nombre": "Libya",
+      "rnb_usd": 7250,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "MA": {
+      "nombre": "Morocco",
+      "rnb_usd": 4360,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "MD": {
+      "nombre": "Moldova",
+      "rnb_usd": 8050,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "ME": {
+      "nombre": "Montenegro",
+      "rnb_usd": 14150,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "MG": {
+      "nombre": "Madagascar",
+      "rnb_usd": 560,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "MH": {
+      "nombre": "Marshall Islands",
+      "rnb_usd": 9710,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "MK": {
+      "nombre": "North Macedonia",
+      "rnb_usd": 9490,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "ML": {
+      "nombre": "Mali",
+      "rnb_usd": 1120,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "MM": {
+      "nombre": "Myanmar",
+      "rnb_usd": 1320,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "MN": {
+      "nombre": "Mongolia",
+      "rnb_usd": 6210,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "MO": {
+      "nombre": "Macao SAR, China",
+      "rnb_usd": 69920,
+      "anio": "2024",
+      "multiplicador": 1.5
+    },
+    "MR": {
+      "nombre": "Mauritania",
+      "rnb_usd": 2210,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "MT": {
+      "nombre": "Malta",
+      "rnb_usd": 41440,
+      "anio": "2025",
+      "multiplicador": 1.1
+    },
+    "MU": {
+      "nombre": "Mauritius",
+      "rnb_usd": 14040,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "MV": {
+      "nombre": "Maldives",
+      "rnb_usd": 12950,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "MW": {
+      "nombre": "Malawi",
+      "rnb_usd": 600,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "MX": {
+      "nombre": "Mexico",
+      "rnb_usd": 13730,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "MY": {
+      "nombre": "Malaysia",
+      "rnb_usd": 12380,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "MZ": {
+      "nombre": "Mozambique",
+      "rnb_usd": 570,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "NA": {
+      "nombre": "Namibia",
+      "rnb_usd": 4340,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "NC": {
+      "nombre": "New Caledonia",
+      "rnb_usd": 30070,
+      "anio": "2024",
+      "multiplicador": 0.8
+    },
+    "NE": {
+      "nombre": "Niger",
+      "rnb_usd": 750,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "NG": {
+      "nombre": "Nigeria",
+      "rnb_usd": 1360,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "NI": {
+      "nombre": "Nicaragua",
+      "rnb_usd": 2850,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "NL": {
+      "nombre": "Netherlands",
+      "rnb_usd": 68530,
+      "anio": "2025",
+      "multiplicador": 1.5
+    },
+    "NO": {
+      "nombre": "Norway",
+      "rnb_usd": 97310,
+      "anio": "2025",
+      "multiplicador": 1.5
+    },
+    "NP": {
+      "nombre": "Nepal",
+      "rnb_usd": 1570,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "NR": {
+      "nombre": "Naoero",
+      "rnb_usd": 20690,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "NZ": {
+      "nombre": "New Zealand",
+      "rnb_usd": 46630,
+      "anio": "2025",
+      "multiplicador": 1.25
+    },
+    "OM": {
+      "nombre": "Oman",
+      "rnb_usd": 19520,
+      "anio": "2024",
+      "multiplicador": 0.6
+    },
+    "PA": {
+      "nombre": "Panama",
+      "rnb_usd": 19140,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "PE": {
+      "nombre": "Peru",
+      "rnb_usd": 8430,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "PF": {
+      "nombre": "French Polynesia",
+      "rnb_usd": 24100,
+      "anio": "2024",
+      "multiplicador": 0.65
+    },
+    "PG": {
+      "nombre": "Papua New Guinea",
+      "rnb_usd": 2890,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "PH": {
+      "nombre": "Philippines",
+      "rnb_usd": 4850,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "PK": {
+      "nombre": "Pakistan",
+      "rnb_usd": 1500,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "PL": {
+      "nombre": "Poland",
+      "rnb_usd": 25520,
+      "anio": "2025",
+      "multiplicador": 0.7
+    },
+    "PR": {
+      "nombre": "Puerto Rico (US)",
+      "rnb_usd": 27320,
+      "anio": "2025",
+      "multiplicador": 0.75
+    },
+    "PS": {
+      "nombre": "West Bank and Gaza",
+      "rnb_usd": 3250,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "PT": {
+      "nombre": "Portugal",
+      "rnb_usd": 29930,
+      "anio": "2025",
+      "multiplicador": 0.8
+    },
+    "PW": {
+      "nombre": "Palau",
+      "rnb_usd": 19890,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "PY": {
+      "nombre": "Paraguay",
+      "rnb_usd": 6750,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "QA": {
+      "nombre": "Qatar",
+      "rnb_usd": 74330,
+      "anio": "2025",
+      "multiplicador": 1.5
+    },
+    "RO": {
+      "nombre": "Romania",
+      "rnb_usd": 20190,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "RS": {
+      "nombre": "Serbia",
+      "rnb_usd": 13480,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "RU": {
+      "nombre": "Russian Federation",
+      "rnb_usd": 15960,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "RW": {
+      "nombre": "Rwanda",
+      "rnb_usd": 1150,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "SA": {
+      "nombre": "Saudi Arabia",
+      "rnb_usd": 36070,
+      "anio": "2025",
+      "multiplicador": 0.95
+    },
+    "SB": {
+      "nombre": "Solomon Islands",
+      "rnb_usd": 2020,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "SC": {
+      "nombre": "Seychelles",
+      "rnb_usd": 19200,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "SD": {
+      "nombre": "Sudan",
+      "rnb_usd": 900,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "SE": {
+      "nombre": "Sweden",
+      "rnb_usd": 63010,
+      "anio": "2025",
+      "multiplicador": 1.5
+    },
+    "SG": {
+      "nombre": "Singapore",
+      "rnb_usd": 81760,
+      "anio": "2025",
+      "multiplicador": 1.5
+    },
+    "SI": {
+      "nombre": "Slovenia",
+      "rnb_usd": 35520,
+      "anio": "2025",
+      "multiplicador": 0.95
+    },
+    "SK": {
+      "nombre": "Slovak Republic",
+      "rnb_usd": 26410,
+      "anio": "2025",
+      "multiplicador": 0.7
+    },
+    "SL": {
+      "nombre": "Sierra Leone",
+      "rnb_usd": 830,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "SM": {
+      "nombre": "San Marino",
+      "rnb_usd": 53910,
+      "anio": "2023",
+      "multiplicador": 1.45
+    },
+    "SN": {
+      "nombre": "Senegal",
+      "rnb_usd": 1780,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "SO": {
+      "nombre": "Somalia, Fed. Rep.",
+      "rnb_usd": 640,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "SR": {
+      "nombre": "Suriname",
+      "rnb_usd": 6140,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "SS": {
+      "nombre": "South Sudan",
+      "rnb_usd": 1050,
+      "anio": "2015",
+      "multiplicador": 0.6
+    },
+    "ST": {
+      "nombre": "Sao Tome and Principe",
+      "rnb_usd": 3800,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "SV": {
+      "nombre": "El Salvador",
+      "rnb_usd": 5410,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "SX": {
+      "nombre": "Sint Maarten (Dutch part)",
+      "rnb_usd": 38950,
+      "anio": "2024",
+      "multiplicador": 1.05
+    },
+    "SY": {
+      "nombre": "Syrian Arab Republic",
+      "rnb_usd": 720,
+      "anio": "2022",
+      "multiplicador": 0.6
+    },
+    "SZ": {
+      "nombre": "Eswatini",
+      "rnb_usd": 3730,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "TC": {
+      "nombre": "Turks and Caicos Islands",
+      "rnb_usd": 36760,
+      "anio": "2024",
+      "multiplicador": 1
+    },
+    "TD": {
+      "nombre": "Chad",
+      "rnb_usd": 970,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "TG": {
+      "nombre": "Togo",
+      "rnb_usd": 1350,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "TH": {
+      "nombre": "Thailand",
+      "rnb_usd": 7690,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "TJ": {
+      "nombre": "Tajikistan",
+      "rnb_usd": 2080,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "TL": {
+      "nombre": "Timor-Leste",
+      "rnb_usd": 1510,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "TM": {
+      "nombre": "Turkmenistan",
+      "rnb_usd": 6340,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "TN": {
+      "nombre": "Tunisia",
+      "rnb_usd": 4300,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "TO": {
+      "nombre": "Tonga",
+      "rnb_usd": 6840,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "TR": {
+      "nombre": "Turkiye",
+      "rnb_usd": 16300,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "TT": {
+      "nombre": "Trinidad and Tobago",
+      "rnb_usd": 18550,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "TV": {
+      "nombre": "Tuvalu",
+      "rnb_usd": 9780,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "TZ": {
+      "nombre": "Tanzania",
+      "rnb_usd": 1270,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "UA": {
+      "nombre": "Ukraine",
+      "rnb_usd": 5510,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "UG": {
+      "nombre": "Uganda",
+      "rnb_usd": 1120,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "US": {
+      "nombre": "United States",
+      "rnb_usd": 88810,
+      "anio": "2025",
+      "multiplicador": 1.5
+    },
+    "UY": {
+      "nombre": "Uruguay",
+      "rnb_usd": 24020,
+      "anio": "2025",
+      "multiplicador": 0.65
+    },
+    "UZ": {
+      "nombre": "Uzbekistan",
+      "rnb_usd": 3670,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "VC": {
+      "nombre": "St. Vincent and the Grenadines",
+      "rnb_usd": 12000,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "VE": {
+      "nombre": "Venezuela, RB",
+      "rnb_usd": 3860,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "VN": {
+      "nombre": "Viet Nam",
+      "rnb_usd": 4970,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "VU": {
+      "nombre": "Vanuatu",
+      "rnb_usd": 4410,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "WS": {
+      "nombre": "Samoa",
+      "rnb_usd": 5640,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "XK": {
+      "nombre": "Kosovo",
+      "rnb_usd": 7760,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "YE": {
+      "nombre": "Yemen, Rep.",
+      "rnb_usd": 740,
+      "anio": "2018",
+      "multiplicador": 0.6
+    },
+    "ZA": {
+      "nombre": "South Africa",
+      "rnb_usd": 6270,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "ZM": {
+      "nombre": "Zambia",
+      "rnb_usd": 1200,
+      "anio": "2025",
+      "multiplicador": 0.6
+    },
+    "ZW": {
+      "nombre": "Zimbabwe",
+      "rnb_usd": 2660,
+      "anio": "2025",
+      "multiplicador": 0.6
+    }
+  },
+  "cambio_actual": {
+    "fuente": "Banco Central Europeo, tipos de cambio de referencia del euro (eurofxref-daily)",
+    "url": "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml",
+    "fecha": "2026-10-09",
+    "eur_a": {
+      "USD": 1.1206,
+      "JPY": 177.34,
+      "CZK": 24.369,
+      "DKK": 7.4751,
+      "GBP": 0.84763,
+      "HUF": 365.08,
+      "PLN": 4.3835,
+      "RON": 5.3406,
+      "SEK": 11.1675,
+      "CHF": 0.9313,
+      "ISK": 136.8,
+      "NOK": 10.7155,
+      "TRY": 55.1033,
+      "AUD": 1.6052,
+      "BRL": 5.6086,
+      "CAD": 1.5942,
+      "CNY": 7.4992,
+      "HKD": 8.794,
+      "IDR": 20036.94,
+      "ILS": 3.426,
+      "INR": 108.3965,
+      "KRW": 1503.27,
+      "MXN": 20.395,
+      "MYR": 4.5777,
+      "NZD": 1.9961,
+      "PHP": 70.397,
+      "SGD": 1.4348,
+      "THB": 37.574,
+      "ZAR": 18.527
+    }
+  }
+}

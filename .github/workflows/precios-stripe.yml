@@ -1,0 +1,102 @@
+name: Precios de Stripe
+
+# Crea en Stripe los productos y precios de functions/_lib/precios-zonas.json
+# (scripts/stripe/crear-precios.mjs, sin IA). Idempotente: busca cada precio
+# por su lookup_key antes de crearlo, nunca borra ni archiva nada y para con
+# error si un precio ya existe con otros importes.
+#
+# - modo test: usa el secreto STRIPE_SECRET_KEY_TEST (clave sk_test_/rk_test_).
+#   Se puede lanzar desde cualquier rama.
+# - modo live: usa STRIPE_SECRET_KEY (sk_live_/rk_live_) y SOLO desde main.
+# - accion "comprobar": solo lee y cuenta qué crearía.
+#
+# Los ids que salen se guardan en functions/_lib/stripe-ids.json con una PR
+# (la app los usa si están; si no, resuelve el precio por su lookup_key).
+#
+# Activar un país: añadir/activar su zona en precios-zonas.json, fusionar y
+# lanzar esto (primero test, luego live). Ver CLAUDE.md, "Cobro".
+
+on:
+  workflow_dispatch:
+    inputs:
+      modo:
+        description: "test o live"
+        required: true
+        default: "test"
+        type: choice
+        options: [test, live]
+      accion:
+        description: "comprobar (solo leer) o crear"
+        required: true
+        default: "comprobar"
+        type: choice
+        options: [comprobar, crear]
+      portal:
+        description: "Poner los precios en el portal de cliente (cambio de plan)"
+        required: false
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  precios:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Comprobar rama y modo
+        env:
+          MODO: ${{ inputs.modo }}
+        run: |
+          if [ "$MODO" = "live" ] && [ "$GITHUB_REF" != "refs/heads/main" ]; then
+            echo "::error::El modo live solo se lanza desde main (lanzado desde $GITHUB_REF). No se ha tocado nada."
+            exit 1
+          fi
+
+      - name: Tests de precios
+        run: node --test test/precios.test.js
+
+      - name: Crear o comprobar precios
+        env:
+          MODO: ${{ inputs.modo }}
+          STRIPE_SECRET_KEY: ${{ inputs.modo == 'live' && secrets.STRIPE_SECRET_KEY || secrets.STRIPE_SECRET_KEY_TEST }}
+        run: |
+          if [ -z "$STRIPE_SECRET_KEY" ]; then
+            if [ "$MODO" = "live" ]; then FALTA=STRIPE_SECRET_KEY; else FALTA=STRIPE_SECRET_KEY_TEST; fi
+            echo "::error::Falta el secreto de GitHub Actions $FALTA (Settings → Secrets and variables → Actions). Ver PENDIENTES_MIKEL.md de comun."
+            echo "## Falta el secreto $FALTA" >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+          ARGS=""
+          if [ "${{ inputs.accion }}" = "comprobar" ]; then ARGS="--comprobar"; fi
+          if [ "${{ inputs.portal }}" = "true" ]; then ARGS="$ARGS --portal"; fi
+          node scripts/stripe/crear-precios.mjs $ARGS
+
+      - name: PR con los ids
+        if: inputs.accion == 'crear'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RAMA: robot/stripe-ids-${{ inputs.modo }}-${{ github.run_id }}
+        run: |
+          git config user.name "Costaviva (precios de Stripe)"
+          git config user.email "noreply@anthropic.com"
+          git add functions/_lib/stripe-ids.json
+          if git diff --cached --quiet; then echo "Los ids no han cambiado."; exit 0; fi
+          git checkout -q -b "$RAMA"
+          git commit -qm "Precios de Stripe (${{ inputs.modo }}): ids de los precios creados"
+          git push -q origin "$RAMA"
+          echo "Ids de los precios de Stripe en modo ${{ inputs.modo }} (workflow precios-stripe.yml, sin IA). La app ya funcionaba sin ellos (resuelve por lookup_key); con ellos se ahorra una consulta a Stripe en cada pago." > /tmp/cuerpo.md
+          if ! gh pr create --base main --head "$RAMA" --title "Precios de Stripe (${{ inputs.modo }}): ids" --body-file /tmp/cuerpo.md; then
+            echo "Abre el PR a mano: https://github.com/${{ github.repository }}/compare/main...$RAMA?expand=1" >> "$GITHUB_STEP_SUMMARY"
+          fi
