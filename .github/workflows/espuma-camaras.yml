@@ -34,10 +34,24 @@ name: Oleaje por cámara (espuma de las webcams)
 # min"); el `schedule:` queda de respaldo. Por eso el paso "¿Hay luz?" se
 # aplica también a workflow_dispatch: solo se salta marcando forzar_luz.
 # GitHub no cumple la hora al minuto; da igual, cada línea lleva su hora.
+#
+# NUEVA ZELANDA (2026-10-11, decisión de Mikel: "como en España"): las
+# cámaras de NZ que sirven (camaras.mjs, CAMARAS_NZ_OLA) se miden en SU luz,
+# ~18-06 UTC (Pacific/Auckland). Segunda línea de cron: 0-4 y 19-23 UTC,
+# las horas que la de España no cubre (la luz de NZ empieza a las ~17:30
+# UTC en diciembre y acaba a las ~08 UTC; de 17 a 18 y de 5 a 8 ya corre
+# la de España). Entre las dos, cada 30 min todo el día: 48 ejecuciones de
+# 15 s (sin luz) a ~3 min (con luz). Repo público, runners estándar
+# gratis; un solo job, sin matrices, y `concurrency` para no solaparse.
+# Cada cámara solo se mide con el sol ≥ 8° en su sitio (camarasConLuz), y
+# las boyas de Copernicus (IBI, solo España) solo se piden si hay luz en
+# España. pg_cron: la línea de NZ necesita su migración
+# (20261011180000_programador_espuma_nz.sql); sin ella, este schedule.
 
 on:
   schedule:
     - cron: "7,37 5-18 * * *"
+    - cron: "7,37 0-4,19-23 * * *"
   workflow_dispatch:
     inputs:
       forzar_luz:
@@ -71,10 +85,12 @@ jobs:
           FORZAR_LUZ: ${{ inputs.forzar_luz }}
         run: |
           node -e '
-            import("./scripts/oleaje-camaras/calibracion.mjs").then(({ elevacionSolar, ELEVACION_MINIMA }) => {
-              const e = elevacionSolar(Date.now(), 43.35, -2.5);
-              console.log(`Sol a ${e}°`);
-              require("fs").appendFileSync(process.env.GITHUB_OUTPUT, `hay=${e >= ELEVACION_MINIMA || process.env.FORZAR_LUZ === "true"}\n`);
+            import("./scripts/oleaje-camaras/camaras.mjs").then(({ camarasConLuz, CAMARAS }) => {
+              const forzar = process.env.FORZAR_LUZ === "true";
+              const ids = camarasConLuz(Date.now(), forzar);
+              const es = ids.some((id) => CAMARAS[id].region === "es");
+              console.log(`Cámaras con luz: ${ids.join(", ") || "ninguna"}`);
+              require("fs").appendFileSync(process.env.GITHUB_OUTPUT, `hay=${ids.length > 0}\nhay_es=${es}\n`);
             })'
 
       - name: ffmpeg y netCDF4 (pip, más rápido que apt)
@@ -84,7 +100,7 @@ jobs:
           echo "FFMPEG=$(python3 -c 'import imageio_ffmpeg; print(imageio_ffmpeg.get_ffmpeg_exe())')" >> "$GITHUB_ENV"
 
       - name: Boyas de Copernicus Marine In Situ
-        if: steps.luz.outputs.hay == 'true'
+        if: steps.luz.outputs.hay_es == 'true'
         # Si Copernicus falla, se sigue: la calibración usa el modelo con menos peso.
         continue-on-error: true
         run: python3 scripts/oleaje-camaras/boyas-copernicus.py --salida /tmp/boyas.json

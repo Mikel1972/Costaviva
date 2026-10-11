@@ -151,10 +151,10 @@ test("index.html filtra las externas con externaCuentaComoCaida y el robot usa l
 
 // --- Nueva Zelanda (assets/js/camaras-nz.js, 2026-10-11) ---
 // Mismo formato y mismas reglas, pero cada cámara va a un spot de SPOTS_NZ y
-// sin análisis. Embebidas por decisión de Mikel (2026-10-11, pendiente de la
+// análisis de la ola según NZ_ANALISIS_AUTORIZADO. Embebidas por decisión de Mikel (2026-10-11, pendiente de la
 // respuesta escrita de cada dueño) con un interruptor por dueño
 // (NZ_EMBED_AUTORIZADO): el modo de cada una se deduce de él.
-import { CAMARAS_NZ, CONDICIONES_NZ, NZ_EMBED_AUTORIZADO, ORIGENES_IFRAME_NZ, embedNZ } from "../assets/js/camaras-nz.js";
+import { CAMARAS_NZ, CONDICIONES_NZ, NZ_EMBED_AUTORIZADO, NZ_ANALISIS_AUTORIZADO, ORIGENES_IFRAME_NZ, embedNZ } from "../assets/js/camaras-nz.js";
 import { SPOTS_NZ } from "../functions/_lib/nz/spots-nz.js";
 import { MODOS_EXTERNAS, htmlCamaraIncrustada, textoAtribucion } from "../assets/js/camaras-externas.js";
 import { construirCsp } from "../functions/_middleware.js";
@@ -165,6 +165,12 @@ const T = {
 };
 const tPara = (idioma) => (clave, vars = {}) => T[idioma][clave].replace(/\{(\w+)\}/g, (_, k) => vars[k]);
 
+test("NZ: Earth Sciences NZ (Cam-Era) prohíbe bots en sus términos: fuera del análisis", () => {
+  assert.equal(NZ_ANALISIS_AUTORIZADO.earth_sciences_camera, false);
+  assert.match(CONDICIONES_NZ.earth_sciences_camera.prohibicion, /web scraping tool/);
+  assert.deepEqual(Object.keys(NZ_ANALISIS_AUTORIZADO).sort(), Object.keys(CONDICIONES_NZ).sort());
+});
+
 test("NZ: cada condición dice dueño, modos, análisis y fuente", () => {
   for (const [clave, c] of Object.entries(CONDICIONES_NZ)) {
     assert.ok(c.dueno, `${clave}: sin dueño`);
@@ -173,7 +179,11 @@ test("NZ: cada condición dice dueño, modos, análisis y fuente", () => {
     assert.deepEqual(c.modos_permitidos, esperado, `${clave}: modos según su interruptor`);
     if (!embedNZ(clave) && NZ_EMBED_AUTORIZADO[clave]) assert.ok(c.motivo_sin_embed, `${clave}: con interruptor y sin embed, falta motivo_sin_embed`);
     assert.ok(c.licencia === null || (c.licencia.nombre && c.licencia.url.startsWith("https://")), `${clave}: licencia`);
-    assert.equal(c.analisis_permitido, false, `${clave}: analisis_permitido`);
+    // Análisis de la ola: interruptor por dueño (decisión de Mikel, 2026-10-11).
+    assert.equal(typeof NZ_ANALISIS_AUTORIZADO[clave], "boolean", `${clave}: falta en NZ_ANALISIS_AUTORIZADO`);
+    assert.equal(c.analisis_permitido, NZ_ANALISIS_AUTORIZADO[clave], `${clave}: analisis_permitido sale del interruptor`);
+    // Términos que prohíben expresamente bots/scraping: siempre en false.
+    if (c.prohibicion) assert.equal(NZ_ANALISIS_AUTORIZADO[clave], false, `${clave}: sus términos prohíben el uso automatizado`);
     assert.ok(c.fuentes?.length && c.fuentes.every((u) => u.startsWith("https://")), `${clave}: sin fuente`);
     assert.ok(c.cita, `${clave}: sin cita`);
     assert.equal(CONDICIONES[clave], c, `${clave}: camaras-externas.js debe sumar las condiciones de NZ`);
@@ -205,7 +215,7 @@ test("NZ: cada cámara tiene dueño, enlace https, verificación y un spot NZ re
     } else {
       assert.equal(c.atribucion?.dueno, c.dueno, `${c.id}: embebida sin atribución al dueño`);
     }
-    assert.equal(c.analisis_permitido, false, `${c.id}: nunca analizar fotogramas de terceros`);
+    assert.equal(c.analisis_permitido, CONDICIONES_NZ[c.condiciones].analisis_permitido, `${c.id}: análisis = interruptor de su dueño`);
     assert.equal(typeof c.rompiente, "boolean", `${c.id}: rompiente`);
     assert.ok(c.url?.startsWith("https://"), `${c.id}: url`);
     assert.ok(!/facebook\.com|instagram\.com|fb\.watch/i.test(c.url), `${c.id}: nada de Facebook ni Instagram`);
