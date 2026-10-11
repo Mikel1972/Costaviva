@@ -149,7 +149,7 @@ ${idioma === "en" ? CABECERA_PIE_EN(cuerpo, pie) : `<header class="cabecera-publ
 ${cuerpo}
 </main>
 <footer class="pie-publico">
-  <p><a href="/spots">Spots de pesca</a> · <a href="/especies">Especies</a> · <a href="/mareas">Mareas hoy</a> · <a href="/privacidad">Privacidad</a> · <a href="/login">Entrar</a></p>
+  <p><a href="/spots">Spots de pesca</a> · <a href="/especies">Especies</a> · <a href="/mareas">Mareas hoy</a> · <a href="/en/spots" lang="en">New Zealand (English)</a> · <a href="/privacidad">Privacidad</a> · <a href="/login">Entrar</a></p>
   <p class="nota">Datos de mar y tiempo: Open-Meteo (CC BY 4.0). Profundidad: EMODnet Bathymetry (CC BY 4.0). Tipo de fondo: EMODnet Seabed Habitats (CC BY 4.0) y © colaboradores de OpenStreetMap (ODbL). Orientativo: no sirve para navegar. Tallas y vedas orientativas: manda la norma vigente publicada en el boletín oficial.</p>
 </footer>`}
 </body>

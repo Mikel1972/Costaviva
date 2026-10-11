@@ -51,6 +51,11 @@ export async function onRequestGet(context) {
   // real y distinto en cada página de región, en vez de una lista de
   // nombres que Google ve casi igual en las 8 regiones.
   const pleamarDe = (s) => (s.marea?.proximas || []).find((e) => e.tipo === "pleamar");
+  // Tabla con pleamar, bajamar, ola y viento de cada spot (2026-10-11, SEO):
+  // la página prometía esos datos en la descripción y solo listaba nombres
+  // (80-120 palabras, la más fina del sitio).
+  const bajamarDe = (s) => (s.marea?.proximas || []).find((e) => e.tipo === "bajamar");
+  const textoEventoCorto = (e) => `${e.manana ? "mañana " : ""}${e.hora} (${e.altura} m)`;
   const jsonLd = JSON.stringify({
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -97,7 +102,15 @@ export async function onRequestGet(context) {
   .lista { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
   .lista li a { display: block; background: ${BLANCO}; border: 1px solid ${BORDE}; border-radius: 10px; padding: 10px 14px; text-decoration: none; color: ${NAVY}; font-size: 14px; }
   a { color: ${DORADO}; }
-  .lista li a small { display: block; color: ${GRIS}; font-size: 12px; margin-top: 2px; }
+  .tabla-env { overflow-x: auto; margin-bottom: 8px; }
+  .tabla { width: 100%; border-collapse: collapse; font-size: 14px; background: ${BLANCO}; }
+  .tabla th, .tabla td { text-align: left; padding: 8px; border-bottom: 1px solid ${BORDE}; vertical-align: top; }
+  .tabla thead th { font-size: 12px; color: ${GRIS}; text-transform: uppercase; }
+  .tabla th a { color: ${NAVY}; font-weight: bold; text-decoration: none; }
+  .tabla th small { display: block; font-weight: normal; }
+  .tabla th small a { color: ${DORADO}; font-weight: normal; }
+  h2 { font-family: Georgia, serif; font-size: 20px; margin: 24px 0 8px; }
+  .nota { color: ${GRIS}; font-size: 12px; }
   .cta-sub { text-align: center; color: ${GRIS}; font-size: 13px; margin: -24px 0 32px; }
 </style>
 </head>
@@ -113,14 +126,21 @@ export async function onRequestGet(context) {
     <a class="cta" href="/login?alta=1">Prueba Costaviva 7 días gratis →</a>
     <p class="cta-sub">Sin tarjeta. Mapa completo, webcams en directo y diario de pesca. Después, 3,99 €/mes.</p>
 
-    <ul class="lista">
+    <h2>Próximas mareas y oleaje por spot</h2>
+    <div class="tabla-env"><table class="tabla">
+      <thead><tr><th scope="col">Spot</th><th scope="col">Pleamar</th><th scope="col">Bajamar</th><th scope="col">Ola</th><th scope="col">Viento</th></tr></thead>
+      <tbody>
       ${spots
         .map((s) => {
           const p = pleamarDe(s);
-          return `<li><a href="/mareas/${s.slug}">${escaparHtml(s.nombre)}${p ? `<small>Pleamar ${p.manana ? "mañana " : ""}${escaparHtml(p.hora)}</small>` : ""}</a></li>`;
+          const b = bajamarDe(s);
+          const o = s.bloques?.[0];
+          return `<tr><th scope="row"><a href="/mareas/${s.slug}">${escaparHtml(s.nombre)}</a><small><a href="/spots/${s.slug}">pesca</a></small></th><td>${p ? escaparHtml(textoEventoCorto(p)) : "–"}</td><td>${b ? escaparHtml(textoEventoCorto(b)) : "–"}</td><td>${o?.altura ? `${o.altura[0]}–${o.altura[1]} m` : "–"}</td><td>${o?.viento != null ? `${o.viento} km/h ${escaparHtml(o.dirViento || "")}` : "–"}</td></tr>`;
         })
         .join("\n      ")}
-    </ul>
+      </tbody>
+    </table></div>
+    <p class="nota">Horas locales de cada spot, calculadas con los mismos datos que la app (Open-Meteo, CC BY 4.0). Orientativo: no sirve para navegar.</p>
     <p class="cta-sub"><a href="/spots/region/${region.slug}">Qué se pesca en ${nombre}: especies y temporada por spot →</a></p>
   </div>
 </body>

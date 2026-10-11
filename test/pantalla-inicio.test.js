@@ -96,7 +96,7 @@ test("index.html: el texto y los enlaces para buscadores siguen ahí; canonical 
   const b = bloquePantalla(html);
   assert.match(b, /<div class="pantalla-inicio__seo">/);
   assert.match(b, /<strong>Costaviva<\/strong>: pesca en tiempo real en España y Portugal\. Mareas, oleaje, viento, índice de pesca por spot, especies de temporada y diario de pesca\./);
-  assert.match(b, /<nav aria-label="Páginas públicas"><a href="\/spots">Spots de pesca<\/a><a href="\/especies">Especies<\/a><a href="\/mareas">Mareas hoy<\/a><\/nav>/);
+  assert.match(b, /<nav aria-label="Páginas públicas"><a href="\/spots">Spots de pesca<\/a><a href="\/especies">Especies<\/a><a href="\/mareas">Mareas hoy<\/a><a href="\/en\/spots">Nueva Zelanda \(en inglés\)<\/a><\/nav>/);
   assert.ok(html.includes('<link rel="canonical" href="https://costaviva.org/" />'));
   assert.doesNotMatch(html, /noindex/i);
   for (const p of ["login.html", "index.html"]) assert.doesNotMatch(leer(p), /<meta[^>]+name="robots"[^>]+noindex/i, p);

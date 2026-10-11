@@ -45,5 +45,12 @@ export function decisionIndexacion(urlTexto, metodo = "GET") {
     return { redirigir: `https://${HOST_CANONICO}${url.pathname}${url.search}`, noindex: false };
   }
   if (host.endsWith(".pages.dev")) return { redirigir: null, noindex: true };
+  // Una sola URL por página (2026-10-11): /spots/deba/ respondía 200 con la
+  // misma página que /spots/deba (solo la canonical lo arreglaba). Ahora 301
+  // a la forma sin barra en todas las secciones públicas.
+  if (host === HOST_CANONICO && lectura && url.pathname.length > 1 && url.pathname.endsWith("/") && PREFIJOS_PAGINAS.some((p) => url.pathname.startsWith(p))) {
+    url.pathname = url.pathname.replace(/\/+$/, "");
+    return { redirigir: url.toString(), noindex: false };
+  }
   return { redirigir: null, noindex: PAGINAS_PRIVADAS.has(url.pathname) };
 }

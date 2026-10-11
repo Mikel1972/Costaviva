@@ -312,3 +312,42 @@ test("portada: HTML para buscadores con enlaces a las páginas públicas", () =>
   const mareas = leer("functions/mareas/[slug].js");
   assert.ok(mareas.includes('href="/spots/${spot.slug}"'), "mareas enlaza a su spot");
 });
+
+// ---------------------------------------------------------------------------
+// Indexación (2026-10-11): una URL por página, mareas de NZ sin agotar la CPU
+// del Worker y la página de spot sin listas repetidas.
+// ---------------------------------------------------------------------------
+test("barra final: 301 a la forma sin barra en las secciones públicas", () => {
+  for (const [desde, hacia] of [
+    ["https://costaviva.org/spots/deba/", "https://costaviva.org/spots/deba"],
+    ["https://costaviva.org/mareas/deba/", "https://costaviva.org/mareas/deba"],
+    ["https://costaviva.org/especies/lubina/", "https://costaviva.org/especies/lubina"],
+    ["https://costaviva.org/en/spots/nz-raglan/?x=1", "https://costaviva.org/en/spots/nz-raglan?x=1"],
+  ]) assert.equal(decisionIndexacion(desde).redirigir, hacia, desde);
+  assert.equal(decisionIndexacion("https://costaviva.org/").redirigir, null);
+  assert.equal(decisionIndexacion("https://costaviva.org/spots/deba").redirigir, null);
+  assert.equal(decisionIndexacion("https://costaviva.org/spots/deba/", "POST").redirigir, null);
+});
+
+test("mareas de NZ: hoy y mañana sin crear un formateador por evento (CPU del Worker)", async () => {
+  const { mareasDiasNZ } = await import("../functions/_lib/seo/paginas-en.js");
+  const ahora = Date.parse("2026-10-11T08:00:00Z");
+  const eventos = [];
+  for (let t = Date.parse("2026-01-01T00:00:00Z"), i = 0; t < Date.parse("2027-12-31T00:00:00Z"); t += 6.2 * 3600e3, i++) eventos.push({ t, h: 1 + (i % 2), tipo: i % 2 ? "pleamar" : "bajamar" });
+  const inicio = performance.now();
+  const dias = mareasDiasNZ(eventos, ahora);
+  assert.ok(performance.now() - inicio < 50, "debe tardar milisegundos, no cientos");
+  assert.ok(dias.length >= 6 && dias.length <= 10, String(dias.length));
+  assert.deepEqual([...new Set(dias.map((d) => d.dia))], ["today", "tomorrow"]);
+  assert.ok(dias.every((d) => /^\d{2}:\d{2}$/.test(d.hora)));
+});
+
+test("/spots/<spot>: cada especie una sola vez, cercanos con distancia y frase de temporada correcta", async () => {
+  const r = await html(await rutaSpot.onRequestGet(contexto("/spots/bakio", { slug: "bakio" })));
+  const filas = [...r.texto.matchAll(/<tr[^>]*><th scope="row"><a href="\/especies\/([^"]+)"/g)].map((m) => m[1]);
+  assert.ok(filas.length > 10);
+  assert.equal(new Set(filas).size, filas.length, "especies repetidas en la tabla");
+  assert.match(r.texto, /<ul class="cercanos"><li><a href="\/spots\/[^"]+">[^<]+<\/a> <span class="nota">[\d,]+ km/);
+  assert.match(visible(r.texto), /El spot más cercano que sigue Costaviva es [^,]+, a [\d,]+ km\./);
+  assert.doesNotMatch(visible(r.texto), /entre otras \d+ especies|unos 1 m/);
+});

@@ -171,7 +171,7 @@ export function especiesDestacadas(especies, modalidades = VA.MODALIDADES) {
 // Intro propia de cada spot, compuesta con SUS datos (orilla, fondo,
 // profundidad, especies de temporada, cámaras, río): evita 105 páginas
 // iguales con el nombre cambiado.
-export function introSpot(spot, { region, fondo, prof, especies, camaras, rio, mes }) {
+export function introSpot(spot, { region, fondo, prof, especies, camaras, rio, mes, cercano = null }) {
   const n = nombreCortoSpot(spot.nombre);
   const partes = [];
   const donde = region ? ` (${region.nombre.split(" (")[0]})` : "";
@@ -181,15 +181,23 @@ export function introSpot(spot, { region, fondo, prof, especies, camaras, rio, m
     partes.push(`La orilla es de ${fondo.orilla || "tipo variado"}${f && f !== "sin dato cerca" ? ` y el fondo cercano, de ${f}` : ""}.`);
   }
   if (prof?.zona_m != null && prof?.max5 != null) {
-    partes.push(`A un kilómetro de la orilla hay unos ${Math.round(prof.zona_m)} m de agua y a 5 km se llega a unos ${Math.round(prof.max5)} m.`);
+    const unos = (m) => (Math.round(m) <= 1 ? "1 m o menos" : `unos ${Math.round(m)} m`);
+    partes.push(`A un kilómetro de la orilla hay ${unos(prof.zona_m)} de agua y a 5 km se llega a ${unos(prof.max5)}.`);
   }
   const deTemp = especiesDestacadas(especies);
   if (deTemp.length) {
     const lista = deTemp.slice(0, 4).map((x) => x.toLowerCase());
-    partes.push(`En ${mesLargo(mes)} es temporada de ${lista.join(", ").replace(/, ([^,]*)$/, " y $1")}${deTemp.length > 4 ? `, entre otras ${deTemp.length} especies` : ""}.`);
+    const y = lista.join(", ").replace(/, ([^,]*)$/, " y $1");
+    partes.push(deTemp.length > 4
+      ? `En ${mesLargo(mes)} hay ${deTemp.length} especies de temporada; entre ellas, ${y}.`
+      : `En ${mesLargo(mes)} es temporada de ${y}.`);
   }
   if (rio) partes.push(`Cerca desemboca el río ${rio.nombre}.`);
   if (camaras.externas.length || camaras.enApp) partes.push("Tiene cámara para ver el mar antes de salir.");
+  if (cercano?.distancia != null) {
+    const km = cercano.distancia < 10 ? Math.round(cercano.distancia * 10) / 10 : Math.round(cercano.distancia);
+    partes.push(`El spot más cercano que sigue Costaviva es ${nombreCortoSpot(cercano.nombre)}, a ${String(km).replace(".", ",")} km.`);
+  }
   return partes.join(" ");
 }
 

@@ -46,11 +46,32 @@ ${cond ? `<div class="datos">${celda("Ola", cond.ola, cond.olaDetalle)}${celda("
 </section>`;
 }
 
-function listaEspecies(lista) {
-  if (!lista.length) return `<p class="nota">Sin especies con datos para esta modalidad aquí.</p>`;
-  return `<ul class="especies">${lista
-    .map((e) => `<li${e.deTemporada ? ' class="temporada"' : ""}><a href="/especies/${esc(e.slug)}"><span aria-hidden="true">${esc(e.emoji)}</span> ${esc(e.nombre)}</a><span class="meses">${esc(e.temporada)}${e.deTemporada ? " · ahora" : ""}${e.veda ? " · en veda" : ""}</span></li>`)
-    .join("")}</ul>`;
+// Una sola tabla de especies con sus modalidades (2026-10-11, SEO): antes
+// eran tres listas (costa, embarcación, submarina) con las mismas especies
+// repetidas, iguales en todos los spots de la región: ~60% del texto de la
+// página era plantilla compartida. Misma información, cada especie una vez.
+export function tablaEspeciesSpot(porModalidad, modalidades = MODALIDADES) {
+  const filas = new Map();
+  for (const m of modalidades) {
+    for (const e of porModalidad[m] || []) {
+      if (!filas.has(e.id)) filas.set(e.id, { ...e, modos: new Set() });
+      filas.get(e.id).modos.add(m);
+    }
+  }
+  const lista = [...filas.values()].sort((a, b) => (b.deTemporada - a.deTemporada) || a.nombre.localeCompare(b.nombre, "es"));
+  if (!lista.length) return `<p class="nota">Sin especies con datos para este spot.</p>`;
+  const marca = (si) => (si ? `<span aria-label="sí">✓</span>` : `<span aria-label="no">–</span>`);
+  return `<div class="tabla-env"><table class="tabla-especies"><thead><tr><th scope="col">Especie</th><th scope="col">Temporada</th>${modalidades.map((m) => `<th scope="col">${esc(NOMBRE_MODALIDAD[m])}</th>`).join("")}</tr></thead><tbody>
+${lista.map((e) => `<tr${e.deTemporada ? ' class="ahora"' : ""}><th scope="row"><a href="/especies/${esc(e.slug)}"><span aria-hidden="true">${esc(e.emoji)}</span> ${esc(e.nombre)}</a></th><td>${esc(e.temporada)}${e.deTemporada ? " · <strong>ahora</strong>" : ""}${e.veda ? " · <strong>en veda</strong>" : ""}</td>${modalidades.map((m) => `<td>${marca(e.modos.has(m))}</td>`).join("")}</tr>`).join("\n")}
+</tbody></table></div>`;
+}
+
+// "Mutriku · 3 km · roca": spots cercanos con su distancia y su orilla
+// (datos reales de tipo-fondo.json; sin orilla, solo la distancia).
+function textoCercano(s, tipoFondo) {
+  const km = s.distancia < 10 ? Math.round(s.distancia * 10) / 10 : Math.round(s.distancia);
+  const orilla = fondoDeSpot(tipoFondo, s.slug)?.orilla;
+  return `${String(km).replace(".", ",")} km${orilla ? ` · ${orilla}` : ""}`;
 }
 
 export function paginaSpot(spot, todos, d) {
@@ -62,8 +83,8 @@ export function paginaSpot(spot, todos, d) {
   const prof = profundidadDeSpot(profundidad, spot.slug);
   const camaras = camarasPublicasDeSpot(spot.slug, camarasApp);
   const rio = rioDeSpot(spot.slug, caudales);
-  const intro = introSpot(spot, { region, fondo, prof, especies, camaras, rio, mes });
   const cercanos = spotsCercanos(todos, spot, 6);
+  const intro = introSpot(spot, { region, fondo, prof, especies, camaras, rio, mes, cercano: cercanos[0] });
   const ruta = `/spots/${spot.slug}`;
   const deTemporada = especiesDestacadas(especies, ["costa"]).slice(0, 3).map((x) => x.toLowerCase());
 
@@ -85,17 +106,14 @@ export function paginaSpot(spot, todos, d) {
     migasJsonLd(migas),
   ];
 
-  const seccionModalidades = MODALIDADES.map(
-    (m) => `<section class="modalidad" aria-labelledby="t-${m}"><h3 id="t-${m}">${NOMBRE_MODALIDAD[m]}</h3>${listaEspecies(especies.porModalidad[m])}</section>`
-  ).join("");
 
   const cuerpo = `${migasHtml(migas)}
 <h1>Pesca en ${esc(nombre)}</h1>
 <p class="intro">${esc(intro)}</p>
 ${bloqueCondiciones(cond, indice, spot)}
 <section aria-labelledby="t-especies"><h2 id="t-especies">Qué se pesca en ${esc(nombre)}</h2>
-<p class="nota">Especies de ${esc(NOMBRE_REGION_ESPECIES[especies.region] || "la zona")} con su temporada. Resaltadas, las de ${esc(mesLargo(mes))}.</p>
-<div class="modalidades">${seccionModalidades}</div></section>
+<p class="nota">Especies de ${esc(NOMBRE_REGION_ESPECIES[especies.region] || "la zona")} con su temporada y en qué modalidad se pescan. Resaltadas, las de ${esc(mesLargo(mes))}.</p>
+${tablaEspeciesSpot(especies.porModalidad)}</section>
 ${fondo || prof ? `<section class="tarjeta" aria-labelledby="t-fondo"><h2 id="t-fondo">Fondo y profundidad</h2>
 ${fondo?.orilla ? `<p><strong>Orilla:</strong> ${esc(fondo.orilla)}.</p>` : ""}
 ${fondo?.texto ? `<p><strong>${esc(fondo.texto.split(" · ")[0].replace(/^Fondo:/, "Fondo cercano:"))}</strong></p>` : ""}
@@ -108,7 +126,7 @@ ${camaras.externas.length ? `<ul class="camaras">${camaras.externas.map((c) => `
 </section>` : ""}
 ${cta(`Pesca mejor en ${nombre}`)}
 <section aria-labelledby="t-cerca"><h2 id="t-cerca">Spots cercanos</h2>
-<ul class="chips">${cercanos.map((s) => `<li><a href="/spots/${esc(s.slug)}">${esc(nombreCortoSpot(s.nombre))}</a></li>`).join("")}</ul>
+<ul class="cercanos">${cercanos.map((s) => `<li><a href="/spots/${esc(s.slug)}">${esc(nombreCortoSpot(s.nombre))}</a> <span class="nota">${esc(textoCercano(s, tipoFondo))}</span> · <a href="/mareas/${esc(s.slug)}">marea</a></li>`).join("")}</ul>
 ${region ? `<p><a href="/spots/region/${esc(region.slug)}">Todos los spots de ${esc(nombreRegion(region))} →</a></p>` : ""}
 </section>`;
 
