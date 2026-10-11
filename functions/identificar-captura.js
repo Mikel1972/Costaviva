@@ -172,7 +172,7 @@ export function inicioMesMadrid(ahora = new Date()) {
 
 // Mismo criterio de acceso que el paywall de la app: se llama a la propia
 // mi_estado_suscripcion() con el token del usuario (no con service_role),
-// así que el bypass del admin, los accesos permanentes, los 7 días de
+// así que el bypass del admin, los accesos permanentes, los 14 días de
 // prueba y las suscripciones trialing/active son exactamente los mismos y
 // no hay una segunda copia de la regla que pueda divergir. Devuelve true,
 // false, o null si no se pudo saber (red, RPC caída): con null se deja

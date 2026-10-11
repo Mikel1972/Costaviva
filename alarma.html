@@ -340,8 +340,9 @@ async function registrarEvento(tipo, detalle) {
   } catch (e) { /* nunca debe romper la interacción del usuario */ }
 }
 
-// Paywall (2026-09-15, pedido explícito del usuario): 7 días de prueba
-// desde el alta, luego bloqueo total sin suscripción activa —
+// Página solo Premium (cobro, 2026-10-11): con la prueba de 14 días o con
+// Premium (regional o Mundial) se entra; en el plan gratuito, a la página de
+// planes (con_acceso = tiene Premium en alguna región) —
 // mi_estado_suscripcion() ya resuelve el bypass del admin en el
 // servidor. Fallo silencioso a propósito si la RPC falla (red, error
 // devuelto, o una excepción real) — try/catch explícito porque un

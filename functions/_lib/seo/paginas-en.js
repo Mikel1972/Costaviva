@@ -98,7 +98,7 @@ export function especiesDeSpotNZ(datos, spot, mes) {
 // ---------------------------------------------------------------------------
 // Piezas comunes
 // ---------------------------------------------------------------------------
-function ctaEn(titulo = "Try Costaviva free for 7 days") {
+function ctaEn(titulo = "Try Costaviva free for 14 days") {
   return `<section class="cta" aria-label="Try Costaviva">
   <p class="cta-titulo">${esc(titulo)}</p>
   <ul class="cta-lista">

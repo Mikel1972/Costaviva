@@ -44,6 +44,9 @@ const ARCHIVOS_PUBLICOS = new Set([
   // Privacidad de las capturas y de "Comparte tu captura" (2026-10-08).
   "/privacidad.html",
   "/privacidad",
+  // Términos y condiciones de la suscripción (2026-10-11).
+  "/terminos.html",
+  "/terminos",
   // Página de entrada de las campañas y de "Invita a un amigo" (2026-10-09).
   "/empieza.html",
   "/empieza",
@@ -83,6 +86,9 @@ const ARCHIVOS_PUBLICOS = new Set([
   "/viento-campo",
   "/crear-checkout-stripe",
   "/crear-portal-stripe",
+  // Precios de Premium para el país de quien pregunta (2026-10-11): tabla
+  // pública, sin datos personales.
+  "/precios-zona",
   // Invitaciones con descuento (2026-10-08): admin-invitaciones exige
   // es_admin() en el servidor; canjear-invitacion, la sesión del invitado.
   "/admin-invitaciones",

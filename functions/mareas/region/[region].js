@@ -125,7 +125,7 @@ ${region.slug === "portugal" ? `${enlacesHreflang("/mareas/region/portugal", "ht
     <h1>Mareas hoy en ${nombre}</h1>
     <p class="intro">${escaparHtml(descripcion)}</p>
 
-    <a class="cta" href="/login?alta=1">Prueba Costaviva 7 días gratis →</a>
+    <a class="cta" href="/login?alta=1">Prueba Costaviva 14 días gratis →</a>
     <p class="cta-sub">Sin tarjeta. Mapa completo, webcams en directo y diario de pesca. Después, 3,99 €/mes.</p>
 
     <h2>Próximas mareas y oleaje por spot</h2>

@@ -35,12 +35,24 @@ name: Aplicar migraciones a producción
 #      pendiente es EXACTAMENTE esa. Si hay otra pendiente, falla sin tocar
 #      nada y las lista. Lógica en .github/scripts/migraciones.mjs.
 
+# Modo "probar" (2026-10-11, comun estandares/supabase.md D2, como el de
+# Lurnahi): ejecuta las migraciones pendientes dentro de UNA transacción que
+# termina en ROLLBACK, desde cualquier rama, y enseña la salida (NOTICE
+# incluidos). No deja nada. Sirve para enseñarle a Mikel el resultado antes de
+# pedirle el sí; aplicar sigue siendo solo desde main y escribiendo "aplicar".
+
 on:
   workflow_dispatch:
     inputs:
-      confirmacion:
-        description: 'Escribe "aplicar" para confirmar que quieres tocar la base de datos de producción'
+      modo:
+        description: "aplicar (solo desde main) o probar (rollback, cualquier rama)"
         required: true
+        default: "aplicar"
+        type: choice
+        options: [aplicar, probar]
+      confirmacion:
+        description: 'Para aplicar: escribe "aplicar" para confirmar que quieres tocar la base de datos de producción'
+        required: false
         default: ""
       migracion:
         description: 'Nombre exacto del fichero aprobado por Mikel (p. ej. 20261011230000_cobro_prueba_14_dias_plan_gratis.sql). Si hay otra pendiente, no se aplica nada.'
@@ -51,7 +63,48 @@ permissions:
   contents: read
 
 jobs:
+  probar:
+    if: github.event.inputs.modo == 'probar'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Probar las pendientes con ROLLBACK
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          if [ -z "$SUPABASE_DB_URL" ]; then
+            echo "::error::Falta el secret SUPABASE_DB_URL."
+            exit 1
+          fi
+          sudo apt-get install -y -qq postgresql-client >/dev/null 2>&1 || true
+          psql "$SUPABASE_DB_URL" -At -c "select version from supabase_migrations.schema_migrations order by 1" > /tmp/aplicadas.txt
+          : > /tmp/pendientes.txt
+          for f in supabase/migrations/*.sql; do
+            v=$(basename "$f" | cut -d_ -f1)
+            grep -qx "$v" /tmp/aplicadas.txt || echo "$f" >> /tmp/pendientes.txt
+          done
+          echo "Pendientes:"; cat /tmp/pendientes.txt
+          if [ ! -s /tmp/pendientes.txt ]; then echo "No hay migraciones pendientes."; exit 0; fi
+          {
+            echo '\set ON_ERROR_STOP on'
+            echo 'begin;'
+            while read -r f; do echo "\\echo '=== $f'"; echo "\\i $f"; done < /tmp/pendientes.txt
+            echo 'rollback;'
+          } > /tmp/probar.sql
+          set -o pipefail
+          psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -f /tmp/probar.sql 2>&1 | tee /tmp/salida.txt
+          {
+            echo "### Prueba con ROLLBACK (no se ha guardado nada)"
+            echo '```'
+            cat /tmp/pendientes.txt
+            echo '---'
+            tail -n 80 /tmp/salida.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
   migrar:
+    if: github.event.inputs.modo != 'probar'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

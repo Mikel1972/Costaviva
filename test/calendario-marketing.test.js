@@ -62,7 +62,7 @@ test("enlaces con UTM por red y por pieza", () => {
   assert.equal(campana, "20261013-especies-lubina-europea");
   assert.match(C.campanaDePieza("2026-10-13", "Condiciones Sopelana/ÁÉ"), /^[a-z0-9][a-z0-9_-]{0,59}$/);
   assert.equal(C.enlaceCampana("facebook", campana), "https://costaviva.org/empieza?utm_source=facebook&utm_medium=social&utm_campaign=20261013-especies-lubina-europea");
-  const base = `Texto\n🔗 Pruébala 7 días gratis: ${C.MARCA_ENLACE}`;
+  const base = `Texto\n🔗 Pruébala 14 días gratis: ${C.MARCA_ENLACE}`;
   const ig = C.captionParaRed(base, "instagram", campana);
   const fb = C.captionParaRed(base, "facebook", campana);
   assert.match(ig, /costaviva\.org\/empieza\?utm_source=instagram&utm_medium=social&utm_campaign=20261013-especies-lubina-europea \(o en el enlace de la bio\)/);
@@ -70,7 +70,7 @@ test("enlaces con UTM por red y por pieza", () => {
   assert.match(fb, /https:\/\/costaviva\.org\/empieza\?utm_source=facebook/);
   assert.ok(!ig.includes(C.MARCA_ENLACE) && !fb.includes(C.MARCA_ENLACE));
   // Sin hueco (texto antiguo): se añade al final.
-  assert.match(C.captionParaRed("Hola", "facebook", campana), /Hola\n\n🔗 Pruébala 7 días gratis: https:/);
+  assert.match(C.captionParaRed("Hola", "facebook", campana), /Hola\n\n🔗 Pruébala 14 días gratis: https:/);
   assert.throws(() => C.enlaceCampana("tiktok", campana));
 });
 
