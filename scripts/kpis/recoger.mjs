@@ -1,5 +1,5 @@
 // scripts/kpis/recoger.mjs — SIN IA. SOLO LECTURA de producción.
-// Cada día (kpis.yml) añade a datos-robots/kpis/historico.jsonl una línea por
+// Cada día (kpis.yml) añade a kpis/costaviva/historico.jsonl de comun (privado) una línea por
 // cada día cerrado que falte (hora de España), con los flujos de ese día, y
 // en la del último día el "stock" del momento (MRR, suscriptores, socios).
 // El histórico NUNCA se reescribe: solo se añaden líneas (appendFileSync).
@@ -9,7 +9,8 @@
 //     origen_altas, visitas_publicas, eventos_uso, suscripciones,
 //     administradores, accesos_permanentes, invitaciones y
 //     /auth/v1/admin/users (email confirmado).
-//   - Stripe con STRIPE_KPI_KEY, clave RESTRINGIDA de solo lectura
+//   - Stripe con STRIPE_SECRET_KEY (la clave restringida única de Costaviva;
+//     STRIPE_KPI_KEY de respaldo), aquí SOLO en lectura
 //     (Subscriptions, Invoices, Promotion codes y Coupons: Read). Solo GET.
 //     Sin ella, el MRR sale de public.suscripciones a precio de lista y lo
 //     dice (mrr_fuente "supabase"); facturado y cancelaciones exactas, N/D.
@@ -28,7 +29,8 @@ import {
 } from "./lib.mjs";
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
-export const RUTA_HISTORICO = join(RAIZ, "datos-robots", "kpis", "historico.jsonl");
+export { RUTA_HISTORICO } from "./rutas.mjs";
+import { RUTA_HISTORICO } from "./rutas.mjs";
 // Primer día que se reconstruye (Stripe en live desde el 2026-09-15).
 export const DESDE_INICIAL = "2026-09-15";
 const MAX_DIAS_POR_PASADA = 60;
@@ -221,8 +223,10 @@ async function usuariosConfirmados() {
   }
   return ids;
 }
+const CLAVE_STRIPE = () => process.env.STRIPE_SECRET_KEY || process.env.STRIPE_KPI_KEY || "";
+
 async function stripeLista(ruta, params = "") {
-  const key = process.env.STRIPE_KPI_KEY;
+  const key = CLAVE_STRIPE();
   const out = [];
   let tras = null;
   for (let i = 0; i < 100; i++) {
@@ -236,7 +240,7 @@ async function stripeLista(ruta, params = "") {
   return out;
 }
 export async function leerStripe() {
-  if (!process.env.STRIPE_KPI_KEY) return null;
+  if (!CLAVE_STRIPE()) return null;
   const desde = Math.floor(Date.parse(`${DESDE_INICIAL}T00:00:00Z`) / 1000);
   const [subs, invoices, promos] = await Promise.all([
     stripeLista("subscriptions", "&status=all&expand[]=data.discounts"),
@@ -294,7 +298,7 @@ async function principal() {
   try { confirmados = await usuariosConfirmados(); } catch (e) { console.log(`::warning::Sin email confirmado (${e.message}): altas_confirmadas = altas.`); }
   let stripe = null;
   try { stripe = await leerStripe(); } catch (e) { console.log(`::warning::Stripe no responde (${e.message}): MRR desde public.suscripciones a precio de lista.`); }
-  if (!process.env.STRIPE_KPI_KEY) console.log("::warning::Falta el secreto STRIPE_KPI_KEY (comun, PENDIENTES_MIKEL.md): MRR a precio de lista desde Supabase, sin facturado ni cancelaciones exactas.");
+  if (!CLAVE_STRIPE()) console.log("::warning::Falta el secreto STRIPE_SECRET_KEY (comun, PENDIENTES_MIKEL.md): MRR a precio de lista desde Supabase, sin facturado ni cancelaciones exactas.");
 
   const emailsPrueba = [process.env.TEST_USER_A_EMAIL, process.env.TEST_USER_B_EMAIL, process.env.SMOKE_TEST_EMAIL].filter(Boolean);
   const excluidos = idsExcluidos({ perfiles, admins, permanentes, invitaciones, emailsPrueba });
@@ -317,7 +321,7 @@ async function principal() {
   }
   const paisUsuario = paisesUsuarios(perfiles.map((p) => p.id), { paisStripe, slugs, paisPorSlug });
   const lineas = calcularLineas(dias, { perfiles, confirmados, origen, visitas, eventos, subsSupabase, excluidos, stripe, paisUsuario });
-  if (stripe === null && process.env.STRIPE_KPI_KEY) for (const l of lineas) l.fuentes.stripe = "error";
+  if (stripe === null && CLAVE_STRIPE()) for (const l of lineas) l.fuentes.stripe = "error";
   mkdirSync(dirname(ruta), { recursive: true });
   appendFileSync(ruta, lineas.map((l) => JSON.stringify(l)).join("\n") + "\n");
   const s = lineas.at(-1).stock;

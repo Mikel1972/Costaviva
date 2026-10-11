@@ -279,3 +279,16 @@ test("tasas: con 0 conversiones o pocos casos se planifica con el supuesto; ante
   const md = markdown(construir([{ fecha: "2026-10-10", visitas: 63, altas: 0, stock: { mrr_eur: 0, suscriptores: { mensual: 0, anual: 0 } } }], "2026-10-11", []));
   assert.ok(!/Infinity|NaN/.test(md));
 });
+
+test("KPIs privados: ni KPIS.md ni histórico ni resumen en este repo público", async () => {
+  const { existsSync } = await import("node:fs");
+  for (const f of ["KPIS.md", "datos-robots/kpis/historico.jsonl", "datos-robots/kpis/resumen.json", "datos-robots/kpis/mrr.svg", "datos-robots/kpis/cambios.jsonl"]) {
+    assert.ok(!existsSync(new URL(`../${f}`, import.meta.url)), `${f} no debe estar en Costaviva (va en comun, kpis/costaviva/)`);
+  }
+  const { DIR_KPIS } = await import("../scripts/kpis/rutas.mjs");
+  assert.match(DIR_KPIS, /comun[\\/]kpis[\\/]costaviva$/);
+  const wf = readFileSync(new URL("../.github/workflows/kpis.yml", import.meta.url), "utf8");
+  assert.match(wf, /repository: Mikel1972\/comun/);
+  assert.match(wf, /STRIPE_SECRET_KEY/);
+  assert.ok(!/git add datos-robots\/kpis/.test(wf));
+});
