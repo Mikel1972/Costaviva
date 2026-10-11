@@ -87,7 +87,7 @@ export function ctaPt(titulo = "Experimente a Costaviva 7 dias grátis") {
 }
 
 // Llamada a la app: siempre a /login?alta=1 (mismo destino que /mareas).
-export function cta(titulo = "Prueba Costaviva 7 días gratis") {
+export function cta(titulo = "Prueba Costaviva 14 días gratis") {
   return `<section class="cta" aria-label="Prueba Costaviva">
   <p class="cta-titulo">${esc(titulo)}</p>
   <ul class="cta-lista">

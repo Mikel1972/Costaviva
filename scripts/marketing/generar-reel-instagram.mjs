@@ -64,7 +64,7 @@ async function piezaDelReel(tipo, navegador, objetivo) {
       datos: { ...pieza, gancho: GANCHOS.condiciones(nombre), claim: CLAIMS[0], viento: await vientoDeSpot(slug, objetivo ? `${objetivo.fecha}T${objetivo.hora.slice(0, 2)}:00` : null), rotuloMapa: objetivo ? `Viento a las ${objetivo.hora}` : "Viento ahora" },
       caption: [`¿Te merece la pena ir hoy a ${nombre}? Índice de pesca ${resumen.puntuacion}/100, mejor especie ahora: ${resumen.especie}.`,
         ...(resumen.avisoOla ? [resumen.avisoOla] : []), "", CLAIMS[0],
-        "El índice es una orientación con reglas públicas, no una garantía.", `🔗 Pruébala 7 días gratis: ${MARCA_ENLACE}`, "", `#pesca #fishing #pescadesdecosta #costaviva ${hashtagsRegionales(slug)}`],
+        "El índice es una orientación con reglas públicas, no una garantía.", `🔗 Pruébala 14 días gratis: ${MARCA_ENLACE}`, "", `#pesca #fishing #pescadesdecosta #costaviva ${hashtagsRegionales(slug)}`],
       nombre: `condiciones-${slug}`,
     };
   }
@@ -72,7 +72,7 @@ async function piezaDelReel(tipo, navegador, objetivo) {
     const { especie, pieza } = datosEspecie(objetivo);
     return {
       datos: { ...pieza, gancho: GANCHOS.especie(especie.nombre), claim: CLAIMS[1] },
-      caption: [`${especie.nombre}: de temporada ahora mismo.`, "", CLAIMS[1], `🔗 Pruébala 7 días gratis: ${MARCA_ENLACE}`, "", "#pesca #fishing #pescarecreativa #costaviva #pescaenespaña"],
+      caption: [`${especie.nombre}: de temporada ahora mismo.`, "", CLAIMS[1], `🔗 Pruébala 14 días gratis: ${MARCA_ENLACE}`, "", "#pesca #fishing #pescarecreativa #costaviva #pescaenespaña"],
       nombre: `especie-${especie.id}`,
     };
   }
@@ -90,7 +90,7 @@ async function piezaDelReel(tipo, navegador, objetivo) {
       tipo: "funcion", fecha: fechaLegible(objetivo ? instanteMadrid(objetivo.fecha, objetivo.hora) : new Date()), gancho: GANCHOS[tipo](), claim: f.claim,
       funcion: { ...f, captura: `data:image/png;base64,${captura.toString("base64")}` },
     },
-    caption: [f.frase, "", ...(f.aviso ? [f.aviso, ""] : []), `🔗 Pruébala 7 días gratis: ${MARCA_ENLACE}`, "", "#pesca #fishing #pescadeportiva #costaviva"],
+    caption: [f.frase, "", ...(f.aviso ? [f.aviso, ""] : []), `🔗 Pruébala 14 días gratis: ${MARCA_ENLACE}`, "", "#pesca #fishing #pescadeportiva #costaviva"],
     nombre: tipo,
   };
 }

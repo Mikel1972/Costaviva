@@ -120,7 +120,7 @@ export function captionParaRed(caption, red, campana) {
   const enlace = red === "instagram" ? `${url.replace(/^https:\/\//, "")} (o en el enlace de la bio)` : url;
   const texto = String(caption);
   if (texto.includes(MARCA_ENLACE)) return texto.split(MARCA_ENLACE).join(enlace);
-  return `${texto}\n\n🔗 Pruébala 7 días gratis: ${enlace}`;
+  return `${texto}\n\n🔗 Pruébala 14 días gratis: ${enlace}`;
 }
 
 // Línea "cuándo publicar" del Issue.

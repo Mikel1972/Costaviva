@@ -36,7 +36,7 @@ const EXCEPCIONES = new Set(["Costaviva", "0 km/h", "54+ km/h", "Open-Meteo", "W
 // Claves cuya traducción inglesa coincide con la española (nombres propios,
 // unidades, palabras iguales en los dos idiomas).
 const IGUALES_PERMITIDOS = new Set([
-  "mapa.panel.banda_mas3", "comun.admin", "mapa.capa.spots", "mapa.caudal.normal", "mapa.rio.humedad",
+  "mapa.panel.banda_mas3", "comun.admin", "prec.premium", "prec.premium_region", "mapa.capa.spots", "mapa.caudal.normal", "mapa.rio.humedad",
   "mapa.marea.coef", "mapa.va.natural", "va.ola.rango", "va.region.atlantico_norte", "va.region.portugal",
   "va.region.madeira", "rayos.lugar_spot", "lluvia.radar", "corriente.ley_tramo",
   "login.region.cantabria", "login.region.asturias", "login.region.galicia", "login.region.portugal",

@@ -1,32 +1,86 @@
 // functions/crear-checkout-stripe.js
-// Crea una Stripe Checkout Session (modo suscripción) para el usuario
-// que llama, con 7 días de prueba. Alcanzable en /crear-checkout-stripe.
+// Crea una Stripe Checkout Session (modo suscripción) para el usuario que
+// llama. Alcanzable en /crear-checkout-stripe.
 //
-// Mismo patrón de auth que sos-alerta.js: valida el token del propio
-// usuario contra Supabase Auth, nunca acepta datos sensibles crudos del
-// cliente (aquí, el price id de Stripe — solo se acepta "monthly" o
-// "annual" y se traduce server-side, ver PRECIOS).
+// Precios por zonas y ámbitos (2026-10-11, ver CLAUDE.md "Cobro"): el
+// cliente solo manda { ambito: "regional"|"mundial", plan: "mensual"|"anual"|
+// "fundador_anual" } y aquí se decide el precio, nunca el price id crudo. La
+// zona sale del país de la petición (Cloudflare, request.cf.country); el
+// checkout pide la dirección de facturación, que manda para el IVA, y el
+// webhook la guarda y avisa en el log si su zona no coincide. Por
+// compatibilidad se aceptan aún "monthly"/"annual" (= regional).
 //
-// Variable de entorno necesaria en Cloudflare Pages (Settings >
-// Environment variables, como "Secret", nunca en el repo):
-// STRIPE_SECRET_KEY.
+// Prueba: los días que le queden de los 14 de la app (sin tarjeta) pasan a
+// Stripe como trial, para que suscribirse antes no le haga perder días.
+// Pasada la prueba, se cobra al momento.
+//
+// Variables de entorno en Cloudflare Pages (Secret): STRIPE_SECRET_KEY.
+// COBRO_ACTIVO = "true" para abrir los pagos (por defecto cerrados: 403
+// codigo "cobro_no_activo", ver CLAUDE.md "Cobro").
+// Opcionales (texto "1"): STRIPE_TAX_AUTOMATICO (automatic_tax, cuando Stripe
+// Tax tenga los registros hechos) y STRIPE_TOS_EN_CHECKOUT (casilla de
+// términos de Stripe; exige la URL de términos en el Dashboard).
 
 import { descuentoAplicaAPlan } from "./_lib/invitaciones.js";
 import { diasExtraPorReferidos } from "./_lib/referidos.js";
+import { zonaDePais, precioParaZona, leerPlan, diasDePruebaRestantes, cobroActivo } from "./_lib/precios.js";
+import { VERSION as VERSION_ACEPTACION, IDIOMAS as IDIOMAS_ACEPTACION, textoAceptacion, textoSiCerramos } from "../assets/js/consentimiento.js";
+import CONFIG_PRECIOS from "./_lib/precios-zonas.json";
+import STRIPE_IDS from "./_lib/stripe-ids.json";
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
 
-// Producto real en Stripe, modo LIVE (2026-09-15, tras verificar la
-// cuenta): "Costaviva Premium". Los IDs de test (prod_VGVio7rbJPK1Oh y
-// sus precios) quedan en el historial de git, ya no son válidos aquí
-// — test y live son espacios de objetos completamente separados en
-// Stripe, un STRIPE_SECRET_KEY live no puede usar precios de test.
-const PRECIOS = {
-  monthly: "price_1UG0hPGVID60u22aXMcBJNF3", // 3,99€/mes
-  annual: "price_1UG0hPGVID60u22a3GO1Cflj", // 39,99€/año
-};
+// Cláusula aceptada (decisión de Mikel, 2026-10-11): renuncia al
+// desistimiento por contenido digital con ejecución inmediata (art. 103.m
+// TRLGDCU) y no reembolso del periodo pagado. El texto y su versión viven en
+// assets/js/consentimiento.js; aquí se exige que la casilla se haya marcado,
+// se guarda la aceptación (eventos_uso + metadatos de Stripe) y se repite el
+// texto en el propio checkout.
+const ENLACE_TERMINOS = "https://costaviva.org/terminos";
+
+// Guarda la aceptación con el token del propio usuario (RLS: solo inserta
+// sus eventos). Sin SQL nuevo. Si falla, queda en el log y en Stripe.
+async function guardarAceptacion(token, userId, detalle) {
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/eventos_uso`, {
+      method: "POST",
+      headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${token}`, "content-type": "application/json", Prefer: "return=minimal" },
+      body: JSON.stringify({ user_id: userId, tipo: "acepta_condiciones_pago", detalle }),
+    });
+    if (!r.ok) console.error(`crear-checkout-stripe: no se pudo guardar la aceptación: HTTP ${r.status}`);
+  } catch (e) {
+    console.error("crear-checkout-stripe: no se pudo guardar la aceptación:", e);
+  }
+}
+
+function modoDeClave(clave) {
+  return /^(sk|rk)_live_/.test(clave) ? "live" : "test";
+}
+
+// Id del precio: el guardado por el workflow de precios o, si aún no está, el
+// que Stripe tenga con ese lookup_key.
+async function idDePrecio(stripeKey, lookupKey) {
+  const guardado = STRIPE_IDS?.[modoDeClave(stripeKey)]?.precios?.[lookupKey];
+  if (guardado) return guardado;
+  const r = await fetch(`https://api.stripe.com/v1/prices?lookup_keys[]=${encodeURIComponent(lookupKey)}&limit=1`, {
+    headers: { Authorization: `Bearer ${stripeKey}` },
+  });
+  if (!r.ok) throw new Error(`Stripe prices HTTP ${r.status}: ${await r.text()}`);
+  const j = await r.json();
+  return j.data?.[0]?.id || null;
+}
+
+async function plazasFundador(token) {
+  const resp = await fetch(`${SUPABASE_URL}/rest/v1/rpc/plazas_fundador_restantes`, {
+    method: "POST",
+    headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${token}`, "content-type": "application/json" },
+    body: "{}",
+  });
+  if (!resp.ok) throw new Error(`plazas_fundador_restantes HTTP ${resp.status}`);
+  return Number(await resp.json());
+}
 
 async function usuarioDesdeToken(token) {
   const resp = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
@@ -91,16 +145,6 @@ async function mesesDeAmigosPendientes(token) {
   }
 }
 
-// Días de prueba restantes en la app (desde perfiles.creado_en, 7 días
-// totales) — evita regalar otros 7 días de prueba de Stripe encima de
-// una prueba de la app ya parcialmente consumida.
-function diasDePruebaRestantes(fechaAltaISO) {
-  const creado = new Date(fechaAltaISO).getTime();
-  const transcurridos = (Date.now() - creado) / (1000 * 60 * 60 * 24);
-  const restantes = Math.ceil(7 - transcurridos);
-  return Math.max(1, Math.min(7, restantes));
-}
-
 // Mensaje único que ve el usuario cuando algo falla del lado de Stripe. El
 // detalle real (que es lo que hace falta para diagnosticar) se queda en el
 // log del Worker. Un error de configuración nuestro no debe presentarse como
@@ -109,6 +153,14 @@ const MENSAJE_GENERICO = "No se ha podido abrir el pago ahora mismo. Vuelve a in
 
 export async function onRequestPost(context) {
   const { request, env } = context;
+  // Interruptor COBRO_ACTIVO (por defecto apagado): sin él no se crea
+  // ninguna sesión de pago, ni en live ni en test.
+  if (!cobroActivo(env)) {
+    return new Response(JSON.stringify({
+      error: "Todavía no hemos abierto los pagos. Mientras tanto, disfruta de los 14 días de Premium gratis.",
+      codigo: "cobro_no_activo",
+    }), { status: 403, headers: { "content-type": "application/json" } });
+  }
   const stripeKey = env.STRIPE_SECRET_KEY;
   if (!stripeKey) {
     return new Response(JSON.stringify({ error: "Pagos no configurados todavía (falta STRIPE_SECRET_KEY)" }), {
@@ -135,31 +187,89 @@ export async function onRequestPost(context) {
       headers: { "content-type": "application/json" },
     });
   }
-  const plan = body?.plan;
-  if (plan !== "monthly" && plan !== "annual") {
-    return new Response(JSON.stringify({ error: "plan inválido (usa 'monthly' o 'annual')" }), {
+  const pedido = leerPlan(body);
+  if (!pedido) {
+    return new Response(JSON.stringify({ error: "plan inválido" }), {
       status: 400,
       headers: { "content-type": "application/json" },
     });
   }
+  const idioma = body?.idioma === "en" ? "en" : "es";
+  // Sin la casilla marcada con la versión vigente del texto, no hay pago.
+  const aceptacion = body?.aceptacion;
+  if (!aceptacion || aceptacion.aceptada !== true || aceptacion.version !== VERSION_ACEPTACION) {
+    return new Response(JSON.stringify({
+      error: idioma === "en" ? "Please tick the box to accept the conditions before paying." : "Marca la casilla de aceptación antes de pagar.",
+      codigo: "falta_aceptacion",
+    }), { status: 400, headers: { "content-type": "application/json" } });
+  }
+  const idiomaAcept = IDIOMAS_ACEPTACION.includes(aceptacion.idioma) ? aceptacion.idioma : idioma;
 
   try {
     const usuario = await usuarioDesdeToken(token);
     const clienteExistente = await clienteStripeExistente(token, usuario.id);
     const origen = new URL(request.url).origin;
 
+    // Zona por el país de la petición (Cloudflare). La facturación la
+    // confirma el propio checkout (dirección obligatoria).
+    const paisIp = String(request.cf?.country || request.headers.get("CF-IPCountry") || "").toUpperCase();
+    const zona = zonaDePais(CONFIG_PRECIOS, paisIp);
+    const precio = precioParaZona(CONFIG_PRECIOS, zona.id, pedido.ambito, pedido.plan);
+    const esFundador = pedido.plan === "fundador_anual";
+    if (esFundador) {
+      let plazas = 0;
+      try { plazas = await plazasFundador(token); } catch (e) { console.error(`crear-checkout-stripe: ${String(e)}`); plazas = 0; }
+      if (!(plazas > 0)) {
+        return new Response(JSON.stringify({
+          error: idioma === "en" ? "There are no founder places left. You can take the annual plan." : "Ya no quedan plazas de fundador. Puedes elegir el plan anual.",
+          codigo: "sin_plazas_fundador",
+        }), { status: 409, headers: { "content-type": "application/json" } });
+      }
+    }
+    const priceId = await idDePrecio(stripeKey, precio.lookup_key);
+    if (!priceId) throw new Error(`no existe en Stripe el precio ${precio.lookup_key} (¿falta lanzar precios-stripe.yml?)`);
+    const regionContenido = pedido.ambito === "mundial" ? "todas" : zona.region_contenido;
+    const plan = pedido.plan === "mensual" ? "monthly" : "annual"; // para el cupón de invitación
+
     const params = new URLSearchParams();
     params.append("mode", "subscription");
-    params.append("line_items[0][price]", PRECIOS[plan]);
+    params.append("line_items[0][price]", priceId);
     params.append("line_items[0][quantity]", "1");
+    if (precio.moneda !== "EUR") params.append("currency", precio.moneda.toLowerCase());
+    params.append("locale", idiomaAcept);
+    params.append("billing_address_collection", "required");
+    // El texto aceptado, también en el checkout. Con la URL de términos
+    // puesta en el Dashboard de Stripe (STRIPE_TOS_EN_CHECKOUT=1), Stripe
+    // pone una casilla obligatoria y este texto va a su lado; si no, junto al
+    // botón de pagar.
+    const textoAcept = `${textoAceptacion(pedido.plan, idiomaAcept)} ${textoSiCerramos(idiomaAcept)}`;
+    if (env.STRIPE_TOS_EN_CHECKOUT === "1") {
+      params.append("consent_collection[terms_of_service]", "required");
+      params.append("custom_text[terms_of_service_acceptance][message]", `${textoAcept} [${ENLACE_TERMINOS.replace("https://", "")}](${ENLACE_TERMINOS})`);
+    } else {
+      params.append("custom_text[submit][message]", `${textoAcept} ${ENLACE_TERMINOS.replace("https://", "")}`);
+    }
+    if (env.STRIPE_TAX_AUTOMATICO === "1") params.append("automatic_tax[enabled]", "true");
+    const datosPlan = {
+      zona: zona.id, pais_ip: paisIp || "?", ambito: pedido.ambito, plan: pedido.plan,
+      region_contenido: regionContenido, fundador: String(esFundador), lookup_key: precio.lookup_key,
+      aceptacion_version: VERSION_ACEPTACION, aceptacion_idioma: idiomaAcept,
+      aceptacion_fecha: new Date().toISOString(), idioma,
+    };
+    await guardarAceptacion(token, usuario.id, {
+      version: VERSION_ACEPTACION, idioma: idiomaAcept, plan: pedido.plan, ambito: pedido.ambito,
+      zona: zona.id, fecha: datosPlan.aceptacion_fecha,
+    });
+    for (const [k, v] of Object.entries(datosPlan)) {
+      params.append(`metadata[${k}]`, v);
+      params.append(`subscription_data[metadata][${k}]`, v);
+    }
     // Meses gratis por amigos invitados que pagaron antes de que esta
     // persona se suscribiera: 30 días de prueba más por cada uno (máx. 3).
     // El webhook los marca como usados al completar el checkout.
     const mesesAmigos = await mesesDeAmigosPendientes(token);
-    params.append(
-      "subscription_data[trial_period_days]",
-      String(diasDePruebaRestantes(usuario.created_at) + diasExtraPorReferidos(mesesAmigos.length))
-    );
+    const diasTrial = diasDePruebaRestantes(usuario.created_at) + diasExtraPorReferidos(mesesAmigos.length);
+    if (diasTrial > 0) params.append("subscription_data[trial_period_days]", String(diasTrial));
     if (mesesAmigos.length) params.append("metadata[referidos_dias]", mesesAmigos.join(","));
     // Imprescindible para que el user_id llegue a los eventos
     // customer.subscription.* del webhook — el objeto Subscription no
@@ -187,14 +297,12 @@ export async function onRequestPost(context) {
     } else {
       params.append("allow_promotion_codes", "true");
     }
-    // "Managed Payments" (activado por defecto en cuentas nuevas de
-    // Stripe) exige un tax_code por producto si está activo — no
-    // configuramos Stripe Tax a propósito (ver login.html/suscripcion.html,
-    // decisión explícita de no activarlo por ahora), así que se
-    // desactiva para esta sesión en vez de rellenar un código fiscal.
+    // "Managed Payments" (activado por defecto en cuentas nuevas de Stripe)
+    // haría a Stripe vendedor de registro; seguimos vendiendo nosotros.
     params.append("managed_payments[enabled]", "false");
     if (clienteExistente) {
       params.append("customer", clienteExistente);
+      params.append("customer_update[address]", "auto");
     } else {
       params.append("customer_email", usuario.email);
     }
@@ -238,6 +346,7 @@ export async function onRequestPost(context) {
           `crear-checkout-stripe: el cliente guardado ${clienteExistente} no existe en esta cuenta de Stripe; reintentando sin él`
         );
         params.delete("customer");
+        params.delete("customer_update[address]");
         params.append("customer_email", usuario.email);
         resp = await crearSesion(params);
       }

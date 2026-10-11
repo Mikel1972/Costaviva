@@ -965,6 +965,18 @@
   }
   .ola-banda { background:var(--superficie); border:1px solid var(--linea); color:var(--tinta); border-radius:12px; padding:4px 8px; font-size:11px; cursor:pointer; font-family:var(--f-texto); }
   .ola-banda:hover { background:var(--superficie-2); }
+  /* Plan gratuito y aviso de fin de prueba (2026-10-11, cobro). */
+  #panel.sin-premium #pescaModalidades .indice-box,
+  #panel.sin-premium #ventanaActividadBox,
+  #panel.sin-premium #panelWebcamBox { display: none; }
+  .premium-aviso { margin-top: 10px; font-family: var(--f-texto); font-size: 12px; line-height: 1.45; color: var(--tinta-2); border: 1px dashed var(--linea); }
+  .premium-aviso[hidden] { display: none; }
+  .premium-aviso a { color: var(--acento); font-weight: 600; }
+  .aviso-prueba { position: relative; z-index: 1200; display: flex; align-items: center; gap: 10px; padding: 8px 12px; font-family: var(--f-texto); font-size: 12.5px; line-height: 1.4; background: var(--aviso-fondo); color: var(--aviso-texto); border-bottom: 1px solid var(--aviso-borde); }
+  .aviso-prueba[hidden] { display: none; }
+  .aviso-prueba a { color: inherit; font-weight: 700; white-space: nowrap; }
+  .aviso-prueba button::before { content: "×"; }
+  .aviso-prueba button { margin-left: auto; background: none; border: none; color: inherit; font-size: 16px; cursor: pointer; padding: 0 4px; }
 </style>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "d398d313ac4e4524a1b89af3c9ad6fda"}'></script><!-- End Cloudflare Web Analytics -->
 </head>
@@ -1017,27 +1029,20 @@
   if (!data.session) {
     window.location.href = "/login"; // directo, sin el 308 de /login.html
   } else {
-    // Paywall (2026-09-15, pedido explícito del usuario): 7 días de
-    // prueba desde el alta, luego bloqueo total sin suscripción activa
-    // — mi_estado_suscripcion() ya resuelve el bypass del admin en el
-    // servidor. Fallo silencioso a propósito si la RPC falla (red, error
-    // devuelto, o incluso una excepción real) — try/catch explícito
-    // porque un throw sin capturar aquí pararía TODO el script del
-    // módulo (top-level await, sin nada más abajo que lo recoja) y
-    // dejaría "Comprobando acceso…" colgado para siempre. Nota: no se
-    // puede usar "return" aquí — este bloque no está dentro de ninguna
-    // función (es top-level del módulo), así que se usa un flag en su
-    // lugar para saltarse el resto sin un "return" ilegal.
-    let conAcceso = true;
+    // Plan de la cuenta (2026-10-11, cobro): ya no se bloquea la app. Con
+    // la prueba de 14 días o con Premium se ve todo lo de su ámbito; sin
+    // Premium, el plan gratuito (mapa, mareas y condiciones básicas). El
+    // <script> clásico lo lee en window.estadoPlan (assets/js/plan.js decide
+    // qué se ve por región). Si la RPC falla se deja ver todo, como antes.
+    // Nota: no se puede usar "return" aquí (top-level del módulo).
+    const conAcceso = true;
     try {
       const { data: estadoSuscripcion, error: errorSuscripcion } = await supabase.rpc("mi_estado_suscripcion");
-      if (!errorSuscripcion && estadoSuscripcion && estadoSuscripcion.con_acceso === false) {
-        conAcceso = false;
-        window.location.href = "/suscripcion.html";
-      }
+      if (!errorSuscripcion && estadoSuscripcion) window.estadoPlan = estadoSuscripcion;
     } catch (e) {
-      console.error("mi_estado_suscripcion falló, se deja pasar:", e);
+      console.error("mi_estado_suscripcion falló, se deja ver todo:", e);
     }
+    window.dispatchEvent(new Event("plan-listo"));
     if (conAcceso) {
       window.quitarPantallaInicio();
       // Enlace al panel de administrador (2026-09-13, pedido explícito del
@@ -1119,6 +1124,11 @@
 </script>
 
 
+<div id="avisoPrueba" class="aviso-prueba" role="status" hidden>
+  <span id="avisoPruebaTexto"></span>
+  <a href="/suscripcion" data-i18n="plan.ver_planes">Ver planes</a>
+  <button type="button" data-accion="cerrarAvisoPrueba" aria-label="Cerrar" data-i18n-aria-label="comun.cerrar"></button>
+</div>
 <header>
   <svg class="marca-logo" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><circle class="marca-fondo" cx="20" cy="20" r="19"/><path class="marca-pez" d="M9 17c4-6.5 14-6.5 19 0-5 6.5-15 6.5-19 0z"/><path class="marca-pez" d="M27.5 17l6-4.5v9z"/><circle class="marca-ojo" cx="13.5" cy="16" r="1.4"/><path class="marca-ola" d="M5 28c3.5-3.2 6.5-3.2 10 0s6.5 3.2 10 0 6.5-3.2 10 0"/></svg>
   <h1 class="logotipo">Costaviva</h1><p data-i18n="comun.cabecera.lema">pesca en tiempo real</p><span class="fecha"><span id="estadoVigenciaGlobal" data-i18n="comun.cargando_min">cargando…</span></span>
@@ -1397,6 +1407,10 @@
     <!-- Modalidades de pesca (2026-10-08, pedido de Mikel): una pestaña por
          modalidad; el índice de pesca, la ventana de actividad y la normativa
          de abajo se recalculan con la pestaña elegida. Sin on*= (CSP). -->
+    <div class="tarjeta premium-aviso" id="panelPremiumAviso" hidden>
+      <span id="panelPremiumAvisoTexto"></span>
+      <a href="/suscripcion" data-i18n="plan.ver_planes">Ver planes</a>
+    </div>
     <div class="pesca-modalidades" id="pescaModalidades">
     <div class="mod-tabs" role="tablist" aria-label="Modalidad de pesca" data-i18n-aria-label="mapa.mod.grupo">
       <button type="button" role="tab" id="modTab-costa" data-modalidad="costa" aria-controls="modPanel" aria-selected="true" tabindex="0" data-i18n="mapa.mod.tab_costa">🪨 Desde costa</button>
@@ -1476,7 +1490,7 @@
 <div class="modal-estacion" id="modalBienvenida">
   <div class="modal-estacion-contenido">
     <h3 data-i18n="mapa.bienvenida.titulo">🐟 ¡Bienvenido a Costaviva!</h3>
-    <p data-i18n-html="mapa.bienvenida.texto">Tienes <b>7 días de prueba gratuita</b>. Si cuando terminen no te has suscrito, tu cuenta quedará desactivada, pero tus datos se guardan: al suscribirte lo recuperas todo. Puedes hacerlo cuando quieras desde tu perfil, en <b>«Mi suscripción»</b>; te avisaremos por email dos días antes.</p>
+    <p data-i18n-html="mapa.bienvenida.texto">Tienes <b>14 días de Premium gratis</b>, sin tarjeta. Cuando terminen pasas al plan gratuito (mapa, mareas y condiciones básicas) sin que se te cobre nada, y tus datos se guardan. Puedes suscribirte cuando quieras desde tu perfil, en <b>«Mi suscripción»</b>; te avisaremos 3 días antes.</p>
     <div class="botones-bienvenida">
       <button type="button" class="primario" id="btnVerPlanesBienvenida" data-i18n="mapa.bienvenida.ver_planes">Ver los planes</button>
       <button type="button" class="secundario" id="btnCerrarBienvenida" data-i18n="mapa.bienvenida.entendido">Entendido, ¡a pescar!</button>
@@ -1506,6 +1520,8 @@
   import * as Corriente from "/assets/js/corriente.js";
   import * as Isotermas from "/assets/js/isotermas.js";
   import * as CapasCombinadas from "/assets/js/capas-combinadas.js";
+  import * as Plan from "/assets/js/plan.js";
+  window.Plan = Plan;
   window.VentanaActividad = VentanaActividad;
   window.Regiones = Regiones;
   window.CapasCombinadas = CapasCombinadas;
@@ -3305,6 +3321,77 @@ async function datosCapaMarListos(nombre, silencioso) {
   }
   return d;
 }
+// ---------------------------------------------------------------------------
+// Plan de la cuenta (2026-10-11, cobro): qué es Premium y en qué región.
+// Gratis en todas las regiones: mapa, mareas y condiciones básicas (ola,
+// viento, marea, temperatura del agua, nubes, lluvia, presión, índice de
+// mar, lluvia y rayos). Premium: índice de pesca y ventana de actividad,
+// webcams, capas del mar (clorofila, temperatura, frentes, corriente), diario,
+// grupos, alarma e identificación por foto. Con plan regional solo en su
+// región; fuera de ella, aviso "Disponible con el plan Mundial".
+// window.estadoPlan lo deja el módulo de sesión; assets/js/plan.js decide.
+// ---------------------------------------------------------------------------
+function regionContenidoDe(lat, lon) {
+  const R = window.Regiones;
+  if (!R) return "es";
+  return R.paisDeRegion(R.regionPorCoordenadas(lat, lon));
+}
+function avisoPremiumEn(region) {
+  if (!window.Plan) return null;
+  return window.Plan.avisoPremium(window.estadoPlan || null, region);
+}
+function textoAvisoPremium(tipo) {
+  return tipo === "mundial" ? I18n.t("plan.solo_mundial") : I18n.t("plan.solo_premium");
+}
+function aplicarPlanPanel(s) {
+  const aviso = avisoPremiumEn(regionContenidoDe(s.lat, s.lon));
+  document.getElementById("panel").classList.toggle("sin-premium", !!aviso);
+  const caja = document.getElementById("panelPremiumAviso");
+  caja.hidden = !aviso;
+  if (aviso) document.getElementById("panelPremiumAvisoTexto").textContent = textoAvisoPremium(aviso) + " ";
+}
+// Capas del mar: Premium en la región que se mira.
+function capaMarPermitida() {
+  const aviso = avisoPremiumEn(regionDeCentro());
+  if (aviso) avisoCapa(textoAvisoPremium(aviso));
+  return !aviso;
+}
+// Aviso de fin de prueba: 3 días antes y el último día, una vez cada uno.
+const CLAVE_AVISO_PRUEBA = "costaviva.avisoPrueba";
+function pintarAvisoPrueba() {
+  const a = window.Plan?.avisoFinPrueba(window.estadoPlan || null);
+  const el = document.getElementById("avisoPrueba");
+  if (!a) { el.hidden = true; return; }
+  const clave = `${a.tipo}:${a.fin.toISOString().slice(0, 10)}`;
+  let cerrado = null;
+  try { cerrado = localStorage.getItem(CLAVE_AVISO_PRUEBA); } catch (e) { cerrado = null; }
+  if (cerrado === clave) { el.hidden = true; return; }
+  const fecha = a.fin.toLocaleDateString(I18n.locale(), { day: "numeric", month: "long" });
+  document.getElementById("avisoPruebaTexto").textContent = I18n.t(a.tipo === "ultimo_dia" ? "plan.prueba_ultimo_dia" : "plan.prueba_tres_dias", { fecha });
+  el.dataset.clave = clave;
+  el.hidden = false;
+}
+function cerrarAvisoPrueba() {
+  const el = document.getElementById("avisoPrueba");
+  try { localStorage.setItem(CLAVE_AVISO_PRUEBA, el.dataset.clave || ""); } catch (e) { /* solo comodidad */ }
+  el.hidden = true;
+}
+document.getElementById("avisoPrueba").addEventListener("click", (e) => {
+  if (e.target.closest('[data-accion="cerrarAvisoPrueba"]')) cerrarAvisoPrueba();
+});
+// Cuando llega el plan (o el módulo de regiones): se vuelve a mirar la ficha
+// abierta y las capas encendidas.
+function plan_alLlegar() {
+  pintarAvisoPrueba();
+  if (spotAbiertoActual && document.getElementById("panel").classList.contains("visible")) aplicarPlanPanel(spotAbiertoActual);
+  if (avisoPremiumEn(regionDeCentro()) && capasMar.activas.length) {
+    for (const n of [...capasMar.activas]) alternarCapaMar(n);
+  }
+}
+window.addEventListener("plan-listo", plan_alLlegar);
+window.addEventListener("ventana-actividad-lista", plan_alLlegar);
+if (window.estadoPlan) setTimeout(plan_alLlegar, 0);
+
 // Botón de una capa de mar: enciende o apaga SOLO esa (las demás siguen).
 async function alternarCapaMar(nombre, { silencioso = false } = {}) {
   if (capasMar.activas.includes(nombre)) {
@@ -3319,6 +3406,8 @@ async function alternarCapaMar(nombre, { silencioso = false } = {}) {
     marcarBotonCapaMar(nombre, false);
     return;
   }
+  if (!silencioso && !capaMarPermitida()) return;
+  if (silencioso && avisoPremiumEn(regionDeCentro())) return;
   capasMar.cargando.add(nombre);
   marcarBotonCapaMar(nombre, true);
   const d = await datosCapaMarListos(nombre, silencioso);
@@ -3366,6 +3455,12 @@ function cambioRegionCapasMar() {
   if (!antes.length) return;
   capasMar.activas = [];
   componerCapasMar();
+  const avisoPlan = avisoPremiumEn(regionDeCentro());
+  if (avisoPlan) {
+    for (const n of antes) marcarBotonCapaMar(n, false);
+    avisoCapa(textoAvisoPremium(avisoPlan));
+    return;
+  }
   Promise.all(antes.map((n) => alternarCapaMar(n, { silencioso: true }))).then(() => {
     if (!capasMar.activas.length) avisoCapa(I18n.t("capas.no_disponible"));
   });
@@ -4796,6 +4891,7 @@ function abrirPanel(s) {
   // °S/°E en Nueva Zelanda (antes "°N, °W" fijo).
   document.getElementById("panelCoords").textContent = formatoCoordenadas(s.lat, s.lon);
   pintarRegionPanel(s);
+  aplicarPlanPanel(s);
   pintarReservasPanel(s);
   pintarFondoPanel(s);
   actualizarBotonFavorito(s);
