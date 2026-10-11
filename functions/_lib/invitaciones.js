@@ -368,7 +368,7 @@ export function emailFinInvitacion({ acceso_hasta }, ahora = new Date(), base = 
         : `Tu acceso gratis a Costaviva por invitación termina el ${fecha}.`,
       "",
       "Si quieres seguir consultando las condiciones del mar y tu cuaderno de pesca, puedes suscribirte:",
-      `Planes: ${base}/suscripcion  (desde 3,99 €/mes o 29,99 €/año, IVA incluido; se cancela cuando quieras)`,
+      `Planes: ${base}/suscripcion  (desde 3,99 €/mes o 34,99 €/año, IVA incluido; se cancela cuando quieras)`,
       "",
       "Tus salidas, capturas y ubicaciones siguen guardadas. Si no te suscribes, no se te cobra nada.",
       "",

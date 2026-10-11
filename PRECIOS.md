@@ -4,7 +4,7 @@
 
 Generado sin IA por `scripts/precios/generar-md.mjs` a partir de `functions/_lib/precios-zonas.json`. No editar a mano.
 
-Versión de precios: `2026_10` · Mundial = regional de la zona × 1,5 · plazas de fundador: 500 (compartidas entre regional y Mundial). Todos los precios con impuestos incluidos.
+Versión de precios: `2026_10b` · Mundial = regional de la zona × 1,5 · plazas de fundador: 500 (compartidas entre regional y Mundial). Todos los precios con impuestos incluidos.
 
 ## Plan regional · Mensual
 
@@ -23,6 +23,19 @@ Versión de precios: `2026_10` · Mundial = regional de la zona × 1,5 · plazas
 
 | Zona | Países | Estado | Moneda | Multiplicador | De dónde sale | Precio local | Equivalente EUR (BCE hoy) | Frente a España |
 |---|---|---|---|---|---|---|---|---|
+| Unión Europea y EEE | 30 países | activa | EUR | 1 | fijo por ley (geobloqueo UE) | 34,99 EUR | 34,99 EUR | 0 % |
+| Nueva Zelanda | NZ | activa | NZD | 1,4 | manual de Mikel (2026-10-11; la renta daría 1,25) | 97,99 NZD | 49,09 EUR | +40 % |
+| Australia | AU | preparada | AUD | 1,5 | RNB Atlas 2025 (64.120 $) / España (37.120 $) | 84,99 AUD | 52,95 EUR | +51 % |
+| Reino Unido | GB | preparada | GBP | 1,45 | RNB Atlas 2025 (54.550 $) / España (37.120 $) | 43,99 GBP | 51,90 EUR | +48 % |
+| Estados Unidos | US | preparada | USD | 1,5 | RNB Atlas 2025 (88.810 $) / España (37.120 $) | 58,99 USD | 52,64 EUR | +50 % |
+| Canadá | CA | preparada | CAD | 1,5 | RNB Atlas 2025 (56.420 $) / España (37.120 $) | 83,99 CAD | 52,68 EUR | +51 % |
+| Suiza | CH | preparada | CHF | 1,5 | RNB Atlas 2025 (110.330 $) / España (37.120 $) | 48,90 CHF | 52,51 EUR | +50 % |
+| Resto del mundo | el resto | activa | EUR | 1 | fijo (resto del mundo) | 34,99 EUR | 34,99 EUR | 0 % |
+
+## Plan regional · Fundador (anual)
+
+| Zona | Países | Estado | Moneda | Multiplicador | De dónde sale | Precio local | Equivalente EUR (BCE hoy) | Frente a España |
+|---|---|---|---|---|---|---|---|---|
 | Unión Europea y EEE | 30 países | activa | EUR | 1 | fijo por ley (geobloqueo UE) | 29,99 EUR | 29,99 EUR | 0 % |
 | Nueva Zelanda | NZ | activa | NZD | 1,4 | manual de Mikel (2026-10-11; la renta daría 1,25) | 83,99 NZD | 42,08 EUR | +40 % |
 | Australia | AU | preparada | AUD | 1,5 | RNB Atlas 2025 (64.120 $) / España (37.120 $) | 72,99 AUD | 45,47 EUR | +52 % |
@@ -31,19 +44,6 @@ Versión de precios: `2026_10` · Mundial = regional de la zona × 1,5 · plazas
 | Canadá | CA | preparada | CAD | 1,5 | RNB Atlas 2025 (56.420 $) / España (37.120 $) | 71,99 CAD | 45,16 EUR | +51 % |
 | Suiza | CH | preparada | CHF | 1,5 | RNB Atlas 2025 (110.330 $) / España (37.120 $) | 41,90 CHF | 44,99 EUR | +50 % |
 | Resto del mundo | el resto | activa | EUR | 1 | fijo (resto del mundo) | 29,99 EUR | 29,99 EUR | 0 % |
-
-## Plan regional · Fundador (anual)
-
-| Zona | Países | Estado | Moneda | Multiplicador | De dónde sale | Precio local | Equivalente EUR (BCE hoy) | Frente a España |
-|---|---|---|---|---|---|---|---|---|
-| Unión Europea y EEE | 30 países | activa | EUR | 1 | fijo por ley (geobloqueo UE) | 24,99 EUR | 24,99 EUR | 0 % |
-| Nueva Zelanda | NZ | activa | NZD | 1,4 | manual de Mikel (2026-10-11; la renta daría 1,25) | 69,99 NZD | 35,06 EUR | +40 % |
-| Australia | AU | preparada | AUD | 1,5 | RNB Atlas 2025 (64.120 $) / España (37.120 $) | 60,99 AUD | 38,00 EUR | +52 % |
-| Reino Unido | GB | preparada | GBP | 1,45 | RNB Atlas 2025 (54.550 $) / España (37.120 $) | 30,99 GBP | 36,56 EUR | +46 % |
-| Estados Unidos | US | preparada | USD | 1,5 | RNB Atlas 2025 (88.810 $) / España (37.120 $) | 42,99 USD | 38,36 EUR | +54 % |
-| Canadá | CA | preparada | CAD | 1,5 | RNB Atlas 2025 (56.420 $) / España (37.120 $) | 59,99 CAD | 37,63 EUR | +51 % |
-| Suiza | CH | preparada | CHF | 1,5 | RNB Atlas 2025 (110.330 $) / España (37.120 $) | 35,90 CHF | 38,55 EUR | +54 % |
-| Resto del mundo | el resto | activa | EUR | 1 | fijo (resto del mundo) | 24,99 EUR | 24,99 EUR | 0 % |
 
 ## Plan Mundial · Mensual
 
@@ -62,6 +62,19 @@ Versión de precios: `2026_10` · Mundial = regional de la zona × 1,5 · plazas
 
 | Zona | Países | Estado | Moneda | Multiplicador | De dónde sale | Precio local | Equivalente EUR (BCE hoy) | Frente a España |
 |---|---|---|---|---|---|---|---|---|
+| Unión Europea y EEE | 30 países | activa | EUR | 1 | fijo por ley (geobloqueo UE) | 52,99 EUR | 52,99 EUR | 0 % |
+| Nueva Zelanda | NZ | activa | NZD | 1,4 | manual de Mikel (2026-10-11; la renta daría 1,25) | 146,99 NZD | 73,64 EUR | +39 % |
+| Australia | AU | preparada | AUD | 1,5 | RNB Atlas 2025 (64.120 $) / España (37.120 $) | 127,99 AUD | 79,73 EUR | +50 % |
+| Reino Unido | GB | preparada | GBP | 1,45 | RNB Atlas 2025 (54.550 $) / España (37.120 $) | 65,99 GBP | 77,85 EUR | +47 % |
+| Estados Unidos | US | preparada | USD | 1,5 | RNB Atlas 2025 (88.810 $) / España (37.120 $) | 88,99 USD | 79,41 EUR | +50 % |
+| Canadá | CA | preparada | CAD | 1,5 | RNB Atlas 2025 (56.420 $) / España (37.120 $) | 125,99 CAD | 79,03 EUR | +49 % |
+| Suiza | CH | preparada | CHF | 1,5 | RNB Atlas 2025 (110.330 $) / España (37.120 $) | 73,90 CHF | 79,35 EUR | +50 % |
+| Resto del mundo | el resto | activa | EUR | 1 | fijo (resto del mundo) | 52,99 EUR | 52,99 EUR | 0 % |
+
+## Plan Mundial · Fundador (anual)
+
+| Zona | Países | Estado | Moneda | Multiplicador | De dónde sale | Precio local | Equivalente EUR (BCE hoy) | Frente a España |
+|---|---|---|---|---|---|---|---|---|
 | Unión Europea y EEE | 30 países | activa | EUR | 1 | fijo por ley (geobloqueo UE) | 44,99 EUR | 44,99 EUR | 0 % |
 | Nueva Zelanda | NZ | activa | NZD | 1,4 | manual de Mikel (2026-10-11; la renta daría 1,25) | 125,99 NZD | 63,12 EUR | +40 % |
 | Australia | AU | preparada | AUD | 1,5 | RNB Atlas 2025 (64.120 $) / España (37.120 $) | 109,99 AUD | 68,52 EUR | +52 % |
@@ -70,19 +83,6 @@ Versión de precios: `2026_10` · Mundial = regional de la zona × 1,5 · plazas
 | Canadá | CA | preparada | CAD | 1,5 | RNB Atlas 2025 (56.420 $) / España (37.120 $) | 107,99 CAD | 67,74 EUR | +51 % |
 | Suiza | CH | preparada | CHF | 1,5 | RNB Atlas 2025 (110.330 $) / España (37.120 $) | 62,90 CHF | 67,54 EUR | +50 % |
 | Resto del mundo | el resto | activa | EUR | 1 | fijo (resto del mundo) | 44,99 EUR | 44,99 EUR | 0 % |
-
-## Plan Mundial · Fundador (anual)
-
-| Zona | Países | Estado | Moneda | Multiplicador | De dónde sale | Precio local | Equivalente EUR (BCE hoy) | Frente a España |
-|---|---|---|---|---|---|---|---|---|
-| Unión Europea y EEE | 30 países | activa | EUR | 1 | fijo por ley (geobloqueo UE) | 37,99 EUR | 37,99 EUR | 0 % |
-| Nueva Zelanda | NZ | activa | NZD | 1,4 | manual de Mikel (2026-10-11; la renta daría 1,25) | 104,99 NZD | 52,60 EUR | +38 % |
-| Australia | AU | preparada | AUD | 1,5 | RNB Atlas 2025 (64.120 $) / España (37.120 $) | 91,99 AUD | 57,31 EUR | +51 % |
-| Reino Unido | GB | preparada | GBP | 1,45 | RNB Atlas 2025 (54.550 $) / España (37.120 $) | 46,99 GBP | 55,44 EUR | +46 % |
-| Estados Unidos | US | preparada | USD | 1,5 | RNB Atlas 2025 (88.810 $) / España (37.120 $) | 64,99 USD | 58,00 EUR | +53 % |
-| Canadá | CA | preparada | CAD | 1,5 | RNB Atlas 2025 (56.420 $) / España (37.120 $) | 89,99 CAD | 56,45 EUR | +49 % |
-| Suiza | CH | preparada | CHF | 1,5 | RNB Atlas 2025 (110.330 $) / España (37.120 $) | 53,90 CHF | 57,88 EUR | +52 % |
-| Resto del mundo | el resto | activa | EUR | 1 | fijo (resto del mundo) | 37,99 EUR | 37,99 EUR | 0 % |
 
 ## Desvíos del cambio (propuestas, no se aplican solas)
 

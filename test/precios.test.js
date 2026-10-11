@@ -47,11 +47,11 @@ test("geobloqueo: todos los países de la UE/EEE pagan lo mismo, en EUR y a 1,0"
   assert.equal(ue.multiplicador_decision, undefined);
 });
 
-test("precios de España/UE: 3,99 / 29,99 / 24,99 y Mundial 5,99 / 44,99 / 37,99", () => {
+test("precios de España/UE: 3,99 / 34,99 / 29,99 y Mundial 5,99 / 52,99 / 44,99", () => {
   const t = tablaZona(config, "ue_eee").planes;
-  assert.deepEqual([t.regional.mensual, t.regional.anual, t.regional.fundador_anual], [399, 2999, 2499]);
-  assert.deepEqual([t.mundial.mensual, t.mundial.anual, t.mundial.fundador_anual], [599, 4499, 3799]);
-  assert.equal(t.regional.ahorro_anual, 37);
+  assert.deepEqual([t.regional.mensual, t.regional.anual, t.regional.fundador_anual], [399, 3499, 2999]);
+  assert.deepEqual([t.mundial.mensual, t.mundial.anual, t.mundial.fundador_anual], [599, 5299, 4499]);
+  assert.equal(t.regional.ahorro_anual, 27);
 });
 
 test("Mundial = regional de la zona × 1,5 redondeado a .99, en todas las zonas", () => {
@@ -67,8 +67,8 @@ test("Nueva Zelanda: ×1,40 manual (la renta daría 1,25) con el BCE 1,9961", ()
   assert.equal(nz.multiplicador_calculado_info, 1.25);
   assert.equal(config.tipo_cambio.eur_a.NZD, 1.9961);
   const t = tablaZona(config, "nz").planes;
-  assert.deepEqual([t.regional.mensual, t.regional.anual, t.regional.fundador_anual], [1199, 8399, 6999]);
-  assert.deepEqual([t.mundial.mensual, t.mundial.anual, t.mundial.fundador_anual], [1799, 12599, 10499]);
+  assert.deepEqual([t.regional.mensual, t.regional.anual, t.regional.fundador_anual], [1199, 9799, 8399]);
+  assert.deepEqual([t.mundial.mensual, t.mundial.anual, t.mundial.fundador_anual], [1799, 14699, 12599]);
   assert.equal(zonaDePais(config, "NZ").id, "nz");
 });
 
@@ -84,7 +84,7 @@ test("Stripe: un precio por ámbito y plan, en EUR con currency_options", () => 
   assert.equal(reg.moneda, "eur");
   assert.equal(reg.importe, 399);
   assert.deepEqual(reg.currency_options, { nzd: 1199 });
-  assert.deepEqual(precioParaZona(config, "nz", "mundial", "anual"), { lookup_key: `cv_mundial_anual_v${config.version_precios}`, moneda: "NZD", importe: 12599 });
+  assert.deepEqual(precioParaZona(config, "nz", "mundial", "anual"), { lookup_key: `cv_mundial_anual_v${config.version_precios}`, moneda: "NZD", importe: 14699 });
   assert.ok(lista.filter((p) => p.fundador).every((p) => p.intervalo === "year"));
 });
 
@@ -99,8 +99,9 @@ test("una zona en EUR con otro importe lleva su propio precio", () => {
 });
 
 test("ahorro del anual", () => {
+  assert.equal(ahorroAnual(399, 3499), 27);
+  assert.equal(ahorroAnual(1199, 9799), 32);
   assert.equal(ahorroAnual(399, 2999), 37);
-  assert.equal(ahorroAnual(1199, 8399), 41);
 });
 
 test("metadatos del precio: plan, ámbito y fundador; precios antiguos como regional", () => {
@@ -121,4 +122,11 @@ test("PRECIOS.md y resumen se generan sin red", () => {
   assert.match(md, /Plan Mundial · Fundador/);
   assert.match(md, /11,99 NZD/);
   assert.match(generarResumen(config), /Precios vigentes/);
+});
+
+test("el % de ahorro no está escrito a mano en ningún texto", () => {
+  for (const f of ["suscripcion.html", "assets/i18n/es.js", "assets/i18n/en.js", "assets/i18n/pt.js", "terminos.html", "empieza.html"]) {
+    const t = readFileSync(new URL(`../${f}`, import.meta.url), "utf8");
+    assert.doesNotMatch(t, /(Ahorra|Save|Poupe)( un)? \d+ ?%/, f);
+  }
 });
