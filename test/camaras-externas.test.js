@@ -6,7 +6,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import {
-  CAMARAS_EXTERNAS, CONDICIONES, SKYLINE_EMBED_AUTORIZADO, camarasExternasDeSpot, claveSalud,
+  CAMARAS_EXTERNAS, CONDICIONES, SKYLINE_EMBED_AUTORIZADO, camarasExternasDeSpot, claveSalud, nombreCamara,
   resultadoComprobacionExterna, lecturaSaludExterna, externaCuentaComoCaida,
 } from "../assets/js/camaras-externas.js";
 
@@ -14,6 +14,8 @@ const MODOS = ["imagen_oficial", "enlace"];
 const spotsPrevision = new Set(
   [...readFileSync(new URL("../functions/prevision.js", import.meta.url), "utf8").matchAll(/slug: "([a-z0-9]+)", nombre:/g)].map((m) => m[1])
 );
+// Los spots de NZ (2026-10-11) no están en prevision.js: vienen de SPOTS_NZ.
+for (const s of SPOTS_NZ) spotsPrevision.add(s.slug);
 const webcamsProxy = readFileSync(new URL("../functions/webcam/[slug].js", import.meta.url), "utf8");
 
 test("hay cámaras externas y los ids no se repiten", () => {
@@ -159,7 +161,8 @@ test("NZ: cada condición dice dueño, modos, análisis y fuente", () => {
     assert.equal(c.analisis_permitido, false, `${clave}: analisis_permitido`);
     assert.ok(c.fuentes?.length && c.fuentes.every((u) => u.startsWith("https://")), `${clave}: sin fuente`);
     assert.ok(c.cita, `${clave}: sin cita`);
-    assert.ok(!(clave in CONDICIONES), `${clave}: choca con una condición de camaras-externas.js`);
+    assert.equal(CONDICIONES[clave], c, `${clave}: camaras-externas.js debe sumar las condiciones de NZ`);
+    assert.ok(c.dueno_corto, `${clave}: falta el nombre corto del dueño (botón)`);
   }
 });
 
@@ -168,12 +171,17 @@ test("NZ: cada cámara tiene dueño, enlace https, verificación y un spot NZ re
   const ids = CAMARAS_NZ.map((c) => c.id);
   assert.ok(CAMARAS_NZ.length > 0);
   assert.equal(new Set(ids).size, ids.length);
-  const idsES = new Set(CAMARAS_EXTERNAS.map((c) => c.id));
+  const idsES = new Set(CAMARAS_EXTERNAS.filter((c) => !c.spot.startsWith("nz-")).map((c) => c.id));
+  // Conectadas a la app y al robot (2026-10-11): todas están en CAMARAS_EXTERNAS.
+  for (const c of CAMARAS_NZ) assert.ok(CAMARAS_EXTERNAS.includes(c), `${c.id}: no está en CAMARAS_EXTERNAS`);
   for (const c of CAMARAS_NZ) {
     assert.match(c.id, /^nz-[a-z0-9-]+$/, c.id);
     assert.ok(!idsES.has(c.id), `${c.id}: id repetido con España`);
     assert.ok(CONDICIONES_NZ[c.condiciones], `${c.id}: condiciones ${c.condiciones}`);
     assert.ok(c.dueno && c.nombre, `${c.id}: dueño/nombre`);
+    assert.ok(c.nombre_en && !/[áéíóúñ¿¡]|\b(playa|puerto|desde|hacia|desembocadura|norte|barra|mar)\b/i.test(c.nombre_en.replace(/[āēīōū]/g, "")), `${c.id}: nombre_en en inglés`);
+    assert.equal(nombreCamara(c, "en"), c.nombre_en);
+    assert.equal(nombreCamara(c, "es"), c.nombre);
     assert.equal(c.modo, "enlace", `${c.id}: sin permiso escrito solo enlace`);
     assert.equal(c.imagen, undefined, `${c.id}: un enlace no lleva imagen`);
     assert.equal(c.analisis_permitido, false, `${c.id}: nunca analizar fotogramas de terceros`);
