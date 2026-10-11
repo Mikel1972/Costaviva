@@ -1,13 +1,13 @@
 {
- "fecha": "2026-10-11T16:37:51.718Z",
- "lineasHistorial": 822,
+ "fecha": "2026-10-11T16:44:50.933Z",
+ "lineasHistorial": 833,
  "etiquetas": 138,
  "etiquetasClaude": 43,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.2128,
+   "a": 1.2036,
    "p": 0.5,
-   "n": 34,
+   "n": 35,
    "nEtiquetas": 7,
    "nEtiquetasClaude": 3,
    "franjasClaude": [
@@ -16,7 +16,7 @@
    "dias": 4,
    "hMin": 0.15,
    "hMax": 0.54,
-   "errorRel": 0.701,
+   "errorRel": 0.7,
    "pocosDatos": false
   },
   "hondarribia/bocana": {
@@ -48,9 +48,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 3.6212,
+   "a": 3.6376,
    "p": 0.5,
-   "n": 88,
+   "n": 89,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -60,7 +60,7 @@
    "dias": 4,
    "hMin": 0.3,
    "hMax": 3.59,
-   "errorRel": 0.645,
+   "errorRel": 0.648,
    "pocosDatos": false
   },
   "zumaia/c": {
@@ -93,9 +93,9 @@
    "pocosDatos": false
   },
   "deba/rompiente": {
-   "a": 4.3205,
+   "a": 4.5046,
    "p": 0.5,
-   "n": 21,
+   "n": 22,
    "nEtiquetas": 2,
    "nEtiquetasClaude": 3,
    "franjasClaude": [
@@ -104,13 +104,13 @@
    "dias": 4,
    "hMin": 0.3,
    "hMax": 3.59,
-   "errorRel": 0.935,
+   "errorRel": 0.987,
    "pocosDatos": false
   },
   "mundaka/principal": {
-   "a": 3.1595,
+   "a": 3.168,
    "p": 0.5,
-   "n": 61,
+   "n": 62,
    "nEtiquetas": 11,
    "nEtiquetasClaude": 3,
    "franjasClaude": [
@@ -120,7 +120,7 @@
    "dias": 4,
    "hMin": 0.3,
    "hMax": 2.18,
-   "errorRel": 0.63,
+   "errorRel": 0.628,
    "pocosDatos": false
   },
   "bakio/principal": {
@@ -178,9 +178,9 @@
    "pocosDatos": false
   },
   "berria/dinamico": {
-   "a": 4.2302,
+   "a": 4.248,
    "p": 0.5,
-   "n": 46,
+   "n": 47,
    "nEtiquetas": 8,
    "nEtiquetasClaude": 9,
    "franjasClaude": [
@@ -190,7 +190,7 @@
    "dias": 4,
    "hMin": 0.75,
    "hMax": 3.12,
-   "errorRel": 0.803,
+   "errorRel": 0.799,
    "pocosDatos": false
   },
   "mutriku/principal": {
@@ -264,8 +264,8 @@
    "sustituye": true,
    "motivo": "7 etiquetas",
    "ruido": {
-    "ruido": 1.028,
-    "pares": 9
+    "ruido": 0.934,
+    "pares": 10
    }
   },
   "donostia": {
@@ -288,8 +288,8 @@
    "sustituye": true,
    "motivo": "18 etiquetas",
    "ruido": {
-    "ruido": 0.492,
-    "pares": 55
+    "ruido": 0.508,
+    "pares": 56
    }
   },
   "getaria": {
