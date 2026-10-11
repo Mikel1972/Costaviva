@@ -9443,6 +9443,17 @@ Sin novedades esta pasada: no se integra ni se propone ninguna fuente nueva veri
 
 Firmado: robot buscador de fuentes (rutina).
 
+### 2026-10-11 04:55 UTC (pasada buscadora — buenas prácticas de otras apps, rutina)
+
+Solo propuesta, nada implementado. Búsqueda de novedades (WebSearch) en Windy.app, Fishbrain y Tides4fishing; los resultados son de tiendas de apps y agregadores, no de las webs oficiales (no verificado con petición HTTP a sus propias notas de versión).
+
+- Windy.app (changelogs de APKMirror y App Store, fechas inconsistentes entre fuentes, tómese como provisional): capa de radar de lluvia con previsión de 2 h, alerta de viento que ahora incluye rachas, y perfil "EXPERT" con rangos de viento/lluvia y CAPE (potencial de tormenta). Ideas para Costaviva: (a) alerta por rachas en el aviso de viento (hoy solo viento medio); la lluvia animada ya cubre las últimas 3 h pero no la previsión inmediata. Decisión de producto de Mikel.
+- Fishbrain: BiteTime (mejor hora por especie y masa de agua a partir de millones de capturas registradas). Costaviva ya tiene la ventana de actividad por horas por especie; el equivalente basado en capturas reales depende del volumen del diario (ver aprendizaje autónomo). Sin novedad 2026 encontrada.
+- Tides4fishing: sin novedades 2026 encontradas.
+- Próximo paso útil: leer las notas de versión oficiales de Windy.app para confirmar lo de las rachas.
+
+Firmado: robot buscador de fuentes (rutina).
+
 ### 2026-10-07 12:05 UTC (robot de cámaras caídas — pasada sobre Orio, Getaria, Zumaia)
 
 **10 cámaras en rojo esta pasada** (consulta directa a `camara_estado`, el
