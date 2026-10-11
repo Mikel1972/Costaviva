@@ -6,6 +6,12 @@
 // "en" + x-default. Las de España siguen solo en español, sin hreflang, con
 // las mismas canónicas: su HTML no cambia.
 //
+// Portugués europeo (2026-10-11): las páginas de los spots de Portugal (sus
+// spots y mareas y la región), las de especies y su índice tienen versión en
+// /pt/ con las mismas rutas (/pt/spots/cascais, /pt/mareas/cascais,
+// /pt/especies/lubina...; paginas-pt.js). Ese par lleva hreflang es, pt-PT y
+// x-default (español) en las dos versiones; el resto de España sigue igual.
+//
 // Si un día hay versión inglesa de una página de España: documento({ ...,
 // idioma: "en", alternos: ["es", "en"] }) pone <html lang="en">, og:locale
 // en_NZ, canónica /en/... y los hreflang es, en y x-default (español) en las
@@ -15,6 +21,7 @@ export const PUBLICAR_EN = true;
 export const IDIOMAS_SEO = {
   es: { prefijo: "", lang: "es", hreflang: "es", ogLocale: "es_ES" },
   en: { prefijo: "/en", lang: "en", hreflang: "en", ogLocale: "en_NZ" },
+  pt: { prefijo: "/pt", lang: "pt-PT", hreflang: "pt-PT", ogLocale: "pt_PT" },
 };
 
 // "/spots/bakio" -> "/en/spots/bakio" (y "/" -> "/en/").
@@ -24,10 +31,10 @@ export function rutaIdioma(ruta, idioma = "es") {
   return ruta === "/" ? `${p}/` : `${p}${ruta}`;
 }
 
-// "/en/spots/bakio" -> { idioma: "en", ruta: "/spots/bakio" }.
+// "/en/spots/bakio" -> { idioma: "en", ruta: "/spots/bakio" }; igual con /pt/.
 export function idiomaDeRuta(pathname) {
-  const m = /^\/en(\/.*)?$/.exec(pathname || "");
-  if (m) return { idioma: "en", ruta: m[1] || "/" };
+  const m = /^\/(en|pt)(\/.*)?$/.exec(pathname || "");
+  if (m) return { idioma: m[1], ruta: m[2] || "/" };
   return { idioma: "es", ruta: pathname || "/" };
 }
 

@@ -59,12 +59,32 @@ export function migasJsonLd(migas) {
 }
 
 export function migasHtml(migas, idioma = "es") {
-  return `<nav class="migas" aria-label="${idioma === "en" ? "Breadcrumb" : "Migas de pan"}"><ol>${migas
+  const etiqueta = { en: "Breadcrumb", pt: "Navegação estrutural" }[idioma] || "Migas de pan";
+  return `<nav class="migas" aria-label="${etiqueta}"><ol>${migas
     .map((m, i) => (i === migas.length - 1 ? `<li aria-current="page">${esc(m.nombre)}</li>` : `<li><a href="${esc(m.ruta)}">${esc(m.nombre)}</a></li>`))
     .join("")}</ol></nav>`;
 }
 
 const LOGO = `<svg class="marca-logo" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><circle class="marca-fondo" cx="20" cy="20" r="19"/><path class="marca-pez" d="M9 17c4-6.5 14-6.5 19 0-5 6.5-15 6.5-19 0z"/><path class="marca-pez" d="M27.5 17l6-4.5v9z"/><circle class="marca-ojo" cx="13.5" cy="16" r="1.4"/><path class="marca-ola" d="M5 28c3.5-3.2 6.5-3.2 10 0s6.5 3.2 10 0 6.5-3.2 10 0"/></svg>`;
+
+// Precios que enseñan las llamadas a la app (los mismos en todos los idiomas).
+export const PRECIO_MES = "3,99 €";
+export const PRECIO_ANO = "39,99 €";
+
+// Llamada a la app en portugués (páginas /pt/, 2026-10-11).
+export function ctaPt(titulo = "Experimente a Costaviva 7 dias grátis") {
+  return `<section class="cta" aria-label="Experimente a Costaviva">
+  <p class="cta-titulo">${esc(titulo)}</p>
+  <ul class="cta-lista">
+    <li>Índice de pesca hora a hora e a melhor janela do dia</li>
+    <li>Alarmes de condições e SOS com a sua localização</li>
+    <li>Diário de pesca com os dados do momento de cada captura</li>
+    <li>Grupos privados para partilhar pesqueiros e saídas</li>
+  </ul>
+  <a class="cta-boton" href="/login?alta=1">Comece grátis →</a>
+  <p class="cta-sub">Sem cartão. Depois, ${PRECIO_MES}/mês ou ${PRECIO_ANO}/ano.</p>
+</section>`;
+}
 
 // Llamada a la app: siempre a /login?alta=1 (mismo destino que /mareas).
 export function cta(titulo = "Prueba Costaviva 7 días gratis") {
@@ -77,7 +97,7 @@ export function cta(titulo = "Prueba Costaviva 7 días gratis") {
     <li>Grupos privados para compartir spots y salidas</li>
   </ul>
   <a class="cta-boton" href="/login?alta=1">Empieza gratis →</a>
-  <p class="cta-sub">Sin tarjeta. Después, 3,99 €/mes o 39,99 €/año.</p>
+  <p class="cta-sub">Sin tarjeta. Después, ${PRECIO_MES}/mes o ${PRECIO_ANO}/año.</p>
 </section>`;
 }
 
@@ -97,6 +117,23 @@ ${cuerpo}
 <footer class="pie-publico">
   <p><a href="/en/spots">Fishing spots</a> · <a href="/en/species">Species</a> · <a href="/en/tides">Tides today</a> · <a href="/privacidad">Privacy (Spanish)</a> · <a href="/login">Log in</a></p>
   ${pie ? `<p class="nota">${pie}</p>` : ""}
+</footer>`;
+}
+
+// Cabecera y pie de las páginas en portugués (Portugal, 2026-10-11).
+function CABECERA_PIE_PT(cuerpo) {
+  return `<header class="cabecera-publica">
+  <a class="enlace-marca" href="/pt/spots/region/portugal" aria-label="Costaviva, início">${LOGO}<span class="logotipo">Costaviva</span></a>
+  <nav class="nav-publica" aria-label="Secções">
+    <a href="/pt/spots/region/portugal">Pesqueiros</a><a href="/pt/especies">Espécies</a><a href="/pt/mareas/region/portugal">Marés</a>
+  </nav>
+</header>
+<main class="contenido">
+${cuerpo}
+</main>
+<footer class="pie-publico">
+  <p><a href="/pt/spots/region/portugal">Pesqueiros em Portugal</a> · <a href="/pt/especies">Espécies</a> · <a href="/pt/mareas/region/portugal">Marés de hoje</a> · <a href="/spots" lang="es">España (español)</a> · <a href="/privacidad">Privacidade (em espanhol)</a> · <a href="/login">Entrar</a></p>
+  <p class="nota">Dados do mar e do tempo: Open-Meteo (CC BY 4.0). Profundidade: EMODnet Bathymetry (CC BY 4.0). Tipo de fundo: EMODnet Seabed Habitats (CC BY 4.0) e © contribuidores do OpenStreetMap (ODbL). Orientativo: não serve para navegar. Tamanhos mínimos e defesos orientativos: prevalece a norma em vigor publicada no Diário da República.</p>
 </footer>`;
 }
 
@@ -139,7 +176,7 @@ ${FUENTES_PRECARGA.map((f) => `<link rel="preload" href="${f}" as="font" type="f
 ${ld.map(jsonLd).join("\n")}
 </head>
 <body class="publica">
-${idioma === "en" ? CABECERA_PIE_EN(cuerpo, pie) : `<header class="cabecera-publica">
+${idioma === "en" ? CABECERA_PIE_EN(cuerpo, pie) : idioma === "pt" ? CABECERA_PIE_PT(cuerpo) : `<header class="cabecera-publica">
   <a class="enlace-marca" href="/" aria-label="Costaviva, inicio">${LOGO}<span class="logotipo">Costaviva</span></a>
   <nav class="nav-publica" aria-label="Secciones">
     <a href="/spots">Spots</a><a href="/especies">Especies</a><a href="/mareas">Mareas</a>
@@ -149,7 +186,7 @@ ${idioma === "en" ? CABECERA_PIE_EN(cuerpo, pie) : `<header class="cabecera-publ
 ${cuerpo}
 </main>
 <footer class="pie-publico">
-  <p><a href="/spots">Spots de pesca</a> · <a href="/especies">Especies</a> · <a href="/mareas">Mareas hoy</a> · <a href="/en/spots" lang="en">New Zealand (English)</a> · <a href="/privacidad">Privacidad</a> · <a href="/login">Entrar</a></p>
+  <p><a href="/spots">Spots de pesca</a> · <a href="/especies">Especies</a> · <a href="/mareas">Mareas hoy</a> · <a href="/en/spots" lang="en">New Zealand (English)</a> · <a href="/pt/spots/region/portugal" lang="pt-PT">Portugal (português)</a> · <a href="/privacidad">Privacidad</a> · <a href="/login">Entrar</a></p>
   <p class="nota">Datos de mar y tiempo: Open-Meteo (CC BY 4.0). Profundidad: EMODnet Bathymetry (CC BY 4.0). Tipo de fondo: EMODnet Seabed Habitats (CC BY 4.0) y © colaboradores de OpenStreetMap (ODbL). Orientativo: no sirve para navegar. Tallas y vedas orientativas: manda la norma vigente publicada en el boletín oficial.</p>
 </footer>`}
 </body>
@@ -164,6 +201,20 @@ export function respuestaHtml(html, { status = 200, ttl = TTL_FIJA_S, noindex = 
 
 // Página 404 de verdad (status 404 y noindex), con enlaces útiles.
 export function html404({ que = "página", volver = "/spots", volverTexto = "Ver todos los spots" } = {}) {
+  // Páginas en portugués (/pt/...): la 404 en portugués.
+  if (volver.startsWith("/pt/")) {
+    const html = documento({
+      titulo: "Página não encontrada | Costaviva",
+      descripcion: "Esta página não existe na Costaviva.",
+      ruta: volver.slice(3),
+      noindex: true,
+      idioma: "pt",
+      cuerpo: `<h1>Não encontrámos esta página</h1>
+<p class="intro">A ligação pode estar mal escrita ou a página pode já não existir.</p>
+<p><a class="cta-boton" href="${esc(volver)}">${esc(volverTexto)}</a></p>`,
+    });
+    return { html, status: 404, ttl: TTL_SIN_DATOS_S, noindex: true };
+  }
   // Páginas de Nueva Zelanda (/en/...): la 404 en inglés.
   if (volver.startsWith("/en/")) {
     const html = documento({
