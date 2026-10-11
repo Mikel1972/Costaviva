@@ -1,13 +1,13 @@
 {
- "fecha": "2026-10-11T16:44:50.933Z",
- "lineasHistorial": 833,
+ "fecha": "2026-10-11T18:37:21.848Z",
+ "lineasHistorial": 834,
  "etiquetas": 138,
  "etiquetasClaude": 43,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.2036,
+   "a": 1.2003,
    "p": 0.5,
-   "n": 35,
+   "n": 36,
    "nEtiquetas": 7,
    "nEtiquetasClaude": 3,
    "franjasClaude": [
@@ -16,7 +16,7 @@
    "dias": 4,
    "hMin": 0.15,
    "hMax": 0.54,
-   "errorRel": 0.7,
+   "errorRel": 0.695,
    "pocosDatos": false
   },
   "hondarribia/bocana": {
@@ -48,9 +48,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 3.6376,
+   "a": 3.6613,
    "p": 0.5,
-   "n": 89,
+   "n": 90,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -60,7 +60,7 @@
    "dias": 4,
    "hMin": 0.3,
    "hMax": 3.59,
-   "errorRel": 0.648,
+   "errorRel": 0.656,
    "pocosDatos": false
   },
   "zumaia/c": {
@@ -362,6 +362,30 @@
    "ruido": {
     "ruido": 0.452,
     "pares": 4
+   }
+  },
+  "nz-napier": {
+   "sustituye": false,
+   "motivo": "ruido aún sin medir (0 pares de lecturas cercanas)",
+   "ruido": {
+    "ruido": null,
+    "pares": 0
+   }
+  },
+  "nz-aramoana": {
+   "sustituye": false,
+   "motivo": "ruido aún sin medir (0 pares de lecturas cercanas)",
+   "ruido": {
+    "ruido": null,
+    "pares": 0
+   }
+  },
+  "nz-riverton": {
+   "sustituye": false,
+   "motivo": "ruido aún sin medir (0 pares de lecturas cercanas)",
+   "ruido": {
+    "ruido": null,
+    "pares": 0
    }
   }
  }
