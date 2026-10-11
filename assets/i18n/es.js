@@ -370,7 +370,7 @@
   "mapa.luna.f_cuarto_menguante": "Cuarto menguante",
   "mapa.luna.f_menguante": "Menguante",
   "mapa.viento.ahora_hora": "ahora ({hora})",
-  "mapa.cam.sin_senal_title": "Sin señal detectada en la webcam",
+  "mapa.cam.sin_camara_title": "Sin cámara funcionando ahora",
   "va.mod.costa": "Desde costa",
   "va.mod.embarcacion": "Embarcación",
   "va.mod.submarina": "Submarina",

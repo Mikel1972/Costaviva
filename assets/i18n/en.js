@@ -370,7 +370,7 @@
   "mapa.luna.f_cuarto_menguante": "Last quarter",
   "mapa.luna.f_menguante": "Waning crescent",
   "mapa.viento.ahora_hora": "now ({hora})",
-  "mapa.cam.sin_senal_title": "No signal detected on the webcam",
+  "mapa.cam.sin_camara_title": "No working camera right now",
   "va.mod.costa": "From shore",
   "va.mod.embarcacion": "Boat",
   "va.mod.submarina": "Spearfishing",

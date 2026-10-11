@@ -53,6 +53,7 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { WEBCAMS } from "../../functions/webcam/[slug].js";
+import { decidirEstado, UMBRAL_DESVIACION, UMBRAL_FALLOS_SEGUIDOS } from "./decidir-estado.mjs";
 import { CAMARAS_EXTERNAS, claveSalud, resultadoComprobacionExterna, lecturaSaludExterna } from "../../assets/js/camaras-externas.js";
 
 const BASE_URL = "https://costaviva.org";
@@ -65,12 +66,8 @@ if (!CRON_SECRET) {
   process.exit(1);
 }
 
-// Umbrales de diseño, no calibrados en laboratorio (mismo criterio que
-// otros umbrales del repo, ej. indiceMar()) — revisar si dan falsos
-// positivos/negativos en real.
-const UMBRAL_DESVIACION = 3; // desviación típica de brillo (0-255) mínima para no ser "plano"
-const UMBRAL_CONGELADA_MS = 3 * 60 * 60 * 1000; // 3h con el mismo frame -> "congelado"
-const UMBRAL_FALLOS_SEGUIDOS = 2; // fallos/frame plano seguidos antes de mostrarlo (evita baches de red de una sola pasada)
+// Umbrales y decisión de salud de las cámaras propias: decidir-estado.mjs
+// (con test, test/estado-camaras.test.js).
 
 // Mismas URLs que WEBCAMS_HLS en index.html — mantener sincronizado a
 // mano, igual que ya hace SPOTS_VIDEO en scripts/turbidez/medir-turbidez.mjs.
@@ -211,37 +208,6 @@ async function comprobarExterna(camara, pedir = pedirSinCuerpo) {
   } catch {
     return { ok: false, motivo: "sin_respuesta" };
   }
-}
-
-// A partir del resultado bruto de esta pasada y el estado guardado la
-// pasada anterior, decide sinSenal/motivo/hashFrame/hashDesde/fallosSeguidos.
-// Vive aparte de comprobarImagen/comprobarVideo porque necesita el estado
-// previo (que esas funciones no conocen) para poder comparar el hash y
-// contar fallos consecutivos.
-function decidirEstado(bruto, previo, ahoraISO) {
-  if (!bruto.ok) {
-    // No se pudo ni descargar/decodificar — se conserva el hash previo tal
-    // cual (no se puede comparar nada esta vez), nunca se inventa uno.
-    const fallosSeguidos = (previo?.fallosSeguidos ?? 0) + 1;
-    return {
-      sinSenal: fallosSeguidos >= UMBRAL_FALLOS_SEGUIDOS,
-      motivo: bruto.motivo,
-      fallosSeguidos,
-      hashFrame: previo?.hashFrame ?? null,
-      hashDesde: previo?.hashDesde ?? null,
-    };
-  }
-  const mismoHash = !!previo?.hashFrame && previo.hashFrame === bruto.hash;
-  const hashDesde = mismoHash ? (previo.hashDesde ?? ahoraISO) : ahoraISO;
-
-  if (bruto.desviacion < UMBRAL_DESVIACION) {
-    const fallosSeguidos = (previo?.fallosSeguidos ?? 0) + 1;
-    return { sinSenal: fallosSeguidos >= UMBRAL_FALLOS_SEGUIDOS, motivo: "frame_plano", fallosSeguidos, hashFrame: bruto.hash, hashDesde };
-  }
-  // Lectura buena de verdad -> se resetea el contador de fallos seguidos,
-  // aunque acabe marcándose congelada por el motivo independiente del hash.
-  const congelada = mismoHash && Date.now() - new Date(hashDesde).getTime() > UMBRAL_CONGELADA_MS;
-  return { sinSenal: congelada, motivo: congelada ? "frame_congelado" : "ok", fallosSeguidos: 0, hashFrame: bruto.hash, hashDesde };
 }
 
 // Lee el estado guardado la pasada anterior de cada cámara — hace falta

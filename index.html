@@ -3484,10 +3484,12 @@ function grosorTramo(punto) {
 const marcadoresPorSlug = new Map();
 function crearMarcadorSpot(s) {
   const color = colorIndiceMarCss(s.indice);
-  const tieneWebcam = !s.esUsuario && SPOTS_CON_WEBCAM.includes(s.slug);
+  // Punto de cámara en todos los spots del catálogo (2026-10-11): verde o
+  // rojo según estadoCamaraSpot (camaras-externas.js). Nace oculto y lo
+  // pinta pintarPuntoCamara() cuando ya se sabe el estado.
   const html = `
     <div style="display:flex; flex-direction:column; align-items:center;">
-      <div class="etiqueta-spot">${s.nombre}${tieneWebcam ? `<span class="punto-webcam-viva" id="webcam-punto-${s.slug}" title="${I18n.t("mapa.webcam_en_directo")}"></span>` : ""}</div>
+      <div class="etiqueta-spot">${s.nombre}${!s.esUsuario ? `<span class="punto-webcam-viva" id="webcam-punto-${s.slug}" style="display:none;"></span>` : ""}</div>
       <div style="display:flex; align-items:center; gap:3px;">
         ${iconoFlecha(gradosDesdeTexto(s.dirOla), "#2E7BA0")}
         ${iconoFlecha(gradosDesdeTexto(s.dirViento), "#D4A24C")}
@@ -4601,17 +4603,44 @@ const HORAS_CAMARA_RETIRADA = 24;
 // las 24 h: Pasaia estuvo días enseñando la misma imagen del 7 de octubre
 // (2026-10-11). Para ella cuenta desde cuándo la imagen es la misma
 // (congeladaDesde, hash_desde en camara_estado), no la última lectura.
+// La regla vive en camaras-externas.js (inicioSinSenal, camaraOculta), con
+// test; aquí solo hay respaldo por si el módulo aún no ha cargado.
 function inicioSinSenal(c) {
+  const CE = globalThis.CamarasExternas;
+  if (CE?.inicioSinSenal) return CE.inicioSinSenal(c);
   if (c?.motivo === "frame_congelado" && c.congeladaDesde) return c.congeladaDesde;
   return c?.ultimaSenalEn ?? null;
 }
 function camaraRetirada(slug) {
   const c = CAMARAS[slug];
+  const CE = globalThis.CamarasExternas;
+  if (CE?.camaraOculta) return CE.camaraOculta(c);
   if (!c?.sinSenal) return false;
   const desde = inicioSinSenal(c);
   if (!desde) return true;
   return Date.now() - new Date(desde).getTime() > HORAS_CAMARA_RETIRADA * 3600 * 1000;
 }
+// Punto de cámara del mapa (2026-10-11, "Verde = cámara. Rojo = no
+// cámara", Mikel): mismo criterio que la ficha, ver estadoCamaraSpot en
+// assets/js/camaras-externas.js. Solo España y Portugal: /prevision?region=nz
+// no trae el estado de las cámaras, así que en NZ no se pinta. Sin el
+// estado de las cámaras (aún sin cargar, o /prevision sin `camaras`) tampoco:
+// no se pinta un color que no se sabe. "no_verificable" (solo enlaces de
+// dueños que bloquean robots, MEO Beachcam) se queda sin punto, como estaba,
+// hasta que Mikel decida su color.
+function pintarPuntoCamara(s) {
+  const punto = document.getElementById(`webcam-punto-${s.slug}`);
+  if (!punto) return;
+  const CE = window.CamarasExternas;
+  const estado = CE?.estadoCamaraSpot && s.pais !== "nz" && Object.keys(CAMARAS).length
+    ? CE.estadoCamaraSpot(s.slug, SPOTS_CON_WEBCAM.includes(s.slug), CAMARAS)
+    : null;
+  punto.dataset.estado = estado || "";
+  punto.style.display = estado === "verde" || estado === "rojo" ? "" : "none";
+  punto.classList.toggle("sin-senal", estado === "rojo");
+  punto.title = estado === "rojo" ? I18n.t("mapa.cam.sin_camara_title") : I18n.t("mapa.webcam_en_directo");
+}
+window.addEventListener("camaras-externas-listas", () => todosLosSpots().forEach(pintarPuntoCamara));
 function lineaCamaraSaludHtml(slug) {
   const c = CAMARAS[slug];
   if (!c?.sinSenal) return "";
@@ -6015,13 +6044,7 @@ function refrescarIndicesVisibles() {
     marcadorEl.style.background = color;
     const anillo = marcadorEl.parentElement?.querySelector(".anillo-pulso");
     if (anillo) anillo.style.background = color;
-    const puntoWebcam = document.getElementById(`webcam-punto-${s.slug}`);
-    if (puntoWebcam) {
-      const sinSenal = !!CAMARAS[s.slug]?.sinSenal;
-      puntoWebcam.style.display = camaraRetirada(s.slug) ? "none" : "";
-      puntoWebcam.classList.toggle("sin-senal", sinSenal);
-      puntoWebcam.title = sinSenal ? I18n.t("mapa.cam.sin_senal_title") : I18n.t("mapa.webcam_en_directo");
-    }
+    pintarPuntoCamara(s);
   });
   const estadoEl = document.getElementById("estadoVigenciaGlobal");
   if (estadoEl) estadoEl.textContent = textoVigencia();
