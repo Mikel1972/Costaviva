@@ -16,7 +16,8 @@
 //
 // Escribe los ids en functions/_lib/stripe-ids.json (por modo: test/live).
 // Con --portal pone esos precios (salvo los de fundador, que tienen cupo) en
-// la configuración por defecto del portal de cliente, para cambiar de plan.
+// la configuración por defecto del portal de cliente, para cambiar de plan, y
+// añade invoice.upcoming al webhook de /stripe-webhook (aviso de renovación).
 //
 // Variables: STRIPE_SECRET_KEY, MODO (test | live). Con --comprobar solo lee.
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
@@ -179,6 +180,22 @@ if (conPortal && !soloComprobar && !errores.length) {
     resumen.push(`Portal de cliente: ${conf ? "actualizada" : "creada"} la configuración por defecto (cambio de plan + cancelación al final del periodo).`);
   } catch (e) {
     resumen.push(`Portal de cliente: NO actualizado (${e.message}).`);
+  }
+}
+
+// Webhook: el aviso de renovación anual necesita invoice.upcoming. Se añade
+// (sin quitar nada) a los endpoints que apuntan a /stripe-webhook.
+if (conPortal && !soloComprobar) {
+  try {
+    const eps = await stripe("GET", "/webhook_endpoints?limit=100");
+    for (const ep of eps.data.filter((x) => /\/stripe-webhook$/.test(x.url))) {
+      const ev = ep.enabled_events || [];
+      if (ev.includes("*") || ev.includes("invoice.upcoming")) { resumen.push(`Webhook ${ep.url}: ya recibe invoice.upcoming.`); continue; }
+      await stripe("POST", `/webhook_endpoints/${ep.id}`, { enabled_events: [...ev, "invoice.upcoming"] });
+      resumen.push(`Webhook ${ep.url}: añadido invoice.upcoming (aviso de renovación anual).`);
+    }
+  } catch (e) {
+    resumen.push(`Webhook: no se pudo revisar (${e.message}).`);
   }
 }
 
