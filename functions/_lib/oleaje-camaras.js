@@ -71,6 +71,12 @@ export const CAMARAS_OLEAJE = {
   sopelana: { spot: "sopelana", nombre: "Sopela", expuesta: true, orientacion: 300, lat: 43.3878, lon: -2.9975 },
   berria: { spot: "santona", nombre: "Berria (Santoña)", expuesta: true, orientacion: 0, lat: 43.4615, lon: -3.4655 },
   castrourdiales: { spot: "castrourdiales", nombre: "Castro Urdiales (Ostende)", expuesta: false, orientacion: 45, lat: 43.385, lon: -3.205 },
+  // Nueva Zelanda (2026-10-11, decisión de Mikel; inventario y motivos en
+  // scripts/oleaje-camaras/camaras.mjs, CAMARAS_NZ_OLA y NO_SIRVEN_NZ).
+  // Coordenadas = zona medida (para la luz y la referencia).
+  "nz-napier": { spot: "nz-napier", nombre: "Napier (Marine Parade)", expuesta: true, orientacion: 100, lat: -39.4975, lon: 176.9205 },
+  "nz-aramoana": { spot: "nz-aramoana", nombre: "Aramoana (boca del puerto de Otago)", expuesta: false, orientacion: 40, lat: -45.776, lon: 170.722 },
+  "nz-riverton": { spot: "nz-riverton", nombre: "Riverton (barra del Aparima)", expuesta: false, orientacion: 170, lat: -46.362, lon: 168.022 },
 };
 
 // Spot -> cámara cuya lectura se usa. Spots con cámara propia: la suya
@@ -98,6 +104,12 @@ export const FUENTE_POR_SPOT = {
   sopelana: { camara: "sopelana", propia: true },
   castrourdiales: { camara: "castrourdiales", propia: true },
   santona: { camara: "berria", propia: false, peso: 0.8, motivo: "la cámara de Berria está al otro lado del Buciero: corrige el mar abierto; el abrigo de la bahía se mantiene" },
+  // Nueva Zelanda (2026-10-11). Napier: la cámara mira la playa abierta de
+  // Marine Parade, a ~2,5 km del muelle de Ahuriri del spot (otro abrigo):
+  // como Santoña, corrige el mar abierto y no da la altura del spot.
+  "nz-aramoana": { camara: "nz-aramoana", propia: true },
+  "nz-riverton": { camara: "nz-riverton", propia: true },
+  "nz-napier": { camara: "nz-napier", propia: false, peso: 0.8, motivo: "la cámara mira la playa abierta de Marine Parade, a 2,5 km del muelle de Ahuriri: corrige el mar abierto; el abrigo del puerto se mantiene" },
   // Vecinas (sin cámara usable).
   ondarroa: { camara: "mutriku", propia: false, peso: 0.8, motivo: "a 3 km, misma costa abierta al N" },
   lekeitio: { camara: "deba", propia: false, peso: 0.5, motivo: "a 13 km, costa abierta al N (la de Lekeitio mira al puerto)" },
@@ -148,7 +160,7 @@ export function factorCamara(cociente, horas, peso = 1) {
 
 // Hora local "YYYY-MM-DDTHH:MM" de un instante en la zona del spot (las horas
 // del modelo en /prevision vienen en esa hora local, sin zona). Por defecto
-// Madrid: todas las cámaras de oleaje están hoy en la Península.
+// Madrid (compatibilidad); las de NZ pasan su zona (zonaDeSpot).
 export function isoLocalSpot(ms, zona = ZONA_POR_DEFECTO) {
   return isoLocal(ms, zona);
 }

@@ -688,13 +688,86 @@ CC BY 3.0 NZ»). Siguen en `enlace` por motivo técnico (`motivo_sin_embed`):
 Primo (bloquea el enlace directo a sus imágenes: no se rodea) y Port Otago
 (solo imágenes con la hora en el nombre, sin URL estable). GeoNet y Cam-Era
 sirven `application/octet-stream`: el robot lo acepta en `imagen_oficial`.
-Reglas que siguen: nunca analizar sus fotogramas; nada de Facebook ni
+Reglas que siguen: sus fotogramas solo se analizan para la ola, con el
+interruptor por dueño de la sección siguiente; nada de Facebook ni
 Instagram; YouTube solo como enlace; nunca saltarse un bloqueo. Cada
 entrada lleva `verificada` (fecha y cómo: imagen de hoy y fotograma de día
 mirado). Bloqueadas desde la nube (no se rodean): ECan,
 Waikato Regional Council (Incapsula), DCC, Timaru DC, Tasman DC, Port Nelson
 (403), Surf2surf (ahora Surfline, reto de Cloudflare) y la cámara de Westland
 DC (puerto 85). Coastal Cams y Outdoor Access son de pago.
+
+## Oleaje por cámara en NZ: todas, con interruptor por dueño (2026-10-11)
+
+**Decisión expresa de Mikel (2026-10-11):** calcular la altura de la ola con
+TODAS las cámaras de NZ, como en España, aunque los dueños aún no hayan dado
+permiso (los emails para pedirlo están en preparación).
+
+- **Interruptor `NZ_ANALISIS_AUTORIZADO`** (en `assets/js/camaras-nz.js`), uno
+  por dueño, en `true` por decisión de Mikel. Si un dueño dice que no, se pone
+  su clave en `false` y su cámara deja de analizarse en la siguiente ejecución
+  (`camaras.mjs` la saca de `CAMARAS`; `analisis_permitido` de cada dueño y
+  cámara sale de ahí). Excepción fijada por Mikel: si los términos publicados
+  del dueño prohíben EXPRESAMENTE el uso automatizado, el scraping o el
+  análisis de sus imágenes, se queda en `false` y lo decide Mikel. Hoy:
+  **`earth_sciences_camera` = false** (Cam-Era de Tairua y Pauanui): sus
+  términos (niwa.co.nz/about-niwa/terms) dicen «Use any text or data mining or
+  web scraping tool in relation to our web applications without our express
+  written permission, including by using any "robot", "bot", "spider",
+  "scraper" [...] or other automated device or tool to access, monitor,
+  compile or copy any part of our web applications or material» (cita en
+  `prohibicion`). El resto, `true`. Si Mikel pusiera Cam-Era en `true`, haría
+  falta además dibujar su referencia y su ROI en `CAMARAS_NZ_OLA`.
+- **Mismo sistema que en España** (sección "Oleaje por cámara" de abajo):
+  referencia + ROI de la rompiente por cámara (solo fotogramas de día y con el
+  mismo encuadre que la referencia), métrica de espuma, calibración
+  `a·espuma^p` por cámara y las mismas barreras de `camaraSustituyeModelo()`:
+  todas empiezan "en calibración" (`sustituye_modelo = false`; si la cámara es
+  propia del spot, solo la "referencia de cámara" secundaria).
+- **Qué se mide (`CAMARAS_NZ_OLA` en `camaras.mjs`, referencias
+  `referencias/nz-*.jpg` del amanecer del 12-10 en NZ):** Napier (Marine
+  Parade, cámara 1 del ayuntamiento; rompiente sobre grava junto a la orilla,
+  que apenas se mueve con la marea; para el spot de Ahuriri es VECINA, peso
+  0,8, como Santoña), Aramoana (Port Otago, Taiaroa Head cámara 2: la boca del
+  puerto más allá del espigón; la URL de la foto cambia en cada captura y se
+  lee de su página pública de webcams) y Riverton (SouthLoop, barra del
+  Aparima). **Qué no y por qué (`NO_SIRVEN_NZ`):** Cam-Era (términos), Primo
+  Port Taranaki (bloquea: fuera de su red sus fotos redirigen a
+  /camera-access-info/; no se rodea), CoroLive Whitianga y Whangamatā
+  (panorámicas lejanas sin rompiente) y GeoNet Whakatāne y Te Kaha (cámaras de
+  volcán, mar abierto sin costa). Las "pendientes" del inventario de NZ que no
+  están en `camaras-nz.js` no entran.
+- **Sin imagen pública:** sin permiso escrito, las de NZ llevan
+  `sinMiniaturaPublica` (no se suben al bucket `oleaje-camaras`; Napier, por
+  ejemplo, no permite reproducir sus imágenes en otro sitio). Se guarda la
+  cifra, no la foto.
+- **Referencia física:** no hay boyas de oleaje de NZ en Copernicus In Situ
+  GLO (`index_latest.txt` del 2026-10-11: solo Argo, boyas a la deriva sin
+  olas y barcos) y las de ECan/BoPRC no tienen licencia verificada. La
+  referencia automática es el oleaje de Open-Meteo (peso 0,5; en NZ siempre
+  Open-Meteo, `envMarRegion`, porque Copernicus IBI no cubre NZ). Las
+  etiquetas mandan, y la ola del modelo nunca es la verdad de una etiqueta:
+  en el `lote.json` de NZ ni siquiera va el modelo.
+- **Luz:** cada cámara se mide solo con el sol ≥ 8° en su sitio
+  (`camarasConLuz`); en NZ, ~18-06 UTC (Pacific/Auckland). `espuma-camaras.yml`
+  tiene dos líneas de cron: `7,37 5-18` (España) y `7,37 0-4,19-23` (NZ, las
+  horas que faltan): entre las dos, cada 30 min todo el día, ~15 s sin luz.
+  Las boyas de Copernicus (IBI) solo se piden con luz en España.
+- **pg_cron:** `espuma-camaras.yml` ya está en la lista cerrada de
+  `lanzar_workflow_github()`; la línea de NZ necesita un `cron.schedule` nuevo,
+  `20261011180000_programador_espuma_nz.sql`, **SIN APLICAR** (pendiente del
+  sí de Mikel). Sin ella, el `schedule:` de GitHub hace de respaldo.
+- **/prevision?region=nz** aplica las lecturas igual que España
+  (`aplicarCamarasASpots` + `aplicarReferenciasCamara`; una subpetición más a
+  Supabase).
+- **Etiquetas:** `RUTINA_ETIQUETADO.md` cubre NZ (`--region nz`, una segunda
+  rutina hacia las 23:00 UTC = mediodía en Auckland). **Pendiente (Mikel):**
+  crear esa segunda rutina. Una cámara de NZ sustituye al modelo, como en
+  España, con ruido ≤ ±30 % en ≥ 3 pares de lecturas cercanas, o 5 etiquetas
+  de personas, o 8 de Claude en ≥ 2 franjas de 2 h con error ≤ 75 %, o ≥ 3
+  días con alturas variadas.
+- Tests: `test/oleaje-camaras.test.js` ("NZ: …") y
+  `test/camaras-externas.test.js` (interruptor).
 
 ## Oleaje costero: mar abierto frente a "en la playa" (2026-10-08)
 

@@ -33,7 +33,7 @@
 // mantiene (el encuadre principal de cada una) por compatibilidad.
 import { CAMARAS } from "./camaras.mjs";
 export const ROI_CAMARAS = Object.fromEntries(
-  Object.entries(CAMARAS).filter(([, c]) => c.encuadres.length).map(([id, c]) => [id, { ...c.encuadres[0].roi, url: c.url }])
+  Object.entries(CAMARAS).filter(([, c]) => c.encuadres.length).map(([id, c]) => [id, { ...c.encuadres[0].roi, url: c.url || c.pagina }])
 );
 
 // Umbrales probados con los 6 frames del 2026-10-08 11:57. La cámara de
