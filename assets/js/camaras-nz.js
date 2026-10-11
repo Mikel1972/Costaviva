@@ -2,13 +2,14 @@
 //
 // Cámaras de TERCEROS para los 60 spots de Nueva Zelanda (2026-10-11).
 // Mismo formato que assets/js/camaras-externas.js (id, spot, nombre, dueno,
-// condiciones, modo, url, rompiente, analisis_permitido, visto_en), en un
-// módulo aparte. NZ es pública desde la PR #176: camarasNZVisibles(
-// REGIONES_ACTIVAS) devuelve la lista entera. PENDIENTE: ni index.html ni el
-// robot de salud (scripts/camaras/comprobar-camaras.mjs) la cargan todavía;
-// hay que sumarla a la lista de la app y del robot. Módulo ES sin
-// dependencias (el navegador no puede cargar functions/): quien llame pasa
-// REGIONES_ACTIVAS; sin argumento, nada se ve. test/nz-region.test.js.
+// condiciones, modo, url, rompiente, analisis_permitido, visto_en), más
+// `nombre_en` (la ficha en inglés). Conectadas el 2026-10-11 (NZ es pública
+// desde la PR #176): camaras-externas.js las suma a CAMARAS_EXTERNAS y a
+// CONDICIONES, así que index.html las enseña en la ficha de cada spot NZ y
+// el robot de salud (camaras-salud.yml) las comprueba igual que las de
+// España (un 401/403/429 es "no verificable", no caída). `dueno` es el
+// nombre corto del dueño que sale en el botón; el largo está en
+// CONDICIONES_NZ. Módulo ES sin dependencias.
 //
 // Reglas de Mikel (2026-10-11):
 //   - Sin permiso escrito del dueño, solo modo "enlace" (botón que abre su
@@ -30,6 +31,7 @@
 
 export const CONDICIONES_NZ = {
   earth_sciences_camera: {
+    dueno_corto: "Earth Sciences NZ",
     dueno: "Earth Sciences New Zealand (antes NIWA), red costera Cam-Era",
     tipo_dueno: "publico",
     modos_permitidos: ["enlace"],
@@ -41,6 +43,7 @@ export const CONDICIONES_NZ = {
     contacto: "https://niwa.co.nz/contact-us",
   },
   geonet: {
+    dueno_corto: "GeoNet",
     dueno: "GeoNet (Earth Sciences New Zealand y Natural Hazards Commission Toka Tū Ake)",
     tipo_dueno: "publico",
     modos_permitidos: ["enlace"],
@@ -52,6 +55,7 @@ export const CONDICIONES_NZ = {
     contacto: "info@geonet.org.nz",
   },
   corolive: {
+    dueno_corto: "CoroLive",
     dueno: "CoroLive (red de webcams de la Coromandel)",
     tipo_dueno: "privado",
     modos_permitidos: ["enlace"],
@@ -63,6 +67,7 @@ export const CONDICIONES_NZ = {
     contacto: "hi@corolive.nz",
   },
   port_otago: {
+    dueno_corto: "Port Otago",
     dueno: "Port Otago Limited",
     tipo_dueno: "privado",
     modos_permitidos: ["enlace"],
@@ -72,6 +77,7 @@ export const CONDICIONES_NZ = {
     contacto: "customerservices@portotago.co.nz",
   },
   primo: {
+    dueno_corto: "Primo",
     dueno: "PrimoWireless Ltd (Primo, New Plymouth)",
     tipo_dueno: "privado",
     modos_permitidos: ["enlace"],
@@ -85,6 +91,7 @@ export const CONDICIONES_NZ = {
     contacto: "Primo, 123 Molesworth Street, New Plymouth (formulario en primo.nz)",
   },
   napier_cc: {
+    dueno_corto: "Napier City Council",
     dueno: "Napier City Council",
     tipo_dueno: "publico",
     modos_permitidos: ["enlace"],
@@ -96,6 +103,7 @@ export const CONDICIONES_NZ = {
     contacto: "info@napier.govt.nz",
   },
   southloop: {
+    dueno_corto: "SouthLoop",
     dueno: "SouthLoop (red de cámaras meteorológicas de Southland)",
     tipo_dueno: "privado",
     modos_permitidos: ["enlace"],
@@ -106,11 +114,12 @@ export const CONDICIONES_NZ = {
   },
 };
 
-const cam = (id, spot, nombre, condiciones, url, rompiente, verificada, extra = {}) => ({
+const cam = (id, spot, [nombre, nombre_en], condiciones, url, rompiente, verificada, extra = {}) => ({
   id: `nz-${id}`,
   spot,
   nombre,
-  dueno: CONDICIONES_NZ[condiciones].dueno,
+  nombre_en,
+  dueno: CONDICIONES_NZ[condiciones].dueno_corto,
   condiciones,
   modo: "enlace",
   url,
@@ -125,35 +134,35 @@ const cam = (id, spot, nombre, condiciones, url, rompiente, verificada, extra = 
 // (mirado en el fotograma de día de la verificación).
 const LISTA = [
   // --- Coromandel ---
-  cam("tairua-cam-era", "nz-tairua", "Tairua, playa (Cam-Era)", "earth_sciences_camera", "https://niwa.co.nz/tairua", true,
+  cam("tairua-cam-era", "nz-tairua", ["Tairua, playa", "Tairua beach"], "earth_sciences_camera", "https://niwa.co.nz/tairua", true,
     "2026-10-11: fotograma de las 18:00 NZDT, playa de Tairua con olas rompiendo", { km: 1.5 }),
-  cam("pauanui-norte-cam-era", "nz-tairua", "Pauanui norte: barra y estuario de Tairua (Cam-Era)", "earth_sciences_camera", "https://niwa.co.nz/pauanui-north", true,
+  cam("pauanui-norte-cam-era", "nz-tairua", ["Pauanui norte: barra de Tairua", "Pauanui North: Tairua bar"], "earth_sciences_camera", "https://niwa.co.nz/pauanui-north", true,
     "2026-10-11: fotograma de las 18:00 NZDT, entrada del estuario y Tairua al fondo", { km: 2 }),
-  cam("corolive-whitianga", "nz-whitianga", "Whitianga y Mercury Bay (CoroLive)", "corolive", "https://corolive.nz/whitianga", false,
+  cam("corolive-whitianga", "nz-whitianga", ["Whitianga y Mercury Bay", "Whitianga and Mercury Bay"], "corolive", "https://corolive.nz/whitianga", false,
     "2026-10-11: directo HLS activo y archivo del día hasta las 21:08 NZDT; fotograma de mediodía con la bahía", { km: 4 }),
-  cam("corolive-whangamata", "nz-whangamata", "Whangamatā, puerto y costa (CoroLive)", "corolive", "https://corolive.nz/whangamata", false,
+  cam("corolive-whangamata", "nz-whangamata", ["Whangamatā, puerto y costa", "Whangamatā harbour and coast"], "corolive", "https://corolive.nz/whangamata", false,
     "2026-10-11: directo activo y archivo del día hasta las 21:10 NZDT; fotograma de mediodía con el mar y el puerto", { km: 5 }),
 
   // --- Bay of Plenty ---
-  cam("geonet-whakatane", "nz-whakatane", "Whakatāne, mar hacia Whakaari (GeoNet)", "geonet", "https://www.geonet.org.nz/volcano/cameras/whakatane", false,
+  cam("geonet-whakatane", "nz-whakatane", ["Whakatāne, mar hacia Whakaari", "Whakatāne, sea towards Whakaari"], "geonet", "https://www.geonet.org.nz/volcano/cameras/whakatane", false,
     "2026-10-11: imagen cada 10 min (Last-Modified de hoy); fotograma de las 19:00 NZDT con el mar abierto", { km: 0.7 }),
-  cam("geonet-te-kaha", "nz-te-kaha", "Te Kaha, mar hacia Whakaari (GeoNet)", "geonet", "https://www.geonet.org.nz/volcano/cameras/tekaha", false,
+  cam("geonet-te-kaha", "nz-te-kaha", ["Te Kaha, mar hacia Whakaari", "Te Kaha, sea towards Whakaari"], "geonet", "https://www.geonet.org.nz/volcano/cameras/tekaha", false,
     "2026-10-11: archivo TKAH.01 del día (2026.284) y última imagen de hoy; fotograma de las 13:00 NZDT con el mar", { km: 1.5 }),
 
   // --- Gisborne / Hawke's Bay ---
-  cam("napier-marine-parade", "nz-napier", "Napier, Marine Parade (Napier City Council)", "napier_cc", "https://www.napier.govt.nz/napier/about/weather-cam/", true,
+  cam("napier-marine-parade", "nz-napier", ["Napier, Marine Parade", "Napier, Marine Parade"], "napier_cc", "https://www.napier.govt.nz/napier/about/weather-cam/", true,
     "2026-10-11: la imagen cambia entre descargas; fotograma de las 17:05 NZDT con la playa y el mar", { km: 2.5 }),
 
   // --- Taranaki ---
-  cam("primo-port-taranaki", "nz-new-plymouth", "Port Taranaki desde la chimenea (Primo)", "primo", "https://www.primo.nz/info/primo-webcams", true,
+  cam("primo-port-taranaki", "nz-new-plymouth", ["Port Taranaki desde la chimenea", "Port Taranaki from the chimney"], "primo", "https://www.primo.nz/info/primo-webcams", true,
     "2026-10-11: fotograma de las 19:00 NZDT (ChimneyCam2) con el puerto, el rompeolas y el mar", { km: 1 }),
 
   // --- Otago ---
-  cam("port-otago-aramoana", "nz-aramoana", "Taiaroa Head: Aramoana y el espigón (Port Otago)", "port_otago", "https://www.portotago.co.nz/otago-harbour/webcams", true,
+  cam("port-otago-aramoana", "nz-aramoana", ["Taiaroa Head: Aramoana y el espigón", "Taiaroa Head: Aramoana and the mole"], "port_otago", "https://www.portotago.co.nz/otago-harbour/webcams", true,
     "2026-10-11: imágenes de las 22:35-22:39 NZDT en su web; fotograma de las 17:05 NZDT con el espigón y la entrada del puerto", { km: 2 }),
 
   // --- Southland ---
-  cam("southloop-riverton", "nz-riverton", "Riverton, desembocadura del Aparima (SouthLoop)", "southloop", "https://weathercam.southloop.net.nz/camstart.php", true,
+  cam("southloop-riverton", "nz-riverton", ["Riverton, desembocadura del Aparima", "Riverton, Aparima river mouth"], "southloop", "https://weathercam.southloop.net.nz/camstart.php", true,
     "2026-10-11: imagen de las 22:47 NZDT (Last-Modified de hoy) con la desembocadura y el mar", { km: 1.5, visto_en: "weather.geek.nz" }),
 ];
 

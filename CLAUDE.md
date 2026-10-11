@@ -666,10 +666,11 @@ valor). Analizar sus fotogramas sigue prohibido en cualquier caso.
 
 `assets/js/camaras-nz.js` lista webcams de terceros con mar a la vista para
 los spots de NZ, con el mismo formato que `camaras-externas.js` pero aparte.
-`camarasNZVisibles(REGIONES_ACTIVAS)` las da todas desde que NZ es pública
-(PR #176), pero **todavía nadie lo importa** (ni `index.html` ni el robot de
-salud): falta sumarlas a la lista de la app y del robot
-(`test/nz-region.test.js`). Reglas de Mikel: sin permiso
+Desde el 2026-10-11 están conectadas: `camaras-externas.js` las suma a
+`CAMARAS_EXTERNAS` y a `CONDICIONES`, así que salen en la ficha de cada spot
+NZ (botón "View camera", con `nombre_en` en inglés y el nombre corto del
+dueño) y el robot de salud las comprueba como las de España (401/403/429 =
+`no_verificable`). `test/nz-region.test.js` exige que se carguen. Reglas de Mikel: sin permiso
 escrito del dueño, solo `enlace`, también las de licencia CC BY (NIWA/Earth
 Sciences NZ excluye las fotos de su CC BY; GeoNet es CC BY 3.0 NZ); nunca
 analizar sus fotogramas; nada de Facebook ni Instagram; YouTube solo como
