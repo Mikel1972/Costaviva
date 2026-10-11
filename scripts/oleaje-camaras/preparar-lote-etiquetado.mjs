@@ -8,7 +8,7 @@
 //
 // Dos fuentes de fotogramas:
 //   --origen camaras (por defecto): captura AHORA un fotograma de cada
-//     encuadre de las 13 cámaras (medirHls/medirImagen de medir-espuma.mjs,
+//     encuadre de las cámaras con luz (medirHls/medirImagen de medir-espuma.mjs,
 //     con sus referencias y ROI). Cada fotograma lleva su espuma medida, así
 //     que la etiqueta se puede calibrar sin depender de Supabase.
 //   --origen bucket: lista las lecturas `ok` de las últimas --horas horas en
@@ -26,7 +26,11 @@
 //
 // Uso: node scripts/oleaje-camaras/preparar-lote-etiquetado.mjs
 //        [--dir carpeta] [--origen camaras|bucket] [--horas 24]
-//        [--max 40] [--boyas boyas.json] [--sin-modelo]
+//        [--max 40] [--boyas boyas.json] [--sin-modelo] [--region es|nz]
+//        [--forzar-luz]
+//   Solo captura las cámaras con el sol ≥ 8° en su sitio: España de día
+//   (~07-17 UTC en otoño) y Nueva Zelanda de día (~18-06 UTC,
+//   Pacific/Auckland). --region limita a una de las dos.
 //
 // Y para ANOTAR una etiqueta de un fotograma del lote (añade una línea a
 // datos-robots/oleaje-camaras/etiquetas-claude.jsonl con todo lo que hace
@@ -44,8 +48,8 @@ import { appendFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSyn
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { CAMARAS } from "./camaras.mjs";
-import { medirHls, medirImagen, jpegDeFrame, marAbiertoPorCamara, boyaDeCamara, framesDeFichero, leerJsonl, FICHERO_ETIQUETAS_CLAUDE } from "./medir-espuma.mjs";
+import { CAMARAS, camarasConLuz } from "./camaras.mjs";
+import { medirHls, medirImagen, urlImagen, jpegDeFrame, marAbiertoPorCamara, boyaDeCamara, framesDeFichero, leerJsonl, FICHERO_ETIQUETAS_CLAUDE } from "./medir-espuma.mjs";
 import { medirEspuma } from "./espuma.mjs";
 import { CAMARAS_OLEAJE } from "../../functions/_lib/oleaje-camaras.js";
 
@@ -72,7 +76,7 @@ export function sinEtiquetar(lecturas, etiquetas) {
 // MIRA si el encuadre es el de la referencia y, si lo es, lo marca con
 // `encuadreVerificado: true` (solo entonces cuenta para calibrar).
 async function fotoFijaForzada(id, cam) {
-  const r = await fetch(cam.url, { headers: { "User-Agent": "CostavivaOlaBot/1.0 (+https://costaviva.org)" }, signal: AbortSignal.timeout(30000) });
+  const r = await fetch(await urlImagen(cam), { headers: { "User-Agent": "CostavivaOlaBot/1.0 (+https://costaviva.org)" }, signal: AbortSignal.timeout(30000) });
   if (!r.ok) throw new Error(`HTTP ${r.status}`);
   const lm = Date.parse(r.headers.get("last-modified") || "");
   const dir = mkdtempSync(join(tmpdir(), `lote-${id}-`));
@@ -109,7 +113,7 @@ function imagenRoi(frameJpg, encuadre, destino) {
 // si es la misma foto que se midió (misma Last-Modified).
 async function original(cam, fechaFoto, destino) {
   try {
-    const r = await fetch(cam.url, { headers: { "User-Agent": "CostavivaOlaBot/1.0 (+https://costaviva.org)" }, signal: AbortSignal.timeout(30000) });
+    const r = await fetch(await urlImagen(cam), { headers: { "User-Agent": "CostavivaOlaBot/1.0 (+https://costaviva.org)" }, signal: AbortSignal.timeout(30000) });
     const lm = Date.parse(r.headers.get("last-modified") || "");
     if (!r.ok || !fechaFoto || !Number.isFinite(lm) || new Date(lm).toISOString() !== fechaFoto) return false;
     const d = mkdtempSync(join(tmpdir(), "lote-g-"));
@@ -128,10 +132,20 @@ async function original(cam, fechaFoto, destino) {
 
 const arg = (args, n, def = null) => (args.indexOf(n) >= 0 ? args[args.indexOf(n) + 1] : def);
 
-async function desdeCamaras(dir, { boyas, conModelo }) {
-  const ids = Object.keys(CAMARAS);
+// Cámaras del lote: las que tienen luz ahora en su sitio (sol ≥ 8°), de la
+// región pedida (--region es|nz; por defecto, todas las que tengan luz).
+export function idsDelLote(ahoraMs, { region = null, forzarLuz = false } = {}) {
+  return camarasConLuz(ahoraMs, forzarLuz).filter((id) => !region || CAMARAS[id].region === region);
+}
+
+async function desdeCamaras(dir, { boyas, conModelo, region, forzarLuz }) {
+  const ids = idsDelLote(Date.now(), { region, forzarLuz });
+  if (!ids.length) console.log("Ninguna cámara con luz ahora" + (region ? ` en ${region}` : "") + ".");
+  // En NZ no hay boyas y la única referencia sería el modelo: no se pone en
+  // el lote para no condicionar la etiqueta (se etiqueta lo que se VE).
+  const idsModelo = ids.filter((id) => CAMARAS[id].region !== "nz");
   const [mar, resultados] = await Promise.all([
-    conModelo ? marAbiertoPorCamara().catch((e) => (console.log("Mar abierto no disponible:", e.message), {})) : {},
+    conModelo && idsModelo.length ? marAbiertoPorCamara(idsModelo).catch((e) => (console.log("Mar abierto no disponible:", e.message), {})) : {},
     Promise.all(ids.map((id) => {
       const cam = CAMARAS[id];
       return (cam.tipo === "hls" ? medirHls : medirImagen)(id, cam).then((m) => ({ id, m }), (e) => ({ id, e }));
@@ -156,7 +170,7 @@ async function desdeCamaras(dir, { boyas, conModelo }) {
       const roi = enc ? imagenRoi(join(dir, `${idLote}.jpg`), enc, join(dir, `${idLote}-roi.jpg`)) : false;
       const grande = cam.tipo === "imagen" ? await original(cam, r.fechaFoto, join(dir, `${idLote}-grande.jpg`)) : false;
       lote.push({
-        id: idLote, camara: id, spot: CAMARAS_OLEAJE[id].spot, encuadre: r.encuadre, fecha, estado: r.estado,
+        id: idLote, camara: id, region: CAMARAS[id].region, spot: CAMARAS_OLEAJE[id].spot, encuadre: r.encuadre, fecha, estado: r.estado,
         espuma: r.espuma, similitud: r.similitud ?? null, hash, imagen: `${idLote}.jpg`,
         ...(grande ? { imagenGrande: `${idLote}-grande.jpg` } : {}),
         ...(roi ? { imagenRoi: `${idLote}-roi.jpg` } : {}),
@@ -235,7 +249,7 @@ async function main() {
   mkdirSync(dir, { recursive: true });
   const nuevos = origen === "bucket"
     ? await desdeBucket(dir, { horas, max })
-    : await desdeCamaras(dir, { boyas, conModelo: !args.includes("--sin-modelo") });
+    : await desdeCamaras(dir, { boyas, conModelo: !args.includes("--sin-modelo"), region: arg(args, "--region"), forzarLuz: args.includes("--forzar-luz") });
   // Se ACUMULA en lote.json (varias capturas a lo largo del día en el mismo lote).
   const fLote = join(dir, "lote.json");
   const previo = existsSync(fLote) ? JSON.parse(readFileSync(fLote, "utf8")) : [];

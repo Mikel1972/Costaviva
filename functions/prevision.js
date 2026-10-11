@@ -1286,17 +1286,25 @@ export function camarasDeNZ(camaras) {
   return Object.fromEntries(Object.entries(camaras || {}).filter(([clave]) => clave.startsWith("ext-nz-")));
 }
 
-export async function previsionRegionNZ(spots, env, origen, ahora = Date.now(), cargarCamaras = datosCamarasPorSpot) {
-  const [resultados, linz, reservasDoc, camaras] = await Promise.all([
+// Oleaje por cámara en NZ (2026-10-11, decisión de Mikel): la misma
+// lectura de oleaje_camara_lecturas que en España (una sola petición más a
+// Supabase: el total de subpeticiones de /prevision?region=nz sigue muy
+// por debajo del límite de Cloudflare). Las cámaras de NZ empiezan "en
+// calibración" (sustituye_modelo = false): hasta que pasan las barreras de
+// camaraSustituyeModelo() solo dan `camaraReferencia` (dato secundario).
+export async function previsionRegionNZ(spots, env, origen, ahora = Date.now(), cargarCamaras = datosCamarasPorSpot, cargarOleajeCamaras = datosOleajeCamaras) {
+  const [resultados, linz, reservasDoc, camaras, lecturasOleaje] = await Promise.all([
     previsionTodosSpots(spots, env, { mareaOpenMeteo: false }).catch((e) =>
       spots.map((spot) => ({ slug: spot.slug, nombre: spot.nombre, lat: spot.lat, lon: spot.lon, error: String(e) }))
     ),
     cargarDatosLinz(env, origen, ahora),
     cargarReservasDoc(env, origen),
     cargarCamaras().catch(() => ({})),
+    cargarOleajeCamaras().catch(() => ({ lecturas: {}, medidas: {} })),
   ]);
   const porSlug = new Map(spots.map((s) => [s.slug, s]));
-  const conMarea = resultados.map((r) => completarSpotNZ(r, porSlug.get(r.slug), linz, ahora, reservasDoc));
+  const conMareaSinCamara = resultados.map((r) => completarSpotNZ(r, porSlug.get(r.slug), linz, ahora, reservasDoc));
+  const conMarea = aplicarReferenciasCamara(aplicarCamarasASpots(conMareaSinCamara, lecturasOleaje?.lecturas, ahora), lecturasOleaje?.medidas, ahora);
   return {
     region: "nz",
     spots: conMarea,

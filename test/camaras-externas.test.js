@@ -151,19 +151,29 @@ test("index.html filtra las externas con externaCuentaComoCaida y el robot usa l
 // Mismo formato y mismas reglas, pero cada cámara va a un spot de SPOTS_NZ,
 // todas en modo enlace (sin permiso escrito de ningún dueño) y sin análisis.
 // Que sigan ocultas lo comprueba test/nz-region.test.js.
-import { CAMARAS_NZ, CONDICIONES_NZ } from "../assets/js/camaras-nz.js";
+import { CAMARAS_NZ, CONDICIONES_NZ, NZ_ANALISIS_AUTORIZADO } from "../assets/js/camaras-nz.js";
 import { SPOTS_NZ } from "../functions/_lib/nz/spots-nz.js";
 
 test("NZ: cada condición dice dueño, modos, análisis y fuente", () => {
   for (const [clave, c] of Object.entries(CONDICIONES_NZ)) {
     assert.ok(c.dueno, `${clave}: sin dueño`);
     assert.deepEqual(c.modos_permitidos, ["enlace"], `${clave}: sin permiso escrito solo enlace`);
-    assert.equal(c.analisis_permitido, false, `${clave}: analisis_permitido`);
+    // Análisis de la ola: interruptor por dueño (decisión de Mikel, 2026-10-11).
+    assert.equal(typeof NZ_ANALISIS_AUTORIZADO[clave], "boolean", `${clave}: falta en NZ_ANALISIS_AUTORIZADO`);
+    assert.equal(c.analisis_permitido, NZ_ANALISIS_AUTORIZADO[clave], `${clave}: analisis_permitido sale del interruptor`);
+    // Términos que prohíben expresamente bots/scraping: siempre en false.
+    if (c.prohibicion) assert.equal(NZ_ANALISIS_AUTORIZADO[clave], false, `${clave}: sus términos prohíben el uso automatizado`);
     assert.ok(c.fuentes?.length && c.fuentes.every((u) => u.startsWith("https://")), `${clave}: sin fuente`);
     assert.ok(c.cita, `${clave}: sin cita`);
     assert.equal(CONDICIONES[clave], c, `${clave}: camaras-externas.js debe sumar las condiciones de NZ`);
     assert.ok(c.dueno_corto, `${clave}: falta el nombre corto del dueño (botón)`);
   }
+});
+
+test("NZ: Earth Sciences NZ (Cam-Era) prohíbe bots en sus términos: fuera del análisis", () => {
+  assert.equal(NZ_ANALISIS_AUTORIZADO.earth_sciences_camera, false);
+  assert.match(CONDICIONES_NZ.earth_sciences_camera.prohibicion, /web scraping tool/);
+  assert.deepEqual(Object.keys(NZ_ANALISIS_AUTORIZADO).sort(), Object.keys(CONDICIONES_NZ).sort());
 });
 
 test("NZ: cada cámara tiene dueño, enlace https, verificación y un spot NZ real", () => {
@@ -184,7 +194,7 @@ test("NZ: cada cámara tiene dueño, enlace https, verificación y un spot NZ re
     assert.equal(nombreCamara(c, "es"), c.nombre);
     assert.equal(c.modo, "enlace", `${c.id}: sin permiso escrito solo enlace`);
     assert.equal(c.imagen, undefined, `${c.id}: un enlace no lleva imagen`);
-    assert.equal(c.analisis_permitido, false, `${c.id}: nunca analizar fotogramas de terceros`);
+    assert.equal(c.analisis_permitido, CONDICIONES_NZ[c.condiciones].analisis_permitido, `${c.id}: análisis = interruptor de su dueño`);
     assert.equal(typeof c.rompiente, "boolean", `${c.id}: rompiente`);
     assert.ok(c.url?.startsWith("https://"), `${c.id}: url`);
     assert.ok(!/facebook\.com|instagram\.com|fb\.watch/i.test(c.url), `${c.id}: nada de Facebook ni Instagram`);

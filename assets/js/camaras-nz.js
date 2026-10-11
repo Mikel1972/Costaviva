@@ -15,8 +15,13 @@
 //   - Sin permiso escrito del dueño, solo modo "enlace" (botón que abre su
 //     web). HOY TODAS SON "enlace", también las de licencia CC BY: pedir
 //     permiso o no lo decide Mikel (lista en el informe de la PR).
-//   - Nunca analizar fotogramas de terceros: analisis_permitido = false en
-//     todas.
+//   - Análisis de la OLA (espuma, scripts/oleaje-camaras/): decisión
+//     expresa de Mikel (2026-10-11) de medir la ola con TODAS las cámaras de
+//     NZ, como en España, aunque los dueños aún no hayan contestado (los
+//     emails están en preparación). Interruptor por dueño en
+//     NZ_ANALISIS_AUTORIZADO (abajo): `analisis_permitido` de cada dueño y de
+//     cada cámara sale de ahí. Solo es la ola: nada de turbidez, Instagram
+//     ni miniaturas públicas.
 //   - Nada de Facebook ni de Instagram. YouTube, solo como enlace.
 //
 // Cómo se verificó cada una (2026-10-11, ver "verificada" en cada entrada):
@@ -29,25 +34,51 @@
 // la ubicación que da el dueño o, si no la da, por lo que se ve en el
 // encuadre).
 
+// Interruptor por dueño del análisis de la ola (2026-10-11, decisión de
+// Mikel: true salvo excepción). Si un dueño dice que no, se pone su clave en
+// false y su cámara deja de analizarse en la siguiente ejecución del robot
+// (scripts/oleaje-camaras/camaras.mjs filtra con esto); no hay que tocar
+// nada más. EXCEPCIÓN fijada por Mikel: si los términos publicados del dueño
+// PROHÍBEN EXPRESAMENTE el uso automatizado, el scraping o el análisis de sus
+// imágenes, se queda en false (el texto, en `prohibicion` de CONDICIONES_NZ).
+// Que un dueño esté en true no obliga a analizar: si su cámara no ve la
+// rompiente o bloquea a los robots, va en NO_SIRVEN de camaras.mjs.
+export const NZ_ANALISIS_AUTORIZADO = {
+  earth_sciences_camera: false, // sus términos prohíben bots y scraping (ver `prohibicion`)
+  geonet: true,
+  corolive: true,
+  port_otago: true,
+  primo: true,
+  napier_cc: true,
+  southloop: true,
+};
+
 export const CONDICIONES_NZ = {
   earth_sciences_camera: {
     dueno_corto: "Earth Sciences NZ",
     dueno: "Earth Sciences New Zealand (antes NIWA), red costera Cam-Era",
     tipo_dueno: "publico",
     modos_permitidos: ["enlace"],
-    analisis_permitido: false,
+    analisis_permitido: NZ_ANALISIS_AUTORIZADO.earth_sciences_camera,
     fuentes: ["https://niwa.co.nz/about-niwa/terms", "https://niwa.co.nz/tairua"],
     cita:
       "«material on our web applications is licensed for re-use under a Creative Commons Attribution 4.0 International " +
       "Licence [...] Unless otherwise indicated [...] the CC Licence does not apply to: Photos, videos or animations.»",
     contacto: "https://niwa.co.nz/contact-us",
+    // Comprobado el 2026-10-11 en https://niwa.co.nz/about-niwa/terms: por
+    // esto su interruptor de análisis está en false (lo decide Mikel).
+    prohibicion:
+      "«Use any text or data mining or web scraping tool in relation to our web applications without our express " +
+      "written permission, including by using any \u201crobot\u201d, \u201cbot\u201d, \u201cspider\u201d, \u201cscraper\u201d, artificial " +
+      "intelligence or machine learning tool, or other automated device or tool to access, monitor, compile or copy any " +
+      "part of our web applications or material.»",
   },
   geonet: {
     dueno_corto: "GeoNet",
     dueno: "GeoNet (Earth Sciences New Zealand y Natural Hazards Commission Toka Tū Ake)",
     tipo_dueno: "publico",
     modos_permitidos: ["enlace"],
-    analisis_permitido: false,
+    analisis_permitido: NZ_ANALISIS_AUTORIZADO.geonet,
     fuentes: ["https://www.geonet.org.nz/volcano/cameras", "https://www.geonet.org.nz/data/types/camera"],
     cita:
       "«GeoNet content is copyright Earth Sciences New Zealand and is licensed under a Creative Commons Attribution 3.0 " +
@@ -59,7 +90,7 @@ export const CONDICIONES_NZ = {
     dueno: "CoroLive (red de webcams de la Coromandel)",
     tipo_dueno: "privado",
     modos_permitidos: ["enlace"],
-    analisis_permitido: false,
+    analisis_permitido: NZ_ANALISIS_AUTORIZADO.corolive,
     fuentes: ["https://corolive.nz/embedding"],
     cita:
       "«So you want to embed CoroLive on your own website? [...] reach out and let me know you're going to embed " +
@@ -71,7 +102,7 @@ export const CONDICIONES_NZ = {
     dueno: "Port Otago Limited",
     tipo_dueno: "privado",
     modos_permitidos: ["enlace"],
-    analisis_permitido: false,
+    analisis_permitido: NZ_ANALISIS_AUTORIZADO.port_otago,
     fuentes: ["https://www.portotago.co.nz/otago-harbour/webcams"],
     cita: "«Copyright © 2026 Port Otago Limited - All rights reserved». No publica condiciones de uso de las webcams.",
     contacto: "customerservices@portotago.co.nz",
@@ -81,7 +112,7 @@ export const CONDICIONES_NZ = {
     dueno: "PrimoWireless Ltd (Primo, New Plymouth)",
     tipo_dueno: "privado",
     modos_permitidos: ["enlace"],
-    analisis_permitido: false,
+    analisis_permitido: NZ_ANALISIS_AUTORIZADO.primo,
     fuentes: ["https://www.primo.nz/info/primo-webcams"],
     cita:
       "«You are free to share them with your friends and family far and wide, remember to photo credit us» / " +
@@ -95,7 +126,7 @@ export const CONDICIONES_NZ = {
     dueno: "Napier City Council",
     tipo_dueno: "publico",
     modos_permitidos: ["enlace"],
-    analisis_permitido: false,
+    analisis_permitido: NZ_ANALISIS_AUTORIZADO.napier_cc,
     fuentes: ["https://www.napier.govt.nz/napier/about/weather-cam/", "https://www.napier.govt.nz/our-council/about-this-site/copyright-and-privacy/"],
     cita:
       "«Napier City Council grants you a non-exclusive license to reproduce the contents of this website: in your web " +
@@ -107,7 +138,7 @@ export const CONDICIONES_NZ = {
     dueno: "SouthLoop (red de cámaras meteorológicas de Southland)",
     tipo_dueno: "privado",
     modos_permitidos: ["enlace"],
-    analisis_permitido: false,
+    analisis_permitido: NZ_ANALISIS_AUTORIZADO.southloop,
     fuentes: ["https://weathercam.southloop.net.nz/camstart.php"],
     cita: "«Southland Weather/Environment cameras Provided by SouthLoop». No publica condiciones de uso: sin permiso, enlace.",
     contacto: "https://weathercam.southloop.net.nz/ (sin email publicado)",
@@ -124,7 +155,7 @@ const cam = (id, spot, [nombre, nombre_en], condiciones, url, rompiente, verific
   modo: "enlace",
   url,
   rompiente,
-  analisis_permitido: false,
+  analisis_permitido: CONDICIONES_NZ[condiciones].analisis_permitido,
   visto_en: extra.visto_en || new URL(url).hostname,
   verificada,
   ...(extra.km != null ? { km: extra.km } : {}),
