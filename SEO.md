@@ -297,6 +297,15 @@ inspección de URLs de Search Console).
   `http` → 301. Las URLs con barra final daban 200 (con la canonical bien);
   ahora dan 301.
 
+**Datos frescos de Search Console (inspección de las 450 URLs, 2026-10-11 20:10 UTC):**
+indexadas 9 de 450 (se suma `/especies/calamar`). **Rastreadas alguna vez: 9 de
+450**: cada página que Google ha rastreado está indexada. Ninguna con otra
+canónica elegida por Google, ninguna con error de descarga y ninguna bloqueada
+por robots.txt. Google conoce 199 por el sitemap y solo 14 por enlaces; 250
+son "no reconoce esta URL", que son justo las que Google no ha cruzado aún con
+el sitemap. El sitemap se leyó por última vez el **2026-10-08 (284 URLs)**, así
+que las 166 de NZ no las conoce. Por eso hay que reenviarlo (punto 1 de abajo).
+
 **Hipótesis (no se puede probar desde fuera):** las páginas de spot se
 parecen mucho entre sí. Solo el ~13 % de su texto era propio, porque la
 lista de especies es la misma en toda la región. Eso puede hacer que Google
