@@ -161,15 +161,74 @@ abajo sigue valiendo salvo donde dice "oculto".
   especies `pais` "es"); el sitemap añade las `/en/` (hoy 450 URL: 284 de
   España, iguales, + 166 de NZ). IndexNow cubre /en/ (a diario, /en/spots y
   /en/tides de cada spot). Tests: `test/nz-region.test.js`.
-- **Precio**: NZ paga lo mismo en **EUR** (3,99 €/mes, 39,99 €/año; en inglés
-  "€3.99 / month (EUR)"). Stripe Checkout cobra en euros y el banco convierte.
-  **Falta el precio en NZD** (precio en NZD en Stripe y elegirlo por región
-  en `crear-checkout-stripe.js`), y revisar el texto de desistimiento de 14
-  días (es de la UE) para NZ. Decisión de Mikel pendiente.
+- **Precio**: NZ paga en **NZD** con multiplicador manual ×1,40 (ver "Cobro:
+  precios por zonas"). Revisar el texto de desistimiento de 14 días (es de la
+  UE) para NZ sigue pendiente.
 - **Pendiente tras el lanzamiento**: subir las capas de mar de NZ (workflow
   `fuentes-gratuitas.yml`, parte `capas_nz`; sin ellas las capas de mar en
   NZ dicen "no disponible"), revisión del inglés por un nativo, enviar el
   sitemap en Search Console y la confirmación escrita de LINZ.
+
+## Cobro: precios por zonas y ámbitos (2026-10-11, precios confirmados por Mikel)
+
+Todo sale de **`functions/_lib/precios-zonas.json`** (config) y
+**`functions/_lib/precios.js`** (lógica pura, test `test/precios.test.js`).
+`PRECIOS.md` es la tabla de todos los precios del mundo, generada sin IA.
+
+- **Planes** (base España, IVA incluido): mensual 3,99 €, anual 29,99 € y
+  **fundador** 24,99 €/año para los primeros 500 suscriptores anuales (plazas
+  compartidas entre regional y Mundial; se mantiene mientras siga suscrito).
+- **Ámbitos de contenido**: *regional* = Premium en la región de contenido de
+  su zona (`region_contenido`: "es" = España + Portugal con Canarias, Azores y
+  Madeira; "nz"); *Mundial* = todas las regiones activas (`REGIONES_ACTIVAS`
+  de `functions/_lib/regiones-activas.js`: una región nueva entra sola).
+  Mundial = regional de su zona × 1,5 (`factor_mundial`), hacia arriba a .99:
+  5,99 / 44,99 / 37,99 €. Gratis: igual en todas las regiones.
+- **Zonas**: países ISO, moneda, multiplicador y redondeo (.99 o "local":
+  coronas acabadas en 9, CHF a .90). La zona del cliente es la de su país
+  (`zonaDePais`); las zonas inactivas y los países sin zona van a "resto"
+  (EUR ×1,0).
+  - **UE/EEE: EUR ×1,0 FIJO por ley** (Reglamento UE 2018/302 de
+    geobloqueo): mismas condiciones para todos sus clientes. Regional y
+    Mundial son productos distintos por contenido, no por nacionalidad, y los
+    dos se ofrecen igual a toda la UE. El test falla si un país de la UE/EEE
+    sale de esa zona o paga distinto. **Noruega es EEE**: va en esta zona, no
+    en la de renta alta.
+  - **Fuera de la UE: multiplicador por renta** = RNB per cápita método Atlas
+    en USD corrientes (Banco Mundial, NY.GNP.PCAP.CD, CC BY 4.0) del país ÷ la
+    de España, entre 0,6 y 1,5, a 0,05. **No PPA**: con paridad de poder
+    adquisitivo NZ y España quedan casi iguales; lo que importa es cuánto paga
+    la gente en su moneda. Calculado para 207 países
+    (`multiplicadores_pais`); solo cuenta en zonas activas.
+  - **NZ: ×1,40 manual** de Mikel (2026-10-11, `multiplicador_manual`); la
+    renta daría 1,25 (`multiplicador_calculado_info`, solo información). Con
+    el BCE del 2026-10-09 (1 EUR = 1,9961 NZD): regional 11,99 / 83,99 /
+    69,99 NZD; Mundial 17,99 / 125,99 / 104,99 NZD.
+  - Preparadas e inactivas: AU, GB, US, CA (×1,5 o 1,45 por renta) y CH
+    (redondeo local). Se activan cuando haya contenido de esa región.
+- **Stripe**: un precio por ámbito y plan en EUR con `currency_options` por
+  cada moneda de zona activa, `tax_behavior=inclusive`, metadatos
+  `costaviva_ambito/plan/fundador` y `lookup_key`
+  `cv_<ámbito>_<plan>_v<version_precios>`. Si dos zonas comparten moneda con
+  importes distintos, la segunda lleva precio propio (`_z<zona>`). Los crea
+  **`precios-stripe.yml`** (manual; test con `STRIPE_SECRET_KEY_TEST` desde
+  cualquier rama, live con `STRIPE_SECRET_KEY` solo desde main):
+  idempotente por `lookup_key`, nunca borra ni archiva, para con error si un
+  precio existe con otros importes, añade monedas que falten y, con `portal`,
+  pone los precios (sin los de fundador) en el portal de cliente. Los ids
+  quedan en `functions/_lib/stripe-ids.json` (PR del robot); sin ellos la app
+  resuelve el precio por `lookup_key`.
+- **Activar un país**: añadir su zona (o `activa: true`) en
+  `precios-zonas.json`, `node scripts/precios/generar-md.mjs`, fusionar y
+  lanzar "Precios de Stripe" (test y luego live). Nada más.
+- **Robots sin IA**: `precios-semanal.yml` (lunes) refresca `cambio_actual`
+  del BCE y regenera `PRECIOS.md` y `datos/precios-resumen.md` (tabla "Precios
+  vigentes" para el resumen de los lunes); si el equivalente en EUR de una
+  zona activa se mueve > 10 % lo marca como propuesta, nunca cambia precios.
+  `multiplicadores-anual.yml` (15 de julio) recalcula la renta y el cambio y
+  **abre una PR**; si cambian importes sube `version_precios` (precios nuevos
+  en Stripe tras fusionar; los clientes existentes conservan el suyo). Los
+  manuales y los fijos no se tocan.
 
 ## Nueva Zelanda, fase 1: mareas LINZ, 60 spots y reservas DOC (2026-10-09; OCULTO hasta el lanzamiento del 2026-10-11)
 
