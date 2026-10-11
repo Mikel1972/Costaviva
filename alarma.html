@@ -6,6 +6,7 @@
 <!-- Idiomas (2026-10-09): diccionarios y I18n.t(); en español no cambia nada. Ver assets/js/i18n.js. -->
 <script src="/assets/i18n/es.js"></script>
 <script src="/assets/i18n/en.js"></script>
+<script src="/assets/i18n/pt.js"></script>
 <script src="/assets/js/i18n.js"></script>
 <title data-i18n="alarma.titulo_pagina">Alarma — Costaviva</title>
 <link rel="manifest" href="manifest.json" />
@@ -394,16 +395,19 @@ document.getElementById("btnInvitarAmigo").addEventListener("click", async () =>
 let regionSOS = RegionPais.regionActual();
 function aplicarRegionSOS() {
   const num = RegionPais.numeroEmergencia(regionSOS);
+  // Portugal comparte el 112 con España pero no el prefijo: la ayuda del
+  // WhatsApp se pone siempre, antes de mirar si cambia el número.
+  const ayuda = document.getElementById("ayudaWhatsapp");
+  if (ayuda && ayuda.className === "ayuda") ayuda.textContent = textoAyudaPrefijo();
   const enlace = document.getElementById("enlaceLlamarEmergencias");
   if (enlace.getAttribute("href") === `tel:${num}`) return;
   enlace.setAttribute("href", `tel:${num}`);
   enlace.textContent = I18n.t("alarma.llamar_num", { num });
   document.getElementById("subtituloAlarma").textContent = I18n.t("alarma.subtitulo_num", { num });
   document.getElementById("explicaLlamarEmergencias").textContent = I18n.t("alarma.llamar_explica_num", { num });
-  const ayuda = document.getElementById("ayudaWhatsapp");
-  if (ayuda && ayuda.className === "ayuda") ayuda.textContent = textoAyudaPrefijo();
 }
 function textoAyudaPrefijo() {
+  if (RegionPais.esPT(regionSOS)) return I18n.t("alarma.prefijo_pt");
   return RegionPais.esNZ(regionSOS) ? I18n.t("alarma.prefijo_nz") : I18n.t("alarma.prefijo");
 }
 // Teléfono escrito sin +: prefijo del país de la región.

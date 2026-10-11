@@ -6,6 +6,7 @@
 <!-- Idiomas (2026-10-09): diccionarios y I18n.t(); en español no cambia nada. Ver assets/js/i18n.js. -->
 <script src="/assets/i18n/es.js"></script>
 <script src="/assets/i18n/en.js"></script>
+<script src="/assets/i18n/pt.js"></script>
 <script src="/assets/js/i18n.js"></script>
 <title data-i18n="diario.titulo_pagina">Diario — Costaviva</title>
 <link rel="manifest" href="manifest.json" />
@@ -1776,7 +1777,7 @@ function mostrarFormularioEditarEntrada(iso, salida) {
   selectorHoraInicio = crearSelectorHora("ruedaSalidaInicio", salida.hora_inicio ? salida.hora_inicio.slice(0, 5) : null);
   selectorHoraFin = crearSelectorHora("ruedaSalidaFin", salida.hora_fin ? salida.hora_fin.slice(0, 5) : null);
   document.getElementById("salidaNotas").value = salida.notas || "";
-  document.getElementById("salidaTempSonda").value = TempSonda.textoCampo(salida.indice_factores?.temp_agua_sonda?.medida_c, I18n.idioma() === "es");
+  document.getElementById("salidaTempSonda").value = TempSonda.textoCampo(salida.indice_factores?.temp_agua_sonda?.medida_c, I18n.usaComa());
   document.getElementById("btnGuardarSalida").textContent = I18n.t("diario.guardar_cambios");
   engancharFormularioSalida(iso, salida.id);
   zona.scrollIntoView({ behavior: "smooth", block: "end" });
