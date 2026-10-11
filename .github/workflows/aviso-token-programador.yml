@@ -1,0 +1,68 @@
+name: Aviso de caducidad del token del programador
+
+# Pedido por Mikel el 2026-10-11, al cambiar de cuenta de Claude: el
+# recordatorio de renovar PROGRAMADOR_GITHUB_TOKEN vivía en la cuenta vieja.
+# Este aviso no depende de ninguna cuenta ni usa IA: cada lunes pregunta a
+# GitHub cuándo caduca el token (cabecera
+# github-authentication-token-expiration) y, si quedan 21 días o menos, o el
+# token ya no vale, abre una incidencia en este repo, que le llega por email.
+# Al renovarlo (y lanzar guardar-token-programador.yml) el aviso se calla
+# solo, porque lee la caducidad del token nuevo. Nunca imprime el token.
+
+on:
+  schedule:
+    - cron: "17 7 * * 1"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  comprobar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mirar la caducidad y avisar
+        env:
+          TOKEN: ${{ secrets.PROGRAMADOR_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          TITULO="Renovar PROGRAMADOR_GITHUB_TOKEN (token del programador)"
+          if [ -z "$TOKEN" ]; then
+            MOTIVO="No hay ningún secreto PROGRAMADOR_GITHUB_TOKEN guardado."
+          else
+            codigo=$(curl -sS -o /dev/null -D /tmp/cab.txt -w '%{http_code}' \
+              -H "Authorization: Bearer $TOKEN" https://api.github.com/rate_limit)
+            caduca=$(grep -i '^github-authentication-token-expiration:' /tmp/cab.txt | cut -d' ' -f2- | tr -d '\r')
+            if [ "$codigo" != "200" ]; then
+              MOTIVO="GitHub rechaza el token (HTTP $codigo): ha caducado o se ha revocado. pg_cron ya no puede lanzar los robots."
+            elif [ -z "$caduca" ]; then
+              echo "El token no tiene fecha de caducidad. Nada que avisar."
+              exit 0
+            else
+              dias=$(( ( $(date -d "$caduca" +%s) - $(date +%s) ) / 86400 ))
+              echo "El token caduca el $caduca (quedan $dias días)."
+              if [ "$dias" -gt 21 ]; then exit 0; fi
+              MOTIVO="El token caduca el $caduca (quedan $dias días)."
+            fi
+          fi
+          abierta=$(gh issue list -R "$REPO" --state open --search "\"$TITULO\" in:title" --json number --jq 'length')
+          if [ "$abierta" != "0" ]; then
+            echo "Ya hay una incidencia abierta. $MOTIVO"
+            exit 0
+          fi
+          {
+            echo "$MOTIVO"
+            echo
+            echo "Si caduca, pg_cron deja de lanzar los robots de cada 30 min (cámaras, salud de cámaras, avisos de altas)."
+            echo
+            echo "Pasos:"
+            echo "1. GitHub → Settings → Developer settings → Fine-grained tokens → generar uno igual al actual (solo el repo Costaviva, Actions: read and write, 1 año)."
+            echo "2. Costaviva → Settings → Secrets → Actions → sustituir PROGRAMADOR_GITHUB_TOKEN."
+            echo "3. Pedir a Claude que lance guardar-token-programador.yml (o lanzarlo a mano en Actions)."
+            echo "4. Cerrar esta incidencia. El aviso del lunes siguiente comprobará la caducidad nueva."
+            echo
+            echo "(Aviso automático de aviso-token-programador.yml, sin IA.)"
+          } > /tmp/cuerpo.md
+          gh issue create -R "$REPO" --title "$TITULO" --body-file /tmp/cuerpo.md
