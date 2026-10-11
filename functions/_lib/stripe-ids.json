@@ -1,1 +1,16 @@
-{}
+{
+  "test": {
+    "productos": {
+      "costaviva_premium": "prod_VQKpK70iWsBa9L",
+      "costaviva_premium_mundial": "prod_VQKpQpzEJIagKr"
+    },
+    "precios": {
+      "cv_regional_mensual_v2026_10": "price_1UPUA6GXcSRiyJYIAZrfgEea",
+      "cv_regional_anual_v2026_10": "price_1UPUA6GXcSRiyJYIKVyuCx5v",
+      "cv_regional_fundador_anual_v2026_10": "price_1UPUA6GXcSRiyJYIGwwo2YEj",
+      "cv_mundial_mensual_v2026_10": "price_1UPUA6GXcSRiyJYIMweE0xeJ",
+      "cv_mundial_anual_v2026_10": "price_1UPUA6GXcSRiyJYImwQPhVcP",
+      "cv_mundial_fundador_anual_v2026_10": "price_1UPUA7GXcSRiyJYIaDXlSwlL"
+    }
+  }
+}
