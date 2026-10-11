@@ -34,9 +34,16 @@ name: Robot de marketing — Instagram
 # lanza pg_cron (migración 20261009130000_programador_marketing.sql, lunes,
 # miércoles y jueves 17:30 UTC); este `schedule:` es el respaldo una hora
 # después: si la pieza ya está hecha, no hace nada (calendario-estado.json).
+#
+# Nueva Zelanda (2026-10-11, pedido de Mikel): posts en inglés para las 07:00
+# de NZ (martes especie, viernes condiciones; calendario.mjs, mercado "nz").
+# Se preparan la víspera a las 06:40 UTC (~19:40 en NZ, 08:40 en España) con
+# el segundo `schedule:`; solo GitHub, sin pg_cron (si se retrasa unas horas
+# sigue habiendo margen hasta las 18:00-19:00 UTC). A mano: input `mercado`.
 on:
   schedule:
     - cron: "40 18 * * 1,3,4"
+    - cron: "40 6 * * 1,4"
   workflow_dispatch:
     inputs:
       fecha:
@@ -44,9 +51,15 @@ on:
         required: false
         type: string
       tipo:
-        description: "Forzar tipo: condiciones, especie, funcion, diario, grupos o alarma (vacío = el del calendario)"
+        description: "Forzar tipo: condiciones, especie, funcion, diario, grupos o alarma (vacío = el del calendario; en NZ solo condiciones o especie)"
         required: false
         type: string
+      mercado:
+        description: "es (España, en español) o nz (Nueva Zelanda, en inglés, 07:00 hora de NZ)"
+        required: false
+        default: "es"
+        type: choice
+        options: ["es", "nz"]
 
 permissions:
   contents: write
@@ -87,6 +100,7 @@ jobs:
         env:
           FECHA_PIEZA: ${{ inputs.fecha }}
           TIPO_PIEZA: ${{ inputs.tipo }}
+          MERCADO: ${{ inputs.mercado || (github.event.schedule == '40 6 * * 1,4' && 'nz') || 'es' }}
         run: node generar-post-instagram.mjs
 
       - name: Comitear y subir la imagen generada
@@ -101,7 +115,7 @@ jobs:
           git add assets/marketing/
           # Con spot forzado no se escriben todos los ficheros de estado:
           # añadir solo los que existen (si no, git add falla).
-          for f in scripts/marketing/rotacion-zonas.json scripts/marketing/calendario-estado.json; do
+          for f in scripts/marketing/rotacion-zonas.json scripts/marketing/rotacion-zonas-nz.json scripts/marketing/calendario-estado.json; do
             if [ -e "$f" ]; then git add "$f"; fi
           done
           # Bug real visto en producción 2026-09-19: si se relanza el robot

@@ -145,7 +145,7 @@ function crearIssue({ pieza, previa, facebook }) {
   const cuando = pieza.fecha && pieza.hora ? textoCuando(pieza) : "hoy";
   // Hora de Madrid a propósito (ZONA_NEGOCIO): aviso para Mikel.
   const caduca = new Date(Date.now() + 24 * 3600 * 1000).toLocaleString("es-ES", { timeZone: "Europe/Madrid", weekday: "long", hour: "2-digit", minute: "2-digit" });
-  const titulo = `${esReel ? "🎬 Reel" : "📸 Post"} Instagram + Facebook — ${pieza.tipo} — ${cuando}`;
+  const titulo = `${pieza.mercado === "nz" ? "🇳🇿 NZ — " : ""}${esReel ? "🎬 Reel" : "📸 Post"} Instagram + Facebook — ${pieza.tipo} — ${cuando}`;
   const cuerpo = cuerpoIssue({ pieza, previa, cuando, caduca: `el ${caduca}`, facebookListo: facebook });
   const salida = execFileSync("gh", ["issue", "create", "--title", titulo, "--body", cuerpo, "--label", "marketing"], {
     encoding: "utf8",
@@ -160,8 +160,9 @@ async function main() {
   const { tipo, publicUrl } = pendiente;
   // Un texto por red con su enlace UTM (2026-10-09, calendario.mjs).
   const campana = pendiente.campana || campanaDePieza(pendiente.fecha || new Date().toISOString().slice(0, 10), tipo);
-  const captionInstagram = captionParaRed(pendiente.caption, "instagram", campana);
-  const captionFacebook = captionParaRed(pendiente.caption, "facebook", campana);
+  // Las piezas de NZ (2026-10-11) van en inglés: "or tap the link in bio".
+  const captionInstagram = captionParaRed(pendiente.caption, "instagram", campana, pendiente.idioma);
+  const captionFacebook = captionParaRed(pendiente.caption, "facebook", campana, pendiente.idioma);
 
   await esperarUrlPublica(publicUrl);
 
@@ -170,7 +171,7 @@ async function main() {
 
   const pieza = {
     tipo, esReel: !!pendiente.esReel, publicUrl, campana, fecha: pendiente.fecha || null, hora: pendiente.hora || null, dia: pendiente.dia || null,
-    creationId, captionInstagram, captionFacebook, creadoEn: new Date().toISOString(),
+    mercado: pendiente.mercado || "es", creationId, captionInstagram, captionFacebook, creadoEn: new Date().toISOString(),
   };
   crearIssue({ pieza, previa: publicUrl, facebook: await facebookListo() });
 

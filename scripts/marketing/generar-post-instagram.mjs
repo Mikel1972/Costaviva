@@ -31,6 +31,9 @@
 // sube en España (datos-robots/seo/palabras-es.json, del robot de comun); los hashtags
 // suman los términos con demanda y el texto enlaza la página web del tema.
 // Sin ese fichero, rotación de siempre (palabras-redes.mjs).
+//
+// Nueva Zelanda (2026-10-11): con MERCADO=nz prepara la pieza de NZ, en
+// inglés y para las 07:00 de allí (generar-nz.mjs, pieza-nz.mjs).
 import { readFileSync, writeFileSync, mkdirSync, appendFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
@@ -276,20 +279,26 @@ function salidaWorkflow(clave, valor) {
 
 async function main() {
   const estado = leerEstado();
+  // MERCADO=nz (2026-10-11): pieza de Nueva Zelanda, en inglés, para las
+  // 07:00 de allí (generar-nz.mjs). Sin él, España como siempre.
+  const mercado = process.env.MERCADO === "nz" ? "nz" : "es";
   const objetivo = piezaAPreparar({
-    formato: "post", fechaForzada: process.env.FECHA_PIEZA || "", tipoForzado: process.env.TIPO_PIEZA || "", estado,
+    formato: "post", fechaForzada: process.env.FECHA_PIEZA || "", tipoForzado: process.env.TIPO_PIEZA || "", estado, mercado,
   });
   if (!objetivo) {
-    console.log("Mañana no toca post (o ya está preparado). Nada que hacer.");
+    console.log(`Mañana no toca post${mercado === "nz" ? " de NZ" : ""} (o ya está preparado). Nada que hacer.`);
     salidaWorkflow("generada", "false");
     return;
   }
-  console.log(`Post para el ${objetivo.dia} ${objetivo.fecha} a las ${objetivo.hora}: ${objetivo.tipo}`);
+  console.log(`Post${mercado === "nz" ? " de NZ" : ""} para el ${objetivo.dia} ${objetivo.fecha} a las ${objetivo.hora} (${objetivo.zona}): ${objetivo.tipo}`);
 
   const navegador = await abrirNavegador();
   let resultado, nombreFuncion = null;
   try {
-    if (objetivo.tipo === "especie") resultado = generarEspecies(objetivo);
+    if (mercado === "nz") {
+      const NZ = await import("./generar-nz.mjs");
+      resultado = objetivo.tipo === "especie" ? NZ.postEspecieNZ(objetivo) : await NZ.postCondicionesNZ(objetivo);
+    } else if (objetivo.tipo === "especie") resultado = generarEspecies(objetivo);
     else if (objetivo.tipo === "funcion" || FUNCIONES[objetivo.tipo]) {
       nombreFuncion = FUNCIONES[objetivo.tipo] ? objetivo.tipo : siguienteFuncion(estado.ultimaFuncion);
       resultado = await generarFuncion(objetivo, navegador, nombreFuncion);
@@ -308,7 +317,7 @@ async function main() {
     const campana = campanaDePieza(objetivo.fecha, slug);
     const pendiente = {
       tipo, caption, rutaRelativa, publicUrl: `${BASE_URL}/${rutaRelativa}`, storyUrl: `${BASE_URL}/${rutaStory}`,
-      fecha: objetivo.fecha, hora: objetivo.hora, dia: objetivo.dia, campana,
+      fecha: objetivo.fecha, hora: objetivo.hora, dia: objetivo.dia, campana, mercado, idioma: objetivo.idioma,
     };
     writeFileSync(join(__dirname, "post-pendiente.json"), JSON.stringify(pendiente, null, 2));
     let nuevo = apuntarGenerada(estado, objetivo.clave, { tipo, campana });

@@ -357,6 +357,25 @@ Fase decidida por Mikel: todo a conseguir usuarios (0 suscriptores el
    `costaviva.org/empieza?utm_source=instagram|facebook&utm_medium=social&utm_campaign=<AAAAMMDD-pieza>`.
    Enlace de la bio de Instagram (a mano, Mikel):
    `https://costaviva.org/empieza?utm_source=instagram&utm_medium=social&utm_campaign=bio`.
+   **Nueva Zelanda (2026-10-11, pedido de Mikel):** el mismo calendario tiene
+   huecos con `mercado: "nz"` en `Pacific/Auckland` (`MERCADOS`): martes
+   07:00 especie, viernes 07:00 condiciones, sábado 07:00 reel (condiciones o
+   especie, `rotacion-reels-nz.json`). Sin función de la app (sus pantallas
+   están en español). Se preparan la víspera a las ~19:40 de NZ con un
+   segundo `schedule:` de GitHub (posts L/J 06:40 UTC, reel V 06:20 UTC;
+   `MERCADO=nz`; sin pg_cron): Mikel las ve por la mañana y se publican a
+   las 20:00 (19:00 en invierno de NZ) de la víspera en España; el Issue dice
+   las dos horas (`textoCuando`) y lleva "🇳🇿 NZ" en el título. Clave del
+   estado `AAAA-MM-DD-post-nz` (no choca con la de España). **La regla no
+   cambia: cada pieza sale solo con el OK de Mikel** (workflow manual
+   "Publicar post de Instagram"). Mismo `{ENLACE}` y UTM (campaña
+   `AAAAMMDD-especies-nz-…` / `-condiciones-nz-…`; en Instagram "or tap the
+   link in bio"). Tema: zonas de `ZONAS_NZ` en ciclos completos
+   (`rotacion-zonas-nz.json`), dentro del ciclo primero la más buscada en NZ
+   (`/en/spots/region/…`), y el spot y la especie por
+   `datos-robots/seo/palabras-nz.json` (`mercado: "nz"` en
+   `palabras-redes.mjs`; los términos de España no cuentan). A mano: input
+   `mercado` (es/nz) de los dos robots.
 3. **Métricas sin IA.** `/empieza` (`empieza.html`, noindex) es la entrada
    de campañas y amigos y lleva a `/login?alta=1`. Primer contacto:
    `assets/js/origen.js` (UTM o dominio del referrer, solo listas cerradas,
@@ -623,6 +642,22 @@ YouTube o MEO no dejan republicar) por piezas en el estilo de la app.
   el SOS manda un email con la ubicación a tus contactos y la detección de
   caída es experimental y SOLO con la app abierta y la pantalla visible;
   nada de "te salva la vida" ni segundo plano. El test lo comprueba.
+
+- **Piezas de Nueva Zelanda (2026-10-11)**, en inglés: lógica pura en
+  `scripts/marketing/pieza-nz.mjs`, red y disco en `generar-nz.mjs` (se
+  importa solo con `MERCADO=nz`: fija `I18n.fijarIdioma("en")` para que los
+  motivos del índice y los números salgan en inglés). Solo datos de NZ:
+  spots `SPOTS_NZ` de costa, índice con la misma cuenta que la app
+  (`/meteo` en `Pacific/Auckland`), ola y viento de `/prevision?region=nz`,
+  marea de LINZ a la hora de publicación (`mareaNZ`, ficheros `datos/nz/`),
+  especies `pais: "nz"` del área de MPI de la última zona (nombre inglés y
+  māori, temporada, hábitat `valor_en`, freza). Normativa: solo el enlace a
+  la página de MPI del área, nunca tallas ni cupos. Los motivos sin clave de
+  traducción (reglas expertas escritas en español) se quedan fuera. Sin
+  minimapa (EMODnet solo cubre Europa) ni viento animado; sin cámaras de
+  terceros ni personas. La plantilla `pieza.html` cambia sus textos con
+  `idioma: "en"`. Enlaces a `/en/tides/<spot>` y `/en/species/<id>` solo si
+  están en el sitemap. Tests: `test/calendario-marketing.test.js` (NZ).
 
 ## Cámaras de terceros: solo como su dueño lo permita (2026-10-08)
 

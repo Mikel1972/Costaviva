@@ -50,8 +50,13 @@ export function tipoDeError(datos) {
 // Texto del Issue de revisión (los dos textos, cuándo publicar, cómo).
 export function cuerpoIssue({ pieza, previa, cuando, caduca, facebookListo }) {
   const esReel = !!pieza.esReel;
+  // Nueva Zelanda (2026-10-11): en inglés y para las 07:00 de allí; `cuando`
+  // ya trae también la hora de España (textoCuando).
+  const nz = pieza.mercado === "nz";
   return [
-    `Pieza preparada para **${cuando}** (hora de España). Aún no se ha publicado nada en ninguna red.`,
+    nz
+      ? `🇳🇿 Pieza de **Nueva Zelanda**, en inglés, preparada para **${cuando}**. Aún no se ha publicado nada en ninguna red.`
+      : `Pieza preparada para **${cuando}** (hora de España). Aún no se ha publicado nada en ninguna red.`,
     "",
     esReel ? `🎬 Vídeo: ${previa}` : `![vista previa](${previa})`,
     "",

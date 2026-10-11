@@ -141,6 +141,8 @@
   const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const $ = (sel) => document.querySelector(sel);
   let D = null;
+  // Piezas de Nueva Zelanda (2026-10-11): D.idioma "en" = textos en inglés.
+  const L = (es, en) => (D && D.idioma === "en" ? en : es);
 
   function marcaHtml() {
     return `<div class="marca">${MARCA}<span class="nombre">Costaviva</span><span class="fecha">${D.fecha || ""}</span></div>`;
@@ -153,22 +155,22 @@
   function condicionesHtml(conCta) {
     const r = D.resumen;
     return `${marcaHtml()}
-      <h1 class="titulo" style="font-size:${D.spot.length > 22 ? 52 : D.spot.length > 12 ? 64 : 80}px"><small>Hoy en</small>${esc(D.spot)}</h1>
+      <h1 class="titulo" style="font-size:${D.spot.length > 22 ? 52 : D.spot.length > 12 ? 64 : 80}px"><small>${L("Hoy en", "At")}</small>${esc(D.spot)}</h1>
       <div class="heroe">
-        <div class="nota" data-nivel="${r.nivel}"><b id="nota">${r.puntuacion}</b><span>sobre 100</span></div>
+        <div class="nota" data-nivel="${r.nivel}"><b id="nota">${r.puntuacion}</b><span>${L("sobre 100", "out of 100")}</span></div>
         <div class="lado">
-          <div class="que">Índice de pesca · ${esc(D.modalidad || "desde costa")}</div>
+          <div class="que">${L("Índice de pesca", "Fishing index")} · ${esc(D.modalidad || L("desde costa", "from the shore"))}</div>
           <div class="estrella">${esc(r.especie)}</div>
           <ul class="motivos">${r.motivos.map((m) => `<li><i class="${m.sube ? "sube" : "baja"}">${m.flecha}</i>${esc(m.texto)}</li>`).join("")}</ul>
           ${r.avisoOla ? `<p class="aviso-ola">${esc(r.avisoOla)}</p>` : ""}
         </div>
       </div>
       <div class="datos">${D.tarjetas.map((d) => `<div class="dato"><svg viewBox="0 0 22 22">${ICONOS[d.icono]}</svg><div class="etq">${esc(d.etq)}</div><div class="val">${esc(d.val)}</div><div class="sub">${esc(d.sub)}</div></div>`).join("")}</div>
-      <div class="ventana"><div class="cab"><span>Ventana del día · ${esc(r.especie)}</span><em>${r.mejorTramo ? "mejor: " + r.mejorTramo.texto : ""}</em></div>
+      <div class="ventana"><div class="cab"><span>${L("Ventana del día", "Today's window")} · ${esc(r.especie)}</span><em>${r.mejorTramo ? L("mejor: ", "best: ") + r.mejorTramo.texto : ""}</em></div>
         <div class="barras" id="barras">${barrasHtml()}</div>
         <div class="eje"><span>00</span><span>03</span><span>06</span><span>09</span><span>12</span><span>15</span><span>18</span><span>21</span></div></div>
       ${mapaHtml()}
-      ${conCta ? `<div class="cta">Mira tu spot en costaviva.org</div>` : `<div class="pie"><span class="url">costaviva.org</span><span class="fuentes">${esc(D.fuentes)}</span></div>`}`;
+      ${conCta ? `<div class="cta">${L("Mira tu spot en costaviva.org", "Check your spot at costaviva.org")}</div>` : `<div class="pie"><span class="url">costaviva.org</span><span class="fuentes">${esc(D.fuentes)}</span></div>`}`;
   }
   function mapaHtml() {
     if (!D.mapa) return "";
@@ -201,13 +203,13 @@
   function especieHtml(conCta) {
     const e = D.especie;
     return `${marcaHtml()}
-      <span class="chip">De temporada ahora · ${esc(e.region)}</span>
+      <span class="chip">${L("De temporada ahora", "In season now")} · ${esc(e.region)}</span>
       <h1 class="titulo" style="font-size:96px">${esc(e.nombre)}</h1>
       <div class="ficha"><p>${esc(e.nota)}</p>
-        <dl>${e.cebos ? `<dt>Cebos</dt><dd>${esc(e.cebos)}</dd>` : ""}${e.talla ? `<dt>Talla mín.</dt><dd>${esc(e.talla)}</dd>` : ""}${e.alimentacion ? `<dt>Come</dt><dd>${esc(e.alimentacion)}</dd>` : ""}</dl>
+        <dl>${e.filas ? e.filas.map(([dt, dd]) => `<dt>${esc(dt)}</dt><dd>${esc(dd)}</dd>`).join("") : `${e.cebos ? `<dt>Cebos</dt><dd>${esc(e.cebos)}</dd>` : ""}${e.talla ? `<dt>Talla mín.</dt><dd>${esc(e.talla)}</dd>` : ""}${e.alimentacion ? `<dt>Come</dt><dd>${esc(e.alimentacion)}</dd>` : ""}`}</dl>
         ${e.freza ? `<p class="aviso-freza">${esc(e.freza)}</p>` : ""}</div>
       <div style="flex:1"></div>
-      ${conCta ? `<div class="cta">Su índice de pesca, hora a hora, en costaviva.org</div>` : `<div class="pie"><span class="url">costaviva.org</span><span class="fuentes">${esc(e.fuente || "")}</span></div>`}`;
+      ${conCta ? `<div class="cta">${L("Su índice de pesca, hora a hora, en costaviva.org", "Its fishing index, hour by hour, at costaviva.org")}</div>` : `<div class="pie"><span class="url">costaviva.org</span><span class="fuentes">${esc(e.fuente || "")}</span></div>`}`;
   }
   function cuerpoHtml(conCta) {
     return D.tipo === "funcion" ? funcionHtml(conCta) : D.tipo === "especie" ? especieHtml(conCta) : condicionesHtml(conCta);
@@ -224,7 +226,7 @@
 
   // ---- Post y story ----
   window.pintar = function (datos) {
-    D = datos; dimensionar(D.formato);
+    D = datos; dimensionar(D.formato); document.documentElement.lang = L("es", "en");
     const l = $("#lienzo"); l.className = "lienzo";
     l.innerHTML = cuerpoHtml(D.formato !== "post");
     colocarPin();
@@ -245,7 +247,7 @@
   // (escenaEn, contar), que es lo que se prueba en test/pieza-datos.test.js. ----
   let escenaPintada = null, particulas = null;
   window.prepararReel = function (datos) {
-    D = datos; dimensionar("reel"); escenaPintada = null; particulas = null;
+    D = datos; dimensionar("reel"); escenaPintada = null; particulas = null; document.documentElement.lang = L("es", "en");
     return document.fonts.ready;
   };
   window.fotograma = function ({ escena, progreso, nota, fondo }) {
@@ -262,7 +264,7 @@
       } else {
         l.className = "lienzo"; l.style.background = "";
         l.style.justifyContent = "center";
-        l.innerHTML = `${marcaHtml()}<div style="flex:1"></div><p class="claim">${esc(D.claim)}</p><p class="cierre-marca">Costaviva</p><div class="cta">Gratis 7 días</div><p class="cierre-web">costaviva.org</p><div style="flex:1"></div>`;
+        l.innerHTML = `${marcaHtml()}<div style="flex:1"></div><p class="claim">${esc(D.claim)}</p><p class="cierre-marca">Costaviva</p><div class="cta">${L("Gratis 7 días", "Free for 7 days")}</div><p class="cierre-web">costaviva.org</p><div style="flex:1"></div>`;
       }
     }
     if (escena === "gancho") {
