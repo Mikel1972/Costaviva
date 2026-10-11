@@ -5,6 +5,33 @@ cambian las convenciones — no es un historial (para eso está `ROBOT.md`).
 Si algo de aquí queda desactualizado, corrígelo en el momento en que lo
 detectes, no lo dejes para luego.
 
+## Migraciones: solo se aplica la que Mikel aprobó (2026-10-11, incidente)
+
+Mikel aprobó UNA migración (`20261011230000_cobro_prueba_14_dias_plan_gratis.sql`)
+y al lanzar `aplicar-migraciones.yml` se aplicaron también
+`20261011200000_programador_publicar_veto.sql` y `20261011220000_visitas_en.sql`,
+que otros agentes habían fusionado en main sin su sí: `supabase db push`
+aplica todas las pendientes. Regla: **Claude pregunta, Claude ejecuta; nada de
+SQL sin el sí de Mikel.** Dos cerrojos (trampa en `Mikel1972/comun`):
+
+1. **Check `migraciones-aprobadas`** (`.github/workflows/migraciones-aprobadas.yml`):
+   una PR que añade o modifica algo en `supabase/migrations/` falla salvo que
+   lleve la etiqueta **`sql-aprobado`**. La pone **solo el Claude principal,
+   después del sí explícito de Mikel** a esa migración (nunca un robot ni un
+   subagente por su cuenta, nunca "por adelantado"). Al ponerla, el check se
+   reevalúa solo (eventos `labeled`/`unlabeled`). No fusiones una PR con este
+   check en rojo.
+2. **`aplicar-migraciones.yml` exige el input `migracion`** con el nombre
+   exacto del fichero aprobado. Antes de aplicar mira
+   `supabase_migrations.schema_migrations`: si lo pendiente no es
+   EXACTAMENTE esa migración, falla sin tocar nada y lista las demás. Esas
+   otras se le enseñan a Mikel; no se aplican "de paso".
+
+Cómo se lanza ahora (desde main, con `actions_run_trigger`):
+`workflow_id: aplicar-migraciones.yml`, `ref: main`, inputs
+`{"confirmacion": "aplicar", "migracion": "20261011230000_cobro_prueba_14_dias_plan_gratis.sql"}`.
+Lógica en `.github/scripts/migraciones.mjs`, test en `test/migraciones.test.js`.
+
 ## Idiomas: español, inglés y portugués (2026-10-09, base para Nueva Zelanda; portugués europeo desde el 2026-10-11)
 
 Mikel abre Nueva Zelanda para pescadores en inglés. Base de idiomas sin

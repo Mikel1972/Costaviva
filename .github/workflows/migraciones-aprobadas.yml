@@ -1,0 +1,41 @@
+name: Migraciones aprobadas
+
+# Incidente del 2026-10-11: otros agentes fusionaron migraciones en main sin
+# el sí de Mikel y `supabase db push` las aplicó junto a la única aprobada.
+# Este check falla si la PR añade o modifica algo en supabase/migrations/ y
+# no lleva la etiqueta `sql-aprobado`. La etiqueta la pone el Claude
+# principal DESPUÉS del sí de Mikel, nunca antes ni un robot por su cuenta.
+#
+# Va aparte de tests.yml a propósito: necesita reevaluarse al poner o quitar
+# la etiqueta (types labeled/unlabeled), y meter esos types en tests.yml
+# relanzaría todos los tests en cada cambio de etiqueta.
+# Lógica pura en .github/scripts/migraciones.mjs (test/migraciones.test.js).
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  contents: read
+
+jobs:
+  migraciones-aprobadas:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: ¿Toca migraciones sin la etiqueta sql-aprobado?
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          ETIQUETAS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
+        run: |
+          # Añadidos, copiados, modificados o renombrados respecto a la base.
+          git diff --name-only --diff-filter=ACMR "$BASE_SHA...$HEAD_SHA" > /tmp/ficheros.txt
+          node .github/scripts/migraciones.mjs guardia /tmp/ficheros.txt "$ETIQUETAS"
