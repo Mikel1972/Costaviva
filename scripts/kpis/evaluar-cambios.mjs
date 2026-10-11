@@ -2,7 +2,7 @@
 // Registro y evaluación de los cambios que hace la rutina de KPIs
 // (scripts/kpis/rutina-kpis.txt) para mejorar el paso del embudo más en rojo.
 //
-// datos-robots/kpis/cambios.jsonl, solo se añaden líneas (nunca se reescribe):
+// kpis/costaviva/cambios.jsonl de comun (privado), solo se añaden líneas (nunca se reescribe):
 //   {"tipo":"cambio","id":"kpi-2026-10-13-cta-precios","fecha":"2026-10-13","rama":"robot/diseno-...",
 //    "pr":null,"paso":"nuevos_pagos","descripcion":"...","ficheros":["login.html"]}
 //   {"tipo":"fusion","id":"...","fecha":"2026-10-14","pr":201}
@@ -26,7 +26,8 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { sumarDias, diasEntre, diaMadrid, redondear } from "./lib.mjs";
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
-export const RUTA_CAMBIOS = join(RAIZ, "datos-robots", "kpis", "cambios.jsonl");
+export { RUTA_CAMBIOS } from "./rutas.mjs";
+import { RUTA_CAMBIOS, RUTA_HISTORICO } from "./rutas.mjs";
 export const DIAS_EVALUAR = 14;
 export const MIN_CASOS = 10;
 export const MAX_REEVALUACIONES = 3;
@@ -116,7 +117,7 @@ export function estadoCambios(lineas) {
 function principal() {
   const hoy = diaMadrid(new Date());
   const lineas = leerCambios();
-  const ruta = join(RAIZ, "datos-robots", "kpis", "historico.jsonl");
+  const ruta = RUTA_HISTORICO;
   const historico = existsSync(ruta) ? readFileSync(ruta, "utf8").split("\n").filter(Boolean).map((l) => JSON.parse(l)) : [];
   const p = pendientes(lineas, historico, hoy);
   console.log(JSON.stringify(p, null, 2));
