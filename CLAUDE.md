@@ -377,12 +377,85 @@ solo aplica ya a regiones que no estén en `REGIONES_ACTIVAS`.
   y clave → 200 con solo NZ, caché separada, España igual, normativa sin
   cifras, SOS, alta) y `test/listas-spots.test.js`.
 
+## Publicación automática con veto de 12 h y fusión sola de las PR del robot de SEO (2026-10-11)
+
+**Regla nueva de Mikel (2026-10-11), respondiendo a cómo publicar en redes:
+"Automático con veto"** ("no podemos estar improvisando ni aprobando uno a
+uno"). **Sustituye a la regla anterior ("nada sin su publica")**: desde hoy
+es "automático con veto de 12 h". El publicador manual sigue existiendo.
+
+- **Flujo**: los robots (`robot-marketing-instagram.yml`,
+  `robot-reel-instagram.yml`) preparan la pieza y abren el Issue de aviso
+  (etiqueta `marketing`) la víspera, con la imagen o el vídeo, los textos,
+  los hashtags y la hora a la que saldrá sola. `publicar-con-veto.yml` mira
+  cada 30 min los Issues abiertos (pg_cron:
+  `20261011200000_programador_publicar_veto.sql`, **SIN APLICAR**, a los 05 y
+  35; el `schedule:` "17,47 * * * *" es el respaldo) y, si a la hora prevista
+  no hay veto, publica en Instagram y Facebook con
+  `scripts/marketing/publicar-pieza.mjs` (la misma lógica que el manual,
+  mismo grupo de `concurrency`) y cierra el Issue con los enlaces.
+- **Cómo veta Mikel** (basta una): etiqueta `veto` en el Issue, o un
+  comentario suyo (autor = dueño del repo) con la palabra "no" o "veto" (en
+  caso de duda gana el veto; los comentarios de otros no vetan). Interruptor
+  general: **variable de repositorio `PUBLICACION_AUTOMATICA`**; si no es
+  `true`, no se publica nada solo (el job ni arranca y el Issue lo dice).
+  **No existe todavía: la crea Mikel** (Settings → Secrets and variables →
+  Actions → Variables → `PUBLICACION_AUTOMATICA` = `true`) cuando quiera
+  empezar. `AUTOMATION_PAUSED=true` también lo para.
+- **Barreras** (`scripts/marketing/veto.mjs`, test
+  `test/publicacion-veto.test.js`): 12 h de aviso como mínimo (si el Issue
+  llega tarde, sale 12 h después del aviso, nunca antes; el contenedor de
+  Instagram caduca a las 24 h y a las 23 h se da por caducado y se avisa);
+  como mucho 1 publicación al día por red (`posts-publicados.jsonl`,
+  `posts-facebook.jsonl`) y nunca repite una ya publicada; solo piezas
+  propias servidas desde `costaviva.org/assets/marketing/` (nunca webcams de
+  terceros) y reels solo sin clip o con un clip cuya `.licencia.json` diga
+  `"persona_identificable": false` (el de `coverr-pescador-costa-rocosa`
+  dice `true`: ese reel solo sale a mano; un clip propio necesita su
+  `.licencia.json` con ese campo); textos sin huecos (`{ENLACE}`,
+  `undefined`, `NaN`, `null`): solo datos reales. Token: antes de publicar
+  se comprueba como en `comprobar-token-instagram.yml`
+  (`scripts/marketing/estado-token.mjs`, mismos permisos): inválido o sin
+  permisos de Instagram = no publica y avisa en el Issue; sin
+  `pages_manage_posts` (el caso de hoy) publica solo en Instagram y lo anota.
+  Si algo falla (pieza dudosa, caducada, error al publicar), el Issue queda
+  con la etiqueta `revisar-publicacion` y no se reintenta: decide Mikel. Los
+  avisos llevan una marca invisible para no repetirse cada 30 min.
+
+**Fusión automática de las PR del robot de SEO (Mikel, 2026-10-11: que
+trabaje de forma autónoma).** `fusion-robot-seo.yml` (hermano de
+`robot-diseno-pr.yml`, `workflow_run` de "Tests"; corre el código de main y
+de la PR solo lee los nombres de los ficheros) fusiona con squash las PR de
+`robot/palabras-*` y `robot/etiquetas-olas-*` cuando todos los checks del
+commit están en verde, SOLO si todos los ficheros están en la lista blanca de
+`scripts/seo/fusion-automatica.mjs` (test `test/fusion-robot.test.js`):
+- `robot/palabras-*`: páginas públicas generadas (`functions/mareas|spots|
+  especies|en|tecnicas/**.js`), metadatos (`functions/_lib/seo/paginas.js`,
+  `paginas-en.js`, `datos.js`, `sitemap.js`, `sitemap.xml`, `robots.txt`),
+  `datos-robots/**` y `seo/**`. Como mucho **3 fusiones automáticas en 7
+  días** (cuentan las PR con la etiqueta `fusion-automatica`).
+- `robot/etiquetas-olas-*`: solo `datos-robots/oleaje-camaras/**`.
+- Lista negra que gana siempre: `.github/`, `supabase/`,
+  `functions/_middleware.js`, el resto de `functions/_lib/` (también
+  `rutas-publicas.js`: una página nueva con ruta pública nueva la revisa
+  Mikel) y cualquier ruta con cobro, login, suscripción, stripe, checkout,
+  auth, pago, referidos, invitaciones o admin. `login.html` e `index.html`
+  tampoco entran.
+- Si algún fichero queda fuera, la PR se queda abierta con la etiqueta
+  `revisar` y un comentario con la lista. Límite semanal o checks en rojo:
+  abierta, con comentario. Las demás ramas `robot/*` (diseño, especies,
+  aprendizaje) siguen esperando a Mikel. Reintento a mano: Actions →
+  "Fusionar solas las PR del robot de SEO" → `rama`.
+- Pendiente: el texto de la rutina en comun (`rutinas/robot-seo-redes.md`)
+  aún dice "la fusiona Mikel" y "cada pieza sale solo con el OK de Mikel".
+
 ## Captación: redes, calendario, métricas e "Invita a un amigo" (2026-10-09)
 
 Fase decidida por Mikel: todo a conseguir usuarios (0 suscriptores el
 2026-10-09). Cuatro piezas, todas sin IA y a coste 0:
 
-1. **Instagram + Facebook, mismo flujo de aprobación.** Los robots
+1. **Instagram + Facebook, mismo flujo** (desde el 2026-10-11, automático
+   con veto de 12 h: ver la sección de arriba). Los robots
    (`robot-marketing-instagram.yml`, `robot-reel-instagram.yml`) crean el
    borrador de Instagram y abren UN Issue (etiqueta `marketing`) con los dos
    textos y la pieza entera en un bloque invisible
@@ -1845,15 +1918,16 @@ ese día `scripts/seo/rutina-seo-diseno.txt` solo apunta allí).
 - La rutina "Robot de SEO y diseño" (PARTE C) actúa sobre los huecos en
   ramas `robot/palabras-*` (máx. 3 cambios por pasada, solo páginas públicas
   y metadatos, datos reales; primero el país más alejado de su objetivo en
-  `datos-robots/kpis/objetivos.json`); `robot-diseno-pr.yml` abre la PR y la fusiona
-  Mikel. Cada cambio se mide en comun (`seo/palabras/costaviva-cambios.json`).
+  `datos-robots/kpis/objetivos.json`); `robot-diseno-pr.yml` abre la PR y
+  `fusion-robot-seo.yml` la fusiona sola si todo está en la lista blanca y en
+  verde (2026-10-11; si no, etiqueta `revisar` y decide Mikel). Cada cambio se mide en comun (`seo/palabras/costaviva-cambios.json`).
 - Redes: `scripts/marketing/palabras-redes.mjs` (lógica pura,
   `test/palabras-redes.test.js`) hace que el calendario elija, entre las
   especies que ya valen (temporada, veda, modalidad) y dentro de la zona que
   toca, la especie y el spot que más se buscan y suben; añade hashtags de los
   términos con demanda y enlaza la ficha web de la especie. Lee
-  `palabras-es.json`; sin él (o con más de 21 días), rotación de siempre. La publicación no cambia:
-  cada pieza sale solo con el OK de Mikel.
+  `palabras-es.json`; sin él (o con más de 21 días), rotación de siempre. La publicación: automática
+  con veto de 12 h (2026-10-11, ver "Publicación automática con veto").
 - Métricas comunes: `medir-metricas-instagram.mjs` apunta además una foto
   diaria de seguidores (`instagram_cuenta` en `CALIBRACION.jsonl`); comun
   las suma por semana junto a las de la web.
