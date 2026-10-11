@@ -304,3 +304,62 @@ export function externaCuentaComoCaida(camara, estado) {
   if (camara.modo === "enlace" && CODIGOS_ANTIBOT.some((c) => estado.motivo === `http_${c}`)) return false;
   return true;
 }
+
+// --- Color de cámara de cada spot en el mapa (2026-10-11) ---
+//
+// Pedido de Mikel: "En la de España, revisa que el status sea correcto.
+// Verde = cámara. Rojo = no cámara." Hasta hoy el punto solo salía en los
+// spots con cámara PROPIA (SPOTS_CON_WEBCAM de index.html): los que solo
+// tienen una de terceros que funciona (Santander, Cádiz, Águilas, Muro...)
+// no llevaban punto, y los de cámara oculta o sin cámara tampoco. Ahora el
+// punto sale en todos los spots de España y Portugal y dice lo mismo que
+// verá el usuario al abrir la ficha:
+//
+//   - "verde": funciona AHORA al menos una cámara: la propia (con su
+//     reserva, el proxy ya cambia solo de fuente) o una de terceros cuyo
+//     robot de salud la ha visto bien en su última pasada (motivo "ok").
+//   - "rojo": ninguna funciona: la propia sin señal (también congelada u
+//     oculta por llevar más de 24 h así), las de terceros caídas, las
+//     retiradas del código y los spots que no tienen ninguna.
+//   - "no_verificable": no hay ninguna que funcione comprobada, pero hay al
+//     menos un enlace cuyo dueño bloquea las comprobaciones automáticas (MEO
+//     Beachcam da 403 a los robots). Hoy se ve igual que antes: SIN punto en
+//     el mapa y el enlace en la ficha. Qué color le toca lo decide Mikel.
+export const HORAS_CAMARA_OCULTA = 24;
+
+// Desde cuándo no llega una imagen NUEVA: la última lectura buena
+// (ultimaSenalEn) o, si es anterior, desde cuándo el fotograma es el mismo
+// (congeladaDesde = hash_desde). Antes solo se miraba congeladaDesde con
+// motivo "frame_congelado", y una congelada que además fallaba a ratos
+// (cantabria.es, 522 intermitente) perdía ese motivo en cada fallo y su
+// cuenta de 24 h volvía a empezar.
+export function inicioSinSenal(estado) {
+  const fechas = [estado?.ultimaSenalEn, estado?.congeladaDesde]
+    .map((f) => (f ? Date.parse(f) : NaN))
+    .filter(Number.isFinite);
+  if (!fechas.length) return null;
+  return new Date(Math.min(...fechas)).toISOString();
+}
+
+// Más de 24 h sin señal: fuera de la vista (ver CLAUDE.md, "Cámaras caídas").
+export function camaraOculta(estado, ahoraMs = Date.now()) {
+  if (!estado?.sinSenal) return false;
+  const desde = inicioSinSenal(estado);
+  if (!desde) return true;
+  return ahoraMs - Date.parse(desde) > HORAS_CAMARA_OCULTA * 3600 * 1000;
+}
+
+// Una de terceros cuenta como "funciona" solo si el robot la vio bien.
+export function externaFunciona(estado) {
+  return !!estado && !estado.sinSenal && estado.motivo === "ok";
+}
+
+// slug: spot; tienePropia: si está en SPOTS_CON_WEBCAM; camaras: el objeto
+// `camaras` de /prevision (clave = slug o ext-<id>).
+export function estadoCamaraSpot(slug, tienePropia, camaras = {}) {
+  if (tienePropia && !camaras[slug]?.sinSenal) return "verde";
+  const externas = camarasExternasDeSpot(slug);
+  if (externas.some((c) => externaFunciona(camaras[claveSalud(c)]))) return "verde";
+  if (externas.some((c) => c.modo === "enlace" && esNoVerificable(camaras[claveSalud(c)]?.motivo))) return "no_verificable";
+  return "rojo";
+}

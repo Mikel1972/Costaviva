@@ -6,6 +6,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { WEBCAMS } from "../functions/webcam/[slug].js";
+import { camaraOculta } from "../assets/js/camaras-externas.js";
 
 const leer = (ruta) => readFileSync(new URL(`../${ruta}`, import.meta.url), "utf8");
 const index = leer("index.html");
@@ -38,12 +39,16 @@ test("una cámara congelada más de 24 h se retira aunque su última lectura sea
     alicante: { sinSenal: true, motivo: "origen_404", ultimaSenalEn: "2026-10-07T02:31:00Z" },
     sana: { sinSenal: false, motivo: "ok", ultimaSenalEn: "2026-10-11T09:30:00Z" },
   };
-  const retirada = cargarRetirada(CAMARAS, ahora);
-  assert.equal(retirada("pasaia"), true, "congelada desde el 7 de octubre");
-  assert.equal(retirada("bakio"), false, "congelada solo de noche");
-  assert.equal(retirada("mundaka"), false, "de noche, menos de 24 h");
-  assert.equal(retirada("alicante"), true);
-  assert.equal(retirada("sana"), false);
+  // La regla vive en camaras-externas.js (camaraOculta); index.html la usa
+  // y guarda un respaldo por si el módulo aún no ha cargado: los dos igual.
+  const retiradaModulo = (slug) => camaraOculta(CAMARAS[slug], ahora);
+  for (const retirada of [cargarRetirada(CAMARAS, ahora), retiradaModulo]) {
+    assert.equal(retirada("pasaia"), true, "congelada desde el 7 de octubre");
+    assert.equal(retirada("bakio"), false, "congelada solo de noche");
+    assert.equal(retirada("mundaka"), false, "de noche, menos de 24 h");
+    assert.equal(retirada("alicante"), true);
+    assert.equal(retirada("sana"), false);
+  }
 });
 
 test("/prevision manda desde cuándo está congelada cada cámara", () => {
