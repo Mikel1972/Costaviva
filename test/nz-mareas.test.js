@@ -132,7 +132,9 @@ test("marea de un spot: misma forma que la de España más puerto, fuente y avis
   assert.ok(m.coeficiente >= 20 && m.coeficiente <= 120);
   assert.equal(m.puerto.metodo, "tabla");
   assert.equal(m.atribucion, ATRIBUCION_LINZ);
-  assert.match(m.atribucion, /Land Information New Zealand.*CC BY 4\.0/);
+  assert.match(m.atribucion, /^This work is based on Toitū Te Whenua Land Information New Zealand data .*Creative Commons Attribution 4\.0 International licence\.$/);
+  assert.match(m.atribucionCorta, /Based on Toitū Te Whenua Land Information New Zealand data, CC BY 4\.0/);
+  assert.equal(m.licencia, "https://creativecommons.org/licenses/by/4.0/");
   assert.match(m.aviso, /Maritime Rules Part 25/);
   // Secundario (Akaroa desde Lyttelton) y sin datos.
   const akaroa = { ...spot, puerto_linz: { id: "6490f", nombre: "Akaroa", km: 0.5, tabla: null } };

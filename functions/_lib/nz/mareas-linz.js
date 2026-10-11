@@ -21,14 +21,23 @@
 //   - Las alturas son sobre el cero hidrográfico de la carta (como en una
 //     tabla de mareas normal), no anomalías.
 //
-// Licencia: LINZ declara CC BY 4.0 para su contenido salvo indicación en
-// contra (https://www.linz.govt.nz/copyright); la página de mareas solo
-// dice "Crown copyright". Pendiente de confirmación escrita de LINZ (ver
-// CLAUDE.md, "Nueva Zelanda"). Atribución y aviso obligatorios abajo.
+// Licencia: CC BY 4.0, VERIFICADA el 2026-10-11. LINZ respondió por
+// escrito (atención al cliente) remitiendo a la página de mareas, que dice
+// "Crown copyright ©" y enlaza a https://www.linz.govt.nz/copyright: salvo
+// indicación en contra, CC BY 4.0, sin excepción para las mareas (ver
+// CLAUDE.md, "Nueva Zelanda"). Somos obra adaptada (calculamos las mareas a
+// partir de sus tablas y constantes), así que va la fórmula de obra adaptada
+// de linz.govt.nz/copyright, por escrito y sin logos. Aviso obligatorio abajo.
 
 export const ZONA_NZ = "Pacific/Auckland";
+export const URL_LICENCIA_LINZ = "https://creativecommons.org/licenses/by/4.0/";
+// Fórmula completa (obra adaptada), copiada literal de linz.govt.nz/copyright.
 export const ATRIBUCION_LINZ =
-  "Sourced from Land Information New Zealand data (CC BY 4.0)";
+  "This work is based on Toitū Te Whenua Land Information New Zealand data which are licensed by Toitū Te Whenua Land Information New Zealand for re-use under the Creative Commons Attribution 4.0 International licence.";
+// Abreviada para la UI con poco sitio (panel del mapa): nombre completo,
+// "based on" y "CC BY 4.0" (con enlace a URL_LICENCIA_LINZ donde se pinte).
+export const ATRIBUCION_LINZ_CORTA =
+  "Based on Toitū Te Whenua Land Information New Zealand data, CC BY 4.0";
 export const AVISO_LINZ =
   "Not official tide tables as specified in Maritime Rules Part 25. Times and heights are predictions.";
 export const FUENTE_LINZ = "LINZ tide predictions";
@@ -363,6 +372,8 @@ export function mareaSpotNZ(spot, catalogo, anios, ahora = Date.now()) {
     puerto: { id: puerto.id, nombre: puerto.nombre, km: puerto.km, metodo: puerto.tabla ? "tabla" : "secundario" },
     fuente: FUENTE_LINZ,
     atribucion: ATRIBUCION_LINZ,
+    atribucionCorta: ATRIBUCION_LINZ_CORTA,
+    licencia: URL_LICENCIA_LINZ,
     aviso: AVISO_LINZ,
   };
 }

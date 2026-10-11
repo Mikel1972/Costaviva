@@ -1356,7 +1356,7 @@
         <div class="etq" data-i18n="mapa.panel.marea">MAREA</div>
         <div class="val" id="panelMarea" style="font-size:15px;" data-i18n="mapa.sin_datos">sin datos</div>
         <div class="etq" id="panelMareaProxima"></div>
-        <!-- Marea de LINZ (NZ): puerto, atribución CC BY 4.0 y aviso obligatorio. -->
+        <!-- Marea de LINZ (NZ): puerto, atribución (based on Toitū Te Whenua Land Information New Zealand data, CC BY 4.0 con enlace) y aviso obligatorio. -->
         <div class="etq" id="panelMareaFuente" hidden style="text-transform:none; letter-spacing:0; font-size:9.5px; line-height:1.35; margin-top:3px;"></div>
       </div>
       <div class="tarjeta">
@@ -2351,13 +2351,26 @@ function pintarReservasPanel(s) {
   });
 }
 
-// Marea de LINZ (NZ): puerto de referencia, atribución y aviso obligatorio.
+// Marea de LINZ (NZ): puerto de referencia, atribución (abreviada: nombre
+// completo de LINZ, "based on" y "CC BY 4.0" con enlace a la licencia) y
+// aviso obligatorio. Con nodos de texto, sin innerHTML.
 function pintarFuenteMarea(s) {
   const el = document.getElementById("panelMareaFuente");
   const m = s.marea;
-  if (!m || !m.atribucion) { el.textContent = ""; el.hidden = true; return; }
+  el.textContent = "";
+  if (!m || !m.atribucion) { el.hidden = true; return; }
   const puerto = m.puerto ? I18n.t("mapa.marea.puerto_linz", { puerto: m.puerto.nombre, km: m.puerto.km }) : "";
-  el.textContent = [puerto, m.atribucion, m.aviso].filter(Boolean).join(" · ");
+  const atrib = m.atribucionCorta || m.atribucion;
+  const corte = m.licencia ? atrib.lastIndexOf("CC BY 4.0") : -1;
+  if (puerto) el.append(puerto + " · ");
+  if (corte >= 0) {
+    const a = document.createElement("a");
+    a.href = m.licencia; a.target = "_blank"; a.rel = "noopener"; a.textContent = "CC BY 4.0";
+    el.append(atrib.slice(0, corte), a, atrib.slice(corte + "CC BY 4.0".length));
+  } else {
+    el.append(atrib);
+  }
+  if (m.aviso) el.append(" · " + m.aviso);
   el.hidden = false;
 }
 

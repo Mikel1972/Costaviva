@@ -1028,7 +1028,7 @@
   "mapa.region.chip_es": "España y Portugal",
   "mapa.region.chip_nz": "New Zealand",
   "mapa.region.no_disponible": "No se han podido cargar los datos de esta región. Vuelve a probar en unos minutos.",
-  "mapa.atrib.linz": "Mareas NZ: Sourced from Land Information New Zealand data (CC BY 4.0); no son tablas oficiales",
+  "mapa.atrib.linz": "Mareas NZ: based on Toitū Te Whenua Land Information New Zealand data, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a>; no son tablas oficiales",
   "mapa.panel.reservas": "Reserva marina cerca: {lista}. Dentro de una reserva marina no se puede pescar ni coger nada.",
   "mapa.panel.reservas_atrib": "Reservas marinas: Department of Conservation (DOC), Crown copyright, CC BY 4.0. Contorno simplificado: comprueba el límite exacto en el DOC.",
   "mapa.marea.puerto_linz": "Puerto LINZ: {puerto} ({km} km)",
