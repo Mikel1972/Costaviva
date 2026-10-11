@@ -531,6 +531,17 @@ vigía saldrá en rojo hasta aplicarlas. Tests: `test/captacion.test.js`,
 Objetivo de Mikel: facturación como estrella polar (MRR en €/mes, con los
 anuales a 1/12). Todo sin IA y solo en lectura de producción.
 
+**Los KPIs son PRIVADOS (decisión de Mikel, 2026-10-11).** Este repo es
+público: aquí solo hay código (`scripts/kpis/`) y los objetivos
+(`datos-robots/kpis/objetivos.json`). El histórico, `KPIS.md`, `mrr.svg`,
+`resumen.json`, `cambios.jsonl` y el ranking de socios viven en
+**`Mikel1972/comun`, carpeta `kpis/costaviva/`** (`scripts/kpis/rutas.mjs`;
+`KPIS_DIR`, por defecto `../comun/kpis/costaviva`). Nunca escribas cifras de
+facturación, MRR ni datos de clientes en este repo (commits, PR,
+SEO_ROBOT.md, propuestas). Del 11-oct quedaron en el historial de git de este
+repo un `KPIS.md` y un `historico.jsonl` con solo recuentos y MRR 0 € (sin
+personas ni ids).
+
 - **Objetivos** en `datos-robots/kpis/objetivos.json` (se cambian ahí, sin
   tocar código): 10 quincenas (Q1 cierra el 26-oct, Q10 el 11-mar-2027) y
   tres escenarios de MRR. **Objetivo oficial: ambicioso** (10 → 1.017 €);
@@ -540,18 +551,18 @@ anuales a 1/12). Todo sin IA y solo en lectura de producción.
   base. Dos cierres seguidos bajo el base = aviso a Mikel (Issue de los
   lunes, vía la rutina). Sin ajustes estacionales (decisión de Mikel). Los
   supuestos del embudo (visita → alta 4 %, alta → pago 3 %, ARPU 3,25 €,
-  +15 % por bajas) valen hasta que el real tiene 20 casos.
-- **`kpis.yml`** (diario 05:37 UTC): `scripts/kpis/recoger.mjs` AÑADE a
-  `datos-robots/kpis/historico.jsonl` una línea por día cerrado (hora de
-  Madrid): visitas, altas (sin admin, pruebas, permanentes ni invitaciones
-  del 100 %), canales, cohortes de activación y retención, pagos nuevos,
-  cancelaciones, facturado y, en la última, el stock (MRR, suscriptores,
-  socios). Nunca se reescribe. Supabase con la service_role SOLO GET;
-  Stripe con `STRIPE_KPI_KEY` (clave restringida de lectura; sin ella, MRR a
-  precio de lista desde `suscripciones` y lo dice). Los lunes
-  `scripts/kpis/informe.mjs` escribe `KPIS.md`, `datos-robots/kpis/mrr.svg` y
-  `datos-robots/kpis/resumen.json` (este lo agrega `comun` en su `KPIS.md`).
-  **El repo es público**: KPIS.md enseña MRR y facturación.
+  +15 % por bajas) valen hasta que el real tiene casos suficientes.
+- **`kpis.yml`** (diario 05:37 UTC) clona comun con `APRENDIZAJE_TOKEN`;
+  `scripts/kpis/recoger.mjs` AÑADE a `kpis/costaviva/historico.jsonl` una
+  línea por día cerrado (hora de Madrid): visitas, altas (sin admin, pruebas,
+  permanentes ni invitaciones del 100 %), canales, cohortes de activación y
+  retención, pagos nuevos, cancelaciones, facturado y, en la última, el stock
+  (MRR, suscriptores, socios). Nunca se reescribe. Supabase con la
+  service_role SOLO GET; Stripe con `STRIPE_SECRET_KEY` (la clave restringida
+  única de Costaviva; `STRIPE_KPI_KEY` de respaldo) solo con GET; sin clave,
+  MRR a precio de lista desde `suscripciones` y lo dice. Los lunes
+  `scripts/kpis/informe.mjs` escribe allí `KPIS.md`, `mrr.svg` y
+  `resumen.json` (este lo agrega `comun` en su `KPIS.md`).
 - **Por país** (`objetivos.json`, "paises"): ES 550 €, PT 100 €, NZ 367 € en
   marzo de 2027 (= 1.017 €), cada uno con la forma del ambicioso escalada a
   su parte; ARPU NZ 4,80 € (precio ×1,40). País del usuario: país de
@@ -572,11 +583,11 @@ anuales a 1/12). Todo sin IA y solo en lectura de producción.
   `scripts/socios/crear-codigos.mjs`). Si el webhook guarda
   `suscripciones.codigo_promocion`, también se usa (columna opcional).
 - **Acción autónoma**: la parte D de la rutina "Robot de SEO y diseño" (`rutinas/robot-seo-redes.md` de comun)
-  (martes; `scripts/kpis/rutina-kpis.txt`) evalúa los cambios anteriores
+  (martes; `scripts/kpis/rutina-kpis.txt`; lee y apunta en comun) evalúa los cambios anteriores
   (`scripts/kpis/evaluar-cambios.mjs`: 14 días antes contra 14 después; si
   empeora, revierte por PR) y hace como mucho 2 cambios de texto o llamada a
   la acción sobre el paso más en rojo, en rama `robot/diseno-…-kpi-…`
-  (PR para Mikel), apuntados en `datos-robots/kpis/cambios.jsonl`. Nunca
+  (PR para Mikel), apuntados en `kpis/costaviva/cambios.jsonl` de comun. Nunca
   precios, cobro ni login. Lo que necesita a Mikel va a
   `aprendizaje/propuestas.json` (Issue de los lunes).
 - Tests: `test/kpis.test.js`.
