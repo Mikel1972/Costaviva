@@ -53,11 +53,19 @@ jobs:
           SEO_ESTADO_FICHERO: ${{ github.workspace }}/SEO_ESTADO.md
         run: node indexacion-google.mjs
 
+      # Robot de palabras clave de comun (2026-10-11): búsquedas y semanas de
+      # Search Console para scripts/seo/palabras.mjs de Mikel1972/comun, que
+      # no puede autenticarse aquí. Sin IA; si falla, avisa y sigue.
+      - name: Search Console para el robot de palabras clave
+        working-directory: scripts/seo
+        run: node gsc-palabras.mjs
+
       - name: Guardar SEO_ESTADO.md en el repo
         run: |
           git config user.name "Costaviva (indexación)"
           git config user.email "actions@github.com"
           git add SEO_ESTADO.md
+          [ -f datos-robots/seo/gsc-consultas.json ] && git add datos-robots/seo/gsc-consultas.json
           if git diff --cached --quiet; then
             echo "SEO_ESTADO.md sin cambios."
           else

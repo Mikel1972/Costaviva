@@ -44,12 +44,22 @@ export function modalidadDelPost(env = process.env) {
 // Prioriza las especies cuya temporada en esa región está verificada con
 // fuente (no heredada de la lista antigua); nunca devuelve una en veda ni una
 // que no se pesque con la modalidad del post.
-export function elegirEspeciePost(datos, region, mes, dia, { euskadi = false, modalidad = "costa" } = {}) {
+// `preferencia` (2026-10-11, palabras clave de comun): función especie →
+// valor de demanda. Solo ordena las candidatas que ya valen; si ninguna
+// tiene demanda, rotación por día como siempre.
+export function elegirEspeciePost(datos, region, mes, dia, { euskadi = false, modalidad = "costa", preferencia = null } = {}) {
   const candidatas = especiesDeTemporada(datos, region, mes, modalidad);
   const verificadas = candidatas.filter((e) => e.presencia[region].verificado !== false);
   const lista = verificadas.length ? verificadas : candidatas;
   if (!lista.length) return null;
-  const e = lista[dia % lista.length];
+  let e = lista[dia % lista.length];
+  if (preferencia) {
+    const max = Math.max(...lista.map((x) => preferencia(x) || 0));
+    if (max > 0) {
+      const top = lista.filter((x) => (preferencia(x) || 0) === max);
+      e = top[dia % top.length];
+    }
+  }
   const p = e.presencia[region];
   const fuenteTemporada = p.fuentes?.map((f) => datos.fuentes[f]).find((f) => f?.tipo === "oficial" || f?.tipo === "cientifico");
   const talla = tallasParaRegion(e, region, euskadi && region === "cantabrico").find((t) => t.valor_cm !== null || t.peso_g !== undefined);

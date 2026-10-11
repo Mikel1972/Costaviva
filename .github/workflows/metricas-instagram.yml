@@ -38,6 +38,7 @@ jobs:
         working-directory: scripts/marketing
         env:
           META_PAGE_ACCESS_TOKEN: ${{ secrets.META_PAGE_ACCESS_TOKEN }}
+          META_IG_BUSINESS_ACCOUNT_ID: ${{ vars.META_IG_BUSINESS_ACCOUNT_ID }}
         run: |
           # Guardarraíl de credencial (añadido 2026-09-25). El script sale con
           # código 3 cuando Meta responde que el token no vale (error 190). Un

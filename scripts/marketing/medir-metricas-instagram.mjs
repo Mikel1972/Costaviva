@@ -124,7 +124,35 @@ async function medirPost(postId) {
   return { alcance, impresiones, likes, comentarios, guardados };
 }
 
+// Seguidores de la cuenta, una foto al día (2026-10-11, robot de palabras
+// clave de comun: "seguidores nuevos" por semana junto a las métricas de la
+// web). followers_count es un campo básico de la cuenta (instagram_basic).
+// Si falla, se dice y se sigue: nunca se apunta un número que no sea real.
+async function fotoSeguidores() {
+  const igId = process.env.META_IG_BUSINESS_ACCOUNT_ID;
+  if (!igId) { console.warn("Sin META_IG_BUSINESS_ACCOUNT_ID: no se apuntan seguidores."); return false; }
+  const hoy = new Date().toISOString().slice(0, 10);
+  if (leerLineasJsonl(RUTA_CALIBRACION).some((l) => l.tipo === "instagram_cuenta" && String(l.fecha).startsWith(hoy))) return false;
+  try {
+    const resp = await fetch(`https://graph.facebook.com/v21.0/${igId}?fields=followers_count,media_count&access_token=${PAGE_ACCESS_TOKEN}`);
+    const datos = await resp.json();
+    if (!resp.ok) {
+      if (esTokenCaducado(datos)) abortarPorTokenCaducado(datos);
+      console.warn(`No se pudieron leer los seguidores: ${datos?.error?.message || resp.status}`);
+      return false;
+    }
+    if (datos.followers_count == null) return false;
+    appendFileSync(RUTA_CALIBRACION, JSON.stringify({ fecha: new Date().toISOString(), tipo: "instagram_cuenta", seguidores: datos.followers_count, publicaciones: datos.media_count ?? null }) + "\n");
+    console.log(`✓ Seguidores de Instagram: ${datos.followers_count}`);
+    return true;
+  } catch (e) {
+    console.warn(`Error pidiendo los seguidores: ${e.message}`);
+    return false;
+  }
+}
+
 async function main() {
+  await fotoSeguidores();
   const posts = leerLineasJsonl(RUTA_POSTS);
   if (!posts.length) {
     console.log("No hay posts_publicados.jsonl todavía, nada que medir.");

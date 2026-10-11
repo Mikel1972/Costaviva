@@ -1693,8 +1693,8 @@ protección real del login es Supabase Auth + CAPTCHA + RLS.
 "que el robot optimice la web para que sea atractiva visualmente para el
 usuario y sobre todo para el SEO". Es una **rutina en la nube del plan de
 Claude** (no gasta saldo de API), martes y viernes, creada por el usuario en
-claude.ai/code/routines con el repo conectado; su prompt vive en
-`scripts/seo/rutina-seo-diseno.txt` (si se cambia, actualizar ahí también).
+claude.ai/code/routines con el repo conectado; su prompt vive desde el
+2026-10-11 en comun, `rutinas/robot-seo-redes.md` (ver abajo).
 Decisión del usuario sobre la autonomía:
 - **SEO invisible → directo a `main`**: solo `functions/mareas/**`,
   `sitemap.xml`, `robots.txt` y el `<head>` de `login.html`/`index.html`
@@ -1713,6 +1713,36 @@ Decisión del usuario sobre la autonomía:
   posición por página y búsqueda de 28 días), porque la rutina no llega a
   Search Console. El robot anota en `SEO_ROBOT.md` (historial, se añade al
   final) los números, lo que cambió y qué espera ver la próxima vez.
+
+**Robot de SEO y robot de redes: uno solo (2026-10-11, Mikel).** Las
+palabras clave son la fuente común de la web y de Instagram/Facebook. Ficha,
+prompt y reparto de tareas en comun: `rutinas/robot-seo-redes.md` (desde
+ese día `scripts/seo/rutina-seo-diseno.txt` solo apunta allí).
+- `palabras-clave.yml` de **comun** (lunes, sin IA) cruza Search Console,
+  Bing y Wikipedia, escribe `seo/palabras/costaviva.md` en comun (top 50,
+  huecos, acumulados semanales de web y redes), **un informe por país**
+  (`costaviva-es`, `costaviva-pt` en portugués, `costaviva-nz` en inglés), y
+  deja aquí `datos-robots/seo/palabras-<país>.json` con un commit `[skip ci]`.
+- `scripts/seo/gsc-palabras.mjs` (paso de `indexacion-google.yml`, martes y
+  viernes) deja `datos-robots/seo/gsc-consultas.json`: búsquedas y semanas
+  de Search Console, con el país de cada fila, para comun, que no puede
+  autenticarse aquí (la Workload
+  Identity Federation solo acepta este repo).
+- La rutina "Robot de SEO y diseño" (PARTE C) actúa sobre los huecos en
+  ramas `robot/palabras-*` (máx. 3 cambios por pasada, solo páginas públicas
+  y metadatos, datos reales; primero el país más alejado de su objetivo en
+  `datos-robots/kpis/objetivos.json`); `robot-diseno-pr.yml` abre la PR y la fusiona
+  Mikel. Cada cambio se mide en comun (`seo/palabras/costaviva-cambios.json`).
+- Redes: `scripts/marketing/palabras-redes.mjs` (lógica pura,
+  `test/palabras-redes.test.js`) hace que el calendario elija, entre las
+  especies que ya valen (temporada, veda, modalidad) y dentro de la zona que
+  toca, la especie y el spot que más se buscan y suben; añade hashtags de los
+  términos con demanda y enlaza la ficha web de la especie. Lee
+  `palabras-es.json`; sin él (o con más de 21 días), rotación de siempre. La publicación no cambia:
+  cada pieza sale solo con el OK de Mikel.
+- Métricas comunes: `medir-metricas-instagram.mjs` apunta además una foto
+  diaria de seguidores (`instagram_cuenta` en `CALIBRACION.jsonl`); comun
+  las suma por semana junto a las de la web.
 
 ## Páginas públicas de pesca: /spots y /especies (2026-10-08, pedido de Mikel)
 
