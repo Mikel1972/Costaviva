@@ -12,5 +12,19 @@
       "cv_mundial_anual_v2026_10": "price_1UPUA6GXcSRiyJYImwQPhVcP",
       "cv_mundial_fundador_anual_v2026_10": "price_1UPUA7GXcSRiyJYIaDXlSwlL"
     }
+  },
+  "live": {
+    "productos": {
+      "costaviva_premium": "prod_VQL7SJZQJlL9r9",
+      "costaviva_premium_mundial": "prod_VQL7rOJ0KZa6Pm"
+    },
+    "precios": {
+      "cv_regional_mensual_v2026_10": "price_1UPUR2GVID60u22aQfR4ZRGD",
+      "cv_regional_anual_v2026_10": "price_1UPUR2GVID60u22aW2SB60s9",
+      "cv_regional_fundador_anual_v2026_10": "price_1UPUR2GVID60u22aeC6TSunZ",
+      "cv_mundial_mensual_v2026_10": "price_1UPUR2GVID60u22abEZJoxFO",
+      "cv_mundial_anual_v2026_10": "price_1UPUR3GVID60u22a33prjx2f",
+      "cv_mundial_fundador_anual_v2026_10": "price_1UPUR3GVID60u22aAt7FF20C"
+    }
   }
 }
