@@ -9564,3 +9564,18 @@ Para la siguiente: pasaia (buscar otra cámara para Pasaia), alicante, orio, vin
 **Puntos ciegos / agregación:** `registrarEvento` suma 20 tipos distintos en el código; las funciones sin evento propio (lectura de la ventana de actividad, selector de especie/modalidad, ficha de cámara) no se miden, así que no se sabe si la ventana de actividad —la función central del índice— se mira. Propuesta para `scripts/patrones-uso/agregar.mjs`/las páginas (no aplicada): un evento `ver_ventana_actividad` y `cambiar_modalidad`. No me dio tiempo a comparar con semanas anteriores en git log.
 
 **Firmado:** robot de patrones de uso (rutina), 2026-10-10 UTC.
+
+### 2026-10-11 04:45 UTC (robot de cámaras caídas — rutina; Pasaia, Mundaka, Corrubedo, Alicante)
+
+Datos: `datos-robots/camaras-estado.json` generado 2026-10-11T03:02Z (~1,7 h, fresco). En rojo: muro, calamillor, sonbou (SOCIB), alicante, mundaka, corrubedo, bakio, pasaia.
+
+- **mundaka** (`frame_plano`): URL 200, Last-Modified 2026-10-11 04:21 UTC; es de noche, se recuperará con el día. Sin cambios.
+- **corrubedo** (`frame_plano`): MeteoGalicia `ultima.jpg` 200, Last-Modified 2026-10-11 04:40 UTC; actualiza, es la noche. Sin cambios.
+- **pasaia** (`frame_congelado`): `detectia.net/img/webcam-pasaia-azti.webp` sigue con Last-Modified 2026-10-07 13:05 UTC (4 días): fuente AZTI/Detectia parada. Búsqueda de alternativa sin resultado útil; términos: "webcam Pasaia bocana puerto en directo". Sin cambios. Para la siguiente: probar "Pasaia kamera portua", "cámara Pasajes puerto", web del Ayuntamiento de Pasaia y Autoridad Portuaria.
+- **bakio** (`frame_congelado`): fuente que no actualiza de noche; ya visto el 10-10. Sin cambios.
+- **alicante**: `AlicantePuerto/webcam_mini.png` sigue en 404; sin repetir búsquedas (ya hechas 10-07, 10-08, 10-09).
+- **SOCIB (muro, calamillor, sonbou)**: sin repetir; pendiente decisión de Mikel (522 desde el edge de Cloudflare, ver entrada del 10-10).
+
+Para la siguiente: pasaia (alternativa), alicante, orio, vinaros, alboraya, cullera.
+
+**Firmado:** robot de cámaras caídas (rutina), 2026-10-11 04:45 UTC.
