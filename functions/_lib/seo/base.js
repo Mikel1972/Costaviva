@@ -67,7 +67,7 @@ export function migasHtml(migas, idioma = "es") {
 const LOGO = `<svg class="marca-logo" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><circle class="marca-fondo" cx="20" cy="20" r="19"/><path class="marca-pez" d="M9 17c4-6.5 14-6.5 19 0-5 6.5-15 6.5-19 0z"/><path class="marca-pez" d="M27.5 17l6-4.5v9z"/><circle class="marca-ojo" cx="13.5" cy="16" r="1.4"/><path class="marca-ola" d="M5 28c3.5-3.2 6.5-3.2 10 0s6.5 3.2 10 0 6.5-3.2 10 0"/></svg>`;
 
 // Llamada a la app: siempre a /login?alta=1 (mismo destino que /mareas).
-export function cta(titulo = "Prueba Costaviva 7 días gratis") {
+export function cta(titulo = "Prueba Costaviva 14 días gratis") {
   return `<section class="cta" aria-label="Prueba Costaviva">
   <p class="cta-titulo">${esc(titulo)}</p>
   <ul class="cta-lista">

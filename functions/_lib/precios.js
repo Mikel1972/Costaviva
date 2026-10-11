@@ -222,3 +222,25 @@ export const PAISES_UE = Object.freeze([
   "LV", "LT", "LU", "MT", "NL", "PL", "PT", "RO", "SK", "SI", "ES", "SE",
 ]);
 export const PAISES_EEE_NO_UE = Object.freeze(["IS", "LI", "NO"]);
+
+// Plan pedido -> { ambito, plan }. null si no vale.
+export function leerPlan(body) {
+  if (body?.plan === "monthly") return { ambito: "regional", plan: "mensual" };
+  if (body?.plan === "annual") return { ambito: "regional", plan: "anual" };
+  const ambito = body?.ambito || "regional";
+  if (!AMBITOS.includes(ambito) || !PLANES.includes(body?.plan)) return null;
+  return { ambito, plan: body.plan };
+}
+
+// Días de la prueba de Premium sin tarjeta (mi_estado_suscripcion(), 2026-10-11).
+export const DIAS_PRUEBA = 14;
+
+// Días de prueba de la app que le quedan (14 desde perfiles.creado_en; aquí
+// se usa la fecha de alta de Auth, la misma). 0 si ya terminó.
+export function diasDePruebaRestantes(fechaAltaISO, ahora = Date.now()) {
+  const creado = new Date(fechaAltaISO).getTime();
+  if (!Number.isFinite(creado)) return 0;
+  const transcurridos = (ahora - creado) / (1000 * 60 * 60 * 24);
+  return Math.max(0, Math.min(DIAS_PRUEBA, Math.ceil(DIAS_PRUEBA - transcurridos)));
+}
+

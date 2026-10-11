@@ -21,11 +21,11 @@
 <meta name="twitter:description" content="Previsión marina en tiempo real, mareas, oleaje, diario de pesca con IA y comunidad de pescadores." />
 <meta name="twitter:image" content="https://costaviva.org/assets/og/costaviva.jpg" />
 <!-- Datos estructurados (2026-09-28): qué es Costaviva y cuánto cuesta, con
-     los datos reales de suscripcion.html (3,99 €/mes, 7 días de prueba). -->
+     los datos reales de suscripcion.html (3,99 €/mes, 14 días de prueba de Premium). -->
 <script type="application/ld+json">
 [{"@context":"https://schema.org","@type":"WebSite","name":"Costaviva","url":"https://costaviva.org/","inLanguage":"es"},
  {"@context":"https://schema.org","@type":"Organization","name":"Costaviva","url":"https://costaviva.org/","logo":"https://costaviva.org/assets/iconos/icono-512.png"},
- {"@context":"https://schema.org","@type":"WebApplication","name":"Costaviva","url":"https://costaviva.org/","applicationCategory":"SportsApplication","operatingSystem":"Web, iOS, Android","description":"Previsión marina en tiempo real (mareas, oleaje, viento, temperatura del agua), webcams en directo y diario de pesca para la costa de España y Portugal.","offers":{"@type":"Offer","price":"3.99","priceCurrency":"EUR","description":"7 días de prueba gratis; después 3,99 € al mes o 39,99 € al año."}}]
+ {"@context":"https://schema.org","@type":"WebApplication","name":"Costaviva","url":"https://costaviva.org/","applicationCategory":"SportsApplication","operatingSystem":"Web, iOS, Android","description":"Previsión marina en tiempo real (mareas, oleaje, viento, temperatura del agua), webcams en directo y diario de pesca para la costa de España y Portugal.","offers":{"@type":"Offer","price":"3.99","priceCurrency":"EUR","description":"Plan gratuito; 14 días de prueba de Premium sin tarjeta; Premium 3,99 € al mes o 29,99 € al año, IVA incluido."}}]
 </script>
 <link rel="manifest" href="manifest.json" />
 <link rel="icon" href="icon.svg" type="image/svg+xml" />
@@ -264,7 +264,7 @@
     <div id="turnstileLogin" style="margin-top:8px;"></div>
 
     <button type="submit" id="btnPrincipal" data-i18n="login.entrar">Entrar</button>
-    <button type="button" class="secundario" id="btnIrARegistro" data-i18n="login.crear_cuenta_gratis">Crear cuenta · 7 días gratis</button>
+    <button type="button" class="secundario" id="btnIrARegistro" data-i18n="login.crear_cuenta_gratis">Crear cuenta · 14 días de Premium gratis</button>
   </form>
 
   <div class="toggle"><span data-i18n="login.olvidaste">¿Olvidaste tu contraseña?</span> <a id="linkRecuperar" data-i18n="login.recuperala">Recupérala aquí</a></div>
@@ -292,7 +292,7 @@
     <div class="consentimiento visible">
       <label class="checkbox">
         <input type="checkbox" id="checkTerminos" />
-        <span data-i18n="login.acepto_terminos">Acepto los términos de uso y la política de privacidad de Costaviva, incluyendo el tratamiento de mis datos de cuenta para dar el servicio (obligatorio para crear la cuenta).</span>
+        <span data-i18n="login.acepto_terminos">Acepto los términos de uso y la política de privacidad de Costaviva, incluyendo el tratamiento de mis datos de cuenta para dar el servicio (obligatorio para crear la cuenta).</span> <a href="/terminos" target="_blank" rel="noopener" data-i18n="prec.terminos">Términos y condiciones</a>
       </label>
       <label class="checkbox">
         <input type="checkbox" id="checkDatosCapturas" />
@@ -488,7 +488,7 @@ document.getElementById("btnIrARegistro").addEventListener("click", () => {
   mostrarPantalla(cajaRegistroDatos);
   asegurarWidgetRegistro();
 });
-// /login?alta=1 (2026-09-28): el botón "Prueba 7 días gratis" de las páginas
+// /login?alta=1 (2026-09-28): el botón "Prueba 14 días gratis" de las páginas
 // públicas de mareas llega directo al formulario de alta, sin un clic más.
 // Solo cambia qué caja se ve primero; el alta en sí no se toca.
 if (new URLSearchParams(window.location.search).get("alta") === "1") {

@@ -234,7 +234,7 @@ function renderizarPagina(spot, todos) {
       ${tempAgua != null ? `<div class="tarjeta"><div class="titulo">🌡️ TEMPERATURA DEL AGUA</div><div class="valor">${tempAgua} °C</div></div>` : ""}
     </div>
 
-    <a class="cta" href="/login?alta=1">Prueba Costaviva 7 días gratis →</a>
+    <a class="cta" href="/login?alta=1">Prueba Costaviva 14 días gratis →</a>
     <p class="cta-sub">Sin tarjeta. Mapa completo, webcams en directo y diario de pesca. Después, 3,99 €/mes.</p>
 
     ${

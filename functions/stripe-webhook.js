@@ -5,7 +5,8 @@
 // Dashboard de Stripe (Developers → Webhooks) contra esta URL, eventos:
 //   checkout.session.completed, customer.subscription.created,
 //   customer.subscription.updated, customer.subscription.deleted,
-//   invoice.payment_failed
+//   invoice.payment_failed, invoice.upcoming (aviso de renovación anual,
+//   2026-10-11: scripts/stripe/crear-precios.mjs --portal lo añade)
 //
 // Captación (2026-10-09): cuando una suscripción pasa a "active" (primer
 // cobro real tras la prueba) se apunta suscripciones.primer_pago_en (métrica
@@ -34,15 +35,17 @@
 
 import { calcularFin, uuidValido } from "./_lib/invitaciones.js";
 import { premiarReferido, marcarDiasUsados } from "./_lib/referidos.js";
+import { datosDePrecio, zonaDePais } from "./_lib/precios.js";
+import { enviarEmail } from "./_lib/email.js";
+import CONFIG_PRECIOS from "./_lib/precios-zonas.json";
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 
-// Mismo producto/precios que crear-checkout-stripe.js.
-// Mismos precios live que crear-checkout-stripe.js (2026-09-15).
-const PERIODOS_POR_PRECIO = {
-  "price_1UG0hPGVID60u22aXMcBJNF3": "mensual",
-  "price_1UG0hPGVID60u22a3GO1Cflj": "anual",
-};
+// Qué compró cada cliente (2026-10-11): periodo, ámbito y fundador salen de
+// los metadatos del precio (los pone scripts/stripe/crear-precios.mjs; los
+// dos precios antiguos de 2026-09-15 se reconocen por id, ver
+// _lib/precios.js), y la zona y la región de contenido, de los metadatos de
+// la suscripción (crear-checkout-stripe.js).
 
 async function verificarFirmaStripe(rawBody, header, secret) {
   // La cabecera puede traer varias firmas v1 (rotación del secreto en
@@ -196,6 +199,64 @@ async function apuntarPrimerPago(serviceRoleKey, userId) {
   if (!r.ok) throw new Error(`primer_pago_en HTTP ${r.status}: ${await r.text()}`);
 }
 
+// Código promocional usado en el checkout (2026-10-11): el id viene en
+// session.discounts[].promotion_code; el texto se pide a Stripe.
+async function codigoPromocional(stripeKey, sesion) {
+  const id = (sesion.discounts || []).map((d) => (typeof d.promotion_code === "string" ? d.promotion_code : d.promotion_code?.id)).find(Boolean);
+  if (!id) return null;
+  let codigo = null;
+  if (stripeKey) {
+    try {
+      const r = await fetch(`https://api.stripe.com/v1/promotion_codes/${encodeURIComponent(id)}`, { headers: { Authorization: `Bearer ${stripeKey}` } });
+      if (r.ok) codigo = (await r.json()).code || null;
+      else console.error(`stripe-webhook: promotion_code ${id} HTTP ${r.status}`);
+    } catch (e) {
+      console.error("stripe-webhook: no se pudo leer el código promocional", e);
+    }
+  }
+  return { stripe_promotion_code_id: id, codigo_promocional: codigo };
+}
+
+// Fundador: la primera vez que tiene ese precio (cuenta para las 500 plazas).
+async function marcarFundadorDesde(serviceRoleKey, userId) {
+  if (!uuidValido(userId)) return;
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/suscripciones?user_id=eq.${userId}&fundador_desde=is.null`, {
+    method: "PATCH",
+    headers: { apikey: serviceRoleKey, Authorization: `Bearer ${serviceRoleKey}`, "content-type": "application/json", Prefer: "return=minimal" },
+    body: JSON.stringify({ fundador_desde: new Date().toISOString() }),
+  });
+  if (!r.ok) throw new Error(`fundador_desde HTTP ${r.status}: ${await r.text()}`);
+}
+
+// Aviso de renovación del plan ANUAL (2026-10-11, confirmación de la
+// renovación): Stripe manda invoice.upcoming unos días antes (Dashboard →
+// Billing → Subscriptions → "Upcoming renewal events"). Solo anual.
+function metadatosSuscripcionDeFactura(inv) {
+  return inv.parent?.subscription_details?.metadata || inv.subscription_details?.metadata || {};
+}
+export function esRenovacionAnual(inv) {
+  const linea = inv.lines?.data?.[0];
+  const intervalo = linea?.price?.recurring?.interval || linea?.pricing?.price_details?.price?.recurring?.interval;
+  if (intervalo) return intervalo === "year";
+  const p = linea?.period;
+  return !!(p?.start && p?.end && p.end - p.start > 300 * 86400);
+}
+function textoRenovacion(inv, idioma) {
+  const importe = new Intl.NumberFormat(idioma === "en" ? "en-NZ" : "es-ES", { style: "currency", currency: String(inv.currency || "eur").toUpperCase() }).format((inv.amount_due ?? inv.total ?? 0) / 100);
+  const cuando = new Date(((inv.next_payment_attempt || inv.period_end || inv.lines?.data?.[0]?.period?.start) ?? 0) * 1000);
+  const fecha = cuando.toLocaleDateString(idioma === "en" ? "en-NZ" : "es-ES", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Madrid" }); // a propósito (ZONA_NEGOCIO)
+  if (idioma === "en") {
+    return {
+      subject: `Your Costaviva Premium annual plan renews on ${fecha}`,
+      text: [`Hi,`, ``, `This is a reminder that your Costaviva Premium annual subscription renews automatically on ${fecha} for ${importe} (tax included).`, ``, `If you don't want it to renew, cancel before that date from My subscription: https://costaviva.org/suscripcion (Premium stays active until the end of the year you've paid for).`, ``, `— Costaviva`].join("\n"),
+    };
+  }
+  return {
+    subject: `Tu plan anual de Costaviva Premium se renueva el ${fecha}`,
+    text: [`Hola,`, ``, `Te recordamos que tu suscripción anual a Costaviva Premium se renueva automáticamente el ${fecha} por ${importe} (IVA incluido).`, ``, `Si no quieres que se renueve, cancélala antes de esa fecha desde Mi suscripción: https://costaviva.org/suscripcion (Premium sigue activo hasta el final del año ya pagado).`, ``, `— Costaviva`].join("\n"),
+  };
+}
+
 // Si el procesado falla, se borra el registro para que el reintento de
 // Stripe no se tome por repetido.
 async function olvidarEvento(serviceRoleKey, eventoId) {
@@ -253,10 +314,19 @@ export async function onRequestPost(context) {
       // suscripción, eso llega en customer.subscription.created justo
       // después.
       const userId = obj.client_reference_id || obj.metadata?.supabase_user_id;
+      // País de facturación (manda para el IVA). Si su zona no es la que se
+      // cobró (la del país de la conexión), queda en el log para revisarlo.
+      const paisFact = obj.customer_details?.address?.country || null;
+      if (paisFact && obj.metadata?.zona && zonaDePais(CONFIG_PRECIOS, paisFact)?.id !== obj.metadata.zona) {
+        console.warn(`stripe-webhook: zona distinta en ${obj.id}: cobrada ${obj.metadata.zona}, facturación ${paisFact}`);
+      }
+      const promo = await codigoPromocional(env.STRIPE_SECRET_KEY, obj);
       await upsertSuscripcion(serviceRoleKey, {
         user_id: userId,
         stripe_customer_id: obj.customer,
         stripe_subscription_id: obj.subscription,
+        ...(paisFact ? { pais_facturacion: paisFact } : {}),
+        ...(promo || {}),
         actualizado_en: new Date().toISOString(),
       });
       if (obj.metadata?.invitacion_id) {
@@ -284,17 +354,28 @@ export async function onRequestPost(context) {
       // movió al subscription_item. trial_end sí sigue en el nivel
       // superior y coincide con el fin del periodo durante el trial.
       const finPeriodoUnix = item?.current_period_end || obj.trial_end || null;
+      const precio = datosDePrecio(item?.price);
+      const md = obj.metadata || {};
       await upsertSuscripcion(serviceRoleKey, {
         user_id: userId,
         stripe_customer_id: obj.customer,
         stripe_subscription_id: obj.id,
         estado,
-        periodo: PERIODOS_POR_PRECIO[item?.price?.id] || null,
+        periodo: precio.periodo,
+        ambito: precio.ambito,
+        region_contenido: precio.ambito === "mundial" ? null : (/^[a-z]{2,12}$/.test(md.region_contenido || "") && md.region_contenido !== "todas" ? md.region_contenido : "es"),
+        zona_precio: md.zona || null,
+        moneda: obj.currency ? String(obj.currency).toUpperCase() : null,
+        fundador: precio.fundador,
+        precio_lookup_key: precio.lookup_key,
         periodo_actual_fin: finPeriodoUnix
           ? new Date(finPeriodoUnix * 1000).toISOString()
           : null,
         actualizado_en: new Date().toISOString(),
       });
+      if (precio.fundador && estado !== "incomplete" && estado !== "incomplete_expired") {
+        await marcarFundadorDesde(serviceRoleKey, userId);
+      }
       // Primer cobro real y premio de "Invita a un amigo" (2026-10-09).
       // "active" = la prueba terminó y Stripe cobró. Si el premio falla en
       // Stripe se lanza: 500, Stripe reintenta y el amigo sigue "pendiente"
@@ -302,6 +383,13 @@ export async function onRequestPost(context) {
       if (estado === "active" && uuidValido(userId)) {
         await apuntarPrimerPago(serviceRoleKey, userId);
         await premiarReferido({ serviceRoleKey, stripeKey: env.STRIPE_SECRET_KEY, userId, customerAmigo: obj.customer });
+      }
+    } else if (evento.type === "invoice.upcoming") {
+      if (esRenovacionAnual(obj) && obj.customer_email) {
+        const md = metadatosSuscripcionDeFactura(obj);
+        const idioma = md.idioma === "en" ? "en" : "es";
+        const envio = await enviarEmail(env, { to: obj.customer_email, ...textoRenovacion(obj, idioma) });
+        if (!envio.ok) throw new Error(`aviso de renovación: ${envio.error}`);
       }
     } else if (evento.type === "invoice.payment_failed") {
       // Cobro fallido (comun stripe.md S4). No se toca el estado aquí: Stripe

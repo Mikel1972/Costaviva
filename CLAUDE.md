@@ -221,6 +221,51 @@ Todo sale de **`functions/_lib/precios-zonas.json`** (config) y
 - **Activar un país**: añadir su zona (o `activa: true`) en
   `precios-zonas.json`, `node scripts/precios/generar-md.mjs`, fusionar y
   lanzar "Precios de Stripe" (test y luego live). Nada más.
+- **App (PR "Cobro 2/2", migración `20261011230000`)**:
+  - **Prueba de 14 días de Premium sin tarjeta** desde `perfiles.creado_en`
+    (`mi_estado_suscripcion()`; cuenta como Mundial). **Al acabar, plan
+    gratuito, sin bloquear**: `con_acceso`/`premium` = "tiene Premium en
+    alguna región"; añade `plan` (admin/permanente/invitacion/prueba/premium/
+    gratis), `ambito`, `region_contenido`, `en_prueba`, `fundador`.
+  - **Gratis** (todas las regiones): mapa, mareas, condiciones básicas
+    (ola, viento, marea, temperatura del agua, nubes, lluvia, presión,
+    índice de mar), radar de lluvia y rayos. **Premium**: índice de pesca y
+    ventana de actividad, webcams, capas del mar, diario, grupos, alarma e
+    identificación por foto. index.html ya no redirige: `assets/js/plan.js`
+    (`premiumEn`, `avisoPremium`, `avisoFinPrueba`; test `test/plan.test.js`)
+    decide por la región del spot (`paisDeRegion`) o de la vista
+    (`regionDeCentro`); con plan regional fuera de su región, "Disponible con
+    el plan Mundial". diario/grupos/alarma siguen mandando a la página de
+    planes sin Premium. Sin estado (RPC caída) se deja ver todo.
+  - **Avisos de fin de prueba**: en la app, banda arriba 3 días antes y el
+    último día (`avisoFinPrueba`, cerrar = localStorage); por email (mismo
+    cron de siempre, `avisar-fin-prueba.js`, emails de servicio, ES/EN por
+    `user_metadata.idioma`): bienvenida, recordatorio el día 11 y fin el 14
+    ("pasas al plan gratuito"; `desactivado_en` = cuándo pasó a gratis).
+  - **Página de precios** (`suscripcion.html` + `GET /precios-zona`, tabla de
+    la zona por `request.cf.country`): gratis, Premium regional con el anual
+    destacado ("Ahorra un 37 %"), fundador con "Quedan N plazas"
+    (`plazas_fundador_restantes()`, contador real: cuenta quien tiene o ha
+    tenido precio de fundador salvo checkouts sin cobrar) y Mundial como
+    opción secundaria. Casilla obligatoria antes de pagar (inicio inmediato,
+    desistimiento proporcional, términos y renovación automática).
+  - **Checkout** (`crear-checkout-stripe.js`): `{ ambito, plan, idioma }`,
+    zona por país de la conexión, `currency` si no es EUR, dirección de
+    facturación obligatoria, `custom_text` con el desistimiento,
+    `allow_promotion_codes` (salvo cupón de invitación), trial = días que le
+    queden de la prueba (si ya acabó, cobra al momento), fundador rechazado
+    con 409 sin plazas. Opcionales en Cloudflare: `STRIPE_TAX_AUTOMATICO=1`
+    (automatic_tax) y `STRIPE_TOS_EN_CHECKOUT=1`.
+  - **Webhook**: periodo/ámbito/fundador por los metadatos del precio
+    (`datosDePrecio`), zona y región por los de la suscripción, moneda, país
+    de facturación (avisa en el log si su zona no es la cobrada), código
+    promocional usado (`codigo_promocional`), `fundador_desde`, e
+    `invoice.upcoming` → email de aviso de renovación del plan anual.
+  - **Legal**: `terminos.html` (ES/EN): planes, precios con IVA, fundador,
+    renovación automática, cancelación al final del periodo, desistimiento de
+    14 días con devolución proporcional (servicio digital con inicio
+    inmediato pedido, art. 108.3 TRLGDCU) y modelo de desistimiento.
+    `privacidad.html` explica los datos de pago (Stripe).
 - **Robots sin IA**: `precios-semanal.yml` (lunes) refresca `cambio_actual`
   del BCE y regenera `PRECIOS.md` y `datos/precios-resumen.md` (tabla "Precios
   vigentes" para el resumen de los lunes); si el equivalente en EUR de una
@@ -4643,6 +4688,11 @@ Gipuzkoa) se pintan bien, el resto de capas arrancan apagadas.
 
 ## Paywall de suscripción — Stripe (2026-09-15, en curso)
 
+> **Desde el 2026-10-11 manda "Cobro: precios por zonas y ámbitos"** (arriba):
+> prueba de 14 días, plan gratuito sin bloqueo, precios 3,99/29,99 € y
+> fundador. Lo de abajo es la historia y los detalles de Stripe que siguen
+> valiendo (firma, portal, trampas test/live).
+
 Pedido explícito del usuario: pasar de app gratis a **7 días de prueba
 desde el alta, luego bloqueo total** (no freemium) salvo suscripción
 activa — **3,99€/mes o 39,99€/año**. Proveedor: **Stripe**, vía web
@@ -5161,6 +5211,10 @@ defecto) y nota interna. Lista con estado y acciones reenviar/anular.
 Para dar acceso completo para siempre a una cuenta concreta sin hacerla admin (primer caso: `maetxe2018@gmail.com`, pedido del usuario). Por email, así que vale aunque la persona aún no se haya dado de alta. `mi_estado_suscripcion()` devuelve `estado: 'permanente'` y `con_acceso: true`, y `fin_prueba_fuera_de_ciclo()` la excluye de recordatorio y desactivación. Para añadir o quitar a alguien: migración nueva con `insert`/`delete` en `public.accesos_permanentes` (email en minúsculas). Sin políticas RLS: solo la leen funciones security definer. Al añadir a alguien le llega solo, una vez, el email "¡Tienes enchufe!" (paso "acceso permanente" de `avisar-fin-prueba.js`, columna `avisado_en`).
 
 ## Fin de prueba: o se suscribe o su cuenta queda desactivada (2026-09-28)
+
+> **Sustituido el 2026-10-11**: la prueba dura 14 días y al acabar la cuenta
+> pasa al plan gratuito (ver "Cobro"). El calendario es bienvenida, día 11 y
+> día 14; las excepciones y las guardas de abajo siguen igual.
 
 Pedido explícito del usuario: "hay un periodo de prueba de 7 días sin
 cobrar. A ese vencimiento, o se da de alta o se le cancela". Sustituye al
