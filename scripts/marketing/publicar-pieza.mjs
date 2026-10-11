@@ -1,7 +1,9 @@
 // scripts/marketing/publicar-pieza.mjs
-// Publica de verdad una pieza YA APROBADA por Mikel (2026-10-09). Solo lo
-// corre el workflow manual "Publicar post de Instagram"
-// (publicar-post-instagram.yml): nunca un cron, nunca un robot.
+// Publica de verdad una pieza (2026-10-09). La corren el workflow manual
+// "Publicar post de Instagram" (publicar-post-instagram.yml) y, desde el
+// 2026-10-11, la publicación automática con veto de 12 h
+// (publicar-con-veto.mjs / publicar-con-veto.yml), que solo la llama si
+// nadie ha vetado el Issue y PUBLICACION_AUTOMATICA es "true".
 //
 // Entrada (entorno):
 //   ISSUE_NUMBER  Issue de revisión con etiqueta "marketing" que abrió el
@@ -60,6 +62,21 @@ async function publicarInstagram(creationId) {
   if (!IG_ID) throw new Error("Falta la variable META_IG_BUSINESS_ACCOUNT_ID");
   const d = await post(`${API}/${IG_ID}/media_publish`, { creation_id: creationId, access_token: TOKEN });
   return d.id;
+}
+
+// Enlace público de lo publicado, para cerrar el Issue con él (2026-10-11).
+// Si Meta no lo da, se sigue sin enlace: la publicación ya está hecha.
+async function enlaceInstagram(id) {
+  try {
+    const r = await fetch(`${API}/${id}?fields=permalink&access_token=${encodeURIComponent(TOKEN)}`);
+    const d = await r.json();
+    return d.permalink || null;
+  } catch {
+    return null;
+  }
+}
+function enlaceFacebook(id, esReel) {
+  return esReel ? `https://www.facebook.com/reel/${id}` : `https://www.facebook.com/${id}`;
 }
 
 // Page token a partir del token guardado. Con un token de Usuario del
@@ -124,11 +141,12 @@ async function main() {
         if (!creationId) throw new Error("No hay borrador de Instagram para esta pieza");
         const id = await publicarInstagram(creationId);
         apuntar("posts-publicados.jsonl", { postId: id, red: "instagram", fecha: new Date().toISOString(), issueNumber: ISSUE || null, campana: pieza.campana || null, medido: false });
-        hechos.push(`Instagram (id ${id})`);
+        const enlace = await enlaceInstagram(id);
+        hechos.push(`Instagram (id ${id})${enlace ? `: ${enlace}` : ""}`);
       } else {
         const id = await publicarFacebook(pieza);
         apuntar("posts-facebook.jsonl", { postId: id, red: "facebook", fecha: new Date().toISOString(), issueNumber: ISSUE || null, campana: pieza.campana || null, reel: !!pieza.esReel });
-        hechos.push(`Facebook (id ${id})`);
+        hechos.push(`Facebook (id ${id}): ${enlaceFacebook(id, pieza.esReel)}`);
       }
     } catch (e) {
       console.error(`✗ ${red}: ${e.message}`);

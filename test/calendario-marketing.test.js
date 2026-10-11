@@ -115,7 +115,9 @@ test("datos de la hora de publicación: bloque, mareas del día", () => {
   assert.equal(tarjetaMareaFutura([], "08:00").val, "—");
 });
 
-test("publicar sigue siendo solo manual y pg_cron no puede lanzarlo", () => {
+// El workflow MANUAL sigue siendo manual. La publicación automática con veto
+// (2026-10-11) va aparte: publicar-con-veto.yml (test/publicacion-veto.test.js).
+test("el publicador manual sigue siendo manual y pg_cron no puede lanzarlo", () => {
   const pub = leer(".github/workflows/publicar-post-instagram.yml");
   assert.doesNotMatch(pub, /schedule:/);
   assert.match(pub, /ISSUE_NUMBER: \$\{\{ inputs\.issue_number \}\}/, "inputs por entorno, no pegados en el script");

@@ -1,0 +1,90 @@
+name: Publicar con veto (Instagram y Facebook)
+
+# Decisión de Mikel del 2026-10-11, a la pregunta de cómo publicar:
+# "Automático con veto" ("no podemos estar improvisando ni aprobando uno a
+# uno"). Sustituye a la regla anterior ("nada sin su publica").
+#
+# Los robots (robot-marketing-instagram.yml, robot-reel-instagram.yml)
+# preparan la pieza y abren el Issue de aviso (etiqueta "marketing") la
+# víspera. Este workflow mira cada 30 min los Issues abiertos y, si a la hora
+# prevista (y con 12 h de aviso como mínimo) nadie la ha vetado, la publica en
+# Instagram y en Facebook con scripts/marketing/publicar-pieza.mjs (la misma
+# lógica que el manual "Publicar post de Instagram") y cierra el Issue con el
+# enlace. Sin IA.
+#
+# Veto: etiqueta "veto" en el Issue, o comentario de Mikel (dueño del repo)
+# con "no" o "veto". Interruptor general: la variable de repositorio
+# PUBLICACION_AUTOMATICA; si no es "true", este job ni arranca. La pone Mikel
+# (Settings → Secrets and variables → Actions → Variables) cuando quiera
+# empezar.
+#
+# Barreras (scripts/marketing/veto.mjs): 1 publicación al día por red; solo
+# piezas propias de costaviva.org/assets/marketing (nunca webcams de terceros;
+# reels solo con clip sin personas identificables); textos sin huecos; token
+# comprobado como en comprobar-token-instagram.yml (si falta
+# pages_manage_posts, solo Instagram y lo anota). Si algo falla, etiqueta
+# "revisar-publicacion" y no lo reintenta.
+#
+# Reloj: pg_cron (migración 20261011200000_programador_publicar_veto.sql, a
+# los 05 y 35 de cada hora); este `schedule:` es el respaldo. Mismo grupo de
+# concurrency que el manual: nunca publican los dos a la vez.
+
+on:
+  schedule:
+    - cron: "17,47 * * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: publicar-pieza
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    # AUTOMATION_PAUSED (comun pruebas-y-alertas.md P8) lo para todo;
+    # PUBLICACION_AUTOMATICA distinta de "true" = no se publica nada solo.
+    if: ${{ vars.AUTOMATION_PAUSED != 'true' && vars.PUBLICACION_AUTOMATICA == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Asegurar las etiquetas del veto
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create veto --color B60205 --description "No publicar esta pieza (publicación automática con veto)" --force
+          gh label create revisar-publicacion --color FBCA04 --description "La publicación automática no la publica: decide Mikel" --force
+
+      - name: Publicar lo que no se ha vetado
+        id: publicar
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PUBLICACION_AUTOMATICA: ${{ vars.PUBLICACION_AUTOMATICA }}
+          META_PAGE_ACCESS_TOKEN: ${{ secrets.META_PAGE_ACCESS_TOKEN }}
+          META_IG_BUSINESS_ACCOUNT_ID: ${{ vars.META_IG_BUSINESS_ACCOUNT_ID }}
+          META_PAGE_ID: ${{ vars.META_PAGE_ID }}
+        working-directory: scripts/marketing
+        run: node publicar-con-veto.mjs
+
+      - name: Apuntar lo publicado (para medir métricas más adelante)
+        if: ${{ always() && steps.publicar.outputs.publicadas != '' && steps.publicar.outputs.publicadas != '0' }}
+        run: |
+          git config user.name "Claude (robot Costaviva)"
+          git config user.email "actions@github.com"
+          for f in scripts/marketing/posts-publicados.jsonl scripts/marketing/posts-facebook.jsonl; do
+            [ -f "$f" ] && git add "$f"
+          done
+          if git diff --cached --quiet; then
+            echo "Nada que apuntar."
+          else
+            git commit -m "Robot de marketing: pieza publicada sola (sin veto)"
+            git pull --rebase --quiet
+            git push
+          fi

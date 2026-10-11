@@ -8,8 +8,9 @@ name: Robot de marketing — reel de Instagram
 #
 # Mismo flujo que los posts: este workflow NUNCA publica. Crea el borrador
 # (contenedor REELS de la Content Publishing API, espera a que Instagram lo
-# procese) y abre un Issue; publicar es el workflow manual "Publicar post de
-# Instagram" con ese creation_id. Aprobación humana siempre.
+# procese) y abre un Issue; lo publica publicar-con-veto.yml a su hora si
+# Mikel no lo veta en 12 h (2026-10-11), o el workflow manual "Publicar post
+# de Instagram".
 #
 # Minutos de Actions estimados por reel: ~10 (instalar Chromium y ffmpeg ~2,5;
 # 315 fotogramas ~4-5, medido en local con 4 núcleos: unos 6 min con otras
@@ -113,7 +114,12 @@ jobs:
         if: steps.generar.outputs.generada == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh label create marketing --color FFD700 --description "Propuestas de marketing (Instagram, etc.)" --force
+        run: |
+          gh label create marketing --color FFD700 --description "Propuestas de marketing (Instagram, etc.)" --force
+          # Publicación automática con veto (2026-10-11): "veto" la para;
+          # "revisar-publicacion" la deja para Mikel tras un fallo.
+          gh label create veto --color B60205 --description "No publicar esta pieza (publicación automática con veto)" --force
+          gh label create revisar-publicacion --color FBCA04 --description "La publicación automática no la publica: decide Mikel" --force
 
       - name: Crear borrador del reel en Instagram y abrir Issue de revisión (Instagram + Facebook)
         if: steps.generar.outputs.generada == 'true'
@@ -123,6 +129,9 @@ jobs:
           META_PAGE_ACCESS_TOKEN: ${{ secrets.META_PAGE_ACCESS_TOKEN }}
           META_IG_BUSINESS_ACCOUNT_ID: ${{ vars.META_IG_BUSINESS_ACCOUNT_ID }}
           META_PAGE_ID: ${{ vars.META_PAGE_ID }}
+          # Solo cambia el texto del Issue ("se publica sola el ... si no la
+          # vetas"); quien publica es publicar-con-veto.yml.
+          PUBLICACION_AUTOMATICA: ${{ vars.PUBLICACION_AUTOMATICA }}
         run: |
           # Código 3 = token de Meta caducado (mismo guardarraíl que los posts).
           node publicar-borrador-instagram.mjs reel-pendiente.json || CODIGO=$?

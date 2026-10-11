@@ -1,0 +1,68 @@
+name: Fusionar solas las PR del robot de SEO
+
+# Pedido de Mikel (2026-10-11): que el robot de SEO trabaje de forma
+# autónoma. Hermano de robot-diseno-pr.yml (que abre la PR al recibir el
+# push): cuando los tests de una rama robot/palabras-* o
+# robot/etiquetas-olas-* salen en verde, este workflow mira la PR y la
+# fusiona con squash SOLO si:
+#   - todos los ficheros cambiados están en la lista blanca de su tipo
+#     (scripts/seo/fusion-automatica.mjs; test/fusion-robot.test.js):
+#       palabras        páginas públicas generadas, metadatos,
+#                       datos-robots/** y seo/**
+#       etiquetas-olas  datos-robots/oleaje-camaras/**
+#     nunca cobro, login, suscripción, supabase/migrations ni
+#     .github/workflows (lista negra);
+#   - todos los checks del commit están en verde (espera hasta 40 min);
+#   - para palabras, no lleva ya 3 fusiones automáticas en 7 días.
+# Si algún fichero queda fuera, la PR se queda abierta con la etiqueta
+# "revisar". El resto de ramas robot/* (diseño, especies, aprendizaje) sigue
+# esperando a Mikel. Sin IA.
+#
+# Seguridad: workflow_run corre el código de main, nunca el de la rama; de la
+# PR solo se leen los nombres de los ficheros por la API.
+
+on:
+  workflow_run:
+    workflows: ["Tests"]
+    types: [completed]
+    branches:
+      - "robot/palabras-**"
+      - "robot/etiquetas-olas-**"
+  workflow_dispatch:
+    inputs:
+      rama:
+        description: "Rama robot/palabras-... o robot/etiquetas-olas-... (reintento a mano)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  checks: read
+  statuses: read
+
+concurrency:
+  group: fusion-robot-seo
+  cancel-in-progress: false
+
+jobs:
+  fusionar:
+    if: ${{ vars.AUTOMATION_PAUSED != 'true' && (github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Fusionar si todo está en la lista blanca y en verde
+        env:
+          GH_TOKEN: ${{ github.token }}
+          # Por entorno, nunca pegado en el script (inyección).
+          RAMA: ${{ github.event.workflow_run.head_branch || inputs.rama }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: node scripts/seo/fusion-automatica.mjs

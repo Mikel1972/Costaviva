@@ -12,9 +12,10 @@ name: Robot de marketing — Instagram
 # Este workflow NUNCA publica nada en Instagram por su cuenta -- solo crea
 # un borrador (contenedor de la Content Publishing API, sin publicar) y
 # abre un Issue para que el usuario decida. La publicación real es un
-# segundo workflow aparte (publicar-post-instagram.yml), disparado a
-# mano. Pedido explícito del usuario: aprobación humana antes de que nada
-# se vea en público.
+# segundo workflow aparte: publicar-post-instagram.yml (a mano) o, desde el
+# 2026-10-11, publicar-con-veto.yml, que la publica sola a su hora si Mikel
+# no la veta en las 12 h de aviso (y solo con PUBLICACION_AUTOMATICA=true).
+# Sustituye a la regla anterior ("nada sin su publica").
 #
 # Necesita los secrets/variables ya configurados en este repo (Settings →
 # Secrets and variables → Actions):
@@ -122,7 +123,12 @@ jobs:
         if: steps.generar.outputs.generada == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh label create marketing --color FFD700 --description "Propuestas de marketing (Instagram, etc.)" --force
+        run: |
+          gh label create marketing --color FFD700 --description "Propuestas de marketing (Instagram, etc.)" --force
+          # Publicación automática con veto (2026-10-11): "veto" la para;
+          # "revisar-publicacion" la deja para Mikel tras un fallo.
+          gh label create veto --color B60205 --description "No publicar esta pieza (publicación automática con veto)" --force
+          gh label create revisar-publicacion --color FBCA04 --description "La publicación automática no la publica: decide Mikel" --force
 
       - name: Crear borrador en Instagram y abrir Issue de revisión (Instagram + Facebook)
         if: steps.generar.outputs.generada == 'true'
@@ -132,6 +138,9 @@ jobs:
           META_PAGE_ACCESS_TOKEN: ${{ secrets.META_PAGE_ACCESS_TOKEN }}
           META_IG_BUSINESS_ACCOUNT_ID: ${{ vars.META_IG_BUSINESS_ACCOUNT_ID }}
           META_PAGE_ID: ${{ vars.META_PAGE_ID }}
+          # Solo cambia el texto del Issue ("se publica sola el ... si no la
+          # vetas"); quien publica es publicar-con-veto.yml.
+          PUBLICACION_AUTOMATICA: ${{ vars.PUBLICACION_AUTOMATICA }}
         run: |
           # Guardarraíl de credencial (añadido 2026-09-25). El script sale con
           # código 3 cuando Meta responde que el token no vale (error 190). Un

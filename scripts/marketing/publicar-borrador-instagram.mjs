@@ -30,6 +30,7 @@ import { dirname, join } from "node:path";
 
 import { captionParaRed, campanaDePieza, textoCuando } from "./calendario.mjs";
 import { cuerpoIssue } from "./pieza-issue.mjs";
+import { momentoPublicacion, textoMomento } from "./veto.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PAGE_ID = process.env.META_PAGE_ID || "";
@@ -146,7 +147,11 @@ function crearIssue({ pieza, previa, facebook }) {
   // Hora de Madrid a propósito (ZONA_NEGOCIO): aviso para Mikel.
   const caduca = new Date(Date.now() + 24 * 3600 * 1000).toLocaleString("es-ES", { timeZone: "Europe/Madrid", weekday: "long", hour: "2-digit", minute: "2-digit" });
   const titulo = `${esReel ? "🎬 Reel" : "📸 Post"} Instagram + Facebook — ${pieza.tipo} — ${cuando}`;
-  const cuerpo = cuerpoIssue({ pieza, previa, cuando, caduca: `el ${caduca}`, facebookListo: facebook });
+  // Publicación automática con veto (2026-10-11): la hora real a la que
+  // saldrá sola (la prevista, o 12 h después de este aviso si llega tarde).
+  const automatica = String(process.env.PUBLICACION_AUTOMATICA || "").trim().toLowerCase() === "true";
+  const momento = momentoPublicacion(pieza, new Date());
+  const cuerpo = cuerpoIssue({ pieza, previa, cuando, caduca: `el ${caduca}`, facebookListo: facebook, automatica: automatica && !!momento, publicaEn: momento ? textoMomento(momento) : "" });
   const salida = execFileSync("gh", ["issue", "create", "--title", titulo, "--body", cuerpo, "--label", "marketing"], {
     encoding: "utf8",
   });
@@ -170,6 +175,8 @@ async function main() {
 
   const pieza = {
     tipo, esReel: !!pendiente.esReel, publicUrl, campana, fecha: pendiente.fecha || null, hora: pendiente.hora || null, dia: pendiente.dia || null,
+    // Reels: de qué clip sale el gancho (null = sin clip). Los posts no llevan.
+    ...(pendiente.esReel ? { clip: pendiente.clip === undefined ? undefined : pendiente.clip } : {}),
     creationId, captionInstagram, captionFacebook, creadoEn: new Date().toISOString(),
   };
   crearIssue({ pieza, previa: publicUrl, facebook: await facebookListo() });
