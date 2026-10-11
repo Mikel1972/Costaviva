@@ -12,13 +12,21 @@ import { diasExtraPorReferidos, idsDeMetadata, compartenTarjeta, hashHex, premia
 import { esRutaPermitida } from "../functions/_lib/rutas-publicas.js";
 
 const leer = (r) => readFileSync(new URL(`../${r}`, import.meta.url), "utf8");
-const SQL_ORIGEN = leer("supabase/migrations/20261009100000_captacion_origen_visitas.sql");
+const SQL_ORIGEN = leer("supabase/migrations/20261009100000_captacion_origen_visitas.sql") + leer("supabase/migrations/20261011220000_visitas_en.sql");
 
 test("las listas de fuentes coinciden en el navegador, el servidor y la base de datos", () => {
   assert.deepEqual(O.FUENTES, V.FUENTES);
   const enSql = SQL_ORIGEN.match(/fuente in \(\s*([^)]*)\)/)[1].match(/'([a-z]+)'/g).map((x) => x.slice(1, -1));
   for (const f of O.FUENTES) assert.ok(enSql.includes(f), `${f} falta en la migración`);
   for (const p of V.PAGINAS_CONTADAS) assert.ok(SQL_ORIGEN.includes(`'${p}'`), `${p} falta en la migración`);
+});
+
+test("visitas de NZ: /en/spots, /en/tides y /en/species se cuentan aparte (KPIs por país)", () => {
+  assert.equal(V.paginaContada("/en/tides/nz-piha"), "en_tides");
+  assert.equal(V.paginaContada("/en/spots"), "en_spots");
+  assert.equal(V.paginaContada("/en/species/snapper"), "en_species");
+  assert.equal(V.paginaContada("/en"), null);
+  assert.equal(V.paginaContada("/mareas/bakio"), "mareas");
 });
 
 test("origen: UTM, alias, referrer y descarte de datos personales", () => {

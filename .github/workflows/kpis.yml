@@ -1,0 +1,76 @@
+name: KPIs de facturación
+
+# KPIs de facturación (CLAUDE.md, "KPIs de facturación", 2026-10-11). SIN IA.
+#   - Cada día: scripts/kpis/recoger.mjs lee producción SOLO en lectura
+#     (Supabase por REST con la service_role; Stripe con STRIPE_KPI_KEY, clave
+#     restringida de solo lectura) y AÑADE a datos-robots/kpis/historico.jsonl
+#     una línea por cada día cerrado que falte. El histórico nunca se reescribe.
+#   - Los lunes (o a mano con "informe"): scripts/kpis/informe.mjs escribe
+#     KPIS.md, datos-robots/kpis/mrr.svg y datos-robots/kpis/resumen.json
+#     (este último lo agrega comun en su KPIS.md).
+# La rutina "Robot de SEO y diseño" (martes) lee KPIS.md y actúa sobre el paso
+# del embudo más en rojo (scripts/kpis/rutina-kpis.txt).
+# Sin STRIPE_KPI_KEY no falla: avisa y saca el MRR de public.suscripciones a
+# precio de lista (comun, PENDIENTES_MIKEL.md). Sin la service_role, rojo.
+# Pausa: variable de repositorio AUTOMATION_PAUSED=true.
+
+on:
+  schedule:
+    - cron: "37 5 * * *" # diario, ~07:37 en Madrid; los lunes además el informe
+  workflow_dispatch:
+    inputs:
+      informe:
+        description: "Generar también KPIS.md (normalmente solo los lunes)"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kpis
+  cancel-in-progress: false
+
+jobs:
+  kpis:
+    if: ${{ vars.AUTOMATION_PAUSED != 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Recoger las métricas del día (solo lectura)
+        env:
+          SUPABASE_URL: https://imncbmizxkorotpeisic.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          STRIPE_KPI_KEY: ${{ secrets.STRIPE_KPI_KEY }}
+          TEST_USER_A_EMAIL: ${{ secrets.TEST_USER_A_EMAIL }}
+          TEST_USER_B_EMAIL: ${{ secrets.TEST_USER_B_EMAIL }}
+          SMOKE_TEST_EMAIL: ${{ secrets.SMOKE_TEST_EMAIL }}
+        run: node scripts/kpis/recoger.mjs
+      - name: Informe de los lunes (KPIS.md y gráfico)
+        run: |
+          # El cron es diario: el informe solo los lunes en hora de España
+          # (a propósito: el negocio va en Madrid), salvo lanzado a mano.
+          if [ "${{ github.event_name }}" = "schedule" ] && [ "$(TZ=Europe/Madrid date +%u)" != "1" ]; then
+            echo "Hoy no es lunes: sin informe."; exit 0
+          fi
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.informe }}" != "true" ]; then
+            echo "Sin informe (input)."; exit 0
+          fi
+          node scripts/kpis/informe.mjs
+          {
+            echo "### KPIs"
+            sed -n '/^## Estrella polar/,/^!\[/p' KPIS.md
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Guardar
+        run: |
+          git config user.name "Costaviva (KPIs)"
+          git config user.email "noreply@anthropic.com"
+          git add datos-robots/kpis/ KPIS.md
+          if git diff --cached --quiet; then echo "Sin cambios."; exit 0; fi
+          git commit -qm "KPIs: métricas del día [skip ci]"
+          for i in 1 2 3; do git pull -q --rebase origin main && git push -q origin HEAD:main && exit 0; sleep 5; done
+          echo "::error::No se pudieron subir los KPIs"; exit 1
