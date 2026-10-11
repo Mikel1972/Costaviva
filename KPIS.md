@@ -8,7 +8,7 @@ Generado sin IA por `scripts/kpis/informe.mjs` el 2026-10-11 con datos hasta el 
 
 ## Estrella polar: MRR
 
-- **MRR real:** 0,00 € (precio de lista desde Supabase) · objetivo hoy 0,00 € (suelo 0,00 €) · = 0 % · 🟢 verde
+- **MRR real:** 0,00 € (precio de lista desde Supabase) · objetivo hoy — (empieza el 2026-10-11) · — · ⚪ sin dato
 - **Suscriptores de pago:** 0 mensuales y 0 anuales · en prueba con tarjeta en Stripe: 0 · con baja programada: —
 - **ARPU:** 3,25 € (supuesto de objetivos.json hasta tener datos) · precios de hoy 3,99 €/mes y 29,99 €/año
 - **Usuarios:** 2 cuentas válidas (sin admin, pruebas ni accesos regalados) · activos en 7 días: 1
@@ -44,53 +44,53 @@ Celdas: real / objetivo (prorrateado si la quincena está en curso).
 | MRR (€/mes, anuales a 1/12) | 0,00 € | 0,00 € | 0,00 € | = 0 % | 🟢 verde |
 | Suscriptores de pago | 0 | 0 | 0 | = 0 % | 🟢 verde |
 | Facturado (€ cobrados) | — | 0,00 € | 0,00 € | — | ⚪ sin dato |
-| Visitas a páginas públicas | 63 | — | — | — | ⚪ sin dato |
+| Visitas a páginas públicas | 63 | 0 | 0 | ▲ — | 🟢 verde |
 | Altas (pruebas gratis) | 1 | 0 | 0 | ▲ — | 🟢 verde |
 | Activaciones (cohortes que cumplen 7 días) | — | 0 | 0 | — | ⚪ sin dato |
 | Pagos nuevos | 0 | 0 | 0 | = 0 % | 🟢 verde |
 | Cancelaciones (máximo) | — | 0 | — | — | ⚪ sin dato |
 | Retención semana 4 (%) | — | — | — | — | ⚪ sin dato |
 
-### Semana del 2026-09-28
+### Semana del 2026-09-28 (antes del inicio de los objetivos)
 
 | KPI | Real | Objetivo (ambicioso) | Suelo (base) | Desviación | Estado |
 |---|---|---|---|---|---|
-| MRR (€/mes, anuales a 1/12) | — | 0,00 € | 0,00 € | — | ⚪ sin dato |
-| Suscriptores de pago | — | 0 | 0 | — | ⚪ sin dato |
-| Facturado (€ cobrados) | — | 0,00 € | 0,00 € | — | ⚪ sin dato |
+| MRR (€/mes, anuales a 1/12) | — | — | — | — | ⚪ sin dato |
+| Suscriptores de pago | — | — | — | — | ⚪ sin dato |
+| Facturado (€ cobrados) | — | — | — | — | ⚪ sin dato |
 | Visitas a páginas públicas | — | — | — | — | ⚪ sin dato |
-| Altas (pruebas gratis) | 0 | 0 | 0 | = 0 % | 🟢 verde |
-| Activaciones (cohortes que cumplen 7 días) | — | 0 | 0 | — | ⚪ sin dato |
-| Pagos nuevos | 0 | 0 | 0 | = 0 % | 🟢 verde |
-| Cancelaciones (máximo) | — | 0 | — | — | ⚪ sin dato |
+| Altas (pruebas gratis) | 0 | — | — | — | ⚪ sin dato |
+| Activaciones (cohortes que cumplen 7 días) | — | — | — | — | ⚪ sin dato |
+| Pagos nuevos | 0 | — | — | — | ⚪ sin dato |
+| Cancelaciones (máximo) | — | — | — | — | ⚪ sin dato |
 | Retención semana 4 (%) | — | — | — | — | ⚪ sin dato |
 
-### Semana del 2026-09-21
+### Semana del 2026-09-21 (antes del inicio de los objetivos)
 
 | KPI | Real | Objetivo (ambicioso) | Suelo (base) | Desviación | Estado |
 |---|---|---|---|---|---|
-| MRR (€/mes, anuales a 1/12) | — | 0,00 € | 0,00 € | — | ⚪ sin dato |
-| Suscriptores de pago | — | 0 | 0 | — | ⚪ sin dato |
-| Facturado (€ cobrados) | — | 0,00 € | 0,00 € | — | ⚪ sin dato |
+| MRR (€/mes, anuales a 1/12) | — | — | — | — | ⚪ sin dato |
+| Suscriptores de pago | — | — | — | — | ⚪ sin dato |
+| Facturado (€ cobrados) | — | — | — | — | ⚪ sin dato |
 | Visitas a páginas públicas | — | — | — | — | ⚪ sin dato |
-| Altas (pruebas gratis) | 0 | 0 | 0 | = 0 % | 🟢 verde |
-| Activaciones (cohortes que cumplen 7 días) | — | 0 | 0 | — | ⚪ sin dato |
-| Pagos nuevos | 0 | 0 | 0 | = 0 % | 🟢 verde |
-| Cancelaciones (máximo) | — | 0 | — | — | ⚪ sin dato |
+| Altas (pruebas gratis) | 0 | — | — | — | ⚪ sin dato |
+| Activaciones (cohortes que cumplen 7 días) | — | — | — | — | ⚪ sin dato |
+| Pagos nuevos | 0 | — | — | — | ⚪ sin dato |
+| Cancelaciones (máximo) | — | — | — | — | ⚪ sin dato |
 | Retención semana 4 (%) | — | — | — | — | ⚪ sin dato |
 
-### Semana del 2026-09-14
+### Semana del 2026-09-14 (antes del inicio de los objetivos)
 
 | KPI | Real | Objetivo (ambicioso) | Suelo (base) | Desviación | Estado |
 |---|---|---|---|---|---|
-| MRR (€/mes, anuales a 1/12) | — | 0,00 € | 0,00 € | — | ⚪ sin dato |
-| Suscriptores de pago | — | 0 | 0 | — | ⚪ sin dato |
-| Facturado (€ cobrados) | — | 0,00 € | 0,00 € | — | ⚪ sin dato |
+| MRR (€/mes, anuales a 1/12) | — | — | — | — | ⚪ sin dato |
+| Suscriptores de pago | — | — | — | — | ⚪ sin dato |
+| Facturado (€ cobrados) | — | — | — | — | ⚪ sin dato |
 | Visitas a páginas públicas | — | — | — | — | ⚪ sin dato |
-| Altas (pruebas gratis) | 0 | 0 | 0 | = 0 % | 🟢 verde |
-| Activaciones (cohortes que cumplen 7 días) | 0 | 0 | 0 | = 0 % | 🟢 verde |
-| Pagos nuevos | 0 | 0 | 0 | = 0 % | 🟢 verde |
-| Cancelaciones (máximo) | — | 0 | — | — | ⚪ sin dato |
+| Altas (pruebas gratis) | 0 | — | — | — | ⚪ sin dato |
+| Activaciones (cohortes que cumplen 7 días) | 0 | — | — | — | ⚪ sin dato |
+| Pagos nuevos | 0 | — | — | — | ⚪ sin dato |
+| Cancelaciones (máximo) | — | — | — | — | ⚪ sin dato |
 | Retención semana 4 (%) | — | — | — | — | ⚪ sin dato |
 
 ## Línea base: antes del inicio (2026-09-15 → 2026-10-10)
@@ -113,20 +113,20 @@ Sin datos: hace falta `STRIPE_KPI_KEY` (los códigos de socio se leen de Stripe)
 
 ## Objetivos quincenales del embudo (Ambicioso (objetivo oficial); entre paréntesis, el suelo)
 
-Tasas usadas: visita → alta 0.0 % (real, n=63); alta → pago 3.0 % (supuesto; real con n=1, hace falta 20); alta → activación 40.0 % (supuesto; real con n=1, hace falta 20); ARPU 3,25 €; +15 % de pagos para reponer bajas.
+Tasas usadas: visita → alta 4 % (supuesto; de momento 0 de 63, pocos casos para usar el real); alta → pago 3 % (supuesto; de momento 0 de 1, pocos casos para usar el real); alta → activación 40 % (supuesto; de momento 0 de 1, pocos casos para usar el real); ARPU 3,25 €; +15 % de pagos para reponer bajas.
 
 | Quincena | Cierre | MRR ambicioso (objetivo) | MRR base (suelo) | MRR prudente (ref.) | Pagos nuevos | Altas | Activaciones | Visitas |
 |---|---|---|---|---|---|---|---|---|
-| Q1 | 2026-10-26 | 10,00 € | 6,00 € | 4,00 € | 4 (3) | 134 (100) | 54 (40) | Infinity (Infinity) |
-| Q2 | 2026-11-10 | 20,00 € | 12,00 € | 7,00 € | 4 (3) | 134 (100) | 54 (40) | Infinity (Infinity) |
-| Q3 | 2026-11-25 | 40,00 € | 23,00 € | 12,00 € | 8 (4) | 267 (134) | 107 (54) | Infinity (Infinity) |
-| Q4 | 2026-12-10 | 76,00 € | 41,00 € | 20,00 € | 13 (7) | 434 (234) | 174 (94) | Infinity (Infinity) |
-| Q5 | 2026-12-25 | 137,00 € | 70,00 € | 29,00 € | 22 (11) | 734 (367) | 294 (147) | Infinity (Infinity) |
-| Q6 | 2027-01-09 | 233,00 € | 112,00 € | 41,00 € | 34 (15) | 1134 (500) | 454 (200) | Infinity (Infinity) |
-| Q7 | 2027-01-24 | 372,00 € | 167,00 € | 56,00 € | 50 (20) | 1667 (667) | 667 (267) | Infinity (Infinity) |
-| Q8 | 2027-02-08 | 559,00 € | 234,00 € | 72,00 € | 67 (24) | 2234 (800) | 894 (320) | Infinity (Infinity) |
-| Q9 | 2027-02-23 | 782,00 € | 316,00 € | 90,00 € | 79 (30) | 2634 (1000) | 1054 (400) | Infinity (Infinity) |
-| Q10 | 2027-03-11 | 1017,00 € | 411,00 € | 108,00 € | 84 (34) | 2800 (1134) | 1120 (454) | Infinity (Infinity) |
+| Q1 | 2026-10-26 | 10,00 € | 6,00 € | 4,00 € | 4 (3) | 134 (100) | 54 (40) | 3350 (2500) |
+| Q2 | 2026-11-10 | 20,00 € | 12,00 € | 7,00 € | 4 (3) | 134 (100) | 54 (40) | 3350 (2500) |
+| Q3 | 2026-11-25 | 40,00 € | 23,00 € | 12,00 € | 8 (4) | 267 (134) | 107 (54) | 6675 (3350) |
+| Q4 | 2026-12-10 | 76,00 € | 41,00 € | 20,00 € | 13 (7) | 434 (234) | 174 (94) | 10850 (5850) |
+| Q5 | 2026-12-25 | 137,00 € | 70,00 € | 29,00 € | 22 (11) | 734 (367) | 294 (147) | 18350 (9175) |
+| Q6 | 2027-01-09 | 233,00 € | 112,00 € | 41,00 € | 34 (15) | 1134 (500) | 454 (200) | 28350 (12500) |
+| Q7 | 2027-01-24 | 372,00 € | 167,00 € | 56,00 € | 50 (20) | 1667 (667) | 667 (267) | 41675 (16675) |
+| Q8 | 2027-02-08 | 559,00 € | 234,00 € | 72,00 € | 67 (24) | 2234 (800) | 894 (320) | 55850 (20000) |
+| Q9 | 2027-02-23 | 782,00 € | 316,00 € | 90,00 € | 79 (30) | 2634 (1000) | 1054 (400) | 65850 (25000) |
+| Q10 | 2027-03-11 | 1017,00 € | 411,00 € | 108,00 € | 84 (34) | 2800 (1134) | 1120 (454) | 70000 (28350) |
 
 ## Cambios de la rutina y su evaluación
 

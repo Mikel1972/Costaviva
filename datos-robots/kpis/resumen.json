@@ -43,20 +43,20 @@
    "kpis": {
     "mrr": {
      "real": null,
-     "objetivo": 0,
-     "suelo": 0,
+     "objetivo": null,
+     "suelo": null,
      "estado": "sin_dato"
     },
     "suscriptores": {
      "real": null,
-     "objetivo": 0,
-     "suelo": 0,
+     "objetivo": null,
+     "suelo": null,
      "estado": "sin_dato"
     },
     "facturado": {
      "real": null,
-     "objetivo": 0,
-     "suelo": 0,
+     "objetivo": null,
+     "suelo": null,
      "estado": "sin_dato"
     },
     "visitas": {
@@ -67,25 +67,25 @@
     },
     "altas": {
      "real": null,
-     "objetivo": 0,
-     "suelo": 0,
+     "objetivo": null,
+     "suelo": null,
      "estado": "sin_dato"
     },
     "activaciones": {
      "real": null,
-     "objetivo": 0,
-     "suelo": 0,
+     "objetivo": null,
+     "suelo": null,
      "estado": "sin_dato"
     },
     "nuevos_pagos": {
      "real": null,
-     "objetivo": 0,
-     "suelo": 0,
+     "objetivo": null,
+     "suelo": null,
      "estado": "sin_dato"
     },
     "cancelaciones": {
      "real": null,
-     "objetivo": 0,
+     "objetivo": null,
      "suelo": null,
      "estado": "sin_dato"
     },
@@ -108,20 +108,20 @@
    "kpis": {
     "mrr": {
      "real": null,
-     "objetivo": 0,
-     "suelo": 0,
+     "objetivo": null,
+     "suelo": null,
      "estado": "sin_dato"
     },
     "suscriptores": {
      "real": null,
-     "objetivo": 0,
-     "suelo": 0,
+     "objetivo": null,
+     "suelo": null,
      "estado": "sin_dato"
     },
     "facturado": {
      "real": null,
-     "objetivo": 0,
-     "suelo": 0,
+     "objetivo": null,
+     "suelo": null,
      "estado": "sin_dato"
     },
     "visitas": {
@@ -132,25 +132,25 @@
     },
     "altas": {
      "real": 0,
-     "objetivo": 0,
-     "suelo": 0,
-     "estado": "verde"
+     "objetivo": null,
+     "suelo": null,
+     "estado": "sin_dato"
     },
     "activaciones": {
      "real": 0,
-     "objetivo": 0,
-     "suelo": 0,
-     "estado": "verde"
+     "objetivo": null,
+     "suelo": null,
+     "estado": "sin_dato"
     },
     "nuevos_pagos": {
      "real": 0,
-     "objetivo": 0,
-     "suelo": 0,
-     "estado": "verde"
+     "objetivo": null,
+     "suelo": null,
+     "estado": "sin_dato"
     },
     "cancelaciones": {
      "real": null,
-     "objetivo": 0,
+     "objetivo": null,
      "suelo": null,
      "estado": "sin_dato"
     },
@@ -173,20 +173,20 @@
    "kpis": {
     "mrr": {
      "real": null,
-     "objetivo": 0,
-     "suelo": 0,
+     "objetivo": null,
+     "suelo": null,
      "estado": "sin_dato"
     },
     "suscriptores": {
      "real": null,
-     "objetivo": 0,
-     "suelo": 0,
+     "objetivo": null,
+     "suelo": null,
      "estado": "sin_dato"
     },
     "facturado": {
      "real": null,
-     "objetivo": 0,
-     "suelo": 0,
+     "objetivo": null,
+     "suelo": null,
      "estado": "sin_dato"
     },
     "visitas": {
@@ -197,25 +197,25 @@
     },
     "altas": {
      "real": 0,
-     "objetivo": 0,
-     "suelo": 0,
-     "estado": "verde"
+     "objetivo": null,
+     "suelo": null,
+     "estado": "sin_dato"
     },
     "activaciones": {
      "real": null,
-     "objetivo": 0,
-     "suelo": 0,
+     "objetivo": null,
+     "suelo": null,
      "estado": "sin_dato"
     },
     "nuevos_pagos": {
      "real": 0,
-     "objetivo": 0,
-     "suelo": 0,
-     "estado": "verde"
+     "objetivo": null,
+     "suelo": null,
+     "estado": "sin_dato"
     },
     "cancelaciones": {
      "real": null,
-     "objetivo": 0,
+     "objetivo": null,
      "suelo": null,
      "estado": "sin_dato"
     },
@@ -238,20 +238,20 @@
    "kpis": {
     "mrr": {
      "real": null,
-     "objetivo": 0,
-     "suelo": 0,
+     "objetivo": null,
+     "suelo": null,
      "estado": "sin_dato"
     },
     "suscriptores": {
      "real": null,
-     "objetivo": 0,
-     "suelo": 0,
+     "objetivo": null,
+     "suelo": null,
      "estado": "sin_dato"
     },
     "facturado": {
      "real": null,
-     "objetivo": 0,
-     "suelo": 0,
+     "objetivo": null,
+     "suelo": null,
      "estado": "sin_dato"
     },
     "visitas": {
@@ -262,25 +262,25 @@
     },
     "altas": {
      "real": 0,
-     "objetivo": 0,
-     "suelo": 0,
-     "estado": "verde"
+     "objetivo": null,
+     "suelo": null,
+     "estado": "sin_dato"
     },
     "activaciones": {
      "real": null,
-     "objetivo": 0,
-     "suelo": 0,
+     "objetivo": null,
+     "suelo": null,
      "estado": "sin_dato"
     },
     "nuevos_pagos": {
      "real": 0,
-     "objetivo": 0,
-     "suelo": 0,
-     "estado": "verde"
+     "objetivo": null,
+     "suelo": null,
+     "estado": "sin_dato"
     },
     "cancelaciones": {
      "real": null,
-     "objetivo": 0,
+     "objetivo": null,
      "suelo": null,
      "estado": "sin_dato"
     },
@@ -321,9 +321,9 @@
     },
     "visitas": {
      "real": 63,
-     "objetivo": null,
-     "suelo": null,
-     "estado": "sin_dato"
+     "objetivo": 0,
+     "suelo": 0,
+     "estado": "verde"
     },
     "altas": {
      "real": 1,
@@ -360,7 +360,7 @@
     "directo": 1
    },
    "pagos_canal": {},
-   "paso_mas_rojo": "visitas"
+   "paso_mas_rojo": "activaciones"
   }
  ]
 }
