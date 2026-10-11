@@ -1,0 +1,30 @@
+name: Comprobar clave de DeepL
+
+# Añadido el 2026-10-11 al crear Mikel el secreto DEEPL_API_KEY (DeepL API
+# Free, para contrastar las traducciones pt/en). A mano: dice si la clave
+# vale, cuánto cupo mensual queda y traduce una frase de prueba al
+# portugués de Portugal. Nunca imprime la clave.
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  comprobar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Uso y traducción de prueba
+        env:
+          CLAVE: ${{ secrets.DEEPL_API_KEY }}
+        run: |
+          if [ -z "$CLAVE" ]; then echo "::error::Falta el secreto DEEPL_API_KEY."; exit 1; fi
+          case "$CLAVE" in *:fx) BASE=https://api-free.deepl.com ;; *) BASE=https://api.deepl.com ;; esac
+          codigo=$(curl -sS -o /tmp/uso.json -w '%{http_code}' -H "Authorization: DeepL-Auth-Key $CLAVE" "$BASE/v2/usage")
+          if [ "$codigo" != "200" ]; then echo "::error::DeepL rechaza la clave (HTTP $codigo)."; exit 1; fi
+          node -e 'const u=require("/tmp/uso.json");console.log(`Cupo: ${u.character_count} de ${u.character_limit} caracteres usados este mes.`)'
+          curl -sS -H "Authorization: DeepL-Auth-Key $CLAVE" -H "Content-Type: application/json" \
+            -d '{"text":["Marea alta a las 7:40. Buen momento para pescar lubina desde las rocas."],"source_lang":"ES","target_lang":"PT-PT"}' \
+            "$BASE/v2/translate" -o /tmp/tr.json
+          node -e 'const t=require("/tmp/tr.json");console.log("Prueba ES → PT-PT:", t.translations[0].text)'
