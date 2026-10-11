@@ -479,6 +479,14 @@ anuales a 1/12). Todo sin IA y solo en lectura de producción.
   `scripts/kpis/informe.mjs` escribe `KPIS.md`, `datos-robots/kpis/mrr.svg` y
   `datos-robots/kpis/resumen.json` (este lo agrega `comun` en su `KPIS.md`).
   **El repo es público**: KPIS.md enseña MRR y facturación.
+- **Por país** (`objetivos.json`, "paises"): ES 550 €, PT 100 €, NZ 367 € en
+  marzo de 2027 (= 1.017 €), cada uno con la forma del ambicioso escalada a
+  su parte; ARPU NZ 4,80 € (precio ×1,40). País del usuario: país de
+  facturación o moneda en Stripe > el de sus spots (salidas, favoritos,
+  eventos) > ES. Visitas: ES y PT juntas (no se separan por spot); NZ por las
+  páginas /en/ (`en_spots`, `en_tides`, `en_species` en `_lib/visitas.js`,
+  necesitan la migración `20261011220000_visitas_en.sql`, **sin aplicar**).
+  La rutina actúa sobre el país que va más por debajo de su objetivo.
 - **Activación v1**: en sus 7 primeros días abre la app 2 días distintos y
   hace algo más que mirar el mapa o el pago (`EVENTOS_PASIVOS` en
   `scripts/kpis/lib.mjs`). Revisarla con 30 pruebas terminadas.

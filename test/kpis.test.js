@@ -6,7 +6,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
   OBJETIVOS, mrrObjetivo, quincenas, estado, alarmaBajoSuelo, mrrSuscripcion, mrrSuscripcionDetalle, codigoPromoDe,
-  canalDe, activado, objetivosPeriodo, tasas, arpu, svgMrr, filasKpi, agregarPeriodo, pasoMasRojo, semanas, diaMadrid,
+  canalDe, activado, PAISES, partePais, mrrObjetivoPais, paisesUsuarios, paisSuscripcion, paisMasBajo, objetivosPais, objetivosPeriodo, tasas, arpu, svgMrr, filasKpi, agregarPeriodo, pasoMasRojo, semanas, diaMadrid,
 } from "../scripts/kpis/lib.mjs";
 import { calcularLineas, diasPendientes, idsExcluidos, leerHistorico, DESDE_INICIAL } from "../scripts/kpis/recoger.mjs";
 import { construir, markdown, resumenJson } from "../scripts/kpis/informe.mjs";
@@ -221,4 +221,48 @@ test("kpis.yml solo lee producción: ni POST ni PATCH ni DELETE en recoger.mjs",
   assert.ok(!/method:\s*["'](POST|PATCH|PUT|DELETE)/i.test(src));
   const wf = readFileSync(new URL("../.github/workflows/kpis.yml", import.meta.url), "utf8");
   assert.ok(!/ANTHROPIC_API_KEY|claude-code|claude -p/.test(wf), "sin IA en el workflow");
+});
+
+test("países: ES 550 + PT 100 + NZ 367 = 1.017 €, misma forma que el ambicioso", () => {
+  assert.deepEqual(PAISES, ["es", "pt", "nz"]);
+  const suma = PAISES.reduce((a, p) => a + OBJETIVOS.paises[p].mrr_marzo, 0);
+  assert.equal(suma, OBJETIVOS.escenarios.ambicioso.mrr.at(-1));
+  assert.equal(Math.round(mrrObjetivoPais("2027-03-11", "nz")), 367);
+  assert.ok(Math.abs(partePais("es") - 0.54) < 0.01 && Math.abs(partePais("pt") - 0.1) < 0.01 && Math.abs(partePais("nz") - 0.36) < 0.01);
+  assert.equal(OBJETIVOS.paises.nz.arpu_eur, 4.8);
+  const t = tasas([]);
+  const o = objetivosPais({ desde: "2026-10-11", hasta: "2026-10-26" }, "nz", "ambicioso", t);
+  // 3,61 € / 4,80 = 0,75; +15 % = 0,87 → 1 pago; /3 % = 34 altas; /4 % = 850 visitas.
+  assert.deepEqual([o.nuevos_pagos, o.altas, o.visitas], [1, 34, 850]);
+});
+
+test("país de cada usuario: Stripe > sus spots > ES; suscripción NZD → nz", () => {
+  const r = paisesUsuarios(["a", "b", "c", "d"], {
+    paisStripe: { a: "pt" },
+    slugs: [{ user_id: "a", slug: "bakio" }, { user_id: "b", slug: "nz-piha" }, { user_id: "b", slug: "nz-raglan" }, { user_id: "b", slug: "bakio" }, { user_id: "c", slug: "peniche" }],
+    paisPorSlug: { bakio: "es", peniche: "pt" },
+  });
+  assert.deepEqual(r, { a: "pt", b: "nz", c: "pt", d: "es" });
+  assert.equal(paisSuscripcion({ currency: "nzd" }, "es", "es"), "nz");
+  assert.equal(paisSuscripcion({ currency: "eur" }, "PT", "es"), "pt");
+  assert.equal(paisSuscripcion({ currency: "eur" }, "FR", "nz"), "nz");
+  assert.equal(paisMasBajo([{ pais: "es", real: 0, objetivo: 5.4 }, { pais: "pt", real: 0, objetivo: 1 }, { pais: "nz", real: 0, objetivo: 3.6 }]), "es");
+  assert.equal(paisMasBajo([{ pais: "es", real: 6, objetivo: 5.4 }, { pais: "nz", real: 1, objetivo: 3.6 }]), "nz");
+});
+
+test("líneas y KPIS.md por país, con fila de total", () => {
+  const d = { ...datosSinteticos(), paisUsuario: { u1: "es", u2: "nz" } };
+  d.stripe.paisFacturaPorSub = { sub_1: "nz" };
+  d.visitas.push({ dia: "2026-10-12", pagina: "en_tides", fuente: "google", campana: "", visitas: 7 });
+  const L = calcularLineas(["2026-10-05", "2026-10-06", "2026-10-11", "2026-10-12"], d, "2026-10-13T05:00:00Z");
+  assert.deepEqual(L[0].altas_pais, { es: 1, pt: 0, nz: 1 });
+  assert.deepEqual(L[1].pagos_pais, { es: 0, pt: 0, nz: 1 });
+  assert.deepEqual(L[3].visitas_pais, { es: 0, pt: null, nz: 7 });
+  assert.equal(L[3].stock.mrr_pais.nz, 3.59);
+  const r = construir(L, "2026-10-13", []);
+  const md = markdown(r);
+  assert.match(md, /## Por país/);
+  assert.match(md, /\| \*\*Total\*\* \|/);
+  assert.ok(["es", "pt", "nz"].includes(r.paisFoco));
+  assert.equal(resumenJson(r).paises.length, 3);
 });

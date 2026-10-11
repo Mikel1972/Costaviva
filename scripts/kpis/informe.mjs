@@ -13,6 +13,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import {
   OBJETIVOS, INICIO, ESCENARIOS, SUPUESTOS, PRECIO_MENSUAL, PRECIO_ANUAL, CANALES, MIN_N,
   diaMadrid, sumarDias, diasEntre, quincenas, semanas, agregarPeriodo, tasas, arpu, objetivosPeriodo,
+  PAISES, mrrObjetivoPais, objetivosPais, paisMasBajo,
   filasKpi, pasoMasRojo, tablaKpi, svgMrr, mrrObjetivo, alarmaBajoSuelo, estado, desviacion, ICONO, eur, redondear,
 } from "./lib.mjs";
 import { leerHistorico, RUTA_HISTORICO } from "./recoger.mjs";
@@ -55,8 +56,25 @@ export function construir(lineas, hoy, cambios = []) {
   const Q = qs.map(periodo);
   const S = semanas(sumarDias(INICIO, -28), ayer).map(periodo);
   const actual = Q.at(-1) ?? null;
+  // Por país (quincena en curso): visitas, altas, pagos y MRR contra su objetivo.
+  const paises = actual ? PAISES.map((p) => {
+    const o = objetivosPais(actual, p, escenario, t);
+    const len = diasEntre(actual.desde, actual.hasta) + 1;
+    const fr = actual.en_curso ? Math.max(0, Math.min(len, diasEntre(actual.desde, ayer) + 1)) / len : 1;
+    const real = actual.agg.stock?.mrr_pais?.[p] ?? null;
+    const objetivo = redondear(mrrObjetivoPais(actual.en_curso ? ayer : actual.hasta, p, escenario));
+    const suelo = redondear(mrrObjetivoPais(actual.en_curso ? ayer : actual.hasta, p, OBJETIVOS.suelo_alarma));
+    return {
+      pais: p, nombre: OBJETIVOS.paises[p].nombre,
+      visitas: p === "pt" ? null : actual.agg.visitas_pais?.[p] ?? null, visitas_obj: redondear(o.visitas * fr, 1),
+      altas: actual.agg.altas_pais?.[p] ?? null, altas_obj: redondear(o.altas * fr, 1),
+      pagos: actual.agg.pagos_pais?.[p] ?? null, pagos_obj: redondear(o.nuevos_pagos * fr, 1),
+      real, objetivo, suelo, ...estado(real, objetivo, suelo), desv: desviacion(real, objetivo),
+    };
+  }) : [];
+  const paisFoco = paisMasBajo(paises);
   const antes = agregarPeriodo(lineas, { desde: "2026-09-15", hasta: sumarDias(INICIO, -1) });
-  return { hoy, ayer, lineas, ultimoStock, t, a, escenario, suelo, alarma, cierres, Q, S, actual, antes, cambios };
+  return { hoy, ayer, lineas, ultimoStock, t, a, escenario, suelo, alarma, cierres, paises, paisFoco, Q, S, actual, antes, cambios };
 }
 
 const num = (v) => (v == null ? "—" : Number(v).toLocaleString("es-ES", { maximumFractionDigits: 1 }));
@@ -86,6 +104,22 @@ export function markdown(r) {
   if (actual) {
     L.push(`## Paso del embudo más en rojo (${actual.id}, ${actual.desde} → ${actual.hasta}${actual.en_curso ? `, en curso ${actual.dias} días` : ""})`, "");
     L.push(actual.rojo ? `**${NOMBRE_PASO[actual.rojo.clave]}**: real ${actual.rojo.real == null ? "sin dato" : num(actual.rojo.real)} contra ${num(actual.rojo.objetivo)} (${actual.rojo.desv}, ${ICONO[actual.rojo.estado]}). Es el que trabaja la rutina de KPIs (\`scripts/kpis/rutina-kpis.txt\`).` : "Sin datos para elegir.", "");
+  }
+
+  if (actual) {
+    L.push(`## Por país (${actual.id}${actual.en_curso ? `, en curso ${actual.dias} días` : ""})`, "");
+    L.push(`Objetivo de marzo de 2027: ${PAISES.map((p) => `${OBJETIVOS.paises[p].nombre} ${eur(OBJETIVOS.paises[p].mrr_marzo)}`).join(", ")}. Curva de cada país = escenario objetivo escalado a su parte; ARPU ${PAISES.map((p) => `${p.toUpperCase()} ${eur(OBJETIVOS.paises[p].arpu_eur)}`).join(", ")}. Visitas de España y Portugal juntas (no se separan por spot); NZ = páginas /en/.`, "");
+    L.push("| País | Visitas | Altas | Pagos nuevos | MRR real | MRR objetivo | Suelo | Desv. | Estado |", "|---|---|---|---|---|---|---|---|---|");
+    const tot = { visitas: 0, altas: 0, pagos: 0, real: 0, objetivo: 0, suelo: 0, vo: 0, ao: 0, po: 0, conReal: false };
+    for (const f of r.paises) {
+      L.push(`| ${f.nombre}${f.pais === r.paisFoco ? " ← foco" : ""} | ${f.pais === "pt" ? "(con ES)" : `${num(f.visitas)} / ${num(f.visitas_obj)}`} | ${num(f.altas)} / ${num(f.altas_obj)} | ${num(f.pagos)} / ${num(f.pagos_obj)} | ${eur(f.real)} | ${eur(f.objetivo)} | ${eur(f.suelo)} | ${f.desv} | ${ICONO[f.estado]} |`);
+      tot.visitas += f.visitas ?? 0; tot.altas += f.altas ?? 0; tot.pagos += f.pagos ?? 0; tot.real += f.real ?? 0; tot.conReal ||= f.real != null;
+      tot.objetivo += f.objetivo ?? 0; tot.suelo += f.suelo ?? 0; tot.vo += f.visitas_obj ?? 0; tot.ao += f.altas_obj ?? 0; tot.po += f.pagos_obj ?? 0;
+    }
+    const realT = tot.conReal ? redondear(tot.real) : null;
+    const et = estado(realT, redondear(tot.objetivo), redondear(tot.suelo));
+    L.push(`| **Total** | ${num(tot.visitas)} / ${num(redondear(tot.vo, 1))} | ${num(tot.altas)} / ${num(redondear(tot.ao, 1))} | ${num(tot.pagos)} / ${num(redondear(tot.po, 1))} | ${eur(realT)} | ${eur(redondear(tot.objetivo))} | ${eur(redondear(tot.suelo))} | ${desviacion(realT, tot.objetivo)} | ${ICONO[et.estado]} |`);
+    L.push("", `Celdas: real / objetivo (prorrateado si la quincena está en curso). **País en foco** (el que va más por debajo de su objetivo; es donde actúa la rutina): ${r.paisFoco ? OBJETIVOS.paises[r.paisFoco].nombre : "—"}.`, "");
   }
 
   L.push("## Árbol de KPIs", "");
@@ -166,6 +200,7 @@ export function resumenJson(r) {
     app: "Costaviva", generado: r.hoy, datos_hasta: r.ayer, objetivo: r.escenario, suelo: r.suelo, aviso_bajo_suelo: r.alarma,
     fuentes: r.ultimoStock?.fuentes ?? null, stock: r.ultimoStock?.stock ?? null,
     mrr_objetivo_hoy: redondear(mrrObjetivo(r.ayer, r.escenario)),
+    pais_foco: r.paisFoco, paises: r.paises,
     quincenas: r.Q.map(pick), semanas: r.S.map(pick),
   };
 }

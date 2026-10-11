@@ -23,6 +23,7 @@ import { appendFileSync, existsSync, readFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import {
+  PAISES, paisesUsuarios, paisSuscripcion, paisDeCoordenadas,
   diaMadrid, sumarDias, activado, activoSemana4, canalDe, mrrSuscripcionDetalle, codigoPromoDe, mrrDesdeSupabase, redondear, DIA,
 } from "./lib.mjs";
 
@@ -66,6 +67,8 @@ export function idsExcluidos({ perfiles, admins, permanentes, invitaciones, emai
 //   stripe: null | { subs[], invoices[], codigosPorId{}, codigosSocio:Set, usuarioPorSub{} } }
 export function calcularLineas(dias, datos, medidoEn = new Date().toISOString()) {
   const { perfiles, confirmados, origen, visitas, eventos, subsSupabase, excluidos, stripe } = datos;
+  const paisDe = (id) => datos.paisUsuario?.[id] ?? "es";
+  const porPais = (lista, f) => { const o = Object.fromEntries(PAISES.map((p) => [p, 0])); for (const x of lista) o[f(x)] = (o[f(x)] ?? 0) + 1; return o; };
   const validos = perfiles.filter((p) => !excluidos.has(p.id));
   const codigosSocio = stripe?.codigosSocio ?? new Set();
   const eventosPor = new Map();
@@ -109,11 +112,15 @@ export function calcularLineas(dias, datos, medidoEn = new Date().toISOString())
       altas_confirmadas: confirmados ? altas.filter((p) => confirmados.has(p.id)).length : altas.length,
       altas_canal: altasCanal,
       altas_socio: altasSocio,
+      altas_pais: porPais(altas, (p) => paisDe(p.id)),
+      // ES y PT juntos (las páginas en español no se separan por spot); NZ = /en/.
+      visitas_pais: primerDiaVisitas && dia >= primerDiaVisitas ? { es: vis.filter((v) => !String(v.pagina ?? "").startsWith("en_")).reduce((a, v) => a + v.visitas, 0), pt: null, nz: vis.filter((v) => String(v.pagina ?? "").startsWith("en_")).reduce((a, v) => a + v.visitas, 0) } : null,
       cohorte_activacion: { dia: sumarDias(dia, -7), altas: cohA.length, activadas: cohA.filter((p) => activado(eventosPor.get(p.id) ?? [], p.creado_en)).length },
       cohorte_retencion: { dia: sumarDias(dia, -28), altas: cohR.length, activas_s4: cohR.filter((p) => activoSemana4(eventosPor.get(p.id) ?? [], p.creado_en)).length },
       checkout_iniciado: checkout.size,
       nuevos_pagos: pagos.length,
       pagos_canal: pagosCanal,
+      pagos_pais: porPais(pagos, (x) => paisDe(x.user_id)),
       cancelaciones: stripe
         ? stripe.subs.filter((s) => s.canceled_at && !excluidos.has(stripe.usuarioPorSub[s.id]) && diaMadrid(s.canceled_at) === dia).length
         : null,
@@ -130,16 +137,21 @@ export function calcularLineas(dias, datos, medidoEn = new Date().toISOString())
 
 export function calcularStock(datos, medidoEn) {
   const { perfiles, origen, eventos, subsSupabase, excluidos, stripe } = datos;
+  const paisDe = (id) => datos.paisUsuario?.[id] ?? "es";
   const ahora = Date.parse(medidoEn);
   const activos7 = new Set(eventos.filter((e) => !excluidos.has(e.user_id) && ahora - Date.parse(e.creado_en) <= 7 * DIA).map((e) => e.user_id));
   const base = { activos_7d: activos7.size, perfiles: perfiles.filter((p) => !excluidos.has(p.id)).length };
   if (!stripe) {
-    const s = mrrDesdeSupabase(subsSupabase.filter((x) => !excluidos.has(x.user_id)));
-    return { ...base, ...s, mrr_fuente: "supabase", en_prueba_stripe: subsSupabase.filter((x) => x.estado === "trialing" && !excluidos.has(x.user_id)).length, cancelacion_programada: null, socios: null };
+    const validas = subsSupabase.filter((x) => !excluidos.has(x.user_id));
+    const s = mrrDesdeSupabase(validas);
+    const mrr_pais = Object.fromEntries(PAISES.map((p) => [p, mrrDesdeSupabase(validas.filter((x) => paisDe(x.user_id) === p)).mrr_eur]));
+    return { ...base, ...s, mrr_pais, mrr_fuente: "supabase", en_prueba_stripe: subsSupabase.filter((x) => x.estado === "trialing" && !excluidos.has(x.user_id)).length, cancelacion_programada: null, socios: null };
   }
   const subs = stripe.subs.filter((s) => !excluidos.has(stripe.usuarioPorSub[s.id]));
   let mrr = 0, mensual = 0, anual = 0;
   const sinConvertir = {};
+  const mrrPais = Object.fromEntries(PAISES.map((p) => [p, 0]));
+  const subsPais = Object.fromEntries(PAISES.map((p) => [p, 0]));
   const socios = {};
   for (const c of stripe.codigosSocio) socios[c] = { altas: 0, suscriptores: 0, mrr_eur: 0, facturado_eur: 0 };
   for (const p of perfiles) {
@@ -154,6 +166,9 @@ export function calcularStock(datos, medidoEn) {
     const m = d.eur ?? 0;
     if (d.eur == null && d.importe > 0) sinConvertir[d.moneda] = redondear((sinConvertir[d.moneda] ?? 0) + d.importe);
     if (d.importe > 0) {
+      const pais = paisSuscripcion(s, stripe.paisFacturaPorSub?.[s.id], paisDe(stripe.usuarioPorSub[s.id]));
+      mrrPais[pais] = redondear(mrrPais[pais] + m);
+      subsPais[pais]++;
       mrr += m;
       const it = s.items?.data?.[0]?.price?.recurring?.interval ?? s.items?.data?.[0]?.plan?.interval;
       if (it === "year") anual++; else mensual++;
@@ -172,6 +187,8 @@ export function calcularStock(datos, medidoEn) {
     mrr_eur: redondear(mrr),
     mrr_fuente: "stripe",
     mrr_sin_convertir: sinConvertir,
+    mrr_pais: mrrPais,
+    suscriptores_pais: subsPais,
     suscriptores: { mensual, anual },
     en_prueba_stripe: subs.filter((s) => s.status === "trialing").length,
     cancelacion_programada: subs.filter((s) => s.cancel_at_period_end && ["active", "trialing", "past_due"].includes(s.status)).length,
@@ -234,7 +251,14 @@ export async function leerStripe() {
   }
   const usuarioPorSub = {};
   for (const s of subs) usuarioPorSub[s.id] = s.metadata?.supabase_user_id ?? null;
-  return { subs, invoices, codigosPorId, codigosSocio, usuarioPorSub };
+  // País de facturación: el de la factura más reciente de cada suscripción.
+  const paisFacturaPorSub = {};
+  for (const i of [...invoices].sort((a, b) => a.created - b.created)) {
+    const subId = typeof i.subscription === "object" ? i.subscription?.id : i.subscription ?? i.parent?.subscription_details?.subscription;
+    const c = i.customer_address?.country;
+    if (subId && c) paisFacturaPorSub[subId] = String(c).toLowerCase();
+  }
+  return { subs, invoices, codigosPorId, codigosSocio, usuarioPorSub, paisFacturaPorSub };
 }
 
 async function principal() {
@@ -257,8 +281,8 @@ async function principal() {
     supabaseTodo("accesos_permanentes", "email"),
     supabaseTodo("invitaciones", "user_id,descuento", "&user_id=not.is.null"),
     supabaseTodo("origen_altas", "user_id,fuente,campana"),
-    supabaseTodo("visitas_publicas", "dia,fuente,campana,visitas", `&dia=gte.${sumarDias(dias[0], -1)}`),
-    supabaseTodo("eventos_uso", "user_id,tipo,creado_en", `&creado_en=gte.${desdeEventos}`),
+    supabaseTodo("visitas_publicas", "dia,pagina,fuente,campana,visitas", `&dia=gte.${sumarDias(dias[0], -1)}`),
+    supabaseTodo("eventos_uso", "user_id,tipo,creado_en,slug:detalle->>slug", `&creado_en=gte.${desdeEventos}`),
     supabaseTodo("suscripciones", "user_id,estado,periodo,primer_pago_en"),
   ]);
   // Columna opcional (la añade el cobro nuevo): si aún no existe, se sigue sin ella.
@@ -275,7 +299,24 @@ async function principal() {
   const emailsPrueba = [process.env.TEST_USER_A_EMAIL, process.env.TEST_USER_B_EMAIL, process.env.SMOKE_TEST_EMAIL].filter(Boolean);
   const excluidos = idsExcluidos({ perfiles, admins, permanentes, invitaciones, emailsPrueba });
   const origen = Object.fromEntries(origenFilas.map((o) => [o.user_id, o]));
-  const lineas = calcularLineas(dias, { perfiles, confirmados, origen, visitas, eventos, subsSupabase, excluidos, stripe });
+  // País de cada usuario (objetivos.json, "paises"): Stripe > sus spots > ES.
+  const slugs = [...eventos.filter((e) => e.slug).map((e) => ({ user_id: e.user_id, slug: e.slug }))];
+  for (const [tabla, col] of [["salidas_pesca", "spot_slug"], ["spots_favoritos", "spot_slug"]]) {
+    try { for (const f of await supabaseTodo(tabla, `user_id,${col}`)) if (f[col]) slugs.push({ user_id: f.user_id, slug: f[col] }); }
+    catch (e) { console.log(`::warning::${tabla}: ${e.message}`); }
+  }
+  let paisPorSlug = {};
+  try {
+    const [{ SPOTS }, { regionPorCoordenadas, REGIONES }] = await Promise.all([import("../../functions/prevision.js"), import("../../assets/js/regiones.js")]);
+    paisPorSlug = Object.fromEntries(SPOTS.map((sp) => [sp.slug, paisDeCoordenadas(sp.lat, sp.lon, regionPorCoordenadas, REGIONES)]));
+  } catch (e) { console.log(`::warning::Sin lista de spots para el país (${e.message}).`); }
+  const paisStripe = {};
+  for (const sub of stripe?.subs ?? []) {
+    const u = stripe.usuarioPorSub[sub.id];
+    if (u) paisStripe[u] = paisSuscripcion(sub, stripe.paisFacturaPorSub[sub.id], null);
+  }
+  const paisUsuario = paisesUsuarios(perfiles.map((p) => p.id), { paisStripe, slugs, paisPorSlug });
+  const lineas = calcularLineas(dias, { perfiles, confirmados, origen, visitas, eventos, subsSupabase, excluidos, stripe, paisUsuario });
   if (stripe === null && process.env.STRIPE_KPI_KEY) for (const l of lineas) l.fuentes.stripe = "error";
   mkdirSync(dirname(ruta), { recursive: true });
   appendFileSync(ruta, lineas.map((l) => JSON.stringify(l)).join("\n") + "\n");

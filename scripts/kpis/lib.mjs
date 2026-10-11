@@ -57,6 +57,59 @@ export function mrrObjetivo(fecha, escenario = OBJETIVOS.objetivo, obj = OBJETIV
 }
 export const ESCENARIOS = ["prudente", "base", "ambicioso"];
 
+// ── Países (objetivos.json, "paises") ───────────────────────────────────
+// La curva de cada país = escenario × (MRR de marzo del país / MRR de marzo
+// del escenario objetivo). ES 550 + PT 100 + NZ 367 = 1.017 €.
+export const PAISES = Object.keys(OBJETIVOS.paises).filter((k) => k !== "nota");
+export function partePais(pais, obj = OBJETIVOS) {
+  return obj.paises[pais].mrr_marzo / obj.escenarios[obj.objetivo].mrr.at(-1);
+}
+export function mrrObjetivoPais(fecha, pais, escenario = OBJETIVOS.objetivo) {
+  return mrrObjetivo(fecha, escenario) * partePais(pais);
+}
+// Objetivos de un país en un periodo (con su ARPU y los mismos supuestos).
+export function objetivosPais(p, pais, escenario, tasasActuales) {
+  const ini = mrrObjetivoPais(sumarDias(p.desde, -1), pais, escenario);
+  const fin = mrrObjetivoPais(p.hasta, pais, escenario);
+  const neto = Math.max(0, fin - ini) / OBJETIVOS.paises[pais].arpu_eur;
+  const pagos = Math.ceil(neto * (1 + tasasActuales.margen_bajas.valor));
+  const altas = Math.ceil(pagos / tasasActuales.alta_pago.valor);
+  return { mrr_eur: redondear(fin), nuevos_pagos: pagos, altas, visitas: Math.ceil(altas / tasasActuales.visita_alta.valor) };
+}
+// País de un punto: el de su región (assets/js/regiones.js).
+export function paisDeCoordenadas(lat, lon, regionPorCoordenadas, REGIONES) {
+  const r = regionPorCoordenadas(lat, lon);
+  return String(REGIONES[r]?.pais ?? "ES").toLowerCase();
+}
+// País de cada usuario: Stripe (facturación o moneda) > el más frecuente de
+// sus spots > ES. paisStripe: {user_id: "es"|"pt"|"nz"}; slugs: [{user_id, slug}].
+export function paisesUsuarios(ids, { paisStripe = {}, slugs = [], paisPorSlug = {} } = {}) {
+  const cuenta = new Map();
+  for (const { user_id, slug } of slugs) {
+    const p = paisPorSlug[slug] ?? (String(slug ?? "").startsWith("nz-") ? "nz" : null);
+    if (!p) continue;
+    if (!cuenta.has(user_id)) cuenta.set(user_id, {});
+    const c = cuenta.get(user_id);
+    c[p] = (c[p] ?? 0) + 1;
+  }
+  const out = {};
+  for (const id of ids) {
+    if (PAISES.includes(paisStripe[id])) { out[id] = paisStripe[id]; continue; }
+    const c = cuenta.get(id);
+    out[id] = c ? Object.entries(c).sort((a, b) => b[1] - a[1])[0][0] : "es";
+    if (!PAISES.includes(out[id])) out[id] = "es";
+  }
+  return out;
+}
+// País de una suscripción de Stripe: moneda NZD → nz; si no, país de la
+// dirección de facturación de sus facturas; si no, el del usuario.
+export function paisSuscripcion(sub, paisFactura, paisUsuario) {
+  if (String(sub?.currency ?? "").toLowerCase() === "nzd") return "nz";
+  const f = String(paisFactura ?? "").toLowerCase();
+  if (PAISES.includes(f)) return f;
+  return PAISES.includes(paisUsuario) ? paisUsuario : "es";
+}
+
 // Aviso a Mikel (objetivos.json, reglas.avisar_bajo_base): el MRR real por
 // debajo del suelo de alarma al cierre de dos quincenas seguidas.
 export function alarmaBajoSuelo(cierres, obj = OBJETIVOS) {
@@ -197,6 +250,9 @@ export function agregarPeriodo(lineas, p) {
   r.altas_canal = sumarMapas(dentro.map((l) => l.altas_canal));
   r.pagos_canal = sumarMapas(dentro.map((l) => l.pagos_canal));
   r.altas_socio = sumarMapas(dentro.map((l) => l.altas_socio));
+  r.altas_pais = sumarMapas(dentro.map((l) => l.altas_pais));
+  r.pagos_pais = sumarMapas(dentro.map((l) => l.pagos_pais));
+  r.visitas_pais = sumarMapas(dentro.map((l) => (l.visitas_pais ? Object.fromEntries(Object.entries(l.visitas_pais).filter(([, v]) => typeof v === "number")) : null)));
   const ultimo = [...dentro].reverse().find((l) => l.stock);
   r.stock = ultimo?.stock ?? null;
   r.stock_fecha = ultimo?.fecha ?? null;
@@ -305,6 +361,14 @@ export function filasKpi(agg, obj, { fraccion = 1, suelo = null } = {}) {
     ["retencion", "Retención semana 4 (%)", ret, ret == null ? null : SUPUESTOS.retencion_s4_pct, null, false],
   ];
   return def.map(([clave, nombre, real, objetivo, s, menos]) => ({ clave, nombre, real, objetivo, suelo: s ?? null, ...estado(real, objetivo, s ?? null, menos), desv: desviacion(real, objetivo) }));
+}
+
+// País en foco: el que va más por debajo de su objetivo de MRR (menor
+// real/objetivo); empate (p. ej. todos a 0) → el de mayor hueco en euros.
+export function paisMasBajo(filasPais) {
+  const c = filasPais.filter((f) => f.objetivo > 0);
+  if (!c.length) return null;
+  return c.sort((a, b) => (a.real ?? 0) / a.objetivo - (b.real ?? 0) / b.objetivo || (b.objetivo - (b.real ?? 0)) - (a.objetivo - (a.real ?? 0)))[0].pais;
 }
 
 // El paso del embudo más en rojo: el de menor ratio entre los que tienen dato

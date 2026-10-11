@@ -124,5 +124,24 @@
   "cambio_a_eur": {
     "nota": "Tipo de cambio para sumar al MRR en euros las suscripciones en otra moneda (p. ej. NZD). Vacío = no se suman y KPIS.md las enseña aparte. Lo pone Mikel; no se inventa.",
     "tipos": {}
+  },
+  "paises": {
+    "nota": "Plan por países aprobado por Mikel el 2026-10-11. La curva de cada país tiene la forma del escenario objetivo (ambicioso), escalada a su parte del MRR de marzo de 2027; el suelo, el base con la misma escala. El país de cada usuario se deriva sin IA (scripts/kpis/recoger.mjs): país de facturación o moneda en Stripe > país de sus spots (salidas, favoritos, eventos) > ES por defecto. Las visitas de España y Portugal no se pueden separar (se cuentan por tipo de página, no por spot): van juntas en ES.",
+    "es": {
+      "nombre": "España",
+      "mrr_marzo": 550,
+      "arpu_eur": 3.25
+    },
+    "pt": {
+      "nombre": "Portugal",
+      "mrr_marzo": 100,
+      "arpu_eur": 3.25
+    },
+    "nz": {
+      "nombre": "Nueva Zelanda",
+      "mrr_marzo": 367,
+      "arpu_eur": 4.8,
+      "arpu_nota": "Precio en NZD ≈ ×1,40 el de España (Mikel, 2026-10-11)."
+    }
   }
 }
