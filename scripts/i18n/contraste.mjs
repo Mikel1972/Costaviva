@@ -48,7 +48,10 @@ export function aplanar(dic) {
 
 // {var} -> <x>{var}</x> para que DeepL no lo traduzca, y vuelta.
 export const proteger = (s) => String(s).replace(/\{(\w+)\}/g, "<x>{$1}</x>");
-export const desproteger = (s) => String(s).replace(/<x>\s*(\{\w+\})\s*<\/x>/g, "$1");
+// Con tag_handling=html, DeepL devuelve "<" y ">" de texto como entidades: se
+// deshacen para no marcar como distinto "<0,5 m" frente a "&lt;0,5 m".
+export const desproteger = (s) => String(s).replace(/<x>\s*(\{\w+\})\s*<\/x>/g, "$1")
+  .replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, "&");
 
 export const textoPlano = (s) => String(s).replace(/<[^>]+>/g, " ").replace(/\{\w+\}/g, " ").replace(/\s+/g, " ").trim().toLowerCase();
 

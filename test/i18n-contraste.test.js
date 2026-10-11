@@ -20,6 +20,7 @@ test("las variables {x} no se traducen: se protegen y se recuperan", () => {
   assert.equal(proteger(s), "actualizado hace <x>{minutos}</x> min");
   assert.equal(desproteger("atualizado há <x>{minutos}</x> min"), "atualizado há {minutos} min");
   assert.equal(desproteger("há <x> {minutos} </x> min"), "há {minutos} min");
+  assert.equal(desproteger("quase plana (&lt;0,5 m)"), "quase plana (<0,5 m)", "entidades de DeepL");
 });
 
 test("distancia normalizada: 0 iguales, ignora etiquetas, mayúsculas y variables", () => {
