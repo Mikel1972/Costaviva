@@ -601,6 +601,23 @@ ofrece en "Incrustar" mientras contestan. Si Skyline lo niega, se pone a
 `embed.skylinewebcams.com`; no hay que tocar nada más (el test se adapta al
 valor). Analizar sus fotogramas sigue prohibido en cualquier caso.
 
+## Cámaras de Nueva Zelanda: ocultas y solo enlace (2026-10-11)
+
+`assets/js/camaras-nz.js` lista webcams de terceros con mar a la vista para
+los spots de NZ, con el mismo formato que `camaras-externas.js` pero aparte:
+**nadie lo importa** (ni `index.html` ni el robot de salud, que escribe en
+`camara_estado`) y `camarasNZVisibles(REGIONES_ACTIVAS)` devuelve `[]`
+mientras "nz" no esté activa (`test/nz-region.test.js`). Al activar NZ hay que
+sumarlas a la lista de la app y del robot. Reglas de Mikel: sin permiso
+escrito del dueño, solo `enlace`, también las de licencia CC BY (NIWA/Earth
+Sciences NZ excluye las fotos de su CC BY; GeoNet es CC BY 3.0 NZ); nunca
+analizar sus fotogramas; nada de Facebook ni Instagram; YouTube solo como
+enlace. Cada entrada lleva `verificada` (fecha y cómo: imagen de hoy y
+fotograma de día mirado). Bloqueadas desde la nube (no se rodean): ECan,
+Waikato Regional Council (Incapsula), DCC, Timaru DC, Tasman DC, Port Nelson
+(403), Surf2surf (ahora Surfline, reto de Cloudflare) y la cámara de Westland
+DC (puerto 85). Coastal Cams y Outdoor Access son de pago.
+
 ## Oleaje costero: mar abierto frente a "en la playa" (2026-10-08)
 
 **Caso real (Mikel, 2026-10-08):** Hondarribia salía con "3.7–4.5 m" y su

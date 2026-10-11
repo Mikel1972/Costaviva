@@ -83,3 +83,22 @@ test("spots NZ: forma, región, zona horaria y ubicaciones por revisar", () => {
   assert.equal(SPOTS_NZ.find((s) => s.slug === "nz-kaikoura").region, "nz_kaikoura");
   assert.equal(SPOTS_NZ.find((s) => s.slug === "nz-milford-sound").region, "nz_fiordland");
 });
+
+// Cámaras de NZ (assets/js/camaras-nz.js, 2026-10-11): ocultas mientras "nz"
+// no esté activa. Ni la lista pública de externas, ni index.html, ni el robot
+// de salud (que escribe en camara_estado) las ven.
+import { CAMARAS_NZ, camarasNZVisibles, camarasNZDeSpot } from "../assets/js/camaras-nz.js";
+import { CAMARAS_EXTERNAS } from "../assets/js/camaras-externas.js";
+
+test("cámaras de NZ ocultas con la región apagada", () => {
+  assert.ok(CAMARAS_NZ.length > 0);
+  assert.deepEqual(camarasNZVisibles(REGIONES_ACTIVAS), []);
+  assert.deepEqual(camarasNZVisibles(), []);
+  assert.deepEqual(camarasNZDeSpot(CAMARAS_NZ[0].spot, REGIONES_ACTIVAS), []);
+  assert.equal(camarasNZVisibles([...REGIONES_ACTIVAS, "nz"]).length, CAMARAS_NZ.length);
+  assert.equal(CAMARAS_EXTERNAS.filter((c) => String(c.spot).startsWith("nz-") || String(c.id).startsWith("nz-")).length, 0);
+  assert.ok(!/["']nz-[a-z]/.test(leer("assets/js/camaras-externas.js")), "camaras-externas.js no lleva spots de NZ");
+  for (const f of ["index.html", "diario.html", "scripts/camaras/comprobar-camaras.mjs", "scripts/turbidez/medir-turbidez.mjs"]) {
+    assert.ok(!leer(f).includes("camaras-nz"), `${f} no debe cargar las cámaras de NZ todavía`);
+  }
+});
