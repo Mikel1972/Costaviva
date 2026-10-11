@@ -113,6 +113,10 @@ body.publica { margin: 0; background: var(--fondo); color: var(--tinta); font-fa
 .lista-especies { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
 .lista-especies a { font-weight: 700; color: var(--tinta); }
 .camaras { padding-left: 18px; margin: 6px 0; }
+.tabla-especies th a { font-weight: 700; color: var(--tinta); text-decoration: none; }
+.tabla-especies td:nth-child(n+3) { text-align: center; }
+.cercanos { list-style: none; padding: 0; margin: 0 0 8px; display: grid; gap: 4px; font-size: 14px; }
+.cercanos > li > a:first-child { font-weight: 700; color: var(--tinta); }
 .modos { padding-left: 18px; }
 
 .tabla-env { overflow-x: auto; }

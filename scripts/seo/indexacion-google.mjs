@@ -121,6 +121,16 @@ async function rendimiento(sitio, cabecera) {
   }
 }
 
+// Nota corta por URL: solo lo que se sale de lo normal.
+function notaFila(r) {
+  const n = [];
+  if (r.canonicaGoogle && r.canonicaNuestra && r.canonicaGoogle !== r.canonicaNuestra) n.push(`Google prefiere ${r.canonicaGoogle}`);
+  if (r.descarga && r.descarga !== "SUCCESSFUL" && r.descarga !== "PAGE_FETCH_STATE_UNSPECIFIED") n.push(`descarga: ${r.descarga}`);
+  if (r.robots === "DISALLOWED") n.push("robots.txt");
+  if (!r.enSitemap && !r.enlazadaDesde && r.veredicto !== "PASS") n.push("ni sitemap ni enlaces vistos");
+  return n.join("; ");
+}
+
 async function main() {
   const auth = new GoogleAuth({ scopes: ["https://www.googleapis.com/auth/webmasters.readonly"] });
   const token = (await (await auth.getClient()).getAccessToken()).token;
@@ -166,7 +176,17 @@ async function main() {
       throw error;
     }
     const r = datos.inspectionResult?.indexStatusResult || {};
-    return { url, veredicto: r.verdict, estado: r.coverageState, rastreo: r.lastCrawlTime };
+    // Además del estado (2026-10-11, diagnóstico de "descubierta sin
+    // indexar"): si Google llegó a bajarla y cómo (pageFetchState), qué
+    // canónica eligió frente a la nuestra, y si la conoce por el sitemap o
+    // por enlaces. Con eso se separa "no la rastrea" (autoridad/presupuesto)
+    // de "la rastrea y no la quiere" (calidad/duplicado).
+    return {
+      url, veredicto: r.verdict, estado: r.coverageState, rastreo: r.lastCrawlTime,
+      descarga: r.pageFetchState || null, robots: r.robotsTxtState || null, comoRastreo: r.crawledAs || null,
+      canonicaGoogle: r.googleCanonical || null, canonicaNuestra: r.userCanonical || null,
+      enSitemap: (r.sitemap || []).length > 0, enlazadaDesde: (r.referringUrls || []).length,
+    };
   }
 
   // La primera sola: si la cuenta no tiene permiso para inspeccionar, se ve
@@ -222,6 +242,23 @@ async function main() {
     const listadas = noIndexadas.slice(0, MAX_NO_INDEXADAS_LISTADAS).map((r) => ruta(r.url));
     lineas.push(`  - Ejemplos sin indexar: ${listadas.join(", ")}${noIndexadas.length > listadas.length ? ` y ${noIndexadas.length - listadas.length} más` : ""}`);
   }
+  // Diagnóstico (2026-10-11): rastreada o no, canónica elegida, errores.
+  const rastreadas = resultados.filter((r) => r.rastreo);
+  lineas.push(`  - Rastreadas alguna vez por Google: ${rastreadas.length} de ${resultados.length}. Sin rastrear nunca: ${resultados.length - rastreadas.length} (si son casi todas las no indexadas, el freno es la autoridad o el presupuesto de rastreo, no la calidad).`);
+  const otraCanonica = resultados.filter((r) => r.canonicaGoogle && r.canonicaNuestra && r.canonicaGoogle !== r.canonicaNuestra);
+  if (otraCanonica.length) lineas.push(`  - ⚠️ Google eligió otra canónica en ${otraCanonica.length}: ${otraCanonica.slice(0, 5).map((r) => `${ruta(r.url)} → ${r.canonicaGoogle}`).join(", ")}`);
+  const malDescargadas = resultados.filter((r) => r.descarga && r.descarga !== "SUCCESSFUL" && r.descarga !== "PAGE_FETCH_STATE_UNSPECIFIED");
+  if (malDescargadas.length) lineas.push(`  - ⚠️ Googlebot no pudo bajar ${malDescargadas.length}: ${malDescargadas.slice(0, 5).map((r) => `${ruta(r.url)} (${r.descarga})`).join(", ")}`);
+  const bloqueadas = resultados.filter((r) => r.robots === "DISALLOWED");
+  if (bloqueadas.length) lineas.push(`  - ⚠️ Bloqueadas por robots.txt: ${bloqueadas.map((r) => ruta(r.url)).join(", ")}`);
+  // Por tipo de página (en vez de partir el sitemap: mismo dato, sin tocar
+  // la URL ya enviada).
+  const tipo = (u) => { const p = ruta(u).split("/").filter(Boolean); return p.length <= 1 ? `/${p[0] || ""}` : p[0] === "en" ? `/en/${p[1]}${p.length > 2 ? (p[2] === "region" ? "/region" : "/*") : ""}` : `/${p[0]}${p[1] === "region" ? "/region" : "/*"}`; };
+  const porTipo = {};
+  for (const r of resultados) { const t = (porTipo[tipo(r.url)] ||= { n: 0, idx: 0, rastr: 0 }); t.n++; if (r.veredicto === "PASS") t.idx++; if (r.rastreo) t.rastr++; }
+  lineas.push(`  - Por tipo (indexadas / rastreadas / total): ${Object.entries(porTipo).sort((x, y) => y[1].n - x[1].n).map(([t, v]) => `${t} ${v.idx}/${v.rastr}/${v.n}`).join(" · ")}`);
+  const conocidas = resultados.filter((r) => r.enSitemap || r.enlazadaDesde);
+  lineas.push(`  - Google las conoce por el sitemap: ${resultados.filter((r) => r.enSitemap).length}; con enlaces que Google ha visto: ${resultados.filter((r) => r.enlazadaDesde).length}; por ninguna de las dos: ${resultados.length - conocidas.length}.`);
   if (fallos.length) {
     lineas.push(`  - ⚠️ ${fallos.length} URLs no se pudieron inspeccionar (primer motivo: ${fallos[0].motivo})`);
   }
@@ -233,8 +270,8 @@ async function main() {
   const orden = (r) => (r.veredicto === "PASS" ? 0 : 1);
   const filas = [...resultados]
     .sort((a, b) => orden(a) - orden(b) || a.url.localeCompare(b.url))
-    .map((r) => `| ${r.veredicto === "PASS" ? "✅" : "—"} | ${ruta(r.url)} | ${traducir(r.estado)} | ${r.rastreo ? r.rastreo.slice(0, 10) : "nunca"} |`);
-  const tabla = ["", "| | URL | Estado en Google | Último rastreo |", "|---|---|---|---|", ...filas, ""].join("\n");
+    .map((r) => `| ${r.veredicto === "PASS" ? "✅" : "—"} | ${ruta(r.url)} | ${traducir(r.estado)} | ${r.rastreo ? r.rastreo.slice(0, 10) : "nunca"} | ${notaFila(r)} |`);
+  const tabla = ["", "| | URL | Estado en Google | Último rastreo | Nota |", "|---|---|---|---|---|", ...filas, ""].join("\n");
 
   escribirSalida(lineas, indexadas.length, resultados.length, tabla, await rendimiento(sitio, cabecera));
 }
