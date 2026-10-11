@@ -118,7 +118,7 @@
     "nota": "Reserva: los precios de lista salen de functions/_lib/precios-zonas.json (cobro por zonas) si existe. Solo se usan para el MRR sin clave de Stripe (desde public.suscripciones).",
     "eur": {
       "mensual": 3.99,
-      "anual": 29.99
+      "anual": 34.99
     }
   },
   "cambio_a_eur": {

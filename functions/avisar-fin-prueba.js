@@ -51,7 +51,7 @@ function fecha(valor, idioma = "es") {
 
 const PIE = [``, `— Costaviva`, `https://costaviva.org`];
 const PLANES = {
-  es: `Planes Premium:  https://costaviva.org/suscripcion  (desde 3,99 €/mes o 29,99 €/año, IVA incluido; se cancela cuando quieras)`,
+  es: `Planes Premium:  https://costaviva.org/suscripcion  (desde 3,99 €/mes o 34,99 €/año, IVA incluido; se cancela cuando quieras)`,
   en: `Premium plans:  https://costaviva.org/suscripcion  (prices in your currency, tax included; cancel any time)`,
 };
 

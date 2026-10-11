@@ -236,15 +236,16 @@ Todo sale de **`functions/_lib/precios-zonas.json`** (config) y
 **`functions/_lib/precios.js`** (lógica pura, test `test/precios.test.js`).
 `PRECIOS.md` es la tabla de todos los precios del mundo, generada sin IA.
 
-- **Planes** (base España, IVA incluido): mensual 3,99 €, anual 29,99 € y
-  **fundador** 24,99 €/año para los primeros 500 suscriptores anuales (plazas
+- **Planes** (base España, IVA incluido): mensual 3,99 €, anual 34,99 € (ahorro
+  calculado, 27 %; cambio de Mikel del 2026-10-11, antes 29,99) y **fundador**
+  29,99 €/año para los primeros 500 suscriptores anuales (plazas
   compartidas entre regional y Mundial; se mantiene mientras siga suscrito).
 - **Ámbitos de contenido**: *regional* = Premium en la región de contenido de
   su zona (`region_contenido`: "es" = España + Portugal con Canarias, Azores y
   Madeira; "nz"); *Mundial* = todas las regiones activas (`REGIONES_ACTIVAS`
   de `functions/_lib/regiones-activas.js`: una región nueva entra sola).
   Mundial = regional de su zona × 1,5 (`factor_mundial`), hacia arriba a .99:
-  5,99 / 44,99 / 37,99 €. Gratis: igual en todas las regiones.
+  5,99 / 52,99 / 44,99 €. Gratis: igual en todas las regiones.
 - **Zonas**: países ISO, moneda, multiplicador y redondeo (.99 o "local":
   coronas acabadas en 9, CHF a .90). La zona del cliente es la de su país
   (`zonaDePais`); las zonas inactivas y los países sin zona van a "resto"
@@ -263,8 +264,9 @@ Todo sale de **`functions/_lib/precios-zonas.json`** (config) y
     (`multiplicadores_pais`); solo cuenta en zonas activas.
   - **NZ: ×1,40 manual** de Mikel (2026-10-11, `multiplicador_manual`); la
     renta daría 1,25 (`multiplicador_calculado_info`, solo información). Con
-    el BCE del 2026-10-09 (1 EUR = 1,9961 NZD): regional 11,99 / 83,99 /
-    69,99 NZD; Mundial 17,99 / 125,99 / 104,99 NZD.
+    el BCE del 2026-10-09 (1 EUR = 1,9961 NZD): regional 11,99 / 97,99 /
+    83,99 NZD; Mundial 17,99 / 146,99 / 125,99 NZD (versión `2026_10b`; los
+    precios `2026_10` siguen en Stripe, sin archivar y sin clientes).
   - Preparadas e inactivas: AU, GB, US, CA (×1,5 o 1,45 por renta) y CH
     (redondeo local). Se activan cuando haya contenido de esa región.
 - **Stripe**: un precio por ámbito y plan en EUR con `currency_options` por
@@ -323,7 +325,7 @@ Todo sale de **`functions/_lib/precios-zonas.json`** (config) y
     ("pasas al plan gratuito"; `desactivado_en` = cuándo pasó a gratis).
   - **Página de precios** (`suscripcion.html` + `GET /precios-zona`, tabla de
     la zona por `request.cf.country`): gratis, Premium regional con el anual
-    destacado ("Ahorra un 37 %"), fundador con "Quedan N plazas"
+    destacado ("Ahorra un N %", calculado con `ahorroAnual()`, nunca escrito a mano: 27 % en EUR, 32 % en NZD), fundador con "Quedan N plazas"
     (`plazas_fundador_restantes()`, contador real: cuenta quien tiene o ha
     tenido precio de fundador salvo checkouts sin cobrar) y Mundial como
     opción secundaria. Al elegir plan sale la confirmación con la **casilla
@@ -4881,7 +4883,7 @@ Gipuzkoa) se pintan bien, el resto de capas arrancan apagadas.
 ## Paywall de suscripción — Stripe (2026-09-15, en curso)
 
 > **Desde el 2026-10-11 manda "Cobro: precios por zonas y ámbitos"** (arriba):
-> prueba de 14 días, plan gratuito sin bloqueo, precios 3,99/29,99 € y
+> prueba de 14 días, plan gratuito sin bloqueo, precios 3,99/34,99 € y
 > fundador. Lo de abajo es la historia y los detalles de Stripe que siguen
 > valiendo (firma, portal, trampas test/live).
 

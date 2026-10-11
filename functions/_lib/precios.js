@@ -16,7 +16,7 @@
 //   - ÁMBITO: "regional" (Premium en la región de contenido de su zona) o
 //     "mundial" (todas las regiones activas). Mundial = regional de su zona
 //     × 1,5, redondeado hacia arriba a .99.
-//   - PLAN: mensual, anual o fundador_anual (24,99 € en la UE, plazas
+//   - PLAN: mensual, anual o fundador_anual (29,99 € en la UE, plazas
 //     compartidas entre regional y mundial).
 
 export const AMBITOS = Object.freeze(["regional", "mundial"]);
@@ -170,11 +170,12 @@ export function precioParaZona(config, zonaId, ambito, plan) {
   return { lookup_key: p.lookup_key, moneda: zona.moneda, importe: importeZona(config, zona, ambito, plan) };
 }
 
-// Ahorro del anual frente a 12 mensualidades, en % entero hacia abajo (para
-// no prometer de más: 37,36 -> 37).
+// Ahorro del anual frente a 12 mensualidades, en % entero redondeado
+// (34,99 frente a 12 × 3,99 = 47,88 -> 26,9 % -> 27). Se calcula siempre:
+// ningún texto lleva el porcentaje escrito a mano.
 export function ahorroAnual(mensualCent, anualCent) {
   if (!(mensualCent > 0)) return 0;
-  return Math.floor((1 - anualCent / (mensualCent * 12)) * 100);
+  return Math.round((1 - anualCent / (mensualCent * 12)) * 100);
 }
 
 // Región de contenido que cubre cada ámbito para una zona: regional = la de
