@@ -247,8 +247,11 @@ Todo sale de **`functions/_lib/precios-zonas.json`** (config) y
     destacado ("Ahorra un 37 %"), fundador con "Quedan N plazas"
     (`plazas_fundador_restantes()`, contador real: cuenta quien tiene o ha
     tenido precio de fundador salvo checkouts sin cobrar) y Mundial como
-    opción secundaria. Casilla obligatoria antes de pagar (inicio inmediato,
-    desistimiento proporcional, términos y renovación automática).
+    opción secundaria. Al elegir plan sale la confirmación con la **casilla
+    obligatoria, sin marcar** (texto de `assets/js/consentimiento.js`, es/en/pt,
+    anual y mensual, con `VERSION`); sin ella el botón de pago no se activa y
+    el servidor responde 400 `falta_aceptacion`. Recuerda "Prueba 14 días
+    gratis antes de pagar".
   - **Checkout** (`crear-checkout-stripe.js`): `{ ambito, plan, idioma }`,
     zona por país de la conexión, `currency` si no es EUR, dirección de
     facturación obligatoria, `custom_text` con el desistimiento,
@@ -261,11 +264,20 @@ Todo sale de **`functions/_lib/precios-zonas.json`** (config) y
     de facturación (avisa en el log si su zona no es la cobrada), código
     promocional usado (`codigo_promocional`), `fundador_desde`, e
     `invoice.upcoming` → email de aviso de renovación del plan anual.
-  - **Legal**: `terminos.html` (ES/EN): planes, precios con IVA, fundador,
-    renovación automática, cancelación al final del periodo, desistimiento de
-    14 días con devolución proporcional (servicio digital con inicio
-    inmediato pedido, art. 108.3 TRLGDCU) y modelo de desistimiento.
-    `privacidad.html` explica los datos de pago (Stripe).
+  - **Legal (decisión de Mikel, 2026-10-11: "el anual no se reembolsa, se
+    pierde todo el año")**: vía de contenido digital con ejecución inmediata
+    (art. 103.m TRLGDCU, art. 16.m Directiva 2011/83/UE). Casilla en nuestra
+    página; en el checkout, el mismo texto junto al pago (o junto a la casilla
+    de términos de Stripe con `STRIPE_TOS_EN_CHECKOUT=1`); la aceptación se
+    guarda en `eventos_uso` (`acepta_condiciones_pago`: versión, idioma,
+    plan, fecha; sin SQL nuevo) y en los metadatos de Stripe
+    (`aceptacion_version/idioma/fecha`); tras el pago, email de confirmación
+    (soporte duradero) con el texto aceptado y el enlace a los términos.
+    `terminos.html` (ES/EN): renuncia expresa al desistimiento, no reembolso
+    del periodo pagado (tampoco el anual), cancelar solo detiene la
+    renovación, y las devoluciones que imponga la ley (servicio no prestado o
+    defectuoso) se mantienen. `privacidad.html` explica los datos de pago.
+    Si cambia el texto de la casilla, sube `VERSION`.
 - **Robots sin IA**: `precios-semanal.yml` (lunes) refresca `cambio_actual`
   del BCE y regenera `PRECIOS.md` y `datos/precios-resumen.md` (tabla "Precios
   vigentes" para el resumen de los lunes); si el equivalente en EUR de una

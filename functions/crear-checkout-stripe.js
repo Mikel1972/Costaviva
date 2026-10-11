@@ -22,6 +22,7 @@
 import { descuentoAplicaAPlan } from "./_lib/invitaciones.js";
 import { diasExtraPorReferidos } from "./_lib/referidos.js";
 import { zonaDePais, precioParaZona, leerPlan, diasDePruebaRestantes } from "./_lib/precios.js";
+import { VERSION as VERSION_ACEPTACION, IDIOMAS as IDIOMAS_ACEPTACION, textoAceptacion, textoSiCerramos } from "../assets/js/consentimiento.js";
 import CONFIG_PRECIOS from "./_lib/precios-zonas.json";
 import STRIPE_IDS from "./_lib/stripe-ids.json";
 
@@ -29,15 +30,28 @@ const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
 
-// Texto junto al botón de pagar de Stripe (aceptación expresa en el propio
-// checkout, además de la casilla de suscripcion.html). Costaviva es un
-// servicio digital continuo: con el inicio inmediato pedido por el
-// consumidor, si desiste en 14 días paga solo la parte proporcional (art.
-// 108.3 TRLGDCU). Ver terminos.html.
-const TEXTO_PAGO = {
-  es: "Al suscribirte pides que Premium empiece de inmediato. Tienes 14 días para desistir: te devolvemos lo pagado menos la parte proporcional del tiempo usado (escribe a datos@costaviva.org). La suscripción se renueva automáticamente hasta que la canceles desde Mi suscripción. Términos: costaviva.org/terminos",
-  en: "By subscribing you ask for Premium to start straight away. You have 14 days to withdraw: we refund what you paid minus the proportional part of the time used (email datos@costaviva.org). The subscription renews automatically until you cancel it from My subscription. Terms: costaviva.org/terminos",
-};
+// Cláusula aceptada (decisión de Mikel, 2026-10-11): renuncia al
+// desistimiento por contenido digital con ejecución inmediata (art. 103.m
+// TRLGDCU) y no reembolso del periodo pagado. El texto y su versión viven en
+// assets/js/consentimiento.js; aquí se exige que la casilla se haya marcado,
+// se guarda la aceptación (eventos_uso + metadatos de Stripe) y se repite el
+// texto en el propio checkout.
+const ENLACE_TERMINOS = "https://costaviva.org/terminos";
+
+// Guarda la aceptación con el token del propio usuario (RLS: solo inserta
+// sus eventos). Sin SQL nuevo. Si falla, queda en el log y en Stripe.
+async function guardarAceptacion(token, userId, detalle) {
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/eventos_uso`, {
+      method: "POST",
+      headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${token}`, "content-type": "application/json", Prefer: "return=minimal" },
+      body: JSON.stringify({ user_id: userId, tipo: "acepta_condiciones_pago", detalle }),
+    });
+    if (!r.ok) console.error(`crear-checkout-stripe: no se pudo guardar la aceptación: HTTP ${r.status}`);
+  } catch (e) {
+    console.error("crear-checkout-stripe: no se pudo guardar la aceptación:", e);
+  }
+}
 
 function modoDeClave(clave) {
   return /^(sk|rk)_live_/.test(clave) ? "live" : "test";
@@ -171,6 +185,15 @@ export async function onRequestPost(context) {
     });
   }
   const idioma = body?.idioma === "en" ? "en" : "es";
+  // Sin la casilla marcada con la versión vigente del texto, no hay pago.
+  const aceptacion = body?.aceptacion;
+  if (!aceptacion || aceptacion.aceptada !== true || aceptacion.version !== VERSION_ACEPTACION) {
+    return new Response(JSON.stringify({
+      error: idioma === "en" ? "Please tick the box to accept the conditions before paying." : "Marca la casilla de aceptación antes de pagar.",
+      codigo: "falta_aceptacion",
+    }), { status: 400, headers: { "content-type": "application/json" } });
+  }
+  const idiomaAcept = IDIOMAS_ACEPTACION.includes(aceptacion.idioma) ? aceptacion.idioma : idioma;
 
   try {
     const usuario = await usuarioDesdeToken(token);
@@ -203,16 +226,30 @@ export async function onRequestPost(context) {
     params.append("line_items[0][price]", priceId);
     params.append("line_items[0][quantity]", "1");
     if (precio.moneda !== "EUR") params.append("currency", precio.moneda.toLowerCase());
-    params.append("locale", idioma);
+    params.append("locale", idiomaAcept);
     params.append("billing_address_collection", "required");
-    params.append("custom_text[submit][message]", TEXTO_PAGO[idioma]);
+    // El texto aceptado, también en el checkout. Con la URL de términos
+    // puesta en el Dashboard de Stripe (STRIPE_TOS_EN_CHECKOUT=1), Stripe
+    // pone una casilla obligatoria y este texto va a su lado; si no, junto al
+    // botón de pagar.
+    const textoAcept = `${textoAceptacion(pedido.plan, idiomaAcept)} ${textoSiCerramos(idiomaAcept)}`;
+    if (env.STRIPE_TOS_EN_CHECKOUT === "1") {
+      params.append("consent_collection[terms_of_service]", "required");
+      params.append("custom_text[terms_of_service_acceptance][message]", `${textoAcept} [${ENLACE_TERMINOS.replace("https://", "")}](${ENLACE_TERMINOS})`);
+    } else {
+      params.append("custom_text[submit][message]", `${textoAcept} ${ENLACE_TERMINOS.replace("https://", "")}`);
+    }
     if (env.STRIPE_TAX_AUTOMATICO === "1") params.append("automatic_tax[enabled]", "true");
-    if (env.STRIPE_TOS_EN_CHECKOUT === "1") params.append("consent_collection[terms_of_service]", "required");
     const datosPlan = {
       zona: zona.id, pais_ip: paisIp || "?", ambito: pedido.ambito, plan: pedido.plan,
       region_contenido: regionContenido, fundador: String(esFundador), lookup_key: precio.lookup_key,
-      acepta_inicio_inmediato: new Date().toISOString(), idioma,
+      aceptacion_version: VERSION_ACEPTACION, aceptacion_idioma: idiomaAcept,
+      aceptacion_fecha: new Date().toISOString(), idioma,
     };
+    await guardarAceptacion(token, usuario.id, {
+      version: VERSION_ACEPTACION, idioma: idiomaAcept, plan: pedido.plan, ambito: pedido.ambito,
+      zona: zona.id, fecha: datosPlan.aceptacion_fecha,
+    });
     for (const [k, v] of Object.entries(datosPlan)) {
       params.append(`metadata[${k}]`, v);
       params.append(`subscription_data[metadata][${k}]`, v);

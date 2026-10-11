@@ -71,3 +71,50 @@ test("ninguna página enseña un price_ de Stripe (los precios se resuelven en e
     assert.doesNotMatch(readFileSync(new URL(`../${f}`, import.meta.url), "utf8"), /price_[A-Za-z0-9]{8,}/, f);
   }
 });
+
+// Cláusula de aceptación antes de pagar (decisión de Mikel, 2026-10-11).
+import { TEXTOS, IDIOMAS, VERSION, textoAceptacion, idiomaAceptacion, tipoDePlan } from "../assets/js/consentimiento.js";
+
+test("aceptación: texto en es, en y pt, para el anual y el mensual", () => {
+  assert.deepEqual([...IDIOMAS], ["es", "en", "pt"]);
+  for (const i of IDIOMAS) {
+    for (const t of ["anual", "mensual"]) assert.ok(TEXTOS[i][t].length > 80, `${i}/${t}`);
+  }
+  assert.equal(TEXTOS.es.anual, "Solicito el acceso inmediato a Premium y acepto que, al empezar, pierdo mi derecho de desistimiento. El plan anual no se reembolsa: si cancelas, sigue activo hasta el final del periodo pagado y no se renueva.");
+  assert.match(TEXTOS.en.anual, /non-refundable/);
+  assert.match(TEXTOS.pt.anual, /não é reembolsável/);
+  assert.equal(tipoDePlan("fundador_anual"), "anual");
+  assert.equal(textoAceptacion("mensual", "pt"), TEXTOS.pt.mensual);
+  assert.equal(textoAceptacion("anual", "fr"), TEXTOS.es.anual);
+  assert.equal(idiomaAceptacion("es", ["pt-PT"]), "pt");
+  assert.equal(idiomaAceptacion("en", ["pt-PT"]), "en");
+  assert.match(VERSION, /^\d{4}-\d{2}-\d{2}$/);
+});
+
+test("aceptación: casilla sin marcar y botón de pago desactivado sin ella", () => {
+  const html = readFileSync(new URL("../suscripcion.html", import.meta.url), "utf8");
+  assert.match(html, /<input type="checkbox" id="checkLegal" \/>/, "la casilla no puede venir marcada");
+  assert.match(html, /<button type="button" id="btnPagar" disabled/);
+  assert.match(html, /btnPagar\.disabled = !checkLegal\.checked/);
+  assert.match(html, /if \(!planElegido \|\| !checkLegal\.checked\) return;/);
+  assert.match(html, /textoAceptacion\(plan, IDIOMA_ACEPTACION\)/);
+  assert.match(html, /data-i18n="prec.prueba_antes"/);
+});
+
+test("aceptación: el servidor la exige y la repite en el checkout y en la confirmación", () => {
+  const checkout = readFileSync(new URL("../functions/crear-checkout-stripe.js", import.meta.url), "utf8");
+  assert.match(checkout, /aceptacion\.aceptada !== true \|\| aceptacion\.version !== VERSION_ACEPTACION/);
+  assert.match(checkout, /codigo: "falta_aceptacion"/);
+  assert.match(checkout, /tipo: "acepta_condiciones_pago"/);
+  assert.match(checkout, /consent_collection\[terms_of_service\]/);
+  const webhook = readFileSync(new URL("../functions/stripe-webhook.js", import.meta.url), "utf8");
+  assert.match(webhook, /emailConfirmacionPago\(obj\)/);
+  const terminos = readFileSync(new URL("../terminos.html", import.meta.url), "utf8");
+  assert.match(terminos, /103\.m/);
+  // Lo proporcional solo para el cierre del servicio, en los tres idiomas.
+  assert.match(terminos, /Si Costaviva deja de prestar el servicio/);
+  assert.match(terminos, /If Costaviva stops providing the service/);
+  assert.match(terminos, /Se o Costaviva deixar de prestar o serviço/);
+  assert.doesNotMatch(terminos, /parte proporcional del tiempo|minus the proportional/);
+  assert.match(webhook, /textoSiCerramos\(idioma\)/);
+});

@@ -101,6 +101,8 @@
   label.checkbox.legal input { margin-top: 2px; accent-color: var(--acento); flex-shrink: 0; }
   label.checkbox.legal a { color: var(--acento); }
   #bloqueSuscrito { margin-bottom: 16px; }
+  .plan.confirmar { border: 2px solid var(--acento); }
+  .nota-prueba-gratis { font-weight: 600; color: var(--tinta); }
   .confirmando { text-align: center; padding: 20px 0; font-family: var(--f-texto); font-size: 13px; color: var(--tinta-2); }
 </style>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "d398d313ac4e4524a1b89af3c9ad6fda"}'></script><!-- End Cloudflare Web Analytics -->
@@ -143,6 +145,7 @@
   <!-- Página de precios (2026-10-11). Precios de /precios-zona según el país
        detectado; el precio final lo confirma el pago de Stripe. -->
   <div id="bloquePaywall" style="display:none;">
+    <p class="nota-legal nota-prueba-gratis" data-i18n="prec.prueba_antes">Prueba 14 días gratis antes de pagar: cada cuenta nueva tiene 14 días de Premium sin tarjeta.</p>
     <div class="plan plan-gratis">
       <p class="precio"><span data-i18n="prec.gratis">Gratis</span> <span class="badge-actual" id="badgeGratis" hidden data-i18n="susc.plan_actual">✓ Tu plan actual</span></p>
       <p class="detalle" data-i18n="prec.gratis_incluye">Mapa, mareas y condiciones básicas (ola, viento, temperatura del agua, nubes, lluvia y presión) en todas las regiones. Sin anuncios.</p>
@@ -155,34 +158,44 @@
       <span class="etiqueta-ahorro" id="ahorroAnual"></span>
       <p class="precio"><span id="precioAnual"></span> <span class="unidad" data-i18n="prec.por_ano">/ año</span></p>
       <p class="detalle" id="equivaleAnual"></p>
-      <button type="button" class="btn-comprar" data-ambito="regional" data-plan="anual" disabled data-i18n="prec.elegir_anual">Elegir anual</button>
+      <button type="button" class="btn-comprar" data-ambito="regional" data-plan="anual" data-i18n="prec.elegir_anual">Elegir anual</button>
     </div>
     <div class="plan" id="planFundador" hidden>
       <span class="etiqueta-fundador" id="plazasFundador"></span>
       <p class="precio"><span id="precioFundador"></span> <span class="unidad" data-i18n="prec.por_ano">/ año</span></p>
       <p class="detalle" data-i18n="prec.fundador_explica">Precio de fundador para las primeras suscripciones anuales. Lo mantienes mientras sigas suscrito.</p>
-      <button type="button" class="btn-comprar" data-ambito="regional" data-plan="fundador_anual" disabled data-i18n="prec.elegir_fundador">Quiero el precio de fundador</button>
+      <button type="button" class="btn-comprar" data-ambito="regional" data-plan="fundador_anual" data-i18n="prec.elegir_fundador">Quiero el precio de fundador</button>
     </div>
     <div class="plan" id="planMensual">
       <p class="precio"><span id="precioMensual"></span> <span class="unidad" data-i18n="prec.por_mes">/ mes</span></p>
       <p class="detalle" data-i18n="prec.mensual_explica">Sin permanencia: cancela cuando quieras.</p>
-      <button type="button" class="btn-comprar secundario" data-ambito="regional" data-plan="mensual" disabled data-i18n="prec.elegir_mensual">Elegir mensual</button>
+      <button type="button" class="btn-comprar secundario" data-ambito="regional" data-plan="mensual" data-i18n="prec.elegir_mensual">Elegir mensual</button>
     </div>
 
     <details class="mundial" id="bloqueMundial">
       <summary data-i18n="prec.mundial_titulo">¿Pescas en varias regiones? Plan Mundial</summary>
       <p class="detalle" id="mundialExplica"></p>
       <div class="filas-mundial">
-        <div class="fila-mundial"><span id="mundialAnual"></span><button type="button" class="btn-comprar secundario" data-ambito="mundial" data-plan="anual" disabled data-i18n="prec.anual">Anual</button></div>
-        <div class="fila-mundial" id="filaMundialFundador" hidden><span id="mundialFundador"></span><button type="button" class="btn-comprar secundario" data-ambito="mundial" data-plan="fundador_anual" disabled data-i18n="prec.fundador">Fundador</button></div>
-        <div class="fila-mundial"><span id="mundialMensual"></span><button type="button" class="btn-comprar secundario" data-ambito="mundial" data-plan="mensual" disabled data-i18n="prec.mensual">Mensual</button></div>
+        <div class="fila-mundial"><span id="mundialAnual"></span><button type="button" class="btn-comprar secundario" data-ambito="mundial" data-plan="anual" data-i18n="prec.anual">Anual</button></div>
+        <div class="fila-mundial" id="filaMundialFundador" hidden><span id="mundialFundador"></span><button type="button" class="btn-comprar secundario" data-ambito="mundial" data-plan="fundador_anual" data-i18n="prec.fundador">Fundador</button></div>
+        <div class="fila-mundial"><span id="mundialMensual"></span><button type="button" class="btn-comprar secundario" data-ambito="mundial" data-plan="mensual" data-i18n="prec.mensual">Mensual</button></div>
       </div>
     </details>
 
-    <label class="checkbox legal">
-      <input type="checkbox" id="checkLegal" />
-      <span data-i18n-html="prec.acepto">Pido que Premium empiece de inmediato. Sé que tengo 14 días para desistir y que, si lo hago, se me devolverá lo pagado menos la parte proporcional del tiempo ya disfrutado. Acepto los <a href="/terminos" target="_blank" rel="noopener">términos</a>: la suscripción se renueva automáticamente hasta que la cancele.</span>
-    </label>
+    <!-- Confirmación antes de pagar (2026-10-11, decisión de Mikel): casilla
+         obligatoria y sin marcar con la renuncia al desistimiento por
+         contenido digital (texto en assets/js/consentimiento.js). El botón de
+         pago no se activa sin ella. -->
+    <div class="plan confirmar" id="confirmarPago" hidden>
+      <p class="precio" id="resumenPago"></p>
+      <label class="checkbox legal">
+        <input type="checkbox" id="checkLegal" />
+        <span id="textoAceptacion"></span>
+      </label>
+      <p class="nota-legal" id="textoSiCerramos"></p>
+      <button type="button" id="btnPagar" disabled data-i18n="prec.ir_al_pago">Ir al pago</button>
+      <p class="nota-legal"><a href="/terminos" target="_blank" rel="noopener" data-i18n="prec.terminos">Términos y condiciones</a></p>
+    </div>
     <p class="nota-legal" id="notaPrueba" hidden></p>
     <p class="nota-legal" id="notaPrecio" data-i18n="prec.nota_precio">Precios con IVA incluido. El precio final se confirma en la pantalla de pago según tu país de facturación.</p>
     <p class="nota-legal" id="notaInvitacion" hidden></p>
@@ -209,6 +222,7 @@
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { enlaceAmigo, enlaceWhatsapp, mensajeParaCompartir, textoResumen, REGLAS } from "/assets/js/invitar-amigo.js";
+import { VERSION as VERSION_ACEPTACION, textoAceptacion, textoSiCerramos, idiomaAceptacion } from "/assets/js/consentimiento.js";
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
@@ -234,13 +248,19 @@ async function registrarEvento(tipo, detalle) {
   } catch (e) { /* nunca debe romper la interacción del usuario */ }
 }
 
+const IDIOMA_ACEPTACION = idiomaAceptacion(I18n.idioma(), navigator.languages || [navigator.language || ""]);
+
 async function iniciarCheckout(ambito, plan) {
   registrarEvento("iniciar_checkout", { ambito, plan });
   const { data: { session } } = await supabase.auth.getSession();
   const resp = await fetch("/crear-checkout-stripe", {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
-    body: JSON.stringify({ ambito, plan, idioma: I18n.idioma() }),
+    body: JSON.stringify({
+      ambito, plan, idioma: I18n.idioma(),
+      // Aceptación expresa de la casilla: el servidor la exige y la guarda.
+      aceptacion: { version: VERSION_ACEPTACION, idioma: IDIOMA_ACEPTACION, aceptada: checkLegal.checked },
+    }),
   });
   let resultado = {};
   try { resultado = await resp.json(); } catch (e) { resultado = {}; }
@@ -248,7 +268,7 @@ async function iniciarCheckout(ambito, plan) {
     window.location.href = resultado.url;
   } else {
     mostrarMensaje(resultado.error || I18n.t("susc.error_pago"), "error");
-    activarBotones();
+    btnPagar.disabled = !checkLegal.checked;
   }
 }
 
@@ -263,19 +283,34 @@ async function abrirPortal() {
   else mostrarMensaje(resultado.error || I18n.t("susc.error_portal"), "error");
 }
 
-// Botones de compra: solo con la casilla legal marcada (aceptación expresa
-// del inicio inmediato y de los términos). Sin on*= (CSP).
+// Elegir plan -> bloque de confirmación con la casilla legal (sin marcar).
+// El botón de pago solo se activa con la casilla marcada. Sin on*= (CSP).
 const checkLegal = document.getElementById("checkLegal");
-const botonesCompra = () => [...document.querySelectorAll(".btn-comprar")];
-function activarBotones() {
-  for (const b of botonesCompra()) b.disabled = !checkLegal.checked;
+const btnPagar = document.getElementById("btnPagar");
+const confirmarPago = document.getElementById("confirmarPago");
+let planElegido = null;
+let preciosZona = null;
+function elegirPlan(ambito, plan) {
+  planElegido = { ambito, plan };
+  checkLegal.checked = false;
+  btnPagar.disabled = true;
+  document.getElementById("textoAceptacion").textContent = textoAceptacion(plan, IDIOMA_ACEPTACION);
+  document.getElementById("textoSiCerramos").textContent = textoSiCerramos(IDIOMA_ACEPTACION);
+  const cent = preciosZona?.planes?.[ambito]?.[plan];
+  const nombre = `${ambito === "mundial" ? I18n.t("prec.mundial") + " · " : ""}${I18n.t(`prec.${plan === "fundador_anual" ? "fundador" : plan}`)}`;
+  document.getElementById("resumenPago").textContent = cent ? `${nombre}: ${dinero(cent, preciosZona.moneda)}` : nombre;
+  confirmarPago.hidden = false;
+  confirmarPago.scrollIntoView({ behavior: "smooth", block: "center" });
 }
-checkLegal.addEventListener("change", activarBotones);
+checkLegal.addEventListener("change", () => { btnPagar.disabled = !checkLegal.checked || !planElegido; });
 document.getElementById("bloquePaywall").addEventListener("click", (e) => {
   const b = e.target.closest(".btn-comprar");
-  if (!b || b.disabled || !checkLegal.checked) return;
-  for (const x of botonesCompra()) x.disabled = true;
-  iniciarCheckout(b.dataset.ambito, b.dataset.plan);
+  if (b) elegirPlan(b.dataset.ambito, b.dataset.plan);
+});
+btnPagar.addEventListener("click", () => {
+  if (!planElegido || !checkLegal.checked) return;
+  btnPagar.disabled = true;
+  iniciarCheckout(planElegido.ambito, planElegido.plan);
 });
 document.getElementById("btnGestionar").addEventListener("click", (e) => {
   e.target.disabled = true;
@@ -323,9 +358,10 @@ async function plazasFundador() {
 
 // Pinta la tabla de su zona. Sin precios (red), no se ofrece comprar.
 function pintarPrecios(p, plazas) {
+  preciosZona = p;
   if (!p) {
     mostrarMensaje(I18n.t("prec.sin_precios"), "error");
-    for (const b of botonesCompra()) b.hidden = true;
+    for (const b of document.querySelectorAll(".btn-comprar")) b.hidden = true;
     return;
   }
   const r = p.planes.regional, m = p.planes.mundial;

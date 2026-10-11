@@ -37,6 +37,7 @@ import { calcularFin, uuidValido } from "./_lib/invitaciones.js";
 import { premiarReferido, marcarDiasUsados } from "./_lib/referidos.js";
 import { datosDePrecio, zonaDePais } from "./_lib/precios.js";
 import { enviarEmail } from "./_lib/email.js";
+import { textoAceptacion, textoSiCerramos, VERSION as VERSION_ACEPTACION } from "../assets/js/consentimiento.js";
 import CONFIG_PRECIOS from "./_lib/precios-zonas.json";
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
@@ -257,6 +258,40 @@ function textoRenovacion(inv, idioma) {
   };
 }
 
+// Confirmación en soporte duradero (2026-10-11, decisión de Mikel): tras el
+// pago, un email con el plan, el texto de la renuncia que se aceptó y el
+// enlace a los términos. Idempotente por el registro de eventos.
+const TXT_CONFIRMACION = {
+  es: { asunto: "Confirmación de tu suscripción a Costaviva Premium", hola: "Hola,", gracias: "Gracias por suscribirte a Costaviva Premium. Este email es la confirmación de tu contrato.", plan: "Plan", importe: "Importe (IVA incluido)", fecha: "Fecha", aceptaste: "Antes de pagar aceptaste expresamente lo siguiente", version: "versión", renovacion: "La suscripción se renueva automáticamente al final de cada periodo hasta que la canceles desde Mi suscripción (https://costaviva.org/suscripcion). Si cancelas, sigue activa hasta el final del periodo pagado y no se renueva.", terminos: "Términos y condiciones" },
+  en: { asunto: "Your Costaviva Premium subscription confirmation", hola: "Hi,", gracias: "Thanks for subscribing to Costaviva Premium. This email confirms your contract.", plan: "Plan", importe: "Amount (tax included)", fecha: "Date", aceptaste: "Before paying you expressly accepted the following", version: "version", renovacion: "The subscription renews automatically at the end of each period until you cancel it from My subscription (https://costaviva.org/suscripcion). If you cancel, it stays active until the end of the paid period and does not renew.", terminos: "Terms and conditions" },
+  pt: { asunto: "Confirmação da tua subscrição Costaviva Premium", hola: "Olá,", gracias: "Obrigado por subscreveres o Costaviva Premium. Este email confirma o teu contrato.", plan: "Plano", importe: "Montante (IVA incluído)", fecha: "Data", aceptaste: "Antes de pagar aceitaste expressamente o seguinte", version: "versão", renovacion: "A subscrição renova-se automaticamente no fim de cada período até a cancelares em A minha subscrição (https://costaviva.org/suscripcion). Se cancelares, continua ativa até ao fim do período pago e não se renova.", terminos: "Termos e condições" },
+};
+export function emailConfirmacionPago(sesion) {
+  const md = sesion.metadata || {};
+  const idioma = TXT_CONFIRMACION[md.aceptacion_idioma] ? md.aceptacion_idioma : (md.idioma === "en" ? "en" : "es");
+  const T = TXT_CONFIRMACION[idioma];
+  const locale = idioma === "en" ? "en-NZ" : idioma === "pt" ? "pt-PT" : "es-ES";
+  const importe = typeof sesion.amount_total === "number"
+    ? new Intl.NumberFormat(locale, { style: "currency", currency: String(sesion.currency || "eur").toUpperCase() }).format(sesion.amount_total / 100)
+    : "—";
+  const fecha = new Date((sesion.created || Date.now() / 1000) * 1000).toLocaleString(locale, { timeZone: "Europe/Madrid" }); // a propósito (ZONA_NEGOCIO)
+  const plan = [md.ambito === "mundial" ? "Premium Mundial" : "Premium", md.plan || ""].join(" · ");
+  const version = md.aceptacion_version || VERSION_ACEPTACION;
+  return {
+    subject: T.asunto,
+    text: [
+      T.hola, "", T.gracias, "",
+      `${T.plan}: ${plan}`, `${T.importe}: ${importe}`, `${T.fecha}: ${fecha}`, "",
+      `${T.aceptaste} (${T.version} ${version}, ${md.aceptacion_fecha || fecha}):`,
+      `«${textoAceptacion(md.plan, idioma)}»`, "",
+      textoSiCerramos(idioma), "",
+      T.renovacion, "",
+      `${T.terminos}: https://costaviva.org/terminos`, "",
+      "— Costaviva",
+    ].join("\n"),
+  };
+}
+
 // Si el procesado falla, se borra el registro para que el reintento de
 // Stripe no se tome por repetido.
 async function olvidarEvento(serviceRoleKey, eventoId) {
@@ -331,6 +366,12 @@ export async function onRequestPost(context) {
       });
       if (obj.metadata?.invitacion_id) {
         await marcarInvitacionAplicada(serviceRoleKey, obj.metadata.invitacion_id);
+      }
+      // Confirmación del contrato con la renuncia aceptada (soporte duradero).
+      const para = obj.customer_details?.email || obj.customer_email;
+      if (obj.mode === "subscription" && para) {
+        const envio = await enviarEmail(env, { to: para, ...emailConfirmacionPago(obj) });
+        if (!envio.ok && envio.error !== "sin_configurar") throw new Error(`confirmación de pago: ${envio.error}`);
       }
       // Meses de "Invita a un amigo" usados como días de prueba extra
       // (crear-checkout-stripe.js los pone en metadata.referidos_dias).
