@@ -290,7 +290,9 @@ test("cámaras de NZ: se cargan en la ficha de cada spot NZ y en el robot de sal
   for (const c of CAMARAS_NZ) {
     assert.ok(slugsNZ.has(c.spot), c.id);
     assert.ok(camarasExternasDeSpot(c.spot).includes(c), `${c.id}: no sale en la ficha de ${c.spot}`);
-    assert.equal(c.modo, "enlace", c.id);
+    // Embebidas por decisión de Mikel (2026-10-11) o enlace: el detalle, en
+    // test/camaras-externas.test.js.
+    assert.ok(["imagen_oficial", "iframe_oficial", "enlace"].includes(c.modo), c.id);
   }
   assert.equal(CAMARAS_EXTERNAS.filter((c) => c.spot.startsWith("nz-")).length, CAMARAS_NZ.length);
   assert.match(leer("assets/js/camaras-externas.js"), /from "\.\/camaras-nz\.js"/);

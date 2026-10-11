@@ -662,20 +662,36 @@ ofrece en "Incrustar" mientras contestan. Si Skyline lo niega, se pone a
 `embed.skylinewebcams.com`; no hay que tocar nada más (el test se adapta al
 valor). Analizar sus fotogramas sigue prohibido en cualquier caso.
 
-## Cámaras de Nueva Zelanda: ocultas y solo enlace (2026-10-11)
+## Cámaras de Nueva Zelanda: embebidas con interruptor por dueño (2026-10-11)
 
 `assets/js/camaras-nz.js` lista webcams de terceros con mar a la vista para
 los spots de NZ, con el mismo formato que `camaras-externas.js` pero aparte.
 Desde el 2026-10-11 están conectadas: `camaras-externas.js` las suma a
 `CAMARAS_EXTERNAS` y a `CONDICIONES`, así que salen en la ficha de cada spot
-NZ (botón "View camera", con `nombre_en` en inglés y el nombre corto del
-dueño) y el robot de salud las comprueba como las de España (401/403/429 =
-`no_verificable`). `test/nz-region.test.js` exige que se carguen. Reglas de Mikel: sin permiso
-escrito del dueño, solo `enlace`, también las de licencia CC BY (NIWA/Earth
-Sciences NZ excluye las fotos de su CC BY; GeoNet es CC BY 3.0 NZ); nunca
-analizar sus fotogramas; nada de Facebook ni Instagram; YouTube solo como
-enlace. Cada entrada lleva `verificada` (fecha y cómo: imagen de hoy y
-fotograma de día mirado). Bloqueadas desde la nube (no se rodean): ECan,
+NZ (con `nombre_en` en inglés y el nombre corto del dueño) y el robot de
+salud las comprueba como las de España (401/403/429 en enlace o iframe =
+`no_verificable`). `test/nz-region.test.js` exige que se carguen.
+
+**Embebidas: decisión de Mikel 2026-10-11 ("Embeberlas", como Skyline),
+pendiente de respuesta escrita de cada dueño.** Interruptor por dueño
+`NZ_EMBED_AUTORIZADO` (hoy todos `true`): si un dueño dice que no, se pone
+su clave a `false` y sus cámaras vuelven solas a `enlace` (CoroLive sale
+además de `frame-src` de la CSP, que se arma con `ORIGENES_IFRAME_NZ`). Se
+usa solo lo que publica el dueño: imagen `latest` documentada de GeoNet
+(licencia CC BY 3.0 NZ verificada, la única con licencia), `latest.jpg` del
+almacén público de Cam-Era (sin licencia: NIWA excluye las fotos de su CC
+BY), imagen de Napier City Council, imagen de SouthLoop (por https) e
+iframe oficial de CoroLive (`iframe_oficial`, modo nuevo; CoroLive pide que
+le avisen para su lista blanca). Siempre con atribución visible y enlace al
+dueño: `htmlCamaraIncrustada()` en `camaras-externas.js` («Image: GeoNet,
+CC BY 3.0 NZ»). Siguen en `enlace` por motivo técnico (`motivo_sin_embed`):
+Primo (bloquea el enlace directo a sus imágenes: no se rodea) y Port Otago
+(solo imágenes con la hora en el nombre, sin URL estable). GeoNet y Cam-Era
+sirven `application/octet-stream`: el robot lo acepta en `imagen_oficial`.
+Reglas que siguen: nunca analizar sus fotogramas; nada de Facebook ni
+Instagram; YouTube solo como enlace; nunca saltarse un bloqueo. Cada
+entrada lleva `verificada` (fecha y cómo: imagen de hoy y fotograma de día
+mirado). Bloqueadas desde la nube (no se rodean): ECan,
 Waikato Regional Council (Incapsula), DCC, Timaru DC, Tasman DC, Port Nelson
 (403), Surf2surf (ahora Surfline, reto de Cloudflare) y la cámara de Westland
 DC (puerto 85). Coastal Cams y Outdoor Access son de pago.
