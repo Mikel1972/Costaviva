@@ -178,10 +178,25 @@ export function introSpotNZ(spot, porModalidad, mes) {
   return partes.join(" ");
 }
 
-function listaEspeciesEn(lista) {
-  if (!lista.length) return `<p class="nota">No species listed for this kind of fishing here.</p>`;
-  return `<ul class="especies">${lista.map((e) => `<li${e.ahora && e.meses.length < 12 ? ' class="temporada"' : ""}><a href="/en/species/${esc(e.slug)}"><span aria-hidden="true">${esc(e.emoji)}</span> ${esc(e.nombre)}</a><span class="meses">${esc(e.temporada)}${e.maori ? ` · ${esc(e.maori)}` : ""}</span></li>`).join("")}</ul>`;
+// Una sola tabla de especies con sus modalidades (2026-10-11, SEO): las tres
+// listas repetían las mismas especies, iguales en todo el área MPI.
+function tablaEspeciesEn(porModalidad) {
+  const filas = new Map();
+  for (const m of MODALIDADES) {
+    for (const e of porModalidad[m] || []) {
+      if (!filas.has(e.id)) filas.set(e.id, { ...e, modos: new Set() });
+      filas.get(e.id).modos.add(m);
+    }
+  }
+  const lista = [...filas.values()].sort((a, b) => ((b.ahora && b.meses.length < 12) - (a.ahora && a.meses.length < 12)) || a.nombre.localeCompare(b.nombre, "en"));
+  if (!lista.length) return `<p class="nota">No species listed for this spot.</p>`;
+  const marca = (si) => (si ? `<span aria-label="yes">✓</span>` : `<span aria-label="no">–</span>`);
+  return `<div class="tabla-env"><table class="tabla-especies"><thead><tr><th scope="col">Species</th><th scope="col">Season</th>${MODALIDADES.map((m) => `<th scope="col">${esc(NOMBRE_MODALIDAD_EN[m])}</th>`).join("")}</tr></thead><tbody>
+${lista.map((e) => `<tr${e.ahora && e.meses.length < 12 ? ' class="ahora"' : ""}><th scope="row"><a href="/en/species/${esc(e.slug)}"><span aria-hidden="true">${esc(e.emoji)}</span> ${esc(e.nombre)}</a>${e.maori ? ` <span class="nota">${esc(e.maori)}</span>` : ""}</th><td>${esc(e.temporada)}</td>${MODALIDADES.map((m) => `<td>${marca(e.modos.has(m))}</td>`).join("")}</tr>`).join("\n")}
+</tbody></table></div>`;
 }
+
+const kmTexto = (km) => String(km < 10 ? Math.round(km * 10) / 10 : Math.round(km));
 
 export function paginaSpotNZ(spot, todos, d) {
   const { especiesDatos, spotPrev, reservas, mes } = d;
@@ -208,11 +223,11 @@ ${condicionesHoy(spotPrev, spot)}
 ${bloqueReservas(reservas)}
 <section aria-labelledby="t-especies"><h2 id="t-especies">What you can catch at ${esc(spot.nombre)}</h2>
 <p class="nota">Species of the MPI ${esc(AREAS_MPI[spot.region]?.nombre || "")} area and their season. Highlighted: in season in ${esc(mesLargoEn(mes))}.</p>
-<div class="modalidades">${MODALIDADES.map((m) => `<section class="modalidad" aria-labelledby="t-${m}"><h3 id="t-${m}">${NOMBRE_MODALIDAD_EN[m]}</h3>${listaEspeciesEn(porModalidad[m])}</section>`).join("")}</div></section>
+${tablaEspeciesEn(porModalidad)}</section>
 ${bloqueNormativa(spot.region)}
 ${ctaEn(`Fish smarter at ${spot.nombre}`)}
 <section aria-labelledby="t-cerca"><h2 id="t-cerca">Nearby spots</h2>
-<ul class="chips">${cercanos.map((s) => `<li><a href="/en/spots/${esc(s.slug)}">${esc(s.nombre)}</a></li>`).join("")}</ul>
+<ul class="cercanos">${cercanos.map((s) => `<li><a href="/en/spots/${esc(s.slug)}">${esc(s.nombre)}</a> <span class="nota">${kmTexto(s.km)} km</span> · <a href="/en/tides/${esc(s.slug)}">tides</a></li>`).join("")}</ul>
 ${zona ? `<p><a href="/en/spots/region/${esc(zona.slug)}">All spots in ${esc(zona.nombre)} →</a></p>` : ""}
 </section>`;
   return { titulo, html: documentoEn({ titulo, descripcion, ruta, cuerpo, ld, imagenAlt: `Fishing at ${spot.nombre} with Costaviva` }) };
@@ -273,12 +288,23 @@ ${ctaEn()}
 // ---------------------------------------------------------------------------
 // Pleamares y bajamares de hoy y mañana (hora de NZ) a partir de los eventos
 // de LINZ del puerto: [{ dia: "today"|"tomorrow", tipo, hora, altura }].
+// Formateadores creados una sola vez: crear un Intl.DateTimeFormat por
+// evento (2.800 por puerto y año) costaba 0,5-1,7 s de CPU por página y el
+// Worker cortaba con "Error 1102" (503) — medido el 2026-10-11 en 9 de 166
+// páginas /en/ servidas a un rastreador.
+const FMT_FECHA_NZ = new Intl.DateTimeFormat("en-CA", { timeZone: ZONA_NZ, year: "numeric", month: "2-digit", day: "2-digit" });
+const FMT_HORA_NZ = new Intl.DateTimeFormat("en-GB", { timeZone: ZONA_NZ, hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
+const DIA_MS = 24 * 3600 * 1000;
+
 export function mareasDiasNZ(eventos, ahora = Date.now()) {
-  const fecha = (t) => new Intl.DateTimeFormat("en-CA", { timeZone: ZONA_NZ, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(t));
-  const hora = (t) => new Intl.DateTimeFormat("en-GB", { timeZone: ZONA_NZ, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(new Date(t));
+  const fecha = (t) => FMT_FECHA_NZ.format(new Date(t));
+  const hora = (t) => FMT_HORA_NZ.format(new Date(t));
   const hoy = fecha(ahora);
-  const manana = fecha(ahora + 36 * 3600 * 1000) === hoy ? fecha(ahora + 48 * 3600 * 1000) : fecha(ahora + 24 * 3600 * 1000);
+  const manana = fecha(ahora + 36 * 3600 * 1000) === hoy ? fecha(ahora + 48 * 3600 * 1000) : fecha(ahora + DIA_MS);
+  // Hoy y mañana (hora de NZ) caen siempre entre ayer y pasado mañana: solo
+  // se formatean esos eventos.
   return (eventos || [])
+    .filter((e) => e.t > ahora - 2 * DIA_MS && e.t < ahora + 3 * DIA_MS)
     .filter((e) => [hoy, manana].includes(fecha(e.t)))
     .map((e) => ({ dia: fecha(e.t) === hoy ? "today" : "tomorrow", fechaISO: fecha(e.t), tipo: e.tipo, hora: hora(e.t), altura: Math.round(e.h * 100) / 100, pasada: e.t < ahora }));
 }
