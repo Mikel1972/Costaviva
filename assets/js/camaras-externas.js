@@ -321,10 +321,12 @@ export function externaCuentaComoCaida(camara, estado) {
 //   - "rojo": ninguna funciona: la propia sin señal (también congelada u
 //     oculta por llevar más de 24 h así), las de terceros caídas, las
 //     retiradas del código y los spots que no tienen ninguna.
-//   - "no_verificable": no hay ninguna que funcione comprobada, pero hay al
-//     menos un enlace cuyo dueño bloquea las comprobaciones automáticas (MEO
-//     Beachcam da 403 a los robots). Hoy se ve igual que antes: SIN punto en
-//     el mapa y el enlace en la ficha. Qué color le toca lo decide Mikel.
+//   - Las de terceros "no verificables" (su dueño bloquea a los robots: MEO
+//     Beachcam, CoroLive en NZ, motivo no_verificable_*) cuentan como
+//     funcionando, igual que una vista bien (decisión de Mikel, 2026-10-11).
+//     Una vez al mes la rutina de cámaras caídas las mira a mano (ver
+//     ROBOT_REGLAS.md) y, si ve que una está caída de verdad, la marca con
+//     `caida_comprobada` (más abajo) o la quita de la lista.
 export const HORAS_CAMARA_OCULTA = 24;
 
 // Desde cuándo no llega una imagen NUEVA: la última lectura buena
@@ -349,17 +351,30 @@ export function camaraOculta(estado, ahoraMs = Date.now()) {
   return ahoraMs - Date.parse(desde) > HORAS_CAMARA_OCULTA * 3600 * 1000;
 }
 
-// Una de terceros cuenta como "funciona" solo si el robot la vio bien.
-export function externaFunciona(estado) {
-  return !!estado && !estado.sinSenal && estado.motivo === "ok";
+// Caída comprobada A MANO (2026-10-11). Para las que el robot de salud no
+// puede comprobar (no_verificable_*): si la revisión mensual de la rutina
+// ve en la web del dueño que no emite, añade a su entrada de LISTA
+//   caida_comprobada: { fecha: "AAAA-MM-DD", nota: "qué se vio y dónde" }
+// y la app la trata como caída: fuera de la ficha y no cuenta para el color.
+// Cuando vuelva a emitir, se borra el campo. Si no va a volver, se quita la
+// entrada entera (retirada).
+export function externaMarcadaCaida(camara) {
+  return !!camara?.caida_comprobada;
+}
+
+// Una de terceros cuenta como "funciona" si el robot la vio bien o si su
+// dueño no deja comprobarla (no_verificable_*), salvo que esté marcada a
+// mano como caída.
+export function externaFunciona(estado, camara = null) {
+  if (externaMarcadaCaida(camara)) return false;
+  if (!estado || estado.sinSenal) return false;
+  return estado.motivo === "ok" || esNoVerificable(estado.motivo);
 }
 
 // slug: spot; tienePropia: si está en SPOTS_CON_WEBCAM; camaras: el objeto
 // `camaras` de /prevision (clave = slug o ext-<id>).
 export function estadoCamaraSpot(slug, tienePropia, camaras = {}) {
   if (tienePropia && !camaras[slug]?.sinSenal) return "verde";
-  const externas = camarasExternasDeSpot(slug);
-  if (externas.some((c) => externaFunciona(camaras[claveSalud(c)]))) return "verde";
-  if (externas.some((c) => c.modo === "enlace" && esNoVerificable(camaras[claveSalud(c)]?.motivo))) return "no_verificable";
+  if (camarasExternasDeSpot(slug).some((c) => externaFunciona(camaras[claveSalud(c)], c))) return "verde";
   return "rojo";
 }
