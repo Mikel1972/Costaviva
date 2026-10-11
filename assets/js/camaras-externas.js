@@ -41,6 +41,11 @@
 // Decisión de Mikel (2026-10-08): true mientras contestan (su FAQ ofrece el
 // código de "Insertar" a cualquier web). Si lo niegan: false y todas pasan a
 // "enlace" sin cargar nada de embed.skylinewebcams.com. Nada más que tocar.
+// Nueva Zelanda (2026-10-11): sus cámaras viven en camaras-nz.js (mismo
+// formato, todas en modo enlace) y se suman aquí a la lista y a las
+// condiciones, así que la app y el robot de salud las tratan igual.
+import { CAMARAS_NZ, CONDICIONES_NZ } from "./camaras-nz.js";
+
 export const SKYLINE_EMBED_AUTORIZADO = true;
 
 export const CONDICIONES = {
@@ -216,7 +221,9 @@ const LISTA = [
   meo("faro", "Ilha do Farol (Culatra)", "ilha-do-farol-culatra", true),
 ];
 
-export const CAMARAS_EXTERNAS = LISTA;
+Object.assign(CONDICIONES, CONDICIONES_NZ);
+
+export const CAMARAS_EXTERNAS = [...LISTA, ...CAMARAS_NZ];
 
 export function camarasExternasDeSpot(slug) {
   return CAMARAS_EXTERNAS.filter((c) => c.spot === slug);
@@ -224,6 +231,11 @@ export function camarasExternasDeSpot(slug) {
 
 // Clave en camara_estado (la tabla de salud, una fila por clave): con
 // prefijo para no pisar nunca la fila de la cámara propia del spot.
+// Nombre de la cámara en el idioma de la ficha (las de NZ traen nombre_en).
+export function nombreCamara(camara, idioma = "es") {
+  return idioma === "en" && camara.nombre_en ? camara.nombre_en : camara.nombre;
+}
+
 export function claveSalud(camara) {
   return `ext-${camara.id}`;
 }

@@ -4382,6 +4382,12 @@ function camarasExternasVisibles(slug) {
 function escaparHtmlCam(t) {
   return String(t).replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch]);
 }
+// Nombre en el idioma de la ficha: las de NZ (assets/js/camaras-nz.js)
+// traen nombre_en; el dueño va siempre con su nombre propio.
+function nombreCamExterna(c) {
+  const CE = window.CamarasExternas;
+  return CE && CE.nombreCamara ? CE.nombreCamara(c, I18n.idioma()) : c.nombre;
+}
 function pintarCamarasExternas(slug) {
   const caja = document.getElementById("panelWebcamExternas");
   if (!caja) return;
@@ -4396,12 +4402,12 @@ function pintarCamarasExternas(slug) {
   const enlaces = lista.filter((c) => c.modo === "enlace");
   const htmlImagenes = imagenes.map((c) => `
     <figure style="margin:8px 0 0;">
-      <a href="${escaparHtmlCam(c.url)}" target="_blank" rel="noopener"><img src="${escaparHtmlCam(c.imagen)}" alt="${escaparHtmlCam(c.nombre)} | ${escaparHtmlCam(c.dueno)}" loading="lazy" style="width:100%; border-radius:8px; border:1px solid var(--linea); display:block;"></a>
-      <figcaption style="font-size:11px; color:var(--tinta-2); margin-top:3px;">${escaparHtmlCam(c.nombre)} · ${I18n.t("mapa.cam.imagen_de")} <a href="${escaparHtmlCam(c.url)}" target="_blank" rel="noopener">${escaparHtmlCam(c.dueno)}</a> ${I18n.t("mapa.cam.cada_5")}</figcaption>
+      <a href="${escaparHtmlCam(c.url)}" target="_blank" rel="noopener"><img src="${escaparHtmlCam(c.imagen)}" alt="${escaparHtmlCam(nombreCamExterna(c))} | ${escaparHtmlCam(c.dueno)}" loading="lazy" style="width:100%; border-radius:8px; border:1px solid var(--linea); display:block;"></a>
+      <figcaption style="font-size:11px; color:var(--tinta-2); margin-top:3px;">${escaparHtmlCam(nombreCamExterna(c))} · ${I18n.t("mapa.cam.imagen_de")} <a href="${escaparHtmlCam(c.url)}" target="_blank" rel="noopener">${escaparHtmlCam(c.dueno)}</a> ${I18n.t("mapa.cam.cada_5")}</figcaption>
     </figure>`).join("");
   const htmlEnlaces = enlaces.length ? `
     <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;">
-      ${enlaces.map((c) => `<a href="${escaparHtmlCam(c.url)}" target="_blank" rel="noopener" style="font-size:12px; padding:5px 10px; border:1px solid var(--linea); border-radius:14px; text-decoration:none; color:#2E7BA0;">${I18n.t("mapa.cam.ver")} ${escaparHtmlCam(c.nombre)} (${escaparHtmlCam(c.dueno)}) ↗</a>`).join("")}
+      ${enlaces.map((c) => `<a href="${escaparHtmlCam(c.url)}" target="_blank" rel="noopener" style="font-size:12px; padding:5px 10px; border:1px solid var(--linea); border-radius:14px; text-decoration:none; color:#2E7BA0;">${I18n.t("mapa.cam.ver")} ${escaparHtmlCam(nombreCamExterna(c))} (${escaparHtmlCam(c.dueno)}) ↗</a>`).join("")}
     </div>` : "";
   caja.innerHTML = `
     <div class="etq" style="margin:12px 0 2px;">${I18n.t("mapa.cam.otras")}</div>

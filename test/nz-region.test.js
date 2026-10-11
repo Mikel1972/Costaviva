@@ -275,22 +275,28 @@ test("atribuciones de LINZ: la frase exacta y el aviso de que no son tablas ofic
   assert.match(leer("assets/i18n/en.js"), /"mapa\.atrib\.linz": "NZ tides: Sourced from Land Information New Zealand data \(CC BY 4\.0\); not official tide tables"/);
 });
 
-// Cámaras de NZ (assets/js/camaras-nz.js, 2026-10-11). NZ es pública desde la
-// PR #176: con "nz" en REGIONES_ACTIVAS la lista entera es visible. Ni
-// index.html ni el robot de salud las cargan todavía (cuando se enchufen, se
-// quita la última comprobación), y camaras-externas.js sigue sin ninguna.
-import { CAMARAS_NZ, camarasNZVisibles, camarasNZDeSpot } from "../assets/js/camaras-nz.js";
-import { CAMARAS_EXTERNAS } from "../assets/js/camaras-externas.js";
+// Cámaras de NZ (assets/js/camaras-nz.js), conectadas el 2026-10-11: NZ es
+// pública desde la PR #176, así que SÍ se cargan en la app (vía
+// camaras-externas.js, que index.html importa) y el robot de salud las
+// comprueba (recorre CAMARAS_EXTERNAS).
+import { CAMARAS_NZ, camarasNZVisibles } from "../assets/js/camaras-nz.js";
+import { CAMARAS_EXTERNAS, camarasExternasDeSpot } from "../assets/js/camaras-externas.js";
 
-test("cámaras de NZ: visibles con NZ activa, ocultas sin ella", () => {
+test("cámaras de NZ: se cargan en la ficha de cada spot NZ y en el robot de salud", () => {
+  assert.ok(REGIONES_ACTIVAS.includes("nz"));
   assert.ok(CAMARAS_NZ.length > 0);
-  assert.equal(camarasNZVisibles(REGIONES_ACTIVAS).length, REGIONES_ACTIVAS.includes("nz") ? CAMARAS_NZ.length : 0);
-  assert.deepEqual(camarasNZVisibles(["es"]), []);
-  assert.deepEqual(camarasNZVisibles(), []);
-  assert.deepEqual(camarasNZDeSpot(CAMARAS_NZ[0].spot, ["es"]), []);
-  assert.equal(camarasNZVisibles(["es", "nz"]).length, CAMARAS_NZ.length);
-  assert.equal(CAMARAS_EXTERNAS.filter((c) => String(c.spot).startsWith("nz-") || String(c.id).startsWith("nz-")).length, 0);
-  for (const f of ["scripts/camaras/comprobar-camaras.mjs", "scripts/turbidez/medir-turbidez.mjs"]) {
-    assert.ok(!leer(f).includes("camaras-nz"), `${f}: el robot no las comprueba todavía`);
+  assert.equal(camarasNZVisibles(REGIONES_ACTIVAS).length, CAMARAS_NZ.length);
+  const slugsNZ = new Set(SPOTS_NZ.map((s) => s.slug));
+  for (const c of CAMARAS_NZ) {
+    assert.ok(slugsNZ.has(c.spot), c.id);
+    assert.ok(camarasExternasDeSpot(c.spot).includes(c), `${c.id}: no sale en la ficha de ${c.spot}`);
+    assert.equal(c.modo, "enlace", c.id);
   }
+  assert.equal(CAMARAS_EXTERNAS.filter((c) => c.spot.startsWith("nz-")).length, CAMARAS_NZ.length);
+  assert.match(leer("assets/js/camaras-externas.js"), /from "\.\/camaras-nz\.js"/);
+  const index = leer("index.html");
+  assert.match(index, /import \* as CamarasExternas from "\/assets\/js\/camaras-externas\.js"/);
+  assert.match(index, /CE\.nombreCamara\(c, I18n\.idioma\(\)\)/, "nombre de la cámara en inglés en la ficha");
+  const robot = leer("scripts/camaras/comprobar-camaras.mjs");
+  assert.match(robot, /for \(const camara of CAMARAS_EXTERNAS\)/);
 });
