@@ -26,7 +26,7 @@ import { aplicarCamarasASpots, aplicarReferenciasCamara, filasLecturas, VIGENCIA
 import { spotsRegionesActivas, spotsDeRegion } from "./_lib/regiones-activas.js";
 // /prevision por región y vista previa de las regiones ocultas (fase 2 de NZ).
 import { autorizarRegion, noEncontrado, regionDeUrl } from "./_lib/vista-previa.js";
-import { cargarDatosLinz, completarSpotNZ, ATRIBUCION_LINZ, AVISO_LINZ } from "./_lib/nz/prevision-nz.js";
+import { cargarDatosLinz, cargarReservasDoc, completarSpotNZ, ATRIBUCION_LINZ, AVISO_LINZ, ATRIBUCION_DOC } from "./_lib/nz/prevision-nz.js";
 
 // Spots de España y Portugal (región "es"): los únicos que pide /prevision
 // sin parámetro. Cada región nueva pide los suyos con ?region=<id> y su
@@ -1275,19 +1275,20 @@ export function listaSpotsRegion(spots) {
 }
 
 export async function previsionRegionNZ(spots, env, origen, ahora = Date.now()) {
-  const [resultados, linz] = await Promise.all([
+  const [resultados, linz, reservasDoc] = await Promise.all([
     previsionTodosSpots(spots, env, { mareaOpenMeteo: false }).catch((e) =>
       spots.map((spot) => ({ slug: spot.slug, nombre: spot.nombre, lat: spot.lat, lon: spot.lon, error: String(e) }))
     ),
     cargarDatosLinz(env, origen, ahora),
+    cargarReservasDoc(env, origen),
   ]);
   const porSlug = new Map(spots.map((s) => [s.slug, s]));
-  const conMarea = resultados.map((r) => completarSpotNZ(r, porSlug.get(r.slug), linz, ahora));
+  const conMarea = resultados.map((r) => completarSpotNZ(r, porSlug.get(r.slug), linz, ahora, reservasDoc));
   return {
     region: "nz",
     spots: conMarea,
     fuentesDatos: [...new Set(conMarea.flatMap((r) => r.fuentesDatos || []))],
-    atribuciones: { marea: ATRIBUCION_LINZ, avisoMarea: AVISO_LINZ, mareaDisponible: Boolean(linz.catalogo && linz.anios.length) },
+    atribuciones: { marea: ATRIBUCION_LINZ, avisoMarea: AVISO_LINZ, mareaDisponible: Boolean(linz.catalogo && linz.anios.length), reservas: ATRIBUCION_DOC },
     boyas: [],
   };
 }

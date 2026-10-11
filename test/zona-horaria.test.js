@@ -60,9 +60,12 @@ test("índice hora a hora: España igual que con Madrid fijo; Portugal en su zon
 
 const SPOTS_PT = ["aveiro", "cascais", "costadacaparica", "ericeira", "faro", "figueiradafoz", "lagos", "matosinhos", "milfontes",
   "moledo", "nazare", "peniche", "povoadevarzim", "sagres", "sines", "troia", "vianadocastelo"];
-test("todos los spots fijos: Madrid, salvo Canarias (Atlantic/Canary) y Portugal (Europe/Lisbon)", () => {
+test("todos los spots fijos: Madrid, salvo Canarias (Atlantic/Canary) y Portugal (Europe/Lisbon); NZ en Auckland", () => {
   const porZona = {};
   for (const s of SPOTS) (porZona[R.zonaDeSpot(s)] ||= []).push(s.slug);
+  // Nueva Zelanda (activa desde el 2026-10-11): todos sus spots en Auckland.
+  assert.deepEqual(porZona["Pacific/Auckland"].sort(), SPOTS_NZ.map((s) => s.slug).sort());
+  delete porZona["Pacific/Auckland"];
   assert.deepEqual(Object.keys(porZona).sort(), ["Atlantic/Canary", "Europe/Lisbon", "Europe/Madrid"]);
   assert.deepEqual(porZona["Atlantic/Canary"].sort(), ["corralejo", "elmedano", "laspalmas", "santacruztenerife"]);
   assert.deepEqual(porZona["Europe/Lisbon"].sort(), SPOTS_PT);
@@ -340,8 +343,8 @@ test("hemisferio sur: la freza y las vedas 'general' de la Península no se apli
   for (let m = 1; m <= 12; m++) assert.deepEqual(VA.especiesDeTemporada(DATOS, "nueva_zelanda", m), []);
 });
 
-test("los 60 spots NZ (fase 1, ocultos) caen en Pacific/Auckland y en la región nueva_zelanda", () => {
-  assert.ok(SPOTS_NZ.length >= 60);
+test("los spots NZ (59 activos desde el lanzamiento) caen en Pacific/Auckland y en la región nueva_zelanda", () => {
+  assert.ok(SPOTS_NZ.length >= 59);
   for (const s of SPOTS_NZ) {
     assert.equal(R.zonaDeSpot(s), "Pacific/Auckland", s.slug);
     assert.equal(R.zonaPorCoordenadas(s.lat, s.lon), "Pacific/Auckland", s.slug);

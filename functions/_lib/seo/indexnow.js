@@ -44,8 +44,10 @@ export function cambiosSitemap(xmlAntes, xmlDespues) {
 // Qué páginas públicas cambian cuando cambia cada fichero del repo. Devuelve
 // funciones que, de todas las URLs del sitemap, eligen las afectadas.
 const ruta = (u) => new URL(u).pathname;
-const esSpot = (u) => /^\/spots\/(?!region\/)[^/]+$/.test(ruta(u));
-const esMareaSpot = (u) => /^\/mareas\/(?!region\/)[^/]+$/.test(ruta(u));
+// Con las de Nueva Zelanda en inglés (2026-10-11): /en/spots/<slug> y
+// /en/tides/<slug>.
+const esSpot = (u) => /^(\/en)?\/spots\/(?!region\/)[^/]+$/.test(ruta(u));
+const esMareaSpot = (u) => /^(\/mareas|\/en\/tides)\/(?!region\/)[^/]+$/.test(ruta(u));
 const empieza = (prefijo) => (u) => ruta(u) === prefijo || ruta(u).startsWith(`${prefijo}/`);
 const exacta = (r) => (u) => ruta(u) === r;
 const todas = () => true;
@@ -64,6 +66,10 @@ const REGLAS = [
   [(f) => f.startsWith("functions/mareas/"), empieza("/mareas")],
   [(f) => f === "index.html" || f === "login.html", exacta("/")],
   [(f) => f === "privacidad.html", exacta("/privacidad")],
+  // Nueva Zelanda en inglés (/en/...): sus rutas, su HTML, sus datos y los
+  // de LINZ/DOC; las especies de NZ van en especies.json (regla de arriba).
+  [(f) => f.startsWith("functions/en/") || f.startsWith("functions/_lib/nz/") || f.startsWith("datos/nz/") ||
+    ["functions/_lib/seo/paginas-en.js", "functions/_lib/seo/carga-en.js", "assets/js/normativa-nz.js", "assets/datos/especies.json"].includes(f), empieza("/en")],
 ];
 
 // URLs a avisar tras un push: las que el sitemap marca como nuevas o

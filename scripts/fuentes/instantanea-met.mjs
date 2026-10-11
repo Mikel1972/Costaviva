@@ -19,7 +19,8 @@
 //      (opcional ANTERIOR_URL o FUENTES_GRATUITAS_URL para reaprovechar la anterior)
 
 import { writeFileSync } from "node:fs";
-import { SPOTS } from "../../functions/prevision.js";
+// Solo España/Portugal (SPOTS_ES): la fuente de este script es europea; Nueva Zelanda (activa desde 2026-10-11) no entra.
+import { SPOTS_ES as SPOTS } from "../../functions/prevision.js";
 import { urlMetNorway, userAgentMetNorway, serieDesdeMet, COLUMNAS_MET } from "../../functions/_lib/met-norway.js";
 import { baseInstantaneas } from "../../functions/_lib/instantaneas.js";
 

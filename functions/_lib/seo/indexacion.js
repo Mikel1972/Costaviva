@@ -25,8 +25,9 @@ export const PAGINAS_PRIVADAS = new Set([
 ]);
 
 // Rutas que son páginas (se redirigen desde el alias de pages.dev).
-const PAGINAS_EXACTAS = new Set(["/", "/index.html", "/login", "/login.html", "/privacidad", "/privacidad.html", "/empieza", "/empieza.html", "/robots.txt", "/sitemap.xml", "/mareas", "/spots", "/especies"]);
-const PREFIJOS_PAGINAS = ["/mareas/", "/spots/", "/especies/"];
+const PAGINAS_EXACTAS = new Set(["/", "/index.html", "/login", "/login.html", "/privacidad", "/privacidad.html", "/empieza", "/empieza.html", "/robots.txt", "/sitemap.xml", "/mareas", "/spots", "/especies", "/en"]);
+// "/en/": páginas de Nueva Zelanda en inglés (2026-10-11).
+const PREFIJOS_PAGINAS = ["/mareas/", "/spots/", "/especies/", "/en/"];
 export function esPagina(pathname) {
   return PAGINAS_EXACTAS.has(pathname) || PAGINAS_PRIVADAS.has(pathname) || PREFIJOS_PAGINAS.some((p) => pathname.startsWith(p));
 }
