@@ -109,9 +109,16 @@ export const WEBCAMS = {
     "https://www.cantabria.es/ftp_webcam/castro-New-117.jpg",
     "https://rswc.tendsys.net/memfs/56b44eac-9cc1-4487-98fc-3991c5a4874d.jpg",
   ],
+  // Reserva cambiada el 2026-10-11 (agente de cámaras caídas): la de
+  // "Puntal Pinos" (4d8076d3-...) seguía respondiendo 200 y actualizándose,
+  // pero enseñaba un fotograma gris desenfocado con la fecha "02-03-1970"
+  // grabada (cámara reiniciada, sin imagen útil). Ahora va la de Regatón
+  // (webcamsencantabria.com/webcam-laredo-regaton/), verificada con
+  // Last-Modified de minutos y mirada: playa de La Salvé/Regatón con la
+  // bahía detrás.
   laredo: [
     "https://www.cantabria.es/ftp_webcam/Laredo-New-1.jpg",
-    "https://rswc.tendsys.net/memfs/4d8076d3-525d-4868-b02d-8126c51da987.jpg",
+    "https://rswc.tendsys.net/memfs/e743087e-688c-4355-aa0b-3c16d36efbcf.jpg",
   ],
   sanvicente: "https://www.cantabria.es/ftp_webcam/sanvicente-New-101_1.jpg",
   comillas: "https://www.cantabria.es/ftp_webcam/Comillas-New-1.jpg",
@@ -149,13 +156,14 @@ export const WEBCAMS = {
   oliva: "https://streaming.comunitatvalenciana.com/static/OlivaPuerto/webcam_mini.png",
   piles: "https://streaming.comunitatvalenciana.com/static/Piles/webcam_mini.png",
 
-  // SOCIB (Sistema d'Observació i Predicció Costanera de les Illes Balears)
-  // — endpoint interno del visor BEAMON, no documentado públicamente pero
-  // verificado en vivo 2026-09-09 (redirección 307 a un JPEG con marca de
-  // agua SOCIB, CORS abierto). Puede romperse si SOCIB cambia el visor.
-  calamillor: "https://apps.socib.es/beamon/api/image_access/view/clm/clm/c01/latest/latest/thumbnail/",
-  sonbou: "https://apps.socib.es/beamon/api/image_access/view/snb/snb/c01/latest/latest/thumbnail/",
-  muro: "https://apps.socib.es/beamon/api/image_access/view/muro/muro/c01/latest/latest/thumbnail/",
+  // SOCIB (calamillor, sonbou, muro) RETIRADAS el 2026-10-11 (agente de
+  // cámaras caídas): nunca tuvieron señal en producción (251 fallos). Dos
+  // motivos a la vez: (1) desde el edge de Cloudflare apps.socib.es da 522
+  // (no conecta); (2) aunque conectara, las imágenes "latest" de SOCIB están
+  // paradas: Last-Modified 2024-12-11 (Cala Millor), 2025-05-26 (Son Bou) y
+  // 2025-02-24 (Muro) en todas sus cámaras c01-c05. No volver a añadirlas
+  // sin comprobar antes el Last-Modified de
+  // images.socib.es/beamon/<loc>/sirena/<loc>/latest_mobile/c01_snap.jpg.
 
   // Águilas (SkylineWebcams) YA NO pasa por este proxy (2026-10-08): las
   // condiciones de SkylineWebcams prohíben descargar o reproducir sus

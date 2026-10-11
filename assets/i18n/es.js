@@ -259,7 +259,7 @@
   "mapa.cam.alt": "Webcam en directo de {nombre}",
   "mapa.cam.cada_minuto": "Se actualiza sola cada minuto.",
   "mapa.cam.no_carga_img": "No se pudo cargar la webcam de {nombre} ahora mismo",
-  "mapa.cam.solo_desplegado": "(solo funciona una vez desplegado en Cloudflare Pages — no en este archivo abierto suelto).",
+  "mapa.cam.proveedor_no_responde": "(su proveedor no responde; suele ser algo pasajero, vuelve a mirar en un rato).",
   "mapa.cam.video": "Vídeo en directo ({fuente}).",
   "mapa.cam.fuente_externa": "fuente externa",
   "mapa.cam.no_carga": "No se pudo cargar la webcam de {nombre} ahora mismo.",
