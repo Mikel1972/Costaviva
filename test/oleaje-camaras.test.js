@@ -523,7 +523,13 @@ test("NZ: cada cámara de camaras-nz.js se mide o tiene su motivo en NO_SIRVEN_N
     const fuera = Boolean(NO_SIRVEN_NZ[app.id]);
     assert.ok(medidas.has(app.id) !== fuera, `${app.id}: o se mide o está en NO_SIRVEN_NZ`);
   }
-  for (const id of Object.keys(NO_SIRVEN_NZ)) assert.ok(CAMARAS_NZ_APP.some((a) => a.id === id), `NO_SIRVEN_NZ: ${id} no existe`);
+  for (const id of Object.keys(NO_SIRVEN_NZ)) {
+    // Las descartadas en el repaso (nz-descartada-*) no están en la app; el resto, sí.
+    if (id.startsWith("nz-descartada-")) {
+      assert.match(NO_SIRVEN_NZ[id], /^DESCARTADA \(no está en camaras-nz\.js\): .{20,}/, id);
+      assert.ok(!CAMARAS_NZ_APP.some((a) => a.id === id), `${id}: descartada pero está en la app`);
+    } else assert.ok(CAMARAS_NZ_APP.some((a) => a.id === id), `NO_SIRVEN_NZ: ${id} no existe`);
+  }
   assert.ok(camarasNZ().length >= 1);
 });
 

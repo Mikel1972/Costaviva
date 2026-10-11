@@ -76,6 +76,15 @@ export const NZ_ANALISIS_AUTORIZADO = {
   primo: true,
   napier_cc: true,
   southloop: true,
+  // Añadidos en el repaso de día del 2026-10-12, solo como ENLACE: ni se
+  // embeben ni se analizan mientras no haya permiso escrito (peticiones en
+  // permisos/registro.json de Mikel1972/comun).
+  hauraki_coromandel: false,
+  raglan_sport_fishing: false,
+  castlepoint_lighthouse: false,
+  greater_wellington: false,
+  nelson_cc: false,
+  sails_ashore: false,
 };
 
 export const NZ_EMBED_AUTORIZADO = {
@@ -88,6 +97,15 @@ export const NZ_EMBED_AUTORIZADO = {
   // cambia nada mientras no publiquen una imagen o un iframe utilizable.
   port_otago: true,
   primo: true,
+  // Repaso de día del 2026-10-12: enlace hasta que el dueño conteste por
+  // escrito (no hay modo en EMBEBIBLE: aunque se pusieran a true, seguirían
+  // en enlace hasta añadirles la imagen o el iframe que publiquen).
+  hauraki_coromandel: false,
+  raglan_sport_fishing: false,
+  castlepoint_lighthouse: false,
+  greater_wellington: false,
+  nelson_cc: false,
+  sails_ashore: false,
 };
 
 // Cómo se embebe cada dueño, si se puede: "imagen_oficial" (la URL de la
@@ -226,6 +244,89 @@ export const CONDICIONES_NZ = {
       "decisión de Mikel (2026-10-11), pendiente de su respuesta escrita.",
     contacto: "https://weathercam.southloop.net.nz/ (sin email publicado)",
   },
+  // --- Repaso de día del 2026-10-12: dueños nuevos, solo ENLACE ---
+  hauraki_coromandel: {
+    dueno_corto: "Destination Hauraki Coromandel",
+    dueno: "Destination Hauraki Coromandel (thecoromandel.nz; la cámara la sirve Select Solutions)",
+    tipo_dueno: "publico",
+    modos_permitidos: modos("hauraki_coromandel"),
+    analisis_permitido: NZ_ANALISIS_AUTORIZADO.hauraki_coromandel,
+    licencia: null,
+    fuentes: ["https://thecoromandel.nz/webcams/whangamata-webcam", "https://thecoromandel.nz/industry/about-us/policy"],
+    cita:
+      "«Copyright © 2026 Destination Hauraki Coromandel, All Rights Reserved» (pie de la página de la webcam). No publica " +
+      "condiciones de uso de las webcams ni prohíbe enlazar. Solo enlace hasta su permiso escrito.",
+    contacto: "info@haurakicoromandel.com",
+  },
+  raglan_sport_fishing: {
+    dueno_corto: "Raglan Sport Fishing Club",
+    dueno: "Raglan Sport Fishing Club (directo en su canal de YouTube)",
+    tipo_dueno: "privado",
+    modos_permitidos: modos("raglan_sport_fishing"),
+    analisis_permitido: NZ_ANALISIS_AUTORIZADO.raglan_sport_fishing,
+    licencia: null,
+    fuentes: ["https://www.raglansportfishing.co.nz/live-cams/raglan-bar-cam"],
+    cita:
+      "«RAGLAN BAR CAM Connection kindly supplied by: [...]» con el directo de YouTube del club insertado. No publica " +
+      "condiciones de uso. YouTube solo como enlace: se enlaza la página del club.",
+    contacto: "info@raglansportfishing.co.nz",
+  },
+  castlepoint_lighthouse: {
+    dueno_corto: "Castlepoint Lighthouse",
+    dueno: "Castlepoint Lighthouse (castlepointlighthouse.com, patrocinado por Harvest Electronics)",
+    tipo_dueno: "privado",
+    modos_permitidos: modos("castlepoint_lighthouse"),
+    analisis_permitido: NZ_ANALISIS_AUTORIZADO.castlepoint_lighthouse,
+    licencia: null,
+    fuentes: ["https://castlepointlighthouse.com/"],
+    cita:
+      "«The live video feed will only run between 7am and 6pm due to low battery on site [...] For comments on this " +
+      "website or the live video please email [...]». No publica condiciones de uso. El id de YouTube puede cambiar: se " +
+      "enlaza su web.",
+    contacto: "castlepointlighthouse@harvest.com",
+  },
+  greater_wellington: {
+    dueno_corto: "Greater Wellington",
+    dueno: "Greater Wellington Regional Council (Beacon Hill Signal Station)",
+    tipo_dueno: "publico",
+    modos_permitidos: modos("greater_wellington"),
+    analisis_permitido: NZ_ANALISIS_AUTORIZADO.greater_wellington,
+    licencia: { nombre: "CC BY 4.0", url: "https://creativecommons.org/licenses/by/4.0/" },
+    fuentes: [
+      "https://www.gw.govt.nz/environment/harbours-and-coasts/wellington-harbour-entrance-webcams-and-radio/",
+      "https://www.gw.govt.nz/your-council/legal/",
+    ],
+    cita:
+      "«Unless indicated otherwise [...] this copyright material is licensed for re-use under a Creative Commons " +
+      "Attribution 4.0 International Licence [...] as long as you attribute it to the Greater Wellington Regional " +
+      "Council» (gw.govt.nz/your-council/legal, leído el 2026-10-12). Aun así, solo enlace hasta su respuesta escrita.",
+    contacto: "harbours@gw.govt.nz",
+  },
+  nelson_cc: {
+    dueno_corto: "Nelson City Council",
+    dueno: "Nelson City Council (Harbourmaster)",
+    tipo_dueno: "publico",
+    modos_permitidos: modos("nelson_cc"),
+    analisis_permitido: NZ_ANALISIS_AUTORIZADO.nelson_cc,
+    licencia: null,
+    fuentes: ["https://harbours.nelson.govt.nz/cams/"],
+    cita:
+      "«Harbour Cameras provide safety information to the public and for emergency response and awareness. For all " +
+      "enquiries, please contact the Harbourmaster». Las páginas legales de nelson.govt.nz no se pudieron leer desde la " +
+      "nube (202 de un reto anti-bots: no se rodea). Solo enlace.",
+    contacto: "harbourmaster@ncc.govt.nz",
+  },
+  sails_ashore: {
+    dueno_corto: "Sails Ashore",
+    dueno: "Sails Ashore (alojamiento en Stewart Island)",
+    tipo_dueno: "privado",
+    modos_permitidos: modos("sails_ashore"),
+    analisis_permitido: NZ_ANALISIS_AUTORIZADO.sails_ashore,
+    licencia: null,
+    fuentes: ["https://sailsashore.co.nz/garden-web-cam/"],
+    cita: "«Sails Ashore Garden & Webcam». No publica condiciones de uso. Solo enlace.",
+    contacto: "tait@sailsashore.co.nz",
+  },
 };
 
 // embed: { imagen } o { iframe } que publica el dueño, y refresco_min (cada
@@ -326,6 +427,25 @@ const LISTA = [
       visto_en: "weather.geek.nz",
       embed: { imagen: "https://weathercam.southloop.net.nz/riverton/rivertonA0.jpg", refresco_min: null },
     }),
+  // --- Repaso de día del 2026-10-12 (07:30-07:45 NZDT): solo ENLACE ---
+  // Fotograma de día mirado con Read en cada una; ni se embeben ni se
+  // analizan sin permiso escrito (NO_SIRVEN_NZ de camaras.mjs).
+  cam("hauraki-whangamata-beach", "nz-whangamata", ["Whangamatā, playa", "Whangamatā beach"], "hauraki_coromandel", "https://thecoromandel.nz/webcams/whangamata-webcam", true,
+    "2026-10-12: imagen de las 07:41 NZDT (Last-Modified de hoy; el sello de la cámara dice 06:41), playa con olas rompiendo, Whenuakura y Hauturu", { km: 1.5 }),
+  cam("raglan-bar", "nz-raglan", ["Raglan, barra", "Raglan bar"], "raglan_sport_fishing", "https://www.raglansportfishing.co.nz/live-cams/raglan-bar-cam", true,
+    "2026-10-12: directo de YouTube activo, fotograma de las 07:37 NZDT con niebla: se ven el mar y las olas rompiendo en la barra", { km: 3 }),
+  cam("castlepoint-lighthouse", "nz-castlepoint", ["Castlepoint, faro", "Castlepoint lighthouse"], "castlepoint_lighthouse", "https://castlepointlighthouse.com/", false,
+    "2026-10-12: directo de YouTube activo (de 7 a 18 h), fotograma de las 07:38 NZDT con el faro, el mar, la laguna y Castle Rock", { km: 0.5 }),
+  cam("gw-beacon-hill", "nz-wellington-harbour", ["Beacon Hill: entrada del puerto de Wellington", "Beacon Hill: Wellington Harbour entrance"], "greater_wellington", "https://www.gw.govt.nz/environment/harbours-and-coasts/wellington-harbour-entrance-webcams-and-radio/", true,
+    "2026-10-12: las 4 imágenes de las 07:39 NZDT (Last-Modified de hoy): bahía, Breaker Bay con olas rompiendo, la entrada y la costa sur", { km: 1.5 }),
+  cam("nelson-harbour", "nz-nelson", ["Puerto de Nelson (norte y sur)", "Nelson Harbour (north and south)"], "nelson_cc", "https://harbours.nelson.govt.nz/cams/", false,
+    "2026-10-12: las 2 imágenes de las 07:38 NZDT (Last-Modified de hoy): Boulder Bank, el faro y el puerto en calma", { km: 3 }),
+  cam("southloop-ocean-beach", "nz-bluff", ["Ocean Beach (Bluff)", "Ocean Beach (Bluff)"], "southloop", "https://weathercam.southloop.net.nz/camstart.php", false,
+    "2026-10-12: imagen de las 07:33 NZDT (Last-Modified de hoy), costa rocosa y mar con Bluff Hill detrás", { km: 3.5 }),
+  cam("southloop-oban", "nz-halfmoon-bay", ["Oban, South Seas Hotel", "Oban, South Seas Hotel"], "southloop", "https://weathercam.southloop.net.nz/camstart.php", false,
+    "2026-10-12: imagen de las 07:00 NZDT (Last-Modified de hoy), Halfmoon Bay con el muelle y los barcos fondeados", { km: 0.2 }),
+  cam("sails-ashore", "nz-halfmoon-bay", ["Halfmoon Bay desde Sails Ashore", "Halfmoon Bay from Sails Ashore"], "sails_ashore", "https://sailsashore.co.nz/garden-web-cam/", false,
+    "2026-10-12: imagen de las 07:37 NZDT (Last-Modified de hoy), Halfmoon Bay, el muelle de Oban y el mar abierto", { km: 0.6 }),
 ];
 
 export const CAMARAS_NZ = LISTA;

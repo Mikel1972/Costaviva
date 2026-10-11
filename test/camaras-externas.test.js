@@ -240,7 +240,59 @@ const MODO_NZ = {
   "nz-primo-port-taranaki": "enlace", // bloquea el enlace directo a sus imágenes
   "nz-port-otago-aramoana": "enlace", // sin URL estable de imagen
   "nz-southloop-riverton": "imagen_oficial",
+  // Repaso de día del 2026-10-12: solo enlace hasta el permiso escrito.
+  "nz-hauraki-whangamata-beach": "enlace",
+  "nz-raglan-bar": "enlace",
+  "nz-castlepoint-lighthouse": "enlace",
+  "nz-gw-beacon-hill": "enlace",
+  "nz-nelson-harbour": "enlace",
+  "nz-southloop-ocean-beach": "enlace",
+  "nz-southloop-oban": "enlace",
+  "nz-sails-ashore": "enlace",
 };
+
+// Repaso de día del 2026-10-12: las 15 pendientes de NZ, añadidas (solo
+// enlace, sin análisis) o descartadas con motivo en NO_SIRVEN_NZ.
+import { NO_SIRVEN_NZ } from "../scripts/oleaje-camaras/camaras.mjs";
+const DUENOS_NUEVOS_NZ = ["hauraki_coromandel", "raglan_sport_fishing", "castlepoint_lighthouse", "greater_wellington", "nelson_cc", "sails_ashore"];
+const REPASO_DIA_NZ = {
+  "nz-hauraki-whangamata-beach": "nz-whangamata",
+  "nz-raglan-bar": "nz-raglan",
+  "nz-castlepoint-lighthouse": "nz-castlepoint",
+  "nz-gw-beacon-hill": "nz-wellington-harbour",
+  "nz-nelson-harbour": "nz-nelson",
+  "nz-southloop-ocean-beach": "nz-bluff",
+  "nz-southloop-oban": "nz-halfmoon-bay",
+  "nz-sails-ashore": "nz-halfmoon-bay",
+};
+const DESCARTADAS_DIA_NZ = ["coromandel-harbour", "manu-bay", "plimmerton", "kaikoura-cubby-house", "waikanae-slsc", "coastguard-whakatane", "picton-harbour-view"];
+
+test("NZ (repaso de día 2026-10-12): las 15 pendientes, añadidas solo como enlace o descartadas con motivo", () => {
+  assert.equal(Object.keys(REPASO_DIA_NZ).length + DESCARTADAS_DIA_NZ.length, 15);
+  for (const [id, spot] of Object.entries(REPASO_DIA_NZ)) {
+    const c = CAMARAS_NZ.find((x) => x.id === id);
+    assert.ok(c, `${id}: falta en camaras-nz.js`);
+    assert.equal(c.spot, spot, id);
+    assert.equal(c.modo, "enlace", `${id}: sin permiso escrito solo va como enlace`);
+    assert.equal(c.imagen ?? c.iframe, undefined, id);
+    assert.match(c.verificada, /^2026-10-12: /, `${id}: verificada de día el 2026-10-12`);
+    assert.ok(!/youtube\.com|youtu\.be|facebook|instagram/.test(c.url), `${id}: se enlaza la web del dueño`);
+    assert.ok(NO_SIRVEN_NZ[id], `${id}: no se analiza (motivo en NO_SIRVEN_NZ)`);
+  }
+  for (const id of DESCARTADAS_DIA_NZ) {
+    assert.ok(!CAMARAS_NZ.some((c) => c.id === `nz-${id}`), id);
+    assert.match(NO_SIRVEN_NZ[`nz-descartada-${id}`] || "", /^DESCARTADA /, `${id}: falta su motivo`);
+  }
+  // Dueños nuevos: ni embebido ni análisis hasta su respuesta, y un contacto.
+  for (const k of DUENOS_NUEVOS_NZ) {
+    assert.equal(NZ_EMBED_AUTORIZADO[k], false, k);
+    assert.equal(NZ_ANALISIS_AUTORIZADO[k], false, k);
+    assert.equal(embedNZ(k), null, k);
+    assert.deepEqual(CONDICIONES_NZ[k].modos_permitidos, ["enlace"], k);
+    assert.ok(CONDICIONES_NZ[k].contacto, `${k}: sin contacto`);
+    assert.ok(CAMARAS_NZ.some((c) => c.condiciones === k), `${k}: dueño sin cámara`);
+  }
+});
 
 test("NZ: modo por cámara según el interruptor de su dueño", () => {
   for (const c of CAMARAS_NZ) {
