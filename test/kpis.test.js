@@ -267,3 +267,15 @@ test("líneas y KPIS.md por país, con fila de total", () => {
   assert.ok(["es", "pt", "nz"].includes(r.paisFoco));
   assert.equal(resumenJson(r).paises.length, 3);
 });
+
+test("tasas: con 0 conversiones o pocos casos se planifica con el supuesto; antes del inicio no hay objetivo", () => {
+  const L = Array.from({ length: 30 }, (_, i) => ({ fecha: `2026-10-${String(i + 1).padStart(2, "0")}`, visitas: 30, altas: 0 }));
+  const t = tasas(L);
+  assert.equal(t.visita_alta.real, false);
+  assert.equal(t.visita_alta.valor, 0.04);
+  const o = objetivosPeriodo({ desde: "2026-09-28", hasta: "2026-10-04" }, "ambicioso", t, arpu(null));
+  assert.equal(o.altas, null);
+  assert.equal(filasKpi(agregarPeriodo([], { desde: "2026-09-28", hasta: "2026-10-04" }), o).find((f) => f.clave === "altas").estado, "sin_dato");
+  const md = markdown(construir([{ fecha: "2026-10-10", visitas: 63, altas: 0, stock: { mrr_eur: 0, suscriptores: { mensual: 0, anual: 0 } } }], "2026-10-11", []));
+  assert.ok(!/Infinity|NaN/.test(md));
+});

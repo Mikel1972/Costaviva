@@ -78,7 +78,7 @@ export function construir(lineas, hoy, cambios = []) {
 }
 
 const num = (v) => (v == null ? "—" : Number(v).toLocaleString("es-ES", { maximumFractionDigits: 1 }));
-function fmtTasa(x) { return `${(x.valor * 100).toFixed(1)} % ${x.real ? `(real, n=${x.n})` : `(supuesto; real con n=${x.n}, hace falta ${MIN_N})`}`; }
+function fmtTasa(x) { return `${num(x.valor * 100)} % ${x.real ? `(real, n=${x.n})` : `(supuesto; de momento ${x.num ?? 0} de ${x.n}, pocos casos para usar el real)`}`; }
 
 export function markdown(r) {
   const { ultimoStock: u, actual } = r;
@@ -92,9 +92,9 @@ export function markdown(r) {
   if (r.alarma.avisar) L.push(`> ⚠️ **Aviso a Mikel:** el MRR real ha quedado por debajo del suelo (escenario base) al cierre de ${r.alarma.quincenas.join(" y ")}. La causa y la propuesta van en el Issue de los lunes (rutina de KPIs).`, "");
 
   L.push("## Estrella polar: MRR", "");
-  const objHoy = mrrObjetivo(r.ayer, r.escenario);
-  const e = estado(s?.mrr_eur ?? null, objHoy, mrrObjetivo(r.ayer, r.suelo));
-  L.push(`- **MRR real:** ${eur(s?.mrr_eur ?? null)} (${s?.mrr_fuente === "stripe" ? "Stripe, anuales a 1/12, con descuentos" : "precio de lista desde Supabase"}) · objetivo hoy ${eur(redondear(objHoy))} (suelo ${eur(redondear(mrrObjetivo(r.ayer, r.suelo)))}) · ${desviacion(s?.mrr_eur ?? null, objHoy)} · ${ICONO[e.estado]}`);
+  const objHoy = r.ayer < INICIO ? null : mrrObjetivo(r.ayer, r.escenario);
+  const e = estado(s?.mrr_eur ?? null, objHoy, objHoy == null ? null : mrrObjetivo(r.ayer, r.suelo));
+  L.push(`- **MRR real:** ${eur(s?.mrr_eur ?? null)} (${s?.mrr_fuente === "stripe" ? "Stripe, anuales a 1/12, con descuentos" : "precio de lista desde Supabase"}) · objetivo hoy ${objHoy == null ? "— (empieza el " + INICIO + ")" : `${eur(redondear(objHoy))} (suelo ${eur(redondear(mrrObjetivo(r.ayer, r.suelo)))})`} · ${desviacion(s?.mrr_eur ?? null, objHoy)} · ${ICONO[e.estado]}`);
   L.push(`- **Suscriptores de pago:** ${s ? `${s.suscriptores.mensual} mensuales y ${s.suscriptores.anual} anuales` : "—"} · en prueba con tarjeta en Stripe: ${s?.en_prueba_stripe ?? "—"} · con baja programada: ${s?.cancelacion_programada ?? "—"}`);
   L.push(`- **ARPU:** ${eur(redondear(r.a.valor))} ${r.a.real ? "(real)" : "(supuesto de objetivos.json hasta tener datos)"} · precios de hoy ${eur(PRECIO_MENSUAL)}/mes y ${eur(PRECIO_ANUAL)}/año`);
   L.push(`- **Usuarios:** ${s?.perfiles ?? "—"} cuentas válidas (sin admin, pruebas ni accesos regalados) · activos en 7 días: ${s?.activos_7d ?? "—"}`);
@@ -137,7 +137,7 @@ export function markdown(r) {
   if (actual) L.push(`### Detalle de ${actual.id}`, "", tablaKpi(actual.filas), "");
 
   L.push("## Por semana (lunes a domingo)", "");
-  for (const w of [...r.S].reverse().slice(0, 4)) L.push(`### Semana del ${w.desde}${w.en_curso ? ` (en curso, ${w.dias} días)` : ""}`, "", tablaKpi(w.filas), "");
+  for (const w of [...r.S].reverse().slice(0, 4)) L.push(`### Semana del ${w.desde}${w.en_curso ? ` (en curso, ${w.dias} días)` : ""}${w.hasta < INICIO ? " (antes del inicio de los objetivos)" : ""}`, "", tablaKpi(w.filas), "");
 
   L.push("## Línea base: antes del inicio (2026-09-15 → 2026-10-10)", "");
   const b = r.antes;
