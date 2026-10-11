@@ -282,19 +282,24 @@ Todo sale de **`functions/_lib/precios-zonas.json`** (config) y
 - **Activar un país**: añadir su zona (o `activa: true`) en
   `precios-zonas.json`, `node scripts/precios/generar-md.mjs`, fusionar y
   lanzar "Precios de Stripe" (test y luego live). Nada más.
-- **Interruptor `COBRO_ACTIVO` (2026-10-11, Mikel: aún sin empresa ni alta
-  fiscal; "lo legal siempre se cumple")**: variable de entorno de Cloudflare
-  Pages, **por defecto apagada** (solo el texto `true` la enciende,
-  `cobroActivo()` de `_lib/precios.js`). Apagada: la página de precios enseña
-  los planes, la prueba de 14 días funciona, el botón de pago dice
-  "Próximamente" (es/en/pt) y `/crear-checkout-stripe` responde 403
-  `cobro_no_activo` sin tocar Stripe (también `probar-checkout-stripe.yml`).
-  Encenderla solo cuando Mikel confirme el alta: `COBRO_ACTIVO=true` en
-  Production (y Preview si se quiere probar) + redeploy (trampa 1).
-- **Pendiente del alta (no inventar)**: datos del titular en la sección 1 de
-  `terminos.html` (nombre o razón social, NIF y domicilio; LSSI art. 10) y el
-  registro de IVA en Stripe Tax (España/OSS). Hasta entonces los términos no
-  llevan datos del titular y el cobro sigue apagado.
+- **COBRO ACTIVO DESDE EL 2026-10-11, SIN ALTA FISCAL (decisión de Mikel,
+  riesgo legal y fiscal asumido por él; rechazó lanzar sin cobrar).**
+  `COBRO_ACTIVO=true` en Cloudflare Production. Stripe Tax está activo pero
+  sin registros, así que **Stripe no cobra IVA aparte**: los precios llevan el
+  IVA incluido y, al darse de alta, Mikel deberá ingresar a Hacienda ~17,4 %
+  de lo cobrado (21/121). Mientras `alta_fiscal.pendiente` sea `true` en
+  `precios-zonas.json`, el aviso sale cada lunes en el informe diario (paso
+  "Cobro y precios", sin IA) y en `PRECIOS.md`; la sección 1 de
+  `terminos.html` dice "pendiente de completar" (es/en/pt, `data-titular`)
+  con el contacto datos@costaviva.org. Al constar el alta: datos del titular
+  en los términos, registro de IVA en Stripe Tax (España/OSS),
+  `STRIPE_TAX_AUTOMATICO=1` y `pendiente: false`.
+- **Interruptor `COBRO_ACTIVO`**: variable de entorno de Cloudflare Pages
+  (solo el texto `true` la enciende, `cobroActivo()` de `_lib/precios.js`).
+  Apagada: la página de precios enseña los planes, la prueba de 14 días
+  funciona, el botón de pago dice "Próximamente" (es/en/pt) y
+  `/crear-checkout-stripe` responde 403 `cobro_no_activo` sin tocar Stripe.
+  Cambiarla exige redeploy (trampa 1).
 - **App (PR "Cobro 2/2", migración `20261011230000`)**:
   - **Prueba de 14 días de Premium sin tarjeta** desde `perfiles.creado_en`
     (`mi_estado_suscripcion()`; cuenta como Mundial). **Al acabar, plan

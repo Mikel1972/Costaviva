@@ -145,8 +145,26 @@ test("COBRO_ACTIVO: por defecto cerrado; solo 'true' abre los pagos", () => {
   }
 });
 
-test("términos: sin datos del titular inventados", () => {
+test("términos: sin datos del titular inventados; marcador mientras falte el alta", () => {
   const t = readFileSync(new URL("../terminos.html", import.meta.url), "utf8");
+  const cfg = JSON.parse(readFileSync(new URL("../functions/_lib/precios-zonas.json", import.meta.url), "utf8"));
+  if (cfg.alta_fiscal?.pendiente) {
+    assert.equal((t.match(/<p data-titular>/g) || []).length, 3, "marcador del titular en es, en y pt");
+    assert.match(t, /pendiente de completar/);
+    assert.match(t, /pending completion/);
+    assert.match(t, /pendente de preenchimento/);
+  }
   assert.doesNotMatch(t, /\[(titular|nif|cif|domicilio|razón social|pendiente)[^\]]*\]/i);
   assert.doesNotMatch(t, /\b(NIF|CIF)\s*:?\s*[A-Z0-9]{8,9}\b/);
+});
+
+test("aviso del alta fiscal en el resumen de los lunes mientras esté pendiente", async () => {
+  const { avisoAltaFiscal, generarResumen } = await import("../scripts/precios/generar-md.mjs");
+  const cfg = JSON.parse(readFileSync(new URL("../functions/_lib/precios-zonas.json", import.meta.url), "utf8"));
+  assert.match(avisoAltaFiscal(cfg), /sin alta fiscal/);
+  assert.match(avisoAltaFiscal(cfg), /17,4 %/);
+  assert.match(generarResumen(cfg), /^\*\*AVISO/);
+  assert.equal(avisoAltaFiscal({ ...cfg, alta_fiscal: { ...cfg.alta_fiscal, pendiente: false } }), "");
+  const informe = readFileSync(new URL("../.github/workflows/daily-report.yml", import.meta.url), "utf8");
+  assert.match(informe, /steps\.cobro\.outputs\.resultado/);
 });
