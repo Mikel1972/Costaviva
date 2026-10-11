@@ -135,6 +135,7 @@ export function alarmaBajoSuelo(cierres, obj = OBJETIVOS) {
 // el real tenga min_n casos en el denominador; entonces manda el real.
 export const SUPUESTOS = OBJETIVOS.supuestos_embudo;
 export const MIN_N = SUPUESTOS.min_n;
+export const MIN_EVENTOS = 5;
 
 // Activación v1 (2026-10-11): en sus 7 primeros días, el usuario abre la app
 // al menos 2 días distintos y hace algo más que mirar el mapa o la pantalla
@@ -288,9 +289,12 @@ export function tasas(lineas) {
   const visDias = lineas.filter((l) => typeof l.visitas === "number");
   const altasConVisitas = visDias.reduce((a, l) => a + (l.altas ?? 0), 0);
   const visitas = visDias.reduce((a, l) => a + l.visitas, 0);
-  const elegir = (num, den, sup) => (den >= MIN_N ? { valor: num / den, real: true, n: den } : { valor: sup, real: false, n: den });
+  // El real manda con al menos MIN_N casos en el denominador y MIN_EVENTOS en
+  // el numerador (con 0 conversiones no se puede planificar hacia atrás); para
+  // visita → alta, además, 500 visitas.
+  const elegir = (num, den, sup, minDen = MIN_N) => (den >= minDen && num >= MIN_EVENTOS ? { valor: num / den, real: true, n: den } : { valor: sup, real: false, n: den, num });
   return {
-    visita_alta: elegir(altasConVisitas, visitas, SUPUESTOS.visita_alta),
+    visita_alta: elegir(altasConVisitas, visitas, SUPUESTOS.visita_alta, 500),
     alta_activacion: elegir(t.cohorte_activadas ?? 0, t.cohorte_altas ?? 0, SUPUESTOS.alta_activacion),
     alta_pago: elegir(t.nuevos_pagos ?? 0, t.altas_confirmadas ?? 0, SUPUESTOS.alta_pago),
     margen_bajas: { valor: SUPUESTOS.margen_bajas, real: false, n: 0 },
@@ -306,6 +310,8 @@ export function arpu(stock) {
 // nuevos = MRR a ganar / ARPU, +15 % para reponer bajas; altas y visitas,
 // hacia atrás con las tasas.
 export function objetivosPeriodo(p, escenario, tasasActuales, arpuActual) {
+  // Antes del inicio no hay objetivo (la línea base se enseña aparte).
+  if (p.hasta < INICIO) return { mrr_eur: null, suscriptores: null, nuevos_pagos: null, altas: null, activaciones: null, visitas: null, cancelaciones_max: null, facturado_eur: null };
   const len = diasEntre(p.desde, p.hasta) + 1;
   const mrrIni = mrrObjetivo(sumarDias(p.desde, -1), escenario);
   const mrrFin = mrrObjetivo(p.hasta, escenario);
