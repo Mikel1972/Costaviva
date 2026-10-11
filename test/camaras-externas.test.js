@@ -144,3 +144,46 @@ test("index.html filtra las externas con externaCuentaComoCaida y el robot usa l
   assert.match(robot, /resultadoComprobacionExterna\(camara, status, tipo\)/);
   assert.match(robot, /lecturaSaludExterna\(clave,/);
 });
+
+// --- Nueva Zelanda (assets/js/camaras-nz.js, 2026-10-11) ---
+// Mismo formato y mismas reglas, pero cada cámara va a un spot de SPOTS_NZ,
+// todas en modo enlace (sin permiso escrito de ningún dueño) y sin análisis.
+// Que sigan ocultas lo comprueba test/nz-region.test.js.
+import { CAMARAS_NZ, CONDICIONES_NZ } from "../assets/js/camaras-nz.js";
+import { SPOTS_NZ } from "../functions/_lib/nz/spots-nz.js";
+
+test("NZ: cada condición dice dueño, modos, análisis y fuente", () => {
+  for (const [clave, c] of Object.entries(CONDICIONES_NZ)) {
+    assert.ok(c.dueno, `${clave}: sin dueño`);
+    assert.deepEqual(c.modos_permitidos, ["enlace"], `${clave}: sin permiso escrito solo enlace`);
+    assert.equal(c.analisis_permitido, false, `${clave}: analisis_permitido`);
+    assert.ok(c.fuentes?.length && c.fuentes.every((u) => u.startsWith("https://")), `${clave}: sin fuente`);
+    assert.ok(c.cita, `${clave}: sin cita`);
+    assert.ok(!(clave in CONDICIONES), `${clave}: choca con una condición de camaras-externas.js`);
+  }
+});
+
+test("NZ: cada cámara tiene dueño, enlace https, verificación y un spot NZ real", () => {
+  const slugsNZ = new Set(SPOTS_NZ.map((s) => s.slug));
+  const ids = CAMARAS_NZ.map((c) => c.id);
+  assert.ok(CAMARAS_NZ.length > 0);
+  assert.equal(new Set(ids).size, ids.length);
+  const idsES = new Set(CAMARAS_EXTERNAS.map((c) => c.id));
+  for (const c of CAMARAS_NZ) {
+    assert.match(c.id, /^nz-[a-z0-9-]+$/, c.id);
+    assert.ok(!idsES.has(c.id), `${c.id}: id repetido con España`);
+    assert.ok(CONDICIONES_NZ[c.condiciones], `${c.id}: condiciones ${c.condiciones}`);
+    assert.ok(c.dueno && c.nombre, `${c.id}: dueño/nombre`);
+    assert.equal(c.modo, "enlace", `${c.id}: sin permiso escrito solo enlace`);
+    assert.equal(c.imagen, undefined, `${c.id}: un enlace no lleva imagen`);
+    assert.equal(c.analisis_permitido, false, `${c.id}: nunca analizar fotogramas de terceros`);
+    assert.equal(typeof c.rompiente, "boolean", `${c.id}: rompiente`);
+    assert.ok(c.url?.startsWith("https://"), `${c.id}: url`);
+    assert.ok(!/facebook\.com|instagram\.com|fb\.watch/i.test(c.url), `${c.id}: nada de Facebook ni Instagram`);
+    if (/youtube\.com|youtu\.be/.test(c.url)) assert.match(c.url, /^https:\/\/www\.youtube\.com\/watch\?v=[A-Za-z0-9_-]{11}$/, c.id);
+    assert.match(c.verificada || "", /^\d{4}-\d{2}-\d{2}: /, `${c.id}: falta cómo y cuándo se verificó`);
+    if (c.km != null) assert.ok(c.km <= 15, `${c.id}: a más de 15 km`);
+    assert.ok(slugsNZ.has(c.spot), `${c.id}: el spot ${c.spot} no es de NZ`);
+    assert.match(claveSalud(c), /^ext-nz-/);
+  }
+});
