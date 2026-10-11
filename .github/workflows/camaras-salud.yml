@@ -94,8 +94,15 @@ jobs:
           mkdir -p datos-robots
           node -e '
             const fs = require("fs");
-            const camaras = JSON.parse(fs.readFileSync("/tmp/camaras.json", "utf8"));
+            let camaras = JSON.parse(fs.readFileSync("/tmp/camaras.json", "utf8"));
             if (!Array.isArray(camaras)) throw new Error("respuesta inesperada");
+            // Solo las cámaras que comprobar-camaras.mjs vigila hoy: las filas de
+            // cámaras retiradas del código se quedan en camara_estado y no deben
+            // seguir saliendo en rojo en el parte (2026-10-11, SOCIB).
+            try {
+              const vigiladas = new Set(JSON.parse(fs.readFileSync("/tmp/camaras-vigiladas.json", "utf8")));
+              if (vigiladas.size) camaras = camaras.filter((c) => vigiladas.has(c.spot_slug));
+            } catch {}
             fs.writeFileSync(process.argv[1], JSON.stringify({ generado_en: new Date().toISOString(), fuente: "camara_estado", camaras }, null, 1) + "\n");
           ' "$F"
           git config user.name "Costaviva (volcado)"
