@@ -458,6 +458,40 @@ Comillas no tiene nada que ver con la que sustituya a Suances.
 | `http_502`, `sin_respuesta` en varias del mismo proveedor a la vez | Caída del proveedor. Esperar, no investigar una a una. |
 | `frame_congelado` | La cámara responde pero da siempre la misma imagen: puede estar apagada de noche, o muerta de verdad. Comprobar `Last-Modified`. |
 | `sin_respuesta` en una sola, con el resto del proveedor bien | Candidata clara a haberse movido. |
+| `origen_404` (desde 2026-10-11) | El dueño ya no publica ese fichero: mira qué embebe hoy su web. |
+| `origen_522` (desde 2026-10-11) | El edge de Cloudflare no consigue **conectar** con el servidor del dueño. No es nuestra URL ni el User-Agent (la conexión no llega). Si desde la sesión sí responde, el dueño bloquea o filtra las IP de Cloudflare: el proxy no lo puede arreglar. |
+
+**`http_502` a secas es NUESTRO proxy, no el proveedor** (corregido el
+2026-10-11, agente de cámaras caídas). `functions/webcam/[slug].js` responde
+502 siempre que fallan todas las fuentes, y hasta ese día el monitor guardaba
+solo eso. El parte del 2026-10-10 tenía 8 cámaras en `http_502` que eran tres
+problemas distintos: 404 del dueño (Alicante), 522 hacia `cantabria.es`
+(intermitente: a ratos conecta) y 522 hacia `apps.socib.es`. Si ves
+`http_502` en filas antiguas, pide `/webcam/<slug>` a mano: el JSON trae el
+error real de cada fuente en `detalle`. Desde ese día el monitor guarda
+`origen_<código>`.
+
+**Un 200 del proveedor tampoco es señal de vida, aunque haya redirección**
+(caso real 2026-10-11, SOCIB). `apps.socib.es/.../latest/...` respondía 307
+→ `images.socib.es/convert/...` → 200 con imagen real y una marca
+`?cache=<hora de ahora>` en la URL. Parecía viva. El fichero de debajo
+(`images.socib.es/beamon/<loc>/sirena/<loc>/latest_mobile/c01_snap.jpg`)
+tenía `Last-Modified` de 2024 y 2025 en las cinco cámaras de cada estación:
+las tres llevaban paradas más de un año. Mira el `Last-Modified` del
+fichero ORIGINAL, no del que sirve un redimensionador.
+
+**Una reserva que "funciona" también hay que mirarla** (caso real
+2026-10-11, Laredo). Con `fuente_usada > 0` el monitor da la cámara por
+buena si la reserva devuelve una imagen con contraste. La de Laredo
+(tendsys, "Puntal Pinos") devolvía 200, `Last-Modified` de minutos y un
+fotograma gris desenfocado con la fecha `02-03-1970` grabada: cámara
+reiniciada, inútil. Cuando una cámara va por reserva, ábrela con `Read`.
+
+**Una cámara congelada no se retiraba nunca** (corregido el 2026-10-11).
+`frame_congelado` cuenta como lectura buena, así que `ultima_senal_en` se
+renovaba cada 30 min y la regla de 24 h de la app no saltaba: Pasaia enseñó
+la misma imagen del 7 de octubre durante cuatro días. Ahora la app usa
+`hash_desde` (desde cuándo el fotograma es idéntico) para las congeladas.
 
 **3. Busca la web pública del dueño y mira qué embebe HOY.** No busques la
 URL antigua: busca la página del ayuntamiento, la escuela de surf, el club
