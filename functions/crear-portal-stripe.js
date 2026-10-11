@@ -24,7 +24,18 @@
 // Environment variables, como "Secret", nunca en el repo):
 // STRIPE_SECRET_KEY (la misma que ya usa crear-checkout-stripe.js).
 
+import STRIPE_IDS from "./_lib/stripe-ids.json";
+
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
+
+// Configuración del portal que crea scripts/stripe/crear-precios.mjs
+// (cambio de plan entre los precios vigentes, cambio de tarjeta y
+// cancelación al final del periodo). En live no había configuración por
+// defecto (2026-10-11), así que se pasa su id; sin él, Stripe usa la suya.
+function configuracionPortal(stripeKey) {
+  const modo = /^(sk|rk)_live_/.test(stripeKey) ? "live" : "test";
+  return STRIPE_IDS?.[modo]?.portal || null;
+}
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
 
@@ -85,6 +96,8 @@ export async function onRequestPost(context) {
     const params = new URLSearchParams();
     params.append("customer", clienteId);
     params.append("return_url", `${origen}/suscripcion.html`);
+    const conf = configuracionPortal(stripeKey);
+    if (conf) params.append("configuration", conf);
 
     const resp = await fetch("https://api.stripe.com/v1/billing_portal/sessions", {
       method: "POST",
