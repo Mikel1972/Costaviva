@@ -151,7 +151,8 @@ test("/prevision?region=nz&lista=1 pública (sin sesión ni clave)", async () =>
 // ---------------------------------------------------------------------------
 test("sitemap: las URL de España de siempre (284) y las de NZ solo bajo /en/, sin /login", () => {
   const urls = urlsSitemap({ spots: SPOTS, especies, tipoFondo: null, profundidad: null });
-  const es = urls.filter((u) => !u.loc.includes("/en/"));
+  // Las /pt/ (portugués, 2026-10-11) aparte: test/seo-pt.test.js.
+  const es = urls.filter((u) => !u.loc.includes("/en/") && !u.loc.includes("/pt/"));
   const en = urls.filter((u) => u.loc.includes("/en/"));
   assert.equal(es.length, 284);
   assert.ok(!es.some((u) => /\/nz-|\/nz\//.test(u.loc)), "nada de NZ en las URL en español");

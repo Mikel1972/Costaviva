@@ -87,7 +87,8 @@ export function indiceDeHoy(especiesDatos, spotPrev, horas, { ahoraISO, tipoFond
     especieId: ind.especie?.id || null,
     freza: !!ind.freza,
     avisoOla: ind.avisoOla?.texto || null,
-    motivos: motivos.map((m) => ({ texto: m.texto, flecha: m.flecha, sube: m.sube })),
+    // clave/vars: para traducir el motivo en las páginas en portugués.
+    motivos: motivos.map((m) => ({ texto: m.texto, flecha: m.flecha, sube: m.sube, ...(m.clave ? { clave: m.clave, vars: m.vars } : {}) })),
   };
 }
 
