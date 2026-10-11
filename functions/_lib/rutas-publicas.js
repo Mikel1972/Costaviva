@@ -110,6 +110,8 @@ const ARCHIVOS_PUBLICOS = new Set([
   "/especies",
   // Nueva Zelanda en inglés (functions/en/index.js redirige a /en/spots).
   "/en",
+  // Portugués (functions/pt/index.js redirige a /pt/spots/region/portugal).
+  "/pt",
   // Proxy de Open-Meteo para el navegador (functions/meteo/[api].js). Rutas
   // exactas, no el prefijo /meteo/: solo existen estas dos APIs.
   "/meteo/forecast",
@@ -132,7 +134,9 @@ const ARCHIVOS_PUBLICOS = new Set([
 //   /en/      — páginas públicas de Nueva Zelanda en inglés (2026-10-11):
 //               /en/spots, /en/tides, /en/species (functions/en/...). /en
 //               a secas redirige a /en/spots.
-const PREFIJOS_PUBLICOS = ["/assets/", "/webcam/", "/mareas/", "/spots/", "/especies/", "/en/"];
+//   /pt/      — páginas públicas en portugués (2026-10-11): spots y mareas de
+//               Portugal y especies (functions/pt/...). /pt a secas redirige.
+const PREFIJOS_PUBLICOS = ["/assets/", "/webcam/", "/mareas/", "/spots/", "/especies/", "/en/", "/pt/"];
 
 export function esRutaPermitida(pathname) {
   if (ARCHIVOS_PUBLICOS.has(pathname)) return true;

@@ -1,9 +1,10 @@
 // scripts/kpis/informe.mjs — SIN IA y sin red.
-// Lee datos-robots/kpis/historico.jsonl (recoger.mjs) y escribe:
-//   - KPIS.md (raíz del repo): árbol de KPIs, tablas por quincena y semana
+// Lee kpis/costaviva/historico.jsonl de comun (recoger.mjs) y escribe en esa
+// misma carpeta de comun (PRIVADA, decisión de Mikel del 2026-10-11):
+//   - KPIS.md: árbol de KPIs, tablas por quincena y semana
 //     con real, objetivo, desviación y estado, canales, socios y cambios;
-//   - datos-robots/kpis/mrr.svg: MRR real contra los tres escenarios;
-//   - datos-robots/kpis/resumen.json: lo mismo en datos, para comun (KPIS.md
+//   - mrr.svg: MRR real contra los tres escenarios;
+//   - resumen.json: lo mismo en datos, para comun (KPIS.md
 //     agregado) y para la rutina que actúa sobre el paso más en rojo.
 // Lo lanza kpis.yml los lunes (y a mano). Uso: node scripts/kpis/informe.mjs [--hoy AAAA-MM-DD]
 
@@ -16,11 +17,12 @@ import {
   PAISES, mrrObjetivoPais, objetivosPais, paisMasBajo,
   filasKpi, pasoMasRojo, tablaKpi, svgMrr, mrrObjetivo, alarmaBajoSuelo, estado, desviacion, ICONO, eur, redondear,
 } from "./lib.mjs";
-import { leerHistorico, RUTA_HISTORICO } from "./recoger.mjs";
+import { leerHistorico } from "./recoger.mjs";
+import { DIR_KPIS, RUTA_HISTORICO } from "./rutas.mjs";
 import { leerCambios, RUTA_CAMBIOS, estadoCambios } from "./evaluar-cambios.mjs";
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
-const DIR = join(RAIZ, "datos-robots", "kpis");
+const DIR = DIR_KPIS;
 
 const NOMBRE_PASO = {
   visitas: "Visitas a páginas públicas", altas: "Altas (visita → alta)", activaciones: "Activación en 7 días",
@@ -85,9 +87,9 @@ export function markdown(r) {
   const s = u?.stock;
   const L = [];
   L.push("# KPIs de Costaviva", "");
-  L.push(`Generado sin IA por \`scripts/kpis/informe.mjs\` el ${r.hoy} con datos hasta el ${r.ayer} (\`datos-robots/kpis/historico.jsonl\`). No se edita a mano.`, "");
+  L.push(`Generado sin IA por \`scripts/kpis/informe.mjs\` el ${r.hoy} con datos hasta el ${r.ayer} (\`historico.jsonl\` de esta carpeta). No se edita a mano.`, "");
   const f = u?.fuentes ?? {};
-  L.push(`**Fuentes:** Supabase ${f.supabase === "ok" ? "✅" : "❌"} · Stripe ${f.stripe === "ok" ? "✅ (API, solo lectura)" : f.stripe === "error" ? "❌ error" : "⚠️ sin clave `STRIPE_KPI_KEY`: MRR a precio de lista desde `suscripciones`, sin facturado ni cancelaciones"}${u ? ` · último dato ${u.fecha}` : " · sin datos todavía"}.`, "");
+  L.push(`**Fuentes:** Supabase ${f.supabase === "ok" ? "✅" : "❌"} · Stripe ${f.stripe === "ok" ? "✅ (API, solo lectura)" : f.stripe === "error" ? "❌ error" : "⚠️ sin clave de Stripe (`STRIPE_SECRET_KEY`): MRR a precio de lista desde `suscripciones`, sin facturado ni cancelaciones"}${u ? ` · último dato ${u.fecha}` : " · sin datos todavía"}.`, "");
   L.push(`**Objetivo:** ${OBJETIVOS.escenarios[r.escenario].nombre} · **suelo de alarma:** ${OBJETIVOS.escenarios[r.suelo].nombre} · prudente solo como referencia. ${OBJETIVOS.reglas.semaforo} Sin ajustes estacionales.`, "");
   if (r.alarma.avisar) L.push(`> ⚠️ **Aviso a Mikel:** el MRR real ha quedado por debajo del suelo (escenario base) al cierre de ${r.alarma.quincenas.join(" y ")}. La causa y la propuesta van en el Issue de los lunes (rutina de KPIs).`, "");
 
@@ -99,7 +101,7 @@ export function markdown(r) {
   L.push(`- **ARPU:** ${eur(redondear(r.a.valor))} ${r.a.real ? "(real)" : "(supuesto de objetivos.json hasta tener datos)"} · precios de hoy ${eur(PRECIO_MENSUAL)}/mes y ${eur(PRECIO_ANUAL)}/año`);
   L.push(`- **Usuarios:** ${s?.perfiles ?? "—"} cuentas válidas (sin admin, pruebas ni accesos regalados) · activos en 7 días: ${s?.activos_7d ?? "—"}`);
   L.push(`- **Referencia de ${eur(OBJETIVOS.referencia.mrr)} el ${OBJETIVOS.referencia.fecha}:** ${OBJETIVOS.referencia.nota}`, "");
-  L.push("![MRR real contra objetivo](datos-robots/kpis/mrr.svg)", "");
+  L.push("![MRR real contra objetivo](mrr.svg)", "");
 
   if (actual) {
     L.push(`## Paso del embudo más en rojo (${actual.id}, ${actual.desde} → ${actual.hasta}${actual.en_curso ? `, en curso ${actual.dias} días` : ""})`, "");
@@ -151,7 +153,7 @@ export function markdown(r) {
 
   L.push("## Canal socios: ranking", "");
   const soc = s?.socios;
-  if (!soc) L.push("Sin datos: hace falta `STRIPE_KPI_KEY` (los códigos de socio se leen de Stripe).", "");
+  if (!soc) L.push("Sin datos: hace falta `STRIPE_SECRET_KEY` (los códigos de socio se leen de Stripe).", "");
   else if (!Object.keys(soc).length) L.push("Todavía no hay ningún código de socio en Stripe (los crea `scripts/socios/crear-codigos.mjs` de comun al pasar una entidad a \"acordado\").", "");
   else {
     const filas = Object.entries(soc).sort((x, y) => y[1].facturado_eur - x[1].facturado_eur || y[1].altas - x[1].altas);
@@ -186,7 +188,7 @@ export function markdown(r) {
   L.push("- **Datos:** `kpis.yml` cada mañana lee producción SOLO en lectura (Supabase por REST con la service_role; Stripe con una clave restringida de lectura) y añade al histórico una línea por día cerrado. El histórico nunca se reescribe.");
   L.push("- **Altas** excluyen al admin, las cuentas de pruebas automáticas, los accesos permanentes y las invitaciones del 100 % (igual que `metricas_captacion()`).");
   L.push("- **Estado:** 🟢 llega al objetivo (ambicioso); 🟠 entre el suelo (base) y el objetivo; 🔴 por debajo del suelo. Cancelaciones: 🟢 hasta el máximo previsto, 🟠 hasta un 30 % más. En una quincena o semana en curso los flujos se comparan con el objetivo prorrateado.");
-  L.push("- **Objetivos:** `datos-robots/kpis/objetivos.json` (se cambian ahí, sin tocar código).");
+  L.push("- **Objetivos:** `datos-robots/kpis/objetivos.json` de Costaviva (se cambian ahí, sin tocar código). Los datos y este informe viven solo en comun (privado).");
   return L.join("\n") + "\n";
 }
 
@@ -212,7 +214,7 @@ function principal() {
   const lineas = leerHistorico(RUTA_HISTORICO);
   const r = construir(lineas, hoy, leerCambios(RUTA_CAMBIOS));
   mkdirSync(DIR, { recursive: true });
-  writeFileSync(join(RAIZ, "KPIS.md"), markdown(r));
+  writeFileSync(join(DIR, "KPIS.md"), markdown(r));
   const puntos = lineas.filter((l) => l.stock).map((l) => ({ fecha: l.fecha, mrr: l.stock.mrr_eur }));
   writeFileSync(join(DIR, "mrr.svg"), svgMrr(puntos));
   writeFileSync(join(DIR, "resumen.json"), JSON.stringify(resumenJson(r), null, 1) + "\n");

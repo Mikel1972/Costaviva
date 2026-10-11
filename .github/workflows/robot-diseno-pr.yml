@@ -24,8 +24,10 @@ on:
       - "robot/etiquetas-olas-**"
       - "robot/aprendizaje-**"
       # Huecos de palabras clave (rutina "Robot de SEO y diseño", PARTE C,
-      # comun/rutinas/robot-seo-redes.md). Añadido 2026-10-11. Como el resto,
-      # se queda abierto hasta que Mikel lo fusiona.
+      # comun/rutinas/robot-seo-redes.md). Añadido 2026-10-11. Desde ese
+      # mismo día, las de palabras y las de etiquetas de olas se fusionan
+      # solas si todo está en su lista blanca y en verde (fusion-robot-seo.yml);
+      # si no, quedan abiertas con la etiqueta "revisar".
       - "robot/palabras-**"
 
 permissions:
@@ -53,16 +55,19 @@ jobs:
           TITULO=$(git log -1 --format=%s)
           case "$RAMA" in
             robot/especies-*-factores) TIPO="Factores"; INTRO="Propuestas de la rutina de los viernes: reglas o pesos del índice de pesca sacados de estudios (cada uno con su fuente), contrastes con tus reglas locales (confirma/refuta/matiza, sin cambiarlas) y, si los hay, concursos con resultados reutilizables. Revisa la evidencia y la confianza de cada regla antes de aprobar." ;;
-            robot/etiquetas-olas-*) TIPO="Etiquetas de olas"; INTRO="Etiquetas de la rutina diaria de Claude mirando las cámaras (datos-robots/oleaje-camaras/etiquetas-claude.jsonl) y la calibración recalculada. Revisa qué cámaras pasan a sustituir al modelo en el panel y las cámaras movidas o ROIs que la rutina haya visto mal." ;;
+            robot/etiquetas-olas-*) TIPO="Etiquetas de olas"; INTRO="Etiquetas de la rutina diaria de Claude mirando las cámaras (datos-robots/oleaje-camaras/etiquetas-claude.jsonl) y la calibración recalculada. Se fusiona sola (fusion-robot-seo.yml) si solo cambia datos-robots/oleaje-camaras/ y los checks salen en verde; si no, queda abierta con la etiqueta revisar." ;;
             robot/aprendizaje-*) TIPO="Aprendizaje"; INTRO="Ideas de la rutina \"Costaviva - Investigador semanal\" para el índice de pesca, ya probadas con el banco de pruebas: retadores en aprendizaje/retadores/ (se calculan en la sombra, no cambian lo que ve nadie) y propuestas en aprendizaje/propuestas.json para tu sí/no del Issue semanal de comun. La evaluación con los datos del diario (solo agregados) la deja el workflow en aprendizaje/evaluacion-retadores.json. Fusionar esta PR NO activa ninguna regla." ;;
-            robot/palabras-*) TIPO="Palabras clave"; INTRO="Cambio del robot de SEO sobre un hueco de palabras clave (informe en Mikel1972/comun, seo/palabras/costaviva.md): solo páginas públicas y metadatos, con datos reales de la app. El efecto se mide a 1, 2 y 4 semanas en comun/seo/palabras/costaviva-cambios.json." ;;
+            robot/palabras-*) TIPO="Palabras clave"; INTRO="Cambio del robot de SEO sobre un hueco de palabras clave (informe en Mikel1972/comun, seo/palabras/costaviva.md): solo páginas públicas y metadatos, con datos reales de la app. El efecto se mide a 1, 2 y 4 semanas en comun/seo/palabras/costaviva-cambios.json. Se fusiona sola (fusion-robot-seo.yml, máx. 3 a la semana) si todos los ficheros están en la lista blanca y los checks salen en verde; si no, queda abierta con la etiqueta revisar." ;;
             robot/especies-*) TIPO="Especies"; INTRO="Actualización de las fichas de especies (assets/datos/especies.json) de la rutina de los jueves. Revisa sobre todo las tallas y vedas: cada una debe llevar su URL oficial." ;;
             *) TIPO="Diseño"; INTRO="Propuesta de diseño del robot de SEO y diseño (rutina en la nube)." ;;
           esac
           {
             echo "$INTRO"
             echo
-            echo "**Nada de esto llega a costaviva.org hasta que apruebes y mergees este PR.**"
+            case "$RAMA" in
+              robot/palabras-*|robot/etiquetas-olas-*) echo "**Fusión automática:** si todo está en la lista blanca y los checks salen en verde, se fusiona sola; si no, se queda abierta para ti." ;;
+              *) echo "**Nada de esto llega a costaviva.org hasta que apruebes y mergees este PR.**" ;;
+            esac
             echo "Para verlo antes: abre el enlace de *Preview* del comentario de Cloudflare de más abajo (tarda un par de minutos)."
             echo
             echo "## Qué cambia y por qué"

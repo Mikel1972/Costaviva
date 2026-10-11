@@ -1039,6 +1039,8 @@
   "va.region.nz_fiordland": "Fiordland",
   "mapa.va.normas_nz": "Size and bag limits: official MPI rules ({area}) ↗",
   "mapa.va.app_mpi": "free NZ Fishing Rules app ↗",
-  "mapa.va.rahui": "Local iwi or hapū may place a rāhui (temporary closure). Respect local signs and notices."
+  "mapa.va.rahui": "Local iwi or hapū may place a rāhui (temporary closure). Respect local signs and notices.",
+  "alarma.prefijo_pt": "Without a country code, Portugal (+351) is assumed. For another country, start with + and its code (+34…).",
+  "login.ej_cp_pt": "E.g. 1000 (the first 4 digits)"
 }
 ; })(typeof window !== "undefined" ? window : globalThis);

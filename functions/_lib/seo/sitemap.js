@@ -5,6 +5,7 @@ import { DOMINIO } from "./base.js";
 import { REGIONES_MAREAS, slugEspecie, fechaDatos } from "./datos.js";
 import { especiesDePais } from "../regiones-activas.js";
 import { urlsEn } from "./paginas-en.js";
+import { urlsPt } from "./paginas-pt.js";
 
 // Fecha de la última revisión de la portada, privacidad y las páginas de
 // mareas (su contenido de datos cambia cada hora, la plantilla no).
@@ -17,6 +18,8 @@ export const FECHA_PLANTILLA_SPOT = "2026-10-11";
 export const FECHA_MAREAS_REGION = "2026-10-11";
 // Lanzamiento de las páginas de Nueva Zelanda en inglés.
 export const FECHA_EN = "2026-10-11";
+// Lanzamiento de las páginas en portugués (Portugal y especies).
+export const FECHA_PT = "2026-10-11";
 
 export function urlsSitemap({ spots, especies, tipoFondo, profundidad }) {
   const fEsp = fechaDatos(especies?.version) || FECHA_PAGINAS_FIJAS;
@@ -38,6 +41,7 @@ export function urlsSitemap({ spots, especies, tipoFondo, profundidad }) {
     ...[...especiesDePais(especies.especies, "es")].sort((a, b) => a.id.localeCompare(b.id)).map((e) => u(`/especies/${slugEspecie(e.id)}`, fEsp, "monthly", "0.7")),
     u("/privacidad", FECHA_PAGINAS_FIJAS, "yearly", "0.2"),
     ...urlsEn({ spots, especies, fecha: fechaDatos(especies?.version, FECHA_EN) || FECHA_EN }),
+    ...urlsPt({ spots: spots.filter((x) => x.pais !== "nz"), especies: especiesDePais(especies.especies, "es"), fecha: fechaDatos(fSpot, FECHA_PT), fechaEspecies: fechaDatos(fEsp, FECHA_PT) }),
   ];
 }
 

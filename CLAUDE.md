@@ -5,28 +5,59 @@ cambian las convenciones — no es un historial (para eso está `ROBOT.md`).
 Si algo de aquí queda desactualizado, corrígelo en el momento en que lo
 detectes, no lo dejes para luego.
 
-## Idiomas: español e inglés (2026-10-09, base para Nueva Zelanda)
+## Migraciones: solo se aplica la que Mikel aprobó (2026-10-11, incidente)
+
+Mikel aprobó UNA migración (`20261011230000_cobro_prueba_14_dias_plan_gratis.sql`)
+y al lanzar `aplicar-migraciones.yml` se aplicaron también
+`20261011200000_programador_publicar_veto.sql` y `20261011220000_visitas_en.sql`,
+que otros agentes habían fusionado en main sin su sí: `supabase db push`
+aplica todas las pendientes. Regla: **Claude pregunta, Claude ejecuta; nada de
+SQL sin el sí de Mikel.** Dos cerrojos (trampa en `Mikel1972/comun`):
+
+1. **Check `migraciones-aprobadas`** (`.github/workflows/migraciones-aprobadas.yml`):
+   una PR que añade o modifica algo en `supabase/migrations/` falla salvo que
+   lleve la etiqueta **`sql-aprobado`**. La pone **solo el Claude principal,
+   después del sí explícito de Mikel** a esa migración (nunca un robot ni un
+   subagente por su cuenta, nunca "por adelantado"). Al ponerla, el check se
+   reevalúa solo (eventos `labeled`/`unlabeled`). No fusiones una PR con este
+   check en rojo.
+2. **`aplicar-migraciones.yml` exige el input `migracion`** con el nombre
+   exacto del fichero aprobado. Antes de aplicar mira
+   `supabase_migrations.schema_migrations`: si lo pendiente no es
+   EXACTAMENTE esa migración, falla sin tocar nada y lista las demás. Esas
+   otras se le enseñan a Mikel; no se aplican "de paso".
+
+Cómo se lanza ahora (desde main, con `actions_run_trigger`):
+`workflow_id: aplicar-migraciones.yml`, `ref: main`, inputs
+`{"confirmacion": "aplicar", "migracion": "20261011230000_cobro_prueba_14_dias_plan_gratis.sql"}`.
+Lógica en `.github/scripts/migraciones.mjs`, test en `test/migraciones.test.js`.
+
+## Idiomas: español, inglés y portugués (2026-10-09, base para Nueva Zelanda; portugués europeo desde el 2026-10-11)
 
 Mikel abre Nueva Zelanda para pescadores en inglés. Base de idiomas sin
-dependencias (PR "i18n"; los datos de NZ van aparte).
+dependencias (PR "i18n"; los datos de NZ van aparte). El 2026-10-11 aprueba
+el **portugués europeo (pt-PT)** para Portugal, Azores y Madeira: nunca
+portugués de Brasil (ecrã, telemóvel, utilizador, palavra-passe; "estar a" +
+infinitivo; tratamiento impersonal o "você" con moderación).
 
 - **Núcleo**: `assets/js/i18n.js` (`window.I18n`), diccionarios
-  `assets/i18n/es.js` y `en.js` (envoltorio + un objeto JSON, una clave por
-  línea). Los módulos ES importan `assets/js/i18n-modulo.js`. En el `<head>`
-  de cada página traducida, **antes de cualquier otro script**: `es.js`,
-  `en.js`, `i18n.js`.
+  `assets/i18n/es.js`, `en.js` y `pt.js` (envoltorio + un objeto JSON, una
+  clave por línea). Los módulos ES importan `assets/js/i18n-modulo.js`. En el
+  `<head>` de cada página traducida, **antes de cualquier otro script**:
+  `es.js`, `en.js`, `pt.js`, `i18n.js`.
 - **Qué idioma** (regla de Mikel, 2026-10-09): elegido a mano en este
   navegador (`localStorage` `costaviva.idioma`) > perfil
   (`user_metadata.idioma` de la sesión de Supabase, leído de su entrada de
   localStorage) > **región** > `navigator.languages` > español. Región:
-  España, Portugal y Canarias en español; Nueva Zelanda en inglés (el
+  España y Canarias en español; Portugal, Azores y Madeira en portugués;
+  Nueva Zelanda en inglés (el
   `idioma` de cada región de `assets/js/regiones.js`; las tablas de i18n.js
   se comprueban contra ella en test/i18n.test.js). La región es la última
   que conoció la app en ese navegador (`I18n.recordarPosicion(lat, lon)` al
   abrir un spot o con el GPS de la alarma, `costaviva.region`) o, si no, la
   zona horaria del dispositivo. Así un español con el móvil en inglés ve la
   app en español. En node (tests, Functions) siempre español. El selector
-  (🌐 Español / English) va en el menú de cuenta 👤 (`<div
+  (🌐 Español / English / Português) va en el menú de cuenta 👤 (`<div
   data-i18n-selector>`) y bajo el formulario de login; guarda, intenta
   `auth.updateUser({ data: { idioma } })` y recarga.
 - **HTML fijo**: el texto español se queda en el HTML y se marca con
@@ -41,26 +72,56 @@ dependencias (PR "i18n"; los datos de NZ van aparte).
   suelto (muchos callbacks usan `t` como variable). Los scripts clásicos que
   también carga admin.html (errores.js, meteo.js...) usan
   `tr("clave", "texto español")`: el respaldo debe ser idéntico a es.js.
-- **Números/unidades**: `I18n.num` (coma en es, punto en en), `I18n.decimal`,
-  `I18n.temp`, `I18n.metros`, `I18n.velocidad(kmh, "nudos")`, `I18n.locale()`
-  (es-ES / en-NZ), `I18n.mesesCortos()`.
+- **Números/unidades**: `I18n.num` (coma en es y pt, punto en en),
+  `I18n.decimal`, `I18n.usaComa()`, `I18n.temp`, `I18n.metros`,
+  `I18n.velocidad(kmh, "nudos")` (nudos / kn / nós), `I18n.locale()`
+  (es-ES / en-NZ / pt-PT), `I18n.mesesCortos()`.
 - **Motivos del índice** (`ventana-actividad.js`): cada motivo lleva `clave`,
   `vars`, `texto` (idioma de la app) y `textoEs`. Lo que se guarda en el
   diario (`resumenIndice`) va en español + clave; `paraUsuario` filtra lo
   interno por `textoEs`.
 - **Datos por idioma** (fase de datos): `I18n.dato(obj, "texto")` usa
-  `texto_en` si existe; `I18n.nombre(especie)` usa `nombres.en`. Sin ellos,
-  español. Reglas expertas: `texto_en` en la regla.
+  `texto_en` en inglés; en portugués `texto_pt`, si no `texto_en`, si no el
+  español. `I18n.nombre(especie)` igual con `nombres.pt` / `nombres.en`.
+  Reglas expertas: `texto_en` / `texto_pt` en la regla. En especies.json todo
+  `_en` tiene su `_pt` (lo exige test/i18n.test.js), y en portugués hay además
+  cebos (`nombre_pt`), freza, tallas y normativa de PT/UE, vedas, reglas
+  expertas y `aviso_legal_pt`. Nombres de especie en portugués: los de la
+  tabla DGRM; los que puso Costaviva llevan `nombres_nota_pt`; sin nombre
+  común seguro, el científico (nunca uno inventado). Urta, medregal, bicuda y
+  palometa no tienen científico en los datos: siguen en español.
+- **Portugal en el alta y el SOS** (`assets/js/region-pais.js`): prefijo
+  +351 y las 4 primeras cifras del código postal (CP4; la restricción de la
+  base de datos ya admite 4-5 cifras); emergencias, 112.
+- **Glosario pt** (`i18n/glosario-pt.json`, con su fuente cada término):
+  maré, preia-mar, baixa-mar, ondulação, isco, amostra, pesqueiro,
+  enrocamento, defeso, tamanho mínimo... `test/i18n-glosario.test.js`
+  comprueba que pt.js los usa siempre y que no hay brasileñismos.
+- **Contraste con DeepL** (`scripts/i18n/contraste.mjs`, workflow manual
+  `i18n-contraste.yml`, secreto `DEEPL_API_KEY`, plan gratuito, sin IA):
+  traduce es.js con DeepL (PT-PT o EN-GB) y escribe `i18n/contraste-<idioma>.md`
+  con las claves que difieren mucho (distancia > 0,35) o en términos del
+  glosario. Es una lista para revisar a mano: DeepL no manda sobre el
+  glosario.
 - **SEO**: `functions/_lib/seo/idiomas.js`, **`PUBLICAR_EN = true`** desde el
   lanzamiento de NZ (2026-10-11): las páginas de Nueva Zelanda van SOLO en
   inglés bajo `/en/` con hreflang `en` + `x-default` (ver "Nueva Zelanda:
   lanzamiento"). Las de España, sin hreflang y con las canónicas de siempre.
+  **Portugués (2026-10-11)**: `functions/_lib/seo/paginas-pt.js` y
+  `functions/pt/**`, mismas rutas bajo `/pt/`: los 17 spots de la región
+  Portugal (`/pt/spots/<slug>`, `/pt/mareas/<slug>`), sus índices
+  (`/pt/spots/region/portugal`, `/pt/mareas/region/portugal`) y todas las
+  especies (`/pt/especies`, `/pt/especies/<slug>`). Cada par lleva hreflang
+  `es`, `pt-PT` y `x-default` (español) en las dos versiones; `/pt` a secas
+  redirige a los pesqueros. Solo se publica en portugués lo que tiene `_pt`
+  (lo demás no sale en /pt/). Están en el sitemap. Tests:
+  `test/seo-pt.test.js`.
 - **Tests**: `test/i18n.test.js` (cobertura de claves, nada sin traducir en
   las páginas de `PAGINAS_I18N` salvo `EXCEPCIONES`, es.js = texto del HTML,
   núcleo). Los tests antiguos que buscan textos en index.html leen la fuente
   con `fuenteEs()` (test/i18n-html.js): `I18n.t("clave"` vuelve a su texto.
-- **Página nueva o texto nuevo**: marca el HTML, añade la clave a es.js Y a
-  en.js. admin.html se queda en español a propósito.
+- **Página nueva o texto nuevo**: marca el HTML, añade la clave a es.js, a
+  en.js Y a pt.js. admin.html se queda en español a propósito.
 - **Pendiente (inventario, sin tocar)**: emails (`avisar-fin-prueba.js`:
   bienvenida, aviso y fin de prueba, enchufe; `_lib/invitaciones.js`:
   invitación; `sos-alerta.js`: SOS a contactos; plantillas de Supabase Auth
@@ -434,12 +495,85 @@ solo aplica ya a regiones que no estén en `REGIONES_ACTIVAS`.
   y clave → 200 con solo NZ, caché separada, España igual, normativa sin
   cifras, SOS, alta) y `test/listas-spots.test.js`.
 
+## Publicación automática con veto de 12 h y fusión sola de las PR del robot de SEO (2026-10-11)
+
+**Regla nueva de Mikel (2026-10-11), respondiendo a cómo publicar en redes:
+"Automático con veto"** ("no podemos estar improvisando ni aprobando uno a
+uno"). **Sustituye a la regla anterior ("nada sin su publica")**: desde hoy
+es "automático con veto de 12 h". El publicador manual sigue existiendo.
+
+- **Flujo**: los robots (`robot-marketing-instagram.yml`,
+  `robot-reel-instagram.yml`) preparan la pieza y abren el Issue de aviso
+  (etiqueta `marketing`) la víspera, con la imagen o el vídeo, los textos,
+  los hashtags y la hora a la que saldrá sola. `publicar-con-veto.yml` mira
+  cada 30 min los Issues abiertos (pg_cron:
+  `20261011200000_programador_publicar_veto.sql`, **SIN APLICAR**, a los 05 y
+  35; el `schedule:` "17,47 * * * *" es el respaldo) y, si a la hora prevista
+  no hay veto, publica en Instagram y Facebook con
+  `scripts/marketing/publicar-pieza.mjs` (la misma lógica que el manual,
+  mismo grupo de `concurrency`) y cierra el Issue con los enlaces.
+- **Cómo veta Mikel** (basta una): etiqueta `veto` en el Issue, o un
+  comentario suyo (autor = dueño del repo) con la palabra "no" o "veto" (en
+  caso de duda gana el veto; los comentarios de otros no vetan). Interruptor
+  general: **variable de repositorio `PUBLICACION_AUTOMATICA`**; si no es
+  `true`, no se publica nada solo (el job ni arranca y el Issue lo dice).
+  **No existe todavía: la crea Mikel** (Settings → Secrets and variables →
+  Actions → Variables → `PUBLICACION_AUTOMATICA` = `true`) cuando quiera
+  empezar. `AUTOMATION_PAUSED=true` también lo para.
+- **Barreras** (`scripts/marketing/veto.mjs`, test
+  `test/publicacion-veto.test.js`): 12 h de aviso como mínimo (si el Issue
+  llega tarde, sale 12 h después del aviso, nunca antes; el contenedor de
+  Instagram caduca a las 24 h y a las 23 h se da por caducado y se avisa);
+  como mucho 1 publicación al día por red (`posts-publicados.jsonl`,
+  `posts-facebook.jsonl`) y nunca repite una ya publicada; solo piezas
+  propias servidas desde `costaviva.org/assets/marketing/` (nunca webcams de
+  terceros) y reels solo sin clip o con un clip cuya `.licencia.json` diga
+  `"persona_identificable": false` (el de `coverr-pescador-costa-rocosa`
+  dice `true`: ese reel solo sale a mano; un clip propio necesita su
+  `.licencia.json` con ese campo); textos sin huecos (`{ENLACE}`,
+  `undefined`, `NaN`, `null`): solo datos reales. Token: antes de publicar
+  se comprueba como en `comprobar-token-instagram.yml`
+  (`scripts/marketing/estado-token.mjs`, mismos permisos): inválido o sin
+  permisos de Instagram = no publica y avisa en el Issue; sin
+  `pages_manage_posts` (el caso de hoy) publica solo en Instagram y lo anota.
+  Si algo falla (pieza dudosa, caducada, error al publicar), el Issue queda
+  con la etiqueta `revisar-publicacion` y no se reintenta: decide Mikel. Los
+  avisos llevan una marca invisible para no repetirse cada 30 min.
+
+**Fusión automática de las PR del robot de SEO (Mikel, 2026-10-11: que
+trabaje de forma autónoma).** `fusion-robot-seo.yml` (hermano de
+`robot-diseno-pr.yml`, `workflow_run` de "Tests"; corre el código de main y
+de la PR solo lee los nombres de los ficheros) fusiona con squash las PR de
+`robot/palabras-*` y `robot/etiquetas-olas-*` cuando todos los checks del
+commit están en verde, SOLO si todos los ficheros están en la lista blanca de
+`scripts/seo/fusion-automatica.mjs` (test `test/fusion-robot.test.js`):
+- `robot/palabras-*`: páginas públicas generadas (`functions/mareas|spots|
+  especies|en|tecnicas/**.js`), metadatos (`functions/_lib/seo/paginas.js`,
+  `paginas-en.js`, `datos.js`, `sitemap.js`, `sitemap.xml`, `robots.txt`),
+  `datos-robots/**` y `seo/**`. Como mucho **3 fusiones automáticas en 7
+  días** (cuentan las PR con la etiqueta `fusion-automatica`).
+- `robot/etiquetas-olas-*`: solo `datos-robots/oleaje-camaras/**`.
+- Lista negra que gana siempre: `.github/`, `supabase/`,
+  `functions/_middleware.js`, el resto de `functions/_lib/` (también
+  `rutas-publicas.js`: una página nueva con ruta pública nueva la revisa
+  Mikel) y cualquier ruta con cobro, login, suscripción, stripe, checkout,
+  auth, pago, referidos, invitaciones o admin. `login.html` e `index.html`
+  tampoco entran.
+- Si algún fichero queda fuera, la PR se queda abierta con la etiqueta
+  `revisar` y un comentario con la lista. Límite semanal o checks en rojo:
+  abierta, con comentario. Las demás ramas `robot/*` (diseño, especies,
+  aprendizaje) siguen esperando a Mikel. Reintento a mano: Actions →
+  "Fusionar solas las PR del robot de SEO" → `rama`.
+- Pendiente: el texto de la rutina en comun (`rutinas/robot-seo-redes.md`)
+  aún dice "la fusiona Mikel" y "cada pieza sale solo con el OK de Mikel".
+
 ## Captación: redes, calendario, métricas e "Invita a un amigo" (2026-10-09)
 
 Fase decidida por Mikel: todo a conseguir usuarios (0 suscriptores el
 2026-10-09). Cuatro piezas, todas sin IA y a coste 0:
 
-1. **Instagram + Facebook, mismo flujo de aprobación.** Los robots
+1. **Instagram + Facebook, mismo flujo** (desde el 2026-10-11, automático
+   con veto de 12 h: ver la sección de arriba). Los robots
    (`robot-marketing-instagram.yml`, `robot-reel-instagram.yml`) crean el
    borrador de Instagram y abren UN Issue (etiqueta `marketing`) con los dos
    textos y la pieza entera en un bloque invisible
@@ -515,6 +649,17 @@ vigía saldrá en rojo hasta aplicarlas. Tests: `test/captacion.test.js`,
 Objetivo de Mikel: facturación como estrella polar (MRR en €/mes, con los
 anuales a 1/12). Todo sin IA y solo en lectura de producción.
 
+**Los KPIs son PRIVADOS (decisión de Mikel, 2026-10-11).** Este repo es
+público: aquí solo hay código (`scripts/kpis/`) y los objetivos
+(`datos-robots/kpis/objetivos.json`). El histórico, `KPIS.md`, `mrr.svg`,
+`resumen.json`, `cambios.jsonl` y el ranking de socios viven en
+**`Mikel1972/comun`, carpeta `kpis/costaviva/`** (`scripts/kpis/rutas.mjs`;
+`KPIS_DIR`, por defecto `../comun/kpis/costaviva`). Nunca escribas cifras de
+facturación, MRR ni datos de clientes en este repo (commits, PR,
+SEO_ROBOT.md, propuestas). Del 11-oct quedaron en el historial de git de este
+repo un `KPIS.md` y un `historico.jsonl` con solo recuentos y MRR 0 € (sin
+personas ni ids).
+
 - **Objetivos** en `datos-robots/kpis/objetivos.json` (se cambian ahí, sin
   tocar código): 10 quincenas (Q1 cierra el 26-oct, Q10 el 11-mar-2027) y
   tres escenarios de MRR. **Objetivo oficial: ambicioso** (10 → 1.017 €);
@@ -524,18 +669,18 @@ anuales a 1/12). Todo sin IA y solo en lectura de producción.
   base. Dos cierres seguidos bajo el base = aviso a Mikel (Issue de los
   lunes, vía la rutina). Sin ajustes estacionales (decisión de Mikel). Los
   supuestos del embudo (visita → alta 4 %, alta → pago 3 %, ARPU 3,25 €,
-  +15 % por bajas) valen hasta que el real tiene 20 casos.
-- **`kpis.yml`** (diario 05:37 UTC): `scripts/kpis/recoger.mjs` AÑADE a
-  `datos-robots/kpis/historico.jsonl` una línea por día cerrado (hora de
-  Madrid): visitas, altas (sin admin, pruebas, permanentes ni invitaciones
-  del 100 %), canales, cohortes de activación y retención, pagos nuevos,
-  cancelaciones, facturado y, en la última, el stock (MRR, suscriptores,
-  socios). Nunca se reescribe. Supabase con la service_role SOLO GET;
-  Stripe con `STRIPE_KPI_KEY` (clave restringida de lectura; sin ella, MRR a
-  precio de lista desde `suscripciones` y lo dice). Los lunes
-  `scripts/kpis/informe.mjs` escribe `KPIS.md`, `datos-robots/kpis/mrr.svg` y
-  `datos-robots/kpis/resumen.json` (este lo agrega `comun` en su `KPIS.md`).
-  **El repo es público**: KPIS.md enseña MRR y facturación.
+  +15 % por bajas) valen hasta que el real tiene casos suficientes.
+- **`kpis.yml`** (diario 05:37 UTC) clona comun con `APRENDIZAJE_TOKEN`;
+  `scripts/kpis/recoger.mjs` AÑADE a `kpis/costaviva/historico.jsonl` una
+  línea por día cerrado (hora de Madrid): visitas, altas (sin admin, pruebas,
+  permanentes ni invitaciones del 100 %), canales, cohortes de activación y
+  retención, pagos nuevos, cancelaciones, facturado y, en la última, el stock
+  (MRR, suscriptores, socios). Nunca se reescribe. Supabase con la
+  service_role SOLO GET; Stripe con `STRIPE_SECRET_KEY` (la clave restringida
+  única de Costaviva; `STRIPE_KPI_KEY` de respaldo) solo con GET; sin clave,
+  MRR a precio de lista desde `suscripciones` y lo dice. Los lunes
+  `scripts/kpis/informe.mjs` escribe allí `KPIS.md`, `mrr.svg` y
+  `resumen.json` (este lo agrega `comun` en su `KPIS.md`).
 - **Por país** (`objetivos.json`, "paises"): ES 550 €, PT 100 €, NZ 367 € en
   marzo de 2027 (= 1.017 €), cada uno con la forma del ambicioso escalada a
   su parte; ARPU NZ 4,80 € (precio ×1,40). País del usuario: país de
@@ -556,11 +701,11 @@ anuales a 1/12). Todo sin IA y solo en lectura de producción.
   `scripts/socios/crear-codigos.mjs`). Si el webhook guarda
   `suscripciones.codigo_promocion`, también se usa (columna opcional).
 - **Acción autónoma**: la parte D de la rutina "Robot de SEO y diseño" (`rutinas/robot-seo-redes.md` de comun)
-  (martes; `scripts/kpis/rutina-kpis.txt`) evalúa los cambios anteriores
+  (martes; `scripts/kpis/rutina-kpis.txt`; lee y apunta en comun) evalúa los cambios anteriores
   (`scripts/kpis/evaluar-cambios.mjs`: 14 días antes contra 14 después; si
   empeora, revierte por PR) y hace como mucho 2 cambios de texto o llamada a
   la acción sobre el paso más en rojo, en rama `robot/diseno-…-kpi-…`
-  (PR para Mikel), apuntados en `datos-robots/kpis/cambios.jsonl`. Nunca
+  (PR para Mikel), apuntados en `kpis/costaviva/cambios.jsonl` de comun. Nunca
   precios, cobro ni login. Lo que necesita a Mikel va a
   `aprendizaje/propuestas.json` (Issue de los lunes).
 - Tests: `test/kpis.test.js`.
@@ -1902,15 +2047,16 @@ ese día `scripts/seo/rutina-seo-diseno.txt` solo apunta allí).
 - La rutina "Robot de SEO y diseño" (PARTE C) actúa sobre los huecos en
   ramas `robot/palabras-*` (máx. 3 cambios por pasada, solo páginas públicas
   y metadatos, datos reales; primero el país más alejado de su objetivo en
-  `datos-robots/kpis/objetivos.json`); `robot-diseno-pr.yml` abre la PR y la fusiona
-  Mikel. Cada cambio se mide en comun (`seo/palabras/costaviva-cambios.json`).
+  `datos-robots/kpis/objetivos.json`); `robot-diseno-pr.yml` abre la PR y
+  `fusion-robot-seo.yml` la fusiona sola si todo está en la lista blanca y en
+  verde (2026-10-11; si no, etiqueta `revisar` y decide Mikel). Cada cambio se mide en comun (`seo/palabras/costaviva-cambios.json`).
 - Redes: `scripts/marketing/palabras-redes.mjs` (lógica pura,
   `test/palabras-redes.test.js`) hace que el calendario elija, entre las
   especies que ya valen (temporada, veda, modalidad) y dentro de la zona que
   toca, la especie y el spot que más se buscan y suben; añade hashtags de los
   términos con demanda y enlaza la ficha web de la especie. Lee
-  `palabras-es.json`; sin él (o con más de 21 días), rotación de siempre. La publicación no cambia:
-  cada pieza sale solo con el OK de Mikel.
+  `palabras-es.json`; sin él (o con más de 21 días), rotación de siempre. La publicación: automática
+  con veto de 12 h (2026-10-11, ver "Publicación automática con veto").
 - Métricas comunes: `medir-metricas-instagram.mjs` apunta además una foto
   diaria de seguidores (`instagram_cuenta` en `CALIBRACION.jsonl`); comun
   las suma por semana junto a las de la web.

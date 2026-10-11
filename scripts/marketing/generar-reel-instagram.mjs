@@ -47,9 +47,14 @@ export function elegirClip(indice, dir = join(__dirname, "clips"), forzado = pro
   const elegido = escogerClip({ propios: listar("propios"), stock, indice, forzado });
   if (!elegido) return null;
   const ruta = join(dir, elegido.carpeta, elegido.fichero);
-  if (elegido.carpeta === "propios") return { ruta, credito: null };
-  const lic = JSON.parse(readFileSync(ruta.replace(/\.mp4$/, ".licencia.json"), "utf8"));
-  return { ruta, credito: `Vídeo: ${new URL(lic.origen).hostname.replace(/^www\./, "")}` };
+  // persona_identificable (2026-10-11): la publicación automática solo saca
+  // reels cuyo clip diga false en su .licencia.json (los propios también
+  // pueden llevarla); sin ficha, el reel solo sale a mano.
+  const rutaFicha = ruta.replace(/\.mp4$/, ".licencia.json");
+  const lic = existsSync(rutaFicha) ? JSON.parse(readFileSync(rutaFicha, "utf8")) : {};
+  const ficha = { carpeta: elegido.carpeta, fichero: elegido.fichero, personaIdentificable: typeof lic.persona_identificable === "boolean" ? lic.persona_identificable : null };
+  if (elegido.carpeta === "propios") return { ruta, credito: null, ficha };
+  return { ruta, credito: `Vídeo: ${new URL(lic.origen).hostname.replace(/^www\./, "")}`, ficha };
 }
 
 async function piezaDelReel(tipo, navegador, objetivo) {
@@ -131,7 +136,7 @@ async function main() {
     const campana = campanaDePieza(fecha, `reel-${nombre}`);
     writeFileSync(join(__dirname, "reel-pendiente.json"), JSON.stringify({
       tipo: `reel-${tipo}`, esReel: true, caption: texto, rutaRelativa, publicUrl: `${BASE_URL}/${rutaRelativa}`,
-      fecha, hora: objetivo.hora, dia: objetivo.dia, campana,
+      fecha, hora: objetivo.hora, dia: objetivo.dia, campana, clip: clip ? clip.ficha : null,
     }, null, 2));
     if (!process.env.TIPO_REEL) writeFileSync(RUTA_ROTACION, JSON.stringify({ ultimoIndice: indice, ultimoTipo: tipo, fecha: new Date().toISOString() }, null, 2) + "\n");
     writeFileSync(RUTA_ESTADO, JSON.stringify(apuntarGenerada(estado, objetivo.clave, { tipo: `reel-${tipo}`, campana }), null, 2) + "\n");

@@ -1039,6 +1039,8 @@
   "va.region.nz_fiordland": "Fiordland (NZ)",
   "mapa.va.normas_nz": "Tallas y cupos: página oficial de MPI ({area}) ↗",
   "mapa.va.app_mpi": "app gratuita NZ Fishing Rules ↗",
-  "mapa.va.rahui": "Los iwi o hapū locales pueden poner un rāhui (cierre temporal). Respeta las señales y avisos locales."
+  "mapa.va.rahui": "Los iwi o hapū locales pueden poner un rāhui (cierre temporal). Respeta las señales y avisos locales.",
+  "alarma.prefijo_pt": "Sin prefijo se entiende Portugal (+351). De otro país, empieza por + y su prefijo (+34…).",
+  "login.ej_cp_pt": "Ej. 1000 (las 4 primeras cifras)"
 }
 ; })(typeof window !== "undefined" ? window : globalThis);

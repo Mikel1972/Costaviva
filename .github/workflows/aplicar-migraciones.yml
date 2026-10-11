@@ -26,6 +26,14 @@ name: Aplicar migraciones a producción
 # `supabase migration list` hace a mano, delante de los ojos de quien lanza.
 # El vigía de esquema (vigia-esquema.yml) avisa a diario de ese mismo
 # desfase, así que en condiciones normales no debería aparecer nunca.
+#
+#   4. SOLO LA MIGRACIÓN APROBADA (incidente del 2026-10-11). Mikel aprobó
+#      una migración y `db push` aplicó también otras dos que otros agentes
+#      habían fusionado en main sin su sí. Ahora hay que decir cuál
+#      (input `migracion`, nombre exacto del fichero) y, antes de aplicar,
+#      se comprueba contra supabase_migrations.schema_migrations que lo
+#      pendiente es EXACTAMENTE esa. Si hay otra pendiente, falla sin tocar
+#      nada y las lista. Lógica en .github/scripts/migraciones.mjs.
 
 # Modo "probar" (2026-10-11, comun estandares/supabase.md D2, como el de
 # Lurnahi): ejecuta las migraciones pendientes dentro de UNA transacción que
@@ -45,6 +53,10 @@ on:
       confirmacion:
         description: 'Para aplicar: escribe "aplicar" para confirmar que quieres tocar la base de datos de producción'
         required: false
+        default: ""
+      migracion:
+        description: 'Nombre exacto del fichero aprobado por Mikel (p. ej. 20261011230000_cobro_prueba_14_dias_plan_gratis.sql). Si hay otra pendiente, no se aplica nada.'
+        required: true
         default: ""
 
 permissions:
@@ -114,6 +126,35 @@ jobs:
         with:
           version: latest
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Comprobar que solo está pendiente la migración aprobada
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          MIGRACION: ${{ github.event.inputs.migracion }}
+        run: |
+          set -o pipefail
+          if [ -z "$SUPABASE_DB_URL" ]; then
+            echo "::error::Falta el secret SUPABASE_DB_URL (cadena de Connection Pooling)."
+            exit 1
+          fi
+          psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -tAc \
+            "select version from supabase_migrations.schema_migrations order by version" > /tmp/aplicadas.txt
+          if node .github/scripts/migraciones.mjs pendientes "$MIGRACION" /tmp/aplicadas.txt | tee /tmp/filtro.txt; then
+            resultado="Se aplica solo la aprobada"
+          else
+            resultado="NO se aplica nada"
+          fi
+          {
+            echo "### Filtro de la migración aprobada: $resultado"
+            echo '```'
+            cat /tmp/filtro.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          [ "$resultado" = "Se aplica solo la aprobada" ]
+
       - name: Enseñar el plan (qué está aplicado y qué no)
         env:
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
@@ -141,7 +182,8 @@ jobs:
         env:
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
         run: |
-          # --include-all: aplica todas las pendientes, no solo la última.
+          # --include-all: aplica todas las pendientes, no solo la última. El
+          # paso anterior ya garantiza que la única pendiente es la aprobada.
           # --yes: sin preguntar, porque la confirmación ya se pidió arriba y
           # aquí no hay nadie para contestar.
           supabase db push --db-url "$SUPABASE_DB_URL" --include-all --yes

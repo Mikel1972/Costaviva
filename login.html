@@ -6,6 +6,7 @@
 <!-- Idiomas (2026-10-09): diccionarios y I18n.t(); en español no cambia nada. Ver assets/js/i18n.js. -->
 <script src="/assets/i18n/es.js"></script>
 <script src="/assets/i18n/en.js"></script>
+<script src="/assets/i18n/pt.js"></script>
 <script src="/assets/js/i18n.js"></script>
 <title data-i18n="mapa.titulo_pagina">Costaviva, pesca en tiempo real | Mareas y previsión marina</title>
 <meta name="description" content="Accede a Costaviva: previsión marina en tiempo real, mareas, oleaje, diario de pesca con IA y comunidad de pescadores en España y Portugal." />
@@ -711,12 +712,13 @@ function mostrarMensajeRegistro(texto, tipo) {
 // Código postal según la región (fase 2 de NZ, 2026-10-09). En España el
 // campo queda como está en el HTML; en NZ admite 4 cifras con su ejemplo.
 const regionAlta = RegionPais.regionActual();
-if (RegionPais.esNZ(regionAlta)) {
+// En Portugal (desde el 2026-10-11), las 4 primeras cifras del CP4-CP3.
+if (RegionPais.esNZ(regionAlta) || RegionPais.esPT(regionAlta)) {
   const campoCP = document.getElementById("codigoPostal");
   const cifras = RegionPais.cifrasCodigoPostal(regionAlta);
   campoCP.setAttribute("pattern", `[0-9]{${cifras}}`);
   campoCP.setAttribute("maxlength", String(cifras));
-  campoCP.setAttribute("placeholder", I18n.t("login.ej_cp_nz"));
+  campoCP.setAttribute("placeholder", I18n.t(RegionPais.esPT(regionAlta) ? "login.ej_cp_pt" : "login.ej_cp_nz"));
 }
 
 formRegistroDatos.addEventListener("submit", async (e) => {
@@ -726,10 +728,10 @@ formRegistroDatos.addEventListener("submit", async (e) => {
   btnContinuarRegistro.disabled = true;
   mensajeRegistroEl.className = "mensaje";
 
-  // 5 cifras en España y Portugal, 4 en Nueva Zelanda (fase 2 de NZ;
+  // 5 cifras en España; 4 en Nueva Zelanda y Portugal (fase 2 de NZ;
   // assets/js/region-pais.js, región que conoce la app en este navegador).
   if (!RegionPais.codigoPostalValido(codigoPostal, regionAlta)) {
-    mostrarMensajeRegistro(RegionPais.esNZ(regionAlta) ? I18n.t("login.cp_4") : I18n.t("login.cp_5"), "error");
+    mostrarMensajeRegistro(RegionPais.cifrasCodigoPostal(regionAlta) === 4 ? I18n.t("login.cp_4") : I18n.t("login.cp_5"), "error");
     btnContinuarRegistro.disabled = false;
     return;
   }
