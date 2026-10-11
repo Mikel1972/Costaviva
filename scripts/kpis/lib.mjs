@@ -21,10 +21,19 @@ export const OBJETIVOS = JSON.parse(readFileSync(RUTA_OBJETIVOS, "utf8"));
 export const INICIO = OBJETIVOS.inicio;
 export const META = { fecha: OBJETIVOS.referencia.fecha, mrr: OBJETIVOS.referencia.mrr };
 export const DIA = 86400000;
-// Precios de lista (solo para el MRR de reserva sin Stripe) y cambio a euros.
-export const PRECIO_MENSUAL = OBJETIVOS.precios_lista.eur.mensual;
-export const PRECIO_ANUAL = OBJETIVOS.precios_lista.eur.anual;
-export const CAMBIO_A_EUR = OBJETIVOS.cambio_a_eur.tipos;
+// Precios de lista (solo para el MRR de reserva sin Stripe) y cambio a euros:
+// de functions/_lib/precios-zonas.json (el cobro por zonas, 2026-10-11; su
+// tipo_cambio es el del BCE que escribe scripts/precios/multiplicadores.mjs).
+// Si no está, objetivos.json. Un tipo puesto a mano en objetivos.json manda.
+const PRECIOS_ZONAS = (() => {
+  try { return JSON.parse(readFileSync(new URL("../../functions/_lib/precios-zonas.json", import.meta.url), "utf8")); } catch { return null; }
+})();
+export const PRECIO_MENSUAL = PRECIOS_ZONAS?.planes?.mensual?.eur_cent ? PRECIOS_ZONAS.planes.mensual.eur_cent / 100 : OBJETIVOS.precios_lista.eur.mensual;
+export const PRECIO_ANUAL = PRECIOS_ZONAS?.planes?.anual?.eur_cent ? PRECIOS_ZONAS.planes.anual.eur_cent / 100 : OBJETIVOS.precios_lista.eur.anual;
+export const CAMBIO_A_EUR = {
+  ...Object.fromEntries(Object.entries(PRECIOS_ZONAS?.tipo_cambio?.eur_a ?? {}).filter(([, v]) => typeof v === "number" && v > 0).map(([k, v]) => [k.toLowerCase(), 1 / v])),
+  ...OBJETIVOS.cambio_a_eur.tipos,
+};
 
 export function diasEntre(a, b) {
   return Math.round((Date.parse(`${b}T00:00:00Z`) - Date.parse(`${a}T00:00:00Z`)) / DIA);

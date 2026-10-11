@@ -115,14 +115,14 @@
     "min_n": 20
   },
   "precios_lista": {
-    "nota": "Solo para el MRR de reserva sin clave de Stripe (desde public.suscripciones). Con STRIPE_KPI_KEY se usa el importe real de cada suscripción. Actualizar cuando se fusione el cobro nuevo (rama claude/cobro-precios).",
+    "nota": "Reserva: los precios de lista salen de functions/_lib/precios-zonas.json (cobro por zonas) si existe. Solo se usan para el MRR sin clave de Stripe (desde public.suscripciones).",
     "eur": {
       "mensual": 3.99,
-      "anual": 39.99
+      "anual": 29.99
     }
   },
   "cambio_a_eur": {
-    "nota": "Tipo de cambio para sumar al MRR en euros las suscripciones en otra moneda (p. ej. NZD). Vacío = no se suman y KPIS.md las enseña aparte. Lo pone Mikel; no se inventa.",
+    "nota": "Tipos para sumar al MRR en euros otras monedas (NZD...). Por defecto, los del BCE de functions/_lib/precios-zonas.json; uno puesto aquí manda. No se inventa.",
     "tipos": {}
   },
   "paises": {

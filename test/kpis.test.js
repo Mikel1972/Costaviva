@@ -71,6 +71,7 @@ test("MRR: mensual entero, anual a 1/12, descuento en %, otra moneda sin tipo de
   assert.equal(mrrSuscripcion(caducado), 3.99);
   const nzd = sub({ currency: "nzd" });
   assert.deepEqual(mrrSuscripcionDetalle(nzd, Date.now(), {}), { moneda: "nzd", importe: 3.99, eur: null });
+  assert.ok(mrrSuscripcionDetalle(nzd).eur > 0, "NZD a euros con el tipo del BCE de precios-zonas.json");
   assert.ok(Math.abs(mrrSuscripcionDetalle(nzd, Date.now(), { nzd: 0.5 }).eur - 1.995) < 1e-9);
 });
 
