@@ -262,3 +262,93 @@ Todo gratis. Ordenado por lo que más ayuda.
    en persona en una zona; Costaviva es solo online y Google suspende esas
    fichas.
 
+
+## Diagnóstico de indexación y qué hacer a mano esta semana (2026-10-11)
+
+### Lo que dicen los datos
+
+Medido el 2026-10-11 con un rastreo propio de las 450 URLs del sitemap de
+producción (con el User-Agent de Googlebot) y con `SEO_ESTADO.md` (API de
+inspección de URLs de Search Console).
+
+**Probado:**
+- **Google no llega a rastrear las páginas; no es que las rechace.** De las
+  276 no indexadas, ninguna está en "Rastreada: actualmente sin indexar":
+  todas tienen "último rastreo: nunca". Las 8 que Google sí rastreó están
+  indexadas, y las 5 que se pidieron a mano el 10-08 entraron todas. 94 URLs
+  de `/mareas` llevan en el sitemap desde septiembre y siguen sin rastrear.
+  Por eso pedir la indexación a mano ayuda poco: Google rastrea lo que se le
+  pide, pero no cambia el ritmo para el resto del sitio. Lo que sube ese ritmo
+  es la autoridad (enlaces de fuera) y que el sitio responda bien siempre.
+- **"Google no reconoce esta URL" (47)**: no hay un patrón detrás. No tienen
+  barra final ni mayúsculas, y no son URLs nuevas: 17 ya estaban en el
+  sitemap de septiembre. Tienen tantos enlaces internos como las demás. Es la
+  cola de descubrimiento de Google, que va lenta con un dominio nuevo.
+- **503 en el 2 % de las páginas `/en/`** ("Error 1102", el Worker se pasaba
+  de CPU calculando las mareas de NZ). Corregido. Un 5xx hace que Google baje
+  el ritmo de rastreo de todo el sitio.
+- **Las 166 páginas de Nueva Zelanda no tenían ningún enlace interno** desde
+  la portada ni desde las páginas en español: Google solo las conocía por el
+  sitemap. Ahora están enlazadas desde la portada, el login, el pie de página
+  y `/mareas` (a 1 o 2 clics de la portada; todas las demás, a 2 o 3).
+- Sin bloqueos: ni challenge, ni 403, ni 503 de Cloudflare con el User-Agent
+  de Googlebot; TTFB de 0,15-0,45 s; sin `noindex` ni canonical erróneas.
+  `fishnow-59u.pages.dev` → 301; previews → `noindex`; `www` no existe;
+  `http` → 301. Las URLs con barra final daban 200 (con la canonical bien);
+  ahora dan 301.
+
+**Hipótesis (no se puede probar desde fuera):** las páginas de spot se
+parecen mucho entre sí. Solo el ~13 % de su texto era propio, porque la
+lista de especies es la misma en toda la región. Eso puede hacer que Google
+dé poca prioridad al sitio. Se ha reducido la parte repetida (una sola tabla
+de especies) y se han añadido datos propios de cada spot (spots cercanos con
+distancia y orilla, el más cercano en la intro). Las páginas "finas" de
+verdad eran las `/mareas/region/*` (80-120 palabras); ahora llevan una tabla
+real de pleamar, bajamar, ola y viento. Ninguna página está casi vacía (la
+más corta de spot tiene 500 palabras), así que no se ha quitado nada del
+sitemap.
+
+**Sitemap:** se queda en uno solo (450 URLs, sin repetidas, todas 200 y
+canónicas, `lastmod` real por tipo). En lugar de partirlo,
+`indexacion-google.mjs` da ahora el resumen por tipo de página, si Google ha
+rastreado cada URL, si la conoce por el sitemap o por enlaces y si eligió
+otra canónica. Lo verás en `SEO_ESTADO.md` el martes y el viernes.
+
+### Qué hacer a mano esta semana
+
+1. **Reenviar el sitemap** tras fusionar esta PR (Search Console →
+   *Sitemaps* → `sitemap.xml` → *Enviar*). Cambian 279 `lastmod` y Google
+   tiene que ver las 450 URLs.
+2. **Solicitar indexación: solo estas 5, una vez** (son hubs: cada una
+   enlaza a muchas páginas, así que Google descubre más páginas con cada
+   rastreo). No hace falta repetirlo cada día:
+   1. `https://costaviva.org/en/spots` (la puerta de las 166 de NZ)
+   2. `https://costaviva.org/spots/region/pais-vasco`
+   3. `https://costaviva.org/mareas/region/galicia`
+   4. `https://costaviva.org/en/tides`
+   5. `https://costaviva.org/spots/region/galicia`
+3. **Enlaces externos, gratis y legítimos** (es lo que de verdad mueve el
+   rastreo). Un enlace de una web del sector vale más que cien de directorios:
+   - **Perfiles propios**: Instagram y Facebook (si no está ya), YouTube,
+     LinkedIn de Mikel y la página de la empresa, GitHub (perfil). Con
+     `https://costaviva.org/` o `/spots`.
+   - **Clubes y sociedades de pesca** con los que haya relación (cofradías,
+     sociedades de pesca de Bizkaia y Gipuzkoa, clubes de pesca submarina):
+     ofrecerles su página de spot (`/spots/<su-zona>`) como recurso gratuito
+     para socios, a cambio de nada. Muchos tienen sección de "enlaces".
+   - **Federaciones**: Federación Española de Pesca y Casting y las
+     autonómicas (vasca, cántabra, asturiana, gallega). Escribirles para
+     presentarles la herramienta gratuita de mareas y tallas, sin pedir
+     enlace a cambio.
+   - **Foros y comunidades de pesca** (España y NZ): participar con tu
+     usuario real y enlazar la página de spot o de especie solo cuando
+     responda a lo que alguien pregunta. Nada de mensajes de promoción
+     sueltos.
+   - **Directorios de apps** con revisión: AlternativeTo, Product Hunt (un
+     lanzamiento), Uneed, SaaSHub. Una ficha en cada uno, con descripción
+     propia.
+   - **Prensa local**: una nota a medios del País Vasco o Cantabria ("app
+     vasca de pesca con índice en tiempo real") suele traer un enlace de un
+     dominio con autoridad.
+   - **No**: comprar enlaces, intercambios, granjas de directorios o
+     comentarios en blogs. Penaliza.
