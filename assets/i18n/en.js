@@ -764,6 +764,8 @@
   "susc.dto.hasta": "until {fecha}",
   "susc.dto.nota": "🎁 You have a {pct} % invitation discount {duracion}{mensual}. It is applied automatically at checkout; use it before {caduca}.",
   "susc.dto.solo_mensual": ", on the monthly plan",
+  "prec.proximamente": "Coming soon",
+  "prec.cobro_no_activo": "Payments are not open yet. In the meantime, enjoy your 14 days of Premium for free.",
   "prec.gestionar_explica": "From there you can switch between monthly and annual or to the Worldwide plan, change your card, download your invoices or cancel. If you cancel, Premium stays active until the end of the period you have paid for.",
   "prec.gratis": "Free",
   "prec.gratis_incluye": "Map, tides and basic conditions (swell, wind, water temperature, cloud, rain and pressure) in every region. No ads.",

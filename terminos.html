@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="/assets/css/costaviva.css">
 <script src="/assets/i18n/es.js"></script>
 <script src="/assets/i18n/en.js"></script>
+<script src="/assets/i18n/pt.js"></script>
 <script src="/assets/js/i18n.js"></script>
 <style>
   * { box-sizing: border-box; }
@@ -207,7 +208,7 @@
   var hash = location.hash.replace("#", "");
   var nav = ((navigator.languages && navigator.languages[0]) || navigator.language || "").toLowerCase();
   var app = (window.I18n && I18n.idioma && I18n.idioma()) || "es";
-  var inicial = ["es", "en", "pt"].indexOf(hash) >= 0 ? hash : app === "en" ? "en" : nav.indexOf("pt") === 0 ? "pt" : "es";
+  var inicial = ["es", "en", "pt"].indexOf(hash) >= 0 ? hash : app === "en" || app === "pt" ? app : nav.indexOf("pt") === 0 ? "pt" : "es";
   mostrar(inicial);
   document.querySelector(".idiomas").addEventListener("click", function (e) {
     var a = e.target.closest("[data-cambiar]");

@@ -102,6 +102,7 @@
   label.checkbox.legal input { margin-top: 2px; accent-color: var(--acento); flex-shrink: 0; }
   label.checkbox.legal a { color: var(--acento); }
   #bloqueSuscrito { margin-bottom: 16px; }
+  label.checkbox.legal[hidden], .nota-legal[hidden] { display: none; }
   .plan.confirmar { border: 2px solid var(--acento); }
   .nota-prueba-gratis { font-weight: 600; color: var(--tinta); }
   .confirmando { text-align: center; padding: 20px 0; font-family: var(--f-texto); font-size: 13px; color: var(--tinta-2); }
@@ -195,6 +196,7 @@
       </label>
       <p class="nota-legal" id="textoSiCerramos"></p>
       <button type="button" id="btnPagar" disabled data-i18n="prec.ir_al_pago">Ir al pago</button>
+      <p class="nota-legal" id="notaCobroNoActivo" hidden data-i18n="prec.cobro_no_activo">Todavía no hemos abierto los pagos. Mientras tanto, disfruta de los 14 días de Premium gratis.</p>
       <p class="nota-legal"><a href="/terminos" target="_blank" rel="noopener" data-i18n="prec.terminos">Términos y condiciones</a></p>
     </div>
     <p class="nota-legal" id="notaPrueba" hidden></p>
@@ -269,7 +271,7 @@ async function iniciarCheckout(ambito, plan) {
     window.location.href = resultado.url;
   } else {
     mostrarMensaje(resultado.error || I18n.t("susc.error_pago"), "error");
-    btnPagar.disabled = !checkLegal.checked;
+    btnPagar.disabled = !cobroAbierto || !checkLegal.checked;
   }
 }
 
@@ -291,10 +293,17 @@ const btnPagar = document.getElementById("btnPagar");
 const confirmarPago = document.getElementById("confirmarPago");
 let planElegido = null;
 let preciosZona = null;
+// Interruptor COBRO_ACTIVO (lo dice /precios-zona): apagado, el botón de
+// pago dice "Próximamente" y no se activa nunca.
+let cobroAbierto = false;
 function elegirPlan(ambito, plan) {
   planElegido = { ambito, plan };
   checkLegal.checked = false;
   btnPagar.disabled = true;
+  btnPagar.textContent = I18n.t(cobroAbierto ? "prec.ir_al_pago" : "prec.proximamente");
+  checkLegal.closest("label").hidden = !cobroAbierto;
+  document.getElementById("textoSiCerramos").hidden = !cobroAbierto;
+  document.getElementById("notaCobroNoActivo").hidden = cobroAbierto;
   document.getElementById("textoAceptacion").textContent = textoAceptacion(plan, IDIOMA_ACEPTACION);
   document.getElementById("textoSiCerramos").textContent = textoSiCerramos(IDIOMA_ACEPTACION);
   const cent = preciosZona?.planes?.[ambito]?.[plan];
@@ -303,13 +312,13 @@ function elegirPlan(ambito, plan) {
   confirmarPago.hidden = false;
   confirmarPago.scrollIntoView({ behavior: "smooth", block: "center" });
 }
-checkLegal.addEventListener("change", () => { btnPagar.disabled = !checkLegal.checked || !planElegido; });
+checkLegal.addEventListener("change", () => { btnPagar.disabled = !cobroAbierto || !checkLegal.checked || !planElegido; });
 document.getElementById("bloquePaywall").addEventListener("click", (e) => {
   const b = e.target.closest(".btn-comprar");
   if (b) elegirPlan(b.dataset.ambito, b.dataset.plan);
 });
 btnPagar.addEventListener("click", () => {
-  if (!planElegido || !checkLegal.checked) return;
+  if (!cobroAbierto || !planElegido || !checkLegal.checked) return;
   btnPagar.disabled = true;
   iniciarCheckout(planElegido.ambito, planElegido.plan);
 });
@@ -360,6 +369,7 @@ async function plazasFundador() {
 // Pinta la tabla de su zona. Sin precios (red), no se ofrece comprar.
 function pintarPrecios(p, plazas) {
   preciosZona = p;
+  cobroAbierto = p?.cobro_activo === true;
   if (!p) {
     mostrarMensaje(I18n.t("prec.sin_precios"), "error");
     for (const b of document.querySelectorAll(".btn-comprar")) b.hidden = true;

@@ -244,3 +244,12 @@ export function diasDePruebaRestantes(fechaAltaISO, ahora = Date.now()) {
   return Math.max(0, Math.min(DIAS_PRUEBA, Math.ceil(DIAS_PRUEBA - transcurridos)));
 }
 
+
+// Interruptor del cobro (2026-10-11, Mikel: todavía sin empresa ni alta
+// fiscal; "lo legal siempre se cumple"). Variable de entorno de Cloudflare
+// COBRO_ACTIVO: solo con el texto "true" se abren pagos. Por defecto, NO:
+// la página enseña los planes y la prueba de 14 días funciona, pero no se
+// crea ninguna sesión de pago.
+export function cobroActivo(env) {
+  return env?.COBRO_ACTIVO === "true";
+}

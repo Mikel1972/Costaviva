@@ -15,13 +15,15 @@
 // Pasada la prueba, se cobra al momento.
 //
 // Variables de entorno en Cloudflare Pages (Secret): STRIPE_SECRET_KEY.
+// COBRO_ACTIVO = "true" para abrir los pagos (por defecto cerrados: 403
+// codigo "cobro_no_activo", ver CLAUDE.md "Cobro").
 // Opcionales (texto "1"): STRIPE_TAX_AUTOMATICO (automatic_tax, cuando Stripe
 // Tax tenga los registros hechos) y STRIPE_TOS_EN_CHECKOUT (casilla de
 // términos de Stripe; exige la URL de términos en el Dashboard).
 
 import { descuentoAplicaAPlan } from "./_lib/invitaciones.js";
 import { diasExtraPorReferidos } from "./_lib/referidos.js";
-import { zonaDePais, precioParaZona, leerPlan, diasDePruebaRestantes } from "./_lib/precios.js";
+import { zonaDePais, precioParaZona, leerPlan, diasDePruebaRestantes, cobroActivo } from "./_lib/precios.js";
 import { VERSION as VERSION_ACEPTACION, IDIOMAS as IDIOMAS_ACEPTACION, textoAceptacion, textoSiCerramos } from "../assets/js/consentimiento.js";
 import CONFIG_PRECIOS from "./_lib/precios-zonas.json";
 import STRIPE_IDS from "./_lib/stripe-ids.json";
@@ -151,6 +153,14 @@ const MENSAJE_GENERICO = "No se ha podido abrir el pago ahora mismo. Vuelve a in
 
 export async function onRequestPost(context) {
   const { request, env } = context;
+  // Interruptor COBRO_ACTIVO (por defecto apagado): sin él no se crea
+  // ninguna sesión de pago, ni en live ni en test.
+  if (!cobroActivo(env)) {
+    return new Response(JSON.stringify({
+      error: "Todavía no hemos abierto los pagos. Mientras tanto, disfruta de los 14 días de Premium gratis.",
+      codigo: "cobro_no_activo",
+    }), { status: 403, headers: { "content-type": "application/json" } });
+  }
   const stripeKey = env.STRIPE_SECRET_KEY;
   if (!stripeKey) {
     return new Response(JSON.stringify({ error: "Pagos no configurados todavía (falta STRIPE_SECRET_KEY)" }), {

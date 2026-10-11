@@ -56,10 +56,10 @@ export function textoAceptacion(plan, idioma = "es") {
   return t[tipoDePlan(plan)];
 }
 
-// Idioma del texto legal: el de la app (es/en) y portugués si el navegador
-// lo pide (la app aún no tiene portugués; la cláusula sí).
+// Idioma del texto legal: el de la app (es/en/pt) y, con la app en español,
+// portugués si el navegador lo pide.
 export function idiomaAceptacion(idiomaApp, idiomasNavegador = []) {
-  if (idiomaApp === "en") return "en";
+  if (idiomaApp === "en" || idiomaApp === "pt") return idiomaApp;
   if ((idiomasNavegador[0] || "").toLowerCase().startsWith("pt")) return "pt";
   return "es";
 }

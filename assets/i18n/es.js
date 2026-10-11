@@ -764,6 +764,8 @@
   "susc.dto.hasta": "hasta el {fecha}",
   "susc.dto.nota": "🎁 Tienes un {pct} % de descuento por invitación {duracion}{mensual}. Se aplica solo al pagar; úsalo antes del {caduca}.",
   "susc.dto.solo_mensual": ", en el plan mensual",
+  "prec.proximamente": "Próximamente",
+  "prec.cobro_no_activo": "Todavía no hemos abierto los pagos. Mientras tanto, disfruta de los 14 días de Premium gratis.",
   "prec.gestionar_explica": "Desde ahí puedes cambiar entre mensual y anual o al plan Mundial, cambiar la tarjeta, descargar tus facturas o cancelar. Si cancelas, Premium sigue activo hasta el final del periodo ya pagado.",
   "prec.gratis": "Gratis",
   "prec.gratis_incluye": "Mapa, mareas y condiciones básicas (ola, viento, temperatura del agua, nubes, lluvia y presión) en todas las regiones. Sin anuncios.",

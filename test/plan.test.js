@@ -95,8 +95,8 @@ test("aceptación: casilla sin marcar y botón de pago desactivado sin ella", ()
   const html = readFileSync(new URL("../suscripcion.html", import.meta.url), "utf8");
   assert.match(html, /<input type="checkbox" id="checkLegal" \/>/, "la casilla no puede venir marcada");
   assert.match(html, /<button type="button" id="btnPagar" disabled/);
-  assert.match(html, /btnPagar\.disabled = !checkLegal\.checked/);
-  assert.match(html, /if \(!planElegido \|\| !checkLegal\.checked\) return;/);
+  assert.match(html, /btnPagar\.disabled = !cobroAbierto \|\| !checkLegal\.checked \|\| !planElegido/);
+  assert.match(html, /if \(!cobroAbierto \|\| !planElegido \|\| !checkLegal\.checked\) return;/);
   assert.match(html, /textoAceptacion\(plan, IDIOMA_ACEPTACION\)/);
   assert.match(html, /data-i18n="prec.prueba_antes"/);
 });
@@ -117,4 +117,36 @@ test("aceptación: el servidor la exige y la repite en el checkout y en la confi
   assert.match(terminos, /Se o Costaviva deixar de prestar o serviço/);
   assert.doesNotMatch(terminos, /parte proporcional del tiempo|minus the proportional/);
   assert.match(webhook, /textoSiCerramos\(idioma\)/);
+});
+
+// Interruptor COBRO_ACTIVO (2026-10-11: sin empresa ni alta fiscal todavía).
+import { cobroActivo } from "../functions/_lib/precios.js";
+
+test("COBRO_ACTIVO: por defecto cerrado; solo 'true' abre los pagos", () => {
+  assert.equal(cobroActivo(undefined), false);
+  assert.equal(cobroActivo({}), false);
+  assert.equal(cobroActivo({ COBRO_ACTIVO: "false" }), false);
+  assert.equal(cobroActivo({ COBRO_ACTIVO: "1" }), false);
+  assert.equal(cobroActivo({ COBRO_ACTIVO: "true" }), true);
+  const checkout = readFileSync(new URL("../functions/crear-checkout-stripe.js", import.meta.url), "utf8");
+  // El 403 va antes de tocar Stripe.
+  const i403 = checkout.indexOf('codigo: "cobro_no_activo"');
+  assert.ok(i403 > 0 && i403 < checkout.indexOf("https://api.stripe.com/v1/checkout/sessions"));
+  assert.ok(i403 < checkout.indexOf("const stripeKey = env.STRIPE_SECRET_KEY"));
+  assert.match(checkout, /status: 403/);
+  const zona = readFileSync(new URL("../functions/precios-zona.js", import.meta.url), "utf8");
+  assert.match(zona, /cobro_activo: cobroActivo\(env\)/);
+  const html = readFileSync(new URL("../suscripcion.html", import.meta.url), "utf8");
+  assert.match(html, /I18n\.t\(cobroAbierto \? "prec\.ir_al_pago" : "prec\.proximamente"\)/);
+  assert.match(html, /btnPagar\.disabled = !cobroAbierto \|\| !checkLegal\.checked/);
+  for (const idioma of ["es", "en", "pt"]) {
+    const dic = readFileSync(new URL(`../assets/i18n/${idioma}.js`, import.meta.url), "utf8");
+    assert.match(dic, /"prec\.proximamente": "(Próximamente|Coming soon|Em breve)"/, idioma);
+  }
+});
+
+test("términos: sin datos del titular inventados", () => {
+  const t = readFileSync(new URL("../terminos.html", import.meta.url), "utf8");
+  assert.doesNotMatch(t, /\[(titular|nif|cif|domicilio|razón social|pendiente)[^\]]*\]/i);
+  assert.doesNotMatch(t, /\b(NIF|CIF)\s*:?\s*[A-Z0-9]{8,9}\b/);
 });
