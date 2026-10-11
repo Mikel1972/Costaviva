@@ -4405,9 +4405,16 @@ function pintarCamarasExternas(slug) {
     return;
   }
   if (!lista.length) { caja.innerHTML = ""; return; }
-  const imagenes = lista.filter((c) => c.modo === "imagen_oficial");
+  // Embebidas con atribución propia (NZ, 2026-10-11, camaras-nz.js): imagen
+  // o iframe del dueño con «Image: <dueño>, <licencia>» siempre visible
+  // (htmlCamaraIncrustada en camaras-externas.js). Las de Skyline siguen
+  // con su pie de siempre.
+  const CE = window.CamarasExternas;
+  const incrustadas = lista.filter((c) => c.atribucion && (c.modo === "imagen_oficial" || c.modo === "iframe_oficial"));
+  const htmlIncrustadas = incrustadas.map((c) => CE.htmlCamaraIncrustada(c, I18n.idioma(), I18n.t)).join("");
+  const imagenes = lista.filter((c) => c.modo === "imagen_oficial" && !c.atribucion);
   const enlaces = lista.filter((c) => c.modo === "enlace");
-  const htmlImagenes = imagenes.map((c) => `
+  const htmlImagenes = htmlIncrustadas + imagenes.map((c) => `
     <figure style="margin:8px 0 0;">
       <a href="${escaparHtmlCam(c.url)}" target="_blank" rel="noopener"><img src="${escaparHtmlCam(c.imagen)}" alt="${escaparHtmlCam(nombreCamExterna(c))} | ${escaparHtmlCam(c.dueno)}" loading="lazy" style="width:100%; border-radius:8px; border:1px solid var(--linea); display:block;"></a>
       <figcaption style="font-size:11px; color:var(--tinta-2); margin-top:3px;">${escaparHtmlCam(nombreCamExterna(c))} · ${I18n.t("mapa.cam.imagen_de")} <a href="${escaparHtmlCam(c.url)}" target="_blank" rel="noopener">${escaparHtmlCam(c.dueno)}</a> ${I18n.t("mapa.cam.cada_5")}</figcaption>

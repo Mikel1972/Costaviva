@@ -25,6 +25,7 @@ import { esRutaPermitida } from "./_lib/rutas-publicas.js";
 import { decisionIndexacion } from "./_lib/seo/indexacion.js";
 import { htmlNoEncontradaGeneral } from "./_lib/seo/base.js";
 import { visitaAContar, contarVisita, conOrigenEnCta } from "./_lib/visitas.js";
+import { ORIGENES_IFRAME_NZ } from "../assets/js/camaras-nz.js";
 
 export async function onRequest(context) {
   const { request, next } = context;
@@ -133,8 +134,10 @@ export function construirCsp(nonce) {
     // hls.js y MapLibre GL (mapa base, 2026-10-08) arrancan su worker desde
     // un blob:.
     "worker-src 'self' blob:",
-    // Turnstile (login.html).
-    "frame-src https://challenges.cloudflare.com",
+    // Turnstile (login.html) y los iframes oficiales de cámaras de NZ cuyo
+    // dueño tiene el interruptor puesto (CoroLive, NZ_EMBED_AUTORIZADO en
+    // assets/js/camaras-nz.js, 2026-10-11): si se apaga, sale de aquí solo.
+    ["frame-src https://challenges.cloudflare.com", ...ORIGENES_IFRAME_NZ].join(" "),
     "manifest-src 'self'",
     "object-src 'none'",
     "base-uri 'none'",
