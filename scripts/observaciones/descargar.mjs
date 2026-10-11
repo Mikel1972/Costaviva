@@ -44,7 +44,8 @@ import {
   DATASET_INATURALIST,
 } from "./lib.mjs";
 import { regionPorCoordenadas } from "../../assets/js/ventana-actividad.js";
-import { SPOTS } from "../../functions/prevision.js";
+// Solo España/Portugal (SPOTS_ES): la fuente de este script es europea; Nueva Zelanda (activa desde 2026-10-11) no entra.
+import { SPOTS_ES as SPOTS } from "../../functions/prevision.js";
 import { pedirOpenMeteo, claveOpenMeteo, ATRIBUCION_OPEN_METEO } from "../../functions/_lib/open-meteo.js";
 import { leerInstantanea } from "../../functions/_lib/instantaneas.js";
 import { ATRIBUCION_COPERNICUS, DOIS_COPERNICUS } from "../../functions/_lib/copernicus-mar.js";

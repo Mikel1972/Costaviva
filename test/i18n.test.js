@@ -38,6 +38,8 @@ const IGUALES_PERMITIDOS = new Set([
   "mapa.marea.coef", "mapa.va.natural", "va.ola.rango", "va.region.atlantico_norte", "va.region.portugal",
   "va.region.madeira", "rayos.lugar_spot", "lluvia.radar", "corriente.ley_tramo",
   "login.region.cantabria", "login.region.asturias", "login.region.galicia", "login.region.portugal",
+  // Selector de región del mapa (NZ, 2026-10-11): "New Zealand" en los dos.
+  "mapa.region.nz", "mapa.region.chip_nz", "mapa.region.pt",
 ]);
 
 const variables = (v) => [...new Set(JSON.stringify(v).match(/\{\w+\}/g) || [])].sort();
@@ -247,23 +249,31 @@ test("index.html en español: puntos clave del mapa, letra por letra", () => {
   assert.equal(I18n.t("mapa.vigencia.caducado", { minutos: 75 }), "sin datos actuales (última respuesta hace 75 min, más de 1h)");
 });
 
-test("SEO /en/: preparado pero apagado (sin hreflang, sin rutas, canónicas y sitemap intactos)", async () => {
+test("SEO /en/: encendido solo para Nueva Zelanda; España igual (sin hreflang, mismas canónicas)", async () => {
   const S = await import("../functions/_lib/seo/idiomas.js");
   const { documento } = await import("../functions/_lib/seo/base.js");
-  assert.equal(S.PUBLICAR_EN, false, "las rutas /en/ no se publican todavía");
-  assert.equal(S.enlacesHreflang("/spots/bakio", "https://costaviva.org", ["es", "en"]), "");
-  const forzado = S.enlacesHreflang("/spots/bakio", "https://costaviva.org", ["es", "en"], { forzar: true });
-  assert.match(forzado, /hreflang="es" href="https:\/\/costaviva\.org\/spots\/bakio"/);
-  assert.match(forzado, /hreflang="en" href="https:\/\/costaviva\.org\/en\/spots\/bakio"/);
-  assert.match(forzado, /hreflang="x-default" href="https:\/\/costaviva\.org\/spots\/bakio"/);
+  assert.equal(S.PUBLICAR_EN, true, "las rutas /en/ (NZ) se publican desde el 2026-10-11");
+  // Una página con versión en los dos idiomas: es, en y x-default (español).
+  const ambos = S.enlacesHreflang("/spots/bakio", "https://costaviva.org", ["es", "en"]);
+  assert.match(ambos, /hreflang="es" href="https:\/\/costaviva\.org\/spots\/bakio"/);
+  assert.match(ambos, /hreflang="en" href="https:\/\/costaviva\.org\/en\/spots\/bakio"/);
+  assert.match(ambos, /hreflang="x-default" href="https:\/\/costaviva\.org\/spots\/bakio"/);
+  // Las de NZ, solo en inglés: en y x-default a la misma /en/.
+  const nz = S.enlacesHreflang("/spots/nz-leigh", "https://costaviva.org", ["en"]);
+  assert.match(nz, /hreflang="en" href="https:\/\/costaviva\.org\/en\/spots\/nz-leigh"/);
+  assert.match(nz, /hreflang="x-default" href="https:\/\/costaviva\.org\/en\/spots\/nz-leigh"/);
+  // Las de España (solo español): sin hreflang, como siempre.
+  assert.equal(S.enlacesHreflang("/spots/bakio", "https://costaviva.org", ["es"]), "");
   assert.equal(S.rutaIdioma("/", "en"), "/en/");
   assert.deepEqual(S.idiomaDeRuta("/en/especies/lubina"), { idioma: "en", ruta: "/especies/lubina" });
   assert.deepEqual(S.idiomaDeRuta("/spots"), { idioma: "es", ruta: "/spots" });
-  const html = documento({ titulo: "T", descripcion: "D", ruta: "/spots/bakio", cuerpo: "", alternos: ["es", "en"] });
+  const html = documento({ titulo: "T", descripcion: "D", ruta: "/spots/bakio", cuerpo: "" });
   assert.match(html, /<html lang="es">/);
   assert.doesNotMatch(html, /hreflang/);
   assert.match(html, /<link rel="canonical" href="https:\/\/costaviva\.org\/spots\/bakio">\n<meta property="og:type"/);
-  assert.doesNotMatch(leer("sitemap.xml"), /\/en\//);
+  // En el sitemap, /en/ solo para NZ.
+  assert.ok((leer("sitemap.xml").match(/<loc>https:\/\/costaviva\.org\/en\/[^<]*<\/loc>/g) || []).every((l) => /\/en\/(spots|tides|species)(\/|<)/.test(l)));
+  assert.doesNotMatch(leer("sitemap.xml"), /\/en\/(spots|tides)\/(?!nz-|region\/)[a-z]/);
   const rutas = await import("../functions/_lib/rutas-publicas.js");
-  assert.equal(rutas.esRutaPermitida("/en/spots/bakio"), false, "/en/ todavía da 404");
+  assert.equal(rutas.esRutaPermitida("/en/spots/nz-leigh"), true);
 });

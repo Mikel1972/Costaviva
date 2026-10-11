@@ -84,6 +84,9 @@
       className: conVector ? "relieve-emodnet" : "",
       opacity: conVector ? 0.45 : 1,
       attribution: ATRIBUCION_RELIEVE,
+      // EMODnet solo cubre Europa: con el mapa que llega al mundo entero
+      // (Nueva Zelanda, 2026-10-11) no se piden teselas fuera de su zona.
+      bounds: L.latLngBounds([[15, -45], [90, 70]]),
     });
 
     if (conVector) {
@@ -101,6 +104,9 @@
           // pasa a ser el mapa base, opaco y en todos los zooms.
           console.warn("Mapa base vectorial no disponible, se usa el relieve de EMODnet:", e.message);
           relieve.setOpacity(1);
+          // Como mapa base tiene que cubrir también fuera de Europa (NZ).
+          relieve.options.bounds = null;
+          if (relieve.redraw) relieve.redraw();
           relieve.getContainer && relieve.getContainer() && relieve.getContainer().classList.remove("relieve-emodnet");
           conVector = false;
           actualizar();

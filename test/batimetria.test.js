@@ -19,7 +19,8 @@ import {
 import * as Capa from "../assets/js/capa-batimetria.js";
 import { calcularVentana } from "../assets/js/ventana-actividad.js";
 import { validarRegla, VARIABLES_CONTEXTO } from "../assets/js/reglas-expertas.js";
-import { SPOTS } from "../functions/prevision.js";
+// EMODnet solo cubre Europa: la profundidad es de los spots de España/Portugal.
+import { SPOTS_ES as SPOTS } from "../functions/prevision.js";
 
 const leer = (p) => JSON.parse(readFileSync(new URL(p, import.meta.url), "utf8"));
 const DATOS = leer("../assets/datos/especies.json");

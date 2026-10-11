@@ -16,7 +16,7 @@ import {
 import { areaPescaNZ, regionPescaPorCoordenadas, regionPorCoordenadas as regionGeografica, usaDatosGenerales, paisDeRegion, AREAS_NZ } from "../assets/js/regiones.js";
 import { enAmbito } from "../assets/js/reglas-expertas.js";
 import { SPOTS_NZ } from "../functions/_lib/nz/spots-nz.js";
-import { especiesVisibles, datosEspeciesVisibles } from "../functions/_lib/regiones-activas.js";
+import { especiesVisibles, especiesDePais, datosEspeciesDePais } from "../functions/_lib/regiones-activas.js";
 import { urlsSitemap } from "../functions/_lib/seo/sitemap.js";
 import { SPOTS } from "../functions/prevision.js";
 import { AREAS_MPI } from "../assets/js/normativa-nz.js";
@@ -94,12 +94,12 @@ test("normativa de especie NZ: solo enlace a la página de MPI del área, ningun
   assert.match(html, /mapa\.va\.rahui/);
 });
 
-test("región de pesca: en NZ el área de MPI (coincide con los 60 spots), en España la de siempre", () => {
+test("región de pesca: en NZ el área de MPI (coincide con los spots de NZ), en España la de siempre", () => {
   for (const s of SPOTS_NZ) assert.equal(areaPescaNZ(s.lat, s.lon), s.region, s.slug);
   assert.equal(regionPorCoordenadas(-36.85, 174.76), "nz_auckland_kermadec");
   assert.equal(regionPorCoordenadas(-45.88, 170.5), "nz_south_east");
   assert.equal(regionGeografica(-45.88, 170.5), "nueva_zelanda");
-  for (const s of SPOTS) assert.equal(regionPescaPorCoordenadas(s.lat, s.lon), regionGeografica(s.lat, s.lon), s.slug);
+  for (const s of SPOTS.filter((x) => x.pais !== "nz")) assert.equal(regionPescaPorCoordenadas(s.lat, s.lon), regionGeografica(s.lat, s.lon), s.slug);
   for (const a of AREAS_NZ) {
     assert.equal(usaDatosGenerales(a), false, a);
     assert.equal(paisDeRegion(a), "nz");
@@ -148,13 +148,17 @@ test("reglas expertas sin `regiones` (de España) no se aplican en NZ", () => {
   assert.equal(enAmbito({ ambito: { regiones: ["nz_central"] } }, { especieId: "nz-snapper", modalidad: "costa", region: "nz_central", mes: 1 }), true);
 });
 
-test("región oculta: las especies de NZ no salen en /especies ni en el sitemap", () => {
-  assert.equal(especiesVisibles(DATOS.especies).length, ES.length);
-  assert.ok(!especiesVisibles(DATOS.especies).some((e) => e.pais === "nz"));
-  assert.equal(especiesVisibles(DATOS.especies, ["es", "nz"]).length, DATOS.especies.length);
+test("NZ activa: sus especies van en inglés bajo /en/species; /especies (español) sigue solo con España", () => {
+  assert.equal(especiesVisibles(DATOS.especies).length, DATOS.especies.length);
+  assert.equal(especiesVisibles(DATOS.especies, ["es"]).length, ES.length);
+  assert.equal(especiesDePais(DATOS.especies, "es").length, ES.length);
+  assert.ok(especiesDePais(DATOS.especies, "nz").every((e) => e.id.startsWith("nz-")));
   const urls = urlsSitemap({ spots: SPOTS, especies: DATOS, tipoFondo: null, profundidad: null });
   assert.ok(!urls.some((u) => /\/especies\/nz-/.test(u.loc)));
-  assert.ok(!readFileSync(new URL("../sitemap.xml", import.meta.url), "utf8").includes("/especies/nz-"));
-  assert.equal(datosEspeciesVisibles(DATOS).especies.length, ES.length);
-  assert.match(readFileSync(new URL("../functions/_lib/seo/carga.js", import.meta.url), "utf8"), /datosEspeciesVisibles\(d\)/);
+  assert.ok(urls.some((u) => u.loc === "https://costaviva.org/en/species/nz-snapper"));
+  const sitemap = readFileSync(new URL("../sitemap.xml", import.meta.url), "utf8");
+  assert.ok(!sitemap.includes("/especies/nz-"));
+  assert.ok(sitemap.includes("/en/species/nz-snapper"));
+  assert.equal(datosEspeciesDePais(DATOS, "es").especies.length, ES.length);
+  assert.match(readFileSync(new URL("../functions/_lib/seo/carga.js", import.meta.url), "utf8"), /datosEspeciesDePais\(d, "es"\)/);
 });

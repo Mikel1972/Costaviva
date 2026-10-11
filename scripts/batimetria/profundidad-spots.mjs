@@ -13,7 +13,8 @@
 // salga una versión nueva del DTM (EMODnet publica cada ~2 años) o se añadan
 // spots (los dos servicios son públicos y sin clave).
 import { writeFileSync } from "node:fs";
-import { SPOTS } from "../../functions/prevision.js";
+// Solo España/Portugal (SPOTS_ES): la fuente de este script es europea; Nueva Zelanda (activa desde 2026-10-11) no entra.
+import { SPOTS_ES as SPOTS } from "../../functions/prevision.js";
 import { rejillaEmodnet, rejillaGebco, estadisticasPunto, cajaAlrededor, RADIO_ZONA_M, RADIO_ALCANCE_M } from "./batimetria.mjs";
 
 const SALIDA = new URL("../../assets/datos/profundidad-spots.json", import.meta.url);

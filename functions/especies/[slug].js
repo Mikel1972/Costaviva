@@ -5,9 +5,12 @@ import { conCache, html404 } from "../_lib/seo/base.js";
 import { paginaEspecie } from "../_lib/seo/paginas.js";
 import { idDeSlugEspecie } from "../_lib/seo/datos.js";
 import { SPOTS, cargarEspecies, mesMadrid } from "../_lib/seo/carga.js";
+import { redireccionNZ } from "../_lib/seo/redireccion-nz.js";
 
 export async function onRequestGet(context) {
   const slug = String(context.params.slug || "");
+  const nz = redireccionNZ(context.request, "especies", slug);
+  if (nz) return nz;
   // Las URLs van con guion; un id con guion bajo redirige a la buena.
   if (slug.includes("_")) {
     const url = new URL(context.request.url);
