@@ -1266,8 +1266,11 @@ async function metaRayos() {
 }
 
 // /prevision?region=nz (fase 2 de NZ): solo los spots de NZ, con la marea de
-// LINZ y el enlace a la normativa de su área. Sin boyas, ríos, estaciones,
-// cámaras ni turbidez (en NZ aún no hay fuentes con licencia). Con
+// LINZ y el enlace a la normativa de su área. Sin boyas, ríos, estaciones
+// ni turbidez (en NZ aún no hay fuentes con licencia). Cámaras: desde el
+// 2026-10-11 manda el estado de salud de las de NZ (claves ext-nz-* de
+// camara_estado, las comprueba camaras-salud.yml) para que el mapa pinte su
+// punto verde/rojo con la misma regla que España (estadoCamaraSpot). Con
 // ?lista=1, solo la lista de spots (el diario la usa para su desplegable),
 // sin gastar Open-Meteo.
 export function listaSpotsRegion(spots) {
@@ -1277,13 +1280,20 @@ export function listaSpotsRegion(spots) {
   }));
 }
 
-export async function previsionRegionNZ(spots, env, origen, ahora = Date.now()) {
-  const [resultados, linz, reservasDoc] = await Promise.all([
+// Solo las filas de cámaras de NZ (ext-nz-*): un usuario de NZ no recibe el
+// estado de las de España.
+export function camarasDeNZ(camaras) {
+  return Object.fromEntries(Object.entries(camaras || {}).filter(([clave]) => clave.startsWith("ext-nz-")));
+}
+
+export async function previsionRegionNZ(spots, env, origen, ahora = Date.now(), cargarCamaras = datosCamarasPorSpot) {
+  const [resultados, linz, reservasDoc, camaras] = await Promise.all([
     previsionTodosSpots(spots, env, { mareaOpenMeteo: false }).catch((e) =>
       spots.map((spot) => ({ slug: spot.slug, nombre: spot.nombre, lat: spot.lat, lon: spot.lon, error: String(e) }))
     ),
     cargarDatosLinz(env, origen, ahora),
     cargarReservasDoc(env, origen),
+    cargarCamaras().catch(() => ({})),
   ]);
   const porSlug = new Map(spots.map((s) => [s.slug, s]));
   const conMarea = resultados.map((r) => completarSpotNZ(r, porSlug.get(r.slug), linz, ahora, reservasDoc));
@@ -1293,6 +1303,7 @@ export async function previsionRegionNZ(spots, env, origen, ahora = Date.now()) 
     fuentesDatos: [...new Set(conMarea.flatMap((r) => r.fuentesDatos || []))],
     atribuciones: { marea: ATRIBUCION_LINZ, avisoMarea: AVISO_LINZ, mareaDisponible: Boolean(linz.catalogo && linz.anios.length), reservas: ATRIBUCION_DOC },
     boyas: [],
+    camaras: camarasDeNZ(camaras),
   };
 }
 
