@@ -16,8 +16,9 @@
 //
 // Escribe los ids en functions/_lib/stripe-ids.json (por modo: test/live).
 // Con --portal pone esos precios (salvo los de fundador, que tienen cupo) en
-// la configuración por defecto del portal de cliente, para cambiar de plan, y
-// añade invoice.upcoming al webhook de /stripe-webhook (aviso de renovación).
+// la configuración por defecto del portal de cliente, para cambiar de plan.
+// Siempre lee el webhook de /stripe-webhook y dice qué eventos le faltan
+// (no lo modifica: la clave no tiene escritura en Webhook Endpoints).
 //
 // Variables: STRIPE_SECRET_KEY, MODO (test | live). Con --comprobar solo lee.
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
@@ -133,11 +134,15 @@ for (const e of especificaciones) {
       else if (actual !== o.unit_amount) errores.push(`${e.lookup_key}: ${m} existe con ${actual} y la config dice ${o.unit_amount}`);
     }
     if (distinto) errores.push(`${e.lookup_key}: existe con ${existente.unit_amount} ${existente.currency}/${existente.recurring?.interval} y la config dice ${e.importe} ${e.moneda}/${e.intervalo}`);
+    // IVA incluido: el precio anunciado es el que se paga.
+    const noInclusivos = [["eur", existente.tax_behavior], ...Object.entries(existente.currency_options || {}).map(([m, o]) => [m, o.tax_behavior])]
+      .filter(([, t]) => t !== "inclusive").map(([m, t]) => `${m}=${t || "sin fijar"}`);
+    if (noInclusivos.length) errores.push(`${e.lookup_key}: impuestos no incluidos (${noInclusivos.join(", ")}); hace falta un precio nuevo (subir version_precios)`);
     if (Object.keys(faltan).length && !soloComprobar && !distinto) {
       await stripe("POST", `/prices/${existente.id}`, { currency_options: faltan });
       resumen.push(`${e.lookup_key}: ya existía ${existente.id}; añadidas monedas ${Object.keys(faltan).join(", ")}.`);
     } else {
-      resumen.push(`${e.lookup_key}: ya existía ${existente.id}${Object.keys(faltan).length ? ` (le faltan ${Object.keys(faltan).join(", ")})` : ""}.`);
+      resumen.push(`${e.lookup_key}: ya existía ${existente.id}, IVA ${existente.tax_behavior === "inclusive" ? "incluido" : existente.tax_behavior}${Object.keys(faltan).length ? ` (le faltan ${Object.keys(faltan).join(", ")})` : ""}.`);
     }
     ids[modo].precios[e.lookup_key] = existente.id;
     continue;
@@ -171,6 +176,10 @@ if (conPortal && !soloComprobar && !errores.length) {
     })).filter((x) => x.product && x.prices.length);
     const cuerpo = {
       features: {
+        // Stripe no deja activar el cambio de plan sin el cambio de tarjeta
+        // (error real en live, 2026-10-11).
+        payment_method_update: { enabled: true },
+        invoice_history: { enabled: true },
         subscription_update: { enabled: true, default_allowed_updates: ["price"], products: productosPortal, proration_behavior: conf?.features?.subscription_update?.proration_behavior || "always_invoice" },
         subscription_cancel: { enabled: true, mode: "at_period_end" },
       },
@@ -183,20 +192,24 @@ if (conPortal && !soloComprobar && !errores.length) {
   }
 }
 
-// Webhook: el aviso de renovación anual necesita invoice.upcoming. Se añade
-// (sin quitar nada) a los endpoints que apuntan a /stripe-webhook.
-if (conPortal && !soloComprobar) {
-  try {
-    const eps = await stripe("GET", "/webhook_endpoints?limit=100");
-    for (const ep of eps.data.filter((x) => /\/stripe-webhook$/.test(x.url))) {
-      const ev = ep.enabled_events || [];
-      if (ev.includes("*") || ev.includes("invoice.upcoming")) { resumen.push(`Webhook ${ep.url}: ya recibe invoice.upcoming.`); continue; }
-      await stripe("POST", `/webhook_endpoints/${ep.id}`, { enabled_events: [...ev, "invoice.upcoming"] });
-      resumen.push(`Webhook ${ep.url}: añadido invoice.upcoming (aviso de renovación anual).`);
-    }
-  } catch (e) {
-    resumen.push(`Webhook: no se pudo revisar (${e.message}).`);
+// Webhook: solo se LEE (la clave restringida no tiene escritura en Webhook
+// Endpoints, a propósito) y se dice qué eventos faltan en los endpoints que
+// apuntan a /stripe-webhook, para añadirlos a mano en el Dashboard.
+const EVENTOS_WEBHOOK = [
+  "checkout.session.completed", "customer.subscription.created", "customer.subscription.updated",
+  "customer.subscription.deleted", "invoice.payment_failed", "invoice.upcoming",
+];
+try {
+  const eps = await stripe("GET", "/webhook_endpoints?limit=100");
+  const nuestros = eps.data.filter((x) => /\/stripe-webhook$/.test(x.url));
+  if (!nuestros.length) resumen.push("Webhook: no hay ningún endpoint que apunte a /stripe-webhook.");
+  for (const ep of nuestros) {
+    const ev = ep.enabled_events || [];
+    const faltan = ev.includes("*") ? [] : EVENTOS_WEBHOOK.filter((e) => !ev.includes(e));
+    resumen.push(`Webhook ${ep.id} (${ep.url}, ${ep.status}): ${faltan.length ? `FALTAN ${faltan.join(", ")} (añadirlos a mano en Dashboard → Developers → Webhooks)` : "recibe todos los eventos necesarios"}.`);
   }
+} catch (e) {
+  resumen.push(`Webhook: no se pudo leer (${e.message}).`);
 }
 
 if (!soloComprobar) writeFileSync(RUTA_IDS, JSON.stringify(ids, null, 2) + "\n");
