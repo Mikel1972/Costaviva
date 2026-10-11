@@ -498,7 +498,7 @@ anuales a 1/12). Todo sin IA y solo en lectura de producción.
   Stripe (`metadata.tipo = "socio"`, lo crea `comun`,
   `scripts/socios/crear-codigos.mjs`). Si el webhook guarda
   `suscripciones.codigo_promocion`, también se usa (columna opcional).
-- **Acción autónoma**: la parte C de la rutina "Robot de SEO y diseño"
+- **Acción autónoma**: la parte D de la rutina "Robot de SEO y diseño" (`rutinas/robot-seo-redes.md` de comun)
   (martes; `scripts/kpis/rutina-kpis.txt`) evalúa los cambios anteriores
   (`scripts/kpis/evaluar-cambios.mjs`: 14 días antes contra 14 después; si
   empeora, revierte por PR) y hace como mucho 2 cambios de texto o llamada a
