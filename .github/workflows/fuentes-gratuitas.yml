@@ -21,8 +21,9 @@ name: Fuentes gratuitas (MET Norway, Copernicus) y comparativa
 #   pasado      1 vez al día: reanálisis ERA5 (copia pública ARCO-ERA5 de
 #               Google, SIN cuenta) para el diario de días pasados ->
 #               pasado/<fecha>/<caja>.json (fase 2)
-#   capas_nz    solo a mano (workflow_dispatch): capas del mar de Nueva
-#               Zelanda con Copernicus GLOBAL -> capas/nz/*.json (región oculta)
+#   capas_nz    1 vez al día (16:53 UTC, de madrugada en NZ) y a mano:
+#               capas del mar de Nueva Zelanda con Copernicus GLOBAL ->
+#               capas/nz/*.json (NZ activa desde el 2026-10-11, PR #176)
 #   historico_frentes  solo a mano (workflow_dispatch): histórico hacia atrás
 #               de 〰 Frentes para el aprendizaje, un fichero por día
 #               capas/historico/frentes-AAAA-MM-DD.json con el mismo cálculo
@@ -55,6 +56,7 @@ on:
     - cron: "47 4 * * *"     # mar
     - cron: "37 6 * * *"     # comparativa
     - cron: "13 8 * * *"     # pasado
+    - cron: "53 16 * * *"    # capas_nz (≈ 5-6 h de la mañana en NZ)
   workflow_dispatch:
     inputs:
       parte:
@@ -234,11 +236,12 @@ jobs:
     # Capas del mar de Nueva Zelanda (2026-10-09, fase 2 de NZ, región aún
     # OCULTA): clorofila, temperatura del agua y 〰 frentes con Copernicus
     # GLOBAL en la caja de NZ -> capas/nz/*.json (+ capas/nz/historico/).
-    # Solo a mano (parte = capas_nz), nunca con "todo" ni con el cron, hasta
-    # que Mikel active NZ. Lanzar DESDE main. Respeta AUTOMATION_PAUSED.
+    # NZ activa desde el 2026-10-11 (PR #176): cron diario propio y a mano
+    # (parte = capas_nz), nunca con "todo". Respeta AUTOMATION_PAUSED.
     if: >-
-      vars.AUTOMATION_PAUSED != 'true' &&
-      github.event_name == 'workflow_dispatch' && inputs.parte == 'capas_nz'
+      vars.AUTOMATION_PAUSED != 'true' && (
+        (github.event_name == 'schedule' && github.event.schedule == '53 16 * * *' && vars.FUENTES_GRATUITAS == 'true') ||
+        (github.event_name == 'workflow_dispatch' && inputs.parte == 'capas_nz'))
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:

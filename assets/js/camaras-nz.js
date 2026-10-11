@@ -2,18 +2,13 @@
 //
 // Cámaras de TERCEROS para los 60 spots de Nueva Zelanda (2026-10-11).
 // Mismo formato que assets/js/camaras-externas.js (id, spot, nombre, dueno,
-// condiciones, modo, url, rompiente, analisis_permitido, visto_en), pero en
-// un módulo aparte para que sigan OCULTAS mientras "nz" no esté en
-// REGIONES_ACTIVAS (functions/_lib/regiones-activas.js):
-//
-//   - index.html y el robot de salud (scripts/camaras/comprobar-camaras.mjs)
-//     solo leen CAMARAS_EXTERNAS de camaras-externas.js, que no lleva ni una
-//     de NZ. Nadie importa este fichero todavía.
-//   - camarasNZVisibles(activas) devuelve [] con NZ apagada; cuando se
-//     active, es lo que hay que sumar a la lista de la app y del robot.
-//     Módulo ES sin dependencias (el navegador no puede cargar functions/):
-//     quien llame pasa REGIONES_ACTIVAS; sin argumento, nada se ve.
-//   - test/nz-region.test.js comprueba las dos cosas.
+// condiciones, modo, url, rompiente, analisis_permitido, visto_en), en un
+// módulo aparte. NZ es pública desde la PR #176: camarasNZVisibles(
+// REGIONES_ACTIVAS) devuelve la lista entera. PENDIENTE: ni index.html ni el
+// robot de salud (scripts/camaras/comprobar-camaras.mjs) la cargan todavía;
+// hay que sumarla a la lista de la app y del robot. Módulo ES sin
+// dependencias (el navegador no puede cargar functions/): quien llame pasa
+// REGIONES_ACTIVAS; sin argumento, nada se ve. test/nz-region.test.js.
 //
 // Reglas de Mikel (2026-10-11):
 //   - Sin permiso escrito del dueño, solo modo "enlace" (botón que abre su

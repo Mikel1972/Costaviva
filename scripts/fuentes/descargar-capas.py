@@ -131,13 +131,23 @@ def rejilla(lats, lons, valores, paso, log=False):
     """Media por celda de salida (fila 0 = norte) de una rejilla nativa."""
     filas = int(round((CAJA["norte"] - CAJA["sur"]) / paso))
     cols = int(round((CAJA["este"] - CAJA["oeste"]) / paso))
-    la2, lo2 = np.meshgrid(lats, lons, indexing="ij")
+    la2, lo2 = np.meshgrid(np.asarray(lats, dtype=np.float64), np.asarray(lons, dtype=np.float64), indexing="ij")
     v = np.asarray(valores, dtype=np.float64)
-    ok = np.isfinite(v) & (la2 < CAJA["norte"]) & (la2 >= CAJA["sur"]) & (lo2 >= CAJA["oeste"]) & (lo2 < CAJA["este"])
+    ok = np.isfinite(v)
     if log:
         ok &= v > 0
-    f = np.floor((CAJA["norte"] - la2[ok]) / paso).astype(np.int64)
-    c = np.floor((lo2[ok] - CAJA["oeste"]) / paso).astype(np.int64)
+    # Fila/columna de cada punto nativo. TOLERANCIA (2026-10-11, primera
+    # pasada real de NZ): en GLO los puntos nativos caen JUSTO en los bordes
+    # de las celdas de 1/12° (-34,0833... = -34 - 1/12) y, con el redondeo de
+    # coma flotante (coordenadas float32), unos caían en la celda de arriba y
+    # otros en la de abajo: una de cada tres filas se quedaba SIN dato (57 %
+    # de la temperatura "con dato"), los huecos contaban como tierra (35 % de
+    # franja costera) y el Sobel, que exige los 8 vecinos, no daba ningún
+    # frente (0,0 % en todo). Con 1e-3 celdas de margen, un punto en el borde
+    # va siempre a la celda que empieza en él. Fuera de los bordes no cambia.
+    TOL = 1e-3
+    f = np.floor((CAJA["norte"] - la2[ok]) / paso + TOL).astype(np.int64)
+    c = np.floor((lo2[ok] - CAJA["oeste"]) / paso + TOL).astype(np.int64)
     dentro = (f >= 0) & (f < filas) & (c >= 0) & (c < cols)
     idx = f[dentro] * cols + c[dentro]
     x = v[ok][dentro]

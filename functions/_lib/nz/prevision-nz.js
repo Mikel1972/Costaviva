@@ -14,8 +14,9 @@
 
 import { mareaSpotNZ, ATRIBUCION_LINZ, AVISO_LINZ } from "./mareas-linz.js";
 import { normativaArea } from "../../../assets/js/normativa-nz.js";
+import { reservasCercanas, ATRIBUCION_DOC } from "./reservas-doc.js";
 
-export { ATRIBUCION_LINZ, AVISO_LINZ };
+export { ATRIBUCION_LINZ, AVISO_LINZ, ATRIBUCION_DOC };
 
 // Años de tablas que hacen falta para "ahora": el actual y el siguiente
 // (las próximas pleamares de fin de año caen en el siguiente).
@@ -45,10 +46,15 @@ export async function cargarDatosLinz(env, origen, ahora = Date.now()) {
   return { catalogo, anios: anios.filter(Boolean) };
 }
 
+// Reservas marinas del DOC (datos/nz/reservas-marinas-doc.geojson), o null.
+export function cargarReservasDoc(env, origen) {
+  return leerJSON(env, origen, "/datos/nz/reservas-marinas-doc.geojson");
+}
+
 // Completa el resultado de procesarSpot() de un spot NZ: marea LINZ (en vez
 // de la de Open-Meteo), región MPI, zona geográfica, modalidades, enlace de
-// normativa y si su punto aún está por revisar.
-export function completarSpotNZ(resultado, spot, linz, ahora = Date.now()) {
+// normativa, reservas marinas cercanas y si su punto aún está por revisar.
+export function completarSpotNZ(resultado, spot, linz, ahora = Date.now(), reservasDoc = null) {
   let marea = null;
   try {
     marea = linz?.catalogo ? mareaSpotNZ(spot, linz.catalogo, linz.anios, ahora) : null;
@@ -64,5 +70,8 @@ export function completarSpotNZ(resultado, spot, linz, ahora = Date.now()) {
     revisarUbicacion: Boolean(spot.revisar_ubicacion),
     marea,
     normativa: normativaArea(spot.region),
+    // Reservas marinas a menos de 3 km (aviso "no fishing", con atribución
+    // del DOC; la geometría es simplificada: no decide si el punto está dentro).
+    reservas: reservasDoc ? reservasCercanas(spot, reservasDoc) : [],
   };
 }

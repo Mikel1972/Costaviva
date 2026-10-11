@@ -51,9 +51,10 @@ dependencias (PR "i18n"; los datos de NZ van aparte).
 - **Datos por idioma** (fase de datos): `I18n.dato(obj, "texto")` usa
   `texto_en` si existe; `I18n.nombre(especie)` usa `nombres.en`. Sin ellos,
   español. Reglas expertas: `texto_en` en la regla.
-- **SEO**: `functions/_lib/seo/idiomas.js` deja preparado `/en/...` con
-  hreflang, **apagado** (`PUBLICAR_EN = false`): mismo HTML, sin rutas /en/,
-  sitemap y canónicas intactos. Los pasos para activarlo están en ese fichero.
+- **SEO**: `functions/_lib/seo/idiomas.js`, **`PUBLICAR_EN = true`** desde el
+  lanzamiento de NZ (2026-10-11): las páginas de Nueva Zelanda van SOLO en
+  inglés bajo `/en/` con hreflang `en` + `x-default` (ver "Nueva Zelanda:
+  lanzamiento"). Las de España, sin hreflang y con las canónicas de siempre.
 - **Tests**: `test/i18n.test.js` (cobertura de claves, nada sin traducir en
   las páginas de `PAGINAS_I18N` salvo `EXCEPCIONES`, es.js = texto del HTML,
   núcleo). Los tests antiguos que buscan textos en index.html leen la fuente
@@ -111,7 +112,66 @@ dependencias (PR "i18n"; los datos de NZ van aparte).
   Peniche, que ahora va en hora de Lisboa); si un cambio
   legítimo del índice lo rompe, regenerarlo con ese script y decirlo en la PR.
 
-## Nueva Zelanda, fase 1: mareas LINZ, 60 spots y reservas DOC, todo OCULTO (2026-10-09)
+## Nueva Zelanda: lanzamiento (2026-10-11, "lanza ya" de Mikel)
+
+**NZ está ACTIVA**: `REGIONES_ACTIVAS = ["es", "nz"]`. Lo de las fases de
+abajo sigue valiendo salvo donde dice "oculto".
+
+- **Spots**: 59 activos de 60 (`SPOTS_NZ`; `SPOTS_NZ_TODOS` con el que está
+  fuera). Los 52 con `revisar_ubicacion` se movieron al punto de pesca real
+  con la API de OSM (muelle/espigón en el agua, `leisure=fishing`, rampa para
+  los de barco, playa o cabo pegados a la costa, o el punto de costa más
+  cercano): `osm` = elemento elegido, `osm_antes` = punto de antes, `costa` =
+  vía `natural=coastline` comprobada y distancia (< 300 m siempre). **Dusky
+  Sound fuera** (`activo: false`): sin punto de acceso ni de pesca claro. El
+  puerto LINZ de todos sigue siendo el mismo (más cercano; distancias al día
+  en `datos/nz/linz-puertos.json`).
+- **Licencia LINZ**: se publica con la declaración general CC BY 4.0 de LINZ,
+  **pendiente aún de su confirmación por escrito**. Si LINZ dijera otra cosa,
+  se quitan las mareas de LINZ (marea de NZ a null en `completarSpotNZ` y
+  fuera las páginas /en/tides).
+- **/prevision?region=nz pública** (caché propia, `public, max-age=1800`); la
+  vista previa (`vista-previa.js`) queda para regiones aún ocultas. Nunca
+  vuelve a pedir todos los spots juntos: el mapa pide cada región SOLO cuando
+  la enseña de cerca (`regionesEnVista`, zoom >= `ZOOM_MIN_SPOTS` = 5):
+  `/prevision` (España) o `/prevision?region=nz`. Un usuario de NZ no pide
+  España y al revés. El viento (`/viento-campo`) igual: rejilla de NZ solo
+  si se mira NZ. `/prevision?region=nz` añade `reservas` (reservas marinas
+  del DOC a < 3 km, `functions/_lib/nz/reservas-doc.js`, aviso "no fishing" +
+  atribución DOC en la ficha y en /en/spots).
+- **Mapa** (index.html): se aleja hasta el globo (`minZoom: 1`,
+  `worldCopyJump`, `maxBounds` ±85° de latitud). Por debajo del zoom 5 no se
+  pintan los spots (`#map.zoom-bajo .icono-spot`) ni se piden datos: una
+  etiqueta por región ("España y Portugal", "New Zealand") lleva a ella. El
+  relieve de EMODnet solo pide teselas de Europa. Selector 🌐 bajo el zoom
+  ("España · Portugal · Canarias · New Zealand", `data-accion`, recuerda la
+  elección en `costaviva.vistaRegion`). **Vista inicial = región del usuario
+  con la regla del idioma**: elegida en el selector (o `?region=nz`) > región
+  de `I18n.region()` (último spot/GPS o zona horaria) > España; NZ arranca en
+  Auckland (zoom 9). El código postal solo recentra dentro de esa región.
+  Las capas de mar piden `capas/nz/` cuando se mira NZ (`cambioRegionCapasMar`);
+  las horas del viento salen en la hora del dispositivo (antes, UTC).
+- **SEO en inglés** (`functions/en/**`, `functions/_lib/seo/paginas-en.js`,
+  `carga-en.js`, zonas en `functions/_lib/nz/zonas-nz.js`): `/en/spots`,
+  `/en/spots/region/<zona>`, `/en/spots/<slug>`, `/en/tides` (+ región y
+  spot, horas de LINZ de hoy y mañana), `/en/species` (+ ficha, nombre inglés
+  y māori, normativa = enlaces a MPI + rāhui, nunca cifras). `/en` → 301 a
+  `/en/spots`. `/spots/nz-…`, `/mareas/nz-…` y `/especies/nz-…` → 301 a su
+  `/en/`. Las páginas en español solo con España (`carga.js`: `SPOTS_ES`,
+  especies `pais` "es"); el sitemap añade las `/en/` (hoy 450 URL: 284 de
+  España, iguales, + 166 de NZ). IndexNow cubre /en/ (a diario, /en/spots y
+  /en/tides de cada spot). Tests: `test/nz-region.test.js`.
+- **Precio**: NZ paga lo mismo en **EUR** (3,99 €/mes, 39,99 €/año; en inglés
+  "€3.99 / month (EUR)"). Stripe Checkout cobra en euros y el banco convierte.
+  **Falta el precio en NZD** (precio en NZD en Stripe y elegirlo por región
+  en `crear-checkout-stripe.js`), y revisar el texto de desistimiento de 14
+  días (es de la UE) para NZ. Decisión de Mikel pendiente.
+- **Pendiente tras el lanzamiento**: subir las capas de mar de NZ (workflow
+  `fuentes-gratuitas.yml`, parte `capas_nz`; sin ellas las capas de mar en
+  NZ dicen "no disponible"), revisión del inglés por un nativo, enviar el
+  sitemap en Search Console y la confirmación escrita de LINZ.
+
+## Nueva Zelanda, fase 1: mareas LINZ, 60 spots y reservas DOC (2026-10-09; OCULTO hasta el lanzamiento del 2026-10-11)
 
 Plan completo de NZ: investigación del 2026-10-09 (fuentes, especies,
 normativa, precio y fases). Esta fase deja los datos y la lógica en el repo
@@ -119,7 +179,7 @@ normativa, precio y fases). Esta fase deja los datos y la lógica en el repo
 marketing.
 
 **Interruptor:** `REGIONES_ACTIVAS` en `functions/_lib/regiones-activas.js`
-(hoy `["es"]`). Los spots NZ solo entran en `SPOTS` (prevision.js, y con
+(desde el 2026-10-11 `["es", "nz"]`). Los spots NZ solo entran en `SPOTS` (prevision.js, y con
 ellos /prevision, /spots, sitemap, /registrar-presion y los scripts que leen
 SPOTS) cuando "nz" está en la lista. `test/nz-region.test.js` falla si con
 el interruptor apagado aparece algo de NZ en SPOTS, el sitemap, los `.html`,
@@ -210,7 +270,8 @@ multiplican). Por spot y día, con la caché actual:
 
 ## Nueva Zelanda, fase 2a: /prevision por región, vista previa, ficha, SOS y alta (2026-10-09)
 
-Sigue **todo oculto** (`REGIONES_ACTIVAS = ["es"]`), pero se puede ver.
+Era **todo oculto** hasta el lanzamiento (2026-10-11, arriba): la vista previa
+solo aplica ya a regiones que no estén en `REGIONES_ACTIVAS`.
 
 - **/prevision por región.** Sin parámetro (o `?region=es`): España exactamente
   como antes, con `SPOTS_ES` (los 105; `SPOTS` = `SPOTS_ES` + regiones
@@ -604,11 +665,11 @@ valor). Analizar sus fotogramas sigue prohibido en cualquier caso.
 ## Cámaras de Nueva Zelanda: ocultas y solo enlace (2026-10-11)
 
 `assets/js/camaras-nz.js` lista webcams de terceros con mar a la vista para
-los spots de NZ, con el mismo formato que `camaras-externas.js` pero aparte:
-**nadie lo importa** (ni `index.html` ni el robot de salud, que escribe en
-`camara_estado`) y `camarasNZVisibles(REGIONES_ACTIVAS)` devuelve `[]`
-mientras "nz" no esté activa (`test/nz-region.test.js`). Al activar NZ hay que
-sumarlas a la lista de la app y del robot. Reglas de Mikel: sin permiso
+los spots de NZ, con el mismo formato que `camaras-externas.js` pero aparte.
+`camarasNZVisibles(REGIONES_ACTIVAS)` las da todas desde que NZ es pública
+(PR #176), pero **todavía nadie lo importa** (ni `index.html` ni el robot de
+salud): falta sumarlas a la lista de la app y del robot
+(`test/nz-region.test.js`). Reglas de Mikel: sin permiso
 escrito del dueño, solo `enlace`, también las de licencia CC BY (NIWA/Earth
 Sciences NZ excluye las fotos de su CC BY; GeoNet es CC BY 3.0 NZ); nunca
 analizar sus fotogramas; nada de Facebook ni Instagram; YouTube solo como
@@ -1381,7 +1442,7 @@ pidan a la vez (`cargandoCapasMar`), y las imágenes se guardan por capa.
   `leyendaVariasCapas()` / `globoCapasMar()` en `index.html`. Tests:
   `test/capas-combinadas.test.js` (en tests.yml).
 
-## Capas del mar de Nueva Zelanda (2026-10-09, fase 2 de NZ, OCULTAS)
+## Capas del mar de Nueva Zelanda (2026-10-09, fase 2 de NZ; públicas desde el lanzamiento del 2026-10-11 en cuanto se suban)
 
 - `descargar-capas.py --region nz` genera `capas/nz/{clorofila,temperatura-agua,frentes}.json`
   (+ `capas/nz/historico/frentes-AAAA-MM-DD.json`) con **Copernicus GLOBAL**
@@ -1401,9 +1462,15 @@ pidan a la vez (`cargandoCapasMar`), y las imágenes se guardan por capa.
   contra main con `--prueba`). `--desde` con `--region nz`: error (sin
   histórico hacia atrás todavía).
 - Workflow: `fuentes-gratuitas.yml`, parte **`capas_nz`**, solo a mano (ni
-  cron ni "todo"). El mapa solo las pide en la vista previa (`/?region=nz`
-  → `capas/nz/`). El bucket es público: una vez subidas, quien sepa la URL
+  cron ni "todo"). El mapa las pide cuando se mira Nueva Zelanda
+  (`capas/nz/`, `cambioRegionCapasMar` en index.html). El bucket es público: una vez subidas, quien sepa la URL
   puede leerlas (son datos de Copernicus, sin nada de usuarios).
+- **Fallo de la primera pasada real (2026-10-11, arreglado):** 57 % de
+  temperatura con dato, 35 % de "franja costera" y 0,0 % de frentes. Causa:
+  los puntos de GLO caen justo en los bordes de las celdas de 1/12° y, con
+  coordenadas float32, `rejilla()` dejaba vacía una de cada tres filas; los
+  huecos contaban como tierra y el Sobel (8 vecinos) no daba ningún frente.
+  `rejilla()` asigna ahora con 1e-3 celdas de tolerancia (España, igual).
 - Tests: `test/capas_nz_test.py` (Python) y `test/capas-nz.test.js`.
 
 ## Informe diario — Search Console real, conteo de cámaras, robot de especies (2026-09-20)
@@ -2633,7 +2700,7 @@ pestaña en la hora actual. Hereda la vigencia por spot del punto anterior
   app (no solo esto) la usa. Pendiente de decidir con Mikel (plan comercial de
   Open-Meteo o alternativa).
 
-## Especies de Nueva Zelanda (2026-10-09, fase 2c de NZ, OCULTAS)
+## Especies de Nueva Zelanda (2026-10-09, fase 2c de NZ; públicas en /en/species desde el 2026-10-11)
 
 - 17 fichas en `especies.json` con `pais: "nz"` e id `nz-…` (nz-snapper,
   nz-kingfish…; el prefijo hace que cualquier fuga a una URL pública se vea
@@ -2662,9 +2729,9 @@ pestaña en la hora actual. Hereda la vigencia por spot del punto anterior
 - Separación por país: `especiesDeTemporada`/`especiesParaModalidad` solo
   dan especies del país de la región (`paisEspecie`, `paisDeRegion`); una
   regla experta sin `regiones` solo aplica en España/Portugal.
-- Oculto: `especiesVisibles` (regiones-activas.js) quita las de NZ de
-  /especies, sus fichas, el sitemap y el índice de las páginas de spot
-  mientras "nz" no esté activa. Tests: `test/nz-especies.test.js`.
+- Desde el lanzamiento (2026-10-11): /especies (español) sigue solo con las
+  de España (`especiesDePais(…, "es")`); las de NZ salen en inglés en
+  `/en/species` (paginas-en.js). Tests: `test/nz-especies.test.js`.
 
 ## Tipo de fondo y orilla (2026-10-08, aprobado por Mikel)
 
@@ -3990,6 +4057,7 @@ GitHub trata los `schedule:` como "cuando pueda": `camaras-salud.yml` y `notific
 ## Cámaras caídas: fuera de la vista a las 24 h, e IPCamLive resuelto en vivo (2026-09-28)
 
 - **Más de 24 h sin señal = se oculta** (`camaraRetirada()` en `index.html`). Una noche dura ~12 h, así que 24 h es una caída real, casi siempre del proveedor (cantabria.es y SOCIB llevan días caídos). Se quita el punto del mapa y el panel dice, en tono neutro, que no está emitiendo. Vuelve sola cuando `camaras-salud.yml` la ve emitir; no hay que tocar nada. Motivo (pedido del usuario): un punto rojo permanente da imagen de app rota a quien llega por primera vez y resta suscripciones.
+- **Congelada = cuenta desde que la imagen dejó de cambiar** (2026-10-11). Con `frame_congelado` la lectura es "buena" y `ultima_senal_en` se renueva cada 30 min, así que nunca llegaba a 24 h (Pasaia, 4 días con la foto del 7 de octubre). `/prevision` manda `congeladaDesde` (`hash_desde`) y `inicioSinSenal()` lo usa. Las de SOCIB (calamillor, sonbou, muro) se quitaron ese día: imágenes paradas desde 2024-2025; Muro tiene un enlace de YouTube. El monitor guarda `origen_<código>` en vez de `http_502` (ver `ROBOT_REGLAS.md`).
 - **IPCamLive (Santoña, Sopelana)**: cambia servidor y streamid sin aviso (se rompieron el 21, el 25 y el 28 de septiembre). `functions/webcam/hls/[slug].js` resuelve el alias del reproductor en cada petición y redirige al stream real. Si falla, redirige a la última URL conocida. `index.html` y `comprobar-camaras.mjs` apuntan a `/webcam/hls/<slug>`. **No volver a pegar la URL final en el código**: si cambia el alias, se cambia en `IPCAMLIVE` de ese fichero. Test: `test/webcam-ipcamlive.test.js`.
 
 ## Cámaras con mar: se integran siempre, y el robot ya puede crear spots (2026-09-25)

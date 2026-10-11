@@ -26,7 +26,7 @@ import { aplicarCamarasASpots, aplicarReferenciasCamara, filasLecturas, VIGENCIA
 import { spotsRegionesActivas, spotsDeRegion } from "./_lib/regiones-activas.js";
 // /prevision por región y vista previa de las regiones ocultas (fase 2 de NZ).
 import { autorizarRegion, noEncontrado, regionDeUrl } from "./_lib/vista-previa.js";
-import { cargarDatosLinz, completarSpotNZ, ATRIBUCION_LINZ, AVISO_LINZ } from "./_lib/nz/prevision-nz.js";
+import { cargarDatosLinz, cargarReservasDoc, completarSpotNZ, ATRIBUCION_LINZ, AVISO_LINZ, ATRIBUCION_DOC } from "./_lib/nz/prevision-nz.js";
 
 // Spots de España y Portugal (región "es"): los únicos que pide /prevision
 // sin parámetro. Cada región nueva pide los suyos con ?region=<id> y su
@@ -527,13 +527,16 @@ async function datosTurbidezPorSpot() {
 // aparte por scripts/camaras/comprobar-camaras.mjs cada 30 min.
 async function datosCamarasPorSpot() {
   try {
-    const url = `${SUPABASE_URL}/rest/v1/camara_estado?select=spot_slug,sin_senal,motivo,ultima_senal_en,comprobado_en`;
+    const url = `${SUPABASE_URL}/rest/v1/camara_estado?select=spot_slug,sin_senal,motivo,ultima_senal_en,comprobado_en,hash_desde`;
     const resp = await fetch(url, { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } });
     if (!resp.ok) return {};
     const filas = await resp.json();
     const resultado = {};
     for (const f of filas) {
-      resultado[f.spot_slug] = { sinSenal: f.sin_senal, motivo: f.motivo, ultimaSenalEn: f.ultima_senal_en, comprobadoEn: f.comprobado_en };
+      // congeladaDesde: desde cuándo el fotograma es idéntico (hash_desde). La
+      // app lo usa para retirar una cámara congelada más de 24 h, que con
+      // ultimaSenalEn no se retiraba nunca (ver camaraRetirada en index.html).
+      resultado[f.spot_slug] = { sinSenal: f.sin_senal, motivo: f.motivo, ultimaSenalEn: f.ultima_senal_en, comprobadoEn: f.comprobado_en, congeladaDesde: f.hash_desde };
     }
     return resultado;
   } catch (e) {
@@ -1275,19 +1278,20 @@ export function listaSpotsRegion(spots) {
 }
 
 export async function previsionRegionNZ(spots, env, origen, ahora = Date.now()) {
-  const [resultados, linz] = await Promise.all([
+  const [resultados, linz, reservasDoc] = await Promise.all([
     previsionTodosSpots(spots, env, { mareaOpenMeteo: false }).catch((e) =>
       spots.map((spot) => ({ slug: spot.slug, nombre: spot.nombre, lat: spot.lat, lon: spot.lon, error: String(e) }))
     ),
     cargarDatosLinz(env, origen, ahora),
+    cargarReservasDoc(env, origen),
   ]);
   const porSlug = new Map(spots.map((s) => [s.slug, s]));
-  const conMarea = resultados.map((r) => completarSpotNZ(r, porSlug.get(r.slug), linz, ahora));
+  const conMarea = resultados.map((r) => completarSpotNZ(r, porSlug.get(r.slug), linz, ahora, reservasDoc));
   return {
     region: "nz",
     spots: conMarea,
     fuentesDatos: [...new Set(conMarea.flatMap((r) => r.fuentesDatos || []))],
-    atribuciones: { marea: ATRIBUCION_LINZ, avisoMarea: AVISO_LINZ, mareaDisponible: Boolean(linz.catalogo && linz.anios.length) },
+    atribuciones: { marea: ATRIBUCION_LINZ, avisoMarea: AVISO_LINZ, mareaDisponible: Boolean(linz.catalogo && linz.anios.length), reservas: ATRIBUCION_DOC },
     boyas: [],
   };
 }

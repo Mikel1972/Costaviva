@@ -42,7 +42,8 @@ const SPOTS_IMAGEN = [
   "pilardelahoradada", "santapola", "javea", "alcossebre", "benicassim",
   "xilxes", "oropesa", "torreblanca", "vinaros", "alboraya", "pobladefarnals",
   "oliva", "piles",
-  "calamillor", "sonbou", "muro",
+  // calamillor, sonbou y muro (SOCIB) salieron el 2026-10-11: imágenes
+  // paradas desde 2024-2025 (ver functions/webcam/[slug].js).
   // Águilas salió el 2026-10-08: su cámara es de SkylineWebcams, que prohíbe
   // descargar o analizar sus fotogramas (ver assets/js/camaras-externas.js).
 ];
