@@ -107,6 +107,15 @@ infinitivo; tratamiento impersonal o "você" con moderación).
   lanzamiento de NZ (2026-10-11): las páginas de Nueva Zelanda van SOLO en
   inglés bajo `/en/` con hreflang `en` + `x-default` (ver "Nueva Zelanda:
   lanzamiento"). Las de España, sin hreflang y con las canónicas de siempre.
+  **Portugués (2026-10-11)**: `functions/_lib/seo/paginas-pt.js` y
+  `functions/pt/**`, mismas rutas bajo `/pt/`: los 17 spots de la región
+  Portugal (`/pt/spots/<slug>`, `/pt/mareas/<slug>`), sus índices
+  (`/pt/spots/region/portugal`, `/pt/mareas/region/portugal`) y todas las
+  especies (`/pt/especies`, `/pt/especies/<slug>`). Cada par lleva hreflang
+  `es`, `pt-PT` y `x-default` (español) en las dos versiones; `/pt` a secas
+  redirige a los pesqueros. Solo se publica en portugués lo que tiene `_pt`
+  (lo demás no sale en /pt/). Están en el sitemap. Tests:
+  `test/seo-pt.test.js`.
 - **Tests**: `test/i18n.test.js` (cobertura de claves, nada sin traducir en
   las páginas de `PAGINAS_I18N` salvo `EXCEPCIONES`, es.js = texto del HTML,
   núcleo). Los tests antiguos que buscan textos en index.html leen la fuente

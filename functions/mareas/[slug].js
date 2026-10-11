@@ -21,6 +21,7 @@
 import { regionDeSlug } from "./_regiones.js";
 import { zonaDeSpot } from "../../assets/js/regiones.js";
 import { redireccionNZ } from "../_lib/seo/redireccion-nz.js";
+import { enlacesHreflang } from "../_lib/seo/idiomas.js";
 
 const DORADO = "#A8792A";
 const NAVY = "#0B2532";
@@ -161,7 +162,7 @@ function renderizarPagina(spot, todos) {
 <title>${escaparHtml(titulo)}</title>
 <meta name="description" content="${escaparHtml(descripcion)}" />
 <link rel="canonical" href="${url}" />
-<meta property="og:type" content="website" />
+${region?.slug === "portugal" ? `${enlacesHreflang(`/mareas/${spot.slug}`, "https://costaviva.org", ["es", "pt"])}\n` : ""}<meta property="og:type" content="website" />
 <meta property="og:url" content="${url}" />
 <meta property="og:title" content="${escaparHtml(titulo)}" />
 <meta property="og:description" content="${escaparHtml(descripcion)}" />
