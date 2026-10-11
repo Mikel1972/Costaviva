@@ -10,6 +10,7 @@
  },
  "descripcion": "Fichas de especies de Costaviva y reglas de la ventana de actividad. Mantenido a mano y por la rutina semanal de especies (scripts/saldo/rutina-buscador-fuentes.txt, jueves). Reglas del fichero: nunca inventar un valor (null + nota); solo fuentes oficiales o abiertas NO-NC; FishBase, FAO, SeaLifeBase y similares (CC BY-NC) prohibidos; cada dato con su fuente (ids de 'fuentes') y cada talla con url + fecha_revision.",
  "aviso_legal": "Tallas y vedas orientativas: manda la norma vigente publicada en el boletín oficial correspondiente.",
+ "aviso_legal_en": "Sizes and closed seasons are a guide only: the regulation currently in force always prevails (in New Zealand, MPI recreational fishing rules).",
  "regiones": [
   "cantabrico",
   "atlantico_norte",
