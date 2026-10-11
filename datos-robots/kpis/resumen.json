@@ -1,0 +1,366 @@
+{
+ "app": "Costaviva",
+ "generado": "2026-10-11",
+ "datos_hasta": "2026-10-10",
+ "objetivo": "ambicioso",
+ "suelo": "base",
+ "aviso_bajo_suelo": {
+  "avisar": false,
+  "quincenas": []
+ },
+ "fuentes": {
+  "supabase": "ok",
+  "stripe": "sin_clave"
+ },
+ "stock": {
+  "activos_7d": 1,
+  "perfiles": 2,
+  "mrr_eur": 0,
+  "suscriptores": {
+   "mensual": 0,
+   "anual": 0
+  },
+  "mrr_pais": {
+   "es": 0,
+   "pt": 0,
+   "nz": 0
+  },
+  "mrr_fuente": "supabase",
+  "en_prueba_stripe": 0,
+  "cancelacion_programada": null,
+  "socios": null
+ },
+ "mrr_objetivo_hoy": 0,
+ "pais_foco": null,
+ "paises": [],
+ "quincenas": [],
+ "semanas": [
+  {
+   "id": "S 2026-09-07",
+   "desde": "2026-09-07",
+   "hasta": "2026-09-13",
+   "en_curso": false,
+   "kpis": {
+    "mrr": {
+     "real": null,
+     "objetivo": 0,
+     "suelo": 0,
+     "estado": "sin_dato"
+    },
+    "suscriptores": {
+     "real": null,
+     "objetivo": 0,
+     "suelo": 0,
+     "estado": "sin_dato"
+    },
+    "facturado": {
+     "real": null,
+     "objetivo": 0,
+     "suelo": 0,
+     "estado": "sin_dato"
+    },
+    "visitas": {
+     "real": null,
+     "objetivo": null,
+     "suelo": null,
+     "estado": "sin_dato"
+    },
+    "altas": {
+     "real": null,
+     "objetivo": 0,
+     "suelo": 0,
+     "estado": "sin_dato"
+    },
+    "activaciones": {
+     "real": null,
+     "objetivo": 0,
+     "suelo": 0,
+     "estado": "sin_dato"
+    },
+    "nuevos_pagos": {
+     "real": null,
+     "objetivo": 0,
+     "suelo": 0,
+     "estado": "sin_dato"
+    },
+    "cancelaciones": {
+     "real": null,
+     "objetivo": 0,
+     "suelo": null,
+     "estado": "sin_dato"
+    },
+    "retencion": {
+     "real": null,
+     "objetivo": null,
+     "suelo": null,
+     "estado": "sin_dato"
+    }
+   },
+   "altas_canal": {},
+   "pagos_canal": {},
+   "paso_mas_rojo": "visitas"
+  },
+  {
+   "id": "S 2026-09-14",
+   "desde": "2026-09-14",
+   "hasta": "2026-09-20",
+   "en_curso": false,
+   "kpis": {
+    "mrr": {
+     "real": null,
+     "objetivo": 0,
+     "suelo": 0,
+     "estado": "sin_dato"
+    },
+    "suscriptores": {
+     "real": null,
+     "objetivo": 0,
+     "suelo": 0,
+     "estado": "sin_dato"
+    },
+    "facturado": {
+     "real": null,
+     "objetivo": 0,
+     "suelo": 0,
+     "estado": "sin_dato"
+    },
+    "visitas": {
+     "real": null,
+     "objetivo": null,
+     "suelo": null,
+     "estado": "sin_dato"
+    },
+    "altas": {
+     "real": 0,
+     "objetivo": 0,
+     "suelo": 0,
+     "estado": "verde"
+    },
+    "activaciones": {
+     "real": 0,
+     "objetivo": 0,
+     "suelo": 0,
+     "estado": "verde"
+    },
+    "nuevos_pagos": {
+     "real": 0,
+     "objetivo": 0,
+     "suelo": 0,
+     "estado": "verde"
+    },
+    "cancelaciones": {
+     "real": null,
+     "objetivo": 0,
+     "suelo": null,
+     "estado": "sin_dato"
+    },
+    "retencion": {
+     "real": null,
+     "objetivo": null,
+     "suelo": null,
+     "estado": "sin_dato"
+    }
+   },
+   "altas_canal": {},
+   "pagos_canal": {},
+   "paso_mas_rojo": "visitas"
+  },
+  {
+   "id": "S 2026-09-21",
+   "desde": "2026-09-21",
+   "hasta": "2026-09-27",
+   "en_curso": false,
+   "kpis": {
+    "mrr": {
+     "real": null,
+     "objetivo": 0,
+     "suelo": 0,
+     "estado": "sin_dato"
+    },
+    "suscriptores": {
+     "real": null,
+     "objetivo": 0,
+     "suelo": 0,
+     "estado": "sin_dato"
+    },
+    "facturado": {
+     "real": null,
+     "objetivo": 0,
+     "suelo": 0,
+     "estado": "sin_dato"
+    },
+    "visitas": {
+     "real": null,
+     "objetivo": null,
+     "suelo": null,
+     "estado": "sin_dato"
+    },
+    "altas": {
+     "real": 0,
+     "objetivo": 0,
+     "suelo": 0,
+     "estado": "verde"
+    },
+    "activaciones": {
+     "real": null,
+     "objetivo": 0,
+     "suelo": 0,
+     "estado": "sin_dato"
+    },
+    "nuevos_pagos": {
+     "real": 0,
+     "objetivo": 0,
+     "suelo": 0,
+     "estado": "verde"
+    },
+    "cancelaciones": {
+     "real": null,
+     "objetivo": 0,
+     "suelo": null,
+     "estado": "sin_dato"
+    },
+    "retencion": {
+     "real": null,
+     "objetivo": null,
+     "suelo": null,
+     "estado": "sin_dato"
+    }
+   },
+   "altas_canal": {},
+   "pagos_canal": {},
+   "paso_mas_rojo": "visitas"
+  },
+  {
+   "id": "S 2026-09-28",
+   "desde": "2026-09-28",
+   "hasta": "2026-10-04",
+   "en_curso": false,
+   "kpis": {
+    "mrr": {
+     "real": null,
+     "objetivo": 0,
+     "suelo": 0,
+     "estado": "sin_dato"
+    },
+    "suscriptores": {
+     "real": null,
+     "objetivo": 0,
+     "suelo": 0,
+     "estado": "sin_dato"
+    },
+    "facturado": {
+     "real": null,
+     "objetivo": 0,
+     "suelo": 0,
+     "estado": "sin_dato"
+    },
+    "visitas": {
+     "real": null,
+     "objetivo": null,
+     "suelo": null,
+     "estado": "sin_dato"
+    },
+    "altas": {
+     "real": 0,
+     "objetivo": 0,
+     "suelo": 0,
+     "estado": "verde"
+    },
+    "activaciones": {
+     "real": null,
+     "objetivo": 0,
+     "suelo": 0,
+     "estado": "sin_dato"
+    },
+    "nuevos_pagos": {
+     "real": 0,
+     "objetivo": 0,
+     "suelo": 0,
+     "estado": "verde"
+    },
+    "cancelaciones": {
+     "real": null,
+     "objetivo": 0,
+     "suelo": null,
+     "estado": "sin_dato"
+    },
+    "retencion": {
+     "real": null,
+     "objetivo": null,
+     "suelo": null,
+     "estado": "sin_dato"
+    }
+   },
+   "altas_canal": {},
+   "pagos_canal": {},
+   "paso_mas_rojo": "visitas"
+  },
+  {
+   "id": "S 2026-10-05",
+   "desde": "2026-10-05",
+   "hasta": "2026-10-11",
+   "en_curso": true,
+   "kpis": {
+    "mrr": {
+     "real": 0,
+     "objetivo": 0,
+     "suelo": 0,
+     "estado": "verde"
+    },
+    "suscriptores": {
+     "real": 0,
+     "objetivo": 0,
+     "suelo": 0,
+     "estado": "verde"
+    },
+    "facturado": {
+     "real": null,
+     "objetivo": 0,
+     "suelo": 0,
+     "estado": "sin_dato"
+    },
+    "visitas": {
+     "real": 63,
+     "objetivo": null,
+     "suelo": null,
+     "estado": "sin_dato"
+    },
+    "altas": {
+     "real": 1,
+     "objetivo": 0,
+     "suelo": 0,
+     "estado": "verde"
+    },
+    "activaciones": {
+     "real": null,
+     "objetivo": 0,
+     "suelo": 0,
+     "estado": "sin_dato"
+    },
+    "nuevos_pagos": {
+     "real": 0,
+     "objetivo": 0,
+     "suelo": 0,
+     "estado": "verde"
+    },
+    "cancelaciones": {
+     "real": null,
+     "objetivo": 0,
+     "suelo": null,
+     "estado": "sin_dato"
+    },
+    "retencion": {
+     "real": null,
+     "objetivo": null,
+     "suelo": null,
+     "estado": "sin_dato"
+    }
+   },
+   "altas_canal": {
+    "directo": 1
+   },
+   "pagos_canal": {},
+   "paso_mas_rojo": "visitas"
+  }
+ ]
+}
