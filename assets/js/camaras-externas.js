@@ -162,6 +162,11 @@ const LISTA = [
   // --- Baleares ---
   sky("palma", "Can Pastilla (Playa de Palma)", "espana/islas-baleares/mallorca/can-pastilla-playa-de-palma", 6123, true),
   yt("arenal", "palma", "S'Arenal (Playa de Palma)", "Webcam Arenal", "1qGjkrM0REk", true, "webcamera24.com"),
+  // Muro: su cámara propia (SOCIB) salió el 2026-10-11 por llevar parada
+  // desde 2024. Esta emite en directo desde el Resort Playa Esperanza
+  // (YouTube "isLive", 8 espectadores, 2026-10-11 09:53 UTC); la miniatura
+  // del canal enseña la playa con la bahía de Alcúdia. Solo enlace.
+  yt("playa-de-muro", "muro", "Playa de Muro (Resort Playa Esperanza)", "WEBCAMS ONLINE", "mxfelXmWtCA", true, "youtube.com"),
   sky("formentera", "Playa de Es Pujols", "espana/islas-baleares/formentera/playa-es-pujols", 4727, true),
 
   // --- Canarias ---

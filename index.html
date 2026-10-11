@@ -4192,8 +4192,9 @@ const SPOTS_CON_WEBCAM = [
   "pilardelahoradada", "santapola", "javea", "alcossebre", "benicassim",
   "burriana", "castellon", "xilxes", "oropesa", "torreblanca", "vinaros",
   "alboraya", "canetdeberenguer", "cullera", "pobladefarnals", "oliva", "piles",
-  // SOCIB (Baleares) — endpoint interno del visor BEAMON, verificado 2026-09-09
-  "calamillor", "sonbou", "muro",
+  // SOCIB (calamillor, sonbou, muro) retiradas el 2026-10-11: sus imágenes
+  // llevan paradas desde 2024-2025 (ver functions/webcam/[slug].js). Muro
+  // tiene ahora un enlace de YouTube en assets/js/camaras-externas.js.
   // Diputación Foral de Gipuzkoa (vídeo HLS, ver WEBCAMS_HLS más abajo) —
   // verificadas 2026-09-14. "getaria" ya estaba en la lista de arriba
   // (AZTI) — desde 2026-09-19 usa el vídeo de la Diputación como fuente
@@ -4454,7 +4455,7 @@ function pintarWebcam(slug, nombre) {
     pararRefrescoWebcam();
     cont.innerHTML = `<div class="tarjeta" style="text-align:center; color:var(--tinta-3); font-size:12px;">
       ${I18n.t("mapa.cam.no_carga_img", { nombre })}<br>
-      ${I18n.t("mapa.cam.solo_desplegado")}
+      ${I18n.t("mapa.cam.proveedor_no_responde")}
     </div>`;
   });
   intervaloWebcam = setInterval(() => {
@@ -4589,17 +4590,28 @@ function badgeWebcamHtml(slug) {
 // sola en cuanto camaras-salud.yml la ve emitir otra vez: no hay que
 // tocar nada.
 const HORAS_CAMARA_RETIRADA = 24;
+// Una cámara CONGELADA (frame_congelado) da un fotograma "bueno" en cada
+// pasada, así que su ultimaSenalEn se renueva cada 30 min y nunca llegaba a
+// las 24 h: Pasaia estuvo días enseñando la misma imagen del 7 de octubre
+// (2026-10-11). Para ella cuenta desde cuándo la imagen es la misma
+// (congeladaDesde, hash_desde en camara_estado), no la última lectura.
+function inicioSinSenal(c) {
+  if (c?.motivo === "frame_congelado" && c.congeladaDesde) return c.congeladaDesde;
+  return c?.ultimaSenalEn ?? null;
+}
 function camaraRetirada(slug) {
   const c = CAMARAS[slug];
   if (!c?.sinSenal) return false;
-  if (!c.ultimaSenalEn) return true;
-  return Date.now() - new Date(c.ultimaSenalEn).getTime() > HORAS_CAMARA_RETIRADA * 3600 * 1000;
+  const desde = inicioSinSenal(c);
+  if (!desde) return true;
+  return Date.now() - new Date(desde).getTime() > HORAS_CAMARA_RETIRADA * 3600 * 1000;
 }
 function lineaCamaraSaludHtml(slug) {
   const c = CAMARAS[slug];
   if (!c?.sinSenal) return "";
-  const desde = c.ultimaSenalEn
-    ? I18n.t("mapa.cam.desde_hace", { tiempo: tiempoTranscurridoDesde(c.ultimaSenalEn) })
+  const inicio = inicioSinSenal(c);
+  const desde = inicio
+    ? I18n.t("mapa.cam.desde_hace", { tiempo: tiempoTranscurridoDesde(inicio) })
     : I18n.t("mapa.cam.desde_siempre");
   // "frame_congelado": la imagen tiene contenido real pero no cambia desde
   // hace horas (ver el hallazgo real documentado en scripts/camaras/

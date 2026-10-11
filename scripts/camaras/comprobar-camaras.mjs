@@ -49,7 +49,7 @@
 import sharp from "sharp";
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { WEBCAMS } from "../../functions/webcam/[slug].js";
@@ -125,9 +125,26 @@ async function analizarBuffer(buffer) {
   return { desviacion, hash };
 }
 
+// Motivo de un fallo del proxy (2026-10-11). Cuando TODAS las fuentes fallan,
+// functions/webcam/[slug].js responde siempre 502 con el error de cada
+// fuente en `detalle`. Guardar solo "http_502" escondía la causa real: el
+// parte del 2026-10-10 tenía 8 cámaras en http_502 que eran tres cosas
+// distintas (404 del dueño en Alicante; 522 de Cloudflare al no poder
+// conectar con cantabria.es y con apps.socib.es). Ahora el motivo dice qué
+// devolvió el ORIGEN de la última fuente probada: origen_404, origen_522...
+// (522 = el edge de Cloudflare no consigue conectar con ese servidor: no es
+// nuestra URL ni el User-Agent, la conexión ni siquiera llega).
+async function motivoFalloProxy(resp) {
+  let cuerpo = null;
+  try { cuerpo = await resp.json(); } catch {}
+  if (resp.status !== 502 || !Array.isArray(cuerpo?.detalle) || !cuerpo.detalle.length) return `http_${resp.status}`;
+  const m = String(cuerpo.detalle[cuerpo.detalle.length - 1]).match(/HTTP (\d{3})/);
+  return m ? `origen_${m[1]}` : "origen_sin_respuesta";
+}
+
 async function comprobarImagen(slug) {
   const resp = await fetch(`${BASE_URL}/webcam/${slug}`, { headers: { "User-Agent": "CostaVivaCamarasBot/1.0" } });
-  if (!resp.ok) return { ok: false, motivo: `http_${resp.status}` };
+  if (!resp.ok) return { ok: false, motivo: await motivoFalloProxy(resp) };
   // Índice de la fuente que sirvió de verdad (ver functions/webcam/[slug].js)
   // — >0 significa que la principal falló y el proxy recurrió sola a una de
   // reserva sin que el usuario lo note; aquí sí interesa saberlo para
@@ -313,6 +330,14 @@ async function main() {
     console.error("Ninguna cámara se pudo comprobar — no se llama a /registrar-estado-camaras");
     process.exit(1);
   }
+
+  // Lista de lo que se vigila hoy, para que el volcado diario de
+  // camaras-salud.yml deje fuera las filas de cámaras ya retiradas del código
+  // (siguen en camara_estado, que esta pasada no borra): sin esto, Muro, Cala
+  // Millor y Son Bou seguirían saliendo "en rojo" en el parte para siempre.
+  try {
+    writeFileSync(join(tmpdir(), "camaras-vigiladas.json"), JSON.stringify(lecturas.map((l) => l.spot)));
+  } catch {}
 
   const resp = await fetch(`${BASE_URL}/registrar-estado-camaras`, {
     method: "POST",

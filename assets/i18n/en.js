@@ -259,7 +259,7 @@
   "mapa.cam.alt": "Live webcam of {nombre}",
   "mapa.cam.cada_minuto": "Refreshes by itself every minute.",
   "mapa.cam.no_carga_img": "Could not load the {nombre} webcam right now",
-  "mapa.cam.solo_desplegado": "(it only works once deployed on Cloudflare Pages — not in this file opened on its own).",
+  "mapa.cam.proveedor_no_responde": "(its provider is not responding; it is usually temporary, check again in a while).",
   "mapa.cam.video": "Live video ({fuente}).",
   "mapa.cam.fuente_externa": "external source",
   "mapa.cam.no_carga": "Could not load the {nombre} webcam right now.",
