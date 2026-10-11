@@ -2183,7 +2183,8 @@ async function actualizarDesdeBackend() {
       });
     }
     if (datos.turbidez) TURBIDEZ = datos.turbidez;
-    if (datos.camaras) CAMARAS = datos.camaras;
+    // Se suman (no se pisan): /prevision?region=nz trae las de NZ aparte.
+    if (datos.camaras) CAMARAS = { ...CAMARAS, ...datos.camaras };
     if (datos.monteRios) MONTE_RIOS = datos.monteRios;
     if (datos.caudales) {
       RIOS.forEach((r) => {
@@ -2262,6 +2263,9 @@ async function cargarRegion(region) {
       s.marea = sb.marea || null;
       if (nuevo && marcadoresListos) crearMarcadorSpot(s);
     }
+    // Estado de las cámaras de la región (ext-nz-*, 2026-10-11): el punto
+    // verde/rojo de sus spots usa la misma regla que España.
+    if (datos.camaras) CAMARAS = { ...CAMARAS, ...datos.camaras };
     if (window.atribucionRegionMapa) window.atribucionRegionMapa(region, datos.atribuciones);
     return true;
   } catch (e) {
@@ -4377,6 +4381,7 @@ function camarasExternasVisibles(slug) {
   const CE = window.CamarasExternas;
   if (!CE) return null;
   return CE.camarasExternasDeSpot(slug).filter((c) => {
+    if (CE.externaMarcadaCaida && CE.externaMarcadaCaida(c)) return false;
     const clave = CE.claveSalud(c);
     return !(CE.externaCuentaComoCaida(c, CAMARAS[clave]) && camaraRetirada(clave));
   });
@@ -4427,7 +4432,7 @@ function pintarWebcam(slug, nombre) {
   pintarCamarasExternas(slug);
   const cont = document.getElementById("panelWebcamContenido");
   if (!SPOTS_CON_WEBCAM.includes(slug)) {
-    const hayExternas = window.CamarasExternas && window.CamarasExternas.camarasExternasDeSpot(slug).length > 0;
+    const hayExternas = (camarasExternasVisibles(slug) || []).length > 0;
     cont.innerHTML = hayExternas
       ? ""
       : `<div class="tarjeta" style="text-align:center; color:var(--tinta-3); font-size:12px;">${I18n.t("mapa.cam.sin_webcam")}</div>`;
@@ -4622,17 +4627,17 @@ function camaraRetirada(slug) {
 }
 // Punto de cámara del mapa (2026-10-11, "Verde = cámara. Rojo = no
 // cámara", Mikel): mismo criterio que la ficha, ver estadoCamaraSpot en
-// assets/js/camaras-externas.js. Solo España y Portugal: /prevision?region=nz
-// no trae el estado de las cámaras, así que en NZ no se pinta. Sin el
+// assets/js/camaras-externas.js. España, Portugal y NZ (/prevision?region=nz
+// trae el estado de sus cámaras, claves ext-nz-*). Sin el
 // estado de las cámaras (aún sin cargar, o /prevision sin `camaras`) tampoco:
-// no se pinta un color que no se sabe. "no_verificable" (solo enlaces de
-// dueños que bloquean robots, MEO Beachcam) se queda sin punto, como estaba,
-// hasta que Mikel decida su color.
+// no se pinta un color que no se sabe. Los enlaces de dueños que bloquean
+// robots (MEO Beachcam, no_verificable_*) cuentan como verde (Mikel,
+// 2026-10-11); la rutina de cámaras caídas los revisa a mano cada mes.
 function pintarPuntoCamara(s) {
   const punto = document.getElementById(`webcam-punto-${s.slug}`);
   if (!punto) return;
   const CE = window.CamarasExternas;
-  const estado = CE?.estadoCamaraSpot && s.pais !== "nz" && Object.keys(CAMARAS).length
+  const estado = CE?.estadoCamaraSpot && Object.keys(CAMARAS).length
     ? CE.estadoCamaraSpot(s.slug, SPOTS_CON_WEBCAM.includes(s.slug), CAMARAS)
     : null;
   punto.dataset.estado = estado || "";

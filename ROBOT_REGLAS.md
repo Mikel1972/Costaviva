@@ -583,6 +583,38 @@ pasada siguiente no repita el mismo trabajo a ciegas. Anota también **qué
 términos de búsqueda ya probaste**, para que la siguiente empiece por otros
 en vez de repetir los mismos.
 
+### Revisión mensual de las cámaras "no verificables" (añadido 2026-10-11, decisión de Mikel)
+
+Las cámaras de terceros con motivo `no_verificable_*` en
+`datos-robots/camaras-estado.json` (MEO Beachcam en Portugal, CoroLive en NZ:
+su dueño responde 401/403/429 a los robots) salen en **verde** en el mapa
+igual que una vista bien (`estadoCamaraSpot` en
+`assets/js/camaras-externas.js`). Como el robot de salud no puede
+comprobarlas, **se miran a mano una vez al mes**:
+
+- **Cuándo**: solo el día 1 de cada mes (`date -u +%d` = `01`). Ese día,
+  además de las cámaras en rojo, la rutina de cámaras caídas revisa TODAS las
+  claves `ext-*` con motivo `no_verificable_*`, aunque no haya ninguna en
+  rojo (no vale el "sin cámaras en rojo → PASO FINAL" de ese día). No cuenta
+  para el límite de 3 cámaras: es mirar, no reparar.
+- **Cómo**: abre la web del dueño (`url` de la entrada en
+  `camaras-externas.js` o `camaras-nz.js`) con WebFetch o con una búsqueda,
+  como lo haría una persona. Nunca se intenta esquivar su protección.
+- **Si se ve caída de verdad** (la página dice "offline", "sem emissão",
+  "temporarily unavailable", no hay emisión o la cámara ya no aparece en su
+  web): márcala en su entrada de la lista con
+  `caida_comprobada: { fecha: "AAAA-MM-DD", nota: "qué se vio y en qué URL" }`.
+  La app la quita de la ficha y no cuenta para el color del spot
+  (`externaMarcadaCaida`). Si el dueño la ha quitado para siempre, borra la
+  entrada entera (retirada). Anótalo en `ROBOT.md` y haz commit y push a
+  main.
+- **Si una marcada vuelve a emitir**: borra su `caida_comprobada`.
+- **Si a la rutina también la bloquean** (403, reto anti-bots, dominio
+  rechazado por la red): dilo en `ROBOT.md` ("sin verificar: bloqueada
+  también a la rutina", con el dominio) y **no** la des por caída.
+- Entrada en `ROBOT.md` aunque estén todas bien: cuántas se miraron, cuántas
+  se vieron emitiendo, cuántas bloqueadas y cuáles se marcaron.
+
 ### Señal de que esta regla hace falta
 
 Si una cámara está en rojo y el usuario la ve funcionando, casi siempre es

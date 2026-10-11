@@ -7,7 +7,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import {
-  estadoCamaraSpot, camaraOculta, inicioSinSenal, externaFunciona, camarasExternasDeSpot, claveSalud,
+  estadoCamaraSpot, camaraOculta, inicioSinSenal, externaFunciona, externaMarcadaCaida, camarasExternasDeSpot, claveSalud,
+  CAMARAS_EXTERNAS,
 } from "../assets/js/camaras-externas.js";
 import { decidirEstado, esFalloDeServidor } from "../scripts/camaras/decidir-estado.mjs";
 
@@ -82,12 +83,34 @@ test("enlace caído de verdad: rojo; enlace que solo falló una vez: no cuenta c
   assert.equal(externaFunciona(undefined), false);
 });
 
-test("solo enlaces que bloquean robots (MEO, 403): tercer estado no_verificable", () => {
-  const camaras = Object.fromEntries(ext("nazare").map((k) => [k, { sinSenal: false, motivo: "no_verificable_403" }]));
-  assert.equal(estadoCamaraSpot("nazare", false, camaras), "no_verificable");
-  // Con uno comprobado al lado (Caparica tiene YouTube), verde.
-  const cap = Object.fromEntries(ext("costadacaparica").map((k) => [k, k.startsWith("ext-yt-") ? ok : { sinSenal: false, motivo: "no_verificable_403" }]));
-  assert.equal(estadoCamaraSpot("costadacaparica", false, cap), "verde");
+test("enlaces que bloquean robots (MEO 403, CoroLive): verde, como una vista bien (Mikel, 2026-10-11)", () => {
+  const nv = { sinSenal: false, motivo: "no_verificable_403" };
+  const camaras = Object.fromEntries(ext("nazare").map((k) => [k, nv]));
+  assert.equal(estadoCamaraSpot("nazare", false, camaras), "verde");
+  assert.equal(externaFunciona(nv), true);
+  assert.equal(externaFunciona({ sinSenal: false, motivo: "no_verificable_429" }), true);
+});
+
+test("los 15 spots de Portugal solo con MEO salen en verde", () => {
+  const nv = { sinSenal: false, motivo: "no_verificable_403" };
+  const soloMeo = [...new Set(CAMARAS_EXTERNAS.filter((c) => c.condiciones === "meo_beachcam").map((c) => c.spot))]
+    .filter((slug) => camarasExternasDeSpot(slug).every((c) => c.condiciones === "meo_beachcam"));
+  assert.equal(soloMeo.length, 15);
+  const camaras = Object.fromEntries(CAMARAS_EXTERNAS.map((c) => [claveSalud(c), nv]));
+  for (const slug of soloMeo) assert.equal(estadoCamaraSpot(slug, false, camaras), "verde", slug);
+});
+
+test("una no verificable marcada a mano como caída (caida_comprobada) no cuenta", () => {
+  const camara = { ...camarasExternasDeSpot("sagres")[0], caida_comprobada: { fecha: "2026-11-01", nota: "su web dice offline" } };
+  assert.equal(externaMarcadaCaida(camara), true);
+  assert.equal(externaFunciona({ sinSenal: false, motivo: "no_verificable_403" }, camara), false);
+});
+
+test("caida_comprobada, si existe, lleva fecha y nota", () => {
+  for (const c of CAMARAS_EXTERNAS.filter(externaMarcadaCaida)) {
+    assert.match(c.caida_comprobada.fecha, /^\d{4}-\d{2}-\d{2}$/, c.id);
+    assert.ok(c.caida_comprobada.nota, c.id);
+  }
 });
 
 test("sin ninguna cámara: rojo", () => {
@@ -130,4 +153,30 @@ test("index.html pinta el punto con estadoCamaraSpot en todos los spots del cat�
   assert.match(html, /CE\.estadoCamaraSpot\(s\.slug, SPOTS_CON_WEBCAM\.includes\(s\.slug\), CAMARAS\)/);
   assert.match(html, /!s\.esUsuario \? `<span class="punto-webcam-viva" id="webcam-punto-/);
   assert.doesNotMatch(html, /const tieneWebcam = !s\.esUsuario && SPOTS_CON_WEBCAM/);
+});
+
+// --- Nueva Zelanda (2026-10-11, "no veo las cámaras de NZ") ---
+
+test("NZ: los 9 spots con cámara salen en verde con el estado real de hoy; los demás, rojo", async () => {
+  const { SPOTS_NZ } = await import("../functions/_lib/nz/spots-nz.js");
+  const conCamara = ["tairua", "whitianga", "whangamata", "whakatane", "te-kaha", "napier", "new-plymouth", "aramoana", "riverton"].map((s) => `nz-${s}`);
+  // Estado de camara_estado del 2026-10-11 12:17 UTC: CoroLive no verificable, el resto ok.
+  const camaras = Object.fromEntries(
+    CAMARAS_EXTERNAS.filter((c) => c.spot.startsWith("nz-")).map((c) => [claveSalud(c), c.id.startsWith("nz-corolive") ? { sinSenal: false, motivo: "no_verificable_403" } : ok])
+  );
+  for (const slug of conCamara) assert.equal(estadoCamaraSpot(slug, false, camaras), "verde", slug);
+  const sin = SPOTS_NZ.filter((s) => !conCamara.includes(s.slug));
+  assert.ok(sin.length > 40);
+  for (const s of sin) assert.equal(estadoCamaraSpot(s.slug, false, camaras), "rojo", s.slug);
+});
+
+test("NZ: /prevision?region=nz manda solo el estado de las cámaras de NZ", async () => {
+  const { camarasDeNZ } = await import("../functions/prevision.js");
+  const todas = { "ext-nz-geonet-te-kaha": ok, "ext-meo-sagres": ok, zarautz: ok };
+  assert.deepEqual(Object.keys(camarasDeNZ(todas)), ["ext-nz-geonet-te-kaha"]);
+  const fuente = readFileSync(new URL("../functions/prevision.js", import.meta.url), "utf8");
+  assert.match(fuente, /camaras: camarasDeNZ\(camaras\)/);
+  const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
+  assert.doesNotMatch(html, /s\.pais !== "nz" && Object\.keys\(CAMARAS\)/);
+  assert.equal((html.match(/CAMARAS = \{ \.\.\.CAMARAS, \.\.\.datos\.camaras \}/g) || []).length, 2);
 });
