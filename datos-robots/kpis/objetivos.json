@@ -1,0 +1,147 @@
+{
+  "nota": "Objetivos de MRR (€/mes, anuales a 1/12) aprobados por Mikel el 2026-10-11. Se cambian aquí, sin tocar código; los lee scripts/kpis/lib.mjs. Objetivo oficial: ambicioso. Suelo de alarma: base. Prudente: solo referencia. Sin ajustes estacionales (Mikel: en pesca no hay gran diferencia entre temporada alta y baja).",
+  "inicio": "2026-10-11",
+  "quincenas": [
+    {
+      "id": "Q1",
+      "cierre": "2026-10-26"
+    },
+    {
+      "id": "Q2",
+      "cierre": "2026-11-10"
+    },
+    {
+      "id": "Q3",
+      "cierre": "2026-11-25"
+    },
+    {
+      "id": "Q4",
+      "cierre": "2026-12-10"
+    },
+    {
+      "id": "Q5",
+      "cierre": "2026-12-25"
+    },
+    {
+      "id": "Q6",
+      "cierre": "2027-01-09"
+    },
+    {
+      "id": "Q7",
+      "cierre": "2027-01-24"
+    },
+    {
+      "id": "Q8",
+      "cierre": "2027-02-08"
+    },
+    {
+      "id": "Q9",
+      "cierre": "2027-02-23"
+    },
+    {
+      "id": "Q10",
+      "cierre": "2027-03-11"
+    }
+  ],
+  "escenarios": {
+    "prudente": {
+      "nombre": "Prudente (solo referencia)",
+      "mrr": [
+        4,
+        7,
+        12,
+        20,
+        29,
+        41,
+        56,
+        72,
+        90,
+        108
+      ]
+    },
+    "base": {
+      "nombre": "Base (suelo de alarma)",
+      "mrr": [
+        6,
+        12,
+        23,
+        41,
+        70,
+        112,
+        167,
+        234,
+        316,
+        411
+      ]
+    },
+    "ambicioso": {
+      "nombre": "Ambicioso (objetivo oficial)",
+      "mrr": [
+        10,
+        20,
+        40,
+        76,
+        137,
+        233,
+        372,
+        559,
+        782,
+        1017
+      ]
+    }
+  },
+  "objetivo": "ambicioso",
+  "suelo_alarma": "base",
+  "referencia_escenario": "prudente",
+  "reglas": {
+    "semaforo": "Verde si el real llega al ambicioso; ámbar si está entre el base y el ambicioso; rojo si queda por debajo del base. Para cada paso del embudo, lo mismo con los objetivos que salen de cada escenario.",
+    "avisar_bajo_base": "Si el MRR real queda por debajo del base al cierre de dos quincenas seguidas, se avisa a Mikel en el Issue de los lunes con la causa y la propuesta."
+  },
+  "referencia": {
+    "mrr": 4000,
+    "fecha": "2027-03-11",
+    "nota": "Objetivo inicial de Mikel (duplicar cada 15 días). Queda solo como referencia: exigiría publicidad de pago."
+  },
+  "supuestos_embudo": {
+    "nota": "Supuestos hasta tener datos reales (cada tasa pasa a la real cuando su denominador llega a min_n casos).",
+    "visita_alta": 0.04,
+    "alta_pago": 0.03,
+    "arpu_eur": 3.25,
+    "margen_bajas": 0.15,
+    "alta_activacion": 0.4,
+    "alta_activacion_nota": "No lo fijó Mikel: supuesto de trabajo de la sesión del 2026-10-11, a sustituir por el real.",
+    "retencion_s4_pct": 40,
+    "retencion_s4_nota": "Supuesto de trabajo, a sustituir por el real.",
+    "min_n": 20
+  },
+  "precios_lista": {
+    "nota": "Reserva: los precios de lista salen de functions/_lib/precios-zonas.json (cobro por zonas) si existe. Solo se usan para el MRR sin clave de Stripe (desde public.suscripciones).",
+    "eur": {
+      "mensual": 3.99,
+      "anual": 29.99
+    }
+  },
+  "cambio_a_eur": {
+    "nota": "Tipos para sumar al MRR en euros otras monedas (NZD...). Por defecto, los del BCE de functions/_lib/precios-zonas.json; uno puesto aquí manda. No se inventa.",
+    "tipos": {}
+  },
+  "paises": {
+    "nota": "Plan por países aprobado por Mikel el 2026-10-11. La curva de cada país tiene la forma del escenario objetivo (ambicioso), escalada a su parte del MRR de marzo de 2027; el suelo, el base con la misma escala. El país de cada usuario se deriva sin IA (scripts/kpis/recoger.mjs): país de facturación o moneda en Stripe > país de sus spots (salidas, favoritos, eventos) > ES por defecto. Las visitas de España y Portugal no se pueden separar (se cuentan por tipo de página, no por spot): van juntas en ES.",
+    "es": {
+      "nombre": "España",
+      "mrr_marzo": 550,
+      "arpu_eur": 3.25
+    },
+    "pt": {
+      "nombre": "Portugal",
+      "mrr_marzo": 100,
+      "arpu_eur": 3.25
+    },
+    "nz": {
+      "nombre": "Nueva Zelanda",
+      "mrr_marzo": 367,
+      "arpu_eur": 4.8,
+      "arpu_nota": "Precio en NZD ≈ ×1,40 el de España (Mikel, 2026-10-11)."
+    }
+  }
+}

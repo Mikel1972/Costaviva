@@ -453,6 +453,61 @@ de Mikel); el baseline del vigía ya lleva las 5 tablas nuevas, así que el
 vigía saldrá en rojo hasta aplicarlas. Tests: `test/captacion.test.js`,
 `test/calendario-marketing.test.js`.
 
+## KPIs de facturación (2026-10-11)
+
+Objetivo de Mikel: facturación como estrella polar (MRR en €/mes, con los
+anuales a 1/12). Todo sin IA y solo en lectura de producción.
+
+- **Objetivos** en `datos-robots/kpis/objetivos.json` (se cambian ahí, sin
+  tocar código): 10 quincenas (Q1 cierra el 26-oct, Q10 el 11-mar-2027) y
+  tres escenarios de MRR. **Objetivo oficial: ambicioso** (10 → 1.017 €);
+  **suelo de alarma: base** (6 → 411 €); prudente solo como referencia; los
+  4.000 € iniciales quedan como línea de referencia (exigirían publicidad de
+  pago). Semáforo: verde ≥ ambicioso, ámbar entre base y ambicioso, rojo <
+  base. Dos cierres seguidos bajo el base = aviso a Mikel (Issue de los
+  lunes, vía la rutina). Sin ajustes estacionales (decisión de Mikel). Los
+  supuestos del embudo (visita → alta 4 %, alta → pago 3 %, ARPU 3,25 €,
+  +15 % por bajas) valen hasta que el real tiene 20 casos.
+- **`kpis.yml`** (diario 05:37 UTC): `scripts/kpis/recoger.mjs` AÑADE a
+  `datos-robots/kpis/historico.jsonl` una línea por día cerrado (hora de
+  Madrid): visitas, altas (sin admin, pruebas, permanentes ni invitaciones
+  del 100 %), canales, cohortes de activación y retención, pagos nuevos,
+  cancelaciones, facturado y, en la última, el stock (MRR, suscriptores,
+  socios). Nunca se reescribe. Supabase con la service_role SOLO GET;
+  Stripe con `STRIPE_KPI_KEY` (clave restringida de lectura; sin ella, MRR a
+  precio de lista desde `suscripciones` y lo dice). Los lunes
+  `scripts/kpis/informe.mjs` escribe `KPIS.md`, `datos-robots/kpis/mrr.svg` y
+  `datos-robots/kpis/resumen.json` (este lo agrega `comun` en su `KPIS.md`).
+  **El repo es público**: KPIS.md enseña MRR y facturación.
+- **Por país** (`objetivos.json`, "paises"): ES 550 €, PT 100 €, NZ 367 € en
+  marzo de 2027 (= 1.017 €), cada uno con la forma del ambicioso escalada a
+  su parte; ARPU NZ 4,80 € (precio ×1,40). País del usuario: país de
+  facturación o moneda en Stripe > el de sus spots (salidas, favoritos,
+  eventos) > ES. Visitas: ES y PT juntas (no se separan por spot); NZ por las
+  páginas /en/ (`en_spots`, `en_tides`, `en_species` en `_lib/visitas.js`,
+  necesitan la migración `20261011220000_visitas_en.sql`, **sin aplicar**).
+  La rutina actúa sobre el país que va más por debajo de su objetivo.
+- **Activación v1**: en sus 7 primeros días abre la app 2 días distintos y
+  hace algo más que mirar el mapa o el pago (`EVENTOS_PASIVOS` en
+  `scripts/kpis/lib.mjs`). Revisarla con 30 pruebas terminadas.
+- **Canales**: Google (y buscadores), Instagram (y Facebook), socios,
+  directo, otros. **Socios**: el enlace de cada entidad es
+  `https://costaviva.org/empieza?utm_source=socio&utm_medium=referido&utm_campaign=<código en minúsculas>`
+  (`origen.js` lo guarda como fuente "otro" con la campaña = código; sin SQL
+  nuevo) y el pago se atribuye por el Promotion Code de la suscripción en
+  Stripe (`metadata.tipo = "socio"`, lo crea `comun`,
+  `scripts/socios/crear-codigos.mjs`). Si el webhook guarda
+  `suscripciones.codigo_promocion`, también se usa (columna opcional).
+- **Acción autónoma**: la parte D de la rutina "Robot de SEO y diseño" (`rutinas/robot-seo-redes.md` de comun)
+  (martes; `scripts/kpis/rutina-kpis.txt`) evalúa los cambios anteriores
+  (`scripts/kpis/evaluar-cambios.mjs`: 14 días antes contra 14 después; si
+  empeora, revierte por PR) y hace como mucho 2 cambios de texto o llamada a
+  la acción sobre el paso más en rojo, en rama `robot/diseno-…-kpi-…`
+  (PR para Mikel), apuntados en `datos-robots/kpis/cambios.jsonl`. Nunca
+  precios, cobro ni login. Lo que necesita a Mikel va a
+  `aprendizaje/propuestas.json` (Issue de los lunes).
+- Tests: `test/kpis.test.js`.
+
 ## Aspecto "Amanecer de pesca" (2026-10-08, elegido por Mikel)
 
 Mikel pidió algo "visualmente atractivo, no frío" y eligió, entre tres
