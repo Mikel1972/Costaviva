@@ -89,6 +89,8 @@ const ARCHIVOS_PUBLICOS = new Set([
   // Precios de Premium para el país de quien pregunta (2026-10-11): tabla
   // pública, sin datos personales.
   "/precios-zona",
+  // Cambio de plan propio (2026-10-11): exige la sesión del usuario.
+  "/cambiar-plan",
   // Invitaciones con descuento (2026-10-08): admin-invitaciones exige
   // es_admin() en el servidor; canjear-invitacion, la sesión del invitado.
   "/admin-invitaciones",

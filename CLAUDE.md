@@ -281,7 +281,8 @@ Todo sale de **`functions/_lib/precios-zonas.json`** (config) y
   cualquier rama, live con `STRIPE_SECRET_KEY` solo desde main):
   idempotente por `lookup_key`, nunca borra ni archiva, para con error si un
   precio existe con otros importes, añade monedas que falten y, con `portal`,
-  pone los precios (sin los de fundador) en el portal de cliente. Los ids
+  configura el portal de cliente (tarjeta, facturas y cancelación al final
+  del periodo; **sin cambio de plan**, que va por `/cambiar-plan`). Los ids
   quedan en `functions/_lib/stripe-ids.json` (PR del robot); sin ellos la app
   resuelve el precio por `lookup_key`.
 - **Activar un país**: añadir su zona (o `activa: true`) en
@@ -339,9 +340,29 @@ Todo sale de **`functions/_lib/precios-zonas.json`** (config) y
   - **Checkout** (`crear-checkout-stripe.js`): `{ ambito, plan, idioma }`,
     zona por país de la conexión, `currency` si no es EUR, dirección de
     facturación obligatoria, `custom_text` con el desistimiento,
-    `allow_promotion_codes` (salvo cupón de invitación), trial = días que le
-    queden de la prueba (si ya acabó, cobra al momento), fundador rechazado
-    con 409 sin plazas. Opcionales en Cloudflare: `STRIPE_TAX_AUTOMATICO=1`
+    `allow_promotion_codes` (salvo cupón de invitación), **sin
+    `trial_period_days`** (Mikel, 2026-10-11, tras una factura de 0,00 €):
+    suscribirse termina la prueba gratis, se cobra hoy y el periodo empieza
+    hoy; los meses de "Invita a un amigo" pendientes se abonan como saldo en
+    Stripe al pagar (`abonarMesesPendientes`, moneda e importe de su
+    mensualidad). Fundador rechazado con 409 sin plazas.
+  - **Cambio de plan** (`functions/cambiar-plan.js`, lógica en
+    `_lib/cambio-plan.js`, test `test/cambio-plan.test.js`; decisión de
+    Mikel, 2026-10-11: "No hay devoluciones sobre lo ya comprado. Solo se
+    compensa la parte no disfrutada cuando se sube de plan"). **Subida**
+    (mensual -> anual y/o regional -> Mundial): periodo nuevo desde ya
+    (`billing_cycle_anchor=now`), abono de lo no disfrutado y cobro inmediato
+    de la diferencia (`proration_behavior=always_invoice`,
+    `payment_behavior=error_if_incomplete`); la página enseña antes "Pagarás
+    hoy X (descontados Y no disfrutados)" (`invoices/create_preview`). El
+    fundador que pasa a otro anual conserva el precio de fundador.
+    **Bajada** (o mixto): se pide cuando se quiera y queda programada al final
+    del periodo pagado con un subscription schedule (fase 2 sin prorrateo);
+    la página dice "Tu plan cambiará a X el DD/MM/AAAA" y se puede anular
+    (`{ anular: true }` -> release). Ambos exigen la casilla de condiciones.
+    El portal de Stripe ya no cambia de plan (no admite el ancla "now" en
+    cambios del mismo intervalo). Prueba real en modo test:
+    `probar-cambio-plan.yml` (tarjeta de prueba de Stripe, borra lo que crea). Opcionales en Cloudflare: `STRIPE_TAX_AUTOMATICO=1`
     (automatic_tax) y `STRIPE_TOS_EN_CHECKOUT=1`.
   - **Webhook**: periodo/ámbito/fundador por los metadatos del precio
     (`datosDePrecio`), zona y región por los de la suscripción, moneda, país
