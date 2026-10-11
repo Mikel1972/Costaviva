@@ -1,5 +1,7 @@
 # Precios de Costaviva Premium
 
+**AVISO: el cobro está activo desde el 2026-10-11 sin alta fiscal** (riesgo asumido por Mikel). Stripe no cobra el IVA aparte: los precios lo llevan incluido, así que al darse de alta habrá que ingresar a Hacienda ~17,4 % de lo cobrado. Pendiente: alta fiscal, datos del titular en los términos y registro de IVA en Stripe Tax.
+
 Generado sin IA por `scripts/precios/generar-md.mjs` a partir de `functions/_lib/precios-zonas.json`. No editar a mano.
 
 Versión de precios: `2026_10` · Mundial = regional de la zona × 1,5 · plazas de fundador: 500 (compartidas entre regional y Mundial). Todos los precios con impuestos incluidos.

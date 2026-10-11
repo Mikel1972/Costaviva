@@ -597,6 +597,27 @@ jobs:
           } >> "$GITHUB_OUTPUT"
           exit "$CODIGO"
 
+      - name: Cobro y precios (semanal, los lunes)
+        # Añadido 2026-10-11 (cobro activo sin alta fiscal, decisión de
+        # Mikel): cada lunes, sin IA, el aviso del alta fiscal mientras
+        # alta_fiscal.pendiente sea true en functions/_lib/precios-zonas.json,
+        # y la tabla "Precios vigentes" (scripts/precios/generar-md.mjs).
+        id: cobro
+        continue-on-error: true
+        run: |
+          # Hora de Madrid a propósito (ZONA_NEGOCIO): lunes de España.
+          if [ "$(TZ=Europe/Madrid date +%u)" != "1" ] && [ "${{ github.event_name }}" = "schedule" ]; then
+            echo "resultado=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          TEXTO=$(node -e 'import("./scripts/precios/generar-md.mjs").then(async (m) => { const { leerConfig } = await import("./scripts/precios/fuentes.mjs"); process.stdout.write(m.generarResumen(leerConfig()).replace(/`/g, "")); })')
+          echo "$TEXTO"
+          {
+            echo "resultado<<FIN_COBRO"
+            echo "$TEXTO"
+            echo "FIN_COBRO"
+          } >> "$GITHUB_OUTPUT"
+
       - name: Reunir lo añadido a ROBOT.md en las últimas 24h
         id: robot24h
         run: |
@@ -772,6 +793,7 @@ jobs:
               `- Marketing (Instagram):`,
               `${{ steps.marketing.outputs.resultado }}`,
               ...(`${{ steps.captacion.outputs.resultado }}`.trim() ? [`- Captación (semanal):`, `${{ steps.captacion.outputs.resultado }}`] : []),
+              ...(`${{ steps.cobro.outputs.resultado }}`.trim() ? [`- Cobro y precios (semanal):`, `${{ steps.cobro.outputs.resultado }}`] : []),
               lineaKpi,
               "",
               sintesis,

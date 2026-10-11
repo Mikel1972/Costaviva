@@ -4,6 +4,12 @@
   "factor_mundial": 1.5,
   "plazas_fundador": 500,
   "zona_por_defecto": "resto",
+  "alta_fiscal": {
+    "pendiente": true,
+    "cobro_activo_desde": "2026-10-11",
+    "iva_incluido_pct": 21,
+    "nota": "Cobro activo sin alta fiscal por decisión de Mikel (riesgo asumido por él). Stripe no cobra IVA aparte: los precios llevan el IVA incluido y al darse de alta deberá ~17,4 % de lo cobrado (21/121) a Hacienda. Poner pendiente=false cuando conste el alta."
+  },
   "planes": {
     "mensual": {
       "eur_cent": 399,

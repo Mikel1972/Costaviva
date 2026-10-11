@@ -58,6 +58,7 @@ export function generarPreciosMd(config) {
   const L = [];
   L.push("# Precios de Costaviva Premium");
   L.push("");
+  if (avisoAltaFiscal(config)) { L.push(avisoAltaFiscal(config)); L.push(""); }
   L.push("Generado sin IA por `scripts/precios/generar-md.mjs` a partir de `functions/_lib/precios-zonas.json`. No editar a mano.");
   L.push("");
   L.push(`Versión de precios: \`${config.version_precios}\` · Mundial = regional de la zona × ${String(config.factor_mundial).replace(".", ",")} · plazas de fundador: ${config.plazas_fundador} (compartidas entre regional y Mundial). Todos los precios con impuestos incluidos.`);
@@ -102,8 +103,18 @@ export function generarPreciosMd(config) {
   return { md: L.join("\n"), alertas };
 }
 
+// Aviso del alta fiscal (2026-10-11): sale en cada resumen de los lunes,
+// sin IA, mientras alta_fiscal.pendiente sea true en precios-zonas.json.
+export function avisoAltaFiscal(config) {
+  const a = config.alta_fiscal;
+  if (!a?.pendiente) return "";
+  const pct = a.iva_incluido_pct ? (a.iva_incluido_pct / (100 + a.iva_incluido_pct) * 100).toFixed(1).replace(".", ",") : "?";
+  return `**AVISO: el cobro está activo desde el ${a.cobro_activo_desde} sin alta fiscal** (riesgo asumido por Mikel). Stripe no cobra el IVA aparte: los precios lo llevan incluido, así que al darse de alta habrá que ingresar a Hacienda ~${pct} % de lo cobrado. Pendiente: alta fiscal, datos del titular en los términos y registro de IVA en Stripe Tax.`;
+}
+
 export function generarResumen(config) {
-  const L = ["### Precios vigentes", "", "| Zona | Moneda | Regional mes / año / fundador | Mundial mes / año / fundador | En EUR (regional mes) |", "|---|---|---|---|---|"];
+  const aviso = avisoAltaFiscal(config);
+  const L = [...(aviso ? [aviso, ""] : []), "### Precios vigentes", "", "| Zona | Moneda | Regional mes / año / fundador | Mundial mes / año / fundador | En EUR (regional mes) |", "|---|---|---|---|---|"];
   for (const z of config.zonas.filter((x) => x.activa)) {
     const f = (ambito) => PLANES.map((p) => fmt(filasPrecios(config, ambito, p).find((x) => x.zona.id === z.id).local, "").trim()).join(" / ");
     const eur = filasPrecios(config, "regional", "mensual").find((x) => x.zona.id === z.id);
