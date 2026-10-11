@@ -1,8 +1,214 @@
 {
-  "generado": "2026-10-11T20:31:17.830Z",
+  "generado": "2026-10-11T20:38:32.953Z",
   "semana": "2026-09-28",
   "fuente": "Mikel1972/comun seo/palabras",
   "terminos": [
+    {
+      "termino": "mareas",
+      "mercado": "es",
+      "grupo": "marea",
+      "puntuacion": 53,
+      "tendencia": "baja",
+      "tendencia_pct": -33,
+      "estacionalidad": {
+        "indice_mes_actual": 1.76,
+        "picos": [
+          10,
+          11,
+          1
+        ],
+        "estacional": true
+      },
+      "url": "/mareas",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "tabla de mareas",
+      "mercado": "es",
+      "grupo": "marea",
+      "puntuacion": 50,
+      "tendencia": "baja",
+      "tendencia_pct": -45,
+      "estacionalidad": null,
+      "url": "/mareas",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "pulpo",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 49,
+      "tendencia": "sube",
+      "tendencia_pct": 29,
+      "estacionalidad": null,
+      "url": "/especies/pulpo",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "lisa",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 48,
+      "tendencia": "sube",
+      "tendencia_pct": 31,
+      "estacionalidad": null,
+      "url": "/especies/lisa",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "calamar",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 46,
+      "tendencia": "sube",
+      "tendencia_pct": 17,
+      "estacionalidad": null,
+      "url": "/especies/calamar",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "gallo",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 45,
+      "tendencia": "estable",
+      "tendencia_pct": 1,
+      "estacionalidad": null,
+      "url": "/especies/gallo",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "caballa",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 44,
+      "tendencia": "sube",
+      "tendencia_pct": 15,
+      "estacionalidad": null,
+      "url": "/especies/caballa",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "abadejo",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 43,
+      "tendencia": "sube",
+      "tendencia_pct": 65,
+      "estacionalidad": null,
+      "url": "/especies/abadejo",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "lubina",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 41,
+      "tendencia": "sube",
+      "tendencia_pct": 13,
+      "estacionalidad": null,
+      "url": "/especies/lubina",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "corvina",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 40,
+      "tendencia": "sube",
+      "tendencia_pct": 18,
+      "estacionalidad": null,
+      "url": "/especies/corvina",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "spinning",
+      "mercado": "es",
+      "grupo": "tecnica",
+      "puntuacion": 40,
+      "tendencia": "sube",
+      "tendencia_pct": 36,
+      "estacionalidad": null,
+      "url": null,
+      "gsc_posicion": null
+    },
+    {
+      "termino": "rape",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 38,
+      "tendencia": "estable",
+      "tendencia_pct": 6,
+      "estacionalidad": null,
+      "url": "/especies/rape",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "merluza",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 37,
+      "tendencia": "estable",
+      "tendencia_pct": 8,
+      "estacionalidad": null,
+      "url": "/especies/merluza",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "besugo",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 35,
+      "tendencia": "sube",
+      "tendencia_pct": 27,
+      "estacionalidad": null,
+      "url": "/especies/besugo",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "mero",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 34,
+      "tendencia": "estable",
+      "tendencia_pct": -1,
+      "estacionalidad": null,
+      "url": "/especies/mero",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "herrera",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 33,
+      "tendencia": "sube",
+      "tendencia_pct": 49,
+      "estacionalidad": null,
+      "url": "/especies/herrera",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "lenguado",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 32,
+      "tendencia": "sube",
+      "tendencia_pct": 45,
+      "estacionalidad": null,
+      "url": "/especies/lenguado",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "dorada",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 30,
+      "tendencia": "sube",
+      "tendencia_pct": 22,
+      "estacionalidad": null,
+      "url": "/especies/dorada",
+      "gsc_posicion": null
+    },
     {
       "termino": "pesca de caballa",
       "mercado": "es",
@@ -23,6 +229,17 @@
       "gsc_posicion": null
     },
     {
+      "termino": "congrio",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 28,
+      "tendencia": "baja",
+      "tendencia_pct": -43,
+      "estacionalidad": null,
+      "url": "/especies/congrio",
+      "gsc_posicion": null
+    },
+    {
       "termino": "pesca de lubina",
       "mercado": "es",
       "grupo": "especie",
@@ -35,6 +252,28 @@
         "estacional": false
       },
       "url": "/especies/lubina",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "palometa",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 27,
+      "tendencia": "sube",
+      "tendencia_pct": 44,
+      "estacionalidad": null,
+      "url": "/especies/palometa",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "jurel",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 26,
+      "tendencia": "baja",
+      "tendencia_pct": -16,
+      "estacionalidad": null,
+      "url": "/especies/jurel",
       "gsc_posicion": null
     },
     {
@@ -55,21 +294,46 @@
       "gsc_posicion": null
     },
     {
-      "termino": "mareas",
+      "termino": "cabracho",
       "mercado": "es",
-      "grupo": "marea",
+      "grupo": "especie",
       "puntuacion": 24,
       "tendencia": "baja",
-      "tendencia_pct": -44,
-      "estacionalidad": {
-        "indice_mes_actual": 1.76,
-        "picos": [
-          10,
-          11,
-          1
-        ],
-        "estacional": true
-      },
+      "tendencia_pct": -20,
+      "estacionalidad": null,
+      "url": "/especies/cabracho",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "pintarroja",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 23,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/especies/pintarroja",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "pez limon",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 22,
+      "tendencia": "estable",
+      "tendencia_pct": 4,
+      "estacionalidad": null,
+      "url": "/especies/pez-limon",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "bajamar",
+      "mercado": "es",
+      "grupo": "marea",
+      "puntuacion": 21,
+      "tendencia": "sube",
+      "tendencia_pct": 42,
+      "estacionalidad": null,
       "url": "/mareas",
       "gsc_posicion": null
     },
@@ -125,6 +389,17 @@
       "gsc_posicion": 27
     },
     {
+      "termino": "faneca",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 20,
+      "tendencia": "estable",
+      "tendencia_pct": 2,
+      "estacionalidad": null,
+      "url": "/especies/faneca",
+      "gsc_posicion": null
+    },
+    {
       "termino": "pesca de corvina",
       "mercado": "es",
       "grupo": "especie",
@@ -139,6 +414,17 @@
         "estacional": false
       },
       "url": "/especies/corvina",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "atun rojo",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 18,
+      "tendencia": "sube",
+      "tendencia_pct": 30,
+      "estacionalidad": null,
+      "url": "/especies/atun-rojo",
       "gsc_posicion": null
     },
     {
@@ -336,6 +622,28 @@
       "gsc_posicion": null
     },
     {
+      "termino": "pleamar",
+      "mercado": "es",
+      "grupo": "marea",
+      "puntuacion": 17,
+      "tendencia": "baja",
+      "tendencia_pct": -34,
+      "estacionalidad": null,
+      "url": "/mareas",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "llampuga",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 16,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/especies/llampuga",
+      "gsc_posicion": null
+    },
+    {
       "termino": "pesca de pulpo",
       "mercado": "es",
       "grupo": "especie",
@@ -352,6 +660,28 @@
         "estacional": false
       },
       "url": "/especies/pulpo",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "surfcasting",
+      "mercado": "es",
+      "grupo": "tecnica",
+      "puntuacion": 15,
+      "tendencia": "sube",
+      "tendencia_pct": 40,
+      "estacionalidad": null,
+      "url": null,
+      "gsc_posicion": null
+    },
+    {
+      "termino": "mojarra",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 13,
+      "tendencia": "baja",
+      "tendencia_pct": -43,
+      "estacionalidad": null,
+      "url": "/especies/mojarra",
       "gsc_posicion": null
     },
     {
@@ -374,6 +704,47 @@
       "gsc_posicion": null
     },
     {
+      "termino": "denton",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 12,
+      "tendencia": "baja",
+      "tendencia_pct": -47,
+      "estacionalidad": null,
+      "url": "/especies/denton",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "breca",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 11,
+      "tendencia": "estable",
+      "tendencia_pct": 7,
+      "estacionalidad": null,
+      "url": "/especies/breca",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "jigging",
+      "mercado": "es",
+      "grupo": "tecnica",
+      "puntuacion": 11,
+      "tendencia": "sube",
+      "tendencia_pct": 175,
+      "estacionalidad": {
+        "indice_mes_actual": 1.32,
+        "picos": [
+          10,
+          1,
+          8
+        ],
+        "estacional": false
+      },
+      "url": null,
+      "gsc_posicion": null
+    },
+    {
       "termino": "pesca de sargo",
       "mercado": "es",
       "grupo": "especie",
@@ -393,6 +764,28 @@
       "gsc_posicion": null
     },
     {
+      "termino": "chopa",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 10,
+      "tendencia": "estable",
+      "tendencia_pct": 8,
+      "estacionalidad": null,
+      "url": "/especies/chopa",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "aligote",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 9,
+      "tendencia": "sube",
+      "tendencia_pct": 57,
+      "estacionalidad": null,
+      "url": "/especies/aligote",
+      "gsc_posicion": null
+    },
+    {
       "termino": "pesca de calamar desde costa",
       "mercado": "es",
       "grupo": "especie",
@@ -408,6 +801,17 @@
         "estacional": false
       },
       "url": "/especies/calamar",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "abade",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 6,
+      "tendencia": "sube",
+      "tendencia_pct": 100,
+      "estacionalidad": null,
+      "url": "/especies/abade",
       "gsc_posicion": null
     },
     {
@@ -430,6 +834,28 @@
       "gsc_posicion": null
     },
     {
+      "termino": "cabrilla",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 5,
+      "tendencia": "estable",
+      "tendencia_pct": 0,
+      "estacionalidad": null,
+      "url": "/especies/cabrilla",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "eging",
+      "mercado": "es",
+      "grupo": "tecnica",
+      "puntuacion": 4,
+      "tendencia": "baja",
+      "tendencia_pct": -37,
+      "estacionalidad": null,
+      "url": null,
+      "gsc_posicion": null
+    },
+    {
       "termino": "temperatura del agua del mar",
       "mercado": "es",
       "grupo": "prevision",
@@ -449,55 +875,25 @@
       "gsc_posicion": null
     },
     {
-      "termino": "jigging",
+      "termino": "oblada",
       "mercado": "es",
-      "grupo": "tecnica",
+      "grupo": "especie",
       "puntuacion": 2,
       "tendencia": "baja",
-      "tendencia_pct": -59,
-      "estacionalidad": {
-        "indice_mes_actual": 1.32,
-        "picos": [
-          10,
-          1,
-          8
-        ],
-        "estacional": false
-      },
-      "url": null,
+      "tendencia_pct": -60,
+      "estacionalidad": null,
+      "url": "/especies/oblada",
       "gsc_posicion": null
     },
     {
-      "termino": "abade",
+      "termino": "bicuda",
       "mercado": "es",
       "grupo": "especie",
-      "puntuacion": 0,
+      "puntuacion": 1,
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/especies/abade",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "abadejo",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/abadejo",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "aligote",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/aligote",
+      "url": "/especies/bicuda",
       "gsc_posicion": null
     },
     {
@@ -523,17 +919,6 @@
       "gsc_posicion": null
     },
     {
-      "termino": "atun rojo",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/atun-rojo",
-      "gsc_posicion": null
-    },
-    {
       "termino": "bacoreta",
       "mercado": "es",
       "grupo": "especie",
@@ -542,39 +927,6 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/especies/bacoreta",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "bajamar",
-      "mercado": "es",
-      "grupo": "marea",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/mareas",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "besugo",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/besugo",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "bicuda",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/bicuda",
       "gsc_posicion": null
     },
     {
@@ -600,61 +952,6 @@
       "gsc_posicion": null
     },
     {
-      "termino": "breca",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/breca",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "caballa",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/caballa",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "cabracho",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/cabracho",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "cabrilla",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/cabrilla",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "calamar",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/calamar",
-      "gsc_posicion": null
-    },
-    {
       "termino": "calendario de pesca",
       "mercado": "es",
       "grupo": "prevision",
@@ -677,17 +974,6 @@
       "gsc_posicion": null
     },
     {
-      "termino": "chopa",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/chopa",
-      "gsc_posicion": null
-    },
-    {
       "termino": "coeficiente de marea",
       "mercado": "es",
       "grupo": "marea",
@@ -696,28 +982,6 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/mareas",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "congrio",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/congrio",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "corvina",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/corvina",
       "gsc_posicion": null
     },
     {
@@ -732,17 +996,6 @@
       "gsc_posicion": null
     },
     {
-      "termino": "denton",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/denton",
-      "gsc_posicion": null
-    },
-    {
       "termino": "diario de pesca",
       "mercado": "es",
       "grupo": "app",
@@ -751,83 +1004,6 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "dorada",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/dorada",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "eging",
-      "mercado": "es",
-      "grupo": "tecnica",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": null,
-      "gsc_posicion": null
-    },
-    {
-      "termino": "faneca",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/faneca",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "gallo",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/gallo",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "herrera",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/herrera",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "jurel",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/jurel",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "lenguado",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/lenguado",
       "gsc_posicion": null
     },
     {
@@ -850,39 +1026,6 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": null,
-      "gsc_posicion": null
-    },
-    {
-      "termino": "lisa",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/lisa",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "llampuga",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/llampuga",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "lubina",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/lubina",
       "gsc_posicion": null
     },
     {
@@ -1986,50 +2129,6 @@
       "gsc_posicion": null
     },
     {
-      "termino": "merluza",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/merluza",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "mero",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/mero",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "mojarra",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/mojarra",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "oblada",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/oblada",
-      "gsc_posicion": null
-    },
-    {
       "termino": "oleaje hoy",
       "mercado": "es",
       "grupo": "prevision",
@@ -2038,17 +2137,6 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/mareas",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "palometa",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/palometa",
       "gsc_posicion": null
     },
     {
@@ -2701,39 +2789,6 @@
       "gsc_posicion": null
     },
     {
-      "termino": "pez limon",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/pez-limon",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "pintarroja",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/pintarroja",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "pleamar",
-      "mercado": "es",
-      "grupo": "marea",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/mareas",
-      "gsc_posicion": null
-    },
-    {
       "termino": "previsión de pesca",
       "mercado": "es",
       "grupo": "prevision",
@@ -2742,28 +2797,6 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "pulpo",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/pulpo",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "rape",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/rape",
       "gsc_posicion": null
     },
     {
@@ -2910,17 +2943,6 @@
       "gsc_posicion": null
     },
     {
-      "termino": "spinning",
-      "mercado": "es",
-      "grupo": "tecnica",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": null,
-      "gsc_posicion": null
-    },
-    {
       "termino": "spots de pesca",
       "mercado": "es",
       "grupo": "spot",
@@ -2929,28 +2951,6 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/spots",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "surfcasting",
-      "mercado": "es",
-      "grupo": "tecnica",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": null,
-      "gsc_posicion": null
-    },
-    {
-      "termino": "tabla de mareas",
-      "mercado": "es",
-      "grupo": "marea",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/mareas",
       "gsc_posicion": null
     },
     {
