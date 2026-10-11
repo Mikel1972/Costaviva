@@ -25,6 +25,12 @@
 // post-pendiente.json, y publicar-borrador-instagram.mjs crea el borrador en
 // Instagram y abre el Issue de revisión. Publicar es un paso manual aparte
 // (aprobación humana, pedido explícito de Mikel).
+//
+// Palabras clave (2026-10-11, un solo cerebro para web y redes): la especie
+// y el spot se eligen, entre los que ya valen, por lo que más se busca y
+// sube en España (datos-robots/seo/palabras-es.json, del robot de comun); los hashtags
+// suman los términos con demanda y el texto enlaza la página web del tema.
+// Sin ese fichero, rotación de siempre (palabras-redes.mjs).
 import { readFileSync, writeFileSync, mkdirSync, appendFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
@@ -35,9 +41,20 @@ import { BASE_URL, previsionDeSpot, resumenDeSpot, mapaDeSpot, nombreSpot, datos
 import { abrirNavegador, renderImagen } from "./render.mjs";
 import { servirRepo, capturarPantalla } from "./capturas-app.mjs";
 import { piezaAPreparar, apuntarGenerada, siguienteFuncion, instanteMadrid, campanaDePieza, MARCA_ENLACE } from "./calendario.mjs";
+import { leerPalabras, preferenciaEspecie, ordenarSpots, hashtagsDemanda } from "./palabras-redes.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const RAIZ_REPO = join(__dirname, "..", "..");
+const PALABRAS = leerPalabras(join(RAIZ_REPO, "datos-robots", "seo", "palabras-es.json"));
+const MES = Number(ahoraMadridISO().slice(5, 7));
+if (PALABRAS) console.log(`Palabras clave de comun del ${PALABRAS.generado.slice(0, 10)}: eligen especie, spot y hashtags.`);
+else console.log("Sin palabras clave recientes (datos-robots/seo/palabras-es.json): rotación de siempre.");
+
+// ¿La página está en el sitemap? (si no, no se enlaza).
+function paginaPublica(ruta) {
+  const sitemap = readFileSync(join(RAIZ_REPO, "sitemap.xml"), "utf8");
+  return sitemap.includes(`<loc>https://costaviva.org${ruta}</loc>`) ? `costaviva.org${ruta}` : null;
+}
 
 function diaDelAnio(fecha) {
   const inicio = new Date(fecha.getFullYear(), 0, 0);
@@ -92,8 +109,12 @@ export async function elegirSpot(forzado = "") {
   const indice = (rotacion.ultimoIndice + 1) % ZONAS.length;
   const zona = ZONAS[indice];
   const ciclo = indice === 0 && rotacion.ultimoIndice >= 0 ? (rotacion.ciclo ?? 1) + 1 : (rotacion.ciclo ?? 1);
-  for (let k = 0; k < zona.spots.length; k++) {
-    const slug = zona.spots[(ciclo + k) % zona.spots.length];
+  // Rotación de siempre dentro de la zona; con palabras clave, primero el
+  // spot más buscado (la zona no cambia: cada post, una zona distinta).
+  const rotados = zona.spots.map((_, k) => zona.spots[(ciclo + k) % zona.spots.length]);
+  const orden = ordenarSpots(rotados, PALABRAS, MES);
+  if (orden[0] !== rotados[0]) console.log(`Palabras clave: ${orden[0]} antes que ${rotados[0]} en ${zona.nombre}.`);
+  for (const slug of orden) {
     try {
       const prevision = await previsionDeSpot(slug);
       writeFileSync(RUTA_ROTACION, JSON.stringify({ ultimoIndice: indice, ciclo, ultimaZona: zona.nombre, ultimoSpot: slug, fecha: new Date().toISOString() }, null, 2) + "\n");
@@ -158,7 +179,7 @@ async function generarCondiciones(objetivo) {
     "",
     "Datos: Open-Meteo (CC BY 4.0) · Batimetría: EMODnet",
     "",
-    `#pesca #fishing #pescadeportiva #pescadesdecosta #surfcasting #costaviva ${hashtagsRegionales(slug)}`,
+    [`#pesca #fishing #pescadeportiva #pescadesdecosta #surfcasting #costaviva ${hashtagsRegionales(slug)}`, ...hashtagsDemanda(PALABRAS, `#pesca #fishing #pescadeportiva #pescadesdecosta #surfcasting #costaviva ${hashtagsRegionales(slug)}`, { mes: MES })].join(" "),
   ].join("\n");
   return { tipo: "condiciones", pieza, caption, slug: `condiciones-${slug}` };
 }
@@ -168,7 +189,7 @@ export function datosEspecie(objetivo = null) {
   const mesActual = Number((objetivo?.fecha || ahoraMadridISO()).slice(5, 7));
   const rotacion = leerRotacion();
   const region = regionDelPost(rotacion);
-  const elegida = elegirEspeciePost(leerEspeciesJson(RAIZ_REPO), region, mesActual, diaDelAnio(cuando), { euskadi: postEnEuskadi(rotacion), modalidad: modalidadDelPost() });
+  const elegida = elegirEspeciePost(leerEspeciesJson(RAIZ_REPO), region, mesActual, diaDelAnio(cuando), { euskadi: postEnEuskadi(rotacion), modalidad: modalidadDelPost(), preferencia: preferenciaEspecie(PALABRAS, mesActual) });
   if (!elegida) throw new Error(`Ninguna especie de temporada (y fuera de veda) en ${region} para el mes ${mesActual}`);
   const { nota, talla, freza, cebos } = elegida;
   const especie = { ...elegida.especie, nombre: elegida.especie.nombres.es };
@@ -201,8 +222,9 @@ function generarEspecies(objetivo) {
     ...(textoTalla ? [`📏 Talla mínima: ${textoTalla}. Manda siempre la norma publicada.`, ""] : []),
     `En Costaviva ves su índice de pesca hora a hora en tu spot.`,
     `🔗 Pruébala 7 días gratis: ${MARCA_ENLACE}`,
+    ...(paginaPublica(`/especies/${String(especie.id).replace(/_/g, "-")}`) ? [`Ficha completa, gratis y sin cuenta: ${paginaPublica(`/especies/${String(especie.id).replace(/_/g, "-")}`)}`] : []),
     "",
-    "#pesca #fishing #pescarecreativa #pescadeportiva #costaviva #pescaenespaña",
+    ["#pesca #fishing #pescarecreativa #pescadeportiva #costaviva #pescaenespaña", ...hashtagsDemanda(PALABRAS, "#pesca #fishing #pescarecreativa #pescadeportiva #costaviva #pescaenespaña", { mes: MES })].join(" "),
   ].join("\n");
   const slug = especie.nombre.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-");
   return { tipo: "especies", pieza, caption, slug: `especies-${slug}` };
