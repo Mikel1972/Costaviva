@@ -125,3 +125,38 @@ export async function marcarDiasUsados({ serviceRoleKey, userId, ids, sesionId, 
   }
   return n;
 }
+
+// Sin trial en el checkout (2026-10-11): los meses ganados por amigos que
+// tenía pendientes quien se suscribe se abonan como saldo a favor en Stripe
+// (se descuentan de sus cobros siguientes), en la moneda de su suscripción y
+// por el importe de su mensualidad. Idempotente por sesión de checkout.
+export async function abonarMesesPendientes({ serviceRoleKey, stripeKey, userId, customer, ids, importeMes, moneda, sesionId, fetchImpl = fetch }) {
+  const lista = idsDeMetadata(ids);
+  if (!uuidValido(userId) || !lista.length || !customer || !(importeMes > 0)) return 0;
+  if (!stripeKey) throw new Error("referidos: falta STRIPE_SECRET_KEY para abonar los meses");
+  const params = new URLSearchParams({
+    amount: String(-importeMes * lista.length),
+    currency: String(moneda || "eur").toLowerCase(),
+    description: `Costaviva: ${lista.length} mes(es) gratis por invitar a amigos`,
+    "metadata[referidos]": lista.join(","),
+  });
+  const r = await fetchImpl(`https://api.stripe.com/v1/customers/${customer}/balance_transactions`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${stripeKey}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Idempotency-Key": `costaviva-referidos-checkout-${sesionId}`,
+    },
+    body: params.toString(),
+  });
+  if (!r.ok) throw new Error(`referidos: Stripe balance_transactions HTTP ${r.status}: ${await r.text()}`);
+  const tx = await r.json();
+  let n = 0;
+  for (const id of lista) {
+    const ok = await rpc(serviceRoleKey, "referido_marcar_recompensa", {
+      p_id: id, p_tipo: "saldo_stripe", p_ref: tx.id || String(sesionId).slice(0, 120), p_referidor: userId, p_huella: null,
+    }, fetchImpl);
+    if (ok === true) n++;
+  }
+  return n;
+}

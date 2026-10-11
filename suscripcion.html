@@ -140,8 +140,27 @@
 
   <!-- Suscriptor: su plan y el portal de Stripe para cambiar o cancelar. -->
   <div id="bloqueSuscrito" hidden>
-    <button type="button" id="btnGestionar" data-i18n="susc.gestionar">Gestionar, cambiar o cancelar mi suscripción</button>
-    <p class="nota-legal" data-i18n="prec.gestionar_explica">Desde ahí puedes cambiar entre mensual y anual o al plan Mundial, cambiar la tarjeta, descargar tus facturas o cancelar. Si cancelas, Premium sigue activo hasta el final del periodo ya pagado.</p>
+    <!-- Cambio de plan propio (2026-10-11, /cambiar-plan): subir empieza hoy
+         con prorrateo; bajar se programa para el final del periodo pagado y
+         se puede anular antes. El portal de Stripe queda para la tarjeta,
+         las facturas y la cancelación. -->
+    <div id="bloqueCambioPlan">
+      <h2 class="titulo-premium" data-i18n="cambio.titulo">Cambiar de plan</h2>
+      <p class="mensaje info" id="cambioProgramadoTexto" hidden></p>
+      <button type="button" class="secundario" id="btnAnularCambio" hidden data-i18n="cambio.anular">Anular el cambio programado</button>
+      <div id="opcionesCambio" class="filas-mundial"></div>
+      <div class="plan confirmar" id="confirmarCambio" hidden>
+        <p class="precio" id="resumenCambio"></p>
+        <label class="checkbox legal">
+          <input type="checkbox" id="checkCambio" />
+          <span id="textoAceptacionCambio"></span>
+        </label>
+        <button type="button" id="btnConfirmarCambio" disabled data-i18n="cambio.confirmar">Confirmar el cambio</button>
+      </div>
+      <p class="nota-legal" data-i18n="cambio.reglas">Subir de plan empieza hoy: se descuenta la parte no disfrutada del plan anterior y pagas la diferencia. Bajar de plan se aplica al final del periodo pagado. No hay devoluciones sobre lo ya comprado.</p>
+    </div>
+    <button type="button" id="btnGestionar" data-i18n="susc.gestionar">Gestionar mi suscripción</button>
+    <p class="nota-legal" data-i18n="prec.gestionar_explica">Desde ahí puedes cambiar la tarjeta, descargar tus facturas o cancelar. Si cancelas, Premium sigue activo hasta el final del periodo ya pagado.</p>
   </div>
 
   <!-- Página de precios (2026-10-11). Precios de /precios-zona según el país
@@ -327,6 +346,94 @@ document.getElementById("btnGestionar").addEventListener("click", (e) => {
   abrirPortal();
 });
 
+// ---- Cambio de plan (/cambiar-plan) ----
+const OPCIONES_CAMBIO = [["regional", "mensual"], ["regional", "anual"], ["mundial", "mensual"], ["mundial", "anual"]];
+let cambioElegido = null;
+function nombrePlan(ambito, plan) {
+  const a = ambito === "mundial" ? I18n.t("prec.mundial") : "Premium";
+  return `${a} · ${I18n.t(`prec.${plan === "fundador_anual" ? "fundador" : plan}`)}`;
+}
+function fechaCorta(iso) {
+  return new Date(iso).toLocaleDateString(I18n.locale(), { day: "2-digit", month: "2-digit", year: "numeric" });
+}
+async function llamarCambio(cuerpo) {
+  const { data: { session } } = await supabase.auth.getSession();
+  const r = await fetch("/cambiar-plan", {
+    method: cuerpo ? "POST" : "GET",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+    body: cuerpo ? JSON.stringify(cuerpo) : undefined,
+  });
+  let j = {};
+  try { j = await r.json(); } catch (e) { j = {}; }
+  return j;
+}
+async function pintarCambioPlan(estado) {
+  const actual = { ambito: estado.ambito === "mundial" ? "mundial" : "regional", periodo: estado.periodo };
+  const cont = document.getElementById("opcionesCambio");
+  cont.replaceChildren(...OPCIONES_CAMBIO.filter(([a, p]) => !(a === actual.ambito && p === actual.periodo)).map(([a, p]) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "secundario";
+    b.dataset.ambito = a;
+    b.dataset.plan = p;
+    b.textContent = nombrePlan(a, p);
+    return b;
+  }));
+  const prog = (await llamarCambio(null)).cambio_programado;
+  if (prog) {
+    const t = document.getElementById("cambioProgramadoTexto");
+    t.textContent = I18n.t("cambio.programado", { plan: nombrePlan(prog.ambito || "regional", prog.plan || "mensual"), fecha: fechaCorta(prog.fecha) });
+    t.hidden = false;
+    document.getElementById("btnAnularCambio").hidden = false;
+  }
+}
+document.getElementById("opcionesCambio").addEventListener("click", async (e) => {
+  const b = e.target.closest("button[data-plan]");
+  if (!b) return;
+  cambioElegido = { ambito: b.dataset.ambito, plan: b.dataset.plan };
+  const caja = document.getElementById("confirmarCambio");
+  const resumen = document.getElementById("resumenCambio");
+  document.getElementById("checkCambio").checked = false;
+  document.getElementById("btnConfirmarCambio").disabled = true;
+  resumen.textContent = I18n.t("comun.cargando");
+  caja.hidden = false;
+  const p = await llamarCambio({ ...cambioElegido, confirmar: false, idioma: I18n.idioma() });
+  if (p.error) { resumen.textContent = p.error; return; }
+  cambioElegido.plan = p.plan || cambioElegido.plan;
+  resumen.textContent = p.tipo === "subida"
+    ? I18n.t("cambio.pagaras_hoy", { plan: nombrePlan(p.ambito, p.plan), cobro: dinero(p.pagar_hoy, p.moneda), descuento: dinero(p.descontado, p.moneda) })
+    : I18n.t("cambio.cambiara_el", { plan: nombrePlan(p.ambito, p.plan), fecha: p.fecha ? fechaCorta(p.fecha) : "—", importe: dinero(p.importe, p.moneda) });
+  document.getElementById("textoAceptacionCambio").textContent = textoAceptacion(p.plan, IDIOMA_ACEPTACION);
+});
+document.getElementById("checkCambio").addEventListener("change", (e) => {
+  document.getElementById("btnConfirmarCambio").disabled = !e.target.checked || !cambioElegido;
+});
+document.getElementById("btnConfirmarCambio").addEventListener("click", async (e) => {
+  if (!cambioElegido || !document.getElementById("checkCambio").checked) return;
+  e.target.disabled = true;
+  const r = await llamarCambio({ ...cambioElegido, confirmar: true, idioma: I18n.idioma(),
+    aceptacion: { version: VERSION_ACEPTACION, idioma: IDIOMA_ACEPTACION, aceptada: true } });
+  if (r.ok) {
+    mostrarMensaje(I18n.t(r.tipo === "subida" ? "cambio.hecho_subida" : "cambio.hecho_bajada", { fecha: r.fecha ? fechaCorta(r.fecha) : "" }), "ok");
+    setTimeout(() => window.location.reload(), 2500);
+  } else {
+    mostrarMensaje(r.error || I18n.t("cambio.error"), "error");
+    e.target.disabled = false;
+  }
+});
+document.getElementById("btnAnularCambio").addEventListener("click", async (e) => {
+  e.target.disabled = true;
+  const r = await llamarCambio({ anular: true });
+  if (r.ok) {
+    mostrarMensaje(I18n.t("cambio.anulado"), "ok");
+    document.getElementById("cambioProgramadoTexto").hidden = true;
+    e.target.hidden = true;
+  } else {
+    mostrarMensaje(r.error || I18n.t("cambio.error"), "error");
+    e.target.disabled = false;
+  }
+});
+
 function formatearFecha(iso) {
   if (!iso) return null;
   return new Date(iso).toLocaleDateString(I18n.locale(), { day: "numeric", month: "long", year: "numeric" });
@@ -443,6 +550,7 @@ async function iniciar() {
     const ambito = estado.ambito === "mundial" ? I18n.t("prec.mundial") : nombreRegion(estado.region_contenido || "es");
     subEstadoEl.textContent = I18n.t("prec.tu_plan", { periodo, ambito, fecha: formatearFecha(estado.periodo_actual_fin) || "—" });
     document.getElementById("bloqueSuscrito").hidden = false;
+    pintarCambioPlan(estado).catch((e) => console.warn("cambio de plan:", e));
   } else if (estado && estado.en_prueba) {
     subEstadoEl.textContent = I18n.t("prec.en_prueba", { fecha: formatearFecha(estado.prueba_termina_en) });
     const nota = document.getElementById("notaPrueba");

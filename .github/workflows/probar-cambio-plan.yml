@@ -1,0 +1,27 @@
+name: Probar cobro y cambios de plan (Stripe test)
+
+# Sin IA, SOLO modo test (STRIPE_SECRET_KEY_TEST, tarjeta de prueba de
+# Stripe: ninguna tarjeta real). Comprueba que el checkout cobra hoy (sin
+# prueba), que la subida empieza ya con prorrateo y que la bajada queda
+# programada al final del periodo y se puede anular. Borra lo que crea.
+# Ver scripts/stripe/probar-cambio-plan.mjs.
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  probar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Probar en Stripe test
+        env:
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY_TEST }}
+        run: node scripts/stripe/probar-cambio-plan.mjs
