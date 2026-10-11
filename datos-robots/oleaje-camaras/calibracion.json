@@ -1,13 +1,13 @@
 {
- "fecha": "2026-10-11T16:05:11.882Z",
- "lineasHistorial": 799,
- "etiquetas": 47,
- "etiquetasClaude": 47,
+ "fecha": "2026-10-11T23:03:27.534Z",
+ "lineasHistorial": 863,
+ "etiquetas": 50,
+ "etiquetasClaude": 50,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.3576,
+   "a": 1.3193,
    "p": 0.5,
-   "n": 27,
+   "n": 29,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 3,
    "franjasClaude": [
@@ -16,7 +16,7 @@
    "dias": 4,
    "hMin": 0.15,
    "hMax": 0.54,
-   "errorRel": 0.967,
+   "errorRel": 0.945,
    "pocosDatos": false
   },
   "hondarribia/bocana": {
@@ -48,9 +48,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 5.0944,
+   "a": 5.1869,
    "p": 0.5,
-   "n": 71,
+   "n": 74,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 8,
    "franjasClaude": [
@@ -61,7 +61,7 @@
    "dias": 4,
    "hMin": 0.98,
    "hMax": 3.59,
-   "errorRel": 0.513,
+   "errorRel": 0.517,
    "pocosDatos": false
   },
   "zumaia/c": {
@@ -94,9 +94,9 @@
    "pocosDatos": false
   },
   "deba/rompiente": {
-   "a": 5.8791,
+   "a": 6.1631,
    "p": 0.5,
-   "n": 19,
+   "n": 20,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 3,
    "franjasClaude": [
@@ -105,13 +105,13 @@
    "dias": 4,
    "hMin": 1.02,
    "hMax": 3.59,
-   "errorRel": 0.788,
+   "errorRel": 0.827,
    "pocosDatos": false
   },
   "mundaka/principal": {
-   "a": 3.5963,
+   "a": 3.5973,
    "p": 0.5,
-   "n": 50,
+   "n": 52,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 4,
    "franjasClaude": [
@@ -122,7 +122,7 @@
    "dias": 4,
    "hMin": 0.75,
    "hMax": 2.18,
-   "errorRel": 0.596,
+   "errorRel": 0.584,
    "pocosDatos": false
   },
   "bakio/principal": {
@@ -180,9 +180,9 @@
    "pocosDatos": false
   },
   "berria/dinamico": {
-   "a": 4.6823,
+   "a": 4.7709,
    "p": 0.5,
-   "n": 38,
+   "n": 40,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 10,
    "franjasClaude": [
@@ -193,7 +193,7 @@
    "dias": 4,
    "hMin": 0.75,
    "hMax": 3.12,
-   "errorRel": 0.776,
+   "errorRel": 0.766,
    "pocosDatos": false
   },
   "mutriku/principal": {
@@ -260,6 +260,51 @@
    "hMax": 1.81,
    "errorRel": 0.666,
    "pocosDatos": true
+  },
+  "nz-napier/principal": {
+   "a": 8.8612,
+   "p": 1,
+   "n": 5,
+   "nEtiquetas": 0,
+   "nEtiquetasClaude": 1,
+   "franjasClaude": [
+    "2026-10-11T22"
+   ],
+   "dias": 1,
+   "hMin": 0.3,
+   "hMax": 0.44,
+   "errorRel": 0.733,
+   "pocosDatos": true
+  },
+  "nz-riverton/principal": {
+   "a": 36.6451,
+   "p": 1,
+   "n": 10,
+   "nEtiquetas": 0,
+   "nEtiquetasClaude": 1,
+   "franjasClaude": [
+    "2026-10-11T22"
+   ],
+   "dias": 1,
+   "hMin": 0.3,
+   "hMax": 1.42,
+   "errorRel": 0.757,
+   "pocosDatos": true
+  },
+  "nz-aramoana/principal": {
+   "a": 108.0452,
+   "p": 1,
+   "n": 4,
+   "nEtiquetas": 0,
+   "nEtiquetasClaude": 1,
+   "franjasClaude": [
+    "2026-10-11T22"
+   ],
+   "dias": 1,
+   "hMin": 0.3,
+   "hMax": 0.92,
+   "errorRel": 0.84,
+   "pocosDatos": true
   }
  },
  "sustitucion": {
@@ -267,8 +312,8 @@
    "sustituye": true,
    "motivo": "≥ 3 días con alturas variadas",
    "ruido": {
-    "ruido": 1.028,
-    "pares": 9
+    "ruido": 0.934,
+    "pares": 10
    }
   },
   "donostia": {
@@ -291,8 +336,8 @@
    "sustituye": true,
    "motivo": "8 etiquetas de Claude en 3 franjas",
    "ruido": {
-    "ruido": 0.492,
-    "pares": 53
+    "ruido": 0.508,
+    "pares": 56
    }
   },
   "getaria": {
@@ -331,8 +376,8 @@
    "sustituye": true,
    "motivo": "≥ 3 días con alturas variadas",
    "ruido": {
-    "ruido": 0.697,
-    "pares": 36
+    "ruido": 0.714,
+    "pares": 37
    }
   },
   "bakio": {
@@ -356,7 +401,7 @@
    "motivo": "≥ 3 días con alturas variadas",
    "ruido": {
     "ruido": 1.532,
-    "pares": 13
+    "pares": 15
    }
   },
   "castrourdiales": {
@@ -365,6 +410,30 @@
    "ruido": {
     "ruido": 0.452,
     "pares": 4
+   }
+  },
+  "nz-napier": {
+   "sustituye": true,
+   "motivo": "estable (±10 % entre lecturas cercanas)",
+   "ruido": {
+    "ruido": 0.098,
+    "pares": 3
+   }
+  },
+  "nz-aramoana": {
+   "sustituye": false,
+   "motivo": "ruido aún sin medir (2 pares de lecturas cercanas); 1 etiquetas de Claude en 1 franjas (faltan)",
+   "ruido": {
+    "ruido": 0.175,
+    "pares": 2
+   }
+  },
+  "nz-riverton": {
+   "sustituye": true,
+   "motivo": "estable (±0 % entre lecturas cercanas)",
+   "ruido": {
+    "ruido": 0,
+    "pares": 8
    }
   }
  }
