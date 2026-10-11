@@ -10,9 +10,12 @@
 // webhook la guarda y avisa en el log si su zona no coincide. Por
 // compatibilidad se aceptan aún "monthly"/"annual" (= regional).
 //
-// Prueba: los días que le queden de los 14 de la app (sin tarjeta) pasan a
-// Stripe como trial, para que suscribirse antes no le haga perder días.
-// Pasada la prueba, se cobra al momento.
+// Sin trial de Stripe (decisión de Mikel, 2026-10-11, tras ver una factura
+// de 0,00 €): suscribirse termina la prueba gratis de la app y se cobra en
+// ese momento; el periodo (mes o año) empieza el día del pago. Los meses
+// ganados con "Invita a un amigo" se abonan como saldo en Stripe al
+// completar el pago (stripe-webhook.js) y se descuentan de los cobros
+// siguientes.
 //
 // Variables de entorno en Cloudflare Pages (Secret): STRIPE_SECRET_KEY.
 // COBRO_ACTIVO = "true" para abrir los pagos (por defecto cerrados: 403
@@ -22,8 +25,7 @@
 // términos de Stripe; exige la URL de términos en el Dashboard).
 
 import { descuentoAplicaAPlan } from "./_lib/invitaciones.js";
-import { diasExtraPorReferidos } from "./_lib/referidos.js";
-import { zonaDePais, precioParaZona, leerPlan, diasDePruebaRestantes, cobroActivo } from "./_lib/precios.js";
+import { zonaDePais, precioParaZona, leerPlan, cobroActivo } from "./_lib/precios.js";
 import { VERSION as VERSION_ACEPTACION, IDIOMAS as IDIOMAS_ACEPTACION, textoAceptacion, textoSiCerramos } from "../assets/js/consentimiento.js";
 import CONFIG_PRECIOS from "./_lib/precios-zonas.json";
 import STRIPE_IDS from "./_lib/stripe-ids.json";
@@ -264,12 +266,9 @@ export async function onRequestPost(context) {
       params.append(`metadata[${k}]`, v);
       params.append(`subscription_data[metadata][${k}]`, v);
     }
-    // Meses gratis por amigos invitados que pagaron antes de que esta
-    // persona se suscribiera: 30 días de prueba más por cada uno (máx. 3).
-    // El webhook los marca como usados al completar el checkout.
+    // Sin trial: se cobra hoy. Los meses de amigos pendientes viajan en el
+    // metadata y el webhook los abona como saldo al confirmar el pago.
     const mesesAmigos = await mesesDeAmigosPendientes(token);
-    const diasTrial = diasDePruebaRestantes(usuario.created_at) + diasExtraPorReferidos(mesesAmigos.length);
-    if (diasTrial > 0) params.append("subscription_data[trial_period_days]", String(diasTrial));
     if (mesesAmigos.length) params.append("metadata[referidos_dias]", mesesAmigos.join(","));
     // Imprescindible para que el user_id llegue a los eventos
     // customer.subscription.* del webhook — el objeto Subscription no

@@ -34,8 +34,8 @@
 // aviso-alta.js).
 
 import { calcularFin, uuidValido } from "./_lib/invitaciones.js";
-import { premiarReferido, marcarDiasUsados } from "./_lib/referidos.js";
-import { datosDePrecio, zonaDePais } from "./_lib/precios.js";
+import { premiarReferido, abonarMesesPendientes } from "./_lib/referidos.js";
+import { datosDePrecio, zonaDePais, zonaPorId, precioParaZona } from "./_lib/precios.js";
 import { enviarEmail } from "./_lib/email.js";
 import { textoAceptacion, textoSiCerramos, VERSION as VERSION_ACEPTACION } from "../assets/js/consentimiento.js";
 import CONFIG_PRECIOS from "./_lib/precios-zonas.json";
@@ -373,10 +373,16 @@ export async function onRequestPost(context) {
         const envio = await enviarEmail(env, { to: para, ...emailConfirmacionPago(obj) });
         if (!envio.ok && envio.error !== "sin_configurar") throw new Error(`confirmación de pago: ${envio.error}`);
       }
-      // Meses de "Invita a un amigo" usados como días de prueba extra
-      // (crear-checkout-stripe.js los pone en metadata.referidos_dias).
+      // Meses de "Invita a un amigo" pendientes (metadata.referidos_dias):
+      // sin trial desde el 2026-10-11, se abonan como saldo a favor.
       if (obj.metadata?.referidos_dias && uuidValido(userId)) {
-        await marcarDiasUsados({ serviceRoleKey, userId, ids: obj.metadata.referidos_dias, sesionId: obj.id });
+        const zonaId = zonaPorId(CONFIG_PRECIOS, obj.metadata.zona) ? obj.metadata.zona : CONFIG_PRECIOS.zona_por_defecto;
+        const ambito = obj.metadata.ambito === "mundial" ? "mundial" : "regional";
+        const mes = precioParaZona(CONFIG_PRECIOS, zonaId, ambito, "mensual");
+        await abonarMesesPendientes({
+          serviceRoleKey, stripeKey: env.STRIPE_SECRET_KEY, userId, customer: obj.customer,
+          ids: obj.metadata.referidos_dias, importeMes: mes.importe, moneda: obj.currency || mes.moneda, sesionId: obj.id,
+        });
       }
     } else if (
       evento.type === "customer.subscription.created" ||

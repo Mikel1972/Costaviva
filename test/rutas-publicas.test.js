@@ -72,6 +72,7 @@ test("los endpoints de functions/ llegan a su propio código", () => {
     "/crear-checkout-stripe",
     "/crear-portal-stripe",
     "/precios-zona",
+    "/cambiar-plan",
     "/terminos",
     "/admin-invitaciones",
     "/canjear-invitacion",

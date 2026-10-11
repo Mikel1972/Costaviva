@@ -15,8 +15,9 @@
 //   - NUNCA borra ni archiva nada.
 //
 // Escribe los ids en functions/_lib/stripe-ids.json (por modo: test/live).
-// Con --portal pone esos precios (salvo los de fundador, que tienen cupo) en
-// la configuración por defecto del portal de cliente, para cambiar de plan.
+// Con --portal configura el portal de cliente: tarjeta, facturas y
+// cancelación al final del periodo. El cambio de plan va por
+// functions/cambiar-plan.js (subida ya con prorrateo, bajada al final).
 // Siempre lee el webhook de /stripe-webhook y dice qué eventos le faltan
 // (no lo modifica: la clave no tiene escritura en Webhook Endpoints).
 //
@@ -174,17 +175,16 @@ if (conPortal && !soloComprobar && !errores.length) {
     const conf = confs.data.find((c) => c.metadata?.costaviva === "portal")
       || confs.data.find((c) => !c.is_default && c.business_profile?.headline === "Costaviva")
       || confs.data.find((c) => c.is_default);
-    const productosPortal = Object.values(config.productos).map((d) => ({
-      product: ids[modo].productos[d.clave],
-      prices: especificaciones.filter((e) => e.producto === d.clave && !e.fundador).map((e) => ids[modo].precios[e.lookup_key]).filter(Boolean),
-    })).filter((x) => x.product && x.prices.length);
     const cuerpo = {
       features: {
         // Stripe no deja activar el cambio de plan sin el cambio de tarjeta
         // (error real en live, 2026-10-11).
         payment_method_update: { enabled: true },
         invoice_history: { enabled: true },
-        subscription_update: { enabled: true, default_allowed_updates: ["price"], products: productosPortal, proration_behavior: conf?.features?.subscription_update?.proration_behavior || "always_invoice" },
+        // El cambio de plan NO va por el portal (2026-10-11): el portal no
+        // permite empezar el periodo ya en las subidas del mismo intervalo.
+        // Lo hace functions/cambiar-plan.js.
+        subscription_update: { enabled: false },
         subscription_cancel: { enabled: true, mode: "at_period_end" },
       },
     };
@@ -194,7 +194,7 @@ if (conPortal && !soloComprobar && !errores.length) {
     // crear-portal-stripe.js la pasa como "configuration" (la creada por API
     // no es la de por defecto de la cuenta).
     ids[modo].portal = final.id;
-    resumen.push(`Portal de cliente: ${conf ? "actualizada" : "creada"} la configuración ${final.id}${final.is_default ? " (por defecto)" : ""}: cambio de plan, cambio de tarjeta y cancelación al final del periodo.`);
+    resumen.push(`Portal de cliente: ${conf ? "actualizada" : "creada"} la configuración ${final.id}${final.is_default ? " (por defecto)" : ""}: tarjeta, facturas y cancelación al final del periodo (sin cambio de plan).`);
   } catch (e) {
     resumen.push(`Portal de cliente: NO actualizado (${e.message}).`);
   }
