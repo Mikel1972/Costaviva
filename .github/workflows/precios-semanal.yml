@@ -1,0 +1,43 @@
+name: Precios (equivalentes en EUR, semanal)
+
+# Cada lunes temprano, sin IA y sin tocar Stripe: refresca el cambio del BCE
+# (cambio_actual de functions/_lib/precios-zonas.json) y regenera PRECIOS.md
+# y datos/precios-resumen.md (tabla "Precios vigentes" del resumen de los
+# lunes). Si el equivalente en EUR de una zona activa se mueve más de un 10 %
+# respecto al cambio con el que se fijó su precio, lo marca como PROPUESTA en
+# PRECIOS.md y en el resumen: no cambia ningún precio solo.
+
+on:
+  schedule:
+    - cron: "23 4 * * 1"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  semanal:
+    if: vars.AUTOMATION_PAUSED != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Cambio del BCE y PRECIOS.md
+        run: |
+          node scripts/precios/multiplicadores.mjs --solo-cambio
+          node scripts/precios/generar-md.mjs
+          node --test test/precios.test.js
+      - name: Guardar
+        run: |
+          git config user.name "Costaviva (precios)"
+          git config user.email "noreply@anthropic.com"
+          git add PRECIOS.md datos/precios-resumen.md functions/_lib/precios-zonas.json
+          if git diff --cached --quiet; then echo "Sin cambios."; exit 0; fi
+          git commit -qm "Precios: equivalentes en EUR con el cambio del BCE de esta semana [skip ci]"
+          git pull -q --rebase origin main
+          git push -q origin HEAD:main
