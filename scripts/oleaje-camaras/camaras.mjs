@@ -204,6 +204,27 @@ export const NO_SIRVEN_NZ = {
   "nz-geonet-whakatane": "cámara de volcán: mar abierto hacia Whakaari a decenas de km, sin costa ni rompiente en el encuadre",
   "nz-geonet-te-kaha": "cámara de volcán: mar abierto hacia Whakaari, sin costa ni rompiente en el encuadre",
   "nz-primo-port-taranaki": "BLOQUEA a los robots: fuera de la red de Primo sus fotos redirigen a /camera-access-info/ (302, comprobado el 2026-10-11). No se rodea",
+  // Repaso de día del 2026-10-12: añadidas solo como ENLACE. No se analizan
+  // sin permiso escrito del dueño (peticiones en permisos/registro.json de
+  // comun); para medirlas haría falta además su referencia y su ROI.
+  "nz-hauraki-whangamata-beach": "solo ENLACE sin permiso escrito de Destination Hauraki Coromandel (petición en cola); no se analiza",
+  "nz-raglan-bar": "solo ENLACE: directo de YouTube del Raglan Sport Fishing Club, sin permiso escrito; no se analiza",
+  "nz-castlepoint-lighthouse": "solo ENLACE: directo de YouTube, sin permiso escrito; además no ve rompiente (fotograma del 2026-10-12)",
+  "nz-gw-beacon-hill": "solo ENLACE sin permiso escrito de Greater Wellington (petición en cola); no se analiza",
+  "nz-nelson-harbour": "solo ENLACE sin permiso escrito de Nelson City Council; además puerto en calma, sin rompiente",
+  "nz-southloop-ocean-beach": "solo ENLACE (repaso del 2026-10-12): sin referencia ni ROI; costa rocosa sin rompiente libre",
+  "nz-southloop-oban": "solo ENLACE (repaso del 2026-10-12): bahía en calma con el muelle, sin rompiente",
+  "nz-sails-ashore": "solo ENLACE sin permiso escrito de Sails Ashore; bahía lejana y en calma, sin rompiente",
+  // DESCARTADAS en el repaso de día del 2026-10-12 (07:30-07:50 NZDT): no
+  // están en camaras-nz.js (clave nz-descartada-<id>). No se rodea ningún
+  // bloqueo; si cambian, se revisan otra vez.
+  "nz-descartada-coromandel-harbour": "DESCARTADA (no está en camaras-nz.js): Select Solutions para thecoromandel.nz; los fotogramas de día (07:41 y 07:53 NZDT) solo muestran cielo gris y una loma, sin mar a la vista (¿niebla? revisar otro día)",
+  "nz-descartada-manu-bay": "DESCARTADA (no está en camaras-nz.js): Raglan Sport Fishing Club; directo activo pero los fotogramas de día (07:41 y 07:51 NZDT) son blancos (niebla o lente), sin poder confirmar el mar ni el sitio (revisar otro día)",
+  "nz-descartada-plimmerton": "DESCARTADA (no está en camaras-nz.js): YouTube de PredictWind; la miniatura del directo es de 30/09/2021 y YouTube devolvió su reto anti-bots: no se pudo comprobar que emita hoy (no se rodea)",
+  "nz-descartada-kaikoura-cubby-house": "DESCARTADA (no está en camaras-nz.js): Cubby House Stay / Immerse; de día se ve campo y el mar es una franja lejana, sin estado del agua legible",
+  "nz-descartada-waikanae-slsc": "DESCARTADA (no está en camaras-nz.js): Waikanae SLSC (ipcamlive); stream no disponible también de día (streamavailable 0 a las 07:45 NZDT)",
+  "nz-descartada-coastguard-whakatane": "DESCARTADA (no está en camaras-nz.js): su stream de Angelcam responde 401 fuera de su web (no se rodea) y su página prohíbe el uso comercial de la imagen sin permiso escrito",
+  "nz-descartada-picton-harbour-view": "DESCARTADA (no está en camaras-nz.js): Harbour View Motel; reproductor JS de rtsp.me sin imagen comprobable desde la nube",
 };
 
 // Las de NZ cuyo dueño tiene el interruptor en false (no se analizan).

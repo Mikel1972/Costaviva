@@ -697,6 +697,22 @@ Waikato Regional Council (Incapsula), DCC, Timaru DC, Tasman DC, Port Nelson
 (403), Surf2surf (ahora Surfline, reto de Cloudflare) y la cámara de Westland
 DC (puerto 85). Coastal Cams y Outdoor Access son de pago.
 
+**Repaso de día (2026-10-12, 07:30-07:55 NZDT) de las 15 pendientes.** Se
+añadieron 8 cámaras SOLO COMO ENLACE (ni embebidas ni analizadas hasta el
+permiso escrito; dueños nuevos con `NZ_EMBED_AUTORIZADO` y
+`NZ_ANALISIS_AUTORIZADO` en `false`): Whangamatā Beach (Destination Hauraki
+Coromandel), Raglan Bar (Raglan Sport Fishing Club, YouTube enlazado por la
+web del club), Castlepoint (su web), Beacon Hill (Greater Wellington, CC BY
+4.0), Nelson Harbour (Nelson City Council), y en SouthLoop Ocean Beach (Bluff)
+y Oban, más Sails Ashore (Halfmoon Bay). Las 8 van en `NO_SIRVEN_NZ` (no se
+miden). Las 7 descartadas van en `NO_SIRVEN_NZ` con clave
+`nz-descartada-<id>` y motivo «DESCARTADA (no está en camaras-nz.js): ...»
+(Coromandel Harbour y Manu Bay sin mar visible ese día, Plimmerton sin poder
+comprobar el directo, Kaikōura con el mar como franja lejana, Waikanae sin
+stream, Coastguard Whakatāne con 401 fuera de su web y uso comercial
+prohibido, Picton sin imagen comprobable). Peticiones de permiso de los
+dueños nuevos: `permisos/registro.json` de `comun`.
+
 ## Oleaje por cámara en NZ: todas, con interruptor por dueño (2026-10-11)
 
 **Decisión expresa de Mikel (2026-10-11):** calcular la altura de la ola con
