@@ -1,7 +1,7 @@
 name: Migraciones aprobadas
 
 # Incidente del 2026-10-11: otros agentes fusionaron migraciones en main sin
-# el sí de Mikel y `supabase db push` las aplicó junto a la única aprobada.
+# el sí de Mikel y el despliegue de la CLI las aplicó junto a la única aprobada.
 # Este check falla si la PR añade o modifica algo en supabase/migrations/ y
 # no lleva la etiqueta `sql-aprobado`. La etiqueta la pone el Claude
 # principal DESPUÉS del sí de Mikel, nunca antes ni un robot por su cuenta.
