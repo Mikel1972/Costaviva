@@ -238,7 +238,9 @@ export function camarasExternasDeSpot(slug) {
 // prefijo para no pisar nunca la fila de la cámara propia del spot.
 // Nombre de la cámara en el idioma de la ficha (las de NZ traen nombre_en).
 export function nombreCamara(camara, idioma = "es") {
-  return idioma === "en" && camara.nombre_en ? camara.nombre_en : camara.nombre;
+  // En portugués, nombre_pt si lo hay y, si no, el inglés (las de NZ).
+  if (idioma === "pt" && camara.nombre_pt) return camara.nombre_pt;
+  return (idioma === "en" || idioma === "pt") && camara.nombre_en ? camara.nombre_en : camara.nombre;
 }
 
 export function claveSalud(camara) {

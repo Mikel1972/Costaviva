@@ -1,7 +1,8 @@
 // assets/js/i18n.js
 // Idiomas de la app (2026-10-09, base para abrir Nueva Zelanda en inglés).
-// Ligero, sin dependencias: diccionarios planos en assets/i18n/es.js y
-// assets/i18n/en.js (clave -> texto) y esta función t(clave, vars).
+// Ligero, sin dependencias: diccionarios planos en assets/i18n/es.js,
+// assets/i18n/en.js y assets/i18n/pt.js (clave -> texto; el portugués,
+// europeo, desde el 2026-10-11) y esta función t(clave, vars).
 //
 // Script clásico: deja window.I18n. Los módulos ES lo usan a través de
 // assets/js/i18n-modulo.js (que importa los diccionarios y este fichero) y
@@ -11,9 +12,10 @@
 //   1. el elegido en el selector de este navegador (localStorage, try/catch);
 //   2. el del perfil (user_metadata.idioma de la sesión de Supabase, que se
 //      lee de su propia entrada de localStorage sin esperar a la red);
-//   3. el de la región (España, Portugal, Canarias: es; Nueva Zelanda: en),
-//      de la última posición conocida o de la zona horaria del dispositivo;
-//   4. navigator.languages (el primero que sea es o en);
+//   3. el de la región (España y Canarias: es; Portugal, Azores y Madeira:
+//      pt; Nueva Zelanda: en), de la última posición conocida o de la zona
+//      horaria del dispositivo;
+//   4. navigator.languages (el primero que sea es, en o pt);
 //   5. español.
 // En Node (tests) no hay document: siempre español salvo que se fije a mano.
 //
@@ -29,9 +31,14 @@
 (function (raiz) {
   if (raiz.I18n && raiz.I18n.__costaviva) return;
 
-  var IDIOMAS = ["es", "en"];
-  var NOMBRES = { es: "Español", en: "English" };
-  var LOCALES = { es: "es-ES", en: "en-NZ" };
+  var IDIOMAS = ["es", "en", "pt"];
+  var NOMBRES = { es: "Español", en: "English", pt: "Português" };
+  var LOCALES = { es: "es-ES", en: "en-NZ", pt: "pt-PT" };
+  // Coma decimal en español y en portugués; punto en inglés.
+  var COMA = { es: true, pt: true };
+  // Respaldo de los textos que faltan: portugués -> inglés -> español
+  // (los datos de NZ solo tienen inglés); inglés -> español.
+  var RESPALDO = { pt: ["en", "es"], en: ["es"], es: [] };
   var CLAVE_LS = "costaviva.idioma";
   var CLAVE_SESION = "sb-imncbmizxkorotpeisic-auth-token";
   var ATRIBUTOS = ["title", "aria-label", "placeholder", "alt"];
@@ -70,8 +77,9 @@
     return null;
   }
   // ---- Región (2026-10-09, decisión de Mikel) ---------------------------
-  // Sin idioma elegido a mano ni en el perfil, manda la REGIÓN: España,
-  // Portugal y Canarias en español; Nueva Zelanda en inglés. Así un español
+  // Sin idioma elegido a mano ni en el perfil, manda la REGIÓN: España y
+  // Canarias en español; Portugal, Azores y Madeira en portugués (desde el
+  // 2026-10-11, aprobado por Mikel); Nueva Zelanda en inglés. Así un español
   // con el móvil en inglés sigue viendo la app en español. El idioma de cada
   // región es el de assets/js/regiones.js (REGIONES[id].idioma; el test
   // comprueba que estas tablas no se separan de allí).
@@ -82,7 +90,7 @@
   var CLAVE_REGION = "costaviva.region";
   var IDIOMA_POR_REGION = {
     cantabrico: "es", atlantico_norte: "es", golfo_cadiz: "es", mediterraneo: "es", baleares: "es",
-    canarias: "es", portugal: "es", azores: "es", madeira: "es", nueva_zelanda: "en",
+    canarias: "es", portugal: "pt", azores: "pt", madeira: "pt", nueva_zelanda: "en",
   };
   // Zona horaria del DISPOSITIVO -> región, solo para elegir idioma (no para
   // calcular horas): "Europe/Madrid" aquí va a propósito.
@@ -152,7 +160,8 @@
     });
   }
   // t("clave", { n, ... }, idioma?). Sin traducción en el idioma, la de
-  // español; sin ninguna, la propia clave (se ve y el test la caza).
+  // español (en el diccionario no se salta al inglés: los tests exigen
+  // todas las claves en los tres); sin ninguna, la propia clave.
   function t(clave, vars, idioma) {
     var id = normaliza(idioma) || actual;
     var todos = textos();
@@ -166,15 +175,20 @@
     return interpola(String(v), vars);
   }
   // Textos que vienen de los datos (especies.json, normativa...): en inglés,
-  // obj[campo + "_en"] si existe; si no, el de siempre. Así la fase de datos
-  // de cada región solo tiene que añadir "texto_en", "nota_en"... Para los
-  // nombres de especie: I18n.nombre(especie) -> especie.nombres[idioma].
+  // obj[campo + "_en"]; en portugués, obj[campo + "_pt"] y, si no existe,
+  // obj[campo + "_en"]; si no hay ninguno, el de siempre (español). Así la
+  // fase de datos de cada región solo tiene que añadir "texto_en",
+  // "nota_pt"... Para los nombres de especie: I18n.nombre(especie) ->
+  // especie.nombres[idioma], con el mismo respaldo.
+  function lleno(v) { return v !== undefined && v !== null && v !== ""; }
   function dato(obj, campo, idioma) {
     if (!obj) return obj;
     var id = normaliza(idioma) || actual;
-    if (id !== "es") {
-      var v = obj[campo + "_" + id];
-      if (v !== undefined && v !== null && v !== "") return v;
+    var orden = [id].concat(RESPALDO[id] || []);
+    for (var i = 0; i < orden.length; i++) {
+      if (orden[i] === "es") break;
+      var v = obj[campo + "_" + orden[i]];
+      if (lleno(v)) return v;
     }
     return obj[campo];
   }
@@ -182,24 +196,29 @@
     var n = especie && especie.nombres;
     if (!n) return especie && especie.nombre;
     var id = normaliza(idioma) || actual;
-    return n[id] || n.es;
+    var orden = [id].concat(RESPALDO[id] || []);
+    for (var i = 0; i < orden.length; i++) if (lleno(n[orden[i]])) return n[orden[i]];
+    return n.es;
   }
   function existe(clave, idioma) {
     return (textos()[normaliza(idioma) || actual] || {})[clave] !== undefined;
   }
 
   // ---- Números, fechas y unidades -------------------------------------
-  // num(1.25, 1) -> "1,3" en español, "1.3" en inglés. Sin decimales
+  // num(1.25, 1) -> "1,3" en español y portugués, "1.3" en inglés. Sin decimales
   // fijos, como String(+x.toFixed(1)) (sin ceros de sobra).
   function num(x, decimales, idioma) {
     if (x === null || x === undefined || Number.isNaN(Number(x))) return "";
     var s = decimales === undefined ? String(+Number(x).toFixed(1)) : Number(x).toFixed(decimales);
-    return (normaliza(idioma) || actual) === "es" ? s.replace(".", ",") : s;
+    return COMA[normaliza(idioma) || actual] ? s.replace(".", ",") : s;
   }
-  // Un número ya escrito con punto ("0.3", "12.5"): coma en español.
+  // Un número ya escrito con punto ("0.3", "12.5"): coma en español y portugués.
   function decimal(texto, idioma) {
     var s = String(texto == null ? "" : texto);
-    return (normaliza(idioma) || actual) === "es" ? s.replace(".", ",") : s;
+    return COMA[normaliza(idioma) || actual] ? s.replace(".", ",") : s;
+  }
+  function usaComa(idioma) {
+    return !!COMA[normaliza(idioma) || actual];
   }
   function temp(c, decimales, idioma) {
     return num(c, decimales === undefined ? 1 : decimales, idioma) + " °C";
@@ -212,11 +231,11 @@
     if (kmh === null || kmh === undefined || Number.isNaN(Number(kmh))) return "";
     if (unidad === "nudos" || unidad === "kn") {
       var id = normaliza(idioma) || actual;
-      return Math.round(kmh / 1.852) + (id === "es" ? " nudos" : " kn");
+      return Math.round(kmh / 1.852) + (id === "es" ? " nudos" : id === "pt" ? " nós" : " kn");
     }
     return Math.round(kmh) + " km/h";
   }
-  // ["ene", "feb", ...] / ["Jan", "Feb", ...] (comun.meses_cortos del diccionario).
+  // ["ene", "feb", ...] / ["Jan", "Feb", ...] / ["jan", "fev", ...] (comun.meses_cortos del diccionario).
   function mesesCortos(idioma) {
     return t("comun.meses_cortos", null, idioma).split(",");
   }
@@ -328,7 +347,7 @@
   }
 
   // ---- Arranque en la página --------------------------------------------
-  // En inglés, el cuerpo se oculta hasta traducir el HTML fijo (sin destello
+  // En inglés o portugués, el cuerpo se oculta hasta traducir el HTML fijo (sin destello
   // de español). La pantalla de inicio se traduce antes con
   // I18n.aplicarInicio() justo después de su HTML, y se deja ver.
   function aplicarInicio(id) {
@@ -381,6 +400,7 @@
     nombre: nombre,
     num: num,
     decimal: decimal,
+    usaComa: usaComa,
     temp: temp,
     metros: metros,
     velocidad: velocidad,
