@@ -101,6 +101,34 @@ class RegionNZ(unittest.TestCase):
             self.assertEqual(t["doi"], "10.48670/moi-00016")
             self.assertEqual((t["filas"], t["columnas"]), (168, 168))
 
+    def test_malla_glo_en_los_bordes_sin_huecos(self):
+        """Caso real (2026-10-11, primera pasada de NZ): los puntos de GLO caen
+        en los bordes de las celdas de 1/12° (coordenadas float32) y una de
+        cada tres filas salía vacía: 57 % de temperatura con dato, 35 % de
+        "franja costera" y 0,0 % de frentes de todo tipo."""
+        dc = cargar()
+        dc.usar_region("nz")
+        for dt in (np.float32, np.float64):
+            lats = (np.arange(-80 * 12, 90 * 12 + 1) / 12).astype(dt)
+            lons = (np.arange(-180 * 12, 180 * 12) / 12).astype(dt)
+            lats = lats[(lats >= -48.1) & (lats <= -33.9)]
+            lons = lons[(lons >= 164.9) & (lons <= 179.1)]
+            la2, lo2 = np.meshgrid(lats.astype(float), lons.astype(float), indexing="ij")
+            # Mar entero con un frente térmico a 42 S y una corriente que converge.
+            t = 14 + 2 * np.tanh((la2 + 42) / 0.15)
+            m = dc.rejilla(lats, lons, t, 1 / 12)
+            self.assertEqual(int(np.isnan(m).sum()), 0, dt.__name__)
+            u = dc.rejilla(lats, lons, -0.3 * np.tanh((lo2 - 172) / 0.3), 1 / 12)
+            v = dc.rejilla(lats, lons, np.zeros_like(t), 1 / 12)
+            chl = dc.rejilla(lats, lons, 10 ** (0.6 * np.tanh((lo2 - 170) / 0.1)), 1 / 12, log=True)
+            filas = m.shape[0]
+            lat_c = dc.CAJA["norte"] - (np.arange(filas) + 0.5) / 12
+            _, est = dc.calcular_frentes(chl, None, m, u, v, lat_c)
+            self.assertEqual(est["pct_costa"], 0.0, dt.__name__)
+            self.assertGreater(est["pct_frente_termico"], 0, dt.__name__)
+            self.assertGreater(est["pct_frente_clorofila"], 0, dt.__name__)
+            self.assertGreater(est["pct_convergencia"], 0, dt.__name__)
+
     def test_espana_sin_cambios(self):
         dc = cargar()
         with tempfile.TemporaryDirectory() as d:

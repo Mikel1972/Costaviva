@@ -1448,6 +1448,12 @@ pidan a la vez (`cargandoCapasMar`), y las imágenes se guardan por capa.
   cron ni "todo"). El mapa las pide cuando se mira Nueva Zelanda
   (`capas/nz/`, `cambioRegionCapasMar` en index.html). El bucket es público: una vez subidas, quien sepa la URL
   puede leerlas (son datos de Copernicus, sin nada de usuarios).
+- **Fallo de la primera pasada real (2026-10-11, arreglado):** 57 % de
+  temperatura con dato, 35 % de "franja costera" y 0,0 % de frentes. Causa:
+  los puntos de GLO caen justo en los bordes de las celdas de 1/12° y, con
+  coordenadas float32, `rejilla()` dejaba vacía una de cada tres filas; los
+  huecos contaban como tierra y el Sobel (8 vecinos) no daba ningún frente.
+  `rejilla()` asigna ahora con 1e-3 celdas de tolerancia (España, igual).
 - Tests: `test/capas_nz_test.py` (Python) y `test/capas-nz.test.js`.
 
 ## Informe diario — Search Console real, conteo de cámaras, robot de especies (2026-09-20)
