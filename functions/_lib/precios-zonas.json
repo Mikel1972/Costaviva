@@ -2,7 +2,7 @@
   "_leeme": "Precios de Premium por zonas (2026-10-11). Lo explica CLAUDE.md, 'Cobro: precios por zonas'. Activar un país: añadir/activar su zona aquí, ejecutar 'node scripts/precios/generar-md.mjs' y lanzar el workflow 'Precios de Stripe'. multiplicadores_pais y tipo_cambio los escribe scripts/precios/multiplicadores.mjs: no editarlos a mano.",
   "version_precios": "2026_10b",
   "factor_mundial": 1.5,
-  "plazas_fundador": 500,
+  "plazas_fundador": 200,
   "zona_por_defecto": "resto",
   "alta_fiscal": {
     "pendiente": true,

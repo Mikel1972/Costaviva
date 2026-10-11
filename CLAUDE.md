@@ -238,8 +238,11 @@ Todo sale de **`functions/_lib/precios-zonas.json`** (config) y
 
 - **Planes** (base España, IVA incluido): mensual 3,99 €, anual 34,99 € (ahorro
   calculado, 27 %; cambio de Mikel del 2026-10-11, antes 29,99) y **fundador**
-  29,99 €/año para los primeros 500 suscriptores anuales (plazas
-  compartidas entre regional y Mundial; se mantiene mientras siga suscrito).
+  29,99 €/año para los primeros 200 suscriptores anuales (plazas compartidas
+  entre regional y Mundial; se mantiene mientras siga suscrito). Eran 500
+  hasta el 2026-10-11: el total vive en `plazas_fundador` de la config y en
+  `plazas_fundador_restantes()` (migración `20261011235000`); el test exige
+  que coincidan.
 - **Ámbitos de contenido**: *regional* = Premium en la región de contenido de
   su zona (`region_contenido`: "es" = España + Portugal con Canarias, Azores y
   Madeira; "nz"); *Mundial* = todas las regiones activas (`REGIONES_ACTIVAS`

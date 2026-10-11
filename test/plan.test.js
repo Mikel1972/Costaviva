@@ -2,7 +2,7 @@
 // avisos de fin de prueba y cosas del checkout. Sin red.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { premiumEn, avisoPremium, avisoFinPrueba } from "../assets/js/plan.js";
 import { leerPlan, diasDePruebaRestantes, DIAS_PRUEBA } from "../functions/_lib/precios.js";
 
@@ -60,9 +60,13 @@ test("checkout: días de prueba que quedan (14 desde el alta)", () => {
   assert.equal(diasDePruebaRestantes("no es fecha", ahora), 0);
 });
 
-test("SQL y config dicen lo mismo: 14 días y 500 plazas de fundador", () => {
+test("SQL y config dicen lo mismo: 14 días y las plazas de fundador", () => {
   assert.match(migracion, /v_creado_en \+ interval '14 days'/);
-  assert.match(migracion, new RegExp(`greatest\\(0, ${config.plazas_fundador} - count\\(\\*\\)\\)`));
+  // La última migración que define plazas_fundador_restantes() manda.
+  const dir = new URL("../supabase/migrations/", import.meta.url);
+  const ultima = readdirSync(dir).filter((f) => f.endsWith(".sql")).sort()
+    .map((f) => readFileSync(new URL(f, dir), "utf8")).filter((t) => /function public\.plazas_fundador_restantes/.test(t)).pop();
+  assert.match(ultima, new RegExp(`greatest\\(0, ${config.plazas_fundador} - count\\(\\*\\)\\)`));
   assert.doesNotMatch(migracion, /\bbegin;|\bcommit;/i);
 });
 
