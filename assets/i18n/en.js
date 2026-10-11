@@ -1028,7 +1028,7 @@
   "mapa.region.chip_es": "Spain & Portugal",
   "mapa.region.chip_nz": "New Zealand",
   "mapa.region.no_disponible": "The data for this region could not be loaded. Try again in a few minutes.",
-  "mapa.atrib.linz": "NZ tides: Sourced from Land Information New Zealand data (CC BY 4.0); not official tide tables",
+  "mapa.atrib.linz": "NZ tides: based on Toitū Te Whenua Land Information New Zealand data, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a>; not official tide tables",
   "mapa.panel.reservas": "Marine reserve nearby: {lista}. No fishing and no taking of any marine life inside a marine reserve.",
   "mapa.panel.reservas_atrib": "Marine reserves: Department of Conservation (DOC), Crown copyright, CC BY 4.0. Simplified outline: check the exact boundary with DOC.",
   "mapa.marea.puerto_linz": "LINZ port: {puerto} ({km} km)",
