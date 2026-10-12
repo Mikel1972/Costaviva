@@ -91,7 +91,10 @@ export async function onRequestGet(context) {
     for (let j = 0; j < PUNTOS_POR_LADO; j++) {
       const lon = oeste + (j / (PUNTOS_POR_LADO - 1)) * (este - oeste);
       lats.push(lat.toFixed(3));
-      lons.push(lon.toFixed(3));
+      // La rejilla de NZ cruza el antimeridiano (162-182 E): Open-Meteo solo
+      // acepta -180..180, así que 181 se pide como -179. La cabecera de
+      // leaflet-velocity sigue en 162..182, continua alrededor de NZ.
+      lons.push((lon > 180 ? lon - 360 : lon).toFixed(3));
     }
   }
 
