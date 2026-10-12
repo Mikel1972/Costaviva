@@ -6,7 +6,8 @@ name: Datos de Nueva Zelanda (mareas LINZ y reservas DOC)
 # el bucket: regenera datos/nz/ con
 #   - scripts/fuentes/linz-mareas.mjs (pleamares y bajamares de LINZ, CC BY 4.0,
 #     verificada con LINZ por escrito el 2026-10-11)
-#   - scripts/fuentes/doc-reservas-marinas.mjs (polígonos de DOC, CC BY 4.0)
+#   - scripts/fuentes/doc-reservas-marinas.mjs (polígonos de DOC: reservas, CC BY 4.0,
+#     y zonas del golfo de Hauraki de 2025) y, con ellos, zonas-sin-pesca.mjs
 # y sube el resultado a una rama `robot/nz-datos-<run>` con su PR, para que
 # se revise antes de llegar a main. El PR lo abre este mismo workflow; si
 # GitHub no le deja, crea un Issue con el enlace (como robot-diseno-pr.yml).
@@ -56,10 +57,13 @@ jobs:
           fi
 
       - name: Descargar reservas marinas de DOC
-        run: node scripts/fuentes/doc-reservas-marinas.mjs
+        run: |
+          node scripts/fuentes/doc-reservas-marinas.mjs
+          # Fichero público de la capa "Zonas sin pesca" del mapa.
+          node scripts/fuentes/zonas-sin-pesca.mjs
 
       - name: Tests de NZ con los datos nuevos
-        run: node --test test/nz-mareas.test.js test/nz-region.test.js
+        run: node --test test/nz-mareas.test.js test/nz-region.test.js test/zonas-sin-pesca.test.js
 
       - name: Rama y PR con los datos nuevos
         env:
@@ -68,7 +72,7 @@ jobs:
         run: |
           git config user.name "Costaviva (datos de NZ)"
           git config user.email "noreply@anthropic.com"
-          git add datos/nz
+          git add datos/nz assets/datos/zonas-sin-pesca
           if git diff --cached --quiet; then echo "Sin cambios en datos/nz."; exit 0; fi
           git checkout -q -b "$RAMA"
           git commit -qm "Datos de NZ: mareas LINZ y reservas DOC regenerados"
