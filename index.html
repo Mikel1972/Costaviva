@@ -2955,7 +2955,7 @@ function lienzoCapaMar(CM, d, def) {
     const im = ctx2.createImageData(ancho, alto);
     im.data.set(px);
     ctx2.putImageData(im, 0, 0);
-    return lienzo.toDataURL("image/png");
+    return lienzo;
   }
   const canvas = document.createElement("canvas");
   canvas.width = d.columnas;
@@ -2967,7 +2967,7 @@ function lienzoCapaMar(CM, d, def) {
     : I ? CM.pixelesCapa(d, d.bytes, I.PALETA_TEMP_AGUA, I.valorColorBandas)
     : CM.pixelesCapa(d, d.bytes, def.paradas, def.valorColor));
   ctx.putImageData(img, 0, 0);
-  return canvas.toDataURL("image/png");
+  return canvas;
 }
 // Créditos de una capa o de varias (DOIs sin repetir).
 function creditoCapaMar(ds) {
@@ -3114,9 +3114,13 @@ function cargarCapaMar(CM, nombre) {
 }
 async function descargarCapaMar(CM, nombre) {
   const prefijo = prefijoCapasMar;
-  const r = await fetch(URL_CAPAS_MAR_BASE + prefijo + nombre + ".json", { cache: "no-cache" });
+  const [r, tierra] = await Promise.all([
+    fetch(URL_CAPAS_MAR_BASE + prefijo + nombre + ".json", { cache: "no-cache" }),
+    cargarTierra(prefijo === "nz/" ? "nz" : "es"),
+  ]);
   if (!r.ok) throw new Error(`HTTP ${r.status}`);
   const d = await r.json();
+  d.tierra = tierra;
   d.bytes = CM.bytesDeBase64(d.datos);
   if (d.bytes.length !== d.filas * d.columnas) throw new Error("tamaño inesperado");
   if (d.corriente) {
@@ -3178,9 +3182,25 @@ function imagenCapaMar(nombre, variante, d) {
     const im = ctx.createImageData(ancho, alto);
     im.data.set(px);
     ctx.putImageData(im, 0, 0);
-    return (d.urlImagenes[clave] = lienzo.toDataURL("image/png"));
+    return (d.urlImagenes[clave] = urlSinTierra(lienzo, d, d, false));
   }
-  return (d.urlImagenes[clave] = lienzoCapaMar(capasMar.CM, def.tipo === "corriente" ? d.mallaVel : d, def));
+  const malla = def.tipo === "corriente" ? d.mallaVel : d;
+  return (d.urlImagenes[clave] = urlSinTierra(lienzoCapaMar(capasMar.CM, malla, def), malla, d, def.tipo !== "frentes"));
+}
+// PNG de un lienzo de capa con la tierra recortada (polígonos de OSM de la
+// región, d.tierra), para que la tierra del mapa base quede siempre encima.
+function urlSinTierra(lienzo, caja, d, extender) {
+  const CM = capasMar.CM;
+  if (!d.tierra || !CM.recortarTierra) return lienzo.toDataURL("image/png");
+  const crear = (w, h) => Object.assign(document.createElement("canvas"), { width: w, height: h });
+  return CM.recortarTierra(lienzo, caja, d.tierra, crear, extender).toDataURL("image/png");
+}
+// Tierra de cada región (assets/datos/tierra/), una sola descarga.
+const tierraPorRegion = {};
+function cargarTierra(region) {
+  return (tierraPorRegion[region] ||= fetch(`/assets/datos/tierra/${region}.geojson`)
+    .then((r) => (r.ok ? r.json() : null))
+    .catch(() => null));
 }
 // Un solo manejador de moveend para todas las capas encendidas.
 function alMoverCapasMar() {
