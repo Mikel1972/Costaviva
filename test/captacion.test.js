@@ -201,3 +201,15 @@ test("migraciones de captación: RLS, search_path y EXECUTE mínimo", () => {
     assert.ok(fila && fila.rls_enabled && fila.policies.length === 0, `${t} en el baseline del vigía`);
   }
 });
+
+test("visitas internas: el navegador del administrador (cookie cv_interno=1) no cuenta (2026-10-12)", async () => {
+  const { visitaAContar, esVisitaInterna, COOKIE_INTERNA } = await import("../functions/_lib/visitas.js");
+  const res = new Response("x", { status: 200, headers: { "content-type": "text/html" } });
+  const req = (cookie) => new Request("https://costaviva.org/mareas", { headers: { "user-agent": "Mozilla/5.0 (iPhone)", ...(cookie ? { cookie } : {}) } });
+  assert.ok(visitaAContar(req(""), res), "una visita normal cuenta");
+  assert.equal(visitaAContar(req("a=1; cv_interno=1"), res), null, "la del administrador no");
+  assert.equal(esVisitaInterna("xcv_interno=1"), false);
+  assert.equal(COOKIE_INTERNA, "cv_interno");
+  const html = (await import("node:fs")).readFileSync(new URL("../index.html", import.meta.url), "utf8");
+  assert.match(html, /document\.cookie = "cv_interno=1; Max-Age=31536000; Path=\/; Secure; SameSite=Lax"/);
+});

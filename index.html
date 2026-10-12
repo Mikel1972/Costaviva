@@ -1118,6 +1118,11 @@
         if (!errAdm && esAdm === true) {
           window.esAdminServidor = true;
           document.getElementById("adminFuentes").hidden = false;
+          // Visitas internas (2026-10-12, Mikel: "que la tabla separe mis
+          // propias visitas"): este navegador queda marcado un año y el
+          // contador de visitas públicas no lo cuenta (functions/_lib/
+          // visitas.js, COOKIE_INTERNA). Sin datos personales: solo "1".
+          try { document.cookie = "cv_interno=1; Max-Age=31536000; Path=/; Secure; SameSite=Lax"; } catch (e) { /* sin cookie */ }
         }
       } catch (e) { /* sin selector */ }
       // El resto de la app vive en un <script> clásico más abajo (por el
