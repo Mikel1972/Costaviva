@@ -100,9 +100,14 @@ jobs:
 
       - name: Comprobar que la copia se restaura
         run: |
+          # La imagen trae auth y storage en una versión antigua (las columnas
+          # nuevas las añade el servicio de Auth al arrancar): auth.users no
+          # entraba (2026-10-12, primera prueba). Se borran para que la copia
+          # los cree tal como están en producción.
+          psql "$PRUEBA" -X -q -c "drop schema if exists auth cascade; drop schema if exists storage cascade;" 2> /dev/null
           psql "$PRUEBA" -X -q -tA -F $'\t' -f .github/scripts/copia-bd-recuento.sql > base.tsv
-          # La imagen de Supabase ya trae creados auth y storage: sus CREATE
-          # fallan ("ya existe") y los datos entran igual. Los mensajes de
+          # Algunos CREATE fallan con objetos que la imagen ya trae ("ya
+          # existe") y los datos entran igual. Los mensajes de
           # error pueden llevar valores de filas (DETAIL: Key ...=...), así
           # que no se imprimen: solo cuántos hay.
           if pg_restore --no-owner --no-privileges -d "$PRUEBA" copia.dump 2> restaurar.log; then
