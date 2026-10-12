@@ -733,6 +733,8 @@
   .admin-fuentes td { text-align: left; padding: 3px 4px; border-bottom: 1px solid var(--linea); vertical-align: top; font-variant-numeric: tabular-nums; }
   .admin-fuentes .nota { color: var(--tinta-2); font-size: 10px; margin-top: 6px; }
   .viento-slider-panel input[type="range"] { width: 100%; }
+  .viento-fila { display: flex; align-items: center; gap: 8px; }
+  .viento-play { width: 32px; height: 32px; flex: 0 0 32px; border-radius: 50%; border: 1px solid var(--mar); background: var(--mar); color: var(--blanco); font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; }
   .viento-slider-panel .etq { text-align: center; color: var(--tinta-2); margin-top: 2px; }
   .viento-slider-ticks { display: flex; justify-content: space-between; font-size: 9px; color: var(--tinta-2); margin-top: -2px; }
   .viento-leyenda-titulo { font-size: 9.5px; color: var(--tinta-2); margin-top: 10px; border-top: 1px solid var(--linea); padding-top: 8px; }
@@ -1218,7 +1220,12 @@
           <button type="button" class="tarjeta-plegar" id="vientoPlegar" aria-expanded="true" aria-controls="vientoCuerpo" aria-label="Minimizar la leyenda" title="Minimizar" data-i18n-aria-label="comun.minimizar_leyenda" data-i18n-title="comun.minimizar">▾</button>
         </div>
         <div class="tarjeta-cuerpo" id="vientoCuerpo">
-        <input type="range" id="vientoSlider" min="0" max="23" value="0" step="1" />
+        <!-- Reproducción de las próximas horas (Mikel, 2026-10-12: "el viento
+             debe estar en play cuando se activa, con opción de pausa"). -->
+        <div class="viento-fila">
+          <button type="button" class="viento-play" id="vientoPlay" aria-label="Pausar" data-i18n-aria-label="lluvia.pausar">⏸</button>
+          <input type="range" id="vientoSlider" min="0" max="23" value="0" step="1" />
+        </div>
         <!-- Horas reales a lo largo de la barra (pedido explícito del
              usuario: "pon las horas y no la diferencia en horas") -- unas
              pocas marcas repartidas, no las 24, para que quepan en el
@@ -6174,7 +6181,14 @@ function mostrarHoraViento(indice) {
     const snaps = vientoSnapshotsPorRegion[region.id];
     if (!snaps?.length) return;
     const snap = snaps[Math.min(i, snaps.length - 1)];
-    if (vientoCapas[region.id]) { map.removeLayer(vientoCapas[region.id]); vientoCapas[region.id] = null; }
+    // Ya creada: solo cambia la hora (setData), sin quitar y poner la capa;
+    // así la reproducción automática no parpadea.
+    const existente = vientoCapas[region.id];
+    if (existente) {
+      existente.setData(snap.data);
+      if (activo && !map.hasLayer(existente)) existente.addTo(map);
+      return;
+    }
     vientoCapas[region.id] = L.velocityLayer({
       displayValues: false,
       data: snap.data,
@@ -6226,10 +6240,31 @@ async function cargarCampoViento() {
   }
 }
 
+// Reproducción automática de las horas: arranca al encender el viento y da
+// la vuelta al llegar al final; el botón la pausa y tocar la barra también.
+const VIENTO_PASO_MS = 1500;
+let temporizadorVientoPlay = null;
+function reproducirViento(si) {
+  clearInterval(temporizadorVientoPlay);
+  temporizadorVientoPlay = null;
+  const boton = document.getElementById("vientoPlay");
+  boton.textContent = si ? "⏸" : "▶";
+  boton.setAttribute("aria-label", I18n.t(si ? "lluvia.pausar" : "lluvia.reproducir"));
+  if (!si) return;
+  temporizadorVientoPlay = setInterval(() => {
+    const slider = document.getElementById("vientoSlider");
+    const max = +slider.max;
+    if (!vientoReferencia() || max <= 0) return;
+    slider.value = String(+slider.value >= max ? 0 : +slider.value + 1);
+    mostrarHoraViento(+slider.value);
+  }, VIENTO_PASO_MS);
+}
+document.getElementById("vientoPlay").addEventListener("click", () => reproducirViento(!temporizadorVientoPlay));
 document.getElementById("toggleViento").addEventListener("click", (e) => {
   const boton = e.currentTarget;
   const panel = document.getElementById("vientoSliderPanel");
   if (boton.classList.contains("activo")) {
+    reproducirViento(false);
     Object.values(vientoCapas).forEach((capa) => { if (capa) map.removeLayer(capa); });
     boton.classList.remove("activo");
     panel.hidden = true;
@@ -6242,6 +6277,7 @@ document.getElementById("toggleViento").addEventListener("click", (e) => {
     plegarViento?.alAbrir();
     registrarEvento("ver_capa_viento");
     cargarCampoViento();
+    reproducirViento(true);
   }
 });
 // La tarjeta del viento también se minimiza (assets/js/plegar-tarjeta.js).
@@ -6251,6 +6287,8 @@ const plegarViento = window.PlegarTarjeta?.montar({
   id: "viento",
 });
 document.getElementById("vientoSlider").addEventListener("input", (e) => {
+  // Mover la barra a mano pausa la reproducción.
+  reproducirViento(false);
   mostrarHoraViento(+e.target.value);
 });
 
