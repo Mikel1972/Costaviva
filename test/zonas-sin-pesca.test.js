@@ -52,3 +52,24 @@ test("mapa: la capa se monta siempre (sin botón) y sale en la leyenda", () => {
   assert.match(html, /Z\.montarCapa\(map, L, \{/);
   assert.match(html, /data-i18n="mapa\.leyenda\.zonas"/);
 });
+
+test("España: zonas de los textos legales, cada una con su norma; rojas sin pesca y naranjas parciales", async () => {
+  const { zonasES } = await import("../scripts/fuentes/zonas-sin-pesca.mjs");
+  const boe = json("datos/es/zonas-sin-pesca-boe.geojson");
+  const es = json("assets/datos/zonas-sin-pesca/es.geojson");
+  assert.deepEqual(es, JSON.parse(JSON.stringify(zonasES(boe))), "regenerar con scripts/fuentes/zonas-sin-pesca.mjs");
+  assert.equal(es.features.length, boe.features.length);
+  for (const f of es.features) {
+    assert.ok(["reserva", "parcial"].includes(f.properties.tipo), f.properties.nombre);
+    assert.ok(f.properties.regla && f.properties.norma, `${f.properties.nombre}: regla y norma`);
+    assert.match(f.properties.url, /^https:\/\//);
+  }
+  const nombres = es.features.filter((f) => f.properties.tipo === "reserva").map((f) => f.properties.nombre).join(" | ");
+  for (const r of ["Cabo de Palos", "Tabarca", "Columbretes", "Cabo de Gata", "Alborán", "Graciosa", "Restinga", "La Palma", "Masía Blanca", "Cabo Tiñoso", "Cabrera", "Medes"]) {
+    assert.match(nombres, new RegExp(r), r);
+  }
+  assert.ok(!esSinPesca("parcial"));
+  assert.equal(estiloZona("parcial").className, "zona-fondo");
+  assert.ok(esRutaPermitida(REGIONES_ZONAS.es.url));
+  assert.ok(regionVisible(REGIONES_ZONAS.es.caja, { sur: 37, norte: 38, oeste: -1, este: 0 }));
+});

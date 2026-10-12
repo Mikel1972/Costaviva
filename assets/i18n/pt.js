@@ -1052,6 +1052,7 @@
   "mapa.panel.reservas_spa": "Zona de proteção do fundo por perto: {lista}. Pode-se pescar à linha, à caça submarina ou à mão; não com arrasto, dragas nem cerco dinamarquês.",
   "mapa.zonas.sin_pesca": "Zona sem pesca: não se pode pescar nem apanhar nada. Contorno aproximado; o limite legal é o oficial.",
   "mapa.zonas.fondo": "Proteção do fundo: linha, caça submarina e apanha à mão sim; arrasto, dragas e cerco dinamarquês não.",
+  "mapa.zonas.aproximado": "Contorno aproximado tirado da norma; o limite legal é o da norma.",
   "mapa.panel.reservas_atrib": "Reservas marinhas: Department of Conservation (DOC), Crown copyright, CC BY 4.0. Zonas do golfo de Hauraki: Crown Copyright: Department of Conservation Te Papa Atawhai 2025. Contorno simplificado: confirme o limite exato no DOC.",
   "mapa.marea.puerto_linz": "Porto LINZ: {puerto} ({km} km)",
   "va.region.nz_auckland_kermadec": "Auckland / Kermadec (NZ)",

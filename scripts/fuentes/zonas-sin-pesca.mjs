@@ -7,6 +7,12 @@
 //   assets/datos/zonas-sin-pesca/nz.geojson  <- datos/nz/reservas-marinas-doc.geojson
 //     (DOC: reservas marinas y zonas del golfo de Hauraki de 2025; lo baja
 //     scripts/fuentes/doc-reservas-marinas.mjs).
+//   assets/datos/zonas-sin-pesca/es.geojson  <- datos/es/zonas-sin-pesca-boe.geojson
+//     (2026-10-12: 44 zonas de reservas marinas y parques nacionales de
+//     España, digitalizadas de los textos legales del BOE, DOG y DOGV, con
+//     norma, artículo, datum y coordenadas originales de cada una; dudas y
+//     criterios en datos/es/zonas-sin-pesca-NOTAS.md). Los textos legales no
+//     tienen derechos de autor (art. 13 LPI).
 //
 // Cada zona lleva solo { nombre, tipo }: "reserva" y "hpa" = no se pesca nada;
 // "spa" = protección del fondo (caña sí, artes de fondo no), que el mapa
@@ -21,7 +27,7 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
-export const TIPOS = ["reserva", "hpa", "spa"];
+export const TIPOS = ["reserva", "hpa", "spa", "parcial"];
 
 const redondear = (x) => Math.round(x * 1e4) / 1e4;
 
@@ -53,6 +59,39 @@ export function zonasNZ(doc) {
   };
 }
 
+// España: "sin_pesca" se dibuja como reserva (rojo); "parcial" (se pesca
+// con limitaciones) en naranja, con su regla. Cada zona lleva la norma y su
+// enlace para el popup.
+export function zonasES(boe) {
+  const features = [];
+  for (const f of boe.features || []) {
+    const p = f.properties || {};
+    const tipo = p.tipo === "sin_pesca" ? "reserva" : p.tipo === "parcial" ? "parcial" : null;
+    const geometry = normalizarGeometria(f.geometry);
+    if (!tipo || !geometry) continue;
+    features.push({
+      type: "Feature",
+      properties: {
+        nombre: `${p.reserva}: ${p.zona}`,
+        tipo,
+        regla: p.regla || null,
+        norma: p.referencia?.norma || null,
+        url: p.referencia?.url || null,
+      },
+      geometry,
+    });
+  }
+  return {
+    type: "FeatureCollection",
+    region: "es",
+    atribucion: "Zonas sin pesca: elaboración propia a partir de los textos legales (BOE, DOG, DOGV)",
+    fuente: "datos/es/zonas-sin-pesca-boe.geojson",
+    generado: boe.generado || null,
+    aviso: "Contorno aproximado sacado del texto legal: el límite legal es el de la norma.",
+    features,
+  };
+}
+
 function main() {
   const doc = JSON.parse(readFileSync(join(RAIZ, "datos", "nz", "reservas-marinas-doc.geojson"), "utf8"));
   const salida = join(RAIZ, "assets", "datos", "zonas-sin-pesca");
@@ -61,6 +100,11 @@ function main() {
   const texto = JSON.stringify(nz) + "\n";
   writeFileSync(join(salida, "nz.geojson"), texto);
   console.log(`nz: ${nz.features.length} zonas, ${Buffer.byteLength(texto)} bytes.`);
+  const boe = JSON.parse(readFileSync(join(RAIZ, "datos", "es", "zonas-sin-pesca-boe.geojson"), "utf8"));
+  const es = zonasES(boe);
+  const textoEs = JSON.stringify(es) + "\n";
+  writeFileSync(join(salida, "es.geojson"), textoEs);
+  console.log(`es: ${es.features.length} zonas, ${Buffer.byteLength(textoEs)} bytes.`);
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) main();
