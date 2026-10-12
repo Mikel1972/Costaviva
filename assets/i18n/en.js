@@ -35,7 +35,7 @@
   "mapa.leyenda.tranquilo": "calm",
   "mapa.leyenda.moderado": "moderate",
   "mapa.leyenda.agitado": "rough",
-  "mapa.leyenda.rios": "◆ RIVERS: 3 points per river (source→mouth), coloured by low/normal/high flow — hover over a point to see the detail. What is measured upstream reaches the coast hours later — useful as an early trend warning. Illustrative positions, not the exact official gauges. Real flow only on the Sella, Besaya, Pas, Asón, Eo, Júcar, Turia, Mijares, Segura and Lagares (river basin authorities + Augas de Galicia) — Basque rivers still have no real data (URA/Bizkaia blocks automated access).",
+  "mapa.leyenda.rios": "◆ RIVERS: 3 points per river (source→mouth), coloured by low/normal/high flow — hover over a point to see the detail. What is measured upstream reaches the coast hours later — useful as an early trend warning. Illustrative positions, not the exact official gauges. Real flow only on the Sella, Besaya, Pas, Asón, Eo, Júcar, Turia, Mijares, Segura, Lagares, Tordera and Muga (river basin authorities + Augas de Galicia + Agència Catalana de l'Aigua) — Basque rivers still have no real data (URA/Bizkaia blocks automated access).",
   "mapa.leyenda.tagua": "🌡 WATER TEMP.: each colour is one degree, always the same across the map (from cold blue to warm red); the lines mark the exact degree.",
   "mapa.capa.rayos": "Lightning",
   "mapa.capa.luna": "Moon",
