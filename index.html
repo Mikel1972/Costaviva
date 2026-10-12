@@ -1240,7 +1240,7 @@
              nunca a mano en el CSS, para que no se puedan desincronizar. -->
         <div class="viento-leyenda-titulo" data-i18n="mapa.viento.velocidad">Velocidad del viento</div>
         <div class="viento-leyenda-barra" id="vientoLeyendaBarra"></div>
-        <div class="viento-leyenda-extremos"><span>0 km/h</span><span>54+ km/h</span></div>
+        <div class="viento-leyenda-extremos"><span id="vientoLeyendaMin">0 km/h</span><span id="vientoLeyendaMax">54+ km/h</span></div>
         </div>
       </div>
       <div class="leyenda" id="leyendaPanel">
@@ -2389,7 +2389,7 @@ function pintarReservasPanel(s) {
   if (!lista.length) return;
   // Sin pesca (reservas y zonas de alta protección de Hauraki) y, aparte, las
   // de protección del fondo (caña sí, arrastre no), 2026-10-12.
-  const nombres = (l) => l.map((r) => (r.km ? `${r.nombre} (${I18n.decimal ? I18n.decimal(r.km, 1) : r.km} km)` : r.nombre)).join(" · ");
+  const nombres = (l) => l.map((r) => (r.km ? `${r.nombre} (${I18n.distancia(r.km)})` : r.nombre)).join(" · ");
   const cerradas = lista.filter((r) => r.tipo !== "spa"), fondo = lista.filter((r) => r.tipo === "spa");
   document.getElementById("panelReservasTexto").textContent = [
     cerradas.length ? I18n.t("mapa.panel.reservas", { lista: nombres(cerradas) }) : "",
@@ -2405,7 +2405,7 @@ function pintarFuenteMarea(s) {
   const m = s.marea;
   el.textContent = "";
   if (!m || !m.atribucion) { el.hidden = true; return; }
-  const puerto = m.puerto ? I18n.t("mapa.marea.puerto_linz", { puerto: m.puerto.nombre, km: m.puerto.km }) : "";
+  const puerto = m.puerto ? I18n.t("mapa.marea.puerto_linz", { puerto: m.puerto.nombre, km: I18n.distancia(m.puerto.km) }) : "";
   const atrib = m.atribucionCorta || m.atribucion;
   const corte = m.licencia ? atrib.lastIndexOf("CC BY 4.0") : -1;
   if (puerto) el.append(puerto + " · ");
@@ -2871,10 +2871,10 @@ const CAPAS_MAR = {
     tipo: "isotermas",
     valorColor: (v) => (v - 10) / 18,
     paradas: ["#2B3A8C", "#2F7FC1", "#4FB7C9", "#9AD27A", "#F2D04B", "#F28C38", "#C9372C"],
-    extremos: ["10 °C", "28+ °C"],
+    extremos: [I18n.temp(10, 0), I18n.temp(28, 0).replace(" ", "+ ")],
     formato: (v, km = 0) => (km > 0
-      ? I18n.t("capas.tagua.formato_cerca", { v: I18n.num(v, 1), km: Math.max(1, Math.round(km)) })
-      : I18n.t("capas.tagua.formato", { v: I18n.num(v, 1) })),
+      ? I18n.t("capas.tagua.formato_cerca", { v: I18n.temp(v, 1), km: I18n.distancia(Math.max(1, Math.round(km)), 0) })
+      : I18n.t("capas.tagua.formato", { v: I18n.temp(v, 1) })),
     resumen: I18n.t("capas.tagua.resumen"),
     explica: I18n.t("capas.tagua.explica"),
     // NZ (capas/nz/, region "nz"): modelo GLOBAL a las 00:00 UTC, no IBI a las 12.
@@ -3079,7 +3079,7 @@ function leyendaBandas(I, grados, dom) {
     const casilla = document.createElement("span");
     casilla.style.background = c;
     casilla.style.color = I.tintaSobre(c);
-    casilla.textContent = `${g}°`;
+    casilla.textContent = I.textoGrados(g);
     fila.append(casilla);
   }
 }
@@ -3325,8 +3325,8 @@ function leyendaUnaCapa(nombre) {
     // Barra fija por grados (la de reserva, continua, si no llega el módulo).
     barra.style.background = window.Isotermas.degradadoBandas();
     mini.style.background = barra.style.background;
-    document.getElementById("capaMarMin").textContent = `${window.Isotermas.TEMP_MIN} °C`;
-    document.getElementById("capaMarMax").textContent = `${window.Isotermas.TEMP_MAX}+ °C`;
+    document.getElementById("capaMarMin").textContent = window.Isotermas.textoExtremo(window.Isotermas.TEMP_MIN);
+    document.getElementById("capaMarMax").textContent = window.Isotermas.textoExtremo(window.Isotermas.TEMP_MAX).replace(" ", "+ ");
     isotermas.dom = { tramo: document.getElementById("capaMarTramo"), fila: document.getElementById("capaMarBandas"), nota: document.getElementById("capaMarNota") };
   }
   document.getElementById("capaMarResumen").textContent = def.resumen;
@@ -3736,7 +3736,7 @@ function crearMarcadorSpot(s) {
       <div style="display:flex; align-items:center; gap:3px;">
         ${iconoFlecha(gradosDesdeTexto(s.dirOla), "#2E7BA0")}
         ${iconoFlecha(gradosDesdeTexto(s.dirViento), "#D4A24C")}
-        <span style="font-family:var(--f-texto); font-size:9px; font-weight:700; color:var(--acento); text-shadow:0 0 3px var(--tinta),0 0 3px var(--tinta);">${s.viento ?? ""}</span>
+        <span style="font-family:var(--f-texto); font-size:9px; font-weight:700; color:var(--acento); text-shadow:0 0 3px var(--tinta),0 0 3px var(--tinta);">${s.viento != null ? I18n.velocidad(s.viento).replace(/ .*$/, "") : ""}</span>
         <div class="marcador-envoltorio">
           <div class="anillo-pulso" style="background:${color};"></div>
           <div class="marcador" id="marcador-${s.slug}" style="background:${color}; color:var(--tinta);">${textoIndice(s.indice)}</div>
@@ -4355,7 +4355,7 @@ function crearMarcadorBoya(boya) {
       <div class="etiqueta-spot" style="color:#2E7BA0;">⚓ ${boya.nombre}</div>
       <div style="display:flex; align-items:center; gap:4px;">
         ${boya.dirOla ? iconoFlecha(gradosDesdeTexto(boya.dirOla), "#2E7BA0") : ""}
-        <div class="marcador-boya">${boya.alturaSignificativa.toFixed(1)}m</div>
+        <div class="marcador-boya">${I18n.metros(boya.alturaSignificativa, 1).replace(" ", "")}</div>
       </div>
     </div>`;
   const icon = L.divIcon({ html, className: "", iconSize: [110, 46], iconAnchor: [55, 23] });
@@ -4364,8 +4364,8 @@ function crearMarcadorBoya(boya) {
   const llamada = `
     <div class="rio-nombre">${I18n.t("mapa.boya.titulo", { nombre: boya.nombre })}</div>
     <div class="rio-tramo">${I18n.t("mapa.boya.medido")}${boya.actualizado ? I18n.t("mapa.boya.a_las", { hora: new Date(boya.actualizado).toLocaleTimeString(I18n.locale(), { timeZone: zonaSpot(boya), hour: "2-digit", minute: "2-digit" }) }) : ""}</div>
-    <div class="rio-caudal">${I18n.t("mapa.boya.oleaje")} ${boya.alturaSignificativa}m${boya.periodoPico ? ` · ${Math.round(boya.periodoPico)}s` : ""}${boya.dirOla ? ` · ${boya.dirOla}` : ""}</div>
-    ${boya.tempAgua !== null && boya.tempAgua !== undefined ? `<div class="rio-caudal">${I18n.t("mapa.boya.agua")} ${boya.tempAgua}°C</div>` : ""}
+    <div class="rio-caudal">${I18n.t("mapa.boya.oleaje")} ${alturaTal(boya.alturaSignificativa)}${boya.periodoPico ? ` · ${Math.round(boya.periodoPico)}s` : ""}${boya.dirOla ? ` · ${boya.dirOla}` : ""}</div>
+    ${boya.tempAgua !== null && boya.tempAgua !== undefined ? `<div class="rio-caudal">${I18n.t("mapa.boya.agua")} ${I18n.temp(boya.tempAgua, null)}</div>` : ""}
     ${boya.codigo === "PT-nazare-costeira" ? "" : `<div class="rio-tramo" style="font-size:10px;">Puertos del Estado vía E.U. Copernicus Marine Service · Generated using E.U. Copernicus Marine Service Information (doi:10.48670/moi-00043)</div>`}
   `;
   marker.bindTooltip(llamada, { direction: "top", offset: [0, -10], className: "llamada-rio", opacity: 1 });
@@ -4398,8 +4398,10 @@ function filaModalEstacion(etiqueta, valor) {
 }
 
 function abrirModalEstacion(estacion) {
+  // Día en el formato de fecha elegido (I18n.fechaNumerica), en la zona del spot.
+  const enZona = (o) => new Date(estacion.actualizado).toLocaleString(o.locale || I18n.locale(), { timeZone: zonaSpot(estacion), ...o.opciones });
   const hora = estacion.actualizado
-    ? new Date(estacion.actualizado).toLocaleString(I18n.locale(), { timeZone: zonaSpot(estacion), hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit" })
+    ? `${I18n.fechaNumerica(`${enZona({ locale: "en-CA", opciones: { year: "numeric", month: "2-digit", day: "2-digit" } })}T00:00`, false)}, ${enZona({ opciones: { hour: "2-digit", minute: "2-digit" } })}`
     : "—";
   document.getElementById("tituloModalEstacion").textContent = `🌧 ${estacion.nombre}`;
   document.getElementById("contenidoModalEstacion").innerHTML = `
@@ -4407,12 +4409,12 @@ function abrirModalEstacion(estacion) {
     ${filaModalEstacion(I18n.t("mapa.estacion.prec"), Number.isFinite(estacion.prec) ? `${estacion.prec} mm` : null)}
     ${filaModalEstacion(I18n.t("mapa.estacion.pres"), Number.isFinite(estacion.pres) ? `${estacion.pres} hPa` : null)}
     ${filaModalEstacion(I18n.t("mapa.estacion.pres_mar"), Number.isFinite(estacion.presNmar) ? `${estacion.presNmar} hPa` : null)}
-    ${filaModalEstacion(I18n.t("mapa.estacion.temp"), Number.isFinite(estacion.ta) ? `${estacion.ta}°C` : null)}
-    ${filaModalEstacion(I18n.t("mapa.estacion.min_max"), (Number.isFinite(estacion.tamin) && Number.isFinite(estacion.tamax)) ? `${estacion.tamin}°C / ${estacion.tamax}°C` : null)}
+    ${filaModalEstacion(I18n.t("mapa.estacion.temp"), Number.isFinite(estacion.ta) ? I18n.temp(estacion.ta, null) : null)}
+    ${filaModalEstacion(I18n.t("mapa.estacion.min_max"), (Number.isFinite(estacion.tamin) && Number.isFinite(estacion.tamax)) ? `${I18n.temp(estacion.tamin, null)} / ${I18n.temp(estacion.tamax, null)}` : null)}
     ${filaModalEstacion(I18n.t("mapa.estacion.humedad"), Number.isFinite(estacion.hr) ? `${estacion.hr}%` : null)}
-    ${filaModalEstacion(I18n.t("mapa.estacion.viento"), Number.isFinite(estacion.vv) ? `${estacion.vv} m/s${Number.isFinite(estacion.dv) ? " " + textoRumbo(estacion.dv) : ""}` : null)}
-    ${filaModalEstacion(I18n.t("mapa.estacion.racha"), Number.isFinite(estacion.vmax) ? `${estacion.vmax} m/s` : null)}
-    ${filaModalEstacion(I18n.t("mapa.estacion.temp_mar"), Number.isFinite(estacion.ts) ? `${estacion.ts}°C` : null)}
+    ${filaModalEstacion(I18n.t("mapa.estacion.viento"), Number.isFinite(estacion.vv) ? `${I18n.velocidad(estacion.vv * 3.6)}${Number.isFinite(estacion.dv) ? " " + textoRumbo(estacion.dv) : ""}` : null)}
+    ${filaModalEstacion(I18n.t("mapa.estacion.racha"), Number.isFinite(estacion.vmax) ? I18n.velocidad(estacion.vmax * 3.6) : null)}
+    ${filaModalEstacion(I18n.t("mapa.estacion.temp_mar"), Number.isFinite(estacion.ts) ? I18n.temp(estacion.ts, null) : null)}
   `;
   document.getElementById("modalEstacion").classList.add("visible");
 }
@@ -4787,8 +4789,8 @@ function lineaMonteRiosHtml(rio, tramo) {
   if (!hayAlgo) return "";
   const partes = [];
   if (d.precipitacionMm != null) partes.push(`🌧 ${d.precipitacionMm} mm/h (${d.estacionPrecip})`);
-  if (d.temperaturaC != null) partes.push(`${d.temperaturaC}°C${d.humedadPct != null ? I18n.t("mapa.rio.humedad", { pct: Math.round(d.humedadPct) }) : ""}`);
-  if (d.vientoVelKmh != null) partes.push(`💨 ${d.vientoVelKmh} km/h${d.vientoDirGrados != null ? ` ${textoRumbo(d.vientoDirGrados)}` : ""}`);
+  if (d.temperaturaC != null) partes.push(`${I18n.temp(d.temperaturaC, null)}${d.humedadPct != null ? I18n.t("mapa.rio.humedad", { pct: Math.round(d.humedadPct) }) : ""}`);
+  if (d.vientoVelKmh != null) partes.push(`💨 ${I18n.velocidad(d.vientoVelKmh)}${d.vientoDirGrados != null ? ` ${textoRumbo(d.vientoDirGrados)}` : ""}`);
   if (d.presionHpa != null) partes.push(`${d.presionHpa} hPa (${d.estacionPresion})`);
   return `<div class="rio-caudal" style="margin-top:2px; color:var(--tinta-2);">${partes.join(" · ")}</div>`;
 }
@@ -4915,13 +4917,21 @@ function lineaCamaraSaludHtml(slug) {
 // rotula siempre como "mar abierto". En los spots abrigados
 // (functions/_lib/oleaje-costero.js) el número grande es la estimación en la
 // playa y debajo va el de mar abierto, para que nunca se pierda.
+// Alturas en m, o en pies con el sistema imperial (preferencias, I18n.metros).
+function alturaOla(v) {
+  return I18n.metros(Number(v), 1);
+}
 function numeroOla(v) {
-  return I18n.decimal(Number(v).toFixed(1));
+  return alturaOla(v).replace(/ [^ ]+$/, "");
+}
+// Alturas tal como llegan (marea, boya: hasta dos decimales), o en pies.
+function alturaTal(v) {
+  return I18n.preferencias().unidades === "imperial" ? I18n.metros(Number(v)) : `${I18n.decimal(String(v))} m`;
 }
 function textoRangoOla(r) {
   if (!r || r[0] == null || r[1] == null) return I18n.t("comun.sd");
   const a = numeroOla(r[0]), b = numeroOla(r[1]);
-  return a === b ? `${a} m` : `${a}–${b} m`;
+  return a === b ? alturaOla(r[0]) : `${a}–${alturaOla(r[1])}`;
 }
 // Referencia de cámara (2026-10-08, aprobado por Mikel): mientras la cámara
 // propia del spot no sustituye al modelo (ruidosa o sin etiquetas), su
@@ -4935,8 +4945,8 @@ function textoReferenciaCamara(ref, ahoraMs = Date.now()) {
   const t = Date.parse(ref.fecha);
   if (!Number.isFinite(t) || ahoraMs - t > VIGENCIA_REF_CAMARA_MS) return "";
   const r = Array.isArray(ref.rango) && ref.rango[0] != null && ref.rango[1] != null && ref.rango[0] !== ref.rango[1]
-    ? `${numeroOla(ref.rango[0])}–${numeroOla(ref.rango[1])} m, ` : "";
-  return I18n.t("mapa.ola.ref_camara", { altura: numeroOla(ref.altura), rango: r, hora: ref.hora });
+    ? `${numeroOla(ref.rango[0])}–${alturaOla(ref.rango[1])}, ` : "";
+  return I18n.t("mapa.ola.ref_camara", { altura: alturaOla(ref.altura), rango: r, hora: ref.hora });
 }
 function pintarReferenciaCamara(s) {
   const el = document.getElementById("panelOlaCamara");
@@ -4956,7 +4966,7 @@ function pintarOleajePanel(s) {
   const nota = document.getElementById("panelOlaNota");
   const z = s.zonaOleaje;
   const km = z?.celdaModelo?.distanciaKm;
-  const dondeModelo = km != null && km >= 1 ? I18n.t("mapa.ola.modelo_a", { km: Math.round(km) }) : I18n.t("mapa.ola.modelo");
+  const dondeModelo = km != null && km >= 1 ? I18n.t("mapa.ola.modelo_a", { km: I18n.distancia(Math.round(km), 0) }) : I18n.t("mapa.ola.modelo");
   const cam = s.oleajeCamara;
   // "Si hay cámara, utiliza nuestro cálculo" (2026-10-08): con lectura de
   // cámara vigente (< 3 h, con luz y en su encuadre), la altura es la de la
@@ -4984,6 +4994,17 @@ function pintarOleajePanel(s) {
 // Botón "ola real que veo" (2026-10-08): solo con sesión y en spots del
 // catálogo. Guarda la banda en oleaje_etiquetas (RLS: cada uno las suyas,
 // solo "ahora" y como mucho una cada 10 min por spot).
+// Bandas en pies con el sistema imperial (preferencias): solo cambia el
+// texto; data-banda, lo que se guarda, sigue en metros.
+if (I18n.preferencias().unidades === "imperial") {
+  const LIMITES = { "<0.5": [null, 0.5], "0.5-1": [0.5, 1], "1-2": [1, 2], "2-3": [2, 3], ">3": [3, null] };
+  const n = (m) => I18n.metros(m).replace(/ [^ ]+$/, "");
+  document.querySelectorAll("#panelOlaRealBandas .ola-banda").forEach((b) => {
+    const [a, c] = LIMITES[b.dataset.banda] || [];
+    if (a === undefined) return;
+    b.textContent = a === null ? `<${I18n.metros(c)}` : c === null ? `>${I18n.metros(a)}` : `${n(a)}–${n(c)}`;
+  });
+}
 function pintarOlaReal(s) {
   const caja = document.getElementById("panelOlaReal");
   const visible = !!(window.supabaseCliente && window.usuarioIdActual && s && !s.esUsuario);
@@ -5045,13 +5066,13 @@ function abrirPanel(s) {
   // periodo null salía literalmente "nulls · NW" -- ahora se esconde el
   // periodo si no hay dato, en vez de interpolarlo tal cual en el texto.
   document.getElementById("panelOlaDir").textContent = s.periodo != null ? `${s.periodo}s · ${s.dirOla}` : s.dirOla;
-  document.getElementById("panelViento").textContent = `${s.viento} km/h`;
+  document.getElementById("panelViento").textContent = I18n.velocidad(s.viento);
   document.getElementById("panelVientoDir").textContent = s.dirViento;
 
   if (s.marea && s.marea.altura !== null) {
     const flecha = s.marea.tendencia === "subiendo" ? "↑" : s.marea.tendencia === "bajando" ? "↓" : "";
     const coef = s.marea.coeficiente != null ? I18n.t("mapa.marea.coef", { coef: s.marea.coeficiente }) : "";
-    document.getElementById("panelMarea").textContent = `${s.marea.altura}m ${flecha}${coef}`;
+    document.getElementById("panelMarea").textContent = `${alturaTal(s.marea.altura)} ${flecha}${coef}`;
     const prox = s.marea.proximas && s.marea.proximas[0];
     // Bug real encontrado por el robot de experiencia de usuario (2026-09-17,
     // spots de marea casi nula como Valencia): con solo la hora ("16:00") no
@@ -5065,7 +5086,7 @@ function abrirPanel(s) {
     document.getElementById("panelMareaProxima").textContent = "";
   }
   pintarFuenteMarea(s);
-  document.getElementById("panelCorriente").textContent = (s.corriente === null || s.corriente === undefined) ? I18n.t("mapa.sin_datos") : `${s.corriente} km/h`;
+  document.getElementById("panelCorriente").textContent = (s.corriente === null || s.corriente === undefined) ? I18n.t("mapa.sin_datos") : `${I18n.num(I18n.velocidadNumero(s.corriente))} ${I18n.unidadVelocidad()}`;
   document.getElementById("panelCorrienteDir").textContent = s.dirCorriente || "";
 
   const indiceEl = document.getElementById("panelIndice");
@@ -5074,7 +5095,7 @@ function abrirPanel(s) {
   indiceEl.dataset.nivel = NivelIndice.nivelMar(s.indice); // el color lo pone el CSS por nivel
   document.getElementById("panelIndiceNota").textContent = textoVigencia(s);
 
-  document.getElementById("panelTempAgua").textContent = (s.tempAgua === null || s.tempAgua === undefined) ? I18n.t("mapa.sin_datos") : `${s.tempAgua}°C`;
+  document.getElementById("panelTempAgua").textContent = (s.tempAgua === null || s.tempAgua === undefined) ? I18n.t("mapa.sin_datos") : I18n.temp(s.tempAgua, null);
   document.getElementById("panelNubosidad").textContent = s.nubosidad === null ? I18n.t("mapa.sin_datos") : `${s.nubosidad}%`;
   document.getElementById("panelPrecipitacion").textContent = s.precipitacion === null ? I18n.t("mapa.sin_datos") : `${s.precipitacion} mm/h`;
 
@@ -5166,7 +5187,7 @@ const MOD_DESC = {
 };
 const MOD_NOTA = {
   costa: I18n.t("mapa.va.nota_reglas"),
-  embarcacion: I18n.t("mapa.mod.nota_embarcacion"),
+  embarcacion: I18n.t("mapa.mod.nota_embarcacion", { v1: I18n.velocidad(20), o1: I18n.metros(1.5), v2: I18n.velocidad(30), o2: I18n.metros(2.5) }),
   submarina: I18n.t("mapa.mod.nota_submarina"),
 };
 let modalidadSpotSlug = null;
@@ -5587,7 +5608,7 @@ function pintarTiraVA(especie, region, fecha, datos) {
   const veda = vedaHoy ? null : (especie.vedas || [])[0];
   const fuente = t ? datos.fuentes[t.fuente] : null;
   document.getElementById("vaTalla").innerHTML = (t
-    ? `${I18n.t("mapa.va.talla")} <b>${t.valor_cm !== null ? `${t.valor_cm} cm` : `${t.peso_g} g`}</b> — ${escVA(I18n.dato(t, "ambito_corto") || I18n.dato(t, "ambito"))}${t.nota ? `. ${escVA(I18n.dato(t, "nota"))}` : ""} (<a href="${escVA(t.url)}" target="_blank" rel="noopener">${escVA(fuente?.editor || I18n.t("mapa.va.norma_oficial"))}</a>, ${I18n.t("mapa.va.revisado")} ${escVA(t.fecha_revision)}).`
+    ? `${I18n.t("mapa.va.talla")} <b>${t.valor_cm !== null ? I18n.centimetros(t.valor_cm, Number.isInteger(Number(t.valor_cm)) ? undefined : 1) : I18n.preferencias().unidades === "imperial" ? I18n.kilos(t.peso_g / 1000) : `${t.peso_g} g`}</b> — ${escVA(I18n.dato(t, "ambito_corto") || I18n.dato(t, "ambito"))}${t.nota ? `. ${escVA(I18n.dato(t, "nota"))}` : ""} (<a href="${escVA(t.url)}" target="_blank" rel="noopener">${escVA(fuente?.editor || I18n.t("mapa.va.norma_oficial"))}</a>, ${I18n.t("mapa.va.revisado")} ${escVA(t.fecha_revision)}).`
     : (window.esAdminCostaviva ? "📏 Talla mínima (admin): sin dato verificado para esta zona todavía." : ""))
     + (veda ? `<br>⚠ ${escVA(I18n.dato(veda, "texto"))}` : "")
     + " " + I18n.t("mapa.va.manda_norma");
@@ -6314,6 +6335,9 @@ document.getElementById("toggleViento").addEventListener("click", (e) => {
     panel.hidden = false;
     document.getElementById("vientoLeyendaBarra").style.background =
       `linear-gradient(to right, ${VIENTO_COLOR_SCALE.join(", ")})`;
+    // Extremos en la unidad del viento elegida (preferencias): 0 y VIENTO_MAX_MS (15 m/s = 54 km/h).
+    document.getElementById("vientoLeyendaMin").textContent = I18n.velocidad(0);
+    document.getElementById("vientoLeyendaMax").textContent = I18n.velocidad(VIENTO_MAX_MS * 3.6).replace(" ", "+ ");
     document.getElementById("vientoMini").style.background = document.getElementById("vientoLeyendaBarra").style.background;
     plegarViento?.alAbrir();
     registrarEvento("ver_capa_viento");

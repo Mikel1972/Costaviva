@@ -25,7 +25,8 @@
 //     data-i18n-title / -aria-label / -placeholder / -alt (atributos).
 //     El HTML conserva el texto en español: en español no se toca nada.
 //   - texto que pinta el JS: I18n.t("clave", { n: 3, nombre: "..." }).
-//   - números y unidades: I18n.num, I18n.temp, I18n.metros, I18n.velocidad,
+//   - números y unidades: I18n.num, I18n.temp (y difTemp), I18n.metros
+//     (y rangoMetros, unidadMetros), I18n.velocidad,
 //     I18n.distancia, I18n.centimetros, I18n.kilos, I18n.fecha,
 //     I18n.fechaNumerica, I18n.locale(). Respetan las PREFERENCIAS del usuario
 //     (2026-10-12, Mikel: "el viento se suele dar también en nudos; en el
@@ -276,17 +277,28 @@
   }
   var vacio = function (x) { return x === null || x === undefined || x === "" || Number.isNaN(Number(x)); };
   var imperial = function () { return prefs.unidades === "imperial"; };
-  // Temperatura: °C, o °F en imperial.
+  // Temperatura: °C, o °F en imperial. decimales null: sin decimales fijos,
+  // como num() ("17 °C", "17,4 °C").
   function temp(c, decimales, idioma) {
     if (vacio(c)) return "";
-    if (imperial()) return num(c * 9 / 5 + 32, decimales === undefined ? 0 : decimales, idioma) + " °F";
-    return num(c, decimales === undefined ? 1 : decimales, idioma) + " °C";
+    var d = decimales === null ? undefined : decimales;
+    if (imperial()) return num(c * 9 / 5 + 32, decimales === undefined ? 0 : d, idioma) + " °F";
+    return num(c, decimales === undefined ? 1 : d, idioma) + " °C";
+  }
+  // Una DIFERENCIA de temperatura (intervalo de isotermas): 1 °C = 1,8 °F, sin sumar 32.
+  function difTemp(c, idioma) {
+    if (vacio(c)) return "";
+    return imperial() ? num(c * 1.8, undefined, idioma) + " °F" : num(c, undefined, idioma) + " °C";
   }
   // Alturas y profundidades (ola, marea, fondo): m, o pies en imperial.
   function metros(m, decimales, idioma) {
     if (vacio(m)) return "";
     if (imperial()) return num(m * 3.28084, decimales === undefined ? (Math.abs(m * 3.28084) < 10 ? 1 : 0) : decimales, idioma) + " ft";
     return num(m, decimales, idioma) + " m";
+  }
+  // "m" o "ft": para títulos como "Profundidad (m)".
+  function unidadMetros() {
+    return imperial() ? "ft" : "m";
   }
   // Dos alturas, "1-2 m" / "3.3-6.6 ft".
   function rangoMetros(a, b, decimales, idioma) {
@@ -589,6 +601,8 @@
     cambiarPreferencias: cambiarPreferencias,
     OPCIONES_PREFS: OPCIONES_PREFS,
     rangoMetros: rangoMetros,
+    unidadMetros: unidadMetros,
+    difTemp: difTemp,
     distancia: distancia,
     centimetros: centimetros,
     kilos: kilos,

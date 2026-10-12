@@ -532,6 +532,14 @@ const CLAVE_TECNICA = {
 function textoTecnica(t) {
   return CLAVE_TECNICA[t] ? I18n.t(CLAVE_TECNICA[t]) : t;
 }
+// Talla y peso de la captura (se guardan en cm y g): pulgadas y libras si el
+// usuario usa el sistema imperial (preferencias, assets/js/i18n.js).
+function textoTalla(cm) {
+  return I18n.centimetros(cm, Number.isInteger(Number(cm)) ? undefined : 1);
+}
+function textoPeso(g) {
+  return I18n.preferencias().unidades === "imperial" ? I18n.kilos(g / 1000) : `${g} g`;
+}
 
 const MESES = I18n.t("diario.meses").split(",");
 const DIAS_SEMANA = I18n.t("diario.dias_semana").split(",");
@@ -1441,11 +1449,11 @@ function contextoHTML(salida) {
       ? I18n.t(salida.marea_pico_tipo === "pleamar" ? "diario.f.pleamar_a" : "diario.f.bajamar_a", { hora: salida.marea_pico_hora })
       : "—"],
     [I18n.t("diario.f.coef"), salida.marea_coeficiente != null ? String(salida.marea_coeficiente) : "—"],
-    [I18n.t("diario.f.viento"), salida.viento_kmh != null ? `${salida.viento_kmh} km/h` : "—"],
+    [I18n.t("diario.f.viento"), salida.viento_kmh != null ? I18n.velocidad(salida.viento_kmh) : "—"],
     [I18n.t("diario.f.oleaje"), CondSalida.textoOleaje(salida.oleaje_altura_min, salida.oleaje_altura_max)],
     [I18n.t("diario.f.presion"), salida.presion_valor != null ? `${salida.presion_valor} hPa` : "—"],
     [I18n.t("diario.f.luna"), salida.luna_fase ? textoFaseLunaDiario(salida.luna_fase) : "—"],
-    [I18n.t("diario.f.temp_agua"), salida.temp_agua != null ? `${CondSalida.fmtDecimal(salida.temp_agua)} °C` : "—"],
+    [I18n.t("diario.f.temp_agua"), salida.temp_agua != null ? CondSalida.textoTemp(salida.temp_agua) : "—"],
     [I18n.t("diario.f.nubosidad"), salida.nubosidad != null ? `${salida.nubosidad}%` : "—"],
     [I18n.t("diario.f.lluvia"), salida.precipitacion != null ? `${CondSalida.fmtDecimal(salida.precipitacion)} mm/h` : "—"],
   ];
@@ -1460,11 +1468,11 @@ function contextoHTML(salida) {
   const sondaReg = fIdx?.temp_agua_sonda;
   const notaSonda = sondaReg && Number.isFinite(sondaReg.medida_c)
     ? `<div class="detalle nota-ficha">${I18n.t("diario.sonda.nota", {
-      v: CondSalida.fmtDecimal(sondaReg.medida_c, 2),
+      v: CondSalida.textoTemp(sondaReg.medida_c, 2),
       modelos: [
-        Number.isFinite(sondaReg.open_meteo_c) ? I18n.t("diario.sonda.serie", { v: CondSalida.fmtDecimal(sondaReg.open_meteo_c) }) : null,
-        Number.isFinite(sondaReg.ibi?.c) ? (sondaReg.ibi.km >= 0.5 ? I18n.t("diario.sonda.ibi_km", { v: CondSalida.fmtDecimal(sondaReg.ibi.c), km: Math.max(1, Math.round(sondaReg.ibi.km)) }) : I18n.t("diario.sonda.ibi", { v: CondSalida.fmtDecimal(sondaReg.ibi.c) })) : null,
-        Number.isFinite(sondaReg.boya?.c) ? I18n.t("diario.sonda.boya", { v: CondSalida.fmtDecimal(sondaReg.boya.c) }) : null,
+        Number.isFinite(sondaReg.open_meteo_c) ? I18n.t("diario.sonda.serie", { v: CondSalida.textoTemp(sondaReg.open_meteo_c) }) : null,
+        Number.isFinite(sondaReg.ibi?.c) ? (sondaReg.ibi.km >= 0.5 ? I18n.t("diario.sonda.ibi_km", { v: CondSalida.textoTemp(sondaReg.ibi.c), km: I18n.distancia(Math.max(1, Math.round(sondaReg.ibi.km)), 0) }) : I18n.t("diario.sonda.ibi", { v: CondSalida.textoTemp(sondaReg.ibi.c) })) : null,
+        Number.isFinite(sondaReg.boya?.c) ? I18n.t("diario.sonda.boya", { v: CondSalida.textoTemp(sondaReg.boya.c) }) : null,
       ].filter(Boolean).join(" · ") || I18n.t("diario.sonda.sin_modelo"),
     })}</div>`
     : "";
@@ -1483,7 +1491,7 @@ function contextoHTML(salida) {
       // Solo motivos con flecha y nada interno ("pendiente de fuente", "no
       // cuenta"...): mismo filtro que la ficha (VentanaActividad.paraUsuario).
       + `<ul style="list-style:none; margin:2px 0 0; padding:0;">${(f?.razones || []).filter((x) => x.aporte && x.factor !== "legal" && x.factor !== "seguridad" && !/pendiente|no cuenta|fuente|por validar|fiabilidad|sin dato/i.test(x.texto || "")).sort((a, b) => Math.abs(b.aporte) - Math.abs(a.aporte)).slice(0, 4)
-        .map((x) => `<li><span style="display:inline-block; min-width:20px; font-size:11px; color:${x.aporte > 0 ? "var(--ok-texto)" : "var(--peligro)"};">${x.aporte >= 6 ? "▲▲" : x.aporte > 0 ? "▲" : x.aporte <= -6 ? "▼▼" : "▼"}</span>${esc(x.clave ? I18n.t(x.clave, x.vars) : x.texto)}</li>`).join("")}</ul>`
+        .map((x) => `<li><span style="display:inline-block; min-width:20px; font-size:11px; color:${x.aporte > 0 ? "var(--ok-texto)" : "var(--peligro)"};">${x.aporte >= 6 ? "▲▲" : x.aporte > 0 ? "▲" : x.aporte <= -6 ? "▼▼" : "▼"}</span>${esc(x.clave ? VentanaActividad.textoMotivo(x.clave, x.vars) : x.texto)}</li>`).join("")}</ul>`
       // Ola peligrosa: nota aparte, no un motivo (decisión de Mikel, 2026-10-08).
       + `${f?.aviso_ola ? `<div class="aviso-ola" role="note">${esc(f.aviso_ola)}</div>` : ""}</div>`
     : "";
@@ -1507,7 +1515,7 @@ async function tarjetaCapturaHTML(captura) {
   const cientifico = await cientificoDe(captura.especie);
   return `
     <div class="tarjeta-captura" data-captura-id="${captura.id}">
-      <div class="fila-titulo"><span class="especie">🐟 ${captura.especie}${cientifico ? ` <i class="cientifico">${escNombre(cientifico)}</i>` : ""}</span><span class="detalle">${captura.hora ? "🕐 " + captura.hora.slice(0, 5) + " " + flechaMareaHtml(captura.marea_tendencia) + " " : ""}${captura.talla_cm ? captura.talla_cm + " cm" : ""} ${captura.peso_g ? "· " + captura.peso_g + " g" : ""}</span></div>
+      <div class="fila-titulo"><span class="especie">🐟 ${captura.especie}${cientifico ? ` <i class="cientifico">${escNombre(cientifico)}</i>` : ""}</span><span class="detalle">${captura.hora ? "🕐 " + captura.hora.slice(0, 5) + " " + flechaMareaHtml(captura.marea_tendencia) + " " : ""}${captura.talla_cm ? textoTalla(captura.talla_cm) : ""} ${captura.peso_g ? "· " + textoPeso(captura.peso_g) : ""}</span></div>
       ${captura.tecnica ? `<div class="detalle">🎣 ${textoTecnica(captura.tecnica)}</div>` : ""}
       ${captura.cebo || captura.aparejo || captura.senuelo ? `<div class="detalle">${CondSalida.textoCeboAparejo(captura)}</div>` : ""}
       ${captura.notas ? `<div class="detalle">${captura.notas}</div>` : ""}

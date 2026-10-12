@@ -19,7 +19,7 @@
 import { I18n } from "./i18n-modulo.js";
 
 export const OPCIONES = [
-  { id: "profundidad", icono: "〰", texto: I18n.t("selfondo.profundidad"), detalle: I18n.t("selfondo.profundidad_det") },
+  { id: "profundidad", icono: "〰", texto: I18n.t("selfondo.profundidad"), detalle: I18n.t("selfondo.profundidad_det", { min: I18n.metros(20, 0).replace(/ [^ ]+$/, ""), max: I18n.metros(5000, 0) }) },
   { id: "tipo", icono: "🪨", texto: I18n.t("fondo.tipo"), detalle: I18n.t("selfondo.tipo_det") },
 ];
 
