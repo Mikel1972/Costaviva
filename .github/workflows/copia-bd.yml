@@ -60,16 +60,6 @@ jobs:
   copia:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    services:
-      prueba:
-        image: supabase/postgres:17.6.1.169
-        env:
-          POSTGRES_PASSWORD: prueba
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U postgres -h localhost"
-          --health-interval 5s --health-timeout 5s --health-retries 30
     env:
       PRUEBA: postgresql://supabase_admin:prueba@localhost:5432/postgres
     steps:
@@ -83,7 +73,11 @@ jobs:
           sudo apt-get install -y -qq postgresql-client-17 > /dev/null
           echo "/usr/lib/postgresql/17/bin" >> "$GITHUB_PATH"
 
-      - name: Copiar producción
+      # La base de prueba, con la imagen de Supabase de la MISMA versión
+      # mayor que producción (comun, estandares/supabase.md D18: así sirve
+      # igual en todas las apps). Al subir Supabase de versión, añadir aquí
+      # la etiqueta nueva de https://hub.docker.com/r/supabase/postgres/tags.
+      - name: Arrancar una base de prueba como la de producción
         env:
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
         run: |
@@ -91,6 +85,26 @@ jobs:
             echo "::error::Falta el secret SUPABASE_DB_URL."
             exit 1
           fi
+          URL="${SUPABASE_DB_URL/:6543\//:5432/}"
+          MAYOR=$(psql "$URL" -X -tAc "show server_version_num" | cut -c1-2)
+          case "$MAYOR" in
+            15) IMAGEN=supabase/postgres:15.8.1.135 ;;
+            17) IMAGEN=supabase/postgres:17.6.1.169 ;;
+            *) echo "::error::Postgres $MAYOR en producción: añadir su imagen en copia-bd.yml."; exit 1 ;;
+          esac
+          echo "Producción: Postgres $MAYOR. Prueba: $IMAGEN."
+          docker run -d --name prueba -e POSTGRES_PASSWORD=prueba -p 5432:5432 "$IMAGEN" > /dev/null
+          for i in $(seq 1 60); do
+            psql "$PRUEBA" -X -tAc "select 1" > /dev/null 2>&1 && exit 0
+            sleep 3
+          done
+          echo "::error::La base de prueba no arrancó."
+          exit 1
+
+      - name: Copiar producción
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
           URL="${SUPABASE_DB_URL/:6543\//:5432/}"
           pg_dump --version
           psql "$URL" -X -q -tA -F $'\t' -f .github/scripts/copia-bd-recuento.sql > prod.tsv
@@ -152,4 +166,6 @@ jobs:
 
       - name: Borrar la copia en claro
         if: always()
-        run: rm -f copia.dump restaurar.log prod.tsv base.tsv restaurada.tsv
+        run: |
+          rm -f copia.dump restaurar.log prod.tsv base.tsv restaurada.tsv
+          docker rm -f prueba > /dev/null 2>&1 || true
