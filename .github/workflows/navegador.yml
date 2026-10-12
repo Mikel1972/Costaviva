@@ -1,0 +1,38 @@
+name: Pruebas en el navegador
+
+# 2026-10-12, Mikel: pruebas automáticas en un navegador de verdad en cada
+# PR, para que nadie rompa sin enterarse el mapa, el menú ☰, las preferencias
+# o el zoom de la foto. Sin IA y sin secretos: las páginas se sirven desde el
+# repo a un Chromium con una sesión de prueba falsa y Supabase contestado en
+# vacío (test/navegador/web.mjs); nada llega a producción. Falla si una
+# página tiene un error de JavaScript o si algo deja de responder.
+# Va aparte de tests.yml porque tarda un par de minutos más (instalar
+# Chromium) y así un fallo aquí se ve con su propio nombre.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  navegador:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Instalar Playwright y Chromium
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1
+          npx playwright install --with-deps chromium
+
+      - name: Probar las páginas en ordenador y en móvil
+        run: node --test test/navegador/
