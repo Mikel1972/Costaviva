@@ -74,8 +74,9 @@ export const NZ_ANALISIS_AUTORIZADO = {
   geonet: true,
   corolive: true,
   port_otago: true,
-  // 2026-10-12: Primo (Craig, respuesta escrita a Mikel) DENIEGA el análisis
-  // automático, el embebido y las URLs directas de imagen; el acceso a sus
+  // 2026-10-12: Primo (respuesta escrita de su helpdesk a Mikel, ticket
+  // #81475) DENIEGA el análisis automático, el embebido y las URLs directas
+  // de imagen; el acceso a sus
   // webcams queda restringido a su web. Solo se ENLAZA a su página de webcams
   // (permisos/registro.json de Mikel1972/comun, estado "denegada").
   primo: false,
@@ -101,7 +102,7 @@ export const NZ_EMBED_AUTORIZADO = {
   // No embebibles por un motivo técnico (motivo_sin_embed): el valor no
   // cambia nada mientras no publiquen una imagen o un iframe utilizable.
   port_otago: true,
-  // 2026-10-12: Primo (Craig) deniega por escrito el embebido y las URLs
+  // 2026-10-12: Primo deniega por escrito el embebido y las URLs
   // directas de imagen: solo enlace a su página pública de webcams.
   primo: false,
   // Repaso de día del 2026-10-12: enlace hasta que el dueño conteste por
@@ -219,7 +220,7 @@ export const CONDICIONES_NZ = {
       "«You are free to share them with your friends and family far and wide, remember to photo credit us» / " +
       "«Our webcam images and videos are solely for informative and entertainment purposes [...] All images and " +
       "streaming on this website are the property of Primo».",
-    // Respuesta escrita de Primo (Craig) a Mikel, 2026-10-12.
+    // Respuesta escrita de Primo (helpdesk, ticket #81475) a Mikel, 2026-10-12.
     denegacion:
       "2026-10-12: Primo deniega el embebido, las URLs directas de imagen y el análisis automático; el acceso a sus " +
       "webcams queda restringido a la web de Primo. Permite enlazar a su página de webcams.",

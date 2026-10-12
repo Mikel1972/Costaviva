@@ -1062,8 +1062,8 @@ le avisen para su lista blanca). Siempre con atribución visible y enlace al
 dueño: `htmlCamaraIncrustada()` en `camaras-externas.js` («Image: GeoNet,
 CC BY 3.0 NZ»). Siguen en `enlace` por motivo técnico (`motivo_sin_embed`):
 Primo y Port Otago (solo imágenes con la hora en el nombre, sin URL
-estable). **Primo DENEGÓ por escrito el 2026-10-12** (Craig, por su
-helpdesk): ni embebido, ni URLs directas de imagen, ni análisis automático;
+estable). **Primo DENEGÓ por escrito el 2026-10-12** (su helpdesk, ticket
+#81475): ni embebido, ni URLs directas de imagen, ni análisis automático;
 el acceso a sus webcams queda en su web. Solo se ENLAZA a su página pública
 de webcams (`https://www.primo.nz/info/primo-webcams`): `primo: false` en
 `NZ_EMBED_AUTORIZADO` y en `NZ_ANALISIS_AUTORIZADO`, `denegacion` en
