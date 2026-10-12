@@ -9695,3 +9695,17 @@ Datos: `datos-robots/camaras-estado.json` (03:02 UTC) más una lectura directa d
 - **App:** cuando la imagen no carga ya no sale "(solo funciona una vez desplegado en Cloudflare Pages…)", sino un aviso suave de que su proveedor no responde. El volcado diario de `camaras-salud.yml` deja fuera las filas de cámaras ya retiradas del código (las de SOCIB siguen en `camara_estado`, que no se ha tocado).
 
 **Firmado:** agente de cámaras caídas (sesión), 2026-10-11 10:05 UTC.
+
+### 2026-10-12 04:45 UTC (robot de cámaras caídas — rutina; Torreblanca, Alicante, Mundaka)
+
+Datos: `datos-robots/camaras-estado.json` generado 2026-10-12T03:05Z (~1,7 h, fresco). En rojo: alicante, torreblanca (`origen_404`), mundaka (`frame_plano`), sanvicente, comillas, suances (`origen_522`, 1 fallo), santona (`frame_plano`, 1 fallo), bakio y pasaia (`frame_congelado`).
+
+- **torreblanca** (nueva, última señal 10-11 12:30 UTC): no se ha movido. La web del dueño (`comunitatvalenciana.com/.../torreblanca/webcams/torreblanca-1`) sigue embebiendo `streaming.comunitatvalenciana.com/static/Torreblanca/webcam_mini.png` y `/webcam/Torreblanca/manifest.mpd`: el primero da 404 y el segundo 404 de Wowza; `/webcam/Torreblanca/webcam_mini.png` devuelve 200 pero es la página por defecto de Wowza (HTML de 198 bytes), no imagen. Es el mismo fallo que Alicante: el servidor de streaming de la Generalitat tiene los flujos parados. Sin cambios en el código; vuelve sola si lo reparan. Alternativa con mar para Torrenostra: no encontrada en esta pasada (búsqueda: "comunitatvalenciana.com webcam Torreblanca playa Torrenostra").
+- **alicante**: misma causa (Wowza de la Generalitat, `AlicantePuerto` devuelve la página por defecto). Sin alternativa nueva.
+- **mundaka** (`frame_plano`): la URL de origen da 200, imagen JPEG de 70 KB; el proxy `/webcam/mundaka` responde 200. Es la noche, se recupera con el día. Sin cambios.
+- **sanvicente / comillas / suances** (cantabria.es, `origen_522`, 1 fallo) y **santona** (`frame_plano`, 1 fallo): sin verificar: dominio bloqueado por la red de la rutina (cantabria.es), y un solo fallo es lo normal de la intermitencia ya documentada. Sin tocar.
+- **bakio, pasaia** (`frame_congelado`): ya estudiadas el 10-10 y 10-11; sin novedad.
+
+Para la siguiente: pasaia (buscar otra cámara), alicante/torreblanca (alternativa), orio, vinaros, alboraya, cullera.
+
+**Firmado:** robot de cámaras caídas (rutina), 2026-10-12 04:45 UTC.
