@@ -48,7 +48,9 @@ export function tipoDeError(datos) {
 }
 
 // Texto del Issue de revisión (los dos textos, cuándo publicar, cómo).
-export function cuerpoIssue({ pieza, previa, cuando, caduca, facebookListo }) {
+// automatica / publicaEn (2026-10-11): con PUBLICACION_AUTOMATICA=true la
+// pieza sale sola a esa hora salvo veto (veto.mjs).
+export function cuerpoIssue({ pieza, previa, cuando, caduca, facebookListo, automatica = false, publicaEn = "" }) {
   const esReel = !!pieza.esReel;
   // Nueva Zelanda (2026-10-11): en inglés y para las 07:00 de allí; `cuando`
   // ya trae también la hora de España (textoCuando).
@@ -74,7 +76,7 @@ export function cuerpoIssue({ pieza, previa, cuando, caduca, facebookListo }) {
     "",
     "---",
     "",
-    "### Para publicarla",
+    "### Para publicarla a mano (ya, sin esperar)",
     "",
     "Actions → **Publicar post de Instagram** → *Run workflow* → `issue_number`: el número de este Issue. En `redes` elige las dos (por defecto), solo Instagram o solo Facebook.",
     "",
@@ -85,7 +87,13 @@ export function cuerpoIssue({ pieza, previa, cuando, caduca, facebookListo }) {
       ? "- Facebook: se publica directamente al aprobar (Facebook no guarda borradores por la API); nada sale antes."
       : "- Facebook: **sin configurar** (falta la variable META_PAGE_ID o el permiso pages_manage_posts del token; ver CLAUDE.md, \"Facebook\").",
     "",
-    "Si no la apruebas, no hagas nada: no se publica sola.",
+    ...(automatica
+      ? [
+        `### ⏰ Se publica SOLA el ${publicaEn || cuando} si no la vetas`,
+        "",
+        "Para vetarla (basta una): pon la etiqueta `veto` a este Issue, o escribe un comentario con **no** o **veto**. Al publicarse se cierra este Issue con el enlace.",
+      ]
+      : ["Publicación automática desactivada (variable `PUBLICACION_AUTOMATICA` distinta de `true`): si no la publicas a mano, no sale."]),
     "",
     incrustarPieza(pieza),
   ].join("\n");

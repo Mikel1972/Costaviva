@@ -160,7 +160,7 @@ export function captionParaRed(caption, red, campana, idioma = "es") {
   const enlace = red === "instagram" ? `${url.replace(/^https:\/\//, "")} (${en ? "or tap the link in bio" : "o en el enlace de la bio"})` : url;
   const texto = String(caption);
   if (texto.includes(MARCA_ENLACE)) return texto.split(MARCA_ENLACE).join(enlace);
-  return `${texto}\n\n🔗 ${en ? "Try it free for 7 days" : "Pruébala 7 días gratis"}: ${enlace}`;
+  return `${texto}\n\n🔗 ${en ? "Try it free for 14 days" : "Pruébala 14 días gratis"}: ${enlace}`;
 }
 
 // Línea "cuándo publicar" del Issue. Las de NZ dicen además la hora de

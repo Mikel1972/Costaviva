@@ -171,6 +171,24 @@ test("NZ: Earth Sciences NZ (Cam-Era) prohíbe bots en sus términos: fuera del 
   assert.deepEqual(Object.keys(NZ_ANALISIS_AUTORIZADO).sort(), Object.keys(CONDICIONES_NZ).sort());
 });
 
+test("NZ: Primo denegó por escrito (2026-10-12): solo enlace a su página de webcams", () => {
+  assert.equal(NZ_EMBED_AUTORIZADO.primo, false);
+  assert.equal(NZ_ANALISIS_AUTORIZADO.primo, false);
+  assert.equal(embedNZ("primo"), null);
+  assert.deepEqual(CONDICIONES_NZ.primo.modos_permitidos, ["enlace"]);
+  assert.equal(CONDICIONES_NZ.primo.analisis_permitido, false);
+  assert.match(CONDICIONES_NZ.primo.denegacion, /^2026-10-12: /);
+  const primo = CAMARAS_NZ.filter((c) => c.condiciones === "primo");
+  assert.ok(primo.length >= 1);
+  for (const c of primo) {
+    assert.equal(c.modo, "enlace", c.id);
+    assert.equal(c.url, "https://www.primo.nz/info/primo-webcams", `${c.id}: solo su página pública de webcams`);
+    assert.equal(c.imagen, undefined);
+    assert.equal(c.iframe, undefined);
+    assert.equal(c.analisis_permitido, false);
+  }
+});
+
 test("NZ: cada condición dice dueño, modos, análisis y fuente", () => {
   for (const [clave, c] of Object.entries(CONDICIONES_NZ)) {
     assert.ok(c.dueno, `${clave}: sin dueño`);
@@ -237,7 +255,7 @@ const MODO_NZ = {
   "nz-geonet-whakatane": "imagen_oficial",
   "nz-geonet-te-kaha": "imagen_oficial",
   "nz-napier-marine-parade": "imagen_oficial",
-  "nz-primo-port-taranaki": "enlace", // bloquea el enlace directo a sus imágenes
+  "nz-primo-port-taranaki": "enlace", // denegado por escrito (2026-10-12): solo enlace
   "nz-port-otago-aramoana": "enlace", // sin URL estable de imagen
   "nz-southloop-riverton": "imagen_oficial",
   // Repaso de día del 2026-10-12: solo enlace hasta el permiso escrito.

@@ -274,7 +274,7 @@ export function textoDuracion(inv) {
 
 export function textoBeneficio(inv) {
   if (inv.descuento === 100) return `Costaviva gratis ${textoDuracion(inv)}, sin tarjeta`;
-  if (inv.descuento === 0) return "acceso a Costaviva con 7 días de prueba gratis";
+  if (inv.descuento === 0) return "acceso a Costaviva con 14 días de Premium gratis";
   return `un ${inv.descuento} % de descuento en tu suscripción ${textoDuracion(inv)}`;
 }
 
@@ -299,7 +299,7 @@ export function emailInvitacion(inv, { base = URL_APP, quienInvita = QUIEN_INVIT
   const despues = inv.descuento === 100
     ? (inv.duracion_tipo === "siempre" ? "" : "Antes de que termine te avisaremos por email; si no te suscribes, no se te cobra nada.")
     : inv.descuento > 0 && inv.duracion_tipo !== "siempre"
-      ? "Después se cobra el precio normal (3,99 €/mes); puedes cancelar cuando quieras."
+      ? "Después se cobra el precio normal de tu plan; puedes cancelar cuando quieras."
       : "";
   const contactoTexto = contacto
     ? "Si tienes dudas, responde a este email."
@@ -368,7 +368,7 @@ export function emailFinInvitacion({ acceso_hasta }, ahora = new Date(), base = 
         : `Tu acceso gratis a Costaviva por invitación termina el ${fecha}.`,
       "",
       "Si quieres seguir consultando las condiciones del mar y tu cuaderno de pesca, puedes suscribirte:",
-      `Planes: ${base}/suscripcion  (3,99 €/mes o 39,99 €/año, se cancela cuando quieras)`,
+      `Planes: ${base}/suscripcion  (desde 3,99 €/mes o 34,99 €/año, IVA incluido; se cancela cuando quieras)`,
       "",
       "Tus salidas, capturas y ubicaciones siguen guardadas. Si no te suscribes, no se te cobra nada.",
       "",

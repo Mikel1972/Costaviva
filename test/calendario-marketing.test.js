@@ -63,7 +63,7 @@ test("enlaces con UTM por red y por pieza", () => {
   assert.equal(campana, "20261013-especies-lubina-europea");
   assert.match(C.campanaDePieza("2026-10-13", "Condiciones Sopelana/ÁÉ"), /^[a-z0-9][a-z0-9_-]{0,59}$/);
   assert.equal(C.enlaceCampana("facebook", campana), "https://costaviva.org/empieza?utm_source=facebook&utm_medium=social&utm_campaign=20261013-especies-lubina-europea");
-  const base = `Texto\n🔗 Pruébala 7 días gratis: ${C.MARCA_ENLACE}`;
+  const base = `Texto\n🔗 Pruébala 14 días gratis: ${C.MARCA_ENLACE}`;
   const ig = C.captionParaRed(base, "instagram", campana);
   const fb = C.captionParaRed(base, "facebook", campana);
   assert.match(ig, /costaviva\.org\/empieza\?utm_source=instagram&utm_medium=social&utm_campaign=20261013-especies-lubina-europea \(o en el enlace de la bio\)/);
@@ -71,7 +71,7 @@ test("enlaces con UTM por red y por pieza", () => {
   assert.match(fb, /https:\/\/costaviva\.org\/empieza\?utm_source=facebook/);
   assert.ok(!ig.includes(C.MARCA_ENLACE) && !fb.includes(C.MARCA_ENLACE));
   // Sin hueco (texto antiguo): se añade al final.
-  assert.match(C.captionParaRed("Hola", "facebook", campana), /Hola\n\n🔗 Pruébala 7 días gratis: https:/);
+  assert.match(C.captionParaRed("Hola", "facebook", campana), /Hola\n\n🔗 Pruébala 14 días gratis: https:/);
   assert.throws(() => C.enlaceCampana("tiktok", campana));
 });
 
@@ -116,7 +116,9 @@ test("datos de la hora de publicación: bloque, mareas del día", () => {
   assert.equal(tarjetaMareaFutura([], "08:00").val, "—");
 });
 
-test("publicar sigue siendo solo manual y pg_cron no puede lanzarlo", () => {
+// El workflow MANUAL sigue siendo manual. La publicación automática con veto
+// (2026-10-11) va aparte: publicar-con-veto.yml (test/publicacion-veto.test.js).
+test("el publicador manual sigue siendo manual y pg_cron no puede lanzarlo", () => {
   const pub = leer(".github/workflows/publicar-post-instagram.yml");
   assert.doesNotMatch(pub, /schedule:/);
   assert.match(pub, /ISSUE_NUMBER: \$\{\{ inputs\.issue_number \}\}/, "inputs por entorno, no pegados en el script");
@@ -190,11 +192,11 @@ test("NZ: 07:00 con horario de verano (NZDT) e invierno (NZST), y su hora de Esp
 test("NZ: enlace con UTM igual que España, con el texto en inglés", () => {
   const campana = C.campanaDePieza("2026-10-13", "especies-" + "nz-snapper");
   assert.equal(campana, "20261013-especies-nz-snapper");
-  const base = `Text\n🔗 Try it free for 7 days: ${C.MARCA_ENLACE}`;
+  const base = `Text\n🔗 Try it free for 14 days: ${C.MARCA_ENLACE}`;
   const ig = C.captionParaRed(base, "instagram", campana, "en");
   assert.match(ig, /costaviva\.org\/empieza\?utm_source=instagram&utm_medium=social&utm_campaign=20261013-especies-nz-snapper \(or tap the link in bio\)/);
   assert.match(C.captionParaRed(base, "facebook", campana, "en"), /https:\/\/costaviva\.org\/empieza\?utm_source=facebook/);
-  assert.match(C.captionParaRed("Hi", "facebook", campana, "en"), /Hi\n\n🔗 Try it free for 7 days: https:/);
+  assert.match(C.captionParaRed("Hi", "facebook", campana, "en"), /Hi\n\n🔗 Try it free for 14 days: https:/);
   for (const f of ["scripts/marketing/generar-nz.mjs"]) assert.ok((leer(f).match(/MARCA_ENLACE\}/g) || []).length >= 2, `${f}: falta {ENLACE}`);
   assert.ok((leer("scripts/marketing/generar-reel-instagram.mjs").match(/MARCA_ENLACE\}/g) || []).length >= 5);
 });
@@ -334,7 +336,7 @@ test("NZ: sin minimapa de EMODnet ni cámaras de terceros, y la plantilla en ing
   const codigo = gen.split("\n").filter((l) => !l.trim().startsWith("//")).join("\n");
   assert.doesNotMatch(codigo, /camara|webcam|youtube|skyline/i);
   const html = leer("scripts/marketing/plantillas/pieza.html");
-  for (const en of ["out of 100", "Fishing index", "In season now", "Free for 7 days", "Check your spot at costaviva.org"]) assert.ok(html.includes(en), en);
+  for (const en of ["out of 100", "Fishing index", "In season now", "Free for 14 days", "Check your spot at costaviva.org"]) assert.ok(html.includes(en), en);
 });
 
 test("NZ: pg_cron lanza las de NZ con mercado=nz y nunca puede publicar", () => {
@@ -350,4 +352,9 @@ test("NZ: pg_cron lanza las de NZ con mercado=nz y nunca puede publicar", () => 
   assert.doesNotMatch(codigo, /lanzar_workflow_github|publicar-post-instagram/, "no toca la función general ni puede publicar");
   // El input que manda existe en los dos workflows y admite "nz".
   for (const w of ["robot-marketing-instagram.yml", "robot-reel-instagram.yml"]) assert.match(leer(`.github/workflows/${w}`), /mercado:[\s\S]*?options: \["es", "nz"\]/);
+});
+
+test("NZ: el reel nunca usa un clip con personas identificables", () => {
+  const fuente = readFileSync(new URL("../scripts/marketing/generar-reel-instagram.mjs", import.meta.url), "utf8");
+  assert.match(fuente, /mercado === "nz" && candidato\?\.ficha\?\.personaIdentificable !== false \? null/);
 });

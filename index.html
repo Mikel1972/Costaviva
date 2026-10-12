@@ -6,6 +6,7 @@
 <!-- Idiomas (2026-10-09): diccionarios y I18n.t(); en español no cambia nada. Ver assets/js/i18n.js. -->
 <script src="/assets/i18n/es.js"></script>
 <script src="/assets/i18n/en.js"></script>
+<script src="/assets/i18n/pt.js"></script>
 <script src="/assets/js/i18n.js"></script>
 <title data-i18n="mapa.titulo_pagina">Costaviva, pesca en tiempo real | Mareas y previsión marina</title>
 <meta name="description" content="Previsión marina en tiempo real: mareas, oleaje, viento y actividad de los peces para planificar tu salida de pesca en España y Portugal." />
@@ -269,8 +270,19 @@
   .llamada-rio .rio-tramo { color: var(--tinta-2); font-size: 10.5px; }
   .llamada-rio .rio-caudal { margin-top: 3px; display: flex; align-items: center; gap: 5px; font-family: var(--f-texto); font-size: 10.5px; }
 
+  /* Zonas sin pesca (assets/js/zonas-sin-pesca.js): trama SVG por CSS. */
+  .zona-sin-pesca { fill: url(#tramaZonaSinPesca); }
+  .zona-fondo { fill: url(#tramaZonaFondo); }
   /* Mundo entero y selector de región (NZ, 2026-10-11). */
   #map.zoom-bajo .icono-spot { display: none; }
+  /* Círculos de los spots al tamaño del zoom (--escala-spot, actualizarZoomBajo)
+     y, de lejos, sin nombre ni flechas (visibility: no mueve el círculo). */
+  .icono-spot > div { transform: scale(var(--escala-spot, 1)); transform-origin: 50% 50%; }
+  #map.zoom-lejos .icono-spot .etiqueta-spot,
+  #map.zoom-lejos .icono-spot div:has(> .marcador-envoltorio) > :not(.marcador-envoltorio) { visibility: hidden; }
+  /* La etiqueta de región se desvanece a los 2 s. */
+  .resumen-region { transition: opacity 0.4s; }
+  #map.resumen-oculto .resumen-region { opacity: 0; pointer-events: none; }
   .resumen-region { background: none; border: 0; }
   .chip-region {
     display: block; width: 100%; padding: 6px 10px; border: 0; border-radius: 999px;
@@ -535,6 +547,20 @@
     background: var(--degradado-fuerte); color: var(--sobre-acento);
     box-shadow: 0 0 0 3px var(--blanco), 0 6px 18px rgba(190,24,93,0.45);
   }
+  /* Botón ☰ de las capas: solo en el móvil (ver @media max-width 720px). */
+  .menu-capas-toggle {
+    display: none; position: absolute; z-index: 503; top: 10px; right: 10px;
+    width: 48px; height: 48px; border-radius: 50%; border: 0; padding: 0;
+    background: var(--mar); color: var(--blanco); font-size: 22px; line-height: 1;
+    align-items: center; justify-content: center; cursor: pointer;
+    box-shadow: 0 6px 16px rgba(11,30,63,0.28);
+  }
+  .menu-capas-toggle .menu-capas-n {
+    position: absolute; top: -3px; right: -3px; min-width: 18px; height: 18px; padding: 0 4px;
+    border-radius: 9px; background: var(--degradado-fuerte); color: var(--sobre-acento);
+    font: 800 11px/18px var(--f-texto); box-shadow: 0 0 0 2px var(--blanco);
+  }
+  .menu-capas-toggle .menu-capas-n[hidden] { display: none; }
   /* El display:flex de arriba (regla de autor) gana por defecto al
      display:none del atributo [hidden] (regla de user-agent) — sin esto,
      poner el botón "+" en hidden no lo ocultaría de verdad. */
@@ -708,7 +734,8 @@
   /* Inglés (2026-10-09): "Lightning", "Stations" y "Water T." son más largos
      que "Rayos", "Estac." y "T. agua"; en español no cambia nada. */
   html[lang="en"] .rayos-toggle .capa-label, html[lang="en"] .estaciones-toggle .capa-label,
-  html[lang="en"] .tempagua-toggle .capa-label { font-size: 8px; letter-spacing: -0.2px; }
+  html[lang="en"] .tempagua-toggle .capa-label, html[lang="pt"] .rayos-toggle .capa-label,
+  html[lang="pt"] .estaciones-toggle .capa-label, html[lang="pt"] .tempagua-toggle .capa-label { font-size: 8px; letter-spacing: -0.2px; }
   .tarjeta-plegable.plegada .titulo { white-space: nowrap; }
   /* Selector de fuentes, solo administradores (2026-10-08). */
   .admin-fuentes { margin-top: 14px; padding: 10px 12px; background: var(--superficie-2); border: 1px dashed var(--acento); border-radius: 12px; font: 500 12px/1.4 var(--f-texto); color: var(--tinta); }
@@ -720,6 +747,8 @@
   .admin-fuentes td { text-align: left; padding: 3px 4px; border-bottom: 1px solid var(--linea); vertical-align: top; font-variant-numeric: tabular-nums; }
   .admin-fuentes .nota { color: var(--tinta-2); font-size: 10px; margin-top: 6px; }
   .viento-slider-panel input[type="range"] { width: 100%; }
+  .viento-fila { display: flex; align-items: center; gap: 8px; }
+  .viento-play { width: 32px; height: 32px; flex: 0 0 32px; border-radius: 50%; border: 1px solid var(--mar); background: var(--mar); color: var(--blanco); font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; }
   .viento-slider-panel .etq { text-align: center; color: var(--tinta-2); margin-top: 2px; }
   .viento-slider-ticks { display: flex; justify-content: space-between; font-size: 9px; color: var(--tinta-2); margin-top: -2px; }
   .viento-leyenda-titulo { font-size: 9.5px; color: var(--tinta-2); margin-top: 10px; border-top: 1px solid var(--linea); padding-top: 8px; }
@@ -897,6 +926,29 @@
     .leyenda-sustrato .nota { display: none; }
     .viento-slider-panel { right: 124px; }
     .luna-panel { right: 124px; }
+    /* Menú ☰ de capas en el móvil (2026-10-12, Mikel: "en móviles, las
+       opciones deberían aparecer en una hamburguesa sobre el mapa, más o
+       menos donde están, para poder minimizar y tener más espacio; con
+       posibilidad de desplegar y contraer. Las leyendas están bien así").
+       El ☰ ocupa la esquina y las dos columnas bajan una fila (56px).
+       Plegado, solo se ve el ☰ (con el número de capas encendidas). */
+    .menu-capas-toggle { display: flex; }
+    .rayos-toggle { top: 66px; }
+    .luna-toggle { top: 122px; }
+    .fondo-toggle { top: 178px; }
+    .nubes-toggle { top: 234px; }
+    .estaciones-toggle { top: 290px; }
+    .viento-toggle { top: 346px; }
+    .spots-toggle { top: 66px; }
+    .anadir-ubicacion-toggle { top: 122px; }
+    .rios-toggle { top: 178px; }
+    .boyas-toggle { top: 234px; }
+    .clorofila-toggle { top: 290px; }
+    .tempagua-toggle { top: 346px; }
+    .frentes-toggle { top: 402px; }
+    .corriente-toggle { top: 458px; }
+    .fondo-selector { top: 178px; }
+    .mapa-wrap.capas-plegadas :is(.rayos-toggle, .luna-toggle, .fondo-toggle, .nubes-toggle, .estaciones-toggle, .viento-toggle, .spots-toggle, .anadir-ubicacion-toggle, .rios-toggle, .boyas-toggle, .fondo-selector) { display: none !important; }
     /* Créditos obligatorios del mapa (assets/js/creditos-mapa.js): al cargar,
        enteros; al tocar el mapa se pliegan en la píldora "ⓒ Fuentes", que
        siempre se ve. Abiertos no pasan del ⓘ (10 + 40 + 10). Las capas de
@@ -963,6 +1015,18 @@
   }
   .ola-banda { background:var(--superficie); border:1px solid var(--linea); color:var(--tinta); border-radius:12px; padding:4px 8px; font-size:11px; cursor:pointer; font-family:var(--f-texto); }
   .ola-banda:hover { background:var(--superficie-2); }
+  /* Plan gratuito y aviso de fin de prueba (2026-10-11, cobro). */
+  #panel.sin-premium #pescaModalidades .indice-box,
+  #panel.sin-premium #ventanaActividadBox,
+  #panel.sin-premium #panelWebcamBox { display: none; }
+  .premium-aviso { margin-top: 10px; font-family: var(--f-texto); font-size: 12px; line-height: 1.45; color: var(--tinta-2); border: 1px dashed var(--linea); }
+  .premium-aviso[hidden] { display: none; }
+  .premium-aviso a { color: var(--acento); font-weight: 600; }
+  .aviso-prueba { position: relative; z-index: 1200; display: flex; align-items: center; gap: 10px; padding: 8px 12px; font-family: var(--f-texto); font-size: 12.5px; line-height: 1.4; background: var(--aviso-fondo); color: var(--aviso-texto); border-bottom: 1px solid var(--aviso-borde); }
+  .aviso-prueba[hidden] { display: none; }
+  .aviso-prueba a { color: inherit; font-weight: 700; white-space: nowrap; }
+  .aviso-prueba button::before { content: "×"; }
+  .aviso-prueba button { margin-left: auto; background: none; border: none; color: inherit; font-size: 16px; cursor: pointer; padding: 0 4px; }
 </style>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "d398d313ac4e4524a1b89af3c9ad6fda"}'></script><!-- End Cloudflare Web Analytics -->
 </head>
@@ -1015,27 +1079,20 @@
   if (!data.session) {
     window.location.href = "/login"; // directo, sin el 308 de /login.html
   } else {
-    // Paywall (2026-09-15, pedido explícito del usuario): 7 días de
-    // prueba desde el alta, luego bloqueo total sin suscripción activa
-    // — mi_estado_suscripcion() ya resuelve el bypass del admin en el
-    // servidor. Fallo silencioso a propósito si la RPC falla (red, error
-    // devuelto, o incluso una excepción real) — try/catch explícito
-    // porque un throw sin capturar aquí pararía TODO el script del
-    // módulo (top-level await, sin nada más abajo que lo recoja) y
-    // dejaría "Comprobando acceso…" colgado para siempre. Nota: no se
-    // puede usar "return" aquí — este bloque no está dentro de ninguna
-    // función (es top-level del módulo), así que se usa un flag en su
-    // lugar para saltarse el resto sin un "return" ilegal.
-    let conAcceso = true;
+    // Plan de la cuenta (2026-10-11, cobro): ya no se bloquea la app. Con
+    // la prueba de 14 días o con Premium se ve todo lo de su ámbito; sin
+    // Premium, el plan gratuito (mapa, mareas y condiciones básicas). El
+    // <script> clásico lo lee en window.estadoPlan (assets/js/plan.js decide
+    // qué se ve por región). Si la RPC falla se deja ver todo, como antes.
+    // Nota: no se puede usar "return" aquí (top-level del módulo).
+    const conAcceso = true;
     try {
       const { data: estadoSuscripcion, error: errorSuscripcion } = await supabase.rpc("mi_estado_suscripcion");
-      if (!errorSuscripcion && estadoSuscripcion && estadoSuscripcion.con_acceso === false) {
-        conAcceso = false;
-        window.location.href = "/suscripcion.html";
-      }
+      if (!errorSuscripcion && estadoSuscripcion) window.estadoPlan = estadoSuscripcion;
     } catch (e) {
-      console.error("mi_estado_suscripcion falló, se deja pasar:", e);
+      console.error("mi_estado_suscripcion falló, se deja ver todo:", e);
     }
+    window.dispatchEvent(new Event("plan-listo"));
     if (conAcceso) {
       window.quitarPantallaInicio();
       // Enlace al panel de administrador (2026-09-13, pedido explícito del
@@ -1117,6 +1174,11 @@
 </script>
 
 
+<div id="avisoPrueba" class="aviso-prueba" role="status" hidden>
+  <span id="avisoPruebaTexto"></span>
+  <a href="/suscripcion" data-i18n="plan.ver_planes">Ver planes</a>
+  <button type="button" data-accion="cerrarAvisoPrueba" aria-label="Cerrar" data-i18n-aria-label="comun.cerrar"></button>
+</div>
 <header>
   <svg class="marca-logo" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><circle class="marca-fondo" cx="20" cy="20" r="19"/><path class="marca-pez" d="M9 17c4-6.5 14-6.5 19 0-5 6.5-15 6.5-19 0z"/><path class="marca-pez" d="M27.5 17l6-4.5v9z"/><circle class="marca-ojo" cx="13.5" cy="16" r="1.4"/><path class="marca-ola" d="M5 28c3.5-3.2 6.5-3.2 10 0s6.5 3.2 10 0 6.5-3.2 10 0"/></svg>
   <h1 class="logotipo">Costaviva</h1><p data-i18n="comun.cabecera.lema">pesca en tiempo real</p><span class="fecha"><span id="estadoVigenciaGlobal" data-i18n="comun.cargando_min">cargando…</span></span>
@@ -1195,7 +1257,12 @@
           <button type="button" class="tarjeta-plegar" id="vientoPlegar" aria-expanded="true" aria-controls="vientoCuerpo" aria-label="Minimizar la leyenda" title="Minimizar" data-i18n-aria-label="comun.minimizar_leyenda" data-i18n-title="comun.minimizar">▾</button>
         </div>
         <div class="tarjeta-cuerpo" id="vientoCuerpo">
-        <input type="range" id="vientoSlider" min="0" max="23" value="0" step="1" />
+        <!-- Reproducción de las próximas horas (Mikel, 2026-10-12: "el viento
+             debe estar en play cuando se activa, con opción de pausa"). -->
+        <div class="viento-fila">
+          <button type="button" class="viento-play" id="vientoPlay" aria-label="Pausar" data-i18n-aria-label="lluvia.pausar">⏸</button>
+          <input type="range" id="vientoSlider" min="0" max="23" value="0" step="1" />
+        </div>
         <!-- Horas reales a lo largo de la barra (pedido explícito del
              usuario: "pon las horas y no la diferencia en horas") -- unas
              pocas marcas repartidas, no las 24, para que quepan en el
@@ -1218,9 +1285,11 @@
         <div class="fila"><span class="chip" style="background:var(--nivel-medio)"></span><span data-i18n="mapa.leyenda.moderado">moderado</span></div>
         <div class="fila"><span class="chip" style="background:var(--nivel-malo)"></span><span data-i18n="mapa.leyenda.agitado">agitado</span></div>
         <div class="nota" style="margin-top:10px; padding-top:8px; border-top:1px solid var(--linea);" data-i18n="mapa.leyenda.rios">◆ RÍOS: 3 puntos por río (cabecera→desembocadura), color por caudal bajo/normal/alto — pasa el cursor por un punto para ver el detalle. Lo que se mide arriba llega a la costa horas después — útil como aviso de tendencia. Posiciones ilustrativas, no las estaciones oficiales exactas. Caudal real solo en Sella, Besaya, Pas, Asón, Eo, Júcar, Turia, Mijares, Segura y Lagares (Confederaciones Hidrográficas + Augas de Galicia) — los ríos vascos siguen sin dato real (URA/Bizkaia bloquea el acceso automático).</div>
+        <div class="nota" style="margin-top:8px; padding-top:8px; border-top:1px solid var(--linea);" data-i18n="mapa.leyenda.zonas">▨ ZONAS SIN PESCA: trama roja = no se puede pescar ni coger nada (reservas marinas y zonas protegidas oficiales); trama naranja discontinua = protección del fondo (caña sí, artes de fondo no). Toca una zona para ver su nombre.</div>
         <div class="nota" style="margin-top:8px; padding-top:8px; border-top:1px solid var(--linea);" data-i18n="mapa.leyenda.tagua">🌡 T. AGUA: cada color es un grado, siempre el mismo en todo el mapa (del azul frío al rojo cálido); las líneas marcan el grado exacto.</div>
       </div>
     </div>
+    <button class="menu-capas-toggle" id="menuCapas" type="button" aria-expanded="false" aria-controls="toggleRayos" aria-label="Mostrar las capas del mapa" title="Capas del mapa" data-i18n-aria-label="mapa.capas.menu_abrir" data-i18n-title="mapa.capas.menu"><span class="menu-capas-icono" aria-hidden="true">☰</span><span class="menu-capas-n" id="menuCapasN" hidden></span></button>
     <button class="rayos-toggle" id="toggleRayos" title="Rayos cerca: al momento y por satélite" aria-label="Mostrar/ocultar rayos en el mapa" data-i18n-aria-label="mapa.capa.rayos_aria" data-i18n-title="mapa.capa.rayos_title">⚡<span class="capa-label" data-i18n="mapa.capa.rayos">Rayos</span></button>
     <div class="aviso-capa" id="avisoCapa" role="status" hidden></div>
     <button class="luna-toggle" id="toggleLuna" title="Fase y posición de la luna" aria-label="Mostrar/ocultar datos de la luna" data-i18n-aria-label="mapa.capa.luna_aria" data-i18n-title="mapa.capa.luna_title">🌙<span class="capa-label" data-i18n="mapa.capa.luna">Luna</span></button>
@@ -1250,9 +1319,9 @@
     <button class="rios-toggle" id="toggleRios" title="Ríos" aria-label="Mostrar/ocultar ríos" data-i18n-aria-label="mapa.capa.rios_aria" data-i18n-title="mapa.capa.rios">〰️<span class="capa-label" data-i18n="mapa.capa.rios">Ríos</span></button>
     <button class="boyas-toggle" id="toggleBoyas" title="Boyas reales (Puertos del Estado vía Copernicus Marine)" aria-label="Mostrar/ocultar boyas" data-i18n-aria-label="mapa.capa.boyas_aria" data-i18n-title="mapa.capa.boyas_title">⚓<span class="capa-label" data-i18n="mapa.capa.boyas">Boyas</span></button>
     <button class="boyas-toggle clorofila-toggle" id="toggleClorofila" title="Clorofila del mar (plancton): satélite de Copernicus" aria-label="Mostrar/ocultar capa de clorofila" aria-pressed="false" data-i18n-aria-label="mapa.capa.clorof_aria" data-i18n-title="mapa.capa.clorof_title">🌿<span class="capa-label" data-i18n="mapa.capa.clorof">Clorof.</span></button>
-    <button class="boyas-toggle tempagua-toggle" id="toggleTempAgua" title="Temperatura del agua (modelo IBI de Copernicus)" aria-label="Mostrar/ocultar capa de temperatura del agua" aria-pressed="false" data-i18n-aria-label="mapa.capa.tagua_aria" data-i18n-title="mapa.capa.tagua_title">🌡<span class="capa-label" data-i18n="mapa.capa.tagua">T. agua</span></button>
+    <button class="boyas-toggle tempagua-toggle" id="toggleTempAgua" title="Temperatura del agua (modelos de Copernicus Marine)" aria-label="Mostrar/ocultar capa de temperatura del agua" aria-pressed="false" data-i18n-aria-label="mapa.capa.tagua_aria" data-i18n-title="mapa.capa.tagua_title">🌡<span class="capa-label" data-i18n="mapa.capa.tagua">T. agua</span></button>
     <button class="boyas-toggle frentes-toggle" id="toggleFrentes" title="Frentes (bordes de clorofila y de temperatura) y corrientes: Copernicus" aria-label="Mostrar/ocultar capa de frentes y corrientes" aria-pressed="false" data-i18n-aria-label="mapa.capa.frentes_aria" data-i18n-title="mapa.capa.frentes_title">〰<span class="capa-label" data-i18n="mapa.capa.frentes">Frentes</span></button>
-    <button class="boyas-toggle corriente-toggle" id="toggleCorriente" title="Corriente del mar (media del día, sin marea): fuerza y dirección, modelo IBI de Copernicus" aria-label="Mostrar/ocultar capa de corriente" aria-pressed="false" data-i18n-aria-label="mapa.capa.corriente_aria" data-i18n-title="mapa.capa.corriente_title">🌊<span class="capa-label" data-i18n="mapa.capa.corriente">Corriente</span></button>
+    <button class="boyas-toggle corriente-toggle" id="toggleCorriente" title="Corriente del mar (media del día, sin marea): fuerza y dirección, modelos de Copernicus Marine" aria-label="Mostrar/ocultar capa de corriente" aria-pressed="false" data-i18n-aria-label="mapa.capa.corriente_aria" data-i18n-title="mapa.capa.corriente_title">🌊<span class="capa-label" data-i18n="mapa.capa.corriente">Corriente</span></button>
     <div class="confirmar-ubicacion-panel" id="eligeMetodoPanel">
       <div class="titulo" data-i18n="mapa.ubic.como_marcar">¿Cómo quieres marcar el punto?</div>
       <div class="botones" style="flex-direction:column; gap:8px;">
@@ -1344,7 +1413,7 @@
         <div class="etq" data-i18n="mapa.panel.marea">MAREA</div>
         <div class="val" id="panelMarea" style="font-size:15px;" data-i18n="mapa.sin_datos">sin datos</div>
         <div class="etq" id="panelMareaProxima"></div>
-        <!-- Marea de LINZ (NZ): puerto, atribución CC BY 4.0 y aviso obligatorio. -->
+        <!-- Marea de LINZ (NZ): puerto, atribución (based on Toitū Te Whenua Land Information New Zealand data, CC BY 4.0 con enlace) y aviso obligatorio. -->
         <div class="etq" id="panelMareaFuente" hidden style="text-transform:none; letter-spacing:0; font-size:9.5px; line-height:1.35; margin-top:3px;"></div>
       </div>
       <div class="tarjeta">
@@ -1358,7 +1427,7 @@
     <!-- Reservas marinas del DOC cerca (NZ): aviso + atribución del DOC. -->
     <div class="tarjeta" id="panelReservasNZ" hidden style="margin-top:10px; font-family:var(--f-texto); font-size:12px; line-height:1.45;">
       <div id="panelReservasTexto"></div>
-      <div style="margin-top:4px; color:var(--tinta-2); font-size:10.5px;" data-i18n="mapa.panel.reservas_atrib">Reservas marinas: Department of Conservation (DOC), Crown copyright, CC BY 4.0. Contorno simplificado: comprueba el límite exacto en el DOC.</div>
+      <div style="margin-top:4px; color:var(--tinta-2); font-size:10.5px;" data-i18n="mapa.panel.reservas_atrib">Reservas marinas: Department of Conservation (DOC), Crown copyright, CC BY 4.0. Zonas del golfo de Hauraki: Crown Copyright: Department of Conservation Te Papa Atawhai 2025. Contorno simplificado: comprueba el límite exacto en el DOC.</div>
     </div>
     <div class="tarjeta" id="panelNormativaNZ" hidden style="margin-top:10px; font-family:var(--f-texto); font-size:12px; line-height:1.45;">
       <a id="panelNormativaEnlace" href="#" target="_blank" rel="noopener"></a>
@@ -1395,6 +1464,10 @@
     <!-- Modalidades de pesca (2026-10-08, pedido de Mikel): una pestaña por
          modalidad; el índice de pesca, la ventana de actividad y la normativa
          de abajo se recalculan con la pestaña elegida. Sin on*= (CSP). -->
+    <div class="tarjeta premium-aviso" id="panelPremiumAviso" hidden>
+      <span id="panelPremiumAvisoTexto"></span>
+      <a href="/suscripcion" data-i18n="plan.ver_planes">Ver planes</a>
+    </div>
     <div class="pesca-modalidades" id="pescaModalidades">
     <div class="mod-tabs" role="tablist" aria-label="Modalidad de pesca" data-i18n-aria-label="mapa.mod.grupo">
       <button type="button" role="tab" id="modTab-costa" data-modalidad="costa" aria-controls="modPanel" aria-selected="true" tabindex="0" data-i18n="mapa.mod.tab_costa">🪨 Desde costa</button>
@@ -1474,7 +1547,7 @@
 <div class="modal-estacion" id="modalBienvenida">
   <div class="modal-estacion-contenido">
     <h3 data-i18n="mapa.bienvenida.titulo">🐟 ¡Bienvenido a Costaviva!</h3>
-    <p data-i18n-html="mapa.bienvenida.texto">Tienes <b>7 días de prueba gratuita</b>. Si cuando terminen no te has suscrito, tu cuenta quedará desactivada, pero tus datos se guardan: al suscribirte lo recuperas todo. Puedes hacerlo cuando quieras desde tu perfil, en <b>«Mi suscripción»</b>; te avisaremos por email dos días antes.</p>
+    <p data-i18n-html="mapa.bienvenida.texto">Tienes <b>14 días de Premium gratis</b>, sin tarjeta. Cuando terminen pasas al plan gratuito (mapa, mareas y condiciones básicas) sin que se te cobre nada, y tus datos se guardan. Puedes suscribirte cuando quieras desde tu perfil, en <b>«Mi suscripción»</b>; te avisaremos 3 días antes.</p>
     <div class="botones-bienvenida">
       <button type="button" class="primario" id="btnVerPlanesBienvenida" data-i18n="mapa.bienvenida.ver_planes">Ver los planes</button>
       <button type="button" class="secundario" id="btnCerrarBienvenida" data-i18n="mapa.bienvenida.entendido">Entendido, ¡a pescar!</button>
@@ -1504,6 +1577,8 @@
   import * as Corriente from "/assets/js/corriente.js";
   import * as Isotermas from "/assets/js/isotermas.js";
   import * as CapasCombinadas from "/assets/js/capas-combinadas.js";
+  import * as Plan from "/assets/js/plan.js";
+  window.Plan = Plan;
   window.VentanaActividad = VentanaActividad;
   window.Regiones = Regiones;
   window.CapasCombinadas = CapasCombinadas;
@@ -1512,6 +1587,13 @@
   window.CapasMar = CapasMar;
   window.Frentes = Frentes;
   window.dispatchEvent(new Event("ventana-actividad-lista"));
+</script>
+<script type="module">
+  // Zonas sin pesca con trama roja (assets/js/zonas-sin-pesca.js, tests en
+  // test/zonas-sin-pesca.test.js). Siempre encendida.
+  import * as ZonasSinPesca from "/assets/js/zonas-sin-pesca.js";
+  window.ZonasSinPesca = ZonasSinPesca;
+  window.dispatchEvent(new Event("zonas-sin-pesca-listas"));
 </script>
 <script type="module">
   // Batimetría (EMODnet): profundidad de los spots e isóbatas de 20 a 5000 m.
@@ -1562,7 +1644,9 @@ const ZONA_POR_DEFECTO = "Europe/Madrid";
 // juntos. caja = [latMin, latMax, lonMin, lonMax].
 const REGIONES_DATOS = {
   es: { caja: [26, 46, -32, 6], centro: [40.2, -4.5] },
-  nz: { caja: [-48, -33.5, 165.5, 179.5], centro: [-41.3, 173.5] },
+  // NZ: la misma caja que sus capas del mar (2026-10-12), 162-186 E: cruza
+  // el antimeridiano (enCajaRegion lo tiene en cuenta).
+  nz: { caja: [-54, -28, 162, 186], centro: [-41.3, 173.5] },
 };
 // Selector rápido de región (Mikel, 2026-10-11): "España · Portugal ·
 // Canarias · New Zealand". Cada una con su encuadre; la elección se recuerda
@@ -1574,15 +1658,25 @@ const VISTAS_REGION = {
   nz: { limites: [[-47.4, 166.3], [-34.3, 178.6]], i18n: "mapa.region.nz" },
 };
 // Vista de arranque de cada región de datos: la de siempre en España
-// (Bizkaia) y Auckland en Nueva Zelanda.
+// (Bizkaia) y, en Nueva Zelanda, el país entero (Mikel, 2026-10-12: "la
+// primera visual debe contemplar toda Nueva Zelanda, no una zona"; antes
+// Auckland a zoom 9). En NZ, nada más crear el mapa se encuadra
+// VISTAS_REGION.nz con fitBounds (encuadrarArranque).
 const VISTA_INICIAL_REGION = {
   es: { centro: [43.51, -2.82], zoom: 10 },
-  nz: { centro: [-36.85, 174.76], zoom: 9 },
+  nz: { centro: [-41.3, 173.5], zoom: 5, encuadre: "nz" },
 };
 // Por debajo de este zoom no se pintan los spots uno a uno (a zoom de
 // continente se taparían todos) ni se piden datos: se ve una etiqueta por
-// región que lleva a ella.
-const ZOOM_MIN_SPOTS = 5;
+// región que lleva a ella. 4 desde el 2026-10-12: en el móvil, toda NZ
+// cabe a zoom 4, y los círculos se encogen con el zoom (ESCALA_SPOT_POR_ZOOM).
+const ZOOM_MIN_SPOTS = 4;
+// Tamaño de los círculos de los spots según el zoom (Mikel, 2026-10-12: "los
+// círculos, adaptarse al zoom"). Por debajo de ZOOM_ETIQUETAS_SPOT solo se
+// ve el círculo: sin nombre ni flechas, que a esa distancia se pisan.
+const ESCALA_SPOT_POR_ZOOM = { 4: 0.45, 5: 0.55, 6: 0.65, 7: 0.8, 8: 0.9 };
+const ZOOM_ETIQUETAS_SPOT = 8;
+const escalaSpot = (z) => (z >= 9 ? 1 : ESCALA_SPOT_POR_ZOOM[Math.max(4, Math.floor(z))]);
 const CLAVE_VISTA_REGION = "costaviva.vistaRegion";
 function vistaRegionGuardada() {
   try { const v = window.localStorage.getItem(CLAVE_VISTA_REGION); return VISTAS_REGION[v] ? v : null; } catch (e) { return null; }
@@ -1595,7 +1689,9 @@ const regionDatosDeVista = (id) => (id === "nz" ? "nz" : "es");
 function enCajaRegion(region, lat, lon) {
   const [s, n, o, e] = REGIONES_DATOS[region].caja;
   const l = ((((lon + 180) % 360) + 360) % 360) - 180;
-  return lat >= s && lat <= n && l >= o && l <= e;
+  // Caja que pasa del antimeridiano (NZ hasta 186 E): -179 es 181.
+  const l2 = e > 180 && l < o ? l + 360 : l;
+  return lat >= s && lat <= n && l2 >= o && l2 <= e;
 }
 // ?region=nz (enlaces de la vista previa de la fase 2) abre el mapa en NZ;
 // &clave=... se sigue mandando para una región que aún estuviera oculta.
@@ -2328,18 +2424,36 @@ function pintarReservasPanel(s) {
   const lista = s.reservas || [];
   caja.hidden = !lista.length;
   if (!lista.length) return;
-  document.getElementById("panelReservasTexto").textContent = I18n.t("mapa.panel.reservas", {
-    lista: lista.map((r) => (r.km ? `${r.nombre} (${I18n.decimal ? I18n.decimal(r.km, 1) : r.km} km)` : r.nombre)).join(" · "),
-  });
+  // Sin pesca (reservas y zonas de alta protección de Hauraki) y, aparte, las
+  // de protección del fondo (caña sí, arrastre no), 2026-10-12.
+  const nombres = (l) => l.map((r) => (r.km ? `${r.nombre} (${I18n.decimal ? I18n.decimal(r.km, 1) : r.km} km)` : r.nombre)).join(" · ");
+  const cerradas = lista.filter((r) => r.tipo !== "spa"), fondo = lista.filter((r) => r.tipo === "spa");
+  document.getElementById("panelReservasTexto").textContent = [
+    cerradas.length ? I18n.t("mapa.panel.reservas", { lista: nombres(cerradas) }) : "",
+    fondo.length ? I18n.t("mapa.panel.reservas_spa", { lista: nombres(fondo) }) : "",
+  ].filter(Boolean).join(" ");
 }
 
-// Marea de LINZ (NZ): puerto de referencia, atribución y aviso obligatorio.
+// Marea de LINZ (NZ): puerto de referencia, atribución (abreviada: nombre
+// completo de LINZ, "based on" y "CC BY 4.0" con enlace a la licencia) y
+// aviso obligatorio. Con nodos de texto, sin innerHTML.
 function pintarFuenteMarea(s) {
   const el = document.getElementById("panelMareaFuente");
   const m = s.marea;
-  if (!m || !m.atribucion) { el.textContent = ""; el.hidden = true; return; }
+  el.textContent = "";
+  if (!m || !m.atribucion) { el.hidden = true; return; }
   const puerto = m.puerto ? I18n.t("mapa.marea.puerto_linz", { puerto: m.puerto.nombre, km: m.puerto.km }) : "";
-  el.textContent = [puerto, m.atribucion, m.aviso].filter(Boolean).join(" · ");
+  const atrib = m.atribucionCorta || m.atribucion;
+  const corte = m.licencia ? atrib.lastIndexOf("CC BY 4.0") : -1;
+  if (puerto) el.append(puerto + " · ");
+  if (corte >= 0) {
+    const a = document.createElement("a");
+    a.href = m.licencia; a.target = "_blank"; a.rel = "noopener"; a.textContent = "CC BY 4.0";
+    el.append(atrib.slice(0, corte), a, atrib.slice(corte + "CC BY 4.0".length));
+  } else {
+    el.append(atrib);
+  }
+  if (m.aviso) el.append(" · " + m.aviso);
   el.hidden = false;
 }
 
@@ -2354,12 +2468,13 @@ const map = L.map("map", {
   zoom: VISTA_INICIAL_REGION[VISTA_INICIAL.region].zoom,
   // Hasta ver el globo entero (Mikel, 2026-10-11: "si no es muy difícil
   // llegar a NZ"): zoom 1-2 en el móvil. Arriba y abajo, sin franjas grises;
-  // a los lados el mundo se repite y los marcadores saltan a la copia que se
-  // ve (worldCopyJump), así NZ nunca queda partida por el antimeridiano.
+  // a los lados el mundo se repite. Sin worldCopyJump (2026-10-12): en
+  // Leaflet 1.9 salta la VISTA a -180..180 pero no los marcadores ni las
+  // capas, y al arrastrar hacia Chatham (183,5 E) desaparecía todo NZ. Lo
+  // sustituye mantenerVistaEnFranja() (después de crear el mapa).
   minZoom: 1,
   maxBounds: [[-85, -540], [85, 540]],
   maxBoundsViscosity: 1,
-  worldCopyJump: true,
   // Tope en 17: el mapa base vectorial (OpenFreeMap) tiene detalle de sobra;
   // más cerca ya no aporta nada para pescar.
   maxZoom: 17,
@@ -2383,6 +2498,30 @@ const map = L.map("map", {
 // quedan, esos sí son una condición real de uso de esos servicios
 // gratuitos, no solo un logo de la librería.
 map.attributionControl.setPrefix(false);
+// El centro de la vista se queda entre -40 y 320 de longitud: España (-30..5)
+// y NZ (162..186, con sus spots, capas y viento en esas longitudes) se ven
+// siempre enteras y en la misma copia del mundo. Si se arrastra fuera, se
+// vuelve sin animación a la misma vista una vuelta más allá.
+const FRANJA_LONGITUD = [-40, 320];
+function mantenerVistaEnFranja() {
+  const c = map.getCenter();
+  const l = c.lng > FRANJA_LONGITUD[1] ? c.lng - 360 : c.lng < FRANJA_LONGITUD[0] ? c.lng + 360 : c.lng;
+  if (l !== c.lng) map.setView([c.lat, l], map.getZoom(), { animate: false });
+}
+map.on("moveend", mantenerVistaEnFranja);
+// Longitud de un punto de fuera (GPS, rayos, geocodificación: -180..180) en
+// la copia del mundo que se ve: -176,5 (Chatham) es 183,5 junto a NZ.
+const lonEnVista = (lon) => (lon < FRANJA_LONGITUD[0] ? lon + 360 : lon);
+// Y al revés, para pedir a una API que solo admite -180..180.
+const lonEstandar = (lon) => ((((lon + 180) % 360) + 360) % 360) - 180;
+// Arranque en NZ: el país entero, no una zona (fitBounds sobre
+// VISTAS_REGION.nz; también si la vista guardada en el selector es "nz").
+(function encuadrarArranque() {
+  const id = VISTA_INICIAL.vista || VISTA_INICIAL_REGION[VISTA_INICIAL.region].encuadre;
+  if (id !== "nz" || !VISTAS_REGION[id]) return;
+  map.fitBounds(VISTAS_REGION[id].limites, { padding: [12, 12] });
+  if (map.getZoom() < ZOOM_MIN_SPOTS) map.setZoom(ZOOM_MIN_SPOTS);
+})();
 // En el móvil, los créditos se pliegan en "ⓒ Fuentes" para no tapar el ⓘ
 // (assets/js/creditos-mapa.js); en escritorio siempre abiertos.
 const creditosMapa = window.CreditosMapa
@@ -2491,10 +2630,23 @@ for (const [id, vista, region] of [["es", "es", "es"], ["nz", "nz", "nz"]]) {
   L.marker(REGIONES_DATOS[region].centro, { icon, keyboard: true, title: I18n.t(`mapa.region.chip_${id}`) })
     .on("click", () => irARegionMapa(vista)).addTo(capaResumenRegiones);
 }
+// La etiqueta de región se va sola a los 2 s (Mikel, 2026-10-12: "la caja
+// del nombre debe desaparecer en 2 seg porque tapa"). Vuelve a salir cada
+// vez que se baja otra vez a zoom de continente.
+let temporizadorResumenRegiones = null;
 function actualizarZoomBajo() {
-  const bajo = map.getZoom() < ZOOM_MIN_SPOTS;
-  map.getContainer().classList.toggle("zoom-bajo", bajo);
-  if (bajo && !map.hasLayer(capaResumenRegiones)) capaResumenRegiones.addTo(map);
+  const z = map.getZoom();
+  const bajo = z < ZOOM_MIN_SPOTS;
+  const contenedor = map.getContainer();
+  contenedor.classList.toggle("zoom-bajo", bajo);
+  contenedor.classList.toggle("zoom-lejos", z < ZOOM_ETIQUETAS_SPOT);
+  if (!bajo) contenedor.style.setProperty("--escala-spot", String(escalaSpot(z)));
+  if (bajo && !map.hasLayer(capaResumenRegiones)) {
+    capaResumenRegiones.addTo(map);
+    contenedor.classList.remove("resumen-oculto");
+    clearTimeout(temporizadorResumenRegiones);
+    temporizadorResumenRegiones = setTimeout(() => contenedor.classList.add("resumen-oculto"), 2000);
+  }
   if (!bajo && map.hasLayer(capaResumenRegiones)) map.removeLayer(capaResumenRegiones);
 }
 map.on("zoomend", actualizarZoomBajo);
@@ -2606,6 +2758,59 @@ conBatimetria((B) => {
   B.montarCapa(map, { onCambio: () => selectorFondo?.refrescar() });
   B.porModalidad(vaEstado.modalidad);
 });
+// Zonas sin pesca (2026-10-12): reservas marinas y zonas protegidas oficiales
+// de cada región, con trama roja; siempre a la vista desde zoom 4.
+function montarZonasSinPesca(Z) {
+  Z.montarCapa(map, L, {
+    sinPesca: I18n.t("mapa.zonas.sin_pesca"),
+    fondo: I18n.t("mapa.zonas.fondo"),
+    aproximado: I18n.t("mapa.zonas.aproximado"),
+  });
+}
+if (window.ZonasSinPesca) montarZonasSinPesca(window.ZonasSinPesca);
+else window.addEventListener("zonas-sin-pesca-listas", () => montarZonasSinPesca(window.ZonasSinPesca), { once: true });
+// Menú ☰ de las capas en el móvil (2026-10-12). Plegado por defecto en la
+// primera visita; luego se recuerda en este navegador (solo comodidad).
+// Plegado, el ☰ cuenta las capas encendidas (sin contar Spots, que va
+// encendida de serie).
+const CLAVE_MENU_CAPAS = "costaviva.menuCapas";
+const BOTONES_CAPA_MENU = ["toggleRayos", "toggleLuna", "toggleFondo", "toggleNubes", "toggleEstaciones", "toggleViento",
+  "toggleRios", "toggleBoyas", "toggleClorofila", "toggleTempAgua", "toggleFrentes", "toggleCorriente"];
+function ponerMenuCapas(abierto, guardar) {
+  const wrap = document.querySelector(".mapa-wrap");
+  const boton = document.getElementById("menuCapas");
+  if (!wrap || !boton) return;
+  wrap.classList.toggle("capas-plegadas", !abierto);
+  boton.setAttribute("aria-expanded", abierto ? "true" : "false");
+  boton.querySelector(".menu-capas-icono").textContent = abierto ? "✕" : "☰";
+  boton.setAttribute("aria-label", I18n.t(abierto ? "mapa.capas.menu_cerrar" : "mapa.capas.menu_abrir"));
+  if (guardar) { try { localStorage.setItem(CLAVE_MENU_CAPAS, abierto ? "abierto" : "plegado"); } catch (e) { /* solo comodidad */ } }
+  contarCapasMenu();
+}
+function contarCapasMenu() {
+  const n = BOTONES_CAPA_MENU.filter((id) => document.getElementById(id)?.classList.contains("activo")).length;
+  const marca = document.getElementById("menuCapasN");
+  if (!marca) return;
+  marca.textContent = String(n);
+  marca.hidden = !n || !document.querySelector(".mapa-wrap")?.classList.contains("capas-plegadas");
+}
+(function montarMenuCapas() {
+  const boton = document.getElementById("menuCapas");
+  if (!boton) return;
+  let abierto = false;
+  try { abierto = localStorage.getItem(CLAVE_MENU_CAPAS) === "abierto"; } catch (e) { abierto = false; }
+  ponerMenuCapas(abierto, false);
+  boton.addEventListener("click", (e) => {
+    e.stopPropagation();
+    ponerMenuCapas(boton.getAttribute("aria-expanded") !== "true", true);
+  });
+  // El número se pone al día cuando cualquier botón de capa cambia de estado.
+  const vigia = new MutationObserver(contarCapasMenu);
+  for (const id of BOTONES_CAPA_MENU) {
+    const b = document.getElementById(id);
+    if (b) vigia.observe(b, { attributes: true, attributeFilter: ["class"] });
+  }
+})();
 let temporizadorAvisoCapa = null;
 function avisoCapa(texto) {
   const el = document.getElementById("avisoCapa");
@@ -2614,7 +2819,16 @@ function avisoCapa(texto) {
   clearTimeout(temporizadorAvisoCapa);
   temporizadorAvisoCapa = setTimeout(() => { el.hidden = true; }, 6000);
 }
+// Capas con datos solo de España y Portugal (ríos, boyas, estaciones de
+// AEMET, fondo de EMODnet, radar OPERA): en NZ se dice en vez de enseñar una
+// capa vacía (revisión de menús, 2026-10-12). Devuelve true si se avisó.
+function avisoSoloIberiaEnNZ(claveNombre) {
+  if (regionDeCentro() !== "nz") return false;
+  avisoCapa(I18n.t("mapa.capa.solo_iberia", { capa: I18n.t(claveNombre) }));
+  return true;
+}
 document.getElementById("toggleEstaciones").addEventListener("click", (e) => {
+  if (!map.hasLayer(capaEstaciones) && avisoSoloIberiaEnNZ("mapa.capa.estac_title")) return;
   if (map.hasLayer(capaEstaciones)) {
     map.removeLayer(capaEstaciones);
     e.currentTarget.classList.remove("activo");
@@ -2649,6 +2863,8 @@ conTipoFondo((TF) => {
 });
 // Selector del botón "Fondo": cuando las dos capas y el selector ya están.
 let selectorFondo = null;
+// Fondo (EMODnet: solo Europa): en NZ, aviso al pulsar el botón.
+document.getElementById("toggleFondo").addEventListener("click", () => avisoSoloIberiaEnNZ("mapa.capa.fondo_title"));
 Promise.all([
   new Promise((ok) => conBatimetria(ok)),
   new Promise((ok) => conTipoFondo(ok)),
@@ -2663,6 +2879,7 @@ Promise.all([
   });
 });
 document.getElementById("toggleRios").addEventListener("click", (e) => {
+  if (!map.hasLayer(capaRios) && avisoSoloIberiaEnNZ("mapa.capa.rios")) return;
   if (map.hasLayer(capaRios)) {
     map.removeLayer(capaRios);
     e.currentTarget.classList.remove("activo");
@@ -2673,6 +2890,7 @@ document.getElementById("toggleRios").addEventListener("click", (e) => {
   }
 });
 document.getElementById("toggleBoyas").addEventListener("click", (e) => {
+  if (!map.hasLayer(capaBoyas) && avisoSoloIberiaEnNZ("mapa.capa.boyas")) return;
   if (map.hasLayer(capaBoyas)) {
     map.removeLayer(capaBoyas);
     e.currentTarget.classList.remove("activo");
@@ -2724,7 +2942,7 @@ const CAPAS_MAR = {
     boton: "toggleTempAgua",
     titulo: I18n.t("capas.tagua.titulo"),
     corto: I18n.t("capas.tagua.corto"),
-    // Escala FIJA por bandas de 1 °C de 8 a 30 °C (2026-10-09, Mikel: "El
+    // Escala FIJA por bandas de 1 °C de 8 a 30 °C (de 0 a 30 desde el 2026-10-12) (2026-10-09, Mikel: "El
     // color debiera ser el mismo"): cada grado tiene siempre su color, en
     // cualquier zona y zoom (paleta y por qué en assets/js/isotermas.js), e
     // isotermas con su número. valorColor, paradas y extremos de aquí solo
@@ -2738,8 +2956,9 @@ const CAPAS_MAR = {
       : I18n.t("capas.tagua.formato", { v: I18n.num(v, 1) })),
     resumen: I18n.t("capas.tagua.resumen"),
     explica: I18n.t("capas.tagua.explica"),
-    fecha: (d) => I18n.t("capas.tagua.fecha", { fecha: fechaCorta(d.fecha) }),
-    fechaFila: (d) => I18n.t("capas.tagua.fecha_fila", { fecha: fechaCorta(d.fecha) }),
+    // NZ (capas/nz/, region "nz"): modelo GLOBAL a las 00:00 UTC, no IBI a las 12.
+    fecha: (d) => I18n.t(d.region === "nz" ? "capas.tagua.fecha_nz" : "capas.tagua.fecha", { fecha: fechaCorta(d.fecha) }),
+    fechaFila: (d) => I18n.t(d.region === "nz" ? "capas.tagua.fecha_fila_nz" : "capas.tagua.fecha_fila", { fecha: fechaCorta(d.fecha) }),
     maxDias: 3,
   },
   // 〰 Frentes y corrientes (2026-10-09): bordes de clorofila y de
@@ -2783,7 +3002,7 @@ const CAPAS_MAR = {
     tipo: "corriente",
     resumen: I18n.t("capas.corriente.resumen"),
     explica: I18n.t("capas.corriente.explica"),
-    fecha: (d) => I18n.t("capas.corriente.fecha", { fecha: fechaCorta(d.fecha) }),
+    fecha: (d) => I18n.t(d.region === "nz" ? "capas.corriente.fecha_nz" : "capas.corriente.fecha", { fecha: fechaCorta(d.fecha) }),
     fechaFila: (d) => I18n.t("capas.corriente.fecha_fila", { fecha: fechaCorta(d.fecha) }),
     maxDias: 3,
   },
@@ -2817,7 +3036,7 @@ function lienzoCapaMar(CM, d, def) {
     const im = ctx2.createImageData(ancho, alto);
     im.data.set(px);
     ctx2.putImageData(im, 0, 0);
-    return lienzo.toDataURL("image/png");
+    return lienzo;
   }
   const canvas = document.createElement("canvas");
   canvas.width = d.columnas;
@@ -2829,7 +3048,7 @@ function lienzoCapaMar(CM, d, def) {
     : I ? CM.pixelesCapa(d, d.bytes, I.PALETA_TEMP_AGUA, I.valorColorBandas)
     : CM.pixelesCapa(d, d.bytes, def.paradas, def.valorColor));
   ctx.putImageData(img, 0, 0);
-  return canvas.toDataURL("image/png");
+  return canvas;
 }
 // Créditos de una capa o de varias (DOIs sin repetir).
 function creditoCapaMar(ds) {
@@ -2916,7 +3135,7 @@ function pintarIsotermas(estado, d) {
   }
   estado.ms = performance.now() - t0;
 }
-// Leyenda de 🌡 T. agua: barra fija de 8 a 30 °C con el tramo visible
+// Leyenda de 🌡 T. agua: barra fija de 0 a 30 °C con el tramo visible
 // recuadrado y, debajo, una casilla por grado visible con su número (mismos
 // colores que el mapa, siempre). dom = { tramo?, fila? } (la fila de la
 // leyenda de varias capas no lleva barra).
@@ -2976,9 +3195,13 @@ function cargarCapaMar(CM, nombre) {
 }
 async function descargarCapaMar(CM, nombre) {
   const prefijo = prefijoCapasMar;
-  const r = await fetch(URL_CAPAS_MAR_BASE + prefijo + nombre + ".json", { cache: "no-cache" });
+  const [r, tierra] = await Promise.all([
+    fetch(URL_CAPAS_MAR_BASE + prefijo + nombre + ".json", { cache: "no-cache" }),
+    cargarTierra(prefijo === "nz/" ? "nz" : "es"),
+  ]);
   if (!r.ok) throw new Error(`HTTP ${r.status}`);
   const d = await r.json();
+  d.tierra = tierra;
   d.bytes = CM.bytesDeBase64(d.datos);
   if (d.bytes.length !== d.filas * d.columnas) throw new Error("tamaño inesperado");
   if (d.corriente) {
@@ -3040,9 +3263,25 @@ function imagenCapaMar(nombre, variante, d) {
     const im = ctx.createImageData(ancho, alto);
     im.data.set(px);
     ctx.putImageData(im, 0, 0);
-    return (d.urlImagenes[clave] = lienzo.toDataURL("image/png"));
+    return (d.urlImagenes[clave] = urlSinTierra(lienzo, d, d, false));
   }
-  return (d.urlImagenes[clave] = lienzoCapaMar(capasMar.CM, def.tipo === "corriente" ? d.mallaVel : d, def));
+  const malla = def.tipo === "corriente" ? d.mallaVel : d;
+  return (d.urlImagenes[clave] = urlSinTierra(lienzoCapaMar(capasMar.CM, malla, def), malla, d, def.tipo !== "frentes"));
+}
+// PNG de un lienzo de capa con la tierra recortada (polígonos de OSM de la
+// región, d.tierra), para que la tierra del mapa base quede siempre encima.
+function urlSinTierra(lienzo, caja, d, extender) {
+  const CM = capasMar.CM;
+  if (!d.tierra || !CM.recortarTierra) return lienzo.toDataURL("image/png");
+  const crear = (w, h) => Object.assign(document.createElement("canvas"), { width: w, height: h });
+  return CM.recortarTierra(lienzo, caja, d.tierra, crear, extender).toDataURL("image/png");
+}
+// Tierra de cada región (assets/datos/tierra/), una sola descarga.
+const tierraPorRegion = {};
+function cargarTierra(region) {
+  return (tierraPorRegion[region] ||= fetch(`/assets/datos/tierra/${region}.geojson`)
+    .then((r) => (r.ok ? r.json() : null))
+    .catch(() => null));
 }
 // Un solo manejador de moveend para todas las capas encendidas.
 function alMoverCapasMar() {
@@ -3303,6 +3542,77 @@ async function datosCapaMarListos(nombre, silencioso) {
   }
   return d;
 }
+// ---------------------------------------------------------------------------
+// Plan de la cuenta (2026-10-11, cobro): qué es Premium y en qué región.
+// Gratis en todas las regiones: mapa, mareas y condiciones básicas (ola,
+// viento, marea, temperatura del agua, nubes, lluvia, presión, índice de
+// mar, lluvia y rayos). Premium: índice de pesca y ventana de actividad,
+// webcams, capas del mar (clorofila, temperatura, frentes, corriente), diario,
+// grupos, alarma e identificación por foto. Con plan regional solo en su
+// región; fuera de ella, aviso "Disponible con el plan Mundial".
+// window.estadoPlan lo deja el módulo de sesión; assets/js/plan.js decide.
+// ---------------------------------------------------------------------------
+function regionContenidoDe(lat, lon) {
+  const R = window.Regiones;
+  if (!R) return "es";
+  return R.paisDeRegion(R.regionPorCoordenadas(lat, lon));
+}
+function avisoPremiumEn(region) {
+  if (!window.Plan) return null;
+  return window.Plan.avisoPremium(window.estadoPlan || null, region);
+}
+function textoAvisoPremium(tipo) {
+  return tipo === "mundial" ? I18n.t("plan.solo_mundial") : I18n.t("plan.solo_premium");
+}
+function aplicarPlanPanel(s) {
+  const aviso = avisoPremiumEn(regionContenidoDe(s.lat, s.lon));
+  document.getElementById("panel").classList.toggle("sin-premium", !!aviso);
+  const caja = document.getElementById("panelPremiumAviso");
+  caja.hidden = !aviso;
+  if (aviso) document.getElementById("panelPremiumAvisoTexto").textContent = textoAvisoPremium(aviso) + " ";
+}
+// Capas del mar: Premium en la región que se mira.
+function capaMarPermitida() {
+  const aviso = avisoPremiumEn(regionDeCentro());
+  if (aviso) avisoCapa(textoAvisoPremium(aviso));
+  return !aviso;
+}
+// Aviso de fin de prueba: 3 días antes y el último día, una vez cada uno.
+const CLAVE_AVISO_PRUEBA = "costaviva.avisoPrueba";
+function pintarAvisoPrueba() {
+  const a = window.Plan?.avisoFinPrueba(window.estadoPlan || null);
+  const el = document.getElementById("avisoPrueba");
+  if (!a) { el.hidden = true; return; }
+  const clave = `${a.tipo}:${a.fin.toISOString().slice(0, 10)}`;
+  let cerrado = null;
+  try { cerrado = localStorage.getItem(CLAVE_AVISO_PRUEBA); } catch (e) { cerrado = null; }
+  if (cerrado === clave) { el.hidden = true; return; }
+  const fecha = a.fin.toLocaleDateString(I18n.locale(), { day: "numeric", month: "long" });
+  document.getElementById("avisoPruebaTexto").textContent = I18n.t(a.tipo === "ultimo_dia" ? "plan.prueba_ultimo_dia" : "plan.prueba_tres_dias", { fecha });
+  el.dataset.clave = clave;
+  el.hidden = false;
+}
+function cerrarAvisoPrueba() {
+  const el = document.getElementById("avisoPrueba");
+  try { localStorage.setItem(CLAVE_AVISO_PRUEBA, el.dataset.clave || ""); } catch (e) { /* solo comodidad */ }
+  el.hidden = true;
+}
+document.getElementById("avisoPrueba").addEventListener("click", (e) => {
+  if (e.target.closest('[data-accion="cerrarAvisoPrueba"]')) cerrarAvisoPrueba();
+});
+// Cuando llega el plan (o el módulo de regiones): se vuelve a mirar la ficha
+// abierta y las capas encendidas.
+function plan_alLlegar() {
+  pintarAvisoPrueba();
+  if (spotAbiertoActual && document.getElementById("panel").classList.contains("visible")) aplicarPlanPanel(spotAbiertoActual);
+  if (avisoPremiumEn(regionDeCentro()) && capasMar.activas.length) {
+    for (const n of [...capasMar.activas]) alternarCapaMar(n);
+  }
+}
+window.addEventListener("plan-listo", plan_alLlegar);
+window.addEventListener("ventana-actividad-lista", plan_alLlegar);
+if (window.estadoPlan) setTimeout(plan_alLlegar, 0);
+
 // Botón de una capa de mar: enciende o apaga SOLO esa (las demás siguen).
 async function alternarCapaMar(nombre, { silencioso = false } = {}) {
   if (capasMar.activas.includes(nombre)) {
@@ -3317,6 +3627,8 @@ async function alternarCapaMar(nombre, { silencioso = false } = {}) {
     marcarBotonCapaMar(nombre, false);
     return;
   }
+  if (!silencioso && !capaMarPermitida()) return;
+  if (silencioso && avisoPremiumEn(regionDeCentro())) return;
   capasMar.cargando.add(nombre);
   marcarBotonCapaMar(nombre, true);
   const d = await datosCapaMarListos(nombre, silencioso);
@@ -3364,6 +3676,12 @@ function cambioRegionCapasMar() {
   if (!antes.length) return;
   capasMar.activas = [];
   componerCapasMar();
+  const avisoPlan = avisoPremiumEn(regionDeCentro());
+  if (avisoPlan) {
+    for (const n of antes) marcarBotonCapaMar(n, false);
+    avisoCapa(textoAvisoPremium(avisoPlan));
+    return;
+  }
   Promise.all(antes.map((n) => alternarCapaMar(n, { silencioso: true }))).then(() => {
     if (!capasMar.activas.length) avisoCapa(I18n.t("capas.no_disponible"));
   });
@@ -4794,6 +5112,7 @@ function abrirPanel(s) {
   // °S/°E en Nueva Zelanda (antes "°N, °W" fijo).
   document.getElementById("panelCoords").textContent = formatoCoordenadas(s.lat, s.lon);
   pintarRegionPanel(s);
+  aplicarPlanPanel(s);
   pintarReservasPanel(s);
   pintarFondoPanel(s);
   actualizarBotonFavorito(s);
@@ -5483,6 +5802,16 @@ function quitarRayosSat() {
 }
 async function pintarRayosSat() {
   const nota = document.getElementById("notaRayosSatelite");
+  // El satélite MTG y la imagen de AEMET son de Europa/España: en NZ solo
+  // quedan los rayos en tiempo real (Xweather, red mundial).
+  const enNZ = regionDeCentro() === "nz";
+  const enlaceAemet = document.getElementById("enlaceAemetRayos");
+  if (enlaceAemet) enlaceAemet.parentElement.hidden = enNZ;
+  if (enNZ) {
+    quitarRayosSat();
+    nota.textContent = I18n.t("mapa.rayos.nota_sat_nz");
+    return;
+  }
   const ultima = await ultimaHoraRayosSat();
   if (!document.getElementById("toggleRayos").classList.contains("activo")) return;
   quitarRayosSat();
@@ -5607,7 +5936,8 @@ async function actualizarRayosVivo() {
   try {
     const { data } = window.supabaseCliente ? await window.supabaseCliente.auth.getSession() : { data: null };
     const token = data?.session?.access_token;
-    const resp = await fetch(`/rayos-cerca?lat=${ref.lat.toFixed(4)}&lon=${ref.lon.toFixed(4)}`, {
+    // /rayos-cerca solo admite -180..180 (Chatham, 183,5, se pide como -176,5).
+    const resp = await fetch(`/rayos-cerca?lat=${ref.lat.toFixed(4)}&lon=${lonEstandar(ref.lon).toFixed(4)}`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
     datos = resp.ok ? await resp.json() : null;
@@ -5622,6 +5952,8 @@ async function actualizarRayosVivo() {
     pintarResumenRayos(R, { estado: "no_disponible" });
     return;
   }
+  // Cada rayo en la copia del mundo de la referencia (junto a NZ, -179 es 181).
+  datos.rayos = (datos.rayos || []).map((r) => ({ ...r, lon: r.lon + 360 * Math.round((ref.lon - r.lon) / 360) }));
   const ahora = Date.now() / 1000;
   for (const r of datos.rayos) {
     const edadMin = R.edadMinutos(r, ahora);
@@ -5658,6 +5990,7 @@ async function alMoverMapaRayos() {
     const zoomOk = map.getZoom() >= R.ZOOM_MIN_VIVO;
     if (R.debeCambiarReferencia(refRayos, centro, map.getZoom())) {
       refRayos = R.elegirReferencia({ centro });
+      pintarRayosSat();
       actualizarRayosVivo();
     } else if (zoomOk === (estadoRayos === "lejos")) {
       actualizarRayosVivo();
@@ -5678,7 +6011,8 @@ async function abrirRayos() {
   map.attributionControl.addAttribution(ATRIBUCION_RAYOS_VIVO);
   const panelSpot = document.getElementById("panel");
   const spot = panelSpot && panelSpot.classList.contains("visible") ? spotAbiertoActual : null;
-  const gps = spot ? null : await gpsSiHayPermiso();
+  const gpsCrudo = spot ? null : await gpsSiHayPermiso();
+  const gps = gpsCrudo ? { ...gpsCrudo, lon: lonEnVista(gpsCrudo.lon) } : null;
   if (!rayosActivo()) return;
   const c = map.getCenter();
   refRayos = R.elegirReferencia({ spot, gps, centro: { lat: c.lat, lon: c.lng } });
@@ -5811,7 +6145,7 @@ async function actualizarLuna() {
 
   const centro = map.getCenter();
   try {
-    const resp = await fetch(`/luna?lat=${centro.lat.toFixed(4)}&lon=${centro.lng.toFixed(4)}`, { cache: "no-store" });
+    const resp = await fetch(`/luna?lat=${centro.lat.toFixed(4)}&lon=${lonEstandar(centro.lng).toFixed(4)}`, { cache: "no-store" });
     const l = await resp.json();
     if (!resp.ok || l.error) throw new Error(l.error || "sin datos");
     document.getElementById("lunaEmoji").textContent = l.emoji;
@@ -5855,6 +6189,8 @@ document.getElementById("toggleNubes").addEventListener("click", (e) => {
   const boton = e.currentTarget;
   const control = prepararLluviaAnimada();
   if (!control) return;
+  // El radar OPERA y el satélite H SAF son de Europa: en NZ no se descargan.
+  if (!control.activo() && avisoSoloIberiaEnNZ("mapa.capa.lluvia")) return;
   if (control.activo()) {
     control.desactivar();
     boton.classList.remove("activo");
@@ -5912,7 +6248,10 @@ const VIENTO_MAX_MS = 15;
 const VIENTO_REGIONES = [
   { id: "peninsula", regionDatos: "es", bbox: { sur: 35.5, oeste: -9.8, norte: 44.0, este: 4.5 } },
   { id: "canarias", regionDatos: "es", bbox: { sur: 27.3, oeste: -18.5, norte: 29.6, este: -13.0 } },
-  { id: "nz", regionDatos: "nz", bbox: { sur: -47.6, oeste: 166.0, norte: -34.0, este: 179.0 } },
+  // NZ a 24° x 26° desde el 2026-10-12 (la misma caja que sus capas del mar,
+  // con Chatham, Kermadec y Campbell): cruza el antimeridiano,
+  // /viento-campo pide 181 E como -179.
+  { id: "nz", regionDatos: "nz", bbox: { sur: -54.0, oeste: 162.0, norte: -28.0, este: 186.0 } },
 ];
 // Primera rejilla ya descargada (la de referencia para la barra de horas).
 const vientoReferencia = () => VIENTO_REGIONES.map((r) => vientoSnapshotsPorRegion[r.id]).find((x) => x?.length) || null;
@@ -5934,19 +6273,38 @@ function horaVientoLocal(iso) {
   return d.toLocaleTimeString(I18n.locale(), { hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
 }
 
-function mostrarHoraViento(indice) {
+// Viento en una posición de la serie con decimales (2,4 = 40 % del camino
+// de la hora 2 a la 3): mezcla lineal de U y V de las dos horas. Así la
+// reproducción pasa de una hora a otra poco a poco (2026-10-12, Mikel: "da
+// un salto de fotograma a fotograma; ¿se puede hacer más continuo?").
+function datosVientoEn(snaps, pos) {
+  const i = Math.min(Math.floor(pos), snaps.length - 1);
+  const t = pos - Math.floor(pos);
+  const a = snaps[i], b = snaps[Math.min(i + 1, snaps.length - 1)];
+  if (!t || a === b) return a.data;
+  return a.data.map((rec, k) => ({ header: rec.header, data: rec.data.map((x, j) => x + (b.data[k].data[j] - x) * t) }));
+}
+function mostrarHoraViento(pos) {
   const referencia = vientoReferencia();
   if (!referencia?.length) return;
-  const i = Math.min(Math.max(indice, 0), referencia.length - 1);
+  pos = Math.min(Math.max(pos, 0), referencia.length - 1);
+  const i = Math.floor(pos);
   const activo = document.getElementById("toggleViento").classList.contains("activo");
   VIENTO_REGIONES.forEach((region) => {
     const snaps = vientoSnapshotsPorRegion[region.id];
     if (!snaps?.length) return;
-    const snap = snaps[Math.min(i, snaps.length - 1)];
-    if (vientoCapas[region.id]) { map.removeLayer(vientoCapas[region.id]); vientoCapas[region.id] = null; }
+    const datos = datosVientoEn(snaps, Math.min(pos, snaps.length - 1));
+    // Ya creada: solo cambia el campo (setDataSuave, assets/js/leaflet-
+    // velocity.js), sin quitar la capa ni volver a soltar las partículas.
+    const existente = vientoCapas[region.id];
+    if (existente) {
+      existente.setDataSuave(datos);
+      if (activo && !map.hasLayer(existente)) existente.addTo(map);
+      return;
+    }
     vientoCapas[region.id] = L.velocityLayer({
       displayValues: false,
-      data: snap.data,
+      data: datos,
       velocityScale: 0.012,
       opacity: 0.9,
       lineWidth: 2,
@@ -5995,10 +6353,38 @@ async function cargarCampoViento() {
   }
 }
 
+// Reproducción automática de las horas: arranca al encender el viento y da
+// la vuelta al llegar al final; el botón la pausa y tocar la barra también.
+// Cada hora dura VIENTO_PASO_MS y se recorre en VIENTO_SUBPASOS pasos
+// mezclados (datosVientoEn), para que el viento cambie de forma continua.
+const VIENTO_PASO_MS = 1500;
+const VIENTO_SUBPASOS = 5;
+let temporizadorVientoPlay = null;
+let posicionViento = 0;
+function reproducirViento(si) {
+  clearInterval(temporizadorVientoPlay);
+  temporizadorVientoPlay = null;
+  const boton = document.getElementById("vientoPlay");
+  boton.textContent = si ? "⏸" : "▶";
+  boton.setAttribute("aria-label", I18n.t(si ? "lluvia.pausar" : "lluvia.reproducir"));
+  if (!si) return;
+  const slider = document.getElementById("vientoSlider");
+  posicionViento = +slider.value;
+  temporizadorVientoPlay = setInterval(() => {
+    const max = +slider.max;
+    if (!vientoReferencia() || max <= 0) return;
+    posicionViento = Math.round((posicionViento + 1 / VIENTO_SUBPASOS) * VIENTO_SUBPASOS) / VIENTO_SUBPASOS;
+    if (posicionViento > max) posicionViento = 0;
+    slider.value = String(Math.floor(posicionViento));
+    mostrarHoraViento(posicionViento);
+  }, VIENTO_PASO_MS / VIENTO_SUBPASOS);
+}
+document.getElementById("vientoPlay").addEventListener("click", () => reproducirViento(!temporizadorVientoPlay));
 document.getElementById("toggleViento").addEventListener("click", (e) => {
   const boton = e.currentTarget;
   const panel = document.getElementById("vientoSliderPanel");
   if (boton.classList.contains("activo")) {
+    reproducirViento(false);
     Object.values(vientoCapas).forEach((capa) => { if (capa) map.removeLayer(capa); });
     boton.classList.remove("activo");
     panel.hidden = true;
@@ -6011,6 +6397,7 @@ document.getElementById("toggleViento").addEventListener("click", (e) => {
     plegarViento?.alAbrir();
     registrarEvento("ver_capa_viento");
     cargarCampoViento();
+    reproducirViento(true);
   }
 });
 // La tarjeta del viento también se minimiza (assets/js/plegar-tarjeta.js).
@@ -6020,6 +6407,8 @@ const plegarViento = window.PlegarTarjeta?.montar({
   id: "viento",
 });
 document.getElementById("vientoSlider").addEventListener("input", (e) => {
+  // Mover la barra a mano pausa la reproducción.
+  reproducirViento(false);
   mostrarHoraViento(+e.target.value);
 });
 

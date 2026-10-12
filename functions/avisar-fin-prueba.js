@@ -1,17 +1,17 @@
 // functions/avisar-fin-prueba.js
-// Emails de la prueba gratis de 7 días. Empezó el 2026-09-25 como un aviso
-// DESPUÉS de vencer; el 2026-09-28 el usuario lo cambió: "a ese vencimiento,
-// o se da de alta o se le cancela". Ver la migración 20260928120000 para el
-// calendario y las excepciones. Contado desde el alta:
+// Emails de la prueba gratis de Premium. Desde el 2026-10-11 (cobro con los
+// precios confirmados por Mikel) la prueba dura 14 días sin tarjeta y, al
+// acabar, la cuenta pasa al PLAN GRATUITO (mapa, mareas y condiciones
+// básicas): no se bloquea nada. Ver la migración 20261011230000. Contado
+// desde el alta:
 //
 //   alta    bienvenida, con la fecha en que acaba la prueba
-//   día 5   recordatorio: la prueba acaba el día 7
-//   día 7   sin suscripción → cuenta desactivada, con su email
+//   día 11  recordatorio: la prueba de Premium acaba el día 14
+//   día 14  sin suscripción → pasa al plan gratuito, con su email
+//            (perfiles.desactivado_en guarda cuándo)
 //
-// "Desactivada" NO bloquea el login ni borra nada (decisión del usuario): el
-// acceso a la app ya lo corta el paywall, y así puede volver, suscribirse y
-// recuperarlo todo. Sus datos se conservan y sus capturas siguen en las
-// estadísticas anónimas si dio el consentimiento en el alta.
+// Son emails de servicio sobre la propia cuenta (el alta los anuncia), no
+// publicidad. En inglés a quien tiene la app en inglés (user_metadata.idioma).
 //
 // Mismo patrón que notificar-altas.js: protegido con el secreto compartido
 // X-Cron-Secret, llamado por .github/workflows/notificar-altas.yml, y
@@ -22,17 +22,15 @@
 //     (usuarios_bienvenida_pendiente_email, usuarios_fin_prueba_pendiente_*).
 //     Aquí no se recalcula nada.
 //   - Cada paso se marca SOLO tras confirmar Resend el envío. El recordatorio
-//     es además el que fija la fecha de desactivación que se le promete: sin
-//     recordatorio enviado no hay desactivación. Un fallo de correo retrasa
+//     es además el que fija la fecha de fin que se le promete: sin
+//     recordatorio enviado no hay paso a gratis. Un fallo de correo retrasa
 //     el calendario de esa persona, nunca lo acorta.
 //   - Guarda de volumen: si en una pasada salen más de LIMITE_POR_PASADA
-//     recordatorios o desactivaciones, ese paso NO se ejecuta y se avisa al
-//     admin. Con el volumen real de altas, eso es un bug o una decisión que
-//     debe tomar una persona, no el cron.
+//     recordatorios o pasos a gratis, ese paso NO se ejecuta y se avisa al
+//     admin.
 //
-// El tono del email importa: alguien que probó la app y no siguió no ha
-// hecho nada malo. Fechas claras, el enlace para suscribirse, y se acabó.
-// Nada de urgencia fabricada.
+// El tono del email importa: fechas claras, el enlace a los planes, y se
+// acabó. Nada de urgencia fabricada.
 
 import { secretoValido } from "./_lib/secreto.js";
 import { enviarEmail } from "./_lib/email.js";
@@ -42,8 +40,8 @@ const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const LIMITE_POR_PASADA = 10;
 
 // Hora de Madrid a propósito (ZONA_NEGOCIO): fechas de la suscripción en los emails.
-function fecha(valor) {
-  return new Date(valor).toLocaleDateString("es-ES", {
+function fecha(valor, idioma = "es") {
+  return new Date(valor).toLocaleDateString(idioma === "en" ? "en-NZ" : "es-ES", {
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -52,26 +50,43 @@ function fecha(valor) {
 }
 
 const PIE = [``, `— Costaviva`, `https://costaviva.org`];
-const PLANES = `Planes:  https://costaviva.org/suscripcion  (3,99 €/mes o 39,99 €/año, se cancela cuando quieras)`;
+const PLANES = {
+  es: `Planes Premium:  https://costaviva.org/suscripcion  (desde 3,99 €/mes o 34,99 €/año, IVA incluido; se cancela cuando quieras)`,
+  en: `Premium plans:  https://costaviva.org/suscripcion  (prices in your currency, tax included; cancel any time)`,
+};
 
-function emailBienvenida(pruebaTerminaEn) {
+function emailBienvenida(pruebaTerminaEn, idioma = "es") {
+  if (idioma === "en") {
+    return {
+      asunto: "Welcome to Costaviva: 14 days of Premium, free",
+      cuerpo: [
+        `Hi,`,
+        ``,
+        `Thanks for signing up to Costaviva. You have 14 days of Premium for free, no card needed, until ${fecha(pruebaTerminaEn, "en")}.`,
+        ``,
+        `Premium adds the fishing index and activity window, sea layers, webcams, your fishing log, groups and the SOS alarm. The map, tides and basic conditions are always free.`,
+        ``,
+        `When the trial ends you simply move to the free plan: nothing is charged and nothing is deleted. We'll remind you 3 days before.`,
+        ``,
+        PLANES.en,
+        ``,
+        `Tight lines!`,
+        ...PIE,
+      ].join("\n"),
+    };
+  }
   return {
-    asunto: "Bienvenido a Costaviva: tu prueba gratis de 7 días",
+    asunto: "Bienvenido a Costaviva: 14 días de Premium gratis",
     cuerpo: [
       `Hola,`,
       ``,
-      `Gracias por darte de alta en Costaviva. Tienes 7 días de prueba gratis, sin tarjeta, hasta el ${fecha(pruebaTerminaEn)}.`,
+      `Gracias por darte de alta en Costaviva. Tienes 14 días de Premium gratis, sin tarjeta, hasta el ${fecha(pruebaTerminaEn)}.`,
       ``,
-      `En estos días puedes consultar las condiciones del mar en tus zonas, ver las webcams y llevar tu cuaderno de pesca con tus salidas y capturas.`,
+      `Premium añade el índice de pesca y la ventana de actividad, las capas del mar, las webcams, tu cuaderno de pesca, los grupos y la alarma SOS. El mapa, las mareas y las condiciones básicas son siempre gratis.`,
       ``,
-      `Para que no haya sorpresas:`,
+      `Cuando acabe la prueba pasas al plan gratuito sin más: no se cobra nada y no se borra nada. Te avisaremos 3 días antes.`,
       ``,
-      `  - Si te suscribes antes del ${fecha(pruebaTerminaEn)}, sigues usando la app sin cortes.`,
-      `  - Si no, ese día tu cuenta quedará desactivada. Tus datos se guardan: si te suscribes más adelante, lo recuperas todo.`,
-      ``,
-      `Te mandaremos un recordatorio dos días antes de que acabe la prueba.`,
-      ``,
-      PLANES,
+      PLANES.es,
       ``,
       `¡Buena pesca!`,
       ...PIE,
@@ -79,19 +94,34 @@ function emailBienvenida(pruebaTerminaEn) {
   };
 }
 
-function emailRecordatorio(desactivarEn) {
+function emailRecordatorio(finEn, idioma = "es") {
+  if (idioma === "en") {
+    return {
+      asunto: `Your Costaviva Premium trial ends on ${fecha(finEn, "en")}`,
+      cuerpo: [
+        `Hi,`,
+        ``,
+        `Your free Premium trial ends on ${fecha(finEn, "en")}. After that you'll be on the free plan (map, tides and basic conditions). Your data stays saved.`,
+        ``,
+        `If you'd like to keep Premium, you can subscribe before then:`,
+        ``,
+        PLANES.en,
+        ``,
+        `If not, you don't need to do anything.`,
+        ...PIE,
+      ].join("\n"),
+    };
+  }
   return {
-    asunto: `Tu prueba de Costaviva termina el ${fecha(desactivarEn)}`,
+    asunto: `Tu prueba de Premium en Costaviva termina el ${fecha(finEn)}`,
     cuerpo: [
       `Hola,`,
       ``,
-      `Tu prueba gratis de Costaviva está a punto de terminar.`,
+      `Tu prueba gratis de Premium termina el ${fecha(finEn)}. Después seguirás con el plan gratuito (mapa, mareas y condiciones básicas). Tus datos se guardan.`,
       ``,
-      `El ${fecha(desactivarEn)}, si no te has suscrito, tu cuenta quedará desactivada y ya no podrás consultar las condiciones del mar ni tu cuaderno de pesca. Tus datos se guardan.`,
+      `Si quieres seguir con Premium, puedes suscribirte antes:`,
       ``,
-      `Si quieres seguir sin cortes, basta con suscribirte antes:`,
-      ``,
-      PLANES,
+      PLANES.es,
       ``,
       `Si no, no hace falta que hagas nada.`,
       ...PIE,
@@ -99,19 +129,36 @@ function emailRecordatorio(desactivarEn) {
   };
 }
 
-function emailDesactivada() {
+function emailPasoAGratis(idioma = "es") {
+  if (idioma === "en") {
+    return {
+      asunto: "Your Costaviva Premium trial has ended",
+      cuerpo: [
+        `Hi,`,
+        ``,
+        `Your free Premium trial has ended, so your account is now on the free plan: the map, tides and basic conditions are still there.`,
+        ``,
+        `Your trips, catches, photos and spots are saved. If you subscribe to Premium at any time, everything is back as you left it.`,
+        ``,
+        PLANES.en,
+        ``,
+        `Thanks for trying it.`,
+        ...PIE,
+      ].join("\n"),
+    };
+  }
   return {
-    asunto: "Tu prueba de Costaviva ha terminado",
+    asunto: "Tu prueba de Premium en Costaviva ha terminado",
     cuerpo: [
       `Hola,`,
       ``,
-      `Tu prueba gratis de Costaviva ha terminado sin suscripción, así que tu cuenta ha quedado desactivada.`,
+      `Tu prueba gratis de Premium ha terminado y tu cuenta pasa al plan gratuito: el mapa, las mareas y las condiciones básicas siguen ahí.`,
       ``,
-      `Tus salidas, capturas, fotos y ubicaciones siguen guardadas. Si en algún momento te suscribes, entras con tu email de siempre y lo tienes todo como lo dejaste.`,
+      `Tus salidas, capturas, fotos y ubicaciones siguen guardadas. Si te suscribes a Premium en cualquier momento, lo tienes todo como lo dejaste.`,
       ``,
-      PLANES,
+      PLANES.es,
       ``,
-      `Y si no es para ti, no pasa nada — gracias por haberla probado.`,
+      `Gracias por haberla probado.`,
       ...PIE,
     ].join("\n"),
   };
@@ -244,34 +291,34 @@ export async function onRequestPost(context) {
     nombre: "bienvenida",
     lista: "usuarios_bienvenida_pendiente_email",
     limitar: false,
-    email: (u) => emailBienvenida(u.prueba_termina_en),
+    email: (u) => emailBienvenida(u.prueba_termina_en, u.idioma),
     marcar: "marcar_bienvenida_email",
     contador: "bienvenidas",
   });
 
-  // El recordatorio fija la fecha de desactivación. El primer día incluye a
+  // El recordatorio fija la fecha de fin de la prueba. El primer día incluye a
   // los usuarios de antes de este cambio con la prueba ya vencida: por eso
   // lleva guarda de volumen.
   await paso({
     nombre: "recordatorio",
     lista: "usuarios_fin_prueba_pendiente_recordatorio",
     limitar: true,
-    email: (u) => emailRecordatorio(u.desactivar_en),
+    email: (u) => emailRecordatorio(u.desactivar_en, u.idioma),
     marcar: "marcar_fin_prueba_recordatorio",
     contador: "recordados",
   });
 
   const desactivados = await paso({
-    nombre: "desactivación",
+    nombre: "paso a gratis",
     lista: "usuarios_fin_prueba_pendiente_desactivar",
     limitar: true,
-    email: () => emailDesactivada(),
+    email: (u) => emailPasoAGratis(u.idioma),
     marcar: "desactivar_usuario_fin_prueba",
     contador: "desactivados",
   });
   if (desactivados.length) {
     await avisarAdmin(`${desactivados.length} prueba(s) terminada(s) sin suscripción`, [
-      `Cuentas desactivadas (sin acceso a la app hasta que se suscriban; datos conservados):`,
+      `Cuentas que han pasado al plan gratuito (siguen entrando; datos conservados):`,
       ...desactivados.map((e) => `  - ${e}`),
     ]);
   }

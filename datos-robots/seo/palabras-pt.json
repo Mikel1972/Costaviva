@@ -1,8 +1,221 @@
 {
-  "generado": "2026-10-11T20:13:41.430Z",
+  "generado": "2026-10-11T20:38:32.953Z",
   "semana": "2026-09-28",
   "fuente": "Mikel1972/comun seo/palabras",
   "terminos": [
+    {
+      "termino": "marés",
+      "mercado": "pt",
+      "grupo": "marea",
+      "puntuacion": 73,
+      "tendencia": "baja",
+      "tendencia_pct": -27,
+      "estacionalidad": {
+        "indice_mes_actual": 1.35,
+        "picos": [
+          10,
+          1,
+          3
+        ],
+        "estacional": false
+      },
+      "url": "/mareas/region/portugal",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "marés Cascais",
+      "mercado": "pt",
+      "grupo": "spot",
+      "puntuacion": 50,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/mareas/cascais",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "spinning",
+      "mercado": "pt",
+      "grupo": "tecnica",
+      "puntuacion": 36,
+      "tendencia": "sube",
+      "tendencia_pct": 21,
+      "estacionalidad": null,
+      "url": null,
+      "gsc_posicion": null
+    },
+    {
+      "termino": "tabela de marés",
+      "mercado": "pt",
+      "grupo": "marea",
+      "puntuacion": 29,
+      "tendencia": "baja",
+      "tendencia_pct": -46,
+      "estacionalidad": null,
+      "url": "/mareas/region/portugal",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "pesca ao robalo",
+      "mercado": "pt",
+      "grupo": "especie",
+      "puntuacion": 26,
+      "tendencia": "baja",
+      "tendencia_pct": -23,
+      "estacionalidad": {
+        "indice_mes_actual": 1.05,
+        "picos": [
+          8
+        ],
+        "estacional": false
+      },
+      "url": "/especies/lubina",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "pesca à dourada",
+      "mercado": "pt",
+      "grupo": "especie",
+      "puntuacion": 22,
+      "tendencia": "baja",
+      "tendencia_pct": -18,
+      "estacionalidad": {
+        "indice_mes_actual": 1.15,
+        "picos": [
+          10
+        ],
+        "estacional": false
+      },
+      "url": "/especies/dorada",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "marés Figueira da Foz",
+      "mercado": "pt",
+      "grupo": "spot",
+      "puntuacion": 21,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/mareas/figueiradafoz",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "pesca ao sargo",
+      "mercado": "pt",
+      "grupo": "especie",
+      "puntuacion": 19,
+      "tendencia": "baja",
+      "tendencia_pct": -17,
+      "estacionalidad": {
+        "indice_mes_actual": 0.98,
+        "picos": [
+          8,
+          6,
+          7
+        ],
+        "estacional": true
+      },
+      "url": "/especies/sargo",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "pesca ao polvo",
+      "mercado": "pt",
+      "grupo": "especie",
+      "puntuacion": 15,
+      "tendencia": "baja",
+      "tendencia_pct": -29,
+      "estacionalidad": {
+        "indice_mes_actual": 1.11,
+        "picos": [
+          9,
+          3
+        ],
+        "estacional": false
+      },
+      "url": "/especies/pulpo",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "surfcasting",
+      "mercado": "pt",
+      "grupo": "tecnica",
+      "puntuacion": 14,
+      "tendencia": "sube",
+      "tendencia_pct": 111,
+      "estacionalidad": null,
+      "url": null,
+      "gsc_posicion": null
+    },
+    {
+      "termino": "pesca à linha",
+      "mercado": "pt",
+      "grupo": "tecnica",
+      "puntuacion": 11,
+      "tendencia": "baja",
+      "tendencia_pct": -36,
+      "estacionalidad": {
+        "indice_mes_actual": 1.47,
+        "picos": [
+          10,
+          1,
+          3
+        ],
+        "estacional": false
+      },
+      "url": "/spots/region/portugal",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "pesca ao choco",
+      "mercado": "pt",
+      "grupo": "especie",
+      "puntuacion": 8,
+      "tendencia": "baja",
+      "tendencia_pct": -65,
+      "estacionalidad": {
+        "indice_mes_actual": 1.03,
+        "picos": [
+          11,
+          6,
+          7
+        ],
+        "estacional": true
+      },
+      "url": "/especies/sepia",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "jigging",
+      "mercado": "pt",
+      "grupo": "tecnica",
+      "puntuacion": 7,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": null,
+      "gsc_posicion": null
+    },
+    {
+      "termino": "pesca à lula",
+      "mercado": "pt",
+      "grupo": "especie",
+      "puntuacion": 4,
+      "tendencia": "baja",
+      "tendencia_pct": -60,
+      "estacionalidad": {
+        "indice_mes_actual": 1.25,
+        "picos": [
+          2,
+          10,
+          3
+        ],
+        "estacional": false
+      },
+      "url": "/especies/calamar",
+      "gsc_posicion": null
+    },
     {
       "termino": "baixa-mar",
       "mercado": "pt",
@@ -12,17 +225,6 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/mareas/region/portugal",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "jigging",
-      "mercado": "pt",
-      "grupo": "tecnica",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": null,
       "gsc_posicion": null
     },
     {
@@ -37,17 +239,6 @@
       "gsc_posicion": null
     },
     {
-      "termino": "marés",
-      "mercado": "pt",
-      "grupo": "marea",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/mareas/region/portugal",
-      "gsc_posicion": null
-    },
-    {
       "termino": "marés Aveiro",
       "mercado": "pt",
       "grupo": "spot",
@@ -56,17 +247,6 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/mareas/aveiro",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "marés Cascais",
-      "mercado": "pt",
-      "grupo": "spot",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/mareas/cascais",
       "gsc_posicion": null
     },
     {
@@ -100,17 +280,6 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/mareas/faro",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "marés Figueira da Foz",
-      "mercado": "pt",
-      "grupo": "spot",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/mareas/figueiradafoz",
       "gsc_posicion": null
     },
     {
@@ -276,83 +445,6 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/especies/caballa",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "pesca à dourada",
-      "mercado": "pt",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/dorada",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "pesca à linha",
-      "mercado": "pt",
-      "grupo": "tecnica",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/spots/region/portugal",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "pesca à lula",
-      "mercado": "pt",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/calamar",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "pesca ao choco",
-      "mercado": "pt",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/sepia",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "pesca ao polvo",
-      "mercado": "pt",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/pulpo",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "pesca ao robalo",
-      "mercado": "pt",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/lubina",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "pesca ao sargo",
-      "mercado": "pt",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/sargo",
       "gsc_posicion": null
     },
     {
@@ -595,39 +687,6 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/spots",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "spinning",
-      "mercado": "pt",
-      "grupo": "tecnica",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": null,
-      "gsc_posicion": null
-    },
-    {
-      "termino": "surfcasting",
-      "mercado": "pt",
-      "grupo": "tecnica",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": null,
-      "gsc_posicion": null
-    },
-    {
-      "termino": "tabela de marés",
-      "mercado": "pt",
-      "grupo": "marea",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/mareas/region/portugal",
       "gsc_posicion": null
     },
     {

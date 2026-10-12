@@ -15,7 +15,10 @@ export const FUENTES = [
   "instagram", "facebook", "google", "bing", "duckduckgo", "ecosia", "yahoo",
   "whatsapp", "telegram", "x", "email", "referido", "invitacion", "directo", "otro",
 ];
-export const PAGINAS_CONTADAS = ["empieza", "mareas", "spots", "especies", "login"];
+// en_*: páginas de Nueva Zelanda en inglés (/en/spots, /en/tides, /en/species),
+// para separar las visitas de NZ en KPIS.md (2026-10-11). Necesitan la
+// migración 20261011220000_visitas_en.sql; sin ella, la función las ignora.
+export const PAGINAS_CONTADAS = ["empieza", "mareas", "spots", "especies", "login", "en_spots", "en_tides", "en_species"];
 
 const ALIAS = {
   ig: "instagram", insta: "instagram", "instagram.com": "instagram",
@@ -34,6 +37,7 @@ export function paginaContada(pathname) {
   if (p === "/empieza" || p === "/empieza.html") return "empieza";
   if (p === "/login" || p === "/login.html") return "login";
   for (const t of ["mareas", "spots", "especies"]) if (p === `/${t}` || p.startsWith(`/${t}/`)) return t;
+  for (const t of ["spots", "tides", "species"]) if (p === `/en/${t}` || p.startsWith(`/en/${t}/`)) return `en_${t}`;
   return null;
 }
 

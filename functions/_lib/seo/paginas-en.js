@@ -15,14 +15,15 @@
 //
 // Reglas de contenido (las de España, más las de NZ): ninguna cifra de
 // normativa (tallas y cupos solo en MPI), siempre el aviso de rāhui, LINZ con
-// "Sourced from Land Information New Zealand data (CC BY 4.0)" y el aviso de
+// la fórmula de obra adaptada ("This work is based on Toitū Te Whenua Land
+// Information New Zealand data...", enlace a CC BY 4.0) y el aviso de
 // que no son tablas oficiales, y nada interno ("heuristic", "pending"...).
 
 import { DOMINIO, esc, documento, migasHtml, migasJsonLd, imagenOg } from "./base.js";
 import { ZONAS_NZ, zonaDeSpotNZ } from "../nz/zonas-nz.js";
 import { AREAS_MPI, URL_APP_MPI, URL_REGLAS_MPI, normativaArea } from "../../../assets/js/normativa-nz.js";
-import { ATRIBUCION_LINZ, AVISO_LINZ } from "../nz/mareas-linz.js";
-import { ATRIBUCION_DOC, URL_DOC_RESERVAS } from "../nz/reservas-doc.js";
+import { ATRIBUCION_LINZ, AVISO_LINZ, URL_LICENCIA_LINZ } from "../nz/mareas-linz.js";
+import { ATRIBUCION_DOC, URL_DOC_RESERVAS, sinPesca } from "../nz/reservas-doc.js";
 import { slugEspecie } from "./datos.js";
 
 export const ZONA_NZ = "Pacific/Auckland";
@@ -35,8 +36,12 @@ export const NOMBRE_MODALIDAD_EN = { costa: "Shore fishing", embarcacion: "Boat 
 const MODALIDAD_CORTA_EN = { costa: "from the shore", embarcacion: "from a boat", submarina: "spearfishing" };
 const AVISO_RAHUI = "Rāhui (temporary closures placed by tangata whenua) can apply at any time and are not in any dataset: respect local signs and notices.";
 
+// Atribución de LINZ (obra adaptada, frase literal de linz.govt.nz/copyright)
+// con enlace a la licencia CC BY 4.0. Termina en punto.
+export const ATRIBUCION_LINZ_HTML = `${esc(ATRIBUCION_LINZ)} Licence: <a href="${esc(URL_LICENCIA_LINZ)}" rel="noopener" target="_blank">CC BY 4.0</a>.`;
+
 // Créditos del pie de todas las páginas /en/.
-export const PIE_EN = `Marine weather: Open-Meteo (CC BY 4.0). Tides: ${esc(ATRIBUCION_LINZ)}; ${esc(AVISO_LINZ)} ${esc(ATRIBUCION_DOC)}. Map data © OpenStreetMap contributors (ODbL). Fishing rules change: always check the official <a href="${esc(URL_REGLAS_MPI)}" rel="noopener" target="_blank">MPI fishing rules</a>.`;
+export const PIE_EN = `Marine weather: Open-Meteo (CC BY 4.0). Tides: ${ATRIBUCION_LINZ_HTML} ${esc(AVISO_LINZ)} ${esc(ATRIBUCION_DOC)}. Map data © OpenStreetMap contributors (ODbL). Fishing rules change: always check the official <a href="${esc(URL_REGLAS_MPI)}" rel="noopener" target="_blank">MPI fishing rules</a>.`;
 
 // Spots de NZ = los de pais "nz". Especies de NZ = las de pais "nz".
 export const spotsNZ = (spots) => (spots || []).filter((s) => s.pais === "nz");
@@ -98,7 +103,7 @@ export function especiesDeSpotNZ(datos, spot, mes) {
 // ---------------------------------------------------------------------------
 // Piezas comunes
 // ---------------------------------------------------------------------------
-function ctaEn(titulo = "Try Costaviva free for 7 days") {
+function ctaEn(titulo = "Try Costaviva free for 14 days") {
   return `<section class="cta" aria-label="Try Costaviva">
   <p class="cta-titulo">${esc(titulo)}</p>
   <ul class="cta-lista">
@@ -123,9 +128,14 @@ function bloqueNormativa(region) {
 
 function bloqueReservas(reservas) {
   if (!reservas?.length) return "";
-  return `<section class="tarjeta aviso" aria-labelledby="t-reservas"><h2 id="t-reservas">Marine reserve nearby</h2>
-<ul>${reservas.map((r) => `<li><strong>${esc(r.nombre)}</strong> ${r.km === 0 ? "(at this spot)" : `(about ${esc(String(r.km))} km away)`}</li>`).join("")}</ul>
-<p>No fishing and no taking of any marine life inside a marine reserve. Check the exact boundary on the <a href="${esc(URL_DOC_RESERVAS)}" rel="noopener" target="_blank">Department of Conservation website</a> before fishing.</p>
+  const li = (r) => `<li><strong>${esc(r.nombre)}</strong> ${r.km === 0 ? "(at this spot)" : `(about ${esc(String(r.km))} km away)`}</li>`;
+  const cerradas = reservas.filter(sinPesca), fondo = reservas.filter((r) => !sinPesca(r));
+  return `<section class="tarjeta aviso" aria-labelledby="t-reservas"><h2 id="t-reservas">${cerradas.length ? "No-fishing area nearby" : "Seafloor protection area nearby"}</h2>
+${cerradas.length ? `<ul>${cerradas.map(li).join("")}</ul>
+<p>No fishing and no taking of any marine life inside a marine reserve or a Hauraki Gulf high protection area.</p>` : ""}
+${fondo.length ? `<ul>${fondo.map(li).join("")}</ul>
+<p>In a seafloor protection area, line fishing, spearfishing and gathering by hand are allowed; bottom trawling, dredging and Danish seining are not.</p>` : ""}
+<p>Check the exact boundary on the <a href="${esc(URL_DOC_RESERVAS)}" rel="noopener" target="_blank">Department of Conservation website</a> before fishing.</p>
 <p class="nota">${esc(ATRIBUCION_DOC)}. Simplified outline, not an exact boundary.</p></section>`;
 }
 
@@ -134,7 +144,7 @@ const textoEvento = (e) => `${e.manana ? "tomorrow " : ""}${e.hora} (${e.altura}
 const tipoEn = (t) => (t === "pleamar" ? "High tide" : "Low tide");
 
 function notaMareaLinz(puerto) {
-  return `<p class="nota">${puerto ? `Tide port: ${esc(puerto.nombre)} (${esc(String(puerto.km))} km${puerto.metodo === "secundario" ? ", secondary port" : ""}). ` : ""}Heights above chart datum. ${esc(ATRIBUCION_LINZ)}. ${esc(AVISO_LINZ)}</p>`;
+  return `<p class="nota">${puerto ? `Tide port: ${esc(puerto.nombre)} (${esc(String(puerto.km))} km${puerto.metodo === "secundario" ? ", secondary port" : ""}). ` : ""}Heights above chart datum. ${ATRIBUCION_LINZ_HTML} ${esc(AVISO_LINZ)}</p>`;
 }
 
 function condicionesHoy(spotPrev, spot) {
@@ -368,7 +378,7 @@ ${ZONAS_NZ.map((z) => {
     if (!del.length) return "";
     return `<section aria-labelledby="t-${z.slug}"><h2 id="t-${z.slug}"><a href="/en/tides/region/${z.slug}">${esc(z.nombre)}</a> <small>(${del.length})</small></h2>${listaSpotsEn(del, "/en/tides")}</section>`;
   }).join("\n")}
-<p class="nota">${esc(ATRIBUCION_LINZ)}. ${esc(AVISO_LINZ)}</p>
+<p class="nota">${ATRIBUCION_LINZ_HTML} ${esc(AVISO_LINZ)}</p>
 ${ctaEn()}`;
   return { titulo, html: documentoEn({ titulo, descripcion, ruta, cuerpo, ld, imagen: imagenOg("mareas"), imagenAlt: "Tide times in New Zealand" }) };
 }
@@ -384,7 +394,7 @@ export function paginaZonaMareasNZ(zona, todos) {
 <h1>${esc(zona.nombre)} tide times today</h1>
 <p class="intro">Tides at ${del.length} fishing spots in ${esc(zona.nombre)}. Fishing guide for the area: <a href="/en/spots/region/${esc(zona.slug)}">fishing in ${esc(zona.nombre)}</a>.</p>
 ${listaSpotsEn(del, "/en/tides")}
-<p class="nota">${esc(ATRIBUCION_LINZ)}. ${esc(AVISO_LINZ)}</p>
+<p class="nota">${ATRIBUCION_LINZ_HTML} ${esc(AVISO_LINZ)}</p>
 ${ctaEn()}
 <p><a href="/en/tides">All of New Zealand →</a></p>`;
   return { titulo, html: documentoEn({ titulo, descripcion, ruta, cuerpo, ld, imagen: imagenOg("mareas"), imagenAlt: `${zona.nombre} tide times` }) };

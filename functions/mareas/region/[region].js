@@ -7,6 +7,7 @@
 // "previsión marina Galicia").
 
 import { REGIONES } from "../_regiones.js";
+import { enlacesHreflang } from "../../_lib/seo/idiomas.js";
 
 const DORADO = "#A8792A";
 const NAVY = "#0B2532";
@@ -73,6 +74,7 @@ export async function onRequestGet(context) {
 <title>Mareas hoy en ${nombre}: pleamar, bajamar y oleaje | Costaviva</title>
 <meta name="description" content="${escaparHtml(descripcion)}" />
 <link rel="canonical" href="${url}" />
+${region.slug === "portugal" ? `${enlacesHreflang("/mareas/region/portugal", "https://costaviva.org", ["es", "pt"])}\n` : ""}
 <meta property="og:type" content="website" />
 <meta property="og:url" content="${url}" />
 <meta property="og:title" content="Mareas y oleaje en ${nombre} | Costaviva" />
@@ -123,7 +125,7 @@ export async function onRequestGet(context) {
     <h1>Mareas hoy en ${nombre}</h1>
     <p class="intro">${escaparHtml(descripcion)}</p>
 
-    <a class="cta" href="/login?alta=1">Prueba Costaviva 7 días gratis →</a>
+    <a class="cta" href="/login?alta=1">Prueba Costaviva 14 días gratis →</a>
     <p class="cta-sub">Sin tarjeta. Mapa completo, webcams en directo y diario de pesca. Después, 3,99 €/mes.</p>
 
     <h2>Próximas mareas y oleaje por spot</h2>

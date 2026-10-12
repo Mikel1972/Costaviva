@@ -1,8 +1,226 @@
 {
-  "generado": "2026-10-11T20:13:41.430Z",
+  "generado": "2026-10-11T20:38:32.953Z",
   "semana": "2026-09-28",
   "fuente": "Mikel1972/comun seo/palabras",
   "terminos": [
+    {
+      "termino": "tide times",
+      "mercado": "nz",
+      "grupo": "marea",
+      "puntuacion": 63,
+      "tendencia": "baja",
+      "tendencia_pct": -14,
+      "estacionalidad": {
+        "indice_mes_actual": 1.21,
+        "picos": [
+          10
+        ],
+        "estacional": false
+      },
+      "url": "/en/tides",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "tarakihi",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 57,
+      "tendencia": "baja",
+      "tendencia_pct": -56,
+      "estacionalidad": {
+        "indice_mes_actual": 0.8,
+        "picos": [
+          1,
+          2,
+          3
+        ],
+        "estacional": false
+      },
+      "url": "/en/species/nz-tarakihi",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "high tide today",
+      "mercado": "nz",
+      "grupo": "marea",
+      "puntuacion": 33,
+      "tendencia": "baja",
+      "tendencia_pct": -14,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "kingfish fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 27,
+      "tendencia": "estable",
+      "tendencia_pct": -6,
+      "estacionalidad": {
+        "indice_mes_actual": 1.02,
+        "picos": [
+          1
+        ],
+        "estacional": false
+      },
+      "url": "/en/species/nz-kingfish",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "soft bait fishing",
+      "mercado": "nz",
+      "grupo": "tecnica",
+      "puntuacion": 25,
+      "tendencia": "baja",
+      "tendencia_pct": -10,
+      "estacionalidad": {
+        "indice_mes_actual": 1.11,
+        "picos": [],
+        "estacional": false
+      },
+      "url": null,
+      "gsc_posicion": null
+    },
+    {
+      "termino": "fishing nz",
+      "mercado": "nz",
+      "grupo": "tecnica",
+      "puntuacion": 22,
+      "tendencia": "baja",
+      "tendencia_pct": -17,
+      "estacionalidad": {
+        "indice_mes_actual": 1.11,
+        "picos": [
+          5
+        ],
+        "estacional": false
+      },
+      "url": "/en/spots",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "kahawai fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 20,
+      "tendencia": "estable",
+      "tendencia_pct": -4,
+      "estacionalidad": {
+        "indice_mes_actual": 0.91,
+        "picos": [
+          1,
+          12
+        ],
+        "estacional": false
+      },
+      "url": "/en/species/nz-kahawai",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "snapper fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 18,
+      "tendencia": "baja",
+      "tendencia_pct": -10,
+      "estacionalidad": {
+        "indice_mes_actual": 1,
+        "picos": [
+          1
+        ],
+        "estacional": false
+      },
+      "url": "/en/species/nz-snapper",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "slow jigging",
+      "mercado": "nz",
+      "grupo": "tecnica",
+      "puntuacion": 15,
+      "tendencia": "baja",
+      "tendencia_pct": -14,
+      "estacionalidad": {
+        "indice_mes_actual": 1.02,
+        "picos": [
+          6
+        ],
+        "estacional": true
+      },
+      "url": null,
+      "gsc_posicion": null
+    },
+    {
+      "termino": "spin fishing",
+      "mercado": "nz",
+      "grupo": "tecnica",
+      "puntuacion": 13,
+      "tendencia": "baja",
+      "tendencia_pct": -24,
+      "estacionalidad": {
+        "indice_mes_actual": 1.03,
+        "picos": [
+          8,
+          7,
+          9
+        ],
+        "estacional": false
+      },
+      "url": "/en/spots",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "surfcasting nz",
+      "mercado": "nz",
+      "grupo": "tecnica",
+      "puntuacion": 10,
+      "tendencia": "baja",
+      "tendencia_pct": -32,
+      "estacionalidad": {
+        "indice_mes_actual": 1.09,
+        "picos": [
+          2
+        ],
+        "estacional": false
+      },
+      "url": null,
+      "gsc_posicion": null
+    },
+    {
+      "termino": "gurnard fishing",
+      "mercado": "nz",
+      "grupo": "especie",
+      "puntuacion": 5,
+      "tendencia": "sube",
+      "tendencia_pct": 81,
+      "estacionalidad": {
+        "indice_mes_actual": 0.83,
+        "picos": [
+          1
+        ],
+        "estacional": false
+      },
+      "url": "/en/species/nz-red-gurnard",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "rock fishing",
+      "mercado": "nz",
+      "grupo": "tecnica",
+      "puntuacion": 3,
+      "tendencia": "baja",
+      "tendencia_pct": -48,
+      "estacionalidad": {
+        "indice_mes_actual": 1.07,
+        "picos": [
+          9
+        ],
+        "estacional": true
+      },
+      "url": "/en/spots",
+      "gsc_posicion": null
+    },
     {
       "termino": "arrow squid fishing",
       "mercado": "nz",
@@ -158,17 +376,6 @@
       "gsc_posicion": null
     },
     {
-      "termino": "fishing nz",
-      "mercado": "nz",
-      "grupo": "tecnica",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/spots",
-      "gsc_posicion": null
-    },
-    {
       "termino": "fishing otago",
       "mercado": "nz",
       "grupo": "region",
@@ -257,17 +464,6 @@
       "gsc_posicion": null
     },
     {
-      "termino": "gurnard fishing",
-      "mercado": "nz",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/species/nz-red-gurnard",
-      "gsc_posicion": null
-    },
-    {
       "termino": "hapuku fishing",
       "mercado": "nz",
       "grupo": "especie",
@@ -279,17 +475,6 @@
       "gsc_posicion": null
     },
     {
-      "termino": "high tide today",
-      "mercado": "nz",
-      "grupo": "marea",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/tides",
-      "gsc_posicion": null
-    },
-    {
       "termino": "john dory fishing",
       "mercado": "nz",
       "grupo": "especie",
@@ -298,28 +483,6 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/en/species/nz-john-dory",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "kahawai fishing",
-      "mercado": "nz",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/species/nz-kahawai",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "kingfish fishing",
-      "mercado": "nz",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/species/nz-kingfish",
       "gsc_posicion": null
     },
     {
@@ -367,17 +530,6 @@
       "gsc_posicion": null
     },
     {
-      "termino": "rock fishing",
-      "mercado": "nz",
-      "grupo": "tecnica",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/spots",
-      "gsc_posicion": null
-    },
-    {
       "termino": "rock lobster fishing",
       "mercado": "nz",
       "grupo": "especie",
@@ -400,39 +552,6 @@
       "gsc_posicion": null
     },
     {
-      "termino": "slow jigging",
-      "mercado": "nz",
-      "grupo": "tecnica",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": null,
-      "gsc_posicion": null
-    },
-    {
-      "termino": "snapper fishing",
-      "mercado": "nz",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/species/nz-snapper",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "soft bait fishing",
-      "mercado": "nz",
-      "grupo": "tecnica",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": null,
-      "gsc_posicion": null
-    },
-    {
       "termino": "solunar fishing times",
       "mercado": "nz",
       "grupo": "prevision",
@@ -441,39 +560,6 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": null,
-      "gsc_posicion": null
-    },
-    {
-      "termino": "spin fishing",
-      "mercado": "nz",
-      "grupo": "tecnica",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/spots",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "surfcasting nz",
-      "mercado": "nz",
-      "grupo": "tecnica",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": null,
-      "gsc_posicion": null
-    },
-    {
-      "termino": "tarakihi",
-      "mercado": "nz",
-      "grupo": "especie",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/species/nz-tarakihi",
       "gsc_posicion": null
     },
     {
@@ -489,17 +575,6 @@
     },
     {
       "termino": "tide chart nz",
-      "mercado": "nz",
-      "grupo": "marea",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/tides",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "tide times",
       "mercado": "nz",
       "grupo": "marea",
       "puntuacion": 0,

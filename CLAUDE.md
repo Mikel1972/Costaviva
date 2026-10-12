@@ -5,28 +5,69 @@ cambian las convenciones — no es un historial (para eso está `ROBOT.md`).
 Si algo de aquí queda desactualizado, corrígelo en el momento en que lo
 detectes, no lo dejes para luego.
 
-## Idiomas: español e inglés (2026-10-09, base para Nueva Zelanda)
+## Migraciones: solo se aplica la que Mikel aprobó (2026-10-11, incidente)
+
+Mikel aprobó UNA migración (`20261011230000_cobro_prueba_14_dias_plan_gratis.sql`)
+y al lanzar `aplicar-migraciones.yml` se aplicaron también
+`20261011200000_programador_publicar_veto.sql` y `20261011220000_visitas_en.sql`,
+que otros agentes habían fusionado en main sin su sí: `supabase db push`
+aplica todas las pendientes. Regla: **Claude pregunta, Claude ejecuta; nada de
+SQL sin el sí de Mikel.** Dos cerrojos (trampa en `Mikel1972/comun`):
+
+1. **Check `migraciones-aprobadas`** (`.github/workflows/migraciones-aprobadas.yml`):
+   una PR que añade o modifica algo en `supabase/migrations/` falla salvo que
+   lleve la etiqueta **`sql-aprobado`**. La pone **solo el Claude principal,
+   después del sí explícito de Mikel** a esa migración (nunca un robot ni un
+   subagente por su cuenta, nunca "por adelantado"). Al ponerla, el check se
+   reevalúa solo (eventos `labeled`/`unlabeled`). No fusiones una PR con este
+   check en rojo.
+2. **`aplicar-migraciones.yml` exige el input `migracion`** con el nombre
+   exacto del fichero aprobado. Antes de aplicar mira
+   `supabase_migrations.schema_migrations`: si lo pendiente no es
+   EXACTAMENTE esa migración, falla sin tocar nada y lista las demás. Esas
+   otras se le enseñan a Mikel; no se aplican "de paso".
+
+Cómo se lanza ahora (desde main, con `actions_run_trigger`):
+`workflow_id: aplicar-migraciones.yml`, `ref: main`, inputs
+`{"confirmacion": "aplicar", "migracion": "20261011230000_cobro_prueba_14_dias_plan_gratis.sql"}`.
+Lógica en `.github/scripts/migraciones.mjs`, test en `test/migraciones.test.js`.
+
+## Idiomas: español, inglés y portugués (2026-10-09, base para Nueva Zelanda; portugués europeo desde el 2026-10-11)
+
+**Validación del portugués (decisión de Mikel, 2026-10-12): no habrá revisión
+por un nativo.** "Utiliza DeepL para comprobaciones cruzadas; no preguntaré a
+nadie; valídalo tú." La valida Claude con `i18n-contraste.yml` (DeepL API
+Free): se revisan una a una las claves que difieren y manda nuestro criterio
+(portugués europeo, trato de "você/o seu", glosario `i18n/glosario-pt.json`).
+DeepL no decide: mete brasileñismos ("link", "assinatura"), la grafía antigua
+"bóia", tutea y falla términos de pesca ("Spots" → "Anúncios", "Aparejo" →
+"Carpinteiro"). Primera pasada completa el 2026-10-12: 1070 claves, 223
+distintas, 9 corregidas. Repetirla tras cada lote grande de textos nuevos.
 
 Mikel abre Nueva Zelanda para pescadores en inglés. Base de idiomas sin
-dependencias (PR "i18n"; los datos de NZ van aparte).
+dependencias (PR "i18n"; los datos de NZ van aparte). El 2026-10-11 aprueba
+el **portugués europeo (pt-PT)** para Portugal, Azores y Madeira: nunca
+portugués de Brasil (ecrã, telemóvel, utilizador, palavra-passe; "estar a" +
+infinitivo; tratamiento impersonal o "você" con moderación).
 
 - **Núcleo**: `assets/js/i18n.js` (`window.I18n`), diccionarios
-  `assets/i18n/es.js` y `en.js` (envoltorio + un objeto JSON, una clave por
-  línea). Los módulos ES importan `assets/js/i18n-modulo.js`. En el `<head>`
-  de cada página traducida, **antes de cualquier otro script**: `es.js`,
-  `en.js`, `i18n.js`.
+  `assets/i18n/es.js`, `en.js` y `pt.js` (envoltorio + un objeto JSON, una
+  clave por línea). Los módulos ES importan `assets/js/i18n-modulo.js`. En el
+  `<head>` de cada página traducida, **antes de cualquier otro script**:
+  `es.js`, `en.js`, `pt.js`, `i18n.js`.
 - **Qué idioma** (regla de Mikel, 2026-10-09): elegido a mano en este
   navegador (`localStorage` `costaviva.idioma`) > perfil
   (`user_metadata.idioma` de la sesión de Supabase, leído de su entrada de
   localStorage) > **región** > `navigator.languages` > español. Región:
-  España, Portugal y Canarias en español; Nueva Zelanda en inglés (el
+  España y Canarias en español; Portugal, Azores y Madeira en portugués;
+  Nueva Zelanda en inglés (el
   `idioma` de cada región de `assets/js/regiones.js`; las tablas de i18n.js
   se comprueban contra ella en test/i18n.test.js). La región es la última
   que conoció la app en ese navegador (`I18n.recordarPosicion(lat, lon)` al
   abrir un spot o con el GPS de la alarma, `costaviva.region`) o, si no, la
   zona horaria del dispositivo. Así un español con el móvil en inglés ve la
   app en español. En node (tests, Functions) siempre español. El selector
-  (🌐 Español / English) va en el menú de cuenta 👤 (`<div
+  (🌐 Español / English / Português) va en el menú de cuenta 👤 (`<div
   data-i18n-selector>`) y bajo el formulario de login; guarda, intenta
   `auth.updateUser({ data: { idioma } })` y recarga.
 - **HTML fijo**: el texto español se queda en el HTML y se marca con
@@ -41,26 +82,56 @@ dependencias (PR "i18n"; los datos de NZ van aparte).
   suelto (muchos callbacks usan `t` como variable). Los scripts clásicos que
   también carga admin.html (errores.js, meteo.js...) usan
   `tr("clave", "texto español")`: el respaldo debe ser idéntico a es.js.
-- **Números/unidades**: `I18n.num` (coma en es, punto en en), `I18n.decimal`,
-  `I18n.temp`, `I18n.metros`, `I18n.velocidad(kmh, "nudos")`, `I18n.locale()`
-  (es-ES / en-NZ), `I18n.mesesCortos()`.
+- **Números/unidades**: `I18n.num` (coma en es y pt, punto en en),
+  `I18n.decimal`, `I18n.usaComa()`, `I18n.temp`, `I18n.metros`,
+  `I18n.velocidad(kmh, "nudos")` (nudos / kn / nós), `I18n.locale()`
+  (es-ES / en-NZ / pt-PT), `I18n.mesesCortos()`.
 - **Motivos del índice** (`ventana-actividad.js`): cada motivo lleva `clave`,
   `vars`, `texto` (idioma de la app) y `textoEs`. Lo que se guarda en el
   diario (`resumenIndice`) va en español + clave; `paraUsuario` filtra lo
   interno por `textoEs`.
 - **Datos por idioma** (fase de datos): `I18n.dato(obj, "texto")` usa
-  `texto_en` si existe; `I18n.nombre(especie)` usa `nombres.en`. Sin ellos,
-  español. Reglas expertas: `texto_en` en la regla.
+  `texto_en` en inglés; en portugués `texto_pt`, si no `texto_en`, si no el
+  español. `I18n.nombre(especie)` igual con `nombres.pt` / `nombres.en`.
+  Reglas expertas: `texto_en` / `texto_pt` en la regla. En especies.json todo
+  `_en` tiene su `_pt` (lo exige test/i18n.test.js), y en portugués hay además
+  cebos (`nombre_pt`), freza, tallas y normativa de PT/UE, vedas, reglas
+  expertas y `aviso_legal_pt`. Nombres de especie en portugués: los de la
+  tabla DGRM; los que puso Costaviva llevan `nombres_nota_pt`; sin nombre
+  común seguro, el científico (nunca uno inventado). Urta, medregal, bicuda y
+  palometa no tienen científico en los datos: siguen en español.
+- **Portugal en el alta y el SOS** (`assets/js/region-pais.js`): prefijo
+  +351 y las 4 primeras cifras del código postal (CP4; la restricción de la
+  base de datos ya admite 4-5 cifras); emergencias, 112.
+- **Glosario pt** (`i18n/glosario-pt.json`, con su fuente cada término):
+  maré, preia-mar, baixa-mar, ondulação, isco, amostra, pesqueiro,
+  enrocamento, defeso, tamanho mínimo... `test/i18n-glosario.test.js`
+  comprueba que pt.js los usa siempre y que no hay brasileñismos.
+- **Contraste con DeepL** (`scripts/i18n/contraste.mjs`, workflow manual
+  `i18n-contraste.yml`, secreto `DEEPL_API_KEY`, plan gratuito, sin IA):
+  traduce es.js con DeepL (PT-PT o EN-GB) y escribe `i18n/contraste-<idioma>.md`
+  con las claves que difieren mucho (distancia > 0,35) o en términos del
+  glosario. Es una lista para revisar a mano: DeepL no manda sobre el
+  glosario.
 - **SEO**: `functions/_lib/seo/idiomas.js`, **`PUBLICAR_EN = true`** desde el
   lanzamiento de NZ (2026-10-11): las páginas de Nueva Zelanda van SOLO en
   inglés bajo `/en/` con hreflang `en` + `x-default` (ver "Nueva Zelanda:
   lanzamiento"). Las de España, sin hreflang y con las canónicas de siempre.
+  **Portugués (2026-10-11)**: `functions/_lib/seo/paginas-pt.js` y
+  `functions/pt/**`, mismas rutas bajo `/pt/`: los 17 spots de la región
+  Portugal (`/pt/spots/<slug>`, `/pt/mareas/<slug>`), sus índices
+  (`/pt/spots/region/portugal`, `/pt/mareas/region/portugal`) y todas las
+  especies (`/pt/especies`, `/pt/especies/<slug>`). Cada par lleva hreflang
+  `es`, `pt-PT` y `x-default` (español) en las dos versiones; `/pt` a secas
+  redirige a los pesqueros. Solo se publica en portugués lo que tiene `_pt`
+  (lo demás no sale en /pt/). Están en el sitemap. Tests:
+  `test/seo-pt.test.js`.
 - **Tests**: `test/i18n.test.js` (cobertura de claves, nada sin traducir en
   las páginas de `PAGINAS_I18N` salvo `EXCEPCIONES`, es.js = texto del HTML,
   núcleo). Los tests antiguos que buscan textos en index.html leen la fuente
   con `fuenteEs()` (test/i18n-html.js): `I18n.t("clave"` vuelve a su texto.
-- **Página nueva o texto nuevo**: marca el HTML, añade la clave a es.js Y a
-  en.js. admin.html se queda en español a propósito.
+- **Página nueva o texto nuevo**: marca el HTML, añade la clave a es.js, a
+  en.js Y a pt.js. admin.html se queda en español a propósito.
 - **Pendiente (inventario, sin tocar)**: emails (`avisar-fin-prueba.js`:
   bienvenida, aviso y fin de prueba, enchufe; `_lib/invitaciones.js`:
   invitación; `sos-alerta.js`: SOS a contactos; plantillas de Supabase Auth
@@ -126,10 +197,9 @@ abajo sigue valiendo salvo donde dice "oculto".
   Sound fuera** (`activo: false`): sin punto de acceso ni de pesca claro. El
   puerto LINZ de todos sigue siendo el mismo (más cercano; distancias al día
   en `datos/nz/linz-puertos.json`).
-- **Licencia LINZ**: se publica con la declaración general CC BY 4.0 de LINZ,
-  **pendiente aún de su confirmación por escrito**. Si LINZ dijera otra cosa,
-  se quitan las mareas de LINZ (marea de NZ a null en `completarSpotNZ` y
-  fuera las páginas /en/tides).
+- **Licencia LINZ: CC BY 4.0, VERIFICADA el 2026-10-11** (respuesta escrita
+  de LINZ; detalle y fórmula de atribución en "Nueva Zelanda, fase 1", más
+  abajo).
 - **/prevision?region=nz pública** (caché propia, `public, max-age=1800`); la
   vista previa (`vista-previa.js`) queda para regiones aún ocultas. Nunca
   vuelve a pedir todos los spots juntos: el mapa pide cada región SOLO cuando
@@ -161,15 +231,176 @@ abajo sigue valiendo salvo donde dice "oculto".
   especies `pais` "es"); el sitemap añade las `/en/` (hoy 450 URL: 284 de
   España, iguales, + 166 de NZ). IndexNow cubre /en/ (a diario, /en/spots y
   /en/tides de cada spot). Tests: `test/nz-region.test.js`.
-- **Precio**: NZ paga lo mismo en **EUR** (3,99 €/mes, 39,99 €/año; en inglés
-  "€3.99 / month (EUR)"). Stripe Checkout cobra en euros y el banco convierte.
-  **Falta el precio en NZD** (precio en NZD en Stripe y elegirlo por región
-  en `crear-checkout-stripe.js`), y revisar el texto de desistimiento de 14
-  días (es de la UE) para NZ. Decisión de Mikel pendiente.
+- **Precio**: NZ paga en **NZD** con multiplicador manual ×1,40 (ver "Cobro:
+  precios por zonas"). Revisar el texto de desistimiento de 14 días (es de la
+  UE) para NZ sigue pendiente.
 - **Pendiente tras el lanzamiento**: subir las capas de mar de NZ (workflow
   `fuentes-gratuitas.yml`, parte `capas_nz`; sin ellas las capas de mar en
-  NZ dicen "no disponible"), revisión del inglés por un nativo, enviar el
-  sitemap en Search Console y la confirmación escrita de LINZ.
+  NZ dicen "no disponible"), revisión del inglés por un nativo y enviar el
+  sitemap en Search Console. (La confirmación escrita de LINZ llegó el
+  2026-10-11: licencia verificada.)
+
+## Cobro: precios por zonas y ámbitos (2026-10-11, precios confirmados por Mikel)
+
+Todo sale de **`functions/_lib/precios-zonas.json`** (config) y
+**`functions/_lib/precios.js`** (lógica pura, test `test/precios.test.js`).
+`PRECIOS.md` es la tabla de todos los precios del mundo, generada sin IA.
+
+- **Planes** (base España, IVA incluido): mensual 3,99 €, anual 34,99 € (ahorro
+  calculado, 27 %; cambio de Mikel del 2026-10-11, antes 29,99) y **fundador**
+  29,99 €/año para los primeros 200 suscriptores anuales (plazas compartidas
+  entre regional y Mundial; se mantiene mientras siga suscrito). Eran 500
+  hasta el 2026-10-11: el total vive en `plazas_fundador` de la config y en
+  `plazas_fundador_restantes()` (migración `20261011235000`); el test exige
+  que coincidan.
+- **Ámbitos de contenido**: *regional* = Premium en la región de contenido de
+  su zona (`region_contenido`: "es" = España + Portugal con Canarias, Azores y
+  Madeira; "nz"); *Mundial* = todas las regiones activas (`REGIONES_ACTIVAS`
+  de `functions/_lib/regiones-activas.js`: una región nueva entra sola).
+  Mundial = regional de su zona × 1,5 (`factor_mundial`), hacia arriba a .99:
+  5,99 / 52,99 / 44,99 €. Gratis: igual en todas las regiones.
+- **Zonas**: países ISO, moneda, multiplicador y redondeo (.99 o "local":
+  coronas acabadas en 9, CHF a .90). La zona del cliente es la de su país
+  (`zonaDePais`); las zonas inactivas y los países sin zona van a "resto"
+  (EUR ×1,0).
+  - **UE/EEE: EUR ×1,0 FIJO por ley** (Reglamento UE 2018/302 de
+    geobloqueo): mismas condiciones para todos sus clientes. Regional y
+    Mundial son productos distintos por contenido, no por nacionalidad, y los
+    dos se ofrecen igual a toda la UE. El test falla si un país de la UE/EEE
+    sale de esa zona o paga distinto. **Noruega es EEE**: va en esta zona, no
+    en la de renta alta.
+  - **Fuera de la UE: multiplicador por renta** = RNB per cápita método Atlas
+    en USD corrientes (Banco Mundial, NY.GNP.PCAP.CD, CC BY 4.0) del país ÷ la
+    de España, entre 0,6 y 1,5, a 0,05. **No PPA**: con paridad de poder
+    adquisitivo NZ y España quedan casi iguales; lo que importa es cuánto paga
+    la gente en su moneda. Calculado para 207 países
+    (`multiplicadores_pais`); solo cuenta en zonas activas.
+  - **NZ: ×1,40 manual** de Mikel (2026-10-11, `multiplicador_manual`); la
+    renta daría 1,25 (`multiplicador_calculado_info`, solo información). Con
+    el BCE del 2026-10-09 (1 EUR = 1,9961 NZD): regional 11,99 / 97,99 /
+    83,99 NZD; Mundial 17,99 / 146,99 / 125,99 NZD (versión `2026_10b`; los
+    precios `2026_10` siguen en Stripe, sin archivar y sin clientes).
+  - Preparadas e inactivas: AU, GB, US, CA (×1,5 o 1,45 por renta) y CH
+    (redondeo local). Se activan cuando haya contenido de esa región.
+- **Stripe**: un precio por ámbito y plan en EUR con `currency_options` por
+  cada moneda de zona activa, `tax_behavior=inclusive`, metadatos
+  `costaviva_ambito/plan/fundador` y `lookup_key`
+  `cv_<ámbito>_<plan>_v<version_precios>`. Si dos zonas comparten moneda con
+  importes distintos, la segunda lleva precio propio (`_z<zona>`). Los crea
+  **`precios-stripe.yml`** (manual; test con `STRIPE_SECRET_KEY_TEST` desde
+  cualquier rama, live con `STRIPE_SECRET_KEY` solo desde main):
+  idempotente por `lookup_key`, nunca borra ni archiva, para con error si un
+  precio existe con otros importes, añade monedas que falten y, con `portal`,
+  configura el portal de cliente (tarjeta, facturas y cancelación al final
+  del periodo; **sin cambio de plan**, que va por `/cambiar-plan`). Los ids
+  quedan en `functions/_lib/stripe-ids.json` (PR del robot); sin ellos la app
+  resuelve el precio por `lookup_key`.
+- **Activar un país**: añadir su zona (o `activa: true`) en
+  `precios-zonas.json`, `node scripts/precios/generar-md.mjs`, fusionar y
+  lanzar "Precios de Stripe" (test y luego live). Nada más.
+- **COBRO ACTIVO DESDE EL 2026-10-11, SIN ALTA FISCAL (decisión de Mikel,
+  riesgo legal y fiscal asumido por él; rechazó lanzar sin cobrar).**
+  `COBRO_ACTIVO=true` en Cloudflare Production. Stripe Tax está activo pero
+  sin registros, así que **Stripe no cobra IVA aparte**: los precios llevan el
+  IVA incluido y, al darse de alta, Mikel deberá ingresar a Hacienda ~17,4 %
+  de lo cobrado (21/121). Mientras `alta_fiscal.pendiente` sea `true` en
+  `precios-zonas.json`, el aviso sale cada lunes en el informe diario (paso
+  "Cobro y precios", sin IA) y en `PRECIOS.md`; la sección 1 de
+  `terminos.html` dice "pendiente de completar" (es/en/pt, `data-titular`)
+  con el contacto datos@costaviva.org. Al constar el alta: datos del titular
+  en los términos, registro de IVA en Stripe Tax (España/OSS),
+  `STRIPE_TAX_AUTOMATICO=1` y `pendiente: false`.
+- **Interruptor `COBRO_ACTIVO`**: variable de entorno de Cloudflare Pages
+  (solo el texto `true` la enciende, `cobroActivo()` de `_lib/precios.js`).
+  Apagada: la página de precios enseña los planes, la prueba de 14 días
+  funciona, el botón de pago dice "Próximamente" (es/en/pt) y
+  `/crear-checkout-stripe` responde 403 `cobro_no_activo` sin tocar Stripe.
+  Cambiarla exige redeploy (trampa 1).
+- **App (PR "Cobro 2/2", migración `20261011230000`)**:
+  - **Prueba de 14 días de Premium sin tarjeta** desde `perfiles.creado_en`
+    (`mi_estado_suscripcion()`; cuenta como Mundial). **Al acabar, plan
+    gratuito, sin bloquear**: `con_acceso`/`premium` = "tiene Premium en
+    alguna región"; añade `plan` (admin/permanente/invitacion/prueba/premium/
+    gratis), `ambito`, `region_contenido`, `en_prueba`, `fundador`.
+  - **Gratis** (todas las regiones): mapa, mareas, condiciones básicas
+    (ola, viento, marea, temperatura del agua, nubes, lluvia, presión,
+    índice de mar), radar de lluvia y rayos. **Premium**: índice de pesca y
+    ventana de actividad, webcams, capas del mar, diario, grupos, alarma e
+    identificación por foto. index.html ya no redirige: `assets/js/plan.js`
+    (`premiumEn`, `avisoPremium`, `avisoFinPrueba`; test `test/plan.test.js`)
+    decide por la región del spot (`paisDeRegion`) o de la vista
+    (`regionDeCentro`); con plan regional fuera de su región, "Disponible con
+    el plan Mundial". diario/grupos/alarma siguen mandando a la página de
+    planes sin Premium. Sin estado (RPC caída) se deja ver todo.
+  - **Avisos de fin de prueba**: en la app, banda arriba 3 días antes y el
+    último día (`avisoFinPrueba`, cerrar = localStorage); por email (mismo
+    cron de siempre, `avisar-fin-prueba.js`, emails de servicio, ES/EN por
+    `user_metadata.idioma`): bienvenida, recordatorio el día 11 y fin el 14
+    ("pasas al plan gratuito"; `desactivado_en` = cuándo pasó a gratis).
+  - **Página de precios** (`suscripcion.html` + `GET /precios-zona`, tabla de
+    la zona por `request.cf.country`): gratis, Premium regional con el anual
+    destacado ("Ahorra un N %", calculado con `ahorroAnual()`, nunca escrito a mano: 27 % en EUR, 32 % en NZD), fundador con "Quedan N plazas"
+    (`plazas_fundador_restantes()`, contador real: cuenta quien tiene o ha
+    tenido precio de fundador salvo checkouts sin cobrar) y Mundial como
+    opción secundaria. Al elegir plan sale la confirmación con la **casilla
+    obligatoria, sin marcar** (texto de `assets/js/consentimiento.js`, es/en/pt,
+    anual y mensual, con `VERSION`); sin ella el botón de pago no se activa y
+    el servidor responde 400 `falta_aceptacion`. Recuerda "Prueba 14 días
+    gratis antes de pagar".
+  - **Checkout** (`crear-checkout-stripe.js`): `{ ambito, plan, idioma }`,
+    zona por país de la conexión, `currency` si no es EUR, dirección de
+    facturación obligatoria, `custom_text` con el desistimiento,
+    `allow_promotion_codes` (salvo cupón de invitación), **sin
+    `trial_period_days`** (Mikel, 2026-10-11, tras una factura de 0,00 €):
+    suscribirse termina la prueba gratis, se cobra hoy y el periodo empieza
+    hoy; los meses de "Invita a un amigo" pendientes se abonan como saldo en
+    Stripe al pagar (`abonarMesesPendientes`, moneda e importe de su
+    mensualidad). Fundador rechazado con 409 sin plazas.
+  - **Cambio de plan** (`functions/cambiar-plan.js`, lógica en
+    `_lib/cambio-plan.js`, test `test/cambio-plan.test.js`; decisión de
+    Mikel, 2026-10-11: "No hay devoluciones sobre lo ya comprado. Solo se
+    compensa la parte no disfrutada cuando se sube de plan"). **Subida**
+    (mensual -> anual y/o regional -> Mundial): periodo nuevo desde ya
+    (`billing_cycle_anchor=now`), abono de lo no disfrutado y cobro inmediato
+    de la diferencia (`proration_behavior=always_invoice`,
+    `payment_behavior=error_if_incomplete`); la página enseña antes "Pagarás
+    hoy X (descontados Y no disfrutados)" (`invoices/create_preview`). El
+    fundador que pasa a otro anual conserva el precio de fundador.
+    **Bajada** (o mixto): se pide cuando se quiera y queda programada al final
+    del periodo pagado con un subscription schedule (fase 2 sin prorrateo);
+    la página dice "Tu plan cambiará a X el DD/MM/AAAA" y se puede anular
+    (`{ anular: true }` -> release). Ambos exigen la casilla de condiciones.
+    El portal de Stripe ya no cambia de plan (no admite el ancla "now" en
+    cambios del mismo intervalo). Prueba real en modo test:
+    `probar-cambio-plan.yml` (tarjeta de prueba de Stripe, borra lo que crea). Opcionales en Cloudflare: `STRIPE_TAX_AUTOMATICO=1`
+    (automatic_tax) y `STRIPE_TOS_EN_CHECKOUT=1`.
+  - **Webhook**: periodo/ámbito/fundador por los metadatos del precio
+    (`datosDePrecio`), zona y región por los de la suscripción, moneda, país
+    de facturación (avisa en el log si su zona no es la cobrada), código
+    promocional usado (`codigo_promocional`), `fundador_desde`, e
+    `invoice.upcoming` → email de aviso de renovación del plan anual.
+  - **Legal (decisión de Mikel, 2026-10-11: "el anual no se reembolsa, se
+    pierde todo el año")**: vía de contenido digital con ejecución inmediata
+    (art. 103.m TRLGDCU, art. 16.m Directiva 2011/83/UE). Casilla en nuestra
+    página; en el checkout, el mismo texto junto al pago (o junto a la casilla
+    de términos de Stripe con `STRIPE_TOS_EN_CHECKOUT=1`); la aceptación se
+    guarda en `eventos_uso` (`acepta_condiciones_pago`: versión, idioma,
+    plan, fecha; sin SQL nuevo) y en los metadatos de Stripe
+    (`aceptacion_version/idioma/fecha`); tras el pago, email de confirmación
+    (soporte duradero) con el texto aceptado y el enlace a los términos.
+    `terminos.html` (ES/EN): renuncia expresa al desistimiento, no reembolso
+    del periodo pagado (tampoco el anual), cancelar solo detiene la
+    renovación, y las devoluciones que imponga la ley (servicio no prestado o
+    defectuoso) se mantienen. `privacidad.html` explica los datos de pago.
+    Si cambia el texto de la casilla, sube `VERSION`.
+- **Robots sin IA**: `precios-semanal.yml` (lunes) refresca `cambio_actual`
+  del BCE y regenera `PRECIOS.md` y `datos/precios-resumen.md` (tabla "Precios
+  vigentes" para el resumen de los lunes); si el equivalente en EUR de una
+  zona activa se mueve > 10 % lo marca como propuesta, nunca cambia precios.
+  `multiplicadores-anual.yml` (15 de julio) recalcula la renta y el cambio y
+  **abre una PR**; si cambian importes sube `version_precios` (precios nuevos
+  en Stripe tras fusionar; los clientes existentes conservan el suyo). Los
+  manuales y los fijos no se tocan.
 
 ## Nueva Zelanda, fase 1: mareas LINZ, 60 spots y reservas DOC (2026-10-09; OCULTO hasta el lanzamiento del 2026-10-11)
 
@@ -184,8 +415,8 @@ ellos /prevision, /spots, sitemap, /registrar-presion y los scripts que leen
 SPOTS) cuando "nz" está en la lista. `test/nz-region.test.js` falla si con
 el interruptor apagado aparece algo de NZ en SPOTS, el sitemap, los `.html`,
 `tarjetas-mapa.js` o los scripts de marketing. **Activarlo es cosa de Mikel**
-y antes falta: mover los spots con `revisar_ubicacion`, la confirmación de
-licencia de LINZ, la migración del código postal y mirar la cuota de
+y antes falta: mover los spots con `revisar_ubicacion` (la licencia de LINZ
+ya está verificada, 2026-10-11), la migración del código postal y mirar la cuota de
 Open-Meteo (la zona horaria, /prevision por región, el mapa y el diario ya
 están: fase 2a, más abajo). Al activar, quitar NZ de las aserciones de
 "oculto" de test/nz-region.test.js.
@@ -228,13 +459,29 @@ amenity, tourism), no el pesquero. Chatham y Kermadec, fuera (antimeridiano).
   `--comprobar` falla si el puerto de algún spot cambiaría; entonces hay que
   regenerar `spots-nz.js`. Tests: `test/nz-mareas.test.js`, con tablas reales
   de Auckland, Leigh y Lyttelton 2026 en `test/fixtures/linz/`.
-- **Licencia LINZ: CC BY 4.0 por la declaración general de LINZ
-  (linz.govt.nz/copyright), PENDIENTE DE CONFIRMACIÓN por email
-  (customersupport@linz.govt.nz).** La página de mareas solo dice "Crown
-  copyright". Al mostrarla: "Sourced from Land Information New Zealand data
-  (CC BY 4.0)" (`ATRIBUCION_LINZ`) y el aviso "Not official tide tables as
-  specified in Maritime Rules Part 25" (`AVISO_LINZ`). No publicar la marea
-  NZ sin la confirmación.
+- **Licencia LINZ: CC BY 4.0, VERIFICADA el 2026-10-11.** Respuesta escrita
+  de atención al cliente de LINZ (customersupport@linz.govt.nz) a Mikel:
+  "Copyright information is found on our website at the following link:
+  https://www.linz.govt.nz/products-services/tides-and-tidal-streams/tide-predictions".
+  Esa página dice "Crown copyright ©" y enlaza a
+  https://www.linz.govt.nz/copyright, que dice que, salvo indicación en
+  contra, el contenido de LINZ va con licencia Creative Commons Attribution
+  4.0 International (https://creativecommons.org/licenses/by/4.0/, permite
+  uso comercial); no hay excepción para las predicciones de mareas (solo
+  para los datos del LINZ Data Service, que no usamos). Atribución por
+  escrito, sin logos. Somos **obra adaptada** (calculamos las mareas de cada
+  spot a partir de sus tablas y constantes), así que va la fórmula de obra
+  adaptada, literal: "This work is based on Toitū Te Whenua Land Information
+  New Zealand data which are licensed by Toitū Te Whenua Land Information
+  New Zealand for re-use under the Creative Commons Attribution 4.0
+  International licence." (`ATRIBUCION_LINZ`, en `/prevision` y en las
+  páginas /en/ con enlace a la licencia). Donde hay poco sitio (panel y
+  créditos del mapa, en/es/pt) va abreviada, `ATRIBUCION_LINZ_CORTA` y
+  `mapa.atrib.linz`: siempre el nombre completo "Toitū Te Whenua Land
+  Information New Zealand", "based on" y "CC BY 4.0" con enlace
+  (`URL_LICENCIA_LINZ`). Además, el aviso "Not official tide tables as
+  specified in Maritime Rules Part 25" (`AVISO_LINZ`). `test/nz-region.test.js`
+  fija las frases.
 
 **Reservas marinas DOC** (`datos/nz/reservas-marinas-doc.geojson`, 49
 reservas, ~185 KB, simplificadas a 0,0005° en el servidor de ArcGIS):
@@ -318,12 +565,90 @@ solo aplica ya a regiones que no estén en `REGIONES_ACTIVAS`.
   y clave → 200 con solo NZ, caché separada, España igual, normativa sin
   cifras, SOS, alta) y `test/listas-spots.test.js`.
 
+## Publicación automática con veto de 12 h y fusión sola de las PR del robot de SEO (2026-10-11)
+
+**Regla nueva de Mikel (2026-10-11), respondiendo a cómo publicar en redes:
+"Automático con veto"** ("no podemos estar improvisando ni aprobando uno a
+uno"). **Sustituye a la regla anterior ("nada sin su publica")**: desde hoy
+es "automático con veto de 12 h". El publicador manual sigue existiendo.
+
+- **Flujo**: los robots (`robot-marketing-instagram.yml`,
+  `robot-reel-instagram.yml`) preparan la pieza y abren el Issue de aviso
+  (etiqueta `marketing`) la víspera, con la imagen o el vídeo, los textos,
+  los hashtags y la hora a la que saldrá sola. `publicar-con-veto.yml` mira
+  cada 30 min los Issues abiertos (pg_cron:
+  `20261011200000_programador_publicar_veto.sql`, **SIN APLICAR**, a los 05 y
+  35; el `schedule:` "17,47 * * * *" es el respaldo) y, si a la hora prevista
+  no hay veto, publica en Instagram y Facebook con
+  `scripts/marketing/publicar-pieza.mjs` (la misma lógica que el manual,
+  mismo grupo de `concurrency`) y cierra el Issue con los enlaces.
+- **Excepción: Nueva Zelanda.** Las piezas con `mercado: "nz"` nunca salen
+  solas (`decidir()` de `veto.mjs` las salta y su Issue no dice "se publica
+  sola"): siguen saliendo solo con el OK de Mikel, por el workflow manual
+  (petición de Mikel del 2026-10-11 para NZ). Sus reels no llevan clip si su
+  ficha no dice `persona_identificable: false`.
+- **Cómo veta Mikel** (basta una): etiqueta `veto` en el Issue, o un
+  comentario suyo (autor = dueño del repo) con la palabra "no" o "veto" (en
+  caso de duda gana el veto; los comentarios de otros no vetan). Interruptor
+  general: **variable de repositorio `PUBLICACION_AUTOMATICA`**; si no es
+  `true`, no se publica nada solo (el job ni arranca y el Issue lo dice).
+  **No existe todavía: la crea Mikel** (Settings → Secrets and variables →
+  Actions → Variables → `PUBLICACION_AUTOMATICA` = `true`) cuando quiera
+  empezar. `AUTOMATION_PAUSED=true` también lo para.
+- **Barreras** (`scripts/marketing/veto.mjs`, test
+  `test/publicacion-veto.test.js`): 12 h de aviso como mínimo (si el Issue
+  llega tarde, sale 12 h después del aviso, nunca antes; el contenedor de
+  Instagram caduca a las 24 h y a las 23 h se da por caducado y se avisa);
+  como mucho 1 publicación al día por red (`posts-publicados.jsonl`,
+  `posts-facebook.jsonl`) y nunca repite una ya publicada; solo piezas
+  propias servidas desde `costaviva.org/assets/marketing/` (nunca webcams de
+  terceros) y reels solo sin clip o con un clip cuya `.licencia.json` diga
+  `"persona_identificable": false` (el de `coverr-pescador-costa-rocosa`
+  dice `true`: ese reel solo sale a mano; un clip propio necesita su
+  `.licencia.json` con ese campo); textos sin huecos (`{ENLACE}`,
+  `undefined`, `NaN`, `null`): solo datos reales. Token: antes de publicar
+  se comprueba como en `comprobar-token-instagram.yml`
+  (`scripts/marketing/estado-token.mjs`, mismos permisos): inválido o sin
+  permisos de Instagram = no publica y avisa en el Issue; sin
+  `pages_manage_posts` (el caso de hoy) publica solo en Instagram y lo anota.
+  Si algo falla (pieza dudosa, caducada, error al publicar), el Issue queda
+  con la etiqueta `revisar-publicacion` y no se reintenta: decide Mikel. Los
+  avisos llevan una marca invisible para no repetirse cada 30 min.
+
+**Fusión automática de las PR del robot de SEO (Mikel, 2026-10-11: que
+trabaje de forma autónoma).** `fusion-robot-seo.yml` (hermano de
+`robot-diseno-pr.yml`, `workflow_run` de "Tests"; corre el código de main y
+de la PR solo lee los nombres de los ficheros) fusiona con squash las PR de
+`robot/palabras-*` y `robot/etiquetas-olas-*` cuando todos los checks del
+commit están en verde, SOLO si todos los ficheros están en la lista blanca de
+`scripts/seo/fusion-automatica.mjs` (test `test/fusion-robot.test.js`):
+- `robot/palabras-*`: páginas públicas generadas (`functions/mareas|spots|
+  especies|en|tecnicas/**.js`), metadatos (`functions/_lib/seo/paginas.js`,
+  `paginas-en.js`, `datos.js`, `sitemap.js`, `sitemap.xml`, `robots.txt`),
+  `datos-robots/**` y `seo/**`. Como mucho **3 fusiones automáticas en 7
+  días** (cuentan las PR con la etiqueta `fusion-automatica`).
+- `robot/etiquetas-olas-*`: solo `datos-robots/oleaje-camaras/**`.
+- Lista negra que gana siempre: `.github/`, `supabase/`,
+  `functions/_middleware.js`, el resto de `functions/_lib/` (también
+  `rutas-publicas.js`: una página nueva con ruta pública nueva la revisa
+  Mikel) y cualquier ruta con cobro, login, suscripción, stripe, checkout,
+  auth, pago, referidos, invitaciones o admin. `login.html` e `index.html`
+  tampoco entran.
+- Si algún fichero queda fuera, la PR se queda abierta con la etiqueta
+  `revisar` y un comentario con la lista. Límite semanal o checks en rojo:
+  abierta, con comentario. Las demás ramas `robot/*` (diseño, especies,
+  aprendizaje) siguen esperando a Mikel. Reintento a mano: Actions →
+  "Fusionar solas las PR del robot de SEO" → `rama`.
+- Pendiente: el texto de la rutina en comun (`rutinas/robot-seo-redes.md`)
+  aún dice "la fusiona Mikel" y "cada pieza sale solo con el OK de Mikel".
+
 ## Captación: redes, calendario, métricas e "Invita a un amigo" (2026-10-09)
 
 Fase decidida por Mikel: todo a conseguir usuarios (0 suscriptores el
 2026-10-09). Cuatro piezas, todas sin IA y a coste 0:
 
-1. **Instagram + Facebook, mismo flujo de aprobación.** Los robots
+1. **Instagram + Facebook, mismo flujo** (desde el 2026-10-11, automático
+   con veto de 12 h: ver la sección de arriba). Los robots
    (`robot-marketing-instagram.yml`, `robot-reel-instagram.yml`) crean el
    borrador de Instagram y abren UN Issue (etiqueta `marketing`) con los dos
    textos y la pieza entera en un bloque invisible
@@ -416,6 +741,72 @@ Migraciones `20261009100000`-`20261009130000` **sin aplicar** (esperan el sí
 de Mikel); el baseline del vigía ya lleva las 5 tablas nuevas, así que el
 vigía saldrá en rojo hasta aplicarlas. Tests: `test/captacion.test.js`,
 `test/calendario-marketing.test.js`.
+
+## KPIs de facturación (2026-10-11)
+
+Objetivo de Mikel: facturación como estrella polar (MRR en €/mes, con los
+anuales a 1/12). Todo sin IA y solo en lectura de producción.
+
+**Los KPIs son PRIVADOS (decisión de Mikel, 2026-10-11).** Este repo es
+público: aquí solo hay código (`scripts/kpis/`) y los objetivos
+(`datos-robots/kpis/objetivos.json`). El histórico, `KPIS.md`, `mrr.svg`,
+`resumen.json`, `cambios.jsonl` y el ranking de socios viven en
+**`Mikel1972/comun`, carpeta `kpis/costaviva/`** (`scripts/kpis/rutas.mjs`;
+`KPIS_DIR`, por defecto `../comun/kpis/costaviva`). Nunca escribas cifras de
+facturación, MRR ni datos de clientes en este repo (commits, PR,
+SEO_ROBOT.md, propuestas). Del 11-oct quedaron en el historial de git de este
+repo un `KPIS.md` y un `historico.jsonl` con solo recuentos y MRR 0 € (sin
+personas ni ids).
+
+- **Objetivos** en `datos-robots/kpis/objetivos.json` (se cambian ahí, sin
+  tocar código): 10 quincenas (Q1 cierra el 26-oct, Q10 el 11-mar-2027) y
+  tres escenarios de MRR. **Objetivo oficial: ambicioso** (10 → 1.017 €);
+  **suelo de alarma: base** (6 → 411 €); prudente solo como referencia; los
+  4.000 € iniciales quedan como línea de referencia (exigirían publicidad de
+  pago). Semáforo: verde ≥ ambicioso, ámbar entre base y ambicioso, rojo <
+  base. Dos cierres seguidos bajo el base = aviso a Mikel (Issue de los
+  lunes, vía la rutina). Sin ajustes estacionales (decisión de Mikel). Los
+  supuestos del embudo (visita → alta 4 %, alta → pago 3 %, ARPU 3,25 €,
+  +15 % por bajas) valen hasta que el real tiene casos suficientes.
+- **`kpis.yml`** (diario 05:37 UTC) clona comun con `APRENDIZAJE_TOKEN`;
+  `scripts/kpis/recoger.mjs` AÑADE a `kpis/costaviva/historico.jsonl` una
+  línea por día cerrado (hora de Madrid): visitas, altas (sin admin, pruebas,
+  permanentes ni invitaciones del 100 %), canales, cohortes de activación y
+  retención, pagos nuevos, cancelaciones, facturado y, en la última, el stock
+  (MRR, suscriptores, socios). Nunca se reescribe. Supabase con la
+  service_role SOLO GET; Stripe con `STRIPE_SECRET_KEY` (la clave restringida
+  única de Costaviva; `STRIPE_KPI_KEY` de respaldo) solo con GET; sin clave,
+  MRR a precio de lista desde `suscripciones` y lo dice. Los lunes
+  `scripts/kpis/informe.mjs` escribe allí `KPIS.md`, `mrr.svg` y
+  `resumen.json` (este lo agrega `comun` en su `KPIS.md`).
+- **Por país** (`objetivos.json`, "paises"): ES 550 €, PT 100 €, NZ 367 € en
+  marzo de 2027 (= 1.017 €), cada uno con la forma del ambicioso escalada a
+  su parte; ARPU NZ 4,80 € (precio ×1,40). País del usuario: país de
+  facturación o moneda en Stripe > el de sus spots (salidas, favoritos,
+  eventos) > ES. Visitas: ES y PT juntas (no se separan por spot); NZ por las
+  páginas /en/ (`en_spots`, `en_tides`, `en_species` en `_lib/visitas.js`,
+  necesitan la migración `20261011220000_visitas_en.sql`, **sin aplicar**).
+  La rutina actúa sobre el país que va más por debajo de su objetivo.
+- **Activación v1**: en sus 7 primeros días abre la app 2 días distintos y
+  hace algo más que mirar el mapa o el pago (`EVENTOS_PASIVOS` en
+  `scripts/kpis/lib.mjs`). Revisarla con 30 pruebas terminadas.
+- **Canales**: Google (y buscadores), Instagram (y Facebook), socios,
+  directo, otros. **Socios**: el enlace de cada entidad es
+  `https://costaviva.org/empieza?utm_source=socio&utm_medium=referido&utm_campaign=<código en minúsculas>`
+  (`origen.js` lo guarda como fuente "otro" con la campaña = código; sin SQL
+  nuevo) y el pago se atribuye por el Promotion Code de la suscripción en
+  Stripe (`metadata.tipo = "socio"`, lo crea `comun`,
+  `scripts/socios/crear-codigos.mjs`). Si el webhook guarda
+  `suscripciones.codigo_promocion`, también se usa (columna opcional).
+- **Acción autónoma**: la parte D de la rutina "Robot de SEO y diseño" (`rutinas/robot-seo-redes.md` de comun)
+  (martes; `scripts/kpis/rutina-kpis.txt`; lee y apunta en comun) evalúa los cambios anteriores
+  (`scripts/kpis/evaluar-cambios.mjs`: 14 días antes contra 14 después; si
+  empeora, revierte por PR) y hace como mucho 2 cambios de texto o llamada a
+  la acción sobre el paso más en rojo, en rama `robot/diseno-…-kpi-…`
+  (PR para Mikel), apuntados en `kpis/costaviva/cambios.jsonl` de comun. Nunca
+  precios, cobro ni login. Lo que necesita a Mikel va a
+  `aprendizaje/propuestas.json` (Issue de los lunes).
+- Tests: `test/kpis.test.js`.
 
 ## Aspecto "Amanecer de pesca" (2026-10-08, elegido por Mikel)
 
@@ -713,7 +1104,7 @@ salud las comprueba como las de España (401/403/429 en enlace o iframe =
 
 **Embebidas: decisión de Mikel 2026-10-11 ("Embeberlas", como Skyline),
 pendiente de respuesta escrita de cada dueño.** Interruptor por dueño
-`NZ_EMBED_AUTORIZADO` (hoy todos `true`): si un dueño dice que no, se pone
+`NZ_EMBED_AUTORIZADO`: si un dueño dice que no, se pone
 su clave a `false` y sus cámaras vuelven solas a `enlace` (CoroLive sale
 además de `frame-src` de la CSP, que se arma con `ORIGENES_IFRAME_NZ`). Se
 usa solo lo que publica el dueño: imagen `latest` documentada de GeoNet
@@ -724,8 +1115,15 @@ iframe oficial de CoroLive (`iframe_oficial`, modo nuevo; CoroLive pide que
 le avisen para su lista blanca). Siempre con atribución visible y enlace al
 dueño: `htmlCamaraIncrustada()` en `camaras-externas.js` («Image: GeoNet,
 CC BY 3.0 NZ»). Siguen en `enlace` por motivo técnico (`motivo_sin_embed`):
-Primo (bloquea el enlace directo a sus imágenes: no se rodea) y Port Otago
-(solo imágenes con la hora en el nombre, sin URL estable). GeoNet y Cam-Era
+Primo y Port Otago (solo imágenes con la hora en el nombre, sin URL
+estable). **Primo DENEGÓ por escrito el 2026-10-12** (su helpdesk, ticket
+#81475): ni embebido, ni URLs directas de imagen, ni análisis automático;
+el acceso a sus webcams queda en su web. Solo se ENLAZA a su página pública
+de webcams (`https://www.primo.nz/info/primo-webcams`): `primo: false` en
+`NZ_EMBED_AUTORIZADO` y en `NZ_ANALISIS_AUTORIZADO`, `denegacion` en
+`CONDICIONES_NZ.primo`, y nada (ola, miniaturas, capturas) pide su imagen.
+No volver a pedirlo ni a proponerlo salvo que Primo cambie su política
+(registro en `permisos/registro.json` de comun, estado `denegada`). GeoNet y Cam-Era
 sirven `application/octet-stream`: el robot lo acepta en `imagen_oficial`.
 Reglas que siguen: sus fotogramas solo se analizan para la ola, con el
 interruptor por dueño de la sección siguiente; nada de Facebook ni
@@ -787,8 +1185,8 @@ permiso (los emails para pedirlo están en preparación).
   puerto más allá del espigón; la URL de la foto cambia en cada captura y se
   lee de su página pública de webcams) y Riverton (SouthLoop, barra del
   Aparima). **Qué no y por qué (`NO_SIRVEN_NZ`):** Cam-Era (términos), Primo
-  Port Taranaki (bloquea: fuera de su red sus fotos redirigen a
-  /camera-access-info/; no se rodea), CoroLive Whitianga y Whangamatā
+  Port Taranaki (DENEGADO por escrito el 2026-10-12: análisis en false; además
+  fuera de su red sus fotos redirigen a /camera-access-info/), CoroLive Whitianga y Whangamatā
   (panorámicas lejanas sin rompiente) y GeoNet Whakatāne y Te Kaha (cámaras de
   volcán, mar abierto sin costa). Las "pendientes" del inventario de NZ que no
   están en `camaras-nz.js` no entran.
@@ -1770,15 +2168,16 @@ ese día `scripts/seo/rutina-seo-diseno.txt` solo apunta allí).
 - La rutina "Robot de SEO y diseño" (PARTE C) actúa sobre los huecos en
   ramas `robot/palabras-*` (máx. 3 cambios por pasada, solo páginas públicas
   y metadatos, datos reales; primero el país más alejado de su objetivo en
-  `datos-robots/kpis/objetivos.json`); `robot-diseno-pr.yml` abre la PR y la fusiona
-  Mikel. Cada cambio se mide en comun (`seo/palabras/costaviva-cambios.json`).
+  `datos-robots/kpis/objetivos.json`); `robot-diseno-pr.yml` abre la PR y
+  `fusion-robot-seo.yml` la fusiona sola si todo está en la lista blanca y en
+  verde (2026-10-11; si no, etiqueta `revisar` y decide Mikel). Cada cambio se mide en comun (`seo/palabras/costaviva-cambios.json`).
 - Redes: `scripts/marketing/palabras-redes.mjs` (lógica pura,
   `test/palabras-redes.test.js`) hace que el calendario elija, entre las
   especies que ya valen (temporada, veda, modalidad) y dentro de la zona que
   toca, la especie y el spot que más se buscan y suben; añade hashtags de los
   términos con demanda y enlaza la ficha web de la especie. Lee
-  `palabras-es.json`; sin él (o con más de 21 días), rotación de siempre. La publicación no cambia:
-  cada pieza sale solo con el OK de Mikel.
+  `palabras-es.json`; sin él (o con más de 21 días), rotación de siempre. La publicación: automática
+  con veto de 12 h (2026-10-11, ver "Publicación automática con veto").
 - Métricas comunes: `medir-metricas-instagram.mjs` apunta además una foto
   diaria de seguidores (`instagram_cuenta` en `CALIBRACION.jsonl`); comun
   las suma por semana junto a las de la web.
@@ -4568,6 +4967,11 @@ Gipuzkoa) se pintan bien, el resto de capas arrancan apagadas.
 
 ## Paywall de suscripción — Stripe (2026-09-15, en curso)
 
+> **Desde el 2026-10-11 manda "Cobro: precios por zonas y ámbitos"** (arriba):
+> prueba de 14 días, plan gratuito sin bloqueo, precios 3,99/34,99 € y
+> fundador. Lo de abajo es la historia y los detalles de Stripe que siguen
+> valiendo (firma, portal, trampas test/live).
+
 Pedido explícito del usuario: pasar de app gratis a **7 días de prueba
 desde el alta, luego bloqueo total** (no freemium) salvo suscripción
 activa — **3,99€/mes o 39,99€/año**. Proveedor: **Stripe**, vía web
@@ -5086,6 +5490,10 @@ defecto) y nota interna. Lista con estado y acciones reenviar/anular.
 Para dar acceso completo para siempre a una cuenta concreta sin hacerla admin (primer caso: `maetxe2018@gmail.com`, pedido del usuario). Por email, así que vale aunque la persona aún no se haya dado de alta. `mi_estado_suscripcion()` devuelve `estado: 'permanente'` y `con_acceso: true`, y `fin_prueba_fuera_de_ciclo()` la excluye de recordatorio y desactivación. Para añadir o quitar a alguien: migración nueva con `insert`/`delete` en `public.accesos_permanentes` (email en minúsculas). Sin políticas RLS: solo la leen funciones security definer. Al añadir a alguien le llega solo, una vez, el email "¡Tienes enchufe!" (paso "acceso permanente" de `avisar-fin-prueba.js`, columna `avisado_en`).
 
 ## Fin de prueba: o se suscribe o su cuenta queda desactivada (2026-09-28)
+
+> **Sustituido el 2026-10-11**: la prueba dura 14 días y al acabar la cuenta
+> pasa al plan gratuito (ver "Cobro"). El calendario es bienvenida, día 11 y
+> día 14; las excepciones y las guardas de abajo siguen igual.
 
 Pedido explícito del usuario: "hay un periodo de prueba de 7 días sin
 cobrar. A ese vencimiento, o se da de alta o se le cancela". Sustituye al

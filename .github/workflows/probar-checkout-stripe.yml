@@ -83,11 +83,14 @@ jobs:
           TOKEN: ${{ steps.login.outputs.token }}
           PLAN: ${{ github.event.inputs.plan }}
         run: |
+          # La casilla de aceptación (assets/js/consentimiento.js) es obligatoria
+          # desde el 2026-10-11: se manda con la versión vigente del texto.
+          VERSION=$(grep -oE 'VERSION = "[^"]+"' assets/js/consentimiento.js | cut -d'"' -f2)
           curl -sS -X POST "$PRODUCCION_URL/crear-checkout-stripe" \
             -H "Authorization: Bearer $TOKEN" \
             -H "Content-Type: application/json" \
             --max-time 45 \
-            -d "{\"plan\":\"$PLAN\"}" -o /tmp/checkout.json -w "%{http_code}" > /tmp/codigo.txt
+            -d "{\"plan\":\"$PLAN\",\"aceptacion\":{\"version\":\"$VERSION\",\"idioma\":\"es\",\"aceptada\":true}}" -o /tmp/checkout.json -w "%{http_code}" > /tmp/codigo.txt
 
           # Diagnóstico: el código HTTP y el cuerpo. Es seguro imprimirlo — el
           # endpoint ya no reenvía nada del proveedor, solo mensajes propios.

@@ -56,7 +56,7 @@ export async function datosPaginaSpot(context, spot) {
   const camarasApp = Object.fromEntries(Object.keys(WEBCAMS).map((k) => [k, true]));
   for (const [k, v] of Object.entries(prevision?.camaras || {})) if (v && v.sinSenal === false) camarasApp[k] = true;
   return {
-    especiesDatos, tipoFondo, profundidad, caudales: prevision?.caudales || null, camarasApp, cond, indice,
+    especiesDatos, tipoFondo, profundidad, caudales: prevision?.caudales || null, camarasApp, cond, indice, spotPrev,
     mes: Number(ahoraISO.slice(5, 7)),
     completa: !!(cond && indice),
   };

@@ -15,3 +15,13 @@ Una entrada por pasada (martes y viernes), añadida al final. Anota números de 
 - SEO aplicado: ninguno. Mi cambio anterior (8afde0d) aún no se puede evaluar con datos de Search Console posteriores; tocar más sin medir sería adivinar. El cuello sigue siendo rastreo/autoridad, no el contenido de las páginas.
 - Diseño: ninguna propuesta; sin datos que justifiquen un cambio visible.
 - Esperado próxima pasada: SEO_ESTADO.md con fecha nueva; más de 4 indexadas o "Descubierta" por debajo de 94 (IndexNow ayuda a Bing, no a Google).
+
+## 2026-10-12 08:0x UTC (lunes, disparo programado)
+- Aviso: SEO_ESTADO.md es del 2026-10-09 10:52 UTC (no de hoy).
+- Números: indexadas 8 de 284 (3%); antes 4 de 115 (+4 indexadas: /especies, /especies/lubina, /spots, /spots/bakio entran). 229 "Descubierta: sin indexar", 47 "Google no reconoce esta URL". Clics/impresiones de 28 días: no figuran en el fichero (informe de palabras: 19 búsquedas de todos los países).
+- País priorizado: sin objetivos por país con datos (pais_foco vacío, MRR 0); reparto por puntuación de huecos → España (Mundaka y mareas por spot, posiciones 24-34).
+- SEO/palabras (PARTE C, rama robot/palabras-2026-10-12-mareas-plural, PR la abre robot-diseno-pr.yml): /mareas/<spot> pasa de "Marea hoy en X" a "Mareas en X hoy" en título, descripción y h1 (+"pleamar y bajamar"), porque las búsquedas con demanda usan el plural ("mareas mundaka" pos. 24, "pleamar mundaka hoy" 27, "bajamar mundaka" 32, "mareas en portosin" 34). Sirve al punto 1. Medición en comun seo/palabras/costaviva-es-cambios.json.
+- Huecos dejados: "spinning", "jigging", "surfcasting", "soft bait", "slow jigging" (técnicas, ES/PT/NZ): no hay datos reales con fuente en la app para escribir esas páginas, no se crean. Portugal "traducción pendiente": ya existen /pt/ de spots, mareas y especies en main; el informe está desfasado, a revisar el lunes.
+- Diseño: ninguna propuesta; sin datos que la justifiquen.
+- Parte D (DeepL): día <= 7 no aplica (día 12). KPIs: pais_foco nulo y 0 MRR; sin cambios de CTA esta pasada.
+- Esperado próxima pasada: PR fusionada y los 4 términos con posición igual o mejor a 2 semanas; "Descubierta" por debajo de 229.

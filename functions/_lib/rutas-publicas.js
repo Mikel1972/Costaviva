@@ -44,6 +44,9 @@ const ARCHIVOS_PUBLICOS = new Set([
   // Privacidad de las capturas y de "Comparte tu captura" (2026-10-08).
   "/privacidad.html",
   "/privacidad",
+  // Términos y condiciones de la suscripción (2026-10-11).
+  "/terminos.html",
+  "/terminos",
   // Página de entrada de las campañas y de "Invita a un amigo" (2026-10-09).
   "/empieza.html",
   "/empieza",
@@ -83,6 +86,11 @@ const ARCHIVOS_PUBLICOS = new Set([
   "/viento-campo",
   "/crear-checkout-stripe",
   "/crear-portal-stripe",
+  // Precios de Premium para el país de quien pregunta (2026-10-11): tabla
+  // pública, sin datos personales.
+  "/precios-zona",
+  // Cambio de plan propio (2026-10-11): exige la sesión del usuario.
+  "/cambiar-plan",
   // Invitaciones con descuento (2026-10-08): admin-invitaciones exige
   // es_admin() en el servidor; canjear-invitacion, la sesión del invitado.
   "/admin-invitaciones",
@@ -104,6 +112,8 @@ const ARCHIVOS_PUBLICOS = new Set([
   "/especies",
   // Nueva Zelanda en inglés (functions/en/index.js redirige a /en/spots).
   "/en",
+  // Portugués (functions/pt/index.js redirige a /pt/spots/region/portugal).
+  "/pt",
   // Proxy de Open-Meteo para el navegador (functions/meteo/[api].js). Rutas
   // exactas, no el prefijo /meteo/: solo existen estas dos APIs.
   "/meteo/forecast",
@@ -126,7 +136,9 @@ const ARCHIVOS_PUBLICOS = new Set([
 //   /en/      — páginas públicas de Nueva Zelanda en inglés (2026-10-11):
 //               /en/spots, /en/tides, /en/species (functions/en/...). /en
 //               a secas redirige a /en/spots.
-const PREFIJOS_PUBLICOS = ["/assets/", "/webcam/", "/mareas/", "/spots/", "/especies/", "/en/"];
+//   /pt/      — páginas públicas en portugués (2026-10-11): spots y mareas de
+//               Portugal y especies (functions/pt/...). /pt a secas redirige.
+const PREFIJOS_PUBLICOS = ["/assets/", "/webcam/", "/mareas/", "/spots/", "/especies/", "/en/", "/pt/"];
 
 export function esRutaPermitida(pathname) {
   if (ARCHIVOS_PUBLICOS.has(pathname)) return true;
