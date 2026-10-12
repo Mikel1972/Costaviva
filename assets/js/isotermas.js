@@ -69,15 +69,18 @@ export function percentilesVisibles(d, bytes, lim, pInf = 0.02, pSup = 0.98, min
   return { bajo: buscar(pInf), alto: buscar(pSup), n };
 }
 
-// Paleta fija: un color por grado entero, de 8 a 30 °C (23 bandas).
-export const TEMP_MIN = 8;
+// Paleta fija: un color por grado entero, de 0 a 30 °C (31 bandas). De 0 a
+// 7 °C desde el 2026-10-12 (el mar de NZ llega a 54 S, subantártico); los
+// colores de 8 a 30 °C no cambian (Mikel: "el color debiera ser el mismo").
+export const TEMP_MIN = 0;
 export const TEMP_MAX = 30;
 export const PALETA_TEMP_AGUA = [
+  "#2A0B4A", "#8D6FD1", "#3D1780", "#A58BEA", "#3A2394", "#8F86F0", "#2F2E9E", "#9AA8F5", // 0-7
   "#3C48B5", "#7A9DF7", "#2C74CC", "#6BC1F5", "#1F9BB8", "#67DFDA", "#25BA92", "#76F4B8", // 8-15
   "#41CC6A", "#95FE98", "#6CCF49", "#BEFA80", "#9DC333", "#E5E971", "#C4A925", "#FFCE68", // 16-23
   "#D1831C", "#FFAA62", "#CF5815", "#F2855B", "#AF2E0D", "#D16553", "#871102", // 24-30
 ];
-// Grado entero (banda) de un valor, recortado a 8-30.
+// Grado entero (banda) de un valor, recortado a 0-30.
 export function bandaTemperatura(v) {
   return Math.min(TEMP_MAX, Math.max(TEMP_MIN, Math.floor(v + 1e-9)));
 }
@@ -90,7 +93,7 @@ export function colorTemperatura(v) {
 export function valorColorBandas(v) {
   return (bandaTemperatura(v) - TEMP_MIN) / (PALETA_TEMP_AGUA.length - 1);
 }
-// Degradado CSS de bandas duras para la barra de la leyenda (8 a 30 °C).
+// Degradado CSS de bandas duras para la barra de la leyenda (0 a 30 °C).
 export function degradadoBandas() {
   const n = PALETA_TEMP_AGUA.length;
   const pc = (k) => `${((100 * k) / n).toFixed(2)}%`;

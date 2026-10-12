@@ -130,12 +130,16 @@ test("escala fija: el mismo valor da el mismo color en dos vistas y dos mares di
   assert.match(html, /Cada color es un grado/);
 });
 
-test("escala fija: un color por grado de 8 a 30 °C, recortada en los extremos", () => {
+test("escala fija: un color por grado de 0 a 30 °C, recortada en los extremos", () => {
   assert.equal(PALETA_TEMP_AGUA.length, TEMP_MAX - TEMP_MIN + 1);
   assert.equal(new Set(PALETA_TEMP_AGUA).size, PALETA_TEMP_AGUA.length, "sin colores repetidos");
   assert.equal(bandaTemperatura(18), 18);
   assert.equal(bandaTemperatura(18.99), 18);
-  assert.equal(bandaTemperatura(3), 8);
+  assert.equal(bandaTemperatura(3), 3);
+  assert.equal(bandaTemperatura(-1.5), 0);
+  // Los colores de 8 a 30 °C no cambian al añadir 0-7 (2026-10-12).
+  assert.equal(colorTemperatura(8.2), "#3C48B5");
+  assert.equal(colorTemperatura(30), "#871102");
   assert.equal(bandaTemperatura(33), 30);
   assert.equal(colorTemperatura(18.0), colorTemperatura(18.875));
   assert.notEqual(colorTemperatura(18.875), colorTemperatura(19));
@@ -191,7 +195,8 @@ test("leyenda: grados visibles, mínimo 3 y uno de cada dos si son muchos", () =
   assert.deepEqual(bandasVisibles({ bajo: 19.5, alto: 19.9 }), [18, 19, 20]);
   assert.deepEqual(bandasVisibles({ bajo: 16.1, alto: 21 }), [16, 17, 18, 19, 20, 21]);
   assert.deepEqual(bandasVisibles({ bajo: 14, alto: 26 }), [14, 16, 18, 20, 22, 24, 26]);
-  assert.deepEqual(bandasVisibles({ bajo: 5, alto: 7 }), [8, 9, 10]);
+  assert.deepEqual(bandasVisibles({ bajo: 5, alto: 7 }), [5, 6, 7]);
+  assert.deepEqual(bandasVisibles({ bajo: -1, alto: 0.5 }), [0, 1, 2]);
   assert.deepEqual(bandasVisibles(null), []);
 });
 
