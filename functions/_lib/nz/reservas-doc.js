@@ -8,10 +8,20 @@
 // está dentro o fuera. Por eso el texto siempre manda a comprobar el límite
 // en el DOC y no se dice "estás fuera".
 
-export const ATRIBUCION_DOC = "Marine reserves: Department of Conservation (DOC), Crown copyright, CC BY 4.0";
+// Desde el 2026-10-12 el fichero lleva también las zonas del golfo de Hauraki
+// (ley de 2025): `tipo` "reserva" (sin pesca), "hpa" (alta protección: sin
+// pesca recreativa ni marisqueo) o "spa" (protección del fondo: caña sí,
+// arrastre, dragas y cerco danés no). Su reconocimiento va en la atribución.
+export const ATRIBUCION_DOC = "Marine reserves: Department of Conservation (DOC), Crown copyright, CC BY 4.0. Hauraki Gulf / Tīkapa Moana protection areas: Crown Copyright: Department of Conservation Te Papa Atawhai 2025";
+// Zonas donde no se pesca nada (reservas y alta protección).
+export const sinPesca = (r) => r.tipo !== "spa";
 export const URL_DOC_RESERVAS = "https://www.doc.govt.nz/";
-// Distancia a partir de la que ya no se avisa.
+// Distancia a partir de la que ya no se avisa: 3 km desde la costa y 10 km en
+// los spots de barco (2026-10-12: desde una rampa, una zona sin pesca a 6 km
+// está al alcance, p. ej. Slipper Island desde Tairua).
 export const RADIO_AVISO_KM = 3;
+export const RADIO_AVISO_BARCO_KM = 10;
+export const radioAvisoKm = (spot) => (spot?.modalidades?.includes("embarcacion") ? RADIO_AVISO_BARCO_KM : RADIO_AVISO_KM);
 
 const RAD = Math.PI / 180;
 
@@ -53,15 +63,15 @@ export function distanciaReserva(punto, geometria) {
   return { dentro, km: dentro ? 0 : km };
 }
 
-// Reservas a menos de `radioKm` del spot, de la más cercana a la más lejana:
-// [{ nombre, km }] (km redondeado a 0,1; 0 = el punto cae en la geometría
-// simplificada).
-export function reservasCercanas(spot, geojson, radioKm = RADIO_AVISO_KM) {
+// Reservas y zonas a menos de `radioKm` del spot, de la más cercana a la más
+// lejana: [{ nombre, km, tipo }] (km redondeado a 0,1; 0 = el punto cae en la
+// geometría simplificada; tipo "reserva" si el fichero es de antes de tipos).
+export function reservasCercanas(spot, geojson, radioKm = radioAvisoKm(spot)) {
   if (!geojson?.features || !Number.isFinite(spot?.lat) || !Number.isFinite(spot?.lon)) return [];
   const p = [spot.lon, spot.lat];
   return geojson.features
-    .map((f) => ({ nombre: f.properties?.nombre || "Marine reserve", ...distanciaReserva(p, f.geometry) }))
+    .map((f) => ({ nombre: f.properties?.nombre || "Marine reserve", tipo: f.properties?.tipo || "reserva", ...distanciaReserva(p, f.geometry) }))
     .filter((r) => r.km <= radioKm)
     .sort((a, b) => a.km - b.km)
-    .map((r) => ({ nombre: r.nombre, km: Math.round(r.km * 10) / 10 }));
+    .map((r) => ({ nombre: r.nombre, km: Math.round(r.km * 10) / 10, tipo: r.tipo }));
 }
