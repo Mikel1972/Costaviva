@@ -688,8 +688,8 @@ Fase decidida por Mikel: todo a conseguir usuarios (0 suscriptores el
    especie, `rotacion-reels-nz.json`). Sin función de la app (sus pantallas
    están en español). Se preparan la víspera por la tarde de NZ: pg_cron
    (posts L/J 05:40 UTC, reel V 05:20 UTC; migración
-   `20261012090000_programador_marketing_nz.sql`, **SIN APLICAR**, sí de
-   Mikel del 2026-10-12) con `lanzar_marketing_nz()`, que solo admite los dos
+   `20261012090000_programador_marketing_nz.sql`, aplicada en producción el 2026-10-12 con el sí de
+   Mikel) con `lanzar_marketing_nz()`, que solo admite los dos
    robots de marketing y siempre manda `mercado=nz` (la función general lanza
    sin inputs = España); el segundo `schedule:` de GitHub (06:40 / 06:20
    UTC) es el respaldo. Mikel las ve por la mañana y se publican a
