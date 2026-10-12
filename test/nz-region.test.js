@@ -332,3 +332,10 @@ test("cámaras de NZ: se cargan en la ficha de cada spot NZ y en el robot de sal
   const robot = leer("scripts/camaras/comprobar-camaras.mjs");
   assert.match(robot, /for \(const camara of CAMARAS_EXTERNAS\)/);
 });
+
+test("mapa: en NZ, los botones de capas sin datos allí salen sombreados (pulsables, con aviso)", () => {
+  const html = leer("index.html");
+  assert.match(html, /const BOTONES_SOLO_IBERIA = \["toggleRios", "toggleBoyas", "toggleEstaciones", "toggleFondo", "toggleNubes"\];/);
+  assert.match(html, /\.sin-datos-region \{ opacity: 0\.38; filter: grayscale\(1\); \}/);
+  assert.match(html, /map\.on\("moveend", sombrearCapasSinDatos\);/);
+});
