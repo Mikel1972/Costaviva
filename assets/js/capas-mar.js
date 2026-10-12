@@ -114,3 +114,80 @@ export function pixelesCapa(d, bytes, paradas, valorColor) {
   }
   return px;
 }
+
+// ---------------------------------------------------------------------------
+// Tierra por encima de las capas del mar (2026-10-12, Mikel: "al poner la
+// capa de temperatura, la tierra queda detrás de la capa; eso está mal").
+// Las rejillas marcan tierra celda a celda (en NZ, 1/12° ≈ 9 km): islas
+// pequeñas como Manawatāwhi / Three Kings y la orilla quedaban tapadas. Se
+// amplía la imagen y se borran (destination-out) los píxeles que caen en los
+// polígonos de tierra de OpenStreetMap (assets/datos/tierra/<región>.geojson,
+// scripts/fuentes/tierra-osm.py), con la misma proyección que usa Leaflet:
+// x lineal en longitud, y lineal en Mercator.
+// ---------------------------------------------------------------------------
+export const ANCHO_MIN_RECORTE = 1400;
+export function factorRecorte(ancho, minimo = ANCHO_MIN_RECORTE) {
+  return Math.max(1, Math.min(8, Math.ceil(minimo / Math.max(1, ancho))));
+}
+// Píxel (x, y) de un punto en una imagen W x H que cubre `caja` ({norte, sur, oeste, este}).
+export function pixelTierra(caja, W, H, lon, lat) {
+  const yN = mercY(caja.norte), yS = mercY(caja.sur);
+  return [((lon - caja.oeste) / (caja.este - caja.oeste)) * W, ((yN - mercY(lat)) / (yN - yS)) * H];
+}
+// Rellena los píxeles transparentes que tocan mar con la media de sus
+// vecinos con dato, `pasos` veces: las celdas que el modelo da por tierra
+// junto a la costa toman el color del mar de al lado, y el recorte con los
+// polígonos de OSM deja la orilla real (sin el halo vacío de antes).
+export function extenderAlaCosta(px, W, H, pasos = 3) {
+  for (let p = 0; p < pasos; p++) {
+    const antes = px.slice();
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const o = (y * W + x) * 4;
+      if (antes[o + 3]) continue;
+      let r = 0, g = 0, b = 0, a = 0, n = 0;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const xx = x + dx, yy = y + dy;
+        if (xx < 0 || yy < 0 || xx >= W || yy >= H) continue;
+        const v = (yy * W + xx) * 4;
+        if (!antes[v + 3]) continue;
+        r += antes[v]; g += antes[v + 1]; b += antes[v + 2]; a += antes[v + 3]; n++;
+      }
+      if (n) { px[o] = r / n; px[o + 1] = g / n; px[o + 2] = b / n; px[o + 3] = a / n; }
+    }
+  }
+  return px;
+}
+// Devuelve un lienzo nuevo, ampliado, con la tierra en transparente.
+// `crearLienzo(w, h)` crea un <canvas> (document.createElement en el mapa).
+// `extender`: rellenar antes la franja de costa (capas de color continuo; no
+// en los trazos de 〰 Frentes, que se engordarían).
+export function recortarTierra(lienzo, caja, tierra, crearLienzo, extender = true) {
+  if (extender) {
+    const c0 = lienzo.getContext("2d");
+    const im = c0.getImageData(0, 0, lienzo.width, lienzo.height);
+    extenderAlaCosta(im.data, lienzo.width, lienzo.height);
+    c0.putImageData(im, 0, 0);
+  }
+  const k = factorRecorte(lienzo.width);
+  const W = lienzo.width * k, H = lienzo.height * k;
+  const out = crearLienzo(W, H);
+  const ctx = out.getContext("2d");
+  ctx.imageSmoothingEnabled = true;
+  ctx.drawImage(lienzo, 0, 0, W, H);
+  ctx.globalCompositeOperation = "destination-out";
+  ctx.beginPath();
+  for (const f of tierra?.features || []) {
+    const g = f.geometry;
+    const polis = g?.type === "Polygon" ? [g.coordinates] : g?.type === "MultiPolygon" ? g.coordinates : [];
+    for (const poli of polis) for (const anillo of poli) {
+      anillo.forEach(([lon, lat], i) => {
+        const [x, y] = pixelTierra(caja, W, H, lon, lat);
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      });
+      ctx.closePath();
+    }
+  }
+  ctx.fill("evenodd");
+  ctx.globalCompositeOperation = "source-over";
+  return out;
+}
