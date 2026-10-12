@@ -6192,26 +6192,38 @@ function horaVientoLocal(iso) {
   return d.toLocaleTimeString(I18n.locale(), { hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
 }
 
-function mostrarHoraViento(indice) {
+// Viento en una posición de la serie con decimales (2,4 = 40 % del camino
+// de la hora 2 a la 3): mezcla lineal de U y V de las dos horas. Así la
+// reproducción pasa de una hora a otra poco a poco (2026-10-12, Mikel: "da
+// un salto de fotograma a fotograma; ¿se puede hacer más continuo?").
+function datosVientoEn(snaps, pos) {
+  const i = Math.min(Math.floor(pos), snaps.length - 1);
+  const t = pos - Math.floor(pos);
+  const a = snaps[i], b = snaps[Math.min(i + 1, snaps.length - 1)];
+  if (!t || a === b) return a.data;
+  return a.data.map((rec, k) => ({ header: rec.header, data: rec.data.map((x, j) => x + (b.data[k].data[j] - x) * t) }));
+}
+function mostrarHoraViento(pos) {
   const referencia = vientoReferencia();
   if (!referencia?.length) return;
-  const i = Math.min(Math.max(indice, 0), referencia.length - 1);
+  pos = Math.min(Math.max(pos, 0), referencia.length - 1);
+  const i = Math.floor(pos);
   const activo = document.getElementById("toggleViento").classList.contains("activo");
   VIENTO_REGIONES.forEach((region) => {
     const snaps = vientoSnapshotsPorRegion[region.id];
     if (!snaps?.length) return;
-    const snap = snaps[Math.min(i, snaps.length - 1)];
-    // Ya creada: solo cambia la hora (setData), sin quitar y poner la capa;
-    // así la reproducción automática no parpadea.
+    const datos = datosVientoEn(snaps, Math.min(pos, snaps.length - 1));
+    // Ya creada: solo cambia el campo (setDataSuave, assets/js/leaflet-
+    // velocity.js), sin quitar la capa ni volver a soltar las partículas.
     const existente = vientoCapas[region.id];
     if (existente) {
-      existente.setData(snap.data);
+      existente.setDataSuave(datos);
       if (activo && !map.hasLayer(existente)) existente.addTo(map);
       return;
     }
     vientoCapas[region.id] = L.velocityLayer({
       displayValues: false,
-      data: snap.data,
+      data: datos,
       velocityScale: 0.012,
       opacity: 0.9,
       lineWidth: 2,
@@ -6262,8 +6274,12 @@ async function cargarCampoViento() {
 
 // Reproducción automática de las horas: arranca al encender el viento y da
 // la vuelta al llegar al final; el botón la pausa y tocar la barra también.
+// Cada hora dura VIENTO_PASO_MS y se recorre en VIENTO_SUBPASOS pasos
+// mezclados (datosVientoEn), para que el viento cambie de forma continua.
 const VIENTO_PASO_MS = 1500;
+const VIENTO_SUBPASOS = 5;
 let temporizadorVientoPlay = null;
+let posicionViento = 0;
 function reproducirViento(si) {
   clearInterval(temporizadorVientoPlay);
   temporizadorVientoPlay = null;
@@ -6271,13 +6287,16 @@ function reproducirViento(si) {
   boton.textContent = si ? "⏸" : "▶";
   boton.setAttribute("aria-label", I18n.t(si ? "lluvia.pausar" : "lluvia.reproducir"));
   if (!si) return;
+  const slider = document.getElementById("vientoSlider");
+  posicionViento = +slider.value;
   temporizadorVientoPlay = setInterval(() => {
-    const slider = document.getElementById("vientoSlider");
     const max = +slider.max;
     if (!vientoReferencia() || max <= 0) return;
-    slider.value = String(+slider.value >= max ? 0 : +slider.value + 1);
-    mostrarHoraViento(+slider.value);
-  }, VIENTO_PASO_MS);
+    posicionViento = Math.round((posicionViento + 1 / VIENTO_SUBPASOS) * VIENTO_SUBPASOS) / VIENTO_SUBPASOS;
+    if (posicionViento > max) posicionViento = 0;
+    slider.value = String(Math.floor(posicionViento));
+    mostrarHoraViento(posicionViento);
+  }, VIENTO_PASO_MS / VIENTO_SUBPASOS);
 }
 document.getElementById("vientoPlay").addEventListener("click", () => reproducirViento(!temporizadorVientoPlay));
 document.getElementById("toggleViento").addEventListener("click", (e) => {

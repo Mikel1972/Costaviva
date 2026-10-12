@@ -351,6 +351,15 @@ L.VelocityLayer = (L.Layer ? L.Layer : L.Class).extend({
 
     this.fire("load");
   },
+  // Costaviva (2026-10-12, Mikel: "da un salto de fotograma a fotograma; ¿se
+  // puede hacer más continuo?"): cambia el campo de viento sin borrar el
+  // lienzo ni volver a soltar las partículas, que siguen su camino sobre el
+  // campo nuevo. Si la animación aún no ha arrancado, como setData.
+  setDataSuave: function setDataSuave(data) {
+    this.options.data = data;
+    if (this._windy && this._windy.field && this._windy.cambiarCampo(data)) return;
+    this.setData(data);
+  },
   setOpacity: function setOpacity(opacity) {
     this._canvasLayer.setOpacity(opacity);
   },
@@ -905,6 +914,8 @@ var Windy = function Windy(params) {
     var fadeFillStyle = "rgba(0, 0, 0, ".concat(OPACITY, ")");
     var particles = [];
 
+    // Costaviva: el campo vigente puede cambiar (cambiarCampo) sin reiniciar.
+    var campo = function () { return windy.field || field; };
     for (var i = 0; i < particleCount; i++) {
       particles.push(field.randomize({
         age: Math.floor(Math.random() * MAX_PARTICLE_AGE) + 0
@@ -916,13 +927,14 @@ var Windy = function Windy(params) {
         bucket.length = 0;
       });
       particles.forEach(function (particle) {
+        var f = campo();
         if (particle.age > MAX_PARTICLE_AGE) {
-          field.randomize(particle).age = 0;
+          f.randomize(particle).age = 0;
         }
 
         var x = particle.x;
         var y = particle.y;
-        var v = field(x, y); // vector at current position
+        var v = f(x, y); // vector at current position
 
         var m = v[2];
 
@@ -934,7 +946,7 @@ var Windy = function Windy(params) {
           var xt = x + v[0] * mult;
           var yt = y + v[1] * mult;
 
-          if (field(xt, yt)[2] !== null) {
+          if (f(xt, yt)[2] !== null) {
             // Path from (x,y) to (xt,yt) is visible, so add this particle to the appropriate draw bucket.
             particle.xt = xt;
             particle.yt = yt;
@@ -996,6 +1008,24 @@ var Windy = function Windy(params) {
     })();
   };
 
+  var ultimoInicio = null;
+  // Costaviva: nuevo campo para la misma vista, sin reiniciar la animación.
+  // Devuelve false si no hay una vista arrancada sobre la que hacerlo.
+  var cambiarCampo = function cambiarCampo(data) {
+    if (!ultimoInicio || !animationLoop) return false;
+    gridData = data;
+    var ini = ultimoInicio;
+    buildGrid(gridData, function (grid) {
+      interpolateField(grid, buildBounds(ini.bounds, ini.width, ini.height), ini.mapBounds, function (bounds, field) {
+        if (ini !== ultimoInicio) { field.release(); return; } // la vista cambió mientras tanto
+        var viejo = windy.field;
+        windy.field = field;
+        if (viejo && viejo !== field) viejo.release();
+      });
+    });
+    return true;
+  };
+
   var start = function start(bounds, width, height, extent) {
     var mapBounds = {
       south: deg2rad(extent[0][1]),
@@ -1006,6 +1036,7 @@ var Windy = function Windy(params) {
       height: height
     };
     stop(); // build grid
+    ultimoInicio = { bounds: bounds, width: width, height: height, mapBounds: mapBounds };
 
     buildGrid(gridData, function (grid) {
       // interpolateField
@@ -1029,7 +1060,8 @@ var Windy = function Windy(params) {
     createField: createField,
     interpolatePoint: interpolate,
     setData: setData,
-    setOptions: setOptions
+    setOptions: setOptions,
+    cambiarCampo: cambiarCampo
   };
   return windy;
 };
