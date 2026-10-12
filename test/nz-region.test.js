@@ -248,7 +248,13 @@ test("mapa: NZ se pide sola (/prevision?region=nz), arranque en Auckland para NZ
   // Cada región con su petición: nunca todos los spots juntos.
   assert.match(html, /fetch\(`\/prevision\?\$\{params\}`/);
   assert.match(html, /const params = new URLSearchParams\(\{ region \}\)/);
-  assert.match(html, /nz: \{ centro: \[-36\.85, 174\.76\], zoom: 9 \}/, "Auckland");
+  // Arranque en NZ con el país entero (2026-10-12), no Auckland.
+  assert.match(html, /nz: \{ centro: \[-41\.3, 173\.5\], zoom: 5, encuadre: "nz" \}/, "NZ entera");
+  assert.match(html, /map\.fitBounds\(VISTAS_REGION\[id\]\.limites/);
+  // Círculos al tamaño del zoom y etiqueta de región que se va a los 2 s.
+  assert.match(html, /const ESCALA_SPOT_POR_ZOOM = /);
+  assert.match(html, /\.icono-spot > div \{ transform: scale\(var\(--escala-spot, 1\)\)/);
+  assert.match(html, /classList\.add\("resumen-oculto"\), 2000\)/);
   assert.match(html, /return \{ region: r === "nueva_zelanda" \? "nz" : "es", fija: false \};/, "región del usuario, como el idioma");
   assert.match(html, /minZoom: 1,/);
   assert.match(html, /worldCopyJump: true,/);

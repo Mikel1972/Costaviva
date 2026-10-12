@@ -272,6 +272,14 @@
 
   /* Mundo entero y selector de región (NZ, 2026-10-11). */
   #map.zoom-bajo .icono-spot { display: none; }
+  /* Círculos de los spots al tamaño del zoom (--escala-spot, actualizarZoomBajo)
+     y, de lejos, sin nombre ni flechas (visibility: no mueve el círculo). */
+  .icono-spot > div { transform: scale(var(--escala-spot, 1)); transform-origin: 50% 50%; }
+  #map.zoom-lejos .icono-spot .etiqueta-spot,
+  #map.zoom-lejos .icono-spot div:has(> .marcador-envoltorio) > :not(.marcador-envoltorio) { visibility: hidden; }
+  /* La etiqueta de región se desvanece a los 2 s. */
+  .resumen-region { transition: opacity 0.4s; }
+  #map.resumen-oculto .resumen-region { opacity: 0; pointer-events: none; }
   .resumen-region { background: none; border: 0; }
   .chip-region {
     display: block; width: 100%; padding: 6px 10px; border: 0; border-radius: 999px;
@@ -1594,15 +1602,25 @@ const VISTAS_REGION = {
   nz: { limites: [[-47.4, 166.3], [-34.3, 178.6]], i18n: "mapa.region.nz" },
 };
 // Vista de arranque de cada región de datos: la de siempre en España
-// (Bizkaia) y Auckland en Nueva Zelanda.
+// (Bizkaia) y, en Nueva Zelanda, el país entero (Mikel, 2026-10-12: "la
+// primera visual debe contemplar toda Nueva Zelanda, no una zona"; antes
+// Auckland a zoom 9). En NZ, nada más crear el mapa se encuadra
+// VISTAS_REGION.nz con fitBounds (encuadrarArranque).
 const VISTA_INICIAL_REGION = {
   es: { centro: [43.51, -2.82], zoom: 10 },
-  nz: { centro: [-36.85, 174.76], zoom: 9 },
+  nz: { centro: [-41.3, 173.5], zoom: 5, encuadre: "nz" },
 };
 // Por debajo de este zoom no se pintan los spots uno a uno (a zoom de
 // continente se taparían todos) ni se piden datos: se ve una etiqueta por
-// región que lleva a ella.
-const ZOOM_MIN_SPOTS = 5;
+// región que lleva a ella. 4 desde el 2026-10-12: en el móvil, toda NZ
+// cabe a zoom 4, y los círculos se encogen con el zoom (ESCALA_SPOT_POR_ZOOM).
+const ZOOM_MIN_SPOTS = 4;
+// Tamaño de los círculos de los spots según el zoom (Mikel, 2026-10-12: "los
+// círculos, adaptarse al zoom"). Por debajo de ZOOM_ETIQUETAS_SPOT solo se
+// ve el círculo: sin nombre ni flechas, que a esa distancia se pisan.
+const ESCALA_SPOT_POR_ZOOM = { 4: 0.45, 5: 0.55, 6: 0.65, 7: 0.8, 8: 0.9 };
+const ZOOM_ETIQUETAS_SPOT = 8;
+const escalaSpot = (z) => (z >= 9 ? 1 : ESCALA_SPOT_POR_ZOOM[Math.max(4, Math.floor(z))]);
 const CLAVE_VISTA_REGION = "costaviva.vistaRegion";
 function vistaRegionGuardada() {
   try { const v = window.localStorage.getItem(CLAVE_VISTA_REGION); return VISTAS_REGION[v] ? v : null; } catch (e) { return null; }
@@ -2418,6 +2436,14 @@ const map = L.map("map", {
 // quedan, esos sí son una condición real de uso de esos servicios
 // gratuitos, no solo un logo de la librería.
 map.attributionControl.setPrefix(false);
+// Arranque en NZ: el país entero, no una zona (fitBounds sobre
+// VISTAS_REGION.nz; también si la vista guardada en el selector es "nz").
+(function encuadrarArranque() {
+  const id = VISTA_INICIAL.vista || VISTA_INICIAL_REGION[VISTA_INICIAL.region].encuadre;
+  if (id !== "nz" || !VISTAS_REGION[id]) return;
+  map.fitBounds(VISTAS_REGION[id].limites, { padding: [12, 12] });
+  if (map.getZoom() < ZOOM_MIN_SPOTS) map.setZoom(ZOOM_MIN_SPOTS);
+})();
 // En el móvil, los créditos se pliegan en "ⓒ Fuentes" para no tapar el ⓘ
 // (assets/js/creditos-mapa.js); en escritorio siempre abiertos.
 const creditosMapa = window.CreditosMapa
@@ -2526,10 +2552,23 @@ for (const [id, vista, region] of [["es", "es", "es"], ["nz", "nz", "nz"]]) {
   L.marker(REGIONES_DATOS[region].centro, { icon, keyboard: true, title: I18n.t(`mapa.region.chip_${id}`) })
     .on("click", () => irARegionMapa(vista)).addTo(capaResumenRegiones);
 }
+// La etiqueta de región se va sola a los 2 s (Mikel, 2026-10-12: "la caja
+// del nombre debe desaparecer en 2 seg porque tapa"). Vuelve a salir cada
+// vez que se baja otra vez a zoom de continente.
+let temporizadorResumenRegiones = null;
 function actualizarZoomBajo() {
-  const bajo = map.getZoom() < ZOOM_MIN_SPOTS;
-  map.getContainer().classList.toggle("zoom-bajo", bajo);
-  if (bajo && !map.hasLayer(capaResumenRegiones)) capaResumenRegiones.addTo(map);
+  const z = map.getZoom();
+  const bajo = z < ZOOM_MIN_SPOTS;
+  const contenedor = map.getContainer();
+  contenedor.classList.toggle("zoom-bajo", bajo);
+  contenedor.classList.toggle("zoom-lejos", z < ZOOM_ETIQUETAS_SPOT);
+  if (!bajo) contenedor.style.setProperty("--escala-spot", String(escalaSpot(z)));
+  if (bajo && !map.hasLayer(capaResumenRegiones)) {
+    capaResumenRegiones.addTo(map);
+    contenedor.classList.remove("resumen-oculto");
+    clearTimeout(temporizadorResumenRegiones);
+    temporizadorResumenRegiones = setTimeout(() => contenedor.classList.add("resumen-oculto"), 2000);
+  }
   if (!bajo && map.hasLayer(capaResumenRegiones)) map.removeLayer(capaResumenRegiones);
 }
 map.on("zoomend", actualizarZoomBajo);
