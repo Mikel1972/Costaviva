@@ -547,6 +547,20 @@
     background: var(--degradado-fuerte); color: var(--sobre-acento);
     box-shadow: 0 0 0 3px var(--blanco), 0 6px 18px rgba(190,24,93,0.45);
   }
+  /* Botón ☰ de las capas: solo en el móvil (ver @media max-width 720px). */
+  .menu-capas-toggle {
+    display: none; position: absolute; z-index: 503; top: 10px; right: 10px;
+    width: 48px; height: 48px; border-radius: 50%; border: 0; padding: 0;
+    background: var(--mar); color: var(--blanco); font-size: 22px; line-height: 1;
+    align-items: center; justify-content: center; cursor: pointer;
+    box-shadow: 0 6px 16px rgba(11,30,63,0.28);
+  }
+  .menu-capas-toggle .menu-capas-n {
+    position: absolute; top: -3px; right: -3px; min-width: 18px; height: 18px; padding: 0 4px;
+    border-radius: 9px; background: var(--degradado-fuerte); color: var(--sobre-acento);
+    font: 800 11px/18px var(--f-texto); box-shadow: 0 0 0 2px var(--blanco);
+  }
+  .menu-capas-toggle .menu-capas-n[hidden] { display: none; }
   /* El display:flex de arriba (regla de autor) gana por defecto al
      display:none del atributo [hidden] (regla de user-agent) — sin esto,
      poner el botón "+" en hidden no lo ocultaría de verdad. */
@@ -912,6 +926,29 @@
     .leyenda-sustrato .nota { display: none; }
     .viento-slider-panel { right: 124px; }
     .luna-panel { right: 124px; }
+    /* Menú ☰ de capas en el móvil (2026-10-12, Mikel: "en móviles, las
+       opciones deberían aparecer en una hamburguesa sobre el mapa, más o
+       menos donde están, para poder minimizar y tener más espacio; con
+       posibilidad de desplegar y contraer. Las leyendas están bien así").
+       El ☰ ocupa la esquina y las dos columnas bajan una fila (56px).
+       Plegado, solo se ve el ☰ (con el número de capas encendidas). */
+    .menu-capas-toggle { display: flex; }
+    .rayos-toggle { top: 66px; }
+    .luna-toggle { top: 122px; }
+    .fondo-toggle { top: 178px; }
+    .nubes-toggle { top: 234px; }
+    .estaciones-toggle { top: 290px; }
+    .viento-toggle { top: 346px; }
+    .spots-toggle { top: 66px; }
+    .anadir-ubicacion-toggle { top: 122px; }
+    .rios-toggle { top: 178px; }
+    .boyas-toggle { top: 234px; }
+    .clorofila-toggle { top: 290px; }
+    .tempagua-toggle { top: 346px; }
+    .frentes-toggle { top: 402px; }
+    .corriente-toggle { top: 458px; }
+    .fondo-selector { top: 178px; }
+    .mapa-wrap.capas-plegadas :is(.rayos-toggle, .luna-toggle, .fondo-toggle, .nubes-toggle, .estaciones-toggle, .viento-toggle, .spots-toggle, .anadir-ubicacion-toggle, .rios-toggle, .boyas-toggle, .fondo-selector) { display: none !important; }
     /* Créditos obligatorios del mapa (assets/js/creditos-mapa.js): al cargar,
        enteros; al tocar el mapa se pliegan en la píldora "ⓒ Fuentes", que
        siempre se ve. Abiertos no pasan del ⓘ (10 + 40 + 10). Las capas de
@@ -1252,6 +1289,7 @@
         <div class="nota" style="margin-top:8px; padding-top:8px; border-top:1px solid var(--linea);" data-i18n="mapa.leyenda.tagua">🌡 T. AGUA: cada color es un grado, siempre el mismo en todo el mapa (del azul frío al rojo cálido); las líneas marcan el grado exacto.</div>
       </div>
     </div>
+    <button class="menu-capas-toggle" id="menuCapas" type="button" aria-expanded="false" aria-controls="toggleRayos" aria-label="Mostrar las capas del mapa" title="Capas del mapa" data-i18n-aria-label="mapa.capas.menu_abrir" data-i18n-title="mapa.capas.menu"><span class="menu-capas-icono" aria-hidden="true">☰</span><span class="menu-capas-n" id="menuCapasN" hidden></span></button>
     <button class="rayos-toggle" id="toggleRayos" title="Rayos cerca: al momento y por satélite" aria-label="Mostrar/ocultar rayos en el mapa" data-i18n-aria-label="mapa.capa.rayos_aria" data-i18n-title="mapa.capa.rayos_title">⚡<span class="capa-label" data-i18n="mapa.capa.rayos">Rayos</span></button>
     <div class="aviso-capa" id="avisoCapa" role="status" hidden></div>
     <button class="luna-toggle" id="toggleLuna" title="Fase y posición de la luna" aria-label="Mostrar/ocultar datos de la luna" data-i18n-aria-label="mapa.capa.luna_aria" data-i18n-title="mapa.capa.luna_title">🌙<span class="capa-label" data-i18n="mapa.capa.luna">Luna</span></button>
@@ -2731,6 +2769,48 @@ function montarZonasSinPesca(Z) {
 }
 if (window.ZonasSinPesca) montarZonasSinPesca(window.ZonasSinPesca);
 else window.addEventListener("zonas-sin-pesca-listas", () => montarZonasSinPesca(window.ZonasSinPesca), { once: true });
+// Menú ☰ de las capas en el móvil (2026-10-12). Plegado por defecto en la
+// primera visita; luego se recuerda en este navegador (solo comodidad).
+// Plegado, el ☰ cuenta las capas encendidas (sin contar Spots, que va
+// encendida de serie).
+const CLAVE_MENU_CAPAS = "costaviva.menuCapas";
+const BOTONES_CAPA_MENU = ["toggleRayos", "toggleLuna", "toggleFondo", "toggleNubes", "toggleEstaciones", "toggleViento",
+  "toggleRios", "toggleBoyas", "toggleClorofila", "toggleTempAgua", "toggleFrentes", "toggleCorriente"];
+function ponerMenuCapas(abierto, guardar) {
+  const wrap = document.querySelector(".mapa-wrap");
+  const boton = document.getElementById("menuCapas");
+  if (!wrap || !boton) return;
+  wrap.classList.toggle("capas-plegadas", !abierto);
+  boton.setAttribute("aria-expanded", abierto ? "true" : "false");
+  boton.querySelector(".menu-capas-icono").textContent = abierto ? "✕" : "☰";
+  boton.setAttribute("aria-label", I18n.t(abierto ? "mapa.capas.menu_cerrar" : "mapa.capas.menu_abrir"));
+  if (guardar) { try { localStorage.setItem(CLAVE_MENU_CAPAS, abierto ? "abierto" : "plegado"); } catch (e) { /* solo comodidad */ } }
+  contarCapasMenu();
+}
+function contarCapasMenu() {
+  const n = BOTONES_CAPA_MENU.filter((id) => document.getElementById(id)?.classList.contains("activo")).length;
+  const marca = document.getElementById("menuCapasN");
+  if (!marca) return;
+  marca.textContent = String(n);
+  marca.hidden = !n || !document.querySelector(".mapa-wrap")?.classList.contains("capas-plegadas");
+}
+(function montarMenuCapas() {
+  const boton = document.getElementById("menuCapas");
+  if (!boton) return;
+  let abierto = false;
+  try { abierto = localStorage.getItem(CLAVE_MENU_CAPAS) === "abierto"; } catch (e) { abierto = false; }
+  ponerMenuCapas(abierto, false);
+  boton.addEventListener("click", (e) => {
+    e.stopPropagation();
+    ponerMenuCapas(boton.getAttribute("aria-expanded") !== "true", true);
+  });
+  // El número se pone al día cuando cualquier botón de capa cambia de estado.
+  const vigia = new MutationObserver(contarCapasMenu);
+  for (const id of BOTONES_CAPA_MENU) {
+    const b = document.getElementById(id);
+    if (b) vigia.observe(b, { attributes: true, attributeFilter: ["class"] });
+  }
+})();
 let temporizadorAvisoCapa = null;
 function avisoCapa(texto) {
   const el = document.getElementById("avisoCapa");
