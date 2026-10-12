@@ -1,8 +1,8 @@
 // functions/_lib/nz/spots-nz.js
 // Los spots de Nueva Zelanda (fase 1 de NZ, 2026-10-09; PÚBLICOS desde el
 // lanzamiento del 2026-10-11: "nz" está en REGIONES_ACTIVAS,
-// functions/_lib/regiones-activas.js). 65 en la lista, 64 activos (5 de
-// islas añadidos el 2026-10-12: Aotea x2, Waiheke, Rangitoto y D'Urville).
+// functions/_lib/regiones-activas.js). 69 en la lista, 68 activos (9 de
+// islas añadidos el 2026-10-12: Aotea x6, Waiheke, Rangitoto y D'Urville).
 //
 // Origen: plan de NZ de 2026-10-09 (tabla de §4). Coordenadas de
 // OpenStreetMap (ODbL 1.0, "© OpenStreetMap contributors"), con el id OSM
@@ -72,6 +72,11 @@ const BASE = [
   // Islas del golfo de Hauraki (2026-10-12, Mikel: "busca cámaras y spots en las islas que aparezcan en el recuadro"). Fuera de las zonas de protección de 2025 (HPA), comprobado contra los puntos de límite de DOC.
   { slug: "nz-tryphena", nombre: "Tryphena (Aotea / Great Barrier Island)", lat: -36.32035, lon: 175.48587, region: "nz_auckland_kermadec", zona: "Auckland / Hauraki Gulf", modalidades: ["costa","embarcacion"], osm: "way/91965331 man_made=pier (Shoal Bay wharf)", costa: { osm: "way/1329593275", m: 15 }, puerto_linz: { id: "6407", nombre: "Tryphena", km: 0.5, tabla: null } },
   { slug: "nz-port-fitzroy", nombre: "Port Fitzroy (Aotea / Great Barrier Island)", lat: -36.16499, lon: 175.36122, region: "nz_auckland_kermadec", zona: "Auckland / Hauraki Gulf", modalidades: ["costa","embarcacion"], osm: "way/91965316 man_made=pier", costa: { osm: "way/1331306180", m: 7 }, puerto_linz: { id: "6406", nombre: "Nagle Cove", km: 4.3, tabla: null } },
+  // Más Aotea / Great Barrier (2026-10-12, Mikel: "¿puedes localizar algo en Great Island?"). Todos a > 10 km de zonas sin pesca.
+  { slug: "nz-whangaparapara", nombre: "Whangaparapara wharf (Aotea / Great Barrier Island)", lat: -36.24442, lon: 175.39721, region: "nz_auckland_kermadec", zona: "Auckland / Hauraki Gulf", modalidades: ["costa","embarcacion"], osm: "way/91965521 man_made=pier", costa: { osm: "way/190004081", m: 19 }, puerto_linz: { id: "6407a", nombre: "Korotiti Bay", km: 10.3, tabla: "Korotiti Bay" } },
+  { slug: "nz-okupu", nombre: "Okupu wharf, Blind Bay (Aotea / Great Barrier Island)", lat: -36.26424, lon: 175.4214, region: "nz_auckland_kermadec", zona: "Auckland / Hauraki Gulf", modalidades: ["costa","embarcacion"], osm: "way/91965278 man_made=pier", costa: { osm: "way/190004076", m: 7 }, puerto_linz: { id: "6407", nombre: "Tryphena", km: 8.1, tabla: null } },
+  { slug: "nz-medlands", nombre: "Medlands Beach (Aotea / Great Barrier Island)", lat: -36.26562, lon: 175.4958, region: "nz_auckland_kermadec", zona: "Auckland / Hauraki Gulf", modalidades: ["costa"], osm: "way/147374517 natural=beach (Medlands Beach)", costa: { osm: "way/190004117", m: 105 }, puerto_linz: { id: "6407", nombre: "Tryphena", km: 5.8, tabla: null } },
+  { slug: "nz-whangapoua", nombre: "Whangapoua Beach, Okiwi (Aotea / Great Barrier Island)", lat: -36.13091, lon: 175.42368, region: "nz_auckland_kermadec", zona: "Auckland / Hauraki Gulf", modalidades: ["costa"], osm: "way/144513404 natural=beach (Whangapoua Beach)", costa: { osm: "way/1331306211", m: 73 }, puerto_linz: { id: "6407a", nombre: "Korotiti Bay", km: 7.9, tabla: "Korotiti Bay" } },
   { slug: "nz-matiatia", nombre: "Mātiatia (Waiheke Island)", lat: -36.78015, lon: 174.99145, region: "nz_auckland_kermadec", zona: "Auckland / Hauraki Gulf", modalidades: ["costa","embarcacion"], osm: "way/91965055 man_made=pier (Old Matiatia Wharf)", costa: { osm: "way/1210239120", m: 41 }, puerto_linz: { id: "6401a", nombre: "Mātiatia Bay", km: 0.8, tabla: "Mātiatia Bay" } },
   { slug: "nz-rangitoto-wharf", nombre: "Rangitoto Wharf (Rangitoto Island)", lat: -36.80869, lon: 174.86214, region: "nz_auckland_kermadec", zona: "Auckland / Hauraki Gulf", modalidades: ["costa"], osm: "way/44127739 man_made=pier (Rangitoto Wharf)", costa: { osm: "way/190304163", m: 36 }, puerto_linz: { id: "6400a", nombre: "McKenzie Bay", km: 3.8, tabla: null } },
   // Coromandel
