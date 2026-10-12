@@ -41,6 +41,8 @@ export const RIOS_SPOT = {
   burriana: { rio: "Mijares", clave: "mijares" },
   guardamardelsegura: { rio: "Segura", clave: "segura" },
   cangas: { rio: "Lagares", clave: "lagares" },
+  blanes: { rio: "Tordera", clave: "tordera" },
+  roses: { rio: "Muga", clave: "muga" },
 };
 
 export const NOMBRE_REGION_ESPECIES = {

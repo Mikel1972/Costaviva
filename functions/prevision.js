@@ -1126,14 +1126,50 @@ async function datosCaudalGalicia() {
   return { lagares: { caudal: parseFloat(m[1].replace(",", ".")), actualizado: null, estacion: "Lagares (Vigo)" } };
 }
 
+// Agència Catalana de l'Aigua (ACA), vía el portal de dades obertes de la
+// Generalitat (Socrata/SODA, sin login) — ríos Tordera (Blanes) y Muga
+// (Roses). A diferencia de las 4 fuentes de arriba (hora a hora), este
+// dataset ("Nivell d'aforament de rius de les conques internes de
+// Catalunya", id 2bwe-vgpr) se actualiza una vez al día — verificado a
+// mano el 2026-10-12, con dato real del día anterior en las dos
+// estaciones. Las otras cuencas catalanas con costa en SPOTS (Ebre, cerca
+// de Cambrils) no tienen estación de ACA en este dataset cerca de la
+// desembocadura, así que se quedan sin dato real por ahora. Licencia:
+// "Llicència oberta d'ús d'informació - Catalunya" (reutilización y obras
+// derivadas libres citando la fuente), sin restricción de uso comercial.
+const CAUDAL_CATALUNYA_ESTACIONES = [
+  { slugRio: "tordera", codiVariable: "4343824", estacion: "Fogars de la Selva (Can Simó)" },
+  { slugRio: "muga", codiVariable: "4140493", estacion: "Castelló d'Empúries" },
+];
+async function datosCaudalCataluna() {
+  const codigos = CAUDAL_CATALUNYA_ESTACIONES.map((e) => `'${e.codiVariable}'`).join(",");
+  const url = `https://analisi.transparenciacatalunya.cat/resource/2bwe-vgpr.json?$where=codi_variable in(${codigos})&$order=dia DESC&$limit=${CAUDAL_CATALUNYA_ESTACIONES.length * 2}`;
+  const resp = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0 (compatible; CostaVivaApp/0.1)" } });
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+  const filas = await resp.json();
+  const resultado = {};
+  for (const est of CAUDAL_CATALUNYA_ESTACIONES) {
+    // La primera fila de cada estación ya es la más reciente (orden DESC);
+    // el dataset mezcla varias estaciones por fecha, así que se busca la
+    // primera que coincida con este código de variable.
+    const f = filas.find((x) => x.codi_variable === est.codiVariable);
+    const caudal = f ? parseFloat(f.cabal_riu_m3_s) : null;
+    resultado[est.slugRio] = Number.isFinite(caudal)
+      ? { caudal, actualizado: f.dia ? f.dia.slice(0, 10) : null, estacion: est.estacion }
+      : null;
+  }
+  return resultado;
+}
+
 async function datosCaudalTodos() {
-  const [cantabrico, jucar, segura, galicia] = await Promise.all([
+  const [cantabrico, jucar, segura, galicia, catalunya] = await Promise.all([
     datosCaudalCantabrico().catch((e) => ({ error: String(e) })),
     datosCaudalJucar().catch((e) => ({ error: String(e) })),
     datosCaudalSegura().catch((e) => ({ error: String(e) })),
     datosCaudalGalicia().catch((e) => ({ error: String(e) })),
+    datosCaudalCataluna().catch((e) => ({ error: String(e) })),
   ]);
-  return { ...cantabrico, ...jucar, ...segura, ...galicia };
+  return { ...cantabrico, ...jucar, ...segura, ...galicia, ...catalunya };
 }
 
 // ---------------------------------------------------------------------------
