@@ -194,3 +194,11 @@ test("clips de stock: todos dicen si sale una persona identificable", () => {
     assert.equal(typeof lic.persona_identificable, "boolean", f);
   }
 });
+
+test("Nueva Zelanda: nunca sale sola, solo con el OK manual de Mikel", () => {
+  const d = V.decidir(base({ pieza: { ...PIEZA, mercado: "nz" }, ahora: new Date("2026-10-14T06:10:00Z") }));
+  assert.equal(d.accion, "saltar");
+  assert.match(d.motivo, /Nueva Zelanda/);
+  const fuente = leer("scripts/marketing/publicar-borrador-instagram.mjs");
+  assert.match(fuente, /pieza\.mercado !== "nz"/);
+});

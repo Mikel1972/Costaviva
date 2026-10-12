@@ -58,7 +58,9 @@ export function resumenDelDia(especiesDatos, horas, { lat, lon, ahoraISO, modali
 // neutro ni interno ("pendiente de fuente", "no cuenta"...).
 export const flecha = VA.flechaDeAporte;
 export function motivosDestacados(razones, max = 3) {
-  return VA.paraUsuario(razones, { max }).motivos.map(({ texto, flecha: f, sube }) => ({ texto, flecha: f, sube }));
+  // La clave (si la hay) es la del texto traducible: las piezas de NZ solo
+  // enseñan los motivos que la tienen (pieza-nz.mjs).
+  return VA.paraUsuario(razones, { max }).motivos.map(({ texto, flecha: f, sube, clave }) => ({ texto, flecha: f, sube, ...(clave ? { clave } : {}) }));
 }
 
 // Tramo de 3 horas con la media más alta de la tira (empates: el primero).

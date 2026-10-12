@@ -272,7 +272,9 @@ test("mapa: NZ se pide sola (/prevision?region=nz), arranque en Auckland para NZ
   assert.ok(!/["']nz-[a-z]/.test(html));
 });
 
-test("diario: la lista de NZ llega del servidor; marketing sin NZ", () => {
+// Marketing: desde el 2026-10-11 hay piezas de NZ, pero sus spots y especies
+// salen de los datos (SPOTS_NZ, especies.json), nunca escritos a mano.
+test("diario: la lista de NZ llega del servidor; marketing sin slugs de NZ escritos a mano", () => {
   assert.match(leer("diario.html"), /const REGIONES_DIARIO = \["nz"\];/);
   const ficheros = [
     "assets/js/tarjetas-mapa.js",
