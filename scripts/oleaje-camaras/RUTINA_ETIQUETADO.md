@@ -10,6 +10,30 @@ de pago. Los scripts no usan IA: solo bajan fotogramas y calculan. El único
 "modelo" es la propia sesión mirando las imágenes con la herramienta de leer
 ficheros.
 
+## Dos franjas: España y Nueva Zelanda (2026-10-11)
+
+Desde el 2026-10-11 también se miden cámaras de Nueva Zelanda (decisión de
+Mikel: "como en España"; `CAMARAS_NZ_OLA` en `camaras.mjs`). Cada cámara se
+captura solo con el sol ≥ 8° en SU sitio:
+
+| Región | Zona horaria | Luz (aprox., UTC) | Captura |
+| --- | --- | --- | --- |
+| España | Europe/Madrid | 07-17 en otoño, 05:30-19 en junio | `--region es` |
+| Nueva Zelanda | Pacific/Auckland | ~18-06 (de 17:30 a 08 en diciembre; de 20:30 a 04 en junio) | `--region nz` |
+
+Por eso hay **dos rutinas** con el mismo texto (abajo) y distinta hora: la
+de España (p. ej. 14:00 UTC) y la de NZ (p. ej. 23:00 UTC = 12:00 en
+Auckland en verano). Cada una solo encuentra con luz las cámaras de su
+región, y la rama del día es la misma (`robot/etiquetas-olas-AAAA-MM-DD`):
+si ya existe en `origin`, se parte de ella.
+
+**NZ no tiene boyas** (ninguna boya de oleaje en Copernicus In Situ GLO, y
+las de los consejos regionales no tienen licencia verificada) y en
+`lote.json` de NZ **no va el modelo**: la etiqueta sale solo de lo que se
+ve en el fotograma. La ola del modelo nunca es la "verdad" de una etiqueta.
+Las miniaturas de NZ no se suben al bucket (sin permiso escrito de los
+dueños): solo vale `--origen camaras`.
+
 ## Pasos
 
 1. **Lote.** Desde una rama nueva `robot/etiquetas-olas-AAAA-MM-DD` sobre
@@ -22,14 +46,18 @@ ficheros.
    node scripts/oleaje-camaras/preparar-lote-etiquetado.mjs --dir $L --boyas $L/../boyas.json
    ```
 
-   Captura un fotograma de cada encuadre de las 13 cámaras (tarda ~2 min) y
+   (En la rutina de NZ: sin `boyas-copernicus.py` y con `--region nz`.)
+
+   Captura un fotograma de cada encuadre de las cámaras con luz (España
+   tarda ~2 min; NZ, segundos: son fotos fijas) y
    lo acumula en `$L/lote.json`. Repetirlo 2-4 veces separadas ≥ 30 min da
    franjas distintas (hace falta ≥ 2 franjas de 2 h para que las etiquetas
    de Claude cuenten). Con la migración `20261008180000` aplicada, además:
    `--origen bucket --horas 24` baja las miniaturas que el robot ya guardó
    hoy y que aún no tienen etiqueta de Claude.
 
-   Solo con luz (sol > 8°: más o menos 08:00-16:30 UTC en otoño).
+   Solo con luz (sol > 8° en el sitio de la cámara: en España, más o menos
+   08:00-16:30 UTC en otoño; en NZ, ~18:00-06:00 UTC).
 
 2. **Mirar cada fotograma** (`$L/<id>.jpg`; en las fotos fijas también
    `<id>-grande.jpg`, mejor para ver detalles). Para elegir la banda:
@@ -105,9 +133,12 @@ alturas variadas (`camaraSustituyeModelo()`).
 ## Texto de la rutina (para crearla en el plan de Claude)
 
 > Eres la rutina diaria de etiquetado de olas de Costaviva (repo
-> Mikel1972/costaviva). Trabaja SIN la API de pago: tú miras las imágenes en
-> esta sesión. Crea la rama `robot/etiquetas-olas-<fecha de hoy AAAA-MM-DD>`
-> desde `origin/main`. Lee `scripts/oleaje-camaras/RUTINA_ETIQUETADO.md` y
+> Mikel1972/costaviva), región <es o nz>. Trabaja SIN la API de pago: tú
+> miras las imágenes en esta sesión. Usa la rama
+> `robot/etiquetas-olas-<fecha de hoy AAAA-MM-DD>`: si ya existe en origin,
+> pártela de ahí; si no, créala desde `origin/main`. Pasa `--region <es o
+> nz>` a `preparar-lote-etiquetado.mjs`; en NZ no hay boyas ni modelo en el
+> lote: etiqueta solo lo que ves. Lee `scripts/oleaje-camaras/RUTINA_ETIQUETADO.md` y
 > síguelo: (1) prepara el lote en tu carpeta temporal (fuera del repo) con
 > `boyas-copernicus.py` y `preparar-lote-etiquetado.mjs`, y repite la
 > captura dos veces más separadas al menos 30 minutos, siempre con luz;

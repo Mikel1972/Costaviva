@@ -201,6 +201,8 @@ function pedirSinCuerpo(url) {
 async function comprobarExterna(camara, pedir = pedirSinCuerpo) {
   let url = camara.url;
   if (camara.modo === "imagen_oficial") url = camara.imagen;
+  // Iframe del dueño (CoroLive, NZ, 2026-10-11): HEAD de la página del iframe.
+  else if (camara.modo === "iframe_oficial") url = camara.iframe;
   else if (camara.youtube_id) url = `https://www.youtube.com/oembed?format=json&url=${encodeURIComponent(camara.url)}`;
   try {
     const { status, tipo } = pedir(url);

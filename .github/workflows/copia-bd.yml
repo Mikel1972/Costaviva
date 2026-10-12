@@ -1,0 +1,171 @@
+name: Copia de seguridad de la base de datos
+
+# 2026-10-12. Costaviva está en el plan gratuito de Supabase, que no incluye
+# copias de seguridad: si se borrara o se corrompiera la base de datos, se
+# perderían los diarios, capturas y cuentas de todos los usuarios. Esta
+# tarea, sin IA, hace una copia cada noche y, antes de guardarla, comprueba
+# que sirve: la restaura en una base de prueba (la misma imagen de Postgres
+# que usa Supabase) y compara el número de filas de cada tabla con
+# producción. Una copia que no se ha restaurado nunca no es una copia.
+#
+# QUÉ COPIA: los esquemas public (los datos de la app), auth (cuentas) y
+# storage (solo la ficha de cada fichero subido). Las FOTOS en sí no están en
+# la base de datos sino en el almacenamiento de Supabase: no van aquí.
+#
+# DÓNDE SE GUARDA: como artefacto de este workflow, 30 días (minimización de
+# datos: un usuario que borra su cuenta desaparece de las copias en 30 días;
+# lo dice privacidad.html). El repo es PÚBLICO y cualquiera con cuenta de
+# GitHub puede descargar los artefactos de un repo público, así que la copia
+# se guarda SIEMPRE cifrada (AES-256 con gpg) y nunca en claro. Por lo mismo,
+# los registros no escriben datos ni cuántas filas hay: solo nombres de tabla
+# y porcentajes.
+#
+# NECESITA DOS SECRETS:
+#   SUPABASE_DB_URL  la cadena de Connection Pooling (ya existe, la usa
+#                    vigia-esquema.yml). pg_dump necesita el modo sesión
+#                    (puerto 5432): si el secret trae el 6543, se cambia aquí.
+#   COPIA_BD_CLAVE   la frase con la que se cifra la copia, de 20 caracteres
+#                    o más. La pone Mikel en GitHub > Settings > Secrets y la
+#                    guarda también en su gestor de contraseñas: GitHub no
+#                    deja volver a leerla y sin ella la copia no se puede
+#                    abrir. Nunca por el chat.
+# Sin la clave, la copia se hace y se comprueba igual, pero no se guarda y la
+# tarea acaba en ROJO (comun, estandares/supabase.md D16: un vigilante que
+# no puede hacer su trabajo no puede decir "todo bien").
+#
+# RESTAURAR (solo si hace falta de verdad, y con Mikel):
+#   gpg --decrypt copia-bd-AAAA-MM-DD.dump.gpg > copia.dump
+#   pg_restore --no-owner --no-privileges -d "<cadena de la base destino>" copia.dump
+#
+# En las PR que tocan esta tarea se hace la copia y la prueba de
+# restauración, pero no se guarda nada.
+
+on:
+  schedule:
+    - cron: "17 2 * * *"
+  workflow_dispatch: {}
+  pull_request:
+    paths:
+      - .github/workflows/copia-bd.yml
+      - .github/scripts/copia-bd-*
+
+permissions:
+  contents: read
+
+concurrency:
+  group: copia-bd
+  cancel-in-progress: false
+
+jobs:
+  copia:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PRUEBA: postgresql://supabase_admin:prueba@localhost:5432/postgres
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar el cliente de Postgres 17
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-common > /dev/null
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y > /dev/null
+          sudo apt-get install -y -qq postgresql-client-17 > /dev/null
+          echo "/usr/lib/postgresql/17/bin" >> "$GITHUB_PATH"
+
+      # La base de prueba, con la imagen de Supabase de la MISMA versión
+      # mayor que producción (comun, estandares/supabase.md D18: así sirve
+      # igual en todas las apps). Al subir Supabase de versión, añadir aquí
+      # la etiqueta nueva de https://hub.docker.com/r/supabase/postgres/tags.
+      - name: Arrancar una base de prueba como la de producción
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          if [ -z "$SUPABASE_DB_URL" ]; then
+            echo "::error::Falta el secret SUPABASE_DB_URL."
+            exit 1
+          fi
+          URL="${SUPABASE_DB_URL/:6543\//:5432/}"
+          MAYOR=$(psql "$URL" -X -tAc "show server_version_num" | cut -c1-2)
+          case "$MAYOR" in
+            15) IMAGEN=supabase/postgres:15.8.1.135 ;;
+            17) IMAGEN=supabase/postgres:17.6.1.169 ;;
+            *) echo "::error::Postgres $MAYOR en producción: añadir su imagen en copia-bd.yml."; exit 1 ;;
+          esac
+          echo "Producción: Postgres $MAYOR. Prueba: $IMAGEN."
+          docker run -d --name prueba -e POSTGRES_PASSWORD=prueba -p 5432:5432 "$IMAGEN" > /dev/null
+          for i in $(seq 1 60); do
+            psql "$PRUEBA" -X -tAc "select 1" > /dev/null 2>&1 && exit 0
+            sleep 3
+          done
+          echo "::error::La base de prueba no arrancó."
+          exit 1
+
+      - name: Copiar producción
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          URL="${SUPABASE_DB_URL/:6543\//:5432/}"
+          pg_dump --version
+          psql "$URL" -X -q -tA -F $'\t' -f .github/scripts/copia-bd-recuento.sql > prod.tsv
+          pg_dump "$URL" --format=custom --no-owner --no-privileges \
+            --schema=public --schema=auth --schema=storage --file=copia.dump
+          echo "Copia: $(du -h copia.dump | cut -f1)."
+
+      - name: Comprobar que la copia se restaura
+        run: |
+          # La imagen trae auth y storage en una versión antigua (las columnas
+          # nuevas las añade el servicio de Auth al arrancar): auth.users no
+          # entraba (2026-10-12, primera prueba). Se borran para que la copia
+          # los cree tal como están en producción.
+          psql "$PRUEBA" -X -q -c "drop schema if exists auth cascade; drop schema if exists storage cascade;" 2> /dev/null
+          psql "$PRUEBA" -X -q -tA -F $'\t' -f .github/scripts/copia-bd-recuento.sql > base.tsv
+          # Algunos CREATE fallan con objetos que la imagen ya trae ("ya
+          # existe") y los datos entran igual. Los mensajes de
+          # error pueden llevar valores de filas (DETAIL: Key ...=...), así
+          # que no se imprimen: solo cuántos hay.
+          if pg_restore --no-owner --no-privileges -d "$PRUEBA" copia.dump 2> restaurar.log; then
+            echo "Restaurada sin avisos."
+          else
+            echo "Restaurada con $(grep -c '^pg_restore: error' restaurar.log || true) avisos (objetos que la imagen ya trae)."
+          fi
+          psql "$PRUEBA" -X -q -tA -F $'\t' -f .github/scripts/copia-bd-recuento.sql > restaurada.tsv
+          .github/scripts/copia-bd-comparar.sh prod.tsv base.tsv restaurada.tsv
+
+      - name: Cifrar
+        if: github.event_name != 'pull_request'
+        env:
+          COPIA_BD_CLAVE: ${{ secrets.COPIA_BD_CLAVE }}
+        run: |
+          if [ "${#COPIA_BD_CLAVE}" -lt 20 ]; then
+            echo "::error::Falta el secret COPIA_BD_CLAVE (20 caracteres o más). La copia se ha hecho y restaurado bien, pero NO se ha guardado."
+            {
+              echo "### Copia de seguridad NO guardada"
+              echo "Falta el secret \`COPIA_BD_CLAVE\` (una frase de 20 caracteres o más, guardada también en el gestor de contraseñas). Sin ella la copia no se puede cifrar y el repo es público."
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+          FECHA=$(date -u +%F)
+          printf '%s' "$COPIA_BD_CLAVE" | gpg --batch --yes --pinentry-mode loopback --passphrase-fd 0 \
+            --symmetric --cipher-algo AES256 --output "copia-bd-$FECHA.dump.gpg" copia.dump
+          # Que se pueda abrir con la misma clave antes de guardarla.
+          printf '%s' "$COPIA_BD_CLAVE" | gpg --batch --quiet --pinentry-mode loopback --passphrase-fd 0 \
+            --decrypt "copia-bd-$FECHA.dump.gpg" | cmp - copia.dump
+          echo "FECHA=$FECHA" >> "$GITHUB_ENV"
+          echo "### Copia de seguridad guardada ($FECHA), restaurada y comprobada" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Guardar 30 días
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: copia-bd-${{ env.FECHA }}
+          path: copia-bd-${{ env.FECHA }}.dump.gpg
+          retention-days: 30
+          compression-level: 0
+          if-no-files-found: error
+
+      - name: Borrar la copia en claro
+        if: always()
+        run: |
+          rm -f copia.dump restaurar.log prod.tsv base.tsv restaurada.tsv
+          docker rm -f prueba > /dev/null 2>&1 || true

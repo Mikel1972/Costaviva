@@ -6,6 +6,7 @@
 <!-- Idiomas (2026-10-09): diccionarios y I18n.t(); en español no cambia nada. Ver assets/js/i18n.js. -->
 <script src="/assets/i18n/es.js"></script>
 <script src="/assets/i18n/en.js"></script>
+<script src="/assets/i18n/pt.js"></script>
 <script src="/assets/js/i18n.js"></script>
 <title data-i18n="mapa.titulo_pagina">Costaviva, pesca en tiempo real | Mareas y previsión marina</title>
 <meta name="description" content="Accede a Costaviva: previsión marina en tiempo real, mareas, oleaje, diario de pesca con IA y comunidad de pescadores en España y Portugal." />
@@ -21,11 +22,11 @@
 <meta name="twitter:description" content="Previsión marina en tiempo real, mareas, oleaje, diario de pesca con IA y comunidad de pescadores." />
 <meta name="twitter:image" content="https://costaviva.org/assets/og/costaviva.jpg" />
 <!-- Datos estructurados (2026-09-28): qué es Costaviva y cuánto cuesta, con
-     los datos reales de suscripcion.html (3,99 €/mes, 7 días de prueba). -->
+     los datos reales de suscripcion.html (3,99 €/mes, 14 días de prueba de Premium). -->
 <script type="application/ld+json">
 [{"@context":"https://schema.org","@type":"WebSite","name":"Costaviva","url":"https://costaviva.org/","inLanguage":"es"},
  {"@context":"https://schema.org","@type":"Organization","name":"Costaviva","url":"https://costaviva.org/","logo":"https://costaviva.org/assets/iconos/icono-512.png"},
- {"@context":"https://schema.org","@type":"WebApplication","name":"Costaviva","url":"https://costaviva.org/","applicationCategory":"SportsApplication","operatingSystem":"Web, iOS, Android","description":"Previsión marina en tiempo real (mareas, oleaje, viento, temperatura del agua), webcams en directo y diario de pesca para la costa de España y Portugal.","offers":{"@type":"Offer","price":"3.99","priceCurrency":"EUR","description":"7 días de prueba gratis; después 3,99 € al mes o 39,99 € al año."}}]
+ {"@context":"https://schema.org","@type":"WebApplication","name":"Costaviva","url":"https://costaviva.org/","applicationCategory":"SportsApplication","operatingSystem":"Web, iOS, Android","description":"Previsión marina en tiempo real (mareas, oleaje, viento, temperatura del agua), webcams en directo y diario de pesca para la costa de España y Portugal.","offers":{"@type":"Offer","price":"3.99","priceCurrency":"EUR","description":"Plan gratuito; 14 días de prueba de Premium sin tarjeta; Premium 3,99 € al mes o 34,99 € al año, IVA incluido."}}]
 </script>
 <link rel="manifest" href="manifest.json" />
 <link rel="icon" href="icon.svg" type="image/svg+xml" />
@@ -243,6 +244,7 @@
       <ul>
         <li><a href="/spots" data-i18n="mapa.seo.spots">Spots de pesca</a></li>
         <li><a href="/especies" data-i18n="login.especies_tallas">Especies, tallas y temporada</a></li>
+        <li><a href="/en/spots" data-i18n="login.nz_spots">Spots de Nueva Zelanda (en inglés)</a></li>
       </ul>
     </nav>
   </div>
@@ -263,7 +265,7 @@
     <div id="turnstileLogin" style="margin-top:8px;"></div>
 
     <button type="submit" id="btnPrincipal" data-i18n="login.entrar">Entrar</button>
-    <button type="button" class="secundario" id="btnIrARegistro" data-i18n="login.crear_cuenta_gratis">Crear cuenta · 7 días gratis</button>
+    <button type="button" class="secundario" id="btnIrARegistro" data-i18n="login.crear_cuenta_gratis">Crear cuenta · 14 días de Premium gratis</button>
   </form>
 
   <div class="toggle"><span data-i18n="login.olvidaste">¿Olvidaste tu contraseña?</span> <a id="linkRecuperar" data-i18n="login.recuperala">Recupérala aquí</a></div>
@@ -291,7 +293,7 @@
     <div class="consentimiento visible">
       <label class="checkbox">
         <input type="checkbox" id="checkTerminos" />
-        <span data-i18n="login.acepto_terminos">Acepto los términos de uso y la política de privacidad de Costaviva, incluyendo el tratamiento de mis datos de cuenta para dar el servicio (obligatorio para crear la cuenta).</span>
+        <span data-i18n="login.acepto_terminos">Acepto los términos de uso y la política de privacidad de Costaviva, incluyendo el tratamiento de mis datos de cuenta para dar el servicio (obligatorio para crear la cuenta).</span> <a href="/terminos" target="_blank" rel="noopener" data-i18n="prec.terminos">Términos y condiciones</a>
       </label>
       <label class="checkbox">
         <input type="checkbox" id="checkDatosCapturas" />
@@ -487,7 +489,7 @@ document.getElementById("btnIrARegistro").addEventListener("click", () => {
   mostrarPantalla(cajaRegistroDatos);
   asegurarWidgetRegistro();
 });
-// /login?alta=1 (2026-09-28): el botón "Prueba 7 días gratis" de las páginas
+// /login?alta=1 (2026-09-28): el botón "Prueba 14 días gratis" de las páginas
 // públicas de mareas llega directo al formulario de alta, sin un clic más.
 // Solo cambia qué caja se ve primero; el alta en sí no se toca.
 if (new URLSearchParams(window.location.search).get("alta") === "1") {
@@ -710,12 +712,13 @@ function mostrarMensajeRegistro(texto, tipo) {
 // Código postal según la región (fase 2 de NZ, 2026-10-09). En España el
 // campo queda como está en el HTML; en NZ admite 4 cifras con su ejemplo.
 const regionAlta = RegionPais.regionActual();
-if (RegionPais.esNZ(regionAlta)) {
+// En Portugal (desde el 2026-10-11), las 4 primeras cifras del CP4-CP3.
+if (RegionPais.esNZ(regionAlta) || RegionPais.esPT(regionAlta)) {
   const campoCP = document.getElementById("codigoPostal");
   const cifras = RegionPais.cifrasCodigoPostal(regionAlta);
   campoCP.setAttribute("pattern", `[0-9]{${cifras}}`);
   campoCP.setAttribute("maxlength", String(cifras));
-  campoCP.setAttribute("placeholder", I18n.t("login.ej_cp_nz"));
+  campoCP.setAttribute("placeholder", I18n.t(RegionPais.esPT(regionAlta) ? "login.ej_cp_pt" : "login.ej_cp_nz"));
 }
 
 formRegistroDatos.addEventListener("submit", async (e) => {
@@ -725,10 +728,10 @@ formRegistroDatos.addEventListener("submit", async (e) => {
   btnContinuarRegistro.disabled = true;
   mensajeRegistroEl.className = "mensaje";
 
-  // 5 cifras en España y Portugal, 4 en Nueva Zelanda (fase 2 de NZ;
+  // 5 cifras en España; 4 en Nueva Zelanda y Portugal (fase 2 de NZ;
   // assets/js/region-pais.js, región que conoce la app en este navegador).
   if (!RegionPais.codigoPostalValido(codigoPostal, regionAlta)) {
-    mostrarMensajeRegistro(RegionPais.esNZ(regionAlta) ? I18n.t("login.cp_4") : I18n.t("login.cp_5"), "error");
+    mostrarMensajeRegistro(RegionPais.cifrasCodigoPostal(regionAlta) === 4 ? I18n.t("login.cp_4") : I18n.t("login.cp_5"), "error");
     btnContinuarRegistro.disabled = false;
     return;
   }

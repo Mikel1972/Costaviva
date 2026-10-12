@@ -1,10 +1,11 @@
 name: Publicar post de Instagram
 
 # Segundo paso del robot de marketing (robot-marketing-instagram.yml y
-# robot-reel-instagram.yml). Pedido explícito de Mikel: la publicación real
-# SIEMPRE es manual, nunca automática. Este workflow solo publica una pieza
-# que el robot ya preparó y que Mikel ha revisado en su Issue; nunca crea
-# contenido nuevo.
+# robot-reel-instagram.yml), a mano. Desde el 2026-10-11 lo normal es la
+# publicación automática con veto de 12 h (publicar-con-veto.yml, decisión de
+# Mikel: "Automático con veto"); este workflow queda para publicar ya, sin
+# esperar, o una pieza que la automática dejó en "revisar-publicacion". Solo
+# publica una pieza que el robot ya preparó; nunca crea contenido nuevo.
 #
 # Desde el 2026-10-09 publica la misma pieza en Instagram y en la Página de
 # Facebook (o solo en una de las dos): basta con el número del Issue, que

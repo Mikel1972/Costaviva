@@ -6,6 +6,7 @@
 // volver a evaluarlos aquí no cambia nada.
 import "../i18n/es.js";
 import "../i18n/en.js";
+import "../i18n/pt.js";
 import "./i18n.js";
 
 export const I18n = globalThis.I18n;

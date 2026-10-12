@@ -19,7 +19,7 @@ import {
 } from "../scripts/oleaje-camaras/calibracion.mjs";
 import { sinEtiquetar, lineaEtiqueta, filtroRoi } from "../scripts/oleaje-camaras/preparar-lote-etiquetado.mjs";
 import { medirEspuma, zonasDinamicas, medirEspumaDinamica } from "../scripts/oleaje-camaras/espuma.mjs";
-import { CAMARAS } from "../scripts/oleaje-camaras/camaras.mjs";
+import { CAMARAS, NO_SIRVEN_NZ, NZ_FUERA_POR_DUENO, camarasConLuz } from "../scripts/oleaje-camaras/camaras.mjs";
 import { combinar } from "../scripts/oleaje-camaras/medir-espuma.mjs";
 import { SPOTS, BOYAS, boyaDesdeCopernicus, ATRIBUCION_BOYAS } from "../functions/prevision.js";
 
@@ -139,7 +139,8 @@ test("inventario: cámaras, referencias, ROIs y fuentes por spot coherentes", ()
   }
   for (const [spot, f] of Object.entries(FUENTE_POR_SPOT)) {
     assert.ok(slugs.has(spot), `FUENTE_POR_SPOT: spot ${spot} no existe`);
-    assert.ok(CAMARAS[f.camara], `${spot}: cámara ${f.camara} no se mide`);
+    // Una de NZ cuyo dueño tiene el interruptor en false no se mide (y no pasa nada).
+    assert.ok(CAMARAS[f.camara] || NZ_FUERA_POR_DUENO[f.camara], `${spot}: cámara ${f.camara} no se mide`);
     if (!f.propia) {
       assert.equal(CAMARAS_OLEAJE[f.camara].expuesta, true, `${spot}: una vecina tiene que ser expuesta`);
       assert.ok(f.peso > 0 && f.peso < 1);
@@ -504,4 +505,124 @@ test("preparar-lote --anotar: la línea lleva lo que necesita la calibración y 
   assert.throws(() => lineaEtiqueta(entrada, { banda: "1-2", confianza: "segura", motivo: "m" }));
   assert.throws(() => lineaEtiqueta(entrada, { banda: "1-2", confianza: "alta", motivo: "" }));
   assert.equal(filtroRoi({ x0: 0.5, y0: 0.25, x1: 1, y1: 0.5 }), "scale=640:360,drawbox=x=320:y=90:w=320:h=90:color=red:t=2");
+});
+
+// ---------------------------------------------------------------------------
+// Nueva Zelanda (2026-10-11, decisión de Mikel: medir la ola con TODAS las
+// cámaras de NZ, como en España, con un interruptor por dueño).
+import { CAMARAS_NZ as CAMARAS_NZ_APP, NZ_ANALISIS_AUTORIZADO } from "../assets/js/camaras-nz.js";
+import { envMarRegion, urlDesdePagina } from "../scripts/oleaje-camaras/medir-espuma.mjs";
+import { idsDelLote } from "../scripts/oleaje-camaras/preparar-lote-etiquetado.mjs";
+import { SPOTS_NZ } from "../functions/_lib/nz/spots-nz.js";
+
+const camarasNZ = () => Object.entries(CAMARAS).filter(([, c]) => c.region === "nz");
+
+test("NZ: cada cámara de camaras-nz.js se mide o tiene su motivo en NO_SIRVEN_NZ (nunca las dos)", () => {
+  const medidas = new Set(camarasNZ().map(([, c]) => c.camaraApp));
+  for (const app of CAMARAS_NZ_APP) {
+    const fuera = Boolean(NO_SIRVEN_NZ[app.id]);
+    assert.ok(medidas.has(app.id) !== fuera, `${app.id}: o se mide o está en NO_SIRVEN_NZ`);
+  }
+  for (const id of Object.keys(NO_SIRVEN_NZ)) {
+    // Las descartadas en el repaso (nz-descartada-*) no están en la app; el resto, sí.
+    if (id.startsWith("nz-descartada-")) {
+      assert.match(NO_SIRVEN_NZ[id], /^DESCARTADA \(no está en camaras-nz\.js\): .{20,}/, id);
+      assert.ok(!CAMARAS_NZ_APP.some((a) => a.id === id), `${id}: descartada pero está en la app`);
+    } else assert.ok(CAMARAS_NZ_APP.some((a) => a.id === id), `NO_SIRVEN_NZ: ${id} no existe`);
+  }
+  assert.ok(camarasNZ().length >= 1);
+});
+
+test("NZ: el interruptor por dueño manda; Earth Sciences NZ (términos) y Primo (denegado por escrito) no se analizan", () => {
+  for (const [id, c] of camarasNZ()) {
+    const app = CAMARAS_NZ_APP.find((a) => a.id === c.camaraApp);
+    assert.ok(app, `${id}: camaraApp desconocida`);
+    assert.equal(NZ_ANALISIS_AUTORIZADO[app.condiciones], true, `${id}: su dueño no tiene el análisis autorizado`);
+    assert.equal(app.analisis_permitido, true);
+    assert.equal(CAMARAS_OLEAJE[id].spot.startsWith("nz-"), true);
+    assert.ok(SPOTS_NZ.some((s) => s.slug === CAMARAS_OLEAJE[id].spot), `${id}: spot NZ inactivo o inexistente`);
+    // Sin permiso escrito: ni miniatura pública, ni boyas (no hay en NZ).
+    assert.equal(c.sinMiniaturaPublica, true, `${id}: la imagen no se publica`);
+    assert.deepEqual(c.boyas, []);
+    assert.ok(!/primo\.nz|niwa\.co\.nz/.test(c.url || c.pagina), `${id}: dueño que bloquea o prohíbe`);
+  }
+  assert.equal(NZ_ANALISIS_AUTORIZADO.earth_sciences_camera, false);
+  assert.match(NO_SIRVEN_NZ["nz-tairua-cam-era"], /prohíben expresamente/);
+  // Primo denegó por escrito el análisis y las URLs de imagen (2026-10-12).
+  assert.equal(NZ_ANALISIS_AUTORIZADO.primo, false);
+  assert.match(NO_SIRVEN_NZ["nz-primo-port-taranaki"], /DENEGADO por escrito/);
+  assert.equal(NZ_FUERA_POR_DUENO["nz-primo-port-taranaki"], undefined, "Primo no puede estar en CAMARAS_NZ_OLA");
+  for (const c of Object.values(CAMARAS)) {
+    assert.ok(!/primo/i.test(`${c.url || ""} ${c.pagina || ""} ${c.camaraApp || ""}`), "nada pide imágenes de Primo");
+  }
+  for (const id of Object.keys(CAMARAS)) assert.ok(!CAMARAS[id].camaraApp?.includes("cam-era"));
+});
+
+test("NZ: cada cámara se mide solo con luz en su sitio (NZ de noche en España y al revés)", () => {
+  const nz = (ids) => ids.filter((id) => CAMARAS[id].region === "nz");
+  const es = (ids) => ids.filter((id) => CAMARAS[id].region === "es");
+  const mediodiaES = camarasConLuz(Date.parse("2026-10-12T12:00:00Z"));
+  assert.ok(es(mediodiaES).length > 0 && nz(mediodiaES).length === 0, "a las 12 UTC: España sí, NZ no");
+  const mediodiaNZ = camarasConLuz(Date.parse("2026-10-11T23:00:00Z"));
+  assert.ok(nz(mediodiaNZ).length === camarasNZ().length && es(mediodiaNZ).length === 0, "a las 23 UTC: NZ sí, España no");
+  assert.equal(camarasConLuz(Date.parse("2026-10-11T23:00:00Z"), true).length, Object.keys(CAMARAS).length, "forzar luz");
+  assert.deepEqual(idsDelLote(Date.parse("2026-10-11T23:00:00Z"), { region: "es" }), []);
+  assert.deepEqual(idsDelLote(Date.parse("2026-10-11T23:00:00Z"), { region: "nz" }), nz(mediodiaNZ));
+});
+
+test("NZ: el cron de espuma-camaras cubre toda la luz de NZ del año y pg_cron (migración) usa el mismo", () => {
+  const yml = readFileSync(new URL("../.github/workflows/espuma-camaras.yml", import.meta.url), "utf8");
+  const crons = [...yml.matchAll(/cron:\s*"([^"]+)"/g)].map((m) => m[1]);
+  assert.equal(crons.length, 2);
+  const expandir = (campo) => campo.split(",").flatMap((p) => {
+    const [a, b] = p.split("-").map(Number);
+    return b === undefined ? [a] : Array.from({ length: b - a + 1 }, (_, i) => a + i);
+  });
+  const ejecuciones = new Set(crons.flatMap((c) => { const [min, hora] = c.split(/\s+/); return expandir(hora).flatMap((h) => expandir(min).map((m) => h * 60 + m)); }));
+  // Con luz en cualquier cámara de NZ, siempre hay una ejecución en los 30 min siguientes.
+  for (let d = 0; d < 365; d += 5) {
+    const dia = Date.UTC(2026, 0, 1) + d * 864e5;
+    for (let m = 0; m < 1440; m += 10) {
+      const hayLuz = camarasNZ().some(([id]) => elevacionSolar(dia + m * 6e4, CAMARAS_OLEAJE[id].lat, CAMARAS_OLEAJE[id].lon) >= 8);
+      if (!hayLuz) continue;
+      const ok = [...ejecuciones].some((t) => (t - m + 1440) % 1440 <= 30);
+      assert.ok(ok, `${new Date(dia + m * 6e4).toISOString()}: luz en NZ sin ejecución en 30 min`);
+    }
+  }
+  const sql = readFileSync(new URL("../supabase/migrations/20261011180000_programador_espuma_nz.sql", import.meta.url), "utf8");
+  assert.ok(sql.includes(`'lanzar-espuma-camaras-nz', '${crons[1]}'`), "pg_cron con el mismo horario que la línea de NZ");
+  assert.ok(sql.includes("lanzar_workflow_github('espuma-camaras.yml')"));
+  assert.ok(!/create or replace function/i.test(sql), "no toca la lista cerrada de lanzar_workflow_github()");
+  // Las boyas (Copernicus IBI, solo España) no se piden si solo hay luz en NZ.
+  assert.match(yml, /Boyas de Copernicus Marine In Situ\n\s+if: steps\.luz\.outputs\.hay_es == 'true'/);
+});
+
+test("NZ: mar abierto siempre de Open-Meteo (IBI no cubre NZ) y foto leída de la página del dueño", () => {
+  const env = { FUENTE_MAR: "copernicus", FUENTE_OLEAJE: "copernicus", OPEN_METEO_API_KEY: "x" };
+  assert.equal(envMarRegion("es", env), env);
+  const nz = envMarRegion("nz", env);
+  assert.equal(nz.FUENTE_MAR, "openmeteo");
+  assert.equal(nz.FUENTE_OLEAJE, undefined);
+  assert.equal(nz.OPEN_METEO_API_KEY, "x");
+  const html = '<img src="/assets/Webcams/TaiaroaHead/Camera-2/TaiaroaHead2-20261012-0650-1791741303.jpg">';
+  assert.equal(urlDesdePagina(html, CAMARAS["nz-aramoana"].patron, "https://www.portotago.co.nz/otago-harbour/webcams"),
+    "https://www.portotago.co.nz/assets/Webcams/TaiaroaHead/Camera-2/TaiaroaHead2-20261012-0650-1791741303.jpg");
+  assert.equal(urlDesdePagina("<p>nada</p>", CAMARAS["nz-aramoana"].patron, "https://x.nz/"), null);
+});
+
+test("NZ: /prevision?region=nz aplica la cámara con la hora de Auckland, y solo si sustituye al modelo", () => {
+  const ahora = Date.parse("2026-10-11T23:10:00Z"); // 12:10 en Auckland (NZDT)
+  const spot = { slug: "nz-aramoana", lat: -45.77309, lon: 170.71589, bloques: [
+    { horaISO: "2026-10-12T12:00", altura: [0.9, 1.1] }, { horaISO: "2026-10-12T15:00", altura: [0.9, 1.1] },
+  ] };
+  const lectura = { fecha: "2026-10-11T23:07:00Z", estado: "ok", estimacion: 1.6, rangoMin: 1.1, rangoMax: 2.3, modeloCamara: 1, errorRel: 0.3, sustituyeModelo: true };
+  const [r] = aplicarCamarasASpots([spot], { "nz-aramoana": lectura }, ahora);
+  assert.equal(r.oleajeCamara.horaLocal, "12:07");
+  assert.equal(r.bloques[0].fuenteAltura, "camara");
+  // En calibración (sustituye_modelo = false): nada cambia.
+  const [r2] = aplicarCamarasASpots([spot], { "nz-aramoana": { ...lectura, sustituyeModelo: false } }, ahora);
+  assert.equal(r2, spot);
+  const fuente = readFileSync(new URL("../functions/prevision.js", import.meta.url), "utf8");
+  const nzFn = fuente.slice(fuente.indexOf("export async function previsionRegionNZ"), fuente.indexOf("async function responderRegion"));
+  assert.match(nzFn, /aplicarReferenciasCamara\(aplicarCamarasASpots\(/);
 });

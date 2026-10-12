@@ -15,7 +15,10 @@ export const FUENTES = [
   "instagram", "facebook", "google", "bing", "duckduckgo", "ecosia", "yahoo",
   "whatsapp", "telegram", "x", "email", "referido", "invitacion", "directo", "otro",
 ];
-export const PAGINAS_CONTADAS = ["empieza", "mareas", "spots", "especies", "login"];
+// en_*: páginas de Nueva Zelanda en inglés (/en/spots, /en/tides, /en/species),
+// para separar las visitas de NZ en KPIS.md (2026-10-11). Necesitan la
+// migración 20261011220000_visitas_en.sql; sin ella, la función las ignora.
+export const PAGINAS_CONTADAS = ["empieza", "mareas", "spots", "especies", "login", "en_spots", "en_tides", "en_species"];
 
 const ALIAS = {
   ig: "instagram", insta: "instagram", "instagram.com": "instagram",
@@ -26,6 +29,14 @@ const ALIAS = {
   amigo: "referido", ref: "referido",
 };
 
+// Visitas internas (2026-10-12): el navegador del administrador lleva la
+// cookie cv_interno=1 (la pone index.html al confirmar es_admin()) y no se
+// cuenta, para que "directo" refleje solo a usuarios reales.
+export const COOKIE_INTERNA = "cv_interno";
+export function esVisitaInterna(cookies) {
+  return new RegExp(`(?:^|;\\s*)${COOKIE_INTERNA}=1(?:;|$)`).test(String(cookies || ""));
+}
+
 // Robots, previsualizaciones de enlaces y comprobaciones propias no cuentan.
 const NO_PERSONA = /bot|crawl|spider|slurp|preview|facebookexternalhit|whatsapp|telegram|discord|curl|wget|python|node-fetch|undici|headless|lighthouse|pingdom|uptime|monitor|playwright/i;
 
@@ -34,6 +45,7 @@ export function paginaContada(pathname) {
   if (p === "/empieza" || p === "/empieza.html") return "empieza";
   if (p === "/login" || p === "/login.html") return "login";
   for (const t of ["mareas", "spots", "especies"]) if (p === `/${t}` || p.startsWith(`/${t}/`)) return t;
+  for (const t of ["spots", "tides", "species"]) if (p === `/en/${t}` || p.startsWith(`/en/${t}/`)) return `en_${t}`;
   return null;
 }
 
@@ -76,6 +88,7 @@ export function visitaAContar(request, respuesta) {
   const h = request.headers;
   const ua = h.get("user-agent") || "";
   if (!ua || NO_PERSONA.test(ua)) return null;
+  if (esVisitaInterna(h.get("cookie"))) return null;
   // Precargas del navegador: no son visitas.
   if (/prefetch|prerender/i.test(h.get("sec-purpose") || h.get("purpose") || "")) return null;
   const url = new URL(request.url);

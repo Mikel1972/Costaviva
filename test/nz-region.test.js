@@ -28,7 +28,7 @@ import * as rutaMareaEn from "../functions/en/tides/[slug].js";
 import * as rutaMareasEn from "../functions/en/tides/index.js";
 import * as rutaEspecieEn from "../functions/en/species/[slug].js";
 import * as rutaEspeciesEn from "../functions/en/species/index.js";
-import { ATRIBUCION_LINZ, AVISO_LINZ } from "../functions/_lib/nz/mareas-linz.js";
+import { ATRIBUCION_LINZ, ATRIBUCION_LINZ_CORTA, AVISO_LINZ, URL_LICENCIA_LINZ } from "../functions/_lib/nz/mareas-linz.js";
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), "..");
 const leer = (r) => readFileSync(join(RAIZ, r), "utf8");
@@ -79,9 +79,9 @@ test("/prevision (lo de España) y las páginas en español: los 105 de siempre,
   assert.match(paginaIndiceSpots(SPOTS_SEO).titulo, /^Spots de pesca en España y Portugal: 105 lugares/);
 });
 
-test("spots NZ: 59 en el lanzamiento, Dusky Sound fuera", () => {
-  assert.equal(SPOTS_NZ_TODOS.length, 60);
-  assert.equal(SPOTS_NZ.length, 59);
+test("spots NZ: 68 activos (59 del lanzamiento + 9 de islas), Dusky Sound fuera", () => {
+  assert.equal(SPOTS_NZ_TODOS.length, 69);
+  assert.equal(SPOTS_NZ.length, 68);
   const fuera = SPOTS_NZ_TODOS.filter((s) => s.activo === false).map((s) => s.slug);
   assert.deepEqual(fuera, ["nz-dusky-sound"]);
   assert.ok(!SPOTS.some((s) => s.slug === "nz-dusky-sound"));
@@ -89,7 +89,7 @@ test("spots NZ: 59 en el lanzamiento, Dusky Sound fuera", () => {
 
 test("spots NZ: forma, región MPI, zona horaria y punto de pesca real (OSM, < 300 m de la costa)", () => {
   const slugs = new Set(SPOTS_NZ_TODOS.map((s) => s.slug));
-  assert.equal(slugs.size, 60);
+  assert.equal(slugs.size, 69);
   const espana = new Set(SPOTS_ES.map((s) => s.slug));
   const regiones = new Set(["nz_auckland_kermadec", "nz_central", "nz_challenger", "nz_south_east", "nz_kaikoura", "nz_southland", "nz_fiordland"]);
   for (const s of SPOTS_NZ) {
@@ -151,7 +151,8 @@ test("/prevision?region=nz&lista=1 pública (sin sesión ni clave)", async () =>
 // ---------------------------------------------------------------------------
 test("sitemap: las URL de España de siempre (284) y las de NZ solo bajo /en/, sin /login", () => {
   const urls = urlsSitemap({ spots: SPOTS, especies, tipoFondo: null, profundidad: null });
-  const es = urls.filter((u) => !u.loc.includes("/en/"));
+  // Las /pt/ (portugués, 2026-10-11) aparte: test/seo-pt.test.js.
+  const es = urls.filter((u) => !u.loc.includes("/en/") && !u.loc.includes("/pt/"));
   const en = urls.filter((u) => u.loc.includes("/en/"));
   assert.equal(es.length, 284);
   assert.ok(!es.some((u) => /\/nz-|\/nz\//.test(u.loc)), "nada de NZ en las URL en español");
@@ -202,8 +203,10 @@ test("páginas /en/ de NZ: inglés, canónica /en/, hreflang en + x-default, LIN
     assert.ok(html.includes(`<link rel="alternate" hreflang="en" href="${url}">`), `${url}: hreflang en`);
     assert.ok(html.includes(`<link rel="alternate" hreflang="x-default" href="${url}">`), `${url}: x-default`);
     assert.match(html, /<meta property="og:locale" content="en_NZ">/);
-    // Atribución de LINZ (frase exacta) y aviso, en el pie de todas.
-    assert.ok(html.includes("Sourced from Land Information New Zealand data (CC BY 4.0)"), url);
+    // Atribución de LINZ (fórmula exacta de obra adaptada, con enlace a la
+    // licencia CC BY 4.0) y aviso, en el pie de todas.
+    assert.ok(html.includes(ATRIBUCION_LINZ), url);
+    assert.ok(html.includes('<a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener" target="_blank">CC BY 4.0</a>'), `${url}: enlace a CC BY 4.0`);
     assert.ok(html.includes(AVISO_LINZ), url);
     assert.ok(html.includes("Department of Conservation (DOC), Crown copyright, CC BY 4.0"), url);
     // Nada en español a la vista (salvo el enlace a la versión de España).
@@ -245,10 +248,19 @@ test("mapa: NZ se pide sola (/prevision?region=nz), arranque en Auckland para NZ
   // Cada región con su petición: nunca todos los spots juntos.
   assert.match(html, /fetch\(`\/prevision\?\$\{params\}`/);
   assert.match(html, /const params = new URLSearchParams\(\{ region \}\)/);
-  assert.match(html, /nz: \{ centro: \[-36\.85, 174\.76\], zoom: 9 \}/, "Auckland");
+  // Arranque en NZ con el país entero (2026-10-12), no Auckland.
+  assert.match(html, /nz: \{ centro: \[-41\.3, 173\.5\], zoom: 5, encuadre: "nz" \}/, "NZ entera");
+  assert.match(html, /map\.fitBounds\(VISTAS_REGION\[id\]\.limites/);
+  // Círculos al tamaño del zoom y etiqueta de región que se va a los 2 s.
+  assert.match(html, /const ESCALA_SPOT_POR_ZOOM = /);
+  assert.match(html, /\.icono-spot > div \{ transform: scale\(var\(--escala-spot, 1\)\)/);
+  assert.match(html, /classList\.add\("resumen-oculto"\), 2000\)/);
   assert.match(html, /return \{ region: r === "nueva_zelanda" \? "nz" : "es", fija: false \};/, "región del usuario, como el idioma");
   assert.match(html, /minZoom: 1,/);
-  assert.match(html, /worldCopyJump: true,/);
+  // Sin worldCopyJump (2026-10-12): la vista se queda en la franja -40..320.
+  assert.doesNotMatch(html, /worldCopyJump: true/);
+  assert.match(html, /const FRANJA_LONGITUD = \[-40, 320\];/);
+  assert.match(html, /map\.on\("moveend", mantenerVistaEnFranja\);/);
   assert.match(html, /maxBounds: \[\[-85, -540\], \[85, 540\]\]/);
   for (const id of ["es", "pt", "canarias", "nz"]) assert.match(html, new RegExp(`${id}: \\{ limites: `), id);
   assert.match(html, /data-accion="irARegionMapa" data-args='\$\{JSON\.stringify\(\[id\]\)\}'/);
@@ -260,7 +272,9 @@ test("mapa: NZ se pide sola (/prevision?region=nz), arranque en Auckland para NZ
   assert.ok(!/["']nz-[a-z]/.test(html));
 });
 
-test("diario: la lista de NZ llega del servidor; marketing sin NZ", () => {
+// Marketing: desde el 2026-10-11 hay piezas de NZ, pero sus spots y especies
+// salen de los datos (SPOTS_NZ, especies.json), nunca escritos a mano.
+test("diario: la lista de NZ llega del servidor; marketing sin slugs de NZ escritos a mano", () => {
   assert.match(leer("diario.html"), /const REGIONES_DIARIO = \["nz"\];/);
   const ficheros = [
     "assets/js/tarjetas-mapa.js",
@@ -269,10 +283,26 @@ test("diario: la lista de NZ llega del servidor; marketing sin NZ", () => {
   for (const f of ficheros) assert.ok(!/["']nz-[a-z]/.test(leer(f)), `${f} menciona un slug de NZ`);
 });
 
-test("atribuciones de LINZ: la frase exacta y el aviso de que no son tablas oficiales", () => {
-  assert.equal(ATRIBUCION_LINZ, "Sourced from Land Information New Zealand data (CC BY 4.0)");
+// Licencia LINZ verificada por escrito el 2026-10-11: fórmula de obra
+// adaptada de https://www.linz.govt.nz/copyright, literal; en la UI puede ir
+// abreviada con el nombre completo, "based on" y "CC BY 4.0" con enlace.
+test("atribuciones de LINZ: la fórmula exacta de obra adaptada y el aviso de que no son tablas oficiales", () => {
+  assert.equal(ATRIBUCION_LINZ, "This work is based on Toitū Te Whenua Land Information New Zealand data which are licensed by Toitū Te Whenua Land Information New Zealand for re-use under the Creative Commons Attribution 4.0 International licence.");
+  assert.match(ATRIBUCION_LINZ_CORTA, /^Based on Toitū Te Whenua Land Information New Zealand data, CC BY 4\.0$/);
+  assert.equal(URL_LICENCIA_LINZ, "https://creativecommons.org/licenses/by/4.0/");
   assert.match(AVISO_LINZ, /^Not official tide tables as specified in Maritime Rules Part 25/);
-  assert.match(leer("assets/i18n/en.js"), /"mapa\.atrib\.linz": "NZ tides: Sourced from Land Information New Zealand data \(CC BY 4\.0\); not official tide tables"/);
+  for (const idioma of ["en", "es", "pt"]) {
+    const linea = leer(`assets/i18n/${idioma}.js`).split("\n").find((l) => l.includes('"mapa.atrib.linz"'));
+    assert.ok(linea, idioma);
+    assert.ok(linea.includes("based on Toitū Te Whenua Land Information New Zealand data"), idioma);
+    assert.ok(linea.includes('<a href=\\"https://creativecommons.org/licenses/by/4.0/\\" target=\\"_blank\\" rel=\\"noopener\\">CC BY 4.0</a>'), idioma);
+    assert.doesNotMatch(linea, /Sourced from/, idioma);
+  }
+  for (const f of ["datos/nz/linz-puertos.json", "datos/nz/linz-mareas-2026.json", "datos/nz/linz-mareas-2027.json"]) {
+    const d = JSON.parse(leer(f));
+    assert.equal(d.atribucion, ATRIBUCION_LINZ, f);
+    assert.doesNotMatch(d.licencia, /pendiente/, f);
+  }
 });
 
 // Cámaras de NZ (assets/js/camaras-nz.js), conectadas el 2026-10-11: NZ es
@@ -290,7 +320,9 @@ test("cámaras de NZ: se cargan en la ficha de cada spot NZ y en el robot de sal
   for (const c of CAMARAS_NZ) {
     assert.ok(slugsNZ.has(c.spot), c.id);
     assert.ok(camarasExternasDeSpot(c.spot).includes(c), `${c.id}: no sale en la ficha de ${c.spot}`);
-    assert.equal(c.modo, "enlace", c.id);
+    // Embebidas por decisión de Mikel (2026-10-11) o enlace: el detalle, en
+    // test/camaras-externas.test.js.
+    assert.ok(["imagen_oficial", "iframe_oficial", "enlace"].includes(c.modo), c.id);
   }
   assert.equal(CAMARAS_EXTERNAS.filter((c) => c.spot.startsWith("nz-")).length, CAMARAS_NZ.length);
   assert.match(leer("assets/js/camaras-externas.js"), /from "\.\/camaras-nz\.js"/);
@@ -299,4 +331,11 @@ test("cámaras de NZ: se cargan en la ficha de cada spot NZ y en el robot de sal
   assert.match(index, /CE\.nombreCamara\(c, I18n\.idioma\(\)\)/, "nombre de la cámara en inglés en la ficha");
   const robot = leer("scripts/camaras/comprobar-camaras.mjs");
   assert.match(robot, /for \(const camara of CAMARAS_EXTERNAS\)/);
+});
+
+test("mapa: en NZ, los botones de capas sin datos allí salen sombreados (pulsables, con aviso)", () => {
+  const html = leer("index.html");
+  assert.match(html, /const BOTONES_SOLO_IBERIA = \["toggleRios", "toggleBoyas", "toggleEstaciones", "toggleFondo", "toggleNubes"\];/);
+  assert.match(html, /\.sin-datos-region \{ opacity: 0\.38; filter: grayscale\(1\); \}/);
+  assert.match(html, /map\.on\("moveend", sombrearCapasSinDatos\);/);
 });

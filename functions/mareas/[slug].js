@@ -21,6 +21,7 @@
 import { regionDeSlug } from "./_regiones.js";
 import { zonaDeSpot } from "../../assets/js/regiones.js";
 import { redireccionNZ } from "../_lib/seo/redireccion-nz.js";
+import { enlacesHreflang } from "../_lib/seo/idiomas.js";
 
 const DORADO = "#A8792A";
 const NAVY = "#0B2532";
@@ -103,10 +104,10 @@ function renderizarPagina(spot, todos) {
     .filter(Boolean)
     .join(", ");
   const descripcion =
-    `Marea hoy en ${spot.nombre}: ${resumenMareas ? `próxima ${resumenMareas}; ` : ""}` +
+    `Mareas en ${spot.nombre} hoy: ${resumenMareas ? `próxima ${resumenMareas}; ` : ""}` +
     `oleaje ${oleajeTexto}, viento ${vientoTexto}${tempAgua != null ? `, agua a ${tempAgua} °C` : ""}. ` +
     `Datos reales actualizados cada hora, gratis y sin cuenta.`;
-  const titulo = `Marea hoy en ${spot.nombre}: pleamar, bajamar y oleaje | Costaviva`;
+  const titulo = `Mareas en ${spot.nombre} hoy: pleamar, bajamar y oleaje | Costaviva`;
   const url = `https://costaviva.org/mareas/${spot.slug}`;
   // Enlaces a otros spots de la misma región (más allá de los 4 más
   // cercanos): cada página de spot enlaza a más páginas hermanas, para que
@@ -161,7 +162,7 @@ function renderizarPagina(spot, todos) {
 <title>${escaparHtml(titulo)}</title>
 <meta name="description" content="${escaparHtml(descripcion)}" />
 <link rel="canonical" href="${url}" />
-<meta property="og:type" content="website" />
+${region?.slug === "portugal" ? `${enlacesHreflang(`/mareas/${spot.slug}`, "https://costaviva.org", ["es", "pt"])}\n` : ""}<meta property="og:type" content="website" />
 <meta property="og:url" content="${url}" />
 <meta property="og:title" content="${escaparHtml(titulo)}" />
 <meta property="og:description" content="${escaparHtml(descripcion)}" />
@@ -215,7 +216,7 @@ function renderizarPagina(spot, todos) {
     <div class="subtitulo">pesca en tiempo real</div>
 
     <div class="migas"><a href="/mareas">Todos los spots</a>${region ? ` → <a href="/mareas/region/${region.slug}">${escaparHtml(region.nombre)}</a>` : ""} → ${nombre}</div>
-    <h1>Marea hoy en ${nombre}</h1>
+    <h1>Mareas hoy en ${nombre}: pleamar y bajamar</h1>
     <div class="actualizado">Datos reales, actualizados: ${new Date(spot.actualizado).toLocaleString("es-ES", { timeZone: zonaDeSpot(spot) })}</div>
 
     ${
@@ -234,7 +235,7 @@ function renderizarPagina(spot, todos) {
       ${tempAgua != null ? `<div class="tarjeta"><div class="titulo">🌡️ TEMPERATURA DEL AGUA</div><div class="valor">${tempAgua} °C</div></div>` : ""}
     </div>
 
-    <a class="cta" href="/login?alta=1">Prueba Costaviva 7 días gratis →</a>
+    <a class="cta" href="/login?alta=1">Prueba Costaviva 14 días gratis →</a>
     <p class="cta-sub">Sin tarjeta. Mapa completo, webcams en directo y diario de pesca. Después, 3,99 €/mes.</p>
 
     ${

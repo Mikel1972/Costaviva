@@ -6,6 +6,7 @@
 <!-- Idiomas (2026-10-09): diccionarios y I18n.t(); en español no cambia nada. Ver assets/js/i18n.js. -->
 <script src="/assets/i18n/es.js"></script>
 <script src="/assets/i18n/en.js"></script>
+<script src="/assets/i18n/pt.js"></script>
 <script src="/assets/js/i18n.js"></script>
 <title data-i18n="grupos.titulo_pagina">Grupos — Costaviva</title>
 <link rel="manifest" href="manifest.json" />
@@ -124,6 +125,7 @@
       <button type="button" id="btnMiSuscripcion" data-i18n="comun.menu.suscripcion">💳 Mi suscripción</button>
       <button type="button" id="btnCerrarSesion" data-i18n="comun.menu.cerrar_sesion">🚪 Cerrar sesión</button>
       <div data-i18n-selector></div>
+        <div data-preferencias-selector></div>
     </div>
   </div>
 </header>
@@ -191,8 +193,9 @@ async function registrarEvento(tipo, detalle) {
   } catch (e) { /* nunca debe romper la interacción del usuario */ }
 }
 
-// Paywall (2026-09-15, pedido explícito del usuario): 7 días de prueba
-// desde el alta, luego bloqueo total sin suscripción activa —
+// Página solo Premium (cobro, 2026-10-11): con la prueba de 14 días o con
+// Premium (regional o Mundial) se entra; en el plan gratuito, a la página de
+// planes (con_acceso = tiene Premium en alguna región) —
 // mi_estado_suscripcion() ya resuelve el bypass del admin en el
 // servidor. Fallo silencioso a propósito si la RPC falla (red, error
 // devuelto, o una excepción real) — try/catch explícito porque un
@@ -309,6 +312,11 @@ async function generarInvitacion(grupoId, contenedorEl) {
   contenedorEl.innerHTML = `<div class="invitacion-caja">${enlace}</div>`;
 }
 
+// Fecha de una salida ("AAAA-MM-DD", día local) en el formato de las preferencias.
+function fechaGrupo(f) {
+  return /^\d{4}-\d{2}-\d{2}$/.test(String(f)) ? I18n.fechaNumerica(`${f}T00:00`) : (f ? I18n.fechaNumerica(f) : "");
+}
+
 async function actividadCompartidaHTML(grupoId) {
   const [{ data: calendario }, { data: capturas }, { data: ubicaciones }] = await Promise.all([
     supabase.rpc("obtener_calendario_grupo", { p_grupo_id: grupoId }),
@@ -317,12 +325,12 @@ async function actividadCompartidaHTML(grupoId) {
   ]);
 
   const filaCalendario = (s) =>
-    `<div class="fila-actividad"><span class="autor">${s.autor_nombre}</span> — ${s.fecha}
+    `<div class="fila-actividad"><span class="autor">${s.autor_nombre}</span> — ${fechaGrupo(s.fecha)}
       <div class="detalle">📍 ${s.spot_nombre || I18n.t("grupos.ubicacion_actual")}${s.tipo_salida ? ` · ${I18n.existe(`comun.tipo_salida.${s.tipo_salida}`) ? I18n.t(`comun.tipo_salida.${s.tipo_salida}`) : s.tipo_salida}` : ""}</div>
     </div>`;
   const filaCaptura = (c) =>
     `<div class="fila-actividad"><span class="autor">${c.autor_nombre}</span> — 🐟 ${c.especie}
-      <div class="detalle">${c.talla_cm ? c.talla_cm + " cm " : ""}${c.peso_g ? "· " + c.peso_g + " g" : ""}</div>
+      <div class="detalle">${c.talla_cm ? I18n.centimetros(c.talla_cm, Number.isInteger(Number(c.talla_cm)) ? undefined : 1) + " " : ""}${c.peso_g ? "· " + (I18n.preferencias().unidades === "imperial" ? I18n.kilos(c.peso_g / 1000) : c.peso_g + " g") : ""}</div>
     </div>`;
   const filaUbicacion = (u) =>
     `<div class="fila-actividad"><span class="autor">${u.autor_nombre}</span> — 📍 ${u.nombre}</div>`;

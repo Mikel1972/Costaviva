@@ -4,8 +4,8 @@
 // Sin IA, sin claves. Lo lanza a mano el workflow linz-mareas.yml (o
 // cualquiera en local); no escribe en producción ni en el bucket.
 //
-// Qué descarga (todo de linz.govt.nz, licencia CC BY 4.0 por la
-// declaración general de LINZ, pendiente de confirmación escrita):
+// Qué descarga (todo de linz.govt.nz, licencia CC BY 4.0, verificada con
+// LINZ por escrito el 2026-10-11; https://www.linz.govt.nz/copyright):
 //   - La lista de tablas anuales de los 87 puertos (CSV por puerto y año).
 //   - La tabla de puertos secundarios (diferencias de hora y alturas).
 // Qué escribe:
@@ -145,7 +145,7 @@ async function main() {
   const comun = {
     fuente: "Toitū Te Whenua Land Information New Zealand (LINZ), tide predictions",
     urls: [URL_PAGINA, urlSec],
-    licencia: "CC BY 4.0 (declaración general de LINZ, https://www.linz.govt.nz/copyright; pendiente de confirmación escrita)",
+    licencia: "CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/), verificada con LINZ por escrito el 2026-10-11 (https://www.linz.govt.nz/copyright)",
     atribucion: ATRIBUCION_LINZ,
     aviso: AVISO_LINZ,
     script: "scripts/fuentes/linz-mareas.mjs",

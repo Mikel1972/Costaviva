@@ -171,7 +171,7 @@ export function resumenIndice(ind, { estimada = false } = {}) {
       fiabilidad: ind.fiabilidad ? { estrellas: ind.fiabilidad.estrellas, etiqueta: ind.fiabilidad.etiqueta } : null,
       freza: !!ind.freza,
       // Ola peligrosa (2026-10-08): nota aparte, no motivo ni tope.
-      aviso_ola: ind.avisoOla ? (ind.avisoOla.clave ? t(ind.avisoOla.clave, ind.avisoOla.vars, "es") : ind.avisoOla.texto) : null,
+      aviso_ola: ind.avisoOla ? (ind.avisoOla.textoEs ?? (ind.avisoOla.clave ? t(ind.avisoOla.clave, ind.avisoOla.vars, "es") : ind.avisoOla.texto)) : null,
       ranking: ind.ranking.map((x) => ({ id: x.id, p: x.puntuacion })),
     },
   };
@@ -225,11 +225,20 @@ export function fmtDecimal(x, decimales = 1) {
   return I18n.decimal(String(+(+x).toFixed(decimales)));
 }
 
-// "1,9 m" si es un solo valor (boya) y "1,7–2,1 m" si es un rango (modelo).
+// "1,9 m" si es un solo valor (boya) y "1,7–2,1 m" si es un rango (modelo);
+// en pies si el usuario usa el sistema imperial (I18n.metros).
 export function textoOleaje(min, max) {
   const a = fmtDecimal(min), b = fmtDecimal(max ?? min);
   if (a === null) return "—";
-  return a === b || b === null ? `${a} m` : `${a}–${b} m`;
+  const ha = I18n.metros(+min), hb = b === null ? ha : I18n.metros(+(max ?? min));
+  return ha === hb ? ha : `${ha.replace(/ (m|ft)$/, "")}–${hb}`;
+}
+
+// "17,2 °C" (sin ceros de sobra, como fmtDecimal) o "63 °F" en imperial; null sin dato.
+export function textoTemp(c, decimales = 1) {
+  const v = fmtDecimal(c, decimales);
+  if (v === null) return null;
+  return I18n.preferencias().unidades === "imperial" ? I18n.temp(+c, decimales > 1 ? 1 : 0) : `${v} °C`;
 }
 
 // "Cebo: Anchoa · Señuelo: Pulpo" sin separadores sueltos si falta alguno.

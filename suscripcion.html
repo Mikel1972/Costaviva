@@ -6,6 +6,7 @@
 <!-- Idiomas (2026-10-09): diccionarios y I18n.t(); en español no cambia nada. Ver assets/js/i18n.js. -->
 <script src="/assets/i18n/es.js"></script>
 <script src="/assets/i18n/en.js"></script>
+<script src="/assets/i18n/pt.js"></script>
 <script src="/assets/js/i18n.js"></script>
 <title data-i18n="susc.titulo_pagina">Mi suscripción — Costaviva</title>
 <link rel="manifest" href="manifest.json" />
@@ -82,6 +83,28 @@
   .botones-amigo { display: flex; gap: 8px; margin-bottom: 10px; }
   .boton-wa { flex: 1; display: flex; align-items: center; justify-content: center; border-radius: 7px; border: 1px solid var(--ok-borde); background: var(--ok-fondo); color: var(--ok-texto); font-weight: 800; font-size: 13.5px; text-decoration: none; }
   .amigo .reglas { font-size: 11px; color: var(--tinta-2); line-height: 1.45; padding-left: 16px; margin: 0; }
+  .plan.destacado { border: 2px solid var(--acento); position: relative; }
+  .plan .unidad { font-family: var(--f-texto); font-size: 13px; font-weight: 400; color: var(--tinta-2); }
+  .etiqueta-ahorro, .etiqueta-fundador { display: inline-block; font-size: 11px; font-weight: 700; border-radius: 5px; padding: 2px 8px; margin-bottom: 6px; }
+  .etiqueta-ahorro { background: var(--acento); color: var(--sobre-acento); }
+  .etiqueta-ahorro:empty { display: none; }
+  .etiqueta-fundador { background: var(--aviso-fondo); color: var(--aviso-texto); }
+  .titulo-premium { font-family: var(--f-titulo); font-size: 19px; margin: 18px 0 4px; }
+  .caja > div > .detalle { font-size: 12px; color: var(--tinta-2); margin: 0 0 12px; line-height: 1.45; }
+  button.secundario { background: var(--superficie-2); color: var(--tinta); border: 1px solid var(--linea); }
+  .mundial { border: 1px solid var(--linea); border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; font-size: 13px; }
+  .mundial summary { cursor: pointer; font-weight: 600; }
+  .mundial .detalle { font-size: 12px; color: var(--tinta-2); line-height: 1.45; }
+  .fila-mundial { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+  .fila-mundial span { flex: 1; }
+  .fila-mundial button { width: auto; padding: 7px 12px; }
+  label.checkbox.legal { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: var(--tinta-2); line-height: 1.45; margin: 4px 0 10px; cursor: pointer; }
+  label.checkbox.legal input { margin-top: 2px; accent-color: var(--acento); flex-shrink: 0; }
+  label.checkbox.legal a { color: var(--acento); }
+  #bloqueSuscrito { margin-bottom: 16px; }
+  label.checkbox.legal[hidden], .nota-legal[hidden] { display: none; }
+  .plan.confirmar { border: 2px solid var(--acento); }
+  .nota-prueba-gratis { font-weight: 600; color: var(--tinta); }
   .confirmando { text-align: center; padding: 20px 0; font-family: var(--f-texto); font-size: 13px; color: var(--tinta-2); }
 </style>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "d398d313ac4e4524a1b89af3c9ad6fda"}'></script><!-- End Cloudflare Web Analytics -->
@@ -115,24 +138,90 @@
 
   <div id="bloqueConfirmando" class="confirmando" style="display:none;" data-i18n="susc.confirmando">Confirmando tu suscripción…</div>
 
+  <!-- Suscriptor: su plan y el portal de Stripe para cambiar o cancelar. -->
+  <div id="bloqueSuscrito" hidden>
+    <!-- Cambio de plan propio (2026-10-11, /cambiar-plan): subir empieza hoy
+         con prorrateo; bajar se programa para el final del periodo pagado y
+         se puede anular antes. El portal de Stripe queda para la tarjeta,
+         las facturas y la cancelación. -->
+    <div id="bloqueCambioPlan">
+      <h2 class="titulo-premium" data-i18n="cambio.titulo">Cambiar de plan</h2>
+      <p class="mensaje info" id="cambioProgramadoTexto" hidden></p>
+      <button type="button" class="secundario" id="btnAnularCambio" hidden data-i18n="cambio.anular">Anular el cambio programado</button>
+      <div id="opcionesCambio" class="filas-mundial"></div>
+      <div class="plan confirmar" id="confirmarCambio" hidden>
+        <p class="precio" id="resumenCambio"></p>
+        <label class="checkbox legal">
+          <input type="checkbox" id="checkCambio" />
+          <span id="textoAceptacionCambio"></span>
+        </label>
+        <button type="button" id="btnConfirmarCambio" disabled data-i18n="cambio.confirmar">Confirmar el cambio</button>
+      </div>
+      <p class="nota-legal" data-i18n="cambio.reglas">Subir de plan empieza hoy: se descuenta la parte no disfrutada del plan anterior y pagas la diferencia. Bajar de plan se aplica al final del periodo pagado. No hay devoluciones sobre lo ya comprado.</p>
+    </div>
+    <button type="button" id="btnGestionar" data-i18n="susc.gestionar">Gestionar mi suscripción</button>
+    <p class="nota-legal" data-i18n="prec.gestionar_explica">Desde ahí puedes cambiar la tarjeta, descargar tus facturas o cancelar. Si cancelas, Premium sigue activo hasta el final del periodo ya pagado.</p>
+  </div>
+
+  <!-- Página de precios (2026-10-11). Precios de /precios-zona según el país
+       detectado; el precio final lo confirma el pago de Stripe. -->
   <div id="bloquePaywall" style="display:none;">
+    <p class="nota-legal nota-prueba-gratis" data-i18n="prec.prueba_antes">Prueba 14 días gratis antes de pagar: cada cuenta nueva tiene 14 días de Premium sin tarjeta.</p>
+    <div class="plan plan-gratis">
+      <p class="precio"><span data-i18n="prec.gratis">Gratis</span> <span class="badge-actual" id="badgeGratis" hidden data-i18n="susc.plan_actual">✓ Tu plan actual</span></p>
+      <p class="detalle" data-i18n="prec.gratis_incluye">Mapa, mareas y condiciones básicas (ola, viento, temperatura del agua, nubes, lluvia y presión) en todas las regiones. Sin anuncios.</p>
+    </div>
+
+    <h2 class="titulo-premium" id="tituloPremium" data-i18n="prec.premium">Premium</h2>
+    <p class="detalle" data-i18n="prec.premium_incluye">Además de lo gratuito: índice de pesca y ventana de actividad por horas, webcams, capas del mar (clorofila, temperatura, frentes y corrientes), diario de pesca, grupos, alarma SOS e identificación de capturas por foto.</p>
+
+    <div class="plan destacado" id="planAnual">
+      <span class="etiqueta-ahorro" id="ahorroAnual"></span>
+      <p class="precio"><span id="precioAnual"></span> <span class="unidad" data-i18n="prec.por_ano">/ año</span></p>
+      <p class="detalle" id="equivaleAnual"></p>
+      <button type="button" class="btn-comprar" data-ambito="regional" data-plan="anual" data-i18n="prec.elegir_anual">Elegir anual</button>
+    </div>
+    <div class="plan" id="planFundador" hidden>
+      <span class="etiqueta-fundador" id="plazasFundador"></span>
+      <p class="precio"><span id="precioFundador"></span> <span class="unidad" data-i18n="prec.por_ano">/ año</span></p>
+      <p class="detalle" data-i18n="prec.fundador_explica">Precio de fundador para las primeras suscripciones anuales. Lo mantienes mientras sigas suscrito.</p>
+      <button type="button" class="btn-comprar" data-ambito="regional" data-plan="fundador_anual" data-i18n="prec.elegir_fundador">Quiero el precio de fundador</button>
+    </div>
     <div class="plan" id="planMensual">
-      <p class="precio"><span data-i18n="susc.precio_mes">3,99€ / mes</span> <span class="badge-actual" id="badgeMensual" hidden data-i18n="susc.plan_actual">✓ Tu plan actual</span></p>
-      <p class="detalle" data-i18n="susc.mensual_explica">Renovación mensual automática. Puedes cancelar cuando quieras — el acceso sigue activo hasta el final del mes ya pagado, sin devolución de ese importe.</p>
-      <button type="button" id="btnMensual" data-i18n="susc.suscribirme_mensual">Suscribirme mensual</button>
+      <p class="precio"><span id="precioMensual"></span> <span class="unidad" data-i18n="prec.por_mes">/ mes</span></p>
+      <p class="detalle" data-i18n="prec.mensual_explica">Sin permanencia: cancela cuando quieras.</p>
+      <button type="button" class="btn-comprar secundario" data-ambito="regional" data-plan="mensual" data-i18n="prec.elegir_mensual">Elegir mensual</button>
     </div>
-    <div class="plan" id="planAnual">
-      <p class="precio"><span data-i18n="susc.precio_ano">39,99€ / año</span> <span class="badge-actual" id="badgeAnual" hidden data-i18n="susc.plan_actual">✓ Tu plan actual</span></p>
-      <p class="detalle" data-i18n="susc.anual_explica">Renovación anual automática. Puedes cancelar cuando quieras — el acceso sigue activo hasta el final del año ya pagado, pero ese importe no es reembolsable.</p>
-      <label class="checkbox" id="labelCheckAnual">
-        <input type="checkbox" id="checkAnual" />
-        <span data-i18n="susc.anual_renuncia">Entiendo que, al contratar el plan anual, el servicio empieza de inmediato, renuncio a mi derecho de desistimiento de 14 días para esta compra, y el importe del año ya pagado no se reembolsa aunque cancele antes de que termine.</span>
+
+    <details class="mundial" id="bloqueMundial">
+      <summary data-i18n="prec.mundial_titulo">¿Pescas en varias regiones? Plan Mundial</summary>
+      <p class="detalle" id="mundialExplica"></p>
+      <div class="filas-mundial">
+        <div class="fila-mundial"><span id="mundialAnual"></span><button type="button" class="btn-comprar secundario" data-ambito="mundial" data-plan="anual" data-i18n="prec.anual">Anual</button></div>
+        <div class="fila-mundial" id="filaMundialFundador" hidden><span id="mundialFundador"></span><button type="button" class="btn-comprar secundario" data-ambito="mundial" data-plan="fundador_anual" data-i18n="prec.fundador">Fundador</button></div>
+        <div class="fila-mundial"><span id="mundialMensual"></span><button type="button" class="btn-comprar secundario" data-ambito="mundial" data-plan="mensual" data-i18n="prec.mensual">Mensual</button></div>
+      </div>
+    </details>
+
+    <!-- Confirmación antes de pagar (2026-10-11, decisión de Mikel): casilla
+         obligatoria y sin marcar con la renuncia al desistimiento por
+         contenido digital (texto en assets/js/consentimiento.js). El botón de
+         pago no se activa sin ella. -->
+    <div class="plan confirmar" id="confirmarPago" hidden>
+      <p class="precio" id="resumenPago"></p>
+      <label class="checkbox legal">
+        <input type="checkbox" id="checkLegal" />
+        <span id="textoAceptacion"></span>
       </label>
-      <button type="button" id="btnAnual" disabled data-i18n="susc.suscribirme_anual">Suscribirme anual</button>
+      <p class="nota-legal" id="textoSiCerramos"></p>
+      <button type="button" id="btnPagar" disabled data-i18n="prec.ir_al_pago">Ir al pago</button>
+      <p class="nota-legal" id="notaCobroNoActivo" hidden data-i18n="prec.cobro_no_activo">Todavía no hemos abierto los pagos. Mientras tanto, disfruta de los 14 días de Premium gratis.</p>
+      <p class="nota-legal"><a href="/terminos" target="_blank" rel="noopener" data-i18n="prec.terminos">Términos y condiciones</a></p>
     </div>
+    <p class="nota-legal" id="notaPrueba" hidden></p>
+    <p class="nota-legal" id="notaPrecio" data-i18n="prec.nota_precio">Precios con IVA incluido. El precio final se confirma en la pantalla de pago según tu país de facturación.</p>
     <p class="nota-legal" id="notaInvitacion" hidden></p>
     <p class="nota-legal" id="notaCodigoStripe" data-i18n="susc.codigo_descuento">¿Tienes un código de descuento? Podrás introducirlo en la propia pantalla de pago de Stripe.</p>
-    <p class="gestionar"><a id="linkGestionar" data-i18n="susc.gestionar">Gestionar, cambiar o cancelar mi suscripción</a></p>
   </div>
 
   <!-- "Invita a un amigo" (2026-10-09, aprobado por Mikel). Se rellena con
@@ -149,12 +238,13 @@
     <ul class="reglas" id="reglasAmigo"></ul>
   </div>
 
-  <p class="volver"><a href="/" data-i18n="susc.volver_mapa">← Volver al mapa</a></p>
+  <p class="volver"><a href="/terminos" data-i18n="prec.terminos">Términos y condiciones</a> · <a href="/" data-i18n="susc.volver_mapa">← Volver al mapa</a></p>
 </div>
 
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { enlaceAmigo, enlaceWhatsapp, mensajeParaCompartir, textoResumen, REGLAS } from "/assets/js/invitar-amigo.js";
+import { VERSION as VERSION_ACEPTACION, textoAceptacion, textoSiCerramos, idiomaAceptacion } from "/assets/js/consentimiento.js";
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc";
@@ -180,19 +270,27 @@ async function registrarEvento(tipo, detalle) {
   } catch (e) { /* nunca debe romper la interacción del usuario */ }
 }
 
-async function iniciarCheckout(plan) {
-  registrarEvento("iniciar_checkout", { plan });
+const IDIOMA_ACEPTACION = idiomaAceptacion(I18n.idioma(), navigator.languages || [navigator.language || ""]);
+
+async function iniciarCheckout(ambito, plan) {
+  registrarEvento("iniciar_checkout", { ambito, plan });
   const { data: { session } } = await supabase.auth.getSession();
   const resp = await fetch("/crear-checkout-stripe", {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
-    body: JSON.stringify({ plan }),
+    body: JSON.stringify({
+      ambito, plan, idioma: I18n.idioma(),
+      // Aceptación expresa de la casilla: el servidor la exige y la guarda.
+      aceptacion: { version: VERSION_ACEPTACION, idioma: IDIOMA_ACEPTACION, aceptada: checkLegal.checked },
+    }),
   });
-  const resultado = await resp.json();
+  let resultado = {};
+  try { resultado = await resp.json(); } catch (e) { resultado = {}; }
   if (resultado.url) {
     window.location.href = resultado.url;
   } else {
     mostrarMensaje(resultado.error || I18n.t("susc.error_pago"), "error");
+    btnPagar.disabled = !cobroAbierto || !checkLegal.checked;
   }
 }
 
@@ -207,54 +305,145 @@ async function abrirPortal() {
   else mostrarMensaje(resultado.error || I18n.t("susc.error_portal"), "error");
 }
 
-const btnMensual = document.getElementById("btnMensual");
-const btnAnual = document.getElementById("btnAnual");
-
-btnMensual.addEventListener("click", (e) => {
+// Elegir plan -> bloque de confirmación con la casilla legal (sin marcar).
+// El botón de pago solo se activa con la casilla marcada. Sin on*= (CSP).
+const checkLegal = document.getElementById("checkLegal");
+const btnPagar = document.getElementById("btnPagar");
+const confirmarPago = document.getElementById("confirmarPago");
+let planElegido = null;
+let preciosZona = null;
+// Interruptor COBRO_ACTIVO (lo dice /precios-zona): apagado, el botón de
+// pago dice "Próximamente" y no se activa nunca.
+let cobroAbierto = false;
+function elegirPlan(ambito, plan) {
+  planElegido = { ambito, plan };
+  checkLegal.checked = false;
+  btnPagar.disabled = true;
+  btnPagar.textContent = I18n.t(cobroAbierto ? "prec.ir_al_pago" : "prec.proximamente");
+  checkLegal.closest("label").hidden = !cobroAbierto;
+  document.getElementById("textoSiCerramos").hidden = !cobroAbierto;
+  document.getElementById("notaCobroNoActivo").hidden = cobroAbierto;
+  document.getElementById("textoAceptacion").textContent = textoAceptacion(plan, IDIOMA_ACEPTACION);
+  document.getElementById("textoSiCerramos").textContent = textoSiCerramos(IDIOMA_ACEPTACION);
+  const cent = preciosZona?.planes?.[ambito]?.[plan];
+  const nombre = `${ambito === "mundial" ? I18n.t("prec.mundial") + " · " : ""}${I18n.t(`prec.${plan === "fundador_anual" ? "fundador" : plan}`)}`;
+  document.getElementById("resumenPago").textContent = cent ? `${nombre}: ${dinero(cent, preciosZona.moneda)}` : nombre;
+  confirmarPago.hidden = false;
+  confirmarPago.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+checkLegal.addEventListener("change", () => { btnPagar.disabled = !cobroAbierto || !checkLegal.checked || !planElegido; });
+document.getElementById("bloquePaywall").addEventListener("click", (e) => {
+  const b = e.target.closest(".btn-comprar");
+  if (b) elegirPlan(b.dataset.ambito, b.dataset.plan);
+});
+btnPagar.addEventListener("click", () => {
+  if (!cobroAbierto || !planElegido || !checkLegal.checked) return;
+  btnPagar.disabled = true;
+  iniciarCheckout(planElegido.ambito, planElegido.plan);
+});
+document.getElementById("btnGestionar").addEventListener("click", (e) => {
   e.target.disabled = true;
-  if (btnMensual.dataset.accion === "cambiar") abrirPortal();
-  else iniciarCheckout("monthly");
+  abrirPortal();
 });
-document.getElementById("checkAnual").addEventListener("change", (e) => {
-  btnAnual.disabled = !e.target.checked;
-});
-btnAnual.addEventListener("click", (e) => {
-  e.target.disabled = true;
-  if (btnAnual.dataset.accion === "cambiar") abrirPortal();
-  else iniciarCheckout("annual");
-});
-document.getElementById("linkGestionar").addEventListener("click", abrirPortal);
 
-// Marca el plan que ya se tiene (borde + insignia "Tu plan actual") y
-// convierte el botón del OTRO plan en "Cambiar a..." (vale igual para
-// subir a anual que para bajar a mensual — pedido explícito del
-// usuario) — el cambio en sí se hace desde el Portal de Stripe, que ya
-// resuelve el prorrateo, en vez de escribir esa lógica a mano aquí.
-function aplicarPlanActual(periodo) {
-  if (periodo === "mensual") {
-    document.getElementById("planMensual").classList.add("actual");
-    document.getElementById("badgeMensual").hidden = false;
-    btnMensual.textContent = I18n.t("susc.tu_plan");
-    btnMensual.disabled = true;
-    document.getElementById("labelCheckAnual").style.display = "none";
-    btnAnual.textContent = I18n.t("susc.cambiar_anual");
-    btnAnual.disabled = false;
-    btnAnual.dataset.accion = "cambiar";
-  } else if (periodo === "anual") {
-    document.getElementById("planAnual").classList.add("actual");
-    document.getElementById("badgeAnual").hidden = false;
-    document.getElementById("labelCheckAnual").style.display = "none";
-    btnAnual.textContent = I18n.t("susc.tu_plan");
-    btnAnual.disabled = true;
-    btnMensual.textContent = I18n.t("susc.cambiar_mensual");
-    btnMensual.disabled = false;
-    btnMensual.dataset.accion = "cambiar";
+// ---- Cambio de plan (/cambiar-plan) ----
+const OPCIONES_CAMBIO = [["regional", "mensual"], ["regional", "anual"], ["mundial", "mensual"], ["mundial", "anual"]];
+let cambioElegido = null;
+function nombrePlan(ambito, plan) {
+  const a = ambito === "mundial" ? I18n.t("prec.mundial") : "Premium";
+  return `${a} · ${I18n.t(`prec.${plan === "fundador_anual" ? "fundador" : plan}`)}`;
+}
+// En el formato de fecha de las preferencias (31/12/2026, 12/31/2026 o 2026-12-31).
+function fechaCorta(iso) {
+  return I18n.fechaNumerica(iso);
+}
+async function llamarCambio(cuerpo) {
+  const { data: { session } } = await supabase.auth.getSession();
+  const r = await fetch("/cambiar-plan", {
+    method: cuerpo ? "POST" : "GET",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+    body: cuerpo ? JSON.stringify(cuerpo) : undefined,
+  });
+  let j = {};
+  try { j = await r.json(); } catch (e) { j = {}; }
+  return j;
+}
+async function pintarCambioPlan(estado) {
+  const actual = { ambito: estado.ambito === "mundial" ? "mundial" : "regional", periodo: estado.periodo };
+  const cont = document.getElementById("opcionesCambio");
+  cont.replaceChildren(...OPCIONES_CAMBIO.filter(([a, p]) => !(a === actual.ambito && p === actual.periodo)).map(([a, p]) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "secundario";
+    b.dataset.ambito = a;
+    b.dataset.plan = p;
+    b.textContent = nombrePlan(a, p);
+    return b;
+  }));
+  const prog = (await llamarCambio(null)).cambio_programado;
+  if (prog) {
+    const t = document.getElementById("cambioProgramadoTexto");
+    t.textContent = I18n.t("cambio.programado", { plan: nombrePlan(prog.ambito || "regional", prog.plan || "mensual"), fecha: fechaCorta(prog.fecha) });
+    t.hidden = false;
+    document.getElementById("btnAnularCambio").hidden = false;
   }
 }
+document.getElementById("opcionesCambio").addEventListener("click", async (e) => {
+  const b = e.target.closest("button[data-plan]");
+  if (!b) return;
+  cambioElegido = { ambito: b.dataset.ambito, plan: b.dataset.plan };
+  const caja = document.getElementById("confirmarCambio");
+  const resumen = document.getElementById("resumenCambio");
+  document.getElementById("checkCambio").checked = false;
+  document.getElementById("btnConfirmarCambio").disabled = true;
+  resumen.textContent = I18n.t("comun.cargando");
+  caja.hidden = false;
+  const p = await llamarCambio({ ...cambioElegido, confirmar: false, idioma: I18n.idioma() });
+  if (p.error) { resumen.textContent = p.error; return; }
+  cambioElegido.plan = p.plan || cambioElegido.plan;
+  resumen.textContent = p.tipo === "subida"
+    ? I18n.t("cambio.pagaras_hoy", { plan: nombrePlan(p.ambito, p.plan), cobro: dinero(p.pagar_hoy, p.moneda), descuento: dinero(p.descontado, p.moneda) })
+    : I18n.t("cambio.cambiara_el", { plan: nombrePlan(p.ambito, p.plan), fecha: p.fecha ? fechaCorta(p.fecha) : "—", importe: dinero(p.importe, p.moneda) });
+  document.getElementById("textoAceptacionCambio").textContent = textoAceptacion(p.plan, IDIOMA_ACEPTACION);
+});
+document.getElementById("checkCambio").addEventListener("change", (e) => {
+  document.getElementById("btnConfirmarCambio").disabled = !e.target.checked || !cambioElegido;
+});
+document.getElementById("btnConfirmarCambio").addEventListener("click", async (e) => {
+  if (!cambioElegido || !document.getElementById("checkCambio").checked) return;
+  e.target.disabled = true;
+  const r = await llamarCambio({ ...cambioElegido, confirmar: true, idioma: I18n.idioma(),
+    aceptacion: { version: VERSION_ACEPTACION, idioma: IDIOMA_ACEPTACION, aceptada: true } });
+  if (r.ok) {
+    mostrarMensaje(I18n.t(r.tipo === "subida" ? "cambio.hecho_subida" : "cambio.hecho_bajada", { fecha: r.fecha ? fechaCorta(r.fecha) : "" }), "ok");
+    setTimeout(() => window.location.reload(), 2500);
+  } else {
+    mostrarMensaje(r.error || I18n.t("cambio.error"), "error");
+    e.target.disabled = false;
+  }
+});
+document.getElementById("btnAnularCambio").addEventListener("click", async (e) => {
+  e.target.disabled = true;
+  const r = await llamarCambio({ anular: true });
+  if (r.ok) {
+    mostrarMensaje(I18n.t("cambio.anulado"), "ok");
+    document.getElementById("cambioProgramadoTexto").hidden = true;
+    e.target.hidden = true;
+  } else {
+    mostrarMensaje(r.error || I18n.t("cambio.error"), "error");
+    e.target.disabled = false;
+  }
+});
 
 function formatearFecha(iso) {
   if (!iso) return null;
   return new Date(iso).toLocaleDateString(I18n.locale(), { day: "numeric", month: "long", year: "numeric" });
+}
+function dinero(cent, moneda) {
+  return new Intl.NumberFormat(I18n.locale(), { style: "currency", currency: moneda }).format(cent / 100);
+}
+function nombreRegion(id) {
+  return I18n.existe(`prec.region.${id}`) ? I18n.t(`prec.region.${id}`) : id;
 }
 
 async function comprobarEstado() {
@@ -267,12 +456,58 @@ async function comprobarEstado() {
   }
 }
 
+async function cargarPrecios() {
+  try {
+    const r = await fetch("/precios-zona");
+    return r.ok ? await r.json() : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+async function plazasFundador() {
+  try {
+    const { data, error } = await supabase.rpc("plazas_fundador_restantes");
+    return error || typeof data !== "number" ? null : data;
+  } catch (e) {
+    return null;
+  }
+}
+
+// Pinta la tabla de su zona. Sin precios (red), no se ofrece comprar.
+function pintarPrecios(p, plazas) {
+  preciosZona = p;
+  cobroAbierto = p?.cobro_activo === true;
+  if (!p) {
+    mostrarMensaje(I18n.t("prec.sin_precios"), "error");
+    for (const b of document.querySelectorAll(".btn-comprar")) b.hidden = true;
+    return;
+  }
+  const r = p.planes.regional, m = p.planes.mundial;
+  document.getElementById("tituloPremium").textContent = I18n.t("prec.premium_region", { region: nombreRegion(p.region_contenido) });
+  document.getElementById("precioAnual").textContent = dinero(r.anual, p.moneda);
+  document.getElementById("precioMensual").textContent = dinero(r.mensual, p.moneda);
+  document.getElementById("precioFundador").textContent = dinero(r.fundador_anual, p.moneda);
+  document.getElementById("ahorroAnual").textContent = r.ahorro_anual > 0 ? I18n.t("prec.ahorra", { pct: r.ahorro_anual }) : "";
+  document.getElementById("equivaleAnual").textContent = I18n.t("prec.equivale", { mes: dinero(Math.round(r.anual / 12), p.moneda) });
+  // Fundador: solo mientras queden plazas (contador real de Postgres).
+  const hayPlazas = typeof plazas === "number" && plazas > 0;
+  document.getElementById("planFundador").hidden = !hayPlazas;
+  document.getElementById("filaMundialFundador").hidden = !hayPlazas;
+  if (hayPlazas) document.getElementById("plazasFundador").textContent = I18n.t("prec.quedan_plazas", { n: plazas });
+  const regiones = (p.regiones_mundial || []).map(nombreRegion).join(", ");
+  document.getElementById("mundialExplica").textContent = I18n.t("prec.mundial_explica", { regiones });
+  document.getElementById("mundialAnual").textContent = `${dinero(m.anual, p.moneda)} ${I18n.t("prec.por_ano")}`;
+  document.getElementById("mundialMensual").textContent = `${dinero(m.mensual, p.moneda)} ${I18n.t("prec.por_mes")}`;
+  document.getElementById("mundialFundador").textContent = `${dinero(m.fundador_anual, p.moneda)} ${I18n.t("prec.por_ano")} · ${I18n.t("prec.fundador")}`;
+}
+
 async function esperarConfirmacion() {
   bloqueConfirmando.style.display = "block";
   bloquePaywall.style.display = "none";
   for (let intento = 0; intento < 5; intento++) {
     const estado = await comprobarEstado();
-    if (estado && estado.con_acceso) {
+    if (estado && estado.plan === "premium") {
       window.location.href = "/";
       return;
     }
@@ -280,7 +515,6 @@ async function esperarConfirmacion() {
   }
   bloqueConfirmando.style.display = "none";
   mostrarMensaje(I18n.t("susc.puede_tardar"), "info");
-  bloquePaywall.style.display = "block";
 }
 
 async function iniciar() {
@@ -302,31 +536,36 @@ async function iniciar() {
     mostrarMensaje(I18n.t("susc.pago_cancelado"), "info");
   }
 
-  bloquePaywall.style.display = "block";
-  const estado = await comprobarEstado();
+  const [estado, precios, plazas] = await Promise.all([comprobarEstado(), cargarPrecios(), plazasFundador()]);
+  const suscrito = !!(estado && estado.periodo && ["trialing", "active", "past_due"].includes(estado.estado));
   if (estado && estado.estado === "admin") {
     subEstadoEl.textContent = I18n.t("susc.admin");
   } else if (estado && estado.estado === "invitacion") {
-    // Invitación del 100 % canjeada (2026-10-08, migración 20261008170000).
     subEstadoEl.textContent = estado.acceso_hasta
       ? I18n.t("susc.invitacion_hasta", { fecha: formatearFecha(new Date(new Date(estado.acceso_hasta).getTime() - 1)) })
       : I18n.t("susc.invitacion_siempre");
   } else if (estado && estado.estado === "permanente") {
-    // Cuentas de public.accesos_permanentes (2026-10-01).
     subEstadoEl.textContent = I18n.t("susc.permanente");
-  } else if (estado && estado.periodo) {
-    // Ya pasó por Checkout alguna vez (trialing/active de Stripe, no el
-    // trial de la app) — se distingue de "solo en prueba" precisamente
-    // porque tiene un periodo real. aplicarPlanActual() marca cuál es
-    // y convierte el otro botón en "Cambiar a...".
-    subEstadoEl.textContent = I18n.t("susc.tu_plan_renovacion", { plan: I18n.existe(`susc.periodo.${estado.periodo}`) ? I18n.t(`susc.periodo.${estado.periodo}`) : estado.periodo, fecha: formatearFecha(estado.periodo_actual_fin) || "—" });
-    aplicarPlanActual(estado.periodo);
-  } else if (estado && estado.con_acceso) {
-    subEstadoEl.textContent = I18n.t("susc.en_prueba", { fecha: formatearFecha(estado.prueba_termina_en) });
+  } else if (suscrito) {
+    const periodo = I18n.existe(`susc.periodo.${estado.periodo}`) ? I18n.t(`susc.periodo.${estado.periodo}`) : estado.periodo;
+    const ambito = estado.ambito === "mundial" ? I18n.t("prec.mundial") : nombreRegion(estado.region_contenido || "es");
+    subEstadoEl.textContent = I18n.t("prec.tu_plan", { periodo, ambito, fecha: formatearFecha(estado.periodo_actual_fin) || "—" });
+    document.getElementById("bloqueSuscrito").hidden = false;
+    pintarCambioPlan(estado).catch((e) => console.warn("cambio de plan:", e));
+  } else if (estado && estado.en_prueba) {
+    subEstadoEl.textContent = I18n.t("prec.en_prueba", { fecha: formatearFecha(estado.prueba_termina_en) });
+    const nota = document.getElementById("notaPrueba");
+    nota.textContent = I18n.t("prec.nota_prueba", { fecha: formatearFecha(estado.prueba_termina_en) });
+    nota.hidden = false;
   } else {
-    subEstadoEl.textContent = I18n.t("susc.prueba_terminada");
+    subEstadoEl.textContent = I18n.t("prec.plan_gratis");
+    document.getElementById("badgeGratis").hidden = false;
   }
-  await mostrarDescuentoInvitacion();
+  if (!suscrito) {
+    bloquePaywall.style.display = "block";
+    pintarPrecios(precios, plazas);
+    await mostrarDescuentoInvitacion();
+  }
   await mostrarInvitarAmigo();
 }
 

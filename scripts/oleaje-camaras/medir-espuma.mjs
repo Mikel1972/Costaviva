@@ -38,7 +38,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { medirEspuma, medirEspumaDinamica, huella, similitud, SIMILITUD_MINIMA } from "./espuma.mjs";
-import { CAMARAS } from "./camaras.mjs";
+import { CAMARAS, camarasConLuz } from "./camaras.mjs";
 import {
   calibrarTodo, estimarAltura, claveCalibracion, emparejarEtiquetaSpot, elevacionSolar, ELEVACION_MINIMA, ERROR_MINIMO_POCOS_DATOS,
   ruidoCamara, camaraSustituyeModelo, etiquetasClaudeParaCalibrar,
@@ -222,7 +222,19 @@ export async function medirHls(id, cam) {
   return res;
 }
 
-async function urlImagen(cam) {
+// Foto cuya URL cambia en cada captura (Port Otago: el nombre lleva la
+// hora): se lee de la página pública del dueño, la misma que ve cualquiera.
+export function urlDesdePagina(html, patron, base) {
+  const m = new RegExp(patron).exec(html || "");
+  return m ? new URL(m[0], base).href : null;
+}
+
+export async function urlImagen(cam) {
+  if (cam.pagina) {
+    const u = urlDesdePagina(await (await pedir(cam.pagina)).text(), cam.patron, cam.pagina);
+    if (!u) throw new Error("no se encontró la imagen en la página del dueño");
+    return u;
+  }
   if (cam.tipo !== "ipcamlive") return cam.url;
   // Mismo método que functions/webcam/hls/[slug].js (el alias es lo estable).
   const html = await (await pedir(`https://ipcamlive.com/player/player.php?alias=${encodeURIComponent(cam.alias)}`)).text();
@@ -257,19 +269,42 @@ export async function medirImagen(id, cam) {
   }
 }
 
-// Mar abierto del modelo en la hora actual en los spots de las cámaras.
-export async function marAbiertoPorCamara() {
-  const ids = Object.keys(CAMARAS);
+// Entorno para pedir el mar de una región: en NZ siempre Open-Meteo (las
+// fuentes gratuitas de mar son Copernicus IBI, que no cubre NZ) y sin
+// sea_level_height_msl (la marea de NZ es la de LINZ).
+export function envMarRegion(region, env = process.env) {
+  if (region !== "nz") return env;
+  const e = { ...env, FUENTE_MAR: "openmeteo" };
+  delete e.FUENTE_OLEAJE; delete e.FUENTE_TEMP_AGUA; delete e.FUENTE_MAREA; delete e.FUENTE_CORRIENTE;
+  return e;
+}
+
+// Mar abierto del modelo en la hora actual en los spots de las cámaras
+// (una consulta por región, solo de las cámaras `ids`).
+export async function marAbiertoPorCamara(ids = Object.keys(CAMARAS)) {
+  const res = {};
+  const regiones = [...new Set(ids.map((id) => CAMARAS[id]?.region || "es"))];
+  await Promise.all(regiones.map(async (region) => {
+    const idsR = ids.filter((id) => (CAMARAS[id]?.region || "es") === region);
+    Object.assign(res, await marAbiertoRegion(idsR, region));
+  }));
+  return res;
+}
+
+async function marAbiertoRegion(ids, region) {
+  if (!ids.length) return {};
+  const env = envMarRegion(region);
   const spots = ids.map((id) => SPOTS.find((s) => s.slug === CAMARAS_OLEAJE[id].spot));
+  const variables = "wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_direction" + (region === "nz" ? "" : ",sea_level_height_msl");
   const datos = await pedirDatosMeteo(
     "marine",
     `latitude=${spots.map((s) => s.lat).join(",")}&longitude=${spots.map((s) => s.lon).join(",")}` +
-      "&hourly=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_direction,sea_level_height_msl&timezone=UTC&forecast_days=1",
-    { env: process.env }
+      `&hourly=${variables}&timezone=UTC&forecast_days=1`,
+    { env }
   );
   const lista = Array.isArray(datos) ? datos : [datos];
   const horaUTC = new Date().toISOString().slice(0, 13);
-  const fuente = fuenteDeVariable("marine", "wave_height", process.env);
+  const fuente = fuenteDeVariable("marine", "wave_height", env);
   const res = {};
   ids.forEach((id, i) => {
     const s = spots[i];
@@ -431,11 +466,14 @@ async function main() {
     for (const [id, d] of Object.entries(sustitucionPorCamara(historial, calibracion))) console.log(`${d.sustituye ? "✓" : "·"} ${id}: ${d.motivo}`);
     return;
   }
-  const sol = elevacionSolar(ahora, 43.35, -2.5);
-  if (sol < ELEVACION_MINIMA && !FORZAR_LUZ) {
-    console.log(`Sol a ${sol}° (< ${ELEVACION_MINIMA}°): sin luz para medir. Nada que hacer.`);
+  // Cada cámara se mide solo con luz en SU sitio (España y NZ tienen el día
+  // en horas UTC casi opuestas).
+  const ids = camarasConLuz(ahora, FORZAR_LUZ);
+  if (!ids.length) {
+    console.log(`Ninguna cámara con el sol ≥ ${ELEVACION_MINIMA}° en su sitio: sin luz para medir. Nada que hacer.`);
     return;
   }
+  console.log(`Con luz: ${ids.join(", ")}`);
   const boyas = FICHERO_BOYAS && existsSync(FICHERO_BOYAS) ? JSON.parse(readFileSync(FICHERO_BOYAS, "utf8")) : null;
   if (!boyas) console.log("::warning::Sin fichero de boyas: la calibración usará el modelo (con menos peso).");
   const historial = leerHistorial();
@@ -445,9 +483,8 @@ async function main() {
   ];
   const calibracion = calibrarTodo(historial, etiquetas, centroBanda);
 
-  const ids = Object.keys(CAMARAS);
   const [mar, resultados] = await Promise.all([
-    marAbiertoPorCamara().catch((e) => (console.log("Mar abierto no disponible:", e.message), {})),
+    marAbiertoPorCamara(ids).catch((e) => (console.log("Mar abierto no disponible:", e.message), {})),
     Promise.all(ids.map((id) => {
       const cam = CAMARAS[id];
       const medir = cam.tipo === "hls" ? medirHls : medirImagen;
@@ -534,7 +571,8 @@ async function main() {
     const registros = [];
     for (const { linea: l, frameMiniatura } of filas) {
       let miniatura = null;
-      if (frameMiniatura && l.estado === "ok") {
+      // Sin permiso escrito del dueño (NZ), la imagen no se publica.
+      if (frameMiniatura && l.estado === "ok" && !CAMARAS[l.camara]?.sinMiniaturaPublica) {
         miniatura = `${dia}/${l.camara}-${l.encuadre}-${hhmm}.jpg`;
         try { await subirMiniatura(miniatura, jpegDeFrame(frameMiniatura)); } catch (e) { console.log(`::warning::Miniatura ${miniatura}: ${e.message}`); miniatura = null; }
       }

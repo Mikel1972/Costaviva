@@ -7,7 +7,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import {
-  estadoCamaraSpot, camaraOculta, inicioSinSenal, externaFunciona, externaMarcadaCaida, camarasExternasDeSpot, claveSalud,
+  estadoCamaraSpot, enlaceCuentaVerde, camaraOculta, inicioSinSenal, externaFunciona, externaMarcadaCaida, camarasExternasDeSpot, claveSalud,
   CAMARAS_EXTERNAS,
 } from "../assets/js/camaras-externas.js";
 import { decidirEstado, esFalloDeServidor } from "../scripts/camaras/decidir-estado.mjs";
@@ -157,9 +157,12 @@ test("index.html pinta el punto con estadoCamaraSpot en todos los spots del cat�
 
 // --- Nueva Zelanda (2026-10-11, "no veo las cámaras de NZ") ---
 
-test("NZ: los 9 spots con cámara salen en verde con el estado real de hoy; los demás, rojo", async () => {
+test("NZ: los 15 spots con cámara salen en verde con el estado real de hoy; los demás, rojo", async () => {
   const { SPOTS_NZ } = await import("../functions/_lib/nz/spots-nz.js");
-  const conCamara = ["tairua", "whitianga", "whangamata", "whakatane", "te-kaha", "napier", "new-plymouth", "aramoana", "riverton"].map((s) => `nz-${s}`);
+  // 9 del 2026-10-11 + 6 del repaso de día del 2026-10-12 (raglan, castlepoint,
+  // wellington-harbour, nelson, bluff, halfmoon-bay; whangamata ya tenía).
+  const conCamara = ["tairua", "whitianga", "whangamata", "whakatane", "te-kaha", "napier", "new-plymouth", "aramoana", "riverton",
+    "raglan", "castlepoint", "wellington-harbour", "nelson", "bluff", "halfmoon-bay"].map((s) => `nz-${s}`);
   // Estado de camara_estado del 2026-10-11 12:17 UTC: CoroLive no verificable, el resto ok.
   const camaras = Object.fromEntries(
     CAMARAS_EXTERNAS.filter((c) => c.spot.startsWith("nz-")).map((c) => [claveSalud(c), c.id.startsWith("nz-corolive") ? { sinSenal: false, motivo: "no_verificable_403" } : ok])
@@ -179,4 +182,14 @@ test("NZ: /prevision?region=nz manda solo el estado de las cámaras de NZ", asyn
   const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
   assert.doesNotMatch(html, /s\.pais !== "nz" && Object\.keys\(CAMARAS\)/);
   assert.equal((html.match(/CAMARAS = \{ \.\.\.CAMARAS, \.\.\.datos\.camaras \}/g) || []).length, 2);
+});
+
+test("un spot con enlace a una cámara es punto verde aunque el robot no la haya visto aún (Mikel, 2026-10-12)", () => {
+  const [clave] = ext("nerja");
+  assert.ok(clave, "Nerja tiene un enlace");
+  assert.equal(estadoCamaraSpot("nerja", false, {}), "verde", "sin fila de salud todavía");
+  assert.equal(estadoCamaraSpot("nerja", false, { [clave]: { sinSenal: false, motivo: "http_500" } }), "verde", "un fallo suelto no lo apaga");
+  assert.equal(estadoCamaraSpot("nerja", false, { [clave]: { sinSenal: true, motivo: "http_404" } }), "rojo", "roto de verdad: rojo");
+  assert.equal(enlaceCuentaVerde({ modo: "imagen_oficial" }, undefined), false, "solo los enlaces");
+  assert.equal(enlaceCuentaVerde({ modo: "enlace", caida_comprobada: { fecha: "2026-10-12" } }, undefined), false);
 });

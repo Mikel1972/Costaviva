@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Privacidad de tus capturas — Costaviva</title>
 <meta name="description" content="Qué hace Costaviva con las capturas de tu diario de pesca, qué se comparte de forma anónima y cómo retirarlo." />
+<link rel="canonical" href="https://costaviva.org/privacidad" />
 <link rel="icon" href="icon.svg" type="image/svg+xml" />
 <meta name="theme-color" content="#0B1E3F" />
 <link rel="stylesheet" href="/assets/css/costaviva.css">
@@ -37,7 +38,7 @@
 <body>
 <main>
   <h1>Privacidad de tus capturas</h1>
-  <p class="sub">Qué hacemos con lo que apuntas en el diario de pesca. Última actualización: 9 de octubre de 2026.</p>
+  <p class="sub">Qué hacemos con lo que apuntas en el diario de pesca y con los datos de pago. Última actualización: 11 de octubre de 2026.</p>
 
   <h2 id="diario">Tu diario es privado</h2>
   <p>Las salidas, capturas, fotos, notas y ubicaciones que guardas en el diario no se muestran a otros
@@ -104,7 +105,22 @@
   no el email; y para evitar abusos comprobamos con nuestro proveedor de pagos (Stripe) si se paga con la misma
   tarjeta, guardando solo otro resumen cifrado de la huella de la tarjeta, nunca su número.</p>
 
-  <p class="nota">Esta página explica el tratamiento de las capturas, de los datos de la comunidad y de los datos de captación. Para
+  <h2>Pagos y suscripción</h2>
+  <p>Si te suscribes a Premium, el cobro lo hace nuestro proveedor de pagos, <a href="https://stripe.com/es/privacy" target="_blank" rel="noopener">Stripe</a>,
+  que recibe tu email, tu nombre, tu dirección de facturación y los datos de la tarjeta. Nosotros nunca vemos ni guardamos el número de la tarjeta.
+  Junto a tu cuenta guardamos solo lo necesario para darte el servicio y cumplir con Hacienda: el identificador de cliente y de suscripción de Stripe,
+  el plan (mensual o anual, regional o Mundial, fundador), su estado y fechas, la moneda, el país de facturación (decide el IVA), la zona de precios
+  y el código promocional que hayas usado. Las facturas las conserva Stripe y nosotros los datos de facturación durante los plazos que exige la ley fiscal.</p>
+  <p>Los emails sobre tu prueba gratis (bienvenida, aviso 3 días antes y fin de la prueba) y sobre tu suscripción (aviso antes de la renovación anual)
+  son avisos de servicio de tu propia cuenta, no publicidad. Las condiciones de la suscripción, la renovación automática, la cancelación y el desistimiento
+  están en los <a href="/terminos">términos y condiciones</a>.</p>
+
+  <h2 id="copias">Copias de seguridad</h2>
+  <p>Para no perder tu diario si algo falla, cada noche hacemos una copia de seguridad de la base de datos. Se guarda cifrada en GitHub,
+  solo la podemos abrir nosotros y se borra a los 30 días: si borras algo o borras tu cuenta, desaparece también de las copias
+  en ese plazo como máximo.</p>
+
+  <p class="nota">Esta página explica el tratamiento de las capturas, de los datos de la comunidad, de los datos de captación y de los de pago. Para
   ejercer tus derechos (acceso, rectificación, supresión, oposición) sobre cualquier dato de tu cuenta,
   contacta con Costaviva.</p>
   <p><a href="/diario">Volver al diario</a></p>

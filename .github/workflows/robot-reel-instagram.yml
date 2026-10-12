@@ -8,8 +8,9 @@ name: Robot de marketing — reel de Instagram
 #
 # Mismo flujo que los posts: este workflow NUNCA publica. Crea el borrador
 # (contenedor REELS de la Content Publishing API, espera a que Instagram lo
-# procese) y abre un Issue; publicar es el workflow manual "Publicar post de
-# Instagram" con ese creation_id. Aprobación humana siempre.
+# procese) y abre un Issue; lo publica publicar-con-veto.yml a su hora si
+# Mikel no lo veta en 12 h (2026-10-11), o el workflow manual "Publicar post
+# de Instagram".
 #
 # Minutos de Actions estimados por reel: ~10 (instalar Chromium y ffmpeg ~2,5;
 # 315 fotogramas ~4-5, medido en local con 4 núcleos: unos 6 min con otras
@@ -26,9 +27,15 @@ name: Robot de marketing — reel de Instagram
 # (20261009130000_programador_marketing.sql, viernes 17:10 UTC); este
 # `schedule:` es el respaldo y no repite si ya está hecho
 # (calendario-estado.json).
+#
+# Nueva Zelanda (2026-10-11): reel en inglés para el sábado a las 07:00 de NZ
+# (condiciones o especie, rotacion-reels-nz.json), preparado el viernes: pg_cron
+# a las 05:20 UTC (20261012090000_programador_marketing_nz.sql) y este segundo
+# `schedule:` de respaldo a las 06:20 UTC. A mano: input `mercado`.
 on:
   schedule:
     - cron: "20 18 * * 5"
+    - cron: "20 6 * * 5"
   workflow_dispatch:
     inputs:
       fecha:
@@ -39,8 +46,14 @@ on:
         description: "Forzar un tipo (condiciones, especie, diario, grupos, alarma); vacío = el siguiente de la rotación"
         required: false
         type: string
+      mercado:
+        description: "es (España, en español) o nz (Nueva Zelanda, en inglés, 07:00 hora de NZ)"
+        required: false
+        default: "es"
+        type: choice
+        options: ["es", "nz"]
       spot:
-        description: "Forzar un spot en los reels de condiciones (slug, p. ej. bakio); vacío = el de la rotación de zonas"
+        description: "Forzar un spot en los reels de condiciones (slug, p. ej. bakio; de NZ si mercado es nz); vacío = el de la rotación de zonas"
         required: false
         type: string
       clip:
@@ -87,6 +100,7 @@ jobs:
           TIPO_REEL: ${{ inputs.tipo }}
           SPOT_REEL: ${{ inputs.spot }}
           CLIP_REEL: ${{ inputs.clip }}
+          MERCADO: ${{ inputs.mercado || (github.event.schedule == '20 6 * * 5' && 'nz') || 'es' }}
         run: node generar-reel-instagram.mjs
 
       - name: Comitear el reel (y dejar solo los 4 últimos)
@@ -98,7 +112,7 @@ jobs:
           git add assets/marketing/reels/
           # Con spot o clip forzados el generador no escribe todos los ficheros
           # de rotación: añadir solo los que existen (si no, git add falla).
-          for f in scripts/marketing/rotacion-reels.json scripts/marketing/rotacion-zonas.json scripts/marketing/calendario-estado.json; do
+          for f in scripts/marketing/rotacion-reels.json scripts/marketing/rotacion-reels-nz.json scripts/marketing/rotacion-zonas.json scripts/marketing/rotacion-zonas-nz.json scripts/marketing/calendario-estado.json; do
             if [ -e "$f" ]; then git add "$f"; fi
           done
           if git diff --cached --quiet; then
@@ -113,7 +127,12 @@ jobs:
         if: steps.generar.outputs.generada == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh label create marketing --color FFD700 --description "Propuestas de marketing (Instagram, etc.)" --force
+        run: |
+          gh label create marketing --color FFD700 --description "Propuestas de marketing (Instagram, etc.)" --force
+          # Publicación automática con veto (2026-10-11): "veto" la para;
+          # "revisar-publicacion" la deja para Mikel tras un fallo.
+          gh label create veto --color B60205 --description "No publicar esta pieza (publicación automática con veto)" --force
+          gh label create revisar-publicacion --color FBCA04 --description "La publicación automática no la publica: decide Mikel" --force
 
       - name: Crear borrador del reel en Instagram y abrir Issue de revisión (Instagram + Facebook)
         if: steps.generar.outputs.generada == 'true'
@@ -123,6 +142,9 @@ jobs:
           META_PAGE_ACCESS_TOKEN: ${{ secrets.META_PAGE_ACCESS_TOKEN }}
           META_IG_BUSINESS_ACCOUNT_ID: ${{ vars.META_IG_BUSINESS_ACCOUNT_ID }}
           META_PAGE_ID: ${{ vars.META_PAGE_ID }}
+          # Solo cambia el texto del Issue ("se publica sola el ... si no la
+          # vetas"); quien publica es publicar-con-veto.yml.
+          PUBLICACION_AUTOMATICA: ${{ vars.PUBLICACION_AUTOMATICA }}
         run: |
           # Código 3 = token de Meta caducado (mismo guardarraíl que los posts).
           node publicar-borrador-instagram.mjs reel-pendiente.json || CODIGO=$?

@@ -6630,6 +6630,104 @@ II** (lleva ya cuatro noches sin poder completarse por el `500`).
 
 **Firmado:** robot de calibración nocturna, 2026-10-11 01:25 UTC.
 
+### 2026-10-12 (pasada nocturna corta — calibración bloqueada, salud de datos)
+
+**Calibración — sigue sin puntos nuevos, quinta noche seguida.**
+`poem.puertos.es/portus/StationData` sigue en `500 Internal Server Error`
+para cualquier consulta con datos reales — mismo patrón exacto que las
+cuatro noches anteriores (2026-10-08 fue la última con dato real):
+
+- Las 4 boyas de esta rotación (2136 Bilbao-Vizcaya, 1117 Gijón, 1101
+  Pasaia II y 1731 Barcelona II, que lleva ya cuatro noches pendiente de
+  rotar) → las 4, `500` inmediato (~1-2s), reproducido además con
+  variaciones (solo `Hm0` en vez de los 4 parámetros, y una ventana
+  completamente en el pasado del 2026-10-09 al 2026-10-10) — siempre el
+  mismo `500`.
+- Control: `?code=2136` **sin** `params` → `422` con el JSON de validación
+  de siempre ("Field required") — el router sigue vivo. Ruta inexistente
+  (`/portus/no-existe-esta-ruta`) → `404` ("Cant find path... on router
+  portus"). Boya de control **1103 AP Bilbao** → también `500`. Mismo
+  diagnóstico que las cuatro noches previas: el servicio está arriba, es
+  la propia consulta de datos la que rompe en su servidor.
+- **Sin ningún punto real que comparar, no se ha escrito nada en
+  `CALIBRACION.jsonl` esta noche** (nunca inventar un dato). La rotación
+  pendiente sigue siendo **1731 Barcelona II** (su último punto real fue
+  el 2026-10-03, hace ya una semana y media larga) — queda para la próxima
+  pasada en que el endpoint responda. El historial no cambia desde el
+  2026-10-08: 2136/1117/1101 en 35 puntos cada una, Barcelona II en 8
+  (8/8 negativo, −28.8%, sigue siendo la candidata más sólida tras Pasaia
+  II), Dragonera en 8, Cabo de Gata en 8, Málaga y Cabo Peñas en 7,
+  Villano-Sisargas en 6. Ningún factor de corrección nuevo propuesto —
+  Pasaia II sigue siendo la única con factor ya aplicado (x1.38); Barcelona
+  II necesitaría 7 puntos más (mínimo 15) antes de poder proponer nada
+  sobre ella, y de todas formas lleva ya cinco noches sin poder sumar ni
+  uno porque el endpoint de medida real está caído.
+- **Severidad: sin cambios respecto a ayer, el patrón sigue sostenido.**
+  Quinta noche seguida en `500` desde el 2026-10-08 — nada nuevo que
+  escalar (no ha empeorado ni mejorado), pero tampoco hay señal de que
+  Puertos del Estado lo vaya a arreglar pronto. Sigue sin afectar a un
+  usuario real: el mapa en producción usa la instantánea de Copernicus
+  desde el 2026-10-08, no este endpoint — solo esta rutina de calibración
+  y `comparar-boyas.mjs` dependen de él.
+
+**Salud de datos** — comprobado con `curl` real, reproduciendo el *parsing*
+exacto de cada función de `functions/prevision.js` contra la respuesta de
+esta noche:
+
+- **Boya de Nazaré** (`monican.hidrografico.pt`, POST a `boia.graph.php`):
+  `200` en las 4 variables, última hora real (2026-10-12 01:00 UTC) con
+  Hs 1.2 m, temperatura 16.9 °C — sin novedad.
+- **Caudal Cantábrico** (`visor.saichcantabrico.es`): `200`, 164 KB
+  reales. Reproducido `parsearCaudalCantabrico()` fila a fila: las 5
+  estaciones (`sella` 11.37, `besaya` 3.95, `pas` 2.96, `ason` 3.67, `eo`
+  2.09 m³/s, todas actualizadas a las 03:10 de hoy) devuelven su valor
+  propio sin cruzarse — el *fix* del commit `650bbc0` (2026-10-08) sigue
+  sano.
+- **Caudal Júcar** (`saih.chj.es/mapa-aforos`): `200`, 69 KB, el array
+  `aforos` se extrae y parsea bien — Júcar 19.00, Turia 4.09, Mijares 1.44
+  m³/s, todos reales y con fecha de hoy (03:10).
+- **Caudal Segura** (`saihweb.chsegura.es`): `200`, forma esperada (33
+  estaciones), todas con dato real — A.Rojales 1.768 m³/s. Sano.
+- **Caudal Galicia** (`servizos.meteogalicia.gal`, río Lagares en Vigo):
+  `200`, el campo se encuentra y da `0 m³/s` — mismo valor real ya
+  documentado en pasadas anteriores, no un fallo.
+- **Webcams, muestra de 4 en 4 regiones distintas** (País Vasco, Galicia,
+  Cantabria, Com. Valenciana): `getaria` vía `detectia.net`/AZTI (OK,
+  WebP 1600×1200, 52 KB), `cangas` vía `meteogalicia.gal` (OK, JPEG
+  1280×720, 50 KB, con la marca de hora "Cangas_12/10/2026_01:04:41" —
+  vista con `Read`, imagen real de esta noche), `javea` vía
+  `streaming.comunitatvalenciana.com` (OK, PNG 480×270, 187 KB, imagen
+  real del puerto de noche, vista con `Read`) y `castrourdiales`
+  (**fuente principal caída, failover correcto**: `www.cantabria.es`
+  sigue sin servicio — TLS handshake colgado y "Connection reset by peer",
+  idéntico al bloqueo documentado desde el 2026-09-25 y reconfirmado el
+  2026-10-10/11; se comprobó que es del proveedor entero, no solo de
+  Castro-Urdiales: `Comillas-New-1.jpg` y `Laredo-New-1.jpg` fallan igual
+  esta noche. Las reservas en `webcamsencantabria.com`/tendsys.net
+  funcionan bien para Castro-Urdiales y Laredo —`56b44eac-...jpg` (104 KB,
+  JPEG 1920×1080) y `e743087e-...jpg` (37 KB, JPEG 1920×1080), ambas
+  respondiendo `200` con imagen real—, así que esos dos spots se siguen
+  viendo sin que el usuario note nada. **Suances, San Vicente, Comillas y
+  Santoña siguen sin reserva y, por tanto, sin imagen real mientras dure
+  esta caída** — mismo hueco ya anotado el 2026-09-19/25, sin cambios).
+
+**Resumen de severidad para el usuario**: nada roto de cara a un usuario
+real. El hallazgo con severidad real sigue siendo el mismo de las cuatro
+noches anteriores: `poem.puertos.es` lleva **cinco noches seguidas** en
+`500` para cualquier consulta de datos (desde el 2026-10-08) — bloquea
+solo esta rutina de calibración y `comparar-boyas.mjs` (ninguno de los dos
+se sirve en público). Todo lo demás sano: Nazaré, Cantábrico (caudal, ya
+corregido), Júcar, Segura, Galicia. `www.cantabria.es` (imágenes) sigue
+caído como proveedor entero desde el 2026-09-25 — confirmado de nuevo
+esta noche en 3 de sus cámaras (Castro, Comillas, Laredo) —, pero
+Castro-Urdiales y Laredo lo cubren con su reserva de `tendsys.net`;
+Suances/San Vicente/Comillas/Santoña siguen expuestos sin reserva, como ya
+se sabía. Rotación pendiente para la próxima pasada: **1731 Barcelona II**
+(lleva ya cinco noches sin poder completarse por el `500` de Puertos del
+Estado).
+
+**Firmado:** robot de calibración nocturna, 2026-10-12 01:40 UTC.
+
 ---
 
 ## Robot de experiencia de usuario
@@ -6878,6 +6976,32 @@ membresías) borrados y verificados a 0. Informe completo en
 /tmp/experiencia-informe.txt.
 
 ---
+
+### 2026-10-12 07:40 UTC — robot de experiencia de usuario (rutina)
+
+Datos: `datos-robots/experiencia/ultima.json`, generado el 2026-10-12 00:41 UTC (7 h, dentro del margen).
+
+**Qué miré**
+- `/prevision` de los 105 spots (marea, coeficiente, presión, bloque de ahora), los 12 de la muestra completa, boyas (27), caudales, AEMET, turbidez (36), cámaras (136), ríos de monte.
+- `/luna` en 3 zonas, 8 casos límite y el diario (cuenta A, spot Mundaka).
+
+**Todo bien**
+- Ningún spot con marea, coeficiente, presión, viento, agua, nubosidad, lluvia, periodo u ola vacíos; `spots_con_error` = [].
+- Mareas con sentido por zona: Cantábrico ~3,5 m, Galicia/Portugal 2,6-3,2 m, Cádiz 2,5-2,8, Canarias 1,7-2,2, Málaga/Almería 0,3-0,5, Mediterráneo 0,0-0,2 m. Pleamares coherentes con "subiendo" (1,4-1,9 m a las 02:41 con pleamar a las 05-06:00). Coeficiente 109 el 12-oct, con luna del 3 % (nueva el 10-oct), cuadra.
+- Agua: Cantábrico 19,3-20,3 °C, Rías/Minho 15,3-16, Portugal 16-20, Mediterráneo 24-26, Canarias 23-25. Boyas lo confirman (Pasaia II 20,8, Langosteira 14,6, Las Palmas 24,8). Spots abrigados (Pasaia 0,2 m, Hondarribia 0,3, Santander 0,1, Getxo 0,4, Mundaka 0,8-1,0 con mar abierto 1,2-1,5) coherentes con la boya (1,5-1,6 m).
+- `/luna`: Creciente 3-4 % en las tres zonas, salidas/puestas razonables. Casos límite con error claro (400/404 en JSON).
+- Diario: enviado = guardado (`diferencias` vacío), B no la ve ni la borra, borrada (204, `sigue_existiendo` false).
+
+**Hallazgos**
+1. *Posible desajuste de unidades en los umbrales de caudal (sospecha, no confirmado).* Caudales actuales vs umbrales que devuelve `/prevision`: sella 11,09 (umbral bajo 438 / alto 885), besaya 3,95 (226/474), pas 2,88 (251/374), ason 3,67 (205/284), eo 2,09 (115/227); Valencia: júcar 19 (200/400), turia 4,16 (50/200), mijares 1,44 (50/300). Todos los ríos salen a 1-5 % del umbral bajo. Nace en `parsearCaudalCantabrico()` (functions/prevision.js ~L1040: `umbrales[0]`/`[2]` de los `<span>` tras `&nbsp;`), y `categoriaCaudal()` de index.html (~L2039) compara caudal con ellos directamente. Si los umbrales del SAICH están en otra unidad (l/s, o son niveles) o son de otra columna, "caudal alto" no se activaría nunca y las reglas de río crecido (lubina, cefalópodos) nunca aplicarían. Hay que mirar la tabla HTML real del SAICH/CHJ y comparar columnas/unidades. Sin caudal esta semana es un día seco, así que hoy no se nota.
+2. *Presión: tendencia "estable" en los 105 spots.* Con presión 1015-1020 en toda España puede ser cierto hoy, pero un patrón uniforme merece comprobar que `calcularPresion()` (prevision.js ~L407-439, umbral ±1 hPa) recibe historial real de `presion_historico` y no cae siempre en el valor por defecto. Revisar con una semana con frente.
+3. *Cámaras, falso rojo nocturno posible.* A las 00:34 UTC (02:34 en España): Mundaka `frame_plano` (sinSenal true), Bakio y Pasaia `frame_congelado` (Bakio congelada desde 19:00 UTC del 11-oct, o sea desde el anochecer), Zumaia `sin_respuesta`. Por la noche un fotograma negro/plano es normal y no una caída; la regla de 24 h se cumple, pero el punto del mapa puede ponerse en rojo cada noche. Comprobar si `scripts/camaras/decidir-estado.mjs` ignora las horas sin luz. Reales: Torreblanca y Alicante `origen_404`, Muro `http_502`.
+4. *Menor:* `/identificar-captura` por GET responde 404 con la página HTML (el endpoint solo exporta `onRequestPost`), no 405/401. Inofensivo (no gasta IA), pero la expectativa del sondeo ("401/403/405") no se cumple; quien pregunte verá una web de 404.
+5. Observación: marea con bajamar exactamente 0,0 y pleamar en horas redondas (06:00, 12:00): es la re-referencia al mínimo de la ventana y la resolución horaria de Open-Meteo, ya documentado; no es nuevo.
+
+**Pendiente para la próxima pasada**
+- Propuesta para `scripts/experiencia/sondear.mjs` (no aplicada): guardar también `nivel` de caudal calculado y el HTML crudo de una fila del SAICH para verificar unidades; pedir `GET /prevision` dos veces separadas 1 h para ver cambios de tendencia de presión; marcar la hora local en el resumen de cámaras; que el caso de `/identificar-captura` use POST sin token y espere 401.
+- No se revisó la parte de Nueva Zelanda (`?region=nz`), que el sondeo no pide; proponer añadirla.
 
 ## Robot de patrones de uso
 
@@ -9597,3 +9721,17 @@ Datos: `datos-robots/camaras-estado.json` (03:02 UTC) más una lectura directa d
 - **App:** cuando la imagen no carga ya no sale "(solo funciona una vez desplegado en Cloudflare Pages…)", sino un aviso suave de que su proveedor no responde. El volcado diario de `camaras-salud.yml` deja fuera las filas de cámaras ya retiradas del código (las de SOCIB siguen en `camara_estado`, que no se ha tocado).
 
 **Firmado:** agente de cámaras caídas (sesión), 2026-10-11 10:05 UTC.
+
+### 2026-10-12 04:45 UTC (robot de cámaras caídas — rutina; Torreblanca, Alicante, Mundaka)
+
+Datos: `datos-robots/camaras-estado.json` generado 2026-10-12T03:05Z (~1,7 h, fresco). En rojo: alicante, torreblanca (`origen_404`), mundaka (`frame_plano`), sanvicente, comillas, suances (`origen_522`, 1 fallo), santona (`frame_plano`, 1 fallo), bakio y pasaia (`frame_congelado`).
+
+- **torreblanca** (nueva, última señal 10-11 12:30 UTC): no se ha movido. La web del dueño (`comunitatvalenciana.com/.../torreblanca/webcams/torreblanca-1`) sigue embebiendo `streaming.comunitatvalenciana.com/static/Torreblanca/webcam_mini.png` y `/webcam/Torreblanca/manifest.mpd`: el primero da 404 y el segundo 404 de Wowza; `/webcam/Torreblanca/webcam_mini.png` devuelve 200 pero es la página por defecto de Wowza (HTML de 198 bytes), no imagen. Es el mismo fallo que Alicante: el servidor de streaming de la Generalitat tiene los flujos parados. Sin cambios en el código; vuelve sola si lo reparan. Alternativa con mar para Torrenostra: no encontrada en esta pasada (búsqueda: "comunitatvalenciana.com webcam Torreblanca playa Torrenostra").
+- **alicante**: misma causa (Wowza de la Generalitat, `AlicantePuerto` devuelve la página por defecto). Sin alternativa nueva.
+- **mundaka** (`frame_plano`): la URL de origen da 200, imagen JPEG de 70 KB; el proxy `/webcam/mundaka` responde 200. Es la noche, se recupera con el día. Sin cambios.
+- **sanvicente / comillas / suances** (cantabria.es, `origen_522`, 1 fallo) y **santona** (`frame_plano`, 1 fallo): sin verificar: dominio bloqueado por la red de la rutina (cantabria.es), y un solo fallo es lo normal de la intermitencia ya documentada. Sin tocar.
+- **bakio, pasaia** (`frame_congelado`): ya estudiadas el 10-10 y 10-11; sin novedad.
+
+Para la siguiente: pasaia (buscar otra cámara), alicante/torreblanca (alternativa), orio, vinaros, alboraya, cullera.
+
+**Firmado:** robot de cámaras caídas (rutina), 2026-10-12 04:45 UTC.

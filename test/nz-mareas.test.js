@@ -15,8 +15,9 @@ import {
   etiquetaLocal, ATRIBUCION_LINZ,
 } from "../functions/_lib/nz/mareas-linz.js";
 import { SPOTS_NZ } from "../functions/_lib/nz/spots-nz.js";
+import { reservasCercanas } from "../functions/_lib/nz/reservas-doc.js";
 import { urlsTablas, casarTablas, normalizar } from "../scripts/fuentes/linz-mareas.mjs";
-import { armarGeojson, LIMITE_BYTES } from "../scripts/fuentes/doc-reservas-marinas.mjs";
+import { armarGeojson, LIMITE_BYTES, tipoZonaHauraki } from "../scripts/fuentes/doc-reservas-marinas.mjs";
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), "..");
 const leer = (r) => readFileSync(join(RAIZ, r), "utf8");
@@ -132,7 +133,9 @@ test("marea de un spot: misma forma que la de España más puerto, fuente y avis
   assert.ok(m.coeficiente >= 20 && m.coeficiente <= 120);
   assert.equal(m.puerto.metodo, "tabla");
   assert.equal(m.atribucion, ATRIBUCION_LINZ);
-  assert.match(m.atribucion, /Land Information New Zealand.*CC BY 4\.0/);
+  assert.match(m.atribucion, /^This work is based on Toitū Te Whenua Land Information New Zealand data .*Creative Commons Attribution 4\.0 International licence\.$/);
+  assert.match(m.atribucionCorta, /Based on Toitū Te Whenua Land Information New Zealand data, CC BY 4\.0/);
+  assert.equal(m.licencia, "https://creativecommons.org/licenses/by/4.0/");
   assert.match(m.aviso, /Maritime Rules Part 25/);
   // Secundario (Akaroa desde Lyttelton) y sin datos.
   const akaroa = { ...spot, puerto_linz: { id: "6490f", nombre: "Akaroa", km: 0.5, tabla: null } };
@@ -151,8 +154,9 @@ const catalogo = json("datos/nz/linz-puertos.json");
 const anios = [json("datos/nz/linz-mareas-2026.json"), json("datos/nz/linz-mareas-2027.json")];
 
 test("datos/nz: el puerto de cada spot sigue siendo el que elige asignarPuerto()", () => {
-  // 59 activos (Dusky Sound queda fuera del lanzamiento, 2026-10-11).
-  assert.equal(SPOTS_NZ.length, 59);
+  // 68 activos: 59 del lanzamiento (Dusky Sound fuera, 2026-10-11) y 9 de
+  // islas (2026-10-12).
+  assert.equal(SPOTS_NZ.length, 68);
   for (const s of SPOTS_NZ) {
     assert.deepEqual(s.puerto_linz, asignarPuerto(s, catalogo), s.slug);
     assert.ok(s.puerto_linz.km < 20, `${s.slug} a ${s.puerto_linz.km} km de su puerto`);
@@ -160,7 +164,7 @@ test("datos/nz: el puerto de cada spot sigue siendo el que elige asignarPuerto()
   }
 });
 
-test("datos/nz: los 60 spots tienen marea en 2026 y 2027, con atribución", () => {
+test("datos/nz: los 68 spots activos tienen marea en 2026 y 2027, con atribución", () => {
   for (const a of anios) {
     assert.equal(a.atribucion, ATRIBUCION_LINZ);
     assert.match(a.licencia, /CC BY 4\.0/);
@@ -203,17 +207,37 @@ test("script: URLs de la lista de LINZ y casado de nombres", () => {
   assert.equal(tablas.Lejos.secundario, null);
 });
 
-test("reservas marinas de DOC: ≤ 300 KB, 49 reservas y atribución CC BY 4.0", () => {
+test("reservas marinas de DOC: ≤ 300 KB, 49 reservas + 19 zonas de Hauraki (2025) y atribuciones", () => {
   const f = "datos/nz/reservas-marinas-doc.geojson";
   assert.ok(statSync(join(RAIZ, f)).size <= LIMITE_BYTES);
   const g = json(f);
   assert.equal(g.type, "FeatureCollection");
-  assert.equal(g.features.length, 49);
+  assert.equal(g.features.length, 68);
+  const tipos = {};
+  for (const x of g.features) tipos[x.properties.tipo] = (tipos[x.properties.tipo] || 0) + 1;
+  // 49 reservas + 2 ampliaciones de Hauraki, 12 de alta protección, 5 del fondo.
+  assert.deepEqual(tipos, { reserva: 51, hpa: 12, spa: 5 });
   assert.match(g.atribucion, /Department of Conservation.*CC BY 4\.0/);
+  assert.match(g.atribucion, /Crown Copyright: Department of Conservation Te Papa Atawhai 2025/);
   for (const x of g.features) {
     assert.ok(["Polygon", "MultiPolygon"].includes(x.geometry.type));
     assert.ok(x.properties.nombre);
   }
   const mini = armarGeojson({ features: [{ properties: { NaPALIS_ID: 1, Name: "X", Legislation: "L", Recorded_Area: 2 }, geometry: { type: "Polygon", coordinates: [] } }] }, 0.001, "2026-10-09");
-  assert.deepEqual(mini.features[0].properties, { id: 1, nombre: "X", ley: "L", area_ha: 2 });
+  assert.deepEqual(mini.features[0].properties, { id: 1, nombre: "X", ley: "L", area_ha: 2, tipo: "reserva" });
+  assert.equal(tipoZonaHauraki("S20_HIGH_PROTECTION_AREAS_DECLARED"), "hpa");
+  assert.equal(tipoZonaHauraki("S16_SEAFLOOR_PROTECTION_AREAS_DECLARED"), "spa");
+  assert.equal(tipoZonaHauraki("S13_MARINE_RESERVES_DECLARED"), "reserva");
+});
+
+test("zonas de Hauraki 2025: avisos por spot (sin pesca aparte de protección del fondo; 10 km en barco)", () => {
+  const g = json("datos/nz/reservas-marinas-doc.geojson");
+  const por = (slug) => reservasCercanas(SPOTS_NZ.find((s) => s.slug === slug), g);
+  assert.ok(por("nz-leigh").some((r) => /Cape Rodney-Okakari Point Extension/.test(r.nombre) && r.tipo === "reserva"));
+  const gh = por("nz-gulf-harbour");
+  assert.ok(gh.some((r) => r.tipo === "spa" && /Tiritiri/.test(r.nombre)));
+  assert.ok(gh.some((r) => r.tipo === "hpa" && /Tiritiri/.test(r.nombre)), "spot de barco: la HPA a ~7 km");
+  assert.ok(por("nz-tairua").some((r) => r.tipo === "hpa" && /Slipper/.test(r.nombre)));
+  // Desde la costa, 3 km: Rangitoto Wharf (solo costa) no avisa de la HPA a 4,6 km.
+  assert.ok(!por("nz-rangitoto-wharf").some((r) => r.tipo === "hpa"));
 });

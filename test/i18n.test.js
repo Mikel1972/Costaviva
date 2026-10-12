@@ -1,8 +1,9 @@
-// Tests de idiomas (assets/js/i18n.js, assets/i18n/es.js y en.js; 2026-10-09).
+// Tests de idiomas (assets/js/i18n.js, assets/i18n/es.js, en.js y pt.js;
+// 2026-10-09, portugués europeo desde el 2026-10-11).
 //
 // Lo que protegen:
-//   1. Cobertura: ninguna clave en español sin inglés ni al revés, con las
-//      mismas variables {x} y los mismos plurales.
+//   1. Cobertura: ninguna clave en español sin inglés NI SIN PORTUGUÉS, ni
+//      al revés, con las mismas variables {x} y los mismos plurales.
 //   2. Nada sin traducir en las páginas que ya tienen idiomas: todo texto y
 //      todo title/aria-label/placeholder/alt del HTML lleva su data-i18n*
 //      (salvo la lista de EXCEPCIONES: marcas, unidades...), y ninguna
@@ -22,6 +23,7 @@ import { analizarHtml, sinTraducir, leerDiccionario, limpio, desescapar, htmlInt
 const { I18n } = await import("../assets/js/i18n-modulo.js");
 const ES = leerDiccionario(new URL("../assets/i18n/es.js", import.meta.url));
 const EN = leerDiccionario(new URL("../assets/i18n/en.js", import.meta.url));
+const PT = leerDiccionario(new URL("../assets/i18n/pt.js", import.meta.url));
 const leer = (r) => readFileSync(new URL(`../${r}`, import.meta.url), "utf8");
 
 // Páginas de la app ya traducidas. admin.html se queda en español a propósito.
@@ -34,15 +36,42 @@ const EXCEPCIONES = new Set(["Costaviva", "0 km/h", "54+ km/h", "Open-Meteo", "W
 // Claves cuya traducción inglesa coincide con la española (nombres propios,
 // unidades, palabras iguales en los dos idiomas).
 const IGUALES_PERMITIDOS = new Set([
-  "mapa.panel.banda_mas3", "comun.admin", "mapa.capa.spots", "mapa.caudal.normal", "mapa.rio.humedad",
+  "mapa.panel.banda_mas3", "comun.admin", "prec.premium", "prec.premium_region", "mapa.capa.spots", "mapa.caudal.normal", "mapa.rio.humedad",
   "mapa.marea.coef", "mapa.va.natural", "va.ola.rango", "va.region.atlantico_norte", "va.region.portugal",
   "va.region.madeira", "rayos.lugar_spot", "lluvia.radar", "corriente.ley_tramo",
   "login.region.cantabria", "login.region.asturias", "login.region.galicia", "login.region.portugal",
   // Selector de región del mapa (NZ, 2026-10-11): "New Zealand" en los dos.
   "mapa.region.nz", "mapa.region.chip_nz", "mapa.region.pt",
+  // Preferencias (2026-10-12): "Imperial" se escribe igual.
+  "comun.pref.imperial",
 ]);
 
 const variables = (v) => [...new Set(JSON.stringify(v).match(/\{\w+\}/g) || [])].sort();
+
+test("cobertura: mismas claves en es y pt, con las mismas variables y plurales", () => {
+  const ke = Object.keys(ES), kp = Object.keys(PT);
+  assert.deepEqual(ke.filter((k) => !(k in PT)), [], "claves en español sin portugués");
+  assert.deepEqual(kp.filter((k) => !(k in ES)), [], "claves en portugués sin español");
+  for (const k of ke) {
+    assert.equal(typeof ES[k], typeof PT[k], `${k}: uno es plural y el otro no`);
+    if (typeof ES[k] === "object") assert.deepEqual(Object.keys(PT[k]).sort(), ["one", "other"], `${k}: plurales distintos`);
+    assert.deepEqual(variables(ES[k]), variables(PT[k]), `${k}: variables distintas`);
+    assert.ok(String(JSON.stringify(PT[k])).replace(/[{}"\s]/g, "").length > 0, `${k}: vacía`);
+    // Mismo marcado (negritas, enlaces) que en español.
+    const etiquetas = (v) => (JSON.stringify(v).match(/<\/?[a-z]+/g) || []).sort().join();
+    assert.equal(etiquetas(PT[k]), etiquetas(ES[k]), `${k}: etiquetas HTML distintas`);
+  }
+});
+
+test("nada en español dentro de pt.js (pocas iguales y sin palabras castellanas)", () => {
+  const iguales = Object.keys(ES).filter((k) => JSON.stringify(ES[k]) === JSON.stringify(PT[k]));
+  assert.ok(iguales.length < Object.keys(ES).length * 0.12, `demasiadas claves iguales al español (${iguales.length})`);
+  // Sin contar los pronombres pegados del portugués (tê-las, devolvê-los).
+  const castellano = /[ñ¿¡]|(?<![\p{L}-])(y|del|los|las|hoy|mañana|ahora|sin|muy|hay|pero|también|puedes|tienes|estás|aquí|cuando|desde la|el mapa|la marea)(?![\p{L}-])/iu;
+  const nombres = /Puertos del Estado|Augas de Galicia|Confederaciones Hidrográficas|Peñas|Diputación|Ayuntamiento|Golfo de Cádiz/g;
+  const sospechosas = Object.entries(PT).filter(([, v]) => castellano.test(JSON.stringify(v).replace(/<[^>]+>/g, "").replace(nombres, "")));
+  assert.deepEqual(sospechosas.map(([k]) => k), [], "texto en español dentro de pt.js");
+});
 
 test("cobertura: mismas claves en es y en, con las mismas variables y plurales", () => {
   const ke = Object.keys(ES), kn = Object.keys(EN);
@@ -101,8 +130,9 @@ for (const pagina of PAGINAS_I18N) {
   test(`${pagina}: carga los diccionarios y el núcleo antes que ningún otro script, y tiene el selector`, () => {
     const i = src.indexOf('<script src="/assets/i18n/es.js"></script>');
     const j = src.indexOf('<script src="/assets/i18n/en.js"></script>');
+    const p = src.indexOf('<script src="/assets/i18n/pt.js"></script>');
     const k = src.indexOf('<script src="/assets/js/i18n.js"></script>');
-    assert.ok(i > 0 && i < j && j < k, "orden es.js, en.js, i18n.js");
+    assert.ok(i > 0 && i < j && j < p && p < k, "orden es.js, en.js, pt.js, i18n.js");
     assert.equal(src.slice(0, i).indexOf("<script"), -1, "hay un <script> antes de los idiomas");
     if (!SIN_SELECTOR.has(pagina)) assert.match(src, /<div[^>]* data-i18n-selector><\/div>/, "falta el selector de idioma");
     assert.doesNotMatch(src, /\son[a-z]{3,}\s*=\s*["'`]/i, "sin on*= (CSP)");
@@ -136,8 +166,9 @@ test("t(): variables, plurales, idioma pedido, respaldo en español y clave desc
   assert.equal(I18n.t("mapa.vigencia.hace", { minutos: 5 }, "en"), "updated 5 min ago");
   assert.equal(I18n.t("comun.n_dias", { n: 1 }, "en"), "1 day");
   assert.equal(I18n.t("comun.n_dias", { n: 3 }, "en"), "3 days");
-  assert.equal(I18n.t("rayos.conteo", { n: 1, min: 5, km: 100 }), "1 rayo en los últimos 5 min a menos de 100 km.");
-  assert.equal(I18n.t("rayos.conteo", { n: 2, min: 5, km: 100 }, "en"), "2 strikes in the last 5 min within 100 km.");
+  // La distancia llega ya con su unidad (I18n.distancia, preferencias del usuario).
+  assert.equal(I18n.t("rayos.conteo", { n: 1, min: 5, km: "100 km" }), "1 rayo en los últimos 5 min a menos de 100 km.");
+  assert.equal(I18n.t("rayos.conteo", { n: 2, min: 5, km: "100 km" }, "en"), "2 strikes in the last 5 min within 100 km.");
   assert.equal(I18n.t("no.existe"), "no.existe");
   assert.equal(I18n.t("mapa.vigencia.hace", {}), "actualizado hace {minutos} min", "sin la variable se ve el hueco");
 });
@@ -149,7 +180,14 @@ test("elegir idioma: a mano > perfil > región > navegador > español", () => {
   // El caso de Mikel: español con el móvil en inglés, en España -> español.
   assert.equal(I18n.elegirIdioma({ region: "cantabrico", navegador: "en-US" }), "es");
   assert.equal(I18n.elegirIdioma({ region: "canarias", navegador: "en-GB" }), "es");
-  assert.equal(I18n.elegirIdioma({ region: "portugal", navegador: "pt-PT" }), "es");
+  // Portugal, Azores y Madeira en portugués (2026-10-11), aunque el navegador diga otra cosa.
+  assert.equal(I18n.elegirIdioma({ region: "portugal", navegador: "pt-PT" }), "pt");
+  assert.equal(I18n.elegirIdioma({ region: "azores", navegador: "en-GB" }), "pt");
+  assert.equal(I18n.elegirIdioma({ region: "madeira", navegador: "es-ES" }), "pt");
+  // Sin región, un navegador en portugués (también de Brasil: la app solo tiene el europeo).
+  assert.equal(I18n.elegirIdioma({ region: null, navegador: "pt-PT" }), "pt");
+  assert.equal(I18n.elegirIdioma({ region: null, navegador: "pt-BR" }), "pt");
+  assert.equal(I18n.elegirIdioma({ guardado: "es", region: "portugal" }), "es", "lo elegido a mano manda");
   // Nueva Zelanda en inglés, aunque el navegador diga español.
   assert.equal(I18n.elegirIdioma({ region: "nueva_zelanda", navegador: "es-ES" }), "en");
   // Sin región conocida, el navegador; y si no, español.
@@ -163,6 +201,9 @@ test("región para el idioma: la última conocida > zona horaria del dispositivo
   assert.equal(I18n.regionInicial({ guardada: null, zona: "Europe/Madrid" }), "cantabrico");
   assert.equal(I18n.regionInicial({ zona: "Atlantic/Canary" }), "canarias");
   assert.equal(I18n.regionInicial({ zona: "Pacific/Auckland" }), "nueva_zelanda");
+  assert.equal(I18n.idiomaDeRegion(I18n.regionInicial({ zona: "Europe/Lisbon" })), "pt");
+  assert.equal(I18n.idiomaDeRegion(I18n.regionInicial({ zona: "Atlantic/Azores" })), "pt");
+  assert.equal(I18n.idiomaDeRegion(I18n.regionInicial({ zona: "Atlantic/Madeira" })), "pt");
   assert.equal(I18n.regionInicial({ guardada: "marte", zona: "America/New_York" }), null);
   const { REGIONES, regionPorCoordenadas } = await import("../assets/js/regiones.js");
   // Cada región de regiones.js con su idioma, y nada más.
@@ -175,6 +216,10 @@ test("región para el idioma: la última conocida > zona horaria del dispositivo
   assert.equal(I18n.idiomaDeRegion(regionPorCoordenadas(-36.85, 174.76)), "en");
   assert.equal(I18n.idiomaDeRegion(regionPorCoordenadas(43.43, -2.81)), "es");
   assert.equal(I18n.idiomaDeRegion(regionPorCoordenadas(28.14, -15.43)), "es");
+  // Lisboa (Cascais), Ponta Delgada y Funchal.
+  assert.equal(I18n.idiomaDeRegion(regionPorCoordenadas(38.69, -9.42)), "pt");
+  assert.equal(I18n.idiomaDeRegion(regionPorCoordenadas(37.74, -25.67)), "pt");
+  assert.equal(I18n.idiomaDeRegion(regionPorCoordenadas(32.64, -16.92)), "pt");
 });
 
 test("números y unidades: coma en español, punto en inglés; km/h y nudos; °C; m", () => {
@@ -193,15 +238,38 @@ test("números y unidades: coma en español, punto en inglés; km/h y nudos; °C
   assert.equal(I18n.locale("es"), "es-ES");
   assert.deepEqual(I18n.mesesCortos("es").slice(0, 3), ["ene", "feb", "mar"]);
   assert.deepEqual(I18n.mesesCortos("en").slice(0, 3), ["Jan", "Feb", "Mar"]);
+  // Portugués: coma decimal, nós, pt-PT.
+  assert.equal(I18n.num(1.25, 1, "pt"), "1,3");
+  assert.equal(I18n.temp(17.36, 1, "pt"), "17,4 °C");
+  assert.equal(I18n.decimal("0.2", "pt"), "0,2");
+  assert.equal(I18n.usaComa("pt"), true);
+  assert.equal(I18n.usaComa("en"), false);
+  assert.equal(I18n.velocidad(18.52, "nudos", "pt"), "10 nós");
+  assert.equal(I18n.locale("pt"), "pt-PT");
+  assert.deepEqual(I18n.mesesCortos("pt").slice(0, 3), ["jan", "fev", "mar"]);
+  assert.equal(I18n.t("comun.n_dias", { n: 1 }, "pt"), "1 dia");
+  assert.equal(I18n.t("comun.n_dias", { n: 3 }, "pt"), "3 dias");
+  assert.equal(I18n.t("mapa.vigencia.hace", { minutos: 5 }, "pt"), "atualizado há 5 min");
 });
 
-test("datos por idioma (fase de datos): texto_en y nombres.en si existen; si no, el español", () => {
+test("datos por idioma (fase de datos): texto_en/_pt y nombres.en/pt si existen; si no, el español", () => {
   const veda = { texto: "veda de marzo", texto_en: "March closed season" };
   assert.equal(I18n.dato(veda, "texto", "en"), "March closed season");
   assert.equal(I18n.dato(veda, "texto", "es"), "veda de marzo");
   assert.equal(I18n.dato({ texto: "solo español" }, "texto", "en"), "solo español");
   assert.equal(I18n.nombre({ nombres: { es: "Lubina", en: "European sea bass" } }, "en"), "European sea bass");
   assert.equal(I18n.nombre({ nombres: { es: "Lubina" } }, "en"), "Lubina");
+  // Portugués: campo_pt; si no, campo_en; si no, el español.
+  const tres = { texto: "veda", texto_en: "closed season", texto_pt: "defeso" };
+  assert.equal(I18n.dato(tres, "texto", "pt"), "defeso");
+  assert.equal(I18n.dato({ texto: "veda", texto_en: "closed season" }, "texto", "pt"), "closed season");
+  assert.equal(I18n.dato({ texto: "veda", texto_en: "closed season", texto_pt: "" }, "texto", "pt"), "closed season");
+  assert.equal(I18n.dato({ texto: "veda" }, "texto", "pt"), "veda");
+  assert.equal(I18n.dato(tres, "texto", "en"), "closed season", "el inglés no mira el portugués");
+  assert.equal(I18n.dato(tres, "texto", "es"), "veda");
+  assert.equal(I18n.nombre({ nombres: { es: "Lubina", en: "European sea bass", pt: "Robalo-legítimo" } }, "pt"), "Robalo-legítimo");
+  assert.equal(I18n.nombre({ nombres: { es: "Pargo (NZ)", en: "Snapper", pt: null } }, "pt"), "Snapper");
+  assert.equal(I18n.nombre({ nombres: { es: "Lubina" } }, "pt"), "Lubina");
 });
 
 test("motivos del índice por clave: en español lo de siempre, en inglés traducidos", async () => {
@@ -216,15 +284,19 @@ test("motivos del índice por clave: en español lo de siempre, en inglés tradu
   const conClave = r.razones.filter((x) => x.clave);
   assert.ok(conClave.length >= 3, "los motivos base llevan su clave");
   for (const x of conClave) {
-    assert.equal(x.texto, I18n.t(x.clave, x.vars, "es"), "en español, el texto es el de la clave");
+    // vars lleva los números en métrico; la unidad la pone textoMotivo (preferencias).
+    assert.equal(x.texto, VA.textoMotivo(x.clave, x.vars, "es"), "en español, el texto es el de la clave");
     assert.equal(x.textoEs, x.texto);
-    assert.notEqual(I18n.t(x.clave, x.vars, "en"), x.texto, `${x.clave}: sin traducir`);
+    assert.notEqual(VA.textoMotivo(x.clave, x.vars, "en"), x.texto, `${x.clave}: sin traducir`);
   }
   // Puntos clave, letra por letra como antes de los idiomas.
   assert.ok(r.razones.some((x) => x.texto === "viento fuerte (45 km/h)"));
   assert.ok(r.razones.some((x) => x.texto === "mar de 1-1,5 m"));
   assert.ok(r.razones.some((x) => x.texto === "agua a 17,4 °C, cerca de su óptimo (" + especie.temperatura_agua.rango.join("-") + ")" || x.factor !== "temperatura"));
-  assert.equal(I18n.t("va.ola.mar_de", { a: "1", b: "1.5" }, "en"), "1-1.5 m sea");
+  assert.equal(VA.textoMotivo("va.ola.mar_de", { a: 1, b: 1.5 }, "en"), "1-1.5 m sea");
+  // Motivos guardados antes de las unidades (números ya escritos, "1,5"): igual.
+  assert.equal(VA.textoMotivo("va.ola.mar_de", { a: "1", b: "1,5" }, "es"), "mar de 1-1,5 m");
+  assert.equal(VA.textoMotivo("va.viento.fuerte", { v: 45 }, "es"), "viento fuerte (45 km/h)");
   assert.equal(VA.NOMBRE_MODALIDAD.costa, "Desde costa");
   assert.equal(VA.textoMeses([1, 2, 3]), "ene–mar");
   // Lo interno se reconoce aunque el texto esté en inglés.
@@ -276,4 +348,44 @@ test("SEO /en/: encendido solo para Nueva Zelanda; España igual (sin hreflang, 
   assert.doesNotMatch(leer("sitemap.xml"), /\/en\/(spots|tides)\/(?!nz-|region\/)[a-z]/);
   const rutas = await import("../functions/_lib/rutas-publicas.js");
   assert.equal(rutas.esRutaPermitida("/en/spots/nz-leigh"), true);
+});
+
+test("Portugal en el alta y el SOS: prefijo +351 y las 4 primeras cifras del código postal", async () => {
+  await import("../assets/js/region-pais.js");
+  const RP = globalThis.RegionPais;
+  for (const r of ["portugal", "azores", "madeira"]) {
+    assert.equal(RP.esPT(r), true, r);
+    assert.equal(RP.prefijoTelefono(r), "351", r);
+    assert.equal(RP.numeroEmergencia(r), "112", r);
+    assert.equal(RP.cifrasCodigoPostal(r), 4, r);
+    assert.equal(RP.codigoPostalValido("1000", r), true, r);
+    assert.equal(RP.codigoPostalValido("48001", r), false, r);
+  }
+  // España, igual que siempre.
+  assert.equal(RP.prefijoTelefono("cantabrico"), "34");
+  assert.equal(RP.cifrasCodigoPostal("cantabrico"), 5);
+  assert.equal(RP.esPT("cantabrico"), false);
+  assert.match(PT["alarma.prefijo_pt"], /\+351/);
+});
+
+test("datos en portugués: todo campo _en tiene su _pt, y nombre portugués o científico en las especies europeas", () => {
+  const datos = JSON.parse(leer("assets/datos/especies.json"));
+  const faltan = [];
+  const recorrer = (o, ruta) => {
+    if (Array.isArray(o)) return o.forEach((x, i) => recorrer(x, `${ruta}[${i}]`));
+    if (!o || typeof o !== "object") return;
+    for (const [k, v] of Object.entries(o)) {
+      if (k.endsWith("_en") && typeof v === "string" && !(typeof o[`${k.slice(0, -3)}_pt`] === "string" && o[`${k.slice(0, -3)}_pt`])) faltan.push(`${ruta}.${k}`);
+      recorrer(v, `${ruta}.${k}`);
+    }
+  };
+  recorrer(datos, "");
+  assert.deepEqual(faltan, []);
+  assert.match(datos.aviso_legal_pt, /Diário da República/);
+  // Especies de España y Portugal: nombre portugués (o el científico si no hay uno seguro).
+  // Sin nombre científico en los datos, no se puede poner ninguno: se queda el español.
+  const sinCientifico = new Set(["urta", "medregal", "bicuda", "palometa"]);
+  const sinPt = datos.especies.filter((e) => e.pais !== "nz" && !e.nombres.pt && !sinCientifico.has(e.id)).map((e) => e.id);
+  assert.deepEqual(sinPt, []);
+  for (const e of datos.especies) if (e.nombres_nota_pt) assert.ok(e.nombres.pt, e.id);
 });

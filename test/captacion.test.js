@@ -12,13 +12,21 @@ import { diasExtraPorReferidos, idsDeMetadata, compartenTarjeta, hashHex, premia
 import { esRutaPermitida } from "../functions/_lib/rutas-publicas.js";
 
 const leer = (r) => readFileSync(new URL(`../${r}`, import.meta.url), "utf8");
-const SQL_ORIGEN = leer("supabase/migrations/20261009100000_captacion_origen_visitas.sql");
+const SQL_ORIGEN = leer("supabase/migrations/20261009100000_captacion_origen_visitas.sql") + leer("supabase/migrations/20261011220000_visitas_en.sql");
 
 test("las listas de fuentes coinciden en el navegador, el servidor y la base de datos", () => {
   assert.deepEqual(O.FUENTES, V.FUENTES);
   const enSql = SQL_ORIGEN.match(/fuente in \(\s*([^)]*)\)/)[1].match(/'([a-z]+)'/g).map((x) => x.slice(1, -1));
   for (const f of O.FUENTES) assert.ok(enSql.includes(f), `${f} falta en la migración`);
   for (const p of V.PAGINAS_CONTADAS) assert.ok(SQL_ORIGEN.includes(`'${p}'`), `${p} falta en la migración`);
+});
+
+test("visitas de NZ: /en/spots, /en/tides y /en/species se cuentan aparte (KPIs por país)", () => {
+  assert.equal(V.paginaContada("/en/tides/nz-piha"), "en_tides");
+  assert.equal(V.paginaContada("/en/spots"), "en_spots");
+  assert.equal(V.paginaContada("/en/species/snapper"), "en_species");
+  assert.equal(V.paginaContada("/en"), null);
+  assert.equal(V.paginaContada("/mareas/bakio"), "mareas");
 });
 
 test("origen: UTM, alias, referrer y descarte de datos personales", () => {
@@ -192,4 +200,16 @@ test("migraciones de captación: RLS, search_path y EXECUTE mínimo", () => {
     const fila = baseline.tablas.find((x) => x.tablename === t);
     assert.ok(fila && fila.rls_enabled && fila.policies.length === 0, `${t} en el baseline del vigía`);
   }
+});
+
+test("visitas internas: el navegador del administrador (cookie cv_interno=1) no cuenta (2026-10-12)", async () => {
+  const { visitaAContar, esVisitaInterna, COOKIE_INTERNA } = await import("../functions/_lib/visitas.js");
+  const res = new Response("x", { status: 200, headers: { "content-type": "text/html" } });
+  const req = (cookie) => new Request("https://costaviva.org/mareas", { headers: { "user-agent": "Mozilla/5.0 (iPhone)", ...(cookie ? { cookie } : {}) } });
+  assert.ok(visitaAContar(req(""), res), "una visita normal cuenta");
+  assert.equal(visitaAContar(req("a=1; cv_interno=1"), res), null, "la del administrador no");
+  assert.equal(esVisitaInterna("xcv_interno=1"), false);
+  assert.equal(COOKIE_INTERNA, "cv_interno");
+  const html = (await import("node:fs")).readFileSync(new URL("../index.html", import.meta.url), "utf8");
+  assert.match(html, /document\.cookie = "cv_interno=1; Max-Age=31536000; Path=\/; Secure; SameSite=Lax"/);
 });

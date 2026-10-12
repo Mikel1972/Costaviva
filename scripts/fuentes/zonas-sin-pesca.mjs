@@ -1,0 +1,144 @@
+// scripts/fuentes/zonas-sin-pesca.mjs
+// Ficheros PÚBLICOS de la capa "Zonas sin pesca" del mapa (2026-10-12, Mikel:
+// "las zonas de no pesca deben aparecer marcadas, en su totalidad, con una
+// trama de líneas rojas, en todo el mundo en el que ofrezcamos servicios").
+// Sin IA ni red: se generan a partir de los datos oficiales ya descargados.
+//
+//   assets/datos/zonas-sin-pesca/nz.geojson  <- datos/nz/reservas-marinas-doc.geojson
+//     (DOC: reservas marinas y zonas del golfo de Hauraki de 2025; lo baja
+//     scripts/fuentes/doc-reservas-marinas.mjs).
+//   assets/datos/zonas-sin-pesca/es.geojson  <- datos/es/zonas-sin-pesca-boe.geojson
+//     (2026-10-12: 44 zonas de reservas marinas y parques nacionales de
+//     España, digitalizadas de los textos legales del BOE, DOG y DOGV, con
+//     norma, artículo, datum y coordenadas originales de cada una; dudas y
+//     criterios en datos/es/zonas-sin-pesca-NOTAS.md). Los textos legales no
+//     tienen derechos de autor (art. 13 LPI).
+//   assets/datos/zonas-sin-pesca/pt.geojson  <- datos/pt/zonas-sin-pesca-dr.geojson
+//     (2026-10-12: 52 zonas de Portugal continental, Madeira y Azores,
+//     sacadas del Diário da República y de los diarios oficiales de las
+//     regiones autónomas; mismos campos que España. Criterios y lo que falta
+//     (Arrábida, Porto Santo...) en datos/pt/zonas-sin-pesca-NOTAS.md. Textos
+//     legales sin derechos de autor: art. 7 del Código do Direito de Autor).
+//
+// Cada zona lleva solo { nombre, tipo }: "reserva" y "hpa" = no se pesca nada;
+// "spa" = protección del fondo (caña sí, artes de fondo no), que el mapa
+// dibuja distinto. Longitudes de NZ en 162..186 (la copia del mundo del
+// mapa): una reserva al este del 180 (Kermadec) llega como -178 y se pasa a
+// +182. Coordenadas a 4 decimales (~11 m), de sobra para dibujar.
+//
+// Uso: node scripts/fuentes/zonas-sin-pesca.mjs
+
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const RAIZ = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+export const TIPOS = ["reserva", "hpa", "spa", "parcial"];
+
+const redondear = (x) => Math.round(x * 1e4) / 1e4;
+
+// Pasa cada anillo a la copia del mundo de `lonMin` (NZ: 162) y redondea.
+export function normalizarGeometria(g, lonMin = -180) {
+  const punto = ([lon, lat]) => [redondear(lon < lonMin ? lon + 360 : lon), redondear(lat)];
+  const anillo = (a) => a.map(punto);
+  if (g?.type === "Polygon") return { type: "Polygon", coordinates: g.coordinates.map(anillo) };
+  if (g?.type === "MultiPolygon") return { type: "MultiPolygon", coordinates: g.coordinates.map((p) => p.map(anillo)) };
+  return null;
+}
+
+export function zonasNZ(doc) {
+  const features = [];
+  for (const f of doc.features || []) {
+    const tipo = f.properties?.tipo || "reserva";
+    const geometry = normalizarGeometria(f.geometry, 0);
+    if (!TIPOS.includes(tipo) || !geometry) continue;
+    features.push({ type: "Feature", properties: { nombre: f.properties?.nombre || "Marine reserve", tipo }, geometry });
+  }
+  return {
+    type: "FeatureCollection",
+    region: "nz",
+    atribucion: doc.atribucion,
+    fuente: doc.fuente,
+    generado: doc.generado,
+    aviso: "Contorno simplificado para dibujar: no sirve como límite legal exacto.",
+    features,
+  };
+}
+
+// España: "sin_pesca" se dibuja como reserva (rojo); "parcial" (se pesca
+// con limitaciones) en naranja, con su regla. Cada zona lleva la norma y su
+// enlace para el popup.
+export function zonasES(boe, region = "es", atribucion = "Zonas sin pesca: elaboración propia a partir de los textos legales (BOE, DOG, DOGV)", fuente = "datos/es/zonas-sin-pesca-boe.geojson") {
+  const features = [];
+  for (const f of boe.features || []) {
+    const p = f.properties || {};
+    const tipo = p.tipo === "sin_pesca" ? "reserva" : p.tipo === "parcial" ? "parcial" : null;
+    const geometry = normalizarGeometria(f.geometry);
+    if (!tipo || !geometry) continue;
+    features.push({
+      type: "Feature",
+      properties: {
+        nombre: `${p.reserva}: ${p.zona}`,
+        tipo,
+        regla: p.regla || null,
+        norma: p.referencia?.norma || null,
+        url: p.referencia?.url || null,
+      },
+      geometry,
+    });
+  }
+  return {
+    type: "FeatureCollection",
+    region,
+    atribucion,
+    fuente,
+    generado: boe.generado || null,
+    aviso: "Contorno aproximado sacado del texto legal: el límite legal es el de la norma.",
+    features,
+  };
+}
+
+// Reglas traducidas (2026-10-12, DeepL revisado: datos/zonas-sin-pesca-
+// traducciones.json, lo rellena scripts/fuentes/traducir-reglas-zonas.mjs):
+// cada zona lleva regla_pt y regla_en si están; el popup elige por idioma.
+export function anadirTraducciones(geo, trad = {}) {
+  for (const f of geo.features) {
+    const t = trad[f.properties.regla];
+    if (t?.pt) f.properties.regla_pt = t.pt;
+    if (t?.en) f.properties.regla_en = t.en;
+  }
+  return geo;
+}
+
+export function leerTraduccionesReglas() {
+  const f = join(RAIZ, "datos", "zonas-sin-pesca-traducciones.json");
+  return existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : {};
+}
+
+// Portugal: mismo formato que España.
+export const zonasPT = (dr) => zonasES(dr, "pt",
+  "Zonas sem pesca: elaboração própria a partir dos textos legais (Diário da República, JORAM, JORAA)",
+  "datos/pt/zonas-sin-pesca-dr.geojson");
+
+function main() {
+  const doc = JSON.parse(readFileSync(join(RAIZ, "datos", "nz", "reservas-marinas-doc.geojson"), "utf8"));
+  const salida = join(RAIZ, "assets", "datos", "zonas-sin-pesca");
+  mkdirSync(salida, { recursive: true });
+  const nz = zonasNZ(doc);
+  const texto = JSON.stringify(nz) + "\n";
+  writeFileSync(join(salida, "nz.geojson"), texto);
+  console.log(`nz: ${nz.features.length} zonas, ${Buffer.byteLength(texto)} bytes.`);
+  const boe = JSON.parse(readFileSync(join(RAIZ, "datos", "es", "zonas-sin-pesca-boe.geojson"), "utf8"));
+  const trad = leerTraduccionesReglas();
+  const es = anadirTraducciones(zonasES(boe), trad);
+  const textoEs = JSON.stringify(es) + "\n";
+  writeFileSync(join(salida, "es.geojson"), textoEs);
+  console.log(`es: ${es.features.length} zonas, ${Buffer.byteLength(textoEs)} bytes.`);
+  const dr = JSON.parse(readFileSync(join(RAIZ, "datos", "pt", "zonas-sin-pesca-dr.geojson"), "utf8"));
+  const pt = anadirTraducciones(zonasPT(dr), trad);
+  const textoPt = JSON.stringify(pt) + "\n";
+  writeFileSync(join(salida, "pt.geojson"), textoPt);
+  console.log(`pt: ${pt.features.length} zonas, ${Buffer.byteLength(textoPt)} bytes.`);
+}
+
+if (import.meta.url === `file://${process.argv[1]}`) main();

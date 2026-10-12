@@ -17,7 +17,7 @@
 // ve igual, con menos detalle.
 
 import { valorEnPunto } from "./capas-mar.js";
-import { componenteByte, rumbo } from "./frentes.js";
+import { componenteByte, rumbo, corrienteEnNudos, numeroCorriente, velocidadCorriente, textoNudos } from "./frentes.js";
 import { I18n } from "./i18n-modulo.js";
 
 export const NUDO_MS = 1852 / 3600; // 0,5144 m/s
@@ -44,15 +44,18 @@ export function tramo(ms) {
 const fmt = (x) => I18n.decimal(String(+x.toFixed(x < 1 ? 2 : 1)));
 const fmt1 = (x) => I18n.num(x);
 
-// Filas de la leyenda: [color, texto], de menos a más.
+// Filas de la leyenda: [color, texto], de menos a más. En nudos y, entre
+// paréntesis, en la unidad del viento del usuario (si no es ya en nudos).
 export function leyendaTramos() {
   const t = TRAMOS_NUDOS;
-  const kmh = (kn) => fmt1(kn * 1.852);
-  const filas = [I18n.t("corriente.ley_menos", { kn: fmt(t[0]), kmh: kmh(t[0]) })];
+  const otra = (texto) => (corrienteEnNudos() ? "" : ` (${texto})`);
+  const filas = [I18n.t("corriente.ley_menos", { cifras: `${fmt(t[0])} ${I18n.t("corriente.nudos")}${otra(`< ${velocidadCorriente(t[0] * 1.852)}`)}` })];
   for (let i = 1; i < t.length; i++) {
-    filas.push(I18n.t("corriente.ley_tramo", { a: fmt(t[i - 1]), b: fmt(t[i]), nudos: t[i] === 1 ? I18n.t("corriente.nudo") : I18n.t("corriente.nudos"), kmha: kmh(t[i - 1]), kmhb: kmh(t[i]) }));
+    const nudos = t[i] === 1 ? I18n.t("corriente.nudo") : I18n.t("corriente.nudos");
+    filas.push(I18n.t("corriente.ley_tramo", { cifras: `${fmt(t[i - 1])}-${fmt(t[i])} ${nudos}${otra(`${numeroCorriente(t[i - 1] * 1.852)}-${velocidadCorriente(t[i] * 1.852)}`)}` }));
   }
-  filas.push(I18n.t("corriente.ley_mas", { kn: fmt(t[t.length - 1]), kmh: kmh(t[t.length - 1]) }));
+  const ultimo = t[t.length - 1];
+  filas.push(I18n.t("corriente.ley_mas", { cifras: `${fmt(ultimo)} ${I18n.t("corriente.nudo")}${otra(`> ${velocidadCorriente(ultimo * 1.852)}`)}` }));
   return filas.map((texto, i) => [PALETA_CORRIENTE[i], texto]);
 }
 
@@ -121,12 +124,13 @@ export function dentroDeZona(malla, lat, lon) {
 }
 
 // Frase llana del toque: "Corriente hacia el NE, 0,6 nudos (1,1 km/h)."
+// (entre paréntesis, en la unidad del viento del usuario; nada si son nudos).
 export function textoToque(c, dentro = true) {
   if (!dentro) return I18n.t("frentes.fuera_zona") + ".";
   if (!c) return I18n.t("capas.globo.tierra") + ".";
   const kn = nudos(c.ms);
   if (kn < 0.05) return I18n.t("corriente.parada");
-  const cifras = `${fmt1(kn)} ${fmt1(kn) === "1" ? I18n.t("corriente.nudo") : I18n.t("corriente.nudos")} (${fmt1(c.ms * 3.6)} km/h)`;
+  const cifras = `${textoNudos(fmt1(kn))}${corrienteEnNudos() ? "" : ` (${velocidadCorriente(c.ms * 3.6)})`}`;
   if (c.u === null || c.v === null || Math.hypot(c.u, c.v) < 1e-6) return I18n.t("corriente.de", { cifras });
   return I18n.t("corriente.hacia", { rumbo: rumbo(c.u, c.v), cifras });
 }

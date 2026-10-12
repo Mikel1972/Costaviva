@@ -84,7 +84,7 @@ export async function onRequestGet(context) {
     <h1>Mareas y oleaje en España y Portugal</h1>
     <p class="intro">${escaparHtml(descripcion)}</p>
 
-    <a class="cta" href="/login?alta=1">Prueba Costaviva 7 días gratis →</a>
+    <a class="cta" href="/login?alta=1">Prueba Costaviva 14 días gratis →</a>
     <p class="cta-sub">Sin tarjeta. Mapa completo, webcams en directo y diario de pesca. Después, 3,99 €/mes.</p>
 
     <h2>Por región</h2>
@@ -92,7 +92,7 @@ export async function onRequestGet(context) {
       ${REGIONES.map((r) => `<li><a href="/mareas/region/${r.slug}">${escaparHtml(r.nombre)} (${r.spots.size})</a></li>`).join("\n      ")}
     </ul>
 
-    <p class="intro">¿Qué se pesca en cada sitio? <a href="/spots">Spots de pesca</a> y <a href="/especies">especies, tallas y temporada</a>.</p>
+    <p class="intro">¿Qué se pesca en cada sitio? <a href="/spots">Spots de pesca</a> y <a href="/especies">especies, tallas y temporada</a>. Nueva Zelanda: <a href="/en/tides" lang="en">New Zealand tide times (English)</a>.</p>
 
     <h2>Todos los spots</h2>
     <ul class="lista">

@@ -96,7 +96,7 @@ test("index.html: el texto y los enlaces para buscadores siguen ahí; canonical 
   const b = bloquePantalla(html);
   assert.match(b, /<div class="pantalla-inicio__seo">/);
   assert.match(b, /<strong>Costaviva<\/strong>: pesca en tiempo real en España y Portugal\. Mareas, oleaje, viento, índice de pesca por spot, especies de temporada y diario de pesca\./);
-  assert.match(b, /<nav aria-label="Páginas públicas"><a href="\/spots">Spots de pesca<\/a><a href="\/especies">Especies<\/a><a href="\/mareas">Mareas hoy<\/a><\/nav>/);
+  assert.match(b, /<nav aria-label="Páginas públicas"><a href="\/spots">Spots de pesca<\/a><a href="\/especies">Especies<\/a><a href="\/mareas">Mareas hoy<\/a><a href="\/en\/spots">Nueva Zelanda \(en inglés\)<\/a><\/nav>/);
   assert.ok(html.includes('<link rel="canonical" href="https://costaviva.org/" />'));
   assert.doesNotMatch(html, /noindex/i);
   for (const p of ["login.html", "index.html"]) assert.doesNotMatch(leer(p), /<meta[^>]+name="robots"[^>]+noindex/i, p);
@@ -144,9 +144,9 @@ test("manifest y caché: fondo y tema en --mar, /assets/inicio/* con una semana 
   assert.match(leer("_headers"), /^\/assets\/inicio\/\*\n\s+Cache-Control: public, max-age=604800$/m);
 });
 
-test("pantalla de inicio: 5 s más la primera vez de la sesión y salida suave", () => {
+test("pantalla de inicio: 3,5 s más la primera vez de la sesión y salida suave", () => {
   const js = readFileSync(new URL("../assets/js/pantalla-inicio.js", import.meta.url), "utf8");
-  assert.match(js, /const EXTRA_MS = 5000;/);
+  assert.match(js, /const EXTRA_MS = 3500;/);
   assert.match(js, /sessionStorage/);
   for (const f of ["admin", "alarma", "diario", "grupos", "index", "suscripcion"]) {
     const h = readFileSync(new URL(`../${f}.html`, import.meta.url), "utf8");

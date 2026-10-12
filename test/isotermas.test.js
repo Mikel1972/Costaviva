@@ -130,12 +130,16 @@ test("escala fija: el mismo valor da el mismo color en dos vistas y dos mares di
   assert.match(html, /Cada color es un grado/);
 });
 
-test("escala fija: un color por grado de 8 a 30 °C, recortada en los extremos", () => {
+test("escala fija: un color por grado de 0 a 30 °C, recortada en los extremos", () => {
   assert.equal(PALETA_TEMP_AGUA.length, TEMP_MAX - TEMP_MIN + 1);
   assert.equal(new Set(PALETA_TEMP_AGUA).size, PALETA_TEMP_AGUA.length, "sin colores repetidos");
   assert.equal(bandaTemperatura(18), 18);
   assert.equal(bandaTemperatura(18.99), 18);
-  assert.equal(bandaTemperatura(3), 8);
+  assert.equal(bandaTemperatura(3), 3);
+  assert.equal(bandaTemperatura(-1.5), 0);
+  // Los colores de 8 a 30 °C no cambian al añadir 0-7 (2026-10-12).
+  assert.equal(colorTemperatura(8.2), "#3C48B5");
+  assert.equal(colorTemperatura(30), "#871102");
   assert.equal(bandaTemperatura(33), 30);
   assert.equal(colorTemperatura(18.0), colorTemperatura(18.875));
   assert.notEqual(colorTemperatura(18.875), colorTemperatura(19));
@@ -191,7 +195,8 @@ test("leyenda: grados visibles, mínimo 3 y uno de cada dos si son muchos", () =
   assert.deepEqual(bandasVisibles({ bajo: 19.5, alto: 19.9 }), [18, 19, 20]);
   assert.deepEqual(bandasVisibles({ bajo: 16.1, alto: 21 }), [16, 17, 18, 19, 20, 21]);
   assert.deepEqual(bandasVisibles({ bajo: 14, alto: 26 }), [14, 16, 18, 20, 22, 24, 26]);
-  assert.deepEqual(bandasVisibles({ bajo: 5, alto: 7 }), [8, 9, 10]);
+  assert.deepEqual(bandasVisibles({ bajo: 5, alto: 7 }), [5, 6, 7]);
+  assert.deepEqual(bandasVisibles({ bajo: -1, alto: 0.5 }), [0, 1, 2]);
   assert.deepEqual(bandasVisibles(null), []);
 });
 
@@ -232,9 +237,10 @@ test("textos con coma decimal", async () => {
   const html = fuenteEs(readFileSync("index.html", "utf8"));
   // Desde los idiomas (2026-10-09) la coma la pone I18n.num en español.
   assert.match(html, /formato: \(v, km = 0\) => \(km > 0/);
-  assert.match(html, /: I18n\.t\("\{v\} °C en superficie", \{ v: I18n\.num\(v, 1\) \}\)\),/);
-  // Celda vacía junto a la costa (2026-10-10): "a N km", también con coma.
-  assert.match(html, /I18n\.t\("\{v\} °C a \{km\} km, el modelo no llega a la orilla", \{ v: I18n\.num\(v, 1\), km: Math\.max\(1, Math\.round\(km\)\) \}\)/);
+  // Desde las preferencias de unidades (2026-10-12), con I18n.temp (°C o °F).
+  assert.match(html, /: I18n\.t\("\{v\} en superficie", \{ v: I18n\.temp\(v, 1\) \}\)\),/);
+  // Celda vacía junto a la costa (2026-10-10): "a N km", también con coma (km o mi).
+  assert.match(html, /I18n\.t\("\{v\} a \{km\}, el modelo no llega a la orilla", \{ v: I18n\.temp\(v, 1\), km: I18n\.distancia\(Math\.max\(1, Math\.round\(km\)\), 0\) \}\)/);
   const { I18n } = await import("../assets/js/i18n-modulo.js");
   assert.equal(I18n.num(18.375, 1), "18,4");
 });

@@ -23,7 +23,8 @@
 // subiendo); además espuma.mjs descarta la lectura si dentro del ROI hay
 // color de arena (`orilla`), que es lo que pasaría con bajamar fuerte.
 
-import { CAMARAS_OLEAJE } from "../../functions/_lib/oleaje-camaras.js";
+import { CAMARAS_OLEAJE, elevacionSolar, ELEVACION_MINIMA } from "../../functions/_lib/oleaje-camaras.js";
+import { CAMARAS_NZ as CAMARAS_NZ_APP, NZ_ANALISIS_AUTORIZADO } from "../../assets/js/camaras-nz.js";
 
 const DIPU = (stream) => `https://58f14c0895a20.streamlock.net/camaramar/${stream}.stream/playlist.m3u8`;
 
@@ -33,7 +34,7 @@ const DIPU = (stream) => `https://58f14c0895a20.streamlock.net/camaramar/${strea
 const BOYA_GIPUZKOA = ["PasaiaII-coast-buoy", "Donostia-buoy"];
 const BOYA_BIZKAIA = ["Bilbao-coast-buoy", "6200024"];
 
-export const CAMARAS = {
+const CAMARAS_ES = {
   hondarribia: {
     tipo: "hls", url: DIPU("GIP_hondarribia_169"), boyas: BOYA_GIPUZKOA,
     encuadres: [
@@ -136,6 +137,117 @@ export const CAMARAS = {
     encuadres: [{ id: "principal", ref: "castrourdiales", roi: { x0: 0.35, y0: 0.42, x1: 0.78, y1: 0.5 } }],
   },
 };
+
+// ---------------------------------------------------------------------------
+// NUEVA ZELANDA (2026-10-11). Decisión expresa de Mikel: medir la ola con
+// TODAS las cámaras de NZ (assets/js/camaras-nz.js), como en España, aunque
+// los dueños aún no hayan dado permiso (emails en preparación). Reglas:
+//   - Interruptor por dueño NZ_ANALISIS_AUTORIZADO (camaras-nz.js): si está
+//     en false, la cámara no entra en CAMARAS (no se descarga nada).
+//   - Mismo criterio que en España para que una cámara SIRVA (ver arriba): si
+//     no ve la rompiente, o bloquea a los robots, va a NO_SIRVEN_NZ con el
+//     motivo. No se rodea ningún bloqueo (ni Referer, ni otro User-Agent).
+//   - `sinMiniaturaPublica`: sin permiso escrito, el fotograma no se sube al
+//     bucket público oleaje-camaras (Napier, por ejemplo, no permite
+//     reproducir sus imágenes en otro sitio). Se mide y se guarda la cifra,
+//     no la imagen. La rutina de etiquetado mira el fotograma en local.
+//   - Sin boyas: Copernicus In Situ GLO no tiene ninguna boya de oleaje en
+//     NZ (index_latest.txt del 2026-10-11: solo perfiladores Argo, boyas a
+//     la deriva sin olas y barcos) y las de ECan/BoPRC no tienen licencia
+//     verificada (plan-nueva-zelanda). La referencia automática es el
+//     oleaje de Open-Meteo (peso 0,5, como el "modelo" de España); las
+//     etiquetas mandan.
+//   - Luz: cada cámara se mide solo con el sol ≥ 8° en SU sitio
+//     (camarasConLuz); en NZ eso cae más o menos entre las 18 y las 06 UTC.
+// `camaraApp` = id de la cámara en camaras-nz.js (de ahí sale el dueño).
+const CAMARAS_NZ_OLA = {
+  "nz-napier": {
+    // Napier City Council, cámara 1 de Marine Parade (la de la plataforma
+    // "Viewing Platform"). Playa de grava muy pendiente: la ola rompe junto a
+    // la orilla, pero la orilla apenas se mueve con la marea (~1,8 m de
+    // carrera sobre grava empinada, no los 4 m de Getxo sobre arena), así
+    // que la franja de rompiente a la izquierda de la plataforma sirve. La
+    // grava es gris oscura: no la confunde con espuma ni con arena.
+    camaraApp: "nz-napier-marine-parade", tipo: "imagen",
+    url: "https://data.napier.govt.nz/webcam/thumbnail.php?ims=800",
+    encuadres: [{ id: "principal", ref: "nz-napier", roi: { x0: 0.0, y0: 0.56, x1: 0.2, y1: 0.66 } }],
+  },
+  "nz-aramoana": {
+    // Port Otago, Taiaroa Head cámara 2 (ojo de pez): el espigón de Aramoana
+    // y la boca del puerto de Otago. ROI = el agua de la boca más allá de la
+    // punta del espigón (la barra), sin el espigón (x < 0,75) ni la costa
+    // del fondo (y < 0,2). El nombre de la foto cambia en cada captura
+    // (lleva la hora): se lee de su página pública de webcams.
+    camaraApp: "nz-port-otago-aramoana", tipo: "imagen",
+    pagina: "https://www.portotago.co.nz/otago-harbour/webcams",
+    patron: "/assets/Webcams/TaiaroaHead/Camera-2/TaiaroaHead2-[0-9-]+\\.jpg",
+    encuadres: [{ id: "principal", ref: "nz-aramoana", roi: { x0: 0.76, y0: 0.2, x1: 0.97, y1: 0.32 } }],
+  },
+  "nz-riverton": {
+    // SouthLoop, "Aparima Mouth" (imagen fija ~cada 10 min): la boca del
+    // Aparima con la barra al fondo. ROI = la barra (donde rompe la ola del
+    // mar), sin la arena de la derecha (x > 0,85) ni el agua tranquila del
+    // estuario de delante (y > 0,4).
+    camaraApp: "nz-southloop-riverton", tipo: "imagen",
+    url: "https://weathercam.southloop.net.nz/riverton/rivertonA0.jpg",
+    encuadres: [{ id: "principal", ref: "nz-riverton", roi: { x0: 0.4, y0: 0.31, x1: 0.8, y1: 0.4 } }],
+  },
+};
+
+// Cámaras de camaras-nz.js que NO sirven para medir la ola, con el motivo
+// (mirado en un fotograma de día del 2026-10-11/12). Clave = id de la app.
+export const NO_SIRVEN_NZ = {
+  "nz-tairua-cam-era": "dueño con el análisis en false: los términos de Earth Sciences NZ (niwa.co.nz/about-niwa/terms) prohíben expresamente bots, scrapers y herramientas automáticas sin permiso escrito",
+  "nz-pauanui-norte-cam-era": "dueño con el análisis en false: los términos de Earth Sciences NZ prohíben expresamente bots, scrapers y herramientas automáticas sin permiso escrito",
+  "nz-corolive-whitianga": "mira Whitianga y Mercury Bay desde un monte a varios km: bahía en calma y lejana, sin rompiente a la vista (fotograma de mediodía del 2026-10-11)",
+  "nz-corolive-whangamata": "panorámica desde el interior: el mar es una franja lejana en el horizonte, sin rompiente distinguible (fotograma de mediodía del 2026-10-11)",
+  "nz-geonet-whakatane": "cámara de volcán: mar abierto hacia Whakaari a decenas de km, sin costa ni rompiente en el encuadre",
+  "nz-geonet-te-kaha": "cámara de volcán: mar abierto hacia Whakaari, sin costa ni rompiente en el encuadre",
+  "nz-primo-port-taranaki": "DENEGADO por escrito por Primo (helpdesk, 2026-10-12): ni análisis automático, ni embebido, ni URLs directas de imagen; solo enlace a su página de webcams (dueño con el análisis en false). Además BLOQUEA a los robots: fuera de su red sus fotos redirigen a /camera-access-info/. No se pide nunca su imagen",
+  // Repaso de día del 2026-10-12: añadidas solo como ENLACE. No se analizan
+  // sin permiso escrito del dueño (peticiones en permisos/registro.json de
+  // comun); para medirlas haría falta además su referencia y su ROI.
+  "nz-hauraki-whangamata-beach": "solo ENLACE sin permiso escrito de Destination Hauraki Coromandel (petición en cola); no se analiza",
+  "nz-raglan-bar": "solo ENLACE: directo de YouTube del Raglan Sport Fishing Club, sin permiso escrito; no se analiza",
+  "nz-castlepoint-lighthouse": "solo ENLACE: directo de YouTube, sin permiso escrito; además no ve rompiente (fotograma del 2026-10-12)",
+  "nz-gw-beacon-hill": "solo ENLACE sin permiso escrito de Greater Wellington (petición en cola); no se analiza",
+  "nz-nelson-harbour": "solo ENLACE sin permiso escrito de Nelson City Council; además puerto en calma, sin rompiente",
+  "nz-southloop-ocean-beach": "solo ENLACE (repaso del 2026-10-12): sin referencia ni ROI; costa rocosa sin rompiente libre",
+  "nz-southloop-oban": "solo ENLACE (repaso del 2026-10-12): bahía en calma con el muelle, sin rompiente",
+  "nz-sails-ashore": "solo ENLACE sin permiso escrito de Sails Ashore; bahía lejana y en calma, sin rompiente",
+  // DESCARTADAS en el repaso de día del 2026-10-12 (07:30-07:50 NZDT): no
+  // están en camaras-nz.js (clave nz-descartada-<id>). No se rodea ningún
+  // bloqueo; si cambian, se revisan otra vez.
+  "nz-descartada-coromandel-harbour": "DESCARTADA (no está en camaras-nz.js): Select Solutions para thecoromandel.nz; los fotogramas de día (07:41 y 07:53 NZDT) solo muestran cielo gris y una loma, sin mar a la vista (¿niebla? revisar otro día)",
+  "nz-descartada-manu-bay": "DESCARTADA (no está en camaras-nz.js): Raglan Sport Fishing Club; directo activo pero los fotogramas de día (07:41 y 07:51 NZDT) son blancos (niebla o lente), sin poder confirmar el mar ni el sitio (revisar otro día)",
+  "nz-descartada-plimmerton": "DESCARTADA (no está en camaras-nz.js): YouTube de PredictWind; la miniatura del directo es de 30/09/2021 y YouTube devolvió su reto anti-bots: no se pudo comprobar que emita hoy (no se rodea)",
+  "nz-descartada-kaikoura-cubby-house": "DESCARTADA (no está en camaras-nz.js): Cubby House Stay / Immerse; de día se ve campo y el mar es una franja lejana, sin estado del agua legible",
+  "nz-descartada-waikanae-slsc": "DESCARTADA (no está en camaras-nz.js): Waikanae SLSC (ipcamlive); stream no disponible también de día (streamavailable 0 a las 07:45 NZDT)",
+  "nz-descartada-coastguard-whakatane": "DESCARTADA (no está en camaras-nz.js): su stream de Angelcam responde 401 fuera de su web (no se rodea) y su página prohíbe el uso comercial de la imagen sin permiso escrito",
+  "nz-descartada-picton-harbour-view": "DESCARTADA (no está en camaras-nz.js): Harbour View Motel; reproductor JS de rtsp.me sin imagen comprobable desde la nube",
+};
+
+// Las de NZ cuyo dueño tiene el interruptor en false (no se analizan).
+export const NZ_FUERA_POR_DUENO = Object.fromEntries(
+  Object.entries(CAMARAS_NZ_OLA)
+    .map(([id, c]) => [id, CAMARAS_NZ_APP.find((a) => a.id === c.camaraApp)])
+    .filter(([, app]) => !app || NZ_ANALISIS_AUTORIZADO[app.condiciones] !== true)
+    .map(([id, app]) => [id, app ? app.condiciones : "sin cámara en camaras-nz.js"])
+);
+
+export const CAMARAS = {
+  ...Object.fromEntries(Object.entries(CAMARAS_ES).map(([id, c]) => [id, { region: "es", ...c }])),
+  ...Object.fromEntries(
+    Object.entries(CAMARAS_NZ_OLA)
+      .filter(([id]) => !NZ_FUERA_POR_DUENO[id])
+      .map(([id, c]) => [id, { region: "nz", sinMiniaturaPublica: true, boyas: [], ...c }])
+  ),
+};
+
+// Cámaras que se pueden medir ahora: sol ≥ ELEVACION_MINIMA en su sitio.
+export function camarasConLuz(ahoraMs = Date.now(), forzar = false) {
+  return Object.keys(CAMARAS).filter((id) => forzar || elevacionSolar(ahoraMs, CAMARAS_OLEAJE[id].lat, CAMARAS_OLEAJE[id].lon) >= ELEVACION_MINIMA);
+}
 
 // Las que la app tiene y NO sirven para medir la ola, con el motivo (mirado
 // en el fotograma del 2026-10-08). Si cambian de encuadre, se revisan.

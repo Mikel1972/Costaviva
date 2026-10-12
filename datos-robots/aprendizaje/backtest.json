@@ -1,37 +1,224 @@
 {
- "generado_en": "2026-10-08T22:01:32.396Z",
- "semana": "2026-W41",
+ "generado_en": "2026-10-12T12:25:33.343Z",
+ "semana": "2026-W42",
  "nota": "Solo agregados de 5 usuarios distintos o más (o solo del dueño). p = índice/100 de la mejor especie a la hora de la salida; y = se pescó algo. Sin ids, fechas, horas, spots ni coordenadas.",
  "datos": {
-  "casos": 0,
+  "casos": 2,
   "por_fuente": {
    "recalculado": 0,
-   "guardado": 0,
-   "sin_indice": 0
+   "guardado": 2,
+   "sin_indice": 3
   },
-  "descartes": {},
+  "descartes": {
+   "en_curso": 0,
+   "prueba": 1,
+   "futuro": 0,
+   "sin_condiciones": 0,
+   "sin_lugar": 0
+  },
   "aviso_series": "sin OPEN_METEO_API_KEY: no se recalcula con series (solo términos guardados)",
-  "errores": [
-   "sin SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY: pasada sin casos"
-  ]
+  "errores": []
  },
  "campeon": {
   "version": "v2-logistica-2026-10-08",
   "global": {
-   "oculto": true,
-   "motivo": "sin casos"
+   "n": 2,
+   "positivos": 2,
+   "tasa": 1,
+   "brier": 0.1645,
+   "brier_referencia": 0,
+   "habilidad_brier": null,
+   "logloss": 0.5177,
+   "auc": null,
+   "ece_puntos": 40.1,
+   "calibracion": [
+    {
+     "desde": 0,
+     "hasta": 20,
+     "n": 0,
+     "indice_medio": null,
+     "tasa_real": null
+    },
+    {
+     "desde": 20,
+     "hasta": 40,
+     "n": 0,
+     "indice_medio": null,
+     "tasa_real": null
+    },
+    {
+     "desde": 40,
+     "hasta": 60,
+     "n": 1,
+     "indice_medio": 54,
+     "tasa_real": 100
+    },
+    {
+     "desde": 60,
+     "hasta": 80,
+     "n": 1,
+     "indice_medio": 65.8,
+     "tasa_real": 100
+    },
+    {
+     "desde": 80,
+     "hasta": 100,
+     "n": 0,
+     "indice_medio": null,
+     "tasa_real": null
+    }
+   ]
   },
-  "por_modalidad": {},
-  "por_region": {},
+  "por_modalidad": {
+   "embarcacion": {
+    "n": 2,
+    "positivos": 2,
+    "tasa": 1,
+    "brier": 0.1645,
+    "brier_referencia": 0,
+    "habilidad_brier": null,
+    "logloss": 0.5177,
+    "auc": null,
+    "ece_puntos": 40.1,
+    "calibracion": [
+     {
+      "desde": 0,
+      "hasta": 20,
+      "n": 0,
+      "indice_medio": null,
+      "tasa_real": null
+     },
+     {
+      "desde": 20,
+      "hasta": 40,
+      "n": 0,
+      "indice_medio": null,
+      "tasa_real": null
+     },
+     {
+      "desde": 40,
+      "hasta": 60,
+      "n": 1,
+      "indice_medio": 54,
+      "tasa_real": 100
+     },
+     {
+      "desde": 60,
+      "hasta": 80,
+      "n": 1,
+      "indice_medio": 65.8,
+      "tasa_real": 100
+     },
+     {
+      "desde": 80,
+      "hasta": 100,
+      "n": 0,
+      "indice_medio": null,
+      "tasa_real": null
+     }
+    ]
+   }
+  },
+  "por_region": {
+   "cantabrico": {
+    "n": 2,
+    "positivos": 2,
+    "tasa": 1,
+    "brier": 0.1645,
+    "brier_referencia": 0,
+    "habilidad_brier": null,
+    "logloss": 0.5177,
+    "auc": null,
+    "ece_puntos": 40.1,
+    "calibracion": [
+     {
+      "desde": 0,
+      "hasta": 20,
+      "n": 0,
+      "indice_medio": null,
+      "tasa_real": null
+     },
+     {
+      "desde": 20,
+      "hasta": 40,
+      "n": 0,
+      "indice_medio": null,
+      "tasa_real": null
+     },
+     {
+      "desde": 40,
+      "hasta": 60,
+      "n": 1,
+      "indice_medio": 54,
+      "tasa_real": 100
+     },
+     {
+      "desde": 60,
+      "hasta": 80,
+      "n": 1,
+      "indice_medio": 65.8,
+      "tasa_real": 100
+     },
+     {
+      "desde": 80,
+      "hasta": 100,
+      "n": 0,
+      "indice_medio": null,
+      "tasa_real": null
+     }
+    ]
+   }
+  },
   "acierto_especie": {
    "oculto": true,
    "motivo": "sin casos"
   }
  },
- "unidades": {},
+ "unidades": {
+  "marea": {
+   "n": 1,
+   "usuarios": "solo Mikel",
+   "aporte_medio_logodds": -0.048,
+   "tasa_pesca_si_suma": null,
+   "tasa_pesca_si_resta": 1,
+   "ablacion_logloss": -0.01091
+  },
+  "oleaje": {
+   "n": 2,
+   "usuarios": "solo Mikel",
+   "aporte_medio_logodds": -0.0555,
+   "tasa_pesca_si_suma": null,
+   "tasa_pesca_si_resta": 1,
+   "ablacion_logloss": -0.02262
+  },
+  "presion": {
+   "n": 2,
+   "usuarios": "solo Mikel",
+   "aporte_medio_logodds": 0.078,
+   "tasa_pesca_si_suma": 1,
+   "tasa_pesca_si_resta": null,
+   "ablacion_logloss": 0.02971
+  },
+  "regla:borde_borrasca_tunidos": {
+   "n": 1,
+   "usuarios": "solo Mikel",
+   "aporte_medio_logodds": 0.21,
+   "tasa_pesca_si_suma": 1,
+   "tasa_pesca_si_resta": null,
+   "ablacion_logloss": 0.03845
+  },
+  "temperatura": {
+   "n": 2,
+   "usuarios": "solo Mikel",
+   "aporte_medio_logodds": 0.303,
+   "tasa_pesca_si_suma": 1,
+   "tasa_pesca_si_resta": null,
+   "ablacion_logloss": 0.12918
+  }
+ },
  "ajuste": {
-  "casos_ajuste": 0,
-  "casos_prueba": 0,
+  "casos_ajuste": 1,
+  "casos_prueba": 1,
   "b0": null,
   "automaticos": [],
   "no_aplicados": null,
@@ -40,7 +227,7 @@
   "descartados": []
  },
  "comunidad": {
-  "error": "sin Supabase",
+  "error": null,
   "filas_k5": 0,
   "por_condiciones": []
  }

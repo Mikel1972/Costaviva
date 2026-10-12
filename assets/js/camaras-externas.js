@@ -39,12 +39,23 @@
 // INTERRUPTOR ÚNICO (2026-10-08). Mikel ha pedido a SkylineWebcams
 // autorización escrita para usar su fotograma oficial en una app de pago.
 // Decisión de Mikel (2026-10-08): true mientras contestan (su FAQ ofrece el
-// código de "Insertar" a cualquier web). Si lo niegan: false y todas pasan a
-// "enlace" sin cargar nada de embed.skylinewebcams.com. Nada más que tocar.
+// código de "Insertar" a cualquier web). CONFIRMADO POR ESCRITO el
+// 2026-10-12: SkylineWebcams contesta que no dan autorizaciones aparte para
+// insertar sus imágenes fijas porque ese uso ya está permitido en su web, y
+// que se use la función oficial de inserción según sus condiciones. El
+// análisis automático no lo autorizan (no contestan a esa pregunta). Emails
+// completos en comun, permisos/evidencias/it/skylinewebcams/. Si algún día
+// lo retiran: false y todas pasan a "enlace" sin cargar nada de
+// embed.skylinewebcams.com. Nada más que tocar.
 // Nueva Zelanda (2026-10-11): sus cámaras viven en camaras-nz.js (mismo
-// formato, todas en modo enlace) y se suman aquí a la lista y a las
-// condiciones, así que la app y el robot de salud las tratan igual.
+// formato) y se suman aquí a la lista y a las condiciones, así que la app y
+// el robot de salud las tratan igual. Embebidas por decisión de Mikel
+// (2026-10-11) con un interruptor por dueño (NZ_EMBED_AUTORIZADO); traen un
+// tercer modo, "iframe_oficial" (el iframe que publica el dueño: CoroLive),
+// y `atribucion` (dueño y licencia, que la ficha enseña siempre).
 import { CAMARAS_NZ, CONDICIONES_NZ } from "./camaras-nz.js";
+
+export const MODOS_EXTERNAS = ["imagen_oficial", "iframe_oficial", "enlace"];
 
 export const SKYLINE_EMBED_AUTORIZADO = true;
 
@@ -233,7 +244,9 @@ export function camarasExternasDeSpot(slug) {
 // prefijo para no pisar nunca la fila de la cámara propia del spot.
 // Nombre de la cámara en el idioma de la ficha (las de NZ traen nombre_en).
 export function nombreCamara(camara, idioma = "es") {
-  return idioma === "en" && camara.nombre_en ? camara.nombre_en : camara.nombre;
+  // En portugués, nombre_pt si lo hay y, si no, el inglés (las de NZ).
+  if (idioma === "pt" && camara.nombre_pt) return camara.nombre_pt;
+  return (idioma === "en" || idioma === "pt") && camara.nombre_en ? camara.nombre_en : camara.nombre;
 }
 
 export function claveSalud(camara) {
@@ -265,13 +278,20 @@ export function esNoVerificable(motivo) {
 
 // Resultado de una comprobación HTTP de una cámara externa (status y
 // content-type de la respuesta; status 0 = sin respuesta).
+// GeoNet y Cam-Era (NZ, 2026-10-11) sirven sus JPG como
+// application/octet-stream; el navegador las pinta igual (lo hace su propia
+// web). Una página de error sigue saliendo como no_es_imagen (text/html).
+// En "iframe_oficial" la página la carga el navegador dentro del iframe, así
+// que un bloqueo a los robots es "no verificable", como en un enlace.
+const TIPOS_IMAGEN = ["image/", "application/octet-stream"];
+
 export function resultadoComprobacionExterna(camara, status, contentType = "") {
   if (!status) return { ok: false, motivo: "sin_respuesta" };
   if (status >= 200 && status < 300) {
-    if (camara.modo === "imagen_oficial" && !String(contentType).startsWith("image/")) return { ok: false, motivo: "no_es_imagen" };
+    if (camara.modo === "imagen_oficial" && !TIPOS_IMAGEN.some((t) => String(contentType).toLowerCase().startsWith(t))) return { ok: false, motivo: "no_es_imagen" };
     return { ok: true };
   }
-  if (camara.modo === "enlace" && CODIGOS_ANTIBOT.includes(status)) return { ok: null, noVerificable: true, motivo: `no_verificable_${status}` };
+  if ((camara.modo === "enlace" || camara.modo === "iframe_oficial") && CODIGOS_ANTIBOT.includes(status)) return { ok: null, noVerificable: true, motivo: `no_verificable_${status}` };
   return { ok: false, motivo: `http_${status}` };
 }
 
@@ -301,8 +321,52 @@ export function lecturaSaludExterna(clave, bruto, previo, ahora, umbral = 2) {
 export function externaCuentaComoCaida(camara, estado) {
   if (!estado?.sinSenal) return false;
   if (esNoVerificable(estado.motivo)) return false;
-  if (camara.modo === "enlace" && CODIGOS_ANTIBOT.some((c) => estado.motivo === `http_${c}`)) return false;
+  if ((camara.modo === "enlace" || camara.modo === "iframe_oficial") && CODIGOS_ANTIBOT.some((c) => estado.motivo === `http_${c}`)) return false;
   return true;
+}
+
+// --- Cámara embebida en la ficha, con atribución visible (2026-10-11) ---
+//
+// HTML de una cámara de terceros en modo "imagen_oficial" o
+// "iframe_oficial" que lleva `atribucion` (las de NZ). Puro y sin DOM para
+// poder probarlo: index.html lo mete con innerHTML. Sin on*= (la CSP con
+// nonce los bloquearía). Siempre: el nombre, «Image: <dueño enlazado a su
+// web>[, <licencia enlazada>]» y cada cuánto la cambia el dueño. `t` es
+// I18n.t (claves mapa.cam.imagen_atrib, video_atrib, cada_min, en_directo_su_web).
+const escaparHtml = (x) =>
+  String(x).replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch]);
+
+export function textoAtribucion(camara, t) {
+  const a = camara.atribucion;
+  if (!a) return "";
+  const etiqueta = camara.modo === "iframe_oficial" ? t("mapa.cam.video_atrib") : t("mapa.cam.imagen_atrib");
+  return `${etiqueta}: ${a.dueno}${a.licencia ? `, ${a.licencia.nombre}` : ""}`;
+}
+
+export function htmlCamaraIncrustada(camara, idioma, t) {
+  const e = escaparHtml;
+  const nombre = nombreCamara(camara, idioma);
+  const a = camara.atribucion;
+  const enlace = (url, texto) => `<a href="${e(url)}" target="_blank" rel="noopener">${e(texto)}</a>`;
+  const etiqueta = camara.modo === "iframe_oficial" ? t("mapa.cam.video_atrib") : t("mapa.cam.imagen_atrib");
+  const atrib =
+    `<span class="atribucion-camara">${e(etiqueta)}: ${enlace(camara.url, a.dueno)}` +
+    `${a.licencia ? `, ${enlace(a.licencia.url, a.licencia.nombre)}` : ""}</span>`;
+  const ritmo = camara.modo === "iframe_oficial"
+    ? t("mapa.cam.en_directo_su_web")
+    : camara.refresco_min ? t("mapa.cam.cada_min", { min: camara.refresco_min }) : "";
+  const alt = `${nombre} | ${textoAtribucion(camara, t)}`;
+  const medio = camara.modo === "iframe_oficial"
+    ? `<iframe src="${e(camara.iframe)}" title="${e(alt)}" loading="lazy" allow="autoplay; fullscreen" allowfullscreen ` +
+      `sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox" referrerpolicy="strict-origin" ` +
+      `style="width:100%; aspect-ratio:16/9; border:1px solid var(--linea); border-radius:8px; display:block; background:#000;"></iframe>`
+    : `<a href="${e(camara.url)}" target="_blank" rel="noopener"><img src="${e(camara.imagen)}" alt="${e(alt)}" loading="lazy" ` +
+      `referrerpolicy="strict-origin" style="width:100%; border-radius:8px; border:1px solid var(--linea); display:block;"></a>`;
+  return `
+    <figure class="camara-incrustada" data-camara="${e(camara.id)}" style="margin:8px 0 0;">
+      ${medio}
+      <figcaption style="font-size:11px; color:var(--tinta-2); margin-top:3px;">${e(nombre)} · ${atrib}${ritmo ? ` ${e(ritmo)}` : ""}</figcaption>
+    </figure>`;
 }
 
 // --- Color de cámara de cada spot en el mapa (2026-10-11) ---
@@ -371,10 +435,18 @@ export function externaFunciona(estado, camara = null) {
   return estado.motivo === "ok" || esNoVerificable(estado.motivo);
 }
 
+// Un enlace a la cámara de otro (modo "enlace") pone el punto verde aunque el
+// robot de salud no la haya podido ver aún (Mikel, 2026-10-12: "si un spot
+// tiene link a cámaras, también es punto verde"). Solo no cuenta si el robot
+// la ha visto caída de verdad (sinSenal) o está marcada a mano como caída.
+export function enlaceCuentaVerde(camara, estado) {
+  return camara?.modo === "enlace" && !externaMarcadaCaida(camara) && !estado?.sinSenal;
+}
+
 // slug: spot; tienePropia: si está en SPOTS_CON_WEBCAM; camaras: el objeto
 // `camaras` de /prevision (clave = slug o ext-<id>).
 export function estadoCamaraSpot(slug, tienePropia, camaras = {}) {
   if (tienePropia && !camaras[slug]?.sinSenal) return "verde";
-  if (camarasExternasDeSpot(slug).some((c) => externaFunciona(camaras[claveSalud(c)], c))) return "verde";
+  if (camarasExternasDeSpot(slug).some((c) => externaFunciona(camaras[claveSalud(c)], c) || enlaceCuentaVerde(c, camaras[claveSalud(c)]))) return "verde";
   return "rojo";
 }
