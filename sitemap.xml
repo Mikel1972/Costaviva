@@ -2071,6 +2071,12 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://costaviva.org/en/spots/nz-medlands</loc>
+    <lastmod>2026-10-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://costaviva.org/en/spots/nz-milford-sound</loc>
     <lastmod>2026-10-11</lastmod>
     <changefreq>daily</changefreq>
@@ -2120,6 +2126,12 @@
   </url>
   <url>
     <loc>https://costaviva.org/en/spots/nz-oamaru</loc>
+    <lastmod>2026-10-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://costaviva.org/en/spots/nz-okupu</loc>
     <lastmod>2026-10-11</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
@@ -2252,6 +2264,18 @@
   </url>
   <url>
     <loc>https://costaviva.org/en/spots/nz-whangamata</loc>
+    <lastmod>2026-10-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://costaviva.org/en/spots/nz-whangaparapara</loc>
+    <lastmod>2026-10-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://costaviva.org/en/spots/nz-whangapoua</loc>
     <lastmod>2026-10-11</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
@@ -2455,6 +2479,12 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://costaviva.org/en/tides/nz-medlands</loc>
+    <lastmod>2026-10-11</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://costaviva.org/en/tides/nz-milford-sound</loc>
     <lastmod>2026-10-11</lastmod>
     <changefreq>hourly</changefreq>
@@ -2504,6 +2534,12 @@
   </url>
   <url>
     <loc>https://costaviva.org/en/tides/nz-oamaru</loc>
+    <lastmod>2026-10-11</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://costaviva.org/en/tides/nz-okupu</loc>
     <lastmod>2026-10-11</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.7</priority>
@@ -2636,6 +2672,18 @@
   </url>
   <url>
     <loc>https://costaviva.org/en/tides/nz-whangamata</loc>
+    <lastmod>2026-10-11</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://costaviva.org/en/tides/nz-whangaparapara</loc>
+    <lastmod>2026-10-11</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://costaviva.org/en/tides/nz-whangapoua</loc>
     <lastmod>2026-10-11</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.7</priority>
