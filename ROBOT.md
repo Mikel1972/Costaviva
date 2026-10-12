@@ -6630,6 +6630,104 @@ II** (lleva ya cuatro noches sin poder completarse por el `500`).
 
 **Firmado:** robot de calibración nocturna, 2026-10-11 01:25 UTC.
 
+### 2026-10-12 (pasada nocturna corta — calibración bloqueada, salud de datos)
+
+**Calibración — sigue sin puntos nuevos, quinta noche seguida.**
+`poem.puertos.es/portus/StationData` sigue en `500 Internal Server Error`
+para cualquier consulta con datos reales — mismo patrón exacto que las
+cuatro noches anteriores (2026-10-08 fue la última con dato real):
+
+- Las 4 boyas de esta rotación (2136 Bilbao-Vizcaya, 1117 Gijón, 1101
+  Pasaia II y 1731 Barcelona II, que lleva ya cuatro noches pendiente de
+  rotar) → las 4, `500` inmediato (~1-2s), reproducido además con
+  variaciones (solo `Hm0` en vez de los 4 parámetros, y una ventana
+  completamente en el pasado del 2026-10-09 al 2026-10-10) — siempre el
+  mismo `500`.
+- Control: `?code=2136` **sin** `params` → `422` con el JSON de validación
+  de siempre ("Field required") — el router sigue vivo. Ruta inexistente
+  (`/portus/no-existe-esta-ruta`) → `404` ("Cant find path... on router
+  portus"). Boya de control **1103 AP Bilbao** → también `500`. Mismo
+  diagnóstico que las cuatro noches previas: el servicio está arriba, es
+  la propia consulta de datos la que rompe en su servidor.
+- **Sin ningún punto real que comparar, no se ha escrito nada en
+  `CALIBRACION.jsonl` esta noche** (nunca inventar un dato). La rotación
+  pendiente sigue siendo **1731 Barcelona II** (su último punto real fue
+  el 2026-10-03, hace ya una semana y media larga) — queda para la próxima
+  pasada en que el endpoint responda. El historial no cambia desde el
+  2026-10-08: 2136/1117/1101 en 35 puntos cada una, Barcelona II en 8
+  (8/8 negativo, −28.8%, sigue siendo la candidata más sólida tras Pasaia
+  II), Dragonera en 8, Cabo de Gata en 8, Málaga y Cabo Peñas en 7,
+  Villano-Sisargas en 6. Ningún factor de corrección nuevo propuesto —
+  Pasaia II sigue siendo la única con factor ya aplicado (x1.38); Barcelona
+  II necesitaría 7 puntos más (mínimo 15) antes de poder proponer nada
+  sobre ella, y de todas formas lleva ya cinco noches sin poder sumar ni
+  uno porque el endpoint de medida real está caído.
+- **Severidad: sin cambios respecto a ayer, el patrón sigue sostenido.**
+  Quinta noche seguida en `500` desde el 2026-10-08 — nada nuevo que
+  escalar (no ha empeorado ni mejorado), pero tampoco hay señal de que
+  Puertos del Estado lo vaya a arreglar pronto. Sigue sin afectar a un
+  usuario real: el mapa en producción usa la instantánea de Copernicus
+  desde el 2026-10-08, no este endpoint — solo esta rutina de calibración
+  y `comparar-boyas.mjs` dependen de él.
+
+**Salud de datos** — comprobado con `curl` real, reproduciendo el *parsing*
+exacto de cada función de `functions/prevision.js` contra la respuesta de
+esta noche:
+
+- **Boya de Nazaré** (`monican.hidrografico.pt`, POST a `boia.graph.php`):
+  `200` en las 4 variables, última hora real (2026-10-12 01:00 UTC) con
+  Hs 1.2 m, temperatura 16.9 °C — sin novedad.
+- **Caudal Cantábrico** (`visor.saichcantabrico.es`): `200`, 164 KB
+  reales. Reproducido `parsearCaudalCantabrico()` fila a fila: las 5
+  estaciones (`sella` 11.37, `besaya` 3.95, `pas` 2.96, `ason` 3.67, `eo`
+  2.09 m³/s, todas actualizadas a las 03:10 de hoy) devuelven su valor
+  propio sin cruzarse — el *fix* del commit `650bbc0` (2026-10-08) sigue
+  sano.
+- **Caudal Júcar** (`saih.chj.es/mapa-aforos`): `200`, 69 KB, el array
+  `aforos` se extrae y parsea bien — Júcar 19.00, Turia 4.09, Mijares 1.44
+  m³/s, todos reales y con fecha de hoy (03:10).
+- **Caudal Segura** (`saihweb.chsegura.es`): `200`, forma esperada (33
+  estaciones), todas con dato real — A.Rojales 1.768 m³/s. Sano.
+- **Caudal Galicia** (`servizos.meteogalicia.gal`, río Lagares en Vigo):
+  `200`, el campo se encuentra y da `0 m³/s` — mismo valor real ya
+  documentado en pasadas anteriores, no un fallo.
+- **Webcams, muestra de 4 en 4 regiones distintas** (País Vasco, Galicia,
+  Cantabria, Com. Valenciana): `getaria` vía `detectia.net`/AZTI (OK,
+  WebP 1600×1200, 52 KB), `cangas` vía `meteogalicia.gal` (OK, JPEG
+  1280×720, 50 KB, con la marca de hora "Cangas_12/10/2026_01:04:41" —
+  vista con `Read`, imagen real de esta noche), `javea` vía
+  `streaming.comunitatvalenciana.com` (OK, PNG 480×270, 187 KB, imagen
+  real del puerto de noche, vista con `Read`) y `castrourdiales`
+  (**fuente principal caída, failover correcto**: `www.cantabria.es`
+  sigue sin servicio — TLS handshake colgado y "Connection reset by peer",
+  idéntico al bloqueo documentado desde el 2026-09-25 y reconfirmado el
+  2026-10-10/11; se comprobó que es del proveedor entero, no solo de
+  Castro-Urdiales: `Comillas-New-1.jpg` y `Laredo-New-1.jpg` fallan igual
+  esta noche. Las reservas en `webcamsencantabria.com`/tendsys.net
+  funcionan bien para Castro-Urdiales y Laredo —`56b44eac-...jpg` (104 KB,
+  JPEG 1920×1080) y `e743087e-...jpg` (37 KB, JPEG 1920×1080), ambas
+  respondiendo `200` con imagen real—, así que esos dos spots se siguen
+  viendo sin que el usuario note nada. **Suances, San Vicente, Comillas y
+  Santoña siguen sin reserva y, por tanto, sin imagen real mientras dure
+  esta caída** — mismo hueco ya anotado el 2026-09-19/25, sin cambios).
+
+**Resumen de severidad para el usuario**: nada roto de cara a un usuario
+real. El hallazgo con severidad real sigue siendo el mismo de las cuatro
+noches anteriores: `poem.puertos.es` lleva **cinco noches seguidas** en
+`500` para cualquier consulta de datos (desde el 2026-10-08) — bloquea
+solo esta rutina de calibración y `comparar-boyas.mjs` (ninguno de los dos
+se sirve en público). Todo lo demás sano: Nazaré, Cantábrico (caudal, ya
+corregido), Júcar, Segura, Galicia. `www.cantabria.es` (imágenes) sigue
+caído como proveedor entero desde el 2026-09-25 — confirmado de nuevo
+esta noche en 3 de sus cámaras (Castro, Comillas, Laredo) —, pero
+Castro-Urdiales y Laredo lo cubren con su reserva de `tendsys.net`;
+Suances/San Vicente/Comillas/Santoña siguen expuestos sin reserva, como ya
+se sabía. Rotación pendiente para la próxima pasada: **1731 Barcelona II**
+(lleva ya cinco noches sin poder completarse por el `500` de Puertos del
+Estado).
+
+**Firmado:** robot de calibración nocturna, 2026-10-12 01:40 UTC.
+
 ---
 
 ## Robot de experiencia de usuario
