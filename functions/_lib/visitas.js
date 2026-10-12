@@ -29,6 +29,14 @@ const ALIAS = {
   amigo: "referido", ref: "referido",
 };
 
+// Visitas internas (2026-10-12): el navegador del administrador lleva la
+// cookie cv_interno=1 (la pone index.html al confirmar es_admin()) y no se
+// cuenta, para que "directo" refleje solo a usuarios reales.
+export const COOKIE_INTERNA = "cv_interno";
+export function esVisitaInterna(cookies) {
+  return new RegExp(`(?:^|;\\s*)${COOKIE_INTERNA}=1(?:;|$)`).test(String(cookies || ""));
+}
+
 // Robots, previsualizaciones de enlaces y comprobaciones propias no cuentan.
 const NO_PERSONA = /bot|crawl|spider|slurp|preview|facebookexternalhit|whatsapp|telegram|discord|curl|wget|python|node-fetch|undici|headless|lighthouse|pingdom|uptime|monitor|playwright/i;
 
@@ -80,6 +88,7 @@ export function visitaAContar(request, respuesta) {
   const h = request.headers;
   const ua = h.get("user-agent") || "";
   if (!ua || NO_PERSONA.test(ua)) return null;
+  if (esVisitaInterna(h.get("cookie"))) return null;
   // Precargas del navegador: no son visitas.
   if (/prefetch|prerender/i.test(h.get("sec-purpose") || h.get("purpose") || "")) return null;
   const url = new URL(request.url);
