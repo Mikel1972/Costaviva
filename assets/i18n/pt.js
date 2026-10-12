@@ -8,6 +8,11 @@
 (function (r) { var d = r.I18N_TEXTOS || (r.I18N_TEXTOS = {}); d.pt =
 {
   "comun.idioma.etiqueta": "Idioma",
+  "comun.pref.unidades": "Unidades",
+  "comun.pref.metrico": "Métrico",
+  "comun.pref.imperial": "Imperial",
+  "comun.pref.viento": "Vento",
+  "comun.pref.fecha": "Data",
   "mapa.titulo_pagina": "Costaviva, pesca em tempo real | Marés e previsão marítima",
   "comun.inicio.frase": "O mar de hoje, antes de ir à pesca",
   "comun.inicio.comprobando": "A verificar o acesso…",

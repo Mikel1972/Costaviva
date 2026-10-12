@@ -6,6 +6,11 @@
 (function (r) { var d = r.I18N_TEXTOS || (r.I18N_TEXTOS = {}); d.en =
 {
   "comun.idioma.etiqueta": "Language",
+  "comun.pref.unidades": "Units",
+  "comun.pref.metrico": "Metric",
+  "comun.pref.imperial": "Imperial",
+  "comun.pref.viento": "Wind",
+  "comun.pref.fecha": "Date",
   "mapa.titulo_pagina": "Costaviva, real-time fishing | Tides and marine forecast",
   "comun.inicio.frase": "Today's sea, before you go fishing",
   "comun.inicio.comprobando": "Checking access…",

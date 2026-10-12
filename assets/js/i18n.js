@@ -26,7 +26,15 @@
 //     El HTML conserva el texto en español: en español no se toca nada.
 //   - texto que pinta el JS: I18n.t("clave", { n: 3, nombre: "..." }).
 //   - números y unidades: I18n.num, I18n.temp, I18n.metros, I18n.velocidad,
-//     I18n.fecha, I18n.locale().
+//     I18n.distancia, I18n.centimetros, I18n.kilos, I18n.fecha,
+//     I18n.fechaNumerica, I18n.locale(). Respetan las PREFERENCIAS del usuario
+//     (2026-10-12, Mikel: "el viento se suele dar también en nudos; en el
+//     perfil, un menú para elegir unidades, métrico o imperial, y el formato
+//     de la fecha"): sistema métrico/imperial, unidad del viento (km/h,
+//     nudos, mph, m/s) y fecha (31/12/2026, 12/31/2026, 2026-12-31). Se
+//     guardan como el idioma: en este navegador y en el perfil
+//     (user_metadata.preferencias). Los datos siempre llegan en métrico; solo
+//     cambia cómo se enseñan.
 // Nada de on*= (CSP con nonce): el selector usa addEventListener.
 (function (raiz) {
   if (raiz.I18n && raiz.I18n.__costaviva) return;
@@ -40,6 +48,13 @@
   // (los datos de NZ solo tienen inglés); inglés -> español.
   var RESPALDO = { pt: ["en", "es"], en: ["es"], es: [] };
   var CLAVE_LS = "costaviva.idioma";
+  var CLAVE_PREFS = "costaviva.preferencias";
+  var OPCIONES_PREFS = {
+    unidades: ["metrico", "imperial"],
+    viento: ["kmh", "nudos", "mph", "ms"],
+    fecha: ["dmy", "mdy", "ymd"],
+  };
+  var PREFS_DEFECTO = { unidades: "metrico", viento: "kmh", fecha: "dmy" };
   var CLAVE_SESION = "sb-imncbmizxkorotpeisic-auth-token";
   var ATRIBUTOS = ["title", "aria-label", "placeholder", "alt"];
   var hayDom = typeof document !== "undefined" && !!document.documentElement;
@@ -66,6 +81,45 @@
       var u = o && (o.user || (o.currentSession && o.currentSession.user));
       return normaliza(u && u.user_metadata && u.user_metadata.idioma);
     } catch (e) { return null; }
+  }
+  // Preferencias válidas de un objeto cualquiera (lo demás se ignora).
+  function prefsValidas(o) {
+    var r = {};
+    if (!o || typeof o !== "object") return r;
+    Object.keys(OPCIONES_PREFS).forEach(function (k) {
+      if (OPCIONES_PREFS[k].indexOf(o[k]) >= 0) r[k] = o[k];
+    });
+    return r;
+  }
+  function prefsDePerfil() {
+    try {
+      var a = almacen();
+      var s = a && a.getItem(CLAVE_SESION);
+      if (!s) return {};
+      var o = JSON.parse(s);
+      var u = o && (o.user || (o.currentSession && o.currentSession.user));
+      return prefsValidas(u && u.user_metadata && u.user_metadata.preferencias);
+    } catch (e) { return {}; }
+  }
+  function prefsGuardadas() {
+    try { var a = almacen(); return prefsValidas(a ? JSON.parse(a.getItem(CLAVE_PREFS) || "null") : null); } catch (e) { return {}; }
+  }
+  // Por defecto, luego el perfil y, encima, lo elegido en este navegador.
+  function cargarPrefs() {
+    var p = {}, k;
+    for (k in PREFS_DEFECTO) p[k] = PREFS_DEFECTO[k];
+    var perfil = prefsDePerfil(), local = prefsGuardadas();
+    for (k in perfil) p[k] = perfil[k];
+    for (k in local) p[k] = local[k];
+    return p;
+  }
+  var prefs = cargarPrefs();
+  function cargarPrefsDe(p) {
+    var r = {}, k;
+    for (k in PREFS_DEFECTO) r[k] = PREFS_DEFECTO[k];
+    var v = prefsValidas(p);
+    for (k in v) r[k] = v[k];
+    return r;
   }
   function deNavegador() {
     if (!hayDom || !raiz.navigator) return null;
@@ -220,20 +274,71 @@
   function usaComa(idioma) {
     return !!COMA[normaliza(idioma) || actual];
   }
+  var vacio = function (x) { return x === null || x === undefined || x === "" || Number.isNaN(Number(x)); };
+  var imperial = function () { return prefs.unidades === "imperial"; };
+  // Temperatura: °C, o °F en imperial.
   function temp(c, decimales, idioma) {
+    if (vacio(c)) return "";
+    if (imperial()) return num(c * 9 / 5 + 32, decimales === undefined ? 0 : decimales, idioma) + " °F";
     return num(c, decimales === undefined ? 1 : decimales, idioma) + " °C";
   }
+  // Alturas y profundidades (ola, marea, fondo): m, o pies en imperial.
   function metros(m, decimales, idioma) {
+    if (vacio(m)) return "";
+    if (imperial()) return num(m * 3.28084, decimales === undefined ? (Math.abs(m * 3.28084) < 10 ? 1 : 0) : decimales, idioma) + " ft";
     return num(m, decimales, idioma) + " m";
   }
-  // Viento: km/h por defecto; nudos si se pide (1 kn = 1,852 km/h).
+  // Dos alturas, "1-2 m" / "3.3-6.6 ft".
+  function rangoMetros(a, b, decimales, idioma) {
+    if (vacio(a) || vacio(b)) return "";
+    var ua = metros(a, decimales, idioma), ub = metros(b, decimales, idioma);
+    return ua.replace(/ (m|ft)$/, "") + "-" + ub;
+  }
+  // Distancias: km, o millas en imperial.
+  function distancia(km, decimales, idioma) {
+    if (vacio(km)) return "";
+    if (imperial()) return num(km / 1.609344, decimales, idioma) + " mi";
+    return num(km, decimales, idioma) + " km";
+  }
+  // Tallas (cm) y pesos (kg) de las capturas: pulgadas y libras en imperial.
+  function centimetros(cm, decimales, idioma) {
+    if (vacio(cm)) return "";
+    if (imperial()) return num(cm / 2.54, decimales === undefined ? 1 : decimales, idioma) + " in";
+    return num(cm, decimales === undefined ? 0 : decimales, idioma) + " cm";
+  }
+  function kilos(kg, decimales, idioma) {
+    if (vacio(kg)) return "";
+    if (imperial()) return num(kg * 2.20462, decimales === undefined ? 1 : decimales, idioma) + " lb";
+    return num(kg, decimales === undefined ? 1 : decimales, idioma) + " kg";
+  }
+  // Viento y corriente (llegan en km/h): la unidad de las preferencias, o la
+  // que se pida (1 kn = 1,852 km/h; 1 mph = 1,609 km/h; 1 m/s = 3,6 km/h).
+  function nombreNudos(idioma) {
+    var id = normaliza(idioma) || actual;
+    return id === "es" ? "nudos" : id === "pt" ? "nós" : "kn";
+  }
+  function unidadVelocidad(unidad, idioma) {
+    var u = unidad === "kn" ? "nudos" : unidad || prefs.viento;
+    return u === "nudos" ? nombreNudos(idioma) : u === "mph" ? "mph" : u === "ms" ? "m/s" : "km/h";
+  }
+  function velocidadNumero(kmh, unidad) {
+    var u = unidad === "kn" ? "nudos" : unidad || prefs.viento;
+    return u === "nudos" ? kmh / 1.852 : u === "mph" ? kmh / 1.609344 : u === "ms" ? kmh / 3.6 : kmh;
+  }
   function velocidad(kmh, unidad, idioma) {
-    if (kmh === null || kmh === undefined || Number.isNaN(Number(kmh))) return "";
-    if (unidad === "nudos" || unidad === "kn") {
-      var id = normaliza(idioma) || actual;
-      return Math.round(kmh / 1.852) + (id === "es" ? " nudos" : id === "pt" ? " nós" : " kn");
-    }
-    return Math.round(kmh) + " km/h";
+    if (vacio(kmh)) return "";
+    var u = unidad === "kn" ? "nudos" : unidad || prefs.viento;
+    var v = velocidadNumero(kmh, u);
+    return (u === "ms" ? num(v, 1, idioma) : String(Math.round(v))) + " " + unidadVelocidad(u, idioma);
+  }
+  // Fecha en números con el formato elegido: 31/12/2026, 12/31/2026 o 2026-12-31.
+  function fechaNumerica(d, conAnio) {
+    var x = new Date(d);
+    if (Number.isNaN(x.getTime())) return "";
+    var dd = String(x.getDate()).padStart(2, "0"), mm = String(x.getMonth() + 1).padStart(2, "0"), aa = String(x.getFullYear());
+    if (prefs.fecha === "ymd") return conAnio === false ? mm + "-" + dd : aa + "-" + mm + "-" + dd;
+    var dm = prefs.fecha === "mdy" ? mm + "/" + dd : dd + "/" + mm;
+    return conAnio === false ? dm : dm + "/" + aa;
   }
   // ["ene", "feb", ...] / ["Jan", "Feb", ...] / ["jan", "fev", ...] (comun.meses_cortos del diccionario).
   function mesesCortos(idioma) {
@@ -303,6 +408,71 @@
     var plazo = new Promise(function (ok) { setTimeout(ok, 1500); });
     Promise.race([hecho, plazo]).then(recargar, recargar);
   }
+  // Preferencias: se guardan aquí y en el perfil, y se recarga (como el idioma).
+  function cambiarPreferencias(parcial) {
+    var nuevas = {}, k;
+    for (k in prefs) nuevas[k] = prefs[k];
+    var v = prefsValidas(parcial);
+    for (k in v) nuevas[k] = v[k];
+    // Al pasar a imperial, el viento en mph si estaba en km/h (y al revés).
+    if (v.unidades && !v.viento) {
+      if (v.unidades === "imperial" && nuevas.viento === "kmh") nuevas.viento = "mph";
+      if (v.unidades === "metrico" && nuevas.viento === "mph") nuevas.viento = "kmh";
+    }
+    try { var a = almacen(); if (a) a.setItem(CLAVE_PREFS, JSON.stringify(nuevas)); } catch (e) { /* sin almacenamiento */ }
+    prefs = nuevas;
+    var hecho = Promise.resolve();
+    try {
+      var cliente = raiz.supabaseCliente;
+      if (cliente && cliente.auth && cliente.auth.updateUser) {
+        hecho = cliente.auth.updateUser({ data: { preferencias: nuevas } }).catch(function () {});
+      }
+    } catch (e) { /* nada */ }
+    if (!hayDom) return hecho;
+    var recargar = function () { try { raiz.location.reload(); } catch (e) { /* nada */ } };
+    var plazo = new Promise(function (ok) { setTimeout(ok, 1500); });
+    return Promise.race([hecho, plazo]).then(recargar, recargar);
+  }
+  // Tres filas en el menú de cuenta, con el mismo aspecto que el idioma.
+  function montarPreferencias(contenedor) {
+    if (!contenedor || contenedor.getAttribute("data-prefs-montado")) return;
+    estiloSelector();
+    contenedor.setAttribute("data-prefs-montado", "1");
+    var filas = [
+      ["unidades", "📏 " + t("comun.pref.unidades"), { metrico: t("comun.pref.metrico"), imperial: t("comun.pref.imperial") }],
+      ["viento", "💨 " + t("comun.pref.viento"), { kmh: "km/h", nudos: nombreNudos(), mph: "mph", ms: "m/s" }],
+      ["fecha", "📅 " + t("comun.pref.fecha"), { dmy: "31/12", mdy: "12/31", ymd: "2026-12-31" }],
+    ];
+    filas.forEach(function (f) {
+      var caja = document.createElement("div");
+      caja.className = "i18n-selector";
+      caja.setAttribute("role", "group");
+      caja.setAttribute("aria-label", f[1].slice(3));
+      var etq = document.createElement("span");
+      etq.className = "i18n-selector__etq";
+      etq.textContent = f[1];
+      caja.appendChild(etq);
+      var ops = document.createElement("span");
+      ops.className = "i18n-selector__opciones";
+      OPCIONES_PREFS[f[0]].forEach(function (op) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "i18n-selector__opcion";
+        b.setAttribute("aria-pressed", prefs[f[0]] === op ? "true" : "false");
+        b.textContent = f[2][op];
+        b.addEventListener("click", function (e) {
+          e.stopPropagation();
+          if (prefs[f[0]] === op) return;
+          var p = {};
+          p[f[0]] = op;
+          cambiarPreferencias(p);
+        });
+        ops.appendChild(b);
+      });
+      caja.appendChild(ops);
+      contenedor.appendChild(caja);
+    });
+  }
   // Estilo del selector aquí y no en costaviva.css: esa hoja se copia en
   // línea en las páginas públicas (functions/_lib/seo/estilos.js) y el
   // selector solo existe en la app.
@@ -358,6 +528,7 @@
   function alCargar() {
     aplicar(document);
     Array.prototype.forEach.call(document.querySelectorAll("[data-i18n-selector]"), montarSelector);
+    Array.prototype.forEach.call(document.querySelectorAll("[data-preferencias-selector]"), montarPreferencias);
     document.documentElement.classList.remove("i18n-pendiente");
   }
   if (hayDom) {
@@ -411,6 +582,19 @@
     aplicar: aplicar,
     aplicarInicio: aplicarInicio,
     montarSelector: montarSelector,
+    montarPreferencias: montarPreferencias,
+    preferencias: function () { var c = {}; for (var k in prefs) c[k] = prefs[k]; return c; },
+    // Solo para tests: fija las preferencias sin guardar ni recargar.
+    fijarPreferencias: function (p) { prefs = cargarPrefsDe(p); return prefs; },
+    cambiarPreferencias: cambiarPreferencias,
+    OPCIONES_PREFS: OPCIONES_PREFS,
+    rangoMetros: rangoMetros,
+    distancia: distancia,
+    centimetros: centimetros,
+    kilos: kilos,
+    unidadVelocidad: unidadVelocidad,
+    velocidadNumero: velocidadNumero,
+    fechaNumerica: fechaNumerica,
     cambiar: cambiar,
     guardar: guardar,
   };
