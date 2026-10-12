@@ -1050,7 +1050,7 @@ salud las comprueba como las de España (401/403/429 en enlace o iframe =
 
 **Embebidas: decisión de Mikel 2026-10-11 ("Embeberlas", como Skyline),
 pendiente de respuesta escrita de cada dueño.** Interruptor por dueño
-`NZ_EMBED_AUTORIZADO` (hoy todos `true`): si un dueño dice que no, se pone
+`NZ_EMBED_AUTORIZADO`: si un dueño dice que no, se pone
 su clave a `false` y sus cámaras vuelven solas a `enlace` (CoroLive sale
 además de `frame-src` de la CSP, que se arma con `ORIGENES_IFRAME_NZ`). Se
 usa solo lo que publica el dueño: imagen `latest` documentada de GeoNet
@@ -1061,8 +1061,15 @@ iframe oficial de CoroLive (`iframe_oficial`, modo nuevo; CoroLive pide que
 le avisen para su lista blanca). Siempre con atribución visible y enlace al
 dueño: `htmlCamaraIncrustada()` en `camaras-externas.js` («Image: GeoNet,
 CC BY 3.0 NZ»). Siguen en `enlace` por motivo técnico (`motivo_sin_embed`):
-Primo (bloquea el enlace directo a sus imágenes: no se rodea) y Port Otago
-(solo imágenes con la hora en el nombre, sin URL estable). GeoNet y Cam-Era
+Primo y Port Otago (solo imágenes con la hora en el nombre, sin URL
+estable). **Primo DENEGÓ por escrito el 2026-10-12** (Craig, por su
+helpdesk): ni embebido, ni URLs directas de imagen, ni análisis automático;
+el acceso a sus webcams queda en su web. Solo se ENLAZA a su página pública
+de webcams (`https://www.primo.nz/info/primo-webcams`): `primo: false` en
+`NZ_EMBED_AUTORIZADO` y en `NZ_ANALISIS_AUTORIZADO`, `denegacion` en
+`CONDICIONES_NZ.primo`, y nada (ola, miniaturas, capturas) pide su imagen.
+No volver a pedirlo ni a proponerlo salvo que Primo cambie su política
+(registro en `permisos/registro.json` de comun, estado `denegada`). GeoNet y Cam-Era
 sirven `application/octet-stream`: el robot lo acepta en `imagen_oficial`.
 Reglas que siguen: sus fotogramas solo se analizan para la ola, con el
 interruptor por dueño de la sección siguiente; nada de Facebook ni
@@ -1124,8 +1131,8 @@ permiso (los emails para pedirlo están en preparación).
   puerto más allá del espigón; la URL de la foto cambia en cada captura y se
   lee de su página pública de webcams) y Riverton (SouthLoop, barra del
   Aparima). **Qué no y por qué (`NO_SIRVEN_NZ`):** Cam-Era (términos), Primo
-  Port Taranaki (bloquea: fuera de su red sus fotos redirigen a
-  /camera-access-info/; no se rodea), CoroLive Whitianga y Whangamatā
+  Port Taranaki (DENEGADO por escrito el 2026-10-12: análisis en false; además
+  fuera de su red sus fotos redirigen a /camera-access-info/), CoroLive Whitianga y Whangamatā
   (panorámicas lejanas sin rompiente) y GeoNet Whakatāne y Te Kaha (cámaras de
   volcán, mar abierto sin costa). Las "pendientes" del inventario de NZ que no
   están en `camaras-nz.js` no entran.

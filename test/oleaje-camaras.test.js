@@ -533,7 +533,7 @@ test("NZ: cada cámara de camaras-nz.js se mide o tiene su motivo en NO_SIRVEN_N
   assert.ok(camarasNZ().length >= 1);
 });
 
-test("NZ: el interruptor por dueño manda; Earth Sciences NZ (términos) y Primo (bloqueo) no se analizan", () => {
+test("NZ: el interruptor por dueño manda; Earth Sciences NZ (términos) y Primo (denegado por escrito) no se analizan", () => {
   for (const [id, c] of camarasNZ()) {
     const app = CAMARAS_NZ_APP.find((a) => a.id === c.camaraApp);
     assert.ok(app, `${id}: camaraApp desconocida`);
@@ -548,7 +548,13 @@ test("NZ: el interruptor por dueño manda; Earth Sciences NZ (términos) y Primo
   }
   assert.equal(NZ_ANALISIS_AUTORIZADO.earth_sciences_camera, false);
   assert.match(NO_SIRVEN_NZ["nz-tairua-cam-era"], /prohíben expresamente/);
-  assert.match(NO_SIRVEN_NZ["nz-primo-port-taranaki"], /BLOQUEA/);
+  // Primo denegó por escrito el análisis y las URLs de imagen (2026-10-12).
+  assert.equal(NZ_ANALISIS_AUTORIZADO.primo, false);
+  assert.match(NO_SIRVEN_NZ["nz-primo-port-taranaki"], /DENEGADO por escrito/);
+  assert.equal(NZ_FUERA_POR_DUENO["nz-primo-port-taranaki"], undefined, "Primo no puede estar en CAMARAS_NZ_OLA");
+  for (const c of Object.values(CAMARAS)) {
+    assert.ok(!/primo/i.test(`${c.url || ""} ${c.pagina || ""} ${c.camaraApp || ""}`), "nada pide imágenes de Primo");
+  }
   for (const id of Object.keys(CAMARAS)) assert.ok(!CAMARAS[id].camaraApp?.includes("cam-era"));
 });
 

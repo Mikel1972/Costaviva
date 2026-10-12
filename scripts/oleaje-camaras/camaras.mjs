@@ -203,7 +203,7 @@ export const NO_SIRVEN_NZ = {
   "nz-corolive-whangamata": "panorámica desde el interior: el mar es una franja lejana en el horizonte, sin rompiente distinguible (fotograma de mediodía del 2026-10-11)",
   "nz-geonet-whakatane": "cámara de volcán: mar abierto hacia Whakaari a decenas de km, sin costa ni rompiente en el encuadre",
   "nz-geonet-te-kaha": "cámara de volcán: mar abierto hacia Whakaari, sin costa ni rompiente en el encuadre",
-  "nz-primo-port-taranaki": "BLOQUEA a los robots: fuera de la red de Primo sus fotos redirigen a /camera-access-info/ (302, comprobado el 2026-10-11). No se rodea",
+  "nz-primo-port-taranaki": "DENEGADO por escrito por Primo (Craig, 2026-10-12): ni análisis automático, ni embebido, ni URLs directas de imagen; solo enlace a su página de webcams (dueño con el análisis en false). Además BLOQUEA a los robots: fuera de su red sus fotos redirigen a /camera-access-info/. No se pide nunca su imagen",
   // Repaso de día del 2026-10-12: añadidas solo como ENLACE. No se analizan
   // sin permiso escrito del dueño (peticiones en permisos/registro.json de
   // comun); para medirlas haría falta además su referencia y su ROI.

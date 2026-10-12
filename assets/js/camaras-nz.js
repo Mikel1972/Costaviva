@@ -43,8 +43,9 @@
 //     dominio en su lista blanca (hoy el iframe no comprueba el dominio).
 //   - Napier City Council: su copyright solo da licencia para verlo en el
 //     navegador. SouthLoop: no publica condiciones.
-// Técnicamente NO embebibles (siguen en enlace, motivo_sin_embed): Primo
-// bloquea el enlace directo a sus imágenes (redirige a /camera-access-info/)
+// NO embebibles (siguen en enlace, motivo_sin_embed): Primo lo DENEGÓ por
+// escrito el 2026-10-12 (embebido, URLs de imagen y análisis; solo enlace a
+// su página de webcams; antes ya bloqueaba el enlace directo a sus imágenes)
 // y Port Otago solo publica imágenes con la hora en el nombre (no hay una URL
 // estable sin rascar su página).
 //
@@ -73,7 +74,11 @@ export const NZ_ANALISIS_AUTORIZADO = {
   geonet: true,
   corolive: true,
   port_otago: true,
-  primo: true,
+  // 2026-10-12: Primo (Craig, respuesta escrita a Mikel) DENIEGA el análisis
+  // automático, el embebido y las URLs directas de imagen; el acceso a sus
+  // webcams queda restringido a su web. Solo se ENLAZA a su página de webcams
+  // (permisos/registro.json de Mikel1972/comun, estado "denegada").
+  primo: false,
   napier_cc: true,
   southloop: true,
   // Añadidos en el repaso de día del 2026-10-12, solo como ENLACE: ni se
@@ -96,7 +101,9 @@ export const NZ_EMBED_AUTORIZADO = {
   // No embebibles por un motivo técnico (motivo_sin_embed): el valor no
   // cambia nada mientras no publiquen una imagen o un iframe utilizable.
   port_otago: true,
-  primo: true,
+  // 2026-10-12: Primo (Craig) deniega por escrito el embebido y las URLs
+  // directas de imagen: solo enlace a su página pública de webcams.
+  primo: false,
   // Repaso de día del 2026-10-12: enlace hasta que el dueño conteste por
   // escrito (no hay modo en EMBEBIBLE: aunque se pusieran a true, seguirían
   // en enlace hasta añadirles la imagen o el iframe que publiquen).
@@ -212,9 +219,13 @@ export const CONDICIONES_NZ = {
       "«You are free to share them with your friends and family far and wide, remember to photo credit us» / " +
       "«Our webcam images and videos are solely for informative and entertainment purposes [...] All images and " +
       "streaming on this website are the property of Primo».",
+    // Respuesta escrita de Primo (Craig) a Mikel, 2026-10-12.
+    denegacion:
+      "2026-10-12: Primo deniega el embebido, las URLs directas de imagen y el análisis automático; el acceso a sus " +
+      "webcams queda restringido a la web de Primo. Permite enlazar a su página de webcams.",
     motivo_sin_embed:
-      "Sus imágenes rechazan el enlace directo desde otras webs (redirigen a /camera-access-info/): es un bloqueo y no " +
-      "se rodea. Sigue en enlace.",
+      "Denegado por escrito por Primo (2026-10-12): solo enlace a su página pública de webcams. Además sus imágenes " +
+      "rechazan el enlace directo desde otras webs (redirigen a /camera-access-info/).",
     contacto: "Primo, 123 Molesworth Street, New Plymouth (formulario en primo.nz)",
   },
   napier_cc: {
@@ -410,6 +421,8 @@ const LISTA = [
     }),
 
   // --- Taranaki ---
+  // Primo: SOLO enlace a su página de webcams (denegado el resto, 2026-10-12).
+  // Nunca se le añade `embed` ni se pide su imagen.
   cam("primo-port-taranaki", "nz-new-plymouth", ["Port Taranaki desde la chimenea", "Port Taranaki from the chimney"], "primo", "https://www.primo.nz/info/primo-webcams", true,
     "2026-10-11: fotograma de las 19:00 NZDT (ChimneyCam2) con el puerto, el rompeolas y el mar", { km: 1 }),
 
