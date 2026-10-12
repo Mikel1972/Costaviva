@@ -54,10 +54,10 @@ test("mapa: la capa se monta siempre (sin botón) y sale en la leyenda", () => {
 });
 
 test("España: zonas de los textos legales, cada una con su norma; rojas sin pesca y naranjas parciales", async () => {
-  const { zonasES } = await import("../scripts/fuentes/zonas-sin-pesca.mjs");
+  const { zonasES, anadirTraducciones, leerTraduccionesReglas } = await import("../scripts/fuentes/zonas-sin-pesca.mjs");
   const boe = json("datos/es/zonas-sin-pesca-boe.geojson");
   const es = json("assets/datos/zonas-sin-pesca/es.geojson");
-  assert.deepEqual(es, JSON.parse(JSON.stringify(zonasES(boe))), "regenerar con scripts/fuentes/zonas-sin-pesca.mjs");
+  assert.deepEqual(es, JSON.parse(JSON.stringify(anadirTraducciones(zonasES(boe), leerTraduccionesReglas()))), "regenerar con scripts/fuentes/zonas-sin-pesca.mjs");
   assert.equal(es.features.length, boe.features.length);
   for (const f of es.features) {
     assert.ok(["reserva", "parcial"].includes(f.properties.tipo), f.properties.nombre);
@@ -75,14 +75,28 @@ test("España: zonas de los textos legales, cada una con su norma; rojas sin pes
 });
 
 test("Portugal: zonas del Diário da República (continente, Madeira y Azores)", async () => {
-  const { zonasPT } = await import("../scripts/fuentes/zonas-sin-pesca.mjs");
+  const { zonasPT, anadirTraducciones, leerTraduccionesReglas } = await import("../scripts/fuentes/zonas-sin-pesca.mjs");
   const dr = json("datos/pt/zonas-sin-pesca-dr.geojson");
   const pt = json("assets/datos/zonas-sin-pesca/pt.geojson");
-  assert.deepEqual(pt, JSON.parse(JSON.stringify(zonasPT(dr))), "regenerar con scripts/fuentes/zonas-sin-pesca.mjs");
+  assert.deepEqual(pt, JSON.parse(JSON.stringify(anadirTraducciones(zonasPT(dr), leerTraduccionesReglas()))), "regenerar con scripts/fuentes/zonas-sin-pesca.mjs");
   assert.equal(pt.region, "pt");
   for (const f of pt.features) assert.ok(f.properties.regla && f.properties.norma && /^https:\/\//.test(f.properties.url), f.properties.nombre);
   const nombres = pt.features.map((f) => f.properties.nombre).join(" | ");
   for (const r of ["Berlengas", "Garajau", "Selvagens", "Desertas"]) assert.match(nombres, new RegExp(r), r);
   assert.ok(regionVisible(REGIONES_ZONAS.pt.caja, { sur: 37.5, norte: 39, oeste: -29, este: -27 }), "Azores");
   assert.ok(esRutaPermitida(REGIONES_ZONAS.pt.url));
+});
+
+test("reglas de España y Portugal también en portugués y en inglés (DeepL revisado)", () => {
+  for (const r of ["es", "pt"]) {
+    for (const f of json(`assets/datos/zonas-sin-pesca/${r}.geojson`).features) {
+      if (!f.properties.regla) continue;
+      assert.ok(f.properties.regla_pt && f.properties.regla_en, `${f.properties.nombre}: falta traducción (traducir-reglas-zonas.yml)`);
+    }
+  }
+  // Revisiones a mano que DeepL había cambiado de sentido.
+  const pt = JSON.stringify(json("assets/datos/zonas-sin-pesca/pt.geojson"));
+  assert.match(pt, /a apanha só é permitida a residentes/);
+  assert.doesNotMatch(pt, /garoupa/);
+  assert.match(html, /idioma: I18n\.idioma\(\),/);
 });

@@ -1,0 +1,50 @@
+name: Traducir reglas de las zonas sin pesca (DeepL)
+
+# 2026-10-12. Traduce al portugués y al inglés las reglas de las zonas sin
+# pesca que falten (scripts/fuentes/traducir-reglas-zonas.mjs) y sube
+# datos/zonas-sin-pesca-traducciones.json a la MISMA rama. Sin IA: DeepL API
+# Free (DEEPL_API_KEY). Se lanza solo al cambiar los textos legales en una
+# rama que no sea main, o a mano. Después hay que regenerar los geojson
+# públicos (node scripts/fuentes/zonas-sin-pesca.mjs) y revisar la
+# traducción antes de fusionar.
+
+on:
+  push:
+    branches-ignore: [main]
+    paths:
+      - datos/es/zonas-sin-pesca-boe.geojson
+      - datos/pt/zonas-sin-pesca-dr.geojson
+      - scripts/fuentes/traducir-reglas-zonas.mjs
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: traducir-reglas-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  traducir:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Pedir a DeepL lo que falte
+        env:
+          DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
+        run: node scripts/fuentes/traducir-reglas-zonas.mjs
+      - name: Subir las traducciones a la rama
+        run: |
+          if git diff --quiet -- datos/zonas-sin-pesca-traducciones.json && git ls-files --error-unmatch datos/zonas-sin-pesca-traducciones.json > /dev/null 2>&1; then
+            echo "Nada nuevo que traducir."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add datos/zonas-sin-pesca-traducciones.json
+          git commit -m "Traducciones de las reglas de las zonas sin pesca (DeepL)"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

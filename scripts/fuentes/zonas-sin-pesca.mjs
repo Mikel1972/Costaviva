@@ -28,7 +28,7 @@
 //
 // Uso: node scripts/fuentes/zonas-sin-pesca.mjs
 
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -98,6 +98,23 @@ export function zonasES(boe, region = "es", atribucion = "Zonas sin pesca: elabo
   };
 }
 
+// Reglas traducidas (2026-10-12, DeepL revisado: datos/zonas-sin-pesca-
+// traducciones.json, lo rellena scripts/fuentes/traducir-reglas-zonas.mjs):
+// cada zona lleva regla_pt y regla_en si están; el popup elige por idioma.
+export function anadirTraducciones(geo, trad = {}) {
+  for (const f of geo.features) {
+    const t = trad[f.properties.regla];
+    if (t?.pt) f.properties.regla_pt = t.pt;
+    if (t?.en) f.properties.regla_en = t.en;
+  }
+  return geo;
+}
+
+export function leerTraduccionesReglas() {
+  const f = join(RAIZ, "datos", "zonas-sin-pesca-traducciones.json");
+  return existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : {};
+}
+
 // Portugal: mismo formato que España.
 export const zonasPT = (dr) => zonasES(dr, "pt",
   "Zonas sem pesca: elaboração própria a partir dos textos legais (Diário da República, JORAM, JORAA)",
@@ -112,12 +129,13 @@ function main() {
   writeFileSync(join(salida, "nz.geojson"), texto);
   console.log(`nz: ${nz.features.length} zonas, ${Buffer.byteLength(texto)} bytes.`);
   const boe = JSON.parse(readFileSync(join(RAIZ, "datos", "es", "zonas-sin-pesca-boe.geojson"), "utf8"));
-  const es = zonasES(boe);
+  const trad = leerTraduccionesReglas();
+  const es = anadirTraducciones(zonasES(boe), trad);
   const textoEs = JSON.stringify(es) + "\n";
   writeFileSync(join(salida, "es.geojson"), textoEs);
   console.log(`es: ${es.features.length} zonas, ${Buffer.byteLength(textoEs)} bytes.`);
   const dr = JSON.parse(readFileSync(join(RAIZ, "datos", "pt", "zonas-sin-pesca-dr.geojson"), "utf8"));
-  const pt = zonasPT(dr);
+  const pt = anadirTraducciones(zonasPT(dr), trad);
   const textoPt = JSON.stringify(pt) + "\n";
   writeFileSync(join(salida, "pt.geojson"), textoPt);
   console.log(`pt: ${pt.features.length} zonas, ${Buffer.byteLength(textoPt)} bytes.`);

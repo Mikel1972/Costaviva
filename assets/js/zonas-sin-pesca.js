@@ -64,7 +64,8 @@ function patron(doc, id, color, ancho, separacion) {
   return p;
 }
 
-// Monta la capa en `map`. `textos` (de I18n): { sinPesca, fondo, atribucion(region) }.
+// Monta la capa en `map`. `textos` (de I18n): { sinPesca, fondo, aproximado,
+// idioma ('es' | 'en' | 'pt'), atribucion(region) }.
 export function montarCapa(map, L, textos) {
   map.createPane("zonasSinPesca");
   // Encima de las capas del mar (tilePane, 200) y debajo de los spots (600).
@@ -88,7 +89,9 @@ export function montarCapa(map, L, textos) {
   function texto(f) {
     const p = f.properties || {};
     // Con regla propia (España): la regla de su norma; si no, la genérica.
-    const regla = p.regla ? limpio(p.regla) : esSinPesca(p.tipo) ? textos.sinPesca : textos.fondo;
+    // En portugués o inglés, la regla traducida (regla_pt, regla_en) si la hay.
+    const propia = p[`regla_${textos.idioma}`] || p.regla;
+    const regla = propia ? limpio(propia) : esSinPesca(p.tipo) ? textos.sinPesca : textos.fondo;
     const norma = p.norma && /^https:\/\//.test(p.url || "")
       ? `<br><a href="${limpio(p.url)}" target="_blank" rel="noopener">${limpio(p.norma)}</a>` : "";
     const aviso = p.regla && textos.aproximado ? `<br><small>${textos.aproximado}</small>` : "";
