@@ -435,10 +435,18 @@ export function externaFunciona(estado, camara = null) {
   return estado.motivo === "ok" || esNoVerificable(estado.motivo);
 }
 
+// Un enlace a la cámara de otro (modo "enlace") pone el punto verde aunque el
+// robot de salud no la haya podido ver aún (Mikel, 2026-10-12: "si un spot
+// tiene link a cámaras, también es punto verde"). Solo no cuenta si el robot
+// la ha visto caída de verdad (sinSenal) o está marcada a mano como caída.
+export function enlaceCuentaVerde(camara, estado) {
+  return camara?.modo === "enlace" && !externaMarcadaCaida(camara) && !estado?.sinSenal;
+}
+
 // slug: spot; tienePropia: si está en SPOTS_CON_WEBCAM; camaras: el objeto
 // `camaras` de /prevision (clave = slug o ext-<id>).
 export function estadoCamaraSpot(slug, tienePropia, camaras = {}) {
   if (tienePropia && !camaras[slug]?.sinSenal) return "verde";
-  if (camarasExternasDeSpot(slug).some((c) => externaFunciona(camaras[claveSalud(c)], c))) return "verde";
+  if (camarasExternasDeSpot(slug).some((c) => externaFunciona(camaras[claveSalud(c)], c) || enlaceCuentaVerde(c, camaras[claveSalud(c)]))) return "verde";
   return "rojo";
 }
