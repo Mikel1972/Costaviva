@@ -28,8 +28,9 @@ name: Robot de marketing — reel de Instagram
 # (calendario-estado.json).
 #
 # Nueva Zelanda (2026-10-11): reel en inglés para el sábado a las 07:00 de NZ
-# (condiciones o especie, rotacion-reels-nz.json), preparado el viernes a las
-# 06:20 UTC (~19:20 en NZ) con el segundo `schedule:`. A mano: input `mercado`.
+# (condiciones o especie, rotacion-reels-nz.json), preparado el viernes: pg_cron
+# a las 05:20 UTC (20261012090000_programador_marketing_nz.sql) y este segundo
+# `schedule:` de respaldo a las 06:20 UTC. A mano: input `mercado`.
 on:
   schedule:
     - cron: "20 18 * * 5"

@@ -27,8 +27,10 @@
 // hora de NZ (Pacific/Auckland), con datos solo de NZ y el tema elegido por
 // las palabras clave de NZ (pieza-nz.mjs). Martes especie, viernes
 // condiciones de un spot, sábado reel (condiciones o especie). Sin función de
-// la app: sus pantallas están en español. Se preparan la víspera a las ~19:40
-// de NZ (06:40 UTC), así que Mikel las ve por la mañana en España y se
+// la app: sus pantallas están en español. Se preparan la víspera por la tarde
+// de NZ (pg_cron a las 05:40/05:20 UTC con lanzar_marketing_nz(); el
+// `schedule:` de GitHub, una hora después), así que Mikel las ve por la
+// mañana en España y se
 // publican a las 20:00 (19:00 en invierno) de la víspera en España; el
 // contenedor sigue vivo (caduca a las 24 h). La regla no cambia: cada pieza
 // sale solo con su OK (workflow manual "Publicar post de Instagram").

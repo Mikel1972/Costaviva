@@ -316,7 +316,7 @@ test("NZ: los workflows preparan las de NZ la víspera de allí y nunca publican
   assert.match(reel, /rotacion-reels-nz\.json/);
   // Lunes/jueves 06:40 UTC es ya la tarde en NZ (víspera del martes/viernes)
   // y el contenedor de Instagram (24 h) sigue vivo a las 07:00 de NZ.
-  for (const [ahora, formato] of [["2026-10-12T06:40:00Z", "post"], ["2026-10-15T06:40:00Z", "post"], ["2026-10-16T06:20:00Z", "reel"], ["2026-06-15T06:40:00Z", "post"]]) {
+  for (const [ahora, formato] of [["2026-10-12T05:40:00Z", "post"], ["2026-10-16T05:20:00Z", "reel"], ["2026-10-12T06:40:00Z", "post"], ["2026-10-15T06:40:00Z", "post"], ["2026-10-16T06:20:00Z", "reel"], ["2026-06-15T06:40:00Z", "post"]]) {
     const p = C.piezaAPreparar({ formato, ahora: new Date(ahora), mercado: "nz" });
     assert.ok(p, ahora);
     const margen = C.instanteEn(p.fecha, p.hora, "Pacific/Auckland") - new Date(ahora);
@@ -335,4 +335,19 @@ test("NZ: sin minimapa de EMODnet ni cámaras de terceros, y la plantilla en ing
   assert.doesNotMatch(codigo, /camara|webcam|youtube|skyline/i);
   const html = leer("scripts/marketing/plantillas/pieza.html");
   for (const en of ["out of 100", "Fishing index", "In season now", "Free for 7 days", "Check your spot at costaviva.org"]) assert.ok(html.includes(en), en);
+});
+
+test("NZ: pg_cron lanza las de NZ con mercado=nz y nunca puede publicar", () => {
+  const sql = leer("supabase/migrations/20261012090000_programador_marketing_nz.sql");
+  const codigo = sql.split("\n").filter((l) => !l.trim().startsWith("--")).join("\n");
+  const lista = codigo.match(/if workflow not in \(([^)]*)\)/)[1];
+  assert.deepEqual([...lista.matchAll(/'([^']+)'/g)].map((m) => m[1]).sort(), ["robot-marketing-instagram.yml", "robot-reel-instagram.yml"]);
+  assert.match(codigo, /jsonb_build_object\('ref', 'main', 'inputs', jsonb_build_object\('mercado', 'nz'\)\)/);
+  assert.match(codigo, /security definer\s+set search_path = ''/);
+  assert.match(codigo, /revoke all on function public\.lanzar_marketing_nz\(text\) from public, anon, authenticated;/);
+  assert.match(codigo, /cron\.schedule\('lanzar-marketing-posts-nz', '40 5 \* \* 1,4'/);
+  assert.match(codigo, /cron\.schedule\('lanzar-marketing-reel-nz', '20 5 \* \* 5'/);
+  assert.doesNotMatch(codigo, /lanzar_workflow_github|publicar-post-instagram/, "no toca la función general ni puede publicar");
+  // El input que manda existe en los dos workflows y admite "nz".
+  for (const w of ["robot-marketing-instagram.yml", "robot-reel-instagram.yml"]) assert.match(leer(`.github/workflows/${w}`), /mercado:[\s\S]*?options: \["es", "nz"\]/);
 });

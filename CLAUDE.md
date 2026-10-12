@@ -361,9 +361,13 @@ Fase decidida por Mikel: todo a conseguir usuarios (0 suscriptores el
    huecos con `mercado: "nz"` en `Pacific/Auckland` (`MERCADOS`): martes
    07:00 especie, viernes 07:00 condiciones, sábado 07:00 reel (condiciones o
    especie, `rotacion-reels-nz.json`). Sin función de la app (sus pantallas
-   están en español). Se preparan la víspera a las ~19:40 de NZ con un
-   segundo `schedule:` de GitHub (posts L/J 06:40 UTC, reel V 06:20 UTC;
-   `MERCADO=nz`; sin pg_cron): Mikel las ve por la mañana y se publican a
+   están en español). Se preparan la víspera por la tarde de NZ: pg_cron
+   (posts L/J 05:40 UTC, reel V 05:20 UTC; migración
+   `20261012090000_programador_marketing_nz.sql`, **SIN APLICAR**, sí de
+   Mikel del 2026-10-12) con `lanzar_marketing_nz()`, que solo admite los dos
+   robots de marketing y siempre manda `mercado=nz` (la función general lanza
+   sin inputs = España); el segundo `schedule:` de GitHub (06:40 / 06:20
+   UTC) es el respaldo. Mikel las ve por la mañana y se publican a
    las 20:00 (19:00 en invierno de NZ) de la víspera en España; el Issue dice
    las dos horas (`textoCuando`) y lleva "🇳🇿 NZ" en el título. Clave del
    estado `AAAA-MM-DD-post-nz` (no choca con la de España). **La regla no
