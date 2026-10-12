@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-12T09:37:41.126Z",
- "lineasHistorial": 972,
+ "fecha": "2026-10-12T09:42:49.590Z",
+ "lineasHistorial": 983,
  "etiquetas": 138,
  "etiquetasClaude": 43,
  "calibracion": {
@@ -220,17 +220,17 @@
    "pocosDatos": false
   },
   "getaria/malkorbe": {
-   "a": 9.6731,
+   "a": 9.3504,
    "p": 1,
-   "n": 7,
+   "n": 8,
    "nEtiquetas": 3,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
-   "dias": 2,
+   "dias": 3,
    "hMin": 0.3,
    "hMax": 1.81,
    "errorRel": 1,
-   "pocosDatos": true
+   "pocosDatos": false
   },
   "donostia/playa": {
    "a": 6.2951,
@@ -303,8 +303,8 @@
    "sustituye": true,
    "motivo": "7 etiquetas",
    "ruido": {
-    "ruido": 0.934,
-    "pares": 10
+    "ruido": 0.844,
+    "pares": 11
    }
   },
   "donostia": {
@@ -332,11 +332,11 @@
    }
   },
   "getaria": {
-   "sustituye": false,
-   "motivo": "ruido aún sin medir (1 pares de lecturas cercanas)",
+   "sustituye": true,
+   "motivo": "≥ 3 días con alturas variadas",
    "ruido": {
-    "ruido": 1.763,
-    "pares": 1
+    "ruido": 1.136,
+    "pares": 2
    }
   },
   "zumaia": {
