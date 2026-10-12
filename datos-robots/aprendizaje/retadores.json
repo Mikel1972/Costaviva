@@ -1,6 +1,6 @@
 {
- "generado_en": "2026-10-08T22:01:32.396Z",
- "semana": "2026-W41",
+ "generado_en": "2026-10-12T04:41:24.451Z",
+ "semana": "2026-W42",
  "retadores": [
   {
    "fichero": "calamar-luna-llena.json",
@@ -74,11 +74,28 @@
      }
     ]
    },
-   "n_casos": 0,
+   "n_casos": 2,
    "metricas": {
-    "oculto": true,
-    "motivo": "sin casos evaluables"
-   }
+    "campeon": {
+     "logloss": 0.5177,
+     "brier": 0.1645,
+     "auc": null
+    },
+    "retador": {
+     "logloss": 0.5177,
+     "brier": 0.1645,
+     "auc": null
+    },
+    "mejora_logloss": {
+     "mejora_media": 0,
+     "ic90": [
+      0,
+      0
+     ],
+     "prob_mejora": 0
+    }
+   },
+   "gana": false
   },
   {
    "fichero": "lisa-rio-crecido.json",

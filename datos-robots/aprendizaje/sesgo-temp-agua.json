@@ -1,0 +1,20 @@
+{
+ "generado_en": "2026-10-12T04:41:24.451Z",
+ "semana": "2026-W42",
+ "nota": "Sesgo del modelo de temperatura del agua: media de (sonda − modelo) en °C por zona y modelo (Open-Meteo de la serie de la salida, capa IBI de Copernicus, boya). Solo grupos de 5 personas distintas o más; los del dueño solo, en admin. Barreras: aprendizaje/config.json → sesgo_temp_agua. Código: scripts/aprendizaje/sesgo-temp-agua.mjs.",
+ "medidas": 1,
+ "grupos": [
+  {
+   "zona": "cantabrico",
+   "modelo": "open_meteo",
+   "oculto": true,
+   "motivo": "solo medidas del dueño: las ve en admin"
+  },
+  {
+   "zona": "cantabrico",
+   "modelo": "ibi",
+   "oculto": true,
+   "motivo": "solo medidas del dueño: las ve en admin"
+  }
+ ]
+}

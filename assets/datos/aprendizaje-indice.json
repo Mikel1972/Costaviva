@@ -1,11 +1,96 @@
 {
  "nota": "Aprendizaje semanal del índice (scripts/aprendizaje/semanal.mjs). Solo agregados. Lo enseña admin.html.",
- "semana": "2026-W41",
+ "semana": "2026-W42",
  "version": "v2-logistica-2026-10-08",
  "global": {
-  "oculto": true,
-  "motivo": "sin casos"
+  "n": 2,
+  "positivos": 2,
+  "tasa": 1,
+  "brier": 0.1645,
+  "brier_referencia": 0,
+  "habilidad_brier": null,
+  "logloss": 0.5177,
+  "auc": null,
+  "ece_puntos": 40.1,
+  "calibracion": [
+   {
+    "desde": 0,
+    "hasta": 20,
+    "n": 0,
+    "indice_medio": null,
+    "tasa_real": null
+   },
+   {
+    "desde": 20,
+    "hasta": 40,
+    "n": 0,
+    "indice_medio": null,
+    "tasa_real": null
+   },
+   {
+    "desde": 40,
+    "hasta": 60,
+    "n": 1,
+    "indice_medio": 54,
+    "tasa_real": 100
+   },
+   {
+    "desde": 60,
+    "hasta": 80,
+    "n": 1,
+    "indice_medio": 65.8,
+    "tasa_real": 100
+   },
+   {
+    "desde": 80,
+    "hasta": 100,
+    "n": 0,
+    "indice_medio": null,
+    "tasa_real": null
+   }
+  ]
  },
- "unidades": {},
+ "unidades": {
+  "marea": {
+   "n": 1,
+   "usuarios": "solo Mikel",
+   "aporte_medio_logodds": -0.048,
+   "tasa_pesca_si_suma": null,
+   "tasa_pesca_si_resta": 1,
+   "ablacion_logloss": -0.01091
+  },
+  "oleaje": {
+   "n": 2,
+   "usuarios": "solo Mikel",
+   "aporte_medio_logodds": -0.0555,
+   "tasa_pesca_si_suma": null,
+   "tasa_pesca_si_resta": 1,
+   "ablacion_logloss": -0.02262
+  },
+  "presion": {
+   "n": 2,
+   "usuarios": "solo Mikel",
+   "aporte_medio_logodds": 0.078,
+   "tasa_pesca_si_suma": 1,
+   "tasa_pesca_si_resta": null,
+   "ablacion_logloss": 0.02971
+  },
+  "regla:borde_borrasca_tunidos": {
+   "n": 1,
+   "usuarios": "solo Mikel",
+   "aporte_medio_logodds": 0.21,
+   "tasa_pesca_si_suma": 1,
+   "tasa_pesca_si_resta": null,
+   "ablacion_logloss": 0.03845
+  },
+  "temperatura": {
+   "n": 2,
+   "usuarios": "solo Mikel",
+   "aporte_medio_logodds": 0.303,
+   "tasa_pesca_si_suma": 1,
+   "tasa_pesca_si_resta": null,
+   "ablacion_logloss": 0.12918
+  }
+ },
  "automaticos": []
 }

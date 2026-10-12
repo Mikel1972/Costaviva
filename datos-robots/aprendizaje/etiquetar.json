@@ -1,6 +1,6 @@
 {
- "generado_en": "2026-10-08T22:01:32.396Z",
- "semana": "2026-W41",
+ "generado_en": "2026-10-12T04:41:24.451Z",
+ "semana": "2026-W42",
  "nota": "Fotogramas que más enseñarían a la calibración de las cámaras si se etiquetan (etiquetar-olas.html o la rutina de etiquetado).",
  "fotogramas": [
   {
@@ -10,7 +10,17 @@
    "espuma": 0.0037,
    "estimacion": 0.03,
    "modelo": 2,
-   "ganancia": 5.3,
+   "ganancia": 5.255,
+   "motivo": "cámara y modelo discrepan mucho"
+  },
+  {
+   "camara": "donostia",
+   "encuadre": "principal",
+   "fecha": "2026-10-10T11:07:54.456Z",
+   "espuma": 0.0091,
+   "estimacion": 0.18,
+   "modelo": 1.57,
+   "ganancia": 3.666,
    "motivo": "cámara y modelo discrepan mucho"
   },
   {
@@ -20,17 +30,37 @@
    "espuma": 0.0365,
    "estimacion": 0.47,
    "modelo": 3.28,
-   "ganancia": 3.943,
+   "ganancia": 3.443,
    "motivo": "cámara y modelo discrepan mucho"
   },
   {
-   "camara": "mundaka",
+   "camara": "deba",
+   "encuadre": "rompiente",
+   "fecha": "2026-10-09T15:07:58.645Z",
+   "espuma": 0.0083,
+   "estimacion": 0.2,
+   "modelo": 1.35,
+   "ganancia": 3.076,
+   "motivo": "cámara y modelo discrepan mucho"
+  },
+  {
+   "camara": "castrourdiales",
    "encuadre": "principal",
-   "fecha": "2026-10-08T16:21:01.000Z",
-   "espuma": 0.0626,
-   "estimacion": 0.37,
-   "modelo": 1.57,
-   "ganancia": 2.695,
+   "fecha": "2026-10-09T11:07:20.000Z",
+   "espuma": 0.0043,
+   "estimacion": 0.19,
+   "modelo": 1.12,
+   "ganancia": 2.941,
+   "motivo": "cámara y modelo discrepan mucho"
+  },
+  {
+   "camara": "orio",
+   "encuadre": "principal",
+   "fecha": "2026-10-10T09:07:50.354Z",
+   "espuma": 0.0508,
+   "estimacion": 0.38,
+   "modelo": 1.41,
+   "ganancia": 2.811,
    "motivo": "cámara y modelo discrepan mucho"
   },
   {
@@ -44,83 +74,53 @@
    "motivo": "cámara y modelo discrepan mucho"
   },
   {
-   "camara": "bakio",
+   "camara": "castrourdiales",
    "encuadre": "principal",
-   "fecha": "2026-10-08T11:10:03.000Z",
-   "espuma": 0.408,
+   "fecha": "2026-10-09T08:07:39.000Z",
+   "espuma": 0.1174,
    "estimacion": 4.68,
-   "modelo": 2.32,
-   "ganancia": 2.202,
+   "modelo": 1.2,
+   "ganancia": 2.528,
+   "motivo": "cámara y modelo discrepan mucho"
+  },
+  {
+   "camara": "castrourdiales",
+   "encuadre": "principal",
+   "fecha": "2026-10-09T07:07:27.000Z",
+   "espuma": 0.0821,
+   "estimacion": 4.68,
+   "modelo": 1.24,
+   "ganancia": 2.495,
+   "motivo": "cámara y modelo discrepan mucho"
+  },
+  {
+   "camara": "zumaia",
+   "encuadre": "a",
+   "fecha": "2026-10-09T10:37:59.037Z",
+   "espuma": 0.2013,
+   "estimacion": 4.89,
+   "modelo": 1.55,
+   "ganancia": 2.349,
    "motivo": "cámara y modelo discrepan mucho"
   },
   {
    "camara": "sopelana",
    "encuadre": "principal",
-   "fecha": "2026-10-08T11:04:19.000Z",
-   "espuma": 0.2869,
-   "estimacion": 2.18,
-   "modelo": 2.42,
-   "ganancia": 2,
-   "motivo": "ola fuera del rango ya calibrado"
-  },
-  {
-   "camara": "deba",
-   "encuadre": "rompiente",
-   "fecha": "2026-10-08T16:37:48.093Z",
-   "espuma": 0.1819,
-   "estimacion": 5.18,
-   "modelo": 2.48,
-   "ganancia": 1.987,
+   "fecha": "2026-10-09T11:04:18.000Z",
+   "espuma": 0.3909,
+   "estimacion": 3.86,
+   "modelo": 1.28,
+   "ganancia": 2.304,
    "motivo": "cámara y modelo discrepan mucho"
   },
   {
-   "camara": "zarautz",
-   "encuadre": "dinamico",
-   "fecha": "2026-10-08T16:37:48.093Z",
-   "espuma": 0.08585000000000001,
-   "estimacion": 1.74,
-   "modelo": 2.57,
-   "ganancia": 1.125,
-   "motivo": "ola fuera del rango ya calibrado"
-  },
-  {
-   "camara": "berria",
+   "camara": "bakio",
    "encuadre": "principal",
-   "fecha": "2026-10-08T11:01:36.000Z",
-   "espuma": 0.042,
-   "estimacion": null,
-   "modelo": 2.36,
-   "ganancia": 1,
-   "motivo": "pocas etiquetas en este encuadre"
-  },
-  {
-   "camara": "castrourdiales",
-   "encuadre": "principal",
-   "fecha": "2026-10-08T11:02:04.000Z",
-   "espuma": 0.0034,
-   "estimacion": null,
-   "modelo": 2.2,
-   "ganancia": 1,
-   "motivo": "pocas etiquetas en este encuadre"
-  },
-  {
-   "camara": "mutriku",
-   "encuadre": "principal",
-   "fecha": "2026-10-08T11:24:17.006Z",
-   "espuma": 0.0117,
-   "estimacion": null,
-   "modelo": 2.95,
-   "ganancia": 1,
-   "motivo": "pocas etiquetas en este encuadre"
-  },
-  {
-   "camara": "deba",
-   "encuadre": "rompiente",
-   "fecha": "2026-10-08T11:24:17.006Z",
-   "espuma": 0.0696,
-   "estimacion": 1.64,
-   "modelo": 2.95,
-   "ganancia": 0.837,
+   "fecha": "2026-10-09T07:40:03.000Z",
+   "espuma": 0.264,
+   "estimacion": 3.91,
+   "modelo": 1.3,
+   "ganancia": 2.301,
    "motivo": "cámara y modelo discrepan mucho"
   }
  ]
