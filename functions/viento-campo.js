@@ -29,7 +29,7 @@ import { pedirDatosMeteo } from "./_lib/fuentes.js";
 
 const RESOLUCION_GRADOS = 1; // tamaño de celda de la rejilla redondeada
 const PUNTOS_POR_LADO = 16; // 16x16 = 256 puntos, de sobra para que la interpolación bilineal de leaflet-velocity se vea suave
-const EXTENSION_MAXIMA_GRADOS = 20; // límite de seguridad si el bbox pedido es enorme (usuario con el mapa muy alejado)
+const EXTENSION_MAXIMA_GRADOS = 26; // (26 desde el 2026-10-12: la rejilla fija de NZ mide 24° x 26°; siempre 16x16 puntos, la cuota no cambia) límite de seguridad si el bbox pedido es enorme (usuario con el mapa muy alejado)
 
 function redondearBbox(sur, oeste, norte, este) {
   let s = Math.floor(sur / RESOLUCION_GRADOS) * RESOLUCION_GRADOS;
@@ -91,7 +91,10 @@ export async function onRequestGet(context) {
     for (let j = 0; j < PUNTOS_POR_LADO; j++) {
       const lon = oeste + (j / (PUNTOS_POR_LADO - 1)) * (este - oeste);
       lats.push(lat.toFixed(3));
-      lons.push(lon.toFixed(3));
+      // La rejilla de NZ cruza el antimeridiano (162-186 E): Open-Meteo solo
+      // acepta -180..180, así que 181 se pide como -179. La cabecera de
+      // leaflet-velocity sigue en 162..186, continua alrededor de NZ.
+      lons.push((lon > 180 ? lon - 360 : lon).toFixed(3));
     }
   }
 

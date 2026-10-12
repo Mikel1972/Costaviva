@@ -153,8 +153,9 @@ const catalogo = json("datos/nz/linz-puertos.json");
 const anios = [json("datos/nz/linz-mareas-2026.json"), json("datos/nz/linz-mareas-2027.json")];
 
 test("datos/nz: el puerto de cada spot sigue siendo el que elige asignarPuerto()", () => {
-  // 59 activos (Dusky Sound queda fuera del lanzamiento, 2026-10-11).
-  assert.equal(SPOTS_NZ.length, 59);
+  // 64 activos: 59 del lanzamiento (Dusky Sound fuera, 2026-10-11) y 5 de
+  // islas (2026-10-12).
+  assert.equal(SPOTS_NZ.length, 64);
   for (const s of SPOTS_NZ) {
     assert.deepEqual(s.puerto_linz, asignarPuerto(s, catalogo), s.slug);
     assert.ok(s.puerto_linz.km < 20, `${s.slug} a ${s.puerto_linz.km} km de su puerto`);
@@ -162,7 +163,7 @@ test("datos/nz: el puerto de cada spot sigue siendo el que elige asignarPuerto()
   }
 });
 
-test("datos/nz: los 60 spots tienen marea en 2026 y 2027, con atribución", () => {
+test("datos/nz: los 64 spots activos tienen marea en 2026 y 2027, con atribución", () => {
   for (const a of anios) {
     assert.equal(a.atribucion, ATRIBUCION_LINZ);
     assert.match(a.licencia, /CC BY 4\.0/);
