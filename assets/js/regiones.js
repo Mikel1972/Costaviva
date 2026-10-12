@@ -50,15 +50,24 @@ export const REGIONES = {
   portugal: R("portugal", "Portugal", "PT", "Europe/Lisbon", { idioma: "pt" }),
   azores: R("azores", "Azores", "PT", "Atlantic/Azores", { idioma: "pt", bbox: [36.8, 39.8, -31.5, -24.5] }),
   madeira: R("madeira", "Madeira", "PT", "Atlantic/Madeira", { idioma: "pt", bbox: [32.3, 33.2, -17.4, -16.1] }),
-  // Nueva Zelanda continental (Norte, Sur y Stewart). Chatham (-176,5°, otra
-  // zona: Pacific/Chatham) y Kermadec quedan fuera de la primera fase. Las
-  // regiones de pesca de MPI (nz_auckland_kermadec...) llegan en la fase 3.
+  // Nueva Zelanda: la caja del mapa de NZ desde el 2026-10-12 (162-186 E,
+  // 54-28 S), con Chatham, Kermadec, Auckland Islands y Campbell. Pasa del
+  // antimeridiano: -176,5 es 183,5 (enCaja). Chatham va en su hora
+  // (Pacific/Chatham, CHATHAM más abajo). Las regiones de pesca de MPI
+  // (nz_auckland_kermadec...) llegan en la fase 3.
   nueva_zelanda: R("nueva_zelanda", "Nueva Zelanda", "NZ", "Pacific/Auckland", {
-    hemisferio: "sur", moneda: "NZD", idioma: "en", bbox: [-47.6, -34.0, 166.0, 179.0],
+    hemisferio: "sur", moneda: "NZD", idioma: "en", bbox: [-54.0, -28.0, 162.0, 186.0],
   }),
 };
+// Islas Chatham: misma región, otra hora (UTC+12:45 / +13:45).
+const CHATHAM = { bbox: [-44.8, -43.3, 182.8, 184.5], zona: "Pacific/Chatham" };
 
-const enCaja = (lat, lon, [a, b, c, d]) => lat >= a && lat <= b && lon >= c && lon <= d;
+// Caja [latMin, latMax, lonMin, lonMax]; si pasa del antimeridiano (lonMax >
+// 180), una longitud negativa se mira también una vuelta más allá.
+const enCaja = (lat, lon, [a, b, c, d]) => {
+  const l = d > 180 && lon < c ? lon + 360 : lon;
+  return lat >= a && lat <= b && l >= c && l <= d;
+};
 
 // Región de un punto. Cajas aproximadas, no límites oficiales (igual que
 // zonaPorCoordenadas() de index.html). Las de Iberia son las de siempre
@@ -108,6 +117,13 @@ export function paisDeRegion(id) {
 // test/nz-especies.test.js la compara con la región asignada a mano a los 60
 // spots.
 export function areaPescaNZ(lat, lon) {
+  // Islas de la caja de 2026-10-12: Kermadec (FMA 1) va con Auckland/
+  // Kermadec, Chatham (FMA 4) con South-East y las subantárticas (FMA 6) con
+  // Southland. Chatham puede llegar como -176,5.
+  if (lon < 0) lon += 360;
+  if (lat > -32) return "nz_auckland_kermadec";
+  if (lon > 180) return "nz_south_east";
+  if (lat < -48) return "nz_southland";
   const norte = lat >= -41.7 && (lon >= 174.4 || lat >= -40.4);
   if (norte) {
     if (lon < 175.5) return lat > -38.4 ? "nz_auckland_kermadec" : "nz_central";
@@ -160,6 +176,7 @@ export function zonaPorCoordenadas(lat, lon) {
   if (lat === null || lat === undefined || lon === null || lon === undefined || !Number.isFinite(la) || !Number.isFinite(lo)) {
     return ZONA_POR_DEFECTO;
   }
+  if (enCaja(la, lo, CHATHAM.bbox)) return CHATHAM.zona;
   return zonaDeRegion(regionPorCoordenadas(la, lo));
 }
 
@@ -174,7 +191,7 @@ export function zonaDeSpot(s) {
 
 // Zonas que admiten el proxy /meteo/ y los adaptadores (lista cerrada).
 export const ZONAS_HORARIAS = new Set([
-  ...Object.values(REGIONES).flatMap((r) => [r.zona, r.zonaOficial]), "UTC", "GMT",
+  ...Object.values(REGIONES).flatMap((r) => [r.zona, r.zonaOficial]), CHATHAM.zona, "UTC", "GMT",
 ]);
 
 // ---------------------------------------------------------------------------

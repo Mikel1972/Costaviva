@@ -257,7 +257,10 @@ test("mapa: NZ se pide sola (/prevision?region=nz), arranque en Auckland para NZ
   assert.match(html, /classList\.add\("resumen-oculto"\), 2000\)/);
   assert.match(html, /return \{ region: r === "nueva_zelanda" \? "nz" : "es", fija: false \};/, "región del usuario, como el idioma");
   assert.match(html, /minZoom: 1,/);
-  assert.match(html, /worldCopyJump: true,/);
+  // Sin worldCopyJump (2026-10-12): la vista se queda en la franja -40..320.
+  assert.doesNotMatch(html, /worldCopyJump: true/);
+  assert.match(html, /const FRANJA_LONGITUD = \[-40, 320\];/);
+  assert.match(html, /map\.on\("moveend", mantenerVistaEnFranja\);/);
   assert.match(html, /maxBounds: \[\[-85, -540\], \[85, 540\]\]/);
   for (const id of ["es", "pt", "canarias", "nz"]) assert.match(html, new RegExp(`${id}: \\{ limites: `), id);
   assert.match(html, /data-accion="irARegionMapa" data-args='\$\{JSON\.stringify\(\[id\]\)\}'/);
