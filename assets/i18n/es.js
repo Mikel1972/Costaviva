@@ -35,7 +35,7 @@
   "mapa.leyenda.tranquilo": "tranquilo",
   "mapa.leyenda.moderado": "moderado",
   "mapa.leyenda.agitado": "agitado",
-  "mapa.leyenda.rios": "◆ RÍOS: 3 puntos por río (cabecera→desembocadura), color por caudal bajo/normal/alto — pasa el cursor por un punto para ver el detalle. Lo que se mide arriba llega a la costa horas después — útil como aviso de tendencia. Posiciones ilustrativas, no las estaciones oficiales exactas. Caudal real solo en Sella, Besaya, Pas, Asón, Eo, Júcar, Turia, Mijares, Segura y Lagares (Confederaciones Hidrográficas + Augas de Galicia) — los ríos vascos siguen sin dato real (URA/Bizkaia bloquea el acceso automático).",
+  "mapa.leyenda.rios": "◆ RÍOS: 3 puntos por río (cabecera→desembocadura), color por caudal bajo/normal/alto — pasa el cursor por un punto para ver el detalle. Lo que se mide arriba llega a la costa horas después — útil como aviso de tendencia. Posiciones ilustrativas, no las estaciones oficiales exactas. Caudal real solo en Sella, Besaya, Pas, Asón, Eo, Júcar, Turia, Mijares, Segura, Lagares, Tordera y Muga (Confederaciones Hidrográficas + Augas de Galicia + Agència Catalana de l'Aigua) — los ríos vascos siguen sin dato real (URA/Bizkaia bloquea el acceso automático).",
   "mapa.leyenda.tagua": "🌡 T. AGUA: cada color es un grado, siempre el mismo en todo el mapa (del azul frío al rojo cálido); las líneas marcan el grado exacto.",
   "mapa.capa.rayos": "Rayos",
   "mapa.capa.luna": "Luna",

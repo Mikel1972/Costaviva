@@ -1229,7 +1229,7 @@
         <div class="fila"><span class="chip" style="background:var(--nivel-bueno)"></span><span data-i18n="mapa.leyenda.tranquilo">tranquilo</span></div>
         <div class="fila"><span class="chip" style="background:var(--nivel-medio)"></span><span data-i18n="mapa.leyenda.moderado">moderado</span></div>
         <div class="fila"><span class="chip" style="background:var(--nivel-malo)"></span><span data-i18n="mapa.leyenda.agitado">agitado</span></div>
-        <div class="nota" style="margin-top:10px; padding-top:8px; border-top:1px solid var(--linea);" data-i18n="mapa.leyenda.rios">◆ RÍOS: 3 puntos por río (cabecera→desembocadura), color por caudal bajo/normal/alto — pasa el cursor por un punto para ver el detalle. Lo que se mide arriba llega a la costa horas después — útil como aviso de tendencia. Posiciones ilustrativas, no las estaciones oficiales exactas. Caudal real solo en Sella, Besaya, Pas, Asón, Eo, Júcar, Turia, Mijares, Segura y Lagares (Confederaciones Hidrográficas + Augas de Galicia) — los ríos vascos siguen sin dato real (URA/Bizkaia bloquea el acceso automático).</div>
+        <div class="nota" style="margin-top:10px; padding-top:8px; border-top:1px solid var(--linea);" data-i18n="mapa.leyenda.rios">◆ RÍOS: 3 puntos por río (cabecera→desembocadura), color por caudal bajo/normal/alto — pasa el cursor por un punto para ver el detalle. Lo que se mide arriba llega a la costa horas después — útil como aviso de tendencia. Posiciones ilustrativas, no las estaciones oficiales exactas. Caudal real solo en Sella, Besaya, Pas, Asón, Eo, Júcar, Turia, Mijares, Segura, Lagares, Tordera y Muga (Confederaciones Hidrográficas + Augas de Galicia + Agència Catalana de l'Aigua) — los ríos vascos siguen sin dato real (URA/Bizkaia bloquea el acceso automático).</div>
         <div class="nota" style="margin-top:8px; padding-top:8px; border-top:1px solid var(--linea);" data-i18n="mapa.leyenda.tagua">🌡 T. AGUA: cada color es un grado, siempre el mismo en todo el mapa (del azul frío al rojo cálido); las líneas marcan el grado exacto.</div>
       </div>
     </div>
@@ -2022,6 +2022,29 @@ const RIOS = [
       { tramo: "Cabecera (A Madroa, Vigo)", lat: 42.211, lon: -8.683, caudal: null },
       { tramo: "Medio (Vigo)", lat: 42.225, lon: -8.700, caudal: null },
       { tramo: "Desembocadura (Ría de Vigo)", lat: 42.238, lon: -8.720, caudal: null, slugCaudal: "lagares" },
+    ],
+  },
+
+  // --- Ríos de Cataluña con caudal REAL vía la Agència Catalana de l'Aigua
+  // (dades obertes de la Generalitat, dataset diario "2bwe-vgpr") — ver
+  // datosCaudalCataluna en functions/prevision.js. Igual que en los ríos de
+  // arriba, el punto exacto de la estación real no coincide con el de
+  // "Desembocadura" (posición ilustrativa de la propia desembocadura),
+  // solo su dato de caudal. ---
+  {
+    rio: "Tordera", spotCosta: "blanes",
+    puntos: [
+      { tramo: "Cabecera (Montseny)", lat: 41.753, lon: 2.398, caudal: null },
+      { tramo: "Medio (Fogars de la Selva)", lat: 41.739, lon: 2.694, caudal: null },
+      { tramo: "Desembocadura (Blanes/Malgrat de Mar)", lat: 41.681, lon: 2.799, caudal: null, slugCaudal: "tordera" },
+    ],
+  },
+  {
+    rio: "Muga", spotCosta: "roses",
+    puntos: [
+      { tramo: "Cabecera (embassament de Darnius Boadella)", lat: 42.341, lon: 2.833, caudal: null },
+      { tramo: "Medio (Castelló d'Empúries)", lat: 42.254, lon: 3.072, caudal: null },
+      { tramo: "Desembocadura (Sant Pere Pescador, golf de Roses)", lat: 42.238, lon: 3.123, caudal: null, slugCaudal: "muga" },
     ],
   },
 ];

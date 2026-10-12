@@ -2750,6 +2750,135 @@ con red, comprobar columnas y último año disponible, y reintentar `datos.ieo.e
 
 **Firmado:** robot buscador de fuentes (rutina), 2026-10-02 04:55 UTC.
 
+### 2026-10-12 07:22 UTC (pasada del robot de datos — fuentes nuevas, nota de contexto importante)
+
+**El prompt de esta pasada programada describe un estado del proyecto muy
+anterior al actual** (habla de "6 spots del País Vasco", de que "no hay
+base de datos" y de montar desde cero un algoritmo de aprendizaje a partir
+de las capturas) — eso ya no es así desde hace semanas, y `CLAUDE.md`
+documenta en detalle todo lo que ha pasado desde entonces (105 spots de
+España, 59 de Nueva Zelanda, Portugal con precios y SEO propios, un
+sistema de aprendizaje autónomo del índice ya en producción, calibración
+por cámara, etc.). Esta entrada sigue las 5 partes pedidas tal como están
+escritas, pero contrastando primero cada una contra el código y los datos
+reales de hoy en vez de dar por buena la premisa de 2026-08/09 del propio
+prompt — igual que pide la norma de "nunca inventar", tampoco se repite
+sin comprobar un hueco que ya se cerró.
+
+**1. Fuentes nuevas — boyas de Asturias/Cataluña/Murcia/Andalucía/Canarias:
+ya resueltas, no es un hueco real.** `functions/prevision.js` (`BOYAS`)
+tiene hoy 26 boyas españolas de Puertos del Estado vía Copernicus Marine
+(migración del 2026-10-08, ver "Copernicus Marine" en `CLAUDE.md`):
+Asturias (Gijón 1117, Cabo Peñas 2242), Galicia, **Andalucía/Golfo de
+Cádiz** (Tarifa 1500, Algeciras 1504, Ceuta 1512, Málaga 1514, Golfo de
+Cádiz 2342, Cabo de Gata 2548), **Murcia** (Cabo de Palos 2610) y
+**Cataluña** (Tarragona 1712, Tarragona exterior 2720, Barcelona II 1731,
+Cabo de Begur 2798, más Baleares) y **Canarias** (Las Palmas Este 1414,
+Sta. Cruz de Tenerife 1421, Gran Canaria 2442, Tenerife Sur 2446). No hace
+falta ninguna fuente nueva aquí.
+
+**2. Boyas de Portugal: sigue sin haber más que Nazaré, confirmado hoy
+con una petición real, y hay un hallazgo aprovechable en la misma
+estación ya integrada.** El visor de MONICAN (Instituto Hidrográfico,
+`monican.hidrografico.pt/boias.nazare`) solo tiene 2 estaciones en su
+desplegable: "Nazaré oceânica" (`id_est=1`) y "Nazaré costeira"
+(`id_est=2`, la que ya usa `boyaDesdeNazare()`) — no hay Leixões, Sines ni
+Faro en este visor público, confirma lo que ya decía el código. La
+"oceânica" sigue devolviendo `NaN` en las 3 variables comprobadas (altura,
+presión, viento), igual que el 2026-09-09: sigue averiada/sin instrumentar,
+no se integra. **Hallazgo nuevo**: la propia estación "Nazaré costeira" (la
+que SÍ se usa) también publica presión atmosférica y viento (velocidad y
+dirección) por el mismo endpoint (`par=5`, `par=6`, `par=7`), con datos
+reales y frescos comprobados esta mañana (12/10, 07:00 UTC: 1019.3 hPa,
+1.6 m/s, 94°) — hoy `datosBoyaNazare()` solo pide alturas/periodo/
+dirección/temperatura (`par=1..4`). Es una ampliación de una fuente ya
+integrada, no una nueva, pero toca cómo se pinta el tooltip de la boya en
+`index.html`: **se propone, no se implementa esta pasada** (cambiar qué
+muestra el tooltip de una boya es más decisión de interfaz que corrección
+de datos).
+
+**Portugal, webcams: ya resuelto, no es un hueco.** `assets/js/
+camaras-externas.js` ya tiene Nazaré, Sines, Vila Nova de Milfontes y Faro/
+Culatra vía MEO Beachcam, en modo `enlace` (no incrustadas) — exactamente
+la solución correcta al problema que describe el prompt (streams con token
+de 24h, no hotlinkables). No se ha reinvestigado si MEO cambió de política
+esta pasada (fuera de presupuesto de esta sesión); si se quiere evaluar
+pasar alguna a incrustada, sería una pasada aparte centrada solo en eso.
+
+**3. Caudal de ríos — Asturias y Murcia ya con dato real; Cataluña, nueva
+fuente real integrada hoy; Andalucía y Canarias, sin hallazgo.**
+`functions/prevision.js` (`datosCaudalTodos`) ya cubre Asturias/Cantabria
+(Sella, Besaya, Pas, Asón, Eo vía la Confederación Hidrográfica del
+Cantábrico) y la zona de Murcia/Alicante (Segura, cerca de Guardamar, vía
+la Confederación Hidrográfica del Segura) — verificado con una petición
+real esta mañana (ver auditoría, abajo), ambas sanas. Lo nuevo:
+
+- **Cataluña — Agència Catalana de l'Aigua (ACA), vía el portal de dades
+  obertes de la Generalitat (Socrata/SODA, sin login)**. Dataset "Nivell
+  d'aforament de rius de les conques internes de Catalunya" (id
+  `2bwe-vgpr`, `analisi.transparenciacatalunya.cat`), actualizado a diario
+  (no hora a hora como las de arriba) — comprobado con una petición real:
+  `https://analisi.transparenciacatalunya.cat/resource/2bwe-vgpr.json?$where=codi_variable in('4343824','4140493')&$order=dia DESC` devuelve
+  caudal real del río Tordera (estación EA089, Fogars de la Selva,
+  4.373 m³/s el 11/10) y del río Muga (estación EA052, Castelló
+  d'Empúries, 0.556 m³/s el 11/10) — las dos con fecha de ayer, no
+  inventadas. **Licencia**: "Llicència oberta d'ús d'informació -
+  Catalunya" (`administraciodigital.gencat.cat`/`web.gencat.cat` →
+  Dades obertes → Llicències), permite reutilización, distribución y
+  obras derivadas sin límite de tiempo ni de ámbito, solo exige citar la
+  fuente y la fecha de actualización — sin restricción de uso comercial.
+  **Integrado esta pasada** (rama `robot/2026-10-12`, bajo riesgo y mismo
+  patrón que las 4 fuentes de caudal ya existentes): nueva función
+  `datosCaudalCataluna()` en `functions/prevision.js`, dos ríos nuevos en
+  `RIOS` de `index.html` (Tordera → spot `blanes`, Muga → spot `roses`,
+  igual que los demás: 3 puntos ilustrativos, el real solo en la
+  desembocadura), su copia en `functions/_lib/seo/datos.js`
+  (`RIOS_SPOT`, el test de SEO lo exige) y la leyenda del mapa en
+  `es.js`/`en.js`/`pt.js` + el HTML. `node --check` en los dos `.js`
+  tocados y los 931 tests de `node --test test/*.test.js` en verde (el
+  único que falló al principio, `seo-paginas.test.js` por `RIOS_SPOT`
+  desincronizado, ya corregido). No hay umbral oficial bajo/normal/alto
+  en este dataset (a diferencia de las Confederaciones): se muestra el
+  número real sin colorear, igual que ya se hace con Segura y Lagares.
+  El Ebro (cerca de Cambrils) no tiene estación de ACA cerca de su
+  desembocadura en este mismo dataset — se queda sin dato real por ahora.
+- **Andalucía**: `chguadalquivir.es/saih/` responde `200` pero es un
+  visor ASP.NET WebForms clásico sin API JSON visible a simple vista
+  (como Cantábrico/Júcar/Segura, pero sin el array JS ni el endpoint
+  AJAX que esos sí tienen) — encontrar su endpoint real necesitaría más
+  tiempo de ingeniería inversa del que da esta pasada.
+  `www.saihguadalquivir.es` está bloqueado por la política de red de
+  esta sesión (`connect_rejected`), así que no se pudo ni empezar a
+  mirarlo. Sin fuente nueva esta pasada.
+- **Canarias**: no se encontró ningún candidato (los barrancos canarios
+  casi nunca llevan caudal permanente, y no se ha localizado una red de
+  aforo pública con datos en tiempo real). Sin fuente nueva.
+- **Lead para una próxima pasada, sin verificar del todo**: MeteoGalicia/
+  Augas de Galicia documenta un servicio JSON de estado de estaciones de
+  aforo que pide una clave gratuita por email (distinto del endpoint ya
+  usado para Lagares, que no necesita clave) — podría ampliar la
+  cobertura de Galicia si algún día hace falta más de un río. No
+  verificado con una petición real esta pasada (requiere pedir la clave
+  primero), así que queda solo como pista, no como hallazgo.
+
+**Especies de pesca por región (parte 2 del prompt): la pregunta ya no
+aplica tal como está escrita.** Las 4 listas `ESPECIES`/
+`ESPECIES_MEDITERRANEO`/`ESPECIES_GOLFO_CADIZ`/`ESPECIES_CANARIAS` de
+`index.html` que menciona el prompt **se retiraron el 2026-10-08** (ver
+"Fuente única de especies" en `CLAUDE.md`): hoy toda la ficha de especie
+vive en `assets/datos/especies.json`, con 53 especies de España/Portugal
+más 17 de Nueva Zelanda, cada campo con su fuente y licencia citadas
+(FishBase y FAO explícitamente excluidos por ser CC BY-NC, no comercial),
+vedas, tallas mínimas, modalidades de pesca y más de 20 reglas expertas
+con su propia fuente. Es un sistema mucho más maduro que el que describe
+el prompt — no se ha intentado "añadir 2-3 especies nuevas a una lista"
+que ya no existe. Si Mikel quiere ampliar `especies.json` con una fuente
+nueva verificada (lonjas, FishBase alternativo...), es una tarea aparte
+con su propio criterio de fuente/licencia, no una continuación de esta
+parte del prompt.
+
+**Firmado:** robot de datos (rutina), 2026-10-12 07:22 UTC.
+
 ---
 
 ## Auditoría de datos
@@ -3319,6 +3448,49 @@ webcams vascas siguen respondiendo con normalidad. Severidad sin cambios
 (media para los 4 ríos, baja-media para Nazaré) — sigue pendiente que el
 usuario revise la política de red de este entorno para esos 5 dominios
 concretos si quiere que esta rutina pueda vigilar su salud de verdad.
+
+### 2026-10-12 07:22 UTC (pasada del robot de datos — auditoría, parte 3 del prompt)
+
+**Esta sección lleva desde el 2026-09-16 sin entradas porque la rutina
+nocturna "Calibración y salud nocturna" (ver `## Calibración`, es otra
+rutina del plan de Claude, no esta) ya hace una auditoría de salud mucho
+más completa cada noche, con la misma red bloqueada que describía el
+prompt ya resuelta — este entorno de hoy sí tiene salida a los 5 dominios
+que entonces estaban bloqueados.** Para no duplicar ese trabajo, esta
+pasada verificó en vivo, con peticiones reales, los endpoints propios que
+esa rutina nocturna no cubre o cubrió hace horas, sin encontrar ninguna
+forma rota ni ningún dato con pinta de inventado:
+
+- **`/prevision` en producción** (`https://costaviva.org/prevision`):
+  `200`, 613 KB, 105 spots de España + 27 boyas (26 de Puertos del Estado
+  vía Copernicus + Nazaré), 0 boyas con error, `caudales` con las 10
+  estaciones ya conocidas, `fuentesDatos: ["openmeteo"]` (los interruptores
+  `FUENTE_*` siguen apagados, como documenta `CLAUDE.md`).
+- **`/prevision?region=nz&lista=1`**: `200`, 59 spots — coincide con "59
+  activos de 60" de `CLAUDE.md`.
+- **`/luna?lat=43.3&lon=-2.9`**: `200`, forma esperada (fase, iluminación,
+  horas de salida/puesta/culminación, azimuts).
+- **`/sos-alerta` sin token**: `401`, como debe ser.
+- **`/rayos-imagen`**: `200`, `image/png` real.
+- **Las 4 fuentes de caudal ya integradas (Cantábrico/Júcar/Segura/
+  Galicia) y `boyaDesdeNazare`**, reproduciendo el *parsing* exacto de
+  `functions/prevision.js` fuera del Worker: las 5 estaciones del
+  Cantábrico, las 3 del Júcar y Segura dan valor real de hoy (09:20 hora
+  local); Galicia (Lagares) sigue en `0 m³/s`, mismo valor ya documentado
+  varias veces por la rutina nocturna, no un fallo nuevo. Ningún corte,
+  ningún campo desplazado.
+- **`poem.puertos.es/portus/StationData`** (la API de Puertos del Estado
+  que usa SOLO la calibración nocturna y `comparar-boyas.mjs`, nunca la
+  app en producción desde el 2026-10-08): reproducido con `curl` real,
+  **sigue en `500 Internal Server Error`** — confirma de forma
+  independiente lo que ya reportó la rutina nocturna esta misma madrugada
+  (01:40 UTC), quinta noche seguida.
+
+**Nada que corregir esta pasada.** La única corrección de código de hoy es
+la ampliación de `datosCaudalTodos()` con Cataluña (ver "Fuentes nuevas"),
+que no es una corrección sino una fuente nueva.
+
+**Firmado:** robot de datos (rutina), 2026-10-12 07:22 UTC.
 
 ---
 
@@ -6727,6 +6899,78 @@ se sabía. Rotación pendiente para la próxima pasada: **1731 Barcelona II**
 Estado).
 
 **Firmado:** robot de calibración nocturna, 2026-10-12 01:40 UTC.
+
+### 2026-10-12 07:22 UTC (pasada del robot de datos — parte 4 y parte 5 del prompt)
+
+**Parte 4 (calibración oleaje calculado vs. boyas reales): no se añade
+ningún punto nuevo a `CALIBRACION.jsonl` esta pasada, por dos motivos
+reales, no por pereza.** Primero, `poem.puertos.es` sigue en `500`
+(confirmado de forma independiente esta misma mañana, ver "Auditoría de
+datos" arriba) — sin altura medida real no hay con qué comparar, y la
+norma de "nunca inventar" aplica igual a un punto de calibración que a
+cualquier otro dato. Segundo, y más de fondo: el método que pide esta
+parte del prompt (una línea manual por pasada comparando Open-Meteo
+contra 2-3 boyas) es el método de **antes del 2026-10-08** — desde esa
+fecha existe un sistema de calibración mucho más rico y ya en producción,
+el de "Oleaje por cámara" (`scripts/oleaje-camaras/`, cada 30 min, con
+13+ cámaras, boyas de Copernicus como verdad de terreno y etiquetas de
+personas y de Claude): es el que de verdad decide cuándo una cámara
+sustituye al modelo, no `CALIBRACION.jsonl` (que la propia rutina nocturna
+de calibración, no esta, sigue alimentando con el método antiguo para las
+boyas de mar abierto, que es otra cosa). Comprobado en vivo esta mañana
+(`datos-robots/oleaje-camaras/espuma.jsonl`, lectura de las 07:08 UTC): la
+cámara de **Deba pasó a `sustituyeModelo: true`** ("≥ 3 días con alturas
+variadas") — la primera vez que lo consigue desde que arrancó el sistema
+el 2026-10-08 (entonces ninguna cámara llegaba). No es un hallazgo que
+requiera acción: es el sistema funcionando como está diseñado.
+
+**Parte 5 (arquitectura para un algoritmo que aprenda de las capturas
+reales): ya existe, ya está en producción, y la pregunta del prompt
+("¿hay ya volumen de capturas?") tiene respuesta real hoy.** El prompt
+pide proponer una Function nueva que agregue estadísticas anónimas
+filtrando por `perfiles.consiente_uso_datos_capturas`, con `service_role`
+solo en el servidor y devolviendo solo agregados — **eso es exactamente
+lo que ya se construyó el 2026-10-09** ("Aprendizaje autónomo del
+índice", ver `CLAUDE.md`): `scripts/aprendizaje/` corre cada lunes
+(`aprendizaje-semanal.yml`, lanzado por pg_cron) contra Supabase con
+`service_role` **solo en ese workflow, nunca en código servido al
+navegador**, agrega por especie/spot/mes/marea/viento/oleaje/modalidad,
+nunca publica una fila individual (umbral de 5 usuarios distintos
+siempre) y ajusta por Bayes la confianza de cada regla experta del índice
+con barreras estrictas (mínimo de salidas, validación fuera de muestra,
+nunca cambia el signo, máximo 3 cambios/semana, nunca sin aprobación en
+lo que no sea el ajuste de confianza ya acotado). Va más allá de lo que
+pide el prompt: también mide frentes/clorofila/corriente en la sombra, y
+tiene campeón/retadores para probar reglas nuevas antes de activarlas. No
+se ha vuelto a leer Supabase desde esta sesión (sigue sin credenciales, y
+no debe tenerlas) — el estado de hoy se leyó del propio repo
+(`aprendizaje/senales.json`, generado por la última pasada real del
+workflow, 2026-10-12 04:41 UTC, horas antes de esta pasada):
+
+- `"estado": "ok"`, `"casos": 2` — **solo 2 salidas reales del diario
+  tienen hoy el contexto completo que necesita el ajuste** (desde que se
+  aplicó la migración `20261008120000_indice_pesca_salida.sql`). Las
+  barreras de `aprendizaje/config.json` piden mínimo 80 salidas (15 con y
+  15 sin captura) antes de poder proponer ningún ajuste real — con 2
+  casos, el sistema está sano pero no tiene nada que decidir todavía;
+  `propuestas_abiertas: 0` y `cambios_automaticos_semana: 0` lo confirman.
+  **Respuesta directa a la pregunta del prompt: no, todavía no hay volumen
+  real** (2 muy lejos de 80) — no hace falta ningún primer paso nuevo por
+  ahora, solo que pase el tiempo y la gente use el diario. El primer paso
+  concreto, cuando lo haya, no es código nuevo: es que Mikel revise la
+  primera propuesta real que aparezca en `aprendizaje/propuestas.json` /
+  el Issue semanal, exactamente como ya está montado.
+- `reglas_activas: 32`, `retadores_en_sombra: 3`, `fotogramas_para_etiquetar:
+  12` (candidatos para la rutina de etiquetado de cámaras), `avisos_deriva:
+  7` (frescura de fuentes, sesgo de cámaras/boyas — ninguno crítico según
+  `RESUMEN.md`).
+
+No se propone ninguna arquitectura nueva porque sería proponer construir
+dos veces lo mismo. Si Mikel quiere un cambio concreto sobre este sistema
+(otro umbral, otra variable de contexto), es más rápido pedirlo
+directamente que esperar a que esta rutina lo reinvente desde cero.
+
+**Firmado:** robot de datos (rutina), 2026-10-12 07:22 UTC.
 
 ---
 
