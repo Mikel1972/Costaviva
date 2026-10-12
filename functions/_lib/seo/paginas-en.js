@@ -23,7 +23,7 @@ import { DOMINIO, esc, documento, migasHtml, migasJsonLd, imagenOg } from "./bas
 import { ZONAS_NZ, zonaDeSpotNZ } from "../nz/zonas-nz.js";
 import { AREAS_MPI, URL_APP_MPI, URL_REGLAS_MPI, normativaArea } from "../../../assets/js/normativa-nz.js";
 import { ATRIBUCION_LINZ, AVISO_LINZ, URL_LICENCIA_LINZ } from "../nz/mareas-linz.js";
-import { ATRIBUCION_DOC, URL_DOC_RESERVAS } from "../nz/reservas-doc.js";
+import { ATRIBUCION_DOC, URL_DOC_RESERVAS, sinPesca } from "../nz/reservas-doc.js";
 import { slugEspecie } from "./datos.js";
 
 export const ZONA_NZ = "Pacific/Auckland";
@@ -128,9 +128,14 @@ function bloqueNormativa(region) {
 
 function bloqueReservas(reservas) {
   if (!reservas?.length) return "";
-  return `<section class="tarjeta aviso" aria-labelledby="t-reservas"><h2 id="t-reservas">Marine reserve nearby</h2>
-<ul>${reservas.map((r) => `<li><strong>${esc(r.nombre)}</strong> ${r.km === 0 ? "(at this spot)" : `(about ${esc(String(r.km))} km away)`}</li>`).join("")}</ul>
-<p>No fishing and no taking of any marine life inside a marine reserve. Check the exact boundary on the <a href="${esc(URL_DOC_RESERVAS)}" rel="noopener" target="_blank">Department of Conservation website</a> before fishing.</p>
+  const li = (r) => `<li><strong>${esc(r.nombre)}</strong> ${r.km === 0 ? "(at this spot)" : `(about ${esc(String(r.km))} km away)`}</li>`;
+  const cerradas = reservas.filter(sinPesca), fondo = reservas.filter((r) => !sinPesca(r));
+  return `<section class="tarjeta aviso" aria-labelledby="t-reservas"><h2 id="t-reservas">${cerradas.length ? "No-fishing area nearby" : "Seafloor protection area nearby"}</h2>
+${cerradas.length ? `<ul>${cerradas.map(li).join("")}</ul>
+<p>No fishing and no taking of any marine life inside a marine reserve or a Hauraki Gulf high protection area.</p>` : ""}
+${fondo.length ? `<ul>${fondo.map(li).join("")}</ul>
+<p>In a seafloor protection area, line fishing, spearfishing and gathering by hand are allowed; bottom trawling, dredging and Danish seining are not.</p>` : ""}
+<p>Check the exact boundary on the <a href="${esc(URL_DOC_RESERVAS)}" rel="noopener" target="_blank">Department of Conservation website</a> before fishing.</p>
 <p class="nota">${esc(ATRIBUCION_DOC)}. Simplified outline, not an exact boundary.</p></section>`;
 }
 
