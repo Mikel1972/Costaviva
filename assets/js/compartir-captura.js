@@ -15,7 +15,7 @@
 
 import { I18n } from "./i18n-modulo.js";
 
-export const TEXTO_CASILLA = I18n.t("compartir.casilla");
+export const TEXTO_CASILLA = I18n.t("compartir.casilla", { km: I18n.distancia(5) });
 
 export async function cargarCompartidas(supabase) {
   try {

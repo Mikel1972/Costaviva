@@ -299,11 +299,22 @@ export function flechasVisibles(d, uBytes, vBytes, caja, maxPorLado = 12) {
 }
 
 const fmt1 = (x) => I18n.num(x);
+// Velocidad de la corriente (preferencias de unidades, 2026-10-12): en la
+// unidad del viento que haya elegido el usuario, con un decimal
+// (I18n.velocidad redondea a enteros y la corriente rara vez pasa de 2 km/h),
+// y en nudos, que es como se habla de la corriente en el mar. Si el usuario
+// ya ve el viento en nudos, la cifra no se repite (corrienteEnNudos).
+export const corrienteEnNudos = () => I18n.preferencias().viento === "nudos";
+export const numeroCorriente = (kmh) => I18n.num(I18n.velocidadNumero(kmh));
+export const velocidadCorriente = (kmh) => `${numeroCorriente(kmh)} ${I18n.unidadVelocidad()}`;
+// "0,6 nudos", "1 nudo" a partir del número ya escrito.
+export const textoNudos = (n) => `${n} ${n === "1" ? I18n.t("corriente.nudo") : I18n.t("corriente.nudos")}`;
 export function textoCorriente(u, v) {
   if (u === null || v === null) return null;
   const ms = Math.hypot(u, v);
   if (ms < 0.03) return I18n.t("frentes.corriente_nula");
-  return I18n.t("frentes.corriente", { rumbo: rumbo(u, v), kmh: fmt1(ms * 3.6), kn: fmt1(ms * 1.94384) });
+  const kn = textoNudos(fmt1(ms * 1.94384));
+  return I18n.t("frentes.corriente", { rumbo: rumbo(u, v), cifras: corrienteEnNudos() ? kn : `${velocidadCorriente(ms * 3.6)} (${kn})` });
 }
 
 // Corriente (u, v) de la malla gruesa en un punto, o nulls.
@@ -323,7 +334,7 @@ export function describirPunto(d, bytes, lat, lon, corr = { u: null, v: null }) 
   if (!x) return I18n.t("capas.globo.tierra");
   const r = rasgosPunto(d, bytes, lat, lon, { radioKm: 10 });
   const lineas = [];
-  const cerca = (nombre) => (r[`dist_${nombre}_km`] <= 3 ? I18n.t("frentes.aqui_mismo") : I18n.t("frentes.a_unos", { km: Math.round(r[`dist_${nombre}_km`]) }));
+  const cerca = (nombre) => (r[`dist_${nombre}_km`] <= 3 ? I18n.t("frentes.aqui_mismo") : I18n.t("frentes.a_unos", { km: I18n.distancia(Math.round(r[`dist_${nombre}_km`]), 0) }));
   if (r.frente_ambos) lineas.push(I18n.t("cc.frentes.ambos", { dist: cerca("frente_ambos") }));
   else if (r.frente_y_corriente) lineas.push(I18n.t("frentes.y_corriente", { dist: cerca("frente_y_corriente") }));
   else {
@@ -332,7 +343,8 @@ export function describirPunto(d, bytes, lat, lon, corr = { u: null, v: null }) 
   }
   if (!lineas.length && r.convergencia) lineas.push(I18n.t("cc.frentes.convergencia", { dist: cerca("convergencia") }));
   // Sin clorofila fiable alrededor (nubes o costa) no se puede decir "sin frentes".
-  if (!lineas.length) lineas.push(r.frente_clorofila === null ? I18n.t("frentes.sin_cambios_no_clorofila") : I18n.t("frentes.sin_frentes"));
+  const radio = { km: I18n.distancia(10) };
+  if (!lineas.length) lineas.push(r.frente_clorofila === null ? I18n.t("frentes.sin_cambios_no_clorofila", radio) : I18n.t("frentes.sin_frentes", radio));
   if (x.costa) lineas.push(I18n.t("frentes.costa_no_fiable"));
   else if (x.nubes) lineas.push(I18n.t("frentes.nubes"));
   const tc = textoCorriente(corr.u, corr.v);

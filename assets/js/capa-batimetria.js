@@ -130,6 +130,11 @@ const juegos = {
   someras: { url: "/assets/datos/isobatas.json", zoomMin: ZOOM_SOMERAS, capa: null, geo: null, cargando: null },
 };
 
+// Profundidad de una isóbata: "200 m", o en pies con el sistema imperial
+// ("656 ft"; los niveles siguen siendo los de la carta, en metros).
+const profundidad = (m) => I18n.metros(m, 0);
+const sinUnidad = (s) => s.replace(/ [^ ]+$/, "");
+
 function cargar(j, L) {
   if (j.capa) return Promise.resolve(j.capa);
   j.cargando ||= fetch(j.url)
@@ -138,7 +143,7 @@ function cargar(j, L) {
       j.geo = geo;
       j.capa = L.geoJSON(geo, {
         style: (f) => estiloIsobata(f.properties.profundidad_m),
-        onEachFeature: (f, l) => l.bindTooltip(`${f.properties.profundidad_m} m`, { sticky: true }),
+        onEachFeature: (f, l) => l.bindTooltip(profundidad(f.properties.profundidad_m), { sticky: true }),
         attribution: ATRIBUCION_ISOBATAS,
       });
       return j.capa;
@@ -175,17 +180,17 @@ function crearLeyenda(L) {
   ctl.onAdd = () => {
     const div = L.DomUtil.create("div", "isobatas-leyenda");
     div.setAttribute("role", "img");
-    div.setAttribute("aria-label", I18n.t("bati.leyenda_aria", { min: TODOS_LOS_NIVELES[0], max: TODOS_LOS_NIVELES.at(-1) }));
+    div.setAttribute("aria-label", I18n.t("bati.leyenda_aria", { min: sinUnidad(profundidad(TODOS_LOS_NIVELES[0])), max: profundidad(TODOS_LOS_NIVELES.at(-1)) }));
     const tit = L.DomUtil.create("div", "tit", div);
-    tit.textContent = I18n.t("bati.profundidad_m");
+    tit.textContent = I18n.t("bati.profundidad_m", { u: I18n.unidadMetros() });
     const barra = L.DomUtil.create("div", "barra", div);
     for (const n of TODOS_LOS_NIVELES) {
       const i = L.DomUtil.create("i", "", barra);
       i.style.background = colorIsobata(n);
-      i.title = `${n} m`;
+      i.title = profundidad(n);
     }
     const ext = L.DomUtil.create("div", "ext", div);
-    for (const t of ["20", "200", "1000", "5000"]) L.DomUtil.create("span", "", ext).textContent = t;
+    for (const n of [20, 200, 1000, 5000]) L.DomUtil.create("span", "", ext).textContent = sinUnidad(profundidad(n));
     return div;
   };
   return ctl;
@@ -199,7 +204,7 @@ function pintarEtiquetas(L) {
   const caja = { sur: b.getSouth(), norte: b.getNorth(), oeste: b.getWest(), este: b.getEast() };
   for (const e of etiquetasVisibles(feats, caja, mapa.getZoom())) {
     const html = document.createElement("span");
-    html.textContent = `${e.prof} m`;
+    html.textContent = profundidad(e.prof);
     html.style.setProperty("--c", colorIsobata(e.prof));
     L.marker([e.lat, e.lon], {
       icon: L.divIcon({ className: "isobata-etq", html, iconSize: null }),

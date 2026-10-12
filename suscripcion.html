@@ -353,8 +353,9 @@ function nombrePlan(ambito, plan) {
   const a = ambito === "mundial" ? I18n.t("prec.mundial") : "Premium";
   return `${a} · ${I18n.t(`prec.${plan === "fundador_anual" ? "fundador" : plan}`)}`;
 }
+// En el formato de fecha de las preferencias (31/12/2026, 12/31/2026 o 2026-12-31).
 function fechaCorta(iso) {
-  return new Date(iso).toLocaleDateString(I18n.locale(), { day: "2-digit", month: "2-digit", year: "numeric" });
+  return I18n.fechaNumerica(iso);
 }
 async function llamarCambio(cuerpo) {
   const { data: { session } } = await supabase.auth.getSession();

@@ -107,13 +107,14 @@ export function resumenRayos({ estado, masCercano, total = 0, ref }) {
     return { nivel: "neutro", texto: I18n.t("rayos.no_disponible") };
   }
   if (!masCercano) {
-    return { nivel: "ok", texto: I18n.t("rayos.sin_rayos", { km: RADIO_KM, min: VENTANA_MIN }) };
+    return { nivel: "ok", texto: I18n.t("rayos.sin_rayos", { km: I18n.distancia(RADIO_KM, 0), min: VENTANA_MIN }) };
   }
-  const km = masCercano.km < 1 ? I18n.t("rayos.menos_de_1") : String(Math.round(masCercano.km));
+  // Distancias en km, o en millas con el sistema imperial (I18n.distancia).
+  const km = masCercano.km < 1 ? I18n.t("rayos.menos_de_1", { km: I18n.distancia(1) }) : I18n.distancia(Math.round(masCercano.km), 0);
   const de = ref?.de ? ` ${ref.de}` : "";
   const nivel = masCercano.km <= KM_PELIGRO ? "peligro" : masCercano.km <= KM_AVISO ? "aviso" : "lejos";
   // El total va aparte (en el ⓘ): la frase tiene que caber en el móvil.
-  const conteo = I18n.t("rayos.conteo", { n: total, min: VENTANA_MIN, km: RADIO_KM });
+  const conteo = I18n.t("rayos.conteo", { n: total, min: VENTANA_MIN, km: I18n.distancia(RADIO_KM, 0) });
   return { nivel, conteo, texto: I18n.t("rayos.mas_cercano", { km, cardinal: masCercano.cardinal, de, edad: textoEdad(masCercano.edadMin) }) };
 }
 

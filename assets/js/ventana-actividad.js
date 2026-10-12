@@ -71,7 +71,49 @@ import { t, I18n } from "./i18n-modulo.js";
 // mismo motivo en español: es el que se guarda en el diario y el que mira
 // paraUsuario() para separar lo interno. Las reglas expertas traen su texto
 // de los datos (texto, y texto_en cuando la fase de datos lo añada).
-const tx = (clave, vars) => ({ clave, vars: vars || null, texto: t(clave, vars), textoEs: t(clave, vars, "es") });
+// Unidades (2026-10-12): `vars` lleva los números en métrico y sin unidad
+// (km/h, m, °C); la unidad se pone al componer el texto: en `texto`, la de
+// las preferencias del usuario (I18n.velocidad, I18n.metros, I18n.temp); en
+// `textoEs`, que es lo que se guarda, siempre en métrico. Las salidas
+// guardadas antes traen los números ya escritos ("1,5"): también valen.
+// Qué variable de cada motivo lleva unidad: kmh (velocidad), m (altura),
+// m_num (altura sin unidad, la primera de un rango "1-1,5 m"), c (temperatura)
+// y c_num (temperatura sin unidad: el rango de la especie, "(14-20)").
+const UNIDADES_MOTIVO = {
+  "va.viento.fuerte": { v: "kmh" }, "va.seg.viento": { v: "kmh" }, "va.seg.tope": { v: "kmh" },
+  "va.seg.ola": { v: "m" }, "va.marea.nula": { rango: "m" }, "va.ola.plana": { h: "m" }, "va.ola.rango_plana": { h: "m" },
+  "va.ola.mar_de": { a: "m_num", b: "m" }, "va.ola.rango": { a: "m_num", b: "m" },
+  "va.temp.pendiente": { t: "c" }, "va.temp.agua": { t: "c" },
+  "va.temp.fuera": { t: "c", min: "c_num", max: "c_num" }, "va.temp.optimo": { t: "c", min: "c_num", max: "c_num" },
+  "va.temp.en_rango": { t: "c", min: "c_num", max: "c_num" },
+};
+const numeroDe = (x) => (typeof x === "number" ? x : Number(String(x ?? "").replace(",", ".")));
+function conUnidad(n, tipo, idioma, metrico) {
+  const imperial = !metrico && I18n.preferencias().unidades === "imperial";
+  const sinUnidad = (s) => s.replace(/ [^ ]+$/, "");
+  if (tipo === "kmh") return I18n.velocidad(n, metrico ? "kmh" : undefined, idioma);
+  if (tipo === "m" || tipo === "m_num") {
+    const s = imperial ? I18n.metros(n, undefined, idioma) : `${I18n.num(n, undefined, idioma)} m`;
+    return tipo === "m" ? s : sinUnidad(s);
+  }
+  if (tipo === "c") return imperial ? I18n.temp(n, undefined, idioma) : `${I18n.num(n, undefined, idioma)} °C`;
+  // c_num: en métrico, el número tal cual (como siempre).
+  return imperial ? I18n.num(n * 9 / 5 + 32, 0, idioma) : String(n);
+}
+// Texto de un motivo con sus unidades: en el idioma y las preferencias de la
+// app o, con `metrico`, siempre en km/h, m y °C. También para los motivos
+// guardados (diario.html) y las páginas /pt/ (functions/_lib/seo/paginas-pt.js).
+export function textoMotivo(clave, vars, idioma, metrico = false) {
+  const u = UNIDADES_MOTIVO[clave];
+  if (!u || !vars) return t(clave, vars, idioma);
+  const v = { ...vars };
+  for (const [k, tipo] of Object.entries(u)) {
+    const n = numeroDe(vars[k]);
+    if (vars[k] !== null && vars[k] !== undefined && vars[k] !== "" && Number.isFinite(n)) v[k] = conUnidad(n, tipo, idioma, metrico);
+  }
+  return t(clave, v, idioma);
+}
+const tx = (clave, vars) => ({ clave, vars: vars || null, texto: textoMotivo(clave, vars), textoEs: textoMotivo(clave, vars, "es", true) });
 import {
   regionPescaPorCoordenadas, zonaPorCoordenadas, minutosLocales, msAproxDeEtiqueta, usaDatosGenerales, ZONA_POR_DEFECTO,
   paisDeRegion, AREAS_NZ,
@@ -341,7 +383,10 @@ export function avisoOlaPeligrosa(ola, reglasOleaje) {
   const peligro = I18n.dato(reglasOleaje, "texto_peligro") || t("va.ola.peligro_defecto");
   const rango = rangoOla(ola, true);
   const m = tx("va.ola.aviso", { peligro, rango: rango.texto });
-  return { texto: m.texto, clave: m.clave, vars: m.vars, umbral_m: umbral, ola: +ola.toFixed(1) };
+  // Lo que se guarda (condiciones-salida.js): en español y en métrico.
+  const peligroEs = reglasOleaje.texto_peligro || t("va.ola.peligro_defecto", null, "es");
+  const textoEs = t("va.ola.aviso", { peligro: peligroEs, rango: rango.textoEs }, "es");
+  return { texto: m.texto, textoEs, clave: m.clave, vars: m.vars, umbral_m: umbral, ola: +ola.toFixed(1) };
 }
 
 // Lo que ve el USUARIO del porqué (Mikel, 2026-10-08): solo los motivos con
@@ -376,9 +421,9 @@ export function paraUsuario(razones, { max = Infinity } = {}) {
 // Oleaje de una hora como motivo: "mar de 1-1,5 m" / "1-1.5 m sea". soloRango:
 // sin "mar de" (para el aviso de ola peligrosa).
 function rangoOla(h, soloRango = false) {
-  if (h < 0.5) return tx(soloRango ? "va.ola.rango_plana" : "va.ola.plana");
+  if (h < 0.5) return tx(soloRango ? "va.ola.rango_plana" : "va.ola.plana", { h: 0.5 });
   const a = Math.floor(h * 2) / 2;
-  return tx(soloRango ? "va.ola.rango" : "va.ola.mar_de", { a: fmt1(a), b: fmt1(a + 0.5) });
+  return tx(soloRango ? "va.ola.rango" : "va.ola.mar_de", { a, b: a + 0.5 });
 }
 
 // ---------------------------------------------------------------------------
@@ -520,7 +565,7 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
       const ref = reglas.marea.rango_referencia_m || 2.5;
       const escala = clamp(m.rango / ref, 0, 1);
       if (escala < 0.25) {
-        terminos.push({ factor: "marea", ...tx("va.marea.nula", { rango: fmt1(m.rango) }), lo: 0 });
+        terminos.push({ factor: "marea", ...tx("va.marea.nula", { rango: m.rango }), lo: 0 });
       } else {
         const estado = m.repunte ? "repunte" : m.tendencia;
         const pref = reglas.marea.preferencia?.[estado] ?? 0;
@@ -532,19 +577,19 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
     const hayTemp = h.tempAgua !== null && h.tempAgua !== undefined;
     if (tempExcluida && hayTemp) {
       cuenta("temperatura", false);
-      terminos.push({ factor: "temperatura", ...tx("va.temp.pendiente", { t: fmt1(h.tempAgua) }), lo: 0 });
+      terminos.push({ factor: "temperatura", ...tx("va.temp.pendiente", { t: +Number(h.tempAgua).toFixed(1) }), lo: 0 });
     } else if (rangoTemp) {
       if (cuenta("temperatura", hayTemp)) {
         const [tmin, tmax] = rangoTemp;
         const f = factorTemperatura(h.tempAgua, rangoTemp);
         const dentro = h.tempAgua >= tmin && h.tempAgua <= tmax;
-        const v = { t: fmt1(h.tempAgua), min: tmin, max: tmax };
+        const v = { t: +Number(h.tempAgua).toFixed(1), min: tmin, max: tmax };
         const txt = !dentro ? tx("va.temp.fuera", v) : f >= 0.8 ? tx("va.temp.optimo", v) : tx("va.temp.en_rango", v);
         anota("temperatura", f, txt, tempCientifica);
       }
     } else {
       cuenta("temperatura", false);
-      if (modalidad === "submarina" && hayTemp) terminos.push({ factor: "temperatura", ...tx("va.temp.agua", { t: fmt1(h.tempAgua) }), lo: 0 });
+      if (modalidad === "submarina" && hayTemp) terminos.push({ factor: "temperatura", ...tx("va.temp.agua", { t: +Number(h.tempAgua).toFixed(1) }), lo: 0 });
     }
 
     // Oleaje. El aviso de ola peligrosa va APARTE del factor y no toca la
@@ -583,13 +628,13 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
         const porViento = hayViento && h.viento > nv.viento_max_kmh;
         const porOla = hayOla && h.ola > nv.ola_max_m;
         if ((porViento || porOla) && !avisos.length) {
-          const motivoEn = (id) => [porViento && t("va.seg.viento", { v: Math.round(h.viento) }, id), porOla && t("va.seg.ola", { v: fmt1(h.ola, id) }, id)].filter(Boolean).join(t("va.seg.y", null, id));
+          const motivoEn = (id, metrico) => [porViento && textoMotivo("va.seg.viento", { v: Math.round(h.viento) }, id, metrico), porOla && textoMotivo("va.seg.ola", { v: h.ola }, id, metrico)].filter(Boolean).join(t("va.seg.y", null, id));
           const nvTexto = I18n.dato(nv, "texto");
           avisos.push({ nivel: nv.id, texto: `${nvTexto} (${motivoEn()})` });
-          notas.push({ factor: "seguridad", texto: `⚠ ${nvTexto} (${motivoEn()})`, textoEs: `⚠ ${nv.texto} (${motivoEn("es")})`, aporte: 0 });
+          notas.push({ factor: "seguridad", texto: `⚠ ${nvTexto} (${motivoEn()})`, textoEs: `⚠ ${nv.texto} (${motivoEn("es", true)})`, aporte: 0 });
         }
         if (porViento) {
-          topes.push({ tope: nv.tope, texto: t("va.seg.tope", { nivel: I18n.dato(nv, "texto"), v: Math.round(h.viento), tope: nv.tope }), textoEs: t("va.seg.tope", { nivel: nv.texto, v: Math.round(h.viento), tope: nv.tope }, "es") });
+          topes.push({ tope: nv.tope, texto: textoMotivo("va.seg.tope", { nivel: I18n.dato(nv, "texto"), v: Math.round(h.viento), tope: nv.tope }), textoEs: textoMotivo("va.seg.tope", { nivel: nv.texto, v: Math.round(h.viento), tope: nv.tope }, "es", true) });
           break;
         }
       }

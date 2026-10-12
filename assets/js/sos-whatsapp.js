@@ -100,7 +100,11 @@
     var lugar;
     if (p && Number.isFinite(p.lat) && Number.isFinite(p.lon)) {
       var detalles = [];
-      if (Number.isFinite(p.precision)) detalles.push(tr("sos.precision", "precisión ±{m} m", { m: Math.max(1, Math.round(p.precision)) }));
+      if (Number.isFinite(p.precision)) {
+        // En pies si el usuario usa el sistema imperial (preferencias, I18n.metros).
+        var precision = Math.max(1, Math.round(p.precision));
+        detalles.push(tr("sos.precision", "precisión ±{m}", { m: raiz.I18n && raiz.I18n.metros ? raiz.I18n.metros(precision, 0) : precision + " m" }));
+      }
       detalles.push(hhmm(o.fecha || Date.now(), o.zonaHoraria));
       lugar = tr("sos.mi_ubicacion", " Mi ubicación: {url} ({detalles}).", {
         url: "https://maps.google.com/?q=" + p.lat.toFixed(6) + "," + p.lon.toFixed(6), detalles: detalles.join(", "),

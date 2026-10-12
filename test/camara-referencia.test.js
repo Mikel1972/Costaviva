@@ -140,7 +140,7 @@ test("texto del panel (copia de index.html): ~ y una cifra decimal; vieja en el 
     return html.slice(i, j + 1);
   };
   const { textoReferenciaCamara } = new Function(
-    `const VIGENCIA_REF_CAMARA_MS = 3 * 3600e3;\n${extraer("numeroOla")}\n${extraer("textoReferenciaCamara")}\nreturn { textoReferenciaCamara };`
+    `const VIGENCIA_REF_CAMARA_MS = 3 * 3600e3;\n${extraer("alturaOla")}\n${extraer("numeroOla")}\n${extraer("textoReferenciaCamara")}\nreturn { textoReferenciaCamara };`
   )();
   const ref = camaraReferenciaDeSpot(spot("sopelana"), medidaDe([fila()]), AHORA);
   assert.equal(textoReferenciaCamara(ref, AHORA), "La cámara apunta a ~1,2 m (0,8–1,9 m, sin calibrar · 16:30)");

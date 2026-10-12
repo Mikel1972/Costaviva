@@ -237,9 +237,10 @@ test("textos con coma decimal", async () => {
   const html = fuenteEs(readFileSync("index.html", "utf8"));
   // Desde los idiomas (2026-10-09) la coma la pone I18n.num en español.
   assert.match(html, /formato: \(v, km = 0\) => \(km > 0/);
-  assert.match(html, /: I18n\.t\("\{v\} °C en superficie", \{ v: I18n\.num\(v, 1\) \}\)\),/);
-  // Celda vacía junto a la costa (2026-10-10): "a N km", también con coma.
-  assert.match(html, /I18n\.t\("\{v\} °C a \{km\} km, el modelo no llega a la orilla", \{ v: I18n\.num\(v, 1\), km: Math\.max\(1, Math\.round\(km\)\) \}\)/);
+  // Desde las preferencias de unidades (2026-10-12), con I18n.temp (°C o °F).
+  assert.match(html, /: I18n\.t\("\{v\} en superficie", \{ v: I18n\.temp\(v, 1\) \}\)\),/);
+  // Celda vacía junto a la costa (2026-10-10): "a N km", también con coma (km o mi).
+  assert.match(html, /I18n\.t\("\{v\} a \{km\}, el modelo no llega a la orilla", \{ v: I18n\.temp\(v, 1\), km: I18n\.distancia\(Math\.max\(1, Math\.round\(km\)\), 0\) \}\)/);
   const { I18n } = await import("../assets/js/i18n-modulo.js");
   assert.equal(I18n.num(18.375, 1), "18,4");
 });
