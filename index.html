@@ -242,16 +242,15 @@
     background: rgba(11,30,63,0.7); border: none; color: var(--fondo); font-size: 20px; cursor: pointer;
     width: 40px; height: 40px; border-radius: 50%;
   }
+  /* Zoom y arrastre con assets/js/zoom-foto.js (2026-10-12): sin scroll,
+     la foto se mueve con translate + scale y nunca deja huecos. */
   #contenidoZoomWebcam {
-    width: 100%; height: 100%; overflow: auto;
+    width: 100%; height: 100%; overflow: hidden;
     display: flex; align-items: center; justify-content: center;
   }
   #contenidoZoomWebcam img, #contenidoZoomWebcam video {
     max-width: 100%; max-height: 100%; cursor: zoom-in;
-    transition: transform 0.15s ease-out;
-  }
-  #contenidoZoomWebcam img.ampliada, #contenidoZoomWebcam video.ampliada {
-    max-width: none; max-height: none; transform: scale(2.2); cursor: zoom-out;
+    touch-action: none; user-select: none; -webkit-user-drag: none;
   }
 
   /* Llamada de caudal: tooltip de Leaflet restilizado para que se note que
@@ -1629,6 +1628,10 @@
   // assets/js/camaras-externas.js y test/camaras-externas.test.js.
   import * as CamarasExternas from "/assets/js/camaras-externas.js";
   window.CamarasExternas = CamarasExternas;
+  // Zoom de la foto/vídeo ampliado: tocar, arrastrar, pellizcar y rueda
+  // (assets/js/zoom-foto.js, test/zoom-foto.test.js).
+  import * as ZoomFoto from "/assets/js/zoom-foto.js";
+  window.ZoomFoto = ZoomFoto;
   window.dispatchEvent(new Event("camaras-externas-listas"));
 </script>
 <script type="module">
@@ -4678,9 +4681,24 @@ function destruirHlsActivo() {
 // estaba al cerrar.
 let videoZoomOrigen = null; // wrapper del que se sacó el <video>, o null si el pop-up es de una imagen
 
+let zoomMontado = null; // { desmontar } de assets/js/zoom-foto.js
+
+// Tocar amplía en ese punto, arrastrar mueve la foto ampliada, pellizco y
+// rueda acercan o alejan, y tocar el fondo cierra (2026-10-12: antes, con
+// un scale fijo y scroll, la foto ampliada no se podía mover bien).
+function montarZoomFoto(media) {
+  const vista = document.getElementById("contenidoZoomWebcam");
+  zoomMontado?.desmontar();
+  zoomMontado = window.ZoomFoto
+    ? window.ZoomFoto.montarZoom(vista, media, { alClicFuera: cerrarZoomWebcam })
+    : null;
+}
+
 function abrirZoomImagen(src, alt) {
-  document.getElementById("contenidoZoomWebcam").innerHTML = `<img src="${src}" alt="${alt}">`;
+  const contenido = document.getElementById("contenidoZoomWebcam");
+  contenido.innerHTML = `<img src="${src}" alt="${alt}">`;
   document.getElementById("modalZoomWebcam").classList.add("visible");
+  montarZoomFoto(contenido.querySelector("img"));
 }
 
 function abrirZoomVideo(video) {
@@ -4689,17 +4707,19 @@ function abrirZoomVideo(video) {
   video.style.cssText = "max-width:100%; max-height:100%; cursor:zoom-in;";
   document.getElementById("contenidoZoomWebcam").appendChild(video);
   document.getElementById("modalZoomWebcam").classList.add("visible");
+  montarZoomFoto(video);
 }
 
 function cerrarZoomWebcam() {
   const modal = document.getElementById("modalZoomWebcam");
   if (!modal.classList.contains("visible")) return;
   modal.classList.remove("visible");
+  zoomMontado?.desmontar();
+  zoomMontado = null;
   const contenido = document.getElementById("contenidoZoomWebcam");
   if (videoZoomOrigen) {
     const video = contenido.querySelector("video");
     if (video) {
-      video.classList.remove("ampliada");
       video.style.cssText = video.dataset.estiloOriginal || "";
       delete video.dataset.estiloOriginal;
       videoZoomOrigen.prepend(video);
@@ -6139,24 +6159,10 @@ document.getElementById("btnVerPlanesBienvenida").addEventListener("click", () =
 });
 
 document.getElementById("cerrarModalZoomWebcam").addEventListener("click", cerrarZoomWebcam);
+// Clic en el fondo alrededor de la foto -> cierra (lo engancha
+// montarZoomFoto). Si zoom-foto.js aún no ha cargado, cierra igual.
 document.getElementById("contenidoZoomWebcam").addEventListener("click", (e) => {
-  // Clic en la foto/vídeo -> alterna zoom. Clic en el fondo alrededor
-  // (el propio contenedor, no un hijo) -> cierra, como un lightbox normal.
-  if (e.target.tagName === "IMG" || e.target.tagName === "VIDEO") {
-    // Pedido explícito del usuario: el zoom debe centrarse en el punto
-    // exacto donde se hace clic, no siempre en el centro de la foto —
-    // se fija transform-origin al punto clicado (en %) justo antes de
-    // ampliar, así el zoom "crece" desde ahí en vez de desde el centro.
-    if (!e.target.classList.contains("ampliada")) {
-      const rect = e.target.getBoundingClientRect();
-      const xPct = ((e.clientX - rect.left) / rect.width) * 100;
-      const yPct = ((e.clientY - rect.top) / rect.height) * 100;
-      e.target.style.transformOrigin = `${xPct}% ${yPct}%`;
-    }
-    e.target.classList.toggle("ampliada");
-  } else {
-    cerrarZoomWebcam();
-  }
+  if (!zoomMontado && e.target.id === "contenidoZoomWebcam") cerrarZoomWebcam();
 });
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") cerrarZoomWebcam();
