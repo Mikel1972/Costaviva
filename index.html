@@ -1378,7 +1378,7 @@
     <!-- Reservas marinas del DOC cerca (NZ): aviso + atribución del DOC. -->
     <div class="tarjeta" id="panelReservasNZ" hidden style="margin-top:10px; font-family:var(--f-texto); font-size:12px; line-height:1.45;">
       <div id="panelReservasTexto"></div>
-      <div style="margin-top:4px; color:var(--tinta-2); font-size:10.5px;" data-i18n="mapa.panel.reservas_atrib">Reservas marinas: Department of Conservation (DOC), Crown copyright, CC BY 4.0. Contorno simplificado: comprueba el límite exacto en el DOC.</div>
+      <div style="margin-top:4px; color:var(--tinta-2); font-size:10.5px;" data-i18n="mapa.panel.reservas_atrib">Reservas marinas: Department of Conservation (DOC), Crown copyright, CC BY 4.0. Zonas del golfo de Hauraki: Crown Copyright: Department of Conservation Te Papa Atawhai 2025. Contorno simplificado: comprueba el límite exacto en el DOC.</div>
     </div>
     <div class="tarjeta" id="panelNormativaNZ" hidden style="margin-top:10px; font-family:var(--f-texto); font-size:12px; line-height:1.45;">
       <a id="panelNormativaEnlace" href="#" target="_blank" rel="noopener"></a>
@@ -2368,9 +2368,14 @@ function pintarReservasPanel(s) {
   const lista = s.reservas || [];
   caja.hidden = !lista.length;
   if (!lista.length) return;
-  document.getElementById("panelReservasTexto").textContent = I18n.t("mapa.panel.reservas", {
-    lista: lista.map((r) => (r.km ? `${r.nombre} (${I18n.decimal ? I18n.decimal(r.km, 1) : r.km} km)` : r.nombre)).join(" · "),
-  });
+  // Sin pesca (reservas y zonas de alta protección de Hauraki) y, aparte, las
+  // de protección del fondo (caña sí, arrastre no), 2026-10-12.
+  const nombres = (l) => l.map((r) => (r.km ? `${r.nombre} (${I18n.decimal ? I18n.decimal(r.km, 1) : r.km} km)` : r.nombre)).join(" · ");
+  const cerradas = lista.filter((r) => r.tipo !== "spa"), fondo = lista.filter((r) => r.tipo === "spa");
+  document.getElementById("panelReservasTexto").textContent = [
+    cerradas.length ? I18n.t("mapa.panel.reservas", { lista: nombres(cerradas) }) : "",
+    fondo.length ? I18n.t("mapa.panel.reservas_spa", { lista: nombres(fondo) }) : "",
+  ].filter(Boolean).join(" ");
 }
 
 // Marea de LINZ (NZ): puerto de referencia, atribución (abreviada: nombre
