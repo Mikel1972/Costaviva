@@ -108,6 +108,8 @@ export function decidir({ issue, pieza, etiquetas = [], comentarios = [], dueno,
   if (String(automatica ?? "").trim().toLowerCase() !== "true") return r("saltar", "PUBLICACION_AUTOMATICA no es true");
   if (!abierto) return r("saltar", "Issue cerrado");
   if (!pieza) return r("saltar", "Issue sin pieza");
+  // Las piezas de Nueva Zelanda solo salen con el OK manual de Mikel (2026-10-11).
+  if (pieza.mercado === "nz") return r("saltar", "pieza de Nueva Zelanda: solo se publica a mano, con el OK de Mikel");
   if (etiquetas.includes(ETIQUETA_REVISAR)) return r("saltar", `etiqueta ${ETIQUETA_REVISAR}`);
   const v = vetada({ etiquetas, comentarios, dueno });
   if (v.vetada) return r("saltar", `vetada (${v.motivo})`, { vetada: true });

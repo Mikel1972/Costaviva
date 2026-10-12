@@ -8,6 +8,8 @@ import { fileURLToPath } from "node:url";
 import { SPOTS } from "../../functions/prevision.js";
 import { serieHoraria } from "../../assets/js/condiciones-salida.js";
 import { resumenDelDia, tarjetasCondiciones, bboxMercator } from "./pieza-datos.mjs";
+import { mareaSpotNZ } from "../../functions/_lib/nz/mareas-linz.js";
+import { aniosNecesarios } from "../../functions/_lib/nz/prevision-nz.js";
 
 const RAIZ_REPO = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 export const BASE_URL = "https://costaviva.org";
@@ -37,18 +39,20 @@ async function json(url) {
   return r.json();
 }
 
-export async function previsionDeSpot(slug) {
-  const datos = await json(`${BASE_URL}/prevision`);
+// `region` "nz" (2026-10-11, piezas de NZ): /prevision?region=nz.
+export async function previsionDeSpot(slug, region = "es") {
+  const datos = await json(`${BASE_URL}/prevision${region === "nz" ? "?region=nz" : ""}`);
   const spot = datos.spots.find((s) => s.slug === slug);
   if (!spot || spot.error || !spot.bloques?.length) throw new Error(`/prevision no trae datos de "${slug}"`);
   return { spot, fuentes: datos.fuentesDatos || ["openmeteo"] };
 }
 
 // Mismo cálculo que la ficha de la app: serie horaria de /meteo + índice.
-export async function resumenDeSpot(slug, especiesDatos, ahoraISO = ahoraMadridISO()) {
+// `zona`: la de la hora de publicación (NZ: Pacific/Auckland, la del spot).
+export async function resumenDeSpot(slug, especiesDatos, ahoraISO = ahoraMadridISO(), zona = null) {
   const s = SPOTS.find((x) => x.slug === slug);
-  // Hora de Madrid a propósito (ZONA_NEGOCIO): casa con ahoraISO, que es la hora de publicación en España.
-  const coord = `latitude=${s.lat}&longitude=${s.lon}&timezone=Europe%2FMadrid`;
+  // Hora de Madrid a propósito (ZONA_NEGOCIO) si no se dice otra: casa con ahoraISO, que es la hora de publicación en España.
+  const coord = `latitude=${s.lat}&longitude=${s.lon}&timezone=${encodeURIComponent(zona || "Europe/Madrid")}`;
   const [marino, tiempo] = await Promise.all([
     json(`${BASE_URL}/meteo/marine?${coord}&past_days=1&forecast_days=2&hourly=wave_height,wave_direction,sea_surface_temperature,sea_level_height_msl`),
     json(`${BASE_URL}/meteo/forecast?${coord}&past_days=5&forecast_days=2&hourly=windspeed_10m,winddirection_10m,pressure_msl,precipitation&windspeed_unit=kmh`),
@@ -90,6 +94,20 @@ export async function vientoDeSpot(slug, objetivoISO = null) {
     return { u: { header: u.header, data: u.data }, v: { header: v.header, data: v.data } };
   } catch (e) {
     console.warn(`Sin viento animado (${e.message}).`);
+    return null;
+  }
+}
+
+// Marea de LINZ de un spot de NZ en un instante (la hora de publicación),
+// con los mismos ficheros que sirve la web (datos/nz/), leídos del repo.
+export function mareaNZ(slug, instante) {
+  const spot = SPOTS.find((x) => x.slug === slug);
+  try {
+    const leer = (f) => JSON.parse(readFileSync(join(RAIZ_REPO, "datos", "nz", f), "utf8"));
+    const anios = aniosNecesarios(instante.getTime()).map((y) => { try { return leer(`linz-mareas-${y}.json`); } catch { return null; } }).filter(Boolean);
+    return mareaSpotNZ(spot, leer("linz-puertos.json"), anios, instante.getTime());
+  } catch (e) {
+    console.warn(`Sin marea de LINZ para ${slug} (${e.message}).`);
     return null;
   }
 }

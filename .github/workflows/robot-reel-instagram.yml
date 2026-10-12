@@ -27,9 +27,15 @@ name: Robot de marketing — reel de Instagram
 # (20261009130000_programador_marketing.sql, viernes 17:10 UTC); este
 # `schedule:` es el respaldo y no repite si ya está hecho
 # (calendario-estado.json).
+#
+# Nueva Zelanda (2026-10-11): reel en inglés para el sábado a las 07:00 de NZ
+# (condiciones o especie, rotacion-reels-nz.json), preparado el viernes: pg_cron
+# a las 05:20 UTC (20261012090000_programador_marketing_nz.sql) y este segundo
+# `schedule:` de respaldo a las 06:20 UTC. A mano: input `mercado`.
 on:
   schedule:
     - cron: "20 18 * * 5"
+    - cron: "20 6 * * 5"
   workflow_dispatch:
     inputs:
       fecha:
@@ -40,8 +46,14 @@ on:
         description: "Forzar un tipo (condiciones, especie, diario, grupos, alarma); vacío = el siguiente de la rotación"
         required: false
         type: string
+      mercado:
+        description: "es (España, en español) o nz (Nueva Zelanda, en inglés, 07:00 hora de NZ)"
+        required: false
+        default: "es"
+        type: choice
+        options: ["es", "nz"]
       spot:
-        description: "Forzar un spot en los reels de condiciones (slug, p. ej. bakio); vacío = el de la rotación de zonas"
+        description: "Forzar un spot en los reels de condiciones (slug, p. ej. bakio; de NZ si mercado es nz); vacío = el de la rotación de zonas"
         required: false
         type: string
       clip:
@@ -88,6 +100,7 @@ jobs:
           TIPO_REEL: ${{ inputs.tipo }}
           SPOT_REEL: ${{ inputs.spot }}
           CLIP_REEL: ${{ inputs.clip }}
+          MERCADO: ${{ inputs.mercado || (github.event.schedule == '20 6 * * 5' && 'nz') || 'es' }}
         run: node generar-reel-instagram.mjs
 
       - name: Comitear el reel (y dejar solo los 4 últimos)
@@ -99,7 +112,7 @@ jobs:
           git add assets/marketing/reels/
           # Con spot o clip forzados el generador no escribe todos los ficheros
           # de rotación: añadir solo los que existen (si no, git add falla).
-          for f in scripts/marketing/rotacion-reels.json scripts/marketing/rotacion-zonas.json scripts/marketing/calendario-estado.json; do
+          for f in scripts/marketing/rotacion-reels.json scripts/marketing/rotacion-reels-nz.json scripts/marketing/rotacion-zonas.json scripts/marketing/rotacion-zonas-nz.json scripts/marketing/calendario-estado.json; do
             if [ -e "$f" ]; then git add "$f"; fi
           done
           if git diff --cached --quiet; then

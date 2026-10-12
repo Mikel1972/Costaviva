@@ -3,7 +3,8 @@
 // de Instagram y Facebook elige tema con las palabras clave que deja cada
 // lunes el robot de comun (Mikel1972/comun, scripts/seo/palabras.mjs, sin
 // IA) en datos-robots/seo/palabras-<país>.json (el calendario de España lee
-// palabras-es.json). Lógica pura y sin red:
+// palabras-es.json; el de Nueva Zelanda, palabras-nz.json con
+// mercado "nz"). Lógica pura y sin red:
 // test/palabras-redes.test.js.
 //
 // Qué decide aquí, y nada más:
@@ -71,31 +72,47 @@ export function elegirPorDemanda(candidatas, slugDeCandidata, valores) {
   return mejor ? { elegida: mejor, valor: max } : null;
 }
 
+// Páginas de cada mercado (NZ, 2026-10-11: las públicas en inglés).
+export const PREFIJOS = {
+  es: { especie: ["/especies/"], spot: ["/mareas/", "/spots/"], zona: [] },
+  nz: { especie: ["/en/species/"], spot: ["/en/tides/", "/en/spots/"], zona: ["/en/spots/region/", "/en/tides/region/"] },
+};
+const prefijosDe = (mercado) => PREFIJOS[mercado] || PREFIJOS.es;
+
 // Preferencia de especie para elegirEspeciePost (id con _ → slug con -).
-export function preferenciaEspecie(palabras, mes) {
+export function preferenciaEspecie(palabras, mes, mercado = "es") {
   if (!palabras) return null;
-  const valores = valoresPorSlug(palabras, { grupos: ["especie"], prefijos: ["/especies/"], mes });
+  const valores = valoresPorSlug(palabras, { grupos: ["especie"], prefijos: prefijosDe(mercado).especie, mercado, mes });
   return valores.size ? (e) => valores.get(String(e.id).replace(/_/g, "-")) ?? 0 : null;
 }
 
 // Orden de los spots de una zona: primero los más buscados (mareas o spot).
-export function ordenarSpots(spots, palabras, mes) {
+// Las páginas de región de NZ (/en/spots/region/…) no cuentan como spot.
+export function ordenarSpots(spots, palabras, mes, mercado = "es") {
   if (!palabras) return spots;
-  const valores = valoresPorSlug(palabras, { grupos: ["spot", "region", "marea", "descubierto"], prefijos: ["/mareas/", "/spots/"], mes });
+  const valores = valoresPorSlug(palabras, { grupos: ["spot", "region", "marea", "descubierto"], prefijos: prefijosDe(mercado).spot, mercado, mes });
   if (!valores.size) return spots;
   return [...spots].sort((a, b) => (valores.get(b) ?? 0) - (valores.get(a) ?? 0));
 }
 
+// Zona de NZ con más demanda entre las que aún no han salido en el ciclo
+// (páginas /en/spots/region/<slug> y /en/tides/region/<slug>), o null.
+export function valoresZonas(palabras, mes, mercado = "nz") {
+  if (!palabras || !prefijosDe(mercado).zona.length) return new Map();
+  return valoresPorSlug(palabras, { grupos: ["region", "marea", "spot"], prefijos: prefijosDe(mercado).zona, mercado, mes });
+}
+
 // Hashtags de los términos con demanda (técnicas y temas), sin repetir los
 // fijos. Solo términos cortos (1-2 palabras) y de la semana.
-export function hashtagsDemanda(palabras, base = "", { max = 4, mes, grupos = ["tecnica", "prevision", "marea"] } = {}) {
+const VACIAS = ["de", "del", "la", "el", "en", "a", "al", "para", "con", "the", "to", "for", "in", "of", "at", "best", "time"];
+export function hashtagsDemanda(palabras, base = "", { max = 4, mes, grupos = ["tecnica", "prevision", "marea"], mercado = "es" } = {}) {
   if (!palabras) return [];
   const ya = new Set(String(base).toLowerCase().split(/\s+/).filter(Boolean));
   const out = [];
-  const lista = (palabras.terminos || []).filter((t) => t.mercado === "es" && grupos.includes(t.grupo) && t.puntuacion > 0)
+  const lista = (palabras.terminos || []).filter((t) => t.mercado === mercado && grupos.includes(t.grupo) && t.puntuacion > 0)
     .sort((a, b) => valorRedes(b, mes) - valorRedes(a, mes));
   for (const t of lista) {
-    const palabrasT = t.termino.split(/\s+/).filter((x) => !["de", "del", "la", "el", "en", "a", "al", "para", "con"].includes(x));
+    const palabrasT = t.termino.split(/\s+/).filter((x) => !VACIAS.includes(x));
     if (!palabrasT.length || palabrasT.length > 2) continue;
     const h = `#${palabrasT.join("").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9ñ]/g, "")}`;
     if (h.length < 4 || ya.has(h)) continue;
