@@ -1,13 +1,13 @@
 {
- "fecha": "2026-10-12T09:42:49.590Z",
- "lineasHistorial": 983,
+ "fecha": "2026-10-12T10:07:58.801Z",
+ "lineasHistorial": 996,
  "etiquetas": 138,
  "etiquetasClaude": 43,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.1897,
+   "a": 1.1783,
    "p": 0.5,
-   "n": 37,
+   "n": 38,
    "nEtiquetas": 7,
    "nEtiquetasClaude": 3,
    "franjasClaude": [
@@ -16,7 +16,7 @@
    "dias": 5,
    "hMin": 0.15,
    "hMax": 0.54,
-   "errorRel": 0.697,
+   "errorRel": 0.7,
    "pocosDatos": false
   },
   "hondarribia/bocana": {
@@ -220,9 +220,9 @@
    "pocosDatos": false
   },
   "getaria/malkorbe": {
-   "a": 9.3504,
+   "a": 9.2869,
    "p": 1,
-   "n": 8,
+   "n": 9,
    "nEtiquetas": 3,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
@@ -303,8 +303,8 @@
    "sustituye": true,
    "motivo": "7 etiquetas",
    "ruido": {
-    "ruido": 0.844,
-    "pares": 11
+    "ruido": 0.613,
+    "pares": 12
    }
   },
   "donostia": {
