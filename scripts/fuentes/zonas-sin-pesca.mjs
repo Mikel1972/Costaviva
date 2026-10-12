@@ -13,6 +13,12 @@
 //     norma, artículo, datum y coordenadas originales de cada una; dudas y
 //     criterios en datos/es/zonas-sin-pesca-NOTAS.md). Los textos legales no
 //     tienen derechos de autor (art. 13 LPI).
+//   assets/datos/zonas-sin-pesca/pt.geojson  <- datos/pt/zonas-sin-pesca-dr.geojson
+//     (2026-10-12: 52 zonas de Portugal continental, Madeira y Azores,
+//     sacadas del Diário da República y de los diarios oficiales de las
+//     regiones autónomas; mismos campos que España. Criterios y lo que falta
+//     (Arrábida, Porto Santo...) en datos/pt/zonas-sin-pesca-NOTAS.md. Textos
+//     legales sin derechos de autor: art. 7 del Código do Direito de Autor).
 //
 // Cada zona lleva solo { nombre, tipo }: "reserva" y "hpa" = no se pesca nada;
 // "spa" = protección del fondo (caña sí, artes de fondo no), que el mapa
@@ -62,7 +68,7 @@ export function zonasNZ(doc) {
 // España: "sin_pesca" se dibuja como reserva (rojo); "parcial" (se pesca
 // con limitaciones) en naranja, con su regla. Cada zona lleva la norma y su
 // enlace para el popup.
-export function zonasES(boe) {
+export function zonasES(boe, region = "es", atribucion = "Zonas sin pesca: elaboración propia a partir de los textos legales (BOE, DOG, DOGV)", fuente = "datos/es/zonas-sin-pesca-boe.geojson") {
   const features = [];
   for (const f of boe.features || []) {
     const p = f.properties || {};
@@ -83,14 +89,19 @@ export function zonasES(boe) {
   }
   return {
     type: "FeatureCollection",
-    region: "es",
-    atribucion: "Zonas sin pesca: elaboración propia a partir de los textos legales (BOE, DOG, DOGV)",
-    fuente: "datos/es/zonas-sin-pesca-boe.geojson",
+    region,
+    atribucion,
+    fuente,
     generado: boe.generado || null,
     aviso: "Contorno aproximado sacado del texto legal: el límite legal es el de la norma.",
     features,
   };
 }
+
+// Portugal: mismo formato que España.
+export const zonasPT = (dr) => zonasES(dr, "pt",
+  "Zonas sem pesca: elaboração própria a partir dos textos legais (Diário da República, JORAM, JORAA)",
+  "datos/pt/zonas-sin-pesca-dr.geojson");
 
 function main() {
   const doc = JSON.parse(readFileSync(join(RAIZ, "datos", "nz", "reservas-marinas-doc.geojson"), "utf8"));
@@ -105,6 +116,11 @@ function main() {
   const textoEs = JSON.stringify(es) + "\n";
   writeFileSync(join(salida, "es.geojson"), textoEs);
   console.log(`es: ${es.features.length} zonas, ${Buffer.byteLength(textoEs)} bytes.`);
+  const dr = JSON.parse(readFileSync(join(RAIZ, "datos", "pt", "zonas-sin-pesca-dr.geojson"), "utf8"));
+  const pt = zonasPT(dr);
+  const textoPt = JSON.stringify(pt) + "\n";
+  writeFileSync(join(salida, "pt.geojson"), textoPt);
+  console.log(`pt: ${pt.features.length} zonas, ${Buffer.byteLength(textoPt)} bytes.`);
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) main();
