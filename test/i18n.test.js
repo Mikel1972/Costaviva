@@ -42,6 +42,8 @@ const IGUALES_PERMITIDOS = new Set([
   "login.region.cantabria", "login.region.asturias", "login.region.galicia", "login.region.portugal",
   // Selector de región del mapa (NZ, 2026-10-11): "New Zealand" en los dos.
   "mapa.region.nz", "mapa.region.chip_nz", "mapa.region.pt",
+  // Preferencias (2026-10-12): "Imperial" se escribe igual.
+  "comun.pref.imperial",
 ]);
 
 const variables = (v) => [...new Set(JSON.stringify(v).match(/\{\w+\}/g) || [])].sort();
@@ -164,8 +166,9 @@ test("t(): variables, plurales, idioma pedido, respaldo en español y clave desc
   assert.equal(I18n.t("mapa.vigencia.hace", { minutos: 5 }, "en"), "updated 5 min ago");
   assert.equal(I18n.t("comun.n_dias", { n: 1 }, "en"), "1 day");
   assert.equal(I18n.t("comun.n_dias", { n: 3 }, "en"), "3 days");
-  assert.equal(I18n.t("rayos.conteo", { n: 1, min: 5, km: 100 }), "1 rayo en los últimos 5 min a menos de 100 km.");
-  assert.equal(I18n.t("rayos.conteo", { n: 2, min: 5, km: 100 }, "en"), "2 strikes in the last 5 min within 100 km.");
+  // La distancia llega ya con su unidad (I18n.distancia, preferencias del usuario).
+  assert.equal(I18n.t("rayos.conteo", { n: 1, min: 5, km: "100 km" }), "1 rayo en los últimos 5 min a menos de 100 km.");
+  assert.equal(I18n.t("rayos.conteo", { n: 2, min: 5, km: "100 km" }, "en"), "2 strikes in the last 5 min within 100 km.");
   assert.equal(I18n.t("no.existe"), "no.existe");
   assert.equal(I18n.t("mapa.vigencia.hace", {}), "actualizado hace {minutos} min", "sin la variable se ve el hueco");
 });
@@ -281,15 +284,19 @@ test("motivos del índice por clave: en español lo de siempre, en inglés tradu
   const conClave = r.razones.filter((x) => x.clave);
   assert.ok(conClave.length >= 3, "los motivos base llevan su clave");
   for (const x of conClave) {
-    assert.equal(x.texto, I18n.t(x.clave, x.vars, "es"), "en español, el texto es el de la clave");
+    // vars lleva los números en métrico; la unidad la pone textoMotivo (preferencias).
+    assert.equal(x.texto, VA.textoMotivo(x.clave, x.vars, "es"), "en español, el texto es el de la clave");
     assert.equal(x.textoEs, x.texto);
-    assert.notEqual(I18n.t(x.clave, x.vars, "en"), x.texto, `${x.clave}: sin traducir`);
+    assert.notEqual(VA.textoMotivo(x.clave, x.vars, "en"), x.texto, `${x.clave}: sin traducir`);
   }
   // Puntos clave, letra por letra como antes de los idiomas.
   assert.ok(r.razones.some((x) => x.texto === "viento fuerte (45 km/h)"));
   assert.ok(r.razones.some((x) => x.texto === "mar de 1-1,5 m"));
   assert.ok(r.razones.some((x) => x.texto === "agua a 17,4 °C, cerca de su óptimo (" + especie.temperatura_agua.rango.join("-") + ")" || x.factor !== "temperatura"));
-  assert.equal(I18n.t("va.ola.mar_de", { a: "1", b: "1.5" }, "en"), "1-1.5 m sea");
+  assert.equal(VA.textoMotivo("va.ola.mar_de", { a: 1, b: 1.5 }, "en"), "1-1.5 m sea");
+  // Motivos guardados antes de las unidades (números ya escritos, "1,5"): igual.
+  assert.equal(VA.textoMotivo("va.ola.mar_de", { a: "1", b: "1,5" }, "es"), "mar de 1-1,5 m");
+  assert.equal(VA.textoMotivo("va.viento.fuerte", { v: 45 }, "es"), "viento fuerte (45 km/h)");
   assert.equal(VA.NOMBRE_MODALIDAD.costa, "Desde costa");
   assert.equal(VA.textoMeses([1, 2, 3]), "ene–mar");
   // Lo interno se reconoce aunque el texto esté en inglés.

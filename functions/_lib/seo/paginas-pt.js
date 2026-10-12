@@ -78,7 +78,7 @@ export function nombrePt(e) {
 // Motivo del índice en portugués: por su clave de assets/i18n; las reglas
 // expertas, por su texto_pt. Sin traducción, no se enseña.
 export function motivoPt(m, especiesDatos) {
-  if (m.clave) return t(m.clave, m.vars);
+  if (m.clave) return VA.textoMotivo(m.clave, m.vars, "pt", true);
   const regla = (especiesDatos?.reglas_expertas?.reglas || []).find((r) => r.texto === m.texto);
   return soloPt(regla, "texto");
 }

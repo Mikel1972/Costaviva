@@ -120,8 +120,8 @@ export function textoClorofila(v) {
 // llega a la orilla; capas-mar.js valorCercano).
 export function textoTemperatura(v, km = 0) {
   if (v === null || v === undefined || !Number.isFinite(v)) return I18n.t("cc.temp.sin_dato");
-  if (km > 0) return I18n.t("capas.tagua.formato_cerca", { v: coma(v), km: kmCerca(km) });
-  return I18n.t("capas.tagua.formato", { v: coma(v) });
+  if (km > 0) return I18n.t("capas.tagua.formato_cerca", { v: I18n.temp(v, null), km: I18n.distancia(kmCerca(km), 0) });
+  return I18n.t("capas.tagua.formato", { v: I18n.temp(v, null) });
 }
 // Distancia redondeada al km (nunca "a 0 km").
 export const kmCerca = (km) => Math.max(1, Math.round(km));
@@ -130,7 +130,7 @@ export const kmCerca = (km) => Math.max(1, Math.round(km));
 // frentes.js (rasgosPunto, radio 10 km). null = fuera de la malla.
 export function textoFrentes(r) {
   if (!r) return I18n.t("cc.frentes.sin_dato");
-  const dist = (k) => (r[`dist_${k}_km`] <= 3 ? I18n.t("frentes.aqui_mismo") : I18n.t("frentes.a_unos", { km: Math.round(r[`dist_${k}_km`]) }));
+  const dist = (k) => (r[`dist_${k}_km`] <= 3 ? I18n.t("frentes.aqui_mismo") : I18n.t("frentes.a_unos", { km: I18n.distancia(Math.round(r[`dist_${k}_km`]), 0) }));
   if (r.frente_ambos) return I18n.t("cc.frentes.ambos", { dist: dist("frente_ambos") });
   if (r.frente_y_corriente) return I18n.t("cc.frentes.y_corriente", { dist: dist("frente_y_corriente") });
   const partes = [];
@@ -138,7 +138,8 @@ export function textoFrentes(r) {
   if (r.frente_termico) partes.push(I18n.t("cc.frentes.termico", { dist: dist("frente_termico") }));
   if (partes.length) return partes.join(I18n.t("va.seg.y")).replace(/^./, (c) => c.toUpperCase());
   if (r.convergencia) return I18n.t("cc.frentes.convergencia", { dist: dist("convergencia") });
-  return r.frente_clorofila === null ? I18n.t("frentes.sin_cambios_temp") : I18n.t("frentes.sin_frentes");
+  const radio = { km: I18n.distancia(10) };
+  return r.frente_clorofila === null ? I18n.t("frentes.sin_cambios_temp", radio) : I18n.t("frentes.sin_frentes", radio);
 }
 
 // Globo combinado: una línea por capa, en el orden de CAPAS, con su icono.
@@ -150,7 +151,7 @@ export function lineasGlobo(partes) {
 // Texto corto de la leyenda conjunta para cada fila (lo que se ve en el
 // mapa), una línea en el móvil.
 export function textoFila(nombre, modo, { intervalo = null } = {}) {
-  const cada = intervalo ? I18n.t("cc.fila.cada", { v: coma(intervalo) }) : "";
+  const cada = intervalo ? I18n.t("cc.fila.cada", { v: I18n.difTemp(intervalo) }) : "";
   if (nombre === "clorofila") return modo.relleno ? I18n.t("cc.fila.clorofila_relleno") : I18n.t("cc.fila.clorofila_lineas");
   if (nombre === "temperatura-agua") return modo.relleno ? I18n.t("cc.fila.tagua_relleno", { cada }) : I18n.t("cc.fila.tagua_lineas", { cada });
   if (nombre === "corriente") return modo.relleno ? I18n.t("cc.fila.corriente_relleno") : I18n.t("cc.fila.corriente_flechas");

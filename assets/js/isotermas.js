@@ -299,19 +299,23 @@ export function etiquetasIsotermas(lineas, { ancho, alto, max = 8, separacion = 
   return elegidas;
 }
 
-// "18°", "18,5°" (coma decimal).
+// Preferencias de unidades (2026-10-12): con el sistema imperial, los números
+// de las isotermas y de la leyenda van en °F (los niveles siguen en °C).
+const imperial = () => I18n.preferencias().unidades === "imperial";
+const numeroGrados = (n) => (imperial() ? I18n.num(n * 9 / 5 + 32, 0) : Number.isInteger(n) ? String(n) : I18n.decimal(n.toFixed(1)));
+// "18°", "18,5°" (coma decimal); "64°" en imperial.
 export function textoGrados(n) {
-  return `${Number.isInteger(n) ? n : I18n.decimal(n.toFixed(1))}°`;
+  return `${numeroGrados(n)}°`;
 }
-// "16 °C", "16,5 °C" (leyenda).
+// "16 °C", "16,5 °C" (leyenda); "61 °F" en imperial.
 export function textoExtremo(n) {
-  return `${Number.isInteger(n) ? n : I18n.decimal(n.toFixed(1))} °C`;
+  return `${numeroGrados(n)} ${imperial() ? "°F" : "°C"}`;
 }
 // "18,4 °C en superficie" (al tocar el mapa).
 export function textoToque(v) {
-  return I18n.t("capas.tagua.formato", { v: I18n.decimal(v.toFixed(1)) });
+  return I18n.t("capas.tagua.formato", { v: I18n.temp(v, 1) });
 }
-// "Líneas cada 1 °C", "cada 0,5 °C".
+// "Líneas cada 1 °C", "cada 0,5 °C" (en imperial, cada 1,8 °F / 0,9 °F).
 export function textoIntervalo(paso) {
-  return I18n.t("iso.intervalo", { v: I18n.decimal(String(paso)) });
+  return I18n.t("iso.intervalo", { v: I18n.difTemp(paso) });
 }
