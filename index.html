@@ -1270,9 +1270,9 @@
     <button class="rios-toggle" id="toggleRios" title="Ríos" aria-label="Mostrar/ocultar ríos" data-i18n-aria-label="mapa.capa.rios_aria" data-i18n-title="mapa.capa.rios">〰️<span class="capa-label" data-i18n="mapa.capa.rios">Ríos</span></button>
     <button class="boyas-toggle" id="toggleBoyas" title="Boyas reales (Puertos del Estado vía Copernicus Marine)" aria-label="Mostrar/ocultar boyas" data-i18n-aria-label="mapa.capa.boyas_aria" data-i18n-title="mapa.capa.boyas_title">⚓<span class="capa-label" data-i18n="mapa.capa.boyas">Boyas</span></button>
     <button class="boyas-toggle clorofila-toggle" id="toggleClorofila" title="Clorofila del mar (plancton): satélite de Copernicus" aria-label="Mostrar/ocultar capa de clorofila" aria-pressed="false" data-i18n-aria-label="mapa.capa.clorof_aria" data-i18n-title="mapa.capa.clorof_title">🌿<span class="capa-label" data-i18n="mapa.capa.clorof">Clorof.</span></button>
-    <button class="boyas-toggle tempagua-toggle" id="toggleTempAgua" title="Temperatura del agua (modelo IBI de Copernicus)" aria-label="Mostrar/ocultar capa de temperatura del agua" aria-pressed="false" data-i18n-aria-label="mapa.capa.tagua_aria" data-i18n-title="mapa.capa.tagua_title">🌡<span class="capa-label" data-i18n="mapa.capa.tagua">T. agua</span></button>
+    <button class="boyas-toggle tempagua-toggle" id="toggleTempAgua" title="Temperatura del agua (modelos de Copernicus Marine)" aria-label="Mostrar/ocultar capa de temperatura del agua" aria-pressed="false" data-i18n-aria-label="mapa.capa.tagua_aria" data-i18n-title="mapa.capa.tagua_title">🌡<span class="capa-label" data-i18n="mapa.capa.tagua">T. agua</span></button>
     <button class="boyas-toggle frentes-toggle" id="toggleFrentes" title="Frentes (bordes de clorofila y de temperatura) y corrientes: Copernicus" aria-label="Mostrar/ocultar capa de frentes y corrientes" aria-pressed="false" data-i18n-aria-label="mapa.capa.frentes_aria" data-i18n-title="mapa.capa.frentes_title">〰<span class="capa-label" data-i18n="mapa.capa.frentes">Frentes</span></button>
-    <button class="boyas-toggle corriente-toggle" id="toggleCorriente" title="Corriente del mar (media del día, sin marea): fuerza y dirección, modelo IBI de Copernicus" aria-label="Mostrar/ocultar capa de corriente" aria-pressed="false" data-i18n-aria-label="mapa.capa.corriente_aria" data-i18n-title="mapa.capa.corriente_title">🌊<span class="capa-label" data-i18n="mapa.capa.corriente">Corriente</span></button>
+    <button class="boyas-toggle corriente-toggle" id="toggleCorriente" title="Corriente del mar (media del día, sin marea): fuerza y dirección, modelos de Copernicus Marine" aria-label="Mostrar/ocultar capa de corriente" aria-pressed="false" data-i18n-aria-label="mapa.capa.corriente_aria" data-i18n-title="mapa.capa.corriente_title">🌊<span class="capa-label" data-i18n="mapa.capa.corriente">Corriente</span></button>
     <div class="confirmar-ubicacion-panel" id="eligeMetodoPanel">
       <div class="titulo" data-i18n="mapa.ubic.como_marcar">¿Cómo quieres marcar el punto?</div>
       <div class="botones" style="flex-direction:column; gap:8px;">
@@ -2407,12 +2407,13 @@ const map = L.map("map", {
   zoom: VISTA_INICIAL_REGION[VISTA_INICIAL.region].zoom,
   // Hasta ver el globo entero (Mikel, 2026-10-11: "si no es muy difícil
   // llegar a NZ"): zoom 1-2 en el móvil. Arriba y abajo, sin franjas grises;
-  // a los lados el mundo se repite y los marcadores saltan a la copia que se
-  // ve (worldCopyJump), así NZ nunca queda partida por el antimeridiano.
+  // a los lados el mundo se repite. Sin worldCopyJump (2026-10-12): en
+  // Leaflet 1.9 salta la VISTA a -180..180 pero no los marcadores ni las
+  // capas, y al arrastrar hacia Chatham (183,5 E) desaparecía todo NZ. Lo
+  // sustituye mantenerVistaEnFranja() (después de crear el mapa).
   minZoom: 1,
   maxBounds: [[-85, -540], [85, 540]],
   maxBoundsViscosity: 1,
-  worldCopyJump: true,
   // Tope en 17: el mapa base vectorial (OpenFreeMap) tiene detalle de sobra;
   // más cerca ya no aporta nada para pescar.
   maxZoom: 17,
@@ -2436,6 +2437,22 @@ const map = L.map("map", {
 // quedan, esos sí son una condición real de uso de esos servicios
 // gratuitos, no solo un logo de la librería.
 map.attributionControl.setPrefix(false);
+// El centro de la vista se queda entre -40 y 320 de longitud: España (-30..5)
+// y NZ (162..186, con sus spots, capas y viento en esas longitudes) se ven
+// siempre enteras y en la misma copia del mundo. Si se arrastra fuera, se
+// vuelve sin animación a la misma vista una vuelta más allá.
+const FRANJA_LONGITUD = [-40, 320];
+function mantenerVistaEnFranja() {
+  const c = map.getCenter();
+  const l = c.lng > FRANJA_LONGITUD[1] ? c.lng - 360 : c.lng < FRANJA_LONGITUD[0] ? c.lng + 360 : c.lng;
+  if (l !== c.lng) map.setView([c.lat, l], map.getZoom(), { animate: false });
+}
+map.on("moveend", mantenerVistaEnFranja);
+// Longitud de un punto de fuera (GPS, rayos, geocodificación: -180..180) en
+// la copia del mundo que se ve: -176,5 (Chatham) es 183,5 junto a NZ.
+const lonEnVista = (lon) => (lon < FRANJA_LONGITUD[0] ? lon + 360 : lon);
+// Y al revés, para pedir a una API que solo admite -180..180.
+const lonEstandar = (lon) => ((((lon + 180) % 360) + 360) % 360) - 180;
 // Arranque en NZ: el país entero, no una zona (fitBounds sobre
 // VISTAS_REGION.nz; también si la vista guardada en el selector es "nz").
 (function encuadrarArranque() {
@@ -2688,7 +2705,16 @@ function avisoCapa(texto) {
   clearTimeout(temporizadorAvisoCapa);
   temporizadorAvisoCapa = setTimeout(() => { el.hidden = true; }, 6000);
 }
+// Capas con datos solo de España y Portugal (ríos, boyas, estaciones de
+// AEMET, fondo de EMODnet, radar OPERA): en NZ se dice en vez de enseñar una
+// capa vacía (revisión de menús, 2026-10-12). Devuelve true si se avisó.
+function avisoSoloIberiaEnNZ(claveNombre) {
+  if (regionDeCentro() !== "nz") return false;
+  avisoCapa(I18n.t("mapa.capa.solo_iberia", { capa: I18n.t(claveNombre) }));
+  return true;
+}
 document.getElementById("toggleEstaciones").addEventListener("click", (e) => {
+  if (!map.hasLayer(capaEstaciones) && avisoSoloIberiaEnNZ("mapa.capa.estac_title")) return;
   if (map.hasLayer(capaEstaciones)) {
     map.removeLayer(capaEstaciones);
     e.currentTarget.classList.remove("activo");
@@ -2723,6 +2749,8 @@ conTipoFondo((TF) => {
 });
 // Selector del botón "Fondo": cuando las dos capas y el selector ya están.
 let selectorFondo = null;
+// Fondo (EMODnet: solo Europa): en NZ, aviso al pulsar el botón.
+document.getElementById("toggleFondo").addEventListener("click", () => avisoSoloIberiaEnNZ("mapa.capa.fondo_title"));
 Promise.all([
   new Promise((ok) => conBatimetria(ok)),
   new Promise((ok) => conTipoFondo(ok)),
@@ -2737,6 +2765,7 @@ Promise.all([
   });
 });
 document.getElementById("toggleRios").addEventListener("click", (e) => {
+  if (!map.hasLayer(capaRios) && avisoSoloIberiaEnNZ("mapa.capa.rios")) return;
   if (map.hasLayer(capaRios)) {
     map.removeLayer(capaRios);
     e.currentTarget.classList.remove("activo");
@@ -2747,6 +2776,7 @@ document.getElementById("toggleRios").addEventListener("click", (e) => {
   }
 });
 document.getElementById("toggleBoyas").addEventListener("click", (e) => {
+  if (!map.hasLayer(capaBoyas) && avisoSoloIberiaEnNZ("mapa.capa.boyas")) return;
   if (map.hasLayer(capaBoyas)) {
     map.removeLayer(capaBoyas);
     e.currentTarget.classList.remove("activo");
@@ -2798,7 +2828,7 @@ const CAPAS_MAR = {
     boton: "toggleTempAgua",
     titulo: I18n.t("capas.tagua.titulo"),
     corto: I18n.t("capas.tagua.corto"),
-    // Escala FIJA por bandas de 1 °C de 8 a 30 °C (2026-10-09, Mikel: "El
+    // Escala FIJA por bandas de 1 °C de 8 a 30 °C (de 0 a 30 desde el 2026-10-12) (2026-10-09, Mikel: "El
     // color debiera ser el mismo"): cada grado tiene siempre su color, en
     // cualquier zona y zoom (paleta y por qué en assets/js/isotermas.js), e
     // isotermas con su número. valorColor, paradas y extremos de aquí solo
@@ -2812,8 +2842,9 @@ const CAPAS_MAR = {
       : I18n.t("capas.tagua.formato", { v: I18n.num(v, 1) })),
     resumen: I18n.t("capas.tagua.resumen"),
     explica: I18n.t("capas.tagua.explica"),
-    fecha: (d) => I18n.t("capas.tagua.fecha", { fecha: fechaCorta(d.fecha) }),
-    fechaFila: (d) => I18n.t("capas.tagua.fecha_fila", { fecha: fechaCorta(d.fecha) }),
+    // NZ (capas/nz/, region "nz"): modelo GLOBAL a las 00:00 UTC, no IBI a las 12.
+    fecha: (d) => I18n.t(d.region === "nz" ? "capas.tagua.fecha_nz" : "capas.tagua.fecha", { fecha: fechaCorta(d.fecha) }),
+    fechaFila: (d) => I18n.t(d.region === "nz" ? "capas.tagua.fecha_fila_nz" : "capas.tagua.fecha_fila", { fecha: fechaCorta(d.fecha) }),
     maxDias: 3,
   },
   // 〰 Frentes y corrientes (2026-10-09): bordes de clorofila y de
@@ -2857,7 +2888,7 @@ const CAPAS_MAR = {
     tipo: "corriente",
     resumen: I18n.t("capas.corriente.resumen"),
     explica: I18n.t("capas.corriente.explica"),
-    fecha: (d) => I18n.t("capas.corriente.fecha", { fecha: fechaCorta(d.fecha) }),
+    fecha: (d) => I18n.t(d.region === "nz" ? "capas.corriente.fecha_nz" : "capas.corriente.fecha", { fecha: fechaCorta(d.fecha) }),
     fechaFila: (d) => I18n.t("capas.corriente.fecha_fila", { fecha: fechaCorta(d.fecha) }),
     maxDias: 3,
   },
@@ -2990,7 +3021,7 @@ function pintarIsotermas(estado, d) {
   }
   estado.ms = performance.now() - t0;
 }
-// Leyenda de 🌡 T. agua: barra fija de 8 a 30 °C con el tramo visible
+// Leyenda de 🌡 T. agua: barra fija de 0 a 30 °C con el tramo visible
 // recuadrado y, debajo, una casilla por grado visible con su número (mismos
 // colores que el mapa, siempre). dom = { tramo?, fila? } (la fila de la
 // leyenda de varias capas no lleva barra).
@@ -5637,6 +5668,16 @@ function quitarRayosSat() {
 }
 async function pintarRayosSat() {
   const nota = document.getElementById("notaRayosSatelite");
+  // El satélite MTG y la imagen de AEMET son de Europa/España: en NZ solo
+  // quedan los rayos en tiempo real (Xweather, red mundial).
+  const enNZ = regionDeCentro() === "nz";
+  const enlaceAemet = document.getElementById("enlaceAemetRayos");
+  if (enlaceAemet) enlaceAemet.parentElement.hidden = enNZ;
+  if (enNZ) {
+    quitarRayosSat();
+    nota.textContent = I18n.t("mapa.rayos.nota_sat_nz");
+    return;
+  }
   const ultima = await ultimaHoraRayosSat();
   if (!document.getElementById("toggleRayos").classList.contains("activo")) return;
   quitarRayosSat();
@@ -5761,7 +5802,8 @@ async function actualizarRayosVivo() {
   try {
     const { data } = window.supabaseCliente ? await window.supabaseCliente.auth.getSession() : { data: null };
     const token = data?.session?.access_token;
-    const resp = await fetch(`/rayos-cerca?lat=${ref.lat.toFixed(4)}&lon=${ref.lon.toFixed(4)}`, {
+    // /rayos-cerca solo admite -180..180 (Chatham, 183,5, se pide como -176,5).
+    const resp = await fetch(`/rayos-cerca?lat=${ref.lat.toFixed(4)}&lon=${lonEstandar(ref.lon).toFixed(4)}`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
     datos = resp.ok ? await resp.json() : null;
@@ -5776,6 +5818,8 @@ async function actualizarRayosVivo() {
     pintarResumenRayos(R, { estado: "no_disponible" });
     return;
   }
+  // Cada rayo en la copia del mundo de la referencia (junto a NZ, -179 es 181).
+  datos.rayos = (datos.rayos || []).map((r) => ({ ...r, lon: r.lon + 360 * Math.round((ref.lon - r.lon) / 360) }));
   const ahora = Date.now() / 1000;
   for (const r of datos.rayos) {
     const edadMin = R.edadMinutos(r, ahora);
@@ -5812,6 +5856,7 @@ async function alMoverMapaRayos() {
     const zoomOk = map.getZoom() >= R.ZOOM_MIN_VIVO;
     if (R.debeCambiarReferencia(refRayos, centro, map.getZoom())) {
       refRayos = R.elegirReferencia({ centro });
+      pintarRayosSat();
       actualizarRayosVivo();
     } else if (zoomOk === (estadoRayos === "lejos")) {
       actualizarRayosVivo();
@@ -5832,7 +5877,8 @@ async function abrirRayos() {
   map.attributionControl.addAttribution(ATRIBUCION_RAYOS_VIVO);
   const panelSpot = document.getElementById("panel");
   const spot = panelSpot && panelSpot.classList.contains("visible") ? spotAbiertoActual : null;
-  const gps = spot ? null : await gpsSiHayPermiso();
+  const gpsCrudo = spot ? null : await gpsSiHayPermiso();
+  const gps = gpsCrudo ? { ...gpsCrudo, lon: lonEnVista(gpsCrudo.lon) } : null;
   if (!rayosActivo()) return;
   const c = map.getCenter();
   refRayos = R.elegirReferencia({ spot, gps, centro: { lat: c.lat, lon: c.lng } });
@@ -5965,7 +6011,7 @@ async function actualizarLuna() {
 
   const centro = map.getCenter();
   try {
-    const resp = await fetch(`/luna?lat=${centro.lat.toFixed(4)}&lon=${centro.lng.toFixed(4)}`, { cache: "no-store" });
+    const resp = await fetch(`/luna?lat=${centro.lat.toFixed(4)}&lon=${lonEstandar(centro.lng).toFixed(4)}`, { cache: "no-store" });
     const l = await resp.json();
     if (!resp.ok || l.error) throw new Error(l.error || "sin datos");
     document.getElementById("lunaEmoji").textContent = l.emoji;
@@ -6009,6 +6055,8 @@ document.getElementById("toggleNubes").addEventListener("click", (e) => {
   const boton = e.currentTarget;
   const control = prepararLluviaAnimada();
   if (!control) return;
+  // El radar OPERA y el satélite H SAF son de Europa: en NZ no se descargan.
+  if (!control.activo() && avisoSoloIberiaEnNZ("mapa.capa.lluvia")) return;
   if (control.activo()) {
     control.desactivar();
     boton.classList.remove("activo");
