@@ -79,9 +79,9 @@ test("/prevision (lo de España) y las páginas en español: los 105 de siempre,
   assert.match(paginaIndiceSpots(SPOTS_SEO).titulo, /^Spots de pesca en España y Portugal: 105 lugares/);
 });
 
-test("spots NZ: 59 en el lanzamiento, Dusky Sound fuera", () => {
-  assert.equal(SPOTS_NZ_TODOS.length, 60);
-  assert.equal(SPOTS_NZ.length, 59);
+test("spots NZ: 64 activos (59 del lanzamiento + 5 de islas), Dusky Sound fuera", () => {
+  assert.equal(SPOTS_NZ_TODOS.length, 65);
+  assert.equal(SPOTS_NZ.length, 64);
   const fuera = SPOTS_NZ_TODOS.filter((s) => s.activo === false).map((s) => s.slug);
   assert.deepEqual(fuera, ["nz-dusky-sound"]);
   assert.ok(!SPOTS.some((s) => s.slug === "nz-dusky-sound"));
@@ -89,7 +89,7 @@ test("spots NZ: 59 en el lanzamiento, Dusky Sound fuera", () => {
 
 test("spots NZ: forma, región MPI, zona horaria y punto de pesca real (OSM, < 300 m de la costa)", () => {
   const slugs = new Set(SPOTS_NZ_TODOS.map((s) => s.slug));
-  assert.equal(slugs.size, 60);
+  assert.equal(slugs.size, 65);
   const espana = new Set(SPOTS_ES.map((s) => s.slug));
   const regiones = new Set(["nz_auckland_kermadec", "nz_central", "nz_challenger", "nz_south_east", "nz_kaikoura", "nz_southland", "nz_fiordland"]);
   for (const s of SPOTS_NZ) {
@@ -248,7 +248,13 @@ test("mapa: NZ se pide sola (/prevision?region=nz), arranque en Auckland para NZ
   // Cada región con su petición: nunca todos los spots juntos.
   assert.match(html, /fetch\(`\/prevision\?\$\{params\}`/);
   assert.match(html, /const params = new URLSearchParams\(\{ region \}\)/);
-  assert.match(html, /nz: \{ centro: \[-36\.85, 174\.76\], zoom: 9 \}/, "Auckland");
+  // Arranque en NZ con el país entero (2026-10-12), no Auckland.
+  assert.match(html, /nz: \{ centro: \[-41\.3, 173\.5\], zoom: 5, encuadre: "nz" \}/, "NZ entera");
+  assert.match(html, /map\.fitBounds\(VISTAS_REGION\[id\]\.limites/);
+  // Círculos al tamaño del zoom y etiqueta de región que se va a los 2 s.
+  assert.match(html, /const ESCALA_SPOT_POR_ZOOM = /);
+  assert.match(html, /\.icono-spot > div \{ transform: scale\(var\(--escala-spot, 1\)\)/);
+  assert.match(html, /classList\.add\("resumen-oculto"\), 2000\)/);
   assert.match(html, /return \{ region: r === "nueva_zelanda" \? "nz" : "es", fija: false \};/, "región del usuario, como el idioma");
   assert.match(html, /minZoom: 1,/);
   assert.match(html, /worldCopyJump: true,/);

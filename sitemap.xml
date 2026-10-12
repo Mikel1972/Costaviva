@@ -1939,6 +1939,12 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://costaviva.org/en/spots/nz-durville-island</loc>
+    <lastmod>2026-10-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://costaviva.org/en/spots/nz-french-pass</loc>
     <lastmod>2026-10-11</lastmod>
     <changefreq>daily</changefreq>
@@ -2059,6 +2065,12 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://costaviva.org/en/spots/nz-matiatia</loc>
+    <lastmod>2026-10-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://costaviva.org/en/spots/nz-milford-sound</loc>
     <lastmod>2026-10-11</lastmod>
     <changefreq>daily</changefreq>
@@ -2137,7 +2149,19 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://costaviva.org/en/spots/nz-port-fitzroy</loc>
+    <lastmod>2026-10-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://costaviva.org/en/spots/nz-raglan</loc>
+    <lastmod>2026-10-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://costaviva.org/en/spots/nz-rangitoto-wharf</loc>
     <lastmod>2026-10-11</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
@@ -2186,6 +2210,12 @@
   </url>
   <url>
     <loc>https://costaviva.org/en/spots/nz-tolaga-bay-wharf</loc>
+    <lastmod>2026-10-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://costaviva.org/en/spots/nz-tryphena</loc>
     <lastmod>2026-10-11</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
@@ -2288,6 +2318,12 @@
   </url>
   <url>
     <loc>https://costaviva.org/en/tides/nz-deep-cove</loc>
+    <lastmod>2026-10-11</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://costaviva.org/en/tides/nz-durville-island</loc>
     <lastmod>2026-10-11</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.7</priority>
@@ -2413,6 +2449,12 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://costaviva.org/en/tides/nz-matiatia</loc>
+    <lastmod>2026-10-11</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://costaviva.org/en/tides/nz-milford-sound</loc>
     <lastmod>2026-10-11</lastmod>
     <changefreq>hourly</changefreq>
@@ -2491,7 +2533,19 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://costaviva.org/en/tides/nz-port-fitzroy</loc>
+    <lastmod>2026-10-11</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://costaviva.org/en/tides/nz-raglan</loc>
+    <lastmod>2026-10-11</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://costaviva.org/en/tides/nz-rangitoto-wharf</loc>
     <lastmod>2026-10-11</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.7</priority>
@@ -2540,6 +2594,12 @@
   </url>
   <url>
     <loc>https://costaviva.org/en/tides/nz-tolaga-bay-wharf</loc>
+    <lastmod>2026-10-11</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://costaviva.org/en/tides/nz-tryphena</loc>
     <lastmod>2026-10-11</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.7</priority>

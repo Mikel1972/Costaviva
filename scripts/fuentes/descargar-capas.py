@@ -146,6 +146,10 @@ def rejilla(lats, lons, valores, paso, log=False):
     # frente (0,0 % en todo). Con 1e-3 celdas de margen, un punto en el borde
     # va siempre a la celda que empieza en él. Fuera de los bordes no cambia.
     TOL = 1e-3
+    # Caja que cruza el antimeridiano (NZ, 162-186 E): una longitud que llegue
+    # como -180..-174 es la misma que 180..186.
+    if CAJA["este"] > 180:
+        lo2 = np.where(lo2 < CAJA["oeste"], lo2 + 360, lo2)
     f = np.floor((CAJA["norte"] - la2[ok]) / paso + TOL).astype(np.int64)
     c = np.floor((lo2[ok] - CAJA["oeste"]) / paso + TOL).astype(np.int64)
     dentro = (f >= 0) & (f < filas) & (c >= 0) & (c < cols)
@@ -708,8 +712,14 @@ def construir_frentes(r_chl, r_temp, r_corr, es_prueba):
 #     cmems_mod_glo_wav_anfc_0.083deg_PT3H-i  VHM0/VMDR/VTPK..., 1/12°, cada
 #       3 h, 2022-11-01 .. +10 días. No lo usan estas capas (el oleaje de los
 #       spots sale de Open-Meteo); queda anotado para la capa de olas.
-# Caja: 165-179 E, 48-34 S (Norte, Sur y Stewart; sin Chatham ni Kermadec,
-# que obligarían a cruzar el antimeridiano).
+# Caja: 162-186 E, 54-28 S (2026-10-12, Mikel: "NZ está en mitad del agua,
+# amplía la superficie marina visible al doble" y "más también para el este,
+# norte y sur"). Antes 165-179 E, 48-34 S (14° x 14°); ahora 24° x 26°
+# (x3,2). Entran Chatham (183,5 E), Kermadec (Raoul, 29,3 S), Auckland
+# Islands y Campbell (52,5 S). Cruza el antimeridiano: el toolbox
+# (subset_xarray.x_axis_selection) devuelve las longitudes ya desplazadas a
+# 162..186 y, por si acaso, rejilla() pasa a +360 las que llegaran como
+# -180..-174.
 #
 # Umbrales adaptados a la resolución (malla de los frentes 1/12° ≈ 9,3 km
 # en latitud y 6,4-7,7 km en longitud a 34-48 S, frente a 1/18° ≈ 6 km en
@@ -740,7 +750,7 @@ REGIONES = {
         },
     },
     "nz": {
-        "caja": {"norte": -34.0, "sur": -48.0, "oeste": 165.0, "este": 179.0},
+        "caja": {"norte": -28.0, "sur": -54.0, "oeste": 162.0, "este": 186.0},
         "capas": {
             "clorofila": {
                 "producto": "OCEANCOLOUR_GLO_BGC_L4_NRT_009_102",
