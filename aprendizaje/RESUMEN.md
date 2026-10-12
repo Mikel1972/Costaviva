@@ -34,13 +34,14 @@ Barreras: solo el peso (confianza) de reglas expertas, como mucho ±20 % por sem
 
 ## Vigilancia de los datos
 
-- Etiquetas de olas de Claude (rutina diaria): último dato hace 83 h (se espera cada 48 h)
+- Etiquetas de olas de Claude (rutina diaria): último dato hace 91 h (se espera cada 48 h)
 - Observaciones abiertas GBIF (martes): sin datos
 - el modelo da -30 % frente a la boya Bilbao-Vizcaya (exterior) (8 lecturas)
+- el sesgo frente a Bilbao II (costera) ha cambiado: de 0.80 a 1.01
 - la calibración de castrourdiales/principal empeora: error 50 % → 100 %
 - la calibración de hondarribia/bocana empeora: error 50 % → 100 %
-- la calibración de sopelana/principal empeora: error 50 % → 66 %
-- la calibración de zarautz/dinamico empeora: error 50 % → 66 %
+- la calibración de sopelana/principal empeora: error 50 % → 63 %
+- la calibración de zarautz/dinamico empeora: error 50 % → 69 %
 
 ## Retadores en la sombra
 
