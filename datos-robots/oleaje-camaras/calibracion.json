@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-12T14:07:49.112Z",
- "lineasHistorial": 1094,
+ "fecha": "2026-10-12T14:37:52.475Z",
+ "lineasHistorial": 1105,
  "etiquetas": 138,
  "etiquetasClaude": 43,
  "calibracion": {
@@ -48,9 +48,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 3.7767,
+   "a": 3.7893,
    "p": 0.5,
-   "n": 102,
+   "n": 103,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -60,7 +60,7 @@
    "dias": 5,
    "hMin": 0.3,
    "hMax": 3.59,
-   "errorRel": 0.684,
+   "errorRel": 0.685,
    "pocosDatos": false
   },
   "zumaia/c": {
@@ -124,31 +124,31 @@
    "pocosDatos": false
   },
   "bakio/principal": {
-   "a": 2.5937,
+   "a": 2.6042,
    "p": 0.5,
-   "n": 12,
+   "n": 13,
    "nEtiquetas": 3,
    "nEtiquetasClaude": 1,
    "franjasClaude": [
     "2026-10-08T16"
    ],
-   "dias": 4,
+   "dias": 5,
    "hMin": 0.75,
    "hMax": 3.12,
-   "errorRel": 0.684,
+   "errorRel": 0.667,
    "pocosDatos": false
   },
   "sopelana/principal": {
-   "a": 3.1341,
+   "a": 3.2988,
    "p": 0.5,
-   "n": 25,
+   "n": 26,
    "nEtiquetas": 4,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
    "dias": 5,
    "hMin": 0.75,
    "hMax": 3.12,
-   "errorRel": 0.617,
+   "errorRel": 0.781,
    "pocosDatos": false
   },
   "berria/principal": {
@@ -178,9 +178,9 @@
    "pocosDatos": false
   },
   "berria/dinamico": {
-   "a": 4.3472,
+   "a": 4.4124,
    "p": 0.5,
-   "n": 52,
+   "n": 53,
    "nEtiquetas": 8,
    "nEtiquetasClaude": 9,
    "franjasClaude": [
@@ -190,7 +190,7 @@
    "dias": 5,
    "hMin": 0.75,
    "hMax": 3.12,
-   "errorRel": 0.809,
+   "errorRel": 0.833,
    "pocosDatos": false
   },
   "mutriku/principal": {
@@ -327,8 +327,8 @@
    "sustituye": true,
    "motivo": "18 etiquetas",
    "ruido": {
-    "ruido": 0.529,
-    "pares": 67
+    "ruido": 0.527,
+    "pares": 68
    }
   },
   "getaria": {
@@ -391,8 +391,8 @@
    "sustituye": true,
    "motivo": "8 etiquetas",
    "ruido": {
-    "ruido": 1.559,
-    "pares": 18
+    "ruido": 1.585,
+    "pares": 19
    }
   },
   "castrourdiales": {
