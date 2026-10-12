@@ -39,8 +39,14 @@
 // INTERRUPTOR ÚNICO (2026-10-08). Mikel ha pedido a SkylineWebcams
 // autorización escrita para usar su fotograma oficial en una app de pago.
 // Decisión de Mikel (2026-10-08): true mientras contestan (su FAQ ofrece el
-// código de "Insertar" a cualquier web). Si lo niegan: false y todas pasan a
-// "enlace" sin cargar nada de embed.skylinewebcams.com. Nada más que tocar.
+// código de "Insertar" a cualquier web). CONFIRMADO POR ESCRITO el
+// 2026-10-12: SkylineWebcams contesta que no dan autorizaciones aparte para
+// insertar sus imágenes fijas porque ese uso ya está permitido en su web, y
+// que se use la función oficial de inserción según sus condiciones. El
+// análisis automático no lo autorizan (no contestan a esa pregunta). Emails
+// completos en comun, permisos/evidencias/it/skylinewebcams/. Si algún día
+// lo retiran: false y todas pasan a "enlace" sin cargar nada de
+// embed.skylinewebcams.com. Nada más que tocar.
 // Nueva Zelanda (2026-10-11): sus cámaras viven en camaras-nz.js (mismo
 // formato) y se suman aquí a la lista y a las condiciones, así que la app y
 // el robot de salud las tratan igual. Embebidas por decisión de Mikel

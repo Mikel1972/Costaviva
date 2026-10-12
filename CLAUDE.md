@@ -1085,9 +1085,15 @@ una externa si `externaCuentaComoCaida` (también ignora filas viejas con
 esquivar su protección. En `imagen_oficial` un 403 sí es fallo.
 
 **Interruptor `SKYLINE_EMBED_AUTORIZADO` (en `camaras-externas.js`, hoy
-`true`).** Mikel ha pedido a SkylineWebcams autorización escrita para el
-uso comercial (2026-10-08) y decidió usar ya la imagen oficial que su FAQ
-ofrece en "Incrustar" mientras contestan. Si Skyline lo niega, se pone a
+`true`).** Mikel pidió a SkylineWebcams autorización escrita para el uso
+comercial (2026-10-08) y decidió usar ya la imagen oficial que su FAQ
+ofrece en "Incrustar" mientras contestaban. **Confirmado por escrito el
+2026-10-12:** no dan autorizaciones aparte para insertar sus imágenes fijas
+porque ese uso ya está permitido públicamente en su web; se usa su función
+oficial de inserción según sus condiciones (marca y enlace, sin tocar la
+imagen). No contestan sobre el análisis automático: sigue prohibido. Emails
+completos (con SHA-256 y DKIM comprobado) en comun,
+`permisos/evidencias/it/skylinewebcams/`. Si algún día lo retiran, se pone a
 `false` y todas (Águilas incluida) pasan a `enlace` sin cargar nada de
 `embed.skylinewebcams.com`; no hay que tocar nada más (el test se adapta al
 valor). Analizar sus fotogramas sigue prohibido en cualquier caso.
