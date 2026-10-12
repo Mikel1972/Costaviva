@@ -1580,10 +1580,9 @@ const ZONA_POR_DEFECTO = "Europe/Madrid";
 // juntos. caja = [latMin, latMax, lonMin, lonMax].
 const REGIONES_DATOS = {
   es: { caja: [26, 46, -32, 6], centro: [40.2, -4.5] },
-  // NZ: la misma caja que sus capas del mar (2026-10-12, el doble de mar).
-  // enCajaRegion pasa la longitud a -180..180, así que el borde este se
-  // queda en 180 para eso; regionesEnVista la desplaza una vuelta.
-  nz: { caja: [-51, -31, 162, 180], centro: [-41.3, 173.5] },
+  // NZ: la misma caja que sus capas del mar (2026-10-12), 162-186 E: cruza
+  // el antimeridiano (enCajaRegion lo tiene en cuenta).
+  nz: { caja: [-54, -28, 162, 186], centro: [-41.3, 173.5] },
 };
 // Selector rápido de región (Mikel, 2026-10-11): "España · Portugal ·
 // Canarias · New Zealand". Cada una con su encuadre; la elección se recuerda
@@ -1616,7 +1615,9 @@ const regionDatosDeVista = (id) => (id === "nz" ? "nz" : "es");
 function enCajaRegion(region, lat, lon) {
   const [s, n, o, e] = REGIONES_DATOS[region].caja;
   const l = ((((lon + 180) % 360) + 360) % 360) - 180;
-  return lat >= s && lat <= n && l >= o && l <= e;
+  // Caja que pasa del antimeridiano (NZ hasta 186 E): -179 es 181.
+  const l2 = e > 180 && l < o ? l + 360 : l;
+  return lat >= s && lat <= n && l2 >= o && l2 <= e;
 }
 // ?region=nz (enlaces de la vista previa de la fase 2) abre el mapa en NZ;
 // &clave=... se sigue mandando para una región que aún estuviera oculta.
@@ -6026,9 +6027,10 @@ const VIENTO_MAX_MS = 15;
 const VIENTO_REGIONES = [
   { id: "peninsula", regionDatos: "es", bbox: { sur: 35.5, oeste: -9.8, norte: 44.0, este: 4.5 } },
   { id: "canarias", regionDatos: "es", bbox: { sur: 27.3, oeste: -18.5, norte: 29.6, este: -13.0 } },
-  // NZ a 20° x 20° desde el 2026-10-12 (el doble de mar, como sus capas del
-  // mar): cruza el antimeridiano, /viento-campo pide 181 E como -179.
-  { id: "nz", regionDatos: "nz", bbox: { sur: -51.0, oeste: 162.0, norte: -31.0, este: 182.0 } },
+  // NZ a 24° x 26° desde el 2026-10-12 (la misma caja que sus capas del mar,
+  // con Chatham, Kermadec y Campbell): cruza el antimeridiano,
+  // /viento-campo pide 181 E como -179.
+  { id: "nz", regionDatos: "nz", bbox: { sur: -54.0, oeste: 162.0, norte: -28.0, este: 186.0 } },
 ];
 // Primera rejilla ya descargada (la de referencia para la barra de horas).
 const vientoReferencia = () => VIENTO_REGIONES.map((r) => vientoSnapshotsPorRegion[r.id]).find((x) => x?.length) || null;

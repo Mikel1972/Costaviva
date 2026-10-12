@@ -48,9 +48,9 @@ class RegionNZ(unittest.TestCase):
         dc = cargar()
         es = {"caja": dict(dc.CAJA), "chl": dc.CAPAS["clorofila"]["dataset"], "frentes": dict(dc.FRENTES)}
         dc.usar_region("nz")
-        self.assertEqual(dc.CAJA, {"norte": -31.0, "sur": -51.0, "oeste": 162.0, "este": 182.0})
+        self.assertEqual(dc.CAJA, {"norte": -28.0, "sur": -54.0, "oeste": 162.0, "este": 186.0})
         # El doble de superficie que la caja anterior (14° x 14°), cruzando el
-        # antimeridiano con oeste < este (longitudes 162..182, no -178).
+        # antimeridiano con oeste < este (longitudes 162..186, no -174).
         self.assertLess(dc.CAJA["oeste"], dc.CAJA["este"])
         lado = lambda c: (c["norte"] - c["sur"]) * (c["este"] - c["oeste"])
         self.assertGreaterEqual(lado(dc.CAJA) / (14 * 14), 2)
@@ -92,7 +92,7 @@ class RegionNZ(unittest.TestCase):
             for nombre in ("clorofila", "temperatura-agua", "frentes"):
                 j = leer(os.path.join(base, f"{nombre}.json"))
                 self.assertEqual(j["region"], "nz")
-                self.assertEqual((j["norte"], j["sur"], j["oeste"], j["este"]), (-31.0, -51.0, 162.0, 182.0))
+                self.assertEqual((j["norte"], j["sur"], j["oeste"], j["este"]), (-28.0, -54.0, 162.0, 186.0))
                 self.assertTrue(j["prueba"])
             fr = leer(os.path.join(base, "frentes.json"))
             self.assertIn("cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m", fr["datasets"])
@@ -101,7 +101,7 @@ class RegionNZ(unittest.TestCase):
                 self.assertLess(fr["estadisticas"][k], 25)
             t = leer(os.path.join(base, "temperatura-agua.json"))
             self.assertEqual(t["doi"], "10.48670/moi-00016")
-            self.assertEqual((t["filas"], t["columnas"]), (240, 240))
+            self.assertEqual((t["filas"], t["columnas"]), (312, 288))
 
     def test_malla_glo_en_los_bordes_sin_huecos(self):
         """Caso real (2026-10-11, primera pasada de NZ): los puntos de GLO caen
@@ -110,14 +110,14 @@ class RegionNZ(unittest.TestCase):
         "franja costera" y 0,0 % de frentes de todo tipo."""
         dc = cargar()
         dc.usar_region("nz")
-        # La caja cruza el antimeridiano (162-182 E): las longitudes pueden
-        # llegar ya desplazadas por el toolbox (162..182) o tal cual vienen en
+        # La caja cruza el antimeridiano (162-186 E): las longitudes pueden
+        # llegar ya desplazadas por el toolbox (162..186) o tal cual vienen en
         # GLO (-180..179,92); las dos tienen que dar la rejilla entera.
         for dt, desplazadas in ((np.float32, True), (np.float64, True), (np.float32, False)):
             lats = (np.arange(-80 * 12, 90 * 12 + 1) / 12).astype(dt)
             lons = (np.arange(-180 * 12, 180 * 12) / 12).astype(dt)
-            lats = lats[(lats >= -51.1) & (lats <= -30.9)]
-            lons = lons[(lons >= 161.9) | (lons <= -177.9)]
+            lats = lats[(lats >= -54.1) & (lats <= -27.9)]
+            lons = lons[(lons >= 161.9) | (lons <= -173.9)]
             if desplazadas:
                 lons = np.sort(np.where(lons < 0, lons + 360, lons)).astype(dt)
             la2, lo2 = np.meshgrid(lats.astype(float), np.where(lons < 0, lons + 360.0, lons).astype(float), indexing="ij")
