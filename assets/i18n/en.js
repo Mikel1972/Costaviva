@@ -1050,6 +1050,7 @@
   "mapa.panel.reservas_spa": "Seafloor protection area nearby: {lista}. Line fishing, spearfishing and gathering by hand are allowed; bottom trawling, dredging and Danish seining are not.",
   "mapa.zonas.sin_pesca": "No-fishing zone: no fishing and no taking of any marine life. Approximate outline; the official boundary is the legal one.",
   "mapa.zonas.fondo": "Seafloor protection: line fishing, spearfishing and gathering by hand allowed; no bottom trawling, dredging or Danish seining.",
+  "mapa.zonas.aproximado": "Approximate outline taken from the legal text; the legal boundary is the one in the text.",
   "mapa.panel.reservas_atrib": "Marine reserves: Department of Conservation (DOC), Crown copyright, CC BY 4.0. Hauraki Gulf protection areas: Crown Copyright: Department of Conservation Te Papa Atawhai 2025. Simplified outline: check the exact boundary with DOC.",
   "mapa.marea.puerto_linz": "LINZ port: {puerto} ({km} km)",
   "va.region.nz_auckland_kermadec": "Auckland / Kermadec",
