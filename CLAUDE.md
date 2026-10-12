@@ -32,6 +32,21 @@ Cómo se lanza ahora (desde main, con `actions_run_trigger`):
 `{"confirmacion": "aplicar", "migracion": "20261011230000_cobro_prueba_14_dias_plan_gratis.sql"}`.
 Lógica en `.github/scripts/migraciones.mjs`, test en `test/migraciones.test.js`.
 
+## Copia de seguridad y pruebas en el navegador (2026-10-12, pedido de Mikel)
+
+- **Copia de la base de datos:** Supabase en plan gratuito no hace copias.
+  `copia-bd.yml` (sin IA, cada noche) hace `pg_dump` de public, auth y
+  storage, la restaura en `supabase/postgres` y compara las filas de cada
+  tabla con producción; la guarda cifrada (AES-256, secret `COPIA_BD_CLAVE`)
+  30 días como artefacto. El repo es público: nunca en claro, y los registros
+  no muestran datos ni recuentos. Sin la clave queda en rojo. Las fotos (en
+  Storage) no entran. Cómo restaurar: cabecera del workflow.
+- **Pruebas en el navegador:** `navegador.yml` corre `test/navegador/` en
+  Chromium en cada PR, en ordenador y en móvil: cada página sin errores de
+  JavaScript, el mapa y el ☰, las preferencias y el zoom de la foto. Sesión
+  falsa y Supabase contestado en vacío (`test/navegador/web.mjs`): nada llega
+  a producción. Al cambiar algo visible, añade su prueba ahí.
+
 ## Idiomas: español, inglés y portugués (2026-10-09, base para Nueva Zelanda; portugués europeo desde el 2026-10-11)
 
 **Validación del portugués (decisión de Mikel, 2026-10-12): no habrá revisión
