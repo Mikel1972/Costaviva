@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-12T18:37:18.519Z",
- "lineasHistorial": 1152,
+ "fecha": "2026-10-12T19:07:17.540Z",
+ "lineasHistorial": 1155,
  "etiquetas": 148,
  "etiquetasClaude": 53,
  "calibracion": {
@@ -264,9 +264,9 @@
    "pocosDatos": false
   },
   "nz-napier/principal": {
-   "a": 11.1908,
+   "a": 11.4087,
    "p": 1,
-   "n": 6,
+   "n": 7,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 1,
    "franjasClaude": [
@@ -415,11 +415,11 @@
    }
   },
   "nz-napier": {
-   "sustituye": true,
-   "motivo": "estable (±10 % entre lecturas cercanas)",
+   "sustituye": false,
+   "motivo": "ruidosa (±35 %) y sin calibrar; 1 etiquetas de Claude en 1 franjas (faltan)",
    "ruido": {
-    "ruido": 0.098,
-    "pares": 3
+    "ruido": 0.348,
+    "pares": 4
    }
   },
   "nz-aramoana": {
