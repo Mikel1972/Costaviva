@@ -12,27 +12,32 @@
 // la capa (renderer L.svg en su panel), aplicado por CSS (fill: url(#...)),
 // porque Leaflet solo admite colores lisos en fillColor.
 //   reserva / hpa  -> líneas rojas y borde rojo: no se pesca nada.
-//   spa            -> borde naranja discontinuo y trama naranja suave:
-//                     protección del fondo (caña sí, artes de fondo no).
-// Tocar una zona abre su nombre y lo que no se puede hacer.
+//   spa / parcial  -> borde naranja discontinuo y trama naranja suave: se
+//                     pesca con limitaciones (protección del fondo en NZ;
+//                     resto de una reserva española, con su regla).
+// Tocar una zona abre su nombre, lo que no se puede hacer y, si la trae, la
+// norma que lo dice (enlace).
 
 export const ZOOM_MIN_ZONAS = 4;
 // Cajas [latMin, latMax, lonMin, lonMax] de cada fichero (las del mapa).
 export const REGIONES_ZONAS = {
   nz: { url: "/assets/datos/zonas-sin-pesca/nz.geojson", caja: [-54, -28, 162, 186] },
+  // España (2026-10-12): reservas marinas y parques nacionales sacados de
+  // los textos legales (scripts/fuentes/zonas-sin-pesca.mjs).
+  es: { url: "/assets/datos/zonas-sin-pesca/es.geojson", caja: [26, 46, -19, 5] },
 };
 export const ID_TRAMA = "tramaZonaSinPesca";
 export const ID_TRAMA_FONDO = "tramaZonaFondo";
 
 // Estilo de Leaflet por tipo (el relleno lo pone la trama por CSS).
 export function estiloZona(tipo) {
-  if (tipo === "spa") {
+  if (tipo === "spa" || tipo === "parcial") {
     return { color: "#E07B00", weight: 1.5, dashArray: "5 4", opacity: 0.95, fillOpacity: 1, className: "zona-fondo" };
   }
   return { color: "#D0021B", weight: 1.8, opacity: 0.95, fillOpacity: 1, className: "zona-sin-pesca" };
 }
 
-export const esSinPesca = (tipo) => tipo !== "spa";
+export const esSinPesca = (tipo) => tipo !== "spa" && tipo !== "parcial";
 
 // ¿Se ve (con margen de una vuelta del mundo a cada lado) la caja de la región?
 export function regionVisible(caja, b) {
@@ -77,9 +82,15 @@ export function montarCapa(map, L, textos) {
     defsPuestas = true;
   }
 
+  const limpio = (t) => String(t || "").replace(/[<>&"]/g, "");
   function texto(f) {
     const p = f.properties || {};
-    return `<strong>${String(p.nombre || "").replace(/[<>&"]/g, "")}</strong><br>${esSinPesca(p.tipo) ? textos.sinPesca : textos.fondo}`;
+    // Con regla propia (España): la regla de su norma; si no, la genérica.
+    const regla = p.regla ? limpio(p.regla) : esSinPesca(p.tipo) ? textos.sinPesca : textos.fondo;
+    const norma = p.norma && /^https:\/\//.test(p.url || "")
+      ? `<br><a href="${limpio(p.url)}" target="_blank" rel="noopener">${limpio(p.norma)}</a>` : "";
+    const aviso = p.regla && textos.aproximado ? `<br><small>${textos.aproximado}</small>` : "";
+    return `<strong>${limpio(p.nombre)}</strong><br>${regla}${norma}${aviso}`;
   }
 
   function cargar(id) {
