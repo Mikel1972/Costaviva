@@ -73,3 +73,16 @@ test("España: zonas de los textos legales, cada una con su norma; rojas sin pes
   assert.ok(esRutaPermitida(REGIONES_ZONAS.es.url));
   assert.ok(regionVisible(REGIONES_ZONAS.es.caja, { sur: 37, norte: 38, oeste: -1, este: 0 }));
 });
+
+test("Portugal: zonas del Diário da República (continente, Madeira y Azores)", async () => {
+  const { zonasPT } = await import("../scripts/fuentes/zonas-sin-pesca.mjs");
+  const dr = json("datos/pt/zonas-sin-pesca-dr.geojson");
+  const pt = json("assets/datos/zonas-sin-pesca/pt.geojson");
+  assert.deepEqual(pt, JSON.parse(JSON.stringify(zonasPT(dr))), "regenerar con scripts/fuentes/zonas-sin-pesca.mjs");
+  assert.equal(pt.region, "pt");
+  for (const f of pt.features) assert.ok(f.properties.regla && f.properties.norma && /^https:\/\//.test(f.properties.url), f.properties.nombre);
+  const nombres = pt.features.map((f) => f.properties.nombre).join(" | ");
+  for (const r of ["Berlengas", "Garajau", "Selvagens", "Desertas"]) assert.match(nombres, new RegExp(r), r);
+  assert.ok(regionVisible(REGIONES_ZONAS.pt.caja, { sur: 37.5, norte: 39, oeste: -29, este: -27 }), "Azores");
+  assert.ok(esRutaPermitida(REGIONES_ZONAS.pt.url));
+});

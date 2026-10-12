@@ -25,6 +25,8 @@ export const REGIONES_ZONAS = {
   // España (2026-10-12): reservas marinas y parques nacionales sacados de
   // los textos legales (scripts/fuentes/zonas-sin-pesca.mjs).
   es: { url: "/assets/datos/zonas-sin-pesca/es.geojson", caja: [26, 46, -19, 5] },
+  // Portugal continental, Madeira, Selvagens y Azores (2026-10-12).
+  pt: { url: "/assets/datos/zonas-sin-pesca/pt.geojson", caja: [29, 43.5, -36, -6] },
 };
 export const ID_TRAMA = "tramaZonaSinPesca";
 export const ID_TRAMA_FONDO = "tramaZonaFondo";
