@@ -34,6 +34,16 @@ Lógica en `.github/scripts/migraciones.mjs`, test en `test/migraciones.test.js`
 
 ## Idiomas: español, inglés y portugués (2026-10-09, base para Nueva Zelanda; portugués europeo desde el 2026-10-11)
 
+**Validación del portugués (decisión de Mikel, 2026-10-12): no habrá revisión
+por un nativo.** "Utiliza DeepL para comprobaciones cruzadas; no preguntaré a
+nadie; valídalo tú." La valida Claude con `i18n-contraste.yml` (DeepL API
+Free): se revisan una a una las claves que difieren y manda nuestro criterio
+(portugués europeo, trato de "você/o seu", glosario `i18n/glosario-pt.json`).
+DeepL no decide: mete brasileñismos ("link", "assinatura"), la grafía antigua
+"bóia", tutea y falla términos de pesca ("Spots" → "Anúncios", "Aparejo" →
+"Carpinteiro"). Primera pasada completa el 2026-10-12: 1070 claves, 223
+distintas, 9 corregidas. Repetirla tras cada lote grande de textos nuevos.
+
 Mikel abre Nueva Zelanda para pescadores en inglés. Base de idiomas sin
 dependencias (PR "i18n"; los datos de NZ van aparte). El 2026-10-11 aprueba
 el **portugués europeo (pt-PT)** para Portugal, Azores y Madeira: nunca
