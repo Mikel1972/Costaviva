@@ -1,13 +1,13 @@
 {
- "fecha": "2026-10-13T10:07:46.120Z",
- "lineasHistorial": 1312,
+ "fecha": "2026-10-13T10:37:46.977Z",
+ "lineasHistorial": 1323,
  "etiquetas": 148,
  "etiquetasClaude": 53,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.1407,
+   "a": 1.1391,
    "p": 0.5,
-   "n": 48,
+   "n": 49,
    "nEtiquetas": 7,
    "nEtiquetasClaude": 3,
    "franjasClaude": [
@@ -16,7 +16,7 @@
    "dias": 6,
    "hMin": 0.15,
    "hMax": 0.54,
-   "errorRel": 0.696,
+   "errorRel": 0.691,
    "pocosDatos": false
   },
   "hondarribia/bocana": {
@@ -49,9 +49,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 3.9586,
+   "a": 3.9667,
    "p": 0.5,
-   "n": 117,
+   "n": 118,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 9,
    "franjasClaude": [
@@ -63,7 +63,7 @@
    "dias": 6,
    "hMin": 0.3,
    "hMax": 3.59,
-   "errorRel": 0.727,
+   "errorRel": 0.726,
    "pocosDatos": false
   },
   "zumaia/c": {
@@ -111,9 +111,9 @@
    "pocosDatos": false
   },
   "mundaka/principal": {
-   "a": 3.0864,
+   "a": 3.0734,
    "p": 0.5,
-   "n": 74,
+   "n": 75,
    "nEtiquetas": 11,
    "nEtiquetasClaude": 4,
    "franjasClaude": [
@@ -124,7 +124,7 @@
    "dias": 6,
    "hMin": 0.3,
    "hMax": 2.18,
-   "errorRel": 0.619,
+   "errorRel": 0.62,
    "pocosDatos": false
   },
   "bakio/principal": {
@@ -143,16 +143,16 @@
    "pocosDatos": false
   },
   "sopelana/principal": {
-   "a": 3.3344,
+   "a": 3.3307,
    "p": 0.5,
-   "n": 28,
+   "n": 29,
    "nEtiquetas": 4,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
    "dias": 6,
    "hMin": 0.75,
    "hMax": 3.12,
-   "errorRel": 0.761,
+   "errorRel": 0.75,
    "pocosDatos": false
   },
   "berria/principal": {
@@ -169,13 +169,13 @@
    "pocosDatos": true
   },
   "castrourdiales/principal": {
-   "a": 3.1477,
+   "a": 3.2228,
    "p": 0.5,
-   "n": 13,
+   "n": 14,
    "nEtiquetas": 5,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
-   "dias": 3,
+   "dias": 4,
    "hMin": 0.3,
    "hMax": 3.12,
    "errorRel": 1,
@@ -314,8 +314,8 @@
    "sustituye": true,
    "motivo": "7 etiquetas",
    "ruido": {
-    "ruido": 0.477,
-    "pares": 19
+    "ruido": 0.65,
+    "pares": 20
    }
   },
   "donostia": {
@@ -338,8 +338,8 @@
    "sustituye": true,
    "motivo": "18 etiquetas",
    "ruido": {
-    "ruido": 0.524,
-    "pares": 79
+    "ruido": 0.527,
+    "pares": 80
    }
   },
   "getaria": {
@@ -378,8 +378,8 @@
    "sustituye": true,
    "motivo": "11 etiquetas",
    "ruido": {
-    "ruido": 0.68,
-    "pares": 45
+    "ruido": 0.697,
+    "pares": 46
    }
   },
   "bakio": {
@@ -410,8 +410,8 @@
    "sustituye": true,
    "motivo": "5 etiquetas",
    "ruido": {
-    "ruido": 0.452,
-    "pares": 4
+    "ruido": 0.588,
+    "pares": 5
    }
   },
   "nz-napier": {
