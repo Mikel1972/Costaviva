@@ -1,0 +1,203 @@
+{
+ "generado_en": "2026-10-13T13:00:12.701Z",
+ "desde": 2025,
+ "hasta": 2026,
+ "por_especie": {
+  "lubina": {
+   "gbif_total": 450,
+   "guardadas": 349
+  },
+  "sargo": {
+   "gbif_total": 1087,
+   "guardadas": 712
+  },
+  "dorada": {
+   "gbif_total": 408,
+   "guardadas": 330
+  },
+  "salmonete": {
+   "gbif_total": 948,
+   "guardadas": 550
+  },
+  "jurel": {
+   "gbif_total": 19,
+   "guardadas": 15
+  },
+  "caballa": {
+   "gbif_total": 19,
+   "guardadas": 14
+  },
+  "faneca": {
+   "gbif_total": 40,
+   "guardadas": 39
+  },
+  "congrio": {
+   "gbif_total": 189,
+   "guardadas": 147
+  },
+  "pulpo": {
+   "gbif_total": 1787,
+   "guardadas": 1313
+  },
+  "sepia": {
+   "gbif_total": 1127,
+   "guardadas": 760
+  },
+  "calamar": {
+   "gbif_total": 26,
+   "guardadas": 16
+  },
+  "abadejo": {
+   "gbif_total": 3,
+   "guardadas": 3
+  },
+  "bonito_norte": {
+   "gbif_total": 1,
+   "guardadas": 0
+  },
+  "lisa": {
+   "gbif_total": 717,
+   "guardadas": 325
+  },
+  "breca": {
+   "gbif_total": 61,
+   "guardadas": 43
+  },
+  "lenguado": {
+   "gbif_total": 40,
+   "guardadas": 37
+  },
+  "corvina": {
+   "gbif_total": 11,
+   "guardadas": 11
+  },
+  "denton": {
+   "gbif_total": 135,
+   "guardadas": 112
+  },
+  "bocinegro": {
+   "gbif_total": 116,
+   "guardadas": 80
+  },
+  "vieja": {
+   "gbif_total": 613,
+   "guardadas": 183
+  },
+  "sama": {
+   "gbif_total": 5,
+   "guardadas": 0
+  },
+  "chicharro_canario": {
+   "gbif_total": 22,
+   "guardadas": 15
+  },
+  "salema": {
+   "gbif_total": 1659,
+   "guardadas": 984
+  },
+  "cabrilla": {
+   "gbif_total": 521,
+   "guardadas": 375
+  },
+  "rodaballo": {
+   "gbif_total": 4,
+   "guardadas": 3
+  },
+  "remol": {
+   "gbif_total": 6,
+   "guardadas": 6
+  },
+  "cabracho": {
+   "gbif_total": 133,
+   "guardadas": 72
+  },
+  "rascacio": {
+   "gbif_total": 592,
+   "guardadas": 460
+  },
+  "maragota": {
+   "gbif_total": 99,
+   "guardadas": 77
+  },
+  "besugo": {
+   "gbif_total": 7,
+   "guardadas": 1
+  },
+  "aligote": {
+   "gbif_total": 39,
+   "guardadas": 23
+  },
+  "mero": {
+   "gbif_total": 809,
+   "guardadas": 553
+  },
+  "gallo": {
+   "gbif_total": 1,
+   "guardadas": 0
+  },
+  "raya": {
+   "gbif_total": 241,
+   "guardadas": 208
+  },
+  "merluza": {
+   "gbif_total": 5,
+   "guardadas": 5
+  },
+  "rape": {
+   "gbif_total": 22,
+   "guardadas": 16
+  },
+  "chopa": {
+   "gbif_total": 190,
+   "guardadas": 163
+  },
+  "mojarra": {
+   "gbif_total": 1359,
+   "guardadas": 896
+  },
+  "herrera": {
+   "gbif_total": 339,
+   "guardadas": 208
+  },
+  "raspallon": {
+   "gbif_total": 203,
+   "guardadas": 137
+  },
+  "oblada": {
+   "gbif_total": 746,
+   "guardadas": 491
+  },
+  "sargo_picudo": {
+   "gbif_total": 326,
+   "guardadas": 219
+  },
+  "pez_limon": {
+   "gbif_total": 141,
+   "guardadas": 93
+  },
+  "bacoreta": {
+   "gbif_total": 8,
+   "guardadas": 5
+  },
+  "atun_rojo": {
+   "gbif_total": 11,
+   "guardadas": 9
+  },
+  "llampuga": {
+   "gbif_total": 6,
+   "guardadas": 2
+  },
+  "abade": {
+   "gbif_total": 161,
+   "guardadas": 47
+  },
+  "anjova": {
+   "gbif_total": 26,
+   "guardadas": 12
+  },
+  "pintarroja": {
+   "gbif_total": 304,
+   "guardadas": 275
+  }
+ }
+}
