@@ -1,0 +1,360 @@
+{
+ "generado": "2026-10-13T11:01:26.561Z",
+ "propiedad": "sc-domain:costaviva.org",
+ "hasta": "2026-10-10",
+ "semanas": [
+  {
+   "semana": "2026-09-14",
+   "clics": 1,
+   "impresiones": 3,
+   "posicion": 1
+  },
+  {
+   "semana": "2026-09-21",
+   "clics": 1,
+   "impresiones": 6,
+   "posicion": 19.5
+  },
+  {
+   "semana": "2026-09-28",
+   "clics": 1,
+   "impresiones": 22,
+   "posicion": 31
+  }
+ ],
+ "semanas_por_pais": {
+  "esp": [
+   {
+    "semana": "2026-09-14",
+    "clics": 1,
+    "impresiones": 3,
+    "posicion": 1
+   },
+   {
+    "semana": "2026-09-21",
+    "clics": 1,
+    "impresiones": 6,
+    "posicion": 19.5
+   },
+   {
+    "semana": "2026-09-28",
+    "clics": 1,
+    "impresiones": 22,
+    "posicion": 31
+   }
+  ],
+  "rou": [],
+  "mar": []
+ },
+ "consultas": [
+  {
+   "query": "costa viva",
+   "pagina": "/",
+   "pais": "esp",
+   "clics": 1,
+   "impresiones": 2,
+   "posicion": 3
+  },
+  {
+   "query": "bajamar mundaka",
+   "pagina": "/mareas/mundaka",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 32
+  },
+  {
+   "query": "marea en bakio",
+   "pagina": "/spots/bakio",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 32
+  },
+  {
+   "query": "mareas bakio hoy",
+   "pagina": "/spots/bakio",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 28
+  },
+  {
+   "query": "mareas bilbao",
+   "pagina": "/mareas/region/pais-vasco",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 51
+  },
+  {
+   "query": "mareas en donosti",
+   "pagina": "/mareas/region/pais-vasco",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 86
+  },
+  {
+   "query": "mareas en donostia",
+   "pagina": "/mareas/region/pais-vasco",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 94
+  },
+  {
+   "query": "mareas en portosin",
+   "pagina": "/mareas",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 34
+  },
+  {
+   "query": "mareas españa",
+   "pagina": "/mareas",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 35
+  },
+  {
+   "query": "mareas euskadi",
+   "pagina": "/mareas/region/pais-vasco",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 25
+  },
+  {
+   "query": "mareas irun",
+   "pagina": "/mareas/region/pais-vasco",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 36
+  },
+  {
+   "query": "mareas mundaka",
+   "pagina": "/mareas/mundaka",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 24
+  },
+  {
+   "query": "mareas mundaka hoy",
+   "pagina": "/mareas/mundaka",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 26
+  },
+  {
+   "query": "mareas pais vasco",
+   "pagina": "/mareas/region/pais-vasco",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 2,
+   "posicion": 24
+  },
+  {
+   "query": "mareas vivas bizkaia",
+   "pagina": "/mareas/region/pais-vasco",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 44
+  },
+  {
+   "query": "pesca pais vasco",
+   "pagina": "/mareas/region/pais-vasco",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 5
+  },
+  {
+   "query": "pleamar mundaka",
+   "pagina": "/mareas/mundaka",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 4,
+   "posicion": 29.5
+  },
+  {
+   "query": "pleamar mundaka hoy",
+   "pagina": "/mareas/mundaka",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 2,
+   "posicion": 27
+  },
+  {
+   "query": "tabla de mareas mundaka",
+   "pagina": "/mareas/mundaka",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 29
+  },
+  {
+   "query": "tabla mareas mundaka",
+   "pagina": "/mareas/mundaka",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 33
+  },
+  {
+   "query": "webcam mundaka",
+   "pagina": "/mareas/mundaka",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 2,
+   "posicion": 44.5
+  },
+  {
+   "query": "webcam mundaka directo",
+   "pagina": "/mareas/mundaka",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 37
+  }
+ ],
+ "consultas_semana": {
+  "semana": "2026-09-28",
+  "filas": [
+   {
+    "query": "bajamar mundaka",
+    "pagina": "/mareas/mundaka",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 32
+   },
+   {
+    "query": "costa viva",
+    "pagina": "/",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 3
+   },
+   {
+    "query": "mareas bilbao",
+    "pagina": "/mareas/region/pais-vasco",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 51
+   },
+   {
+    "query": "mareas en donosti",
+    "pagina": "/mareas/region/pais-vasco",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 86
+   },
+   {
+    "query": "mareas en donostia",
+    "pagina": "/mareas/region/pais-vasco",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 94
+   },
+   {
+    "query": "mareas en portosin",
+    "pagina": "/mareas",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 34
+   },
+   {
+    "query": "mareas españa",
+    "pagina": "/mareas",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 35
+   },
+   {
+    "query": "mareas euskadi",
+    "pagina": "/mareas/region/pais-vasco",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 25
+   },
+   {
+    "query": "mareas mundaka hoy",
+    "pagina": "/mareas/mundaka",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 26
+   },
+   {
+    "query": "mareas pais vasco",
+    "pagina": "/mareas/region/pais-vasco",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 24
+   },
+   {
+    "query": "pesca pais vasco",
+    "pagina": "/mareas/region/pais-vasco",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 5
+   },
+   {
+    "query": "pleamar mundaka",
+    "pagina": "/mareas/mundaka",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 33
+   },
+   {
+    "query": "pleamar mundaka hoy",
+    "pagina": "/mareas/mundaka",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 27
+   },
+   {
+    "query": "tabla de mareas mundaka",
+    "pagina": "/mareas/mundaka",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 29
+   },
+   {
+    "query": "tabla mareas mundaka",
+    "pagina": "/mareas/mundaka",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 33
+   },
+   {
+    "query": "webcam mundaka directo",
+    "pagina": "/mareas/mundaka",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 37
+   }
+  ]
+ }
+}
