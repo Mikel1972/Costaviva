@@ -9,6 +9,12 @@
       "tipo": "especies",
       "campana": "20261013-especies-lisa-mujol",
       "en": "2026-10-12T17:30:35.002Z"
+    },
+    "2026-10-15-post": {
+      "tipo": "funcion-diario",
+      "campana": "20261015-funcion-diario",
+      "en": "2026-10-14T17:30:49.507Z"
     }
-  }
+  },
+  "ultimaFuncion": "diario"
 }
