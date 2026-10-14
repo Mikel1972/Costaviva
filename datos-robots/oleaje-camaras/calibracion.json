@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-14T16:37:54.420Z",
- "lineasHistorial": 1794,
+ "fecha": "2026-10-14T18:37:23.388Z",
+ "lineasHistorial": 1796,
  "etiquetas": 148,
  "etiquetasClaude": 53,
  "calibracion": {
@@ -49,9 +49,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 4.2266,
+   "a": 4.2452,
    "p": 0.5,
-   "n": 150,
+   "n": 151,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 9,
    "franjasClaude": [
@@ -63,7 +63,7 @@
    "dias": 7,
    "hMin": 0.3,
    "hMax": 3.59,
-   "errorRel": 0.756,
+   "errorRel": 0.761,
    "pocosDatos": false
   },
   "zumaia/c": {
