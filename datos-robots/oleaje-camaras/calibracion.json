@@ -1,13 +1,13 @@
 {
- "fecha": "2026-10-14T12:07:56.304Z",
- "lineasHistorial": 1680,
+ "fecha": "2026-10-14T12:37:49.995Z",
+ "lineasHistorial": 1692,
  "etiquetas": 148,
  "etiquetasClaude": 53,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.0864,
+   "a": 1.079,
    "p": 0.5,
-   "n": 60,
+   "n": 61,
    "nEtiquetas": 7,
    "nEtiquetasClaude": 3,
    "franjasClaude": [
@@ -16,7 +16,7 @@
    "dias": 7,
    "hMin": 0.15,
    "hMax": 0.54,
-   "errorRel": 0.699,
+   "errorRel": 0.701,
    "pocosDatos": false
   },
   "hondarribia/bocana": {
@@ -128,9 +128,9 @@
    "pocosDatos": false
   },
   "bakio/principal": {
-   "a": 2.5963,
+   "a": 2.5909,
    "p": 0.5,
-   "n": 14,
+   "n": 15,
    "nEtiquetas": 3,
    "nEtiquetasClaude": 1,
    "franjasClaude": [
@@ -139,20 +139,20 @@
    "dias": 6,
    "hMin": 0.75,
    "hMax": 3.12,
-   "errorRel": 0.651,
+   "errorRel": 0.636,
    "pocosDatos": false
   },
   "sopelana/principal": {
-   "a": 3.4479,
+   "a": 3.4518,
    "p": 0.5,
-   "n": 35,
+   "n": 36,
    "nEtiquetas": 4,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
    "dias": 7,
    "hMin": 0.66,
    "hMax": 3.12,
-   "errorRel": 0.763,
+   "errorRel": 0.754,
    "pocosDatos": false
   },
   "berria/principal": {
@@ -314,8 +314,8 @@
    "sustituye": true,
    "motivo": "7 etiquetas",
    "ruido": {
-    "ruido": 0.411,
-    "pares": 27
+    "ruido": 0.444,
+    "pares": 28
    }
   },
   "donostia": {
