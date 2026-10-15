@@ -101,12 +101,14 @@ dueños): solo vale `--origen camaras`.
    node --test test/oleaje-camaras.test.js
    ```
 
-   Reescribe `calibracion.json` (por encuadre: `a`, `p`, `n`,
-   `nEtiquetasClaude`, `franjasClaude`, `errorRel`; y `sustitucion` por
-   cámara) y dice qué cámaras sustituyen ya al modelo.
+   Dice qué cámaras sustituyen ya al modelo. Sin la clave de Supabase (lo
+   normal en la rutina) NO reescribe `calibracion.json`: le faltarían las
+   etiquetas de Mikel y pisaría la buena; la recalcula el robot
+   `espuma-camaras.yml` en su siguiente ejecución con las de Claude ya en
+   `main` (2026-10-15).
 
-6. **Commit y push** de `etiquetas-claude.jsonl` y `calibracion.json`
-   (nunca imágenes) a `robot/etiquetas-olas-AAAA-MM-DD`. El asunto del
+6. **Commit y push** de `etiquetas-claude.jsonl` (y de `calibracion.json`
+   solo si cambió; nunca imágenes) a `robot/etiquetas-olas-AAAA-MM-DD`. El asunto del
    commit, "Etiquetas de Claude AAAA-MM-DD", es el título de la PR, y el
    cuerpo del commit es su descripción: cuántos fotogramas por cámara, la
    distribución de bandas, las cámaras que pasan a sustituir al modelo (o
