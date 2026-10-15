@@ -14,6 +14,11 @@
       "tipo": "funcion-diario",
       "campana": "20261015-funcion-diario",
       "en": "2026-10-14T17:30:49.507Z"
+    },
+    "2026-10-16-post-nz": {
+      "tipo": "condiciones-nz",
+      "campana": "20261016-condiciones-nz-ninety-mile-beach",
+      "en": "2026-10-15T05:40:38.637Z"
     }
   },
   "ultimaFuncion": "diario"
