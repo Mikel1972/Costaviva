@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-15T01:07:18.697Z",
- "lineasHistorial": 1841,
+ "fecha": "2026-10-15T01:37:18.533Z",
+ "lineasHistorial": 1843,
  "etiquetas": 148,
  "etiquetasClaude": 53,
  "calibracion": {
@@ -264,9 +264,9 @@
    "pocosDatos": false
   },
   "nz-napier/principal": {
-   "a": 20.4364,
+   "a": 22.1178,
    "p": 1,
-   "n": 12,
+   "n": 13,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 1,
    "franjasClaude": [
