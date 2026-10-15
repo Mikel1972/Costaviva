@@ -62,6 +62,16 @@
    "fecha_consulta": "2026-10-07",
    "nota": "Anexo VII = aguas suroccidentales (CIEM 8, 9, 10 y CPACO), anexo IX = Mediterráneo. Art. 2.2: las tallas de las partes A NO se aplican por sí solas a la pesca recreativa (solo si un acto delegado lo dispone). Texto ORIGINAL: no se ha podido leer el consolidado (EUR-Lex bloquea la descarga automática); revisar modificaciones posteriores."
   },
+  "ue_2026_249": {
+   "titulo": "Reglamento (UE) 2026/249 del Consejo, posibilidades de pesca 2026-2028 (DOUE L de 30.1.2026), arts. 11-13",
+   "url": "https://boe.es/doue/2026/249/L00001-00212.pdf",
+   "editor": "DOUE (copia del BOE)",
+   "tipo": "oficial",
+   "licencia": "reutilizable citando la fuente (Decisión 2011/833/UE)",
+   "fecha_documento": "2026-01-26",
+   "fecha_consulta": "2026-10-15",
+   "nota": "Art. 13: abadejo en CIEM 8, 9 y 10: talla de referencia 42 cm; pesca recreativa (también desde costa) máximo 2 ejemplares/pescador/día y sin captura ni retención del 1 de enero al 30 de abril (se permite captura y suelta); sin perjuicio de medidas nacionales más restrictivas. Art. 11.4: lubina recreativa en CIEM 8a y 8b, máximo 2 ejemplares/día. Texto original; las modificaciones 2026/786 y 2026/1547 no se han leído."
+  },
   "dgrm_tmc_2025": {
    "titulo": "DGRM — Tabela de Tamanhos Mínimos de Captura (Portaria n.º 255/2022, Reg. (UE) 2019/1241 e Reg. (UE) 2025/202)",
    "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
@@ -755,11 +765,12 @@
   "UE": {
    "estado": "parcial",
    "hecho": [
-    "Reg. (UE) 2019/1241 anexos VII (SWW) y IX (MED), texto original de 2019"
+    "Reg. (UE) 2019/1241 anexos VII (SWW) y IX (MED), texto original de 2019",
+    "Reg. (UE) 2026/249 arts. 11-13 (lubina y abadejo recreativos), texto original de 30.1.2026"
    ],
    "pendiente": [
     "leer el texto consolidado (EUR-Lex bloquea la descarga automática; probar desde Actions o a mano)",
-    "Reg. (UE) 2026/249: veda y cupo recreativo de abadejo y lubina en 2026"
+    "Reg. (UE) 2026/249 leído el 2026-10-15 (art. 13 abadejo, art. 11 lubina CIEM 8a/8b); faltan las modificaciones 2026/786 y 2026/1547"
    ]
   },
   "ES-estado": {
@@ -4821,16 +4832,17 @@
       "portugal",
       "golfo_cadiz"
      ],
-     "pendiente_verificar": "Reg. (UE) 2026/249, art. 12 (2026)",
-     "texto": "Según ICES (2025), el Reg. (UE) 2025/202 cerró la pesca recreativa del 1 de enero al 30 de abril y limitó a 2 ejemplares/día el resto del año. Para 2026 rige el Reg. (UE) 2026/249 (art. 12): NO verificado en su texto.",
-     "texto_pt": "Segundo o ICES (2025), o Reg. (UE) 2025/202 fechou a pesca lúdica de 1 de janeiro a 30 de abril e limitou-a a 2 exemplares/dia no resto do ano. Para 2026 vigora o Reg. (UE) 2026/249 (art. 12.º): NÃO verificado no seu texto.",
-     "fuente": "ices_pol_sa",
-     "verificado": false
+     "texto": "Reg. (UE) 2026/249, art. 13: en la pesca recreativa (también desde costa) en CIEM 8, 9 y 10 no se puede capturar ni mantener abadejo del 1 de enero al 30 de abril (se permite captura y suelta); el resto del año, máximo 2 ejemplares por pescador y día. Sin perjuicio de medidas nacionales más restrictivas.",
+     "texto_pt": "Reg. (UE) 2026/249, art. 13.º: na pesca lúdica (incluindo a partir de terra) nas zonas CIEM 8, 9 e 10 não é permitido capturar nem manter pollack de 1 de janeiro a 30 de abril (é permitida a captura e libertação); no resto do ano, máximo de 2 exemplares por pescador e dia. Sem prejuízo de medidas nacionais mais restritivas.",
+     "fuente": "ue_2026_249",
+     "url": "https://boe.es/doue/2026/249/L00001-00212.pdf",
+     "fecha_revision": "2026-10-15",
+     "verificado": true
     }
    ],
    "reglas": {},
    "pendiente": [
-    "verificar Reg. (UE) 2026/249 (veda y cupo recreativo 2026) y la talla UE vigente",
+    "veda y cupo recreativo de abadejo verificados en el Reg. (UE) 2026/249 (2026-10-15); falta leer las modificaciones 2026/786 y 2026/1547 y confirmar la talla UE de 42 cm en el texto consolidado de 2019/1241",
     "rango de temperatura no-NC",
     "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)"
    ],
