@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-15T13:37:50.120Z",
- "lineasHistorial": 2032,
+ "fecha": "2026-10-15T14:07:46.415Z",
+ "lineasHistorial": 2044,
  "etiquetas": 148,
  "etiquetasClaude": 53,
  "calibracion": {
@@ -49,9 +49,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 4.3482,
+   "a": 4.3539,
    "p": 0.5,
-   "n": 162,
+   "n": 163,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 9,
    "franjasClaude": [
@@ -63,7 +63,7 @@
    "dias": 8,
    "hMin": 0.3,
    "hMax": 3.59,
-   "errorRel": 0.76,
+   "errorRel": 0.758,
    "pocosDatos": false
   },
   "zumaia/c": {
@@ -96,9 +96,9 @@
    "pocosDatos": false
   },
   "deba/rompiente": {
-   "a": 4.8164,
+   "a": 4.8212,
    "p": 0.5,
-   "n": 31,
+   "n": 32,
    "nEtiquetas": 2,
    "nEtiquetasClaude": 3,
    "franjasClaude": [
@@ -107,13 +107,13 @@
    "dias": 7,
    "hMin": 0.3,
    "hMax": 3.59,
-   "errorRel": 0.969,
+   "errorRel": 0.952,
    "pocosDatos": false
   },
   "mundaka/principal": {
-   "a": 3.1025,
+   "a": 3.0964,
    "p": 0.5,
-   "n": 82,
+   "n": 83,
    "nEtiquetas": 11,
    "nEtiquetasClaude": 4,
    "franjasClaude": [
@@ -124,13 +124,13 @@
    "dias": 8,
    "hMin": 0.3,
    "hMax": 2.18,
-   "errorRel": 0.626,
+   "errorRel": 0.624,
    "pocosDatos": false
   },
   "bakio/principal": {
-   "a": 2.5866,
+   "a": 2.5904,
    "p": 0.5,
-   "n": 17,
+   "n": 18,
    "nEtiquetas": 3,
    "nEtiquetasClaude": 1,
    "franjasClaude": [
@@ -139,7 +139,7 @@
    "dias": 7,
    "hMin": 0.75,
    "hMax": 3.12,
-   "errorRel": 0.608,
+   "errorRel": 0.595,
    "pocosDatos": false
   },
   "sopelana/principal": {
@@ -169,9 +169,9 @@
    "pocosDatos": true
   },
   "castrourdiales/principal": {
-   "a": 4.0237,
+   "a": 4.1786,
    "p": 0.5,
-   "n": 20,
+   "n": 21,
    "nEtiquetas": 5,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
@@ -338,8 +338,8 @@
    "sustituye": true,
    "motivo": "18 etiquetas",
    "ruido": {
-    "ruido": 0.538,
-    "pares": 121
+    "ruido": 0.537,
+    "pares": 122
    }
   },
   "getaria": {
@@ -378,16 +378,16 @@
    "sustituye": true,
    "motivo": "11 etiquetas",
    "ruido": {
-    "ruido": 0.697,
-    "pares": 48
+    "ruido": 0.68,
+    "pares": 49
    }
   },
   "bakio": {
    "sustituye": true,
-   "motivo": "estable (±12 % entre lecturas cercanas)",
+   "motivo": "estable (±15 % entre lecturas cercanas)",
    "ruido": {
-    "ruido": 0.119,
-    "pares": 5
+    "ruido": 0.151,
+    "pares": 6
    }
   },
   "sopelana": {
