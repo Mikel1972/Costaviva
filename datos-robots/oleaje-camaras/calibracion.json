@@ -1,13 +1,13 @@
 {
- "fecha": "2026-10-15T10:07:50.303Z",
- "lineasHistorial": 1949,
+ "fecha": "2026-10-15T10:37:49.260Z",
+ "lineasHistorial": 1960,
  "etiquetas": 148,
  "etiquetasClaude": 53,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.0629,
+   "a": 1.0603,
    "p": 0.5,
-   "n": 65,
+   "n": 66,
    "nEtiquetas": 7,
    "nEtiquetasClaude": 3,
    "franjasClaude": [
@@ -16,7 +16,7 @@
    "dias": 8,
    "hMin": 0.15,
    "hMax": 0.54,
-   "errorRel": 0.691,
+   "errorRel": 0.687,
    "pocosDatos": false
   },
   "hondarribia/bocana": {
@@ -49,9 +49,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 4.2948,
+   "a": 4.3112,
    "p": 0.5,
-   "n": 155,
+   "n": 156,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 9,
    "franjasClaude": [
@@ -63,7 +63,7 @@
    "dias": 8,
    "hMin": 0.3,
    "hMax": 3.59,
-   "errorRel": 0.764,
+   "errorRel": 0.767,
    "pocosDatos": false
   },
   "zumaia/c": {
@@ -143,16 +143,16 @@
    "pocosDatos": false
   },
   "sopelana/principal": {
-   "a": 3.548,
+   "a": 3.5243,
    "p": 0.5,
-   "n": 38,
+   "n": 39,
    "nEtiquetas": 4,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
    "dias": 8,
    "hMin": 0.66,
    "hMax": 3.12,
-   "errorRel": 0.781,
+   "errorRel": 0.775,
    "pocosDatos": false
   },
   "berria/principal": {
@@ -182,9 +182,9 @@
    "pocosDatos": false
   },
   "berria/dinamico": {
-   "a": 4.4485,
+   "a": 4.4866,
    "p": 0.5,
-   "n": 66,
+   "n": 67,
    "nEtiquetas": 8,
    "nEtiquetasClaude": 10,
    "franjasClaude": [
@@ -195,7 +195,7 @@
    "dias": 8,
    "hMin": 0.75,
    "hMax": 3.12,
-   "errorRel": 0.804,
+   "errorRel": 0.81,
    "pocosDatos": false
   },
   "mutriku/principal": {
@@ -312,10 +312,10 @@
  "sustitucion": {
   "hondarribia": {
    "sustituye": true,
-   "motivo": "7 etiquetas",
+   "motivo": "estable (±28 % entre lecturas cercanas)",
    "ruido": {
-    "ruido": 0.307,
-    "pares": 31
+    "ruido": 0.283,
+    "pares": 32
    }
   },
   "donostia": {
@@ -338,8 +338,8 @@
    "sustituye": true,
    "motivo": "18 etiquetas",
    "ruido": {
-    "ruido": 0.555,
-    "pares": 114
+    "ruido": 0.573,
+    "pares": 115
    }
   },
   "getaria": {
