@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-15T22:07:18.282Z",
- "lineasHistorial": 2118,
+ "fecha": "2026-10-15T22:10:13.971Z",
+ "lineasHistorial": 2120,
  "etiquetas": 154,
  "etiquetasClaude": 59,
  "calibracion": {
@@ -269,9 +269,9 @@
    "pocosDatos": false
   },
   "nz-napier/principal": {
-   "a": 3.0419,
+   "a": 3.0491,
    "p": 0.5,
-   "n": 26,
+   "n": 27,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 1,
    "franjasClaude": [
@@ -279,14 +279,14 @@
    ],
    "dias": 4,
    "hMin": 0.3,
-   "hMax": 0.72,
-   "errorRel": 0.662,
+   "hMax": 0.8,
+   "errorRel": 0.649,
    "pocosDatos": false
   },
   "nz-riverton/principal": {
-   "a": 10.0572,
+   "a": 10.0519,
    "p": 0.5,
-   "n": 96,
+   "n": 97,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 1,
    "franjasClaude": [
@@ -295,7 +295,7 @@
    "dias": 5,
    "hMin": 0.3,
    "hMax": 2.42,
-   "errorRel": 0.366,
+   "errorRel": 0.364,
    "pocosDatos": false
   },
   "nz-aramoana/principal": {
