@@ -1505,6 +1505,16 @@ imágenes). Procedimiento y texto de la rutina diaria:
 `--anotar`); recalcular con `medir-espuma.mjs --solo-calibrar` (el robot
 también las lee en cada ejecución). La rutina sube a
 `robot/etiquetas-olas-AAAA-MM-DD` y `robot-diseno-pr.yml` le abre la PR.
+**Un solo dueño de `calibracion.json` (2026-10-15):** lo escribe el robot
+`espuma-camaras.yml`, el único con todas las fuentes (etiquetas de Mikel en
+Supabase + las de Claude). La rutina, sin la clave, la reescribía sin las de
+Mikel (Bakio de 3 a 0), su PR #251 chocó con el push del robot y en la sesión
+se dijo a Mikel "0 etiquetas tuyas" leyendo ese fichero. Ahora
+`--solo-calibrar` sin clave no escribe, y el robot gana el choque al subir
+(`-X theirs`); lo cubren dos pruebas de `test/oleaje-camaras.test.js`. Para
+contar etiquetas o mirar la calibración real, usa las filas de `espuma.jsonl`
+(campo `calibracion`) o `/prevision`, nunca un fichero que pudo escribir quien
+no tenía todos los datos (trampa 22 de comun).
 **Pendiente (Mikel):** crear la rutina en claude.ai/code/routines con el
 texto del final de `RUTINA_ETIQUETADO.md` (diaria, con luz, p. ej. 14:00
 UTC).
