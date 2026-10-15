@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-15T22:10:13.971Z",
- "lineasHistorial": 2120,
+ "fecha": "2026-10-15T22:37:23.659Z",
+ "lineasHistorial": 2123,
  "etiquetas": 154,
  "etiquetasClaude": 59,
  "calibracion": {
@@ -423,8 +423,8 @@
    "sustituye": true,
    "motivo": "≥ 3 días con alturas variadas",
    "ruido": {
-    "ruido": 0.717,
-    "pares": 17
+    "ruido": 0.781,
+    "pares": 18
    }
   },
   "nz-aramoana": {
@@ -440,7 +440,7 @@
    "motivo": "estable (±0 % entre lecturas cercanas)",
    "ruido": {
     "ruido": 0,
-    "pares": 86
+    "pares": 87
    }
   }
  }
