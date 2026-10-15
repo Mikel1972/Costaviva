@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-15T07:38:12.923Z",
- "lineasHistorial": 1879,
+ "fecha": "2026-10-15T08:08:21.221Z",
+ "lineasHistorial": 1891,
  "etiquetas": 148,
  "etiquetasClaude": 53,
  "calibracion": {
@@ -96,18 +96,18 @@
    "pocosDatos": false
   },
   "deba/rompiente": {
-   "a": 4.6526,
+   "a": 4.8104,
    "p": 0.5,
-   "n": 28,
+   "n": 29,
    "nEtiquetas": 2,
    "nEtiquetasClaude": 3,
    "franjasClaude": [
     "2026-10-08T16"
    ],
-   "dias": 6,
+   "dias": 7,
    "hMin": 0.3,
    "hMax": 3.59,
-   "errorRel": 0.964,
+   "errorRel": 1,
    "pocosDatos": false
   },
   "mundaka/principal": {
