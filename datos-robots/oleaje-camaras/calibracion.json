@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-15T11:37:51.222Z",
- "lineasHistorial": 1983,
+ "fecha": "2026-10-15T12:07:47.490Z",
+ "lineasHistorial": 1997,
  "etiquetas": 148,
  "etiquetasClaude": 53,
  "calibracion": {
@@ -20,16 +20,16 @@
    "pocosDatos": false
   },
   "hondarribia/bocana": {
-   "a": 30.6689,
+   "a": 31.0342,
    "p": 1,
-   "n": 7,
+   "n": 8,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 2,
    "franjasClaude": [
     "2026-10-08T16",
     "2026-10-12T16"
    ],
-   "dias": 5,
+   "dias": 6,
    "hMin": 0.15,
    "hMax": 0.3,
    "errorRel": 1,
@@ -49,9 +49,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 4.3233,
+   "a": 4.3352,
    "p": 0.5,
-   "n": 158,
+   "n": 159,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 9,
    "franjasClaude": [
@@ -63,7 +63,7 @@
    "dias": 8,
    "hMin": 0.3,
    "hMax": 3.59,
-   "errorRel": 0.764,
+   "errorRel": 0.765,
    "pocosDatos": false
   },
   "zumaia/c": {
@@ -169,13 +169,13 @@
    "pocosDatos": true
   },
   "castrourdiales/principal": {
-   "a": 3.7167,
+   "a": 3.8486,
    "p": 0.5,
-   "n": 18,
+   "n": 19,
    "nEtiquetas": 5,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
-   "dias": 5,
+   "dias": 6,
    "hMin": 0.3,
    "hMax": 3.12,
    "errorRel": 1,
@@ -338,8 +338,8 @@
    "sustituye": true,
    "motivo": "18 etiquetas",
    "ruido": {
-    "ruido": 0.573,
-    "pares": 117
+    "ruido": 0.574,
+    "pares": 118
    }
   },
   "getaria": {
