@@ -626,3 +626,26 @@ test("NZ: /prevision?region=nz aplica la cámara con la hora de Auckland, y solo
   const nzFn = fuente.slice(fuente.indexOf("export async function previsionRegionNZ"), fuente.indexOf("async function responderRegion"));
   assert.match(nzFn, /aplicarReferenciasCamara\(aplicarCamarasASpots\(/);
 });
+
+// 2026-10-15 (Mikel: "y aprende del error"). La rutina de etiquetado, sin
+// la clave de Supabase, reescribía calibracion.json sin las etiquetas de
+// Mikel (Bakio: de 3 a 0) y su PR chocó con el push del robot. Un fichero
+// tiene un solo dueño: el robot, que es el único con todas las fuentes.
+test("--solo-calibrar sin la clave de Supabase no reescribe calibracion.json", async () => {
+  const { execFileSync } = await import("node:child_process");
+  const { readFileSync } = await import("node:fs");
+  const f = new URL("../datos-robots/oleaje-camaras/calibracion.json", import.meta.url);
+  const antes = readFileSync(f, "utf8");
+  const salida = execFileSync(process.execPath, [new URL("../scripts/oleaje-camaras/medir-espuma.mjs", import.meta.url).pathname, "--solo-calibrar"], {
+    env: { ...process.env, SUPABASE_SERVICE_ROLE_KEY: "" }, encoding: "utf8",
+  });
+  assert.equal(readFileSync(f, "utf8"), antes);
+  assert.match(salida, /no se reescribe/);
+});
+
+test("el robot de cámaras gana el choque de calibracion.json al subir", async () => {
+  const { readFileSync } = await import("node:fs");
+  const wf = readFileSync(new URL("../.github/workflows/espuma-camaras.yml", import.meta.url), "utf8");
+  assert.match(wf, /git pull -q --rebase -X theirs origin main/);
+  assert.match(wf, /git rebase --abort/);
+});
