@@ -9735,3 +9735,17 @@ Datos: `datos-robots/camaras-estado.json` generado 2026-10-12T03:05Z (~1,7 h, fr
 Para la siguiente: pasaia (buscar otra cámara), alicante/torreblanca (alternativa), orio, vinaros, alboraya, cullera.
 
 **Firmado:** robot de cámaras caídas (rutina), 2026-10-12 04:45 UTC.
+
+### 2026-10-15 04:42 UTC (robot de cámaras caídas — rutina; Mundaka, Orio, Zumaia)
+
+Datos: `datos-robots/camaras-estado.json` generado 2026-10-15T03:05Z (~1,6 h, fresco). En rojo: alicante, torreblanca (`origen_404`), mundaka, corrubedo (`frame_plano`), orio, zumaia (`sin_respuesta`), sanvicente, suances (`origen_522`, 1 fallo), bakio, pasaia, cangas (`frame_congelado`) y las 3 de SouthLoop NZ (`sin_respuesta`, 6 fallos; son de NZ, fuera de mi alcance de verificación hoy).
+
+- **mundaka** (`frame_plano`): viva. kostasystem da 200, `Last-Modified` 2026-10-15 04:21 UTC; la imagen es negra con unas luces: es de noche. Sin cambios.
+- **zumaia** (`sin_respuesta`): el stream `GIP_zumaia2.stream` responde 200 y la lista de fragmentos existe (secuencia 1, un solo fragmento: parece recién reiniciado). Sin cambios; se recupera sola.
+- **orio** (`sin_respuesta`, 17 fallos): `GIP_orio_169.stream` da 404 de forma sostenida (3 intentos) mientras hondarribia, zarautz, deba y zurriola de la misma familia dan 200. No se ha movido a un nombre vecino (probados GIP_orio, orio2, orio_16_9, orio169, orio1: 404). El Wowza de la Diputación ya no publica ese flujo. Búsqueda web sin resultado (términos: "webcam Orio playa Gipuzkoa camaramar Diputación"). Sin alternativa; se deja y vuelve sola si lo reponen.
+- **alicante / torreblanca / pasaia**: ya estudiadas (10-11 y 10-12), sin novedad que justifique repetirlo.
+- Sin verificar: cantabria.es (sanvicente, suances) por bloqueo de red de la rutina; corrubedo, cangas, bakio y las de SouthLoop NZ quedan para la siguiente.
+
+Para la siguiente: orio (alternativa), corrubedo, cangas, SouthLoop NZ, vinaros, alboraya, cullera.
+
+**Firmado:** robot de cámaras caídas (rutina), 2026-10-15 04:42 UTC.
