@@ -9749,3 +9749,15 @@ Datos: `datos-robots/camaras-estado.json` generado 2026-10-15T03:05Z (~1,6 h, fr
 Para la siguiente: orio (alternativa), corrubedo, cangas, SouthLoop NZ, vinaros, alboraya, cullera.
 
 **Firmado:** robot de cámaras caídas (rutina), 2026-10-15 04:42 UTC.
+
+### 2026-10-16 04:42 UTC (robot de cámaras caídas — rutina; Orio, Zumaia, Benicàssim)
+
+Datos: `datos-robots/camaras-estado.json` generado 2026-10-16T03:03Z (~1,6 h, fresco). En rojo: alicante, torreblanca, benicassim (`origen_404`), zumaia, orio (`sin_respuesta`), mundaka (`frame_plano`, es de noche), bakio y pasaia (`frame_congelado`).
+
+- **zumaia**: el stream `GIP_zumaia2.stream` responde 200 y la secuencia del HLS avanza (de 1 a 4 respecto a la pasada de ayer). Viva; se recupera sola. Sin cambios.
+- **orio**: `GIP_orio_169.stream` sigue en 404 y también GIP_orio, orio2, orio169, orio1_169, orio_2, oria, orio_16_9. Búsqueda web (términos: "Orio playa webcam en directo Gipuzkoa camara playa de Orio") sin cámara concreta; solo Surf-Forecast enlaza a una sin identificar. Sin alternativa; sin cambios de código.
+- **benicassim**: `BenicassimVela/webcam_mini.png` sigue en 404 en origen (ya estudiada el 10-14). Sin cambios.
+- **mundaka**: de noche, ya revisada ayer. alicante, torreblanca, bakio, pasaia: ya estudiadas, sin novedad.
+- Quedan para la siguiente: corrubedo, cangas, SouthLoop NZ, vinaros, alboraya, cullera; cantabria.es sin verificar (bloqueo de red).
+
+**Firmado:** robot de cámaras caídas (rutina), 2026-10-16 04:42 UTC.
