@@ -1,10 +1,11 @@
 {
   "usadas": [
-    "northland"
+    "northland",
+    "auckland-hauraki-gulf"
   ],
   "ciclo": 1,
-  "ultimaZona": "northland",
+  "ultimaZona": "auckland-hauraki-gulf",
   "ultimaRegion": "nz_auckland_kermadec",
-  "ultimoSpot": "nz-ninety-mile-beach",
-  "fecha": "2026-10-15T05:40:37.412Z"
+  "ultimoSpot": "nz-leigh",
+  "fecha": "2026-10-16T05:20:54.532Z"
 }
