@@ -24,6 +24,11 @@
       "tipo": "condiciones-nz",
       "campana": "20261016-condiciones-nz-ninety-mile-beach",
       "en": "2026-10-15T05:40:38.637Z"
+    },
+    "2026-10-17-reel-nz": {
+      "tipo": "reel-condiciones",
+      "campana": "20261017-reel-condiciones-nz-leigh",
+      "en": "2026-10-16T05:21:49.701Z"
     }
   },
   "ultimaFuncion": "diario"
