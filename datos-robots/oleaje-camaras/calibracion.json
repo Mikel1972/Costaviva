@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-16T22:02:05.826Z",
- "lineasHistorial": 2420,
+ "fecha": "2026-10-16T22:07:23.890Z",
+ "lineasHistorial": 2423,
  "etiquetas": 162,
  "etiquetasClaude": 67,
  "calibracion": {
@@ -459,7 +459,7 @@
    "motivo": "estable (±0 % entre lecturas cercanas)",
    "ruido": {
     "ruido": 0,
-    "pares": 108
+    "pares": 109
    }
   }
  }
