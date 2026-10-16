@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-16T16:37:55.968Z",
- "lineasHistorial": 2395,
+ "fecha": "2026-10-16T18:37:18.482Z",
+ "lineasHistorial": 2397,
  "etiquetas": 162,
  "etiquetasClaude": 67,
  "calibracion": {
@@ -192,9 +192,9 @@
    "pocosDatos": false
   },
   "berria/dinamico": {
-   "a": 4.5406,
+   "a": 4.5386,
    "p": 0.5,
-   "n": 73,
+   "n": 74,
    "nEtiquetas": 8,
    "nEtiquetasClaude": 11,
    "franjasClaude": [
@@ -206,7 +206,7 @@
    "dias": 9,
    "hMin": 0.75,
    "hMax": 3.12,
-   "errorRel": 0.852,
+   "errorRel": 0.847,
    "pocosDatos": false
   },
   "mutriku/principal": {
