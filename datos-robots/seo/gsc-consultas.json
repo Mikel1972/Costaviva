@@ -1,7 +1,7 @@
 {
- "generado": "2026-10-13T11:01:26.561Z",
+ "generado": "2026-10-16T08:33:02.038Z",
  "propiedad": "sc-domain:costaviva.org",
- "hasta": "2026-10-10",
+ "hasta": "2026-10-13",
  "semanas": [
   {
    "semana": "2026-09-14",
@@ -20,6 +20,12 @@
    "clics": 1,
    "impresiones": 22,
    "posicion": 31
+  },
+  {
+   "semana": "2026-10-05",
+   "clics": 1,
+   "impresiones": 36,
+   "posicion": 14.1
   }
  ],
  "semanas_por_pais": {
@@ -41,10 +47,63 @@
     "clics": 1,
     "impresiones": 22,
     "posicion": 31
+   },
+   {
+    "semana": "2026-10-05",
+    "clics": 0,
+    "impresiones": 28,
+    "posicion": 17.1
    }
   ],
-  "rou": [],
-  "mar": []
+  "rou": [
+   {
+    "semana": "2026-10-05",
+    "clics": 1,
+    "impresiones": 1,
+    "posicion": 1
+   }
+  ],
+  "mar": [
+   {
+    "semana": "2026-10-05",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 1
+   }
+  ],
+  "egy": [
+   {
+    "semana": "2026-10-05",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 10
+   }
+  ],
+  "fra": [
+   {
+    "semana": "2026-10-05",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 4
+   }
+  ],
+  "nzl": [
+   {
+    "semana": "2026-10-05",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 1
+   }
+  ],
+  "prt": [
+   {
+    "semana": "2026-10-05",
+    "clics": 0,
+    "impresiones": 2,
+    "posicion": 5
+   }
+  ],
+  "mex": []
  },
  "consultas": [
   {
@@ -62,6 +121,38 @@
    "clics": 0,
    "impresiones": 1,
    "posicion": 32
+  },
+  {
+   "query": "calamar",
+   "pagina": "/especies/calamar",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 78
+  },
+  {
+   "query": "chipiron pescado",
+   "pagina": "/especies/calamar",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 2,
+   "posicion": 82
+  },
+  {
+   "query": "lubina pesca",
+   "pagina": "/especies/lubina",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 100
+  },
+  {
+   "query": "lugares de pesca en españa",
+   "pagina": "/spots",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 52
   },
   {
    "query": "marea en bakio",
@@ -168,6 +259,14 @@
    "posicion": 44
   },
   {
+   "query": "pesca chipiron",
+   "pagina": "/especies/calamar",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 2,
+   "posicion": 24
+  },
+  {
    "query": "pesca pais vasco",
    "pagina": "/mareas/region/pais-vasco",
    "pais": "esp",
@@ -208,6 +307,14 @@
    "posicion": 33
   },
   {
+   "query": "tiburón bakio",
+   "pagina": "/spots/bakio",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 49
+  },
+  {
    "query": "webcam mundaka",
    "pagina": "/mareas/mundaka",
    "pais": "esp",
@@ -222,138 +329,66 @@
    "clics": 0,
    "impresiones": 1,
    "posicion": 37
+  },
+  {
+   "query": "windfinder mundaka",
+   "pagina": "/mareas/mundaka",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 2,
+   "posicion": 35
   }
  ],
  "consultas_semana": {
-  "semana": "2026-09-28",
+  "semana": "2026-10-05",
   "filas": [
    {
-    "query": "bajamar mundaka",
-    "pagina": "/mareas/mundaka",
+    "query": "chipiron pescado",
+    "pagina": "/especies/calamar",
+    "pais": "esp",
+    "clics": 0,
+    "impresiones": 1,
+    "posicion": 82
+   },
+   {
+    "query": "marea en bakio",
+    "pagina": "/spots/bakio",
     "pais": "esp",
     "clics": 0,
     "impresiones": 1,
     "posicion": 32
    },
    {
-    "query": "costa viva",
-    "pagina": "/",
+    "query": "mareas bakio hoy",
+    "pagina": "/spots/bakio",
     "pais": "esp",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 3
+    "posicion": 28
    },
    {
-    "query": "mareas bilbao",
-    "pagina": "/mareas/region/pais-vasco",
+    "query": "pesca chipiron",
+    "pagina": "/especies/calamar",
     "pais": "esp",
     "clics": 0,
     "impresiones": 1,
-    "posicion": 51
-   },
-   {
-    "query": "mareas en donosti",
-    "pagina": "/mareas/region/pais-vasco",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 86
-   },
-   {
-    "query": "mareas en donostia",
-    "pagina": "/mareas/region/pais-vasco",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 94
-   },
-   {
-    "query": "mareas en portosin",
-    "pagina": "/mareas",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 34
-   },
-   {
-    "query": "mareas españa",
-    "pagina": "/mareas",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 35
-   },
-   {
-    "query": "mareas euskadi",
-    "pagina": "/mareas/region/pais-vasco",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 25
-   },
-   {
-    "query": "mareas mundaka hoy",
-    "pagina": "/mareas/mundaka",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 26
-   },
-   {
-    "query": "mareas pais vasco",
-    "pagina": "/mareas/region/pais-vasco",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 2,
-    "posicion": 24
-   },
-   {
-    "query": "pesca pais vasco",
-    "pagina": "/mareas/region/pais-vasco",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 5
+    "posicion": 27
    },
    {
     "query": "pleamar mundaka",
     "pagina": "/mareas/mundaka",
     "pais": "esp",
     "clics": 0,
-    "impresiones": 1,
-    "posicion": 33
+    "impresiones": 3,
+    "posicion": 28.3
    },
    {
-    "query": "pleamar mundaka hoy",
+    "query": "webcam mundaka",
     "pagina": "/mareas/mundaka",
     "pais": "esp",
     "clics": 0,
     "impresiones": 2,
-    "posicion": 27
-   },
-   {
-    "query": "tabla de mareas mundaka",
-    "pagina": "/mareas/mundaka",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 29
-   },
-   {
-    "query": "tabla mareas mundaka",
-    "pagina": "/mareas/mundaka",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 33
-   },
-   {
-    "query": "webcam mundaka directo",
-    "pagina": "/mareas/mundaka",
-    "pais": "esp",
-    "clics": 0,
-    "impresiones": 1,
-    "posicion": 37
+    "posicion": 44.5
    }
   ]
  }
