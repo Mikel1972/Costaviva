@@ -1,13 +1,13 @@
 {
- "fecha": "2026-10-16T14:37:53.399Z",
- "lineasHistorial": 2347,
+ "fecha": "2026-10-16T14:43:21.050Z",
+ "lineasHistorial": 2358,
  "etiquetas": 154,
  "etiquetasClaude": 59,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.0622,
+   "a": 1.0688,
    "p": 0.5,
-   "n": 76,
+   "n": 77,
    "nEtiquetas": 7,
    "nEtiquetasClaude": 3,
    "franjasClaude": [
@@ -16,7 +16,7 @@
    "dias": 9,
    "hMin": 0.15,
    "hMax": 0.54,
-   "errorRel": 0.702,
+   "errorRel": 0.705,
    "pocosDatos": false
   },
   "hondarribia/bocana": {
@@ -49,9 +49,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 4.5131,
+   "a": 4.5211,
    "p": 0.5,
-   "n": 183,
+   "n": 184,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 10,
    "franjasClaude": [
@@ -64,7 +64,7 @@
    "dias": 9,
    "hMin": 0.3,
    "hMax": 3.59,
-   "errorRel": 0.773,
+   "errorRel": 0.772,
    "pocosDatos": false
   },
   "zumaia/c": {
@@ -97,9 +97,9 @@
    "pocosDatos": false
   },
   "deba/rompiente": {
-   "a": 5.0999,
+   "a": 5.1476,
    "p": 0.5,
-   "n": 43,
+   "n": 44,
    "nEtiquetas": 2,
    "nEtiquetasClaude": 3,
    "franjasClaude": [
@@ -108,13 +108,13 @@
    "dias": 8,
    "hMin": 0.3,
    "hMax": 3.59,
-   "errorRel": 0.895,
+   "errorRel": 0.89,
    "pocosDatos": false
   },
   "mundaka/principal": {
-   "a": 2.9806,
+   "a": 2.9658,
    "p": 0.5,
-   "n": 102,
+   "n": 103,
    "nEtiquetas": 11,
    "nEtiquetasClaude": 5,
    "franjasClaude": [
@@ -126,7 +126,7 @@
    "dias": 9,
    "hMin": 0.3,
    "hMax": 2.18,
-   "errorRel": 0.641,
+   "errorRel": 0.644,
    "pocosDatos": false
   },
   "bakio/principal": {
@@ -332,8 +332,8 @@
    "sustituye": true,
    "motivo": "7 etiquetas",
    "ruido": {
-    "ruido": 0.307,
-    "pares": 37
+    "ruido": 0.301,
+    "pares": 38
    }
   },
   "donostia": {
@@ -356,8 +356,8 @@
    "sustituye": true,
    "motivo": "18 etiquetas",
    "ruido": {
-    "ruido": 0.574,
-    "pares": 140
+    "ruido": 0.575,
+    "pares": 141
    }
   },
   "getaria": {
@@ -372,16 +372,16 @@
    "sustituye": true,
    "motivo": "≥ 3 días con alturas variadas",
    "ruido": {
-    "ruido": 0.527,
-    "pares": 10
+    "ruido": 0.426,
+    "pares": 11
    }
   },
   "deba": {
    "sustituye": true,
    "motivo": "≥ 3 días con alturas variadas",
    "ruido": {
-    "ruido": 0.451,
-    "pares": 15
+    "ruido": 0.687,
+    "pares": 16
    }
   },
   "mutriku": {
