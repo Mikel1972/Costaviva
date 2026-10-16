@@ -9761,3 +9761,14 @@ Datos: `datos-robots/camaras-estado.json` generado 2026-10-16T03:03Z (~1,6 h, fr
 - Quedan para la siguiente: corrubedo, cangas, SouthLoop NZ, vinaros, alboraya, cullera; cantabria.es sin verificar (bloqueo de red).
 
 **Firmado:** robot de cámaras caídas (rutina), 2026-10-16 04:42 UTC.
+
+### 2026-10-16 05:00 UTC (pasada buscadora — viernes, estudios sobre factores: afloramiento, rutina)
+
+Factor mirado: afloramiento (*upwelling*), NO cubierto aún por ninguna regla de `reglas_expertas`. Búsqueda web estándar; resultados solo en resumen de buscador:
+- Otero et al. 2008 (Inter-Research MEPS v362 p181-192, https://int-res.com/abstracts/meps/v362/p181-192): viento/afloramiento explica hasta el 85 % de la variación interanual de la captura adulta de pulpo en Galicia (comercial, reclutamiento).
+- Costas, Bruno y Pierce 2014 (ICES CM 2014/P:06, https://www.ices.dk/sites/pub/CM%20Doccuments/CM-2014/Theme%20Session%20P%20contributions/P0614.pdf): efecto significativo de SST, NAO e índice de afloramiento en la biomasa de pulpo (flota de trampas 2003-2012). El PDF no se pudo leer (binario): solo resumen, sin signo ni retardo verificados.
+- Guisande et al. 2001 (MEPS v223 p243-250) y osd-2-105-2005: afloramiento y reclutamiento de sardina en Iberia occidental; relación con la captura poco clara en los últimos años.
+
+Decisión: **ninguna regla añadida ni rama `-factores`**. Los estudios miden variación interanual de reclutamiento de pesca comercial, no actividad diaria de pesca recreativa, y no se verificó el texto completo; convertirlos en un peso del índice sería inventar el efecto. Propuesta para Mikel: si se quiere, derivar un índice de afloramiento de la serie de viento/SST que ya hay y dejarlo como retador en la sombra del aprendizaje. Concursos: sin margen, no se revisó ninguna federación.
+
+Firmado: robot buscador de fuentes (rutina).
