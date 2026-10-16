@@ -25,3 +25,12 @@ Una entrada por pasada (martes y viernes), añadida al final. Anota números de 
 - Diseño: ninguna propuesta; sin datos que la justifiquen.
 - Parte D (DeepL): día <= 7 no aplica (día 12). KPIs: pais_foco nulo y 0 MRR; sin cambios de CTA esta pasada.
 - Esperado próxima pasada: PR fusionada y los 4 términos con posición igual o mejor a 2 semanas; "Descubierta" por debajo de 229.
+
+## 2026-10-16 UTC (viernes, disparo programado)
+- Aviso: SEO_ESTADO.md es del 2026-10-13 11:01 UTC (no de hoy). Clics/impresiones de 28 días no figuran en el fichero.
+- Números: indexadas 9 de 500 inspeccionadas (sitemap: 450 URLs; antes 8 de 284): entra /mareas/mundaka entre las indexadas listadas. 291 "Descubierta: sin indexar", 200 "Google no reconoce esta URL" (sobre todo /en/, /pt/ y regiones, sin rastrear nunca).
+- País priorizado: sin MRR ni objetivos por país con datos; reparto por puntuación de huecos (España).
+- SEO/palabras: ningún cambio. El cambio del 2026-10-12 ("Mareas en X hoy", ya en main) aún no tiene medida a 1 semana; el título de /mareas/region/<región> ya es "Mareas hoy en País Vasco…", que coincide con "mareas pais vasco". Tocar más sin medir sería adivinar; el cuello sigue siendo rastreo/autoridad (491 URLs nunca rastreadas).
+- Huecos dejados: técnicas (spinning, surfcasting, jigging, eging) sin datos reales con fuente en la app; "mareas vivas bizkaia" sin página.
+- Diseño: ninguna propuesta. Parte D (DeepL): día 16 > 7, no aplica; KPIs: no es martes.
+- Esperado próxima pasada: veredicto a 1 semana de "mareas-plural"; "Descubierta" por debajo de 291.
