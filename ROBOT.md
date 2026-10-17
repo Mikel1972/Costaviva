@@ -9775,3 +9775,26 @@ Datos: `datos-robots/camaras-estado.json` generado 2026-10-17T03:04Z (~1,7 h, fr
 Para la siguiente: corrubedo, cangas, SouthLoop NZ, vinaros, alboraya, cullera; reintentar Zurriola y Orio.
 
 **Firmado:** robot de cámaras caídas (rutina), 2026-10-17 04:50 UTC.
+
+### 2026-10-17 (robot de patrones de uso — rutina; datos de `ultima.json` del 2026-10-17 00:25 UTC)
+
+**Datos** (agregados, cuentas de prueba fuera; recogida sin errores): 8 perfiles (4 altas en 28 días, 2 en 7), 6 usuarios activos en 7 y en 28 días, 563 eventos desde el 2026-09-17. De los 6 perfiles con más de 7 días, 2 nunca hicieron nada; ninguno lleva 7 días parado. **Muestra minúscula (6 personas): lo que sigue son indicios, no patrones.** La recogida funciona y los números cuadran (ver_mapa en los 6 usuarios).
+
+- Mapa: `ver_mapa` 62 eventos / 6 usuarios en 7 días; es lo único que usan todos.
+- Capas (28 días, usuarios): clorofila 34/4, T. agua 29/4, frentes 30/2, corriente 19/3, viento 41/3 (8 en 7 d, 1 usuario), rayos 10/3, boyas 12/3, ríos 8/3, sustrato 9/3, isóbatas 5/3, radar 8/2, estaciones 13/2, batimetría 5/1 (último uso 2026-10-08; ya no existe como botón: ahora es "isóbatas").
+- Diario: `crear_salida` 8 filas y `crear_captura` 3, **todo de 1 sola persona**. Grupos: `unirse_grupo` 1 (2026-09-18), `crear_grupo` 0.
+- Cobro: `ver_suscripcion` 17/2 y `iniciar_checkout` 11/2 (annual 6, monthly 5), **todos antes del 2026-10-03**; nada en los últimos 7 días. SOS: 1 pulsación y 1 WhatsApp (2026-10-08, probablemente prueba).
+- `ir_a_region` 6/2 (NZ, 11-12 oct).
+- Actividad por día: picos 19-sep (81), 25-sep (38), 8-12 oct (35-114), coinciden con lanzamientos de funciones; desde el 13-oct casi nada (8 y 1).
+
+**Propuestas** (todas para decisión de Mikel; nada se ha tocado):
+1. **Las capas del mar nuevas (clorofila, T. agua, frentes, corriente) sí se usan** (3-4 de 6 activos, 112 eventos en 28 días entre las cuatro): no tocar; si se simplifica el menú, no es por aquí. La más frágil de justificar es 〰 Frentes: 30 eventos pero de 2 personas (probablemente una sola insistiendo). Esperar a tener 15+ activos antes de decidir nada.
+2. **Capas con menos de 3 usuarios en 28 días** (radar de lluvia 2, estaciones 2): candidatas a pasar a un submenú *solo si* con ≥15 usuarios activos siguen por debajo del 15 %. Hoy no hay base para quitar nada.
+3. **El diario y los grupos los usa 1 persona de 6** (¿Mikel?). Si no es Mikel, hay un problema de descubrimiento: proponer medir antes de rediseñar (ver punto ciego 1) y revisar con 20+ activos.
+4. **Pago**: 2 personas llegaron a checkout (11 eventos) y no hay actividad de pago desde el 25-sep; coincide con el cambio a "plan gratis tras 14 días". Revisar con Stripe si hubo alguna conversión; desde aquí no se puede saber.
+
+**Puntos ciegos de la medición** (existen en la app y no registran evento, o no los vi en esta agregación): no hay evento al abrir la ficha de un spot, ni al abrir `diario.html`, `grupos.html` o `alarma.html` (solo acciones de crear), ni para la ventana de actividad / índice de pesca, webcams, identificación por foto, ni para la nueva pantalla de planes gratis/Premium (`avisoPremium`) ni el cambio de plan. Tampoco `ver_capa_*` de `batimetria` ya se emite. Los eventos `compartir_enlace_amigo`, `contactos_agenda`, `sos_whatsapp_grupo` están en el código pero no salen en los datos (0 usos). Propuesta a `scripts/patrones-uso/agregar.mjs` / páginas: añadir `ver_spot`, `ver_diario`, `ver_grupos`, `ver_alarma`, `ver_ventana_actividad`, `ver_camara`, `identificar_foto` y `ver_aviso_premium`. No aplicado.
+
+No me dio tiempo/datos para: la retención por cohorte y la comparación con semanas previas (esta es la primera entrada con datos reales de la rutina). El SOS no se propone tocar.
+
+**Firmado:** robot de patrones de uso (rutina), 2026-10-17.
