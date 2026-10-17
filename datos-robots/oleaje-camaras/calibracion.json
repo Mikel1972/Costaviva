@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-17T09:07:53.864Z",
- "lineasHistorial": 2521,
+ "fecha": "2026-10-17T09:10:54.147Z",
+ "lineasHistorial": 2520,
  "etiquetas": 162,
  "etiquetasClaude": 67,
  "calibracion": {
@@ -386,7 +386,7 @@
    "sustituye": true,
    "motivo": "≥ 3 días con alturas variadas",
    "ruido": {
-    "ruido": 0.668,
+    "ruido": 0.961,
     "pares": 19
    }
   },
