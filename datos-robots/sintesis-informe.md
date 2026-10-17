@@ -1,21 +1,18 @@
-<!-- SINTESIS fecha=2026-10-16 hasta_commit=cec482105a5404b850f86a31fd633e6485bb7c1c -->
+<!-- SINTESIS fecha=2026-10-17 hasta_commit=c94cd5663897069b614c00ac92087a630d830c92 -->
 
 ## 🛠 Trabajo interno (calibración y datos)
-Solo hay una entrada nueva en ROBOT.md: el parte del robot de cámaras caídas (04:42 UTC). Los datos de cámaras eran frescos (~1,6 h). En rojo: alicante, torreblanca, benicassim (`origen_404`), zumaia, orio (`sin_respuesta`), mundaka (`frame_plano`, de noche), bakio y pasaia (`frame_congelado`). Zumaia está viva: el stream responde 200 y la secuencia HLS avanza, así que se recupera sola. Orio sigue en 404 con GIP_orio_169.stream y otras 7 variantes; sin alternativa. Benicàssim sigue en 404 en origen. Mundaka, Alicante, Torreblanca, Bakio y Pasaia, sin novedad. Quedan pendientes corrubedo, cangas, SouthLoop NZ, vinaròs, alboraya y cullera; cantabria.es sin verificar por bloqueo de red. No hay entrada de calibración nocturna ni de presión, corrientes o caudal en este tramo.
-
+Solo pasó el robot de cámaras caídas (17-oct, 04:50 UTC; también el 16-oct). Estado a las 03:04 UTC: en rojo alicante, torreblanca y benicassim (el origen da 404, sin cambios desde el 12-14 oct), donostia/Zurriola y orio (sin respuesta), mundaka (frame plano, es de noche), suances y sanvicente (error 522 del origen, sin poder verificar porque cantabria.es está bloqueado desde la red de la rutina), y bakio y pasaia con la imagen congelada.
+Lo nuevo: **Zurriola (Donostia)** cayó el 16-oct a las 15:30 UTC; `GIP_zurriola_169.stream` da 404 en el servidor de la Diputación (mientras Hondarribia da 200), igual que Orio, que sigue en 404 con todas las variantes probadas. Puede ser una parada del codificador, como Zumaia, que el 16-oct ya se recuperó sola. Sin cambios de código.
 **Cámaras nuevas encontradas:** 0
-
-**Términos de búsqueda:** "Orio playa webcam en directo Gipuzkoa camara playa de Orio" (Orio, Gipuzkoa): no dio ninguna cámara concreta; solo Surf-Forecast enlaza a una sin identificar. Ningún término funcionó por primera vez ni apareció un tipo de dueño nuevo.
+**Términos de búsqueda:** "webcam Zurriola Donostia en directo Diputación Gipuzkoa camaramar" (Gipuzkoa): solo agregadores, sin URL nueva verificable; el 16-oct, "Orio playa webcam en directo Gipuzkoa": sin cámara concreta. Ningún tipo de dueño nuevo.
 
 ## 🧪 Experiencia de usuario y patrones de uso
-**Robot de experiencia de usuario:** no le tocaba pasar hoy (corre los lunes); sin entrada nueva.
-
-**Robot de patrones de uso:** no le tocaba pasar esta semana (corre los sábados); sin entrada nueva.
+**Robot de experiencia de usuario:** no le tocaba pasar hoy (sin entrada suya).
+**Robot de patrones de uso:** no le tocaba pasar esta semana (sin entrada suya).
 
 ## 🔎 Trabajo externo (investigación de contenido)
-Sin entradas nuevas sobre buenas prácticas de otras apps ni estudios institucionales desde la última síntesis.
-
-**Robot de especies:** no le tocaba pasar hoy (corre los jueves); sin entrada nueva.
+Sin novedades de buenas prácticas de otras apps ni de estudios institucionales en este periodo.
+**Robot de especies:** no le tocaba pasar hoy (sin entrada suya).
 
 ## 🆕 Nuevas fuentes encontradas, pendientes de validar
 Ninguna fuente nueva desde la última síntesis.
