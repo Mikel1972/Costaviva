@@ -9761,3 +9761,17 @@ Datos: `datos-robots/camaras-estado.json` generado 2026-10-16T03:03Z (~1,6 h, fr
 - Quedan para la siguiente: corrubedo, cangas, SouthLoop NZ, vinaros, alboraya, cullera; cantabria.es sin verificar (bloqueo de red).
 
 **Firmado:** robot de cámaras caídas (rutina), 2026-10-16 04:42 UTC.
+
+### 2026-10-17 04:50 UTC (robot de cámaras caídas — rutina; Donostia/Zurriola, Orio, Benicàssim)
+
+Datos: `datos-robots/camaras-estado.json` generado 2026-10-17T03:04Z (~1,7 h, fresco). En rojo: alicante, torreblanca, benicassim (`origen_404`), donostia, orio (`sin_respuesta`), mundaka (`frame_plano`, de noche), suances, sanvicente (`origen_522`, 1 fallo), bakio y pasaia (`frame_congelado`); getaria con 1 fallo.
+
+- **donostia (Zurriola)** — nueva en rojo (última señal 10-16 15:30 UTC): `GIP_zurriola_169.stream` da 404 en el Wowza de la Diputación mientras `GIP_hondarribia_169` da 200. Probados también GIP_zurriola, zurriola2 y donostia_169: 404. Mismo patrón que Orio: el flujo ya no se publica. Búsqueda web (términos: "webcam Zurriola Donostia en directo Diputación Gipuzkoa camaramar"): solo agregadores (enteraT) y webs de la Diputación que no responden desde esta red (gipuzkoa.eus 404); sin URL nueva verificable. Sin cambios de código; vigilar si vuelve (puede ser una parada del codificador, como Zumaia).
+- **orio**: sigue en 404 (`GIP_orio_169`, orio2, orio_2, orioa_169, oria_169). Sin alternativa.
+- **benicassim, torreblanca, alicante**: Wowza de la Generalitat, sin novedad (ya estudiadas 10-12 y 10-14).
+- **suances, sanvicente**: sin verificar: dominio bloqueado por la red de la rutina (cantabria.es).
+- **bakio, pasaia, mundaka**: sin novedad.
+
+Para la siguiente: corrubedo, cangas, SouthLoop NZ, vinaros, alboraya, cullera; reintentar Zurriola y Orio.
+
+**Firmado:** robot de cámaras caídas (rutina), 2026-10-17 04:50 UTC.
