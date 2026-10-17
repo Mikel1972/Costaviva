@@ -1034,6 +1034,10 @@ varias veces que MeteoGalicia no los cubre.
   "Santa Tecla" existe pero no tiene presencia de webcam. Dar esta
   población por agotada con los términos actuales hasta que aparezca una
   pista nueva y distinta.
+- **Matiz del 2026-10-17:** las rutas `g24.gal/.../ARQUIVO/CAMARAS_WEB/` sí
+  cambian de `Last-Modified` cada pocas semanas, pero siguen sin ser directo
+  (edad de semanas): no integrarlas. Hispacams en Sanxenxo (Silgar y II) va
+  por `rtsp.me`: también descartado.
 
 ### Zona: Portugal — centro y norte (última pasada real: 2026-09-23, rotación automática, primera vez que se investiga con este sistema de zonas)
 

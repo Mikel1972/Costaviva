@@ -9775,3 +9775,14 @@ Datos: `datos-robots/camaras-estado.json` generado 2026-10-17T03:04Z (~1,7 h, fr
 Para la siguiente: corrubedo, cangas, SouthLoop NZ, vinaros, alboraya, cullera; reintentar Zurriola y Orio.
 
 **Firmado:** robot de cámaras caídas (rutina), 2026-10-17 04:50 UTC.
+
+### 2026-10-17 04:55 UTC (pasada buscadora — webcams, ZONA: Galicia — Rías Baixas / costa sur)
+
+Segunda pasada a esta zona (la primera fue el 2026-09-22). Spots sin cámara: `aguarda` y `sanxenxo`; los otros 6 siguen con MeteoGalicia sin caídas anotadas.
+
+- **Sanxenxo/Silgar/Portonovo:** las dos cámaras de Hispacams (Sanxenxo I = Hotel Minso, `rtsp.me/embed/ZtENkk9Y/`; Sanxenxo II, `rtsp.me/embed/AEy2Ahn5/`) usan `rtsp.me`, sin snapshot público (bloqueo ya documentado). `camarastrafico.com.es` reenvía al Hotel Minso (`hotelminso.com/webcam.php`, responde 301 y no se vio imagen). Enterat y camarastrafico son agregadores sin fuente propia.
+- **A Guarda:** la cámara de Santa Trega solo aparece en el listado de G24/CRTVG, que da solo `thumbnail_aguarda.jpg` y la ruta `ARQUIVO`. Esa ruta cambia de `Last-Modified` cada pocas semanas (`aguarda.jpg`: 28-ago → 14-oct; `sanxenxo.jpg`: 27-sep), pero no es directo; no se integra. `g24.gal/Webcams/-/a-guarda` da 404.
+- **Cola de MeteoGalicia sin spot** (Marín/Aguete, Bueu/Ons, Poio/Castrove): no se tocó esta pasada. Falta la comprobación visual del encuadre con `Read` (el listado `camarasIndex.action` de MeteoGalicia da 404 desde esta sesión; hay que sacar la URL correcta).
+- Spots creados: ninguno. Cámaras integradas: ninguna. Sin cambios de código.
+
+Firmado: robot buscador de fuentes (rutina), 2026-10-17 04:55 UTC.
