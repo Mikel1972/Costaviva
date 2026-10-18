@@ -34,6 +34,11 @@
       "tipo": "reel-condiciones",
       "campana": "20261017-reel-condiciones-nz-leigh",
       "en": "2026-10-16T05:21:49.701Z"
+    },
+    "2026-10-19-reel": {
+      "tipo": "reel-peces",
+      "campana": "20261019-reel-peces-ribadesella",
+      "en": "2026-10-18T21:29:46.164Z"
     }
   },
   "ultimaFuncion": "diario"
