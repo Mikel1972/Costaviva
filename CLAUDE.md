@@ -1061,7 +1061,14 @@ YouTube o MEO no dejan republicar) por piezas en el estilo de la app.
   actividad; si la lubina no está de temporada, no se monta). Cierra con "Mareas,
   corrientes, ríos, oleaje, clorofila, cámaras en directo y muchos más datos",
   costa · barco · submarina y la llamada a la acción. Nunca "la primera app".
-  Se lanza con el robot de reels, `tipo: peces` (y `spot`, `fecha`); el resto del
+  **Es el reel de los sábados en España** (Mikel, 2026-10-18: "a partir de ahora
+  prepararemos vídeos de este tipo"): el robot de reels lo monta sin `tipo` en
+  España (con `tipo: peces`, `spot` y `fecha` se fuerza cualquier día; los otros
+  tipos siguen a mano; NZ no cambia). Rota los spots con río y los vídeos con
+  `"tema": "peces"` en su ficha (`rotacion-reels-peces.json`), salta los spots
+  sin todos los datos o sin lubina de temporada y no se repite
+  (`calendario-estado.json`). Más vídeos de peces = más variedad: basta con
+  añadir el clip y su `.licencia.json` con `"tema": "peces"`. El resto del
   flujo (borrador + Issue + OK de Mikel) es el de siempre.
 - **Piezas de Nueva Zelanda (2026-10-11)**, en inglés: lógica pura en
   `scripts/marketing/pieza-nz.mjs`, red y disco en `generar-nz.mjs` (se
