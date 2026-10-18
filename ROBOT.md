@@ -9789,3 +9789,14 @@ Datos: `datos-robots/camaras-estado.json` generado 2026-10-18T03:03Z (~1,8 h, fr
 Para la siguiente: corrubedo, cangas, SouthLoop NZ, vinaros, alboraya, cullera; reintentar Zumaia, Zurriola y Orio.
 
 **Firmado:** robot de cámaras caídas (rutina), 2026-10-18 04:55 UTC.
+
+### 2026-10-18 04:55 UTC (pasada buscadora — corrientes marinas por zona, revisión espaciada del catálogo)
+
+Domingo, semana ISO 42 (42 % 3 = 0 → corrientes). Según la conclusión del 2026-09-25 (catálogo ya revisado dos veces, línea cerrada salvo red nueva), solo se repasó el catálogo de radar HF de EMODnet Physics, sin recalibrar.
+
+- Búsqueda `searchFor=HFRADAR` en `erddap.emodnet-physics.eu` (200): 57 filas. Redes de España/Portugal: las 9 ya conocidas (EUSKOOS, Galicia, Lisboa, Gibraltar, South, Ibiza, PLOCAN, ICATMAR, DeltaEbro). Sin red nueva.
+- Única nueva por nombre respecto a lo anotado: `HFR-WHub-Total`. Está en el mar de Irlanda/Cornualles (lat 50,2–51,0, lon −6,1 a −5,1) y su serie acaba el 2024-10-23. No aplica a España ni Portugal.
+- Cantabria sigue siendo hueco estructural (ninguna rejilla cubre Santander).
+- Sin cambios de código ni de datos. Próxima revisión del catálogo: dentro de ~2 meses, no en cada pasada de corrientes.
+
+**Firmado:** robot buscador de fuentes (rutina), 2026-10-18 04:55 UTC.
