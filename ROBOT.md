@@ -9775,3 +9775,17 @@ Datos: `datos-robots/camaras-estado.json` generado 2026-10-17T03:04Z (~1,7 h, fr
 Para la siguiente: corrubedo, cangas, SouthLoop NZ, vinaros, alboraya, cullera; reintentar Zurriola y Orio.
 
 **Firmado:** robot de cámaras caídas (rutina), 2026-10-17 04:50 UTC.
+
+### 2026-10-18 04:55 UTC (robot de cámaras caídas — rutina; Zumaia, Alicante, Torreblanca, Benicàssim, Altea)
+
+Datos: `datos-robots/camaras-estado.json` generado 2026-10-18T03:03Z (~1,8 h, fresco). En rojo: alicante, torreblanca, benicassim, altea (`origen_404`), mundaka (`frame_plano`), zumaia (`sin_respuesta`), suances, sanvicente, comillas, bakio, pasaia (`frame_congelado`).
+
+- **zumaia**: cambio desde ayer. `GIP_zumaia2.stream` da ahora 404 (antes 200), igual que `GIP_zumaia_169`, `GIP_zumaia`, `_2`, `2_169` y `3`, mientras `GIP_hondarribia_169` sigue en 200. Mismo patrón que Orio y Zurriola: la Diputación dejó de publicar el flujo. La página de playas de la Diputación carga (200) pero no expone ninguna URL de stream. Búsqueda web (términos: "Zumaia webcam en directo Flysch Itzurun camara"): solo agregadores (Windy/meteoblue, camarastrafico, worldcam) sin fuente del dueño verificable. Sin cambios de código.
+- **alicante, torreblanca, benicassim, altea**: `webcam_mini.png` sigue en 404 en el streaming de la Generalitat (Altea es nueva en rojo, mismo origen). Sin novedad.
+- **mundaka**: la imagen de kostasystem responde 200 (63 KB); el `frame_plano` es de noche. Sin novedad.
+- **suances, sanvicente, comillas**: sin verificar: dominio bloqueado por la red de la rutina (cantabria.es).
+- **bakio, pasaia**: sin novedad.
+
+Para la siguiente: corrubedo, cangas, SouthLoop NZ, vinaros, alboraya, cullera; reintentar Zumaia, Zurriola y Orio.
+
+**Firmado:** robot de cámaras caídas (rutina), 2026-10-18 04:55 UTC.
