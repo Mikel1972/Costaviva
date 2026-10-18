@@ -358,3 +358,20 @@ test("NZ: el reel nunca usa un clip con personas identificables", () => {
   const fuente = readFileSync(new URL("../scripts/marketing/generar-reel-instagram.mjs", import.meta.url), "utf8");
   assert.match(fuente, /mercado === "nz" && candidato\?\.ficha\?\.personaIdentificable !== false \? null/);
 });
+
+// Reel de peces (2026-10-18): el reel de los sábados de España.
+test("reel de peces: rota spots y clips, y solo usa vídeos de peces con licencia", async () => {
+  const { clipsDePeces, siguienteDe, textoCaudal } = await import("../scripts/marketing/reel-peces.mjs");
+  const clips = clipsDePeces();
+  assert.ok(clips.includes("pexels-peces-arrecife.mp4"));
+  for (const c of clips) assert.ok(!/pescador|cana|carrete/.test(c), `${c} no es de peces`);
+  assert.deepEqual(siguienteDe(["a", "b", "c"], "b"), ["c", "a", "b"]);
+  assert.deepEqual(siguienteDe(["a", "b", "c"], undefined), ["a", "b", "c"]);
+  assert.deepEqual(textoCaudal({ caudal: 10.82, umbralBajo: 438, umbralAlto: 885 }), { val: "10,8 m³/s", sub: "caudal bajo" });
+  assert.equal(textoCaudal({ caudal: 900, umbralBajo: 438, umbralAlto: 885 }).sub, "crecido");
+  assert.equal(textoCaudal(null), null);
+  const texto = readFileSync(new URL("../scripts/marketing/plantillas/reel-peces.html", import.meta.url), "utf8");
+  assert.ok(!/primera app/i.test(texto), "nada de 'la primera app' (Ley General de Publicidad)");
+  assert.match(texto, /clorofila/);
+  assert.match(texto, /Desde costa/); assert.match(texto, /En barco/); assert.match(texto, /Pesca submarina/);
+});
