@@ -17,6 +17,8 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { dirname, join } from "node:path";
 import { BASE_URL, resumenDeSpot, leerEspecies, fechaLegible, nombreSpot } from "./obtener-datos.mjs";
 import { abrirNavegador } from "./render.mjs";
+import { mejorTramo } from "./pieza-datos.mjs";
+import * as VA from "../../assets/js/ventana-actividad.js";
 import { instanteMadrid, campanaDePieza, MARCA_ENLACE } from "./calendario.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -35,6 +37,28 @@ function arg(nombre, def) {
   return process.env[ENTORNO[nombre]] || def;
 }
 const num = (x, d = 1) => x.toFixed(d).replace(".", ",");
+
+// Especie del reel (Mikel, 2026-10-18: "no pongas lisa, sino lubina"). Su
+// índice es el real de la ficha para esa especie (misma cuenta que la ventana
+// de actividad), no el de la mejor especie; si no está de temporada o en
+// veda en ese spot, el reel no se monta.
+const ESPECIE = "lubina";
+export function indiceDeEspecie(datos, horas, spot, horaISO, id) {
+  const i = horas.findIndex((h) => h.hora.slice(0, 13) === horaISO.slice(0, 13));
+  if (i < 0) return null;
+  const region = VA.regionPorCoordenadas(spot.lat, spot.lon);
+  const mes = Number(horaISO.slice(5, 7));
+  const especie = VA.especiesDeTemporada(datos, region, mes, "costa").find((e) => e.id === id);
+  if (!especie) throw new Error(`${id} no está de temporada (o está en veda) en ${spot.slug} en el mes ${mes}`);
+  const ventana = VA.calcularVentana(especie, datos.reglas_por_defecto, horas, {
+    lat: spot.lat, lon: spot.lon, modalidad: "costa", region, horaActual: horaISO,
+    reglasModalidad: datos.reglas_por_modalidad, reglasExpertas: datos.reglas_expertas, b0: datos.indice?.b0_logodds ?? 0,
+  });
+  const puntuacion = Math.round(ventana[i].puntuacion);
+  const barras = [];
+  horas.forEach((h, j) => { if (h.hora.startsWith(horaISO.slice(0, 10))) barras.push(Math.round(ventana[j].puntuacion)); });
+  return { puntuacion, nivel: globalThis.NivelIndice.nivelPesca(puntuacion), especie: especie.nombres.es, mejorTramo: mejorTramo(barras) };
+}
 
 export function textoCaudal(c) {
   if (!c || typeof c.caudal !== "number") return null;
@@ -60,7 +84,9 @@ async function main() {
   if (!spot) throw new Error(`No está ${slug} en /prevision`);
   const bloque = [...spot.bloques].sort((a, b) => Math.abs(new Date(a.horaISO) - new Date(horaISO)) - Math.abs(new Date(b.horaISO) - new Date(horaISO)))[0];
   const caudal = textoCaudal(prevision.caudales?.[rio[0]]);
-  const { resumen, horas } = await resumenDeSpot(slug, leerEspecies(), horaISO);
+  const especiesDatos = leerEspecies();
+  const { horas } = await resumenDeSpot(slug, especiesDatos, horaISO);
+  const resumen = indiceDeEspecie(especiesDatos, horas, spot, horaISO, ESPECIE);
   const dia = horas.filter((h) => h.hora.startsWith(fecha) && typeof h.nivelMar === "number");
   if (!resumen || dia.length < 20 || !caudal || bloque?.corriente == null) throw new Error("Faltan datos reales (índice, marea, caudal o corriente): no se monta el reel.");
   const iAhora = Math.max(0, dia.findIndex((h) => h.hora === horaISO));
@@ -126,7 +152,7 @@ async function main() {
   const caption = [
     "¿Sabes lo que te espera hoy en el agua? 🌊",
     "",
-    "Mareas, corrientes, ríos, oleaje y cámaras en directo. En tiempo real, en una sola app.",
+    "Mareas, corrientes, ríos, oleaje, clorofila, cámaras en directo y muchos más datos. En tiempo real, en una sola app.",
     "Desde costa, en barco o en pesca submarina: para que sepas lo que te vas a encontrar antes de ir, y qué especies buscar en ese momento.",
     "",
     `Datos del vídeo: ${datos.spot}, ${fecha.split("-").reverse().join("/")} a las ${hora}.`,
