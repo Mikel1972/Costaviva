@@ -1,18 +1,17 @@
-<!-- SINTESIS fecha=2026-10-17 hasta_commit=c94cd5663897069b614c00ac92087a630d830c92 -->
+<!-- SINTESIS fecha=2026-10-18 hasta_commit=a7725db2e90bf5810d283cfb0cfe00cf7d89b4bb -->
 
 ## 🛠 Trabajo interno (calibración y datos)
-Solo pasó el robot de cámaras caídas (17-oct, 04:50 UTC; también el 16-oct). Estado a las 03:04 UTC: en rojo alicante, torreblanca y benicassim (el origen da 404, sin cambios desde el 12-14 oct), donostia/Zurriola y orio (sin respuesta), mundaka (frame plano, es de noche), suances y sanvicente (error 522 del origen, sin poder verificar porque cantabria.es está bloqueado desde la red de la rutina), y bakio y pasaia con la imagen congelada.
-Lo nuevo: **Zurriola (Donostia)** cayó el 16-oct a las 15:30 UTC; `GIP_zurriola_169.stream` da 404 en el servidor de la Diputación (mientras Hondarribia da 200), igual que Orio, que sigue en 404 con todas las variantes probadas. Puede ser una parada del codificador, como Zumaia, que el 16-oct ya se recuperó sola. Sin cambios de código.
+Solo pasó el robot de cámaras caídas (18-oct, 04:55 UTC), con datos de las 03:03 UTC. En rojo: Alicante, Torreblanca, Benicàssim y Altea (Altea es nueva en rojo; `webcam_mini.png` da 404 en el streaming de la Generalitat), Mundaka (`frame_plano`, es de noche, la imagen responde 200), Zumaia (`sin_respuesta`) y Suances, San Vicente, Comillas, Bakio y Pasaia (`frame_congelado`; las tres de Cantabria no se pudieron verificar porque la red de la rutina bloquea cantabria.es). Zumaia cambió desde ayer: `GIP_zumaia2.stream` da ahora 404, igual que el resto de sus flujos; mismo patrón que Orio y Zurriola (la Diputación parece haber dejado de publicar esos flujos). No hubo cambios de código.
 **Cámaras nuevas encontradas:** 0
-**Términos de búsqueda:** "webcam Zurriola Donostia en directo Diputación Gipuzkoa camaramar" (Gipuzkoa): solo agregadores, sin URL nueva verificable; el 16-oct, "Orio playa webcam en directo Gipuzkoa": sin cámara concreta. Ningún tipo de dueño nuevo.
+**Términos de búsqueda:** "Zumaia webcam en directo Flysch Itzurun camara" (Zumaia): solo agregadores (Windy/meteoblue, camarastrafico, worldcam), sin fuente del dueño verificable. No hay tipo de dueño nuevo.
 
 ## 🧪 Experiencia de usuario y patrones de uso
-**Robot de experiencia de usuario:** no le tocaba pasar hoy (sin entrada suya).
-**Robot de patrones de uso:** no le tocaba pasar esta semana (sin entrada suya).
+**Robot de experiencia de usuario:** no le tocaba pasar hoy.
+**Robot de patrones de uso:** no le tocaba pasar esta semana.
 
 ## 🔎 Trabajo externo (investigación de contenido)
-Sin novedades de buenas prácticas de otras apps ni de estudios institucionales en este periodo.
-**Robot de especies:** no le tocaba pasar hoy (sin entrada suya).
+Sin novedades de buenas prácticas de otras apps ni de estudios institucionales en ROBOT.md desde la última síntesis.
+**Robot de especies:** no le tocaba pasar hoy.
 
 ## 🆕 Nuevas fuentes encontradas, pendientes de validar
 Ninguna fuente nueva desde la última síntesis.
