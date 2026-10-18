@@ -10,16 +10,16 @@
 // Deja assets/marketing/reels/<fecha>-peces-<spot>.mp4 y reel-pendiente.json
 // (el mismo que lee publicar-borrador-instagram.mjs). Solo con datos reales:
 // si falta un dato, falla en vez de inventarlo.
-import { readFileSync, writeFileSync, mkdirSync, mkdtempSync, rmSync, statSync, appendFileSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, mkdtempSync, rmSync, statSync, appendFileSync, readdirSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { dirname, join } from "node:path";
 import { BASE_URL, resumenDeSpot, leerEspecies, fechaLegible, nombreSpot } from "./obtener-datos.mjs";
-import { abrirNavegador } from "./render.mjs";
+// render.mjs (Playwright) se importa solo al montar: los tests no lo tienen instalado.
 import { mejorTramo } from "./pieza-datos.mjs";
 import * as VA from "../../assets/js/ventana-actividad.js";
-import { instanteMadrid, campanaDePieza, MARCA_ENLACE } from "./calendario.mjs";
+import { instanteMadrid, campanaDePieza, MARCA_ENLACE, piezaAPreparar, apuntarGenerada } from "./calendario.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const RAIZ_REPO = join(__dirname, "..", "..");
@@ -66,25 +66,15 @@ export function textoCaudal(c) {
   return { val: `${num(c.caudal)} m³/s`, sub: nivel };
 }
 
-async function main() {
-  const slug = arg("spot", "ribadesella");
-  const ficheroClip = arg("clip", "pexels-peces-arrecife.mp4");
-  const CLIP = join(__dirname, "clips", "stock", ficheroClip);
-  const licencia = JSON.parse(readFileSync(CLIP.replace(/\.mp4$/, ".licencia.json"), "utf8"));
-  const creditoVideo = `Vídeo: ${new URL(licencia.origen).hostname.replace(/^www\./, "")}`;
-  const manana = new Date(Date.now() + 864e5).toISOString().slice(0, 10);
-  const fecha = arg("fecha", manana);
-  const hora = arg("hora", "08:00");
+async function datosDeSpot(slug, fecha, hora, prevision, especiesDatos) {
   const horaISO = `${fecha}T${hora.slice(0, 2)}:00`;
   const rio = RIO_SPOT[slug];
   if (!rio) throw new Error(`${slug} no tiene río con caudal real; elige uno de: ${Object.keys(RIO_SPOT).join(", ")}`);
 
-  const prevision = await (await fetch(`${BASE_URL}/prevision`)).json();
   const spot = prevision.spots.find((s) => s.slug === slug);
   if (!spot) throw new Error(`No está ${slug} en /prevision`);
   const bloque = [...spot.bloques].sort((a, b) => Math.abs(new Date(a.horaISO) - new Date(horaISO)) - Math.abs(new Date(b.horaISO) - new Date(horaISO)))[0];
   const caudal = textoCaudal(prevision.caudales?.[rio[0]]);
-  const especiesDatos = leerEspecies();
   const { horas } = await resumenDeSpot(slug, especiesDatos, horaISO);
   const resumen = indiceDeEspecie(especiesDatos, horas, spot, horaISO, ESPECIE);
   const dia = horas.filter((h) => h.hora.startsWith(fecha) && typeof h.nivelMar === "number");
@@ -98,6 +88,59 @@ async function main() {
     if ((b > a && b >= c) || (b < a && b <= c)) { extremo = { tipo: b > a ? "pleamar" : "bajamar", hora: dia[i].hora.slice(11, 16) }; break; }
   }
 
+  return { spot, bloque, caudal, resumen, dia, iAhora, sube, extremo, rio };
+}
+
+// Vídeos de peces: los .mp4 de clips/stock cuya ficha lleva "tema": "peces".
+export function clipsDePeces(dir = join(__dirname, "clips", "stock")) {
+  return readdirSync(dir).filter((f) => f.endsWith(".mp4")).filter((f) => {
+    try { return JSON.parse(readFileSync(join(dir, f.replace(/\.mp4$/, ".licencia.json")), "utf8")).tema === "peces"; } catch { return false; }
+  }).sort();
+}
+// El siguiente de una lista tras `ultimo` (rotación).
+export function siguienteDe(lista, ultimo) {
+  const i = lista.indexOf(ultimo);
+  return [...lista.slice(i + 1), ...lista.slice(0, i + 1)];
+}
+
+const RUTA_ESTADO = join(__dirname, "calendario-estado.json");
+const RUTA_ROTACION = join(__dirname, "rotacion-reels-peces.json");
+const leerJson = (ruta) => { try { return JSON.parse(readFileSync(ruta, "utf8")); } catch { return {}; } };
+
+async function main() {
+  // Calendario (2026-10-18, Mikel: "a partir de ahora prepararemos vídeos de
+  // este tipo"): es el reel de los sábados de España. Se prepara la víspera
+  // y no se repite (calendario-estado.json); con --fecha (o FECHA_PIEZA) o
+  // TIPO_REEL=peces se fuerza cualquier día.
+  const estado = leerJson(RUTA_ESTADO);
+  const objetivo = piezaAPreparar({ formato: "reel", fechaForzada: arg("fecha", ""), tipoForzado: process.env.TIPO_REEL || (arg("fecha", "") ? "peces" : ""), estado, mercado: "es" });
+  if (!objetivo) {
+    console.log("Mañana no toca reel (o ya está preparado). Nada que hacer.");
+    if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, "generada=false\n");
+    return;
+  }
+  const { fecha } = objetivo;
+  const hora = arg("hora", objetivo.hora);
+  const rotacion = leerJson(RUTA_ROTACION);
+  const clips = clipsDePeces();
+  if (!clips.length) throw new Error("No hay vídeos de peces en clips/stock (ficha con \"tema\": \"peces\").");
+  const ficheroClip = arg("clip", "") || siguienteDe(clips, rotacion.ultimoClip)[0];
+  const CLIP = join(__dirname, "clips", "stock", ficheroClip);
+  const licencia = JSON.parse(readFileSync(CLIP.replace(/\.mp4$/, ".licencia.json"), "utf8"));
+  const creditoVideo = `Vídeo: ${new URL(licencia.origen).hostname.replace(/^www\./, "")}`;
+
+  // Spot: el forzado o el siguiente de la rotación en el que haya todos los
+  // datos y la lubina esté de temporada.
+  const prevision = await (await fetch(`${BASE_URL}/prevision`)).json();
+  const especiesDatos = leerEspecies();
+  const forzado = arg("spot", "");
+  const candidatos = forzado ? [forzado] : siguienteDe(Object.keys(RIO_SPOT), rotacion.ultimoSpot);
+  let slug = null, d = null;
+  for (const s of candidatos) {
+    try { d = await datosDeSpot(s, fecha, hora, prevision, especiesDatos); slug = s; break; } catch (e) { console.warn(`${s}: ${e.message}`); }
+  }
+  if (!slug) throw new Error("Ningún spot con río tiene hoy todos los datos reales: no se monta el reel.");
+  const { spot, bloque, caudal, resumen, dia, iAhora, sube, extremo, rio } = d;
   const datos = {
     spot: nombreSpot(slug),
     fecha: fechaLegible(instanteMadrid(fecha, hora)),
@@ -121,6 +164,7 @@ async function main() {
     const durClip = Number(execFileSync("ffprobe", ["-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", CLIP]).toString());
     const lento = (DURACION / durClip).toFixed(4);
     execFileSync("ffmpeg", ["-v", "error", "-y", "-i", CLIP, "-vf", `setpts=${lento}*PTS,fps=${FPS},eq=contrast=1.08:saturation=1.15`, "-t", String(DURACION), "-q:v", "3", join(dir, "c%04d.jpg")]);
+    const { abrirNavegador } = await import("./render.mjs");
     const navegador = await abrirNavegador();
     try {
       const ctx = await navegador.newContext({ viewport: { width: 1080, height: 1920 }, deviceScaleFactor: 1 });
@@ -169,6 +213,8 @@ async function main() {
     fecha, hora, dia: new Intl.DateTimeFormat("es-ES", { weekday: "long", timeZone: "UTC" }).format(new Date(`${fecha}T12:00:00Z`)),
     campana, mercado: "es", idioma: "es", clip: { carpeta: "stock", fichero: ficheroClip, personaIdentificable: licencia.persona_identificable === false ? false : true },
   }, null, 2));
+  writeFileSync(RUTA_ROTACION, JSON.stringify({ ultimoSpot: slug, ultimoClip: ficheroClip, fecha: new Date().toISOString() }, null, 2) + "\n");
+  writeFileSync(RUTA_ESTADO, JSON.stringify(apuntarGenerada(estado, objetivo.clave, { tipo: "reel-peces", campana }), null, 2) + "\n");
   if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, "generada=true\n");
 }
 
