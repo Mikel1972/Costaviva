@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-18T12:07:43.825Z",
- "lineasHistorial": 2887,
+ "fecha": "2026-10-18T12:37:48.780Z",
+ "lineasHistorial": 2898,
  "etiquetas": 170,
  "etiquetasClaude": 75,
  "calibracion": {
@@ -49,9 +49,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 4.6426,
+   "a": 4.644,
    "p": 0.5,
-   "n": 218,
+   "n": 219,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 12,
    "franjasClaude": [
@@ -66,7 +66,7 @@
    "dias": 11,
    "hMin": 0.3,
    "hMax": 3.59,
-   "errorRel": 0.764,
+   "errorRel": 0.762,
    "pocosDatos": false
   },
   "zumaia/c": {
@@ -153,9 +153,9 @@
    "pocosDatos": false
   },
   "sopelana/principal": {
-   "a": 3.84,
+   "a": 3.8764,
    "p": 0.5,
-   "n": 64,
+   "n": 65,
    "nEtiquetas": 4,
    "nEtiquetasClaude": 3,
    "franjasClaude": [
@@ -166,7 +166,7 @@
    "dias": 11,
    "hMin": 0.66,
    "hMax": 3.12,
-   "errorRel": 0.782,
+   "errorRel": 0.787,
    "pocosDatos": false
   },
   "berria/principal": {
@@ -183,9 +183,9 @@
    "pocosDatos": true
   },
   "castrourdiales/principal": {
-   "a": 4.5906,
+   "a": 4.7329,
    "p": 0.5,
-   "n": 33,
+   "n": 34,
    "nEtiquetas": 5,
    "nEtiquetasClaude": 1,
    "franjasClaude": [
@@ -229,16 +229,16 @@
    "pocosDatos": true
   },
   "orio/principal": {
-   "a": 3.7007,
+   "a": 3.7258,
    "p": 0.5,
-   "n": 25,
+   "n": 26,
    "nEtiquetas": 1,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
    "dias": 8,
    "hMin": 0.75,
    "hMax": 2.11,
-   "errorRel": 0.651,
+   "errorRel": 0.639,
    "pocosDatos": false
   },
   "getaria/malkorbe": {
@@ -358,10 +358,10 @@
   },
   "orio": {
    "sustituye": true,
-   "motivo": "estable (±26 % entre lecturas cercanas)",
+   "motivo": "≥ 3 días con alturas variadas",
    "ruido": {
-    "ruido": 0.263,
-    "pares": 15
+    "ruido": 0.494,
+    "pares": 16
    }
   },
   "zarautz": {
@@ -369,7 +369,7 @@
    "motivo": "18 etiquetas",
    "ruido": {
     "ruido": 0.593,
-    "pares": 171
+    "pares": 172
    }
   },
   "getaria": {
@@ -440,8 +440,8 @@
    "sustituye": true,
    "motivo": "5 etiquetas",
    "ruido": {
-    "ruido": 0.588,
-    "pares": 15
+    "ruido": 0.554,
+    "pares": 16
    }
   },
   "nz-napier": {
