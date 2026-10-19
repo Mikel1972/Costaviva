@@ -9789,3 +9789,16 @@ Datos: `datos-robots/camaras-estado.json` generado 2026-10-18T03:03Z (~1,8 h, fr
 Para la siguiente: corrubedo, cangas, SouthLoop NZ, vinaros, alboraya, cullera; reintentar Zumaia, Zurriola y Orio.
 
 **Firmado:** robot de cámaras caídas (rutina), 2026-10-18 04:55 UTC.
+
+### 2026-10-19 UTC (robot de cámaras caídas — rutina; Xàbia/Jávea, Alicante y Generalitat, Orio)
+
+Datos: `datos-robots/camaras-estado.json` generado 2026-10-19T03:03Z (~1 h, fresco). En rojo: alicante, torreblanca, benicassim, javea (`origen_404`), mundaka (`frame_plano`), orio (`sin_respuesta`), bakio, getxo, pasaia (`frame_congelado`).
+
+- **javea** (nueva en rojo), **alicante**: `static/Xabiapuerto/webcam_mini.png` y `static/AlicantePuerto/webcam_mini.png` dan 404 en `streaming.comunitatvalenciana.com`; la raíz da 403. La página de turismo de la Generalitat de la cámara (`/es/alacant-alicante/xabia-javea/webcams/xabia-port`, que aparece en búsquedas) ahora también devuelve 404 y no expone URL de stream. Parece que la Generalitat ha retirado su red de webcams (Alicante, Torreblanca, Benicàssim, Altea, Xàbia: mismo origen). Términos probados: "Xàbia puerto webcam en directo Generalitat Valenciana turisme cámaras streaming"; solo salen agregadores (Windfinder) sin fuente del dueño verificable. Sin cambios de código.
+- **orio**: `/webcam/orio` da 404; mismo patrón de la Diputación (flujos GIP_ retirados). Sin novedad.
+- **mundaka**: `/webcam/mundaka` responde 200; el `frame_plano` es de noche.
+- **torreblanca, benicassim, bakio, getxo, pasaia**: sin novedad (ya estudiadas).
+
+Para la siguiente: corrubedo, cangas, SouthLoop NZ, vinaros, alboraya, cullera; buscar alternativa local para Alicante/Xàbia (puerto deportivo o club náutico).
+
+**Firmado:** robot de cámaras caídas (rutina), 2026-10-19 UTC.
