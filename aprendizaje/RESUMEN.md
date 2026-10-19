@@ -1,10 +1,10 @@
-# Aprendizaje de Costaviva — semana 2026-W42
+# Aprendizaje de Costaviva — semana 2026-W43
 
-Generado el 2026-10-12 por el aprendizaje semanal (sin IA, `aprendizaje-semanal.yml`). Contrato de comun: `estandares/aprendizaje.md`. Detalle técnico en `datos-robots/aprendizaje/`; propuestas en `aprendizaje/propuestas.json`; señales en `aprendizaje/senales.json`.
+Generado el 2026-10-19 por el aprendizaje semanal (sin IA, `aprendizaje-semanal.yml`). Contrato de comun: `estandares/aprendizaje.md`. Detalle técnico en `datos-robots/aprendizaje/`; propuestas en `aprendizaje/propuestas.json`; señales en `aprendizaje/senales.json`.
 
 ## Estado del bucle
 
-- Aprendizaje semanal: corrió el 2026-10-12 (ok). Salidas usadas: 2.
+- Aprendizaje semanal: corrió el 2026-10-19 (ok). Salidas usadas: 2.
 - Banco de pruebas: 0 salidas recalculadas con el tiempo de su día y 2 con lo que guardó el diario. sin OPEN_METEO_API_KEY: no se recalcula con series (solo términos guardados).
 - Retadores en la sombra: 3. Reglas con peso ajustado por los datos: 0.
 - Propuestas abiertas: 0. Las decides en el Issue semanal de comun.
@@ -34,14 +34,9 @@ Barreras: solo el peso (confianza) de reglas expertas, como mucho ±20 % por sem
 
 ## Vigilancia de los datos
 
-- Etiquetas de olas de Claude (rutina diaria): último dato hace 91 h (se espera cada 48 h)
-- Observaciones abiertas GBIF (martes): sin datos
+- Presión real por spot (cada hora): último dato hace 4 h (se espera cada 2 h)
 - el modelo da -30 % frente a la boya Bilbao-Vizcaya (exterior) (8 lecturas)
-- el sesgo frente a Bilbao II (costera) ha cambiado: de 0.80 a 1.01
-- la calibración de castrourdiales/principal empeora: error 50 % → 100 %
-- la calibración de hondarribia/bocana empeora: error 50 % → 100 %
-- la calibración de sopelana/principal empeora: error 50 % → 63 %
-- la calibración de zarautz/dinamico empeora: error 50 % → 69 %
+- el sesgo frente a Pasaia II (costera) ha cambiado: de 1.13 a 0.92
 
 ## Retadores en la sombra
 
@@ -63,12 +58,11 @@ Quien mide el agua con su sonda la apunta en el diario. Se compara con lo que de
 
 ## Para etiquetar (lo que más enseña)
 
-- Cámara berria (dinamico), 2026-10-08 16:37 UTC: cámara y modelo discrepan mucho.
-- Cámara donostia (principal), 2026-10-10 11:07 UTC: cámara y modelo discrepan mucho.
-- Cámara donostia (principal), 2026-10-08 11:02 UTC: cámara y modelo discrepan mucho.
-- Cámara deba (rompiente), 2026-10-09 15:07 UTC: cámara y modelo discrepan mucho.
-- Cámara castrourdiales (principal), 2026-10-09 11:07 UTC: cámara y modelo discrepan mucho.
-- Cámara orio (principal), 2026-10-10 09:07 UTC: cámara y modelo discrepan mucho.
+- Cámara nz-napier (principal), 2026-10-14 21:07 UTC: cámara y modelo discrepan mucho.
+- Cámara nz-napier (principal), 2026-10-12 19:07 UTC: cámara y modelo discrepan mucho.
+- Cámara getaria (malkorbe), 2026-10-12 09:37 UTC: cámara y modelo discrepan mucho.
+- Cámara nz-aramoana (principal), 2026-10-12 22:35 UTC: pocas etiquetas en este encuadre.
+- Cámara nz-aramoana (principal), 2026-10-13 02:35 UTC: pocas etiquetas en este encuadre.
 
 Se etiquetan en `etiquetar-olas.html` (admin) o con la rutina de etiquetado.
 
