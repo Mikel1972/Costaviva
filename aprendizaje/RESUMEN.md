@@ -34,9 +34,7 @@ Barreras: solo el peso (confianza) de reglas expertas, como mucho ±20 % por sem
 
 ## Vigilancia de los datos
 
-- Presión real por spot (cada hora): último dato hace 4 h (se espera cada 2 h)
 - el modelo da -30 % frente a la boya Bilbao-Vizcaya (exterior) (8 lecturas)
-- el sesgo frente a Pasaia II (costera) ha cambiado: de 1.13 a 0.92
 
 ## Retadores en la sombra
 
@@ -60,7 +58,6 @@ Quien mide el agua con su sonda la apunta en el diario. Se compara con lo que de
 
 - Cámara nz-napier (principal), 2026-10-14 21:07 UTC: cámara y modelo discrepan mucho.
 - Cámara nz-napier (principal), 2026-10-12 19:07 UTC: cámara y modelo discrepan mucho.
-- Cámara getaria (malkorbe), 2026-10-12 09:37 UTC: cámara y modelo discrepan mucho.
 - Cámara nz-aramoana (principal), 2026-10-12 22:35 UTC: pocas etiquetas en este encuadre.
 - Cámara nz-aramoana (principal), 2026-10-13 02:35 UTC: pocas etiquetas en este encuadre.
 
