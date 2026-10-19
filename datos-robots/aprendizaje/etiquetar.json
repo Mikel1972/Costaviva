@@ -1,5 +1,5 @@
 {
- "generado_en": "2026-10-19T04:41:35.339Z",
+ "generado_en": "2026-10-19T10:16:22.257Z",
  "semana": "2026-W43",
  "nota": "Fotogramas que más enseñarían a la calibración de las cámaras si se etiquetan (etiquetar-olas.html o la rutina de etiquetado).",
  "fotogramas": [
@@ -21,16 +21,6 @@
    "estimacion": 0.06,
    "modelo": 0.38,
    "ganancia": 3.346,
-   "motivo": "cámara y modelo discrepan mucho"
-  },
-  {
-   "camara": "getaria",
-   "encuadre": "malkorbe",
-   "fecha": "2026-10-12T09:37:41.126Z",
-   "espuma": 0.2853,
-   "estimacion": 2.71,
-   "modelo": 1.27,
-   "ganancia": 2.008,
    "motivo": "cámara y modelo discrepan mucho"
   },
   {
