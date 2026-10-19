@@ -7003,6 +7003,30 @@ Datos: `datos-robots/experiencia/ultima.json`, generado el 2026-10-12 00:41 UTC 
 - Propuesta para `scripts/experiencia/sondear.mjs` (no aplicada): guardar también `nivel` de caudal calculado y el HTML crudo de una fila del SAICH para verificar unidades; pedir `GET /prevision` dos veces separadas 1 h para ver cambios de tendencia de presión; marcar la hora local en el resumen de cámaras; que el caso de `/identificar-captura` use POST sin token y espere 401.
 - No se revisó la parte de Nueva Zelanda (`?region=nz`), que el sondeo no pide; proponer añadirla.
 
+### 2026-10-19 07:35 UTC — robot de experiencia de usuario (rutina)
+
+Datos: `datos-robots/experiencia/ultima.json`, generado 2026-10-18 23:28 UTC (8 h, fresco).
+
+**Qué miré**
+- 105 spots de `todos_compactos` (marea, coeficiente, presión, bloque actual) y los 12 de `muestra_completa`; boyas frente al spot más cercano; luna en 3 zonas; 8 casos límite; diario (A/B, limpieza).
+
+**Todo bien**
+- Diario: lo guardado coincide con lo enviado (0 diferencias), B no ve ni borra la salida de A (`false`/`false`), y se borró (204, ya no existe).
+- Sin nulls en ola, periodo, viento, agua, lluvia, nubes, corriente, dirección ni presión en los 105 spots; `spots_con_error` vacío; `avisos` vacío.
+- Presión 1012-1022 hPa, agua 13-25 °C (Mediterráneo y Canarias 24-25 °C; Cantábrico 13-19 °C), sin rangos de marea absurdos (máx. 1,16 m en el Cantábrico). Luna 57-58 % creciente, coherente. Canarias en su hora (00:00 frente a 03:00): correcto.
+- Casos límite con error claro (400 con mensaje, 404 webcam inexistente, 400 en `/meteo/marine`). Boyas del Cantábrico y Canarias frente a su spot: coherentes (±0,3 m).
+
+**Hallazgos**
+1. *Coeficiente de marea sin sentido en el Mediterráneo (el principal).* 23 spots salen con coeficiente 120 y otros con 110-112 (Dénia, rango de marea 0,02 m; Gandia 0,03 m; Valencia 0,12 m → 111; Cartagena y Águilas 0,00 m → 66 y 62; Cabo de Palos 0,00 m → 90). Se muestra en el panel como "coef. N" junto a la altura (`index.html` ~L5198, siempre que `coeficiente != null`). Causa: `coeficientePorSpot()` (`functions/prevision.js` ~L289) normaliza el rango de hoy contra el mínimo y máximo de la propia ventana del spot; cuando todo el rango es ruido de centímetros (seiche/presión), igualmente da 20-120. La guarda `rangoMax - rangoMin < 0.01` solo salta con variación casi cero; con 2-16 cm de rango pasa y se pinta "vivas" donde no hay mareas. Un usuario de Dénia ve "coef. 120" con 0,0 m de marea. Propuesta (no aplicada): devolver `coeficiente: null` si `rangoMax < ~0,3 m` (o reutilizar `UMBRAL_RUIDO_MAREA_M`). Además, en esos spots `proximas` puede traer dos pleamares seguidas (Valencia: pleamar 07:00 y pleamar 15:00) y la tendencia contradice la próxima (26 spots: "bajando" con la altura en 0,00 y la siguiente es pleamar); es el mismo ruido, ya conocido, pero hoy se enseña como dato.
+2. *Coeficiente 20 idéntico en 61 spots atlánticos.* En el Cantábrico, Galicia, Golfo de Cádiz y Canarias salen todos con 20 (el suelo de la escala). Es coherente con el diseño (un día después del cuarto creciente, neaps) y no lo doy por bug, pero conviene vigilarlo: si mañana siguen todos en 20 sería que hoy es el borde de la ventana y no la marea real.
+3. *Agua del modelo más fría que la boya en Galicia/Asturias.* A Coruña spot 14,3 °C frente a Langosteira 11,3 °C (la boya, aún más fría) y Llanes 13,0 °C frente a Gijón 15,7 °C (50 km); Santander 18,6. Puede ser afloramiento real y no lo afirmo; lo dejo anotado para comparar con otra pasada (no es concluyente con una sola foto).
+4. *Cámaras:* Mundaka `frame_plano` y Bakio `frame_congelado` a las 23:00 UTC (01:00 en España) marcan `sinSenal: true` de noche: la misma sospecha de falso rojo nocturno que ya se anotó el 2026-10-12; sigue sin resolverse.
+5. *Menor, repetido:* `/identificar-captura` por GET responde 404 con HTML (solo exporta `onRequestPost`, `functions/identificar-captura.js` L272). Inofensivo; no gasta IA.
+
+**Pendiente para la próxima pasada**
+- Comprobar si el coeficiente de los spots mediterráneos sigue pegado a 110-120 días seguidos (confirmaría hallazgo 1) y si los 61 atlánticos salen del 20.
+- Propuesta para `scripts/experiencia/sondear.mjs` (no aplicada): guardar también el histórico del día anterior para comparar coeficientes/tendencias, e incluir `?region=nz` (sigue sin pedirse).
+
 ## Robot de patrones de uso
 
 ### 2026-09-17
