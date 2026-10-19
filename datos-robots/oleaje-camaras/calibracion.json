@@ -1,8 +1,8 @@
 {
- "fecha": "2026-10-19T16:07:56.378Z",
- "lineasHistorial": 3286,
- "etiquetas": 175,
- "etiquetasClaude": 80,
+ "fecha": "2026-10-19T18:07:22.466Z",
+ "lineasHistorial": 3287,
+ "etiquetas": 180,
+ "etiquetasClaude": 85,
  "calibracion": {
   "hondarribia/principal": {
    "a": 1.1306,
@@ -49,11 +49,11 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 4.5156,
+   "a": 4.5148,
    "p": 0.5,
-   "n": 246,
+   "n": 248,
    "nEtiquetas": 17,
-   "nEtiquetasClaude": 13,
+   "nEtiquetasClaude": 14,
    "franjasClaude": [
     "2026-10-08T14",
     "2026-10-08T16",
@@ -62,12 +62,13 @@
     "2026-10-15T16",
     "2026-10-16T16",
     "2026-10-17T16",
-    "2026-10-18T16"
+    "2026-10-18T16",
+    "2026-10-19T16"
    ],
    "dias": 12,
    "hMin": 0.3,
    "hMax": 3.59,
-   "errorRel": 0.757,
+   "errorRel": 0.754,
    "pocosDatos": false
   },
   "zumaia/c": {
@@ -117,11 +118,11 @@
    "pocosDatos": false
   },
   "mundaka/principal": {
-   "a": 3.0521,
+   "a": 3.0579,
    "p": 0.5,
-   "n": 155,
+   "n": 157,
    "nEtiquetas": 11,
-   "nEtiquetasClaude": 8,
+   "nEtiquetasClaude": 9,
    "franjasClaude": [
     "2026-10-08T14",
     "2026-10-08T16",
@@ -129,18 +130,19 @@
     "2026-10-15T14",
     "2026-10-16T14",
     "2026-10-17T14",
-    "2026-10-18T14"
+    "2026-10-18T14",
+    "2026-10-19T14"
    ],
    "dias": 12,
    "hMin": 0.3,
    "hMax": 2.18,
-   "errorRel": 0.604,
+   "errorRel": 0.6,
    "pocosDatos": false
   },
   "bakio/principal": {
-   "a": 2.7625,
+   "a": 2.7083,
    "p": 0.5,
-   "n": 31,
+   "n": 32,
    "nEtiquetas": 3,
    "nEtiquetasClaude": 4,
    "franjasClaude": [
@@ -150,26 +152,27 @@
     "2026-10-18T14"
    ],
    "dias": 11,
-   "hMin": 0.74,
+   "hMin": 0.7,
    "hMax": 3.12,
-   "errorRel": 0.648,
+   "errorRel": 0.667,
    "pocosDatos": false
   },
   "sopelana/principal": {
-   "a": 3.9804,
+   "a": 4.0376,
    "p": 0.5,
-   "n": 72,
+   "n": 73,
    "nEtiquetas": 4,
-   "nEtiquetasClaude": 3,
+   "nEtiquetasClaude": 4,
    "franjasClaude": [
     "2026-10-15T14",
     "2026-10-16T14",
-    "2026-10-17T14"
+    "2026-10-17T14",
+    "2026-10-19T14"
    ],
    "dias": 12,
    "hMin": 0.66,
    "hMax": 3.12,
-   "errorRel": 0.775,
+   "errorRel": 0.777,
    "pocosDatos": false
   },
   "berria/principal": {
@@ -272,16 +275,18 @@
    "pocosDatos": true
   },
   "zarautz/principal": {
-   "a": 2.9489,
+   "a": 3.1298,
    "p": 0.5,
-   "n": 15,
+   "n": 17,
    "nEtiquetas": 1,
-   "nEtiquetasClaude": 0,
-   "franjasClaude": [],
+   "nEtiquetasClaude": 1,
+   "franjasClaude": [
+    "2026-10-19T16"
+   ],
    "dias": 8,
    "hMin": 0.58,
    "hMax": 2.67,
-   "errorRel": 0.561,
+   "errorRel": 0.559,
    "pocosDatos": false
   },
   "nz-napier/principal": {
