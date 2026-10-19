@@ -1,22 +1,22 @@
 {
- "fecha": "2026-10-19T07:41:48.904Z",
- "lineasHistorial": 3077,
+ "fecha": "2026-10-19T08:08:09.078Z",
+ "lineasHistorial": 3089,
  "etiquetas": 175,
  "etiquetasClaude": 80,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.1191,
+   "a": 1.1282,
    "p": 0.5,
-   "n": 88,
+   "n": 89,
    "nEtiquetas": 7,
    "nEtiquetasClaude": 3,
    "franjasClaude": [
     "2026-10-08T16"
    ],
-   "dias": 11,
+   "dias": 12,
    "hMin": 0.15,
    "hMax": 1.69,
-   "errorRel": 0.785,
+   "errorRel": 0.793,
    "pocosDatos": false
   },
   "hondarribia/bocana": {
@@ -49,9 +49,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 4.6396,
+   "a": 4.6337,
    "p": 0.5,
-   "n": 229,
+   "n": 230,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 13,
    "franjasClaude": [
@@ -64,10 +64,10 @@
     "2026-10-17T16",
     "2026-10-18T16"
    ],
-   "dias": 11,
+   "dias": 12,
    "hMin": 0.3,
    "hMax": 3.59,
-   "errorRel": 0.758,
+   "errorRel": 0.757,
    "pocosDatos": false
   },
   "zumaia/c": {
@@ -117,9 +117,9 @@
    "pocosDatos": false
   },
   "mundaka/principal": {
-   "a": 3.0062,
+   "a": 3.0133,
    "p": 0.5,
-   "n": 140,
+   "n": 141,
    "nEtiquetas": 11,
    "nEtiquetasClaude": 8,
    "franjasClaude": [
@@ -131,7 +131,7 @@
     "2026-10-17T14",
     "2026-10-18T14"
    ],
-   "dias": 11,
+   "dias": 12,
    "hMin": 0.3,
    "hMax": 2.18,
    "errorRel": 0.615,
@@ -202,9 +202,9 @@
    "pocosDatos": false
   },
   "berria/dinamico": {
-   "a": 4.8144,
+   "a": 4.7823,
    "p": 0.5,
-   "n": 93,
+   "n": 94,
    "nEtiquetas": 8,
    "nEtiquetasClaude": 11,
    "franjasClaude": [
@@ -213,10 +213,10 @@
     "2026-10-11T16",
     "2026-10-16T16"
    ],
-   "dias": 11,
+   "dias": 12,
    "hMin": 0.75,
    "hMax": 3.12,
-   "errorRel": 0.848,
+   "errorRel": 0.853,
    "pocosDatos": false
   },
   "mutriku/principal": {
@@ -348,8 +348,8 @@
    "sustituye": true,
    "motivo": "7 etiquetas",
    "ruido": {
-    "ruido": 0.301,
-    "pares": 44
+    "ruido": 0.307,
+    "pares": 45
    }
   },
   "donostia": {
@@ -372,8 +372,8 @@
    "sustituye": true,
    "motivo": "18 etiquetas",
    "ruido": {
-    "ruido": 0.574,
-    "pares": 180
+    "ruido": 0.573,
+    "pares": 181
    }
   },
   "getaria": {
@@ -412,8 +412,8 @@
    "sustituye": true,
    "motivo": "11 etiquetas",
    "ruido": {
-    "ruido": 0.542,
-    "pares": 94
+    "ruido": 0.529,
+    "pares": 95
    }
   },
   "bakio": {
@@ -436,8 +436,8 @@
    "sustituye": true,
    "motivo": "8 etiquetas",
    "ruido": {
-    "ruido": 1.523,
-    "pares": 34
+    "ruido": 1.521,
+    "pares": 35
    }
   },
   "castrourdiales": {
