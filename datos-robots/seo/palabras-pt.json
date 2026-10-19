@@ -1,15 +1,15 @@
 {
-  "generado": "2026-10-12T12:10:55.174Z",
-  "semana": "2026-09-28",
+  "generado": "2026-10-19T10:02:27.688Z",
+  "semana": "2026-10-05",
   "fuente": "Mikel1972/comun seo/palabras",
   "terminos": [
     {
       "termino": "marés",
       "mercado": "pt",
       "grupo": "marea",
-      "puntuacion": 73,
+      "puntuacion": 66,
       "tendencia": "baja",
-      "tendencia_pct": -27,
+      "tendencia_pct": -48,
       "estacionalidad": {
         "indice_mes_actual": 1.35,
         "picos": [
@@ -19,7 +19,7 @@
         ],
         "estacional": false
       },
-      "url": "/mareas/region/portugal",
+      "url": "/pt/mareas/region/portugal",
       "gsc_posicion": null
     },
     {
@@ -27,32 +27,32 @@
       "mercado": "pt",
       "grupo": "spot",
       "puntuacion": 50,
-      "tendencia": null,
-      "tendencia_pct": null,
+      "tendencia": "baja",
+      "tendencia_pct": -14,
       "estacionalidad": null,
-      "url": "/mareas/cascais",
+      "url": "/pt/mareas/cascais",
       "gsc_posicion": null
     },
     {
       "termino": "spinning",
       "mercado": "pt",
       "grupo": "tecnica",
-      "puntuacion": 36,
+      "puntuacion": 43,
       "tendencia": "sube",
-      "tendencia_pct": 21,
+      "tendencia_pct": 38,
       "estacionalidad": null,
       "url": null,
       "gsc_posicion": null
     },
     {
-      "termino": "tabela de marés",
+      "termino": "marés Figueira da Foz",
       "mercado": "pt",
-      "grupo": "marea",
+      "grupo": "spot",
       "puntuacion": 29,
-      "tendencia": "baja",
-      "tendencia_pct": -46,
+      "tendencia": null,
+      "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/mareas/region/portugal",
+      "url": "/pt/mareas/figueiradafoz",
       "gsc_posicion": null
     },
     {
@@ -69,7 +69,7 @@
         ],
         "estacional": false
       },
-      "url": "/especies/lubina",
+      "url": "/pt/especies/lubina",
       "gsc_posicion": null
     },
     {
@@ -86,18 +86,18 @@
         ],
         "estacional": false
       },
-      "url": "/especies/dorada",
+      "url": "/pt/especies/dorada",
       "gsc_posicion": null
     },
     {
-      "termino": "marés Figueira da Foz",
+      "termino": "surfcasting",
       "mercado": "pt",
-      "grupo": "spot",
+      "grupo": "tecnica",
       "puntuacion": 21,
-      "tendencia": null,
-      "tendencia_pct": null,
+      "tendencia": "sube",
+      "tendencia_pct": 110,
       "estacionalidad": null,
-      "url": "/mareas/figueiradafoz",
+      "url": null,
       "gsc_posicion": null
     },
     {
@@ -116,7 +116,7 @@
         ],
         "estacional": true
       },
-      "url": "/especies/sargo",
+      "url": "/pt/especies/sargo",
       "gsc_posicion": null
     },
     {
@@ -134,18 +134,18 @@
         ],
         "estacional": false
       },
-      "url": "/especies/pulpo",
+      "url": "/pt/especies/pulpo",
       "gsc_posicion": null
     },
     {
-      "termino": "surfcasting",
+      "termino": "tabela de marés",
       "mercado": "pt",
-      "grupo": "tecnica",
+      "grupo": "marea",
       "puntuacion": 14,
-      "tendencia": "sube",
-      "tendencia_pct": 111,
+      "tendencia": "baja",
+      "tendencia_pct": -75,
       "estacionalidad": null,
-      "url": null,
+      "url": "/pt/mareas/region/portugal",
       "gsc_posicion": null
     },
     {
@@ -164,7 +164,7 @@
         ],
         "estacional": false
       },
-      "url": "/spots/region/portugal",
+      "url": "/pt/spots/region/portugal",
       "gsc_posicion": null
     },
     {
@@ -183,7 +183,7 @@
         ],
         "estacional": true
       },
-      "url": "/especies/sepia",
+      "url": "/pt/especies/sepia",
       "gsc_posicion": null
     },
     {
@@ -213,7 +213,7 @@
         ],
         "estacional": false
       },
-      "url": "/especies/calamar",
+      "url": "/pt/especies/calamar",
       "gsc_posicion": null
     },
     {
@@ -224,7 +224,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/mareas/region/portugal",
+      "url": "/pt/mareas/region/portugal",
       "gsc_posicion": null
     },
     {
@@ -246,7 +246,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/mareas/aveiro",
+      "url": "/pt/mareas/aveiro",
       "gsc_posicion": null
     },
     {
@@ -257,7 +257,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/mareas/costadacaparica",
+      "url": "/pt/mareas/costadacaparica",
       "gsc_posicion": null
     },
     {
@@ -268,7 +268,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/mareas/ericeira",
+      "url": "/pt/mareas/ericeira",
       "gsc_posicion": null
     },
     {
@@ -279,7 +279,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/mareas/faro",
+      "url": "/pt/mareas/faro",
       "gsc_posicion": null
     },
     {
@@ -290,7 +290,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/mareas/region/portugal",
+      "url": "/pt/mareas/region/portugal",
       "gsc_posicion": null
     },
     {
@@ -301,7 +301,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/mareas/lagos",
+      "url": "/pt/mareas/lagos",
       "gsc_posicion": null
     },
     {
@@ -312,7 +312,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/mareas/matosinhos",
+      "url": "/pt/mareas/matosinhos",
       "gsc_posicion": null
     },
     {
@@ -323,7 +323,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/mareas/moledo",
+      "url": "/pt/mareas/moledo",
       "gsc_posicion": null
     },
     {
@@ -334,7 +334,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/mareas/nazare",
+      "url": "/pt/mareas/nazare",
       "gsc_posicion": null
     },
     {
@@ -345,7 +345,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/mareas/peniche",
+      "url": "/pt/mareas/peniche",
       "gsc_posicion": null
     },
     {
@@ -356,7 +356,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/mareas/povoadevarzim",
+      "url": "/pt/mareas/povoadevarzim",
       "gsc_posicion": null
     },
     {
@@ -367,7 +367,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/mareas/sagres",
+      "url": "/pt/mareas/sagres",
       "gsc_posicion": null
     },
     {
@@ -378,7 +378,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/mareas/sines",
+      "url": "/pt/mareas/sines",
       "gsc_posicion": null
     },
     {
@@ -389,7 +389,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/mareas/troia",
+      "url": "/pt/mareas/troia",
       "gsc_posicion": null
     },
     {
@@ -400,7 +400,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/mareas/vianadocastelo",
+      "url": "/pt/mareas/vianadocastelo",
       "gsc_posicion": null
     },
     {
@@ -411,7 +411,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/mareas/milfontes",
+      "url": "/pt/mareas/milfontes",
       "gsc_posicion": null
     },
     {
@@ -444,7 +444,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/especies/caballa",
+      "url": "/pt/especies/caballa",
       "gsc_posicion": null
     },
     {
@@ -455,7 +455,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/spots/aveiro",
+      "url": "/pt/spots/aveiro",
       "gsc_posicion": null
     },
     {
@@ -466,7 +466,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/spots/cascais",
+      "url": "/pt/spots/cascais",
       "gsc_posicion": null
     },
     {
@@ -477,7 +477,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/spots/costadacaparica",
+      "url": "/pt/spots/costadacaparica",
       "gsc_posicion": null
     },
     {
@@ -488,7 +488,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/spots/region/portugal",
+      "url": "/pt/spots/region/portugal",
       "gsc_posicion": null
     },
     {
@@ -499,7 +499,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/spots",
+      "url": "/pt/spots/aveiro",
       "gsc_posicion": null
     },
     {
@@ -510,7 +510,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/spots/region/portugal",
+      "url": "/pt/spots/region/portugal",
       "gsc_posicion": null
     },
     {
@@ -521,7 +521,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/spots/ericeira",
+      "url": "/pt/spots/ericeira",
       "gsc_posicion": null
     },
     {
@@ -532,7 +532,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/spots/faro",
+      "url": "/pt/spots/faro",
       "gsc_posicion": null
     },
     {
@@ -543,7 +543,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/spots/figueiradafoz",
+      "url": "/pt/spots/figueiradafoz",
       "gsc_posicion": null
     },
     {
@@ -554,7 +554,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/spots/lagos",
+      "url": "/pt/spots/lagos",
       "gsc_posicion": null
     },
     {
@@ -565,7 +565,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/spots/matosinhos",
+      "url": "/pt/spots/matosinhos",
       "gsc_posicion": null
     },
     {
@@ -576,7 +576,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/spots/moledo",
+      "url": "/pt/spots/moledo",
       "gsc_posicion": null
     },
     {
@@ -587,7 +587,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/spots/nazare",
+      "url": "/pt/spots/nazare",
       "gsc_posicion": null
     },
     {
@@ -598,7 +598,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/spots/peniche",
+      "url": "/pt/spots/peniche",
       "gsc_posicion": null
     },
     {
@@ -609,7 +609,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/spots/povoadevarzim",
+      "url": "/pt/spots/povoadevarzim",
       "gsc_posicion": null
     },
     {
@@ -620,7 +620,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/spots/sagres",
+      "url": "/pt/spots/sagres",
       "gsc_posicion": null
     },
     {
@@ -631,7 +631,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/spots/sines",
+      "url": "/pt/spots/sines",
       "gsc_posicion": null
     },
     {
@@ -642,7 +642,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/spots/troia",
+      "url": "/pt/spots/troia",
       "gsc_posicion": null
     },
     {
@@ -653,7 +653,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/spots/vianadocastelo",
+      "url": "/pt/spots/vianadocastelo",
       "gsc_posicion": null
     },
     {
@@ -664,7 +664,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/spots/milfontes",
+      "url": "/pt/spots/milfontes",
       "gsc_posicion": null
     },
     {
@@ -675,7 +675,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/mareas/region/portugal",
+      "url": "/pt/mareas/region/portugal",
       "gsc_posicion": null
     },
     {
@@ -686,7 +686,7 @@
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/spots",
+      "url": "/pt/spots/aveiro",
       "gsc_posicion": null
     },
     {
