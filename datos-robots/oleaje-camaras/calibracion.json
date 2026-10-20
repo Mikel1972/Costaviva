@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-20T14:54:58.800Z",
- "lineasHistorial": 3578,
+ "fecha": "2026-10-20T15:07:43.517Z",
+ "lineasHistorial": 3590,
  "etiquetas": 180,
  "etiquetasClaude": 85,
  "calibracion": {
@@ -49,9 +49,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 4.5051,
+   "a": 4.5065,
    "p": 0.5,
-   "n": 265,
+   "n": 266,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 14,
    "franjasClaude": [
@@ -68,7 +68,7 @@
    "dias": 13,
    "hMin": 0.3,
    "hMax": 3.59,
-   "errorRel": 0.747,
+   "errorRel": 0.745,
    "pocosDatos": false
   },
   "zumaia/c": {
@@ -85,9 +85,9 @@
    "pocosDatos": true
   },
   "zumaia/a": {
-   "a": 4.3333,
+   "a": 4.268,
    "p": 0.5,
-   "n": 35,
+   "n": 36,
    "nEtiquetas": 2,
    "nEtiquetasClaude": 2,
    "franjasClaude": [
@@ -101,9 +101,9 @@
    "pocosDatos": false
   },
   "deba/rompiente": {
-   "a": 5.3658,
+   "a": 5.3444,
    "p": 0.5,
-   "n": 68,
+   "n": 69,
    "nEtiquetas": 2,
    "nEtiquetasClaude": 5,
    "franjasClaude": [
@@ -114,7 +114,7 @@
    "dias": 12,
    "hMin": 0.3,
    "hMax": 3.59,
-   "errorRel": 0.947,
+   "errorRel": 0.941,
    "pocosDatos": false
   },
   "mundaka/principal": {
@@ -140,9 +140,9 @@
    "pocosDatos": false
   },
   "bakio/principal": {
-   "a": 2.5647,
+   "a": 2.5415,
    "p": 0.5,
-   "n": 36,
+   "n": 37,
    "nEtiquetas": 3,
    "nEtiquetasClaude": 4,
    "franjasClaude": [
@@ -154,7 +154,7 @@
    "dias": 12,
    "hMin": 0.7,
    "hMax": 3.12,
-   "errorRel": 0.695,
+   "errorRel": 0.692,
    "pocosDatos": false
   },
   "sopelana/principal": {
@@ -377,8 +377,8 @@
    "sustituye": true,
    "motivo": "18 etiquetas",
    "ruido": {
-    "ruido": 0.555,
-    "pares": 215
+    "ruido": 0.564,
+    "pares": 216
    }
   },
   "getaria": {
@@ -401,8 +401,8 @@
    "sustituye": true,
    "motivo": "≥ 3 días con alturas variadas",
    "ruido": {
-    "ruido": 0.808,
-    "pares": 24
+    "ruido": 0.961,
+    "pares": 25
    }
   },
   "mutriku": {
@@ -417,8 +417,8 @@
    "sustituye": true,
    "motivo": "11 etiquetas",
    "ruido": {
-    "ruido": 0.536,
-    "pares": 108
+    "ruido": 0.543,
+    "pares": 109
    }
   },
   "bakio": {
