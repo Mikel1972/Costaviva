@@ -35,6 +35,8 @@ export const CAPA_PUNTO = "eusm2025_eunis2019_full";
 // Zoom mínimo de la capa: a escala de plataforma (Golfo de Bizkaia entero) ya
 // se distingue roca, arena y fango (petición de Mikel: "hasta donde tengamos").
 export const ZOOM_MIN_CAPA = 7;
+// Sin ninguna tesela en este tiempo, se avisa de que EMODnet no responde.
+export const ESPERA_TESELAS_MS = 20000;
 // Radio para reutilizar el dato de un spot fijo en un punto propio.
 export const RADIO_SPOT_CERCANO_KM = 1.5;
 
@@ -326,6 +328,24 @@ export function montarCapa(map, aviso = () => {}) {
     if (map.hasLayer(capa) && map.getZoom() < ZOOM_MIN_CAPA) aviso(I18n.t("fondo.acercate"));
   };
   map.on("zoomend", avisoZoom);
+  // El servidor de EMODnet Seabed Habitats a veces no contesta (2026-10-20:
+  // más de 90 s sin respuesta). Sin esto la leyenda salía y el mapa quedaba
+  // sin manchas, sin decir nada. Se avisa si fallan varias teselas o si en
+  // ESPERA_TESELAS_MS no ha llegado ninguna; una vez por encendido.
+  let errores = 0, cargadas = 0, avisado = false, reloj = null;
+  const sinServidor = () => {
+    if (avisado || !map.hasLayer(capa) || map.getZoom() < ZOOM_MIN_CAPA) return;
+    avisado = true;
+    aviso(I18n.t("fondo.sin_servidor"));
+  };
+  capa.on("add", () => {
+    errores = 0; cargadas = 0; avisado = false;
+    clearTimeout(reloj);
+    reloj = setTimeout(() => { if (!cargadas) sinServidor(); }, ESPERA_TESELAS_MS);
+  });
+  capa.on("remove", () => clearTimeout(reloj));
+  capa.on("tileload", () => { cargadas++; });
+  capa.on("tileerror", () => { if (++errores >= 3 && !cargadas) sinServidor(); });
 }
 
 export const visible = () => !!(mapaCapa && capa && mapaCapa.hasLayer(capa));

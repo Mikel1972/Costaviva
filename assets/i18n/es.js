@@ -561,6 +561,7 @@
   "fondo.tipo": "Tipo de fondo",
   "fondo.nota_orilla": "Cerca de la orilla, orientativo.",
   "fondo.acercate": "Acércate un poco para ver el tipo de fondo.",
+  "fondo.sin_servidor": "El servidor europeo del tipo de fondo (EMODnet) no responde ahora. Vuelve a probar más tarde.",
   "selfondo.profundidad": "Profundidad",
   "selfondo.profundidad_det": "Isóbatas {min}–{max}",
   "selfondo.tipo_det": "Roca, arena, fango, Posidonia",

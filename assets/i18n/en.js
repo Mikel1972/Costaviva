@@ -561,6 +561,7 @@
   "fondo.tipo": "Seabed type",
   "fondo.nota_orilla": "Near the shore, indicative only.",
   "fondo.acercate": "Zoom in a bit to see the seabed type.",
+  "fondo.sin_servidor": "The European seabed type server (EMODnet) is not responding right now. Try again later.",
   "selfondo.profundidad": "Depth",
   "selfondo.profundidad_det": "Depth contours {min}–{max}",
   "selfondo.tipo_det": "Rock, sand, mud, seagrass",
