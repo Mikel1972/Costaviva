@@ -1,17 +1,21 @@
-<!-- SINTESIS fecha=2026-10-19 hasta_commit=478d16a9222683add80bd15c108eb5dc0e4f49d9 -->
+<!-- SINTESIS fecha=2026-10-20 hasta_commit=ab9283156e1d369fcb37a0e1d2f5f61afa7b980f -->
 
 ## 🛠 Trabajo interno (calibración y datos)
-Solo pasó el robot de cámaras caídas (19-oct), con datos de las 03:03 UTC. En rojo: Alicante, Torreblanca, Benicàssim y Xàbia/Jávea (`origen_404`; Jávea es nueva en rojo), Mundaka (`frame_plano`, es de noche y la imagen responde 200), Orio (`sin_respuesta`, `/webcam/orio` da 404, mismo patrón de la Diputación) y Bakio, Getxo y Pasaia (`frame_congelado`, sin novedad). Las imágenes `webcam_mini.png` de Alicante y Xàbia dan 404 en el streaming de la Generalitat Valenciana y su página de turismo de la cámara también; parece que la Generalitat ha retirado su red de webcams (Alicante, Torreblanca, Benicàssim, Altea, Xàbia comparten origen). No hubo cambios de código.
+Solo hay entrada nueva del robot de cámaras caídas (04:42 UTC). Con datos de hace ~1,5 h, están en rojo Alicante, Torreblanca, Benicàssim, Xàbia y Gandía (esta última nueva, `origen_404`), Orio (`sin_respuesta`, la Diputación sigue en 404), Mundaka y Santoña (`frame_plano`, de noche) y Cangas, Bakio y Pasaia (`frame_congelado`, de noche). Gandía: la web oficial sigue embebiendo la imagen y el stream, pero ambos dan 404 en origen; mismo patrón que Alicante, Xàbia, Torreblanca y Benicàssim (la Generalitat parece haber retirado su red de streaming). Sin cambios de código. Pendiente para la siguiente pasada: Corrubedo, Cangas de día, SouthLoop NZ, Vinaròs, Alboraia, Cullera y buscar alternativa local (club náutico o puerto deportivo) para Alicante/Xàbia/Gandía.
+
 **Cámaras nuevas encontradas:** 0
-**Términos de búsqueda:** "Xàbia puerto webcam en directo Generalitat Valenciana turisme cámaras streaming" (Xàbia): solo salieron agregadores (Windfinder) sin fuente del dueño verificable. No hay tipo de dueño nuevo. Siguiente paso anotado: buscar alternativa local (puerto deportivo o club náutico) para Alicante/Xàbia.
+
+**Términos de búsqueda:** "webcam Platja de Gandia en directo playa Safor cámara en vivo" (Gandía): solo salieron la página oficial y Windfinder (agregador, sin fuente verificable del dueño). Nada funcionó por primera vez ni apareció un tipo de dueño nuevo.
 
 ## 🧪 Experiencia de usuario y patrones de uso
-**Robot de experiencia de usuario:** no le tocaba pasar hoy.
-**Robot de patrones de uso:** no le tocaba pasar esta semana.
+**Robot de experiencia de usuario:** no le tocaba pasar hoy (corre los lunes); sin entrada nueva.
+
+**Robot de patrones de uso:** no le tocaba pasar esta semana; sin entrada nueva.
 
 ## 🔎 Trabajo externo (investigación de contenido)
-Sin novedades de buenas prácticas de otras apps ni de estudios institucionales en ROBOT.md desde la última síntesis.
-**Robot de especies:** no le tocaba pasar hoy.
+Sin entradas nuevas de buenas prácticas de otras apps ni de estudios institucionales.
+
+**Robot de especies:** no le tocaba pasar hoy (corre los jueves).
 
 ## 🆕 Nuevas fuentes encontradas, pendientes de validar
 Ninguna fuente nueva desde la última síntesis.
