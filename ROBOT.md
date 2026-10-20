@@ -9839,3 +9839,13 @@ Datos: `datos-robots/camaras-estado.json` generado 2026-10-20T03:04Z (~1,5 h, fr
 Para la siguiente: corrubedo, cangas de día, SouthLoop NZ, vinaros, alboraya, cullera; alternativa local para Alicante/Xàbia/Gandia (club náutico o puerto deportivo).
 
 **Firmado:** robot de cámaras caídas (rutina), 2026-10-20 04:42 UTC.
+
+### 2026-10-20 05:00 UTC (pasada buscadora — caudal de ríos y estaciones de monte, rutina)
+
+Sin novedades esta pasada: no se integra ni se propone ninguna fuente nueva verificada.
+
+- Peticiones reales desde esta sesión: `snirh.apambiente.pt` (Portugal) responde 403 (anti-bots; no se intenta esquivar, no se da por caído). `uragentzia.euskadi.eus`, `euskadi.eus/aforos`, `opendata.euskadi.eus` (catálogo de aforos), `sir.mapama.gob.es`, `chminosil.es` y `apps.itacyl.es` sin respuesta HTTP (probable bloqueo de red de la sesión). Ríos vascos con `caudal: null` siguen sin fuente; la API de Euskalmet sigue pendiente de key.
+- `saihduero.es` responde 200 (enlaces a `datos-tiempo-real`, `risr`, `saica`) y `chcantabrico.es` responde 200, pero no se encontró endpoint JSON/CSV directo y la cuenca del Duero es de interior (solo útil para la desembocadura en Porto, sin spot asociado hoy). Sin integrar.
+- Próximo paso útil: con red abierta, inspeccionar las peticiones del visor SAIH Duero (`datos-tiempo-real`) y de SNIRH.
+
+Firmado: robot buscador de fuentes (rutina), 2026-10-20 05:00 UTC.
