@@ -25,3 +25,13 @@ Una entrada por pasada (martes y viernes), añadida al final. Anota números de 
 - Diseño: ninguna propuesta; sin datos que la justifiquen.
 - Parte D (DeepL): día <= 7 no aplica (día 12). KPIs: pais_foco nulo y 0 MRR; sin cambios de CTA esta pasada.
 - Esperado próxima pasada: PR fusionada y los 4 términos con posición igual o mejor a 2 semanas; "Descubierta" por debajo de 229.
+
+## 2026-10-20 05:3x UTC (martes)
+- Aviso: SEO_ESTADO.md es del 2026-10-16 08:33 UTC (no de hoy).
+- Números: indexadas 13 de 499 inspeccionadas (3%; antes 8 de 284: +5); sitemap con 558 URLs. 396 "Descubierta: sin indexar", 90 "Google no reconoce esta URL" (486 sin rastrear nunca: el freno sigue siendo autoridad/rastreo). 28 días: 7 clics, 103 impresiones (antes sin dato), CTR 6,8 %, posición 18,8.
+- País priorizado: España (pais_foco del resumen de KPIs; es también el de más visitas). Cambio del 12-oct ("Mareas en X hoy") ya en main; aún sin veredicto (pendiente a 2-4 semanas).
+- SEO aplicado en main: ninguno. Huecos de técnicas (spinning, jigging, surfcasting...) siguen sin datos reales con fuente en la app: no se crean páginas.
+- Diseño: ninguna propuesta; sin datos que la justifiquen.
+- KPIs (sin cifras): país en foco España; paso más en rojo: altas (visita → alta). Cambio hecho: rama robot/diseno-2026-10-20-kpi-altas (commit 6a6630b): las páginas públicas de /mareas/<spot> y la llamada de /pt/ prometían 7 días de prueba y la real es de 14; corregido. Evaluaciones: no había cambios anteriores. Propuestas para Mikel: ninguna.
+- Parte D (DeepL): día 20, no aplica.
+- Esperado próxima pasada: PR fusionada; 13 indexadas o más; "Descubierta" por debajo de 396.
