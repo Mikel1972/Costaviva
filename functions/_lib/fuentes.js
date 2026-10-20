@@ -187,7 +187,38 @@ function mezclar(base, otra, hourly, current) {
 // Sustituto de pedirOpenMeteo(api, consulta, { apiKey }) que respeta los
 // interruptores. Opciones: env (obligatorio para leer interruptores y
 // claves), fetchImpl, ahora, cache + origen (caché de MET en el proxy).
-export async function pedirDatosMeteo(api, consulta, { env = {}, fetchImpl = fetch, ahora = Date.now(), cache = null, origen = "" } = {}) {
+// Respaldo automático (2026-10-20, Mikel: ubicación personal "Sopela" toda
+// en "sin datos"): Open-Meteo gratis devolvía 429 (cuota diaria agotada) y
+// el proxy /meteo/ dejaba los puntos personales sin nada. Si Open-Meteo
+// responde 429 o 5xx, la misma consulta sale de las fuentes gratuitas (MET
+// Norway + Copernicus Marine, misma forma) con un aviso. Si el respaldo
+// también falla, se devuelve el error ORIGINAL de Open-Meteo.
+export const ESTADOS_RESPALDO = new Set([429, 500, 502, 503, 504]);
+export async function pedirDatosMeteo(api, consulta, opciones = {}) {
+  try {
+    return await pedirDatosMeteoSinRespaldo(api, consulta, opciones);
+  } catch (e) {
+    const env = opciones.env || {};
+    const yaGratuitas = env.FUENTE_ATMOSFERA === "metno" && env.FUENTE_MAR === "copernicus";
+    // Solo una coordenada (el proxy /meteo/): con las ~100 de /prevision, MET
+    // Norway (una petición por punto) pasaría del límite de subpeticiones
+    // de un Worker.
+    const qs = typeof consulta === "string" ? consulta : new URLSearchParams(consulta).toString();
+    const unaCoordenada = !/latitude=[^&]*(,|%2C)/i.test(qs);
+    if (!ESTADOS_RESPALDO.has(e.status) || !GRUPOS[api] || yaGratuitas || !unaCoordenada) throw e;
+    try {
+      const datos = await pedirDatosMeteoSinRespaldo(api, consulta, { ...opciones, env: envConFuenteForzada(env, "gratuitas") });
+      for (const o of Array.isArray(datos) ? datos : [datos]) {
+        if (o && typeof o === "object") o.aviso_respaldo = `Open-Meteo ${e.status}: fuentes gratuitas`;
+      }
+      return datos;
+    } catch {
+      throw e;
+    }
+  }
+}
+
+async function pedirDatosMeteoSinRespaldo(api, consulta, { env = {}, fetchImpl = fetch, ahora = Date.now(), cache = null, origen = "" } = {}) {
   const qs = typeof consulta === "string" ? consulta.replace(/^\?/, "") : new URLSearchParams(consulta).toString();
   const sp = new URLSearchParams(qs);
   const hourly = listaVars(sp, "hourly");
