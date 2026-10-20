@@ -35,8 +35,16 @@ export const CAPA_PUNTO = "eusm2025_eunis2019_full";
 // Zoom mínimo de la capa: a escala de plataforma (Golfo de Bizkaia entero) ya
 // se distingue roca, arena y fango (petición de Mikel: "hasta donde tengamos").
 export const ZOOM_MIN_CAPA = 7;
-// Sin ninguna tesela en este tiempo, se avisa de que EMODnet no responde.
-export const ESPERA_TESELAS_MS = 20000;
+// Respaldo (2026-10-20, Seabed Habitats con 503 o sin contestar): el sustrato
+// de EMODnet Geology, otro servidor de EMODnet con la misma clasificación
+// Folk y casi los mismos colores. Menos detalle junto a la orilla y sin
+// Posidonia, pero se ve. 250k encima de 1:1M (donde hay 250k, manda).
+export const WMS_EMODNET_GEOLOGIA = "https://drive.emodnet-geology.eu/geoserver/gtk/wms";
+export const CAPAS_GEOLOGIA = "seabed_substrate_1m,seabed_substrate_250k";
+// Sin ninguna tesela de Seabed Habitats en este tiempo (o con 3 fallos), se
+// pasa al respaldo y se recuerda en la sesión para no volver a esperar.
+export const ESPERA_TESELAS_MS = 10000;
+const CLAVE_RESPALDO = "costaviva.fondo.respaldo";
 // Radio para reutilizar el dato de un spot fijo en un punto propio.
 export const RADIO_SPOT_CERCANO_KM = 1.5;
 
@@ -312,7 +320,8 @@ function crearLeyenda(L) {
 // map: el mapa de Leaflet; aviso(texto): para decir que hay que acercarse.
 // La enciende y apaga "Tipo de fondo" en el selector del botón "Fondo"
 // (selector-fondo.js) con ponerVisible().
-let mapaCapa = null, avisoZoom = () => {};
+let mapaCapa = null, capaRespaldo = null, avisoZoom = () => {};
+const enRespaldo = () => { try { return sessionStorage.getItem(CLAVE_RESPALDO) === "1"; } catch (e) { return false; } };
 export function montarCapa(map, aviso = () => {}) {
   const L = window.L;
   mapaCapa = map;
@@ -324,18 +333,25 @@ export function montarCapa(map, aviso = () => {}) {
     opacity: 0.6, minZoom: ZOOM_MIN_CAPA, attribution: ATRIBUCION_SUSTRATO,
   });
   leyenda = crearLeyenda(L);
+  capaRespaldo = L.tileLayer.wms(WMS_EMODNET_GEOLOGIA, {
+    pane: "tilePane", layers: CAPAS_GEOLOGIA, styles: "", format: "image/png", transparent: true,
+    opacity: 0.6, minZoom: ZOOM_MIN_CAPA, attribution: I18n.t("fondo.atribucion_geologia"),
+  });
   avisoZoom = () => {
-    if (map.hasLayer(capa) && map.getZoom() < ZOOM_MIN_CAPA) aviso(I18n.t("fondo.acercate"));
+    if (visible() && map.getZoom() < ZOOM_MIN_CAPA) aviso(I18n.t("fondo.acercate"));
   };
   map.on("zoomend", avisoZoom);
   // El servidor de EMODnet Seabed Habitats a veces no contesta (2026-10-20:
-  // más de 90 s sin respuesta). Sin esto la leyenda salía y el mapa quedaba
-  // sin manchas, sin decir nada. Se avisa si fallan varias teselas o si en
-  // ESPERA_TESELAS_MS no ha llegado ninguna; una vez por encendido.
+  // 503 o más de 90 s sin respuesta): la leyenda salía y el mapa quedaba sin
+  // manchas. Si fallan varias teselas o en ESPERA_TESELAS_MS no llega
+  // ninguna, se cambia al respaldo de EMODnet Geology y se dice.
   let errores = 0, cargadas = 0, avisado = false, reloj = null;
   const sinServidor = () => {
     if (avisado || !map.hasLayer(capa) || map.getZoom() < ZOOM_MIN_CAPA) return;
     avisado = true;
+    try { sessionStorage.setItem(CLAVE_RESPALDO, "1"); } catch (e) {}
+    map.removeLayer(capa);
+    capaRespaldo.addTo(map);
     aviso(I18n.t("fondo.sin_servidor"));
   };
   capa.on("add", () => {
@@ -348,10 +364,10 @@ export function montarCapa(map, aviso = () => {}) {
   capa.on("tileerror", () => { if (++errores >= 3 && !cargadas) sinServidor(); });
 }
 
-export const visible = () => !!(mapaCapa && capa && mapaCapa.hasLayer(capa));
+export const visible = () => !!(mapaCapa && capa && (mapaCapa.hasLayer(capa) || mapaCapa.hasLayer(capaRespaldo)));
 
 export function ponerVisible(v) {
   if (!mapaCapa || !capa || !!v === visible()) return;
-  if (v) { capa.addTo(mapaCapa); leyenda.addTo(mapaCapa); avisoZoom(); }
-  else { mapaCapa.removeLayer(capa); leyenda.remove(); }
+  if (v) { (enRespaldo() ? capaRespaldo : capa).addTo(mapaCapa); leyenda.addTo(mapaCapa); avisoZoom(); }
+  else { mapaCapa.removeLayer(capa); mapaCapa.removeLayer(capaRespaldo); leyenda.remove(); }
 }
