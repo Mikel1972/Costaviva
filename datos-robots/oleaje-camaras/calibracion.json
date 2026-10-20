@@ -1,5 +1,5 @@
 {
- "fecha": "2026-10-20T19:07:19.523Z",
+ "fecha": "2026-10-20T19:07:56.356Z",
  "lineasHistorial": 3621,
  "etiquetas": 187,
  "etiquetasClaude": 92,
@@ -462,7 +462,7 @@
    "sustituye": true,
    "motivo": "≥ 3 días con alturas variadas",
    "ruido": {
-    "ruido": 0.565,
+    "ruido": 0.572,
     "pares": 60
    }
   },
