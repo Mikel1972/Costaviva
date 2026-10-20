@@ -563,6 +563,7 @@
   "fondo.tipo": "Tipo de fundo",
   "fondo.nota_orilla": "Perto da costa, orientativo.",
   "fondo.acercate": "Aproxime um pouco para ver o tipo de fundo.",
+  "fondo.sin_servidor": "O servidor europeu do tipo de fundo (EMODnet) não responde agora. Tente mais tarde.",
   "selfondo.profundidad": "Profundidade",
   "selfondo.profundidad_det": "Batimétricas {min}–{max}",
   "selfondo.tipo_det": "Rocha, areia, lodo, Posidónia",
