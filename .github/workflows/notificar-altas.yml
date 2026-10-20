@@ -40,7 +40,7 @@ jobs:
         run: |
           code=$(curl -sS -o /tmp/resp.json -w "%{http_code}" -X POST \
             -H "X-Cron-Secret: ${{ secrets.PRESION_CRON_SECRET }}" \
-            --max-time 30 \
+            --max-time 90 \
             "https://costaviva.org/notificar-altas")
           echo "HTTP $code"
           cat /tmp/resp.json
@@ -51,9 +51,14 @@ jobs:
       # un workflow aparte para llamar a un endpoint más. Se pone en un paso
       # propio (y no encadenado con &&) para que un fallo de uno no tape al
       # otro en el log.
+      # 90 s y no 30 (2026-10-20): una pasada que manda varios emails seguidos
+      # pasó de 30 s y curl la cortó (código 28), aunque el servidor siguió. No
+      # se reintenta: el servidor marca cada email después de enviarlo, y un
+      # reintento mientras sigue trabajando podría mandar alguno dos veces; la
+      # pasada siguiente (30 min) recoge lo que quede.
       - name: Llamar a /avisar-fin-prueba
         run: |
-          code=$(curl -sS -o /tmp/resp2.json -w "%{http_code}" -X POST             -H "X-Cron-Secret: ${{ secrets.PRESION_CRON_SECRET }}"             --max-time 30             "https://costaviva.org/avisar-fin-prueba")
+          code=$(curl -sS -o /tmp/resp2.json -w "%{http_code}" -X POST             -H "X-Cron-Secret: ${{ secrets.PRESION_CRON_SECRET }}"             --max-time 90             "https://costaviva.org/avisar-fin-prueba")
           echo "HTTP $code"
           cat /tmp/resp2.json
           echo
