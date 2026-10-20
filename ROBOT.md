@@ -9826,3 +9826,16 @@ Datos: `datos-robots/camaras-estado.json` generado 2026-10-19T03:03Z (~1 h, fres
 Para la siguiente: corrubedo, cangas, SouthLoop NZ, vinaros, alboraya, cullera; buscar alternativa local para Alicante/Xàbia (puerto deportivo o club náutico).
 
 **Firmado:** robot de cámaras caídas (rutina), 2026-10-19 UTC.
+
+### 2026-10-20 UTC (robot de cámaras caídas — rutina; Gandia, Orio, Mundaka)
+
+Datos: `datos-robots/camaras-estado.json` generado 2026-10-20T03:04Z (~1,5 h, fresco). En rojo: alicante, torreblanca, benicassim, javea, gandia (`origen_404`), orio (`sin_respuesta`), mundaka y santona (`frame_plano`, de noche), cangas, bakio, pasaia (`frame_congelado`).
+
+- **gandia** (nueva en rojo, última señal 10-19 03:30): no se ha movido. La web oficial (`comunitatvalenciana.com/es/valencia/gandia/webcams/gandia-1`) sigue embebiendo `static/Gandia/webcam_mini.png` y `webcam/Gandia/manifest.mpd`; ambos dan 404 en origen. Mismo patrón que Alicante, Xàbia, Torreblanca y Benicàssim: la Generalitat parece haber retirado su red de streaming. Búsqueda: "webcam Platja de Gandia en directo playa Safor cámara en vivo"; solo salen la página oficial y Windfinder (agregador, sin fuente verificable del dueño). Sin cambios de código.
+- **orio**: `/webcam/orio` sigue en 404 (Diputación). Sin novedad.
+- **mundaka**: `/webcam/mundaka` responde 200; el `frame_plano` es de noche. Santoña igual.
+- **cangas, bakio, pasaia**: `frame_congelado` a las 03:00 (noche), sin novedad.
+
+Para la siguiente: corrubedo, cangas de día, SouthLoop NZ, vinaros, alboraya, cullera; alternativa local para Alicante/Xàbia/Gandia (club náutico o puerto deportivo).
+
+**Firmado:** robot de cámaras caídas (rutina), 2026-10-20 04:42 UTC.
