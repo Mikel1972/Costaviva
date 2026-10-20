@@ -1,23 +1,23 @@
 {
- "generado_en": "2026-10-13T13:00:12.701Z",
+ "generado_en": "2026-10-20T10:29:05.827Z",
  "desde": 2025,
  "hasta": 2026,
  "por_especie": {
   "lubina": {
-   "gbif_total": 450,
-   "guardadas": 349
+   "gbif_total": 429,
+   "guardadas": 352
   },
   "sargo": {
-   "gbif_total": 1087,
-   "guardadas": 712
+   "gbif_total": 950,
+   "guardadas": 727
   },
   "dorada": {
-   "gbif_total": 408,
-   "guardadas": 330
+   "gbif_total": 385,
+   "guardadas": 337
   },
   "salmonete": {
-   "gbif_total": 948,
-   "guardadas": 550
+   "gbif_total": 763,
+   "guardadas": 572
   },
   "jurel": {
    "gbif_total": 19,
@@ -36,16 +36,16 @@
    "guardadas": 147
   },
   "pulpo": {
-   "gbif_total": 1787,
-   "guardadas": 1313
+   "gbif_total": 1600,
+   "guardadas": 1332
   },
   "sepia": {
-   "gbif_total": 1127,
-   "guardadas": 760
+   "gbif_total": 1086,
+   "guardadas": 763
   },
   "calamar": {
-   "gbif_total": 26,
-   "guardadas": 16
+   "gbif_total": 25,
+   "guardadas": 17
   },
   "abadejo": {
    "gbif_total": 3,
@@ -56,15 +56,15 @@
    "guardadas": 0
   },
   "lisa": {
-   "gbif_total": 717,
-   "guardadas": 325
+   "gbif_total": 677,
+   "guardadas": 347
   },
   "breca": {
-   "gbif_total": 61,
-   "guardadas": 43
+   "gbif_total": 62,
+   "guardadas": 46
   },
   "lenguado": {
-   "gbif_total": 40,
+   "gbif_total": 39,
    "guardadas": 37
   },
   "corvina": {
@@ -72,15 +72,15 @@
    "guardadas": 11
   },
   "denton": {
-   "gbif_total": 135,
-   "guardadas": 112
+   "gbif_total": 140,
+   "guardadas": 117
   },
   "bocinegro": {
-   "gbif_total": 116,
+   "gbif_total": 109,
    "guardadas": 80
   },
   "vieja": {
-   "gbif_total": 613,
+   "gbif_total": 624,
    "guardadas": 183
   },
   "sama": {
@@ -88,48 +88,48 @@
    "guardadas": 0
   },
   "chicharro_canario": {
-   "gbif_total": 22,
+   "gbif_total": 20,
    "guardadas": 15
   },
   "salema": {
-   "gbif_total": 1659,
-   "guardadas": 984
+   "gbif_total": 1369,
+   "guardadas": 997
   },
   "cabrilla": {
-   "gbif_total": 521,
-   "guardadas": 375
+   "gbif_total": 480,
+   "guardadas": 385
   },
   "rodaballo": {
-   "gbif_total": 4,
-   "guardadas": 3
+   "gbif_total": 5,
+   "guardadas": 4
   },
   "remol": {
    "gbif_total": 6,
    "guardadas": 6
   },
   "cabracho": {
-   "gbif_total": 133,
-   "guardadas": 72
+   "gbif_total": 135,
+   "guardadas": 74
   },
   "rascacio": {
-   "gbif_total": 592,
-   "guardadas": 460
+   "gbif_total": 523,
+   "guardadas": 464
   },
   "maragota": {
-   "gbif_total": 99,
-   "guardadas": 77
+   "gbif_total": 101,
+   "guardadas": 78
   },
   "besugo": {
    "gbif_total": 7,
    "guardadas": 1
   },
   "aligote": {
-   "gbif_total": 39,
-   "guardadas": 23
+   "gbif_total": 38,
+   "guardadas": 24
   },
   "mero": {
-   "gbif_total": 809,
-   "guardadas": 553
+   "gbif_total": 824,
+   "guardadas": 557
   },
   "gallo": {
    "gbif_total": 1,
@@ -148,35 +148,35 @@
    "guardadas": 16
   },
   "chopa": {
-   "gbif_total": 190,
-   "guardadas": 163
+   "gbif_total": 197,
+   "guardadas": 169
   },
   "mojarra": {
-   "gbif_total": 1359,
-   "guardadas": 896
+   "gbif_total": 1189,
+   "guardadas": 912
   },
   "herrera": {
-   "gbif_total": 339,
-   "guardadas": 208
+   "gbif_total": 313,
+   "guardadas": 209
   },
   "raspallon": {
-   "gbif_total": 203,
-   "guardadas": 137
+   "gbif_total": 173,
+   "guardadas": 140
   },
   "oblada": {
-   "gbif_total": 746,
-   "guardadas": 491
+   "gbif_total": 694,
+   "guardadas": 499
   },
   "sargo_picudo": {
-   "gbif_total": 326,
-   "guardadas": 219
+   "gbif_total": 300,
+   "guardadas": 229
   },
   "pez_limon": {
-   "gbif_total": 141,
-   "guardadas": 93
+   "gbif_total": 137,
+   "guardadas": 94
   },
   "bacoreta": {
-   "gbif_total": 8,
+   "gbif_total": 9,
    "guardadas": 5
   },
   "atun_rojo": {
@@ -188,11 +188,11 @@
    "guardadas": 2
   },
   "abade": {
-   "gbif_total": 161,
-   "guardadas": 47
+   "gbif_total": 165,
+   "guardadas": 48
   },
   "anjova": {
-   "gbif_total": 26,
+   "gbif_total": 25,
    "guardadas": 12
   },
   "pintarroja": {
