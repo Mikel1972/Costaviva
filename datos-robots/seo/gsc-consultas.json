@@ -1,7 +1,7 @@
 {
- "generado": "2026-10-16T08:33:02.038Z",
+ "generado": "2026-10-20T08:56:17.778Z",
  "propiedad": "sc-domain:costaviva.org",
- "hasta": "2026-10-13",
+ "hasta": "2026-10-17",
  "semanas": [
   {
    "semana": "2026-09-14",
@@ -103,7 +103,11 @@
     "posicion": 5
    }
   ],
-  "mex": []
+  "mex": [],
+  "bgd": [],
+  "chl": [],
+  "bra": [],
+  "col": []
  },
  "consultas": [
   {
@@ -131,12 +135,52 @@
    "posicion": 78
   },
   {
+   "query": "calamar galicia",
+   "pagina": "/especies/calamar",
+   "pais": "bgd",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 38
+  },
+  {
+   "query": "cebo lubina",
+   "pagina": "/especies/lubina",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 100
+  },
+  {
+   "query": "chipiron animal",
+   "pagina": "/especies/calamar",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 87
+  },
+  {
    "query": "chipiron pescado",
    "pagina": "/especies/calamar",
    "pais": "esp",
    "clics": 0,
-   "impresiones": 2,
-   "posicion": 82
+   "impresiones": 10,
+   "posicion": 79.2
+  },
+  {
+   "query": "como pescar chipirones",
+   "pagina": "/especies/calamar",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 2
+  },
+  {
+   "query": "lubina",
+   "pagina": "/especies/lubina",
+   "pais": "prt",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 76
   },
   {
    "query": "lubina pesca",
@@ -145,6 +189,14 @@
    "clics": 0,
    "impresiones": 1,
    "posicion": 100
+  },
+  {
+   "query": "lubinas",
+   "pagina": "/especies/lubina",
+   "pais": "prt",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 69
   },
   {
    "query": "lugares de pesca en españa",
@@ -177,6 +229,14 @@
    "clics": 0,
    "impresiones": 1,
    "posicion": 51
+  },
+  {
+   "query": "mareas en bakio",
+   "pagina": "/spots/bakio",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 2,
+   "posicion": 30.5
   },
   {
    "query": "mareas en donosti",
@@ -227,6 +287,14 @@
    "posicion": 36
   },
   {
+   "query": "mareas mediterraneo",
+   "pagina": "/mareas/region/mediterraneo",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 19
+  },
+  {
    "query": "mareas mundaka",
    "pagina": "/mareas/mundaka",
    "pais": "esp",
@@ -275,6 +343,30 @@
    "posicion": 5
   },
   {
+   "query": "pescar chipirones",
+   "pagina": "/especies/calamar",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 2
+  },
+  {
+   "query": "pleamar",
+   "pagina": "/mareas/denia",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 13
+  },
+  {
+   "query": "pleamar denia",
+   "pagina": "/mareas/denia",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 13
+  },
+  {
    "query": "pleamar mundaka",
    "pagina": "/mareas/mundaka",
    "pais": "esp",
@@ -291,6 +383,14 @@
    "posicion": 27
   },
   {
+   "query": "tabla de mareas bakio",
+   "pagina": "/spots/bakio",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 33
+  },
+  {
    "query": "tabla de mareas mundaka",
    "pagina": "/mareas/mundaka",
    "pais": "esp",
@@ -305,6 +405,30 @@
    "clics": 0,
    "impresiones": 1,
    "posicion": 33
+  },
+  {
+   "query": "talla mínima lubina galicia",
+   "pagina": "/especies/lubina",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 5
+  },
+  {
+   "query": "talla mínima lubina galicia 2026",
+   "pagina": "/especies/lubina",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 5
+  },
+  {
+   "query": "tiburon bakio",
+   "pagina": "/spots/bakio",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 55
   },
   {
    "query": "tiburón bakio",
