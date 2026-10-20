@@ -56,9 +56,69 @@ export const LEYENDA_SUSTRATO = [
   { clase: "arena", texto: I18n.t("fondo.ley.arena"), color: "#F6F17C" },
   { clase: "grava", texto: I18n.t("fondo.ley.grava"), color: "#D1CD6A" },
   { clase: "fango", texto: I18n.t("fondo.ley.fango"), color: "#95DCFC" },
-  { clase: "posidonia", texto: I18n.t("fondo.ley.posidonia"), color: "#2EA531" },
+  { clase: "posidonia", texto: I18n.t("fondo.ley.posidonia"), color: "#2EA531", patron: true },
   { clase: null, texto: I18n.t("fondo.ley.sin_clasificar"), color: "#A5A5A5" },
 ];
+
+// Posidonia a rayas (2026-10-20, Mikel: "la posidonia no se ve muy
+// distinta"): al 60 % sobre el mar, el verde de EMODnet casi no se separa de
+// la grava. El WMS no deja cambiar su color, así que cada tesela se repinta
+// en el navegador: los píxeles del verde de EMODnet pasan a rayas de dos
+// verdes, opacas. Si el servidor no da CORS, la tesela sale sin repintar.
+export const COLOR_POSIDONIA_WMS = [0x2e, 0xa5, 0x31];
+export const RAYAS_POSIDONIA = [[0x05, 0x4a, 0x1a], [0x7c, 0xff, 0x4f]];
+export const ANCHO_RAYA_PX = 3;
+export const PATRON_POSIDONIA_CSS = `repeating-linear-gradient(45deg, rgb(${RAYAS_POSIDONIA[0]}) 0 ${ANCHO_RAYA_PX}px, rgb(${RAYAS_POSIDONIA[1]}) ${ANCHO_RAYA_PX}px ${2 * ANCHO_RAYA_PX}px)`;
+
+// Repinta en su sitio los píxeles RGBA (ancho x alto) del verde de la
+// Posidonia. Devuelve cuántos ha cambiado. Puro: se prueba en Node.
+export function repintarPosidonia(px, ancho, tolerancia = 24) {
+  const [r0, g0, b0] = COLOR_POSIDONIA_WMS;
+  let n = 0;
+  for (let i = 0; i < px.length; i += 4) {
+    if (!px[i + 3]) continue;
+    if (Math.abs(px[i] - r0) + Math.abs(px[i + 1] - g0) + Math.abs(px[i + 2] - b0) > tolerancia) continue;
+    const p = i / 4, x = p % ancho, y = (p - x) / ancho;
+    const c = RAYAS_POSIDONIA[Math.floor((x + y) / ANCHO_RAYA_PX) % 2];
+    px[i] = c[0]; px[i + 1] = c[1]; px[i + 2] = c[2]; px[i + 3] = 255;
+    n++;
+  }
+  return n;
+}
+
+// WMS de Leaflet que dibuja cada tesela en un canvas para repintar la
+// Posidonia. Mismos eventos (tileload / tileerror) que una tileLayer.wms.
+function wmsConPosidonia(L, url, opciones) {
+  const Capa = L.TileLayer.WMS.extend({
+    createTile(coords, done) {
+      const tamano = this.getTileSize();
+      const lienzo = document.createElement("canvas");
+      lienzo.width = tamano.x; lienzo.height = tamano.y;
+      const ctx = lienzo.getContext("2d");
+      const src = this.getTileUrl(coords);
+      const cargar = (cors) => {
+        const img = new Image();
+        if (cors) img.crossOrigin = "anonymous";
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0, tamano.x, tamano.y);
+          if (cors) {
+            try {
+              const datos = ctx.getImageData(0, 0, tamano.x, tamano.y);
+              if (repintarPosidonia(datos.data, tamano.x)) ctx.putImageData(datos, 0, 0);
+            } catch (e) { /* lienzo sin CORS: se queda sin repintar */ }
+          }
+          done(null, lienzo);
+        };
+        // Sin cabecera CORS la carga con crossOrigin falla: otra vez sin él.
+        img.onerror = () => (cors ? cargar(false) : done(new Error("tesela"), lienzo));
+        img.src = src;
+      };
+      cargar(true);
+      return lienzo;
+    },
+  });
+  return new Capa(url, opciones);
+}
 
 export const CLASES_FONDO = ["roca", "arena", "grava", "fango", "posidonia", "pradera", "biogenico"];
 export const TIPOS_ORILLA = ["acantilado", "roca", "escollera", "playa_arena", "playa_cantos", "playa", "puerto"];
@@ -301,7 +361,7 @@ function crearLeyenda(L) {
       for (const l of LEYENDA_SUSTRATO) {
         const fila = document.createElement("div");
         const muestra = document.createElement("i");
-        muestra.style.background = l.color;
+        muestra.style.background = l.patron ? PATRON_POSIDONIA_CSS : l.color;
         fila.appendChild(muestra);
         fila.appendChild(document.createTextNode(l.texto));
         div.appendChild(fila);
@@ -328,7 +388,7 @@ export function montarCapa(map, aviso = () => {}) {
   // Panel por defecto (tilePane, z 200): por encima del mapa base y del
   // relieve (paneles mapaBase 150 y relieveFondo 160 de mapa-base.js) y por
   // debajo de overlayPane/markerPane (spots, marcadores, isóbatas).
-  capa = L.tileLayer.wms(WMS_EMODNET_SEABED, {
+  capa = wmsConPosidonia(L, WMS_EMODNET_SEABED, {
     pane: "tilePane", layers: CAPA_SUSTRATO, styles: "", format: "image/png", transparent: true,
     opacity: 0.6, minZoom: ZOOM_MIN_CAPA, attribution: ATRIBUCION_SUSTRATO,
   });
