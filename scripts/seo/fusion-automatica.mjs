@@ -161,16 +161,12 @@ async function main() {
     return console.log(`Checks: ${estado}`);
   }
 
-  // Choque con main solo en ficheros de solo añadir: se juntan las líneas en
-  // un commit de unión en la rama y se fusiona ese commit. Lo que se añade es lo
-  // mismo que ya pasó los checks, encima del main actual.
-  let cabeza = pr.headRefOid;
-  let estadoFusion = null;
-  for (let i = 0; i < 6 && estadoFusion === null; i++) {   // GitHub lo calcula en segundo plano
-    estadoFusion = JSON.parse(gh(["api", `repos/${repo}/pulls/${pr.number}`])).mergeable;
-    if (estadoFusion === null) await dormir(5000);
-  }
-  if (estadoFusion === false && tipo === "etiquetasOlas" && ficheros.every((f) => SOLO_ANADIR.has(f))) {
+  // Choque con main solo en ficheros de solo añadir (etiquetas de dos pasadas
+  // el mismo día, #286): commit de unión en la rama y se fusiona ese commit.
+  // Lo que se añade es lo mismo que ya pasó los checks, encima de main. Se
+  // intenta tras el primer "merge conflicts": GitHub calcula `mergeable` en
+  // segundo plano y a menudo aún no lo sabe (2026-10-21, segundo intento).
+  const unir = async () => {
     const base = JSON.parse(gh(["api", `repos/${repo}/compare/main...${rama}`])).merge_base_commit.sha;
     const leer = (ref, f) => {
       try { return Buffer.from(JSON.parse(gh(["api", `repos/${repo}/contents/${f}?ref=${ref}`])).content, "base64").toString("utf8"); }
@@ -188,15 +184,23 @@ async function main() {
       sha: api("POST", `repos/${repo}/git/blobs`, { content: Buffer.from(unirLineas(leer(base, f), leer(rama, f), leer(mainSha, f))).toString("base64"), encoding: "base64" }).sha,
     }));
     const arbol = api("POST", `repos/${repo}/git/trees`, { base_tree: mainArbol, tree: entradas }).sha;
-    cabeza = api("POST", `repos/${repo}/git/commits`, { message: "Unir con main (etiquetas: solo añadir líneas)", tree: arbol, parents: [pr.headRefOid, mainSha] }).sha;
+    const cabeza = api("POST", `repos/${repo}/git/commits`, { message: "Unir con main (etiquetas: solo añadir líneas)", tree: arbol, parents: [pr.headRefOid, mainSha] }).sha;
     api("PATCH", `repos/${repo}/git/refs/heads/${rama}`, { sha: cabeza, force: false });
     await dormir(5000);
     console.log(`Choque solo en ficheros de solo añadir: líneas unidas en ${cabeza}.`);
-  }
+    return cabeza;
+  };
+  const puedeUnir = tipo === "etiquetasOlas" && ficheros.every((f) => SOLO_ANADIR.has(f));
 
   gh(["label", "create", ETIQUETA_FUSION, "--repo", repo, "--color", "0E8A16", "--description", "Fusionada sola por el robot (lista blanca + checks en verde)", "--force"]);
   gh(["pr", "edit", String(pr.number), "--repo", repo, "--add-label", ETIQUETA_FUSION]);
-  gh(["pr", "merge", String(pr.number), "--repo", repo, "--squash", "--match-head-commit", cabeza]);
+  try {
+    gh(["pr", "merge", String(pr.number), "--repo", repo, "--squash", "--match-head-commit", pr.headRefOid]);
+  } catch (e) {
+    if (!puedeUnir || !/conflict|not mergeable/i.test(String(e.message))) throw e;
+    const cabeza = await unir();
+    gh(["pr", "merge", String(pr.number), "--repo", repo, "--squash", "--match-head-commit", cabeza]);
+  }
   gh(["pr", "comment", String(pr.number), "--repo", repo, "--body", `🤖 Fusionada sola (squash): todos los ficheros en la lista blanca de \`${tipo === "palabras" ? "robot/palabras-*" : "robot/etiquetas-olas-*"}\` y todos los checks en verde.`]);
   console.log(`PR #${pr.number} fusionada.`);
 }
