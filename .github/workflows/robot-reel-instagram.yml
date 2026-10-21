@@ -43,7 +43,7 @@ on:
         required: false
         type: string
       tipo:
-        description: "Forzar un tipo (condiciones, especie, diario, grupos, alarma); vacío = el siguiente de la rotación"
+        description: "Forzar un tipo (condiciones, especie, diario, grupos, alarma, peces); vacío = el siguiente de la rotación. peces = banco de peces con datos reales (reel-peces.mjs; es el de por defecto en España)"
         required: false
         type: string
       mercado:
@@ -101,7 +101,11 @@ jobs:
           SPOT_REEL: ${{ inputs.spot }}
           CLIP_REEL: ${{ inputs.clip }}
           MERCADO: ${{ inputs.mercado || (github.event.schedule == '20 6 * * 5' && 'nz') || 'es' }}
-        run: node generar-reel-instagram.mjs
+        run: |
+          # España: desde el 2026-10-18 el reel es siempre el de peces con datos
+          # reales (Mikel: "a partir de ahora prepararemos vídeos de este tipo").
+          # Los otros tipos siguen a mano (input tipo) y NZ va con su generador.
+          if [ "$TIPO_REEL" = "peces" ] || { [ "$MERCADO" = "es" ] && [ -z "$TIPO_REEL" ]; }; then node reel-peces.mjs; else node generar-reel-instagram.mjs; fi
 
       - name: Comitear el reel (y dejar solo los 4 últimos)
         if: steps.generar.outputs.generada == 'true'
@@ -112,7 +116,7 @@ jobs:
           git add assets/marketing/reels/
           # Con spot o clip forzados el generador no escribe todos los ficheros
           # de rotación: añadir solo los que existen (si no, git add falla).
-          for f in scripts/marketing/rotacion-reels.json scripts/marketing/rotacion-reels-nz.json scripts/marketing/rotacion-zonas.json scripts/marketing/rotacion-zonas-nz.json scripts/marketing/calendario-estado.json; do
+          for f in scripts/marketing/rotacion-reels.json scripts/marketing/rotacion-reels-peces.json scripts/marketing/rotacion-reels-nz.json scripts/marketing/rotacion-zonas.json scripts/marketing/rotacion-zonas-nz.json scripts/marketing/calendario-estado.json; do
             if [ -e "$f" ]; then git add "$f"; fi
           done
           if git diff --cached --quiet; then

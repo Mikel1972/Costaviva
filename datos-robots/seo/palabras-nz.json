@@ -1,25 +1,8 @@
 {
-  "generado": "2026-10-12T12:10:55.174Z",
-  "semana": "2026-09-28",
+  "generado": "2026-10-19T10:02:27.688Z",
+  "semana": "2026-10-05",
   "fuente": "Mikel1972/comun seo/palabras",
   "terminos": [
-    {
-      "termino": "tide times",
-      "mercado": "nz",
-      "grupo": "marea",
-      "puntuacion": 63,
-      "tendencia": "baja",
-      "tendencia_pct": -14,
-      "estacionalidad": {
-        "indice_mes_actual": 1.21,
-        "picos": [
-          10
-        ],
-        "estacional": false
-      },
-      "url": "/en/tides",
-      "gsc_posicion": null
-    },
     {
       "termino": "tarakihi",
       "mercado": "nz",
@@ -43,10 +26,27 @@
       "termino": "high tide today",
       "mercado": "nz",
       "grupo": "marea",
-      "puntuacion": 33,
+      "puntuacion": 50,
+      "tendencia": "baja",
+      "tendencia_pct": -12,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "tide times",
+      "mercado": "nz",
+      "grupo": "marea",
+      "puntuacion": 47,
       "tendencia": "baja",
       "tendencia_pct": -14,
-      "estacionalidad": null,
+      "estacionalidad": {
+        "indice_mes_actual": 1.21,
+        "picos": [
+          10
+        ],
+        "estacional": false
+      },
       "url": "/en/tides",
       "gsc_posicion": null
     },

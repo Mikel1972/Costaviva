@@ -34,7 +34,27 @@
       "tipo": "reel-condiciones",
       "campana": "20261017-reel-condiciones-nz-leigh",
       "en": "2026-10-16T05:21:49.701Z"
+    },
+    "2026-10-19-reel": {
+      "tipo": "reel-peces",
+      "campana": "20261019-reel-peces-ribadesella",
+      "en": "2026-10-18T21:29:46.164Z"
+    },
+    "2026-10-20-post": {
+      "tipo": "especies",
+      "campana": "20261020-especies-calamar-chipiron",
+      "en": "2026-10-19T17:30:38.859Z"
+    },
+    "2026-10-20-post-nz": {
+      "tipo": "especies-nz",
+      "campana": "20261020-especies-nz-kingfish",
+      "en": "2026-10-19T05:40:39.342Z"
+    },
+    "2026-10-22-post": {
+      "tipo": "funcion-grupos",
+      "campana": "20261022-funcion-grupos",
+      "en": "2026-10-21T17:30:32.993Z"
     }
   },
-  "ultimaFuncion": "diario"
+  "ultimaFuncion": "grupos"
 }

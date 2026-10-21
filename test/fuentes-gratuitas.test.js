@@ -376,3 +376,28 @@ test("comparativa: solo marca de calidad 1 y mismas horas para todas las fuentes
   assert.equal(e.mae, 20);
   assert.equal(e.sesgo, 0);
 });
+
+// 2026-10-20: Open-Meteo gratis con 429 dejaba sin datos las ubicaciones
+// personales. Respaldo automático a las fuentes gratuitas, solo con 429/5xx
+// y una coordenada; si el respaldo falla, el error original.
+test("respaldo de Open-Meteo: 429 de una coordenada prueba las gratuitas; 400 o varias coordenadas, no", async () => {
+  const { pedirDatosMeteo } = await import("../functions/_lib/fuentes.js");
+  const pedidas = [];
+  const fetchImpl = async (url) => {
+    pedidas.push(String(url));
+    if (String(url).includes("open-meteo.com")) return new Response("{}", { status: Number(new URL(url).searchParams.get("latitude").startsWith("1") ? 400 : 429) });
+    throw new Error("sin red en la prueba");
+  };
+  const q = (lat) => `latitude=${lat}&longitude=-3.02&timezone=Europe%2FMadrid&forecast_days=1&hourly=windspeed_10m`;
+  await assert.rejects(pedirDatosMeteo("forecast", q("43.39"), { env: {}, fetchImpl }), (e) => e.status === 429);
+  assert.ok(pedidas.some((u) => !u.includes("open-meteo.com")), "intentó el respaldo");
+  pedidas.length = 0;
+  await assert.rejects(pedirDatosMeteo("forecast", q("13.39"), { env: {}, fetchImpl }), (e) => e.status === 400);
+  assert.ok(pedidas.every((u) => u.includes("open-meteo.com")), "un 400 no usa respaldo");
+  pedidas.length = 0;
+  await assert.rejects(pedirDatosMeteo("forecast", q("43.39,43.5").replace("longitude=-3.02", "longitude=-3.02,-3.1"), { env: {}, fetchImpl }), (e) => e.status === 429);
+  assert.ok(pedidas.every((u) => u.includes("open-meteo.com")), "varias coordenadas de atmósfera no usan respaldo");
+  pedidas.length = 0;
+  await assert.rejects(pedirDatosMeteo("marine", "latitude=43.39,43.5&longitude=-3.02,-3.1&timezone=Europe%2FMadrid&forecast_days=1&hourly=sea_level_height_msl", { env: {}, fetchImpl }), (e) => e.status === 429);
+  assert.ok(pedidas.some((u) => !u.includes("open-meteo.com")), "el mar con varias coordenadas sí prueba Copernicus");
+});
