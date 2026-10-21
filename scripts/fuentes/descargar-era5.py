@@ -89,7 +89,7 @@ def leer(url, intentos=4):
             with urllib.request.urlopen(url, timeout=60) as r:
                 return r.read()
         except Exception as e:
-            if i == intentos - 1:
+            if i == intentos - 1 or getattr(e, "code", None) == 404:
                 raise
             print(f"::warning::{url}: {e}; reintento")
             time.sleep(3 * (i + 1))
@@ -136,16 +136,38 @@ def dia_real(fecha, sel):
     ixs = np.array([s[1] for s in sel])
     trabajos = [(k, h) for k in VARIABLES for h in range(24)]
 
+    # Huecos del Zarr público (2026-10-21: el 10-10 de 02 a 14 h UTC da 404,
+    # dentro de lo que ERA5T dice tener): esas horas quedan vacías (null en
+    # el fichero), nunca inventadas, y el día se guarda igual. Antes la tarea
+    # se caía y volvía a bajar ~300 MB cada vez que le tocaba ese día.
     def uno(tr):
         k, h = tr
-        a = decodificar(leer(f"{ZARR}/{VARIABLES[k]}/{i0 + h}.0.0"), "<f4", (721, 1440))
+        try:
+            datos = leer(f"{ZARR}/{VARIABLES[k]}/{i0 + h}.0.0", intentos=2)
+        except urllib.error.HTTPError as e:
+            if e.code != 404:
+                raise
+            return k, h, None
+        a = decodificar(datos, "<f4", (721, 1440))
         return k, h, a[iys, ixs].copy()
 
     salida = {k: np.full((24, len(sel)), np.nan, dtype=np.float32) for k in VARIABLES}
+    huecos = 0
     with ThreadPoolExecutor(HILOS) as ex:
         for k, h, vals in ex.map(uno, trabajos):
-            salida[k][h] = vals
+            if vals is None:
+                huecos += 1
+            else:
+                salida[k][h] = vals
+    if huecos == len(trabajos):
+        raise DiaSinPublicar(fecha)
+    if huecos:
+        print(f"::warning::ERA5 {fecha}: {huecos} de {len(trabajos)} trozos no existen en el Zarr público; esas horas quedan vacías")
     return salida
+
+
+class DiaSinPublicar(Exception):
+    pass
 
 
 def red(arr, dec):
@@ -243,7 +265,11 @@ def main():
             datos["t"] = datos["t"] * 10 + 283
             datos["pr"] = datos["pr"] / 1000
         else:
-            datos = dia_real(f, sel)
+            try:
+                datos = dia_real(f, sel)
+            except DiaSinPublicar:
+                print(f"::warning::ERA5 {f}: aún sin publicar; se reintenta en la próxima pasada")
+                continue
         n, b = escribir_dia(a.salida, f, datos, sel, cajas, a.prueba)
         total_bytes += b
         hechas.add(f.isoformat())
