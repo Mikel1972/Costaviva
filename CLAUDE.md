@@ -1053,6 +1053,23 @@ YouTube o MEO no dejan republicar) por piezas en el estilo de la app.
   caída es experimental y SOLO con la app abierta y la pantalla visible;
   nada de "te salva la vida" ni segundo plano. El test lo comprueba.
 
+- **Reel de peces (2026-10-18, pedido de Mikel)**: `scripts/marketing/reel-peces.mjs`
+  + `plantillas/reel-peces.html`. Vídeo de peces de Pexels (`clips/stock/pexels-peces-arrecife`,
+  lo eligió Mikel; licencia en su `.licencia.json`) de fondo los 13 s y encima datos
+  reales de un spot con caudal de río (marea del día, corriente, río, ola, agua e
+  índice de pesca **de la lubina** desde costa, la misma cuenta que la ventana de
+  actividad; si la lubina no está de temporada, no se monta). Cierra con "Mareas,
+  corrientes, ríos, oleaje, clorofila, cámaras en directo y muchos más datos",
+  costa · barco · submarina y la llamada a la acción. Nunca "la primera app".
+  **Es el reel de los sábados en España** (Mikel, 2026-10-18: "a partir de ahora
+  prepararemos vídeos de este tipo"): el robot de reels lo monta sin `tipo` en
+  España (con `tipo: peces`, `spot` y `fecha` se fuerza cualquier día; los otros
+  tipos siguen a mano; NZ no cambia). Rota los spots con río y los vídeos con
+  `"tema": "peces"` en su ficha (`rotacion-reels-peces.json`), salta los spots
+  sin todos los datos o sin lubina de temporada y no se repite
+  (`calendario-estado.json`). Más vídeos de peces = más variedad: basta con
+  añadir el clip y su `.licencia.json` con `"tema": "peces"`. El resto del
+  flujo (borrador + Issue + OK de Mikel) es el de siempre.
 - **Piezas de Nueva Zelanda (2026-10-11)**, en inglés: lógica pura en
   `scripts/marketing/pieza-nz.mjs`, red y disco en `generar-nz.mjs` (se
   importa solo con `MERCADO=nz`: fija `I18n.fijarIdioma("en")` para que los
