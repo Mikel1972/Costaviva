@@ -44,6 +44,21 @@ export const LISTA_BLANCA = {
   etiquetasOlas: [/^datos-robots\/oleaje-camaras\//],
 };
 
+// Ficheros de solo añadir líneas (una por etiqueta). Si dos pasadas de la
+// rutina añaden a la vez, la PR choca con main aunque no haya nada que
+// decidir (2026-10-21, PR #286 tras #283): se juntan las líneas de las dos.
+export const SOLO_ANADIR = new Set(["datos-robots/oleaje-camaras/etiquetas-claude.jsonl"]);
+
+// main + las líneas que la rama añadió respecto a la base común y main aún
+// no tiene, en el orden de la rama. Puro: test/fusion-robot.test.js.
+export function unirLineas(base, rama, main) {
+  const lineas = (t) => String(t || "").split("\n").filter((l) => l.trim());
+  const enBase = new Set(lineas(base)), enMain = new Set(lineas(main));
+  const nuevas = lineas(rama).filter((l) => !enBase.has(l) && !enMain.has(l));
+  const m = lineas(main);
+  return [...m, ...nuevas].join("\n") + "\n";
+}
+
 export function tipoRama(rama) {
   if (/^robot\/palabras-/.test(rama)) return "palabras";
   if (/^robot\/etiquetas-olas-/.test(rama)) return "etiquetasOlas";
@@ -146,9 +161,33 @@ async function main() {
     return console.log(`Checks: ${estado}`);
   }
 
+  // Choque con main solo en ficheros de solo añadir: se juntan las líneas en
+  // la rama (API de contenidos) y se fusiona ese commit. Lo que se añade es lo
+  // mismo que ya pasó los checks, encima del main actual.
+  let cabeza = pr.headRefOid;
+  let estadoFusion = null;
+  for (let i = 0; i < 6 && estadoFusion === null; i++) {   // GitHub lo calcula en segundo plano
+    estadoFusion = JSON.parse(gh(["api", `repos/${repo}/pulls/${pr.number}`])).mergeable;
+    if (estadoFusion === null) await dormir(5000);
+  }
+  if (estadoFusion === false && tipo === "etiquetasOlas" && ficheros.every((f) => SOLO_ANADIR.has(f))) {
+    const base = JSON.parse(gh(["api", `repos/${repo}/compare/main...${rama}`])).merge_base_commit.sha;
+    const leer = (ref, f) => {
+      try { return Buffer.from(JSON.parse(gh(["api", `repos/${repo}/contents/${f}?ref=${ref}`])).content, "base64").toString("utf8"); }
+      catch { return ""; }
+    };
+    for (const f of ficheros) {
+      const unido = unirLineas(leer(base, f), leer(rama, f), leer("main", f));
+      const shaFichero = JSON.parse(gh(["api", `repos/${repo}/contents/${f}?ref=${rama}`])).sha;
+      cabeza = JSON.parse(gh(["api", "-X", "PUT", `repos/${repo}/contents/${f}`, "-f", `message=Unir ${f.split("/").pop()} con main (solo añadir líneas)`,
+        "-f", `content=${Buffer.from(unido).toString("base64")}`, "-f", `sha=${shaFichero}`, "-f", `branch=${rama}`])).commit.sha;
+    }
+    console.log(`Choque solo en ficheros de solo añadir: líneas unidas en ${cabeza}.`);
+  }
+
   gh(["label", "create", ETIQUETA_FUSION, "--repo", repo, "--color", "0E8A16", "--description", "Fusionada sola por el robot (lista blanca + checks en verde)", "--force"]);
   gh(["pr", "edit", String(pr.number), "--repo", repo, "--add-label", ETIQUETA_FUSION]);
-  gh(["pr", "merge", String(pr.number), "--repo", repo, "--squash", "--match-head-commit", pr.headRefOid]);
+  gh(["pr", "merge", String(pr.number), "--repo", repo, "--squash", "--match-head-commit", cabeza]);
   gh(["pr", "comment", String(pr.number), "--repo", repo, "--body", `🤖 Fusionada sola (squash): todos los ficheros en la lista blanca de \`${tipo === "palabras" ? "robot/palabras-*" : "robot/etiquetas-olas-*"}\` y todos los checks en verde.`]);
   console.log(`PR #${pr.number} fusionada.`);
 }
