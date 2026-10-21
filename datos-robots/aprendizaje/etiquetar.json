@@ -1,127 +1,47 @@
 {
- "generado_en": "2026-10-12T12:25:33.343Z",
- "semana": "2026-W42",
+ "generado_en": "2026-10-19T10:16:22.257Z",
+ "semana": "2026-W43",
  "nota": "Fotogramas que más enseñarían a la calibración de las cámaras si se etiquetan (etiquetar-olas.html o la rutina de etiquetado).",
  "fotogramas": [
   {
-   "camara": "berria",
-   "encuadre": "dinamico",
-   "fecha": "2026-10-08T16:37:12.000Z",
-   "espuma": 0.0037,
-   "estimacion": 0.03,
-   "modelo": 2,
-   "ganancia": 5.255,
-   "motivo": "cámara y modelo discrepan mucho"
-  },
-  {
-   "camara": "donostia",
+   "camara": "nz-napier",
    "encuadre": "principal",
-   "fecha": "2026-10-10T11:07:54.456Z",
-   "espuma": 0.0091,
-   "estimacion": 0.18,
-   "modelo": 1.57,
-   "ganancia": 3.666,
+   "fecha": "2026-10-14T21:07:21.920Z",
+   "espuma": 0.0049,
+   "estimacion": 0.07,
+   "modelo": 0.48,
+   "ganancia": 3.425,
    "motivo": "cámara y modelo discrepan mucho"
   },
   {
-   "camara": "donostia",
+   "camara": "nz-napier",
    "encuadre": "principal",
-   "fecha": "2026-10-08T11:02:30.264Z",
-   "espuma": 0.0365,
-   "estimacion": 0.47,
-   "modelo": 3.28,
-   "ganancia": 3.443,
+   "fecha": "2026-10-12T19:07:17.540Z",
+   "espuma": 0.0049,
+   "estimacion": 0.06,
+   "modelo": 0.38,
+   "ganancia": 3.346,
    "motivo": "cámara y modelo discrepan mucho"
   },
   {
-   "camara": "deba",
-   "encuadre": "rompiente",
-   "fecha": "2026-10-09T15:07:58.645Z",
-   "espuma": 0.0083,
-   "estimacion": 0.2,
-   "modelo": 1.35,
-   "ganancia": 3.076,
-   "motivo": "cámara y modelo discrepan mucho"
-  },
-  {
-   "camara": "castrourdiales",
+   "camara": "nz-aramoana",
    "encuadre": "principal",
-   "fecha": "2026-10-09T11:07:20.000Z",
-   "espuma": 0.0043,
-   "estimacion": 0.19,
-   "modelo": 1.12,
-   "ganancia": 2.941,
-   "motivo": "cámara y modelo discrepan mucho"
+   "fecha": "2026-10-12T22:35:04.000Z",
+   "espuma": 0.0234,
+   "estimacion": 1,
+   "modelo": 0.98,
+   "ganancia": 0.5,
+   "motivo": "pocas etiquetas en este encuadre"
   },
   {
-   "camara": "orio",
+   "camara": "nz-aramoana",
    "encuadre": "principal",
-   "fecha": "2026-10-10T09:07:50.354Z",
-   "espuma": 0.0508,
-   "estimacion": 0.38,
-   "modelo": 1.41,
-   "ganancia": 2.811,
-   "motivo": "cámara y modelo discrepan mucho"
-  },
-  {
-   "camara": "zumaia",
-   "encuadre": "c",
-   "fecha": "2026-10-08T11:10:40.734Z",
-   "espuma": 0.3454,
-   "estimacion": 5.38,
-   "modelo": 2.95,
-   "ganancia": 2.601,
-   "motivo": "cámara y modelo discrepan mucho"
-  },
-  {
-   "camara": "castrourdiales",
-   "encuadre": "principal",
-   "fecha": "2026-10-09T08:07:39.000Z",
-   "espuma": 0.1174,
-   "estimacion": 4.68,
-   "modelo": 1.2,
-   "ganancia": 2.528,
-   "motivo": "cámara y modelo discrepan mucho"
-  },
-  {
-   "camara": "castrourdiales",
-   "encuadre": "principal",
-   "fecha": "2026-10-09T07:07:27.000Z",
-   "espuma": 0.0821,
-   "estimacion": 4.68,
-   "modelo": 1.24,
-   "ganancia": 2.495,
-   "motivo": "cámara y modelo discrepan mucho"
-  },
-  {
-   "camara": "zumaia",
-   "encuadre": "a",
-   "fecha": "2026-10-09T10:37:59.037Z",
-   "espuma": 0.2013,
-   "estimacion": 4.89,
-   "modelo": 1.55,
-   "ganancia": 2.349,
-   "motivo": "cámara y modelo discrepan mucho"
-  },
-  {
-   "camara": "sopelana",
-   "encuadre": "principal",
-   "fecha": "2026-10-09T11:04:18.000Z",
-   "espuma": 0.3909,
-   "estimacion": 3.86,
-   "modelo": 1.28,
-   "ganancia": 2.304,
-   "motivo": "cámara y modelo discrepan mucho"
-  },
-  {
-   "camara": "bakio",
-   "encuadre": "principal",
-   "fecha": "2026-10-09T07:40:03.000Z",
-   "espuma": 0.264,
-   "estimacion": 3.91,
-   "modelo": 1.3,
-   "ganancia": 2.301,
-   "motivo": "cámara y modelo discrepan mucho"
+   "fecha": "2026-10-13T02:35:04.000Z",
+   "espuma": 0.0281,
+   "estimacion": 1.09,
+   "modelo": 1.1,
+   "ganancia": 0.5,
+   "motivo": "pocas etiquetas en este encuadre"
   }
  ]
 }

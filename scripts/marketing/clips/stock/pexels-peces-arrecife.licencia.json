@@ -1,0 +1,17 @@
+{
+  "clip": "pexels-peces-arrecife.mp4",
+  "origen": "https://www.pexels.com/video/14745292/",
+  "fichero_original": "14745292_1920_1080_60fps.mp4 (descargado de Pexels por Mikel el 2026-10-18 y subido a la sesión)",
+  "autor": "Pexels, vídeo 14745292 (autor pendiente de anotar: la página del vídeo devuelve 403 a las peticiones automáticas)",
+  "personas": "Ninguna: peces oscuros (parecen chopas/sargos) sobre fondo rocoso en agua azul. Sin marcas visibles.",
+  "persona_identificable": false,
+  "edicion": "Clip completo (9 s, 60 fps), recorte vertical 608x1080 con barrido de izquierda a derecha siguiendo a los peces (x = 250 + 95·t), escalado a 1080x1920, H.264, sin audio. En el reel de peces se ralentiza a ~13 s.",
+  "paisaje": "Arrecife rocoso de aspecto mediterráneo; no se reconoce ningún lugar.",
+  "licencia_url": "https://www.pexels.com/license/",
+  "licencia_comprobada": "2026-10-18",
+  "cita_licencia": "All photos and videos on Pexels are free to use. Attribution is not required. You can modify the photos and videos from Pexels.",
+  "prohibido": "Vender copias sin modificar; redistribuirlo en otras plataformas de stock; sugerir que personas o marcas del vídeo respaldan el producto; usarlo como marca.",
+  "atribucion": "No obligatoria; se cita igualmente en el texto del reel.",
+  "nota_verificacion": "La página de licencia se leyó con WebFetch el 2026-10-18; la página del vídeo concreto sigue bloqueando a los robots (403). La licencia de Pexels es la misma para todo su catálogo (sin vídeos 'restringidos').",
+  "tema": "peces"
+}
