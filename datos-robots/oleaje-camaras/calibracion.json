@@ -1,13 +1,13 @@
 {
- "fecha": "2026-10-21T14:38:02.040Z",
- "lineasHistorial": 3869,
+ "fecha": "2026-10-21T15:01:22.521Z",
+ "lineasHistorial": 3880,
  "etiquetas": 187,
  "etiquetasClaude": 92,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.1271,
+   "a": 1.1399,
    "p": 0.5,
-   "n": 101,
+   "n": 102,
    "nEtiquetas": 7,
    "nEtiquetasClaude": 3,
    "franjasClaude": [
@@ -16,7 +16,7 @@
    "dias": 14,
    "hMin": 0.12,
    "hMax": 1.69,
-   "errorRel": 0.91,
+   "errorRel": 0.93,
    "pocosDatos": false
   },
   "hondarribia/bocana": {
@@ -49,9 +49,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 4.594,
+   "a": 4.6046,
    "p": 0.5,
-   "n": 285,
+   "n": 286,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 15,
    "franjasClaude": [
@@ -69,7 +69,7 @@
    "dias": 14,
    "hMin": 0.3,
    "hMax": 3.84,
-   "errorRel": 0.737,
+   "errorRel": 0.738,
    "pocosDatos": false
   },
   "zumaia/c": {
@@ -102,9 +102,9 @@
    "pocosDatos": false
   },
   "deba/rompiente": {
-   "a": 5.345,
+   "a": 5.3683,
    "p": 0.5,
-   "n": 85,
+   "n": 86,
    "nEtiquetas": 2,
    "nEtiquetasClaude": 6,
    "franjasClaude": [
@@ -116,13 +116,13 @@
    "dias": 13,
    "hMin": 0.3,
    "hMax": 3.84,
-   "errorRel": 0.972,
+   "errorRel": 0.968,
    "pocosDatos": false
   },
   "mundaka/principal": {
-   "a": 2.9744,
+   "a": 2.9746,
    "p": 0.5,
-   "n": 177,
+   "n": 178,
    "nEtiquetas": 11,
    "nEtiquetasClaude": 10,
    "franjasClaude": [
@@ -139,7 +139,7 @@
    "dias": 14,
    "hMin": 0.3,
    "hMax": 2.18,
-   "errorRel": 0.605,
+   "errorRel": 0.603,
    "pocosDatos": false
   },
   "bakio/principal": {
@@ -382,8 +382,8 @@
    "sustituye": true,
    "motivo": "18 etiquetas",
    "ruido": {
-    "ruido": 0.539,
-    "pares": 233
+    "ruido": 0.541,
+    "pares": 234
    }
   },
   "getaria": {
@@ -406,8 +406,8 @@
    "sustituye": true,
    "motivo": "≥ 3 días con alturas variadas",
    "ruido": {
-    "ruido": 0.995,
-    "pares": 38
+    "ruido": 1.029,
+    "pares": 39
    }
   },
   "mutriku": {
@@ -422,8 +422,8 @@
    "sustituye": true,
    "motivo": "11 etiquetas",
    "ruido": {
-    "ruido": 0.477,
-    "pares": 123
+    "ruido": 0.478,
+    "pares": 124
    }
   },
   "bakio": {
