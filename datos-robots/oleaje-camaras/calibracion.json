@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-21T08:08:11.651Z",
- "lineasHistorial": 3718,
+ "fecha": "2026-10-21T08:38:36.977Z",
+ "lineasHistorial": 3728,
  "etiquetas": 187,
  "etiquetasClaude": 92,
  "calibracion": {
@@ -49,9 +49,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 4.5031,
+   "a": 4.5076,
    "p": 0.5,
-   "n": 271,
+   "n": 272,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 15,
    "franjasClaude": [
@@ -69,7 +69,7 @@
    "dias": 14,
    "hMin": 0.3,
    "hMax": 3.59,
-   "errorRel": 0.739,
+   "errorRel": 0.738,
    "pocosDatos": false
   },
   "zumaia/c": {
@@ -120,9 +120,9 @@
    "pocosDatos": false
   },
   "mundaka/principal": {
-   "a": 2.9763,
+   "a": 2.9783,
    "p": 0.5,
-   "n": 165,
+   "n": 166,
    "nEtiquetas": 11,
    "nEtiquetasClaude": 10,
    "franjasClaude": [
@@ -139,7 +139,7 @@
    "dias": 14,
    "hMin": 0.3,
    "hMax": 2.18,
-   "errorRel": 0.625,
+   "errorRel": 0.623,
    "pocosDatos": false
   },
   "bakio/principal": {
@@ -161,9 +161,9 @@
    "pocosDatos": false
   },
   "sopelana/principal": {
-   "a": 4.0383,
+   "a": 4.0398,
    "p": 0.5,
-   "n": 78,
+   "n": 79,
    "nEtiquetas": 4,
    "nEtiquetasClaude": 5,
    "franjasClaude": [
@@ -173,10 +173,10 @@
     "2026-10-19T14",
     "2026-10-20T14"
    ],
-   "dias": 13,
+   "dias": 14,
    "hMin": 0.66,
    "hMax": 3.12,
-   "errorRel": 0.752,
+   "errorRel": 0.746,
    "pocosDatos": false
   },
   "berria/principal": {
@@ -209,9 +209,9 @@
    "pocosDatos": false
   },
   "berria/dinamico": {
-   "a": 4.6408,
+   "a": 4.6948,
    "p": 0.5,
-   "n": 116,
+   "n": 117,
    "nEtiquetas": 8,
    "nEtiquetasClaude": 11,
    "franjasClaude": [
@@ -220,10 +220,10 @@
     "2026-10-11T16",
     "2026-10-16T16"
    ],
-   "dias": 13,
+   "dias": 14,
    "hMin": 0.69,
    "hMax": 3.12,
-   "errorRel": 0.828,
+   "errorRel": 0.855,
    "pocosDatos": false
   },
   "mutriku/principal": {
@@ -382,8 +382,8 @@
    "sustituye": true,
    "motivo": "18 etiquetas",
    "ruido": {
-    "ruido": 0.555,
-    "pares": 219
+    "ruido": 0.554,
+    "pares": 220
    }
   },
   "getaria": {
@@ -422,8 +422,8 @@
    "sustituye": true,
    "motivo": "11 etiquetas",
    "ruido": {
-    "ruido": 0.536,
-    "pares": 112
+    "ruido": 0.543,
+    "pares": 113
    }
   },
   "bakio": {
@@ -436,7 +436,7 @@
   },
   "sopelana": {
    "sustituye": true,
-   "motivo": "≥ 3 días con alturas variadas",
+   "motivo": "4 etiquetas + 5 etiquetas de Claude en 5 franjas",
    "ruido": {
     "ruido": null,
     "pares": 0
