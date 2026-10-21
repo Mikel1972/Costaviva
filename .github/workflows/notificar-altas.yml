@@ -36,30 +36,32 @@ jobs:
     if: ${{ vars.AUTOMATION_PAUSED != 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - name: Llamar a /notificar-altas
+      # Cada llamada, con UN reintento a los 20 s si Cloudflare responde 5xx
+      # con su error propio (1101/1102: la función se cayó o pasó su límite
+      # de CPU; 2026-10-21, 1 de cada ~40 pasadas). Sin reintento si curl
+      # corta por tiempo (código 28): el servidor puede seguir trabajando y
+      # se podría mandar algún email dos veces. Un reintento tras un 1101/1102
+      # no añade riesgo: cada email se marca solo tras confirmarlo Resend, y
+      # lo que quedara a medias lo recogería igual la pasada siguiente.
+      - name: Llamar a /notificar-altas y /avisar-fin-prueba
         run: |
-          code=$(curl -sS -o /tmp/resp.json -w "%{http_code}" -X POST \
-            -H "X-Cron-Secret: ${{ secrets.PRESION_CRON_SECRET }}" \
-            --max-time 90 \
-            "https://costaviva.org/notificar-altas")
-          echo "HTTP $code"
-          cat /tmp/resp.json
-          echo
-          if [ "$code" != "200" ]; then exit 1; fi
-
-      # Aprovecha el mismo cron de 30 min y el mismo secreto: no hace falta
-      # un workflow aparte para llamar a un endpoint más. Se pone en un paso
-      # propio (y no encadenado con &&) para que un fallo de uno no tape al
-      # otro en el log.
-      # 90 s y no 30 (2026-10-20): una pasada que manda varios emails seguidos
-      # pasó de 30 s y curl la cortó (código 28), aunque el servidor siguió. No
-      # se reintenta: el servidor marca cada email después de enviarlo, y un
-      # reintento mientras sigue trabajando podría mandar alguno dos veces; la
-      # pasada siguiente (30 min) recoge lo que quede.
-      - name: Llamar a /avisar-fin-prueba
-        run: |
-          code=$(curl -sS -o /tmp/resp2.json -w "%{http_code}" -X POST             -H "X-Cron-Secret: ${{ secrets.PRESION_CRON_SECRET }}"             --max-time 90             "https://costaviva.org/avisar-fin-prueba")
-          echo "HTTP $code"
-          cat /tmp/resp2.json
-          echo
-          if [ "$code" != "200" ]; then exit 1; fi
+          llamar() {
+            for intento in 1 2; do
+              code=$(curl -sS -o /tmp/resp.json -w "%{http_code}" -X POST \
+                -H "X-Cron-Secret: ${{ secrets.PRESION_CRON_SECRET }}" \
+                --max-time 90 "https://costaviva.org/$1") || return 1
+              echo "$1 (intento $intento): HTTP $code"
+              cat /tmp/resp.json; echo
+              [ "$code" = "200" ] && return 0
+              if [ "$intento" = 1 ] && [ "${code:0:1}" = "5" ] && grep -q "error code: 110[12]" /tmp/resp.json; then
+                sleep 20; continue
+              fi
+              return 1
+            done
+            return 1
+          }
+          # Las dos aunque falle una: un fallo no tapa al otro.
+          fallo=0
+          llamar notificar-altas || fallo=1
+          llamar avisar-fin-prueba || fallo=1
+          exit $fallo
