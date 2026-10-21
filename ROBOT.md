@@ -9839,3 +9839,15 @@ Datos: `datos-robots/camaras-estado.json` generado 2026-10-20T03:04Z (~1,5 h, fr
 Para la siguiente: corrubedo, cangas de día, SouthLoop NZ, vinaros, alboraya, cullera; alternativa local para Alicante/Xàbia/Gandia (club náutico o puerto deportivo).
 
 **Firmado:** robot de cámaras caídas (rutina), 2026-10-20 04:42 UTC.
+
+### 2026-10-21 04:55 UTC (pasada buscadora — cámaras/webcams, ZONA: Portugal — centro y norte, segunda vez)
+
+**Qué se hizo**: se reabrió la cola de las 15 cámaras de Windy Webcams de esta zona (spots `matosinhos`, `vianadocastelo`, `aveiro`, `figueiradafoz`, `nazare`, `peniche`, más `moledo`). Con GET real a `imgproxy.windy.com/_/full/plain/current/<id>/original.jpg` las 16 respondieron 200 con `Last-Modified` entre las 04:38 y las 04:48 UTC de hoy (resolución 1280x720 o 1920x1080). Ojo: la comprobación con HEAD devuelve `content-length: 1` y sin fecha; hay que usar GET. `moledo` (ID 1570535472), parada el 17-sep, vuelve a actualizar.
+
+**NO se integró ninguna, por dos motivos**:
+1. **Política vigente de CLAUDE.md** ("Cámaras de terceros: solo como su dueño lo permita"): Windy Webcams "queda fuera (exige su API)" y los permisos los pone el dueño real del stream. Al mirar las imágenes, al menos 8 llevan la marca de agua **BEACHCAM (MEO)** o **SURFTOTAL** (Leça da Palmeira es de MEO; Darque PTZ y Nazaré/Peniche/Aveiro/Figueira llevan logo Beachcam), es decir, streams de MEO que Windy solo reencuadra. Hotlinkearlos desde una app de pago contradice esa política y la pasada de 2026-09-23 ya había anotado que Beachcam pasó a servicio de pago (403). La "cola pendiente" de ROBOT_REGLAS.md (7 cámaras de Windy) es anterior a esa política: **decide Mikel** si se mantiene, se pide permiso a MEO/Windy o se retira de la cola.
+2. **Comprobación visual no concluyente**: la pasada corrió de noche (04:48 UTC), así que la mayoría de imágenes son negras o con niebla. Sí se ve mar de verdad en: Figueira da Foz/Buarcos `1646935622` (rompiente y paseo iluminado), Figueira/Quiaios `1691852074` (rompiente fuerte y barandilla) y Peniche/Areia Branca `1742819240` (playa con olas). En Leça da Palmeira, Nazaré Town Beach, Darque PTZ y las demás no se puede afirmar que haya mar legible. Lo de la cola sigue pendiente de comprobar de día si Mikel da el visto bueno.
+
+**Búsquedas sin Windy** (`webcam porto de Leixões APDL`, `webcam câmara municipal Viana/Aveiro/Figueira`): sin cámara oficial de APDL ni de ninguna câmara municipal; solo agregadores (Windfinder, surf-forecast, que dicen no operar las cámaras). Sin fuente nueva, sin spots nuevos creados, sin cambios de código.
+
+**Firmado:** robot buscador de fuentes (rutina), 2026-10-21 04:55 UTC.
