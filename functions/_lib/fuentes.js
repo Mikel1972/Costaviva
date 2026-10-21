@@ -200,12 +200,14 @@ export async function pedirDatosMeteo(api, consulta, opciones = {}) {
   } catch (e) {
     const env = opciones.env || {};
     const yaGratuitas = env.FUENTE_ATMOSFERA === "metno" && env.FUENTE_MAR === "copernicus";
-    // Solo una coordenada (el proxy /meteo/): con las ~100 de /prevision, MET
-    // Norway (una petición por punto) pasaría del límite de subpeticiones
-    // de un Worker.
+    // Atmósfera solo con una coordenada (el proxy /meteo/): MET Norway hace
+    // una petición por punto y con las ~100 de /prevision pasaría del límite
+    // de subpeticiones de un Worker. El mar sí con varias: Copernicus sale de
+    // nuestras cajas de 0,5° (21 puntos de toda España = 1 petición, medido
+    // el 2026-10-21 con un lote de /registrar-presion, que fallaba por el 429).
     const qs = typeof consulta === "string" ? consulta : new URLSearchParams(consulta).toString();
     const unaCoordenada = !/latitude=[^&]*(,|%2C)/i.test(qs);
-    if (!ESTADOS_RESPALDO.has(e.status) || !GRUPOS[api] || yaGratuitas || !unaCoordenada) throw e;
+    if (!ESTADOS_RESPALDO.has(e.status) || !GRUPOS[api] || yaGratuitas || (!unaCoordenada && api !== "marine")) throw e;
     try {
       const datos = await pedirDatosMeteoSinRespaldo(api, consulta, { ...opciones, env: envConFuenteForzada(env, "gratuitas") });
       for (const o of Array.isArray(datos) ? datos : [datos]) {
