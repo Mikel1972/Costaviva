@@ -396,5 +396,8 @@ test("respaldo de Open-Meteo: 429 de una coordenada prueba las gratuitas; 400 o 
   assert.ok(pedidas.every((u) => u.includes("open-meteo.com")), "un 400 no usa respaldo");
   pedidas.length = 0;
   await assert.rejects(pedirDatosMeteo("forecast", q("43.39,43.5").replace("longitude=-3.02", "longitude=-3.02,-3.1"), { env: {}, fetchImpl }), (e) => e.status === 429);
-  assert.ok(pedidas.every((u) => u.includes("open-meteo.com")), "varias coordenadas no usan respaldo");
+  assert.ok(pedidas.every((u) => u.includes("open-meteo.com")), "varias coordenadas de atmósfera no usan respaldo");
+  pedidas.length = 0;
+  await assert.rejects(pedirDatosMeteo("marine", "latitude=43.39,43.5&longitude=-3.02,-3.1&timezone=Europe%2FMadrid&forecast_days=1&hourly=sea_level_height_msl", { env: {}, fetchImpl }), (e) => e.status === 429);
+  assert.ok(pedidas.some((u) => !u.includes("open-meteo.com")), "el mar con varias coordenadas sí prueba Copernicus");
 });
