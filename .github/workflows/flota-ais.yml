@@ -1,0 +1,40 @@
+name: Flota pesquera faenando (AIS)
+
+# Fase 1 (2026-10-20): scripts/flota/flota-ais.mjs escucha el AIS de
+# aisstream.io 20 min y apunta en Supabase (flota_faena) qué pesqueros
+# faenaron en qué celda de ~5 km, sin nombre ni MMSI. Sin IA. Solo totales en
+# el registro (el repo es público).
+#
+# NECESITA: el secret AISSTREAM_API_KEY (cuenta gratis en aisstream.io, la
+# crea Mikel) y la migración 20261020150000_flota_faena.sql aplicada. Hasta
+# entonces solo se lanza a mano; el horario se añade cuando funcione.
+
+on:
+  workflow_dispatch:
+    inputs:
+      minutos:
+        description: "Minutos de escucha"
+        default: "20"
+
+concurrency:
+  group: flota-ais
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  escuchar:
+    if: ${{ vars.AUTOMATION_PAUSED != 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Escuchar el AIS y guardar la faena
+        env:
+          AISSTREAM_API_KEY: ${{ secrets.AISSTREAM_API_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node scripts/flota/flota-ais.mjs --minutos "${{ github.event.inputs.minutos || '20' }}"

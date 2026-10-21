@@ -82,3 +82,13 @@ test("workflow: tras los tests, solo esas ramas, código de main", () => {
   const tests = readFileSync(new URL("../.github/workflows/tests.yml", import.meta.url), "utf8");
   assert.match(tests, /^name: Tests$/m);
 });
+
+// 2026-10-21: dos pasadas de la rutina de etiquetas el mismo día chocaban.
+test("unirLineas: main + lo que añadió la rama, sin repetir", async () => {
+  const { unirLineas, SOLO_ANADIR } = await import("../scripts/seo/fusion-automatica.mjs");
+  const base = "a\nb\n";
+  const main = "a\nb\nc\nd\n";       // otra pasada añadió c y d
+  const rama = "a\nb\ne\nc\n";       // esta añadió e (y c, ya en main)
+  assert.equal(unirLineas(base, rama, main), "a\nb\nc\nd\ne\n");
+  assert.ok(SOLO_ANADIR.has("datos-robots/oleaje-camaras/etiquetas-claude.jsonl"));
+});
