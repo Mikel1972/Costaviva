@@ -9839,3 +9839,13 @@ Datos: `datos-robots/camaras-estado.json` generado 2026-10-20T03:04Z (~1,5 h, fr
 Para la siguiente: corrubedo, cangas de día, SouthLoop NZ, vinaros, alboraya, cullera; alternativa local para Alicante/Xàbia/Gandia (club náutico o puerto deportivo).
 
 **Firmado:** robot de cámaras caídas (rutina), 2026-10-20 04:42 UTC.
+
+### 2026-10-21 UTC (robot de cámaras caídas — rutina; Alicante, Torreblanca)
+
+Datos: `datos-robots/camaras-estado.json` generado 2026-10-21T03:04Z (fresco). En rojo: alicante, torreblanca (`origen_404`), mundaka (`frame_plano`), pasaia y bakio (`frame_congelado`).
+- **alicante, torreblanca**: re-comprobado hoy, `static/AlicantePuerto/webcam_mini.png` y `static/Torreblanca/webcam_mini.png` siguen dando 404 en el origen de la Generalitat (red retirada, igual que Xàbia, Gandia, Benicàssim). Búsqueda nueva: "webcam Real Club de Regatas Alicante puerto en directo": sin resultados de cámara; la web del club (rcra.es) y la Autoridad Portuaria de Alicante quedan por mirar a mano (sin verificar desde esta sesión). Sin cambios de código.
+- **mundaka, pasaia, bakio**: lectura de las 03:00 UTC (noche, plano/congelado), sin novedad.
+
+Para la siguiente: rcra.es / puerto de Alicante, corrubedo, cangas de día, SouthLoop NZ, vinaros, alboraya, cullera.
+
+**Firmado:** robot de cámaras caídas (rutina), 2026-10-21 04:41 UTC.
