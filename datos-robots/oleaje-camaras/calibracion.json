@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-21T14:07:45.843Z",
- "lineasHistorial": 3859,
+ "fecha": "2026-10-21T14:38:02.040Z",
+ "lineasHistorial": 3869,
  "etiquetas": 187,
  "etiquetasClaude": 92,
  "calibracion": {
@@ -49,9 +49,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 4.5869,
+   "a": 4.594,
    "p": 0.5,
-   "n": 284,
+   "n": 285,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 15,
    "franjasClaude": [
@@ -102,9 +102,9 @@
    "pocosDatos": false
   },
   "deba/rompiente": {
-   "a": 5.3349,
+   "a": 5.345,
    "p": 0.5,
-   "n": 84,
+   "n": 85,
    "nEtiquetas": 2,
    "nEtiquetasClaude": 6,
    "franjasClaude": [
@@ -116,13 +116,13 @@
    "dias": 13,
    "hMin": 0.3,
    "hMax": 3.84,
-   "errorRel": 0.979,
+   "errorRel": 0.972,
    "pocosDatos": false
   },
   "mundaka/principal": {
-   "a": 2.9755,
+   "a": 2.9744,
    "p": 0.5,
-   "n": 176,
+   "n": 177,
    "nEtiquetas": 11,
    "nEtiquetasClaude": 10,
    "franjasClaude": [
@@ -139,7 +139,7 @@
    "dias": 14,
    "hMin": 0.3,
    "hMax": 2.18,
-   "errorRel": 0.606,
+   "errorRel": 0.605,
    "pocosDatos": false
   },
   "bakio/principal": {
@@ -161,9 +161,9 @@
    "pocosDatos": false
   },
   "sopelana/principal": {
-   "a": 4.0488,
+   "a": 4.0673,
    "p": 0.5,
-   "n": 81,
+   "n": 82,
    "nEtiquetas": 4,
    "nEtiquetasClaude": 5,
    "franjasClaude": [
@@ -175,8 +175,8 @@
    ],
    "dias": 14,
    "hMin": 0.66,
-   "hMax": 3.12,
-   "errorRel": 0.737,
+   "hMax": 3.14,
+   "errorRel": 0.736,
    "pocosDatos": false
   },
   "berria/principal": {
@@ -383,7 +383,7 @@
    "motivo": "18 etiquetas",
    "ruido": {
     "ruido": 0.539,
-    "pares": 232
+    "pares": 233
    }
   },
   "getaria": {
@@ -406,8 +406,8 @@
    "sustituye": true,
    "motivo": "≥ 3 días con alturas variadas",
    "ruido": {
-    "ruido": 1.029,
-    "pares": 37
+    "ruido": 0.995,
+    "pares": 38
    }
   },
   "mutriku": {
@@ -422,8 +422,8 @@
    "sustituye": true,
    "motivo": "11 etiquetas",
    "ruido": {
-    "ruido": 0.478,
-    "pares": 122
+    "ruido": 0.477,
+    "pares": 123
    }
   },
   "bakio": {
