@@ -4070,8 +4070,17 @@ DÍA, no un acumulado de 30 días.
   CHECK en la tabla). Por qué tabla de agregados y no vista/función: una
   vista se salta la RLS, una definer no puede ser de anon (D10) y una invoker
   obligaría a abrir `flota_faena`. Migración `20261022120000_flota_zonas_dia.sql`.
-- **Mapa** (`assets/js/capa-flota.js`, `window.Flota`): rectángulos por
-  celda, color por barcos (3-4, 5-9, 10-19, 20+), control "Hoy (24 h) / Ayer"
+- **Mapa** (`assets/js/capa-flota.js`, `window.Flota`): **mapa de calor**
+  (2026-10-23) en un `<canvas>` propio, sin librerías: una mancha de ~3,5 km
+  de radio por celda (`radioBlobPx`, mínimo 7 px a zoom bajo), intensidad
+  logarítmica de 3 a 30 barcos, gradiente amarillo → rojo; las manchas se
+  juntan con el MÁXIMO ("lighten"), no sumando, para que a zoom bajo no
+  salga una franja más roja que cualquier celda. Tooltip "N barcos" de la
+  celda bajo el ratón o el dedo. **▶️ de 14 días**: `flota_zonas_dia`
+  (migración `20261023100000_flota_zonas_historico.sql`; día de MADRID,
+  hoy y ayer se recalculan en cada escucha, 60 días, mismo umbral y misma
+  regla contra la resta); cada fotograma es un día suelto; con menos de 2
+  días, "Aún no hay días suficientes". Control "Hoy (24 h) / Ayer"
   + eslora, aviso sin datos y atribución "Datos AIS: aisstream.io". Solo con
   la modalidad Embarcación y gratis para todos. **Escucha el evento
   `modalidad`** (`document`, `{ detail: { modalidad } }`) que lanza

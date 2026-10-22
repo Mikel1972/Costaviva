@@ -2845,6 +2845,21 @@ function montarFlota(F) {
       if (error) throw new Error(error.message);
       return data || [];
     },
+    // ▶️ de los últimos 14 días: el histórico diario (flota_zonas_dia).
+    consultarDias: async (desde) => {
+      if (!window.supabaseCliente) return [];
+      // Por páginas: Supabase da 1000 filas como mucho por petición.
+      const filas = [];
+      for (let i = 0; i < 20000; i += 1000) {
+        const { data, error } = await window.supabaseCliente.from("flota_zonas_dia")
+          .select("dia,celda_lat,celda_lon,clase,n_barcos,especie_probable").gte("dia", desde)
+          .order("dia").order("celda_lat").order("celda_lon").order("clase").range(i, i + 999);
+        if (error) throw new Error(error.message);
+        filas.push(...(data || []));
+        if (!data || data.length < 1000) break;
+      }
+      return filas;
+    },
   });
   F.porModalidad(vaEstado.modalidad);
 }
