@@ -82,6 +82,8 @@
   .amigo input { width: 100%; padding: 9px 10px; border: 1px solid var(--linea); border-radius: 7px; font-size: 12px; color: var(--tinta); background: var(--superficie-2); margin-bottom: 8px; }
   .botones-amigo { display: flex; gap: 8px; margin-bottom: 10px; }
   .boton-wa { flex: 1; display: flex; align-items: center; justify-content: center; border-radius: 7px; border: 1px solid var(--ok-borde); background: var(--ok-fondo); color: var(--ok-texto); font-weight: 800; font-size: 13.5px; text-decoration: none; }
+  .casilla-datos { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; line-height: 1.4; margin: 0 0 8px; cursor: pointer; }
+  .casilla-datos input { width: 18px; height: 18px; margin: 1px 0 0; accent-color: var(--acento); flex-shrink: 0; }
   .amigo .reglas { font-size: 11px; color: var(--tinta-2); line-height: 1.45; padding-left: 16px; margin: 0; }
   .plan.destacado { border: 2px solid var(--acento); position: relative; }
   .plan .unidad { font-family: var(--f-texto); font-size: 13px; font-weight: 400; color: var(--tinta-2); }
@@ -236,6 +238,23 @@
     </div>
     <p class="detalle" id="resumenAmigo"></p>
     <ul class="reglas" id="reglasAmigo"></ul>
+  </div>
+
+  <!-- Tus datos (2026-10-22, hoja de condiciones del alta): oposición a las
+       estadísticas anónimas (interés legítimo, art. 6.1.f RGPD). La casilla
+       es perfiles.consiente_uso_datos_capturas, la que miran los triggers de
+       estadísticas y el aprendizaje del índice; se cambia con la RPC
+       fijar_uso_capturas_estadisticas (migración 20261022230000). Sin la
+       columna o sin la RPC, no se ve. -->
+  <div id="bloqueDatos" class="amigo" hidden>
+    <h2 data-i18n="susc.datos_titulo">🔒 Tus datos</h2>
+    <p class="detalle" data-i18n="susc.datos_explica">Usamos tus capturas del diario, de forma anónima y agregada, para mejorar el índice de pesca y nuestras estadísticas (interés legítimo, art. 6.1.f RGPD). Si desmarcas la casilla, te opones y dejamos de usarlas.</p>
+    <label class="casilla-datos">
+      <input type="checkbox" id="checkEstadisticas" />
+      <span data-i18n="susc.datos_casilla">Usar mis capturas, de forma anónima, para el índice y las estadísticas</span>
+    </label>
+    <p class="detalle"><a href="/privacidad#estadisticas" target="_blank" rel="noopener" data-i18n="susc.datos_mas">Más información</a></p>
+    <p class="detalle" id="mensajeDatos" role="status"></p>
   </div>
 
   <p class="volver"><a href="/terminos" data-i18n="prec.terminos">Términos y condiciones</a> · <a href="/" data-i18n="susc.volver_mapa">← Volver al mapa</a></p>
@@ -567,6 +586,36 @@ async function iniciar() {
     await mostrarDescuentoInvitacion();
   }
   await mostrarInvitarAmigo();
+  await mostrarTusDatos(sesionInicial.session.user.id);
+}
+
+// Tus datos (2026-10-22): oposición a las estadísticas anónimas. Nunca rompe
+// la página: si no se puede leer el perfil, el bloque no se ve.
+async function mostrarTusDatos(userId) {
+  try {
+    const { data, error } = await supabase.from("perfiles").select("consiente_uso_datos_capturas").eq("id", userId).maybeSingle();
+    if (error || !data || typeof data.consiente_uso_datos_capturas !== "boolean") return;
+    const check = document.getElementById("checkEstadisticas");
+    const mensaje = document.getElementById("mensajeDatos");
+    check.checked = data.consiente_uso_datos_capturas;
+    check.addEventListener("change", async () => {
+      const usar = check.checked;
+      check.disabled = true;
+      const { error: e } = await supabase.rpc("fijar_uso_capturas_estadisticas", { p_usar: usar });
+      check.disabled = false;
+      if (e) {
+        check.checked = !usar;
+        mensaje.textContent = I18n.t("susc.datos_error");
+        return;
+      }
+      mensaje.textContent = I18n.t(usar ? "susc.datos_si" : "susc.datos_no");
+      registrarEvento(usar ? "estadisticas_anonimas_si" : "estadisticas_anonimas_no");
+    });
+    document.getElementById("bloqueDatos").hidden = false;
+    if (window.location.hash === "#datos") document.getElementById("bloqueDatos").scrollIntoView({ behavior: "smooth" });
+  } catch (e) {
+    console.warn("tus datos:", e);
+  }
 }
 
 // "Invita a un amigo" (2026-10-09). Nunca rompe la página si falla.

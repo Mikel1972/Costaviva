@@ -194,13 +194,40 @@
   .mensaje.ok { display: block; background: var(--ok-fondo); color: var(--ok-texto); border: 1px solid var(--ok-borde); }
   .toggle { text-align: center; margin-top: 8px; font-size: 12px; color: var(--tinta-2); }
   .toggle a { color: var(--acento); cursor: pointer; text-decoration: underline; }
-  .consentimiento { display: none; margin-top: 16px; }
-  .consentimiento.visible { display: block; }
-  .consentimiento label.checkbox {
-    display: flex; align-items: flex-start; gap: 8px; margin: 10px 0 0;
-    font-family: var(--f-texto); font-weight: 400; font-size: 12px; color: var(--tinta-2); cursor: pointer;
+  /* Hoja de condiciones del alta (2026-10-22): a pantalla completa en el
+     móvil (hoja que sube desde abajo), ventana centrada en el ordenador; el
+     texto se desplaza y la casilla y el botón quedan siempre a la vista. */
+  .hoja-fondo {
+    position: fixed; inset: 0; z-index: 50; background: rgba(11,30,63,0.72);
+    display: flex; align-items: flex-end; justify-content: center;
   }
-  .consentimiento input[type="checkbox"] { width: auto; margin-top: 2px; accent-color: var(--acento); flex-shrink: 0; }
+  .hoja-fondo[hidden] { display: none; }
+  .hoja {
+    width: 100%; max-width: 620px; max-height: 92vh; max-height: 92dvh;
+    display: flex; flex-direction: column; background: var(--superficie); color: var(--tinta);
+    border-radius: 16px 16px 0 0; box-shadow: 0 -6px 30px rgba(0,0,0,0.35);
+    padding: 16px 16px calc(12px + env(safe-area-inset-bottom));
+  }
+  @media (min-width: 760px) {
+    .hoja-fondo { align-items: center; }
+    .hoja { border-radius: 16px; max-height: 86vh; padding: 20px 24px; }
+  }
+  .hoja h2 { font-family: var(--f-titulo); font-size: 19px; margin: 0 0 8px; }
+  .hoja-cuerpo { overflow-y: auto; -webkit-overflow-scrolling: touch; flex: 1; min-height: 0; padding-right: 4px; font-size: 13px; line-height: 1.5; color: var(--tinta-2); }
+  .hoja-cuerpo h3 { font-family: var(--f-titulo); font-size: 15px; color: var(--tinta); margin: 16px 0 6px; }
+  .hoja-cuerpo ul { margin: 0; padding-left: 18px; }
+  .hoja-cuerpo li { margin: 0 0 6px; }
+  .hoja-cuerpo p { margin: 0 0 8px; }
+  .hoja-cuerpo strong { color: var(--tinta); }
+  .hoja-cuerpo a { color: var(--acento); }
+  .hoja-intro { color: var(--tinta-3); font-size: 12px; }
+  .hoja-pie { border-top: 1px solid var(--linea); padding-top: 10px; margin-top: 8px; }
+  .hoja-pie label.checkbox {
+    display: flex; align-items: flex-start; gap: 8px; margin: 0 0 8px;
+    font-family: var(--f-texto); font-weight: 600; font-size: 13px; color: var(--tinta); cursor: pointer;
+  }
+  .hoja-pie input[type="checkbox"] { width: 20px; height: 20px; margin: 0; accent-color: var(--acento); flex-shrink: 0; }
+  .hoja-pie button[disabled] { opacity: 0.5; cursor: not-allowed; }
 </style>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "d398d313ac4e4524a1b89af3c9ad6fda"}'></script><!-- End Cloudflare Web Analytics -->
 </head>
@@ -290,17 +317,6 @@
     <label for="codigoPostal" data-i18n="login.codigo_postal">Código postal</label>
     <input type="text" id="codigoPostal" required inputmode="numeric" pattern="[0-9]{5}" maxlength="5" placeholder="Ej. 48001" data-i18n-placeholder="login.ej_cp" />
 
-    <div class="consentimiento visible">
-      <label class="checkbox">
-        <input type="checkbox" id="checkTerminos" />
-        <span data-i18n="login.acepto_terminos">Acepto los términos de uso y la política de privacidad de Costaviva, incluyendo el tratamiento de mis datos de cuenta para dar el servicio (obligatorio para crear la cuenta).</span> <a href="/terminos" target="_blank" rel="noopener" data-i18n="prec.terminos">Términos y condiciones</a>
-      </label>
-      <label class="checkbox">
-        <input type="checkbox" id="checkDatosCapturas" />
-        <span data-i18n="login.autorizo_capturas">Autorizo el uso anónimo de mis capturas registradas en el diario para mejorar el índice de pesca de Costaviva (opcional — puedes usar la app igualmente si no lo marcas).</span> <a href="/privacidad" target="_blank" rel="noopener" data-i18n="login.mas_info">Más información</a>
-      </label>
-    </div>
-
     <div id="turnstileRegistro" style="margin-top:8px;"></div>
 
     <button type="submit" id="btnContinuarRegistro" data-i18n="login.continuar">Continuar</button>
@@ -351,6 +367,56 @@
   </div>
 </div>
 
+<!-- Hoja de condiciones del alta (2026-10-22, diseño aprobado por Mikel): se
+     acepta antes de crear la cuenta. Sustituye a las dos casillas de antes
+     (términos y la del uso anónimo de las capturas): las estadísticas
+     anónimas pasan a interés legítimo con derecho de oposición en
+     suscripcion.html ("Tus datos"). Versión y fecha de la aceptación viajan
+     en el metadato del alta (assets/js/hoja-condiciones.js). Si cambia el
+     texto, sube VERSION_HOJA. Precios: test/hoja-condiciones.test.js los
+     compara con functions/_lib/precios-zonas.json. -->
+<div class="hoja-fondo" id="hojaCondiciones" hidden>
+  <div class="hoja" role="dialog" aria-modal="true" aria-labelledby="hojaTitulo">
+    <h2 id="hojaTitulo" data-i18n="hoja.titulo">Antes de crear tu cuenta</h2>
+    <div class="hoja-cuerpo" id="hojaCuerpo" tabindex="0">
+      <p class="hoja-intro" data-i18n="hoja.intro">Esto es lo que aceptas al darte de alta, en corto. Versión del 22 de octubre de 2026.</p>
+      <h3 data-i18n="hoja.datos_titulo">1. Protección de datos (RGPD)</h3>
+      <ul>
+        <li data-i18n-html="hoja.datos_responsable"><strong>Responsable:</strong> Costaviva (costaviva.org). Titular: pendiente de completar (nombre, NIF y dirección). Contacto: <a href="mailto:datos@costaviva.org">datos@costaviva.org</a>.</li>
+        <li data-i18n-html="hoja.datos_que"><strong>Qué guardamos:</strong> tu email y tu código postal; lo que apuntas en la app (salidas y capturas del diario con sus fotos, ubicaciones, grupos y contactos de la alarma SOS); qué funciones usas y por dónde llegaste; y, si te suscribes, los datos de la suscripción. El número de tu tarjeta lo tiene Stripe, nunca nosotros.</li>
+        <li data-i18n-html="hoja.datos_para"><strong>Para qué:</strong> darte la cuenta y el servicio, cobrar y facturar la suscripción, mandarte por email los avisos de tu cuenta (prueba, renovación, SOS a tus contactos), mejorar la app y las estadísticas anónimas del punto 2.</li>
+        <li data-i18n-html="hoja.datos_base"><strong>Base legal:</strong> el contrato contigo (art. 6.1.b RGPD) para la cuenta y el servicio; las obligaciones legales (art. 6.1.c) para la facturación; y nuestro interés legítimo (art. 6.1.f) para mejorar la app y para las estadísticas anónimas.</li>
+        <li data-i18n-html="hoja.datos_plazo"><strong>Cuánto tiempo:</strong> mientras tengas la cuenta. Si la borras, borramos tus datos (de las copias de seguridad, en 30 días como máximo), salvo los de facturación, que se guardan los años que exige la ley fiscal.</li>
+        <li data-i18n-html="hoja.datos_quien"><strong>Quién más los trata</strong> (encargados, solo para darte el servicio): Supabase (base de datos y acceso), Cloudflare (alojamiento de la web y CAPTCHA), Stripe (pagos), Resend (emails), Anthropic (identificar la especie de la foto que tú envíes) y GitHub (copia de seguridad cifrada). Algunos están fuera de la Unión Europea y tratan los datos con las garantías que exige el RGPD. No vendemos tus datos ni los usamos para publicidad.</li>
+        <li data-i18n-html="hoja.datos_derechos"><strong>Tus derechos:</strong> acceso, rectificación, supresión, oposición, limitación y portabilidad. Escríbenos a <a href="mailto:datos@costaviva.org">datos@costaviva.org</a>. Si crees que no los respetamos, puedes reclamar ante la Agencia Española de Protección de Datos (<a href="https://www.aepd.es" target="_blank" rel="noopener">aepd.es</a>).</li>
+      </ul>
+      <h3 data-i18n="hoja.anon_titulo">2. Estadísticas anónimas</h3>
+      <p data-i18n="hoja.anon_texto">Usamos tus capturas del diario, de forma anónima y agregada, para mejorar el índice de pesca y nuestras estadísticas. Base legal: interés legítimo (art. 6.1.f RGPD). Puedes oponerte cuando quieras desde tu perfil (👤 → Mi suscripción → «Tus datos»), y entonces dejamos de usarlas.</p>
+      <p data-i18n="hoja.anon_detalle">Solo se cuentan especie, spot del catálogo y mes, sin tu nombre ni tu email; tus ubicaciones personales no cuentan nunca. «Compartir esta captura» con la comunidad es otra cosa: es voluntario y se elige captura a captura.</p>
+      <h3 data-i18n="hoja.pago_titulo">3. Condiciones de pago</h3>
+      <ul>
+        <li data-i18n-html="hoja.pago_prueba"><strong>Prueba gratis:</strong> 14 días de Premium sin tarjeta. Al acabar pasas al plan gratuito: no se cobra nada y no se borra nada.</li>
+        <li data-i18n-html="hoja.pago_precios"><strong>Precios de Premium</strong> (IVA incluido, en la UE): regional 3,99 €/mes o 34,99 €/año; Mundial 5,99 €/mes o 52,99 €/año. Precio de fundador para las primeras 200 suscripciones anuales: 29,99 €/año el regional y 44,99 €/año el Mundial. El precio final se confirma en la pantalla de pago.</li>
+        <li data-i18n-html="hoja.pago_renovacion"><strong>Renovación:</strong> la suscripción se renueva sola al final de cada mes o año, al mismo precio, hasta que la canceles. Antes de renovar el plan anual te avisamos por email. Suscribirte termina la prueba gratis y se cobra ese mismo día.</li>
+        <li data-i18n-html="hoja.pago_cancelar"><strong>Cancelación:</strong> cuando quieras, sin permanencia. Premium sigue activo hasta el final del periodo pagado y no se renueva. Lo ya pagado no se reembolsa, tampoco el plan anual; solo se descuenta la parte no disfrutada si subes de plan.</li>
+        <li data-i18n-html="hoja.pago_desistimiento"><strong>Desistimiento:</strong> Premium es contenido digital que empieza al pagar. Antes de pagar marcas una casilla en la que pides el acceso inmediato y aceptas que pierdes el derecho de desistimiento de 14 días (art. 103.m TRLGDCU, ley de consumidores). Para probar antes tienes la prueba gratis. Las devoluciones que imponga la ley (servicio no prestado o defectuoso) se mantienen.</li>
+      </ul>
+      <h3 data-i18n="hoja.terceros_titulo">4. Datos de terceros y disponibilidad</h3>
+      <p data-i18n="hoja.terceros_texto">Las condiciones, previsiones, cámaras, boyas, mapas y demás datos que mostramos vienen de fuentes de terceros (organismos públicos, servicios meteorológicos, dueños de webcams, AIS…) con sus propias licencias. Su disponibilidad, cobertura, frecuencia o contenido pueden cambiar, interrumpirse o retirarse, por ejemplo si cambian esas licencias o permisos, sin que eso sea un incumplimiento de Costaviva.</p>
+      <p data-i18n="hoja.terceros_aviso">Es información orientativa, no una garantía: no la uses para navegar ni para decidir sobre tu seguridad. La decisión de salir al mar y la seguridad son responsabilidad de cada persona.</p>
+      <p class="hoja-enlaces" data-i18n-html="hoja.enlaces">Todo el detalle: <a href="/terminos" target="_blank" rel="noopener">términos y condiciones</a> y <a href="/privacidad" target="_blank" rel="noopener">política de privacidad</a>.</p>
+    </div>
+    <div class="hoja-pie">
+      <label class="checkbox">
+        <input type="checkbox" id="checkHoja" />
+        <span data-i18n="hoja.acepto">He leído y acepto estas condiciones, los términos y condiciones y la política de privacidad.</span>
+      </label>
+      <button type="button" id="btnAceptarHoja" disabled data-i18n="hoja.aceptar">Aceptar y crear cuenta</button>
+      <button type="button" class="secundario" id="btnVolverHoja" data-i18n="hoja.volver">Volver</button>
+    </div>
+  </div>
+</div>
+
 <script src="/assets/js/errores.js"></script>
 <script src="/assets/js/region-pais.js"></script>
 <script type="module">
@@ -368,6 +434,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { normalizarCodigo, formatearCodigo, guardarCodigo, leerCodigoGuardado, olvidarCodigo, mensajeCanje, mensajeExito, esDefinitivo, canjear } from "/assets/js/invitacion.js";
 import { capturarOrigen, leerPrimerContacto, leerRef } from "/assets/js/origen.js";
+import { metadatosAceptacion } from "/assets/js/hoja-condiciones.js";
 
 // Captación (2026-10-09): de dónde llega quien se da de alta (primer
 // contacto, solo fuente/medio/campaña de listas cerradas) y el código de
@@ -695,14 +762,41 @@ formLogin.addEventListener("submit", async (e) => {
 // signInWithOtp (en vez de signUp) manda un enlace de verificación sin
 // pedir contraseña aquí — la contraseña se crea en el paso 3, al volver
 // del enlace (mismo formulario que "recuperar contraseña", ver arriba).
-// El código postal y el consentimiento viajan como metadato del alta
-// (options.data) y el trigger gestionar_alta_perfil() los copia a
-// public.perfiles en el mismo momento en que crea la fila.
+// El código postal y la aceptación de la hoja de condiciones (2026-10-22,
+// assets/js/hoja-condiciones.js) viajan como metadato del alta
+// (options.data); el trigger gestionar_alta_perfil() copia a public.perfiles
+// el código postal y consiente_uso_datos_capturas (estadísticas anónimas por
+// interés legítimo: true, el usuario se opone en suscripcion.html).
 const formRegistroDatos = document.getElementById("formRegistroDatos");
 const btnContinuarRegistro = document.getElementById("btnContinuarRegistro");
 const mensajeRegistroEl = document.getElementById("mensajeRegistro");
-const checkTerminos = document.getElementById("checkTerminos");
-const checkDatosCapturas = document.getElementById("checkDatosCapturas");
+const hojaCondiciones = document.getElementById("hojaCondiciones");
+const hojaCuerpo = document.getElementById("hojaCuerpo");
+const checkHoja = document.getElementById("checkHoja");
+const btnAceptarHoja = document.getElementById("btnAceptarHoja");
+// Fecha en que aceptó la hoja en esta visita (null = aún no).
+let hojaAceptadaEn = null;
+
+function abrirHoja() {
+  hojaCondiciones.hidden = false;
+  hojaCuerpo.scrollTop = 0;
+  document.body.style.overflow = "hidden";
+  checkHoja.focus();
+}
+function cerrarHoja() {
+  hojaCondiciones.hidden = true;
+  document.body.style.overflow = "";
+  btnContinuarRegistro.focus();
+}
+checkHoja.addEventListener("change", () => { btnAceptarHoja.disabled = !checkHoja.checked; });
+document.getElementById("btnVolverHoja").addEventListener("click", cerrarHoja);
+hojaCondiciones.addEventListener("keydown", (e) => { if (e.key === "Escape") cerrarHoja(); });
+btnAceptarHoja.addEventListener("click", () => {
+  if (!checkHoja.checked) { mostrarMensajeRegistro(I18n.t("login.acepta_terminos"), "error"); return; }
+  hojaAceptadaEn = new Date();
+  cerrarHoja();
+  enviarAlta();
+});
 
 function mostrarMensajeRegistro(texto, tipo) {
   mensajeRegistroEl.textContent = texto;
@@ -721,8 +815,12 @@ if (RegionPais.esNZ(regionAlta) || RegionPais.esPT(regionAlta)) {
   campoCP.setAttribute("placeholder", I18n.t(RegionPais.esPT(regionAlta) ? "login.ej_cp_pt" : "login.ej_cp_nz"));
 }
 
-formRegistroDatos.addEventListener("submit", async (e) => {
+formRegistroDatos.addEventListener("submit", (e) => {
   e.preventDefault();
+  enviarAlta();
+});
+
+async function enviarAlta() {
   const email = document.getElementById("emailRegistro").value;
   const codigoPostal = document.getElementById("codigoPostal").value.trim();
   btnContinuarRegistro.disabled = true;
@@ -735,9 +833,10 @@ formRegistroDatos.addEventListener("submit", async (e) => {
     btnContinuarRegistro.disabled = false;
     return;
   }
-  if (!checkTerminos.checked) {
-    mostrarMensajeRegistro(I18n.t("login.acepta_terminos"), "error");
+  // Hoja de condiciones: se acepta antes de pedir el enlace del alta.
+  if (!hojaAceptadaEn) {
     btnContinuarRegistro.disabled = false;
+    abrirHoja();
     return;
   }
   const captchaToken = leerTokenTurnstile(widgetRegistro);
@@ -755,7 +854,7 @@ formRegistroDatos.addEventListener("submit", async (e) => {
       captchaToken,
       data: {
         codigo_postal: codigoPostal,
-        consiente_uso_datos_capturas: checkDatosCapturas.checked,
+        ...metadatosAceptacion(hojaAceptadaEn, I18n.idioma()),
         ...(codigoInvitacion() ? { codigo_invitacion: codigoInvitacion() } : {}),
         ...(leerPrimerContacto() ? { origen: leerPrimerContacto() } : {}),
         ...(leerRef() ? { ref: leerRef() } : {}),
@@ -774,7 +873,7 @@ formRegistroDatos.addEventListener("submit", async (e) => {
     // bienvenida tampoco necesita nada de aquí, ver index.html.
     mostrarPantalla(cajaRegistroEsperando);
   }
-});
+}
 </script>
 
 </body>
