@@ -52,7 +52,10 @@ Sin IA. No toca los ficheros de la flota.
 - `.github/workflows/lonjas-galicia.yml`: cada día a las 10:17 UTC y a mano
   (`modo: probar|guardar`, `dias`). Solo totales en el registro.
 - Tabla `lonja_ventas` (migración `20261022213000_lonja_ventas.sql`):
-  lectura pública (datos abiertos, `anon-ok`), escribe solo service_role.
+  **uso interno** desde `20261022230000_lonja_ventas_interna.sql` (Mikel,
+  2026-10-22: "los datos de la pesca solo nos interesan a nosotros para
+  sugerir tipo de pesca"): sin lectura pública, la leen y escriben solo los
+  robots con service_role. No se muestran en la app.
 - Coordenadas de las 60 lonxas (puerto, ~1 km, puestas a mano) en
   `scripts/lonjas/lonjas-galicia.json`, por el nombre exacto de la fuente
   (`Cariño.` y `Ribeira.` llevan punto). Si aparece una lonja nueva, el
@@ -80,6 +83,31 @@ Sin IA. No toca los ficheros de la flota.
   JavaScript, el mapa y el ☰, las preferencias y el zoom de la foto. Sesión
   falsa y Supabase contestado en vacío (`test/navegador/web.mjs`): nada llega
   a producción. Al cambiar algo visible, añade su prueba ahí.
+
+## Hoja de condiciones del alta y estadísticas por interés legítimo (2026-10-22, diseño de Mikel)
+
+- **Alta** (`login.html`): «Continuar» abre la hoja de condiciones (protección
+  de datos RGPD, estadísticas anónimas, condiciones de pago, datos de terceros
+  y disponibilidad, enlaces a /terminos y /privacidad; claves `hoja.*` en
+  es/en/pt). Sin marcar «He leído y acepto» el botón no se activa y no se pide
+  el enlace. Ya no hay casillas de términos ni de "Autorizo el uso anónimo".
+- **Aceptación**: en el metadato del alta (`assets/js/hoja-condiciones.js`,
+  `metadatosAceptacion`): `condiciones_alta_version` (`VERSION_HOJA`),
+  `condiciones_alta_aceptadas_en`, `condiciones_alta_idioma` en
+  `auth.users.raw_user_meta_data`, sin SQL. Si cambia el texto, sube
+  `VERSION_HOJA` (y la fecha de `hoja.intro`).
+- **Estadísticas anónimas = interés legítimo (art. 6.1.f) con oposición**: el
+  alta manda `consiente_uso_datos_capturas: true` (lo copia el trigger de
+  siempre). Oponerse: Mi suscripción → «Tus datos» (`suscripcion.html`), RPC
+  `fijar_uso_capturas_estadisticas(p_usar)` (migración
+  `20261022233000_estadisticas_interes_legitimo.sql`, **pendiente del sí de
+  Mikel**; sin ella el bloque falla al guardar). Pone la misma columna a false:
+  los triggers dejan de contarle y el aprendizaje del índice le excluye
+  (`usuariosExcluidos` de `scripts/aprendizaje/casos.mjs`, salvo el dueño).
+  Los usuarios antiguos que no marcaron la casilla siguen a false.
+- Precios de la hoja: `test/hoja-condiciones.test.js` los compara con
+  `precios-zonas.json` (si cambian, cambia `hoja.pago_precios`). Prueba en el
+  navegador del alta y de «Tus datos» en `test/navegador/`.
 
 ## Idiomas: español, inglés y portugués (2026-10-09, base para Nueva Zelanda; portugués europeo desde el 2026-10-11)
 
@@ -5650,8 +5678,9 @@ cambies sin preguntar.** Se llegó a montar un bloqueo de login + borrado a
 los 14 días; se descartó el mismo día: con el login bloqueado no podrían ni
 pagar para volver, y el usuario quiere conservar tanto la cuenta como los
 datos generados ("pasan a nuestra base de conocimientos" — en la práctica,
-sus capturas siguen alimentando `estadisticas_anonimas_capturas` si dieron
-`consiente_uso_datos_capturas` en el alta, como ya pasaba). El acceso lo
+sus capturas siguen alimentando `estadisticas_anonimas_capturas` si
+`consiente_uso_datos_capturas` sigue a true: desde el 2026-10-22 es interés
+legítimo con oposición, ver "Hoja de condiciones del alta"). El acceso lo
 corta el paywall (`mi_estado_suscripcion()`), que ya lo hacía antes: al
 suscribirse lo recuperan todo al instante. `desactivado_en` es la constancia
 de que su prueba terminó y se le avisó.

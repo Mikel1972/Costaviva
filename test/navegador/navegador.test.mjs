@@ -154,6 +154,84 @@ for (const [nombre, opciones] of [["ordenador", PC], ["móvil", MOVIL]]) {
   });
 }
 
+// Hoja de condiciones del alta (2026-10-22): «Continuar» abre la hoja, el
+// botón no se activa sin «He leído y acepto», y al aceptar se pide el enlace
+// del alta con la versión aceptada y las estadísticas por interés legítimo.
+// Turnstile se sustituye por uno de mentira (su script no se carga aquí).
+for (const [nombre, opciones] of [["ordenador", PC], ["móvil", MOVIL]]) {
+  test(`${nombre}: el alta pide aceptar la hoja de condiciones antes de crear la cuenta`, async () => {
+    const ctx = await contexto(opciones, { conSesion: false });
+    await ctx.addInitScript(() => { window.turnstile = { render: () => 1, getResponse: () => "token-de-prueba", reset: () => {} }; });
+    const peticiones = [];
+    await ctx.route("https://imncbmizxkorotpeisic.supabase.co/auth/v1/otp**", (route) => {
+      if (route.request().method() === "POST") peticiones.push(route.request().postDataJSON());
+      return route.fulfill({ status: 200, contentType: "application/json", headers: { "access-control-allow-origin": "*", "access-control-allow-headers": "*" }, body: "{}" });
+    });
+    const { pagina, errores } = await abrir(ctx, "/login?alta=1");
+    await pagina.locator("#cajaRegistroDatos").waitFor({ state: "visible" });
+    assert.equal(await pagina.locator("#checkDatosCapturas").count(), 0, "sin la casilla de capturas anónimas");
+    await pagina.fill("#emailRegistro", "nuevo@costaviva.test");
+    await pagina.fill("#codigoPostal", "48001");
+    await pagina.click("#btnContinuarRegistro");
+    const hoja = pagina.locator("#hojaCondiciones");
+    await hoja.waitFor({ state: "visible" });
+    assert.equal(peticiones.length, 0, "sin aceptar no se pide el enlace");
+    assert.equal(await pagina.locator("#btnAceptarHoja").isDisabled(), true);
+    for (const t of ["Protección de datos (RGPD)", "Estadísticas anónimas", "Condiciones de pago", "Datos de terceros y disponibilidad"]) {
+      assert.ok(await pagina.getByText(t).count(), `falta «${t}»`);
+    }
+    // El texto se desplaza y la casilla y el botón quedan dentro de la pantalla.
+    const caja = await pagina.locator("#btnAceptarHoja").boundingBox();
+    assert.ok(caja.y + caja.height <= opciones.viewport.height, "el botón se ve sin desplazar");
+    const cuerpo = await pagina.$eval("#hojaCuerpo", (e) => ({ alto: e.clientHeight, total: e.scrollHeight }));
+    assert.ok(cuerpo.total > cuerpo.alto, "el texto se desplaza dentro de la hoja");
+    const ancho = await pagina.evaluate(() => document.documentElement.scrollWidth <= innerWidth);
+    assert.ok(ancho, "sin desplazamiento horizontal");
+    await pagina.check("#checkHoja");
+    assert.equal(await pagina.locator("#btnAceptarHoja").isDisabled(), false);
+    if (opciones.isMobile && process.env.CAPTURA_HOJA) await pagina.screenshot({ path: process.env.CAPTURA_HOJA });
+    await pagina.click("#btnAceptarHoja");
+    await pagina.locator("#cajaRegistroEsperando").waitFor({ state: "visible" });
+    assert.equal(await hoja.isVisible(), false);
+    assert.equal(peticiones.length, 1);
+    const datos = peticiones[0].data;
+    assert.equal(datos.codigo_postal, "48001");
+    assert.equal(datos.consiente_uso_datos_capturas, true);
+    assert.match(datos.condiciones_alta_version, /^\d{4}-\d{2}-\d{2}$/);
+    assert.ok(!Number.isNaN(Date.parse(datos.condiciones_alta_aceptadas_en)));
+    assert.equal(datos.condiciones_alta_idioma, "es");
+    assert.deepEqual(errores, []);
+    await ctx.close();
+  });
+}
+
+test("Mi suscripción: «Tus datos» deja oponerse a las estadísticas anónimas", async () => {
+  const ctx = await contexto(MOVIL);
+  const llamadas = [];
+  const cors = { "access-control-allow-origin": "*", "access-control-allow-headers": "*" };
+  await ctx.route("https://imncbmizxkorotpeisic.supabase.co/rest/v1/perfiles**", (route) => {
+    if (route.request().method() === "OPTIONS") return route.fulfill({ status: 200, headers: cors, body: "" });
+    const url = new URL(route.request().url());
+    if (url.searchParams.get("select") === "consiente_uso_datos_capturas") {
+      return route.fulfill({ status: 200, contentType: "application/json", headers: cors, body: JSON.stringify({ consiente_uso_datos_capturas: true }) });
+    }
+    return route.fulfill({ status: 200, contentType: "application/json", headers: cors, body: "[]" });
+  });
+  await ctx.route("https://imncbmizxkorotpeisic.supabase.co/rest/v1/rpc/fijar_uso_capturas_estadisticas", (route) => {
+    if (route.request().method() === "POST") llamadas.push(route.request().postDataJSON());
+    return route.fulfill({ status: 200, contentType: "application/json", headers: cors, body: "false" });
+  });
+  const { pagina, errores } = await abrir(ctx, "/suscripcion");
+  await pagina.locator("#bloqueDatos").waitFor({ state: "visible", timeout: 15000 });
+  assert.equal(await pagina.locator("#checkEstadisticas").isChecked(), true, "por defecto, activado");
+  await pagina.locator("#checkEstadisticas").uncheck();
+  await pagina.waitForFunction(() => document.getElementById("mensajeDatos").textContent.length > 0);
+  assert.deepEqual(llamadas, [{ p_usar: false }]);
+  assert.match(await pagina.locator("#mensajeDatos").textContent(), /dejamos de usar/);
+  assert.deepEqual(errores, []);
+  await ctx.close();
+});
+
 // Flota pesquera faenando (2026-10-22): la capa sale solo con la modalidad
 // Embarcación (evento `modalidad`, no los clics de las pestañas), con su
 // control "Hoy (24 h) / Ayer", el filtro de eslora y el aviso sin datos.
