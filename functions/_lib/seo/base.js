@@ -72,7 +72,7 @@ export const PRECIO_MES = "3,99 €";
 export const PRECIO_ANO = "39,99 €";
 
 // Llamada a la app en portugués (páginas /pt/, 2026-10-11).
-export function ctaPt(titulo = "Experimente a Costaviva 7 dias grátis") {
+export function ctaPt(titulo = "Experimente a Costaviva 14 dias grátis") {
   return `<section class="cta" aria-label="Experimente a Costaviva">
   <p class="cta-titulo">${esc(titulo)}</p>
   <ul class="cta-lista">

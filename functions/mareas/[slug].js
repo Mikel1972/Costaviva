@@ -248,7 +248,7 @@ ${region?.slug === "portugal" ? `${enlacesHreflang(`/mareas/${spot.slug}`, "http
         : ""
     }
 
-    <p class="nota">Costaviva es una app de condiciones costeras en tiempo real (oleaje, mareas, corriente, webcams, radar de lluvia) y diario de pesca, para toda la costa de España y Portugal. La marea, el oleaje y el viento de ${nombre} son gratis y no necesitan cuenta. Con la prueba gratuita de 7 días ves además el mapa completo, las webcams en directo de este spot y de otros, y llevas tu propio diario de pesca con los datos del momento de cada captura.</p>
+    <p class="nota">Costaviva es una app de condiciones costeras en tiempo real (oleaje, mareas, corriente, webcams, radar de lluvia) y diario de pesca, para toda la costa de España y Portugal. La marea, el oleaje y el viento de ${nombre} son gratis y no necesitan cuenta. Con la prueba gratuita de 14 días ves además el mapa completo, las webcams en directo de este spot y de otros, y llevas tu propio diario de pesca con los datos del momento de cada captura.</p>
 
     <div class="cercanos">
       <div class="titulo">SPOTS CERCANOS</div>
