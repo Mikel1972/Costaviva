@@ -260,6 +260,20 @@
       "policies": []
     },
     {
+      "tablename": "flota_zonas",
+      "rls_enabled": true,
+      "policies": [
+        {
+          "name": "lectura pública de las zonas de flota faenando",
+          "cmd": "r",
+          "roles": [
+            "anon",
+            "authenticated"
+          ]
+        }
+      ]
+    },
+    {
       "tablename": "grupos",
       "rls_enabled": true,
       "policies": [
