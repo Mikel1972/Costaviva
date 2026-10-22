@@ -64,6 +64,11 @@
       "tipo": "condiciones-nz",
       "campana": "20261023-condiciones-nz-whangamata",
       "en": "2026-10-22T05:40:47.410Z"
+    },
+    "2026-10-23-reel": {
+      "tipo": "reel-peces",
+      "campana": "20261023-reel-peces-suances",
+      "en": "2026-10-22T19:15:50.024Z"
     }
   },
   "ultimaFuncion": "grupos"
