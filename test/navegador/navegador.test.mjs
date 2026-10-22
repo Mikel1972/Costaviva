@@ -143,6 +143,16 @@ for (const [nombre, opciones] of [["ordenador", PC], ["móvil", MOVIL]]) {
     assert.equal(await control.count(), 0, "en Desde costa no hay capa");
     await modalidad("embarcacion");
     await control.waitFor({ state: "visible" });
+    // En el móvil empieza plegado en un chip; en el ordenador, abierto.
+    const chip = pagina.locator("[data-flota-chip]");
+    if (opciones.isMobile) {
+      assert.equal(await chip.getAttribute("aria-expanded"), "false");
+      assert.match(await chip.innerText(), /Flota\s*▾/);
+      assert.equal(await pagina.locator("[data-flota-clase]").isVisible(), false);
+      await chip.click();
+    }
+    assert.equal(await chip.getAttribute("aria-expanded"), "true");
+    assert.equal(await pagina.locator("[data-flota-clase]").isVisible(), true);
     await pagina.waitForFunction(() => document.querySelectorAll(".leaflet-overlay-pane path[fill='#EE8434']").length > 0, null, { timeout: 10000 });
     assert.equal(await celdas(), 2, "dos celdas en las últimas 24 h");
     assert.equal(await pagina.locator("[data-periodo='24h']").getAttribute("aria-pressed"), "true");
@@ -171,7 +181,7 @@ test("flota faenando sin datos: aviso «Sin flota faenando registrada en las úl
   const { pagina, errores } = await abrir(ctx, "/");
   await pagina.waitForFunction(() => window.Flota && window.supabaseCliente, null, { timeout: 15000 });
   await pagina.evaluate(() => document.dispatchEvent(new CustomEvent("modalidad", { detail: { modalidad: "embarcacion" } })));
-  await pagina.waitForSelector("[data-flota-vacio]:not([hidden])");
+  await pagina.waitForSelector("[data-flota-vacio]:not([hidden])", { state: "attached" });
   assert.equal(await pagina.locator("[data-flota-vacio]").innerText(), "Sin flota faenando registrada en las últimas 24 h");
   assert.deepEqual(errores, []);
   await ctx.close();

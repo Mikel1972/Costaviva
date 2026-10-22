@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { claseEslora, celda, celdaDeFaena, leerMensaje, filasDeFaena, resumenBarco, horaEnPunto, zonasDeFaena, MIN_BARCOS_CELDA } from "../scripts/flota/flota-ais.mjs";
+import { claseEslora, celda, celdaDeFaena, leerMensaje, filasDeFaena, resumenBarco, horaEnPunto, zonasDeFaena, MIN_BARCOS_CELDA, CLASES_ZONA as CLASES } from "../scripts/flota/flota-ais.mjs";
 
 test("clase por eslora (A+B del AIS)", () => {
   assert.equal(claseEslora(10, 8), "<24");
@@ -100,9 +100,9 @@ test("cada pez tiene su momento: la celda de ayer no se arrastra a hoy", () => {
 });
 
 test("por clase de eslora: la conocida (flota_barcos) manda; '?' solo cuenta en 'todas'", () => {
-  const filas = [fila("a", 1, "?"), fila("b", 1, "?"), fila("c", 1, "?"), fila("d", 1, ">40")];
+  const filas = [fila("a", 1, "?"), fila("b", 1, "?"), fila("c", 1, "?"), fila("d", 1, ">40"), fila("e", 1, "?"), fila("f", 1, "?"), fila("g", 1, "?")];
   const z = zonasDeFaena(filas, { a: ">40", b: ">40" }, AHORA);
-  assert.deepEqual(z.map((x) => [x.clase, x.n_barcos]), [[">40", 3], ["todas", 4]]);
+  assert.deepEqual(z.map((x) => [x.clase, x.n_barcos]), [[">40", 3], ["todas", 7]]);
   assert.ok(!z.some((x) => x.clase === "?"));
 });
 
@@ -138,4 +138,34 @@ test("workflow cada 2 h (pg_cron + respaldo) y migración de la fase 2 con su ba
     policies: [{ name: "lectura pública de las zonas de flota faenando", cmd: "r", roles: ["anon", "authenticated"] }],
   });
   assert.match(sql, /create policy "lectura pública de las zonas de flota faenando"/);
+});
+
+test("contra la resta: una clase no sale si 'todas' menos ella deja 1 o 2 barcos", () => {
+  const celda = (clases) => clases.map(([b, c]) => fila(b, 1, c));
+  const clasesDe = (filas) => zonasDeFaena(filas, {}, AHORA).map((x) => [x.clase, x.n_barcos]);
+  // todas 4, <24 3 -> delataría 1 barco de otra eslora: solo "todas".
+  assert.deepEqual(clasesDe(celda([["a", "<24"], ["b", "<24"], ["c", "<24"], ["d", ">40"]])), [["todas", 4]]);
+  // todas 5, <24 3 -> resto 2: solo "todas".
+  assert.deepEqual(clasesDe(celda([["a", "<24"], ["b", "<24"], ["c", "<24"], ["d", ">40"], ["e", "?"]])), [["todas", 5]]);
+  // todas 3, <24 3 -> resto 0: sale.
+  assert.deepEqual(clasesDe(celda([["a", "<24"], ["b", "<24"], ["c", "<24"]])), [["<24", 3], ["todas", 3]]);
+  // todas 6, <24 3 y >40 3 -> restos 3 y 0: salen las dos.
+  assert.deepEqual(clasesDe(celda([["a", "<24"], ["b", "<24"], ["c", "<24"], ["d", ">40"], ["e", ">40"], ["f", ">40"]])),
+    [["<24", 3], [">40", 3], ["todas", 6]]);
+  // todas 7, <24 3 y 24-40 3: cada una deja 4, pero juntas dejan 1 -> se quita una.
+  const z = clasesDe(celda([["a", "<24"], ["b", "<24"], ["c", "<24"], ["d", "24-40"], ["e", "24-40"], ["f", "24-40"], ["g", "?"]]));
+  assert.equal(z.length, 2);
+  assert.deepEqual(z.at(-1), ["todas", 7]);
+  // Propiedad: en cualquier celda publicada, "todas" menos lo publicado por clases es 0 o >= 3.
+  for (const [tot, ...cls] of [[7, 3, 3], [9, 3, 3, 3], [8, 5, 3], [10, 4, 4, 1]]) {
+    const filas = [];
+    let i = 0;
+    cls.forEach((n, k) => { for (let j = 0; j < n; j++) filas.push(fila(`b${i++}`, 1, CLASES[k])); });
+    while (i < tot) filas.push(fila(`b${i++}`, 1, "?"));
+    const zs = zonasDeFaena(filas, {}, AHORA);
+    const total = zs.find((x) => x.clase === "todas").n_barcos;
+    const resto = total - zs.filter((x) => x.clase !== "todas").reduce((s, x) => s + x.n_barcos, 0);
+    assert.ok(resto === 0 || resto >= 3, `${tot}/${cls}: resto ${resto}`);
+    for (const x of zs.filter((x) => x.clase !== "todas")) assert.ok(total - x.n_barcos === 0 || total - x.n_barcos >= 3);
+  }
 });

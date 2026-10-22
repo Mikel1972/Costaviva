@@ -117,6 +117,11 @@ export function filasDeFaena(barcos, clasesConocidas, clave, dia, hora) {
 // celda (un barco visto en 5 escuchas en la misma celda cuenta 1) y solo
 // devuelve celdas con min barcos o más, por clase y "todas" (en "todas"
 // entran también los de eslora desconocida). Nunca devuelve barcos.
+// Contra la resta (2026-10-22): una fila de clase solo sale si "todas" menos
+// esa clase es 0 o >= min, y lo que queda de "todas" tras restar TODAS las
+// clases publicadas también; si no, se quitan clases (la más pequeña
+// primero). Así "todas = 4, <24 = 3" no delata que había 1 barco de otra
+// eslora. La fila "todas" se queda siempre.
 export function zonasDeFaena(filas, clases, ahora, min = MIN_BARCOS_CELDA) {
   const t = ahora.getTime();
   const calculado = ahora.toISOString();
@@ -134,10 +139,19 @@ export function zonasDeFaena(filas, clases, ahora, min = MIN_BARCOS_CELDA) {
     if (CLASES_ZONA.includes(clase)) sumar(`${periodo}|${lat}|${lon}|${clase}`, f.barco);
   }
   const zonas = [];
+  const restoValido = (r) => r === 0 || r >= min;
   for (const [k, barcos] of grupos) {
-    if (barcos.size < min) continue;
     const [periodo, lat, lon, clase] = k.split("|");
-    zonas.push({ periodo, celda_lat: Number(lat), celda_lon: Number(lon), clase, n_barcos: barcos.size, especie_probable: null, calculado });
+    if (clase !== "todas" || barcos.size < min) continue;
+    const total = barcos.size;
+    const base = { periodo, celda_lat: Number(lat), celda_lon: Number(lon), especie_probable: null, calculado };
+    zonas.push({ ...base, clase: "todas", n_barcos: total });
+    let clasesCelda = CLASES_ZONA
+      .map((c) => ({ clase: c, n: grupos.get(`${periodo}|${lat}|${lon}|${c}`)?.size || 0 }))
+      .filter((c) => c.n >= min && restoValido(total - c.n))
+      .sort((a, b) => b.n - a.n);
+    while (clasesCelda.length && !restoValido(total - clasesCelda.reduce((s, c) => s + c.n, 0))) clasesCelda = clasesCelda.slice(0, -1);
+    for (const c of clasesCelda) zonas.push({ ...base, clase: c.clase, n_barcos: c.n });
   }
   const orden = { "24h": 0, ayer: 1 };
   return zonas.sort((a, b) => orden[a.periodo] - orden[b.periodo] || a.celda_lat - b.celda_lat || a.celda_lon - b.celda_lon || a.clase.localeCompare(b.clase));

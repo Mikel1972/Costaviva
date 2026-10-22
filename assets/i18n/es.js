@@ -535,6 +535,7 @@
   "bati.atribucion": "Isóbatas: <a href=\"https://doi.org/10.12770/cf51df64-56f9-4a99-b1aa-36b8d7b743a1\" target=\"_blank\" rel=\"noopener\">EMODnet Bathymetry Consortium (DTM 2024)</a>, <a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener\">CC BY 4.0</a>, calculadas por Costaviva. No sirven para navegar.",
   "bati.leyenda_aria": "Isóbatas de {min} a {max}: más oscuro, más profundo",
   "bati.profundidad_m": "Profundidad ({u})",
+  "flota.chip": "🚤 Flota",
   "flota.titulo": "🚤 Flota faenando",
   "flota.hoy": "Hoy (24 h)",
   "flota.ayer": "Ayer",

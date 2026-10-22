@@ -71,6 +71,11 @@ export function textoCelda(f) {
 }
 export const claveClase = (c) => ({ todas: "todas", "<24": "menos24", "24-40": "de24a40", ">40": "mas40" })[c];
 
+// En pantallas estrechas el control empieza plegado en un chip "🚤 Flota ▾"
+// (tapaba un tercio del mapa en el móvil); en escritorio, abierto.
+export const ANCHO_PLEGADO = 600;
+export const empiezaPlegado = (ancho = globalThis.innerWidth) => Number.isFinite(ancho) && ancho > 0 && ancho <= ANCHO_PLEGADO;
+
 export const textoVacio = (periodo) => I18n.t(periodo === "ayer" ? "flota.vacio_ayer" : "flota.vacio_24h");
 
 // ---------------------------------------------------------------------------
@@ -78,7 +83,7 @@ export const textoVacio = (periodo) => I18n.t(periodo === "ayer" ? "flota.vacio_
 // ---------------------------------------------------------------------------
 const REFRESCO_MS = 10 * 60_000;
 let mapa = null, consultar = async () => [], grupo = null, control = null, controlPuesto = false;
-const estado = { modalidad: "costa", periodo: "24h", clase: "todas", filas: null, pedido: 0, cargando: null };
+const estado = { plegado: null, modalidad: "costa", periodo: "24h", clase: "todas", filas: null, pedido: 0, cargando: null };
 const atribucion = () => I18n.t("flota.atribucion");
 
 function ponerEstilos() {
@@ -88,7 +93,12 @@ function ponerEstilos() {
   st.textContent = `
   .flota-control { background: var(--superficie); border-radius: 14px; padding: 8px 10px; max-width: 230px;
     font: 600 11px var(--f-texto); color: var(--tinta); box-shadow: 0 6px 16px rgba(11,30,63,0.2); }
-  .flota-control .tit { font-weight: 700; margin-bottom: 6px; }
+  .flota-control .chip { display: flex; align-items: center; gap: 6px; width: 100%; font: 700 11px var(--f-texto);
+    color: var(--tinta); background: transparent; border: 0; padding: 0; cursor: pointer; text-align: left; }
+  .flota-control .chip .flecha { margin-left: auto; color: var(--tinta-2); }
+  .flota-control .cuerpo { margin-top: 6px; }
+  .flota-control .cuerpo[hidden] { display: none; }
+  .flota-control.plegado { padding: 6px 10px; border-radius: 999px; }
   .flota-control .periodos { display: flex; gap: 4px; margin-bottom: 6px; }
   .flota-control .periodos button { flex: 1; font: inherit; border: 1px solid var(--linea); border-radius: 999px;
     background: transparent; color: var(--tinta); padding: 3px 8px; cursor: pointer; }
@@ -111,8 +121,27 @@ function crearControl(L) {
     div.setAttribute("data-flota-control", "");
     L.DomEvent.disableClickPropagation(div);
     L.DomEvent.disableScrollPropagation(div);
-    L.DomUtil.create("div", "tit", div).textContent = I18n.t("flota.titulo");
-    const per = L.DomUtil.create("div", "periodos", div);
+    estado.plegado ??= empiezaPlegado();
+    const chip = L.DomUtil.create("button", "chip", div);
+    chip.type = "button";
+    chip.setAttribute("data-flota-chip", "");
+    chip.setAttribute("aria-controls", "flotaCuerpo");
+    const tit = L.DomUtil.create("span", "tit", chip);
+    const flecha = L.DomUtil.create("span", "flecha", chip);
+    flecha.setAttribute("aria-hidden", "true");
+    const cuerpo = L.DomUtil.create("div", "cuerpo", div);
+    cuerpo.id = "flotaCuerpo";
+    const ponerPlegado = (p) => {
+      estado.plegado = p;
+      chip.setAttribute("aria-expanded", p ? "false" : "true");
+      tit.textContent = I18n.t(p ? "flota.chip" : "flota.titulo");
+      flecha.textContent = p ? "▾" : "▴";
+      cuerpo.hidden = p;
+      div.classList.toggle("plegado", p);
+    };
+    chip.addEventListener("click", () => ponerPlegado(!estado.plegado));
+    ponerPlegado(estado.plegado);
+    const per = L.DomUtil.create("div", "periodos", cuerpo);
     per.setAttribute("role", "group");
     per.setAttribute("aria-label", I18n.t("flota.periodo_aria"));
     for (const p of PERIODOS) {
@@ -122,7 +151,7 @@ function crearControl(L) {
       b.textContent = I18n.t(p === "ayer" ? "flota.ayer" : "flota.hoy");
       b.addEventListener("click", () => { estado.periodo = p; pintar(); });
     }
-    const lab = L.DomUtil.create("label", "", div);
+    const lab = L.DomUtil.create("label", "", cuerpo);
     lab.textContent = I18n.t("flota.eslora");
     const sel = L.DomUtil.create("select", "", lab);
     sel.setAttribute("data-flota-clase", "");
@@ -132,7 +161,7 @@ function crearControl(L) {
       o.textContent = I18n.t(`flota.clase.${claveClase(c)}`);
     }
     sel.addEventListener("change", () => { estado.clase = sel.value; pintar(); });
-    const esc = L.DomUtil.create("div", "escala", div);
+    const esc = L.DomUtil.create("div", "escala", cuerpo);
     esc.setAttribute("role", "img");
     esc.setAttribute("aria-label", I18n.t("flota.leyenda_aria"));
     for (const t of TRAMOS) {
@@ -141,8 +170,8 @@ function crearControl(L) {
       if (t.max === Infinity) s.style.color = "var(--superficie)";
       s.textContent = t.max === Infinity ? `${t.min}+` : `${t.min}-${t.max}`;
     }
-    L.DomUtil.create("div", "nota", div).textContent = I18n.t("flota.nota");
-    const vacio = L.DomUtil.create("div", "vacio", div);
+    L.DomUtil.create("div", "nota", cuerpo).textContent = I18n.t("flota.nota");
+    const vacio = L.DomUtil.create("div", "vacio", cuerpo);
     vacio.setAttribute("data-flota-vacio", "");
     vacio.setAttribute("role", "status");
     vacio.hidden = true;
@@ -204,10 +233,21 @@ function aplicar() {
   cargar();
 }
 
+// Modalidad al arrancar: la que marca <html data-modalidad>, si no la última
+// elegida en este navegador (localStorage va_modalidad), si no "costa".
+export function modalidadInicial(doc = globalThis.document, almacen = globalThis.localStorage) {
+  const validas = ["costa", "embarcacion", "submarina"];
+  const html = doc?.documentElement?.dataset?.modalidad;
+  if (validas.includes(html)) return html;
+  try { const g = almacen?.getItem("va_modalidad"); if (validas.includes(g)) return g; } catch (e) { /* sin almacenamiento */ }
+  return "costa";
+}
+
 // map: el mapa de Leaflet; consultar(): promesa con las filas de flota_zonas.
 export function montarCapa(map, { consultar: fn } = {}) {
   mapa = map;
   if (fn) consultar = fn;
+  estado.modalidad = modalidadInicial();
   document.addEventListener("modalidad", (ev) => porModalidad(ev.detail?.modalidad));
   aplicar();
 }

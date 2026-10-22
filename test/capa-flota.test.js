@@ -7,7 +7,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import {
   zonasVisibles, colorFlota, limitesCelda, capaVisible, textoCelda, textoVacio, claveClase,
-  MIN_BARCOS, CLASES, PERIODOS, TRAMOS, CADUCA_H,
+  MIN_BARCOS, CLASES, PERIODOS, TRAMOS, CADUCA_H, empiezaPlegado, ANCHO_PLEGADO, modalidadInicial,
 } from "../assets/js/capa-flota.js";
 import { leerDiccionario } from "./i18n-html.js";
 
@@ -18,6 +18,16 @@ const z = (periodo, clase, n, lat = 43.6, lon = -3.1, calculado = RECIENTE) => (
 test("solo en Embarcación", () => {
   assert.equal(capaVisible("embarcacion"), true);
   for (const m of ["costa", "submarina", undefined]) assert.equal(capaVisible(m), false);
+});
+
+test("modalidad al arrancar: <html data-modalidad> > localStorage va_modalidad > costa", () => {
+  const doc = (m) => ({ documentElement: { dataset: m ? { modalidad: m } : {} } });
+  const alm = (v) => ({ getItem: (k) => (k === "va_modalidad" ? v : null) });
+  assert.equal(modalidadInicial(doc("embarcacion"), alm("costa")), "embarcacion");
+  assert.equal(modalidadInicial(doc(), alm("embarcacion")), "embarcacion");
+  assert.equal(modalidadInicial(doc("rara"), alm("submarina")), "submarina");
+  assert.equal(modalidadInicial(doc(), { getItem: () => { throw new Error("bloqueado"); } }), "costa");
+  assert.equal(modalidadInicial(undefined, undefined), "costa");
 });
 
 test("filtro por periodo (Hoy 24 h / Ayer) y por eslora", () => {
@@ -52,6 +62,16 @@ test("color por número de barcos: escala de ámbar a granate, más oscuro con m
   assert.equal(new Set(TRAMOS.map((t) => t.color)).size, TRAMOS.length);
 });
 
+test("móvil: el control empieza plegado (chip) en pantallas de 600 px o menos", () => {
+  assert.equal(ANCHO_PLEGADO, 600);
+  for (const w of [320, 390, 600]) assert.equal(empiezaPlegado(w), true, `${w}px`);
+  for (const w of [601, 768, 1280]) assert.equal(empiezaPlegado(w), false, `${w}px`);
+  assert.equal(empiezaPlegado(undefined), false);
+  const JS = readFileSync(new URL("../assets/js/capa-flota.js", import.meta.url), "utf8");
+  assert.match(JS, /setAttribute\("aria-expanded"/);
+  assert.match(JS, /setAttribute\("aria-controls", "flotaCuerpo"\)/);
+});
+
 test("celda de 0,05° (~5 km): esquina sur-oeste + paso", () => {
   assert.deepEqual(limitesCelda(43.6, -3.1), [[43.6, -3.1], [43.65, -3.05]]);
   assert.deepEqual(limitesCelda("43.45", "-2.95"), [[43.45, -2.95], [43.5, -2.9]]);
@@ -70,7 +90,7 @@ test("i18n: todas las claves flota.* en es, en y pt (también las compuestas)", 
   const ES = dic("es"), EN = dic("en"), PT = dic("pt");
   const usadas = [...readFileSync(new URL("../assets/js/capa-flota.js", import.meta.url), "utf8").matchAll(/I18n\.t\("(flota\.[\w.]+)"/g)].map((m) => m[1]);
   const compuestas = CLASES.map((c) => `flota.clase.${claveClase(c)}`);
-  for (const k of [...usadas, ...compuestas, "flota.vacio_24h", "flota.vacio_ayer", "flota.hoy", "flota.ayer"]) {
+  for (const k of [...usadas, ...compuestas, "flota.vacio_24h", "flota.vacio_ayer", "flota.hoy", "flota.ayer", "flota.chip"]) {
     for (const [n, d] of [["es", ES], ["en", EN], ["pt", PT]]) assert.ok(k in d, `${k} en ${n}`);
   }
   assert.equal(ES["flota.hoy"], "Hoy (24 h)");
