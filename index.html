@@ -1642,6 +1642,13 @@
   window.dispatchEvent(new Event("batimetria-lista"));
 </script>
 <script type="module">
+  // Flota pesquera faenando (AIS): zonas calientes del día, solo en la
+  // modalidad Embarcación (assets/js/capa-flota.js, test/capa-flota.test.js).
+  import * as Flota from "/assets/js/capa-flota.js";
+  window.Flota = Flota;
+  window.dispatchEvent(new Event("flota-lista"));
+</script>
+<script type="module">
   // Tipo de fondo y orilla de cada spot + capa "Sustrato" (EMODnet, OSM):
   // assets/js/capa-tipo-fondo.js, tests en test/tipo-fondo.test.js.
   import * as TipoFondo from "/assets/js/capa-tipo-fondo.js";
@@ -2825,6 +2832,24 @@ conBatimetria((B) => {
   B.montarCapa(map, { onCambio: () => selectorFondo?.refrescar() });
   B.porModalidad(vaEstado.modalidad);
 });
+// Flota pesquera faenando (fase 2, 2026-10-22): zonas calientes de las
+// últimas 24 h o de ayer, solo con la modalidad Embarcación y para todos
+// (también el plan gratis). Lee flota_zonas (lectura pública, ya agregado:
+// celdas con 3 barcos o más). Escucha el evento `modalidad`, no las pestañas.
+function montarFlota(F) {
+  F.montarCapa(map, {
+    consultar: async () => {
+      if (!window.supabaseCliente) return [];
+      const { data, error } = await window.supabaseCliente.from("flota_zonas")
+        .select("periodo,celda_lat,celda_lon,clase,n_barcos,especie_probable,calculado");
+      if (error) throw new Error(error.message);
+      return data || [];
+    },
+  });
+  F.porModalidad(vaEstado.modalidad);
+}
+if (window.Flota) montarFlota(window.Flota);
+else window.addEventListener("flota-lista", () => montarFlota(window.Flota), { once: true });
 // Zonas sin pesca (2026-10-12): reservas marinas y zonas protegidas oficiales
 // de cada región, con trama roja; siempre a la vista desde zoom 4.
 function montarZonasSinPesca(Z) {

@@ -153,3 +153,76 @@ for (const [nombre, opciones] of [["ordenador", PC], ["móvil", MOVIL]]) {
     await ctx.close();
   });
 }
+
+// Flota pesquera faenando (2026-10-22): la capa sale solo con la modalidad
+// Embarcación (evento `modalidad`, no los clics de las pestañas), con su
+// control "Hoy (24 h) / Ayer", el filtro de eslora y el aviso sin datos.
+for (const [nombre, opciones] of [["ordenador", PC], ["móvil", MOVIL]]) {
+  test(`${nombre}: flota faenando solo en Embarcación, con Hoy/Ayer, eslora y aviso sin datos`, async () => {
+    const ctx = await contexto(opciones);
+    const calculado = new Date().toISOString();
+    const fila = (periodo, clase, n, lat) => ({ periodo, clase, n_barcos: n, celda_lat: lat, celda_lon: -3.1, especie_probable: null, calculado });
+    await ctx.route("https://imncbmizxkorotpeisic.supabase.co/rest/v1/flota_zonas**", (route) => route.fulfill({
+      status: 200, contentType: "application/json", headers: { "access-control-allow-origin": "*", "access-control-allow-headers": "*" },
+      body: JSON.stringify(route.request().method() === "OPTIONS" ? {} : [
+        fila("24h", "todas", 5, 43.6), fila("24h", "<24", 3, 43.6), fila("24h", "todas", 12, 43.7), fila("ayer", "todas", 4, 43.5),
+      ]),
+    }));
+    const { pagina, errores } = await abrir(ctx, "/");
+    await pagina.waitForSelector("#map.leaflet-container", { timeout: 15000 });
+    await pagina.waitForFunction(() => window.Flota && window.supabaseCliente, null, { timeout: 15000 });
+    const modalidad = (m) => pagina.locator(`#modPill-${m}`).click();
+    const celdas = () => pagina.locator("path.leaflet-interactive[fill='#EE8434'], path.leaflet-interactive[fill='#F6B84B'], path.leaflet-interactive[fill='#D2492A']").count();
+    const control = pagina.locator("[data-flota-control]");
+
+    assert.equal(await control.count(), 0, "en Desde costa no hay capa");
+    await modalidad("embarcacion");
+    await control.waitFor({ state: "visible" });
+    // En el móvil empieza plegado en un chip; en el ordenador, abierto.
+    const chip = pagina.locator("[data-flota-chip]");
+    if (opciones.isMobile) {
+      assert.equal(await chip.getAttribute("aria-expanded"), "false");
+      assert.match(await chip.innerText(), /Flota\s*▾/);
+      assert.equal(await pagina.locator("[data-flota-clase]").isVisible(), false);
+      await chip.click();
+    }
+    assert.equal(await chip.getAttribute("aria-expanded"), "true");
+    assert.equal(await pagina.locator("[data-flota-clase]").isVisible(), true);
+    await pagina.waitForFunction(() => document.querySelectorAll(".leaflet-overlay-pane path[fill='#EE8434']").length > 0, null, { timeout: 10000 });
+    assert.equal(await celdas(), 2, "dos celdas en las últimas 24 h");
+    assert.equal(await pagina.locator("[data-periodo='24h']").getAttribute("aria-pressed"), "true");
+    assert.equal(await pagina.locator("[data-flota-vacio]").isVisible(), false);
+    assert.match(await pagina.locator(".leaflet-control-attribution").innerText(), /aisstream\.io/);
+
+    await pagina.locator("[data-flota-clase]").selectOption(">40");
+    assert.equal(await celdas(), 0);
+    assert.match(await pagina.locator("[data-flota-vacio]").innerText(), /Sin flota faenando registrada en las últimas 24 h/);
+    await pagina.locator("[data-flota-clase]").selectOption("todas");
+    await pagina.locator("[data-periodo='ayer']").click();
+    assert.equal(await celdas(), 1, "ayer, una celda");
+    assert.equal(await pagina.locator("[data-periodo='ayer']").getAttribute("aria-pressed"), "true");
+
+    await modalidad("costa");
+    assert.equal(await control.count(), 0, "al salir de Embarcación desaparece");
+    assert.equal(await celdas(), 0);
+    assert.doesNotMatch(await pagina.locator(".leaflet-control-attribution").innerText(), /aisstream\.io/);
+    // Al volver con Embarcación recordada, la capa sale sola al cargar.
+    await modalidad("embarcacion");
+    await pagina.reload({ waitUntil: "load" });
+    await pagina.waitForFunction(() => window.Flota, null, { timeout: 15000 });
+    await control.waitFor({ state: "visible" });
+    assert.deepEqual(errores, []);
+    await ctx.close();
+  });
+}
+
+test("flota faenando sin datos: aviso «Sin flota faenando registrada en las últimas 24 h»", async () => {
+  const ctx = await contexto(PC);
+  const { pagina, errores } = await abrir(ctx, "/");
+  await pagina.waitForFunction(() => window.Flota && window.supabaseCliente, null, { timeout: 15000 });
+  await pagina.evaluate(() => document.dispatchEvent(new CustomEvent("modalidad", { detail: { modalidad: "embarcacion" } })));
+  await pagina.waitForSelector("[data-flota-vacio]:not([hidden])", { state: "attached" });
+  assert.equal(await pagina.locator("[data-flota-vacio]").innerText(), "Sin flota faenando registrada en las últimas 24 h");
+  assert.deepEqual(errores, []);
+  await ctx.close();
+});
