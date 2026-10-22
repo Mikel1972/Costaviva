@@ -80,6 +80,13 @@
       "rls_enabled": true,
       "policies": [
         {
+          "name": "cada usuario actualiza solo sus capturas",
+          "cmd": "w",
+          "roles": [
+            "authenticated"
+          ]
+        },
+        {
           "name": "cada usuario borra solo sus capturas",
           "cmd": "d",
           "roles": [

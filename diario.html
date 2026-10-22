@@ -1650,8 +1650,17 @@ async function guardarCaptura(salidaId, fecha, idExistente, ordenFotoBase) {
   };
   let capturaId = idExistente;
   if (idExistente) {
-    const { error } = await supabase.from("capturas").update(datos).eq("id", idExistente);
-    if (error) { mensajeEl.className = "mensaje error"; mensajeEl.textContent = traducirError(error, I18n.t("diario.error_captura")); btn.disabled = false; return; }
+    // .select("id"): un update que RLS no deja aplicar NO da error, solo
+    // cambia 0 filas. Así pasó hasta el 2026-10-19 (capturas no tenía policy
+    // de UPDATE, ver 20261019120000_capturas_policy_update.sql): la edición
+    // parecía guardarse y no se guardaba nada. Sin fila devuelta = error.
+    const { data: filas, error } = await supabase.from("capturas").update(datos).eq("id", idExistente).select("id");
+    if (error || !filas?.length) {
+      mensajeEl.className = "mensaje error";
+      mensajeEl.textContent = error ? traducirError(error, I18n.t("diario.error_captura")) : I18n.t("diario.error_captura");
+      btn.disabled = false;
+      return;
+    }
   } else {
     const { data: captura, error } = await supabase.from("capturas").insert(datos).select().single();
     if (error) { mensajeEl.className = "mensaje error"; mensajeEl.textContent = traducirError(error, I18n.t("diario.error_captura")); btn.disabled = false; return; }
