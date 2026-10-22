@@ -1126,14 +1126,60 @@ async function datosCaudalGalicia() {
   return { lagares: { caudal: parseFloat(m[1].replace(",", ".")), actualizado: null, estacion: "Lagares (Vigo)" } };
 }
 
+// Agència Catalana de l'Aigua (ACA), vía el portal de dades obertes de la
+// Generalitat (Socrata/SODA, sin login) — ríos Tordera (Blanes) y Muga
+// (Roses). A diferencia de las fuentes de arriba (hora a hora), este
+// dataset ("Nivell d'aforament de rius de les conques internes de
+// Catalunya", id 2bwe-vgpr) se actualiza una vez al día — verificado con
+// peticiones reales el 2026-10-12 y el 2026-10-22 (dato del mismo día en
+// las dos estaciones). El Ebre (cerca de Cambrils) no es cuenca interna y
+// no está en este dataset: sigue sin dato real. Licencia: "Llicència
+// oberta d'ús d'informació - Catalunya" (reutilización y obras derivadas
+// libres citando la fuente), sin restricción de uso comercial. No da
+// umbrales oficiales, igual que Segura y Lagares.
+export const CAUDAL_CATALUNYA_ESTACIONES = [
+  { slugRio: "tordera", codiVariable: "4343824", estacion: "Fogars de la Selva (Can Simó)" },
+  { slugRio: "muga", codiVariable: "4140493", estacion: "Castelló d'Empúries" },
+];
+async function datosCaudalCataluna() {
+  const codigos = CAUDAL_CATALUNYA_ESTACIONES.map((e) => `'${e.codiVariable}'`).join(",");
+  const params = new URLSearchParams({
+    $where: `codi_variable in(${codigos})`,
+    $order: "dia DESC",
+    $limit: String(CAUDAL_CATALUNYA_ESTACIONES.length * 4),
+  });
+  const resp = await fetch(`https://analisi.transparenciacatalunya.cat/resource/2bwe-vgpr.json?${params}`, {
+    headers: { "User-Agent": "Mozilla/5.0 (compatible; CostaVivaApp/0.1)" },
+  });
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+  return parsearCaudalCataluna(await resp.json());
+}
+
+// Filas del dataset (orden por día DESC, varias estaciones mezcladas): para
+// cada estación, la fila más reciente con un caudal numérico.
+export function parsearCaudalCataluna(filas) {
+  const lista = Array.isArray(filas) ? filas : [];
+  const resultado = {};
+  for (const est of CAUDAL_CATALUNYA_ESTACIONES) {
+    const f = lista
+      .filter((x) => x && x.codi_variable === est.codiVariable && Number.isFinite(parseFloat(x.cabal_riu_m3_s)))
+      .sort((a, b) => String(b.dia || "").localeCompare(String(a.dia || "")))[0];
+    resultado[est.slugRio] = f
+      ? { caudal: parseFloat(f.cabal_riu_m3_s), actualizado: f.dia ? String(f.dia).slice(0, 10) : null, estacion: est.estacion }
+      : null;
+  }
+  return resultado;
+}
+
 async function datosCaudalTodos() {
-  const [cantabrico, jucar, segura, galicia] = await Promise.all([
+  const [cantabrico, jucar, segura, galicia, catalunya] = await Promise.all([
     datosCaudalCantabrico().catch((e) => ({ error: String(e) })),
     datosCaudalJucar().catch((e) => ({ error: String(e) })),
     datosCaudalSegura().catch((e) => ({ error: String(e) })),
     datosCaudalGalicia().catch((e) => ({ error: String(e) })),
+    datosCaudalCataluna().catch((e) => ({ error: String(e) })),
   ]);
-  return { ...cantabrico, ...jucar, ...segura, ...galicia };
+  return { ...cantabrico, ...jucar, ...segura, ...galicia, ...catalunya };
 }
 
 // ---------------------------------------------------------------------------
