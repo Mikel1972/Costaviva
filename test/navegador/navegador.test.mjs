@@ -119,6 +119,41 @@ for (const [nombre, opciones] of [["ordenador", PC], ["móvil", MOVIL]]) {
   });
 }
 
+// Modalidad global (2026-10-22): la píldora 🪨 🚤 🤿 del mapa se ve en
+// ordenador y en móvil (también con el ☰ plegado), empieza en Desde costa,
+// emite "modalidad" al cambiar y se recuerda al volver.
+for (const [nombre, opciones] of [["ordenador", PC], ["móvil", MOVIL]]) {
+  test(`${nombre}: la píldora de modalidad del mapa cambia, avisa y se recuerda`, async () => {
+    const ctx = await contexto(opciones);
+    const { pagina, errores } = await abrir(ctx, "/");
+    await pagina.waitForSelector("#map.leaflet-container", { timeout: 15000 });
+    const pildora = pagina.locator("#modalidadPildora");
+    await pildora.waitFor({ state: "visible" });
+    assert.equal(await pildora.getAttribute("role"), "radiogroup");
+    assert.equal(await pagina.locator("#modPill-costa").getAttribute("aria-checked"), "true", "la primera vez, Desde costa");
+    assert.equal(await pagina.locator("#modPill-costa").getAttribute("aria-label"), "Desde costa");
+    await pagina.evaluate(() => { window.cambios = []; document.addEventListener("modalidad", (e) => window.cambios.push(e.detail.modalidad)); });
+    await pagina.locator("#modPill-embarcacion").click();
+    assert.equal(await pagina.locator("#modPill-embarcacion").getAttribute("aria-checked"), "true");
+    assert.equal(await pagina.locator("#modPill-costa").getAttribute("aria-checked"), "false");
+    assert.equal(await pagina.locator("#modalidadNombre").textContent(), "Embarcación");
+    assert.ok(await pagina.locator("#modalidadNombre.visible").count(), "al tocar se ve el nombre");
+    await pagina.locator("#modPill-embarcacion").press("ArrowRight");
+    assert.equal(await pagina.locator("#modPill-submarina").getAttribute("aria-checked"), "true");
+    assert.equal(await pagina.evaluate(() => document.activeElement?.id), "modPill-submarina", "el foco sigue a la selección");
+    assert.deepEqual(await pagina.evaluate(() => window.cambios), ["embarcacion", "submarina"]);
+    assert.equal(await pagina.evaluate(() => localStorage.getItem("va_modalidad")), "submarina");
+    assert.equal(await pagina.locator("#modActual").textContent(), "🤿 Submarina", "la ficha dice la modalidad puesta");
+    assert.equal(await pagina.locator("#pescaModalidades [role=tab]").count(), 0, "sin pestañas en la ficha");
+    await pagina.reload({ waitUntil: "load" });
+    await pagina.waitForSelector("#map.leaflet-container", { timeout: 15000 });
+    assert.equal(await pagina.locator("#modPill-submarina").getAttribute("aria-checked"), "true", "se recuerda al volver");
+    assert.equal(await pagina.evaluate(() => document.documentElement.dataset.modalidad), "submarina");
+    assert.deepEqual(errores, []);
+    await ctx.close();
+  });
+}
+
 // Flota pesquera faenando (2026-10-22): la capa sale solo con la modalidad
 // Embarcación (evento `modalidad`, no los clics de las pestañas), con su
 // control "Hoy (24 h) / Ayer", el filtro de eslora y el aviso sin datos.
@@ -136,7 +171,7 @@ for (const [nombre, opciones] of [["ordenador", PC], ["móvil", MOVIL]]) {
     const { pagina, errores } = await abrir(ctx, "/");
     await pagina.waitForSelector("#map.leaflet-container", { timeout: 15000 });
     await pagina.waitForFunction(() => window.Flota && window.supabaseCliente, null, { timeout: 15000 });
-    const modalidad = (m) => pagina.evaluate((x) => document.dispatchEvent(new CustomEvent("modalidad", { detail: { modalidad: x } })), m);
+    const modalidad = (m) => pagina.locator(`#modPill-${m}`).click();
     const celdas = () => pagina.locator("path.leaflet-interactive[fill='#EE8434'], path.leaflet-interactive[fill='#F6B84B'], path.leaflet-interactive[fill='#D2492A']").count();
     const control = pagina.locator("[data-flota-control]");
 
@@ -171,6 +206,11 @@ for (const [nombre, opciones] of [["ordenador", PC], ["móvil", MOVIL]]) {
     assert.equal(await control.count(), 0, "al salir de Embarcación desaparece");
     assert.equal(await celdas(), 0);
     assert.doesNotMatch(await pagina.locator(".leaflet-control-attribution").innerText(), /aisstream\.io/);
+    // Al volver con Embarcación recordada, la capa sale sola al cargar.
+    await modalidad("embarcacion");
+    await pagina.reload({ waitUntil: "load" });
+    await pagina.waitForFunction(() => window.Flota, null, { timeout: 15000 });
+    await control.waitFor({ state: "visible" });
     assert.deepEqual(errores, []);
     await ctx.close();
   });

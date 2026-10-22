@@ -106,10 +106,11 @@ test("index.html: carga el módulo, lo monta con flota_zonas y avisa de la modal
   assert.match(HTML, /import \* as Flota from "\/assets\/js\/capa-flota\.js";/);
   assert.match(HTML, /\.from\("flota_zonas"\)/);
   assert.doesNotMatch(HTML, /\.from\("flota_faena"\)|\.from\("flota_barcos"\)/, "las tablas con barcos nunca desde el navegador");
-  // La capa no depende de las pestañas: evento `modalidad` desde pintarPestanasModalidad.
-  assert.match(HTML, /new CustomEvent\("modalidad", \{ detail: \{ modalidad: vaEstado\.modalidad \} \}\)/);
-  const pintar = HTML.slice(HTML.indexOf("function pintarPestanasModalidad"), HTML.indexOf("function elegirModalidad"));
-  assert.match(pintar, /avisarModalidad\(\)/);
+  // La capa no depende de dónde esté el selector: ponerModalidad() (el único
+  // setter) lanza el evento `modalidad` y marca <html data-modalidad>.
+  const poner = HTML.slice(HTML.indexOf("function ponerModalidad"), HTML.indexOf("function elegirModalidad"));
+  assert.match(poner, /new CustomEvent\("modalidad", \{ detail: \{ modalidad: m \} \}\)/);
+  assert.match(poner, /document\.documentElement\.dataset\.modalidad = m/);
   assert.match(JS, /document\.addEventListener\("modalidad"/);
   assert.doesNotMatch(JS, /modTab-/);
   // Gratis para todos: nada de premium en la capa.

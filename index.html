@@ -882,12 +882,34 @@
   .va-nota { margin-top: 6px; font-size: 10.5px; color: var(--tinta-2); line-height: 1.4; }
   .va-nota a { color: var(--acento); }
 
-  /* Modalidades de pesca (2026-10-08): pestañas costa / embarcación / submarina */
+  /* Modalidades de pesca (2026-10-08). Desde el 2026-10-22 se eligen en la
+     píldora 🪨 🚤 🤿 del mapa; la ficha solo dice cuál está puesta. */
   .pesca-modalidades { margin-top: 10px; }
-  .mod-tabs { display: flex; gap: 6px; }
-  .mod-tabs [role="tab"] { flex: 1; min-width: 0; font: inherit; font-size: 12px; padding: 9px 4px; border: 0; border-radius: 999px; background: var(--superficie); color: var(--tinta-3); font-weight: 700; box-shadow: 0 2px 8px rgba(26,21,51,0.06); cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .mod-tabs [role="tab"][aria-selected="true"] { background: var(--degradado-fuerte); color: var(--sobre-acento); box-shadow: 0 4px 14px rgba(190,24,93,0.3); }
-  .mod-tabs [role="tab"]:focus-visible { outline: 2px solid var(--tinta); outline-offset: -2px; }
+  .mod-actual { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
+  .mod-actual-nombre { display: inline-block; font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 999px; background: var(--degradado-fuerte); color: var(--sobre-acento); }
+  .mod-actual-pista { font-size: 10.5px; color: var(--tinta-2); }
+  /* Píldora de modalidad en el mapa (2026-10-22, diseño aprobado por Mikel):
+     tres iconos arriba a la izquierda, junto al zoom; la activa resaltada y,
+     al tocar, su nombre un momento debajo. */
+  .modalidad-pildora {
+    position: absolute; top: 10px; left: 56px; z-index: 600;
+    display: flex; gap: 2px; padding: 3px; border-radius: 999px;
+    background: var(--superficie); box-shadow: 0 6px 16px rgba(11,30,63,0.28);
+  }
+  .modalidad-pildora [role="radio"] {
+    width: 38px; height: 38px; padding: 0; border: 0; border-radius: 50%;
+    background: transparent; font-size: 18px; line-height: 1; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; opacity: 0.65;
+  }
+  .modalidad-pildora [role="radio"][aria-checked="true"] { background: var(--degradado-fuerte); opacity: 1; box-shadow: 0 3px 10px rgba(190,24,93,0.35); }
+  .modalidad-pildora [role="radio"]:focus-visible { outline: 2px solid var(--tinta); outline-offset: 1px; }
+  .modalidad-nombre {
+    position: absolute; top: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+    padding: 4px 10px; border-radius: 999px; white-space: nowrap; pointer-events: none;
+    background: var(--superficie); color: var(--tinta); font-family: var(--f-texto); font-size: 12px; font-weight: 700;
+    box-shadow: 0 4px 12px rgba(11,30,63,0.22); opacity: 0; transition: opacity 0.2s ease-out;
+  }
+  .modalidad-nombre.visible { opacity: 1; }
   .mod-desc { font-size: 11px; color: var(--tinta-2); margin: 6px 2px 0; line-height: 1.4; }
   .mod-normativa li { margin-bottom: 4px; }
   .mod-normativa ul { margin: 4px 0 6px; padding-left: 18px; }
@@ -1212,6 +1234,15 @@
 <div class="main">
   <div class="mapa-wrap">
     <div id="map"></div>
+    <!-- Modalidad de pesca global (2026-10-22, diseño aprobado por Mikel): la
+         elegida manda en las capas del mapa y en la ficha de cada spot.
+         Sin on*= (CSP): los eventos se enganchan en el script. -->
+    <div class="modalidad-pildora" id="modalidadPildora" role="radiogroup" aria-label="Modalidad de pesca" data-i18n-aria-label="mapa.mod.grupo">
+      <button type="button" role="radio" id="modPill-costa" data-modalidad="costa" aria-checked="true" tabindex="0" aria-label="Desde costa" title="Desde costa" data-i18n-aria-label="va.mod.costa" data-i18n-title="va.mod.costa"><span aria-hidden="true">🪨</span></button>
+      <button type="button" role="radio" id="modPill-embarcacion" data-modalidad="embarcacion" aria-checked="false" tabindex="-1" aria-label="Embarcación" title="Embarcación" data-i18n-aria-label="va.mod.embarcacion" data-i18n-title="va.mod.embarcacion"><span aria-hidden="true">🚤</span></button>
+      <button type="button" role="radio" id="modPill-submarina" data-modalidad="submarina" aria-checked="false" tabindex="-1" aria-label="Submarina" title="Submarina" data-i18n-aria-label="va.mod.submarina" data-i18n-title="va.mod.submarina"><span aria-hidden="true">🤿</span></button>
+      <span class="modalidad-nombre" id="modalidadNombre" aria-hidden="true"></span>
+    </div>
     <button class="leyenda-toggle" id="toggleLeyenda" title="¿Qué significan los colores del mapa?" aria-label="Mostrar/ocultar leyenda" data-i18n-aria-label="mapa.leyenda.boton_aria" data-i18n-title="mapa.leyenda.boton_title">ⓘ</button>
     <!-- Tarjetas de abajo del mapa (assets/js/tarjetas-mapa.js): rayos, lluvia
          (la mete lluvia-animada.js), clorofila / temperatura, viento y la
@@ -1469,20 +1500,21 @@
       <div class="val" id="panelPresion" style="font-size:15px;" data-i18n="mapa.sin_datos">sin datos</div>
       <div class="etq" id="panelPresionNota"></div>
     </div>
-    <!-- Modalidades de pesca (2026-10-08, pedido de Mikel): una pestaña por
-         modalidad; el índice de pesca, la ventana de actividad y la normativa
-         de abajo se recalculan con la pestaña elegida. Sin on*= (CSP). -->
+    <!-- Modalidades de pesca (2026-10-08, pedido de Mikel): el índice de
+         pesca, la ventana de actividad y la normativa de abajo se calculan
+         con la modalidad elegida. Desde el 2026-10-22 se elige solo en la
+         píldora 🪨 🚤 🤿 del mapa (decisión de Mikel: fuera las pestañas de
+         la ficha); aquí solo se dice cuál está puesta. -->
     <div class="tarjeta premium-aviso" id="panelPremiumAviso" hidden>
       <span id="panelPremiumAvisoTexto"></span>
       <a href="/suscripcion" data-i18n="plan.ver_planes">Ver planes</a>
     </div>
     <div class="pesca-modalidades" id="pescaModalidades">
-    <div class="mod-tabs" role="tablist" aria-label="Modalidad de pesca" data-i18n-aria-label="mapa.mod.grupo">
-      <button type="button" role="tab" id="modTab-costa" data-modalidad="costa" aria-controls="modPanel" aria-selected="true" tabindex="0" data-i18n="mapa.mod.tab_costa">🪨 Desde costa</button>
-      <button type="button" role="tab" id="modTab-embarcacion" data-modalidad="embarcacion" aria-controls="modPanel" aria-selected="false" tabindex="-1" data-i18n="mapa.mod.tab_embarcacion">🚤 Embarcación</button>
-      <button type="button" role="tab" id="modTab-submarina" data-modalidad="submarina" aria-controls="modPanel" aria-selected="false" tabindex="-1" data-i18n="mapa.mod.tab_submarina">🤿 Submarina</button>
+    <div class="mod-actual">
+      <span class="mod-actual-nombre" id="modActual" data-i18n="mapa.mod.tab_costa">🪨 Desde costa</span>
+      <span class="mod-actual-pista" data-i18n="mapa.mod.cambiar_en_mapa">Se cambia con 🪨 🚤 🤿 arriba en el mapa.</span>
     </div>
-    <div id="modPanel" role="tabpanel" aria-labelledby="modTab-costa">
+    <div id="modPanel">
     <div class="mod-desc" id="modDesc" data-i18n="mapa.mod.desc_costa">Surfcasting, roca y spinning desde la orilla o el espigón.</div>
     <div class="indice-box">
       <div class="etq"><span data-i18n="mapa.panel.indice_pesca">🎣 ÍNDICE DE PESCA (estimación)</span>
@@ -2936,6 +2968,8 @@ conTipoFondo((TF) => {
   // Al llegar el JSON (o el dato en vivo de un punto propio), se repinta el spot abierto.
   TF.iniciar({ onFondo: repintar }).then(() => { if (spotAbiertoActual) repintar(spotAbiertoActual); });
   TF.montarCapa(map, avisoCapa);
+  // Si se entra ya en Submarina, el tipo de fondo se enciende al llegar el módulo.
+  if (vaEstado.modalidad === "submarina") aplicarCapasModalidad("submarina");
 });
 // Selector del botón "Fondo": cuando las dos capas y el selector ya están.
 let selectorFondo = null;
@@ -5347,11 +5381,20 @@ let especiesDatos = null; // contenido de especies.json, se carga una vez
 const vaCacheHoras = new Map(); // slug -> { t, horas: Promise<horas> }
 let vaEstado = { s: null, dia: 0, especieId: null, resultados: [], idxSel: null, modalidad: "costa" };
 
-// ---- Pestañas de modalidad (2026-10-08) ----
-// Al abrir un spot: un punto propio de embarcación o buceo abre su pestaña;
-// si no, la última que eligió este usuario (localStorage, solo comodidad);
-// si no, "Desde costa". La lista de especies, el índice de pesca, las reglas
-// de la ventana y la normativa dependen de la pestaña.
+// ---- Modalidad de pesca global (2026-10-08; píldora del mapa 2026-10-22) ----
+// Una sola modalidad para toda la app, elegida en la píldora 🪨 🚤 🤿 de
+// arriba a la izquierda del mapa (decisión de Mikel, 2026-10-22: las pestañas
+// de la ficha se quitan). Sin pregunta la primera vez: "Desde costa"; luego
+// la última que eligió este usuario (localStorage "va_modalidad", la clave de
+// siempre, solo comodidad). Manda en las capas del mapa (aplicarCapasModalidad)
+// y en la ficha: lista de especies, índice de pesca, reglas de la ventana y
+// normativa. Un punto propio de embarcación o buceo, al abrirlo, cambia la
+// modalidad global a la suya (la píldora lo refleja) sin guardarla.
+// Cada cambio sale UNA vez, desde ponerModalidad(), como evento del documento:
+//   document.addEventListener("modalidad", (e) => e.detail.modalidad)
+// y queda en <html data-modalidad="..."> para quien llegue después.
+const MODALIDADES = ["costa", "embarcacion", "submarina"];
+const CLAVE_MODALIDAD = "va_modalidad";
 const MOD_DESC = {
   costa: I18n.t("mapa.mod.desc_costa"),
   embarcacion: I18n.t("mapa.mod.desc_embarcacion"),
@@ -5362,53 +5405,111 @@ const MOD_NOTA = {
   embarcacion: I18n.t("mapa.mod.nota_embarcacion", { v1: I18n.velocidad(20), o1: I18n.metros(1.5), v2: I18n.velocidad(30), o2: I18n.metros(2.5) }),
   submarina: I18n.t("mapa.mod.nota_submarina"),
 };
-let modalidadSpotSlug = null;
-function prepararModalidad(s) {
-  if (modalidadSpotSlug === s.slug) return pintarPestanasModalidad();
-  modalidadSpotSlug = s.slug;
-  let guardada = null;
-  try { guardada = localStorage.getItem("va_modalidad"); } catch (e) { /* sin almacenamiento */ }
-  vaEstado.modalidad = s.tipo === "embarcacion" ? "embarcacion" : s.tipo === "buceo" ? "submarina"
-    : ["costa", "embarcacion", "submarina"].includes(guardada) ? guardada : "costa";
-  pintarPestanasModalidad();
+function modalidadGuardada() {
+  let g = null;
+  try { g = localStorage.getItem(CLAVE_MODALIDAD); } catch (e) { /* sin almacenamiento */ }
+  return MODALIDADES.includes(g) ? g : "costa";
 }
-function pintarPestanasModalidad() {
-  document.querySelectorAll('#pescaModalidades [role="tab"]').forEach((b) => {
-    const activa = b.dataset.modalidad === vaEstado.modalidad;
-    b.setAttribute("aria-selected", activa ? "true" : "false");
+vaEstado.modalidad = modalidadGuardada();
+document.documentElement.dataset.modalidad = vaEstado.modalidad;
+
+// Capas por modalidad, conservador: se encienden solas las que tocan y se
+// apagan al salir solo si las encendió la modalidad; nada se oculta ni se
+// quita, y cualquier capa sigue a mano en su botón.
+//  - Embarcación: isóbatas (capa-batimetria.js, porModalidad).
+//  - Submarina: tipo de fondo (capa-tipo-fondo.js; EMODnet, solo Europa:
+//    en Nueva Zelanda no se enciende).
+//  - Desde costa: nada extra (los spots ya se ven siempre).
+let fondoPorSubmarina = false;
+function aplicarCapasModalidad(m) {
+  window.Batimetria?.porModalidad(m); // isóbatas solas en Embarcación
+  const TF = window.TipoFondo;
+  if (TF) {
+    if (m === "submarina") {
+      if (!TF.visible() && regionDeCentro() !== "nz") { TF.ponerVisible(true); fondoPorSubmarina = TF.visible(); }
+    } else if (fondoPorSubmarina) {
+      fondoPorSubmarina = false;
+      TF.ponerVisible(false);
+    }
+  }
+  selectorFondo?.refrescar();
+}
+
+// Pinta la píldora del mapa y lo de la ficha que depende de la modalidad.
+function pintarModalidad() {
+  const m = vaEstado.modalidad;
+  document.querySelectorAll('#modalidadPildora [role="radio"]').forEach((b) => {
+    const activa = b.dataset.modalidad === m;
+    b.setAttribute("aria-checked", activa ? "true" : "false");
     b.tabIndex = activa ? 0 : -1;
   });
-  document.getElementById("modPanel").setAttribute("aria-labelledby", `modTab-${vaEstado.modalidad}`);
-  document.getElementById("modDesc").textContent = MOD_DESC[vaEstado.modalidad];
-  document.getElementById("vaNotaReglas").textContent = MOD_NOTA[vaEstado.modalidad];
-  window.Batimetria?.porModalidad(vaEstado.modalidad); // isóbatas solas en Embarcación
-  avisarModalidad();
+  document.getElementById("modActual").textContent = I18n.t(`mapa.mod.tab_${m}`);
+  document.getElementById("modDesc").textContent = MOD_DESC[m];
+  document.getElementById("vaNotaReglas").textContent = MOD_NOTA[m];
 }
-// Cada vez que cambia la modalidad, un evento `modalidad` para las capas que
-// dependen de ella (capa-flota.js). No depende de dónde esté el selector.
-function avisarModalidad() {
-  document.dispatchEvent(new CustomEvent("modalidad", { detail: { modalidad: vaEstado.modalidad } }));
+
+// El nombre de la modalidad, un momento debajo de la píldora.
+let relojNombreModalidad = null;
+function mostrarNombreModalidad(m) {
+  const el = document.getElementById("modalidadNombre");
+  el.textContent = I18n.t(`va.mod.${m}`);
+  el.classList.add("visible");
+  clearTimeout(relojNombreModalidad);
+  relojNombreModalidad = setTimeout(() => el.classList.remove("visible"), 1600);
 }
-function elegirModalidad(m, foco) {
-  if (m === vaEstado.modalidad) return;
+
+// El ÚNICO sitio que cambia la modalidad. guardar: recordarla en este
+// navegador (solo cuando la elige el usuario); repintar: recalcular la ficha
+// abierta (prepararModalidad no lo pide porque abrirSpot pinta después).
+function ponerModalidad(m, { guardar = true, repintar = true } = {}) {
+  if (!MODALIDADES.includes(m) || m === vaEstado.modalidad) return false;
   vaEstado.modalidad = m;
   vaEstado.idxSel = null;
-  try { localStorage.setItem("va_modalidad", m); } catch (e) { /* sin almacenamiento */ }
-  pintarPestanasModalidad();
-  if (foco) document.getElementById(`modTab-${m}`).focus();
-  if (spotAbiertoActual) pintarIndicePesca(spotAbiertoActual);
-  if (vaEstado.s) pintarVentanaActividad(vaEstado.s);
+  if (guardar) { try { localStorage.setItem(CLAVE_MODALIDAD, m); } catch (e) { /* sin almacenamiento */ } }
+  document.documentElement.dataset.modalidad = m;
+  pintarModalidad();
+  aplicarCapasModalidad(m);
+  if (repintar) {
+    if (spotAbiertoActual) pintarIndicePesca(spotAbiertoActual);
+    if (vaEstado.s) pintarVentanaActividad(vaEstado.s);
+  }
+  document.dispatchEvent(new CustomEvent("modalidad", { detail: { modalidad: m } }));
+  return true;
 }
-document.querySelectorAll('#pescaModalidades [role="tab"]').forEach((b) => {
+
+// Desde la píldora del mapa.
+function elegirModalidad(m, foco) {
+  ponerModalidad(m);
+  mostrarNombreModalidad(m);
+  if (foco) document.getElementById(`modPill-${m}`).focus();
+}
+
+// Al abrir un spot: un punto propio de embarcación o buceo pone su modalidad
+// (solo la primera vez que se abre, para no pisar lo que el usuario cambie
+// después con la ficha abierta); el resto se abre en la modalidad global.
+let modalidadSpotSlug = null;
+function prepararModalidad(s) {
+  if (modalidadSpotSlug !== s.slug) {
+    modalidadSpotSlug = s.slug;
+    const propia = s.tipo === "embarcacion" ? "embarcacion" : s.tipo === "buceo" ? "submarina" : null;
+    if (propia && ponerModalidad(propia, { guardar: false, repintar: false })) mostrarNombreModalidad(propia);
+  }
+  pintarModalidad();
+}
+
+pintarModalidad();
+document.querySelectorAll('#modalidadPildora [role="radio"]').forEach((b) => {
   b.addEventListener("click", () => elegirModalidad(b.dataset.modalidad, false));
   b.addEventListener("keydown", (ev) => {
-    const orden = ["costa", "embarcacion", "submarina"];
-    const i = orden.indexOf(b.dataset.modalidad);
-    const destino = { ArrowRight: orden[(i + 1) % 3], ArrowLeft: orden[(i + 2) % 3], Home: orden[0], End: orden[2] }[ev.key];
+    const i = MODALIDADES.indexOf(b.dataset.modalidad);
+    const destino = {
+      ArrowRight: MODALIDADES[(i + 1) % 3], ArrowDown: MODALIDADES[(i + 1) % 3],
+      ArrowLeft: MODALIDADES[(i + 2) % 3], ArrowUp: MODALIDADES[(i + 2) % 3],
+      Home: MODALIDADES[0], End: MODALIDADES[2],
+    }[ev.key];
     if (!destino) return;
     ev.preventDefault();
     elegirModalidad(destino, true);
-    document.getElementById(`modTab-${destino}`).focus();
   });
 });
 
