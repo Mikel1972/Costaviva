@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-22T13:37:55.005Z",
- "lineasHistorial": 4160,
+ "fecha": "2026-10-22T14:07:48.436Z",
+ "lineasHistorial": 4172,
  "etiquetas": 224,
  "etiquetasClaude": 129,
  "calibracion": {
@@ -49,9 +49,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 4.6986,
+   "a": 4.7023,
    "p": 0.5,
-   "n": 304,
+   "n": 305,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 16,
    "franjasClaude": [
@@ -70,7 +70,7 @@
    "dias": 15,
    "hMin": 0.3,
    "hMax": 3.84,
-   "errorRel": 0.73,
+   "errorRel": 0.729,
    "pocosDatos": false
   },
   "zumaia/c": {
@@ -87,9 +87,9 @@
    "pocosDatos": true
   },
   "zumaia/a": {
-   "a": 4.3124,
+   "a": 4.3355,
    "p": 0.5,
-   "n": 38,
+   "n": 39,
    "nEtiquetas": 2,
    "nEtiquetasClaude": 2,
    "franjasClaude": [
@@ -122,9 +122,9 @@
    "pocosDatos": false
   },
   "mundaka/principal": {
-   "a": 2.9831,
+   "a": 2.9842,
    "p": 0.5,
-   "n": 194,
+   "n": 195,
    "nEtiquetas": 11,
    "nEtiquetasClaude": 11,
    "franjasClaude": [
@@ -142,7 +142,7 @@
    "dias": 15,
    "hMin": 0.3,
    "hMax": 2.18,
-   "errorRel": 0.582,
+   "errorRel": 0.58,
    "pocosDatos": false
   },
   "bakio/principal": {
@@ -214,9 +214,9 @@
    "pocosDatos": false
   },
   "berria/dinamico": {
-   "a": 4.987,
+   "a": 4.9887,
    "p": 0.5,
-   "n": 142,
+   "n": 143,
    "nEtiquetas": 8,
    "nEtiquetasClaude": 11,
    "franjasClaude": [
@@ -228,7 +228,7 @@
    "dias": 15,
    "hMin": 0.69,
    "hMax": 3.16,
-   "errorRel": 0.846,
+   "errorRel": 0.842,
    "pocosDatos": false
   },
   "mutriku/principal": {
@@ -406,8 +406,8 @@
    "sustituye": true,
    "motivo": "18 etiquetas",
    "ruido": {
-    "ruido": 0.527,
-    "pares": 250
+    "ruido": 0.524,
+    "pares": 251
    }
   },
   "getaria": {
@@ -446,8 +446,8 @@
    "sustituye": true,
    "motivo": "11 etiquetas",
    "ruido": {
-    "ruido": 0.456,
-    "pares": 138
+    "ruido": 0.445,
+    "pares": 139
    }
   },
   "bakio": {
@@ -470,8 +470,8 @@
    "sustituye": true,
    "motivo": "8 etiquetas",
    "ruido": {
-    "ruido": 0.926,
-    "pares": 72
+    "ruido": 0.925,
+    "pares": 73
    }
   },
   "castrourdiales": {
