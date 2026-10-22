@@ -243,6 +243,16 @@
       ]
     },
     {
+      "tablename": "flota_barcos",
+      "rls_enabled": true,
+      "policies": []
+    },
+    {
+      "tablename": "flota_faena",
+      "rls_enabled": true,
+      "policies": []
+    },
+    {
       "tablename": "grupos",
       "rls_enabled": true,
       "policies": [
