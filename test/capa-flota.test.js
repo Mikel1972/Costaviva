@@ -6,8 +6,10 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import {
-  zonasVisibles, colorFlota, limitesCelda, capaVisible, textoCelda, textoVacio, claveClase,
-  MIN_BARCOS, CLASES, PERIODOS, TRAMOS, CADUCA_H, empiezaPlegado, ANCHO_PLEGADO, modalidadInicial,
+  zonasVisibles, colorCalor, intensidadFlota, alfaCalor, tablaCalor, radioBlobPx, metrosPorPixel, centroCelda,
+  celdaCercana, gradienteCss, PARADAS, OPACIDAD_MAX, RADIO_MIN_PX, RADIO_MAX_PX,
+  diasPlay, diaMadrid, zonasDelDia, diasConDatos, fechaDia, DIAS_PLAY, MIN_DIAS_PLAY, limitesCelda, capaVisible, textoCelda, textoVacio, claveClase,
+  MIN_BARCOS, CLASES, PERIODOS, CADUCA_H, empiezaPlegado, ANCHO_PLEGADO, modalidadInicial,
 } from "../assets/js/capa-flota.js";
 import { leerDiccionario } from "./i18n-html.js";
 
@@ -53,13 +55,42 @@ test("un cálculo caducado (el robot parado) no se enseña como 'últimas 24 h'"
   assert.equal(zonasVisibles(null, { ahora: AHORA }).length, 0);
 });
 
-test("color por número de barcos: escala de ámbar a granate, más oscuro con más barcos", () => {
-  assert.equal(colorFlota(3), TRAMOS[0].color);
-  assert.equal(colorFlota(4), TRAMOS[0].color);
-  assert.equal(colorFlota(5), TRAMOS[1].color);
-  assert.equal(colorFlota(12), TRAMOS[2].color);
-  assert.equal(colorFlota(200), TRAMOS[3].color);
-  assert.equal(new Set(TRAMOS.map((t) => t.color)).size, TRAMOS.length);
+test("mapa de calor: gradiente amarillo -> naranja -> rojo, más intenso con más barcos (tope en 30)", () => {
+  assert.deepEqual(colorCalor(0), [255, 224, 102]);
+  assert.deepEqual(colorCalor(1), [127, 29, 29]);
+  assert.deepEqual(colorCalor(0.45), [245, 158, 11]);
+  assert.deepEqual(colorCalor(2), colorCalor(1));
+  assert.equal(intensidadFlota(2), 0, "por debajo del umbral, nada");
+  assert.equal(intensidadFlota(3), 0.35);
+  assert.ok(intensidadFlota(6) > intensidadFlota(3) && intensidadFlota(12) > intensidadFlota(6));
+  assert.equal(intensidadFlota(30), 1);
+  assert.equal(intensidadFlota(300), 1, "tope: más barcos no satura más");
+  assert.equal(alfaCalor(1), OPACIDAD_MAX);
+  assert.equal(alfaCalor(0), 0);
+  const t = tablaCalor();
+  assert.equal(t.length, 1024);
+  assert.equal(t[3], 0, "intensidad 0 = transparente");
+  assert.deepEqual([...t.slice(255 * 4, 255 * 4 + 3)], PARADAS.at(-1)[1]);
+  assert.match(gradienteCss(), /^linear-gradient\(90deg, rgb\(255,224,102\) 0%, .* rgb\(127,29,29\) 100%\)$/);
+});
+
+test("radio de la mancha: ~3,5 km según zoom y latitud, con mínimo y máximo", () => {
+  assert.ok(Math.abs(metrosPorPixel(0, 0) - 156543.03) < 0.1);
+  const r9 = radioBlobPx(9, 43.5), r11 = radioBlobPx(11, 43.5);
+  assert.ok(r11 > r9 * 3.9 && r11 < r9 * 4.1, "el doble de zoom, el doble de radio (x4 en dos niveles)");
+  assert.equal(radioBlobPx(4, 43.5), RADIO_MIN_PX, "a zoom bajo, mínimo");
+  assert.equal(radioBlobPx(16, 43.5), RADIO_MAX_PX, "a zoom alto, máximo");
+  // Una celda de 0,05° a zoom 10 mide ~36 px de ancho: la mancha (~2 radios) la cubre con borde suave.
+  assert.ok(radioBlobPx(10, 43.5) >= 30 && radioBlobPx(10, 43.5) <= 50);
+});
+
+test("tooltip: la celda que contiene el punto, o la más cercana a menos de una celda", () => {
+  const zs = [z("24h", "todas", 4, 43.6, -3.1), z("24h", "todas", 9, 43.65, -3.1)];
+  assert.deepEqual(centroCelda(43.6, -3.1), [43.625, -3.075]);
+  assert.equal(celdaCercana(zs, 43.61, -3.08).n_barcos, 4);
+  assert.equal(celdaCercana(zs, 43.67, -3.08).n_barcos, 9);
+  assert.equal(celdaCercana(zs, 43.0, -3.08), null);
+  assert.equal(celdaCercana([], 43.6, -3.1), null);
 });
 
 test("móvil: el control empieza plegado (chip) en pantallas de 600 px o menos", () => {
@@ -85,16 +116,45 @@ test("textos: tooltip con barcos y eslora; vacío según el periodo; especie pro
   assert.equal(textoVacio("ayer"), "Sin flota faenando registrada ayer");
 });
 
+test("▶️ 14 días: días de Madrid, un día cada fotograma (no acumulado), mismo filtro y umbral", () => {
+  assert.equal(DIAS_PLAY, 14);
+  assert.equal(MIN_DIAS_PLAY, 2);
+  // 23:30 UTC del 22 de octubre ya es 23 en Madrid (horario de verano).
+  assert.equal(diaMadrid(new Date("2026-10-22T23:30:00Z")), "2026-10-23");
+  const d = diasPlay(new Date("2026-10-22T23:30:00Z"));
+  assert.equal(d.length, 14);
+  assert.equal(d.at(-1), "2026-10-23");
+  assert.equal(d[0], "2026-10-10");
+  // Cambio de hora (25 de octubre): sigue habiendo 14 días distintos y seguidos.
+  const c = diasPlay(new Date("2026-11-02T10:00:00Z"));
+  assert.equal(new Set(c).size, 14);
+  assert.deepEqual(c.slice(-3), ["2026-10-31", "2026-11-01", "2026-11-02"]);
+  const h = [
+    { dia: "2026-10-21", clase: "todas", n_barcos: 5, celda_lat: 43.6, celda_lon: -3.1 },
+    { dia: "2026-10-21", clase: "<24", n_barcos: 3, celda_lat: 43.6, celda_lon: -3.1 },
+    { dia: "2026-10-22", clase: "todas", n_barcos: 4, celda_lat: 43.5, celda_lon: -3.1 },
+    { dia: "2026-10-22", clase: "todas", n_barcos: 2, celda_lat: 43.4, celda_lon: -3.1 },
+  ];
+  assert.deepEqual(zonasDelDia(h, "2026-10-21").map((f) => f.n_barcos), [5]);
+  assert.deepEqual(zonasDelDia(h, "2026-10-21", "<24").map((f) => f.n_barcos), [3]);
+  assert.deepEqual(zonasDelDia(h, "2026-10-22").map((f) => f.celda_lat), [43.5], "la de 2 barcos no");
+  assert.equal(diasConDatos(h), 2);
+  assert.equal(diasConDatos(h.slice(0, 2)), 1, "con un solo día no hay play");
+  assert.equal(diasConDatos([]), 0);
+  assert.match(fechaDia("2026-10-22"), /22/);
+});
+
 test("i18n: todas las claves flota.* en es, en y pt (también las compuestas)", () => {
   const dic = (i) => leerDiccionario(new URL(`../assets/i18n/${i}.js`, import.meta.url));
   const ES = dic("es"), EN = dic("en"), PT = dic("pt");
   const usadas = [...readFileSync(new URL("../assets/js/capa-flota.js", import.meta.url), "utf8").matchAll(/I18n\.t\("(flota\.[\w.]+)"/g)].map((m) => m[1]);
   const compuestas = CLASES.map((c) => `flota.clase.${claveClase(c)}`);
-  for (const k of [...usadas, ...compuestas, "flota.vacio_24h", "flota.vacio_ayer", "flota.hoy", "flota.ayer", "flota.chip"]) {
+  for (const k of [...usadas, ...compuestas, "flota.vacio_24h", "flota.vacio_ayer", "flota.hoy", "flota.ayer", "flota.chip", "flota.pocos_dias", "flota.play_ayuda", "flota.vacio_dia", "lluvia.pausar", "lluvia.reproducir"]) {
     for (const [n, d] of [["es", ES], ["en", EN], ["pt", PT]]) assert.ok(k in d, `${k} en ${n}`);
   }
   assert.equal(ES["flota.hoy"], "Hoy (24 h)");
   assert.equal(ES["flota.ayer"], "Ayer");
+  assert.equal(ES["flota.pocos_dias"], "Aún no hay días suficientes");
   assert.match(ES["flota.atribucion"], /Datos AIS: .*aisstream\.io/);
   assert.match(EN["flota.atribucion"], /AIS data: .*aisstream\.io/);
   assert.match(PT["flota.atribucion"], /Dados AIS: .*aisstream\.io/);
@@ -105,6 +165,11 @@ test("index.html: carga el módulo, lo monta con flota_zonas y avisa de la modal
   const JS = readFileSync(new URL("../assets/js/capa-flota.js", import.meta.url), "utf8");
   assert.match(HTML, /import \* as Flota from "\/assets\/js\/capa-flota\.js";/);
   assert.match(HTML, /\.from\("flota_zonas"\)/);
+  assert.match(HTML, /\.from\("flota_zonas_dia"\)/);
+  assert.match(HTML, /consultarDias:/);
+  // Sin librerías nuevas: el calor se pinta en un canvas propio.
+  assert.doesNotMatch(HTML, /leaflet-heat|leaflet\.heat|heatmap\.js/i);
+  assert.match(JS, /globalCompositeOperation = "lighten"/, "las manchas se juntan con el máximo, no sumando");
   assert.doesNotMatch(HTML, /\.from\("flota_faena"\)|\.from\("flota_barcos"\)/, "las tablas con barcos nunca desde el navegador");
   // La capa no depende de dónde esté el selector: ponerModalidad() (el único
   // setter) lanza el evento `modalidad` y marca <html data-modalidad>.

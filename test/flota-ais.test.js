@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { claseEslora, celda, celdaDeFaena, leerMensaje, filasDeFaena, resumenBarco, horaEnPunto, zonasDeFaena, MIN_BARCOS_CELDA, CLASES_ZONA as CLASES } from "../scripts/flota/flota-ais.mjs";
+import { claseEslora, celda, celdaDeFaena, leerMensaje, filasDeFaena, resumenBarco, horaEnPunto, zonasDeFaena, zonasPorDia, diaMadrid, MIN_BARCOS_CELDA, CLASES_ZONA as CLASES } from "../scripts/flota/flota-ais.mjs";
 
 test("clase por eslora (A+B del AIS)", () => {
   assert.equal(claseEslora(10, 8), "<24");
@@ -168,4 +168,54 @@ test("contra la resta: una clase no sale si 'todas' menos ella deja 1 o 2 barcos
     assert.ok(resto === 0 || resto >= 3, `${tot}/${cls}: resto ${resto}`);
     for (const x of zs.filter((x) => x.clase !== "todas")) assert.ok(total - x.n_barcos === 0 || total - x.n_barcos >= 3);
   }
+});
+
+// ---- Histórico diario para el ▶️ de 14 días (2026-10-23) ----
+
+test("histórico: días de Madrid (hoy y ayer), cada día suelto, mismo umbral y regla contra la resta", () => {
+  // 22:30 UTC del 22 = 00:30 del 23 en Madrid.
+  const ahora = new Date("2026-10-22T22:30:00Z");
+  assert.equal(diaMadrid(ahora), "2026-10-23");
+  const f = (barco, iso, clase = "<24", lat = 43.6) => ({ hora: iso, celda_lat: lat, celda_lon: -3.1, barco, clase });
+  const filas = [
+    // 22:00 UTC = 00:00 del 23 en Madrid -> hoy
+    f("a", "2026-10-22T22:00:00Z"), f("b", "2026-10-22T22:00:00Z"), f("c", "2026-10-22T22:00:00Z"),
+    // 21:00 UTC = 23:00 del 22 en Madrid -> ayer (aunque en UTC sea el mismo día)
+    f("d", "2026-10-22T21:00:00Z", ">40", 43.5), f("e", "2026-10-22T03:00:00Z", ">40", 43.5), f("g", "2026-10-21T23:00:00Z", ">40", 43.5),
+    f("h", "2026-10-22T10:00:00Z", "<24", 43.5),
+    // 21 de Madrid: ni hoy ni ayer -> fuera
+    f("x", "2026-10-21T20:00:00Z"), f("y", "2026-10-21T20:00:00Z"), f("z", "2026-10-21T20:00:00Z"),
+  ];
+  const { dias, zonas } = zonasPorDia(filas, {}, ahora);
+  assert.deepEqual(dias, ["2026-10-22", "2026-10-23"]);
+  assert.deepEqual(zonas.map((z) => [z.dia, z.celda_lat, z.clase, z.n_barcos]), [
+    ["2026-10-22", 43.5, "todas", 4],             // >40 = 3 dejaría 1 de <24: no sale
+    ["2026-10-23", 43.6, "<24", 3],
+    ["2026-10-23", 43.6, "todas", 3],
+  ]);
+  for (const z of zonas) {
+    assert.deepEqual(Object.keys(z).sort(), ["calculado", "celda_lat", "celda_lon", "clase", "dia", "especie_probable", "n_barcos"]);
+    assert.ok(z.n_barcos >= 3);
+  }
+  // Un barco visto en varias escuchas del mismo día cuenta una vez.
+  const rep = zonasPorDia([f("a", "2026-10-22T22:00:00Z"), f("a", "2026-10-22T22:10:00Z"), f("b", "2026-10-22T22:00:00Z")], {}, ahora);
+  assert.deepEqual(rep.zonas, []);
+});
+
+test("histórico: migración de flota_zonas_dia (lectura pública, sin escritura) y su baseline", () => {
+  const sql = readFileSync(new URL("../supabase/migrations/20261023100000_flota_zonas_historico.sql", import.meta.url), "utf8");
+  assert.match(sql, /create table if not exists public\.flota_zonas_dia/);
+  assert.match(sql, /check \(n_barcos >= 3\)/);
+  assert.match(sql, /primary key \(dia, celda_lat, celda_lon, clase\)/);
+  assert.match(sql, /grant select on public\.flota_zonas_dia to anon, authenticated;/);
+  assert.match(sql, /-- anon-ok:/);
+  assert.doesNotMatch(sql, /for (insert|update|delete|all)/i);
+  assert.doesNotMatch(sql, /security definer/i);
+  const base = JSON.parse(readFileSync(new URL("../supabase/baseline-seguridad.json", import.meta.url), "utf8"));
+  assert.deepEqual(base.tablas.find((t) => t.tablename === "flota_zonas_dia"), {
+    tablename: "flota_zonas_dia", rls_enabled: true,
+    policies: [{ name: "lectura pública del histórico de zonas de flota", cmd: "r", roles: ["anon", "authenticated"] }],
+  });
+  const robot = readFileSync(new URL("../scripts/flota/flota-ais.mjs", import.meta.url), "utf8");
+  assert.match(robot, /flota_zonas_dia\?dia=lt\.\$\{corte\}/, "borra lo de más de 60 días");
 });

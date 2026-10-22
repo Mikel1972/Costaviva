@@ -274,6 +274,20 @@
       ]
     },
     {
+      "tablename": "flota_zonas_dia",
+      "rls_enabled": true,
+      "policies": [
+        {
+          "name": "lectura pública del histórico de zonas de flota",
+          "cmd": "r",
+          "roles": [
+            "anon",
+            "authenticated"
+          ]
+        }
+      ]
+    },
+    {
       "tablename": "grupos",
       "rls_enabled": true,
       "policies": [

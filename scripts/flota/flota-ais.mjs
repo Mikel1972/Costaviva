@@ -20,6 +20,8 @@
 // en las últimas 24 h ("24h") y en las 24 h anteriores ("ayer"), por clase
 // de eslora y "todas", solo celdas con MIN_BARCOS_CELDA (3) o más. Lo lanza
 // pg_cron cada 2 h (migración 20261022120000_flota_zonas_dia.sql).
+// Histórico (2026-10-23): además, flota_zonas_dia guarda cada DÍA de Madrid
+// (hoy y ayer se recalculan en cada escucha; 60 días) para el ▶️ de 14 días.
 //
 // Uso: AISSTREAM_API_KEY=... SUPABASE_SERVICE_ROLE_KEY=... node scripts/flota/flota-ais.mjs
 //      [--minutos 20]
@@ -124,37 +126,72 @@ export function filasDeFaena(barcos, clasesConocidas, clave, dia, hora) {
 // eslora. La fila "todas" se queda siempre.
 export function zonasDeFaena(filas, clases, ahora, min = MIN_BARCOS_CELDA) {
   const t = ahora.getTime();
-  const calculado = ahora.toISOString();
-  const grupos = new Map(); // "periodo|lat|lon|clase" -> Set(barco)
+  const zonas = agregarCeldas(filas, clases, (h) => {
+    if (h > t) return null;
+    const edad = t - h;
+    return edad < 24 * HORA_MS ? "24h" : edad < 48 * HORA_MS ? "ayer" : null;
+  }, min).map(({ grupo, ...z }) => ({ periodo: grupo, ...z, especie_probable: null, calculado: ahora.toISOString() }));
+  const orden = { "24h": 0, ayer: 1 };
+  return zonas.sort((a, b) => orden[a.periodo] - orden[b.periodo] || a.celda_lat - b.celda_lat || a.celda_lon - b.celda_lon || a.clase.localeCompare(b.clase));
+}
+
+// Día de calendario de Madrid (YYYY-MM-DD) de un instante: el "día" del
+// histórico (el de la gente que pesca en España y Portugal; el de UTC
+// partiría la noche a la 01:00/02:00 hora local).
+// Madrid a propósito: el día del histórico es el de Madrid para toda la
+// flota (la caja del AIS es Cantábrico y Galicia), no la zona de un spot.
+const FORMATO_DIA = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Madrid", year: "numeric", month: "2-digit", day: "2-digit" });
+export const diaMadrid = (fecha) => FORMATO_DIA.format(fecha);
+
+// Histórico diario (flota_zonas_dia): las zonas de HOY y AYER (días de
+// Madrid) con las filas de las últimas ~50 h. Mismo umbral y misma regla
+// contra la resta que zonasDeFaena. Devuelve { dias, zonas }: los días
+// recalculados (para borrar lo que deje de cumplir el umbral) y las filas.
+export function zonasPorDia(filas, clases, ahora, min = MIN_BARCOS_CELDA) {
+  const hoy = diaMadrid(ahora);
+  const ayer = diaMadrid(new Date(Date.parse(`${hoy}T12:00:00Z`) - 24 * HORA_MS));
+  const dias = [ayer, hoy];
+  const t = ahora.getTime();
+  const zonas = agregarCeldas(filas, clases, (h) => {
+    if (h > t) return null;
+    const d = diaMadrid(new Date(h));
+    return dias.includes(d) ? d : null;
+  }, min).map(({ grupo, ...z }) => ({ dia: grupo, ...z, especie_probable: null, calculado: ahora.toISOString() }));
+  zonas.sort((a, b) => a.dia.localeCompare(b.dia) || a.celda_lat - b.celda_lat || a.celda_lon - b.celda_lon || a.clase.localeCompare(b.clase));
+  return { dias, zonas };
+}
+
+// Lo común: barcos DISTINTOS por grupo (periodo o día), celda y clase, con
+// el umbral y la regla contra la resta. grupoDe(ms) -> grupo o null.
+function agregarCeldas(filas, clases, grupoDe, min) {
+  const grupos = new Map(); // "grupo|lat|lon|clase" -> Set(barco)
   const sumar = (clave, barco) => { if (!grupos.has(clave)) grupos.set(clave, new Set()); grupos.get(clave).add(barco); };
   for (const f of filas) {
     const h = Date.parse(f.hora);
-    if (!Number.isFinite(h) || h > t) continue;
-    const edad = t - h;
-    const periodo = edad < 24 * HORA_MS ? "24h" : edad < 48 * HORA_MS ? "ayer" : null;
-    if (!periodo) continue;
+    if (!Number.isFinite(h)) continue;
+    const grupo = grupoDe(h);
+    if (!grupo) continue;
     const lat = Number(f.celda_lat), lon = Number(f.celda_lon);
     const clase = clases[f.barco] && clases[f.barco] !== "?" ? clases[f.barco] : f.clase;
-    sumar(`${periodo}|${lat}|${lon}|todas`, f.barco);
-    if (CLASES_ZONA.includes(clase)) sumar(`${periodo}|${lat}|${lon}|${clase}`, f.barco);
+    sumar(`${grupo}|${lat}|${lon}|todas`, f.barco);
+    if (CLASES_ZONA.includes(clase)) sumar(`${grupo}|${lat}|${lon}|${clase}`, f.barco);
   }
   const zonas = [];
   const restoValido = (r) => r === 0 || r >= min;
   for (const [k, barcos] of grupos) {
-    const [periodo, lat, lon, clase] = k.split("|");
+    const [grupo, lat, lon, clase] = k.split("|");
     if (clase !== "todas" || barcos.size < min) continue;
     const total = barcos.size;
-    const base = { periodo, celda_lat: Number(lat), celda_lon: Number(lon), especie_probable: null, calculado };
+    const base = { grupo, celda_lat: Number(lat), celda_lon: Number(lon) };
     zonas.push({ ...base, clase: "todas", n_barcos: total });
     let clasesCelda = CLASES_ZONA
-      .map((c) => ({ clase: c, n: grupos.get(`${periodo}|${lat}|${lon}|${c}`)?.size || 0 }))
+      .map((c) => ({ clase: c, n: grupos.get(`${grupo}|${lat}|${lon}|${c}`)?.size || 0 }))
       .filter((c) => c.n >= min && restoValido(total - c.n))
       .sort((a, b) => b.n - a.n);
     while (clasesCelda.length && !restoValido(total - clasesCelda.reduce((s, c) => s + c.n, 0))) clasesCelda = clasesCelda.slice(0, -1);
     for (const c of clasesCelda) zonas.push({ ...base, clase: c.clase, n_barcos: c.n });
   }
-  const orden = { "24h": 0, ayer: 1 };
-  return zonas.sort((a, b) => orden[a.periodo] - orden[b.periodo] || a.celda_lat - b.celda_lat || a.celda_lon - b.celda_lon || a.clase.localeCompare(b.clase));
+  return zonas;
 }
 
 async function supabase(ruta, opciones = {}) {
@@ -229,11 +266,20 @@ async function main() {
   // que el mapa nunca vea la tabla vacía a medias.
   const ahora = new Date();
   for (const n of nuevas) conocidas[n.barco] = n.clase;
-  const desde = encodeURIComponent(new Date(ahora.getTime() - 48 * HORA_MS).toISOString());
+  // 50 h: cubre las 24 h + ayer y el día de ayer de Madrid entero.
+  const desde = encodeURIComponent(new Date(ahora.getTime() - 50 * HORA_MS).toISOString());
   const recientes = await leerTodo(`flota_faena?select=hora,celda_lat,celda_lon,barco,clase&hora=gt.${desde}&order=hora,celda_lat,celda_lon,barco`);
   const zonas = zonasDeFaena(recientes, conocidas, ahora);
   if (zonas.length) await supabase("flota_zonas?on_conflict=periodo,celda_lat,celda_lon,clase", { method: "POST", headers: { Prefer: "resolution=merge-duplicates,return=minimal" }, body: JSON.stringify(zonas) });
   await supabase(`flota_zonas?calculado=lt.${encodeURIComponent(ahora.toISOString())}`, { method: "DELETE", headers: { Prefer: "return=minimal" } });
+
+  // Histórico diario (▶️ de 14 días): hoy y ayer (días de Madrid), igual:
+  // primero lo nuevo, luego se borra lo viejo de esos dos días; y lo de más
+  // de 60 días.
+  const { dias, zonas: zonasDia } = zonasPorDia(recientes, conocidas, ahora);
+  if (zonasDia.length) await supabase("flota_zonas_dia?on_conflict=dia,celda_lat,celda_lon,clase", { method: "POST", headers: { Prefer: "resolution=merge-duplicates,return=minimal" }, body: JSON.stringify(zonasDia) });
+  await supabase(`flota_zonas_dia?dia=in.(${dias.join(",")})&calculado=lt.${encodeURIComponent(ahora.toISOString())}`, { method: "DELETE", headers: { Prefer: "return=minimal" } });
+  await supabase(`flota_zonas_dia?dia=lt.${corte}`, { method: "DELETE", headers: { Prefer: "return=minimal" } });
 
   // Solo totales en el registro (repo público): nunca celdas ni barcos.
   const pesqueros = Object.entries(barcos).filter(([m, b]) => b.tipo === TIPO_PESQUERO || (b.tipo == null && conocidas[resumenBarco(m, clave)])).length;
@@ -241,7 +287,7 @@ async function main() {
   console.log(`${minutos} min: ${mensajes} mensajes, ${Object.keys(barcos).length} barcos, ${pesqueros} pesqueros, ${filas.length} faenando ${JSON.stringify(porClase)}.`);
   // Solo cuántas celdas se publican, nunca cuáles.
   const celdasPublicadas = (p) => zonas.filter((z) => z.periodo === p && z.clase === "todas").length;
-  console.log(`Zonas publicadas (>= ${MIN_BARCOS_CELDA} barcos): ${celdasPublicadas("24h")} celdas en las últimas 24 h, ${celdasPublicadas("ayer")} ayer.`);
+  console.log(`Zonas publicadas (>= ${MIN_BARCOS_CELDA} barcos): ${celdasPublicadas("24h")} celdas en las últimas 24 h, ${celdasPublicadas("ayer")} ayer; histórico de hoy: ${zonasDia.filter((z) => z.dia === dias[1] && z.clase === "todas").length} celdas.`);
   if (!mensajes) throw new Error("aisstream no mandó ningún mensaje.");
 }
 
