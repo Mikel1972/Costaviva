@@ -92,7 +92,7 @@ test("oposición: suscripcion.html tiene la casilla y la RPC tiene su migración
   assert.match(s, /select\("consiente_uso_datos_capturas"\)/);
   assert.match(s, /rpc\("fijar_uso_capturas_estadisticas", \{ p_usar: usar \}\)/);
   const f = readdirSync(new URL("../supabase/migrations/", import.meta.url)).filter((x) => /fijar_uso_capturas_estadisticas/.test(leer(`supabase/migrations/${x}`)));
-  assert.deepEqual(f, ["20261022230000_estadisticas_interes_legitimo.sql"]);
+  assert.deepEqual(f, ["20261022233000_estadisticas_interes_legitimo.sql"]);
   const sql = leer(`supabase/migrations/${f[0]}`);
   assert.match(sql, /security definer/);
   assert.match(sql, /where id = auth\.uid\(\)/);
