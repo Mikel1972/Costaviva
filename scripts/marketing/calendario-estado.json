@@ -54,6 +54,11 @@
       "tipo": "funcion-grupos",
       "campana": "20261022-funcion-grupos",
       "en": "2026-10-21T17:30:32.993Z"
+    },
+    "2026-10-23-post-nz": {
+      "tipo": "condiciones-nz",
+      "campana": "20261023-condiciones-nz-whangamata",
+      "en": "2026-10-22T05:40:47.410Z"
     }
   },
   "ultimaFuncion": "grupos"
