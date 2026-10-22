@@ -26,6 +26,10 @@ SQL sin el sí de Mikel.** Dos cerrojos (trampa en `Mikel1972/comun`):
    `supabase_migrations.schema_migrations`: si lo pendiente no es
    EXACTAMENTE esa migración, falla sin tocar nada y lista las demás. Esas
    otras se le enseñan a Mikel; no se aplican "de paso".
+3. **Tabla nueva o RLS/políticas cambiadas = `supabase/baseline-seguridad.json`
+   en la MISMA PR** que la migración. Si no, `vigia-esquema.yml` sale en rojo
+   cada día al verla en producción (2026-10-21: `flota_faena` y
+   `flota_barcos`, arreglado en #293).
 
 Cómo se lanza ahora (desde main, con `actions_run_trigger`):
 `workflow_id: aplicar-migraciones.yml`, `ref: main`, inputs
