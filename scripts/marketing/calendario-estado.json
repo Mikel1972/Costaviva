@@ -49,7 +49,27 @@
       "tipo": "especies-nz",
       "campana": "20261020-especies-nz-kingfish",
       "en": "2026-10-19T05:40:39.342Z"
+    },
+    "2026-10-22-post": {
+      "tipo": "funcion-grupos",
+      "campana": "20261022-funcion-grupos",
+      "en": "2026-10-21T17:30:32.993Z"
+    },
+    "2026-10-23-post": {
+      "tipo": "condiciones",
+      "campana": "20261023-condiciones-castrourdiales",
+      "en": "2026-10-22T17:44:25.130Z"
+    },
+    "2026-10-23-post-nz": {
+      "tipo": "condiciones-nz",
+      "campana": "20261023-condiciones-nz-whangamata",
+      "en": "2026-10-22T05:40:47.410Z"
+    },
+    "2026-10-23-reel": {
+      "tipo": "reel-peces",
+      "campana": "20261023-reel-peces-suances",
+      "en": "2026-10-22T19:15:50.024Z"
     }
   },
-  "ultimaFuncion": "diario"
+  "ultimaFuncion": "grupos"
 }

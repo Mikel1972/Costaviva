@@ -314,3 +314,15 @@ test("tipo-fondo.json: todos los spots, ligero, con fuentes, licencias y fecha",
     }
   }
 });
+
+// 2026-10-20 (Mikel: "la posidonia no se ve muy distinta").
+test("la Posidonia de EMODnet se repinta a rayas opacas y lo demás no se toca", async () => {
+  const { repintarPosidonia, COLOR_POSIDONIA_WMS, RAYAS_POSIDONIA } = await import("../assets/js/capa-tipo-fondo.js");
+  const px = new Uint8ClampedArray(4 * 4 * 2);
+  for (let i = 0; i < 8; i++) px.set(i < 4 ? [...COLOR_POSIDONIA_WMS, 200] : [0xd1, 0xcd, 0x6a, 200], i * 4);
+  assert.equal(repintarPosidonia(px, 4), 4);
+  const colores = new Set();
+  for (let i = 0; i < 4; i++) { colores.add(String([...px.slice(i * 4, i * 4 + 3)])); assert.equal(px[i * 4 + 3], 255); }
+  for (const c of colores) assert.ok(RAYAS_POSIDONIA.some((r) => String(r) === c));
+  assert.deepEqual([...px.slice(16, 20)], [0xd1, 0xcd, 0x6a, 200]);
+});
