@@ -14,6 +14,13 @@
 // celda", con el barco como HMAC del MMSI: ni nombre, ni MMSI, ni ruta.
 // En el registro (el repo es público) solo salen totales, nunca celdas.
 //
+// Fase 2 (2026-10-22, aprobada por Mikel: "cada pez tiene su momento"): cada
+// fila lleva la HORA de la escucha (en punto, UTC) y, al acabar, el robot
+// recalcula flota_zonas, lo único que lee la app: barcos DISTINTOS por celda
+// en las últimas 24 h ("24h") y en las 24 h anteriores ("ayer"), por clase
+// de eslora y "todas", solo celdas con MIN_BARCOS_CELDA (3) o más. Lo lanza
+// pg_cron cada 2 h (migración 20261022120000_flota_zonas_dia.sql).
+//
 // Uso: AISSTREAM_API_KEY=... SUPABASE_SERVICE_ROLE_KEY=... node scripts/flota/flota-ais.mjs
 //      [--minutos 20]
 // Lo puro (sin red) se prueba en test/flota-ais.test.js.
@@ -29,6 +36,10 @@ export const SOG_FAENA = [0.5, 5];
 export const MIN_POSICIONES = 3;
 export const DIAS_CONSERVAR = 60;
 export const TIPO_PESQUERO = 30;
+// Privacidad: una celda solo se publica con al menos 3 barcos distintos.
+export const MIN_BARCOS_CELDA = 3;
+export const CLASES_ZONA = ["<24", "24-40", ">40"];
+const HORA_MS = 3600_000;
 
 export function claseEslora(a, b) {
   const l = (Number(a) || 0) + (Number(b) || 0);
@@ -77,9 +88,13 @@ export function leerMensaje(m) {
   return { mmsi };
 }
 
+// Hora en punto (UTC) de un instante, en ISO: la "hora" de la escucha.
+export const horaEnPunto = (fecha) => new Date(Math.floor(fecha.getTime() / HORA_MS) * HORA_MS).toISOString();
+
 // Junta lo escuchado: { [mmsi]: { tipo, clase, posiciones } } + clases ya
 // conocidas de otras escuchas ({ [barco]: clase }) -> filas para flota_faena.
-export function filasDeFaena(barcos, clasesConocidas, clave, dia) {
+// hora: horaEnPunto() del comienzo de la escucha (fase 2).
+export function filasDeFaena(barcos, clasesConocidas, clave, dia, hora) {
   const filas = [], nuevas = [];
   for (const [mmsi, b] of Object.entries(barcos)) {
     const barco = resumenBarco(mmsi, clave);
@@ -89,9 +104,43 @@ export function filasDeFaena(barcos, clasesConocidas, clave, dia) {
     const clase = b.clase && b.clase !== "?" ? b.clase : conocida || "?";
     if (b.tipo === TIPO_PESQUERO && clase !== conocida) nuevas.push({ barco, clase, visto: dia });
     const c = celdaDeFaena(b.posiciones || []);
-    if (c) filas.push({ dia, celda_lat: c[0], celda_lon: c[1], clase, barco });
+    if (c) filas.push({ dia, ...(hora ? { hora } : {}), celda_lat: c[0], celda_lon: c[1], clase, barco });
   }
   return { filas, nuevas };
+}
+
+// Zonas calientes para la app (flota_zonas) a partir de las filas de
+// flota_faena de las últimas 48 h ({ hora, celda_lat, celda_lon, barco, clase }).
+// "24h": hora > ahora - 24 h; "ayer": de ahora - 48 h (excluida) a ahora - 24 h.
+// La clase de cada barco es la más reciente conocida (clases: { [barco]:
+// clase }, de flota_barcos), si no la de la fila. Cuenta barcos DISTINTOS por
+// celda (un barco visto en 5 escuchas en la misma celda cuenta 1) y solo
+// devuelve celdas con min barcos o más, por clase y "todas" (en "todas"
+// entran también los de eslora desconocida). Nunca devuelve barcos.
+export function zonasDeFaena(filas, clases, ahora, min = MIN_BARCOS_CELDA) {
+  const t = ahora.getTime();
+  const calculado = ahora.toISOString();
+  const grupos = new Map(); // "periodo|lat|lon|clase" -> Set(barco)
+  const sumar = (clave, barco) => { if (!grupos.has(clave)) grupos.set(clave, new Set()); grupos.get(clave).add(barco); };
+  for (const f of filas) {
+    const h = Date.parse(f.hora);
+    if (!Number.isFinite(h) || h > t) continue;
+    const edad = t - h;
+    const periodo = edad < 24 * HORA_MS ? "24h" : edad < 48 * HORA_MS ? "ayer" : null;
+    if (!periodo) continue;
+    const lat = Number(f.celda_lat), lon = Number(f.celda_lon);
+    const clase = clases[f.barco] && clases[f.barco] !== "?" ? clases[f.barco] : f.clase;
+    sumar(`${periodo}|${lat}|${lon}|todas`, f.barco);
+    if (CLASES_ZONA.includes(clase)) sumar(`${periodo}|${lat}|${lon}|${clase}`, f.barco);
+  }
+  const zonas = [];
+  for (const [k, barcos] of grupos) {
+    if (barcos.size < min) continue;
+    const [periodo, lat, lon, clase] = k.split("|");
+    zonas.push({ periodo, celda_lat: Number(lat), celda_lon: Number(lon), clase, n_barcos: barcos.size, especie_probable: null, calculado });
+  }
+  const orden = { "24h": 0, ayer: 1 };
+  return zonas.sort((a, b) => orden[a.periodo] - orden[b.periodo] || a.celda_lat - b.celda_lat || a.celda_lon - b.celda_lon || a.clase.localeCompare(b.clase));
 }
 
 async function supabase(ruta, opciones = {}) {
@@ -102,6 +151,17 @@ async function supabase(ruta, opciones = {}) {
   });
   if (!r.ok) throw new Error(`Supabase ${r.status} ${ruta.split("?")[0]}: ${(await r.text()).slice(0, 200)}`);
   return r;
+}
+
+// PostgREST devuelve como mucho 1000 filas por petición (max-rows de
+// Supabase): se pide por páginas hasta que llega una incompleta.
+async function leerTodo(ruta, pagina = 1000) {
+  const todo = [];
+  for (let desde = 0; ; desde += pagina) {
+    const filas = await (await supabase(`${ruta}&limit=${pagina}&offset=${desde}`)).json();
+    todo.push(...filas);
+    if (filas.length < pagina) return todo;
+  }
 }
 
 function escuchar(minutos, apiKey) {
@@ -138,20 +198,36 @@ async function main() {
   if (!clave) throw new Error("Falta SUPABASE_SERVICE_ROLE_KEY.");
   const i = process.argv.indexOf("--minutos");
   const minutos = i > -1 ? Number(process.argv[i + 1]) : 20;
-  const dia = new Date().toISOString().slice(0, 10);
+  const inicio = new Date();
+  const dia = inicio.toISOString().slice(0, 10);
+  const hora = horaEnPunto(inicio);
 
-  const conocidas = Object.fromEntries((await (await supabase("flota_barcos?select=barco,clase&limit=100000")).json()).map((r) => [r.barco, r.clase]));
+  const conocidas = Object.fromEntries((await leerTodo("flota_barcos?select=barco,clase&order=barco")).map((r) => [r.barco, r.clase]));
   const { barcos, mensajes } = await escuchar(minutos, apiKey);
-  const { filas, nuevas } = filasDeFaena(barcos, conocidas, clave, dia);
+  const { filas, nuevas } = filasDeFaena(barcos, conocidas, clave, dia, hora);
   if (nuevas.length) await supabase("flota_barcos?on_conflict=barco", { method: "POST", headers: { Prefer: "resolution=merge-duplicates,return=minimal" }, body: JSON.stringify(nuevas) });
-  if (filas.length) await supabase("flota_faena?on_conflict=dia,celda_lat,celda_lon,barco", { method: "POST", headers: { Prefer: "resolution=ignore-duplicates,return=minimal" }, body: JSON.stringify(filas) });
+  if (filas.length) await supabase("flota_faena?on_conflict=hora,celda_lat,celda_lon,barco", { method: "POST", headers: { Prefer: "resolution=ignore-duplicates,return=minimal" }, body: JSON.stringify(filas) });
   const corte = new Date(Date.now() - DIAS_CONSERVAR * 864e5).toISOString().slice(0, 10);
   await supabase(`flota_faena?dia=lt.${corte}`, { method: "DELETE", headers: { Prefer: "return=minimal" } });
+
+  // Zonas para la app (fase 2): se recalculan con las últimas 48 h; primero
+  // se escriben las nuevas y luego se borran las de cálculos anteriores, para
+  // que el mapa nunca vea la tabla vacía a medias.
+  const ahora = new Date();
+  for (const n of nuevas) conocidas[n.barco] = n.clase;
+  const desde = encodeURIComponent(new Date(ahora.getTime() - 48 * HORA_MS).toISOString());
+  const recientes = await leerTodo(`flota_faena?select=hora,celda_lat,celda_lon,barco,clase&hora=gt.${desde}&order=hora,celda_lat,celda_lon,barco`);
+  const zonas = zonasDeFaena(recientes, conocidas, ahora);
+  if (zonas.length) await supabase("flota_zonas?on_conflict=periodo,celda_lat,celda_lon,clase", { method: "POST", headers: { Prefer: "resolution=merge-duplicates,return=minimal" }, body: JSON.stringify(zonas) });
+  await supabase(`flota_zonas?calculado=lt.${encodeURIComponent(ahora.toISOString())}`, { method: "DELETE", headers: { Prefer: "return=minimal" } });
 
   // Solo totales en el registro (repo público): nunca celdas ni barcos.
   const pesqueros = Object.entries(barcos).filter(([m, b]) => b.tipo === TIPO_PESQUERO || (b.tipo == null && conocidas[resumenBarco(m, clave)])).length;
   const porClase = filas.reduce((a, f) => ((a[f.clase] = (a[f.clase] || 0) + 1), a), {});
   console.log(`${minutos} min: ${mensajes} mensajes, ${Object.keys(barcos).length} barcos, ${pesqueros} pesqueros, ${filas.length} faenando ${JSON.stringify(porClase)}.`);
+  // Solo cuántas celdas se publican, nunca cuáles.
+  const celdasPublicadas = (p) => zonas.filter((z) => z.periodo === p && z.clase === "todas").length;
+  console.log(`Zonas publicadas (>= ${MIN_BARCOS_CELDA} barcos): ${celdasPublicadas("24h")} celdas en las últimas 24 h, ${celdasPublicadas("ayer")} ayer.`);
   if (!mensajes) throw new Error("aisstream no mandó ningún mensaje.");
 }
 
