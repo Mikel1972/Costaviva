@@ -115,4 +115,6 @@ test("cita de la fuente exigida por el aviso legal", () => {
   assert.doesNotMatch(wf, /ANTHROPIC|claude/i, "robot sin IA");
   const mig = readdirSync(new URL("../supabase/migrations/", import.meta.url)).find((f) => f.endsWith("_lonja_ventas.sql"));
   assert.ok(mig, "falta la migración de lonja_ventas");
+  const especies = JSON.parse(readFileSync(new URL("../assets/datos/especies.json", import.meta.url), "utf8"));
+  assert.equal(especies.fuentes.xunta_pescadegalicia_lonxas?.cita, CITA, "falta la fuente en especies.json");
 });
