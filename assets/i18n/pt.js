@@ -42,7 +42,7 @@
   "mapa.leyenda.tranquilo": "calmo",
   "mapa.leyenda.moderado": "moderado",
   "mapa.leyenda.agitado": "agitado",
-  "mapa.leyenda.rios": "◆ RIOS: 3 pontos por rio (nascente→foz), cor pelo caudal baixo/normal/alto — passe o cursor por um ponto para ver o detalhe. O que se mede a montante chega à costa horas depois — útil como aviso de tendência. Posições ilustrativas, não as estações oficiais exatas. Caudal real só no Sella, Besaya, Pas, Asón, Eo, Júcar, Turia, Mijares, Segura e Lagares (Confederaciones Hidrográficas + Augas de Galicia) — os rios bascos continuam sem dado real (a URA/Bizkaia bloqueia o acesso automático).",
+  "mapa.leyenda.rios": "◆ RIOS: 3 pontos por rio (nascente→foz), cor pelo caudal baixo/normal/alto — passe o cursor por um ponto para ver o detalhe. O que se mede a montante chega à costa horas depois — útil como aviso de tendência. Posições ilustrativas, não as estações oficiais exatas. Caudal real só no Sella, Besaya, Pas, Asón, Eo, Júcar, Turia, Mijares, Segura, Lagares, Tordera e Muga (Confederaciones Hidrográficas + Augas de Galicia + Agència Catalana de l'Aigua) — os rios bascos continuam sem dado real (a URA/Bizkaia bloqueia o acesso automático).",
   "mapa.leyenda.zonas": "▨ ZONAS SEM PESCA: trama vermelha = não se pode pescar nem apanhar nada (reservas marinhas e zonas protegidas oficiais); trama laranja tracejada = proteção do fundo (linha sim, artes de fundo não). Toque numa zona para ver o nome.",
   "mapa.leyenda.tagua": "🌡 T. ÁGUA: cada cor é um grau, sempre a mesma em todo o mapa (do azul frio ao vermelho quente); as linhas marcam o grau exato.",
   "mapa.capa.rayos": "Raios",
