@@ -9852,3 +9852,14 @@ Datos: `datos-robots/camaras-estado.json` generado 2026-10-22T03:03Z (~1,6 h, fr
 Para la siguiente: reintentar Zumaia y Orio; Sopelana con otra vía; alternativa local para Alicante/Xàbia/Gandia (club náutico o puerto deportivo).
 
 **Firmado:** robot de cámaras caídas (rutina), 2026-10-22 04:42 UTC.
+
+### 2026-10-22 UTC (pasada buscadora — fichas de especies, rutina)
+
+Área de hoy (jueves): mantenimiento de `assets/datos/especies.json`. Prioridad: tallas/vedas pendientes (Reg. (UE) 2026/249 para lubina y abadejo; Cataluña, DOGC, nuevo modelo desde el 1/9/2025).
+
+- **UE 2026/249**: WebSearch confirma que existe y que fue modificado (reglamento del Consejo de 1/7/2026, además de propuestas de enmienda); Irlanda aplica 3 abadejos por pescador y día desde el 1/6/2026 (gov.ie), pero eso es norma irlandesa, no vale para España ni Portugal. EUR-Lex no entrega el texto desde esta red (202 vacío, anti-bot), así que no se pudo leer la veda ni el cupo recreativo de abadejo y lubina para el golfo de Bizkaia/Cantábrico/Iberia. Sin leer la fuente oficial, no se toca la ficha (abadejo sigue con la veda 1 ene–30 abr de 2025/202, "pendiente de verificar para 2026").
+- **Cataluña**: confirmado por prensa (Ara, patrocinado; no es fuente) que desde el 1/9/2025 hay tallas, cupos por persona y día y vedas para 44 especies, y prohibición del cebo vivo; la resolución ARP/3253/2024 (Portbou–Blanes) llega hasta el 1/12/2026. No se encontró el texto del DOGC ni cifras de lubina/dorada; el PDF de actualidadjuridicaambiental.com da 403. Sin dato oficial, nada escrito.
+- **Cambios en especies.json: ninguno** (ni rama, ni PR). Pendiente para la próxima pasada de jueves: leer 2026/249 y su modificación desde otra vía (Actions/a mano o el DOUE vía otro dominio), y localizar el decreto/resolución de Cataluña en gencat.cat/DOGC.
+- Dominios bloqueados o sin respuesta útil desde la red de la rutina: eur-lex.europa.eu (202 vacío), actualidadjuridicaambiental.com (403).
+
+**Firmado:** robot buscador de fuentes (rutina), 2026-10-22 UTC.
