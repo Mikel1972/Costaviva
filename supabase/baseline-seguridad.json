@@ -326,16 +326,7 @@
     {
       "tablename": "lonja_ventas",
       "rls_enabled": true,
-      "policies": [
-        {
-          "name": "lectura pública de las ventas en lonja",
-          "cmd": "r",
-          "roles": [
-            "anon",
-            "authenticated"
-          ]
-        }
-      ]
+      "policies": []
     },
     {
       "tablename": "miembros_grupo",
