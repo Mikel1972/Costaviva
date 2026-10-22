@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-22T15:01:00.181Z",
- "lineasHistorial": 4197,
+ "fecha": "2026-10-22T15:07:47.971Z",
+ "lineasHistorial": 4209,
  "etiquetas": 224,
  "etiquetasClaude": 129,
  "calibracion": {
@@ -49,9 +49,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 4.7141,
+   "a": 4.7279,
    "p": 0.5,
-   "n": 307,
+   "n": 308,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 16,
    "franjasClaude": [
@@ -70,7 +70,7 @@
    "dias": 15,
    "hMin": 0.3,
    "hMax": 3.84,
-   "errorRel": 0.728,
+   "errorRel": 0.732,
    "pocosDatos": false
   },
   "zumaia/c": {
@@ -87,9 +87,9 @@
    "pocosDatos": true
   },
   "zumaia/a": {
-   "a": 4.3355,
+   "a": 4.3635,
    "p": 0.5,
-   "n": 39,
+   "n": 40,
    "nEtiquetas": 2,
    "nEtiquetasClaude": 2,
    "franjasClaude": [
@@ -103,9 +103,9 @@
    "pocosDatos": false
   },
   "deba/rompiente": {
-   "a": 5.5242,
+   "a": 5.5436,
    "p": 0.5,
-   "n": 103,
+   "n": 104,
    "nEtiquetas": 2,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -118,13 +118,13 @@
    "dias": 14,
    "hMin": 0.3,
    "hMax": 3.84,
-   "errorRel": 0.925,
+   "errorRel": 0.922,
    "pocosDatos": false
   },
   "mundaka/principal": {
-   "a": 2.9821,
+   "a": 2.981,
    "p": 0.5,
-   "n": 197,
+   "n": 198,
    "nEtiquetas": 11,
    "nEtiquetasClaude": 11,
    "franjasClaude": [
@@ -142,7 +142,7 @@
    "dias": 15,
    "hMin": 0.3,
    "hMax": 2.18,
-   "errorRel": 0.577,
+   "errorRel": 0.576,
    "pocosDatos": false
   },
   "bakio/principal": {
@@ -406,8 +406,8 @@
    "sustituye": true,
    "motivo": "18 etiquetas",
    "ruido": {
-    "ruido": 0.524,
-    "pares": 253
+    "ruido": 0.527,
+    "pares": 254
    }
   },
   "getaria": {
@@ -422,16 +422,16 @@
    "sustituye": true,
    "motivo": "≥ 3 días con alturas variadas",
    "ruido": {
-    "ruido": 0.635,
-    "pares": 17
+    "ruido": 0.527,
+    "pares": 18
    }
   },
   "deba": {
    "sustituye": true,
    "motivo": "≥ 3 días con alturas variadas",
    "ruido": {
-    "ruido": 0.914,
-    "pares": 51
+    "ruido": 0.913,
+    "pares": 52
    }
   },
   "mutriku": {
