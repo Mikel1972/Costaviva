@@ -52,7 +52,10 @@ Sin IA. No toca los ficheros de la flota.
 - `.github/workflows/lonjas-galicia.yml`: cada día a las 10:17 UTC y a mano
   (`modo: probar|guardar`, `dias`). Solo totales en el registro.
 - Tabla `lonja_ventas` (migración `20261022213000_lonja_ventas.sql`):
-  lectura pública (datos abiertos, `anon-ok`), escribe solo service_role.
+  **uso interno** desde `20261022230000_lonja_ventas_interna.sql` (Mikel,
+  2026-10-22: "los datos de la pesca solo nos interesan a nosotros para
+  sugerir tipo de pesca"): sin lectura pública, la leen y escriben solo los
+  robots con service_role. No se muestran en la app.
 - Coordenadas de las 60 lonxas (puerto, ~1 km, puestas a mano) en
   `scripts/lonjas/lonjas-galicia.json`, por el nombre exacto de la fuente
   (`Cariño.` y `Ribeira.` llevan punto). Si aparece una lonja nueva, el
