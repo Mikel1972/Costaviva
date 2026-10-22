@@ -9839,3 +9839,16 @@ Datos: `datos-robots/camaras-estado.json` generado 2026-10-20T03:04Z (~1,5 h, fr
 Para la siguiente: corrubedo, cangas de día, SouthLoop NZ, vinaros, alboraya, cullera; alternativa local para Alicante/Xàbia/Gandia (club náutico o puerto deportivo).
 
 **Firmado:** robot de cámaras caídas (rutina), 2026-10-20 04:42 UTC.
+
+### 2026-10-22 04:42 UTC (robot de cámaras caídas — rutina; Zumaia, Orio, Sopelana)
+
+Datos: `datos-robots/camaras-estado.json` generado 2026-10-22T03:03Z (~1,6 h, fresco). En rojo: alicante, torreblanca, gandia (`origen_404`), zumaia, orio, sopelana, santona (`sin_respuesta`), mundaka (`frame_plano`), bakio, pasaia (`frame_congelado`).
+
+- **zumaia, orio**: no se han movido por nombre. En el Wowza de la Diputación (streamlock.net) los playlists `GIP_zumaia2` y `GIP_orio_169` dan 404 mientras Deba, Getaria, Hondarribia, Mutriku, Zarautz y Zurriola dan 200. Probadas variantes (`GIP_zumaia`, `_169`, `1`, `GIP_orio`, `2`): todas 404. Es la emisión de esas dos cámaras parada en origen (Zumaia, 46 fallos desde 10-21 06:30; Orio, 20 desde 10-21 18:30). Sin cambios de código.
+- **sopelana**: sin verificar: ipcamlive.com no responde bien desde la red de la rutina (player.php 500, el stream guardado 404). No se puede decir si cambió el alias `673c8a5893eaf`; el proxy `/webcam/hls/sopelana` aún redirige a la última URL conocida. Se deja para otra pasada o para el robot de salud.
+- **santona**: sigue en 522 desde cantabria.es hacia Cloudflare (ya estudiada); sin novedad.
+- **alicante, torreblanca, gandia**: Generalitat sigue en 404 (ya estudiadas).
+
+Para la siguiente: reintentar Zumaia y Orio; Sopelana con otra vía; alternativa local para Alicante/Xàbia/Gandia (club náutico o puerto deportivo).
+
+**Firmado:** robot de cámaras caídas (rutina), 2026-10-22 04:42 UTC.
