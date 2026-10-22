@@ -1,0 +1,37 @@
+name: Borrar ramas fusionadas
+
+# Borra las ramas cuyo contenido ya está en main (Mikel, 2026-10-22: 229
+# ramas acumuladas). Sin IA. Se quedan main, las que tienen PR abierta y las
+# que tienen algo que no está en main (scripts/ramas/borrar-ramas-fusionadas.mjs,
+# copia del de comun: un repo público no puede usar el workflow privado de
+# comun). Cada domingo y a mano ("probar" solo lista).
+
+on:
+  schedule:
+    - cron: "47 4 * * 0"
+  workflow_dispatch:
+    inputs:
+      probar:
+        description: "Solo listar, sin borrar"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+  pull-requests: read
+
+concurrency:
+  group: borrar-ramas
+  cancel-in-progress: false
+
+jobs:
+  borrar:
+    if: ${{ vars.AUTOMATION_PAUSED != 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Borrar ramas con el contenido ya en main
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/ramas/borrar-ramas-fusionadas.mjs ${{ (github.event_name == 'workflow_dispatch' && inputs.probar) && '--probar' || '' }}
