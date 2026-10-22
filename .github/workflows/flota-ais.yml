@@ -1,15 +1,30 @@
 name: Flota pesquera faenando (AIS)
 
-# Fase 1 (2026-10-20): scripts/flota/flota-ais.mjs escucha el AIS de
-# aisstream.io 20 min y apunta en Supabase (flota_faena) qué pesqueros
-# faenaron en qué celda de ~5 km, sin nombre ni MMSI. Sin IA. Solo totales en
-# el registro (el repo es público).
+# scripts/flota/flota-ais.mjs escucha el AIS de aisstream.io 20 min y apunta
+# en Supabase (flota_faena) qué pesqueros faenaron en qué celda de ~5 km y a
+# qué hora, sin nombre ni MMSI. Sin IA. Solo totales en el registro (el repo
+# es público): nunca celdas ni barcos.
 #
-# NECESITA: el secret AISSTREAM_API_KEY (cuenta gratis en aisstream.io, la
-# crea Mikel) y la migración 20261020150000_flota_faena.sql aplicada. Hasta
-# entonces solo se lanza a mano; el horario se añade cuando funcione.
+# Fase 2 (2026-10-22, aprobada por Mikel): zonas calientes DEL DÍA. Al acabar
+# cada escucha recalcula flota_zonas (barcos distintos por celda en las
+# últimas 24 h y en las 24 h anteriores, solo celdas con 3 barcos o más), que
+# es lo que pinta el mapa en la pestaña 🚤 Embarcación.
+#
+# CUÁNDO: cada 2 h, de día y de noche (el cerco de la anchoa faena de
+# noche y al alba), 20 min cada vez. El reloj fiable es pg_cron (trabajo
+# 'lanzar-flota-ais', a los 11 min de las horas pares, migración
+# 20261022120000_flota_zonas_dia.sql): GitHub trata los `schedule:`
+# frecuentes como "cuando pueda" (trampa 15 de comun). El `schedule:` de
+# abajo queda de RESPALDO, 30 min después; si pg_cron ya la lanzó en las
+# últimas 100 min, el paso "¿Ya escuchó?" la salta sin escuchar otra vez.
+#
+# NECESITA: los secrets AISSTREAM_API_KEY y SUPABASE_SERVICE_ROLE_KEY, y la
+# migración 20261022120000_flota_zonas_dia.sql aplicada (columna hora y
+# tabla flota_zonas). Sin ella la escucha falla en rojo al guardar.
 
 on:
+  schedule:
+    - cron: "41 */2 * * *"
   workflow_dispatch:
     inputs:
       minutos:
@@ -22,6 +37,7 @@ concurrency:
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
   escuchar:
@@ -29,11 +45,28 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
+      - name: ¿Ya escuchó? (solo el respaldo del schedule)
+        id: ya
+        if: github.event_name == 'schedule'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          desde=$(date -u -d '100 minutes ago' +%Y-%m-%dT%H:%M:%SZ)
+          n=$(curl -sfS -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/flota-ais.yml/runs?event=workflow_dispatch&created=%3E%3D$desde&per_page=5" \
+            | jq '[.workflow_runs[] | select(.conclusion != "failure" and .conclusion != "cancelled")] | length' || echo 0)
+          if [ "${n:-0}" -gt 0 ]; then
+            echo "pg_cron ya la lanzó hace menos de 100 min: no se repite la escucha."
+            echo "saltar=true" >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/checkout@v4
+        if: steps.ya.outputs.saltar != 'true'
       - uses: actions/setup-node@v4
+        if: steps.ya.outputs.saltar != 'true'
         with:
           node-version: "22"
-      - name: Escuchar el AIS y guardar la faena
+      - name: Escuchar el AIS, guardar la faena y recalcular las zonas
+        if: steps.ya.outputs.saltar != 'true'
         env:
           AISSTREAM_API_KEY: ${{ secrets.AISSTREAM_API_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}

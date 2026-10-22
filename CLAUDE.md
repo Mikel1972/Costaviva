@@ -52,7 +52,10 @@ Sin IA. No toca los ficheros de la flota.
 - `.github/workflows/lonjas-galicia.yml`: cada día a las 10:17 UTC y a mano
   (`modo: probar|guardar`, `dias`). Solo totales en el registro.
 - Tabla `lonja_ventas` (migración `20261022213000_lonja_ventas.sql`):
-  lectura pública (datos abiertos, `anon-ok`), escribe solo service_role.
+  **uso interno** desde `20261022230000_lonja_ventas_interna.sql` (Mikel,
+  2026-10-22: "los datos de la pesca solo nos interesan a nosotros para
+  sugerir tipo de pesca"): sin lectura pública, la leen y escriben solo los
+  robots con service_role. No se muestran en la app.
 - Coordenadas de las 60 lonxas (puerto, ~1 km, puestas a mano) en
   `scripts/lonjas/lonjas-galicia.json`, por el nombre exacto de la fuente
   (`Cariño.` y `Ribeira.` llevan punto). Si aparece una lonja nueva, el
@@ -4078,6 +4081,35 @@ la izquierda por encima del ⓘ en escritorio; **en el móvil arriba a la
 izquierda** (`esquinaLeyenda`), porque abajo las tapaban los créditos.
 Analítica: `ver_capa_isobatas` y `ver_capa_sustrato` (ya no hay
 `ver_capa_batimetria`).
+
+## 🚤 Flota pesquera faenando (AIS): zonas calientes del día (2026-10-22, fase 2 aprobada por Mikel)
+
+"Cada pez tiene su momento: anchoa 3 días, luego chicharro": se enseña el
+DÍA, no un acumulado de 30 días.
+- **Robot** (`scripts/flota/flota-ais.mjs`, `flota-ais.yml`, sin IA): escucha
+  aisstream.io 20 min cada 2 h (pg_cron `lanzar-flota-ais` a los 11 de las
+  horas pares; el `schedule:` es respaldo y se salta si pg_cron ya la lanzó).
+  Guarda en `flota_faena` (cerrada, solo service_role) barco = HMAC, celda de
+  0,05°, clase y **hora** de la escucha; al acabar recalcula `flota_zonas`.
+- **`flota_zonas`** (lectura pública, `anon-ok`): periodo `24h` (últimas 24 h)
+  o `ayer` (las 24 h anteriores), celda, clase (`todas`, `<24`, `24-40`,
+  `>40`), `n_barcos` (barcos DISTINTOS) y `especie_probable` (null hasta
+  cruzar con las lonjas). **Solo celdas con 3 barcos o más** (también un
+  CHECK en la tabla). Por qué tabla de agregados y no vista/función: una
+  vista se salta la RLS, una definer no puede ser de anon (D10) y una invoker
+  obligaría a abrir `flota_faena`. Migración `20261022120000_flota_zonas_dia.sql`.
+- **Mapa** (`assets/js/capa-flota.js`, `window.Flota`): rectángulos por
+  celda, color por barcos (3-4, 5-9, 10-19, 20+), control "Hoy (24 h) / Ayer"
+  + eslora, aviso sin datos y atribución "Datos AIS: aisstream.io". Solo con
+  la modalidad Embarcación y gratis para todos. **Escucha el evento
+  `modalidad`** (`document`, `{ detail: { modalidad } }`) que lanza
+  `ponerModalidad()` (la píldora del mapa), no los clics; al arrancar lee
+  `<html data-modalidad>` (si no, `localStorage va_modalidad`). En pantallas
+  de 600 px o menos el control empieza plegado en un chip "🚤 Flota ▾"
+  (botón con `aria-expanded`). Por eslora solo se publica una clase si
+  "todas" menos ella (y menos todas las publicadas) es 0 o ≥ 3: nada de
+  deducir un barco suelto restando. Tests:
+  `test/flota-ais.test.js`, `test/capa-flota.test.js` y `test/navegador/`.
 
 ## Triggers / rutinas automatizadas
 
