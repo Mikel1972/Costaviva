@@ -169,6 +169,7 @@
   "mapa.panel.favorito": "Marcar/retirar dos favoritos",
   "mapa.panel.que_significa": "O que significa este número?",
   "mapa.mod.grupo": "Modalidade de pesca",
+  "mapa.mod.cambiar_en_mapa": "Altera-se com 🪨 🚤 🤿 em cima, no mapa.",
   "mapa.va.especie": "Espécie",
   "comun.cerrar": "Fechar",
   "mapa.caudal.bajo": "baixo",

@@ -167,6 +167,7 @@
   "mapa.panel.favorito": "Add to/remove from favourites",
   "mapa.panel.que_significa": "What does this number mean?",
   "mapa.mod.grupo": "Fishing type",
+  "mapa.mod.cambiar_en_mapa": "Change it with 🪨 🚤 🤿 at the top of the map.",
   "mapa.va.especie": "Species",
   "comun.cerrar": "Close",
   "mapa.caudal.bajo": "low",

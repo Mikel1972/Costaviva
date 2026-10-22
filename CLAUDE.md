@@ -3292,6 +3292,23 @@ pestaña en la hora actual. Hereda la vigencia por spot del punto anterior
   actividad, las especies del índice de pesca, los cebos (submarina: sin
   cebos) y la normativa; el post de Instagram es de costa por defecto
   (`MODALIDAD_POST` lo cambia) y nunca saca una especie de mar adentro.
+  - **Modalidad global en el mapa (2026-10-22, diseño aprobado por Mikel;
+    sustituye a las pestañas de arriba)**: píldora 🪨 🚤 🤿
+    (`#modalidadPildora`, `role=radiogroup`, flechas/Inicio/Fin, nombre un
+    momento debajo al tocar) arriba a la izquierda del mapa, junto al zoom;
+    se ve también con el ☰ plegado y con la ficha abierta en el móvil. Sin
+    pregunta la primera vez (Desde costa); luego la última elegida
+    (`va_modalidad`). Mikel quitó las pestañas de la ficha: la ficha solo
+    dice cuál está puesta (`#modActual`). Un punto propio de
+    embarcación/buceo cambia la modalidad global al abrirlo (sin guardarla).
+    Único sitio que la cambia: `ponerModalidad()` en index.html, que emite
+    `document` → `CustomEvent("modalidad", { detail: { modalidad } })` y deja
+    `<html data-modalidad>` (para quien cargue después: la capa de la flota
+    lo escucha). Capas, conservador (nada se oculta): Embarcación enciende
+    las isóbatas; Submarina, el tipo de fondo (no en NZ: EMODnet es solo
+    Europa) y lo apaga al salir solo si lo encendió ella. Los spots fijos no
+    tienen tipo costa/mar adentro: no se filtran. Tests:
+    `test/modalidad-mapa.test.js` y `test/navegador/`.
   - Datos: `modalidades` por especie en `especies.json` (muchos-a-muchos:
     lubina en las tres, bonito solo embarcación; `aplica: null` = sin dato, no
     se muestra). Recupera la división costa/mar adentro que tenía la lista
