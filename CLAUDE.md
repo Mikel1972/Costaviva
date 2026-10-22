@@ -36,6 +36,36 @@ Cómo se lanza ahora (desde main, con `actions_run_trigger`):
 `{"confirmacion": "aplicar", "migracion": "20261011230000_cobro_prueba_14_dias_plan_gratis.sql"}`.
 Lógica en `.github/scripts/migraciones.mjs`, test en `test/migraciones.test.js`.
 
+## Lonjas de Galicia: primera venta por día, lonja y especie (2026-10-22, aprobado por Mikel)
+
+Para etiquetar después las zonas calientes de la flota (AIS) como
+"probablemente <especie>" según lo que se vende en el puerto más cercano.
+Sin IA. No toca los ficheros de la flota.
+
+- `scripts/lonjas/galicia.mjs` (Node, sin dependencias): GET de
+  https://www.pescadegalicia.gal/informe-notasventa/agregation (cookie +
+  `_csrf`), POST JSON a la misma URL con `X-CSRF-TOKEN`, filtro `TYPE_FECHA`
+  (dd/mm/aaaa) y agrupación fecha + lonja + grupo biológico + especie, 1000
+  filas por página. Lee la tabla HTML, cuadra los kg con la fila "Totais" y
+  hace upsert en `lonja_ventas` (clave fecha, region, lonja, especie) de
+  D-1..D-3: Vigo a veces llega tarde. `--probar` solo baja y suma.
+- `.github/workflows/lonjas-galicia.yml`: cada día a las 10:17 UTC y a mano
+  (`modo: probar|guardar`, `dias`). Solo totales en el registro.
+- Tabla `lonja_ventas` (migración `20261022213000_lonja_ventas.sql`):
+  lectura pública (datos abiertos, `anon-ok`), escribe solo service_role.
+- Coordenadas de las 60 lonxas (puerto, ~1 km, puestas a mano) en
+  `scripts/lonjas/lonjas-galicia.json`, por el nombre exacto de la fuente
+  (`Cariño.` y `Ribeira.` llevan punto). Si aparece una lonja nueva, el
+  workflow avisa: añadirla ahí.
+- **Licencia:** el aviso legal de pescadegalicia.gal permite reutilizar
+  (también con fines comerciales) citando la fuente y sin desnaturalizar los
+  datos. Se guardan tal cual y, donde se muestre algo derivado, va
+  **"Fonte: Xunta de Galicia – pescadegalicia.gal"** (fuente
+  `xunta_pescadegalicia_lonxas` en `assets/datos/especies.json`; al pintarlo
+  en el mapa, también en sus créditos).
+- Test: `test/lonjas-galicia.test.js` (fixtures recortadas de respuestas
+  reales en `test/fixtures/pescadegalicia-agregacion*.html`).
+
 ## Copia de seguridad y pruebas en el navegador (2026-10-12, pedido de Mikel)
 
 - **Copia de la base de datos:** Supabase en plan gratuito no hace copias.
