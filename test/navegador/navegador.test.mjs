@@ -374,7 +374,7 @@ test("flota faenando sin datos: aviso «Sin flota faenando registrada en las úl
   assert.equal(await pagina.locator("[data-flota-vacio]").innerText(), "Sin flota faenando registrada en las últimas 24 h");
   assert.equal(await pagina.locator("[data-flota-fecha]").innerText(), "Aún no hay días suficientes");
   assert.equal(await pagina.locator("[data-flota-play]").isDisabled(), true);
-  assert.equal(await pagina.locator("[data-flota-escucha]").innerText(), "Sin grupos de 3 o más barcos parados");
+  assert.equal(await pagina.locator("[data-flota-escucha]").innerText(), "Sin grupos de 3 o más barcos");
   assert.equal(await pagina.locator(".flota-parado").count(), 0);
   assert.deepEqual(errores, []);
   await ctx.close();
