@@ -1,12 +1,12 @@
 {
- "generado_en": "2026-10-22T03:03:27.329Z",
+ "generado_en": "2026-10-23T03:04:19.577Z",
  "fuente": "camara_estado",
  "camaras": [
   {
    "spot_slug": "alicante",
    "sin_senal": true,
    "motivo": "origen_404",
-   "fallos_seguidos": 734,
+   "fallos_seguidos": 787,
    "ultima_senal_en": "2026-10-07T02:31:27.208+00:00",
    "fuente_usada": 0
   },
@@ -14,56 +14,56 @@
    "spot_slug": "torreblanca",
    "sin_senal": true,
    "motivo": "origen_404",
-   "fallos_seguidos": 570,
+   "fallos_seguidos": 623,
    "ultima_senal_en": "2026-10-11T12:30:46.765+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "zumaia",
-   "sin_senal": true,
-   "motivo": "sin_respuesta",
-   "fallos_seguidos": 46,
-   "ultima_senal_en": "2026-10-21T06:30:43.835+00:00",
    "fuente_usada": 0
   },
   {
    "spot_slug": "orio",
    "sin_senal": true,
    "motivo": "sin_respuesta",
-   "fallos_seguidos": 20,
-   "ultima_senal_en": "2026-10-21T18:30:42.35+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "mundaka",
-   "sin_senal": true,
-   "motivo": "frame_plano",
-   "fallos_seguidos": 17,
-   "ultima_senal_en": "2026-10-21T19:31:06.209+00:00",
+   "fallos_seguidos": 18,
+   "ultima_senal_en": "2026-10-22T19:00:33.515+00:00",
    "fuente_usada": 0
   },
   {
    "spot_slug": "gandia",
    "sin_senal": true,
    "motivo": "origen_404",
-   "fallos_seguidos": 17,
-   "ultima_senal_en": "2026-10-21T19:31:06.209+00:00",
+   "fallos_seguidos": 16,
+   "ultima_senal_en": "2026-10-22T20:00:39.558+00:00",
    "fuente_usada": 0
   },
   {
-   "spot_slug": "sopelana",
+   "spot_slug": "comillas",
    "sin_senal": true,
-   "motivo": "sin_respuesta",
-   "fallos_seguidos": 13,
-   "ultima_senal_en": "2026-10-21T21:30:44.314+00:00",
+   "motivo": "origen_530",
+   "fallos_seguidos": 2,
+   "ultima_senal_en": "2026-10-23T02:31:20.317+00:00",
    "fuente_usada": 0
   },
   {
-   "spot_slug": "santona",
+   "spot_slug": "sanvicente",
    "sin_senal": true,
-   "motivo": "sin_respuesta",
-   "fallos_seguidos": 13,
-   "ultima_senal_en": "2026-10-21T21:30:44.314+00:00",
+   "motivo": "origen_500",
+   "fallos_seguidos": 1,
+   "ultima_senal_en": "2026-10-23T02:35:06.008+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "suances",
+   "sin_senal": true,
+   "motivo": "origen_522",
+   "fallos_seguidos": 1,
+   "ultima_senal_en": "2026-10-23T02:35:06.008+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "javea",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -71,7 +71,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -79,7 +79,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -87,7 +87,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -95,7 +95,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -103,7 +103,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -111,7 +111,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -119,7 +119,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -127,7 +127,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -135,7 +135,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -143,7 +143,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -151,7 +151,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -159,7 +159,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -167,7 +167,23 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "sopelana",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "zumaia",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -175,7 +191,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -183,287 +199,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "baiona",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "acoruna",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "camarinas",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "cangas",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "corrubedo",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ribadeo",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "suances",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "hondarribia",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "donostia",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "zarautz",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "deba",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "mutriku",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "getaria",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-sky-728",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-yt-santander-bahia",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-yt-loredo-somo",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-sky-804",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-sky-757",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-sky-1329",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-sky-1372",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-sky-1735",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-yt-cortadura",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-yt-nerja-balcon",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-sky-5963",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-sky-260",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-sky-1448",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-sky-490",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-sky-631",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-sky-6123",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-yt-arenal",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-sky-4727",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-sky-680",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-sky-624",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-sky-627",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-yt-teresitas",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -471,7 +207,279 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "baiona",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "acoruna",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "camarinas",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "cangas",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "corrubedo",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ribadeo",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "hondarribia",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "donostia",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "zarautz",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "deba",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "mutriku",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "getaria",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-sky-728",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-yt-santander-bahia",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-yt-loredo-somo",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-sky-804",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-sky-757",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-sky-1329",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-sky-1372",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-sky-1735",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-yt-cortadura",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-yt-nerja-balcon",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-sky-5963",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-sky-260",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-sky-1448",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-sky-490",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-sky-631",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-sky-6123",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-yt-arenal",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-sky-4727",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-sky-680",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-sky-624",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-sky-627",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-yt-teresitas",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -479,7 +487,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -487,7 +495,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -495,7 +503,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -503,31 +511,15 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 1
   },
   {
    "spot_slug": "laredo",
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "sanvicente",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "comillas",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -535,7 +527,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -543,7 +535,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -551,7 +543,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -559,7 +551,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -567,7 +559,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -575,7 +567,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -583,7 +575,15 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "santona",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -591,7 +591,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -599,7 +599,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -607,7 +607,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -615,7 +615,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -623,7 +623,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -647,7 +647,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -655,7 +655,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -663,7 +663,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -671,7 +671,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -679,7 +679,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -687,7 +687,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -695,7 +695,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -703,7 +703,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -711,7 +711,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -895,7 +895,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -943,7 +943,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -975,7 +975,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -983,7 +983,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -999,7 +999,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -1007,7 +1007,15 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "mundaka",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -1015,7 +1023,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -1023,7 +1031,7 @@
    "sin_senal": true,
    "motivo": "frame_congelado",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -1031,7 +1039,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -1039,7 +1047,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -1047,7 +1055,7 @@
    "sin_senal": true,
    "motivo": "frame_congelado",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -1055,7 +1063,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -1063,7 +1071,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   },
   {
@@ -1071,15 +1079,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "javea",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-22T03:00:36.832+00:00",
+   "ultima_senal_en": "2026-10-23T03:00:38.705+00:00",
    "fuente_usada": 0
   }
  ]
