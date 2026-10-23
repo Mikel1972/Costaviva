@@ -255,7 +255,9 @@ test("Mi suscripción: «Tus datos» de quien ya se opuso sale desmarcada", asyn
 // manchas pintadas) con ▶️ de los últimos 14 días.
 const CORS = { "access-control-allow-origin": "*", "access-control-allow-headers": "*" };
 const diaMadrid = (ms) => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Madrid" }).format(new Date(ms));
-async function rutasFlota(ctx, zonas, historico) {
+async function rutasFlota(ctx, zonas, historico, parados = []) {
+  await ctx.route("https://imncbmizxkorotpeisic.supabase.co/rest/v1/flota_parados?**", (route) => route.fulfill({
+    status: 200, contentType: "application/json", headers: CORS, body: JSON.stringify(route.request().method() === "OPTIONS" ? {} : parados) }));
   await ctx.route("https://imncbmizxkorotpeisic.supabase.co/rest/v1/flota_zonas?**", (route) => route.fulfill({
     status: 200, contentType: "application/json", headers: CORS, body: JSON.stringify(route.request().method() === "OPTIONS" ? {} : zonas) }));
   await ctx.route("https://imncbmizxkorotpeisic.supabase.co/rest/v1/flota_zonas_dia?**", (route) => route.fulfill({
@@ -270,7 +272,10 @@ for (const [nombre, opciones] of [["ordenador", PC], ["móvil", MOVIL]]) {
     const hist = (dia, n, lat) => ({ dia, clase: "todas", n_barcos: n, celda_lat: lat, celda_lon: -3.1, especie_probable: null });
     await rutasFlota(ctx, [
       fila("24h", "todas", 5, 43.6), fila("24h", "<24", 3, 43.6), fila("24h", "todas", 12, 43.7), fila("ayer", "todas", 4, 43.5),
-    ], [hist(ayer, 6, 43.5), hist(ayer, 3, 43.4), hist(hoy, 8, 43.6)]);
+    ], [hist(ayer, 6, 43.5), hist(ayer, 3, 43.4), hist(hoy, 8, 43.6)], [
+      { tipo: "puerto", puerto: "Ondarroa", lat: 43.322, lon: -2.418, n_barcos: 14, escucha: calculado },
+      { tipo: "mar", puerto: null, lat: 43.6, lon: -2.85, n_barcos: 3, escucha: calculado },
+    ]);
     const { pagina, errores } = await abrir(ctx, "/");
     await pagina.waitForSelector("#map.leaflet-container", { timeout: 15000 });
     await pagina.waitForFunction(() => window.Flota && window.supabaseCliente, null, { timeout: 15000 });
@@ -301,6 +306,18 @@ for (const [nombre, opciones] of [["ordenador", PC], ["móvil", MOVIL]]) {
     await pagina.waitForFunction(() => +document.querySelector("canvas[data-flota-calor]")?.dataset.celdas > 0, null, { timeout: 10000 });
     assert.equal(await celdas(), 2, "dos manchas en las últimas 24 h");
     assert.ok(await pintado() > 100, "el calor se ve (píxeles con color)");
+    // 🔴 Parados de la última escucha: encendidos por defecto, con su cifra.
+    const parados = pagina.locator(".flota-parado");
+    assert.equal(await parados.count(), 2);
+    assert.deepEqual((await parados.allInnerTexts()).sort(), ["14", "3"]);
+    assert.equal(await pagina.locator(".flota-parado[title='Ondarroa · 14 parados']").count(), 1);
+    assert.match(await pagina.locator("[data-flota-escucha]").innerText(), /^Última escucha: \d{2}:\d{2}$/);
+    const casilla = pagina.locator("[data-flota-parados]");
+    assert.equal(await casilla.isChecked(), true);
+    await casilla.uncheck();
+    assert.equal(await parados.count(), 0, "la casilla los quita");
+    await casilla.check();
+    assert.equal(await parados.count(), 2);
     assert.equal(await pagina.locator("[data-periodo='24h']").getAttribute("aria-pressed"), "true");
     assert.equal(await pagina.locator("[data-flota-vacio]").isVisible(), false);
     assert.match(await pagina.locator(".leaflet-control-attribution").innerText(), /aisstream\.io/);
@@ -335,6 +352,7 @@ for (const [nombre, opciones] of [["ordenador", PC], ["móvil", MOVIL]]) {
 
     await modalidad("costa");
     assert.equal(await control.count(), 0, "al salir de Embarcación desaparece");
+    assert.equal(await pagina.locator(".flota-parado").count(), 0, "y los parados también");
     assert.equal(await celdas(), 0);
     assert.doesNotMatch(await pagina.locator(".leaflet-control-attribution").innerText(), /aisstream\.io/);
     // Al volver con Embarcación recordada, la capa sale sola al cargar.
@@ -356,6 +374,8 @@ test("flota faenando sin datos: aviso «Sin flota faenando registrada en las úl
   assert.equal(await pagina.locator("[data-flota-vacio]").innerText(), "Sin flota faenando registrada en las últimas 24 h");
   assert.equal(await pagina.locator("[data-flota-fecha]").innerText(), "Aún no hay días suficientes");
   assert.equal(await pagina.locator("[data-flota-play]").isDisabled(), true);
+  assert.equal(await pagina.locator("[data-flota-escucha]").innerText(), "Sin grupos de 3 o más barcos parados");
+  assert.equal(await pagina.locator(".flota-parado").count(), 0);
   assert.deepEqual(errores, []);
   await ctx.close();
 });

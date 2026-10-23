@@ -20,6 +20,13 @@
 // en las últimas 24 h ("24h") y en las 24 h anteriores ("ayer"), por clase
 // de eslora y "todas", solo celdas con MIN_BARCOS_CELDA (3) o más. Lo lanza
 // pg_cron cada 2 h (migración 20261022120000_flota_zonas_dia.sql).
+// Flota PARADA (2026-10-23, pedido de Mikel): de la ÚLTIMA escucha, los
+// pesqueros con velocidad mediana < 0,5 nudos se cuentan en el puerto
+// conocido a menos de 2 km (scripts/flota/puertos.json + las lonxas de
+// scripts/lonjas/lonjas-galicia.json) o, si no hay puerto cerca, por celda
+// de 0,05° en el mar. Solo puertos y celdas con 3 barcos o más, sin
+// desglose por eslora (así no hay restas que delaten a nadie). Tabla
+// flota_parados (migración 20261023130000_flota_parados.sql).
 // Histórico (2026-10-23): además, flota_zonas_dia guarda cada DÍA de Madrid
 // (hoy y ayer se recalculan en cada escucha; 60 días) para el ▶️ de 14 días.
 //
@@ -28,6 +35,7 @@
 // Lo puro (sin red) se prueba en test/flota-ais.test.js.
 
 import { createHmac } from "node:crypto";
+import { readFileSync } from "node:fs";
 
 export const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
 export const AIS_URL = "wss://stream.aisstream.io/v0/stream";
@@ -67,6 +75,78 @@ export function celdaDeFaena(posiciones) {
   const sog = mediana(validas.map((p) => p.sog));
   if (sog < SOG_FAENA[0] || sog > SOG_FAENA[1]) return null;
   return celda(mediana(validas.map((p) => p.lat)), mediana(validas.map((p) => p.lon)));
+}
+
+// ---- Flota parada (2026-10-23) ----
+export const SOG_PARADO = 0.5;
+export const RADIO_PUERTO_KM = 2;
+
+// posiciones -> [lat, lon] medianas si el barco está PARADO (al menos 3
+// posiciones y velocidad mediana < 0,5 nudos), si no null.
+export function posicionParado(posiciones) {
+  const validas = (posiciones || []).filter((p) => Number.isFinite(p.sog) && p.sog < 102 && Math.abs(p.lat) <= 90 && Math.abs(p.lon) <= 180);
+  if (validas.length < MIN_POSICIONES) return null;
+  if (mediana(validas.map((p) => p.sog)) >= SOG_PARADO) return null;
+  return [mediana(validas.map((p) => p.lat)), mediana(validas.map((p) => p.lon))];
+}
+
+export function distanciaKm(lat1, lon1, lat2, lon2) {
+  const r = Math.PI / 180;
+  const a = Math.sin(((lat2 - lat1) * r) / 2) ** 2 + Math.cos(lat1 * r) * Math.cos(lat2 * r) * Math.sin(((lon2 - lon1) * r) / 2) ** 2;
+  return 2 * 6371 * Math.asin(Math.sqrt(a));
+}
+
+// El puerto más cercano a menos de radio km, o null.
+export function puertoCercano(lat, lon, puertos, radio = RADIO_PUERTO_KM) {
+  let mejor = null, dMejor = Infinity;
+  for (const p of puertos) {
+    const d = distanciaKm(lat, lon, p.lat, p.lon);
+    if (d <= radio && d < dMejor) { mejor = p; dMejor = d; }
+  }
+  return mejor;
+}
+
+// Puertos de la caja: los de puertos.json + las lonxas de Galicia con
+// coordenadas (id "gal-<id>"). Todos aproximados (~1 km).
+export function cargarPuertos() {
+  const leer = (ruta) => JSON.parse(readFileSync(new URL(ruta, import.meta.url), "utf8"));
+  const propios = leer("./puertos.json").puertos;
+  const galicia = leer("../lonjas/lonjas-galicia.json").lonjas
+    .filter((l) => Number.isFinite(l.lat) && Number.isFinite(l.lon))
+    .map((l) => ({ id: `gal-${l.id}`, nombre: l.nombre.replace(/\.$/, ""), zona: "Galicia", lat: l.lat, lon: l.lon }));
+  // Solo los de dentro de la caja del AIS (A Guarda, p. ej., queda al sur).
+  const dentro = (x) => x.lat >= CAJA[0][0] && x.lat <= CAJA[1][0] && x.lon >= CAJA[0][1] && x.lon <= CAJA[1][1];
+  return [...propios, ...galicia].filter(dentro);
+}
+
+const esPesquero = (b, conocida) => b.tipo === TIPO_PESQUERO || (b.tipo == null && !!conocida);
+
+// Flota parada de UNA escucha -> filas de flota_parados: por puerto (a
+// menos de 2 km) o por celda en el mar, barcos DISTINTOS, solo >= min.
+// Nunca devuelve barcos ni posiciones de barcos: la del puerto o la celda.
+export function paradosDeEscucha(barcos, clasesConocidas, clave, puertos, escucha, min = MIN_BARCOS_CELDA) {
+  const grupos = new Map(); // clave -> { fila, barcos: Set }
+  for (const [mmsi, b] of Object.entries(barcos)) {
+    const barco = resumenBarco(mmsi, clave);
+    if (!esPesquero(b, clasesConocidas[barco])) continue;
+    const pos = posicionParado(b.posiciones);
+    if (!pos) continue;
+    const puerto = puertoCercano(pos[0], pos[1], puertos);
+    let k, base;
+    if (puerto) {
+      k = `puerto:${puerto.id}`;
+      base = { clave: k, tipo: "puerto", puerto: puerto.nombre, lat: puerto.lat, lon: puerto.lon };
+    } else {
+      const [la, lo] = celda(pos[0], pos[1]);
+      k = `mar:${la.toFixed(2)},${lo.toFixed(2)}`;
+      base = { clave: k, tipo: "mar", puerto: null, lat: la, lon: lo };
+    }
+    if (!grupos.has(k)) grupos.set(k, { base, barcos: new Set() });
+    grupos.get(k).barcos.add(barco);
+  }
+  return [...grupos.values()].filter((g) => g.barcos.size >= min)
+    .map((g) => ({ ...g.base, n_barcos: g.barcos.size, escucha }))
+    .sort((a, b) => a.clave.localeCompare(b.clave));
 }
 
 export const resumenBarco = (mmsi, clave) => createHmac("sha256", clave).update(String(mmsi)).digest("hex").slice(0, 24);
@@ -281,6 +361,12 @@ async function main() {
   await supabase(`flota_zonas_dia?dia=in.(${dias.join(",")})&calculado=lt.${encodeURIComponent(ahora.toISOString())}`, { method: "DELETE", headers: { Prefer: "return=minimal" } });
   await supabase(`flota_zonas_dia?dia=lt.${corte}`, { method: "DELETE", headers: { Prefer: "return=minimal" } });
 
+  // Flota parada de ESTA escucha (foto, no 24 h): lo nuevo y luego se borra
+  // lo de escuchas anteriores.
+  const parados = paradosDeEscucha(barcos, conocidas, clave, cargarPuertos(), ahora.toISOString());
+  if (parados.length) await supabase("flota_parados?on_conflict=clave", { method: "POST", headers: { Prefer: "resolution=merge-duplicates,return=minimal" }, body: JSON.stringify(parados) });
+  await supabase(`flota_parados?escucha=lt.${encodeURIComponent(ahora.toISOString())}`, { method: "DELETE", headers: { Prefer: "return=minimal" } });
+
   // Solo totales en el registro (repo público): nunca celdas ni barcos.
   const pesqueros = Object.entries(barcos).filter(([m, b]) => b.tipo === TIPO_PESQUERO || (b.tipo == null && conocidas[resumenBarco(m, clave)])).length;
   const porClase = filas.reduce((a, f) => ((a[f.clase] = (a[f.clase] || 0) + 1), a), {});
@@ -288,6 +374,7 @@ async function main() {
   // Solo cuántas celdas se publican, nunca cuáles.
   const celdasPublicadas = (p) => zonas.filter((z) => z.periodo === p && z.clase === "todas").length;
   console.log(`Zonas publicadas (>= ${MIN_BARCOS_CELDA} barcos): ${celdasPublicadas("24h")} celdas en las últimas 24 h, ${celdasPublicadas("ayer")} ayer; histórico de hoy: ${zonasDia.filter((z) => z.dia === dias[1] && z.clase === "todas").length} celdas.`);
+  console.log(`Flota parada (>= ${MIN_BARCOS_CELDA} barcos): ${parados.filter((p) => p.tipo === "puerto").length} puertos, ${parados.filter((p) => p.tipo === "mar").length} celdas en el mar.`);
   if (!mensajes) throw new Error("aisstream no mandó ningún mensaje.");
 }
 
