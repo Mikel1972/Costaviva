@@ -4120,7 +4120,15 @@ DÍA, no un acumulado de 30 días.
   (migración `20261023100000_flota_zonas_historico.sql`; día de MADRID,
   hoy y ayer se recalculan en cada escucha, 60 días, mismo umbral y misma
   regla contra la resta); cada fotograma es un día suelto; con menos de 2
-  días, "Aún no hay días suficientes". Control "Hoy (24 h) / Ayer"
+  días, "Aún no hay días suficientes". **🔴 Flota parada** (2026-10-23):
+  foto de la ÚLTIMA escucha en `flota_parados` (migración
+  `20261023130000_flota_parados.sql`): pesqueros con velocidad mediana
+  < 0,5 nudos, contados en el puerto a menos de 2 km
+  (`scripts/flota/puertos.json`, aproximados ~1 km, + las lonxas de
+  `scripts/lonjas/lonjas-galicia.json`) o por celda en el mar; solo ≥ 3
+  barcos, sin desglose por eslora. Círculos rojos con la cifra en su panel
+  (encima de los spots), casilla "🔴 Parados" encendida por defecto y
+  "Última escucha: HH:MM"; caducan a las 6 h. Control "Hoy (24 h) / Ayer"
   + eslora, aviso sin datos y atribución "Datos AIS: aisstream.io". Solo con
   la modalidad Embarcación y gratis para todos. **Escucha el evento
   `modalidad`** (`document`, `{ detail: { modalidad } }`) que lanza
