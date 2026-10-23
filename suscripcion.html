@@ -244,8 +244,9 @@
        estadísticas anónimas (interés legítimo, art. 6.1.f RGPD). La casilla
        es perfiles.consiente_uso_datos_capturas, la que miran los triggers de
        estadísticas y el aprendizaje del índice; se cambia con la RPC
-       fijar_uso_capturas_estadisticas (migración 20261022230000). Sin la
-       columna o sin la RPC, no se ve. -->
+       fijar_uso_capturas_estadisticas (migración 20261022233000; la
+       20261023120000 añade aviso_condiciones_en y oposicion_estadisticas_en).
+       Sin la columna o sin la RPC, no se ve. -->
   <div id="bloqueDatos" class="amigo" hidden>
     <h2 data-i18n="susc.datos_titulo">🔒 Tus datos</h2>
     <p class="detalle" data-i18n="susc.datos_explica">Usamos tus capturas del diario, de forma anónima y agregada, para mejorar el índice de pesca y nuestras estadísticas (interés legítimo, art. 6.1.f RGPD). Si desmarcas la casilla, te opones y dejamos de usarlas.</p>
@@ -593,11 +594,18 @@ async function iniciar() {
 // la página: si no se puede leer el perfil, el bloque no se ve.
 async function mostrarTusDatos(userId) {
   try {
-    const { data, error } = await supabase.from("perfiles").select("consiente_uso_datos_capturas").eq("id", userId).maybeSingle();
+    // Con la migración 20261023120000 se leen también las fechas del aviso de
+    // condiciones y de la oposición; sin ella, solo la casilla (como antes).
+    let { data, error } = await supabase.from("perfiles").select("consiente_uso_datos_capturas,aviso_condiciones_en,oposicion_estadisticas_en").eq("id", userId).maybeSingle();
+    if (error) ({ data, error } = await supabase.from("perfiles").select("consiente_uso_datos_capturas").eq("id", userId).maybeSingle());
     if (error || !data || typeof data.consiente_uso_datos_capturas !== "boolean") return;
     const check = document.getElementById("checkEstadisticas");
     const mensaje = document.getElementById("mensajeDatos");
-    check.checked = data.consiente_uso_datos_capturas;
+    // Cuenta antigua ya avisada (scripts/avisos/condiciones-2026-10.mjs) que no
+    // se ha opuesto: durante los 15 días de preaviso sigue a false, pero lo que
+    // le aplica es el interés legítimo, así que la casilla sale marcada y
+    // desmarcarla es oponerse (la RPC pone oposicion_estadisticas_en).
+    check.checked = data.consiente_uso_datos_capturas || (!!data.aviso_condiciones_en && !data.oposicion_estadisticas_en);
     check.addEventListener("change", async () => {
       const usar = check.checked;
       check.disabled = true;
