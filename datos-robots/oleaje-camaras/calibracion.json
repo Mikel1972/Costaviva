@@ -1,13 +1,13 @@
 {
- "fecha": "2026-10-23T14:37:43.620Z",
- "lineasHistorial": 4495,
+ "fecha": "2026-10-23T14:53:09.532Z",
+ "lineasHistorial": 4505,
  "etiquetas": 233,
  "etiquetasClaude": 138,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.2864,
+   "a": 1.2958,
    "p": 0.5,
-   "n": 118,
+   "n": 119,
    "nEtiquetas": 7,
    "nEtiquetasClaude": 3,
    "franjasClaude": [
@@ -20,9 +20,9 @@
    "pocosDatos": false
   },
   "hondarribia/bocana": {
-   "a": 4.0752,
+   "a": 4.319,
    "p": 0.5,
-   "n": 22,
+   "n": 23,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 2,
    "franjasClaude": [
@@ -31,7 +31,7 @@
    ],
    "dias": 12,
    "hMin": 0.15,
-   "hMax": 0.9,
+   "hMax": 0.97,
    "errorRel": 1,
    "pocosDatos": false
   },
@@ -49,9 +49,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 5.005,
+   "a": 5.026,
    "p": 0.5,
-   "n": 327,
+   "n": 328,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 17,
    "franjasClaude": [
@@ -71,7 +71,7 @@
    "dias": 16,
    "hMin": 0.3,
    "hMax": 6.84,
-   "errorRel": 0.837,
+   "errorRel": 0.846,
    "pocosDatos": false
   },
   "zumaia/c": {
@@ -105,9 +105,9 @@
    "pocosDatos": false
   },
   "deba/rompiente": {
-   "a": 6.1805,
+   "a": 6.2107,
    "p": 0.5,
-   "n": 119,
+   "n": 120,
    "nEtiquetas": 2,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -217,9 +217,9 @@
    "pocosDatos": false
   },
   "berria/dinamico": {
-   "a": 5.2145,
+   "a": 5.2368,
    "p": 0.5,
-   "n": 157,
+   "n": 158,
    "nEtiquetas": 8,
    "nEtiquetasClaude": 11,
    "franjasClaude": [
@@ -231,7 +231,7 @@
    "dias": 16,
    "hMin": 0.69,
    "hMax": 4.73,
-   "errorRel": 0.857,
+   "errorRel": 0.86,
    "pocosDatos": false
   },
   "mutriku/principal": {
@@ -389,7 +389,7 @@
    "motivo": "7 etiquetas",
    "ruido": {
     "ruido": 0.5,
-    "pares": 62
+    "pares": 63
    }
   },
   "donostia": {
@@ -412,8 +412,8 @@
    "sustituye": true,
    "motivo": "18 etiquetas",
    "ruido": {
-    "ruido": 0.538,
-    "pares": 271
+    "ruido": 0.539,
+    "pares": 272
    }
   },
   "getaria": {
