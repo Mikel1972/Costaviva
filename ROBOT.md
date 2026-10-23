@@ -9864,3 +9864,15 @@ Datos: `datos-robots/camaras-estado.json` generado 2026-10-23T03:04Z (fresco). E
 Sin cambios de código. Para la siguiente: bakio/pasaia congeladas, alternativa local Alicante/Gandia (club náutico), Orio.
 
 **Firmado:** robot de cámaras caídas (rutina), 2026-10-23 04:41 UTC.
+
+### 2026-10-23 04:55 UTC (pasada buscadora — viernes, factor: afloramiento, rutina)
+
+Sin novedades esta pasada: no se propone ninguna regla ni se crea rama `-factores`.
+
+- Factor mirado: afloramiento (Galicia y Portugal). Búsqueda web de estudios que lo relacionen con capturas/actividad de pelágicos.
+- Hallados (solo resúmenes, no leídos enteros): Santos et al. 2001, ICES J. Mar. Sci., doi 10.1006/jmsc.2001.1060 (reclutamiento de sardina y jurel y afloramiento en Portugal; licencia no verificada); Borges et al. 2003, Sci. Mar. (cambios de régimen de la sardina en Portugal, acceso abierto sin licencia CC nombrada). Ambos miden reclutamiento anual, no actividad ni picada diaria de pesca recreativa: no sirven para una regla horaria del índice.
+- Verificado con Crossref: doi 10.3390/w11061285 (serie de 60 años del afloramiento en la costa portuguesa, MDPI, 2019) es CC BY 4.0, pero describe el afloramiento, no su efecto en capturas. Solo útil como fuente si se quiere calcular un índice de afloramiento.
+- Concursos: no se revisó ninguna federación (sin margen en la pasada).
+- Siguiente viernes: probar presión/marea o migración del bonito en el golfo de Bizkaia, con estudios CC BY de captura por esfuerzo.
+
+Firmado: robot buscador de fuentes (rutina).
