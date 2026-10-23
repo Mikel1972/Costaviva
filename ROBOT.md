@@ -9852,3 +9852,15 @@ Datos: `datos-robots/camaras-estado.json` generado 2026-10-22T03:03Z (~1,6 h, fr
 Para la siguiente: reintentar Zumaia y Orio; Sopelana con otra vía; alternativa local para Alicante/Xàbia/Gandia (club náutico o puerto deportivo).
 
 **Firmado:** robot de cámaras caídas (rutina), 2026-10-22 04:42 UTC.
+
+### 2026-10-23 04:41 UTC (robot de cámaras caídas — rutina; Orio, Gandia/Alicante/Torreblanca, Cantabria)
+
+Datos: `datos-robots/camaras-estado.json` generado 2026-10-23T03:04Z (fresco). En rojo: alicante, torreblanca, gandia (`origen_404`), orio (`sin_respuesta`), comillas, sanvicente, suances (origen 530/500/522), bakio y pasaia (`frame_congelado`). Zumaia ya no está en rojo.
+
+- **orio**: `GIP_orio_169` sigue en 404 en el Wowza de la Diputación mientras Zarautz da 200; emisión parada en origen. Búsqueda web ("webcam Orio playa Gipuzkoa en directo cámara"): sin cámara local alternativa (solo Surf-Forecast con cámaras francesas).
+- **alicante, torreblanca, gandia**: `streaming.comunitatvalenciana.com/static/*/webcam_mini.png` siguen en 404 (comprobadas hoy); sin cambios.
+- **comillas, sanvicente, suances**: sin verificar: cantabria.es no es alcanzable desde la red de la rutina (conexión rechazada); en el parte, 530/500/522 desde el edge.
+- **bakio, pasaia** (congeladas): no revisadas esta pasada.
+Sin cambios de código. Para la siguiente: bakio/pasaia congeladas, alternativa local Alicante/Gandia (club náutico), Orio.
+
+**Firmado:** robot de cámaras caídas (rutina), 2026-10-23 04:41 UTC.
