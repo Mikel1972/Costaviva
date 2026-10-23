@@ -248,36 +248,41 @@ test("Mi suscripción: «Tus datos» de quien ya se opuso sale desmarcada", asyn
   await probarTusDatos({ consiente_uso_datos_capturas: false, aviso_condiciones_en: "2026-10-23T09:00:00Z", oposicion_estadisticas_en: "2026-10-24T09:00:00Z" }, false, "opuesto");
 });
 
-test("flota faenando sin datos: aviso «Sin flota faenando registrada en las últimas 24 h»", async () => {
-  const ctx = await contexto(PC);
-  const { pagina, errores } = await abrir(ctx, "/");
-  await pagina.waitForFunction(() => window.Flota && window.supabaseCliente, null, { timeout: 15000 });
-  await pagina.evaluate(() => document.dispatchEvent(new CustomEvent("modalidad", { detail: { modalidad: "embarcacion" } })));
-  await pagina.waitForSelector("[data-flota-vacio]:not([hidden])", { state: "attached" });
-  assert.equal(await pagina.locator("[data-flota-vacio]").innerText(), "Sin flota faenando registrada en las últimas 24 h");
-  assert.deepEqual(errores, []);
-  await ctx.close();
-});
-
 // Flota pesquera faenando (2026-10-22): la capa sale solo con la modalidad
 // Embarcación (evento `modalidad`, no los clics de las pestañas), con su
 // control "Hoy (24 h) / Ayer", el filtro de eslora y el aviso sin datos.
+// Desde el 2026-10-23 es un mapa de calor en un <canvas> (data-celdas =
+// manchas pintadas) con ▶️ de los últimos 14 días.
+const CORS = { "access-control-allow-origin": "*", "access-control-allow-headers": "*" };
+const diaMadrid = (ms) => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Madrid" }).format(new Date(ms));
+async function rutasFlota(ctx, zonas, historico) {
+  await ctx.route("https://imncbmizxkorotpeisic.supabase.co/rest/v1/flota_zonas?**", (route) => route.fulfill({
+    status: 200, contentType: "application/json", headers: CORS, body: JSON.stringify(route.request().method() === "OPTIONS" ? {} : zonas) }));
+  await ctx.route("https://imncbmizxkorotpeisic.supabase.co/rest/v1/flota_zonas_dia?**", (route) => route.fulfill({
+    status: 200, contentType: "application/json", headers: CORS, body: JSON.stringify(route.request().method() === "OPTIONS" ? {} : historico) }));
+}
 for (const [nombre, opciones] of [["ordenador", PC], ["móvil", MOVIL]]) {
   test(`${nombre}: flota faenando solo en Embarcación, con Hoy/Ayer, eslora y aviso sin datos`, async () => {
     const ctx = await contexto(opciones);
     const calculado = new Date().toISOString();
     const fila = (periodo, clase, n, lat) => ({ periodo, clase, n_barcos: n, celda_lat: lat, celda_lon: -3.1, especie_probable: null, calculado });
-    await ctx.route("https://imncbmizxkorotpeisic.supabase.co/rest/v1/flota_zonas**", (route) => route.fulfill({
-      status: 200, contentType: "application/json", headers: { "access-control-allow-origin": "*", "access-control-allow-headers": "*" },
-      body: JSON.stringify(route.request().method() === "OPTIONS" ? {} : [
-        fila("24h", "todas", 5, 43.6), fila("24h", "<24", 3, 43.6), fila("24h", "todas", 12, 43.7), fila("ayer", "todas", 4, 43.5),
-      ]),
-    }));
+    const hoy = diaMadrid(Date.now()), ayer = diaMadrid(Date.now() - 864e5);
+    const hist = (dia, n, lat) => ({ dia, clase: "todas", n_barcos: n, celda_lat: lat, celda_lon: -3.1, especie_probable: null });
+    await rutasFlota(ctx, [
+      fila("24h", "todas", 5, 43.6), fila("24h", "<24", 3, 43.6), fila("24h", "todas", 12, 43.7), fila("ayer", "todas", 4, 43.5),
+    ], [hist(ayer, 6, 43.5), hist(ayer, 3, 43.4), hist(hoy, 8, 43.6)]);
     const { pagina, errores } = await abrir(ctx, "/");
     await pagina.waitForSelector("#map.leaflet-container", { timeout: 15000 });
     await pagina.waitForFunction(() => window.Flota && window.supabaseCliente, null, { timeout: 15000 });
     const modalidad = (m) => pagina.locator(`#modPill-${m}`).click();
-    const celdas = () => pagina.locator("path.leaflet-interactive[fill='#EE8434'], path.leaflet-interactive[fill='#F6B84B'], path.leaflet-interactive[fill='#D2492A']").count();
+    const celdas = () => pagina.evaluate(() => { const c = document.querySelector("canvas[data-flota-calor]"); return c ? +c.dataset.celdas : 0; });
+    const pintado = () => pagina.evaluate(() => {
+      const c = document.querySelector("canvas[data-flota-calor]");
+      const d = c.getContext("2d").getImageData(0, 0, c.width, c.height).data;
+      let n = 0;
+      for (let i = 3; i < d.length; i += 4) if (d[i] > 0) n++;
+      return n;
+    });
     const control = pagina.locator("[data-flota-control]");
 
     assert.equal(await control.count(), 0, "en Desde costa no hay capa");
@@ -293,8 +298,9 @@ for (const [nombre, opciones] of [["ordenador", PC], ["móvil", MOVIL]]) {
     }
     assert.equal(await chip.getAttribute("aria-expanded"), "true");
     assert.equal(await pagina.locator("[data-flota-clase]").isVisible(), true);
-    await pagina.waitForFunction(() => document.querySelectorAll(".leaflet-overlay-pane path[fill='#EE8434']").length > 0, null, { timeout: 10000 });
-    assert.equal(await celdas(), 2, "dos celdas en las últimas 24 h");
+    await pagina.waitForFunction(() => +document.querySelector("canvas[data-flota-calor]")?.dataset.celdas > 0, null, { timeout: 10000 });
+    assert.equal(await celdas(), 2, "dos manchas en las últimas 24 h");
+    assert.ok(await pintado() > 100, "el calor se ve (píxeles con color)");
     assert.equal(await pagina.locator("[data-periodo='24h']").getAttribute("aria-pressed"), "true");
     assert.equal(await pagina.locator("[data-flota-vacio]").isVisible(), false);
     assert.match(await pagina.locator(".leaflet-control-attribution").innerText(), /aisstream\.io/);
@@ -306,6 +312,26 @@ for (const [nombre, opciones] of [["ordenador", PC], ["móvil", MOVIL]]) {
     await pagina.locator("[data-periodo='ayer']").click();
     assert.equal(await celdas(), 1, "ayer, una celda");
     assert.equal(await pagina.locator("[data-periodo='ayer']").getAttribute("aria-pressed"), "true");
+
+    // ▶️ 14 días: cada fotograma es un día; la barra lo para y enseña ese día.
+    const play = pagina.locator("[data-flota-play]");
+    assert.equal(await play.isDisabled(), false, "con 2 días de histórico hay play");
+    await play.click();
+    assert.equal(await play.getAttribute("aria-label"), "Pausar");
+    assert.equal(await pagina.locator("[data-periodo='24h']").getAttribute("aria-pressed"), "false");
+    await play.click();
+    assert.equal(await play.getAttribute("aria-label"), "Reproducir");
+    const barra = pagina.locator("[data-flota-dia]");
+    await barra.fill("12"); // ayer
+    assert.equal(await celdas(), 2, "ayer (histórico): dos manchas");
+    assert.match(await pagina.locator("[data-flota-fecha]").innerText(), new RegExp(String(+ayer.slice(8))));
+    await barra.fill("13"); // hoy
+    assert.equal(await celdas(), 1);
+    await barra.fill("0"); // hace 13 días, sin datos
+    assert.equal(await celdas(), 0);
+    assert.match(await pagina.locator("[data-flota-vacio]").innerText(), /Sin flota faenando registrada el /);
+    await pagina.locator("[data-periodo='24h']").click();
+    assert.equal(await celdas(), 2, "Hoy (24 h) vuelve a lo de siempre");
 
     await modalidad("costa");
     assert.equal(await control.count(), 0, "al salir de Embarcación desaparece");
@@ -320,3 +346,16 @@ for (const [nombre, opciones] of [["ordenador", PC], ["móvil", MOVIL]]) {
     await ctx.close();
   });
 }
+
+test("flota faenando sin datos: aviso «Sin flota faenando registrada en las últimas 24 h» y ▶️ sin días", async () => {
+  const ctx = await contexto(PC);
+  const { pagina, errores } = await abrir(ctx, "/");
+  await pagina.waitForFunction(() => window.Flota && window.supabaseCliente, null, { timeout: 15000 });
+  await pagina.evaluate(() => document.dispatchEvent(new CustomEvent("modalidad", { detail: { modalidad: "embarcacion" } })));
+  await pagina.waitForSelector("[data-flota-vacio]:not([hidden])", { state: "attached" });
+  assert.equal(await pagina.locator("[data-flota-vacio]").innerText(), "Sin flota faenando registrada en las últimas 24 h");
+  assert.equal(await pagina.locator("[data-flota-fecha]").innerText(), "Aún no hay días suficientes");
+  assert.equal(await pagina.locator("[data-flota-play]").isDisabled(), true);
+  assert.deepEqual(errores, []);
+  await ctx.close();
+});
