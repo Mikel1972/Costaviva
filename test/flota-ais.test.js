@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { claseEslora, celda, celdaDeFaena, leerMensaje, filasDeFaena, resumenBarco, horaEnPunto, zonasDeFaena, zonasPorDia, diaMadrid, posicionParado, puertoCercano, distanciaKm, cargarPuertos, paradosDeEscucha, CAJA, MIN_BARCOS_CELDA, CLASES_ZONA as CLASES } from "../scripts/flota/flota-ais.mjs";
+import { claseEslora, celda, celdaDeFaena, leerMensaje, filasDeFaena, resumenBarco, horaEnPunto, zonasDeFaena, zonasPorDia, diaMadrid, posicionParado, puertoCercano, distanciaKm, cargarPuertos, paradosDeEscucha, posicionNavegando, navegandoDeEscucha, PASO_MAR, CAJA, MIN_BARCOS_CELDA, CLASES_ZONA as CLASES } from "../scripts/flota/flota-ais.mjs";
 
 test("clase por eslora (A+B del AIS)", () => {
   assert.equal(claseEslora(10, 8), "<24");
@@ -293,4 +293,47 @@ test("flota parada: migración (lectura pública, sin escritura) y baseline", ()
     tablename: "flota_parados", rls_enabled: true,
     policies: [{ name: "lectura pública de la flota parada", cmd: "r", roles: ["anon", "authenticated"] }],
   });
+});
+
+// ---- Pesqueros en el mar en movimiento (2026-10-23) ----
+
+test("navegando: velocidad mediana >= 0,5 nudos, una posición basta, la última", () => {
+  const p = (sog, lat = 43.6, lon = -2.8) => ({ lat, lon, sog });
+  assert.deepEqual(posicionNavegando([p(8)]), [43.6, -2.8]);
+  assert.deepEqual(posicionNavegando([p(3, 43.6), p(3, 43.7), p(4, 43.8)]), [43.8, -2.8], "la última posición");
+  assert.equal(posicionNavegando([p(0), p(0.1), p(9)]), null, "parado");
+  assert.equal(posicionNavegando([]), null);
+  assert.equal(posicionNavegando([p(102.3)]), null, "velocidad no disponible");
+});
+
+test("pesqueros en el mar: lejos de puerto, celda de 0,1°, barcos distintos, solo >= 3, sin solaparse con los parados", () => {
+  const clave = "k";
+  const mueve = (lat, lon, sog = 8) => ({ tipo: 30, posiciones: [{ lat, lon, sog }] });
+  const barcos = {
+    1: mueve(43.61, -2.81), 2: mueve(43.65, -2.85), 3: mueve(43.69, -2.89, 3),   // celda 43.60,-2.90: 3
+    4: mueve(43.91, -2.81), 5: mueve(43.95, -2.85),                              // 2 -> no
+    6: mueve(43.322, -2.418), 7: mueve(43.323, -2.417), 8: mueve(43.321, -2.419), // en Ondarroa: no
+    9: { tipo: 70, posiciones: mueve(43.62, -2.82).posiciones },                  // mercante: no
+    10: { tipo: 30, posiciones: [0, 0, 0.1].map((sog) => ({ lat: 43.62, lon: -2.82, sog })) }, // parado: no
+  };
+  assert.equal(PASO_MAR, 0.1);
+  const filas = navegandoDeEscucha(barcos, {}, clave, cargarPuertos(), "2026-10-23T14:00:00.000Z");
+  assert.deepEqual(filas, [
+    { clave: "nav:43.60,-2.90", tipo: "navegando", puerto: null, lat: 43.6, lon: -2.9, n_barcos: 3, escucha: "2026-10-23T14:00:00.000Z" },
+  ]);
+  const re = /^(puerto:[a-z0-9-]+|(mar|nav):-?[0-9]+\.[0-9]{2},-?[0-9]+\.[0-9]{2})$/;
+  const sql = readFileSync(new URL("../supabase/migrations/20261023160000_flota_navegando.sql", import.meta.url), "utf8");
+  assert.ok(sql.includes(`'${re.source}'`), "el CHECK nuevo de la clave es esta misma expresión");
+  assert.match(sql, /check \(tipo in \('puerto', 'mar', 'navegando'\)\)/);
+  assert.doesNotMatch(sql, /policy|grant|security definer/i, "ni policies ni permisos nuevos");
+  for (const k of ["nav:43.60,-2.90", "mar:43.60,-2.85", "puerto:ondarroa"]) assert.match(k, re);
+});
+
+test("escucha de 40 min por defecto (workflow y script)", () => {
+  const yml = readFileSync(new URL("../.github/workflows/flota-ais.yml", import.meta.url), "utf8");
+  const js = readFileSync(new URL("../scripts/flota/flota-ais.mjs", import.meta.url), "utf8");
+  assert.match(yml, /default: "40"/);
+  assert.match(yml, /minutos \|\| '40'/);
+  assert.match(yml, /timeout-minutes: 60/);
+  assert.match(js, /: 40;/);
 });

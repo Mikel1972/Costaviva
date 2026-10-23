@@ -8,7 +8,7 @@ import { readFileSync } from "node:fs";
 import {
   zonasVisibles, colorCalor, intensidadFlota, alfaCalor, tablaCalor, radioBlobPx, metrosPorPixel, centroCelda,
   celdaCercana, gradienteCss, PARADAS, OPACIDAD_MAX, RADIO_MIN_PX, RADIO_MAX_PX,
-  diasPlay, diaMadrid, paradosVisibles, posicionParado, textoParado, tamParado, ultimaEscucha, CADUCA_PARADOS_H, zonasDelDia, diasConDatos, fechaDia, DIAS_PLAY, MIN_DIAS_PLAY, limitesCelda, capaVisible, textoCelda, textoVacio, claveClase,
+  diasPlay, diaMadrid, paradosVisibles, navegandoVisibles, posicionParado, textoParado, tamParado, ultimaEscucha, CADUCA_PARADOS_H, zonasDelDia, diasConDatos, fechaDia, DIAS_PLAY, MIN_DIAS_PLAY, limitesCelda, capaVisible, textoCelda, textoVacio, claveClase,
   MIN_BARCOS, CLASES, PERIODOS, CADUCA_H, empiezaPlegado, ANCHO_PLEGADO, modalidadInicial,
 } from "../assets/js/capa-flota.js";
 import { leerDiccionario } from "./i18n-html.js";
@@ -168,12 +168,28 @@ test("🔴 parados: última escucha, >= 3 barcos, puerto o centro de la celda, y
   assert.equal(ultimaEscucha([]), null);
 });
 
+test("🔵 pesqueros en el mar: solo tipo navegando, >= 3, sin caducar, centro de la celda de 0,1°", () => {
+  const AH = new Date("2026-10-23T15:00:00Z");
+  const e = "2026-10-23T14:40:00Z";
+  const filas = [
+    { tipo: "navegando", puerto: null, lat: 43.6, lon: -2.9, n_barcos: 5, escucha: e },
+    { tipo: "navegando", puerto: null, lat: 43.9, lon: -2.9, n_barcos: 2, escucha: e },
+    { tipo: "navegando", puerto: null, lat: 44.0, lon: -2.9, n_barcos: 7, escucha: "2026-10-23T01:00:00Z" },
+    { tipo: "mar", puerto: null, lat: 43.6, lon: -2.85, n_barcos: 3, escucha: e },
+  ];
+  const v = navegandoVisibles(filas, AH);
+  assert.equal(v.length, 1);
+  assert.deepEqual(posicionParado(v[0]), [43.65, -2.85]);
+  assert.equal(textoParado(v[0]), "5 pesqueros en el mar (en movimiento)");
+  assert.equal(paradosVisibles(filas, AH).length, 1, "los navegando no son rojos");
+});
+
 test("i18n: todas las claves flota.* en es, en y pt (también las compuestas)", () => {
   const dic = (i) => leerDiccionario(new URL(`../assets/i18n/${i}.js`, import.meta.url));
   const ES = dic("es"), EN = dic("en"), PT = dic("pt");
   const usadas = [...readFileSync(new URL("../assets/js/capa-flota.js", import.meta.url), "utf8").matchAll(/I18n\.t\("(flota\.[\w.]+)"/g)].map((m) => m[1]);
   const compuestas = CLASES.map((c) => `flota.clase.${claveClase(c)}`);
-  for (const k of [...usadas, ...compuestas, "flota.vacio_24h", "flota.vacio_ayer", "flota.hoy", "flota.ayer", "flota.chip", "flota.pocos_dias", "flota.play_ayuda", "flota.vacio_dia", "lluvia.pausar", "lluvia.reproducir", "flota.parados", "flota.parados_puerto", "flota.parados_mar", "flota.ultima_escucha", "flota.sin_parados"]) {
+  for (const k of [...usadas, ...compuestas, "flota.vacio_24h", "flota.vacio_ayer", "flota.hoy", "flota.ayer", "flota.chip", "flota.pocos_dias", "flota.play_ayuda", "flota.vacio_dia", "lluvia.pausar", "lluvia.reproducir", "flota.parados", "flota.parados_puerto", "flota.parados_mar", "flota.ultima_escucha", "flota.sin_parados", "flota.navegando", "flota.navegando_mar"]) {
     for (const [n, d] of [["es", ES], ["en", EN], ["pt", PT]]) assert.ok(k in d, `${k} en ${n}`);
   }
   assert.equal(ES["flota.hoy"], "Hoy (24 h)");

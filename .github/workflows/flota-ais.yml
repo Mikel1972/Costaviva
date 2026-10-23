@@ -1,6 +1,6 @@
 name: Flota pesquera faenando (AIS)
 
-# scripts/flota/flota-ais.mjs escucha el AIS de aisstream.io 20 min y apunta
+# scripts/flota/flota-ais.mjs escucha el AIS de aisstream.io 40 min (20 hasta el 2026-10-23) y apunta
 # en Supabase (flota_faena) qué pesqueros faenaron en qué celda de ~5 km y a
 # qué hora, sin nombre ni MMSI. Sin IA. Solo totales en el registro (el repo
 # es público): nunca celdas ni barcos.
@@ -11,7 +11,7 @@ name: Flota pesquera faenando (AIS)
 # es lo que pinta el mapa en la pestaña 🚤 Embarcación.
 #
 # CUÁNDO: cada 2 h, de día y de noche (el cerco de la anchoa faena de
-# noche y al alba), 20 min cada vez. El reloj fiable es pg_cron (trabajo
+# noche y al alba), 40 min cada vez. El reloj fiable es pg_cron (trabajo
 # 'lanzar-flota-ais', a los 11 min de las horas pares, migración
 # 20261022120000_flota_zonas_dia.sql): GitHub trata los `schedule:`
 # frecuentes como "cuando pueda" (trampa 15 de comun). El `schedule:` de
@@ -29,7 +29,7 @@ on:
     inputs:
       minutos:
         description: "Minutos de escucha"
-        default: "20"
+        default: "40"
 
 concurrency:
   group: flota-ais
@@ -43,7 +43,7 @@ jobs:
   escuchar:
     if: ${{ vars.AUTOMATION_PAUSED != 'true' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 60
     steps:
       - name: ¿Ya escuchó? (solo el respaldo del schedule)
         id: ya
@@ -70,4 +70,4 @@ jobs:
         env:
           AISSTREAM_API_KEY: ${{ secrets.AISSTREAM_API_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-        run: node scripts/flota/flota-ais.mjs --minutos "${{ github.event.inputs.minutos || '20' }}"
+        run: node scripts/flota/flota-ais.mjs --minutos "${{ github.event.inputs.minutos || '40' }}"

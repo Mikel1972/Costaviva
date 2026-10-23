@@ -173,10 +173,21 @@ export function paradosVisibles(filas, ahora = new Date()) {
   return (filas || []).filter((f) => (f.tipo === "puerto" || f.tipo === "mar") && Number(f.n_barcos) >= MIN_BARCOS
     && Number.isFinite(Number(f.lat)) && Number.isFinite(Number(f.lon)) && Date.parse(f.escucha) >= limite);
 }
+// 🔵 Pesqueros EN EL MAR en movimiento (2026-10-23): misma tabla, tipo
+// 'navegando', celdas de 0,1°, misma foto de la última escucha.
+export const PASO_NAVEGANDO = 0.1;
+export const COLOR_NAVEGANDO = "#2563EB";
+export function navegandoVisibles(filas, ahora = new Date()) {
+  const limite = ahora.getTime() - CADUCA_PARADOS_H * 3600_000;
+  return (filas || []).filter((f) => f.tipo === "navegando" && Number(f.n_barcos) >= MIN_BARCOS
+    && Number.isFinite(Number(f.lat)) && Number.isFinite(Number(f.lon)) && Date.parse(f.escucha) >= limite);
+}
 // Dónde va el círculo: el puerto, o el centro de la celda en el mar.
-export const posicionParado = (f) => (f.tipo === "puerto" ? [Number(f.lat), Number(f.lon)] : centroCelda(f.lat, f.lon));
+export const posicionParado = (f) => (f.tipo === "puerto" ? [Number(f.lat), Number(f.lon)]
+  : centroCelda(f.lat, f.lon, f.tipo === "navegando" ? PASO_NAVEGANDO : PASO_CELDA));
 export const textoParado = (f) => (f.tipo === "puerto"
   ? I18n.t("flota.parados_puerto", { puerto: f.puerto, n: Number(f.n_barcos) })
+  : f.tipo === "navegando" ? I18n.t("flota.navegando_mar", { n: Number(f.n_barcos) })
   : I18n.t("flota.parados_mar", { n: Number(f.n_barcos) }));
 // Diámetro del círculo con la cifra: de 22 px (3 barcos) a 38 px (40 o más).
 export const tamParado = (n) => Math.round(22 + 16 * Math.min(1, Math.log(Math.max(MIN_BARCOS, n) / MIN_BARCOS) / Math.log(40 / MIN_BARCOS)));
@@ -194,7 +205,7 @@ export const textoVacio = (periodo) => I18n.t(periodo === "ayer" ? "flota.vacio_
 const REFRESCO_MS = 10 * 60_000;
 let mapa = null, consultar = async () => [], calor = null, control = null, controlPuesto = false;
 const estado = { plegado: null, modalidad: "costa", periodo: "24h", clase: "todas", filas: null, pedido: 0, cargando: null,
-  historico: null, dia: null, reloj: null, parados: null, verParados: true };
+  historico: null, dia: null, reloj: null, parados: null, verParados: true, verNavegando: true };
 let consultarDias = async () => [];
 let consultarParados = async () => [];
 let capaParados = null;
@@ -231,6 +242,7 @@ function ponerEstilos() {
   .flota-parado span { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;
     border-radius: 50%; background: ${COLOR_PARADOS}; color: #fff; border: 2px solid #fff;
     font: 800 11px var(--f-texto); box-shadow: 0 2px 6px rgba(11,30,63,0.35); box-sizing: border-box; }
+  .flota-parado.navegando span { background: ${COLOR_NAVEGANDO}; }
   .flota-control .escala .barra { height: 10px; border-radius: 5px; }
   .flota-control .escala .ext { display: flex; justify-content: space-between; color: var(--tinta-2); margin-top: 2px; font-weight: 500; }
   .leaflet-pane canvas.flota-calor { position: absolute; left: 0; top: 0; pointer-events: none; }
@@ -321,6 +333,14 @@ function crearControl(L) {
     casilla.setAttribute("data-flota-parados", "");
     L.DomUtil.create("span", "", par).textContent = I18n.t("flota.parados");
     casilla.addEventListener("change", () => { estado.verParados = casilla.checked; pintarParados(); });
+    // 🔵 Pesqueros en el mar en movimiento (última escucha), también encendidos.
+    const nav = L.DomUtil.create("label", "parados", cuerpo);
+    const casillaNav = L.DomUtil.create("input", "", nav);
+    casillaNav.type = "checkbox";
+    casillaNav.checked = estado.verNavegando;
+    casillaNav.setAttribute("data-flota-navegando", "");
+    L.DomUtil.create("span", "", nav).textContent = I18n.t("flota.navegando");
+    casillaNav.addEventListener("change", () => { estado.verNavegando = casillaNav.checked; pintarParados(); });
     const esc2 = L.DomUtil.create("div", "escucha", cuerpo);
     esc2.setAttribute("data-flota-escucha", "");
     L.DomUtil.create("div", "nota", cuerpo).textContent = I18n.t("flota.nota");
@@ -439,7 +459,8 @@ function ponerDia(i) {
   pintar();
 }
 
-// Círculos rojos con la cifra de la flota parada (puertos y mar).
+// Círculos con la cifra: rojos la flota parada (puertos y mar), azules los
+// pesqueros que se mueven en el mar.
 function pintarParados() {
   if (!mapa) return;
   const L = window.L;
@@ -447,13 +468,14 @@ function pintarParados() {
   // Su propio panel, por encima de los spots (muchos puertos son spots).
   if (!mapa.getPane("flotaParados")) mapa.createPane("flotaParados").style.zIndex = 640;
   capaParados.clearLayers();
-  const filas = paradosVisibles(estado.parados);
-  const ver = capaVisible(estado.modalidad) && estado.verParados;
+  const rojos = paradosVisibles(estado.parados), azules = navegandoVisibles(estado.parados);
+  const filas = [...(estado.verNavegando ? azules : []), ...(estado.verParados ? rojos : [])];
+  const ver = capaVisible(estado.modalidad) && (estado.verParados || estado.verNavegando);
   if (ver && !mapa.hasLayer(capaParados)) capaParados.addTo(mapa);
   if (!ver && mapa.hasLayer(capaParados)) mapa.removeLayer(capaParados);
   const etq = control?.getContainer()?.querySelector("[data-flota-escucha]");
   if (etq) {
-    const u = ultimaEscucha(filas);
+    const u = ultimaEscucha([...rojos, ...azules]);
     etq.textContent = estado.parados === null ? "" : u ? I18n.t("flota.ultima_escucha", { hora: horaEscucha(u) }) : I18n.t("flota.sin_parados");
   }
   if (!ver) return;
@@ -462,7 +484,7 @@ function pintarParados() {
     const html = document.createElement("span");
     html.textContent = String(f.n_barcos);
     L.marker(posicionParado(f), {
-      icon: L.divIcon({ className: "flota-parado", html, iconSize: [tam, tam] }),
+      icon: L.divIcon({ className: f.tipo === "navegando" ? "flota-parado navegando" : "flota-parado", html, iconSize: [tam, tam] }),
       keyboard: false, title: textoParado(f), pane: "flotaParados",
     }).bindTooltip(textoParado(f), { direction: "top", offset: [0, -tam / 2] }).addTo(capaParados);
   }
