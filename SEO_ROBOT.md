@@ -35,3 +35,14 @@ Una entrada por pasada (martes y viernes), añadida al final. Anota números de 
 - KPIs (sin cifras): país en foco España; paso más en rojo: altas (visita → alta). Cambio hecho: rama robot/diseno-2026-10-20-kpi-altas (commit 6a6630b): las páginas públicas de /mareas/<spot> y la llamada de /pt/ prometían 7 días de prueba y la real es de 14; corregido. Evaluaciones: no había cambios anteriores. Propuestas para Mikel: ninguna.
 - Parte D (DeepL): día 20, no aplica.
 - Esperado próxima pasada: PR fusionada; 13 indexadas o más; "Descubierta" por debajo de 396.
+
+## 2026-10-23 05:4x UTC (viernes)
+- Aviso: SEO_ESTADO.md es del 2026-10-20 08:56 UTC (no de hoy).
+- Números: indexadas 22 de 500 inspeccionadas (4%; antes 13 de 499: +9). Sitemap 558 URLs. 344 "Descubierta: sin indexar", 133 "Google no reconoce esta URL", 477 sin rastrear nunca (el freno sigue siendo autoridad/rastreo). Clics/impresiones de 28 días: no figuran en este fichero (informe de palabras: España semana 05-oct, 28 impresiones, 0 clics, posición 17,1).
+- País priorizado: España (pais_foco del resumen de KPIs; es el que más búsquedas tiene). Portugal y NZ solo tienen huecos de técnicas.
+- PARTE C (rama robot/palabras-2026-10-23-calamar-chipiron, commit 451fb5e, la PR la abre robot-diseno-pr.yml): /especies/<especie> pasa de "X: dónde y cuándo pescarla…" a "Pesca de X: dónde y cuándo pescarla…" en título y meta description. Términos: "pesca chipiron" (pos. 24), "chipiron pescado" (82), "lubina pesca" (100), "calamar" (78). Sirve al punto 1. Medición en comun seo/palabras/costaviva-es-cambios.json.
+- Veredictos: el cambio del 12-oct (Mareas en X hoy) sigue "pendiente" (menos de 2 semanas con datos); nada que revertir.
+- Huecos dejados: técnicas (spinning, jigging, surfcasting, soft bait, slow jigging; ES/PT/NZ): sin datos reales con fuente en la app, no se crean páginas.
+- SEO invisible (PARTE A) y diseño (PARTE B): ninguno esta pasada; sin datos que lo justifiquen.
+- KPIs (PARTE D): es viernes, solo martes. DeepL: día 23, no aplica.
+- Esperado próxima pasada: PR fusionada; 22 indexadas o más; "Descubierta" por debajo de 344; posición de los 4 términos igual o mejor a 2 semanas.
