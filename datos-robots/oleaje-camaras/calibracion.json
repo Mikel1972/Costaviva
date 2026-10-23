@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-23T11:37:42.609Z",
- "lineasHistorial": 4425,
+ "fecha": "2026-10-23T12:07:49.169Z",
+ "lineasHistorial": 4438,
  "etiquetas": 233,
  "etiquetasClaude": 138,
  "calibracion": {
@@ -20,9 +20,9 @@
    "pocosDatos": false
   },
   "hondarribia/bocana": {
-   "a": 3.4643,
+   "a": 3.6681,
    "p": 0.5,
-   "n": 19,
+   "n": 20,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 2,
    "franjasClaude": [
@@ -31,8 +31,8 @@
    ],
    "dias": 12,
    "hMin": 0.15,
-   "hMax": 0.86,
-   "errorRel": 0.981,
+   "hMax": 0.87,
+   "errorRel": 1,
    "pocosDatos": false
   },
   "donostia/principal": {
@@ -49,9 +49,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 4.8895,
+   "a": 4.9016,
    "p": 0.5,
-   "n": 321,
+   "n": 322,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 17,
    "franjasClaude": [
@@ -70,8 +70,8 @@
    ],
    "dias": 16,
    "hMin": 0.3,
-   "hMax": 5.76,
-   "errorRel": 0.783,
+   "hMax": 5.83,
+   "errorRel": 0.785,
    "pocosDatos": false
   },
   "zumaia/c": {
@@ -105,9 +105,9 @@
    "pocosDatos": false
   },
   "deba/rompiente": {
-   "a": 5.9336,
+   "a": 5.9493,
    "p": 0.5,
-   "n": 114,
+   "n": 115,
    "nEtiquetas": 2,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -119,8 +119,8 @@
    ],
    "dias": 15,
    "hMin": 0.3,
-   "hMax": 5.76,
-   "errorRel": 0.991,
+   "hMax": 5.83,
+   "errorRel": 0.987,
    "pocosDatos": false
   },
   "mundaka/principal": {
@@ -217,9 +217,9 @@
    "pocosDatos": false
   },
   "berria/dinamico": {
-   "a": 5.1486,
+   "a": 5.1717,
    "p": 0.5,
-   "n": 153,
+   "n": 154,
    "nEtiquetas": 8,
    "nEtiquetasClaude": 11,
    "franjasClaude": [
@@ -231,7 +231,7 @@
    "dias": 16,
    "hMin": 0.69,
    "hMax": 4.51,
-   "errorRel": 0.856,
+   "errorRel": 0.859,
    "pocosDatos": false
   },
   "mutriku/principal": {
@@ -388,8 +388,8 @@
    "sustituye": true,
    "motivo": "7 etiquetas",
    "ruido": {
-    "ruido": 0.5,
-    "pares": 57
+    "ruido": 0.488,
+    "pares": 58
    }
   },
   "donostia": {
@@ -412,8 +412,8 @@
    "sustituye": true,
    "motivo": "18 etiquetas",
    "ruido": {
-    "ruido": 0.535,
-    "pares": 265
+    "ruido": 0.536,
+    "pares": 266
    }
   },
   "getaria": {
@@ -436,8 +436,8 @@
    "sustituye": true,
    "motivo": "≥ 3 días con alturas variadas",
    "ruido": {
-    "ruido": 0.937,
-    "pares": 60
+    "ruido": 0.961,
+    "pares": 61
    }
   },
   "mutriku": {
@@ -476,8 +476,8 @@
    "sustituye": true,
    "motivo": "8 etiquetas",
    "ruido": {
-    "ruido": 0.919,
-    "pares": 79
+    "ruido": 0.903,
+    "pares": 80
    }
   },
   "castrourdiales": {
