@@ -100,8 +100,8 @@ Sin IA. No toca los ficheros de la flota.
   alta manda `consiente_uso_datos_capturas: true` (lo copia el trigger de
   siempre). Oponerse: Mi suscripción → «Tus datos» (`suscripcion.html`), RPC
   `fijar_uso_capturas_estadisticas(p_usar)` (migración
-  `20261022233000_estadisticas_interes_legitimo.sql`, **pendiente del sí de
-  Mikel**; sin ella el bloque falla al guardar). Pone la misma columna a false:
+  `20261022233000_estadisticas_interes_legitimo.sql`, ya aplicada en producción
+  según schema_migrations el 2026-10-23). Pone la misma columna a false:
   los triggers dejan de contarle y el aprendizaje del índice le excluye
   (`usuariosExcluidos` de `scripts/aprendizaje/casos.mjs`, salvo el dueño).
   Los usuarios antiguos que no marcaron la casilla siguen a false.
