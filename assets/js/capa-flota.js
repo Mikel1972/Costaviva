@@ -163,6 +163,29 @@ export const diasConDatos = (filas, dias) => new Set((filas || []).filter((f) =>
 // "mié 22 oct" / "Wed 22 Oct" / "qua., 22/10"... en el idioma de la app.
 export const fechaDia = (dia) => new Date(`${dia}T12:00:00Z`).toLocaleDateString(I18n.locale(), { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
 
+// 🔴 Flota PARADA (2026-10-23): foto de la ÚLTIMA escucha (flota_parados),
+// por puerto (a menos de 2 km) o por celda en el mar, solo con 3 barcos o
+// más, sin desglose por eslora. Encendida por defecto, con su casilla.
+export const CADUCA_PARADOS_H = 6; // el robot va cada 2 h
+export const COLOR_PARADOS = "#DC2626";
+export function paradosVisibles(filas, ahora = new Date()) {
+  const limite = ahora.getTime() - CADUCA_PARADOS_H * 3600_000;
+  return (filas || []).filter((f) => (f.tipo === "puerto" || f.tipo === "mar") && Number(f.n_barcos) >= MIN_BARCOS
+    && Number.isFinite(Number(f.lat)) && Number.isFinite(Number(f.lon)) && Date.parse(f.escucha) >= limite);
+}
+// Dónde va el círculo: el puerto, o el centro de la celda en el mar.
+export const posicionParado = (f) => (f.tipo === "puerto" ? [Number(f.lat), Number(f.lon)] : centroCelda(f.lat, f.lon));
+export const textoParado = (f) => (f.tipo === "puerto"
+  ? I18n.t("flota.parados_puerto", { puerto: f.puerto, n: Number(f.n_barcos) })
+  : I18n.t("flota.parados_mar", { n: Number(f.n_barcos) }));
+// Diámetro del círculo con la cifra: de 22 px (3 barcos) a 38 px (40 o más).
+export const tamParado = (n) => Math.round(22 + 16 * Math.min(1, Math.log(Math.max(MIN_BARCOS, n) / MIN_BARCOS) / Math.log(40 / MIN_BARCOS)));
+export function ultimaEscucha(filas) {
+  const t = Math.max(...(filas || []).map((f) => Date.parse(f.escucha)).filter(Number.isFinite));
+  return Number.isFinite(t) ? new Date(t) : null;
+}
+export const horaEscucha = (fecha) => fecha.toLocaleTimeString(I18n.locale(), { hour: "2-digit", minute: "2-digit" });
+
 export const textoVacio = (periodo) => I18n.t(periodo === "ayer" ? "flota.vacio_ayer" : "flota.vacio_24h");
 
 // ---------------------------------------------------------------------------
@@ -171,8 +194,10 @@ export const textoVacio = (periodo) => I18n.t(periodo === "ayer" ? "flota.vacio_
 const REFRESCO_MS = 10 * 60_000;
 let mapa = null, consultar = async () => [], calor = null, control = null, controlPuesto = false;
 const estado = { plegado: null, modalidad: "costa", periodo: "24h", clase: "todas", filas: null, pedido: 0, cargando: null,
-  historico: null, dia: null, reloj: null };
+  historico: null, dia: null, reloj: null, parados: null, verParados: true };
 let consultarDias = async () => [];
+let consultarParados = async () => [];
+let capaParados = null;
 const atribucion = () => I18n.t("flota.atribucion");
 
 function ponerEstilos() {
@@ -199,6 +224,13 @@ function ponerEstilos() {
   .flota-control .play button:disabled, .flota-control .play input:disabled { opacity: 0.45; cursor: default; }
   .flota-control .fecha { color: var(--tinta-2); font-weight: 500; margin-bottom: 6px; min-height: 1.2em; }
   .flota-control .escala { margin-top: 6px; }
+  .flota-control .parados { display: flex; align-items: center; gap: 6px; margin-top: 6px; color: var(--tinta); }
+  .flota-control .parados input { margin: 0; }
+  .flota-control .escucha { color: var(--tinta-2); font-weight: 500; }
+  .flota-parado { background: none; border: none; }
+  .flota-parado span { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;
+    border-radius: 50%; background: ${COLOR_PARADOS}; color: #fff; border: 2px solid #fff;
+    font: 800 11px var(--f-texto); box-shadow: 0 2px 6px rgba(11,30,63,0.35); box-sizing: border-box; }
   .flota-control .escala .barra { height: 10px; border-radius: 5px; }
   .flota-control .escala .ext { display: flex; justify-content: space-between; color: var(--tinta-2); margin-top: 2px; font-weight: 500; }
   .leaflet-pane canvas.flota-calor { position: absolute; left: 0; top: 0; pointer-events: none; }
@@ -281,6 +313,16 @@ function crearControl(L) {
     const ext = L.DomUtil.create("div", "ext", esc);
     L.DomUtil.create("span", "", ext).textContent = I18n.t("flota.leyenda_pocos");
     L.DomUtil.create("span", "", ext).textContent = I18n.t("flota.leyenda_muchos");
+    // 🔴 Parados (última escucha), encendidos por defecto.
+    const par = L.DomUtil.create("label", "parados", cuerpo);
+    const casilla = L.DomUtil.create("input", "", par);
+    casilla.type = "checkbox";
+    casilla.checked = estado.verParados;
+    casilla.setAttribute("data-flota-parados", "");
+    L.DomUtil.create("span", "", par).textContent = I18n.t("flota.parados");
+    casilla.addEventListener("change", () => { estado.verParados = casilla.checked; pintarParados(); });
+    const esc2 = L.DomUtil.create("div", "escucha", cuerpo);
+    esc2.setAttribute("data-flota-escucha", "");
     L.DomUtil.create("div", "nota", cuerpo).textContent = I18n.t("flota.nota");
     const vacio = L.DomUtil.create("div", "vacio", cuerpo);
     vacio.setAttribute("data-flota-vacio", "");
@@ -397,7 +439,37 @@ function ponerDia(i) {
   pintar();
 }
 
+// Círculos rojos con la cifra de la flota parada (puertos y mar).
+function pintarParados() {
+  if (!mapa) return;
+  const L = window.L;
+  capaParados ||= L.layerGroup();
+  // Su propio panel, por encima de los spots (muchos puertos son spots).
+  if (!mapa.getPane("flotaParados")) mapa.createPane("flotaParados").style.zIndex = 640;
+  capaParados.clearLayers();
+  const filas = paradosVisibles(estado.parados);
+  const ver = capaVisible(estado.modalidad) && estado.verParados;
+  if (ver && !mapa.hasLayer(capaParados)) capaParados.addTo(mapa);
+  if (!ver && mapa.hasLayer(capaParados)) mapa.removeLayer(capaParados);
+  const etq = control?.getContainer()?.querySelector("[data-flota-escucha]");
+  if (etq) {
+    const u = ultimaEscucha(filas);
+    etq.textContent = estado.parados === null ? "" : u ? I18n.t("flota.ultima_escucha", { hora: horaEscucha(u) }) : I18n.t("flota.sin_parados");
+  }
+  if (!ver) return;
+  for (const f of filas) {
+    const tam = tamParado(Number(f.n_barcos));
+    const html = document.createElement("span");
+    html.textContent = String(f.n_barcos);
+    L.marker(posicionParado(f), {
+      icon: L.divIcon({ className: "flota-parado", html, iconSize: [tam, tam] }),
+      keyboard: false, title: textoParado(f), pane: "flotaParados",
+    }).bindTooltip(textoParado(f), { direction: "top", offset: [0, -tam / 2] }).addTo(capaParados);
+  }
+}
+
 function pintar() {
+  pintarParados();
   if (!mapa || !calor) return;
   const div = control?.getContainer();
   const dias = diasPlay();
@@ -442,8 +514,10 @@ function cargar() {
     .then(() => Promise.all([
       Promise.resolve().then(() => consultar()).catch((e) => { console.warn("Flota:", e?.message || e); return null; }),
       Promise.resolve().then(() => consultarDias(diasPlay()[0])).catch((e) => { console.warn("Flota (días):", e?.message || e); return null; }),
+      Promise.resolve().then(() => consultarParados()).catch((e) => { console.warn("Flota (parados):", e?.message || e); return null; }),
     ]))
-    .then(([filas, historico]) => {
+    .then(([filas, historico, parados]) => {
+      estado.parados = Array.isArray(parados) ? parados : (estado.parados ?? []);
       estado.filas = Array.isArray(filas) ? filas : (estado.filas ?? []);
       estado.historico = Array.isArray(historico) ? historico : (estado.historico ?? []);
       estado.pedido = Date.now();
@@ -458,6 +532,7 @@ function aplicar() {
   if (!capaVisible(estado.modalidad)) {
     reproducir(false);
     if (calor && mapa.hasLayer(calor)) mapa.removeLayer(calor);
+    if (capaParados && mapa.hasLayer(capaParados)) mapa.removeLayer(capaParados);
     if (controlPuesto) { control.remove(); controlPuesto = false; mapa.attributionControl?.removeAttribution(atribucion()); }
     return;
   }
@@ -482,7 +557,9 @@ export function modalidadInicial(doc = globalThis.document, almacen = globalThis
 
 // map: el mapa de Leaflet; consultar(): promesa con las filas de flota_zonas.
 // consultarDias(desde): promesa con las filas de flota_zonas_dia desde ese día.
-export function montarCapa(map, { consultar: fn, consultarDias: fnDias } = {}) {
+// consultarParados(): promesa con las filas de flota_parados.
+export function montarCapa(map, { consultar: fn, consultarDias: fnDias, consultarParados: fnParados } = {}) {
+  if (fnParados) consultarParados = fnParados;
   mapa = map;
   if (fn) consultar = fn;
   if (fnDias) consultarDias = fnDias;

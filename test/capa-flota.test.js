@@ -8,7 +8,7 @@ import { readFileSync } from "node:fs";
 import {
   zonasVisibles, colorCalor, intensidadFlota, alfaCalor, tablaCalor, radioBlobPx, metrosPorPixel, centroCelda,
   celdaCercana, gradienteCss, PARADAS, OPACIDAD_MAX, RADIO_MIN_PX, RADIO_MAX_PX,
-  diasPlay, diaMadrid, zonasDelDia, diasConDatos, fechaDia, DIAS_PLAY, MIN_DIAS_PLAY, limitesCelda, capaVisible, textoCelda, textoVacio, claveClase,
+  diasPlay, diaMadrid, paradosVisibles, posicionParado, textoParado, tamParado, ultimaEscucha, CADUCA_PARADOS_H, zonasDelDia, diasConDatos, fechaDia, DIAS_PLAY, MIN_DIAS_PLAY, limitesCelda, capaVisible, textoCelda, textoVacio, claveClase,
   MIN_BARCOS, CLASES, PERIODOS, CADUCA_H, empiezaPlegado, ANCHO_PLEGADO, modalidadInicial,
 } from "../assets/js/capa-flota.js";
 import { leerDiccionario } from "./i18n-html.js";
@@ -144,12 +144,36 @@ test("▶️ 14 días: días de Madrid, un día cada fotograma (no acumulado), m
   assert.match(fechaDia("2026-10-22"), /22/);
 });
 
+test("🔴 parados: última escucha, >= 3 barcos, puerto o centro de la celda, y su texto", () => {
+  const AH = new Date("2026-10-23T09:00:00Z");
+  const e = "2026-10-23T08:20:00Z";
+  const filas = [
+    { tipo: "puerto", puerto: "Ondarroa", lat: 43.322, lon: -2.418, n_barcos: 14, escucha: e },
+    { tipo: "mar", puerto: null, lat: 43.6, lon: -2.85, n_barcos: 3, escucha: e },
+    { tipo: "mar", puerto: null, lat: 43.7, lon: -2.85, n_barcos: 2, escucha: e },
+    { tipo: "puerto", puerto: "Bermeo", lat: 43.42, lon: -2.721, n_barcos: 5, escucha: "2026-10-22T20:00:00Z" },
+    { tipo: "otro", lat: 43.7, lon: -2.85, n_barcos: 9, escucha: e },
+  ];
+  assert.equal(CADUCA_PARADOS_H, 6);
+  const v = paradosVisibles(filas, AH);
+  assert.deepEqual(v.map((f) => f.puerto ?? f.lat), ["Ondarroa", 43.6], "ni < 3, ni caducados, ni tipos raros");
+  assert.deepEqual(posicionParado(v[0]), [43.322, -2.418]);
+  assert.deepEqual(posicionParado(v[1]), [43.625, -2.825]);
+  assert.equal(textoParado(v[0]), "Ondarroa · 14 parados");
+  assert.equal(textoParado(v[1]), "3 parados en el mar");
+  assert.equal(tamParado(3), 22);
+  assert.equal(tamParado(400), 38);
+  assert.ok(tamParado(14) > tamParado(5));
+  assert.equal(ultimaEscucha(v).toISOString(), "2026-10-23T08:20:00.000Z");
+  assert.equal(ultimaEscucha([]), null);
+});
+
 test("i18n: todas las claves flota.* en es, en y pt (también las compuestas)", () => {
   const dic = (i) => leerDiccionario(new URL(`../assets/i18n/${i}.js`, import.meta.url));
   const ES = dic("es"), EN = dic("en"), PT = dic("pt");
   const usadas = [...readFileSync(new URL("../assets/js/capa-flota.js", import.meta.url), "utf8").matchAll(/I18n\.t\("(flota\.[\w.]+)"/g)].map((m) => m[1]);
   const compuestas = CLASES.map((c) => `flota.clase.${claveClase(c)}`);
-  for (const k of [...usadas, ...compuestas, "flota.vacio_24h", "flota.vacio_ayer", "flota.hoy", "flota.ayer", "flota.chip", "flota.pocos_dias", "flota.play_ayuda", "flota.vacio_dia", "lluvia.pausar", "lluvia.reproducir"]) {
+  for (const k of [...usadas, ...compuestas, "flota.vacio_24h", "flota.vacio_ayer", "flota.hoy", "flota.ayer", "flota.chip", "flota.pocos_dias", "flota.play_ayuda", "flota.vacio_dia", "lluvia.pausar", "lluvia.reproducir", "flota.parados", "flota.parados_puerto", "flota.parados_mar", "flota.ultima_escucha", "flota.sin_parados"]) {
     for (const [n, d] of [["es", ES], ["en", EN], ["pt", PT]]) assert.ok(k in d, `${k} en ${n}`);
   }
   assert.equal(ES["flota.hoy"], "Hoy (24 h)");
@@ -167,6 +191,7 @@ test("index.html: carga el módulo, lo monta con flota_zonas y avisa de la modal
   assert.match(HTML, /\.from\("flota_zonas"\)/);
   assert.match(HTML, /\.from\("flota_zonas_dia"\)/);
   assert.match(HTML, /consultarDias:/);
+  assert.match(HTML, /\.from\("flota_parados"\)/);
   // Sin librerías nuevas: el calor se pinta en un canvas propio.
   assert.doesNotMatch(HTML, /leaflet-heat|leaflet\.heat|heatmap\.js/i);
   assert.match(JS, /globalCompositeOperation = "lighten"/, "las manchas se juntan con el máximo, no sumando");

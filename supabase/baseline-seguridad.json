@@ -260,6 +260,20 @@
       "policies": []
     },
     {
+      "tablename": "flota_parados",
+      "rls_enabled": true,
+      "policies": [
+        {
+          "name": "lectura pública de la flota parada",
+          "cmd": "r",
+          "roles": [
+            "anon",
+            "authenticated"
+          ]
+        }
+      ]
+    },
+    {
       "tablename": "flota_zonas",
       "rls_enabled": true,
       "policies": [

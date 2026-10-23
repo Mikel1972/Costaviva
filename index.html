@@ -2845,6 +2845,14 @@ function montarFlota(F) {
       if (error) throw new Error(error.message);
       return data || [];
     },
+    // 🔴 Flota parada de la última escucha (flota_parados): pocas filas.
+    consultarParados: async () => {
+      if (!window.supabaseCliente) return [];
+      const { data, error } = await window.supabaseCliente.from("flota_parados")
+        .select("tipo,puerto,lat,lon,n_barcos,escucha");
+      if (error) throw new Error(error.message);
+      return data || [];
+    },
     // ▶️ de los últimos 14 días: el histórico diario (flota_zonas_dia).
     consultarDias: async (desde) => {
       if (!window.supabaseCliente) return [];

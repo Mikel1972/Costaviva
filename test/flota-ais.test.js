@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { claseEslora, celda, celdaDeFaena, leerMensaje, filasDeFaena, resumenBarco, horaEnPunto, zonasDeFaena, zonasPorDia, diaMadrid, MIN_BARCOS_CELDA, CLASES_ZONA as CLASES } from "../scripts/flota/flota-ais.mjs";
+import { claseEslora, celda, celdaDeFaena, leerMensaje, filasDeFaena, resumenBarco, horaEnPunto, zonasDeFaena, zonasPorDia, diaMadrid, posicionParado, puertoCercano, distanciaKm, cargarPuertos, paradosDeEscucha, CAJA, MIN_BARCOS_CELDA, CLASES_ZONA as CLASES } from "../scripts/flota/flota-ais.mjs";
 
 test("clase por eslora (A+B del AIS)", () => {
   assert.equal(claseEslora(10, 8), "<24");
@@ -218,4 +218,79 @@ test("histórico: migración de flota_zonas_dia (lectura pública, sin escritura
   });
   const robot = readFileSync(new URL("../scripts/flota/flota-ais.mjs", import.meta.url), "utf8");
   assert.match(robot, /flota_zonas_dia\?dia=lt\.\$\{corte\}/, "borra lo de más de 60 días");
+});
+
+// ---- Flota parada (2026-10-23) ----
+
+test("parado: al menos 3 posiciones con velocidad mediana < 0,5 nudos", () => {
+  const p = (sog, lat = 43.322, lon = -2.418) => ({ lat, lon, sog });
+  assert.deepEqual(posicionParado([p(0), p(0.1), p(0.2)]), [43.322, -2.418]);
+  assert.equal(posicionParado([p(0), p(0.1)]), null, "pocas posiciones");
+  assert.equal(posicionParado([p(2), p(3), p(0)]), null, "faenando no es parado");
+  assert.equal(posicionParado([p(0.5), p(0.6), p(0.5)]), null, "0,5 ya no cuenta");
+  assert.equal(posicionParado([p(102.3), p(102.3), p(102.3)]), null, "velocidad no disponible");
+});
+
+test("puertos: los de puertos.json + las lonxas de Galicia, todos dentro de la caja del AIS y aproximados", () => {
+  const json = JSON.parse(readFileSync(new URL("../scripts/flota/puertos.json", import.meta.url), "utf8"));
+  assert.equal(json.aproximado, true);
+  assert.match(json._nota, /APROXIMADAS/);
+  const ps = cargarPuertos();
+  assert.ok(ps.length >= 80);
+  assert.equal(new Set(ps.map((x) => x.id)).size, ps.length, "ids únicos");
+  for (const x of ps) {
+    assert.match(x.id, /^[a-z0-9-]+$/, x.id);
+    assert.ok(x.lat >= CAJA[0][0] && x.lat <= CAJA[1][0] && x.lon >= CAJA[0][1] && x.lon <= CAJA[1][1], `${x.nombre} fuera de la caja`);
+    assert.ok(!/\.$/.test(x.nombre), x.nombre);
+  }
+  for (const n of ["Ondarroa", "Bermeo", "Pasaia", "Santoña", "Avilés", "Burela", "Celeiro", "Ribeira"]) assert.ok(ps.some((x) => x.nombre === n), n);
+});
+
+test("puerto cercano: el más próximo a menos de 2 km; lejos, ninguno", () => {
+  const ps = cargarPuertos();
+  assert.ok(Math.abs(distanciaKm(43.3, -2.4, 43.3, -2.4)) < 1e-9);
+  assert.ok(Math.abs(distanciaKm(43.3, -2.4, 43.309, -2.4) - 1.0) < 0.01);
+  assert.equal(puertoCercano(43.323, -2.419, ps).nombre, "Ondarroa");
+  assert.equal(puertoCercano(43.309, -2.383, ps).nombre, "Mutriku", "a 3 km de Ondarroa: el más cercano");
+  assert.equal(puertoCercano(43.6, -2.6, ps), null, "en mar abierto");
+});
+
+test("flota parada: por puerto o celda del mar, barcos distintos, solo >= 3 y sin barcos en las filas", () => {
+  const clave = "k";
+  const parado = (lat, lon) => ({ tipo: 30, posiciones: [0, 0.1, 0].map((sog) => ({ lat, lon, sog })) });
+  const barcos = {
+    1: parado(43.322, -2.418), 2: parado(43.323, -2.417), 3: parado(43.321, -2.419), 4: parado(43.322, -2.418), // Ondarroa: 4
+    5: parado(43.42, -2.721), 6: parado(43.42, -2.72),                                                           // Bermeo: 2 -> no
+    7: parado(43.61, -2.81), 8: parado(43.62, -2.82), 9: parado(43.63, -2.83),                                   // mar: 3
+    10: { tipo: 70, posiciones: parado(43.322, -2.418).posiciones },                                              // mercante: no
+    11: { tipo: 30, posiciones: [3, 3, 2].map((sog) => ({ lat: 43.322, lon: -2.418, sog })) },                    // faenando: no
+  };
+  const filas = paradosDeEscucha(barcos, {}, clave, cargarPuertos(), "2026-10-23T08:20:00.000Z");
+  assert.deepEqual(filas, [
+    { clave: "mar:43.60,-2.85", tipo: "mar", puerto: null, lat: 43.6, lon: -2.85, n_barcos: 3, escucha: "2026-10-23T08:20:00.000Z" },
+    { clave: "puerto:ondarroa", tipo: "puerto", puerto: "Ondarroa", lat: 43.322, lon: -2.418, n_barcos: 4, escucha: "2026-10-23T08:20:00.000Z" },
+  ]);
+  // Un pesquero conocido de otra escucha (sin mensaje estático ahora) también cuenta.
+  const conocido = resumenBarco(12, clave);
+  const mas = paradosDeEscucha({ ...barcos, 12: { posiciones: parado(43.42, -2.72).posiciones }, 13: parado(43.42, -2.72) }, { [conocido]: "<24" }, clave, cargarPuertos(), "x");
+  assert.equal(mas.find((f) => f.clave === "puerto:bermeo")?.n_barcos, 4);
+});
+
+test("flota parada: migración (lectura pública, sin escritura) y baseline", () => {
+  const sql = readFileSync(new URL("../supabase/migrations/20261023130000_flota_parados.sql", import.meta.url), "utf8");
+  assert.match(sql, /create table if not exists public\.flota_parados/);
+  assert.match(sql, /check \(n_barcos >= 3\)/);
+  assert.match(sql, /grant select on public\.flota_parados to anon, authenticated;/);
+  assert.match(sql, /-- anon-ok:/);
+  assert.doesNotMatch(sql, /for (insert|update|delete|all)/i);
+  assert.doesNotMatch(sql, /security definer/i);
+  // Las claves que escribe el robot cumplen el CHECK de la tabla.
+  const re = /^(puerto:[a-z0-9-]+|mar:-?[0-9]+\.[0-9]{2},-?[0-9]+\.[0-9]{2})$/;
+  assert.ok(sql.includes(`'${re.source}'`), "el CHECK de la clave es esta misma expresión");
+  for (const k of ["puerto:ondarroa", "puerto:gal-12", "mar:43.60,-2.85", "mar:42.05,-10.00"]) assert.match(k, re);
+  const base = JSON.parse(readFileSync(new URL("../supabase/baseline-seguridad.json", import.meta.url), "utf8"));
+  assert.deepEqual(base.tablas.find((t) => t.tablename === "flota_parados"), {
+    tablename: "flota_parados", rls_enabled: true,
+    policies: [{ name: "lectura pública de la flota parada", cmd: "r", roles: ["anon", "authenticated"] }],
+  });
 });

@@ -1,0 +1,251 @@
+{
+  "_nota": "Puertos pesqueros de la caja del AIS (scripts/flota/flota-ais.mjs) fuera de Galicia, para contar la flota PARADA en puerto (2026-10-23). Posiciones APROXIMADAS (~1 km), puestas a mano sobre el puerto pesquero o la dársena principal; sirven para 'a menos de 2 km de un puerto', no para navegar. Los de Galicia salen de scripts/lonjas/lonjas-galicia.json (sus lonxas, mismo criterio de ~1 km): no se copian aquí.",
+  "aproximado": true,
+  "puertos": [
+    {
+      "id": "tapia",
+      "nombre": "Tapia de Casariego",
+      "zona": "Asturias",
+      "lat": 43.57,
+      "lon": -6.944
+    },
+    {
+      "id": "ortiguera",
+      "nombre": "Ortiguera",
+      "zona": "Asturias",
+      "lat": 43.561,
+      "lon": -6.736
+    },
+    {
+      "id": "puerto-de-vega",
+      "nombre": "Puerto de Vega",
+      "zona": "Asturias",
+      "lat": 43.567,
+      "lon": -6.645
+    },
+    {
+      "id": "luarca",
+      "nombre": "Luarca",
+      "zona": "Asturias",
+      "lat": 43.546,
+      "lon": -6.535
+    },
+    {
+      "id": "cudillero",
+      "nombre": "Cudillero",
+      "zona": "Asturias",
+      "lat": 43.565,
+      "lon": -6.147
+    },
+    {
+      "id": "san-juan-de-la-arena",
+      "nombre": "San Juan de la Arena",
+      "zona": "Asturias",
+      "lat": 43.557,
+      "lon": -6.077
+    },
+    {
+      "id": "aviles",
+      "nombre": "Avilés",
+      "zona": "Asturias",
+      "lat": 43.564,
+      "lon": -5.92
+    },
+    {
+      "id": "luanco",
+      "nombre": "Luanco",
+      "zona": "Asturias",
+      "lat": 43.614,
+      "lon": -5.792
+    },
+    {
+      "id": "candas",
+      "nombre": "Candás",
+      "zona": "Asturias",
+      "lat": 43.59,
+      "lon": -5.762
+    },
+    {
+      "id": "gijon",
+      "nombre": "Gijón",
+      "zona": "Asturias",
+      "lat": 43.545,
+      "lon": -5.666
+    },
+    {
+      "id": "tazones",
+      "nombre": "Tazones",
+      "zona": "Asturias",
+      "lat": 43.545,
+      "lon": -5.402
+    },
+    {
+      "id": "lastres",
+      "nombre": "Lastres",
+      "zona": "Asturias",
+      "lat": 43.512,
+      "lon": -5.266
+    },
+    {
+      "id": "ribadesella",
+      "nombre": "Ribadesella",
+      "zona": "Asturias",
+      "lat": 43.465,
+      "lon": -5.06
+    },
+    {
+      "id": "llanes",
+      "nombre": "Llanes",
+      "zona": "Asturias",
+      "lat": 43.421,
+      "lon": -4.752
+    },
+    {
+      "id": "san-vicente-de-la-barquera",
+      "nombre": "San Vicente de la Barquera",
+      "zona": "Cantabria",
+      "lat": 43.385,
+      "lon": -4.398
+    },
+    {
+      "id": "comillas",
+      "nombre": "Comillas",
+      "zona": "Cantabria",
+      "lat": 43.387,
+      "lon": -4.29
+    },
+    {
+      "id": "suances",
+      "nombre": "Suances",
+      "zona": "Cantabria",
+      "lat": 43.43,
+      "lon": -4.04
+    },
+    {
+      "id": "santander",
+      "nombre": "Santander",
+      "zona": "Cantabria",
+      "lat": 43.451,
+      "lon": -3.815
+    },
+    {
+      "id": "santona",
+      "nombre": "Santoña",
+      "zona": "Cantabria",
+      "lat": 43.443,
+      "lon": -3.457
+    },
+    {
+      "id": "colindres",
+      "nombre": "Colindres",
+      "zona": "Cantabria",
+      "lat": 43.398,
+      "lon": -3.452
+    },
+    {
+      "id": "laredo",
+      "nombre": "Laredo",
+      "zona": "Cantabria",
+      "lat": 43.414,
+      "lon": -3.416
+    },
+    {
+      "id": "castro-urdiales",
+      "nombre": "Castro Urdiales",
+      "zona": "Cantabria",
+      "lat": 43.384,
+      "lon": -3.213
+    },
+    {
+      "id": "santurtzi",
+      "nombre": "Santurtzi",
+      "zona": "Bizkaia",
+      "lat": 43.331,
+      "lon": -3.032
+    },
+    {
+      "id": "armintza",
+      "nombre": "Armintza",
+      "zona": "Bizkaia",
+      "lat": 43.434,
+      "lon": -2.903
+    },
+    {
+      "id": "bermeo",
+      "nombre": "Bermeo",
+      "zona": "Bizkaia",
+      "lat": 43.42,
+      "lon": -2.721
+    },
+    {
+      "id": "mundaka",
+      "nombre": "Mundaka",
+      "zona": "Bizkaia",
+      "lat": 43.408,
+      "lon": -2.698
+    },
+    {
+      "id": "elantxobe",
+      "nombre": "Elantxobe",
+      "zona": "Bizkaia",
+      "lat": 43.403,
+      "lon": -2.638
+    },
+    {
+      "id": "lekeitio",
+      "nombre": "Lekeitio",
+      "zona": "Bizkaia",
+      "lat": 43.364,
+      "lon": -2.505
+    },
+    {
+      "id": "ondarroa",
+      "nombre": "Ondarroa",
+      "zona": "Bizkaia",
+      "lat": 43.322,
+      "lon": -2.418
+    },
+    {
+      "id": "mutriku",
+      "nombre": "Mutriku",
+      "zona": "Gipuzkoa",
+      "lat": 43.309,
+      "lon": -2.382
+    },
+    {
+      "id": "getaria",
+      "nombre": "Getaria",
+      "zona": "Gipuzkoa",
+      "lat": 43.304,
+      "lon": -2.204
+    },
+    {
+      "id": "orio",
+      "nombre": "Orio",
+      "zona": "Gipuzkoa",
+      "lat": 43.281,
+      "lon": -2.127
+    },
+    {
+      "id": "pasaia",
+      "nombre": "Pasaia",
+      "zona": "Gipuzkoa",
+      "lat": 43.323,
+      "lon": -1.923
+    },
+    {
+      "id": "hondarribia",
+      "nombre": "Hondarribia",
+      "zona": "Gipuzkoa",
+      "lat": 43.375,
+      "lon": -1.792
+    },
+    {
+      "id": "donibane-lohizune",
+      "nombre": "Saint-Jean-de-Luz / Ciboure",
+      "zona": "Pyrénées-Atlantiques",
+      "lat": 43.388,
+      "lon": -1.668
+    }
+  ]
+}
