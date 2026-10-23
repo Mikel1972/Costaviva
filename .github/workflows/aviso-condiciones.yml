@@ -1,0 +1,87 @@
+name: Aviso de condiciones (2026-10)
+
+# 2026-10-22, decisión de Mikel. Sin IA. SOLO A MANO: nunca programado.
+#
+# Las cuentas antiguas que no marcaron la casilla de capturas anónimas
+# (perfiles.consiente_uso_datos_capturas = false) reciben un email: a partir
+# de la fecha de envío + 15 días sus capturas entran en las estadísticas
+# anónimas por interés legítimo (art. 6.1.f RGPD), salvo que se opongan en
+# «Tus datos» (👤 → Mi suscripción). Lógica en
+# scripts/avisos/condiciones-2026-10.mjs, test en test/aviso-condiciones.test.js.
+#
+#   contar   solo recuentos (por idioma). Solo lectura.
+#   probar   pinta el email en es/en/pt con un destinatario falso. Sin
+#            secretos ni red.
+#   enviar   ESCRIBE A USUARIOS REALES: hay que escribir "enviar" en
+#            confirmacion. Como mucho 90 en 24 h (plan gratuito de Resend);
+#            repetir un día después hasta que no queden pendientes. Marca
+#            aviso_condiciones_en tras cada envío confirmado: no repite.
+#   incluir  CAMBIA DATOS DE PRODUCCIÓN: hay que escribir "incluir". Pone
+#            consiente_uso_datos_capturas = true a quien recibió el aviso hace
+#            15 días o más y no se ha opuesto.
+#
+# Repo público: el registro solo lleva números, nunca emails ni ids.
+#
+# NECESITA: la migración 20261023120000_aviso_condiciones_oposicion.sql
+# aplicada (y antes la 20261022233000), el secret SUPABASE_SERVICE_ROLE_KEY y,
+# para enviar, el secret RESEND_API_KEY en GitHub (el mismo valor que en
+# Cloudflare Pages; hasta ahora solo estaba allí).
+
+on:
+  workflow_dispatch:
+    inputs:
+      modo:
+        description: "contar, probar (sin enviar), enviar o incluir"
+        required: true
+        default: contar
+        type: choice
+        options: [contar, probar, enviar, incluir]
+      confirmacion:
+        description: 'Para enviar o incluir: escribe la misma palabra ("enviar" o "incluir")'
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: aviso-condiciones
+  cancel-in-progress: false
+
+jobs:
+  aviso:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Comprobar la confirmación
+        env:
+          MODO: ${{ github.event.inputs.modo }}
+          CONFIRMACION: ${{ github.event.inputs.confirmacion }}
+        run: |
+          case "$MODO" in
+            contar|probar) echo "Modo $MODO: no escribe nada." ;;
+            enviar|incluir)
+              if [ "$CONFIRMACION" != "$MODO" ]; then
+                echo "::error::Para el modo $MODO hay que escribir \"$MODO\" en confirmacion. No se ha hecho nada."
+                exit 1
+              fi ;;
+            *) echo "::error::Modo desconocido"; exit 1 ;;
+          esac
+      - name: Ejecutar
+        env:
+          MODO: ${{ github.event.inputs.modo }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ github.event.inputs.modo != 'probar' && secrets.SUPABASE_SERVICE_ROLE_KEY || '' }}
+          RESEND_API_KEY: ${{ github.event.inputs.modo == 'enviar' && secrets.RESEND_API_KEY || '' }}
+          TEST_USER_A_EMAIL: ${{ secrets.TEST_USER_A_EMAIL }}
+          TEST_USER_B_EMAIL: ${{ secrets.TEST_USER_B_EMAIL }}
+          SMOKE_TEST_EMAIL: ${{ secrets.SMOKE_TEST_EMAIL }}
+        run: |
+          set -o pipefail
+          node scripts/avisos/condiciones-2026-10.mjs "--$MODO" | tee /tmp/salida.txt
+          if [ "$MODO" != "probar" ]; then
+            { echo "### Aviso de condiciones: $MODO"; echo '```'; cat /tmp/salida.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          fi

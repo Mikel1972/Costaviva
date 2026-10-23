@@ -89,16 +89,21 @@ test("oposición: suscripcion.html tiene la casilla y la RPC tiene su migración
   const s = leer("suscripcion.html");
   assert.match(s, /id="bloqueDatos"/);
   assert.match(s, /id="checkEstadisticas"/);
-  assert.match(s, /select\("consiente_uso_datos_capturas"\)/);
+  assert.match(s, /select\("consiente_uso_datos_capturas"\)/); // sin la migración 20261023120000
+  assert.match(s, /select\("consiente_uso_datos_capturas,aviso_condiciones_en,oposicion_estadisticas_en"\)/);
   assert.match(s, /rpc\("fijar_uso_capturas_estadisticas", \{ p_usar: usar \}\)/);
   const f = readdirSync(new URL("../supabase/migrations/", import.meta.url)).filter((x) => /fijar_uso_capturas_estadisticas/.test(leer(`supabase/migrations/${x}`)));
-  assert.deepEqual(f, ["20261022233000_estadisticas_interes_legitimo.sql"]);
-  const sql = leer(`supabase/migrations/${f[0]}`);
-  assert.match(sql, /security definer/);
-  assert.match(sql, /where id = auth\.uid\(\)/);
-  assert.match(sql, /revoke execute on function public\.fijar_uso_capturas_estadisticas\(boolean\) from public, anon;/);
-  assert.match(sql, /grant execute on function public\.fijar_uso_capturas_estadisticas\(boolean\) to authenticated;/);
-  assert.doesNotMatch(sql, /\b(begin|commit);/i);
+  // La 20261023120000 la reescribe para guardar la fecha de oposición: las dos
+  // con las mismas propiedades de seguridad.
+  assert.deepEqual(f, ["20261022233000_estadisticas_interes_legitimo.sql", "20261023120000_aviso_condiciones_oposicion.sql"]);
+  for (const m of f) {
+    const sql = leer(`supabase/migrations/${m}`);
+    assert.match(sql, /security definer/);
+    assert.match(sql, /where id = auth\.uid\(\)/);
+    assert.match(sql, /revoke execute on function public\.fijar_uso_capturas_estadisticas\(boolean\) from public, anon;/);
+    assert.match(sql, /grant execute on function public\.fijar_uso_capturas_estadisticas\(boolean\) to authenticated;/);
+    assert.doesNotMatch(sql, /\b(begin|commit);/i);
+  }
 });
 
 test("aprendizaje del índice: fuera las cuentas de prueba y quien se opuso, salvo el dueño", () => {

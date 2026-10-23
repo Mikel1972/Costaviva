@@ -105,6 +105,18 @@ Sin IA. No toca los ficheros de la flota.
   los triggers dejan de contarle y el aprendizaje del índice le excluye
   (`usuariosExcluidos` de `scripts/aprendizaje/casos.mjs`, salvo el dueño).
   Los usuarios antiguos que no marcaron la casilla siguen a false.
+- **Aviso a las cuentas antiguas (decisión de Mikel, 2026-10-22)**: las que
+  siguen a false reciben un email (es/en/pt, `user_metadata.idioma`) y, 15
+  días después, entran por interés legítimo salvo que se opongan.
+  `scripts/avisos/condiciones-2026-10.mjs` + `aviso-condiciones.yml` (solo a
+  mano, sin IA; `contar`, `probar`, `enviar` e `incluir`, los dos últimos
+  escribiendo la misma palabra en `confirmacion`; 90 envíos/24 h; solo
+  números en el registro). Migración `20261023120000_aviso_condiciones_oposicion.sql`
+  (**pendiente del sí de Mikel**): `perfiles.aviso_condiciones_en` y
+  `oposicion_estadisticas_en` (la pone la RPC con false, la borra con true).
+  En «Tus datos», una cuenta avisada y no opuesta ve la casilla marcada:
+  desmarcarla es oponerse. `enviar` necesita el secret `RESEND_API_KEY`
+  también en GitHub. Test: `test/aviso-condiciones.test.js`.
 - Precios de la hoja: `test/hoja-condiciones.test.js` los compara con
   `precios-zonas.json` (si cambian, cambia `hoja.pago_precios`). Prueba en el
   navegador del alta y de «Tus datos» en `test/navegador/`.

@@ -205,15 +205,17 @@ for (const [nombre, opciones] of [["ordenador", PC], ["móvil", MOVIL]]) {
   });
 }
 
-test("Mi suscripción: «Tus datos» deja oponerse a las estadísticas anónimas", async () => {
+// perfil: lo que devuelve /rest/v1/perfiles con las columnas nuevas
+// (migración 20261023120000).
+async function probarTusDatos(perfil, marcadaEsperada, motivo) {
   const ctx = await contexto(MOVIL);
   const llamadas = [];
   const cors = { "access-control-allow-origin": "*", "access-control-allow-headers": "*" };
   await ctx.route("https://imncbmizxkorotpeisic.supabase.co/rest/v1/perfiles**", (route) => {
     if (route.request().method() === "OPTIONS") return route.fulfill({ status: 200, headers: cors, body: "" });
     const url = new URL(route.request().url());
-    if (url.searchParams.get("select") === "consiente_uso_datos_capturas") {
-      return route.fulfill({ status: 200, contentType: "application/json", headers: cors, body: JSON.stringify({ consiente_uso_datos_capturas: true }) });
+    if ((url.searchParams.get("select") || "").startsWith("consiente_uso_datos_capturas")) {
+      return route.fulfill({ status: 200, contentType: "application/json", headers: cors, body: JSON.stringify(perfil) });
     }
     return route.fulfill({ status: 200, contentType: "application/json", headers: cors, body: "[]" });
   });
@@ -223,13 +225,27 @@ test("Mi suscripción: «Tus datos» deja oponerse a las estadísticas anónimas
   });
   const { pagina, errores } = await abrir(ctx, "/suscripcion");
   await pagina.locator("#bloqueDatos").waitFor({ state: "visible", timeout: 15000 });
-  assert.equal(await pagina.locator("#checkEstadisticas").isChecked(), true, "por defecto, activado");
-  await pagina.locator("#checkEstadisticas").uncheck();
-  await pagina.waitForFunction(() => document.getElementById("mensajeDatos").textContent.length > 0);
-  assert.deepEqual(llamadas, [{ p_usar: false }]);
-  assert.match(await pagina.locator("#mensajeDatos").textContent(), /dejamos de usar/);
+  assert.equal(await pagina.locator("#checkEstadisticas").isChecked(), marcadaEsperada, motivo);
+  if (marcadaEsperada) {
+    await pagina.locator("#checkEstadisticas").uncheck();
+    await pagina.waitForFunction(() => document.getElementById("mensajeDatos").textContent.length > 0);
+    assert.deepEqual(llamadas, [{ p_usar: false }]);
+    assert.match(await pagina.locator("#mensajeDatos").textContent(), /dejamos de usar/);
+  }
   assert.deepEqual(errores, []);
   await ctx.close();
+}
+
+test("Mi suscripción: «Tus datos» deja oponerse a las estadísticas anónimas", async () => {
+  await probarTusDatos({ consiente_uso_datos_capturas: true, aviso_condiciones_en: null, oposicion_estadisticas_en: null }, true, "por defecto, activado");
+});
+
+test("Mi suscripción: «Tus datos» de una cuenta antigua avisada sale marcada y deja oponerse", async () => {
+  await probarTusDatos({ consiente_uso_datos_capturas: false, aviso_condiciones_en: "2026-10-23T09:00:00Z", oposicion_estadisticas_en: null }, true, "en el preaviso aplica el interés legítimo");
+});
+
+test("Mi suscripción: «Tus datos» de quien ya se opuso sale desmarcada", async () => {
+  await probarTusDatos({ consiente_uso_datos_capturas: false, aviso_condiciones_en: "2026-10-23T09:00:00Z", oposicion_estadisticas_en: "2026-10-24T09:00:00Z" }, false, "opuesto");
 });
 
 test("flota faenando sin datos: aviso «Sin flota faenando registrada en las últimas 24 h»", async () => {
