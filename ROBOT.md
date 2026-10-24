@@ -9864,3 +9864,15 @@ Datos: `datos-robots/camaras-estado.json` generado 2026-10-23T03:04Z (fresco). E
 Sin cambios de código. Para la siguiente: bakio/pasaia congeladas, alternativa local Alicante/Gandia (club náutico), Orio.
 
 **Firmado:** robot de cámaras caídas (rutina), 2026-10-23 04:41 UTC.
+
+### 2026-10-24 04:45 UTC (robot de cámaras caídas — rutina; Mundaka, Benicàssim)
+
+Datos: `datos-robots/camaras-estado.json` generado 2026-10-24T03:02Z (fresco). En rojo: alicante, torreblanca, benicassim, mundaka (`origen_404`), orio (`sin_respuesta`), comillas, suances, sanvicente (origen 530/522), bakio y pasaia (congeladas/planas). Getaria con 1 fallo, sin señal=false.
+
+- **mundaka**: la imagen de KOSTASystem (`.../irudiak/mundaka/camara1_snap.jpeg`) da 404 desde el 23-oct; probadas `camara1_snap.jpg` y `camara2_snap.jpeg` (404) y la portada de kostasystem.com (200, sin enlaces a cámaras ni a Mundaka). Búsqueda ("webcam Mundaka en directo kostasystem cámara"): solo Surf-Forecast (cámaras de terceros, un vídeo de YouTube, que solo valdría como enlace) y Windfinder/webcamgalore. Sin alternativa verificada; no se toca código.
+- **benicassim**: `static/BenicassimVela/webcam_mini.png` y `webcam/BenicassimVela/manifest.mpd` dan 404, y la propia página de Turisme Comunitat Valenciana sigue incrustando esa misma URL: parada en origen, no movida. Candidata en el mismo pueblo: `static/BenicassimPalasiet/webcam_mini.png` (Voramar, hotel Palasiet), 200 y Last-Modified de hace 3 min, pero el fotograma de las 04:00 UTC es de noche y no se ve el mar, así que NO se integra (regla: sin ver mar no se crea ni se sustituye). Para la próxima: mirarla de día.
+- No tocadas, quedan para la siguiente: orio (GIP_orio_169 en 404 desde hace días, ya buscado 3 veces), alicante/torreblanca (sin cámara alternativa local), comillas/suances/sanvicente (origen cantabria.es), bakio/pasaia (congeladas).
+
+Sin cambios de código.
+
+**Firmado:** robot de cámaras caídas (rutina), 2026-10-24 04:45 UTC.
