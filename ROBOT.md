@@ -2752,6 +2752,15 @@ con red, comprobar columnas y último año disponible, y reintentar `datos.ieo.e
 
 ---
 
+### 2026-10-24 04:55 UTC (robot buscador de fuentes (rutina); cámaras, zona 7: Portugal — sur)
+
+Zona de hoy (semana ISO 43, sábado → N=87, 87%10=7): Lisboa/Cascais, Setúbal, Sines, Algarve. Los 9 spots fijos de la zona (ericeira, cascais, costadacaparica, troia, sines, milfontes, sagres, lagos, faro) ya tienen cámara en `camaras-externas.js` (MEO Beachcam en enlace, Skyline en Lagos); no hay hueco que cubrir en spots existentes.
+- Buscado "webcam Sesimbra" y "webcam Algarve (Albufeira, Portimão, Tavira)" con WebSearch: ninguna cámara oficial de ayuntamiento (Albufeira solo videovigilancia; cm-sesimbra.pt y algarve-webcams.com no responden desde esta red, 000). Solo agregadores (Windfinder, Surf-Forecast), que no son dueños del stream.
+- `beachcam.meo.pt/sitemap.xml` (200) lista cámaras MEO Beachcam aún no usadas en puntos sin spot fijo: `praia-sesimbra`, `praia-do-meco`, `portinho-da-arrabida`, `albarquel` (Setúbal), `praia-da-rocha`, `alvor`, `ferragudo`, `carvoeiro`, `armacao-de-pera`, `vilamoura`, `praia-quarteira-oeste`, `ilha-do-farol-culatra` (ya usada), y en Tavira/Cabanas solo fichas de playa sin cámara propia.
+- NO se crea ningún spot: MEO solo se enlaza (su política y el bloqueo anti-bots impiden bajar un fotograma), así que no se puede comprobar con `Read` que haya mar a la vista, requisito de la regla de "Cámara con mar a la vista". Propuesta para una pasada con acceso visual: Sesimbra (praia-sesimbra), Setúbal (albarquel), Portimão/Rocha (praia-da-rocha) y Albufeira/Quarteira como spots nuevos en modo enlace. Sin cambios de código.
+
+**Firmado:** robot buscador de fuentes (rutina), 2026-10-24 04:55 UTC.
+
 ## Auditoría de datos
 
 ### 2026-08-31
