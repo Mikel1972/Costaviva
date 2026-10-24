@@ -1,13 +1,13 @@
 {
- "fecha": "2026-10-24T08:08:04.935Z",
- "lineasHistorial": 4645,
+ "fecha": "2026-10-24T08:38:05.596Z",
+ "lineasHistorial": 4656,
  "etiquetas": 243,
  "etiquetasClaude": 148,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.323,
+   "a": 1.3348,
    "p": 0.5,
-   "n": 121,
+   "n": 122,
    "nEtiquetas": 7,
    "nEtiquetasClaude": 3,
    "franjasClaude": [
@@ -49,9 +49,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 5.1158,
+   "a": 5.1299,
    "p": 0.5,
-   "n": 334,
+   "n": 335,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 18,
    "franjasClaude": [
@@ -72,7 +72,7 @@
    "dias": 17,
    "hMin": 0.3,
    "hMax": 6.97,
-   "errorRel": 0.884,
+   "errorRel": 0.888,
    "pocosDatos": false
   },
   "zumaia/c": {
@@ -150,9 +150,9 @@
    "pocosDatos": false
   },
   "bakio/principal": {
-   "a": 3.0112,
+   "a": 3.0368,
    "p": 0.5,
-   "n": 47,
+   "n": 48,
    "nEtiquetas": 3,
    "nEtiquetasClaude": 6,
    "franjasClaude": [
@@ -166,13 +166,13 @@
    "dias": 16,
    "hMin": 0.7,
    "hMax": 4.62,
-   "errorRel": 0.9,
+   "errorRel": 0.896,
    "pocosDatos": false
   },
   "sopelana/principal": {
-   "a": 4.1034,
+   "a": 4.1071,
    "p": 0.5,
-   "n": 98,
+   "n": 99,
    "nEtiquetas": 4,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -184,10 +184,10 @@
     "2026-10-21T14",
     "2026-10-23T14"
    ],
-   "dias": 16,
+   "dias": 17,
    "hMin": 0.3,
    "hMax": 4.62,
-   "errorRel": 0.821,
+   "errorRel": 0.817,
    "pocosDatos": false
   },
   "berria/principal": {
@@ -204,9 +204,9 @@
    "pocosDatos": true
   },
   "castrourdiales/principal": {
-   "a": 5.7354,
+   "a": 5.7405,
    "p": 0.5,
-   "n": 55,
+   "n": 56,
    "nEtiquetas": 5,
    "nEtiquetasClaude": 2,
    "franjasClaude": [
@@ -418,8 +418,8 @@
    "sustituye": true,
    "motivo": "18 etiquetas",
    "ruido": {
-    "ruido": 0.54,
-    "pares": 276
+    "ruido": 0.541,
+    "pares": 277
    }
   },
   "getaria": {
@@ -490,8 +490,8 @@
    "sustituye": true,
    "motivo": "5 etiquetas",
    "ruido": {
-    "ruido": 0.694,
-    "pares": 28
+    "ruido": 0.602,
+    "pares": 29
    }
   },
   "nz-napier": {
