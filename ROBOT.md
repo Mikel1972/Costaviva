@@ -9713,6 +9713,22 @@ Para la siguiente: pasaia (buscar otra cámara para Pasaia), alicante, orio, vin
 
 **Firmado:** robot de patrones de uso (rutina), 2026-10-10 UTC.
 
+### 2026-10-24 (patrones de uso)
+
+**Datos:** `datos-robots/patrones-uso/ultima.json`, generado 2026-10-24 00:36 UTC (fresco). `errores` vacío; 2 cuentas de prueba excluidas. Muestra **muy pequeña**: 9 perfiles (1 alta en 7 días, 5 en 28), 3 usuarios activos en 7 días y 7 en 28; 67 eventos en 7 días (3 usuarios) y 427 en 28. Abandono: de 8 perfiles con más de 7 días, 2 nunca hicieron nada y 4 llevan 7 días sin actividad (solo 2 activos).
+
+**Uso por función (filas/usuarios):** 7 días: ver_mapa 32/3, ver_capa_sustrato 8/2 (17/4 en 28 d), ver_suscripcion 9/1, isóbatas 3/2, boyas 2/2, clorofila 2/2, crear_captura 2/1, ir_a_region 2/2. 28 días: ver_mapa 184/7, clorofila 36/5, frentes 31/2, temperatura del agua 30/4, corriente 20/3, viento 18/3, estaciones 13/2, rayos 10/3, ríos 9/4, boyas 9/4, isóbatas 8/4, radar de lluvia 7/2, batimetría (botón antiguo) 5/1, crear_salida 3/1, crear_captura 5/1, SOS 1/1. Checkout: 0 en 28 días (último 25-sep, 11 pulsaciones de 2 personas, annual 6 / monthly 5).
+
+**Propuestas (todas con la salvedad de n pequeña):**
+1. **Embudo de pago:** ver_suscripcion sube a 9 filas en 7 días, pero de una sola persona, y nadie pulsa el checkout desde el 25-sep (29 días). Con 1 usuario no hay patrón; recomiendo mirar la página de planes con ojos de nuevo usuario (la prueba de 14 días y el plan gratuito son nuevos desde el 11-oct) antes de tocar nada, y volver a medir cuando haya ≥ 3 personas viendo la página.
+2. **Activación:** 6 de 8 perfiles con más de una semana no están activos (2 nunca hicieron nada). La media de eventos por usuario activo es alta, pero la base es mínima: la mejora más barata es observar qué hacen justo tras el alta (ver_mapa es el único evento común) antes de plantear una guía de primer uso.
+3. **Capas de mar:** clorofila (5 de 7 activos en 28 d), temperatura (4) y corriente (3) tienen uso repartido; frentes tiene 31 pulsaciones pero de solo 2 personas. No hay base para quitar ni esconder ninguna; reevaluar con ≥ 4 semanas más y más usuarios. Aviso: el botón antiguo de batimetría (5 filas, 1 usuario, último 08-oct) ya no existe (ahora isóbatas y sustrato); no es un fallo.
+4. **Diario y grupos:** 1 persona crea salidas/capturas (últimas el 19-oct), grupos sin actividad en 28 días. Sin datos para decidir; no cambiar nada. El SOS no se toca por poco uso.
+
+**Puntos ciegos:** `registrarEvento` registra los tipos de arriba, pero no hay evento para la píldora de modalidad (🪨🚤🤿), la ventana de actividad/selector de especie, la capa de flota (AIS), la hoja de condiciones del alta ni «Tus datos». Propuesta (no aplicada) para `scripts/patrones-uso/agregar.mjs` y las páginas: añadir `registrarEvento` a `ponerModalidad` y a la capa de flota, para saber si las funciones de las últimas semanas se usan. No me dio tiempo a comparar con semanas previas más allá de la entrada del 10-oct.
+
+**Firmado:** robot de patrones de uso (rutina), 2026-10-24 UTC.
+
 ### 2026-10-11 04:45 UTC (robot de cámaras caídas — rutina; Pasaia, Mundaka, Corrubedo, Alicante)
 
 Datos: `datos-robots/camaras-estado.json` generado 2026-10-11T03:02Z (~1,7 h, fresco). En rojo: muro, calamillor, sonbou (SOCIB), alicante, mundaka, corrubedo, bakio, pasaia.
