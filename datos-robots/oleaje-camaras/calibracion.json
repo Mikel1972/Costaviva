@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-24T10:07:48.916Z",
- "lineasHistorial": 4705,
+ "fecha": "2026-10-24T10:37:46.441Z",
+ "lineasHistorial": 4715,
  "etiquetas": 243,
  "etiquetasClaude": 148,
  "calibracion": {
@@ -49,9 +49,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 5.1625,
+   "a": 5.1722,
    "p": 0.5,
-   "n": 339,
+   "n": 340,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 18,
    "franjasClaude": [
@@ -72,7 +72,7 @@
    "dias": 17,
    "hMin": 0.3,
    "hMax": 6.97,
-   "errorRel": 0.888,
+   "errorRel": 0.889,
    "pocosDatos": false
   },
   "zumaia/c": {
@@ -89,9 +89,9 @@
    "pocosDatos": true
   },
   "zumaia/a": {
-   "a": 5.6579,
+   "a": 5.7021,
    "p": 0.5,
-   "n": 54,
+   "n": 55,
    "nEtiquetas": 2,
    "nEtiquetasClaude": 3,
    "franjasClaude": [
@@ -99,16 +99,16 @@
     "2026-10-08T16",
     "2026-10-22T16"
    ],
-   "dias": 12,
+   "dias": 13,
    "hMin": 0.61,
    "hMax": 6.97,
    "errorRel": 1,
    "pocosDatos": false
   },
   "deba/rompiente": {
-   "a": 6.3385,
+   "a": 6.3496,
    "p": 0.5,
-   "n": 126,
+   "n": 127,
    "nEtiquetas": 2,
    "nEtiquetasClaude": 8,
    "franjasClaude": [
@@ -170,9 +170,9 @@
    "pocosDatos": false
   },
   "sopelana/principal": {
-   "a": 4.1109,
+   "a": 4.111,
    "p": 0.5,
-   "n": 100,
+   "n": 101,
    "nEtiquetas": 4,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -187,7 +187,7 @@
    "dias": 17,
    "hMin": 0.3,
    "hMax": 4.62,
-   "errorRel": 0.812,
+   "errorRel": 0.808,
    "pocosDatos": false
   },
   "berria/principal": {
@@ -291,9 +291,9 @@
    "pocosDatos": true
   },
   "zarautz/principal": {
-   "a": 3.6974,
+   "a": 3.8092,
    "p": 0.5,
-   "n": 21,
+   "n": 22,
    "nEtiquetas": 1,
    "nEtiquetasClaude": 2,
    "franjasClaude": [
@@ -303,7 +303,7 @@
    "dias": 12,
    "hMin": 0.58,
    "hMax": 6.49,
-   "errorRel": 0.842,
+   "errorRel": 0.858,
    "pocosDatos": false
   },
   "nz-napier/principal": {
@@ -418,8 +418,8 @@
    "sustituye": true,
    "motivo": "18 etiquetas",
    "ruido": {
-    "ruido": 0.538,
-    "pares": 281
+    "ruido": 0.537,
+    "pares": 282
    }
   },
   "getaria": {
@@ -434,8 +434,8 @@
    "sustituye": true,
    "motivo": "≥ 3 días con alturas variadas",
    "ruido": {
-    "ruido": 0.518,
-    "pares": 28
+    "ruido": 0.576,
+    "pares": 29
    }
   },
   "deba": {
