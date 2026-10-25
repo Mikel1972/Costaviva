@@ -9892,3 +9892,16 @@ Datos: `datos-robots/camaras-estado.json` generado 2026-10-24T03:02Z (fresco). E
 Sin cambios de código.
 
 **Firmado:** robot de cámaras caídas (rutina), 2026-10-24 04:45 UTC.
+
+### 2026-10-25 04:50 UTC (robot de cámaras caídas — rutina; Mundaka, Zumaia, Pasaia)
+
+Datos: `datos-robots/camaras-estado.json` generado 2026-10-25T03:03Z (fresco). En rojo: alicante, torreblanca, mundaka, benicassim (`origen_404`), zumaia (`sin_respuesta`), pasaia (`frame_plano`), y una más congelada.
+
+- **mundaka**: `kostasystem.com/.../mundaka/camara1_snap.jpeg` y `/mundaka-webcam/` siguen en 404 (la portada da 200). Nueva búsqueda ("Mundaka webcam en directo ola izquierda cámara"): solo agregadores (Surf-Forecast) con cámaras de escuelas (Peña Txuri, Surf 30) sin URL propia verificable. Sin alternativa; sin cambios.
+- **zumaia**: `GIP_zumaia2.stream/playlist.m3u8` da 404, y hoy también `GIP_zarautz.stream` y la raíz del Wowza: parece caída general del servidor de la Diputación esta noche, no una URL movida. Reintentar de día.
+- **pasaia**: `detectia.net/img/webcam-pasaia-azti.webp` responde 200 pero con Last-Modified del 24-oct 18:04 GMT: la imagen no se actualiza en origen. Sin alternativa.
+- No tocadas: benicassim (mirar `BenicassimPalasiet` de día, ya anotado), alicante/torreblanca.
+
+Sin cambios de código.
+
+**Firmado:** robot de cámaras caídas (rutina), 2026-10-25 04:50 UTC.
