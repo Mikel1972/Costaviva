@@ -9905,3 +9905,13 @@ Datos: `datos-robots/camaras-estado.json` generado 2026-10-25T03:03Z (fresco). E
 Sin cambios de código.
 
 **Firmado:** robot de cámaras caídas (rutina), 2026-10-25 04:50 UTC.
+
+### 2026-10-25 04:55 UTC (pasada buscadora — presión atmosférica e histórico por zona, rutina)
+
+Una novedad verificable, sin integrar (sería tocar `functions/`: solo propuesta).
+
+- **IPMA (Portugal) vuelve a responder desde esta sesión**: `api.ipma.pt/open-data/observation/meteorology/stations/observations.json` da 200 con observaciones horarias de las últimas ~24 h por estación, con campo `pressao` (hPa), además de temperatura, viento y precipitación acumulada. Complementa la presión de modelo en Portugal (hasta ahora solo había series históricas largas). Sin clave, JSON abierto. Pendiente de decidir: si se usa como presión real (estilo `ESTACIONES_AEMET`) y su licencia (no verificada hoy).
+- Siguen sin verificar: `meteogalicia.gal/observacion/rest/getEstacionsMeteo` (404, la ruta puede haber cambiado) y `opendata.aemet.es/opendata/api/` (404 sin clave, normal). `meteo.cat` responde 200.
+- Nada que añadir a ROBOT_REGLAS.md.
+
+Firmado: robot buscador de fuentes (rutina).
