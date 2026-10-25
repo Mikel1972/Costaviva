@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-25T11:07:49.683Z",
- "lineasHistorial": 5041,
+ "fecha": "2026-10-25T11:37:53.910Z",
+ "lineasHistorial": 5050,
  "etiquetas": 249,
  "etiquetasClaude": 154,
  "calibracion": {
@@ -49,9 +49,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 5.3296,
+   "a": 5.336,
    "p": 0.5,
-   "n": 363,
+   "n": 364,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 19,
    "franjasClaude": [
@@ -107,9 +107,9 @@
    "pocosDatos": false
   },
   "deba/rompiente": {
-   "a": 6.2133,
+   "a": 6.2359,
    "p": 0.5,
-   "n": 136,
+   "n": 137,
    "nEtiquetas": 2,
    "nEtiquetasClaude": 9,
    "franjasClaude": [
@@ -128,9 +128,9 @@
    "pocosDatos": false
   },
   "mundaka/principal": {
-   "a": 2.9844,
+   "a": 2.986,
    "p": 0.5,
-   "n": 199,
+   "n": 200,
    "nEtiquetas": 11,
    "nEtiquetasClaude": 11,
    "franjasClaude": [
@@ -145,10 +145,10 @@
     "2026-10-20T14",
     "2026-10-21T14"
    ],
-   "dias": 15,
+   "dias": 16,
    "hMin": 0.3,
    "hMax": 2.18,
-   "errorRel": 0.575,
+   "errorRel": 0.574,
    "pocosDatos": false
   },
   "bakio/principal": {
@@ -173,9 +173,9 @@
    "pocosDatos": false
   },
   "sopelana/principal": {
-   "a": 4.1181,
+   "a": 4.125,
    "p": 0.5,
-   "n": 104,
+   "n": 105,
    "nEtiquetas": 4,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -190,7 +190,7 @@
    "dias": 18,
    "hMin": 0.3,
    "hMax": 4.62,
-   "errorRel": 0.796,
+   "errorRel": 0.793,
    "pocosDatos": false
   },
   "berria/principal": {
@@ -381,16 +381,16 @@
    "pocosDatos": false
   },
   "deba/principal": {
-   "a": 8.9156,
+   "a": 8.7413,
    "p": 0.5,
-   "n": 14,
+   "n": 15,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
    "dias": 6,
    "hMin": 1.76,
    "hMax": 4.2,
-   "errorRel": 0.498,
+   "errorRel": 0.488,
    "pocosDatos": false
   }
  },
@@ -423,8 +423,8 @@
    "sustituye": true,
    "motivo": "18 etiquetas",
    "ruido": {
-    "ruido": 0.534,
-    "pares": 306
+    "ruido": 0.533,
+    "pares": 307
    }
   },
   "getaria": {
