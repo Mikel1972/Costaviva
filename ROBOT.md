@@ -9915,3 +9915,16 @@ Una novedad verificable, sin integrar (sería tocar `functions/`: solo propuesta
 - Nada que añadir a ROBOT_REGLAS.md.
 
 Firmado: robot buscador de fuentes (rutina).
+
+### 2026-10-26 05:00 UTC (robot de cámaras caídas — rutina; Zumaia, Orio, Alicante/Torreblanca, Benicàssim)
+
+Datos: `datos-robots/camaras-estado.json` generado 2026-10-26T03:03Z (fresco). En rojo: alicante, torreblanca, benicassim (`origen_404`), zumaia, orio (`sin_respuesta`), pasaia (`frame_plano`); mundaka y bakio con `frame_congelado` (lectura de noche, 03:00 UTC, sin fallos).
+
+- **zumaia, orio**: en el Wowza de la Diputación `GIP_zarautz_169`, `GIP_zurriola_169` y `GIP_deba_169` dan 200 (el servidor está bien), pero `GIP_zumaia2` y `GIP_orio_169` siguen en 404. Probadas variantes (`zumaia`, `_169`, `1`, `3`, `orio`, `_1`, `2`, `2_169`): todas 404. `zumaia.eus/es/webcam` da 404 y no se pudo ver qué embebe hoy. Emisión parada en origen, no movida.
+- **alicante, torreblanca**: `static/AlicantePuerto` y `static/Torreblanca/webcam_mini.png` siguen en 404 en la Generalitat. Sin alternativa local verificada.
+- **benicassim**: `static/BenicassimPalasiet/webcam_mini.png` responde 200 con Last-Modified de las 04:00 GMT de hoy, pero es de noche: sin ver mar no se sustituye. Pendiente de mirarla de día (pasada de mañana o el robot de salud).
+- **pasaia**: no revisada (Detectia sin actualizar desde el 24-oct, ya estudiada).
+
+Sin cambios de código.
+
+**Firmado:** robot de cámaras caídas (rutina), 2026-10-26 05:00 UTC.
