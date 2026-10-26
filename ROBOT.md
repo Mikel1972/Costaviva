@@ -7027,6 +7027,28 @@ Datos: `datos-robots/experiencia/ultima.json`, generado 2026-10-18 23:28 UTC (8 
 - Comprobar si el coeficiente de los spots mediterráneos sigue pegado a 110-120 días seguidos (confirmaría hallazgo 1) y si los 61 atlánticos salen del 20.
 - Propuesta para `scripts/experiencia/sondear.mjs` (no aplicada): guardar también el histórico del día anterior para comparar coeficientes/tendencias, e incluir `?region=nz` (sigue sin pedirse).
 
+### 2026-10-26 07:30 UTC — robot de experiencia de usuario (rutina)
+
+Dato del sondeo: `generado_en` 2026-10-25 23:26 UTC (~8 h, fresco).
+
+**Qué miré**
+- `ultima.json` entero por secciones: avisos, prevision, luna, casos_limite, diario.
+- Código: `functions/_lib/open-meteo.js` (`claveOpenMeteo`, `urlOpenMeteo`), `functions/prevision.js` (caché), `scripts/experiencia/sondear.mjs` (qué pide a /luna).
+
+**Todo bien**
+- Casos límite de errores claros: `/luna` sin lat/lon → 400 `faltan lat/lon`; `/geocodificar` cp inválido → 400, cp 48360 → Mundaka (43.407, -2.700); `/webcam/no-existe` → 404 JSON; `/meteo/marine` con parámetro no permitido → 400.
+- `/prevision` responde 200 en ~4,8 s con boyas, cámaras, estaciones AEMET, etc. (la estructura está, pero sin datos de spot, ver abajo).
+
+**Hallazgos**
+1. **GRAVE: los 105 spots de /prevision salieron con error `Open-Meteo (forecast) HTTP 429`** (105/105, `spots_con_error` = 105, `fuentesDatos` vacío). Ningún usuario que abriera la app a esa hora habría visto marea, oleaje, viento ni presión; todo en S/D. El mensaje de error muestra que la petición fue al host **gratuito** `api.open-meteo.com` sin `apikey` (con key sería `customer-api.open-meteo.com`, ver `urlOpenMeteo` en `functions/_lib/open-meteo.js`). Es decir, en producción `OPEN_METEO_API_KEY` no le llegaba a la Function (no configurada, vacía, o secret en Preview y no en Production, o falta redeploy: trampa 1) y el plan gratuito (no comercial, 10.000/día) ya agotó su cuota. Dos peticiones agrupadas (17 coordenadas Portugal, ~90 España) bastan para gastarla. Acción para Mikel: comprobar en Cloudflare Pages → Production que `OPEN_METEO_API_KEY` existe y no está vacío, redeploy, y mirar el consumo en el panel de Open-Meteo. Parte puede ser que esa cuota de día esté agotada por otros usos (el proxy `/meteo/` y `/viento-campo` también caen al host libre sin key).
+2. **Consecuencia en el sondeo (no es bug de /luna):** `diario.hecho = false` ("/prevision no trajo ningún spot sin error"), así que esta semana NO se pudo comprobar el diario (guardado vs enviado, cuenta B, limpieza). Y las 3 llamadas a `/luna` dieron 400 `faltan lat/lon` porque `sondear.mjs` saca lat/lon del spot de /prevision y los spots con error solo traen `slug/nombre/error` (sin lat ni lon). `/luna` en sí funciona (casos límite bien); queda sin verificar su contenido.
+3. Cuando /prevision está entera en error, `/prevision` sigue devolviendo **200** con la lista de errores (el caso límite "spot que no existe" también da 200 con el error 429 dentro). Para un cliente no hay señal HTTP de que todo está caído; conviene que el front muestre S/D (lo hace por la vigencia) y que el smoke test mire `spots_con_error`. No se si esta respuesta se cachea 30 min en el edge: en la rama de España no lo he leído (en la de NZ, `responderRegion`, solo se cachea si fallan menos de la mitad). Sin verificar.
+4. `/identificar-captura` sin sesión devolvió **404** con la página HTML "Página no encontrada" (esperado 401/403/405). No gasta IA y es inocuo, pero el sondeo lo marca como no cumplido: puede que sea correcto que la ruta POST-only responda 404 a un GET por la lista blanca; el sondeo debería usar POST sin token para comprobarlo de verdad.
+
+**Pendiente para la próxima pasada**
+- Repetir con datos reales de /prevision: marea/coeficiente por zona, vecinos vs boyas, diario y cuenta B (hoy nada de esto se pudo juzgar).
+- Propuesta para `scripts/experiencia/sondear.mjs` (no aplicada): (a) si `spots_con_error` ≥ 50 %, marcarlo en `avisos` como grave; (b) sacar lat/lon de la lista fija `SPOTS` y no de la respuesta; (c) probar `/identificar-captura` con POST sin token.
+
 ## Robot de patrones de uso
 
 ### 2026-09-17
