@@ -36,11 +36,15 @@ Barreras: solo el peso (confianza) de reglas expertas, como mucho ±20 % por sem
 
 - Presión real por spot (cada hora): último dato hace 4 h (se espera cada 2 h)
 - el modelo da -30 % frente a la boya Bilbao-Vizcaya (exterior) (8 lecturas)
-- la calibración de bakio/principal empeora: error 63 % → 92 %
+- el modelo da -24 % frente a la boya Bilbao II (costera) (13 lecturas)
+- el modelo da -21 % frente a la boya Pasaia II (costera) (19 lecturas)
+- el sesgo frente a Pasaia II (costera) ha cambiado: de 1.02 a 0.79
+- la calibración de bakio/principal empeora: error 63 % → 93 %
 - la calibración de hondarribia/bocana empeora: error 61 % → 100 %
 - la calibración de mutriku/principal empeora: error 50 % → 100 %
 - la calibración de nz-riverton/principal empeora: error 33 % → 100 %
-- la calibración de zarautz/principal empeora: error 54 % → 96 %
+- la calibración de zarautz/dinamico empeora: error 75 % → 97 %
+- la calibración de zarautz/principal empeora: error 54 % → 95 %
 - el índice de las salidas de esta semana se ha desplazado frente al mes anterior (PSI 4,604)
 
 ## Retadores en la sombra
