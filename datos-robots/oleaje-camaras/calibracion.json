@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-26T10:57:06.454Z",
- "lineasHistorial": 5312,
+ "fecha": "2026-10-26T11:07:55.106Z",
+ "lineasHistorial": 5323,
  "etiquetas": 254,
  "etiquetasClaude": 159,
  "calibracion": {
@@ -36,9 +36,9 @@
    "pocosDatos": false
   },
   "donostia/principal": {
-   "a": 9.3145,
+   "a": 9.3904,
    "p": 0.5,
-   "n": 28,
+   "n": 29,
    "nEtiquetas": 1,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
@@ -49,9 +49,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 5.6022,
+   "a": 5.6117,
    "p": 0.5,
-   "n": 381,
+   "n": 382,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 20,
    "franjasClaude": [
@@ -74,7 +74,7 @@
    "dias": 19,
    "hMin": 0.3,
    "hMax": 6.97,
-   "errorRel": 0.976,
+   "errorRel": 0.977,
    "pocosDatos": false
   },
   "zumaia/c": {
@@ -108,9 +108,9 @@
    "pocosDatos": false
   },
   "deba/rompiente": {
-   "a": 6.2963,
+   "a": 6.3298,
    "p": 0.5,
-   "n": 139,
+   "n": 140,
    "nEtiquetas": 2,
    "nEtiquetasClaude": 9,
    "franjasClaude": [
@@ -257,16 +257,16 @@
    "pocosDatos": true
   },
   "orio/principal": {
-   "a": 4.234,
+   "a": 4.2864,
    "p": 0.5,
-   "n": 42,
+   "n": 43,
    "nEtiquetas": 1,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
    "dias": 13,
    "hMin": 0.75,
    "hMax": 4.04,
-   "errorRel": 0.681,
+   "errorRel": 0.683,
    "pocosDatos": false
   },
   "getaria/malkorbe": {
@@ -401,8 +401,8 @@
    "sustituye": true,
    "motivo": "7 etiquetas",
    "ruido": {
-    "ruido": 0.536,
-    "pares": 70
+    "ruido": 0.573,
+    "pares": 71
    }
   },
   "donostia": {
@@ -417,8 +417,8 @@
    "sustituye": true,
    "motivo": "≥ 3 días con alturas variadas",
    "ruido": {
-    "ruido": 0.333,
-    "pares": 22
+    "ruido": 0.313,
+    "pares": 23
    }
   },
   "zarautz": {
@@ -426,7 +426,7 @@
    "motivo": "18 etiquetas",
    "ruido": {
     "ruido": 0.535,
-    "pares": 321
+    "pares": 322
    }
   },
   "getaria": {
@@ -449,8 +449,8 @@
    "sustituye": true,
    "motivo": "≥ 3 días con alturas variadas",
    "ruido": {
-    "ruido": 0.854,
-    "pares": 73
+    "ruido": 0.815,
+    "pares": 74
    }
   },
   "mutriku": {
