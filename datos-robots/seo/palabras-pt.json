@@ -1,15 +1,15 @@
 {
-  "generado": "2026-10-19T10:02:27.688Z",
-  "semana": "2026-10-05",
+  "generado": "2026-10-26T10:16:40.890Z",
+  "semana": "2026-10-12",
   "fuente": "Mikel1972/comun seo/palabras",
   "terminos": [
     {
       "termino": "marés",
       "mercado": "pt",
       "grupo": "marea",
-      "puntuacion": 66,
+      "puntuacion": 61,
       "tendencia": "baja",
-      "tendencia_pct": -48,
+      "tendencia_pct": -78,
       "estacionalidad": {
         "indice_mes_actual": 1.35,
         "picos": [
@@ -37,9 +37,9 @@
       "termino": "spinning",
       "mercado": "pt",
       "grupo": "tecnica",
-      "puntuacion": 43,
-      "tendencia": "sube",
-      "tendencia_pct": 38,
+      "puntuacion": 44,
+      "tendencia": "estable",
+      "tendencia_pct": 6,
       "estacionalidad": null,
       "url": null,
       "gsc_posicion": null
@@ -48,12 +48,23 @@
       "termino": "marés Figueira da Foz",
       "mercado": "pt",
       "grupo": "spot",
-      "puntuacion": 29,
+      "puntuacion": 38,
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/pt/mareas/figueiradafoz",
       "gsc_posicion": null
+    },
+    {
+      "termino": "lubina",
+      "mercado": "pt",
+      "grupo": "descubierto",
+      "puntuacion": 33,
+      "tendencia": "baja",
+      "tendencia_pct": -30,
+      "estacionalidad": null,
+      "url": "/especies/lubina",
+      "gsc_posicion": 76
     },
     {
       "termino": "pesca ao robalo",
@@ -70,6 +81,17 @@
         "estacional": false
       },
       "url": "/pt/especies/lubina",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "tabela de marés",
+      "mercado": "pt",
+      "grupo": "marea",
+      "puntuacion": 25,
+      "tendencia": "baja",
+      "tendencia_pct": -75,
+      "estacionalidad": null,
+      "url": "/pt/mareas/region/portugal",
       "gsc_posicion": null
     },
     {
@@ -90,15 +112,26 @@
       "gsc_posicion": null
     },
     {
-      "termino": "surfcasting",
+      "termino": "lubinas",
       "mercado": "pt",
-      "grupo": "tecnica",
-      "puntuacion": 21,
-      "tendencia": "sube",
-      "tendencia_pct": 110,
+      "grupo": "descubierto",
+      "puntuacion": 20,
+      "tendencia": null,
+      "tendencia_pct": null,
       "estacionalidad": null,
-      "url": null,
-      "gsc_posicion": null
+      "url": "/especies/lubina",
+      "gsc_posicion": 69
+    },
+    {
+      "termino": "pesqueiros",
+      "mercado": "pt",
+      "grupo": "descubierto",
+      "puntuacion": 20,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/pt/spots/region/portugal",
+      "gsc_posicion": 9
     },
     {
       "termino": "pesca ao sargo",
@@ -120,6 +153,17 @@
       "gsc_posicion": null
     },
     {
+      "termino": "surfcasting",
+      "mercado": "pt",
+      "grupo": "tecnica",
+      "puntuacion": 19,
+      "tendencia": "estable",
+      "tendencia_pct": 6,
+      "estacionalidad": null,
+      "url": null,
+      "gsc_posicion": null
+    },
+    {
       "termino": "pesca ao polvo",
       "mercado": "pt",
       "grupo": "especie",
@@ -135,17 +179,6 @@
         "estacional": false
       },
       "url": "/pt/especies/pulpo",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "tabela de marés",
-      "mercado": "pt",
-      "grupo": "marea",
-      "puntuacion": 14,
-      "tendencia": "baja",
-      "tendencia_pct": -75,
-      "estacionalidad": null,
-      "url": "/pt/mareas/region/portugal",
       "gsc_posicion": null
     },
     {
@@ -190,7 +223,7 @@
       "termino": "jigging",
       "mercado": "pt",
       "grupo": "tecnica",
-      "puntuacion": 7,
+      "puntuacion": 6,
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
