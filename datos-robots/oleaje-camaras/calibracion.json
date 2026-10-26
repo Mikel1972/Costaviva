@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-26T09:37:45.847Z",
- "lineasHistorial": 5284,
+ "fecha": "2026-10-26T10:08:00.272Z",
+ "lineasHistorial": 5295,
  "etiquetas": 254,
  "etiquetasClaude": 159,
  "calibracion": {
@@ -36,22 +36,22 @@
    "pocosDatos": false
   },
   "donostia/principal": {
-   "a": 8.7332,
+   "a": 8.8177,
    "p": 0.5,
-   "n": 25,
+   "n": 26,
    "nEtiquetas": 1,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
-   "dias": 12,
+   "dias": 13,
    "hMin": 0.75,
    "hMax": 3.87,
    "errorRel": 1,
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 5.5548,
+   "a": 5.5672,
    "p": 0.5,
-   "n": 378,
+   "n": 379,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 20,
    "franjasClaude": [
@@ -74,7 +74,7 @@
    "dias": 19,
    "hMin": 0.3,
    "hMax": 6.97,
-   "errorRel": 0.964,
+   "errorRel": 0.966,
    "pocosDatos": false
   },
   "zumaia/c": {
@@ -153,9 +153,9 @@
    "pocosDatos": false
   },
   "bakio/principal": {
-   "a": 3.3402,
+   "a": 3.3694,
    "p": 0.5,
-   "n": 57,
+   "n": 58,
    "nEtiquetas": 3,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -170,7 +170,7 @@
    "dias": 18,
    "hMin": 0.7,
    "hMax": 4.62,
-   "errorRel": 0.926,
+   "errorRel": 0.925,
    "pocosDatos": false
   },
   "sopelana/principal": {
@@ -208,9 +208,9 @@
    "pocosDatos": true
   },
   "castrourdiales/principal": {
-   "a": 5.836,
+   "a": 5.871,
    "p": 0.5,
-   "n": 64,
+   "n": 65,
    "nEtiquetas": 5,
    "nEtiquetasClaude": 2,
    "franjasClaude": [
@@ -383,16 +383,16 @@
    "pocosDatos": false
   },
   "deba/principal": {
-   "a": 8.7413,
+   "a": 8.829,
    "p": 0.5,
-   "n": 15,
+   "n": 16,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
-   "dias": 6,
+   "dias": 7,
    "hMin": 1.76,
    "hMax": 4.2,
-   "errorRel": 0.488,
+   "errorRel": 0.472,
    "pocosDatos": false
   }
  },
@@ -409,8 +409,8 @@
    "sustituye": true,
    "motivo": "≥ 3 días con alturas variadas",
    "ruido": {
-    "ruido": 0.427,
-    "pares": 7
+    "ruido": 0.642,
+    "pares": 8
    }
   },
   "orio": {
@@ -426,7 +426,7 @@
    "motivo": "18 etiquetas",
    "ruido": {
     "ruido": 0.534,
-    "pares": 318
+    "pares": 319
    }
   },
   "getaria": {
@@ -497,8 +497,8 @@
    "sustituye": true,
    "motivo": "5 etiquetas",
    "ruido": {
-    "ruido": 0.503,
-    "pares": 34
+    "ruido": 0.486,
+    "pares": 35
    }
   },
   "nz-napier": {
