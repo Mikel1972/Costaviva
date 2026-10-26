@@ -80,6 +80,11 @@
       "campana": "20261024-reel-especie-nz-kingfish",
       "en": "2026-10-23T05:22:15.534Z"
     },
+    "2026-10-27-post": {
+      "tipo": "especies",
+      "campana": "20261027-especies-calamar-chipiron",
+      "en": "2026-10-26T17:30:44.189Z"
+    },
     "2026-10-27-post-nz": {
       "tipo": "especies-nz",
       "campana": "20261027-especies-nz-kingfish",
