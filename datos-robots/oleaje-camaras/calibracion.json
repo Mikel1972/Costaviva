@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-26T13:07:59.578Z",
- "lineasHistorial": 5364,
+ "fecha": "2026-10-26T13:37:50.668Z",
+ "lineasHistorial": 5375,
  "etiquetas": 254,
  "etiquetasClaude": 159,
  "calibracion": {
@@ -49,9 +49,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 5.6416,
+   "a": 5.6502,
    "p": 0.5,
-   "n": 386,
+   "n": 387,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 20,
    "franjasClaude": [
@@ -153,9 +153,9 @@
    "pocosDatos": false
   },
   "bakio/principal": {
-   "a": 3.3737,
+   "a": 3.3857,
    "p": 0.5,
-   "n": 59,
+   "n": 60,
    "nEtiquetas": 3,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -170,13 +170,13 @@
    "dias": 18,
    "hMin": 0.7,
    "hMax": 4.62,
-   "errorRel": 0.916,
+   "errorRel": 0.909,
    "pocosDatos": false
   },
   "sopelana/principal": {
-   "a": 4.1782,
+   "a": 4.2044,
    "p": 0.5,
-   "n": 112,
+   "n": 113,
    "nEtiquetas": 4,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -191,7 +191,7 @@
    "dias": 19,
    "hMin": 0.3,
    "hMax": 4.62,
-   "errorRel": 0.772,
+   "errorRel": 0.776,
    "pocosDatos": false
   },
   "berria/principal": {
@@ -224,9 +224,9 @@
    "pocosDatos": false
   },
   "berria/dinamico": {
-   "a": 5.4759,
+   "a": 5.4803,
    "p": 0.5,
-   "n": 187,
+   "n": 188,
    "nEtiquetas": 8,
    "nEtiquetasClaude": 13,
    "franjasClaude": [
@@ -240,7 +240,7 @@
    "dias": 19,
    "hMin": 0.69,
    "hMax": 4.73,
-   "errorRel": 0.829,
+   "errorRel": 0.827,
    "pocosDatos": false
   },
   "mutriku/principal": {
@@ -425,8 +425,8 @@
    "sustituye": true,
    "motivo": "18 etiquetas",
    "ruido": {
-    "ruido": 0.537,
-    "pares": 326
+    "ruido": 0.536,
+    "pares": 327
    }
   },
   "getaria": {
@@ -471,10 +471,10 @@
   },
   "bakio": {
    "sustituye": true,
-   "motivo": "estable (±14 % entre lecturas cercanas)",
+   "motivo": "estable (±15 % entre lecturas cercanas)",
    "ruido": {
-    "ruido": 0.144,
-    "pares": 15
+    "ruido": 0.147,
+    "pares": 16
    }
   },
   "sopelana": {
@@ -489,8 +489,8 @@
    "sustituye": true,
    "motivo": "8 etiquetas",
    "ruido": {
-    "ruido": 0.84,
-    "pares": 100
+    "ruido": 0.828,
+    "pares": 101
    }
   },
   "castrourdiales": {
