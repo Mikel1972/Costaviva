@@ -1,15 +1,15 @@
 {
-  "generado": "2026-10-19T10:02:27.688Z",
-  "semana": "2026-10-05",
+  "generado": "2026-10-26T10:16:40.890Z",
+  "semana": "2026-10-12",
   "fuente": "Mikel1972/comun seo/palabras",
   "terminos": [
     {
       "termino": "calamar",
       "mercado": "es",
       "grupo": "especie",
-      "puntuacion": 61,
+      "puntuacion": 60,
       "tendencia": "sube",
-      "tendencia_pct": 16,
+      "tendencia_pct": 11,
       "estacionalidad": null,
       "url": "/especies/calamar",
       "gsc_posicion": 78
@@ -18,9 +18,9 @@
       "termino": "mareas",
       "mercado": "es",
       "grupo": "marea",
-      "puntuacion": 54,
+      "puntuacion": 52,
       "tendencia": "baja",
-      "tendencia_pct": -21,
+      "tendencia_pct": -29,
       "estacionalidad": {
         "indice_mes_actual": 1.76,
         "picos": [
@@ -34,25 +34,25 @@
       "gsc_posicion": null
     },
     {
-      "termino": "tabla de mareas",
-      "mercado": "es",
-      "grupo": "marea",
-      "puntuacion": 50,
-      "tendencia": "baja",
-      "tendencia_pct": -39,
-      "estacionalidad": null,
-      "url": "/mareas",
-      "gsc_posicion": null
-    },
-    {
       "termino": "pulpo",
       "mercado": "es",
       "grupo": "especie",
-      "puntuacion": 49,
+      "puntuacion": 50,
       "tendencia": "sube",
-      "tendencia_pct": 17,
+      "tendencia_pct": 22,
       "estacionalidad": null,
       "url": "/especies/pulpo",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "tabla de mareas",
+      "mercado": "es",
+      "grupo": "marea",
+      "puntuacion": 49,
+      "tendencia": "baja",
+      "tendencia_pct": -38,
+      "estacionalidad": null,
+      "url": "/mareas",
       "gsc_posicion": null
     },
     {
@@ -61,7 +61,7 @@
       "grupo": "especie",
       "puntuacion": 48,
       "tendencia": "estable",
-      "tendencia_pct": 4,
+      "tendencia_pct": 3,
       "estacionalidad": null,
       "url": "/especies/lisa",
       "gsc_posicion": null
@@ -70,31 +70,20 @@
       "termino": "gallo",
       "mercado": "es",
       "grupo": "especie",
-      "puntuacion": 45,
-      "tendencia": "baja",
-      "tendencia_pct": -11,
+      "puntuacion": 46,
+      "tendencia": "estable",
+      "tendencia_pct": -7,
       "estacionalidad": null,
       "url": "/especies/gallo",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "lubina",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 44,
-      "tendencia": "estable",
-      "tendencia_pct": 1,
-      "estacionalidad": null,
-      "url": "/especies/lubina",
       "gsc_posicion": null
     },
     {
       "termino": "merluza",
       "mercado": "es",
       "grupo": "especie",
-      "puntuacion": 43,
+      "puntuacion": 44,
       "tendencia": "sube",
-      "tendencia_pct": 16,
+      "tendencia_pct": 24,
       "estacionalidad": null,
       "url": "/especies/merluza",
       "gsc_posicion": null
@@ -103,9 +92,9 @@
       "termino": "abadejo",
       "mercado": "es",
       "grupo": "especie",
-      "puntuacion": 41,
+      "puntuacion": 43,
       "tendencia": "sube",
-      "tendencia_pct": 10,
+      "tendencia_pct": 16,
       "estacionalidad": null,
       "url": "/especies/abadejo",
       "gsc_posicion": null
@@ -114,33 +103,44 @@
       "termino": "corvina",
       "mercado": "es",
       "grupo": "especie",
-      "puntuacion": 40,
-      "tendencia": "estable",
-      "tendencia_pct": 9,
+      "puntuacion": 42,
+      "tendencia": "sube",
+      "tendencia_pct": 11,
       "estacionalidad": null,
       "url": "/especies/corvina",
       "gsc_posicion": null
     },
     {
-      "termino": "caballa",
+      "termino": "lubina",
       "mercado": "es",
       "grupo": "especie",
-      "puntuacion": 39,
-      "tendencia": "baja",
-      "tendencia_pct": -39,
+      "puntuacion": 40,
+      "tendencia": "estable",
+      "tendencia_pct": -2,
       "estacionalidad": null,
-      "url": "/especies/caballa",
+      "url": "/especies/lubina",
       "gsc_posicion": null
     },
     {
       "termino": "spinning",
       "mercado": "es",
       "grupo": "tecnica",
-      "puntuacion": 38,
+      "puntuacion": 39,
       "tendencia": "sube",
-      "tendencia_pct": 18,
+      "tendencia_pct": 10,
       "estacionalidad": null,
       "url": null,
+      "gsc_posicion": null
+    },
+    {
+      "termino": "herrera",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 38,
+      "tendencia": "sube",
+      "tendencia_pct": 78,
+      "estacionalidad": null,
+      "url": "/especies/herrera",
       "gsc_posicion": null
     },
     {
@@ -149,29 +149,40 @@
       "grupo": "especie",
       "puntuacion": 37,
       "tendencia": "estable",
-      "tendencia_pct": 2,
+      "tendencia_pct": -5,
       "estacionalidad": null,
       "url": "/especies/rape",
       "gsc_posicion": null
     },
     {
-      "termino": "herrera",
+      "termino": "caballa",
       "mercado": "es",
       "grupo": "especie",
-      "puntuacion": 35,
-      "tendencia": "sube",
-      "tendencia_pct": 52,
+      "puntuacion": 36,
+      "tendencia": "baja",
+      "tendencia_pct": -48,
       "estacionalidad": null,
-      "url": "/especies/herrera",
+      "url": "/especies/caballa",
       "gsc_posicion": null
+    },
+    {
+      "termino": "pleamar",
+      "mercado": "es",
+      "grupo": "marea",
+      "puntuacion": 35,
+      "tendencia": "estable",
+      "tendencia_pct": -2,
+      "estacionalidad": null,
+      "url": "/mareas/denia",
+      "gsc_posicion": 13
     },
     {
       "termino": "besugo",
       "mercado": "es",
       "grupo": "especie",
-      "puntuacion": 34,
+      "puntuacion": 35,
       "tendencia": "sube",
-      "tendencia_pct": 23,
+      "tendencia_pct": 13,
       "estacionalidad": null,
       "url": "/especies/besugo",
       "gsc_posicion": null
@@ -182,7 +193,7 @@
       "grupo": "especie",
       "puntuacion": 33,
       "tendencia": "estable",
-      "tendencia_pct": 4,
+      "tendencia_pct": 1,
       "estacionalidad": null,
       "url": "/especies/mero",
       "gsc_posicion": null
@@ -193,9 +204,31 @@
       "grupo": "especie",
       "puntuacion": 32,
       "tendencia": "sube",
-      "tendencia_pct": 21,
+      "tendencia_pct": 23,
       "estacionalidad": null,
       "url": "/especies/dorada",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "congrio",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 31,
+      "tendencia": "estable",
+      "tendencia_pct": -2,
+      "estacionalidad": null,
+      "url": "/especies/congrio",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "lenguado",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 30,
+      "tendencia": "estable",
+      "tendencia_pct": 3,
+      "estacionalidad": null,
+      "url": "/especies/lenguado",
       "gsc_posicion": null
     },
     {
@@ -218,28 +251,6 @@
       "gsc_posicion": null
     },
     {
-      "termino": "lenguado",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 29,
-      "tendencia": "sube",
-      "tendencia_pct": 11,
-      "estacionalidad": null,
-      "url": "/especies/lenguado",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "congrio",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 28,
-      "tendencia": "baja",
-      "tendencia_pct": -12,
-      "estacionalidad": null,
-      "url": "/especies/congrio",
-      "gsc_posicion": null
-    },
-    {
       "termino": "pesca de lubina",
       "mercado": "es",
       "grupo": "especie",
@@ -255,25 +266,25 @@
       "gsc_posicion": null
     },
     {
-      "termino": "jurel",
+      "termino": "cabracho",
       "mercado": "es",
       "grupo": "especie",
       "puntuacion": 27,
-      "tendencia": "baja",
-      "tendencia_pct": -15,
+      "tendencia": "sube",
+      "tendencia_pct": 24,
       "estacionalidad": null,
-      "url": "/especies/jurel",
+      "url": "/especies/cabracho",
       "gsc_posicion": null
     },
     {
-      "termino": "palometa",
+      "termino": "jurel",
       "mercado": "es",
       "grupo": "especie",
       "puntuacion": 26,
-      "tendencia": "sube",
-      "tendencia_pct": 19,
+      "tendencia": "estable",
+      "tendencia_pct": -8,
       "estacionalidad": null,
-      "url": "/especies/palometa",
+      "url": "/especies/jurel",
       "gsc_posicion": null
     },
     {
@@ -294,36 +305,47 @@
       "gsc_posicion": null
     },
     {
-      "termino": "cabracho",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 24,
-      "tendencia": "estable",
-      "tendencia_pct": -2,
-      "estacionalidad": null,
-      "url": "/especies/cabracho",
-      "gsc_posicion": null
-    },
-    {
       "termino": "bajamar",
       "mercado": "es",
       "grupo": "marea",
-      "puntuacion": 23,
+      "puntuacion": 25,
       "tendencia": "sube",
-      "tendencia_pct": 127,
+      "tendencia_pct": 222,
       "estacionalidad": null,
       "url": "/mareas",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "palometa",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 24,
+      "tendencia": "baja",
+      "tendencia_pct": -10,
+      "estacionalidad": null,
+      "url": "/especies/palometa",
       "gsc_posicion": null
     },
     {
       "termino": "pintarroja",
       "mercado": "es",
       "grupo": "especie",
-      "puntuacion": 22,
+      "puntuacion": 23,
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/especies/pintarroja",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "faneca",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 21,
+      "tendencia": "estable",
+      "tendencia_pct": 2,
+      "estacionalidad": null,
+      "url": "/especies/faneca",
       "gsc_posicion": null
     },
     {
@@ -345,15 +367,15 @@
       "gsc_posicion": null
     },
     {
-      "termino": "pez limon",
+      "termino": "chipiron pescado",
       "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 21,
-      "tendencia": "estable",
-      "tendencia_pct": 2,
+      "grupo": "descubierto",
+      "puntuacion": 20,
+      "tendencia": null,
+      "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/especies/pez-limon",
-      "gsc_posicion": null
+      "url": "/especies/calamar",
+      "gsc_posicion": 75.2
     },
     {
       "termino": "pleamar mundaka",
@@ -367,18 +389,7 @@
       "gsc_posicion": 29.5
     },
     {
-      "termino": "faneca",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 20,
-      "tendencia": "estable",
-      "tendencia_pct": 2,
-      "estacionalidad": null,
-      "url": "/especies/faneca",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "chipiron pescado",
+      "termino": "pesca chipiron",
       "mercado": "es",
       "grupo": "descubierto",
       "puntuacion": 19,
@@ -386,7 +397,7 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/especies/calamar",
-      "gsc_posicion": 82
+      "gsc_posicion": 24.7
     },
     {
       "termino": "costa viva",
@@ -400,6 +411,39 @@
       "gsc_posicion": 3
     },
     {
+      "termino": "mareas en bakio",
+      "mercado": "es",
+      "grupo": "descubierto",
+      "puntuacion": 19,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/spots/bakio",
+      "gsc_posicion": 30.5
+    },
+    {
+      "termino": "mareas euskadi",
+      "mercado": "es",
+      "grupo": "descubierto",
+      "puntuacion": 19,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/mareas/region/pais-vasco",
+      "gsc_posicion": 22.5
+    },
+    {
+      "termino": "mareas mediterraneo",
+      "mercado": "es",
+      "grupo": "region",
+      "puntuacion": 19,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/mareas/region/mediterraneo",
+      "gsc_posicion": 27.5
+    },
+    {
       "termino": "mareas pais vasco",
       "mercado": "es",
       "grupo": "region",
@@ -408,17 +452,6 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/mareas/region/pais-vasco",
-      "gsc_posicion": 24
-    },
-    {
-      "termino": "pesca chipiron",
-      "mercado": "es",
-      "grupo": "descubierto",
-      "puntuacion": 19,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/calamar",
       "gsc_posicion": 24
     },
     {
@@ -431,6 +464,17 @@
       "estacionalidad": null,
       "url": "/mareas/mundaka",
       "gsc_posicion": 27
+    },
+    {
+      "termino": "punto de pesca",
+      "mercado": "es",
+      "grupo": "descubierto",
+      "puntuacion": 19,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/spots",
+      "gsc_posicion": 41.5
     },
     {
       "termino": "webcam mundaka",
@@ -472,25 +516,36 @@
       "gsc_posicion": null
     },
     {
-      "termino": "pleamar",
+      "termino": "pez limon",
       "mercado": "es",
-      "grupo": "marea",
-      "puntuacion": 18,
+      "grupo": "especie",
+      "puntuacion": 19,
       "tendencia": "baja",
-      "tendencia_pct": -15,
+      "tendencia_pct": -19,
       "estacionalidad": null,
-      "url": "/mareas",
+      "url": "/especies/pez-limon",
       "gsc_posicion": null
     },
     {
       "termino": "atun rojo",
       "mercado": "es",
       "grupo": "especie",
-      "puntuacion": 17,
-      "tendencia": "sube",
-      "tendencia_pct": 54,
+      "puntuacion": 18,
+      "tendencia": "estable",
+      "tendencia_pct": 3,
       "estacionalidad": null,
       "url": "/especies/atun-rojo",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "llampuga",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 17,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/especies/llampuga",
       "gsc_posicion": null
     },
     {
@@ -512,15 +567,356 @@
       "gsc_posicion": null
     },
     {
-      "termino": "llampuga",
+      "termino": "bajamar mundaka",
       "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 16,
+      "grupo": "descubierto",
+      "puntuacion": 15,
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/especies/llampuga",
-      "gsc_posicion": null
+      "url": "/mareas/mundaka",
+      "gsc_posicion": 32
+    },
+    {
+      "termino": "cebo lubina",
+      "mercado": "es",
+      "grupo": "descubierto",
+      "puntuacion": 15,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/especies/lubina",
+      "gsc_posicion": 100
+    },
+    {
+      "termino": "chipiron animal",
+      "mercado": "es",
+      "grupo": "descubierto",
+      "puntuacion": 15,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/especies/calamar",
+      "gsc_posicion": 87
+    },
+    {
+      "termino": "como pescar chipirones",
+      "mercado": "es",
+      "grupo": "descubierto",
+      "puntuacion": 15,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/especies/calamar",
+      "gsc_posicion": 2
+    },
+    {
+      "termino": "costaviva",
+      "mercado": "es",
+      "grupo": "marca",
+      "puntuacion": 15,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/",
+      "gsc_posicion": 1
+    },
+    {
+      "termino": "lubina pesca",
+      "mercado": "es",
+      "grupo": "descubierto",
+      "puntuacion": 15,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/especies/lubina",
+      "gsc_posicion": 100
+    },
+    {
+      "termino": "lugares de pesca en españa",
+      "mercado": "es",
+      "grupo": "descubierto",
+      "puntuacion": 15,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/spots",
+      "gsc_posicion": 52
+    },
+    {
+      "termino": "marea en bakio",
+      "mercado": "es",
+      "grupo": "descubierto",
+      "puntuacion": 15,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/spots/bakio",
+      "gsc_posicion": 32
+    },
+    {
+      "termino": "mareas bakio hoy",
+      "mercado": "es",
+      "grupo": "descubierto",
+      "puntuacion": 15,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/spots/bakio",
+      "gsc_posicion": 28
+    },
+    {
+      "termino": "mareas bilbao",
+      "mercado": "es",
+      "grupo": "descubierto",
+      "puntuacion": 15,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/mareas/region/pais-vasco",
+      "gsc_posicion": 51
+    },
+    {
+      "termino": "mareas e luas meteogalicia",
+      "mercado": "es",
+      "grupo": "descubierto",
+      "puntuacion": 15,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/mareas/region/galicia",
+      "gsc_posicion": 25
+    },
+    {
+      "termino": "mareas en donosti",
+      "mercado": "es",
+      "grupo": "descubierto",
+      "puntuacion": 15,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/mareas/region/pais-vasco",
+      "gsc_posicion": 86
+    },
+    {
+      "termino": "mareas en donostia",
+      "mercado": "es",
+      "grupo": "descubierto",
+      "puntuacion": 15,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/mareas/region/pais-vasco",
+      "gsc_posicion": 94
+    },
+    {
+      "termino": "mareas en portosin",
+      "mercado": "es",
+      "grupo": "descubierto",
+      "puntuacion": 15,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/mareas",
+      "gsc_posicion": 34
+    },
+    {
+      "termino": "mareas españa",
+      "mercado": "es",
+      "grupo": "descubierto",
+      "puntuacion": 15,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/mareas",
+      "gsc_posicion": 35
+    },
+    {
+      "termino": "mareas hoy",
+      "mercado": "es",
+      "grupo": "marea",
+      "puntuacion": 15,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/mareas/region/cantabria",
+      "gsc_posicion": 5
+    },
+    {
+      "termino": "mareas irun",
+      "mercado": "es",
+      "grupo": "descubierto",
+      "puntuacion": 15,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/mareas/region/pais-vasco",
+      "gsc_posicion": 36
+    },
+    {
+      "termino": "mareas mundaka",
+      "mercado": "es",
+      "grupo": "spot",
+      "puntuacion": 15,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/mareas/mundaka",
+      "gsc_posicion": 24
+    },
+    {
+      "termino": "mareas mundaka hoy",
+      "mercado": "es",
+      "grupo": "descubierto",
+      "puntuacion": 15,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/mareas/mundaka",
+      "gsc_posicion": 26
+    },
+    {
+      "termino": "mareas vivas bizkaia",
+      "mercado": "es",
+      "grupo": "descubierto",
+      "puntuacion": 15,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/mareas/region/pais-vasco",
+      "gsc_posicion": 44
+    },
+    {
+      "termino": "meteo galicia mareas",
+      "mercado": "es",
+      "grupo": "descubierto",
+      "puntuacion": 15,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/mareas/region/galicia",
+      "gsc_posicion": 18
+    },
+    {
+      "termino": "pesca pais vasco",
+      "mercado": "es",
+      "grupo": "descubierto",
+      "puntuacion": 15,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/mareas/region/pais-vasco",
+      "gsc_posicion": 5
+    },
+    {
+      "termino": "pescar chipirones",
+      "mercado": "es",
+      "grupo": "descubierto",
+      "puntuacion": 15,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/especies/calamar",
+      "gsc_posicion": 2
+    },
+    {
+      "termino": "pleamar denia",
+      "mercado": "es",
+      "grupo": "descubierto",
+      "puntuacion": 15,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/mareas/denia",
+      "gsc_posicion": 13
+    },
+    {
+      "termino": "pleamar san vicente de la barquera",
+      "mercado": "es",
+      "grupo": "descubierto",
+      "puntuacion": 15,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/mareas/region/cantabria",
+      "gsc_posicion": 33
+    },
+    {
+      "termino": "tabla de mareas bakio",
+      "mercado": "es",
+      "grupo": "descubierto",
+      "puntuacion": 15,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/spots/bakio",
+      "gsc_posicion": 33
+    },
+    {
+      "termino": "tabla de mareas mundaka",
+      "mercado": "es",
+      "grupo": "descubierto",
+      "puntuacion": 15,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/mareas/mundaka",
+      "gsc_posicion": 29
+    },
+    {
+      "termino": "tabla mareas mundaka",
+      "mercado": "es",
+      "grupo": "descubierto",
+      "puntuacion": 15,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/mareas/mundaka",
+      "gsc_posicion": 33
+    },
+    {
+      "termino": "talla mínima lubina galicia",
+      "mercado": "es",
+      "grupo": "descubierto",
+      "puntuacion": 15,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/especies/lubina",
+      "gsc_posicion": 5
+    },
+    {
+      "termino": "talla mínima lubina galicia 2026",
+      "mercado": "es",
+      "grupo": "descubierto",
+      "puntuacion": 15,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/especies/lubina",
+      "gsc_posicion": 5
+    },
+    {
+      "termino": "tiburon bakio",
+      "mercado": "es",
+      "grupo": "descubierto",
+      "puntuacion": 15,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/spots/bakio",
+      "gsc_posicion": 55
+    },
+    {
+      "termino": "webcam mundaka directo",
+      "mercado": "es",
+      "grupo": "descubierto",
+      "puntuacion": 15,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/mareas/mundaka",
+      "gsc_posicion": 37
     },
     {
       "termino": "mojarra",
@@ -553,224 +949,26 @@
       "gsc_posicion": null
     },
     {
-      "termino": "bajamar mundaka",
+      "termino": "denton",
       "mercado": "es",
-      "grupo": "descubierto",
+      "grupo": "especie",
       "puntuacion": 14,
-      "tendencia": null,
-      "tendencia_pct": null,
+      "tendencia": "baja",
+      "tendencia_pct": -14,
       "estacionalidad": null,
-      "url": "/mareas/mundaka",
-      "gsc_posicion": 32
+      "url": "/especies/denton",
+      "gsc_posicion": null
     },
     {
-      "termino": "lubina pesca",
+      "termino": "surfcasting",
       "mercado": "es",
-      "grupo": "descubierto",
+      "grupo": "tecnica",
       "puntuacion": 14,
-      "tendencia": null,
-      "tendencia_pct": null,
+      "tendencia": "baja",
+      "tendencia_pct": -10,
       "estacionalidad": null,
-      "url": "/especies/lubina",
-      "gsc_posicion": 100
-    },
-    {
-      "termino": "lugares de pesca en españa",
-      "mercado": "es",
-      "grupo": "descubierto",
-      "puntuacion": 14,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/spots",
-      "gsc_posicion": 52
-    },
-    {
-      "termino": "marea en bakio",
-      "mercado": "es",
-      "grupo": "descubierto",
-      "puntuacion": 14,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/spots/bakio",
-      "gsc_posicion": 32
-    },
-    {
-      "termino": "mareas bakio hoy",
-      "mercado": "es",
-      "grupo": "descubierto",
-      "puntuacion": 14,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/spots/bakio",
-      "gsc_posicion": 28
-    },
-    {
-      "termino": "mareas bilbao",
-      "mercado": "es",
-      "grupo": "descubierto",
-      "puntuacion": 14,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/mareas/region/pais-vasco",
-      "gsc_posicion": 51
-    },
-    {
-      "termino": "mareas en donosti",
-      "mercado": "es",
-      "grupo": "descubierto",
-      "puntuacion": 14,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/mareas/region/pais-vasco",
-      "gsc_posicion": 86
-    },
-    {
-      "termino": "mareas en donostia",
-      "mercado": "es",
-      "grupo": "descubierto",
-      "puntuacion": 14,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/mareas/region/pais-vasco",
-      "gsc_posicion": 94
-    },
-    {
-      "termino": "mareas en portosin",
-      "mercado": "es",
-      "grupo": "descubierto",
-      "puntuacion": 14,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/mareas",
-      "gsc_posicion": 34
-    },
-    {
-      "termino": "mareas españa",
-      "mercado": "es",
-      "grupo": "descubierto",
-      "puntuacion": 14,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/mareas",
-      "gsc_posicion": 35
-    },
-    {
-      "termino": "mareas euskadi",
-      "mercado": "es",
-      "grupo": "descubierto",
-      "puntuacion": 14,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/mareas/region/pais-vasco",
-      "gsc_posicion": 25
-    },
-    {
-      "termino": "mareas irun",
-      "mercado": "es",
-      "grupo": "descubierto",
-      "puntuacion": 14,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/mareas/region/pais-vasco",
-      "gsc_posicion": 36
-    },
-    {
-      "termino": "mareas mundaka",
-      "mercado": "es",
-      "grupo": "spot",
-      "puntuacion": 14,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/mareas/mundaka",
-      "gsc_posicion": 24
-    },
-    {
-      "termino": "mareas mundaka hoy",
-      "mercado": "es",
-      "grupo": "descubierto",
-      "puntuacion": 14,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/mareas/mundaka",
-      "gsc_posicion": 26
-    },
-    {
-      "termino": "mareas vivas bizkaia",
-      "mercado": "es",
-      "grupo": "descubierto",
-      "puntuacion": 14,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/mareas/region/pais-vasco",
-      "gsc_posicion": 44
-    },
-    {
-      "termino": "pesca pais vasco",
-      "mercado": "es",
-      "grupo": "descubierto",
-      "puntuacion": 14,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/mareas/region/pais-vasco",
-      "gsc_posicion": 5
-    },
-    {
-      "termino": "tabla de mareas mundaka",
-      "mercado": "es",
-      "grupo": "descubierto",
-      "puntuacion": 14,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/mareas/mundaka",
-      "gsc_posicion": 29
-    },
-    {
-      "termino": "tabla mareas mundaka",
-      "mercado": "es",
-      "grupo": "descubierto",
-      "puntuacion": 14,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/mareas/mundaka",
-      "gsc_posicion": 33
-    },
-    {
-      "termino": "tiburón bakio",
-      "mercado": "es",
-      "grupo": "descubierto",
-      "puntuacion": 14,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/spots/bakio",
-      "gsc_posicion": 49
-    },
-    {
-      "termino": "webcam mundaka directo",
-      "mercado": "es",
-      "grupo": "descubierto",
-      "puntuacion": 14,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/mareas/mundaka",
-      "gsc_posicion": 37
+      "url": null,
+      "gsc_posicion": null
     },
     {
       "termino": "pesca recreativa",
@@ -792,34 +990,12 @@
       "gsc_posicion": null
     },
     {
-      "termino": "surfcasting",
-      "mercado": "es",
-      "grupo": "tecnica",
-      "puntuacion": 13,
-      "tendencia": "sube",
-      "tendencia_pct": 108,
-      "estacionalidad": null,
-      "url": null,
-      "gsc_posicion": null
-    },
-    {
-      "termino": "denton",
+      "termino": "breca",
       "mercado": "es",
       "grupo": "especie",
       "puntuacion": 12,
       "tendencia": "baja",
-      "tendencia_pct": -36,
-      "estacionalidad": null,
-      "url": "/especies/denton",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "breca",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 11,
-      "tendencia": "baja",
-      "tendencia_pct": -24,
+      "tendencia_pct": -28,
       "estacionalidad": null,
       "url": "/especies/breca",
       "gsc_posicion": null
@@ -828,7 +1004,7 @@
       "termino": "jigging",
       "mercado": "es",
       "grupo": "tecnica",
-      "puntuacion": 11,
+      "puntuacion": 12,
       "tendencia": "sube",
       "tendencia_pct": 83,
       "estacionalidad": {
@@ -841,6 +1017,17 @@
         "estacional": false
       },
       "url": null,
+      "gsc_posicion": null
+    },
+    {
+      "termino": "mareas vivas",
+      "mercado": "es",
+      "grupo": "marea",
+      "puntuacion": 12,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/mareas",
       "gsc_posicion": null
     },
     {
@@ -863,21 +1050,10 @@
       "gsc_posicion": null
     },
     {
-      "termino": "chopa",
-      "mercado": "es",
-      "grupo": "especie",
-      "puntuacion": 10,
-      "tendencia": "baja",
-      "tendencia_pct": -20,
-      "estacionalidad": null,
-      "url": "/especies/chopa",
-      "gsc_posicion": null
-    },
-    {
       "termino": "aligote",
       "mercado": "es",
       "grupo": "especie",
-      "puntuacion": 9,
+      "puntuacion": 10,
       "tendencia": "sube",
       "tendencia_pct": 57,
       "estacionalidad": null,
@@ -906,11 +1082,22 @@
       "termino": "abade",
       "mercado": "es",
       "grupo": "especie",
-      "puntuacion": 6,
+      "puntuacion": 7,
       "tendencia": "sube",
-      "tendencia_pct": 29,
+      "tendencia_pct": 50,
       "estacionalidad": null,
       "url": "/especies/abade",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "chopa",
+      "mercado": "es",
+      "grupo": "especie",
+      "puntuacion": 7,
+      "tendencia": "baja",
+      "tendencia_pct": -50,
+      "estacionalidad": null,
+      "url": "/especies/chopa",
       "gsc_posicion": null
     },
     {
@@ -948,8 +1135,8 @@
       "mercado": "es",
       "grupo": "tecnica",
       "puntuacion": 4,
-      "tendencia": null,
-      "tendencia_pct": null,
+      "tendencia": "sube",
+      "tendencia_pct": 20,
       "estacionalidad": null,
       "url": null,
       "gsc_posicion": null
@@ -960,7 +1147,7 @@
       "grupo": "especie",
       "puntuacion": 4,
       "tendencia": "baja",
-      "tendencia_pct": -37,
+      "tendencia_pct": -14,
       "estacionalidad": null,
       "url": "/especies/oblada",
       "gsc_posicion": null
@@ -1081,17 +1268,6 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/mareas",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "costaviva",
-      "mercado": "es",
-      "grupo": "marca",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/",
       "gsc_posicion": null
     },
     {
@@ -1678,17 +1854,6 @@
       "gsc_posicion": null
     },
     {
-      "termino": "mareas hoy",
-      "mercado": "es",
-      "grupo": "marea",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/mareas",
-      "gsc_posicion": null
-    },
-    {
       "termino": "mareas javea",
       "mercado": "es",
       "grupo": "spot",
@@ -1752,17 +1917,6 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/mareas/malaga",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "mareas mediterraneo",
-      "mercado": "es",
-      "grupo": "region",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/mareas/region/mediterraneo",
       "gsc_posicion": null
     },
     {
@@ -2148,17 +2302,6 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/mareas/vinaros",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "mareas vivas",
-      "mercado": "es",
-      "grupo": "marea",
-      "puntuacion": 0,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/mareas",
       "gsc_posicion": null
     },
     {

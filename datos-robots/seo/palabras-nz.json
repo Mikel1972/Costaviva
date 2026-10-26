@@ -1,15 +1,32 @@
 {
-  "generado": "2026-10-19T10:02:27.688Z",
-  "semana": "2026-10-05",
+  "generado": "2026-10-26T10:16:40.890Z",
+  "semana": "2026-10-12",
   "fuente": "Mikel1972/comun seo/palabras",
   "terminos": [
+    {
+      "termino": "tide times",
+      "mercado": "nz",
+      "grupo": "marea",
+      "puntuacion": 80,
+      "tendencia": "sube",
+      "tendencia_pct": 50,
+      "estacionalidad": {
+        "indice_mes_actual": 1.21,
+        "picos": [
+          10
+        ],
+        "estacional": false
+      },
+      "url": "/en/tides",
+      "gsc_posicion": null
+    },
     {
       "termino": "tarakihi",
       "mercado": "nz",
       "grupo": "especie",
-      "puntuacion": 57,
+      "puntuacion": 41,
       "tendencia": "baja",
-      "tendencia_pct": -56,
+      "tendencia_pct": -47,
       "estacionalidad": {
         "indice_mes_actual": 0.8,
         "picos": [
@@ -20,34 +37,6 @@
         "estacional": false
       },
       "url": "/en/species/nz-tarakihi",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "high tide today",
-      "mercado": "nz",
-      "grupo": "marea",
-      "puntuacion": 50,
-      "tendencia": "baja",
-      "tendencia_pct": -12,
-      "estacionalidad": null,
-      "url": "/en/tides",
-      "gsc_posicion": null
-    },
-    {
-      "termino": "tide times",
-      "mercado": "nz",
-      "grupo": "marea",
-      "puntuacion": 47,
-      "tendencia": "baja",
-      "tendencia_pct": -14,
-      "estacionalidad": {
-        "indice_mes_actual": 1.21,
-        "picos": [
-          10
-        ],
-        "estacional": false
-      },
-      "url": "/en/tides",
       "gsc_posicion": null
     },
     {
@@ -100,6 +89,28 @@
       "gsc_posicion": null
     },
     {
+      "termino": "tides pohara",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 20,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 35
+    },
+    {
+      "termino": "waimamaku tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 20,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 38
+    },
+    {
       "termino": "kahawai fishing",
       "mercado": "nz",
       "grupo": "especie",
@@ -133,6 +144,94 @@
       },
       "url": "/en/species/nz-snapper",
       "gsc_posicion": null
+    },
+    {
+      "termino": "high tide today",
+      "mercado": "nz",
+      "grupo": "marea",
+      "puntuacion": 17,
+      "tendencia": "baja",
+      "tendencia_pct": -12,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": null
+    },
+    {
+      "termino": "kairaki tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 16,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 47
+    },
+    {
+      "termino": "oceanfun tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 16,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides/nz-halfmoon-bay",
+      "gsc_posicion": 35
+    },
+    {
+      "termino": "ohope tide times",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 16,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 56
+    },
+    {
+      "termino": "tawharanui tide times",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 16,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 34
+    },
+    {
+      "termino": "tide times foxton",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 16,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 45
+    },
+    {
+      "termino": "waitaki tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 16,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 69
+    },
+    {
+      "termino": "whangaparaoa tide",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 16,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 34
     },
     {
       "termino": "slow jigging",
