@@ -1,47 +1,17 @@
 {
- "generado_en": "2026-10-19T10:16:22.257Z",
- "semana": "2026-W43",
+ "generado_en": "2026-10-26T04:41:25.681Z",
+ "semana": "2026-W44",
  "nota": "Fotogramas que más enseñarían a la calibración de las cámaras si se etiquetan (etiquetar-olas.html o la rutina de etiquetado).",
  "fotogramas": [
   {
-   "camara": "nz-napier",
+   "camara": "mutriku",
    "encuadre": "principal",
-   "fecha": "2026-10-14T21:07:21.920Z",
-   "espuma": 0.0049,
-   "estimacion": 0.07,
-   "modelo": 0.48,
-   "ganancia": 3.425,
+   "fecha": "2026-10-22T09:38:02.269Z",
+   "espuma": 0.0569,
+   "estimacion": 5.26,
+   "modelo": 2.54,
+   "ganancia": 2.728,
    "motivo": "cámara y modelo discrepan mucho"
-  },
-  {
-   "camara": "nz-napier",
-   "encuadre": "principal",
-   "fecha": "2026-10-12T19:07:17.540Z",
-   "espuma": 0.0049,
-   "estimacion": 0.06,
-   "modelo": 0.38,
-   "ganancia": 3.346,
-   "motivo": "cámara y modelo discrepan mucho"
-  },
-  {
-   "camara": "nz-aramoana",
-   "encuadre": "principal",
-   "fecha": "2026-10-12T22:35:04.000Z",
-   "espuma": 0.0234,
-   "estimacion": 1,
-   "modelo": 0.98,
-   "ganancia": 0.5,
-   "motivo": "pocas etiquetas en este encuadre"
-  },
-  {
-   "camara": "nz-aramoana",
-   "encuadre": "principal",
-   "fecha": "2026-10-13T02:35:04.000Z",
-   "espuma": 0.0281,
-   "estimacion": 1.09,
-   "modelo": 1.1,
-   "ganancia": 0.5,
-   "motivo": "pocas etiquetas en este encuadre"
   }
  ]
 }

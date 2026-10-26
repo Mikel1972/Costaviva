@@ -1,17 +1,17 @@
 {
  "nota": "Aprendizaje semanal del índice (scripts/aprendizaje/semanal.mjs). Solo agregados. Lo enseña admin.html.",
- "semana": "2026-W43",
+ "semana": "2026-W44",
  "version": "v2-logistica-2026-10-08",
  "global": {
-  "n": 2,
-  "positivos": 2,
+  "n": 3,
+  "positivos": 3,
   "tasa": 1,
-  "brier": 0.1645,
+  "brier": 0.1428,
   "brier_referencia": 0,
   "habilidad_brier": null,
-  "logloss": 0.5177,
+  "logloss": 0.4714,
   "auc": null,
-  "ece_puntos": 40.1,
+  "ece_puntos": 37.27,
   "calibracion": [
    {
     "desde": 0,
@@ -37,8 +37,8 @@
    {
     "desde": 60,
     "hasta": 80,
-    "n": 1,
-    "indice_medio": 65.8,
+    "n": 2,
+    "indice_medio": 67.1,
     "tasa_real": 100
    },
    {
@@ -52,20 +52,20 @@
  },
  "unidades": {
   "marea": {
-   "n": 1,
-   "usuarios": "solo Mikel",
-   "aporte_medio_logodds": -0.048,
-   "tasa_pesca_si_suma": null,
-   "tasa_pesca_si_resta": 1,
-   "ablacion_logloss": -0.01091
-  },
-  "oleaje": {
    "n": 2,
    "usuarios": "solo Mikel",
-   "aporte_medio_logodds": -0.0555,
+   "aporte_medio_logodds": -0.0355,
    "tasa_pesca_si_suma": null,
    "tasa_pesca_si_resta": 1,
-   "ablacion_logloss": -0.02262
+   "ablacion_logloss": -0.00967
+  },
+  "oleaje": {
+   "n": 3,
+   "usuarios": "solo Mikel",
+   "aporte_medio_logodds": 0.0697,
+   "tasa_pesca_si_suma": 1,
+   "tasa_pesca_si_resta": 1,
+   "ablacion_logloss": 0.02236
   },
   "presion": {
    "n": 2,
@@ -73,7 +73,7 @@
    "aporte_medio_logodds": 0.078,
    "tasa_pesca_si_suma": 1,
    "tasa_pesca_si_resta": null,
-   "ablacion_logloss": 0.02971
+   "ablacion_logloss": 0.01981
   },
   "regla:borde_borrasca_tunidos": {
    "n": 1,
@@ -81,15 +81,15 @@
    "aporte_medio_logodds": 0.21,
    "tasa_pesca_si_suma": 1,
    "tasa_pesca_si_resta": null,
-   "ablacion_logloss": 0.03845
+   "ablacion_logloss": 0.02563
   },
   "temperatura": {
-   "n": 2,
+   "n": 3,
    "usuarios": "solo Mikel",
-   "aporte_medio_logodds": 0.303,
+   "aporte_medio_logodds": 0.3617,
    "tasa_pesca_si_suma": 1,
    "tasa_pesca_si_resta": null,
-   "ablacion_logloss": 0.12918
+   "ablacion_logloss": 0.14513
   }
  },
  "automaticos": []
