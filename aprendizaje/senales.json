@@ -1,6 +1,6 @@
 {
  "app": "Costaviva",
- "generado": "2026-10-26T04:41:25.681Z",
+ "generado": "2026-10-26T10:29:58.998Z",
  "ventana_dias": 17,
  "estado": "ok",
  "metricas": {
@@ -17,9 +17,9 @@
   "retadores_en_sombra": 3,
   "propuestas_abiertas": 0,
   "fuentes_no_ok": 1,
-  "avisos_deriva": 8,
+  "avisos_deriva": 12,
   "boyas_sesgo_max_pct": 30,
-  "camaras_error_medio_pct": 87,
+  "camaras_error_medio_pct": 88,
   "panel_indice_medio": 52.2,
   "observaciones_abiertas": 637,
   "fotogramas_para_etiquetar": 1,
