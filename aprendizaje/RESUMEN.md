@@ -1,17 +1,17 @@
-# Aprendizaje de Costaviva — semana 2026-W43
+# Aprendizaje de Costaviva — semana 2026-W44
 
-Generado el 2026-10-19 por el aprendizaje semanal (sin IA, `aprendizaje-semanal.yml`). Contrato de comun: `estandares/aprendizaje.md`. Detalle técnico en `datos-robots/aprendizaje/`; propuestas en `aprendizaje/propuestas.json`; señales en `aprendizaje/senales.json`.
+Generado el 2026-10-26 por el aprendizaje semanal (sin IA, `aprendizaje-semanal.yml`). Contrato de comun: `estandares/aprendizaje.md`. Detalle técnico en `datos-robots/aprendizaje/`; propuestas en `aprendizaje/propuestas.json`; señales en `aprendizaje/senales.json`.
 
 ## Estado del bucle
 
-- Aprendizaje semanal: corrió el 2026-10-19 (ok). Salidas usadas: 2.
-- Banco de pruebas: 0 salidas recalculadas con el tiempo de su día y 2 con lo que guardó el diario. sin OPEN_METEO_API_KEY: no se recalcula con series (solo términos guardados).
+- Aprendizaje semanal: corrió el 2026-10-26 (ok). Salidas usadas: 3.
+- Banco de pruebas: 0 salidas recalculadas con el tiempo de su día y 3 con lo que guardó el diario. sin OPEN_METEO_API_KEY: no se recalcula con series (solo términos guardados).
 - Retadores en la sombra: 3. Reglas con peso ajustado por los datos: 0.
 - Propuestas abiertas: 0. Las decides en el Issue semanal de comun.
 
 ## En una frase
 
-Con 2 salidas, cuando el índice está más alto se pesca (falta alguna salida sin pesca para saberlo) (AUC —); se pescó algo en el 100 % de las salidas.
+Con 3 salidas, cuando el índice está más alto se pesca (falta alguna salida sin pesca para saberlo) (AUC —); se pescó algo en el 100 % de las salidas.
 0 cambio(s) aplicados solos y 0 pregunta(s) para ti.
 
 ## Te pregunto (sí o no)
@@ -30,36 +30,40 @@ Barreras: solo el peso (confianza) de reglas expertas, como mucho ±20 % por sem
 | Índice | Salidas | Se pescó algo |
 |---|---|---|
 | 40-60 | 1 | 100 % |
-| 60-80 | 1 | 100 % |
+| 60-80 | 2 | 100 % |
 
 ## Vigilancia de los datos
 
+- Presión real por spot (cada hora): último dato hace 4 h (se espera cada 2 h)
 - el modelo da -30 % frente a la boya Bilbao-Vizcaya (exterior) (8 lecturas)
+- la calibración de bakio/principal empeora: error 63 % → 92 %
+- la calibración de hondarribia/bocana empeora: error 61 % → 100 %
+- la calibración de mutriku/principal empeora: error 50 % → 100 %
+- la calibración de nz-riverton/principal empeora: error 33 % → 100 %
+- la calibración de zarautz/principal empeora: error 54 % → 96 %
+- el índice de las salidas de esta semana se ha desplazado frente al mes anterior (PSI 4,604)
 
 ## Retadores en la sombra
 
 - `calamar-luna-llena` (Calamar: mejor con luna llena de noche): sin resultado publicable (sin casos evaluables); movería el índice 0 puntos de media.
-- `levante-confianza-05` (Levante en el Cantábrico con menos peso (0,7 → 0,5)): no gana al índice actual en 2 salidas (probabilidad de mejora 0 %); movería el índice 0,1 puntos de media.
+- `levante-confianza-05` (Levante en el Cantábrico con menos peso (0,7 → 0,5)): no gana al índice actual en 3 salidas (probabilidad de mejora 0 %); movería el índice 0,1 puntos de media.
 - `lisa-rio-crecido` (Río crecido: la lisa entra en la desembocadura): sin resultado publicable (sin casos evaluables); movería el índice 0 puntos de media.
 
 ## Frentes, clorofila y corrientes (en la sombra)
 
 Se mira, para cada modalidad y cada especie, si pescar cerca de un borde de clorofila, de un cambio de temperatura, de una corriente que junta el agua (o con agua azul, verdosa o con floración, o con corriente fuerte) cambia lo que ya decía el índice, sin suponer de antemano si ayuda o estorba. No toca el índice en vivo.
-- Salidas con la capa de su día: 2 de 2. 3 fechas de salida sin capa de frentes (la copia diaria empezó el 2026-10-09 o falló ese día): esas salidas no cuentan en la sombra de frentes.
+- Salidas con la capa de su día: 3 de 3. 3 fechas de salida sin capa de frentes (la copia diaria empezó el 2026-10-09 o falló ese día): esas salidas no cuentan en la sombra de frentes.
 - Ninguna combinación supera todavía las barreras (80 salidas, 15 con y 15 sin captura, 30 con y 30 sin el rasgo, 5 personas o más, efecto de 3 desviaciones y mejora en las salidas recientes). Todas siguen en la sombra, acumulando salidas.
 
 ## Temperatura del agua: sonda frente al modelo
 
 Quien mide el agua con su sonda la apunta en el diario. Se compara con lo que decía el modelo a esa hora y en ese punto (Open-Meteo, la capa IBI de Copernicus y la boya si se usó), por zona. No cambia nada solo.
-- Medidas con sonda: 1.
+- Medidas con sonda: 2.
 - Ninguna zona supera todavía las barreras (30 medidas, 5 personas o más, sesgo de 0,3 °C o más, 3 errores típicos y que se mantenga en las medidas recientes).
 
 ## Para etiquetar (lo que más enseña)
 
-- Cámara nz-napier (principal), 2026-10-14 21:07 UTC: cámara y modelo discrepan mucho.
-- Cámara nz-napier (principal), 2026-10-12 19:07 UTC: cámara y modelo discrepan mucho.
-- Cámara nz-aramoana (principal), 2026-10-12 22:35 UTC: pocas etiquetas en este encuadre.
-- Cámara nz-aramoana (principal), 2026-10-13 02:35 UTC: pocas etiquetas en este encuadre.
+- Cámara mutriku (principal), 2026-10-22 09:38 UTC: cámara y modelo discrepan mucho.
 
 Se etiquetan en `etiquetar-olas.html` (admin) o con la rutina de etiquetado.
 
