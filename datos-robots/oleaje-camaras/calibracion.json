@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-26T00:10:27.221Z",
- "lineasHistorial": 5192,
+ "fecha": "2026-10-26T00:37:19.826Z",
+ "lineasHistorial": 5195,
  "etiquetas": 254,
  "etiquetasClaude": 159,
  "calibracion": {
@@ -367,9 +367,9 @@
    "pocosDatos": false
   },
   "nz-aramoana/principal": {
-   "a": 6.014,
+   "a": 6.0719,
    "p": 0.5,
-   "n": 61,
+   "n": 62,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 2,
    "franjasClaude": [
@@ -514,7 +514,7 @@
    "motivo": "≥ 3 días con alturas variadas",
    "ruido": {
     "ruido": 0.424,
-    "pares": 28
+    "pares": 29
    }
   },
   "nz-riverton": {
@@ -522,7 +522,7 @@
    "motivo": "estable (±0 % entre lecturas cercanas)",
    "ruido": {
     "ruido": 0,
-    "pares": 316
+    "pares": 317
    }
   }
  }
