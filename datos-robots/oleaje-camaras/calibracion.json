@@ -1,13 +1,13 @@
 {
- "fecha": "2026-10-26T10:08:00.272Z",
- "lineasHistorial": 5295,
+ "fecha": "2026-10-26T10:37:46.147Z",
+ "lineasHistorial": 5304,
  "etiquetas": 254,
  "etiquetasClaude": 159,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.4434,
+   "a": 1.4476,
    "p": 0.5,
-   "n": 133,
+   "n": 134,
    "nEtiquetas": 7,
    "nEtiquetasClaude": 3,
    "franjasClaude": [
@@ -36,22 +36,22 @@
    "pocosDatos": false
   },
   "donostia/principal": {
-   "a": 8.8177,
+   "a": 9.0218,
    "p": 0.5,
-   "n": 26,
+   "n": 27,
    "nEtiquetas": 1,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
    "dias": 13,
    "hMin": 0.75,
-   "hMax": 3.87,
+   "hMax": 4.04,
    "errorRel": 1,
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 5.5672,
+   "a": 5.5883,
    "p": 0.5,
-   "n": 379,
+   "n": 380,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 20,
    "franjasClaude": [
@@ -74,7 +74,7 @@
    "dias": 19,
    "hMin": 0.3,
    "hMax": 6.97,
-   "errorRel": 0.966,
+   "errorRel": 0.974,
    "pocosDatos": false
   },
   "zumaia/c": {
@@ -174,9 +174,9 @@
    "pocosDatos": false
   },
   "sopelana/principal": {
-   "a": 4.1649,
+   "a": 4.1755,
    "p": 0.5,
-   "n": 109,
+   "n": 110,
    "nEtiquetas": 4,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -191,7 +191,7 @@
    "dias": 19,
    "hMin": 0.3,
    "hMax": 4.62,
-   "errorRel": 0.782,
+   "errorRel": 0.779,
    "pocosDatos": false
   },
   "berria/principal": {
@@ -208,9 +208,9 @@
    "pocosDatos": true
   },
   "castrourdiales/principal": {
-   "a": 5.871,
+   "a": 5.8924,
    "p": 0.5,
-   "n": 65,
+   "n": 66,
    "nEtiquetas": 5,
    "nEtiquetasClaude": 2,
    "franjasClaude": [
@@ -257,16 +257,16 @@
    "pocosDatos": true
   },
   "orio/principal": {
-   "a": 4.0899,
+   "a": 4.1659,
    "p": 0.5,
-   "n": 40,
+   "n": 41,
    "nEtiquetas": 1,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
    "dias": 13,
    "hMin": 0.75,
-   "hMax": 3.81,
-   "errorRel": 0.656,
+   "hMax": 4.04,
+   "errorRel": 0.671,
    "pocosDatos": false
   },
   "getaria/malkorbe": {
@@ -401,32 +401,32 @@
    "sustituye": true,
    "motivo": "7 etiquetas",
    "ruido": {
-    "ruido": 0.573,
-    "pares": 69
+    "ruido": 0.536,
+    "pares": 70
    }
   },
   "donostia": {
    "sustituye": true,
    "motivo": "≥ 3 días con alturas variadas",
    "ruido": {
-    "ruido": 0.642,
-    "pares": 8
+    "ruido": 0.89,
+    "pares": 9
    }
   },
   "orio": {
    "sustituye": true,
    "motivo": "≥ 3 días con alturas variadas",
    "ruido": {
-    "ruido": 0.523,
-    "pares": 20
+    "ruido": 0.313,
+    "pares": 21
    }
   },
   "zarautz": {
    "sustituye": true,
    "motivo": "18 etiquetas",
    "ruido": {
-    "ruido": 0.534,
-    "pares": 319
+    "ruido": 0.535,
+    "pares": 320
    }
   },
   "getaria": {
