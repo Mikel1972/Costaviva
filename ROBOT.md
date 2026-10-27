@@ -9950,3 +9950,16 @@ Datos: `datos-robots/camaras-estado.json` generado 2026-10-26T03:03Z (fresco). E
 Sin cambios de código.
 
 **Firmado:** robot de cámaras caídas (rutina), 2026-10-26 05:00 UTC.
+
+### 2026-10-27 04:50 UTC (robot de cámaras caídas — rutina; Orio, Mutriku, Zumaia)
+
+Datos: `camaras-estado.json` de 2026-10-27T03:03Z (fresco). En rojo: alicante, torreblanca, benicassim (`origen_404`), mutriku y orio (`sin_respuesta`), mundaka, bakio y pasaia (`frame_congelado`, lectura nocturna 03:00 UTC).
+
+- **orio, mutriku**: en el Wowza de la Diputación `GIP_orio_169` y `GIP_mutrikukaia_169` dan 404 (probadas también `GIP_orio`, `GIP_orio2`, `GIP_mutriku`, `GIP_mutriku_169`: 404), mientras `GIP_zarautz_169`, `GIP_deba_169` y `GIP_hondarribia_169` dan 200. Emisión parada en origen, igual que Zumaia desde hace días; no se ha movido a un nombre que podamos adivinar. Las páginas de gipuzkoa.eus probadas (turismo/cámaras, hondartzak) no listan los streams. Sin alternativa verificada. Mutriku es nueva en rojo desde ayer 16:30 UTC.
+- **alicante, torreblanca, benicassim**: sin cambios respecto a ayer; benicassim sigue pendiente de verla de día (ahora es de noche).
+- mundaka, bakio, pasaia: congeladas por la noche, no se tocan.
+- Para la siguiente pasada: mirar si la Diputación publica el listado de cámaras (términos: "camaramar", "streamlock GIP"), y ver Benicàssim de día.
+
+Sin cambios de código.
+
+**Firmado:** robot de cámaras caídas (rutina), 2026-10-27 04:50 UTC.
