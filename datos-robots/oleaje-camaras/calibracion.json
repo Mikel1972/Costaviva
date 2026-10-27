@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-27T07:43:25.695Z",
- "lineasHistorial": 5527,
+ "fecha": "2026-10-27T08:08:16.412Z",
+ "lineasHistorial": 5536,
  "etiquetas": 258,
  "etiquetasClaude": 163,
  "calibracion": {
@@ -225,9 +225,9 @@
    "pocosDatos": false
   },
   "berria/dinamico": {
-   "a": 5.4766,
+   "a": 5.491,
    "p": 0.5,
-   "n": 190,
+   "n": 191,
    "nEtiquetas": 8,
    "nEtiquetasClaude": 13,
    "franjasClaude": [
@@ -238,7 +238,7 @@
     "2026-10-23T16",
     "2026-10-24T16"
    ],
-   "dias": 19,
+   "dias": 20,
    "hMin": 0.69,
    "hMax": 4.73,
    "errorRel": 0.822,
@@ -297,19 +297,19 @@
    "pocosDatos": true
   },
   "zarautz/principal": {
-   "a": 4.7911,
+   "a": 4.7527,
    "p": 0.5,
-   "n": 32,
+   "n": 33,
    "nEtiquetas": 1,
    "nEtiquetasClaude": 2,
    "franjasClaude": [
     "2026-10-19T16",
     "2026-10-20T16"
    ],
-   "dias": 14,
+   "dias": 15,
    "hMin": 0.58,
    "hMax": 6.49,
-   "errorRel": 0.947,
+   "errorRel": 0.934,
    "pocosDatos": false
   },
   "nz-napier/principal": {
