@@ -46,3 +46,14 @@ Una entrada por pasada (martes y viernes), añadida al final. Anota números de 
 - SEO invisible (PARTE A) y diseño (PARTE B): ninguno esta pasada; sin datos que lo justifiquen.
 - KPIs (PARTE D): es viernes, solo martes. DeepL: día 23, no aplica.
 - Esperado próxima pasada: PR fusionada; 22 indexadas o más; "Descubierta" por debajo de 344; posición de los 4 términos igual o mejor a 2 semanas.
+
+## 2026-10-27 05:4x UTC (martes)
+- Aviso: SEO_ESTADO.md es del 2026-10-23 08:54 UTC (no de hoy).
+- Números: indexadas 23 de 499 inspeccionadas (5%; antes 22 de 500: +1). Sitemap 558 URLs. 386 "Descubierta: sin indexar", 89 "Google no reconoce esta URL", 475 sin rastrear nunca (el freno sigue siendo autoridad/rastreo). Clics/impresiones de 28 días: no figuran en este fichero; informe de palabras (España, semana 12-oct): 120 impresiones, 5 clics, CTR 4,2 %, posición 18,8.
+- País priorizado: España (pais_foco del resumen de KPIs).
+- SEO aplicado en main (PARTE A) y PARTE C: ninguno esta pasada. Los huecos que quedan son técnicas (spinning, jigging, surfcasting...; ES/PT/NZ) sin datos reales con fuente en la app: no se crean páginas.
+- Veredictos: los cambios del 12-oct (Mareas en X hoy) y del 23-oct (Pesca de X) siguen "pendiente"; nada que revertir.
+- Diseño: ninguna propuesta; sin datos que la justifiquen.
+- KPIs (sin cifras): país en foco España; paso más en rojo: pago (prueba → pago), pero con apenas cuentas válidas aún no hay pruebas terminadas con las que juzgarlo, así que no se hace cambio. Evaluaciones: el cambio del 20-oct (prueba de 14 días en páginas públicas) aún sin fusionar ni evaluable. Propuestas para Mikel: ninguna.
+- Parte D (DeepL): día 27, no aplica.
+- Esperado próxima pasada: 23 indexadas o más; "Descubierta" por debajo de 386; veredicto a 2 semanas del cambio del 12-oct.
