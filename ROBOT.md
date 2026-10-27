@@ -9963,3 +9963,13 @@ Datos: `camaras-estado.json` de 2026-10-27T03:03Z (fresco). En rojo: alicante, t
 Sin cambios de código.
 
 **Firmado:** robot de cámaras caídas (rutina), 2026-10-27 04:50 UTC.
+
+### 2026-10-27 05:00 UTC (pasada buscadora — caudal de ríos y estaciones de monte, rutina)
+
+Una fuente nueva verificada, sin integrar (haría falta clave y tocar `functions/`: solo propuesta).
+
+- **Galicia — red foronómica de MeteoGalicia + Augas de Galicia**: el PDF oficial `meteo-estaticos.xunta.gal/datosred/infoweb/aforos/json/JSON_Aforos_Estado_Actual_es.pdf` (200) describe un servicio JSON `servizos.meteogalicia.gal/mgafos/json/estadoActual.action?cod=CLAVE` con caudal y nivel actuales de las estaciones en servicio. Dice que es público y gratuito, pero exige clave personal pedida por email a `administracion-web.meteogalicia@xunta.gal` (se puede pedir con `datos@costaviva.org`). Sin clave el endpoint responde página de error (comprobado). Listado de estaciones: `servizos.meteogalicia.gal/mgafos/estacions/estacions.action` (200). Cubriría ríos gallegos hoy sin caudal. Licencia de reutilización no verificada. **Decisión para Mikel**: pedir la clave (Mikel envía el email, como con Euskalmet).
+- Ríos vascos: URA (`uragentzia.euskadi.eus/datos-de-estaciones-de-aforo/...`) sigue en 200 pero sin endpoint JSON/CSV directo; búsqueda web no encuentra ninguno documentado. Sigue pendiente la clave de Euskalmet.
+- Sin respuesta útil desde esta sesión: `snirh.apambiente.pt` (403), `saihebro.com` (sin respuesta); no se dan por caídos.
+
+Firmado: robot buscador de fuentes (rutina).
