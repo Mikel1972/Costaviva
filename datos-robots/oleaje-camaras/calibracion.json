@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-27T20:37:28.906Z",
- "lineasHistorial": 5734,
+ "fecha": "2026-10-27T21:07:20.979Z",
+ "lineasHistorial": 5737,
  "etiquetas": 262,
  "etiquetasClaude": 167,
  "calibracion": {
@@ -373,9 +373,9 @@
    "pocosDatos": false
   },
   "nz-aramoana/principal": {
-   "a": 6.5025,
+   "a": 6.5367,
    "p": 0.5,
-   "n": 75,
+   "n": 76,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 2,
    "franjasClaude": [
@@ -528,7 +528,7 @@
    "motivo": "estable (±0 % entre lecturas cercanas)",
    "ruido": {
     "ruido": 0,
-    "pares": 355
+    "pares": 356
    }
   }
  }
