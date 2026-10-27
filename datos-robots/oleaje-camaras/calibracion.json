@@ -1,19 +1,19 @@
 {
- "fecha": "2026-10-27T08:38:15.557Z",
- "lineasHistorial": 5545,
+ "fecha": "2026-10-27T09:07:57.467Z",
+ "lineasHistorial": 5556,
  "etiquetas": 258,
  "etiquetasClaude": 163,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.471,
+   "a": 1.4669,
    "p": 0.5,
-   "n": 138,
+   "n": 139,
    "nEtiquetas": 7,
    "nEtiquetasClaude": 3,
    "franjasClaude": [
     "2026-10-08T16"
    ],
-   "dias": 19,
+   "dias": 20,
    "hMin": 0.12,
    "hMax": 1.69,
    "errorRel": 1,
@@ -49,9 +49,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 5.7074,
+   "a": 5.7154,
    "p": 0.5,
-   "n": 394,
+   "n": 395,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 21,
    "franjasClaude": [
@@ -225,9 +225,9 @@
    "pocosDatos": false
   },
   "berria/dinamico": {
-   "a": 5.491,
+   "a": 5.4976,
    "p": 0.5,
-   "n": 191,
+   "n": 192,
    "nEtiquetas": 8,
    "nEtiquetasClaude": 13,
    "franjasClaude": [
@@ -241,7 +241,7 @@
    "dias": 20,
    "hMin": 0.69,
    "hMax": 4.73,
-   "errorRel": 0.822,
+   "errorRel": 0.82,
    "pocosDatos": false
   },
   "mutriku/principal": {
@@ -258,16 +258,16 @@
    "pocosDatos": true
   },
   "orio/principal": {
-   "a": 4.3515,
+   "a": 4.4273,
    "p": 0.5,
-   "n": 46,
+   "n": 47,
    "nEtiquetas": 1,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
-   "dias": 13,
+   "dias": 14,
    "hMin": 0.75,
    "hMax": 4.04,
-   "errorRel": 0.662,
+   "errorRel": 0.679,
    "pocosDatos": false
   },
   "getaria/malkorbe": {
@@ -403,8 +403,8 @@
    "sustituye": true,
    "motivo": "7 etiquetas",
    "ruido": {
-    "ruido": 0.589,
-    "pares": 72
+    "ruido": 0.605,
+    "pares": 73
    }
   },
   "donostia": {
@@ -417,18 +417,18 @@
   },
   "orio": {
    "sustituye": true,
-   "motivo": "estable (±26 % entre lecturas cercanas)",
+   "motivo": "estable (±24 % entre lecturas cercanas)",
    "ruido": {
-    "ruido": 0.263,
-    "pares": 25
+    "ruido": 0.238,
+    "pares": 26
    }
   },
   "zarautz": {
    "sustituye": true,
    "motivo": "18 etiquetas",
    "ruido": {
-    "ruido": 0.538,
-    "pares": 331
+    "ruido": 0.539,
+    "pares": 332
    }
   },
   "getaria": {
