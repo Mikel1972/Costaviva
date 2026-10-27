@@ -3,7 +3,7 @@
 Generado por `scripts/observaciones/descargar.mjs`. Cada registro guarda su `gbifID` (`id`), su conjunto de
 datos (`ds`), su licencia (`lic`) y, si la licencia lo exige (CC BY), su autor (`autor`).
 
-Cita general: GBIF.org — búsquedas de ocurrencias por especie, España y Portugal, 2026-10-20.
+Cita general: GBIF.org — búsquedas de ocurrencias por especie, España y Portugal, 2026-10-27.
 Para una cita formal con DOI hay que pedir una descarga de GBIF (API de descargas, con cuenta).
 
 | Conjunto de datos | Publicador | Licencia del conjunto (cada registro lleva la suya en `lic`) | Registros guardados |
