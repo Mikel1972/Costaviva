@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-27T08:08:16.412Z",
- "lineasHistorial": 5536,
+ "fecha": "2026-10-27T08:38:15.557Z",
+ "lineasHistorial": 5545,
  "etiquetas": 258,
  "etiquetasClaude": 163,
  "calibracion": {
@@ -49,9 +49,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 5.7067,
+   "a": 5.7074,
    "p": 0.5,
-   "n": 393,
+   "n": 394,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 21,
    "franjasClaude": [
@@ -72,10 +72,10 @@
     "2026-10-25T16",
     "2026-10-26T16"
    ],
-   "dias": 19,
+   "dias": 20,
    "hMin": 0.3,
    "hMax": 6.97,
-   "errorRel": 0.986,
+   "errorRel": 0.984,
    "pocosDatos": false
   },
   "zumaia/c": {
@@ -175,9 +175,9 @@
    "pocosDatos": false
   },
   "sopelana/principal": {
-   "a": 4.2044,
+   "a": 4.2062,
    "p": 0.5,
-   "n": 113,
+   "n": 114,
    "nEtiquetas": 4,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -189,10 +189,10 @@
     "2026-10-21T14",
     "2026-10-23T14"
    ],
-   "dias": 19,
+   "dias": 20,
    "hMin": 0.3,
    "hMax": 4.62,
-   "errorRel": 0.776,
+   "errorRel": 0.772,
    "pocosDatos": false
   },
   "berria/principal": {
@@ -427,8 +427,8 @@
    "sustituye": true,
    "motivo": "18 etiquetas",
    "ruido": {
-    "ruido": 0.537,
-    "pares": 330
+    "ruido": 0.538,
+    "pares": 331
    }
   },
   "getaria": {
