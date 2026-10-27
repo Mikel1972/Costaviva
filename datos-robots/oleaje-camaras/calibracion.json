@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-27T15:59:36.177Z",
- "lineasHistorial": 5706,
+ "fecha": "2026-10-27T16:07:51.718Z",
+ "lineasHistorial": 5716,
  "etiquetas": 258,
  "etiquetasClaude": 163,
  "calibracion": {
@@ -427,8 +427,8 @@
    "sustituye": true,
    "motivo": "18 etiquetas",
    "ruido": {
-    "ruido": 0.534,
-    "pares": 347
+    "ruido": 0.535,
+    "pares": 348
    }
   },
   "getaria": {
@@ -491,8 +491,8 @@
    "sustituye": true,
    "motivo": "8 etiquetas",
    "ruido": {
-    "ruido": 0.778,
-    "pares": 109
+    "ruido": 0.789,
+    "pares": 110
    }
   },
   "castrourdiales": {
