@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-28T21:07:24.258Z",
- "lineasHistorial": 6008,
+ "fecha": "2026-10-28T21:37:24.525Z",
+ "lineasHistorial": 6011,
  "etiquetas": 266,
  "etiquetasClaude": 171,
  "calibracion": {
@@ -343,9 +343,9 @@
    "pocosDatos": false
   },
   "nz-riverton/principal": {
-   "a": 8.5363,
+   "a": 8.5525,
    "p": 0.5,
-   "n": 443,
+   "n": 444,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 29,
    "franjasClaude": [
@@ -531,7 +531,7 @@
    "motivo": "estable (±0 % entre lecturas cercanas)",
    "ruido": {
     "ruido": 0,
-    "pares": 381
+    "pares": 382
    }
   }
  }
