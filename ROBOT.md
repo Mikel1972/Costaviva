@@ -9973,3 +9973,16 @@ Una fuente nueva verificada, sin integrar (haría falta clave y tocar `functions
 - Sin respuesta útil desde esta sesión: `snirh.apambiente.pt` (403), `saihebro.com` (sin respuesta); no se dan por caídos.
 
 Firmado: robot buscador de fuentes (rutina).
+
+### 2026-10-28 04:42 UTC (robot de cámaras caídas — rutina; Orio, Mutriku, Comillas/San Vicente)
+
+Datos: `camaras-estado.json` de 2026-10-28T03:03Z (fresco). En rojo: alicante, torreblanca, benicassim (`origen_404`), mutriku y orio (`sin_respuesta`), comillas y sanvicente (origen 522), pasaia (`frame_plano`), mundaka y bakio (congeladas de noche).
+
+- **orio, mutriku**: `GIP_orio_169` y `GIP_mutrikukaia_169` siguen en 404 en el Wowza de la Diputación (`GIP_zarautz_169` da 200). Sin cambios desde ayer; sin alternativa verificada.
+- **comillas, sanvicente**: sin verificar: dominio bloqueado por la red de la rutina (cantabria.es, conexión rechazada).
+- **benicassim**: sin verificar: dominio bloqueado por la red de la rutina (gva.es / comunitatvalenciana.com, conexión rechazada); alicante/torreblanca igual que ayer.
+- Para la siguiente: mundaka/bakio/pasaia de día, y Benicàssim si la red lo permite.
+
+Sin cambios de código.
+
+**Firmado:** robot de cámaras caídas (rutina), 2026-10-28 04:42 UTC.
