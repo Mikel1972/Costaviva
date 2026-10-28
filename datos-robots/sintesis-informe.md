@@ -1,19 +1,17 @@
-<!-- SINTESIS fecha=2026-10-27 hasta_commit=1a861d2d00ec51c81324c7f842263c3e86225609 -->
+<!-- SINTESIS fecha=2026-10-28 hasta_commit=02412ca547ce4d971f6605dfa74763478ecc8d8c -->
 
 ## 🛠 Trabajo interno (calibración y datos)
-El robot de cámaras caídas pasó a las 04:50 UTC con datos frescos (03:03 UTC). En rojo: alicante, torreblanca y benicassim (`origen_404`, sin cambios desde ayer; benicassim queda pendiente de verla de día), mutriku y orio (`sin_respuesta`) y mundaka, bakio y pasaia (`frame_congelado`, lectura nocturna, no se tocan). En el servidor de la Diputación de Gipuzkoa los streams de Orio y Mutriku dan 404 (también con otros nombres probados), mientras Zarautz, Deba y Hondarribia dan 200: la emisión está parada en origen, igual que Zumaia desde hace días. No hay alternativa verificada. Mutriku está en rojo desde ayer 16:30 UTC. Sin cambios de código.
+Entraron dos pasadas de rutina el 28-10. El robot de cámaras caídas leyó `camaras-estado.json` (03:03Z, fresco). Siguen en rojo alicante, torreblanca y benicassim (`origen_404`), mutriku y orio (`sin_respuesta`, 404 en el Wowza de la Diputación), comillas y sanvicente (origen 522), pasaia (`frame_plano`), y mundaka y bakio (congeladas de noche). Varias no se pudieron verificar porque la red de la rutina bloquea cantabria.es y gva.es. El texto no menciona calibración nocturna.
 **Cámaras nuevas encontradas:** 0
-**Términos de búsqueda:** no se probaron términos de webcams nuevos; para la próxima pasada se sugiere buscar si la Diputación publica el listado ("camaramar", "streamlock GIP"). No apareció ningún tipo de dueño nuevo.
+**Términos de búsqueda:** "webcam Cartagena puerto en directo mar cámara en vivo Murcia Mazarrón Manga" (Murcia/Valencia). Sin éxito: solo Windfinder (agregador, sin fuente del dueño). No apareció ningún tipo de dueño nuevo.
 
 ## 🧪 Experiencia de usuario y patrones de uso
-**Robot de experiencia de usuario:** no le tocaba pasar hoy (sin entrada nueva).
-**Robot de patrones de uso:** no le tocaba pasar esta semana (sin entrada nueva).
+**Robot de experiencia de usuario:** no le tocaba pasar hoy (sin entrada suya).
+**Robot de patrones de uso:** no le tocaba pasar esta semana (sin entrada suya).
 
 ## 🔎 Trabajo externo (investigación de contenido)
-La pasada de caudal de ríos y estaciones de monte (05:00 UTC) no trató buenas prácticas de otras apps ni estudios institucionales; no hay novedades en esos temas.
-**Robot de especies:** no le tocaba pasar hoy (sin entrada nueva).
+No hay entradas nuevas de buenas prácticas de otras apps ni de estudios institucionales.
+**Robot de especies:** no le tocaba pasar hoy.
 
 ## 🆕 Nuevas fuentes encontradas, pendientes de validar
-### Red foronómica de MeteoGalicia + Augas de Galicia (caudal y nivel de ríos gallegos)
-Un servicio JSON oficial (`servizos.meteogalicia.gal/mgafos/json/estadoActual.action`) da caudal y nivel actuales de las estaciones de aforo en servicio, y cubriría ríos gallegos que hoy no tienen caudal. Es público y gratuito pero exige una clave personal pedida por email a `administracion-web.meteogalicia@xunta.gal` (puede pedirse con `datos@costaviva.org`); sin clave responde una página de error. Su licencia de reutilización no está verificada. Opinión: parece sólida (fuente oficial, mismo patrón que AEMET), pero integrarla exige clave y tocar `functions/`. **Decisión para Mikel:** pedir la clave por email, como con Euskalmet.
-Además: los ríos vascos (URA) siguen sin endpoint directo y Euskalmet sigue pendiente de clave; `snirh.apambiente.pt` (403) y `saihebro.com` (sin respuesta) no se pudieron comprobar desde la sesión, no se dan por caídos.
+Ninguna fuente nueva desde la última síntesis. Cartagena sigue sin cámara: el iframe de apc.es/controlvideo.apc.es rechaza la conexión desde la rutina, así que no se puede verificar (no es una caída). Para Mazarrón y La Manga no apareció nada. Cabo de Palos ya tiene la de Skyline.
