@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-28T08:08:32.697Z",
- "lineasHistorial": 5817,
+ "fecha": "2026-10-28T08:38:25.869Z",
+ "lineasHistorial": 5827,
  "etiquetas": 264,
  "etiquetasClaude": 169,
  "calibracion": {
@@ -50,9 +50,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 5.7122,
+   "a": 5.7234,
    "p": 0.5,
-   "n": 412,
+   "n": 413,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 22,
    "franjasClaude": [
@@ -74,10 +74,10 @@
     "2026-10-26T16",
     "2026-10-27T16"
    ],
-   "dias": 20,
+   "dias": 21,
    "hMin": 0.3,
    "hMax": 6.97,
-   "errorRel": 0.964,
+   "errorRel": 0.966,
    "pocosDatos": false
   },
   "zumaia/c": {
@@ -111,9 +111,9 @@
    "pocosDatos": false
   },
   "deba/rompiente": {
-   "a": 6.4417,
+   "a": 6.4682,
    "p": 0.5,
-   "n": 150,
+   "n": 151,
    "nEtiquetas": 2,
    "nEtiquetasClaude": 9,
    "franjasClaude": [
@@ -125,7 +125,7 @@
     "2026-10-23T16",
     "2026-10-24T16"
    ],
-   "dias": 19,
+   "dias": 20,
    "hMin": 0.3,
    "hMax": 6.97,
    "errorRel": 1,
@@ -178,9 +178,9 @@
    "pocosDatos": false
   },
   "sopelana/principal": {
-   "a": 4.1747,
+   "a": 4.1704,
    "p": 0.5,
-   "n": 119,
+   "n": 120,
    "nEtiquetas": 4,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -192,10 +192,10 @@
     "2026-10-21T14",
     "2026-10-23T14"
    ],
-   "dias": 20,
+   "dias": 21,
    "hMin": 0.3,
    "hMax": 4.62,
-   "errorRel": 0.759,
+   "errorRel": 0.756,
    "pocosDatos": false
   },
   "berria/principal": {
@@ -212,25 +212,25 @@
    "pocosDatos": true
   },
   "castrourdiales/principal": {
-   "a": 6.0379,
+   "a": 6.0487,
    "p": 0.5,
-   "n": 68,
+   "n": 69,
    "nEtiquetas": 5,
    "nEtiquetasClaude": 2,
    "franjasClaude": [
     "2026-10-17T16",
     "2026-10-18T16"
    ],
-   "dias": 15,
+   "dias": 16,
    "hMin": 0.3,
    "hMax": 4.51,
    "errorRel": 1,
    "pocosDatos": false
   },
   "berria/dinamico": {
-   "a": 5.478,
+   "a": 5.4931,
    "p": 0.5,
-   "n": 204,
+   "n": 205,
    "nEtiquetas": 8,
    "nEtiquetasClaude": 14,
    "franjasClaude": [
@@ -433,7 +433,7 @@
    "motivo": "18 etiquetas",
    "ruido": {
     "ruido": 0.535,
-    "pares": 348
+    "pares": 349
    }
   },
   "getaria": {
@@ -504,8 +504,8 @@
    "sustituye": true,
    "motivo": "5 etiquetas",
    "ruido": {
-    "ruido": 0.503,
-    "pares": 36
+    "ruido": 0.486,
+    "pares": 37
    }
   },
   "nz-napier": {
