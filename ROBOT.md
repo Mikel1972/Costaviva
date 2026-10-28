@@ -9986,3 +9986,8 @@ Datos: `camaras-estado.json` de 2026-10-28T03:03Z (fresco). En rojo: alicante, t
 Sin cambios de código.
 
 **Firmado:** robot de cámaras caídas (rutina), 2026-10-28 04:42 UTC.
+
+### 2026-10-28 04:55 UTC — robot buscador de fuentes (rutina): cámaras, zona Comunidad Valenciana y Murcia
+- Zona de hoy (semana ISO 44, miércoles → N=88 → índice 8). Sin novedades esta pasada: no se integra ni crea nada.
+- **cartagena** sigue sin cámara. `www.apc.es` y `controlvideo.apc.es:15378` (el iframe que sigue embebiendo meteomurcia.com/webcampuertocartagena.php) dan conexión rechazada desde la red de la rutina: no verificable, no es "caída". Búsqueda "webcam Cartagena puerto en directo mar cámara en vivo Murcia Mazarrón Manga": solo Windfinder (agregador, última imagen de septiembre, sin fuente del dueño) y otras Cartagenas. Nada para Mazarrón ni La Manga. `cabodepalos` ya tiene la de Skyline (live490).
+- Cámaras de Turisme Comunitat Valenciana (Alicante, Torreblanca, Gandia, Benicàssim, Xàbia): no re-verificadas hoy (dominio bloqueado en la rutina); el último estado conocido es 404 en origen.
