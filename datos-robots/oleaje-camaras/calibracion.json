@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-28T14:07:50.628Z",
- "lineasHistorial": 5950,
+ "fecha": "2026-10-28T14:37:50.312Z",
+ "lineasHistorial": 5960,
  "etiquetas": 264,
  "etiquetasClaude": 169,
  "calibracion": {
@@ -50,9 +50,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 5.7984,
+   "a": 5.8059,
    "p": 0.5,
-   "n": 426,
+   "n": 427,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 22,
    "franjasClaude": [
@@ -94,9 +94,9 @@
    "pocosDatos": true
   },
   "zumaia/a": {
-   "a": 5.8215,
+   "a": 5.7966,
    "p": 0.5,
-   "n": 64,
+   "n": 65,
    "nEtiquetas": 2,
    "nEtiquetasClaude": 3,
    "franjasClaude": [
@@ -178,9 +178,9 @@
    "pocosDatos": false
   },
   "sopelana/principal": {
-   "a": 4.1526,
+   "a": 4.1438,
    "p": 0.5,
-   "n": 125,
+   "n": 126,
    "nEtiquetas": 4,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -195,7 +195,7 @@
    "dias": 21,
    "hMin": 0.3,
    "hMax": 4.62,
-   "errorRel": 0.74,
+   "errorRel": 0.738,
    "pocosDatos": false
   },
   "berria/principal": {
@@ -212,9 +212,9 @@
    "pocosDatos": true
   },
   "castrourdiales/principal": {
-   "a": 6.3301,
+   "a": 6.4349,
    "p": 0.5,
-   "n": 76,
+   "n": 77,
    "nEtiquetas": 5,
    "nEtiquetasClaude": 2,
    "franjasClaude": [
@@ -228,9 +228,9 @@
    "pocosDatos": false
   },
   "berria/dinamico": {
-   "a": 5.491,
+   "a": 5.487,
    "p": 0.5,
-   "n": 206,
+   "n": 207,
    "nEtiquetas": 8,
    "nEtiquetasClaude": 14,
    "franjasClaude": [
@@ -245,7 +245,7 @@
    "dias": 21,
    "hMin": 0.69,
    "hMax": 4.73,
-   "errorRel": 0.8,
+   "errorRel": 0.798,
    "pocosDatos": false
   },
   "mutriku/principal": {
@@ -432,8 +432,8 @@
    "sustituye": true,
    "motivo": "18 etiquetas",
    "ruido": {
-    "ruido": 0.542,
-    "pares": 362
+    "ruido": 0.541,
+    "pares": 363
    }
   },
   "getaria": {
@@ -496,8 +496,8 @@
    "sustituye": true,
    "motivo": "8 etiquetas",
    "ruido": {
-    "ruido": 0.775,
-    "pares": 112
+    "ruido": 0.772,
+    "pares": 113
    }
   },
   "castrourdiales": {
