@@ -85,10 +85,21 @@ function mediana(v) {
   return o.length % 2 ? o[m] : (o[m - 1] + o[m]) / 2;
 }
 
-async function pedir(url, ms = 20000) {
-  const r = await fetch(url, { headers: UA, signal: AbortSignal.timeout(ms) });
-  if (!r.ok) throw new Error(`HTTP ${r.status} (${url.slice(0, 90)})`);
-  return r;
+// Un reintento a los 3 s si falla la red o el servidor da 5xx (2026-10-28:
+// con una sola cámara con luz, un "fetch failed" suelto dejaba la vuelta en rojo).
+async function pedir(url, ms = 20000, intentos = 2) {
+  for (let i = 1; ; i++) {
+    try {
+      const r = await fetch(url, { headers: UA, signal: AbortSignal.timeout(ms) });
+      if (r.status >= 500 && i < intentos) throw Object.assign(new Error(`HTTP ${r.status}`), { reintentable: true });
+      if (!r.ok) throw new Error(`HTTP ${r.status} (${url.slice(0, 90)})`);
+      return r;
+    } catch (e) {
+      const deRed = e.reintentable || e.name === "TypeError" || e.name === "TimeoutError";
+      if (!deRed || i >= intentos) throw e;
+      await new Promise((ok) => setTimeout(ok, 3000));
+    }
+  }
 }
 
 async function ultimoSegmento(url) {
