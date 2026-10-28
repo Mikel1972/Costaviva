@@ -1,20 +1,20 @@
 {
- "fecha": "2026-10-28T08:57:09.904Z",
- "lineasHistorial": 5836,
+ "fecha": "2026-10-28T09:07:48.838Z",
+ "lineasHistorial": 5846,
  "etiquetas": 264,
  "etiquetasClaude": 169,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.4458,
+   "a": 1.4547,
    "p": 0.5,
-   "n": 148,
+   "n": 149,
    "nEtiquetas": 7,
    "nEtiquetasClaude": 4,
    "franjasClaude": [
     "2026-10-08T16",
     "2026-10-27T16"
    ],
-   "dias": 20,
+   "dias": 21,
    "hMin": 0.12,
    "hMax": 1.69,
    "errorRel": 1,
@@ -50,9 +50,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 5.7242,
+   "a": 5.7312,
    "p": 0.5,
-   "n": 414,
+   "n": 415,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 22,
    "franjasClaude": [
@@ -212,9 +212,9 @@
    "pocosDatos": true
   },
   "castrourdiales/principal": {
-   "a": 6.0633,
+   "a": 6.0649,
    "p": 0.5,
-   "n": 70,
+   "n": 71,
    "nEtiquetas": 5,
    "nEtiquetasClaude": 2,
    "franjasClaude": [
@@ -408,8 +408,8 @@
    "sustituye": true,
    "motivo": "7 etiquetas",
    "ruido": {
-    "ruido": 0.598,
-    "pares": 78
+    "ruido": 0.605,
+    "pares": 79
    }
   },
   "donostia": {
@@ -433,7 +433,7 @@
    "motivo": "18 etiquetas",
    "ruido": {
     "ruido": 0.536,
-    "pares": 350
+    "pares": 351
    }
   },
   "getaria": {
@@ -448,8 +448,8 @@
    "sustituye": true,
    "motivo": "≥ 3 días con alturas variadas",
    "ruido": {
-    "ruido": 0.576,
-    "pares": 29
+    "ruido": 0.605,
+    "pares": 30
    }
   },
   "deba": {
@@ -504,8 +504,8 @@
    "sustituye": true,
    "motivo": "5 etiquetas",
    "ruido": {
-    "ruido": 0.473,
-    "pares": 38
+    "ruido": 0.46,
+    "pares": 39
    }
   },
   "nz-napier": {
