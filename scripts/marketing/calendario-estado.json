@@ -89,7 +89,12 @@
       "tipo": "especies-nz",
       "campana": "20261027-especies-nz-kingfish",
       "en": "2026-10-26T05:40:40.516Z"
+    },
+    "2026-10-29-post": {
+      "tipo": "funcion-alarma",
+      "campana": "20261029-funcion-alarma",
+      "en": "2026-10-28T17:30:38.738Z"
     }
   },
-  "ultimaFuncion": "grupos"
+  "ultimaFuncion": "alarma"
 }
