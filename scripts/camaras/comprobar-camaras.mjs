@@ -90,7 +90,7 @@ const WEBCAMS_VIDEO = {
   orio: "https://58f14c0895a20.streamlock.net/camaramar/GIP_orio_169.stream/playlist.m3u8",
   zarautz: "https://58f14c0895a20.streamlock.net/camaramar/GIP_zarautz_169.stream/playlist.m3u8",
   deba: "https://58f14c0895a20.streamlock.net/camaramar/GIP_deba_169.stream/playlist.m3u8",
-  mutriku: "https://58f14c0895a20.streamlock.net/camaramar/GIP_mutrikukaia_169.stream/playlist.m3u8",
+  mutriku: "https://58f14c0895a20.streamlock.net/camaramar/GIP_saturraran_169.stream/playlist.m3u8",
   // Getaria y Zumaia, añadidas 2026-09-19 — ver los comentarios iguales en
   // index.html (WEBCAMS_HLS).
   getaria: "https://58f14c0895a20.streamlock.net/camaramar/GIP_getaria_169.stream/playlist.m3u8",
