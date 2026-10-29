@@ -66,6 +66,8 @@ on:
 permissions:
   contents: write
   issues: write
+  # Para lanzar el robot de reels (vídeo de peces, ver abajo).
+  actions: write
 
 # Mismo grupo que el robot de reels: los dos comitean y suben a main.
 concurrency:
@@ -85,7 +87,34 @@ jobs:
         with:
           node-version: "20"
 
+      # Desde el 2026-10-29 todas las piezas de España van en vídeo, el reel de
+      # peces (Mikel: "con el formato vídeo [...] como el que publicamos al
+      # principio [...] hazlo así a partir de hoy"). Si mañana toca post en
+      # España y no se ha forzado un tipo, se lanza el robot de reels con
+      # tipo "peces" para esa fecha y este no genera nada. El robot de reels
+      # no repite (calendario-estado.json), así que el respaldo de una hora
+      # después no duplica. NZ y los tipos forzados a mano siguen como antes.
+      - name: España en vídeo (reel de peces)
+        id: video
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FECHA_PIEZA: ${{ inputs.fecha }}
+          TIPO_PIEZA: ${{ inputs.tipo }}
+          MERCADO: ${{ inputs.mercado || (github.event.schedule == '40 6 * * 1,4' && 'nz') || 'es' }}
+        run: |
+          if [ "$MERCADO" != "es" ] || [ -n "$TIPO_PIEZA" ]; then exit 0; fi
+          FECHA=$(node --input-type=module -e '
+            import { hoyMadrid, sumarDias, huecoDe } from "./scripts/marketing/calendario.mjs";
+            const f = /^\d{4}-\d{2}-\d{2}$/.test(process.env.FECHA_PIEZA || "") ? process.env.FECHA_PIEZA : sumarDias(hoyMadrid(), 1);
+            if (huecoDe(f, "post", "es")) console.log(f);
+          ')
+          if [ -z "$FECHA" ]; then echo "Mañana no toca post en España."; exit 0; fi
+          gh workflow run robot-reel-instagram.yml --ref "${GITHUB_REF_NAME}" -f fecha="$FECHA" -f tipo=peces -f mercado=es
+          echo "lanzado=true" >> "$GITHUB_OUTPUT"
+          echo "Pieza del $FECHA en vídeo: lanzado el robot de reels (tipo peces)." >> "$GITHUB_STEP_SUMMARY"
+
       - name: Instalar dependencias del script
+        if: steps.video.outputs.lanzado != 'true'
         working-directory: scripts/marketing
         run: npm ci --no-audit --no-fund
 
@@ -93,11 +122,13 @@ jobs:
       # "Amanecer", 2026-10-08). Las letras van dentro del repo
       # (assets/fonts); los emoji solo en el texto del post.
       - name: Instalar Chromium para Playwright
+        if: steps.video.outputs.lanzado != 'true'
         working-directory: scripts/marketing
         run: npx playwright install --with-deps chromium
 
       - name: Generar imagen y texto del post
         id: generar
+        if: steps.video.outputs.lanzado != 'true'
         working-directory: scripts/marketing
         env:
           FECHA_PIEZA: ${{ inputs.fecha }}

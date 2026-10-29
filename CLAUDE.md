@@ -1144,6 +1144,15 @@ YouTube o MEO no dejan republicar) por piezas en el estilo de la app.
   (`calendario-estado.json`). Más vídeos de peces = más variedad: basta con
   añadir el clip y su `.licencia.json` con `"tema": "peces"`. El resto del
   flujo (borrador + Issue + OK de Mikel) es el de siempre.
+  **Desde el 2026-10-29, TODAS las piezas de España van en este vídeo**
+  (Mikel: "con el formato vídeo [...] como el que publicamos al principio
+  [...] hazlo así a partir de hoy"): cuando el robot de posts
+  (`robot-marketing-instagram.yml`) ve que mañana toca post en España y no
+  se ha forzado un `tipo`, lanza `robot-reel-instagram.yml` con `fecha` de
+  mañana y `tipo: peces` y no genera el post (paso "España en vídeo").
+  Martes, jueves, viernes y sábado salen en vídeo, a las 09:00. NZ y los
+  tipos forzados a mano siguen como antes. Con solo 2 clips de peces se
+  repiten mucho: cuantos más vídeos con `"tema": "peces"`, mejor.
 - **Piezas de Nueva Zelanda (2026-10-11)**, en inglés: lógica pura en
   `scripts/marketing/pieza-nz.mjs`, red y disco en `generar-nz.mjs` (se
   importa solo con `MERCADO=nz`: fija `I18n.fijarIdioma("en")` para que los
