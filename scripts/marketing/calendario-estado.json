@@ -95,6 +95,11 @@
       "campana": "20261029-funcion-alarma",
       "en": "2026-10-28T17:30:38.738Z"
     },
+    "2026-10-30-post-nz": {
+      "tipo": "condiciones-nz",
+      "campana": "20261030-condiciones-nz-whakatane",
+      "en": "2026-10-29T05:40:42.247Z"
+    },
     "2026-11-01-post": {
       "tipo": "especies",
       "campana": "20261101-especies-calamar-chipiron",
