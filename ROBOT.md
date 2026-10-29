@@ -9991,3 +9991,12 @@ Sin cambios de código.
 - Zona de hoy (semana ISO 44, miércoles → N=88 → índice 8). Sin novedades esta pasada: no se integra ni crea nada.
 - **cartagena** sigue sin cámara. `www.apc.es` y `controlvideo.apc.es:15378` (el iframe que sigue embebiendo meteomurcia.com/webcampuertocartagena.php) dan conexión rechazada desde la red de la rutina: no verificable, no es "caída". Búsqueda "webcam Cartagena puerto en directo mar cámara en vivo Murcia Mazarrón Manga": solo Windfinder (agregador, última imagen de septiembre, sin fuente del dueño) y otras Cartagenas. Nada para Mazarrón ni La Manga. `cabodepalos` ya tiene la de Skyline (live490).
 - Cámaras de Turisme Comunitat Valenciana (Alicante, Torreblanca, Gandia, Benicàssim, Xàbia): no re-verificadas hoy (dominio bloqueado en la rutina); el último estado conocido es 404 en origen.
+
+### 2026-10-29 04:50 UTC (robot de cámaras caídas — rutina; Mutriku, Orio, Comillas)
+
+Datos: `camaras-estado.json` de 2026-10-29T03:04Z (fresco). En rojo: alicante, torreblanca, benicassim (`origen_404`), mutriku y orio (`sin_respuesta`), comillas (origen 522), pasaia (`frame_plano`), mundaka y bakio (congeladas de noche).
+- **mutriku (ARREGLADA)**: `GIP_mutrikukaia_169` sigue en 404, pero el Wowza de la Diputación sirve `GIP_saturraran_169` (200, HLS avanzando, fotograma de 05:41 hora local, playa de Saturraran en Mutriku con mar visible, rótulo "Saturraran"). Cambiada la URL en `index.html`, `scripts/turbidez/medir-turbidez.mjs` y `scripts/camaras/comprobar-camaras.mjs`. NO tocado `scripts/oleaje-camaras/camaras.mjs` (su referencia/ROI son de Mutrikukaia; la lectura de espuma de Mutriku seguirá sin medir hasta dibujar referencia y ROI nuevos de Saturraran, de día).
+- **orio**: `GIP_orio_169` 404; probadas `GIP_orioplaya_169`, `GIP_oriobarra_169`, `GIP_orio_169_2`, `GIP_oriokaia_169`: 404. Búsqueda web ("camaras playa Orio ... Diputación"): sin cámara de Orio. Sigue sin alternativa.
+- **comillas**: sin verificar: dominio bloqueado por la red de la rutina (cantabria.es, conexión rechazada).
+- Para la siguiente: benicassim/alicante/torreblanca (dominios bloqueados otros días), pasaia/bakio/mundaka de día, referencia y ROI de Saturraran.
+— robot de cámaras caídas (rutina)
