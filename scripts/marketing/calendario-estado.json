@@ -89,7 +89,32 @@
       "tipo": "especies-nz",
       "campana": "20261027-especies-nz-kingfish",
       "en": "2026-10-26T05:40:40.516Z"
+    },
+    "2026-10-29-post": {
+      "tipo": "funcion-alarma",
+      "campana": "20261029-funcion-alarma",
+      "en": "2026-10-28T17:30:38.738Z"
+    },
+    "2026-10-30-post-nz": {
+      "tipo": "condiciones-nz",
+      "campana": "20261030-condiciones-nz-whakatane",
+      "en": "2026-10-29T05:40:42.247Z"
+    },
+    "2026-10-30-reel": {
+      "tipo": "reel-peces",
+      "campana": "20261030-reel-peces-ribadeo",
+      "en": "2026-10-29T23:03:20.964Z"
+    },
+    "2026-11-01-post": {
+      "tipo": "especies",
+      "campana": "20261101-especies-calamar-chipiron",
+      "en": "2026-10-29T00:26:27.877Z"
+    },
+    "2026-11-02-post-nz": {
+      "tipo": "especies-nz",
+      "campana": "20261102-especies-nz-kingfish",
+      "en": "2026-10-29T00:30:17.119Z"
     }
   },
-  "ultimaFuncion": "grupos"
+  "ultimaFuncion": "alarma"
 }
