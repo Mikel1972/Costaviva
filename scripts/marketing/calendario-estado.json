@@ -100,6 +100,11 @@
       "campana": "20261030-condiciones-nz-whakatane",
       "en": "2026-10-29T05:40:42.247Z"
     },
+    "2026-10-30-reel": {
+      "tipo": "reel-peces",
+      "campana": "20261030-reel-peces-santona",
+      "en": "2026-10-29T17:34:09.341Z"
+    },
     "2026-11-01-post": {
       "tipo": "especies",
       "campana": "20261101-especies-calamar-chipiron",
