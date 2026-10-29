@@ -375,3 +375,24 @@ test("reel de peces: rota spots y clips, y solo usa vídeos de peces con licenci
   assert.match(texto, /clorofila/);
   assert.match(texto, /Desde costa/); assert.match(texto, /En barco/); assert.match(texto, /Pesca submarina/);
 });
+
+test("España en vídeo: el robot de posts lanza el reel de peces si mañana toca post", () => {
+  const post = leer(".github/workflows/robot-marketing-instagram.yml");
+  assert.match(post, /actions: write/);
+  assert.match(post, /gh workflow run robot-reel-instagram\.yml --ref "\$\{GITHUB_REF_NAME\}" -f fecha="\$FECHA" -f tipo=peces -f mercado=es/);
+  // Solo España y sin tipo forzado; NZ y los tipos a mano siguen con el post.
+  assert.match(post, /if \[ "\$MERCADO" != "es" \] \|\| \[ -n "\$TIPO_PIEZA" \]; then exit 0; fi/);
+  for (const paso of ["Instalar dependencias del script", "Instalar Chromium para Playwright", "Generar imagen y texto del post"]) {
+    const i = post.indexOf(`- name: ${paso}`);
+    assert.ok(i > 0, paso);
+    assert.match(post.slice(i, i + 200), /if: steps\.video\.outputs\.lanzado != 'true'/, paso);
+  }
+  // Martes, jueves y viernes tienen post en España; un reel forzado ese día
+  // no choca con el del sábado (clave por fecha).
+  for (const f of ["2026-11-03", "2026-11-05", "2026-11-06"]) {
+    assert.ok(C.huecoDe(f, "post", "es"), f);
+    const p = C.piezaAPreparar({ formato: "reel", fechaForzada: f, tipoForzado: "peces", mercado: "es" });
+    assert.equal(p.tipo, "peces");
+    assert.equal(p.clave, `${f}-reel`);
+  }
+});
