@@ -10000,3 +10000,9 @@ Datos: `camaras-estado.json` de 2026-10-29T03:04Z (fresco). En rojo: alicante, t
 - **comillas**: sin verificar: dominio bloqueado por la red de la rutina (cantabria.es, conexión rechazada).
 - Para la siguiente: benicassim/alicante/torreblanca (dominios bloqueados otros días), pasaia/bakio/mundaka de día, referencia y ROI de Saturraran.
 — robot de cámaras caídas (rutina)
+
+### 2026-10-29 05:00 UTC — robot buscador de fuentes (rutina): fichas de especies (jueves)
+- Verificado en el texto oficial (BOE, copia del DOUE: https://www.boe.es/doue/2026/249/L00001-00212.pdf) el Reg. (UE) 2026/249, arts. 11-13: lubina recreativa CIEM 8a-8b, máx. 2 por pescador y día y sin redes fijas; abadejo CIEM 6-7, máx. 3/día; abadejo CIEM 8-10: talla de referencia 42 cm, máx. 2/día, veda 1 ene-30 abr (captura y suelta permitida). Todos sin perjuicio de normas nacionales más restrictivas.
+- `especies.json` (rama `robot/especies-2026-10-29`): fuente nueva `ue_2026_249`; veda del abadejo pasa a `verificado: true` (antes citaba el art. 12 y a ICES; el artículo correcto es el 13); nueva entrada de talla `UE-2026-249` = 42 cm para el abadejo (antes figuraba 30 cm del texto de 2019 de la UE-SWW, que se conserva con nota); `jurisdicciones.UE` actualizado. Cupo de lubina solo anotado en la fuente y en `jurisdicciones` (no hay campo de cupos). Tests de ventana, i18n y modalidades en verde.
+- Pendiente: Cataluña (nuevo modelo desde 1/9/2025: la prensa cita 7 doradas de 30 cm, 3 lubinas de 40 cm, 2 meros de 50 cm, 44 especies, sin cebo vivo) sigue SIN verificar en el DOGC; no se escribe nada. EUR-Lex devuelve reto anti-bot (202); el consolidado de 2019/1241 sigue sin leerse.
+Firmado: robot buscador de fuentes (rutina).
