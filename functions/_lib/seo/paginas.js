@@ -203,9 +203,9 @@ export function paginaEspecie(e, especiesDatos, spots, mes) {
   const n = f.nombres.es;
   const ruta = `/especies/${f.slug}`;
   const intro = introEspecie(f, mes);
-  const titulo = `Pesca de ${n.toLowerCase()}: dónde y cuándo pescarla, talla mínima y cebos | Costaviva`;
+  const titulo = `Pesca de ${n.toLowerCase()}: dónde y cuándo se pesca, talla mínima y cebos | Costaviva`;
   const tallaTxt = f.tallas.length ? ` Talla mínima desde ${Math.min(...f.tallas.map((t) => t.cm))} cm.` : "";
-  const descripcion = `Pesca de ${n.toLowerCase()}${f.nombres.cientifico ? ` (${f.nombres.cientifico})` : ""}: temporada por zonas de España y Portugal, modalidades, cebos y spots donde pescarla.${tallaTxt}`;
+  const descripcion = `Pesca de ${n.toLowerCase()}${f.nombres.cientifico ? ` (${f.nombres.cientifico})` : ""}: temporada por zonas de España y Portugal, modalidades, cebos y spots donde se pesca.${tallaTxt}`;
   const migas = [{ nombre: "Especies", ruta: "/especies" }, { nombre: n, ruta }];
   const ld = [
     {
