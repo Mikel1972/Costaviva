@@ -72,6 +72,16 @@
    "fecha_consulta": "2026-10-07",
    "nota": "Anexo VII = aguas suroccidentales (CIEM 8, 9, 10 y CPACO), anexo IX = Mediterráneo. Art. 2.2: las tallas de las partes A NO se aplican por sí solas a la pesca recreativa (solo si un acto delegado lo dispone). Texto ORIGINAL: no se ha podido leer el consolidado (EUR-Lex bloquea la descarga automática); revisar modificaciones posteriores."
   },
+  "ue_2026_249": {
+   "titulo": "Reglamento (UE) 2026/249 del Consejo, de 26 de enero de 2026, posibilidades de pesca 2026-2028 (DOUE L de 30.1.2026), arts. 11-13",
+   "url": "https://www.boe.es/doue/2026/249/L00001-00212.pdf",
+   "editor": "DOUE (copia del BOE)",
+   "tipo": "oficial",
+   "licencia": "reutilizable citando la fuente (Decisión 2011/833/UE)",
+   "fecha_documento": "2026-01-26",
+   "fecha_consulta": "2026-10-29",
+   "nota": "Art. 11.4: lubina recreativa en CIEM 8a-8b, máx. 2 por pescador y día, sin redes fijas. Art. 12: abadejo recreativo en CIEM 6-7, máx. 3/día. Art. 13: abadejo en CIEM 8, 9 y 10: talla mínima de referencia 42 cm; recreativa máx. 2/día (después, captura y suelta) y veda 1 ene-30 abr (captura y suelta permitida). Todos «sin perjuicio de medidas nacionales más restrictivas»."
+  },
   "dgrm_tmc_2025": {
    "titulo": "DGRM — Tabela de Tamanhos Mínimos de Captura (Portaria n.º 255/2022, Reg. (UE) 2019/1241 e Reg. (UE) 2025/202)",
    "url": "https://dgrm.pt/documents/20143/121101/Tabela+de+Tamanhos+M%C3%ADnimos+de+Captura+30-10-25.pdf/0395af29-7e6b-8fd8-4b8a-3e29c09226e4",
@@ -765,11 +775,11 @@
   "UE": {
    "estado": "parcial",
    "hecho": [
-    "Reg. (UE) 2019/1241 anexos VII (SWW) y IX (MED), texto original de 2019"
+    "Reg. (UE) 2019/1241 anexos VII (SWW) y IX (MED), texto original de 2019",
+    "Reg. (UE) 2026/249 arts. 11-13 (2026-10-29): lubina recreativa CIEM 8a-8b máx. 2/día y sin redes fijas; abadejo recreativo CIEM 8-10 máx. 2/día, veda 1 ene-30 abr y talla de referencia 42 cm; abadejo CIEM 6-7 máx. 3/día"
    ],
    "pendiente": [
-    "leer el texto consolidado (EUR-Lex bloquea la descarga automática; probar desde Actions o a mano)",
-    "Reg. (UE) 2026/249: veda y cupo recreativo de abadejo y lubina en 2026"
+    "leer el texto consolidado (EUR-Lex bloquea la descarga automática; probar desde Actions o a mano)"
    ]
   },
   "ES-estado": {
@@ -4796,8 +4806,22 @@
      "url": "https://www.boe.es/doue/2019/198/L00105-00201.pdf",
      "fecha_revision": "2026-10-07",
      "fecha_documento": "2019-07-25",
-     "nota": "Texto original de 2019. ICES (2025, CC BY) dice que el Reg. (UE) 2025/202 la subió a 42 cm.",
-     "nota_pt": "Texto original de 2019. O ICES (2025, CC BY) indica que o Reg. (UE) 2025/202 o subiu para 42 cm."
+     "nota": "Texto original de 2019. ICES (2025, CC BY) dice que el Reg. (UE) 2025/202 la subió a 42 cm; el Reg. (UE) 2026/249, art. 13.1, fija 42 cm de talla mínima de referencia para CIEM 8, 9 y 10 (verificado 2026-10-29, ver siguiente entrada).",
+     "nota_pt": "Texto original de 2019. O ICES (2025) indica que o Reg. (UE) 2025/202 o subiu para 42 cm; o Reg. (UE) 2026/249, art. 13.º, n.º 1, fixa 42 cm de tamanho mínimo de referência para CIEM 8, 9 e 10 (verificado em 2026-10-29, ver entrada seguinte)."
+    },
+    {
+     "jurisdiccion": "UE-2026-249",
+     "valor_cm": 42,
+     "ambito": "UE, CIEM 8, 9 y 10 (Reg. (UE) 2026/249, art. 13.1): talla mínima de referencia de conservación",
+     "ambito_pt": "UE, CIEM 8, 9 e 10 (Reg. (UE) 2026/249, art. 13.º, n.º 1): tamanho mínimo de referência de conservação",
+     "ambito_corto": "UE (Reg. 2026/249)",
+     "ambito_corto_pt": "UE (Reg. 2026/249)",
+     "fuente": "ue_2026_249",
+     "url": "https://www.boe.es/doue/2026/249/L00001-00212.pdf",
+     "fecha_revision": "2026-10-29",
+     "fecha_documento": "2026-01-26",
+     "nota": "Talla de referencia para la pesca profesional; la recreativa tiene además cupo y veda (art. 13.2). Las normas nacionales más restrictivas prevalecen.",
+     "nota_pt": "Tamanho de referência para a pesca profissional; a lúdica tem ainda limite diário e defeso (art. 13.º, n.º 2). Prevalecem as normas nacionais mais restritivas."
     },
     {
      "jurisdiccion": "PT",
@@ -4831,16 +4855,16 @@
       "portugal",
       "golfo_cadiz"
      ],
-     "pendiente_verificar": "Reg. (UE) 2026/249, art. 12 (2026)",
-     "texto": "Según ICES (2025), el Reg. (UE) 2025/202 cerró la pesca recreativa del 1 de enero al 30 de abril y limitó a 2 ejemplares/día el resto del año. Para 2026 rige el Reg. (UE) 2026/249 (art. 12): NO verificado en su texto.",
-     "texto_pt": "Segundo o ICES (2025), o Reg. (UE) 2025/202 fechou a pesca lúdica de 1 de janeiro a 30 de abril e limitou-a a 2 exemplares/dia no resto do ano. Para 2026 vigora o Reg. (UE) 2026/249 (art. 12.º): NÃO verificado no seu texto.",
-     "fuente": "ices_pol_sa",
-     "verificado": false
+     "texto": "Reg. (UE) 2026/249, art. 13.2: en pesca recreativa (también desde costa) en CIEM 8, 9 y 10 no se pueden capturar ni mantener abadejos del 1 de enero al 30 de abril (se permite captura y suelta); el resto del año, máximo 2 por pescador y día (después, captura y suelta). Sin perjuicio de normas nacionales más restrictivas.",
+     "texto_pt": "Reg. (UE) 2026/249, art. 13.º, n.º 2: na pesca lúdica (também a partir de terra) nas subzonas CIEM 8, 9 e 10 não podem ser capturados nem mantidos pollachius de 1 de janeiro a 30 de abril (permitida a captura e libertação); no resto do ano, máximo de 2 por pescador e dia (depois, captura e libertação). Sem prejuízo de normas nacionais mais restritivas.",
+     "fuente": "ue_2026_249",
+     "url": "https://www.boe.es/doue/2026/249/L00001-00212.pdf",
+     "fecha_revision": "2026-10-29",
+     "verificado": true
     }
    ],
    "reglas": {},
    "pendiente": [
-    "verificar Reg. (UE) 2026/249 (veda y cupo recreativo 2026) y la talla UE vigente",
     "rango de temperatura no-NC",
     "modalidades: sustituir la heurística por fuente (profundidad/zona por modalidad, técnica submarina)"
    ],
