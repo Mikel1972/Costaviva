@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-30T08:08:14.567Z",
- "lineasHistorial": 6373,
+ "fecha": "2026-10-30T08:38:17.722Z",
+ "lineasHistorial": 6381,
  "etiquetas": 270,
  "etiquetasClaude": 175,
  "calibracion": {
@@ -112,9 +112,9 @@
    "pocosDatos": false
   },
   "deba/rompiente": {
-   "a": 6.4661,
+   "a": 6.4165,
    "p": 0.5,
-   "n": 163,
+   "n": 164,
    "nEtiquetas": 2,
    "nEtiquetasClaude": 9,
    "franjasClaude": [
