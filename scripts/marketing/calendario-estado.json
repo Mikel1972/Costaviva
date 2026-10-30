@@ -105,6 +105,11 @@
       "campana": "20261030-reel-peces-ribadeo",
       "en": "2026-10-29T23:03:20.964Z"
     },
+    "2026-10-31-reel-nz": {
+      "tipo": "reel-condiciones",
+      "campana": "20261031-reel-condiciones-nz-napier",
+      "en": "2026-10-30T05:21:46.218Z"
+    },
     "2026-11-01-post": {
       "tipo": "especies",
       "campana": "20261101-especies-calamar-chipiron",
