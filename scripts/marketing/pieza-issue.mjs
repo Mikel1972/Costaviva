@@ -43,7 +43,10 @@ export function tipoDeError(datos) {
   if (!e) return null;
   if (e.code === 190) return "token";
   if (e.code === 10 || e.code === 200 || (e.code >= 200 && e.code < 300) || /permission|permiso/i.test(e.message || "")) return "permiso";
-  if (e.type === "OAuthException") return "token";
+  // 2026-10-30: Meta también manda type OAuthException con code -1/1/2
+  // ("Fatal", errores pasajeros o un contenedor caducado): eso no es el
+  // token. Solo 190 y 102 (sesión) lo son.
+  if (e.type === "OAuthException" && e.code === 102) return "token";
   return "otro";
 }
 
