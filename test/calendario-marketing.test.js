@@ -101,6 +101,9 @@ test("redes pedidas y errores de Meta", () => {
   assert.equal(tipoDeError({ error: { code: 200, type: "OAuthException", message: "(#200) Requires pages_manage_posts permission" } }), "permiso");
   assert.equal(tipoDeError({ error: { code: 10 } }), "permiso");
   assert.equal(tipoDeError({ error: { code: 1 } }), "otro");
+  // #342: "Fatal" de /media_publish con un contenedor caducado no es el token.
+  assert.equal(tipoDeError({ error: { message: "Fatal", type: "OAuthException", code: -1 } }), "otro");
+  assert.equal(tipoDeError({ error: { type: "OAuthException", code: 102 } }), "token");
   assert.equal(tipoDeError({}), null);
 });
 
@@ -395,4 +398,17 @@ test("España en vídeo: el robot de posts lanza el reel de peces si mañana toc
     assert.equal(p.tipo, "peces");
     assert.equal(p.clave, `${f}-reel`);
   }
+});
+
+test("Instagram: borrador caducado o en proceso antes de publicar (#342)", async () => {
+  const { contenedorListo } = await import("../scripts/marketing/publicar-pieza.mjs");
+  const pieza = { publicUrl: "https://costaviva.org/assets/marketing/x.mp4", captionInstagram: "Texto", esReel: true };
+  const crear = async () => "nuevo";
+  const estados = (m) => async (id) => m[id];
+  assert.equal(await contenedorListo("viejo", pieza, { estadoDe: estados({ viejo: "FINISHED" }), crear }), "viejo");
+  assert.equal(await contenedorListo("viejo", pieza, { estadoDe: estados({ viejo: "EXPIRED", nuevo: "FINISHED" }), crear }), "nuevo");
+  assert.equal(await contenedorListo("viejo", pieza, { estadoDe: estados({ viejo: "NO_EXISTE", nuevo: "FINISHED" }), crear }), "nuevo");
+  assert.equal(await contenedorListo(undefined, pieza, { estadoDe: estados({ nuevo: "FINISHED" }), crear }), "nuevo");
+  await assert.rejects(contenedorListo("viejo", {}, { estadoDe: estados({ viejo: "EXPIRED" }), crear }), /no trae la pieza/);
+  await assert.rejects(contenedorListo("viejo", pieza, { estadoDe: estados({ viejo: "ERROR", nuevo: "ERROR" }), crear }), /borrador nuevo/);
 });

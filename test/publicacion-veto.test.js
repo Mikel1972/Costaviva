@@ -110,6 +110,12 @@ test("solo piezas propias: nada de webcams de terceros ni personas identificable
   assert.equal(V.piezaSegura({ ...reel, clip: null }).ok, true, "sin clip: fondo de la marca");
   assert.equal(V.piezaSegura({ ...reel, clip: { carpeta: "stock", fichero: "a.mp4", personaIdentificable: false } }).ok, true);
   assert.equal(V.piezaSegura({ ...reel, clip: { carpeta: "stock", fichero: "a.mp4", personaIdentificable: true } }).ok, false);
+  // Los reels se guardan en assets/marketing/reels/ (caso real del 2026-10-30:
+  // el reel de peces no salió solo porque la comprobación no lo aceptaba).
+  const reelReal = { ...reel, publicUrl: "https://costaviva.org/assets/marketing/reels/2026-10-30-peces-santona.mp4", clip: { carpeta: "stock", fichero: "pexels-jureles-azules-roca.mp4", personaIdentificable: false } };
+  assert.equal(V.piezaSegura(reelReal).ok, true);
+  assert.equal(V.piezaSegura({ ...reelReal, publicUrl: "https://costaviva.org/assets/marketing/otra/x.mp4" }).ok, false);
+  assert.equal(V.piezaSegura({ ...reelReal, publicUrl: "https://costaviva.org/assets/marketing/reels/../x.mp4" }).ok, false);
   assert.equal(V.piezaSegura({ ...reel, clip: { carpeta: "propios", fichero: "b.mp4", personaIdentificable: null } }).ok, false);
   assert.equal(V.piezaSegura(reel).ok, false, "reel antiguo sin datos del clip: solo a mano");
   const d = V.decidir(base({ pieza: { ...PIEZA, publicUrl: "https://example.com/x.png" } }));
