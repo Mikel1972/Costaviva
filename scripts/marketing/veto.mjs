@@ -63,7 +63,7 @@ export function momentoPublicacion(pieza, creadoIssue) {
 }
 
 // Solo piezas de nuestra plantilla, servidas desde costaviva.org/assets/marketing.
-const URL_PROPIA = /^https:\/\/costaviva\.org\/assets\/marketing\/[A-Za-z0-9._-]+\.(png|jpe?g|mp4)$/;
+const URL_PROPIA = /^https:\/\/costaviva\.org\/assets\/marketing\/(?:reels\/)?[A-Za-z0-9._-]+\.(png|jpe?g|mp4)$/;
 const HUECOS = /\{ENLACE\}|\bundefined\b|\bNaN\b|\bnull\b|\[object /;
 export function piezaSegura(pieza) {
   if (!pieza || typeof pieza !== "object") return { ok: false, motivo: "el Issue no lleva la pieza" };
