@@ -1,12 +1,12 @@
 {
- "generado_en": "2026-10-29T03:04:13.917Z",
+ "generado_en": "2026-10-30T03:04:39.855Z",
  "fuente": "camara_estado",
  "camaras": [
   {
    "spot_slug": "alicante",
    "sin_senal": true,
    "motivo": "origen_404",
-   "fallos_seguidos": 1107,
+   "fallos_seguidos": 1160,
    "ultima_senal_en": "2026-10-07T02:31:27.208+00:00",
    "fuente_usada": 0
   },
@@ -14,7 +14,7 @@
    "spot_slug": "torreblanca",
    "sin_senal": true,
    "motivo": "origen_404",
-   "fallos_seguidos": 943,
+   "fallos_seguidos": 996,
    "ultima_senal_en": "2026-10-11T12:30:46.765+00:00",
    "fuente_usada": 0
   },
@@ -22,280 +22,24 @@
    "spot_slug": "benicassim",
    "sin_senal": true,
    "motivo": "origen_404",
-   "fallos_seguidos": 308,
+   "fallos_seguidos": 361,
    "ultima_senal_en": "2026-10-23T09:00:38.717+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "mutriku",
-   "sin_senal": true,
-   "motivo": "sin_respuesta",
-   "fallos_seguidos": 128,
-   "ultima_senal_en": "2026-10-26T16:30:42.065+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "pasaia",
-   "sin_senal": true,
-   "motivo": "frame_plano",
-   "fallos_seguidos": 16,
-   "ultima_senal_en": "2026-10-28T20:00:47.246+00:00",
    "fuente_usada": 0
   },
   {
    "spot_slug": "orio",
    "sin_senal": true,
    "motivo": "sin_respuesta",
-   "fallos_seguidos": 15,
-   "ultima_senal_en": "2026-10-28T20:30:38.556+00:00",
+   "fallos_seguidos": 3,
+   "ultima_senal_en": "2026-10-30T02:00:34.954+00:00",
    "fuente_usada": 0
   },
   {
    "spot_slug": "comillas",
    "sin_senal": true,
    "motivo": "origen_522",
-   "fallos_seguidos": 1,
-   "ultima_senal_en": "2026-10-29T02:30:43.187+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "corrubedo",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ribadeo",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ons",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "portosin",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "cies",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "suances",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "castrourdiales",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "laredo",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "sanvicente",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "calpe",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "denia",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "peniscola",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "gandia",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "valencia",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "altea",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "benidorm",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "guardamardelsegura",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "vilajoiosa",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "pilardelahoradada",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "castellon",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "bakio",
-   "sin_senal": true,
-   "motivo": "frame_congelado",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "javea",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "alcossebre",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "burriana",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "xilxes",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "oropesa",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "vinaros",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "alboraya",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "canetdeberenguer",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "cullera",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "fallos_seguidos": 2,
+   "ultima_senal_en": "2026-10-30T02:30:34.804+00:00",
    "fuente_usada": 0
   },
   {
@@ -303,15 +47,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "oliva",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -319,15 +55,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "santona",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -335,15 +63,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "hondarribia",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -351,7 +71,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -359,15 +79,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "deba",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -375,7 +87,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -383,15 +95,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-yt-santander-bahia",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -399,7 +103,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -407,23 +111,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-yt-arenal",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-yt-playa-de-muro",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -431,7 +119,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -439,23 +127,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-sky-624",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-sky-627",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -463,7 +135,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -471,31 +143,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-sky-427",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-sky-6103",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-sky-376",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -503,23 +151,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-meo-vila-nova-de-milfontes-farol",
-   "sin_senal": false,
-   "motivo": "no_verificable_403",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": null,
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-meo-vila-nova-de-milfontes-franquia",
-   "sin_senal": false,
-   "motivo": "no_verificable_403",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": null,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -531,43 +163,11 @@
    "fuente_usada": 0
   },
   {
-   "spot_slug": "ext-sky-996",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-meo-meia-praia",
-   "sin_senal": false,
-   "motivo": "no_verificable_403",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": null,
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-meo-faro",
-   "sin_senal": false,
-   "motivo": "no_verificable_403",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": null,
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-meo-ilha-do-farol-culatra",
-   "sin_senal": false,
-   "motivo": "no_verificable_403",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": null,
-   "fuente_usada": 0
-  },
-  {
    "spot_slug": "ext-nz-tairua-cam-era",
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -575,7 +175,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -599,7 +199,423 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-nz-nelson-harbour",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-nz-southloop-ocean-beach",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-nz-southloop-oban",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-nz-sails-ashore",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "pasaia",
+   "sin_senal": true,
+   "motivo": "frame_congelado",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "baiona",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "acoruna",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "camarinas",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "cangas",
+   "sin_senal": true,
+   "motivo": "frame_congelado",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "corrubedo",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ribadeo",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ons",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "portosin",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "cies",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "suances",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "castrourdiales",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "laredo",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "sanvicente",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "calpe",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "denia",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "peniscola",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "gandia",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "valencia",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "altea",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "benidorm",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "guardamardelsegura",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "vilajoiosa",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "pilardelahoradada",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-sky-376",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "bakio",
+   "sin_senal": true,
+   "motivo": "frame_congelado",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "javea",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "alcossebre",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "burriana",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "xilxes",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "vinaros",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "alboraya",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "cullera",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "oliva",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "santona",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "hondarribia",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "deba",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "mutriku",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-sky-728",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-yt-santander-bahia",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-yt-arenal",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-yt-playa-de-muro",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-sky-624",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-sky-627",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-sky-427",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-sky-6103",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-meo-vila-nova-de-milfontes-farol",
+   "sin_senal": false,
+   "motivo": "no_verificable_403",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": null,
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-meo-vila-nova-de-milfontes-franquia",
+   "sin_senal": false,
+   "motivo": "no_verificable_403",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": null,
    "fuente_usada": 0
   },
   {
@@ -607,7 +623,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -615,7 +631,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -623,7 +639,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -631,7 +647,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -639,7 +655,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -647,7 +663,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -655,7 +671,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -671,39 +687,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-nz-nelson-harbour",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-nz-southloop-ocean-beach",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-nz-southloop-oban",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-nz-sails-ashore",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -711,7 +695,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -719,7 +703,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -903,7 +887,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -923,11 +907,43 @@
    "fuente_usada": 0
   },
   {
+   "spot_slug": "ext-sky-996",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-meo-meia-praia",
+   "sin_senal": false,
+   "motivo": "no_verificable_403",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": null,
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-meo-faro",
+   "sin_senal": false,
+   "motivo": "no_verificable_403",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": null,
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-meo-ilha-do-farol-culatra",
+   "sin_senal": false,
+   "motivo": "no_verificable_403",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": null,
+   "fuente_usada": 0
+  },
+  {
    "spot_slug": "ext-yt-loredo-somo",
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -935,7 +951,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -943,7 +959,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -951,7 +967,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -959,7 +975,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -967,7 +983,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -975,7 +991,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -983,7 +999,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -991,7 +1007,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -999,7 +1015,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -1007,7 +1023,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -1015,7 +1031,7 @@
    "sin_senal": true,
    "motivo": "frame_congelado",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -1023,7 +1039,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -1031,7 +1047,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
@@ -1039,47 +1055,31 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
-   "spot_slug": "ext-sky-728",
+   "spot_slug": "castellon",
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
-   "spot_slug": "baiona",
+   "spot_slug": "oropesa",
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   },
   {
-   "spot_slug": "acoruna",
+   "spot_slug": "canetdeberenguer",
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "camarinas",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "cangas",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-10-29T03:01:05.583+00:00",
+   "ultima_senal_en": "2026-10-30T03:00:43.461+00:00",
    "fuente_usada": 0
   }
  ]
