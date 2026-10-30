@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-30T13:07:42.482Z",
- "lineasHistorial": 6487,
+ "fecha": "2026-10-30T13:37:55.438Z",
+ "lineasHistorial": 6496,
  "etiquetas": 270,
  "etiquetasClaude": 175,
  "calibracion": {
@@ -179,9 +179,9 @@
    "pocosDatos": false
   },
   "sopelana/principal": {
-   "a": 4.1454,
+   "a": 4.1508,
    "p": 0.5,
-   "n": 131,
+   "n": 132,
    "nEtiquetas": 4,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -196,7 +196,7 @@
    "dias": 23,
    "hMin": 0.3,
    "hMax": 4.62,
-   "errorRel": 0.731,
+   "errorRel": 0.728,
    "pocosDatos": false
   },
   "berria/principal": {
@@ -230,9 +230,9 @@
    "pocosDatos": false
   },
   "berria/dinamico": {
-   "a": 5.511,
+   "a": 5.5238,
    "p": 0.5,
-   "n": 219,
+   "n": 220,
    "nEtiquetas": 8,
    "nEtiquetasClaude": 14,
    "franjasClaude": [
@@ -247,7 +247,7 @@
    "dias": 23,
    "hMin": 0.68,
    "hMax": 4.73,
-   "errorRel": 0.795,
+   "errorRel": 0.796,
    "pocosDatos": false
   },
   "mutriku/principal": {
