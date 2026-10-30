@@ -105,6 +105,11 @@
       "campana": "20261030-reel-peces-ribadeo",
       "en": "2026-10-29T23:03:20.964Z"
     },
+    "2026-10-31-reel": {
+      "tipo": "reel-peces",
+      "campana": "20261031-reel-peces-cullera",
+      "en": "2026-10-30T17:14:36.606Z"
+    },
     "2026-10-31-reel-nz": {
       "tipo": "reel-condiciones",
       "campana": "20261031-reel-condiciones-nz-napier",
