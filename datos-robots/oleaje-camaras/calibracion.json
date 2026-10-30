@@ -1,13 +1,13 @@
 {
- "fecha": "2026-10-30T11:17:51.335Z",
- "lineasHistorial": 6450,
+ "fecha": "2026-10-30T11:37:50.526Z",
+ "lineasHistorial": 6459,
  "etiquetas": 270,
  "etiquetasClaude": 175,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.4274,
+   "a": 1.4164,
    "p": 0.5,
-   "n": 161,
+   "n": 162,
    "nEtiquetas": 7,
    "nEtiquetasClaude": 4,
    "franjasClaude": [
@@ -50,9 +50,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 5.8204,
+   "a": 5.814,
    "p": 0.5,
-   "n": 456,
+   "n": 457,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 23,
    "franjasClaude": [
@@ -78,7 +78,7 @@
    "dias": 23,
    "hMin": 0.3,
    "hMax": 6.97,
-   "errorRel": 0.952,
+   "errorRel": 0.951,
    "pocosDatos": false
   },
   "zumaia/c": {
@@ -413,8 +413,8 @@
    "sustituye": true,
    "motivo": "7 etiquetas",
    "ruido": {
-    "ruido": 0.64,
-    "pares": 86
+    "ruido": 0.605,
+    "pares": 87
    }
   },
   "donostia": {
