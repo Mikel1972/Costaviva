@@ -10000,3 +10000,12 @@ Datos: `camaras-estado.json` de 2026-10-29T03:04Z (fresco). En rojo: alicante, t
 - **comillas**: sin verificar: dominio bloqueado por la red de la rutina (cantabria.es, conexión rechazada).
 - Para la siguiente: benicassim/alicante/torreblanca (dominios bloqueados otros días), pasaia/bakio/mundaka de día, referencia y ROI de Saturraran.
 — robot de cámaras caídas (rutina)
+
+### 2026-10-30 04:50 UTC (robot de cámaras caídas — rutina; Benicàssim, Orio, Alicante/Torreblanca)
+
+Datos: `camaras-estado.json` de 2026-10-30T03:04Z (fresco). En rojo: alicante, torreblanca, benicassim (`origen_404`), orio (`sin_respuesta`), comillas (origen 522), pasaia, cangas, bakio y mundaka (`frame_congelado`, lectura nocturna 03:00 UTC, sin fallos).
+- **benicassim (ARREGLADA)**: `static/BenicassimVela` sigue en 404; `static/BenicassimPalasiet/webcam_mini.png` da 200 con Last-Modified 04:00 GMT de hoy. Vista la imagen: playa de Benicàssim con el mar y el paseo iluminados (de noche, pero inequívocamente mar y el sitio correcto). Cambiada en `functions/webcam/[slug].js`. Hoy el dominio gva sí era alcanzable.
+- **alicante, torreblanca**: `AlicantePuerto` y `Torreblanca` siguen en 404 en origen; sin alternativa verificada.
+- **orio**: `GIP_orio_169`, `_2_169`, `GIP_orioplaya_169`, `GIP_orio`: 404. Sin alternativa.
+- **comillas**: no tocada en esta pasada (queda para la siguiente, cantabria.es). Congeladas nocturnas: revisar de día.
+— robot de cámaras caídas (rutina)
