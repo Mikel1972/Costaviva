@@ -47,7 +47,10 @@ export async function onRequestGet(context) {
   const spots = datos.spots.filter((s) => region.spots.has(s.slug)).sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
   const url = `https://costaviva.org/mareas/region/${region.slug}`;
   const nombre = escaparHtml(region.nombre);
-  const descripcion = `Mareas hoy en ${region.nombre}: próxima pleamar, oleaje y viento en tiempo real de ${spots.length} spots de pesca. Gratis y sin necesidad de cuenta.`;
+  // Nombre alternativo con el que se busca la región (2026-10-30, SEO: "mareas
+  // euskadi" pos. 22,5, "mareas pais vasco" pos. 24): solo en título y descripción.
+  const nombreBusqueda = region.alias ? `${region.nombre} (${region.alias})` : region.nombre;
+  const descripcion = `Mareas hoy en ${nombreBusqueda}: próxima pleamar, oleaje y viento en tiempo real de ${spots.length} spots de pesca. Gratis y sin necesidad de cuenta.`;
   // Próxima pleamar de cada spot junto a su nombre (2026-09-28): contenido
   // real y distinto en cada página de región, en vez de una lista de
   // nombres que Google ve casi igual en las 8 regiones.
@@ -71,7 +74,7 @@ export async function onRequestGet(context) {
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Mareas hoy en ${nombre}: pleamar, bajamar y oleaje | Costaviva</title>
+<title>Mareas hoy en ${escaparHtml(nombreBusqueda)}: pleamar, bajamar y oleaje | Costaviva</title>
 <meta name="description" content="${escaparHtml(descripcion)}" />
 <link rel="canonical" href="${url}" />
 ${region.slug === "portugal" ? `${enlacesHreflang("/mareas/region/portugal", "https://costaviva.org", ["es", "pt"])}\n` : ""}
