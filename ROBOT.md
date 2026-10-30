@@ -10009,3 +10009,11 @@ Datos: `camaras-estado.json` de 2026-10-30T03:04Z (fresco). En rojo: alicante, t
 - **orio**: `GIP_orio_169`, `_2_169`, `GIP_orioplaya_169`, `GIP_orio`: 404. Sin alternativa.
 - **comillas**: no tocada en esta pasada (queda para la siguiente, cantabria.es). Congeladas nocturnas: revisar de día.
 — robot de cámaras caídas (rutina)
+
+### 2026-10-30 04:58 UTC — robot buscador de fuentes (rutina): viernes, estudios sobre factores (afloramiento)
+- Factor de hoy: afloramiento (*upwelling*) y viento del este en Galicia/Cantábrico. Una búsqueda web ("upwelling effect on catches ... Galicia Cantabrian Sea sea bass sardine"): solo salió oceanografía antigua (JGR 1995 sobre duración/frecuencia del afloramiento y pesquería de sardina en Galicia, más fuerte y persistente en la costa norte que en las Rías Baixas; ICES 1989 sobre sardina y afloramiento episódico de marzo a octubre). Enlaces: https://core.ac.uk/download/71765371.pdf, https://www.vliz.be/imisdocs/publications/ocrd/274863.pdf.
+- Sin regla propuesta: solo leí resúmenes del buscador (no abrí los textos, no comprobé licencia), son de sardina (no de nuestras especies de caña) y miden escalas anuales, no horarias. No llega a confianza 0,3. No hay rama `-factores` esta semana. Coincide con la nota de EVIDENCIA_FACTORES.md: el mecanismo del levante en el Cantábrico es plausible, pero sin estudio de capturas.
+- Concursos: no se revisó ninguna federación nueva hoy (sin margen); FEPyC y FPPD siguen en `no_permitida_sin_permiso`.
+- Para la próxima: buscar estudios de capturabilidad de lubina/sargo con viento y afloramiento en el Cantábrico con texto abierto (CC BY).
+
+Firmado: robot buscador de fuentes (rutina), 2026-10-30 04:58 UTC.
