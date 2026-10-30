@@ -1,19 +1,17 @@
-<!-- SINTESIS fecha=2026-10-29 hasta_commit=9af8d858b50ad631aa53caa5871f48b7edfa69bb -->
+<!-- SINTESIS fecha=2026-10-30 hasta_commit=bc512444250b33cc1e1c74c4e7b82845756b00fb -->
 
 ## 🛠 Trabajo interno (calibración y datos)
-Una pasada nueva desde la última síntesis: el robot de cámaras caídas (29-10, 04:50 UTC, datos de `camaras-estado.json` de las 03:04Z). Siguen en rojo alicante, torreblanca y benicàssim (`origen_404`), orio (`sin_respuesta`), comillas (origen 522), pasaia (`frame_plano`) y mundaka y bakio (congeladas de noche). **Mutriku, arreglada**: el stream `GIP_mutrikukaia_169` sigue en 404, pero el servidor de la Diputación sirve `GIP_saturraran_169` (200, HLS avanzando, playa de Saturraran con mar visible); se cambió la URL en `index.html`, `medir-turbidez.mjs` y `comprobar-camaras.mjs`. No se tocó `scripts/oleaje-camaras/camaras.mjs`: la lectura de espuma de Mutriku seguirá sin medir hasta dibujar referencia y ROI nuevos de Saturraran, de día. Orio: probadas 4 variantes de URL (todas 404) y la búsqueda web no encuentra cámara de Orio; sin alternativa. Comillas: no verificable, dominio cantabria.es bloqueado desde la rutina.
-
+El robot de cámaras caídas (04:50 UTC) revisó el estado de las cámaras y arregló Benicàssim: el stream anterior (`BenicassimVela`) daba 404 y lo cambió por `BenicassimPalasiet`, que responde 200 con imagen de hoy (playa y mar correctos, aunque de noche). Siguen sin alternativa verificada Alicante y Torreblanca (404 en origen) y Orio (404 en todas las variantes probadas). Comillas no se tocó esta pasada. Pasaia, Cangas, Bakio y Mundaka salen congeladas, pero es una lectura nocturna sin fallos: conviene revisarlas de día. Además hubo una actualización de datos de oleaje por cámara (volcado automático).
 **Cámaras nuevas encontradas:** 0
-
-**Términos de búsqueda:** el texto no registra términos de webcams probados esta vez salvo la búsqueda "camaras playa Orio ... Diputación" (sin resultado); no hay tipo de dueño nuevo.
+**Términos de búsqueda:** el texto no menciona términos de webcams probados ni un tipo de dueño nuevo.
 
 ## 🧪 Experiencia de usuario y patrones de uso
-**Robot de experiencia de usuario:** no le tocaba pasar hoy (corre los lunes) y no hay entrada suya.
+**Robot de experiencia de usuario:** no le tocaba pasar hoy (corre los lunes); no hay entrada suya.
 **Robot de patrones de uso:** no le tocaba pasar esta semana (corre los sábados).
 
 ## 🔎 Trabajo externo (investigación de contenido)
-Sin entradas nuevas de buenas prácticas de otras apps ni estudios institucionales desde la última síntesis.
-**Robot de especies:** hoy es jueves, pero no dejó entrada en ROBOT.md desde la última síntesis.
+El buscador de fuentes (viernes) estudió el afloramiento y el viento del este en Galicia/Cantábrico: solo encontró oceanografía antigua sobre sardina, con escalas anuales y sin texto abierto comprobado, así que no propone ninguna regla ni rama. No revisó concursos nuevos; FEPyC y FPPD siguen sin permiso. Próxima búsqueda: estudios abiertos de capturabilidad de lubina/sargo con viento y afloramiento.
+**Robot de especies:** no le tocaba pasar hoy (corre los jueves); no hay entrada suya.
 
 ## 🆕 Nuevas fuentes encontradas, pendientes de validar
 Ninguna fuente nueva desde la última síntesis.
