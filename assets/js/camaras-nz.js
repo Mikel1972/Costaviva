@@ -91,6 +91,9 @@ export const NZ_ANALISIS_AUTORIZADO = {
   greater_wellington: false,
   nelson_cc: false,
   sails_ashore: false,
+  // 2026-10-31, del buscador de cámaras: directo de YouTube, solo enlace
+  // (paywall) y nunca analizado (condiciones de YouTube).
+  youtube_motella: false,
 };
 
 export const NZ_EMBED_AUTORIZADO = {
@@ -114,6 +117,9 @@ export const NZ_EMBED_AUTORIZADO = {
   greater_wellington: false,
   nelson_cc: false,
   sails_ashore: false,
+  // 2026-10-31, del buscador de cámaras: directo de YouTube, solo enlace
+  // (paywall) y nunca analizado (condiciones de YouTube).
+  youtube_motella: false,
 };
 
 // Cómo se embebe cada dueño, si se puede: "imagen_oficial" (la URL de la
@@ -339,6 +345,17 @@ export const CONDICIONES_NZ = {
     cita: "«Sails Ashore Garden & Webcam». No publica condiciones de uso. Solo enlace.",
     contacto: "tait@sailsashore.co.nz",
   },
+  youtube_motella: {
+    dueno_corto: "Motella (YouTube)",
+    dueno: "Canal de YouTube Motella (Teal Motor Lodge, Gisborne)",
+    tipo_dueno: "privado",
+    modos_permitidos: ["enlace"],
+    analisis_permitido: NZ_ANALISIS_AUTORIZADO.youtube_motella,
+    licencia: null,
+    fuentes: ["https://www.youtube.com/watch?v=TBWhP73uY6s", "https://developers.google.com/youtube/terms/developer-policies"],
+    cita: "Directo público de YouTube. Solo enlace: Costaviva tiene paywall y YouTube no permite cobrar por ver un reproductor insertado.",
+    contacto: null,
+  },
 };
 
 // embed: { imagen } o { iframe } que publica el dueño, y refresco_min (cada
@@ -460,6 +477,9 @@ const LISTA = [
     "2026-10-12: imagen de las 07:00 NZDT (Last-Modified de hoy), Halfmoon Bay con el muelle y los barcos fondeados", { km: 0.2 }),
   cam("sails-ashore", "nz-halfmoon-bay", ["Halfmoon Bay desde Sails Ashore", "Halfmoon Bay from Sails Ashore"], "sails_ashore", "https://sailsashore.co.nz/garden-web-cam/", false,
     "2026-10-12: imagen de las 07:37 NZDT (Last-Modified de hoy), Halfmoon Bay, el muelle de Oban y el mar abierto", { km: 0.6 }),
+  // Del buscador de cámaras (Issue #357, aprobada por Mikel el 2026-10-31).
+  cam("motella-gisborne", "nz-gisborne", ["Gisborne, Teal Motor Lodge", "Gisborne, Teal Motor Lodge"], "youtube_motella", "https://www.youtube.com/watch?v=TBWhP73uY6s", false,
+    "2026-10-31: directo de YouTube «Gisborne Live Webcam | NZ Weather» encontrado por buscar-camaras.yml", { visto_en: "youtube.com (buscar-camaras)" }),
 ];
 
 export const CAMARAS_NZ = LISTA;
