@@ -162,9 +162,14 @@ const LISTA = [
   sky("cadiz", "Playa Santa María del Mar", "espana/andalucia/cadiz/playa-santa-maria-del-mar", 1372, true),
   sky("cadiz", "Playa Victoria", "espana/andalucia/cadiz/playa-victoria", 1735, true),
   yt("cortadura", "cadiz", "Playa de Cortadura", "Playa Victoria", "kkIA93YOQ6w", true, "webcamera24.com"),
+  // Del buscador de cámaras (Issue #359, aprobadas por Mikel el 2026-10-31).
+  yt("conil-fontanilla", "conil", "Conil, playa de la Fontanilla", "La costa de Cádiz", "KmBrwm5T-Dc", true, "youtube.com (buscar-camaras)"),
 
   // --- Mediterráneo ---
   yt("nerja-balcon", "nerja", "Nerja, Balcón de Europa", "meteo365es", "liW4_fLCE5A", false, "webcamera24.com"),
+  // Del buscador de cámaras (Issue #359, aprobadas por Mikel el 2026-10-31).
+  yt("malaga-puerto", "malaga", "Puerto de Málaga, Muelle de Levante y faro", "meteo365es", "sxgx5ZqAAxo", false, "youtube.com (buscar-camaras)"),
+  yt("rincon-victoria", "malaga", "Rincón de la Victoria, playa", "Malaga Live Cam", "Ib0xbFBU9Wg", true, "youtube.com (buscar-camaras)"),
   // Águilas: hasta el 2026-10-08 se pasaban por nuestro proxy
   // (functions/webcam/[slug].js) y se medía su turbidez; las condiciones de
   // SkylineWebcams no lo permiten (ver SKYLINE_EMBED_AUTORIZADO).

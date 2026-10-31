@@ -267,6 +267,7 @@ const MODO_NZ = {
   "nz-southloop-ocean-beach": "enlace",
   "nz-southloop-oban": "enlace",
   "nz-sails-ashore": "enlace",
+  "nz-motella-gisborne": "enlace",
 };
 
 // Repaso de día del 2026-10-12: las 15 pendientes de NZ, añadidas (solo

@@ -157,12 +157,14 @@ test("index.html pinta el punto con estadoCamaraSpot en todos los spots del cat�
 
 // --- Nueva Zelanda (2026-10-11, "no veo las cámaras de NZ") ---
 
-test("NZ: los 15 spots con cámara salen en verde con el estado real de hoy; los demás, rojo", async () => {
+test("NZ: los 16 spots con cámara salen en verde con el estado real de hoy; los demás, rojo", async () => {
   const { SPOTS_NZ } = await import("../functions/_lib/nz/spots-nz.js");
   // 9 del 2026-10-11 + 6 del repaso de día del 2026-10-12 (raglan, castlepoint,
   // wellington-harbour, nelson, bluff, halfmoon-bay; whangamata ya tenía).
   const conCamara = ["tairua", "whitianga", "whangamata", "whakatane", "te-kaha", "napier", "new-plymouth", "aramoana", "riverton",
-    "raglan", "castlepoint", "wellington-harbour", "nelson", "bluff", "halfmoon-bay"].map((s) => `nz-${s}`);
+    "raglan", "castlepoint", "wellington-harbour", "nelson", "bluff", "halfmoon-bay",
+    // 2026-10-31: Gisborne, del buscador de cámaras (YouTube, enlace).
+    "gisborne"].map((s) => `nz-${s}`);
   // Estado de camara_estado del 2026-10-11 12:17 UTC: CoroLive no verificable, el resto ok.
   const camaras = Object.fromEntries(
     CAMARAS_EXTERNAS.filter((c) => c.spot.startsWith("nz-")).map((c) => [claveSalud(c), c.id.startsWith("nz-corolive") ? { sinSenal: false, motivo: "no_verificable_403" } : ok])
