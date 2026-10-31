@@ -189,6 +189,30 @@ export function navegandoDeEscucha(barcos, clasesConocidas, clave, puertos, escu
     .sort((a, b) => a.clave.localeCompare(b.clave));
 }
 
+// Diagnóstico (2026-10-31, Mikel enseña en VesselFinder muchos barcos que
+// faenan y que aquí no cuentan): cuántos barcos hay de cada tipo AIS y
+// cuántos SIN tipo se mueven a velocidad de faena. Solo totales, nunca barcos.
+export function grupoTipo(tipo) {
+  if (tipo == null || tipo === 0) return "sin_tipo";
+  if (tipo === TIPO_PESQUERO) return "pesquero";
+  if (tipo === 36 || tipo === 37) return "recreo";
+  if (tipo >= 60 && tipo <= 69) return "pasaje";
+  if (tipo >= 70 && tipo <= 79) return "carga";
+  if (tipo >= 80 && tipo <= 89) return "tanque";
+  return "otros";
+}
+export function diagnosticoTipos(barcos, clasesConocidas, clave) {
+  const porGrupo = {};
+  let sinTipoFaena = 0;
+  for (const [mmsi, b] of Object.entries(barcos)) {
+    const conocido = b.tipo == null && clasesConocidas[resumenBarco(mmsi, clave)];
+    const g = conocido ? "pesquero" : grupoTipo(b.tipo);
+    porGrupo[g] = (porGrupo[g] || 0) + 1;
+    if (g === "sin_tipo" && celdaDeFaena(b.posiciones || [])) sinTipoFaena++;
+  }
+  return { porGrupo, sinTipoFaena };
+}
+
 export const resumenBarco = (mmsi, clave) => createHmac("sha256", clave).update(String(mmsi)).digest("hex").slice(0, 24);
 
 // Un mensaje de aisstream.io -> { mmsi, tipo?, clase?, pos? }.
@@ -414,6 +438,8 @@ async function main() {
   const pesqueros = Object.entries(barcos).filter(([m, b]) => b.tipo === TIPO_PESQUERO || (b.tipo == null && conocidas[resumenBarco(m, clave)])).length;
   const porClase = filas.reduce((a, f) => ((a[f.clase] = (a[f.clase] || 0) + 1), a), {});
   console.log(`${minutos} min: ${mensajes} mensajes, ${Object.keys(barcos).length} barcos, ${pesqueros} pesqueros, ${filas.length} faenando ${JSON.stringify(porClase)}.`);
+  const diag = diagnosticoTipos(barcos, conocidas, clave);
+  console.log(`Tipos AIS: ${JSON.stringify(diag.porGrupo)}; sin tipo a velocidad de faena: ${diag.sinTipoFaena}.`);
   // Solo cuántas celdas se publican, nunca cuáles.
   const celdasPublicadas = (p) => zonas.filter((z) => z.periodo === p && z.clase === "todas").length;
   console.log(`Zonas publicadas (>= ${MIN_BARCOS_CELDA} barcos): ${celdasPublicadas("24h")} celdas en las últimas 24 h, ${celdasPublicadas("ayer")} ayer; histórico de hoy: ${zonasDia.filter((z) => z.dia === dias[1] && z.clase === "todas").length} celdas.`);
