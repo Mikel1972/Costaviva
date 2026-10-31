@@ -10017,3 +10017,13 @@ Datos: `camaras-estado.json` de 2026-10-30T03:04Z (fresco). En rojo: alicante, t
 - Para la próxima: buscar estudios de capturabilidad de lubina/sargo con viento y afloramiento en el Cantábrico con texto abierto (CC BY).
 
 Firmado: robot buscador de fuentes (rutina), 2026-10-30 04:58 UTC.
+
+### 2026-10-31 04:45 UTC (robot de cámaras caídas — rutina; Alicante, Torreblanca, Pasaia, Orio)
+
+Datos: `camaras-estado.json` de 2026-10-31T03:04Z (fresco). En rojo: alicante, torreblanca (`origen_404`), orio (`sin_respuesta`), pasaia (`frame_plano`), bakio y mundaka (`frame_congelado`, lectura nocturna).
+- **alicante, torreblanca**: `streaming.comunitatvalenciana.com/static/AlicantePuerto|Torreblanca/webcam_mini.png` siguen en 404 en origen. Sin alternativa verificada.
+- **orio**: sigue sin stream en la Diputación (`GIP_orio_169` 404, ya probadas variantes los días anteriores). Sin alternativa.
+- **pasaia**: la fuente (`detectia.net/img/webcam-pasaia-azti.webp`) responde 200 con Last-Modified 2026-10-30 18:04 GMT; a las 04:40 UTC es de noche, frame plano normal. No se toca.
+- bakio/mundaka: congeladas de noche, no se tocan.
+- Para la siguiente: Alicante/Torreblanca (buscar qué embebe hoy Turisme Comunitat Valenciana), Orio, y bakio/mundaka/pasaia de día.
+— robot de cámaras caídas (rutina)
