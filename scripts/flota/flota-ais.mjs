@@ -213,6 +213,36 @@ export function diagnosticoTipos(barcos, clasesConocidas, clave) {
   return { porGrupo, sinTipoFaena };
 }
 
+// Pesqueros PROBABLES, en pruebas (2026-10-31, aprobado por Mikel): barcos
+// SIN tipo AIS que van a velocidad de faena a más de 10 km de cualquier
+// puerto (el recreo suele quedarse cerca). Solo se cuentan en el registro
+// para comparar fin de semana con entre semana; no se publica nada.
+export const KM_PROBABLE_PUERTO = 10;
+export function probablesDeEscucha(barcos, clasesConocidas, clave, puertos, min = MIN_BARCOS_CELDA) {
+  const probables = [];
+  for (const [mmsi, b] of Object.entries(barcos)) {
+    if (grupoTipo(b.tipo) !== "sin_tipo" || clasesConocidas[resumenBarco(mmsi, clave)]) continue;
+    const validas = (b.posiciones || []).filter((p) => Number.isFinite(p.sog) && p.sog < 102 && Math.abs(p.lat) <= 90 && Math.abs(p.lon) <= 180);
+    const c = celdaDeFaena(validas);
+    if (!c) continue;
+    const lat = mediana(validas.map((p) => p.lat)), lon = mediana(validas.map((p) => p.lon));
+    if (puertoCercano(lat, lon, puertos, KM_PROBABLE_PUERTO)) continue;
+    probables.push({ mmsi, celda: c });
+  }
+  // Celdas de faena con >= min barcos si se suman los probables a los declarados.
+  const porCelda = new Map();
+  const sumar = (c, id) => { const k = c.join(","); if (!porCelda.has(k)) porCelda.set(k, new Set()); porCelda.get(k).add(id); };
+  for (const [mmsi, b] of Object.entries(barcos)) {
+    if (!esPesquero(b, clasesConocidas[resumenBarco(mmsi, clave)])) continue;
+    const c = celdaDeFaena(b.posiciones || []);
+    if (c) sumar(c, mmsi);
+  }
+  const soloDeclarados = [...porCelda.values()].filter((x) => x.size >= min).length;
+  for (const p of probables) sumar(p.celda, p.mmsi);
+  const conProbables = [...porCelda.values()].filter((x) => x.size >= min).length;
+  return { probables: probables.length, celdasDeclarados: soloDeclarados, celdasConProbables: conProbables };
+}
+
 export const resumenBarco = (mmsi, clave) => createHmac("sha256", clave).update(String(mmsi)).digest("hex").slice(0, 24);
 
 // Un mensaje de aisstream.io -> { mmsi, tipo?, clase?, pos? }.
@@ -440,6 +470,8 @@ async function main() {
   console.log(`${minutos} min: ${mensajes} mensajes, ${Object.keys(barcos).length} barcos, ${pesqueros} pesqueros, ${filas.length} faenando ${JSON.stringify(porClase)}.`);
   const diag = diagnosticoTipos(barcos, conocidas, clave);
   console.log(`Tipos AIS: ${JSON.stringify(diag.porGrupo)}; sin tipo a velocidad de faena: ${diag.sinTipoFaena}.`);
+  const prob = probablesDeEscucha(barcos, conocidas, clave, puertos);
+  console.log(`En pruebas, pesqueros probables (sin tipo, velocidad de faena, > ${KM_PROBABLE_PUERTO} km de puerto): ${prob.probables}; celdas de faena con >= ${MIN_BARCOS_CELDA} en esta escucha: ${prob.celdasDeclarados} solo declarados, ${prob.celdasConProbables} sumando probables.`);
   // Solo cuántas celdas se publican, nunca cuáles.
   const celdasPublicadas = (p) => zonas.filter((z) => z.periodo === p && z.clase === "todas").length;
   console.log(`Zonas publicadas (>= ${MIN_BARCOS_CELDA} barcos): ${celdasPublicadas("24h")} celdas en las últimas 24 h, ${celdasPublicadas("ayer")} ayer; histórico de hoy: ${zonasDia.filter((z) => z.dia === dias[1] && z.clase === "todas").length} celdas.`);

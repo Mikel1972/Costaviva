@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { claseEslora, celda, celdaDeFaena, leerMensaje, filasDeFaena, resumenBarco, horaEnPunto, zonasDeFaena, zonasPorDia, diaMadrid, posicionParado, puertoCercano, distanciaKm, cargarPuertos, paradosDeEscucha, grupoTipo, diagnosticoTipos, posicionNavegando, navegandoDeEscucha, PASO_MAR, CAJA, MIN_BARCOS_CELDA, CLASES_ZONA as CLASES } from "../scripts/flota/flota-ais.mjs";
+import { claseEslora, celda, celdaDeFaena, leerMensaje, filasDeFaena, resumenBarco, horaEnPunto, zonasDeFaena, zonasPorDia, diaMadrid, posicionParado, puertoCercano, distanciaKm, cargarPuertos, paradosDeEscucha, grupoTipo, diagnosticoTipos, probablesDeEscucha, KM_PROBABLE_PUERTO, posicionNavegando, navegandoDeEscucha, PASO_MAR, CAJA, MIN_BARCOS_CELDA, CLASES_ZONA as CLASES } from "../scripts/flota/flota-ais.mjs";
 
 test("clase por eslora (A+B del AIS)", () => {
   assert.equal(claseEslora(10, 8), "<24");
@@ -348,4 +348,17 @@ test("diagnóstico de tipos AIS: solo totales y los sin tipo que van a velocidad
   const rapido = [12, 12, 12].map((sog) => ({ lat: 43.9, lon: -2.5, sog }));
   const d = diagnosticoTipos({ 1: { posiciones: faena }, 2: { tipo: 0, posiciones: rapido }, 3: { tipo: 30, posiciones: faena }, 4: { tipo: 70, posiciones: rapido }, 5: { posiciones: faena } }, { [resumenBarco(5, "k")]: "<24" }, "k");
   assert.deepEqual(d, { porGrupo: { sin_tipo: 2, pesquero: 2, carga: 1 }, sinTipoFaena: 1 });
+});
+
+test("pesqueros probables (en pruebas): sin tipo, a velocidad de faena y lejos de puerto", () => {
+  const faena = (lat, lon) => [3, 3, 2].map((sog) => ({ lat, lon, sog }));
+  const barcos = {
+    1: { tipo: 30, posiciones: faena(43.91, -2.51) }, 2: { tipo: 30, posiciones: faena(43.92, -2.52) }, // declarados en la celda
+    3: { posiciones: faena(43.93, -2.53) },                       // sin tipo, mar adentro: probable
+    4: { tipo: 0, posiciones: faena(43.322, -2.418) },            // sin tipo, en Ondarroa: no
+    5: { tipo: 37, posiciones: faena(43.91, -2.51) },             // recreo: no
+    6: { posiciones: [12, 12, 12].map((sog) => ({ lat: 43.9, lon: -2.5, sog })) }, // navegando rápido: no
+  };
+  assert.equal(KM_PROBABLE_PUERTO, 10);
+  assert.deepEqual(probablesDeEscucha(barcos, {}, "k", cargarPuertos()), { probables: 1, celdasDeclarados: 0, celdasConProbables: 1 });
 });
