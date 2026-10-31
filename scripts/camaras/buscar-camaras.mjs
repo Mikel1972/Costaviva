@@ -46,17 +46,33 @@ export function huecos(spots, slugsConCamara) {
 // Te Rerenga Wairua" -> "Cape Reinga"; "Playa de la Concha (Donostia)" -> "Playa de la Concha".
 export const nombreBusqueda = (nombre) => String(nombre).split(/[/(,]/)[0].trim();
 
+export const KM_LEJOS = 50;
+// Países que, en el título, delatan que el directo es de otro sitio.
+export const PAISES_FUERA = ["colombia", "chile", "mexico", "argentina", "peru", "ecuador", "venezuela", "cuba", "brasil", "brazil",
+  "usa", "california", "florida", "oregon", "washington", "canada", "alberta", "france", "francia", "normandie", "italia", "italy",
+  "philippines", "filipinas", "australia", "africa", "zambezi", "ireland", "england", "uk", "new zealand", "nz", "espana", "spain", "portugal"];
+const paisesDelSpot = (spot) => (spot.slug.startsWith("nz-") ? ["new zealand", "nz"] : ["espana", "spain", "portugal"]);
+export const contienePalabra = (texto, palabra) => new RegExp(`(^|[^a-z0-9])${palabra.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}($|[^a-z0-9])`).test(texto);
+
 // Un vídeo de YouTube (videos.list) -> candidata o null.
 export function candidataDeVideo(video, spot, yaEnApp) {
   const sn = video.snippet || {};
   if (sn.liveBroadcastContent !== "live") return null;
   if (yaEnApp.videos.has(video.id)) return null;
   if (yaEnApp.canalesPorSpot.get(spot.slug)?.has(sn.channelId)) return null;
-  const texto = normalizar(`${sn.title} ${sn.description}`);
+  // Filtro (2026-10-31, tras la primera pasada con 24 candidatas y mucho
+  // ruido: Cartagena de Colombia, "Mana" en Manaus, "Leigh" en Leighlin):
+  // el nombre del spot como PALABRA en el TÍTULO, ninguna ubicación lejana y
+  // ningún país de fuera en el título.
+  const titulo = normalizar(sn.title);
   const nombre = normalizar(nombreBusqueda(spot.nombre));
   const loc = video.recordingDetails?.location;
-  const cerca = loc && Number.isFinite(loc.latitude) && distanciaKm(spot.lat, spot.lon, loc.latitude, loc.longitude) < RADIO_KM * 3;
-  if (!texto.includes(nombre) && !cerca) return null;
+  const conLoc = loc && Number.isFinite(loc.latitude) && Number.isFinite(loc.longitude);
+  const km = conLoc ? distanciaKm(spot.lat, spot.lon, loc.latitude, loc.longitude) : null;
+  if (km !== null && km > KM_LEJOS) return null;
+  const cerca = km !== null && km < RADIO_KM * 3;
+  if (!cerca && !contienePalabra(titulo, nombre)) return null;
+  if (!cerca && PAISES_FUERA.some((p) => contienePalabra(titulo, p) && !paisesDelSpot(spot).includes(p))) return null;
   return {
     spot: spot.slug,
     spot_nombre: spot.nombre,
@@ -100,7 +116,7 @@ async function json(url) {
 }
 
 async function buscarEnYoutube(spot, clave, yaEnApp) {
-  const q = `${nombreBusqueda(spot.nombre)} webcam`;
+  const q = `${nombreBusqueda(spot.nombre)} ${spot.slug.startsWith("nz-") ? "New Zealand " : ""}webcam`;
   const busq = await json(`${YT}/search?part=snippet&type=video&eventType=live&maxResults=10&q=${encodeURIComponent(q)}&key=${clave}`);
   const ids = (busq.items || []).map((i) => i.id?.videoId).filter(Boolean);
   if (!ids.length) return [];

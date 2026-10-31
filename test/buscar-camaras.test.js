@@ -31,6 +31,11 @@ test("candidata de YouTube: en directo, nombra el spot o está cerca, y no está
   assert.equal(candidataDeVideo(v("x", { snippet: { channelId: "canalYa" } }), ond, ya), null, "canal ya en ese spot");
   assert.equal(candidataDeVideo(v("x", { snippet: { liveBroadcastContent: "none" } }), ond, ya), null, "no es un directo");
   assert.equal(candidataDeVideo(v("x", { snippet: { title: "Playa de Bilbao" } }), ond, ya), null, "ni lo nombra ni está cerca");
+  assert.equal(candidataDeVideo(v("x", { snippet: { title: "Live", description: "Ondarroa" } }), ond, ya), null, "solo en la descripción no basta");
+  assert.equal(candidataDeVideo(v("x", { snippet: { title: "Ondarroatik live" } }), ond, ya), null, "palabra entera");
+  assert.equal(candidataDeVideo(v("x", { snippet: { title: "Ondarroa Colombia LIVE" } }), ond, ya), null, "otro país en el título");
+  assert.ok(candidataDeVideo(v("x", { snippet: { title: "Ondarroa España LIVE" } }), ond, ya), "su propio país sí");
+  assert.equal(candidataDeVideo(v("x", { resto: { recordingDetails: { location: { latitude: 10.4, longitude: -75.5 } } } }), ond, ya), null, "ubicación lejana");
   const cerca = candidataDeVideo(v("x", { snippet: { title: "Live beach cam" }, resto: { recordingDetails: { location: { latitude: 43.33, longitude: -2.42 } } } }), ond, ya);
   assert.equal(cerca.motivo, "ubicación del vídeo cerca del spot");
 });
