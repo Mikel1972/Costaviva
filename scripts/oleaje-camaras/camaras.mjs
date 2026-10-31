@@ -215,6 +215,7 @@ export const NO_SIRVEN_NZ = {
   "nz-southloop-ocean-beach": "solo ENLACE (repaso del 2026-10-12): sin referencia ni ROI; costa rocosa sin rompiente libre",
   "nz-southloop-oban": "solo ENLACE (repaso del 2026-10-12): bahía en calma con el muelle, sin rompiente",
   "nz-sails-ashore": "solo ENLACE sin permiso escrito de Sails Ashore; bahía lejana y en calma, sin rompiente",
+  "nz-motella-gisborne": "directo de YouTube: solo ENLACE y nunca analizado (condiciones de YouTube)",
   // DESCARTADAS en el repaso de día del 2026-10-12 (07:30-07:50 NZDT): no
   // están en camaras-nz.js (clave nz-descartada-<id>). No se rodea ningún
   // bloqueo; si cambian, se revisan otra vez.

@@ -120,6 +120,11 @@
       "campana": "20261101-especies-calamar-chipiron",
       "en": "2026-10-29T00:26:27.877Z"
     },
+    "2026-11-01-reel": {
+      "tipo": "reel-peces",
+      "campana": "20261101-reel-peces-valencia",
+      "en": "2026-10-31T17:35:02.411Z"
+    },
     "2026-11-02-post-nz": {
       "tipo": "especies-nz",
       "campana": "20261102-especies-nz-kingfish",
