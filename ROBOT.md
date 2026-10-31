@@ -10027,3 +10027,10 @@ Datos: `camaras-estado.json` de 2026-10-31T03:04Z (fresco). En rojo: alicante, t
 - bakio/mundaka: congeladas de noche, no se tocan.
 - Para la siguiente: Alicante/Torreblanca (buscar qué embebe hoy Turisme Comunitat Valenciana), Orio, y bakio/mundaka/pasaia de día.
 — robot de cámaras caídas (rutina)
+
+### 2026-10-31 04:55 UTC — robot buscador de fuentes (rutina): cámaras, zona Cataluña, Baleares, Andalucía y Canarias
+- Zona de hoy (semana ISO 44, sábado → N=89 → índice 9). Sin novedades esta pasada: no se integra ni crea nada.
+- Búsqueda "webcam playa Tarifa Cádiz Málaga Almería": solo agregadores (enterat.com, Skyline, Windfinder, balticlivecam, webcamtaxi) y cámaras de tráfico de Málaga; ninguna fuente del dueño con imagen fija o HLS verificable (Tarifa, Zahara, Santa María del Mar y Torre de Balerma son de Skyline/agregadores, no se tocan; Skyline solo como enlace).
+- Búsqueda "webcam puerto Mallorca Menorca Ibiza": seemallorca.com (`/webcams/palma-marina`, `/webcams/port-de-pollensa`) responde 200 pero es portal sin URL directa de imagen/stream en el HTML; no se pudo ver ningún fotograma, así que no se crea ningún spot (sin comprobación visual). Menorca/Ibiza: solo directorios de 2007-2017.
+- Para la siguiente vez en esta zona: Meteocat/Catalunya (cámaras de costa), webs de puertos de Puertos de Andalucía y Canarias (Gran Canaria, Tenerife) con imagen propia.
+Firmado: robot buscador de fuentes (rutina), 2026-10-31 04:55 UTC.
