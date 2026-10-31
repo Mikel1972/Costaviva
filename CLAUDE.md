@@ -1213,6 +1213,17 @@ completos (con SHA-256 y DKIM comprobado) en comun,
 `embed.skylinewebcams.com`; no hay que tocar nada más (el test se adapta al
 valor). Analizar sus fotogramas sigue prohibido en cualquier caso.
 
+## Buscador de cámaras nuevas (2026-10-31)
+
+`buscar-camaras.yml` (lunes 06:47 UTC, sin IA) corre
+`scripts/camaras/buscar-camaras.mjs`: spots sin ninguna cámara (ni del proxy
+`/webcam/` ni de `camaras-externas.js`) a menos de 5 km y, con el secret
+`YOUTUBE_API_KEY`, directos de YouTube que nombran el spot o están cerca y no
+están ya en la app. Deja un Issue `camaras-candidatas` con casillas para
+Mikel y cierra el de la semana anterior; no toca la app. Lo marcado se añade
+a mano a `camaras-externas.js` como `enlace` (paywall). Tests:
+`test/buscar-camaras.test.js`.
+
 ## Cámaras de Nueva Zelanda: embebidas con interruptor por dueño (2026-10-11)
 
 `assets/js/camaras-nz.js` lista webcams de terceros con mar a la vista para
