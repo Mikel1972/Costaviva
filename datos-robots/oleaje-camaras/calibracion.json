@@ -1,6 +1,6 @@
 {
- "fecha": "2026-10-31T15:07:55.791Z",
- "lineasHistorial": 6785,
+ "fecha": "2026-10-31T15:37:49.353Z",
+ "lineasHistorial": 6794,
  "etiquetas": 276,
  "etiquetasClaude": 181,
  "calibracion": {
@@ -50,9 +50,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 5.7686,
+   "a": 5.7718,
    "p": 0.5,
-   "n": 480,
+   "n": 481,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 24,
    "franjasClaude": [
@@ -79,7 +79,7 @@
    "dias": 24,
    "hMin": 0.3,
    "hMax": 6.97,
-   "errorRel": 0.934,
+   "errorRel": 0.933,
    "pocosDatos": false
   },
   "zumaia/c": {
@@ -181,9 +181,9 @@
    "pocosDatos": false
   },
   "sopelana/principal": {
-   "a": 4.2273,
+   "a": 4.2081,
    "p": 0.5,
-   "n": 138,
+   "n": 139,
    "nEtiquetas": 4,
    "nEtiquetasClaude": 8,
    "franjasClaude": [
@@ -199,7 +199,7 @@
    "dias": 24,
    "hMin": 0.3,
    "hMax": 4.62,
-   "errorRel": 0.76,
+   "errorRel": 0.762,
    "pocosDatos": false
   },
   "berria/principal": {
