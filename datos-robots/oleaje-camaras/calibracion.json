@@ -1,13 +1,13 @@
 {
- "fecha": "2026-10-31T15:37:49.353Z",
- "lineasHistorial": 6794,
+ "fecha": "2026-10-31T16:00:53.032Z",
+ "lineasHistorial": 6802,
  "etiquetas": 276,
  "etiquetasClaude": 181,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.3389,
+   "a": 1.342,
    "p": 0.5,
-   "n": 172,
+   "n": 173,
    "nEtiquetas": 7,
    "nEtiquetasClaude": 4,
    "franjasClaude": [
@@ -113,9 +113,9 @@
    "pocosDatos": false
   },
   "deba/rompiente": {
-   "a": 6.4086,
+   "a": 6.4043,
    "p": 0.5,
-   "n": 168,
+   "n": 169,
    "nEtiquetas": 2,
    "nEtiquetasClaude": 10,
    "franjasClaude": [
@@ -465,8 +465,8 @@
    "sustituye": true,
    "motivo": "≥ 3 días con alturas variadas",
    "ruido": {
-    "ruido": 0.854,
-    "pares": 83
+    "ruido": 0.839,
+    "pares": 84
    }
   },
   "mutriku": {
