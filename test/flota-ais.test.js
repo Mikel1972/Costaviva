@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { claseEslora, celda, celdaDeFaena, leerMensaje, filasDeFaena, resumenBarco, horaEnPunto, zonasDeFaena, zonasPorDia, diaMadrid, posicionParado, puertoCercano, distanciaKm, cargarPuertos, paradosDeEscucha, posicionNavegando, navegandoDeEscucha, PASO_MAR, CAJA, MIN_BARCOS_CELDA, CLASES_ZONA as CLASES } from "../scripts/flota/flota-ais.mjs";
+import { claseEslora, celda, celdaDeFaena, leerMensaje, filasDeFaena, resumenBarco, horaEnPunto, zonasDeFaena, zonasPorDia, diaMadrid, posicionParado, puertoCercano, distanciaKm, cargarPuertos, paradosDeEscucha, grupoTipo, diagnosticoTipos, posicionNavegando, navegandoDeEscucha, PASO_MAR, CAJA, MIN_BARCOS_CELDA, CLASES_ZONA as CLASES } from "../scripts/flota/flota-ais.mjs";
 
 test("clase por eslora (A+B del AIS)", () => {
   assert.equal(claseEslora(10, 8), "<24");
@@ -336,4 +336,16 @@ test("escucha de 40 min por defecto (workflow y script)", () => {
   assert.match(yml, /minutos \|\| '40'/);
   assert.match(yml, /timeout-minutes: 60/);
   assert.match(js, /: 40;/);
+});
+
+test("diagnóstico de tipos AIS: solo totales y los sin tipo que van a velocidad de faena", () => {
+  assert.equal(grupoTipo(undefined), "sin_tipo");
+  assert.equal(grupoTipo(0), "sin_tipo");
+  assert.equal(grupoTipo(30), "pesquero");
+  assert.equal(grupoTipo(37), "recreo");
+  assert.equal(grupoTipo(71), "carga");
+  const faena = [3, 3, 2].map((sog) => ({ lat: 43.9, lon: -2.5, sog }));
+  const rapido = [12, 12, 12].map((sog) => ({ lat: 43.9, lon: -2.5, sog }));
+  const d = diagnosticoTipos({ 1: { posiciones: faena }, 2: { tipo: 0, posiciones: rapido }, 3: { tipo: 30, posiciones: faena }, 4: { tipo: 70, posiciones: rapido }, 5: { posiciones: faena } }, { [resumenBarco(5, "k")]: "<24" }, "k");
+  assert.deepEqual(d, { porGrupo: { sin_tipo: 2, pesquero: 2, carga: 1 }, sinTipoFaena: 1 });
 });
