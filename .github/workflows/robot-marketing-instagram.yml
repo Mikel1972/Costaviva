@@ -104,11 +104,21 @@ jobs:
         run: |
           if [ "$MERCADO" != "es" ] || [ -n "$TIPO_PIEZA" ]; then exit 0; fi
           FECHA=$(node --input-type=module -e '
+            import { readFileSync } from "node:fs";
             import { hoyMadrid, sumarDias, huecoDe } from "./scripts/marketing/calendario.mjs";
             const f = /^\d{4}-\d{2}-\d{2}$/.test(process.env.FECHA_PIEZA || "") ? process.env.FECHA_PIEZA : sumarDias(hoyMadrid(), 1);
-            if (huecoDe(f, "post", "es")) console.log(f);
+            // El respaldo de una hora después no repite: el reel con tipo
+            // forzado no mira el estado, así que se mira aquí.
+            let estado = {};
+            try { estado = JSON.parse(readFileSync("scripts/marketing/calendario-estado.json", "utf8")); } catch {}
+            if (huecoDe(f, "post", "es")) console.log(estado?.generadas?.[`${f}-reel`] ? "HECHO" : f);
           ')
           if [ -z "$FECHA" ]; then echo "Mañana no toca post en España."; exit 0; fi
+          if [ "$FECHA" = "HECHO" ]; then
+            echo "El reel de mañana ya está hecho: no se repite."
+            echo "lanzado=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           gh workflow run robot-reel-instagram.yml --ref "${GITHUB_REF_NAME}" -f fecha="$FECHA" -f tipo=peces -f mercado=es
           echo "lanzado=true" >> "$GITHUB_OUTPUT"
           echo "Pieza del $FECHA en vídeo: lanzado el robot de reels (tipo peces)." >> "$GITHUB_STEP_SUMMARY"

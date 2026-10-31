@@ -385,6 +385,10 @@ test("España en vídeo: el robot de posts lanza el reel de peces si mañana toc
   assert.match(post, /gh workflow run robot-reel-instagram\.yml --ref "\$\{GITHUB_REF_NAME\}" -f fecha="\$FECHA" -f tipo=peces -f mercado=es/);
   // Solo España y sin tipo forzado; NZ y los tipos a mano siguen con el post.
   assert.match(post, /if \[ "\$MERCADO" != "es" \] \|\| \[ -n "\$TIPO_PIEZA" \]; then exit 0; fi/);
+  // El respaldo de una hora después no repite el reel (caso real: dos reels
+  // para el 30/10). Con tipo forzado el robot de reels no mira el estado.
+  assert.match(post, /estado\?\.generadas\?\.\[`\$\{f\}-reel`\] \? "HECHO" : f/);
+  assert.match(post, /if \[ "\$FECHA" = "HECHO" \]; then[\s\S]*?lanzado=true/);
   for (const paso of ["Instalar dependencias del script", "Instalar Chromium para Playwright", "Generar imagen y texto del post"]) {
     const i = post.indexOf(`- name: ${paso}`);
     assert.ok(i > 0, paso);
