@@ -1,13 +1,13 @@
 {
- "fecha": "2026-10-31T16:07:52.497Z",
- "lineasHistorial": 6811,
+ "fecha": "2026-10-31T18:07:20.594Z",
+ "lineasHistorial": 6812,
  "etiquetas": 281,
  "etiquetasClaude": 186,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.346,
+   "a": 1.3342,
    "p": 0.5,
-   "n": 174,
+   "n": 175,
    "nEtiquetas": 7,
    "nEtiquetasClaude": 5,
    "franjasClaude": [
@@ -51,9 +51,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 5.7613,
+   "a": 5.759,
    "p": 0.5,
-   "n": 483,
+   "n": 484,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 25,
    "franjasClaude": [
@@ -81,7 +81,7 @@
    "dias": 24,
    "hMin": 0.3,
    "hMax": 6.97,
-   "errorRel": 0.932,
+   "errorRel": 0.931,
    "pocosDatos": false
   },
   "zumaia/c": {
