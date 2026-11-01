@@ -1235,7 +1235,7 @@ salud las comprueba como las de España (401/403/429 en enlace o iframe =
 `no_verificable`). `test/nz-region.test.js` exige que se carguen.
 
 **Embebidas: decisión de Mikel 2026-10-11 ("Embeberlas", como Skyline),
-pendiente de respuesta escrita de cada dueño.** Interruptor por dueño
+pendiente de respuesta escrita de cada dueño.** **CoroLive verificada por escrito el 2026-10-31 (CoroLive): «yep sure go ahead» al embebido con su iframe oficial y el crédito.** No dicen nada del análisis: sigue a la espera de decisión de Mikel. Interruptor por dueño
 `NZ_EMBED_AUTORIZADO`: si un dueño dice que no, se pone
 su clave a `false` y sus cámaras vuelven solas a `enlace` (CoroLive sale
 además de `frame-src` de la CSP, que se arma con `ORIGENES_IFRAME_NZ`). Se
