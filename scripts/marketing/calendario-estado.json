@@ -129,6 +129,11 @@
       "tipo": "especies-nz",
       "campana": "20261102-especies-nz-kingfish",
       "en": "2026-11-01T05:16:22.102Z"
+    },
+    "2026-11-02-reel": {
+      "tipo": "reel-peces",
+      "campana": "20261102-reel-peces-burriana",
+      "en": "2026-11-01T18:05:43.212Z"
     }
   },
   "ultimaFuncion": "alarma"
