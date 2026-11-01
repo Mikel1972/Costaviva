@@ -1,13 +1,13 @@
 {
- "fecha": "2026-11-01T11:07:47.343Z",
- "lineasHistorial": 6978,
+ "fecha": "2026-11-01T11:37:44.871Z",
+ "lineasHistorial": 6987,
  "etiquetas": 284,
  "etiquetasClaude": 189,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.3366,
+   "a": 1.3315,
    "p": 0.5,
-   "n": 177,
+   "n": 178,
    "nEtiquetas": 7,
    "nEtiquetasClaude": 5,
    "franjasClaude": [
@@ -51,9 +51,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 5.73,
+   "a": 5.7258,
    "p": 0.5,
-   "n": 492,
+   "n": 493,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 25,
    "franjasClaude": [
@@ -81,7 +81,7 @@
    "dias": 25,
    "hMin": 0.3,
    "hMax": 6.97,
-   "errorRel": 0.926,
+   "errorRel": 0.925,
    "pocosDatos": false
   },
   "zumaia/c": {
@@ -115,9 +115,9 @@
    "pocosDatos": false
   },
   "deba/rompiente": {
-   "a": 6.3985,
+   "a": 6.3938,
    "p": 0.5,
-   "n": 171,
+   "n": 172,
    "nEtiquetas": 2,
    "nEtiquetasClaude": 10,
    "franjasClaude": [
@@ -183,9 +183,9 @@
    "pocosDatos": false
   },
   "sopelana/principal": {
-   "a": 4.2184,
+   "a": 4.2346,
    "p": 0.5,
-   "n": 140,
+   "n": 141,
    "nEtiquetas": 4,
    "nEtiquetasClaude": 9,
    "franjasClaude": [
@@ -199,7 +199,7 @@
     "2026-10-30T14",
     "2026-10-31T14"
    ],
-   "dias": 24,
+   "dias": 25,
    "hMin": 0.3,
    "hMax": 4.62,
    "errorRel": 0.757,
@@ -271,16 +271,16 @@
    "pocosDatos": true
   },
   "orio/principal": {
-   "a": 4.9634,
+   "a": 4.9683,
    "p": 0.5,
-   "n": 64,
+   "n": 65,
    "nEtiquetas": 1,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
-   "dias": 18,
+   "dias": 19,
    "hMin": 0.75,
    "hMax": 4.04,
-   "errorRel": 0.72,
+   "errorRel": 0.713,
    "pocosDatos": false
   },
   "getaria/malkorbe": {
@@ -423,8 +423,8 @@
    "sustituye": true,
    "motivo": "7 etiquetas",
    "ruido": {
-    "ruido": 0.605,
-    "pares": 93
+    "ruido": 0.598,
+    "pares": 94
    }
   },
   "donostia": {
@@ -439,16 +439,16 @@
    "sustituye": true,
    "motivo": "≥ 3 días con alturas variadas",
    "ruido": {
-    "ruido": 0.327,
-    "pares": 37
+    "ruido": 0.34,
+    "pares": 38
    }
   },
   "zarautz": {
    "sustituye": true,
    "motivo": "18 etiquetas",
    "ruido": {
-    "ruido": 0.55,
-    "pares": 418
+    "ruido": 0.553,
+    "pares": 419
    }
   },
   "getaria": {
