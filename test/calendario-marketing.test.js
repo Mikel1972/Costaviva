@@ -366,7 +366,8 @@ test("NZ: el reel nunca usa un clip con personas identificables", () => {
 test("reel de peces: rota spots y clips, y solo usa vídeos de peces con licencia", async () => {
   const { clipsDePeces, siguienteDe, textoCaudal } = await import("../scripts/marketing/reel-peces.mjs");
   const clips = clipsDePeces();
-  assert.ok(clips.includes("pexels-peces-arrecife.mp4"));
+  assert.ok(clips.includes("pexels-jureles-azules-roca.mp4"));
+  assert.ok(!clips.includes("pexels-peces-arrecife.mp4"), "retirado el 2026-11-01 (parece arrecife tropical)");
   for (const c of clips) assert.ok(!/pescador|cana|carrete/.test(c), `${c} no es de peces`);
   assert.deepEqual(siguienteDe(["a", "b", "c"], "b"), ["c", "a", "b"]);
   assert.deepEqual(siguienteDe(["a", "b", "c"], undefined), ["a", "b", "c"]);
