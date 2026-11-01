@@ -10059,3 +10059,10 @@ Datos: `camaras-estado.json` de 2026-11-01T03:00Z (fresco). En rojo: alicante, t
 - pasaia/bakio/mundaka: son las 04:50 UTC, de noche; no se tocan.
 - Para la siguiente (de día): pasaia, bakio, mundaka, orio; Alicante/Torreblanca solo si Turisme CV vuelve a publicar.
 — robot de cámaras caídas (rutina)
+
+### 2026-11-01 04:58 UTC — robot buscador de fuentes (rutina): domingo, buenas prácticas de otras apps (solo propuesta)
+- Domingo, semana ISO 44 (44 % 3 = 2) → buenas prácticas de otras apps. Nada tocado en código.
+- **Propuesta (hallazgo nuevo): PescaREC.** El MAPA tiene una app oficial de declaración de capturas de pesca recreativa; según el Ministerio y prensa (maldita.es, xatakamovil), tras el RD 214/2026 de 18 de marzo su uso es obligatorio desde el 20-03-2026 (antes se anunció para el 10-01-2026 por normativa UE). Instrucciones: mapa.gob.es (PDF "instrucciones de uso de pescarec v1.06"). Idea para Mikel: en `diario.html`, un aviso/enlace en las capturas ("recuerda declararla en PescaREC") y, quizá, exportar la captura en formato fácil de copiar. No se ha leído el RD entero ni verificado a quién obliga exactamente (modalidades, especies): antes de poner texto legal en la app hay que leerlo en el BOE. Es decisión de producto, no se implementa.
+- Otras apps (Fishbrain 11.60, FishMeteo, Fishing Points, Fish & Tides): las fichas de tienda solo hablan de "pronóstico con IA", mapas náuticos, radar y caudal de ríos (Fishing Points usa 35.000 estaciones de EE. UU.). Nada nuevo frente a lo ya propuesto el 14/15/23 de septiembre; nada verificable de Tides4fishing, Windy ni de una función nueva de Puertos del Estado (solo un convenio de datos con Meteocat en el BOE, sin relación con apps).
+- Para la siguiente vez de este tipo: leer el RD 214/2026 en el BOE y ver qué exige a las apps de terceros.
+Firmado: robot buscador de fuentes (rutina), 2026-11-01 04:58 UTC.
