@@ -1,6 +1,7 @@
 // scripts/marketing/reel-peces.mjs
 // Reel "banco de peces + datos" (2026-10-18, pedido de Mikel). Sin IA y a
-// coste 0: un clip de peces de clips/stock/ (por defecto pexels-peces-arrecife,
+// coste 0: un clip de peces de clips/stock/ (desde el 2026-11-01 solo pexels-jureles-azules-roca;
+// el de arrecife está retirado,
 // licencia en su .licencia.json; --clip elige otro) va de fondo todo el vídeo, ralentizado, y
 // encima aparecen datos REALES de un spot a la hora de publicación (marea del
 // día, corriente, caudal del río, ola, agua e índice de pesca con la misma
