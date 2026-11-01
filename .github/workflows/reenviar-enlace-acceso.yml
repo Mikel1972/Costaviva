@@ -1,0 +1,44 @@
+name: Reenviar enlace de acceso
+
+# A mano (2026-11-01, Mikel: un alta sin confirmar a las 48 h). Vuelve a
+# mandar el enlace de acceso de Supabase Auth (el mismo email que pidió la
+# persona al registrarse, sin nada comercial) a UN usuario que aún no ha
+# confirmado. Se pasa el id del usuario, nunca el email: el repo es público
+# y el email se enmascara en el registro. No crea usuarios.
+
+on:
+  workflow_dispatch:
+    inputs:
+      usuario_id:
+        description: "id (uuid) del usuario en auth.users"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  reenviar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      SUPABASE_URL: https://imncbmizxkorotpeisic.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      USUARIO_ID: ${{ github.event.inputs.usuario_id }}
+    steps:
+      - name: Reenviar
+        run: |
+          [[ "$USUARIO_ID" =~ ^[0-9a-f-]{36}$ ]] || { echo "::error::usuario_id no es un uuid"; exit 1; }
+          u=$(curl -sS "$SUPABASE_URL/auth/v1/admin/users/$USUARIO_ID" \
+            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY")
+          email=$(echo "$u" | jq -r '.email // empty')
+          confirmado=$(echo "$u" | jq -r '.email_confirmed_at // empty')
+          [ -n "$email" ] || { echo "::error::No existe ese usuario"; exit 1; }
+          echo "::add-mask::$email"
+          [ -z "$confirmado" ] || { echo "Ya confirmó su email: no se reenvía nada."; exit 0; }
+          cuerpo=$(jq -n --arg e "$email" '{email: $e, create_user: false, options: {email_redirect_to: "https://costaviva.org/login"}}')
+          r=$(curl -sS -o /tmp/r.json -w '%{http_code}' -X POST "$SUPABASE_URL/auth/v1/otp?redirect_to=https://costaviva.org/login" \
+            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
+            -H "Content-Type: application/json" -d "$cuerpo")
+          if [ "$r" != "200" ]; then echo "::error::Supabase respondió $r: $(jq -r '.msg // .error_description // .message // "sin detalle"' /tmp/r.json)"; exit 1; fi
+          echo "Enlace de acceso reenviado."
