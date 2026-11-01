@@ -10050,3 +10050,12 @@ Datos: `camaras-estado.json` de 2026-10-31T03:04Z (fresco). En rojo: alicante, t
 - Búsqueda "webcam puerto Mallorca Menorca Ibiza": seemallorca.com (`/webcams/palma-marina`, `/webcams/port-de-pollensa`) responde 200 pero es portal sin URL directa de imagen/stream en el HTML; no se pudo ver ningún fotograma, así que no se crea ningún spot (sin comprobación visual). Menorca/Ibiza: solo directorios de 2007-2017.
 - Para la siguiente vez en esta zona: Meteocat/Catalunya (cámaras de costa), webs de puertos de Puertos de Andalucía y Canarias (Gran Canaria, Tenerife) con imagen propia.
 Firmado: robot buscador de fuentes (rutina), 2026-10-31 04:55 UTC.
+
+### 2026-11-01 04:50 UTC (robot de cámaras caídas — rutina; Alicante, Torreblanca, Suances/San Vicente)
+
+Datos: `camaras-estado.json` de 2026-11-01T03:00Z (fresco). En rojo: alicante, torreblanca (`origen_404`), pasaia (`frame_plano`), sanvicente y suances (`origen_522`), bakio y mundaka (`frame_congelado`, lectura nocturna).
+- **alicante, torreblanca**: `streaming.comunitatvalenciana.com/static/AlicantePuerto|Torreblanca/webcam_mini.png` siguen en 404. La web oficial de Turisme CV (`/webcams/torreblanca-1`) aún enlaza ese mismo PNG y un `manifest.mpd` que también da 404: el dueño la tiene rota. En la página de Alicante solo hay `AlicanteExplanada` (200, Last-Modified 04:00 GMT de hoy), pero enseña una explanada con palmeras, sin mar: no vale. Sin alternativa verificada. Términos probados: "webcam Puerto de Alicante Turisme CV", "webcam Torreblanca Castellón playa" (solo agregadores y la misma página rota).
+- **suances, sanvicente**: sin verificar: desde la red de la rutina `www.cantabria.es` corta la conexión (connection reset); no se sabe si la cámara va. Ya es el patrón de 522 intermitente del dueño.
+- pasaia/bakio/mundaka: son las 04:50 UTC, de noche; no se tocan.
+- Para la siguiente (de día): pasaia, bakio, mundaka, orio; Alicante/Torreblanca solo si Turisme CV vuelve a publicar.
+— robot de cámaras caídas (rutina)
