@@ -13,25 +13,30 @@
 // salga una versión nueva del DTM (EMODnet publica cada ~2 años) o se añadan
 // spots (los dos servicios son públicos y sin clave).
 import { writeFileSync } from "node:fs";
-// Solo España/Portugal (SPOTS_ES): la fuente de este script es europea; Nueva Zelanda (activa desde 2026-10-11) no entra.
-import { SPOTS_ES as SPOTS } from "../../functions/prevision.js";
+// España/Portugal (SPOTS_ES) con EMODnet y GEBCO de respaldo. Nueva Zelanda
+// (2026-11-02, aprobado por Mikel): EMODnet no la cubre, va directa a GEBCO.
+// Con --nz solo recalcula los de NZ y conserva los demás del fichero.
+import { readFileSync } from "node:fs";
+import { SPOTS_ES } from "../../functions/prevision.js";
+import { SPOTS_NZ } from "../../functions/_lib/nz/spots-nz.js";
+const SPOTS = [...SPOTS_ES, ...SPOTS_NZ];
 import { rejillaEmodnet, rejillaGebco, estadisticasPunto, cajaAlrededor, RADIO_ZONA_M, RADIO_ALCANCE_M } from "./batimetria.mjs";
 
 const SALIDA = new URL("../../assets/datos/profundidad-spots.json", import.meta.url);
 // ~11 km a cada lado: hay spots a 4-5 km del agua y se miran 5 km más desde la orilla.
 const RADIO_CAJA_M = 11000;
 
-export async function profundidadPunto(lat, lon) {
+export async function profundidadPunto(lat, lon, { soloGebco = false } = {}) {
   const caja = cajaAlrededor(lat, lon, RADIO_CAJA_M);
-  let error = null;
-  try {
+  let error = soloGebco ? "fuera de EMODnet (NZ)" : null;
+  if (!soloGebco) try {
     const st = estadisticasPunto(await rejillaEmodnet(caja), lat, lon);
     if (st.zona_m !== null) return { ...st, fuente: "emodnet_dtm_2024" };
     error = "EMODnet sin mar a 1 km";
   } catch (e) { error = e.message; }
   try {
     const st = estadisticasPunto(await rejillaGebco(caja), lat, lon);
-    return { ...st, fuente: "gebco_2026", aviso: `respaldo GEBCO (${error})` };
+    return { ...st, fuente: "gebco_2026", ...(soloGebco ? {} : { aviso: `respaldo GEBCO (${error})` }) };
   } catch (e) {
     return { zona_m: null, fuente: null, aviso: `sin dato: ${error}; GEBCO: ${e.message}` };
   }
@@ -44,16 +49,18 @@ async function principal() {
     console.log(nombre, JSON.stringify(await profundidadPunto(Number(lat), Number(lon)), null, 1));
     return;
   }
-  const spots = {};
-  const cola = [...SPOTS];
+  const soloNZ = process.argv.includes("--nz");
+  const previos = soloNZ ? JSON.parse(readFileSync(SALIDA, "utf8")).spots : {};
+  const spots = { ...previos };
+  const cola = SPOTS.filter((s) => !soloNZ || s.slug.startsWith("nz-"));
   const trabajador = async () => {
     for (let s; (s = cola.shift());) {
-      spots[s.slug] = { lat: s.lat, lon: s.lon, ...(await profundidadPunto(s.lat, s.lon)) };
+      spots[s.slug] = { lat: s.lat, lon: s.lon, ...(await profundidadPunto(s.lat, s.lon, { soloGebco: s.slug.startsWith("nz-") })) };
       process.stderr.write(`${s.slug}: ${spots[s.slug].zona_m} m (${spots[s.slug].fuente})\n`);
     }
   };
   await Promise.all([trabajador(), trabajador(), trabajador()]);
-  const ordenado = Object.fromEntries(SPOTS.map((s) => [s.slug, spots[s.slug]]));
+  const ordenado = Object.fromEntries(SPOTS.filter((s) => spots[s.slug]).map((s) => [s.slug, spots[s.slug]]));
   const salida = {
     version: 1,
     generado: new Date().toISOString().slice(0, 10),
