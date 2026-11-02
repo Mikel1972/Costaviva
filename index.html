@@ -1642,6 +1642,13 @@
   window.dispatchEvent(new Event("batimetria-lista"));
 </script>
 <script type="module">
+  // Actividad pesquera comercial de Global Fishing Watch (2026-11-02): capa
+  // GRATIS en todas las modalidades (assets/js/capa-gfw.js, test/capa-gfw.test.js).
+  import * as GFW from "/assets/js/capa-gfw.js";
+  window.CapaGFW = GFW;
+  window.dispatchEvent(new Event("gfw-lista"));
+</script>
+<script type="module">
   // Flota pesquera faenando (AIS): zonas calientes del día, solo en la
   // modalidad Embarcación (assets/js/capa-flota.js, test/capa-flota.test.js).
   import * as Flota from "/assets/js/capa-flota.js";
@@ -2873,6 +2880,28 @@ function montarFlota(F) {
 }
 if (window.Flota) montarFlota(window.Flota);
 else window.addEventListener("flota-lista", () => montarFlota(window.Flota), { once: true });
+// Actividad pesquera comercial de Global Fishing Watch (2026-11-02): lee
+// gfw_esfuerzo (lectura pública, horas por celda de 0,1°). Capa GRATIS:
+// condición de GFW para no pedir licencia comercial. Nunca tras Premium.
+function montarGFW(G) {
+  G.montarCapa(map, {
+    consultar: async ({ region, periodo, arte }) => {
+      if (!window.supabaseCliente) return [];
+      const filas = [];
+      for (let i = 0; i < 10000; i += 1000) {
+        const { data, error } = await window.supabaseCliente.from("gfw_esfuerzo")
+          .select("celda_lat,celda_lon,horas,desde,hasta").eq("region", region).eq("periodo", periodo).eq("arte", arte)
+          .order("celda_lat").order("celda_lon").range(i, i + 999);
+        if (error) throw new Error(error.message);
+        filas.push(...(data || []));
+        if (!data || data.length < 1000) break;
+      }
+      return filas;
+    },
+  });
+}
+if (window.CapaGFW) montarGFW(window.CapaGFW);
+else window.addEventListener("gfw-lista", () => montarGFW(window.CapaGFW), { once: true });
 // Zonas sin pesca (2026-10-12): reservas marinas y zonas protegidas oficiales
 // de cada región, con trama roja; siempre a la vista desde zoom 4.
 function montarZonasSinPesca(Z) {
