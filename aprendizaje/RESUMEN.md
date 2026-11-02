@@ -1,10 +1,10 @@
-# Aprendizaje de Costaviva — semana 2026-W44
+# Aprendizaje de Costaviva — semana 2026-W45
 
-Generado el 2026-10-26 por el aprendizaje semanal (sin IA, `aprendizaje-semanal.yml`). Contrato de comun: `estandares/aprendizaje.md`. Detalle técnico en `datos-robots/aprendizaje/`; propuestas en `aprendizaje/propuestas.json`; señales en `aprendizaje/senales.json`.
+Generado el 2026-11-02 por el aprendizaje semanal (sin IA, `aprendizaje-semanal.yml`). Contrato de comun: `estandares/aprendizaje.md`. Detalle técnico en `datos-robots/aprendizaje/`; propuestas en `aprendizaje/propuestas.json`; señales en `aprendizaje/senales.json`.
 
 ## Estado del bucle
 
-- Aprendizaje semanal: corrió el 2026-10-26 (ok). Salidas usadas: 3.
+- Aprendizaje semanal: corrió el 2026-11-02 (ok). Salidas usadas: 3.
 - Banco de pruebas: 0 salidas recalculadas con el tiempo de su día y 3 con lo que guardó el diario. sin OPEN_METEO_API_KEY: no se recalcula con series (solo términos guardados).
 - Retadores en la sombra: 3. Reglas con peso ajustado por los datos: 0.
 - Propuestas abiertas: 0. Las decides en el Issue semanal de comun.
@@ -34,18 +34,8 @@ Barreras: solo el peso (confianza) de reglas expertas, como mucho ±20 % por sem
 
 ## Vigilancia de los datos
 
-- Presión real por spot (cada hora): último dato hace 4 h (se espera cada 2 h)
+- Presión real por spot (cada hora): último dato hace 5 h (se espera cada 2 h)
 - el modelo da -30 % frente a la boya Bilbao-Vizcaya (exterior) (8 lecturas)
-- el modelo da -24 % frente a la boya Bilbao II (costera) (13 lecturas)
-- el modelo da -21 % frente a la boya Pasaia II (costera) (19 lecturas)
-- el sesgo frente a Pasaia II (costera) ha cambiado: de 1.02 a 0.79
-- la calibración de bakio/principal empeora: error 63 % → 93 %
-- la calibración de hondarribia/bocana empeora: error 61 % → 100 %
-- la calibración de mutriku/principal empeora: error 50 % → 100 %
-- la calibración de nz-riverton/principal empeora: error 33 % → 100 %
-- la calibración de zarautz/dinamico empeora: error 75 % → 97 %
-- la calibración de zarautz/principal empeora: error 54 % → 95 %
-- el índice de las salidas de esta semana se ha desplazado frente al mes anterior (PSI 4,604)
 
 ## Retadores en la sombra
 
@@ -67,7 +57,7 @@ Quien mide el agua con su sonda la apunta en el diario. Se compara con lo que de
 
 ## Para etiquetar (lo que más enseña)
 
-- Cámara mutriku (principal), 2026-10-22 09:38 UTC: cámara y modelo discrepan mucho.
+Nada pendiente.
 
 Se etiquetan en `etiquetar-olas.html` (admin) o con la rutina de etiquetado.
 
