@@ -39,6 +39,15 @@ for (const v of vistas) {
   await p.screenshot({ path: `capturas-gfw/${v.nombre}.png` });
   await p.close();
 }
+// La comparativa de planes (suscripcion.html): la capa sale en el plan GRATIS.
+{
+  const p = await b.newPage({ viewport: { width: 1280, height: 1100 }, locale: "en-GB" });
+  await p.addInitScript(([k, s]) => { localStorage.setItem(k, s); localStorage.setItem("idioma", "en"); }, [CLAVE, JSON.stringify(SESION)]);
+  await p.goto("https://costaviva.org/suscripcion", { waitUntil: "load", timeout: 60000 });
+  await p.waitForTimeout(5000);
+  await p.screenshot({ path: "capturas-gfw/5-plan-gratis.png", fullPage: true });
+  await p.close();
+}
 writeFileSync("capturas-gfw/informe.json", JSON.stringify(informe, null, 1));
 console.log(JSON.stringify(informe, null, 1));
 await b.close();
