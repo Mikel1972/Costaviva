@@ -14,6 +14,7 @@ test("celdas: suma horas por celda de 0,1°, sin barcos ni banderas, solo > 0", 
     { lat: 43.51, lon: -2.49, hours: 3.2, flag: "ESP", vesselIDs: 2 },
     { lat: 43.55, lon: -2.42, hours: 1.8, flag: "FRA", vesselIDs: 1 },
     { lat: 43.65, lon: -2.42, hours: 0 },
+    { lat: 36.31, lon: -6.38, hours: 0.02 },
     { lat: "x", lon: 1, hours: 4 },
   ] }] };
   assert.deepEqual(celdasDeRespuesta(json), [{ celda_lat: 43.5, celda_lon: -2.5, horas: 5 }]);
