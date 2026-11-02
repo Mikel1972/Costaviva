@@ -53,10 +53,12 @@ export function celdasDeRespuesta(json) {
       }
     }
   }
+  // Con menos de 0,05 h la celda redondea a 0,0 y la tabla exige horas > 0
+  // (caso real del 2026-11-02): fuera.
   return [...suma].map(([k, h]) => {
     const [la, lo] = k.split(",").map(Number);
     return { celda_lat: la, celda_lon: lo, horas: +h.toFixed(1) };
-  }).sort((a, b) => a.celda_lat - b.celda_lat || a.celda_lon - b.celda_lon);
+  }).filter((c) => c.horas > 0).sort((a, b) => a.celda_lat - b.celda_lat || a.celda_lon - b.celda_lon);
 }
 
 // La respuesta viene paginada (limit/offset/nextOffset): se piden todas las
