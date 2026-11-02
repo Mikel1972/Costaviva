@@ -34,7 +34,7 @@ jobs:
           echo "$sesion" | jq -e '.access_token' >/dev/null || { echo "::error::No se pudo verificar"; exit 1; }
           echo "::add-mask::$(echo "$sesion" | jq -r '.access_token')"
           echo "::add-mask::$(echo "$sesion" | jq -r '.refresh_token')"
-          { echo "SESION_JSON<<FIN"; echo "$sesion" | jq -c '. + {expires_at: (now|floor) + .expires_in}'; echo "FIN"; } >> "$GITHUB_ENV"
+          { echo "SESION_JSON<<FIN"; echo "$sesion" | jq -c '. + {expires_at: ((now|floor) + .expires_in)}'; echo "FIN"; } >> "$GITHUB_ENV"
       - run: npm i --no-save --no-package-lock playwright@1.56.1 && npx playwright install --with-deps chromium
       - run: node scripts/capturas/gfw.mjs
       - uses: actions/upload-artifact@v4
