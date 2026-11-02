@@ -1,0 +1,44 @@
+name: Capturas de la capa de Global Fishing Watch
+
+# A mano (2026-11-02): capturas de la capa gratis de GFW en producción con la
+# cuenta de prueba A, para enseñárselas a GFW. Ver scripts/capturas/gfw.mjs.
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  capturas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SUPABASE_URL: "https://imncbmizxkorotpeisic.supabase.co"
+      SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltbmNibWl6eGtvcm90cGVpc2ljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MzczMTQsImV4cCI6MjEwNDUxMzMxNH0.QYvtoHQyFRo1SploGPCUyWZqeHNwy6Qdd6IsAbmvHnc"
+      TEST_USER_A_EMAIL: ${{ secrets.TEST_USER_A_EMAIL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Sesión de la cuenta de prueba (sin contraseña, vía API admin)
+        run: |
+          enlace=$(curl -sS -X POST "$SUPABASE_URL/auth/v1/admin/generate_link" \
+            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
+            -H "Content-Type: application/json" -d "{\"type\":\"magiclink\",\"email\":\"$TEST_USER_A_EMAIL\"}")
+          hashed=$(echo "$enlace" | jq -r '.hashed_token // .properties.hashed_token // empty')
+          [ -n "$hashed" ] || { echo "::error::No se pudo generar el enlace"; exit 1; }
+          sesion=$(curl -sS -X POST "$SUPABASE_URL/auth/v1/verify" -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Content-Type: application/json" -d "{\"type\":\"email\",\"token_hash\":\"$hashed\"}")
+          echo "$sesion" | jq -e '.access_token' >/dev/null || { echo "::error::No se pudo verificar"; exit 1; }
+          echo "::add-mask::$(echo "$sesion" | jq -r '.access_token')"
+          echo "::add-mask::$(echo "$sesion" | jq -r '.refresh_token')"
+          { echo "SESION_JSON<<FIN"; echo "$sesion" | jq -c '. + {expires_at: (now|floor) + .expires_in}'; echo "FIN"; } >> "$GITHUB_ENV"
+      - run: npm i --no-save --no-package-lock playwright@1.56.1 && npx playwright install --with-deps chromium
+      - run: node scripts/capturas/gfw.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: capturas-gfw
+          path: capturas-gfw/
