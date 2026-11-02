@@ -7049,6 +7049,18 @@ Dato del sondeo: `generado_en` 2026-10-25 23:26 UTC (~8 h, fresco).
 - Repetir con datos reales de /prevision: marea/coeficiente por zona, vecinos vs boyas, diario y cuenta B (hoy nada de esto se pudo juzgar).
 - Propuesta para `scripts/experiencia/sondear.mjs` (no aplicada): (a) si `spots_con_error` ≥ 50 %, marcarlo en `avisos` como grave; (b) sacar lat/lon de la lista fija `SPOTS` y no de la respuesta; (c) probar `/identificar-captura` con POST sin token.
 
+### 2026-11-02 07:45 UTC — robot de experiencia de usuario (rutina)
+
+**Qué miré:** `datos-robots/experiencia/ultima.json` (generado 2026-11-02 00:57 UTC, ~7 h: fresco). /prevision (105 spots, 0 con error), luna en 3 zonas, casos límite y la salida de prueba del diario (Mundaka). Código: `coeficientePorSpot()` y `calcularMarea()` en `functions/prevision.js`, `registrar-presion.js`.
+
+**Todo bien:** 0 spots con marea, presión, oleaje, viento, temperatura del agua, nubosidad, lluvia, corriente o periodo vacíos. Presión 1016-1026 hPa coherente entre vecinos; agua 14,4-17 °C en el Cantábrico/Galicia y 23-24,6 °C en Canarias/Palma (razonable en noviembre); rango de marea ~2 m en el Cantábrico y 0,1-0,3 m en Valencia/Alicante/Málaga/Palma (correcto). Luna: 43 % menguante igual en las tres zonas, horas distintas y coherentes. Casos límite: /luna sin lat/lon → 400, cp inválido → 400, webcam inexistente → 404, parámetro no permitido en /meteo → 400, todos con mensaje claro. Diario: enviado = guardado (sin diferencias), la cuenta B ni la ve ni la puede borrar (false/false), y la salida se borró (204, ya no existe).
+
+**Hallazgos:**
+1. (Menor, de diseño ya conocido) **46 spots tienen coeficiente de marea exactamente 20**: todo el Cantábrico, Galicia, Cádiz/Huelva y Almería/Cartagena/Águilas, mientras Portugal da 27-31 y el Mediterráneo oriental 47-67. 20 es el suelo de la escala (`Math.round(20 + 100*factor)` en `coeficientePorSpot`, `functions/prevision.js`): hoy está en el mínimo de la ventana de 8 días atrás/16 adelante de cada spot (neap en torno al 2-3 nov, cuarto menguante del 1 nov). Un usuario que lo compare con otras webs verá ~40 donde nosotros ponemos 20, y 46 spots idénticos parecen un valor por defecto. Ya documentado en CLAUDE.md (coeficiente propio por spot con nota visible); solo señalo que con la ventana asimétrica el suelo se alcanza en cada neap. No es un fallo del cálculo.
+2. (Menor, del sondeo, no de producción) El caso «/identificar-captura sin sesión» espera 401/403/405 pero recibe 404 con la página HTML de «no encontrada». Causa: `sondear.mjs` hace GET y la función solo exporta `onRequestPost`, así que el GET cae en la lista blanca y da 404. No prueba que un POST sin token se rechace.
+
+**Pendiente para la próxima pasada:** proponer cambiar ese caso en `scripts/experiencia/sondear.mjs` a POST sin cabecera Authorization (esperado 401) — no aplicado. Además, el sondeo no pide una hora de /prevision distinta de la actual ni compara contra boyas por spot; no me dio tiempo a cruzar oleaje con boyas.
+
 ## Robot de patrones de uso
 
 ### 2026-09-17
