@@ -10066,3 +10066,13 @@ Datos: `camaras-estado.json` de 2026-11-01T03:00Z (fresco). En rojo: alicante, t
 - Otras apps (Fishbrain 11.60, FishMeteo, Fishing Points, Fish & Tides): las fichas de tienda solo hablan de "pronóstico con IA", mapas náuticos, radar y caudal de ríos (Fishing Points usa 35.000 estaciones de EE. UU.). Nada nuevo frente a lo ya propuesto el 14/15/23 de septiembre; nada verificable de Tides4fishing, Windy ni de una función nueva de Puertos del Estado (solo un convenio de datos con Meteocat en el BOE, sin relación con apps).
 - Para la siguiente vez de este tipo: leer el RD 214/2026 en el BOE y ver qué exige a las apps de terceros.
 Firmado: robot buscador de fuentes (rutina), 2026-11-01 04:58 UTC.
+
+### 2026-11-02 04:45 UTC (robot de cámaras caídas — rutina; Alicante, Torreblanca, Pasaia, Suances/San Vicente)
+
+Datos: `camaras-estado.json` de 2026-11-02T03:04Z (fresco). En rojo: alicante, torreblanca (`origen_404`), pasaia (`frame_plano`), sanvicente y suances (`origen_522`), cangas, bakio y mundaka (`frame_congelado`, lectura nocturna).
+- **alicante, torreblanca**: `streaming.comunitatvalenciana.com/static/AlicantePuerto|Torreblanca/webcam_mini.png` siguen en 404 (comprobado hoy). Sin alternativa nueva respecto a ayer (Turisme CV no ha vuelto a publicar).
+- **pasaia**: `detectia.net/img/webcam-pasaia-azti.webp` responde 200 pero con Last-Modified 2026-11-01 18:04 GMT (9,5 kB): imagen no actualizada desde el anochecer. Es de noche; no se puede juzgar sin verla de día.
+- **suances, sanvicente**: sin verificar: `www.cantabria.es` solo devuelve el túnel del proxy sin cabeceras útiles desde la red de la rutina; no se sabe si la cámara va.
+- cangas/bakio/mundaka: de noche, no se tocan.
+- Para la siguiente (de día): pasaia, bakio, mundaka, cangas, orio; Alicante/Torreblanca solo si Turisme CV vuelve a publicar.
+— robot de cámaras caídas (rutina)
