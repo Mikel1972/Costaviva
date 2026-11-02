@@ -66,3 +66,13 @@ Para qué: profundidad del mar delante de cada spot y la alcanzable a 5 km
 
 Las profundidades y las isóbatas son orientativas (rejilla de ~115 m,
 simplificadas): no sirven para navegar. El texto de la capa lo dice.
+
+## Nueva Zelanda (2026-11-02, aprobado por Mikel)
+
+EMODnet no cubre NZ: la profundidad de los 68 spots de `SPOTS_NZ` sale de
+**GEBCO_2026** (dominio público, atribución pedida: «GEBCO Compilation Group
+(2026) GEBCO_2026 Grid», DOI 10.5285/4f68d5c7-45eb-f999-e063-7086abc036fa),
+con el mismo cálculo desde la orilla (`fuente: "gebco_2026"` en
+`assets/datos/profundidad-spots.json`). Celdas de 15" (~460 m): más gruesas
+que EMODnet, orientativo. Regenerar solo NZ: `node
+scripts/batimetria/profundidad-spots.mjs --nz`.
