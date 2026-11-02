@@ -830,7 +830,7 @@
   "susc.dto.solo_mensual": ", no plano mensal",
   "prec.gestionar_explica": "A partir daí pode mudar o cartão, descarregar as faturas ou cancelar. Se cancelar, o Premium continua ativo até ao fim do período já pago.",
   "prec.gratis": "Grátis",
-  "prec.gratis_incluye": "Mapa, marés e condições básicas (onda, vento, temperatura da água, nuvens, chuva e pressão) em todas as regiões. Sem anúncios.",
+  "prec.gratis_incluye": "Mapa, marés e condições básicas (onda, vento, temperatura da água, nuvens, chuva e pressão) em todas as regiões, e a atividade de pesca comercial da Global Fishing Watch. Sem anúncios.",
   "prec.premium": "Premium",
   "prec.premium_incluye": "Além do que é grátis: índice de pesca e janela de atividade por horas, webcams, camadas do mar (clorofila, temperatura, frentes e corrente), diário de pesca, grupos, alarme SOS e identificação de capturas por foto.",
   "prec.por_ano": "/ ano",

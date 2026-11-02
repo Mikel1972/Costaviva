@@ -830,7 +830,7 @@
   "prec.cobro_no_activo": "Todavía no hemos abierto los pagos. Mientras tanto, disfruta de los 14 días de Premium gratis.",
   "prec.gestionar_explica": "Desde ahí puedes cambiar la tarjeta, descargar tus facturas o cancelar. Si cancelas, Premium sigue activo hasta el final del periodo ya pagado.",
   "prec.gratis": "Gratis",
-  "prec.gratis_incluye": "Mapa, mareas y condiciones básicas (ola, viento, temperatura del agua, nubes, lluvia y presión) en todas las regiones. Sin anuncios.",
+  "prec.gratis_incluye": "Mapa, mareas y condiciones básicas (ola, viento, temperatura del agua, nubes, lluvia y presión) en todas las regiones, y la actividad pesquera comercial de Global Fishing Watch. Sin anuncios.",
   "prec.premium": "Premium",
   "prec.premium_incluye": "Además de lo gratuito: índice de pesca y ventana de actividad por horas, webcams, capas del mar (clorofila, temperatura, frentes y corrientes), diario de pesca, grupos, alarma SOS e identificación de capturas por foto.",
   "prec.por_ano": "/ año",
