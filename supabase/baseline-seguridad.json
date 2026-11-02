@@ -302,6 +302,20 @@
       ]
     },
     {
+      "tablename": "gfw_esfuerzo",
+      "rls_enabled": true,
+      "policies": [
+        {
+          "name": "lectura pública del esfuerzo pesquero de GFW",
+          "cmd": "r",
+          "roles": [
+            "anon",
+            "authenticated"
+          ]
+        }
+      ]
+    },
+    {
       "tablename": "grupos",
       "rls_enabled": true,
       "policies": [

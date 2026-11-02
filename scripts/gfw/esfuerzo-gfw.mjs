@@ -6,8 +6,9 @@
 // Pide a la API 4Wings el esfuerzo pesquero APARENTE (horas, inferido del
 // AIS) de los 7 días que acaban hace 4 (los datos llegan con 96 h de
 // retraso), en celdas de 0,1° (resolución LOW), para las cajas de
-// REGIONES. Suma las horas por celda: nunca guarda barcos, banderas ni
-// rutas. Con --seco solo enseña totales y la forma de la respuesta.
+// REGIONES. La API devuelve filas por barco (nombre, MMSI...): aquí solo se
+// suman las horas por celda y lo demás se tira; nunca se guardan barcos,
+// banderas ni rutas. Con --seco solo enseña totales y la forma de la respuesta.
 //
 // Uso: GFW_API_TOKEN=... [SUPABASE_SERVICE_ROLE_KEY=...] node scripts/gfw/esfuerzo-gfw.mjs [--seco]
 // Lo puro se prueba en test/esfuerzo-gfw.test.js.
@@ -58,8 +59,22 @@ export function celdasDeRespuesta(json) {
   }).sort((a, b) => a.celda_lat - b.celda_lat || a.celda_lon - b.celda_lon);
 }
 
+// La respuesta viene paginada (limit/offset/nextOffset): se piden todas las
+// páginas y se juntan sus entries.
 async function pedir(region, caja, v, token) {
-  const q = new URLSearchParams({ "spatial-resolution": "LOW", "temporal-resolution": "ENTIRE", "datasets[0]": DATASET, "date-range": `${v.desde},${v.hasta}`, format: "JSON" });
+  const entries = [];
+  let offset = 0;
+  for (let pagina = 0; pagina < 200; pagina++) {
+    const json = await pedirPagina(region, caja, v, token, offset);
+    entries.push(...(json.entries || []));
+    if (json.nextOffset == null || json.nextOffset === offset) return { ...json, entries };
+    offset = json.nextOffset;
+  }
+  throw new Error(`GFW (${region}): más de 200 páginas`);
+}
+
+async function pedirPagina(region, caja, v, token, offset) {
+  const q = new URLSearchParams({ "spatial-resolution": "LOW", "temporal-resolution": "ENTIRE", "datasets[0]": DATASET, "date-range": `${v.desde},${v.hasta}`, format: "JSON", ...(offset ? { offset: String(offset) } : {}) });
   const r = await fetch(`${API}?${q}`, {
     method: "POST",
     headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
@@ -81,7 +96,7 @@ async function main() {
     const json = await pedir(region, caja, v, token);
     if (seco) {
       const primera = Object.values(json?.entries?.[0] || {})[0]?.[0];
-      console.log(`${region}: claves ${JSON.stringify(Object.keys(json || {}))}; ejemplo de fila: ${JSON.stringify(Object.keys(primera || {}))}`);
+      console.log(`${region}: ${json.entries.length} bloques, total ${json.total}; campos de fila: ${JSON.stringify(Object.keys(primera || {}))}`);
     }
     const celdas = celdasDeRespuesta(json).map((c) => ({ ...c, region }));
     console.log(`${region} (${v.desde} a ${v.hasta}): ${celdas.length} celdas con actividad, ${Math.round(celdas.reduce((s, c) => s + c.horas, 0))} horas de pesca aparente.`);
