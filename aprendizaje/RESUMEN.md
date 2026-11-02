@@ -34,8 +34,10 @@ Barreras: solo el peso (confianza) de reglas expertas, como mucho ±20 % por sem
 
 ## Vigilancia de los datos
 
-- Presión real por spot (cada hora): último dato hace 5 h (se espera cada 2 h)
+- Salud de las cámaras: último dato hace 10 h (se espera cada 6 h)
+- Presión real por spot (cada hora): último dato hace 7 h (se espera cada 2 h)
 - el modelo da -30 % frente a la boya Bilbao-Vizcaya (exterior) (8 lecturas)
+- el modelo da -33 % frente a la boya Bilbao II (costera) (16 lecturas)
 
 ## Retadores en la sombra
 
