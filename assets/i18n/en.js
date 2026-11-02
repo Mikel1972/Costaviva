@@ -830,7 +830,7 @@
   "prec.cobro_no_activo": "Payments are not open yet. In the meantime, enjoy your 14 days of Premium for free.",
   "prec.gestionar_explica": "From there you can change your card, download your invoices or cancel. If you cancel, Premium stays active until the end of the period you have paid for.",
   "prec.gratis": "Free",
-  "prec.gratis_incluye": "Map, tides and basic conditions (swell, wind, water temperature, cloud, rain and pressure) in every region. No ads.",
+  "prec.gratis_incluye": "Map, tides and basic conditions (swell, wind, water temperature, cloud, rain and pressure) in every region, plus commercial fishing activity from Global Fishing Watch. No ads.",
   "prec.premium": "Premium",
   "prec.premium_incluye": "Everything in Free, plus: fishing index and hourly activity window, webcams, sea layers (chlorophyll, temperature, fronts and currents), fishing log, groups, SOS alarm and catch identification by photo.",
   "prec.por_ano": "/ year",
