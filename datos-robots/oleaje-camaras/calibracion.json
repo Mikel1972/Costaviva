@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-02T13:37:50.126Z",
- "lineasHistorial": 7310,
+ "fecha": "2026-11-02T14:07:44.163Z",
+ "lineasHistorial": 7319,
  "etiquetas": 295,
  "etiquetasClaude": 200,
  "calibracion": {
@@ -224,9 +224,9 @@
    "pocosDatos": true
   },
   "castrourdiales/principal": {
-   "a": 6.434,
+   "a": 6.4361,
    "p": 0.5,
-   "n": 90,
+   "n": 91,
    "nEtiquetas": 5,
    "nEtiquetasClaude": 5,
    "franjasClaude": [
@@ -527,8 +527,8 @@
    "sustituye": true,
    "motivo": "5 etiquetas",
    "ruido": {
-    "ruido": 0.425,
-    "pares": 44
+    "ruido": 0.414,
+    "pares": 45
    }
   },
   "nz-napier": {
