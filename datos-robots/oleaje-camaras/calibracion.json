@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-02T16:07:57.983Z",
- "lineasHistorial": 7350,
+ "fecha": "2026-11-02T18:07:24.664Z",
+ "lineasHistorial": 7352,
  "etiquetas": 295,
  "etiquetasClaude": 200,
  "calibracion": {
@@ -224,9 +224,9 @@
    "pocosDatos": true
   },
   "castrourdiales/principal": {
-   "a": 6.438,
+   "a": 6.4364,
    "p": 0.5,
-   "n": 95,
+   "n": 96,
    "nEtiquetas": 5,
    "nEtiquetasClaude": 5,
    "franjasClaude": [
