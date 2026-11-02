@@ -134,6 +134,11 @@
       "tipo": "reel-peces",
       "campana": "20261102-reel-peces-burriana",
       "en": "2026-11-01T18:05:43.212Z"
+    },
+    "2026-11-03-post-nz": {
+      "tipo": "especies-nz",
+      "campana": "20261103-especies-nz-kingfish",
+      "en": "2026-11-02T05:40:39.723Z"
     }
   },
   "ultimaFuncion": "alarma"
