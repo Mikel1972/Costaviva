@@ -4,11 +4,12 @@
     "auckland-hauraki-gulf",
     "coromandel",
     "bay-of-plenty",
-    "gisborne-hawkes-bay"
+    "gisborne-hawkes-bay",
+    "waikato-west-coast"
   ],
   "ciclo": 1,
-  "ultimaZona": "gisborne-hawkes-bay",
-  "ultimaRegion": "nz_central",
-  "ultimoSpot": "nz-napier",
-  "fecha": "2026-10-30T05:20:56.794Z"
+  "ultimaZona": "waikato-west-coast",
+  "ultimaRegion": "nz_auckland_kermadec",
+  "ultimoSpot": "nz-kawhia",
+  "fecha": "2026-11-03T05:31:57.199Z"
 }

@@ -144,6 +144,11 @@
       "tipo": "reel-peces",
       "campana": "20261103-reel-peces-suances",
       "en": "2026-11-02T17:36:10.228Z"
+    },
+    "2026-11-04-post-nz": {
+      "tipo": "condiciones-nz",
+      "campana": "20261104-condiciones-nz-kawhia",
+      "en": "2026-11-03T05:31:58.534Z"
     }
   },
   "ultimaFuncion": "alarma"
