@@ -46,3 +46,12 @@ Una entrada por pasada (martes y viernes), añadida al final. Anota números de 
 - SEO invisible (PARTE A) y diseño (PARTE B): ninguno esta pasada; sin datos que lo justifiquen.
 - KPIs (PARTE D): es viernes, solo martes. DeepL: día 23, no aplica.
 - Esperado próxima pasada: PR fusionada; 22 indexadas o más; "Descubierta" por debajo de 344; posición de los 4 términos igual o mejor a 2 semanas.
+
+## 2026-11-03 05:3x UTC (martes)
+- Aviso: SEO_ESTADO.md es del 2026-10-30 10:28 UTC (no de hoy).
+- Números: indexadas 32 de 494 inspeccionadas (6%; antes 22 de 500: +10). Sitemap 558 URLs. 388 "Descubierta: sin indexar", 73 "Google no reconoce esta URL", 461 sin rastrear nunca (el freno sigue siendo autoridad/rastreo). Clics/impresiones de 28 días: no figuran en este fichero.
+- País priorizado: España (pais_foco del resumen de KPIs; es el que más visitas tiene).
+- PARTE A/B/C: ningún cambio. Los dos cambios anteriores (12-oct "Mareas en X hoy" y 23-oct "Pesca de X") siguen en veredicto "pendiente"; las páginas de región y de especie ya llevan en título los términos de los huecos ("mareas canarias", "cebo lubina"), así que retocar más sería adivinar. Huecos de técnicas (spinning, surfcasting, jigging, soft bait; ES/PT/NZ): sin datos reales con fuente en la app, no se crean.
+- KPIs (PARTE D, sin cifras): país en foco España; paso más en rojo: activación a 7 días, con muy pocas cuentas para decidir nada. Sin cambios ni evaluaciones pendientes; sin propuestas para Mikel.
+- DeepL (primera pasada del mes): lanzado i18n-contraste.yml con idioma=pt (run 41583206674). Su informe queda por revisar en la próxima pasada (aún no había terminado); idioma=en en la siguiente.
+- Esperado próxima pasada: 32 indexadas o más; "Descubierta" por debajo de 388; primeros datos a 2 semanas del cambio del 23-oct.
