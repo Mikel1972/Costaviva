@@ -149,6 +149,11 @@
       "tipo": "condiciones-nz",
       "campana": "20261104-condiciones-nz-kawhia",
       "en": "2026-11-03T05:31:58.534Z"
+    },
+    "2026-11-04-reel": {
+      "tipo": "reel-peces",
+      "campana": "20261104-reel-peces-santander",
+      "en": "2026-11-03T17:07:45.839Z"
     }
   },
   "ultimaFuncion": "alarma"
