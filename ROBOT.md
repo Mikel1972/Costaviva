@@ -10098,3 +10098,10 @@ Datos: `camaras-estado.json` de 2026-11-03T03:03Z (fresco). En rojo: alicante, t
 - bakio/mundaka: de noche, no se tocan.
 - Para la siguiente (de día): pasaia, bakio, mundaka; Alicante/Torreblanca solo si Turisme CV vuelve a publicar.
 — robot de cámaras caídas (rutina)
+
+### 2026-11-03 04:55 UTC — robot buscador de fuentes (rutina): martes, caudal de ríos y estaciones de monte
+- Sin cambios en código. Una pista nueva, sin integrar (haría falta contacto y tocar `functions/`: solo propuesta).
+- **Cantábrico (Asturias, Cantabria, Bizkaia/Gipuzkoa parte)**: el visor del SAIH de la Confederación Hidrográfica del Cantábrico está en `visor.saichcantabrico.es`. Copernicus EFAS cita que integra 118 estaciones de esa confederación "vía su API", pero no hay documentación pública de la API ni licencia verificada. **Decisión para Mikel**: pedir por email a la confederación acceso/condiciones de reutilización (con `datos@costaviva.org`).
+- Catálogo nacional SAIH caudal en datos.gob.es (`e0dat0002-estaciones-de-aforo-en-rio-saih-caudal`) y PDF `sig.mapama.gob.es/Docs/PDFServicios/SAIHCaudales.pdf`: servicio de MITECO que podría dar caudales de todas las confederaciones; no verificado si es en tiempo real ni su formato.
+- Red de esta sesión: `chcantabrico.es`, `chminosil.es` y `sihga.cma.junta-andalucia.es` sin respuesta; `snirh.apambiente.pt` 403. No se dan por caídos. Siguen pendientes las claves de Euskalmet y MeteoGalicia.
+Firmado: robot buscador de fuentes (rutina), 2026-11-03 04:55 UTC.
