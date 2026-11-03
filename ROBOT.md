@@ -10088,3 +10088,13 @@ Datos: `camaras-estado.json` de 2026-11-02T03:04Z (fresco). En rojo: alicante, t
 - cangas/bakio/mundaka: de noche, no se tocan.
 - Para la siguiente (de día): pasaia, bakio, mundaka, cangas, orio; Alicante/Torreblanca solo si Turisme CV vuelve a publicar.
 — robot de cámaras caídas (rutina)
+
+### 2026-11-03 04:45 UTC (robot de cámaras caídas — rutina; Alicante, Torreblanca, Pasaia, Suances/San Vicente)
+
+Datos: `camaras-estado.json` de 2026-11-03T03:03Z (fresco). En rojo: alicante, torreblanca (`origen_404`), pasaia (`frame_plano`), sanvicente (`origen_522`), bakio y mundaka (`frame_congelado`, lectura nocturna).
+- **alicante, torreblanca**: `streaming.comunitatvalenciana.com/static/AlicantePuerto|Torreblanca/webcam_mini.png` siguen en 404 (comprobado hoy). Sin alternativa nueva; Turisme CV no ha vuelto a publicar.
+- **pasaia**: `detectia.net/img/webcam-pasaia-azti.webp` 200 pero Last-Modified 2026-11-02 18:04 GMT (sin actualizar desde el anochecer). De noche no se puede juzgar sin verla.
+- **sanvicente (suances)**: sin verificar: `www.cantabria.es` solo devuelve el túnel del proxy desde la red de la rutina, sin cabeceras útiles; no se sabe si la cámara va.
+- bakio/mundaka: de noche, no se tocan.
+- Para la siguiente (de día): pasaia, bakio, mundaka; Alicante/Torreblanca solo si Turisme CV vuelve a publicar.
+— robot de cámaras caídas (rutina)
