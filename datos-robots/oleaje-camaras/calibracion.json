@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-03T13:07:44.518Z",
- "lineasHistorial": 7555,
+ "fecha": "2026-11-03T13:37:43.912Z",
+ "lineasHistorial": 7565,
  "etiquetas": 297,
  "etiquetasClaude": 202,
  "calibracion": {
@@ -52,9 +52,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 5.5812,
+   "a": 5.574,
    "p": 0.5,
-   "n": 535,
+   "n": 536,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 26,
    "franjasClaude": [
@@ -243,9 +243,9 @@
    "pocosDatos": false
   },
   "berria/dinamico": {
-   "a": 5.437,
+   "a": 5.4292,
    "p": 0.5,
-   "n": 251,
+   "n": 252,
    "nEtiquetas": 8,
    "nEtiquetasClaude": 14,
    "franjasClaude": [
@@ -260,7 +260,7 @@
    "dias": 27,
    "hMin": 0.68,
    "hMax": 4.73,
-   "errorRel": 0.771,
+   "errorRel": 0.77,
    "pocosDatos": false
   },
   "mutriku/principal": {
@@ -277,16 +277,16 @@
    "pocosDatos": true
   },
   "orio/principal": {
-   "a": 4.8066,
+   "a": 4.769,
    "p": 0.5,
-   "n": 75,
+   "n": 76,
    "nEtiquetas": 1,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
-   "dias": 20,
+   "dias": 21,
    "hMin": 0.75,
    "hMax": 4.04,
-   "errorRel": 0.71,
+   "errorRel": 0.712,
    "pocosDatos": false
   },
   "getaria/malkorbe": {
@@ -448,16 +448,16 @@
    "sustituye": true,
    "motivo": "≥ 3 días con alturas variadas",
    "ruido": {
-    "ruido": 0.653,
-    "pares": 45
+    "ruido": 0.562,
+    "pares": 46
    }
   },
   "zarautz": {
    "sustituye": true,
    "motivo": "18 etiquetas",
    "ruido": {
-    "ruido": 0.546,
-    "pares": 457
+    "ruido": 0.544,
+    "pares": 458
    }
   },
   "getaria": {
