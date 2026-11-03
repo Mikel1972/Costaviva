@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-03T08:08:31.117Z",
- "lineasHistorial": 7444,
+ "fecha": "2026-11-03T08:32:52.854Z",
+ "lineasHistorial": 7453,
  "etiquetas": 297,
  "etiquetasClaude": 202,
  "calibracion": {
@@ -52,9 +52,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 5.6505,
+   "a": 5.6449,
    "p": 0.5,
-   "n": 523,
+   "n": 524,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 26,
    "franjasClaude": [
@@ -118,9 +118,9 @@
    "pocosDatos": false
   },
   "deba/rompiente": {
-   "a": 6.284,
+   "a": 6.2575,
    "p": 0.5,
-   "n": 184,
+   "n": 185,
    "nEtiquetas": 2,
    "nEtiquetasClaude": 11,
    "franjasClaude": [
@@ -134,10 +134,10 @@
     "2026-10-30T16",
     "2026-11-01T16"
    ],
-   "dias": 25,
+   "dias": 26,
    "hMin": 0.3,
    "hMax": 6.97,
-   "errorRel": 0.999,
+   "errorRel": 1,
    "pocosDatos": false
   },
   "mundaka/principal": {
@@ -224,9 +224,9 @@
    "pocosDatos": true
   },
   "castrourdiales/principal": {
-   "a": 6.4364,
+   "a": 6.446,
    "p": 0.5,
-   "n": 96,
+   "n": 97,
    "nEtiquetas": 5,
    "nEtiquetasClaude": 5,
    "franjasClaude": [
@@ -236,16 +236,16 @@
     "2026-10-31T16",
     "2026-11-01T16"
    ],
-   "dias": 21,
+   "dias": 22,
    "hMin": 0.3,
    "hMax": 4.51,
    "errorRel": 1,
    "pocosDatos": false
   },
   "berria/dinamico": {
-   "a": 5.4846,
+   "a": 5.4728,
    "p": 0.5,
-   "n": 244,
+   "n": 245,
    "nEtiquetas": 8,
    "nEtiquetasClaude": 14,
    "franjasClaude": [
@@ -257,7 +257,7 @@
     "2026-10-24T16",
     "2026-10-27T16"
    ],
-   "dias": 26,
+   "dias": 27,
    "hMin": 0.68,
    "hMax": 4.73,
    "errorRel": 0.773,
@@ -456,8 +456,8 @@
    "sustituye": true,
    "motivo": "18 etiquetas",
    "ruido": {
-    "ruido": 0.546,
-    "pares": 445
+    "ruido": 0.547,
+    "pares": 446
    }
   },
   "getaria": {
@@ -480,8 +480,8 @@
    "sustituye": true,
    "motivo": "≥ 3 días con alturas variadas",
    "ruido": {
-    "ruido": 0.882,
-    "pares": 92
+    "ruido": 0.912,
+    "pares": 93
    }
   },
   "mutriku": {
@@ -528,8 +528,8 @@
    "sustituye": true,
    "motivo": "5 etiquetas",
    "ruido": {
-    "ruido": 0.414,
-    "pares": 49
+    "ruido": 0.423,
+    "pares": 50
    }
   },
   "nz-napier": {
