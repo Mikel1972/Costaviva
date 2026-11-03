@@ -1,18 +1,22 @@
-<!-- SINTESIS fecha=2026-11-02 hasta_commit=3c1373bbb5cd428bed3ac884dc1d2eb9c62ef8ff -->
+<!-- SINTESIS fecha=2026-11-03 hasta_commit=31e79c573dc9e92bbf9ac6a5a63b7e87e1e633d0 -->
 
 ## 🛠 Trabajo interno (calibración y datos)
-El robot de cámaras caídas pasó el 1 y el 2 de noviembre (04:45–04:50 UTC, de noche). Siguen en rojo Alicante y Torreblanca (el PNG de Turisme CV da 404; el propio dueño lo tiene roto y no hay alternativa verificada), Suances y San Vicente (`origen_522` de cantabria.es, que no se pudo verificar desde la red de la rutina) y Pasaia (`frame_plano`: la imagen no se actualiza desde las 18:04 GMT del 1-nov). Bakio, Mundaka y Cangas salen congeladas por lectura nocturna; no se tocaron. Hoy no hay entrada de calibración nocturna en ROBOT.md.
+El robot de cámaras caídas pasó a las 04:45 UTC (de noche). Siguen en rojo Alicante y Torreblanca (el PNG de Turisme CV sigue dando 404; sin alternativa nueva), Pasaia (imagen sin actualizar desde el anochecer del 2 de noviembre; de noche no se puede juzgar), San Vicente/Suances (`origen_522`; no se pudo verificar desde la red de la rutina) y Bakio/Mundaka (congeladas, lectura nocturna; no se tocan). Próxima pasada, de día: Pasaia, Bakio y Mundaka.
+El robot buscador de fuentes hizo hoy la pasada de caudal de ríos y estaciones de monte (sin cambios en código).
 **Cámaras nuevas encontradas:** 0
-**Términos de búsqueda:** "webcam Puerto de Alicante Turisme CV" y "webcam Torreblanca Castellón playa" (1-nov): solo agregadores y la misma página rota; ninguno funcionó. En la explanada de Alicante hay otra cámara (`AlicanteExplanada`) pero no enseña mar, no vale. Sin tipo de dueño nuevo.
+**Términos de búsqueda:** hoy no se probaron términos de webcams; la pasada fue de caudal de ríos.
 
 ## 🧪 Experiencia de usuario y patrones de uso
-**Robot de experiencia de usuario:** no le tocaba pasar hoy (corre los lunes; sin entrada suya en este periodo).
-**Robot de patrones de uso:** no le tocaba pasar esta semana (sin entrada suya).
+**Robot de experiencia de usuario:** no le tocaba pasar hoy (corre los lunes; no hay entrada nueva suya).
+**Robot de patrones de uso:** no le tocaba pasar esta semana (corre los sábados).
 
 ## 🔎 Trabajo externo (investigación de contenido)
-El 1-nov (domingo, buenas prácticas de otras apps) el buscador propuso PescaREC: la app oficial del MAPA para declarar capturas de pesca recreativa, obligatoria desde el 20-03-2026 según el RD 214/2026. Idea: en el diario, un aviso o enlace "recuerda declararla en PescaREC" y quizá exportar la captura en formato copiable. No se ha leído el RD ni verificado a quién obliga exactamente; es decisión de producto, no se implementa. De otras apps (Fishbrain, FishMeteo, Fishing Points, Fish & Tides) no hay nada nuevo.
+Hoy solo hubo la pasada de caudal de ríos; sin novedades de buenas prácticas de otras apps ni de estudios institucionales.
 **Robot de especies:** no le tocaba pasar hoy (corre los jueves).
 
 ## 🆕 Nuevas fuentes encontradas, pendientes de validar
-### PescaREC (MAPA)
-App oficial de declaración de capturas de pesca recreativa, obligatoria desde marzo de 2026 según prensa y el Ministerio. Aportaría un aviso legal útil en el diario y quizá una exportación fácil de copiar. Opinión: parece sólida y relevante para pescadores españoles, pero antes de poner texto legal hay que leer el RD 214/2026 en el BOE. No es una fuente de datos, sino una función posible.
+### SAIH de la Confederación Hidrográfica del Cantábrico
+Visor en `visor.saichcantabrico.es`. Copernicus EFAS cita que integra 118 estaciones de esa confederación "vía su API", pero no hay documentación pública de la API ni licencia verificada. Aportaría caudal real en Asturias, Cantabria y parte de Bizkaia/Gipuzkoa, donde hoy hay huecos. Opinión: prometedora por cobertura, pero no sólida hasta tener licencia y API confirmadas; el robot propone que Mikel escriba a la confederación desde datos@costaviva.org.
+### Catálogo nacional SAIH de caudal (MITECO)
+Estaciones de aforo en datos.gob.es y PDF `SAIHCaudales.pdf`: un servicio de MITECO que podría dar caudales de todas las confederaciones. No se ha verificado si es en tiempo real ni su formato. Opinión: interesante por cobertura nacional, aún sin evidencia suficiente.
+Nota: desde la red de la rutina `chcantabrico.es`, `chminosil.es` y `sihga.cma.junta-andalucia.es` no respondieron y `snirh.apambiente.pt` dio 403; no se dan por caídos. Siguen pendientes las claves de Euskalmet y MeteoGalicia.
