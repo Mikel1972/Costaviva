@@ -27,7 +27,7 @@ import { puntoAOpenMeteo, pedirCopernicusMar, claveCaja } from "../functions/_li
 import { vaciarMemoriaInstantaneas, leerInstantanea } from "../functions/_lib/instantaneas.js";
 import { pedirDatosMeteo, fuenteDeVariable, firmaFuentes, ATRIBUCIONES_HTML } from "../functions/_lib/fuentes.js";
 import { onRequestGet } from "../functions/meteo/[api].js";
-import { puntosInstantanea } from "../scripts/fuentes/instantanea-met.mjs";
+import { puntosInstantanea, pedirPunto } from "../scripts/fuentes/instantanea-met.mjs";
 import { parsearBoya, estadisticas, cruzar } from "../scripts/fuentes/comparar-boyas.mjs";
 
 const MET = JSON.parse(readFileSync("test/fixtures/metno-locationforecast.json", "utf8"));
@@ -400,4 +400,28 @@ test("respaldo de Open-Meteo: 429 de una coordenada prueba las gratuitas; 400 o 
   pedidas.length = 0;
   await assert.rejects(pedirDatosMeteo("marine", "latitude=43.39,43.5&longitude=-3.02,-3.1&timezone=Europe%2FMadrid&forecast_days=1&hourly=sea_level_height_msl", { env: {}, fetchImpl }), (e) => e.status === 429);
   assert.ok(pedidas.some((u) => !u.includes("open-meteo.com")), "el mar con varias coordenadas sí prueba Copernicus");
+});
+
+// 2026-11-04: MET Norway cortó conexiones ("fetch failed") y mandó cuerpos
+// truncados; el robot no los reintentaba y salió en rojo.
+test("instantánea MET: reintenta cortes de red y JSON truncado", async () => {
+  const original = globalThis.fetch;
+  const texto = JSON.stringify(MET);
+  let llamadas = 0;
+  globalThis.fetch = async () => {
+    llamadas++;
+    if (llamadas === 1) throw new TypeError("fetch failed");
+    if (llamadas === 2) return new Response(texto.slice(0, 500), { status: 200, headers: { "content-type": "application/json" } });
+    return new Response(texto, { status: 200, headers: { "content-type": "application/json" } });
+  };
+  try {
+    const stats = { descargados: 0, no_modificados: 0, reutilizados: 0, fallos: 0 };
+    const p = puntosInstantanea()[0];
+    const r = await pedirPunto(p, new Map(), "costaviva-test", AHORA_MET, stats);
+    assert.equal(llamadas, 3);
+    assert.equal(stats.descargados, 1);
+    assert.ok(r.serie);
+  } finally {
+    globalThis.fetch = original;
+  }
 });
