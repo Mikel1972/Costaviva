@@ -1,7 +1,7 @@
 // Actividad pesquera de Global Fishing Watch (scripts/gfw/esfuerzo-gfw.mjs).
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { ventana, celdasDeRespuesta, poligono, DIAS_RETRASO, DIAS_VENTANA, grupoArte, ventanasHabituales, juntarRespuestas, LISTA_ARTES } from "../scripts/gfw/esfuerzo-gfw.mjs";
+import { ventana, celdasDeRespuesta, poligono, DIAS_RETRASO, DIAS_VENTANA, grupoArte, ventanasHabituales, juntarRespuestas, LISTA_ARTES, esCaidaTemporal } from "../scripts/gfw/esfuerzo-gfw.mjs";
 import { readFileSync } from "node:fs";
 
 test("ventana: 7 días que acaban hace 4 (los datos de GFW llegan con 96 h de retraso)", () => {
@@ -52,4 +52,13 @@ test("habitual: el mismo mes de los 3 años anteriores, media por año", () => {
   const ano = (h) => ({ entries: [{ d: [{ lat: 43.51, lon: -2.49, hours: h, geartype: "trawlers" }] }] });
   const media = celdasDeRespuesta(juntarRespuestas([ano(3), ano(6), ano(0)]), 3);
   assert.deepEqual(media.find((c) => c.arte === "todas").horas, 3);
+});
+
+test("GFW: reconoce una caída temporal suya (2026-11-04)", () => {
+  const texto = '{"statusCode":404,"error":"Not Found","messages":[{"title":"Not Found","detail":"This feature is temporarily unavailable because of infrastructure constraints and an upstream data dependency issue."}]}';
+  assert.equal(esCaidaTemporal(404, texto), true);
+  assert.equal(esCaidaTemporal(503, ""), true);
+  assert.equal(esCaidaTemporal(429, ""), true);
+  assert.equal(esCaidaTemporal(401, '{"error":"Unauthorized"}'), false);
+  assert.equal(esCaidaTemporal(404, '{"error":"Not Found"}'), false);
 });
