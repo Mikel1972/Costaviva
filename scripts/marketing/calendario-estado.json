@@ -155,6 +155,11 @@
       "campana": "20261104-reel-peces-santander",
       "en": "2026-11-03T17:07:45.839Z"
     },
+    "2026-11-05-reel": {
+      "tipo": "reel-peces",
+      "campana": "20261105-reel-peces-santona",
+      "en": "2026-11-04T17:35:09.492Z"
+    },
     "2026-11-05-reel-nz": {
       "tipo": "reel-especie",
       "campana": "20261105-reel-especie-nz-kingfish",
