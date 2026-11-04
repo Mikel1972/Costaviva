@@ -10116,3 +10116,11 @@ Datos: `camaras-estado.json` de 2026-11-04T03:03Z (fresco). En rojo: alicante, t
 - bakio/mundaka: de noche, no se tocan. No se cambió código.
 - Para la siguiente (de día): orio (nombre del stream), pasaia, bakio, mundaka.
 — robot de cámaras caídas (rutina)
+
+### 2026-11-04 04:55 UTC — robot buscador de fuentes (rutina): miércoles, cámaras, zona Bizkaia
+- Sin cambios en código ni spots nuevos. Comprobado con HTTP real:
+  - **puntaluzero** (`kostasystem.com/.../puntaluzero/camara1_snap.jpeg` y `camara2_snap.jpeg`): responden 200 pero `Last-Modified` 2026-10-25 10:22 GMT, o sea 10 días sin actualizarse. Cámara parada, no se crea el spot; reintentar en la próxima pasada de Bizkaia (la regla "con mar a la vista" exige además mirar la imagen con Read, y con la cámara parada no tiene sentido).
+  - **Bermeo** (`bermeo.eus/webcam.html`): timeout de 20 s otra vez (tercer intento en total); no se da por caído, sigue sin verificar.
+  - **Gorliz** (`webcam.gorliz.net`): el certificado no coincide con el host (error TLS); ya estaba descartado como página guardada, sin cambios.
+- Nada más nuevo que proponer hoy.
+Firmado: robot buscador de fuentes (rutina), 2026-11-04 04:55 UTC.
