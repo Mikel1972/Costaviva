@@ -68,7 +68,7 @@ async function leerAnterior() {
   }
 }
 
-async function pedirPunto(p, anterior, ua, ahora, stats) {
+export async function pedirPunto(p, anterior, ua, ahora, stats) {
   const prev = anterior.get(p.id);
   if (prev && prev.expira && ahora < prev.expira && prev.serie) {
     stats.reutilizados++;
@@ -76,8 +76,20 @@ async function pedirPunto(p, anterior, ua, ahora, stats) {
   }
   const headers = { "User-Agent": ua, Accept: "application/json" };
   if (prev?.last_modified && prev.serie) headers["If-Modified-Since"] = prev.last_modified;
+  let ultimoError = null;
   for (let intento = 1; intento <= 3; intento++) {
-    const r = await fetch(urlMetNorway(p.lat, p.lon), { headers });
+    // Cortes de red y cuerpos truncados (2026-11-04: "fetch failed" y
+    // "Unterminated string in JSON" en 15 puntos a la vez) se reintentan
+    // igual que un 429/5xx.
+    let r, json;
+    try {
+      r = await fetch(urlMetNorway(p.lat, p.lon), { headers, signal: AbortSignal.timeout(30000) });
+      if (r.ok) json = await r.json();
+    } catch (e) {
+      ultimoError = e;
+      await new Promise((ok) => setTimeout(ok, 2000 * intento));
+      continue;
+    }
     const exp = Date.parse(r.headers.get("expires") || "");
     const expira = Number.isFinite(exp) ? exp : ahora + 30 * 60e3;
     if (r.status === 304 && prev?.serie) {
@@ -85,7 +97,6 @@ async function pedirPunto(p, anterior, ua, ahora, stats) {
       return { ...p, expira, last_modified: prev.last_modified, elevacion: prev.elevacion ?? null, serie: prev.serie };
     }
     if (r.ok) {
-      const json = await r.json();
       stats.descargados++;
       return {
         ...p,
@@ -101,7 +112,7 @@ async function pedirPunto(p, anterior, ua, ahora, stats) {
     }
     throw new Error(`MET Norway HTTP ${r.status} en ${p.id}`);
   }
-  throw new Error(`MET Norway no respondió en ${p.id}`);
+  throw new Error(`MET Norway no respondió en ${p.id}${ultimoError ? `: ${ultimoError.message}` : ""}`);
 }
 
 export async function generarInstantanea({ ahora = Date.now() } = {}) {
