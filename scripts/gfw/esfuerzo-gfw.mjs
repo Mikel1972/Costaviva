@@ -112,6 +112,28 @@ async function pedir(region, caja, v, token) {
   throw new Error(`GFW (${region}): más de 200 páginas`);
 }
 
+// Caída de GFW, no nuestra (2026-11-04: 404 "This feature is temporarily
+// unavailable because of infrastructure constraints and an upstream data
+// dependency issue"). También 429 y 5xx.
+export function esCaidaTemporal(status, texto) {
+  return status === 429 || status >= 500 || /temporarily unavailable/i.test(String(texto || ""));
+}
+
+// Días de margen con GFW caído: el mapa sigue con el último cálculo (no se
+// borra nada si falla la descarga) y el robot solo avisa en rojo cuando ese
+// cálculo tiene más de DIAS_AVISO días.
+export const DIAS_AVISO = 4;
+const URL_SB = "https://imncbmizxkorotpeisic.supabase.co/rest/v1/gfw_esfuerzo";
+
+async function diasDelUltimoCalculo() {
+  const clave = (process.env.SUPABASE_SERVICE_ROLE_KEY || "").trim();
+  if (!clave) return null;
+  const r = await fetch(`${URL_SB}?select=calculado&order=calculado.desc&limit=1`, { headers: { apikey: clave, Authorization: `Bearer ${clave}` } });
+  if (!r.ok) return null;
+  const ultimo = (await r.json())?.[0]?.calculado;
+  return ultimo ? (Date.now() - Date.parse(ultimo)) / 86400e3 : null;
+}
+
 async function pedirPagina(region, caja, v, token, offset) {
   const q = new URLSearchParams({ "spatial-resolution": "LOW", "temporal-resolution": "ENTIRE", "datasets[0]": DATASET, "date-range": `${v.desde},${v.hasta}`, format: "JSON", ...(offset ? { offset: String(offset) } : {}) });
   const r = await fetch(`${API}?${q}`, {
@@ -121,7 +143,11 @@ async function pedirPagina(region, caja, v, token, offset) {
     signal: AbortSignal.timeout(120000),
   });
   const texto = await r.text();
-  if (!r.ok) throw new Error(`GFW ${r.status} (${region}): ${texto.slice(0, 300)}`);
+  if (!r.ok) {
+    const e = new Error(`GFW ${r.status} (${region}): ${texto.slice(0, 300)}`);
+    e.temporal = esCaidaTemporal(r.status, texto);
+    throw e;
+  }
   return JSON.parse(texto);
 }
 
@@ -150,7 +176,6 @@ async function main() {
   if (seco) return;
   const clave = (process.env.SUPABASE_SERVICE_ROLE_KEY || "").trim();
   if (!clave) throw new Error("Falta SUPABASE_SERVICE_ROLE_KEY.");
-  const URL_SB = "https://imncbmizxkorotpeisic.supabase.co/rest/v1/gfw_esfuerzo";
   const h = { apikey: clave, Authorization: `Bearer ${clave}`, "Content-Type": "application/json" };
   const calculado = new Date().toISOString();
   const filas = todas.map((c) => ({ ...c, calculado }));
@@ -165,5 +190,17 @@ async function main() {
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  main().catch((e) => { console.error(`::error::${e.message}`); process.exit(1); });
+  main().catch(async (e) => {
+    if (e.temporal) {
+      const dias = await diasDelUltimoCalculo().catch(() => null);
+      if (dias !== null && dias <= DIAS_AVISO) {
+        console.log(`::warning::GFW caído (no es nuestro); el mapa sigue con el cálculo de hace ${dias.toFixed(1)} días. ${e.message}`);
+        process.exit(0);
+      }
+      console.error(`::error::GFW lleva caído y el último cálculo tiene ${dias === null ? "edad desconocida" : dias.toFixed(1) + " días"} (más de ${DIAS_AVISO}). ${e.message}`);
+      process.exit(1);
+    }
+    console.error(`::error::${e.message}`);
+    process.exit(1);
+  });
 }
