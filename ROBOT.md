@@ -10105,3 +10105,14 @@ Datos: `camaras-estado.json` de 2026-11-03T03:03Z (fresco). En rojo: alicante, t
 - Catálogo nacional SAIH caudal en datos.gob.es (`e0dat0002-estaciones-de-aforo-en-rio-saih-caudal`) y PDF `sig.mapama.gob.es/Docs/PDFServicios/SAIHCaudales.pdf`: servicio de MITECO que podría dar caudales de todas las confederaciones; no verificado si es en tiempo real ni su formato.
 - Red de esta sesión: `chcantabrico.es`, `chminosil.es` y `sihga.cma.junta-andalucia.es` sin respuesta; `snirh.apambiente.pt` 403. No se dan por caídos. Siguen pendientes las claves de Euskalmet y MeteoGalicia.
 Firmado: robot buscador de fuentes (rutina), 2026-11-03 04:55 UTC.
+
+### 2026-11-04 04:50 UTC (robot de cámaras caídas — rutina; Orio, Pasaia, Alicante, Torreblanca, San Vicente/Comillas)
+
+Datos: `camaras-estado.json` de 2026-11-04T03:03Z (fresco). En rojo: alicante, torreblanca (`origen_404`), orio (`sin_respuesta`, 21 fallos, última señal ayer 17:31 UTC), pasaia (`frame_plano`), sanvicente y comillas (`origen_522`), bakio y mundaka (`frame_congelado`, nocturno).
+- **orio**: `.../camaramar/GIP_orio_169.stream/playlist.m3u8` da 404 hoy, mientras el stream hermano de Zarautz (`GIP_zarautz_169.stream`) responde 200: la Diputación ha parado o renombrado el stream de Orio. No encontré aún el nombre nuevo (no hay listado público del servidor). Para la siguiente: mirar la web de la Diputación de Gipuzkoa (camaras de playas) por si embebe otro nombre.
+- **pasaia**: `detectia.net/img/webcam-pasaia-azti.webp` 200, Last-Modified 2026-11-03 18:05 GMT (sin cambiar desde el anochecer). Son las 04:50 UTC, de noche; no se puede juzgar.
+- **alicante, torreblanca**: sin cambios, sin alternativa (Turisme CV no ha vuelto a publicar).
+- **sanvicente, comillas**: sin verificar: `www.cantabria.es` solo devuelve el túnel del proxy desde la red de la rutina.
+- bakio/mundaka: de noche, no se tocan. No se cambió código.
+- Para la siguiente (de día): orio (nombre del stream), pasaia, bakio, mundaka.
+— robot de cámaras caídas (rutina)
