@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-04T18:07:21.827Z",
- "lineasHistorial": 7840,
+ "fecha": "2026-11-04T18:37:20.242Z",
+ "lineasHistorial": 7843,
  "etiquetas": 606,
  "etiquetasClaude": 215,
  "calibracion": {
@@ -342,9 +342,9 @@
    "pocosDatos": false
   },
   "nz-napier/principal": {
-   "a": 2.3139,
+   "a": 2.3031,
    "p": 0.5,
-   "n": 103,
+   "n": 104,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 15,
    "franjasClaude": [
@@ -359,7 +359,7 @@
     "2026-10-19T22",
     "2026-10-20T22"
    ],
-   "dias": 12,
+   "dias": 13,
    "hMin": 0.28,
    "hMax": 1.2,
    "errorRel": 0.791,
