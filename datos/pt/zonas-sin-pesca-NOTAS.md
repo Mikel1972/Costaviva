@@ -2,7 +2,7 @@
 
 ## Ficheros
 
-- `zonas.geojson`: 52 zonas en WGS84, con las mismas propiedades que `reservas-es`. Hay 24 `sin_pesca` y 28 `parcial`.
+- `zonas.geojson`: 61 zonas en WGS84, con las mismas propiedades que `reservas-es`. Hay 30 `sin_pesca` y 31 `parcial` (9 de Arrábida, del ICNF, desde 2026-11-04).
 - `zonas.json`: la misma información en el formato de `reservas-es`, con `poligono`, `huecos` y `poligonos_extra`.
 - `control.tsv`: una fila por zona con el área, la distancia a un lugar de referencia y la fracción en tierra según OSM.
   - En las áreas oceánicas de Azores, `zonas.json` y `zonas.geojson` guardan además la distancia entre el centroide calculado y el centroide oficial del anexo I.
@@ -39,7 +39,7 @@
 
 ## Por reserva
 
-### 1. Parque Marinho Professor Luiz Saldanha (Arrábida): no se dibuja
+### 1. Parque Marinho Professor Luiz Saldanha (Arrábida): 9 zonas de la capa oficial del ICNF (2026-11-04)
 
 **Norma**: RCM 141/2005 (POPNA), DR I-B n.º 161, 23-8-2005. No tiene modificaciones posteriores. Hay un Programa Especial en elaboración (Despacho 2066/2025) que todavía no está aprobado.
 
@@ -48,11 +48,10 @@ Reglas de pesca lúdica:
 - **Protección parcial** (incluido el Portinho da Arrábida): prohibida la pesca lúdica en todas sus modalidades (art. 41.1.g): `sin_pesca`.
 - **Protección complementaria**: en todo el parque marino están prohibidas la apanha y la caza submarina (art. 34.1.q). Solo queda la pesca a la línea, pendiente de una regulación específica (art. 47): `parcial`.
 
-**Por qué no hay geometría**:
-- El texto no da coordenadas de las zonas. Remite a la planta de síntese 1:25 000.
-- En el DR, la planta se publicó como una imagen gris de 1028×698 px de todo el parque, a unos 45 m por píxel. La cuadrícula no se puede leer y los tonos de total y parcial no se distinguen en el mar. Digitalizarla sería inventar.
-- El límite exterior (DR 11/2003) tiene coordenadas en Datum Lisboa: P1 38°27'18"N 9°14'W, P2 38°23'54"N 9°14'W, P3 38°23'54"N 9°11'42"W. Pero se cierra hacia el este por las balizas n.º 2 y n.º 4 de la barra de Setúbal, sin coordenadas, y excluye las aguas de la APSS.
-- **Pendiente**: pedir al ICNF la capa vectorial o la planta de síntese original del POPNA.
+**Geometría (2026-11-04)**: el ICNF contestó a Costaviva y la capa oficial está en su WFS abierto `https://si.icnf.pt/geoserver/ows`, capa `POEM:poap_rprotecao_poem` (GetCapabilities: Fees NONE, AccessConstraints NONE), filtrada por `poap = 'PNARR'`. Son 9 polígonos: 1 de protección total, 5 de parcial y 3 de complementaria. Se piden en EPSG:4326; la capa nativa está en EPSG:3763. Ids `pt-arr-<objeto del ICNF>`.
+
+- **Regla de embarcación** (Portaria 14/2014): en todo el parque, la pesca desde embarcación solo se permite de jueves a lunes, festivos incluidos, del 1 de octubre al 30 de mayo. Va en la `regla` de las 9 zonas.
+- Antes (2026-10-12) no se dibujaba: la planta de síntese del DR era una imagen de 1028×698 px ilegible, y el límite exterior se cerraba por balizas sin coordenadas.
 
 ### 2. Reserva Natural das Berlengas: 6 zonas, todas `parcial`
 
