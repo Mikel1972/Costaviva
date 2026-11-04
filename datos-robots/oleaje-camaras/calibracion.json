@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-04T10:37:53.236Z",
- "lineasHistorial": 7729,
+ "fecha": "2026-11-04T11:07:49.905Z",
+ "lineasHistorial": 7739,
  "etiquetas": 304,
  "etiquetasClaude": 209,
  "calibracion": {
@@ -24,16 +24,16 @@
    "pocosDatos": false
   },
   "hondarribia/bocana": {
-   "a": 3.973,
+   "a": 3.8802,
    "p": 0.5,
-   "n": 30,
+   "n": 31,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 2,
    "franjasClaude": [
     "2026-10-08T16",
     "2026-10-12T16"
    ],
-   "dias": 18,
+   "dias": 19,
    "hMin": 0.13,
    "hMax": 1.05,
    "errorRel": 1,
@@ -53,9 +53,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 5.5122,
+   "a": 5.5079,
    "p": 0.5,
-   "n": 546,
+   "n": 547,
    "nEtiquetas": 17,
    "nEtiquetasClaude": 27,
    "franjasClaude": [
@@ -85,7 +85,7 @@
    "dias": 28,
    "hMin": 0.3,
    "hMax": 6.97,
-   "errorRel": 0.908,
+   "errorRel": 0.907,
    "pocosDatos": false
   },
   "zumaia/c": {
@@ -167,9 +167,9 @@
    "pocosDatos": false
   },
   "bakio/principal": {
-   "a": 3.5128,
+   "a": 3.5055,
    "p": 0.5,
-   "n": 76,
+   "n": 77,
    "nEtiquetas": 3,
    "nEtiquetasClaude": 9,
    "franjasClaude": [
@@ -183,10 +183,10 @@
     "2026-10-27T14",
     "2026-11-03T14"
    ],
-   "dias": 23,
+   "dias": 24,
    "hMin": 0.7,
    "hMax": 4.62,
-   "errorRel": 0.874,
+   "errorRel": 0.868,
    "pocosDatos": false
   },
   "sopelana/principal": {
@@ -247,9 +247,9 @@
    "pocosDatos": false
   },
   "berria/dinamico": {
-   "a": 5.427,
+   "a": 5.4274,
    "p": 0.5,
-   "n": 259,
+   "n": 260,
    "nEtiquetas": 8,
    "nEtiquetasClaude": 14,
    "franjasClaude": [
@@ -264,7 +264,7 @@
    "dias": 28,
    "hMin": 0.68,
    "hMax": 4.73,
-   "errorRel": 0.761,
+   "errorRel": 0.759,
    "pocosDatos": false
   },
   "mutriku/principal": {
@@ -463,8 +463,8 @@
    "sustituye": true,
    "motivo": "18 etiquetas",
    "ruido": {
-    "ruido": 0.541,
-    "pares": 465
+    "ruido": 0.542,
+    "pares": 466
    }
   },
   "getaria": {
@@ -527,8 +527,8 @@
    "sustituye": true,
    "motivo": "8 etiquetas",
    "ruido": {
-    "ruido": 0.879,
-    "pares": 139
+    "ruido": 0.883,
+    "pares": 140
    }
   },
   "castrourdiales": {
