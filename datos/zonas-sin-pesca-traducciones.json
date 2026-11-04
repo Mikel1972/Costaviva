@@ -67,6 +67,10 @@
     "pt": "É proibida a pesca recreativa a partir de embarcações e da costa, bem como a pesca submarina, em toda a reserva (art. 5.1.b).",
     "en": "Recreational fishing from boats and from the shore, as well as spearfishing, is prohibited throughout the reserve (Art. 5.1.b)."
   },
+  "Prohibida la pesca lúdica en todas sus modalidades (art. 41.1.g); en todo el parque, prohibidas la apanha (marisqueo) y la caza submarina (art. 34.1.q). Pesca desde embarcación en todo el parque: solo de jueves a lunes (festivos incluidos) del 1 de octubre al 30 de mayo (Portaria 14/2014).": {
+    "pt": "Proibida a pesca lúdica em todas as suas modalidades (art. 41.1.g); em todo o parque, proibidas a apanha e a caça submarina (art. 34.1.q). Pesca a partir de embarcação em todo o parque: só de quinta a segunda-feira (feriados incluídos) de 1 de outubro a 30 de maio (Portaria 14/2014).",
+    "en": "Recreational fishing prohibited in all forms (art. 41.1.g); throughout the park, shellfish gathering (apanha) and spearfishing are prohibited (art. 34.1.q). Boat fishing anywhere in the park: only Thursday to Monday (holidays included) from 1 October to 30 May (Portaria 14/2014)."
+  },
   "Prohibida la pesca lúdica en todas sus modalidades (art. 43.1.d).": {
     "pt": "É proibida a pesca recreativa em todas as suas modalidades (art. 43.1.d).",
     "en": "All forms of recreational fishing are prohibited (Art. 43.1.d)."
@@ -90,6 +94,10 @@
   "Prohibida toda pesca y extracción salvo la pesca profesional con liña y de túnidos: no se permite pesca de recreo (art. 5).": {
     "pt": "É proibida toda a pesca e captura, com exceção da pesca profissional com linha e da pesca de atuns: não é permitida a pesca recreativa (art. 5.º).",
     "en": "All fishing and harvesting is prohibited, with the exception of commercial line fishing and tuna fishing: recreational fishing is not permitted (Art. 5)."
+  },
+  "Prohibida toda pesca: solo paso inofensivo a más de ¼ de milla de la costa, investigación, vigilancia y emergencias (art. 39). Pesca desde embarcación en todo el parque: solo de jueves a lunes (festivos incluidos) del 1 de octubre al 30 de mayo (Portaria 14/2014).": {
+    "pt": "Proibida toda a pesca: só passagem inofensiva a mais de ¼ de milha da costa, investigação, vigilância e emergências (art. 39). Pesca a partir de embarcação em todo o parque: só de quinta a segunda-feira (feriados incluídos) de 1 de outubro a 30 de maio (Portaria 14/2014).",
+    "en": "All fishing prohibited: only innocent passage more than ¼ mile from the coast, research, surveillance and emergencies (art. 39). Boat fishing anywhere in the park: only Thursday to Monday (holidays included) from 1 October to 30 May (Portaria 14/2014)."
   },
   "Prohibidas la caza submarina, la apanha y toda la pesca salvo la de pequeños pelágicos, sujeta a dictamen vinculante de la Inspeção Regional das Pescas (art. 9.2.f-g).": {
     "pt": "É proibida a caça subaquática, a apanha e toda a pesca, com exceção da pesca de pequenos peixes pelágicos, sujeita a parecer vinculativo da Inspeção Regional das Pescas (art. 9.2.f-g).",
@@ -175,6 +183,10 @@
     "pt": "Apenas é permitida a pesca recreativa a bordo (desportiva, turística ou de lazer); são proibidas a pesca a partir da costa (não consta das atividades permitidas), a pesca subaquática e os covos; a apanha de lapas e caramujos só é permitida através do mergulho em apneia (artigos 7.3 e 8).",
     "en": "Only recreational fishing from a boat (sport, tourist or leisure fishing) is permitted; fishing from the shore (which is not listed amongst the permitted activities), spearfishing and pots (nasas) are prohibited; the harvesting of limpets and topshells (caramujos) is permitted only whilst free-diving (Articles 7.3 and 8)."
   },
+  "Solo se permite la pesca a la línea (art. 43); en todo el parque, prohibidas la apanha (marisqueo) y la caza submarina (art. 34.1.q). Pesca desde embarcación en todo el parque: solo de jueves a lunes (festivos incluidos) del 1 de octubre al 30 de mayo (Portaria 14/2014).": {
+    "pt": "Só é permitida a pesca à linha (art. 43); em todo o parque, proibidas a apanha e a caça submarina (art. 34.1.q). Pesca a partir de embarcação em todo o parque: só de quinta a segunda-feira (feriados incluídos) de 1 de outubro a 30 de maio (Portaria 14/2014).",
+    "en": "Only line fishing is allowed (art. 43); throughout the park, shellfish gathering (apanha) and spearfishing are prohibited (art. 34.1.q). Boat fishing anywhere in the park: only Thursday to Monday (holidays included) from 1 October to 30 May (Portaria 14/2014)."
+  },
   "Solo se permite la pesca marítima de recreo en superficie (desde tierra o embarcación); prohibida la pesca submarina (art. 5.e).": {
     "pt": "Apenas é permitida a pesca recreativa marítima à superfície (a partir da costa ou de embarcação); a pesca submarina é proibida (art. 5.e).",
     "en": "Only recreational surface fishing at sea (from the shore or a boat) is permitted; spearfishing is prohibited (Art. 5(e))."
@@ -190,17 +202,5 @@
   "Área para la gestión de hábitats y especies: pesca lúdica (incluida la submarina) solo con autorización de la Autoridad de Gestión de la RAMPA y en sus condiciones (art. 81.b); sin autorización, no se puede pescar.": {
     "pt": "Área de gestão de habitats e espécies: pesca recreativa (incluindo a pesca submarina) apenas com autorização da Autoridade de Gestão da RAMPA e de acordo com as condições por esta estabelecidas (art. 81.b); sem autorização, não é permitido pescar.",
     "en": "Habitat and Species Management Area: recreational fishing (including spearfishing) is permitted only with authorisation from the RAMPA Management Authority and subject to its conditions (Art. 81.b); without authorisation, fishing is not permitted."
-  },
-  "Solo se permite la pesca a la línea (art. 43); en todo el parque, prohibidas la apanha (marisqueo) y la caza submarina (art. 34.1.q). Pesca desde embarcación en todo el parque: solo de jueves a lunes (festivos incluidos) del 1 de octubre al 30 de mayo (Portaria 14/2014).": {
-    "pt": "Só é permitida a pesca à linha (art. 43); em todo o parque, proibidas a apanha e a caça submarina (art. 34.1.q). Pesca a partir de embarcação em todo o parque: só de quinta a segunda-feira (feriados incluídos) de 1 de outubro a 30 de maio (Portaria 14/2014).",
-    "en": "Only line fishing is allowed (art. 43); throughout the park, shellfish gathering (apanha) and spearfishing are prohibited (art. 34.1.q). Boat fishing anywhere in the park: only Thursday to Monday (holidays included) from 1 October to 30 May (Portaria 14/2014)."
-  },
-  "Prohibida la pesca lúdica en todas sus modalidades (art. 41.1.g); en todo el parque, prohibidas la apanha (marisqueo) y la caza submarina (art. 34.1.q). Pesca desde embarcación en todo el parque: solo de jueves a lunes (festivos incluidos) del 1 de octubre al 30 de mayo (Portaria 14/2014).": {
-    "pt": "Proibida a pesca lúdica em todas as suas modalidades (art. 41.1.g); em todo o parque, proibidas a apanha e a caça submarina (art. 34.1.q). Pesca a partir de embarcação em todo o parque: só de quinta a segunda-feira (feriados incluídos) de 1 de outubro a 30 de maio (Portaria 14/2014).",
-    "en": "Recreational fishing prohibited in all forms (art. 41.1.g); throughout the park, shellfish gathering (apanha) and spearfishing are prohibited (art. 34.1.q). Boat fishing anywhere in the park: only Thursday to Monday (holidays included) from 1 October to 30 May (Portaria 14/2014)."
-  },
-  "Prohibida toda pesca: solo paso inofensivo a más de ¼ de milla de la costa, investigación, vigilancia y emergencias (art. 39). Pesca desde embarcación en todo el parque: solo de jueves a lunes (festivos incluidos) del 1 de octubre al 30 de mayo (Portaria 14/2014).": {
-    "pt": "Proibida toda a pesca: só passagem inofensiva a mais de ¼ de milha da costa, investigação, vigilância e emergências (art. 39). Pesca a partir de embarcação em todo o parque: só de quinta a segunda-feira (feriados incluídos) de 1 de outubro a 30 de maio (Portaria 14/2014).",
-    "en": "All fishing prohibited: only innocent passage more than ¼ mile from the coast, research, surveillance and emergencies (art. 39). Boat fishing anywhere in the park: only Thursday to Monday (holidays included) from 1 October to 30 May (Portaria 14/2014)."
   }
 }
