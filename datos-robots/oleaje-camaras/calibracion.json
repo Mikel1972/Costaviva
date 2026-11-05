@@ -1,8 +1,8 @@
 {
- "fecha": "2026-11-05T23:07:24.155Z",
- "lineasHistorial": 8130,
- "etiquetas": 608,
- "etiquetasClaude": 217,
+ "fecha": "2026-11-05T23:37:21.188Z",
+ "lineasHistorial": 8133,
+ "etiquetas": 612,
+ "etiquetasClaude": 221,
  "calibracion": {
   "hondarribia/principal": {
    "a": 1.214,
@@ -53,11 +53,11 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 3.2023,
+   "a": 3.2036,
    "p": 0.5,
-   "n": 643,
+   "n": 644,
    "nEtiquetas": 88,
-   "nEtiquetasClaude": 28,
+   "nEtiquetasClaude": 29,
    "franjasClaude": [
     "2026-10-08T14",
     "2026-10-08T16",
@@ -81,7 +81,8 @@
     "2026-10-31T16",
     "2026-11-01T16",
     "2026-11-03T16",
-    "2026-11-04T16"
+    "2026-11-04T16",
+    "2026-11-05T16"
    ],
    "dias": 29,
    "hMin": 0.3,
@@ -103,16 +104,17 @@
    "pocosDatos": true
   },
   "zumaia/a": {
-   "a": 5.8574,
+   "a": 5.8295,
    "p": 0.5,
-   "n": 68,
+   "n": 69,
    "nEtiquetas": 2,
-   "nEtiquetasClaude": 4,
+   "nEtiquetasClaude": 5,
    "franjasClaude": [
     "2026-10-08T14",
     "2026-10-08T16",
     "2026-10-22T16",
-    "2026-11-01T16"
+    "2026-11-01T16",
+    "2026-11-05T16"
    ],
    "dias": 18,
    "hMin": 0.48,
@@ -169,11 +171,11 @@
    "pocosDatos": false
   },
   "bakio/principal": {
-   "a": 3.0632,
+   "a": 3.0527,
    "p": 0.5,
-   "n": 88,
+   "n": 89,
    "nEtiquetas": 8,
-   "nEtiquetasClaude": 10,
+   "nEtiquetasClaude": 11,
    "franjasClaude": [
     "2026-10-08T16",
     "2026-10-15T14",
@@ -184,12 +186,13 @@
     "2026-10-24T14",
     "2026-10-27T14",
     "2026-11-03T14",
-    "2026-11-04T14"
+    "2026-11-04T14",
+    "2026-11-05T14"
    ],
    "dias": 25,
    "hMin": 0.63,
    "hMax": 4.62,
-   "errorRel": 0.858,
+   "errorRel": 0.855,
    "pocosDatos": false
   },
   "sopelana/principal": {
@@ -366,11 +369,11 @@
    "pocosDatos": false
   },
   "nz-riverton/principal": {
-   "a": 8.1257,
+   "a": 8.0575,
    "p": 0.5,
-   "n": 670,
+   "n": 672,
    "nEtiquetas": 0,
-   "nEtiquetasClaude": 45,
+   "nEtiquetasClaude": 46,
    "franjasClaude": [
     "2026-10-11T22",
     "2026-10-15T22",
@@ -401,7 +404,8 @@
     "2026-11-02T00",
     "2026-11-02T22",
     "2026-11-03T22",
-    "2026-11-04T22"
+    "2026-11-04T22",
+    "2026-11-05T22"
    ],
    "dias": 26,
    "hMin": 0.3,
@@ -567,7 +571,7 @@
    "motivo": "estable (±0 % entre lecturas cercanas)",
    "ruido": {
     "ruido": 0,
-    "pares": 571
+    "pares": 572
    }
   }
  }
