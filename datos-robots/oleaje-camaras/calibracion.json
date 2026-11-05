@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-05T08:08:08.178Z",
- "lineasHistorial": 7928,
+ "fecha": "2026-11-05T08:38:06.815Z",
+ "lineasHistorial": 7938,
  "etiquetas": 608,
  "etiquetasClaude": 217,
  "calibracion": {
@@ -53,9 +53,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 3.1909,
+   "a": 3.1921,
    "p": 0.5,
-   "n": 630,
+   "n": 631,
    "nEtiquetas": 88,
    "nEtiquetasClaude": 28,
    "franjasClaude": [
@@ -83,7 +83,7 @@
     "2026-11-03T16",
     "2026-11-04T16"
    ],
-   "dias": 28,
+   "dias": 29,
    "hMin": 0.3,
    "hMax": 6.97,
    "errorRel": 1,
@@ -103,9 +103,9 @@
    "pocosDatos": true
   },
   "zumaia/a": {
-   "a": 5.8954,
+   "a": 5.8574,
    "p": 0.5,
-   "n": 67,
+   "n": 68,
    "nEtiquetas": 2,
    "nEtiquetasClaude": 4,
    "franjasClaude": [
@@ -114,16 +114,16 @@
     "2026-10-22T16",
     "2026-11-01T16"
    ],
-   "dias": 17,
-   "hMin": 0.61,
+   "dias": 18,
+   "hMin": 0.48,
    "hMax": 6.97,
    "errorRel": 1,
    "pocosDatos": false
   },
   "deba/rompiente": {
-   "a": 3.9245,
+   "a": 3.9233,
    "p": 0.5,
-   "n": 217,
+   "n": 218,
    "nEtiquetas": 24,
    "nEtiquetasClaude": 12,
    "franjasClaude": [
@@ -138,7 +138,7 @@
     "2026-11-01T16",
     "2026-11-04T16"
    ],
-   "dias": 27,
+   "dias": 28,
    "hMin": 0.3,
    "hMax": 6.97,
    "errorRel": 1,
@@ -230,9 +230,9 @@
    "pocosDatos": true
   },
   "castrourdiales/principal": {
-   "a": 3.5837,
+   "a": 3.5784,
    "p": 0.5,
-   "n": 127,
+   "n": 128,
    "nEtiquetas": 26,
    "nEtiquetasClaude": 6,
    "franjasClaude": [
@@ -243,7 +243,7 @@
     "2026-11-01T16",
     "2026-11-03T16"
    ],
-   "dias": 22,
+   "dias": 23,
    "hMin": 0.3,
    "hMax": 4.51,
    "errorRel": 1,
@@ -470,8 +470,8 @@
    "sustituye": true,
    "motivo": "91 etiquetas",
    "ruido": {
-    "ruido": 0.54,
-    "pares": 476
+    "ruido": 0.539,
+    "pares": 477
    }
   },
   "getaria": {
@@ -542,8 +542,8 @@
    "sustituye": true,
    "motivo": "26 etiquetas",
    "ruido": {
-    "ruido": 0.433,
-    "pares": 56
+    "ruido": 0.436,
+    "pares": 57
    }
   },
   "nz-napier": {
