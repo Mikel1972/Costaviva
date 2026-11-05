@@ -1,13 +1,13 @@
 {
- "fecha": "2026-11-05T12:07:46.585Z",
- "lineasHistorial": 8016,
+ "fecha": "2026-11-05T12:38:01.794Z",
+ "lineasHistorial": 8026,
  "etiquetas": 608,
  "etiquetasClaude": 217,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.2189,
+   "a": 1.214,
    "p": 0.5,
-   "n": 236,
+   "n": 237,
    "nEtiquetas": 34,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
