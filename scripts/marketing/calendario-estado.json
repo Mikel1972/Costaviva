@@ -165,6 +165,11 @@
       "campana": "20261105-reel-especie-nz-kingfish",
       "en": "2026-11-04T05:32:31.768Z"
     },
+    "2026-11-06-post-nz": {
+      "tipo": "condiciones-nz",
+      "campana": "20261106-condiciones-nz-opunake",
+      "en": "2026-11-05T05:40:42.044Z"
+    },
     "2026-11-06-reel": {
       "tipo": "reel-peces",
       "campana": "20261106-reel-peces-ribadeo",
