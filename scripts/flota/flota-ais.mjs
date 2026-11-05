@@ -75,6 +75,21 @@ const mediana = (xs) => {
   return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
 };
 
+// Curva de minutos (2026-11-05, Mikel: "optimiza flota"; la escucha es el
+// 40 % de los minutos de Actions de Costaviva): cuántos barcos faenando se
+// habrían detectado escuchando solo los primeros `corte` minutos de esta
+// misma escucha. Con unos días de curvas se decide cuánto acortarla sin
+// perder barcos. Pura: recibe la función que cuenta.
+export function curvaMinutos(barcos, cortes, contar) {
+  return cortes.map((corte) => {
+    const parcial = {};
+    for (const [m, b] of Object.entries(barcos)) {
+      parcial[m] = { ...b, posiciones: (b.posiciones || []).filter((p) => !Number.isFinite(p.t) || p.t <= corte * 60_000) };
+    }
+    return [corte, contar(parcial)];
+  });
+}
+
 // posiciones: [{ lat, lon, sog }]. Devuelve la celda donde faena o null.
 export function celdaDeFaena(posiciones) {
   const validas = posiciones.filter((p) => Number.isFinite(p.sog) && p.sog < 102 && Math.abs(p.lat) <= 90 && Math.abs(p.lon) <= 180);
@@ -365,6 +380,7 @@ async function leerTodo(ruta, pagina = 1000) {
 function escuchar(minutos, apiKey) {
   return new Promise((resolver, rechazar) => {
     const barcos = {};
+    const t0 = Date.now();
     let n = 0;
     const ws = new WebSocket(AIS_URL);
     const fin = setTimeout(() => ws.close(), minutos * 60_000);
@@ -382,7 +398,8 @@ function escuchar(minutos, apiKey) {
       const b = (barcos[l.mmsi] ||= { posiciones: [] });
       if (l.tipo != null) b.tipo = l.tipo;
       if (l.clase && l.clase !== "?") b.clase = l.clase;
-      if (l.pos) b.posiciones.push(l.pos);
+      // t: ms desde el inicio de la escucha (curva de minutos, 2026-11-05).
+      if (l.pos) b.posiciones.push({ ...l.pos, t: Date.now() - t0 });
     };
     ws.onerror = (e) => { clearTimeout(fin); rechazar(new Error(`WebSocket: ${e.message || "error"}`)); };
     ws.onclose = () => { clearTimeout(fin); resolver({ barcos, mensajes: n }); };
@@ -441,6 +458,9 @@ async function main() {
   const pesqueros = Object.entries(barcos).filter(([m, b]) => b.tipo === TIPO_PESQUERO || (b.tipo == null && conocidas[resumenBarco(m, clave)])).length;
   const porClase = filas.reduce((a, f) => ((a[f.clase] = (a[f.clase] || 0) + 1), a), {});
   console.log(`${minutos} min: ${mensajes} mensajes, ${Object.keys(barcos).length} barcos, ${pesqueros} pesqueros, ${filas.length} faenando ${JSON.stringify(porClase)}.`);
+  const cortes = [10, 15, 20, 25, 30, 35].filter((c) => c < minutos);
+  const curva = curvaMinutos(barcos, cortes, (parcial) => filasDeFaena(parcial, conocidas, clave, dia, hora).filas.length);
+  console.log(`Curva de minutos (faenando si se hubiera escuchado menos): ${curva.map(([c, n]) => `${c} min ${n}`).join(", ")}, ${minutos} min ${filas.length}.`);
   const diag = diagnosticoTipos(barcos, conocidas, clave);
   console.log(`Tipos AIS: ${JSON.stringify(diag.porGrupo)}; sin tipo a velocidad de faena: ${diag.sinTipoFaena}.`);
   // Solo cuántas celdas se publican, nunca cuáles.
