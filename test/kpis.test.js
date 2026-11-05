@@ -95,8 +95,8 @@ function datosSinteticos() {
   const perfiles = [
     { id: "u1", email: "a@x.es", creado_en: "2026-10-05T10:00:00Z" },
     { id: "u2", email: "b@x.es", creado_en: "2026-10-05T12:00:00Z" },
-    { id: "adm", email: "admin@x.es", creado_en: "2026-10-05T12:00:00Z" },
-    { id: "t1", email: "etxebe2005+smoke@gmail.com", creado_en: "2026-10-05T12:00:00Z" },
+    { id: "adm", email: "admin@ejemplo.test", creado_en: "2026-10-05T12:00:00Z" },
+    { id: "t1", email: "admin+smoke@ejemplo.test", creado_en: "2026-10-05T12:00:00Z" },
     { id: "p1", email: "perm@x.es", creado_en: "2026-10-05T12:00:00Z" },
     { id: "i1", email: "inv@x.es", creado_en: "2026-10-05T12:00:00Z" },
   ];
@@ -291,4 +291,15 @@ test("KPIs privados: ni KPIS.md ni histórico ni resumen en este repo público",
   assert.match(wf, /repository: Mikel1972\/comun/);
   assert.match(wf, /STRIPE_SECRET_KEY/);
   assert.ok(!/git add datos-robots\/kpis/.test(wf));
+});
+
+test("exclusiones: solo los alias \"+algo\" del email de un admin, no los de otras cuentas", () => {
+  const perfiles = [
+    { id: "adm", email: "Admin@Ejemplo.test" },
+    { id: "t1", email: "admin+auth@ejemplo.test" },
+    { id: "otro", email: "admin+x@otro.test" },
+    { id: "u1", email: "usuaria+x@ejemplo.test" },
+  ];
+  const ex = idsExcluidos({ perfiles, admins: [{ user_id: "adm" }], permanentes: [], invitaciones: [], emailsPrueba: [] });
+  assert.deepEqual([...ex].sort(), ["adm", "t1"]);
 });

@@ -1,3 +1,4 @@
+-- 2026-11-05: emails personales retirados del repo público; la migración ya está aplicada en producción y este texto no se vuelve a ejecutar. En una base nueva, el administrador y los accesos permanentes se dan de alta a mano.
 -- Aviso por email cuando se acaba la prueba de 7 dias y no hay suscripcion
 -- (pedido explicito del usuario, 2026-09-25: "cuando se pasa el periodo de
 -- prueba y no renuevan, hay que mandarles un email diciendo que el periodo
@@ -40,7 +41,7 @@ as $$
   where p.fin_prueba_avisado = false
     and p.creado_en + interval '7 days' < now()
     and u.email_confirmed_at is not null
-    and u.email <> 'etxebe2005@gmail.com'
+    and u.email <> 'admin@costaviva.invalid'
     and not exists (
       select 1 from public.suscripciones s
       where s.user_id = p.id and s.estado in ('trialing', 'active')

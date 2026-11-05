@@ -1,3 +1,4 @@
+-- 2026-11-05: emails personales retirados del repo público; la migración ya está aplicada en producción y este texto no se vuelve a ejecutar. En una base nueva, el administrador y los accesos permanentes se dan de alta a mano.
 -- Costa Viva — invitaciones con descuento (panel de admin, 2026-10-08)
 --
 -- Aprobado por Mikel el 2026-10-08. SIN APLICAR: se aplica con
@@ -194,8 +195,8 @@ as $$
       select 1 from auth.users u
       where u.id = p_user_id
         and (
-          u.email = 'etxebe2005@gmail.com'
-          or u.email like 'etxebe2005+%'
+          u.email = 'admin@costaviva.invalid'
+          or u.email like 'admin+%'
           or public.tiene_acceso_permanente(u.email)
         )
     )

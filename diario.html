@@ -339,9 +339,12 @@ window.quitarPantallaInicio();
   }
 }
 comprobarNovedadesGrupos(supabase);
-if (usuario.email === "etxebe2005@gmail.com") {
-  document.getElementById("enlaceAdmin").style.display = "flex";
-}
+// Icono del panel de administrador: lo decide el servidor (RPC es_admin(),
+// security definer, devuelve true/false), no el email en el cliente. El
+// panel vuelve a comprobarlo; esto es solo para no enseñar el icono.
+supabase.rpc("es_admin").then(({ data: esAdm, error: errAdm }) => {
+  if (!errAdm && esAdm === true) document.getElementById("enlaceAdmin").style.display = "flex";
+}).catch(() => { /* sin icono */ });
 
 document.getElementById("btnMiSuscripcion").addEventListener("click", () => {
   window.location.href = "/suscripcion.html";

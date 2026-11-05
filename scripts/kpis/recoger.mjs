@@ -55,9 +55,17 @@ export function idsExcluidos({ perfiles, admins, permanentes, invitaciones, emai
   const prueba = new Set(emailsPrueba.map((e) => e.toLowerCase()));
   const ex = new Set(admins.map((a) => a.user_id));
   for (const i of invitaciones) if (i.user_id && Number(i.descuento) === 100) ex.add(i.user_id);
+  // Alias "+algo" de una cuenta de admin (las cuentas de smoke-test.yml y
+  // auth-test.yml): misma parte local antes del "+" y mismo dominio que el
+  // email de un admin. Los admins vienen por user_id y su email sale de
+  // perfiles, así que no hay ningún email escrito en el código.
+  const emailDe = (p) => String(p.email ?? "").toLowerCase();
+  const baseAdmin = new Set(perfiles.filter((p) => ex.has(p.id)).map(emailDe).filter((e) => e.includes("@")));
+  const baseDe = (e) => { const [local, dominio] = [e.slice(0, e.lastIndexOf("@")), e.slice(e.lastIndexOf("@") + 1)]; return `${local.split("+")[0]}@${dominio}`; };
   for (const p of perfiles) {
-    const e = String(p.email ?? "").toLowerCase();
-    if (e.startsWith("etxebe2005+") || prueba.has(e) || perm.has(e)) ex.add(p.id);
+    const e = emailDe(p);
+    const aliasDeAdmin = e.includes("@") && e.slice(0, e.lastIndexOf("@")).includes("+") && baseAdmin.has(baseDe(e));
+    if (aliasDeAdmin || prueba.has(e) || perm.has(e)) ex.add(p.id);
   }
   return ex;
 }

@@ -2672,7 +2672,8 @@ el SMTP personalizado de Supabase (Authentication → Emails → SMTP
 Settings) apuntando a Resend (`smtp.resend.com`, puerto 465, usuario
 `resend`, contraseña = `RESEND_API_KEY`, remitente
 `noreply@costaviva.org`) — verificado en real pidiendo un
-restablecimiento de contraseña para `etxebe2005+fishnowtest1@gmail.com`
+restablecimiento de contraseña para uno de los alias de prueba del
+administrador (cuentas de `smoke-test.yml`/`auth-test.yml`)
 vía `POST /auth/v1/recover`: `200` y el email llegó de verdad. Ya no
 depende del límite de Supabase.
 
@@ -2753,6 +2754,23 @@ otro usuario". Cualquier cambio que toque `alarma.html`,
   equivalente.
 - `RESEND_API_KEY` (para el email de SOS) vive solo en Cloudflare Pages
   como variable de entorno tipo "Secret" — nunca en el repo.
+- `EUSKALMET_EMAIL` (2026-11-05): el email de la cuenta asociada a
+  `EUSKALMET_API_KEY`, que va dentro del JWT de
+  `functions/actualizar-euskalmet-rios.js`. Secret de Cloudflare Pages
+  (Production) porque es una dirección personal y el repo es público; sin
+  él la Function responde 503 ("Falta el secret EUSKALMET_EMAIL en
+  Cloudflare Pages") y no llama a Euskalmet. Tras añadirlo hace falta un
+  redeploy.
+- **Ningún email personal en el repo** (2026-11-05, Mikel: "los emails no
+  pueden quedar a la vista del público"): ni en código, ni en docs, ni en
+  migraciones. El icono del admin lo decide `es_admin()`, no el email en
+  el cliente; las cuentas se describen ("la cuenta del administrador", "los
+  alias de prueba del administrador"). `test/sin-emails-personales.test.js`
+  falla si aparece una dirección de gmail, yahoo, hotmail, outlook, icloud,
+  proton, gmx, etc. en cualquier fichero del repo; solo admite una lista
+  cerrada de direcciones de mentira de los tests. Las migraciones antiguas
+  llevan `admin@costaviva.invalid` / `persona@costaviva.invalid` en su lugar
+  (ya estaban aplicadas en producción; ese texto no se vuelve a ejecutar).
 - Tablas y RLS (todas con `using/with check (auth.uid() = user_id)`,
   definidas en `supabase/schema.sql` y
   `supabase/schema_diario_alarma.sql`):
@@ -4218,8 +4236,8 @@ seguro de tener en automático).
 fila de usuario B) — opcional: solo corre si están `TEST_USER_A_EMAIL`,
 `TEST_USER_B_EMAIL` y `SUPABASE_SERVICE_ROLE_KEY`; sin ellas se salta con
 un aviso en vez de fallar. Cuentas de prueba
-(`etxebe2005+fishnowtest1@gmail.com` / `etxebe2005+fishnowtest2@gmail.com`,
-alias de Gmail — llegan al mismo buzón del usuario; la misma cuenta A
+(los alias de prueba del administrador A y B, `TEST_USER_A_EMAIL` /
+`TEST_USER_B_EMAIL`, alias de Gmail — llegan al mismo buzón del usuario; la misma cuenta A
 sirve también para `smoke-test.yml`). **Ejecutado en real: el token de B
 no vio la fila de A, ni por listado ni por id directo.**
 
@@ -4934,9 +4952,9 @@ parezca que el robot "no encuentra nada": mirar primero
 Pedido explícito del usuario: "como en Pólizas.ai", ver quién está
 inscrito, pudiendo pausarlo o eliminarlo. `admin.html` — no aparece en
 el menú inferior de ninguna otra página; el acceso visible es un icono
-⚙️ junto al botón de cuenta (`title="Admin"`), solo pintado cuando
-`session.user.email === "etxebe2005@gmail.com"` (comprobado en JS en
-las 4 páginas con cabecera). Esa comprobación en el cliente es solo
+⚙️ junto al botón de cuenta (`title="Admin"`), solo pintado para
+la cuenta del administrador (antes se comparaba su email en JS en las 4
+páginas con cabecera; desde 2026-11-05 lo decide la RPC `es_admin()`). Esa comprobación en el cliente es solo
 para no anunciar el icono a nadie más — la seguridad real está en
 Supabase. La propia `admin.html` tiene su cabecera a juego con el
 resto de la app: botón "← Volver al mapa" + botón de cuenta con
@@ -4946,7 +4964,7 @@ despliegue: "no tengo botón para echar para atrás").
 **Decisión de diseño clave**: nada de esto usa `service_role` ni un
 segundo endpoint de Cloudflare. Tres funciones `security definer` en
 Postgres (`supabase/migrations/20260913090000_panel_administrador.sql`):
-- `es_admin()` — `auth.email() = 'etxebe2005@gmail.com'`. **Pendiente de
+- `es_admin()` — `auth.email()` igual a la cuenta del administrador. **Pendiente de
   aplicar (2026-10-07, comun auth.md A4):** `20261007150000_admin_por_tabla.sql`
   la cambia a `exists` en `public.administradores` (por `user_id`, sin
   policies). Al aplicarla, actualizar `supabase/baseline-seguridad.json`.
@@ -4978,7 +4996,8 @@ el fix: las 3 funciones rechazan con `400 "no autorizado"` sin sesión.
 **Probado en real con datos reales** (2026-09-13): el panel muestra
 correctamente los 6 usuarios registrados hasta ahora, incluidas dos
 altas nuevas del mismo día; pausar/reactivar probado de verdad sobre
-`etxebe2005+fishnowtest1@gmail.com` (restaurado a como estaba después).
+uno de los alias de prueba del administrador (restaurado a como estaba
+después).
 "Eliminar" no se ha probado en real todavía (es irreversible) — la
 capa de autorización sí está verificada.
 
@@ -5692,7 +5711,7 @@ defecto) y nota interna. Lista con estado y acciones reenviar/anular.
 
 ## Acceso permanente sin suscripción: tabla `accesos_permanentes` (2026-10-01)
 
-Para dar acceso completo para siempre a una cuenta concreta sin hacerla admin (primer caso: `maetxe2018@gmail.com`, pedido del usuario). Por email, así que vale aunque la persona aún no se haya dado de alta. `mi_estado_suscripcion()` devuelve `estado: 'permanente'` y `con_acceso: true`, y `fin_prueba_fuera_de_ciclo()` la excluye de recordatorio y desactivación. Para añadir o quitar a alguien: migración nueva con `insert`/`delete` en `public.accesos_permanentes` (email en minúsculas). Sin políticas RLS: solo la leen funciones security definer. Al añadir a alguien le llega solo, una vez, el email "¡Tienes enchufe!" (paso "acceso permanente" de `avisar-fin-prueba.js`, columna `avisado_en`).
+Para dar acceso completo para siempre a una cuenta concreta sin hacerla admin (primer caso: el primer acceso permanente (2026-10-01), pedido del usuario). Por email, así que vale aunque la persona aún no se haya dado de alta. `mi_estado_suscripcion()` devuelve `estado: 'permanente'` y `con_acceso: true`, y `fin_prueba_fuera_de_ciclo()` la excluye de recordatorio y desactivación. Para añadir o quitar a alguien: migración nueva con `insert`/`delete` en `public.accesos_permanentes` (email en minúsculas). Sin políticas RLS: solo la leen funciones security definer. Al añadir a alguien le llega solo, una vez, el email "¡Tienes enchufe!" (paso "acceso permanente" de `avisar-fin-prueba.js`, columna `avisado_en`).
 
 ## Fin de prueba: o se suscribe o su cuenta queda desactivada (2026-09-28)
 
@@ -5732,7 +5751,7 @@ quién le toca cada email las decide Postgres (`usuarios_bienvenida_pendiente_em
 el estado de `suscripcion.html` cuentan lo mismo.
 
 - **Nunca entran en el ciclo** (`fin_prueba_fuera_de_ciclo()`): el admin, los
-  alias `etxebe2005+...` (cuentas de `smoke-test.yml`/`auth-test.yml`) y quien
+  alias de prueba del administrador (cuentas de `smoke-test.yml`/`auth-test.yml`) y quien
   haya tenido alguna vez una suscripción real (cualquier fila en
   `suscripciones` salvo `incomplete`/`incomplete_expired`). **Ex-suscriptor
   que cancela (decidido 2026-09-28): pierde el acceso y nada más** — lo hace

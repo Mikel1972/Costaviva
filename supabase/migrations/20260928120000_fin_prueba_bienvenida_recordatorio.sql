@@ -1,3 +1,4 @@
+-- 2026-11-05: emails personales retirados del repo público; la migración ya está aplicada en producción y este texto no se vuelve a ejecutar. En una base nueva, el administrador y los accesos permanentes se dan de alta a mano.
 -- Fin de la prueba: o se suscribe o su cuenta queda desactivada (pedido
 -- explicito del usuario, 2026-09-28): "hay un periodo de prueba de 7 dias sin
 -- cobrar. A ese vencimiento, o se da de alta o se le cancela".
@@ -32,7 +33,7 @@
 --
 -- QUIEN NUNCA ENTRA EN ESTE CICLO (fin_prueba_fuera_de_ciclo):
 --   - El admin.
---   - Los alias de prueba etxebe2005+...@gmail.com: son las cuentas de
+--   - Los alias de prueba admin+...@costaviva.invalid: son las cuentas de
 --     smoke-test.yml y auth-test.yml.
 --   - Quien haya tenido alguna vez una suscripcion de verdad (cualquier fila
 --     en suscripciones salvo incomplete/incomplete_expired, checkouts que
@@ -81,7 +82,7 @@ as $$
     exists (
       select 1 from auth.users u
       where u.id = p_user_id
-        and (u.email = 'etxebe2005@gmail.com' or u.email like 'etxebe2005+%')
+        and (u.email = 'admin@costaviva.invalid' or u.email like 'admin+%')
     )
     or exists (
       select 1 from public.suscripciones s

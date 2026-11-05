@@ -1226,8 +1226,8 @@ memoria):**
   dicen las notas de prensa, **no comprobado con una descarga real del
   dataset**. Antes de integrar nada haría falta localizar el `handle`
   exacto en RiuNet (buscar "Digipesca" / "lonjas" en el buscador del
-  repositorio, o pedir el enlace directo al contacto del proyecto,
-  `proyectodigipesca@gmail.com`) y bajar un fichero de verdad para
+  repositorio, o pedir el enlace directo al contacto del proyecto de datos,
+  cuyo email aparece en su ficha) y bajar un fichero de verdad para
   confirmar formato (¿CSV/Excel?), licencia y que efectivamente no pide
   login.
 
@@ -7419,7 +7419,7 @@ para Costaviva: (a) es un mirror no oficial sin garantía de
 mantenimiento ni de fidelidad a los datos originales de AEMET (a
 diferencia de OpenData, que es la fuente primaria), y (b) su propia
 descripción dice que la descarga completa por estación requiere pedirla
-por email a una dirección personal (`historicoexcel@yahoo.com`) — no es
+por email a una dirección personal — no es
 automatizable ni fiable para un cron. Se descarta como candidato; queda
 anotado solo para no repetir la búsqueda si alguien lo sugiere de nuevo.
 

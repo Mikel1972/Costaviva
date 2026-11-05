@@ -1,3 +1,4 @@
+-- 2026-11-05: emails personales retirados del repo público; la migración ya está aplicada en producción y este texto no se vuelve a ejecutar. En una base nueva, el administrador y los accesos permanentes se dan de alta a mano.
 -- Costaviva — Captación (3/4): números semanales de captación, sin IA
 -- (2026-10-09).
 --
@@ -12,7 +13,7 @@
 --
 -- Métrica principal (estrella del norte): % de pruebas terminadas que pasan
 -- a pago. Una "prueba" es un alta con el email confirmado, sin contar al
--- admin, las cuentas de pruebas automáticas (etxebe2005+...), los accesos
+-- admin, las cuentas de pruebas automáticas (admin+...), los accesos
 -- permanentes ni quien entró con una invitación del 100 %. "Paga" =
 -- suscripciones.primer_pago_en relleno (primer cobro real tras la prueba).
 -- "Terminada" = han pasado 8 días desde el alta (7 de prueba + 1 de margen
@@ -55,7 +56,7 @@ begin
     left join public.suscripciones s on s.user_id = p.id
     where p.creado_en >= (v_desde::timestamp at time zone 'Europe/Madrid')
       and not exists (select 1 from public.administradores a where a.user_id = p.id)
-      and lower(u.email) not like 'etxebe2005+%'
+      and lower(u.email) not like 'admin+%'
       and not public.tiene_acceso_permanente(u.email)
       and not exists (select 1 from public.invitaciones i where i.user_id = p.id and i.descuento = 100)
   ),
