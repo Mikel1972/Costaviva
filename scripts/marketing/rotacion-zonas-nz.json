@@ -5,11 +5,12 @@
     "coromandel",
     "bay-of-plenty",
     "gisborne-hawkes-bay",
-    "waikato-west-coast"
+    "waikato-west-coast",
+    "taranaki"
   ],
   "ciclo": 1,
-  "ultimaZona": "waikato-west-coast",
-  "ultimaRegion": "nz_auckland_kermadec",
-  "ultimoSpot": "nz-kawhia",
-  "fecha": "2026-11-03T05:31:57.199Z"
+  "ultimaZona": "taranaki",
+  "ultimaRegion": "nz_central",
+  "ultimoSpot": "nz-opunake",
+  "fecha": "2026-11-05T05:40:40.850Z"
 }
