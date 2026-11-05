@@ -10124,3 +10124,12 @@ Datos: `camaras-estado.json` de 2026-11-04T03:03Z (fresco). En rojo: alicante, t
   - **Gorliz** (`webcam.gorliz.net`): el certificado no coincide con el host (error TLS); ya estaba descartado como página guardada, sin cambios.
 - Nada más nuevo que proponer hoy.
 Firmado: robot buscador de fuentes (rutina), 2026-11-04 04:55 UTC.
+
+### 2026-11-05 04:45 UTC (robot de cámaras caídas — rutina; Pasaia, Alicante, Torreblanca, Cangas/Bakio/Mundaka)
+
+Datos: `camaras-estado.json` de 2026-11-05T03:04Z (fresco). En rojo: alicante, torreblanca (`origen_404`), pasaia (`frame_plano`, última señal ayer 18:00 UTC), cangas, bakio y mundaka (`frame_congelado`, lectura nocturna). Orio ya no está en rojo (se recuperó).
+- **alicante, torreblanca**: `streaming.comunitatvalenciana.com/static/.../webcam_mini.png` siguen en 404 hoy. Sin alternativa nueva; Turisme CV no ha vuelto a publicar.
+- **pasaia**: `detectia.net/img/webcam-pasaia-azti.webp` 200, Last-Modified 2026-11-04 18:04 GMT (sin cambiar desde el anochecer). Son las 04:45 UTC, de noche: no se puede juzgar.
+- **cangas, bakio, mundaka**: congeladas pero de noche (última señal hace 1 h); no se tocan.
+- No se cambió código. Para la siguiente (de día): pasaia, cangas, bakio, mundaka.
+— robot de cámaras caídas (rutina)
