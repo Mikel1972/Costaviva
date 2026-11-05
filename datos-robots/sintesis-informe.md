@@ -1,17 +1,20 @@
-<!-- SINTESIS fecha=2026-11-04 hasta_commit=b6a96a93cd7d72057bdd642a405fcdb6a06deea0 -->
+<!-- SINTESIS fecha=2026-11-05 hasta_commit=fc6182e69708de71f1448971c79efb479ed4645c -->
 
 ## 🛠 Trabajo interno (calibración y datos)
-El robot de cámaras caídas revisó el estado de las cámaras (datos de las 03:03 UTC). En rojo: Alicante y Torreblanca (origen 404, sin alternativa porque Turisme CV no ha vuelto a publicar), Orio (el stream de la Diputación da 404 mientras el de Zarautz responde 200; no se ha encontrado el nombre nuevo), Pasaia (imagen sin cambios desde el anochecer, de noche no se puede juzgar) y San Vicente/Comillas (no verificables desde la red de la rutina). Bakio y Mundaka congeladas por ser de noche. No se tocó código.
+El robot de cámaras caídas (rutina) pasó a las 04:45 UTC con datos frescos de `camaras-estado.json`. En rojo: Alicante y Torreblanca (`origen_404`: las imágenes `webcam_mini.png` de streaming.comunitatvalenciana.com siguen en 404 y Turisme CV no ha vuelto a publicar), Pasaia (`frame_plano`, imagen sin cambiar desde las 18:04 GMT de ayer) y Cangas, Bakio y Mundaka (`frame_congelado`). Pasaia y las tres congeladas son de noche (no se pueden juzgar), así que no se tocó código; las revisa la siguiente pasada de día. Orio ya se recuperó. No hay entrada de calibración ni de otras pasadas de datos (corrientes, presión, caudal) en este periodo.
+
 **Cámaras nuevas encontradas:** 0
-**Términos de búsqueda:** el buscador (zona Bizkaia) probó puntaluzero (kostasystem, cámara parada desde el 25-oct, no se crea spot), Bermeo (timeout, tercer intento sin verificar) y Gorliz (certificado TLS no coincide, ya descartada). Ningún término nuevo funcionó ni apareció un tipo de dueño nuevo.
+**Términos de búsqueda:** ninguno probado en este periodo (sin pasada del buscador de fuentes en ROBOT.md).
 
 ## 🧪 Experiencia de usuario y patrones de uso
-**Robot de experiencia de usuario:** no le tocaba pasar hoy (corre los lunes); no hay entrada suya.
+**Robot de experiencia de usuario:** no le tocaba pasar hoy (corre los lunes) y no hay entrada suya.
 **Robot de patrones de uso:** no le tocaba pasar esta semana.
 
 ## 🔎 Trabajo externo (investigación de contenido)
-Sin entradas nuevas sobre buenas prácticas de otras apps ni estudios institucionales desde la última síntesis.
+Sin novedades de buenas prácticas de otras apps ni de estudios institucionales en ROBOT.md desde la última síntesis.
 **Robot de especies:** no le tocaba pasar hoy (corre los jueves).
 
 ## 🆕 Nuevas fuentes encontradas, pendientes de validar
 Ninguna fuente nueva desde la última síntesis.
+
+_Nota: el commit de la síntesis anterior ya no existe en main (historial reescrito), por lo que se usaron solo las entradas de las últimas 24 h._
