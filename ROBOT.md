@@ -10133,3 +10133,9 @@ Datos: `camaras-estado.json` de 2026-11-05T03:04Z (fresco). En rojo: alicante, t
 - **cangas, bakio, mundaka**: congeladas pero de noche (última señal hace 1 h); no se tocan.
 - No se cambió código. Para la siguiente (de día): pasaia, cangas, bakio, mundaka.
 — robot de cámaras caídas (rutina)
+
+### 2026-11-05 05:00 UTC — robot buscador de fuentes (rutina): jueves, fichas de especies
+- Sin cambios en `assets/datos/especies.json` ni rama `robot/especies-*`. Prioridad elegida: Cataluña (`ES-CT`, pendiente: nuevo modelo de pesca recreativa desde el 1/9/2025, 44 especies).
+- Búsqueda: solo prensa (Ara, Ebre Digital) confirma que el modelo rige desde septiembre de 2025 hasta septiembre de 2027; las cifras de prensa no coinciden entre sí (44 vs 46 especies) y no se encontró el texto del DOGC. El PDF del BOE que salió (`BOE-A-2025-22024-C`) no se pudo leer (PDF comprimido) y no se sabe si es la norma. No se escribe ninguna talla ni cupo.
+- Pendiente: localizar en el DOGC (dogc.gencat.cat) la norma exacta y sus anexos de tallas/cupos/vedas; el siguiente jueves, probar desde Actions o a mano si el dominio da problemas.
+Firmado: robot buscador de fuentes (rutina), 2026-11-05 05:00 UTC.
