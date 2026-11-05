@@ -1,3 +1,4 @@
+-- 2026-11-05: emails personales retirados del repo público; la migración ya está aplicada en producción y este texto no se vuelve a ejecutar. En una base nueva, el administrador y los accesos permanentes se dan de alta a mano.
 -- Quitar el grandfathering a los usuarios REALES que ya tienen la prueba
 -- vencida, para que reciban el aviso de fin de periodo (pedido explicito del
 -- usuario, 2026-09-25: "hay un usuario que debiera recibirlo").
@@ -8,9 +9,9 @@
 -- para quien de verdad toca.
 --
 -- QUIEN SE QUEDA FUERA, y por que:
---   - El admin (etxebe2005@gmail.com): tiene acceso permanente, el aviso no
+--   - El admin (admin@costaviva.invalid): tiene acceso permanente, el aviso no
 --     aplica.
---   - Los alias de prueba (etxebe2005+...@gmail.com): son las cuentas de
+--   - Los alias de prueba (admin+...@costaviva.invalid): son las cuentas de
 --     smoke-test.yml y auth-test.yml. Peticion explicita del usuario: "de los
 --     actuales, no hace falta enviar a los emails de prueba". Ademas llegan
 --     todos al mismo buzon, asi que solo serian ruido.
@@ -31,8 +32,8 @@ begin
       select 1 from auth.users u
       where u.id = p.id
         and u.email_confirmed_at is not null
-        and u.email <> 'etxebe2005@gmail.com'
-        and u.email not like 'etxebe2005+%'
+        and u.email <> 'admin@costaviva.invalid'
+        and u.email not like 'admin+%'
     )
     and not exists (
       select 1 from public.suscripciones s

@@ -1,3 +1,4 @@
+-- 2026-11-05: emails personales retirados del repo público; la migración ya está aplicada en producción y este texto no se vuelve a ejecutar. En una base nueva, el administrador y los accesos permanentes se dan de alta a mano.
 -- Costa Viva — corrige un bug de seguridad real en es_admin()
 --
 -- Encontrado probando en real, minutos después de aplicar la migración
@@ -21,5 +22,5 @@ security definer
 set search_path = public
 stable
 as $$
-  select coalesce(auth.email() = 'etxebe2005@gmail.com', false);
+  select coalesce(auth.email() = 'admin@costaviva.invalid', false);
 $$;

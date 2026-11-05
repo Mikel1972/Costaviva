@@ -1120,24 +1120,20 @@
     if (conAcceso) {
       window.quitarPantallaInicio();
       // Enlace al panel de administrador (2026-09-13, pedido explícito del
-      // usuario): solo visible para su propia cuenta — el panel en sí ya
-      // rechaza a cualquier otra por su cuenta (es_admin() en Supabase),
-      // esto es solo para no mostrar el icono a nadie más.
-      if (data.session.user.email === "etxebe2005@gmail.com") {
-        document.getElementById("enlaceAdmin").style.display = "flex";
-        // Solo cosmético (2026-10-08): el admin ve el origen y la confianza
-        // de las reglas expertas en el porqué de la ventana de actividad; el
-        // resto de usuarios ve una etiqueta neutra. No protege nada.
-        window.esAdminCostaviva = true;
-      }
-      // Selector de fuentes del panel de spot (2026-10-08): solo si la RPC
-      // es_admin() de Supabase dice true (decisión del servidor, no del
-      // email en el cliente). El proxy /meteo/ lo vuelve a comprobar con el
-      // JWT en cada petición, así que ocultarlo es solo para no enseñarlo.
+      // usuario) y selector de fuentes del panel de spot (2026-10-08): solo
+      // si la RPC es_admin() de Supabase dice true (decisión del servidor, no
+      // del email en el cliente; desde 2026-11-05 tampoco el icono). El panel
+      // y el proxy /meteo/ lo vuelven a comprobar con el JWT en cada
+      // petición, así que ocultarlo es solo para no enseñarlo.
       try {
         const { data: esAdm, error: errAdm } = await supabase.rpc("es_admin");
         if (!errAdm && esAdm === true) {
           window.esAdminServidor = true;
+          document.getElementById("enlaceAdmin").style.display = "flex";
+          // Solo cosmético (2026-10-08): el admin ve el origen y la confianza
+          // de las reglas expertas en el porqué de la ventana de actividad; el
+          // resto de usuarios ve una etiqueta neutra. No protege nada.
+          window.esAdminCostaviva = true;
           document.getElementById("adminFuentes").hidden = false;
           // Visitas internas (2026-10-12, Mikel: "que la tabla separe mis
           // propias visitas"): este navegador queda marcado un año y el

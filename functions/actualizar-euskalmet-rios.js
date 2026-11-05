@@ -101,12 +101,13 @@ const OBJETIVOS = [
 ];
 
 const EUSKALMET_BASE = "https://api.euskadi.eus";
-// Cuenta real asociada a la clave privada actual — no es datos@costaviva.org
-// (ese alta nunca llegó a completarse: Cloudflare Email Routing descarta
-// cualquier correo que no pase SPF/DKIM, y opendata.euskadi.eus no los
-// tiene bien configurados). Si se renueva la clave con otra cuenta, hay
-// que actualizar esto también.
-const EUSKALMET_EMAIL = "cot2038@gmail.com";
+// Email de la cuenta asociada a la clave privada actual: va en el JWT. No es
+// datos@costaviva.org (ese alta nunca llegó a completarse: Cloudflare Email
+// Routing descarta cualquier correo que no pase SPF/DKIM, y
+// opendata.euskadi.eus no los tiene bien configurados). Desde 2026-11-05 se
+// lee del secret EUSKALMET_EMAIL de Cloudflare Pages: es una dirección
+// personal y el repo es público. Si se renueva la clave con otra cuenta, hay
+// que cambiar también ese secret.
 const EUSKALMET_ISS = "Costaviva";
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
@@ -136,10 +137,10 @@ function pemADer(pem) {
 // firmar de más cuesta CPU real (RSA-sign con Web Crypto agotó el límite
 // de recursos de un Worker al firmar una vez por estación durante las
 // pruebas de esta integración).
-async function firmarJwtEuskalmet(privateKeyPem) {
+async function firmarJwtEuskalmet(privateKeyPem, email) {
   const header = { alg: "RS256", typ: "JWT" };
   const ahoraS = Math.floor(Date.now() / 1000);
-  const payload = { aud: "met01.apikey", iss: EUSKALMET_ISS, exp: ahoraS + 300, iat: ahoraS, version: "1.0.0", email: EUSKALMET_EMAIL };
+  const payload = { aud: "met01.apikey", iss: EUSKALMET_ISS, exp: ahoraS + 300, iat: ahoraS, version: "1.0.0", email };
   const entrada = `${base64UrlDesdeTexto(JSON.stringify(header))}.${base64UrlDesdeTexto(JSON.stringify(payload))}`;
   const clave = await crypto.subtle.importKey("pkcs8", pemADer(privateKeyPem), { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" }, false, ["sign"]);
   const firma = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", clave, new TextEncoder().encode(entrada));
@@ -230,7 +231,16 @@ export async function onRequestPost(context) {
     return new Response(JSON.stringify({ error: "Falta EUSKALMET_API_KEY" }), { status: 500, headers: { "content-type": "application/json" } });
   }
 
-  const jwt = await firmarJwtEuskalmet(privateKeyPem);
+  const euskalmetEmail = context.env.EUSKALMET_EMAIL;
+  if (!euskalmetEmail) {
+    console.error("Falta el secret EUSKALMET_EMAIL en Cloudflare Pages");
+    return new Response(JSON.stringify({ ok: false, error: "Falta el secret EUSKALMET_EMAIL en Cloudflare Pages" }), {
+      status: 503,
+      headers: { "content-type": "application/json" },
+    });
+  }
+
+  const jwt = await firmarJwtEuskalmet(privateKeyPem, euskalmetEmail);
   const ahora = new Date().toISOString();
   const leer = cacheLecturas(jwt);
 

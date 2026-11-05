@@ -1,3 +1,4 @@
+-- 2026-11-05: emails personales retirados del repo público; la migración ya está aplicada en producción y este texto no se vuelve a ejecutar. En una base nueva, el administrador y los accesos permanentes se dan de alta a mano.
 -- Costa Viva — panel de administrador
 --
 -- Pedido explícito del usuario: un panel donde vea quién está inscrito,
@@ -14,7 +15,7 @@
 --
 -- ADMIN_EMAIL hardcodeado a propósito (app de un solo dueño, no hace
 -- falta una tabla de roles para esto) — pedido explícito del usuario:
--- "solo mi cuenta (etxebe2005@gmail.com)".
+-- "solo mi cuenta (admin@costaviva.invalid)".
 create or replace function public.es_admin()
 returns boolean
 language sql
@@ -22,7 +23,7 @@ security definer
 set search_path = public
 stable
 as $$
-  select auth.email() = 'etxebe2005@gmail.com';
+  select auth.email() = 'admin@costaviva.invalid';
 $$;
 
 -- Lista todos los perfiles (RLS de "perfiles" solo deja ver la fila

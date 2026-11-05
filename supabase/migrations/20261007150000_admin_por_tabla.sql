@@ -1,3 +1,4 @@
+-- 2026-11-05: emails personales retirados del repo público; la migración ya está aplicada en producción y este texto no se vuelve a ejecutar. En una base nueva, el administrador y los accesos permanentes se dan de alta a mano.
 -- Costa Viva — es_admin() deja de depender de un email fijo en SQL
 --
 -- MOTIVO (Mikel1972/comun, estandares/auth.md A4; 2026-10-07): es_admin()
@@ -28,7 +29,7 @@ comment on table public.administradores is 'Cuentas con rol de administrador (es
 -- Alta única de la cuenta del dueño (la misma que tenía es_admin()). El
 -- email solo se usa aquí para encontrar su user_id; la regla ya no lo usa.
 insert into public.administradores (user_id)
-select u.id from auth.users u where lower(u.email) = lower('etxebe2005@gmail.com')
+select u.id from auth.users u where lower(u.email) = lower('admin@costaviva.invalid')
 on conflict (user_id) do nothing;
 
 do $$
