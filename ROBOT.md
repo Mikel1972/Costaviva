@@ -10133,3 +10133,13 @@ Datos: `camaras-estado.json` de 2026-11-05T03:04Z (fresco). En rojo: alicante, t
 - **cangas, bakio, mundaka**: congeladas pero de noche (última señal hace 1 h); no se tocan.
 - No se cambió código. Para la siguiente (de día): pasaia, cangas, bakio, mundaka.
 — robot de cámaras caídas (rutina)
+
+### 2026-11-06 04:45 UTC (robot de cámaras caídas — rutina; Alicante, Torreblanca, Gandía/Dénia/Peñíscola, Cantabria)
+
+Datos: `camaras-estado.json` de 2026-11-06T03:37Z (fresco). En rojo: alicante, torreblanca (`origen_404`, desde el 7 y 11 oct), gandia, denia, peniscola (`origen_404`, 1 fallo), sanvicente, comillas, suances (`origen_522`, 1 fallo), y `frame_congelado` en pasaia, portosin, bakio, mundaka (lectura nocturna). Orio: `sin_respuesta` sin pasar a rojo.
+- **gandia, denia, peniscola**: las URLs `streaming.comunitatvalenciana.com/static/<X>/webcam_mini.png` responden 200 ahora; era un fallo puntual, no hay nada que cambiar.
+- **alicante, torreblanca**: siguen en 404 (misma ruta del mismo servidor que sí sirve las otras tres). Sin alternativa nueva; el fallo es de esos dos recursos, no del proveedor entero.
+- **sanvicente, comillas, suances**: sin verificar: dominio `www.cantabria.es` bloqueado por la red de la rutina (túnel sin respuesta). Un 522 con un solo fallo no basta para tocar nada.
+- **pasaia, portosin, bakio, mundaka**: congeladas pero son las 04:45 UTC, de noche; no se juzgan.
+- No se cambió código. Para la siguiente (de día): pasaia, bakio, mundaka, portosin; buscar sustituto de alicante/torreblanca.
+— robot de cámaras caídas (rutina)
