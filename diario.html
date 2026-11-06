@@ -1449,7 +1449,7 @@ function contextoHTML(salida) {
       ? I18n.t(salida.marea_pico_tipo === "pleamar" ? "diario.f.pleamar_a" : "diario.f.bajamar_a", { hora: salida.marea_pico_hora })
       : "—"],
     [I18n.t("diario.f.coef"), salida.marea_coeficiente != null ? String(salida.marea_coeficiente) : "—"],
-    [I18n.t("diario.f.viento"), salida.viento_kmh != null ? I18n.velocidad(salida.viento_kmh) : "—"],
+    [I18n.t("diario.f.viento"), salida.viento_kmh != null ? `${I18n.velocidad(salida.viento_kmh)}${salida.viento_dir ? ` ${salida.viento_dir}` : ""}` : "—"],
     [I18n.t("diario.f.oleaje"), CondSalida.textoOleaje(salida.oleaje_altura_min, salida.oleaje_altura_max)],
     [I18n.t("diario.f.presion"), salida.presion_valor != null ? `${salida.presion_valor} hPa` : "—"],
     [I18n.t("diario.f.luna"), salida.luna_fase ? textoFaseLunaDiario(salida.luna_fase) : "—"],
