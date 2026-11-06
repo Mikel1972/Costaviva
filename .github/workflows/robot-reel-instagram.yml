@@ -72,7 +72,7 @@ concurrency:
 jobs:
   generar-y-proponer:
     if: ${{ vars.AUTOMATION_PAUSED != 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # Playwright 1.56.1 no soporta Ubuntu 26.04 (2026-11-06)
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
