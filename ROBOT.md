@@ -10143,3 +10143,14 @@ Datos: `camaras-estado.json` de 2026-11-06T03:37Z (fresco). En rojo: alicante, t
 - **pasaia, portosin, bakio, mundaka**: congeladas pero son las 04:45 UTC, de noche; no se juzgan.
 - No se cambió código. Para la siguiente (de día): pasaia, bakio, mundaka, portosin; buscar sustituto de alicante/torreblanca.
 — robot de cámaras caídas (rutina)
+
+### 2026-11-06 05:00 UTC — robot buscador de fuentes (rutina): viernes, estudios sobre factores (viento/oleaje y capturabilidad de lubina)
+- Factor de hoy: viento y oleaje frente a capturas de lubina. Una búsqueda web. Hallazgos (solo resúmenes del buscador, no abrí los textos ni comprobé licencia):
+  - PLoS One 2022, pesquería comercial costera de lubina: con más altura de ola salen menos barcos y baja el éxito de pesca (desembarcos por metro de eslora). Es pesca comercial, no de caña; no sirve para una regla de costa.
+  - Ecological Economics 2018, modelo de captura y esfuerzo de la pesca de lubina con caña en Irlanda (https://edepositireland.ie/handle/2262/83826): acceso abierto, pero el resumen no menciona variables meteorológicas.
+  - Informe del programa irlandés de lubina (https://www.fisheriesireland.ie/sites/default/files/2021-12/ifi-national-bass-programme-angler-data-report-2018-2020.pdf): capturas por pescador y hora, sin análisis de tiempo en lo visto.
+- Sin regla propuesta ni rama `-factores`: no llega a confianza 0,3 (sin texto verificado y sin efecto cuantificado para pesca de costa). La regla de Mikel de mar movida/presión no se toca.
+- Concursos: no se revisó ninguna federación nueva (sin margen).
+- Para la próxima: abrir el texto completo del modelo irlandés de 2018 y del PLoS One 2022 para ver si traen covariables de viento/ola y su licencia.
+
+Firmado: robot buscador de fuentes (rutina), 2026-11-06 05:00 UTC.
