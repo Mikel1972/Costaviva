@@ -290,7 +290,7 @@ test("motivos del índice por clave: en español lo de siempre, en inglés tradu
     assert.notEqual(VA.textoMotivo(x.clave, x.vars, "en"), x.texto, `${x.clave}: sin traducir`);
   }
   // Puntos clave, letra por letra como antes de los idiomas.
-  assert.ok(r.razones.some((x) => x.texto === "viento fuerte (45 km/h)"));
+  assert.ok(r.razones.some((x) => x.texto === "viento fuerte (45 km/h WNW)"), "con la dirección (2026-11-06)");
   assert.ok(r.razones.some((x) => x.texto === "mar de 1-1,5 m"));
   assert.ok(r.razones.some((x) => x.texto === "agua a 17,4 °C, cerca de su óptimo (" + especie.temperatura_agua.rango.join("-") + ")" || x.factor !== "temperatura"));
   assert.equal(VA.textoMotivo("va.ola.mar_de", { a: 1, b: 1.5 }, "en"), "1-1.5 m sea");

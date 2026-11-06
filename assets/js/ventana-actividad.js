@@ -109,7 +109,12 @@ export function textoMotivo(clave, vars, idioma, metrico = false) {
   const v = { ...vars };
   for (const [k, tipo] of Object.entries(u)) {
     const n = numeroDe(vars[k]);
-    if (vars[k] !== null && vars[k] !== undefined && vars[k] !== "" && Number.isFinite(n)) v[k] = conUnidad(n, tipo, idioma, metrico);
+    if (vars[k] !== null && vars[k] !== undefined && vars[k] !== "" && Number.isFinite(n)) {
+      v[k] = conUnidad(n, tipo, idioma, metrico);
+      // Viento con su dirección (2026-11-06): "viento fuerte (35 km/h NW)".
+      // Los motivos guardados antes no llevan `dir`: solo la velocidad.
+      if (tipo === "kmh" && I18n.rumbo(vars.dir)) v[k] += " " + I18n.rumbo(vars.dir);
+    }
   }
   return t(clave, v, idioma);
 }
@@ -610,10 +615,12 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
       anota("oleaje", v, rangoOla(h.ola));
     }
 
-    // Viento: solo penaliza por encima del máximo cómodo
+    // Viento: solo penaliza por encima del máximo cómodo. `dir`: de dónde
+    // viene, en rumbos (vientoDir llega en grados).
+    const vientoVars = (extra) => ({ ...extra, v: Math.round(h.viento), ...(I18n.rumbo(h.vientoDir) ? { dir: I18n.rumbo(h.vientoDir) } : {}) });
     if (cuenta("viento", h.viento !== null && h.viento !== undefined) && pesoLogOdds(reglas.viento)) {
       const vmax = reglas.viento.max_kmh || 30;
-      if (h.viento > vmax) anota("viento", -clamp((h.viento - vmax) / 20, 0.2, 1), tx("va.viento.fuerte", { v: Math.round(h.viento) }));
+      if (h.viento > vmax) anota("viento", -clamp((h.viento - vmax) / 20, 0.2, 1), tx("va.viento.fuerte", vientoVars()));
     }
 
     // Embarcación: avisos de seguridad (kayak / embarcación pequeña). Se
@@ -628,13 +635,13 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
         const porViento = hayViento && h.viento > nv.viento_max_kmh;
         const porOla = hayOla && h.ola > nv.ola_max_m;
         if ((porViento || porOla) && !avisos.length) {
-          const motivoEn = (id, metrico) => [porViento && textoMotivo("va.seg.viento", { v: Math.round(h.viento) }, id, metrico), porOla && textoMotivo("va.seg.ola", { v: h.ola }, id, metrico)].filter(Boolean).join(t("va.seg.y", null, id));
+          const motivoEn = (id, metrico) => [porViento && textoMotivo("va.seg.viento", vientoVars(), id, metrico), porOla && textoMotivo("va.seg.ola", { v: h.ola }, id, metrico)].filter(Boolean).join(t("va.seg.y", null, id));
           const nvTexto = I18n.dato(nv, "texto");
           avisos.push({ nivel: nv.id, texto: `${nvTexto} (${motivoEn()})` });
           notas.push({ factor: "seguridad", texto: `⚠ ${nvTexto} (${motivoEn()})`, textoEs: `⚠ ${nv.texto} (${motivoEn("es", true)})`, aporte: 0 });
         }
         if (porViento) {
-          topes.push({ tope: nv.tope, texto: textoMotivo("va.seg.tope", { nivel: I18n.dato(nv, "texto"), v: Math.round(h.viento), tope: nv.tope }), textoEs: textoMotivo("va.seg.tope", { nivel: nv.texto, v: Math.round(h.viento), tope: nv.tope }, "es", true) });
+          topes.push({ tope: nv.tope, texto: textoMotivo("va.seg.tope", vientoVars({ nivel: I18n.dato(nv, "texto"), tope: nv.tope })), textoEs: textoMotivo("va.seg.tope", vientoVars({ nivel: nv.texto, tope: nv.tope }), "es", true) });
           break;
         }
       }

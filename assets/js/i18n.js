@@ -26,7 +26,8 @@
 //     El HTML conserva el texto en español: en español no se toca nada.
 //   - texto que pinta el JS: I18n.t("clave", { n: 3, nombre: "..." }).
 //   - números y unidades: I18n.num, I18n.temp (y difTemp), I18n.metros
-//     (y rangoMetros, unidadMetros), I18n.velocidad,
+//     (y rangoMetros, unidadMetros), I18n.velocidad (I18n.viento con la
+//     dirección: "15 km/h NW"; I18n.rumbo),
 //     I18n.distancia, I18n.centimetros, I18n.kilos, I18n.fecha,
 //     I18n.fechaNumerica, I18n.locale(). Respetan las PREFERENCIAS del usuario
 //     (2026-10-12, Mikel: "el viento se suele dar también en nudos; en el
@@ -343,6 +344,25 @@
     var v = velocidadNumero(kmh, u);
     return (u === "ms" ? num(v, 1, idioma) : String(Math.round(v))) + " " + unidadVelocidad(u, idioma);
   }
+  // Dirección del viento (de dónde viene) en 16 rumbos, con las mismas letras
+  // que ya usa la app en el panel del spot, /prevision y el diario
+  // (RUMBOS_16 de index.html, viento_dir de salidas_pesca): N, NNE... NW, NNW,
+  // en los tres idiomas (2026-11-06, Mikel: "además de la intensidad del
+  // viento hay que poner la dirección"). Acepta grados o un rumbo ya escrito.
+  var RUMBOS_16 = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
+  function rumbo(dir) {
+    if (dir === null || dir === undefined || dir === "") return "";
+    if (typeof dir === "string" && !/^-?[0-9.]+$/.test(dir.trim())) return dir.trim().split(" ")[0];
+    var g = Number(dir);
+    if (!Number.isFinite(g)) return "";
+    return RUMBOS_16[Math.round((((g % 360) + 360) % 360) / 22.5) % 16];
+  }
+  // "15 km/h NW" (o "8 kn NW"); sin dirección, solo la velocidad.
+  function viento(kmh, dir, unidad, idioma) {
+    var v = velocidad(kmh, unidad, idioma);
+    var r = rumbo(dir);
+    return v && r ? v + " " + r : v;
+  }
   // Fecha en números con el formato elegido: 31/12/2026, 12/31/2026 o 2026-12-31.
   function fechaNumerica(d, conAnio) {
     var x = new Date(d);
@@ -587,6 +607,8 @@
     temp: temp,
     metros: metros,
     velocidad: velocidad,
+    rumbo: rumbo,
+    viento: viento,
     locale: locale,
     mesesCortos: mesesCortos,
     fecha: fecha,
