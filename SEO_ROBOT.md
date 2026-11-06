@@ -46,3 +46,13 @@ Una entrada por pasada (martes y viernes), añadida al final. Anota números de 
 - SEO invisible (PARTE A) y diseño (PARTE B): ninguno esta pasada; sin datos que lo justifiquen.
 - KPIs (PARTE D): es viernes, solo martes. DeepL: día 23, no aplica.
 - Esperado próxima pasada: PR fusionada; 22 indexadas o más; "Descubierta" por debajo de 344; posición de los 4 términos igual o mejor a 2 semanas.
+
+## 2026-11-06 05:4x UTC (viernes)
+- Aviso: SEO_ESTADO.md es del 2026-11-03 11:17 UTC (no de hoy).
+- Números: indexadas 32 de 500 inspeccionadas (6%; antes 22: +10). Sitemap 558 URLs. 380 "Descubierta: sin indexar" (antes 344), 87 "Google no reconoce esta URL" (antes 133), 467 sin rastrear nunca. Google, 28 días: 17 clics, 925 impresiones, CTR 1,8 %, posición 29,8 (la entrada anterior no traía estas cifras). /especies/calamar: 7 clics, 220 impresiones.
+- País priorizado: España (pais_foco; real 0 frente a objetivo 7,57 €; Portugal y NZ también en rojo, sin visitas medibles en PT).
+- PARTE C: ningún cambio. Los huecos con más puntuación (calamar, chipirón, mareas Euskadi/País Vasco) ya tienen cambios hechos el 23 y 30-oct, aún sin medir; tocarlos otra vez impediría saber si funcionaron. /mareas/<spot> ya lleva pleamar, bajamar y oleaje en título y descripción. Técnicas (spinning…): sin datos reales con fuente, no se crean.
+- Veredictos: los dos cambios en comun siguen "pendiente"; nada que revertir.
+- PARTE A y B: ninguna; sin datos que lo justifiquen.
+- PARTE D: viernes, KPIs solo martes. DeepL: lanzado "Contraste de traducciones con DeepL" (idioma=pt, ref main); el de en, en la pasada siguiente del mes. Informe aún sin leer ni aplicar.
+- Esperado próxima pasada: 32 o más indexadas; "Descubierta" estancada o a la baja; primeros veredictos a 2 semanas de los cambios del 23-oct.
