@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-06T08:08:02.233Z",
- "lineasHistorial": 8185,
+ "fecha": "2026-11-06T08:38:27.862Z",
+ "lineasHistorial": 8195,
  "etiquetas": 614,
  "etiquetasClaude": 223,
  "calibracion": {
@@ -53,9 +53,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 3.2036,
+   "a": 3.2061,
    "p": 0.5,
-   "n": 644,
+   "n": 645,
    "nEtiquetas": 88,
    "nEtiquetasClaude": 29,
    "franjasClaude": [
@@ -84,7 +84,7 @@
     "2026-11-04T16",
     "2026-11-05T16"
    ],
-   "dias": 29,
+   "dias": 30,
    "hMin": 0.3,
    "hMax": 6.97,
    "errorRel": 1,
@@ -123,9 +123,9 @@
    "pocosDatos": false
   },
   "deba/rompiente": {
-   "a": 3.9233,
+   "a": 3.9323,
    "p": 0.5,
-   "n": 218,
+   "n": 219,
    "nEtiquetas": 24,
    "nEtiquetasClaude": 12,
    "franjasClaude": [
@@ -140,7 +140,7 @@
     "2026-11-01T16",
     "2026-11-04T16"
    ],
-   "dias": 28,
+   "dias": 29,
    "hMin": 0.3,
    "hMax": 6.97,
    "errorRel": 1,
@@ -171,9 +171,9 @@
    "pocosDatos": false
   },
   "bakio/principal": {
-   "a": 3.0527,
+   "a": 3.0284,
    "p": 0.5,
-   "n": 89,
+   "n": 90,
    "nEtiquetas": 8,
    "nEtiquetasClaude": 11,
    "franjasClaude": [
@@ -189,10 +189,10 @@
     "2026-11-04T14",
     "2026-11-05T14"
    ],
-   "dias": 25,
-   "hMin": 0.63,
+   "dias": 26,
+   "hMin": 0.6,
    "hMax": 4.62,
-   "errorRel": 0.855,
+   "errorRel": 0.863,
    "pocosDatos": false
   },
   "sopelana/principal": {
@@ -233,9 +233,9 @@
    "pocosDatos": true
   },
   "castrourdiales/principal": {
-   "a": 3.5969,
+   "a": 3.5889,
    "p": 0.5,
-   "n": 130,
+   "n": 131,
    "nEtiquetas": 26,
    "nEtiquetasClaude": 6,
    "franjasClaude": [
@@ -246,7 +246,7 @@
     "2026-11-01T16",
     "2026-11-03T16"
    ],
-   "dias": 23,
+   "dias": 24,
    "hMin": 0.3,
    "hMax": 4.51,
    "errorRel": 1,
@@ -476,7 +476,7 @@
    "motivo": "91 etiquetas",
    "ruido": {
     "ruido": 0.543,
-    "pares": 486
+    "pares": 487
    }
   },
   "getaria": {
@@ -547,8 +547,8 @@
    "sustituye": true,
    "motivo": "26 etiquetas",
    "ruido": {
-    "ruido": 0.436,
-    "pares": 57
+    "ruido": 0.433,
+    "pares": 58
    }
   },
   "nz-napier": {
