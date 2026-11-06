@@ -1,13 +1,13 @@
 {
- "fecha": "2026-11-06T11:38:01.465Z",
- "lineasHistorial": 8261,
+ "fecha": "2026-11-06T12:07:48.600Z",
+ "lineasHistorial": 8271,
  "etiquetas": 614,
  "etiquetasClaude": 223,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.1999,
+   "a": 1.1958,
    "p": 0.5,
-   "n": 241,
+   "n": 242,
    "nEtiquetas": 34,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -53,9 +53,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 3.2086,
+   "a": 3.2108,
    "p": 0.5,
-   "n": 651,
+   "n": 652,
    "nEtiquetas": 88,
    "nEtiquetasClaude": 29,
    "franjasClaude": [
@@ -171,9 +171,9 @@
    "pocosDatos": false
   },
   "bakio/principal": {
-   "a": 2.9936,
+   "a": 2.9832,
    "p": 0.5,
-   "n": 92,
+   "n": 93,
    "nEtiquetas": 8,
    "nEtiquetasClaude": 11,
    "franjasClaude": [
@@ -192,7 +192,7 @@
    "dias": 26,
    "hMin": 0.6,
    "hMax": 4.62,
-   "errorRel": 0.867,
+   "errorRel": 0.864,
    "pocosDatos": false
   },
   "sopelana/principal": {
@@ -253,9 +253,9 @@
    "pocosDatos": false
   },
   "berria/dinamico": {
-   "a": 3.0489,
+   "a": 3.0482,
    "p": 0.5,
-   "n": 310,
+   "n": 311,
    "nEtiquetas": 43,
    "nEtiquetasClaude": 15,
    "franjasClaude": [
@@ -268,7 +268,7 @@
     "2026-10-27T16",
     "2026-11-04T16"
    ],
-   "dias": 29,
+   "dias": 30,
    "hMin": 0.3,
    "hMax": 4.73,
    "errorRel": 1,
@@ -303,13 +303,13 @@
    "pocosDatos": false
   },
   "getaria/malkorbe": {
-   "a": 4.6621,
+   "a": 4.6268,
    "p": 0.5,
-   "n": 20,
+   "n": 21,
    "nEtiquetas": 3,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
-   "dias": 9,
+   "dias": 10,
    "hMin": 0.3,
    "hMax": 4.23,
    "errorRel": 1,
@@ -451,8 +451,8 @@
    "sustituye": true,
    "motivo": "36 etiquetas",
    "ruido": {
-    "ruido": 0.58,
-    "pares": 112
+    "ruido": 0.573,
+    "pares": 113
    }
   },
   "donostia": {
@@ -475,16 +475,16 @@
    "sustituye": true,
    "motivo": "91 etiquetas",
    "ruido": {
-    "ruido": 0.546,
-    "pares": 493
+    "ruido": 0.547,
+    "pares": 494
    }
   },
   "getaria": {
    "sustituye": true,
    "motivo": "≥ 3 días con alturas variadas",
    "ruido": {
-    "ruido": 0.964,
-    "pares": 6
+    "ruido": 0.806,
+    "pares": 7
    }
   },
   "zumaia": {
@@ -539,8 +539,8 @@
    "sustituye": true,
    "motivo": "43 etiquetas",
    "ruido": {
-    "ruido": 0.886,
-    "pares": 149
+    "ruido": 0.903,
+    "pares": 150
    }
   },
   "castrourdiales": {
