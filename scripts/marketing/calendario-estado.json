@@ -184,6 +184,11 @@
       "tipo": "reel-especie",
       "campana": "20261107-reel-especie-nz-kingfish",
       "en": "2026-11-06T05:22:45.175Z"
+    },
+    "2026-11-08-post-nz": {
+      "tipo": "especies-nz",
+      "campana": "20261108-especies-nz-kingfish",
+      "en": "2026-11-07T06:02:01.596Z"
     }
   },
   "ultimaFuncion": "alarma"
