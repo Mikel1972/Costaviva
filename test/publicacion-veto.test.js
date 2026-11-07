@@ -219,3 +219,13 @@ test("Nueva Zelanda: sale sola con veto, como España (Mikel, 2026-11-07)", () =
   const esConNz = V.decidir(base({ ahora: EN_HORA, publicados: { instagram: [hoyNz], facebook: [hoyNz] } }));
   assert.equal(esConNz.accion, "publicar");
 });
+
+test("NZ: la hora de la pieza es la de Auckland, no la de Madrid (#420)", () => {
+  const nz = { ...PIEZA, mercado: "nz", fecha: "2026-11-08", hora: "07:00", creadoEn: "2026-11-07T06:03:00Z" };
+  // 07:00 NZDT del 8/11 = 18:00 UTC del 7/11; el aviso de 12 h acaba a las 18:03.
+  assert.equal(V.momentoPublicacion(nz, "2026-11-07T06:03:00Z").toISOString(), "2026-11-07T18:03:00.000Z");
+  const d = V.decidir(base({ pieza: nz, creado: "2026-11-07T06:03:00Z", ahora: new Date("2026-11-07T18:05:00Z") }));
+  assert.equal(d.accion, "publicar");
+  // España sigue en hora de Madrid.
+  assert.equal(V.momentoPublicacion({ ...PIEZA, fecha: "2026-11-08", hora: "09:00" }, "2026-11-07T17:00:00Z").toISOString(), "2026-11-08T08:00:00.000Z");
+});
