@@ -1,13 +1,13 @@
 {
- "fecha": "2026-11-07T12:07:41.162Z",
- "lineasHistorial": 8523,
+ "fecha": "2026-11-07T12:37:51.130Z",
+ "lineasHistorial": 8533,
  "etiquetas": 619,
  "etiquetasClaude": 228,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.1796,
+   "a": 1.1762,
    "p": 0.5,
-   "n": 248,
+   "n": 249,
    "nEtiquetas": 34,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -123,9 +123,9 @@
    "pocosDatos": false
   },
   "deba/rompiente": {
-   "a": 3.9033,
+   "a": 3.9025,
    "p": 0.5,
-   "n": 222,
+   "n": 223,
    "nEtiquetas": 24,
    "nEtiquetasClaude": 12,
    "franjasClaude": [
