@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-07T13:37:44.504Z",
- "lineasHistorial": 8553,
+ "fecha": "2026-11-07T14:07:53.678Z",
+ "lineasHistorial": 8563,
  "etiquetas": 619,
  "etiquetasClaude": 228,
  "calibracion": {
@@ -253,9 +253,9 @@
    "pocosDatos": false
   },
   "berria/dinamico": {
-   "a": 3.0606,
+   "a": 3.0642,
    "p": 0.5,
-   "n": 322,
+   "n": 323,
    "nEtiquetas": 43,
    "nEtiquetasClaude": 16,
    "franjasClaude": [
