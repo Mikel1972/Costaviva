@@ -671,11 +671,12 @@ es "automático con veto de 12 h". El publicador manual sigue existiendo.
   no hay veto, publica en Instagram y Facebook con
   `scripts/marketing/publicar-pieza.mjs` (la misma lógica que el manual,
   mismo grupo de `concurrency`) y cierra el Issue con los enlaces.
-- **Excepción: Nueva Zelanda.** Las piezas con `mercado: "nz"` nunca salen
-  solas (`decidir()` de `veto.mjs` las salta y su Issue no dice "se publica
-  sola"): siguen saliendo solo con el OK de Mikel, por el workflow manual
-  (petición de Mikel del 2026-10-11 para NZ). Sus reels no llevan clip si su
-  ficha no dice `persona_identificable: false`.
+- **Nueva Zelanda: también sola con veto desde el 2026-11-07** (Mikel:
+  "Publica"; hasta entonces solo con su OK, y las que nadie aprobó se
+  perdían). El máximo de 1 al día por red cuenta por mercado
+  (`publicadaHoy(..., mercado)`, el de cada publicación sale de su campaña:
+  `-nz-`): España a las 09:00 y NZ a las 19:00 de Madrid no se pisan. Sus
+  reels siguen sin clip si su ficha no dice `persona_identificable: false`.
 - **Cómo veta Mikel** (basta una): etiqueta `veto` en el Issue, o un
   comentario suyo (autor = dueño del repo) con la palabra "no" o "veto" (en
   caso de duda gana el veto; los comentarios de otros no vetan). Interruptor
@@ -781,12 +782,13 @@ Fase decidida por Mikel: todo a conseguir usuarios (0 suscriptores el
    Mikel) con `lanzar_marketing_nz()`, que solo admite los dos
    robots de marketing y siempre manda `mercado=nz` (la función general lanza
    sin inputs = España); el segundo `schedule:` de GitHub (06:40 / 06:20
-   UTC) es el respaldo. Mikel las ve por la mañana y se publican a
+   UTC) es el respaldo; sin fecha, antes de las 12:00 locales no se
+   prepara nada (un respaldo retrasado haría la de pasado mañana, #404).
+   Mikel las ve por la mañana y se publican a
    las 20:00 (19:00 en invierno de NZ) de la víspera en España; el Issue dice
    las dos horas (`textoCuando`) y lleva "🇳🇿 NZ" en el título. Clave del
-   estado `AAAA-MM-DD-post-nz` (no choca con la de España). **La regla no
-   cambia: cada pieza sale solo con el OK de Mikel** (workflow manual
-   "Publicar post de Instagram"). Mismo `{ENLACE}` y UTM (campaña
+   estado `AAAA-MM-DD-post-nz` (no choca con la de España). Desde el
+   2026-11-07 salen solas con el veto de 12 h, como las de España. Mismo `{ENLACE}` y UTM (campaña
    `AAAAMMDD-especies-nz-…` / `-condiciones-nz-…`; en Instagram "or tap the
    link in bio"). Tema: zonas de `ZONAS_NZ` en ciclos completos
    (`rotacion-zonas-nz.json`), dentro del ciclo primero la más buscada en NZ
