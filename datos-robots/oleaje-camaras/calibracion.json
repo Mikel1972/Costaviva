@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-07T08:08:17.810Z",
- "lineasHistorial": 8440,
+ "fecha": "2026-11-07T08:38:32.036Z",
+ "lineasHistorial": 8451,
  "etiquetas": 619,
  "etiquetasClaude": 228,
  "calibracion": {
@@ -53,9 +53,9 @@
    "pocosDatos": false
   },
   "zarautz/dinamico": {
-   "a": 3.2239,
+   "a": 3.2243,
    "p": 0.5,
-   "n": 659,
+   "n": 660,
    "nEtiquetas": 88,
    "nEtiquetasClaude": 29,
    "franjasClaude": [
@@ -84,7 +84,7 @@
     "2026-11-04T16",
     "2026-11-05T16"
    ],
-   "dias": 30,
+   "dias": 31,
    "hMin": 0.3,
    "hMax": 6.97,
    "errorRel": 1,
