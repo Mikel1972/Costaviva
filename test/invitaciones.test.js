@@ -371,24 +371,28 @@ test("admin-invitaciones: anular borra el cupón sin usar y marca anulada_en", a
   assert.ok(llamadas.some((l) => l.metodo === "DELETE" && /cup_9/.test(l.url)));
 });
 
+// El endpoint mira la hora real: una invitación que no caduca nunca durante
+// la prueba (2026-11-07: base() caducaba ese día y la prueba empezó a fallar).
+const vigente = () => ({ ...base(), caduca_en: "2099-01-01T00:00:00Z" });
+
 test("canjear-invitacion: otro email rechazado; el canje es condicionado (un solo uso)", async () => {
   const req = (codigo) => new Request("https://costaviva.org/canjear-invitacion", {
     method: "POST", headers: { Authorization: "Bearer tok-user", "content-type": "application/json" }, body: JSON.stringify({ codigo }),
   });
-  simular([sesion("otra@b.es"), [/invitaciones\?codigo=eq\./, () => respuesta([base()])]]);
+  simular([sesion("otra@b.es"), [/invitaciones\?codigo=eq\./, () => respuesta([vigente()])]]);
   let r = await canje.onRequestPost({ request: req("abcd-efgh-jklm"), env: ENV });
   assert.equal(r.status, 403);
   assert.equal((await r.json()).codigo, "otro_email");
 
   // Carrera perdida: el PATCH condicionado no devuelve filas → "usada".
-  simular([sesion("ana@ejemplo.com"), [/invitaciones\?codigo=eq\./, () => respuesta([base()])], [/invitaciones\?id=eq\..*user_id=is\.null/, () => respuesta([])]]);
+  simular([sesion("ana@ejemplo.com"), [/invitaciones\?codigo=eq\./, () => respuesta([vigente()])], [/invitaciones\?id=eq\..*user_id=is\.null/, () => respuesta([])]]);
   r = await canje.onRequestPost({ request: req("ABCDEFGHJKLM"), env: ENV });
   assert.equal((await r.json()).codigo, "usada");
 
   simular([
     sesion("ana@ejemplo.com"),
-    [/invitaciones\?codigo=eq\./, () => respuesta([base()])],
-    [/invitaciones\?id=eq\..*user_id=is\.null&anulada_en=is\.null/, (u, o) => respuesta([{ ...base(), ...JSON.parse(o.body) }])],
+    [/invitaciones\?codigo=eq\./, () => respuesta([vigente()])],
+    [/invitaciones\?id=eq\..*user_id=is\.null&anulada_en=is\.null/, (u, o) => respuesta([{ ...vigente(), ...JSON.parse(o.body) }])],
     [/perfiles\?id=eq\./, () => new Response(null, { status: 204 })],
   ]);
   r = await canje.onRequestPost({ request: req("ABCDEFGHJKLM"), env: ENV });
