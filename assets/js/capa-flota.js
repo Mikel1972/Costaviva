@@ -18,6 +18,12 @@
 // cambia, no los clics de las pestañas: así sigue funcionando cuando el
 // selector pase al mapa. porModalidad(m) hace lo mismo a mano.
 //
+// Empieza APAGADA (2026-11-07, Mikel: "Cuando se entra en la app, solamente
+// deben aparecer marcados los spots. Todo lo demás desactivado."): en
+// Embarcación sale el chip "🚤 Flota ▾", plegado, y la capa solo se pinta
+// (y solo se piden los datos) cuando el usuario marca "Ver en el mapa" o
+// toca Hoy/Ayer, la eslora o ▶️. No se guarda: cada visita empieza apagada.
+//
 // Mapa de calor (2026-10-23, Mikel: "como mapa de calor"): manchas suaves
 // de amarillo a rojo en un <canvas> propio, sin librerías (nada nuevo en la
 // CSP). Cada celda es una mancha de ~5 km centrada en la celda, más intensa
@@ -40,7 +46,7 @@ export const CLASES = ["todas", "<24", "24-40", ">40"];
 export const CADUCA_H = 26;
 
 // Gradiente del calor: amarillo -> naranja -> rojo -> granate (no se
-// confunde con los azules de las isóbatas, que también salen en Embarcación).
+// confunde con los azules de las isóbatas, que pueden estar encendidas a la vez).
 export const PARADAS = [
   [0, [255, 224, 102]],
   [0.45, [245, 158, 11]],
@@ -108,7 +114,10 @@ export function celdaCercana(zonas, lat, lon, paso = PASO_CELDA) {
   return mejor;
 }
 
-export const capaVisible = (modalidad) => modalidad === "embarcacion";
+// El control (chip) sale solo en Embarcación; la capa, además, solo si el
+// usuario la encendió en esta visita (ver).
+export const controlVisible = (modalidad) => modalidad === "embarcacion";
+export const capaVisible = (modalidad, ver = false) => controlVisible(modalidad) && ver === true;
 
 // Rectángulo de una celda: esquina sur-oeste + 0,05°.
 export function limitesCelda(lat, lon, paso = PASO_CELDA) {
@@ -134,11 +143,6 @@ export function textoCelda(f) {
   return partes.join(" · ");
 }
 export const claveClase = (c) => ({ todas: "todas", "<24": "menos24", "24-40": "de24a40", ">40": "mas40" })[c];
-
-// En pantallas estrechas el control empieza plegado en un chip "🚤 Flota ▾"
-// (tapaba un tercio del mapa en el móvil); en escritorio, abierto.
-export const ANCHO_PLEGADO = 600;
-export const empiezaPlegado = (ancho = globalThis.innerWidth) => Number.isFinite(ancho) && ancho > 0 && ancho <= ANCHO_PLEGADO;
 
 // ▶️ de los últimos 14 días (2026-10-23): cada fotograma es UN día (de
 // Madrid) de flota_zonas_dia, no un acumulado. Mismo filtro de eslora y
@@ -203,8 +207,8 @@ export const textoVacio = (periodo) => I18n.t(periodo === "ayer" ? "flota.vacio_
 // Navegador
 // ---------------------------------------------------------------------------
 const REFRESCO_MS = 10 * 60_000;
-let mapa = null, consultar = async () => [], calor = null, control = null, controlPuesto = false;
-const estado = { plegado: null, modalidad: "costa", periodo: "24h", clase: "todas", filas: null, pedido: 0, cargando: null,
+let mapa = null, consultar = async () => [], calor = null, control = null, controlPuesto = false, atribucionPuesta = false;
+const estado = { plegado: true, ver: false, modalidad: "costa", periodo: "24h", clase: "todas", filas: null, pedido: 0, cargando: null,
   historico: null, dia: null, reloj: null, parados: null, verParados: true, verNavegando: true };
 let consultarDias = async () => [];
 let consultarParados = async () => [];
@@ -235,6 +239,8 @@ function ponerEstilos() {
   .flota-control .play button:disabled, .flota-control .play input:disabled { opacity: 0.45; cursor: default; }
   .flota-control .fecha { color: var(--tinta-2); font-weight: 500; margin-bottom: 6px; min-height: 1.2em; }
   .flota-control .escala { margin-top: 6px; }
+  .flota-control .ver { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+  .flota-control .ver input { margin: 0; }
   .flota-control .parados { display: flex; align-items: center; gap: 6px; margin-top: 6px; color: var(--tinta); }
   .flota-control .parados input { margin: 0; }
   .flota-control .escucha { color: var(--tinta-2); font-weight: 500; }
@@ -260,7 +266,6 @@ function crearControl(L) {
     div.setAttribute("data-flota-control", "");
     L.DomEvent.disableClickPropagation(div);
     L.DomEvent.disableScrollPropagation(div);
-    estado.plegado ??= empiezaPlegado();
     const chip = L.DomUtil.create("button", "chip", div);
     chip.type = "button";
     chip.setAttribute("data-flota-chip", "");
@@ -280,6 +285,14 @@ function crearControl(L) {
     };
     chip.addEventListener("click", () => ponerPlegado(!estado.plegado));
     ponerPlegado(estado.plegado);
+    // Encender / apagar la capa (empieza apagada, como el resto de capas).
+    const ver = L.DomUtil.create("label", "ver", cuerpo);
+    const casillaVer = L.DomUtil.create("input", "", ver);
+    casillaVer.type = "checkbox";
+    casillaVer.checked = estado.ver;
+    casillaVer.setAttribute("data-flota-ver", "");
+    L.DomUtil.create("span", "", ver).textContent = I18n.t("flota.ver");
+    casillaVer.addEventListener("change", () => ponerVer(casillaVer.checked));
     const per = L.DomUtil.create("div", "periodos", cuerpo);
     per.setAttribute("role", "group");
     per.setAttribute("aria-label", I18n.t("flota.periodo_aria"));
@@ -288,7 +301,7 @@ function crearControl(L) {
       b.type = "button";
       b.dataset.periodo = p;
       b.textContent = I18n.t(p === "ayer" ? "flota.ayer" : "flota.hoy");
-      b.addEventListener("click", () => { reproducir(false); estado.dia = null; estado.periodo = p; pintar(); });
+      b.addEventListener("click", () => { reproducir(false); estado.dia = null; estado.periodo = p; ponerVer(true); });
     }
     // ▶️ de los últimos 14 días, como el del viento (botón redondo + barra).
     const fila = L.DomUtil.create("div", "play", cuerpo);
@@ -306,8 +319,8 @@ function crearControl(L) {
     const fecha = L.DomUtil.create("div", "fecha", cuerpo);
     fecha.setAttribute("data-flota-fecha", "");
     fecha.setAttribute("aria-live", "polite");
-    play.addEventListener("click", () => reproducir(!estado.reloj));
-    barra.addEventListener("input", () => { reproducir(false); ponerDia(+barra.value); });
+    play.addEventListener("click", () => { ponerVer(true); reproducir(!estado.reloj); });
+    barra.addEventListener("input", () => { const i = +barra.value; reproducir(false); ponerVer(true); ponerDia(i); });
     const lab = L.DomUtil.create("label", "", cuerpo);
     lab.textContent = I18n.t("flota.eslora");
     const sel = L.DomUtil.create("select", "", lab);
@@ -317,7 +330,7 @@ function crearControl(L) {
       o.value = c;
       o.textContent = I18n.t(`flota.clase.${claveClase(c)}`);
     }
-    sel.addEventListener("change", () => { estado.clase = sel.value; pintar(); });
+    sel.addEventListener("change", () => { estado.clase = sel.value; ponerVer(true); });
     const esc = L.DomUtil.create("div", "escala", cuerpo);
     esc.setAttribute("role", "img");
     esc.setAttribute("aria-label", I18n.t("flota.leyenda_aria"));
@@ -470,7 +483,7 @@ function pintarParados() {
   capaParados.clearLayers();
   const rojos = paradosVisibles(estado.parados), azules = navegandoVisibles(estado.parados);
   const filas = [...(estado.verNavegando ? azules : []), ...(estado.verParados ? rojos : [])];
-  const ver = capaVisible(estado.modalidad) && (estado.verParados || estado.verNavegando);
+  const ver = capaVisible(estado.modalidad, estado.ver) && (estado.verParados || estado.verNavegando);
   if (ver && !mapa.hasLayer(capaParados)) capaParados.addTo(mapa);
   if (!ver && mapa.hasLayer(capaParados)) mapa.removeLayer(capaParados);
   const etq = control?.getContainer()?.querySelector("[data-flota-escucha]");
@@ -544,27 +557,41 @@ function cargar() {
       estado.historico = Array.isArray(historico) ? historico : (estado.historico ?? []);
       estado.pedido = Date.now();
     })
-    .finally(() => { estado.cargando = null; if (capaVisible(estado.modalidad)) pintar(); });
+    .finally(() => { estado.cargando = null; if (capaVisible(estado.modalidad, estado.ver)) pintar(); });
   return estado.cargando;
 }
 
 function aplicar() {
   if (!mapa) return;
   const L = window.L;
-  if (!capaVisible(estado.modalidad)) {
+  const conControl = controlVisible(estado.modalidad);
+  if (!capaVisible(estado.modalidad, estado.ver)) {
     reproducir(false);
     if (calor && mapa.hasLayer(calor)) mapa.removeLayer(calor);
     if (capaParados && mapa.hasLayer(capaParados)) mapa.removeLayer(capaParados);
-    if (controlPuesto) { control.remove(); controlPuesto = false; mapa.attributionControl?.removeAttribution(atribucion()); }
-    return;
+    if (atribucionPuesta) { mapa.attributionControl?.removeAttribution(atribucion()); atribucionPuesta = false; }
+    if (!conControl && controlPuesto) { control.remove(); controlPuesto = false; }
   }
-  ponerEstilos();
+  if (conControl) {
+    ponerEstilos();
+    control ||= crearControl(L);
+    if (!controlPuesto) { control.addTo(mapa); controlPuesto = true; }
+    const casilla = control.getContainer()?.querySelector("[data-flota-ver]");
+    if (casilla) casilla.checked = estado.ver;
+  }
+  if (!capaVisible(estado.modalidad, estado.ver)) return;
   calor ||= crearCapaCalor(L);
   if (!mapa.hasLayer(calor)) calor.addTo(mapa);
-  control ||= crearControl(L);
-  if (!controlPuesto) { control.addTo(mapa); controlPuesto = true; mapa.attributionControl?.addAttribution(atribucion()); }
+  if (!atribucionPuesta) { mapa.attributionControl?.addAttribution(atribucion()); atribucionPuesta = true; }
   pintar();
   cargar();
+}
+
+// Encender o apagar la capa a mano (casilla "Ver en el mapa"; tocar Hoy/Ayer,
+// la eslora o ▶️ también la enciende). Solo para esta visita.
+export function ponerVer(v) {
+  estado.ver = !!v;
+  aplicar();
 }
 
 // Modalidad al arrancar: la que marca <html data-modalidad>, si no la última
@@ -597,4 +624,4 @@ export function porModalidad(m) {
   aplicar();
 }
 
-export const visible = () => capaVisible(estado.modalidad);
+export const visible = () => capaVisible(estado.modalidad, estado.ver);

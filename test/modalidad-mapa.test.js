@@ -133,22 +133,22 @@ test("punto propio de embarcación o buceo: cambia la modalidad global sin guard
   assert.equal(sb.vaEstado.modalidad, "submarina", "un spot fijo se abre en la modalidad global");
 });
 
-test("capas: isóbatas en Embarcación; tipo de fondo en Submarina (no en NZ) y se apaga solo si lo encendió ella", () => {
+test("capas: la modalidad no enciende ninguna (2026-11-07: al entrar, solo los spots)", () => {
+  for (const guardada of [null, "embarcacion", "submarina"]) {
+    const sb = montar({ guardada });
+    assert.equal(sb.window.Batimetria.m, null, `isóbatas sin tocar al cargar (${guardada})`);
+    assert.equal(sb.tf.on, false, `tipo de fondo apagado al cargar (${guardada})`);
+    sb.api.elegirModalidad("embarcacion", false);
+    sb.api.elegirModalidad("submarina", false);
+    assert.equal(sb.window.Batimetria.m, null, "cambiar de modalidad no toca las isóbatas");
+    assert.equal(sb.tf.on, false, "ni enciende el tipo de fondo");
+  }
   const sb = montar();
-  sb.api.elegirModalidad("embarcacion", false);
-  assert.equal(sb.window.Batimetria.m, "embarcacion");
-  assert.equal(sb.tf.on, false);
-  sb.api.elegirModalidad("submarina", false);
-  assert.equal(sb.tf.on, true);
-  sb.api.elegirModalidad("costa", false);
-  assert.equal(sb.tf.on, false);
   sb.tf.on = true; // encendido a mano
   sb.api.elegirModalidad("submarina", false);
   sb.api.elegirModalidad("costa", false);
   assert.equal(sb.tf.on, true, "lo encendido a mano se respeta");
-  const nz = montar({ region: "nz" });
-  nz.api.elegirModalidad("submarina", false);
-  assert.equal(nz.tf.on, false, "EMODnet no cubre Nueva Zelanda");
+  assert.doesNotMatch(HTML, /porModalidad\(vaEstado\.modalidad\);\n\}\);|Batimetria\?\.porModalidad|aplicarCapasModalidad/);
 });
 
 test("index.html: píldora accesible en el mapa, sin pestañas en la ficha y un solo emisor del evento", () => {
