@@ -39,6 +39,34 @@ Tests: `test/batimetria.test.js`, `test/capa-flota.test.js`,
 embarcacion/submarina recordada solo se ven los spots" (con `va_gfw`
 `{ver:true}` y `cv_capas_mar` guardados). Capa nueva: que empiece apagada.
 
+## Coordenadas al tocar el mapa en Embarcación (2026-11-07, pedido de Mikel)
+
+Mikel: "Cuando esté en embarcación, el toque en pantalla debe permitir ver
+las coordenadas. Si quiero ir a un punto en concreto debo saber cuál es."
+Con la modalidad `embarcacion` (`vaEstado.modalidad`), tocar un punto vacío
+del mapa abre un globo con "📍 Coordenadas de este punto": grados y minutos
+decimales del GPS/plotter (`43° 24,123′ N · 2° 41,456′ W`; coma en es/pt,
+punto en en; N/S/E/W en los tres idiomas, como `formatoCoordenadas`) y grados
+decimales para pegar (`43.40205, -2.69093`, siempre con punto), cada línea
+con «Copiar» (portapapeles; si no, `execCommand`; si tampoco, selecciona la
+línea y dice "Selecciona y copia") y la × de Leaflet ("Cerrar coordenadas").
+- Puro en `assets/js/coordenadas.js` (`formatoMinutos`, `formatoDecimal`,
+  `normalizarLon` para Nueva Zelanda más allá de 180°, `copiarTexto`,
+  `contenidoGlobo`), `window.Coordenadas`. Claves `coords.*` en es/en/pt.
+- El toque en index.html (`map.on("click")` junto a "Añadir ubicación"):
+  un solo globo (el nuevo toque lo mueve); espera 280 ms y se anula con
+  doble toque, zoom o arrastre. Añadir ubicación manda (ese toque crea el
+  punto). Los spots no cambian (sus marcadores no pasan el toque al mapa).
+  Las capas con globo propio (zonas sin pesca, celdas de GFW, barcos
+  parados: `L.Path` marcado en `marcarToqueCapa`) se quedan con su globo.
+  Con capas de mar encendidas sale su globo de siempre y, en Embarcación,
+  las coordenadas debajo en el mismo globo.
+- En Costa y Submarina el toque hace exactamente lo de antes (nada, o el
+  globo de las capas de mar).
+- Profundidad del punto: no, porque necesitaría pedirla al WCS de EMODnet.
+Tests: `test/coordenadas.test.js` (en tests.yml) y en `test/navegador/`
+"tocar el mapa en embarcacion/costa".
+
 ## Migraciones: solo se aplica la que Mikel aprobó (2026-10-11, incidente)
 
 Mikel aprobó UNA migración (`20261011230000_cobro_prueba_14_dias_plan_gratis.sql`)
