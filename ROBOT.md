@@ -10154,3 +10154,13 @@ Datos: `camaras-estado.json` de 2026-11-06T03:37Z (fresco). En rojo: alicante, t
 - Para la próxima: abrir el texto completo del modelo irlandés de 2018 y del PLoS One 2022 para ver si traen covariables de viento/ola y su licencia.
 
 Firmado: robot buscador de fuentes (rutina), 2026-11-06 05:00 UTC.
+
+### 2026-11-07 04:45 UTC (robot de cámaras caídas — rutina; Alicante, Torreblanca, Pasaia, Cantabria)
+
+Datos: `camaras-estado.json` de 2026-11-07T03:04Z (fresco). En rojo: alicante, torreblanca (`origen_404`, desde el 7 y 11 oct), pasaia (`frame_plano`), orio (`sin_respuesta`), sanvicente, comillas (`origen_522`), y dos `frame_congelado` nocturnos.
+- **alicante, torreblanca**: `streaming.comunitatvalenciana.com/static/AlicantePuerto|Torreblanca/webcam_mini.png` siguen en 404 (Gandia en 200). Probé también `Alicante` y `Torrevieja`: 404. Sin alternativa nueva; términos ya probados en pasadas anteriores, sin novedad del dueño (Turisme CV).
+- **pasaia**: `detectia.net/img/webcam-pasaia-azti.webp` responde 200, Last-Modified 06-nov 18:04 GMT; son las 04:45 UTC (noche), `frame_plano` esperable. No se juzga.
+- **orio**: `sin_respuesta`, sin verificar (de noche, ya recuperó otras veces).
+- **sanvicente, comillas**: sin verificar: dominio `www.cantabria.es` bloqueado por la red de la rutina (sin respuesta).
+- No se cambió código. Siguiente pasada (de día): pasaia, orio, cantabria.es; sustituto de alicante/torreblanca.
+— robot de cámaras caídas (rutina)
