@@ -266,14 +266,14 @@ const MODO_NZ = {
   "nz-nelson-harbour": "enlace",
   "nz-southloop-ocean-beach": "enlace",
   "nz-southloop-oban": "enlace",
-  "nz-sails-ashore": "enlace",
+  "nz-sails-ashore": "imagen_oficial", // permiso escrito 2026-11-07
   "nz-motella-gisborne": "enlace",
 };
 
 // Repaso de día del 2026-10-12: las 15 pendientes de NZ, añadidas (solo
 // enlace, sin análisis) o descartadas con motivo en NO_SIRVEN_NZ.
 import { NO_SIRVEN_NZ } from "../scripts/oleaje-camaras/camaras.mjs";
-const DUENOS_NUEVOS_NZ = ["hauraki_coromandel", "raglan_sport_fishing", "castlepoint_lighthouse", "greater_wellington", "nelson_cc", "sails_ashore"];
+const DUENOS_NUEVOS_NZ = ["hauraki_coromandel", "raglan_sport_fishing", "castlepoint_lighthouse", "greater_wellington", "nelson_cc"];
 const REPASO_DIA_NZ = {
   "nz-hauraki-whangamata-beach": "nz-whangamata",
   "nz-raglan-bar": "nz-raglan",
@@ -292,8 +292,12 @@ test("NZ (repaso de día 2026-10-12): las 15 pendientes, añadidas solo como enl
     const c = CAMARAS_NZ.find((x) => x.id === id);
     assert.ok(c, `${id}: falta en camaras-nz.js`);
     assert.equal(c.spot, spot, id);
-    assert.equal(c.modo, "enlace", `${id}: sin permiso escrito solo va como enlace`);
-    assert.equal(c.imagen ?? c.iframe, undefined, id);
+    // Sails Ashore dio permiso escrito el 2026-11-07: embebida.
+    if (id === "nz-sails-ashore") assert.equal(c.modo, "imagen_oficial", id);
+    else {
+      assert.equal(c.modo, "enlace", `${id}: sin permiso escrito solo va como enlace`);
+      assert.equal(c.imagen ?? c.iframe, undefined, id);
+    }
     assert.match(c.verificada, /^2026-10-12: /, `${id}: verificada de día el 2026-10-12`);
     assert.ok(!/youtube\.com|youtu\.be|facebook|instagram/.test(c.url), `${id}: se enlaza la web del dueño`);
     assert.ok(NO_SIRVEN_NZ[id], `${id}: no se analiza (motivo en NO_SIRVEN_NZ)`);
@@ -338,6 +342,7 @@ test("NZ: las embebidas usan la imagen o el iframe que publica su dueño", () =>
     earth_sciences_camera: /^https:\/\/camerastorageoflalbwn\.blob\.core\.windows\.net\/\$web\/[A-Za-z]+\/latest\.jpg$/,
     napier_cc: /^https:\/\/data\.napier\.govt\.nz\/webcam\/thumbnail\.php\?ims=800$/,
     southloop: /^https:\/\/weathercam\.southloop\.net\.nz\/[a-z]+\/[A-Za-z0-9]+\.jpg$/,
+    sails_ashore: /^https:\/\/sailsashore\.co\.nz\/image\/cam\/snapshot1\.jpg$/,
     corolive: /^https:\/\/corolive\.nz\/embed\?camera=(whitianga|whangamata)$/,
   };
   for (const c of CAMARAS_NZ.filter((c) => c.modo !== "enlace")) {
