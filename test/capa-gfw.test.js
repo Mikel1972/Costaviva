@@ -5,7 +5,7 @@ import { readFileSync } from "node:fs";
 import { leerDiccionario } from "./i18n-html.js";
 
 globalThis.window ??= {};
-const { regionDe, colorHoras, limitesCelda, ARTES, PERIODOS, URL_GFW } = await import("../assets/js/capa-gfw.js");
+const { regionDe, colorHoras, limitesCelda, ARTES, PERIODOS, URL_GFW, estadoInicial } = await import("../assets/js/capa-gfw.js");
 
 test("región según el centro del mapa", () => {
   assert.equal(regionDe(-2.7), "iberia");
@@ -45,4 +45,17 @@ test("condiciones de GFW: cita enlazada, nota de esfuerzo aparente y capa gratis
   const es = leerDiccionario(new URL("../assets/i18n/es.js", import.meta.url));
   assert.match(es["gfw.nota"], /aparente/);
   assert.match(es["gfw.nota"], /No es una guía de dónde hay peces/);
+});
+
+test("al abrir la app la capa empieza apagada aunque se guardara encendida (2026-11-07)", () => {
+  // Mikel: "Cuando se entra en la app, solamente deben aparecer marcados los
+  // spots. Todo lo demás desactivado." Periodo y arte sí se recuerdan.
+  assert.deepEqual(estadoInicial({ ver: true, periodo: "habitual", arte: "cerco" }), { ver: false, periodo: "habitual", arte: "cerco" });
+  assert.deepEqual(estadoInicial({ ver: true }), { ver: false, periodo: "reciente", arte: "todas" });
+  assert.deepEqual(estadoInicial({ periodo: "raro", arte: "dinamita" }), { ver: false, periodo: "reciente", arte: "todas" });
+  assert.deepEqual(estadoInicial(null), { ver: false, periodo: "reciente", arte: "todas" });
+  assert.deepEqual(estadoInicial("basura"), { ver: false, periodo: "reciente", arte: "todas" });
+  const JS = readFileSync(new URL("../assets/js/capa-gfw.js", import.meta.url), "utf8");
+  assert.match(JS, /const estado = \{ ver: false,/);
+  assert.match(JS, /JSON\.stringify\(\{ periodo: estado\.periodo, arte: estado\.arte \}\)/, "no se guarda ver");
 });

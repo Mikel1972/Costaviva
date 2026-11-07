@@ -62,13 +62,27 @@ export const mesActual = (ahora = new Date()) => ahora.toLocaleDateString(I18n.l
 let mapa = null, consultar = async () => [], control = null, capa = null, renderer = null;
 const estado = { ver: false, plegado: true, periodo: "reciente", arte: "todas", region: null, filas: null, pedido: 0 };
 
+// Estado al abrir la app a partir de lo guardado en va_gfw: se recuerdan el
+// periodo y el arte (preferencias), pero la capa SIEMPRE empieza apagada
+// (2026-11-07, Mikel: "Cuando se entra en la app, solamente deben aparecer
+// marcados los spots. Todo lo demás desactivado."). Un `ver: true` guardado
+// por versiones anteriores se ignora.
+export function estadoInicial(guardado) {
+  const g = guardado && typeof guardado === "object" ? guardado : {};
+  return {
+    ver: false,
+    periodo: PERIODOS.includes(g.periodo) ? g.periodo : "reciente",
+    arte: ARTES.includes(g.arte) ? g.arte : "todas",
+  };
+}
+
 function leerLocal() {
-  try { Object.assign(estado, JSON.parse(localStorage.getItem(CLAVE_LOCAL) || "{}")); } catch { /* sin almacenamiento */ }
-  if (!PERIODOS.includes(estado.periodo)) estado.periodo = "reciente";
-  if (!ARTES.includes(estado.arte)) estado.arte = "todas";
+  let g = null;
+  try { g = JSON.parse(localStorage.getItem(CLAVE_LOCAL) || "null"); } catch { /* sin almacenamiento */ }
+  Object.assign(estado, estadoInicial(g));
 }
 function guardarLocal() {
-  try { localStorage.setItem(CLAVE_LOCAL, JSON.stringify({ ver: estado.ver, periodo: estado.periodo, arte: estado.arte })); } catch { /* sin almacenamiento */ }
+  try { localStorage.setItem(CLAVE_LOCAL, JSON.stringify({ periodo: estado.periodo, arte: estado.arte })); } catch { /* sin almacenamiento */ }
 }
 
 function ponerEstilos() {
@@ -232,3 +246,6 @@ export function montarCapa(map, { consultar: fn } = {}) {
   map.on("moveend", () => { if (regionDe(map.getCenter().lng) !== estado.region) cargar(); });
   cargar();
 }
+
+// ¿Se ve la capa ahora? (solo si el usuario la encendió en esta visita).
+export const visible = () => estado.ver;
