@@ -72,6 +72,12 @@ export function hoyEn(zona, ahora = new Date()) {
 export function hoyMadrid(ahora = new Date()) {
   return hoyEn(MERCADOS.es.zona, ahora);
 }
+// Hora local (0-23) en una zona.
+export function horaLocal(zona, ahora = new Date()) {
+  return Number(new Intl.DateTimeFormat("en-GB", { timeZone: zona, hour: "2-digit", hourCycle: "h23" }).format(ahora));
+}
+// Antes de esta hora local, sin fecha no se prepara nada (ver piezaAPreparar).
+export const HORA_MINIMA_VISPERA = 12;
 export function sumarDias(fechaISO, n) {
   const [a, m, d] = fechaISO.split("-").map(Number);
   return new Date(Date.UTC(a, m - 1, d + n)).toISOString().slice(0, 10);
@@ -119,7 +125,12 @@ export function instanteMadrid(fechaISO, hora = "08:00") {
 // de NZ lleva "-nz": el mismo día puede haber pieza de los dos mercados.
 export function piezaAPreparar({ formato, ahora = new Date(), fechaForzada = "", tipoForzado = "", estado = {}, mercado = "es" }) {
   const m = mercadoValido(mercado);
-  const fecha = /^\d{4}-\d{2}-\d{2}$/.test(fechaForzada) ? fechaForzada : sumarDias(hoyEn(MERCADOS[m].zona, ahora), 1);
+  const forzada = /^\d{4}-\d{2}-\d{2}$/.test(fechaForzada);
+  // Sin fecha, la pieza es la de mañana y se prepara la víspera por la tarde.
+  // Un respaldo de GitHub que arranca con horas de retraso, ya de madrugada,
+  // haría la de pasado mañana: su borrador caduca antes de publicarse (#404).
+  if (!forzada && horaLocal(MERCADOS[m].zona, ahora) < HORA_MINIMA_VISPERA) return null;
+  const fecha = forzada ? fechaForzada : sumarDias(hoyEn(MERCADOS[m].zona, ahora), 1);
   const hueco = huecoDe(fecha, formato, m);
   if (!hueco && !tipoForzado) return null;
   if (m === "nz" && tipoForzado && !TIPOS_NZ.includes(tipoForzado)) throw new Error(`En NZ solo hay piezas de ${TIPOS_NZ.join(" o ")} (pedido: ${tipoForzado})`);
