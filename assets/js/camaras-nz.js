@@ -90,7 +90,9 @@ export const NZ_ANALISIS_AUTORIZADO = {
   castlepoint_lighthouse: false,
   greater_wellington: false,
   nelson_cc: false,
-  sails_ashore: false,
+  // 2026-11-07: permiso escrito de Sails Ashore («Happy for you to use our
+  // web cam images»), a la petición que pedía embeber y analizar.
+  sails_ashore: true,
   // 2026-10-31, del buscador de cámaras: directo de YouTube, solo enlace
   // (paywall) y nunca analizado (condiciones de YouTube).
   youtube_motella: false,
@@ -116,7 +118,9 @@ export const NZ_EMBED_AUTORIZADO = {
   castlepoint_lighthouse: false,
   greater_wellington: false,
   nelson_cc: false,
-  sails_ashore: false,
+  // 2026-11-07: permiso escrito de Sails Ashore («Happy for you to use our
+  // web cam images»), a la petición que pedía embeber y analizar.
+  sails_ashore: true,
   // 2026-10-31, del buscador de cámaras: directo de YouTube, solo enlace
   // (paywall) y nunca analizado (condiciones de YouTube).
   youtube_motella: false,
@@ -130,6 +134,7 @@ const EMBEBIBLE = {
   corolive: "iframe_oficial",
   napier_cc: "imagen_oficial",
   southloop: "imagen_oficial",
+  sails_ashore: "imagen_oficial",
 };
 
 // Modo de embebido de un dueño, o null si va como enlace.
@@ -342,7 +347,10 @@ export const CONDICIONES_NZ = {
     analisis_permitido: NZ_ANALISIS_AUTORIZADO.sails_ashore,
     licencia: null,
     fuentes: ["https://sailsashore.co.nz/garden-web-cam/"],
-    cita: "«Sails Ashore Garden & Webcam». No publica condiciones de uso. Solo enlace.",
+    cita:
+      "«Sails Ashore Garden & Webcam». Permiso escrito por email a datos@costaviva.org el 2026-11-07: «Happy for you " +
+      "to use our web cam images, Please send me a link to the page it's on». Embebida con su imagen pública " +
+      "(snapshot1.jpg) y su nombre; se le envía el enlace a la página.",
     contacto: "tait@sailsashore.co.nz",
   },
   youtube_motella: {
@@ -476,7 +484,12 @@ const LISTA = [
   cam("southloop-oban", "nz-halfmoon-bay", ["Oban, South Seas Hotel", "Oban, South Seas Hotel"], "southloop", "https://weathercam.southloop.net.nz/camstart.php", false,
     "2026-10-12: imagen de las 07:00 NZDT (Last-Modified de hoy), Halfmoon Bay con el muelle y los barcos fondeados", { km: 0.2 }),
   cam("sails-ashore", "nz-halfmoon-bay", ["Halfmoon Bay desde Sails Ashore", "Halfmoon Bay from Sails Ashore"], "sails_ashore", "https://sailsashore.co.nz/garden-web-cam/", false,
-    "2026-10-12: imagen de las 07:37 NZDT (Last-Modified de hoy), Halfmoon Bay, el muelle de Oban y el mar abierto", { km: 0.6 }),
+    "2026-10-12: imagen de las 07:37 NZDT (Last-Modified de hoy), Halfmoon Bay, el muelle de Oban y el mar abierto", {
+      km: 0.6,
+      // 2026-11-07: la imagen que publica su página (la enlaza por http; el
+      // mismo host la sirve por https, Last-Modified al minuto).
+      embed: { imagen: "https://sailsashore.co.nz/image/cam/snapshot1.jpg", refresco_min: null },
+    }),
   // Del buscador de cámaras (Issue #357, aprobada por Mikel el 2026-10-31).
   cam("motella-gisborne", "nz-gisborne", ["Gisborne, Teal Motor Lodge", "Gisborne, Teal Motor Lodge"], "youtube_motella", "https://www.youtube.com/watch?v=TBWhP73uY6s", false,
     "2026-10-31: directo de YouTube «Gisborne Live Webcam | NZ Weather» encontrado por buscar-camaras.yml", { visto_en: "youtube.com (buscar-camaras)" }),
