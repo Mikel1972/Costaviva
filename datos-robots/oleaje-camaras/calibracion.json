@@ -1,13 +1,13 @@
 {
- "fecha": "2026-11-07T09:07:53.561Z",
- "lineasHistorial": 8462,
+ "fecha": "2026-11-07T09:37:42.638Z",
+ "lineasHistorial": 8471,
  "etiquetas": 619,
  "etiquetasClaude": 228,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.1914,
+   "a": 1.1891,
    "p": 0.5,
-   "n": 243,
+   "n": 244,
    "nEtiquetas": 34,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -17,7 +17,7 @@
     "2026-11-01T16",
     "2026-11-03T16"
    ],
-   "dias": 30,
+   "dias": 31,
    "hMin": 0.07,
    "hMax": 1.69,
    "errorRel": 1,
@@ -171,9 +171,9 @@
    "pocosDatos": false
   },
   "bakio/principal": {
-   "a": 2.9573,
+   "a": 2.9261,
    "p": 0.5,
-   "n": 94,
+   "n": 95,
    "nEtiquetas": 8,
    "nEtiquetasClaude": 11,
    "franjasClaude": [
@@ -192,7 +192,7 @@
    "dias": 27,
    "hMin": 0.47,
    "hMax": 4.62,
-   "errorRel": 0.875,
+   "errorRel": 0.892,
    "pocosDatos": false
   },
   "sopelana/principal": {
@@ -233,9 +233,9 @@
    "pocosDatos": true
   },
   "castrourdiales/principal": {
-   "a": 3.579,
+   "a": 3.5621,
    "p": 0.5,
-   "n": 134,
+   "n": 135,
    "nEtiquetas": 26,
    "nEtiquetasClaude": 6,
    "franjasClaude": [
@@ -453,8 +453,8 @@
    "sustituye": true,
    "motivo": "36 etiquetas",
    "ruido": {
-    "ruido": 0.573,
-    "pares": 113
+    "ruido": 0.536,
+    "pares": 114
    }
   },
   "donostia": {
