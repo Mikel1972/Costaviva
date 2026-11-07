@@ -10164,3 +10164,21 @@ Datos: `camaras-estado.json` de 2026-11-07T03:04Z (fresco). En rojo: alicante, t
 - **sanvicente, comillas**: sin verificar: dominio `www.cantabria.es` bloqueado por la red de la rutina (sin respuesta).
 - No se cambió código. Siguiente pasada (de día): pasaia, orio, cantabria.es; sustituto de alicante/torreblanca.
 — robot de cámaras caídas (rutina)
+
+### 2026-11-07 11:20 UTC — robot de patrones de uso (rutina)
+
+Datos: `datos-robots/patrones-uso/ultima.json` generado el 2026-11-07 01:51 UTC (fresco, `errores` vacío, 2 cuentas de prueba excluidas). Muestra pequeña: 11 perfiles, 3 usuarios activos en 7 días, 8 en 28 días, 700 eventos totales de 8 usuarios desde el 2026-09-17. Solo se confirma la recogida y se señalan tendencias con cautela.
+- Abandono: de 10 perfiles con más de 7 días, 3 nunca hicieron nada, 5 llevan 7 días sin actividad y 2 siguen activos. 1 alta en 7 días, 5 en 28.
+- Mapa: `ver_mapa` 17 eventos de 3 usuarios (7d), 118 de 8 (28d). Es lo que usa todo el mundo.
+- Capas (usuarios distintos en 28d): clorofila 5, isóbatas 5, sustrato 5, temperatura agua 4, boyas 4, ríos 3, frentes 3, corriente 3, viento 3, estaciones 3, radar lluvia 2, rayos 2; batimetría vieja 0 (sustituida por isóbatas). Desde el 2026-11-07 las capas arrancan apagadas, así que estos recuentos pasarán a medir encendido manual de verdad.
+- Diario: `crear_salida` y `crear_captura` los usa 1 solo usuario (11 salidas, 5 capturas en total; última captura el 2026-10-19). Grupos: 1 `unirse_grupo` (2026-09-18), nada desde entonces. SOS: 1 pulsación (2026-10-08, prueba probable).
+- Pago: `ver_suscripcion` 18 eventos de 2 usuarios (28d); `iniciar_checkout` 13 totales de 3 usuarios (anual 6, mensual 5); `acepta_condiciones_pago` 2 eventos de 1 usuario el 2026-11-05. Hay intención de pago pero no se ve conversión en estos datos.
+
+Propuestas (solo propuestas, nada aplicado):
+1. Diario y grupos casi no tienen uso real (1 usuario activo en diario, 0 usuarios en grupos en 28 días) con 8 usuarios activos. No quitarlos con esta muestra; sí revisar con Mikel si la entrada al diario es visible y está explicada en la prueba de 14 días (ejemplo: tarjeta o aviso tras la primera vez que se abre un spot).
+2. Las capas de mar (clorofila, frentes, corriente, sustrato) las prueban 3-5 de 8 usuarios, más que radar y rayos (2). Mantenerlas, y valorar que el aviso "las capas empiezan apagadas" tenga un acceso claro para no perder ese descubrimiento tras el cambio del 2026-11-07.
+3. Embudo de pago: 3 usuarios iniciaron checkout y 1 aceptó condiciones, pero no hay evento de pago completado. Medirlo con el KPI prueba → pago de `suscripciones.primer_pago_en` antes de decidir cambios en `suscripcion.html`.
+4. Sin acción sobre SOS: se queda como está (seguridad).
+
+Puntos ciegos de la medición: no hay evento para la modalidad (🪨🚤🤿), la flota/mapa de calor, el ▶️ de 14 días, la ventana de actividad, la identificación por foto ni el cambio de idioma; y las capas llevan eventos solo al encender, no cuánto tiempo se usan. Propuesta para `scripts/patrones-uso/agregar.mjs` y la instrumentación: añadir `cambiar_modalidad` y `ver_capa_flota` con `registrarEvento` (no aplicado). No tuve tiempo de comparar con semanas anteriores en `git log -p`.
+— robot de patrones de uso (rutina)
