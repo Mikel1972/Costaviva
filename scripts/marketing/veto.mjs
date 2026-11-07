@@ -19,7 +19,7 @@
 // identificables), textos sin huecos, token válido (si falta
 // pages_manage_posts, solo Instagram).
 
-import { hoyMadrid, instanteMadrid } from "./calendario.mjs";
+import { hoyMadrid, instanteEn, MERCADOS } from "./calendario.mjs";
 
 export const HORAS_AVISO = 12;
 // El contenedor de Instagram caduca a las 24 h de crearse: margen de 1 h.
@@ -56,7 +56,10 @@ export function vetada({ etiquetas = [], comentarios = [], dueno = "" }) {
 // que se abrió el Issue (si el robot llegó tarde, se retrasa).
 export function momentoPublicacion(pieza, creadoIssue) {
   if (!pieza?.fecha || !pieza?.hora || !/^\d{4}-\d{2}-\d{2}$/.test(pieza.fecha) || !/^\d{2}:\d{2}$/.test(pieza.hora)) return null;
-  const prevista = instanteMadrid(pieza.fecha, pieza.hora);
+  // La hora de la pieza es la de su mercado: las de NZ, 07:00 de Auckland
+  // (hasta el 2026-11-07 se leía en hora de Madrid y #420 salía 12 h tarde).
+  const zona = pieza.zona || MERCADOS[pieza.mercado === "nz" ? "nz" : "es"].zona;
+  const prevista = instanteEn(pieza.fecha, pieza.hora, zona);
   const creado = new Date(creadoIssue);
   if (Number.isNaN(creado.getTime())) return null;
   return new Date(Math.max(prevista.getTime(), creado.getTime() + HORAS_AVISO * H));
