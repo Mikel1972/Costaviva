@@ -1,15 +1,16 @@
 // Capa de la flota pesquera faenando (assets/js/capa-flota.js, fase 2,
 // 2026-10-22): lo puro (filtro por periodo y eslora, umbral de 3 barcos,
 // colores, celdas), los textos en es/en/pt y cómo la monta index.html (solo
-// en Embarcación, por el evento `modalidad`). Sin red ni DOM. Corre en tests.yml.
+// en Embarcación, por el evento `modalidad`, y apagada hasta que el usuario
+// la enciende: 2026-11-07). Sin red ni DOM. Corre en tests.yml.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import {
   zonasVisibles, colorCalor, intensidadFlota, alfaCalor, tablaCalor, radioBlobPx, metrosPorPixel, centroCelda,
   celdaCercana, gradienteCss, PARADAS, OPACIDAD_MAX, RADIO_MIN_PX, RADIO_MAX_PX,
-  diasPlay, diaMadrid, paradosVisibles, navegandoVisibles, posicionParado, textoParado, tamParado, ultimaEscucha, CADUCA_PARADOS_H, zonasDelDia, diasConDatos, fechaDia, DIAS_PLAY, MIN_DIAS_PLAY, limitesCelda, capaVisible, textoCelda, textoVacio, claveClase,
-  MIN_BARCOS, CLASES, PERIODOS, CADUCA_H, empiezaPlegado, ANCHO_PLEGADO, modalidadInicial,
+  diasPlay, diaMadrid, paradosVisibles, navegandoVisibles, posicionParado, textoParado, tamParado, ultimaEscucha, CADUCA_PARADOS_H, zonasDelDia, diasConDatos, fechaDia, DIAS_PLAY, MIN_DIAS_PLAY, limitesCelda, capaVisible, controlVisible, textoCelda, textoVacio, claveClase,
+  MIN_BARCOS, CLASES, PERIODOS, CADUCA_H, modalidadInicial,
 } from "../assets/js/capa-flota.js";
 import { leerDiccionario } from "./i18n-html.js";
 
@@ -17,9 +18,21 @@ const AHORA = new Date("2026-10-22T12:30:00Z");
 const RECIENTE = "2026-10-22T12:10:00Z";
 const z = (periodo, clase, n, lat = 43.6, lon = -3.1, calculado = RECIENTE) => ({ periodo, clase, n_barcos: n, celda_lat: lat, celda_lon: lon, especie_probable: null, calculado });
 
-test("solo en Embarcación", () => {
-  assert.equal(capaVisible("embarcacion"), true);
-  for (const m of ["costa", "submarina", undefined]) assert.equal(capaVisible(m), false);
+test("solo en Embarcación y solo si el usuario la enciende (al abrir, apagada)", () => {
+  assert.equal(controlVisible("embarcacion"), true);
+  for (const m of ["costa", "submarina", undefined]) assert.equal(controlVisible(m), false);
+  // 2026-11-07, Mikel: al entrar solo los spots. Embarcación ya no la enciende.
+  assert.equal(capaVisible("embarcacion"), false, "por defecto, apagada");
+  assert.equal(capaVisible("embarcacion", false), false);
+  assert.equal(capaVisible("embarcacion", true), true);
+  for (const m of ["costa", "submarina", undefined]) assert.equal(capaVisible(m, true), false, `${m}`);
+  const JS = readFileSync(new URL("../assets/js/capa-flota.js", import.meta.url), "utf8");
+  assert.match(JS, /plegado: true, ver: false,/, "empieza plegada y apagada");
+  assert.doesNotMatch(JS, /localStorage\.setItem|setItem\(/, "el encendido no se guarda");
+  for (const i of ["es", "en", "pt"]) {
+    const d = leerDiccionario(new URL(`../assets/i18n/${i}.js`, import.meta.url));
+    assert.ok(d["flota.ver"]?.trim(), `flota.ver en ${i}`);
+  }
 });
 
 test("modalidad al arrancar: <html data-modalidad> > localStorage va_modalidad > costa", () => {
@@ -93,14 +106,11 @@ test("tooltip: la celda que contiene el punto, o la más cercana a menos de una 
   assert.equal(celdaCercana([], 43.6, -3.1), null);
 });
 
-test("móvil: el control empieza plegado (chip) en pantallas de 600 px o menos", () => {
-  assert.equal(ANCHO_PLEGADO, 600);
-  for (const w of [320, 390, 600]) assert.equal(empiezaPlegado(w), true, `${w}px`);
-  for (const w of [601, 768, 1280]) assert.equal(empiezaPlegado(w), false, `${w}px`);
-  assert.equal(empiezaPlegado(undefined), false);
+test("el control empieza plegado (chip «🚤 Flota ▾») en móvil y en ordenador", () => {
   const JS = readFileSync(new URL("../assets/js/capa-flota.js", import.meta.url), "utf8");
   assert.match(JS, /setAttribute\("aria-expanded"/);
   assert.match(JS, /setAttribute\("aria-controls", "flotaCuerpo"\)/);
+  assert.match(JS, /setAttribute\("data-flota-ver", ""\)/);
 });
 
 test("celda de 0,05° (~5 km): esquina sur-oeste + paso", () => {

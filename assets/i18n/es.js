@@ -537,6 +537,7 @@
   "bati.leyenda_aria": "Isóbatas de {min} a {max}: más oscuro, más profundo",
   "bati.profundidad_m": "Profundidad ({u})",
   "flota.chip": "🚤 Flota",
+  "flota.ver": "Ver en el mapa",
   "flota.titulo": "🚤 Flota faenando",
   "flota.hoy": "Hoy (24 h)",
   "flota.ayer": "Ayer",

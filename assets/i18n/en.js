@@ -537,6 +537,7 @@
   "bati.leyenda_aria": "Depth contours from {min} to {max}: darker means deeper",
   "bati.profundidad_m": "Depth ({u})",
   "flota.chip": "🚤 Fleet",
+  "flota.ver": "Show on map",
   "flota.titulo": "🚤 Fishing fleet at work",
   "flota.hoy": "Today (24 h)",
   "flota.ayer": "Yesterday",

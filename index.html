@@ -2837,7 +2837,6 @@ conBatimetria((B) => {
     },
   });
   B.montarCapa(map, { onCambio: () => selectorFondo?.refrescar() });
-  B.porModalidad(vaEstado.modalidad);
 });
 // Flota pesquera faenando (fase 2, 2026-10-22): zonas calientes de las
 // últimas 24 h o de ayer, solo con la modalidad Embarcación y para todos
@@ -3020,8 +3019,6 @@ conTipoFondo((TF) => {
   // Al llegar el JSON (o el dato en vivo de un punto propio), se repinta el spot abierto.
   TF.iniciar({ onFondo: repintar }).then(() => { if (spotAbiertoActual) repintar(spotAbiertoActual); });
   TF.montarCapa(map, avisoCapa);
-  // Si se entra ya en Submarina, el tipo de fondo se enciende al llegar el módulo.
-  if (vaEstado.modalidad === "submarina") aplicarCapasModalidad("submarina");
 });
 // Selector del botón "Fondo": cuando las dos capas y el selector ya están.
 let selectorFondo = null;
@@ -3385,7 +3382,8 @@ async function descargarCapaMar(CM, nombre) {
 // independiente; quién pinta el color de fondo y cómo se dibuja cada una al
 // combinarse lo decide assets/js/capas-combinadas.js (puro, con tests). Con
 // una sola capa, todo como antes. Lo encendido y el fondo elegido se
-// recuerdan en localStorage (cv_capas_mar, solo comodidad).
+// guardan en localStorage (cv_capas_mar), pero al abrir la app solo se
+// recupera el fondo elegido: las capas empiezan apagadas (2026-11-07).
 // ---------------------------------------------------------------------------
 const capasMar = {
   activas: [],          // en el orden de CapasCombinadas.CAPAS
@@ -3814,15 +3812,14 @@ document.getElementById("toggleClorofila").addEventListener("click", () => alter
 document.getElementById("toggleTempAgua").addEventListener("click", () => alternarCapaMar("temperatura-agua"));
 document.getElementById("toggleFrentes").addEventListener("click", () => alternarCapaMar("frentes"));
 document.getElementById("toggleCorriente").addEventListener("click", () => alternarCapaMar("corriente"));
-// Las capas que el usuario tenía encendidas la última vez (y su fondo).
+// Al abrir, todas las capas de mar APAGADAS aunque se guardaran encendidas
+// (2026-11-07, Mikel: "Cuando se entra en la app, solamente deben aparecer
+// marcados los spots. Todo lo demás desactivado."). Solo se recuerda cuál
+// eligió de fondo, por si vuelve a encender varias.
 async function restaurarCapasMar() {
-  // Con los módulos de cálculo (Frentes, Corriente, Isotermas) ya cargados.
-  if (!window.Frentes) await new Promise((ok) => window.addEventListener("ventana-actividad-lista", ok, { once: true }));
   const CC = await moduloCombinadas();
   const guardado = CC.leerEstado(almacenLocal());
-  if (!guardado.activas.length) return;
-  capasMar.fondo = guardado.fondo;
-  await Promise.all(guardado.activas.map((n) => alternarCapaMar(n, { silencioso: true })));
+  if (!capasMar.activas.length) capasMar.fondo = guardado.fondo;
 }
 restaurarCapasMar().catch((e) => console.warn("Capa: no se pudieron restaurar las capas de mar:", e && e.message));
 // Al pasar de España a Nueva Zelanda (o al revés) con capas de mar
@@ -5438,8 +5435,8 @@ let vaEstado = { s: null, dia: 0, especieId: null, resultados: [], idxSel: null,
 // arriba a la izquierda del mapa (decisión de Mikel, 2026-10-22: las pestañas
 // de la ficha se quitan). Sin pregunta la primera vez: "Desde costa"; luego
 // la última que eligió este usuario (localStorage "va_modalidad", la clave de
-// siempre, solo comodidad). Manda en las capas del mapa (aplicarCapasModalidad)
-// y en la ficha: lista de especies, índice de pesca, reglas de la ventana y
+// siempre, solo comodidad). No enciende capas (2026-11-07). Manda en la
+// ficha: lista de especies, índice de pesca, reglas de la ventana y
 // normativa. Un punto propio de embarcación o buceo, al abrirlo, cambia la
 // modalidad global a la suya (la píldora lo refleja) sin guardarla.
 // Cada cambio sale UNA vez, desde ponerModalidad(), como evento del documento:
@@ -5465,27 +5462,13 @@ function modalidadGuardada() {
 vaEstado.modalidad = modalidadGuardada();
 document.documentElement.dataset.modalidad = vaEstado.modalidad;
 
-// Capas por modalidad, conservador: se encienden solas las que tocan y se
-// apagan al salir solo si las encendió la modalidad; nada se oculta ni se
-// quita, y cualquier capa sigue a mano en su botón.
-//  - Embarcación: isóbatas (capa-batimetria.js, porModalidad).
-//  - Submarina: tipo de fondo (capa-tipo-fondo.js; EMODnet, solo Europa:
-//    en Nueva Zelanda no se enciende).
-//  - Desde costa: nada extra (los spots ya se ven siempre).
-let fondoPorSubmarina = false;
-function aplicarCapasModalidad(m) {
-  window.Batimetria?.porModalidad(m); // isóbatas solas en Embarcación
-  const TF = window.TipoFondo;
-  if (TF) {
-    if (m === "submarina") {
-      if (!TF.visible() && regionDeCentro() !== "nz") { TF.ponerVisible(true); fondoPorSubmarina = TF.visible(); }
-    } else if (fondoPorSubmarina) {
-      fondoPorSubmarina = false;
-      TF.ponerVisible(false);
-    }
-  }
-  selectorFondo?.refrescar();
-}
+// Capas por modalidad: ninguna. Hasta el 2026-11-07 la modalidad encendía
+// sola las isóbatas (Embarcación) y el tipo de fondo (Submarina), y como la
+// modalidad se recuerda, la app se abría con ellas puestas. Mikel: "Cuando
+// se entra en la app, solamente deben aparecer marcados los spots. Todo lo
+// demás desactivado." Ahora cada capa se enciende solo a mano, en su botón;
+// la modalidad cambia la ficha (especies, índice, reglas, normativa) y deja
+// ver el control de la flota (capa-flota.js), que también empieza apagado.
 
 // Pinta la píldora del mapa y lo de la ficha que depende de la modalidad.
 function pintarModalidad() {
@@ -5520,7 +5503,6 @@ function ponerModalidad(m, { guardar = true, repintar = true } = {}) {
   if (guardar) { try { localStorage.setItem(CLAVE_MODALIDAD, m); } catch (e) { /* sin almacenamiento */ } }
   document.documentElement.dataset.modalidad = m;
   pintarModalidad();
-  aplicarCapasModalidad(m);
   if (repintar) {
     if (spotAbiertoActual) pintarIndicePesca(spotAbiertoActual);
     if (vaEstado.s) pintarVentanaActividad(vaEstado.s);

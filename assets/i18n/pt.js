@@ -539,6 +539,7 @@
   "bati.leyenda_aria": "Batimétricas de {min} a {max}: mais escuro, mais fundo",
   "bati.profundidad_m": "Profundidade ({u})",
   "flota.chip": "🚤 Frota",
+  "flota.ver": "Ver no mapa",
   "flota.titulo": "🚤 Frota a pescar",
   "flota.hoy": "Hoje (24 h)",
   "flota.ayer": "Ontem",

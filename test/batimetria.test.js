@@ -236,14 +236,19 @@ test("isobatas-profundas.json: 150 a 5000 m, también mar abierto, < 1 MB, con e
 // ---------------------------------------------------------------------------
 // Capa del mapa (funciones puras)
 // ---------------------------------------------------------------------------
-test("capa: profundidad de un spot, de la API REST y visibilidad por pestaña", () => {
+test("capa: profundidad de un spot, de la API REST y visibilidad solo a mano", () => {
   assert.equal(batimetriaDeSpot(PROF, "bakio"), PROF.spots.bakio);
   assert.equal(batimetriaDeSpot(PROF, "no-existe"), null);
   assert.equal(batimetriaDeSpot(null, "bakio"), null);
-  assert.equal(capaVisible({ manual: null, modalidad: "embarcacion" }), true);
-  assert.equal(capaVisible({ manual: null, modalidad: "costa" }), false);
+  // 2026-11-07, Mikel: al entrar solo los spots. Embarcación ya no enciende
+  // las isóbatas; solo "Profundidad" en el selector "Fondo".
+  assert.equal(capaVisible({ manual: null, modalidad: "embarcacion" }), false);
   assert.equal(capaVisible({ manual: false, modalidad: "embarcacion" }), false);
+  assert.equal(capaVisible({}), false);
+  assert.equal(capaVisible(), false);
+  assert.equal(capaVisible({ manual: true, modalidad: "costa" }), true);
   assert.equal(capaVisible({ manual: true, modalidad: "submarina" }), true);
+  assert.equal(typeof Capa.porModalidad, "undefined", "ya no hay encendido por modalidad");
   assert.match(ATRIBUCION_ISOBATAS, /EMODnet Bathymetry Consortium.*CC BY 4\.0/);
   // Sin mapa montado (antes de montarCapa) no se ve, y encenderla a mano no rompe.
   assert.equal(Capa.visible(), false);

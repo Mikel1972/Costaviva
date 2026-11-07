@@ -163,6 +163,11 @@ test("index.html: conmutadores independientes, fondo con un toque, recuerdo y si
   assert.match(HTML, /capasMar\.fondo = fila\.dataset\.capa/);
   assert.match(HTML, /guardarEstado\(almacenLocal\(\)/);
   assert.match(HTML, /restaurarCapasMar\(\)/);
+  // 2026-11-07, Mikel: al entrar solo los spots. Se recuerda el fondo elegido,
+  // pero las capas guardadas como encendidas no se vuelven a encender.
+  const restaurar = HTML.slice(HTML.indexOf("async function restaurarCapasMar()"), HTML.indexOf("restaurarCapasMar().catch"));
+  assert.doesNotMatch(restaurar, /alternarCapaMar/);
+  assert.match(restaurar, /capasMar\.fondo = guardado\.fondo/);
   assert.match(HTML, /"CAPAS DEL MAR"/);
   assert.match(HTML, /globoCapasMar\(lat, lng\)/);
   // Créditos de Copernicus siempre, con los DOIs de todas las capas encendidas.
