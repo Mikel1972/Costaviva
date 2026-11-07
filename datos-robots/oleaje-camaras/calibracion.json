@@ -1,8 +1,8 @@
 {
- "fecha": "2026-11-07T15:37:57.952Z",
- "lineasHistorial": 8591,
- "etiquetas": 619,
- "etiquetasClaude": 228,
+ "fecha": "2026-11-07T18:07:20.622Z",
+ "lineasHistorial": 8593,
+ "etiquetas": 620,
+ "etiquetasClaude": 229,
  "calibracion": {
   "hondarribia/principal": {
    "a": 1.1762,
@@ -171,11 +171,11 @@
    "pocosDatos": false
   },
   "bakio/principal": {
-   "a": 2.9261,
+   "a": 2.9312,
    "p": 0.5,
-   "n": 95,
+   "n": 96,
    "nEtiquetas": 8,
-   "nEtiquetasClaude": 11,
+   "nEtiquetasClaude": 12,
    "franjasClaude": [
     "2026-10-08T16",
     "2026-10-15T14",
@@ -187,12 +187,13 @@
     "2026-10-27T14",
     "2026-11-03T14",
     "2026-11-04T14",
-    "2026-11-05T14"
+    "2026-11-05T14",
+    "2026-11-07T14"
    ],
    "dias": 27,
    "hMin": 0.47,
    "hMax": 4.62,
-   "errorRel": 0.892,
+   "errorRel": 0.883,
    "pocosDatos": false
   },
   "sopelana/principal": {
