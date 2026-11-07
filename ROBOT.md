@@ -10164,3 +10164,15 @@ Datos: `camaras-estado.json` de 2026-11-07T03:04Z (fresco). En rojo: alicante, t
 - **sanvicente, comillas**: sin verificar: dominio `www.cantabria.es` bloqueado por la red de la rutina (sin respuesta).
 - No se cambió código. Siguiente pasada (de día): pasaia, orio, cantabria.es; sustituto de alicante/torreblanca.
 — robot de cámaras caídas (rutina)
+
+### 2026-11-07 05:00 UTC (pasada buscadora — cámaras, zona País Vasco — Gipuzkoa y Baiona, rutina)
+
+Sin cambios de código esta pasada: no se integra ni se crea ningún spot.
+
+- **Red abierta hoy** (gipuzkoa.eus, streamlock.net y camaramar.com responden 200; las pasadas anteriores los tenían bloqueados). Streams de la Diputación (`58f14c0895a20.streamlock.net/camaramar/GIP_<x>_169.stream/playlist.m3u8`) con petición real: 200 en zurriola, mutrikukaia, getaria (Malkorbe), zarautz, hondarribia, deba, kontxa, ondarreta y saturraran. **Zurriola y Mutriku han vuelto** (estaban en 404 en octubre).
+- **Siguen en 404 en origen**: `GIP_orio_169` (la propia página oficial de Orio aún lo enlaza, así que la Diputación lo tiene parado) y `GIP_zumaia_169` (la página oficial ya no lista Zumaia entre las cámaras).
+- **Cámaras nuevas en la web oficial, sin usar en la app**: La Concha (`GIP_kontxa_169`), Ondarreta (`GIP_ondarreta_169`) y Saturrarán (`GIP_saturraran_169`, Mutriku). No se ha podido extraer un fotograma esta pasada (solo HLS), así que no se juzga qué se ve en el encuadre. **Propuesta**: La Concha/Ondarreta como fuente de reserva o alternativa de vídeo del spot `donostia` (hoy solo Zurriola, expuesta); cambiar `WEBCAMS_HLS` toca `index.html` y scripts de monitorización, por eso solo se propone. Saturrarán sería una segunda cámara para Mutriku (ya hay una en el puerto).
+- **Baiona/Biarritz/Anglet**: solo salen agregadores (Surf-Forecast, Quiksilver, Windy; Destination Biarritz cita cámaras de la Grande Plage y Côte des Basques). Sin spot en Francia y sin fuente directa verificada: no se crea nada.
+- Nada que añadir a ROBOT_REGLAS.md.
+
+Firmado: robot buscador de fuentes (rutina).
