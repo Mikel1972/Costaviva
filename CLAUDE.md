@@ -737,7 +737,9 @@ es "automático con veto de 12 h". El publicador manual sigue existiendo.
   "Publica"; hasta entonces solo con su OK, y las que nadie aprobó se
   perdían). El máximo de 1 al día por red cuenta por mercado
   (`publicadaHoy(..., mercado)`, el de cada publicación sale de su campaña:
-  `-nz-`): España a las 09:00 y NZ a las 19:00 de Madrid no se pisan. Sus
+  `-nz-`): España a las 09:00 y NZ a las 19:00 de Madrid no se pisan. La
+  hora de cada pieza se lee en la zona de su mercado (`momentoPublicacion`;
+  hasta el 2026-11-07 era siempre Madrid y #420 se iba 12 h tarde). Sus
   reels siguen sin clip si su ficha no dice `persona_identificable: false`.
 - **Cómo veta Mikel** (basta una): etiqueta `veto` en el Issue, o un
   comentario suyo (autor = dueño del repo) con la palabra "no" o "veto" (en
