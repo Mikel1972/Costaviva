@@ -201,10 +201,21 @@ test("clips de stock: todos dicen si sale una persona identificable", () => {
   }
 });
 
-test("Nueva Zelanda: nunca sale sola, solo con el OK manual de Mikel", () => {
-  const d = V.decidir(base({ pieza: { ...PIEZA, mercado: "nz" }, ahora: new Date("2026-10-14T06:10:00Z") }));
-  assert.equal(d.accion, "saltar");
-  assert.match(d.motivo, /Nueva Zelanda/);
+test("Nueva Zelanda: sale sola con veto, como España (Mikel, 2026-11-07)", () => {
+  const nz = { ...PIEZA, mercado: "nz" };
+  const d = V.decidir(base({ pieza: nz, ahora: EN_HORA }));
+  assert.equal(d.accion, "publicar");
   const fuente = leer("scripts/marketing/publicar-borrador-instagram.mjs");
-  assert.match(fuente, /pieza\.mercado !== "nz"/);
+  assert.doesNotMatch(fuente, /pieza\.mercado !== "nz"/);
+  // El máximo de 1 al día por red es por mercado.
+  const hoyEs = { fecha: "2026-10-13T05:00:00Z", issueNumber: "1", campana: "20261013-reel-peces-bakio" };
+  const hoyNz = { fecha: "2026-10-13T05:00:00Z", issueNumber: "2", campana: "20261013-condiciones-nz-raglan" };
+  assert.equal(V.mercadoDePublicada(hoyNz), "nz");
+  assert.equal(V.mercadoDePublicada(hoyEs), "es");
+  const conEs = V.decidir(base({ pieza: nz, ahora: EN_HORA, publicados: { instagram: [hoyEs], facebook: [hoyEs] } }));
+  assert.equal(conEs.accion, "publicar");
+  const conNz = V.decidir(base({ pieza: nz, ahora: EN_HORA, publicados: { instagram: [hoyNz], facebook: [hoyNz] } }));
+  assert.equal(conNz.accion, "avisar");
+  const esConNz = V.decidir(base({ ahora: EN_HORA, publicados: { instagram: [hoyNz], facebook: [hoyNz] } }));
+  assert.equal(esConNz.accion, "publicar");
 });

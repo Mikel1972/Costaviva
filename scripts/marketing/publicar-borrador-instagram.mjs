@@ -149,8 +149,8 @@ function crearIssue({ pieza, previa, facebook }) {
   const titulo = `${pieza.mercado === "nz" ? "🇳🇿 NZ — " : ""}${esReel ? "🎬 Reel" : "📸 Post"} Instagram + Facebook — ${pieza.tipo} — ${cuando}`;
   // Publicación automática con veto (2026-10-11): la hora real a la que
   // saldrá sola (la prevista, o 12 h después de este aviso si llega tarde).
-  // Las piezas de NZ nunca salen solas: solo con el OK de Mikel (2026-10-11).
-  const automatica = String(process.env.PUBLICACION_AUTOMATICA || "").trim().toLowerCase() === "true" && pieza.mercado !== "nz";
+  // Desde el 2026-11-07 también las de NZ (antes solo con el OK de Mikel).
+  const automatica = String(process.env.PUBLICACION_AUTOMATICA || "").trim().toLowerCase() === "true";
   const momento = momentoPublicacion(pieza, new Date());
   const cuerpo = cuerpoIssue({ pieza, previa, cuando, caduca: `el ${caduca}`, facebookListo: facebook, automatica: automatica && !!momento, publicaEn: momento ? textoMomento(momento) : "" });
   const salida = execFileSync("gh", ["issue", "create", "--title", titulo, "--body", cuerpo, "--label", "marketing"], {
