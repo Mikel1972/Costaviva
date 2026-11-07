@@ -203,6 +203,91 @@ for (const [nombre, opciones] of [["ordenador", PC], ["móvil", MOVIL]]) {
   }
 }
 
+// Coordenadas al tocar el mapa en Embarcación (2026-11-07, Mikel: "si quiero
+// ir a un punto en concreto debo saber cuál es"). Un toque en un punto vacío
+// del mapa abre un globo con grados y minutos decimales y grados decimales,
+// cada uno con «Copiar»; un toque nuevo lo mueve (uno solo). Desde costa, el
+// toque no abre nada (como antes).
+for (const [nombre, opciones] of [["ordenador", PC], ["móvil", MOVIL]]) {
+  for (const modalidad of ["embarcacion", "costa"]) {
+    test(`${nombre}: tocar el mapa en ${modalidad} ${modalidad === "embarcacion" ? "enseña" : "no enseña"} las coordenadas`, async () => {
+      const ctx = await contexto({ ...opciones, permissions: ["clipboard-read", "clipboard-write"] });
+      // cv-inicio-visto: la pantalla de inicio se quita en cuanto está lista.
+      await ctx.addInitScript(([m]) => { try { localStorage.setItem("va_modalidad", m); sessionStorage.setItem("cv-inicio-visto", "1"); } catch (e) { /* sin almacenamiento */ } }, [modalidad]);
+      const { pagina, errores } = await abrir(ctx, "/");
+      await pagina.waitForSelector("#map.leaflet-container", { timeout: 15000 });
+      await pagina.waitForFunction(() => window.Coordenadas && !document.getElementById("comprobandoAcceso"), null, { timeout: 15000 });
+      await pagina.waitForTimeout(1000);
+      const mapa = pagina.locator("#map");
+      const caja = await mapa.boundingBox();
+      // Un punto vacío del mapa (sin controles encima) cerca del centro.
+      // Dos puntos vacíos del mapa (sin spots ni controles encima).
+      const vacios = await pagina.evaluate(([x0, y0, w, h]) => {
+        const r = [];
+        for (let fy = 0.35; fy <= 0.75; fy += 0.05) {
+          for (let fx = 0.3; fx <= 0.7; fx += 0.05) {
+            const x = Math.round(x0 + w * fx), y = Math.round(y0 + h * fy);
+            const el = document.elementFromPoint(x, y);
+            if (el && el.closest("#map") && !el.closest(".leaflet-control, .leaflet-marker-icon, .leaflet-interactive, .leaflet-popup, .leaflet-marker-pane > *")) r.push({ x: x - x0, y: y - y0 });
+          }
+        }
+        return r;
+      }, [caja.x, caja.y, caja.width, caja.height]);
+      const punto = vacios[0];
+      // El segundo, lejos del primero y por debajo (el globo sale hacia arriba
+      // desde el punto: debajo no lo tapa).
+      const otro = vacios.find((p) => p.y > punto.y + 40 && Math.abs(p.x - punto.x) > 60);
+      assert.ok(punto && otro, "hay puntos vacíos en el mapa");
+      const tocar = (p) => (opciones.hasTouch ? mapa.tap({ position: p }) : mapa.click({ position: p }));
+      // Lo que debe salir, antes de tocar (el globo puede desplazar el mapa)
+      // y con el mapa quieto (al cargar todavía se recoloca).
+      await pagina.waitForFunction(() => {
+        const c = map.getCenter(), z = map.getZoom(), k = `${c.lat},${c.lng},${z}`;
+        const quieto = window.__ultimoCentro === k;
+        window.__ultimoCentro = k;
+        return quieto;
+      }, null, { polling: 600, timeout: 15000 });
+      const esperado = await pagina.evaluate(([x, y]) => {
+        const ll = map.containerPointToLatLng([x, y]);
+        return { dec: window.Coordenadas.formatoDecimal(ll.lat, ll.lng), min: window.Coordenadas.formatoMinutos(ll.lat, ll.lng, { coma: true }) };
+      }, [punto.x, punto.y]);
+      await tocar(punto);
+      if (modalidad === "costa") {
+        await pagina.waitForTimeout(800);
+        assert.equal(await pagina.locator("[data-globo-coords]").count(), 0, "desde costa el toque no abre nada");
+        assert.equal(await pagina.locator(".leaflet-popup").count(), 0);
+        assert.deepEqual(errores, []);
+        await ctx.close();
+        return;
+      }
+      const globo = pagina.locator("[data-globo-coords]");
+      await globo.waitFor({ state: "visible", timeout: 5000 });
+      const min = await pagina.locator("[data-coords-minutos]").textContent();
+      const dec = await pagina.locator("[data-coords-decimal]").textContent();
+      assert.match(min, /^\d{1,2}° \d{2},\d{3}′ [NS] · \d{1,3}° \d{2},\d{3}′ [EW]$/, min);
+      assert.match(dec, /^-?\d{1,2}\.\d{5}, -?\d{1,3}\.\d{5}$/, dec);
+      assert.equal(min, esperado.min);
+      assert.equal(dec, esperado.dec);
+      assert.equal(await pagina.locator(".leaflet-popup-close-button").getAttribute("aria-label"), "Cerrar coordenadas");
+      // «Copiar» copia la línea de grados y minutos y lo confirma.
+      const copiar = pagina.locator('[data-coords-copiar="minutos"]');
+      await copiar.click();
+      await pagina.waitForFunction(() => document.querySelector('[data-coords-copiar="minutos"]')?.textContent === "✓ Copiado", null, { timeout: 3000 });
+      assert.equal(await pagina.evaluate(() => navigator.clipboard.readText()), min);
+      // Otro toque lo mueve: sigue habiendo un solo globo.
+      await tocar(otro);
+      await pagina.waitForFunction((anterior) => { const t = document.querySelector("[data-coords-decimal]")?.textContent; return t && t !== anterior; }, dec, { timeout: 5000 });
+      assert.equal(await pagina.locator(".leaflet-popup").count(), 1, "un solo globo");
+      // La × lo cierra.
+      await pagina.locator(".leaflet-popup-close-button").click();
+      await pagina.waitForTimeout(300);
+      assert.equal(await pagina.locator("[data-globo-coords]").count(), 0);
+      assert.deepEqual(errores, []);
+      await ctx.close();
+    });
+  }
+}
+
 // Hoja de condiciones del alta (2026-10-22): «Continuar» abre la hoja, el
 // botón no se activa sin «He leído y acepto», y al aceptar se pide el enlace
 // del alta con la versión aceptada y las estadísticas por interés legítimo.
