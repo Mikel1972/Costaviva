@@ -191,7 +191,7 @@ export function candidatasDeWindy(webcams, spot, yaEnApp) {
     const km = distanciaKm(spot.lat, spot.lon, loc.latitude, loc.longitude);
     if (km > RADIO_BUSQUEDA_KM) continue;
     const url = w.urls?.detail || `https://www.windy.com/webcams/${w.webcamId}`;
-    if (yaEnApp.urls?.has(url)) continue;
+    if (yaEnApp.urls?.has(url) || yaEnApp.windy?.has(String(w.webcamId))) continue;
     out.push({
       spot: spot.slug, spot_nombre: spot.nombre, titulo: `${w.title || "Webcam"} (Windy)`, canal: loc.city || "—",
       video_id: `windy-${w.webcamId}`, url, motivo: `a ${km.toFixed(1)} km del spot`, fuente: "Windy",
@@ -320,7 +320,9 @@ async function cargar() {
   }
   const videos = new Set(CAMARAS_EXTERNAS.map((c) => c.youtube_id).filter(Boolean));
   const urls = new Set(CAMARAS_EXTERNAS.flatMap((c) => [c.url, c.imagen]).filter(Boolean));
-  return { spots, conCamara, yaEnApp: { videos, canalesPorSpot, urls } };
+  // Cámaras de Windy ya en la app (por id: su URL puede ir con o sin www).
+  const windy = new Set(CAMARAS_EXTERNAS.map((c) => String(c.url || "").match(/windy\.com\/webcams\/(\d+)/)?.[1]).filter(Boolean));
+  return { spots, conCamara, yaEnApp: { videos, canalesPorSpot, urls, windy } };
 }
 
 async function main() {

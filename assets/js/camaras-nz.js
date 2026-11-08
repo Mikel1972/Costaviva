@@ -95,6 +95,9 @@ export const NZ_ANALISIS_AUTORIZADO = {
   sails_ashore: true,
   // 2026-10-31, del buscador de cámaras: directo de YouTube, solo enlace
   // (paywall) y nunca analizado (condiciones de YouTube).
+  // 2026-11-08: del buscador (Windy) y revisadas a mano; solo enlace a
+  // windy.com mientras Windy no conteste (comun, cz/windy).
+  windy: false,
   youtube_motella: false,
 };
 
@@ -127,6 +130,9 @@ export const NZ_EMBED_AUTORIZADO = {
   sails_ashore: true,
   // 2026-10-31, del buscador de cámaras: directo de YouTube, solo enlace
   // (paywall) y nunca analizado (condiciones de YouTube).
+  // 2026-11-08: del buscador (Windy) y revisadas a mano; solo enlace a
+  // windy.com mientras Windy no conteste (comun, cz/windy).
+  windy: false,
   youtube_motella: false,
 };
 
@@ -362,6 +368,17 @@ export const CONDICIONES_NZ = {
       "(snapshot1.jpg) y su nombre; se le envía el enlace a la página.",
     contacto: "tait@sailsashore.co.nz",
   },
+  windy: {
+    dueno_corto: "Windy.com",
+    dueno: "Windy.com (directorio de webcams; cada cámara es de su anfitrión)",
+    tipo_dueno: "privado",
+    modos_permitidos: ["enlace"],
+    analisis_permitido: NZ_ANALISIS_AUTORIZADO.windy,
+    licencia: null,
+    fuentes: ["https://api.windy.com/webcams/terms", "https://api.windy.com/webcams/pricing"],
+    cita: "Condiciones del Webcams API de Windy: cada imagen debe enlazar a la página de la cámara en windy.com o a su reproductor; «If you don't want to link or embed Windy, use the API». Aquí solo se enlaza su página pública, sin cargar nada de Windy.",
+    contacto: "webcams@windy.com",
+  },
   youtube_motella: {
     dueno_corto: "Motella (YouTube)",
     dueno: "Canal de YouTube Motella (Teal Motor Lodge, Gisborne)",
@@ -503,6 +520,19 @@ const LISTA = [
       // mismo host la sirve por https, Last-Modified al minuto).
       embed: { imagen: "https://sailsashore.co.nz/image/cam/snapshot1.jpg", refresco_min: null },
     }),
+  // Del buscador (Windy), revisadas a mano el 2026-11-08 (Issue #437): ven el mar.
+  cam("windy-russell", "nz-russell", ["Russell, Bay of Islands", "Russell, Bay of Islands"], "windy", "https://www.windy.com/webcams/1735898492", false,
+    "2026-11-08: imagen de día de Windy, la bahía de Russell mirando al oeste", { km: 0.4, visto_en: "windy.com (buscar-camaras)" }),
+  cam("windy-mauao", "nz-tauranga", ["Pilot Bay y Mauao", "Pilot Bay and Mauao"], "windy", "https://www.windy.com/webcams/1603651225", false,
+    "2026-11-08: imagen de día de Windy, Mauao y la entrada del puerto con el mar", { km: 0.9, visto_en: "windy.com (buscar-camaras)" }),
+  cam("windy-howick", "nz-half-moon-bay", ["Howick, costa", "Howick coast"], "windy", "https://www.windy.com/webcams/1634526069", false,
+    "2026-11-08: imagen de día de Windy, la orilla y el mar al nordeste", { km: 2.3, visto_en: "windy.com (buscar-camaras)" }),
+  cam("windy-waikawa", "nz-picton", ["Waikawa Marina", "Waikawa Marina"], "windy", "https://www.windy.com/webcams/1753255946", false,
+    "2026-11-08: imagen de día de Windy, el puerto deportivo y la bahía", { km: 3.3, visto_en: "windy.com (buscar-camaras)" }),
+  cam("windy-taylors-mistake", "nz-lyttelton", ["Taylors Mistake", "Taylors Mistake"], "windy", "https://www.windy.com/webcams/1623991479", true,
+    "2026-11-08: imagen de día de Windy, la playa y los acantilados con el mar abierto", { km: 6.4, visto_en: "windy.com (buscar-camaras)" }),
+  cam("windy-westport", "nz-westport", ["Westport, desembocadura del Buller", "Westport, Buller river mouth"], "windy", "https://www.windy.com/webcams/1714011444", false,
+    "2026-11-08: imagen de día de Windy, la desembocadura, los espigones y el mar", { km: 1.3, visto_en: "windy.com (buscar-camaras)" }),
   // Del buscador de cámaras (Issue #357, aprobada por Mikel el 2026-10-31).
   cam("motella-gisborne", "nz-gisborne", ["Gisborne, Teal Motor Lodge", "Gisborne, Teal Motor Lodge"], "youtube_motella", "https://www.youtube.com/watch?v=TBWhP73uY6s", false,
     "2026-10-31: directo de YouTube «Gisborne Live Webcam | NZ Weather» encontrado por buscar-camaras.yml", { visto_en: "youtube.com (buscar-camaras)" }),
