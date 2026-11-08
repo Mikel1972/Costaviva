@@ -1,13 +1,13 @@
 {
- "fecha": "2026-11-08T09:26:14.788Z",
- "lineasHistorial": 8714,
+ "fecha": "2026-11-08T09:39:03.750Z",
+ "lineasHistorial": 8723,
  "etiquetas": 623,
  "etiquetasClaude": 232,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.1709,
+   "a": 1.1656,
    "p": 0.5,
-   "n": 251,
+   "n": 252,
    "nEtiquetas": 34,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -18,7 +18,7 @@
     "2026-11-03T16"
    ],
    "dias": 32,
-   "hMin": 0.07,
+   "hMin": 0.06,
    "hMax": 1.69,
    "errorRel": 1,
    "pocosDatos": false
@@ -234,9 +234,9 @@
    "pocosDatos": true
   },
   "castrourdiales/principal": {
-   "a": 3.5193,
+   "a": 3.5105,
    "p": 0.5,
-   "n": 138,
+   "n": 139,
    "nEtiquetas": 26,
    "nEtiquetasClaude": 6,
    "franjasClaude": [
@@ -553,7 +553,7 @@
    "motivo": "26 etiquetas",
    "ruido": {
     "ruido": 0.436,
-    "pares": 62
+    "pares": 63
    }
   },
   "nz-napier": {
