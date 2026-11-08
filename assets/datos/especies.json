@@ -2063,7 +2063,18 @@
      ]
     }
    ],
-   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
+   "sustrato": {
+    "preferido": [
+     "roca"
+    ],
+    "valor": "Arrecifes rocosos sublitorales (ficha: hábitat).",
+    "fuentes": [
+     "plos_dsargus_2018"
+    ],
+    "verificado": false,
+    "nota": "2026-11-08, Mikel («el rodaballo es de fondos de arena: en Armintza es imposible»). Sacado del hábitat de la ficha; desde costa y en submarina limita el índice cuando el fondo del spot no encaja (ventana-actividad.js, topeHabitat)."
+   }
   },
   {
    "id": "dorada",
@@ -3886,7 +3897,18 @@
      ]
     }
    ],
-   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
+   "sustrato": {
+    "preferido": [
+     "roca"
+    ],
+    "valor": "Cuevas y grietas de fondo rocoso (ficha: hábitat).",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false,
+    "nota": "2026-11-08, Mikel («el rodaballo es de fondos de arena: en Armintza es imposible»). Sacado del hábitat de la ficha; desde costa y en submarina limita el índice cuando el fondo del spot no encaja (ventana-actividad.js, topeHabitat)."
+   }
   },
   {
    "id": "pulpo",
@@ -4896,7 +4918,18 @@
      ]
     }
    ],
-   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
+   "sustrato": {
+    "preferido": [
+     "roca"
+    ],
+    "valor": "Fondo duro, roca y pecios (ficha: hábitat).",
+    "fuentes": [
+     "ices_pol_sa"
+    ],
+    "verificado": false,
+    "nota": "2026-11-08, Mikel («el rodaballo es de fondos de arena: en Armintza es imposible»). Sacado del hábitat de la ficha; desde costa y en submarina limita el índice cuando el fondo del spot no encaja (ventana-actividad.js, topeHabitat)."
+   }
   },
   {
    "id": "bonito_norte",
@@ -5897,7 +5930,18 @@
      ]
     }
    ],
-   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
+   "sustrato": {
+    "preferido": [
+     "arena"
+    ],
+    "valor": "Arena fina (ficha: hábitat).",
+    "fuentes": [
+     "app_index"
+    ],
+    "verificado": false,
+    "nota": "2026-11-08, Mikel («el rodaballo es de fondos de arena: en Armintza es imposible»). Sacado del hábitat de la ficha; desde costa y en submarina limita el índice cuando el fondo del spot no encaja (ventana-actividad.js, topeHabitat)."
+   }
   },
   {
    "id": "corvina",
@@ -8167,7 +8211,18 @@
      ]
     }
    ],
-   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
+   "sustrato": {
+    "preferido": [
+     "arena"
+    ],
+    "valor": "Fondos de arena, también playas (ficha: hábitat).",
+    "fuentes": [
+     "mikel_experiencia_local"
+    ],
+    "verificado": false,
+    "nota": "2026-11-08, Mikel («el rodaballo es de fondos de arena: en Armintza es imposible»). Sacado del hábitat de la ficha; desde costa y en submarina limita el índice cuando el fondo del spot no encaja (ventana-actividad.js, topeHabitat)."
+   }
   },
   {
    "id": "remol",
@@ -8646,7 +8701,18 @@
      ]
     }
    ],
-   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
+   "sustrato": {
+    "preferido": [
+     "roca"
+    ],
+    "valor": "Fondos de roca (ficha: hábitat).",
+    "fuentes": [
+     "gencat_guia_pr_2021"
+    ],
+    "verificado": false,
+    "nota": "2026-11-08, Mikel («el rodaballo es de fondos de arena: en Armintza es imposible»). Sacado del hábitat de la ficha; desde costa y en submarina limita el índice cuando el fondo del spot no encaja (ventana-actividad.js, topeHabitat)."
+   }
   },
   {
    "id": "rascacio",
@@ -8850,7 +8916,18 @@
      ]
     }
    ],
-   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
+   "sustrato": {
+    "preferido": [
+     "roca"
+    ],
+    "valor": "Fondos de roca (ficha: hábitat).",
+    "fuentes": [
+     "gencat_guia_pr_2021"
+    ],
+    "verificado": false,
+    "nota": "2026-11-08, Mikel («el rodaballo es de fondos de arena: en Armintza es imposible»). Sacado del hábitat de la ficha; desde costa y en submarina limita el índice cuando el fondo del spot no encaja (ventana-actividad.js, topeHabitat)."
+   }
   },
   {
    "id": "maragota",
@@ -9086,7 +9163,19 @@
      ]
     }
    ],
-   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
+   "sustrato": {
+    "preferido": [
+     "roca"
+    ],
+    "valor": "Pez de roca (regla «Orilla de roca» de Mikel; IEO, Labrus en Galicia).",
+    "fuentes": [
+     "mikel_experiencia_local",
+     "ieo_labrus_galicia_2018"
+    ],
+    "verificado": false,
+    "nota": "2026-11-08, Mikel («el rodaballo es de fondos de arena: en Armintza es imposible»). Sacado del hábitat de la ficha; desde costa y en submarina limita el índice cuando el fondo del spot no encaja (ventana-actividad.js, topeHabitat)."
+   }
   },
   {
    "id": "besugo",
@@ -9756,7 +9845,19 @@
      ]
     }
    ],
-   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
+   "sustrato": {
+    "preferido": [
+     "arena",
+     "fango"
+    ],
+    "valor": "Fondos de arena y fango del litoral (ficha: hábitat).",
+    "fuentes": [
+     "gencat_guia_pr_2021"
+    ],
+    "verificado": false,
+    "nota": "2026-11-08, Mikel («el rodaballo es de fondos de arena: en Armintza es imposible»). Sacado del hábitat de la ficha; desde costa y en submarina limita el índice cuando el fondo del spot no encaja (ventana-actividad.js, topeHabitat)."
+   }
   },
   {
    "id": "mero",
@@ -10603,7 +10704,19 @@
      ]
     }
    ],
-   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
+   "sustrato": {
+    "preferido": [
+     "arena",
+     "fango"
+    ],
+    "valor": "Fondos blandos; desde costa en zonas de arena (regla «Playa de arena» de Mikel).",
+    "fuentes": [
+     "mikel_campo_bizkaia"
+    ],
+    "verificado": false,
+    "nota": "2026-11-08, Mikel («el rodaballo es de fondos de arena: en Armintza es imposible»). Sacado del hábitat de la ficha; desde costa y en submarina limita el índice cuando el fondo del spot no encaja (ventana-actividad.js, topeHabitat)."
+   }
   },
   {
    "id": "merluza",
@@ -12111,7 +12224,18 @@
      ]
     }
    ],
-   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo)."
+   "cebos_nota": "Cebos típicos para orientar; revisa siempre la normativa de cebos de cada comunidad (p. ej. cebo vivo).",
+   "sustrato": {
+    "preferido": [
+     "arena"
+    ],
+    "valor": "Fondos de arena de poca profundidad (ficha: hábitat).",
+    "fuentes": [
+     "gencat_guia_pr_2021"
+    ],
+    "verificado": false,
+    "nota": "2026-11-08, Mikel («el rodaballo es de fondos de arena: en Armintza es imposible»). Sacado del hábitat de la ficha; desde costa y en submarina limita el índice cuando el fondo del spot no encaja (ventana-actividad.js, topeHabitat)."
+   }
   },
   {
    "id": "raspallon",
@@ -16131,7 +16255,19 @@
    "cebos": [],
    "cebos_nota": "Cebos de NZ pendientes: ninguno sin fuente o criterio todavía.",
    "cebos_nota_en": "NZ baits pending: none listed until there is a source.",
-   "cebos_nota_pt": "Iscos da NZ pendentes: nenhum enquanto não houver fonte."
+   "cebos_nota_pt": "Iscos da NZ pendentes: nenhum enquanto não houver fonte.",
+   "sustrato": {
+    "preferido": [
+     "arena",
+     "fango"
+    ],
+    "valor": "Sobre todo en arena o fango (ficha: hábitat).",
+    "fuentes": [
+     "mpi_gur"
+    ],
+    "verificado": false,
+    "nota": "2026-11-08, Mikel («el rodaballo es de fondos de arena: en Armintza es imposible»). Sacado del hábitat de la ficha; desde costa y en submarina limita el índice cuando el fondo del spot no encaja (ventana-actividad.js, topeHabitat)."
+   }
   },
   {
    "id": "nz-john-dory",
@@ -16934,7 +17070,19 @@
    "cebos": [],
    "cebos_nota": "Cebos de NZ pendientes: ninguno sin fuente o criterio todavía.",
    "cebos_nota_en": "NZ baits pending: none listed until there is a source.",
-   "cebos_nota_pt": "Iscos da NZ pendentes: nenhum enquanto não houver fonte."
+   "cebos_nota_pt": "Iscos da NZ pendentes: nenhum enquanto não houver fonte.",
+   "sustrato": {
+    "preferido": [
+     "arena",
+     "fango"
+    ],
+    "valor": "Estuarios y llanuras someras de arena o fango (ficha: hábitat).",
+    "fuentes": [
+     "mpi_fla"
+    ],
+    "verificado": false,
+    "nota": "2026-11-08, Mikel («el rodaballo es de fondos de arena: en Armintza es imposible»). Sacado del hábitat de la ficha; desde costa y en submarina limita el índice cuando el fondo del spot no encaja (ventana-actividad.js, topeHabitat)."
+   }
   },
   {
    "id": "nz-sand-flounder",
@@ -17362,7 +17510,18 @@
    "cebos": [],
    "cebos_nota": "Cebos de NZ pendientes: ninguno sin fuente o criterio todavía.",
    "cebos_nota_en": "NZ baits pending: none listed until there is a source.",
-   "cebos_nota_pt": "Iscos da NZ pendentes: nenhum enquanto não houver fonte."
+   "cebos_nota_pt": "Iscos da NZ pendentes: nenhum enquanto não houver fonte.",
+   "sustrato": {
+    "preferido": [
+     "arena"
+    ],
+    "valor": "Fondos someros de arena (ficha: hábitat).",
+    "fuentes": [
+     "mpi_fla"
+    ],
+    "verificado": false,
+    "nota": "2026-11-08, Mikel («el rodaballo es de fondos de arena: en Armintza es imposible»). Sacado del hábitat de la ficha; desde costa y en submarina limita el índice cuando el fondo del spot no encaja (ventana-actividad.js, topeHabitat)."
+   }
   },
   {
    "id": "nz-arrow-squid",
@@ -18061,7 +18220,18 @@
    "cebos": [],
    "cebos_nota": "Cebos de NZ pendientes: ninguno sin fuente o criterio todavía.",
    "cebos_nota_en": "NZ baits pending: none listed until there is a source.",
-   "cebos_nota_pt": "Iscos da NZ pendentes: nenhum enquanto não houver fonte."
+   "cebos_nota_pt": "Iscos da NZ pendentes: nenhum enquanto não houver fonte.",
+   "sustrato": {
+    "preferido": [
+     "roca"
+    ],
+    "valor": "Arrecifes, grietas de roca (ficha: hábitat).",
+    "fuentes": [
+     "mpi_cra_2025"
+    ],
+    "verificado": false,
+    "nota": "2026-11-08, Mikel («el rodaballo es de fondos de arena: en Armintza es imposible»). Sacado del hábitat de la ficha; desde costa y en submarina limita el índice cuando el fondo del spot no encaja (ventana-actividad.js, topeHabitat)."
+   }
   },
   {
    "id": "nz-paua",
@@ -18447,7 +18617,18 @@
    "cebos": [],
    "cebos_nota": "Cebos de NZ pendientes: ninguno sin fuente o criterio todavía.",
    "cebos_nota_en": "NZ baits pending: none listed until there is a source.",
-   "cebos_nota_pt": "Iscos da NZ pendentes: nenhum enquanto não houver fonte."
+   "cebos_nota_pt": "Iscos da NZ pendentes: nenhum enquanto não houver fonte.",
+   "sustrato": {
+    "preferido": [
+     "roca"
+    ],
+    "valor": "Arrecifes con algas a menos de 10 m (ficha: hábitat).",
+    "fuentes": [
+     "mpi_popular_fish"
+    ],
+    "verificado": false,
+    "nota": "2026-11-08, Mikel («el rodaballo es de fondos de arena: en Armintza es imposible»). Sacado del hábitat de la ficha; desde costa y en submarina limita el índice cuando el fondo del spot no encaja (ventana-actividad.js, topeHabitat)."
+   }
   },
   {
    "id": "nz-blue-moki",
