@@ -14,16 +14,34 @@
 //    terceros").
 // 3. Escribe el cuerpo del Issue semanal (Mikel marca las que quiere).
 //
-// Cuota de YouTube: search.list cuesta 100 unidades y videos.list 1; con
-// MAX_BUSQUEDAS = 60 son ~6.100 de las 10.000 diarias gratis.
+// Mejoras del 2026-11-08 (Mikel: "no puede ser que no encuentre ninguna"):
+// - Huecos bien contados: faltaban las cámaras HLS de index.html
+//   (WEBCAMS_HLS: Hondarribia, Deba, Orio, Mutriku...), que salían como
+//   spots sin cámara y gastaban búsquedas.
+// - YouTube: búsqueda sesgada al país del spot (regionCode y idioma),
+//   25 resultados por búsqueda (mismo coste) y con "en directo/ao vivo/live";
+//   se descartan los canales de otro país (channels.list, 1 unidad).
+// - Fuentes nuevas sin IA: OpenStreetMap (etiquetas webcam=* y
+//   contact:webcam=* cerca del spot, Overpass, sin clave) y, si hay
+//   WINDY_WEBCAMS_KEY (gratis en api.windy.com/keys), las webcams públicas de
+//   Windy a menos de RADIO_BUSQUEDA_KM.
+// - Memoria: lo que ya salió en un Issue anterior sin marcar no se repite
+//   (va a un desplegable), para que cada semana solo aparezca lo nuevo.
 //
-// Uso: [YOUTUBE_API_KEY=...] node scripts/camaras/buscar-camaras.mjs [--salida fichero.md]
+// Cuota de YouTube: search.list cuesta 100 unidades y videos.list y
+// channels.list 1; con MAX_BUSQUEDAS = 80 son ~8.200 de las 10.000 diarias.
+//
+// Uso: [YOUTUBE_API_KEY=...] [WINDY_WEBCAMS_KEY=...] node scripts/camaras/buscar-camaras.mjs
+//        [--salida fichero.md] [--anteriores issues-anteriores.txt]
 // Lo puro se prueba en test/buscar-camaras.test.js.
 
 import { readFileSync, writeFileSync } from "node:fs";
 
 export const RADIO_KM = 5;
-export const MAX_BUSQUEDAS = 60;
+export const MAX_BUSQUEDAS = 80;
+// Radio para OSM y Windy: algo más que RADIO_KM (una cámara a 8 km que ve
+// la misma costa sirve; Mikel decide en el Issue).
+export const RADIO_BUSQUEDA_KM = 8;
 const YT = "https://www.googleapis.com/youtube/v3";
 
 export function distanciaKm(lat1, lon1, lat2, lon2) {
@@ -52,6 +70,25 @@ export const PAISES_FUERA = ["colombia", "chile", "mexico", "argentina", "peru",
   "usa", "california", "florida", "oregon", "washington", "canada", "alberta", "france", "francia", "normandie", "italia", "italy",
   "philippines", "filipinas", "australia", "africa", "zambezi", "ireland", "england", "uk", "new zealand", "nz", "espana", "spain", "portugal"];
 const paisesDelSpot = (spot) => (spot.slug.startsWith("nz-") ? ["new zealand", "nz"] : ["espana", "spain", "portugal"]);
+
+// País del spot: NZ por el slug, Portugal por el "(PT)" del nombre, si no España.
+export const paisSpot = (spot) => (spot.slug.startsWith("nz-") ? "NZ" : /\(PT\)/.test(spot.nombre) ? "PT" : "ES");
+const IDIOMA = { ES: "es", PT: "pt", NZ: "en" };
+const EN_DIRECTO = { ES: '"en directo"|"en vivo"|webcam', PT: '"ao vivo"|webcam|"em direto"', NZ: "webcam|live cam|livestream" };
+
+// Consulta de YouTube para un spot: nombre + palabras de directo del idioma.
+export function consultaYoutube(spot) {
+  const p = paisSpot(spot);
+  return `${nombreBusqueda(spot.nombre)}${p === "NZ" ? " New Zealand" : ""} ${EN_DIRECTO[p]}`;
+}
+
+// Canal de otro país (channels.list snippet.country): fuera. Sin país, se queda.
+export function canalDeFuera(paisCanal, spot) {
+  if (!paisCanal) return false;
+  const p = paisSpot(spot);
+  const validos = p === "NZ" ? ["NZ"] : ["ES", "PT"];
+  return !validos.includes(String(paisCanal).toUpperCase());
+}
 export const contienePalabra = (texto, palabra) => new RegExp(`(^|[^a-z0-9])${palabra.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}($|[^a-z0-9])`).test(texto);
 
 // Un vídeo de YouTube (videos.list) -> candidata o null.
@@ -84,10 +121,79 @@ export function candidataDeVideo(video, spot, yaEnApp) {
     miniatura: sn.thumbnails?.medium?.url || sn.thumbnails?.default?.url || null,
     insertable: video.status?.embeddable === true,
     motivo: cerca ? "ubicación del vídeo cerca del spot" : "nombra el spot",
+    fuente: "YouTube",
   };
 }
 
-export function cuerpoIssue({ fecha, totalSpots, listaHuecos, candidatas, sinClave }) {
+// --- OpenStreetMap (Overpass, sin clave) ---
+// Una consulta para todos los huecos: objetos con webcam=URL o
+// contact:webcam=URL a menos de RADIO_BUSQUEDA_KM de cada spot.
+export function consultaOverpass(spots, radioKm = RADIO_BUSQUEDA_KM) {
+  const m = Math.round(radioKm * 1000);
+  const partes = spots.flatMap((s) => [
+    `nwr["webcam"](around:${m},${s.lat},${s.lon});`,
+    `nwr["contact:webcam"](around:${m},${s.lat},${s.lon});`,
+  ]);
+  return `[out:json][timeout:120];(${partes.join("")});out center tags;`;
+}
+
+const esUrl = (u) => /^https?:\/\/[^\s]+$/i.test(String(u || "").trim());
+
+// Elementos de Overpass -> candidatas (cada una asignada a su spot más cercano).
+export function candidatasDeOsm(elementos, spots, yaEnApp, radioKm = RADIO_BUSQUEDA_KM) {
+  const out = [];
+  for (const e of elementos || []) {
+    const t = e.tags || {};
+    const url = String(t.webcam || t["contact:webcam"] || "").split(";")[0].trim();
+    if (!esUrl(url) || yaEnApp.urls?.has(url)) continue;
+    const lat = e.lat ?? e.center?.lat;
+    const lon = e.lon ?? e.center?.lon;
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
+    let mejor = null;
+    for (const s of spots) {
+      const km = distanciaKm(s.lat, s.lon, lat, lon);
+      if (km <= radioKm && (!mejor || km < mejor.km)) mejor = { s, km };
+    }
+    if (!mejor) continue;
+    const nombre = t.name || t.operator || t.tourism || t.amenity || "webcam";
+    out.push({
+      spot: mejor.s.slug, spot_nombre: mejor.s.nombre, titulo: `${nombre} (OpenStreetMap)`, canal: t.operator || "—",
+      video_id: `osm-${e.type}-${e.id}`, url, motivo: `a ${mejor.km.toFixed(1)} km del spot`, fuente: "OpenStreetMap",
+    });
+  }
+  return out;
+}
+
+// --- Windy Webcams (opcional, WINDY_WEBCAMS_KEY) ---
+export function candidatasDeWindy(webcams, spot, yaEnApp) {
+  const out = [];
+  for (const w of webcams || []) {
+    if (w.status && w.status !== "active") continue;
+    const loc = w.location || {};
+    if (!Number.isFinite(loc.latitude) || !Number.isFinite(loc.longitude)) continue;
+    const km = distanciaKm(spot.lat, spot.lon, loc.latitude, loc.longitude);
+    if (km > RADIO_BUSQUEDA_KM) continue;
+    const url = w.urls?.detail || `https://www.windy.com/webcams/${w.webcamId}`;
+    if (yaEnApp.urls?.has(url)) continue;
+    out.push({
+      spot: spot.slug, spot_nombre: spot.nombre, titulo: `${w.title || "Webcam"} (Windy)`, canal: loc.city || "—",
+      video_id: `windy-${w.webcamId}`, url, motivo: `a ${km.toFixed(1)} km del spot`, fuente: "Windy",
+    });
+  }
+  return out;
+}
+
+// --- Memoria entre semanas ---
+// Marcas <!-- cand:spot:id --> de Issues anteriores: lo ya propuesto.
+export const yaPropuestas = (texto) => new Set([...String(texto || "").matchAll(/<!-- cand:([^:\s]+):([^\s]+) -->/g)].map((m) => `${m[1]}:${m[2]}`));
+
+// Claves de WEBCAMS_HLS en index.html (cámaras HLS propias de la app).
+export function slugsHls(html) {
+  const m = String(html).match(/^const WEBCAMS_HLS = \{([\s\S]*?)^\};/m);
+  return m ? [...m[1].matchAll(/^\s+([a-z0-9]+):/gm)].map((x) => x[1]) : [];
+}
+
+export function cuerpoIssue({ fecha, totalSpots, listaHuecos, candidatas, sinClave, sinWindy = true, repetidas = [], fuentes = {} }) {
   const l = [
     `Búsqueda semanal de cámaras (${fecha}). Sin IA: \`scripts/camaras/buscar-camaras.mjs\`.`,
     "",
@@ -95,33 +201,74 @@ export function cuerpoIssue({ fecha, totalSpots, listaHuecos, candidatas, sinCla
   ];
   if (sinClave) {
     l.push("- ⚠️ Sin `YOUTUBE_API_KEY`: no se ha buscado en YouTube. Mikel la saca una vez en console.cloud.google.com (YouTube Data API v3) y la guarda como secret de GitHub.");
-  } else {
-    l.push(`- Candidatas en YouTube (directos que nombran el spot o están cerca): **${candidatas.length}**.`);
   }
+  if (sinWindy) {
+    l.push("- ℹ️ Sin `WINDY_WEBCAMS_KEY`: no se ha mirado el directorio de webcams de Windy (gratis en https://api.windy.com/keys, secret de GitHub).");
+  }
+  const porFuente = Object.entries(fuentes).map(([f, n]) => `${f} ${n}`).join(", ");
+  l.push(`- **Candidatas nuevas: ${candidatas.length}**${porFuente ? ` (${porFuente})` : ""}; ya propuestas otras semanas: ${repetidas.length}.`);
   if (candidatas.length) {
-    l.push("", "## Candidatas", "", "Marca las que quieras en la app. Entran como **enlace** (YouTube nunca insertado: Costaviva tiene paywall).", "");
+    l.push("", "## Candidatas nuevas", "", "Marca las que quieras en la app. Las de YouTube entran como **enlace** (nunca insertado: Costaviva tiene paywall); las demás, como enlace hasta tener permiso escrito del dueño.", "");
     for (const c of candidatas) {
-      l.push(`- [ ] **${c.spot_nombre}** — [${c.titulo}](${c.url}) · canal ${c.canal} · ${c.motivo} <!-- cand:${c.spot}:${c.video_id} -->`);
+      l.push(`- [ ] **${c.spot_nombre}** — [${c.titulo}](${c.url}) · ${c.fuente || "YouTube"} · ${c.canal} · ${c.motivo} <!-- cand:${c.spot}:${c.video_id} -->`);
     }
+  }
+  if (repetidas.length) {
+    l.push("", "<details><summary>Ya propuestas otras semanas (siguen ahí)</summary>", "");
+    for (const c of repetidas) l.push(`- [ ] **${c.spot_nombre}** — [${c.titulo}](${c.url}) · ${c.fuente || "YouTube"} <!-- cand:${c.spot}:${c.video_id} -->`);
+    l.push("", "</details>");
   }
   l.push("", "<details><summary>Spots sin cámara</summary>", "", listaHuecos.map((s) => s.nombre).join(", ") || "Ninguno.", "", "</details>");
   return l.join("\n");
 }
 
-async function json(url) {
-  const r = await fetch(url, { signal: AbortSignal.timeout(20000) });
+async function json(url, opciones = {}, quien = "YouTube") {
+  const r = await fetch(url, { signal: AbortSignal.timeout(opciones.timeout || 20000), ...opciones });
   const d = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(`YouTube ${r.status}: ${d?.error?.message || "sin detalle"}`);
+  if (!r.ok) throw new Error(`${quien} ${r.status}: ${d?.error?.message || d?.message || "sin detalle"}`);
   return d;
 }
 
 async function buscarEnYoutube(spot, clave, yaEnApp) {
-  const q = `${nombreBusqueda(spot.nombre)} ${spot.slug.startsWith("nz-") ? "New Zealand " : ""}webcam`;
-  const busq = await json(`${YT}/search?part=snippet&type=video&eventType=live&maxResults=10&q=${encodeURIComponent(q)}&key=${clave}`);
+  const p = paisSpot(spot);
+  const q = consultaYoutube(spot);
+  const busq = await json(`${YT}/search?part=snippet&type=video&eventType=live&maxResults=25&regionCode=${p}&relevanceLanguage=${IDIOMA[p]}&q=${encodeURIComponent(q)}&key=${clave}`);
   const ids = (busq.items || []).map((i) => i.id?.videoId).filter(Boolean);
   if (!ids.length) return [];
   const vids = await json(`${YT}/videos?part=snippet,status,recordingDetails&id=${ids.join(",")}&key=${clave}`);
-  return (vids.items || []).map((v) => candidataDeVideo(v, spot, yaEnApp)).filter(Boolean);
+  const cands = (vids.items || []).map((v) => candidataDeVideo(v, spot, yaEnApp)).filter(Boolean);
+  if (!cands.length) return [];
+  const canales = [...new Set(cands.map((c) => c.canal_id))];
+  const ch = await json(`${YT}/channels?part=snippet&id=${canales.join(",")}&key=${clave}`);
+  const pais = new Map((ch.items || []).map((c) => [c.id, c.snippet?.country]));
+  return cands.filter((c) => !canalDeFuera(pais.get(c.canal_id), spot));
+}
+
+// Servidor principal y una réplica pública por si el primero está saturado.
+const OVERPASS = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter"];
+
+async function buscarEnOsm(spots, yaEnApp) {
+  if (!spots.length) return [];
+  let ultimo;
+  for (const url of OVERPASS) {
+    try {
+      const d = await json(url, {
+        method: "POST",
+        headers: { "content-type": "application/x-www-form-urlencoded", "user-agent": "Costaviva-buscar-camaras/1.0 (+https://costaviva.org)" },
+        body: "data=" + encodeURIComponent(consultaOverpass(spots)),
+        timeout: 150000,
+      }, "Overpass");
+      return candidatasDeOsm(d.elements, spots, yaEnApp);
+    } catch (e) {
+      ultimo = e;
+    }
+  }
+  throw ultimo;
+}
+
+async function buscarEnWindy(spot, clave, yaEnApp) {
+  const d = await json(`https://api.windy.com/webcams/api/v3/webcams?nearby=${spot.lat},${spot.lon},${RADIO_BUSQUEDA_KM}&limit=20&include=location,urls`, { headers: { "x-windy-api-key": clave } }, "Windy");
+  return candidatasDeWindy(d.webcams, spot, yaEnApp);
 }
 
 async function cargar() {
@@ -134,7 +281,8 @@ async function cargar() {
   const vistos = new Set();
   const spots = [...es, ...SPOTS_NZ.map((s) => ({ slug: s.slug, nombre: s.nombre, lat: s.lat, lon: s.lon }))]
     .filter((s) => !vistos.has(s.slug) && vistos.add(s.slug));
-  const conCamara = new Set([...Object.keys(WEBCAMS), ...CAMARAS_EXTERNAS.map((c) => c.spot)]);
+  const html = readFileSync(new URL("../../index.html", import.meta.url), "utf8");
+  const conCamara = new Set([...Object.keys(WEBCAMS), ...slugsHls(html), ...CAMARAS_EXTERNAS.map((c) => c.spot)]);
   const canalesPorSpot = new Map();
   for (const c of CAMARAS_EXTERNAS) {
     if (!c.canal_id) continue;
@@ -142,16 +290,34 @@ async function cargar() {
     canalesPorSpot.get(c.spot).add(c.canal_id);
   }
   const videos = new Set(CAMARAS_EXTERNAS.map((c) => c.youtube_id).filter(Boolean));
-  return { spots, conCamara, yaEnApp: { videos, canalesPorSpot } };
+  const urls = new Set(CAMARAS_EXTERNAS.flatMap((c) => [c.url, c.imagen]).filter(Boolean));
+  return { spots, conCamara, yaEnApp: { videos, canalesPorSpot, urls } };
 }
 
 async function main() {
-  const i = process.argv.indexOf("--salida");
-  const salida = i > -1 ? process.argv[i + 1] : null;
+  const arg = (n) => { const i = process.argv.indexOf(n); return i > -1 ? process.argv[i + 1] : null; };
+  const salida = arg("--salida");
+  const anteriores = arg("--anteriores");
   const clave = (process.env.YOUTUBE_API_KEY || "").trim();
+  const claveWindy = (process.env.WINDY_WEBCAMS_KEY || "").trim();
   const { spots, conCamara, yaEnApp } = await cargar();
   const listaHuecos = huecos(spots, conCamara);
   const candidatas = [];
+  try {
+    candidatas.push(...await buscarEnOsm(listaHuecos, yaEnApp));
+  } catch (e) {
+    console.error(`✗ OpenStreetMap: ${e.message}`);
+  }
+  if (claveWindy) {
+    for (const spot of listaHuecos) {
+      try {
+        candidatas.push(...await buscarEnWindy(spot, claveWindy, yaEnApp));
+      } catch (e) {
+        console.error(`✗ Windy ${spot.slug}: ${e.message}`);
+        if (/40[13]/.test(e.message)) break;
+      }
+    }
+  }
   if (clave) {
     for (const spot of listaHuecos.slice(0, MAX_BUSQUEDAS)) {
       try {
@@ -162,10 +328,15 @@ async function main() {
       }
     }
   }
-  // Un mismo directo puede salir para dos spots: se queda el primero.
-  const unicas = candidatas.filter((c, k) => candidatas.findIndex((x) => x.video_id === c.video_id) === k);
-  const cuerpo = cuerpoIssue({ fecha: new Date().toISOString().slice(0, 10), totalSpots: spots.length, listaHuecos, candidatas: unicas, sinClave: !clave });
-  console.log(`Spots ${spots.length}, sin cámara ${listaHuecos.length}, candidatas ${unicas.length}${clave ? "" : " (sin YOUTUBE_API_KEY)"}.`);
+  // Un mismo directo o URL puede salir para dos spots: se queda el primero.
+  const unicas = candidatas.filter((c, k) => candidatas.findIndex((x) => x.video_id === c.video_id || x.url === c.url) === k);
+  const vistas = anteriores ? yaPropuestas(readFileSync(anteriores, "utf8")) : new Set();
+  const nuevas = unicas.filter((c) => !vistas.has(`${c.spot}:${c.video_id}`));
+  const repetidas = unicas.filter((c) => vistas.has(`${c.spot}:${c.video_id}`));
+  const fuentes = {};
+  for (const c of nuevas) fuentes[c.fuente] = (fuentes[c.fuente] || 0) + 1;
+  const cuerpo = cuerpoIssue({ fecha: new Date().toISOString().slice(0, 10), totalSpots: spots.length, listaHuecos, candidatas: nuevas, sinClave: !clave, sinWindy: !claveWindy, repetidas, fuentes });
+  console.log(`Spots ${spots.length}, sin cámara ${listaHuecos.length}, candidatas nuevas ${nuevas.length}, repetidas ${repetidas.length}${clave ? "" : " (sin YOUTUBE_API_KEY)"}${claveWindy ? "" : " (sin WINDY_WEBCAMS_KEY)"}.`);
   if (salida) writeFileSync(salida, cuerpo + "\n");
   else console.log(cuerpo);
 }

@@ -1,7 +1,11 @@
 // Buscador de cámaras nuevas (scripts/camaras/buscar-camaras.mjs): lógica pura.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { huecos, candidataDeVideo, cuerpoIssue, nombreBusqueda, RADIO_KM } from "../scripts/camaras/buscar-camaras.mjs";
+import { readFileSync } from "node:fs";
+import {
+  huecos, candidataDeVideo, cuerpoIssue, nombreBusqueda, RADIO_KM, paisSpot, consultaYoutube, canalDeFuera,
+  consultaOverpass, candidatasDeOsm, candidatasDeWindy, yaPropuestas, slugsHls,
+} from "../scripts/camaras/buscar-camaras.mjs";
 
 const spots = [
   { slug: "mundaka", nombre: "Mundaka", lat: 43.4047, lon: -2.6989 },
@@ -44,8 +48,75 @@ test("Issue: avisa si falta la clave y lista candidatas con casilla", () => {
   const sin = cuerpoIssue({ fecha: "2026-11-02", totalSpots: 3, listaHuecos: [spots[2]], candidatas: [], sinClave: true });
   assert.match(sin, /sin ninguna cámara a menos de 5 km: 1/);
   assert.match(sin, /Sin `YOUTUBE_API_KEY`/);
+  assert.match(sin, /Sin `WINDY_WEBCAMS_KEY`/);
   const con = cuerpoIssue({ fecha: "2026-11-02", totalSpots: 3, listaHuecos: [spots[2]], candidatas: [{ spot: "ondarroa", spot_nombre: "Ondarroa", titulo: "Ondarroa live", url: "https://www.youtube.com/watch?v=a", canal: "C", motivo: "nombra el spot", video_id: "a" }], sinClave: false });
   assert.match(con, /- \[ \] \*\*Ondarroa\*\* — \[Ondarroa live\]\(https:\/\/www\.youtube\.com\/watch\?v=a\)/);
   assert.match(con, /<!-- cand:ondarroa:a -->/);
   assert.match(con, /enlace/);
+});
+
+// Mejoras del 2026-11-08 ("no puede ser que no encuentre ninguna").
+test("huecos: las cámaras HLS de index.html cuentan como cámara", () => {
+  const hls = slugsHls(readFileSync(new URL("../index.html", import.meta.url), "utf8"));
+  for (const s of ["hondarribia", "deba", "orio", "mutriku", "zarautz"]) assert.ok(hls.includes(s), s);
+  assert.deepEqual(slugsHls("const WEBCAMS_HLS = {\n  a: \"x\",\n  b2: \"y\",\n};\n"), ["a", "b2"]);
+  assert.deepEqual(slugsHls("nada"), []);
+});
+
+test("YouTube: país del spot, consulta en su idioma y canales de fuera", () => {
+  const nz = { slug: "nz-timaru", nombre: "Timaru", lat: -44.4, lon: 171.25 };
+  const pt = { slug: "nazare", nombre: "Nazaré (PT)", lat: 39.6, lon: -9.08 };
+  const es = spots[2];
+  assert.equal(paisSpot(nz), "NZ");
+  assert.equal(paisSpot(pt), "PT");
+  assert.equal(paisSpot(es), "ES");
+  assert.match(consultaYoutube(es), /^Ondarroa .*"en directo"/);
+  assert.match(consultaYoutube(pt), /^Nazaré .*"ao vivo"/);
+  assert.match(consultaYoutube(nz), /^Timaru New Zealand /);
+  assert.equal(canalDeFuera("CO", es), true, "Cartagena de Colombia fuera");
+  assert.equal(canalDeFuera("PT", es), false);
+  assert.equal(canalDeFuera(undefined, es), false, "sin país, se queda");
+  assert.equal(canalDeFuera("AU", nz), true);
+  assert.equal(canalDeFuera("nz", nz), false);
+});
+
+test("OpenStreetMap: consulta y candidatas con webcam=URL cerca del spot", () => {
+  const q = consultaOverpass([spots[2]]);
+  assert.match(q, /nwr\["webcam"\]\(around:8000,43\.322,-2\.418\);/);
+  assert.match(q, /nwr\["contact:webcam"\]/);
+  const ya = { urls: new Set(["https://ya.example/cam"]) };
+  const els = [
+    { type: "node", id: 1, lat: 43.33, lon: -2.42, tags: { webcam: "https://cofradia.example/cam", name: "Cofradía" } },
+    { type: "way", id: 2, center: { lat: 43.33, lon: -2.42 }, tags: { "contact:webcam": "https://ya.example/cam" } },
+    { type: "node", id: 3, lat: 43.33, lon: -2.42, tags: { webcam: "no es url" } },
+    { type: "node", id: 4, lat: 40.0, lon: -3.7, tags: { webcam: "https://lejos.example" } },
+  ];
+  const c = candidatasDeOsm(els, [spots[2]], ya);
+  assert.equal(c.length, 1);
+  assert.equal(c[0].spot, "ondarroa");
+  assert.equal(c[0].url, "https://cofradia.example/cam");
+  assert.equal(c[0].video_id, "osm-node-1");
+  assert.equal(c[0].fuente, "OpenStreetMap");
+  assert.match(c[0].motivo, /^a \d+\.\d km del spot$/);
+});
+
+test("Windy: solo activas y a menos del radio", () => {
+  const ws = [
+    { webcamId: 10, title: "Ondarroa puerto", status: "active", location: { latitude: 43.32, longitude: -2.42, city: "Ondarroa" }, urls: { detail: "https://www.windy.com/webcams/10" } },
+    { webcamId: 11, title: "Inactiva", status: "inactive", location: { latitude: 43.32, longitude: -2.42 } },
+    { webcamId: 12, title: "Lejos", status: "active", location: { latitude: 43.0, longitude: -2.0 } },
+  ];
+  const c = candidatasDeWindy(ws, spots[2], { urls: new Set() });
+  assert.deepEqual(c.map((x) => x.video_id), ["windy-10"]);
+  assert.equal(c[0].fuente, "Windy");
+});
+
+test("Issue: lo ya propuesto otras semanas no se repite como nuevo", () => {
+  const prev = "- [ ] **Cartagena** — [x](u) <!-- cand:cartagena:obYSVVM7RB0 -->\n<!-- cand:nz-timaru:FgePIvvAE88 -->";
+  assert.deepEqual([...yaPropuestas(prev)], ["cartagena:obYSVVM7RB0", "nz-timaru:FgePIvvAE88"]);
+  const rep = { spot: "cartagena", spot_nombre: "Cartagena", titulo: "x", url: "u", video_id: "obYSVVM7RB0", fuente: "YouTube" };
+  const cuerpo = cuerpoIssue({ fecha: "2026-11-09", totalSpots: 3, listaHuecos: [], candidatas: [], sinClave: false, sinWindy: false, repetidas: [rep] });
+  assert.match(cuerpo, /Candidatas nuevas: 0\*\*; ya propuestas otras semanas: 1/);
+  assert.match(cuerpo, /<summary>Ya propuestas otras semanas/);
+  assert.doesNotMatch(cuerpo, /WINDY_WEBCAMS_KEY/);
 });
