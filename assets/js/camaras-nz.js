@@ -99,6 +99,9 @@ export const NZ_ANALISIS_AUTORIZADO = {
   // windy.com mientras Windy no conteste (comun, cz/windy).
   windy: false,
   youtube_motella: false,
+  // 2026-11-08: Bowentown, solo enlace a la página de Waihi Beach Coastguard
+  // (aprobado por Mikel); sin permiso escrito ni embebido ni análisis.
+  waihi_coastguard: false,
 };
 
 export const NZ_EMBED_AUTORIZADO = {
@@ -134,6 +137,9 @@ export const NZ_EMBED_AUTORIZADO = {
   // windy.com mientras Windy no conteste (comun, cz/windy).
   windy: false,
   youtube_motella: false,
+  // 2026-11-08: Bowentown, solo enlace a la página de Waihi Beach Coastguard
+  // (aprobado por Mikel); sin permiso escrito ni embebido ni análisis.
+  waihi_coastguard: false,
 };
 
 // Cómo se embebe cada dueño, si se puede: "imagen_oficial" (la URL de la
@@ -390,6 +396,19 @@ export const CONDICIONES_NZ = {
     cita: "Directo público de YouTube. Solo enlace: Costaviva tiene paywall y YouTube no permite cobrar por ver un reproductor insertado.",
     contacto: null,
   },
+  waihi_coastguard: {
+    dueno_corto: "Waihi Beach Coastguard",
+    dueno: "Waihi Beach Coastguard (cámara de la barra de Bowentown, emitida con Angelcam)",
+    tipo_dueno: "privado",
+    modos_permitidos: ["enlace"],
+    analisis_permitido: NZ_ANALISIS_AUTORIZADO.waihi_coastguard,
+    licencia: null,
+    fuentes: ["https://www.waihibeachcoastguard.co.nz/barcamera"],
+    cita:
+      "Página «Bowentown bar camera» con el reproductor de Angelcam. No publica condiciones de uso. Solo enlace a su " +
+      "página (decisión de Mikel, 2026-11-08); nada de embebido ni de análisis sin permiso escrito.",
+    contacto: "admin@waihibeachcoastguard.co.nz",
+  },
 };
 
 // embed: { imagen } o { iframe } que publica el dueño, y refresco_min (cada
@@ -536,6 +555,8 @@ const LISTA = [
   // Del buscador de cámaras (Issue #357, aprobada por Mikel el 2026-10-31).
   cam("motella-gisborne", "nz-gisborne", ["Gisborne, Teal Motor Lodge", "Gisborne, Teal Motor Lodge"], "youtube_motella", "https://www.youtube.com/watch?v=TBWhP73uY6s", false,
     "2026-10-31: directo de YouTube «Gisborne Live Webcam | NZ Weather» encontrado por buscar-camaras.yml", { visto_en: "youtube.com (buscar-camaras)" }),
+  cam("bowentown-bar", "nz-waihi-beach", ["Bowentown, barra", "Bowentown bar"], "waihi_coastguard", "https://www.waihibeachcoastguard.co.nz/barcamera", true,
+    "2026-11-08: directo de Angelcam activo, fotograma de las 08:48 NZDT: se ven el mar abierto y las olas desde Bowentown Heads", { km: 1 }),
 ];
 
 export const CAMARAS_NZ = LISTA;

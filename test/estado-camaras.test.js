@@ -171,7 +171,9 @@ test("NZ: los 22 spots con cámara salen en verde con el estado real de hoy; los
     // 2026-10-31: Gisborne, del buscador de cámaras (YouTube, enlace).
     "gisborne",
     // 2026-11-08: del buscador (Windy, enlace), revisadas a mano.
-    "russell", "tauranga", "half-moon-bay", "picton", "lyttelton", "westport"].map((s) => `nz-${s}`);
+    "russell", "tauranga", "half-moon-bay", "picton", "lyttelton", "westport",
+    // 2026-11-08: Bowentown (Waihi Beach Coastguard, enlace).
+    "waihi-beach"].map((s) => `nz-${s}`);
   // Estado de camara_estado del 2026-10-11 12:17 UTC: CoroLive no verificable, el resto ok.
   const camaras = Object.fromEntries(
     CAMARAS_EXTERNAS.filter((c) => c.spot.startsWith("nz-")).map((c) => [claveSalud(c), c.id.startsWith("nz-corolive") ? { sinSenal: false, motivo: "no_verificable_403" } : ok])

@@ -275,6 +275,7 @@ const MODO_NZ = {
   "nz-windy-waikawa": "enlace",
   "nz-windy-taylors-mistake": "enlace",
   "nz-windy-westport": "enlace",
+  "nz-bowentown-bar": "enlace",
 };
 
 // Repaso de día del 2026-10-12: las 15 pendientes de NZ, añadidas (solo

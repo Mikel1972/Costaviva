@@ -223,6 +223,7 @@ export const NO_SIRVEN_NZ = {
   "nz-windy-waikawa": "solo ENLACE a windy.com (sin permiso para analizar)",
   "nz-windy-taylors-mistake": "solo ENLACE a windy.com (sin permiso para analizar)",
   "nz-windy-westport": "solo ENLACE a windy.com (sin permiso para analizar)",
+  "nz-bowentown-bar": "solo ENLACE a la página de Waihi Beach Coastguard (sin permiso para analizar)",
   // DESCARTADAS en el repaso de día del 2026-10-12 (07:30-07:50 NZDT): no
   // están en camaras-nz.js (clave nz-descartada-<id>). No se rodea ningún
   // bloqueo; si cambian, se revisan otra vez.
