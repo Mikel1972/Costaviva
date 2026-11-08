@@ -34,8 +34,9 @@ export const CAPA = "msg_fes:h60b";
 export const ATRIBUCION = I18n.t("lluvia.atribucion");
 export const HORAS_VENTANA = 3;
 export const PASO_POR_DEFECTO_MIN = 15;
-export const RETARDO_FRAME_MS = 400;
-export const RETARDO_ULTIMO_MS = 2000;
+// Más despacio (2026-11-08, Mikel: "debiera ir más despacio"): antes 400 y 2000.
+export const RETARDO_FRAME_MS = 700;
+export const RETARDO_ULTIMO_MS = 3000;
 
 const MIN = 60 * 1000;
 
@@ -481,7 +482,13 @@ export function crearLluviaAnimada({ L, map, contenedor, fetchFn = (...a) => fet
     clearTimeout(temporizador);
     if (!activo) return;
     temporizador = setTimeout(() => {
-      estado = avanzar(estado, listas());
+      // Mientras faltan tomas no se anima: se queda en la más reciente y la
+      // vuelta empieza cuando están todas (2026-11-08, Mikel: "¿por qué solo
+      // carga el último trozo?": antes repetía solo las ya cargadas).
+      if (estados.includes("pendiente")) {
+        const u = ultimoIndiceListo(listas());
+        if (estado.reproduciendo && u >= 0) estado = { ...estado, indice: u };
+      } else estado = avanzar(estado, listas());
       pintar();
       programar();
     }, retardo(estado.indice, listas()));

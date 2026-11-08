@@ -64,7 +64,7 @@ test("diario: el índice usa la boya que enseña la ficha", () => {
 test("diario: la hoja del día no se mete bajo el menú ni bajo la cabecera", () => {
   const h = html("diario.html");
   const panel = h.match(/\.panel-dia \{[\s\S]*?\}/)[0];
-  assert.match(panel, /bottom: var\(--menu-alto, calc\(72px \+ env\(safe-area-inset-bottom\)\)\)/);
+  assert.match(panel, /bottom: var\(--menu-alto, calc\(56px \+ env\(safe-area-inset-bottom\)\)\)/);
   assert.match(panel, /var\(--cabecera-abajo/);
   assert.doesNotMatch(panel, /bottom: 54px/);
   assert.match(h, /setProperty\("--cabecera-abajo"/);
@@ -81,10 +81,10 @@ test("diario: '➕ Añadir entrada' pegado al pie de la hoja y oculto con formul
 
 test("páginas con menú inferior: hueco abajo y safe-area arriba", () => {
   const css = html("assets/css/costaviva.css");
-  assert.match(css, /\.tabs-nav \{[^}]*height: calc\(72px \+ env\(safe-area-inset-bottom\)\)/);
+  assert.match(css, /\.tabs-nav \{[^}]*height: calc\(56px \+ env\(safe-area-inset-bottom\)\)/);
   for (const f of ["diario.html", "alarma.html", "grupos.html", "index.html"]) {
     const h = html(f);
-    assert.match(h, /padding-bottom: calc\(72px \+ env\(safe-area-inset-bottom\)\)/, `${f}: hueco del menú`);
+    assert.match(h, /padding-bottom: calc\(56px \+ env\(safe-area-inset-bottom\)\)/, `${f}: hueco del menú`);
     assert.match(h, /header \{ padding: max\(10px, env\(safe-area-inset-top\)\)/, `${f}: safe-area arriba`);
     assert.match(h, /viewport-fit=cover/, f);
   }
