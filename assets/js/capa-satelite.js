@@ -51,8 +51,12 @@ export const RECTANGULOS_ESPANA = [
 export const COLOR_SIN_FOTO = [32, 26, 38];
 export const TOLERANCIA_SIN_FOTO = 6;
 export const COLOR_MAR_SATELITE = "#2F4260";
+// También la raya muy oscura y azulada que deja el borde de la foto, p. ej.
+// (4, 12, 31) junto al "sin foto" frente a Bakio a zoom 14.
 export function esSinFoto(r, g, b) {
-  return Math.abs(r - COLOR_SIN_FOTO[0]) <= TOLERANCIA_SIN_FOTO && Math.abs(g - COLOR_SIN_FOTO[1]) <= TOLERANCIA_SIN_FOTO && Math.abs(b - COLOR_SIN_FOTO[2]) <= TOLERANCIA_SIN_FOTO;
+  const morado = Math.abs(r - COLOR_SIN_FOTO[0]) <= TOLERANCIA_SIN_FOTO && Math.abs(g - COLOR_SIN_FOTO[1]) <= TOLERANCIA_SIN_FOTO && Math.abs(b - COLOR_SIN_FOTO[2]) <= TOLERANCIA_SIN_FOTO;
+  const rayaBorde = Math.max(r, g, b) <= 34 && b >= r + 10 && b >= g + 8;
+  return morado || rayaBorde;
 }
 // De lejos (zoom ≤ ZOOM_MAR_GRIS) el IGN da Sentinel-2 y el mar sale gris
 // oscuro, cortado en bloques donde acaba la foto: también se quita (gris =
@@ -62,14 +66,52 @@ export const ZOOM_MAR_GRIS = 13;
 export function esMarGris(r, g, b) {
   return Math.max(r, g, b) <= 80 && Math.max(r, g, b) - Math.min(r, g, b) <= 12;
 }
-// Pasa a transparentes, en un RGBA, los píxeles "sin foto" (y el mar gris
-// de lejos). Devuelve cuántos.
-export function quitarSinFoto(rgba, zoom = 99) {
+// Borde suave (Mikel, 2026-11-08: "de cerca sigue igual"): la foto del IGN
+// acaba en el mar con una línea recta. Los píxeles a menos de BORDE_SUAVE_PX
+// de un "sin foto" se van haciendo transparentes, y la foto se funde con el
+// azul del mar del mapa (COLOR_MAR_SATELITE). Solo desde el "sin foto": la
+// línea de costa (mar gris de lejos) no se difumina.
+export const BORDE_SUAVE_PX = 24;
+
+// Pasa a transparentes, en un RGBA de lado × lado, los píxeles "sin foto"
+// (y el mar gris de lejos) y difumina el borde de la foto. Devuelve cuántos
+// píxeles quedaron transparentes del todo.
+export function quitarSinFoto(rgba, zoom = 99, lado = Math.round(Math.sqrt(rgba.length / 4))) {
   const gris = zoom <= ZOOM_MAR_GRIS;
-  let n = 0;
-  for (let i = 0; i < rgba.length; i += 4) {
-    const r = rgba[i], g = rgba[i + 1], b = rgba[i + 2];
-    if (esSinFoto(r, g, b) || (gris && esMarGris(r, g, b))) { rgba[i + 3] = 0; n++; }
+  const total = rgba.length / 4;
+  const dist = new Float32Array(total).fill(Infinity);
+  let n = 0, sinFoto = 0;
+  for (let p = 0; p < total; p++) {
+    const i = p * 4, r = rgba[i], g = rgba[i + 1], b = rgba[i + 2];
+    if (esSinFoto(r, g, b)) { rgba[i + 3] = 0; dist[p] = 0; n++; sinFoto++; }
+    else if (gris && esMarGris(r, g, b)) { rgba[i + 3] = 0; n++; }
+  }
+  if (!sinFoto || sinFoto === total || lado * lado !== total) return n;
+  // Distancia aproximada al "sin foto" más cercano (chaflán en dos pasadas).
+  const D = Math.SQRT2;
+  for (let y = 0; y < lado; y++) for (let x = 0; x < lado; x++) {
+    const p = y * lado + x; let d = dist[p];
+    if (x > 0) d = Math.min(d, dist[p - 1] + 1);
+    if (y > 0) {
+      d = Math.min(d, dist[p - lado] + 1);
+      if (x > 0) d = Math.min(d, dist[p - lado - 1] + D);
+      if (x < lado - 1) d = Math.min(d, dist[p - lado + 1] + D);
+    }
+    dist[p] = d;
+  }
+  for (let y = lado - 1; y >= 0; y--) for (let x = lado - 1; x >= 0; x--) {
+    const p = y * lado + x; let d = dist[p];
+    if (x < lado - 1) d = Math.min(d, dist[p + 1] + 1);
+    if (y < lado - 1) {
+      d = Math.min(d, dist[p + lado] + 1);
+      if (x < lado - 1) d = Math.min(d, dist[p + lado + 1] + D);
+      if (x > 0) d = Math.min(d, dist[p + lado - 1] + D);
+    }
+    dist[p] = d;
+  }
+  for (let p = 0; p < total; p++) {
+    const d = dist[p];
+    if (d > 0 && d < BORDE_SUAVE_PX) rgba[p * 4 + 3] = Math.min(rgba[p * 4 + 3], Math.round((255 * d) / BORDE_SUAVE_PX));
   }
   return n;
 }
