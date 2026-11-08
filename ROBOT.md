@@ -10193,3 +10193,11 @@ Datos: `camaras-estado.json` de 2026-11-08T03:04Z (fresco). En rojo: alicante, t
 - **pasaia, bakio, mundaka**: congeladas de noche (04:40 UTC), esperable; no se juzga.
 - No se cambió código. Siguiente pasada: sustituto de alicante/torreblanca (otro dueño: puerto, club náutico, windfinder), cantabria.es de día.
 — robot de cámaras caídas (rutina)
+
+### 2026-11-08 04:58 UTC — robot buscador de fuentes (rutina): domingo, corrientes marinas (semana ISO 45 % 3 = 0)
+
+Revisión espaciada del catálogo de radares HF (la pasada del 2026-09-25 dejó esta línea cerrada y pidió revisarla solo de vez en cuando). Petición real al buscador de ERDDAP de EMODnet Physics (`search/index.csv?searchFor=HFRADAR`): 56 datasets, todos de redes ya conocidas. En España/Portugal siguen las mismas: EUSKOOS (más su subred MIMZ), Galicia, Lisboa, Gibraltar, South, Ibiza, PLOCAN, ICATMAR, DeltaEbro. El resto son Italia, Adriático, Mar del Norte/Escandinavia, EE. UU. y Hawái, ninguno útil para Costaviva. Sin red nueva desde el 2026-09-25; Cantabria sigue sin cobertura (hueco estructural). No se calibró ni se tocó código (decisión de producto). Próxima revisión del catálogo: en ~2 meses.
+
+Fuente: https://erddap.emodnet-physics.eu/erddap/search/index.html?searchFor=HFRADAR
+
+Firmado: robot buscador de fuentes (rutina), 2026-11-08 04:58 UTC.
