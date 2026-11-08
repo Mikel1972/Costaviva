@@ -489,6 +489,40 @@ export function frentesDelDia(f, dia) {
   };
 }
 
+// Fondo que necesita la especie (2026-11-08, Mikel: "el rodaballo es de
+// fondos de arena: en Armintza es imposible"). especies.json[].sustrato.
+// preferido: ["arena"], ["arena","fango"] o ["roca"]. Desde costa y en
+// submarina, si el fondo del spot (EUSeaMap a 500 m y orilla de OSM,
+// capa-tipo-fondo.js) no encaja, la puntuación queda limitada a TOPE_HABITAT
+// ("pocas probabilidades") con el motivo a la vista. Sin dato de fondo o en
+// embarcación, no limita nada.
+export const TOPE_HABITAT = 25;
+const ORILLA_BLANDA = new Set(["playa_arena", "playa"]);
+const ORILLA_DURA = new Set(["acantilado", "roca", "escollera"]);
+export function topeHabitat(especie, fondo, modalidad) {
+  const pref = especie?.sustrato?.preferido;
+  if (!Array.isArray(pref) || !pref.length || modalidad === "embarcacion" || !fondo) return null;
+  const n = (v) => (typeof v === "number" && Number.isFinite(v) ? v : null);
+  const roca = n(fondo.fondo_roca), arena = n(fondo.fondo_arena), fango = n(fondo.fondo_fango), grava = n(fondo.fondo_grava);
+  const orilla = fondo.orilla_tipo || null;
+  const hayFondo = [roca, arena, fango, grava].some((v) => v !== null);
+  if (!hayFondo && !orilla) return null;
+  const blando = (arena || 0) + (fango || 0) + (grava || 0);
+  const quiereBlando = pref.some((x) => x === "arena" || x === "fango");
+  if (quiereBlando) {
+    const sinBlando = hayFondo ? blando < 0.2 : true;
+    const orillaNoVale = orilla ? !ORILLA_BLANDA.has(orilla) : true;
+    if (sinBlando && orillaNoVale && (hayFondo || ORILLA_DURA.has(orilla))) return { tope: TOPE_HABITAT, prefiere: pref.includes("arena") ? "arena" : "fango", hay: "roca" };
+    return null;
+  }
+  if (pref.includes("roca")) {
+    const sinRoca = hayFondo ? (roca || 0) < 0.1 : true;
+    const orillaNoVale = orilla ? !ORILLA_DURA.has(orilla) : true;
+    if (sinRoca && orillaNoVale && (hayFondo || ORILLA_BLANDA.has(orilla))) return { tope: TOPE_HABITAT, prefiere: "roca", hay: "arena" };
+  }
+  return null;
+}
+
 export function calcularVentana(especie, reglasDefecto, horas, contexto) {
   const modalidad = contexto.modalidad || "costa";
   const reglas = reglasParaModalidad(reglasDefecto, especie, modalidad, contexto.reglasModalidad);
@@ -629,6 +663,12 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
     // (la ola ya no pone tope: decisión de Mikel, 2026-10-08; para la ola
     // está `avisoOla`).
     const avisos = [];
+    const habitat = topeHabitat(especie, contexto.fondo, modalidad);
+    if (habitat) {
+      const vars = { prefiere: t(`va.hab.${habitat.prefiere}`), fondo: t(`va.hab.${habitat.hay}`) };
+      const varsEs = { prefiere: t(`va.hab.${habitat.prefiere}`, null, "es"), fondo: t(`va.hab.${habitat.hay}`, null, "es") };
+      topes.push({ tope: habitat.tope, razon: "va.hab.tope_razon", texto: t("va.hab.tope", vars), textoEs: t("va.hab.tope", varsEs, "es") });
+    }
     if (rm.seguridad?.niveles) {
       const hayViento = h.viento !== null && h.viento !== undefined;
       for (const nv of rm.seguridad.niveles) {
@@ -723,7 +763,8 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
     if (topes.length) {
       const peor = topes.reduce((a, b) => (b.tope < a.tope ? b : a));
       if (puntuacion > peor.tope) {
-        razones.push({ factor: "tope", texto: t("va.seg.tope_razon", { texto: peor.texto }), textoEs: t("va.seg.tope_razon", { texto: peor.textoEs }, "es"), aporte: peor.tope - puntuacion });
+        const clave = peor.razon || "va.seg.tope_razon";
+        razones.push({ factor: peor.razon ? "habitat" : "tope", texto: t(clave, { texto: peor.texto }), textoEs: t(clave, { texto: peor.textoEs }, "es"), aporte: peor.tope - puntuacion });
         puntuacion = peor.tope;
       }
     }

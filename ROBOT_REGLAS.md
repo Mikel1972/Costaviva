@@ -1673,6 +1673,8 @@ cambio de diseño a proponer aparte, nunca aplicado directo).
 
 ## Fichas de especies (`assets/datos/especies.json`) — jueves (añadido 2026-10-07, aprobado por Mikel)
 
+**Fondo que necesita cada especie (`sustrato`, 2026-11-08, pedido de Mikel: «el rodaballo es de fondos de arena: en Armintza es imposible; esto para todas las especies en todas las zonas»).** Campo `sustrato: { preferido: ["arena"] | ["arena","fango"] | ["roca"], valor, fuentes, verificado, nota }`. Desde costa y en submarina, si el fondo del spot no encaja, `topeHabitat` (ventana-actividad.js) deja la especie en «pocas probabilidades» (máximo 25). Hoy lo tienen 16 especies, sacadas de su propio `habitat` o de reglas de Mikel. Cada jueves, completa 3-5 especies más que aún no lo tengan, con fuente real (guías oficiales, IEO, MITECO, NIWA...). Las pelágicas o que viven en cualquier fondo (lubina, jurel, caballa, bonito...) NO llevan `sustrato`: sin él no se limita nada. Ante la duda, no lo pongas.
+
 `assets/datos/especies.json` es la ficha de referencia de cada especie
 (nombres es/eu/gl/ca/pt, científico, hábitat, profundidad, presencia por
 región, freza, actividad, temperatura, alimentación, tallas mínimas y vedas
