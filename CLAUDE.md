@@ -1282,7 +1282,9 @@ valor). Analizar sus fotogramas sigue prohibido en cualquier caso.
 ## Fondo satélite (2026-11-08)
 
 Opción «🛰 Satélite» del botón Fondo (`assets/js/capa-satelite.js`,
-`selector-fondo.js`), apagada al abrir como las demás capas. Ortofoto PNOA
+`selector-fondo.js`), ENCENDIDA POR DEFECTO (Mikel: «que salga así por
+defecto»; excepción a «al entrar, solo los spots»); si el usuario la quita se
+recuerda en su navegador (`costaviva.fondo_satelite` = "no"). Ortofoto PNOA
 del IGN (WMTS `pnoa-ma`, CC BY 4.0, «PNOA cedido por © Instituto
 Geográfico Nacional»), sin clave, solo dentro de `RECTANGULOS_ESPANA` (fuera
 el servicio da teselas en blanco y taparía Portugal). Con el satélite el mapa

@@ -2,8 +2,10 @@
 //
 // Foto aérea ("satélite") como fondo del mapa (2026-11-08, Mikel: "¿podemos
 // dar la opción de imagen satelital? ... es interesante poder ver cómo son
-// las rocas"). Una opción más del botón "Fondo" (selector-fondo.js), apagada
-// al abrir la app como el resto de capas (solo los spots se ven de entrada).
+// las rocas"). Una opción más del botón "Fondo" (selector-fondo.js).
+// ENCENDIDA POR DEFECTO (Mikel, mismo día, al ver las capturas: "que salga
+// así por defecto"): es la excepción a "al entrar, solo los spots". Si el
+// usuario la quita, se recuerda en su navegador y ya no vuelve a salir.
 //
 // Fuente: ortofoto PNOA de máxima actualidad del Instituto Geográfico
 // Nacional (WMTS pnoa-ma, 25 cm/píxel o mejor; se distinguen rocas, bajos,
@@ -56,6 +58,19 @@ export function zoomAlCambiar(satelite, zoomActual) {
   return { max, zoom: Math.min(zoomActual, max) };
 }
 
+// Preferencia guardada en el navegador: "no" si el usuario la quitó.
+export const CLAVE_PREFERENCIA = "costaviva.fondo_satelite";
+export function satelitePorDefecto(guardado) {
+  return guardado !== "no";
+}
+
+function leerPreferencia() {
+  try { return localStorage.getItem(CLAVE_PREFERENCIA); } catch { return null; }
+}
+function guardarPreferencia(v) {
+  try { localStorage.setItem(CLAVE_PREFERENCIA, v ? "si" : "no"); } catch {}
+}
+
 // ---------------------------------------------------------------------------
 // Navegador: { visible(), ponerVisible(v) }, la interfaz que espera el
 // selector del botón "Fondo".
@@ -68,10 +83,11 @@ export function montarCapa(map, L) {
     })),
   );
   let visible = false;
-  return {
+  const capa = {
     visible: () => visible,
-    ponerVisible(v) {
+    ponerVisible(v, { guardar = true } = {}) {
       visible = !!v;
+      if (guardar) guardarPreferencia(visible);
       const { max, zoom } = zoomAlCambiar(visible, map.getZoom());
       if (visible) {
         map.setMaxZoom(max);
@@ -85,4 +101,6 @@ export function montarCapa(map, L) {
       }
     },
   };
+  if (satelitePorDefecto(leerPreferencia())) capa.ponerVisible(true, { guardar: false });
+  return capa;
 }

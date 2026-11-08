@@ -2,7 +2,7 @@
 // cómo son las rocas"). Lógica pura de assets/js/capa-satelite.js.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { URL_PNOA, ATRIBUCION_PNOA, RECTANGULOS_ESPANA, dentroDeEspana, zoomAlCambiar, ZOOM_MAX_SATELITE, ZOOM_MAX_NORMAL } from "../assets/js/capa-satelite.js";
+import { satelitePorDefecto, CLAVE_PREFERENCIA, URL_PNOA, ATRIBUCION_PNOA, RECTANGULOS_ESPANA, dentroDeEspana, zoomAlCambiar, ZOOM_MAX_SATELITE, ZOOM_MAX_NORMAL } from "../assets/js/capa-satelite.js";
 
 test("PNOA del IGN: WMTS en Google Mercator, JPEG, con su atribución CC BY 4.0", () => {
   assert.match(URL_PNOA, /^https:\/\/www\.ign\.es\/wmts\/pnoa-ma\?/);
@@ -30,4 +30,11 @@ test("zoom: con satélite hasta 19 (rocas); al quitarlo vuelve a 17", () => {
   assert.deepEqual(zoomAlCambiar(true, 16), { max: 19, zoom: 16 });
   assert.deepEqual(zoomAlCambiar(false, 19), { max: 17, zoom: 17 });
   assert.deepEqual(zoomAlCambiar(false, 12), { max: 17, zoom: 12 });
+});
+
+test("por defecto encendida (Mikel: «que salga así por defecto»); si el usuario la quita, se recuerda", () => {
+  assert.equal(satelitePorDefecto(null), true, "primera visita");
+  assert.equal(satelitePorDefecto("si"), true);
+  assert.equal(satelitePorDefecto("no"), false, "la quitó");
+  assert.equal(CLAVE_PREFERENCIA, "costaviva.fondo_satelite");
 });
