@@ -2,7 +2,7 @@
 // cómo son las rocas"). Lógica pura de assets/js/capa-satelite.js.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { esMarGris, ZOOM_MAR_GRIS, esSinFoto, quitarSinFoto, COLOR_MAR_SATELITE, satelitePorDefecto, CLAVE_PREFERENCIA, URL_PNOA, ATRIBUCION_PNOA, RECTANGULOS_ESPANA, dentroDeEspana, zoomAlCambiar, ZOOM_MAX_SATELITE, ZOOM_MAX_NORMAL } from "../assets/js/capa-satelite.js";
+import { BORDE_SUAVE_PX, esMarGris, ZOOM_MAR_GRIS, esSinFoto, quitarSinFoto, COLOR_MAR_SATELITE, satelitePorDefecto, CLAVE_PREFERENCIA, URL_PNOA, ATRIBUCION_PNOA, RECTANGULOS_ESPANA, dentroDeEspana, zoomAlCambiar, ZOOM_MAX_SATELITE, ZOOM_MAX_NORMAL } from "../assets/js/capa-satelite.js";
 
 test("PNOA del IGN: WMTS en Google Mercator, JPEG, con su atribución CC BY 4.0", () => {
   assert.match(URL_PNOA, /^https:\/\/www\.ign\.es\/wmts\/pnoa-ma\?/);
@@ -44,6 +44,8 @@ test("el mar sin foto del IGN (morado liso) se vuelve transparente; el mar de la
   assert.ok(esSinFoto(35, 24, 41), "con artefactos del JPEG");
   assert.ok(!esSinFoto(47, 66, 96), "mar real frente a Bakio");
   assert.ok(!esSinFoto(20, 20, 20), "roca oscura");
+  assert.ok(esSinFoto(4, 12, 31), "raya oscura del borde de la foto");
+  assert.ok(!esSinFoto(10, 12, 14), "sombra neutra");
   const rgba = new Uint8ClampedArray([32, 26, 38, 255, 47, 66, 96, 255]);
   assert.equal(quitarSinFoto(rgba), 1);
   assert.deepEqual([...rgba], [32, 26, 38, 0, 47, 66, 96, 255]);
@@ -59,4 +61,21 @@ test("de lejos también se quita el mar gris de Sentinel-2 (cortado en bloques);
   const mar = () => new Uint8ClampedArray([56, 64, 60, 255]);
   const lejos = mar(); quitarSinFoto(lejos, 12); assert.equal(lejos[3], 0);
   const cerca = mar(); quitarSinFoto(cerca, 17); assert.equal(cerca[3], 255);
+});
+
+test("borde suave: la foto se funde poco a poco donde empieza el mar sin foto", () => {
+  assert.equal(BORDE_SUAVE_PX, 24);
+  const lado = 64;
+  const rgba = new Uint8ClampedArray(lado * lado * 4);
+  for (let y = 0; y < lado; y++) for (let x = 0; x < lado; x++) {
+    const i = (y * lado + x) * 4;
+    const [r, g, b] = x < 32 ? [47, 66, 96] : [32, 26, 38]; // mitad foto, mitad "sin foto"
+    rgba[i] = r; rgba[i + 1] = g; rgba[i + 2] = b; rgba[i + 3] = 255;
+  }
+  quitarSinFoto(rgba, 17, lado);
+  const alfa = (x) => rgba[(10 * lado + x) * 4 + 3];
+  assert.equal(alfa(40), 0, "sin foto: transparente");
+  assert.equal(alfa(2), 255, "lejos del borde: entera");
+  assert.ok(alfa(31) > 0 && alfa(31) < 40, "junto al borde: casi transparente");
+  assert.ok(alfa(20) > alfa(28), "más opaca cuanto más lejos del borde");
 });

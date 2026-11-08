@@ -62,6 +62,8 @@
   // oscuro que el mar de la foto (capa-satelite.js), para que no se note el
   // corte. null = el color normal.
   var capaVector = null;
+  var satelitePedido = null;
+  var modoVector = false;
   var colorMarPedido = null;
   function ponerColorMar(color) {
     colorMarPedido = color;
@@ -75,6 +77,79 @@
     if (m.isStyleLoaded()) aplicar();
     else m.once("load", aplicar);
   }
+
+  // Satélite DENTRO del mapa vectorial (2026-11-08, Mikel: "quedan estos
+  // restos" en Santoña). La foto va como capa raster ENTRE dos copias del
+  // agua: la de abajo (opaca, azul oscuro) rellena donde no hay foto; la de
+  // arriba tapa el mar de la foto de lejos (bloques grises y verdosos de
+  // Sentinel-2) con el contorno exacto de la costa, y se desvanece al acercar
+  // para que se vea el mar real junto a las rocas. cfg: { rectangulos,
+  // urlTesela(z, x, y), procesar(rgba, z, lado), colorMar, zoomDesde,
+  // zoomHasta, maxzoom }. Devuelve false si no hay mapa vectorial (entonces
+  // capa-satelite.js usa su capa de Leaflet).
+  var protocoloListo = false;
+  var CAPAS_SAT = [];
+  function ponerSatelite(activo, cfg) {
+    var m = capaVector && capaVector.getMaplibreMap && capaVector.getMaplibreMap();
+    var gl = raiz.maplibregl;
+    if (!m || !gl) return false;
+    var hacer = function () {
+      var capas = m.getStyle().layers || [];
+      var iAgua = capas.findIndex(function (c) { return c.id === "water" && c.type === "fill"; });
+      if (iAgua < 0) return;
+      var siguiente = capas[iAgua + 1] && capas[iAgua + 1].id;
+      CAPAS_SAT.forEach(function (id) { if (m.getLayer(id)) m.removeLayer(id); if (m.getSource(id)) m.removeSource(id); });
+      CAPAS_SAT = [];
+      // Lo que pinta el mapa por encima del agua (arena, carreteras, edificios,
+      // nombres) se esconde con el satélite: se ve la foto limpia.
+      var encima = capas.slice(iAgua + 1).map(function (c) { return c.id; })
+        .filter(function (id) { return id.indexOf("satelite-") !== 0; });
+      encima.forEach(function (id) { m.setLayoutProperty(id, "visibility", activo ? "none" : "visible"); });
+      if (!activo) {
+        m.setPaintProperty("water", "fill-color", COLORES.mar);
+        return;
+      }
+      if (!protocoloListo) {
+        gl.addProtocol("pnoa", function (params, abort) {
+          var p = params.url.replace("pnoa://", "").split("/").map(Number);
+          return fetch(cfg.urlTesela(p[0], p[1], p[2]), { signal: abort && abort.signal, mode: "cors" })
+            .then(function (r) { if (!r.ok) throw new Error("PNOA " + r.status); return r.blob(); })
+            .then(function (b) { return createImageBitmap(b); })
+            .then(function (img) {
+              var lado = img.width;
+              var c = typeof OffscreenCanvas !== "undefined" ? new OffscreenCanvas(lado, lado) : Object.assign(document.createElement("canvas"), { width: lado, height: lado });
+              var ctx = c.getContext("2d");
+              ctx.drawImage(img, 0, 0);
+              var datos = ctx.getImageData(0, 0, lado, lado);
+              cfg.procesar(datos.data, p[0], lado);
+              ctx.putImageData(datos, 0, 0);
+              return c.convertToBlob ? c.convertToBlob({ type: "image/png" }) : new Promise(function (ok) { c.toBlob(ok, "image/png"); });
+            })
+            .then(function (b) { return b.arrayBuffer(); })
+            .then(function (data) { return { data: data }; });
+        });
+        protocoloListo = true;
+      }
+      m.setPaintProperty("water", "fill-color", cfg.colorMar);
+      cfg.rectangulos.forEach(function (r, i) {
+        var id = "satelite-" + i;
+        m.addSource(id, { type: "raster", tiles: ["pnoa://{z}/{x}/{y}"], tileSize: 256, maxzoom: cfg.maxzoom, bounds: [r[0][1], r[0][0], r[1][1], r[1][0]] });
+        m.addLayer({ id: id, type: "raster", source: id }, siguiente);
+        CAPAS_SAT.push(id);
+      });
+      var tapa = capas[iAgua];
+      m.addLayer({
+        id: "satelite-mar", type: "fill", source: tapa.source, "source-layer": tapa["source-layer"], filter: tapa.filter,
+        paint: { "fill-color": cfg.colorMar, "fill-antialias": false,
+          "fill-opacity": ["interpolate", ["linear"], ["zoom"], cfg.zoomDesde, 1, cfg.zoomHasta, 0] },
+      }, siguiente);
+      CAPAS_SAT.push("satelite-mar");
+    };
+    if (m.isStyleLoaded()) hacer();
+    else m.once("load", hacer);
+    return true;
+  }
+  function vectorListo() { return !!(capaVector && capaVector.getMaplibreMap && capaVector.getMaplibreMap()); }
 
   function hayWebGL() {
     try {
@@ -95,6 +170,7 @@
     map.getPane("relieveFondo").style.pointerEvents = "none";
 
     var conVector = hayWebGL() && L.maplibreGL && raiz.maplibregl;
+    modoVector = !!conVector;
     var relieve = L.tileLayer.wms("https://ows.emodnet-bathymetry.eu/wms", {
       layers: "emodnet:mean_atlas_land",
       format: "image/png",
@@ -117,6 +193,8 @@
         .then(function (estilo) {
           capaVector = L.maplibreGL({ style: retocarEstilo(estilo), pane: "mapaBase", attributionControl: false, interactive: false }).addTo(map);
           if (colorMarPedido) ponerColorMar(colorMarPedido);
+          if (satelitePedido) ponerSatelite(true, satelitePedido);
+          (raiz.__alVectorListo || []).forEach(function (f) { try { f(); } catch (e) {} });
           map.attributionControl.addAttribution(ATRIBUCION);
         })
         .catch(function (e) {
@@ -129,6 +207,8 @@
           if (relieve.redraw) relieve.redraw();
           relieve.getContainer && relieve.getContainer() && relieve.getContainer().classList.remove("relieve-emodnet");
           conVector = false;
+          modoVector = false;
+          (raiz.__alVectorFallido || []).forEach(function (f) { try { f(); } catch (e) {} });
           actualizar();
         });
     }
@@ -147,5 +227,7 @@
   raiz.MapaBase = {
     URL_ESTILO: URL_ESTILO, ATRIBUCION: ATRIBUCION, ATRIBUCION_RELIEVE: ATRIBUCION_RELIEVE,
     ZOOM_MAX_RELIEVE: ZOOM_MAX_RELIEVE, COLORES: COLORES, retocarEstilo: retocarEstilo, montar: montar, ponerColorMar: ponerColorMar,
+    ponerSatelite: function (activo, cfg) { satelitePedido = activo ? cfg : null; return ponerSatelite(activo, cfg); },
+    vectorListo: vectorListo, usaVector: function () { return modoVector; },
   };
 })(typeof window !== "undefined" ? window : globalThis);
