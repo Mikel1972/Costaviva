@@ -69,6 +69,9 @@ export const KM_LEJOS = 50;
 export const PAISES_FUERA = ["colombia", "chile", "mexico", "argentina", "peru", "ecuador", "venezuela", "cuba", "brasil", "brazil",
   "usa", "california", "florida", "oregon", "washington", "canada", "alberta", "france", "francia", "normandie", "italia", "italy",
   "philippines", "filipinas", "australia", "africa", "zambezi", "ireland", "england", "uk", "new zealand", "nz", "espana", "spain", "portugal"];
+// Directos que no son cámaras (2026-11-08: «Motril vs Almeria B 🔴 En
+// Directo || Tercera RFEF» en Almería): deporte, misas, plenos, noticias.
+export const NO_ES_CAMARA = ["vs", "futbol", "football", "partido", "rfef", "liga", "match", "misa", "pleno", "noticias", "news", "radio", "concierto", "procesion"];
 const paisesDelSpot = (spot) => (spot.slug.startsWith("nz-") ? ["new zealand", "nz"] : ["espana", "spain", "portugal"]);
 
 // País del spot: NZ por el slug, Portugal por el "(PT)" del nombre, si no España.
@@ -110,6 +113,7 @@ export function candidataDeVideo(video, spot, yaEnApp) {
   const cerca = km !== null && km < RADIO_KM * 3;
   if (!cerca && !contienePalabra(titulo, nombre)) return null;
   if (!cerca && PAISES_FUERA.some((p) => contienePalabra(titulo, p) && !paisesDelSpot(spot).includes(p))) return null;
+  if (NO_ES_CAMARA.some((p) => contienePalabra(titulo, p))) return null;
   return {
     spot: spot.slug,
     spot_nombre: spot.nombre,
@@ -126,15 +130,14 @@ export function candidataDeVideo(video, spot, yaEnApp) {
 }
 
 // --- OpenStreetMap (Overpass, sin clave) ---
-// Una consulta para todos los huecos: objetos con webcam=URL o
-// contact:webcam=URL a menos de RADIO_BUSQUEDA_KM de cada spot.
+// Objetos con webcam=URL o contact:webcam=URL a menos de RADIO_BUSQUEDA_KM
+// de cada spot. Por lotes de LOTE_OSM spots: con los 65 de golpe Overpass
+// pasaba de 150 s (primera pasada del 2026-11-08).
+export const LOTE_OSM = 8;
 export function consultaOverpass(spots, radioKm = RADIO_BUSQUEDA_KM) {
   const m = Math.round(radioKm * 1000);
-  const partes = spots.flatMap((s) => [
-    `nwr["webcam"](around:${m},${s.lat},${s.lon});`,
-    `nwr["contact:webcam"](around:${m},${s.lat},${s.lon});`,
-  ]);
-  return `[out:json][timeout:120];(${partes.join("")});out center tags;`;
+  const partes = spots.map((s) => `nwr[~"^(contact:)?webcam$"~"."](around:${m},${s.lat},${s.lon});`);
+  return `[out:json][timeout:60];(${partes.join("")});out center tags;`;
 }
 
 const esUrl = (u) => /^https?:\/\/[^\s]+$/i.test(String(u || "").trim());
@@ -247,23 +250,35 @@ async function buscarEnYoutube(spot, clave, yaEnApp) {
 // Servidor principal y una réplica pública por si el primero está saturado.
 const OVERPASS = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter"];
 
-async function buscarEnOsm(spots, yaEnApp) {
-  if (!spots.length) return [];
+async function loteOsm(lote, yaEnApp) {
   let ultimo;
   for (const url of OVERPASS) {
     try {
       const d = await json(url, {
         method: "POST",
         headers: { "content-type": "application/x-www-form-urlencoded", "user-agent": "Costaviva-buscar-camaras/1.0 (+https://costaviva.org)" },
-        body: "data=" + encodeURIComponent(consultaOverpass(spots)),
-        timeout: 150000,
+        body: "data=" + encodeURIComponent(consultaOverpass(lote)),
+        timeout: 70000,
       }, "Overpass");
-      return candidatasDeOsm(d.elements, spots, yaEnApp);
+      return candidatasDeOsm(d.elements, lote, yaEnApp);
     } catch (e) {
       ultimo = e;
     }
   }
   throw ultimo;
+}
+
+async function buscarEnOsm(spots, yaEnApp) {
+  const out = [];
+  for (let i = 0; i < spots.length; i += LOTE_OSM) {
+    const lote = spots.slice(i, i + LOTE_OSM);
+    try {
+      out.push(...await loteOsm(lote, yaEnApp));
+    } catch (e) {
+      console.error(`✗ OpenStreetMap (${lote.map((s) => s.slug).join(", ")}): ${e.message}`);
+    }
+  }
+  return out;
 }
 
 async function buscarEnWindy(spot, clave, yaEnApp) {
