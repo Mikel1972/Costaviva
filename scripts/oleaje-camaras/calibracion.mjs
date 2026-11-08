@@ -310,10 +310,10 @@ export const ETIQUETAS_CLAUDE_PARA_FIARSE = 8; // equivalen a las 5 de Mikel
 export const FRANJAS_CLAUDE_MINIMAS = 2;
 export const ERROR_MAXIMO_CLAUDE = 0.75;
 export const PARES_MINIMOS_RUIDO = 3; // con menos pares, el ruido no está medido
-// Una cámara solo sustituye al modelo si su espuma ACOMPAÑA a la ola: con al
-// menos MUESTRAS_HABILIDAD muestras en un encuadre, su correlación tiene que
-// llegar a CORRELACION_MINIMA en alguno. Si no, se sigue midiendo (por si
-// mejora con etiquetas o con otro encuadre), pero no se enseña.
+// Habilidad de la cámara (solo informativa, 2026-11-08: Mikel ve que la
+// altura por cámara "no va mal del todo", así que NO se usa para apagar
+// ninguna): la mejor correlación espuma-ola entre sus encuadres con al
+// menos MUESTRAS_HABILIDAD muestras, por debajo de CORRELACION_MINIMA = floja.
 export const MUESTRAS_HABILIDAD = 30;
 export const CORRELACION_MINIMA = 0.3;
 export function habilidadCamara(calibraciones) {
@@ -353,10 +353,6 @@ export function camaraSustituyeModelo(ruido, calibraciones) {
   const equivalentes = etiquetas + (etiquetasClaude * ETIQUETAS_PARA_FIARSE) / ETIQUETAS_CLAUDE_PARA_FIARSE;
   const errorClaude = Math.min(...cals.filter((c) => c.nEtiquetasClaude > 0).map((c) => (Number.isFinite(c.errorRel) ? c.errorRel : 1)), Infinity);
   const variada = cals.some((c) => c.pocosDatos === false);
-  const hab = habilidadCamara(cals);
-  if (hab.medida && !hab.suficiente) {
-    return { sustituye: false, motivo: `su espuma no acompaña a la ola (correlación ${hab.mejor.toFixed(2)} < ${CORRELACION_MINIMA})` };
-  }
   const ruidosa = !ruido || ruido.ruido === null || ruido.pares < PARES_MINIMOS_RUIDO || ruido.ruido > RUIDO_MAXIMO;
   if (!ruidosa) return { sustituye: true, motivo: `estable (±${Math.round(ruido.ruido * 100)} % entre lecturas cercanas)` };
   if (etiquetas >= ETIQUETAS_PARA_FIARSE) return { sustituye: true, motivo: `${etiquetas} etiquetas` };

@@ -1301,8 +1301,9 @@ Overpass, sin clave) y Windy Webcams si existe el secret `WINDY_WEBCAMS_KEY`
 cuenta como nuevo.
 
 **Robots de cámaras, 2026-11-08 ("mejora el robot de cámaras", los tres):**
-- Buscador: miniatura de cada candidata en el Issue (Windy: imagen de día;
-  YouTube: miniatura; OSM: la imagen), descarta solo los enlaces de OSM
+- Buscador: `miniatura()` de cada candidata (Windy: imagen de día; YouTube:
+  miniatura; OSM: la imagen) para revisarlas, pero NO en el Issue: Mikel
+  quiere verlas en el chat de la sesión. Descarta solo los enlaces de OSM
   caídos (404/410/5xx) o con la imagen parada (Last-Modified > 30 días), y
   los spots cuya cámara propia lleva > 7 días caída (`camaras-estado.json`)
   cuentan como hueco para buscarles sustituta.
@@ -1311,11 +1312,9 @@ cuenta como nuevo.
   daba 200); con `WINDY_WEBCAMS_KEY` una cámara de Windy inactiva o sin
   imagen nueva en 2 días es `windy_inactiva`/`windy_congelada`. Una llamada
   por pasada para todas.
-- Oleaje: `ajustarCalibracion` guarda la `correlacion` espuma-ola; con ≥ 30
-  muestras, si ningún encuadre llega a 0,3 la cámara NO sustituye al modelo
-  (`habilidadCamara`). Con el histórico del 2026-11-08 quedan fuera Bakio,
-  Hondarribia, Zumaia, Castro, Riverton y Aramoana (su espuma no acompaña a
-  la ola); se siguen midiendo por si mejoran con etiquetas.
+- Oleaje: `ajustarCalibracion` guarda la `correlacion` espuma-ola y
+  `habilidadCamara` la resume, solo como dato: Mikel ve que la altura por
+  cámara "no va mal del todo", así que no apaga ninguna cámara.
 
 ## Cámaras de Nueva Zelanda: embebidas con interruptor por dueño (2026-10-11)
 

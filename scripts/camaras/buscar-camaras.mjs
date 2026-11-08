@@ -200,10 +200,11 @@ export function candidatasDeWindy(webcams, spot, yaEnApp) {
   return out;
 }
 
-// --- Miniatura para el Issue (2026-11-08: "mejora el robot de cámaras") ---
-// Imagen pública que GitHub puede enseñar en el Issue, para que Mikel decida
-// viéndola: Windy da su imagen de día (sin clave), YouTube la miniatura del
-// directo y OpenStreetMap la propia imagen si el enlace es una imagen.
+// --- Miniatura de una candidata (2026-11-08) ---
+// Imagen pública para revisarla (Windy: su imagen de día, sin clave;
+// YouTube: miniatura del directo; OSM: la imagen si el enlace lo es). No va
+// al Issue (Mikel: "muéstramelas aquí, no en las issue"): la sesión que
+// revisa las candidatas las baja y se las enseña en el chat.
 export function miniatura(c) {
   if (c.fuente === "Windy") return `https://imgproxy.windy.com/_/preview/plain/daylight/${String(c.video_id).replace(/^windy-/, "")}/original.jpg`;
   if (c.fuente === "YouTube" || /youtu\.?be/.test(c.url)) {
@@ -265,9 +266,7 @@ export function cuerpoIssue({ fecha, totalSpots, listaHuecos, candidatas, sinCla
   if (candidatas.length) {
     l.push("", "## Candidatas nuevas", "", "Marca las que quieras en la app. Las de YouTube entran como **enlace** (nunca insertado: Costaviva tiene paywall); las demás, como enlace hasta tener permiso escrito del dueño.", "");
     for (const c of candidatas) {
-      const mini = miniatura(c);
       l.push(`- [ ] **${c.spot_nombre}** — [${c.titulo}](${c.url}) · ${c.fuente || "YouTube"} · ${c.canal} · ${c.motivo} <!-- cand:${c.spot}:${c.video_id} -->`);
-      if (mini) l.push(`  <br><img src="${mini}" width="320" alt="${String(c.titulo).replace(/"/g, "'")}">`);
     }
   }
   if (repetidas.length) {

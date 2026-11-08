@@ -129,14 +129,14 @@ test("Issue: lo ya propuesto otras semanas no se repite como nuevo", () => {
   assert.doesNotMatch(cuerpo, /WINDY_WEBCAMS_KEY/);
 });
 
-test("Issue con miniatura de cada candidata", () => {
+test("miniatura de cada candidata (no en el Issue)", () => {
   assert.equal(miniatura({ fuente: "Windy", video_id: "windy-123" }), "https://imgproxy.windy.com/_/preview/plain/daylight/123/original.jpg");
   assert.equal(miniatura({ fuente: "YouTube", video_id: "abcdefghijk", url: "https://www.youtube.com/watch?v=abcdefghijk" }), "https://i.ytimg.com/vi/abcdefghijk/hqdefault_live.jpg");
   assert.equal(miniatura({ fuente: "OpenStreetMap", video_id: "osm-node-1", url: "https://youtu.be/qjfzvIBf_qw" }), "https://i.ytimg.com/vi/qjfzvIBf_qw/hqdefault_live.jpg");
   assert.equal(miniatura({ fuente: "OpenStreetMap", video_id: "osm-node-2", url: "http://x.example/cam.jpg" }), "https://x.example/cam.jpg");
   assert.equal(miniatura({ fuente: "OpenStreetMap", video_id: "osm-node-3", url: "https://x.example/webcam" }), null);
   const cuerpo = cuerpoIssue({ fecha: "2026-11-09", totalSpots: 3, listaHuecos: [], candidatas: [{ spot: "x", spot_nombre: "X", titulo: "Cam \"X\"", url: "u", video_id: "windy-5", fuente: "Windy", canal: "-", motivo: "m" }], sinClave: false, sinWindy: false, descartadas: [{}], caidas: ["Orio"] });
-  assert.match(cuerpo, /<img src="https:\/\/imgproxy\.windy\.com\/_\/preview\/plain\/daylight\/5\/original\.jpg" width="320" alt="Cam 'X'">/);
+  assert.doesNotMatch(cuerpo, /<img /, "las miniaturas no van al Issue");
   assert.match(cuerpo, /Descartadas solas por enlace caído o imagen parada: 1/);
   assert.match(cuerpo, /cámara caída hace más de 7 días \(se les busca sustituta\): Orio/);
 });
