@@ -10,7 +10,7 @@
   "display": "standalone",
   "background_color": "#0B1E3F",
   "theme_color": "#0B1E3F",
-  "orientation": "portrait",
+  "orientation": "any",
   "categories": ["sports", "weather", "navigation"],
   "icons": [
     { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
