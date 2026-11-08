@@ -1,13 +1,13 @@
 {
- "fecha": "2026-11-08T08:38:10.709Z",
- "lineasHistorial": 8694,
+ "fecha": "2026-11-08T09:08:57.321Z",
+ "lineasHistorial": 8704,
  "etiquetas": 623,
  "etiquetasClaude": 232,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.1762,
+   "a": 1.1763,
    "p": 0.5,
-   "n": 249,
+   "n": 250,
    "nEtiquetas": 34,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -17,7 +17,7 @@
     "2026-11-01T16",
     "2026-11-03T16"
    ],
-   "dias": 31,
+   "dias": 32,
    "hMin": 0.07,
    "hMax": 1.69,
    "errorRel": 1,
@@ -171,9 +171,9 @@
    "pocosDatos": false
   },
   "bakio/principal": {
-   "a": 2.9312,
+   "a": 2.8987,
    "p": 0.5,
-   "n": 96,
+   "n": 97,
    "nEtiquetas": 8,
    "nEtiquetasClaude": 12,
    "franjasClaude": [
@@ -190,10 +190,10 @@
     "2026-11-05T14",
     "2026-11-07T14"
    ],
-   "dias": 27,
-   "hMin": 0.47,
+   "dias": 28,
+   "hMin": 0.42,
    "hMax": 4.62,
-   "errorRel": 0.883,
+   "errorRel": 0.903,
    "pocosDatos": false
   },
   "sopelana/principal": {
@@ -234,9 +234,9 @@
    "pocosDatos": true
   },
   "castrourdiales/principal": {
-   "a": 3.5488,
+   "a": 3.5308,
    "p": 0.5,
-   "n": 136,
+   "n": 137,
    "nEtiquetas": 26,
    "nEtiquetasClaude": 6,
    "franjasClaude": [
@@ -290,15 +290,15 @@
    "pocosDatos": true
   },
   "orio/principal": {
-   "a": 2.8041,
+   "a": 2.8027,
    "p": 0.5,
-   "n": 94,
+   "n": 95,
    "nEtiquetas": 11,
    "nEtiquetasClaude": 1,
    "franjasClaude": [
     "2026-11-04T16"
    ],
-   "dias": 24,
+   "dias": 25,
    "hMin": 0.3,
    "hMax": 4.04,
    "errorRel": 1,
@@ -456,8 +456,8 @@
    "sustituye": true,
    "motivo": "36 etiquetas",
    "ruido": {
-    "ruido": 0.5,
-    "pares": 117
+    "ruido": 0.536,
+    "pares": 118
    }
   },
   "donostia": {
@@ -552,8 +552,8 @@
    "sustituye": true,
    "motivo": "26 etiquetas",
    "ruido": {
-    "ruido": 0.433,
-    "pares": 60
+    "ruido": 0.436,
+    "pares": 61
    }
   },
   "nz-napier": {
