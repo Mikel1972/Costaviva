@@ -64,7 +64,14 @@ export async function leerDiario({ url, key, emailsPrueba = [] }) {
   const errores = [];
   let salidas;
   try {
-    salidas = await leerTodo(url, key, "salidas_pesca", `${COLS_SALIDA},${COLS_INDICE}`);
+    // picadas (migración 20261108230000): si aún no existe, se lee sin ella.
+    try {
+      salidas = await leerTodo(url, key, "salidas_pesca", `${COLS_SALIDA},picadas,${COLS_INDICE}`);
+    } catch (e) {
+      if (e.status !== 400) throw e;
+      errores.push("salidas_pesca sin la columna picadas (migración 20261108230000)");
+      salidas = await leerTodo(url, key, "salidas_pesca", `${COLS_SALIDA},${COLS_INDICE}`);
+    }
   } catch (e) {
     // Las columnas indice_* (migración 20261008120000, aplicada): si un día
     // faltaran (trampa 10), se sigue sin ellas y se avisa.
