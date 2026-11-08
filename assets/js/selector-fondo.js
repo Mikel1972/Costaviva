@@ -21,9 +21,11 @@ import { I18n } from "./i18n-modulo.js";
 export const OPCIONES = [
   { id: "profundidad", icono: "〰", texto: I18n.t("selfondo.profundidad"), detalle: I18n.t("selfondo.profundidad_det", { min: I18n.metros(20, 0).replace(/ [^ ]+$/, ""), max: I18n.metros(5000, 0) }) },
   { id: "tipo", icono: "🪨", texto: I18n.t("fondo.tipo"), detalle: I18n.t("selfondo.tipo_det") },
+  // 2026-11-08: foto aérea del IGN (capa-satelite.js), para ver las rocas.
+  { id: "satelite", icono: "🛰", texto: I18n.t("selfondo.satelite"), detalle: I18n.t("selfondo.satelite_det") },
 ];
 
-export const NINGUNO = Object.freeze({ profundidad: false, tipo: false });
+export const NINGUNO = Object.freeze({ profundidad: false, tipo: false, satelite: false });
 
 // Nuevo estado tras tocar una opción: "ninguno" apaga las dos; las demás se
 // alternan sin tocar la otra.
@@ -37,8 +39,10 @@ export function elegir(estado, opcion) {
 // pantalla y el title que dice cuáles.
 export function resumen(estado) {
   const activas = OPCIONES.filter((o) => estado[o.id]).map((o) => o.texto.toLowerCase());
+  // El satélite es el mapa base (encendido por defecto, 2026-11-08): no
+  // marca el botón como activo; solo las capas del fondo del mar lo hacen.
   return {
-    activo: activas.length > 0,
+    activo: OPCIONES.some((o) => o.id !== "satelite" && estado[o.id]),
     texto: activas.length ? I18n.t("selfondo.resumen", { capas: activas.join(I18n.t("va.seg.y")) }) : I18n.t("selfondo.ninguna"),
   };
 }
@@ -51,7 +55,7 @@ export function resumen(estado) {
 // alEncender(id): para la analítica de uso. Devuelve { refrescar } para que
 // las capas avisen si cambian por otro camino.
 export function montarSelector({ boton, panel, capas, alEncender = () => {} }) {
-  const estado = () => ({ profundidad: !!capas.profundidad?.visible(), tipo: !!capas.tipo?.visible() });
+  const estado = () => Object.fromEntries(OPCIONES.map((o) => [o.id, !!capas[o.id]?.visible()]));
   const casillas = {};
 
   const tit = document.createElement("div");

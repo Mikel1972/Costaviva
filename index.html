@@ -1672,6 +1672,9 @@
   // Un solo botón "Fondo" con selector: profundidad / tipo de fondo / ninguno
   // (assets/js/selector-fondo.js, tests en test/selector-fondo.test.js).
   import * as SelectorFondo from "/assets/js/selector-fondo.js";
+  // Foto aérea del IGN como opción del botón Fondo (2026-11-08).
+  import * as CapaSatelite from "/assets/js/capa-satelite.js";
+  window.CapaSatelite = CapaSatelite;
   window.SelectorFondo = SelectorFondo;
   window.dispatchEvent(new Event("selector-fondo-listo"));
 </script>
@@ -3039,8 +3042,8 @@ Promise.all([
   selectorFondo = SF.montarSelector({
     boton: document.getElementById("toggleFondo"),
     panel: document.getElementById("fondoSelector"),
-    capas: { profundidad: B, tipo: TF },
-    alEncender: (id) => registrarEvento(id === "tipo" ? "ver_capa_sustrato" : "ver_capa_isobatas"),
+    capas: { profundidad: B, tipo: TF, satelite: window.CapaSatelite.montarCapa(map, L) },
+    alEncender: (id) => registrarEvento(id === "tipo" ? "ver_capa_sustrato" : id === "satelite" ? "ver_capa_satelite" : "ver_capa_isobatas"),
   });
 });
 document.getElementById("toggleRios").addEventListener("click", (e) => {

@@ -142,7 +142,7 @@ test("capa: grupo de todas las escalas, visible desde la plataforma, con atribuc
   assert.match(ATRIBUCION_SUSTRATO, /EMODnet Seabed Habitats/);
   assert.match(ATRIBUCION_SUSTRATO, /CC BY 4\.0/);
   assert.ok(LEYENDA_SUSTRATO.length >= 5);
-  assert.match(HTML, /capas: \{ profundidad: B, tipo: TF \}/, "se enciende desde el selector del botón Fondo");
+  assert.match(HTML, /capas: \{ profundidad: B, tipo: TF[,} ]/, "se enciende desde el selector del botón Fondo");
   assert.match(HTML, /id="panelFondo"/);
   // Sin mapa montado, ponerVisible no hace nada y no rompe.
   assert.equal(TFmod.visible(), false);

@@ -12,16 +12,16 @@ import { fuenteEs } from "./i18n-html.js";
 const HTML = fuenteEs(readFileSync(new URL("../index.html", import.meta.url), "utf8"));
 
 test("selector: dos capas que se pueden marcar a la vez y 'Ninguno' las apaga", () => {
-  assert.deepEqual(OPCIONES.map((o) => o.id), ["profundidad", "tipo"]);
-  assert.deepEqual(OPCIONES.map((o) => o.texto), ["Profundidad", "Tipo de fondo"]);
+  assert.deepEqual(OPCIONES.map((o) => o.id), ["profundidad", "tipo", "satelite"]);
+  assert.deepEqual(OPCIONES.map((o) => o.texto), ["Profundidad", "Tipo de fondo", "Satélite"]);
   let e = { ...NINGUNO };
   e = elegir(e, "profundidad");
-  assert.deepEqual(e, { profundidad: true, tipo: false });
+  assert.deepEqual(e, { profundidad: true, tipo: false, satelite: false });
   e = elegir(e, "tipo");
-  assert.deepEqual(e, { profundidad: true, tipo: true }, "las dos a la vez");
+  assert.deepEqual(e, { profundidad: true, tipo: true, satelite: false }, "las dos a la vez");
   e = elegir(e, "profundidad");
-  assert.deepEqual(e, { profundidad: false, tipo: true }, "quitar una no toca la otra");
-  assert.deepEqual(elegir({ profundidad: true, tipo: true }, "ninguno"), NINGUNO);
+  assert.deepEqual(e, { profundidad: false, tipo: true, satelite: false }, "quitar una no toca la otra");
+  assert.deepEqual(elegir({ profundidad: true, tipo: true, satelite: true }, "ninguno"), NINGUNO);
   assert.deepEqual(elegir(e, "otra-cosa"), e, "opción desconocida: sin cambios");
   const antes = { profundidad: true, tipo: false };
   elegir(antes, "tipo");
@@ -33,13 +33,16 @@ test("selector: el botón se ve activo con alguna capa y dice cuáles", () => {
   assert.deepEqual(resumen({ profundidad: true, tipo: false }), { activo: true, texto: "Fondo del mar: profundidad" });
   assert.deepEqual(resumen({ profundidad: false, tipo: true }), { activo: true, texto: "Fondo del mar: tipo de fondo" });
   assert.equal(resumen({ profundidad: true, tipo: true }).texto, "Fondo del mar: profundidad y tipo de fondo");
+  // El satélite (por defecto, 2026-11-08) es el mapa base: no marca el botón.
+  assert.equal(resumen({ profundidad: false, tipo: false, satelite: true }).activo, false);
+  assert.equal(resumen({ profundidad: true, tipo: false, satelite: true }).activo, true);
 });
 
 test("index.html: un solo botón Fondo con su selector; fuera la capa WMS duplicada, Isób. y Sustr.", () => {
   assert.match(HTML, /id="toggleFondo"[^>]*>📏<span class="capa-label">Fondo<\/span>/);
   assert.match(HTML, /id="fondoSelector"[^>]*hidden/);
   assert.match(HTML, /import \* as SelectorFondo from "\/assets\/js\/selector-fondo\.js"/);
-  assert.match(HTML, /capas: \{ profundidad: B, tipo: TF \}/);
+  assert.match(HTML, /capas: \{ profundidad: B, tipo: TF, satelite: window\.CapaSatelite\.montarCapa\(map, L\) \}/);
   for (const fuera of ["toggleBatimetria", "toggleIsobatas", "toggleSustrato", "emodnet:mean,emodnet:contours",
     "capaBatimetria", ".isobatas-toggle", ".sustrato-toggle", ".batimetria-toggle", ">Isób.<", ">Sustr.<"]) {
     assert.ok(!HTML.includes(fuera), `sobra ${fuera}`);

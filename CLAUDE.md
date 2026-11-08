@@ -1279,6 +1279,21 @@ completos (con SHA-256 y DKIM comprobado) en comun,
 `embed.skylinewebcams.com`; no hay que tocar nada más (el test se adapta al
 valor). Analizar sus fotogramas sigue prohibido en cualquier caso.
 
+## Fondo satélite (2026-11-08)
+
+Opción «🛰 Satélite» del botón Fondo (`assets/js/capa-satelite.js`,
+`selector-fondo.js`), ENCENDIDA POR DEFECTO (Mikel: «que salga así por
+defecto»; excepción a «al entrar, solo los spots»); si el usuario la quita se
+recuerda en su navegador (`costaviva.fondo_satelite` = "no"). Ortofoto PNOA
+del IGN (WMTS `pnoa-ma`, CC BY 4.0, «PNOA cedido por © Instituto
+Geográfico Nacional»), sin clave, solo dentro de `RECTANGULOS_ESPANA` (fuera
+el servicio da teselas en blanco y taparía Portugal). Con el satélite el mapa
+llega a zoom 19 (rocas); al quitarlo vuelve a 17. Esri no (licencia).
+Nueva Zelanda: LINZ Basemaps (CC BY 4.0) necesita una clave de
+desarrollador fija, pedida a LINZ; Portugal (DGT) y la vista lejana
+(Sentinel-2 de EOX: su licencia comercial no está clara) quedan pendientes.
+Tests: `test/capa-satelite.test.js`, `test/selector-fondo.test.js`.
+
 ## Buscador de cámaras nuevas (2026-10-31)
 
 `buscar-camaras.yml` (lunes 06:47 UTC, sin IA) corre
