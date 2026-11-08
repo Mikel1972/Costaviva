@@ -200,6 +200,43 @@ export function candidatasDeWindy(webcams, spot, yaEnApp) {
   return out;
 }
 
+// --- Miniatura de una candidata (2026-11-08) ---
+// Imagen pública para revisarla (Windy: su imagen de día, sin clave;
+// YouTube: miniatura del directo; OSM: la imagen si el enlace lo es). No va
+// al Issue (Mikel: "muéstramelas aquí, no en las issue"): la sesión que
+// revisa las candidatas las baja y se las enseña en el chat.
+export function miniatura(c) {
+  if (c.fuente === "Windy") return `https://imgproxy.windy.com/_/preview/plain/daylight/${String(c.video_id).replace(/^windy-/, "")}/original.jpg`;
+  if (c.fuente === "YouTube" || /youtu\.?be/.test(c.url)) {
+    const id = c.fuente === "YouTube" ? c.video_id : String(c.url).match(/(?:youtu\.be\/|v=)([A-Za-z0-9_-]{11})/)?.[1];
+    return id ? `https://i.ytimg.com/vi/${id}/hqdefault_live.jpg` : null;
+  }
+  return /\.(jpe?g|png|webp)(\?|$)/i.test(c.url) ? c.url.replace(/^http:/, "https:") : null;
+}
+
+// --- Enlaces muertos o imágenes paradas (OpenStreetMap) ---
+// Con la respuesta HTTP del enlace: 404/410/5xx = caído; una imagen cuyo
+// Last-Modified tiene más de DIAS_IMAGEN_PARADA días = parada (hoy había
+// cámaras de 2021-2025 en OSM).
+export const DIAS_IMAGEN_PARADA = 30;
+export function enlaceMuerto({ status, ultimaModificacion }, ahoraMs = Date.now()) {
+  if (!status) return null; // sin respuesta: puede ser la red; se deja
+  if (status === 404 || status === 410 || status >= 500) return `http_${status}`;
+  const t = Date.parse(ultimaModificacion || "");
+  if (Number.isFinite(t) && ahoraMs - t > DIAS_IMAGEN_PARADA * 86400000) return "imagen_parada";
+  return null;
+}
+
+// --- Spots cuya cámara lleva días caída (datos-robots/camaras-estado.json) ---
+// Cuentan como huecos para buscarles sustituta (Orio, Zumaia, Mutriku...).
+export const DIAS_CAIDA_HUECO = 7;
+export function spotsConCamaraCaida(estado, ahoraMs = Date.now()) {
+  return new Set((estado?.camaras || [])
+    .filter((c) => c.sin_senal && !String(c.spot_slug).startsWith("ext-"))
+    .filter((c) => { const t = Date.parse(c.ultima_senal_en || ""); return !Number.isFinite(t) || ahoraMs - t > DIAS_CAIDA_HUECO * 86400000; })
+    .map((c) => c.spot_slug));
+}
+
 // --- Memoria entre semanas ---
 // Marcas <!-- cand:spot:id --> de Issues anteriores: lo ya propuesto.
 export const yaPropuestas = (texto) => new Set([...String(texto || "").matchAll(/<!-- cand:([^:\s]+):([^\s]+) -->/g)].map((m) => `${m[1]}:${m[2]}`));
@@ -210,7 +247,7 @@ export function slugsHls(html) {
   return m ? [...m[1].matchAll(/^\s+([a-z0-9]+):/gm)].map((x) => x[1]) : [];
 }
 
-export function cuerpoIssue({ fecha, totalSpots, listaHuecos, candidatas, sinClave, sinWindy = true, repetidas = [], fuentes = {} }) {
+export function cuerpoIssue({ fecha, totalSpots, listaHuecos, candidatas, sinClave, sinWindy = true, repetidas = [], fuentes = {}, descartadas = [], caidas = [] }) {
   const l = [
     `Búsqueda semanal de cámaras (${fecha}). Sin IA: \`scripts/camaras/buscar-camaras.mjs\`.`,
     "",
@@ -222,6 +259,8 @@ export function cuerpoIssue({ fecha, totalSpots, listaHuecos, candidatas, sinCla
   if (sinWindy) {
     l.push("- ℹ️ Sin `WINDY_WEBCAMS_KEY`: no se ha mirado el directorio de webcams de Windy (gratis en https://api.windy.com/keys, secret de GitHub).");
   }
+  if (caidas.length) l.push(`- Spots con su cámara caída hace más de ${DIAS_CAIDA_HUECO} días (se les busca sustituta): ${caidas.join(", ")}.`);
+  if (descartadas.length) l.push(`- Descartadas solas por enlace caído o imagen parada: ${descartadas.length}.`);
   const porFuente = Object.entries(fuentes).map(([f, n]) => `${f} ${n}`).join(", ");
   l.push(`- **Candidatas nuevas: ${candidatas.length}**${porFuente ? ` (${porFuente})` : ""}; ya propuestas otras semanas: ${repetidas.length}.`);
   if (candidatas.length) {
@@ -259,6 +298,20 @@ async function buscarEnYoutube(spot, clave, yaEnApp) {
   const ch = await json(`${YT}/channels?part=snippet&id=${canales.join(",")}&key=${clave}`);
   const pais = new Map((ch.items || []).map((c) => [c.id, c.snippet?.country]));
   return cands.filter((c) => !canalDeFuera(pais.get(c.canal_id), spot));
+}
+
+// Estado y Last-Modified de un enlace (HEAD y, si no lo admiten, GET).
+async function cabeceras(url) {
+  for (const method of ["HEAD", "GET"]) {
+    try {
+      const r = await fetch(url, { method, redirect: "follow", signal: AbortSignal.timeout(15000), headers: { "user-agent": "Costaviva-buscar-camaras/1.0 (+https://costaviva.org)" } });
+      if (method === "HEAD" && (r.status === 405 || r.status === 403)) continue;
+      return { status: r.status, ultimaModificacion: r.headers.get("last-modified") };
+    } catch {
+      if (method === "GET") return { status: 0 };
+    }
+  }
+  return { status: 0 };
 }
 
 // Servidor principal y una réplica pública por si el primero está saturado.
@@ -311,7 +364,11 @@ async function cargar() {
   const spots = [...es, ...SPOTS_NZ.map((s) => ({ slug: s.slug, nombre: s.nombre, lat: s.lat, lon: s.lon }))]
     .filter((s) => !vistos.has(s.slug) && vistos.add(s.slug));
   const html = readFileSync(new URL("../../index.html", import.meta.url), "utf8");
-  const conCamara = new Set([...Object.keys(WEBCAMS), ...slugsHls(html), ...CAMARAS_EXTERNAS.map((c) => c.spot)]);
+  let estado = null;
+  try { estado = JSON.parse(readFileSync(new URL("../../datos-robots/camaras-estado.json", import.meta.url), "utf8")); } catch {}
+  const conExterna = new Set(CAMARAS_EXTERNAS.map((c) => c.spot));
+  const caidas = [...spotsConCamaraCaida(estado)].filter((s) => !conExterna.has(s));
+  const conCamara = new Set([...Object.keys(WEBCAMS), ...slugsHls(html), ...conExterna].filter((s) => !caidas.includes(s)));
   const canalesPorSpot = new Map();
   for (const c of CAMARAS_EXTERNAS) {
     if (!c.canal_id) continue;
@@ -322,7 +379,7 @@ async function cargar() {
   const urls = new Set(CAMARAS_EXTERNAS.flatMap((c) => [c.url, c.imagen]).filter(Boolean));
   // Cámaras de Windy ya en la app (por id: su URL puede ir con o sin www).
   const windy = new Set(CAMARAS_EXTERNAS.map((c) => String(c.url || "").match(/windy\.com\/webcams\/(\d+)/)?.[1]).filter(Boolean));
-  return { spots, conCamara, yaEnApp: { videos, canalesPorSpot, urls, windy } };
+  return { spots, conCamara, caidas, yaEnApp: { videos, canalesPorSpot, urls, windy } };
 }
 
 async function main() {
@@ -331,7 +388,7 @@ async function main() {
   const anteriores = arg("--anteriores");
   const clave = (process.env.YOUTUBE_API_KEY || "").trim();
   const claveWindy = (process.env.WINDY_WEBCAMS_KEY || "").trim();
-  const { spots, conCamara, yaEnApp } = await cargar();
+  const { spots, conCamara, caidas, yaEnApp } = await cargar();
   const listaHuecos = huecos(spots, conCamara);
   const candidatas = [];
   try {
@@ -360,13 +417,22 @@ async function main() {
     }
   }
   // Un mismo directo o URL puede salir para dos spots: se queda el primero.
-  const unicas = candidatas.filter((c, k) => candidatas.findIndex((x) => x.video_id === c.video_id || x.url === c.url) === k);
+  const todas = candidatas.filter((c, k) => candidatas.findIndex((x) => x.video_id === c.video_id || x.url === c.url) === k);
+  // Enlaces de OpenStreetMap caídos o con la imagen parada: fuera.
+  const descartadas = [];
+  const unicas = [];
+  for (const c of todas) {
+    const motivo = c.fuente === "OpenStreetMap" ? enlaceMuerto(await cabeceras(c.url)) : null;
+    if (motivo) descartadas.push({ ...c, motivo });
+    else unicas.push(c);
+  }
   const vistas = anteriores ? yaPropuestas(readFileSync(anteriores, "utf8")) : new Set();
   const nuevas = unicas.filter((c) => !vistas.has(`${c.spot}:${c.video_id}`));
   const repetidas = unicas.filter((c) => vistas.has(`${c.spot}:${c.video_id}`));
   const fuentes = {};
   for (const c of nuevas) fuentes[c.fuente] = (fuentes[c.fuente] || 0) + 1;
-  const cuerpo = cuerpoIssue({ fecha: new Date().toISOString().slice(0, 10), totalSpots: spots.length, listaHuecos, candidatas: nuevas, sinClave: !clave, sinWindy: !claveWindy, repetidas, fuentes });
+  const nombres = new Map(spots.map((s) => [s.slug, s.nombre]));
+  const cuerpo = cuerpoIssue({ fecha: new Date().toISOString().slice(0, 10), totalSpots: spots.length, listaHuecos, candidatas: nuevas, sinClave: !clave, sinWindy: !claveWindy, repetidas, fuentes, descartadas, caidas: caidas.map((s) => nombres.get(s) || s) });
   console.log(`Spots ${spots.length}, sin cámara ${listaHuecos.length}, candidatas nuevas ${nuevas.length}, repetidas ${repetidas.length}${clave ? "" : " (sin YOUTUBE_API_KEY)"}${claveWindy ? "" : " (sin WINDY_WEBCAMS_KEY)"}.`);
   if (salida) writeFileSync(salida, cuerpo + "\n");
   else console.log(cuerpo);

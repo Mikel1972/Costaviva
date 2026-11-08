@@ -71,6 +71,10 @@ jobs:
         working-directory: scripts/camaras
         env:
           CRON_SECRET: ${{ secrets.PRESION_CRON_SECRET }}
+          # Opcionales (2026-11-08): si existen, la API dice si un directo de
+          # YouTube sigue emitiendo y si una cámara de Windy está activa y al día.
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          WINDY_WEBCAMS_KEY: ${{ secrets.WINDY_WEBCAMS_KEY }}
         run: node comprobar-camaras.mjs
 
       # Una vez al día (la primera pasada desde las 03:00 UTC) deja el estado de

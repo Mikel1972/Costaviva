@@ -5,6 +5,7 @@ import { readFileSync } from "node:fs";
 import {
   huecos, candidataDeVideo, cuerpoIssue, nombreBusqueda, RADIO_KM, paisSpot, consultaYoutube, canalDeFuera,
   consultaOverpass, candidatasDeOsm, candidatasDeWindy, yaPropuestas, slugsHls, categoriaValida,
+  miniatura, enlaceMuerto, spotsConCamaraCaida,
 } from "../scripts/camaras/buscar-camaras.mjs";
 
 const spots = [
@@ -126,4 +127,38 @@ test("Issue: lo ya propuesto otras semanas no se repite como nuevo", () => {
   assert.match(cuerpo, /Candidatas nuevas: 0\*\*; ya propuestas otras semanas: 1/);
   assert.match(cuerpo, /<summary>Ya propuestas otras semanas/);
   assert.doesNotMatch(cuerpo, /WINDY_WEBCAMS_KEY/);
+});
+
+test("miniatura de cada candidata (no en el Issue)", () => {
+  assert.equal(miniatura({ fuente: "Windy", video_id: "windy-123" }), "https://imgproxy.windy.com/_/preview/plain/daylight/123/original.jpg");
+  assert.equal(miniatura({ fuente: "YouTube", video_id: "abcdefghijk", url: "https://www.youtube.com/watch?v=abcdefghijk" }), "https://i.ytimg.com/vi/abcdefghijk/hqdefault_live.jpg");
+  assert.equal(miniatura({ fuente: "OpenStreetMap", video_id: "osm-node-1", url: "https://youtu.be/qjfzvIBf_qw" }), "https://i.ytimg.com/vi/qjfzvIBf_qw/hqdefault_live.jpg");
+  assert.equal(miniatura({ fuente: "OpenStreetMap", video_id: "osm-node-2", url: "http://x.example/cam.jpg" }), "https://x.example/cam.jpg");
+  assert.equal(miniatura({ fuente: "OpenStreetMap", video_id: "osm-node-3", url: "https://x.example/webcam" }), null);
+  const cuerpo = cuerpoIssue({ fecha: "2026-11-09", totalSpots: 3, listaHuecos: [], candidatas: [{ spot: "x", spot_nombre: "X", titulo: "Cam \"X\"", url: "u", video_id: "windy-5", fuente: "Windy", canal: "-", motivo: "m" }], sinClave: false, sinWindy: false, descartadas: [{}], caidas: ["Orio"] });
+  assert.doesNotMatch(cuerpo, /<img /, "las miniaturas no van al Issue");
+  assert.match(cuerpo, /Descartadas solas por enlace caído o imagen parada: 1/);
+  assert.match(cuerpo, /cámara caída hace más de 7 días \(se les busca sustituta\): Orio/);
+});
+
+test("enlaces muertos o imágenes paradas", () => {
+  const ahora = Date.parse("2026-11-08T12:00:00Z");
+  assert.equal(enlaceMuerto({ status: 404 }, ahora), "http_404");
+  assert.equal(enlaceMuerto({ status: 503 }, ahora), "http_503");
+  assert.equal(enlaceMuerto({ status: 0 }, ahora), null, "sin respuesta no descarta");
+  assert.equal(enlaceMuerto({ status: 200, ultimaModificacion: "Fri, 10 Feb 2023 15:23:35 GMT" }, ahora), "imagen_parada");
+  assert.equal(enlaceMuerto({ status: 200, ultimaModificacion: "Sun, 08 Nov 2026 11:00:00 GMT" }, ahora), null);
+  assert.equal(enlaceMuerto({ status: 403 }, ahora), null, "antibots no es caída");
+});
+
+test("spots con la cámara caída más de 7 días cuentan como hueco", () => {
+  const ahora = Date.parse("2026-11-08T12:00:00Z");
+  const estado = { camaras: [
+    { spot_slug: "orio", sin_senal: true, ultima_senal_en: "2026-10-21T18:30:00Z" },
+    { spot_slug: "mutriku", sin_senal: true, ultima_senal_en: "2026-11-07T16:30:00Z" },
+    { spot_slug: "deba", sin_senal: false, ultima_senal_en: "2026-11-08T11:00:00Z" },
+    { spot_slug: "ext-nz-geonet-te-kaha", sin_senal: true, ultima_senal_en: null },
+  ] };
+  assert.deepEqual([...spotsConCamaraCaida(estado, ahora)], ["orio"]);
+  assert.deepEqual([...spotsConCamaraCaida(null, ahora)], []);
 });

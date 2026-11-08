@@ -112,6 +112,21 @@ export function ajustarCalibracion(muestras) {
   } else {
     lnA = sumaPonderada(Y.map((y, i) => y - p * X[i]), W) / sw;
   }
+  // Habilidad (2026-11-08, "mejora el robot de cámaras"): correlación
+  // ponderada entre ln(espuma) y ln(altura). En Bakio, Getaria, Hondarribia
+  // (principal), Zumaia, Riverton y Aramoana salía ~0 o negativa con cientos
+  // de lecturas: su espuma no acompaña a la ola y aun así sustituían al modelo.
+  let correlacion = null;
+  {
+    const mx = sumaPonderada(X, W) / sw, my = sumaPonderada(Y, W) / sw;
+    let sxy = 0, sxx = 0, syy = 0;
+    for (let i = 0; i < m.length; i++) {
+      sxy += W[i] * (X[i] - mx) * (Y[i] - my);
+      sxx += W[i] * (X[i] - mx) ** 2;
+      syy += W[i] * (Y[i] - my) ** 2;
+    }
+    if (sxx > 0 && syy > 0) correlacion = +(sxy / Math.sqrt(sxx * syy)).toFixed(3);
+  }
   const res = Y.map((y, i) => y - (lnA + p * X[i]));
   const rms = Math.sqrt(sumaPonderada(res.map((r) => r * r), W) / sw);
   const dias = new Set(m.map((x) => x.dia).filter(Boolean)).size;
@@ -132,6 +147,7 @@ export function ajustarCalibracion(muestras) {
     hMax: +hMax.toFixed(2),
     errorRel: +Math.min(1, errorRel).toFixed(3),
     pocosDatos,
+    correlacion,
   };
 }
 
@@ -294,6 +310,18 @@ export const ETIQUETAS_CLAUDE_PARA_FIARSE = 8; // equivalen a las 5 de Mikel
 export const FRANJAS_CLAUDE_MINIMAS = 2;
 export const ERROR_MAXIMO_CLAUDE = 0.75;
 export const PARES_MINIMOS_RUIDO = 3; // con menos pares, el ruido no está medido
+// Habilidad de la cámara (solo informativa, 2026-11-08: Mikel ve que la
+// altura por cámara "no va mal del todo", así que NO se usa para apagar
+// ninguna): la mejor correlación espuma-ola entre sus encuadres con al
+// menos MUESTRAS_HABILIDAD muestras, por debajo de CORRELACION_MINIMA = floja.
+export const MUESTRAS_HABILIDAD = 30;
+export const CORRELACION_MINIMA = 0.3;
+export function habilidadCamara(calibraciones) {
+  const medidas = (calibraciones || []).filter((c) => c && c.n >= MUESTRAS_HABILIDAD && Number.isFinite(c.correlacion));
+  if (!medidas.length) return { medida: false, mejor: null };
+  const mejor = Math.max(...medidas.map((c) => c.correlacion));
+  return { medida: true, mejor, suficiente: mejor >= CORRELACION_MINIMA };
+}
 
 export function ruidoCamara(historial, camara) {
   const porEnc = {};
