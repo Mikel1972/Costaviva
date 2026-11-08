@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-08T09:39:03.750Z",
- "lineasHistorial": 8723,
+ "fecha": "2026-11-08T10:07:51.221Z",
+ "lineasHistorial": 8734,
  "etiquetas": 623,
  "etiquetasClaude": 232,
  "calibracion": {
@@ -234,9 +234,9 @@
    "pocosDatos": true
   },
   "castrourdiales/principal": {
-   "a": 3.5105,
+   "a": 3.5056,
    "p": 0.5,
-   "n": 139,
+   "n": 140,
    "nEtiquetas": 26,
    "nEtiquetasClaude": 6,
    "franjasClaude": [
@@ -457,7 +457,7 @@
    "motivo": "36 etiquetas",
    "ruido": {
     "ruido": 0.5,
-    "pares": 119
+    "pares": 120
    }
   },
   "donostia": {
@@ -552,8 +552,8 @@
    "sustituye": true,
    "motivo": "26 etiquetas",
    "ruido": {
-    "ruido": 0.436,
-    "pares": 63
+    "ruido": 0.444,
+    "pares": 64
    }
   },
   "nz-napier": {
