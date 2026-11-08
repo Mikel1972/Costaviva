@@ -175,7 +175,8 @@ test("NZ: 'mañana' es la de NZ y la clave no choca con la de España", () => {
   assert.equal(C.piezaAPreparar({ formato: "reel", ahora: new Date("2026-10-16T06:20:00Z"), mercado: "nz" }).fecha, "2026-10-17");
   // Miércoles en NZ no toca post; y en NZ no hay piezas de funciones.
   assert.equal(C.piezaAPreparar({ formato: "post", ahora: new Date("2026-10-13T06:40:00Z"), mercado: "nz" }), null);
-  assert.throws(() => C.piezaAPreparar({ formato: "post", mercado: "nz", tipoForzado: "diario" }), /NZ/);
+  // Con fecha fija (2026-11-07: sin "ahora" dependía del día en que corre la prueba).
+  assert.throws(() => C.piezaAPreparar({ formato: "post", ahora: new Date("2026-10-12T06:40:00Z"), mercado: "nz", tipoForzado: "diario" }), /NZ/);
   // Un mercado desconocido es España.
   assert.equal(C.piezaAPreparar({ formato: "post", ahora: new Date("2026-10-12T17:30:00Z"), mercado: "xx" }).mercado, "es");
 });
@@ -416,4 +417,19 @@ test("Instagram: borrador caducado o en proceso antes de publicar (#342)", async
   assert.equal(await contenedorListo(undefined, pieza, { estadoDe: estados({ nuevo: "FINISHED" }), crear }), "nuevo");
   await assert.rejects(contenedorListo("viejo", {}, { estadoDe: estados({ viejo: "EXPIRED" }), crear }), /no trae la pieza/);
   await assert.rejects(contenedorListo("viejo", pieza, { estadoDe: estados({ viejo: "ERROR", nuevo: "ERROR" }), crear }), /borrador nuevo/);
+});
+
+test("Respaldo retrasado hasta la madrugada: sin fecha no prepara la de pasado mañana (#404)", () => {
+  // Miércoles 4/11, 23:54 UTC = jueves 00:54 en Madrid: antes salía el viernes.
+  assert.equal(C.piezaAPreparar({ formato: "post", ahora: new Date("2026-11-04T23:54:00Z") }), null);
+  assert.equal(C.piezaAPreparar({ formato: "reel", ahora: new Date("2026-11-05T06:00:00Z") }), null);
+  // La víspera por la tarde sí.
+  assert.equal(C.piezaAPreparar({ formato: "post", ahora: new Date("2026-11-04T17:30:00Z") }).fecha, "2026-11-05");
+  // Con fecha forzada, a cualquier hora.
+  assert.equal(C.piezaAPreparar({ formato: "post", fechaForzada: "2026-11-06", ahora: new Date("2026-11-04T23:54:00Z") }).fecha, "2026-11-06");
+  // NZ: 05:40 UTC = tarde en Auckland, vale; 13:00 UTC = madrugada allí, no.
+  assert.ok(C.piezaAPreparar({ formato: "post", mercado: "nz", ahora: new Date("2026-11-09T05:40:00Z") }));
+  assert.equal(C.piezaAPreparar({ formato: "post", mercado: "nz", ahora: new Date("2026-11-09T13:00:00Z") }), null);
+  const yml = readFileSync(".github/workflows/robot-marketing-instagram.yml", "utf8");
+  assert.match(yml, /horaLocal\(MERCADOS\.es\.zona\) < HORA_MINIMA_VISPERA/);
 });

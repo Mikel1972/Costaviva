@@ -350,3 +350,13 @@ test("diagnóstico de tipos AIS: solo totales y los sin tipo que van a velocidad
   assert.deepEqual(d, { porGrupo: { sin_tipo: 2, pesquero: 2, carga: 1 }, sinTipoFaena: 1 });
 });
 
+
+test("curvaMinutos: cuenta con las posiciones de los primeros minutos (2026-11-05)", async () => {
+  const { curvaMinutos } = await import("../scripts/flota/flota-ais.mjs");
+  const barcos = {
+    a: { posiciones: [{ t: 60_000 }, { t: 5 * 60_000 }, { t: 9 * 60_000 }] },
+    b: { posiciones: [{ t: 60_000 }, { t: 15 * 60_000 }, { t: 25 * 60_000 }] },
+  };
+  const contar = (bs) => Object.values(bs).filter((b) => b.posiciones.length >= 3).length;
+  assert.deepEqual(curvaMinutos(barcos, [10, 20, 30], contar), [[10, 1], [20, 1], [30, 2]]);
+});

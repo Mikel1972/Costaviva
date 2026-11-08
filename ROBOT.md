@@ -10133,3 +10133,63 @@ Datos: `camaras-estado.json` de 2026-11-05T03:04Z (fresco). En rojo: alicante, t
 - **cangas, bakio, mundaka**: congeladas pero de noche (última señal hace 1 h); no se tocan.
 - No se cambió código. Para la siguiente (de día): pasaia, cangas, bakio, mundaka.
 — robot de cámaras caídas (rutina)
+
+### 2026-11-06 04:45 UTC (robot de cámaras caídas — rutina; Alicante, Torreblanca, Gandía/Dénia/Peñíscola, Cantabria)
+
+Datos: `camaras-estado.json` de 2026-11-06T03:37Z (fresco). En rojo: alicante, torreblanca (`origen_404`, desde el 7 y 11 oct), gandia, denia, peniscola (`origen_404`, 1 fallo), sanvicente, comillas, suances (`origen_522`, 1 fallo), y `frame_congelado` en pasaia, portosin, bakio, mundaka (lectura nocturna). Orio: `sin_respuesta` sin pasar a rojo.
+- **gandia, denia, peniscola**: las URLs `streaming.comunitatvalenciana.com/static/<X>/webcam_mini.png` responden 200 ahora; era un fallo puntual, no hay nada que cambiar.
+- **alicante, torreblanca**: siguen en 404 (misma ruta del mismo servidor que sí sirve las otras tres). Sin alternativa nueva; el fallo es de esos dos recursos, no del proveedor entero.
+- **sanvicente, comillas, suances**: sin verificar: dominio `www.cantabria.es` bloqueado por la red de la rutina (túnel sin respuesta). Un 522 con un solo fallo no basta para tocar nada.
+- **pasaia, portosin, bakio, mundaka**: congeladas pero son las 04:45 UTC, de noche; no se juzgan.
+- No se cambió código. Para la siguiente (de día): pasaia, bakio, mundaka, portosin; buscar sustituto de alicante/torreblanca.
+— robot de cámaras caídas (rutina)
+
+### 2026-11-06 05:00 UTC — robot buscador de fuentes (rutina): viernes, estudios sobre factores (viento/oleaje y capturabilidad de lubina)
+- Factor de hoy: viento y oleaje frente a capturas de lubina. Una búsqueda web. Hallazgos (solo resúmenes del buscador, no abrí los textos ni comprobé licencia):
+  - PLoS One 2022, pesquería comercial costera de lubina: con más altura de ola salen menos barcos y baja el éxito de pesca (desembarcos por metro de eslora). Es pesca comercial, no de caña; no sirve para una regla de costa.
+  - Ecological Economics 2018, modelo de captura y esfuerzo de la pesca de lubina con caña en Irlanda (https://edepositireland.ie/handle/2262/83826): acceso abierto, pero el resumen no menciona variables meteorológicas.
+  - Informe del programa irlandés de lubina (https://www.fisheriesireland.ie/sites/default/files/2021-12/ifi-national-bass-programme-angler-data-report-2018-2020.pdf): capturas por pescador y hora, sin análisis de tiempo en lo visto.
+- Sin regla propuesta ni rama `-factores`: no llega a confianza 0,3 (sin texto verificado y sin efecto cuantificado para pesca de costa). La regla de Mikel de mar movida/presión no se toca.
+- Concursos: no se revisó ninguna federación nueva (sin margen).
+- Para la próxima: abrir el texto completo del modelo irlandés de 2018 y del PLoS One 2022 para ver si traen covariables de viento/ola y su licencia.
+
+Firmado: robot buscador de fuentes (rutina), 2026-11-06 05:00 UTC.
+
+### 2026-11-07 04:45 UTC (robot de cámaras caídas — rutina; Alicante, Torreblanca, Pasaia, Cantabria)
+
+Datos: `camaras-estado.json` de 2026-11-07T03:04Z (fresco). En rojo: alicante, torreblanca (`origen_404`, desde el 7 y 11 oct), pasaia (`frame_plano`), orio (`sin_respuesta`), sanvicente, comillas (`origen_522`), y dos `frame_congelado` nocturnos.
+- **alicante, torreblanca**: `streaming.comunitatvalenciana.com/static/AlicantePuerto|Torreblanca/webcam_mini.png` siguen en 404 (Gandia en 200). Probé también `Alicante` y `Torrevieja`: 404. Sin alternativa nueva; términos ya probados en pasadas anteriores, sin novedad del dueño (Turisme CV).
+- **pasaia**: `detectia.net/img/webcam-pasaia-azti.webp` responde 200, Last-Modified 06-nov 18:04 GMT; son las 04:45 UTC (noche), `frame_plano` esperable. No se juzga.
+- **orio**: `sin_respuesta`, sin verificar (de noche, ya recuperó otras veces).
+- **sanvicente, comillas**: sin verificar: dominio `www.cantabria.es` bloqueado por la red de la rutina (sin respuesta).
+- No se cambió código. Siguiente pasada (de día): pasaia, orio, cantabria.es; sustituto de alicante/torreblanca.
+— robot de cámaras caídas (rutina)
+
+### 2026-11-07 11:20 UTC — robot de patrones de uso (rutina)
+
+Datos: `datos-robots/patrones-uso/ultima.json` generado el 2026-11-07 01:51 UTC (fresco, `errores` vacío, 2 cuentas de prueba excluidas). Muestra pequeña: 11 perfiles, 3 usuarios activos en 7 días, 8 en 28 días, 700 eventos totales de 8 usuarios desde el 2026-09-17. Solo se confirma la recogida y se señalan tendencias con cautela.
+- Abandono: de 10 perfiles con más de 7 días, 3 nunca hicieron nada, 5 llevan 7 días sin actividad y 2 siguen activos. 1 alta en 7 días, 5 en 28.
+- Mapa: `ver_mapa` 17 eventos de 3 usuarios (7d), 118 de 8 (28d). Es lo que usa todo el mundo.
+- Capas (usuarios distintos en 28d): clorofila 5, isóbatas 5, sustrato 5, temperatura agua 4, boyas 4, ríos 3, frentes 3, corriente 3, viento 3, estaciones 3, radar lluvia 2, rayos 2; batimetría vieja 0 (sustituida por isóbatas). Desde el 2026-11-07 las capas arrancan apagadas, así que estos recuentos pasarán a medir encendido manual de verdad.
+- Diario: `crear_salida` y `crear_captura` los usa 1 solo usuario (11 salidas, 5 capturas en total; última captura el 2026-10-19). Grupos: 1 `unirse_grupo` (2026-09-18), nada desde entonces. SOS: 1 pulsación (2026-10-08, prueba probable).
+- Pago: `ver_suscripcion` 18 eventos de 2 usuarios (28d); `iniciar_checkout` 13 totales de 3 usuarios (anual 6, mensual 5); `acepta_condiciones_pago` 2 eventos de 1 usuario el 2026-11-05. Hay intención de pago pero no se ve conversión en estos datos.
+
+Propuestas (solo propuestas, nada aplicado):
+1. Diario y grupos casi no tienen uso real (1 usuario activo en diario, 0 usuarios en grupos en 28 días) con 8 usuarios activos. No quitarlos con esta muestra; sí revisar con Mikel si la entrada al diario es visible y está explicada en la prueba de 14 días (ejemplo: tarjeta o aviso tras la primera vez que se abre un spot).
+2. Las capas de mar (clorofila, frentes, corriente, sustrato) las prueban 3-5 de 8 usuarios, más que radar y rayos (2). Mantenerlas, y valorar que el aviso "las capas empiezan apagadas" tenga un acceso claro para no perder ese descubrimiento tras el cambio del 2026-11-07.
+3. Embudo de pago: 3 usuarios iniciaron checkout y 1 aceptó condiciones, pero no hay evento de pago completado. Medirlo con el KPI prueba → pago de `suscripciones.primer_pago_en` antes de decidir cambios en `suscripcion.html`.
+4. Sin acción sobre SOS: se queda como está (seguridad).
+
+Puntos ciegos de la medición: no hay evento para la modalidad (🪨🚤🤿), la flota/mapa de calor, el ▶️ de 14 días, la ventana de actividad, la identificación por foto ni el cambio de idioma; y las capas llevan eventos solo al encender, no cuánto tiempo se usan. Propuesta para `scripts/patrones-uso/agregar.mjs` y la instrumentación: añadir `cambiar_modalidad` y `ver_capa_flota` con `registrarEvento` (no aplicado). No tuve tiempo de comparar con semanas anteriores en `git log -p`.
+— robot de patrones de uso (rutina)
+
+### 2026-11-08 04:55 UTC (robot de cámaras caídas — rutina; Alicante, Torreblanca, Xilxes, Cantabria)
+
+Datos: `camaras-estado.json` de 2026-11-08T03:04Z (fresco). En rojo: alicante, torreblanca (`origen_404`, desde el 7 y 11 oct), xilxes (`origen_404`, 1 fallo), sanvicente, comillas (`origen_522`), pasaia, bakio, mundaka (`frame_congelado`, lectura nocturna).
+- **xilxes**: ya vuelve a dar 200 (`Xilxes/webcam_mini.png`); fallo puntual, nada que tocar.
+- **alicante**: `AlicantePuerto` sigue en 404. La web de Turisme CV (`/es/webcams`) solo lista ahora `AlicanteExplanada` (200, Last-Modified de hoy 04:00 GMT). La miré con Read: es el paseo de palmeras de la Explanada, sin mar a la vista → NO sirve para el spot; no se cambia. Probé también `AlicantePostiguet`, `Alicante1`, `Postiguet`: 404.
+- **torreblanca**: `Torreblanca` sigue en 404 y la página de webcams de Turisme CV no lista ningún stream de Torreblanca. Sin alternativa.
+- **sanvicente, comillas**: sin verificar: `www.cantabria.es` no responde desde la red de la rutina.
+- **pasaia, bakio, mundaka**: congeladas de noche (04:40 UTC), esperable; no se juzga.
+- No se cambió código. Siguiente pasada: sustituto de alicante/torreblanca (otro dueño: puerto, club náutico, windfinder), cantabria.es de día.
+— robot de cámaras caídas (rutina)

@@ -201,10 +201,31 @@ test("clips de stock: todos dicen si sale una persona identificable", () => {
   }
 });
 
-test("Nueva Zelanda: nunca sale sola, solo con el OK manual de Mikel", () => {
-  const d = V.decidir(base({ pieza: { ...PIEZA, mercado: "nz" }, ahora: new Date("2026-10-14T06:10:00Z") }));
-  assert.equal(d.accion, "saltar");
-  assert.match(d.motivo, /Nueva Zelanda/);
+test("Nueva Zelanda: sale sola con veto, como España (Mikel, 2026-11-07)", () => {
+  const nz = { ...PIEZA, mercado: "nz" };
+  const d = V.decidir(base({ pieza: nz, ahora: EN_HORA }));
+  assert.equal(d.accion, "publicar");
   const fuente = leer("scripts/marketing/publicar-borrador-instagram.mjs");
-  assert.match(fuente, /pieza\.mercado !== "nz"/);
+  assert.doesNotMatch(fuente, /pieza\.mercado !== "nz"/);
+  // El máximo de 1 al día por red es por mercado.
+  const hoyEs = { fecha: "2026-10-13T05:00:00Z", issueNumber: "1", campana: "20261013-reel-peces-bakio" };
+  const hoyNz = { fecha: "2026-10-13T05:00:00Z", issueNumber: "2", campana: "20261013-condiciones-nz-raglan" };
+  assert.equal(V.mercadoDePublicada(hoyNz), "nz");
+  assert.equal(V.mercadoDePublicada(hoyEs), "es");
+  const conEs = V.decidir(base({ pieza: nz, ahora: EN_HORA, publicados: { instagram: [hoyEs], facebook: [hoyEs] } }));
+  assert.equal(conEs.accion, "publicar");
+  const conNz = V.decidir(base({ pieza: nz, ahora: EN_HORA, publicados: { instagram: [hoyNz], facebook: [hoyNz] } }));
+  assert.equal(conNz.accion, "avisar");
+  const esConNz = V.decidir(base({ ahora: EN_HORA, publicados: { instagram: [hoyNz], facebook: [hoyNz] } }));
+  assert.equal(esConNz.accion, "publicar");
+});
+
+test("NZ: la hora de la pieza es la de Auckland, no la de Madrid (#420)", () => {
+  const nz = { ...PIEZA, mercado: "nz", fecha: "2026-11-08", hora: "07:00", creadoEn: "2026-11-07T06:03:00Z" };
+  // 07:00 NZDT del 8/11 = 18:00 UTC del 7/11; el aviso de 12 h acaba a las 18:03.
+  assert.equal(V.momentoPublicacion(nz, "2026-11-07T06:03:00Z").toISOString(), "2026-11-07T18:03:00.000Z");
+  const d = V.decidir(base({ pieza: nz, creado: "2026-11-07T06:03:00Z", ahora: new Date("2026-11-07T18:05:00Z") }));
+  assert.equal(d.accion, "publicar");
+  // España sigue en hora de Madrid.
+  assert.equal(V.momentoPublicacion({ ...PIEZA, fecha: "2026-11-08", hora: "09:00" }, "2026-11-07T17:00:00Z").toISOString(), "2026-11-08T08:00:00.000Z");
 });

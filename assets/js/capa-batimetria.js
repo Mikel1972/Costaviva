@@ -17,9 +17,11 @@
 //      100 m, isobatas.json, más detalladas) desde zoom 8. Cada fichero se
 //      pide la primera vez que hace falta. Etiquetas "200 m" en puntos
 //      precalculados (solo las que caen en pantalla, desde cierto zoom) y
-//      leyenda de colores. Se enciende sola con la pestaña Embarcación y a
-//      mano con "Profundidad" en el selector del botón "Fondo"
-//      (selector-fondo.js).
+//      leyenda de colores. Solo se enciende a mano con "Profundidad" en el
+//      selector del botón "Fondo" (selector-fondo.js). Hasta el 2026-11-07
+//      se encendía sola con la modalidad Embarcación; Mikel lo quitó: "Cuando
+//      se entra en la app, solamente deben aparecer marcados los spots. Todo
+//      lo demás desactivado." Al abrir la app, siempre apagada.
 // Licencias y atribución: datos-robots/fuentes/BATIMETRIA.md.
 //
 // Las funciones puras (sin DOM ni red) tienen tests en test/batimetria.test.js;
@@ -82,9 +84,10 @@ export function batimetriaDeSpot(datos, slug) {
 // punto está en tierra a algo de distancia del agua.
 export const RADIO_CAJA_PUNTO_M = 6000;
 
-// ¿Se debe ver la capa? Encendida a mano, o sola en la pestaña Embarcación.
-export function capaVisible({ manual, modalidad }) {
-  return manual === true || (manual === null && modalidad === "embarcacion");
+// ¿Se debe ver la capa? Solo encendida a mano en esta visita; la modalidad
+// no la enciende (2026-11-07).
+export function capaVisible({ manual } = {}) {
+  return manual === true;
 }
 
 // ---------------------------------------------------------------------------
@@ -124,7 +127,7 @@ export function batimetria(s) {
 }
 
 let mapa = null, avisarCambio = () => {}, leyenda = null, leyendaPuesta = false, capaEtiquetas = null;
-const estado = { manual: null, modalidad: "costa" };
+const estado = { manual: false };
 const juegos = {
   profundas: { url: "/assets/datos/isobatas-profundas.json", zoomMin: 0, capa: null, geo: null, cargando: null },
   someras: { url: "/assets/datos/isobatas.json", zoomMin: ZOOM_SOMERAS, capa: null, geo: null, cargando: null },
@@ -241,7 +244,7 @@ async function aplicar() {
 }
 
 // map: el mapa de Leaflet; onCambio(visible): se llama cada vez que se
-// decide si se ve (también cuando la enciende o apaga la pestaña).
+// decide si se ve.
 export function montarCapa(map, { onCambio } = {}) {
   mapa = map;
   if (onCambio) avisarCambio = onCambio;
@@ -249,19 +252,11 @@ export function montarCapa(map, { onCambio } = {}) {
   aplicar();
 }
 
-// Lo que se ve ahora (a mano o por la pestaña).
+// Lo que se ve ahora (solo lo encendido a mano).
 export const visible = () => capaVisible(estado);
 
-// A mano (selector "Fondo"): manda sobre la pestaña hasta que se cambie de pestaña.
+// A mano (selector "Fondo"). No se guarda: al abrir la app, apagada.
 export function ponerVisible(v) {
   estado.manual = !!v;
-  aplicar();
-}
-
-// La llama index.html cada vez que se pinta la pestaña de modalidad.
-export function porModalidad(m) {
-  if (m === estado.modalidad) return;
-  estado.modalidad = m;
-  estado.manual = null;
   aplicar();
 }

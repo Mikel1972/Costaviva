@@ -5,6 +5,68 @@ cambian las convenciones — no es un historial (para eso está `ROBOT.md`).
 Si algo de aquí queda desactualizado, corrígelo en el momento en que lo
 detectes, no lo dejes para luego.
 
+## Al abrir la app, solo los spots (2026-11-07, pedido de Mikel)
+
+Mikel: "Cuando se abre la app, sale por defecto la profundidad. No debe ser
+así. Cuando se entra en la app, solamente deben aparecer marcados los spots.
+Todo lo demás desactivado." Causa: la modalidad se recuerda (`va_modalidad`)
+y Embarcación encendía sola las isóbatas y la flota faenando; Submarina, el
+tipo de fondo; GFW y las capas de mar restauraban su "encendido" guardado.
+
+Regla desde hoy: al abrir `index.html` solo se ven los spots (con el resumen
+por regiones a zoom bajo) y las zonas sin pesca (aviso legal, orden de Mikel
+del 2026-10-12: no se tocan). Todas las demás capas empiezan APAGADAS y solo
+se encienden a mano en esta visita; su encendido no se guarda ni se restaura.
+- Isóbatas (`capa-batimetria.js`): `capaVisible({ manual })` = solo
+  `manual === true`; ya no hay `porModalidad`. Solo "Profundidad" del
+  selector "Fondo". La profundidad de cada spot para el índice no cambia.
+- Tipo de fondo: Submarina ya no lo enciende (se quitó
+  `aplicarCapasModalidad` de index.html). La modalidad no enciende capas.
+- Flota faenando (`capa-flota.js`): en Embarcación sale el chip "🚤 Flota ▾"
+  plegado (móvil y ordenador); la capa (calor y parados) y la petición de
+  datos solo con la casilla "Ver en el mapa" (`data-flota-ver`, clave
+  `flota.ver` en es/en/pt) o al tocar Hoy/Ayer, eslora o ▶️.
+  `controlVisible(m)` / `capaVisible(m, ver)`, `ponerVer(v)`.
+- GFW (`capa-gfw.js`): `estadoInicial(guardado)` recuerda periodo y arte de
+  `va_gfw`, pero `ver` siempre `false`; ya no se guarda `ver`.
+- Capas de mar (🌿 🌡 〰 🌊): `cv_capas_mar` solo devuelve el fondo elegido;
+  las activas guardadas no se vuelven a encender.
+- Se siguen recordando (no son capas): modalidad, unidades, idioma, vista de
+  región y menú de capas plegado.
+Tests: `test/batimetria.test.js`, `test/capa-flota.test.js`,
+`test/capa-gfw.test.js`, `test/modalidad-mapa.test.js`,
+`test/capas-combinadas.test.js` y en `test/navegador/` "al abrir con
+embarcacion/submarina recordada solo se ven los spots" (con `va_gfw`
+`{ver:true}` y `cv_capas_mar` guardados). Capa nueva: que empiece apagada.
+
+## Coordenadas al tocar el mapa en Embarcación (2026-11-07, pedido de Mikel)
+
+Mikel: "Cuando esté en embarcación, el toque en pantalla debe permitir ver
+las coordenadas. Si quiero ir a un punto en concreto debo saber cuál es."
+Con la modalidad `embarcacion` (`vaEstado.modalidad`), tocar un punto vacío
+del mapa abre un globo con "📍 Coordenadas de este punto": grados y minutos
+decimales del GPS/plotter (`43° 24,123′ N · 2° 41,456′ W`; coma en es/pt,
+punto en en; N/S/E/W en los tres idiomas, como `formatoCoordenadas`) y grados
+decimales para pegar (`43.40205, -2.69093`, siempre con punto), cada línea
+con «Copiar» (portapapeles; si no, `execCommand`; si tampoco, selecciona la
+línea y dice "Selecciona y copia") y la × de Leaflet ("Cerrar coordenadas").
+- Puro en `assets/js/coordenadas.js` (`formatoMinutos`, `formatoDecimal`,
+  `normalizarLon` para Nueva Zelanda más allá de 180°, `copiarTexto`,
+  `contenidoGlobo`), `window.Coordenadas`. Claves `coords.*` en es/en/pt.
+- El toque en index.html (`map.on("click")` junto a "Añadir ubicación"):
+  un solo globo (el nuevo toque lo mueve); espera 280 ms y se anula con
+  doble toque, zoom o arrastre. Añadir ubicación manda (ese toque crea el
+  punto). Los spots no cambian (sus marcadores no pasan el toque al mapa).
+  Las capas con globo propio (zonas sin pesca, celdas de GFW, barcos
+  parados: `L.Path` marcado en `marcarToqueCapa`) se quedan con su globo.
+  Con capas de mar encendidas sale su globo de siempre y, en Embarcación,
+  las coordenadas debajo en el mismo globo.
+- En Costa y Submarina el toque hace exactamente lo de antes (nada, o el
+  globo de las capas de mar).
+- Profundidad del punto: no, porque necesitaría pedirla al WCS de EMODnet.
+Tests: `test/coordenadas.test.js` (en tests.yml) y en `test/navegador/`
+"tocar el mapa en embarcacion/costa".
+
 ## Migraciones: solo se aplica la que Mikel aprobó (2026-10-11, incidente)
 
 Mikel aprobó UNA migración (`20261011230000_cobro_prueba_14_dias_plan_gratis.sql`)
@@ -671,11 +733,14 @@ es "automático con veto de 12 h". El publicador manual sigue existiendo.
   no hay veto, publica en Instagram y Facebook con
   `scripts/marketing/publicar-pieza.mjs` (la misma lógica que el manual,
   mismo grupo de `concurrency`) y cierra el Issue con los enlaces.
-- **Excepción: Nueva Zelanda.** Las piezas con `mercado: "nz"` nunca salen
-  solas (`decidir()` de `veto.mjs` las salta y su Issue no dice "se publica
-  sola"): siguen saliendo solo con el OK de Mikel, por el workflow manual
-  (petición de Mikel del 2026-10-11 para NZ). Sus reels no llevan clip si su
-  ficha no dice `persona_identificable: false`.
+- **Nueva Zelanda: también sola con veto desde el 2026-11-07** (Mikel:
+  "Publica"; hasta entonces solo con su OK, y las que nadie aprobó se
+  perdían). El máximo de 1 al día por red cuenta por mercado
+  (`publicadaHoy(..., mercado)`, el de cada publicación sale de su campaña:
+  `-nz-`): España a las 09:00 y NZ a las 19:00 de Madrid no se pisan. La
+  hora de cada pieza se lee en la zona de su mercado (`momentoPublicacion`;
+  hasta el 2026-11-07 era siempre Madrid y #420 se iba 12 h tarde). Sus
+  reels siguen sin clip si su ficha no dice `persona_identificable: false`.
 - **Cómo veta Mikel** (basta una): etiqueta `veto` en el Issue, o un
   comentario suyo (autor = dueño del repo) con la palabra "no" o "veto" (en
   caso de duda gana el veto; los comentarios de otros no vetan). Interruptor
@@ -781,12 +846,13 @@ Fase decidida por Mikel: todo a conseguir usuarios (0 suscriptores el
    Mikel) con `lanzar_marketing_nz()`, que solo admite los dos
    robots de marketing y siempre manda `mercado=nz` (la función general lanza
    sin inputs = España); el segundo `schedule:` de GitHub (06:40 / 06:20
-   UTC) es el respaldo. Mikel las ve por la mañana y se publican a
+   UTC) es el respaldo; sin fecha, antes de las 12:00 locales no se
+   prepara nada (un respaldo retrasado haría la de pasado mañana, #404).
+   Mikel las ve por la mañana y se publican a
    las 20:00 (19:00 en invierno de NZ) de la víspera en España; el Issue dice
    las dos horas (`textoCuando`) y lleva "🇳🇿 NZ" en el título. Clave del
-   estado `AAAA-MM-DD-post-nz` (no choca con la de España). **La regla no
-   cambia: cada pieza sale solo con el OK de Mikel** (workflow manual
-   "Publicar post de Instagram"). Mismo `{ENLACE}` y UTM (campaña
+   estado `AAAA-MM-DD-post-nz` (no choca con la de España). Desde el
+   2026-11-07 salen solas con el veto de 12 h, como las de España. Mismo `{ENLACE}` y UTM (campaña
    `AAAAMMDD-especies-nz-…` / `-condiciones-nz-…`; en Instagram "or tap the
    link in bio"). Tema: zonas de `ZONAS_NZ` en ciclos completos
    (`rotacion-zonas-nz.json`), dentro del ciclo primero la más buscada en NZ
@@ -1235,7 +1301,7 @@ salud las comprueba como las de España (401/403/429 en enlace o iframe =
 `no_verificable`). `test/nz-region.test.js` exige que se carguen.
 
 **Embebidas: decisión de Mikel 2026-10-11 ("Embeberlas", como Skyline),
-pendiente de respuesta escrita de cada dueño.** **CoroLive verificada por escrito el 2026-10-31 (CoroLive): «yep sure go ahead» al embebido con su iframe oficial y el crédito.** No dicen nada del análisis: sigue a la espera de decisión de Mikel. Interruptor por dueño
+pendiente de respuesta escrita de cada dueño.** **CoroLive verificada por escrito el 2026-10-31 (CoroLive): «yep sure go ahead» al embebido con su iframe oficial y el crédito.** **Sails Ashore (Halfmoon Bay, Stewart Island) dio permiso escrito el 2026-11-07** a la petición de embeber y analizar («Happy for you to use our web cam images»; pide el enlace a la página): embebida con su `snapshot1.jpg` (`imagen_oficial`); análisis permitido pero no se usa (bahía en calma, sin rompiente, `NO_SIRVEN_NZ`). No dicen nada del análisis: sigue a la espera de decisión de Mikel. Interruptor por dueño
 `NZ_EMBED_AUTORIZADO`: si un dueño dice que no, se pone
 su clave a `false` y sus cámaras vuelven solas a `enlace` (CoroLive sale
 además de `frame-src` de la CSP, que se arma con `ORIGENES_IFRAME_NZ`). Se
@@ -2119,8 +2185,9 @@ pidan a la vez (`cargandoCapasMar`), y las imágenes se guardan por capa.
   mg/m³)", "🌡 19,4 °C en superficie", "〰 Borde de agua verde y azul a unos 3
   km", "🌊 Corriente hacia el NE, 0,3 nudos (0,6 km/h)"), estrecho (195 px)
   para no quedar debajo de la columna de botones.
-- **Recuerdo**: `cv_capas_mar` en localStorage (`{activas, fondo}`, try/catch)
-  y se restauran al abrir, cuando ya están los módulos (`ventana-actividad-lista`).
+- **Recuerdo**: `cv_capas_mar` en localStorage (`{activas, fondo}`, try/catch).
+  Desde el 2026-11-07 al abrir solo se recupera el fondo elegido: las capas
+  empiezan apagadas (ver "Al abrir la app, solo los spots").
 - Medido (Chromium, 390x844, CPU x4): mover el mapa con las 4 capas ~28 ms;
   la imagen de trazos, una vez, ~260 ms.
 - Código: `assets/js/capas-combinadas.js` (puro), `componerCapasMar()` /
@@ -3382,9 +3449,9 @@ pestaña en la hora actual. Hereda la vigencia por spot del punto anterior
     Único sitio que la cambia: `ponerModalidad()` en index.html, que emite
     `document` → `CustomEvent("modalidad", { detail: { modalidad } })` y deja
     `<html data-modalidad>` (para quien cargue después: la capa de la flota
-    lo escucha). Capas, conservador (nada se oculta): Embarcación enciende
-    las isóbatas; Submarina, el tipo de fondo (no en NZ: EMODnet es solo
-    Europa) y lo apaga al salir solo si lo encendió ella. Los spots fijos no
+    lo escucha). Capas: desde el 2026-11-07 la modalidad no enciende
+    ninguna (antes Embarcación encendía las isóbatas y Submarina el tipo de
+    fondo; ver "Al abrir la app, solo los spots"). Los spots fijos no
     tienen tipo costa/mar adentro: no se filtran. Tests:
     `test/modalidad-mapa.test.js` y `test/navegador/`.
   - Datos: `modalidades` por especie en `especies.json` (muchos-a-muchos:
@@ -4103,9 +4170,9 @@ y `... someras` (~10 min cada uno; GEBCO si EMODnet no tiene un cuadro). El
 WMS `emodnet:contours` no tiene la de 20 m. Colores discretos de claro a
 oscuro y leyenda abajo a la izquierda; etiquetas "200 m" en puntos
 precalculados (`etiquetas` de cada nivel) que caen en pantalla, las
-profundas desde zoom 6 y las someras desde zoom 10, 120 como mucho. Se
-encienden solas en la pestaña Embarcación (`porModalidad`) y a mano con
-"Profundidad" en el selector del botón "Fondo"; cada fichero se pide la
+profundas desde zoom 6 y las someras desde zoom 10, 120 como mucho. Solo
+se encienden a mano con "Profundidad" en el selector del botón "Fondo"
+(hasta el 2026-11-07 también solas en Embarcación); cada fichero se pide la
 primera vez que hace falta. Tests: `test/batimetria.test.js` (en tests.yml).
 
 **Botón único "Fondo" (2026-10-08, Mikel: "Fondos e Isób. muestran lo
@@ -4124,8 +4191,8 @@ marcar las dos**: líneas finas encima de manchas al 60 % se leen bien y es
 justo la pregunta del pescador ("¿roca a 30 m?"). Tocar fuera o Escape lo
 cierra; el botón sale activo si hay alguna capa y su `aria-label` dice
 cuáles. Las capas exponen `visible()` / `ponerVisible(v)`;
-`capa-batimetria.js` avisa con `onCambio` cuando la pestaña Embarcación
-enciende o apaga las isóbatas, y el selector se refresca. Seis botones por
+`capa-batimetria.js` avisa con `onCambio` cuando se encienden o apagan
+las isóbatas, y el selector se refresca. Seis botones por
 columna (Clorof. y T. agua suben a 260/322 px). Leyendas del fondo: abajo a
 la izquierda por encima del ⓘ en escritorio; **en el móvil arriba a la
 izquierda** (`esquinaLeyenda`), porque abajo las tapaban los créditos.
@@ -4171,9 +4238,10 @@ DÍA, no un acumulado de 30 días.
   la modalidad Embarcación y gratis para todos. **Escucha el evento
   `modalidad`** (`document`, `{ detail: { modalidad } }`) que lanza
   `ponerModalidad()` (la píldora del mapa), no los clics; al arrancar lee
-  `<html data-modalidad>` (si no, `localStorage va_modalidad`). En pantallas
-  de 600 px o menos el control empieza plegado en un chip "🚤 Flota ▾"
-  (botón con `aria-expanded`). Por eslora solo se publica una clase si
+  `<html data-modalidad>` (si no, `localStorage va_modalidad`). Desde el
+  2026-11-07 el control empieza siempre plegado en un chip "🚤 Flota ▾"
+  (botón con `aria-expanded`) y la capa apagada hasta "Ver en el mapa"
+  (ver "Al abrir la app, solo los spots"). Por eslora solo se publica una clase si
   "todas" menos ella (y menos todas las publicadas) es 0 o ≥ 3: nada de
   deducir un barco suelto restando. Tests:
   `test/flota-ais.test.js`, `test/capa-flota.test.js` y `test/navegador/`.

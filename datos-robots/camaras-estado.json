@@ -1,12 +1,12 @@
 {
- "generado_en": "2026-11-05T03:04:41.583Z",
+ "generado_en": "2026-11-08T03:04:17.730Z",
  "fuente": "camara_estado",
  "camaras": [
   {
    "spot_slug": "alicante",
    "sin_senal": true,
    "motivo": "origen_404",
-   "fallos_seguidos": 1472,
+   "fallos_seguidos": 1629,
    "ultima_senal_en": "2026-10-07T02:31:27.208+00:00",
    "fuente_usada": 0
   },
@@ -14,32 +14,32 @@
    "spot_slug": "torreblanca",
    "sin_senal": true,
    "motivo": "origen_404",
-   "fallos_seguidos": 1308,
+   "fallos_seguidos": 1465,
    "ultima_senal_en": "2026-10-11T12:30:46.765+00:00",
    "fuente_usada": 0
   },
   {
-   "spot_slug": "pasaia",
+   "spot_slug": "sanvicente",
    "sin_senal": true,
-   "motivo": "frame_plano",
-   "fallos_seguidos": 20,
-   "ultima_senal_en": "2026-11-04T18:00:42.246+00:00",
+   "motivo": "origen_522",
+   "fallos_seguidos": 5,
+   "ultima_senal_en": "2026-11-08T01:00:31.039+00:00",
    "fuente_usada": 0
   },
   {
-   "spot_slug": "castellon",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "spot_slug": "comillas",
+   "sin_senal": true,
+   "motivo": "origen_522",
+   "fallos_seguidos": 1,
+   "ultima_senal_en": "2026-11-08T02:30:32.656+00:00",
    "fuente_usada": 0
   },
   {
-   "spot_slug": "oropesa",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "spot_slug": "xilxes",
+   "sin_senal": true,
+   "motivo": "origen_404",
+   "fallos_seguidos": 1,
+   "ultima_senal_en": "2026-11-08T02:30:32.656+00:00",
    "fuente_usada": 0
   },
   {
@@ -47,7 +47,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -55,7 +55,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -63,7 +63,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -71,7 +71,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -79,7 +79,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -87,7 +87,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -95,7 +95,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -103,7 +103,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -111,7 +111,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -127,7 +127,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -135,7 +135,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -143,7 +143,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -151,7 +151,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -159,7 +159,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -167,7 +167,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -175,7 +175,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -183,7 +183,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -191,7 +191,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -199,7 +199,7 @@
    "sin_senal": false,
    "motivo": "no_verificable_403",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T01:01:18.226+00:00",
+   "ultima_senal_en": "2026-11-05T06:01:09.257+00:00",
    "fuente_usada": 0
   },
   {
@@ -207,7 +207,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -215,23 +215,23 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
    "spot_slug": "ext-nz-corolive-whitianga",
    "sin_senal": false,
-   "motivo": "no_verificable_403",
+   "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": null,
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
    "spot_slug": "ext-nz-corolive-whangamata",
    "sin_senal": false,
-   "motivo": "no_verificable_403",
+   "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": null,
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -239,7 +239,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -247,7 +247,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -255,7 +255,15 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "pasaia",
+   "sin_senal": true,
+   "motivo": "frame_congelado",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -263,7 +271,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -271,7 +279,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -279,15 +287,15 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
    "spot_slug": "cangas",
-   "sin_senal": true,
-   "motivo": "frame_congelado",
+   "sin_senal": false,
+   "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -295,7 +303,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -303,7 +311,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -311,7 +319,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -319,7 +327,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -327,7 +335,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -335,7 +343,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -343,39 +351,23 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
-   "fuente_usada": 0
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
+   "fuente_usada": 1
   },
   {
    "spot_slug": "laredo",
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "sanvicente",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "comillas",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
-   "fuente_usada": 0
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
+   "fuente_usada": 1
   },
   {
    "spot_slug": "calpe",
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -383,7 +375,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -391,7 +383,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -399,7 +391,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -407,7 +399,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -415,7 +407,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -423,7 +415,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -431,7 +423,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -439,7 +431,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -447,279 +439,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "bakio",
-   "sin_senal": true,
-   "motivo": "frame_congelado",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "javea",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "alcossebre",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "burriana",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "xilxes",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "vinaros",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "alboraya",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "cullera",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "oliva",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "santona",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "hondarribia",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "orio",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "deba",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "mutriku",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-sky-728",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-yt-santander-bahia",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-yt-arenal",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-yt-playa-de-muro",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-sky-624",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-sky-627",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-sky-427",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-sky-6103",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-meo-vila-nova-de-milfontes-farol",
-   "sin_senal": false,
-   "motivo": "no_verificable_403",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T01:01:18.226+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-meo-vila-nova-de-milfontes-franquia",
-   "sin_senal": false,
-   "motivo": "no_verificable_403",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T01:01:18.226+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-nz-geonet-te-kaha",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-nz-napier-marine-parade",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-nz-primo-port-taranaki",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-nz-port-otago-aramoana",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-nz-southloop-riverton",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-nz-hauraki-whangamata-beach",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-nz-raglan-bar",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-nz-castlepoint-lighthouse",
-   "sin_senal": false,
-   "motivo": "no_verificable_403",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": null,
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-nz-gw-beacon-hill",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
-   "fuente_usada": 0
-  },
-  {
-   "spot_slug": "ext-nz-southloop-oban",
-   "sin_senal": false,
-   "motivo": "ok",
-   "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -727,7 +447,271 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "bakio",
+   "sin_senal": true,
+   "motivo": "frame_congelado",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "javea",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "alcossebre",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "burriana",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "vinaros",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "alboraya",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "cullera",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "oliva",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "santona",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "hondarribia",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "orio",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "deba",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "mutriku",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-sky-728",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-yt-santander-bahia",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-yt-arenal",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-yt-playa-de-muro",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-sky-624",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-sky-627",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-sky-427",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-sky-6103",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-meo-vila-nova-de-milfontes-farol",
+   "sin_senal": false,
+   "motivo": "no_verificable_403",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-11-05T06:01:09.257+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-meo-vila-nova-de-milfontes-franquia",
+   "sin_senal": false,
+   "motivo": "no_verificable_403",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-11-05T06:01:09.257+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-nz-geonet-te-kaha",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-nz-napier-marine-parade",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-nz-primo-port-taranaki",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-nz-port-otago-aramoana",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-nz-southloop-riverton",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-nz-hauraki-whangamata-beach",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-nz-raglan-bar",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-nz-castlepoint-lighthouse",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-nz-gw-beacon-hill",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "ext-nz-southloop-oban",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -735,7 +719,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -743,7 +727,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -751,7 +735,7 @@
    "sin_senal": false,
    "motivo": "no_verificable_403",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T01:01:18.226+00:00",
+   "ultima_senal_en": "2026-11-05T06:01:09.257+00:00",
    "fuente_usada": 0
   },
   {
@@ -759,7 +743,7 @@
    "sin_senal": false,
    "motivo": "no_verificable_403",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T01:01:18.226+00:00",
+   "ultima_senal_en": "2026-11-05T06:01:09.257+00:00",
    "fuente_usada": 0
   },
   {
@@ -767,7 +751,7 @@
    "sin_senal": false,
    "motivo": "no_verificable_403",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T01:01:18.226+00:00",
+   "ultima_senal_en": "2026-11-05T06:01:09.257+00:00",
    "fuente_usada": 0
   },
   {
@@ -775,7 +759,7 @@
    "sin_senal": false,
    "motivo": "no_verificable_403",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T01:01:18.226+00:00",
+   "ultima_senal_en": "2026-11-05T06:01:09.257+00:00",
    "fuente_usada": 0
   },
   {
@@ -783,7 +767,7 @@
    "sin_senal": false,
    "motivo": "no_verificable_403",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T01:01:18.226+00:00",
+   "ultima_senal_en": "2026-11-05T06:01:09.257+00:00",
    "fuente_usada": 0
   },
   {
@@ -791,7 +775,7 @@
    "sin_senal": false,
    "motivo": "no_verificable_403",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T01:01:18.226+00:00",
+   "ultima_senal_en": "2026-11-05T06:01:09.257+00:00",
    "fuente_usada": 0
   },
   {
@@ -799,7 +783,7 @@
    "sin_senal": false,
    "motivo": "no_verificable_403",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T01:01:18.226+00:00",
+   "ultima_senal_en": "2026-11-05T06:01:09.257+00:00",
    "fuente_usada": 0
   },
   {
@@ -807,7 +791,7 @@
    "sin_senal": false,
    "motivo": "no_verificable_403",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T01:01:18.226+00:00",
+   "ultima_senal_en": "2026-11-05T06:01:09.257+00:00",
    "fuente_usada": 0
   },
   {
@@ -815,7 +799,7 @@
    "sin_senal": false,
    "motivo": "no_verificable_403",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T01:01:18.226+00:00",
+   "ultima_senal_en": "2026-11-05T06:01:09.257+00:00",
    "fuente_usada": 0
   },
   {
@@ -823,7 +807,7 @@
    "sin_senal": false,
    "motivo": "no_verificable_403",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T01:01:18.226+00:00",
+   "ultima_senal_en": "2026-11-05T06:01:09.257+00:00",
    "fuente_usada": 0
   },
   {
@@ -831,7 +815,7 @@
    "sin_senal": false,
    "motivo": "no_verificable_403",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T01:01:18.226+00:00",
+   "ultima_senal_en": "2026-11-05T06:01:09.257+00:00",
    "fuente_usada": 0
   },
   {
@@ -839,7 +823,7 @@
    "sin_senal": false,
    "motivo": "no_verificable_403",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T01:01:18.226+00:00",
+   "ultima_senal_en": "2026-11-05T06:01:09.257+00:00",
    "fuente_usada": 0
   },
   {
@@ -847,7 +831,7 @@
    "sin_senal": false,
    "motivo": "no_verificable_403",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T01:01:18.226+00:00",
+   "ultima_senal_en": "2026-11-05T06:01:09.257+00:00",
    "fuente_usada": 0
   },
   {
@@ -855,7 +839,7 @@
    "sin_senal": false,
    "motivo": "no_verificable_403",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T01:01:18.226+00:00",
+   "ultima_senal_en": "2026-11-05T06:01:09.257+00:00",
    "fuente_usada": 0
   },
   {
@@ -863,7 +847,7 @@
    "sin_senal": false,
    "motivo": "no_verificable_403",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T01:01:18.226+00:00",
+   "ultima_senal_en": "2026-11-05T06:01:09.257+00:00",
    "fuente_usada": 0
   },
   {
@@ -871,7 +855,7 @@
    "sin_senal": false,
    "motivo": "no_verificable_403",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T01:01:18.226+00:00",
+   "ultima_senal_en": "2026-11-05T06:01:09.257+00:00",
    "fuente_usada": 0
   },
   {
@@ -879,7 +863,7 @@
    "sin_senal": false,
    "motivo": "no_verificable_403",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T01:01:18.226+00:00",
+   "ultima_senal_en": "2026-11-05T06:01:09.257+00:00",
    "fuente_usada": 0
   },
   {
@@ -887,7 +871,7 @@
    "sin_senal": false,
    "motivo": "no_verificable_403",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T01:01:18.226+00:00",
+   "ultima_senal_en": "2026-11-05T06:01:09.257+00:00",
    "fuente_usada": 0
   },
   {
@@ -895,7 +879,7 @@
    "sin_senal": false,
    "motivo": "no_verificable_403",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T01:01:18.226+00:00",
+   "ultima_senal_en": "2026-11-05T06:01:09.257+00:00",
    "fuente_usada": 0
   },
   {
@@ -903,7 +887,7 @@
    "sin_senal": false,
    "motivo": "no_verificable_403",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T01:01:18.226+00:00",
+   "ultima_senal_en": "2026-11-05T06:01:09.257+00:00",
    "fuente_usada": 0
   },
   {
@@ -911,7 +895,7 @@
    "sin_senal": false,
    "motivo": "no_verificable_403",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T01:01:18.226+00:00",
+   "ultima_senal_en": "2026-11-05T06:01:09.257+00:00",
    "fuente_usada": 0
   },
   {
@@ -919,7 +903,7 @@
    "sin_senal": false,
    "motivo": "no_verificable_403",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T01:01:18.226+00:00",
+   "ultima_senal_en": "2026-11-05T06:01:09.257+00:00",
    "fuente_usada": 0
   },
   {
@@ -927,7 +911,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -935,7 +919,7 @@
    "sin_senal": false,
    "motivo": "no_verificable_403",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T01:01:18.226+00:00",
+   "ultima_senal_en": "2026-11-05T06:01:09.257+00:00",
    "fuente_usada": 0
   },
   {
@@ -943,7 +927,7 @@
    "sin_senal": false,
    "motivo": "no_verificable_403",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T01:01:18.226+00:00",
+   "ultima_senal_en": "2026-11-05T06:01:09.257+00:00",
    "fuente_usada": 0
   },
   {
@@ -951,7 +935,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -959,7 +943,7 @@
    "sin_senal": false,
    "motivo": "no_verificable_403",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T01:01:18.226+00:00",
+   "ultima_senal_en": "2026-11-05T06:01:09.257+00:00",
    "fuente_usada": 0
   },
   {
@@ -967,7 +951,7 @@
    "sin_senal": false,
    "motivo": "no_verificable_403",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T01:01:18.226+00:00",
+   "ultima_senal_en": "2026-11-05T06:01:09.257+00:00",
    "fuente_usada": 0
   },
   {
@@ -975,7 +959,7 @@
    "sin_senal": false,
    "motivo": "no_verificable_403",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T01:01:18.226+00:00",
+   "ultima_senal_en": "2026-11-05T06:01:09.257+00:00",
    "fuente_usada": 0
   },
   {
@@ -983,7 +967,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -991,7 +975,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -999,7 +983,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -1007,7 +991,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -1015,7 +999,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -1023,7 +1007,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -1031,7 +1015,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -1039,7 +1023,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -1047,7 +1031,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -1055,7 +1039,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -1063,7 +1047,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -1071,7 +1055,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -1079,7 +1063,7 @@
    "sin_senal": true,
    "motivo": "frame_congelado",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -1087,7 +1071,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -1095,7 +1079,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -1103,7 +1087,7 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   },
   {
@@ -1111,7 +1095,23 @@
    "sin_senal": false,
    "motivo": "ok",
    "fallos_seguidos": 0,
-   "ultima_senal_en": "2026-11-05T03:00:43.801+00:00",
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "castellon",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
+   "fuente_usada": 0
+  },
+  {
+   "spot_slug": "oropesa",
+   "sin_senal": false,
+   "motivo": "ok",
+   "fallos_seguidos": 0,
+   "ultima_senal_en": "2026-11-08T03:00:33.456+00:00",
    "fuente_usada": 0
   }
  ]

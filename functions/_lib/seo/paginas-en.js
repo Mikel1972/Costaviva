@@ -329,7 +329,7 @@ export function paginaMareaNZ(spot, todos, d) {
   const b = spotPrev?.bloques?.[0];
   const resumen = [pleamar && `next high tide ${textoEvento(pleamar)}`, bajamar && `low tide ${textoEvento(bajamar)}`].filter(Boolean).join(", ");
   const titulo = `${spot.nombre} tide times today: high and low tide, waves | Costaviva`;
-  const descripcion = `Tide times today at ${spot.nombre}, New Zealand${resumen ? `: ${resumen}` : ""}${b?.altura ? `; waves ${b.altura[0]}–${b.altura[1]} m` : ""}${b?.viento != null ? `, wind ${b.viento} km/h` : ""}. LINZ tide predictions, free and without an account.`;
+  const descripcion = `Tide times today at ${spot.nombre}, New Zealand${resumen ? `: ${resumen}` : ""}${b?.altura ? `; waves ${b.altura[0]}–${b.altura[1]} m` : ""}${b?.viento != null ? `, wind ${b.viento} km/h${b.dirViento ? ` ${b.dirViento}` : ""}` : ""}. LINZ tide predictions, free and without an account.`;
   const migas = [{ nombre: "Tides", ruta: "/en/tides" }, ...(zona ? [{ nombre: zona.nombre, ruta: `/en/tides/region/${zona.slug}` }] : []), { nombre: spot.nombre, ruta: `/en${ruta}` }];
   const ld = [
     { "@context": "https://schema.org", "@type": "Place", name: spot.nombre, geo: { "@type": "GeoCoordinates", latitude: spot.lat, longitude: spot.lon }, url: `${DOMINIO}/en${ruta}` },

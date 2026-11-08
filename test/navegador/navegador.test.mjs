@@ -154,6 +154,140 @@ for (const [nombre, opciones] of [["ordenador", PC], ["móvil", MOVIL]]) {
   });
 }
 
+// Al abrir la app, solo los spots (2026-11-07, Mikel: "Cuando se entra en la
+// app, solamente deben aparecer marcados los spots. Todo lo demás
+// desactivado."). Aunque la última vez se usara Embarcación (que encendía las
+// isóbatas y la flota), Submarina (tipo de fondo), GFW guardado encendido y
+// capas de mar guardadas: todo apagado. La modalidad sí se recuerda.
+for (const [nombre, opciones] of [["ordenador", PC], ["móvil", MOVIL]]) {
+  for (const modalidad of ["embarcacion", "submarina"]) {
+    test(`${nombre}: al abrir con ${modalidad} recordada solo se ven los spots`, async () => {
+      const ctx = await contexto(opciones);
+      await ctx.addInitScript(([m]) => {
+        try {
+          localStorage.setItem("va_modalidad", m);
+          localStorage.setItem("va_gfw", JSON.stringify({ ver: true, periodo: "habitual", arte: "cerco" }));
+          localStorage.setItem("cv_capas_mar", JSON.stringify({ activas: ["clorofila", "corriente"], fondo: "corriente" }));
+        } catch (e) { /* sin almacenamiento */ }
+      }, [modalidad]);
+      const { pagina, errores } = await abrir(ctx, "/");
+      await pagina.waitForSelector("#map.leaflet-container", { timeout: 15000 });
+      await pagina.waitForFunction(() => window.Batimetria && window.Flota && window.CapaGFW && window.TipoFondo && window.CapasCombinadas,
+        null, { timeout: 15000 });
+      await pagina.waitForSelector("[data-gfw-control]", { state: "attached", timeout: 15000 });
+      await pagina.waitForTimeout(1500);
+      assert.equal(await pagina.locator(`#modPill-${modalidad}`).getAttribute("aria-checked"), "true", "la modalidad se recuerda");
+      const estado = await pagina.evaluate(() => ({
+        isobatas: window.Batimetria.visible(),
+        flota: window.Flota.visible(),
+        gfw: window.CapaGFW.visible(),
+        gfwCasilla: document.querySelector("[data-gfw-ver]")?.checked ?? null,
+        tipoFondo: window.TipoFondo.visible(),
+        etiquetasIsobatas: document.querySelectorAll(".isobata-etq").length,
+        calorFlota: document.querySelectorAll("canvas[data-flota-calor]").length,
+        encendidos: [...document.querySelectorAll("[id^=toggle].activo, [id^=toggle][aria-pressed=true]")].map((b) => b.id),
+      }));
+      assert.deepEqual(estado, {
+        isobatas: false, flota: false, gfw: false, gfwCasilla: false, tipoFondo: false,
+        etiquetasIsobatas: 0, calorFlota: 0, encendidos: ["toggleSpots"],
+      });
+      if (modalidad === "embarcacion") {
+        assert.equal(await pagina.locator("[data-flota-control]").count(), 1, "el chip de la flota sigue a mano");
+        assert.equal(await pagina.locator("[data-flota-ver]").isChecked(), false);
+      }
+      // GFW: el periodo y el arte se recuerdan; el encendido no.
+      assert.equal(await pagina.locator("[data-gfw-arte]").inputValue(), "cerco");
+      assert.deepEqual(errores, []);
+      await ctx.close();
+    });
+  }
+}
+
+// Coordenadas al tocar el mapa en Embarcación (2026-11-07, Mikel: "si quiero
+// ir a un punto en concreto debo saber cuál es"). Un toque en un punto vacío
+// del mapa abre un globo con grados y minutos decimales y grados decimales,
+// cada uno con «Copiar»; un toque nuevo lo mueve (uno solo). Desde costa, el
+// toque no abre nada (como antes).
+for (const [nombre, opciones] of [["ordenador", PC], ["móvil", MOVIL]]) {
+  for (const modalidad of ["embarcacion", "costa"]) {
+    test(`${nombre}: tocar el mapa en ${modalidad} ${modalidad === "embarcacion" ? "enseña" : "no enseña"} las coordenadas`, async () => {
+      const ctx = await contexto({ ...opciones, permissions: ["clipboard-read", "clipboard-write"] });
+      // cv-inicio-visto: la pantalla de inicio se quita en cuanto está lista.
+      await ctx.addInitScript(([m]) => { try { localStorage.setItem("va_modalidad", m); sessionStorage.setItem("cv-inicio-visto", "1"); } catch (e) { /* sin almacenamiento */ } }, [modalidad]);
+      const { pagina, errores } = await abrir(ctx, "/");
+      await pagina.waitForSelector("#map.leaflet-container", { timeout: 15000 });
+      await pagina.waitForFunction(() => window.Coordenadas && !document.getElementById("comprobandoAcceso"), null, { timeout: 15000 });
+      await pagina.waitForTimeout(1000);
+      const mapa = pagina.locator("#map");
+      const caja = await mapa.boundingBox();
+      // Un punto vacío del mapa (sin controles encima) cerca del centro.
+      // Dos puntos vacíos del mapa (sin spots ni controles encima).
+      const vacios = await pagina.evaluate(([x0, y0, w, h]) => {
+        const r = [];
+        for (let fy = 0.35; fy <= 0.75; fy += 0.05) {
+          for (let fx = 0.3; fx <= 0.7; fx += 0.05) {
+            const x = Math.round(x0 + w * fx), y = Math.round(y0 + h * fy);
+            const el = document.elementFromPoint(x, y);
+            if (el && el.closest("#map") && !el.closest(".leaflet-control, .leaflet-marker-icon, .leaflet-interactive, .leaflet-popup, .leaflet-marker-pane > *")) r.push({ x: x - x0, y: y - y0 });
+          }
+        }
+        return r;
+      }, [caja.x, caja.y, caja.width, caja.height]);
+      const punto = vacios[0];
+      // El segundo, lejos del primero y por debajo (el globo sale hacia arriba
+      // desde el punto: debajo no lo tapa).
+      const otro = vacios.find((p) => p.y > punto.y + 40 && Math.abs(p.x - punto.x) > 60);
+      assert.ok(punto && otro, "hay puntos vacíos en el mapa");
+      const tocar = (p) => (opciones.hasTouch ? mapa.tap({ position: p }) : mapa.click({ position: p }));
+      // Lo que debe salir, antes de tocar (el globo puede desplazar el mapa)
+      // y con el mapa quieto (al cargar todavía se recoloca).
+      await pagina.waitForFunction(() => {
+        const c = map.getCenter(), z = map.getZoom(), k = `${c.lat},${c.lng},${z}`;
+        const quieto = window.__ultimoCentro === k;
+        window.__ultimoCentro = k;
+        return quieto;
+      }, null, { polling: 600, timeout: 15000 });
+      const esperado = await pagina.evaluate(([x, y]) => {
+        const ll = map.containerPointToLatLng([x, y]);
+        return { dec: window.Coordenadas.formatoDecimal(ll.lat, ll.lng), min: window.Coordenadas.formatoMinutos(ll.lat, ll.lng, { coma: true }) };
+      }, [punto.x, punto.y]);
+      await tocar(punto);
+      if (modalidad === "costa") {
+        await pagina.waitForTimeout(800);
+        assert.equal(await pagina.locator("[data-globo-coords]").count(), 0, "desde costa el toque no abre nada");
+        assert.equal(await pagina.locator(".leaflet-popup").count(), 0);
+        assert.deepEqual(errores, []);
+        await ctx.close();
+        return;
+      }
+      const globo = pagina.locator("[data-globo-coords]");
+      await globo.waitFor({ state: "visible", timeout: 5000 });
+      const min = await pagina.locator("[data-coords-minutos]").textContent();
+      const dec = await pagina.locator("[data-coords-decimal]").textContent();
+      assert.match(min, /^\d{1,2}° \d{2},\d{3}′ [NS] · \d{1,3}° \d{2},\d{3}′ [EW]$/, min);
+      assert.match(dec, /^-?\d{1,2}\.\d{5}, -?\d{1,3}\.\d{5}$/, dec);
+      assert.equal(min, esperado.min);
+      assert.equal(dec, esperado.dec);
+      assert.equal(await pagina.locator(".leaflet-popup-close-button").getAttribute("aria-label"), "Cerrar coordenadas");
+      // «Copiar» copia la línea de grados y minutos y lo confirma.
+      const copiar = pagina.locator('[data-coords-copiar="minutos"]');
+      await copiar.click();
+      await pagina.waitForFunction(() => document.querySelector('[data-coords-copiar="minutos"]')?.textContent === "✓ Copiado", null, { timeout: 3000 });
+      assert.equal(await pagina.evaluate(() => navigator.clipboard.readText()), min);
+      // Otro toque lo mueve: sigue habiendo un solo globo.
+      await tocar(otro);
+      await pagina.waitForFunction((anterior) => { const t = document.querySelector("[data-coords-decimal]")?.textContent; return t && t !== anterior; }, dec, { timeout: 5000 });
+      assert.equal(await pagina.locator(".leaflet-popup").count(), 1, "un solo globo");
+      // La × lo cierra.
+      await pagina.locator(".leaflet-popup-close-button").click();
+      await pagina.waitForTimeout(300);
+      assert.equal(await pagina.locator("[data-globo-coords]").count(), 0);
+      assert.deepEqual(errores, []);
+      await ctx.close();
+    });
+  }
+}
+
 // Hoja de condiciones del alta (2026-10-22): «Continuar» abre la hoja, el
 // botón no se activa sin «He leído y acepto», y al aceptar se pide el enlace
 // del alta con la versión aceptada y las estadísticas por interés legítimo.
@@ -252,7 +386,8 @@ test("Mi suscripción: «Tus datos» de quien ya se opuso sale desmarcada", asyn
 // Embarcación (evento `modalidad`, no los clics de las pestañas), con su
 // control "Hoy (24 h) / Ayer", el filtro de eslora y el aviso sin datos.
 // Desde el 2026-10-23 es un mapa de calor en un <canvas> (data-celdas =
-// manchas pintadas) con ▶️ de los últimos 14 días.
+// manchas pintadas) con ▶️ de los últimos 14 días. Desde el 2026-11-07 el
+// chip sale plegado y la capa apagada hasta marcar "Ver en el mapa".
 const CORS = { "access-control-allow-origin": "*", "access-control-allow-headers": "*" };
 const diaMadrid = (ms) => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Madrid" }).format(new Date(ms));
 async function rutasFlota(ctx, zonas, historico, parados = []) {
@@ -293,16 +428,23 @@ for (const [nombre, opciones] of [["ordenador", PC], ["móvil", MOVIL]]) {
     assert.equal(await control.count(), 0, "en Desde costa no hay capa");
     await modalidad("embarcacion");
     await control.waitFor({ state: "visible" });
-    // En el móvil empieza plegado en un chip; en el ordenador, abierto.
+    // Empieza plegado en un chip (móvil y ordenador) y con la capa apagada:
+    // ni calor, ni parados, ni datos pedidos (2026-11-07, solo los spots).
     const chip = pagina.locator("[data-flota-chip]");
-    if (opciones.isMobile) {
-      assert.equal(await chip.getAttribute("aria-expanded"), "false");
-      assert.match(await chip.innerText(), /Flota\s*▾/);
-      assert.equal(await pagina.locator("[data-flota-clase]").isVisible(), false);
-      await chip.click();
-    }
+    assert.equal(await chip.getAttribute("aria-expanded"), "false");
+    assert.match(await chip.innerText(), /Flota\s*▾/);
+    assert.equal(await pagina.locator("[data-flota-clase]").isVisible(), false);
+    await pagina.waitForTimeout(500);
+    assert.equal(await pagina.locator("canvas[data-flota-calor]").count(), 0, "sin calor hasta encenderla");
+    assert.equal(await pagina.locator(".flota-parado").count(), 0);
+    assert.equal(await pagina.evaluate(() => window.Flota.visible()), false);
+    await chip.click();
     assert.equal(await chip.getAttribute("aria-expanded"), "true");
     assert.equal(await pagina.locator("[data-flota-clase]").isVisible(), true);
+    const ver = pagina.locator("[data-flota-ver]");
+    assert.equal(await ver.isChecked(), false);
+    await ver.check();
+    assert.equal(await pagina.evaluate(() => window.Flota.visible()), true);
     await pagina.waitForFunction(() => +document.querySelector("canvas[data-flota-calor]")?.dataset.celdas > 0, null, { timeout: 10000 });
     assert.equal(await celdas(), 2, "dos manchas en las últimas 24 h");
     assert.ok(await pintado() > 100, "el calor se ve (píxeles con color)");
@@ -355,11 +497,14 @@ for (const [nombre, opciones] of [["ordenador", PC], ["móvil", MOVIL]]) {
     assert.equal(await pagina.locator(".flota-parado").count(), 0, "y los parados también");
     assert.equal(await celdas(), 0);
     assert.doesNotMatch(await pagina.locator(".leaflet-control-attribution").innerText(), /aisstream\.io/);
-    // Al volver con Embarcación recordada, la capa sale sola al cargar.
+    // Al volver con Embarcación recordada: sale el chip, pero la capa apagada.
     await modalidad("embarcacion");
     await pagina.reload({ waitUntil: "load" });
     await pagina.waitForFunction(() => window.Flota, null, { timeout: 15000 });
     await control.waitFor({ state: "visible" });
+    assert.equal(await pagina.locator("[data-flota-chip]").getAttribute("aria-expanded"), "false");
+    assert.equal(await pagina.evaluate(() => window.Flota.visible()), false);
+    assert.equal(await pagina.locator("canvas[data-flota-calor]").count(), 0);
     assert.deepEqual(errores, []);
     await ctx.close();
   });
@@ -370,6 +515,8 @@ test("flota faenando sin datos: aviso «Sin flota faenando registrada en las úl
   const { pagina, errores } = await abrir(ctx, "/");
   await pagina.waitForFunction(() => window.Flota && window.supabaseCliente, null, { timeout: 15000 });
   await pagina.evaluate(() => document.dispatchEvent(new CustomEvent("modalidad", { detail: { modalidad: "embarcacion" } })));
+  await pagina.locator("[data-flota-chip]").click();
+  await pagina.locator("[data-flota-ver]").check();
   await pagina.waitForSelector("[data-flota-vacio]:not([hidden])", { state: "attached" });
   assert.equal(await pagina.locator("[data-flota-vacio]").innerText(), "Sin flota faenando registrada en las últimas 24 h");
   assert.equal(await pagina.locator("[data-flota-fecha]").innerText(), "Aún no hay días suficientes");
