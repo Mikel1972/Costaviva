@@ -39,8 +39,10 @@ export function elegir(estado, opcion) {
 // pantalla y el title que dice cuáles.
 export function resumen(estado) {
   const activas = OPCIONES.filter((o) => estado[o.id]).map((o) => o.texto.toLowerCase());
+  // El satélite es el mapa base (encendido por defecto, 2026-11-08): no
+  // marca el botón como activo; solo las capas del fondo del mar lo hacen.
   return {
-    activo: activas.length > 0,
+    activo: OPCIONES.some((o) => o.id !== "satelite" && estado[o.id]),
     texto: activas.length ? I18n.t("selfondo.resumen", { capas: activas.join(I18n.t("va.seg.y")) }) : I18n.t("selfondo.ninguna"),
   };
 }

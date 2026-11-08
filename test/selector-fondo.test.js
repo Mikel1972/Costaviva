@@ -33,6 +33,9 @@ test("selector: el botón se ve activo con alguna capa y dice cuáles", () => {
   assert.deepEqual(resumen({ profundidad: true, tipo: false }), { activo: true, texto: "Fondo del mar: profundidad" });
   assert.deepEqual(resumen({ profundidad: false, tipo: true }), { activo: true, texto: "Fondo del mar: tipo de fondo" });
   assert.equal(resumen({ profundidad: true, tipo: true }).texto, "Fondo del mar: profundidad y tipo de fondo");
+  // El satélite (por defecto, 2026-11-08) es el mapa base: no marca el botón.
+  assert.equal(resumen({ profundidad: false, tipo: false, satelite: true }).activo, false);
+  assert.equal(resumen({ profundidad: true, tipo: false, satelite: true }).activo, true);
 });
 
 test("index.html: un solo botón Fondo con su selector; fuera la capa WMS duplicada, Isób. y Sustr.", () => {
