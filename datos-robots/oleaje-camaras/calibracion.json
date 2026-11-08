@@ -1,13 +1,13 @@
 {
- "fecha": "2026-11-08T10:07:51.221Z",
- "lineasHistorial": 8734,
+ "fecha": "2026-11-08T10:38:00.840Z",
+ "lineasHistorial": 8744,
  "etiquetas": 623,
  "etiquetasClaude": 232,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.1656,
+   "a": 1.1597,
    "p": 0.5,
-   "n": 252,
+   "n": 253,
    "nEtiquetas": 34,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -18,7 +18,7 @@
     "2026-11-03T16"
    ],
    "dias": 32,
-   "hMin": 0.06,
+   "hMin": 0.05,
    "hMax": 1.69,
    "errorRel": 1,
    "pocosDatos": false
@@ -234,9 +234,9 @@
    "pocosDatos": true
   },
   "castrourdiales/principal": {
-   "a": 3.5056,
+   "a": 3.4941,
    "p": 0.5,
-   "n": 140,
+   "n": 141,
    "nEtiquetas": 26,
    "nEtiquetasClaude": 6,
    "franjasClaude": [
