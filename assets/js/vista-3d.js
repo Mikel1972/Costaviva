@@ -59,13 +59,14 @@ export const INCLINACION_MINIMA = 25;
 export const EXAGERACION = 1.5;
 export const ZOOM_MAX_BATIMETRIA = 10;
 // Más pantalla para el mapa (Mikel: "minimizar las franjas que no sean
-// mapa"): inclinación de 50° al abrir y 70° como máximo, para que el cielo
+// mapa"): inclinación de 50° al abrir; hasta 85° (casi a ras del horizonte,
+// pedido de Mikel 2026-11-08; antes 70° para que el cielo
 // no se coma la parte de arriba; los créditos, plegados en un ⓘ.
 export const INCLINACION = 50;
 // Zoom de MapLibre en el que el color por profundidad empieza a apagarse y
 // en el que ya no se ve.
 export const ZOOM_RELIEVE_COLOR = [10.5, 12];
-export const INCLINACION_MAXIMA = 70;
+export const INCLINACION_MAXIMA = 85;
 
 // Colores del fondo por profundidad (m); por encima de 0, transparente.
 export const COLORES_PROFUNDIDAD = [
