@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { ZONAS_EMODNET, zonaEmodnet, fuenteRelieve, URL_EMODNET, INCLINACION_MINIMA, ZOOM_MAX_BATIMETRIA, estilo3D, vistaInicial, URL_DEM, COLORES_PROFUNDIDAD, EXAGERACION, INCLINACION } from "../assets/js/vista-3d.js";
+import { teselaPrueba, ZONAS_EMODNET, zonaEmodnet, fuenteRelieve, URL_EMODNET, INCLINACION_MINIMA, ZOOM_MAX_BATIMETRIA, estilo3D, vistaInicial, URL_DEM, COLORES_PROFUNDIDAD, EXAGERACION, INCLINACION } from "../assets/js/vista-3d.js";
 
 test("estilo 3D: relieve con batimetría, mar por profundidad, ortofoto en España y agua encima de la foto", () => {
   const e = estilo3D();
@@ -60,4 +60,15 @@ test("nunca plana: inclinación mínima (Mikel: «cuando lo inclino, pasa a 2D»
   assert.equal(INCLINACION_MINIMA, 25);
   const js = readFileSync(new URL("../assets/js/vista-3d.js", import.meta.url), "utf8");
   assert.match(js, /minPitch: INCLINACION_MINIMA/);
+  // Más mapa y menos franjas (Mikel): cielo acotado y créditos plegados.
+  assert.match(js, /maxPitch: INCLINACION_MAXIMA/);
+  assert.match(js, /new gl\.AttributionControl\(\{ compact: true \}\)/);
+  assert.match(js, /maplibregl-compact-show/);
+});
+
+test("si las teselas de EMODnet aún no están, el 3D usa el relieve de AWS (no se queda en blanco)", () => {
+  assert.equal(teselaPrueba(ZONAS_EMODNET.iberia), URL_EMODNET.replace("{z}", "5").replace("{x}", "15").replace("{y}", "12"));
+  const e = estilo3D({ lat: 43.4, lng: -2.8 }, false);
+  assert.deepEqual(e.sources.dem.tiles, [URL_DEM]);
+  assert.deepEqual(e.sources.demTerreno.tiles, [URL_DEM]);
 });
