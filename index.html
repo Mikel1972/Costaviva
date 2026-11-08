@@ -289,6 +289,23 @@
     font-family: var(--f-texto); font-size: 12px; font-weight: 700; white-space: nowrap; cursor: pointer;
   }
   .selector-region { position: relative; }
+  .boton-3d-boton {
+    display: block; width: 30px; height: 30px; padding: 0; border: 0; border-radius: 4px;
+    background: var(--superficie); font: 800 12px/30px system-ui, sans-serif; color: var(--tinta); cursor: pointer;
+  }
+  .vista-3d { position: fixed; inset: 0; z-index: 6000; background: #0b1e3f; }
+  .vista-3d-mapa { position: absolute; inset: 0; }
+  .vista-3d-cerrar {
+    position: absolute; top: max(12px, env(safe-area-inset-top)); right: 12px; z-index: 2; width: 44px; height: 44px;
+    border: 0; border-radius: 50%; background: var(--superficie); color: var(--tinta); font-size: 20px; cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+  }
+  .vista-3d-ayuda {
+    position: absolute; left: 50%; bottom: max(24px, env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 2;
+    background: rgba(11,30,63,0.85); color: #fff; padding: 8px 14px; border-radius: 18px; font-size: 13px;
+    transition: opacity 0.6s; pointer-events: none; max-width: 90vw; text-align: center;
+  }
+  .vista-3d-ayuda.oculta { opacity: 0; }
   .selector-region-boton {
     display: block; width: 30px; height: 30px; padding: 0; border: 0; border-radius: 4px;
     background: var(--superficie); font-size: 16px; line-height: 30px; cursor: pointer;
@@ -1675,6 +1692,9 @@
   // Foto aérea del IGN como opción del botón Fondo (2026-11-08).
   import * as CapaSatelite from "/assets/js/capa-satelite.js";
   window.CapaSatelite = CapaSatelite;
+  // Vista 3D del relieve y del fondo del mar (2026-11-08).
+  import * as Vista3D from "/assets/js/vista-3d.js";
+  window.Vista3D = Vista3D;
   window.SelectorFondo = SelectorFondo;
   window.dispatchEvent(new Event("selector-fondo-listo"));
 </script>
@@ -2707,6 +2727,23 @@ const ControlRegion = L.Control.extend({
   },
 });
 new ControlRegion().addTo(map);
+// Botón "3D" (2026-11-08, Mikel: "¿y con posibilidad de 3D?"): abre encima
+// un mapa MapLibre inclinado en el mismo sitio (assets/js/vista-3d.js).
+const Control3D = L.Control.extend({
+  options: { position: "topleft" },
+  onAdd() {
+    const div = L.DomUtil.create("div", "leaflet-bar boton-3d");
+    div.innerHTML = `<button type="button" id="boton3d" class="boton-3d-boton" title="${escVA(I18n.t("vista3d.titulo"))}" aria-label="${escVA(I18n.t("vista3d.titulo"))}">3D</button>`;
+    L.DomEvent.disableClickPropagation(div);
+    div.querySelector("button").addEventListener("click", () => {
+      if (!window.Vista3D) return;
+      window.Vista3D.abrir(map, { titulo: I18n.t("vista3d.titulo"), cerrar: I18n.t("vista3d.cerrar"), ayuda: I18n.t("vista3d.ayuda") });
+      registrarEvento("ver_vista_3d");
+    });
+    return div;
+  },
+});
+new Control3D().addTo(map);
 map.on("click", cerrarSelectorRegion);
 // A zoom de continente o de mundo, una etiqueta por región en vez de los
 // spots (que se taparían todos). Tocarla lleva a la región.

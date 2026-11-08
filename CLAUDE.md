@@ -1304,6 +1304,19 @@ desarrollador fija, pedida a LINZ; Portugal (DGT) y la vista lejana
 (Sentinel-2 de EOX: su licencia comercial no está clara) quedan pendientes.
 Tests: `test/capa-satelite.test.js`, `test/selector-fondo.test.js`.
 
+## Vista 3D (2026-11-08)
+
+Botón «3D» (arriba a la izquierda, bajo el 🌐): abre encima un mapa MapLibre
+propio (`assets/js/vista-3d.js`), en el mismo sitio, inclinado 60°, que se
+gira e inclina con dos dedos. Leaflet no se puede inclinar: por eso es una
+vista aparte. Relieve gratis de las Terrain Tiles de AWS Open Data
+(terrarium; incluyen batimetría solo hasta zoom 10, por eso el fondo y la
+forma 3D salen de zoom ≤ 10 ampliado y el sombreado de tierra del detalle),
+mar coloreado por profundidad (`color-relief`), ortofoto PNOA en España y el
+agua de OpenFreeMap encima de la foto. Siguiente paso posible: batimetría
+fina de EMODnet (115 m) convertida a teselas propias. Tests:
+`test/vista-3d.test.js`.
+
 ## Buscador de cámaras nuevas (2026-10-31)
 
 `buscar-camaras.yml` (lunes 06:47 UTC, sin IA) corre
