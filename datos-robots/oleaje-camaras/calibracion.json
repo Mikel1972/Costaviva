@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-08T15:37:40.429Z",
- "lineasHistorial": 8844,
+ "fecha": "2026-11-08T17:52:20.350Z",
+ "lineasHistorial": 8845,
  "etiquetas": 623,
  "etiquetasClaude": 232,
  "calibracion": {
@@ -21,7 +21,8 @@
    "hMin": 0.05,
    "hMax": 1.69,
    "errorRel": 1,
-   "pocosDatos": false
+   "pocosDatos": false,
+   "correlacion": -0.103
   },
   "hondarribia/bocana": {
    "a": 3.4026,
@@ -37,7 +38,8 @@
    "hMin": 0.06,
    "hMax": 1.05,
    "errorRel": 1,
-   "pocosDatos": false
+   "pocosDatos": false,
+   "correlacion": 0.044
   },
   "donostia/principal": {
    "a": 5.3407,
@@ -50,7 +52,8 @@
    "hMin": 0.3,
    "hMax": 4.04,
    "errorRel": 1,
-   "pocosDatos": false
+   "pocosDatos": false,
+   "correlacion": -0.087
   },
   "zarautz/dinamico": {
    "a": 3.2246,
@@ -88,7 +91,8 @@
    "hMin": 0.3,
    "hMax": 6.97,
    "errorRel": 1,
-   "pocosDatos": false
+   "pocosDatos": false,
+   "correlacion": 0.029
   },
   "zumaia/c": {
    "a": 20.2583,
@@ -101,7 +105,8 @@
    "hMin": 2.95,
    "hMax": 3.59,
    "errorRel": 1,
-   "pocosDatos": true
+   "pocosDatos": true,
+   "correlacion": -0.663
   },
   "zumaia/a": {
    "a": 5.8215,
@@ -120,7 +125,8 @@
    "hMin": 0.37,
    "hMax": 6.97,
    "errorRel": 1,
-   "pocosDatos": false
+   "pocosDatos": false,
+   "correlacion": 0.049
   },
   "deba/rompiente": {
    "a": 3.8928,
@@ -144,7 +150,8 @@
    "hMin": 0.3,
    "hMax": 6.97,
    "errorRel": 1,
-   "pocosDatos": false
+   "pocosDatos": false,
+   "correlacion": 0.304
   },
   "mundaka/principal": {
    "a": 2.986,
@@ -168,7 +175,8 @@
    "hMin": 0.3,
    "hMax": 2.18,
    "errorRel": 0.574,
-   "pocosDatos": false
+   "pocosDatos": false,
+   "correlacion": 0.481
   },
   "bakio/principal": {
    "a": 2.8987,
@@ -194,7 +202,8 @@
    "hMin": 0.42,
    "hMax": 4.62,
    "errorRel": 0.903,
-   "pocosDatos": false
+   "pocosDatos": false,
+   "correlacion": 0.059
   },
   "sopelana/principal": {
    "a": 3.4204,
@@ -218,7 +227,8 @@
    "hMin": 0.3,
    "hMax": 4.62,
    "errorRel": 0.99,
-   "pocosDatos": false
+   "pocosDatos": false,
+   "correlacion": 0.425
   },
   "berria/principal": {
    "a": 74.2857,
@@ -231,7 +241,8 @@
    "hMin": 3.12,
    "hMax": 3.12,
    "errorRel": 0.5,
-   "pocosDatos": true
+   "pocosDatos": true,
+   "correlacion": null
   },
   "castrourdiales/principal": {
    "a": 3.495,
@@ -251,7 +262,8 @@
    "hMin": 0.3,
    "hMax": 4.51,
    "errorRel": 1,
-   "pocosDatos": false
+   "pocosDatos": false,
+   "correlacion": 0.13
   },
   "berria/dinamico": {
    "a": 3.0642,
@@ -274,7 +286,8 @@
    "hMin": 0.3,
    "hMax": 4.73,
    "errorRel": 1,
-   "pocosDatos": false
+   "pocosDatos": false,
+   "correlacion": 0.214
   },
   "mutriku/principal": {
    "a": 39.4085,
@@ -287,7 +300,8 @@
    "hMin": 0.48,
    "hMax": 3.51,
    "errorRel": 1,
-   "pocosDatos": true
+   "pocosDatos": true,
+   "correlacion": -0.807
   },
   "orio/principal": {
    "a": 2.807,
@@ -302,7 +316,8 @@
    "hMin": 0.3,
    "hMax": 4.04,
    "errorRel": 1,
-   "pocosDatos": false
+   "pocosDatos": false,
+   "correlacion": 0.161
   },
   "getaria/malkorbe": {
    "a": 4.0512,
@@ -315,7 +330,8 @@
    "hMin": 0.3,
    "hMax": 4.23,
    "errorRel": 1,
-   "pocosDatos": false
+   "pocosDatos": false,
+   "correlacion": -0.134
   },
   "donostia/playa": {
    "a": 6.8583,
@@ -328,7 +344,8 @@
    "hMin": 0.3,
    "hMax": 1.81,
    "errorRel": 0.925,
-   "pocosDatos": true
+   "pocosDatos": true,
+   "correlacion": 0.504
   },
   "zarautz/principal": {
    "a": 3.5324,
@@ -344,7 +361,8 @@
    "hMin": 0.3,
    "hMax": 6.49,
    "errorRel": 1,
-   "pocosDatos": false
+   "pocosDatos": false,
+   "correlacion": -0.023
   },
   "nz-napier/principal": {
    "a": 2.3031,
@@ -368,7 +386,8 @@
    "hMin": 0.28,
    "hMax": 1.2,
    "errorRel": 0.791,
-   "pocosDatos": false
+   "pocosDatos": false,
+   "correlacion": 0.461
   },
   "nz-riverton/principal": {
    "a": 7.6299,
@@ -416,7 +435,8 @@
    "hMin": 0.3,
    "hMax": 4.42,
    "errorRel": 1,
-   "pocosDatos": false
+   "pocosDatos": false,
+   "correlacion": 0
   },
   "nz-aramoana/principal": {
    "a": 6.2565,
@@ -433,7 +453,8 @@
    "hMin": 0.3,
    "hMax": 2.76,
    "errorRel": 1,
-   "pocosDatos": false
+   "pocosDatos": false,
+   "correlacion": 0.225
   },
   "deba/principal": {
    "a": 8.0066,
@@ -448,7 +469,8 @@
    "hMin": 0.75,
    "hMax": 4.2,
    "errorRel": 0.494,
-   "pocosDatos": false
+   "pocosDatos": false,
+   "correlacion": 0.712
   }
  },
  "sustitucion": {
