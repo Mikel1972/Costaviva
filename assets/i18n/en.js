@@ -626,6 +626,8 @@
   "selfondo.resumen": "Seabed: {capas}",
   "selfondo.ninguna": "Seabed: no layer",
   "selfondo.titulo": "Seabed",
+  "selfondo.satelite": "Satellite",
+  "selfondo.satelite_det": "IGN aerial photo (Spain)",
   "selfondo.ninguno": "None",
   "selfondo.aria": "{texto}. Choose seabed layers",
   "err.generico": "The operation could not be completed. Please try again.",

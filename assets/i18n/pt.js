@@ -628,6 +628,8 @@
   "selfondo.resumen": "Fundo do mar: {capas}",
   "selfondo.ninguna": "Fundo do mar: nenhuma camada",
   "selfondo.titulo": "Fundo do mar",
+  "selfondo.satelite": "Satélite",
+  "selfondo.satelite_det": "Fotografia aérea do IGN (Espanha)",
   "selfondo.ninguno": "Nenhum",
   "selfondo.aria": "{texto}. Escolher camadas do fundo",
   "err.generico": "Não foi possível concluir a operação. Tente novamente.",
