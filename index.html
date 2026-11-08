@@ -6695,11 +6695,9 @@ async function cargarCampoViento() {
     const numMarcas = Math.min(5, referencia.length);
     ticks.innerHTML = Array.from({ length: numMarcas }, (_, k) => {
       const idx = Math.round((k / (numMarcas - 1)) * (referencia.length - 1));
-      // La primera marca es "ahora"; las de mañana llevan una "m" pequeña
-      // delante para que se vea dónde cambia el día.
-      if (idx === 0) return `<span>${I18n.t("mapa.viento.ahora")}</span>`;
-      const manana = diasDesdeHoyViento(referencia[idx].hora) === 1;
-      return `<span>${manana ? `<small>${I18n.t("mapa.viento.manana_corto")}</small>` : ""}${horaVientoLocal(referencia[idx].hora)}</span>`;
+      // Solo horas (2026-11-08, Mikel): la primera es la de ahora y las
+      // siguientes, previsión; el día va en la hora elegida, debajo.
+      return `<span>${horaVientoLocal(referencia[idx].hora)}</span>`;
     }).join("");
     mostrarHoraViento(+slider.value);
   } catch (e) {

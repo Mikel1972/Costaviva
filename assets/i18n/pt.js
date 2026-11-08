@@ -401,7 +401,6 @@
   "mapa.viento.ahora_hora": "agora ({hora})",
   "mapa.viento.hoy_hora": "hoje {hora}",
   "mapa.viento.manana_hora": "amanhã {hora}",
-  "mapa.viento.manana_corto": "amn ",
   "mapa.cam.sin_camara_title": "Nenhuma câmara a funcionar neste momento",
   "va.mod.costa": "De terra",
   "va.mod.embarcacion": "Embarcação",

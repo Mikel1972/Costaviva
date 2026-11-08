@@ -399,7 +399,6 @@
   "mapa.viento.ahora_hora": "now ({hora})",
   "mapa.viento.hoy_hora": "today {hora}",
   "mapa.viento.manana_hora": "tomorrow {hora}",
-  "mapa.viento.manana_corto": "tmw ",
   "mapa.cam.sin_camara_title": "No working camera right now",
   "va.mod.costa": "From shore",
   "va.mod.embarcacion": "Boat",
