@@ -1,3 +1,4 @@
+-- 2026-11-05: emails personales retirados del repo público; la migración ya está aplicada en producción y este texto no se vuelve a ejecutar. En una base nueva, el administrador y los accesos permanentes se dan de alta a mano.
 -- Costa Viva — es_admin() deja de depender de un email fijo en SQL
 --
 -- MOTIVO (Mikel1972/comun, estandares/auth.md A4; 2026-10-07): es_admin()

@@ -10,7 +10,7 @@ import { onRequestPost, MAX_PETICIONES_EUSKALMET } from "../functions/actualizar
 const { privateKey } = generateKeyPairSync("rsa", { modulusLength: 2048 });
 const pem = privateKey.export({ type: "pkcs8", format: "pem" });
 
-async function ejecutar(responde) {
+async function ejecutar(responde, env = { CRON_SECRET: "s".repeat(32), SUPABASE_SERVICE_ROLE_KEY: "k", EUSKALMET_API_KEY: pem, EUSKALMET_EMAIL: "cuenta@ejemplo.test" }) {
   const real = globalThis.fetch;
   let n = 0;
   globalThis.fetch = async (url) => {
@@ -21,7 +21,7 @@ async function ejecutar(responde) {
   try {
     const r = await onRequestPost({
       request: new Request("https://x/actualizar-euskalmet-rios", { method: "POST", headers: { "X-Cron-Secret": "s".repeat(32) } }),
-      env: { CRON_SECRET: "s".repeat(32), SUPABASE_SERVICE_ROLE_KEY: "k", EUSKALMET_API_KEY: pem },
+      env,
     });
     return { r, n };
   } finally { globalThis.fetch = real; }
@@ -38,4 +38,11 @@ test("con datos en la última hora completa: una petición por lectura", async (
   const { r, n } = await ejecutar(() => Response.json({ values: [1, 2] }));
   assert.equal(r.status, 200);
   assert.ok(n <= 38, `${n} subpeticiones`);
+});
+
+test("sin el secret EUSKALMET_EMAIL: 503 claro, sin llamar a Euskalmet ni lanzar", async () => {
+  const { r, n } = await ejecutar(() => Response.json({ values: [1] }), { CRON_SECRET: "s".repeat(32), SUPABASE_SERVICE_ROLE_KEY: "k", EUSKALMET_API_KEY: pem });
+  assert.equal(r.status, 503);
+  assert.equal(n, 0);
+  assert.match((await r.json()).error, /EUSKALMET_EMAIL/);
 });

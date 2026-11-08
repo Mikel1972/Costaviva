@@ -1,5 +1,6 @@
+-- 2026-11-05: emails personales retirados del repo público; la migración ya está aplicada en producción y este texto no se vuelve a ejecutar. En una base nueva, el administrador y los accesos permanentes se dan de alta a mano.
 -- Acceso permanente sin suscripción para cuentas concretas (2026-10-01,
--- pedido del usuario: "persona@costaviva.invalid dale permiso permanente").
+-- pedido del usuario: dar permiso permanente a una cuenta concreta).
 --
 -- Hasta ahora el único acceso permanente era el del admin, escrito a mano
 -- en es_admin(). Esto lo generaliza sin darle a nadie poderes de admin: una
