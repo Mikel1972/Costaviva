@@ -268,6 +268,13 @@ const MODO_NZ = {
   "nz-southloop-oban": "enlace",
   "nz-sails-ashore": "imagen_oficial", // permiso escrito 2026-11-07
   "nz-motella-gisborne": "enlace",
+  // Del buscador (Windy), revisadas a mano el 2026-11-08: solo enlace.
+  "nz-windy-russell": "enlace",
+  "nz-windy-mauao": "enlace",
+  "nz-windy-howick": "enlace",
+  "nz-windy-waikawa": "enlace",
+  "nz-windy-taylors-mistake": "enlace",
+  "nz-windy-westport": "enlace",
 };
 
 // Repaso de día del 2026-10-12: las 15 pendientes de NZ, añadidas (solo

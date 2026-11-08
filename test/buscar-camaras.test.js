@@ -114,6 +114,7 @@ test("Windy: solo activas y a menos del radio", () => {
   assert.equal(categoriaValida([{ id: "landscape" }]), true);
   const c = candidatasDeWindy(ws, spots[2], { urls: new Set() });
   assert.deepEqual(c.map((x) => x.video_id), ["windy-10"]);
+  assert.deepEqual(candidatasDeWindy(ws, spots[2], { urls: new Set(), windy: new Set(["10"]) }), [], "ya en la app");
   assert.equal(c[0].fuente, "Windy");
 });
 

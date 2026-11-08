@@ -53,10 +53,15 @@ test("caída menos de 24 h: rojo pero sigue a la vista; más de 24 h (Alicante, 
   assert.equal(estadoCamaraSpot("alicante", true, { alicante }), "rojo");
 });
 
-test("retirada del código (Cala Millor, Son Bou): la fila vieja no cuenta, rojo", () => {
+test("retirada del código (Son Bou): la fila vieja no cuenta, rojo", () => {
   const vieja = { sinSenal: false, motivo: "ok" }; // aunque la fila dijera ok
-  assert.equal(estadoCamaraSpot("calamillor", false, { calamillor: vieja }), "rojo");
+  assert.equal(estadoCamaraSpot("sonbou", false, { sonbou: vieja }), "rojo");
   assert.equal(estadoCamaraSpot("sonbou", false, {}), "rojo");
+  // Cala Millor perdió su cámara propia, pero desde el 2026-11-08 tiene el
+  // enlace a Cala Bona (Windy): verde por esa, no por la fila vieja.
+  const [clave] = ext("calamillor");
+  assert.ok(clave, "Cala Millor debe tener su enlace de Windy");
+  assert.equal(estadoCamaraSpot("calamillor", false, { calamillor: { sinSenal: true, motivo: "origen_404" }, [clave]: ok }), "verde");
 });
 
 test("retirada con enlace de YouTube comprobado (Muro): verde", () => {
@@ -157,14 +162,16 @@ test("index.html pinta el punto con estadoCamaraSpot en todos los spots del cat�
 
 // --- Nueva Zelanda (2026-10-11, "no veo las cámaras de NZ") ---
 
-test("NZ: los 16 spots con cámara salen en verde con el estado real de hoy; los demás, rojo", async () => {
+test("NZ: los 22 spots con cámara salen en verde con el estado real de hoy; los demás, rojo", async () => {
   const { SPOTS_NZ } = await import("../functions/_lib/nz/spots-nz.js");
   // 9 del 2026-10-11 + 6 del repaso de día del 2026-10-12 (raglan, castlepoint,
   // wellington-harbour, nelson, bluff, halfmoon-bay; whangamata ya tenía).
   const conCamara = ["tairua", "whitianga", "whangamata", "whakatane", "te-kaha", "napier", "new-plymouth", "aramoana", "riverton",
     "raglan", "castlepoint", "wellington-harbour", "nelson", "bluff", "halfmoon-bay",
     // 2026-10-31: Gisborne, del buscador de cámaras (YouTube, enlace).
-    "gisborne"].map((s) => `nz-${s}`);
+    "gisborne",
+    // 2026-11-08: del buscador (Windy, enlace), revisadas a mano.
+    "russell", "tauranga", "half-moon-bay", "picton", "lyttelton", "westport"].map((s) => `nz-${s}`);
   // Estado de camara_estado del 2026-10-11 12:17 UTC: CoroLive no verificable, el resto ok.
   const camaras = Object.fromEntries(
     CAMARAS_EXTERNAS.filter((c) => c.spot.startsWith("nz-")).map((c) => [claveSalud(c), c.id.startsWith("nz-corolive") ? { sinSenal: false, motivo: "no_verificable_403" } : ok])

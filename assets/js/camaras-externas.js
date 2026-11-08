@@ -90,6 +90,19 @@ export const CONDICIONES = {
       "Términos: no se permite «access the Service using any automated means (such as robots, botnets or scrapers)» " +
       "ni descargar contenido salvo autorización expresa.",
   },
+  // 2026-11-08: cámaras encontradas por el buscador (Windy Webcams API) y
+  // revisadas a mano (ven el mar con imagen de hoy). Solo ENLACE a su página
+  // de windy.com; el permiso para insertar su reproductor está pedido
+  // (comun, permisos/registro.json, cz/windy).
+  windy: {
+    dueno: "Windy.com (directorio de webcams; cada cámara es de su anfitrión)",
+    tipo_dueno: "privado",
+    modos_permitidos: ["enlace"],
+    analisis_permitido: false,
+    fuentes: ["https://api.windy.com/webcams/terms", "https://api.windy.com/webcams/pricing"],
+    cita: "Condiciones del Webcams API de Windy: cada imagen debe enlazar a la página de la cámara en windy.com o a su reproductor; «If you don't want to link or embed Windy, use the API». Aquí solo se enlaza su página pública, sin cargar nada de Windy.",
+    contacto: "webcams@windy.com",
+  },
   meo_beachcam: {
     dueno: "MEO Beachcam (Altice Portugal)",
     tipo_dueno: "privado",
@@ -129,6 +142,21 @@ const yt = (id, spot, nombre, canal, videoId, rompiente, vistoEn) => ({
   rompiente,
   analisis_permitido: false,
   visto_en: vistoEn,
+});
+
+// Cámara del directorio de Windy, solo como enlace a su página.
+export const windy = (spot, nombre, windyId, rompiente) => ({
+  id: `windy-${windyId}`,
+  spot,
+  nombre,
+  dueno: "Windy.com",
+  condiciones: "windy",
+  modo: "enlace",
+  url: `https://www.windy.com/webcams/${windyId}`,
+  windy_id: windyId,
+  rompiente,
+  analisis_permitido: false,
+  visto_en: "windy.com (buscar-camaras, revisada 2026-11-08)",
 });
 
 const meo = (spot, nombre, slugMeo, rompiente) => ({
@@ -181,6 +209,14 @@ const LISTA = [
   sky("blanes", "Lloret de Mar", "espana/cataluna/gerona/lloret-de-mar-costa-brava", 631, true),
 
   // --- Baleares ---
+  // Revisadas a mano el 2026-11-08 (Issue #437): ven el mar.
+  windy("sanxenxo", "Sanxenxo, playa de Silgar", 1276183252, false),
+  windy("sanxenxo", "Portonovo, playa de Baltar", 1302031812, false),
+  windy("roses", "Roses, playa de La Perola", 1718287201, false),
+  windy("roses", "Puerto de Roses", 1600352745, false),
+  windy("cambrils", "Puerto de Cambrils", 1232544942, false),
+  windy("calamillor", "Cala Bona (Son Servera)", 1712748772, false),
+
   sky("palma", "Can Pastilla (Playa de Palma)", "espana/islas-baleares/mallorca/can-pastilla-playa-de-palma", 6123, true),
   yt("arenal", "palma", "S'Arenal (Playa de Palma)", "Webcam Arenal", "1qGjkrM0REk", true, "webcamera24.com"),
   // Muro: su cámara propia (SOCIB) salió el 2026-10-11 por llevar parada

@@ -216,6 +216,13 @@ export const NO_SIRVEN_NZ = {
   "nz-southloop-oban": "solo ENLACE (repaso del 2026-10-12): bahía en calma con el muelle, sin rompiente",
   "nz-sails-ashore": "análisis permitido por escrito (2026-11-07), pero la bahía queda lejos y en calma, sin rompiente: no da ola",
   "nz-motella-gisborne": "directo de YouTube: solo ENLACE y nunca analizado (condiciones de YouTube)",
+  // 2026-11-08: del directorio de Windy, solo ENLACE (sin permiso para cargar su imagen).
+  "nz-windy-russell": "solo ENLACE a windy.com (sin permiso para analizar)",
+  "nz-windy-mauao": "solo ENLACE a windy.com (sin permiso para analizar)",
+  "nz-windy-howick": "solo ENLACE a windy.com (sin permiso para analizar)",
+  "nz-windy-waikawa": "solo ENLACE a windy.com (sin permiso para analizar)",
+  "nz-windy-taylors-mistake": "solo ENLACE a windy.com (sin permiso para analizar)",
+  "nz-windy-westport": "solo ENLACE a windy.com (sin permiso para analizar)",
   // DESCARTADAS en el repaso de día del 2026-10-12 (07:30-07:50 NZDT): no
   // están en camaras-nz.js (clave nz-descartada-<id>). No se rodea ningún
   // bloqueo; si cambian, se revisan otra vez.
