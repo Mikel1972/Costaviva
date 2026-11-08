@@ -777,9 +777,8 @@
   .viento-play { width: 32px; height: 32px; flex: 0 0 32px; border-radius: 50%; border: 1px solid var(--mar); background: var(--mar); color: var(--blanco); font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; }
   .viento-slider-panel .etq { text-align: center; color: var(--tinta-2); margin-top: 2px; }
   .viento-slider-ticks { display: flex; justify-content: space-between; font-size: 9px; color: var(--tinta-2); margin-top: -2px; }
-  .viento-leyenda-titulo { font-size: 9.5px; color: var(--tinta-2); margin-top: 10px; border-top: 1px solid var(--linea); padding-top: 8px; }
-  .viento-leyenda-barra { height: 10px; border-radius: 4px; margin-top: 4px; }
-  .viento-leyenda-extremos { display: flex; justify-content: space-between; font-size: 9px; color: var(--tinta-2); margin-top: 2px; }
+  .viento-leyenda { display: flex; align-items: center; gap: 5px; font-size: 9px; color: var(--tinta-2); margin-top: 6px; white-space: nowrap; }
+  .viento-leyenda-barra { flex: 1; height: 8px; border-radius: 4px; }
 
   .luna-panel {
     position: absolute; top: 12px; right: 138px; z-index: 501;
@@ -1314,7 +1313,7 @@
       </div>
       <div class="viento-slider-panel tarjeta-plegable" id="vientoSliderPanel" hidden>
         <div class="tarjeta-cabecera">
-          <div class="titulo"><span class="t-largo" data-i18n="mapa.viento.titulo">VIENTO — próximas 24 h</span><span class="t-corto" data-i18n="mapa.viento.corto">💨 Viento</span></div>
+          <div class="titulo"><span class="t-largo" data-i18n="mapa.viento.titulo">VIENTO · 24 h</span><span class="t-corto" data-i18n="mapa.viento.corto">💨 Viento</span></div>
           <span class="tarjeta-mini" id="vientoMini" aria-hidden="true"></span>
           <button type="button" class="tarjeta-plegar" id="vientoPlegar" aria-expanded="true" aria-controls="vientoCuerpo" aria-label="Minimizar la leyenda" title="Minimizar" data-i18n-aria-label="comun.minimizar_leyenda" data-i18n-title="comun.minimizar">▾</button>
         </div>
@@ -1336,9 +1335,9 @@
              vemos") -- la barra de degradado se rellena por JS con la
              misma paleta (VIENTO_COLOR_SCALE) que usa la capa de verdad,
              nunca a mano en el CSS, para que no se puedan desincronizar. -->
-        <div class="viento-leyenda-titulo" data-i18n="mapa.viento.velocidad">Velocidad del viento</div>
-        <div class="viento-leyenda-barra" id="vientoLeyendaBarra"></div>
-        <div class="viento-leyenda-extremos"><span id="vientoLeyendaMin">0 km/h</span><span id="vientoLeyendaMax">54+ km/h</span></div>
+        <!-- Compacta (2026-11-08, Mikel: "que entre siempre en el cuadro, sin
+             scroll"): mínimo, barra y máximo en una sola línea. -->
+        <div class="viento-leyenda" title="Velocidad del viento" data-i18n-title="mapa.viento.velocidad"><span id="vientoLeyendaMin">0 km/h</span><div class="viento-leyenda-barra" id="vientoLeyendaBarra" role="img" aria-label="Velocidad del viento" data-i18n-aria-label="mapa.viento.velocidad"></div><span id="vientoLeyendaMax">54+ km/h</span></div>
         </div>
       </div>
       <div class="leyenda" id="leyendaPanel">
@@ -6695,11 +6694,9 @@ async function cargarCampoViento() {
     const numMarcas = Math.min(5, referencia.length);
     ticks.innerHTML = Array.from({ length: numMarcas }, (_, k) => {
       const idx = Math.round((k / (numMarcas - 1)) * (referencia.length - 1));
-      // La primera marca es "ahora"; las de mañana llevan una "m" pequeña
-      // delante para que se vea dónde cambia el día.
-      if (idx === 0) return `<span>${I18n.t("mapa.viento.ahora")}</span>`;
-      const manana = diasDesdeHoyViento(referencia[idx].hora) === 1;
-      return `<span>${manana ? `<small>${I18n.t("mapa.viento.manana_corto")}</small>` : ""}${horaVientoLocal(referencia[idx].hora)}</span>`;
+      // Solo horas (2026-11-08, Mikel): la primera es la de ahora y las
+      // siguientes, previsión; el día va en la hora elegida, debajo.
+      return `<span>${horaVientoLocal(referencia[idx].hora)}</span>`;
     }).join("");
     mostrarHoraViento(+slider.value);
   } catch (e) {

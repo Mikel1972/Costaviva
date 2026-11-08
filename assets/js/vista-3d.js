@@ -62,6 +62,9 @@ export const ZOOM_MAX_BATIMETRIA = 10;
 // mapa"): inclinación de 50° al abrir y 70° como máximo, para que el cielo
 // no se coma la parte de arriba; los créditos, plegados en un ⓘ.
 export const INCLINACION = 50;
+// Zoom de MapLibre en el que el color por profundidad empieza a apagarse y
+// en el que ya no se ve.
+export const ZOOM_RELIEVE_COLOR = [10.5, 12];
 export const INCLINACION_MAXIMA = 70;
 
 // Colores del fondo por profundidad (m); por encima de 0, transparente.
@@ -104,7 +107,11 @@ export function estilo3D(centro = null, conEmodnet = true) {
     // Donde el relieve da 0 m junto a la costa (sin batimetría fina), el agua
     // sale del color de poca profundidad, no de un azul oscuro a manchas.
     { id: "agua", type: "fill", source: "ofm", "source-layer": "water", paint: { "fill-color": "#93cdea" } },
-    { id: "profundidad", type: "color-relief", source: "dem", paint: { "color-relief-color": relieve } },
+    // De cerca se apaga (2026-11-08, Mikel: cuadros azules sobre el puerto
+    // de Santurtzi y otras zonas de la costa): la batimetría llega hasta
+    // zoom 10 (~150 m por píxel) y, ampliada, algunos móviles la pintan a
+    // cuadros que se salen del agua. De cerca queda el agua lisa del mapa.
+    { id: "profundidad", type: "color-relief", source: "dem", paint: { "color-relief-color": relieve, "color-relief-opacity": ["interpolate", ["linear"], ["zoom"], ZOOM_RELIEVE_COLOR[0], 1, ZOOM_RELIEVE_COLOR[1], 0] } },
     { id: "sombreado", type: "hillshade", source: "demSombra", paint: { "hillshade-exaggeration": 0.5, "hillshade-shadow-color": "#04101f" } },
   );
   return { version: 8, sources, layers, terrain: { source: "demTerreno", exaggeration: EXAGERACION } };
