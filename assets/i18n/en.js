@@ -32,7 +32,7 @@
   "mapa.rayos.cargando_satelite": "Loading satellite…",
   "mapa.rayos.enlace_aemet": "AEMET lightning map, all of Spain, last 12 h ↗",
   "mapa.rayos.fuentes": "Sources: Vaisala Xweather (live), EUMETSAT MTG Lightning Imager (CC BY 4.0) and AEMET.",
-  "mapa.viento.titulo": "WIND — next 24 h",
+  "mapa.viento.titulo": "WIND · 24 h",
   "mapa.viento.corto": "💨 Wind",
   "mapa.viento.ahora": "now",
   "mapa.viento.velocidad": "Wind speed",

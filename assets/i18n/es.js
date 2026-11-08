@@ -32,7 +32,7 @@
   "mapa.rayos.cargando_satelite": "Cargando el satélite…",
   "mapa.rayos.enlace_aemet": "Mapa de rayos de AEMET, toda España, últimas 12 h ↗",
   "mapa.rayos.fuentes": "Fuentes: Vaisala Xweather (al momento), EUMETSAT MTG Lightning Imager (CC BY 4.0) y AEMET.",
-  "mapa.viento.titulo": "VIENTO — próximas 24 h",
+  "mapa.viento.titulo": "VIENTO · 24 h",
   "mapa.viento.corto": "💨 Viento",
   "mapa.viento.ahora": "ahora",
   "mapa.viento.velocidad": "Velocidad del viento",
