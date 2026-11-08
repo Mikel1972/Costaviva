@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import {
   huecos, candidataDeVideo, cuerpoIssue, nombreBusqueda, RADIO_KM, paisSpot, consultaYoutube, canalDeFuera,
-  consultaOverpass, candidatasDeOsm, candidatasDeWindy, yaPropuestas, slugsHls,
+  consultaOverpass, candidatasDeOsm, candidatasDeWindy, yaPropuestas, slugsHls, categoriaValida,
 } from "../scripts/camaras/buscar-camaras.mjs";
 
 const spots = [
@@ -90,6 +90,7 @@ test("OpenStreetMap: consulta y candidatas con webcam=URL cerca del spot", () =>
     { type: "way", id: 2, center: { lat: 43.33, lon: -2.42 }, tags: { "contact:webcam": "https://ya.example/cam" } },
     { type: "node", id: 3, lat: 43.33, lon: -2.42, tags: { webcam: "no es url" } },
     { type: "node", id: 4, lat: 40.0, lon: -3.7, tags: { webcam: "https://lejos.example" } },
+    { type: "node", id: 5, lat: 43.33, lon: -2.42, tags: { webcam: "https://trafficnz.info/camera/90.jpg", name: "SH1 South Eastern Hwy" } },
   ];
   const c = candidatasDeOsm(els, [spots[2]], ya);
   assert.equal(c.length, 1);
@@ -105,7 +106,12 @@ test("Windy: solo activas y a menos del radio", () => {
     { webcamId: 10, title: "Ondarroa puerto", status: "active", location: { latitude: 43.32, longitude: -2.42, city: "Ondarroa" }, urls: { detail: "https://www.windy.com/webcams/10" } },
     { webcamId: 11, title: "Inactiva", status: "inactive", location: { latitude: 43.32, longitude: -2.42 } },
     { webcamId: 12, title: "Lejos", status: "active", location: { latitude: 43.0, longitude: -2.0 } },
+    { webcamId: 13, title: "Autovía", status: "active", categories: [{ id: "traffic" }], location: { latitude: 43.32, longitude: -2.42 } },
   ];
+  assert.equal(categoriaValida([{ id: "traffic" }]), false);
+  assert.equal(categoriaValida([{ id: "city" }, { id: "harbor" }]), true, "ciudad con puerto sí");
+  assert.equal(categoriaValida([]), true, "sin categorías, se queda");
+  assert.equal(categoriaValida([{ id: "landscape" }]), true);
   const c = candidatasDeWindy(ws, spots[2], { urls: new Set() });
   assert.deepEqual(c.map((x) => x.video_id), ["windy-10"]);
   assert.equal(c[0].fuente, "Windy");
