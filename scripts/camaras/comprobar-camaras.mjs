@@ -55,6 +55,7 @@ import { join } from "node:path";
 import { WEBCAMS } from "../../functions/webcam/[slug].js";
 import { decidirEstado, UMBRAL_DESVIACION, UMBRAL_FALLOS_SEGUIDOS } from "./decidir-estado.mjs";
 import { CAMARAS_EXTERNAS, claveSalud, resultadoComprobacionExterna, lecturaSaludExterna } from "../../assets/js/camaras-externas.js";
+import { ajustarConApis, consultarYoutube, consultarWindy } from "./apis-externas.mjs";
 
 const BASE_URL = "https://costaviva.org";
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
@@ -286,9 +287,19 @@ async function main() {
     console.log(`${lectura.sinSenal ? "✗" : "✓"} ${slug} (vídeo): ${lectura.motivo}`);
   }
 
+  // YouTube y Windy: su API dice si el directo sigue y si la cámara está
+  // activa y con imagen reciente (una llamada para todas; sin clave, nada).
+  const apis = {
+    youtube: await consultarYoutube(CAMARAS_EXTERNAS.map((c) => c.youtube_id).filter(Boolean), (process.env.YOUTUBE_API_KEY || "").trim()),
+    windy: await consultarWindy(
+      CAMARAS_EXTERNAS.map((c) => c.windy_id ?? String(c.url || "").match(/windy\.com\/webcams\/(\d+)/)?.[1]).filter(Boolean),
+      (process.env.WINDY_WEBCAMS_KEY || "").trim(),
+    ),
+  };
   for (const camara of CAMARAS_EXTERNAS) {
     const clave = claveSalud(camara);
-    const lectura = lecturaSaludExterna(clave, await comprobarExterna(camara), previo[clave], ahora, UMBRAL_FALLOS_SEGUIDOS);
+    const bruto = ajustarConApis(camara, await comprobarExterna(camara), apis);
+    const lectura = lecturaSaludExterna(clave, bruto, previo[clave], ahora, UMBRAL_FALLOS_SEGUIDOS);
     lecturas.push(lectura);
     const marca = lectura.motivo.startsWith("no_verificable") ? "?" : lectura.sinSenal ? "✗" : "✓";
     console.log(`${marca} ${clave} (externa, ${camara.modo}): ${lectura.motivo}`);

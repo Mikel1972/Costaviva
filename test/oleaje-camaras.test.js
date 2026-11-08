@@ -649,3 +649,28 @@ test("el robot de cámaras gana el choque de calibracion.json al subir", async (
   assert.match(wf, /git pull -q --rebase -X theirs origin main/);
   assert.match(wf, /git rebase --abort/);
 });
+
+// 2026-11-08: "mejora el robot de cámaras". Habilidad = correlación espuma-ola.
+import { habilidadCamara, ajustarCalibracion as ajustarHab, CORRELACION_MINIMA, MUESTRAS_HABILIDAD } from "../scripts/oleaje-camaras/calibracion.mjs";
+
+test("habilidad: una cámara cuya espuma no acompaña a la ola no sustituye al modelo", () => {
+  assert.equal(CORRELACION_MINIMA, 0.3);
+  assert.equal(MUESTRAS_HABILIDAD, 30);
+  const estable = { ruido: 0.1, pares: 10 };
+  const sinHabilidad = { n: 200, correlacion: 0.05, nEtiquetas: 0, pocosDatos: false };
+  const conHabilidad = { n: 200, correlacion: 0.6, nEtiquetas: 0, pocosDatos: false };
+  const d = camaraSustituyeModelo(estable, [sinHabilidad]);
+  assert.equal(d.sustituye, false);
+  assert.match(d.motivo, /no acompaña a la ola \(correlación 0\.05 < 0\.3\)/);
+  assert.equal(camaraSustituyeModelo(estable, [sinHabilidad, conHabilidad]).sustituye, true, "basta un encuadre bueno");
+  assert.equal(camaraSustituyeModelo(estable, [{ n: 10, correlacion: 0.01, pocosDatos: false }]).sustituye, true, "con pocas muestras aún no se juzga");
+  assert.deepEqual(habilidadCamara([{ n: 5 }]), { medida: false, mejor: null });
+});
+
+test("habilidad: ajustarCalibracion calcula la correlación espuma-altura", () => {
+  const dias = ["2026-10-01", "2026-10-02", "2026-10-03"];
+  const buena = Array.from({ length: 30 }, (_, i) => ({ espuma: 0.01 * (i + 1), altura: 0.2 * Math.sqrt(i + 1), peso: 1, dia: dias[i % 3] }));
+  assert.ok(ajustarHab(buena).correlacion > 0.95);
+  const mala = Array.from({ length: 30 }, (_, i) => ({ espuma: 0.01 * (i + 1), altura: 1 + (i % 2), peso: 1, dia: dias[i % 3] }));
+  assert.ok(Math.abs(ajustarHab(mala).correlacion) < 0.3);
+});

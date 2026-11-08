@@ -112,6 +112,21 @@ export function ajustarCalibracion(muestras) {
   } else {
     lnA = sumaPonderada(Y.map((y, i) => y - p * X[i]), W) / sw;
   }
+  // Habilidad (2026-11-08, "mejora el robot de cámaras"): correlación
+  // ponderada entre ln(espuma) y ln(altura). En Bakio, Getaria, Hondarribia
+  // (principal), Zumaia, Riverton y Aramoana salía ~0 o negativa con cientos
+  // de lecturas: su espuma no acompaña a la ola y aun así sustituían al modelo.
+  let correlacion = null;
+  {
+    const mx = sumaPonderada(X, W) / sw, my = sumaPonderada(Y, W) / sw;
+    let sxy = 0, sxx = 0, syy = 0;
+    for (let i = 0; i < m.length; i++) {
+      sxy += W[i] * (X[i] - mx) * (Y[i] - my);
+      sxx += W[i] * (X[i] - mx) ** 2;
+      syy += W[i] * (Y[i] - my) ** 2;
+    }
+    if (sxx > 0 && syy > 0) correlacion = +(sxy / Math.sqrt(sxx * syy)).toFixed(3);
+  }
   const res = Y.map((y, i) => y - (lnA + p * X[i]));
   const rms = Math.sqrt(sumaPonderada(res.map((r) => r * r), W) / sw);
   const dias = new Set(m.map((x) => x.dia).filter(Boolean)).size;
@@ -132,6 +147,7 @@ export function ajustarCalibracion(muestras) {
     hMax: +hMax.toFixed(2),
     errorRel: +Math.min(1, errorRel).toFixed(3),
     pocosDatos,
+    correlacion,
   };
 }
 
@@ -294,6 +310,18 @@ export const ETIQUETAS_CLAUDE_PARA_FIARSE = 8; // equivalen a las 5 de Mikel
 export const FRANJAS_CLAUDE_MINIMAS = 2;
 export const ERROR_MAXIMO_CLAUDE = 0.75;
 export const PARES_MINIMOS_RUIDO = 3; // con menos pares, el ruido no está medido
+// Una cámara solo sustituye al modelo si su espuma ACOMPAÑA a la ola: con al
+// menos MUESTRAS_HABILIDAD muestras en un encuadre, su correlación tiene que
+// llegar a CORRELACION_MINIMA en alguno. Si no, se sigue midiendo (por si
+// mejora con etiquetas o con otro encuadre), pero no se enseña.
+export const MUESTRAS_HABILIDAD = 30;
+export const CORRELACION_MINIMA = 0.3;
+export function habilidadCamara(calibraciones) {
+  const medidas = (calibraciones || []).filter((c) => c && c.n >= MUESTRAS_HABILIDAD && Number.isFinite(c.correlacion));
+  if (!medidas.length) return { medida: false, mejor: null };
+  const mejor = Math.max(...medidas.map((c) => c.correlacion));
+  return { medida: true, mejor, suficiente: mejor >= CORRELACION_MINIMA };
+}
 
 export function ruidoCamara(historial, camara) {
   const porEnc = {};
@@ -325,6 +353,10 @@ export function camaraSustituyeModelo(ruido, calibraciones) {
   const equivalentes = etiquetas + (etiquetasClaude * ETIQUETAS_PARA_FIARSE) / ETIQUETAS_CLAUDE_PARA_FIARSE;
   const errorClaude = Math.min(...cals.filter((c) => c.nEtiquetasClaude > 0).map((c) => (Number.isFinite(c.errorRel) ? c.errorRel : 1)), Infinity);
   const variada = cals.some((c) => c.pocosDatos === false);
+  const hab = habilidadCamara(cals);
+  if (hab.medida && !hab.suficiente) {
+    return { sustituye: false, motivo: `su espuma no acompaña a la ola (correlación ${hab.mejor.toFixed(2)} < ${CORRELACION_MINIMA})` };
+  }
   const ruidosa = !ruido || ruido.ruido === null || ruido.pares < PARES_MINIMOS_RUIDO || ruido.ruido > RUIDO_MAXIMO;
   if (!ruidosa) return { sustituye: true, motivo: `estable (±${Math.round(ruido.ruido * 100)} % entre lecturas cercanas)` };
   if (etiquetas >= ETIQUETAS_PARA_FIARSE) return { sustituye: true, motivo: `${etiquetas} etiquetas` };
