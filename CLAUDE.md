@@ -1290,6 +1290,16 @@ Mikel y cierra el de la semana anterior; no toca la app. Lo marcado se añade
 a mano a `camaras-externas.js` como `enlace` (paywall). Tests:
 `test/buscar-camaras.test.js`.
 
+**Mejoras del 2026-11-08** (Mikel: "no puede ser que no encuentre
+ninguna"): las cámaras HLS de `index.html` (`WEBCAMS_HLS`) cuentan como
+cámara (antes Hondarribia, Deba, Orio... salían como huecos); YouTube busca
+con `regionCode`/idioma del país del spot, 25 resultados y "en directo/ao
+vivo/live", y descarta canales de otro país (`channels.list`); fuentes nuevas
+sin IA: OpenStreetMap (`webcam=*` y `contact:webcam=*` a menos de 8 km,
+Overpass, sin clave) y Windy Webcams si existe el secret `WINDY_WEBCAMS_KEY`
+(gratis). Lo ya propuesto en Issues anteriores va a un desplegable y no
+cuenta como nuevo.
+
 ## Cámaras de Nueva Zelanda: embebidas con interruptor por dueño (2026-10-11)
 
 `assets/js/camaras-nz.js` lista webcams de terceros con mar a la vista para
