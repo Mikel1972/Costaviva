@@ -2,7 +2,7 @@
 // cómo son las rocas"). Lógica pura de assets/js/capa-satelite.js.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { satelitePorDefecto, CLAVE_PREFERENCIA, URL_PNOA, ATRIBUCION_PNOA, RECTANGULOS_ESPANA, dentroDeEspana, zoomAlCambiar, ZOOM_MAX_SATELITE, ZOOM_MAX_NORMAL } from "../assets/js/capa-satelite.js";
+import { esMarGris, ZOOM_MAR_GRIS, esSinFoto, quitarSinFoto, COLOR_MAR_SATELITE, satelitePorDefecto, CLAVE_PREFERENCIA, URL_PNOA, ATRIBUCION_PNOA, RECTANGULOS_ESPANA, dentroDeEspana, zoomAlCambiar, ZOOM_MAX_SATELITE, ZOOM_MAX_NORMAL } from "../assets/js/capa-satelite.js";
 
 test("PNOA del IGN: WMTS en Google Mercator, JPEG, con su atribución CC BY 4.0", () => {
   assert.match(URL_PNOA, /^https:\/\/www\.ign\.es\/wmts\/pnoa-ma\?/);
@@ -37,4 +37,26 @@ test("por defecto encendida (Mikel: «que salga así por defecto»); si el usuar
   assert.equal(satelitePorDefecto("si"), true);
   assert.equal(satelitePorDefecto("no"), false, "la quitó");
   assert.equal(CLAVE_PREFERENCIA, "costaviva.fondo_satelite");
+});
+
+test("el mar sin foto del IGN (morado liso) se vuelve transparente; el mar de la foto no", () => {
+  assert.ok(esSinFoto(32, 26, 38));
+  assert.ok(esSinFoto(35, 24, 41), "con artefactos del JPEG");
+  assert.ok(!esSinFoto(47, 66, 96), "mar real frente a Bakio");
+  assert.ok(!esSinFoto(20, 20, 20), "roca oscura");
+  const rgba = new Uint8ClampedArray([32, 26, 38, 255, 47, 66, 96, 255]);
+  assert.equal(quitarSinFoto(rgba), 1);
+  assert.deepEqual([...rgba], [32, 26, 38, 0, 47, 66, 96, 255]);
+  assert.equal(COLOR_MAR_SATELITE, "#2F4260");
+});
+
+test("de lejos también se quita el mar gris de Sentinel-2 (cortado en bloques); de cerca no", () => {
+  assert.equal(ZOOM_MAR_GRIS, 13);
+  assert.ok(esMarGris(56, 64, 60), "mar a zoom 12");
+  assert.ok(!esMarGris(72, 96, 56), "monte");
+  assert.ok(!esMarGris(47, 66, 96), "mar de la ortofoto (azulado)");
+  assert.ok(!esMarGris(150, 150, 150), "urbano claro");
+  const mar = () => new Uint8ClampedArray([56, 64, 60, 255]);
+  const lejos = mar(); quitarSinFoto(lejos, 12); assert.equal(lejos[3], 0);
+  const cerca = mar(); quitarSinFoto(cerca, 17); assert.equal(cerca[3], 255);
 });

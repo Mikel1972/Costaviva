@@ -57,6 +57,25 @@
     return estilo;
   }
 
+  // Color del mar del mapa base, cambiable en vivo (2026-11-08): con el
+  // satélite puesto, el mar donde el IGN no tiene foto se pinta del mismo azul
+  // oscuro que el mar de la foto (capa-satelite.js), para que no se note el
+  // corte. null = el color normal.
+  var capaVector = null;
+  var colorMarPedido = null;
+  function ponerColorMar(color) {
+    colorMarPedido = color;
+    var m = capaVector && capaVector.getMaplibreMap && capaVector.getMaplibreMap();
+    if (!m) return;
+    var aplicar = function () {
+      (m.getStyle().layers || []).forEach(function (capa) {
+        if (capa.id === "water" && capa.type === "fill") m.setPaintProperty(capa.id, "fill-color", color || COLORES.mar);
+      });
+    };
+    if (m.isStyleLoaded()) aplicar();
+    else m.once("load", aplicar);
+  }
+
   function hayWebGL() {
     try {
       var c = document.createElement("canvas");
@@ -96,7 +115,8 @@
           return r.json();
         })
         .then(function (estilo) {
-          L.maplibreGL({ style: retocarEstilo(estilo), pane: "mapaBase", attributionControl: false, interactive: false }).addTo(map);
+          capaVector = L.maplibreGL({ style: retocarEstilo(estilo), pane: "mapaBase", attributionControl: false, interactive: false }).addTo(map);
+          if (colorMarPedido) ponerColorMar(colorMarPedido);
           map.attributionControl.addAttribution(ATRIBUCION);
         })
         .catch(function (e) {
@@ -126,6 +146,6 @@
 
   raiz.MapaBase = {
     URL_ESTILO: URL_ESTILO, ATRIBUCION: ATRIBUCION, ATRIBUCION_RELIEVE: ATRIBUCION_RELIEVE,
-    ZOOM_MAX_RELIEVE: ZOOM_MAX_RELIEVE, COLORES: COLORES, retocarEstilo: retocarEstilo, montar: montar,
+    ZOOM_MAX_RELIEVE: ZOOM_MAX_RELIEVE, COLORES: COLORES, retocarEstilo: retocarEstilo, montar: montar, ponerColorMar: ponerColorMar,
   };
 })(typeof window !== "undefined" ? window : globalThis);
