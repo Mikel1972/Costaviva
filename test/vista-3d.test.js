@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { ZOOM_MAX_BATIMETRIA, estilo3D, vistaInicial, URL_DEM, COLORES_PROFUNDIDAD, EXAGERACION, INCLINACION } from "../assets/js/vista-3d.js";
+import { ZONAS_EMODNET, zonaEmodnet, fuenteRelieve, URL_EMODNET, INCLINACION_MINIMA, ZOOM_MAX_BATIMETRIA, estilo3D, vistaInicial, URL_DEM, COLORES_PROFUNDIDAD, EXAGERACION, INCLINACION } from "../assets/js/vista-3d.js";
 
 test("estilo 3D: relieve con batimetría, mar por profundidad, ortofoto en España y agua encima de la foto", () => {
   const e = estilo3D();
@@ -35,4 +35,29 @@ test("index.html: botón 3D con su módulo, sin on*= (CSP)", () => {
   assert.match(html, /import \* as Vista3D from "\/assets\/js\/vista-3d\.js"/);
   assert.match(html, /id="boton3d"/);
   assert.match(html, /registrarEvento\("ver_vista_3d"\)/);
+});
+
+test("EMODnet: dentro de sus zonas el relieve fino propio; fuera, AWS", () => {
+  assert.match(URL_EMODNET, /^https:\/\/imncbmizxkorotpeisic\.supabase\.co\/storage\/v1\/object\/public\/fuentes-gratuitas\/relieve-emodnet\/\{z\}\/\{x\}\/\{y\}\.png$/);
+  assert.ok(zonaEmodnet(43.4, -2.8), "Bizkaia");
+  assert.ok(zonaEmodnet(28.1, -15.4), "Canarias");
+  assert.equal(zonaEmodnet(-36.8, 174.7), null, "Auckland");
+  const es = fuenteRelieve(43.4, -2.8);
+  assert.deepEqual(es.tiles, [URL_EMODNET]);
+  assert.match(es.attribution, /EMODnet/);
+  assert.deepEqual(es.bounds, [-10.5, 35.0, 5.0, 46.5]);
+  assert.deepEqual(fuenteRelieve(-36.8, 174.7).tiles, [URL_DEM]);
+  const e = estilo3D({ lat: 43.4, lng: -2.8 });
+  assert.deepEqual(e.sources.dem.tiles, [URL_EMODNET]);
+  assert.deepEqual(e.sources.demTerreno.tiles, [URL_EMODNET]);
+  assert.deepEqual(e.sources.demSombra.tiles, [URL_DEM], "sombreado de tierra: AWS al detalle");
+  // Mismas zonas en el script que prepara las teselas.
+  const py = readFileSync(new URL("../scripts/relieve/emodnet_teselas.py", import.meta.url), "utf8");
+  for (const [n, [s, o, no, e]] of Object.entries(ZONAS_EMODNET)) assert.ok(py.includes(`"${n}": [${s.toFixed(1)}, ${o.toFixed(1)}, ${no.toFixed(1)}, ${e.toFixed(1)}]`), n);
+});
+
+test("nunca plana: inclinación mínima (Mikel: «cuando lo inclino, pasa a 2D»)", () => {
+  assert.equal(INCLINACION_MINIMA, 25);
+  const js = readFileSync(new URL("../assets/js/vista-3d.js", import.meta.url), "utf8");
+  assert.match(js, /minPitch: INCLINACION_MINIMA/);
 });

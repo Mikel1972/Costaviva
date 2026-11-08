@@ -1,0 +1,45 @@
+name: Relieve EMODnet para la vista 3D
+
+# scripts/relieve/emodnet_teselas.py (2026-11-08, Mikel: "haz lo de EMODnet
+# para el fondo"). Sin IA. A mano, una vez (o cuando EMODnet publique un DTM
+# nuevo): descarga la batimetría y el relieve de EMODnet (DTM, ~115 m, CC BY
+# 4.0) de las zonas de España y Portugal, hace teselas terrarium de zoom 5 a
+# 10 y las sube al bucket público fuentes-gratuitas/relieve-emodnet/, de
+# donde las lee la vista 3D (assets/js/vista-3d.js).
+
+on:
+  workflow_dispatch:
+    inputs:
+      zonas:
+        description: "Zonas (separadas por espacios): iberia canarias madeira azores. Vacío = todas"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: relieve-emodnet
+  cancel-in-progress: false
+
+jobs:
+  teselas:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Dependencias
+        run: pip install numpy tifffile pillow
+      - name: Teselas
+        run: python3 scripts/relieve/emodnet_teselas.py /tmp/relieve ${{ inputs.zonas }}
+      - name: Subir a Supabase Storage
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SUBIR_CACHE_SEGUNDOS: "2592000"
+        run: node scripts/fuentes/subir-storage.mjs /tmp/relieve relieve-emodnet

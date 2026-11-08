@@ -28,6 +28,34 @@ export const ATRIBUCION_OFM =
   '<a href="https://openfreemap.org" target="_blank" rel="noopener">OpenFreeMap</a> © OpenMapTiles, ' +
   '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>';
 
+// Relieve fino de EMODnet (DTM, ~115 m, CC BY 4.0) en teselas propias, que
+// prepara relieve-emodnet.yml (scripts/relieve/emodnet_teselas.py, mismas
+// zonas). Dentro de una zona se usa ese; fuera, el de AWS.
+export const URL_EMODNET = "https://imncbmizxkorotpeisic.supabase.co/storage/v1/object/public/fuentes-gratuitas/relieve-emodnet/{z}/{x}/{y}.png";
+export const ATRIBUCION_EMODNET =
+  'Relieve y fondo: <a href="https://emodnet.ec.europa.eu/en/bathymetry" target="_blank" rel="noopener">EMODnet Bathymetry Consortium (DTM)</a>, ' +
+  '<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>';
+// [sur, oeste, norte, este]
+export const ZONAS_EMODNET = {
+  iberia: [35.0, -10.5, 46.5, 5.0],
+  canarias: [27.4, -18.5, 29.6, -13.2],
+  madeira: [32.3, -17.4, 33.2, -16.2],
+  azores: [36.8, -31.5, 39.8, -24.8],
+};
+export function zonaEmodnet(lat, lon) {
+  return Object.values(ZONAS_EMODNET).find(([s, o, n, e]) => lat >= s && lat <= n && lon >= o && lon <= e) || null;
+}
+// Fuente del relieve (fondo y forma 3D) para una vista que empieza en lat/lon.
+export function fuenteRelieve(lat, lon) {
+  const z = zonaEmodnet(lat, lon);
+  return z
+    ? { tiles: [URL_EMODNET], attribution: ATRIBUCION_EMODNET, bounds: [z[1], z[0], z[3], z[2]] }
+    : { tiles: [URL_DEM], attribution: ATRIBUCION_DEM };
+}
+
+// Inclinación mínima (Mikel: "cuando lo inclino, pasa a 2D"): nunca plana.
+export const INCLINACION_MINIMA = 25;
+
 export const EXAGERACION = 1.5;
 export const ZOOM_MAX_BATIMETRIA = 10;
 export const INCLINACION = 60;
@@ -38,7 +66,7 @@ export const COLORES_PROFUNDIDAD = [
   [-100, "#2a7bb8"], [-50, "#3f97cf"], [-20, "#63b3e0"], [-1, "#93cdea"],
 ];
 
-export function estilo3D() {
+export function estilo3D(centro = null) {
   const relieve = ["interpolate", ["linear"], ["elevation"]];
   for (const [m, c] of COLORES_PROFUNDIDAD) relieve.push(m, c);
   relieve.push(0, "rgba(0,0,0,0)");
@@ -46,9 +74,10 @@ export function estilo3D() {
   // mar vale 0 (SRTM). Por eso el fondo (color y forma 3D) sale de las de
   // zoom ≤ ZOOM_MAX_BATIMETRIA, ampliadas, y solo el sombreado de tierra de
   // las de detalle.
+  const rel = centro ? fuenteRelieve(centro.lat, centro.lng) : { tiles: [URL_DEM], attribution: ATRIBUCION_DEM };
   const sources = {
-    dem: { type: "raster-dem", tiles: [URL_DEM], encoding: "terrarium", tileSize: 256, maxzoom: ZOOM_MAX_BATIMETRIA, attribution: ATRIBUCION_DEM },
-    demTerreno: { type: "raster-dem", tiles: [URL_DEM], encoding: "terrarium", tileSize: 256, maxzoom: ZOOM_MAX_BATIMETRIA },
+    dem: { type: "raster-dem", encoding: "terrarium", tileSize: 256, maxzoom: ZOOM_MAX_BATIMETRIA, ...rel },
+    demTerreno: { type: "raster-dem", encoding: "terrarium", tileSize: 256, maxzoom: ZOOM_MAX_BATIMETRIA, ...rel, attribution: undefined },
     demSombra: { type: "raster-dem", tiles: [URL_DEM], encoding: "terrarium", tileSize: 256, maxzoom: 15 },
     ofm: { type: "vector", url: URL_TESELAS_OFM, attribution: ATRIBUCION_OFM },
   };
@@ -95,7 +124,10 @@ export function abrir(mapLeaflet, textos = {}) {
   capa.append(cont, cerrar, ayuda);
   document.body.appendChild(capa);
   const v = vistaInicial(mapLeaflet.getCenter(), mapLeaflet.getZoom());
-  const m = new gl.Map({ container: cont, style: estilo3D(), ...v, maxPitch: 85, attributionControl: { compact: true } });
+  const m = new gl.Map({
+    container: cont, style: estilo3D(mapLeaflet.getCenter()), ...v,
+    minPitch: INCLINACION_MINIMA, maxPitch: 85, attributionControl: { compact: true },
+  });
   m.addControl(new gl.NavigationControl({ visualizePitch: true }), "top-left");
   const fuera = () => { try { m.remove(); } catch {} capa.remove(); document.removeEventListener("keydown", esc); };
   const esc = (e) => { if (e.key === "Escape") fuera(); };

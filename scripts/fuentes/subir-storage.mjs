@@ -11,6 +11,9 @@
 // Uso: node subir-storage.mjs <directorio_local> [prefijo_remoto]
 //   sube cada .json de <directorio_local> (recursivo) a
 //   fuentes-gratuitas/<prefijo_remoto>/<ruta relativa>.
+// También .png (2026-11-08, teselas de relieve de EMODnet para la vista 3D):
+// con SUBIR_CACHE_SEGUNDOS se cambia el cache-control (las teselas no cambian)
+// y van 8 a la vez.
 
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
@@ -23,7 +26,7 @@ function listar(dir) {
   for (const n of readdirSync(dir)) {
     const p = join(dir, n);
     if (statSync(p).isDirectory()) salida.push(...listar(p));
-    else if (n.endsWith(".json")) salida.push(p);
+    else if (n.endsWith(".json") || n.endsWith(".png")) salida.push(p);
   }
   return salida;
 }
@@ -35,10 +38,10 @@ async function subir(rutaRemota, cuerpo, clave) {
       headers: {
         Authorization: `Bearer ${clave}`,
         apikey: clave,
-        "content-type": "application/json",
+        "content-type": rutaRemota.endsWith(".png") ? "image/png" : "application/json",
         "x-upsert": "true",
         // El edge de Cloudflare y el CDN de Supabase pueden guardarlo 15 min.
-        "cache-control": "max-age=900",
+        "cache-control": `max-age=${Number(process.env.SUBIR_CACHE_SEGUNDOS) || 900}`,
       },
       body: cuerpo,
     });
@@ -62,11 +65,16 @@ if (!clave) {
 }
 const ficheros = listar(dir);
 let bytes = 0;
-for (const f of ficheros) {
-  const rel = relative(dir, f).split("\\").join("/");
-  const remota = prefijo ? `${prefijo.replace(/\/+$/, "")}/${rel}` : rel;
-  const cuerpo = readFileSync(f);
-  bytes += cuerpo.length;
-  await subir(remota, cuerpo, clave);
+const cola = [...ficheros];
+async function trabajador() {
+  while (cola.length) {
+    const f = cola.shift();
+    const rel = relative(dir, f).split("\\").join("/");
+    const remota = prefijo ? `${prefijo.replace(/\/+$/, "")}/${rel}` : rel;
+    const cuerpo = readFileSync(f);
+    bytes += cuerpo.length;
+    await subir(remota, cuerpo, clave);
+  }
 }
+await Promise.all(Array.from({ length: 8 }, trabajador));
 console.log(`Subidos ${ficheros.length} ficheros (${(bytes / 1e6).toFixed(1)} MB) a ${BUCKET}/${prefijo}`);

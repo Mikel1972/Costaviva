@@ -1313,8 +1313,12 @@ vista aparte. Relieve gratis de las Terrain Tiles de AWS Open Data
 (terrarium; incluyen batimetría solo hasta zoom 10, por eso el fondo y la
 forma 3D salen de zoom ≤ 10 ampliado y el sombreado de tierra del detalle),
 mar coloreado por profundidad (`color-relief`), ortofoto PNOA en España y el
-agua de OpenFreeMap encima de la foto. Siguiente paso posible: batimetría
-fina de EMODnet (115 m) convertida a teselas propias. Tests:
+agua de OpenFreeMap encima de la foto. **EMODnet (2026-11-08):** dentro de
+`ZONAS_EMODNET` (Iberia, Canarias, Madeira, Azores) el fondo y la forma 3D
+salen de teselas propias del DTM de EMODnet (~115 m, CC BY 4.0) que prepara
+`relieve-emodnet.yml` (a mano, `scripts/relieve/emodnet_teselas.py`) en
+`fuentes-gratuitas/relieve-emodnet/`; fuera, AWS. Inclinación mínima 25°
+(Mikel: «cuando lo inclino, pasa a 2D»). Tests:
 `test/vista-3d.test.js`.
 
 ## Buscador de cámaras nuevas (2026-10-31)
