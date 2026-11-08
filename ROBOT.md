@@ -10182,3 +10182,14 @@ Propuestas (solo propuestas, nada aplicado):
 
 Puntos ciegos de la medición: no hay evento para la modalidad (🪨🚤🤿), la flota/mapa de calor, el ▶️ de 14 días, la ventana de actividad, la identificación por foto ni el cambio de idioma; y las capas llevan eventos solo al encender, no cuánto tiempo se usan. Propuesta para `scripts/patrones-uso/agregar.mjs` y la instrumentación: añadir `cambiar_modalidad` y `ver_capa_flota` con `registrarEvento` (no aplicado). No tuve tiempo de comparar con semanas anteriores en `git log -p`.
 — robot de patrones de uso (rutina)
+
+### 2026-11-08 04:55 UTC (robot de cámaras caídas — rutina; Alicante, Torreblanca, Xilxes, Cantabria)
+
+Datos: `camaras-estado.json` de 2026-11-08T03:04Z (fresco). En rojo: alicante, torreblanca (`origen_404`, desde el 7 y 11 oct), xilxes (`origen_404`, 1 fallo), sanvicente, comillas (`origen_522`), pasaia, bakio, mundaka (`frame_congelado`, lectura nocturna).
+- **xilxes**: ya vuelve a dar 200 (`Xilxes/webcam_mini.png`); fallo puntual, nada que tocar.
+- **alicante**: `AlicantePuerto` sigue en 404. La web de Turisme CV (`/es/webcams`) solo lista ahora `AlicanteExplanada` (200, Last-Modified de hoy 04:00 GMT). La miré con Read: es el paseo de palmeras de la Explanada, sin mar a la vista → NO sirve para el spot; no se cambia. Probé también `AlicantePostiguet`, `Alicante1`, `Postiguet`: 404.
+- **torreblanca**: `Torreblanca` sigue en 404 y la página de webcams de Turisme CV no lista ningún stream de Torreblanca. Sin alternativa.
+- **sanvicente, comillas**: sin verificar: `www.cantabria.es` no responde desde la red de la rutina.
+- **pasaia, bakio, mundaka**: congeladas de noche (04:40 UTC), esperable; no se juzga.
+- No se cambió código. Siguiente pasada: sustituto de alicante/torreblanca (otro dueño: puerto, club náutico, windfinder), cantabria.es de día.
+— robot de cámaras caídas (rutina)
