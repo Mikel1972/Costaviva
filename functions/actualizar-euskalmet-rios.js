@@ -101,12 +101,13 @@ const OBJETIVOS = [
 ];
 
 const EUSKALMET_BASE = "https://api.euskadi.eus";
-// Cuenta real asociada a la clave privada actual — no es datos@costaviva.org
-// (ese alta nunca llegó a completarse: Cloudflare Email Routing descarta
-// cualquier correo que no pase SPF/DKIM, y opendata.euskadi.eus no los
-// tiene bien configurados). Si se renueva la clave con otra cuenta, hay
-// que actualizar esto también.
-const EUSKALMET_EMAIL = "cuenta-euskalmet@costaviva.invalid";
+// Email de la cuenta asociada a la clave privada actual: va en el JWT. No es
+// datos@costaviva.org (ese alta nunca llegó a completarse: Cloudflare Email
+// Routing descarta cualquier correo que no pase SPF/DKIM, y
+// opendata.euskadi.eus no los tiene bien configurados). Desde 2026-11-05 se
+// lee del secret EUSKALMET_EMAIL de Cloudflare Pages: es una dirección
+// personal y el repo es público. Si se renueva la clave con otra cuenta, hay
+// que cambiar también ese secret.
 const EUSKALMET_ISS = "Costaviva";
 
 const SUPABASE_URL = "https://imncbmizxkorotpeisic.supabase.co";
@@ -136,10 +137,10 @@ function pemADer(pem) {
 // firmar de más cuesta CPU real (RSA-sign con Web Crypto agotó el límite
 // de recursos de un Worker al firmar una vez por estación durante las
 // pruebas de esta integración).
-async function firmarJwtEuskalmet(privateKeyPem) {
+async function firmarJwtEuskalmet(privateKeyPem, email) {
   const header = { alg: "RS256", typ: "JWT" };
   const ahoraS = Math.floor(Date.now() / 1000);
-  const payload = { aud: "met01.apikey", iss: EUSKALMET_ISS, exp: ahoraS + 300, iat: ahoraS, version: "1.0.0", email: EUSKALMET_EMAIL };
+  const payload = { aud: "met01.apikey", iss: EUSKALMET_ISS, exp: ahoraS + 300, iat: ahoraS, version: "1.0.0", email };
   const entrada = `${base64UrlDesdeTexto(JSON.stringify(header))}.${base64UrlDesdeTexto(JSON.stringify(payload))}`;
   const clave = await crypto.subtle.importKey("pkcs8", pemADer(privateKeyPem), { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" }, false, ["sign"]);
   const firma = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", clave, new TextEncoder().encode(entrada));
@@ -155,9 +156,24 @@ async function euskalmetGet(endpoint, jwt) {
 // real: con la hora local de Madrid la hora "actual" devolvía 404 por
 // estar en el futuro respecto al reloj de la API) — nada de convertir a
 // Europe/Madrid aquí, a diferencia del resto de fechas de este repo.
-async function ultimaLecturaValida(stationId, sensorId, measureType, measureId, jwt) {
+// Orden de horas (2026-10-20): primero la última hora COMPLETA, luego la
+// anterior y, solo si queda margen, la hora en curso. Antes se empezaba por
+// la hora en curso, que a menudo aún no tiene lecturas: cada lectura gastaba
+// 2-3 peticiones y, con 37 lecturas, se pasaba de las 50 subpeticiones de
+// un Worker. El runtime corta entonces la invocación (error 1101 de
+// Cloudflare, 4 de cada 15 días en rojo). La tarea va una vez al día: una
+// hora completa es además la lluvia "de la última hora" de verdad.
+const ORDEN_HORAS = [1, 2, 0];
+// Subpeticiones a Euskalmet como mucho (50 del Worker menos la de Supabase
+// y margen). Sin presupuesto, esa lectura queda sin dato en vez de romper
+// todas las demás.
+export const MAX_PETICIONES_EUSKALMET = 46;
+
+async function ultimaLecturaValida(stationId, sensorId, measureType, measureId, jwt, presupuesto) {
   const ahora = new Date();
-  for (let horasAtras = 0; horasAtras <= 2; horasAtras++) {
+  for (const horasAtras of ORDEN_HORAS) {
+    if (presupuesto.quedan <= 0) return null;
+    presupuesto.quedan--;
     const fecha = new Date(ahora.getTime() - horasAtras * 3600 * 1000);
     const y = fecha.getUTCFullYear();
     const m = String(fecha.getUTCMonth() + 1).padStart(2, "0");
@@ -185,12 +201,12 @@ async function ultimaLecturaValida(stationId, sensorId, measureType, measureId, 
 // siquiera llegaba al try/catch propio porque el runtime corta la
 // invocación entera). Este caché, con clave estación+sensor+medida,
 // deja el total real en ~37 — de sobra por debajo del límite.
-function cacheLecturas(jwt) {
+export function cacheLecturas(jwt, presupuesto = { quedan: MAX_PETICIONES_EUSKALMET }) {
   const cache = new Map();
   return (stationId, sensorId, measureType, measureId) => {
     const clave = `${stationId}|${sensorId}|${measureType}|${measureId}`;
     if (!cache.has(clave)) {
-      cache.set(clave, ultimaLecturaValida(stationId, sensorId, measureType, measureId, jwt).catch(() => null));
+      cache.set(clave, ultimaLecturaValida(stationId, sensorId, measureType, measureId, jwt, presupuesto).catch(() => null));
     }
     return cache.get(clave);
   };
@@ -215,7 +231,16 @@ export async function onRequestPost(context) {
     return new Response(JSON.stringify({ error: "Falta EUSKALMET_API_KEY" }), { status: 500, headers: { "content-type": "application/json" } });
   }
 
-  const jwt = await firmarJwtEuskalmet(privateKeyPem);
+  const euskalmetEmail = context.env.EUSKALMET_EMAIL;
+  if (!euskalmetEmail) {
+    console.error("Falta el secret EUSKALMET_EMAIL en Cloudflare Pages");
+    return new Response(JSON.stringify({ ok: false, error: "Falta el secret EUSKALMET_EMAIL en Cloudflare Pages" }), {
+      status: 503,
+      headers: { "content-type": "application/json" },
+    });
+  }
+
+  const jwt = await firmarJwtEuskalmet(privateKeyPem, euskalmetEmail);
   const ahora = new Date().toISOString();
   const leer = cacheLecturas(jwt);
 

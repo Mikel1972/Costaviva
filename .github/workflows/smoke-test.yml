@@ -129,10 +129,20 @@ jobs:
 
       - name: /prevision y /webcam/<slug> responden
         run: |
-          for ruta in "prevision" "webcam/mundaka"; do
-            code=$(curl -sS -o /dev/null -w "%{http_code}" --max-time 15 "$PRODUCCION_URL/$ruta")
-            if [ "$code" != "200" ]; then echo "::error::$ruta devolvió $code"; exit 1; fi
+          code=$(curl -sS -o /dev/null -w "%{http_code}" --max-time 15 "$PRODUCCION_URL/prevision")
+          if [ "$code" != "200" ]; then echo "::error::prevision devolvió $code"; exit 1; fi
+          # /webcam/<slug>: basta con que responda una de varias cámaras. Si
+          # el proveedor de una cámara se cae (2026-10-23: Mundaka, 404 en
+          # kostasystem.com), la función devuelve 502 "todas las fuentes
+          # fallaron" y eso es la cámara, no nuestro código: lo vigila
+          # camaras-salud.yml. Aquí se comprueba que la ruta funciona.
+          ok=""
+          for slug in mundaka bakio getxo lekeitio; do
+            code=$(curl -sS -o /dev/null -w "%{http_code}" --max-time 15 "$PRODUCCION_URL/webcam/$slug")
+            echo "webcam/$slug: $code"
+            if [ "$code" = "200" ]; then ok=1; break; fi
           done
+          if [ -z "$ok" ]; then echo "::error::ninguna /webcam/<slug> devolvió 200"; exit 1; fi
 
       - name: Proxy de Open-Meteo /meteo responde y no es un proxy abierto
         # Coordenada fija (Mundaka) para que la respuesta salga de la caché del

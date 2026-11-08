@@ -24,6 +24,16 @@
   "madeira"
  ],
  "fuentes": {
+  "xunta_pescadegalicia_lonxas": {
+   "titulo": "Principais indicadores de vendas nas lonxas (primeira venda por día, lonxa e especie)",
+   "url": "https://www.pescadegalicia.gal/informe-notasventa/agregation",
+   "editor": "Xunta de Galicia, Consellería do Mar (pescadegalicia.gal)",
+   "tipo": "oficial",
+   "licencia": "Aviso legal de pescadegalicia.gal (https://www.pescadegalicia.gal/gl/aviso-legal): reutilización comercial y no comercial permitida citando la fuente y sin desnaturalizar los datos",
+   "cita": "Fonte: Xunta de Galicia – pescadegalicia.gal",
+   "fecha_consulta": "2026-10-22",
+   "nota": "Lo baja cada día scripts/lonjas/galicia.mjs (lonjas-galicia.yml) a la tabla lonja_ventas. Donde se muestre algo derivado (p. ej. 'probablemente <especie>' en una zona de faena), va la cita tal cual."
+  },
   "pv_tallas_cupos": {
    "titulo": "Gobierno Vasco — Especies autorizadas, sus tallas mínimas y cupos máximos de capturas (pesca marítima recreativa)",
    "url": "https://www.euskadi.eus/web01-a2arraku/es/contenidos/informacion/especies_tallas_cupos/es_def/index.shtml",

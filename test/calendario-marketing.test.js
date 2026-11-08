@@ -101,6 +101,9 @@ test("redes pedidas y errores de Meta", () => {
   assert.equal(tipoDeError({ error: { code: 200, type: "OAuthException", message: "(#200) Requires pages_manage_posts permission" } }), "permiso");
   assert.equal(tipoDeError({ error: { code: 10 } }), "permiso");
   assert.equal(tipoDeError({ error: { code: 1 } }), "otro");
+  // #342: "Fatal" de /media_publish con un contenedor caducado no es el token.
+  assert.equal(tipoDeError({ error: { message: "Fatal", type: "OAuthException", code: -1 } }), "otro");
+  assert.equal(tipoDeError({ error: { type: "OAuthException", code: 102 } }), "token");
   assert.equal(tipoDeError({}), null);
 });
 
@@ -172,7 +175,8 @@ test("NZ: 'mañana' es la de NZ y la clave no choca con la de España", () => {
   assert.equal(C.piezaAPreparar({ formato: "reel", ahora: new Date("2026-10-16T06:20:00Z"), mercado: "nz" }).fecha, "2026-10-17");
   // Miércoles en NZ no toca post; y en NZ no hay piezas de funciones.
   assert.equal(C.piezaAPreparar({ formato: "post", ahora: new Date("2026-10-13T06:40:00Z"), mercado: "nz" }), null);
-  assert.throws(() => C.piezaAPreparar({ formato: "post", mercado: "nz", tipoForzado: "diario" }), /NZ/);
+  // Con fecha fija (2026-11-07: sin "ahora" dependía del día en que corre la prueba).
+  assert.throws(() => C.piezaAPreparar({ formato: "post", ahora: new Date("2026-10-12T06:40:00Z"), mercado: "nz", tipoForzado: "diario" }), /NZ/);
   // Un mercado desconocido es España.
   assert.equal(C.piezaAPreparar({ formato: "post", ahora: new Date("2026-10-12T17:30:00Z"), mercado: "xx" }).mercado, "es");
 });
@@ -357,4 +361,75 @@ test("NZ: pg_cron lanza las de NZ con mercado=nz y nunca puede publicar", () => 
 test("NZ: el reel nunca usa un clip con personas identificables", () => {
   const fuente = readFileSync(new URL("../scripts/marketing/generar-reel-instagram.mjs", import.meta.url), "utf8");
   assert.match(fuente, /mercado === "nz" && candidato\?\.ficha\?\.personaIdentificable !== false \? null/);
+});
+
+// Reel de peces (2026-10-18): el reel de los sábados de España.
+test("reel de peces: rota spots y clips, y solo usa vídeos de peces con licencia", async () => {
+  const { clipsDePeces, siguienteDe, textoCaudal } = await import("../scripts/marketing/reel-peces.mjs");
+  const clips = clipsDePeces();
+  assert.ok(clips.includes("pexels-jureles-azules-roca.mp4"));
+  assert.ok(!clips.includes("pexels-peces-arrecife.mp4"), "retirado el 2026-11-01 (parece arrecife tropical)");
+  for (const c of clips) assert.ok(!/pescador|cana|carrete/.test(c), `${c} no es de peces`);
+  assert.deepEqual(siguienteDe(["a", "b", "c"], "b"), ["c", "a", "b"]);
+  assert.deepEqual(siguienteDe(["a", "b", "c"], undefined), ["a", "b", "c"]);
+  assert.deepEqual(textoCaudal({ caudal: 10.82, umbralBajo: 438, umbralAlto: 885 }), { val: "10,8 m³/s", sub: "caudal bajo" });
+  assert.equal(textoCaudal({ caudal: 900, umbralBajo: 438, umbralAlto: 885 }).sub, "crecido");
+  assert.equal(textoCaudal(null), null);
+  const texto = readFileSync(new URL("../scripts/marketing/plantillas/reel-peces.html", import.meta.url), "utf8");
+  assert.ok(!/primera app/i.test(texto), "nada de 'la primera app' (Ley General de Publicidad)");
+  assert.match(texto, /clorofila/);
+  assert.match(texto, /Desde costa/); assert.match(texto, /En barco/); assert.match(texto, /Pesca submarina/);
+});
+
+test("España en vídeo: el robot de posts lanza el reel de peces si mañana toca post", () => {
+  const post = leer(".github/workflows/robot-marketing-instagram.yml");
+  assert.match(post, /actions: write/);
+  assert.match(post, /gh workflow run robot-reel-instagram\.yml --ref "\$\{GITHUB_REF_NAME\}" -f fecha="\$FECHA" -f tipo=peces -f mercado=es/);
+  // Solo España y sin tipo forzado; NZ y los tipos a mano siguen con el post.
+  assert.match(post, /if \[ "\$MERCADO" != "es" \] \|\| \[ -n "\$TIPO_PIEZA" \]; then exit 0; fi/);
+  // El respaldo de una hora después no repite el reel (caso real: dos reels
+  // para el 30/10). Con tipo forzado el robot de reels no mira el estado.
+  assert.match(post, /estado\?\.generadas\?\.\[`\$\{f\}-reel`\] \? "HECHO" : f/);
+  assert.match(post, /if \[ "\$FECHA" = "HECHO" \]; then[\s\S]*?lanzado=true/);
+  for (const paso of ["Instalar dependencias del script", "Instalar Chromium para Playwright", "Generar imagen y texto del post"]) {
+    const i = post.indexOf(`- name: ${paso}`);
+    assert.ok(i > 0, paso);
+    assert.match(post.slice(i, i + 200), /if: steps\.video\.outputs\.lanzado != 'true'/, paso);
+  }
+  // Martes, jueves y viernes tienen post en España; un reel forzado ese día
+  // no choca con el del sábado (clave por fecha).
+  for (const f of ["2026-11-03", "2026-11-05", "2026-11-06"]) {
+    assert.ok(C.huecoDe(f, "post", "es"), f);
+    const p = C.piezaAPreparar({ formato: "reel", fechaForzada: f, tipoForzado: "peces", mercado: "es" });
+    assert.equal(p.tipo, "peces");
+    assert.equal(p.clave, `${f}-reel`);
+  }
+});
+
+test("Instagram: borrador caducado o en proceso antes de publicar (#342)", async () => {
+  const { contenedorListo } = await import("../scripts/marketing/publicar-pieza.mjs");
+  const pieza = { publicUrl: "https://costaviva.org/assets/marketing/x.mp4", captionInstagram: "Texto", esReel: true };
+  const crear = async () => "nuevo";
+  const estados = (m) => async (id) => m[id];
+  assert.equal(await contenedorListo("viejo", pieza, { estadoDe: estados({ viejo: "FINISHED" }), crear }), "viejo");
+  assert.equal(await contenedorListo("viejo", pieza, { estadoDe: estados({ viejo: "EXPIRED", nuevo: "FINISHED" }), crear }), "nuevo");
+  assert.equal(await contenedorListo("viejo", pieza, { estadoDe: estados({ viejo: "NO_EXISTE", nuevo: "FINISHED" }), crear }), "nuevo");
+  assert.equal(await contenedorListo(undefined, pieza, { estadoDe: estados({ nuevo: "FINISHED" }), crear }), "nuevo");
+  await assert.rejects(contenedorListo("viejo", {}, { estadoDe: estados({ viejo: "EXPIRED" }), crear }), /no trae la pieza/);
+  await assert.rejects(contenedorListo("viejo", pieza, { estadoDe: estados({ viejo: "ERROR", nuevo: "ERROR" }), crear }), /borrador nuevo/);
+});
+
+test("Respaldo retrasado hasta la madrugada: sin fecha no prepara la de pasado mañana (#404)", () => {
+  // Miércoles 4/11, 23:54 UTC = jueves 00:54 en Madrid: antes salía el viernes.
+  assert.equal(C.piezaAPreparar({ formato: "post", ahora: new Date("2026-11-04T23:54:00Z") }), null);
+  assert.equal(C.piezaAPreparar({ formato: "reel", ahora: new Date("2026-11-05T06:00:00Z") }), null);
+  // La víspera por la tarde sí.
+  assert.equal(C.piezaAPreparar({ formato: "post", ahora: new Date("2026-11-04T17:30:00Z") }).fecha, "2026-11-05");
+  // Con fecha forzada, a cualquier hora.
+  assert.equal(C.piezaAPreparar({ formato: "post", fechaForzada: "2026-11-06", ahora: new Date("2026-11-04T23:54:00Z") }).fecha, "2026-11-06");
+  // NZ: 05:40 UTC = tarde en Auckland, vale; 13:00 UTC = madrugada allí, no.
+  assert.ok(C.piezaAPreparar({ formato: "post", mercado: "nz", ahora: new Date("2026-11-09T05:40:00Z") }));
+  assert.equal(C.piezaAPreparar({ formato: "post", mercado: "nz", ahora: new Date("2026-11-09T13:00:00Z") }), null);
+  const yml = readFileSync(".github/workflows/robot-marketing-instagram.yml", "utf8");
+  assert.match(yml, /horaLocal\(MERCADOS\.es\.zona\) < HORA_MINIMA_VISPERA/);
 });

@@ -136,9 +136,9 @@ test("motivos del índice: en la unidad del usuario; lo que se guarda (textoEs),
   }));
   const r = VA.calcularVentana(especie, datos.reglas_por_defecto, horas, { lat: 43.43, lon: -2.81, modalidad: "costa" })[30];
   const viento = r.razones.find((x) => x.clave === "va.viento.fuerte");
-  assert.equal(viento.texto, "viento fuerte (24 nudos)");
-  assert.equal(viento.textoEs, "viento fuerte (45 km/h)", "lo que se guarda, en km/h");
-  assert.deepEqual(viento.vars, { v: 45 }, "vars en métrico, sin unidad");
+  assert.equal(viento.texto, "viento fuerte (24 nudos WNW)");
+  assert.equal(viento.textoEs, "viento fuerte (45 km/h WNW)", "lo que se guarda, en km/h");
+  assert.deepEqual(viento.vars, { v: 45, dir: "WNW" }, "vars en métrico, sin unidad; dirección en rumbo");
   const ola = r.razones.find((x) => x.factor === "oleaje");
   assert.equal(ola.textoEs, "mar de 1-1,5 m");
 });

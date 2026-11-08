@@ -1,3 +1,4 @@
+-- 2026-11-05: emails personales retirados del repo público; la migración ya está aplicada en producción y este texto no se vuelve a ejecutar. En una base nueva, el administrador y los accesos permanentes se dan de alta a mano.
 -- Quitar el grandfathering a los usuarios REALES que ya tienen la prueba
 -- vencida, para que reciban el aviso de fin de periodo (pedido explicito del
 -- usuario, 2026-09-25: "hay un usuario que debiera recibirlo").

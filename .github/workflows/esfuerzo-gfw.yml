@@ -1,0 +1,40 @@
+name: Actividad pesquera (Global Fishing Watch)
+
+# scripts/gfw/esfuerzo-gfw.mjs (2026-11-02). Sin IA. Una vez al día: horas de
+# pesca aparente de GFW (4Wings) en celdas de 0,1°, 7 días que acaban hace 4,
+# para la península y NZ. Solo para la capa GRATIS de Costaviva (condición de
+# GFW). Necesita el secret GFW_API_TOKEN y la tabla gfw_esfuerzo.
+# A mano con "seco" solo enseña totales, sin guardar. Tabla aplicada el
+# 2026-11-02 (con el sí de Mikel): desde entonces guarda cada día.
+
+on:
+  schedule:
+    - cron: "37 5 * * *"
+  workflow_dispatch:
+    inputs:
+      seco:
+        description: "true = solo totales, sin guardar"
+        default: "false"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: esfuerzo-gfw
+  cancel-in-progress: false
+
+jobs:
+  descargar:
+    if: ${{ vars.AUTOMATION_PAUSED != 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Descargar y guardar
+        env:
+          GFW_API_TOKEN: ${{ secrets.GFW_API_TOKEN }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node scripts/gfw/esfuerzo-gfw.mjs ${{ github.event.inputs.seco == 'true' && '--seco' || '' }}

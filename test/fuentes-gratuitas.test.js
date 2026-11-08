@@ -27,7 +27,7 @@ import { puntoAOpenMeteo, pedirCopernicusMar, claveCaja } from "../functions/_li
 import { vaciarMemoriaInstantaneas, leerInstantanea } from "../functions/_lib/instantaneas.js";
 import { pedirDatosMeteo, fuenteDeVariable, firmaFuentes, ATRIBUCIONES_HTML } from "../functions/_lib/fuentes.js";
 import { onRequestGet } from "../functions/meteo/[api].js";
-import { puntosInstantanea } from "../scripts/fuentes/instantanea-met.mjs";
+import { puntosInstantanea, pedirPunto } from "../scripts/fuentes/instantanea-met.mjs";
 import { parsearBoya, estadisticas, cruzar } from "../scripts/fuentes/comparar-boyas.mjs";
 
 const MET = JSON.parse(readFileSync("test/fixtures/metno-locationforecast.json", "utf8"));
@@ -375,4 +375,53 @@ test("comparativa: solo marca de calidad 1 y mismas horas para todas las fuentes
   const e = estadisticas([[350, 10], [10, 350]], true); // circular: ±20°, no ±340°
   assert.equal(e.mae, 20);
   assert.equal(e.sesgo, 0);
+});
+
+// 2026-10-20: Open-Meteo gratis con 429 dejaba sin datos las ubicaciones
+// personales. Respaldo automático a las fuentes gratuitas, solo con 429/5xx
+// y una coordenada; si el respaldo falla, el error original.
+test("respaldo de Open-Meteo: 429 de una coordenada prueba las gratuitas; 400 o varias coordenadas, no", async () => {
+  const { pedirDatosMeteo } = await import("../functions/_lib/fuentes.js");
+  const pedidas = [];
+  const fetchImpl = async (url) => {
+    pedidas.push(String(url));
+    if (String(url).includes("open-meteo.com")) return new Response("{}", { status: Number(new URL(url).searchParams.get("latitude").startsWith("1") ? 400 : 429) });
+    throw new Error("sin red en la prueba");
+  };
+  const q = (lat) => `latitude=${lat}&longitude=-3.02&timezone=Europe%2FMadrid&forecast_days=1&hourly=windspeed_10m`;
+  await assert.rejects(pedirDatosMeteo("forecast", q("43.39"), { env: {}, fetchImpl }), (e) => e.status === 429);
+  assert.ok(pedidas.some((u) => !u.includes("open-meteo.com")), "intentó el respaldo");
+  pedidas.length = 0;
+  await assert.rejects(pedirDatosMeteo("forecast", q("13.39"), { env: {}, fetchImpl }), (e) => e.status === 400);
+  assert.ok(pedidas.every((u) => u.includes("open-meteo.com")), "un 400 no usa respaldo");
+  pedidas.length = 0;
+  await assert.rejects(pedirDatosMeteo("forecast", q("43.39,43.5").replace("longitude=-3.02", "longitude=-3.02,-3.1"), { env: {}, fetchImpl }), (e) => e.status === 429);
+  assert.ok(pedidas.every((u) => u.includes("open-meteo.com")), "varias coordenadas de atmósfera no usan respaldo");
+  pedidas.length = 0;
+  await assert.rejects(pedirDatosMeteo("marine", "latitude=43.39,43.5&longitude=-3.02,-3.1&timezone=Europe%2FMadrid&forecast_days=1&hourly=sea_level_height_msl", { env: {}, fetchImpl }), (e) => e.status === 429);
+  assert.ok(pedidas.some((u) => !u.includes("open-meteo.com")), "el mar con varias coordenadas sí prueba Copernicus");
+});
+
+// 2026-11-04: MET Norway cortó conexiones ("fetch failed") y mandó cuerpos
+// truncados; el robot no los reintentaba y salió en rojo.
+test("instantánea MET: reintenta cortes de red y JSON truncado", async () => {
+  const original = globalThis.fetch;
+  const texto = JSON.stringify(MET);
+  let llamadas = 0;
+  globalThis.fetch = async () => {
+    llamadas++;
+    if (llamadas === 1) throw new TypeError("fetch failed");
+    if (llamadas === 2) return new Response(texto.slice(0, 500), { status: 200, headers: { "content-type": "application/json" } });
+    return new Response(texto, { status: 200, headers: { "content-type": "application/json" } });
+  };
+  try {
+    const stats = { descargados: 0, no_modificados: 0, reutilizados: 0, fallos: 0 };
+    const p = puntosInstantanea()[0];
+    const r = await pedirPunto(p, new Map(), "costaviva-test", AHORA_MET, stats);
+    assert.equal(llamadas, 3);
+    assert.equal(stats.descargados, 1);
+    assert.ok(r.serie);
+  } finally {
+    globalThis.fetch = original;
+  }
 });

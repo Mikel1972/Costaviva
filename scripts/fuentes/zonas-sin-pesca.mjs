@@ -17,7 +17,8 @@
 //     (2026-10-12: 52 zonas de Portugal continental, Madeira y Azores,
 //     sacadas del Diário da República y de los diarios oficiales de las
 //     regiones autónomas; mismos campos que España. Criterios y lo que falta
-//     (Arrábida, Porto Santo...) en datos/pt/zonas-sin-pesca-NOTAS.md. Textos
+//     (Porto Santo...) en datos/pt/zonas-sin-pesca-NOTAS.md; Arrábida, desde
+//     2026-11-04, de la capa oficial del ICNF. Textos
 //     legales sin derechos de autor: art. 7 del Código do Direito de Autor).
 //
 // Cada zona lleva solo { nombre, tipo }: "reserva" y "hpa" = no se pesca nada;
@@ -117,7 +118,7 @@ export function leerTraduccionesReglas() {
 
 // Portugal: mismo formato que España.
 export const zonasPT = (dr) => zonasES(dr, "pt",
-  "Zonas sem pesca: elaboração própria a partir dos textos legais (Diário da República, JORAM, JORAA)",
+  "Zonas sem pesca: elaboração própria a partir dos textos legais (Diário da República, JORAM, JORAA) e da cartografia do ICNF (Arrábida)",
   "datos/pt/zonas-sin-pesca-dr.geojson");
 
 function main() {

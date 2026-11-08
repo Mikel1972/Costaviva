@@ -1,6 +1,6 @@
 {
- "generado_en": "2026-10-12T12:25:33.343Z",
- "semana": "2026-W42",
+ "generado_en": "2026-11-02T12:51:43.691Z",
+ "semana": "2026-W45",
  "retadores": [
   {
    "fichero": "calamar-luna-llena.json",
@@ -74,16 +74,16 @@
      }
     ]
    },
-   "n_casos": 2,
+   "n_casos": 3,
    "metricas": {
     "campeon": {
-     "logloss": 0.5177,
-     "brier": 0.1645,
+     "logloss": 0.4714,
+     "brier": 0.1428,
      "auc": null
     },
     "retador": {
-     "logloss": 0.5177,
-     "brier": 0.1645,
+     "logloss": 0.4714,
+     "brier": 0.1428,
      "auc": null
     },
     "mejora_logloss": {

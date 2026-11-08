@@ -1,0 +1,16 @@
+{
+  "usadas": [
+    "northland",
+    "auckland-hauraki-gulf",
+    "coromandel",
+    "bay-of-plenty",
+    "gisborne-hawkes-bay",
+    "waikato-west-coast",
+    "taranaki"
+  ],
+  "ciclo": 1,
+  "ultimaZona": "taranaki",
+  "ultimaRegion": "nz_central",
+  "ultimoSpot": "nz-opunake",
+  "fecha": "2026-11-05T05:40:40.850Z"
+}

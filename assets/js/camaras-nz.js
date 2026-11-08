@@ -90,7 +90,12 @@ export const NZ_ANALISIS_AUTORIZADO = {
   castlepoint_lighthouse: false,
   greater_wellington: false,
   nelson_cc: false,
-  sails_ashore: false,
+  // 2026-11-07: permiso escrito de Sails Ashore («Happy for you to use our
+  // web cam images»), a la petición que pedía embeber y analizar.
+  sails_ashore: true,
+  // 2026-10-31, del buscador de cámaras: directo de YouTube, solo enlace
+  // (paywall) y nunca analizado (condiciones de YouTube).
+  youtube_motella: false,
 };
 
 export const NZ_EMBED_AUTORIZADO = {
@@ -110,10 +115,19 @@ export const NZ_EMBED_AUTORIZADO = {
   // en enlace hasta añadirles la imagen o el iframe que publiquen).
   hauraki_coromandel: false,
   raglan_sport_fishing: false,
-  castlepoint_lighthouse: false,
+  // 2026-11-07: permiso escrito de Castlepoint Lighthouse (Peter Munn,
+  // Harvest Electronics: «Sure no problem - just add acknowledgement») a la
+  // petición de mostrar su directo: el reproductor de YouTube que inserta su
+  // web, con el crédito. No se analiza (YouTube).
+  castlepoint_lighthouse: true,
   greater_wellington: false,
   nelson_cc: false,
-  sails_ashore: false,
+  // 2026-11-07: permiso escrito de Sails Ashore («Happy for you to use our
+  // web cam images»), a la petición que pedía embeber y analizar.
+  sails_ashore: true,
+  // 2026-10-31, del buscador de cámaras: directo de YouTube, solo enlace
+  // (paywall) y nunca analizado (condiciones de YouTube).
+  youtube_motella: false,
 };
 
 // Cómo se embebe cada dueño, si se puede: "imagen_oficial" (la URL de la
@@ -124,6 +138,8 @@ const EMBEBIBLE = {
   corolive: "iframe_oficial",
   napier_cc: "imagen_oficial",
   southloop: "imagen_oficial",
+  sails_ashore: "imagen_oficial",
+  castlepoint_lighthouse: "iframe_oficial",
 };
 
 // Modo de embebido de un dueño, o null si va como enlace.
@@ -135,7 +151,10 @@ const modos = (clave) => (embedNZ(clave) ? [embedNZ(clave), "enlace"] : ["enlace
 
 // Orígenes de los iframes que la CSP tiene que admitir en frame-src
 // (functions/_middleware.js): solo los de dueños con el interruptor puesto.
-export const ORIGENES_IFRAME_NZ = embedNZ("corolive") === "iframe_oficial" ? ["https://corolive.nz"] : [];
+export const ORIGENES_IFRAME_NZ = [
+  ...(embedNZ("corolive") === "iframe_oficial" ? ["https://corolive.nz"] : []),
+  ...(embedNZ("castlepoint_lighthouse") === "iframe_oficial" ? ["https://www.youtube.com"] : []),
+];
 
 export const CONDICIONES_NZ = {
   earth_sciences_camera: {
@@ -293,8 +312,9 @@ export const CONDICIONES_NZ = {
     fuentes: ["https://castlepointlighthouse.com/"],
     cita:
       "«The live video feed will only run between 7am and 6pm due to low battery on site [...] For comments on this " +
-      "website or the live video please email [...]». No publica condiciones de uso. El id de YouTube puede cambiar: se " +
-      "enlaza su web.",
+      "website or the live video please email [...]». Permiso escrito por email a datos@costaviva.org el 2026-11-07 " +
+      "(Peter Munn, Harvest Electronics): «Sure no problem - just add acknowledgement». Embebido con el mismo " +
+      "reproductor que usa su web (YouTube live_stream de su canal, el id del vídeo cambia) y su crédito.",
     contacto: "castlepointlighthouse@harvest.com",
   },
   greater_wellington: {
@@ -336,8 +356,22 @@ export const CONDICIONES_NZ = {
     analisis_permitido: NZ_ANALISIS_AUTORIZADO.sails_ashore,
     licencia: null,
     fuentes: ["https://sailsashore.co.nz/garden-web-cam/"],
-    cita: "«Sails Ashore Garden & Webcam». No publica condiciones de uso. Solo enlace.",
+    cita:
+      "«Sails Ashore Garden & Webcam». Permiso escrito por email a datos@costaviva.org el 2026-11-07: «Happy for you " +
+      "to use our web cam images, Please send me a link to the page it's on». Embebida con su imagen pública " +
+      "(snapshot1.jpg) y su nombre; se le envía el enlace a la página.",
     contacto: "tait@sailsashore.co.nz",
+  },
+  youtube_motella: {
+    dueno_corto: "Motella (YouTube)",
+    dueno: "Canal de YouTube Motella (Teal Motor Lodge, Gisborne)",
+    tipo_dueno: "privado",
+    modos_permitidos: ["enlace"],
+    analisis_permitido: NZ_ANALISIS_AUTORIZADO.youtube_motella,
+    licencia: null,
+    fuentes: ["https://www.youtube.com/watch?v=TBWhP73uY6s", "https://developers.google.com/youtube/terms/developer-policies"],
+    cita: "Directo público de YouTube. Solo enlace: Costaviva tiene paywall y YouTube no permite cobrar por ver un reproductor insertado.",
+    contacto: null,
   },
 };
 
@@ -449,7 +483,11 @@ const LISTA = [
   cam("raglan-bar", "nz-raglan", ["Raglan, barra", "Raglan bar"], "raglan_sport_fishing", "https://www.raglansportfishing.co.nz/live-cams/raglan-bar-cam", true,
     "2026-10-12: directo de YouTube activo, fotograma de las 07:37 NZDT con niebla: se ven el mar y las olas rompiendo en la barra", { km: 3 }),
   cam("castlepoint-lighthouse", "nz-castlepoint", ["Castlepoint, faro", "Castlepoint lighthouse"], "castlepoint_lighthouse", "https://castlepointlighthouse.com/", false,
-    "2026-10-12: directo de YouTube activo (de 7 a 18 h), fotograma de las 07:38 NZDT con el faro, el mar, la laguna y Castle Rock", { km: 0.5 }),
+    "2026-10-12: directo de YouTube activo (de 7 a 18 h), fotograma de las 07:38 NZDT con el faro, el mar, la laguna y Castle Rock", {
+      km: 0.5,
+      // 2026-11-08: el reproductor que inserta castlepointlighthouse.com.
+      embed: { iframe: "https://www.youtube.com/embed/live_stream?channel=UCGjGRtsWqkviebAvQlcC5Cg", refresco_min: null },
+    }),
   cam("gw-beacon-hill", "nz-wellington-harbour", ["Beacon Hill: entrada del puerto de Wellington", "Beacon Hill: Wellington Harbour entrance"], "greater_wellington", "https://www.gw.govt.nz/environment/harbours-and-coasts/wellington-harbour-entrance-webcams-and-radio/", true,
     "2026-10-12: las 4 imágenes de las 07:39 NZDT (Last-Modified de hoy): bahía, Breaker Bay con olas rompiendo, la entrada y la costa sur", { km: 1.5 }),
   cam("nelson-harbour", "nz-nelson", ["Puerto de Nelson (norte y sur)", "Nelson Harbour (north and south)"], "nelson_cc", "https://harbours.nelson.govt.nz/cams/", false,
@@ -459,7 +497,15 @@ const LISTA = [
   cam("southloop-oban", "nz-halfmoon-bay", ["Oban, South Seas Hotel", "Oban, South Seas Hotel"], "southloop", "https://weathercam.southloop.net.nz/camstart.php", false,
     "2026-10-12: imagen de las 07:00 NZDT (Last-Modified de hoy), Halfmoon Bay con el muelle y los barcos fondeados", { km: 0.2 }),
   cam("sails-ashore", "nz-halfmoon-bay", ["Halfmoon Bay desde Sails Ashore", "Halfmoon Bay from Sails Ashore"], "sails_ashore", "https://sailsashore.co.nz/garden-web-cam/", false,
-    "2026-10-12: imagen de las 07:37 NZDT (Last-Modified de hoy), Halfmoon Bay, el muelle de Oban y el mar abierto", { km: 0.6 }),
+    "2026-10-12: imagen de las 07:37 NZDT (Last-Modified de hoy), Halfmoon Bay, el muelle de Oban y el mar abierto", {
+      km: 0.6,
+      // 2026-11-07: la imagen que publica su página (la enlaza por http; el
+      // mismo host la sirve por https, Last-Modified al minuto).
+      embed: { imagen: "https://sailsashore.co.nz/image/cam/snapshot1.jpg", refresco_min: null },
+    }),
+  // Del buscador de cámaras (Issue #357, aprobada por Mikel el 2026-10-31).
+  cam("motella-gisborne", "nz-gisborne", ["Gisborne, Teal Motor Lodge", "Gisborne, Teal Motor Lodge"], "youtube_motella", "https://www.youtube.com/watch?v=TBWhP73uY6s", false,
+    "2026-10-31: directo de YouTube «Gisborne Live Webcam | NZ Weather» encontrado por buscar-camaras.yml", { visto_en: "youtube.com (buscar-camaras)" }),
 ];
 
 export const CAMARAS_NZ = LISTA;

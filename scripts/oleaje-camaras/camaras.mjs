@@ -209,12 +209,13 @@ export const NO_SIRVEN_NZ = {
   // comun); para medirlas haría falta además su referencia y su ROI.
   "nz-hauraki-whangamata-beach": "solo ENLACE sin permiso escrito de Destination Hauraki Coromandel (petición en cola); no se analiza",
   "nz-raglan-bar": "solo ENLACE: directo de YouTube del Raglan Sport Fishing Club, sin permiso escrito; no se analiza",
-  "nz-castlepoint-lighthouse": "solo ENLACE: directo de YouTube, sin permiso escrito; además no ve rompiente (fotograma del 2026-10-12)",
+  "nz-castlepoint-lighthouse": "directo de YouTube embebido con permiso escrito (2026-11-07), nunca analizado (condiciones de YouTube); además no ve rompiente (fotograma del 2026-10-12)",
   "nz-gw-beacon-hill": "solo ENLACE sin permiso escrito de Greater Wellington (petición en cola); no se analiza",
   "nz-nelson-harbour": "solo ENLACE sin permiso escrito de Nelson City Council; además puerto en calma, sin rompiente",
   "nz-southloop-ocean-beach": "solo ENLACE (repaso del 2026-10-12): sin referencia ni ROI; costa rocosa sin rompiente libre",
   "nz-southloop-oban": "solo ENLACE (repaso del 2026-10-12): bahía en calma con el muelle, sin rompiente",
-  "nz-sails-ashore": "solo ENLACE sin permiso escrito de Sails Ashore; bahía lejana y en calma, sin rompiente",
+  "nz-sails-ashore": "análisis permitido por escrito (2026-11-07), pero la bahía queda lejos y en calma, sin rompiente: no da ola",
+  "nz-motella-gisborne": "directo de YouTube: solo ENLACE y nunca analizado (condiciones de YouTube)",
   // DESCARTADAS en el repaso de día del 2026-10-12 (07:30-07:50 NZDT): no
   // están en camaras-nz.js (clave nz-descartada-<id>). No se rodea ningún
   // bloqueo; si cambian, se revisan otra vez.

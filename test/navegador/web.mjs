@@ -35,6 +35,9 @@ function supabase(route, url) {
   const json = (body) => route.fulfill({ status: 200, contentType: "application/json", headers: { "access-control-allow-origin": "*", "access-control-allow-headers": "*" }, body: JSON.stringify(body) });
   if (route.request().method() === "OPTIONS") return json({});
   if (pathname.startsWith("/auth/v1/user")) return json(USUARIO);
+  // es_admin() decide si se enseña el icono del panel (2026-11-05): el
+  // usuario de prueba no es admin.
+  if (pathname === "/rest/v1/rpc/es_admin") return json(false);
   if (pathname.startsWith("/rest/v1/rpc/")) return json(null);
   if (pathname.startsWith("/rest/v1/")) return json([]);
   return json({});

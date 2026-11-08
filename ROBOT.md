@@ -1226,8 +1226,8 @@ memoria):**
   dicen las notas de prensa, **no comprobado con una descarga real del
   dataset**. Antes de integrar nada haría falta localizar el `handle`
   exacto en RiuNet (buscar "Digipesca" / "lonjas" en el buscador del
-  repositorio, o pedir el enlace directo al contacto del proyecto,
-  `contacto-retirado@costaviva.invalid`) y bajar un fichero de verdad para
+  repositorio, o pedir el enlace directo al contacto del proyecto de datos,
+  cuyo email aparece en su ficha) y bajar un fichero de verdad para
   confirmar formato (¿CSV/Excel?), licencia y que efectivamente no pide
   login.
 
@@ -7003,6 +7003,64 @@ Datos: `datos-robots/experiencia/ultima.json`, generado el 2026-10-12 00:41 UTC 
 - Propuesta para `scripts/experiencia/sondear.mjs` (no aplicada): guardar también `nivel` de caudal calculado y el HTML crudo de una fila del SAICH para verificar unidades; pedir `GET /prevision` dos veces separadas 1 h para ver cambios de tendencia de presión; marcar la hora local en el resumen de cámaras; que el caso de `/identificar-captura` use POST sin token y espere 401.
 - No se revisó la parte de Nueva Zelanda (`?region=nz`), que el sondeo no pide; proponer añadirla.
 
+### 2026-10-19 07:35 UTC — robot de experiencia de usuario (rutina)
+
+Datos: `datos-robots/experiencia/ultima.json`, generado 2026-10-18 23:28 UTC (8 h, fresco).
+
+**Qué miré**
+- 105 spots de `todos_compactos` (marea, coeficiente, presión, bloque actual) y los 12 de `muestra_completa`; boyas frente al spot más cercano; luna en 3 zonas; 8 casos límite; diario (A/B, limpieza).
+
+**Todo bien**
+- Diario: lo guardado coincide con lo enviado (0 diferencias), B no ve ni borra la salida de A (`false`/`false`), y se borró (204, ya no existe).
+- Sin nulls en ola, periodo, viento, agua, lluvia, nubes, corriente, dirección ni presión en los 105 spots; `spots_con_error` vacío; `avisos` vacío.
+- Presión 1012-1022 hPa, agua 13-25 °C (Mediterráneo y Canarias 24-25 °C; Cantábrico 13-19 °C), sin rangos de marea absurdos (máx. 1,16 m en el Cantábrico). Luna 57-58 % creciente, coherente. Canarias en su hora (00:00 frente a 03:00): correcto.
+- Casos límite con error claro (400 con mensaje, 404 webcam inexistente, 400 en `/meteo/marine`). Boyas del Cantábrico y Canarias frente a su spot: coherentes (±0,3 m).
+
+**Hallazgos**
+1. *Coeficiente de marea sin sentido en el Mediterráneo (el principal).* 23 spots salen con coeficiente 120 y otros con 110-112 (Dénia, rango de marea 0,02 m; Gandia 0,03 m; Valencia 0,12 m → 111; Cartagena y Águilas 0,00 m → 66 y 62; Cabo de Palos 0,00 m → 90). Se muestra en el panel como "coef. N" junto a la altura (`index.html` ~L5198, siempre que `coeficiente != null`). Causa: `coeficientePorSpot()` (`functions/prevision.js` ~L289) normaliza el rango de hoy contra el mínimo y máximo de la propia ventana del spot; cuando todo el rango es ruido de centímetros (seiche/presión), igualmente da 20-120. La guarda `rangoMax - rangoMin < 0.01` solo salta con variación casi cero; con 2-16 cm de rango pasa y se pinta "vivas" donde no hay mareas. Un usuario de Dénia ve "coef. 120" con 0,0 m de marea. Propuesta (no aplicada): devolver `coeficiente: null` si `rangoMax < ~0,3 m` (o reutilizar `UMBRAL_RUIDO_MAREA_M`). Además, en esos spots `proximas` puede traer dos pleamares seguidas (Valencia: pleamar 07:00 y pleamar 15:00) y la tendencia contradice la próxima (26 spots: "bajando" con la altura en 0,00 y la siguiente es pleamar); es el mismo ruido, ya conocido, pero hoy se enseña como dato.
+2. *Coeficiente 20 idéntico en 61 spots atlánticos.* En el Cantábrico, Galicia, Golfo de Cádiz y Canarias salen todos con 20 (el suelo de la escala). Es coherente con el diseño (un día después del cuarto creciente, neaps) y no lo doy por bug, pero conviene vigilarlo: si mañana siguen todos en 20 sería que hoy es el borde de la ventana y no la marea real.
+3. *Agua del modelo más fría que la boya en Galicia/Asturias.* A Coruña spot 14,3 °C frente a Langosteira 11,3 °C (la boya, aún más fría) y Llanes 13,0 °C frente a Gijón 15,7 °C (50 km); Santander 18,6. Puede ser afloramiento real y no lo afirmo; lo dejo anotado para comparar con otra pasada (no es concluyente con una sola foto).
+4. *Cámaras:* Mundaka `frame_plano` y Bakio `frame_congelado` a las 23:00 UTC (01:00 en España) marcan `sinSenal: true` de noche: la misma sospecha de falso rojo nocturno que ya se anotó el 2026-10-12; sigue sin resolverse.
+5. *Menor, repetido:* `/identificar-captura` por GET responde 404 con HTML (solo exporta `onRequestPost`, `functions/identificar-captura.js` L272). Inofensivo; no gasta IA.
+
+**Pendiente para la próxima pasada**
+- Comprobar si el coeficiente de los spots mediterráneos sigue pegado a 110-120 días seguidos (confirmaría hallazgo 1) y si los 61 atlánticos salen del 20.
+- Propuesta para `scripts/experiencia/sondear.mjs` (no aplicada): guardar también el histórico del día anterior para comparar coeficientes/tendencias, e incluir `?region=nz` (sigue sin pedirse).
+
+### 2026-10-26 07:30 UTC — robot de experiencia de usuario (rutina)
+
+Dato del sondeo: `generado_en` 2026-10-25 23:26 UTC (~8 h, fresco).
+
+**Qué miré**
+- `ultima.json` entero por secciones: avisos, prevision, luna, casos_limite, diario.
+- Código: `functions/_lib/open-meteo.js` (`claveOpenMeteo`, `urlOpenMeteo`), `functions/prevision.js` (caché), `scripts/experiencia/sondear.mjs` (qué pide a /luna).
+
+**Todo bien**
+- Casos límite de errores claros: `/luna` sin lat/lon → 400 `faltan lat/lon`; `/geocodificar` cp inválido → 400, cp 48360 → Mundaka (43.407, -2.700); `/webcam/no-existe` → 404 JSON; `/meteo/marine` con parámetro no permitido → 400.
+- `/prevision` responde 200 en ~4,8 s con boyas, cámaras, estaciones AEMET, etc. (la estructura está, pero sin datos de spot, ver abajo).
+
+**Hallazgos**
+1. **GRAVE: los 105 spots de /prevision salieron con error `Open-Meteo (forecast) HTTP 429`** (105/105, `spots_con_error` = 105, `fuentesDatos` vacío). Ningún usuario que abriera la app a esa hora habría visto marea, oleaje, viento ni presión; todo en S/D. El mensaje de error muestra que la petición fue al host **gratuito** `api.open-meteo.com` sin `apikey` (con key sería `customer-api.open-meteo.com`, ver `urlOpenMeteo` en `functions/_lib/open-meteo.js`). Es decir, en producción `OPEN_METEO_API_KEY` no le llegaba a la Function (no configurada, vacía, o secret en Preview y no en Production, o falta redeploy: trampa 1) y el plan gratuito (no comercial, 10.000/día) ya agotó su cuota. Dos peticiones agrupadas (17 coordenadas Portugal, ~90 España) bastan para gastarla. Acción para Mikel: comprobar en Cloudflare Pages → Production que `OPEN_METEO_API_KEY` existe y no está vacío, redeploy, y mirar el consumo en el panel de Open-Meteo. Parte puede ser que esa cuota de día esté agotada por otros usos (el proxy `/meteo/` y `/viento-campo` también caen al host libre sin key).
+2. **Consecuencia en el sondeo (no es bug de /luna):** `diario.hecho = false` ("/prevision no trajo ningún spot sin error"), así que esta semana NO se pudo comprobar el diario (guardado vs enviado, cuenta B, limpieza). Y las 3 llamadas a `/luna` dieron 400 `faltan lat/lon` porque `sondear.mjs` saca lat/lon del spot de /prevision y los spots con error solo traen `slug/nombre/error` (sin lat ni lon). `/luna` en sí funciona (casos límite bien); queda sin verificar su contenido.
+3. Cuando /prevision está entera en error, `/prevision` sigue devolviendo **200** con la lista de errores (el caso límite "spot que no existe" también da 200 con el error 429 dentro). Para un cliente no hay señal HTTP de que todo está caído; conviene que el front muestre S/D (lo hace por la vigencia) y que el smoke test mire `spots_con_error`. No se si esta respuesta se cachea 30 min en el edge: en la rama de España no lo he leído (en la de NZ, `responderRegion`, solo se cachea si fallan menos de la mitad). Sin verificar.
+4. `/identificar-captura` sin sesión devolvió **404** con la página HTML "Página no encontrada" (esperado 401/403/405). No gasta IA y es inocuo, pero el sondeo lo marca como no cumplido: puede que sea correcto que la ruta POST-only responda 404 a un GET por la lista blanca; el sondeo debería usar POST sin token para comprobarlo de verdad.
+
+**Pendiente para la próxima pasada**
+- Repetir con datos reales de /prevision: marea/coeficiente por zona, vecinos vs boyas, diario y cuenta B (hoy nada de esto se pudo juzgar).
+- Propuesta para `scripts/experiencia/sondear.mjs` (no aplicada): (a) si `spots_con_error` ≥ 50 %, marcarlo en `avisos` como grave; (b) sacar lat/lon de la lista fija `SPOTS` y no de la respuesta; (c) probar `/identificar-captura` con POST sin token.
+
+### 2026-11-02 07:45 UTC — robot de experiencia de usuario (rutina)
+
+**Qué miré:** `datos-robots/experiencia/ultima.json` (generado 2026-11-02 00:57 UTC, ~7 h: fresco). /prevision (105 spots, 0 con error), luna en 3 zonas, casos límite y la salida de prueba del diario (Mundaka). Código: `coeficientePorSpot()` y `calcularMarea()` en `functions/prevision.js`, `registrar-presion.js`.
+
+**Todo bien:** 0 spots con marea, presión, oleaje, viento, temperatura del agua, nubosidad, lluvia, corriente o periodo vacíos. Presión 1016-1026 hPa coherente entre vecinos; agua 14,4-17 °C en el Cantábrico/Galicia y 23-24,6 °C en Canarias/Palma (razonable en noviembre); rango de marea ~2 m en el Cantábrico y 0,1-0,3 m en Valencia/Alicante/Málaga/Palma (correcto). Luna: 43 % menguante igual en las tres zonas, horas distintas y coherentes. Casos límite: /luna sin lat/lon → 400, cp inválido → 400, webcam inexistente → 404, parámetro no permitido en /meteo → 400, todos con mensaje claro. Diario: enviado = guardado (sin diferencias), la cuenta B ni la ve ni la puede borrar (false/false), y la salida se borró (204, ya no existe).
+
+**Hallazgos:**
+1. (Menor, de diseño ya conocido) **46 spots tienen coeficiente de marea exactamente 20**: todo el Cantábrico, Galicia, Cádiz/Huelva y Almería/Cartagena/Águilas, mientras Portugal da 27-31 y el Mediterráneo oriental 47-67. 20 es el suelo de la escala (`Math.round(20 + 100*factor)` en `coeficientePorSpot`, `functions/prevision.js`): hoy está en el mínimo de la ventana de 8 días atrás/16 adelante de cada spot (neap en torno al 2-3 nov, cuarto menguante del 1 nov). Un usuario que lo compare con otras webs verá ~40 donde nosotros ponemos 20, y 46 spots idénticos parecen un valor por defecto. Ya documentado en CLAUDE.md (coeficiente propio por spot con nota visible); solo señalo que con la ventana asimétrica el suelo se alcanza en cada neap. No es un fallo del cálculo.
+2. (Menor, del sondeo, no de producción) El caso «/identificar-captura sin sesión» espera 401/403/405 pero recibe 404 con la página HTML de «no encontrada». Causa: `sondear.mjs` hace GET y la función solo exporta `onRequestPost`, así que el GET cae en la lista blanca y da 404. No prueba que un POST sin token se rechace.
+
+**Pendiente para la próxima pasada:** proponer cambiar ese caso en `scripts/experiencia/sondear.mjs` a POST sin cabecera Authorization (esperado 401) — no aplicado. Además, el sondeo no pide una hora de /prevision distinta de la actual ni compara contra boyas por spot; no me dio tiempo a cruzar oleaje con boyas.
+
 ## Robot de patrones de uso
 
 ### 2026-09-17
@@ -7361,7 +7419,7 @@ para Costaviva: (a) es un mirror no oficial sin garantía de
 mantenimiento ni de fidelidad a los datos originales de AEMET (a
 diferencia de OpenData, que es la fuente primaria), y (b) su propia
 descripción dice que la descarga completa por estación requiere pedirla
-por email a una dirección personal (`direccion-retirada@costaviva.invalid`) — no es
+por email a una dirección personal — no es
 automatizable ni fiable para un cron. Se descarta como candidato; queda
 anotado solo para no repetir la búsqueda si alguien lo sugiere de nuevo.
 
@@ -9689,6 +9747,38 @@ Para la siguiente: pasaia (buscar otra cámara para Pasaia), alicante, orio, vin
 
 **Firmado:** robot de patrones de uso (rutina), 2026-10-10 UTC.
 
+### 2026-10-24 (patrones de uso)
+
+**Datos:** `datos-robots/patrones-uso/ultima.json`, generado 2026-10-24 00:36 UTC (fresco). `errores` vacío; 2 cuentas de prueba excluidas. Muestra **muy pequeña**: 9 perfiles (1 alta en 7 días, 5 en 28), 3 usuarios activos en 7 días y 7 en 28; 67 eventos en 7 días (3 usuarios) y 427 en 28. Abandono: de 8 perfiles con más de 7 días, 2 nunca hicieron nada y 4 llevan 7 días sin actividad (solo 2 activos).
+
+**Uso por función (filas/usuarios):** 7 días: ver_mapa 32/3, ver_capa_sustrato 8/2 (17/4 en 28 d), ver_suscripcion 9/1, isóbatas 3/2, boyas 2/2, clorofila 2/2, crear_captura 2/1, ir_a_region 2/2. 28 días: ver_mapa 184/7, clorofila 36/5, frentes 31/2, temperatura del agua 30/4, corriente 20/3, viento 18/3, estaciones 13/2, rayos 10/3, ríos 9/4, boyas 9/4, isóbatas 8/4, radar de lluvia 7/2, batimetría (botón antiguo) 5/1, crear_salida 3/1, crear_captura 5/1, SOS 1/1. Checkout: 0 en 28 días (último 25-sep, 11 pulsaciones de 2 personas, annual 6 / monthly 5).
+
+**Propuestas (todas con la salvedad de n pequeña):**
+1. **Embudo de pago:** ver_suscripcion sube a 9 filas en 7 días, pero de una sola persona, y nadie pulsa el checkout desde el 25-sep (29 días). Con 1 usuario no hay patrón; recomiendo mirar la página de planes con ojos de nuevo usuario (la prueba de 14 días y el plan gratuito son nuevos desde el 11-oct) antes de tocar nada, y volver a medir cuando haya ≥ 3 personas viendo la página.
+2. **Activación:** 6 de 8 perfiles con más de una semana no están activos (2 nunca hicieron nada). La media de eventos por usuario activo es alta, pero la base es mínima: la mejora más barata es observar qué hacen justo tras el alta (ver_mapa es el único evento común) antes de plantear una guía de primer uso.
+3. **Capas de mar:** clorofila (5 de 7 activos en 28 d), temperatura (4) y corriente (3) tienen uso repartido; frentes tiene 31 pulsaciones pero de solo 2 personas. No hay base para quitar ni esconder ninguna; reevaluar con ≥ 4 semanas más y más usuarios. Aviso: el botón antiguo de batimetría (5 filas, 1 usuario, último 08-oct) ya no existe (ahora isóbatas y sustrato); no es un fallo.
+4. **Diario y grupos:** 1 persona crea salidas/capturas (últimas el 19-oct), grupos sin actividad en 28 días. Sin datos para decidir; no cambiar nada. El SOS no se toca por poco uso.
+
+**Puntos ciegos:** `registrarEvento` registra los tipos de arriba, pero no hay evento para la píldora de modalidad (🪨🚤🤿), la ventana de actividad/selector de especie, la capa de flota (AIS), la hoja de condiciones del alta ni «Tus datos». Propuesta (no aplicada) para `scripts/patrones-uso/agregar.mjs` y las páginas: añadir `registrarEvento` a `ponerModalidad` y a la capa de flota, para saber si las funciones de las últimas semanas se usan. No me dio tiempo a comparar con semanas previas más allá de la entrada del 10-oct.
+
+**Firmado:** robot de patrones de uso (rutina), 2026-10-24 UTC.
+
+### 2026-10-31 (patrones de uso)
+
+**Datos:** `datos-robots/patrones-uso/ultima.json`, generado 2026-10-31 01:33 UTC (fresco). `errores` vacío; 2 cuentas de prueba excluidas. Muestra **muy pequeña**: 10 perfiles (1 alta en 7 días, 6 en 28), **1 usuario activo en 7 días** (3 hace una semana) y 7 en 28. Abandono: de 9 perfiles con más de 7 días, 2 nunca hicieron nada y 6 llevan 7 días sin actividad. Eventos: 19 en 7 días (1 usuario; hace una semana eran 67 de 3), 432 en 28, 650 en total desde el 2026-09-17.
+
+**Uso por función (28 días, filas/usuarios):** ver_mapa 184/7, clorofila 36/5, frentes 31/2, temperatura del agua 30/4, corriente 20/3, viento 18/4, sustrato 17/4, ver_suscripcion 15/1, rayos 11/3, ríos 10/4, boyas 10/4, estaciones 12/3, isóbatas 8/4, ir_a_region 8/3, radar de lluvia 6/3, crear_captura 5/1, crear_salida 3/1. En 7 días solo hay actividad de 1 persona (ver_mapa 6, ver_suscripcion 6, y 1 de boyas, estaciones, radar, rayos, ríos y viento). Sin eventos en 28 días: iniciar_checkout (último 25-sep, 11 filas, 2 personas), marcar_favorito, unirse_grupo.
+
+**Propuestas (todas con la salvedad de n pequeña):**
+1. **Actividad en caída:** de 3 a 1 usuarios activos en una semana y 6 de 9 perfiles veteranos parados. Con 10 perfiles no es tendencia, pero la retención es el número a vigilar; se acerca el fin de la prueba de 14 días de las altas de octubre (6 en 28 días): comprobar tras el 11-nov cuántas siguen activas al pasar al plan gratuito.
+2. **Embudo de pago:** ver_suscripcion 15 filas en 28 días pero de 1 sola persona, y ningún checkout desde el 25-sep (36 días). No hay patrón con 1 usuario; no tocar la página de planes hasta que ≥ 3 personas la vean.
+3. **Capas de mar:** clorofila (5 de 7 activos), temperatura (4) y corriente (3) con uso repartido; frentes tiene 31 pulsaciones de solo 2 personas. Sin base para quitar ni esconder ninguna; reevaluar con más usuarios.
+4. **Diario y grupos:** 1 persona crea salidas/capturas (última el 19-oct), grupos sin actividad en 28 días. No cambiar nada. El SOS (1 uso, 08-oct) no se toca por poco uso.
+
+**Puntos ciegos (sin cambios respecto a la entrada del 24-oct):** no hay evento para la píldora de modalidad, la ventana de actividad/selector de especie, la capa de flota (AIS), la hoja de condiciones del alta ni «Tus datos»; tampoco para `sos_whatsapp_grupo` y `contactos_agenda` en la agregación si no aparecen en `por_tipo` (no han tenido filas). Propuesta (no aplicada): añadir `registrarEvento` a `ponerModalidad` y a la capa de flota en index.html. No miré la comparación detallada con semanas anteriores más allá de la entrada del 24-oct.
+
+**Firmado:** robot de patrones de uso (rutina), 2026-10-31 UTC.
+
 ### 2026-10-11 04:45 UTC (robot de cámaras caídas — rutina; Pasaia, Mundaka, Corrubedo, Alicante)
 
 Datos: `datos-robots/camaras-estado.json` generado 2026-10-11T03:02Z (~1,7 h, fresco). En rojo: muro, calamillor, sonbou (SOCIB), alicante, mundaka, corrubedo, bakio, pasaia.
@@ -9749,6 +9839,360 @@ Datos: `datos-robots/camaras-estado.json` generado 2026-10-15T03:05Z (~1,6 h, fr
 Para la siguiente: orio (alternativa), corrubedo, cangas, SouthLoop NZ, vinaros, alboraya, cullera.
 
 **Firmado:** robot de cámaras caídas (rutina), 2026-10-15 04:42 UTC.
+
+### 2026-10-16 04:42 UTC (robot de cámaras caídas — rutina; Orio, Zumaia, Benicàssim)
+
+Datos: `datos-robots/camaras-estado.json` generado 2026-10-16T03:03Z (~1,6 h, fresco). En rojo: alicante, torreblanca, benicassim (`origen_404`), zumaia, orio (`sin_respuesta`), mundaka (`frame_plano`, es de noche), bakio y pasaia (`frame_congelado`).
+
+- **zumaia**: el stream `GIP_zumaia2.stream` responde 200 y la secuencia del HLS avanza (de 1 a 4 respecto a la pasada de ayer). Viva; se recupera sola. Sin cambios.
+- **orio**: `GIP_orio_169.stream` sigue en 404 y también GIP_orio, orio2, orio169, orio1_169, orio_2, oria, orio_16_9. Búsqueda web (términos: "Orio playa webcam en directo Gipuzkoa camara playa de Orio") sin cámara concreta; solo Surf-Forecast enlaza a una sin identificar. Sin alternativa; sin cambios de código.
+- **benicassim**: `BenicassimVela/webcam_mini.png` sigue en 404 en origen (ya estudiada el 10-14). Sin cambios.
+- **mundaka**: de noche, ya revisada ayer. alicante, torreblanca, bakio, pasaia: ya estudiadas, sin novedad.
+- Quedan para la siguiente: corrubedo, cangas, SouthLoop NZ, vinaros, alboraya, cullera; cantabria.es sin verificar (bloqueo de red).
+
+**Firmado:** robot de cámaras caídas (rutina), 2026-10-16 04:42 UTC.
+
+### 2026-10-17 04:50 UTC (robot de cámaras caídas — rutina; Donostia/Zurriola, Orio, Benicàssim)
+
+Datos: `datos-robots/camaras-estado.json` generado 2026-10-17T03:04Z (~1,7 h, fresco). En rojo: alicante, torreblanca, benicassim (`origen_404`), donostia, orio (`sin_respuesta`), mundaka (`frame_plano`, de noche), suances, sanvicente (`origen_522`, 1 fallo), bakio y pasaia (`frame_congelado`); getaria con 1 fallo.
+
+- **donostia (Zurriola)** — nueva en rojo (última señal 10-16 15:30 UTC): `GIP_zurriola_169.stream` da 404 en el Wowza de la Diputación mientras `GIP_hondarribia_169` da 200. Probados también GIP_zurriola, zurriola2 y donostia_169: 404. Mismo patrón que Orio: el flujo ya no se publica. Búsqueda web (términos: "webcam Zurriola Donostia en directo Diputación Gipuzkoa camaramar"): solo agregadores (enteraT) y webs de la Diputación que no responden desde esta red (gipuzkoa.eus 404); sin URL nueva verificable. Sin cambios de código; vigilar si vuelve (puede ser una parada del codificador, como Zumaia).
+- **orio**: sigue en 404 (`GIP_orio_169`, orio2, orio_2, orioa_169, oria_169). Sin alternativa.
+- **benicassim, torreblanca, alicante**: Wowza de la Generalitat, sin novedad (ya estudiadas 10-12 y 10-14).
+- **suances, sanvicente**: sin verificar: dominio bloqueado por la red de la rutina (cantabria.es).
+- **bakio, pasaia, mundaka**: sin novedad.
+
+Para la siguiente: corrubedo, cangas, SouthLoop NZ, vinaros, alboraya, cullera; reintentar Zurriola y Orio.
+
+**Firmado:** robot de cámaras caídas (rutina), 2026-10-17 04:50 UTC.
+
+### 2026-10-18 04:55 UTC (robot de cámaras caídas — rutina; Zumaia, Alicante, Torreblanca, Benicàssim, Altea)
+
+Datos: `datos-robots/camaras-estado.json` generado 2026-10-18T03:03Z (~1,8 h, fresco). En rojo: alicante, torreblanca, benicassim, altea (`origen_404`), mundaka (`frame_plano`), zumaia (`sin_respuesta`), suances, sanvicente, comillas, bakio, pasaia (`frame_congelado`).
+
+- **zumaia**: cambio desde ayer. `GIP_zumaia2.stream` da ahora 404 (antes 200), igual que `GIP_zumaia_169`, `GIP_zumaia`, `_2`, `2_169` y `3`, mientras `GIP_hondarribia_169` sigue en 200. Mismo patrón que Orio y Zurriola: la Diputación dejó de publicar el flujo. La página de playas de la Diputación carga (200) pero no expone ninguna URL de stream. Búsqueda web (términos: "Zumaia webcam en directo Flysch Itzurun camara"): solo agregadores (Windy/meteoblue, camarastrafico, worldcam) sin fuente del dueño verificable. Sin cambios de código.
+- **alicante, torreblanca, benicassim, altea**: `webcam_mini.png` sigue en 404 en el streaming de la Generalitat (Altea es nueva en rojo, mismo origen). Sin novedad.
+- **mundaka**: la imagen de kostasystem responde 200 (63 KB); el `frame_plano` es de noche. Sin novedad.
+- **suances, sanvicente, comillas**: sin verificar: dominio bloqueado por la red de la rutina (cantabria.es).
+- **bakio, pasaia**: sin novedad.
+
+Para la siguiente: corrubedo, cangas, SouthLoop NZ, vinaros, alboraya, cullera; reintentar Zumaia, Zurriola y Orio.
+
+**Firmado:** robot de cámaras caídas (rutina), 2026-10-18 04:55 UTC.
+
+### 2026-10-19 UTC (robot de cámaras caídas — rutina; Xàbia/Jávea, Alicante y Generalitat, Orio)
+
+Datos: `datos-robots/camaras-estado.json` generado 2026-10-19T03:03Z (~1 h, fresco). En rojo: alicante, torreblanca, benicassim, javea (`origen_404`), mundaka (`frame_plano`), orio (`sin_respuesta`), bakio, getxo, pasaia (`frame_congelado`).
+
+- **javea** (nueva en rojo), **alicante**: `static/Xabiapuerto/webcam_mini.png` y `static/AlicantePuerto/webcam_mini.png` dan 404 en `streaming.comunitatvalenciana.com`; la raíz da 403. La página de turismo de la Generalitat de la cámara (`/es/alacant-alicante/xabia-javea/webcams/xabia-port`, que aparece en búsquedas) ahora también devuelve 404 y no expone URL de stream. Parece que la Generalitat ha retirado su red de webcams (Alicante, Torreblanca, Benicàssim, Altea, Xàbia: mismo origen). Términos probados: "Xàbia puerto webcam en directo Generalitat Valenciana turisme cámaras streaming"; solo salen agregadores (Windfinder) sin fuente del dueño verificable. Sin cambios de código.
+- **orio**: `/webcam/orio` da 404; mismo patrón de la Diputación (flujos GIP_ retirados). Sin novedad.
+- **mundaka**: `/webcam/mundaka` responde 200; el `frame_plano` es de noche.
+- **torreblanca, benicassim, bakio, getxo, pasaia**: sin novedad (ya estudiadas).
+
+Para la siguiente: corrubedo, cangas, SouthLoop NZ, vinaros, alboraya, cullera; buscar alternativa local para Alicante/Xàbia (puerto deportivo o club náutico).
+
+**Firmado:** robot de cámaras caídas (rutina), 2026-10-19 UTC.
+
+### 2026-10-20 UTC (robot de cámaras caídas — rutina; Gandia, Orio, Mundaka)
+
+Datos: `datos-robots/camaras-estado.json` generado 2026-10-20T03:04Z (~1,5 h, fresco). En rojo: alicante, torreblanca, benicassim, javea, gandia (`origen_404`), orio (`sin_respuesta`), mundaka y santona (`frame_plano`, de noche), cangas, bakio, pasaia (`frame_congelado`).
+
+- **gandia** (nueva en rojo, última señal 10-19 03:30): no se ha movido. La web oficial (`comunitatvalenciana.com/es/valencia/gandia/webcams/gandia-1`) sigue embebiendo `static/Gandia/webcam_mini.png` y `webcam/Gandia/manifest.mpd`; ambos dan 404 en origen. Mismo patrón que Alicante, Xàbia, Torreblanca y Benicàssim: la Generalitat parece haber retirado su red de streaming. Búsqueda: "webcam Platja de Gandia en directo playa Safor cámara en vivo"; solo salen la página oficial y Windfinder (agregador, sin fuente verificable del dueño). Sin cambios de código.
+- **orio**: `/webcam/orio` sigue en 404 (Diputación). Sin novedad.
+- **mundaka**: `/webcam/mundaka` responde 200; el `frame_plano` es de noche. Santoña igual.
+- **cangas, bakio, pasaia**: `frame_congelado` a las 03:00 (noche), sin novedad.
+
+Para la siguiente: corrubedo, cangas de día, SouthLoop NZ, vinaros, alboraya, cullera; alternativa local para Alicante/Xàbia/Gandia (club náutico o puerto deportivo).
+
+**Firmado:** robot de cámaras caídas (rutina), 2026-10-20 04:42 UTC.
+
+### 2026-10-22 04:42 UTC (robot de cámaras caídas — rutina; Zumaia, Orio, Sopelana)
+
+Datos: `datos-robots/camaras-estado.json` generado 2026-10-22T03:03Z (~1,6 h, fresco). En rojo: alicante, torreblanca, gandia (`origen_404`), zumaia, orio, sopelana, santona (`sin_respuesta`), mundaka (`frame_plano`), bakio, pasaia (`frame_congelado`).
+
+- **zumaia, orio**: no se han movido por nombre. En el Wowza de la Diputación (streamlock.net) los playlists `GIP_zumaia2` y `GIP_orio_169` dan 404 mientras Deba, Getaria, Hondarribia, Mutriku, Zarautz y Zurriola dan 200. Probadas variantes (`GIP_zumaia`, `_169`, `1`, `GIP_orio`, `2`): todas 404. Es la emisión de esas dos cámaras parada en origen (Zumaia, 46 fallos desde 10-21 06:30; Orio, 20 desde 10-21 18:30). Sin cambios de código.
+- **sopelana**: sin verificar: ipcamlive.com no responde bien desde la red de la rutina (player.php 500, el stream guardado 404). No se puede decir si cambió el alias `673c8a5893eaf`; el proxy `/webcam/hls/sopelana` aún redirige a la última URL conocida. Se deja para otra pasada o para el robot de salud.
+- **santona**: sigue en 522 desde cantabria.es hacia Cloudflare (ya estudiada); sin novedad.
+- **alicante, torreblanca, gandia**: Generalitat sigue en 404 (ya estudiadas).
+
+Para la siguiente: reintentar Zumaia y Orio; Sopelana con otra vía; alternativa local para Alicante/Xàbia/Gandia (club náutico o puerto deportivo).
+
+**Firmado:** robot de cámaras caídas (rutina), 2026-10-22 04:42 UTC.
+
+### 2026-10-23 04:41 UTC (robot de cámaras caídas — rutina; Orio, Gandia/Alicante/Torreblanca, Cantabria)
+
+Datos: `datos-robots/camaras-estado.json` generado 2026-10-23T03:04Z (fresco). En rojo: alicante, torreblanca, gandia (`origen_404`), orio (`sin_respuesta`), comillas, sanvicente, suances (origen 530/500/522), bakio y pasaia (`frame_congelado`). Zumaia ya no está en rojo.
+
+- **orio**: `GIP_orio_169` sigue en 404 en el Wowza de la Diputación mientras Zarautz da 200; emisión parada en origen. Búsqueda web ("webcam Orio playa Gipuzkoa en directo cámara"): sin cámara local alternativa (solo Surf-Forecast con cámaras francesas).
+- **alicante, torreblanca, gandia**: `streaming.comunitatvalenciana.com/static/*/webcam_mini.png` siguen en 404 (comprobadas hoy); sin cambios.
+- **comillas, sanvicente, suances**: sin verificar: cantabria.es no es alcanzable desde la red de la rutina (conexión rechazada); en el parte, 530/500/522 desde el edge.
+- **bakio, pasaia** (congeladas): no revisadas esta pasada.
+Sin cambios de código. Para la siguiente: bakio/pasaia congeladas, alternativa local Alicante/Gandia (club náutico), Orio.
+
+**Firmado:** robot de cámaras caídas (rutina), 2026-10-23 04:41 UTC.
+
+### 2026-10-24 04:45 UTC (robot de cámaras caídas — rutina; Mundaka, Benicàssim)
+
+Datos: `datos-robots/camaras-estado.json` generado 2026-10-24T03:02Z (fresco). En rojo: alicante, torreblanca, benicassim, mundaka (`origen_404`), orio (`sin_respuesta`), comillas, suances, sanvicente (origen 530/522), bakio y pasaia (congeladas/planas). Getaria con 1 fallo, sin señal=false.
+
+- **mundaka**: la imagen de KOSTASystem (`.../irudiak/mundaka/camara1_snap.jpeg`) da 404 desde el 23-oct; probadas `camara1_snap.jpg` y `camara2_snap.jpeg` (404) y la portada de kostasystem.com (200, sin enlaces a cámaras ni a Mundaka). Búsqueda ("webcam Mundaka en directo kostasystem cámara"): solo Surf-Forecast (cámaras de terceros, un vídeo de YouTube, que solo valdría como enlace) y Windfinder/webcamgalore. Sin alternativa verificada; no se toca código.
+- **benicassim**: `static/BenicassimVela/webcam_mini.png` y `webcam/BenicassimVela/manifest.mpd` dan 404, y la propia página de Turisme Comunitat Valenciana sigue incrustando esa misma URL: parada en origen, no movida. Candidata en el mismo pueblo: `static/BenicassimPalasiet/webcam_mini.png` (Voramar, hotel Palasiet), 200 y Last-Modified de hace 3 min, pero el fotograma de las 04:00 UTC es de noche y no se ve el mar, así que NO se integra (regla: sin ver mar no se crea ni se sustituye). Para la próxima: mirarla de día.
+- No tocadas, quedan para la siguiente: orio (GIP_orio_169 en 404 desde hace días, ya buscado 3 veces), alicante/torreblanca (sin cámara alternativa local), comillas/suances/sanvicente (origen cantabria.es), bakio/pasaia (congeladas).
+
+Sin cambios de código.
+
+**Firmado:** robot de cámaras caídas (rutina), 2026-10-24 04:45 UTC.
+
+### 2026-10-25 04:50 UTC (robot de cámaras caídas — rutina; Mundaka, Zumaia, Pasaia)
+
+Datos: `datos-robots/camaras-estado.json` generado 2026-10-25T03:03Z (fresco). En rojo: alicante, torreblanca, mundaka, benicassim (`origen_404`), zumaia (`sin_respuesta`), pasaia (`frame_plano`), y una más congelada.
+
+- **mundaka**: `kostasystem.com/.../mundaka/camara1_snap.jpeg` y `/mundaka-webcam/` siguen en 404 (la portada da 200). Nueva búsqueda ("Mundaka webcam en directo ola izquierda cámara"): solo agregadores (Surf-Forecast) con cámaras de escuelas (Peña Txuri, Surf 30) sin URL propia verificable. Sin alternativa; sin cambios.
+- **zumaia**: `GIP_zumaia2.stream/playlist.m3u8` da 404, y hoy también `GIP_zarautz.stream` y la raíz del Wowza: parece caída general del servidor de la Diputación esta noche, no una URL movida. Reintentar de día.
+- **pasaia**: `detectia.net/img/webcam-pasaia-azti.webp` responde 200 pero con Last-Modified del 24-oct 18:04 GMT: la imagen no se actualiza en origen. Sin alternativa.
+- No tocadas: benicassim (mirar `BenicassimPalasiet` de día, ya anotado), alicante/torreblanca.
+
+Sin cambios de código.
+
+**Firmado:** robot de cámaras caídas (rutina), 2026-10-25 04:50 UTC.
+
+### 2026-10-25 04:55 UTC (pasada buscadora — presión atmosférica e histórico por zona, rutina)
+
+Una novedad verificable, sin integrar (sería tocar `functions/`: solo propuesta).
+
+- **IPMA (Portugal) vuelve a responder desde esta sesión**: `api.ipma.pt/open-data/observation/meteorology/stations/observations.json` da 200 con observaciones horarias de las últimas ~24 h por estación, con campo `pressao` (hPa), además de temperatura, viento y precipitación acumulada. Complementa la presión de modelo en Portugal (hasta ahora solo había series históricas largas). Sin clave, JSON abierto. Pendiente de decidir: si se usa como presión real (estilo `ESTACIONES_AEMET`) y su licencia (no verificada hoy).
+- Siguen sin verificar: `meteogalicia.gal/observacion/rest/getEstacionsMeteo` (404, la ruta puede haber cambiado) y `opendata.aemet.es/opendata/api/` (404 sin clave, normal). `meteo.cat` responde 200.
+- Nada que añadir a ROBOT_REGLAS.md.
+
+Firmado: robot buscador de fuentes (rutina).
+
+### 2026-10-26 05:00 UTC (robot de cámaras caídas — rutina; Zumaia, Orio, Alicante/Torreblanca, Benicàssim)
+
+Datos: `datos-robots/camaras-estado.json` generado 2026-10-26T03:03Z (fresco). En rojo: alicante, torreblanca, benicassim (`origen_404`), zumaia, orio (`sin_respuesta`), pasaia (`frame_plano`); mundaka y bakio con `frame_congelado` (lectura de noche, 03:00 UTC, sin fallos).
+
+- **zumaia, orio**: en el Wowza de la Diputación `GIP_zarautz_169`, `GIP_zurriola_169` y `GIP_deba_169` dan 200 (el servidor está bien), pero `GIP_zumaia2` y `GIP_orio_169` siguen en 404. Probadas variantes (`zumaia`, `_169`, `1`, `3`, `orio`, `_1`, `2`, `2_169`): todas 404. `zumaia.eus/es/webcam` da 404 y no se pudo ver qué embebe hoy. Emisión parada en origen, no movida.
+- **alicante, torreblanca**: `static/AlicantePuerto` y `static/Torreblanca/webcam_mini.png` siguen en 404 en la Generalitat. Sin alternativa local verificada.
+- **benicassim**: `static/BenicassimPalasiet/webcam_mini.png` responde 200 con Last-Modified de las 04:00 GMT de hoy, pero es de noche: sin ver mar no se sustituye. Pendiente de mirarla de día (pasada de mañana o el robot de salud).
+- **pasaia**: no revisada (Detectia sin actualizar desde el 24-oct, ya estudiada).
+
+Sin cambios de código.
+
+**Firmado:** robot de cámaras caídas (rutina), 2026-10-26 05:00 UTC.
+
+### 2026-10-27 04:50 UTC (robot de cámaras caídas — rutina; Orio, Mutriku, Zumaia)
+
+Datos: `camaras-estado.json` de 2026-10-27T03:03Z (fresco). En rojo: alicante, torreblanca, benicassim (`origen_404`), mutriku y orio (`sin_respuesta`), mundaka, bakio y pasaia (`frame_congelado`, lectura nocturna 03:00 UTC).
+
+- **orio, mutriku**: en el Wowza de la Diputación `GIP_orio_169` y `GIP_mutrikukaia_169` dan 404 (probadas también `GIP_orio`, `GIP_orio2`, `GIP_mutriku`, `GIP_mutriku_169`: 404), mientras `GIP_zarautz_169`, `GIP_deba_169` y `GIP_hondarribia_169` dan 200. Emisión parada en origen, igual que Zumaia desde hace días; no se ha movido a un nombre que podamos adivinar. Las páginas de gipuzkoa.eus probadas (turismo/cámaras, hondartzak) no listan los streams. Sin alternativa verificada. Mutriku es nueva en rojo desde ayer 16:30 UTC.
+- **alicante, torreblanca, benicassim**: sin cambios respecto a ayer; benicassim sigue pendiente de verla de día (ahora es de noche).
+- mundaka, bakio, pasaia: congeladas por la noche, no se tocan.
+- Para la siguiente pasada: mirar si la Diputación publica el listado de cámaras (términos: "camaramar", "streamlock GIP"), y ver Benicàssim de día.
+
+Sin cambios de código.
+
+**Firmado:** robot de cámaras caídas (rutina), 2026-10-27 04:50 UTC.
+
+### 2026-10-27 05:00 UTC (pasada buscadora — caudal de ríos y estaciones de monte, rutina)
+
+Una fuente nueva verificada, sin integrar (haría falta clave y tocar `functions/`: solo propuesta).
+
+- **Galicia — red foronómica de MeteoGalicia + Augas de Galicia**: el PDF oficial `meteo-estaticos.xunta.gal/datosred/infoweb/aforos/json/JSON_Aforos_Estado_Actual_es.pdf` (200) describe un servicio JSON `servizos.meteogalicia.gal/mgafos/json/estadoActual.action?cod=CLAVE` con caudal y nivel actuales de las estaciones en servicio. Dice que es público y gratuito, pero exige clave personal pedida por email a `administracion-web.meteogalicia@xunta.gal` (se puede pedir con `datos@costaviva.org`). Sin clave el endpoint responde página de error (comprobado). Listado de estaciones: `servizos.meteogalicia.gal/mgafos/estacions/estacions.action` (200). Cubriría ríos gallegos hoy sin caudal. Licencia de reutilización no verificada. **Decisión para Mikel**: pedir la clave (Mikel envía el email, como con Euskalmet).
+- Ríos vascos: URA (`uragentzia.euskadi.eus/datos-de-estaciones-de-aforo/...`) sigue en 200 pero sin endpoint JSON/CSV directo; búsqueda web no encuentra ninguno documentado. Sigue pendiente la clave de Euskalmet.
+- Sin respuesta útil desde esta sesión: `snirh.apambiente.pt` (403), `saihebro.com` (sin respuesta); no se dan por caídos.
+
+Firmado: robot buscador de fuentes (rutina).
+
+### 2026-10-28 04:42 UTC (robot de cámaras caídas — rutina; Orio, Mutriku, Comillas/San Vicente)
+
+Datos: `camaras-estado.json` de 2026-10-28T03:03Z (fresco). En rojo: alicante, torreblanca, benicassim (`origen_404`), mutriku y orio (`sin_respuesta`), comillas y sanvicente (origen 522), pasaia (`frame_plano`), mundaka y bakio (congeladas de noche).
+
+- **orio, mutriku**: `GIP_orio_169` y `GIP_mutrikukaia_169` siguen en 404 en el Wowza de la Diputación (`GIP_zarautz_169` da 200). Sin cambios desde ayer; sin alternativa verificada.
+- **comillas, sanvicente**: sin verificar: dominio bloqueado por la red de la rutina (cantabria.es, conexión rechazada).
+- **benicassim**: sin verificar: dominio bloqueado por la red de la rutina (gva.es / comunitatvalenciana.com, conexión rechazada); alicante/torreblanca igual que ayer.
+- Para la siguiente: mundaka/bakio/pasaia de día, y Benicàssim si la red lo permite.
+
+Sin cambios de código.
+
+**Firmado:** robot de cámaras caídas (rutina), 2026-10-28 04:42 UTC.
+
+### 2026-10-28 04:55 UTC — robot buscador de fuentes (rutina): cámaras, zona Comunidad Valenciana y Murcia
+- Zona de hoy (semana ISO 44, miércoles → N=88 → índice 8). Sin novedades esta pasada: no se integra ni crea nada.
+- **cartagena** sigue sin cámara. `www.apc.es` y `controlvideo.apc.es:15378` (el iframe que sigue embebiendo meteomurcia.com/webcampuertocartagena.php) dan conexión rechazada desde la red de la rutina: no verificable, no es "caída". Búsqueda "webcam Cartagena puerto en directo mar cámara en vivo Murcia Mazarrón Manga": solo Windfinder (agregador, última imagen de septiembre, sin fuente del dueño) y otras Cartagenas. Nada para Mazarrón ni La Manga. `cabodepalos` ya tiene la de Skyline (live490).
+- Cámaras de Turisme Comunitat Valenciana (Alicante, Torreblanca, Gandia, Benicàssim, Xàbia): no re-verificadas hoy (dominio bloqueado en la rutina); el último estado conocido es 404 en origen.
+
+### 2026-10-29 04:50 UTC (robot de cámaras caídas — rutina; Mutriku, Orio, Comillas)
+
+Datos: `camaras-estado.json` de 2026-10-29T03:04Z (fresco). En rojo: alicante, torreblanca, benicassim (`origen_404`), mutriku y orio (`sin_respuesta`), comillas (origen 522), pasaia (`frame_plano`), mundaka y bakio (congeladas de noche).
+- **mutriku (ARREGLADA)**: `GIP_mutrikukaia_169` sigue en 404, pero el Wowza de la Diputación sirve `GIP_saturraran_169` (200, HLS avanzando, fotograma de 05:41 hora local, playa de Saturraran en Mutriku con mar visible, rótulo "Saturraran"). Cambiada la URL en `index.html`, `scripts/turbidez/medir-turbidez.mjs` y `scripts/camaras/comprobar-camaras.mjs`. NO tocado `scripts/oleaje-camaras/camaras.mjs` (su referencia/ROI son de Mutrikukaia; la lectura de espuma de Mutriku seguirá sin medir hasta dibujar referencia y ROI nuevos de Saturraran, de día).
+- **orio**: `GIP_orio_169` 404; probadas `GIP_orioplaya_169`, `GIP_oriobarra_169`, `GIP_orio_169_2`, `GIP_oriokaia_169`: 404. Búsqueda web ("camaras playa Orio ... Diputación"): sin cámara de Orio. Sigue sin alternativa.
+- **comillas**: sin verificar: dominio bloqueado por la red de la rutina (cantabria.es, conexión rechazada).
+- Para la siguiente: benicassim/alicante/torreblanca (dominios bloqueados otros días), pasaia/bakio/mundaka de día, referencia y ROI de Saturraran.
+— robot de cámaras caídas (rutina)
+
+### 2026-10-30 04:50 UTC (robot de cámaras caídas — rutina; Benicàssim, Orio, Alicante/Torreblanca)
+
+Datos: `camaras-estado.json` de 2026-10-30T03:04Z (fresco). En rojo: alicante, torreblanca, benicassim (`origen_404`), orio (`sin_respuesta`), comillas (origen 522), pasaia, cangas, bakio y mundaka (`frame_congelado`, lectura nocturna 03:00 UTC, sin fallos).
+- **benicassim (ARREGLADA)**: `static/BenicassimVela` sigue en 404; `static/BenicassimPalasiet/webcam_mini.png` da 200 con Last-Modified 04:00 GMT de hoy. Vista la imagen: playa de Benicàssim con el mar y el paseo iluminados (de noche, pero inequívocamente mar y el sitio correcto). Cambiada en `functions/webcam/[slug].js`. Hoy el dominio gva sí era alcanzable.
+- **alicante, torreblanca**: `AlicantePuerto` y `Torreblanca` siguen en 404 en origen; sin alternativa verificada.
+- **orio**: `GIP_orio_169`, `_2_169`, `GIP_orioplaya_169`, `GIP_orio`: 404. Sin alternativa.
+- **comillas**: no tocada en esta pasada (queda para la siguiente, cantabria.es). Congeladas nocturnas: revisar de día.
+— robot de cámaras caídas (rutina)
+
+### 2026-10-30 04:58 UTC — robot buscador de fuentes (rutina): viernes, estudios sobre factores (afloramiento)
+- Factor de hoy: afloramiento (*upwelling*) y viento del este en Galicia/Cantábrico. Una búsqueda web ("upwelling effect on catches ... Galicia Cantabrian Sea sea bass sardine"): solo salió oceanografía antigua (JGR 1995 sobre duración/frecuencia del afloramiento y pesquería de sardina en Galicia, más fuerte y persistente en la costa norte que en las Rías Baixas; ICES 1989 sobre sardina y afloramiento episódico de marzo a octubre). Enlaces: https://core.ac.uk/download/71765371.pdf, https://www.vliz.be/imisdocs/publications/ocrd/274863.pdf.
+- Sin regla propuesta: solo leí resúmenes del buscador (no abrí los textos, no comprobé licencia), son de sardina (no de nuestras especies de caña) y miden escalas anuales, no horarias. No llega a confianza 0,3. No hay rama `-factores` esta semana. Coincide con la nota de EVIDENCIA_FACTORES.md: el mecanismo del levante en el Cantábrico es plausible, pero sin estudio de capturas.
+- Concursos: no se revisó ninguna federación nueva hoy (sin margen); FEPyC y FPPD siguen en `no_permitida_sin_permiso`.
+- Para la próxima: buscar estudios de capturabilidad de lubina/sargo con viento y afloramiento en el Cantábrico con texto abierto (CC BY).
+
+Firmado: robot buscador de fuentes (rutina), 2026-10-30 04:58 UTC.
+
+### 2026-10-31 04:45 UTC (robot de cámaras caídas — rutina; Alicante, Torreblanca, Pasaia, Orio)
+
+Datos: `camaras-estado.json` de 2026-10-31T03:04Z (fresco). En rojo: alicante, torreblanca (`origen_404`), orio (`sin_respuesta`), pasaia (`frame_plano`), bakio y mundaka (`frame_congelado`, lectura nocturna).
+- **alicante, torreblanca**: `streaming.comunitatvalenciana.com/static/AlicantePuerto|Torreblanca/webcam_mini.png` siguen en 404 en origen. Sin alternativa verificada.
+- **orio**: sigue sin stream en la Diputación (`GIP_orio_169` 404, ya probadas variantes los días anteriores). Sin alternativa.
+- **pasaia**: la fuente (`detectia.net/img/webcam-pasaia-azti.webp`) responde 200 con Last-Modified 2026-10-30 18:04 GMT; a las 04:40 UTC es de noche, frame plano normal. No se toca.
+- bakio/mundaka: congeladas de noche, no se tocan.
+- Para la siguiente: Alicante/Torreblanca (buscar qué embebe hoy Turisme Comunitat Valenciana), Orio, y bakio/mundaka/pasaia de día.
+— robot de cámaras caídas (rutina)
+
+### 2026-10-31 04:55 UTC — robot buscador de fuentes (rutina): cámaras, zona Cataluña, Baleares, Andalucía y Canarias
+- Zona de hoy (semana ISO 44, sábado → N=89 → índice 9). Sin novedades esta pasada: no se integra ni crea nada.
+- Búsqueda "webcam playa Tarifa Cádiz Málaga Almería": solo agregadores (enterat.com, Skyline, Windfinder, balticlivecam, webcamtaxi) y cámaras de tráfico de Málaga; ninguna fuente del dueño con imagen fija o HLS verificable (Tarifa, Zahara, Santa María del Mar y Torre de Balerma son de Skyline/agregadores, no se tocan; Skyline solo como enlace).
+- Búsqueda "webcam puerto Mallorca Menorca Ibiza": seemallorca.com (`/webcams/palma-marina`, `/webcams/port-de-pollensa`) responde 200 pero es portal sin URL directa de imagen/stream en el HTML; no se pudo ver ningún fotograma, así que no se crea ningún spot (sin comprobación visual). Menorca/Ibiza: solo directorios de 2007-2017.
+- Para la siguiente vez en esta zona: Meteocat/Catalunya (cámaras de costa), webs de puertos de Puertos de Andalucía y Canarias (Gran Canaria, Tenerife) con imagen propia.
+Firmado: robot buscador de fuentes (rutina), 2026-10-31 04:55 UTC.
+
+### 2026-11-01 04:50 UTC (robot de cámaras caídas — rutina; Alicante, Torreblanca, Suances/San Vicente)
+
+Datos: `camaras-estado.json` de 2026-11-01T03:00Z (fresco). En rojo: alicante, torreblanca (`origen_404`), pasaia (`frame_plano`), sanvicente y suances (`origen_522`), bakio y mundaka (`frame_congelado`, lectura nocturna).
+- **alicante, torreblanca**: `streaming.comunitatvalenciana.com/static/AlicantePuerto|Torreblanca/webcam_mini.png` siguen en 404. La web oficial de Turisme CV (`/webcams/torreblanca-1`) aún enlaza ese mismo PNG y un `manifest.mpd` que también da 404: el dueño la tiene rota. En la página de Alicante solo hay `AlicanteExplanada` (200, Last-Modified 04:00 GMT de hoy), pero enseña una explanada con palmeras, sin mar: no vale. Sin alternativa verificada. Términos probados: "webcam Puerto de Alicante Turisme CV", "webcam Torreblanca Castellón playa" (solo agregadores y la misma página rota).
+- **suances, sanvicente**: sin verificar: desde la red de la rutina `www.cantabria.es` corta la conexión (connection reset); no se sabe si la cámara va. Ya es el patrón de 522 intermitente del dueño.
+- pasaia/bakio/mundaka: son las 04:50 UTC, de noche; no se tocan.
+- Para la siguiente (de día): pasaia, bakio, mundaka, orio; Alicante/Torreblanca solo si Turisme CV vuelve a publicar.
+— robot de cámaras caídas (rutina)
+
+### 2026-11-01 04:58 UTC — robot buscador de fuentes (rutina): domingo, buenas prácticas de otras apps (solo propuesta)
+- Domingo, semana ISO 44 (44 % 3 = 2) → buenas prácticas de otras apps. Nada tocado en código.
+- **Propuesta (hallazgo nuevo): PescaREC.** El MAPA tiene una app oficial de declaración de capturas de pesca recreativa; según el Ministerio y prensa (maldita.es, xatakamovil), tras el RD 214/2026 de 18 de marzo su uso es obligatorio desde el 20-03-2026 (antes se anunció para el 10-01-2026 por normativa UE). Instrucciones: mapa.gob.es (PDF "instrucciones de uso de pescarec v1.06"). Idea para Mikel: en `diario.html`, un aviso/enlace en las capturas ("recuerda declararla en PescaREC") y, quizá, exportar la captura en formato fácil de copiar. No se ha leído el RD entero ni verificado a quién obliga exactamente (modalidades, especies): antes de poner texto legal en la app hay que leerlo en el BOE. Es decisión de producto, no se implementa.
+- Otras apps (Fishbrain 11.60, FishMeteo, Fishing Points, Fish & Tides): las fichas de tienda solo hablan de "pronóstico con IA", mapas náuticos, radar y caudal de ríos (Fishing Points usa 35.000 estaciones de EE. UU.). Nada nuevo frente a lo ya propuesto el 14/15/23 de septiembre; nada verificable de Tides4fishing, Windy ni de una función nueva de Puertos del Estado (solo un convenio de datos con Meteocat en el BOE, sin relación con apps).
+- Para la siguiente vez de este tipo: leer el RD 214/2026 en el BOE y ver qué exige a las apps de terceros.
+Firmado: robot buscador de fuentes (rutina), 2026-11-01 04:58 UTC.
+
+### 2026-11-02 04:45 UTC (robot de cámaras caídas — rutina; Alicante, Torreblanca, Pasaia, Suances/San Vicente)
+
+Datos: `camaras-estado.json` de 2026-11-02T03:04Z (fresco). En rojo: alicante, torreblanca (`origen_404`), pasaia (`frame_plano`), sanvicente y suances (`origen_522`), cangas, bakio y mundaka (`frame_congelado`, lectura nocturna).
+- **alicante, torreblanca**: `streaming.comunitatvalenciana.com/static/AlicantePuerto|Torreblanca/webcam_mini.png` siguen en 404 (comprobado hoy). Sin alternativa nueva respecto a ayer (Turisme CV no ha vuelto a publicar).
+- **pasaia**: `detectia.net/img/webcam-pasaia-azti.webp` responde 200 pero con Last-Modified 2026-11-01 18:04 GMT (9,5 kB): imagen no actualizada desde el anochecer. Es de noche; no se puede juzgar sin verla de día.
+- **suances, sanvicente**: sin verificar: `www.cantabria.es` solo devuelve el túnel del proxy sin cabeceras útiles desde la red de la rutina; no se sabe si la cámara va.
+- cangas/bakio/mundaka: de noche, no se tocan.
+- Para la siguiente (de día): pasaia, bakio, mundaka, cangas, orio; Alicante/Torreblanca solo si Turisme CV vuelve a publicar.
+— robot de cámaras caídas (rutina)
+
+### 2026-11-03 04:45 UTC (robot de cámaras caídas — rutina; Alicante, Torreblanca, Pasaia, Suances/San Vicente)
+
+Datos: `camaras-estado.json` de 2026-11-03T03:03Z (fresco). En rojo: alicante, torreblanca (`origen_404`), pasaia (`frame_plano`), sanvicente (`origen_522`), bakio y mundaka (`frame_congelado`, lectura nocturna).
+- **alicante, torreblanca**: `streaming.comunitatvalenciana.com/static/AlicantePuerto|Torreblanca/webcam_mini.png` siguen en 404 (comprobado hoy). Sin alternativa nueva; Turisme CV no ha vuelto a publicar.
+- **pasaia**: `detectia.net/img/webcam-pasaia-azti.webp` 200 pero Last-Modified 2026-11-02 18:04 GMT (sin actualizar desde el anochecer). De noche no se puede juzgar sin verla.
+- **sanvicente (suances)**: sin verificar: `www.cantabria.es` solo devuelve el túnel del proxy desde la red de la rutina, sin cabeceras útiles; no se sabe si la cámara va.
+- bakio/mundaka: de noche, no se tocan.
+- Para la siguiente (de día): pasaia, bakio, mundaka; Alicante/Torreblanca solo si Turisme CV vuelve a publicar.
+— robot de cámaras caídas (rutina)
+
+### 2026-11-03 04:55 UTC — robot buscador de fuentes (rutina): martes, caudal de ríos y estaciones de monte
+- Sin cambios en código. Una pista nueva, sin integrar (haría falta contacto y tocar `functions/`: solo propuesta).
+- **Cantábrico (Asturias, Cantabria, Bizkaia/Gipuzkoa parte)**: el visor del SAIH de la Confederación Hidrográfica del Cantábrico está en `visor.saichcantabrico.es`. Copernicus EFAS cita que integra 118 estaciones de esa confederación "vía su API", pero no hay documentación pública de la API ni licencia verificada. **Decisión para Mikel**: pedir por email a la confederación acceso/condiciones de reutilización (con `datos@costaviva.org`).
+- Catálogo nacional SAIH caudal en datos.gob.es (`e0dat0002-estaciones-de-aforo-en-rio-saih-caudal`) y PDF `sig.mapama.gob.es/Docs/PDFServicios/SAIHCaudales.pdf`: servicio de MITECO que podría dar caudales de todas las confederaciones; no verificado si es en tiempo real ni su formato.
+- Red de esta sesión: `chcantabrico.es`, `chminosil.es` y `sihga.cma.junta-andalucia.es` sin respuesta; `snirh.apambiente.pt` 403. No se dan por caídos. Siguen pendientes las claves de Euskalmet y MeteoGalicia.
+Firmado: robot buscador de fuentes (rutina), 2026-11-03 04:55 UTC.
+
+### 2026-11-04 04:50 UTC (robot de cámaras caídas — rutina; Orio, Pasaia, Alicante, Torreblanca, San Vicente/Comillas)
+
+Datos: `camaras-estado.json` de 2026-11-04T03:03Z (fresco). En rojo: alicante, torreblanca (`origen_404`), orio (`sin_respuesta`, 21 fallos, última señal ayer 17:31 UTC), pasaia (`frame_plano`), sanvicente y comillas (`origen_522`), bakio y mundaka (`frame_congelado`, nocturno).
+- **orio**: `.../camaramar/GIP_orio_169.stream/playlist.m3u8` da 404 hoy, mientras el stream hermano de Zarautz (`GIP_zarautz_169.stream`) responde 200: la Diputación ha parado o renombrado el stream de Orio. No encontré aún el nombre nuevo (no hay listado público del servidor). Para la siguiente: mirar la web de la Diputación de Gipuzkoa (camaras de playas) por si embebe otro nombre.
+- **pasaia**: `detectia.net/img/webcam-pasaia-azti.webp` 200, Last-Modified 2026-11-03 18:05 GMT (sin cambiar desde el anochecer). Son las 04:50 UTC, de noche; no se puede juzgar.
+- **alicante, torreblanca**: sin cambios, sin alternativa (Turisme CV no ha vuelto a publicar).
+- **sanvicente, comillas**: sin verificar: `www.cantabria.es` solo devuelve el túnel del proxy desde la red de la rutina.
+- bakio/mundaka: de noche, no se tocan. No se cambió código.
+- Para la siguiente (de día): orio (nombre del stream), pasaia, bakio, mundaka.
+— robot de cámaras caídas (rutina)
+
+### 2026-11-04 04:55 UTC — robot buscador de fuentes (rutina): miércoles, cámaras, zona Bizkaia
+- Sin cambios en código ni spots nuevos. Comprobado con HTTP real:
+  - **puntaluzero** (`kostasystem.com/.../puntaluzero/camara1_snap.jpeg` y `camara2_snap.jpeg`): responden 200 pero `Last-Modified` 2026-10-25 10:22 GMT, o sea 10 días sin actualizarse. Cámara parada, no se crea el spot; reintentar en la próxima pasada de Bizkaia (la regla "con mar a la vista" exige además mirar la imagen con Read, y con la cámara parada no tiene sentido).
+  - **Bermeo** (`bermeo.eus/webcam.html`): timeout de 20 s otra vez (tercer intento en total); no se da por caído, sigue sin verificar.
+  - **Gorliz** (`webcam.gorliz.net`): el certificado no coincide con el host (error TLS); ya estaba descartado como página guardada, sin cambios.
+- Nada más nuevo que proponer hoy.
+Firmado: robot buscador de fuentes (rutina), 2026-11-04 04:55 UTC.
+
+### 2026-11-05 04:45 UTC (robot de cámaras caídas — rutina; Pasaia, Alicante, Torreblanca, Cangas/Bakio/Mundaka)
+
+Datos: `camaras-estado.json` de 2026-11-05T03:04Z (fresco). En rojo: alicante, torreblanca (`origen_404`), pasaia (`frame_plano`, última señal ayer 18:00 UTC), cangas, bakio y mundaka (`frame_congelado`, lectura nocturna). Orio ya no está en rojo (se recuperó).
+- **alicante, torreblanca**: `streaming.comunitatvalenciana.com/static/.../webcam_mini.png` siguen en 404 hoy. Sin alternativa nueva; Turisme CV no ha vuelto a publicar.
+- **pasaia**: `detectia.net/img/webcam-pasaia-azti.webp` 200, Last-Modified 2026-11-04 18:04 GMT (sin cambiar desde el anochecer). Son las 04:45 UTC, de noche: no se puede juzgar.
+- **cangas, bakio, mundaka**: congeladas pero de noche (última señal hace 1 h); no se tocan.
+- No se cambió código. Para la siguiente (de día): pasaia, cangas, bakio, mundaka.
+— robot de cámaras caídas (rutina)
+
+### 2026-11-06 04:45 UTC (robot de cámaras caídas — rutina; Alicante, Torreblanca, Gandía/Dénia/Peñíscola, Cantabria)
+
+Datos: `camaras-estado.json` de 2026-11-06T03:37Z (fresco). En rojo: alicante, torreblanca (`origen_404`, desde el 7 y 11 oct), gandia, denia, peniscola (`origen_404`, 1 fallo), sanvicente, comillas, suances (`origen_522`, 1 fallo), y `frame_congelado` en pasaia, portosin, bakio, mundaka (lectura nocturna). Orio: `sin_respuesta` sin pasar a rojo.
+- **gandia, denia, peniscola**: las URLs `streaming.comunitatvalenciana.com/static/<X>/webcam_mini.png` responden 200 ahora; era un fallo puntual, no hay nada que cambiar.
+- **alicante, torreblanca**: siguen en 404 (misma ruta del mismo servidor que sí sirve las otras tres). Sin alternativa nueva; el fallo es de esos dos recursos, no del proveedor entero.
+- **sanvicente, comillas, suances**: sin verificar: dominio `www.cantabria.es` bloqueado por la red de la rutina (túnel sin respuesta). Un 522 con un solo fallo no basta para tocar nada.
+- **pasaia, portosin, bakio, mundaka**: congeladas pero son las 04:45 UTC, de noche; no se juzgan.
+- No se cambió código. Para la siguiente (de día): pasaia, bakio, mundaka, portosin; buscar sustituto de alicante/torreblanca.
+— robot de cámaras caídas (rutina)
+
+### 2026-11-06 05:00 UTC — robot buscador de fuentes (rutina): viernes, estudios sobre factores (viento/oleaje y capturabilidad de lubina)
+- Factor de hoy: viento y oleaje frente a capturas de lubina. Una búsqueda web. Hallazgos (solo resúmenes del buscador, no abrí los textos ni comprobé licencia):
+  - PLoS One 2022, pesquería comercial costera de lubina: con más altura de ola salen menos barcos y baja el éxito de pesca (desembarcos por metro de eslora). Es pesca comercial, no de caña; no sirve para una regla de costa.
+  - Ecological Economics 2018, modelo de captura y esfuerzo de la pesca de lubina con caña en Irlanda (https://edepositireland.ie/handle/2262/83826): acceso abierto, pero el resumen no menciona variables meteorológicas.
+  - Informe del programa irlandés de lubina (https://www.fisheriesireland.ie/sites/default/files/2021-12/ifi-national-bass-programme-angler-data-report-2018-2020.pdf): capturas por pescador y hora, sin análisis de tiempo en lo visto.
+- Sin regla propuesta ni rama `-factores`: no llega a confianza 0,3 (sin texto verificado y sin efecto cuantificado para pesca de costa). La regla de Mikel de mar movida/presión no se toca.
+- Concursos: no se revisó ninguna federación nueva (sin margen).
+- Para la próxima: abrir el texto completo del modelo irlandés de 2018 y del PLoS One 2022 para ver si traen covariables de viento/ola y su licencia.
+
+Firmado: robot buscador de fuentes (rutina), 2026-11-06 05:00 UTC.
+
+### 2026-11-07 04:45 UTC (robot de cámaras caídas — rutina; Alicante, Torreblanca, Pasaia, Cantabria)
+
+Datos: `camaras-estado.json` de 2026-11-07T03:04Z (fresco). En rojo: alicante, torreblanca (`origen_404`, desde el 7 y 11 oct), pasaia (`frame_plano`), orio (`sin_respuesta`), sanvicente, comillas (`origen_522`), y dos `frame_congelado` nocturnos.
+- **alicante, torreblanca**: `streaming.comunitatvalenciana.com/static/AlicantePuerto|Torreblanca/webcam_mini.png` siguen en 404 (Gandia en 200). Probé también `Alicante` y `Torrevieja`: 404. Sin alternativa nueva; términos ya probados en pasadas anteriores, sin novedad del dueño (Turisme CV).
+- **pasaia**: `detectia.net/img/webcam-pasaia-azti.webp` responde 200, Last-Modified 06-nov 18:04 GMT; son las 04:45 UTC (noche), `frame_plano` esperable. No se juzga.
+- **orio**: `sin_respuesta`, sin verificar (de noche, ya recuperó otras veces).
+- **sanvicente, comillas**: sin verificar: dominio `www.cantabria.es` bloqueado por la red de la rutina (sin respuesta).
+- No se cambió código. Siguiente pasada (de día): pasaia, orio, cantabria.es; sustituto de alicante/torreblanca.
+— robot de cámaras caídas (rutina)
+
+### 2026-11-07 11:20 UTC — robot de patrones de uso (rutina)
+
+Datos: `datos-robots/patrones-uso/ultima.json` generado el 2026-11-07 01:51 UTC (fresco, `errores` vacío, 2 cuentas de prueba excluidas). Muestra pequeña: 11 perfiles, 3 usuarios activos en 7 días, 8 en 28 días, 700 eventos totales de 8 usuarios desde el 2026-09-17. Solo se confirma la recogida y se señalan tendencias con cautela.
+- Abandono: de 10 perfiles con más de 7 días, 3 nunca hicieron nada, 5 llevan 7 días sin actividad y 2 siguen activos. 1 alta en 7 días, 5 en 28.
+- Mapa: `ver_mapa` 17 eventos de 3 usuarios (7d), 118 de 8 (28d). Es lo que usa todo el mundo.
+- Capas (usuarios distintos en 28d): clorofila 5, isóbatas 5, sustrato 5, temperatura agua 4, boyas 4, ríos 3, frentes 3, corriente 3, viento 3, estaciones 3, radar lluvia 2, rayos 2; batimetría vieja 0 (sustituida por isóbatas). Desde el 2026-11-07 las capas arrancan apagadas, así que estos recuentos pasarán a medir encendido manual de verdad.
+- Diario: `crear_salida` y `crear_captura` los usa 1 solo usuario (11 salidas, 5 capturas en total; última captura el 2026-10-19). Grupos: 1 `unirse_grupo` (2026-09-18), nada desde entonces. SOS: 1 pulsación (2026-10-08, prueba probable).
+- Pago: `ver_suscripcion` 18 eventos de 2 usuarios (28d); `iniciar_checkout` 13 totales de 3 usuarios (anual 6, mensual 5); `acepta_condiciones_pago` 2 eventos de 1 usuario el 2026-11-05. Hay intención de pago pero no se ve conversión en estos datos.
+
+Propuestas (solo propuestas, nada aplicado):
+1. Diario y grupos casi no tienen uso real (1 usuario activo en diario, 0 usuarios en grupos en 28 días) con 8 usuarios activos. No quitarlos con esta muestra; sí revisar con Mikel si la entrada al diario es visible y está explicada en la prueba de 14 días (ejemplo: tarjeta o aviso tras la primera vez que se abre un spot).
+2. Las capas de mar (clorofila, frentes, corriente, sustrato) las prueban 3-5 de 8 usuarios, más que radar y rayos (2). Mantenerlas, y valorar que el aviso "las capas empiezan apagadas" tenga un acceso claro para no perder ese descubrimiento tras el cambio del 2026-11-07.
+3. Embudo de pago: 3 usuarios iniciaron checkout y 1 aceptó condiciones, pero no hay evento de pago completado. Medirlo con el KPI prueba → pago de `suscripciones.primer_pago_en` antes de decidir cambios en `suscripcion.html`.
+4. Sin acción sobre SOS: se queda como está (seguridad).
+
+Puntos ciegos de la medición: no hay evento para la modalidad (🪨🚤🤿), la flota/mapa de calor, el ▶️ de 14 días, la ventana de actividad, la identificación por foto ni el cambio de idioma; y las capas llevan eventos solo al encender, no cuánto tiempo se usan. Propuesta para `scripts/patrones-uso/agregar.mjs` y la instrumentación: añadir `cambiar_modalidad` y `ver_capa_flota` con `registrarEvento` (no aplicado). No tuve tiempo de comparar con semanas anteriores en `git log -p`.
+— robot de patrones de uso (rutina)
+
+### 2026-11-08 04:55 UTC (robot de cámaras caídas — rutina; Alicante, Torreblanca, Xilxes, Cantabria)
+
+Datos: `camaras-estado.json` de 2026-11-08T03:04Z (fresco). En rojo: alicante, torreblanca (`origen_404`, desde el 7 y 11 oct), xilxes (`origen_404`, 1 fallo), sanvicente, comillas (`origen_522`), pasaia, bakio, mundaka (`frame_congelado`, lectura nocturna).
+- **xilxes**: ya vuelve a dar 200 (`Xilxes/webcam_mini.png`); fallo puntual, nada que tocar.
+- **alicante**: `AlicantePuerto` sigue en 404. La web de Turisme CV (`/es/webcams`) solo lista ahora `AlicanteExplanada` (200, Last-Modified de hoy 04:00 GMT). La miré con Read: es el paseo de palmeras de la Explanada, sin mar a la vista → NO sirve para el spot; no se cambia. Probé también `AlicantePostiguet`, `Alicante1`, `Postiguet`: 404.
+- **torreblanca**: `Torreblanca` sigue en 404 y la página de webcams de Turisme CV no lista ningún stream de Torreblanca. Sin alternativa.
+- **sanvicente, comillas**: sin verificar: `www.cantabria.es` no responde desde la red de la rutina.
+- **pasaia, bakio, mundaka**: congeladas de noche (04:40 UTC), esperable; no se juzga.
+- No se cambió código. Siguiente pasada: sustituto de alicante/torreblanca (otro dueño: puerto, club náutico, windfinder), cantabria.es de día.
+— robot de cámaras caídas (rutina)
 
 ### 2026-10-15 05:05 UTC (robot buscador de fuentes — jueves, fichas de especies)
 

@@ -19,7 +19,7 @@
 // identificables), textos sin huecos, token válido (si falta
 // pages_manage_posts, solo Instagram).
 
-import { hoyMadrid, instanteMadrid } from "./calendario.mjs";
+import { hoyMadrid, instanteEn, MERCADOS } from "./calendario.mjs";
 
 export const HORAS_AVISO = 12;
 // El contenedor de Instagram caduca a las 24 h de crearse: margen de 1 h.
@@ -56,14 +56,17 @@ export function vetada({ etiquetas = [], comentarios = [], dueno = "" }) {
 // que se abrió el Issue (si el robot llegó tarde, se retrasa).
 export function momentoPublicacion(pieza, creadoIssue) {
   if (!pieza?.fecha || !pieza?.hora || !/^\d{4}-\d{2}-\d{2}$/.test(pieza.fecha) || !/^\d{2}:\d{2}$/.test(pieza.hora)) return null;
-  const prevista = instanteMadrid(pieza.fecha, pieza.hora);
+  // La hora de la pieza es la de su mercado: las de NZ, 07:00 de Auckland
+  // (hasta el 2026-11-07 se leía en hora de Madrid y #420 salía 12 h tarde).
+  const zona = pieza.zona || MERCADOS[pieza.mercado === "nz" ? "nz" : "es"].zona;
+  const prevista = instanteEn(pieza.fecha, pieza.hora, zona);
   const creado = new Date(creadoIssue);
   if (Number.isNaN(creado.getTime())) return null;
   return new Date(Math.max(prevista.getTime(), creado.getTime() + HORAS_AVISO * H));
 }
 
 // Solo piezas de nuestra plantilla, servidas desde costaviva.org/assets/marketing.
-const URL_PROPIA = /^https:\/\/costaviva\.org\/assets\/marketing\/[A-Za-z0-9._-]+\.(png|jpe?g|mp4)$/;
+const URL_PROPIA = /^https:\/\/costaviva\.org\/assets\/marketing\/(?:reels\/)?[A-Za-z0-9._-]+\.(png|jpe?g|mp4)$/;
 const HUECOS = /\{ENLACE\}|\bundefined\b|\bNaN\b|\bnull\b|\[object /;
 export function piezaSegura(pieza) {
   if (!pieza || typeof pieza !== "object") return { ok: false, motivo: "el Issue no lleva la pieza" };
@@ -91,9 +94,16 @@ export function piezaSegura(pieza) {
 export function yaPublicada(publicados = [], issue) {
   return publicados.some((p) => String(p.issueNumber ?? "") === String(issue));
 }
-export function publicadaHoy(publicados = [], ahora) {
+// Mercado de una publicación apuntada: la campaña de NZ lleva "-nz-"
+// ("20261105-reel-especie-nz-kingfish").
+export function mercadoDePublicada(p = {}) {
+  return /-nz(-|$)/.test(String(p.campana || "")) ? "nz" : "es";
+}
+// El máximo de 1 al día por red es por mercado (2026-11-07): España sale a
+// las 09:00 y NZ a las 19:00 de Madrid, y las dos tienen su público.
+export function publicadaHoy(publicados = [], ahora, mercado = "es") {
   const hoy = hoyMadrid(ahora);
-  return publicados.some((p) => p.fecha && hoyMadrid(new Date(p.fecha)) === hoy);
+  return publicados.some((p) => p.fecha && hoyMadrid(new Date(p.fecha)) === hoy && mercadoDePublicada(p) === mercado);
 }
 
 // Decisión para un Issue. Devuelve { accion, redes, motivo, notas }:
@@ -108,8 +118,8 @@ export function decidir({ issue, pieza, etiquetas = [], comentarios = [], dueno,
   if (String(automatica ?? "").trim().toLowerCase() !== "true") return r("saltar", "PUBLICACION_AUTOMATICA no es true");
   if (!abierto) return r("saltar", "Issue cerrado");
   if (!pieza) return r("saltar", "Issue sin pieza");
-  // Las piezas de Nueva Zelanda solo salen con el OK manual de Mikel (2026-10-11).
-  if (pieza.mercado === "nz") return r("saltar", "pieza de Nueva Zelanda: solo se publica a mano, con el OK de Mikel");
+  // Nueva Zelanda: hasta el 2026-11-07 solo a mano; desde entonces, como
+  // España, sola con 12 h de veto (Mikel: "Publica").
   if (etiquetas.includes(ETIQUETA_REVISAR)) return r("saltar", `etiqueta ${ETIQUETA_REVISAR}`);
   const v = vetada({ etiquetas, comentarios, dueno });
   if (v.vetada) return r("saltar", `vetada (${v.motivo})`, { vetada: true });
@@ -130,7 +140,7 @@ export function decidir({ issue, pieza, etiquetas = [], comentarios = [], dueno,
     return r("avisar", "el borrador de Instagram ha caducado (24 h): vuelve a lanzar el robot para esa fecha", { clave: "caducada", revisar: true });
   }
   for (const [red, lista] of [["instagram", ig], ["facebook", fb]]) {
-    if (redes.includes(red) && publicadaHoy(lista, ahora)) {
+    if (redes.includes(red) && publicadaHoy(lista, ahora, pieza.mercado === "nz" ? "nz" : "es")) {
       redes = redes.filter((x) => x !== red);
       notas.push(`${red === "instagram" ? "Instagram" : "Facebook"}: hoy ya salió otra pieza (máximo 1 al día por red).`);
     }

@@ -35,6 +35,16 @@ export const CAPA_PUNTO = "eusm2025_eunis2019_full";
 // Zoom mínimo de la capa: a escala de plataforma (Golfo de Bizkaia entero) ya
 // se distingue roca, arena y fango (petición de Mikel: "hasta donde tengamos").
 export const ZOOM_MIN_CAPA = 7;
+// Respaldo (2026-10-20, Seabed Habitats con 503 o sin contestar): el sustrato
+// de EMODnet Geology, otro servidor de EMODnet con la misma clasificación
+// Folk y casi los mismos colores. Menos detalle junto a la orilla y sin
+// Posidonia, pero se ve. 250k encima de 1:1M (donde hay 250k, manda).
+export const WMS_EMODNET_GEOLOGIA = "https://drive.emodnet-geology.eu/geoserver/gtk/wms";
+export const CAPAS_GEOLOGIA = "seabed_substrate_1m,seabed_substrate_250k";
+// Sin ninguna tesela de Seabed Habitats en este tiempo (o con 3 fallos), se
+// pasa al respaldo y se recuerda en la sesión para no volver a esperar.
+export const ESPERA_TESELAS_MS = 10000;
+const CLAVE_RESPALDO = "costaviva.fondo.respaldo";
 // Radio para reutilizar el dato de un spot fijo en un punto propio.
 export const RADIO_SPOT_CERCANO_KM = 1.5;
 
@@ -46,9 +56,69 @@ export const LEYENDA_SUSTRATO = [
   { clase: "arena", texto: I18n.t("fondo.ley.arena"), color: "#F6F17C" },
   { clase: "grava", texto: I18n.t("fondo.ley.grava"), color: "#D1CD6A" },
   { clase: "fango", texto: I18n.t("fondo.ley.fango"), color: "#95DCFC" },
-  { clase: "posidonia", texto: I18n.t("fondo.ley.posidonia"), color: "#2EA531" },
+  { clase: "posidonia", texto: I18n.t("fondo.ley.posidonia"), color: "#2EA531", patron: true },
   { clase: null, texto: I18n.t("fondo.ley.sin_clasificar"), color: "#A5A5A5" },
 ];
+
+// Posidonia a rayas (2026-10-20, Mikel: "la posidonia no se ve muy
+// distinta"): al 60 % sobre el mar, el verde de EMODnet casi no se separa de
+// la grava. El WMS no deja cambiar su color, así que cada tesela se repinta
+// en el navegador: los píxeles del verde de EMODnet pasan a rayas de dos
+// verdes, opacas. Si el servidor no da CORS, la tesela sale sin repintar.
+export const COLOR_POSIDONIA_WMS = [0x2e, 0xa5, 0x31];
+export const RAYAS_POSIDONIA = [[0x05, 0x4a, 0x1a], [0x7c, 0xff, 0x4f]];
+export const ANCHO_RAYA_PX = 3;
+export const PATRON_POSIDONIA_CSS = `repeating-linear-gradient(45deg, rgb(${RAYAS_POSIDONIA[0]}) 0 ${ANCHO_RAYA_PX}px, rgb(${RAYAS_POSIDONIA[1]}) ${ANCHO_RAYA_PX}px ${2 * ANCHO_RAYA_PX}px)`;
+
+// Repinta en su sitio los píxeles RGBA (ancho x alto) del verde de la
+// Posidonia. Devuelve cuántos ha cambiado. Puro: se prueba en Node.
+export function repintarPosidonia(px, ancho, tolerancia = 24) {
+  const [r0, g0, b0] = COLOR_POSIDONIA_WMS;
+  let n = 0;
+  for (let i = 0; i < px.length; i += 4) {
+    if (!px[i + 3]) continue;
+    if (Math.abs(px[i] - r0) + Math.abs(px[i + 1] - g0) + Math.abs(px[i + 2] - b0) > tolerancia) continue;
+    const p = i / 4, x = p % ancho, y = (p - x) / ancho;
+    const c = RAYAS_POSIDONIA[Math.floor((x + y) / ANCHO_RAYA_PX) % 2];
+    px[i] = c[0]; px[i + 1] = c[1]; px[i + 2] = c[2]; px[i + 3] = 255;
+    n++;
+  }
+  return n;
+}
+
+// WMS de Leaflet que dibuja cada tesela en un canvas para repintar la
+// Posidonia. Mismos eventos (tileload / tileerror) que una tileLayer.wms.
+function wmsConPosidonia(L, url, opciones) {
+  const Capa = L.TileLayer.WMS.extend({
+    createTile(coords, done) {
+      const tamano = this.getTileSize();
+      const lienzo = document.createElement("canvas");
+      lienzo.width = tamano.x; lienzo.height = tamano.y;
+      const ctx = lienzo.getContext("2d");
+      const src = this.getTileUrl(coords);
+      const cargar = (cors) => {
+        const img = new Image();
+        if (cors) img.crossOrigin = "anonymous";
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0, tamano.x, tamano.y);
+          if (cors) {
+            try {
+              const datos = ctx.getImageData(0, 0, tamano.x, tamano.y);
+              if (repintarPosidonia(datos.data, tamano.x)) ctx.putImageData(datos, 0, 0);
+            } catch (e) { /* lienzo sin CORS: se queda sin repintar */ }
+          }
+          done(null, lienzo);
+        };
+        // Sin cabecera CORS la carga con crossOrigin falla: otra vez sin él.
+        img.onerror = () => (cors ? cargar(false) : done(new Error("tesela"), lienzo));
+        img.src = src;
+      };
+      cargar(true);
+      return lienzo;
+    },
+  });
+  return new Capa(url, opciones);
+}
 
 export const CLASES_FONDO = ["roca", "arena", "grava", "fango", "posidonia", "pradera", "biogenico"];
 export const TIPOS_ORILLA = ["acantilado", "roca", "escollera", "playa_arena", "playa_cantos", "playa", "puerto"];
@@ -291,7 +361,7 @@ function crearLeyenda(L) {
       for (const l of LEYENDA_SUSTRATO) {
         const fila = document.createElement("div");
         const muestra = document.createElement("i");
-        muestra.style.background = l.color;
+        muestra.style.background = l.patron ? PATRON_POSIDONIA_CSS : l.color;
         fila.appendChild(muestra);
         fila.appendChild(document.createTextNode(l.texto));
         div.appendChild(fila);
@@ -310,28 +380,54 @@ function crearLeyenda(L) {
 // map: el mapa de Leaflet; aviso(texto): para decir que hay que acercarse.
 // La enciende y apaga "Tipo de fondo" en el selector del botón "Fondo"
 // (selector-fondo.js) con ponerVisible().
-let mapaCapa = null, avisoZoom = () => {};
+let mapaCapa = null, capaRespaldo = null, avisoZoom = () => {};
+const enRespaldo = () => { try { return sessionStorage.getItem(CLAVE_RESPALDO) === "1"; } catch (e) { return false; } };
 export function montarCapa(map, aviso = () => {}) {
   const L = window.L;
   mapaCapa = map;
   // Panel por defecto (tilePane, z 200): por encima del mapa base y del
   // relieve (paneles mapaBase 150 y relieveFondo 160 de mapa-base.js) y por
   // debajo de overlayPane/markerPane (spots, marcadores, isóbatas).
-  capa = L.tileLayer.wms(WMS_EMODNET_SEABED, {
+  capa = wmsConPosidonia(L, WMS_EMODNET_SEABED, {
     pane: "tilePane", layers: CAPA_SUSTRATO, styles: "", format: "image/png", transparent: true,
     opacity: 0.6, minZoom: ZOOM_MIN_CAPA, attribution: ATRIBUCION_SUSTRATO,
   });
   leyenda = crearLeyenda(L);
+  capaRespaldo = L.tileLayer.wms(WMS_EMODNET_GEOLOGIA, {
+    pane: "tilePane", layers: CAPAS_GEOLOGIA, styles: "", format: "image/png", transparent: true,
+    opacity: 0.6, minZoom: ZOOM_MIN_CAPA, attribution: I18n.t("fondo.atribucion_geologia"),
+  });
   avisoZoom = () => {
-    if (map.hasLayer(capa) && map.getZoom() < ZOOM_MIN_CAPA) aviso(I18n.t("fondo.acercate"));
+    if (visible() && map.getZoom() < ZOOM_MIN_CAPA) aviso(I18n.t("fondo.acercate"));
   };
   map.on("zoomend", avisoZoom);
+  // El servidor de EMODnet Seabed Habitats a veces no contesta (2026-10-20:
+  // 503 o más de 90 s sin respuesta): la leyenda salía y el mapa quedaba sin
+  // manchas. Si fallan varias teselas o en ESPERA_TESELAS_MS no llega
+  // ninguna, se cambia al respaldo de EMODnet Geology y se dice.
+  let errores = 0, cargadas = 0, avisado = false, reloj = null;
+  const sinServidor = () => {
+    if (avisado || !map.hasLayer(capa) || map.getZoom() < ZOOM_MIN_CAPA) return;
+    avisado = true;
+    try { sessionStorage.setItem(CLAVE_RESPALDO, "1"); } catch (e) {}
+    map.removeLayer(capa);
+    capaRespaldo.addTo(map);
+    aviso(I18n.t("fondo.sin_servidor"));
+  };
+  capa.on("add", () => {
+    errores = 0; cargadas = 0; avisado = false;
+    clearTimeout(reloj);
+    reloj = setTimeout(() => { if (!cargadas) sinServidor(); }, ESPERA_TESELAS_MS);
+  });
+  capa.on("remove", () => clearTimeout(reloj));
+  capa.on("tileload", () => { cargadas++; });
+  capa.on("tileerror", () => { if (++errores >= 3 && !cargadas) sinServidor(); });
 }
 
-export const visible = () => !!(mapaCapa && capa && mapaCapa.hasLayer(capa));
+export const visible = () => !!(mapaCapa && capa && (mapaCapa.hasLayer(capa) || mapaCapa.hasLayer(capaRespaldo)));
 
 export function ponerVisible(v) {
   if (!mapaCapa || !capa || !!v === visible()) return;
-  if (v) { capa.addTo(mapaCapa); leyenda.addTo(mapaCapa); avisoZoom(); }
-  else { mapaCapa.removeLayer(capa); leyenda.remove(); }
+  if (v) { (enRespaldo() ? capaRespaldo : capa).addTo(mapaCapa); leyenda.addTo(mapaCapa); avisoZoom(); }
+  else { mapaCapa.removeLayer(capa); mapaCapa.removeLayer(capaRespaldo); leyenda.remove(); }
 }

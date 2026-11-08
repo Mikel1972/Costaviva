@@ -58,9 +58,50 @@ function leerIssue() {
   return { pieza: extraerPieza(d.body), etiquetas: (d.labels || []).map((l) => l.name), estado: d.state };
 }
 
-async function publicarInstagram(creationId) {
+async function publicarInstagram(creationId, pieza = {}) {
   if (!IG_ID) throw new Error("Falta la variable META_IG_BUSINESS_ACCOUNT_ID");
-  const d = await post(`${API}/${IG_ID}/media_publish`, { creation_id: creationId, access_token: TOKEN });
+  const contenedor = await contenedorListo(creationId, pieza);
+  const d = await post(`${API}/${IG_ID}/media_publish`, { creation_id: contenedor, access_token: TOKEN });
+  return d.id;
+}
+
+// 2026-10-30 (#342): el contenedor de Instagram caduca a las 24 h; publicado
+// a mano 23,5 h después, /media_publish dijo "Fatal" y se tomó por token
+// caducado. Ahora se mira antes su estado: si sigue procesando se espera; si
+// caducó o falló (o ya no existe) y el Issue trae la pieza, se crea uno nuevo
+// con el mismo vídeo o imagen y el mismo texto.
+const esperar = (ms) => new Promise((ok) => setTimeout(ok, ms));
+async function estadoContenedor(id) {
+  if (!id) return null;
+  const r = await fetch(`${API}/${id}?fields=status_code&access_token=${encodeURIComponent(TOKEN)}`);
+  const d = await r.json().catch(() => ({}));
+  if (d.error && tipoDeError(d) === "token") throw new ErrorMeta("estado del borrador de Instagram", d);
+  return d.status_code || (d.error ? "NO_EXISTE" : null);
+}
+async function esperarProcesado(id, intentos = 30, ms = 10000) {
+  for (let i = 1; i <= intentos; i++) {
+    const estado = await estadoContenedor(id);
+    if (estado === "FINISHED" || estado === null) return estado;
+    if (estado !== "IN_PROGRESS") return estado;
+    console.log(`… Instagram procesando el borrador (${i}/${intentos})`);
+    await esperar(ms);
+  }
+  return "IN_PROGRESS";
+}
+export async function contenedorListo(creationId, pieza, { estadoDe = esperarProcesado, crear = crearContenedor } = {}) {
+  const estado = creationId ? await estadoDe(creationId) : "NO_EXISTE";
+  if (estado === "FINISHED" || estado === null) return creationId;
+  if (!pieza.publicUrl || !pieza.captionInstagram) throw new Error(`El borrador de Instagram no se puede publicar (${estado}) y el Issue no trae la pieza para rehacerlo`);
+  console.log(`Borrador de Instagram ${estado}: se crea uno nuevo con la misma pieza.`);
+  const nuevo = await crear(pieza);
+  const estadoNuevo = await estadoDe(nuevo);
+  if (estadoNuevo !== "FINISHED" && estadoNuevo !== null) throw new Error(`Instagram no terminó de procesar el borrador nuevo (${estadoNuevo})`);
+  return nuevo;
+}
+async function crearContenedor(pieza) {
+  const d = await post(`${API}/${IG_ID}/media`, pieza.esReel
+    ? { media_type: "REELS", video_url: pieza.publicUrl, caption: pieza.captionInstagram, share_to_feed: "true", access_token: TOKEN }
+    : { image_url: pieza.publicUrl, caption: pieza.captionInstagram, access_token: TOKEN });
   return d.id;
 }
 
@@ -138,8 +179,8 @@ async function main() {
   for (const red of redes) {
     try {
       if (red === "instagram") {
-        if (!creationId) throw new Error("No hay borrador de Instagram para esta pieza");
-        const id = await publicarInstagram(creationId);
+        if (!creationId && !pieza.publicUrl) throw new Error("No hay borrador de Instagram para esta pieza");
+        const id = await publicarInstagram(creationId, pieza);
         apuntar("posts-publicados.jsonl", { postId: id, red: "instagram", fecha: new Date().toISOString(), issueNumber: ISSUE || null, campana: pieza.campana || null, medido: false });
         const enlace = await enlaceInstagram(id);
         hechos.push(`Instagram (id ${id})${enlace ? `: ${enlace}` : ""}`);
@@ -167,7 +208,9 @@ async function main() {
   if (fallos.length) process.exit(1);
 }
 
-main().catch((e) => {
-  console.error("Fallo publicando la pieza:", e.message);
-  process.exit(1);
-});
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main().catch((e) => {
+    console.error("Fallo publicando la pieza:", e.message);
+    process.exit(1);
+  });
+}

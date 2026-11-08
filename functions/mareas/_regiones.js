@@ -35,7 +35,7 @@ const CANTABRIA = new Set(["sanvicente","comillas","suances","santander","santon
 const PAIS_VASCO = new Set(["getxo","sopelana","plentzia","bakio","mundaka","lekeitio","ondarroa","mutriku","deba","zumaia","getaria","zarautz","orio","donostia","pasaia","hondarribia"]);
 
 export const REGIONES = [
-  { slug: "pais-vasco", nombre: "País Vasco", spots: PAIS_VASCO },
+  { slug: "pais-vasco", nombre: "País Vasco", alias: "Euskadi", spots: PAIS_VASCO },
   { slug: "cantabria", nombre: "Cantabria", spots: CANTABRIA },
   { slug: "asturias", nombre: "Asturias", spots: ASTURIAS },
   { slug: "galicia", nombre: "Galicia", spots: GALICIA },

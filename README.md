@@ -50,7 +50,7 @@ Requisito: Node.js instalado (el script te avisa si falta).
 - Las webcams de Mundaka/Bakio/Sopelana se piden a `/webcam/<slug>` (nuestro propio proxy) y se refrescan solas cada minuto mientras el panel está abierto (indicador "EN DIRECTO") — si el proveedor original ha cambiado la URL o la bloquea, el panel avisa en vez de romperse
 - Temperatura del agua, nubosidad y precipitación vienen de Open-Meteo; marea (altura, tendencia, próxima pleamar/bajamar) y corriente marina también, calculadas a partir de la curva horaria real del modelo. Además hay 3 boyas reales de Puertos del Estado (Gijón, Bilbao-Vizcaya, Pasaia II) con oleaje y temperatura MEDIDOS, no modelados
 - Rayos: botón ⚡ en el mapa, muestra el mapa nacional de AEMET (imagen, actualizada cada hora, sin API key). AEMET no publica coordenadas por rayo en abierto — comprobado tanto en su API oficial como en el código de su propia web — así que no es una capa de puntos de esta zona, es una imagen de referencia de toda España
-- Los índices de mar combinado se calculan en el momento; caudal de ríos es real en Sella, Besaya, Pas, Asón, Eo, Júcar, Turia, Mijares, Segura y Lagares (Confederaciones Hidrográficas + Augas de Galicia) — los ríos vascos (Lea, Oka, Butroe...) siguen en `null` porque URA/Bizkaia bloquea el acceso automático a su SAIH
+- Los índices de mar combinado se calculan en el momento; caudal de ríos es real en Sella, Besaya, Pas, Asón, Eo, Júcar, Turia, Mijares, Segura, Lagares, Tordera y Muga (Confederaciones Hidrográficas + Augas de Galicia + Agència Catalana de l'Aigua) — los ríos vascos (Lea, Oka, Butroe...) siguen en `null` porque URA/Bizkaia bloquea el acceso automático a su SAIH
 
 ## Acceso con Supabase (activo)
 

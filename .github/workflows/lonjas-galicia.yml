@@ -1,0 +1,61 @@
+name: Lonjas de Galicia (primera venta)
+
+# 2026-10-22, aprobado por Mikel: scripts/lonjas/galicia.mjs baja de
+# pescadegalicia.gal ("Principais indicadores de vendas nas lonxas") los kg,
+# euros y €/kg vendidos por día, lonja y especie de D-1, D-2 y D-3 (Vigo a
+# veces llega tarde) y los guarda en Supabase (lonja_ventas) con upsert. Sirve
+# para etiquetar después las zonas calientes de la flota como "probablemente
+# <especie>". Sin IA. Solo totales en el registro (el repo es público).
+#
+# Fonte: Xunta de Galicia – pescadegalicia.gal. Su aviso legal
+# (https://www.pescadegalicia.gal/gl/aviso-legal) permite reutilizar los datos
+# citando la fuente y sin desnaturalizarlos.
+#
+# NECESITA: la migración 20261022213000_lonja_ventas.sql aplicada (hasta
+# entonces la pasada diaria sale en rojo al escribir) y el secret
+# SUPABASE_SERVICE_ROLE_KEY. "probar" solo baja y suma: no escribe nada.
+
+on:
+  schedule:
+    - cron: "17 10 * * *"
+  workflow_dispatch:
+    inputs:
+      modo:
+        description: "probar: solo baja y suma, no escribe. guardar: escribe en Supabase."
+        type: choice
+        options: [probar, guardar]
+        default: probar
+      dias:
+        description: "Días hacia atrás (1-31)"
+        default: "3"
+
+concurrency:
+  group: lonjas-galicia
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  lonjas:
+    if: ${{ vars.AUTOMATION_PAUSED != 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Bajar las ventas de las lonjas y guardarlas
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          MODO: ${{ github.event.inputs.modo || 'guardar' }}
+          DIAS: ${{ github.event.inputs.dias || '3' }}
+        run: |
+          case "$DIAS" in ''|*[!0-9]*) echo "::error::dias tiene que ser un número"; exit 1;; esac
+          if [ "$MODO" = "probar" ]; then
+            node scripts/lonjas/galicia.mjs --probar --dias "$DIAS"
+          else
+            node scripts/lonjas/galicia.mjs --dias "$DIAS"
+          fi
+          echo "Fonte: Xunta de Galicia – pescadegalicia.gal" >> "$GITHUB_STEP_SUMMARY"

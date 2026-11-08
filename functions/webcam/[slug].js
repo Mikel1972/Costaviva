@@ -142,7 +142,7 @@ export const WEBCAMS = {
   santapola: "https://streaming.comunitatvalenciana.com/static/SantaPolaGranPlaya/webcam_mini.png",
   javea: "https://streaming.comunitatvalenciana.com/static/Xabiapuerto/webcam_mini.png",
   alcossebre: "https://streaming.comunitatvalenciana.com/static/Alcossebre/webcam_mini.png",
-  benicassim: "https://streaming.comunitatvalenciana.com/static/BenicassimVela/webcam_mini.png",
+  benicassim: "https://streaming.comunitatvalenciana.com/static/BenicassimPalasiet/webcam_mini.png",
   burriana: "https://streaming.comunitatvalenciana.com/static/Burriana/webcam_mini.png",
   castellon: "https://streaming.comunitatvalenciana.com/static/GraodeCastellon/webcam_mini.png",
   xilxes: "https://streaming.comunitatvalenciana.com/static/Xilxes/webcam_mini.png",

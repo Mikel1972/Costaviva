@@ -1,0 +1,45 @@
+name: Buscar cámaras nuevas
+
+# scripts/camaras/buscar-camaras.mjs (2026-10-31, aprobado por Mikel). Sin IA.
+# Una vez por semana: spots sin ninguna cámara a menos de 5 km y, con el
+# secret YOUTUBE_API_KEY, directos de YouTube que los nombran o están cerca.
+# Deja un Issue con etiqueta "camaras-candidatas" (cierra el de la semana
+# anterior) para que Mikel marque las que quiere. No toca la app.
+# Sin la clave sale igual, solo con los huecos y un aviso.
+
+on:
+  schedule:
+    - cron: "47 6 * * 1" # lunes 06:47 UTC
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: buscar-camaras
+  cancel-in-progress: false
+
+jobs:
+  buscar:
+    if: ${{ vars.AUTOMATION_PAUSED != 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Buscar huecos y candidatas
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: node scripts/camaras/buscar-camaras.mjs --salida /tmp/camaras.md
+      - name: Issue semanal
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create camaras-candidatas --color 1D76DB --description "Cámaras nuevas propuestas por el buscador" --force
+          for n in $(gh issue list --label camaras-candidatas --state open --json number --jq '.[].number'); do
+            gh issue close "$n" --comment "Sustituido por la búsqueda de esta semana."
+          done
+          gh issue create --title "📷 Cámaras candidatas — $(date -u +%Y-%m-%d)" --label camaras-candidatas --body-file /tmp/camaras.md

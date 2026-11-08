@@ -49,7 +49,7 @@ export function resumen(estado) {
 // boton: el botón "Fondo"; panel: el contenedor del selector (vacío);
 // capas: { profundidad: { visible(), ponerVisible(v) }, tipo: { ... } };
 // alEncender(id): para la analítica de uso. Devuelve { refrescar } para que
-// las capas avisen si cambian solas (isóbatas en la pestaña Embarcación).
+// las capas avisen si cambian por otro camino.
 export function montarSelector({ boton, panel, capas, alEncender = () => {} }) {
   const estado = () => ({ profundidad: !!capas.profundidad?.visible(), tipo: !!capas.tipo?.visible() });
   const casillas = {};

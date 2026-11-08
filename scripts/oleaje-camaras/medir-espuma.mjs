@@ -85,10 +85,21 @@ function mediana(v) {
   return o.length % 2 ? o[m] : (o[m - 1] + o[m]) / 2;
 }
 
-async function pedir(url, ms = 20000) {
-  const r = await fetch(url, { headers: UA, signal: AbortSignal.timeout(ms) });
-  if (!r.ok) throw new Error(`HTTP ${r.status} (${url.slice(0, 90)})`);
-  return r;
+// Un reintento a los 3 s si falla la red o el servidor da 5xx (2026-10-28:
+// con una sola cámara con luz, un "fetch failed" suelto dejaba la vuelta en rojo).
+async function pedir(url, ms = 20000, intentos = 2) {
+  for (let i = 1; ; i++) {
+    try {
+      const r = await fetch(url, { headers: UA, signal: AbortSignal.timeout(ms) });
+      if (r.status >= 500 && i < intentos) throw Object.assign(new Error(`HTTP ${r.status}`), { reintentable: true });
+      if (!r.ok) throw new Error(`HTTP ${r.status} (${url.slice(0, 90)})`);
+      return r;
+    } catch (e) {
+      const deRed = e.reintentable || e.name === "TypeError" || e.name === "TimeoutError";
+      if (!deRed || i >= intentos) throw e;
+      await new Promise((ok) => setTimeout(ok, 3000));
+    }
+  }
 }
 
 async function ultimoSegmento(url) {
@@ -457,12 +468,18 @@ async function main() {
   const ahora = Date.now();
   if (SOLO_CALIBRAR) {
     const historial = leerHistorial();
+    let sinSupabase = !CLAVE;
     const etiquetas = [
-      ...(await leerEtiquetas(historial).catch((e) => (console.log("::warning::Etiquetas de Supabase no disponibles:", e.message), []))),
+      ...(await leerEtiquetas(historial).catch((e) => (sinSupabase = true, console.log("::warning::Etiquetas de Supabase no disponibles:", e.message), []))),
       ...leerEtiquetasClaude(),
     ];
     const calibracion = calibrarTodo(historial, etiquetas, centroBanda);
-    escribirCalibracion(new Date(ahora).toISOString(), historial, etiquetas, calibracion);
+    // Sin las etiquetas de Mikel (Supabase) la calibración sale peor y, si
+    // se subía, pisaba la buena del robot y chocaba con su push (2026-10-15,
+    // PR #251: Bakio pasó de 3 etiquetas de Mikel a 0 en el fichero y la
+    // tarea de las 16:07 no pudo guardar). Entonces solo se enseña.
+    if (sinSupabase) console.log("calibracion.json no se reescribe (faltan las etiquetas de Supabase): la recalcula el robot en su próxima ejecución.");
+    else escribirCalibracion(new Date(ahora).toISOString(), historial, etiquetas, calibracion);
     for (const [id, d] of Object.entries(sustitucionPorCamara(historial, calibracion))) console.log(`${d.sustituye ? "✓" : "·"} ${id}: ${d.motivo}`);
     return;
   }

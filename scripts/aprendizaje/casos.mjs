@@ -65,8 +65,24 @@ export function terminosGuardados(f) {
   return f.razones.filter((r) => typeof r.lo === "number" && r.factor && r.factor !== "tope").map((r) => ({ u: r.factor, lo: r.lo }));
 }
 
+// Usuarios cuyas salidas no entran en el aprendizaje: las cuentas de prueba
+// y quien se opuso a las estadísticas anónimas (2026-10-22, hoja de
+// condiciones del alta: interés legítimo con oposición en "Tus datos";
+// perfiles.consiente_uso_datos_capturas === false). Las del dueño
+// (administradores) siempre cuentan: son suyas. Un perfil sin la columna
+// (undefined/null) no se excluye por eso.
+export function usuariosExcluidos({ perfiles = [], emailsPrueba = [], propios = new Set() }) {
+  const pruebas = emailsPrueba.map((x) => String(x).toLowerCase());
+  const fuera = new Set();
+  for (const p of perfiles) {
+    if (pruebas.includes((p.email || "").toLowerCase())) fuera.add(p.id);
+    else if (p.consiente_uso_datos_capturas === false && !propios.has(p.id)) fuera.add(p.id);
+  }
+  return fuera;
+}
+
 // salidas: filas de salidas_pesca; capturas: [{ salida_id, especie }];
-// excluir: Set de user_id (cuentas de prueba); propios: Set de user_id del
+// excluir: Set de user_id (cuentas de prueba y oposiciones, usuariosExcluidos); propios: Set de user_id del
 // dueño (tabla administradores). hoy: "AAAA-MM-DD".
 export function casosDesdeDiario({ salidas = [], capturas = [], excluir = new Set(), propios = new Set(), datos, hoy }) {
   const mapa = mapaNombres(datos);

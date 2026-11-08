@@ -5,6 +5,68 @@ cambian las convenciones — no es un historial (para eso está `ROBOT.md`).
 Si algo de aquí queda desactualizado, corrígelo en el momento en que lo
 detectes, no lo dejes para luego.
 
+## Al abrir la app, solo los spots (2026-11-07, pedido de Mikel)
+
+Mikel: "Cuando se abre la app, sale por defecto la profundidad. No debe ser
+así. Cuando se entra en la app, solamente deben aparecer marcados los spots.
+Todo lo demás desactivado." Causa: la modalidad se recuerda (`va_modalidad`)
+y Embarcación encendía sola las isóbatas y la flota faenando; Submarina, el
+tipo de fondo; GFW y las capas de mar restauraban su "encendido" guardado.
+
+Regla desde hoy: al abrir `index.html` solo se ven los spots (con el resumen
+por regiones a zoom bajo) y las zonas sin pesca (aviso legal, orden de Mikel
+del 2026-10-12: no se tocan). Todas las demás capas empiezan APAGADAS y solo
+se encienden a mano en esta visita; su encendido no se guarda ni se restaura.
+- Isóbatas (`capa-batimetria.js`): `capaVisible({ manual })` = solo
+  `manual === true`; ya no hay `porModalidad`. Solo "Profundidad" del
+  selector "Fondo". La profundidad de cada spot para el índice no cambia.
+- Tipo de fondo: Submarina ya no lo enciende (se quitó
+  `aplicarCapasModalidad` de index.html). La modalidad no enciende capas.
+- Flota faenando (`capa-flota.js`): en Embarcación sale el chip "🚤 Flota ▾"
+  plegado (móvil y ordenador); la capa (calor y parados) y la petición de
+  datos solo con la casilla "Ver en el mapa" (`data-flota-ver`, clave
+  `flota.ver` en es/en/pt) o al tocar Hoy/Ayer, eslora o ▶️.
+  `controlVisible(m)` / `capaVisible(m, ver)`, `ponerVer(v)`.
+- GFW (`capa-gfw.js`): `estadoInicial(guardado)` recuerda periodo y arte de
+  `va_gfw`, pero `ver` siempre `false`; ya no se guarda `ver`.
+- Capas de mar (🌿 🌡 〰 🌊): `cv_capas_mar` solo devuelve el fondo elegido;
+  las activas guardadas no se vuelven a encender.
+- Se siguen recordando (no son capas): modalidad, unidades, idioma, vista de
+  región y menú de capas plegado.
+Tests: `test/batimetria.test.js`, `test/capa-flota.test.js`,
+`test/capa-gfw.test.js`, `test/modalidad-mapa.test.js`,
+`test/capas-combinadas.test.js` y en `test/navegador/` "al abrir con
+embarcacion/submarina recordada solo se ven los spots" (con `va_gfw`
+`{ver:true}` y `cv_capas_mar` guardados). Capa nueva: que empiece apagada.
+
+## Coordenadas al tocar el mapa en Embarcación (2026-11-07, pedido de Mikel)
+
+Mikel: "Cuando esté en embarcación, el toque en pantalla debe permitir ver
+las coordenadas. Si quiero ir a un punto en concreto debo saber cuál es."
+Con la modalidad `embarcacion` (`vaEstado.modalidad`), tocar un punto vacío
+del mapa abre un globo con "📍 Coordenadas de este punto": grados y minutos
+decimales del GPS/plotter (`43° 24,123′ N · 2° 41,456′ W`; coma en es/pt,
+punto en en; N/S/E/W en los tres idiomas, como `formatoCoordenadas`) y grados
+decimales para pegar (`43.40205, -2.69093`, siempre con punto), cada línea
+con «Copiar» (portapapeles; si no, `execCommand`; si tampoco, selecciona la
+línea y dice "Selecciona y copia") y la × de Leaflet ("Cerrar coordenadas").
+- Puro en `assets/js/coordenadas.js` (`formatoMinutos`, `formatoDecimal`,
+  `normalizarLon` para Nueva Zelanda más allá de 180°, `copiarTexto`,
+  `contenidoGlobo`), `window.Coordenadas`. Claves `coords.*` en es/en/pt.
+- El toque en index.html (`map.on("click")` junto a "Añadir ubicación"):
+  un solo globo (el nuevo toque lo mueve); espera 280 ms y se anula con
+  doble toque, zoom o arrastre. Añadir ubicación manda (ese toque crea el
+  punto). Los spots no cambian (sus marcadores no pasan el toque al mapa).
+  Las capas con globo propio (zonas sin pesca, celdas de GFW, barcos
+  parados: `L.Path` marcado en `marcarToqueCapa`) se quedan con su globo.
+  Con capas de mar encendidas sale su globo de siempre y, en Embarcación,
+  las coordenadas debajo en el mismo globo.
+- En Costa y Submarina el toque hace exactamente lo de antes (nada, o el
+  globo de las capas de mar).
+- Profundidad del punto: no, porque necesitaría pedirla al WCS de EMODnet.
+Tests: `test/coordenadas.test.js` (en tests.yml) y en `test/navegador/`
+"tocar el mapa en embarcacion/costa".
+
 ## Migraciones: solo se aplica la que Mikel aprobó (2026-10-11, incidente)
 
 Mikel aprobó UNA migración (`20261011230000_cobro_prueba_14_dias_plan_gratis.sql`)
@@ -26,11 +88,48 @@ SQL sin el sí de Mikel.** Dos cerrojos (trampa en `Mikel1972/comun`):
    `supabase_migrations.schema_migrations`: si lo pendiente no es
    EXACTAMENTE esa migración, falla sin tocar nada y lista las demás. Esas
    otras se le enseñan a Mikel; no se aplican "de paso".
+3. **Tabla nueva o RLS/políticas cambiadas = `supabase/baseline-seguridad.json`
+   en la MISMA PR** que la migración. Si no, `vigia-esquema.yml` sale en rojo
+   cada día al verla en producción (2026-10-21: `flota_faena` y
+   `flota_barcos`, arreglado en #293).
 
 Cómo se lanza ahora (desde main, con `actions_run_trigger`):
 `workflow_id: aplicar-migraciones.yml`, `ref: main`, inputs
 `{"confirmacion": "aplicar", "migracion": "20261011230000_cobro_prueba_14_dias_plan_gratis.sql"}`.
 Lógica en `.github/scripts/migraciones.mjs`, test en `test/migraciones.test.js`.
+
+## Lonjas de Galicia: primera venta por día, lonja y especie (2026-10-22, aprobado por Mikel)
+
+Para etiquetar después las zonas calientes de la flota (AIS) como
+"probablemente <especie>" según lo que se vende en el puerto más cercano.
+Sin IA. No toca los ficheros de la flota.
+
+- `scripts/lonjas/galicia.mjs` (Node, sin dependencias): GET de
+  https://www.pescadegalicia.gal/informe-notasventa/agregation (cookie +
+  `_csrf`), POST JSON a la misma URL con `X-CSRF-TOKEN`, filtro `TYPE_FECHA`
+  (dd/mm/aaaa) y agrupación fecha + lonja + grupo biológico + especie, 1000
+  filas por página. Lee la tabla HTML, cuadra los kg con la fila "Totais" y
+  hace upsert en `lonja_ventas` (clave fecha, region, lonja, especie) de
+  D-1..D-3: Vigo a veces llega tarde. `--probar` solo baja y suma.
+- `.github/workflows/lonjas-galicia.yml`: cada día a las 10:17 UTC y a mano
+  (`modo: probar|guardar`, `dias`). Solo totales en el registro.
+- Tabla `lonja_ventas` (migración `20261022213000_lonja_ventas.sql`):
+  **uso interno** desde `20261022230000_lonja_ventas_interna.sql` (Mikel,
+  2026-10-22: "los datos de la pesca solo nos interesan a nosotros para
+  sugerir tipo de pesca"): sin lectura pública, la leen y escriben solo los
+  robots con service_role. No se muestran en la app.
+- Coordenadas de las 60 lonxas (puerto, ~1 km, puestas a mano) en
+  `scripts/lonjas/lonjas-galicia.json`, por el nombre exacto de la fuente
+  (`Cariño.` y `Ribeira.` llevan punto). Si aparece una lonja nueva, el
+  workflow avisa: añadirla ahí.
+- **Licencia:** el aviso legal de pescadegalicia.gal permite reutilizar
+  (también con fines comerciales) citando la fuente y sin desnaturalizar los
+  datos. Se guardan tal cual y, donde se muestre algo derivado, va
+  **"Fonte: Xunta de Galicia – pescadegalicia.gal"** (fuente
+  `xunta_pescadegalicia_lonxas` en `assets/datos/especies.json`; al pintarlo
+  en el mapa, también en sus créditos).
+- Test: `test/lonjas-galicia.test.js` (fixtures recortadas de respuestas
+  reales en `test/fixtures/pescadegalicia-agregacion*.html`).
 
 ## Copia de seguridad y pruebas en el navegador (2026-10-12, pedido de Mikel)
 
@@ -46,6 +145,43 @@ Lógica en `.github/scripts/migraciones.mjs`, test en `test/migraciones.test.js`
   JavaScript, el mapa y el ☰, las preferencias y el zoom de la foto. Sesión
   falsa y Supabase contestado en vacío (`test/navegador/web.mjs`): nada llega
   a producción. Al cambiar algo visible, añade su prueba ahí.
+
+## Hoja de condiciones del alta y estadísticas por interés legítimo (2026-10-22, diseño de Mikel)
+
+- **Alta** (`login.html`): «Continuar» abre la hoja de condiciones (protección
+  de datos RGPD, estadísticas anónimas, condiciones de pago, datos de terceros
+  y disponibilidad, enlaces a /terminos y /privacidad; claves `hoja.*` en
+  es/en/pt). Sin marcar «He leído y acepto» el botón no se activa y no se pide
+  el enlace. Ya no hay casillas de términos ni de "Autorizo el uso anónimo".
+- **Aceptación**: en el metadato del alta (`assets/js/hoja-condiciones.js`,
+  `metadatosAceptacion`): `condiciones_alta_version` (`VERSION_HOJA`),
+  `condiciones_alta_aceptadas_en`, `condiciones_alta_idioma` en
+  `auth.users.raw_user_meta_data`, sin SQL. Si cambia el texto, sube
+  `VERSION_HOJA` (y la fecha de `hoja.intro`).
+- **Estadísticas anónimas = interés legítimo (art. 6.1.f) con oposición**: el
+  alta manda `consiente_uso_datos_capturas: true` (lo copia el trigger de
+  siempre). Oponerse: Mi suscripción → «Tus datos» (`suscripcion.html`), RPC
+  `fijar_uso_capturas_estadisticas(p_usar)` (migración
+  `20261022233000_estadisticas_interes_legitimo.sql`, ya aplicada en producción
+  según schema_migrations el 2026-10-23). Pone la misma columna a false:
+  los triggers dejan de contarle y el aprendizaje del índice le excluye
+  (`usuariosExcluidos` de `scripts/aprendizaje/casos.mjs`, salvo el dueño).
+  Los usuarios antiguos que no marcaron la casilla siguen a false.
+- **Aviso a las cuentas antiguas (decisión de Mikel, 2026-10-22)**: las que
+  siguen a false reciben un email (es/en/pt, `user_metadata.idioma`) y, 15
+  días después, entran por interés legítimo salvo que se opongan.
+  `scripts/avisos/condiciones-2026-10.mjs` + `aviso-condiciones.yml` (solo a
+  mano, sin IA; `contar`, `probar`, `enviar` e `incluir`, los dos últimos
+  escribiendo la misma palabra en `confirmacion`; 90 envíos/24 h; solo
+  números en el registro). Migración `20261023120000_aviso_condiciones_oposicion.sql`
+  (**pendiente del sí de Mikel**): `perfiles.aviso_condiciones_en` y
+  `oposicion_estadisticas_en` (la pone la RPC con false, la borra con true).
+  En «Tus datos», una cuenta avisada y no opuesta ve la casilla marcada:
+  desmarcarla es oponerse. `enviar` necesita el secret `RESEND_API_KEY`
+  también en GitHub. Test: `test/aviso-condiciones.test.js`.
+- Precios de la hoja: `test/hoja-condiciones.test.js` los compara con
+  `precios-zonas.json` (si cambian, cambia `hoja.pago_precios`). Prueba en el
+  navegador del alta y de «Tus datos» en `test/navegador/`.
 
 ## Idiomas: español, inglés y portugués (2026-10-09, base para Nueva Zelanda; portugués europeo desde el 2026-10-11)
 
@@ -597,11 +733,14 @@ es "automático con veto de 12 h". El publicador manual sigue existiendo.
   no hay veto, publica en Instagram y Facebook con
   `scripts/marketing/publicar-pieza.mjs` (la misma lógica que el manual,
   mismo grupo de `concurrency`) y cierra el Issue con los enlaces.
-- **Excepción: Nueva Zelanda.** Las piezas con `mercado: "nz"` nunca salen
-  solas (`decidir()` de `veto.mjs` las salta y su Issue no dice "se publica
-  sola"): siguen saliendo solo con el OK de Mikel, por el workflow manual
-  (petición de Mikel del 2026-10-11 para NZ). Sus reels no llevan clip si su
-  ficha no dice `persona_identificable: false`.
+- **Nueva Zelanda: también sola con veto desde el 2026-11-07** (Mikel:
+  "Publica"; hasta entonces solo con su OK, y las que nadie aprobó se
+  perdían). El máximo de 1 al día por red cuenta por mercado
+  (`publicadaHoy(..., mercado)`, el de cada publicación sale de su campaña:
+  `-nz-`): España a las 09:00 y NZ a las 19:00 de Madrid no se pisan. La
+  hora de cada pieza se lee en la zona de su mercado (`momentoPublicacion`;
+  hasta el 2026-11-07 era siempre Madrid y #420 se iba 12 h tarde). Sus
+  reels siguen sin clip si su ficha no dice `persona_identificable: false`.
 - **Cómo veta Mikel** (basta una): etiqueta `veto` en el Issue, o un
   comentario suyo (autor = dueño del repo) con la palabra "no" o "veto" (en
   caso de duda gana el veto; los comentarios de otros no vetan). Interruptor
@@ -707,12 +846,13 @@ Fase decidida por Mikel: todo a conseguir usuarios (0 suscriptores el
    Mikel) con `lanzar_marketing_nz()`, que solo admite los dos
    robots de marketing y siempre manda `mercado=nz` (la función general lanza
    sin inputs = España); el segundo `schedule:` de GitHub (06:40 / 06:20
-   UTC) es el respaldo. Mikel las ve por la mañana y se publican a
+   UTC) es el respaldo; sin fecha, antes de las 12:00 locales no se
+   prepara nada (un respaldo retrasado haría la de pasado mañana, #404).
+   Mikel las ve por la mañana y se publican a
    las 20:00 (19:00 en invierno de NZ) de la víspera en España; el Issue dice
    las dos horas (`textoCuando`) y lleva "🇳🇿 NZ" en el título. Clave del
-   estado `AAAA-MM-DD-post-nz` (no choca con la de España). **La regla no
-   cambia: cada pieza sale solo con el OK de Mikel** (workflow manual
-   "Publicar post de Instagram"). Mismo `{ENLACE}` y UTM (campaña
+   estado `AAAA-MM-DD-post-nz` (no choca con la de España). Desde el
+   2026-11-07 salen solas con el veto de 12 h, como las de España. Mismo `{ENLACE}` y UTM (campaña
    `AAAAMMDD-especies-nz-…` / `-condiciones-nz-…`; en Instagram "or tap the
    link in bio"). Tema: zonas de `ZONAS_NZ` en ciclos completos
    (`rotacion-zonas-nz.json`), dentro del ciclo primero la más buscada en NZ
@@ -1053,6 +1193,32 @@ YouTube o MEO no dejan republicar) por piezas en el estilo de la app.
   caída es experimental y SOLO con la app abierta y la pantalla visible;
   nada de "te salva la vida" ni segundo plano. El test lo comprueba.
 
+- **Reel de peces (2026-10-18, pedido de Mikel)**: `scripts/marketing/reel-peces.mjs`
+  + `plantillas/reel-peces.html`. Vídeo de peces de Pexels (`clips/stock/pexels-peces-arrecife`,
+  lo eligió Mikel; licencia en su `.licencia.json`) de fondo los 13 s y encima datos
+  reales de un spot con caudal de río (marea del día, corriente, río, ola, agua e
+  índice de pesca **de la lubina** desde costa, la misma cuenta que la ventana de
+  actividad; si la lubina no está de temporada, no se monta). Cierra con "Mareas,
+  corrientes, ríos, oleaje, clorofila, cámaras en directo y muchos más datos",
+  costa · barco · submarina y la llamada a la acción. Nunca "la primera app".
+  **Es el reel de los sábados en España** (Mikel, 2026-10-18: "a partir de ahora
+  prepararemos vídeos de este tipo"): el robot de reels lo monta sin `tipo` en
+  España (con `tipo: peces`, `spot` y `fecha` se fuerza cualquier día; los otros
+  tipos siguen a mano; NZ no cambia). Rota los spots con río y los vídeos con
+  `"tema": "peces"` en su ficha (`rotacion-reels-peces.json`), salta los spots
+  sin todos los datos o sin lubina de temporada y no se repite
+  (`calendario-estado.json`). Más vídeos de peces = más variedad: basta con
+  añadir el clip y su `.licencia.json` con `"tema": "peces"`. El resto del
+  flujo (borrador + Issue + OK de Mikel) es el de siempre.
+  **Desde el 2026-10-29, TODAS las piezas de España van en este vídeo**
+  (Mikel: "con el formato vídeo [...] como el que publicamos al principio
+  [...] hazlo así a partir de hoy"): cuando el robot de posts
+  (`robot-marketing-instagram.yml`) ve que mañana toca post en España y no
+  se ha forzado un `tipo`, lanza `robot-reel-instagram.yml` con `fecha` de
+  mañana y `tipo: peces` y no genera el post (paso "España en vídeo").
+  Martes, jueves, viernes y sábado salen en vídeo, a las 09:00. NZ y los
+  tipos forzados a mano siguen como antes. Con solo 2 clips de peces se
+  repiten mucho: cuantos más vídeos con `"tema": "peces"`, mejor.
 - **Piezas de Nueva Zelanda (2026-10-11)**, en inglés: lógica pura en
   `scripts/marketing/pieza-nz.mjs`, red y disco en `generar-nz.mjs` (se
   importa solo con `MERCADO=nz`: fija `I18n.fijarIdioma("en")` para que los
@@ -1113,6 +1279,17 @@ completos (con SHA-256 y DKIM comprobado) en comun,
 `embed.skylinewebcams.com`; no hay que tocar nada más (el test se adapta al
 valor). Analizar sus fotogramas sigue prohibido en cualquier caso.
 
+## Buscador de cámaras nuevas (2026-10-31)
+
+`buscar-camaras.yml` (lunes 06:47 UTC, sin IA) corre
+`scripts/camaras/buscar-camaras.mjs`: spots sin ninguna cámara (ni del proxy
+`/webcam/` ni de `camaras-externas.js`) a menos de 5 km y, con el secret
+`YOUTUBE_API_KEY`, directos de YouTube que nombran el spot o están cerca y no
+están ya en la app. Deja un Issue `camaras-candidatas` con casillas para
+Mikel y cierra el de la semana anterior; no toca la app. Lo marcado se añade
+a mano a `camaras-externas.js` como `enlace` (paywall). Tests:
+`test/buscar-camaras.test.js`.
+
 ## Cámaras de Nueva Zelanda: embebidas con interruptor por dueño (2026-10-11)
 
 `assets/js/camaras-nz.js` lista webcams de terceros con mar a la vista para
@@ -1124,7 +1301,7 @@ salud las comprueba como las de España (401/403/429 en enlace o iframe =
 `no_verificable`). `test/nz-region.test.js` exige que se carguen.
 
 **Embebidas: decisión de Mikel 2026-10-11 ("Embeberlas", como Skyline),
-pendiente de respuesta escrita de cada dueño.** Interruptor por dueño
+pendiente de respuesta escrita de cada dueño.** **CoroLive verificada por escrito el 2026-10-31 (CoroLive): «yep sure go ahead» al embebido con su iframe oficial y el crédito.** **Sails Ashore (Halfmoon Bay, Stewart Island) dio permiso escrito el 2026-11-07** a la petición de embeber y analizar («Happy for you to use our web cam images»; pide el enlace a la página): embebida con su `snapshot1.jpg` (`imagen_oficial`); análisis permitido pero no se usa (bahía en calma, sin rompiente, `NO_SIRVEN_NZ`). **Castlepoint Lighthouse dio permiso escrito el 2026-11-07** (Peter Munn, Harvest Electronics: «Sure no problem - just add acknowledgement»): embebido con el reproductor de YouTube que usa su web (`youtube.com/embed/live_stream?channel=…`, `iframe_oficial`; `https://www.youtube.com` entra en `frame-src` por `ORIGENES_IFRAME_NZ`) y su crédito; nunca se analiza (YouTube). No dicen nada del análisis: sigue a la espera de decisión de Mikel. Interruptor por dueño
 `NZ_EMBED_AUTORIZADO`: si un dueño dice que no, se pone
 su clave a `false` y sus cámaras vuelven solas a `enlace` (CoroLive sale
 además de `frame-src` de la CSP, que se arma con `ORIGENES_IFRAME_NZ`). Se
@@ -1505,6 +1682,16 @@ imágenes). Procedimiento y texto de la rutina diaria:
 `--anotar`); recalcular con `medir-espuma.mjs --solo-calibrar` (el robot
 también las lee en cada ejecución). La rutina sube a
 `robot/etiquetas-olas-AAAA-MM-DD` y `robot-diseno-pr.yml` le abre la PR.
+**Un solo dueño de `calibracion.json` (2026-10-15):** lo escribe el robot
+`espuma-camaras.yml`, el único con todas las fuentes (etiquetas de Mikel en
+Supabase + las de Claude). La rutina, sin la clave, la reescribía sin las de
+Mikel (Bakio de 3 a 0), su PR #251 chocó con el push del robot y en la sesión
+se dijo a Mikel "0 etiquetas tuyas" leyendo ese fichero. Ahora
+`--solo-calibrar` sin clave no escribe, y el robot gana el choque al subir
+(`-X theirs`); lo cubren dos pruebas de `test/oleaje-camaras.test.js`. Para
+contar etiquetas o mirar la calibración real, usa las filas de `espuma.jsonl`
+(campo `calibracion`) o `/prevision`, nunca un fichero que pudo escribir quien
+no tenía todos los datos (trampa 22 de comun).
 **Pendiente (Mikel):** crear la rutina en claude.ai/code/routines con el
 texto del final de `RUTINA_ETIQUETADO.md` (diaria, con luz, p. ej. 14:00
 UTC).
@@ -1998,8 +2185,9 @@ pidan a la vez (`cargandoCapasMar`), y las imágenes se guardan por capa.
   mg/m³)", "🌡 19,4 °C en superficie", "〰 Borde de agua verde y azul a unos 3
   km", "🌊 Corriente hacia el NE, 0,3 nudos (0,6 km/h)"), estrecho (195 px)
   para no quedar debajo de la columna de botones.
-- **Recuerdo**: `cv_capas_mar` en localStorage (`{activas, fondo}`, try/catch)
-  y se restauran al abrir, cuando ya están los módulos (`ventana-actividad-lista`).
+- **Recuerdo**: `cv_capas_mar` en localStorage (`{activas, fondo}`, try/catch).
+  Desde el 2026-11-07 al abrir solo se recupera el fondo elegido: las capas
+  empiezan apagadas (ver "Al abrir la app, solo los spots").
 - Medido (Chromium, 390x844, CPU x4): mover el mapa con las 4 capas ~28 ms;
   la imagen de trazos, una vez, ~260 ms.
 - Código: `assets/js/capas-combinadas.js` (puro), `componerCapasMar()` /
@@ -2551,7 +2739,8 @@ el SMTP personalizado de Supabase (Authentication → Emails → SMTP
 Settings) apuntando a Resend (`smtp.resend.com`, puerto 465, usuario
 `resend`, contraseña = `RESEND_API_KEY`, remitente
 `noreply@costaviva.org`) — verificado en real pidiendo un
-restablecimiento de contraseña para `admin+fishnowtest1@costaviva.invalid`
+restablecimiento de contraseña para uno de los alias de prueba del
+administrador (cuentas de `smoke-test.yml`/`auth-test.yml`)
 vía `POST /auth/v1/recover`: `200` y el email llegó de verdad. Ya no
 depende del límite de Supabase.
 
@@ -2632,6 +2821,23 @@ otro usuario". Cualquier cambio que toque `alarma.html`,
   equivalente.
 - `RESEND_API_KEY` (para el email de SOS) vive solo en Cloudflare Pages
   como variable de entorno tipo "Secret" — nunca en el repo.
+- `EUSKALMET_EMAIL` (2026-11-05): el email de la cuenta asociada a
+  `EUSKALMET_API_KEY`, que va dentro del JWT de
+  `functions/actualizar-euskalmet-rios.js`. Secret de Cloudflare Pages
+  (Production) porque es una dirección personal y el repo es público; sin
+  él la Function responde 503 ("Falta el secret EUSKALMET_EMAIL en
+  Cloudflare Pages") y no llama a Euskalmet. Tras añadirlo hace falta un
+  redeploy.
+- **Ningún email personal en el repo** (2026-11-05, Mikel: "los emails no
+  pueden quedar a la vista del público"): ni en código, ni en docs, ni en
+  migraciones. El icono del admin lo decide `es_admin()`, no el email en
+  el cliente; las cuentas se describen ("la cuenta del administrador", "los
+  alias de prueba del administrador"). `test/sin-emails-personales.test.js`
+  falla si aparece una dirección de gmail, yahoo, hotmail, outlook, icloud,
+  proton, gmx, etc. en cualquier fichero del repo; solo admite una lista
+  cerrada de direcciones de mentira de los tests. Las migraciones antiguas
+  llevan `admin@costaviva.invalid` / `persona@costaviva.invalid` en su lugar
+  (ya estaban aplicadas en producción; ese texto no se vuelve a ejecutar).
 - Tablas y RLS (todas con `using/with check (auth.uid() = user_id)`,
   definidas en `supabase/schema.sql` y
   `supabase/schema_diario_alarma.sql`):
@@ -3231,6 +3437,23 @@ pestaña en la hora actual. Hereda la vigencia por spot del punto anterior
   actividad, las especies del índice de pesca, los cebos (submarina: sin
   cebos) y la normativa; el post de Instagram es de costa por defecto
   (`MODALIDAD_POST` lo cambia) y nunca saca una especie de mar adentro.
+  - **Modalidad global en el mapa (2026-10-22, diseño aprobado por Mikel;
+    sustituye a las pestañas de arriba)**: píldora 🪨 🚤 🤿
+    (`#modalidadPildora`, `role=radiogroup`, flechas/Inicio/Fin, nombre un
+    momento debajo al tocar) arriba a la izquierda del mapa, junto al zoom;
+    se ve también con el ☰ plegado y con la ficha abierta en el móvil. Sin
+    pregunta la primera vez (Desde costa); luego la última elegida
+    (`va_modalidad`). Mikel quitó las pestañas de la ficha: la ficha solo
+    dice cuál está puesta (`#modActual`). Un punto propio de
+    embarcación/buceo cambia la modalidad global al abrirlo (sin guardarla).
+    Único sitio que la cambia: `ponerModalidad()` en index.html, que emite
+    `document` → `CustomEvent("modalidad", { detail: { modalidad } })` y deja
+    `<html data-modalidad>` (para quien cargue después: la capa de la flota
+    lo escucha). Capas: desde el 2026-11-07 la modalidad no enciende
+    ninguna (antes Embarcación encendía las isóbatas y Submarina el tipo de
+    fondo; ver "Al abrir la app, solo los spots"). Los spots fijos no
+    tienen tipo costa/mar adentro: no se filtran. Tests:
+    `test/modalidad-mapa.test.js` y `test/navegador/`.
   - Datos: `modalidades` por especie en `especies.json` (muchos-a-muchos:
     lubina en las tres, bonito solo embarcación; `aplica: null` = sin dato, no
     se muestra). Recupera la división costa/mar adentro que tenía la lista
@@ -3947,9 +4170,9 @@ y `... someras` (~10 min cada uno; GEBCO si EMODnet no tiene un cuadro). El
 WMS `emodnet:contours` no tiene la de 20 m. Colores discretos de claro a
 oscuro y leyenda abajo a la izquierda; etiquetas "200 m" en puntos
 precalculados (`etiquetas` de cada nivel) que caen en pantalla, las
-profundas desde zoom 6 y las someras desde zoom 10, 120 como mucho. Se
-encienden solas en la pestaña Embarcación (`porModalidad`) y a mano con
-"Profundidad" en el selector del botón "Fondo"; cada fichero se pide la
+profundas desde zoom 6 y las someras desde zoom 10, 120 como mucho. Solo
+se encienden a mano con "Profundidad" en el selector del botón "Fondo"
+(hasta el 2026-11-07 también solas en Embarcación); cada fichero se pide la
 primera vez que hace falta. Tests: `test/batimetria.test.js` (en tests.yml).
 
 **Botón único "Fondo" (2026-10-08, Mikel: "Fondos e Isób. muestran lo
@@ -3968,13 +4191,60 @@ marcar las dos**: líneas finas encima de manchas al 60 % se leen bien y es
 justo la pregunta del pescador ("¿roca a 30 m?"). Tocar fuera o Escape lo
 cierra; el botón sale activo si hay alguna capa y su `aria-label` dice
 cuáles. Las capas exponen `visible()` / `ponerVisible(v)`;
-`capa-batimetria.js` avisa con `onCambio` cuando la pestaña Embarcación
-enciende o apaga las isóbatas, y el selector se refresca. Seis botones por
+`capa-batimetria.js` avisa con `onCambio` cuando se encienden o apagan
+las isóbatas, y el selector se refresca. Seis botones por
 columna (Clorof. y T. agua suben a 260/322 px). Leyendas del fondo: abajo a
 la izquierda por encima del ⓘ en escritorio; **en el móvil arriba a la
 izquierda** (`esquinaLeyenda`), porque abajo las tapaban los créditos.
 Analítica: `ver_capa_isobatas` y `ver_capa_sustrato` (ya no hay
 `ver_capa_batimetria`).
+
+## 🚤 Flota pesquera faenando (AIS): zonas calientes del día (2026-10-22, fase 2 aprobada por Mikel)
+
+"Cada pez tiene su momento: anchoa 3 días, luego chicharro": se enseña el
+DÍA, no un acumulado de 30 días.
+- **Robot** (`scripts/flota/flota-ais.mjs`, `flota-ais.yml`, sin IA): escucha
+  aisstream.io 20 min cada 2 h (pg_cron `lanzar-flota-ais` a los 11 de las
+  horas pares; el `schedule:` es respaldo y se salta si pg_cron ya la lanzó).
+  Guarda en `flota_faena` (cerrada, solo service_role) barco = HMAC, celda de
+  0,05°, clase y **hora** de la escucha; al acabar recalcula `flota_zonas`.
+- **`flota_zonas`** (lectura pública, `anon-ok`): periodo `24h` (últimas 24 h)
+  o `ayer` (las 24 h anteriores), celda, clase (`todas`, `<24`, `24-40`,
+  `>40`), `n_barcos` (barcos DISTINTOS) y `especie_probable` (null hasta
+  cruzar con las lonjas). **Solo celdas con 3 barcos o más** (también un
+  CHECK en la tabla). Por qué tabla de agregados y no vista/función: una
+  vista se salta la RLS, una definer no puede ser de anon (D10) y una invoker
+  obligaría a abrir `flota_faena`. Migración `20261022120000_flota_zonas_dia.sql`.
+- **Mapa** (`assets/js/capa-flota.js`, `window.Flota`): **mapa de calor**
+  (2026-10-23) en un `<canvas>` propio, sin librerías: una mancha de ~3,5 km
+  de radio por celda (`radioBlobPx`, mínimo 7 px a zoom bajo), intensidad
+  logarítmica de 3 a 30 barcos, gradiente amarillo → rojo; las manchas se
+  juntan con el MÁXIMO ("lighten"), no sumando, para que a zoom bajo no
+  salga una franja más roja que cualquier celda. Tooltip "N barcos" de la
+  celda bajo el ratón o el dedo. **▶️ de 14 días**: `flota_zonas_dia`
+  (migración `20261023100000_flota_zonas_historico.sql`; día de MADRID,
+  hoy y ayer se recalculan en cada escucha, 60 días, mismo umbral y misma
+  regla contra la resta); cada fotograma es un día suelto; con menos de 2
+  días, "Aún no hay días suficientes". **🔴 Flota parada** (2026-10-23):
+  foto de la ÚLTIMA escucha en `flota_parados` (migración
+  `20261023130000_flota_parados.sql`): pesqueros con velocidad mediana
+  < 0,5 nudos, contados en el puerto a menos de 2 km
+  (`scripts/flota/puertos.json`, aproximados ~1 km, + las lonxas de
+  `scripts/lonjas/lonjas-galicia.json`) o por celda en el mar; solo ≥ 3
+  barcos, sin desglose por eslora. Círculos rojos con la cifra en su panel
+  (encima de los spots), casilla "🔴 Parados" encendida por defecto y
+  "Última escucha: HH:MM"; caducan a las 6 h. Control "Hoy (24 h) / Ayer"
+  + eslora, aviso sin datos y atribución "Datos AIS: aisstream.io". Solo con
+  la modalidad Embarcación y gratis para todos. **Escucha el evento
+  `modalidad`** (`document`, `{ detail: { modalidad } }`) que lanza
+  `ponerModalidad()` (la píldora del mapa), no los clics; al arrancar lee
+  `<html data-modalidad>` (si no, `localStorage va_modalidad`). Desde el
+  2026-11-07 el control empieza siempre plegado en un chip "🚤 Flota ▾"
+  (botón con `aria-expanded`) y la capa apagada hasta "Ver en el mapa"
+  (ver "Al abrir la app, solo los spots"). Por eslora solo se publica una clase si
+  "todas" menos ella (y menos todas las publicadas) es 0 o ≥ 3: nada de
+  deducir un barco suelto restando. Tests:
+  `test/flota-ais.test.js`, `test/capa-flota.test.js` y `test/navegador/`.
 
 ## Triggers / rutinas automatizadas
 
@@ -4034,8 +4304,8 @@ seguro de tener en automático).
 fila de usuario B) — opcional: solo corre si están `TEST_USER_A_EMAIL`,
 `TEST_USER_B_EMAIL` y `SUPABASE_SERVICE_ROLE_KEY`; sin ellas se salta con
 un aviso en vez de fallar. Cuentas de prueba
-(`admin+fishnowtest1@costaviva.invalid` / `admin+fishnowtest2@costaviva.invalid`,
-alias de Gmail — llegan al mismo buzón del usuario; la misma cuenta A
+(los alias de prueba del administrador A y B, `TEST_USER_A_EMAIL` /
+`TEST_USER_B_EMAIL`, alias de Gmail — llegan al mismo buzón del usuario; la misma cuenta A
 sirve también para `smoke-test.yml`). **Ejecutado en real: el token de B
 no vio la fila de A, ni por listado ni por id directo.**
 
@@ -4750,9 +5020,9 @@ parezca que el robot "no encuentra nada": mirar primero
 Pedido explícito del usuario: "como en Pólizas.ai", ver quién está
 inscrito, pudiendo pausarlo o eliminarlo. `admin.html` — no aparece en
 el menú inferior de ninguna otra página; el acceso visible es un icono
-⚙️ junto al botón de cuenta (`title="Admin"`), solo pintado cuando
-`session.user.email === "admin@costaviva.invalid"` (comprobado en JS en
-las 4 páginas con cabecera). Esa comprobación en el cliente es solo
+⚙️ junto al botón de cuenta (`title="Admin"`), solo pintado para
+la cuenta del administrador (antes se comparaba su email en JS en las 4
+páginas con cabecera; desde 2026-11-05 lo decide la RPC `es_admin()`). Esa comprobación en el cliente es solo
 para no anunciar el icono a nadie más — la seguridad real está en
 Supabase. La propia `admin.html` tiene su cabecera a juego con el
 resto de la app: botón "← Volver al mapa" + botón de cuenta con
@@ -4762,7 +5032,7 @@ despliegue: "no tengo botón para echar para atrás").
 **Decisión de diseño clave**: nada de esto usa `service_role` ni un
 segundo endpoint de Cloudflare. Tres funciones `security definer` en
 Postgres (`supabase/migrations/20260913090000_panel_administrador.sql`):
-- `es_admin()` — `auth.email() = 'admin@costaviva.invalid'`. **Pendiente de
+- `es_admin()` — `auth.email()` igual a la cuenta del administrador. **Pendiente de
   aplicar (2026-10-07, comun auth.md A4):** `20261007150000_admin_por_tabla.sql`
   la cambia a `exists` en `public.administradores` (por `user_id`, sin
   policies). Al aplicarla, actualizar `supabase/baseline-seguridad.json`.
@@ -4794,7 +5064,8 @@ el fix: las 3 funciones rechazan con `400 "no autorizado"` sin sesión.
 **Probado en real con datos reales** (2026-09-13): el panel muestra
 correctamente los 6 usuarios registrados hasta ahora, incluidas dos
 altas nuevas del mismo día; pausar/reactivar probado de verdad sobre
-`admin+fishnowtest1@costaviva.invalid` (restaurado a como estaba después).
+uno de los alias de prueba del administrador (restaurado a como estaba
+después).
 "Eliminar" no se ha probado en real todavía (es irreversible) — la
 capa de autorización sí está verificada.
 
@@ -5508,7 +5779,7 @@ defecto) y nota interna. Lista con estado y acciones reenviar/anular.
 
 ## Acceso permanente sin suscripción: tabla `accesos_permanentes` (2026-10-01)
 
-Para dar acceso completo para siempre a una cuenta concreta sin hacerla admin (primer caso: `persona@costaviva.invalid`, pedido del usuario). Por email, así que vale aunque la persona aún no se haya dado de alta. `mi_estado_suscripcion()` devuelve `estado: 'permanente'` y `con_acceso: true`, y `fin_prueba_fuera_de_ciclo()` la excluye de recordatorio y desactivación. Para añadir o quitar a alguien: migración nueva con `insert`/`delete` en `public.accesos_permanentes` (email en minúsculas). Sin políticas RLS: solo la leen funciones security definer. Al añadir a alguien le llega solo, una vez, el email "¡Tienes enchufe!" (paso "acceso permanente" de `avisar-fin-prueba.js`, columna `avisado_en`).
+Para dar acceso completo para siempre a una cuenta concreta sin hacerla admin (primer caso: el primer acceso permanente (2026-10-01), pedido del usuario). Por email, así que vale aunque la persona aún no se haya dado de alta. `mi_estado_suscripcion()` devuelve `estado: 'permanente'` y `con_acceso: true`, y `fin_prueba_fuera_de_ciclo()` la excluye de recordatorio y desactivación. Para añadir o quitar a alguien: migración nueva con `insert`/`delete` en `public.accesos_permanentes` (email en minúsculas). Sin políticas RLS: solo la leen funciones security definer. Al añadir a alguien le llega solo, una vez, el email "¡Tienes enchufe!" (paso "acceso permanente" de `avisar-fin-prueba.js`, columna `avisado_en`).
 
 ## Fin de prueba: o se suscribe o su cuenta queda desactivada (2026-09-28)
 
@@ -5534,8 +5805,9 @@ cambies sin preguntar.** Se llegó a montar un bloqueo de login + borrado a
 los 14 días; se descartó el mismo día: con el login bloqueado no podrían ni
 pagar para volver, y el usuario quiere conservar tanto la cuenta como los
 datos generados ("pasan a nuestra base de conocimientos" — en la práctica,
-sus capturas siguen alimentando `estadisticas_anonimas_capturas` si dieron
-`consiente_uso_datos_capturas` en el alta, como ya pasaba). El acceso lo
+sus capturas siguen alimentando `estadisticas_anonimas_capturas` si
+`consiente_uso_datos_capturas` sigue a true: desde el 2026-10-22 es interés
+legítimo con oposición, ver "Hoja de condiciones del alta"). El acceso lo
 corta el paywall (`mi_estado_suscripcion()`), que ya lo hacía antes: al
 suscribirse lo recuperan todo al instante. `desactivado_en` es la constancia
 de que su prueba terminó y se le avisó.
@@ -5547,7 +5819,7 @@ quién le toca cada email las decide Postgres (`usuarios_bienvenida_pendiente_em
 el estado de `suscripcion.html` cuentan lo mismo.
 
 - **Nunca entran en el ciclo** (`fin_prueba_fuera_de_ciclo()`): el admin, los
-  alias `admin+...` (cuentas de `smoke-test.yml`/`auth-test.yml`) y quien
+  alias de prueba del administrador (cuentas de `smoke-test.yml`/`auth-test.yml`) y quien
   haya tenido alguna vez una suscripción real (cualquier fila en
   `suscripciones` salvo `incomplete`/`incomplete_expired`). **Ex-suscriptor
   que cancela (decidido 2026-09-28): pierde el acceso y nada más** — lo hace

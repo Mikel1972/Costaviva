@@ -261,18 +261,19 @@ const MODO_NZ = {
   // Repaso de día del 2026-10-12: solo enlace hasta el permiso escrito.
   "nz-hauraki-whangamata-beach": "enlace",
   "nz-raglan-bar": "enlace",
-  "nz-castlepoint-lighthouse": "enlace",
+  "nz-castlepoint-lighthouse": "iframe_oficial", // permiso escrito 2026-11-07
   "nz-gw-beacon-hill": "enlace",
   "nz-nelson-harbour": "enlace",
   "nz-southloop-ocean-beach": "enlace",
   "nz-southloop-oban": "enlace",
-  "nz-sails-ashore": "enlace",
+  "nz-sails-ashore": "imagen_oficial", // permiso escrito 2026-11-07
+  "nz-motella-gisborne": "enlace",
 };
 
 // Repaso de día del 2026-10-12: las 15 pendientes de NZ, añadidas (solo
 // enlace, sin análisis) o descartadas con motivo en NO_SIRVEN_NZ.
 import { NO_SIRVEN_NZ } from "../scripts/oleaje-camaras/camaras.mjs";
-const DUENOS_NUEVOS_NZ = ["hauraki_coromandel", "raglan_sport_fishing", "castlepoint_lighthouse", "greater_wellington", "nelson_cc", "sails_ashore"];
+const DUENOS_NUEVOS_NZ = ["hauraki_coromandel", "raglan_sport_fishing", "greater_wellington", "nelson_cc"];
 const REPASO_DIA_NZ = {
   "nz-hauraki-whangamata-beach": "nz-whangamata",
   "nz-raglan-bar": "nz-raglan",
@@ -291,8 +292,14 @@ test("NZ (repaso de día 2026-10-12): las 15 pendientes, añadidas solo como enl
     const c = CAMARAS_NZ.find((x) => x.id === id);
     assert.ok(c, `${id}: falta en camaras-nz.js`);
     assert.equal(c.spot, spot, id);
-    assert.equal(c.modo, "enlace", `${id}: sin permiso escrito solo va como enlace`);
-    assert.equal(c.imagen ?? c.iframe, undefined, id);
+    // Sails Ashore dio permiso escrito el 2026-11-07: embebida.
+    if (id === "nz-sails-ashore") assert.equal(c.modo, "imagen_oficial", id);
+    // Castlepoint Lighthouse dio permiso escrito el 2026-11-07: su reproductor.
+    else if (id === "nz-castlepoint-lighthouse") assert.equal(c.modo, "iframe_oficial", id);
+    else {
+      assert.equal(c.modo, "enlace", `${id}: sin permiso escrito solo va como enlace`);
+      assert.equal(c.imagen ?? c.iframe, undefined, id);
+    }
     assert.match(c.verificada, /^2026-10-12: /, `${id}: verificada de día el 2026-10-12`);
     assert.ok(!/youtube\.com|youtu\.be|facebook|instagram/.test(c.url), `${id}: se enlaza la web del dueño`);
     assert.ok(NO_SIRVEN_NZ[id], `${id}: no se analiza (motivo en NO_SIRVEN_NZ)`);
@@ -328,7 +335,11 @@ test("NZ: con el interruptor apagado no se carga nada del dueño", () => {
   // CoroLive solo entra en frame-src de la CSP si su interruptor está puesto.
   const frameSrc = construirCsp("x").split("; ").find((d) => d.startsWith("frame-src"));
   assert.equal(frameSrc.includes("https://corolive.nz"), embedNZ("corolive") === "iframe_oficial");
-  assert.deepEqual(ORIGENES_IFRAME_NZ, embedNZ("corolive") ? ["https://corolive.nz"] : []);
+  assert.equal(frameSrc.includes("https://www.youtube.com"), embedNZ("castlepoint_lighthouse") === "iframe_oficial");
+  assert.deepEqual(ORIGENES_IFRAME_NZ, [
+    ...(embedNZ("corolive") ? ["https://corolive.nz"] : []),
+    ...(embedNZ("castlepoint_lighthouse") ? ["https://www.youtube.com"] : []),
+  ]);
 });
 
 test("NZ: las embebidas usan la imagen o el iframe que publica su dueño", () => {
@@ -337,6 +348,8 @@ test("NZ: las embebidas usan la imagen o el iframe que publica su dueño", () =>
     earth_sciences_camera: /^https:\/\/camerastorageoflalbwn\.blob\.core\.windows\.net\/\$web\/[A-Za-z]+\/latest\.jpg$/,
     napier_cc: /^https:\/\/data\.napier\.govt\.nz\/webcam\/thumbnail\.php\?ims=800$/,
     southloop: /^https:\/\/weathercam\.southloop\.net\.nz\/[a-z]+\/[A-Za-z0-9]+\.jpg$/,
+    sails_ashore: /^https:\/\/sailsashore\.co\.nz\/image\/cam\/snapshot1\.jpg$/,
+    castlepoint_lighthouse: /^https:\/\/www\.youtube\.com\/embed\/live_stream\?channel=UC[A-Za-z0-9_-]{22}$/,
     corolive: /^https:\/\/corolive\.nz\/embed\?camera=(whitianga|whangamata)$/,
   };
   for (const c of CAMARAS_NZ.filter((c) => c.modo !== "enlace")) {
@@ -365,7 +378,7 @@ test("NZ: atribución visible, enlace al dueño y sin on*= en el HTML de la fich
       assert.ok(pie.includes(`>${c.dueno}</a>`), `${c.id}: el pie no nombra al dueño`);
       const nombre = idioma === "en" ? c.nombre_en : c.nombre;
       assert.ok(pie.includes(nombre.replace(/&/g, "&amp;")), `${c.id}: sin nombre en ${idioma}`);
-      if (c.modo === "iframe_oficial") assert.match(html, /<iframe src="https:\/\/corolive\.nz\/embed\?camera=/, c.id);
+      if (c.modo === "iframe_oficial") assert.ok(html.includes(`<iframe src="${c.iframe.replace(/&/g, "&amp;")}"`), c.id);
       else assert.ok(html.includes(`<img src="${c.imagen.replace(/&/g, "&amp;")}"`), c.id);
     }
   }

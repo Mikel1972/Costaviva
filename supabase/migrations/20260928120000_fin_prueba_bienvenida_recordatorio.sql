@@ -1,3 +1,4 @@
+-- 2026-11-05: emails personales retirados del repo público; la migración ya está aplicada en producción y este texto no se vuelve a ejecutar. En una base nueva, el administrador y los accesos permanentes se dan de alta a mano.
 -- Fin de la prueba: o se suscribe o su cuenta queda desactivada (pedido
 -- explicito del usuario, 2026-09-28): "hay un periodo de prueba de 7 dias sin
 -- cobrar. A ese vencimiento, o se da de alta o se le cancela".

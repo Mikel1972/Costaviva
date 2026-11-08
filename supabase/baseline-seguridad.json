@@ -80,6 +80,13 @@
       "rls_enabled": true,
       "policies": [
         {
+          "name": "cada usuario actualiza solo sus capturas",
+          "cmd": "w",
+          "roles": [
+            "authenticated"
+          ]
+        },
+        {
           "name": "cada usuario borra solo sus capturas",
           "cmd": "d",
           "roles": [
@@ -243,6 +250,72 @@
       ]
     },
     {
+      "tablename": "flota_barcos",
+      "rls_enabled": true,
+      "policies": []
+    },
+    {
+      "tablename": "flota_faena",
+      "rls_enabled": true,
+      "policies": []
+    },
+    {
+      "tablename": "flota_parados",
+      "rls_enabled": true,
+      "policies": [
+        {
+          "name": "lectura pública de la flota parada",
+          "cmd": "r",
+          "roles": [
+            "anon",
+            "authenticated"
+          ]
+        }
+      ]
+    },
+    {
+      "tablename": "flota_zonas",
+      "rls_enabled": true,
+      "policies": [
+        {
+          "name": "lectura pública de las zonas de flota faenando",
+          "cmd": "r",
+          "roles": [
+            "anon",
+            "authenticated"
+          ]
+        }
+      ]
+    },
+    {
+      "tablename": "flota_zonas_dia",
+      "rls_enabled": true,
+      "policies": [
+        {
+          "name": "lectura pública del histórico de zonas de flota",
+          "cmd": "r",
+          "roles": [
+            "anon",
+            "authenticated"
+          ]
+        }
+      ]
+    },
+    {
+      "tablename": "gfw_esfuerzo",
+      "rls_enabled": true,
+      "policies": [
+        {
+          "name": "lectura pública del esfuerzo pesquero de GFW",
+          "cmd": "r",
+          "roles": [
+            "anon",
+            "authenticated"
+          ]
+        }
+      ]
+    },
+    {
       "tablename": "grupos",
       "rls_enabled": true,
       "policies": [
@@ -291,6 +364,11 @@
           ]
         }
       ]
+    },
+    {
+      "tablename": "lonja_ventas",
+      "rls_enabled": true,
+      "policies": []
     },
     {
       "tablename": "miembros_grupo",

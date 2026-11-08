@@ -4,7 +4,8 @@
 // con git. Todo lo demás (casos, métricas, ajuste, deriva) es puro.
 //
 //   - Supabase con la service_role, SOLO LECTURA: salidas_pesca, capturas,
-//     perfiles (para quitar las cuentas de prueba) y administradores (los
+//     perfiles (para quitar las cuentas de prueba y a quien se opuso a las
+//     estadísticas anónimas) y administradores (los
 //     datos del dueño se pueden publicar agregados aunque sea uno solo).
 //   - Open-Meteo con OPEN_METEO_API_KEY (plan comercial): series horarias
 //     de la fecha de cada salida para recalcular el índice. Sin la key no se
@@ -18,6 +19,7 @@ import { join } from "node:path";
 import { pedirOpenMeteo } from "../../functions/_lib/open-meteo.js";
 import { factorOleaje, SPOTS } from "../../functions/prevision.js";
 import { agruparPorZona, zonaPorCoordenadas } from "../../assets/js/regiones.js";
+import { usuariosExcluidos } from "./casos.mjs";
 
 export function leerJSON(ruta, defecto = null) {
   try { return JSON.parse(readFileSync(ruta, "utf8")); } catch { return defecto; }
@@ -71,13 +73,22 @@ export async function leerDiario({ url, key, emailsPrueba = [] }) {
     salidas = await leerTodo(url, key, "salidas_pesca", COLS_SALIDA);
   }
   const capturas = await leerTodo(url, key, "capturas", "salida_id,especie,creado_en");
-  const perfiles = await leerTodo(url, key, "perfiles", "id,email,creado_en");
-  const pruebas = emailsPrueba.map((x) => x.toLowerCase());
-  const excluir = new Set(perfiles.filter((p) => pruebas.includes((p.email || "").toLowerCase())).map((p) => p.id));
+  // consiente_uso_datos_capturas: quien se opuso a las estadísticas anónimas
+  // (suscripcion.html, "Tus datos") no entra (usuariosExcluidos). Si la
+  // columna faltara (trampa 10), se sigue sin ella y se avisa.
+  let perfiles;
+  try {
+    perfiles = await leerTodo(url, key, "perfiles", "id,email,creado_en,consiente_uso_datos_capturas");
+  } catch (e) {
+    if (e.status !== 400) throw e;
+    errores.push("perfiles sin consiente_uso_datos_capturas: no se pueden quitar las oposiciones");
+    perfiles = await leerTodo(url, key, "perfiles", "id,email,creado_en");
+  }
   let propios = new Set();
   try {
     propios = new Set((await leerTodo(url, key, "administradores", "user_id,creado_en")).map((x) => x.user_id));
   } catch (e) { errores.push(`administradores: ${e.message}`); }
+  const excluir = usuariosExcluidos({ perfiles, emailsPrueba, propios });
   return { salidas, capturas, excluir, propios, errores };
 }
 
