@@ -1,0 +1,17 @@
+{
+  "clip": "pexels-peces-coral.mp4",
+  "tema": "peces",
+  "origen": "https://www.pexels.com/video/14691838/",
+  "fichero_original": "14691838_1920_1080_60fps.mp4 (descargado de Pexels por Mikel el 2026-11-08 y subido a la sesión)",
+  "autor": "Pexels, vídeo 14691838 (autor pendiente de anotar: la página del vídeo devuelve 403 a las peticiones automáticas)",
+  "personas": "Ninguna: banco de peces azules (castañuelas, Chromis) alrededor de un coral sobre fondo de arena. Sin marcas visibles (revisado a 0,5, 3, 6 y 9 s).",
+  "persona_identificable": false,
+  "edicion": "Clip completo (9 s, 60 fps), recorte vertical crop=608:1080:560:0, escalado a 1080x1920, H.264, sin audio.",
+  "paisaje": "Arrecife de coral tropical en agua azul; no se reconoce ningún lugar.",
+  "licencia_url": "https://www.pexels.com/license/",
+  "licencia_comprobada": "2026-10-18",
+  "cita_licencia": "All photos and videos on Pexels are free to use. Attribution is not required. You can modify the photos and videos from Pexels.",
+  "prohibido": "Vender copias sin modificar; redistribuirlo en otras plataformas de stock; sugerir que personas o marcas del vídeo respaldan el producto; usarlo como marca.",
+  "atribucion": "No obligatoria; se cita igualmente en el texto del reel.",
+  "nota_verificacion": "Misma licencia de Pexels que los demás clips (leída con WebFetch el 2026-10-18; la página del vídeo concreto bloquea a los robots). Ojo: es un arrecife tropical, no costa cantábrica; sirve para el reel de peces, no para uno de un spot concreto."
+}
