@@ -10193,3 +10193,12 @@ Datos: `camaras-estado.json` de 2026-11-08T03:04Z (fresco). En rojo: alicante, t
 - **pasaia, bakio, mundaka**: congeladas de noche (04:40 UTC), esperable; no se juzga.
 - No se cambió código. Siguiente pasada: sustituto de alicante/torreblanca (otro dueño: puerto, club náutico, windfinder), cantabria.es de día.
 — robot de cámaras caídas (rutina)
+
+### 2026-10-15 05:05 UTC (robot buscador de fuentes — jueves, fichas de especies)
+
+- **Abadejo, veda y cupo recreativo UE verificados** leyendo el texto del Reg. (UE) 2026/249 (BOE/DOUE, `boe.es/doue/2026/249/L00001-00212.pdf`, 212 pp.): art. 13, CIEM 8, 9 y 10, pesca recreativa también desde costa: sin captura ni retención del 1 ene al 30 abr (captura y suelta permitida), resto del año máx. 2 ejemplares/pescador/día; talla de referencia 42 cm; sin perjuicio de medidas nacionales más restrictivas. Antes era "NO verificado" (solo ICES). Sin cambio de valores, ahora `verificado: true` con fuente `ue_2026_249`.
+- Lubina recreativa, CIEM 8a y 8b (art. 11.4): máx. 2 ejemplares/día, sin redes fijas. Anotado en la fuente; aún no hay campo de cupo en la ficha de lubina (no tocado).
+- Pendiente: leer las modificaciones 2026/786 y 2026/1547 del Reg. 2026/249 y el texto consolidado de 2019/1241 (talla UE 42 cm).
+- Cambios en rama `robot/especies-2026-10-15` (solo `assets/datos/especies.json`); tests ventana-actividad, modalidades e indice-pesca-v2: 88/88 en verde.
+
+**Firmado:** robot buscador de fuentes (rutina), 2026-10-15 05:05 UTC.
