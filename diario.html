@@ -115,6 +115,9 @@
   }
 
   .tarjeta-captura { background: var(--superficie-2); border-radius: 10px; padding: 12px; margin-top: 10px; }
+  .marcas-pesca { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 4px; }
+  .marca-pesca { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 13px; padding: 6px 8px; border-radius: 8px; background: var(--superficie); }
+  .marca-pesca button { background: none; border: none; color: var(--tinta-2); font-size: 11px; cursor: pointer; padding: 0; }
   .tarjeta-captura .fila-titulo { display: flex; justify-content: space-between; align-items: baseline; }
   .tarjeta-captura .especie { font-weight: 600; font-size: 14px; }
   .tarjeta-captura .especie .cientifico { display: block; font-weight: 400; font-size: 12px; color: var(--tinta-2); margin-left: 1.4em; }
@@ -659,6 +662,20 @@ async function cargarDatos() {
       (capturasPorSalida[c.salida_id] = capturasPorSalida[c.salida_id] || []).push(c);
     });
   }
+  // Marcas de pesca de las salidas en barco (2026-11-08, Mikel): varios
+  // puntos con nombre por salida, como las marcas de una sonda/plotter.
+  const marcasPorSalida = {};
+  if (idsSalidas.length) {
+    const { data: marcas, error: errMarcas } = await supabase
+      .from("marcas_pesca")
+      .select("*")
+      .in("salida_id", idsSalidas)
+      .order("creado_en", { ascending: true });
+    if (errMarcas) console.warn("Marcas de pesca:", errMarcas.message);
+    (marcas || []).forEach((m) => {
+      (marcasPorSalida[m.salida_id] = marcasPorSalida[m.salida_id] || []).push(m);
+    });
+  }
   // "Comparte tu captura" (assets/js/compartir-captura.js).
   compartidas = await cargarCompartidas(supabase);
 
@@ -670,7 +687,7 @@ async function cargarDatos() {
   // se creó, gracias al orden de inserción del array).
   salidasPorFecha = {};
   salidas.forEach((s) => {
-    (salidasPorFecha[s.fecha] = salidasPorFecha[s.fecha] || []).push({ salida: s, capturas: capturasPorSalida[s.id] || [] });
+    (salidasPorFecha[s.fecha] = salidasPorFecha[s.fecha] || []).push({ salida: s, capturas: capturasPorSalida[s.id] || [], marcas: marcasPorSalida[s.id] || [] });
   });
 }
 
@@ -1672,6 +1689,16 @@ async function guardarCaptura(salidaId, fecha, idExistente, ordenFotoBase) {
     if (error) { mensajeEl.className = "mensaje error"; mensajeEl.textContent = traducirError(error, I18n.t("diario.error_captura")); btn.disabled = false; return; }
     capturaId = captura.id;
     registrarEvento("crear_captura", { especie, tecnica: tecnica || null });
+    // En barco y con la jornada en curso, la captura deja sola una marca
+    // en el punto donde se está (GPS), con el nombre del pez (2026-11-08,
+    // Mikel: "detectar el punto en el que se está, ya que normalmente no
+    // sabes el punto exacto"). Si no hay GPS, la captura se guarda igual.
+    if (salidaDelDia?.tipo_salida === "embarcacion" && salidaDelDia.concluida === false) {
+      try {
+        const pos = await posicionGPS();
+        await supabase.from("marcas_pesca").insert({ salida_id: salidaDelDia.id, user_id: usuario.id, nombre: especie.slice(0, 60), lat: pos.lat, lon: pos.lon });
+      } catch (e) { console.warn("Marca automática sin GPS:", e?.message); }
+    }
   }
   // El panel se repinta entero justo después de guardar (abrirDia más
   // abajo), así que un mensaje en mensajeEl no llegaría a verse — de ahí
@@ -1732,12 +1759,60 @@ async function resumenEntradaHTML(entrada, idx) {
       ${contextoHTML(salida)}
       <div style="margin-top:14px; font-family:var(--f-texto); font-weight:500; font-size:11px; color:var(--tinta-3);">${I18n.t("diario.capturas_n", { n: capturas.length })}</div>
       ${tarjetas.join("") || `<p style="font-size:12px; color:var(--tinta-3);">${I18n.t("diario.ninguna")}</p>`}
+      ${salida.tipo_salida === "embarcacion" ? marcasHTML(entrada.marcas || [], idx, enCurso) : ""}
       <div style="display:flex; gap:8px; margin-top:10px;">
         <button class="secundario anadir-captura" data-idx="${idx}" style="margin-top:0; flex:1;">${I18n.t("diario.mas_anadir_captura")}</button>
         ${enCurso ? `<button class="principal concluir-entrada" data-idx="${idx}" style="margin-top:0; flex:1;">${I18n.t("diario.concluir")}</button>` : ""}
       </div>
     </div>
   `;
+}
+
+// Marcas de pesca (2026-11-08, Mikel: "en cada punto de pesca, marcar la
+// ubicación y dar la opción de ponerle un nombre"). Solo en salidas en
+// barco. Se ve el nombre; las coordenadas, al dejar el dedo o el ratón
+// encima (title). La posición la pone el GPS del móvil: sola al guardar
+// una captura con la jornada en curso, o con "Marcar dónde estoy".
+const escaparMarca = (x) => String(x ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+const coordsMarca = (m) => `${m.lat.toFixed(5)}, ${m.lon.toFixed(5)}`;
+function marcasHTML(marcas, idx, enCurso) {
+  if (!marcas.length && !enCurso) return "";
+  const lista = marcas.map((m, k) => `
+    <li class="marca-pesca" title="${coordsMarca(m)}">
+      <span>📍 ${escaparMarca(m.nombre || I18n.t("diario.marca_sin_nombre", { n: k + 1 }))}</span>
+      <span style="display:flex; gap:10px; flex-shrink:0;">
+        <button type="button" class="renombrar-marca" data-id="${m.id}" data-nombre="${escaparMarca(m.nombre || "")}">${I18n.t("diario.marca_nombre")}</button>
+        <button type="button" class="borrar-marca" data-id="${m.id}" style="color:var(--peligro);">${I18n.t("mapa.panel.borrar")}</button>
+      </span>
+    </li>`).join("");
+  return `
+    <div style="margin-top:14px; font-family:var(--f-texto); font-weight:500; font-size:11px; color:var(--tinta-3);">${I18n.t("diario.marcas_n", { n: marcas.length })}</div>
+    ${lista ? `<ul class="marcas-pesca">${lista}</ul>` : ""}
+    ${enCurso ? `<button type="button" class="secundario marcar-aqui" data-idx="${idx}" style="margin-top:6px; width:100%;">${I18n.t("diario.marcar_aqui")}</button>` : ""}`;
+}
+function posicionGPS() {
+  return new Promise((resolver, rechazar) => {
+    if (!navigator.geolocation) return rechazar(new Error("sin_gps"));
+    navigator.geolocation.getCurrentPosition(
+      (p) => resolver({ lat: p.coords.latitude, lon: p.coords.longitude }),
+      rechazar,
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 },
+    );
+  });
+}
+async function marcarAqui(salida, boton) {
+  boton.disabled = true;
+  boton.textContent = I18n.t("diario.marcando");
+  let pos;
+  try { pos = await posicionGPS(); } catch (e) {
+    alert(I18n.t("diario.marca_sin_gps"));
+    boton.disabled = false; boton.textContent = I18n.t("diario.marcar_aqui");
+    return false;
+  }
+  const nombre = (prompt(I18n.t("diario.marca_pide_nombre"), "") || "").trim().slice(0, 60);
+  const { error } = await supabase.from("marcas_pesca").insert({ salida_id: salida.id, user_id: usuario.id, nombre: nombre || null, lat: pos.lat, lon: pos.lon });
+  if (error) { alert(I18n.t("diario.marca_error")); console.warn(error.message); }
+  return true;
 }
 
 function cancelarFormulario() {
@@ -2030,6 +2105,26 @@ async function abrirDia(iso, fechaObj) {
   });
   contEl.querySelectorAll(".anadir-captura").forEach((btn) => {
     btn.addEventListener("click", () => mostrarFormularioNuevaCaptura(iso, entradas[+btn.dataset.idx].salida.id));
+  });
+  const recargarDia = async () => { await cargarDatos(); renderCalendario(); abrirDia(iso, fechaObj); };
+  contEl.querySelectorAll(".marcar-aqui").forEach((btn) => {
+    btn.addEventListener("click", async () => { if (await marcarAqui(entradas[+btn.dataset.idx].salida, btn)) recargarDia(); });
+  });
+  contEl.querySelectorAll(".renombrar-marca").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const nuevo = prompt(I18n.t("diario.marca_pide_nombre"), btn.dataset.nombre);
+      if (nuevo === null) return;
+      const { error } = await supabase.from("marcas_pesca").update({ nombre: nuevo.trim().slice(0, 60) || null }).eq("id", btn.dataset.id);
+      if (error) alert(I18n.t("diario.marca_error"));
+      recargarDia();
+    });
+  });
+  contEl.querySelectorAll(".borrar-marca").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      if (!confirm(I18n.t("diario.confirmar_borrar_marca"))) return;
+      await supabase.from("marcas_pesca").delete().eq("id", btn.dataset.id);
+      recargarDia();
+    });
   });
   contEl.querySelectorAll(".concluir-entrada").forEach((btn) => {
     btn.addEventListener("click", () => concluirEntrada(iso, fechaObj, entradas[+btn.dataset.idx].salida));

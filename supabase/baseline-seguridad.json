@@ -371,6 +371,40 @@
       "policies": []
     },
     {
+      "tablename": "marcas_pesca",
+      "rls_enabled": true,
+      "policies": [
+        {
+          "name": "cada usuario actualiza solo sus marcas",
+          "cmd": "w",
+          "roles": [
+            "authenticated"
+          ]
+        },
+        {
+          "name": "cada usuario borra solo sus marcas",
+          "cmd": "d",
+          "roles": [
+            "authenticated"
+          ]
+        },
+        {
+          "name": "cada usuario inserta solo sus marcas",
+          "cmd": "a",
+          "roles": [
+            "authenticated"
+          ]
+        },
+        {
+          "name": "cada usuario ve solo sus marcas",
+          "cmd": "r",
+          "roles": [
+            "authenticated"
+          ]
+        }
+      ]
+    },
+    {
       "tablename": "miembros_grupo",
       "rls_enabled": true,
       "policies": [

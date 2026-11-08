@@ -349,6 +349,10 @@
      si no cabe, scroll. Acaba a la izquierda de las columnas de botones
      (138 = 74 + 54 + 10, como el panel de la luna). El padding deja ver la
      sombra de las tarjetas (left = 16 - 6). */
+  .marca-pesca-mapa span {
+    display: inline-block; white-space: nowrap; font: 700 11px/1.2 var(--f-texto); color: var(--mar);
+    background: rgba(255,255,255,0.92); border-radius: 999px; padding: 3px 8px 3px 4px; box-shadow: 0 2px 6px rgba(11,30,63,0.3);
+  }
   .tarjetas-mapa {
     position: absolute; left: 10px; right: 132px; bottom: 62px; z-index: 900;
     display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 6px;
@@ -4319,6 +4323,28 @@ function claveFavorito(s) {
   return s.slug;
 }
 
+// Marcas de pesca del diario (2026-11-08, Mikel): los puntos donde se pescó
+// desde el barco, con su nombre a la vista; las coordenadas, al pasar el
+// ratón (title) o al tocar la marca. Solo las del usuario (RLS).
+let capaMarcasPesca = null;
+async function cargarMarcasPesca() {
+  if (!window.supabaseCliente) return;
+  const { data, error } = await window.supabaseCliente.from("marcas_pesca").select("id, nombre, lat, lon, creado_en").order("creado_en");
+  if (error) { console.warn("No se pudieron cargar las marcas de pesca:", error.message); return; }
+  if (capaMarcasPesca) map.removeLayer(capaMarcasPesca);
+  capaMarcasPesca = L.layerGroup();
+  (data || []).forEach((m, k) => {
+    const coords = `${m.lat.toFixed(5)}, ${m.lon.toFixed(5)}`;
+    const nombre = escaparHtmlCam(m.nombre || I18n.t("diario.marca_sin_nombre", { n: k + 1 }));
+    const fecha = new Date(m.creado_en).toLocaleDateString(I18n.locale());
+    L.marker([m.lat, m.lon], {
+      icon: L.divIcon({ className: "marca-pesca-mapa", html: `<span title="${coords}">📍 ${nombre}</span>`, iconSize: null, iconAnchor: [8, 22] }),
+      keyboard: false,
+    }).bindPopup(`<strong>${nombre}</strong><br>${coords}<br><small>${fecha}</small>`).addTo(capaMarcasPesca);
+  });
+  capaMarcasPesca.addTo(map);
+}
+
 async function cargarSpotsPersonalizados() {
   if (!window.supabaseCliente) return;
   const sb = window.supabaseCliente;
@@ -6829,8 +6855,9 @@ map.whenReady(async () => {
   refrescarIndicesVisibles();
   if (window.supabaseCliente) {
     cargarSpotsPersonalizados();
+    cargarMarcasPesca();
   } else {
-    window.addEventListener("supabase-listo", () => cargarSpotsPersonalizados(), { once: true });
+    window.addEventListener("supabase-listo", () => { cargarSpotsPersonalizados(); cargarMarcasPesca(); }, { once: true });
   }
   // Refresco real de datos cada hora (antes solo se pedía una vez al
   // cargar la página, así que dejarla abierta más de 1h mostraba un
