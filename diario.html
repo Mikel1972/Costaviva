@@ -115,6 +115,8 @@
   }
 
   .tarjeta-captura { background: var(--superficie-2); border-radius: 10px; padding: 12px; margin-top: 10px; }
+  .fila-picadas { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 10px; font-size: 14px; font-weight: 600; }
+  .fila-picadas button { margin-top: 0; width: auto; padding: 8px 14px; }
   .marcas-pesca { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 4px; }
   .marca-pesca { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 13px; padding: 6px 8px; border-radius: 8px; background: var(--superficie); }
   .marca-pesca button { background: none; border: none; color: var(--tinta-2); font-size: 11px; cursor: pointer; padding: 0; }
@@ -1305,6 +1307,9 @@ function formularioSalida() {
     <label for="salidaTempSonda">${I18n.t("diario.salida.temp_sonda")}</label>
     <input type="text" id="salidaTempSonda" inputmode="decimal" autocomplete="off" maxlength="6" placeholder="${I18n.t("diario.salida.temp_sonda_ph")}" />
     <div class="nota-ficha" style="margin:2px 0 10px;">${I18n.t("diario.salida.temp_sonda_ayuda")}</div>
+    <label for="salidaPicadas">${I18n.t("diario.salida.picadas")}</label>
+    <input type="number" id="salidaPicadas" inputmode="numeric" min="0" max="999" step="1" autocomplete="off" placeholder="0" />
+    <div class="nota-ficha" style="margin:2px 0 10px;">${I18n.t("diario.salida.picadas_ayuda")}</div>
     <label for="salidaNotas">${I18n.t("diario.notas")}</label>
     <textarea id="salidaNotas" placeholder="${I18n.t("diario.salida.notas_ph")}"></textarea>
     <div style="display:flex; gap:8px; margin-top:16px;">
@@ -1362,6 +1367,7 @@ async function guardarSalida(fecha, idExistente) {
   btn.disabled = true;
   const spotSlug = document.getElementById("salidaSpot").value;
   const notas = document.getElementById("salidaNotas").value;
+  const picadas = numeroPicadas(document.getElementById("salidaPicadas").value);
   const horaInicio = selectorHoraInicio.valor();
   const horaFin = selectorHoraFin.valor();
   const tipoSalida = document.getElementById("salidaTipo").value;
@@ -1415,6 +1421,7 @@ async function guardarSalida(fecha, idExistente) {
   const datos = {
     user_id: usuario.id, fecha, spot_slug: spot?.slug ?? null, spot_nombre: spot?.nombre ?? "Ubicación actual",
     lat, lon, notas, hora_inicio: horaInicio, hora_fin: horaFin, tipo_salida: tipoSalida, ...contexto,
+    picadas,
   };
   // Una entrada nueva empieza "en curso" (pedido explícito del usuario:
   // abrirla al salir a pescar y dejarla así mientras dura la jornada,
@@ -1759,6 +1766,7 @@ async function resumenEntradaHTML(entrada, idx) {
       </div>
       ${salida.notas ? `<p style="font-size:13px; margin-top:8px;">${salida.notas}</p>` : ""}
       ${contextoHTML(salida)}
+      ${picadasHTML(salida, idx, enCurso)}
       <div style="margin-top:14px; font-family:var(--f-texto); font-weight:500; font-size:11px; color:var(--tinta-3);">${I18n.t("diario.capturas_n", { n: capturas.length })}</div>
       ${tarjetas.join("") || `<p style="font-size:12px; color:var(--tinta-3);">${I18n.t("diario.ninguna")}</p>`}
       ${salida.tipo_salida === "embarcacion" ? marcasHTML(entrada.marcas || [], idx, enCurso) : ""}
@@ -1815,6 +1823,25 @@ async function marcarAqui(salida, boton) {
   const { error } = await supabase.from("marcas_pesca").insert({ salida_id: salida.id, user_id: usuario.id, nombre: nombre || null, lat: pos.lat, lon: pos.lon });
   if (error) { alert(I18n.t("diario.marca_error")); console.warn(error.message); }
   return true;
+}
+
+// Picadas (2026-11-08, Mikel: "con un número"): cuántas picadas hubo en la
+// salida, piquen o no. El aprendizaje semanal las compara con la ventana de
+// actividad (tres horas "activas" con dos picadas no es lo mismo que nada).
+// Mientras la jornada sigue en curso, "+1 picada" suma sin abrir el formulario.
+function numeroPicadas(texto) {
+  const t = String(texto ?? "").trim();
+  if (!t) return null;
+  const n = Number(t);
+  return Number.isInteger(n) && n >= 0 && n <= 999 ? n : null;
+}
+function picadasHTML(salida, idx, enCurso) {
+  const n = Number.isInteger(salida.picadas) ? salida.picadas : null;
+  if (n === null && !enCurso) return "";
+  return `<div class="fila-picadas">
+      <span>🎣 ${n === null ? I18n.t("diario.picadas_sin") : I18n.t(n === 1 ? "diario.picadas_1" : "diario.picadas_n", { n })}</span>
+      ${enCurso ? `<button type="button" class="secundario mas-picada" data-idx="${idx}">${I18n.t("diario.picada_mas")}</button>` : ""}
+    </div>`;
 }
 
 function cancelarFormulario() {
@@ -1879,6 +1906,7 @@ function mostrarFormularioEditarEntrada(iso, salida) {
   selectorHoraInicio = crearSelectorHora("ruedaSalidaInicio", salida.hora_inicio ? salida.hora_inicio.slice(0, 5) : null);
   selectorHoraFin = crearSelectorHora("ruedaSalidaFin", salida.hora_fin ? salida.hora_fin.slice(0, 5) : null);
   document.getElementById("salidaNotas").value = salida.notas || "";
+  document.getElementById("salidaPicadas").value = Number.isInteger(salida.picadas) ? String(salida.picadas) : "";
   document.getElementById("salidaTempSonda").value = TempSonda.textoCampo(salida.indice_factores?.temp_agua_sonda?.medida_c, I18n.usaComa());
   document.getElementById("btnGuardarSalida").textContent = I18n.t("diario.guardar_cambios");
   engancharFormularioSalida(iso, salida.id);
@@ -2109,6 +2137,16 @@ async function abrirDia(iso, fechaObj) {
     btn.addEventListener("click", () => mostrarFormularioNuevaCaptura(iso, entradas[+btn.dataset.idx].salida.id));
   });
   const recargarDia = async () => { await cargarDatos(); renderCalendario(); abrirDia(iso, fechaObj); };
+  contEl.querySelectorAll(".mas-picada").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      btn.disabled = true;
+      const salida = entradas[+btn.dataset.idx].salida;
+      const nuevo = Math.min(999, (Number.isInteger(salida.picadas) ? salida.picadas : 0) + 1);
+      const { data, error } = await supabase.from("salidas_pesca").update({ picadas: nuevo }).eq("id", salida.id).select("id");
+      if (error || !data?.length) { alert(I18n.t("diario.picadas_error")); btn.disabled = false; return; }
+      recargarDia();
+    });
+  });
   contEl.querySelectorAll(".marcar-aqui").forEach((btn) => {
     btn.addEventListener("click", async () => { if (await marcarAqui(entradas[+btn.dataset.idx].salida, btn)) recargarDia(); });
   });
