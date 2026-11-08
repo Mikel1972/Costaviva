@@ -115,7 +115,11 @@ export const NZ_EMBED_AUTORIZADO = {
   // en enlace hasta añadirles la imagen o el iframe que publiquen).
   hauraki_coromandel: false,
   raglan_sport_fishing: false,
-  castlepoint_lighthouse: false,
+  // 2026-11-07: permiso escrito de Castlepoint Lighthouse (Peter Munn,
+  // Harvest Electronics: «Sure no problem - just add acknowledgement») a la
+  // petición de mostrar su directo: el reproductor de YouTube que inserta su
+  // web, con el crédito. No se analiza (YouTube).
+  castlepoint_lighthouse: true,
   greater_wellington: false,
   nelson_cc: false,
   // 2026-11-07: permiso escrito de Sails Ashore («Happy for you to use our
@@ -135,6 +139,7 @@ const EMBEBIBLE = {
   napier_cc: "imagen_oficial",
   southloop: "imagen_oficial",
   sails_ashore: "imagen_oficial",
+  castlepoint_lighthouse: "iframe_oficial",
 };
 
 // Modo de embebido de un dueño, o null si va como enlace.
@@ -146,7 +151,10 @@ const modos = (clave) => (embedNZ(clave) ? [embedNZ(clave), "enlace"] : ["enlace
 
 // Orígenes de los iframes que la CSP tiene que admitir en frame-src
 // (functions/_middleware.js): solo los de dueños con el interruptor puesto.
-export const ORIGENES_IFRAME_NZ = embedNZ("corolive") === "iframe_oficial" ? ["https://corolive.nz"] : [];
+export const ORIGENES_IFRAME_NZ = [
+  ...(embedNZ("corolive") === "iframe_oficial" ? ["https://corolive.nz"] : []),
+  ...(embedNZ("castlepoint_lighthouse") === "iframe_oficial" ? ["https://www.youtube.com"] : []),
+];
 
 export const CONDICIONES_NZ = {
   earth_sciences_camera: {
@@ -304,8 +312,9 @@ export const CONDICIONES_NZ = {
     fuentes: ["https://castlepointlighthouse.com/"],
     cita:
       "«The live video feed will only run between 7am and 6pm due to low battery on site [...] For comments on this " +
-      "website or the live video please email [...]». No publica condiciones de uso. El id de YouTube puede cambiar: se " +
-      "enlaza su web.",
+      "website or the live video please email [...]». Permiso escrito por email a datos@costaviva.org el 2026-11-07 " +
+      "(Peter Munn, Harvest Electronics): «Sure no problem - just add acknowledgement». Embebido con el mismo " +
+      "reproductor que usa su web (YouTube live_stream de su canal, el id del vídeo cambia) y su crédito.",
     contacto: "castlepointlighthouse@harvest.com",
   },
   greater_wellington: {
@@ -474,7 +483,11 @@ const LISTA = [
   cam("raglan-bar", "nz-raglan", ["Raglan, barra", "Raglan bar"], "raglan_sport_fishing", "https://www.raglansportfishing.co.nz/live-cams/raglan-bar-cam", true,
     "2026-10-12: directo de YouTube activo, fotograma de las 07:37 NZDT con niebla: se ven el mar y las olas rompiendo en la barra", { km: 3 }),
   cam("castlepoint-lighthouse", "nz-castlepoint", ["Castlepoint, faro", "Castlepoint lighthouse"], "castlepoint_lighthouse", "https://castlepointlighthouse.com/", false,
-    "2026-10-12: directo de YouTube activo (de 7 a 18 h), fotograma de las 07:38 NZDT con el faro, el mar, la laguna y Castle Rock", { km: 0.5 }),
+    "2026-10-12: directo de YouTube activo (de 7 a 18 h), fotograma de las 07:38 NZDT con el faro, el mar, la laguna y Castle Rock", {
+      km: 0.5,
+      // 2026-11-08: el reproductor que inserta castlepointlighthouse.com.
+      embed: { iframe: "https://www.youtube.com/embed/live_stream?channel=UCGjGRtsWqkviebAvQlcC5Cg", refresco_min: null },
+    }),
   cam("gw-beacon-hill", "nz-wellington-harbour", ["Beacon Hill: entrada del puerto de Wellington", "Beacon Hill: Wellington Harbour entrance"], "greater_wellington", "https://www.gw.govt.nz/environment/harbours-and-coasts/wellington-harbour-entrance-webcams-and-radio/", true,
     "2026-10-12: las 4 imágenes de las 07:39 NZDT (Last-Modified de hoy): bahía, Breaker Bay con olas rompiendo, la entrada y la costa sur", { km: 1.5 }),
   cam("nelson-harbour", "nz-nelson", ["Puerto de Nelson (norte y sur)", "Nelson Harbour (north and south)"], "nelson_cc", "https://harbours.nelson.govt.nz/cams/", false,
