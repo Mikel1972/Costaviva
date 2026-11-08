@@ -117,6 +117,10 @@ export function quitarSinFoto(rgba, zoom = 99, lado = Math.round(Math.sqrt(rgba.
 }
 
 export const ZOOM_MAX_SATELITE = 19;
+// Con el mapa vectorial, el mar de la foto aparece al acercar: tapado del
+// todo hasta ZOOM_MAR_FOTO_DESDE y a la vista desde ZOOM_MAR_FOTO_HASTA.
+export const ZOOM_MAR_FOTO_DESDE = 13.5;
+export const ZOOM_MAR_FOTO_HASTA = 15;
 export const ZOOM_MAX_NORMAL = 17;
 
 export function dentroDeEspana(lat, lon) {
@@ -177,7 +181,19 @@ export function montarCapa(map, L) {
       pane: "satelite", bounds: L.latLngBounds(r), maxZoom: ZOOM_MAX_SATELITE, maxNativeZoom: ZOOM_MAX_SATELITE,
     })),
   );
-  const colorMar = (v) => { try { (globalThis.MapaBase || window.MapaBase)?.ponerColorMar?.(v ? COLOR_MAR_SATELITE : null); } catch {} };
+  // Con el mapa vectorial (casi siempre), la foto va dentro de MapLibre entre
+  // dos copias del agua (mapa-base.js, ponerSatelite): de lejos el mar lo pinta
+  // el contorno del mapa (sin bloques de ningún color) y de cerca se ve la
+  // foto. Sin WebGL, la capa de Leaflet de arriba.
+  const MB = () => globalThis.MapaBase || window.MapaBase;
+  const cfgVector = {
+    rectangulos: RECTANGULOS_ESPANA, colorMar: COLOR_MAR_SATELITE, maxzoom: ZOOM_MAX_SATELITE,
+    zoomDesde: ZOOM_MAR_FOTO_DESDE, zoomHasta: ZOOM_MAR_FOTO_HASTA,
+    urlTesela: (z, x, y) => L.Util.template(URL_PNOA, { z, x, y }),
+    procesar: (rgba, z, lado) => quitarSinFoto(rgba, 99, lado),
+  };
+  let enVector = !!MB()?.usaVector?.();
+  const colorMar = (v) => { try { MB()?.ponerColorMar?.(v ? COLOR_MAR_SATELITE : null); } catch {} };
   let visible = false;
   const capa = {
     visible: () => visible,
@@ -185,6 +201,14 @@ export function montarCapa(map, L) {
       visible = !!v;
       if (guardar) guardarPreferencia(visible);
       const { max, zoom } = zoomAlCambiar(visible, map.getZoom());
+      if (enVector) {
+        if (visible) map.setMaxZoom(max);
+        MB().ponerSatelite(visible, cfgVector);
+        if (!visible) { if (zoom !== map.getZoom()) map.setZoom(zoom); map.setMaxZoom(max); }
+        if (visible) map.attributionControl.addAttribution(ATRIBUCION_PNOA);
+        else map.attributionControl.removeAttribution(ATRIBUCION_PNOA);
+        return;
+      }
       if (visible) {
         map.setMaxZoom(max);
         grupo.addTo(map);
@@ -199,6 +223,12 @@ export function montarCapa(map, L) {
       }
     },
   };
+  // Si el mapa vectorial falla al cargar, se pasa a la capa de Leaflet.
+  (globalThis.__alVectorFallido ||= []).push(() => {
+    if (!enVector) return;
+    enVector = false;
+    if (visible) { visible = false; capa.ponerVisible(true, { guardar: false }); }
+  });
   if (satelitePorDefecto(leerPreferencia())) capa.ponerVisible(true, { guardar: false });
   return capa;
 }

@@ -1289,6 +1289,16 @@ del IGN (WMTS `pnoa-ma`, CC BY 4.0, «PNOA cedido por © Instituto
 Geográfico Nacional»), sin clave, solo dentro de `RECTANGULOS_ESPANA` (fuera
 el servicio da teselas en blanco y taparía Portugal). Con el satélite el mapa
 llega a zoom 19 (rocas); al quitarlo vuelve a 17. Esri no (licencia).
+**Cómo se pinta (2026-11-08, tras "ese corte no queda bien" y "quedan estos
+restos"):** con mapa vectorial, la foto va DENTRO de MapLibre
+(`MapaBase.ponerSatelite`, protocolo `pnoa://` que pasa cada tesela por
+`quitarSinFoto`) entre dos copias del agua: la de abajo azul `#2F4260`
+rellena donde no hay foto; la de arriba (`satelite-mar`) tapa el mar de la
+foto hasta zoom 13,5 y desaparece a 15, así de lejos no hay bloques de
+Sentinel-2 y de cerca se ve el mar real. El «sin foto» del IGN (morado y la
+raya oscura del borde) se vuelve transparente con 24 px de borde suave. Lo
+que el estilo pinta encima del agua (arena, carreteras, nombres) se esconde.
+Sin WebGL: capa de Leaflet con el mismo filtro.
 Nueva Zelanda: LINZ Basemaps (CC BY 4.0) necesita una clave de
 desarrollador fija, pedida a LINZ; Portugal (DGT) y la vista lejana
 (Sentinel-2 de EOX: su licencia comercial no está clara) quedan pendientes.
