@@ -149,6 +149,8 @@ export function candidatasDeOsm(elementos, spots, yaEnApp, radioKm = RADIO_BUSQU
     const t = e.tags || {};
     const url = String(t.webcam || t["contact:webcam"] || "").split(";")[0].trim();
     if (!esUrl(url) || yaEnApp.urls?.has(url)) continue;
+    // Cámaras de tráfico (2026-11-08: «SH1 South Eastern Hwy», trafficnz.info).
+    if (/traffic|tr[aá]fico|highway|motorway|autopista|carretera|\bsh\d/i.test(`${url} ${t.name || ""} ${t.operator || ""}`)) continue;
     const lat = e.lat ?? e.center?.lat;
     const lon = e.lon ?? e.center?.lon;
     if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
@@ -168,10 +170,22 @@ export function candidatasDeOsm(elementos, spots, yaEnApp, radioKm = RADIO_BUSQU
 }
 
 // --- Windy Webcams (opcional, WINDY_WEBCAMS_KEY) ---
+// Categorías de Windy (include=categories): fuera las que no miran al mar
+// si no tienen además una de mar (2026-11-08, Mikel: "exprime Windy").
+export const CATEGORIAS_MAR = ["beach", "coast", "harbor", "harbour", "bay", "sea", "island", "water", "marina", "port"];
+export const CATEGORIAS_FUERA = ["traffic", "indoor", "airport", "mountain", "city", "building", "square", "forest", "sportarea", "camping", "pool"];
+export function categoriaValida(categorias) {
+  const ids = (categorias || []).map((c) => String(c?.id ?? c).toLowerCase());
+  if (!ids.length) return true;
+  if (ids.some((c) => CATEGORIAS_MAR.includes(c))) return true;
+  return !ids.some((c) => CATEGORIAS_FUERA.includes(c));
+}
+
 export function candidatasDeWindy(webcams, spot, yaEnApp) {
   const out = [];
   for (const w of webcams || []) {
     if (w.status && w.status !== "active") continue;
+    if (!categoriaValida(w.categories)) continue;
     const loc = w.location || {};
     if (!Number.isFinite(loc.latitude) || !Number.isFinite(loc.longitude)) continue;
     const km = distanciaKm(spot.lat, spot.lon, loc.latitude, loc.longitude);
@@ -282,7 +296,7 @@ async function buscarEnOsm(spots, yaEnApp) {
 }
 
 async function buscarEnWindy(spot, clave, yaEnApp) {
-  const d = await json(`https://api.windy.com/webcams/api/v3/webcams?nearby=${spot.lat},${spot.lon},${RADIO_BUSQUEDA_KM}&limit=20&include=location,urls`, { headers: { "x-windy-api-key": clave } }, "Windy");
+  const d = await json(`https://api.windy.com/webcams/api/v3/webcams?nearby=${spot.lat},${spot.lon},${RADIO_BUSQUEDA_KM}&limit=30&include=location,urls,categories`, { headers: { "x-windy-api-key": clave } }, "Windy");
   return candidatasDeWindy(d.webcams, spot, yaEnApp);
 }
 
