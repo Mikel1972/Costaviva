@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-08T12:07:55.230Z",
- "lineasHistorial": 8785,
+ "fecha": "2026-11-08T12:37:50.825Z",
+ "lineasHistorial": 8795,
  "etiquetas": 623,
  "etiquetasClaude": 232,
  "calibracion": {
@@ -104,9 +104,9 @@
    "pocosDatos": true
   },
   "zumaia/a": {
-   "a": 5.8295,
+   "a": 5.8215,
    "p": 0.5,
-   "n": 69,
+   "n": 70,
    "nEtiquetas": 2,
    "nEtiquetasClaude": 5,
    "franjasClaude": [
@@ -116,8 +116,8 @@
     "2026-11-01T16",
     "2026-11-05T16"
    ],
-   "dias": 18,
-   "hMin": 0.48,
+   "dias": 19,
+   "hMin": 0.37,
    "hMax": 6.97,
    "errorRel": 1,
    "pocosDatos": false
@@ -305,9 +305,9 @@
    "pocosDatos": false
   },
   "getaria/malkorbe": {
-   "a": 4.1055,
+   "a": 4.0474,
    "p": 0.5,
-   "n": 30,
+   "n": 31,
    "nEtiquetas": 3,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
@@ -488,8 +488,8 @@
    "sustituye": true,
    "motivo": "≥ 3 días con alturas variadas",
    "ruido": {
-    "ruido": 0.864,
-    "pares": 14
+    "ruido": 0.891,
+    "pares": 15
    }
   },
   "zumaia": {
