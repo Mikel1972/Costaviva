@@ -162,9 +162,10 @@ async function main() {
   mkdirSync(dirname(salida), { recursive: true });
   try {
     // Fondo: el clip ralentizado hasta cubrir todo el reel, un pelín más de contraste.
+    // Un clip corto (más de x2) se ralentiza fundiendo fotogramas para que no vaya a saltos.
     const durClip = Number(execFileSync("ffprobe", ["-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", CLIP]).toString());
     const lento = (DURACION / durClip).toFixed(4);
-    execFileSync("ffmpeg", ["-v", "error", "-y", "-i", CLIP, "-vf", `setpts=${lento}*PTS,fps=${FPS},eq=contrast=1.08:saturation=1.15`, "-t", String(DURACION), "-q:v", "3", join(dir, "c%04d.jpg")]);
+    execFileSync("ffmpeg", ["-v", "error", "-y", "-i", CLIP, "-vf", `setpts=${lento}*PTS,${lento > 2 ? `minterpolate=fps=${FPS}:mi_mode=blend` : `fps=${FPS}`},eq=contrast=1.08:saturation=1.15`, "-t", String(DURACION), "-q:v", "3", join(dir, "c%04d.jpg")]);
     const { abrirNavegador } = await import("./render.mjs");
     const navegador = await abrirNavegador();
     try {

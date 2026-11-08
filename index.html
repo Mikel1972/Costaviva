@@ -100,7 +100,7 @@
     height: 100vh;
     height: 100dvh; /* iOS Safari/PWA: 100vh puede incluir zona no visible; dvh es el real */
     overflow: hidden;
-    padding-bottom: calc(72px + env(safe-area-inset-bottom)); /* deja hueco fijo para .tabs-nav, incluida la franja del home indicator en PWA instalada */
+    padding-bottom: calc(56px + env(safe-area-inset-bottom)); /* deja hueco fijo para .tabs-nav, incluida la franja del home indicator en PWA instalada */
   }
 
 
@@ -1020,10 +1020,13 @@
        66 + 48 + 10) y encima del ⓘ (10 + 40). */
     .tarjetas-mapa { left: 4px; right: 118px; bottom: 54px; }
     .tarjetas-mapa > .leyenda { max-width: 100%; }
-    header { padding: max(8px, env(safe-area-inset-top)) 12px 12px; column-gap: 8px; }
-    header h1 { font-size: 19px; }
-    header .marca-logo { width: 32px; height: 32px; }
-    header .fecha { font-size: 11px; padding: 4px 9px; }
+    /* Más mapa (2026-11-08, Mikel): cabecera de una línea fina. */
+    header { padding: max(4px, env(safe-area-inset-top)) 10px 8px; column-gap: 6px; }
+    header h1 { font-size: 16px; }
+    header .marca-logo { width: 26px; height: 26px; }
+    header .fecha { font-size: 10.5px; padding: 3px 8px; }
+    header .cuenta-menu-btn { width: 34px; height: 34px; font-size: 14px; }
+    header .cuenta-menu-dropdown { top: 40px; }
     header p { display: none; }
 
     #avisoRayos { padding: 6px 16px; font-size: 10.5px; }
@@ -1044,7 +1047,7 @@
     .panel {
       display: block;
       position: fixed;
-      left: 0; right: 0; bottom: calc(72px + env(safe-area-inset-bottom));
+      left: 0; right: 0; bottom: calc(56px + env(safe-area-inset-bottom));
       width: auto;
       max-height: 65vh;
       border-radius: 26px 26px 0 0;
@@ -1311,7 +1314,7 @@
       </div>
       <div class="viento-slider-panel tarjeta-plegable" id="vientoSliderPanel" hidden>
         <div class="tarjeta-cabecera">
-          <div class="titulo"><span class="t-largo" data-i18n="mapa.viento.titulo">VIENTO — próximas horas</span><span class="t-corto" data-i18n="mapa.viento.corto">💨 Viento</span></div>
+          <div class="titulo"><span class="t-largo" data-i18n="mapa.viento.titulo">VIENTO — próximas 24 h</span><span class="t-corto" data-i18n="mapa.viento.corto">💨 Viento</span></div>
           <span class="tarjeta-mini" id="vientoMini" aria-hidden="true"></span>
           <button type="button" class="tarjeta-plegar" id="vientoPlegar" aria-expanded="true" aria-controls="vientoCuerpo" aria-label="Minimizar la leyenda" title="Minimizar" data-i18n-aria-label="comun.minimizar_leyenda" data-i18n-title="comun.minimizar">▾</button>
         </div>
@@ -6597,7 +6600,23 @@ function horaVientoTexto(iso, indice) {
   // /viento-campo da las horas en UTC (sin "Z"): se enseñan en la hora del
   // dispositivo (antes salía la hora UTC tal cual).
   const hhmm = horaVientoLocal(iso);
-  return indice === 0 ? I18n.t("mapa.viento.ahora_hora", { hora: hhmm }) : hhmm;
+  if (indice === 0) return I18n.t("mapa.viento.ahora_hora", { hora: hhmm });
+  // La barra empieza en la hora actual y sigue 24 h: lo que cae en otro día
+  // lleva el día delante (2026-11-08, Mikel: "¿desde qué hora cuenta, del
+  // mismo día o del siguiente?").
+  const dias = diasDesdeHoyViento(iso);
+  if (dias === 1) return I18n.t("mapa.viento.manana_hora", { hora: hhmm });
+  if (dias === 0) return I18n.t("mapa.viento.hoy_hora", { hora: hhmm });
+  return hhmm;
+}
+
+// Días de calendario (en la hora del dispositivo) entre hoy y la hora iso
+// de /viento-campo (UTC sin "Z"): 0 hoy, 1 mañana.
+function diasDesdeHoyViento(iso, ahora = new Date()) {
+  const d = new Date(`${iso.slice(0, 16)}Z`);
+  if (!Number.isFinite(d.getTime())) return null;
+  const medianoche = (x) => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
+  return Math.round((medianoche(d) - medianoche(ahora)) / 86400000);
 }
 
 function horaVientoLocal(iso) {
@@ -6676,7 +6695,11 @@ async function cargarCampoViento() {
     const numMarcas = Math.min(5, referencia.length);
     ticks.innerHTML = Array.from({ length: numMarcas }, (_, k) => {
       const idx = Math.round((k / (numMarcas - 1)) * (referencia.length - 1));
-      return `<span>${horaVientoLocal(referencia[idx].hora)}</span>`;
+      // La primera marca es "ahora"; las de mañana llevan una "m" pequeña
+      // delante para que se vea dónde cambia el día.
+      if (idx === 0) return `<span>${I18n.t("mapa.viento.ahora")}</span>`;
+      const manana = diasDesdeHoyViento(referencia[idx].hora) === 1;
+      return `<span>${manana ? `<small>${I18n.t("mapa.viento.manana_corto")}</small>` : ""}${horaVientoLocal(referencia[idx].hora)}</span>`;
     }).join("");
     mostrarHoraViento(+slider.value);
   } catch (e) {

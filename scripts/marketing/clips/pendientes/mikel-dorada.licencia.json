@@ -1,0 +1,11 @@
+{
+  "clip": "mikel-dorada.mp4",
+  "tema": "peces",
+  "origen": "Video_Project_2.mp4, subido a la sesión por Mikel el 2026-11-08 para los reels.",
+  "autor": "Pendiente de confirmar con Mikel: si lo grabó él o viene de un banco de vídeos (y de cuál).",
+  "personas": "Ninguna: una dorada (banda dorada entre los ojos) nadando de frente sobre fondo de arena; parece un acuario. Sin marcas visibles (revisado a 0,3, 1,5, 3 y 4,2 s).",
+  "persona_identificable": false,
+  "edicion": "Clip completo (4,4 s, 30 fps). El original ya era vertical dentro de un 1920x1080 con bandas negras: crop=608:1080:656:0, escalado a 1080x1920, H.264, sin audio.",
+  "paisaje": "Fondo de arena oscuro; parece un acuario, no se reconoce ningún lugar.",
+  "atribucion": "Según lo que diga Mikel del origen."
+}

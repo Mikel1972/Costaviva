@@ -154,8 +154,8 @@ header:has(.cuenta-menu-dropdown.visible) { z-index: 1200; }
 
 /* ---------- Menú inferior ---------- */
 .tabs-nav {
-  position: fixed; left: 0; right: 0; bottom: 0; height: calc(72px + env(safe-area-inset-bottom));
-  background: var(--mar); display: flex; gap: 6px; padding: 8px 10px calc(10px + env(safe-area-inset-bottom));
+  position: fixed; left: 0; right: 0; bottom: 0; height: calc(56px + env(safe-area-inset-bottom));
+  background: var(--mar); display: flex; gap: 6px; padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
   /* Siempre por encima de la ficha de un spot (z-index 1000), pedido de
      Mikel 2026-09-13: el menú se ve SIEMPRE. */
   z-index: 1100;
@@ -178,6 +178,12 @@ header:has(.cuenta-menu-dropdown.visible) { z-index: 1200; }
   background: var(--nivel-bueno); border: 2px solid var(--mar); animation: pulso 1.6s infinite;
 }
 @media (max-width: 720px) { .tabs-nav a { font-size: 13.5px; gap: 6px; } }
+/* En pantalla ancha (2026-11-08, Mikel: "igual más estrecho"): las cuatro
+   píldoras juntas en el centro, no estiradas de lado a lado. */
+@media (min-width: 721px) {
+  .tabs-nav { justify-content: center; gap: 8px; }
+  .tabs-nav a { flex: 0 1 168px; font-size: 14px; }
+}
 
 /* ---------- Botón principal (emoción: degradado) ---------- */
 .boton-principal {
