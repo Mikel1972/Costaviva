@@ -1270,6 +1270,7 @@
   "mapa.waikato.provisional": "Provisional data: not yet quality-checked and may change.",
   "mapa.waikato.cita_corta": "Waikato Regional Council, CC BY 4.0 · provisional data",
   "mapa.rio.medido_a_las": "measured at {hora}",
+  "mapa.rio.segun_mediana": "Low, normal or high compared with what is usual at this station (30-day median: {mediana}).",
   "mapa.rios.solo_coromandel": "Rivers in New Zealand: for now only the Waiwawa and Tairua (Coromandel), with provisional data from Waikato Regional Council.",
   "va.region.nz_auckland_kermadec": "Auckland / Kermadec",
   "va.region.nz_central": "Central",

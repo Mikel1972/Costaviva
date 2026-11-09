@@ -2229,7 +2229,9 @@ const RIOS = [
   // functions/_lib/nz/kiwis-waikato.js). Llega con /prevision?region=nz
   // (cargarRegion). Aquí el dato va en el punto de la estación, no en la
   // desembocadura; las dos posiciones son APROXIMADAS (por afinar con
-  // getStationList de KiWIS). Sin umbrales oficiales: número sin color.
+  // getStationList de KiWIS). Sin umbrales oficiales: bajo/normal/alto según
+  // la mediana de 30 días de la propia estación (2026-11-09), que también usa
+  // el índice de pesca (reglas rio_crecido_*).
   // Sin spotCosta escrito aquí (ningún slug de NZ en el HTML,
   // test/nz-region.test.js): lo manda el servidor con el caudal. ---
   {
@@ -2287,6 +2289,8 @@ function aplicarCaudales(caudales) {
       // Zona de la hora de la medida (sin esperar a window.Regiones).
       if (c.zona) p.zona = c.zona;
       p.tendencia = c.tendencia || null;
+      // NZ: umbrales propios de la estación (mediana de 30 días, kiwis-waikato.js).
+      p.mediana30d = c.mediana30d ?? null;
     });
   });
 }
@@ -4184,8 +4188,11 @@ function pintarRios() {
       // Dato de Waikato Regional Council: hora de la medida, cita y aviso de
       // dato provisional (condiciones del permiso; los enlaces van en los
       // créditos del mapa y en la ficha, el tooltip no es pulsable).
+      const lineaMediana = p.mediana30d != null
+        ? `<div class="rio-tramo" style="font-size:10px;">${I18n.t("mapa.rio.segun_mediana", { mediana: `${p.mediana30d} m³/s` })}</div>`
+        : "";
       const lineaProvisional = p.provisional
-        ? `<div class="rio-tramo" style="font-size:10px;">${p.hora ? I18n.t("mapa.rio.medido_a_las", { hora: new Date(p.hora).toLocaleTimeString(I18n.locale(), { timeZone: zonaSpot(p), hour: "2-digit", minute: "2-digit" }) }) + " · " : ""}${I18n.t("mapa.waikato.cita_corta")}</div>`
+        ? `${lineaMediana}<div class="rio-tramo" style="font-size:10px;">${p.hora ? I18n.t("mapa.rio.medido_a_las", { hora: new Date(p.hora).toLocaleTimeString(I18n.locale(), { timeZone: zonaSpot(p), hour: "2-digit", minute: "2-digit" }) }) + " · " : ""}${I18n.t("mapa.waikato.cita_corta")}</div>`
         : "";
       const llamada = `
         <div class="rio-nombre">${r.rio}</div>
