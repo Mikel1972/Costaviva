@@ -450,6 +450,12 @@ export function crearLluviaAnimada({ L, map, contenedor, fetchFn = (...a) => fet
   let temporizador = null, refresco = null, reloj = null;
   const indices = new Map();   // región -> Int32Array
   const satCache = new Map();  // "región|ms" -> Promise<Uint8ClampedArray|null>
+  // El satélite de respaldo (EUMETView) tarda 10-25 s por imagen (medido el
+  // 2026-11-09; Mikel: "¿por qué tarda tanto en cargar la lluvia?"). Antes cada
+  // toma de radar lo esperaba; ahora el radar se pinta solo en cuanto llega y
+  // el satélite rellena después lo que el radar no cubre (mar abierto,
+  // Canarias). Para eso se guarda la rejilla de cada toma hasta entonces.
+  const rejillas = [];          // por toma: rejilla del radar (solo hasta rellenar el satélite)
   const enCurso = new Set();   // tomas que ya se están cargando
 
   const listas = () => estados.map((e) => e === "ok");
@@ -554,11 +560,11 @@ export function crearLluviaAnimada({ L, map, contenedor, fetchFn = (...a) => fet
     return rellenarRejilla(meta, crudas, VENTANA_RADAR);
   }
 
-  async function cargarToma(t, g) {
+  async function cargarToma(t, g, { conSatelite = modo !== "radar", rejillaPrevia = null } = {}) {
     const tMs = Date.parse(t);
-    let rejilla = null;
-    if (modo === "radar") rejilla = await rejillaRadar(t);
-    const satMs = Number.isFinite(ultimaSat) ? satelitePara(tMs, ultimaSat) : null;
+    let rejilla = rejillaPrevia;
+    if (modo === "radar" && !rejilla) rejilla = await rejillaRadar(t);
+    const satMs = conSatelite && Number.isFinite(ultimaSat) ? satelitePara(tMs, ultimaSat) : null;
     const salida = [];
     let usaSat = false;
     for (const region of REGIONES) {
@@ -582,11 +588,15 @@ export function crearLluviaAnimada({ L, map, contenedor, fetchFn = (...a) => fet
       });
       salida.push({ overlay, url });
     }
-    return { capas: salida, fuentes: { radar: !!rejilla, satelite: usaSat ? satMs : null } };
+    return { capas: salida, rejilla, fuentes: { radar: !!rejilla, satelite: usaSat ? satMs : null, conSatelite } };
   }
 
   function quitar(i) {
     (capas[i] || []).forEach((c) => { map.removeLayer(c.overlay); URL.revokeObjectURL(c.url); });
+  }
+  function moverRejillas(viejas, nuevas) {
+    const r = nuevas.map((t) => { const j = viejas.indexOf(t); return j >= 0 ? rejillas[j] : null; });
+    rejillas.length = 0; rejillas.push(...r);
   }
 
   // Carga las tomas que falten, de la más reciente a la más antigua, de 3 en 3.
@@ -605,6 +615,7 @@ export function crearLluviaAnimada({ L, map, contenedor, fetchFn = (...a) => fet
         if (res) {
           res.capas.forEach((c) => c.overlay.addTo(map));
           capas[i] = res.capas; fuentes[i] = res.fuentes; estados[i] = "ok";
+          rejillas[i] = res.fuentes.conSatelite ? null : res.rejilla;
         } else estados[i] = "fallo";
         if (!listas()[estado.indice]) {
           const u = ultimoIndiceListo(listas());
@@ -613,7 +624,37 @@ export function crearLluviaAnimada({ L, map, contenedor, fetchFn = (...a) => fet
         pintar();
       }
     };
-    await Promise.all([trabajador(), trabajador(), trabajador()]);
+    // 6 a la vez (antes 3): cada toma es una petición pequeña a /lluvia/toma.
+    await Promise.all([trabajador(), trabajador(), trabajador(), trabajador(), trabajador(), trabajador()]);
+    if (g === gen) await rellenarSatelite(g);
+  }
+
+  // Segunda pasada: el satélite donde el radar no llega, sin bloquear la
+  // animación. De la toma más reciente a la más antigua, de 2 en 2.
+  let rellenando = false;
+  async function rellenarSatelite(g) {
+    if (rellenando || modo !== "radar" || !Number.isFinite(ultimaSat)) return;
+    rellenando = true;
+    try { await rellenarCola(g); } finally { rellenando = false; }
+  }
+  async function rellenarCola(g) {
+    const cola = tomas.map((t, i) => i).filter((i) => estados[i] === "ok" && rejillas[i] && !fuentes[i]?.conSatelite).reverse();
+    const trabajador = async () => {
+      while (cola.length && g === gen) {
+        const i = cola.shift();
+        const t = tomas[i];
+        let res = null;
+        try { res = await cargarToma(t, g, { conSatelite: true, rejillaPrevia: rejillas[i] }); } catch (e) { /* se queda solo con radar */ }
+        if (g !== gen) { res?.capas.forEach((c) => URL.revokeObjectURL(c.url)); return; }
+        const j = tomas.indexOf(t);
+        if (j < 0 || !res) { res?.capas.forEach((c) => URL.revokeObjectURL(c.url)); continue; }
+        res.capas.forEach((c) => c.overlay.addTo(map));
+        quitar(j);
+        capas[j] = res.capas; fuentes[j] = res.fuentes; rejillas[j] = null;
+        pintar();
+      }
+    };
+    await Promise.all([trabajador(), trabajador()]);
   }
 
   async function listaRadar() {
@@ -638,6 +679,7 @@ export function crearLluviaAnimada({ L, map, contenedor, fetchFn = (...a) => fet
       nFuentes.push(j >= 0 ? fuentes[j] : {});
     });
     viejas.forEach((t, j) => { if (!nuevas.includes(t)) quitar(j); });
+    moverRejillas(viejas, nuevas);
     const actual = viejas[estado.indice];
     tomas = nuevas; capas = nCapas; estados = nEstados; fuentes = nFuentes;
     const i = tomas.indexOf(actual);
@@ -650,7 +692,7 @@ export function crearLluviaAnimada({ L, map, contenedor, fetchFn = (...a) => fet
     if (g !== gen) return;
     ultimaSat = dim.ultima;
     const nuevoModo = radar.length ? "radar" : "satelite";
-    if (nuevoModo !== modo) { tomas.forEach((_, j) => quitar(j)); tomas = []; capas = []; estados = []; fuentes = []; }
+    if (nuevoModo !== modo) { tomas.forEach((_, j) => quitar(j)); tomas = []; capas = []; estados = []; fuentes = []; rejillas.length = 0; }
     modo = nuevoModo;
     actualizarTomas(modo === "radar" ? submuestrear(radar) : framesEnVentana(dim));
     pintar();
@@ -684,7 +726,7 @@ export function crearLluviaAnimada({ L, map, contenedor, fetchFn = (...a) => fet
       gen++;
       clearTimeout(temporizador); clearInterval(refresco); clearInterval(reloj);
       tomas.forEach((_, j) => quitar(j));
-      tomas = []; capas = []; estados = []; fuentes = [];
+      tomas = []; capas = []; estados = []; fuentes = []; rejillas.length = 0;
       satCache.clear(); enCurso.clear();
       map.attributionControl?.removeAttribution(ATRIBUCION);
       panel.hidden = true;
