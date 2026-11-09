@@ -31,7 +31,7 @@ async function contexto(opciones, prep) {
 // admin.html queda fuera: solo la usa Mikel y sus datos no se pueden
 // imitar con respuestas vacías.
 const CON_LOGIN = ["/", "/diario", "/alarma", "/grupos", "/suscripcion", "/etiquetar-olas"];
-const SIN_LOGIN = ["/login", "/privacidad", "/terminos", "/empieza", "/404"];
+const SIN_LOGIN = ["/login", "/privacidad", "/terminos", "/empieza", "/clubes", "/404"];
 
 for (const [nombre, opciones] of [["ordenador", PC], ["móvil", MOVIL]]) {
   test(`${nombre}: cada página carga sin errores de JavaScript`, async () => {
