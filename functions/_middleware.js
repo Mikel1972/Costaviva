@@ -26,6 +26,7 @@ import { decisionIndexacion } from "./_lib/seo/indexacion.js";
 import { htmlNoEncontradaGeneral } from "./_lib/seo/base.js";
 import { visitaAContar, contarVisita, conOrigenEnCta } from "./_lib/visitas.js";
 import { ORIGENES_IFRAME_NZ } from "../assets/js/camaras-nz.js";
+import { conClaveLinz } from "./_lib/linz-basemaps.js";
 
 export async function onRequest(context) {
   const { request, next } = context;
@@ -45,6 +46,11 @@ export async function onRequest(context) {
     if (visita && context.waitUntil) context.waitUntil(contarVisita(visita, { url: SUPABASE_URL, anonKey: SUPABASE_ANON_KEY }));
     if (visita) original = conOrigenEnCta(original, visita, HTMLRewriter);
   } catch { /* el contador nunca rompe la página */ }
+  // Clave de LINZ Basemaps (satélite en NZ) desde la variable de Cloudflare
+  // Pages, nunca desde el repo (_lib/linz-basemaps.js). Si falla, sin clave.
+  try {
+    original = conClaveLinz(original, { clave: context.env?.LINZ_BASEMAPS_KEY, pathname, Rewriter: HTMLRewriter });
+  } catch { /* sin clave: el mapa sigue como antes */ }
   const respuesta = aplicarCsp(original, HTMLRewriter);
   return seo.noindex ? conNoindex(respuesta) : respuesta;
 }

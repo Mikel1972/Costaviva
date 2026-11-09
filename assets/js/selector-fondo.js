@@ -17,12 +17,14 @@
 // Lo puro (sin DOM) tiene tests en test/selector-fondo.test.js.
 
 import { I18n } from "./i18n-modulo.js";
+import { claveLinzDePagina } from "./capa-satelite.js";
 
 export const OPCIONES = [
   { id: "profundidad", icono: "〰", texto: I18n.t("selfondo.profundidad"), detalle: I18n.t("selfondo.profundidad_det", { min: I18n.metros(20, 0).replace(/ [^ ]+$/, ""), max: I18n.metros(5000, 0) }) },
   { id: "tipo", icono: "🪨", texto: I18n.t("fondo.tipo"), detalle: I18n.t("selfondo.tipo_det") },
   // 2026-11-08: foto aérea del IGN (capa-satelite.js), para ver las rocas.
-  { id: "satelite", icono: "🛰", texto: I18n.t("selfondo.satelite"), detalle: I18n.t("selfondo.satelite_det") },
+  // Con la clave de LINZ en la página (2026-11-09), también Nueva Zelanda.
+  { id: "satelite", icono: "🛰", texto: I18n.t("selfondo.satelite"), detalle: I18n.t(claveLinzDePagina() ? "selfondo.satelite_det_nz" : "selfondo.satelite_det") },
 ];
 
 export const NINGUNO = Object.freeze({ profundidad: false, tipo: false, satelite: false });

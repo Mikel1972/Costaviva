@@ -85,7 +85,7 @@
   // Sentinel-2) con el contorno exacto de la costa, y se desvanece al acercar
   // para que se vea el mar real junto a las rocas. cfg: { rectangulos,
   // urlTesela(z, x, y), procesar(rgba, z, lado), colorMar, zoomDesde,
-  // zoomHasta, maxzoom }. Devuelve false si no hay mapa vectorial (entonces
+  // zoomHasta, maxzoom, directas: [{ id, url, rectangulos }] }. Devuelve false si no hay mapa vectorial (entonces
   // capa-satelite.js usa su capa de Leaflet).
   var protocoloListo = false;
   var CAPAS_SAT = [];
@@ -136,6 +136,16 @@
         m.addSource(id, { type: "raster", tiles: ["pnoa://{z}/{x}/{y}"], tileSize: 256, maxzoom: cfg.maxzoom, bounds: [r[0][1], r[0][0], r[1][1], r[1][0]] });
         m.addLayer({ id: id, type: "raster", source: id }, siguiente);
         CAPAS_SAT.push(id);
+      });
+      // Fuentes que no pasan por el canvas (LINZ Basemaps en NZ, 2026-11-09):
+      // la URL va tal cual, solo dentro de sus rectángulos.
+      (cfg.directas || []).forEach(function (f) {
+        f.rectangulos.forEach(function (r, i) {
+          var id = "satelite-" + f.id + "-" + i;
+          m.addSource(id, { type: "raster", tiles: [f.url], tileSize: 256, maxzoom: cfg.maxzoom, bounds: [r[0][1], r[0][0], r[1][1], r[1][0]] });
+          m.addLayer({ id: id, type: "raster", source: id }, siguiente);
+          CAPAS_SAT.push(id);
+        });
       });
       var tapa = capas[iAgua];
       m.addLayer({

@@ -729,6 +729,7 @@
   "selfondo.titulo": "Fondo del mar",
   "selfondo.satelite": "Satélite",
   "selfondo.satelite_det": "Foto aérea del IGN (España)",
+  "selfondo.satelite_det_nz": "Foto aérea del IGN (España) y de LINZ (Nueva Zelanda)",
   "vista3d.titulo": "Vista 3D del relieve y del fondo del mar",
   "vista3d.cerrar": "Cerrar la vista 3D",
   "vista3d.ayuda": "Inclina con dos dedos hacia arriba y gira con dos dedos",

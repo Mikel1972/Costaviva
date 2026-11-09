@@ -402,8 +402,9 @@ el dato es provisional. Acceso KiWIS y `ts_path` de Ross Jones (WRC).
 - Lógica y red en `functions/_lib/nz/kiwis-waikato.js`:
   `getTimeseriesValues` (`format=dajson`, `period=P1D`, unidad en los
   metadatos) de Waiwawa `1257/2/S/Cmd.P` y Tairua `940/2/S/Cmd.P` (caudal) y
-  Raglan `857/23/TideLVL/Cmd.P` y Whitianga `1328/20/TideLVL/Cmd.P` (nivel).
-  Kawhia aún no (preguntado). El parser lee dajson y csv; mm/cm → m, l/s →
+  Raglan `857/23/TideLVL/Cmd.P`, Whitianga `1328/20/TideLVL/Cmd.P` y Kawhia
+  `1869/17/TideLVL/Cmd.P` (nivel; Kawhia añadido el 2026-11-09, coordenadas
+  del muelle aproximadas como las demás; solo `nz-kawhia` queda a ≤ 20 km). El parser lee dajson y csv; mm/cm → m, l/s →
   m³/s; sin unidad, un nivel > 30 se toma por mm.
 - **Pocas consultas**: caché propia por estación en la Cache API (2 h el dato,
   1 h un fallo) → como mucho una petición por estación cada 2 h y centro de
@@ -1329,10 +1330,30 @@ Sentinel-2 y de cerca se ve el mar real. El «sin foto» del IGN (morado y la
 raya oscura del borde) se vuelve transparente con 24 px de borde suave. Lo
 que el estilo pinta encima del agua (arena, carreteras, nombres) se esconde.
 Sin WebGL: capa de Leaflet con el mismo filtro.
-Nueva Zelanda: LINZ Basemaps (CC BY 4.0) necesita una clave de
-desarrollador fija, pedida a LINZ; Portugal (DGT) y la vista lejana
-(Sentinel-2 de EOX: su licencia comercial no está clara) quedan pendientes.
-Tests: `test/capa-satelite.test.js`, `test/selector-fondo.test.js`.
+**Nueva Zelanda (2026-11-09): LINZ Basemaps**, capa `aerial` (CC BY 4.0, uso
+comercial con atribución; clave de desarrollador ligada a costaviva.org,
+petición `costaviva-linz-basemaps-aerial` del registro de permisos de comun).
+- **La clave no va en el repo (es público).** Es la variable
+  `LINZ_BASEMAPS_KEY` de Cloudflare Pages (Production y Preview; cambiarla
+  exige redeploy). `_middleware.js` → `functions/_lib/linz-basemaps.js` la
+  mete en `<meta name="linz-basemaps-key">` del `<head>` de `/` e
+  `/index.html` (solo si tiene forma de clave: letras, números, `_`, `-`).
+- `capa-satelite.js` la lee (`claveLinzDePagina`) y, si está, añade
+  `https://basemaps.linz.govt.nz/v1/tiles/aerial/WebMercatorQuad/{z}/{x}/{y}.webp?api=…`
+  solo dentro de `RECTANGULOS_NZ` (islas Norte, Sur y Stewart; Chatham no):
+  en el mapa vectorial como fuente raster directa (`cfg.directas` de
+  `MapaBase.ponerSatelite`, sin el filtro del «sin foto», LINZ da teselas
+  transparentes) y sin WebGL como `L.tileLayer`. Atribución del ejemplo de
+  sus docs, «LINZ CC BY 4.0 © Imagery Basemap contributors» con enlace a su
+  página de atribución, solo mientras la vista toca NZ con el satélite puesto.
+- Sin la variable no se pide nada a LINZ y todo queda como antes. En España
+  y Portugal nada cambia. La vista 3D (`vista-3d.js`) sigue solo con el PNOA.
+  En las previews (`*.pages.dev`) la clave, ligada a costaviva.org, puede dar
+  teselas rechazadas: el mapa sigue sin foto en NZ, sin romperse.
+Portugal (DGT) y la vista lejana (Sentinel-2 de EOX: su licencia comercial no
+está clara) quedan pendientes.
+Tests: `test/capa-satelite.test.js`, `test/selector-fondo.test.js`,
+`test/linz-basemaps.test.js` (la clave en ningún fichero; sin variable, nada).
 
 ## Vista 3D (2026-11-08)
 
