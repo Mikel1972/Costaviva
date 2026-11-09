@@ -130,7 +130,7 @@ test("identificar-captura: registra tokens y usuario sin cambiar la respuesta", 
   assert.deepEqual(await r.json(), {
     especie: "Lubina", talla_cm: null, peso_g: null, confianza: "media",
     // Talla por foto que aprende (2026-11-09): lo que calculó la foto y el margen.
-    talla_foto_cm: null, peso_foto_g: null, margen_cm: null, calibrada: false,
+    talla_foto_cm: null, peso_foto_g: null, margen_cm: null, margen_peso_g: null, calibrada: false,
     limite_mes: 100, restantes_mes: 89,
   });
   assert.equal(filas.length, 1);

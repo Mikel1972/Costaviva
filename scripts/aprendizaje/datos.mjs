@@ -81,13 +81,22 @@ export async function leerDiario({ url, key, emailsPrueba = [] }) {
   }
   // Talla calculada por la foto y medida (migración 20261109090000): si aún
   // no existen las columnas, se lee sin ellas.
+  // Peso calculado y pesado (migración 20261109180000): igual, con su escalón.
   let capturas;
+  const COLS_CAP = "salida_id,especie,creado_en";
+  const COLS_TALLA = "talla_cm,talla_estimada_cm,talla_medida";
   try {
-    capturas = await leerTodo(url, key, "capturas", "salida_id,especie,creado_en,talla_cm,talla_estimada_cm,talla_medida");
+    capturas = await leerTodo(url, key, "capturas", `${COLS_CAP},${COLS_TALLA},peso_g,peso_estimado_g,peso_medido`);
   } catch (e) {
     if (e.status !== 400) throw e;
-    errores.push("capturas sin talla_estimada_cm / talla_medida (migración 20261109090000)");
-    capturas = await leerTodo(url, key, "capturas", "salida_id,especie,creado_en");
+    try {
+      capturas = await leerTodo(url, key, "capturas", `${COLS_CAP},${COLS_TALLA}`);
+      errores.push("capturas sin peso_medido (migración 20261109180000)");
+    } catch (e2) {
+      if (e2.status !== 400) throw e2;
+      errores.push("capturas sin talla_estimada_cm / talla_medida (migración 20261109090000)");
+      capturas = await leerTodo(url, key, "capturas", COLS_CAP);
+    }
   }
   // consiente_uso_datos_capturas: quien se opuso a las estadísticas anónimas
   // (suscripcion.html, "Tus datos") no entra (usuariosExcluidos). Si la

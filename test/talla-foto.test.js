@@ -70,3 +70,53 @@ test("el diario guarda el cálculo de la foto y la casilla de talla medida", () 
   const f = readFileSync(new URL("../functions/identificar-captura.js", import.meta.url), "utf8");
   assert.match(f, /aplicarCalibracion\(interpretado\.resultado, CALIBRACION_TALLA\)/);
 });
+
+import { muestrasPesoFoto, gruposPesoFoto, calibracionPesoFoto } from "../assets/js/talla-foto.js";
+
+function pesadas(n, personas, factor) {
+  const salidas = [], capturas = [];
+  for (let i = 0; i < n; i++) {
+    salidas.push({ id: `s${i}`, user_id: `u${i % personas}` });
+    const real = 500 + 10 * i;
+    capturas.push({ salida_id: `s${i}`, especie: "Sargo", peso_g: real, peso_estimado_g: Math.round(real * factor * (i % 2 ? 1.01 : 0.99)), peso_medido: true });
+  }
+  return muestrasPesoFoto({ salidas, capturas });
+}
+
+test("peso: solo cuentan las capturas pesadas con cálculo de la foto", () => {
+  const salidas = [{ id: "s1", user_id: "a" }];
+  const capturas = [
+    { salida_id: "s1", especie: "Sargo", peso_g: 560, peso_estimado_g: 450, peso_medido: true },
+    { salida_id: "s1", especie: "Sargo", peso_g: 560, peso_estimado_g: 450, peso_medido: false },
+    { salida_id: "s1", especie: "Sargo", peso_g: 560, peso_estimado_g: null, peso_medido: true },
+  ];
+  const m = muestrasPesoFoto({ salidas, capturas });
+  assert.equal(m.length, 1);
+  assert.equal(m[0].error_g, -110);
+  assert.equal(m[0].error_pct, -19.64);
+});
+
+test("peso: con sesgo claro (la foto se queda corta un 20 %), se corrige", () => {
+  const cal = calibracionPesoFoto(gruposPesoFoto(pesadas(10, 5, 0.8)));
+  assert.ok(cal.sargo.sesgo_pct < -19 && cal.sargo.sesgo_pct > -21, String(cal.sargo.sesgo_pct));
+  const r = aplicarCalibracion({ especie: "Sargo", talla_cm: 30, peso_g: 450 }, { talla: {}, peso: cal });
+  assert.equal(r.peso_foto_g, 450);
+  assert.ok(r.peso_g > 550 && r.peso_g < 570, String(r.peso_g));
+  assert.equal(r.calibrada, true);
+  assert.ok(r.margen_peso_g > 0);
+});
+
+test("peso: sin personas suficientes no se corrige", () => {
+  assert.deepEqual(calibracionPesoFoto(gruposPesoFoto(pesadas(20, 4, 0.8))), {});
+});
+
+test("la calibración antigua (solo talla) sigue valiendo", () => {
+  const r = aplicarCalibracion({ especie: "Lubina", talla_cm: 45, peso_g: 1000 }, { lubina: { n: 10, margen_cm: 3, sesgo_cm: 3 } });
+  assert.equal(r.talla_cm, 42);
+});
+
+test("el diario guarda «Lo he pesado»", () => {
+  const h = readFileSync(new URL("../diario.html", import.meta.url), "utf8");
+  assert.match(h, /id="capturaPesoMedido"/);
+  assert.match(h, /peso_medido: peso \? pesoMedido : null/);
+});

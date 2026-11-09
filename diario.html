@@ -1598,6 +1598,10 @@ function formularioCaptura() {
       </label>
       <label for="capturaPeso">${I18n.t("diario.cap.peso")}</label>
       <input type="number" id="capturaPeso" step="1" min="0" />
+      <label class="casilla-peso-medido" style="display:flex; align-items:center; gap:8px; font-weight:400; margin-top:6px;">
+        <input type="checkbox" id="capturaPesoMedido" style="width:auto; margin:0;" />
+        <span>${I18n.t("diario.cap.peso_medido")}</span>
+      </label>
       <label for="capturaTecnica">${I18n.t("diario.cap.tecnica")}</label>
       <select id="capturaTecnica">
         <option value="">${I18n.t("diario.cap.sin_especificar")}</option>
@@ -1677,6 +1681,7 @@ async function guardarCaptura(salidaId, fecha, idExistente, ordenFotoBase) {
   const talla = document.getElementById("capturaTalla").value;
   const peso = document.getElementById("capturaPeso").value;
   const tallaMedida = document.getElementById("capturaTallaMedida")?.checked === true;
+  const pesoMedido = document.getElementById("capturaPesoMedido")?.checked === true;
   const cebo = document.getElementById("capturaCebo").value;
   const tecnica = document.getElementById("capturaTecnica").value;
   const usaSenuelo = TECNICAS_CON_SENUELO.has(tecnica);
@@ -1699,6 +1704,7 @@ async function guardarCaptura(salidaId, fecha, idExistente, ordenFotoBase) {
     // Talla medida y cálculo de la foto (2026-11-09): el aprendizaje semanal
     // compara los dos para que la foto vaya acertando más (talla-foto.js).
     talla_medida: talla ? tallaMedida : null,
+    peso_medido: peso ? pesoMedido : null,
     ...(estimacionFoto || {}),
   };
   let capturaId = idExistente;
@@ -2133,7 +2139,10 @@ async function identificarFotoDesdeArchivo(file) {
     const margen = resultado.talla_cm != null && resultado.margen_cm != null
       ? " " + I18n.t(resultado.calibrada ? "diario.id.margen_corregida" : "diario.id.margen", { margen: textoTalla(resultado.margen_cm) })
       : "";
-    mensajeEl.textContent = I18n.t("diario.id.estimado", { confianza: textoConfianza(resultado.confianza) }) + margen +
+    const margenPeso = resultado.peso_g != null && resultado.margen_peso_g != null
+      ? " " + I18n.t("diario.id.margen_peso", { margen: textoPeso(resultado.margen_peso_g) })
+      : "";
+    mensajeEl.textContent = I18n.t("diario.id.estimado", { confianza: textoConfianza(resultado.confianza) }) + margen + margenPeso +
       (partes.length ? ` (${partes.join("; ")})` : "") + sugerencia + avisoCupoMes(resultado.restantes_mes);
   } catch (e) {
     mensajeEl.className = "mensaje error";
@@ -2162,6 +2171,7 @@ async function mostrarFormularioEditarCaptura(iso, salidaId, captura) {
   selectorHoraCaptura = crearSelectorHora("ruedaCapturaHora", captura.hora ? captura.hora.slice(0, 5) : null);
   document.getElementById("capturaTalla").value = captura.talla_cm ?? "";
   document.getElementById("capturaTallaMedida").checked = captura.talla_medida === true;
+  document.getElementById("capturaPesoMedido").checked = captura.peso_medido === true;
   estimacionFoto = null; // al editar no se pisa lo que calculó la foto al crearla
   document.getElementById("capturaPeso").value = captura.peso_g ?? "";
   document.getElementById("capturaTecnica").value = captura.tecnica || "";
