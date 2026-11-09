@@ -1,13 +1,13 @@
 {
- "fecha": "2026-11-09T10:18:12.045Z",
- "lineasHistorial": 8995,
+ "fecha": "2026-11-09T10:37:53.714Z",
+ "lineasHistorial": 9005,
  "etiquetas": 926,
  "etiquetasClaude": 235,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.1797,
+   "a": 1.1754,
    "p": 0.5,
-   "n": 286,
+   "n": 287,
    "nEtiquetas": 62,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -22,7 +22,7 @@
    "hMax": 1.69,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": -0.089
+   "correlacion": -0.092
   },
   "hondarribia/bocana": {
    "a": 3.5459,
@@ -56,9 +56,9 @@
    "correlacion": -0.065
   },
   "zarautz/dinamico": {
-   "a": 3.1048,
+   "a": 3.1044,
    "p": 0.5,
-   "n": 726,
+   "n": 727,
    "nEtiquetas": 135,
    "nEtiquetasClaude": 29,
    "franjasClaude": [
@@ -266,9 +266,9 @@
    "correlacion": 0.098
   },
   "berria/dinamico": {
-   "a": 2.7682,
+   "a": 2.7664,
    "p": 0.5,
-   "n": 346,
+   "n": 347,
    "nEtiquetas": 64,
    "nEtiquetasClaude": 16,
    "franjasClaude": [
@@ -287,7 +287,7 @@
    "hMax": 4.73,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.288
+   "correlacion": 0.29
   },
   "mutriku/principal": {
    "a": 7.2888,
