@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-09T14:38:02.394Z",
- "lineasHistorial": 9100,
+ "fecha": "2026-11-09T15:07:51.869Z",
+ "lineasHistorial": 9111,
  "etiquetas": 926,
  "etiquetasClaude": 235,
  "calibracion": {
@@ -245,9 +245,9 @@
    "correlacion": null
   },
   "castrourdiales/principal": {
-   "a": 2.7855,
+   "a": 2.778,
    "p": 0.5,
-   "n": 159,
+   "n": 160,
    "nEtiquetas": 42,
    "nEtiquetasClaude": 6,
    "franjasClaude": [
@@ -258,8 +258,8 @@
     "2026-11-01T16",
     "2026-11-03T16"
    ],
-   "dias": 26,
-   "hMin": 0.3,
+   "dias": 27,
+   "hMin": 0.28,
    "hMax": 4.51,
    "errorRel": 1,
    "pocosDatos": false,
