@@ -1825,8 +1825,9 @@ async function marcarAqui(salida, boton) {
   return true;
 }
 
-// Picadas (2026-11-08, Mikel: "con un número"): cuántas picadas hubo en la
-// salida, piquen o no. El aprendizaje semanal las compara con la ventana de
+// Picadas (2026-11-08, Mikel: "con un número"; "son sin sacar el pez: si me
+// pican dos y saco uno, uno queda en captura y el otro en picada"): picadas
+// en las que NO se sacó el pez. Picadas + capturas = actividad total. El aprendizaje semanal las compara con la ventana de
 // actividad (tres horas "activas" con dos picadas no es lo mismo que nada).
 // Mientras la jornada sigue en curso, "+1 picada" suma sin abrir el formulario.
 function numeroPicadas(texto) {

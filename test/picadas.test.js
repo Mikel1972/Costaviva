@@ -4,6 +4,10 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { picadasPorHora } from "../scripts/aprendizaje/casos.mjs";
 
+test("picadas: actividad por hora = picadas sin sacar + capturas", () => {
+  assert.equal(picadasPorHora({ picadas: 1, hora_inicio: "09:00", hora_fin: "12:00" }, 1), 0.67);
+});
+
 test("picadas: por hora a partir del inicio y el fin de la salida", () => {
   assert.equal(picadasPorHora({ picadas: 2, hora_inicio: "09:00:00", hora_fin: "12:00:00" }), 0.67);
   assert.equal(picadasPorHora({ picadas: 3, hora_inicio: "23:00", hora_fin: "01:00" }), 1.5);
