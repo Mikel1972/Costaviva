@@ -1005,6 +1005,7 @@
   "diario.picadas_1": "1 toque",
   "diario.picadas_n": "{n} toques",
   "diario.picada_mas": "+1 toque",
+  "diario.picadas_ninguna": "Nenhum",
   "diario.picada_menos": "Tirar um toque",
   "diario.picadas_error": "Não foi possível guardar o toque. Tenta novamente.",
   "diario.salida.temp_sonda_ph": "Opcional, p. ex. 19,5",
