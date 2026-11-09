@@ -5817,6 +5817,15 @@ function frentesDeSpot(s, modalidad) {
   return frentesSpotCache.get(clave);
 }
 
+// Punto de color para la lista de especies (un <select> nativo no admite
+// colores en iOS; un emoji sí). Misma escala que vaColor.
+function vaPuntoColor(p) {
+  if (p >= 70) return "🟢";
+  if (p >= 55) return "🟡";
+  if (p >= 40) return "🟠";
+  return "⚪";
+}
+
 function vaColor(p) {
   if (p >= 70) return "#22C55E";
   if (p >= 55) return "#FFC24B";
@@ -5932,26 +5941,50 @@ async function pintarVentanaActividad(s) {
       det.textContent = I18n.t("mapa.va.sin_especies", { modalidad: VA.NOMBRE_MODALIDAD[modalidad] });
       return;
     }
-    // En temporada primero; dentro de cada grupo, el orden del JSON (lubina primero).
-    const orden = (e) => datos.especies.indexOf(e);
+    // Orden por probabilidad (2026-11-09, Mikel: "que la lista salga ordenada
+    // de mayor a menor probabilidad, marcada con colores"): la nota de cada
+    // especie ahora (hoy) o en su mejor hora (otro día), de mayor a menor, con
+    // un punto de color de la misma escala que la tira (vaColor) y el número.
+    // Las que están en veda o fuera de temporada, al final, como antes.
+    // Mientras llegan las horas, la lista sin ordenar (para que no salga vacía).
+    if (!document.getElementById("vaEspecie").options.length) {
+      document.getElementById("vaEspecie").innerHTML = candidatas.map((e) => `<option value="${escVA(e.id)}">${escVA(I18n.nombre(e))}</option>`).join("");
+    }
+    det.textContent = I18n.t("mapa.va.cargando");
+    const horas = await datosHorariosSpot(s);
+    if (vaEstado.dia === 0) await frentesIndice(modalidad);
+    if (vaEstado.s !== s) return;
+    const ctx = contextoIndiceSpot(s, datos, modalidad, vaEstado.dia);
+    const fecha = vaFechaDia(vaEstado.dia);
+    const ahoraH = horaActualISO(zonaSpot(s)).slice(0, 13);
     const util = (e) => e.presencia[region].meses.includes(mes) && !VA.vedaActiva(e, region, mes);
-    candidatas.sort((a, b) => (util(b) - util(a)) || orden(a) - orden(b));
+    const nota = new Map();
+    for (const e of candidatas) {
+      if (!util(e)) continue;
+      try {
+        const delDia = VA.calcularVentana(e, datos.reglas_por_defecto, horas, ctx).filter((r) => r.hora.startsWith(fecha) && !r.prohibida);
+        const ref = vaEstado.dia === 0 ? (delDia.find((r) => r.hora.slice(0, 13) >= ahoraH) || delDia[delDia.length - 1]) : delDia.reduce((m, r) => (!m || r.puntuacion > m.puntuacion ? r : m), null);
+        if (ref && Number.isFinite(ref.puntuacion)) nota.set(e.id, ref.puntuacion);
+      } catch (err) { /* sin nota: va detrás de las que la tienen */ }
+    }
+    const orden = (e) => datos.especies.indexOf(e);
+    const clave = (e) => (util(e) ? (nota.has(e.id) ? nota.get(e.id) : -1) : -2);
+    candidatas.sort((a, b) => (clave(b) - clave(a)) || orden(a) - orden(b));
     let preferida = null;
     try { preferida = localStorage.getItem("va_especie"); } catch (e) { /* sin almacenamiento */ }
     const ids = candidatas.map((e) => e.id);
     if (!ids.includes(vaEstado.especieId)) vaEstado.especieId = ids.includes(preferida) ? preferida : ids[0];
     const sel = document.getElementById("vaEspecie");
-    sel.innerHTML = candidatas.map((e) =>
-      `<option value="${escVA(e.id)}"${e.id === vaEstado.especieId ? " selected" : ""}>${escVA(I18n.nombre(e))}${VA.vedaActiva(e, region, mes) ? I18n.t("mapa.va.en_veda_opcion") : e.presencia[region].meses.includes(mes) ? "" : I18n.t("mapa.va.fuera_temporada")}</option>`).join("");
+    sel.innerHTML = candidatas.map((e) => {
+      const n = nota.get(e.id);
+      const marca = n === undefined ? "" : `${vaPuntoColor(n)} `;
+      const cifra = n === undefined ? "" : ` · ${n}`;
+      const extra = VA.vedaActiva(e, region, mes) ? I18n.t("mapa.va.en_veda_opcion") : e.presencia[region].meses.includes(mes) ? "" : I18n.t("mapa.va.fuera_temporada");
+      return `<option value="${escVA(e.id)}"${e.id === vaEstado.especieId ? " selected" : ""}>${marca}${escVA(I18n.nombre(e))}${cifra}${extra}</option>`;
+    }).join("");
 
-    det.textContent = I18n.t("mapa.va.cargando");
-    const horas = await datosHorariosSpot(s);
-    if (vaEstado.dia === 0) await frentesIndice(modalidad);
-    if (vaEstado.s !== s) return;
     const especie = datos.especies.find((e) => e.id === vaEstado.especieId);
-    // Turbidez y caudal: lecturas de hoy (ver contextoIndiceSpot).
-    const ctx = contextoIndiceSpot(s, datos, modalidad, vaEstado.dia);
-    const fecha = vaFechaDia(vaEstado.dia);
+    // Turbidez y caudal: lecturas de hoy (ver contextoIndiceSpot, arriba).
     const todos = VA.calcularVentana(especie, datos.reglas_por_defecto, horas, ctx);
     const region0 = VA.regionPorCoordenadas(s.lat, s.lon);
     vaEstado.resultados = todos.filter((r) => r.hora.startsWith(fecha)).map((r) => ({
