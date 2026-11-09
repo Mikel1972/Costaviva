@@ -41,8 +41,9 @@ export async function onRequestGet(context) {
   try {
     const cab = await rango(origen, 0, CABECERA_BYTES - 1);
     const info = teselasVentana(parsearIfds(cab));
-    const trozos = [];
-    for (const tes of info.teselas) trozos.push(tes.len ? await rango(origen, tes.off, tes.off + tes.len - 1) : new Uint8Array(0));
+    // En paralelo (2026-11-09): el bucket está en Varsovia; una tras otra
+    // sumaban ~0,5 s por tesela.
+    const trozos = await Promise.all(info.teselas.map((tes) => (tes.len ? rango(origen, tes.off, tes.off + tes.len - 1) : new Uint8Array(0))));
     paquete = empaquetar({
       t: new Date(ms).toISOString().replace(".000Z", "Z"),
       ancho: info.ancho, alto: info.alto, tw: info.tw, th: info.th, bandas: info.bandas, factor: VENTANA.factor,
