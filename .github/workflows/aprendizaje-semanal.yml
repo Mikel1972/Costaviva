@@ -97,7 +97,7 @@ jobs:
           git config user.name "Costaviva (aprendizaje)"
           git config user.email "noreply@anthropic.com"
           FECHA=$(date -u +%F)
-          SALIDAS="aprendizaje datos-robots/aprendizaje assets/datos/aprendizaje-indice.json"
+          SALIDAS="aprendizaje datos-robots/aprendizaje assets/datos/aprendizaje-indice.json assets/js/talla-foto-calibracion.js"
           subir_main() {
             git add $SALIDAS
             if git diff --cached --quiet; then echo "Sin cambios."; return 0; fi
