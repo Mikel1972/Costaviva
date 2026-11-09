@@ -728,6 +728,7 @@
   "selfondo.titulo": "Seabed",
   "selfondo.satelite": "Satellite",
   "selfondo.satelite_det": "IGN aerial photo (Spain)",
+  "selfondo.satelite_det_nz": "Aerial photo from IGN (Spain) and LINZ (New Zealand)",
   "vista3d.titulo": "3D view of the coast and seabed",
   "vista3d.cerrar": "Close the 3D view",
   "vista3d.ayuda": "Tilt by dragging two fingers up and rotate with two fingers",

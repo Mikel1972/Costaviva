@@ -14,8 +14,8 @@
 //   3. Pocas consultas al día: aquí, como mucho UNA petición por estación
 //      cada CACHE_WAIKATO_S (2 h) y centro de datos de Cloudflare (Cache
 //      API; un fallo también se guarda, 1 h, para no reintentar en bucle).
-// El acceso KiWIS y los ts_path los dio Ross Jones (WRC) el 2026-11-09.
-// Kawhia aún no (se ha preguntado su ts_path).
+// El acceso KiWIS y los ts_path los dio Ross Jones (WRC) el 2026-11-09;
+// el de Kawhia (1869/17/TideLVL/Cmd.P) llegó después, el mismo día.
 //
 // El servidor es http y puerto 8080. Las sesiones de Claude en la nube no
 // llegan (proxy), pero Cloudflare Workers sí permite fetch a :8080. El
@@ -67,6 +67,12 @@ export const ESTACIONES_WAIKATO = [
     clave: "whitianga", tipo: "marea", nombre: "Whitianga", estacion: "Whitianga Harbour (WRC)",
     tsPath: "1328/20/TideLVL/Cmd.P", siteNo: "1328", stationNo: "20", envirohub: "44896",
     lat: -36.831, lon: 175.709, coordAprox: true,
+  },
+  {
+    // Muelle de Kawhia (coordenadas aproximadas, como las demás).
+    clave: "kawhia", tipo: "marea", nombre: "Kawhia", estacion: "Kawhia Harbour (WRC)",
+    tsPath: "1869/17/TideLVL/Cmd.P", siteNo: "1869", stationNo: "17",
+    lat: -38.066, lon: 174.818, coordAprox: true,
   },
 ];
 
@@ -223,8 +229,8 @@ async function datosEstacion(e, { fetchFn, cache, origen, ahora }) {
   return resultado;
 }
 
-// Las 4 estaciones: { caudales: { waiwawa, tairua }, nivelesMarea: { raglan,
-// whitianga } }. Nunca lanza: una estación caída sale con `error`.
+// Las 5 estaciones: { caudales: { waiwawa, tairua }, nivelesMarea: { raglan,
+// whitianga, kawhia } }. Nunca lanza: una estación caída sale con `error`.
 export async function datosWaikato({
   fetchFn = globalThis.fetch, cache = globalThis.caches?.default, origen = null, ahora = Date.now(),
   estaciones = ESTACIONES_WAIKATO,

@@ -1343,7 +1343,7 @@ export function camarasDeNZ(camaras) {
 // Waikato Regional Council (KiWIS, 2026-11-09, permiso escrito CC BY 4.0 +
 // email, ver functions/_lib/nz/kiwis-waikato.js): caudal de Waiwawa y Tairua
 // (`caudales`, mismo formato que el de España para la capa de ríos) y nivel
-// medido de los mareógrafos de Raglan y Whitianga (`nivelesMarea`, y
+// medido de los mareógrafos de Raglan, Whitianga y Kawhia (`nivelesMarea`, y
 // `mareaMedida` en los spots a ≤ 20 km). Caché propia de 2 h por estación,
 // aparte de la de 30 min de esta respuesta.
 export async function previsionRegionNZ(spots, env, origen, ahora = Date.now(), cargarCamaras = datosCamarasPorSpot, cargarOleajeCamaras = datosOleajeCamaras, cargarWaikato = () => datosWaikato({ origen, ahora })) {

@@ -33,12 +33,13 @@ test("KiWIS: URL de valores con el ts_path, dajson, 1 día y la unidad en los me
   assert.match(u.searchParams.get("md_returnfields"), /ts_unitsymbol/);
 });
 
-test("KiWIS: las 4 estaciones con los ts_path que dio Waikato Regional Council", () => {
+test("KiWIS: las 5 estaciones con los ts_path que dio Waikato Regional Council", () => {
   assert.deepEqual(
     Object.fromEntries(ESTACIONES_WAIKATO.map((e) => [e.clave, [e.tipo, e.tsPath]])),
     {
       waiwawa: ["caudal", "1257/2/S/Cmd.P"], tairua: ["caudal", "940/2/S/Cmd.P"],
       raglan: ["marea", "857/23/TideLVL/Cmd.P"], whitianga: ["marea", "1328/20/TideLVL/Cmd.P"],
+      kawhia: ["marea", "1869/17/TideLVL/Cmd.P"],
     }
   );
   for (const e of ESTACIONES_WAIKATO) assert.ok(e.lat < -36 && e.lat > -38.5 && e.lon > 174 && e.lon < 176.5, e.clave);
@@ -116,16 +117,19 @@ test("datosWaikato: una petición por estación y, con caché, ninguna más; un 
     if (ts.startsWith("940/")) return new Response(TAIRUA);
     if (ts.startsWith("857/")) return new Response(RAGLAN);
     if (ts.startsWith("1328/")) return new Response("down", { status: 503 });
+    if (ts.startsWith("1869/")) return new Response(RAGLAN);
     return new Response('[{"columns":"Timestamp,Value","data":[]}]');
   };
   const cache = cacheFalsa();
   const d = await datosWaikato({ fetchFn, cache, origen: "https://c.org", ahora: AHORA });
-  assert.equal(pedidas.length, 4);
+  assert.equal(pedidas.length, 5);
   assert.equal(d.caudales.tairua.valor, 4.7);
   assert.equal(d.caudales.tairua.nombre, "Tairua River");
   assert.equal(d.caudales.tairua.spotCosta, "nz-tairua");
   assert.equal(d.caudales.waiwawa.error, "sin dato reciente");
   assert.equal(d.nivelesMarea.raglan.valor, 2.15);
+  assert.equal(d.nivelesMarea.kawhia.valor, 2.15);
+  assert.equal(d.nivelesMarea.kawhia.nombre, "Kawhia");
   assert.match(d.nivelesMarea.whitianga.error, /503/);
   // Nada del servidor KiWIS en lo que se manda al navegador.
   assert.doesNotMatch(JSON.stringify(d), /8080|ts_path|Cmd\.P/);
@@ -133,26 +137,32 @@ test("datosWaikato: una petición por estación y, con caché, ninguna más; un 
   assert.equal(cache.guardado.get("https://c.org/__cache/kiwis-waikato/tairua").cc, `public, max-age=${CACHE_WAIKATO_S}`);
   assert.equal(cache.guardado.get("https://c.org/__cache/kiwis-waikato/whitianga").cc, "public, max-age=3600");
   const otra = await datosWaikato({ fetchFn, cache, origen: "https://c.org", ahora: AHORA });
-  assert.equal(pedidas.length, 4, "segunda vez: todo de la caché");
+  assert.equal(pedidas.length, 5, "segunda vez: todo de la caché");
   assert.deepEqual(otra, d);
 });
 
 test("datosWaikato: sin red ni caché, todas con error y sin lanzar", async () => {
   const d = await datosWaikato({ fetchFn: async () => { throw new Error("sin red"); }, cache: null, ahora: AHORA });
   assert.deepEqual(Object.keys(d.caudales), ["waiwawa", "tairua"]);
-  assert.deepEqual(Object.keys(d.nivelesMarea), ["raglan", "whitianga"]);
+  assert.deepEqual(Object.keys(d.nivelesMarea), ["raglan", "whitianga", "kawhia"]);
   assert.ok(Object.values({ ...d.caudales, ...d.nivelesMarea }).every((x) => /sin red/.test(x.error)));
 });
 
-test("mareógrafo de cada spot: Raglan y Whitianga a ≤ 20 km; los demás, ninguno", () => {
+test("mareógrafo de cada spot: Raglan, Whitianga y Kawhia a ≤ 20 km; los demás, ninguno", () => {
   const niveles = {
     raglan: { nombre: "Raglan", valor: 2.15, hora: "x", provisional: true },
     whitianga: { nombre: "Whitianga", valor: 1.1, hora: "x", provisional: true },
+    kawhia: { nombre: "Kawhia", valor: 1.7, hora: "x", provisional: true },
   };
   const spot = (slug) => SPOTS_NZ.find((s) => s.slug === slug);
   assert.equal(mareografoDeSpot(spot("nz-raglan"), niveles).clave, "raglan");
   assert.equal(mareografoDeSpot(spot("nz-whitianga"), niveles).clave, "whitianga");
+  assert.equal(mareografoDeSpot(spot("nz-kawhia"), niveles).clave, "kawhia");
+  assert.ok(mareografoDeSpot(spot("nz-kawhia"), niveles).km < 2);
   assert.equal(mareografoDeSpot(spot("nz-leigh"), niveles), null);
+  // Raglan y Kawhia están a ~30 km: cada spot, solo el suyo.
+  assert.equal(mareografoDeSpot(spot("nz-kawhia"), { raglan: niveles.raglan }), null);
+  assert.equal(mareografoDeSpot(spot("nz-raglan"), { kawhia: niveles.kawhia }), null);
   assert.equal(mareografoDeSpot(spot("nz-raglan"), { raglan: { error: "x" } }), null);
 });
 
@@ -162,12 +172,16 @@ test("/prevision?region=nz: caudales, nivelesMarea, mareaMedida en los spots cer
   try {
     const waikato = async () => ({
       caudales: { tairua: { nombre: "Tairua River", valor: 4.7, unidad: "m³/s", provisional: true } },
-      nivelesMarea: { raglan: { nombre: "Raglan", valor: 2.15, unidad: "m", provisional: true, hora: "2026-11-08T20:00:00.000Z" } },
+      nivelesMarea: {
+        raglan: { nombre: "Raglan", valor: 2.15, unidad: "m", provisional: true, hora: "2026-11-08T20:00:00.000Z" },
+        kawhia: { nombre: "Kawhia", valor: 1.7, unidad: "m", provisional: true, hora: "2026-11-08T20:00:00.000Z" },
+      },
     });
     const d = await previsionRegionNZ(SPOTS_NZ, {}, "https://c.org", AHORA, async () => ({}), async () => ({ lecturas: {}, medidas: {} }), waikato);
     assert.equal(d.caudales.tairua.valor, 4.7);
     assert.equal(d.nivelesMarea.raglan.valor, 2.15);
     assert.equal(d.spots.find((s) => s.slug === "nz-raglan").mareaMedida.valor, 2.15);
+    assert.equal(d.spots.find((s) => s.slug === "nz-kawhia").mareaMedida.valor, 1.7);
     assert.equal(d.spots.find((s) => s.slug === "nz-leigh").mareaMedida, undefined);
     assert.equal(d.atribuciones.waikato.url, "https://www.waikatoregion.govt.nz");
     assert.equal(d.atribuciones.waikato.licencia, "https://creativecommons.org/licenses/by/4.0/");

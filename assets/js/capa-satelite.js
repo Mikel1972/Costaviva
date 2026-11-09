@@ -15,9 +15,18 @@
 //
 // Solo España: fuera de España el servicio devuelve teselas vacías, así que
 // se pide únicamente dentro de rectángulos que no tocan Portugal (si no, el
-// mapa de Portugal saldría en blanco). Nueva Zelanda (LINZ Basemaps, CC BY
-// 4.0) necesita una clave de desarrollador fija: pedida a LINZ; entrará
-// cuando llegue. Esri World Imagery no se usa: su licencia no cubre el uso
+// mapa de Portugal saldría en blanco).
+//
+// Nueva Zelanda (2026-11-09): capa aérea de LINZ Basemaps (CC BY 4.0, uso
+// comercial con atribución; clave de desarrollador ligada a costaviva.org,
+// petición `costaviva-linz-basemaps-aerial` del registro de permisos de
+// comun). LA CLAVE NO ESTÁ EN EL REPO: la variable LINZ_BASEMAPS_KEY de
+// Cloudflare Pages la mete el middleware en un <meta name="linz-basemaps-key">
+// de la página del mapa (functions/_lib/linz-basemaps.js). Sin esa meta no se
+// pide nada a LINZ y todo queda como antes. Las teselas de LINZ solo se piden
+// dentro de RECTANGULOS_NZ: en España y Portugal nada cambia.
+//
+// Esri World Imagery no se usa: su licencia no cubre el uso
 // comercial sin suscripción (CLAUDE.md, "mapa base").
 //
 // Con el satélite puesto se puede acercar hasta ZOOM_MAX_SATELITE (el mapa
@@ -116,6 +125,48 @@ export function quitarSinFoto(rgba, zoom = 99, lado = Math.round(Math.sqrt(rgba.
   return n;
 }
 
+// ---------------------------------------------------------------------------
+// LINZ Basemaps (Nueva Zelanda). Formato de la URL y atribución tomados del
+// ejemplo de Leaflet de https://basemaps.linz.govt.nz/docs/ (2026-11-09).
+export const URL_LINZ_AEREA = "https://basemaps.linz.govt.nz/v1/tiles/aerial/WebMercatorQuad/{z}/{x}/{y}.webp";
+export const ATRIBUCION_LINZ_BASEMAPS =
+  '<a href="https://www.linz.govt.nz/data/linz-data/linz-basemaps/data-attribution" target="_blank" rel="noopener">' +
+  "LINZ CC BY 4.0 © Imagery Basemap contributors</a>";
+// Islas Norte, Sur y Stewart (todos los spots de NZ caen dentro). Chatham
+// no: está al otro lado del antimeridiano y no tiene spots.
+export const RECTANGULOS_NZ = [[[-47.8, 165.8], [-34.0, 179.0]]];
+export const META_CLAVE_LINZ = "linz-basemaps-key";
+// Forma de una clave de LINZ (letras y números). Lo que no encaje no se usa.
+export const FORMA_CLAVE_LINZ = /^[A-Za-z0-9_-]{10,128}$/;
+
+export function dentroDeNZ(lat, lon) {
+  return RECTANGULOS_NZ.some(([[s, o], [n, e]]) => lat >= s && lat <= n && lon >= o && lon <= e);
+}
+
+// Plantilla de teselas de LINZ con la clave, o null si no hay clave válida.
+export function urlTeselaLinz(clave) {
+  const c = String(clave ?? "").trim();
+  if (!FORMA_CLAVE_LINZ.test(c)) return null;
+  return `${URL_LINZ_AEREA}?api=${encodeURIComponent(c)}`;
+}
+
+// Clave que dejó el middleware en la página (o null). `doc` inyectable.
+export function claveLinzDePagina(doc = globalThis.document) {
+  try {
+    const c = doc?.querySelector?.(`meta[name="${META_CLAVE_LINZ}"]`)?.getAttribute("content");
+    return urlTeselaLinz(c) ? c.trim() : null;
+  } catch {
+    return null;
+  }
+}
+
+// ¿Hay que enseñar la atribución de LINZ? Solo si la vista toca NZ.
+// vista: [[sur, oeste], [norte, este]].
+export function vistaTocaNZ(vista) {
+  const [[s, o], [n, e]] = vista;
+  return RECTANGULOS_NZ.some(([[rs, ro], [rn, re]]) => s <= rn && n >= rs && o <= re && e >= ro);
+}
+
 export const ZOOM_MAX_SATELITE = 19;
 // Con el mapa vectorial, el mar de la foto aparece al acercar: tapado del
 // todo hasta ZOOM_MAR_FOTO_DESDE y a la vista desde ZOOM_MAR_FOTO_HASTA.
@@ -145,6 +196,10 @@ function leerPreferencia() {
 }
 function guardarPreferencia(v) {
   try { localStorage.setItem(CLAVE_PREFERENCIA, v ? "si" : "no"); } catch {}
+}
+
+function boundsComoVista(b) {
+  return [[b.getSouth(), b.getWest()], [b.getNorth(), b.getEast()]];
 }
 
 // ---------------------------------------------------------------------------
@@ -181,6 +236,26 @@ export function montarCapa(map, L) {
       pane: "satelite", bounds: L.latLngBounds(r), maxZoom: ZOOM_MAX_SATELITE, maxNativeZoom: ZOOM_MAX_SATELITE,
     })),
   );
+  // Nueva Zelanda (LINZ Basemaps): solo con la clave que puso el middleware.
+  // Sin "sin foto" que quitar: donde no hay foto LINZ da teselas transparentes.
+  const urlLinz = urlTeselaLinz(claveLinzDePagina());
+  if (urlLinz) {
+    for (const r of RECTANGULOS_NZ) {
+      grupo.addLayer(L.tileLayer(urlLinz, {
+        pane: "satelite", bounds: L.latLngBounds(r), maxZoom: ZOOM_MAX_SATELITE, maxNativeZoom: ZOOM_MAX_SATELITE,
+      }));
+    }
+  }
+  // Atribución de LINZ solo mientras se ve NZ con el satélite puesto.
+  let linzAtribuida = false;
+  const atribucionLinz = () => {
+    const debe = !!urlLinz && visible && vistaTocaNZ(boundsComoVista(map.getBounds()));
+    if (debe === linzAtribuida) return;
+    linzAtribuida = debe;
+    if (debe) map.attributionControl.addAttribution(ATRIBUCION_LINZ_BASEMAPS);
+    else map.attributionControl.removeAttribution(ATRIBUCION_LINZ_BASEMAPS);
+  };
+  if (urlLinz) map.on("moveend", atribucionLinz);
   // Con el mapa vectorial (casi siempre), la foto va dentro de MapLibre entre
   // dos copias del agua (mapa-base.js, ponerSatelite): de lejos el mar lo pinta
   // el contorno del mapa (sin bloques de ningún color) y de cerca se ve la
@@ -191,6 +266,8 @@ export function montarCapa(map, L) {
     zoomDesde: ZOOM_MAR_FOTO_DESDE, zoomHasta: ZOOM_MAR_FOTO_HASTA,
     urlTesela: (z, x, y) => L.Util.template(URL_PNOA, { z, x, y }),
     procesar: (rgba, z, lado) => quitarSinFoto(rgba, 99, lado),
+    // Fuentes raster directas (sin pasar por el canvas): LINZ en NZ.
+    directas: urlLinz ? [{ id: "linz", url: urlLinz, rectangulos: RECTANGULOS_NZ }] : [],
   };
   let enVector = !!MB()?.usaVector?.();
   const colorMar = (v) => { try { MB()?.ponerColorMar?.(v ? COLOR_MAR_SATELITE : null); } catch {} };
@@ -207,6 +284,7 @@ export function montarCapa(map, L) {
         if (!visible) { if (zoom !== map.getZoom()) map.setZoom(zoom); map.setMaxZoom(max); }
         if (visible) map.attributionControl.addAttribution(ATRIBUCION_PNOA);
         else map.attributionControl.removeAttribution(ATRIBUCION_PNOA);
+        atribucionLinz();
         return;
       }
       if (visible) {
@@ -221,6 +299,7 @@ export function montarCapa(map, L) {
         if (zoom !== map.getZoom()) map.setZoom(zoom);
         map.setMaxZoom(max);
       }
+      atribucionLinz();
     },
   };
   // Si el mapa vectorial falla al cargar, se pasa a la capa de Leaflet.
