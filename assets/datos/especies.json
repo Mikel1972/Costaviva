@@ -2004,6 +2004,17 @@
      "criterio": "Algo de espuma/turbidez en la rompiente le favorece (heurística)."
     }
    },
+   "reglas_modalidad": {
+    "costa": {
+     "luz": {
+      "preferencia": {
+       "noche": 0
+      },
+      "tipo": "observacion_campo",
+      "criterio": "Desde costa (surfcasting) el sargo se pesca también de noche: sargo de 30 cm a la 1:28 en Armintza (2026-11-08). La regla «muy diurno» no tiene fuente; la noche queda neutra desde costa hasta que la haya (sí de Mikel, 2026-11-09)."
+     }
+    }
+   },
    "pendiente": [
     "talla del sargo en el Cantábrico (no aparece en el anexo I del RD 560/1995)",
     "nombres eu/gl/ca",

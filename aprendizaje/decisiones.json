@@ -1,1 +1,10 @@
-[]
+[
+  {
+    "id": "decision-sargo-noche-costa",
+    "fecha": "2026-11-09",
+    "propuesta_id": "costaviva-sargo-noche-neutra-costa",
+    "decision": "si",
+    "motivo": "Sí de Mikel en la sesión, tras su sargo nocturno en Armintza.",
+    "issue": null
+  }
+]

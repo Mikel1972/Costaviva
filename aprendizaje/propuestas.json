@@ -9,8 +9,8 @@
     "evidencia": "1 sargo de 30 cm a las 01:28 (Armintza, 2026-11-08, surfcasting) con el índice del sargo en 41 por la regla de noche (-0,6); la regla no tiene fuente.",
     "riesgo": "bajo: solo cambia la luz del sargo desde costa; con un único caso no se toca nada más.",
     "requiere_si": true,
-    "estado": "propuesta",
-    "pr": null,
+    "estado": "aplicada",
+    "pr": 464,
     "impacto": 2,
     "esfuerzo": "bajo",
     "origen": "sesion",
@@ -22,6 +22,7 @@
       "antes": -0.6,
       "despues": 0,
       "modalidad": "costa"
-    }
+    },
+    "fecha_aplicada": "2026-11-09"
   }
 ]
