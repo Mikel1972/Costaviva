@@ -10,7 +10,7 @@
     "riesgo": "bajo: solo cambia la luz del sargo desde costa; con un único caso no se toca nada más.",
     "requiere_si": true,
     "estado": "aplicada",
-    "pr": "pendiente",
+    "pr": 464,
     "impacto": 2,
     "esfuerzo": "bajo",
     "origen": "sesion",
