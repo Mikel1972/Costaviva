@@ -1003,6 +1003,7 @@
   "diario.picadas_1": "1 bite",
   "diario.picadas_n": "{n} bites",
   "diario.picada_mas": "+1 bite",
+  "diario.picadas_ninguna": "None",
   "diario.picada_menos": "Remove one bite",
   "diario.picadas_error": "The bite could not be saved. Try again.",
   "diario.salida.temp_sonda_ph": "Optional, e.g. 19.5",

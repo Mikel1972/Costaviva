@@ -1003,6 +1003,7 @@
   "diario.picadas_1": "1 picada",
   "diario.picadas_n": "{n} picadas",
   "diario.picada_mas": "+1 picada",
+  "diario.picadas_ninguna": "Ninguna",
   "diario.picada_menos": "Quitar una picada",
   "diario.picadas_error": "No se ha podido guardar la picada. Vuelve a probar.",
   "diario.salida.temp_sonda_ph": "Opcional, p. ej. 19,5",

@@ -1852,6 +1852,7 @@ function picadasHTML(salida, idx) {
       <span>🎣 ${n === null ? I18n.t("diario.picadas_sin") : I18n.t(n === 1 ? "diario.picadas_1" : "diario.picadas_n", { n })}</span>
       <span style="display:flex; gap:6px;">
         ${n ? `<button type="button" class="secundario cambiar-picadas" data-idx="${idx}" data-delta="-1" aria-label="${I18n.t("diario.picada_menos")}">−</button>` : ""}
+        ${n === null ? `<button type="button" class="secundario cambiar-picadas" data-idx="${idx}" data-delta="0">${I18n.t("diario.picadas_ninguna")}</button>` : ""}
         <button type="button" class="secundario cambiar-picadas" data-idx="${idx}" data-delta="1">${I18n.t("diario.picada_mas")}</button>
       </span>
     </div>`;
