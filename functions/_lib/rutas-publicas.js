@@ -86,6 +86,7 @@ const ARCHIVOS_PUBLICOS = new Set([
   "/geocodificar",
   "/sos-alerta",
   "/identificar-captura",
+  "/dispositivos",
   "/viento-campo",
   "/crear-checkout-stripe",
   "/crear-portal-stripe",

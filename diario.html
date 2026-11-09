@@ -299,6 +299,8 @@ if (!sesionInicial.session) {
   window.location.href = "/login.html";
   throw new Error("sin sesión");
 }
+// Límite de 2 dispositivos por cuenta (2026-11-09): nunca bloquea si falla.
+import("/assets/js/dispositivos.js").then((m) => m.vigilarDispositivos(supabase)).catch(() => {});
 const usuario = sesionInicial.session.user;
 
 // Analítica de uso propia (2026-09-17, ver index.html para el detalle) —
