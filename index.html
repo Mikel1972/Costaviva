@@ -1245,6 +1245,7 @@
       <button class="cuenta-menu-btn" id="btnCuentaMenu" type="button" aria-label="Cuenta" data-i18n-aria-label="comun.cuenta">👤</button>
       <div class="cuenta-menu-dropdown" id="cuentaMenuDropdown">
         <button type="button" id="btnInvitarAmigo" data-i18n="comun.menu.invitar">🎁 Invita a un amigo: 1 mes gratis</button>
+        <button type="button" id="btnGuia" data-i18n="comun.menu.guia">📖 Cómo funciona</button>
         <button type="button" id="btnMiSuscripcion" data-i18n="comun.menu.suscripcion">💳 Mi suscripción</button>
         <button type="button" id="btnCerrarSesion" data-i18n="comun.menu.cerrar_sesion">🚪 Cerrar sesión</button>
         <div data-i18n-selector></div>
@@ -5654,6 +5655,8 @@ function prepararModalidad(s) {
 }
 
 pintarModalidad();
+// La guía «Cómo funciona» (assets/js/guia.js) pregunta la modalidad: se aplica aquí.
+document.addEventListener?.("guia-modalidad", (e) => elegirModalidad(e.detail.modalidad, false));
 document.querySelectorAll('#modalidadPildora [role="radio"]').forEach((b) => {
   b.addEventListener("click", () => elegirModalidad(b.dataset.modalidad, false));
   b.addEventListener("keydown", (ev) => {
@@ -6909,5 +6912,6 @@ function comprobarAvisoRayos() {
   <a href="/grupos.html"><span class="icono"><svg class="ico-grupos" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.3 19.5c0-3.5 2.6-5.7 5.7-5.7s5.7 2.2 5.7 5.7"/><circle cx="17" cy="9" r="2.6"/><path d="M15.3 13.9c2.5.4 4.2 2.3 4.2 5.6"/></svg><span class="punto-novedades-grupos" id="puntoNovedadesGrupos" hidden></span></span><span data-i18n="comun.tab.grupos">Grupos</span></a>
 </nav>
 
+<script type="module" src="/assets/js/guia.js"></script>
 </body>
 </html>

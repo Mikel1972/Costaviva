@@ -526,3 +526,32 @@ test("flota faenando sin datos: aviso «Sin flota faenando registrada en las úl
   assert.deepEqual(errores, []);
   await ctx.close();
 });
+
+// Guía «Cómo funciona» (2026-11-09): sale sola la primera vez en el mapa,
+// pregunta la modalidad y la aplica; después, siempre en el menú 👤.
+test("guía: la primera vez pregunta la modalidad y luego está en el menú 👤", async () => {
+  const ctx = await contexto(MOVIL);
+  // Solo en la primera carga: como un usuario que entra por primera vez.
+  await ctx.addInitScript(() => { try { if (!sessionStorage.getItem("guia-prueba")) { localStorage.removeItem("cv-guia-vista"); sessionStorage.setItem("guia-prueba", "1"); } } catch (e) {} });
+  const { pagina, errores } = await abrir(ctx, "/");
+  await pagina.waitForSelector("#map.leaflet-container", { timeout: 15000 });
+  const guia = pagina.locator(".guia");
+  await guia.waitFor({ state: "visible", timeout: 15000 });
+  assert.equal(await pagina.locator(".guia-siguiente").isDisabled(), true, "primero hay que elegir");
+  await pagina.locator('.guia [data-modalidad="embarcacion"]').click();
+  assert.equal(await pagina.evaluate(() => localStorage.getItem("va_modalidad")), "embarcacion");
+  assert.equal(await pagina.locator("#modPill-embarcacion").getAttribute("aria-checked"), "true", "la píldora del mapa la refleja");
+  assert.equal(await pagina.locator(".guia-pantalla").count(), 10);
+  assert.match(await pagina.locator(".guia").textContent(), /Tus marcas, solas/);
+  await pagina.locator(".guia-saltar").click();
+  assert.equal(await guia.count(), 0);
+  assert.equal(await pagina.evaluate(() => localStorage.getItem("cv-guia-vista")), "1");
+  await pagina.reload({ waitUntil: "load" });
+  await pagina.waitForTimeout(3000);
+  assert.equal(await pagina.locator(".guia").count(), 0, "no vuelve a salir sola");
+  await pagina.locator("#btnCuentaMenu").click();
+  await pagina.locator("#btnGuia").click();
+  await pagina.locator(".guia").waitFor({ state: "visible" });
+  assert.deepEqual(errores, []);
+  await ctx.close();
+});
