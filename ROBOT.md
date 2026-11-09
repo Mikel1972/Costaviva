@@ -7061,6 +7061,27 @@ Dato del sondeo: `generado_en` 2026-10-25 23:26 UTC (~8 h, fresco).
 
 **Pendiente para la próxima pasada:** proponer cambiar ese caso en `scripts/experiencia/sondear.mjs` a POST sin cabecera Authorization (esperado 401) — no aplicado. Además, el sondeo no pide una hora de /prevision distinta de la actual ni compara contra boyas por spot; no me dio tiempo a cruzar oleaje con boyas.
 
+### 2026-11-09 08:35 UTC — robot de experiencia de usuario (rutina)
+
+**Qué miré:** `datos-robots/experiencia/ultima.json` (generado 2026-11-09 01:07 UTC, 7 h de antigüedad: dato fresco): 105 spots de `/prevision` (marea, coeficiente, presión, bloque de ahora), 12 de muestra completa, boyas, caudales, AEMET, turbidez, cámaras, ríos de monte, `/luna` en 3 zonas, 8 casos límite y la salida de prueba del diario.
+
+**Todo bien:**
+- Diario: lo enviado = lo guardado (0 diferencias), la cuenta B no la ve ni la borra, y la de prueba se borró (204, ya no existe).
+- 0 spots con error. Cantábrico y Galicia: agua 14-17 °C, marea de ~3 m con coeficiente 118-120 (luna nueva hoy, mareas vivas: coherente); Mediterráneo con rango de centímetros; Canarias 24 °C. Las boyas (H 0,2-2,7 m, agua 16-24 °C) cuadran con el modelo de spots vecinos (Cabo Silleiro 2,7 m ↔ Baiona 2,1 m; Pasaia II 0,36 ↔ Pasaia 0,1-0,4 abrigada).
+- `/luna`: nueva (0 %), horas y rumbos razonables en Mundaka, Valencia y Las Palmas. Casos límite: errores 400/404 claros y en JSON.
+
+**Hallazgos:**
+1. **Turbidez congelada desde el 12-oct (el más serio).** `/prevision` → `turbidez`: los 36 spots con etiqueta tienen `actualizado` entre 2026-10-06 y 2026-10-12, hace ~4 semanas, con 21-28 lecturas cada uno (suman 954). Causa probable: `datosTurbidezPorSpot()` (`functions/prevision.js` ~l.499-501) pide `turbidez_historico` de 90 días `order=fecha.asc` SIN paginar ni límite; PostgREST corta en 1.000 filas por defecto y se queda con las MÁS ANTIGUAS. 36 spots × ~27 días ≈ 1.000: justo el corte. Efecto: la etiqueta "turbia/muy turbia" de cada spot es la del 12-oct y ya no se actualiza (la tabla seguramente sigue recibiendo lecturas; no puedo verificarlo desde aquí). Arreglo sugerido: `order=fecha.desc` con paginación (o un RPC/vista por spot), y no mostrar etiqueta si `actualizado` tiene más de ~3 días. Hoy no hay ninguna guarda de frescura.
+2. **Mareas del Mediterráneo con extremos duplicados o sin alternar.** Alicante: `p14:00:0.13 p14:00:0.13`; Santa Pola, Guardamar y Orihuela Costa igual (dos pleamares a la misma hora); Cartagena/Águilas: `p08:00 p14:00` seguidas sin bajamar; Valencia y otros solo una bajamar. Nacen del detector de extremos sobre una serie de ~10 cm de rango (mismo origen que el bug de mareas absurdas ya conocido; `calcularMarea` en `functions/prevision.js`). Y el coeficiente allí (35-79) sale de normalizar centímetros de ruido: un usuario ve "coef. 35" en Valencia sin significado físico.
+3. **Nubosidad 0 % aislada.** Llanes, Ribadesella, Comillas y Santa Cruz de Tenerife con 0 % entre vecinos al 100 % (Santander 100, Suances 49, Las Palmas 100) y 100 % de nubosidad en casi toda España a la vez. Puede ser real (celdas del modelo); lo anoto como sospecha, no confirmada.
+4. **Viento muy desigual entre vecinos:** Getaria 4 km/h entre Zumaia 28, Orio 29 y Zarautz 12. Probable artefacto de celdas del modelo, no verificado contra estación.
+5. **Boya Langosteira (A Coruña): agua 11,8 °C** frente a 13,7 °C del modelo en A Coruña y 14,4-15 °C en Portosín/Corrubedo. Dato real de boya o sensor; la ficha de A Coruña no usa esa boya para el agua.
+6. **Cámaras muertas desde hace semanas** (el app las oculta tras 24 h, correcto, pero siguen en el listado): Alicante `origen_404` desde 7-oct, Torreblanca `origen_404` desde 11-oct, Mundaka `frame_congelado` desde 25-oct. Hoy además: Pasaia (frame_plano), Orio, Bakio, Portosín, San Vicente, Comillas, Muro, y 3 de YouTube sin directo. Son candidatas para sustituir o retirar.
+7. **Caudales:** `sella` es `null` y Segura/Lagares/Júcar vienen sin hora o con `actualizado` null; Lagares = 0. Los caudales del Cantábrico (Besaya 1,3; Pas 1,13) están muy por debajo de sus `umbralBajo` (226/251) con un frente atlántico encima: ¿la unidad del caudal y la del umbral son distintas (m³/s frente a l/s)? Hoy el índice los trata como "bajo" siempre; no verificado, lo anoto.
+8. **`GET /identificar-captura` sin sesión devuelve 404 con la página HTML** (no 401/405): la función solo exporta `onRequestPost` (`functions/identificar-captura.js` l.276), así que el GET cae en la página de error del middleware. No gasta IA y no es visible a usuarios; el sondeo (`sondear.mjs` l.160) debería usar POST para comprobar el 401 real.
+
+**Pendiente para la próxima pasada:** (a) comprobar en producción si `turbidez_historico` tiene lecturas posteriores al 12-oct (confirmaría 1); (b) propuesta para `scripts/experiencia/sondear.mjs` (no aplicada): usar POST sin token en `/identificar-captura`, y añadir `fecha` mínima/máxima de cada etiqueta de turbidez como aviso automático de datos viejos (>7 días) y un chequeo de extremos de marea duplicados/no alternos; (c) contrastar nubosidad y viento de los vecinos con las estaciones AEMET del mismo JSON.
+
 ## Robot de patrones de uso
 
 ### 2026-09-17
