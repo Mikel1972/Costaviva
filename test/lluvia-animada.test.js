@@ -339,3 +339,16 @@ test("submuestreo a 10 min, siempre con la última toma publicada", () => {
   assert.deepEqual(submuestrear([]), []);
   assert.deepEqual(submuestrear(["2026-10-08T10:35:00Z"]), ["2026-10-08T10:35:00Z"]);
 });
+
+// Vista de 2 km para la toma más reciente (2026-11-09).
+import { VENTANA_RADAR_FINA, regionFina, REGIONES as REGIONES_2 } from "../assets/js/lluvia-animada.js";
+import { VENTANA_FINA } from "../functions/_lib/radar-opera.js";
+test("la ventana de 2 km es la misma en el servidor y en el navegador, y cubre la región", () => {
+  assert.deepEqual(VENTANA_RADAR_FINA, VENTANA_FINA);
+  const r = regionFina(REGIONES_2[0]);
+  assert.equal(r.ancho, REGIONES_2[0].ancho * 2);
+  const idx = indiceRegion(r, VENTANA_RADAR_FINA);
+  const dentro = idx.filter((k) => k >= 0).length;
+  assert.ok(dentro / idx.length > 0.95, `solo ${dentro}/${idx.length} píxeles dentro`);
+  assert.equal(regionFina(REGIONES_2[1]), REGIONES_2[1], "Canarias (sin radar) no cambia");
+});

@@ -344,6 +344,12 @@ export function componer({ ancho, alto, indice, rejilla, satelite, alfaRadar = 2
 
 // Misma ventana que functions/_lib/radar-opera.js (VENTANA); el test lo vigila.
 export const VENTANA_RADAR = { factor: 4, x0: 0, y0: 724, x1: 396, y1: 1092 };
+// Vista de 2 km para la toma más reciente (VENTANA_FINA del servidor): la
+// imagen de la península se pinta al doble de ancho para que se note.
+export const VENTANA_RADAR_FINA = { factor: 2, x0: 0, y0: 1448, x1: 792, y1: 2184 };
+export function regionFina(r) {
+  return r.radar ? { ...r, id: `${r.id}@2`, ancho: r.ancho * 2 } : r;
+}
 
 // "YYYYMMDDHHMM" (UTC) de una hora en ms, el parámetro t de /lluvia/toma.
 export function sello(ms) {
@@ -552,27 +558,32 @@ export function crearLluviaAnimada({ L, map, contenedor, fetchFn = (...a) => fet
     return satCache.get(clave);
   }
 
-  async function rejillaRadar(t) {
-    const r = await fetchFn(`/lluvia/toma?t=${sello(Date.parse(t))}`);
+  async function rejillaRadar(t, fina = false) {
+    const r = await fetchFn(`/lluvia/toma?t=${sello(Date.parse(t))}${fina ? "&r=2" : ""}`);
     if (!r.ok) throw new Error(`toma ${r.status}`);
     const { meta, trozos } = desempaquetar(await r.arrayBuffer());
     const crudas = await Promise.all(trozos.map((b) => (b.length ? inflar(b) : new Uint8Array(0))));
-    return rellenarRejilla(meta, crudas, VENTANA_RADAR);
+    return rellenarRejilla(meta, crudas, fina ? VENTANA_RADAR_FINA : VENTANA_RADAR);
   }
 
-  async function cargarToma(t, g, { conSatelite = modo !== "radar", rejillaPrevia = null } = {}) {
+  async function cargarToma(t, g, { conSatelite = modo !== "radar", rejillaPrevia = null, fina = modo === "radar" && t === tomas[tomas.length - 1] } = {}) {
     const tMs = Date.parse(t);
     let rejilla = rejillaPrevia;
-    if (modo === "radar" && !rejilla) rejilla = await rejillaRadar(t);
+    if (modo === "radar" && !rejilla) {
+      // La más reciente, a 2 km; si esa vista fallara, la de 4 km de siempre.
+      try { rejilla = await rejillaRadar(t, fina); } catch (e) { if (!fina) throw e; fina = false; rejilla = await rejillaRadar(t, false); }
+    }
+    const ventana = fina ? VENTANA_RADAR_FINA : VENTANA_RADAR;
     const satMs = conSatelite && Number.isFinite(ultimaSat) ? satelitePara(tMs, ultimaSat) : null;
     const salida = [];
     let usaSat = false;
-    for (const region of REGIONES) {
+    for (const base of REGIONES) {
       if (g !== gen) return null;
+      const region = fina ? regionFina(base) : base;
       const alto = altoRegion(region);
       let indice = null;
       if (region.radar && rejilla) {
-        if (!indices.has(region.id)) indices.set(region.id, indiceRegion(region, VENTANA_RADAR));
+        if (!indices.has(region.id)) indices.set(region.id, indiceRegion(region, ventana));
         indice = indices.get(region.id);
       }
       const sat = satMs != null ? await satelite(region, satMs) : null;
@@ -588,7 +599,7 @@ export function crearLluviaAnimada({ L, map, contenedor, fetchFn = (...a) => fet
       });
       salida.push({ overlay, url });
     }
-    return { capas: salida, rejilla, fuentes: { radar: !!rejilla, satelite: usaSat ? satMs : null, conSatelite } };
+    return { capas: salida, rejilla, fuentes: { radar: !!rejilla, satelite: usaSat ? satMs : null, conSatelite, fina } };
   }
 
   function quitar(i) {
@@ -644,7 +655,7 @@ export function crearLluviaAnimada({ L, map, contenedor, fetchFn = (...a) => fet
         const i = cola.shift();
         const t = tomas[i];
         let res = null;
-        try { res = await cargarToma(t, g, { conSatelite: true, rejillaPrevia: rejillas[i] }); } catch (e) { /* se queda solo con radar */ }
+        try { res = await cargarToma(t, g, { conSatelite: true, rejillaPrevia: rejillas[i], fina: !!fuentes[i]?.fina }); } catch (e) { /* se queda solo con radar */ }
         if (g !== gen) { res?.capas.forEach((c) => URL.revokeObjectURL(c.url)); return; }
         const j = tomas.indexOf(t);
         if (j < 0 || !res) { res?.capas.forEach((c) => URL.revokeObjectURL(c.url)); continue; }
