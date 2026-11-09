@@ -258,6 +258,52 @@ export function indiceRegion(r, ventana) {
   return idx;
 }
 
+// Índice suavizado (2026-11-09, Mikel: "suaviza"): para cada píxel, la celda
+// de arriba a la izquierda de las 4 que lo rodean y su posición dentro (0-255),
+// para interpolar la reflectividad entre celdas en vez de pintar cuadrados.
+export function indiceRegionSuave(r, ventana) {
+  const alto = altoRegion(r);
+  const anchoV = ventana.x1 - ventana.x0, altoV = ventana.y1 - ventana.y0;
+  const k = new Int32Array(r.ancho * alto).fill(-1);
+  const fx = new Uint8Array(r.ancho * alto), fy = new Uint8Array(r.ancho * alto);
+  const y0 = mercY(r.norte), y1 = mercY(r.sur);
+  for (let j = 0; j < alto; j++) {
+    const lat = latDeMercY(y0 + ((j + 0.5) / alto) * (y1 - y0));
+    for (let i = 0; i < r.ancho; i++) {
+      const lon = r.oeste + ((i + 0.5) / r.ancho) * (r.este - r.oeste);
+      const [px, py] = pixelOpera(lat, lon, ventana.factor);
+      // Centros de celda en .5: la celda base es la de arriba a la izquierda.
+      const gx = px - 0.5 - ventana.x0, gy = py - 0.5 - ventana.y0;
+      const cx = Math.floor(gx), cy = Math.floor(gy);
+      if (cx < 0 || cy < 0 || cx + 1 >= anchoV || cy + 1 >= altoV) continue;
+      const p = j * r.ancho + i;
+      k[p] = cy * anchoV + cx;
+      fx[p] = Math.round((gx - cx) * 255);
+      fy[p] = Math.round((gy - cy) * 255);
+    }
+  }
+  return { suave: true, k, fx, fy, anchoV };
+}
+
+// Reflectividad interpolada en un píxel del índice suave. "Sin eco" (NaN)
+// cuenta como lluvia nula (-32 dBZ) para que el borde también se suavice;
+// si alguna de las 4 celdas no tiene dato (fuera de la cobertura), se usa la
+// más cercana tal cual, sin inventar.
+const DBZ_SECO = -32;
+export function dbzSuave(ind, rejilla, p) {
+  const k = ind.k[p];
+  if (k < 0) return SIN_DATO;
+  const a = rejilla[k], b = rejilla[k + 1], c = rejilla[k + ind.anchoV], d = rejilla[k + ind.anchoV + 1];
+  const tx = ind.fx[p] / 255, ty = ind.fy[p] / 255;
+  if (a <= -1e6 || b <= -1e6 || c <= -1e6 || d <= -1e6) {
+    const v = [[a, (1 - tx) * (1 - ty)], [b, tx * (1 - ty)], [c, (1 - tx) * ty], [d, tx * ty]].sort((x, y) => y[1] - x[1])[0][0];
+    return v;
+  }
+  const n = (v) => (Number.isNaN(v) ? DBZ_SECO : v);
+  const v = (n(a) * (1 - tx) + n(b) * tx) * (1 - ty) + (n(c) * (1 - tx) + n(d) * tx) * ty;
+  return v <= DBZ_SECO + 0.5 ? NaN : v;
+}
+
 // --- Paquete de /lluvia/toma ------------------------------------------------
 export function desempaquetar(buf) {
   const u8 = buf instanceof Uint8Array ? buf : new Uint8Array(buf);
@@ -327,8 +373,9 @@ export function componer({ ancho, alto, indice, rejilla, satelite, alfaRadar = 2
   const rgba = new Uint8ClampedArray(ancho * alto * 4);
   let pxRadar = 0, pxSatelite = 0;
   for (let p = 0; p < ancho * alto; p++) {
-    const k = indice ? indice[p] : -1;
-    const v = k >= 0 && rejilla ? rejilla[k] : SIN_DATO;
+    let v;
+    if (indice && indice.suave) v = rejilla ? dbzSuave(indice, rejilla, p) : SIN_DATO;
+    else { const k = indice ? indice[p] : -1; v = k >= 0 && rejilla ? rejilla[k] : SIN_DATO; }
     if (v > -1e6 || Number.isNaN(v)) {
       pxRadar++;
       const c = Number.isNaN(v) ? null : colorLluvia(dbzAMmh(v));
@@ -583,7 +630,7 @@ export function crearLluviaAnimada({ L, map, contenedor, fetchFn = (...a) => fet
       const alto = altoRegion(region);
       let indice = null;
       if (region.radar && rejilla) {
-        if (!indices.has(region.id)) indices.set(region.id, indiceRegion(region, ventana));
+        if (!indices.has(region.id)) indices.set(region.id, indiceRegionSuave(region, ventana));
         indice = indices.get(region.id);
       }
       const sat = satMs != null ? await satelite(region, satMs) : null;
