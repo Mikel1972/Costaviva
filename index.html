@@ -161,12 +161,13 @@
     background: var(--peligro); animation: none;
   }
   .rio-marcador {
-    width: 10px; height: 10px; transform: rotate(45deg);
-    border: 1.5px solid var(--tinta);
+    /* Rombo grande con borde blanco y sombra: visible sobre el satélite. */
+    width: 18px; height: 18px; transform: rotate(45deg);
+    border: 3px solid #FFFFFF; box-shadow: 0 0 0 1.5px var(--tinta), 0 2px 6px rgba(0,0,0,0.45);
     transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
   }
   .rio-marcador:hover {
-    transform: rotate(45deg) scale(2);
+    transform: rotate(45deg) scale(1.4);
     box-shadow: 0 0 0 4px rgba(255,246,238,0.2);
   }
   .marcador-boya {
@@ -4102,7 +4103,7 @@ function textoTramoRio(tramo) {
     .replace(" — estación ", I18n.t("mapa.rio.estacion", { estacion: "" }));
 }
 function grosorTramo(punto) {
-  const GROSOR_BASE = 2, GROSOR_MAX = 7;
+  const GROSOR_BASE = 5, GROSOR_MAX = 12;
   if (punto.caudal == null || punto.umbralAlto == null) return GROSOR_BASE;
   const ratio = Math.min(1, punto.caudal / punto.umbralAlto);
   return +(GROSOR_BASE + ratio * (GROSOR_MAX - GROSOR_BASE)).toFixed(1);
@@ -4161,8 +4162,15 @@ function pintarRios() {
     const semillaRio = r.rio.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
     for (let i = 0; i < r.puntos.length - 1; i++) {
       const puntosTramo = curvaTramo(r.puntos[i], r.puntos[i + 1], semillaRio + i);
+      // Más grueso y con borde blanco (2026-11-09, Mikel: "con el mapa
+      // satelital los ríos casi no se perciben; exagera el trazo"): primero un
+      // halo blanco y encima el azul, así se ven sobre la foto y sobre el mapa.
+      const grosor = grosorTramo(r.puntos[i + 1]);
       L.polyline(puntosTramo, {
-        color: "#2E7BA0", weight: grosorTramo(r.puntos[i + 1]), opacity: 0.75, smoothFactor: 1,
+        color: "#FFFFFF", weight: grosor + 4, opacity: 0.85, smoothFactor: 1, lineCap: "round", lineJoin: "round",
+      }).addTo(capaRios);
+      L.polyline(puntosTramo, {
+        color: "#1E88E5", weight: grosor, opacity: 1, smoothFactor: 1, lineCap: "round", lineJoin: "round",
       }).addTo(capaRios);
     }
 
@@ -4179,7 +4187,7 @@ function pintarRios() {
 
       const cat = categoriaCaudal(p.caudal, p.umbralBajo, p.umbralAlto);
       const html = `<div class="rio-marcador" style="background:${cat.color};"></div>`;
-      const icon = L.divIcon({ html, className: "", iconSize: [10, 10], iconAnchor: [5, 5] });
+      const icon = L.divIcon({ html, className: "", iconSize: [20, 20], iconAnchor: [10, 10] });
       const detalleCaudal =
         p.caudal != null && p.umbralBajo != null
           ? `${p.caudal} m³/s (${cat.etiqueta})`
