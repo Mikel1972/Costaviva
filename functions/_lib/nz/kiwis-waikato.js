@@ -43,6 +43,17 @@ export const MAX_ANTIGUEDAD_MS = 24 * 3600e3;
 // Mareógrafo -> spots a esta distancia o menos llevan su nivel medido.
 export const KM_MAREOGRAFO_SPOT = 20;
 
+// Umbrales de caudal para el índice de pesca (2026-11-09, Mikel: "empieza
+// por el río en el índice"). Waikato no publica umbrales oficiales como las
+// confederaciones españolas, así que salen de la propia estación: la mediana
+// de los últimos 30 días es "lo normal"; por debajo de la mitad, "bajo"; a
+// partir del triple (una avenida tras lluvia), "alto". Heurística propia,
+// documentada en la ficha del río; con 14 días de dato o más.
+export const PERIODO_CAUDAL = "P30D";
+export const FACTOR_BAJO = 0.5;
+export const FACTOR_ALTO = 3;
+export const DIAS_MIN_UMBRALES = 14;
+
 // Coordenadas: APROXIMADAS (el mapa de Envirohub no se pudo leer y KiWIS no
 // se alcanza desde la sesión). Se pueden afinar con getStationList
 // (returnfields=station_latitude,station_longitude) en la primera prueba en
@@ -188,8 +199,27 @@ export function resumenSerie(serie, tipo, ahora = Date.now()) {
   if (tipo === "caudal") {
     const dia = puntos.filter((p) => ult.t - p.t <= 24 * 3600e3).map(val);
     out.max24h = redondear(Math.max(...dia));
+    Object.assign(out, umbralesCaudal(puntos.map((p) => ({ t: p.t, v: val(p) })), redondear));
   }
   return out;
+}
+
+// Mediana de los últimos 30 días -> { mediana30d, umbralBajo, umbralAlto,
+// umbralesFuente } o {} si hay menos de DIAS_MIN_UMBRALES días de dato.
+export function umbralesCaudal(puntos, redondear = (x) => +x.toFixed(2)) {
+  if (puntos.length < 2) return {};
+  const dias = (puntos[puntos.length - 1].t - puntos[0].t) / 864e5;
+  if (dias < DIAS_MIN_UMBRALES) return {};
+  const v = puntos.map((p) => p.v).filter((x) => Number.isFinite(x) && x >= 0).sort((a, b) => a - b);
+  if (!v.length) return {};
+  const m = v.length % 2 ? v[(v.length - 1) / 2] : (v[v.length / 2 - 1] + v[v.length / 2]) / 2;
+  if (!(m > 0)) return {};
+  return {
+    mediana30d: redondear(m),
+    umbralBajo: redondear(m * FACTOR_BAJO),
+    umbralAlto: redondear(m * FACTOR_ALTO),
+    umbralesFuente: "mediana_30d",
+  };
 }
 
 // Ficha pública de una estación (sin ts_path ni URL del servidor).
@@ -211,7 +241,7 @@ async function datosEstacion(e, { fetchFn, cache, origen, ahora }) {
   try {
     const opciones = { headers: { "User-Agent": "Mozilla/5.0 (compatible; CostaVivaApp/0.1)" } };
     if (typeof AbortSignal !== "undefined" && AbortSignal.timeout) opciones.signal = AbortSignal.timeout(8000);
-    const resp = await fetchFn(urlValoresKiwis(e.tsPath), opciones);
+    const resp = await fetchFn(urlValoresKiwis(e.tsPath, e.tipo === "caudal" ? PERIODO_CAUDAL : "P1D"), opciones);
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const resumen = resumenSerie(parsearKiwis(await resp.text()), e.tipo, ahora);
     resultado = resumen ? { ...fichaEstacion(e), ...resumen } : { ...fichaEstacion(e), error: "sin dato reciente" };
