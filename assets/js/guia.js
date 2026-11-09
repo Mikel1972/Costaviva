@@ -51,6 +51,16 @@ function cerrar() {
   document.documentElement.style.overflow = "";
 }
 
+// «Ver qué es cada botón»: puntos «?» sobre el mapa de verdad (guia-botones.js).
+function verBotones() {
+  cerrar();
+  if (["/", "/index", "/index.html"].includes(location.pathname)) {
+    import("/assets/js/guia-botones.js").then((m) => m.abrirBotones()).catch(() => {});
+  } else {
+    location.href = "/?botones=1";
+  }
+}
+
 export function abrirGuia() {
   if (typeof document === "undefined" || abierta) return;
   const css = document.getElementById("guia-css") || Object.assign(document.createElement("style"), { id: "guia-css" });
@@ -74,6 +84,8 @@ export function abrirGuia() {
     .guia-puntos i.activo { background: #fff; width: 22px; border-radius: 4px; }
     .guia-siguiente { border: 0; border-radius: 999px; padding: 13px 22px; font: 700 16px/1 var(--f-texto, system-ui); color: #fff; background: linear-gradient(90deg, #E8562A, #7B2FF7); cursor: pointer; }
     .guia-siguiente:disabled { opacity: 0.4; cursor: default; }
+    .guia-siempre { margin-top: 18px !important; font-size: 14px !important; color: rgba(255,255,255,0.7) !important; }
+    .guia-ver-botones { margin-top: 22px; border: 2px solid #fff; background: transparent; color: #fff; border-radius: 999px; padding: 12px 20px; font: 700 16px/1 var(--f-texto, system-ui); cursor: pointer; }
   `;
   document.head.appendChild(css);
 
@@ -101,6 +113,7 @@ export function abrirGuia() {
       <div class="guia-opciones">
         ${MODALIDADES.map((m) => `<button type="button" data-modalidad="${m}" aria-pressed="${m === modalidad}"><span>${{ costa: "🪨", embarcacion: "🚤", submarina: "🤿" }[m]}</span>${t(`guia.op_${m}`, m)}</button>`).join("")}
       </div>
+      <p class="guia-siempre">${t("guia.siempre", "📖 Esta guía está siempre disponible en el menú de usuario 👤, en «Cómo funciona».")}</p>
     </section>`;
 
   const pintar = () => {
@@ -109,7 +122,9 @@ export function abrirGuia() {
         <div class="guia-icono">${p.icono}</div>
         <h2>${t(`guia.${p.id}.titulo`, p.id)}</h2>
         <p>${t(`guia.${p.id}.texto`, "")}</p>
+        ${p.id === "final" ? `<button type="button" class="guia-ver-botones">${t("guia.ver_botones", "👆 Ver qué es cada botón")}</button>` : ""}
       </section>`).join("");
+    pista.querySelector(".guia-ver-botones")?.addEventListener("click", verBotones);
     pista.querySelectorAll("[data-modalidad]").forEach((b) => b.addEventListener("click", () => {
       modalidad = b.dataset.modalidad;
       escribir("va_modalidad", modalidad);

@@ -555,3 +555,16 @@ test("guía: la primera vez pregunta la modalidad y luego está en el menú 👤
   assert.deepEqual(errores, []);
   await ctx.close();
 });
+
+test("qué es cada botón: puntos «?» sobre el mapa y un globo al pasar el ratón", async () => {
+  const ctx = await contexto(PC);
+  const { pagina, errores } = await abrir(ctx, "/?botones=1");
+  await pagina.waitForSelector(".gb-punto", { timeout: 20000 });
+  assert.ok(await pagina.locator(".gb-punto").count() >= 15, "un punto por botón visible");
+  await pagina.locator('.gb-punto[aria-label="Viento"]').hover();
+  assert.match(await pagina.locator(".gb-globo").textContent(), /partículas/);
+  await pagina.locator(".gb-cerrar").click();
+  assert.equal(await pagina.locator(".gb-capa").count(), 0);
+  assert.deepEqual(errores, []);
+  await ctx.close();
+});
