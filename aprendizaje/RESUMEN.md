@@ -1,22 +1,22 @@
-# Aprendizaje de Costaviva — semana 2026-W45
+# Aprendizaje de Costaviva — semana 2026-W46
 
-Generado el 2026-11-02 por el aprendizaje semanal (sin IA, `aprendizaje-semanal.yml`). Contrato de comun: `estandares/aprendizaje.md`. Detalle técnico en `datos-robots/aprendizaje/`; propuestas en `aprendizaje/propuestas.json`; señales en `aprendizaje/senales.json`.
+Generado el 2026-11-09 por el aprendizaje semanal (sin IA, `aprendizaje-semanal.yml`). Contrato de comun: `estandares/aprendizaje.md`. Detalle técnico en `datos-robots/aprendizaje/`; propuestas en `aprendizaje/propuestas.json`; señales en `aprendizaje/senales.json`.
 
 ## Estado del bucle
 
-- Aprendizaje semanal: corrió el 2026-11-02 (ok). Salidas usadas: 3.
-- Banco de pruebas: 0 salidas recalculadas con el tiempo de su día y 3 con lo que guardó el diario. sin OPEN_METEO_API_KEY: no se recalcula con series (solo términos guardados).
+- Aprendizaje semanal: corrió el 2026-11-09 (ok). Salidas usadas: 7.
+- Banco de pruebas: 0 salidas recalculadas con el tiempo de su día y 7 con lo que guardó el diario. sin OPEN_METEO_API_KEY: no se recalcula con series (solo términos guardados).
 - Retadores en la sombra: 3. Reglas con peso ajustado por los datos: 0.
-- Propuestas abiertas: 0. Las decides en el Issue semanal de comun.
+- Propuestas abiertas: 1. Las decides en el Issue semanal de comun.
 
 ## En una frase
 
-Con 3 salidas, cuando el índice está más alto se pesca (falta alguna salida sin pesca para saberlo) (AUC —); se pescó algo en el 100 % de las salidas.
-0 cambio(s) aplicados solos y 0 pregunta(s) para ti.
+Con 7 salidas, cuando el índice está más alto se pesca casi igual que cuando está bajo (AUC 0,4); se pescó algo en el 71 % de las salidas.
+0 cambio(s) aplicados solos y 1 pregunta(s) para ti.
 
 ## Te pregunto (sí o no)
 
-Nada esta semana.
+- **Medir el acierto de la talla que calcula la foto** (`costaviva-talla-foto-estimada-vs-medida`, impacto 2, riesgo bajo: una columna nueva opcional en capturas; requiere migración SQL con el flujo probar/aplicar.). Cuando la foto de una captura calcula la talla, guardar ese cálculo aparte de la talla que apunta el pescador (si la cambia). Así se sabe cuánto acierta la foto por especie y se puede mostrar «suele acertar ±2 cm». Para deshacerlo: quitar la columna talla_estimada_cm de capturas (no la usa nada más). _Evidencia:_ 1 caso: sargo de 2026-11-08, la foto calculó 30 cm y medía 30 cm; hoy no se guarda el cálculo, así que no se puede medir el acierto..
 
 ## Cambios que se han aplicado solos
 
@@ -30,42 +30,45 @@ Barreras: solo el peso (confianza) de reglas expertas, como mucho ±20 % por sem
 | Índice | Salidas | Se pescó algo |
 |---|---|---|
 | 40-60 | 1 | 100 % |
-| 60-80 | 2 | 100 % |
+| 60-80 | 6 | 66.7 % |
 
 ## Vigilancia de los datos
 
-- Salud de las cámaras: último dato hace 10 h (se espera cada 6 h)
-- Presión real por spot (cada hora): último dato hace 7 h (se espera cada 2 h)
+- Presión real por spot (cada hora): último dato hace 5 h (se espera cada 2 h)
 - el modelo da -30 % frente a la boya Bilbao-Vizcaya (exterior) (8 lecturas)
-- el modelo da -33 % frente a la boya Bilbao II (costera) (16 lecturas)
+- el modelo da -23 % frente a la boya Bilbao II (costera) (153 lecturas)
+- la calibración de berria/dinamico empeora: error 78 % → 100 %
+- la calibración de orio/principal empeora: error 71 % → 100 %
+- la calibración de sopelana/principal empeora: error 75 % → 99 %
+- el índice de las salidas de esta semana se ha desplazado frente al mes anterior (PSI 17,782)
 
 ## Retadores en la sombra
 
 - `calamar-luna-llena` (Calamar: mejor con luna llena de noche): sin resultado publicable (sin casos evaluables); movería el índice 0 puntos de media.
-- `levante-confianza-05` (Levante en el Cantábrico con menos peso (0,7 → 0,5)): no gana al índice actual en 3 salidas (probabilidad de mejora 0 %); movería el índice 0,1 puntos de media.
+- `levante-confianza-05` (Levante en el Cantábrico con menos peso (0,7 → 0,5)): no gana al índice actual en 7 salidas (probabilidad de mejora 0 %); movería el índice 0,1 puntos de media.
 - `lisa-rio-crecido` (Río crecido: la lisa entra en la desembocadura): sin resultado publicable (sin casos evaluables); movería el índice 0 puntos de media.
 
 ## Frentes, clorofila y corrientes (en la sombra)
 
 Se mira, para cada modalidad y cada especie, si pescar cerca de un borde de clorofila, de un cambio de temperatura, de una corriente que junta el agua (o con agua azul, verdosa o con floración, o con corriente fuerte) cambia lo que ya decía el índice, sin suponer de antemano si ayuda o estorba. No toca el índice en vivo.
-- Salidas con la capa de su día: 3 de 3. 3 fechas de salida sin capa de frentes (la copia diaria empezó el 2026-10-09 o falló ese día): esas salidas no cuentan en la sombra de frentes.
+- Salidas con la capa de su día: 7 de 7. 3 fechas de salida sin capa de frentes (la copia diaria empezó el 2026-10-09 o falló ese día): esas salidas no cuentan en la sombra de frentes.
 - Ninguna combinación supera todavía las barreras (80 salidas, 15 con y 15 sin captura, 30 con y 30 sin el rasgo, 5 personas o más, efecto de 3 desviaciones y mejora en las salidas recientes). Todas siguen en la sombra, acumulando salidas.
 
 ## Temperatura del agua: sonda frente al modelo
 
 Quien mide el agua con su sonda la apunta en el diario. Se compara con lo que decía el modelo a esa hora y en ese punto (Open-Meteo, la capa IBI de Copernicus y la boya si se usó), por zona. No cambia nada solo.
-- Medidas con sonda: 2.
+- Medidas con sonda: 3.
 - Ninguna zona supera todavía las barreras (30 medidas, 5 personas o más, sesgo de 0,3 °C o más, 3 errores típicos y que se mantenga en las medidas recientes).
 
 ## Para etiquetar (lo que más enseña)
 
-Nada pendiente.
+- Cámara mutriku (principal), 2026-11-05 09:08 UTC: cámara y modelo discrepan mucho.
 
 Se etiquetan en `etiquetar-olas.html` (admin) o con la rutina de etiquetado.
 
 ## Lo que sueles aceptar
 
-Aún no hay decisiones. El orden de las propuestas usa impacto × (aceptadas + 1) / (decididas + 2) por tipo, como el resumen de comun.
+- regla: 1 sí y 0 no (peso para ordenar: 0,67).
 
 ## Ideas para más adelante
 

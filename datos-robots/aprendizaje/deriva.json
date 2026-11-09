@@ -1,6 +1,6 @@
 {
- "generado_en": "2026-11-02T12:51:43.691Z",
- "semana": "2026-W45",
+ "generado_en": "2026-11-09T04:41:38.504Z",
+ "semana": "2026-W46",
  "fuentes": [
   {
    "nombre": "Oleaje por cámara (espuma)",
@@ -17,49 +17,49 @@
   {
    "nombre": "Etiquetas de olas de Claude (rutina diaria)",
    "estado": "ok",
-   "horas": 13,
+   "horas": 3,
    "cadencia_h": 48
   },
   {
    "nombre": "Salud de las cámaras",
-   "estado": "retrasada",
-   "horas": 10,
+   "estado": "ok",
+   "horas": 2,
    "cadencia_h": 6
   },
   {
    "nombre": "Patrones de uso (viernes)",
    "estado": "ok",
-   "horas": 59,
+   "horas": 51,
    "cadencia_h": 168
   },
   {
    "nombre": "Experiencia de usuario (domingo)",
    "estado": "ok",
-   "horas": 12,
+   "horas": 4,
    "cadencia_h": 168
   },
   {
    "nombre": "Observaciones abiertas GBIF (martes)",
    "estado": "ok",
-   "horas": 146,
+   "horas": 136,
    "cadencia_h": 168
   },
   {
    "nombre": "Síntesis del informe diario",
    "estado": "ok",
-   "horas": 7,
+   "horas": 23,
    "cadencia_h": 24
   },
   {
    "nombre": "Presión real por spot (cada hora)",
    "estado": "retrasada",
-   "horas": 7,
+   "horas": 5,
    "cadencia_h": 2
   },
   {
    "nombre": "Turbidez de las webcams (diaria)",
    "estado": "ok",
-   "horas": 20,
+   "horas": 12,
    "cadencia_h": 24
   },
   {
@@ -82,9 +82,9 @@
    "boya": "Bilbao-coast-buoy",
    "nombre": "Bilbao II (costera)",
    "semana": "2026-W45",
-   "n": 16,
-   "modelo_entre_boya": 0.671,
-   "corregido_entre_boya": 0.671
+   "n": 153,
+   "modelo_entre_boya": 0.769,
+   "corregido_entre_boya": 0.769
   },
   {
    "boya": "Donostia-buoy",
@@ -98,9 +98,9 @@
    "boya": "PasaiaII-coast-buoy",
    "nombre": "Pasaia II (costera)",
    "semana": "2026-W45",
-   "n": 36,
-   "modelo_entre_boya": 0.676,
-   "corregido_entre_boya": 0.93
+   "n": 272,
+   "modelo_entre_boya": 0.751,
+   "corregido_entre_boya": 1.036
   }
  ],
  "avisos_boyas": [
@@ -117,28 +117,28 @@
    "nombre": "Bilbao II (costera)",
    "semana": "2026-W45",
    "tipo": "sesgo",
-   "valor": 0.671,
-   "texto": "el modelo da -33 % frente a la boya Bilbao II (costera) (16 lecturas)"
+   "valor": 0.769,
+   "texto": "el modelo da -23 % frente a la boya Bilbao II (costera) (153 lecturas)"
   }
  ],
  "camaras": [
   {
    "camara": "bakio/principal",
-   "n": 74,
-   "etiquetas": 11,
-   "dias": 22,
-   "error": 0.884,
-   "error_antes": 0.925,
+   "n": 107,
+   "etiquetas": 30,
+   "dias": 28,
+   "error": 1,
+   "error_antes": 0.884,
    "empeora": false
   },
   {
    "camara": "berria/dinamico",
-   "n": 241,
-   "etiquetas": 22,
-   "dias": 26,
-   "error": 0.777,
-   "error_antes": 0.834,
-   "empeora": false
+   "n": 344,
+   "etiquetas": 80,
+   "dias": 31,
+   "error": 1,
+   "error_antes": 0.777,
+   "empeora": true
   },
   {
    "camara": "berria/principal",
@@ -151,29 +151,29 @@
   },
   {
    "camara": "castrourdiales/principal",
-   "n": 88,
-   "etiquetas": 10,
-   "dias": 21,
+   "n": 159,
+   "etiquetas": 48,
+   "dias": 26,
    "error": 1,
    "error_antes": 1,
    "empeora": false
   },
   {
    "camara": "deba/principal",
-   "n": 19,
-   "etiquetas": 0,
-   "dias": 9,
-   "error": 0.522,
-   "error_antes": 0.472,
+   "n": 20,
+   "etiquetas": 1,
+   "dias": 10,
+   "error": 0.494,
+   "error_antes": 0.522,
    "empeora": false
   },
   {
    "camara": "deba/rompiente",
-   "n": 182,
-   "etiquetas": 13,
-   "dias": 25,
-   "error": 0.998,
-   "error_antes": 1,
+   "n": 241,
+   "etiquetas": 49,
+   "dias": 31,
+   "error": 1,
+   "error_antes": 0.998,
    "empeora": false
   },
   {
@@ -187,36 +187,36 @@
   },
   {
    "camara": "donostia/principal",
-   "n": 41,
-   "etiquetas": 1,
-   "dias": 18,
-   "error": 0.943,
-   "error_antes": 1,
+   "n": 47,
+   "etiquetas": 5,
+   "dias": 19,
+   "error": 1,
+   "error_antes": 0.943,
    "empeora": false
   },
   {
    "camara": "getaria/malkorbe",
-   "n": 20,
-   "etiquetas": 3,
-   "dias": 9,
+   "n": 44,
+   "etiquetas": 15,
+   "dias": 12,
    "error": 1,
    "error_antes": 1,
    "empeora": false
   },
   {
    "camara": "hondarribia/bocana",
-   "n": 30,
-   "etiquetas": 2,
-   "dias": 18,
+   "n": 37,
+   "etiquetas": 6,
+   "dias": 21,
    "error": 1,
    "error_antes": 1,
    "empeora": false
   },
   {
    "camara": "hondarribia/principal",
-   "n": 189,
-   "etiquetas": 13,
-   "dias": 26,
+   "n": 284,
+   "etiquetas": 69,
+   "dias": 32,
    "error": 1,
    "error_antes": 1,
    "empeora": false
@@ -232,81 +232,81 @@
   },
   {
    "camara": "mutriku/principal",
-   "n": 2,
-   "etiquetas": 0,
-   "dias": 2,
+   "n": 4,
+   "etiquetas": 1,
+   "dias": 3,
    "error": 1,
    "error_antes": 1,
    "empeora": false
   },
   {
    "camara": "nz-aramoana/principal",
-   "n": 84,
-   "etiquetas": 2,
-   "dias": 20,
+   "n": 95,
+   "etiquetas": 3,
+   "dias": 25,
    "error": 1,
    "error_antes": 1,
    "empeora": false
   },
   {
    "camara": "nz-napier/principal",
-   "n": 103,
+   "n": 104,
    "etiquetas": 15,
-   "dias": 12,
+   "dias": 13,
    "error": 0.791,
-   "error_antes": 0.678,
+   "error_antes": 0.791,
    "empeora": false
   },
   {
    "camara": "nz-riverton/principal",
-   "n": 579,
-   "etiquetas": 40,
-   "dias": 23,
+   "n": 766,
+   "etiquetas": 56,
+   "dias": 30,
    "error": 1,
    "error_antes": 1,
    "empeora": false
   },
   {
    "camara": "orio/principal",
-   "n": 75,
-   "etiquetas": 1,
-   "dias": 20,
-   "error": 0.71,
-   "error_antes": 0.656,
-   "empeora": false
+   "n": 103,
+   "etiquetas": 19,
+   "dias": 25,
+   "error": 1,
+   "error_antes": 0.71,
+   "empeora": true
   },
   {
    "camara": "sopelana/principal",
-   "n": 147,
-   "etiquetas": 14,
+   "n": 156,
+   "etiquetas": 23,
    "dias": 25,
-   "error": 0.751,
-   "error_antes": 0.782,
-   "empeora": false
+   "error": 0.99,
+   "error_antes": 0.751,
+   "empeora": true
   },
   {
    "camara": "zarautz/dinamico",
-   "n": 516,
-   "etiquetas": 43,
-   "dias": 26,
-   "error": 0.911,
-   "error_antes": 0.966,
+   "n": 721,
+   "etiquetas": 164,
+   "dias": 32,
+   "error": 1,
+   "error_antes": 0.911,
    "empeora": false
   },
   {
    "camara": "zarautz/principal",
-   "n": 46,
-   "etiquetas": 3,
+   "n": 48,
+   "etiquetas": 5,
    "dias": 17,
-   "error": 0.842,
-   "error_antes": 0.947,
+   "error": 1,
+   "error_antes": 0.842,
    "empeora": false
   },
   {
    "camara": "zumaia/a",
-   "n": 67,
-   "etiquetas": 6,
-   "dias": 17,
+   "n": 72,
+   "etiquetas": 9,
+   "dias": 19,
    "error": 1,
    "error_antes": 1,
    "empeora": false
@@ -338,17 +338,13 @@
  },
  "vivo": null,
  "diario": {
-  "oculto": true,
-  "motivo": "menos de 5 usuarios distintos en alguna de las dos ventanas"
+  "recientes": 4,
+  "psi": 17.7816
  },
  "avisos": [
   {
    "tipo": "fuente",
-   "texto": "Salud de las cámaras: último dato hace 10 h (se espera cada 6 h)"
-  },
-  {
-   "tipo": "fuente",
-   "texto": "Presión real por spot (cada hora): último dato hace 7 h (se espera cada 2 h)"
+   "texto": "Presión real por spot (cada hora): último dato hace 5 h (se espera cada 2 h)"
   },
   {
    "tipo": "boya",
@@ -356,7 +352,23 @@
   },
   {
    "tipo": "boya",
-   "texto": "el modelo da -33 % frente a la boya Bilbao II (costera) (16 lecturas)"
+   "texto": "el modelo da -23 % frente a la boya Bilbao II (costera) (153 lecturas)"
+  },
+  {
+   "tipo": "camara",
+   "texto": "la calibración de berria/dinamico empeora: error 78 % → 100 %"
+  },
+  {
+   "tipo": "camara",
+   "texto": "la calibración de orio/principal empeora: error 71 % → 100 %"
+  },
+  {
+   "tipo": "camara",
+   "texto": "la calibración de sopelana/principal empeora: error 75 % → 99 %"
+  },
+  {
+   "tipo": "indice",
+   "texto": "el índice de las salidas de esta semana se ha desplazado frente al mes anterior (PSI 17,782)"
   }
  ]
 }

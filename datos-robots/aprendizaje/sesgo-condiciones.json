@@ -1,0 +1,8 @@
+{
+ "generado_en": "2026-11-09T04:41:38.504Z",
+ "semana": "2026-W46",
+ "nota": "Histórico previsto/real: error medio (previsto − real) por zona y variable. Previsto = lo que guardó la salida al apuntarse (al menos 1 h antes de empezar); real = análisis del modelo y boya al concluir la jornada (indice_factores.real). Solo grupos de 5 personas distintas o más. Código: scripts/aprendizaje/sesgo-condiciones.mjs.",
+ "muestras": 0,
+ "grupos": [],
+ "candidatos_correccion": []
+}

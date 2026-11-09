@@ -1,6 +1,17 @@
 {
- "generado_en": "2026-11-02T12:51:43.691Z",
- "semana": "2026-W45",
+ "generado_en": "2026-11-09T04:41:38.504Z",
+ "semana": "2026-W46",
  "nota": "Fotogramas que más enseñarían a la calibración de las cámaras si se etiquetan (etiquetar-olas.html o la rutina de etiquetado).",
- "fotogramas": []
+ "fotogramas": [
+  {
+   "camara": "mutriku",
+   "encuadre": "principal",
+   "fecha": "2026-11-05T09:08:03.805Z",
+   "espuma": 0.1133,
+   "estimacion": 5.26,
+   "modelo": 0.58,
+   "ganancia": 3.705,
+   "motivo": "cámara y modelo discrepan mucho"
+  }
+ ]
 }
