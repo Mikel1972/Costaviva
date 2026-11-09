@@ -1,6 +1,6 @@
 {
  "app": "Costaviva",
- "generado": "2026-11-09T04:41:38.504Z",
+ "generado": "2026-11-09T13:21:13.801Z",
  "ventana_dias": 31,
  "estado": "ok",
  "metricas": {
@@ -17,10 +17,10 @@
   "reglas_ajustadas_auto": 0,
   "cambios_automaticos_semana": 0,
   "retadores_en_sombra": 3,
-  "propuestas_abiertas": 1,
-  "fuentes_no_ok": 1,
-  "avisos_deriva": 7,
-  "boyas_sesgo_max_pct": 30,
+  "propuestas_abiertas": 0,
+  "fuentes_no_ok": 2,
+  "avisos_deriva": 10,
+  "boyas_sesgo_max_pct": 259,
   "camaras_error_medio_pct": 92,
   "panel_indice_medio": 52.2,
   "observaciones_abiertas": 637,
@@ -30,6 +30,11 @@
  "prioridades": {
   "tasa_aceptacion_por_tipo": {
    "regla": {
+    "si": 1,
+    "no": 0,
+    "tasa": 0.67
+   },
+   "esquema": {
     "si": 1,
     "no": 0,
     "tasa": 0.67

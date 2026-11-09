@@ -1,0 +1,7 @@
+{
+ "generado_en": "2026-11-09T13:21:13.801Z",
+ "semana": "2026-W46",
+ "nota": "Acierto de la talla que calcula la foto (identificar-captura) frente a la medida por el pescador (talla_medida). error = foto − medida. Solo especies con 5 personas distintas o más. Código: assets/js/talla-foto.js.",
+ "muestras": 1,
+ "grupos": []
+}

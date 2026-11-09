@@ -7,16 +7,16 @@ Generado el 2026-11-09 por el aprendizaje semanal (sin IA, `aprendizaje-semanal.
 - Aprendizaje semanal: corrió el 2026-11-09 (ok). Salidas usadas: 7.
 - Banco de pruebas: 0 salidas recalculadas con el tiempo de su día y 7 con lo que guardó el diario. sin OPEN_METEO_API_KEY: no se recalcula con series (solo términos guardados).
 - Retadores en la sombra: 3. Reglas con peso ajustado por los datos: 0.
-- Propuestas abiertas: 1. Las decides en el Issue semanal de comun.
+- Propuestas abiertas: 0. Las decides en el Issue semanal de comun.
 
 ## En una frase
 
 Con 7 salidas, cuando el índice está más alto se pesca casi igual que cuando está bajo (AUC 0,4); se pescó algo en el 71 % de las salidas.
-0 cambio(s) aplicados solos y 1 pregunta(s) para ti.
+0 cambio(s) aplicados solos y 0 pregunta(s) para ti.
 
 ## Te pregunto (sí o no)
 
-- **Medir el acierto de la talla que calcula la foto** (`costaviva-talla-foto-estimada-vs-medida`, impacto 2, riesgo bajo: una columna nueva opcional en capturas; requiere migración SQL con el flujo probar/aplicar.). Cuando la foto de una captura calcula la talla, guardar ese cálculo aparte de la talla que apunta el pescador (si la cambia). Así se sabe cuánto acierta la foto por especie y se puede mostrar «suele acertar ±2 cm». Para deshacerlo: quitar la columna talla_estimada_cm de capturas (no la usa nada más). _Evidencia:_ 1 caso: sargo de 2026-11-08, la foto calculó 30 cm y medía 30 cm; hoy no se guarda el cálculo, así que no se puede medir el acierto..
+Nada esta semana.
 
 ## Cambios que se han aplicado solos
 
@@ -34,9 +34,12 @@ Barreras: solo el peso (confianza) de reglas expertas, como mucho ±20 % por sem
 
 ## Vigilancia de los datos
 
-- Presión real por spot (cada hora): último dato hace 5 h (se espera cada 2 h)
+- Salud de las cámaras: último dato hace 10 h (se espera cada 6 h)
+- Presión real por spot (cada hora): último dato hace 7 h (se espera cada 2 h)
 - el modelo da -30 % frente a la boya Bilbao-Vizcaya (exterior) (8 lecturas)
-- el modelo da -23 % frente a la boya Bilbao II (costera) (153 lecturas)
+- el sesgo frente a Bilbao II (costera) ha cambiado: de 0.85 a 1.18
+- el modelo da 259 % frente a la boya Pasaia II (costera) (26 lecturas)
+- el sesgo frente a Pasaia II (costera) ha cambiado: de 0.99 a 3.59
 - la calibración de berria/dinamico empeora: error 78 % → 100 %
 - la calibración de orio/principal empeora: error 71 % → 100 %
 - la calibración de sopelana/principal empeora: error 75 % → 99 %
@@ -69,6 +72,7 @@ Se etiquetan en `etiquetar-olas.html` (admin) o con la rutina de etiquetado.
 ## Lo que sueles aceptar
 
 - regla: 1 sí y 0 no (peso para ordenar: 0,67).
+- esquema: 1 sí y 0 no (peso para ordenar: 0,67).
 
 ## Ideas para más adelante
 
