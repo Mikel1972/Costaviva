@@ -34,3 +34,20 @@ test("el menú 👤 de cada página con sesión tiene «Cómo funciona» y carga
     assert.match(h, /src="\/assets\/js\/guia\.js"/, p);
   }
 });
+
+import { BOTONES, posicionGlobo } from "../assets/js/guia-botones.js";
+
+test("qué es cada botón: cada uno tiene nombre y explicación en es, en y pt", () => {
+  for (const idioma of ["es", "en", "pt"]) {
+    const d = dic(idioma);
+    for (const b of BOTONES) for (const c of ["titulo", "texto"]) assert.ok(d.includes(`"guia.b.${b.id}.${c}"`), `${idioma}: guia.b.${b.id}.${c}`);
+  }
+  const h = readFileSync(new URL("../index.html", import.meta.url), "utf8");
+  for (const b of BOTONES.filter((x) => x.sel.startsWith("#"))) assert.ok(h.includes(`id="${b.sel.slice(1)}"`) || b.id === "region" || b.id === "tresd", `${b.sel} no está en index.html`);
+});
+
+test("el globo nunca se sale de la pantalla", () => {
+  const p = { w: 390, h: 800 }, g = { w: 280, h: 90 };
+  assert.deepEqual(posicionGlobo({ x: 380, y: 20 }, g, p), { left: 100, top: 38 }, "arriba a la derecha: debajo y dentro");
+  assert.deepEqual(posicionGlobo({ x: 10, y: 780 }, g, p), { left: 10, top: 672 }, "abajo a la izquierda: encima");
+});
