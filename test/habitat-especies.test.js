@@ -45,3 +45,15 @@ test("el diario calcula el índice de la salida con el tipo de fondo", () => {
   assert.match(h, /const fondo = await fondoSalida\(lat, lon, modalidad\);/);
   assert.match(h, /horaActual: horaActualISO\(zona\), fondo,/);
 });
+
+import { sustratoPreferido } from "../assets/js/ventana-actividad.js";
+test("sustrato por zona: el de la región manda sobre el general", () => {
+  const e = { sustrato: { preferido: ["arena"], por_region: { canarias: { preferido: [] }, mediterraneo: { preferido: ["arena", "fango"] } } } };
+  assert.deepEqual(sustratoPreferido(e, "cantabrico"), ["arena"]);
+  assert.deepEqual(sustratoPreferido(e, "mediterraneo"), ["arena", "fango"]);
+  assert.deepEqual(sustratoPreferido(e, "canarias"), []);
+  const roca = { fondo_roca: 1, fondo_arena: 0, fondo_fango: 0, fondo_grava: 0, orilla_tipo: null };
+  assert.equal(topeHabitat(e, roca, "costa", "canarias"), null, "en Canarias no se limita");
+  assert.equal(topeHabitat(e, roca, "costa", "cantabrico").tope, TOPE_HABITAT);
+  assert.equal(sustratoPreferido({}, "cantabrico"), null);
+});
