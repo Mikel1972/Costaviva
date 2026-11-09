@@ -6,5 +6,13 @@
     "decision": "si",
     "motivo": "Sí de Mikel en la sesión, tras su sargo nocturno en Armintza.",
     "issue": null
+  },
+  {
+    "id": "decision-talla-foto",
+    "fecha": "2026-11-09",
+    "propuesta_id": "costaviva-talla-foto-estimada-vs-medida",
+    "decision": "si",
+    "motivo": "Sí de Mikel en la sesión: «si, hazlo. Instruir al robot para que vaya aprendiendo». Migración 20261109090000 aplicada.",
+    "issue": null
   }
 ]
