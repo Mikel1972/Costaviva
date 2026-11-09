@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-09T08:09:02.578Z",
- "lineasHistorial": 8939,
+ "fecha": "2026-11-09T08:38:16.161Z",
+ "lineasHistorial": 8951,
  "etiquetas": 926,
  "etiquetasClaude": 235,
  "calibracion": {
@@ -56,9 +56,9 @@
    "correlacion": -0.065
   },
   "zarautz/dinamico": {
-   "a": 3.1096,
+   "a": 3.106,
    "p": 0.5,
-   "n": 721,
+   "n": 722,
    "nEtiquetas": 135,
    "nEtiquetasClaude": 29,
    "franjasClaude": [
@@ -87,12 +87,12 @@
     "2026-11-04T16",
     "2026-11-05T16"
    ],
-   "dias": 32,
-   "hMin": 0.3,
+   "dias": 33,
+   "hMin": 0.27,
    "hMax": 6.97,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.234
+   "correlacion": 0.233
   },
   "zumaia/c": {
    "a": 20.2583,
@@ -179,9 +179,9 @@
    "correlacion": 0.481
   },
   "bakio/principal": {
-   "a": 1.918,
+   "a": 1.9252,
    "p": 0.5,
-   "n": 107,
+   "n": 108,
    "nEtiquetas": 18,
    "nEtiquetasClaude": 12,
    "franjasClaude": [
@@ -198,12 +198,12 @@
     "2026-11-05T14",
     "2026-11-07T14"
    ],
-   "dias": 28,
+   "dias": 29,
    "hMin": 0.3,
    "hMax": 4.62,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": -0.006
+   "correlacion": 0.02
   },
   "sopelana/principal": {
    "a": 3.4204,
@@ -266,9 +266,9 @@
    "correlacion": 0.098
   },
   "berria/dinamico": {
-   "a": 2.7699,
+   "a": 2.766,
    "p": 0.5,
-   "n": 344,
+   "n": 345,
    "nEtiquetas": 64,
    "nEtiquetasClaude": 16,
    "franjasClaude": [
@@ -282,12 +282,12 @@
     "2026-11-04T16",
     "2026-11-06T16"
    ],
-   "dias": 31,
+   "dias": 32,
    "hMin": 0.3,
    "hMax": 4.73,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.286
+   "correlacion": 0.285
   },
   "mutriku/principal": {
    "a": 7.2888,
@@ -503,8 +503,8 @@
    "sustituye": true,
    "motivo": "138 etiquetas",
    "ruido": {
-    "ruido": 0.546,
-    "pares": 507
+    "ruido": 0.547,
+    "pares": 508
    }
   },
   "getaria": {
@@ -549,10 +549,10 @@
   },
   "bakio": {
    "sustituye": true,
-   "motivo": "estable (±20 % entre lecturas cercanas)",
+   "motivo": "estable (±21 % entre lecturas cercanas)",
    "ruido": {
-    "ruido": 0.204,
-    "pares": 22
+    "ruido": 0.208,
+    "pares": 23
    }
   },
   "sopelana": {
