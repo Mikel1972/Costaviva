@@ -352,3 +352,24 @@ test("la ventana de 2 km es la misma en el servidor y en el navegador, y cubre l
   assert.ok(dentro / idx.length > 0.95, `solo ${dentro}/${idx.length} píxeles dentro`);
   assert.equal(regionFina(REGIONES_2[1]), REGIONES_2[1], "Canarias (sin radar) no cambia");
 });
+
+// Suavizado (2026-11-09).
+import { indiceRegionSuave, dbzSuave } from "../assets/js/lluvia-animada.js";
+test("suavizado: interpola entre celdas, el borde seco también y no inventa fuera de cobertura", () => {
+  const ind = { suave: true, k: Int32Array.from([0]), fx: Uint8Array.from([128]), fy: Uint8Array.from([0]), anchoV: 2 };
+  const v = dbzSuave(ind, Float32Array.from([20, 40, 20, 40]), 0);
+  assert.ok(Math.abs(v - 30) < 0.2, String(v));
+  const seco = dbzSuave(ind, Float32Array.from([NaN, NaN, NaN, NaN]), 0);
+  assert.ok(Number.isNaN(seco), "sin eco alrededor: sigue seco");
+  const borde = dbzSuave({ ...ind, fx: Uint8Array.from([10]) }, Float32Array.from([NaN, 40, NaN, 40]), 0);
+  assert.ok(Number.isNaN(borde) || colorLluvia(dbzAMmh(borde)) === null, "pegado a la celda seca: no se pinta");
+  const fuera = dbzSuave(ind, Float32Array.from([SIN_DATO, 40, SIN_DATO, 40]), 0);
+  assert.ok(fuera === SIN_DATO || fuera === 40);
+});
+test("suavizado: el índice cubre la región igual que el de antes", () => {
+  const r = REGIONES[0];
+  const s = indiceRegionSuave(r, VENTANA_RADAR);
+  const n = indiceRegion(r, VENTANA_RADAR);
+  const dentroS = s.k.filter((k) => k >= 0).length, dentroN = n.filter((k) => k >= 0).length;
+  assert.ok(dentroS / dentroN > 0.97, `${dentroS} vs ${dentroN}`);
+});
