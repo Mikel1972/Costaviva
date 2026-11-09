@@ -80,7 +80,7 @@ async function cdn(route, url) {
 // pruebas miran: un error así es un fallo que el usuario sufre.
 export async function prepararContexto(ctx, { conSesion = true } = {}) {
   if (conSesion) {
-    await ctx.addInitScript(([k, v]) => { try { localStorage.setItem(k, v); } catch (e) {} }, [CLAVE_SESION, JSON.stringify(sesionFalsa())]);
+    await ctx.addInitScript(([k, v]) => { try { localStorage.setItem(k, v); localStorage.setItem("cv-guia-vista", "1"); } catch (e) {} }, [CLAVE_SESION, JSON.stringify(sesionFalsa())]);
   }
   await ctx.route("**/*", async (route) => {
     const url = route.request().url();
