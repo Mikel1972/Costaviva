@@ -370,7 +370,10 @@ export function reglasParaModalidad(reglasDefecto, especie, modalidad = "costa",
   const deModalidad = Object.fromEntries(Object.entries(rm).filter(([, v]) => v && typeof v === "object" && !Array.isArray(v)));
   const base = fusionarReglas(reglasDefecto, deModalidad);
   const deEspecie = Object.fromEntries(Object.entries(especie.reglas || {}).filter(([k]) => !propios.has(k)));
-  return fusionarReglas(base, deEspecie);
+  // Ajuste de la especie solo en esta modalidad (2026-11-09, propuesta
+  // costaviva-sargo-noche-neutra-costa: el sargo de noche desde costa).
+  const deEspecieModalidad = especie.reglas_modalidad?.[modalidad] || {};
+  return fusionarReglas(fusionarReglas(base, deEspecie), deEspecieModalidad);
 }
 
 // "1,5" en español, "1.5" en inglés (I18n.num sin decimales fijos).
