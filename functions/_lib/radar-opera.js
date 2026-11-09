@@ -30,6 +30,9 @@ export const HORAS_VENTANA = 3;
 // con la proyección de assets/js/lluvia-animada.js; test/lluvia-animada.test.js
 // comprueba que la región del mapa cabe dentro.
 export const VENTANA = { factor: 4, x0: 0, y0: 724, x1: 396, y1: 1092 };
+// La misma zona en la vista de 2 km (2026-11-09, Mikel: más nítido como otras
+// apps): solo para la toma más reciente; ~390 KB frente a ~115 KB.
+export const VENTANA_FINA = { factor: 2, x0: 0, y0: 1448, x1: 792, y1: 2184 };
 export const CABECERA_BYTES = 16384;
 export const MAX_BYTES_TESELAS = 1024 * 1024;
 
