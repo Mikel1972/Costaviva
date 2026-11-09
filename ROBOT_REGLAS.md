@@ -1675,6 +1675,12 @@ cambio de diseño a proponer aparte, nunca aplicado directo).
 
 **Fondo que necesita cada especie (`sustrato`, 2026-11-08, pedido de Mikel: «el rodaballo es de fondos de arena: en Armintza es imposible; esto para todas las especies en todas las zonas»).** Campo `sustrato: { preferido: ["arena"] | ["arena","fango"] | ["roca"], valor, fuentes, verificado, nota }`. Desde costa y en submarina, si el fondo del spot no encaja, `topeHabitat` (ventana-actividad.js) deja la especie en «pocas probabilidades» (máximo 25). Hoy lo tienen 16 especies, sacadas de su propio `habitat` o de reglas de Mikel. Cada jueves, completa 3-5 especies más que aún no lo tengan, con fuente real (guías oficiales, IEO, MITECO, NIWA...). Las pelágicas o que viven en cualquier fondo (lubina, jurel, caballa, bonito...) NO llevan `sustrato`: sin él no se limita nada. Ante la duda, no lo pongas.
 
+**Por zona (2026-11-09, Mikel: «el agente que investiga las especies debe analizar también los fondos en los que vive, en cada zona»).** El fondo de una especie puede cambiar de una región a otra (en una zona sale sobre todo en arena y en otra también en roca o en praderas). Por eso, además del general, cada especie puede llevar `sustrato.por_region: { <región>: { preferido, valor, fuentes, verificado, nota } }` con las mismas regiones que `presencia` (`cantabrico`, `atlantico_norte`, `portugal`, `golfo_cadiz`, `mediterraneo`, `baleares`, `canarias`, `azores`, `madeira` y las de Nueva Zelanda). El de la región manda sobre el general (`sustratoPreferido()` en ventana-actividad.js); `preferido: []` en una región = allí vive en cualquier fondo y no se limita.
+Cada jueves, en este orden:
+1. Especies con spots y sin `sustrato` (primero las de las regiones con más spots: Cantábrico, Galicia, Nueva Zelanda).
+2. Especies con `sustrato` general: comprueba, región por región donde tenga `presencia`, si alguna fuente regional (IEO, MITECO, IPMA, NIWA, guías de pesca oficiales, estudios locales) dice otra cosa, y si es así añade `por_region` con su fuente.
+3. Como mucho 5 especies por pasada. Cada valor con fuente real y su URL en `fuentes`; sin fuente, no se añade. Lo que no esté claro va a `pendiente` de la especie, no a `sustrato`.
+
 `assets/datos/especies.json` es la ficha de referencia de cada especie
 (nombres es/eu/gl/ca/pt, científico, hábitat, profundidad, presencia por
 región, freza, actividad, temperatura, alimentación, tallas mínimas y vedas

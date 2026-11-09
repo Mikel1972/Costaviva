@@ -502,8 +502,20 @@ export function frentesDelDia(f, dia) {
 export const TOPE_HABITAT = 25;
 const ORILLA_BLANDA = new Set(["playa_arena", "playa"]);
 const ORILLA_DURA = new Set(["acantilado", "roca", "escollera"]);
-export function topeHabitat(especie, fondo, modalidad) {
-  const pref = especie?.sustrato?.preferido;
+// Fondo preferido de una especie EN una región (2026-11-09, Mikel: "el agente
+// de especies debe analizar los fondos en los que vive, en cada zona"):
+// sustrato.por_region[region].preferido manda sobre el general; una región
+// con `preferido: []` dice que allí no se limita (vive en cualquier fondo).
+export function sustratoPreferido(especie, region = null) {
+  const s = especie?.sustrato;
+  if (!s) return null;
+  const r = region ? s.por_region?.[region] : null;
+  if (r && Array.isArray(r.preferido)) return r.preferido;
+  return Array.isArray(s.preferido) ? s.preferido : null;
+}
+
+export function topeHabitat(especie, fondo, modalidad, region = null) {
+  const pref = sustratoPreferido(especie, region);
   if (!Array.isArray(pref) || !pref.length || modalidad === "embarcacion" || !fondo) return null;
   const n = (v) => (typeof v === "number" && Number.isFinite(v) ? v : null);
   const roca = n(fondo.fondo_roca), arena = n(fondo.fondo_arena), fango = n(fondo.fondo_fango), grava = n(fondo.fondo_grava);
@@ -666,7 +678,7 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
     // (la ola ya no pone tope: decisión de Mikel, 2026-10-08; para la ola
     // está `avisoOla`).
     const avisos = [];
-    const habitat = topeHabitat(especie, contexto.fondo, modalidad);
+    const habitat = topeHabitat(especie, contexto.fondo, modalidad, region);
     if (habitat) {
       const vars = { prefiere: t(`va.hab.${habitat.prefiere}`), fondo: t(`va.hab.${habitat.hay}`) };
       const varsEs = { prefiere: t(`va.hab.${habitat.prefiere}`, null, "es"), fondo: t(`va.hab.${habitat.hay}`, null, "es") };
