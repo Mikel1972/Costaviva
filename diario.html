@@ -1855,6 +1855,27 @@ function cancelarFormulario() {
 function horaActualHHMM(zona = Regiones.ZONA_POR_DEFECTO) {
   return new Intl.DateTimeFormat("es-ES", { timeZone: zona, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(new Date());
 }
+// Lo que hubo de verdad a la hora de la salida, para compararlo con lo que
+// se predijo al crearla. horas_antes: cuánto antes de empezar se guardó la
+// previsión (si se apuntó la salida después de pescar, ~0: no sirve para
+// medir la previsión y el aprendizaje la descarta).
+function registroReal(salida, post) {
+  const num = (v) => (Number.isFinite(Number(v)) && v !== null ? Number(v) : null);
+  const inicio = salida.hora_inicio ? Date.parse(`${salida.fecha}T${salida.hora_inicio.slice(0, 5)}:00`) : NaN;
+  const creada = Date.parse(salida.creado_en || "");
+  const horasAntes = Number.isFinite(inicio) && Number.isFinite(creada) ? +((inicio - creada) / 3600000).toFixed(1) : null;
+  return {
+    guardado_en: new Date().toISOString(),
+    horas_antes: horasAntes,
+    fuente: post.boya_usada ? "analisis_modelo+boya" : "analisis_modelo",
+    viento_kmh: num(post.viento_kmh), viento_dir: num(post.viento_dir),
+    oleaje_altura_min: num(post.oleaje_altura_min), oleaje_altura_max: num(post.oleaje_altura_max),
+    presion_valor: num(post.presion_valor), temp_agua: num(post.temp_agua),
+    nubosidad: num(post.nubosidad), precipitacion: num(post.precipitacion),
+    boya_usada: post.boya_usada || null,
+  };
+}
+
 async function concluirEntrada(iso, fechaObj, salida) {
   // Hora de fin obligatoria para concluir (pedido explícito del usuario
   // 2026-09-19, para poder calcular estadísticas de marea/duración más
@@ -1866,12 +1887,25 @@ async function concluirEntrada(iso, fechaObj, salida) {
   }
   if (!confirm(I18n.t("diario.confirmar_concluir"))) return;
   const marea = await mareaDeConclusion(salida.lat, salida.lon, salida.hora_inicio?.slice(0, 5), salida.hora_fin.slice(0, 5), salida.fecha);
+  // Histórico previsto/real (2026-11-08, Mikel: "analiza todos los elementos
+  // con nuestras predicciones y vete adaptándolas; crea los históricos").
+  // Lo guardado al crear la salida es la PREVISIÓN de ese momento; al
+  // concluir se vuelve a pedir lo mismo para la misma hora, que ahora es el
+  // análisis del modelo y, si la salida es de hoy, la boya medida. Va en
+  // indice_factores.real (jsonb que ya existe). El aprendizaje semanal
+  // (scripts/aprendizaje/sesgo-condiciones.mjs) compara las dos por zona.
+  let real = null;
+  try {
+    const post = await contextoAmbiental(Number(salida.lat), Number(salida.lon), salida.hora_inicio?.slice(0, 5) || null, salida.tipo_salida, salida.fecha, salida.hora_fin.slice(0, 5));
+    real = registroReal(salida, post);
+  } catch (e) { console.warn("Histórico real de la salida:", e?.message); }
   const { error } = await supabase
     .from("salidas_pesca")
     .update({
       concluida: true,
       marea_altura_fin: marea.alturaFin, marea_tendencia_fin: marea.tendenciaFin,
       marea_pico_tipo: marea.picoTipo, marea_pico_hora: marea.picoHora,
+      ...(real ? { indice_factores: { ...(salida.indice_factores || {}), real } } : {}),
     })
     .eq("id", salida.id);
   if (error) { alert(traducirError(error, I18n.t("diario.error_concluir"))); return; }
