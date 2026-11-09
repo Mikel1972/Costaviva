@@ -1003,6 +1003,7 @@
   "diario.picadas_1": "1 bite",
   "diario.picadas_n": "{n} bites",
   "diario.picada_mas": "+1 bite",
+  "diario.picada_menos": "Remove one bite",
   "diario.picadas_error": "The bite could not be saved. Try again.",
   "diario.salida.temp_sonda_ph": "Optional, e.g. 19.5",
   "diario.salida.temp_sonda_ayuda": "If you measure the water with your probe or a thermometer, note it in °C: it is compared with the model to correct it.",

@@ -1005,6 +1005,7 @@
   "diario.picadas_1": "1 toque",
   "diario.picadas_n": "{n} toques",
   "diario.picada_mas": "+1 toque",
+  "diario.picada_menos": "Tirar um toque",
   "diario.picadas_error": "Não foi possível guardar o toque. Tenta novamente.",
   "diario.salida.temp_sonda_ph": "Opcional, p. ex. 19,5",
   "diario.salida.temp_sonda_ayuda": "Se medir a água com a sua sonda ou um termómetro, registe-a em °C: é comparada com o modelo para o corrigir.",
