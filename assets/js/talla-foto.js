@@ -16,6 +16,10 @@
 // público, como el resto del aprendizaje).
 
 export const CONFIG_TALLA_FOTO = { min_muestras: 10, min_personas: 5, sesgo_min_cm: 1, errores_tipicos: 2 };
+// Peso (2026-11-09, Mikel: "la medida acertó pero el peso no": sargo de 30 cm,
+// la foto dijo 450 g y pesó 560). El error del peso crece con el pez, así que
+// el sesgo va en % y el margen en gramos.
+export const CONFIG_PESO_FOTO = { min_muestras: 10, min_personas: 5, sesgo_min_pct: 5, errores_tipicos: 2 };
 
 export function claveEspecie(nombre) {
   return String(nombre || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase()
@@ -58,6 +62,49 @@ export function gruposTallaFoto(muestras) {
   }).sort((a, b) => a.especie.localeCompare(b.especie));
 }
 
+// Peso: solo capturas pesadas (peso_medido) con cálculo previo de la foto.
+export function muestrasPesoFoto({ salidas = [], capturas = [], excluir = new Set(), propios = new Set() }) {
+  const dueno = new Map(salidas.map((s) => [s.id, s.user_id]));
+  const out = [];
+  for (const c of capturas) {
+    const usuario = dueno.get(c.salida_id);
+    if (!usuario || excluir.has(usuario) || c.peso_medido !== true) continue;
+    const est = num(c.peso_estimado_g), med = num(c.peso_g);
+    if (est === null || med === null || med <= 0) continue;
+    out.push({ especie: claveEspecie(c.especie), error_g: est - med, error_pct: +((100 * (est - med)) / med).toFixed(2), usuario: propios.has(usuario) ? "dueño" : usuario });
+  }
+  return out;
+}
+
+export function gruposPesoFoto(muestras) {
+  const g = new Map();
+  for (const m of muestras) {
+    if (!m.especie) continue;
+    if (!g.has(m.especie)) g.set(m.especie, []);
+    g.get(m.especie).push(m);
+  }
+  return [...g.entries()].map(([especie, ms]) => {
+    const n = ms.length;
+    const media = ms.reduce((a, m) => a + m.error_pct, 0) / n;
+    const mae = ms.reduce((a, m) => a + Math.abs(m.error_g), 0) / n;
+    const sd = n > 1 ? Math.sqrt(ms.reduce((a, m) => a + (m.error_pct - media) ** 2, 0) / (n - 1)) : null;
+    return {
+      especie, n, personas: new Set(ms.map((m) => m.usuario)).size,
+      sesgo_pct: +media.toFixed(1), margen_g: Math.round(mae), error_tipico_pct: sd === null ? null : +(sd / Math.sqrt(n)).toFixed(2),
+    };
+  }).sort((a, b) => a.especie.localeCompare(b.especie));
+}
+
+export function calibracionPesoFoto(grupos, cfg = CONFIG_PESO_FOTO) {
+  const out = {};
+  for (const g of grupos) {
+    if (g.n < cfg.min_muestras || g.personas < cfg.min_personas) continue;
+    const claro = g.error_tipico_pct !== null && Math.abs(g.sesgo_pct) >= cfg.sesgo_min_pct && Math.abs(g.sesgo_pct) >= cfg.errores_tipicos * g.error_tipico_pct;
+    out[g.especie] = { n: g.n, margen_g: g.margen_g, sesgo_pct: claro ? g.sesgo_pct : 0 };
+  }
+  return out;
+}
+
 // Calibración publicable: { especie: { n, margen_cm, sesgo_cm (0 si no es claro) } }.
 export function calibracionTallaFoto(grupos, cfg = CONFIG_TALLA_FOTO) {
   const out = {};
@@ -73,15 +120,27 @@ export function calibracionTallaFoto(grupos, cfg = CONFIG_TALLA_FOTO) {
 // aparte, lo que calculó la foto (es lo que se guarda: el aprendizaje mide
 // siempre la foto sin corregir, para no corregirse a sí mismo).
 export function aplicarCalibracion(resultado, calibracion = {}) {
+  // Forma { talla: {...}, peso: {...} }; la antigua (solo talla) también vale.
+  const calT = calibracion.talla || calibracion.peso ? calibracion.talla || {} : calibracion;
+  const calP = calibracion.peso || {};
   const talla = num(resultado?.talla_cm), peso = num(resultado?.peso_g);
-  const base = { ...resultado, talla_foto_cm: talla, peso_foto_g: peso, margen_cm: null, calibrada: false };
-  const cal = resultado?.especie ? calibracion[claveEspecie(resultado.especie)] : null;
-  if (!cal || talla === null) return base;
-  base.margen_cm = cal.margen_cm;
-  if (!cal.sesgo_cm) return base;
-  const corregida = Math.max(1, Math.round((talla - cal.sesgo_cm) * 2) / 2);
-  return {
-    ...base, talla_cm: corregida, calibrada: true,
-    peso_g: peso === null ? null : Math.round(peso * (corregida / talla) ** 3),
-  };
+  const out = { ...resultado, talla_foto_cm: talla, peso_foto_g: peso, margen_cm: null, margen_peso_g: null, calibrada: false };
+  const clave = resultado?.especie ? claveEspecie(resultado.especie) : null;
+  const ct = clave ? calT[clave] : null, cp = clave ? calP[clave] : null;
+  if (ct && talla !== null) {
+    out.margen_cm = ct.margen_cm;
+    if (ct.sesgo_cm) {
+      out.talla_cm = Math.max(1, Math.round((talla - ct.sesgo_cm) * 2) / 2);
+      out.calibrada = true;
+      if (peso !== null && !cp?.sesgo_pct) out.peso_g = Math.round(peso * (out.talla_cm / talla) ** 3);
+    }
+  }
+  if (cp && peso !== null) {
+    out.margen_peso_g = cp.margen_g;
+    if (cp.sesgo_pct) {
+      out.peso_g = Math.max(1, Math.round(peso / (1 + cp.sesgo_pct / 100)));
+      out.calibrada = true;
+    }
+  }
+  return out;
 }
