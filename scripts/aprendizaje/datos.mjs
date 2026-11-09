@@ -79,7 +79,16 @@ export async function leerDiario({ url, key, emailsPrueba = [] }) {
     errores.push("salidas_pesca sin las columnas indice_* (migración 20261008120000): solo se puede recalcular con series");
     salidas = await leerTodo(url, key, "salidas_pesca", COLS_SALIDA);
   }
-  const capturas = await leerTodo(url, key, "capturas", "salida_id,especie,creado_en");
+  // Talla calculada por la foto y medida (migración 20261109090000): si aún
+  // no existen las columnas, se lee sin ellas.
+  let capturas;
+  try {
+    capturas = await leerTodo(url, key, "capturas", "salida_id,especie,creado_en,talla_cm,talla_estimada_cm,talla_medida");
+  } catch (e) {
+    if (e.status !== 400) throw e;
+    errores.push("capturas sin talla_estimada_cm / talla_medida (migración 20261109090000)");
+    capturas = await leerTodo(url, key, "capturas", "salida_id,especie,creado_en");
+  }
   // consiente_uso_datos_capturas: quien se opuso a las estadísticas anónimas
   // (suscripcion.html, "Tus datos") no entra (usuariosExcluidos). Si la
   // columna faltara (trampa 10), se sigue sin ella y se avisa.

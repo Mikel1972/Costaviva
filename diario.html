@@ -565,6 +565,9 @@ let salidasPorFecha = {}; // "YYYY-MM-DD" -> { salida, capturas: [...] }
 let selectorHoraInicio = null;
 let selectorHoraFin = null;
 let selectorHoraCaptura = null;
+// Lo que calculó la foto en el formulario abierto (2026-11-09): se guarda
+// aparte de lo que apunte el pescador para medir cuánto acierta la foto.
+let estimacionFoto = null;
 
 // Ubicaciones personalizadas (Fase 2 del plan de mejoras): además de la
 // lista fija de arriba, cualquier spot que el usuario haya creado en el
@@ -1586,6 +1589,10 @@ function formularioCaptura() {
       <div class="hora-select" id="ruedaCapturaHora"></div>
       <label for="capturaTalla">${I18n.t("diario.cap.talla")}</label>
       <input type="number" id="capturaTalla" step="0.5" min="0" />
+      <label class="casilla-talla-medida" style="display:flex; align-items:center; gap:8px; font-weight:400; margin-top:6px;">
+        <input type="checkbox" id="capturaTallaMedida" style="width:auto; margin:0;" />
+        <span>${I18n.t("diario.cap.talla_medida")}</span>
+      </label>
       <label for="capturaPeso">${I18n.t("diario.cap.peso")}</label>
       <input type="number" id="capturaPeso" step="1" min="0" />
       <label for="capturaTecnica">${I18n.t("diario.cap.tecnica")}</label>
@@ -1666,6 +1673,7 @@ async function guardarCaptura(salidaId, fecha, idExistente, ordenFotoBase) {
   }
   const talla = document.getElementById("capturaTalla").value;
   const peso = document.getElementById("capturaPeso").value;
+  const tallaMedida = document.getElementById("capturaTallaMedida")?.checked === true;
   const cebo = document.getElementById("capturaCebo").value;
   const tecnica = document.getElementById("capturaTecnica").value;
   const usaSenuelo = TECNICAS_CON_SENUELO.has(tecnica);
@@ -1685,6 +1693,10 @@ async function guardarCaptura(salidaId, fecha, idExistente, ordenFotoBase) {
     salida_id: salidaId, user_id: usuario.id, especie, hora, talla_cm: talla || null, peso_g: peso || null,
     cebo: cebo || null, tecnica: tecnica || null, senuelo: senuelo || null, aparejo: aparejo || null, notas: notas || null,
     marea_altura: marea.altura, marea_tendencia: marea.tendencia,
+    // Talla medida y cálculo de la foto (2026-11-09): el aprendizaje semanal
+    // compara los dos para que la foto vaya acertando más (talla-foto.js).
+    talla_medida: talla ? tallaMedida : null,
+    ...(estimacionFoto || {}),
   };
   let capturaId = idExistente;
   if (idExistente) {
@@ -2097,6 +2109,11 @@ async function identificarFotoDesdeArchivo(file) {
     if (!resp.ok) throw new Error(resultado.error || `HTTP ${resp.status}`);
 
     if (resultado.especie) aplicarEspecieIdentificada(resultado.especie);
+    estimacionFoto = {
+      especie_estimada: resultado.especie ? String(resultado.especie).slice(0, 80) : null,
+      talla_estimada_cm: resultado.talla_foto_cm ?? resultado.talla_cm ?? null,
+      peso_estimado_g: resultado.peso_foto_g ?? resultado.peso_g ?? null,
+    };
     if (resultado.talla_cm != null) document.getElementById("capturaTalla").value = resultado.talla_cm;
     if (resultado.peso_g != null) document.getElementById("capturaPeso").value = resultado.peso_g;
 
@@ -2110,7 +2127,10 @@ async function identificarFotoDesdeArchivo(file) {
       sugerencia = I18n.t("diario.id.sin_referencia");
     }
     mensajeEl.className = "mensaje info";
-    mensajeEl.textContent = I18n.t("diario.id.estimado", { confianza: textoConfianza(resultado.confianza) }) +
+    const margen = resultado.talla_cm != null && resultado.margen_cm != null
+      ? " " + I18n.t(resultado.calibrada ? "diario.id.margen_corregida" : "diario.id.margen", { margen: textoTalla(resultado.margen_cm) })
+      : "";
+    mensajeEl.textContent = I18n.t("diario.id.estimado", { confianza: textoConfianza(resultado.confianza) }) + margen +
       (partes.length ? ` (${partes.join("; ")})` : "") + sugerencia + avisoCupoMes(resultado.restantes_mes);
   } catch (e) {
     mensajeEl.className = "mensaje error";
@@ -2121,6 +2141,7 @@ async function identificarFotoDesdeArchivo(file) {
 function mostrarFormularioNuevaCaptura(iso, salidaId) {
   const zona = document.getElementById("zonaFormulario");
   zona.innerHTML = formularioCaptura();
+  estimacionFoto = null;
   selectorHoraCaptura = crearSelectorHora("ruedaCapturaHora", null);
   engancharFormularioCaptura(iso, salidaId, null, 0);
   zona.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -2137,6 +2158,8 @@ async function mostrarFormularioEditarCaptura(iso, salidaId, captura) {
   }
   selectorHoraCaptura = crearSelectorHora("ruedaCapturaHora", captura.hora ? captura.hora.slice(0, 5) : null);
   document.getElementById("capturaTalla").value = captura.talla_cm ?? "";
+  document.getElementById("capturaTallaMedida").checked = captura.talla_medida === true;
+  estimacionFoto = null; // al editar no se pisa lo que calculó la foto al crearla
   document.getElementById("capturaPeso").value = captura.peso_g ?? "";
   document.getElementById("capturaTecnica").value = captura.tecnica || "";
   const conSenuelo = TECNICAS_CON_SENUELO.has(captura.tecnica || "");

@@ -18,6 +18,10 @@
 // un dato ya confirmado.
 
 import { registrarUsoClaude } from "./_lib/uso-claude.js";
+// La foto aprende a calcular la talla (2026-11-09): calibración por especie
+// del aprendizaje semanal (assets/js/talla-foto.js).
+import { aplicarCalibracion } from "../assets/js/talla-foto.js";
+import CALIBRACION_TALLA from "../assets/js/talla-foto-calibracion.js";
 
 // Registro del gasto en public.uso_claude (comun, estandares/claude-api.md C5).
 const FUNCION_USO = "identificar-captura";
@@ -386,7 +390,7 @@ export async function onRequestPost(context) {
     }
 
     return json(200, {
-      ...interpretado.resultado,
+      ...aplicarCalibracion(interpretado.resultado, CALIBRACION_TALLA),
       limite_mes: LIMITE_MENSUAL,
       // Contando la de ahora (aún no está en uso_claude: se escribe con
       // waitUntil). null si no se pudo contar.
