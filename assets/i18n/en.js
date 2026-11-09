@@ -332,6 +332,7 @@
   "mapa.rio.cabecera": "Upper reach",
   "mapa.rio.medio": "Middle reach",
   "mapa.rio.desembocadura": "Mouth",
+  "mapa.rio.entrada_estuario": "Estuary entrance",
   "mapa.ubic.error_gps": "Could not get your GPS position — check the browser's location permissions.",
   "capas.globo.sin_dato": "No data here (land or no observation)",
   "coords.titulo": "📍 Coordinates of this point",

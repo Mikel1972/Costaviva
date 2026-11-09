@@ -332,6 +332,7 @@
   "mapa.rio.cabecera": "Cabecera",
   "mapa.rio.medio": "Medio",
   "mapa.rio.desembocadura": "Desembocadura",
+  "mapa.rio.entrada_estuario": "Entrada al estuario",
   "mapa.ubic.error_gps": "No se ha podido obtener tu GPS — revisa los permisos de ubicación del navegador.",
   "capas.globo.sin_dato": "Sin dato aquí (tierra o sin observación)",
   "coords.titulo": "📍 Coordenadas de este punto",

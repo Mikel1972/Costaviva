@@ -334,6 +334,7 @@
   "mapa.rio.cabecera": "Troço superior",
   "mapa.rio.medio": "Troço médio",
   "mapa.rio.desembocadura": "Foz",
+  "mapa.rio.entrada_estuario": "Entrada do estuário",
   "mapa.ubic.error_gps": "Não foi possível obter o seu GPS — verifique as permissões de localização do navegador.",
   "capas.globo.sin_dato": "Sem dado aqui (terra ou sem observação)",
   "coords.titulo": "📍 Coordenadas deste ponto",

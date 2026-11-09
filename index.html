@@ -2238,7 +2238,12 @@ const RIOS = [
     rio: "Waiwawa",
     puntos: [
       { tramo: "Medio (Coroglen) — estación WRC", lat: -36.935, lon: 175.640, caudal: null, slugCaudal: "waiwawa" },
-      { tramo: "Desembocadura (Whitianga Harbour)", lat: -36.870, lon: 175.690, caudal: null },
+      { tramo: "Entrada al estuario (Whitianga Harbour)", lat: -36.870, lon: 175.690, caudal: null },
+      // El Waiwawa vierte en el estuario de Whitianga, que sale a Mercury Bay
+      // por la boca del puerto, junto al spot: el agua dulce llega al mar por
+      // ahí. Esa es la "desembocadura" que usa la regla rio_crecido_* (≤ 3 km;
+      // 2026-11-09, Mikel: "amplíalo para la bahía de Whitianga").
+      { tramo: "Desembocadura (Whitianga Harbour → Mercury Bay)", lat: -36.8285, lon: 175.7105, caudal: null },
     ],
   },
   {
@@ -4093,6 +4098,7 @@ function textoTramoRio(tramo) {
     .replace(/^Cabecera/, I18n.t("mapa.rio.cabecera"))
     .replace(/^Medio/, I18n.t("mapa.rio.medio"))
     .replace(/^Desembocadura/, I18n.t("mapa.rio.desembocadura"))
+    .replace(/^Entrada al estuario/, I18n.t("mapa.rio.entrada_estuario"))
     .replace(" — estación ", I18n.t("mapa.rio.estacion", { estacion: "" }));
 }
 function grosorTramo(punto) {
