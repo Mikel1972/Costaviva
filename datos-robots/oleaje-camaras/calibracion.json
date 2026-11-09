@@ -1,13 +1,13 @@
 {
- "fecha": "2026-11-09T14:07:51.592Z",
- "lineasHistorial": 9090,
+ "fecha": "2026-11-09T14:38:02.394Z",
+ "lineasHistorial": 9100,
  "etiquetas": 926,
  "etiquetasClaude": 235,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.1754,
+   "a": 1.17,
    "p": 0.5,
-   "n": 287,
+   "n": 288,
    "nEtiquetas": 62,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -18,11 +18,11 @@
     "2026-11-03T16"
    ],
    "dias": 33,
-   "hMin": 0.04,
+   "hMin": 0.03,
    "hMax": 1.69,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": -0.092
+   "correlacion": -0.095
   },
   "hondarribia/bocana": {
    "a": 3.5459,
