@@ -27,6 +27,7 @@ import { spotsRegionesActivas, spotsDeRegion } from "./_lib/regiones-activas.js"
 // /prevision por región y vista previa de las regiones ocultas (fase 2 de NZ).
 import { autorizarRegion, noEncontrado, regionDeUrl } from "./_lib/vista-previa.js";
 import { cargarDatosLinz, cargarReservasDoc, completarSpotNZ, ATRIBUCION_LINZ, AVISO_LINZ, ATRIBUCION_DOC } from "./_lib/nz/prevision-nz.js";
+import { datosWaikato, mareografoDeSpot, ATRIBUCION_WAIKATO_DATOS } from "./_lib/nz/kiwis-waikato.js";
 
 // Spots de España y Portugal (región "es"): los únicos que pide /prevision
 // sin parámetro. Cada región nueva pide los suyos con ?region=<id> y su
@@ -1338,8 +1339,15 @@ export function camarasDeNZ(camaras) {
 // por debajo del límite de Cloudflare). Las cámaras de NZ empiezan "en
 // calibración" (sustituye_modelo = false): hasta que pasan las barreras de
 // camaraSustituyeModelo() solo dan `camaraReferencia` (dato secundario).
-export async function previsionRegionNZ(spots, env, origen, ahora = Date.now(), cargarCamaras = datosCamarasPorSpot, cargarOleajeCamaras = datosOleajeCamaras) {
-  const [resultados, linz, reservasDoc, camaras, lecturasOleaje] = await Promise.all([
+//
+// Waikato Regional Council (KiWIS, 2026-11-09, permiso escrito CC BY 4.0 +
+// email, ver functions/_lib/nz/kiwis-waikato.js): caudal de Waiwawa y Tairua
+// (`caudales`, mismo formato que el de España para la capa de ríos) y nivel
+// medido de los mareógrafos de Raglan y Whitianga (`nivelesMarea`, y
+// `mareaMedida` en los spots a ≤ 20 km). Caché propia de 2 h por estación,
+// aparte de la de 30 min de esta respuesta.
+export async function previsionRegionNZ(spots, env, origen, ahora = Date.now(), cargarCamaras = datosCamarasPorSpot, cargarOleajeCamaras = datosOleajeCamaras, cargarWaikato = () => datosWaikato({ origen, ahora })) {
+  const [resultados, linz, reservasDoc, camaras, lecturasOleaje, waikato] = await Promise.all([
     previsionTodosSpots(spots, env, { mareaOpenMeteo: false }).catch((e) =>
       spots.map((spot) => ({ slug: spot.slug, nombre: spot.nombre, lat: spot.lat, lon: spot.lon, error: String(e) }))
     ),
@@ -1347,17 +1355,28 @@ export async function previsionRegionNZ(spots, env, origen, ahora = Date.now(), 
     cargarReservasDoc(env, origen),
     cargarCamaras().catch(() => ({})),
     cargarOleajeCamaras().catch(() => ({ lecturas: {}, medidas: {} })),
+    cargarWaikato().catch(() => ({ caudales: {}, nivelesMarea: {} })),
   ]);
   const porSlug = new Map(spots.map((s) => [s.slug, s]));
   const conMareaSinCamara = resultados.map((r) => completarSpotNZ(r, porSlug.get(r.slug), linz, ahora, reservasDoc));
-  const conMarea = aplicarReferenciasCamara(aplicarCamarasASpots(conMareaSinCamara, lecturasOleaje?.lecturas, ahora), lecturasOleaje?.medidas, ahora);
+  const conMarea = aplicarReferenciasCamara(aplicarCamarasASpots(conMareaSinCamara, lecturasOleaje?.lecturas, ahora), lecturasOleaje?.medidas, ahora)
+    .map((r) => {
+      const spot = porSlug.get(r.slug);
+      const medida = spot ? mareografoDeSpot(spot, waikato?.nivelesMarea) : null;
+      return medida ? { ...r, mareaMedida: medida } : r;
+    });
   return {
     region: "nz",
     spots: conMarea,
     fuentesDatos: [...new Set(conMarea.flatMap((r) => r.fuentesDatos || []))],
-    atribuciones: { marea: ATRIBUCION_LINZ, avisoMarea: AVISO_LINZ, mareaDisponible: Boolean(linz.catalogo && linz.anios.length), reservas: ATRIBUCION_DOC },
+    atribuciones: {
+      marea: ATRIBUCION_LINZ, avisoMarea: AVISO_LINZ, mareaDisponible: Boolean(linz.catalogo && linz.anios.length), reservas: ATRIBUCION_DOC,
+      waikato: ATRIBUCION_WAIKATO_DATOS,
+    },
     boyas: [],
     camaras: camarasDeNZ(camaras),
+    caudales: waikato?.caudales || {},
+    nivelesMarea: waikato?.nivelesMarea || {},
   };
 }
 

@@ -391,6 +391,36 @@ abajo sigue valiendo salvo donde dice "oculto".
   sitemap en Search Console. (La confirmación escrita de LINZ llegó el
   2026-10-11: licencia verificada.)
 
+## Waikato Regional Council: ríos y mareógrafos por KiWIS (2026-11-09)
+
+Permiso escrito (comun, `permisos/registro.json`, entidad `waikato-rc`,
+ticket REQ235947): CC BY 4.0 + email de Debbie Eastwood. Condiciones
+obligatorias: citar "Waikato Regional Council" con enlace a
+https://www.waikatoregion.govt.nz y a la licencia CC BY 4.0, y avisar de que
+el dato es provisional. Acceso KiWIS y `ts_path` de Ross Jones (WRC).
+
+- Lógica y red en `functions/_lib/nz/kiwis-waikato.js`:
+  `getTimeseriesValues` (`format=dajson`, `period=P1D`, unidad en los
+  metadatos) de Waiwawa `1257/2/S/Cmd.P` y Tairua `940/2/S/Cmd.P` (caudal) y
+  Raglan `857/23/TideLVL/Cmd.P` y Whitianga `1328/20/TideLVL/Cmd.P` (nivel).
+  Kawhia aún no (preguntado). El parser lee dajson y csv; mm/cm → m, l/s →
+  m³/s; sin unidad, un nivel > 30 se toma por mm.
+- **Pocas consultas**: caché propia por estación en la Cache API (2 h el dato,
+  1 h un fallo) → como mucho una petición por estación cada 2 h y centro de
+  datos de Cloudflare. Sin tabla ni robot: no hace falta SQL.
+- Llega con `/prevision?region=nz`: `caudales` (capa Ríos: Waiwawa y Tairua
+  en `RIOS` de index.html, sin umbrales oficiales → número sin color; el
+  `spotCosta` lo manda el servidor porque el HTML no lleva slugs de NZ),
+  `nivelesMarea` y `mareaMedida` en los spots a ≤ 20 km de un mareógrafo
+  (ficha: "Nivel medido…" bajo la marea de LINZ, sobre el cero de la estación,
+  no comparable con la prevista). Ríos ya no está en `BOTONES_SOLO_IBERIA`.
+- Cita: créditos del mapa (`mapa.atrib.waikato`, con los dos enlaces), ficha
+  (`pintarMareaMedida`, enlaces + aviso) y tooltip del río
+  (`mapa.waikato.cita_corta`). `test/waikato-kiwis.test.js` fija las frases.
+- **Falta comprobar en vivo** (las sesiones no llegan al puerto 8080):
+  forma real de dajson y unidades (ejemplos en `test/fixtures/kiwis/`), y
+  afinar las coordenadas (hoy aproximadas) con `getStationList`.
+
 ## Cobro: precios por zonas y ámbitos (2026-10-11, precios confirmados por Mikel)
 
 Todo sale de **`functions/_lib/precios-zonas.json`** (config) y

@@ -335,7 +335,8 @@ test("cámaras de NZ: se cargan en la ficha de cada spot NZ y en el robot de sal
 
 test("mapa: en NZ, los botones de capas sin datos allí salen sombreados (pulsables, con aviso)", () => {
   const html = leer("index.html");
-  assert.match(html, /const BOTONES_SOLO_IBERIA = \["toggleRios", "toggleBoyas", "toggleEstaciones", "toggleFondo", "toggleNubes"\];/);
+  // Ríos fuera desde el 2026-11-09: caudal de Waikato Regional Council.
+  assert.match(html, /const BOTONES_SOLO_IBERIA = \["toggleBoyas", "toggleEstaciones", "toggleFondo", "toggleNubes"\];/);
   assert.match(html, /\.sin-datos-region \{ opacity: 0\.38; filter: grayscale\(1\); \}/);
   assert.match(html, /map\.on\("moveend", sombrearCapasSinDatos\);/);
 });

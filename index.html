@@ -1352,7 +1352,7 @@
         <div class="fila"><span class="chip" style="background:var(--nivel-bueno)"></span><span data-i18n="mapa.leyenda.tranquilo">tranquilo</span></div>
         <div class="fila"><span class="chip" style="background:var(--nivel-medio)"></span><span data-i18n="mapa.leyenda.moderado">moderado</span></div>
         <div class="fila"><span class="chip" style="background:var(--nivel-malo)"></span><span data-i18n="mapa.leyenda.agitado">agitado</span></div>
-        <div class="nota" style="margin-top:10px; padding-top:8px; border-top:1px solid var(--linea);" data-i18n="mapa.leyenda.rios">◆ RÍOS: 3 puntos por río (cabecera→desembocadura), color por caudal bajo/normal/alto — pasa el cursor por un punto para ver el detalle. Lo que se mide arriba llega a la costa horas después — útil como aviso de tendencia. Posiciones ilustrativas, no las estaciones oficiales exactas. Caudal real solo en Sella, Besaya, Pas, Asón, Eo, Júcar, Turia, Mijares, Segura, Lagares, Tordera y Muga (Confederaciones Hidrográficas + Augas de Galicia + Agència Catalana de l'Aigua) — los ríos vascos siguen sin dato real (URA/Bizkaia bloquea el acceso automático).</div>
+        <div class="nota" style="margin-top:10px; padding-top:8px; border-top:1px solid var(--linea);" data-i18n="mapa.leyenda.rios">◆ RÍOS: 3 puntos por río (cabecera→desembocadura), color por caudal bajo/normal/alto — pasa el cursor por un punto para ver el detalle. Lo que se mide arriba llega a la costa horas después — útil como aviso de tendencia. Posiciones ilustrativas, no las estaciones oficiales exactas. Caudal real solo en Sella, Besaya, Pas, Asón, Eo, Júcar, Turia, Mijares, Segura, Lagares, Tordera y Muga (Confederaciones Hidrográficas + Augas de Galicia + Agència Catalana de l'Aigua) y, en Nueva Zelanda, Waiwawa y Tairua (Waikato Regional Council, dato provisional) — los ríos vascos siguen sin dato real (URA/Bizkaia bloquea el acceso automático).</div>
         <div class="nota" style="margin-top:8px; padding-top:8px; border-top:1px solid var(--linea);" data-i18n="mapa.leyenda.zonas">▨ ZONAS SIN PESCA: trama roja = no se puede pescar ni coger nada (reservas marinas y zonas protegidas oficiales); trama naranja discontinua = protección del fondo (caña sí, artes de fondo no). Toca una zona para ver su nombre.</div>
         <div class="nota" style="margin-top:8px; padding-top:8px; border-top:1px solid var(--linea);" data-i18n="mapa.leyenda.tagua">🌡 T. AGUA: cada color es un grado, siempre el mismo en todo el mapa (del azul frío al rojo cálido); las líneas marcan el grado exacto.</div>
       </div>
@@ -1483,6 +1483,8 @@
         <div class="etq" id="panelMareaProxima"></div>
         <!-- Marea de LINZ (NZ): puerto, atribución (based on Toitū Te Whenua Land Information New Zealand data, CC BY 4.0 con enlace) y aviso obligatorio. -->
         <div class="etq" id="panelMareaFuente" hidden style="text-transform:none; letter-spacing:0; font-size:9.5px; line-height:1.35; margin-top:3px;"></div>
+        <!-- Nivel MEDIDO del mareógrafo de Waikato Regional Council (NZ, ≤ 20 km): valor, tendencia, hora, cita con enlaces y aviso de dato provisional. -->
+        <div class="etq" id="panelMareaMedida" hidden style="text-transform:none; letter-spacing:0; font-size:9.5px; line-height:1.35; margin-top:5px;"></div>
       </div>
       <div class="tarjeta">
         <div class="etq" data-i18n="mapa.panel.corriente">CORRIENTE</div>
@@ -2221,6 +2223,29 @@ const RIOS = [
       { tramo: "Desembocadura (golf de Roses)", lat: 42.238, lon: 3.123, caudal: null, slugCaudal: "muga" },
     ],
   },
+
+  // --- Nueva Zelanda (2026-11-09): caudal REAL de Waikato Regional Council
+  // (KiWIS, permiso escrito CC BY 4.0, dato provisional; ver
+  // functions/_lib/nz/kiwis-waikato.js). Llega con /prevision?region=nz
+  // (cargarRegion). Aquí el dato va en el punto de la estación, no en la
+  // desembocadura; las dos posiciones son APROXIMADAS (por afinar con
+  // getStationList de KiWIS). Sin umbrales oficiales: número sin color.
+  // Sin spotCosta escrito aquí (ningún slug de NZ en el HTML,
+  // test/nz-region.test.js): lo manda el servidor con el caudal. ---
+  {
+    rio: "Waiwawa",
+    puntos: [
+      { tramo: "Medio (Coroglen) — estación WRC", lat: -36.935, lon: 175.640, caudal: null, slugCaudal: "waiwawa" },
+      { tramo: "Desembocadura (Whitianga Harbour)", lat: -36.870, lon: 175.690, caudal: null },
+    ],
+  },
+  {
+    rio: "Tairua",
+    puntos: [
+      { tramo: "Medio (Broken Hills) — estación WRC", lat: -37.112, lon: 175.730, caudal: null, slugCaudal: "tairua" },
+      { tramo: "Desembocadura (Tairua Harbour)", lat: -37.005, lon: 175.850, caudal: null },
+    ],
+  },
 ];
 // Lista plana de todos los puntos, para dibujar en el mapa
 const RIO_PUNTOS = RIOS.flatMap((r) =>
@@ -2241,6 +2266,29 @@ function categoriaCaudal(caudal, umbralBajo, umbralAlto) {
   if (caudal < umbralBajo) return { nivel: "bajo", etiqueta: I18n.t("mapa.caudal.bajo"), color: "#4F9D69" };
   if (caudal < umbralAlto) return { nivel: "normal", etiqueta: I18n.t("mapa.caudal.normal"), color: "#D4A24C" };
   return { nivel: "alto", etiqueta: I18n.t("mapa.caudal.alto"), color: "#A34A35" };
+}
+
+// Caudal real de /prevision (España) o /prevision?region=nz (Waikato
+// Regional Council: `valor` en vez de `caudal`, con hora y aviso de dato
+// provisional) en los puntos de RIOS que lo esperan (slugCaudal).
+function aplicarCaudales(caudales) {
+  RIOS.forEach((r) => {
+    r.puntos.forEach((p) => {
+      if (!p.slugCaudal) return;
+      const c = caudales[p.slugCaudal];
+      if (!c || c.error) return;
+      if (c.spotCosta && !r.spotCosta) r.spotCosta = c.spotCosta;
+      p.caudal = c.caudal ?? c.valor ?? null;
+      p.umbralBajo = c.umbralBajo ?? null;
+      p.umbralAlto = c.umbralAlto ?? null;
+      p.estacion = c.estacion;
+      p.provisional = Boolean(c.provisional);
+      p.hora = c.hora || null;
+      // Zona de la hora de la medida (sin esperar a window.Regiones).
+      if (c.zona) p.zona = c.zona;
+      p.tendencia = c.tendencia || null;
+    });
+  });
 }
 
 // Las listas ESPECIES, ESPECIES_MEDITERRANEO, ESPECIES_GOLFO_CADIZ y
@@ -2401,19 +2449,7 @@ async function actualizarDesdeBackend() {
     // Se suman (no se pisan): /prevision?region=nz trae las de NZ aparte.
     if (datos.camaras) CAMARAS = { ...CAMARAS, ...datos.camaras };
     if (datos.monteRios) MONTE_RIOS = datos.monteRios;
-    if (datos.caudales) {
-      RIOS.forEach((r) => {
-        r.puntos.forEach((p) => {
-          if (!p.slugCaudal) return;
-          const c = datos.caudales[p.slugCaudal];
-          if (!c || c.error) return;
-          p.caudal = c.caudal;
-          p.umbralBajo = c.umbralBajo ?? null;
-          p.umbralAlto = c.umbralAlto ?? null;
-          p.estacion = c.estacion;
-        });
-      });
-    }
+    if (datos.caudales) aplicarCaudales(datos.caudales);
     console.log("Datos reales cargados desde /prevision");
   } catch (e) {
     console.log("Backend no disponible, usando datos fijos de hoy:", e.message);
@@ -2476,11 +2512,18 @@ async function cargarRegion(region) {
       else { s.zona = sb.zona || s.zona; s.altura = null; s.actualizadoEn = null; s.indice = null; }
       // La marea de LINZ puede faltar (datos sin cargar): no se deja la vieja.
       s.marea = sb.marea || null;
+      // Nivel medido del mareógrafo de Waikato Regional Council (≤ 20 km).
+      s.mareaMedida = sb.mareaMedida || null;
       if (nuevo && marcadoresListos) crearMarcadorSpot(s);
     }
     // Estado de las cámaras de la región (ext-nz-*, 2026-10-11): el punto
     // verde/rojo de sus spots usa la misma regla que España.
     if (datos.camaras) CAMARAS = { ...CAMARAS, ...datos.camaras };
+    // Caudal de Waikato Regional Council (Waiwawa, Tairua): a la capa de ríos.
+    if (datos.caudales && Object.keys(datos.caudales).length) {
+      aplicarCaudales(datos.caudales);
+      if (marcadoresListos) pintarRios();
+    }
     if (window.atribucionRegionMapa) window.atribucionRegionMapa(region, datos.atribuciones);
     return true;
   } catch (e) {
@@ -2573,6 +2616,37 @@ function pintarFuenteMarea(s) {
     el.append(atrib);
   }
   if (m.aviso) el.append(" · " + m.aviso);
+  el.hidden = false;
+}
+
+// Nivel medido del mareógrafo de Waikato Regional Council (Raglan,
+// Whitianga) junto a la marea prevista de LINZ. Es el cero de la estación,
+// no el de la carta: no se compara con la altura prevista. Cita con enlace a
+// su web y a la CC BY 4.0 y aviso de dato provisional (condiciones del
+// permiso). Con nodos de texto, sin innerHTML.
+function pintarMareaMedida(s) {
+  const el = document.getElementById("panelMareaMedida");
+  const m = s.mareaMedida;
+  el.textContent = "";
+  if (!m || !Number.isFinite(m.valor)) { el.hidden = true; return; }
+  const hora = m.hora ? new Date(m.hora).toLocaleTimeString(I18n.locale(), { timeZone: zonaSpot(s), hour: "2-digit", minute: "2-digit" }) : "";
+  const tend = m.tendencia ? " " + I18n.t(`mapa.marea.medida_${m.tendencia}`) : "";
+  const fuerte = document.createElement("strong");
+  fuerte.textContent = I18n.t("mapa.marea.medida", { estacion: m.nombre, altura: I18n.metros(m.valor, 2) }) + tend;
+  const enlace = (href, texto) => {
+    const a = document.createElement("a");
+    a.href = href; a.target = "_blank"; a.rel = "noopener"; a.textContent = texto;
+    return a;
+  };
+  el.append(
+    fuerte,
+    (hora ? " · " + hora : "") + " · " + I18n.t("mapa.marea.medida_cero") + ". ",
+    I18n.t("mapa.waikato.fuente") + " ",
+    enlace("https://www.waikatoregion.govt.nz", "Waikato Regional Council"),
+    ", ",
+    enlace("https://creativecommons.org/licenses/by/4.0/", "CC BY 4.0"),
+    ". " + I18n.t("mapa.waikato.provisional"),
+  );
   el.hidden = false;
 }
 
@@ -2788,11 +2862,20 @@ function actualizarZoomBajo() {
 map.on("zoomend", actualizarZoomBajo);
 actualizarZoomBajo();
 // Atribución de las mareas de LINZ en el mapa en cuanto hay spots de NZ.
+// Y la de Waikato Regional Council (ríos y mareógrafos, con enlace a su web,
+// a la CC BY 4.0 y el aviso de dato provisional) si /prevision la manda.
 let atribucionLinzPuesta = false;
-window.atribucionRegionMapa = (region) => {
-  if (region !== "nz" || atribucionLinzPuesta) return;
-  atribucionLinzPuesta = true;
-  map.attributionControl.addAttribution(I18n.t("mapa.atrib.linz"));
+let atribucionWaikatoPuesta = false;
+window.atribucionRegionMapa = (region, atribuciones) => {
+  if (region !== "nz") return;
+  if (!atribucionLinzPuesta) {
+    atribucionLinzPuesta = true;
+    map.attributionControl.addAttribution(I18n.t("mapa.atrib.linz"));
+  }
+  if (atribuciones?.waikato && !atribucionWaikatoPuesta) {
+    atribucionWaikatoPuesta = true;
+    map.attributionControl.addAttribution(I18n.t("mapa.atrib.waikato"));
+  }
 };
 
 if (window.supabaseCliente) {
@@ -3026,10 +3109,11 @@ function avisoSoloIberiaEnNZ(claveNombre) {
   avisoCapa(I18n.t("mapa.capa.solo_iberia", { capa: I18n.t(claveNombre) }));
   return true;
 }
+// Ríos: ya no (2026-11-09), hay caudal de Waikato Regional Council en NZ.
 // Mientras se mira NZ, esos botones salen sombreados (Mikel, 2026-10-12:
 // "mientras no las consigamos, deja esos círculos sombreados"). Siguen
 // pulsables: el toque da el aviso de arriba. Fuentes de NZ en estudio.
-const BOTONES_SOLO_IBERIA = ["toggleRios", "toggleBoyas", "toggleEstaciones", "toggleFondo", "toggleNubes"];
+const BOTONES_SOLO_IBERIA = ["toggleBoyas", "toggleEstaciones", "toggleFondo", "toggleNubes"];
 function sombrearCapasSinDatos() {
   const enNZ = regionDeCentro() === "nz";
   for (const id of BOTONES_SOLO_IBERIA) {
@@ -3093,7 +3177,6 @@ Promise.all([
   });
 });
 document.getElementById("toggleRios").addEventListener("click", (e) => {
-  if (!map.hasLayer(capaRios) && avisoSoloIberiaEnNZ("mapa.capa.rios")) return;
   if (map.hasLayer(capaRios)) {
     map.removeLayer(capaRios);
     e.currentTarget.classList.remove("activo");
@@ -3101,6 +3184,8 @@ document.getElementById("toggleRios").addEventListener("click", (e) => {
     capaRios.addTo(map);
     e.currentTarget.classList.add("activo");
     registrarEvento("ver_capa_rios");
+    // En NZ solo hay ríos con dato en Coromandel (Waikato Regional Council).
+    if (regionDeCentro() === "nz") avisoCapa(I18n.t("mapa.rios.solo_coromandel"));
   }
 });
 document.getElementById("toggleBoyas").addEventListener("click", (e) => {
@@ -4046,6 +4131,16 @@ function crearMarcadorSpot(s) {
 function crearMarcadores() {
   SPOTS.forEach(crearMarcadorSpot);
 
+  pintarRios();
+
+  BOYAS.forEach(crearMarcadorBoya);
+  ESTACIONES_METEO.forEach(crearMarcadorEstacion);
+}
+
+// Ríos en capaRios. Se vuelve a pintar cuando llega el caudal de otra región
+// (NZ llega después de crear los marcadores).
+function pintarRios() {
+  capaRios.clearLayers();
   RIOS.forEach((r) => {
     // Un río = una polilínea continua por tramo (cabecera->medio,
     // medio->desembocadura), cada una con su propio grosor según el
@@ -4086,19 +4181,23 @@ function crearMarcadores() {
       const lineaCaudal = p.caudal != null
         ? `<div class="rio-caudal"><span class="chip" style="width:8px;height:8px;border-radius:2px;background:${cat.color};"></span>${I18n.t("mapa.rio.caudal", { caudal: detalleCaudal })}</div>`
         : "";
+      // Dato de Waikato Regional Council: hora de la medida, cita y aviso de
+      // dato provisional (condiciones del permiso; los enlaces van en los
+      // créditos del mapa y en la ficha, el tooltip no es pulsable).
+      const lineaProvisional = p.provisional
+        ? `<div class="rio-tramo" style="font-size:10px;">${p.hora ? I18n.t("mapa.rio.medido_a_las", { hora: new Date(p.hora).toLocaleTimeString(I18n.locale(), { timeZone: zonaSpot(p), hour: "2-digit", minute: "2-digit" }) }) + " · " : ""}${I18n.t("mapa.waikato.cita_corta")}</div>`
+        : "";
       const llamada = `
         <div class="rio-nombre">${r.rio}</div>
-        <div class="rio-tramo">${textoTramoRio(p.tramo)}${p.estacion ? I18n.t("mapa.rio.estacion", { estacion: p.estacion }) : ""}</div>
+        <div class="rio-tramo">${textoTramoRio(p.tramo)}${p.estacion && !p.provisional ? I18n.t("mapa.rio.estacion", { estacion: p.estacion }) : ""}</div>
         ${lineaCaudal}
+        ${lineaProvisional}
         ${lineaMonteRiosHtml(r.rio, p.tramo)}
       `;
       L.marker([p.lat, p.lon], { icon }).addTo(capaRios)
         .bindTooltip(llamada, { direction: "top", offset: [0, -6], className: "llamada-rio", opacity: 1 });
     });
   });
-
-  BOYAS.forEach(crearMarcadorBoya);
-  ESTACIONES_METEO.forEach(crearMarcadorEstacion);
 }
 
 // ---------------------------------------------------------------------------
@@ -5464,6 +5563,7 @@ function abrirPanel(s) {
     document.getElementById("panelMareaProxima").textContent = "";
   }
   pintarFuenteMarea(s);
+  pintarMareaMedida(s);
   document.getElementById("panelCorriente").textContent = (s.corriente === null || s.corriente === undefined) ? I18n.t("mapa.sin_datos") : `${I18n.num(I18n.velocidadNumero(s.corriente))} ${I18n.unidadVelocidad()}`;
   document.getElementById("panelCorrienteDir").textContent = s.dirCorriente || "";
 
