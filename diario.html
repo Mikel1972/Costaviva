@@ -275,6 +275,32 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { cargarCompartidas, htmlCasillaCompartir, htmlEtiquetaCompartida, sincronizarCompartida } from "/assets/js/compartir-captura.js";
 // Índice de pesca v2 y condiciones por fecha de la salida (2026-10-08).
 import * as VentanaActividad from "/assets/js/ventana-actividad.js";
+import { entradaDeSpot, urlPunto, entradaDePunto, contextoFondo } from "/assets/js/capa-tipo-fondo.js";
+
+// Tipo de fondo de la salida para el índice (2026-11-09, Mikel: "pero
+// lenguado en roca…"): el diario no lo pasaba y el tope de hábitat
+// (topeHabitat: arena/fango vs roca) no se aplicaba, como sí en la ficha del
+// mapa. Mismo criterio que capa-tipo-fondo.js: el spot fijo con dato a 1,5 km
+// o menos; si no, el sustrato de EMODnet en el propio punto. Sin dato, null.
+let tipoFondoDatos;
+async function fondoSalida(lat, lon, modalidad) {
+  if (modalidad === "embarcacion" || !Number.isFinite(+lat) || !Number.isFinite(+lon)) return null;
+  try {
+    if (tipoFondoDatos === undefined) {
+      tipoFondoDatos = await fetch("/assets/datos/tipo-fondo.json").then((r) => (r.ok ? r.json() : null)).catch(() => null);
+    }
+    let e = entradaDeSpot(tipoFondoDatos, { lat: +lat, lon: +lon, esUsuario: true });
+    if (!e) {
+      const ctrl = new AbortController();
+      const reloj = setTimeout(() => ctrl.abort(), 8000);
+      e = await fetch(urlPunto(+lat, +lon), { signal: ctrl.signal }).then((r) => (r.ok ? r.json() : null)).then(entradaDePunto).catch(() => null);
+      clearTimeout(reloj);
+    }
+    return e ? contextoFondo(e, modalidad) : null;
+  } catch (err) {
+    return null;
+  }
+}
 import * as CondSalida from "/assets/js/condiciones-salida.js";
 import * as Regiones from "/assets/js/regiones.js";
 // Temperatura del agua medida con sonda (2026-10-10).
@@ -1142,8 +1168,9 @@ async function contextoAmbiental(lat, lon, horaElegida, tipoSalida, fecha, horaF
         if (r.i >= 0) {
           serie = CondSalida.aplicarBoyaASerie(serie, r.i, boya);
           const modalidad = CondSalida.TIPO_SALIDA_A_MODALIDAD[tipoSalida] || "costa";
+          const fondo = await fondoSalida(lat, lon, modalidad);
           const ind = VentanaActividad.indiceSpot(datosEspecies, serie, r.i, {
-            lat, lon, zona, modalidad, horaActual: horaActualISO(zona),
+            lat, lon, zona, modalidad, horaActual: horaActualISO(zona), fondo,
           });
           Object.assign(resultado, CondSalida.resumenIndice(ind, { estimada: r.estimada }));
           if (boya && resultado.indice_factores) resultado.indice_factores.con_boya = true;

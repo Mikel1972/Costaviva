@@ -37,3 +37,11 @@ test("hábitat: cada preferencia de fondo es arena, fango o roca y lleva fuente"
     assert.ok(Array.isArray(e.sustrato.fuentes), e.id);
   }
 });
+
+// 2026-11-09 (Mikel: "pero lenguado en roca…"): el diario también pasa el
+// tipo de fondo al índice de la salida, no solo la ficha del mapa.
+test("el diario calcula el índice de la salida con el tipo de fondo", () => {
+  const h = readFileSync(new URL("../diario.html", import.meta.url), "utf8");
+  assert.match(h, /const fondo = await fondoSalida\(lat, lon, modalidad\);/);
+  assert.match(h, /horaActual: horaActualISO\(zona\), fondo,/);
+});
