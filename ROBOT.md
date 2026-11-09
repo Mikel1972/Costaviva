@@ -10202,3 +10202,12 @@ Datos: `camaras-estado.json` de 2026-11-08T03:04Z (fresco). En rojo: alicante, t
 - Cambios en rama `robot/especies-2026-10-15` (solo `assets/datos/especies.json`); tests ventana-actividad, modalidades e indice-pesca-v2: 88/88 en verde.
 
 **Firmado:** robot buscador de fuentes (rutina), 2026-10-15 05:05 UTC.
+
+### 2026-11-09 05:42 UTC (robot de cámaras caídas — rutina; Pasaia, Orio, Cantabria)
+
+Datos: `camaras-estado.json` de 2026-11-09T03:03Z (fresco). En rojo: alicante, torreblanca (`origen_404` desde oct), pasaia (`frame_plano`), orio (`sin_respuesta`), sanvicente, suances, comillas (`origen_522`), 3 `frame_congelado` nocturnos, y ext-* de YouTube/Windy (sin directo; no se reparan aquí).
+- **pasaia**: detectia.net responde 200, Last-Modified 08-nov 18:04 GMT; son las 05:4x UTC (noche), `frame_plano` esperable. No se juzga.
+- **orio**: `GIP_orio_169.stream/playlist.m3u8` da 404 (Zarautz del mismo servidor da 200); probadas 4 variantes de nombre, todas 404. Stream retirado o caído en origen; sin alternativa verificada.
+- **suances/sanvicente/comillas**: cantabria.es no responde (connect OK, sin respuesta; 522 del proveedor). No se cambia nada.
+- No se cambió código. Siguiente pasada (de día): pasaia, orio (buscar web de la Diputación), sustituto de alicante/torreblanca.
+— robot de cámaras caídas (rutina)
