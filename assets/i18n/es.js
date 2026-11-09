@@ -1270,6 +1270,7 @@
   "mapa.waikato.provisional": "Dato provisional: aún sin revisar y puede cambiar.",
   "mapa.waikato.cita_corta": "Waikato Regional Council, CC BY 4.0 · dato provisional",
   "mapa.rio.medido_a_las": "medido a las {hora}",
+  "mapa.rio.segun_mediana": "Bajo, normal o alto comparado con lo habitual en esta estación (mediana de 30 días: {mediana}).",
   "mapa.rios.solo_coromandel": "Ríos en Nueva Zelanda: de momento solo Waiwawa y Tairua (Coromandel), con datos provisionales de Waikato Regional Council.",
   "va.region.nz_auckland_kermadec": "Auckland / Kermadec (NZ)",
   "va.region.nz_central": "Central (NZ)",

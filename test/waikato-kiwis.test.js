@@ -227,3 +227,20 @@ test("ríos de NZ en el mapa: Waiwawa y Tairua con su clave de caudal; el spot d
   // El caudal de NZ llega con /prevision?region=nz y se vuelve a pintar la capa.
   assert.match(html, /aplicarCaudales\(datos\.caudales\);\n\s+if \(marcadoresListos\) pintarRios\(\);/);
 });
+
+// Umbrales del río para el índice (2026-11-09): mediana de 30 días.
+import { umbralesCaudal, FACTOR_ALTO, FACTOR_BAJO, PERIODO_CAUDAL } from "../functions/_lib/nz/kiwis-waikato.js";
+test("umbrales de caudal: mediana de 30 días, bajo a la mitad y alto al triple", () => {
+  const t0 = Date.UTC(2026, 9, 10);
+  const puntos = Array.from({ length: 31 }, (_, i) => ({ t: t0 + i * 864e5, v: i === 30 ? 40 : 10 }));
+  const u = umbralesCaudal(puntos);
+  assert.equal(u.mediana30d, 10);
+  assert.equal(u.umbralBajo, 10 * FACTOR_BAJO);
+  assert.equal(u.umbralAlto, 10 * FACTOR_ALTO);
+  assert.equal(u.umbralesFuente, "mediana_30d");
+  assert.equal(PERIODO_CAUDAL, "P30D");
+});
+test("umbrales de caudal: con menos de 14 días no se inventan", () => {
+  const t0 = Date.UTC(2026, 10, 1);
+  assert.deepEqual(umbralesCaudal(Array.from({ length: 10 }, (_, i) => ({ t: t0 + i * 864e5, v: 5 }))), {});
+});
