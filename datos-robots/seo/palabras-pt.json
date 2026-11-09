@@ -1,15 +1,15 @@
 {
-  "generado": "2026-11-02T12:37:48.832Z",
-  "semana": "2026-10-19",
+  "generado": "2026-11-09T13:02:00.704Z",
+  "semana": "2026-10-26",
   "fuente": "Mikel1972/comun seo/palabras",
   "terminos": [
     {
       "termino": "marés",
       "mercado": "pt",
       "grupo": "marea",
-      "puntuacion": 68,
+      "puntuacion": 55,
       "tendencia": "baja",
-      "tendencia_pct": -57,
+      "tendencia_pct": -66,
       "estacionalidad": {
         "indice_mes_actual": 1.19,
         "picos": [
@@ -39,7 +39,7 @@
       "grupo": "tecnica",
       "puntuacion": 44,
       "tendencia": "sube",
-      "tendencia_pct": 30,
+      "tendencia_pct": 61,
       "estacionalidad": null,
       "url": null,
       "gsc_posicion": null
@@ -48,7 +48,7 @@
       "termino": "marés Figueira da Foz",
       "mercado": "pt",
       "grupo": "spot",
-      "puntuacion": 31,
+      "puntuacion": 38,
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
@@ -56,15 +56,15 @@
       "gsc_posicion": null
     },
     {
-      "termino": "lubina",
+      "termino": "surfcasting",
       "mercado": "pt",
-      "grupo": "descubierto",
-      "puntuacion": 28,
-      "tendencia": "estable",
-      "tendencia_pct": 0,
+      "grupo": "tecnica",
+      "puntuacion": 31,
+      "tendencia": "sube",
+      "tendencia_pct": 26,
       "estacionalidad": null,
-      "url": "/especies/lubina",
-      "gsc_posicion": 76
+      "url": null,
+      "gsc_posicion": null
     },
     {
       "termino": "pesca ao robalo",
@@ -84,15 +84,15 @@
       "gsc_posicion": null
     },
     {
-      "termino": "surfcasting",
+      "termino": "lubina",
       "mercado": "pt",
-      "grupo": "tecnica",
+      "grupo": "descubierto",
       "puntuacion": 25,
       "tendencia": "sube",
-      "tendencia_pct": 26,
+      "tendencia_pct": 43,
       "estacionalidad": null,
-      "url": null,
-      "gsc_posicion": null
+      "url": "/especies/lubina",
+      "gsc_posicion": 76
     },
     {
       "termino": "pesca à dourada",
@@ -120,7 +120,29 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/pt/spots/region/portugal",
-      "gsc_posicion": 8.6
+      "gsc_posicion": 8.1
+    },
+    {
+      "termino": "pescado portugal",
+      "mercado": "pt",
+      "grupo": "descubierto",
+      "puntuacion": 19,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/pt/spots/region/portugal",
+      "gsc_posicion": 80.3
+    },
+    {
+      "termino": "pesqueiros portugal",
+      "mercado": "pt",
+      "grupo": "descubierto",
+      "puntuacion": 19,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/pt/spots/region/portugal",
+      "gsc_posicion": 7.7
     },
     {
       "termino": "pesca ao sargo",
@@ -153,81 +175,26 @@
       "gsc_posicion": null
     },
     {
+      "termino": "mareas portugal",
+      "mercado": "pt",
+      "grupo": "descubierto",
+      "puntuacion": 16,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/mareas/region/portugal",
+      "gsc_posicion": 9.5
+    },
+    {
       "termino": "pesca em portugal",
       "mercado": "pt",
       "grupo": "region",
-      "puntuacion": 18,
+      "puntuacion": 16,
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/pt/spots/region/portugal",
       "gsc_posicion": 60
-    },
-    {
-      "termino": "lubinas",
-      "mercado": "pt",
-      "grupo": "descubierto",
-      "puntuacion": 16,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/especies/lubina",
-      "gsc_posicion": 69
-    },
-    {
-      "termino": "peixe da costa portuguesa",
-      "mercado": "pt",
-      "grupo": "descubierto",
-      "puntuacion": 16,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/pt/spots/region/portugal",
-      "gsc_posicion": 29
-    },
-    {
-      "termino": "peixes de portugal",
-      "mercado": "pt",
-      "grupo": "descubierto",
-      "puntuacion": 16,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/pt/spots/region/portugal",
-      "gsc_posicion": 79
-    },
-    {
-      "termino": "pesqueiros portugal",
-      "mercado": "pt",
-      "grupo": "descubierto",
-      "puntuacion": 16,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/pt/spots/region/portugal",
-      "gsc_posicion": 9
-    },
-    {
-      "termino": "tipos de pesca em portugal",
-      "mercado": "pt",
-      "grupo": "descubierto",
-      "puntuacion": 16,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/pt/spots/region/portugal",
-      "gsc_posicion": 10
-    },
-    {
-      "termino": "zonas de pesca em portugal",
-      "mercado": "pt",
-      "grupo": "descubierto",
-      "puntuacion": 16,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/spots/region/portugal",
-      "gsc_posicion": 10
     },
     {
       "termino": "pesca ao polvo",
@@ -246,6 +213,94 @@
       },
       "url": "/pt/especies/pulpo",
       "gsc_posicion": null
+    },
+    {
+      "termino": "lubinas",
+      "mercado": "pt",
+      "grupo": "descubierto",
+      "puntuacion": 13,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/especies/lubina",
+      "gsc_posicion": 69
+    },
+    {
+      "termino": "peixe da costa portuguesa",
+      "mercado": "pt",
+      "grupo": "descubierto",
+      "puntuacion": 13,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/pt/spots/region/portugal",
+      "gsc_posicion": 29
+    },
+    {
+      "termino": "peixes de portugal",
+      "mercado": "pt",
+      "grupo": "descubierto",
+      "puntuacion": 13,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/pt/spots/region/portugal",
+      "gsc_posicion": 79
+    },
+    {
+      "termino": "peixes em portugal",
+      "mercado": "pt",
+      "grupo": "descubierto",
+      "puntuacion": 13,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/pt/spots/region/portugal",
+      "gsc_posicion": 69
+    },
+    {
+      "termino": "peixes portugueses",
+      "mercado": "pt",
+      "grupo": "descubierto",
+      "puntuacion": 13,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/pt/spots/region/portugal",
+      "gsc_posicion": 84
+    },
+    {
+      "termino": "pesqueiro em portugal",
+      "mercado": "pt",
+      "grupo": "descubierto",
+      "puntuacion": 13,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/pt/spots/region/portugal",
+      "gsc_posicion": 9
+    },
+    {
+      "termino": "tipos de pesca em portugal",
+      "mercado": "pt",
+      "grupo": "descubierto",
+      "puntuacion": 13,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/pt/spots/region/portugal",
+      "gsc_posicion": 10
+    },
+    {
+      "termino": "zonas de pesca em portugal",
+      "mercado": "pt",
+      "grupo": "descubierto",
+      "puntuacion": 13,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/spots/region/portugal",
+      "gsc_posicion": 10
     },
     {
       "termino": "pesca à linha",

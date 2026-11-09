@@ -1,15 +1,26 @@
 {
-  "generado": "2026-11-02T12:37:48.832Z",
-  "semana": "2026-10-19",
+  "generado": "2026-11-09T13:02:00.704Z",
+  "semana": "2026-10-26",
   "fuente": "Mikel1972/comun seo/palabras",
   "terminos": [
+    {
+      "termino": "ofu tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 68,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides/nz-halfmoon-bay",
+      "gsc_posicion": 24
+    },
     {
       "termino": "tide times",
       "mercado": "nz",
       "grupo": "marea",
-      "puntuacion": 80,
-      "tendencia": "sube",
-      "tendencia_pct": 57,
+      "puntuacion": 68,
+      "tendencia": "estable",
+      "tendencia_pct": 0,
       "estacionalidad": {
         "indice_mes_actual": 1.08,
         "picos": [
@@ -24,7 +35,7 @@
       "termino": "tarakihi",
       "mercado": "nz",
       "grupo": "especie",
-      "puntuacion": 46,
+      "puntuacion": 38,
       "tendencia": "baja",
       "tendencia_pct": -47,
       "estacionalidad": {
@@ -92,6 +103,28 @@
       "gsc_posicion": null
     },
     {
+      "termino": "ocean fun tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 20,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides/nz-halfmoon-bay",
+      "gsc_posicion": 60.3
+    },
+    {
+      "termino": "clarks beach tides today",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 20,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 87
+    },
+    {
       "termino": "kina beach tides",
       "mercado": "nz",
       "grupo": "descubierto",
@@ -101,6 +134,61 @@
       "estacionalidad": null,
       "url": "/en/tides",
       "gsc_posicion": 29
+    },
+    {
+      "termino": "maraetai fishing tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 20,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 95
+    },
+    {
+      "termino": "ngawi tides today",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 20,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 87
+    },
+    {
+      "termino": "oceanfun tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 20,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides/nz-halfmoon-bay",
+      "gsc_posicion": 56
+    },
+    {
+      "termino": "otaki tides today",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 20,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 60.5
+    },
+    {
+      "termino": "pines beach tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 20,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 58.5
     },
     {
       "termino": "tides pohara",
@@ -125,6 +213,17 @@
       "gsc_posicion": 38
     },
     {
+      "termino": "waitaki tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 20,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 67.5
+    },
+    {
       "termino": "soft bait fishing",
       "mercado": "nz",
       "grupo": "tecnica",
@@ -138,6 +237,105 @@
       },
       "url": null,
       "gsc_posicion": null
+    },
+    {
+      "termino": "all day bay tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 98
+    },
+    {
+      "termino": "aotea harbour tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 94
+    },
+    {
+      "termino": "aotea tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 70
+    },
+    {
+      "termino": "aramoana tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 71
+    },
+    {
+      "termino": "bay of islands tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 61
+    },
+    {
+      "termino": "bluff tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 56
+    },
+    {
+      "termino": "bluff tides for fishing",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 79
+    },
+    {
+      "termino": "bowentown tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 63
+    },
+    {
+      "termino": "bowentown tides today",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 64
     },
     {
       "termino": "bream bay tides",
@@ -162,7 +360,7 @@
       "gsc_posicion": 46
     },
     {
-      "termino": "clarks beach tides today",
+      "termino": "clarks beach high tide today",
       "mercado": "nz",
       "grupo": "descubierto",
       "puntuacion": 18,
@@ -170,7 +368,18 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/en/tides",
-      "gsc_posicion": 82
+      "gsc_posicion": 89
+    },
+    {
+      "termino": "fishing bluff",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots",
+      "gsc_posicion": 90
     },
     {
       "termino": "fishing spots new zealand",
@@ -184,6 +393,28 @@
       "gsc_posicion": 50
     },
     {
+      "termino": "goat island tide times",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 87
+    },
+    {
+      "termino": "great barrier island tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 44
+    },
+    {
       "termino": "great barrier tides",
       "mercado": "nz",
       "grupo": "descubierto",
@@ -195,6 +426,50 @@
       "gsc_posicion": 30
     },
     {
+      "termino": "half moon bay tide chart",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides/nz-halfmoon-bay",
+      "gsc_posicion": 32
+    },
+    {
+      "termino": "half moon bay tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides/nz-halfmoon-bay",
+      "gsc_posicion": 37
+    },
+    {
+      "termino": "high tide bowentown",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 99
+    },
+    {
+      "termino": "high tide helensville",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 36
+    },
+    {
       "termino": "high tide takaka",
       "mercado": "nz",
       "grupo": "descubierto",
@@ -204,6 +479,94 @@
       "estacionalidad": null,
       "url": "/en/tides",
       "gsc_posicion": 50
+    },
+    {
+      "termino": "high tide tutukaka",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 90
+    },
+    {
+      "termino": "high tide tutukaka today",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 82
+    },
+    {
+      "termino": "high tide whangaparaoa today",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 73
+    },
+    {
+      "termino": "high tides for fishing",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 59
+    },
+    {
+      "termino": "houhora heads tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 75
+    },
+    {
+      "termino": "houhora tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 94
+    },
+    {
+      "termino": "jackson bay tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides/nz-jackson-bay",
+      "gsc_posicion": 34
+    },
+    {
+      "termino": "kahawai size limit",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species",
+      "gsc_posicion": 89
     },
     {
       "termino": "kairaki tides",
@@ -228,6 +591,83 @@
       "gsc_posicion": 34
     },
     {
+      "termino": "linz tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 88
+    },
+    {
+      "termino": "lottin point fishing",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/spots",
+      "gsc_posicion": 68
+    },
+    {
+      "termino": "low tide bluff",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 76
+    },
+    {
+      "termino": "low tide half moon bay tomorrow",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides/nz-halfmoon-bay",
+      "gsc_posicion": 11
+    },
+    {
+      "termino": "low tide mangawhai",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 59
+    },
+    {
+      "termino": "low tide opotiki today",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 75
+    },
+    {
+      "termino": "low tide tutukaka",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 79
+    },
+    {
       "termino": "low tide whangapoua",
       "mercado": "nz",
       "grupo": "descubierto",
@@ -237,6 +677,61 @@
       "estacionalidad": null,
       "url": "/en/tides",
       "gsc_posicion": 39
+    },
+    {
+      "termino": "low.tide",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 40
+    },
+    {
+      "termino": "mangawhai tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 36
+    },
+    {
+      "termino": "moeraki tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 83
+    },
+    {
+      "termino": "moeraki tides today",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 79
+    },
+    {
+      "termino": "monkey island tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 43
     },
     {
       "termino": "mosquito bay tides",
@@ -250,6 +745,17 @@
       "gsc_posicion": 30
     },
     {
+      "termino": "niwa tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 65
+    },
+    {
       "termino": "oban tides",
       "mercado": "nz",
       "grupo": "descubierto",
@@ -261,15 +767,15 @@
       "gsc_posicion": 29
     },
     {
-      "termino": "oceanfun tides",
+      "termino": "ohawe tides",
       "mercado": "nz",
       "grupo": "descubierto",
       "puntuacion": 18,
       "tendencia": null,
       "tendencia_pct": null,
       "estacionalidad": null,
-      "url": "/en/tides/nz-halfmoon-bay",
-      "gsc_posicion": 35
+      "url": "/en/tides",
+      "gsc_posicion": 99
     },
     {
       "termino": "ohope tide times",
@@ -283,7 +789,7 @@
       "gsc_posicion": 56
     },
     {
-      "termino": "otaki tides today",
+      "termino": "okahu bay tides",
       "mercado": "nz",
       "grupo": "descubierto",
       "puntuacion": 18,
@@ -291,7 +797,95 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/en/tides",
-      "gsc_posicion": 48
+      "gsc_posicion": 90
+    },
+    {
+      "termino": "okiwi bay tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 42
+    },
+    {
+      "termino": "omana beach tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 80
+    },
+    {
+      "termino": "omaui tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides/nz-halfmoon-bay",
+      "gsc_posicion": 24
+    },
+    {
+      "termino": "opito bay tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 35
+    },
+    {
+      "termino": "opotiki tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 84
+    },
+    {
+      "termino": "otaki tides for fishing",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 77
+    },
+    {
+      "termino": "paihia tide times",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 65
+    },
+    {
+      "termino": "pakawau tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 98
     },
     {
       "termino": "papatowai tides",
@@ -305,6 +899,28 @@
       "gsc_posicion": 37
     },
     {
+      "termino": "parengarenga tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 91
+    },
+    {
+      "termino": "pataua tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 96
+    },
+    {
       "termino": "pegasus tides",
       "mercado": "nz",
       "grupo": "descubierto",
@@ -316,7 +932,7 @@
       "gsc_posicion": 40
     },
     {
-      "termino": "pines beach tides",
+      "termino": "port albert tides",
       "mercado": "nz",
       "grupo": "descubierto",
       "puntuacion": 18,
@@ -324,7 +940,40 @@
       "tendencia_pct": null,
       "estacionalidad": null,
       "url": "/en/tides",
-      "gsc_posicion": 39
+      "gsc_posicion": 53
+    },
+    {
+      "termino": "pukehina tides today",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 98
+    },
+    {
+      "termino": "rabbit island tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides/nz-halfmoon-bay",
+      "gsc_posicion": 85
+    },
+    {
+      "termino": "rarangi tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 57
     },
     {
       "termino": "rarawa beach tides",
@@ -338,6 +987,94 @@
       "gsc_posicion": 41
     },
     {
+      "termino": "ruakaka beach tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 96
+    },
+    {
+      "termino": "ruapuke tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 97
+    },
+    {
+      "termino": "ruawai tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 91
+    },
+    {
+      "termino": "snapper season nz",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/species/nz-snapper",
+      "gsc_posicion": 80
+    },
+    {
+      "termino": "stewart island tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 69
+    },
+    {
+      "termino": "takaka tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 74
+    },
+    {
+      "termino": "takaka tides today",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 64
+    },
+    {
+      "termino": "tarakohe tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 95
+    },
+    {
       "termino": "tawharanui tide times",
       "mercado": "nz",
       "grupo": "descubierto",
@@ -347,6 +1084,28 @@
       "estacionalidad": null,
       "url": "/en/tides",
       "gsc_posicion": 34
+    },
+    {
+      "termino": "tawharanui tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 91
+    },
+    {
+      "termino": "tide times bay of islands",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 65
     },
     {
       "termino": "tide times foxton",
@@ -360,6 +1119,17 @@
       "gsc_posicion": 45
     },
     {
+      "termino": "tide times kaiapoi",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 95
+    },
+    {
       "termino": "tide times katikati",
       "mercado": "nz",
       "grupo": "descubierto",
@@ -369,6 +1139,39 @@
       "estacionalidad": null,
       "url": "/en/tides",
       "gsc_posicion": 38
+    },
+    {
+      "termino": "tide times new zealand",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 58
+    },
+    {
+      "termino": "tide times ngunguru",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 80
+    },
+    {
+      "termino": "tide times opotiki",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 68
     },
     {
       "termino": "tide times pukehina",
@@ -382,6 +1185,17 @@
       "gsc_posicion": 38
     },
     {
+      "termino": "tide times whangaparaoa",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 71
+    },
+    {
       "termino": "tide whangaparaoa",
       "mercado": "nz",
       "grupo": "descubierto",
@@ -391,6 +1205,116 @@
       "estacionalidad": null,
       "url": "/en/tides",
       "gsc_posicion": 28
+    },
+    {
+      "termino": "tides bay of islands",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 58
+    },
+    {
+      "termino": "tides bluff",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 76
+    },
+    {
+      "termino": "tides great barrier island",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 46
+    },
+    {
+      "termino": "tides houhora",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 98
+    },
+    {
+      "termino": "tides kawau island",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 67
+    },
+    {
+      "termino": "tides opotiki",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 86
+    },
+    {
+      "termino": "tides schedule",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 40
+    },
+    {
+      "termino": "tides tolaga bay",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides/nz-tolaga-bay-wharf",
+      "gsc_posicion": 16
+    },
+    {
+      "termino": "tides tutukaka",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 38
+    },
+    {
+      "termino": "tides tutukaka today",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 80
     },
     {
       "termino": "tides waihau bay",
@@ -404,6 +1328,61 @@
       "gsc_posicion": 34
     },
     {
+      "termino": "tinopai tides for fishing",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 80
+    },
+    {
+      "termino": "tolaga bay tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides/nz-tolaga-bay-wharf",
+      "gsc_posicion": 63
+    },
+    {
+      "termino": "tutukaka tide times",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 87
+    },
+    {
+      "termino": "tutukaka tides today",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 85
+    },
+    {
+      "termino": "urquharts bay tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 33
+    },
+    {
       "termino": "waiinu beach tides",
       "mercado": "nz",
       "grupo": "descubierto",
@@ -415,17 +1394,6 @@
       "gsc_posicion": 28
     },
     {
-      "termino": "waitaki tides",
-      "mercado": "nz",
-      "grupo": "descubierto",
-      "puntuacion": 18,
-      "tendencia": null,
-      "tendencia_pct": null,
-      "estacionalidad": null,
-      "url": "/en/tides",
-      "gsc_posicion": 69
-    },
-    {
       "termino": "whangaparaoa tide",
       "mercado": "nz",
       "grupo": "descubierto",
@@ -435,6 +1403,39 @@
       "estacionalidad": null,
       "url": "/en/tides",
       "gsc_posicion": 34
+    },
+    {
+      "termino": "whangaparaoa tide times",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 72
+    },
+    {
+      "termino": "whangaparaoa tides today",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 68
+    },
+    {
+      "termino": "whangapoua tides",
+      "mercado": "nz",
+      "grupo": "descubierto",
+      "puntuacion": 18,
+      "tendencia": null,
+      "tendencia_pct": null,
+      "estacionalidad": null,
+      "url": "/en/tides",
+      "gsc_posicion": 43
     },
     {
       "termino": "snapper fishing",
@@ -454,17 +1455,6 @@
       "gsc_posicion": null
     },
     {
-      "termino": "high tide today",
-      "mercado": "nz",
-      "grupo": "marea",
-      "puntuacion": 17,
-      "tendencia": "baja",
-      "tendencia_pct": -12,
-      "estacionalidad": null,
-      "url": "/en/tides",
-      "gsc_posicion": null
-    },
-    {
       "termino": "slow jigging",
       "mercado": "nz",
       "grupo": "tecnica",
@@ -479,6 +1469,17 @@
         "estacional": true
       },
       "url": null,
+      "gsc_posicion": null
+    },
+    {
+      "termino": "high tide today",
+      "mercado": "nz",
+      "grupo": "marea",
+      "puntuacion": 13,
+      "tendencia": "baja",
+      "tendencia_pct": -12,
+      "estacionalidad": null,
+      "url": "/en/tides",
       "gsc_posicion": null
     },
     {
