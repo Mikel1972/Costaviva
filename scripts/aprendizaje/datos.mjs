@@ -58,7 +58,7 @@ async function leerTodo(url, key, tabla, select, orden = "creado_en.asc") {
 }
 
 const COLS_SALIDA = "id,user_id,fecha,hora_inicio,hora_fin,tipo_salida,lat,lon,spot_slug,concluida,creado_en";
-const COLS_INDICE = "indice_version,indice_puntuacion,indice_especie,indice_factores,condiciones_estado";
+const COLS_INDICE = "indice_version,indice_puntuacion,indice_especie,indice_factores,condiciones_estado,viento_kmh,oleaje_altura_max,presion_valor,temp_agua";
 
 export async function leerDiario({ url, key, emailsPrueba = [] }) {
   const errores = [];
