@@ -84,12 +84,14 @@ export function usuariosExcluidos({ perfiles = [], emailsPrueba = [], propios = 
 // salidas: filas de salidas_pesca; capturas: [{ salida_id, especie }];
 // excluir: Set de user_id (cuentas de prueba y oposiciones, usuariosExcluidos); propios: Set de user_id del
 // dueño (tabla administradores). hoy: "AAAA-MM-DD".
-export function picadasPorHora(s) {
+// picadas = las que NO se sacaron (Mikel, 2026-11-08); la actividad total de
+// la salida son picadas + capturas. Por hora, si la salida tiene inicio y fin.
+export function picadasPorHora(s, capturas = 0) {
   if (!Number.isInteger(s.picadas) || !s.hora_inicio || !s.hora_fin) return null;
   const min = (t) => { const [h, m] = String(t).split(":").map(Number); return h * 60 + (m || 0); };
   let dur = min(s.hora_fin) - min(s.hora_inicio);
   if (dur <= 0) dur += 24 * 60;
-  return dur >= 15 ? +(s.picadas / (dur / 60)).toFixed(2) : null;
+  return dur >= 15 ? +((s.picadas + capturas) / (dur / 60)).toFixed(2) : null;
 }
 
 export function casosDesdeDiario({ salidas = [], capturas = [], excluir = new Set(), propios = new Set(), datos, hoy }) {
@@ -126,7 +128,8 @@ export function casosDesdeDiario({ salidas = [], capturas = [], excluir = new Se
       // la salida tiene inicio y fin. Para comparar la ventana de actividad
       // con lo que de verdad picó, no solo con lo que se sacó.
       picadas: Number.isInteger(s.picadas) ? s.picadas : null,
-      picadas_hora: picadasPorHora(s),
+      // Actividad = picadas sin sacar + capturas, por hora.
+      actividad_hora: picadasPorHora(s, cs.length),
       guardado: p === null ? null : {
         p, version: s.indice_version || f?.version || null, especie: s.indice_especie || f?.especie || null,
         terminos: terminosGuardados(f), ranking: Array.isArray(f?.ranking) ? f.ranking : null,

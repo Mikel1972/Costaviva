@@ -1429,6 +1429,12 @@ async function guardarSalida(fecha, idExistente) {
   // editar una ya existente no se toca concluida — así corregir una
   // nota o el spot de una jornada ya cerrada no la vuelve a abrir.
   if (!idExistente) datos.concluida = false;
+  // Al editar, no se pierde lo que se guardó al concluir (histórico real).
+  if (idExistente) {
+    const previa = Object.values(salidasPorFecha).flat().find((e) => e.salida.id === idExistente)?.salida;
+    const realPrevio = previa?.indice_factores?.real;
+    if (realPrevio && datos.indice_factores) datos.indice_factores = { ...datos.indice_factores, real: realPrevio };
+  }
   const escribir = (d) => (idExistente
     ? supabase.from("salidas_pesca").update(d).eq("id", idExistente)
     : supabase.from("salidas_pesca").insert(d));
@@ -1766,7 +1772,7 @@ async function resumenEntradaHTML(entrada, idx) {
       </div>
       ${salida.notas ? `<p style="font-size:13px; margin-top:8px;">${salida.notas}</p>` : ""}
       ${contextoHTML(salida)}
-      ${picadasHTML(salida, idx, enCurso)}
+      ${picadasHTML(salida, idx)}
       <div style="margin-top:14px; font-family:var(--f-texto); font-weight:500; font-size:11px; color:var(--tinta-3);">${I18n.t("diario.capturas_n", { n: capturas.length })}</div>
       ${tarjetas.join("") || `<p style="font-size:12px; color:var(--tinta-3);">${I18n.t("diario.ninguna")}</p>`}
       ${salida.tipo_salida === "embarcacion" ? marcasHTML(entrada.marcas || [], idx, enCurso) : ""}
@@ -1825,8 +1831,9 @@ async function marcarAqui(salida, boton) {
   return true;
 }
 
-// Picadas (2026-11-08, Mikel: "con un número"): cuántas picadas hubo en la
-// salida, piquen o no. El aprendizaje semanal las compara con la ventana de
+// Picadas (2026-11-08, Mikel: "con un número"; "son sin sacar el pez: si me
+// pican dos y saco uno, uno queda en captura y el otro en picada"): picadas
+// en las que NO se sacó el pez. Picadas + capturas = actividad total. El aprendizaje semanal las compara con la ventana de
 // actividad (tres horas "activas" con dos picadas no es lo mismo que nada).
 // Mientras la jornada sigue en curso, "+1 picada" suma sin abrir el formulario.
 function numeroPicadas(texto) {
@@ -1835,12 +1842,18 @@ function numeroPicadas(texto) {
   const n = Number(t);
   return Number.isInteger(n) && n >= 0 && n <= 999 ? n : null;
 }
-function picadasHTML(salida, idx, enCurso) {
+// En TODAS las salidas, también las ya concluidas (2026-11-09, Mikel: "en
+// las salidas anteriores no me deja poner picadas"): − y + cambian solo el
+// número, sin abrir el formulario (que pediría otra vez el GPS en un punto
+// propio y recalcularía las condiciones).
+function picadasHTML(salida, idx) {
   const n = Number.isInteger(salida.picadas) ? salida.picadas : null;
-  if (n === null && !enCurso) return "";
   return `<div class="fila-picadas">
       <span>🎣 ${n === null ? I18n.t("diario.picadas_sin") : I18n.t(n === 1 ? "diario.picadas_1" : "diario.picadas_n", { n })}</span>
-      ${enCurso ? `<button type="button" class="secundario mas-picada" data-idx="${idx}">${I18n.t("diario.picada_mas")}</button>` : ""}
+      <span style="display:flex; gap:6px;">
+        ${n ? `<button type="button" class="secundario cambiar-picadas" data-idx="${idx}" data-delta="-1" aria-label="${I18n.t("diario.picada_menos")}">−</button>` : ""}
+        <button type="button" class="secundario cambiar-picadas" data-idx="${idx}" data-delta="1">${I18n.t("diario.picada_mas")}</button>
+      </span>
     </div>`;
 }
 
@@ -1855,6 +1868,27 @@ function cancelarFormulario() {
 function horaActualHHMM(zona = Regiones.ZONA_POR_DEFECTO) {
   return new Intl.DateTimeFormat("es-ES", { timeZone: zona, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(new Date());
 }
+// Lo que hubo de verdad a la hora de la salida, para compararlo con lo que
+// se predijo al crearla. horas_antes: cuánto antes de empezar se guardó la
+// previsión (si se apuntó la salida después de pescar, ~0: no sirve para
+// medir la previsión y el aprendizaje la descarta).
+function registroReal(salida, post) {
+  const num = (v) => (Number.isFinite(Number(v)) && v !== null ? Number(v) : null);
+  const inicio = salida.hora_inicio ? Date.parse(`${salida.fecha}T${salida.hora_inicio.slice(0, 5)}:00`) : NaN;
+  const creada = Date.parse(salida.creado_en || "");
+  const horasAntes = Number.isFinite(inicio) && Number.isFinite(creada) ? +((inicio - creada) / 3600000).toFixed(1) : null;
+  return {
+    guardado_en: new Date().toISOString(),
+    horas_antes: horasAntes,
+    fuente: post.boya_usada ? "analisis_modelo+boya" : "analisis_modelo",
+    viento_kmh: num(post.viento_kmh), viento_dir: num(post.viento_dir),
+    oleaje_altura_min: num(post.oleaje_altura_min), oleaje_altura_max: num(post.oleaje_altura_max),
+    presion_valor: num(post.presion_valor), temp_agua: num(post.temp_agua),
+    nubosidad: num(post.nubosidad), precipitacion: num(post.precipitacion),
+    boya_usada: post.boya_usada || null,
+  };
+}
+
 async function concluirEntrada(iso, fechaObj, salida) {
   // Hora de fin obligatoria para concluir (pedido explícito del usuario
   // 2026-09-19, para poder calcular estadísticas de marea/duración más
@@ -1866,12 +1900,25 @@ async function concluirEntrada(iso, fechaObj, salida) {
   }
   if (!confirm(I18n.t("diario.confirmar_concluir"))) return;
   const marea = await mareaDeConclusion(salida.lat, salida.lon, salida.hora_inicio?.slice(0, 5), salida.hora_fin.slice(0, 5), salida.fecha);
+  // Histórico previsto/real (2026-11-08, Mikel: "analiza todos los elementos
+  // con nuestras predicciones y vete adaptándolas; crea los históricos").
+  // Lo guardado al crear la salida es la PREVISIÓN de ese momento; al
+  // concluir se vuelve a pedir lo mismo para la misma hora, que ahora es el
+  // análisis del modelo y, si la salida es de hoy, la boya medida. Va en
+  // indice_factores.real (jsonb que ya existe). El aprendizaje semanal
+  // (scripts/aprendizaje/sesgo-condiciones.mjs) compara las dos por zona.
+  let real = null;
+  try {
+    const post = await contextoAmbiental(Number(salida.lat), Number(salida.lon), salida.hora_inicio?.slice(0, 5) || null, salida.tipo_salida, salida.fecha, salida.hora_fin.slice(0, 5));
+    real = registroReal(salida, post);
+  } catch (e) { console.warn("Histórico real de la salida:", e?.message); }
   const { error } = await supabase
     .from("salidas_pesca")
     .update({
       concluida: true,
       marea_altura_fin: marea.alturaFin, marea_tendencia_fin: marea.tendenciaFin,
       marea_pico_tipo: marea.picoTipo, marea_pico_hora: marea.picoHora,
+      ...(real ? { indice_factores: { ...(salida.indice_factores || {}), real } } : {}),
     })
     .eq("id", salida.id);
   if (error) { alert(traducirError(error, I18n.t("diario.error_concluir"))); return; }
@@ -2137,11 +2184,11 @@ async function abrirDia(iso, fechaObj) {
     btn.addEventListener("click", () => mostrarFormularioNuevaCaptura(iso, entradas[+btn.dataset.idx].salida.id));
   });
   const recargarDia = async () => { await cargarDatos(); renderCalendario(); abrirDia(iso, fechaObj); };
-  contEl.querySelectorAll(".mas-picada").forEach((btn) => {
+  contEl.querySelectorAll(".cambiar-picadas").forEach((btn) => {
     btn.addEventListener("click", async () => {
       btn.disabled = true;
       const salida = entradas[+btn.dataset.idx].salida;
-      const nuevo = Math.min(999, (Number.isInteger(salida.picadas) ? salida.picadas : 0) + 1);
+      const nuevo = Math.max(0, Math.min(999, (Number.isInteger(salida.picadas) ? salida.picadas : 0) + Number(btn.dataset.delta)));
       const { data, error } = await supabase.from("salidas_pesca").update({ picadas: nuevo }).eq("id", salida.id).select("id");
       if (error || !data?.length) { alert(I18n.t("diario.picadas_error")); btn.disabled = false; return; }
       recargarDia();

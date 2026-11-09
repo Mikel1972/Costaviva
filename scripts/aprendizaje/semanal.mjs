@@ -57,6 +57,7 @@ import { propuesta, fusionar, tasasAceptacion, reglasBloqueadas, validarPropuest
 import { cambiarConfianzas } from "./especies-texto.mjs";
 import { indiceSpot } from "../../assets/js/ventana-actividad.js";
 import { muestrasTempAgua, evaluarSesgo, publicarSesgo, propuestasSesgo } from "./sesgo-temp-agua.mjs";
+import { muestrasCondiciones, sesgoCondiciones, publicarCondiciones, candidatosCorreccion } from "./sesgo-condiciones.mjs";
 import { evaluarSombra, publicarSombra, VARIABLES_SOMBRA, RADIO_KM, decodificarHistorico, rasgosCaso, contextosFrentesCasos } from "./frentes-sombra.mjs";
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -76,6 +77,7 @@ export const RUTAS = {
   frentesSombra: "datos-robots/aprendizaje/frentes-sombra.json",
   frentesHipotesis: "aprendizaje/frentes-hipotesis.json",
   sesgoTempAgua: "datos-robots/aprendizaje/sesgo-temp-agua.json",
+  sesgoCondiciones: "datos-robots/aprendizaje/sesgo-condiciones.json",
   calibracionTempAgua: "datos-robots/calibracion-temp-agua.jsonl",
   etiquetar: "datos-robots/aprendizaje/etiquetar.json",
   historial: "datos-robots/aprendizaje/historial.jsonl",
@@ -202,7 +204,7 @@ export function ejecutar(p) {
     datos, textoEspecies, casosBase = [], descartes = {}, series = new Map(), avisoSeries = null, extras = {},
     config = {}, decisiones = [], propuestasExistentes = [], retadores = [], historial = [],
     espuma = [], calibracionCamaras = null, fuentesRepo = [], fuentesTablas = [], vigia = null,
-    observaciones = [], comunidad = { filas: [], error: null }, panelOpciones = {}, rasgosFrentes = new Map(), avisoFrentes = null, hipotesisFrentes = null, muestrasSonda = [], hoy, ahora = Date.now(), pausado = false, sinAuto = null, errores = [],
+    observaciones = [], comunidad = { filas: [], error: null }, panelOpciones = {}, rasgosFrentes = new Map(), avisoFrentes = null, hipotesisFrentes = null, muestrasSonda = [], muestrasCond = [], hoy, ahora = Date.now(), pausado = false, sinAuto = null, errores = [],
   } = p;
   const cfg = { ...CONFIG_POR_DEFECTO, ...(config.ajuste || {}) };
   const cfgRet = { semanas_min_para_promover: 4, victorias_min_ultimas_4: 3, prob_mejora_min: 0.9, ...(config.retadores || {}) };
@@ -275,6 +277,8 @@ export function ejecutar(p) {
   const sombraFrentes = evaluarSombra(casos, rasgosFrentes, datos, cfg, config.frentes || {});
   // 3c. Sesgo del modelo de temperatura del agua (sonda − modelo) por zona
   const sesgoTemp = evaluarSesgo(muestrasSonda, config.sesgo_temp_agua || {});
+  // 3d. Histórico previsto/real de viento, ola, presión y temperatura del agua
+  const gruposCond = sesgoCondiciones(muestrasCond);
 
   // 4. Vigilancia
   const fr = frescura([...fuentesRepo, ...fuentesTablas], ahora);
@@ -561,6 +565,11 @@ export function ejecutar(p) {
       nota: "Sesgo del modelo de temperatura del agua: media de (sonda − modelo) en °C por zona y modelo (Open-Meteo de la serie de la salida, capa IBI de Copernicus, boya). Solo grupos de 5 personas distintas o más; los del dueño solo, en admin. Barreras: aprendizaje/config.json → sesgo_temp_agua. Código: scripts/aprendizaje/sesgo-temp-agua.mjs.",
       medidas: muestrasSonda.length, grupos: publicarSesgo(sesgoTemp, config.sesgo_temp_agua || {}),
     }, null, 1) + "\n",
+    [RUTAS.sesgoCondiciones]: JSON.stringify({
+      generado_en: new Date(ahora).toISOString(), semana,
+      nota: "Histórico previsto/real: error medio (previsto − real) por zona y variable. Previsto = lo que guardó la salida al apuntarse (al menos 1 h antes de empezar); real = análisis del modelo y boya al concluir la jornada (indice_factores.real). Solo grupos de 5 personas distintas o más. Código: scripts/aprendizaje/sesgo-condiciones.mjs.",
+      muestras: muestrasCond.length, grupos: publicarCondiciones(gruposCond), candidatos_correccion: candidatosCorreccion(publicarCondiciones(gruposCond)),
+    }, null, 1) + "\n",
     [RUTAS.etiquetar]: JSON.stringify({ generado_en: new Date(ahora).toISOString(), semana, nota: "Fotogramas que más enseñarían a la calibración de las cámaras si se etiquetan (etiquetar-olas.html o la rutina de etiquetado).", fotogramas: etiquetar }, null, 1) + "\n",
     [RUTAS.historial]: historialNuevo.map((h) => JSON.stringify(h)).join("\n") + "\n",
     [RUTAS.autoCambios]: JSON.stringify({ semana, cambios: todosCambios.map(({ regla, actual, propuesto, revierte }) => ({ regla, actual, propuesto, ...(revierte ? { revierte } : {}) })) }, null, 1) + "\n",
@@ -720,17 +729,19 @@ async function main() {
   const cache = process.env.APRENDIZAJE_CACHE || join(process.env.RUNNER_TEMP || tmpdir(), "aprendizaje-cache");
 
   // Casos (del diario o de un fichero de pruebas)
-  let casosBase = [], descartes = {}, errores = [], muestrasSonda = [];
+  let casosBase = [], descartes = {}, errores = [], muestrasSonda = [], muestrasCond = [];
   const calibracionTemp = leerJSONL(join(RAIZ, RUTAS.calibracionTempAgua));
   if (val("--entrada")) {
     const e = JSON.parse(readFileSync(val("--entrada"), "utf8"));
     ({ casos: casosBase, descartes } = casosDesdeDiario({ ...e, excluir: new Set(e.excluir || []), propios: new Set(e.propios || []), datos, hoy }));
     muestrasSonda = muestrasTempAgua({ salidas: e.salidas || [], calibracion: calibracionTemp, excluir: new Set(e.excluir || []), propios: new Set(e.propios || []) });
+    muestrasCond = muestrasCondiciones({ salidas: e.salidas || [], excluir: new Set(e.excluir || []), propios: new Set(e.propios || []) });
   } else if (url && key) {
     const d = await leerDiario({ url, key, emailsPrueba: [process.env.TEST_USER_A_EMAIL, process.env.TEST_USER_B_EMAIL].filter(Boolean) });
     errores = d.errores;
     ({ casos: casosBase, descartes } = casosDesdeDiario({ ...d, datos, hoy }));
     muestrasSonda = muestrasTempAgua({ ...d, calibracion: calibracionTemp });
+    muestrasCond = muestrasCondiciones(d);
   } else if (!args.includes("--solo-retadores")) {
     errores.push("sin SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY: pasada sin casos");
   }
@@ -796,6 +807,7 @@ async function main() {
     fuentesRepo, fuentesTablas, vigia, observaciones: leerObservaciones(RAIZ), comunidad, hoy, pausado, errores,
     rasgosFrentes, avisoFrentes, hipotesisFrentes: leer(RUTAS.frentesHipotesis, null),
     muestrasSonda: muestrasSonda.length ? muestrasSonda : muestrasTempAgua({ calibracion: calibracionTemp }),
+    muestrasCond,
     sinAuto: args.includes("--no-aplicar") ? "lanzado a mano sin permitir cambios automáticos" : null,
   });
   escribir(r.ficheros);
