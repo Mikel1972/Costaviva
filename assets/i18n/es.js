@@ -1003,6 +1003,7 @@
   "diario.picadas_1": "1 picada",
   "diario.picadas_n": "{n} picadas",
   "diario.picada_mas": "+1 picada",
+  "diario.picada_menos": "Quitar una picada",
   "diario.picadas_error": "No se ha podido guardar la picada. Vuelve a probar.",
   "diario.salida.temp_sonda_ph": "Opcional, p. ej. 19,5",
   "diario.salida.temp_sonda_ayuda": "Si mides el agua con tu sonda o un termómetro, apúntala en °C: se compara con el modelo para corregirlo.",
