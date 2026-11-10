@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-10T15:37:49.802Z",
- "lineasHistorial": 9367,
+ "fecha": "2026-11-10T18:07:23.718Z",
+ "lineasHistorial": 9370,
  "etiquetas": 927,
  "etiquetasClaude": 236,
  "calibracion": {
@@ -56,9 +56,9 @@
    "correlacion": -0.065
   },
   "zarautz/dinamico": {
-   "a": 3.0985,
+   "a": 3.0982,
    "p": 0.5,
-   "n": 738,
+   "n": 739,
    "nEtiquetas": 135,
    "nEtiquetasClaude": 29,
    "franjasClaude": [
@@ -245,9 +245,9 @@
    "correlacion": null
   },
   "castrourdiales/principal": {
-   "a": 2.7413,
+   "a": 2.7344,
    "p": 0.5,
-   "n": 165,
+   "n": 166,
    "nEtiquetas": 42,
    "nEtiquetasClaude": 6,
    "franjasClaude": [
@@ -263,7 +263,7 @@
    "hMax": 4.51,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.091
+   "correlacion": 0.089
   },
   "berria/dinamico": {
    "a": 2.7629,
