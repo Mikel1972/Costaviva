@@ -214,13 +214,28 @@ Identifica, si puedes:
 - "peso_g": peso aproximado en gramos, estimado a partir de la especie y la talla — pon null si talla_cm es null o la especie es incierta.
 - "confianza": "alta", "media" o "baja", tu propia confianza en el conjunto de la estimación.
 
+Peces alargados como serpientes (2026-11-10: dos congrios pescados en el mar se tomaron por anguilas). Distínguelos así:
+- Congrio: boca grande que llega por lo menos al centro del ojo; la mandíbula de ARRIBA sobresale un poco o igual que la de abajo; la aleta dorsal empieza muy cerca de la punta de la aleta pectoral; borde oscuro en las aletas dorsal y anal; gris o gris oscuro por encima y claro por debajo; ojo grande. Es de mar y roca: es lo habitual pescando en el mar.
+- Anguila: la mandíbula de ABAJO más larga que la de arriba; la aleta dorsal empieza mucho más atrás, bastante después de la pectoral; ojo pequeño; pardo, verdoso o amarillento (o plateada); sobre todo de ríos y estuarios. Es especie protegida en España: dilo solo si lo ves claro.
+- Morena: sin aletas pectorales, dibujo jaspeado o moteado y dientes muy visibles.
+Si no se distinguen la boca ni dónde empieza la dorsal, pon la más probable en el mar (congrio) y confianza "baja".
+
 Responde ÚNICAMENTE con el JSON, sin texto antes ni después:
 {"especie": "...", "talla_cm": ..., "peso_g": ..., "confianza": "..."}`;
 
 // Cuerpo de la petición a la API de mensajes. Lo usan este endpoint y el
 // script de evaluación (scripts/eval-identificacion/evaluar.mjs), para que
 // la comparación entre modelos sea con la petición real.
-export function cuerpoPeticion({ imagenBase64, tipoMime, modelo = MODELO }) {
+// Errores frecuentes que ha aprendido el aprendizaje semanal (calibración de
+// talla-foto: confusiones de especie con muestra suficiente): se añaden al
+// final del prompt para que no se repitan.
+export function textoConfusiones(confusiones = []) {
+  const lista = (confusiones || []).filter((c) => c?.dijo && c?.era).slice(0, 8);
+  if (!lista.length) return "";
+  return `\n\nErrores que has cometido otras veces con fotos de pescadores (revísalos antes de responder):\n${lista.map((c) => `- Dijiste "${c.dijo}" y era "${c.era}" (${c.n} veces).`).join("\n")}`;
+}
+
+export function cuerpoPeticion({ imagenBase64, tipoMime, modelo = MODELO, confusiones = CALIBRACION_TALLA?.confusiones || [] }) {
   const ajustes = AJUSTES_MODELO[modelo];
   if (!ajustes) throw new Error(`modelo sin ajustes: ${modelo}`);
   const cuerpo = {
@@ -231,7 +246,7 @@ export function cuerpoPeticion({ imagenBase64, tipoMime, modelo = MODELO }) {
         role: "user",
         content: [
           { type: "image", source: { type: "base64", media_type: tipoMime || "image/jpeg", data: imagenBase64 } },
-          { type: "text", text: PROMPT_IDENTIFICACION },
+          { type: "text", text: PROMPT_IDENTIFICACION + textoConfusiones(confusiones) },
         ],
       },
     ],

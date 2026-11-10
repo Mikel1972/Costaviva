@@ -58,7 +58,7 @@ import { cambiarConfianzas } from "./especies-texto.mjs";
 import { indiceSpot } from "../../assets/js/ventana-actividad.js";
 import { muestrasTempAgua, evaluarSesgo, publicarSesgo, propuestasSesgo } from "./sesgo-temp-agua.mjs";
 import { muestrasCondiciones, sesgoCondiciones, publicarCondiciones, candidatosCorreccion } from "./sesgo-condiciones.mjs";
-import { muestrasTallaFoto, gruposTallaFoto, calibracionTallaFoto, CONFIG_TALLA_FOTO, muestrasPesoFoto, gruposPesoFoto, calibracionPesoFoto } from "../../assets/js/talla-foto.js";
+import { muestrasTallaFoto, gruposTallaFoto, calibracionTallaFoto, CONFIG_TALLA_FOTO, muestrasPesoFoto, gruposPesoFoto, calibracionPesoFoto, confusionesEspecie } from "../../assets/js/talla-foto.js";
 import { evaluarSombra, publicarSombra, VARIABLES_SOMBRA, RADIO_KM, decodificarHistorico, rasgosCaso, contextosFrentesCasos } from "./frentes-sombra.mjs";
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -207,7 +207,7 @@ export function ejecutar(p) {
     datos, textoEspecies, casosBase = [], descartes = {}, series = new Map(), avisoSeries = null, extras = {},
     config = {}, decisiones = [], propuestasExistentes = [], retadores = [], historial = [],
     espuma = [], calibracionCamaras = null, fuentesRepo = [], fuentesTablas = [], vigia = null,
-    observaciones = [], comunidad = { filas: [], error: null }, panelOpciones = {}, rasgosFrentes = new Map(), avisoFrentes = null, hipotesisFrentes = null, muestrasSonda = [], muestrasCond = [], muestrasTalla = [], muestrasPeso = [], hoy, ahora = Date.now(), pausado = false, sinAuto = null, errores = [],
+    observaciones = [], comunidad = { filas: [], error: null }, panelOpciones = {}, rasgosFrentes = new Map(), avisoFrentes = null, hipotesisFrentes = null, muestrasSonda = [], muestrasCond = [], muestrasTalla = [], muestrasPeso = [], capturasDiario = { salidas: [], capturas: [] }, hoy, ahora = Date.now(), pausado = false, sinAuto = null, errores = [],
   } = p;
   const cfg = { ...CONFIG_POR_DEFECTO, ...(config.ajuste || {}) };
   const cfgRet = { semanas_min_para_promover: 4, victorias_min_ultimas_4: 3, prob_mejora_min: 0.9, ...(config.retadores || {}) };
@@ -286,6 +286,7 @@ export function ejecutar(p) {
   const gruposTalla = gruposTallaFoto(muestrasTalla);
   const gruposTallaPub = gruposTalla.filter((g) => g.personas >= CONFIG_TALLA_FOTO.min_personas);
   const gruposPeso = gruposPesoFoto(muestrasPeso);
+  const confusionesFoto = confusionesEspecie(capturasDiario);
 
   // 4. Vigilancia
   const fr = frescura([...fuentesRepo, ...fuentesTablas], ahora);
@@ -583,7 +584,7 @@ export function ejecutar(p) {
       muestras: muestrasTalla.length, grupos: gruposTallaPub,
       muestras_peso: muestrasPeso.length, grupos_peso: gruposPeso.filter((g) => g.personas >= CONFIG_TALLA_FOTO.min_personas),
     }, null, 1) + "\n",
-    [RUTAS.tallaFotoCalibracion]: "// Generado por el aprendizaje semanal (scripts/aprendizaje/semanal.mjs) con\n// calibracionTallaFoto() de talla-foto.js. No editar a mano.\nexport default " + JSON.stringify({ talla: calibracionTallaFoto(gruposTalla), peso: calibracionPesoFoto(gruposPeso) }, null, 1) + ";\n",
+    [RUTAS.tallaFotoCalibracion]: "// Generado por el aprendizaje semanal (scripts/aprendizaje/semanal.mjs) con\n// calibracionTallaFoto() de talla-foto.js. No editar a mano.\nexport default " + JSON.stringify({ talla: calibracionTallaFoto(gruposTalla), peso: calibracionPesoFoto(gruposPeso), confusiones: confusionesFoto }, null, 1) + ";\n",
     [RUTAS.etiquetar]: JSON.stringify({ generado_en: new Date(ahora).toISOString(), semana, nota: "Fotogramas que más enseñarían a la calibración de las cámaras si se etiquetan (etiquetar-olas.html o la rutina de etiquetado).", fotogramas: etiquetar }, null, 1) + "\n",
     [RUTAS.historial]: historialNuevo.map((h) => JSON.stringify(h)).join("\n") + "\n",
     [RUTAS.autoCambios]: JSON.stringify({ semana, cambios: todosCambios.map(({ regla, actual, propuesto, revierte }) => ({ regla, actual, propuesto, ...(revierte ? { revierte } : {}) })) }, null, 1) + "\n",
@@ -743,7 +744,7 @@ async function main() {
   const cache = process.env.APRENDIZAJE_CACHE || join(process.env.RUNNER_TEMP || tmpdir(), "aprendizaje-cache");
 
   // Casos (del diario o de un fichero de pruebas)
-  let casosBase = [], descartes = {}, errores = [], muestrasSonda = [], muestrasCond = [], muestrasTalla = [], muestrasPeso = [];
+  let casosBase = [], descartes = {}, errores = [], muestrasSonda = [], muestrasCond = [], muestrasTalla = [], muestrasPeso = [], capturasDiario = { salidas: [], capturas: [] };
   const calibracionTemp = leerJSONL(join(RAIZ, RUTAS.calibracionTempAgua));
   if (val("--entrada")) {
     const e = JSON.parse(readFileSync(val("--entrada"), "utf8"));
@@ -760,6 +761,7 @@ async function main() {
     muestrasCond = muestrasCondiciones(d);
     muestrasTalla = muestrasTallaFoto(d);
     muestrasPeso = muestrasPesoFoto(d);
+    capturasDiario = d;
   } else if (!args.includes("--solo-retadores")) {
     errores.push("sin SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY: pasada sin casos");
   }
@@ -828,6 +830,7 @@ async function main() {
     muestrasCond,
     muestrasTalla,
     muestrasPeso,
+    capturasDiario,
     sinAuto: args.includes("--no-aplicar") ? "lanzado a mano sin permitir cambios automáticos" : null,
   });
   escribir(r.ficheros);

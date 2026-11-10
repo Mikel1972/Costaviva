@@ -105,6 +105,27 @@ export function calibracionPesoFoto(grupos, cfg = CONFIG_PESO_FOTO) {
   return out;
 }
 
+// Especie: lo que propuso la foto frente a lo que guardó el pescador
+// (2026-11-10, Mikel: dos congrios propuestos como "Anguila"). Una confusión
+// con 5 casos o más de 3 personas o más se publica y la función la añade al
+// prompt (identificar-captura.js, textoConfusiones).
+export const CONFIG_CONFUSIONES = { min_casos: 5, min_personas: 3 };
+export function confusionesEspecie({ salidas = [], capturas = [], excluir = new Set(), propios = new Set() }, cfg = CONFIG_CONFUSIONES) {
+  const dueno = new Map(salidas.map((s) => [s.id, s.user_id]));
+  const g = new Map();
+  for (const c of capturas) {
+    const usuario = dueno.get(c.salida_id);
+    if (!usuario || excluir.has(usuario) || !c.especie_estimada || !c.especie) continue;
+    const dijo = claveEspecie(c.especie_estimada), era = claveEspecie(c.especie);
+    if (!dijo || !era || dijo === era) continue;
+    const k = `${dijo}|${era}`;
+    if (!g.has(k)) g.set(k, { dijo: c.especie_estimada, era: c.especie, n: 0, personas: new Set() });
+    const x = g.get(k); x.n++; x.personas.add(propios.has(usuario) ? "dueño" : usuario);
+  }
+  return [...g.values()].filter((x) => x.n >= cfg.min_casos && x.personas.size >= cfg.min_personas)
+    .sort((a, b) => b.n - a.n).map(({ dijo, era, n, personas }) => ({ dijo, era, n, personas: personas.size }));
+}
+
 // Calibración publicable: { especie: { n, margen_cm, sesgo_cm (0 si no es claro) } }.
 export function calibracionTallaFoto(grupos, cfg = CONFIG_TALLA_FOTO) {
   const out = {};
