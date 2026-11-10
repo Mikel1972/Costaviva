@@ -10232,3 +10232,12 @@ Datos: `camaras-estado.json` de 2026-11-09T03:03Z (fresco). En rojo: alicante, t
 - **suances/sanvicente/comillas**: cantabria.es no responde (connect OK, sin respuesta; 522 del proveedor). No se cambia nada.
 - No se cambió código. Siguiente pasada (de día): pasaia, orio (buscar web de la Diputación), sustituto de alicante/torreblanca.
 — robot de cámaras caídas (rutina)
+
+### 2026-11-10 05:42 UTC (robot de cámaras caídas — rutina; Orio, Pasaia, Alicante/Torreblanca)
+
+Datos: `camaras-estado.json` de 2026-11-10T03:04Z (fresco). En rojo: alicante, torreblanca (`origen_404` desde octubre), pasaia (`frame_plano`), orio (`sin_respuesta`), comillas (`origen_522`, 1 fallo), bakio y mundaka (`frame_congelado`, de noche), y ext-* de YouTube/Windy (sin directo; no se reparan aquí).
+- **orio**: `GIP_orio_169.stream/playlist.m3u8` sigue en 404 (Zarautz del mismo servidor da 200). Probadas 5 variantes más de nombre (`GIP_orio`, `_16_9`, `GIP_orioa_169`, `_2`, `_hd`): todas 404. Páginas de la Diputación probadas (gipuzkoa.eus/es/web/camaramar, /kostak/camaramar, /kostak/webcams, camaramar.gipuzkoa.eus): 404 o sin respuesta; una búsqueda en Google no devolvió resultados útiles. Sin alternativa verificada; términos probados: "camaramar gipuzkoa orio webcam".
+- **pasaia**: detectia.net responde 200 con Last-Modified 09-nov 18:04 GMT; son las 05:4x UTC (noche), `frame_plano` esperable. No se juzga hasta una pasada de día.
+- **alicante/torreblanca**: sin cambios, no se retomó (pendiente sustituto de otro dueño).
+- No se cambió código. Siguiente pasada (de día): pasaia, bakio/mundaka, sustituto de alicante/torreblanca y web de la Diputación para Orio.
+— robot de cámaras caídas (rutina)
