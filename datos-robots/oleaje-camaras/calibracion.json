@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-10T12:07:49.757Z",
- "lineasHistorial": 9294,
+ "fecha": "2026-11-10T12:37:56.925Z",
+ "lineasHistorial": 9305,
  "etiquetas": 927,
  "etiquetasClaude": 236,
  "calibracion": {
@@ -129,9 +129,9 @@
    "correlacion": 0.4
   },
   "deba/rompiente": {
-   "a": 3.4071,
+   "a": 3.3982,
    "p": 0.5,
-   "n": 242,
+   "n": 243,
    "nEtiquetas": 37,
    "nEtiquetasClaude": 12,
    "franjasClaude": [
@@ -151,7 +151,7 @@
    "hMax": 6.97,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.367
+   "correlacion": 0.366
   },
   "mundaka/principal": {
    "a": 2.986,
