@@ -275,6 +275,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { cargarCompartidas, htmlCasillaCompartir, htmlEtiquetaCompartida, sincronizarCompartida } from "/assets/js/compartir-captura.js";
 // Índice de pesca v2 y condiciones por fecha de la salida (2026-10-08).
 import * as VentanaActividad from "/assets/js/ventana-actividad.js";
+import { pendientesConcluir } from "/assets/js/concluir.js";
 import { entradaDeSpot, urlPunto, entradaDePunto, contextoFondo } from "/assets/js/capa-tipo-fondo.js";
 
 // Tipo de fondo de la salida para el índice (2026-11-09, Mikel: "pero
@@ -1938,13 +1939,14 @@ function registroReal(salida, post) {
   };
 }
 
-async function concluirEntrada(iso, fechaObj, salida) {
-  // Hora de fin obligatoria para concluir (pedido explícito del usuario
-  // 2026-09-19, para poder calcular estadísticas de marea/duración más
-  // adelante) — ya no se rellena sola con la hora actual en silencio,
-  // hay que ponerla a mano editando la entrada antes de concluir.
-  if (!salida.hora_fin) {
-    alert(I18n.t("diario.concluir_sin_fin"));
+async function concluirEntrada(iso, fechaObj, salida, capturas = []) {
+  // Antes de concluir se revisa lo que falta y no se deja concluir hasta
+  // completarlo (2026-11-10, Mikel): hora de fin (pedido del 2026-09-19, ya
+  // no se rellena sola), picadas (número o «Ninguna») y hora de cada captura.
+  // assets/js/concluir.js.
+  const faltan = pendientesConcluir(salida, capturas);
+  if (faltan.length) {
+    alert(`${I18n.t("diario.falta.titulo")}\n\n${faltan.map((f) => `• ${I18n.t(f.clave, f.vars)}`).join("\n")}\n\n${I18n.t("diario.falta.pie")}`);
     return;
   }
   if (!confirm(I18n.t("diario.confirmar_concluir"))) return;
@@ -2278,7 +2280,7 @@ async function abrirDia(iso, fechaObj) {
     });
   });
   contEl.querySelectorAll(".concluir-entrada").forEach((btn) => {
-    btn.addEventListener("click", () => concluirEntrada(iso, fechaObj, entradas[+btn.dataset.idx].salida));
+    btn.addEventListener("click", () => concluirEntrada(iso, fechaObj, entradas[+btn.dataset.idx].salida, entradas[+btn.dataset.idx].capturas || []));
   });
   contEl.querySelectorAll(".editar-captura").forEach((btn) => {
     btn.addEventListener("click", () => {
