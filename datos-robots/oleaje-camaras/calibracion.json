@@ -1,13 +1,13 @@
 {
- "fecha": "2026-11-10T13:37:49.831Z",
- "lineasHistorial": 9338,
+ "fecha": "2026-11-10T14:07:49.507Z",
+ "lineasHistorial": 9348,
  "etiquetas": 927,
  "etiquetasClaude": 236,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.1521,
+   "a": 1.1485,
    "p": 0.5,
-   "n": 293,
+   "n": 294,
    "nEtiquetas": 62,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -22,7 +22,7 @@
    "hMax": 1.69,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": -0.097
+   "correlacion": -0.098
   },
   "hondarribia/bocana": {
    "a": 3.241,
@@ -504,8 +504,8 @@
    "sustituye": true,
    "motivo": "138 etiquetas",
    "ruido": {
-    "ruido": 0.56,
-    "pares": 516
+    "ruido": 0.564,
+    "pares": 517
    }
   },
   "getaria": {
