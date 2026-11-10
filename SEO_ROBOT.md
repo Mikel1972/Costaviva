@@ -56,3 +56,14 @@ Una entrada por pasada (martes y viernes), añadida al final. Anota números de 
 - PARTE A y B: ninguna; sin datos que lo justifiquen.
 - PARTE D: viernes, KPIs solo martes. DeepL: lanzado "Contraste de traducciones con DeepL" (idioma=pt, ref main); el de en, en la pasada siguiente del mes. Informe aún sin leer ni aplicar.
 - Esperado próxima pasada: 32 o más indexadas; "Descubierta" estancada o a la baja; primeros veredictos a 2 semanas de los cambios del 23-oct.
+
+## 2026-11-10 06:3x UTC (martes)
+- Aviso: SEO_ESTADO.md es del 2026-11-06 11:23 UTC (no de hoy).
+- Números (los del 06-nov, última medida): indexadas 33 de 499 (7 %; antes 32). Sitemap 558 URLs. 403 "Descubierta: sin indexar" (antes 380), 62 "Google no reconoce esta URL" (antes 87), 465 sin rastrear nunca. Google, 28 días: 20 clics, 1080 impresiones, CTR 1,9 %, posición 29,8 (antes 17 clics y 925 impresiones).
+- País priorizado: España (pais_foco; Portugal y NZ también en rojo).
+- PARTE C: ningún cambio. El cambio del 23-oct ya mejora a 1 semana (posición 58,4 → 46,6 en sus términos); el del 12-oct sigue "pendiente" (sin dato a 4 semanas). Tocar esas mismas páginas ahora impediría medirlos. Técnicas: sin datos reales con fuente, no se crean.
+- Veredictos: ninguno "empeora"; nada que revertir.
+- PARTE A y B: ninguna; sin datos nuevos que las justifiquen.
+- KPIs (PARTE D): país en foco España; paso más en rojo, activación, con una base de usuarios tan pequeña (un puñado de altas) que no permite decidir ni evaluar un cambio con sentido; no se hace ningún cambio. El cambio del 20-oct (prueba 14 días) no consta fusionado en main; sin evaluación (evaluar-cambios no devuelve nada). Propuestas para Mikel: ninguna nueva. El problema de fondo son las visitas y las altas (SEO, parte A).
+- DeepL: día 10 del mes, no aplica (el de pt se lanzó el 06-nov; el de en queda pendiente para la primera pasada del mes que viene, ya que hoy supera el día 7).
+- Esperado próxima pasada: SEO_ESTADO.md renovado; 33 o más indexadas; "Descubierta" estancada; veredicto a 2 semanas del cambio del 23-oct.
