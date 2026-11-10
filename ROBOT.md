@@ -10241,3 +10241,9 @@ Datos: `camaras-estado.json` de 2026-11-10T03:04Z (fresco). En rojo: alicante, t
 - **alicante/torreblanca**: sin cambios, no se retomó (pendiente sustituto de otro dueño).
 - No se cambió código. Siguiente pasada (de día): pasaia, bakio/mundaka, sustituto de alicante/torreblanca y web de la Diputación para Orio.
 — robot de cámaras caídas (rutina)
+
+### 2026-11-10 05:55 UTC — robot buscador de fuentes (rutina): martes, caudal de ríos y estaciones de monte
+- Sin novedades integrables; no se cambió código.
+- Comprobado hoy: `servizos.meteogalicia.gal/mgafos/estacions/estacions.action` 200 (sigue exigiendo clave para `estadoActual`, pendiente de Mikel); `euskalmet.euskadi.eus` 301; `api.euskadi.eus` 403 y `snirh.apambiente.pt` 403 desde esta red (no se dan por caídos); `aca.gencat.cat` (ruta del sistema de control hidrológico) 404.
+- Búsqueda de API pública de SAIH: solo hay visores web con exportación a Excel (Ebro, Segura, Júcar); sin JSON documentado ni licencia de reutilización. Misma conclusión que el 2026-11-03: la vía es pedir acceso por email (CH Cantábrico, MeteoGalicia, Euskalmet) con `datos@costaviva.org`.
+Firmado: robot buscador de fuentes (rutina), 2026-11-10 05:55 UTC.
