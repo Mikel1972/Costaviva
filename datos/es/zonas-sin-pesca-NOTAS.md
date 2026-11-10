@@ -213,3 +213,10 @@ No he comprobado modificaciones posteriores a 2010.
   - Cabo de Gata: medido desde el faro, y las integrales se reparten por 35 km de costa hasta Carboneras.
   - La Palma y Cabo Ferrutx: el lugar de referencia (Tazacorte, Cala Rajada) está a 8–11 km.
 - Las áreas cuadran con las oficiales donde las conozco: Columbretes 55 km², Os Miñarzos 20,6 km² (2.074 ha), Cabrera e Islas Atlánticas (ver arriba).
+
+## Reservas marinas del Govern balear (IDEIB, 2026-11-10)
+
+- 29 zonas de aguas interiores de Baleares, de la capa oficial del IDEIB (`GOIB_ReservesMarines`, capa 1), en `datos/es/reservas-marines-ideib.geojson` (`scripts/fuentes/ideib-reservas-marines.mjs`, simplificadas a ~10 m).
+- Licencia CC BY-SA 4.0, confirmada por escrito por el ICGIB el 2026-11-10: uso comercial sí y CompartirIgual solo para esta capa. Cita obligatoria: "Servei de mapa de les Reserves Marines de les Illes Balears CC BY-SA 4.0 Govern de les Illes Balears, Direcció General de Pesca" con enlace al servicio; va en la atribución del mapa.
+- Rojo (sin pesca) solo donde el tipo de zona lo dice: reserva integral, zona de veda de pesca recreativa y zona de protección máxima. El resto (reserva marina, zona de protección especial, de alta protección, de protección pesquera), naranja con "consulta la norma": falta leer cada decreto para su regla exacta.
+- Las estatales (Levante de Mallorca, Dragonera) siguen saliendo de los textos del BOE; Cabrera, también.

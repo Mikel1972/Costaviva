@@ -13,6 +13,10 @@
 //     norma, artículo, datum y coordenadas originales de cada una; dudas y
 //     criterios en datos/es/zonas-sin-pesca-NOTAS.md). Los textos legales no
 //     tienen derechos de autor (art. 13 LPI).
+//     Más las reservas marinas del Govern balear (2026-11-10): capa oficial
+//     del IDEIB, CC BY-SA 4.0 con permiso escrito del ICGIB; la baja
+//     scripts/fuentes/ideib-reservas-marines.mjs a
+//     datos/es/reservas-marines-ideib.geojson. Su cita va en la atribución.
 //   assets/datos/zonas-sin-pesca/pt.geojson  <- datos/pt/zonas-sin-pesca-dr.geojson
 //     (2026-10-12: 52 zonas de Portugal continental, Madeira y Azores,
 //     sacadas del Diário da República y de los diarios oficiales de las
@@ -99,6 +103,13 @@ export function zonasES(boe, region = "es", atribucion = "Zonas sin pesca: elabo
   };
 }
 
+// España con las reservas del Govern balear (IDEIB) y su cita obligatoria.
+export const ATRIBUCION_ES = "Zonas sin pesca: elaboración propia a partir de los textos legales (BOE, DOG, DOGV)";
+export function zonasESconBaleares(boe, ideib) {
+  const atrib = ideib?.atribucion ? `${ATRIBUCION_ES} · ${ideib.atribucion}` : ATRIBUCION_ES;
+  return zonasES({ ...boe, features: [...(boe.features || []), ...(ideib?.features || [])] }, "es", atrib);
+}
+
 // Reglas traducidas (2026-10-12, DeepL revisado: datos/zonas-sin-pesca-
 // traducciones.json, lo rellena scripts/fuentes/traducir-reglas-zonas.mjs):
 // cada zona lleva regla_pt y regla_en si están; el popup elige por idioma.
@@ -130,8 +141,9 @@ function main() {
   writeFileSync(join(salida, "nz.geojson"), texto);
   console.log(`nz: ${nz.features.length} zonas, ${Buffer.byteLength(texto)} bytes.`);
   const boe = JSON.parse(readFileSync(join(RAIZ, "datos", "es", "zonas-sin-pesca-boe.geojson"), "utf8"));
+  const ideib = JSON.parse(readFileSync(join(RAIZ, "datos", "es", "reservas-marines-ideib.geojson"), "utf8"));
   const trad = leerTraduccionesReglas();
-  const es = anadirTraducciones(zonasES(boe), trad);
+  const es = anadirTraducciones(zonasESconBaleares(boe, ideib), trad);
   const textoEs = JSON.stringify(es) + "\n";
   writeFileSync(join(salida, "es.geojson"), textoEs);
   console.log(`es: ${es.features.length} zonas, ${Buffer.byteLength(textoEs)} bytes.`);

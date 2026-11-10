@@ -54,11 +54,12 @@ test("mapa: la capa se monta siempre (sin botón) y sale en la leyenda", () => {
 });
 
 test("España: zonas de los textos legales, cada una con su norma; rojas sin pesca y naranjas parciales", async () => {
-  const { zonasES, anadirTraducciones, leerTraduccionesReglas } = await import("../scripts/fuentes/zonas-sin-pesca.mjs");
+  const { zonasESconBaleares, anadirTraducciones, leerTraduccionesReglas } = await import("../scripts/fuentes/zonas-sin-pesca.mjs");
   const boe = json("datos/es/zonas-sin-pesca-boe.geojson");
+  const ideib = json("datos/es/reservas-marines-ideib.geojson");
   const es = json("assets/datos/zonas-sin-pesca/es.geojson");
-  assert.deepEqual(es, JSON.parse(JSON.stringify(anadirTraducciones(zonasES(boe), leerTraduccionesReglas()))), "regenerar con scripts/fuentes/zonas-sin-pesca.mjs");
-  assert.equal(es.features.length, boe.features.length);
+  assert.deepEqual(es, JSON.parse(JSON.stringify(anadirTraducciones(zonasESconBaleares(boe, ideib), leerTraduccionesReglas()))), "regenerar con scripts/fuentes/zonas-sin-pesca.mjs");
+  assert.equal(es.features.length, boe.features.length + ideib.features.length);
   for (const f of es.features) {
     assert.ok(["reserva", "parcial"].includes(f.properties.tipo), f.properties.nombre);
     assert.ok(f.properties.regla && f.properties.norma, `${f.properties.nombre}: regla y norma`);
@@ -99,4 +100,30 @@ test("reglas de España y Portugal también en portugués y en inglés (DeepL re
   assert.match(pt, /a apanha só é permitida a residentes/);
   assert.doesNotMatch(pt, /garoupa/);
   assert.match(html, /idioma: I18n\.idioma\(\),/);
+});
+
+test("Baleares: reservas del Govern balear del IDEIB con la cita exacta que pide el ICGIB (2026-11-10)", async () => {
+  const { convertirIDEIB, ATRIBUCION_IDEIB, SERVICIO_IDEIB } = await import("../scripts/fuentes/ideib-reservas-marines.mjs");
+  const es = json("assets/datos/zonas-sin-pesca/es.geojson");
+  assert.match(es.atribucion, /Servei de mapa de les Reserves Marines de les Illes Balears<\/a> CC BY-SA 4\.0 Govern de les Illes Balears, Direcció General de Pesca/);
+  assert.ok(es.atribucion.includes(`href="${SERVICIO_IDEIB}"`));
+  assert.equal(SERVICIO_IDEIB, "https://ideib.caib.es/geoserveis/rest/services/public/GOIB_ReservesMarines/");
+  const ideib = json("datos/es/reservas-marines-ideib.geojson");
+  assert.equal(ideib.atribucion, ATRIBUCION_IDEIB);
+  const nombres = ideib.features.map((f) => f.properties.reserva).join(" | ");
+  for (const r of ["Badia de Palma", "Migjorn de Mallorca", "Freus d'Eivissa", "Nord de Menorca", "Tagomago", "Illa de l’Aire"]) assert.ok(nombres.includes(r), r);
+  // Sin repetidos ni zonas de buceo; las estatales vienen del BOE.
+  const props = (geo) => ({ OBJECTID: geo.id, NOM: "X", PROTECCIO: geo.p, NORMA: null, URL: "http://www.caib.es/a", "SHAPE.AREA": 5000 });
+  const g = { type: "Polygon", coordinates: [[[3, 39], [3.1, 39], [3.1, 39.1], [3, 39]]] };
+  const prueba = convertirIDEIB({ features: [
+    { properties: props({ id: 2, p: "Reserva integral" }), geometry: g },
+    { properties: props({ id: 1, p: "Reserva integral" }), geometry: g },
+    { properties: props({ id: 3, p: "Zona especial de busseig" }), geometry: g },
+    { properties: props({ id: 4, p: "Reserva marina" }), geometry: g },
+  ] });
+  assert.equal(prueba.features.length, 2);
+  assert.equal(prueba.features[0].properties.ideib_objectid, 1);
+  assert.equal(prueba.features[0].properties.tipo, "sin_pesca");
+  assert.equal(prueba.features[1].properties.tipo, "parcial");
+  assert.match(prueba.features[0].properties.referencia.url, /^https:\/\//);
 });

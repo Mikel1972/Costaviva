@@ -202,5 +202,33 @@
   "Área para la gestión de hábitats y especies: pesca lúdica (incluida la submarina) solo con autorización de la Autoridad de Gestión de la RAMPA y en sus condiciones (art. 81.b); sin autorización, no se puede pescar.": {
     "pt": "Área de gestão de habitats e espécies: pesca recreativa (incluindo a pesca submarina) apenas com autorização da Autoridade de Gestão da RAMPA e de acordo com as condições por esta estabelecidas (art. 81.b); sem autorização, não é permitido pescar.",
     "en": "Habitat and Species Management Area: recreational fishing (including spearfishing) is permitted only with authorisation from the RAMPA Management Authority and subject to its conditions (Art. 81.b); without authorisation, fishing is not permitted."
+  },
+  "Reserva integral de les Illes Balears: prohibida toda pesca.": {
+    "pt": "Reserva integral das Ilhas Baleares: proibida toda a pesca.",
+    "en": "Balearic Islands no-take reserve: all fishing is prohibited."
+  },
+  "Zona de veda de pesca recreativa: prohibida la pesca recreativa.": {
+    "pt": "Zona de interdição da pesca lúdica: proibida a pesca lúdica.",
+    "en": "Recreational fishing closure: recreational fishing is prohibited."
+  },
+  "Zona de protección máxima: prohibida la pesca.": {
+    "pt": "Zona de proteção máxima: proibida a pesca.",
+    "en": "Maximum protection zone: fishing is prohibited."
+  },
+  "Reserva marina de les Illes Balears: pesca recreativa con limitaciones (modalidades, cupos y autorización). Consulta la norma.": {
+    "pt": "Reserva marinha das Ilhas Baleares: pesca lúdica com limitações (modalidades, quotas e autorização). Consulte a norma.",
+    "en": "Balearic Islands marine reserve: recreational fishing with restrictions (methods, bag limits and permit). Check the regulation."
+  },
+  "Zona de protección especial de una reserva marina balear: limitaciones más estrictas que en el resto de la reserva. Consulta la norma.": {
+    "pt": "Zona de proteção especial de uma reserva marinha das Baleares: limitações mais estritas do que no resto da reserva. Consulte a norma.",
+    "en": "Special protection zone of a Balearic marine reserve: stricter restrictions than in the rest of the reserve. Check the regulation."
+  },
+  "Zona de alta protección (Govern balear): limitaciones más estrictas a la pesca. Consulta la norma.": {
+    "pt": "Zona de alta proteção (Governo das Baleares): limitações mais estritas à pesca. Consulte a norma.",
+    "en": "High protection zone (Balearic Government): stricter fishing restrictions. Check the regulation."
+  },
+  "Zona de protección pesquera (Govern balear): pesca con limitaciones. Consulta la norma.": {
+    "pt": "Zona de proteção da pesca (Governo das Baleares): pesca com limitações. Consulte a norma.",
+    "en": "Fisheries protection zone (Balearic Government): fishing with restrictions. Check the regulation."
   }
 }
