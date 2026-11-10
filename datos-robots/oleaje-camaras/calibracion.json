@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-10T10:37:55.571Z",
- "lineasHistorial": 9264,
+ "fecha": "2026-11-10T11:07:47.740Z",
+ "lineasHistorial": 9275,
  "etiquetas": 927,
  "etiquetasClaude": 236,
  "calibracion": {
@@ -304,9 +304,9 @@
    "correlacion": -0.872
   },
   "orio/principal": {
-   "a": 2.5814,
+   "a": 2.5801,
    "p": 0.5,
-   "n": 105,
+   "n": 106,
    "nEtiquetas": 18,
    "nEtiquetasClaude": 1,
    "franjasClaude": [
@@ -317,7 +317,7 @@
    "hMax": 4.04,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.384
+   "correlacion": 0.388
   },
   "getaria/malkorbe": {
    "a": 2.4895,
