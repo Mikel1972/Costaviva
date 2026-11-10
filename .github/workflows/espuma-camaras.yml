@@ -128,5 +128,5 @@ jobs:
           # Si otra rama tocó calibracion.json a la vez (la rutina de
           # etiquetado), manda la de esta ejecución: es la única que lleva las
           # etiquetas de Supabase (-X theirs en un rebase = este commit).
-          for i in 1 2 3; do git pull -q --rebase -X theirs origin main && git push -q origin HEAD:main && exit 0; git rebase --abort 2>/dev/null; sleep 5; done
+          for i in 1 2 3; do git pull -q --rebase -X theirs origin main && git push -q origin HEAD:main && exit 0; git rebase --abort 2>/dev/null || true; sleep 5; done
           echo "::warning::No se pudo subir $D"; exit 1
