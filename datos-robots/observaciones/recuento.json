@@ -1,51 +1,51 @@
 {
- "generado_en": "2026-11-03T13:03:37.604Z",
+ "generado_en": "2026-11-10T13:49:19.372Z",
  "desde": 2025,
  "hasta": 2026,
  "por_especie": {
   "lubina": {
-   "gbif_total": 434,
-   "guardadas": 354
+   "gbif_total": 459,
+   "guardadas": 374
   },
   "sargo": {
-   "gbif_total": 959,
-   "guardadas": 730
+   "gbif_total": 1012,
+   "guardadas": 771
   },
   "dorada": {
-   "gbif_total": 386,
-   "guardadas": 338
+   "gbif_total": 409,
+   "guardadas": 360
   },
   "salmonete": {
-   "gbif_total": 768,
-   "guardadas": 575
+   "gbif_total": 809,
+   "guardadas": 606
   },
   "jurel": {
-   "gbif_total": 19,
-   "guardadas": 15
-  },
-  "caballa": {
-   "gbif_total": 19,
+   "gbif_total": 18,
    "guardadas": 14
   },
+  "caballa": {
+   "gbif_total": 16,
+   "guardadas": 11
+  },
   "faneca": {
-   "gbif_total": 40,
-   "guardadas": 39
+   "gbif_total": 41,
+   "guardadas": 40
   },
   "congrio": {
-   "gbif_total": 189,
-   "guardadas": 147
+   "gbif_total": 194,
+   "guardadas": 152
   },
   "pulpo": {
-   "gbif_total": 1600,
-   "guardadas": 1332
+   "gbif_total": 1682,
+   "guardadas": 1388
   },
   "sepia": {
-   "gbif_total": 1087,
-   "guardadas": 764
+   "gbif_total": 1115,
+   "guardadas": 789
   },
   "calamar": {
-   "gbif_total": 25,
-   "guardadas": 17
+   "gbif_total": 26,
+   "guardadas": 18
   },
   "abadejo": {
    "gbif_total": 3,
@@ -56,12 +56,12 @@
    "guardadas": 0
   },
   "lisa": {
-   "gbif_total": 682,
-   "guardadas": 350
+   "gbif_total": 729,
+   "guardadas": 379
   },
   "breca": {
-   "gbif_total": 62,
-   "guardadas": 46
+   "gbif_total": 66,
+   "guardadas": 50
   },
   "lenguado": {
    "gbif_total": 39,
@@ -72,32 +72,32 @@
    "guardadas": 13
   },
   "denton": {
-   "gbif_total": 140,
-   "guardadas": 117
+   "gbif_total": 149,
+   "guardadas": 123
   },
   "bocinegro": {
-   "gbif_total": 110,
-   "guardadas": 80
+   "gbif_total": 119,
+   "guardadas": 81
   },
   "vieja": {
-   "gbif_total": 625,
-   "guardadas": 184
+   "gbif_total": 663,
+   "guardadas": 188
   },
   "sama": {
-   "gbif_total": 5,
+   "gbif_total": 6,
    "guardadas": 0
   },
   "chicharro_canario": {
-   "gbif_total": 20,
-   "guardadas": 15
+   "gbif_total": 19,
+   "guardadas": 14
   },
   "salema": {
-   "gbif_total": 1377,
-   "guardadas": 1003
+   "gbif_total": 1423,
+   "guardadas": 1032
   },
   "cabrilla": {
-   "gbif_total": 480,
-   "guardadas": 385
+   "gbif_total": 491,
+   "guardadas": 392
   },
   "rodaballo": {
    "gbif_total": 5,
@@ -108,36 +108,36 @@
    "guardadas": 6
   },
   "cabracho": {
-   "gbif_total": 135,
-   "guardadas": 74
+   "gbif_total": 143,
+   "guardadas": 79
   },
   "rascacio": {
-   "gbif_total": 524,
-   "guardadas": 464
+   "gbif_total": 564,
+   "guardadas": 501
   },
   "maragota": {
-   "gbif_total": 101,
-   "guardadas": 78
+   "gbif_total": 106,
+   "guardadas": 83
   },
   "besugo": {
    "gbif_total": 7,
    "guardadas": 1
   },
   "aligote": {
-   "gbif_total": 39,
-   "guardadas": 24
+   "gbif_total": 42,
+   "guardadas": 26
   },
   "mero": {
-   "gbif_total": 828,
-   "guardadas": 559
+   "gbif_total": 856,
+   "guardadas": 568
   },
   "gallo": {
    "gbif_total": 1,
    "guardadas": 0
   },
   "raya": {
-   "gbif_total": 241,
-   "guardadas": 208
+   "gbif_total": 251,
+   "guardadas": 215
   },
   "merluza": {
    "gbif_total": 6,
@@ -148,32 +148,32 @@
    "guardadas": 16
   },
   "chopa": {
-   "gbif_total": 197,
-   "guardadas": 169
+   "gbif_total": 208,
+   "guardadas": 175
   },
   "mojarra": {
-   "gbif_total": 1195,
-   "guardadas": 917
+   "gbif_total": 1237,
+   "guardadas": 947
   },
   "herrera": {
-   "gbif_total": 317,
-   "guardadas": 212
+   "gbif_total": 334,
+   "guardadas": 221
   },
   "raspallon": {
-   "gbif_total": 173,
-   "guardadas": 140
+   "gbif_total": 182,
+   "guardadas": 148
   },
   "oblada": {
-   "gbif_total": 700,
-   "guardadas": 504
+   "gbif_total": 744,
+   "guardadas": 539
   },
   "sargo_picudo": {
-   "gbif_total": 302,
-   "guardadas": 231
+   "gbif_total": 315,
+   "guardadas": 239
   },
   "pez_limon": {
-   "gbif_total": 137,
-   "guardadas": 94
+   "gbif_total": 139,
+   "guardadas": 96
   },
   "bacoreta": {
    "gbif_total": 9,
@@ -188,7 +188,7 @@
    "guardadas": 2
   },
   "abade": {
-   "gbif_total": 166,
+   "gbif_total": 181,
    "guardadas": 48
   },
   "anjova": {
@@ -196,8 +196,8 @@
    "guardadas": 12
   },
   "pintarroja": {
-   "gbif_total": 305,
-   "guardadas": 276
+   "gbif_total": 308,
+   "guardadas": 279
   }
  }
 }
