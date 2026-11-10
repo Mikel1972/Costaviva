@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-10T14:37:56.244Z",
- "lineasHistorial": 9357,
+ "fecha": "2026-11-10T15:37:49.802Z",
+ "lineasHistorial": 9367,
  "etiquetas": 927,
  "etiquetasClaude": 236,
  "calibracion": {
@@ -56,9 +56,9 @@
    "correlacion": -0.065
   },
   "zarautz/dinamico": {
-   "a": 3.0983,
+   "a": 3.0985,
    "p": 0.5,
-   "n": 737,
+   "n": 738,
    "nEtiquetas": 135,
    "nEtiquetasClaude": 29,
    "franjasClaude": [
@@ -92,7 +92,7 @@
    "hMax": 6.97,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.247
+   "correlacion": 0.248
   },
   "zumaia/c": {
    "a": 20.2583,
@@ -109,9 +109,9 @@
    "correlacion": -0.663
   },
   "zumaia/a": {
-   "a": 5.271,
+   "a": 5.2104,
    "p": 0.5,
-   "n": 73,
+   "n": 74,
    "nEtiquetas": 4,
    "nEtiquetasClaude": 5,
    "franjasClaude": [
@@ -121,12 +121,12 @@
     "2026-11-01T16",
     "2026-11-05T16"
    ],
-   "dias": 20,
+   "dias": 21,
    "hMin": 0.15,
    "hMax": 6.97,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.4
+   "correlacion": 0.405
   },
   "deba/rompiente": {
    "a": 3.3982,
