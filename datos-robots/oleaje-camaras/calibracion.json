@@ -1,5 +1,5 @@
 {
- "fecha": "2026-11-10T09:38:00.622Z",
+ "fecha": "2026-11-10T09:41:04.383Z",
  "lineasHistorial": 9243,
  "etiquetas": 927,
  "etiquetasClaude": 236,
@@ -576,7 +576,7 @@
    "sustituye": true,
    "motivo": "42 etiquetas",
    "ruido": {
-    "ruido": 0.472,
+    "ruido": 0.456,
     "pares": 68
    }
   },
