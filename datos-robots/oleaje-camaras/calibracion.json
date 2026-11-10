@@ -1,13 +1,13 @@
 {
- "fecha": "2026-11-10T10:07:50.398Z",
- "lineasHistorial": 9254,
+ "fecha": "2026-11-10T10:37:55.571Z",
+ "lineasHistorial": 9264,
  "etiquetas": 927,
  "etiquetasClaude": 236,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.1662,
+   "a": 1.162,
    "p": 0.5,
-   "n": 289,
+   "n": 290,
    "nEtiquetas": 62,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -22,7 +22,7 @@
    "hMax": 1.69,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": -0.097
+   "correlacion": -0.099
   },
   "hondarribia/bocana": {
    "a": 3.36,
@@ -245,9 +245,9 @@
    "correlacion": null
   },
   "castrourdiales/principal": {
-   "a": 2.7502,
+   "a": 2.7413,
    "p": 0.5,
-   "n": 164,
+   "n": 165,
    "nEtiquetas": 42,
    "nEtiquetasClaude": 6,
    "franjasClaude": [
@@ -263,7 +263,7 @@
    "hMax": 4.51,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.093
+   "correlacion": 0.091
   },
   "berria/dinamico": {
    "a": 2.7653,
