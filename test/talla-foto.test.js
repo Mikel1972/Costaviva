@@ -120,3 +120,22 @@ test("el diario guarda «Lo he pesado»", () => {
   assert.match(h, /id="capturaPesoMedido"/);
   assert.match(h, /peso_medido: peso \? pesoMedido : null/);
 });
+
+// Confusiones de especie (2026-11-10: congrio propuesto como "Anguila").
+import { confusionesEspecie } from "../assets/js/talla-foto.js";
+import { textoConfusiones, PROMPT_IDENTIFICACION } from "../functions/identificar-captura.js";
+test("confusiones: congrio tomado por anguila, solo con 5 casos de 3 personas", () => {
+  const salidas = [], capturas = [];
+  for (let i = 0; i < 5; i++) { salidas.push({ id: `s${i}`, user_id: `u${i % 3}` }); capturas.push({ salida_id: `s${i}`, especie: "Congrio", especie_estimada: "Anguila" }); }
+  capturas.push({ salida_id: "s0", especie: "Sargo", especie_estimada: "Sargo" });
+  const c = confusionesEspecie({ salidas, capturas });
+  assert.deepEqual(c, [{ dijo: "Anguila", era: "Congrio", n: 5, personas: 3 }]);
+  assert.deepEqual(confusionesEspecie({ salidas: salidas.slice(0, 2), capturas: capturas.slice(0, 2) }), []);
+  assert.match(textoConfusiones(c), /Dijiste "Anguila" y era "Congrio" \(5 veces\)/);
+  assert.equal(textoConfusiones([]), "");
+});
+test("el prompt explica cómo distinguir congrio, anguila y morena", () => {
+  assert.match(PROMPT_IDENTIFICACION, /Congrio: boca grande/);
+  assert.match(PROMPT_IDENTIFICACION, /Anguila: la mandíbula de ABAJO/);
+  assert.match(PROMPT_IDENTIFICACION, /Morena: sin aletas pectorales/);
+});

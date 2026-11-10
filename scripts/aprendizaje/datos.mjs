@@ -84,7 +84,7 @@ export async function leerDiario({ url, key, emailsPrueba = [] }) {
   // Peso calculado y pesado (migración 20261109180000): igual, con su escalón.
   let capturas;
   const COLS_CAP = "salida_id,especie,creado_en";
-  const COLS_TALLA = "talla_cm,talla_estimada_cm,talla_medida";
+  const COLS_TALLA = "talla_cm,talla_estimada_cm,talla_medida,especie_estimada";
   try {
     capturas = await leerTodo(url, key, "capturas", `${COLS_CAP},${COLS_TALLA},peso_g,peso_estimado_g,peso_medido`);
   } catch (e) {
