@@ -1,7 +1,7 @@
 {
- "generado": "2026-11-06T11:23:37.849Z",
+ "generado": "2026-11-10T11:38:25.607Z",
  "propiedad": "sc-domain:costaviva.org",
- "hasta": "2026-11-03",
+ "hasta": "2026-11-07",
  "semanas": [
   {
    "semana": "2026-09-14",
@@ -131,6 +131,20 @@
     "clics": 0,
     "impresiones": 112,
     "posicion": 65.7
+   }
+  ],
+  "aus": [
+   {
+    "semana": "2026-10-19",
+    "clics": 0,
+    "impresiones": 14,
+    "posicion": 47.2
+   },
+   {
+    "semana": "2026-10-26",
+    "clics": 0,
+    "impresiones": 9,
+    "posicion": 64
    }
   ],
   "mar": [
@@ -287,20 +301,6 @@
     "clics": 0,
     "impresiones": 2,
     "posicion": 62.5
-   }
-  ],
-  "aus": [
-   {
-    "semana": "2026-10-19",
-    "clics": 0,
-    "impresiones": 14,
-    "posicion": 47.2
-   },
-   {
-    "semana": "2026-10-26",
-    "clics": 0,
-    "impresiones": 9,
-    "posicion": 64
    }
   ],
   "phl": [
@@ -627,16 +627,22 @@
   ],
   "dnk": [],
   "hrv": [],
-  "can": []
+  "can": [],
+  "and": [],
+  "aze": [],
+  "hkg": [],
+  "tza": [],
+  "zaf": [],
+  "bgr": []
  },
  "consultas": [
   {
    "query": "costaviva",
    "pagina": "/",
    "pais": "esp",
-   "clics": 1,
-   "impresiones": 3,
-   "posicion": 1.3
+   "clics": 2,
+   "impresiones": 5,
+   "posicion": 1.2
   },
   {
    "query": "a qué hora es la pleamar hoy en santander",
@@ -835,8 +841,8 @@
    "pagina": "/especies/calamar",
    "pais": "esp",
    "clics": 0,
-   "impresiones": 44,
-   "posicion": 69.9
+   "impresiones": 52,
+   "posicion": 68.8
   },
   {
    "query": "chipirón animal",
@@ -895,12 +901,28 @@
    "posicion": 64
   },
   {
+   "query": "diferencia entre chipirón y calamar",
+   "pagina": "/especies/calamar",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 5,
+   "posicion": 95.4
+  },
+  {
    "query": "donde se pesca",
    "pagina": "/spots",
    "pais": "esp",
    "clics": 0,
    "impresiones": 2,
    "posicion": 73.5
+  },
+  {
+   "query": "el chipiron es un calamar pequeño",
+   "pagina": "/especies/calamar",
+   "pais": "arg",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 62
   },
   {
    "query": "estado de la mar en cantabria",
@@ -917,6 +939,14 @@
    "clics": 0,
    "impresiones": 1,
    "posicion": 90
+  },
+  {
+   "query": "fishing spots near me",
+   "pagina": "/en/spots",
+   "pais": "nzl",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 98
   },
   {
    "query": "fishing spots new zealand",
@@ -947,8 +977,8 @@
    "pagina": "/spots/region/galicia",
    "pais": "esp",
    "clics": 0,
-   "impresiones": 1,
-   "posicion": 58
+   "impresiones": 2,
+   "posicion": 56.5
   },
   {
    "query": "glenbrook beach tides",
@@ -979,8 +1009,8 @@
    "pagina": "/spots/region/golfo-de-cadiz",
    "pais": "esp",
    "clics": 0,
-   "impresiones": 1,
-   "posicion": 8
+   "impresiones": 3,
+   "posicion": 8.7
   },
   {
    "query": "golfo de cádiz",
@@ -1179,8 +1209,8 @@
    "pagina": "/mareas/region/canarias",
    "pais": "esp",
    "clics": 0,
-   "impresiones": 3,
-   "posicion": 9
+   "impresiones": 4,
+   "posicion": 17
   },
   {
    "query": "linz tides",
@@ -1295,28 +1325,52 @@
    "posicion": 76
   },
   {
+   "query": "lubina",
+   "pagina": "/especies/lubina",
+   "pais": "ury",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 89
+  },
+  {
+   "query": "lubina agua dulce o salada",
+   "pagina": "/especies/lubina",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 100
+  },
+  {
    "query": "lubina pesca",
    "pagina": "/especies/lubina",
    "pais": "esp",
    "clics": 0,
-   "impresiones": 4,
-   "posicion": 66.8
+   "impresiones": 5,
+   "posicion": 68.2
+  },
+  {
+   "query": "lubina pescado",
+   "pagina": "/especies/lubina",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 93
   },
   {
    "query": "lubina pez",
    "pagina": "/especies/lubina",
    "pais": "esp",
    "clics": 0,
-   "impresiones": 1,
-   "posicion": 97
+   "impresiones": 2,
+   "posicion": 96
   },
   {
    "query": "lubinas",
    "pagina": "/especies/lubina",
    "pais": "esp",
    "clics": 0,
-   "impresiones": 1,
-   "posicion": 96
+   "impresiones": 5,
+   "posicion": 92.8
   },
   {
    "query": "lubinas",
@@ -1339,16 +1393,24 @@
    "pagina": "/spots",
    "pais": "esp",
    "clics": 0,
+   "impresiones": 2,
+   "posicion": 78
+  },
+  {
+   "query": "mahurangi tides",
+   "pagina": "/en/tides",
+   "pais": "bra",
+   "clics": 0,
    "impresiones": 1,
-   "posicion": 81
+   "posicion": 61
   },
   {
    "query": "mangawhai tides",
    "pagina": "/en/tides",
    "pais": "nzl",
    "clics": 0,
-   "impresiones": 1,
-   "posicion": 36
+   "impresiones": 2,
+   "posicion": 37
   },
   {
    "query": "mangawhai tides today",
@@ -1359,12 +1421,28 @@
    "posicion": 33
   },
   {
+   "query": "mangere bridge tides today",
+   "pagina": "/en/tides",
+   "pais": "bra",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 62
+  },
+  {
    "query": "maori snapper",
    "pagina": "/en/species/nz-snapper",
    "pais": "aus",
    "clics": 0,
    "impresiones": 1,
    "posicion": 44
+  },
+  {
+   "query": "mar galicia",
+   "pagina": "/spots/region/galicia",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 79
   },
   {
    "query": "maraetai fishing tides",
@@ -1399,14 +1477,6 @@
    "posicion": 36
   },
   {
-   "query": "marea en bakio",
-   "pagina": "/spots/bakio",
-   "pais": "esp",
-   "clics": 0,
-   "impresiones": 1,
-   "posicion": 32
-  },
-  {
    "query": "marea en canarias",
    "pagina": "/mareas/region/canarias",
    "pais": "esp",
@@ -1421,6 +1491,14 @@
    "clics": 0,
    "impresiones": 1,
    "posicion": 19
+  },
+  {
+   "query": "marea hondarribia hoy",
+   "pagina": "/mareas/region/pais-vasco",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 56
   },
   {
    "query": "marea mundaka",
@@ -1455,20 +1533,20 @@
    "posicion": 41.5
   },
   {
-   "query": "mareas bakio hoy",
-   "pagina": "/spots/bakio",
+   "query": "mareas bilbao",
+   "pagina": "/mareas/region/pais-vasco",
    "pais": "esp",
    "clics": 0,
    "impresiones": 1,
-   "posicion": 28
+   "posicion": 82
   },
   {
    "query": "mareas canarias",
    "pagina": "/mareas/region/canarias",
    "pais": "esp",
    "clics": 0,
-   "impresiones": 4,
-   "posicion": 42.3
+   "impresiones": 5,
+   "posicion": 53.8
   },
   {
    "query": "mareas cantabria hoy",
@@ -1487,11 +1565,35 @@
    "posicion": 10.5
   },
   {
+   "query": "mareas de cantabria",
+   "pagina": "/mareas/region/cantabria",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 10
+  },
+  {
+   "query": "mareas de cádiz hoy",
+   "pagina": "/mareas/region/golfo-de-cadiz",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 28
+  },
+  {
+   "query": "mareas del cantábrico",
+   "pagina": "/mareas/region/cantabria",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 9
+  },
+  {
    "query": "mareas denia",
    "pagina": "/mareas/denia",
    "pais": "esp",
    "clics": 0,
-   "impresiones": 4,
+   "impresiones": 5,
    "posicion": 10
   },
   {
@@ -1501,6 +1603,14 @@
    "clics": 0,
    "impresiones": 1,
    "posicion": 8
+  },
+  {
+   "query": "mareas donostia",
+   "pagina": "/mareas/region/pais-vasco",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 97
   },
   {
    "query": "mareas donostia mañana",
@@ -1539,8 +1649,16 @@
    "pagina": "/mareas/region/canarias",
    "pais": "esp",
    "clics": 0,
-   "impresiones": 2,
-   "posicion": 38.5
+   "impresiones": 3,
+   "posicion": 39.3
+  },
+  {
+   "query": "mareas en cantabria",
+   "pagina": "/mareas/region/cantabria",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 13
   },
   {
    "query": "mareas en cádiz hoy",
@@ -1583,6 +1701,14 @@
    "posicion": 5
   },
   {
+   "query": "mareas hoy santander",
+   "pagina": "/mareas/region/cantabria",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 90
+  },
+  {
    "query": "mareas mediterraneo",
    "pagina": "/mareas/region/mediterraneo",
    "pais": "esp",
@@ -1605,6 +1731,14 @@
    "clics": 0,
    "impresiones": 1,
    "posicion": 10
+  },
+  {
+   "query": "mareas mundaka hoy",
+   "pagina": "/mareas/mundaka",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 6
   },
   {
    "query": "mareas ondarroa",
@@ -1639,6 +1773,14 @@
    "posicion": 9.5
   },
   {
+   "query": "mareas santander hoy",
+   "pagina": "/mareas/region/cantabria",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 68
+  },
+  {
    "query": "mareas vivas donostia",
    "pagina": "/mareas/region/pais-vasco",
    "pais": "esp",
@@ -1653,6 +1795,14 @@
    "clics": 0,
    "impresiones": 1,
    "posicion": 38
+  },
+  {
+   "query": "maree portugal",
+   "pagina": "/mareas/region/portugal",
+   "pais": "prt",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 76
   },
   {
    "query": "medida lubina galicia",
@@ -1811,8 +1961,8 @@
    "pagina": "/en/tides",
    "pais": "nzl",
    "clics": 0,
-   "impresiones": 1,
-   "posicion": 42
+   "impresiones": 2,
+   "posicion": 49
   },
   {
    "query": "olas en mundaka",
@@ -1855,6 +2005,14 @@
    "posicion": 84
   },
   {
+   "query": "otaki tide times",
+   "pagina": "/en/tides",
+   "pais": "nzl",
+   "clics": 0,
+   "impresiones": 2,
+   "posicion": 53.5
+  },
+  {
    "query": "otaki tides for fishing",
    "pagina": "/en/tides",
    "pais": "nzl",
@@ -1869,6 +2027,14 @@
    "clics": 0,
    "impresiones": 2,
    "posicion": 60.5
+  },
+  {
+   "query": "otarawairere bay tide",
+   "pagina": "/en/tides",
+   "pais": "nzl",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 37
   },
   {
    "query": "paihia tide times",
@@ -1939,8 +2105,8 @@
    "pagina": "/spots/region/galicia",
    "pais": "esp",
    "clics": 0,
-   "impresiones": 10,
-   "posicion": 70.6
+   "impresiones": 18,
+   "posicion": 71.5
   },
   {
    "query": "pegasus tides",
@@ -1983,11 +2149,19 @@
    "posicion": 84
   },
   {
+   "query": "pesca cadiz",
+   "pagina": "/spots/region/golfo-de-cadiz",
+   "pais": "ita",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 30
+  },
+  {
    "query": "pesca chipiron",
    "pagina": "/especies/calamar",
    "pais": "esp",
    "clics": 0,
-   "impresiones": 5,
+   "impresiones": 6,
    "posicion": 24
   },
   {
@@ -2003,16 +2177,24 @@
    "pagina": "/pt/spots/region/portugal",
    "pais": "prt",
    "clics": 0,
-   "impresiones": 2,
-   "posicion": 60
+   "impresiones": 4,
+   "posicion": 58.8
   },
   {
    "query": "pesca en cadiz",
    "pagina": "/spots/region/golfo-de-cadiz",
    "pais": "esp",
    "clics": 0,
-   "impresiones": 2,
-   "posicion": 66
+   "impresiones": 3,
+   "posicion": 69
+  },
+  {
+   "query": "pesca en cantabria",
+   "pagina": "/spots/region/cantabria",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 3,
+   "posicion": 70
   },
   {
    "query": "pesca en el mediterraneo",
@@ -2071,6 +2253,14 @@
    "posicion": 80.3
   },
   {
+   "query": "pescados de españa",
+   "pagina": "/especies",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 90
+  },
+  {
    "query": "pescar chipirones",
    "pagina": "/especies/calamar",
    "pais": "esp",
@@ -2099,8 +2289,8 @@
    "pagina": "/pt/spots/region/portugal",
    "pais": "prt",
    "clics": 0,
-   "impresiones": 9,
-   "posicion": 8.1
+   "impresiones": 11,
+   "posicion": 8.3
   },
   {
    "query": "pesqueiros portugal",
@@ -2109,6 +2299,14 @@
    "clics": 0,
    "impresiones": 3,
    "posicion": 7.7
+  },
+  {
+   "query": "pez de españa",
+   "pagina": "/especies",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 91
   },
   {
    "query": "pines beach tides",
@@ -2151,12 +2349,28 @@
    "posicion": 27
   },
   {
+   "query": "pleamar cádiz hoy",
+   "pagina": "/mareas/region/golfo-de-cadiz",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 29
+  },
+  {
    "query": "pleamar denia",
    "pagina": "/mareas/denia",
    "pais": "esp",
    "clics": 0,
    "impresiones": 1,
    "posicion": 13
+  },
+  {
+   "query": "pleamar denia",
+   "pagina": "/mareas/denia",
+   "pais": "fra",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 11
   },
   {
    "query": "pleamar hoy en santander",
@@ -2167,20 +2381,20 @@
    "posicion": 61
   },
   {
+   "query": "pleamar las palmas",
+   "pagina": "/mareas/region/canarias",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 85
+  },
+  {
    "query": "pleamar loredo hoy",
    "pagina": "/mareas/region/cantabria",
    "pais": "bgd",
    "clics": 0,
    "impresiones": 1,
    "posicion": 41
-  },
-  {
-   "query": "pleamar mundaka",
-   "pagina": "/mareas/mundaka",
-   "pais": "esp",
-   "clics": 0,
-   "impresiones": 3,
-   "posicion": 28.3
   },
   {
    "query": "pleamar san vicente de la barquera",
@@ -2213,6 +2427,14 @@
    "clics": 0,
    "impresiones": 1,
    "posicion": 47
+  },
+  {
+   "query": "pleamares y bajamares las palmas",
+   "pagina": "/mareas/region/canarias",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 5
   },
   {
    "query": "port albert fishing nz",
@@ -2261,6 +2483,14 @@
    "clics": 0,
    "impresiones": 2,
    "posicion": 41.5
+  },
+  {
+   "query": "puntos de pesca",
+   "pagina": "/spots",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 78
   },
   {
    "query": "rabbit island tides",
@@ -2355,8 +2585,8 @@
    "pagina": "/spots",
    "pais": "esp",
    "clics": 0,
-   "impresiones": 1,
-   "posicion": 82
+   "impresiones": 3,
+   "posicion": 91
   },
   {
    "query": "snapper season nz",
@@ -2467,8 +2697,16 @@
    "pagina": "/especies/calamar",
    "pais": "esp",
    "clics": 0,
-   "impresiones": 4,
-   "posicion": 50
+   "impresiones": 5,
+   "posicion": 48.8
+  },
+  {
+   "query": "temporadas de pesca mediterraneo",
+   "pagina": "/spots/region/mediterraneo",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 3,
+   "posicion": 68.7
   },
   {
    "query": "tiburon bakio",
@@ -2487,12 +2725,44 @@
    "posicion": 49
   },
   {
+   "query": "tide charts for fishing",
+   "pagina": "/en/tides",
+   "pais": "nzl",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 74
+  },
+  {
+   "query": "tide mount maunganui",
+   "pagina": "/en/tides",
+   "pais": "col",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 65
+  },
+  {
+   "query": "tide tables fishing",
+   "pagina": "/en/tides",
+   "pais": "nzl",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 52
+  },
+  {
    "query": "tide times bay of islands",
    "pagina": "/en/tides",
    "pais": "nzl",
    "clics": 0,
    "impresiones": 1,
    "posicion": 65
+  },
+  {
+   "query": "tide times for fishing",
+   "pagina": "/en/tides",
+   "pais": "nzl",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 58
   },
   {
    "query": "tide times foxton",
@@ -2607,6 +2877,14 @@
    "posicion": 67
   },
   {
+   "query": "tides mount maunganui",
+   "pagina": "/en/tides",
+   "pais": "ven",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 83
+  },
+  {
    "query": "tides nz",
    "pagina": "/en/tides",
    "pais": "ukr",
@@ -2655,6 +2933,14 @@
    "posicion": 20
   },
   {
+   "query": "tides tarakohe",
+   "pagina": "/en/tides",
+   "pais": "nzl",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 46
+  },
+  {
    "query": "tides tolaga bay",
    "pagina": "/en/tides/nz-tolaga-bay-wharf",
    "pais": "nzl",
@@ -2687,6 +2973,22 @@
    "posicion": 34
   },
   {
+   "query": "tides waiheke island",
+   "pagina": "/en/tides",
+   "pais": "nzl",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 30
+  },
+  {
+   "query": "tides zinkwazi",
+   "pagina": "/en/tides",
+   "pais": "chl",
+   "clics": 0,
+   "impresiones": 1,
+   "posicion": 59
+  },
+  {
    "query": "tinopai tides for fishing",
    "pagina": "/en/tides",
    "pais": "nzl",
@@ -2715,8 +3017,8 @@
    "pagina": "/en/spots",
    "pais": "aus",
    "clics": 0,
-   "impresiones": 25,
-   "posicion": 58.6
+   "impresiones": 32,
+   "posicion": 61.4
   },
   {
    "query": "tutukaka tide times",
@@ -2749,6 +3051,14 @@
    "clics": 0,
    "impresiones": 1,
    "posicion": 67
+  },
+  {
+   "query": "viento marea",
+   "pagina": "/mareas/region/cantabria",
+   "pais": "esp",
+   "clics": 0,
+   "impresiones": 2,
+   "posicion": 19.5
   },
   {
    "query": "waiinu beach tides",
@@ -2791,12 +3101,12 @@
    "posicion": 76
   },
   {
-   "query": "webcam mundaka",
-   "pagina": "/mareas/mundaka",
-   "pais": "esp",
+   "query": "waiuku tides today",
+   "pagina": "/en/tides",
+   "pais": "usa",
    "clics": 0,
-   "impresiones": 2,
-   "posicion": 44.5
+   "impresiones": 1,
+   "posicion": 40
   },
   {
    "query": "whangamata fishing spots",
