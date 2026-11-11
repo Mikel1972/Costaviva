@@ -1,13 +1,13 @@
 {
- "fecha": "2026-11-11T11:07:46.694Z",
- "lineasHistorial": 9521,
+ "fecha": "2026-11-11T11:37:51.944Z",
+ "lineasHistorial": 9531,
  "etiquetas": 929,
  "etiquetasClaude": 238,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.1412,
+   "a": 1.1405,
    "p": 0.5,
-   "n": 298,
+   "n": 299,
    "nEtiquetas": 62,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -482,7 +482,7 @@
    "motivo": "66 etiquetas",
    "ruido": {
     "ruido": 0.5,
-    "pares": 129
+    "pares": 130
    }
   },
   "donostia": {
