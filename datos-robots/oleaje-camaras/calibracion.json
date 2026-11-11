@@ -1,13 +1,13 @@
 {
- "fecha": "2026-11-11T08:38:28.288Z",
- "lineasHistorial": 9471,
+ "fecha": "2026-11-11T09:07:46.891Z",
+ "lineasHistorial": 9482,
  "etiquetas": 929,
  "etiquetasClaude": 238,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.1485,
+   "a": 1.1462,
    "p": 0.5,
-   "n": 294,
+   "n": 295,
    "nEtiquetas": 62,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -17,12 +17,12 @@
     "2026-11-01T16",
     "2026-11-03T16"
    ],
-   "dias": 34,
+   "dias": 35,
    "hMin": 0.03,
    "hMax": 1.69,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": -0.098
+   "correlacion": -0.1
   },
   "hondarribia/bocana": {
    "a": 3.241,
@@ -56,9 +56,9 @@
    "correlacion": -0.065
   },
   "zarautz/dinamico": {
-   "a": 3.1006,
+   "a": 3.1035,
    "p": 0.5,
-   "n": 740,
+   "n": 741,
    "nEtiquetas": 135,
    "nEtiquetasClaude": 29,
    "franjasClaude": [
@@ -92,7 +92,7 @@
    "hMax": 6.97,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.248
+   "correlacion": 0.247
   },
   "zumaia/c": {
    "a": 20.2583,
@@ -179,9 +179,9 @@
    "correlacion": 0.481
   },
   "bakio/principal": {
-   "a": 1.8954,
+   "a": 1.8895,
    "p": 0.5,
-   "n": 115,
+   "n": 116,
    "nEtiquetas": 18,
    "nEtiquetasClaude": 12,
    "franjasClaude": [
@@ -198,12 +198,12 @@
     "2026-11-05T14",
     "2026-11-07T14"
    ],
-   "dias": 30,
+   "dias": 31,
    "hMin": 0.27,
    "hMax": 4.62,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.082
+   "correlacion": 0.08
   },
   "sopelana/principal": {
    "a": 3.4204,
@@ -482,7 +482,7 @@
    "motivo": "66 etiquetas",
    "ruido": {
     "ruido": 0.5,
-    "pares": 126
+    "pares": 127
    }
   },
   "donostia": {
@@ -505,8 +505,8 @@
    "sustituye": true,
    "motivo": "138 etiquetas",
    "ruido": {
-    "ruido": 0.555,
-    "pares": 519
+    "ruido": 0.56,
+    "pares": 520
    }
   },
   "getaria": {
@@ -553,8 +553,8 @@
    "sustituye": true,
    "motivo": "18 etiquetas",
    "ruido": {
-    "ruido": 0.362,
-    "pares": 26
+    "ruido": 0.303,
+    "pares": 27
    }
   },
   "sopelana": {
