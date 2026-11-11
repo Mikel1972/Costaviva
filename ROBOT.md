@@ -10247,3 +10247,12 @@ Datos: `camaras-estado.json` de 2026-11-10T03:04Z (fresco). En rojo: alicante, t
 - Comprobado hoy: `servizos.meteogalicia.gal/mgafos/estacions/estacions.action` 200 (sigue exigiendo clave para `estadoActual`, pendiente de Mikel); `euskalmet.euskadi.eus` 301; `api.euskadi.eus` 403 y `snirh.apambiente.pt` 403 desde esta red (no se dan por caídos); `aca.gencat.cat` (ruta del sistema de control hidrológico) 404.
 - Búsqueda de API pública de SAIH: solo hay visores web con exportación a Excel (Ebro, Segura, Júcar); sin JSON documentado ni licencia de reutilización. Misma conclusión que el 2026-11-03: la vía es pedir acceso por email (CH Cantábrico, MeteoGalicia, Euskalmet) con `datos@costaviva.org`.
 Firmado: robot buscador de fuentes (rutina), 2026-11-10 05:55 UTC.
+
+### 2026-11-11 05:42 UTC (robot de cámaras caídas — rutina; Orio, Pasaia, Cantabria)
+
+Datos: `camaras-estado.json` de 2026-11-11T03:04Z (fresco). En rojo: alicante, torreblanca (`origen_404` desde octubre), pasaia (`frame_plano`), orio (`sin_respuesta`), suances y sanvicente (`origen_522`), bakio y mundaka (`frame_congelado`, de noche), y ext-* de YouTube/Windy (sin directo; no se reparan aquí).
+- **orio**: `GIP_orio_169.stream` sigue en 404 mientras Zarautz (mismo servidor) da 200 con HLS vivo. Probadas 7 variantes más de nombre (`GIP_orio_1`, `_169_2`, `_43`, `GIP_oria_169`, `-169`, `GIP_Orio_169`, `_720`): sin alternativa verificada.
+- **pasaia**: detectia.net 200, Last-Modified 10-nov 18:04 GMT; son las 05:4x UTC (noche), `frame_plano` esperable. No se juzga.
+- **suances/sanvicente**: cantabria.es no responde (522 del proveedor). Sin cambios.
+- No se cambió código. Siguiente pasada (de día): pasaia, bakio/mundaka, orio (web de la Diputación), sustituto de alicante/torreblanca.
+— robot de cámaras caídas (rutina)
