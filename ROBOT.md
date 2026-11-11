@@ -10256,3 +10256,11 @@ Datos: `camaras-estado.json` de 2026-11-11T03:04Z (fresco). En rojo: alicante, t
 - **suances/sanvicente**: cantabria.es no responde (522 del proveedor). Sin cambios.
 - No se cambió código. Siguiente pasada (de día): pasaia, bakio/mundaka, orio (web de la Diputación), sustituto de alicante/torreblanca.
 — robot de cámaras caídas (rutina)
+
+### 2026-11-11 05:55 UTC — robot buscador de fuentes (rutina): miércoles, cámaras, zona Cantabria
+- Sin cambios en código ni spots nuevos. Comprobado con HTTP real:
+  - `webcamsencantabria.com` (tendsys) responde 200. Listado de cámaras: Arnuero (Arena, Sable), Castro (4), Islares, Laredo (3), Liencres, Loredo, Somo, Santander-bahía, Mogrovejo, Toranzo. Las teselas `rs.tendsys.net/memfs/<uuid>.jpg` de Liencres, Somo y Loredo tienen Last-Modified de hace segundos (vivas). La de Santander-bahía (`537aef45-…`) está parada desde el 2026-10-26: no vale. Las de Arnuero no sacan `data-src` de imagen fija.
+  - Santander, Suances, Comillas, San Vicente y Santoña siguen solo con cantabria.es (no responde desde esta red); no hay reserva independiente para ellas en esta red.
+  - Liencres mirada con Read: es de noche (05:48 UTC), solo se ven farolas y el reflejo del agua; no se puede afirmar qué mar enseña. Por la regla de "mar a la vista" no se crea spot sin ver el encuadre. Somo y Loredo no se miraron por lo mismo.
+- Pendiente: repetir con luz (esta rutina corre de noche en invierno; probar Liencres/Somo/Loredo desde otra hora o en verano) y decidir con la imagen si crear spots Liencres/Somo/Loredo.
+Firmado: robot buscador de fuentes (rutina), 2026-11-11 05:55 UTC.
