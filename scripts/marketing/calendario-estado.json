@@ -1,10 +1,5 @@
 {
   "generadas": {
-    "2026-10-10-reel": {
-      "tipo": "reel-condiciones",
-      "campana": "20261010-reel-condiciones-bakio",
-      "en": "2026-10-09T07:40:43.926Z"
-    },
     "2026-10-13-post": {
       "tipo": "especies",
       "campana": "20261013-especies-lisa-mujol",
@@ -199,6 +194,11 @@
       "tipo": "reel-peces",
       "campana": "20261110-reel-peces-valencia",
       "en": "2026-11-09T17:34:04.800Z"
+    },
+    "2026-11-12-reel": {
+      "tipo": "reel-peces",
+      "campana": "20261112-reel-peces-suances",
+      "en": "2026-11-11T17:36:57.520Z"
     }
   },
   "ultimaFuncion": "alarma"
