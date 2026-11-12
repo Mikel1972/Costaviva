@@ -10256,3 +10256,11 @@ Datos: `camaras-estado.json` de 2026-11-11T03:04Z (fresco). En rojo: alicante, t
 - **suances/sanvicente**: cantabria.es no responde (522 del proveedor). Sin cambios.
 - No se cambió código. Siguiente pasada (de día): pasaia, bakio/mundaka, orio (web de la Diputación), sustituto de alicante/torreblanca.
 — robot de cámaras caídas (rutina)
+
+### 2026-11-12 05:42 UTC (robot de cámaras caídas — rutina; Orio, Pasaia)
+
+Datos: `camaras-estado.json` de 2026-11-12T03:05Z (fresco). En rojo: alicante, torreblanca (`origen_404` desde oct), pasaia (`frame_plano`), orio (`sin_respuesta`), comillas (`origen_522`, 1 fallo), bakio y mundaka (`frame_congelado`, de noche) y ext-* de YouTube/Windy (sin directo; no se reparan aquí).
+- **orio**: `GIP_orio_169.stream` sigue en 404 mientras Zarautz (mismo servidor) da 200. Probadas 12 variantes más (`orio2`, `orioa`, `oriobarra`, `barraorio`, `antilla`, `orio_barra`, `oriopuerto`, `orio_playa`, `oria`, `aguinaga`, `orio_hd`): todas 404. Mutriku usa un nombre no obvio (`saturraran`), así que el de Orio puede ser otro; hace falta ver la web de la Diputación. Sin alternativa verificada.
+- **pasaia**: detectia.net 200, Last-Modified 11-nov 18:04 GMT (la imagen se actualiza una vez al día hacia esa hora; son las 05:xx UTC, de noche). No es una fuente movida; sin cambios.
+- No se cambió código. Para la próxima: sustituto de alicante/torreblanca (otro dueño) y la web de la Diputación para Orio.
+— robot de cámaras caídas (rutina)
