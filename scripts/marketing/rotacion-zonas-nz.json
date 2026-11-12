@@ -6,11 +6,12 @@
     "bay-of-plenty",
     "gisborne-hawkes-bay",
     "waikato-west-coast",
-    "taranaki"
+    "taranaki",
+    "wellington"
   ],
   "ciclo": 1,
-  "ultimaZona": "taranaki",
+  "ultimaZona": "wellington",
   "ultimaRegion": "nz_central",
-  "ultimoSpot": "nz-opunake",
-  "fecha": "2026-11-05T05:40:40.850Z"
+  "ultimoSpot": "nz-palliser-bay",
+  "fecha": "2026-11-12T05:40:49.513Z"
 }

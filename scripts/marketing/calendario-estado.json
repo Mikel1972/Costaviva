@@ -1,10 +1,5 @@
 {
   "generadas": {
-    "2026-10-13-post": {
-      "tipo": "especies",
-      "campana": "20261013-especies-lisa-mujol",
-      "en": "2026-10-12T17:30:35.002Z"
-    },
     "2026-10-15-post": {
       "tipo": "funcion-diario",
       "campana": "20261015-funcion-diario",
@@ -199,6 +194,11 @@
       "tipo": "reel-peces",
       "campana": "20261112-reel-peces-suances",
       "en": "2026-11-11T17:36:57.520Z"
+    },
+    "2026-11-13-post-nz": {
+      "tipo": "condiciones-nz",
+      "campana": "20261113-condiciones-nz-palliser-bay",
+      "en": "2026-11-12T05:40:50.901Z"
     }
   },
   "ultimaFuncion": "alarma"
