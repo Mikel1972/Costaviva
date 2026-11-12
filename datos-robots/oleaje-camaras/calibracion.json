@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-12T10:37:55.177Z",
- "lineasHistorial": 9757,
+ "fecha": "2026-11-12T11:08:00.456Z",
+ "lineasHistorial": 9769,
  "etiquetas": 930,
  "etiquetasClaude": 239,
  "calibracion": {
@@ -42,13 +42,13 @@
    "correlacion": -0.093
   },
   "donostia/principal": {
-   "a": 4.8683,
+   "a": 4.8399,
    "p": 0.5,
-   "n": 47,
+   "n": 48,
    "nEtiquetas": 5,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
-   "dias": 19,
+   "dias": 20,
    "hMin": 0.3,
    "hMax": 4.04,
    "errorRel": 1,
@@ -56,9 +56,9 @@
    "correlacion": -0.065
   },
   "zarautz/dinamico": {
-   "a": 3.1152,
+   "a": 3.1182,
    "p": 0.5,
-   "n": 757,
+   "n": 758,
    "nEtiquetas": 135,
    "nEtiquetasClaude": 29,
    "franjasClaude": [
