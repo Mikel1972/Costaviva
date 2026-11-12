@@ -10264,3 +10264,13 @@ Datos: `camaras-estado.json` de 2026-11-12T03:05Z (fresco). En rojo: alicante, t
 - **pasaia**: detectia.net 200, Last-Modified 11-nov 18:04 GMT (la imagen se actualiza una vez al día hacia esa hora; son las 05:xx UTC, de noche). No es una fuente movida; sin cambios.
 - No se cambió código. Para la próxima: sustituto de alicante/torreblanca (otro dueño) y la web de la Diputación para Orio.
 — robot de cámaras caídas (rutina)
+
+### 2026-11-12 06:00 UTC — robot buscador de fuentes (rutina): jueves, fichas de especies (sin cambios)
+
+Objetivo de hoy: añadir `sustrato` a 3-5 especies sin él (candidatas: salmonete, rape, gallo, pulpo, mojarra). Resultado: **sin novedades, no se tocó `especies.json`**; ninguna tenía fuente abierta que lo sostuviera sin ambigüedad.
+- **Salmonete** (*M. surmuletus* / *M. barbatus*): la guía del MAPAMA (servicio.mapama.gob.es, salmonete_tcm38-102849.pdf) distingue salmonete de roca (fondos rocosos, hasta ~100 m) y de fango (fondos fangosos/arenosos, 2-30 m); son dos especies y la ficha no las separa. Dato ambiguo → no se añade; propuesta: decidir con Mikel si se divide la ficha o se deja sin `sustrato`.
+- **Rape** (*L. piscatorius*): MAPAMA (rape_tcm38-102823.pdf) lo sitúa a 100-1000 m semienterrado en fango; a esa profundidad no afecta a costa ni a submarina, así que no merece `sustrato`.
+- Gallo, pulpo y mojarra: no se llegó a una fuente verificada (pulpo y mojarra viven en roca y arena, probablemente sin límite útil). Quedan pendientes para el próximo jueves, empezando por gallo y mojarra con fuente IEO/MITECO.
+- No se creó rama `robot/especies-*` porque no hay cambios.
+
+Firmado: robot buscador de fuentes (rutina), 2026-11-12 06:00 UTC.
