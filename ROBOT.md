@@ -10273,3 +10273,15 @@ Datos: `camaras-estado.json` de 2026-11-13T03:04Z (fresco). En rojo: alicante, t
 - **sanvicente/santona**: cantabria.es no responde desde la red de la rutina (sin verificar).
 - No se cambió código. Para la próxima: web de la Diputación para Orio, Postiguet de Windy, sustituto de torreblanca.
 — robot de cámaras caídas (rutina)
+
+### 2026-11-13 05:55 UTC — robot buscador de fuentes (rutina): viernes, estudios sobre factores (afloramiento y marea/presión)
+- Factores de hoy: afloramiento (Portugal/Iberia) y marea/presión en pesca desde costa. Dos búsquedas web; solo resúmenes del buscador, no abrí los textos ni comprobé licencia.
+  - Sargo blanco (*Diplodus sargus*), Portugal, 2014 (https://link.springer.com/doi/10.1007/s10113-014-0726-5): capturas correlacionadas con temperatura superficial y afloramiento, no con el esfuerzo. Datos artesanales/comerciales, no de caña.
+  - Salmonete de roca, Portugal, 2023 (https://mdpi.com/2673-1924/4/3/15): afloramiento y vientos del oeste explican la variación de capturas artesanales. Es otra especie.
+  - Concursos del Algarve, 2011 (sapientia.ualg.pt): tasas de captura de lubina y espáridos, sin afloramiento.
+  - Marea/presión en pesca de costa en Europa: sin estudio abierto encontrado (solo informes de encuestas irlandesas/inglesas sin análisis de tiempo y un trabajo de lucio de agua dulce).
+- Sin regla propuesta ni rama `-factores`: sin texto verificado ni licencia, no llega a confianza 0,3. No se tocaron las reglas de Mikel.
+- Concursos: no se revisó ninguna federación (sin margen).
+- Para la próxima: abrir el texto del estudio de sargo de 2014 (Regional Environmental Change) para ver el efecto y su licencia.
+
+Firmado: robot buscador de fuentes (rutina), 2026-11-13 05:55 UTC.
