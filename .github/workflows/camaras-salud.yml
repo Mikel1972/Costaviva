@@ -113,5 +113,9 @@ jobs:
           git config user.email "noreply@anthropic.com"
           git add "$F"
           git commit -qm "Estado de las cámaras para la rutina [skip ci]"
-          for i in 1 2 3; do git pull -q --rebase origin main && git push -q origin HEAD:main && exit 0; sleep 5; done
+          # Dos pasadas a la vez (el cron de GitHub y el de pg_cron) pueden volcar
+          # el mismo día: si choca, manda este volcado, que es el más reciente
+          # (-X theirs en un rebase = este commit), y un rebase a medias se
+          # aborta sin cortar el bucle (bash -e; 2026-11-13).
+          for i in 1 2 3; do git pull -q --rebase -X theirs origin main && git push -q origin HEAD:main && exit 0; git rebase --abort 2>/dev/null || true; sleep 5; done
           echo "::warning::No se pudo subir $F"; exit 1
