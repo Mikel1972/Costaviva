@@ -133,7 +133,11 @@ export const WEBCAMS = {
   peniscola: "https://streaming.comunitatvalenciana.com/static/Penyiscola/webcam_mini.png",
   gandia: "https://streaming.comunitatvalenciana.com/static/Gandia/webcam_mini.png",
   valencia: "https://streaming.comunitatvalenciana.com/static/ValenciaLasArenas/webcam_mini.png",
-  alicante: "https://streaming.comunitatvalenciana.com/static/AlicantePuerto/webcam_mini.png",
+  // alicante (AlicantePuerto) y torreblanca RETIRADAS el 2026-11-13: 404
+  // desde el 7 y el 11 de octubre (más de 1.700 fallos seguidos) y la rutina
+  // de cámaras caídas no encontró sustituta en un mes. AlicanteCentro da 200
+  // pero enfoca al Ayuntamiento, sin mar. Volver a añadirlas solo con una
+  // URL verificada mirando la imagen.
   altea: "https://streaming.comunitatvalenciana.com/static/Altea/webcam_mini.png",
   benidorm: "https://streaming.comunitatvalenciana.com/static/BenidormLevante/webcam_mini.png",
   guardamardelsegura: "https://streaming.comunitatvalenciana.com/static/GuardamardelSegura/webcam_mini.png",
@@ -147,7 +151,6 @@ export const WEBCAMS = {
   castellon: "https://streaming.comunitatvalenciana.com/static/GraodeCastellon/webcam_mini.png",
   xilxes: "https://streaming.comunitatvalenciana.com/static/Xilxes/webcam_mini.png",
   oropesa: "https://streaming.comunitatvalenciana.com/static/OropesadelMar/webcam_mini.png",
-  torreblanca: "https://streaming.comunitatvalenciana.com/static/Torreblanca/webcam_mini.png",
   vinaros: "https://streaming.comunitatvalenciana.com/static/Vinaros/webcam_mini.png",
   alboraya: "https://streaming.comunitatvalenciana.com/static/AlborayaPatacona/webcam_mini.png",
   canetdeberenguer: "https://streaming.comunitatvalenciana.com/static/CanetdeBerenguer/webcam_mini.png",

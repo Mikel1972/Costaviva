@@ -189,7 +189,8 @@ const LISTA = [
   sky("cadiz", "Santa María del Mar", "espana/andalucia/cadiz/cadiz-santa-maria-del-mar", 1329, true),
   sky("cadiz", "Playa Santa María del Mar", "espana/andalucia/cadiz/playa-santa-maria-del-mar", 1372, true),
   sky("cadiz", "Playa Victoria", "espana/andalucia/cadiz/playa-victoria", 1735, true),
-  yt("cortadura", "cadiz", "Playa de Cortadura", "Playa Victoria", "kkIA93YOQ6w", true, "webcamera24.com"),
+  // yt("cortadura") retirada 2026-11-13: el directo kkIA93YOQ6w terminó el
+  // 2023-01-17 y el canal no emite. Seguía "en verde" porque oembed da 200.
   // Del buscador de cámaras (Issue #359, aprobadas por Mikel el 2026-10-31).
   yt("conil-fontanilla", "conil", "Conil, playa de la Fontanilla", "La costa de Cádiz", "KmBrwm5T-Dc", true, "youtube.com (buscar-camaras)"),
 
@@ -218,7 +219,8 @@ const LISTA = [
   windy("calamillor", "Cala Bona (Son Servera)", 1712748772, false),
 
   sky("palma", "Can Pastilla (Playa de Palma)", "espana/islas-baleares/mallorca/can-pastilla-playa-de-palma", 6123, true),
-  yt("arenal", "palma", "S'Arenal (Playa de Palma)", "Webcam Arenal", "1qGjkrM0REk", true, "webcamera24.com"),
+  // yt("arenal") retirada 2026-11-13: 1qGjkrM0REk sin directo desde el
+  // 2026-11-08 (API de YouTube) y su canal no emite nada en /live.
   // Muro: su cámara propia (SOCIB) salió el 2026-10-11 por llevar parada
   // desde 2024. Esta emite en directo desde el Resort Playa Esperanza
   // (YouTube "isLive", 8 espectadores, 2026-10-11 09:53 UTC); la miniatura
@@ -231,7 +233,8 @@ const LISTA = [
   sky("laspalmas", "Las Canteras desde Peña la Vieja", "espana/canarias/las-palmas-gran-canaria/playa-las-canteras", 624, true),
   sky("laspalmas", "La Cícer (Las Canteras)", "espana/canarias/las-palmas-gran-canaria/la-cicer-las-canteras", 627, true),
   sky("santacruztenerife", "Playa de Las Teresitas", "espana/canarias/santa-cruz-de-tenerife/playa-de-las-teresitas", 1105, true),
-  yt("teresitas", "santacruztenerife", "Las Teresitas", "SIEMPRIA InfiniteTechSolutions", "BuH1_8tFc0g", true, "webcamera24.com"),
+  // yt("teresitas") retirada 2026-11-13: el directo BuH1_8tFc0g terminó el
+  // 2026-07-20 y el canal no emite nada en /live.
   sky("elmedano", "El Médano (surf y kite)", "espana/canarias/santa-cruz-de-tenerife/surf-kitesurf-medano", 427, true),
   sky("elmedano", "Playa de El Médano", "espana/canarias/santa-cruz-de-tenerife/playa-el-medano", 6103, true),
   sky("elmedano", "El Médano, paseo marítimo", "espana/canarias/santa-cruz-de-tenerife/playa-de-el-medano", 376, true),
