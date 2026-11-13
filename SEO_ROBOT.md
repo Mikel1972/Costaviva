@@ -56,3 +56,13 @@ Una entrada por pasada (martes y viernes), añadida al final. Anota números de 
 - PARTE A y B: ninguna; sin datos que lo justifiquen.
 - PARTE D: viernes, KPIs solo martes. DeepL: lanzado "Contraste de traducciones con DeepL" (idioma=pt, ref main); el de en, en la pasada siguiente del mes. Informe aún sin leer ni aplicar.
 - Esperado próxima pasada: 32 o más indexadas; "Descubierta" estancada o a la baja; primeros veredictos a 2 semanas de los cambios del 23-oct.
+
+## 2026-11-13 06:3x UTC (viernes)
+- Aviso: SEO_ESTADO.md es del 2026-11-10 11:38 UTC (no de hoy).
+- Números: indexadas 34 de 500 inspeccionadas (7%; antes 32: +2). Sitemap 558 URLs. 236 "Descubierta: sin indexar" (antes 380), 229 "Google no reconoce esta URL" (antes 87), 1 "Rastreada: sin indexar", 465 sin rastrear nunca. Clics/impresiones de 28 días: no figuran en este fichero; informe de palabras de España, semana 26-oct: 260 impresiones, 5 clics, posición 20,7.
+- País priorizado: España (pais_foco; real 0 frente a objetivo 10,1 €; Portugal y NZ también en rojo).
+- PARTE C: ningún cambio. Los dos cambios medidos siguen "pendiente" (el del 23-oct, con 1 semana: pos. 58,4 → 46,6; el del 12-oct, sin datos). Los huecos que quedan son términos con pocas impresiones en páginas que ya llevan plural/"pesca de" en título; tocarlos de nuevo impediría medir. Técnicas (spinning, surfcasting, jigging): sin datos reales con fuente en la app, no se crean.
+- PARTE A y B: ninguna; sin datos que lo justifiquen.
+- PARTE D: viernes, KPIs solo martes. DeepL: lanzado "Contraste de traducciones con DeepL" con idioma=en (ref main). Los informes de pt (6-nov) y en quedan por leer y aplicar; no se ha cambiado ninguna clave.
+- Esperado próxima pasada: 34 o más indexadas; primeros veredictos a 2 semanas del cambio del 23-oct.
+- Nota: el push directo a main fue denegado en esta sesión; esta entrada va en la rama claude/confident-ritchie-ckz4d7.
