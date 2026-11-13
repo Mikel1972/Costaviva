@@ -627,6 +627,13 @@ uno de estos dos:
 
 Los dos se resuelven con el mismo método de arriba.
 
+### Cámaras de terceros, intentos a ciegas y retirada (añadido 2026-11-13, pedido de Mikel)
+
+- **Las `ext-*` también se reparan** cuando llevan más de 3 días en rojo con un motivo que sí es verificable (`youtube_sin_directo`, `youtube_no_existe`, `windy_inactiva`, `windy_congelada`). Solo se excluyen las de motivo `no_verificable_*`. Para YouTube: mira si el canal emite hoy en `https://www.youtube.com/channel/<id>/live` (si redirige a la página del canal, no emite) y, si emite, cambia el `videoId` en `assets/js/camaras-externas.js`. Si no emite, busca otra cámara para el mismo punto; si no la hay, retírala de la lista (comentario con fecha y motivo, como las del 2026-11-13). No las dejes en rojo semana tras semana.
+- **Nada de probar nombres a ciegas más de 2 pasadas.** Si en 2 pasadas no has encontrado la URL nueva probando variantes (caso de Orio: más de 30 nombres en 4 días), deja de probar: busca la web pública del dueño una vez más y, si tampoco, escribe en ROBOT.md "sin sustituta tras N pasadas" y pasa a otra cámara.
+- **Retirada a las 3 semanas.** Una cámara propia (functions/webcam/[slug].js) con más de 21 días sin señal y sin sustituta verificada se retira del código (comentario con fecha y motivo, y quitada de la lista de index.html), igual que SOCIB (2026-10-11) y Alicante/Torreblanca (2026-11-13). La app ya la ocultaba a las 24 h; retirarla saca el ruido del parte y libera tus pasadas.
+- **De día.** `frame_congelado`/`frame_plano` a las 05-06 UTC es de noche y no dice nada. Juzga esas cámaras con `hash_desde`/`congeladaDesde`: si la imagen es la misma desde hace más de 2 días, está congelada de verdad aunque sea de noche (Mundaka: la misma foto desde el 2026-10-25).
+
 ## Aprendizaje por zonas (añadido 2026-09-19, pedido explícito del usuario)
 
 Principio general para la pasada diaria de "cámaras/webcams"
