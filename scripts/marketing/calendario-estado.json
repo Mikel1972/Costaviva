@@ -1,10 +1,5 @@
 {
   "generadas": {
-    "2026-10-15-post": {
-      "tipo": "funcion-diario",
-      "campana": "20261015-funcion-diario",
-      "en": "2026-10-14T17:30:49.507Z"
-    },
     "2026-10-16-post": {
       "tipo": "condiciones",
       "campana": "20261016-condiciones-mundaka",
@@ -199,6 +194,11 @@
       "tipo": "condiciones-nz",
       "campana": "20261113-condiciones-nz-palliser-bay",
       "en": "2026-11-12T05:40:50.901Z"
+    },
+    "2026-11-14-reel-nz": {
+      "tipo": "reel-condiciones",
+      "campana": "20261114-reel-condiciones-nz-kaiteriteri",
+      "en": "2026-11-13T05:21:48.408Z"
     }
   },
   "ultimaFuncion": "alarma"

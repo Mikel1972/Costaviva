@@ -7,11 +7,12 @@
     "gisborne-hawkes-bay",
     "waikato-west-coast",
     "taranaki",
-    "wellington"
+    "wellington",
+    "nelson-marlborough"
   ],
   "ciclo": 1,
-  "ultimaZona": "wellington",
-  "ultimaRegion": "nz_central",
-  "ultimoSpot": "nz-palliser-bay",
-  "fecha": "2026-11-12T05:40:49.513Z"
+  "ultimaZona": "nelson-marlborough",
+  "ultimaRegion": "nz_challenger",
+  "ultimoSpot": "nz-kaiteriteri",
+  "fecha": "2026-11-13T05:20:51.161Z"
 }
