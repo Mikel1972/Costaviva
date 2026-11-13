@@ -10264,3 +10264,12 @@ Datos: `camaras-estado.json` de 2026-11-12T03:05Z (fresco). En rojo: alicante, t
 - **pasaia**: detectia.net 200, Last-Modified 11-nov 18:04 GMT (la imagen se actualiza una vez al día hacia esa hora; son las 05:xx UTC, de noche). No es una fuente movida; sin cambios.
 - No se cambió código. Para la próxima: sustituto de alicante/torreblanca (otro dueño) y la web de la Diputación para Orio.
 — robot de cámaras caídas (rutina)
+
+### 2026-11-13 05:43 UTC (robot de cámaras caídas — rutina; Orio, Alicante, Cantabria)
+
+Datos: `camaras-estado.json` de 2026-11-13T03:04Z (fresco). En rojo: alicante, torreblanca (`origen_404` desde octubre), pasaia (`frame_plano`), orio (`sin_respuesta`), sanvicente (`origen_522`), santona (`sin_respuesta`, 3 fallos), bakio y mundaka (`frame_congelado`, de noche) y ext-* de YouTube/Windy (sin directo; no se reparan aquí).
+- **orio**: `GIP_orio_169.stream` sigue en 404 mientras Zarautz (mismo servidor) da 200. Probadas 8 variantes más (`_barra`, `_playa`, `_puerto`, `orio2`, `_43`...): todas 404. Páginas de gipuzkoa.eus (kostak/camaras, camara-mar): 404. Búsqueda "webcam Orio Gipuzkoa playa en directo camaramar": solo agregadores (surf-forecast, que remite a Zarautz). Sin alternativa verificada.
+- **alicante**: `AlicantePuerto` sigue en 404 aunque la web de Turisme CV aún lo lista. Probé `AlicanteCentro` (200, Last-Modified de hoy): la miré con Read y es la fachada del Ayuntamiento, sin mar → NO sirve. Windy lista una "Platja del Postiguet" (windy.com/webcams/1349780414), sin verificar (red/licencia: solo como enlace).
+- **sanvicente/santona**: cantabria.es no responde desde la red de la rutina (sin verificar).
+- No se cambió código. Para la próxima: web de la Diputación para Orio, Postiguet de Windy, sustituto de torreblanca.
+— robot de cámaras caídas (rutina)
