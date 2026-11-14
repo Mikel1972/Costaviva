@@ -1,13 +1,13 @@
 {
- "fecha": "2026-11-14T13:08:01.658Z",
- "lineasHistorial": 10288,
+ "fecha": "2026-11-14T13:37:47.059Z",
+ "lineasHistorial": 10299,
  "etiquetas": 932,
  "etiquetasClaude": 241,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.1334,
+   "a": 1.1305,
    "p": 0.5,
-   "n": 306,
+   "n": 307,
    "nEtiquetas": 62,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -22,7 +22,7 @@
    "hMax": 1.69,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": -0.098
+   "correlacion": -0.1
   },
   "hondarribia/bocana": {
    "a": 3.2006,
@@ -56,9 +56,9 @@
    "correlacion": -0.054
   },
   "zarautz/dinamico": {
-   "a": 3.1249,
+   "a": 3.1243,
    "p": 0.5,
-   "n": 793,
+   "n": 794,
    "nEtiquetas": 135,
    "nEtiquetasClaude": 29,
    "franjasClaude": [
@@ -179,9 +179,9 @@
    "correlacion": 0.481
   },
   "bakio/principal": {
-   "a": 1.8842,
+   "a": 1.8824,
    "p": 0.5,
-   "n": 125,
+   "n": 126,
    "nEtiquetas": 18,
    "nEtiquetasClaude": 12,
    "franjasClaude": [
@@ -245,9 +245,9 @@
    "correlacion": null
   },
   "castrourdiales/principal": {
-   "a": 2.7602,
+   "a": 2.7683,
    "p": 0.5,
-   "n": 172,
+   "n": 173,
    "nEtiquetas": 42,
    "nEtiquetasClaude": 6,
    "franjasClaude": [
@@ -263,12 +263,12 @@
    "hMax": 4.51,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.086
+   "correlacion": 0.084
   },
   "berria/dinamico": {
-   "a": 2.8445,
+   "a": 2.8454,
    "p": 0.5,
-   "n": 377,
+   "n": 378,
    "nEtiquetas": 64,
    "nEtiquetasClaude": 16,
    "franjasClaude": [
@@ -484,8 +484,8 @@
    "sustituye": true,
    "motivo": "66 etiquetas",
    "ruido": {
-    "ruido": 0.536,
-    "pares": 132
+    "ruido": 0.573,
+    "pares": 133
    }
   },
   "donostia": {
@@ -508,8 +508,8 @@
    "sustituye": true,
    "motivo": "138 etiquetas",
    "ruido": {
-    "ruido": 0.555,
-    "pares": 565
+    "ruido": 0.554,
+    "pares": 566
    }
   },
   "getaria": {
@@ -554,10 +554,10 @@
   },
   "bakio": {
    "sustituye": true,
-   "motivo": "18 etiquetas",
+   "motivo": "estable (±30 % entre lecturas cercanas)",
    "ruido": {
-    "ruido": 0.303,
-    "pares": 27
+    "ruido": 0.297,
+    "pares": 28
    }
   },
   "sopelana": {
