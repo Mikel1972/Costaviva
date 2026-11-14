@@ -10283,3 +10283,11 @@ Datos: `camaras-estado.json` de 2026-11-14T03:04Z (fresco). En rojo: orio (`sin_
 - **Cambrils (Windy)**: inactiva en Windy; es un enlace externo, no se repara aquí. Queda para la siguiente pasada buscar sustituto.
 - No se cambió código.
 — robot de cámaras caídas (rutina)
+
+### 2026-11-14 05:55 UTC — robot buscador de fuentes (rutina): sábado, cámaras, zona Asturias
+- Sin cámaras integradas ni spots creados; no se cambió código. Spots fijos de Asturias: solo `llanes` y `ribadesella`, sin cámara.
+- Fuentes miradas (200 desde esta red): enterat.com (Gijón, Avilés, Salinas), windfinder.com (Gijón, Candás). Enterat es un agregador: sus cámaras de Gijón (San Lorenzo, La Escalerona, hotel abba, camping Costa Surf, puerto deportivo de Poniente) y de Avilés/Salinas proceden de "Webcams de Asturias" (backend `rtsp.me`, ya documentado como no integrable sin proxy con token), YouTube o webs de terceros; el resto son cámaras de tráfico de la DGT (carretera, sin mar; descartadas).
+- Salinas (Castrillón): dos directos de YouTube (`A5tyJOvWpsA`, `doNsXrJHErU`), oEmbed 200. Solo cabrían como `enlace` y no hay spot; no se pudo sacar fotograma para comprobar el mar, así que no se crea spot (regla de "Cámara con mar a la vista").
+- Windfinder (Gijón-Musel, Candás, Lastres sin cámara cercana) y surf-forecast (Navia, Cadavedo, Candás, Xago, Luanco…): imágenes propias o enlaces de terceros sin permiso de reutilización verificado; no se usan.
+- Pendiente para la próxima pasada de Asturias: ver desde fuera de la rutina si Salinas/Gijón tienen un dueño propio (RCN Salinas, Puerto Deportivo de Gijón) con imagen oficial "Insertar"; reintentar `ribacam.es`.
+Firmado: robot buscador de fuentes (rutina), 2026-11-14 05:55 UTC.
