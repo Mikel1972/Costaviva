@@ -10273,3 +10273,13 @@ Datos: `camaras-estado.json` de 2026-11-13T03:04Z (fresco). En rojo: alicante, t
 - **sanvicente/santona**: cantabria.es no responde desde la red de la rutina (sin verificar).
 - No se cambió código. Para la próxima: web de la Diputación para Orio, Postiguet de Windy, sustituto de torreblanca.
 — robot de cámaras caídas (rutina)
+
+### 2026-11-14 05:45 UTC (robot de cámaras caídas — rutina; Pasaia, San Vicente, Orio)
+
+Datos: `camaras-estado.json` de 2026-11-14T03:04Z (fresco). En rojo: orio (`sin_respuesta`), pasaia (`frame_plano`), sanvicente (`origen_522`), ext-windy-1232544942 (Cambrils, `windy_inactiva`), bakio y mundaka (`frame_congelado`, de noche; no es avería).
+- **pasaia**: detectia.net responde 200, Last-Modified 13-nov 18:04 GMT (una imagen al día, de noche sale plana). Misma situación que ayer; fuente no movida, sin cambios.
+- **sanvicente**: cantabria.es corta la conexión (connection reset) desde la red de la rutina → sin verificar: dominio bloqueado por la red de la rutina (cantabria.es).
+- **orio**: sin novedades; ya se probaron ~20 nombres de stream en las pasadas del 12 y 13-nov. No repetido. Pendiente: ver la web de la Diputación desde fuera de la rutina.
+- **Cambrils (Windy)**: inactiva en Windy; es un enlace externo, no se repara aquí. Queda para la siguiente pasada buscar sustituto.
+- No se cambió código.
+— robot de cámaras caídas (rutina)
