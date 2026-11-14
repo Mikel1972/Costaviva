@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-14T11:37:56.316Z",
- "lineasHistorial": 10248,
+ "fecha": "2026-11-14T12:00:57.114Z",
+ "lineasHistorial": 10259,
  "etiquetas": 932,
  "etiquetasClaude": 241,
  "calibracion": {
@@ -56,9 +56,9 @@
    "correlacion": -0.065
   },
   "zarautz/dinamico": {
-   "a": 3.1252,
+   "a": 3.1237,
    "p": 0.5,
-   "n": 789,
+   "n": 790,
    "nEtiquetas": 135,
    "nEtiquetasClaude": 29,
    "franjasClaude": [
@@ -129,9 +129,9 @@
    "correlacion": 0.405
   },
   "deba/rompiente": {
-   "a": 3.4358,
+   "a": 3.4376,
    "p": 0.5,
-   "n": 255,
+   "n": 256,
    "nEtiquetas": 37,
    "nEtiquetasClaude": 12,
    "franjasClaude": [
@@ -151,7 +151,7 @@
    "hMax": 6.97,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.361
+   "correlacion": 0.362
   },
   "mundaka/principal": {
    "a": 2.986,
@@ -245,9 +245,9 @@
    "correlacion": null
   },
   "castrourdiales/principal": {
-   "a": 2.7591,
+   "a": 2.7586,
    "p": 0.5,
-   "n": 170,
+   "n": 171,
    "nEtiquetas": 42,
    "nEtiquetasClaude": 6,
    "franjasClaude": [
@@ -258,17 +258,17 @@
     "2026-11-01T16",
     "2026-11-03T16"
    ],
-   "dias": 29,
+   "dias": 30,
    "hMin": 0.28,
    "hMax": 4.51,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.085
+   "correlacion": 0.086
   },
   "berria/dinamico": {
-   "a": 2.845,
+   "a": 2.8456,
    "p": 0.5,
-   "n": 374,
+   "n": 375,
    "nEtiquetas": 64,
    "nEtiquetasClaude": 16,
    "franjasClaude": [
@@ -508,8 +508,8 @@
    "sustituye": true,
    "motivo": "138 etiquetas",
    "ruido": {
-    "ruido": 0.555,
-    "pares": 561
+    "ruido": 0.56,
+    "pares": 562
    }
   },
   "getaria": {
@@ -572,16 +572,16 @@
    "sustituye": true,
    "motivo": "64 etiquetas",
    "ruido": {
-    "ruido": 0.919,
-    "pares": 167
+    "ruido": 0.903,
+    "pares": 168
    }
   },
   "castrourdiales": {
    "sustituye": true,
    "motivo": "42 etiquetas",
    "ruido": {
-    "ruido": 0.485,
-    "pares": 72
+    "ruido": 0.486,
+    "pares": 73
    }
   },
   "nz-napier": {
