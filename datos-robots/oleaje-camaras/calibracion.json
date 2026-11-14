@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-14T15:07:43.877Z",
- "lineasHistorial": 10329,
+ "fecha": "2026-11-14T15:37:43.820Z",
+ "lineasHistorial": 10340,
  "etiquetas": 932,
  "etiquetasClaude": 241,
  "calibracion": {
@@ -56,9 +56,9 @@
    "correlacion": -0.054
   },
   "zarautz/dinamico": {
-   "a": 3.124,
+   "a": 3.1238,
    "p": 0.5,
-   "n": 797,
+   "n": 798,
    "nEtiquetas": 135,
    "nEtiquetasClaude": 29,
    "franjasClaude": [
@@ -92,7 +92,7 @@
    "hMax": 6.97,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.246
+   "correlacion": 0.247
   },
   "zumaia/c": {
    "a": 20.2583,
@@ -266,9 +266,9 @@
    "correlacion": 0.084
   },
   "berria/dinamico": {
-   "a": 2.8454,
+   "a": 2.844,
    "p": 0.5,
-   "n": 378,
+   "n": 379,
    "nEtiquetas": 64,
    "nEtiquetasClaude": 16,
    "franjasClaude": [
@@ -348,9 +348,9 @@
    "correlacion": 0.504
   },
   "zarautz/principal": {
-   "a": 3.4982,
+   "a": 3.4859,
    "p": 0.5,
-   "n": 50,
+   "n": 51,
    "nEtiquetas": 3,
    "nEtiquetasClaude": 2,
    "franjasClaude": [
@@ -362,7 +362,7 @@
    "hMax": 6.49,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0
+   "correlacion": 0.023
   },
   "nz-napier/principal": {
    "a": 2.3031,
@@ -508,8 +508,8 @@
    "sustituye": true,
    "motivo": "138 etiquetas",
    "ruido": {
-    "ruido": 0.56,
-    "pares": 570
+    "ruido": 0.554,
+    "pares": 572
    }
   },
   "getaria": {
@@ -572,8 +572,8 @@
    "sustituye": true,
    "motivo": "64 etiquetas",
    "ruido": {
-    "ruido": 0.886,
-    "pares": 169
+    "ruido": 0.903,
+    "pares": 170
    }
   },
   "castrourdiales": {
