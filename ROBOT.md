@@ -10291,3 +10291,23 @@ Datos: `camaras-estado.json` de 2026-11-14T03:04Z (fresco). En rojo: orio (`sin_
 - Windfinder (Gijón-Musel, Candás, Lastres sin cámara cercana) y surf-forecast (Navia, Cadavedo, Candás, Xago, Luanco…): imágenes propias o enlaces de terceros sin permiso de reutilización verificado; no se usan.
 - Pendiente para la próxima pasada de Asturias: ver desde fuera de la rutina si Salinas/Gijón tienen un dueño propio (RCN Salinas, Puerto Deportivo de Gijón) con imagen oficial "Insertar"; reintentar `ribacam.es`.
 Firmado: robot buscador de fuentes (rutina), 2026-11-14 05:55 UTC.
+
+## Robot de patrones de uso (continuación)
+
+### 2026-11-14 (robot de patrones de uso, rutina)
+
+**Datos:** `datos-robots/patrones-uso/ultima.json`, generado el 2026-11-14 02:20 UTC (fresco, `errores` vacío). Perfiles: 13 (2 altas en 7 días, 5 en 28). Usuarios activos: 7 en 7 días y 7 en 28 días. De 11 perfiles con más de 7 días, 3 nunca hicieron nada y 3 llevan 7 días sin actividad. `eventos_uso`: 142 filas/7 usuarios en 7 días; 842 filas/10 usuarios en total desde 2026-09-17. **Muestra muy pequeña (7 activos): son indicios, no patrones firmes.**
+
+**Qué se usa (7 días, usuarios distintos):** `ver_mapa` 7 de 7 (70 filas); capas: corriente 4, frentes 4, estaciones 4, clorofila 3, boyas 3, ríos 3, radar de lluvia 3, sustrato 3, viento 2, isóbatas 2, temperatura del agua 2, rayos 1, satélite 1; vista 3D 2. Diario: `crear_salida` y `crear_captura` solo 2 usuarios (4 y 6 filas, siempre los mismos dos, 12 salidas y 11 capturas en total). `ver_suscripcion` 1 usuario en 7 días (3 en 28), `iniciar_checkout` 0 en 7 días (1 usuario en 28 días, 2 filas); `acepta_condiciones_pago` 1 usuario, 2 filas el 5-nov.
+
+**Propuestas (todas con sí/no de Mikel; no he tocado nada):**
+1. **El diario está en 2 de 7 activos (29 %).** Las capas de mar nuevas (frentes, corriente, clorofila) las prueban 3-4 usuarios cada una, mucho más que el diario. Antes de rediseñar nada, mirar por qué 5 usuarios activos no abren el diario (¿no lo ven? ¿no lo necesitan?). Opción barata: una pista en el mapa que lleve al diario desde la ficha de un spot.
+2. **Capa 🌡 Temperatura del agua: 2 usuarios en 7 días y 5 en total, y 33 filas.** Frentes (40 filas, 4 usuarios en total) y corriente (27) se usan igual o más. No quitar; solo vigilar si sigue siendo la menos tocada de las capas de mar en las próximas semanas.
+3. **Embudo de pago:** en 28 días 3 usuarios vieron la página de suscripción, 1 inició checkout. Con 1-3 usuarios no hay conclusión; pero conviene seguir mirando `ver_suscripcion` → `iniciar_checkout` cuando haya más altas (hoy 3 perfiles sin actividad ninguna nunca llegaron a esta pantalla).
+4. **Abandono temprano:** 3 de 11 perfiles con más de 7 días no han hecho nada nunca. Mirar si el aviso/bienvenida del día 0 y el fin de prueba les llega; no es proponer cambio de producto todavía.
+
+**Sin propuesta de quitar:** SOS (1 uso total; es función de seguridad), batimetría vieja (`ver_capa_batimetria`, ya sustituida por isóbatas/sustrato).
+
+**Puntos ciegos de la medición (comprobado con grep de `registrarEvento`):** no hay evento para el cambio de modalidad costa/embarcación/submarina (píldora del mapa), ni para la capa de flota AIS, ni para tocar el mapa y ver coordenadas, ni para la ficha de ventana de actividad/índice de pesca, ni para identificar una captura por foto (eso sí queda en `uso_claude`, no en `eventos_uso`). Propuesta de dato a añadir a `agregar.mjs`/instrumentación: eventos `cambiar_modalidad` (con la modalidad), `ver_capa_flota` y `ver_ventana_actividad`. Sin ellos no se puede saber si la función estrella de las últimas semanas se usa.
+
+**No me dio tiempo/dato:** comparación con semanas anteriores (no hay ninguna entrada con números desde el 2026-10-10 en esta sección y el histórico git del JSON es corto); detalle de spots (casi todo cae en "otros" por la regla de 2 usuarios).
