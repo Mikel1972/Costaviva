@@ -1,20 +1,18 @@
-<!-- SINTESIS fecha=2026-11-14 hasta_commit=806df2a2c452a27e66231758401dd138c0696ff1 -->
+<!-- SINTESIS fecha=2026-11-15 hasta_commit=cf9295ec0ff68c328bc5d80a265e439948de434c -->
 
 ## 🛠 Trabajo interno (calibración y datos)
-Desde la última síntesis solo hay dos pasadas de cámaras en ROBOT.md (13 y 14 de noviembre). El robot de cámaras caídas sigue viendo en rojo Orio (stream de la Diputación en 404, ~20 nombres probados sin éxito), Pasaia (imagen única diaria, de noche sale plana), San Vicente y Santoña (cantabria.es no responde desde la red de la rutina, sin verificar), Cambrils (Windy inactiva), y el 13-nov también Alicante y Torreblanca (404). Bakio y Mundaka salen congeladas de noche, sin avería. No se cambió código. No hay entrada de calibración nueva.
+El robot de cámaras caídas (14-nov) vio en rojo Orio (sin respuesta), Pasaia (imagen plana: la fuente publica una sola imagen al día, igual que ayer), San Vicente (cantabria.es corta la conexión desde la red de la rutina, sin verificar) y Cambrils en Windy (inactiva; hay que buscarle sustituto). Bakio y Mundaka salen congeladas de noche, sin avería. No se tocó código. La pasada del 15-nov (presión atmosférica) comprobó que IPMA (Portugal) sigue respondiendo con presión real en 78 estaciones; falta verificar su licencia y elegir estaciones costeras (decisión tuya, toca prevision.js). MeteoGalicia sigue en 404.
 **Cámaras nuevas encontradas:** 0
-**Términos de búsqueda:** zona Asturias (Gijón, Avilés, Salinas, Candás, Lastres, Navia): agregadores enterat.com, windfinder y surf-forecast; sin tipo de dueño nuevo ni término que funcionara por primera vez. Salinas tiene dos directos de YouTube (solo cabrían como enlace; sin spot, y no se pudo comprobar el mar).
+**Términos de búsqueda:** zona Asturias (14-nov): se miraron enterat.com y windfinder.com; los directos de Salinas (YouTube) no se pudieron comprobar visualmente, así que no se creó spot. Ningún término funcionó por primera vez ni apareció un tipo de dueño nuevo.
 
 ## 🧪 Experiencia de usuario y patrones de uso
-**Robot de experiencia de usuario:** no le tocaba pasar hoy (sin entrada nueva).
-**Robot de patrones de uso:** no le tocaba pasar esta semana (sin entrada nueva).
+**Robot de experiencia de usuario:** no le tocaba pasar hoy.
+**Robot de patrones de uso (14-nov):** muestra muy pequeña (7 usuarios activos en 7 días; indicios, no patrones). El mapa lo usan los 7; las capas de mar (corriente, frentes, estaciones) las prueban 3-4 cada una, mientras que el diario solo 2 de 7. Propuestas, todas con tu sí/no: (1) investigar por qué 5 activos no abren el diario, p. ej. una pista desde la ficha del spot; (2) vigilar la capa de temperatura del agua (2 usuarios), sin quitarla; (3) seguir el embudo de pago (3 vieron suscripción, 1 inició checkout); (4) 3 de 11 perfiles con más de 7 días nunca hicieron nada: revisar si les llegan los avisos. Punto ciego: no se mide el cambio de modalidad, la capa de flota ni la ventana de actividad; propone eventos cambiar_modalidad, ver_capa_flota y ver_ventana_actividad.
 
 ## 🔎 Trabajo externo (investigación de contenido)
-Sin entradas nuevas de buenas prácticas de otras apps ni de estudios institucionales.
+Sin novedades de buenas prácticas de otras apps ni de estudios institucionales en las últimas 24 h.
 **Robot de especies:** no le tocaba pasar hoy.
 
 ## 🆕 Nuevas fuentes encontradas, pendientes de validar
-### Cámaras de Gijón/Avilés/Salinas (Webcams de Asturias vía enterat.com)
-Agregador cuyas cámaras proceden del backend rtsp.me (ya documentado como no integrable sin proxy con token), YouTube o webs de terceros; el resto son cámaras de tráfico DGT sin mar. Opinión: poco sólida; solo valdría si un dueño propio (RCN Salinas, Puerto Deportivo de Gijón) ofrece imagen oficial "Insertar".
-### Platja del Postiguet (Windy, Alicante)
-Posible sustituto de la cámara de Alicante, sin verificar y solo como enlace por licencia. Opinión: candidata débil hasta comprobar mar y permiso.
+### IPMA observaciones (Portugal)
+Observaciones meteorológicas de las últimas 24 h de 227 estaciones, 78 con presión (hPa) medida en la última hora, sin clave. Aportaría presión real a los spots de Portugal, como ya hacen las estaciones de AEMET en España. Opinión: parece sólida y útil, pero no integrar hasta confirmar la licencia (su página de términos no devolvió texto útil).
