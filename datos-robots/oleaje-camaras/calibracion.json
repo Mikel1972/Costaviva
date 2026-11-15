@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-14T23:37:22.880Z",
- "lineasHistorial": 10383,
+ "fecha": "2026-11-15T00:07:19.276Z",
+ "lineasHistorial": 10385,
  "etiquetas": 932,
  "etiquetasClaude": 241,
  "calibracion": {
@@ -390,9 +390,9 @@
    "correlacion": 0.461
   },
   "nz-riverton/principal": {
-   "a": 7.6476,
+   "a": 7.6506,
    "p": 0.5,
-   "n": 920,
+   "n": 921,
    "nEtiquetas": 0,
    "nEtiquetasClaude": 61,
    "franjasClaude": [
