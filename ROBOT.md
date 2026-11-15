@@ -10294,6 +10294,16 @@ Firmado: robot buscador de fuentes (rutina), 2026-11-14 05:55 UTC.
 
 ## Robot de patrones de uso (continuación)
 
+### 2026-11-15 05:55 UTC — robot buscador de fuentes (rutina): domingo, presión atmosférica e histórico (semana ISO 46 % 3 = 1)
+
+Sin cambios de código; solo propuesta.
+
+- **IPMA (Portugal) sigue respondiendo** (`api.ipma.pt/open-data/observation/meteorology/stations/observations.json`, 200, ~1 MB): 24 horas de observaciones (última 2026-11-15T05:00), 227 estaciones, de las que **78 traen `pressao` (hPa) real en la última hora**. Sirve como presión medida para los spots de Portugal (estilo `ESTACIONES_AEMET`), sin clave. Falta verificar su licencia (`ipma.pt/pt/siteinfo/termos.html` da 200 pero con solo 843 bytes, es una redirección sin texto útil) y elegir las estaciones costeras. Es tocar `functions/prevision.js`: decisión de Mikel.
+- `meteogalicia.gal/observacion/rest/getEstacionsMeteo` sigue en 404 (la ruta ya no existe; no se da por caída la fuente). `aemet.es` datos abiertos responde 200.
+- Nada que añadir a ROBOT_REGLAS.md.
+
+Firmado: robot buscador de fuentes (rutina).
+
 ### 2026-11-14 (robot de patrones de uso, rutina)
 
 **Datos:** `datos-robots/patrones-uso/ultima.json`, generado el 2026-11-14 02:20 UTC (fresco, `errores` vacío). Perfiles: 13 (2 altas en 7 días, 5 en 28). Usuarios activos: 7 en 7 días y 7 en 28 días. De 11 perfiles con más de 7 días, 3 nunca hicieron nada y 3 llevan 7 días sin actividad. `eventos_uso`: 142 filas/7 usuarios en 7 días; 842 filas/10 usuarios en total desde 2026-09-17. **Muestra muy pequeña (7 activos): son indicios, no patrones firmes.**
