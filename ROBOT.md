@@ -10311,3 +10311,12 @@ Firmado: robot buscador de fuentes (rutina), 2026-11-14 05:55 UTC.
 **Puntos ciegos de la medición (comprobado con grep de `registrarEvento`):** no hay evento para el cambio de modalidad costa/embarcación/submarina (píldora del mapa), ni para la capa de flota AIS, ni para tocar el mapa y ver coordenadas, ni para la ficha de ventana de actividad/índice de pesca, ni para identificar una captura por foto (eso sí queda en `uso_claude`, no en `eventos_uso`). Propuesta de dato a añadir a `agregar.mjs`/instrumentación: eventos `cambiar_modalidad` (con la modalidad), `ver_capa_flota` y `ver_ventana_actividad`. Sin ellos no se puede saber si la función estrella de las últimas semanas se usa.
 
 **No me dio tiempo/dato:** comparación con semanas anteriores (no hay ninguna entrada con números desde el 2026-10-10 en esta sección y el histórico git del JSON es corto); detalle de spots (casi todo cae en "otros" por la regla de 2 usuarios).
+
+### 2026-11-15 05:45 UTC (robot de cámaras caídas — rutina; Pasaia, Comillas/Suances/San Vicente)
+
+Datos: `camaras-estado.json` de 2026-11-15T03:04Z (fresco). En rojo: pasaia (`frame_plano`), comillas, suances y sanvicente (`origen_522`, 1 fallo cada una), ext-windy-1232544942 (Cambrils, `windy_inactiva`), bakio y mundaka (`frame_congelado`, de noche; no es avería).
+- **pasaia**: detectia.net responde 200, Last-Modified 14-nov 18:04 GMT (una imagen al día; de noche sale plana). Fuente no movida, sin cambios.
+- **comillas / suances / sanvicente**: cantabria.es corta la conexión (connection reset) desde la red de la rutina → sin verificar: dominio bloqueado por la red de la rutina (cantabria.es). No se da por caída ni por arreglada.
+- **Cambrils (Windy)**: inactiva; es enlace externo, no se repara aquí. Sigue pendiente buscar sustituto.
+- Orio y Santoña ya no salen en rojo. No se cambió código. Para la pasada de día: bakio/mundaka y revisar Pasaia con luz.
+— robot de cámaras caídas (rutina)
