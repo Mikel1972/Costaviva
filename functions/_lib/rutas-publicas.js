@@ -80,6 +80,8 @@ const ARCHIVOS_PUBLICOS = new Set([
   // hasta ese código.
   "/prevision",
   "/luna",
+  // Nubosidad observada (METAR) junto a un punto, 2026-11-16. Pública.
+  "/cielo",
   "/rayos-imagen",
   // Rayos en tiempo real (Xweather); exige sesión dentro del propio endpoint.
   "/rayos-cerca",
