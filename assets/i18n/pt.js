@@ -1102,6 +1102,8 @@
   "diario.picadas_1": "1 toque",
   "diario.picadas_n": "{n} toques",
   "diario.picada_mas": "+1 toque",
+  "diario.picada_cambiar_hora": "Mudar a hora deste toque",
+  "diario.picada_pide_hora": "A que horas foi o toque? (HH:MM)",
   "disp.titulo": "A sua conta está a ser usada em mais de {n} dispositivos",
   "disp.texto": "Cada subscrição é para uma pessoa, em {n} dispositivos no máximo. Para continuar aqui, termine a sessão noutro.",
   "disp.este": "Este dispositivo",
