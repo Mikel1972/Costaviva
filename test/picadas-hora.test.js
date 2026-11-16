@@ -36,3 +36,19 @@ test("la tabla es privada de cada usuario y se borra con la salida", () => {
   assert.match(sql, /references public\.salidas_pesca \(id\) on delete cascade/);
   assert.equal((sql.match(/auth\.uid\(\) = user_id/g) || []).length, 6);
 });
+
+test("la hora de una picada se puede corregir: formatos admitidos y día de la jornada", () => {
+  const horaPicadaValida = cargar("horaPicadaValida");
+  assert.equal(horaPicadaValida("21:50"), "21:50");
+  assert.equal(horaPicadaValida("2150"), "21:50");
+  assert.equal(horaPicadaValida("1.28"), "01:28");
+  assert.equal(horaPicadaValida("25:00"), null);
+  assert.equal(horaPicadaValida(""), null);
+  assert.equal(horaPicadaValida(null), null);
+  const CondSalida = { sumarDias: (iso, d) => new Date(Date.parse(iso + "T12:00:00Z") + d * 864e5).toISOString().slice(0, 10) };
+  const fechaDePicada = new Function("CondSalida", `${html.slice(html.indexOf("function fechaDePicada("), html.indexOf("async function cambiarHoraPicada("))}; return fechaDePicada;`)(CondSalida);
+  const salida = { fecha: "2026-11-15", hora_inicio: "23:00:00" };
+  assert.equal(fechaDePicada(salida, "23:40"), "2026-11-15");
+  assert.equal(fechaDePicada(salida, "01:28"), "2026-11-16", "cruzó la medianoche");
+  assert.match(html, /contEl\.querySelectorAll\("\.hora-picada"\)/);
+});

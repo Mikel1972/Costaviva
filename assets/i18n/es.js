@@ -1100,6 +1100,8 @@
   "diario.picadas_1": "1 picada",
   "diario.picadas_n": "{n} picadas",
   "diario.picada_mas": "+1 picada",
+  "diario.picada_cambiar_hora": "Cambiar la hora de esta picada",
+  "diario.picada_pide_hora": "¿A qué hora fue la picada? (HH:MM)",
   "disp.titulo": "Tu cuenta se usa en más de {n} dispositivos",
   "disp.texto": "Cada suscripción es para una persona, en {n} dispositivos como mucho. Para seguir aquí, cierra la sesión en otro.",
   "disp.este": "Este dispositivo",

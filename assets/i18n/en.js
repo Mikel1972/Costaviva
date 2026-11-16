@@ -1100,6 +1100,8 @@
   "diario.picadas_1": "1 bite",
   "diario.picadas_n": "{n} bites",
   "diario.picada_mas": "+1 bite",
+  "diario.picada_cambiar_hora": "Change the time of this bite",
+  "diario.picada_pide_hora": "What time was the bite? (HH:MM)",
   "disp.titulo": "Your account is being used on more than {n} devices",
   "disp.texto": "Each subscription is for one person, on {n} devices at most. To keep using it here, sign out on another device.",
   "disp.este": "This device",
