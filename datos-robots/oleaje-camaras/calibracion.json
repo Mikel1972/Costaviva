@@ -1,13 +1,13 @@
 {
- "fecha": "2026-11-16T14:07:51.622Z",
- "lineasHistorial": 10818,
+ "fecha": "2026-11-16T14:37:51.320Z",
+ "lineasHistorial": 10829,
  "etiquetas": 936,
  "etiquetasClaude": 245,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.1199,
+   "a": 1.1211,
    "p": 0.5,
-   "n": 320,
+   "n": 321,
    "nEtiquetas": 62,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -22,7 +22,7 @@
    "hMax": 1.69,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": -0.084
+   "correlacion": -0.085
   },
   "hondarribia/bocana": {
    "a": 3.1245,
@@ -42,9 +42,9 @@
    "correlacion": -0.081
   },
   "donostia/principal": {
-   "a": 4.9834,
+   "a": 5.015,
    "p": 0.5,
-   "n": 53,
+   "n": 54,
    "nEtiquetas": 5,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
@@ -53,12 +53,12 @@
    "hMax": 4.04,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": -0.017
+   "correlacion": -0.011
   },
   "zarautz/dinamico": {
-   "a": 3.146,
+   "a": 3.1468,
    "p": 0.5,
-   "n": 825,
+   "n": 826,
    "nEtiquetas": 135,
    "nEtiquetasClaude": 29,
    "franjasClaude": [
@@ -245,9 +245,9 @@
    "correlacion": null
   },
   "castrourdiales/principal": {
-   "a": 2.7744,
+   "a": 2.7852,
    "p": 0.5,
-   "n": 175,
+   "n": 176,
    "nEtiquetas": 42,
    "nEtiquetasClaude": 6,
    "franjasClaude": [
@@ -263,12 +263,12 @@
    "hMax": 4.51,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.085
+   "correlacion": 0.083
   },
   "berria/dinamico": {
-   "a": 2.889,
+   "a": 2.894,
    "p": 0.5,
-   "n": 394,
+   "n": 395,
    "nEtiquetas": 64,
    "nEtiquetasClaude": 16,
    "franjasClaude": [
@@ -287,7 +287,7 @@
    "hMax": 4.73,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.274
+   "correlacion": 0.273
   },
   "mutriku/principal": {
    "a": 9.9053,
@@ -510,8 +510,8 @@
    "sustituye": true,
    "motivo": "138 etiquetas",
    "ruido": {
-    "ruido": 0.554,
-    "pares": 594
+    "ruido": 0.555,
+    "pares": 595
    }
   },
   "getaria": {
