@@ -29,7 +29,11 @@ Barreras: solo el peso (confianza) de reglas expertas, como mucho ±20 % por sem
 
 ## Vigilancia de los datos
 
+- Salud de las cámaras: último dato hace 10 h (se espera cada 6 h)
+- Presión real por spot (cada hora): último dato hace 4 h (se espera cada 2 h)
 - el modelo da -30 % frente a la boya Bilbao-Vizcaya (exterior) (8 lecturas)
+- el modelo da -28 % frente a la boya Bilbao II (costera) (13 lecturas)
+- el sesgo frente a Pasaia II (costera) ha cambiado: de 1.06 a 0.80
 
 ## Retadores en la sombra
 
