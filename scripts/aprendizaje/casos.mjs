@@ -137,7 +137,7 @@ export function casosDesdeDiario({ salidas = [], capturas = [], picadas = [], ex
       // Actividad = picadas sin sacar + capturas, por hora.
       actividad_hora: picadasPorHora(s, cs.length),
       // Cada picada y captura con su hora, marea y condiciones (momentos.mjs).
-      momentos: momentosSalida(picadasPorSalida.get(s.id) || [], cs),
+      momentos: momentosSalida(picadasPorSalida.get(s.id) || [], cs, s),
       guardado: p === null ? null : {
         p, version: s.indice_version || f?.version || null, especie: s.indice_especie || f?.especie || null,
         terminos: terminosGuardados(f), ranking: Array.isArray(f?.ranking) ? f.ranking : null,

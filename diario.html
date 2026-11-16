@@ -304,6 +304,7 @@ async function fondoSalida(lat, lon, modalidad) {
 }
 import * as CondSalida from "/assets/js/condiciones-salida.js";
 import * as Regiones from "/assets/js/regiones.js";
+import { solLuna } from "/assets/js/sol-luna.js";
 // Temperatura del agua medida con sonda (2026-10-10).
 import * as TempSonda from "/assets/js/temp-agua-sonda.js";
 import { bytesDeBase64 } from "/assets/js/capas-mar.js";
@@ -742,7 +743,7 @@ async function cargarDatos() {
   // que "+1", sin esperar; salen en la siguiente carga (2026-11-16, Mikel:
   // "para el robot, debes guardar marea, luna, etc.").
   const salidaPorId = new Map(salidas.map((s) => [s.id, s]));
-  Object.values(picadasPorSalida).flat().filter((p) => p.condiciones == null).slice(0, 6).forEach((p) => {
+  Object.values(picadasPorSalida).flat().filter((p) => p.condiciones == null || p.condiciones.sol_momento === undefined).slice(0, 6).forEach((p) => {
     const s = salidaPorId.get(p.salida_id);
     const hora = String(p.hora).slice(0, 5);
     if (s) completarPicada(p.id, s, fechaDePicada(s, hora), hora);
@@ -1939,9 +1940,17 @@ async function completarPicada(id, salida, fecha, hora) {
     const c = await contextoAmbiental(salida.lat, salida.lon, hora, salida.tipo_salida, fecha, null);
     await supabase.from("picadas_pesca").update({
       marea_altura: c.marea_altura, marea_tendencia: c.marea_tendencia,
-      condiciones: condicionesPicada(c),
+      condiciones: { ...condicionesPicada(c), ...solLunaDePicada(salida, fecha, hora) },
     }).eq("id", id);
   } catch (e) { console.warn("Condiciones de la picada:", e?.message || e); }
+}
+// Sol y Luna en el instante de la picada (assets/js/sol-luna.js; Mikel,
+// 2026-11-16: "la posición del sol" — sin planetas, ver allí por qué).
+function solLunaDePicada(salida, fecha, hora) {
+  try {
+    const ms = Regiones.msDeEtiqueta(`${fecha}T${hora}`, Regiones.zonaPorCoordenadas(salida.lat, salida.lon));
+    return solLuna(ms, salida.lat, salida.lon);
+  } catch { return {}; }
 }
 // "Debe permitir editar la hora, por si en el momento no he podido hacerlo"
 // (Mikel, 2026-11-16). "21:5" o "2150" también valen.
