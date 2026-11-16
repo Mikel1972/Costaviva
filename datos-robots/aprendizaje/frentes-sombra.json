@@ -1,15 +1,15 @@
 {
- "generado_en": "2026-11-09T13:21:13.801Z",
- "semana": "2026-W46",
+ "generado_en": "2026-11-16T04:41:54.427Z",
+ "semana": "2026-W47",
  "nota": "Frentes, clorofila y corrientes EN LA SOMBRA (no tocan el índice en vivo). Efecto en log-odds por encima del índice de cada especie, prior centrado en 0 (sin signo supuesto). Solo agregados de 5 personas o más. Barreras: aprendizaje/config.json (ajuste y frentes). Rasgos: scripts/aprendizaje/frentes-sombra.mjs.",
- "aviso": "3 fechas de salida sin capa de frentes (la copia diaria empezó el 2026-10-09 o falló ese día): esas salidas no cuentan en la sombra de frentes",
+ "aviso": "4 fechas de salida sin capa de frentes (la copia diaria empezó el 2026-10-09 o falló ese día): esas salidas no cuentan en la sombra de frentes",
  "radio_km": {
   "costa": 10,
   "submarina": 10,
   "embarcacion": 20
  },
- "casos": 7,
- "casos_con_capa": 7,
+ "casos": 10,
+ "casos_con_capa": 9,
  "combinaciones": [
   {
    "modalidad": "costa",
@@ -17,102 +17,48 @@
    "variables": {
     "frente_clorofila": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_termico": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_ambos": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "convergencia": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_y_corriente": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_baja": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_moderada": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 3,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_alta": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "corriente_fuerte": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     }
    }
   },
@@ -122,102 +68,48 @@
    "variables": {
     "frente_clorofila": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 1,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_termico": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 1,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_ambos": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 1,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "convergencia": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 1,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_y_corriente": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 1,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_baja": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 1,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_moderada": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 3,
-     "con_captura": 1,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_alta": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 1,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "corriente_fuerte": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 1,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     }
    }
   },
@@ -227,102 +119,48 @@
    "variables": {
     "frente_clorofila": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_termico": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_ambos": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "convergencia": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_y_corriente": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_baja": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_moderada": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 3,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_alta": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "corriente_fuerte": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     }
    }
   },
@@ -332,102 +170,48 @@
    "variables": {
     "frente_clorofila": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_termico": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_ambos": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "convergencia": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_y_corriente": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_baja": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_moderada": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 3,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_alta": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "corriente_fuerte": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     }
    }
   },
@@ -437,102 +221,48 @@
    "variables": {
     "frente_clorofila": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_termico": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_ambos": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "convergencia": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_y_corriente": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_baja": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_moderada": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 3,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_alta": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "corriente_fuerte": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     }
    }
   },
@@ -542,102 +272,48 @@
    "variables": {
     "frente_clorofila": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_termico": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_ambos": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "convergencia": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_y_corriente": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_baja": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_moderada": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 3,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_alta": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "corriente_fuerte": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     }
    }
   },
@@ -647,102 +323,48 @@
    "variables": {
     "frente_clorofila": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_termico": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_ambos": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "convergencia": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_y_corriente": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_baja": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_moderada": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 3,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_alta": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "corriente_fuerte": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     }
    }
   },
@@ -752,102 +374,48 @@
    "variables": {
     "frente_clorofila": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 1,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_termico": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 1,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_ambos": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 1,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "convergencia": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 1,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_y_corriente": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 1,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_baja": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 1,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_moderada": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 3,
-     "con_captura": 1,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_alta": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 1,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "corriente_fuerte": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 1,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     }
    }
   },
@@ -857,102 +425,48 @@
    "variables": {
     "frente_clorofila": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_termico": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_ambos": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "convergencia": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_y_corriente": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_baja": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_moderada": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 3,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_alta": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "corriente_fuerte": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     }
    }
   },
@@ -962,102 +476,48 @@
    "variables": {
     "frente_clorofila": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_termico": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_ambos": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "convergencia": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_y_corriente": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_baja": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_moderada": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 3,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_alta": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "corriente_fuerte": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     }
    }
   },
@@ -1067,102 +527,48 @@
    "variables": {
     "frente_clorofila": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_termico": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_ambos": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "convergencia": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_y_corriente": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_baja": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_moderada": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 3,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_alta": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "corriente_fuerte": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     }
    }
   },
@@ -1172,102 +578,48 @@
    "variables": {
     "frente_clorofila": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_termico": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_ambos": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "convergencia": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_y_corriente": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_baja": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_moderada": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 3,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_alta": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "corriente_fuerte": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     }
    }
   },
@@ -1277,102 +629,48 @@
    "variables": {
     "frente_clorofila": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_termico": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_ambos": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "convergencia": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_y_corriente": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_baja": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_moderada": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 3,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_alta": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "corriente_fuerte": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     }
    }
   },
@@ -1382,102 +680,48 @@
    "variables": {
     "frente_clorofila": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_termico": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_ambos": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "convergencia": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_y_corriente": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_baja": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_moderada": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 3,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_alta": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "corriente_fuerte": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     }
    }
   },
@@ -1487,102 +731,48 @@
    "variables": {
     "frente_clorofila": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_termico": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_ambos": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "convergencia": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_y_corriente": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_baja": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_moderada": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 3,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_alta": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "corriente_fuerte": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     }
    }
   },
@@ -1592,102 +782,48 @@
    "variables": {
     "frente_clorofila": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_termico": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_ambos": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "convergencia": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_y_corriente": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_baja": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_moderada": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 3,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_alta": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "corriente_fuerte": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     }
    }
   },
@@ -1697,102 +833,48 @@
    "variables": {
     "frente_clorofila": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_termico": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_ambos": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "convergencia": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_y_corriente": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_baja": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_moderada": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 3,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_alta": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "corriente_fuerte": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     }
    }
   },
@@ -1802,102 +884,48 @@
    "variables": {
     "frente_clorofila": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_termico": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_ambos": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "convergencia": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_y_corriente": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_baja": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_moderada": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 3,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_alta": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "corriente_fuerte": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     }
    }
   },
@@ -1907,102 +935,48 @@
    "variables": {
     "frente_clorofila": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_termico": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_ambos": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "convergencia": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_y_corriente": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_baja": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_moderada": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 3,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_alta": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "corriente_fuerte": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     }
    }
   },
@@ -2012,102 +986,48 @@
    "variables": {
     "frente_clorofila": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_termico": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_ambos": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "convergencia": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_y_corriente": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_baja": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_moderada": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 3,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_alta": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "corriente_fuerte": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     }
    }
   },
@@ -2117,102 +1037,48 @@
    "variables": {
     "frente_clorofila": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_termico": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_ambos": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "convergencia": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "frente_y_corriente": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_baja": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_moderada": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 3,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "clorofila_alta": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     },
     "corriente_fuerte": {
      "estado": "sombra",
-     "n": 3,
-     "con_rasgo": 0,
-     "con_captura": 0,
-     "motivos": [
-      "3 salidas (mínimo 80)",
-      "faltan salidas con y sin captura (mínimo 15 de cada)",
-      "faltan salidas con y sin el rasgo (mínimo 30 de cada)"
-     ]
+     "oculto": true,
+     "motivo": "menos de 5 usuarios distintos"
     }
    }
   },

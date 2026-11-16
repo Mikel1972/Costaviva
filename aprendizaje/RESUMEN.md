@@ -1,17 +1,17 @@
-# Aprendizaje de Costaviva — semana 2026-W46
+# Aprendizaje de Costaviva — semana 2026-W47
 
-Generado el 2026-11-09 por el aprendizaje semanal (sin IA, `aprendizaje-semanal.yml`). Contrato de comun: `estandares/aprendizaje.md`. Detalle técnico en `datos-robots/aprendizaje/`; propuestas en `aprendizaje/propuestas.json`; señales en `aprendizaje/senales.json`.
+Generado el 2026-11-16 por el aprendizaje semanal (sin IA, `aprendizaje-semanal.yml`). Contrato de comun: `estandares/aprendizaje.md`. Detalle técnico en `datos-robots/aprendizaje/`; propuestas en `aprendizaje/propuestas.json`; señales en `aprendizaje/senales.json`.
 
 ## Estado del bucle
 
-- Aprendizaje semanal: corrió el 2026-11-09 (ok). Salidas usadas: 7.
-- Banco de pruebas: 0 salidas recalculadas con el tiempo de su día y 7 con lo que guardó el diario. sin OPEN_METEO_API_KEY: no se recalcula con series (solo términos guardados).
+- Aprendizaje semanal: corrió el 2026-11-16 (ok). Salidas usadas: 10.
+- Banco de pruebas: 0 salidas recalculadas con el tiempo de su día y 10 con lo que guardó el diario. sin OPEN_METEO_API_KEY: no se recalcula con series (solo términos guardados).
 - Retadores en la sombra: 3. Reglas con peso ajustado por los datos: 0.
 - Propuestas abiertas: 0. Las decides en el Issue semanal de comun.
 
 ## En una frase
 
-Con 7 salidas, cuando el índice está más alto se pesca casi igual que cuando está bajo (AUC 0,4); se pescó algo en el 71 % de las salidas.
+Hay 10 salidas con índice, pero de menos de 5 personas distintas: se aprende con ellas, pero aquí no se publican sus números (privacidad).
 0 cambio(s) aplicados solos y 0 pregunta(s) para ti.
 
 ## Te pregunto (sí o no)
@@ -27,34 +27,20 @@ Barreras: solo el peso (confianza) de reglas expertas, como mucho ±20 % por sem
 ## Qué tal acierta el índice
 
 
-| Índice | Salidas | Se pescó algo |
-|---|---|---|
-| 40-60 | 1 | 100 % |
-| 60-80 | 6 | 66.7 % |
-
 ## Vigilancia de los datos
 
-- Salud de las cámaras: último dato hace 10 h (se espera cada 6 h)
-- Presión real por spot (cada hora): último dato hace 7 h (se espera cada 2 h)
 - el modelo da -30 % frente a la boya Bilbao-Vizcaya (exterior) (8 lecturas)
-- el sesgo frente a Bilbao II (costera) ha cambiado: de 0.85 a 1.18
-- el modelo da 259 % frente a la boya Pasaia II (costera) (26 lecturas)
-- el sesgo frente a Pasaia II (costera) ha cambiado: de 0.99 a 3.59
-- la calibración de berria/dinamico empeora: error 78 % → 100 %
-- la calibración de orio/principal empeora: error 71 % → 100 %
-- la calibración de sopelana/principal empeora: error 75 % → 99 %
-- el índice de las salidas de esta semana se ha desplazado frente al mes anterior (PSI 17,782)
 
 ## Retadores en la sombra
 
 - `calamar-luna-llena` (Calamar: mejor con luna llena de noche): sin resultado publicable (sin casos evaluables); movería el índice 0 puntos de media.
-- `levante-confianza-05` (Levante en el Cantábrico con menos peso (0,7 → 0,5)): no gana al índice actual en 7 salidas (probabilidad de mejora 0 %); movería el índice 0,1 puntos de media.
+- `levante-confianza-05` (Levante en el Cantábrico con menos peso (0,7 → 0,5)): sin resultado publicable (menos de 5 usuarios distintos); movería el índice 0,1 puntos de media.
 - `lisa-rio-crecido` (Río crecido: la lisa entra en la desembocadura): sin resultado publicable (sin casos evaluables); movería el índice 0 puntos de media.
 
 ## Frentes, clorofila y corrientes (en la sombra)
 
 Se mira, para cada modalidad y cada especie, si pescar cerca de un borde de clorofila, de un cambio de temperatura, de una corriente que junta el agua (o con agua azul, verdosa o con floración, o con corriente fuerte) cambia lo que ya decía el índice, sin suponer de antemano si ayuda o estorba. No toca el índice en vivo.
-- Salidas con la capa de su día: 7 de 7. 3 fechas de salida sin capa de frentes (la copia diaria empezó el 2026-10-09 o falló ese día): esas salidas no cuentan en la sombra de frentes.
+- Salidas con la capa de su día: 9 de 10. 4 fechas de salida sin capa de frentes (la copia diaria empezó el 2026-10-09 o falló ese día): esas salidas no cuentan en la sombra de frentes.
 - Ninguna combinación supera todavía las barreras (80 salidas, 15 con y 15 sin captura, 30 con y 30 sin el rasgo, 5 personas o más, efecto de 3 desviaciones y mejora en las salidas recientes). Todas siguen en la sombra, acumulando salidas.
 
 ## Temperatura del agua: sonda frente al modelo
@@ -65,7 +51,7 @@ Quien mide el agua con su sonda la apunta en el diario. Se compara con lo que de
 
 ## Para etiquetar (lo que más enseña)
 
-- Cámara mutriku (principal), 2026-11-05 09:08 UTC: cámara y modelo discrepan mucho.
+- Cámara mutriku (principal), 2026-11-11 08:08 UTC: cámara y modelo discrepan mucho.
 
 Se etiquetan en `etiquetar-olas.html` (admin) o con la rutina de etiquetado.
 
