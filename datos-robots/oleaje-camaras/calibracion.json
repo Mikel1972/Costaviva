@@ -1,8 +1,8 @@
 {
- "fecha": "2026-11-16T01:07:19.241Z",
- "lineasHistorial": 10645,
- "etiquetas": 933,
- "etiquetasClaude": 242,
+ "fecha": "2026-11-16T01:37:24.342Z",
+ "lineasHistorial": 10648,
+ "etiquetas": 936,
+ "etiquetasClaude": 245,
  "calibracion": {
   "hondarribia/principal": {
    "a": 1.1161,
@@ -390,11 +390,11 @@
    "correlacion": 0.461
   },
   "nz-riverton/principal": {
-   "a": 7.7086,
+   "a": 7.5937,
    "p": 0.5,
-   "n": 950,
+   "n": 954,
    "nEtiquetas": 0,
-   "nEtiquetasClaude": 62,
+   "nEtiquetasClaude": 65,
    "franjasClaude": [
     "2026-10-11T22",
     "2026-10-15T22",
@@ -436,7 +436,8 @@
     "2026-11-12T00",
     "2026-11-13T00",
     "2026-11-14T00",
-    "2026-11-14T22"
+    "2026-11-14T22",
+    "2026-11-16T00"
    ],
    "dias": 37,
    "hMin": 0.3,
@@ -606,7 +607,7 @@
    "motivo": "estable (±0 % entre lecturas cercanas)",
    "ruido": {
     "ruido": 0,
-    "pares": 805
+    "pares": 806
    }
   }
  }
