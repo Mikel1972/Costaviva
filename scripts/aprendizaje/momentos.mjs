@@ -55,18 +55,53 @@ export function momentosSalida(picadas = [], capturas = [], salida = null) {
   for (const k of capturas) {
     if (!k?.hora) continue;
     const hora = String(k.hora).slice(0, 5);
-    const sl = solLunaMomento(salida, hora);
-    out.push({ tipo: "captura", hora, marea_tendencia: k.marea_tendencia || null,
-      marea_altura: k.marea_altura ?? null, luna_fase: salida?.luna_fase ?? null, presion_tendencia: null,
-      sol_momento: sl.sol_momento ?? null, solunar: sl.solunar ?? null, luna_visible: sl.luna_visible ?? null, condiciones: {} });
+    const c = k.condiciones && typeof k.condiciones === "object" ? k.condiciones : {};
+    const sl = c.sol_momento !== undefined ? c : solLunaMomento(salida, hora);
+    out.push({ tipo: "captura", hora, especie: normalizarEspecie(k.especie), marea_tendencia: k.marea_tendencia || null,
+      marea_altura: k.marea_altura ?? null, luna_fase: c.luna_fase ?? salida?.luna_fase ?? null, presion_tendencia: c.presion_tendencia ?? null,
+      sol_momento: sl.sol_momento ?? null, solunar: sl.solunar ?? null, luna_visible: sl.luna_visible ?? null, condiciones: c });
   }
   return out.sort((a, b) => a.hora.localeCompare(b.hora));
+}
+
+// Especie en minúsculas y sin acentos ("Pulpo común" -> "pulpo comun").
+export function normalizarEspecie(texto) {
+  const t = String(texto || "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  return t || null;
+}
+
+// Tramos de las variables numéricas extra (extras-momento.js), para contar.
+export function tramos(m) {
+  const c = m.condiciones || {};
+  const t = (v, cortes, nombres) => {
+    if (!Number.isFinite(v)) return null;
+    const i = cortes.findIndex((x) => v < x);
+    return nombres[i === -1 ? nombres.length - 1 : i];
+  };
+  return {
+    marea_ciclo: Number.isFinite(c.marea_min_desde_extremo) && c.marea_ultimo_extremo
+      ? `${c.marea_ultimo_extremo}+${Math.min(6, Math.floor(c.marea_min_desde_extremo / 60))}h` : null,
+    presion_3h: t(c.presion_cambio_3h, [-1, 1], ["baja", "estable", "sube"]),
+    lluvia_72h: t(c.lluvia_72h, [1, 10], ["seco", "algo", "mucha"]),
+    ola: t(c.oleaje_altura_max, [0.5, 1, 2], ["<0.5", "0.5-1", "1-2", ">2"]),
+    agua_72h: t(c.temp_agua_cambio_72h, [-0.5, 0.5], ["enfria", "estable", "calienta"]),
+  };
 }
 
 // Recuento por variable (marea, franja, luna, presión) de picadas y capturas,
 // con cuántas personas distintas hay detrás de cada valor.
 export function agruparMomentos(casos, cfg = CONFIG_MOMENTOS) {
   const grupos = new Map();
+  const especies = new Map();
+  const sumarEspecie = (especie, variable, valor, usuario) => {
+    if (valor === null || valor === undefined || valor === "") return;
+    if (!especies.has(especie)) especies.set(especie, { personas: new Set(), capturas: 0, grupos: new Map() });
+    const e = especies.get(especie);
+    e.personas.add(usuario);
+    const k = `${variable}|${valor}`;
+    if (!e.grupos.has(k)) e.grupos.set(k, { variable, valor, capturas: 0 });
+    e.grupos.get(k).capturas++;
+  };
   const sumar = (variable, valor, tipo, usuario) => {
     if (valor === null || valor === undefined || valor === "") return;
     const k = `${variable}|${valor}`;
@@ -84,6 +119,16 @@ export function agruparMomentos(casos, cfg = CONFIG_MOMENTOS) {
       sumar("sol", m.sol_momento, m.tipo, c.usuario);
       sumar("solunar", m.solunar, m.tipo, c.usuario);
       sumar("luna_visible", m.luna_visible === null || m.luna_visible === undefined ? null : (m.luna_visible ? "si" : "no"), m.tipo, c.usuario);
+      for (const [variable, v] of Object.entries(tramos(m))) sumar(variable, v, m.tipo, c.usuario);
+      // Por especie (solo capturas): la misma cuenta, separada por pez.
+      if (m.tipo === "captura" && m.especie) {
+        sumarEspecie(m.especie, "marea", m.marea_tendencia, c.usuario);
+        sumarEspecie(m.especie, "sol", m.sol_momento, c.usuario);
+        sumarEspecie(m.especie, "solunar", m.solunar, c.usuario);
+        sumarEspecie(m.especie, "luna", m.luna_fase, c.usuario);
+        sumarEspecie(m.especie, "franja", franja(m.hora), c.usuario);
+        for (const [variable, v] of Object.entries(tramos(m))) sumarEspecie(m.especie, variable, v, c.usuario);
+      }
     }
   }
   const todos = [...grupos.values()].map((g) => ({ variable: g.variable, valor: g.valor, picadas: g.picadas, capturas: g.capturas, personas: g.personas.size }));
@@ -91,5 +136,11 @@ export function agruparMomentos(casos, cfg = CONFIG_MOMENTOS) {
     total_momentos: casos.reduce((n, c) => n + (c.momentos?.length || 0), 0),
     grupos: todos.filter((g) => g.personas >= cfg.min_personas).sort((a, b) => a.variable.localeCompare(b.variable) || String(a.valor).localeCompare(String(b.valor))),
     grupos_retenidos: todos.filter((g) => g.personas < cfg.min_personas).length,
+    // Por especie: solo las pescadas por 3 personas distintas o más.
+    por_especie: [...especies.entries()]
+      .filter(([, e]) => e.personas.size >= cfg.min_personas)
+      .map(([especie, e]) => ({ especie, personas: e.personas.size, grupos: [...e.grupos.values()].sort((a, b) => a.variable.localeCompare(b.variable) || String(a.valor).localeCompare(String(b.valor))) }))
+      .sort((a, b) => a.especie.localeCompare(b.especie)),
+    especies_retenidas: [...especies.values()].filter((e) => e.personas.size < cfg.min_personas).length,
   };
 }

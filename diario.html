@@ -305,6 +305,7 @@ async function fondoSalida(lat, lon, modalidad) {
 import * as CondSalida from "/assets/js/condiciones-salida.js";
 import * as Regiones from "/assets/js/regiones.js";
 import { solLuna } from "/assets/js/sol-luna.js";
+import { extrasMomento, HOURLY_MARINO_EXTRAS, HOURLY_TIEMPO_EXTRAS } from "/assets/js/extras-momento.js";
 // Temperatura del agua medida con sonda (2026-10-10).
 import * as TempSonda from "/assets/js/temp-agua-sonda.js";
 import { bytesDeBase64 } from "/assets/js/capas-mar.js";
@@ -743,6 +744,12 @@ async function cargarDatos() {
   // que "+1", sin esperar; salen en la siguiente carga (2026-11-16, Mikel:
   // "para el robot, debes guardar marea, luna, etc.").
   const salidaPorId = new Map(salidas.map((s) => [s.id, s]));
+  // Lo mismo con las capturas con hora que aún no tienen condiciones (las
+  // antiguas incluidas), pocas por carga para no saturar.
+  Object.values(capturasPorSalida).flat()
+    .filter((c) => "condiciones" in c && c.condiciones == null && c.hora)
+    .slice(0, 4)
+    .forEach((c) => completarCaptura(c.id, salidaPorId.get(c.salida_id), c.hora));
   Object.values(picadasPorSalida).flat().filter((p) => p.condiciones == null || p.condiciones.sol_momento === undefined).slice(0, 6).forEach((p) => {
     const s = salidaPorId.get(p.salida_id);
     const hora = String(p.hora).slice(0, 5);
@@ -1773,11 +1780,14 @@ async function guardarCaptura(salidaId, fecha, idExistente, ordenFotoBase) {
       btn.disabled = false;
       return;
     }
+    // La hora pudo cambiar: se recalculan sus condiciones.
+    if (hora && salidaDelDia) completarCaptura(idExistente, salidaDelDia, hora);
   } else {
     const { data: captura, error } = await supabase.from("capturas").insert(datos).select().single();
     if (error) { mensajeEl.className = "mensaje error"; mensajeEl.textContent = traducirError(error, I18n.t("diario.error_captura")); btn.disabled = false; return; }
     capturaId = captura.id;
     registrarEvento("crear_captura", { especie, tecnica: tecnica || null });
+    if (hora && salidaDelDia) completarCaptura(capturaId, salidaDelDia, hora);
     // En barco y con la jornada en curso, la captura deja sola una marca
     // en el punto donde se está (GPS), con el nombre del pez (2026-11-08,
     // Mikel: "detectar el punto en el que se está, ya que normalmente no
@@ -1935,14 +1945,45 @@ async function registrarPicada(salida, horaDada = null) {
   if (error || !data) { console.warn("Picada:", error?.message); return; }
   completarPicada(data.id, salida, fecha, hora);
 }
+// Todo lo de un momento (picada o captura): lo que guarda la salida para esa
+// hora (contextoAmbiental), Sol y Luna, y los datos extra de
+// extras-momento.js (cambios de presión, lluvia previa, aire, rachas, periodo
+// y dirección de la ola, mar de fondo, punto del ciclo de marea...).
+async function condicionesMomento(salida, fecha, hora) {
+  const [c, extras] = await Promise.all([
+    contextoAmbiental(salida.lat, salida.lon, hora, salida.tipo_salida, fecha, null),
+    extrasDeMomento(salida, fecha, hora).catch(() => ({})),
+  ]);
+  return { c, condiciones: { ...condicionesPicada(c), ...solLunaDePicada(salida, fecha, hora), ...extras } };
+}
+async function extrasDeMomento(salida, fecha, hora) {
+  const coord = `latitude=${salida.lat}&longitude=${salida.lon}&${consultaZona(salida.lat, salida.lon)}`;
+  const rango = `start_date=${CondSalida.sumarDias(fecha, -3)}&end_date=${CondSalida.sumarDias(fecha, 1)}`;
+  const [marino, tiempo] = await Promise.all([
+    pedirMeteo("marine", `${coord}&${rango}&hourly=${HOURLY_MARINO_EXTRAS}`).catch(() => null),
+    pedirMeteo("forecast", `${coord}&${rango}&hourly=${HOURLY_TIEMPO_EXTRAS}&windspeed_unit=kmh`).catch(() => null),
+  ]);
+  return extrasMomento({ etiqueta: `${fecha}T${hora}`, marino, tiempo });
+}
 async function completarPicada(id, salida, fecha, hora) {
   try {
-    const c = await contextoAmbiental(salida.lat, salida.lon, hora, salida.tipo_salida, fecha, null);
+    const { c, condiciones } = await condicionesMomento(salida, fecha, hora);
     await supabase.from("picadas_pesca").update({
-      marea_altura: c.marea_altura, marea_tendencia: c.marea_tendencia,
-      condiciones: { ...condicionesPicada(c), ...solLunaDePicada(salida, fecha, hora) },
+      marea_altura: c.marea_altura, marea_tendencia: c.marea_tendencia, condiciones,
     }).eq("id", id);
   } catch (e) { console.warn("Condiciones de la picada:", e?.message || e); }
+}
+// Las capturas guardan lo mismo (capturas.condiciones, migración
+// 20261116120000): "y a las especies pescadas" (Mikel, 2026-11-16). Si la
+// columna aún no existe, el update falla sin más y la captura queda igual.
+async function completarCaptura(id, salida, hora) {
+  if (!salida || !hora || !Number.isFinite(salida.lat) || !Number.isFinite(salida.lon)) return;
+  const h = String(hora).slice(0, 5);
+  try {
+    const { condiciones } = await condicionesMomento(salida, fechaDePicada(salida, h), h);
+    const { error } = await supabase.from("capturas").update({ condiciones }).eq("id", id);
+    if (error) console.warn("Condiciones de la captura:", error.message);
+  } catch (e) { console.warn("Condiciones de la captura:", e?.message || e); }
 }
 // Sol y Luna en el instante de la picada (assets/js/sol-luna.js; Mikel,
 // 2026-11-16: "la posición del sol" — sin planetas, ver allí por qué).

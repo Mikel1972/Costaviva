@@ -498,6 +498,40 @@
       ]
     },
     {
+      "tablename": "picadas_pesca",
+      "rls_enabled": true,
+      "policies": [
+        {
+          "name": "cada usuario actualiza solo sus picadas",
+          "cmd": "w",
+          "roles": [
+            "authenticated"
+          ]
+        },
+        {
+          "name": "cada usuario borra solo sus picadas",
+          "cmd": "d",
+          "roles": [
+            "authenticated"
+          ]
+        },
+        {
+          "name": "cada usuario inserta solo sus picadas",
+          "cmd": "a",
+          "roles": [
+            "authenticated"
+          ]
+        },
+        {
+          "name": "cada usuario ve solo sus picadas",
+          "cmd": "r",
+          "roles": [
+            "authenticated"
+          ]
+        }
+      ]
+    },
+    {
       "tablename": "presion_historico",
       "rls_enabled": true,
       "policies": [
