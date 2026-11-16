@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-16T12:37:44.685Z",
- "lineasHistorial": 10778,
+ "fecha": "2026-11-16T13:07:58.329Z",
+ "lineasHistorial": 10788,
  "etiquetas": 936,
  "etiquetasClaude": 245,
  "calibracion": {
@@ -42,9 +42,9 @@
    "correlacion": -0.081
   },
   "donostia/principal": {
-   "a": 4.9578,
+   "a": 4.9834,
    "p": 0.5,
-   "n": 52,
+   "n": 53,
    "nEtiquetas": 5,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
@@ -53,12 +53,12 @@
    "hMax": 4.04,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": -0.028
+   "correlacion": -0.017
   },
   "zarautz/dinamico": {
-   "a": 3.1405,
+   "a": 3.1418,
    "p": 0.5,
-   "n": 821,
+   "n": 822,
    "nEtiquetas": 135,
    "nEtiquetasClaude": 29,
    "franjasClaude": [
@@ -179,9 +179,9 @@
    "correlacion": 0.481
   },
   "bakio/principal": {
-   "a": 1.8727,
+   "a": 1.8759,
    "p": 0.5,
-   "n": 132,
+   "n": 133,
    "nEtiquetas": 18,
    "nEtiquetasClaude": 12,
    "franjasClaude": [
@@ -198,12 +198,12 @@
     "2026-11-05T14",
     "2026-11-07T14"
    ],
-   "dias": 35,
+   "dias": 36,
    "hMin": 0.27,
    "hMax": 4.62,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.082
+   "correlacion": 0.087
   },
   "sopelana/principal": {
    "a": 3.4204,
@@ -334,18 +334,18 @@
    "correlacion": -0.02
   },
   "donostia/playa": {
-   "a": 6.8583,
+   "a": 6.5554,
    "p": 1,
-   "n": 3,
+   "n": 4,
    "nEtiquetas": 1,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
-   "dias": 2,
+   "dias": 3,
    "hMin": 0.3,
-   "hMax": 1.81,
-   "errorRel": 0.925,
+   "hMax": 2.33,
+   "errorRel": 0.866,
    "pocosDatos": true,
-   "correlacion": 0.504
+   "correlacion": 0.69
   },
   "zarautz/principal": {
    "a": 3.4294,
@@ -494,8 +494,8 @@
    "sustituye": true,
    "motivo": "6 etiquetas",
    "ruido": {
-    "ruido": 0.894,
-    "pares": 16
+    "ruido": 0.89,
+    "pares": 17
    }
   },
   "orio": {
@@ -510,8 +510,8 @@
    "sustituye": true,
    "motivo": "138 etiquetas",
    "ruido": {
-    "ruido": 0.554,
-    "pares": 590
+    "ruido": 0.553,
+    "pares": 591
    }
   },
   "getaria": {
