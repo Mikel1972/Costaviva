@@ -1965,13 +1965,18 @@ async function cambiarHoraPicada(id, salida, horaActual) {
   await completarPicada(id, salida, fechaDePicada(salida, h), h);
   return true;
 }
-// Lo que se guarda en picadas_pesca.condiciones (mismos nombres que en
-// salidas_pesca, para cruzarlos sin traducir).
+// Lo que se guarda en picadas_pesca.condiciones: TODO lo que calcula
+// contextoAmbiental para esa hora (Mikel, 2026-11-16: "luna, presión y todos
+// los demás datos que tengamos"), con los mismos nombres que salidas_pesca.
+// Fuera: la marea (va en sus columnas), los datos "de fin de jornada" y el
+// detalle interno del índice (indice_factores, grande); sí su puntuación.
+const FUERA_CONDICIONES_PICADA = new Set(["marea_altura", "marea_tendencia", "marea_altura_fin", "marea_tendencia_fin", "indice_factores"]);
 function condicionesPicada(c) {
-  const claves = ["presion_valor", "presion_tendencia", "viento_kmh", "viento_dir", "oleaje_altura_min", "oleaje_altura_max",
-    "temp_agua", "nubosidad", "precipitacion", "luna_fase", "luna_iluminacion", "marea_coeficiente", "indice_puntuacion"];
   const out = {};
-  for (const k of claves) if (c?.[k] !== null && c?.[k] !== undefined) out[k] = c[k];
+  for (const [k, v] of Object.entries(c || {})) {
+    if (FUERA_CONDICIONES_PICADA.has(k) || v === null || v === undefined || typeof v === "object" || typeof v === "function") continue;
+    out[k] = v;
+  }
   return out;
 }
 
