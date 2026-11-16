@@ -10292,6 +10292,15 @@ Datos: `camaras-estado.json` de 2026-11-14T03:04Z (fresco). En rojo: orio (`sin_
 - Pendiente para la próxima pasada de Asturias: ver desde fuera de la rutina si Salinas/Gijón tienen un dueño propio (RCN Salinas, Puerto Deportivo de Gijón) con imagen oficial "Insertar"; reintentar `ribacam.es`.
 Firmado: robot buscador de fuentes (rutina), 2026-11-14 05:55 UTC.
 
+### 2026-11-16 05:45 UTC (robot de cámaras caídas — rutina; Pasaia, Cantabria)
+
+Datos: `camaras-estado.json` de 2026-11-16T03:04Z (fresco). En rojo: pasaia (`frame_plano`), sanvicente, suances y comillas (`origen_522`), ext-windy-1232544942 (Cambrils, `windy_inactiva`), bakio y mundaka (`frame_congelado`, de noche; no es avería). Orio ya no sale en rojo.
+- **pasaia**: detectia.net 200, Last-Modified 15-nov 18:04 GMT (una imagen al día; son las 05:4x UTC, de noche). Fuente no movida; sin cambios.
+- **sanvicente/suances/comillas**: cantabria.es no conecta desde la red de la rutina (000) → sin verificar: dominio bloqueado por la red de la rutina (cantabria.es). Su 522 viene del lado del dueño; sin alternativa verificada.
+- **Cambrils (Windy)**: enlace externo inactivo; no se repara aquí, queda para buscar sustituto.
+- No se cambió código. Para la próxima: sustituto de alicante/torreblanca y de Cambrils.
+— robot de cámaras caídas (rutina)
+
 ## Robot de patrones de uso (continuación)
 
 ### 2026-11-15 05:55 UTC — robot buscador de fuentes (rutina): domingo, presión atmosférica e histórico (semana ISO 46 % 3 = 1)
