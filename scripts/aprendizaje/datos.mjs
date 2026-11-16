@@ -87,7 +87,14 @@ export async function leerDiario({ url, key, emailsPrueba = [] }) {
   const COLS_CAP = "salida_id,especie,creado_en,hora,marea_altura,marea_tendencia";
   const COLS_TALLA = "talla_cm,talla_estimada_cm,talla_medida,especie_estimada";
   try {
-    capturas = await leerTodo(url, key, "capturas", `${COLS_CAP},${COLS_TALLA},peso_g,peso_estimado_g,peso_medido`);
+    try {
+      // condiciones de cada captura (migración 20261116120000).
+      capturas = await leerTodo(url, key, "capturas", `${COLS_CAP},${COLS_TALLA},peso_g,peso_estimado_g,peso_medido,condiciones`);
+    } catch (e0) {
+      if (e0.status !== 400) throw e0;
+      errores.push("capturas sin condiciones (migración 20261116120000)");
+      capturas = await leerTodo(url, key, "capturas", `${COLS_CAP},${COLS_TALLA},peso_g,peso_estimado_g,peso_medido`);
+    }
   } catch (e) {
     if (e.status !== 400) throw e;
     try {
