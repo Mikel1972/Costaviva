@@ -719,7 +719,7 @@ async function cargarDatos() {
   if (idsSalidas.length) {
     const { data: picadas, error: errPicadas } = await supabase
       .from("picadas_pesca")
-      .select("id, salida_id, hora, marea_tendencia, creado_en")
+      .select("id, salida_id, hora, marea_tendencia, condiciones, creado_en")
       .in("salida_id", idsSalidas)
       .order("creado_en", { ascending: true });
     if (errPicadas) console.warn("Picadas:", errPicadas.message);
@@ -737,6 +737,16 @@ async function cargarDatos() {
   // ese orden relativo dentro de cada día (más reciente primero según
   // se creó, gracias al orden de inserción del array).
   salidasPorFecha = {};
+  // Picadas sin marea ni condiciones (guardadas sin conexión, cambiadas a
+  // mano o apuntadas por soporte): se completan ahora con el mismo cálculo
+  // que "+1", sin esperar; salen en la siguiente carga (2026-11-16, Mikel:
+  // "para el robot, debes guardar marea, luna, etc.").
+  const salidaPorId = new Map(salidas.map((s) => [s.id, s]));
+  Object.values(picadasPorSalida).flat().filter((p) => p.condiciones == null).slice(0, 6).forEach((p) => {
+    const s = salidaPorId.get(p.salida_id);
+    const hora = String(p.hora).slice(0, 5);
+    if (s) completarPicada(p.id, s, fechaDePicada(s, hora), hora);
+  });
   salidas.forEach((s) => {
     (salidasPorFecha[s.fecha] = salidasPorFecha[s.fecha] || []).push({ salida: s, capturas: capturasPorSalida[s.id] || [], marcas: marcasPorSalida[s.id] || [], picadas: picadasPorSalida[s.id] || [] });
   });

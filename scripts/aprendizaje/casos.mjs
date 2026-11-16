@@ -10,6 +10,7 @@
 // coordenadas (el repo es público).
 
 import { regionPorCoordenadas } from "../../assets/js/ventana-actividad.js";
+import { momentosSalida } from "./momentos.mjs";
 
 const normal = (s) => String(s ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 
@@ -94,12 +95,17 @@ export function picadasPorHora(s, capturas = 0) {
   return dur >= 15 ? +((s.picadas + capturas) / (dur / 60)).toFixed(2) : null;
 }
 
-export function casosDesdeDiario({ salidas = [], capturas = [], excluir = new Set(), propios = new Set(), datos, hoy }) {
+export function casosDesdeDiario({ salidas = [], capturas = [], picadas = [], excluir = new Set(), propios = new Set(), datos, hoy }) {
   const mapa = mapaNombres(datos);
   const porSalida = new Map();
   for (const c of capturas) {
     if (!porSalida.has(c.salida_id)) porSalida.set(c.salida_id, []);
     porSalida.get(c.salida_id).push(c);
+  }
+  const picadasPorSalida = new Map();
+  for (const p of picadas) {
+    if (!picadasPorSalida.has(p.salida_id)) picadasPorSalida.set(p.salida_id, []);
+    picadasPorSalida.get(p.salida_id).push(p);
   }
   const casos = [];
   const descartes = { en_curso: 0, prueba: 0, futuro: 0, sin_condiciones: 0, sin_lugar: 0 };
@@ -130,6 +136,8 @@ export function casosDesdeDiario({ salidas = [], capturas = [], excluir = new Se
       picadas: Number.isInteger(s.picadas) ? s.picadas : null,
       // Actividad = picadas sin sacar + capturas, por hora.
       actividad_hora: picadasPorHora(s, cs.length),
+      // Cada picada y captura con su hora, marea y condiciones (momentos.mjs).
+      momentos: momentosSalida(picadasPorSalida.get(s.id) || [], cs),
       guardado: p === null ? null : {
         p, version: s.indice_version || f?.version || null, especie: s.indice_especie || f?.especie || null,
         terminos: terminosGuardados(f), ranking: Array.isArray(f?.ranking) ? f.ranking : null,
