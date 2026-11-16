@@ -5505,9 +5505,20 @@ if (I18n.preferencias().unidades === "imperial") {
     b.textContent = a === null ? `<${I18n.metros(c)}` : c === null ? `>${I18n.metros(a)}` : `${n(a)}–${n(c)}`;
   });
 }
+// Spots propios también (2026-11-16, Mikel en Lemoiz: "en otros sitios sí").
+// La tabla solo admite [a-z0-9]{2,40}: el id del spot propio (uuid) va sin
+// guiones y con "u" delante ("u" + 32 hex), que no choca con ningún slug
+// del catálogo. medir-espuma.mjs ignora los slugs sin cámara propia, así que
+// estas etiquetas no tocan la calibración de cámaras: sirven para comparar
+// la ola vista con la del modelo en ese punto.
+function slugEtiquetaOla(s) {
+  if (!s?.slug) return null;
+  const slug = s.esUsuario ? `u${String(s.slug).toLowerCase().replace(/[^a-z0-9]/g, "")}` : String(s.slug);
+  return /^[a-z0-9]{2,40}$/.test(slug) ? slug : null;
+}
 function pintarOlaReal(s) {
   const caja = document.getElementById("panelOlaReal");
-  const visible = !!(window.supabaseCliente && window.usuarioIdActual && s && !s.esUsuario);
+  const visible = !!(window.supabaseCliente && window.usuarioIdActual && s && slugEtiquetaOla(s));
   caja.style.display = visible ? "block" : "none";
   document.getElementById("panelOlaRealBandas").style.display = "none";
   document.getElementById("panelOlaRealMsg").textContent = "";
@@ -5523,7 +5534,7 @@ document.querySelectorAll("#panelOlaRealBandas .ola-banda").forEach((btn) => {
     if (!s || !window.supabaseCliente) return;
     msg.textContent = I18n.t("comun.guardando");
     const { error } = await window.supabaseCliente.from("oleaje_etiquetas").insert({
-      origen: "spot", spot_slug: s.slug, banda: btn.dataset.banda, observado_en: new Date().toISOString(),
+      origen: "spot", spot_slug: slugEtiquetaOla(s), banda: btn.dataset.banda, observado_en: new Date().toISOString(),
     });
     document.getElementById("panelOlaRealBandas").style.display = "none";
     msg.textContent = error
