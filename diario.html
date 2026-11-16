@@ -719,7 +719,7 @@ async function cargarDatos() {
   if (idsSalidas.length) {
     const { data: picadas, error: errPicadas } = await supabase
       .from("picadas_pesca")
-      .select("id, salida_id, hora, marea_tendencia, creado_en")
+      .select("id, salida_id, hora, marea_tendencia, condiciones, creado_en")
       .in("salida_id", idsSalidas)
       .order("creado_en", { ascending: true });
     if (errPicadas) console.warn("Picadas:", errPicadas.message);
@@ -737,6 +737,16 @@ async function cargarDatos() {
   // ese orden relativo dentro de cada día (más reciente primero según
   // se creó, gracias al orden de inserción del array).
   salidasPorFecha = {};
+  // Picadas sin marea ni condiciones (guardadas sin conexión, cambiadas a
+  // mano o apuntadas por soporte): se completan ahora con el mismo cálculo
+  // que "+1", sin esperar; salen en la siguiente carga (2026-11-16, Mikel:
+  // "para el robot, debes guardar marea, luna, etc.").
+  const salidaPorId = new Map(salidas.map((s) => [s.id, s]));
+  Object.values(picadasPorSalida).flat().filter((p) => p.condiciones == null).slice(0, 6).forEach((p) => {
+    const s = salidaPorId.get(p.salida_id);
+    const hora = String(p.hora).slice(0, 5);
+    if (s) completarPicada(p.id, s, fechaDePicada(s, hora), hora);
+  });
   salidas.forEach((s) => {
     (salidasPorFecha[s.fecha] = salidasPorFecha[s.fecha] || []).push({ salida: s, capturas: capturasPorSalida[s.id] || [], marcas: marcasPorSalida[s.id] || [], picadas: picadasPorSalida[s.id] || [] });
   });
@@ -1955,29 +1965,37 @@ async function cambiarHoraPicada(id, salida, horaActual) {
   await completarPicada(id, salida, fechaDePicada(salida, h), h);
   return true;
 }
-// Lo que se guarda en picadas_pesca.condiciones (mismos nombres que en
-// salidas_pesca, para cruzarlos sin traducir).
+// Lo que se guarda en picadas_pesca.condiciones: TODO lo que calcula
+// contextoAmbiental para esa hora (Mikel, 2026-11-16: "luna, presión y todos
+// los demás datos que tengamos"), con los mismos nombres que salidas_pesca.
+// Fuera: la marea (va en sus columnas), los datos "de fin de jornada" y el
+// detalle interno del índice (indice_factores, grande); sí su puntuación.
+const FUERA_CONDICIONES_PICADA = new Set(["marea_altura", "marea_tendencia", "marea_altura_fin", "marea_tendencia_fin", "indice_factores"]);
 function condicionesPicada(c) {
-  const claves = ["presion_valor", "presion_tendencia", "viento_kmh", "viento_dir", "oleaje_altura_min", "oleaje_altura_max",
-    "temp_agua", "nubosidad", "precipitacion", "luna_fase", "luna_iluminacion", "marea_coeficiente", "indice_puntuacion"];
   const out = {};
-  for (const k of claves) if (c?.[k] !== null && c?.[k] !== undefined) out[k] = c[k];
+  for (const [k, v] of Object.entries(c || {})) {
+    if (FUERA_CONDICIONES_PICADA.has(k) || v === null || v === undefined || typeof v === "object" || typeof v === "function") continue;
+    out[k] = v;
+  }
   return out;
 }
 
 function picadasHTML(salida, idx, lista = []) {
   const n = Number.isInteger(salida.picadas) ? salida.picadas : null;
+  // Cada picada, a la vista y editable (Mikel, 2026-11-16: "las horas de
+  // cada picada se deben visualizar y poder editar"): una pastilla por
+  // picada con la hora, la flecha de la marea y ✏️; tocarla cambia la hora.
   const horas = lista.length
-    ? ` <span style="font-weight:400; font-size:12px; color:var(--tinta-2);">· ${lista.map((p) => `<button type="button" class="hora-picada" data-idx="${idx}" data-id="${p.id}" data-hora="${String(p.hora).slice(0, 5)}" title="${I18n.t("diario.picada_cambiar_hora")}" style="background:none; border:none; padding:0; margin:0; width:auto; font:inherit; color:inherit; text-decoration:underline dotted; cursor:pointer;">${String(p.hora).slice(0, 5)}</button>${flechaMareaHtml(p.marea_tendencia)}`).join(", ")}</span>`
+    ? `<div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;">${lista.map((p) => `<button type="button" class="hora-picada secundario" data-idx="${idx}" data-id="${p.id}" data-hora="${String(p.hora).slice(0, 5)}" title="${I18n.t("diario.picada_cambiar_hora")}" style="margin:0; width:auto; padding:5px 10px; font-size:13px; font-weight:600;">🕐 ${String(p.hora).slice(0, 5)} ${flechaMareaHtml(p.marea_tendencia)} ✏️</button>`).join("")}</div>`
     : "";
   return `<div class="fila-picadas">
-      <span>🎣 ${n === null ? I18n.t("diario.picadas_sin") : I18n.t(n === 1 ? "diario.picadas_1" : "diario.picadas_n", { n })}${horas}</span>
+      <span>🎣 ${n === null ? I18n.t("diario.picadas_sin") : I18n.t(n === 1 ? "diario.picadas_1" : "diario.picadas_n", { n })}</span>
       <span style="display:flex; gap:6px;">
         ${n ? `<button type="button" class="secundario cambiar-picadas" data-idx="${idx}" data-delta="-1" aria-label="${I18n.t("diario.picada_menos")}">−</button>` : ""}
         ${n === null ? `<button type="button" class="secundario cambiar-picadas" data-idx="${idx}" data-delta="0">${I18n.t("diario.picadas_ninguna")}</button>` : ""}
         <button type="button" class="secundario cambiar-picadas" data-idx="${idx}" data-delta="1">${I18n.t("diario.picada_mas")}</button>
       </span>
-    </div>`;
+    </div>${horas}`;
 }
 
 function cancelarFormulario() {

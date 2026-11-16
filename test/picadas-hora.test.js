@@ -17,10 +17,12 @@ function cargar(nombre) {
 }
 
 test("las condiciones de la picada usan los nombres de salidas_pesca y no guardan nulos", () => {
-  const condicionesPicada = cargar("condicionesPicada");
+  const i = html.indexOf("const FUERA_CONDICIONES_PICADA");
+  const condicionesPicada = new Function(`${html.slice(i, html.indexOf("function picadasHTML(", i))}; return condicionesPicada;`)();
   assert.deepEqual(
-    condicionesPicada({ presion_valor: 1017, viento_kmh: 6, nubosidad: null, luna_fase: "Menguante", marea_altura: 1.2, otra: 1 }),
-    { presion_valor: 1017, viento_kmh: 6, luna_fase: "Menguante" },
+    condicionesPicada({ presion_valor: 1017, presion_tendencia: "estable", viento_kmh: 6, nubosidad: null, luna_fase: "Menguante", luna_iluminacion: 22,
+      marea_altura: 1.2, marea_tendencia_fin: "bajando", indice_factores: { a: 1 }, indice_puntuacion: 61, boya_usada: "Bilbao II" }),
+    { presion_valor: 1017, presion_tendencia: "estable", viento_kmh: 6, luna_fase: "Menguante", luna_iluminacion: 22, indice_puntuacion: 61, boya_usada: "Bilbao II" },
   );
 });
 

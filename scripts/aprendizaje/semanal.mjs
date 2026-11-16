@@ -58,6 +58,7 @@ import { cambiarConfianzas } from "./especies-texto.mjs";
 import { indiceSpot } from "../../assets/js/ventana-actividad.js";
 import { muestrasTempAgua, evaluarSesgo, publicarSesgo, propuestasSesgo } from "./sesgo-temp-agua.mjs";
 import { muestrasCondiciones, sesgoCondiciones, publicarCondiciones, candidatosCorreccion } from "./sesgo-condiciones.mjs";
+import { agruparMomentos } from "./momentos.mjs";
 import { muestrasTallaFoto, gruposTallaFoto, calibracionTallaFoto, CONFIG_TALLA_FOTO, muestrasPesoFoto, gruposPesoFoto, calibracionPesoFoto, confusionesEspecie } from "../../assets/js/talla-foto.js";
 import { evaluarSombra, publicarSombra, VARIABLES_SOMBRA, RADIO_KM, decodificarHistorico, rasgosCaso, contextosFrentesCasos } from "./frentes-sombra.mjs";
 
@@ -79,6 +80,7 @@ export const RUTAS = {
   frentesHipotesis: "aprendizaje/frentes-hipotesis.json",
   sesgoTempAgua: "datos-robots/aprendizaje/sesgo-temp-agua.json",
   sesgoCondiciones: "datos-robots/aprendizaje/sesgo-condiciones.json",
+  momentos: "datos-robots/aprendizaje/momentos-actividad.json",
   tallaFoto: "datos-robots/aprendizaje/talla-foto.json",
   tallaFotoCalibracion: "assets/js/talla-foto-calibracion.js",
   calibracionTempAgua: "datos-robots/calibracion-temp-agua.jsonl",
@@ -577,6 +579,11 @@ export function ejecutar(p) {
       generado_en: new Date(ahora).toISOString(), semana,
       nota: "Histórico previsto/real: error medio (previsto − real) por zona y variable. Previsto = lo que guardó la salida al apuntarse (al menos 1 h antes de empezar); real = análisis del modelo y boya al concluir la jornada (indice_factores.real). Solo grupos de 5 personas distintas o más. Código: scripts/aprendizaje/sesgo-condiciones.mjs.",
       muestras: muestrasCond.length, grupos: publicarCondiciones(gruposCond), candidatos_correccion: candidatosCorreccion(publicarCondiciones(gruposCond)),
+    }, null, 1) + "\n",
+    [RUTAS.momentos]: JSON.stringify({
+      generado_en: new Date(ahora).toISOString(), semana,
+      nota: "Momentos de actividad: cada picada (picadas_pesca, con marea y condiciones de esa hora) y cada captura con hora, contados por marea (subiendo/bajando), franja de 3 h, fase de luna y tendencia de la presión. Solo grupos de 3 personas distintas o más; nunca lugar ni fecha. Código: scripts/aprendizaje/momentos.mjs.",
+      ...agruparMomentos(casosBase),
     }, null, 1) + "\n",
     [RUTAS.tallaFoto]: JSON.stringify({
       generado_en: new Date(ahora).toISOString(), semana,

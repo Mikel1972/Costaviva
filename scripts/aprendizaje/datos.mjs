@@ -83,7 +83,8 @@ export async function leerDiario({ url, key, emailsPrueba = [] }) {
   // no existen las columnas, se lee sin ellas.
   // Peso calculado y pesado (migración 20261109180000): igual, con su escalón.
   let capturas;
-  const COLS_CAP = "salida_id,especie,creado_en";
+  // hora y marea de cada captura (2026-09-19): momentos de actividad.
+  const COLS_CAP = "salida_id,especie,creado_en,hora,marea_altura,marea_tendencia";
   const COLS_TALLA = "talla_cm,talla_estimada_cm,talla_medida,especie_estimada";
   try {
     capturas = await leerTodo(url, key, "capturas", `${COLS_CAP},${COLS_TALLA},peso_g,peso_estimado_g,peso_medido`);
@@ -114,7 +115,15 @@ export async function leerDiario({ url, key, emailsPrueba = [] }) {
     propios = new Set((await leerTodo(url, key, "administradores", "user_id,creado_en")).map((x) => x.user_id));
   } catch (e) { errores.push(`administradores: ${e.message}`); }
   const excluir = usuariosExcluidos({ perfiles, emailsPrueba, propios });
-  return { salidas, capturas, excluir, propios, errores };
+  // Cada picada con hora, marea y condiciones (migración 20261116090000).
+  let picadas = [];
+  try {
+    picadas = await leerTodo(url, key, "picadas_pesca", "salida_id,hora,marea_altura,marea_tendencia,condiciones,creado_en");
+  } catch (e) {
+    if (e.status !== 400 && e.status !== 404) throw e;
+    errores.push("sin la tabla picadas_pesca (migración 20261116090000)");
+  }
+  return { salidas, capturas, picadas, excluir, propios, errores };
 }
 
 // Agregados k ≥ 5 de "Comparte tu captura" (función de la migración
