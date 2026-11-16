@@ -7082,6 +7082,27 @@ Dato del sondeo: `generado_en` 2026-10-25 23:26 UTC (~8 h, fresco).
 
 **Pendiente para la próxima pasada:** (a) comprobar en producción si `turbidez_historico` tiene lecturas posteriores al 12-oct (confirmaría 1); (b) propuesta para `scripts/experiencia/sondear.mjs` (no aplicada): usar POST sin token en `/identificar-captura`, y añadir `fecha` mínima/máxima de cada etiqueta de turbidez como aviso automático de datos viejos (>7 días) y un chequeo de extremos de marea duplicados/no alternos; (c) contrastar nubosidad y viento de los vecinos con las estaciones AEMET del mismo JSON.
 
+### 2026-11-16 08:30 UTC — robot de experiencia de usuario (rutina)
+
+Dato: `datos-robots/experiencia/ultima.json` generado 2026-11-16 01:16 UTC (7 h, fresco).
+
+**Qué miré:** /prevision (105 spots, 0 con error; mareas, coeficientes, bloque actual, boyas, caudales, cámaras, turbidez), /luna en 3 zonas, 8 casos límite y el ciclo del diario (crear/leer/cuenta B/borrar).
+
+**Todo bien:**
+- Diario: lo guardado coincide con lo enviado (`diferencias` vacío), la cuenta B no ve ni borra la salida de A (false/false) y se borró (204, ya no existe).
+- Mareas con sentido por zona: Mediterráneo y Baleares con rangos de 0,07–0,17 m (Palma 0,07, Valencia 0,15), Cantábrico 1,5–1,7 m, Cádiz 1,26 m, Canarias ~0,9 m. Coeficientes entre 20 y 91, sin nulls. Presiones 1013–1024 hPa coherentes entre vecinos. Mundaka: agua 16,5 °C, ola 1,1–1,3 m, viento 11 km/h: plausible para noviembre.
+- Casos límite: /luna sin lat y /geocodificar con CP inválido dan 400 con mensaje claro; /webcam inexistente 404 JSON; /meteo/marine con parámetro no permitido 400.
+
+**Hallazgos:**
+1. **Turbidez congelada en octubre (probable bug, ya señalado en entradas anteriores y sigue sin arreglar).** `prevision.turbidez` trae 36 spots y sus `actualizado` van del 2026-10-06 al 2026-10-12 (todos con 27 lecturas), pese a que `turbidez.yml` corre en verde cada día (último 2026-11-15). Hipótesis: `datosTurbidezPorSpot()` (functions/prevision.js ~l.499) pide `turbidez_historico` con `order=fecha.asc` y sin `limit`; PostgREST corta en 1000 filas por defecto y 90 días × ~40 spots superan eso, así que llegan las filas más antiguas y `ultima` es de octubre (36×27 ≈ 970 encaja). No verificado contra Supabase (sin acceso). Efecto: etiquetas de hace 5 semanas mostradas como actuales. Arreglo probable: `order=fecha.desc` + límite/paginación o consulta por spot.
+2. **Boyas: 12 de 27 sin datos (44 %)** con "boya sin datos de las últimas 6 h": Gijón, Pasaia II, AP Bilbao, Langosteira, Las Palmas Este, Sta. Cruz de Tenerife, Tarifa, Algeciras, Ceuta, Málaga, Tarragona, Barcelona II. Repartido por todas las costas: parece fallo de la instantánea de Copernicus (`boyas/copernicus.json`, `boyas-copernicus.yml`) o de su frescura, no de un proveedor. No comprobado el histórico de ese workflow.
+3. **/identificar-captura sin sesión da 404 con la página HTML "no encontrada"**, no 401/403/405 como espera el sondeo. Causa: solo exporta `onRequestPost` (functions/identificar-captura.js:291) y el sondeo hace GET. No gasta IA, pero la prueba da un falso OK. Proponer en `sondear.mjs` hacer POST sin Authorization y esperar 401/403.
+4. **Cámaras caídas/congeladas**: Mundaka congelada desde 2026-10-25 (22 días), Alicante origen_404 desde 2026-10-07, Torreblanca origen_404 desde 2026-10-11, Bakio y Pasaia congelada/plana desde 2026-11-15, Suances y San Vicente origen_522, Gandía origen_404, Muro http_502, 3 directos de YouTube sin directo y 1 de Windy inactiva. Las de >24 h debe ocultarlas la app (`camaraRetirada`); Mundaka es un spot muy visible.
+5. **Ríos**: `caudales.sella` es null y aparece `caudales.error: "no se encontró el array de aforos"` (CHJ/Júcar, `datosCaudalJucar()` en prevision.js): saih.chj.es ha cambiado y se pierden Júcar, Turia y Mijares. Segura y Lagares traen `actualizado: null`.
+6. Menor: el coeficiente de marea en el Mediterráneo sale alto (Alicante 87, Valencia 70) con rangos de 0,15 m; es consecuencia documentada de normalizar contra el propio rango del spot, pero a un usuario le parecerá absurdo.
+
+**Pendiente para la próxima pasada:** confirmar el hallazgo 1; propongo a `sondear.mjs` (no aplicado): avisar si algún `turbidez.*.actualizado` tiene más de 3 días, si `caudales.error` existe o si >25 % de las boyas fallan, y cambiar la prueba de /identificar-captura a POST. No miré los bloques de otras horas (solo el actual).
+
 ## Robot de patrones de uso
 
 ### 2026-09-17
