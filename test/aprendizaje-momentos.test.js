@@ -31,5 +31,14 @@ test("solo se publican grupos con 3 personas o más", () => {
 
 test("el diario completa las picadas que no tienen condiciones", () => {
   const html = readFileSync(new URL("../diario.html", import.meta.url), "utf8");
-  assert.match(html, /filter\(\(p\) => p\.condiciones == null\)/);
+  assert.match(html, /filter\(\(p\) => p\.condiciones == null \|\| p\.condiciones\.sol_momento === undefined\)/);
+});
+
+test("las capturas sin condiciones también llevan sol y luna, con la fecha de la jornada", () => {
+  const salida = { lat: 43.4334, lon: -2.9002, fecha: "2026-11-15", hora_inicio: "23:00:00" };
+  const m = momentosSalida([], [{ hora: "01:28:00", marea_tendencia: "subiendo" }], salida);
+  assert.equal(m[0].sol_momento, "noche");
+  assert.ok(["mayor", "menor", "ninguno"].includes(m[0].solunar));
+  const r = agruparMomentos(["a", "b", "c"].map((u) => ({ usuario: u, momentos: m })));
+  assert.ok(r.grupos.some((g) => g.variable === "sol" && g.valor === "noche" && g.capturas === 3));
 });
