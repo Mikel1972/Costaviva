@@ -185,6 +185,8 @@
   "mapa.panel.explica_indice_mar": "Com a nossa própria fórmula (ondulação, vento e o ângulo entre ambos), este número resume numa escala de 0 a 100 o estado do mar hoje neste ponto: quanto mais alto, mais agitado e pior para sair (verde, calmo; amarelo, moderado; coral, agitado). Ao contrário do índice de pesca, onde mais alto é melhor.",
   "mapa.panel.temp_agua": "TEMPERATURA DA ÁGUA",
   "mapa.panel.nubosidad": "NEBULOSIDADE",
+  "mapa.nubes.despejado": "limpo",
+  "mapa.nubes.observado": "observado em {lugar}",
   "mapa.panel.precipitacion": "PRECIPITAÇÃO",
   "mapa.panel.presion": "PRESSÃO ATMOSFÉRICA",
   "mapa.mod.tab_costa": "🪨 De terra",

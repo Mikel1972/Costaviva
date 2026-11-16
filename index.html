@@ -5544,6 +5544,23 @@ function pintarFondoPanel(s) {
   el.textContent = t || "";
   el.hidden = !t;
 }
+// Nubosidad de AHORA observada en el aeródromo más cercano (METAR), si lo
+// hay a menos de 40 km y es de la última hora y media (2026-11-16: en
+// Lemoiz el modelo decía 100 % y se veían las estrellas; Bilbao, CAVOK).
+// Si no hay observación, se queda el dato del modelo.
+async function pintarCieloObservado(s) {
+  try {
+    const r = await fetch(`/cielo?lat=${Number(s.lat).toFixed(3)}&lon=${lonEstandar(Number(s.lon)).toFixed(3)}`);
+    if (!r.ok) return;
+    const o = (await r.json())?.observado;
+    if (!o || spotAbiertoActual !== s) return;
+    const valor = o.nubosidad === 0 ? I18n.t("mapa.nubes.despejado") : `${o.nubosidad}%`;
+    const el = document.getElementById("panelNubosidad");
+    el.textContent = `${valor} · ${I18n.t("mapa.nubes.observado", { lugar: o.nombre })}`;
+    el.title = `METAR ${o.estacion}`;
+  } catch { /* sin observación: se queda el modelo */ }
+}
+
 function abrirPanel(s) {
   spotAbiertoActual = s;
   // Idioma por región (2026-10-09): la próxima vez que se abra la app sin
@@ -5598,6 +5615,7 @@ function abrirPanel(s) {
 
   document.getElementById("panelTempAgua").textContent = (s.tempAgua === null || s.tempAgua === undefined) ? I18n.t("mapa.sin_datos") : I18n.temp(s.tempAgua, null);
   document.getElementById("panelNubosidad").textContent = s.nubosidad === null ? I18n.t("mapa.sin_datos") : `${s.nubosidad}%`;
+  pintarCieloObservado(s);
   document.getElementById("panelPrecipitacion").textContent = s.precipitacion === null ? I18n.t("mapa.sin_datos") : `${s.precipitacion} mm/h`;
 
   if (s.presion && s.presion.valor !== null) {

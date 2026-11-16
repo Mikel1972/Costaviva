@@ -183,6 +183,8 @@
   "mapa.panel.explica_indice_mar": "Con nuestra propia fórmula (oleaje, viento y el ángulo entre ambos), este número resume en una escala de 0 a 100 cómo de movido está el mar hoy en este punto: cuanto más alto, más agitado y peor para salir (verde, tranquilo; amarillo, moderado; coral, agitado). Al revés que el índice de pesca, donde más alto es mejor.",
   "mapa.panel.temp_agua": "TEMPERATURA DEL AGUA",
   "mapa.panel.nubosidad": "NUBOSIDAD",
+  "mapa.nubes.despejado": "despejado",
+  "mapa.nubes.observado": "observado en {lugar}",
   "mapa.panel.precipitacion": "PRECIPITACIÓN",
   "mapa.panel.presion": "PRESIÓN ATMOSFÉRICA",
   "mapa.mod.tab_costa": "🪨 Desde costa",

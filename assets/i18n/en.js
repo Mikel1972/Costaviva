@@ -183,6 +183,8 @@
   "mapa.panel.explica_indice_mar": "Using our own formula (swell, wind and the angle between them), this number sums up on a 0 to 100 scale how rough the sea is today at this spot: the higher, the rougher and the worse for going out (green, calm; yellow, moderate; coral, rough). The opposite of the fishing index, where higher is better.",
   "mapa.panel.temp_agua": "WATER TEMPERATURE",
   "mapa.panel.nubosidad": "CLOUD COVER",
+  "mapa.nubes.despejado": "clear",
+  "mapa.nubes.observado": "observed at {lugar}",
   "mapa.panel.precipitacion": "PRECIPITATION",
   "mapa.panel.presion": "ATMOSPHERIC PRESSURE",
   "mapa.mod.tab_costa": "🪨 From shore",
