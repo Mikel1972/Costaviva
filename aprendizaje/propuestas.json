@@ -57,13 +57,13 @@
   "riesgo": "bajo si es esperar o socios; (b) implica gasto y es decisión tuya.",
   "requiere_si": true,
   "estado": "propuesta",
-  "pr": 468,
-  "impacto": 2,
+  "pr": null,
+  "impacto": "medio",
   "esfuerzo": "medio",
   "origen": "rutina-kpis",
-  "evidencia_n": 1,
-  "clave": "talla-foto-estimada-vs-medida",
-  "fecha_aplicada": "2026-11-09",
-  "fecha_decision": "2026-11-09"
+  "evidencia_n": null,
+  "clave": null,
+  "fecha_aplicada": null,
+  "fecha_decision": null
  }
 ]
