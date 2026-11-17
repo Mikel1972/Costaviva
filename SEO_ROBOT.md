@@ -56,3 +56,11 @@ Una entrada por pasada (martes y viernes), añadida al final. Anota números de 
 - PARTE A y B: ninguna; sin datos que lo justifiquen.
 - PARTE D: viernes, KPIs solo martes. DeepL: lanzado "Contraste de traducciones con DeepL" (idioma=pt, ref main); el de en, en la pasada siguiente del mes. Informe aún sin leer ni aplicar.
 - Esperado próxima pasada: 32 o más indexadas; "Descubierta" estancada o a la baja; primeros veredictos a 2 semanas de los cambios del 23-oct.
+
+## 2026-11-17 06:4x UTC (martes)
+- Aviso: SEO_ESTADO.md es del 2026-11-13 11:28 UTC (no de hoy).
+- Números: indexadas 34 de 500 (7%; antes 32: +2). Sitemap 558 URLs; 338 "Descubierta: sin indexar" (antes 380), 127 "Google no reconoce" (antes 87), 465 sin rastrear nunca. Semana 02-nov en España: 316 impresiones, 5 clics, posición 25,4.
+- PARTE A, B y C: ningún cambio; los dos cambios de palabras (12 y 23 oct) siguen "pendiente" (el de 23-oct a 2 semanas: posición 49,1, sin mejora clara) y no se tocan antes de medir. Técnicas: sin datos reales con fuente, no se crean.
+- KPIs: país en foco España; paso más en rojo: altas (visita → alta). Cambios hechos: ninguno (con tan pocas visitas reales un cambio de texto no sería medible; las llamadas a la prueba de 14 días ya están en las páginas públicas). Evaluaciones: sin cambios fusionados por evaluar. Propuesta para Mikel: `costaviva-kpis-bajo-suelo` (aviso de suelo activo).
+- DeepL: día 17, no aplica (el de idioma=en de este mes no quedó registrado; se lanza en la primera pasada del mes que viene).
+- Esperado próxima pasada: 34 o más indexadas, "Descubierta" a la baja, primeros veredictos de los cambios de octubre.

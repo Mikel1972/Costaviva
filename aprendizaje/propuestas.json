@@ -45,5 +45,25 @@
   "clave": "talla-foto-estimada-vs-medida",
   "fecha_aplicada": "2026-11-09",
   "fecha_decision": "2026-11-09"
+ },
+ {
+  "id": "costaviva-kpis-bajo-suelo",
+  "fecha": "2026-11-17",
+  "app": "Costaviva",
+  "tipo": "interfaz",
+  "titulo": "Las altas no arrancan: decidir cómo traer visitas reales",
+  "explicacion_llana": "El paso que falla es visita → alta: hay visitas contadas (sobre todo España y Nueva Zelanda) pero ninguna alta en la quincena en curso, y las dos quincenas cerradas quedaron bajo el suelo. Los textos y botones de las páginas públicas ya piden la prueba de 14 días; con tan pocas visitas reales (Google: pocos clics, 34 de 500 URLs indexadas) un cambio de texto no se podría medir. Propongo decidir entre: (a) esperar a que la indexación crezca, (b) probar una vía de captación de pago pequeña, o (c) activar socios/invitaciones con el enlace /empieza. No cambio nada hasta tu respuesta.",
+  "evidencia": "ver kpis/costaviva/KPIS.md en comun; SEO_ESTADO.md del 2026-11-13: 34 indexadas de 500.",
+  "riesgo": "bajo si es esperar o socios; (b) implica gasto y es decisión tuya.",
+  "requiere_si": true,
+  "estado": "propuesta",
+  "pr": 468,
+  "impacto": 2,
+  "esfuerzo": "medio",
+  "origen": "rutina-kpis",
+  "evidencia_n": 1,
+  "clave": "talla-foto-estimada-vs-medida",
+  "fecha_aplicada": "2026-11-09",
+  "fecha_decision": "2026-11-09"
  }
 ]
