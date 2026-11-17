@@ -1,13 +1,13 @@
 {
- "fecha": "2026-11-17T11:37:53.344Z",
- "lineasHistorial": 11030,
+ "fecha": "2026-11-17T12:08:11.676Z",
+ "lineasHistorial": 11042,
  "etiquetas": 938,
  "etiquetasClaude": 247,
  "calibracion": {
   "hondarribia/principal": {
-   "a": 1.12,
+   "a": 1.119,
    "p": 0.5,
-   "n": 322,
+   "n": 323,
    "nEtiquetas": 62,
    "nEtiquetasClaude": 7,
    "franjasClaude": [
@@ -56,9 +56,9 @@
    "correlacion": -0.011
   },
   "zarautz/dinamico": {
-   "a": 3.157,
+   "a": 3.1582,
    "p": 0.5,
-   "n": 837,
+   "n": 838,
    "nEtiquetas": 135,
    "nEtiquetasClaude": 29,
    "franjasClaude": [
@@ -487,8 +487,8 @@
    "sustituye": true,
    "motivo": "66 etiquetas",
    "ruido": {
-    "ruido": 0.598,
-    "pares": 140
+    "ruido": 0.591,
+    "pares": 141
    }
   },
   "donostia": {
@@ -511,8 +511,8 @@
    "sustituye": true,
    "motivo": "138 etiquetas",
    "ruido": {
-    "ruido": 0.553,
-    "pares": 605
+    "ruido": 0.554,
+    "pares": 606
    }
   },
   "getaria": {
