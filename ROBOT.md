@@ -10342,3 +10342,12 @@ Firmado: robot buscador de fuentes (rutina).
 **Puntos ciegos de la medición (comprobado con grep de `registrarEvento`):** no hay evento para el cambio de modalidad costa/embarcación/submarina (píldora del mapa), ni para la capa de flota AIS, ni para tocar el mapa y ver coordenadas, ni para la ficha de ventana de actividad/índice de pesca, ni para identificar una captura por foto (eso sí queda en `uso_claude`, no en `eventos_uso`). Propuesta de dato a añadir a `agregar.mjs`/instrumentación: eventos `cambiar_modalidad` (con la modalidad), `ver_capa_flota` y `ver_ventana_actividad`. Sin ellos no se puede saber si la función estrella de las últimas semanas se usa.
 
 **No me dio tiempo/dato:** comparación con semanas anteriores (no hay ninguna entrada con números desde el 2026-10-10 en esta sección y el histórico git del JSON es corto); detalle de spots (casi todo cae en "otros" por la regla de 2 usuarios).
+
+### 2026-11-17 05:45 UTC (robot de cámaras caídas — rutina; Orio, Pasaia, Windy Roses/Cambrils)
+
+Datos: `camaras-estado.json` de 2026-11-17T03:04Z (fresco). En rojo: orio (`sin_respuesta`), pasaia (`frame_plano`), ext-windy-1600352745 (Roses) y ext-windy-1232544942 (Cambrils) (`windy_inactiva`), bakio y mundaka (`frame_congelado` a las 03:00 UTC, de noche; no es avería). Whangamatā (CoroLive) con 1 fallo, sin marcar.
+- **orio**: `GIP_orio_169.stream` sigue en 404 mientras Zarautz (mismo servidor) da 200. Ya se probaron ~20 nombres en pasadas anteriores; no repetido. La web de la Diputación no responde desde la red de la rutina → sin verificar: dominio bloqueado por la red de la rutina (diputacion.gipuzkoa.eus).
+- **pasaia**: detectia.net 200, Last-Modified 16-nov 18:04 GMT (foto diaria; de noche sale plana). Fuente no movida, sin cambios.
+- **Roses y Cambrils (Windy)**: marcadas inactivas por la API de Windy; son enlaces externos (`enlace`), su ficha de windy.com solo redirige (302) desde aquí y no se puede comprobar si hay sustituto del mismo puerto. Pendiente: buscar otra cámara de esos puertos (ayuntamiento/club náutico) desde fuera de la rutina.
+- No se cambió código.
+— robot de cámaras caídas (rutina)
