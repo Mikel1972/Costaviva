@@ -26,6 +26,7 @@ import { decisionIndexacion } from "./_lib/seo/indexacion.js";
 import { htmlNoEncontradaGeneral } from "./_lib/seo/base.js";
 import { visitaAContar, contarVisita, conOrigenEnCta } from "./_lib/visitas.js";
 import { ORIGENES_IFRAME_NZ } from "../assets/js/camaras-nz.js";
+import { ORIGEN_IFRAME_WINDY } from "../assets/js/camaras-externas.js";
 import { conClaveLinz } from "./_lib/linz-basemaps.js";
 
 export async function onRequest(context) {
@@ -143,7 +144,7 @@ export function construirCsp(nonce) {
     // Turnstile (login.html) y los iframes oficiales de cámaras de NZ cuyo
     // dueño tiene el interruptor puesto (CoroLive, NZ_EMBED_AUTORIZADO en
     // assets/js/camaras-nz.js, 2026-10-11): si se apaga, sale de aquí solo.
-    ["frame-src https://challenges.cloudflare.com", ...ORIGENES_IFRAME_NZ].join(" "),
+    ["frame-src https://challenges.cloudflare.com", ...ORIGENES_IFRAME_NZ, ORIGEN_IFRAME_WINDY].join(" "),
     "manifest-src 'self'",
     "object-src 'none'",
     "base-uri 'none'",

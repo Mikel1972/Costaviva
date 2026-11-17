@@ -373,6 +373,8 @@
   "mapa.cam.en_directo_su_web": "(live; more on their website)",
   "mapa.cam.ver": "View camera:",
   "mapa.cam.otras": "OTHER CAMERAS IN THE AREA",
+  "mapa.cam.windy_titulo": "NEARBY WEBCAMS",
+  "mapa.cam.premium_ejemplo": "This is a sample. With Premium you also get our own live cameras and the wave height measured from their image.",
   "mapa.cam.terceros": "Third-party cameras: the image belongs to its owner; tap their name to visit their website.",
   "mapa.cam.sin_webcam": "No webcam identified for this spot yet.",
   "mapa.cam.retirada": "The {nombre} webcam is not streaming right now (the problem is with its provider).",

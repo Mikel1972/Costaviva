@@ -95,8 +95,8 @@ export const NZ_ANALISIS_AUTORIZADO = {
   sails_ashore: true,
   // 2026-10-31, del buscador de cámaras: directo de YouTube, solo enlace
   // (paywall) y nunca analizado (condiciones de YouTube).
-  // 2026-11-08: del buscador (Windy) y revisadas a mano; solo enlace a
-  // windy.com mientras Windy no conteste (comun, cz/windy).
+  // 2026-11-08: del buscador (Windy) y revisadas a mano. Nunca se analiza
+  // la imagen (Windy no lo permite; solo su reproductor, cz/windy).
   windy: false,
   youtube_motella: false,
   // 2026-11-08: Bowentown, solo enlace a la página de Waihi Beach Coastguard
@@ -133,9 +133,9 @@ export const NZ_EMBED_AUTORIZADO = {
   sails_ashore: true,
   // 2026-10-31, del buscador de cámaras: directo de YouTube, solo enlace
   // (paywall) y nunca analizado (condiciones de YouTube).
-  // 2026-11-08: del buscador (Windy) y revisadas a mano; solo enlace a
-  // windy.com mientras Windy no conteste (comun, cz/windy).
-  windy: false,
+  // 2026-11-08: del buscador (Windy). 2026-11-17: Windy permite su
+  // reproductor con el plan gratis si es gratis para todos (cz/windy).
+  windy: true,
   youtube_motella: false,
   // 2026-11-08: Bowentown, solo enlace a la página de Waihi Beach Coastguard
   // (aprobado por Mikel); sin permiso escrito ni embebido ni análisis.
@@ -152,6 +152,7 @@ const EMBEBIBLE = {
   southloop: "imagen_oficial",
   sails_ashore: "imagen_oficial",
   castlepoint_lighthouse: "iframe_oficial",
+  windy: "iframe_oficial",
 };
 
 // Modo de embebido de un dueño, o null si va como enlace.
@@ -378,11 +379,13 @@ export const CONDICIONES_NZ = {
     dueno_corto: "Windy.com",
     dueno: "Windy.com (directorio de webcams; cada cámara es de su anfitrión)",
     tipo_dueno: "privado",
-    modos_permitidos: ["enlace"],
+    // 2026-11-17: Windy permite su reproductor con el plan gratis si es
+    // gratis para todos (ver CONDICIONES.windy en camaras-externas.js).
+    modos_permitidos: ["iframe_oficial", "enlace"],
     analisis_permitido: NZ_ANALISIS_AUTORIZADO.windy,
     licencia: null,
     fuentes: ["https://api.windy.com/webcams/terms", "https://api.windy.com/webcams/pricing"],
-    cita: "Condiciones del Webcams API de Windy: cada imagen debe enlazar a la página de la cámara en windy.com o a su reproductor; «If you don't want to link or embed Windy, use the API». Aquí solo se enlaza su página pública, sin cargar nada de Windy.",
+    cita: "Windy (soporte, 2026-11-17): «Yes, you can use our Webcams API Free tier for this purpose, provided that the webcam feature is freely accessible to all users and is not placed behind a paywall or restricted to paid subscribers.» Atribución: «Webcams provided by windy.com - add new webcam», con enlaces a https://www.windy.com y https://www.windy.com/webcams/add.",
     contacto: "webcams@windy.com",
   },
   youtube_motella: {
@@ -416,6 +419,9 @@ export const CONDICIONES_NZ = {
 // interruptor de su dueño lo permite; si no, la cámara queda en enlace sin
 // cargar nada del dueño.
 const cam = (id, spot, [nombre, nombre_en], condiciones, url, rompiente, verificada, extra = {}) => {
+  // Windy (2026-11-17): su reproductor oficial, sacado del id de la página.
+  const windyId = condiciones === "windy" ? url.match(/webcams\/(\d+)/)?.[1] : null;
+  if (windyId && !extra.embed) extra = { ...extra, embed: { iframe: `https://webcams.windy.com/webcams/public/embed/player/${windyId}/day`, refresco_min: null } };
   const modo = extra.embed && embedNZ(condiciones) ? embedNZ(condiciones) : "enlace";
   const cond = CONDICIONES_NZ[condiciones];
   return {
@@ -432,6 +438,7 @@ const cam = (id, spot, [nombre, nombre_en], condiciones, url, rompiente, verific
     ...(modo !== "enlace"
       ? { atribucion: { dueno: cond.dueno_corto, licencia: cond.licencia }, refresco_min: extra.embed.refresco_min ?? null }
       : {}),
+    ...(windyId ? { windy_id: Number(windyId) } : {}),
     rompiente,
     analisis_permitido: cond.analisis_permitido,
     visto_en: extra.visto_en || new URL(url).hostname,

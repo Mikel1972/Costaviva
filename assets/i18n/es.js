@@ -373,6 +373,8 @@
   "mapa.cam.en_directo_su_web": "(en directo; más en su web)",
   "mapa.cam.ver": "Ver cámara:",
   "mapa.cam.otras": "OTRAS CÁMARAS DE LA ZONA",
+  "mapa.cam.windy_titulo": "WEBCAMS CERCANAS",
+  "mapa.cam.premium_ejemplo": "Esto es una muestra. Con Premium verás además nuestras cámaras propias en directo y la ola medida en su imagen.",
   "mapa.cam.terceros": "Cámaras de terceros: la imagen es de su dueño; pulsa su nombre para ir a su web.",
   "mapa.cam.sin_webcam": "Sin webcam identificada para este spot todavía.",
   "mapa.cam.retirada": "La webcam de {nombre} no está emitiendo ahora mismo (el problema es de su proveedor).",

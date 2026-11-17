@@ -375,6 +375,8 @@
   "mapa.cam.en_directo_su_web": "(em direto; mais informação no site)",
   "mapa.cam.ver": "Ver câmara:",
   "mapa.cam.otras": "OUTRAS CÂMARAS DA ZONA",
+  "mapa.cam.windy_titulo": "WEBCAMS PRÓXIMAS",
+  "mapa.cam.premium_ejemplo": "Isto é uma amostra. Com o Premium vê também as nossas câmaras próprias em direto e a onda medida na sua imagem.",
   "mapa.cam.terceros": "Câmaras de terceiros: a imagem pertence ao respetivo dono; carregue no nome para ir ao site.",
   "mapa.cam.sin_webcam": "Ainda sem webcam identificada para este pesqueiro.",
   "mapa.cam.retirada": "A webcam de {nombre} não está a emitir neste momento (o problema é do fornecedor).",
