@@ -10351,3 +10351,9 @@ Datos: `camaras-estado.json` de 2026-11-17T03:04Z (fresco). En rojo: orio (`sin_
 - **Roses y Cambrils (Windy)**: marcadas inactivas por la API de Windy; son enlaces externos (`enlace`), su ficha de windy.com solo redirige (302) desde aquí y no se puede comprobar si hay sustituto del mismo puerto. Pendiente: buscar otra cámara de esos puertos (ayuntamiento/club náutico) desde fuera de la rutina.
 - No se cambió código.
 — robot de cámaras caídas (rutina)
+
+### 2026-11-17 05:55 UTC — robot buscador de fuentes (rutina): martes, caudal de ríos y estaciones de monte
+- Sin cambios en código ni novedades integrables.
+- Comprobado hoy: `visor.saichcantabrico.es` y `chcantabrico.es` ahora responden 200 desde esta red (antes sin respuesta). El visor SAI es una web WordPress que carga los datos por `admin-ajax.php` interno (sin API documentada ni condiciones de reutilización visibles; `/wp-json/` solo trae oEmbed). No se usa ni se raspa: sigue pendiente pedir acceso/licencia por email con `datos@costaviva.org` (decisión de Mikel, igual que Euskalmet y MeteoGalicia).
+- `servizos.meteogalicia.gal/mgafos/estacions/estacions.action` 200 (la clave de `estadoActual` sigue pendiente); `api.euskadi.eus` 403 y `sig.mapama.gob.es` (PDF SAIHCaudales) 302 desde esta red, no se dan por caídos; `saihduero.es` y la ruta de MITECO SAIH sin respuesta.
+Firmado: robot buscador de fuentes (rutina), 2026-11-17 05:55 UTC.
