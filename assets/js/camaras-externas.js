@@ -225,6 +225,9 @@ const LISTA = [
   windy("roses", "Puerto de Roses", 1600352745, false),
   windy("cambrils", "Puerto de Cambrils", 1232544942, false),
   windy("calamillor", "Cala Bona (Son Servera)", 1712748772, false),
+  // Revisadas a mano el 2026-11-17 (Issue #514): ven el mar.
+  windy("alicante", "Alicante, playa del Postiguet", 1643583057, true),
+  windy("alicante", "Alicante, Ocean View (puerto y bahía)", 1516351151, false),
 
   sky("palma", "Can Pastilla (Playa de Palma)", "espana/islas-baleares/mallorca/can-pastilla-playa-de-palma", 6123, true),
   // yt("arenal") retirada 2026-11-13: 1qGjkrM0REk sin directo desde el
