@@ -269,12 +269,12 @@ const MODO_NZ = {
   "nz-sails-ashore": "imagen_oficial", // permiso escrito 2026-11-07
   "nz-motella-gisborne": "enlace",
   // Del buscador (Windy), revisadas a mano el 2026-11-08: solo enlace.
-  "nz-windy-russell": "enlace",
-  "nz-windy-mauao": "enlace",
-  "nz-windy-howick": "enlace",
-  "nz-windy-waikawa": "enlace",
-  "nz-windy-taylors-mistake": "enlace",
-  "nz-windy-westport": "enlace",
+  "nz-windy-russell": "iframe_oficial", // reproductor de Windy (2026-11-17)
+  "nz-windy-mauao": "iframe_oficial", // reproductor de Windy (2026-11-17)
+  "nz-windy-howick": "iframe_oficial", // reproductor de Windy (2026-11-17)
+  "nz-windy-waikawa": "iframe_oficial", // reproductor de Windy (2026-11-17)
+  "nz-windy-taylors-mistake": "iframe_oficial", // reproductor de Windy (2026-11-17)
+  "nz-windy-westport": "iframe_oficial", // reproductor de Windy (2026-11-17)
   "nz-bowentown-bar": "enlace",
 };
 
@@ -359,6 +359,7 @@ test("NZ: las embebidas usan la imagen o el iframe que publica su dueño", () =>
     sails_ashore: /^https:\/\/sailsashore\.co\.nz\/image\/cam\/snapshot1\.jpg$/,
     castlepoint_lighthouse: /^https:\/\/www\.youtube\.com\/embed\/live_stream\?channel=UC[A-Za-z0-9_-]{22}$/,
     corolive: /^https:\/\/corolive\.nz\/embed\?camera=(whitianga|whangamata)$/,
+    windy: /^https:\/\/webcams\.windy\.com\/webcams\/public\/embed\/player\/\d+\/day$/,
   };
   for (const c of CAMARAS_NZ.filter((c) => c.modo !== "enlace")) {
     assert.match(c.imagen || c.iframe, hosts[c.condiciones], c.id);

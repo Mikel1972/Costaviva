@@ -1588,6 +1588,15 @@
       <div id="panelWebcamContenido"></div>
       <div id="panelWebcamExternas"></div>
     </div>
+    <!-- Webcams de Windy (2026-11-17): GRATIS PARA TODOS, fuera del bloque
+         Premium de arriba (condición de Windy para su plan gratis; ver
+         assets/js/camaras-externas.js, CONDICIONES.windy). Sin Premium sirven
+         de muestra de lo que hay en Premium (Mikel). -->
+    <div id="panelWindyBox" style="margin-top:14px;" hidden>
+      <div class="etq" style="margin-bottom:6px;" data-i18n="mapa.cam.windy_titulo">WEBCAMS CERCANAS</div>
+      <div id="panelWindyContenido"></div>
+      <p id="panelWindyPremium" class="nota-final" hidden data-i18n="mapa.cam.premium_ejemplo">Esto es una muestra. Con Premium verás además nuestras cámaras propias en directo y la ola medida en su imagen.</p>
+    </div>
     <!-- Selector de fuentes para comparar (2026-10-08). Oculto salvo para
          administradores: se enseña solo si la RPC es_admin() de Supabase dice
          true, y el proxy /meteo/ vuelve a comprobarlo en el servidor. -->
@@ -5127,6 +5136,21 @@ function camarasExternasVisibles(slug) {
     return !(CE.externaCuentaComoCaida(c, CAMARAS[clave]) && camaraRetirada(clave));
   });
 }
+// Las de Windy van aparte, en #panelWindyBox, visible sin Premium (es la
+// condición de Windy para usar su reproductor con el plan gratis).
+function camarasWindyVisibles(slug) {
+  const CE = window.CamarasExternas;
+  return (camarasExternasVisibles(slug) || []).filter((c) => CE.esCamaraWindy(c));
+}
+function pintarCamarasWindy(slug) {
+  const CE = window.CamarasExternas;
+  const caja = document.getElementById("panelWindyBox");
+  if (!caja) return;
+  const lista = CE ? camarasWindyVisibles(slug) : [];
+  caja.hidden = !lista.length;
+  document.getElementById("panelWindyContenido").innerHTML = lista.length ? CE.htmlCamarasWindy(lista, I18n.idioma(), I18n.t) : "";
+  document.getElementById("panelWindyPremium").hidden = !document.getElementById("panel").classList.contains("sin-premium");
+}
 function escaparHtmlCam(t) {
   return String(t).replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch]);
 }
@@ -5137,9 +5161,11 @@ function nombreCamExterna(c) {
   return CE && CE.nombreCamara ? CE.nombreCamara(c, I18n.idioma()) : c.nombre;
 }
 function pintarCamarasExternas(slug) {
+  pintarCamarasWindy(slug);
   const caja = document.getElementById("panelWebcamExternas");
   if (!caja) return;
-  const lista = camarasExternasVisibles(slug);
+  const todas = camarasExternasVisibles(slug);
+  const lista = todas === null ? null : todas.filter((c) => !window.CamarasExternas.esCamaraWindy(c));
   if (lista === null) {
     caja.innerHTML = "";
     window.addEventListener("camaras-externas-listas", () => { if (spotWebcamActual === slug) pintarCamarasExternas(slug); }, { once: true });
@@ -5180,7 +5206,7 @@ function pintarWebcam(slug, nombre) {
   pintarCamarasExternas(slug);
   const cont = document.getElementById("panelWebcamContenido");
   if (!SPOTS_CON_WEBCAM.includes(slug)) {
-    const hayExternas = (camarasExternasVisibles(slug) || []).length > 0;
+    const hayExternas = (camarasExternasVisibles(slug) || []).some((c) => !window.CamarasExternas?.esCamaraWindy?.(c));
     cont.innerHTML = hayExternas
       ? ""
       : `<div class="tarjeta" style="text-align:center; color:var(--tinta-3); font-size:12px;">${I18n.t("mapa.cam.sin_webcam")}</div>`;

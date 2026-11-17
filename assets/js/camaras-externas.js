@@ -91,16 +91,21 @@ export const CONDICIONES = {
       "ni descargar contenido salvo autorización expresa.",
   },
   // 2026-11-08: cámaras encontradas por el buscador (Windy Webcams API) y
-  // revisadas a mano (ven el mar con imagen de hoy). Solo ENLACE a su página
-  // de windy.com; el permiso para insertar su reproductor está pedido
-  // (comun, permisos/registro.json, cz/windy).
+  // revisadas a mano (ven el mar con imagen de hoy). Desde el 2026-11-17 con
+  // su reproductor oficial insertado: Windy lo permite con el plan gratis
+  // (ticket windyty#20239; comun, permisos/registro.json, cz/windy) con DOS
+  // condiciones: (1) gratis para todos los usuarios, nunca tras el pago:
+  // por eso van en su propio bloque de la ficha (#panelWindyBox), fuera del
+  // de webcams Premium; (2) «Webcams provided by windy.com - add new webcam»
+  // visible, con windy.com -> https://www.windy.com y add new webcam ->
+  // https://www.windy.com/webcams/add (ATRIBUCION_WINDY, htmlCamarasWindy).
   windy: {
     dueno: "Windy.com (directorio de webcams; cada cámara es de su anfitrión)",
     tipo_dueno: "privado",
-    modos_permitidos: ["enlace"],
+    modos_permitidos: ["iframe_oficial", "enlace"],
     analisis_permitido: false,
     fuentes: ["https://api.windy.com/webcams/terms", "https://api.windy.com/webcams/pricing"],
-    cita: "Condiciones del Webcams API de Windy: cada imagen debe enlazar a la página de la cámara en windy.com o a su reproductor; «If you don't want to link or embed Windy, use the API». Aquí solo se enlaza su página pública, sin cargar nada de Windy.",
+    cita: "Windy (soporte, 2026-11-17): «Yes, you can use our Webcams API Free tier for this purpose, provided that the webcam feature is freely accessible to all users and is not placed behind a paywall or restricted to paid subscribers.» Atribución: «Webcams provided by windy.com - add new webcam», con enlaces a https://www.windy.com y https://www.windy.com/webcams/add.",
     contacto: "webcams@windy.com",
   },
   meo_beachcam: {
@@ -144,14 +149,17 @@ const yt = (id, spot, nombre, canal, videoId, rompiente, vistoEn) => ({
   visto_en: vistoEn,
 });
 
-// Cámara del directorio de Windy, solo como enlace a su página.
+// Cámara del directorio de Windy, con su reproductor oficial de time-lapse
+// (gratis para todos, ver CONDICIONES.windy).
+export const ORIGEN_IFRAME_WINDY = "https://webcams.windy.com";
 export const windy = (spot, nombre, windyId, rompiente) => ({
   id: `windy-${windyId}`,
   spot,
   nombre,
   dueno: "Windy.com",
   condiciones: "windy",
-  modo: "enlace",
+  modo: "iframe_oficial",
+  iframe: `${ORIGEN_IFRAME_WINDY}/webcams/public/embed/player/${windyId}/day`,
   url: `https://www.windy.com/webcams/${windyId}`,
   windy_id: windyId,
   rompiente,
@@ -493,4 +501,32 @@ export function estadoCamaraSpot(slug, tienePropia, camaras = {}) {
   if (tienePropia && !camaras[slug]?.sinSenal) return "verde";
   if (camarasExternasDeSpot(slug).some((c) => externaFunciona(camaras[claveSalud(c)], c) || enlaceCuentaVerde(c, camaras[claveSalud(c)]))) return "verde";
   return "rojo";
+}
+
+// Bloque de Windy de la ficha (gratis para todos): un reproductor por
+// cámara y la atribución exacta que pide Windy, una vez, bien visible.
+export const ATRIBUCION_WINDY = {
+  texto: "Webcams provided by {windy} - {add}",
+  windy: { texto: "windy.com", url: "https://www.windy.com" },
+  add: { texto: "add new webcam", url: "https://www.windy.com/webcams/add" },
+};
+export const esCamaraWindy = (c) => c?.condiciones === "windy";
+export function htmlCamarasWindy(camaras, idioma, t) {
+  const e = escaparHtml;
+  if (!camaras?.length) return "";
+  const a = ATRIBUCION_WINDY;
+  const enlace = (x) => `<a href="${e(x.url)}" target="_blank" rel="noopener">${e(x.texto)}</a>`;
+  const atribucion = e(a.texto).replace("{windy}", enlace(a.windy)).replace("{add}", enlace(a.add));
+  const reproductores = camaras.map((c) => {
+    const nombre = nombreCamara(c, idioma);
+    return `
+    <figure class="camara-windy" data-camara="${e(c.id)}" style="margin:8px 0 0;">
+      <iframe src="${e(c.iframe)}" title="${e(nombre)} | Windy.com" loading="lazy" allowfullscreen
+        sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox" referrerpolicy="strict-origin"
+        style="width:100%; aspect-ratio:16/9; border:1px solid var(--linea); border-radius:8px; display:block; background:#000;"></iframe>
+      <figcaption style="font-size:11px; color:var(--tinta-2); margin-top:3px;"><a href="${e(c.url)}" target="_blank" rel="noopener">${e(nombre)}</a></figcaption>
+    </figure>`;
+  }).join("");
+  return `${reproductores}
+    <p class="atribucion-windy" style="font-size:12px; margin:6px 0 0; color:var(--tinta);">${atribucion}</p>`;
 }
