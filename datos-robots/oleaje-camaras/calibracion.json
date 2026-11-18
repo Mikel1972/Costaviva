@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-18T12:37:58.052Z",
- "lineasHistorial": 11315,
+ "fecha": "2026-11-18T13:07:50.990Z",
+ "lineasHistorial": 11325,
  "etiquetas": 940,
  "etiquetasClaude": 249,
  "calibracion": {
@@ -42,9 +42,9 @@
    "correlacion": -0.088
   },
   "donostia/principal": {
-   "a": 5.1718,
+   "a": 5.1987,
    "p": 0.5,
-   "n": 58,
+   "n": 59,
    "nEtiquetas": 5,
    "nEtiquetasClaude": 0,
    "franjasClaude": [],
@@ -53,12 +53,12 @@
    "hMax": 4.04,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": -0.008
+   "correlacion": 0.006
   },
   "zarautz/dinamico": {
-   "a": 3.1847,
+   "a": 3.19,
    "p": 0.5,
-   "n": 853,
+   "n": 854,
    "nEtiquetas": 135,
    "nEtiquetasClaude": 29,
    "franjasClaude": [
@@ -92,7 +92,7 @@
    "hMax": 6.97,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.259
+   "correlacion": 0.256
   },
   "zumaia/c": {
    "a": 16.0421,
@@ -129,9 +129,9 @@
    "correlacion": 0.412
   },
   "deba/rompiente": {
-   "a": 3.4826,
+   "a": 3.4892,
    "p": 0.5,
-   "n": 263,
+   "n": 264,
    "nEtiquetas": 37,
    "nEtiquetasClaude": 12,
    "franjasClaude": [
@@ -151,7 +151,7 @@
    "hMax": 6.97,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.357
+   "correlacion": 0.358
   },
   "mundaka/principal": {
    "a": 2.986,
@@ -304,9 +304,9 @@
    "correlacion": -0.556
   },
   "orio/principal": {
-   "a": 2.6252,
+   "a": 2.6365,
    "p": 0.5,
-   "n": 111,
+   "n": 112,
    "nEtiquetas": 18,
    "nEtiquetasClaude": 1,
    "franjasClaude": [
@@ -317,7 +317,7 @@
    "hMax": 4.04,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.39
+   "correlacion": 0.394
   },
   "getaria/malkorbe": {
    "a": 2.6528,
@@ -513,7 +513,7 @@
    "motivo": "138 etiquetas",
    "ruido": {
     "ruido": 0.572,
-    "pares": 619
+    "pares": 620
    }
   },
   "getaria": {
@@ -536,8 +536,8 @@
    "sustituye": true,
    "motivo": "37 etiquetas",
    "ruido": {
-    "ruido": 0.961,
-    "pares": 103
+    "ruido": 0.942,
+    "pares": 104
    }
   },
   "mutriku": {
