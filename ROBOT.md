@@ -10357,3 +10357,12 @@ Datos: `camaras-estado.json` de 2026-11-17T03:04Z (fresco). En rojo: orio (`sin_
 - Comprobado hoy: `visor.saichcantabrico.es` y `chcantabrico.es` ahora responden 200 desde esta red (antes sin respuesta). El visor SAI es una web WordPress que carga los datos por `admin-ajax.php` interno (sin API documentada ni condiciones de reutilización visibles; `/wp-json/` solo trae oEmbed). No se usa ni se raspa: sigue pendiente pedir acceso/licencia por email con `datos@costaviva.org` (decisión de Mikel, igual que Euskalmet y MeteoGalicia).
 - `servizos.meteogalicia.gal/mgafos/estacions/estacions.action` 200 (la clave de `estadoActual` sigue pendiente); `api.euskadi.eus` 403 y `sig.mapama.gob.es` (PDF SAIHCaudales) 302 desde esta red, no se dan por caídos; `saihduero.es` y la ruta de MITECO SAIH sin respuesta.
 Firmado: robot buscador de fuentes (rutina), 2026-11-17 05:55 UTC.
+
+### 2026-11-18 05:42 UTC (robot de cámaras caídas — rutina; Pasaia, San Vicente, Cambrils)
+
+Datos: `camaras-estado.json` de 2026-11-18T03:03Z (fresco). En rojo: pasaia (`frame_plano`), sanvicente (`origen_522`), ext-windy-1232544942 (Cambrils, `windy_inactiva`), bakio y mundaka (`frame_congelado` a las 03:00 UTC, de noche; no es avería). Orio ya no sale en rojo.
+- **pasaia**: detectia.net 200, Last-Modified 17-nov 18:05 GMT (foto diaria; de noche sale plana). Fuente no movida, sin cambios.
+- **sanvicente**: sin verificar: dominio bloqueado por la red de la rutina (cantabria.es, sin respuesta). No se da por caída ni por arreglada.
+- **Cambrils (Windy)**: enlace externo marcado inactivo por Windy; sigue pendiente buscar otra cámara de ese puerto desde fuera de la rutina.
+- No se cambió código.
+— robot de cámaras caídas (rutina)
