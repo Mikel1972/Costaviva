@@ -1,6 +1,6 @@
 {
- "fecha": "2026-11-18T14:07:49.568Z",
- "lineasHistorial": 11357,
+ "fecha": "2026-11-18T14:37:58.647Z",
+ "lineasHistorial": 11367,
  "etiquetas": 940,
  "etiquetasClaude": 249,
  "calibracion": {
@@ -56,9 +56,9 @@
    "correlacion": 0.006
   },
   "zarautz/dinamico": {
-   "a": 3.1978,
+   "a": 3.2005,
    "p": 0.5,
-   "n": 857,
+   "n": 858,
    "nEtiquetas": 135,
    "nEtiquetasClaude": 29,
    "franjasClaude": [
@@ -92,7 +92,7 @@
    "hMax": 6.97,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.255
+   "correlacion": 0.256
   },
   "zumaia/c": {
    "a": 16.0421,
@@ -129,9 +129,9 @@
    "correlacion": 0.416
   },
   "deba/rompiente": {
-   "a": 3.5155,
+   "a": 3.5273,
    "p": 0.5,
-   "n": 267,
+   "n": 268,
    "nEtiquetas": 37,
    "nEtiquetasClaude": 12,
    "franjasClaude": [
@@ -151,7 +151,7 @@
    "hMax": 6.97,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.357
+   "correlacion": 0.356
   },
   "mundaka/principal": {
    "a": 2.986,
@@ -245,9 +245,9 @@
    "correlacion": null
   },
   "castrourdiales/principal": {
-   "a": 2.8161,
+   "a": 2.8347,
    "p": 0.5,
-   "n": 178,
+   "n": 179,
    "nEtiquetas": 42,
    "nEtiquetasClaude": 6,
    "franjasClaude": [
@@ -263,12 +263,12 @@
    "hMax": 4.51,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.071
+   "correlacion": 0.063
   },
   "berria/dinamico": {
-   "a": 2.9615,
+   "a": 2.9652,
    "p": 0.5,
-   "n": 411,
+   "n": 412,
    "nEtiquetas": 64,
    "nEtiquetasClaude": 16,
    "franjasClaude": [
@@ -287,7 +287,7 @@
    "hMax": 4.73,
    "errorRel": 1,
    "pocosDatos": false,
-   "correlacion": 0.267
+   "correlacion": 0.268
   },
   "mutriku/principal": {
    "a": 10.8748,
@@ -512,8 +512,8 @@
    "sustituye": true,
    "motivo": "138 etiquetas",
    "ruido": {
-    "ruido": 0.573,
-    "pares": 623
+    "ruido": 0.572,
+    "pares": 624
    }
   },
   "getaria": {
@@ -576,8 +576,8 @@
    "sustituye": true,
    "motivo": "64 etiquetas",
    "ruido": {
-    "ruido": 0.9,
-    "pares": 185
+    "ruido": 0.893,
+    "pares": 186
    }
   },
   "castrourdiales": {
