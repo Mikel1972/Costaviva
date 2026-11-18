@@ -10366,3 +10366,10 @@ Datos: `camaras-estado.json` de 2026-11-18T03:03Z (fresco). En rojo: pasaia (`fr
 - **Cambrils (Windy)**: enlace externo marcado inactivo por Windy; sigue pendiente buscar otra cámara de ese puerto desde fuera de la rutina.
 - No se cambió código.
 — robot de cámaras caídas (rutina)
+
+### 2026-11-18 05:55 UTC — robot buscador de fuentes (rutina): miércoles, cámaras, zona Galicia — Rías Altas / costa norte
+- Sin cámaras integradas ni spots creados; no se cambió código.
+- Lista oficial de MeteoGalicia (`servizos.meteogalicia.gal/mgrss/observacion/jsonCamaras.action`, 200): las 6 cámaras del norte siguen sin spot y vivas (Last-Modified 18-nov 05:46 GMT): Burela (43.656, -7.34435), Penedo do Galo/Viveiro (43.66078, -7.56288), Cariño (43.734, -7.86335), Punta Candieira/Cedeira (43.7043, -8.05246), Aldea Nova/Narón (43.5625, -8.13282) y Langosteira/Arteixo (43.3472, -8.53118). Coordenadas de la propia lista (son las de la lente, no del punto de pesca).
+- Comprobación visual: a las 05:46 UTC es de noche. Penedo do Galo (ciudad y ría iluminadas lejos, mar no legible), Cariño (tejados en primer plano, bahía oscura) y Punta Candieira (negro total) no permiten afirmar que el estado del agua se lee; por la regla de "Cámara con mar a la vista" no se crea ningún spot sin verlas de día. Burela, Aldea Nova y Langosteira descargadas pero no miradas.
+- Pendiente para la próxima pasada de esta zona (hacerla con luz, tras ~09:30 UTC o pedir la imagen a mediodía): mirar las 6 y crear spot (máx. 5) de las que tengan mar legible; la coordenada del spot debe ser la playa/muelle, comprobada con la Marine API de Open-Meteo.
+Firmado: robot buscador de fuentes (rutina), 2026-11-18 05:55 UTC.
