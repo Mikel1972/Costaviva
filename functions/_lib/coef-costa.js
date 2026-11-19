@@ -48,13 +48,22 @@ export function aprenderCoefCosta(muestras, { k = K_ENCOGIMIENTO, ahora = new Da
   const modelo = { generado: ahora.toISOString(), n: todas.length, k, global: { coef: +Math.exp(g).toFixed(3), n: todas.length }, camaras: {} };
   const porCam = {};
   for (const m of validas) (porCam[m.camara] ||= []).push(m);
+  const efecto = efectoTamano(validas, log);
+  modelo.efectoTamano = Object.fromEntries(Object.entries(efecto).map(([t, e]) => [t, +Math.exp(e).toFixed(3)]));
   for (const [cam, ms] of Object.entries(porCam)) {
     const c = nivel(ms.map(log), g, k);
+    // Efecto propio de la cámara, sin el tamaño de mar de sus muestras (una
+    // cámara con casi todo mar pequeño tiene la media inflada).
+    const base = nivel(ms.map((m) => log(m) - (efecto[tamanoMar(m.hs)] ?? 0)), g, k).log;
     const tamanos = {};
     for (const t of ["pequeno", "medio", "grande"]) {
       const mt = ms.filter((m) => tamanoMar(m.hs) === t);
-      if (!mt.length) continue;
-      const nt = nivel(mt.map(log), c.log, k);
+      // Sin muestras de ese tamaño, el de la cámara con el efecto del tamaño
+      // que se ve en todas las cámaras (2026-11-19, Mikel: "la ola en Bakio
+      // es demasiado alta": Bakio no tenía ninguna etiqueta de mar grande y
+      // usaba su media, 0,55, sacada de mar pequeño; con mar grande la orilla
+      // recibe bastante menos en todas las cámaras).
+      const nt = nivel(mt.map(log), base + (efecto[t] ?? 0), k);
       const periodos = {};
       for (const p of ["corto", "largo"]) {
         const mp = mt.filter((m) => tipoPeriodo(m.periodo) === p);
@@ -62,9 +71,99 @@ export function aprenderCoefCosta(muestras, { k = K_ENCOGIMIENTO, ahora = new Da
       }
       tamanos[t] = { coef: nt.coef, n: nt.n, periodos };
     }
+    ordenarPorTamano(tamanos);
     modelo.camaras[cam] = { coef: c.coef, n: c.n, tamanos };
   }
   return modelo;
+}
+
+// REGLA (2026-11-19, Mikel: "pon en el robot una regla para que no vuelva a
+// pasar"): con más mar, a la orilla nunca llega una parte MAYOR del mar
+// abierto (la rompiente limita la ola que entra). Por cámara, pequeño ≥
+// medio ≥ grande. Si los datos dicen otra cosa (pocas etiquetas), se juntan
+// los tamaños que se cruzan en su media ponderada por etiquetas (regresión
+// isótona, "pool adjacent violators"), en logaritmos. Los periodos de cada
+// tamaño se mueven lo mismo que su tamaño.
+export const TAMANOS = ["pequeno", "medio", "grande"];
+export function ordenarPorTamano(tamanos) {
+  const ts = TAMANOS.filter((t) => tamanos[t] && Number.isFinite(tamanos[t].coef) && tamanos[t].coef > 0);
+  const bloques = ts.map((t) => ({ ts: [t], w: (tamanos[t].n || 0) + 1, v: Math.log(tamanos[t].coef) }));
+  for (let i = 0; i < bloques.length - 1; ) {
+    if (bloques[i].v < bloques[i + 1].v) {
+      const a = bloques[i], b = bloques[i + 1];
+      bloques.splice(i, 2, { ts: [...a.ts, ...b.ts], w: a.w + b.w, v: (a.v * a.w + b.v * b.w) / (a.w + b.w) });
+      if (i > 0) i--;
+    } else i++;
+  }
+  for (const bl of bloques) {
+    for (const t of bl.ts) {
+      const nuevo = +Math.exp(bl.v).toFixed(3);
+      const f = nuevo / tamanos[t].coef;
+      if (Math.abs(f - 1) > 1e-9) {
+        for (const p of Object.values(tamanos[t].periodos || {})) p.coef = +(p.coef * f).toFixed(3);
+        tamanos[t].coef = nuevo;
+      }
+    }
+  }
+  return tamanos;
+}
+
+// Comprobación del robot antes de publicar el modelo (y test del repo sobre
+// coef-costa-datos.js): cada cámara con los tres tamaños, en orden, y dentro
+// de [COEF_MIN, COEF_MAX]. Devuelve la lista de problemas (vacía = bien).
+export function verificarCoefCosta(modelo, tolerancia = 0.005) {
+  const problemas = [];
+  for (const [cam, c] of Object.entries(modelo?.camaras || {})) {
+    const v = TAMANOS.map((t) => c.tamanos?.[t]?.coef);
+    TAMANOS.forEach((t, i) => { if (!Number.isFinite(v[i])) problemas.push(`${cam}: sin coeficiente para mar ${t}`); });
+    for (let i = 0; i < 2; i++) {
+      if (Number.isFinite(v[i]) && Number.isFinite(v[i + 1]) && v[i + 1] > v[i] * (1 + tolerancia)) {
+        problemas.push(`${cam}: con mar ${TAMANOS[i + 1]} llega más (${v[i + 1]}) que con mar ${TAMANOS[i]} (${v[i]})`);
+      }
+    }
+  }
+  return problemas;
+}
+
+// Efecto del tamaño del mar en el cociente orilla/mar abierto, común a
+// todas las cámaras: log(cociente) ≈ efecto de la cámara + efecto del
+// tamaño (modelo aditivo en logaritmos, ajustado por medias alternas).
+// CADA CÁMARA CUENTA LO MISMO en el efecto del tamaño: si no, una cámara muy
+// abrigada y con muchas etiquetas (Hondarribia, 55 de mar grande, cae al
+// 8 %) arrastraba a todas. Se encoge hacia 0 con K_EFECTO cámaras de peso y
+// se centra en 0 (media de las cámaras), así que cada cámara conserva su
+// nivel.
+export const K_EFECTO = 2, K_MUESTRAS_EFECTO = 3;
+export function efectoTamano(muestras, log, iter = 30, k = K_EFECTO) {
+  const ef = { pequeno: 0, medio: 0, grande: 0 };
+  if (!muestras.length) return ef;
+  const grupos = {}; // cámara -> tamaño -> [suma log, n]
+  for (const m of muestras) {
+    const t = tamanoMar(m.hs);
+    if (!t) continue;
+    const g = ((grupos[m.camara] ||= {})[t] ||= [0, 0]);
+    g[0] += log(m); g[1]++;
+  }
+  const cams = {};
+  for (let it = 0; it < iter; it++) {
+    for (const [c, porT] of Object.entries(grupos)) {
+      let s = 0, n = 0;
+      for (const [t, [sum, cnt]] of Object.entries(porT)) { s += sum - cnt * ef[t]; n += cnt; }
+      cams[c] = s / n;
+    }
+    const st = {};
+    for (const [c, porT] of Object.entries(grupos)) {
+      // Lo de cada cámara también se encoge por sus etiquetas: una sola
+      // etiqueta de mar grande no fija el efecto.
+      for (const [t, [sum, cnt]] of Object.entries(porT)) { const a = (st[t] ||= [0, 0]); a[0] += (sum / cnt - cams[c]) * cnt / (cnt + K_MUESTRAS_EFECTO); a[1]++; }
+    }
+    const nuevos = {};
+    for (const t of Object.keys(ef)) nuevos[t] = st[t] ? st[t][0] / (st[t][1] + k) : 0;
+    const usados = Object.keys(st);
+    const centro = usados.reduce((a, t) => a + nuevos[t] * st[t][1], 0) / usados.reduce((a, t) => a + st[t][1], 0);
+    for (const t of Object.keys(ef)) ef[t] = st[t] ? nuevos[t] - centro : 0;
+  }
+  return ef;
 }
 
 const acotar = (c) => +Math.min(COEF_MAX, Math.max(COEF_MIN, c)).toFixed(3);

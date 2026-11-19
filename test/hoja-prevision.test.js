@@ -5,7 +5,7 @@ import { readFileSync } from "node:fs";
 import { I18n } from "../assets/js/i18n-modulo.js";
 import {
   serieDesdeAhora, hitosMarea, notasPorHora, resumenTendencia, textoResumen, htmlTabla, HORAS_HOJA,
-  medidoAhora, distanciaKm,
+  medidoAhora, distanciaKm, ajustarMareaATabla,
 } from "../assets/js/hoja-prevision.js";
 
 function horas(n = 48, f = () => ({})) {
@@ -137,4 +137,19 @@ test("tabla con medido: columna antes de la de ahora, con su fuente; sin medida,
   assert.equal((html.match(/<td class="hp-medido">—<\/td>/g) || []).length, 8);
   assert.ok(!/undefined|NaN/.test(html));
   assert.ok(!/hp-medido/.test(htmlTabla(s, [])));
+});
+
+test("marea con las alturas de la tabla del puerto, no las del nivel medio (Mikel, 2026-11-19)", () => {
+  // Curva del modelo de −1,1 a +0,8 m; pleamar a las 06:00 y bajamar a las 12:00.
+  const s = horas(25, (k) => ({ nivelMar: +(-0.15 + 0.95 * Math.cos(((k - 6) / 12.4) * 2 * Math.PI)).toFixed(2) }));
+  const marea = { altura: 1.3, proximas: [{ tipo: "pleamar", hora: "06:00", altura: 2.2, manana: false }, { tipo: "bajamar", hora: "12:15", altura: 0.3, manana: false }] };
+  const r = ajustarMareaATabla(s, marea);
+  assert.ok(r.ajustada);
+  const max = Math.max(...r.serie.map((h) => h.nivelMar)), min = Math.min(...r.serie.map((h) => h.nivelMar));
+  assert.ok(Math.abs(max - 2.2) < 0.15, `pleamar ${max}`);
+  assert.ok(Math.abs(min - 0.3) < 0.15, `bajamar ${min}`);
+  assert.ok(r.serie.every((h) => h.nivelMar > 0));
+  // Sin tabla, sin tocar.
+  assert.equal(ajustarMareaATabla(s, null).ajustada, false);
+  assert.equal(ajustarMareaATabla(s, null).serie, s);
 });

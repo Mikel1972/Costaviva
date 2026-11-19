@@ -45,7 +45,7 @@ import {
   muestrasCoefCosta, correlacionFondo,
 } from "./calibracion.mjs";
 import { CAMARAS_OLEAJE, BANDAS_OLA, FUENTE_POR_SPOT } from "../../functions/_lib/oleaje-camaras.js";
-import { aprenderCoefCosta, coefCostaDe } from "../../functions/_lib/coef-costa.js";
+import { aprenderCoefCosta, coefCostaDe, verificarCoefCosta } from "../../functions/_lib/coef-costa.js";
 import { verdades, parear, aprenderSesgo } from "./sesgo-plazo.mjs";
 import { SPOTS, factorOleaje } from "../../functions/prevision.js";
 import { pedirDatosMeteo, fuenteDeVariable } from "../../functions/_lib/fuentes.js";
@@ -498,6 +498,14 @@ try { COEF_COSTA = leerTextoCoefCosta(readFileSync(FICHERO_COEF_COSTA, "utf8"));
 function escribirCoefCosta(historial, etiquetas) {
   const modelo = aprenderCoefCosta(muestrasCoefCosta(historial, etiquetas, centroBanda));
   if (!modelo.n) return;
+  // Regla (coef-costa.js, verificarCoefCosta): si el modelo aprendido la
+  // incumple, no se publica, se queda el anterior y el robot sale en rojo.
+  const problemas = verificarCoefCosta(modelo);
+  if (problemas.length) {
+    for (const p of problemas) console.log(`::error::Coeficiente de costa: ${p}`);
+    process.exitCode = 1;
+    return;
+  }
   if (!cambioMaterial(COEF_COSTA, modelo)) return;
   writeFileSync(FICHERO_COEF_COSTA, textoCoefCosta(modelo));
   COEF_COSTA = modelo;

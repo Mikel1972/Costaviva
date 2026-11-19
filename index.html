@@ -76,6 +76,7 @@
 <script src="/assets/js/meteo.js"></script>
 <script src="/assets/js/nivel-indice.js"></script>
 <script src="/assets/js/relleno-datos.js"></script>
+<script src="/assets/js/correccion-boya.js"></script>
 <!-- Webcams en vídeo en directo de Gipuzkoa (2026-09-14) — HLS, no hace
      falta en Safari (soporte nativo) pero sí en Chrome/Firefox/Edge. -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.6.15/hls.min.js"></script>
@@ -5990,19 +5991,51 @@ cargarEspeciesDatos().catch((e) => console.warn("especies.json:", e.message));
 // la dirección del viento (levante en el Cantábrico). Se guarda la promesa,
 // no solo el resultado: el índice y la ventana la piden a la vez al abrir el
 // panel y así se hace una sola petición.
+// Spots sin cámara asignada (los del usuario, como Lemoiz, y los de la red
+// sin FUENTE_POR_SPOT) a ORILLA_PRESTADA_KM o menos de un spot con cámara
+// propia: lo aprendido por esa cámara, rebajado hacia 1 cuanto más lejos
+// (2026-11-19, Mikel: "la ola que marca en Lemoiz es demasiado alta"; su
+// regla: "en los spots en los que no hay [cámara], inferimos de los spots
+// cercanos"). Más lejos, nada: se queda el mar abierto, y se dice así.
+const ORILLA_PRESTADA_KM = 15;
+function orillaPrestada(s) {
+  if (s.zonaOleaje?.orilla || s.zonaOleaje?.parametros || !Number.isFinite(s.lat)) return null;
+  let mejor = null;
+  for (const o of SPOTS) {
+    const t = o.zonaOleaje?.orilla;
+    if (o === s || !t?.propia || !t.tabla || !Number.isFinite(o.lat)) continue;
+    const km = window.CorreccionBoya.distanciaKm(s.lat, s.lon, o.lat, o.lon);
+    if (km <= ORILLA_PRESTADA_KM && (!mejor || km < mejor.km)) mejor = { o, t, km };
+  }
+  if (!mejor) return null;
+  const peso = Math.max(0, 1 - mejor.km / (ORILLA_PRESTADA_KM + 5));
+  const tabla = {};
+  for (const [tam, pers] of Object.entries(mejor.t.tabla)) {
+    tabla[tam] = {};
+    for (const [per, c] of Object.entries(pers)) tabla[tam][per] = Number.isFinite(c) ? +Math.pow(c, peso).toFixed(3) : c;
+  }
+  return { camara: mejor.t.camara, propia: false, prestada: true, km: Math.round(mejor.km), peso: +peso.toFixed(2), n: mejor.t.n, tabla };
+}
+// ¿La ola de la serie es la de la orilla (cámara, vecina o abrigo) o la de
+// mar abierto?
+const olaEnOrillaSpot = (s) => !!(s.zonaOleaje?.orilla || s.zonaOleaje?.parametros || orillaPrestada(s));
+
 async function datosHorariosSpot(s) {
   const c = vaCacheHoras.get(s.slug);
   // Spots abrigados: misma estimación "en la playa" que /prevision
   // (parámetros en s.zonaOleaje, que manda el backend).
   const abrigo = s.zonaOleaje?.parametros || null;
-  const orilla = s.zonaOleaje?.orilla || null;
+  const orilla = s.zonaOleaje?.orilla || orillaPrestada(s);
   // Con lectura de cámara, el modelo de las próximas horas se corrige con
   // el cociente cámara/modelo, que se apaga en ~18 h (oleaje-camaras.js).
   const cam = s.oleajeCamara && Number.isFinite(s.oleajeCamara.cociente) ? s.oleajeCamara : null;
   const zona = zonaSpot(s);
   const horaCam = cam ? new Date(cam.fecha).toLocaleString("sv-SE", { timeZone: zona }).replace(" ", "T").slice(0, 16) : null;
   const claveCam = cam ? `${cam.camara}@${cam.fecha}` : "";
-  if (c && Date.now() - c.t < 60 * 60 * 1000 && c.abrigo === !!abrigo && c.orilla === !!orilla && c.cam === claveCam) return c.horas;
+  // Boyas con medida (para la corrección desde la boya): si llega una medida
+  // nueva, se recalcula.
+  const claveBoyas = BOYAS.map((b) => b.actualizado || "").join("|");
+  if (c && Date.now() - c.t < 60 * 60 * 1000 && c.abrigo === !!abrigo && c.orilla === !!orilla && c.cam === claveCam && c.boyas === claveBoyas) return c.horas;
   const promesa = (async () => {
     const coord = `latitude=${s.lat}&longitude=${s.lon}&timezone=${encodeURIComponent(zona)}`;
     // Si un dato falla, lo demás sigue (Mikel, 2026-11-19: "si una falla no
@@ -6037,6 +6070,22 @@ async function datosHorariosSpot(s) {
     });
     const factor = factorOleaje(s.lat, s.lon);
     const horaAhoraSpot = horaActualISO(zona).slice(0, 13) + ":00";
+    // Corrección desde la boya (assets/js/correccion-boya.js): la boya más
+    // cercana frente al modelo en la hora de su medida. La cámara manda: si
+    // hay corrección de cámara, no se usa la boya.
+    const horaLocalDe = (iso) => {
+      const d = new Date(Date.parse(iso) + 30 * 60e3); // a la hora más cercana
+      return d.toLocaleString("sv-SE", { timeZone: zona }).replace(" ", "T").slice(0, 13) + ":00";
+    };
+    const modeloAbierto = {};
+    (marino.hourly?.time || []).forEach((t, i) => {
+      const o = marino.hourly.wave_height?.[i];
+      if (Number.isFinite(o)) modeloAbierto[t] = o * factor;
+    });
+    const corrBoya = cam || !window.CorreccionBoya ? null : window.CorreccionBoya.correccionBoya({
+      lat: s.lat, lon: s.lon, boyas: BOYAS, modeloEnHora: (iso) => modeloAbierto[horaLocalDe(iso)] ?? null,
+    });
+    const horaBoya = corrBoya ? horaLocalDe(corrBoya.actualizado) : null;
     const mar = {};
     (marino.hourly?.time || []).forEach((t, i) => {
       const ola = marino.hourly.wave_height?.[i];
@@ -6051,16 +6100,17 @@ async function datosHorariosSpot(s) {
       const plazo = horasEntreLocales(horaAhoraSpot, t);
       const sp = s.zonaOleaje?.sesgoPlazo;
       const fPlazo = !sp || coefOri === null || !(plazo >= 0) ? 1 : sp[plazo < 6 ? 0 : plazo < 24 ? 1 : plazo < 48 ? 2 : 3] ?? 1;
+      const fBoya = corrBoya ? window.CorreccionBoya.factorBoya(corrBoya, horasEntreLocales(horaBoya, t)) : 1;
       mar[t] = {
         nivelMar: marino.hourly.sea_level_height_msl?.[i] ?? null,
-        ola: ola === null || ola === undefined ? null : ola * factor * coef * fCam * fPlazo,
+        ola: ola === null || ola === undefined ? null : ola * factor * coef * fCam * fPlazo * fBoya,
         // Para la hoja de previsión: mar abierto, periodo y dirección.
-        olaMarAbierto: ola === null || ola === undefined ? null : ola * factor,
+        olaMarAbierto: ola === null || ola === undefined ? null : ola * factor * fBoya,
         periodo: marino.hourly.wave_period?.[i] ?? null,
         dirOla: marino.hourly.wave_direction?.[i] ?? null,
         // Mar de fondo en mar abierto (con el factor de zona) y el mismo
         // coeficiente de orilla: la ventana calcula la resaca con ellos.
-        fondoAltura: Number.isFinite(marino.hourly.swell_wave_height?.[i]) ? marino.hourly.swell_wave_height[i] * factor : null,
+        fondoAltura: Number.isFinite(marino.hourly.swell_wave_height?.[i]) ? marino.hourly.swell_wave_height[i] * factor * fBoya : null,
         fondoPeriodo: periodoFondoPico(marino.hourly.swell_wave_peak_period?.[i], marino.hourly.swell_wave_period?.[i], s.zonaOleaje?.periodoFondo),
         fondoCoef: coefOri ?? (abrigo ? coefAbr : null),
         tempAgua: marino.hourly.sea_surface_temperature?.[i] ?? null,
@@ -6094,9 +6144,10 @@ async function datosHorariosSpot(s) {
     if (!horas.some((h) => RD.CAMPOS.some((c) => Number.isFinite(h[c])))) throw new Error("sin datos horarios");
     if (estimados.length) console.warn(`Datos estimados (media de los últimos ${RD.N_MEDIA}) en ${s.slug}:`, estimados.join(", "));
     horas.estimados = estimados;
+    horas.correccionBoya = corrBoya ? { ...corrBoya, horaLocal: horaBoya.slice(11, 16) } : null;
     return horas;
   })();
-  vaCacheHoras.set(s.slug, { t: Date.now(), horas: promesa, abrigo: !!abrigo, orilla: !!orilla, cam: claveCam });
+  vaCacheHoras.set(s.slug, { t: Date.now(), horas: promesa, abrigo: !!abrigo, orilla: !!orilla, cam: claveCam, boyas: claveBoyas });
   promesa.catch(() => { if (vaCacheHoras.get(s.slug)?.horas === promesa) vaCacheHoras.delete(s.slug); });
   return promesa;
 }
@@ -6389,9 +6440,13 @@ async function calcularHojaPrevision() {
       try { hpEstado.resultados[e.id] = VA.calcularVentana(e, datos.reglas_por_defecto, horas, ctx); } catch (err) { /* sin nota para esa especie */ }
     }
     hpEstado.serie = window.HojaPrevision.serieDesdeAhora(horas, horaActualISO(zonaSpot(s)));
+    hpEstado.corrBoya = horas.correccionBoya || null;
     // La luz de cada hora sale del cálculo de la ventana (alba, día, ocaso, noche).
     const algun = Object.values(hpEstado.resultados)[0] || [];
     hpEstado.serie = hpEstado.serie.map((h) => ({ ...h, luz: algun.find((r) => r.hora.slice(0, 13) === h.hora.slice(0, 13))?.luz || null }));
+    // Marea con las alturas de la tabla del puerto (la del panel), no la
+    // del modelo respecto al nivel medio.
+    hpEstado.serie = window.HojaPrevision.ajustarMareaATabla(hpEstado.serie, s.marea).serie;
     hpEstado.nombres = Object.fromEntries(candidatas.map((e) => [e.id, I18n.nombre(e)]));
     if (!(hpEstado.especieId in hpEstado.nombres)) hpEstado.especieId = "";
     document.getElementById("hpPez").innerHTML = `<option value="">${escVA(I18n.t("hoja.pez_mejor"))}</option>` +
@@ -6413,8 +6468,13 @@ function pintarHojaPrevision() {
   document.getElementById("hpPezPremium").hidden = !bloqueada;
   const notas = bloqueada ? [] : HP.notasPorHora(hpEstado.serie, hpEstado.resultados, hpEstado.especieId || null);
   document.getElementById("hpResumen").innerHTML = HP.resumenTendencia(hpEstado.serie, notas)
-    .map((r) => `<li class="${r.tono || "igual"}">${escVA(HP.textoResumen(r, nombre))}</li>`).join("")
-    + (bloqueada ? `<li class="igual"><a href="/suscripcion">${escVA(I18n.t("hoja.mejor_premium"))}</a></li>` : "");
+    .map((r) => `<li class="${r.tono || "igual"}">${escVA(HP.textoResumen(r, nombre, { enOrilla: olaEnOrillaSpot(hpEstado.s) }))}</li>`).join("")
+    + (bloqueada ? `<li class="igual"><a href="/suscripcion">${escVA(I18n.t("hoja.mejor_premium"))}</a></li>` : "")
+    // Corrección desde la boya: se dice siempre que se aplica.
+    + (hpEstado.corrBoya ? `<li class="igual">${escVA(I18n.t("hoja.corr_boya", {
+      nombre: hpEstado.corrBoya.nombre, hora: hpEstado.corrBoya.horaLocal,
+      medido: I18n.metros(hpEstado.corrBoya.medido, 1), modelo: I18n.metros(hpEstado.corrBoya.modelo, 1),
+    }))}</li>` : "");
   // «Medido, ahora»: cámara propia, boya y estación de AEMET más cercanas.
   const s = hpEstado.s;
   const zona = zonaSpot(s);
@@ -6422,7 +6482,7 @@ function pintarHojaPrevision() {
     lat: s.lat, lon: s.lon, camara: s.oleajeCamara, boyas: BOYAS, estaciones: ESTACIONES_METEO,
     horaTexto: (iso) => new Date(iso).toLocaleTimeString(I18n.locale(), { timeZone: zona, hour: "2-digit", minute: "2-digit" }),
   });
-  document.getElementById("hpTabla").innerHTML = HP.htmlTabla(hpEstado.serie, notas, { todos: hpEstado.todos, nombreEspecie: nombre, bloqueada, medido });
+  document.getElementById("hpTabla").innerHTML = HP.htmlTabla(hpEstado.serie, notas, { todos: hpEstado.todos, nombreEspecie: nombre, bloqueada, medido, enOrilla: olaEnOrillaSpot(s) });
   document.getElementById("hpTodos").textContent = I18n.t(hpEstado.todos ? "hoja.solo_esencial" : "hoja.ver_todos");
 }
 // La hoja está al final del <body> (después de este script): sus botones se

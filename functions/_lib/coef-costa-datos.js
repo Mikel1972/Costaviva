@@ -1,6 +1,6 @@
 // Generado por scripts/oleaje-camaras/medir-espuma.mjs (coef-costa.js). No editar a mano.
 export default {
- "generado": "2026-11-19T13:39:42.664Z",
+ "generado": "2026-11-19T20:28:35.056Z",
  "n": 1185,
  "k": 8,
  "global": {
@@ -13,7 +13,7 @@ export default {
    "n": 262,
    "tamanos": {
     "pequeno": {
-     "coef": 0.448,
+     "coef": 0.451,
      "n": 173,
      "periodos": {
       "corto": {
@@ -27,29 +27,29 @@ export default {
      }
     },
     "medio": {
-     "coef": 0.404,
+     "coef": 0.394,
      "n": 68,
      "periodos": {
       "corto": {
-       "coef": 0.432,
+       "coef": 0.43,
        "n": 50
       },
       "largo": {
-       "coef": 0.347,
+       "coef": 0.345,
        "n": 18
       }
      }
     },
     "grande": {
-     "coef": 0.288,
+     "coef": 0.257,
      "n": 21,
      "periodos": {
       "corto": {
-       "coef": 0.303,
+       "coef": 0.274,
        "n": 1
       },
       "largo": {
-       "coef": 0.255,
+       "coef": 0.247,
        "n": 20
       }
      }
@@ -61,43 +61,43 @@ export default {
    "n": 74,
    "tamanos": {
     "pequeno": {
-     "coef": 0.365,
+     "coef": 0.375,
      "n": 47,
      "periodos": {
       "corto": {
-       "coef": 0.379,
+       "coef": 0.382,
        "n": 21
       },
       "largo": {
-       "coef": 0.367,
+       "coef": 0.37,
        "n": 26
       }
      }
     },
     "medio": {
-     "coef": 0.259,
+     "coef": 0.24,
      "n": 15,
      "periodos": {
       "corto": {
-       "coef": 0.266,
+       "coef": 0.256,
        "n": 7
       },
       "largo": {
-       "coef": 0.231,
+       "coef": 0.222,
        "n": 8
       }
      }
     },
     "grande": {
-     "coef": 0.231,
+     "coef": 0.199,
      "n": 12,
      "periodos": {
       "corto": {
-       "coef": 0.21,
+       "coef": 0.183,
        "n": 1
       },
       "largo": {
-       "coef": 0.215,
+       "coef": 0.202,
        "n": 11
       }
      }
@@ -109,39 +109,39 @@ export default {
    "n": 144,
    "tamanos": {
     "pequeno": {
-     "coef": 0.426,
+     "coef": 0.431,
      "n": 97,
      "periodos": {
       "corto": {
-       "coef": 0.416,
+       "coef": 0.417,
        "n": 58
       },
       "largo": {
-       "coef": 0.446,
+       "coef": 0.447,
        "n": 39
       }
      }
     },
     "medio": {
-     "coef": 0.398,
+     "coef": 0.381,
      "n": 35,
      "periodos": {
       "corto": {
-       "coef": 0.438,
+       "coef": 0.433,
        "n": 23
       },
       "largo": {
-       "coef": 0.343,
+       "coef": 0.337,
        "n": 12
       }
      }
     },
     "grande": {
-     "coef": 0.3,
+     "coef": 0.254,
      "n": 12,
      "periodos": {
       "largo": {
-       "coef": 0.268,
+       "coef": 0.251,
        "n": 12
       }
      }
@@ -153,7 +153,7 @@ export default {
    "n": 299,
    "tamanos": {
     "pequeno": {
-     "coef": 0.309,
+     "coef": 0.315,
      "n": 120,
      "periodos": {
       "corto": {
@@ -161,13 +161,13 @@ export default {
        "n": 66
       },
       "largo": {
-       "coef": 0.338,
+       "coef": 0.339,
        "n": 54
       }
      }
     },
     "medio": {
-     "coef": 0.143,
+     "coef": 0.142,
      "n": 124,
      "periodos": {
       "corto": {
@@ -181,11 +181,11 @@ export default {
      }
     },
     "grande": {
-     "coef": 0.082,
+     "coef": 0.079,
      "n": 55,
      "periodos": {
       "corto": {
-       "coef": 0.09,
+       "coef": 0.089,
        "n": 21
       },
       "largo": {
@@ -201,7 +201,7 @@ export default {
    "n": 122,
    "tamanos": {
     "pequeno": {
-     "coef": 0.52,
+     "coef": 0.523,
      "n": 105,
      "periodos": {
       "corto": {
@@ -215,25 +215,25 @@ export default {
      }
     },
     "medio": {
-     "coef": 0.224,
+     "coef": 0.196,
      "n": 11,
      "periodos": {
       "corto": {
-       "coef": 0.216,
+       "coef": 0.191,
        "n": 1
       },
       "largo": {
-       "coef": 0.172,
+       "coef": 0.162,
        "n": 10
       }
      }
     },
     "grande": {
-     "coef": 0.26,
+     "coef": 0.196,
      "n": 6,
      "periodos": {
       "largo": {
-       "coef": 0.196,
+       "coef": 0.166,
        "n": 6
       }
      }
@@ -245,35 +245,35 @@ export default {
    "n": 30,
    "tamanos": {
     "pequeno": {
-     "coef": 0.322,
+     "coef": 0.351,
      "n": 14,
      "periodos": {
       "corto": {
-       "coef": 0.285,
+       "coef": 0.3,
        "n": 6
       },
       "largo": {
-       "coef": 0.379,
+       "coef": 0.396,
        "n": 8
       }
      }
     },
     "medio": {
-     "coef": 0.262,
+     "coef": 0.247,
      "n": 13,
      "periodos": {
       "corto": {
-       "coef": 0.253,
+       "coef": 0.248,
        "n": 13
       }
      }
     },
     "grande": {
-     "coef": 0.254,
+     "coef": 0.201,
      "n": 3,
      "periodos": {
       "largo": {
-       "coef": 0.232,
+       "coef": 0.196,
        "n": 3
       }
      }
@@ -285,32 +285,37 @@ export default {
    "n": 26,
    "tamanos": {
     "pequeno": {
-     "coef": 0.383,
+     "coef": 0.405,
      "n": 17,
      "periodos": {
       "corto": {
-       "coef": 0.383,
+       "coef": 0.392,
        "n": 10
       },
       "largo": {
-       "coef": 0.434,
+       "coef": 0.447,
        "n": 7
       }
      }
     },
     "medio": {
-     "coef": 0.21,
+     "coef": 0.19,
      "n": 9,
      "periodos": {
       "corto": {
-       "coef": 0.2,
+       "coef": 0.189,
        "n": 6
       },
       "largo": {
-       "coef": 0.172,
+       "coef": 0.161,
        "n": 3
       }
      }
+    },
+    "grande": {
+     "coef": 0.19,
+     "n": 0,
+     "periodos": {}
     }
    }
   },
@@ -319,39 +324,39 @@ export default {
    "n": 36,
    "tamanos": {
     "pequeno": {
-     "coef": 0.588,
+     "coef": 0.626,
      "n": 20,
      "periodos": {
       "corto": {
-       "coef": 0.782,
+       "coef": 0.811,
        "n": 6
       },
       "largo": {
-       "coef": 0.542,
+       "coef": 0.555,
        "n": 14
       }
      }
     },
     "medio": {
-     "coef": 0.405,
+     "coef": 0.375,
      "n": 10,
      "periodos": {
       "corto": {
-       "coef": 0.381,
+       "coef": 0.365,
        "n": 7
       },
       "largo": {
-       "coef": 0.409,
+       "coef": 0.387,
        "n": 3
       }
      }
     },
     "grande": {
-     "coef": 0.36,
+     "coef": 0.296,
      "n": 6,
      "periodos": {
       "largo": {
-       "coef": 0.318,
+       "coef": 0.284,
        "n": 6
       }
      }
@@ -363,39 +368,39 @@ export default {
    "n": 20,
    "tamanos": {
     "pequeno": {
-     "coef": 0.561,
+     "coef": 0.63,
      "n": 9,
      "periodos": {
       "corto": {
-       "coef": 0.579,
+       "coef": 0.614,
        "n": 8
       },
       "largo": {
-       "coef": 0.603,
+       "coef": 0.668,
        "n": 1
       }
      }
     },
     "medio": {
-     "coef": 0.516,
+     "coef": 0.483,
      "n": 10,
      "periodos": {
       "corto": {
-       "coef": 0.522,
+       "coef": 0.505,
        "n": 8
       },
       "largo": {
-       "coef": 0.532,
+       "coef": 0.505,
        "n": 2
       }
      }
     },
     "grande": {
-     "coef": 0.482,
+     "coef": 0.363,
      "n": 1,
      "periodos": {
       "corto": {
-       "coef": 0.479,
+       "coef": 0.372,
        "n": 1
       }
      }
@@ -407,39 +412,39 @@ export default {
    "n": 18,
    "tamanos": {
     "pequeno": {
-     "coef": 0.435,
+     "coef": 0.561,
      "n": 3,
      "periodos": {
       "corto": {
-       "coef": 0.441,
+       "coef": 0.553,
        "n": 1
       },
       "largo": {
-       "coef": 0.487,
+       "coef": 0.598,
        "n": 2
       }
      }
     },
     "medio": {
-     "coef": 0.38,
+     "coef": 0.373,
      "n": 10,
      "periodos": {
       "corto": {
-       "coef": 0.418,
+       "coef": 0.414,
        "n": 7
       },
       "largo": {
-       "coef": 0.34,
+       "coef": 0.336,
        "n": 3
       }
      }
     },
     "grande": {
-     "coef": 0.35,
+     "coef": 0.307,
      "n": 5,
      "periodos": {
       "largo": {
-       "coef": 0.337,
+       "coef": 0.311,
        "n": 5
       }
      }
@@ -451,35 +456,35 @@ export default {
    "n": 26,
    "tamanos": {
     "pequeno": {
-     "coef": 0.387,
+     "coef": 0.405,
      "n": 20,
      "periodos": {
       "corto": {
-       "coef": 0.447,
+       "coef": 0.457,
        "n": 8
       },
       "largo": {
-       "coef": 0.363,
+       "coef": 0.369,
        "n": 12
       }
      }
     },
     "medio": {
-     "coef": 0.323,
+     "coef": 0.268,
      "n": 2,
      "periodos": {
       "corto": {
-       "coef": 0.309,
+       "coef": 0.265,
        "n": 2
       }
      }
     },
     "grande": {
-     "coef": 0.287,
+     "coef": 0.219,
      "n": 4,
      "periodos": {
       "largo": {
-       "coef": 0.256,
+       "coef": 0.214,
        "n": 4
       }
      }
@@ -491,28 +496,33 @@ export default {
    "n": 27,
    "tamanos": {
     "pequeno": {
-     "coef": 0.639,
+     "coef": 0.653,
      "n": 25,
      "periodos": {
       "corto": {
-       "coef": 0.687,
+       "coef": 0.693,
        "n": 14
       },
       "largo": {
-       "coef": 0.626,
+       "coef": 0.632,
        "n": 11
       }
      }
     },
     "medio": {
-     "coef": 0.524,
+     "coef": 0.41,
      "n": 2,
      "periodos": {
       "largo": {
-       "coef": 0.504,
+       "coef": 0.415,
        "n": 2
       }
      }
+    },
+    "grande": {
+     "coef": 0.342,
+     "n": 0,
+     "periodos": {}
     }
    }
   },
@@ -521,35 +531,35 @@ export default {
    "n": 6,
    "tamanos": {
     "pequeno": {
-     "coef": 0.313,
+     "coef": 0.38,
      "n": 3,
      "periodos": {
       "corto": {
-       "coef": 0.324,
+       "coef": 0.384,
        "n": 1
       },
       "largo": {
-       "coef": 0.346,
+       "coef": 0.404,
        "n": 2
       }
      }
     },
     "medio": {
-     "coef": 0.223,
+     "coef": 0.201,
      "n": 2,
      "periodos": {
       "largo": {
-       "coef": 0.194,
+       "coef": 0.178,
        "n": 2
       }
      }
     },
     "grande": {
-     "coef": 0.232,
+     "coef": 0.178,
      "n": 1,
      "periodos": {
       "largo": {
-       "coef": 0.204,
+       "coef": 0.161,
        "n": 1
       }
      }
@@ -561,24 +571,29 @@ export default {
    "n": 12,
    "tamanos": {
     "pequeno": {
-     "coef": 0.301,
+     "coef": 0.319,
      "n": 11,
      "periodos": {
       "corto": {
-       "coef": 0.303,
+       "coef": 0.311,
        "n": 11
       }
      }
     },
     "medio": {
-     "coef": 0.274,
+     "coef": 0.218,
      "n": 1,
      "periodos": {
       "corto": {
-       "coef": 0.255,
+       "coef": 0.208,
        "n": 1
       }
      }
+    },
+    "grande": {
+     "coef": 0.194,
+     "n": 0,
+     "periodos": {}
     }
    }
   },
@@ -587,14 +602,24 @@ export default {
    "n": 16,
    "tamanos": {
     "pequeno": {
-     "coef": 0.871,
+     "coef": 0.9,
      "n": 16,
      "periodos": {
       "corto": {
-       "coef": 0.948,
+       "coef": 0.959,
        "n": 16
       }
      }
+    },
+    "medio": {
+     "coef": 0.501,
+     "n": 0,
+     "periodos": {}
+    },
+    "grande": {
+     "coef": 0.423,
+     "n": 0,
+     "periodos": {}
     }
    }
   },
@@ -603,48 +628,53 @@ export default {
    "n": 67,
    "tamanos": {
     "pequeno": {
-     "coef": 0.246,
+     "coef": 0.273,
      "n": 16,
      "periodos": {
       "corto": {
-       "coef": 0.272,
+       "coef": 0.283,
        "n": 13
       },
       "largo": {
-       "coef": 0.253,
+       "coef": 0.273,
        "n": 3
       }
      }
     },
     "medio": {
-     "coef": 0.158,
+     "coef": 0.156,
      "n": 45,
      "periodos": {
       "corto": {
-       "coef": 0.154,
+       "coef": 0.153,
        "n": 38
       },
       "largo": {
-       "coef": 0.159,
+       "coef": 0.158,
        "n": 7
       }
      }
     },
     "grande": {
-     "coef": 0.129,
+     "coef": 0.112,
      "n": 6,
      "periodos": {
       "corto": {
-       "coef": 0.114,
+       "coef": 0.103,
        "n": 3
       },
       "largo": {
-       "coef": 0.114,
+       "coef": 0.103,
        "n": 3
       }
      }
     }
    }
   }
+ },
+ "efectoTamano": {
+  "pequeno": 1.344,
+  "medio": 0.905,
+  "grande": 0.764
  }
 };

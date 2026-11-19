@@ -93,6 +93,39 @@ export const resacaHora = (h) => marDeFondo(h?.fondoAltura, h?.fondoPeriodo, h?.
 const NIVEL_RESACA = { suave: 0, moderada: 1, fuerte: 2, muy_fuerte: 3 };
 
 // Pleamar / bajamar en una serie de niveles: máximo o mínimo local.
+// La marea de la hoja, con las alturas de la tabla del puerto (2026-11-19,
+// Mikel: "estos datos están mal, son variaciones pero no marcan la altura
+// real"). El modelo da el nivel respecto al nivel medio del mar (de −1 a
+// +1 m); las tablas y el panel, respecto al cero del puerto (pleamar 2,2 m,
+// bajamar 0,3 m). La forma de la curva y la hora del modelo valen; se le
+// suma la diferencia con las pleamares y bajamares de la tabla (s.marea de
+// /prevision: proximas [{ tipo, hora "HH:MM", altura, manana }]). Sin
+// tabla, la serie sale tal cual y `ajustada` es false.
+export function ajustarMareaATabla(serie, marea) {
+  const sin = { serie, ajustada: false };
+  if (!serie?.length || !marea) return sin;
+  const hitos = hitosMarea(serie);
+  const hoy = serie[0].hora.slice(0, 10);
+  const manana = (() => { const d = new Date(`${hoy}T12:00:00Z`); d.setUTCDate(d.getUTCDate() + 1); return d.toISOString().slice(0, 10); })();
+  const minutos = (iso) => Date.parse(`${iso.slice(0, 16)}:00Z`) / 60e3;
+  const difs = [];
+  for (const p of marea.proximas || []) {
+    if (!fin(p?.altura) || !/^\d{2}:\d{2}$/.test(p?.hora || "")) continue;
+    const objetivo = minutos(`${p.manana ? manana : hoy}T${p.hora}`);
+    let mejor = null;
+    hitos.forEach((tipo, i) => {
+      if (tipo !== p.tipo) return;
+      const d = Math.abs(minutos(serie[i].hora) - objetivo);
+      if (d <= 150 && (!mejor || d < mejor.d)) mejor = { i, d };
+    });
+    if (mejor) difs.push(p.altura - serie[mejor.i].nivelMar);
+  }
+  if (!difs.length && fin(marea.altura) && fin(serie[0].nivelMar)) difs.push(marea.altura - serie[0].nivelMar);
+  if (!difs.length) return sin;
+  const desfase = difs.reduce((a, b) => a + b, 0) / difs.length;
+  return { serie: serie.map((h) => (fin(h.nivelMar) ? { ...h, nivelMar: +(h.nivelMar + desfase).toFixed(2) } : h)), ajustada: true, desfase: +desfase.toFixed(2) };
+}
+
 export function hitosMarea(serie) {
   return serie.map((h, i) => {
     const a = serie[i - 1]?.nivelMar, b = serie[i + 1]?.nivelMar, x = h.nivelMar;
@@ -181,18 +214,20 @@ const m1 = (x) => (fin(x) ? I18n.metros(x, 1) : "—");
 const vel = (x) => (fin(x) ? I18n.velocidad(x) : "—");
 const nivelNota = (n) => (n >= 65 ? "bueno" : n >= 40 ? "medio" : "malo");
 
-export function textoResumen(r, nombreEspecie = (id) => id) {
+// enOrilla = false: el spot no tiene cámara ni abrigo con que estimar la
+// orilla, y la ola es la de mar abierto (se dice así, no "en la orilla").
+export function textoResumen(r, nombreEspecie = (id) => id, { enOrilla = true } = {}) {
   const v = { ...r.vars };
   for (const k of ["de", "a"]) if (k in v) v[k] = m1(v[k]);
   if ("v" in v) v.v = vel(v.v);
   if ("dir" in v) v.dir = I18n.rumbo(v.dir) || "";
   if ("especie" in v) v.especie = nombreEspecie(v.especie);
-  return t(r.clave, v);
+  return t(!enOrilla && /^hoja\.res\.ola_/.test(r.clave) ? `${r.clave}_abierto` : r.clave, v);
 }
 
 // bloqueada: sin Premium la fila de la nota sale con candado (Mikel,
 // 2026-11-19: "Candado"); el resto de la hoja es gratis.
-export function htmlTabla(serie, notas, { todos = false, nombreEspecie = (id) => id, bloqueada = false, medido = null } = {}) {
+export function htmlTabla(serie, notas, { todos = false, nombreEspecie = (id) => id, bloqueada = false, medido = null, enOrilla = true } = {}) {
   const hitos = hitosMarea(serie);
   const flecha = (a, b, malo = "sube") => {
     if (!fin(a) || !fin(b)) return "";
@@ -214,7 +249,7 @@ export function htmlTabla(serie, notas, { todos = false, nombreEspecie = (id) =>
   const fila = (titulo, celda, extra = false, cls = "", celdaMedida = () => "—") =>
     `<tr class="${extra ? "hp-extra" : ""} ${cls}"${extra && !todos ? " hidden" : ""}><th scope="row">${titulo}</th>${md ? `<td class="hp-medido">${celdaMedida()}</td>` : ""}${serie.map((h, i) => `<td class="${i === 0 ? "hp-ahora" : ""}${h.luz === "noche" ? " hp-noche" : ""}">${celda(h, i)}</td>`).join("")}</tr>`;
   const filas = [
-    fila(esc(t("hoja.f.ola")), (h, i) => (fin(h.ola) ? `${m1(h.ola)} ${i ? flecha(serie[i - 1].ola, h.ola) : ""}` : "—"), false, "",
+    fila(esc(t(enOrilla ? "hoja.f.ola" : "hoja.f.ola_abierto")), (h, i) => (fin(h.ola) ? `${m1(h.ola)} ${i ? flecha(serie[i - 1].ola, h.ola) : ""}` : "—"), false, "",
       () => (md?.ola ? `~${m1(md.ola.valor)}${fuente("📷", md.ola.nombre, md.ola.hora)}` : "—")),
     fila(esc(t("hoja.f.resaca")), (h) => {
       const r = resacaHora(h);
