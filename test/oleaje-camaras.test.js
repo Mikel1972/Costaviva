@@ -670,3 +670,46 @@ test("habilidad: ajustarCalibracion calcula la correlación espuma-altura", () =
   const mala = Array.from({ length: 30 }, (_, i) => ({ espuma: 0.01 * (i + 1), altura: 1 + (i % 2), peso: 1, dia: dias[i % 3] }));
   assert.ok(Math.abs(ajustarHab(mala).correlacion) < 0.3);
 });
+
+// Estructura de la espuma (2026-11-19, paso 4 del plan de la mar de fondo).
+import { estructuraEspuma, medirEspuma as medirEspumaEst } from "../scripts/oleaje-camaras/espuma.mjs";
+import { correlacionFondo, spearman } from "../scripts/oleaje-camaras/calibracion.mjs";
+
+function imagenEst(ancho, alto, pinta) {
+  const d = new Uint8Array(ancho * alto * 3);
+  for (let y = 0; y < alto; y++) for (let x = 0; x < ancho; x++) {
+    const [r, g, b] = pinta(x, y);
+    const p = (y * ancho + x) * 3; d[p] = r; d[p + 1] = g; d[p + 2] = b;
+  }
+  return d;
+}
+const AGUA_EST = [40, 80, 110], ESPUMA_EST = [235, 235, 235];
+
+test("estructura: líneas de rompiente en la orilla frente a manchas sueltas mar adentro", () => {
+  const W = 80, H = 40, roi = { x0: 0, y0: 0, x1: 1, y1: 1 };
+  // Mar de fondo: dos líneas largas de espuma en la mitad de abajo.
+  const fondo = medirEspumaEst(imagenEst(W, H, (x, y) => (y === 28 || y === 34) && x > 5 && x < 75 ? ESPUMA_EST : AGUA_EST), W, H, roi);
+  // Mar de viento: manchas de 3 píxeles repartidas por todo el recorte.
+  const viento = medirEspumaEst(imagenEst(W, H, (x, y) => (x % 12 < 3 && y % 6 === 0) ? ESPUMA_EST : AGUA_EST), W, H, roi);
+  assert.ok(fondo.lineas > 0.8, `fondo ${fondo.lineas}`);
+  assert.ok(viento.lineas < 0.1, `viento ${viento.lineas}`);
+  assert.ok(fondo.espumaCerca > 0 && fondo.espumaLejos === 0);
+  assert.ok(viento.espumaLejos > 0 && viento.espumaCerca > 0);
+  assert.equal(fondo.perfil.length, 4);
+  assert.equal(fondo.perfil[0], 0);
+  assert.deepEqual(estructuraEspuma([], [], 0), { espumaCerca: null, espumaLejos: null, lineas: null, perfil: null });
+});
+
+test("correlación de la estructura con la parte de mar de fondo del modelo", () => {
+  assert.equal(spearman([1, 2, 3, 4], [10, 20, 30, 40]), 1);
+  assert.equal(spearman([1, 2, 3, 4], [4, 3, 2, 1]), -1);
+  const hist = Array.from({ length: 70 }, (_, i) => ({
+    camara: "a", estado: "ok", espuma: 0.1, lineas: i / 70, espumaCerca: 0.05 + i / 1000, espumaLejos: 0.05,
+    marAbierto: { hs: 2, hsFondo: 2 * (i / 70) },
+  }));
+  const r = correlacionFondo([...hist, { camara: "a", estado: "dudosa", espuma: 0.5, lineas: 1, espumaCerca: 1, espumaLejos: 0, marAbierto: { hs: 1, hsFondo: 0 } }]);
+  assert.equal(r.a.n, 70);
+  assert.equal(r.a.suficiente, true);
+  assert.equal(r.a.lineas, 1);
+  assert.ok(r.a.cerca > 0.9);
+});
