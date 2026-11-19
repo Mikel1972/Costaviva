@@ -93,6 +93,23 @@ export function urlsCondicionesHoy(xmlSitemap) {
   return entradasSitemap(xmlSitemap).map((e) => e.loc).filter((u) => esSpot(u) || esMareaSpot(u));
 }
 
+// Bing Webmaster (2026-11-19, captura de Mikel): "Avoid IndexNow Batch Mode
+// to prevent excessive server load and potential indexing delays". Mandábamos
+// ~350 URLs juntas cada mañana y hasta ~350 en un push de especies.json.
+// Ahora: a diario, una séptima parte de las páginas de spot (cada una, una
+// vez por semana, en orden estable) y, en un push, como mucho
+// MAX_URLS_AVISO; el resto lo recoge la rotación y el sitemap (lastmod).
+export const DIAS_ROTACION = 7;
+export const MAX_URLS_AVISO = 60;
+export function rotacionDelDia(urls, fecha = new Date(), dias = DIAS_ROTACION) {
+  const dia = Math.floor(Date.UTC(fecha.getUTCFullYear(), fecha.getUTCMonth(), fecha.getUTCDate()) / 86400e3);
+  const turno = ((dia % dias) + dias) % dias;
+  return urls.filter((_, i) => i % dias === turno);
+}
+export function limitarAviso(urls, max = MAX_URLS_AVISO) {
+  return urls.slice(0, max);
+}
+
 export function todasLasUrls(xmlSitemap) {
   return entradasSitemap(xmlSitemap).map((e) => e.loc);
 }
