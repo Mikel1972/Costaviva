@@ -33,7 +33,7 @@
 //     Es lo que corre la rutina de etiquetado (RUTINA_ETIQUETADO.md).
 
 import { execFileSync } from "node:child_process";
-import { appendFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, unlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -46,6 +46,7 @@ import {
 } from "./calibracion.mjs";
 import { CAMARAS_OLEAJE, BANDAS_OLA, FUENTE_POR_SPOT } from "../../functions/_lib/oleaje-camaras.js";
 import { aprenderCoefCosta, coefCostaDe } from "../../functions/_lib/coef-costa.js";
+import { verdades, parear, aprenderSesgo } from "./sesgo-plazo.mjs";
 import { SPOTS, factorOleaje } from "../../functions/prevision.js";
 import { pedirDatosMeteo, fuenteDeVariable } from "../../functions/_lib/fuentes.js";
 import { coeficienteAbrigo } from "../../functions/_lib/oleaje-costero.js";
@@ -385,6 +386,87 @@ export function sustitucionPorCamara(historial, calibracion) {
   return out;
 }
 
+// ---------------------------------------------------------------------------
+// Lo que dijimos frente a lo que pasó (2026-11-19, sesgo-plazo.mjs). Una vez
+// al día se archiva la ola en la orilla PREVISTA para cada cámara las
+// próximas 72 h (misma cuenta que la app: mar abierto con el factor de zona
+// por el coeficiente de costa aprendido).
+export const DIR_PRONOSTICOS = join(DIR_DATOS, "pronosticos");
+export const DIAS_PRONOSTICOS = 60;
+async function archivarPrevisionDia(ahora = Date.now()) {
+  const dia = new Date(ahora).toISOString().slice(0, 10);
+  const fichero = join(DIR_PRONOSTICOS, `${dia}.json`);
+  if (existsSync(fichero)) return null;
+  const desde = Date.parse(`${dia}T00:00:00Z`);
+  const camaras = {};
+  for (const region of ["es", "nz"]) {
+    const ids = Object.keys(CAMARAS).filter((id) => (CAMARAS[id]?.region || "es") === region && CAMARAS_OLEAJE[id]);
+    if (!ids.length) continue;
+    const env = envMarRegion(region);
+    const spots = ids.map((id) => SPOTS.find((x) => x.slug === CAMARAS_OLEAJE[id].spot));
+    const datos = await pedirDatosMeteo("marine",
+      `latitude=${spots.map((x) => x.lat).join(",")}&longitude=${spots.map((x) => x.lon).join(",")}&hourly=wave_height,wave_period,wave_direction&timezone=UTC&forecast_days=3`, { env });
+    const lista = Array.isArray(datos) ? datos : [datos];
+    const fuente = fuenteDeVariable("marine", "wave_height", env);
+    ids.forEach((id, i) => {
+      const h = lista[i]?.hourly, sp = spots[i];
+      if (!h?.time) return;
+      const orilla = new Array(72).fill(null);
+      h.time.forEach((t, j) => {
+        const k = Math.round((Date.parse(`${t}:00Z`) - desde) / 3600e3);
+        const hs = h.wave_height?.[j];
+        if (k < 0 || k >= 72 || !Number.isFinite(hs)) return;
+        const hsC = hs * factorOleaje(sp.lat, sp.lon, fuente);
+        const ap = coefCostaDe(COEF_COSTA, id, hsC, h.wave_period?.[j] ?? null);
+        const coef = ap ? ap.coef : CAMARAS_OLEAJE[id].expuesta ? 1 : coeficienteAbrigo(sp.slug, h.wave_direction?.[j] ?? null);
+        orilla[k] = +(hsC * coef).toFixed(2);
+      });
+      camaras[id] = { spot: sp.slug, orilla };
+    });
+  }
+  mkdirSync(DIR_PRONOSTICOS, { recursive: true });
+  writeFileSync(fichero, JSON.stringify({ generado: new Date(ahora).toISOString(), desde: new Date(desde).toISOString(), horas: 72, camaras }) + "\n");
+  const limite = new Date(ahora - DIAS_PRONOSTICOS * 86400e3).toISOString().slice(0, 10);
+  for (const n of readdirSync(DIR_PRONOSTICOS)) if (n.endsWith(".json") && n.slice(0, 10) < limite) unlinkSync(join(DIR_PRONOSTICOS, n));
+  return fichero;
+}
+function leerPronosticos() {
+  if (!existsSync(DIR_PRONOSTICOS)) return [];
+  return readdirSync(DIR_PRONOSTICOS).filter((n) => n.endsWith(".json")).sort().map((n) => {
+    try { return JSON.parse(readFileSync(join(DIR_PRONOSTICOS, n), "utf8")); } catch { return null; }
+  }).filter(Boolean);
+}
+export const FICHERO_SESGO_PLAZO = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "functions", "_lib", "sesgo-plazo-datos.js");
+const CABECERA_SESGO = "// Generado por scripts/oleaje-camaras/medir-espuma.mjs (sesgo-plazo.mjs). No editar a mano.\nexport default ";
+export const textoSesgo = (m) => CABECERA_SESGO + JSON.stringify(m, null, 1) + ";\n";
+export function leerTextoSesgo(texto) {
+  const i = texto.indexOf("export default ");
+  return i < 0 ? null : JSON.parse(texto.slice(i + 15).trim().replace(/;$/, ""));
+}
+// Cambio que merece desplegar: algún factor con datos suficientes se mueve
+// más de un 3 %, o una celda llega al mínimo de datos.
+export function cambioSesgo(viejo, nuevo, umbral = 0.03) {
+  const celdas = (m) => Object.entries(m?.camaras || {}).flatMap(([c, t]) => Object.entries(t).map(([tr, x]) => [`${c}|${tr}`, x]));
+  const v = new Map(celdas(viejo));
+  for (const [k, x] of celdas(nuevo)) {
+    const a = v.get(k);
+    const util = (y) => Boolean(y && y.n >= (nuevo.nMin ?? 20));
+    if (util(x) !== util(a)) return true;
+    if (util(x) && Math.abs(x.factor / a.factor - 1) > umbral) return true;
+  }
+  return false;
+}
+function escribirSesgoPlazo(historial, etiquetas) {
+  const pares = parear(leerPronosticos(), verdades(etiquetas, historial, centroBanda));
+  const modelo = aprenderSesgo(pares);
+  let viejo = null;
+  try { viejo = leerTextoSesgo(readFileSync(FICHERO_SESGO_PLAZO, "utf8")); } catch { viejo = null; }
+  if (viejo && !cambioSesgo(viejo, modelo)) return modelo;
+  writeFileSync(FICHERO_SESGO_PLAZO, textoSesgo(modelo));
+  console.log(`Sesgo por plazo reaprendido con ${pares.length} comparaciones.`);
+  return modelo;
+}
+
 // Coeficiente de costa aprendido (2026-11-19). Va dentro de functions/_lib
 // como módulo JS (export default {...}; /prevision lo importa al desplegar y
 // Node no importa .json sin atributos). Solo se reescribe si algún
@@ -424,12 +506,15 @@ function escribirCoefCosta(historial, etiquetas) {
 
 function escribirCalibracion(fecha, historial, etiquetas, calibracion) {
   escribirCoefCosta(historial, etiquetas);
+  const sesgo = escribirSesgoPlazo(historial, etiquetas);
   writeFileSync(join(dirname(SALIDA), "calibracion.json"), JSON.stringify({
     fecha, lineasHistorial: historial.length, etiquetas: etiquetas.length,
     etiquetasClaude: etiquetas.filter((e) => e.origen === "claude").length,
     calibracion, sustitucion: sustitucionPorCamara(historial, calibracion),
     // ¿La estructura de la espuma separa mar de fondo y mar de viento?
     fondoVsEspuma: correlacionFondo(historial),
+    // Lo que dijimos frente a lo que pasó, por cámara y plazo (sesgo-plazo.mjs).
+    previstoVsReal: { global: sesgo.global, camaras: sesgo.camaras },
   }, null, 1) + "\n");
 }
 
@@ -553,6 +638,12 @@ async function main() {
   console.log(`Con luz: ${ids.join(", ")}`);
   const boyas = FICHERO_BOYAS && existsSync(FICHERO_BOYAS) ? JSON.parse(readFileSync(FICHERO_BOYAS, "utf8")) : null;
   if (!boyas) console.log("::warning::Sin fichero de boyas: la calibración usará el modelo (con menos peso).");
+  try {
+    const f = await archivarPrevisionDia(ahora);
+    if (f) console.log(`Previsión del día archivada: ${f}`);
+  } catch (e) {
+    console.log("::warning::No se pudo archivar la previsión del día:", e.message);
+  }
   const historial = leerHistorial();
   const etiquetas = [
     ...(await leerEtiquetas(historial).catch((e) => (console.log("::warning::Etiquetas no disponibles:", e.message), []))),
