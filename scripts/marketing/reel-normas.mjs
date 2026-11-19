@@ -11,6 +11,7 @@ import { dirname, join } from "node:path";
 import { BASE_URL, leerEspecies } from "./obtener-datos.mjs";
 import { piezaAPreparar, campanaDePieza, MARCA_ENLACE } from "./calendario.mjs";
 import { elegirClip, montarVideo, apuntarReel, leerJson, RUTA_ESTADO, LEMA } from "./reel-comun.mjs";
+import { campanaDe } from "./campana-temporal.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const RUTA_ROTACION = join(__dirname, "rotacion-reels-normas.json");
@@ -92,6 +93,7 @@ async function main() {
   const datos = {
     spot: "Normas que<br>nadie te cuenta",
     gancho: p.gancho,
+    cinta: campanaDe(fecha)?.cinta || null,
     tarjetas: p.tarjetas,
     lema: LEMA,
     credito: `${clip.credito} · Normas: BOE${norma.declarar ? " (RD 347/2011, RD 214/2026)" : " (RD 560/1995)"}${p.veda ? " y UE" : ""}`,
@@ -106,6 +108,7 @@ async function main() {
     ...(p.veda ? [`⚠️ ${p.veda.texto}`] : []),
     "",
     "Costaviva te avisa en tu diario si una captura no llega a la talla mínima de tu zona o hay que declararla.",
+    ...(campanaDe(fecha) ? [campanaDe(fecha).texto, ""] : []),
     "💾 Guárdalo y compártelo con tu compañero de pesca: muchos no lo saben.",
     `🔗 14 días gratis, sin tarjeta: ${MARCA_ENLACE}`,
     "",

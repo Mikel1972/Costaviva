@@ -12,6 +12,7 @@ import { BASE_URL, leerEspecies, resumenDeSpot, nombreSpot } from "./obtener-dat
 import { mareaDelDia } from "./pieza-datos.mjs";
 import { piezaAPreparar, campanaDePieza, MARCA_ENLACE, sumarDias } from "./calendario.mjs";
 import { elegirClip, montarVideo, apuntarReel, leerJson, RUTA_ESTADO, LEMA } from "./reel-comun.mjs";
+import { campanaDe } from "./campana-temporal.mjs";
 import { SPOTS } from "../../functions/prevision.js";
 import { regionPorCoordenadas, REGIONES } from "../../assets/js/regiones.js";
 import { hashtagsDe } from "./reel-peces.mjs";
@@ -98,6 +99,7 @@ async function main() {
     spot: `Sábado<br>${Number(sabado.slice(8))}/${Number(sabado.slice(5, 7))}`,
     // Frase de Mikel (2026-11-19): dónde, a qué hora y qué pez.
     gancho: `Este finde en ${nombreRegion}: dónde, a qué hora y qué pez`,
+    cinta: campanaDe(fecha)?.cinta || null,
     tarjetas: top.map((x) => ({
       num: x.nota, nivel: x.nivel,
       etq: nombreCorto(nombreSpot(x.slug)),
@@ -115,6 +117,7 @@ async function main() {
     `Los 3 spots con mejor índice de pesca el sábado ${Number(sabado.slice(8))} de día, con la previsión de hoy:`,
     ...top.map((x, i) => `${["🥇", "🥈", "🥉"][i]} ${nombreCorto(nombreSpot(x.slug))}: ${x.nota}/100, ${x.resumen.especie.toLowerCase()}, de ${x.tramo.replace("–", " a ").replace(" h", " h")}${x.marea ? ` · ${x.marea}` : ""}`),
     "",
+    ...(campanaDe(fecha) ? [campanaDe(fecha).texto, ""] : []),
     "¿Con quién vas? 👇 Etiquétalo y guárdalo para el sábado.",
     `🔗 El índice de tu spot hora a hora, mareas, olas y cámaras, 14 días gratis y sin tarjeta: ${MARCA_ENLACE}`,
     "",

@@ -18,6 +18,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { dirname, join } from "node:path";
 import { BASE_URL, resumenDeSpot, leerEspecies, fechaLegible, nombreSpot } from "./obtener-datos.mjs";
 import { SPOTS } from "../../functions/prevision.js";
+import { campanaDe } from "./campana-temporal.mjs";
 import { regionPorCoordenadas as regionDeCoordenadas, REGIONES as REGIONES_APP } from "../../assets/js/regiones.js";
 // render.mjs (Playwright) se importa solo al montar: los tests no lo tienen instalado.
 import { mejorTramo } from "./pieza-datos.mjs";
@@ -191,6 +192,7 @@ async function main() {
     corriente: { val: `${num(bloque.corriente)} km/h`, sub: `hacia el ${bloque.dirCorriente} · ${num(bloque.corriente / 1.852)} nudos` },
     rio: rio ? { etq: `Río ${rio[1]}`, ...caudal } : null,
     gancho: `¿Pica hoy la ${resumen.especie.toLowerCase()} en ${nombreCorto(nombreSpot(slug))}?`,
+    cinta: campanaDe(fecha)?.cinta || null,
     ola: { val: `${num(bloque.altura[0])}–${num(bloque.altura[1])} m`, sub: `periodo ${bloque.periodo} s · ${bloque.dirOla.split(" ")[0]}` },
     agua: { val: `${num(bloque.tempAgua)} °C`, sub: `viento ${bloque.viento} km/h ${bloque.dirViento}` },
     indice: { puntuacion: resumen.puntuacion, nivel: resumen.nivel, especie: resumen.especie, tramo: resumen.mejorTramo ? `Mejores horas: ${resumen.mejorTramo.texto}` : "" },
@@ -250,6 +252,7 @@ async function main() {
     ...(talla ? [`📏 Talla mínima de la lubina aquí: ${talla.cm} cm (${talla.norma}).`] : []),
     "📋 Si te la quedas, se declara en PescaREC en las 24 h siguientes (RD 214/2026).",
     "",
+    ...(campanaDe(fecha) ? [campanaDe(fecha).texto, ""] : []),
     "💾 Guárdalo para tu próxima salida y síguenos para el parte de tu zona.",
     `🔗 Mareas, olas, cámaras e índice de pesca en tiempo real, 14 días gratis: ${MARCA_ENLACE}`,
     "",
