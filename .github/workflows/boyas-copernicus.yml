@@ -10,6 +10,12 @@ name: Boyas del mapa (Copernicus Marine In Situ)
 # lo que lee /prevision. Copernicus publica con 1-3 h de retraso: pedirlo
 # más a menudo no daría datos más nuevos.
 #
+# CUÁNDO: el reloj fiable es pg_cron (trabajo 'lanzar-boyas-copernicus',
+# migración 20261119210000_programador_boyas.sql): GitHub trata los
+# `schedule:` frecuentes como "cuando pueda" (trampa 15 de comun; el 19/11
+# solo corrió a las 10:13 y a las 20:28). El `schedule:` de abajo queda de
+# respaldo.
+#
 # Minutos de Actions: ~40 s por ejecución (1 min facturado) × 12 al día ×
 # 30 ≈ 360 min/mes (repo público: gratis igualmente).
 
