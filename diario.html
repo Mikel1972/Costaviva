@@ -124,6 +124,10 @@
   .tarjeta-captura .especie { font-weight: 600; font-size: 14px; }
   .tarjeta-captura .especie .cientifico { display: block; font-weight: 400; font-size: 12px; color: var(--tinta-2); margin-left: 1.4em; }
   .tarjeta-captura .detalle { font-size: 12px; color: var(--tinta-2); margin-top: 2px; }
+  .aviso-declarar { margin-top: 6px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--linea); font-size: 12px; color: var(--tinta); }
+  .aviso-declarar .acciones { margin-top: 4px; }
+  .aviso-declarar .acciones button { background: none; border: none; padding: 0; color: var(--acento); font-size: 12px; cursor: pointer; text-decoration: underline; }
+  .aviso-declarar .norma { margin-top: 2px; font-size: 10px; color: var(--tinta-3); }
   .galeria-fotos { display: flex; gap: 6px; margin-top: 8px; overflow-x: auto; }
   .galeria-fotos img { width: 76px; height: 76px; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
   .tarjeta-captura button.borrar-captura {
@@ -304,6 +308,7 @@ async function fondoSalida(lat, lon, modalidad) {
 }
 import * as CondSalida from "/assets/js/condiciones-salida.js";
 import * as Regiones from "/assets/js/regiones.js";
+import { declaracionNecesaria, puntoEnEspanaOPortugal, textoParaDeclarar } from "/assets/js/declaracion-capturas.js";
 import { solLuna } from "/assets/js/sol-luna.js";
 import { extrasMomento, HOURLY_MARINO_EXTRAS, HOURLY_TIEMPO_EXTRAS } from "/assets/js/extras-momento.js";
 // Temperatura del agua medida con sonda (2026-10-10).
@@ -1613,7 +1618,29 @@ function contextoHTML(salida) {
   return `<div class="contexto-ambiental">${filas.map(([e, v]) => `<div class="dato"><div class="etq">${e}</div><div class="val">${v}</div></div>`).join("")}</div>${notaEstado}${notaIndice}${notaBoya}${notaSonda}${notaCoef}${notaMeteo}`;
 }
 
-async function tarjetaCapturaHTML(captura) {
+// Aviso de declaración obligatoria (2026-11-19, assets/js/declaracion-capturas.js):
+// solo avisa y enlaza a la app oficial; Costaviva no declara por nadie.
+function avisoDeclaracionHTML(captura, salida, cientifico) {
+  if (!salida || !puntoEnEspanaOPortugal(salida.lat, salida.lon)) return "";
+  const d = declaracionNecesaria(cientifico, Regiones.regionPorCoordenadas(salida.lat, salida.lon));
+  if (!d) return "";
+  const texto = textoParaDeclarar([
+    [I18n.t("diario.declarar.campo_especie"), `${captura.especie} (${cientifico})`],
+    [I18n.t("diario.declarar.campo_fecha"), salida.fecha],
+    [I18n.t("diario.declarar.campo_hora"), captura.hora ? captura.hora.slice(0, 5) : ""],
+    [I18n.t("diario.declarar.campo_talla"), captura.talla_cm ? `${captura.talla_cm} cm` : ""],
+    [I18n.t("diario.declarar.campo_peso"), captura.peso_g ? `${(captura.peso_g / 1000).toFixed(2)} kg` : ""],
+    [I18n.t("diario.declarar.campo_arte"), captura.tecnica ? textoTecnica(captura.tecnica) : ""],
+  ]);
+  const enlaces = d.pais === "es"
+    ? `<a href="${d.enlaces.ios}" target="_blank" rel="noopener">iPhone</a> · <a href="${d.enlaces.android}" target="_blank" rel="noopener">Android</a>`
+    : `<a href="${d.enlaces.info}" target="_blank" rel="noopener">${I18n.t("diario.declarar.info")}</a>`;
+  return `<div class="aviso-declarar" role="note">📋 ${I18n.t("diario.declarar.aviso", { app: d.app, horas: d.plazo_horas })}
+    <div class="acciones">${enlaces} · <button type="button" class="copiar-declaracion" data-texto="${escNombre(texto)}">${I18n.t("diario.declarar.copiar")}</button></div>
+    <div class="norma">${escNombre(d.norma)}</div></div>`;
+}
+
+async function tarjetaCapturaHTML(captura, salida) {
   const { data: fotos } = await supabase.from("captura_fotos").select("*").eq("captura_id", captura.id).order("orden");
   const urls = await Promise.all((fotos || []).map((f) => urlFirmada(f.foto_path)));
   const cientifico = await cientificoDe(captura.especie);
@@ -1623,6 +1650,7 @@ async function tarjetaCapturaHTML(captura) {
       ${captura.tecnica ? `<div class="detalle">🎣 ${textoTecnica(captura.tecnica)}</div>` : ""}
       ${captura.cebo || captura.aparejo || captura.senuelo ? `<div class="detalle">${CondSalida.textoCeboAparejo(captura)}</div>` : ""}
       ${captura.notas ? `<div class="detalle">${captura.notas}</div>` : ""}
+      ${avisoDeclaracionHTML(captura, salida, cientifico)}
       ${compartidas.ids.has(captura.id) ? htmlEtiquetaCompartida() : ""}
       ${urls.length ? `<div class="galeria-fotos">${urls.map((u) => `<img src="${u}" alt="${I18n.t("diario.foto_de", { especie: captura.especie })}" />`).join("")}</div>` : ""}
       <div style="display:flex; gap:12px; margin-top:6px;">
@@ -1835,7 +1863,7 @@ async function guardarCaptura(salidaId, fecha, idExistente, ordenFotoBase) {
 // abajo (#zonaFormulario), no se edita en línea sobre este resumen.
 async function resumenEntradaHTML(entrada, idx) {
   const { salida, capturas } = entrada;
-  const tarjetas = await Promise.all(capturas.map(tarjetaCapturaHTML));
+  const tarjetas = await Promise.all(capturas.map((c) => tarjetaCapturaHTML(c, salida)));
   // "En curso" (pedido explícito del usuario): una entrada nueva empieza
   // abierta — se puede ir añadiendo capturas y notas mientras dura la
   // jornada, hasta pulsar "Concluir jornada". Estilo distinto (borde en
@@ -2440,6 +2468,12 @@ async function abrirDia(iso, fechaObj) {
   });
   contEl.querySelectorAll(".concluir-entrada").forEach((btn) => {
     btn.addEventListener("click", () => concluirEntrada(iso, fechaObj, entradas[+btn.dataset.idx].salida, entradas[+btn.dataset.idx].capturas || []));
+  });
+  contEl.querySelectorAll(".copiar-declaracion").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      try { await navigator.clipboard.writeText(btn.dataset.texto); btn.textContent = I18n.t("diario.declarar.copiado"); }
+      catch { prompt(I18n.t("diario.declarar.copiar"), btn.dataset.texto); }
+    });
   });
   contEl.querySelectorAll(".editar-captura").forEach((btn) => {
     btn.addEventListener("click", () => {
