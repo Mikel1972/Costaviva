@@ -10366,3 +10366,13 @@ Datos: `camaras-estado.json` de 2026-11-18T03:03Z (fresco). En rojo: pasaia (`fr
 - **Cambrils (Windy)**: enlace externo marcado inactivo por Windy; sigue pendiente buscar otra cámara de ese puerto desde fuera de la rutina.
 - No se cambió código.
 — robot de cámaras caídas (rutina)
+
+### 2026-11-19 UTC (robot de cámaras caídas — rutina; Zumaia, Canet, Cantabria)
+
+Datos: `camaras-estado.json` de 2026-11-19T03:04Z (fresco). En rojo: pasaia (`frame_plano`), zumaia (`sin_respuesta`), comillas/suances/sanvicente (`origen_522`), canetdeberenguer (`origen_404`), ext-windy-1232544942 (Cambrils, `windy_inactiva`), bakio y mundaka (`frame_congelado` a las 03:00 UTC, de noche; no es avería).
+- **zumaia**: `GIP_zumaia2.stream` da 404 desde la red de la rutina; la web de la Diputación no es verificable desde aquí. Sin cambios; sin verificar si es avería real o cierre nocturno.
+- **canetdeberenguer**: el 404 era puntual; ahora la imagen responde 200. Sin cambios.
+- **comillas/suances/sanvicente**: sin verificar: dominio bloqueado por la red de la rutina (www.cantabria.es, túnel cerrado). No se dan por caídas ni arregladas.
+- **pasaia**: foto diaria de detectia.net, de noche sale plana. **Cambrils (Windy)**: sigue pendiente buscar otra cámara desde fuera de la rutina.
+- No se cambió código. Quedan para la próxima pasada: zumaia y Cambrils.
+— robot de cámaras caídas (rutina)
