@@ -432,6 +432,8 @@
   "hoja.ver_todos": "Ver todos os dados",
   "hoja.solo_esencial": "Só o essencial",
   "hoja.pie": "Deslize para a direita para ver as 24 horas. A onda é a que chega à beira-mar (aprendida das câmaras); a nota, com as mesmas regras da janela de atividade. Orientativo: não é uma garantia.",
+  "hoja.nota_premium": "🔒 Premium",
+  "hoja.mejor_premium": "🔒 O melhor momento para pescar e a nota por peixe, com Premium",
   "hoja.ahora": "Agora",
   "hoja.modelo": "previsão",
   "hoja.pleamar": "Preia-mar",

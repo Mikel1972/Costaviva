@@ -83,3 +83,11 @@ test("los textos de la hoja existen en es, en y pt sin «algo»", () => {
   }
   assert.ok(!/"hoja\.[^"]+": "[^"]*\balgo\b/i.test(es));
 });
+
+test("sin Premium la fila de la nota va con candado y no enseña notas", () => {
+  const s = horas(25, () => ({ ola: 1, viento: 10, nivelMar: 0 }));
+  const notas = s.map(() => ({ nota: 77, especie: "lubina" }));
+  const html = htmlTabla(s, notas, { bloqueada: true });
+  assert.match(html, /hp-candado" href="\/suscripcion"/);
+  assert.ok(!/>77</.test(html));
+});

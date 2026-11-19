@@ -1121,6 +1121,10 @@
   .hp-nota b { font-family: var(--f-titulo); font-size: 14px; min-width: 34px; padding: 2px 6px; border-radius: 999px; color: var(--mar); }
   .hp-nota b.bueno { background: var(--nivel-bueno); } .hp-nota b.medio { background: var(--nivel-medio); } .hp-nota b.malo { background: var(--nivel-malo); }
   .hp-tabla tr.hp-extra[hidden] { display: none; }
+  .hp-pez[hidden] { display: none; }
+  .hp-candado { display: inline-block; font-weight: 800; font-size: 12px; color: var(--sobre-acento); background: var(--degradado-fuerte); border-radius: 999px; padding: 4px 10px; text-decoration: none; }
+  .hp-candado-mini { opacity: .55; }
+  .hp-resumen li a { color: var(--acento); font-weight: 700; }
   .hp-tabla tr.hp-fila-nota th { color: var(--tinta); }
   .hp-pie { font-size: 12px; color: var(--tinta-2); margin: 0; }
   .premium-aviso { margin-top: 10px; font-family: var(--f-texto); font-size: 12px; line-height: 1.45; color: var(--tinta-2); border: 1px dashed var(--linea); }
@@ -6354,10 +6358,15 @@ async function calcularHojaPrevision() {
 function pintarHojaPrevision() {
   const HP = window.HojaPrevision;
   const nombre = (id) => hpEstado.nombres?.[id] || id;
-  const notas = HP.notasPorHora(hpEstado.serie, hpEstado.resultados, hpEstado.especieId || null);
+  // Sin Premium (Mikel, 2026-11-19: "Candado"): la nota y el mejor momento
+  // van con candado y no se elige pez; el resto de la hoja es gratis.
+  const bloqueada = document.getElementById("panel").classList.contains("sin-premium");
+  document.querySelector(".hp-pez").hidden = bloqueada;
+  const notas = bloqueada ? [] : HP.notasPorHora(hpEstado.serie, hpEstado.resultados, hpEstado.especieId || null);
   document.getElementById("hpResumen").innerHTML = HP.resumenTendencia(hpEstado.serie, notas)
-    .map((r) => `<li class="${r.tono || "igual"}">${escVA(HP.textoResumen(r, nombre))}</li>`).join("");
-  document.getElementById("hpTabla").innerHTML = HP.htmlTabla(hpEstado.serie, notas, { todos: hpEstado.todos, nombreEspecie: nombre });
+    .map((r) => `<li class="${r.tono || "igual"}">${escVA(HP.textoResumen(r, nombre))}</li>`).join("")
+    + (bloqueada ? `<li class="igual"><a href="/suscripcion">${escVA(I18n.t("hoja.mejor_premium"))}</a></li>` : "");
+  document.getElementById("hpTabla").innerHTML = HP.htmlTabla(hpEstado.serie, notas, { todos: hpEstado.todos, nombreEspecie: nombre, bloqueada });
   document.getElementById("hpTodos").textContent = I18n.t(hpEstado.todos ? "hoja.solo_esencial" : "hoja.ver_todos");
 }
 // La hoja está al final del <body> (después de este script): sus botones se

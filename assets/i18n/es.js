@@ -430,6 +430,8 @@
   "hoja.ver_todos": "Ver todos los datos",
   "hoja.solo_esencial": "Solo lo esencial",
   "hoja.pie": "Desliza a la derecha para ver las 24 horas. La ola es la que llega a la orilla (aprendida de las cámaras); la nota, con las mismas reglas que la ventana de actividad. Orientativo: no es una garantía.",
+  "hoja.nota_premium": "🔒 Premium",
+  "hoja.mejor_premium": "🔒 El mejor momento para pescar y la nota por pez, con Premium",
   "hoja.ahora": "Ahora",
   "hoja.modelo": "previsión",
   "hoja.pleamar": "Pleamar",

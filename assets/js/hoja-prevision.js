@@ -132,7 +132,9 @@ export function textoResumen(r, nombreEspecie = (id) => id) {
   return t(r.clave, v);
 }
 
-export function htmlTabla(serie, notas, { todos = false, nombreEspecie = (id) => id } = {}) {
+// bloqueada: sin Premium la fila de la nota sale con candado (Mikel,
+// 2026-11-19: "Candado"); el resto de la hoja es gratis.
+export function htmlTabla(serie, notas, { todos = false, nombreEspecie = (id) => id, bloqueada = false } = {}) {
   const hitos = hitosMarea(serie);
   const flecha = (a, b, malo = "sube") => {
     if (!fin(a) || !fin(b)) return "";
@@ -167,6 +169,7 @@ export function htmlTabla(serie, notas, { todos = false, nombreEspecie = (id) =>
     fila(esc(t("hoja.f.agua")), (h) => (fin(h.tempAgua) ? I18n.temp(h.tempAgua) : "—"), true),
     fila(esc(t("hoja.f.luz")), (h) => (h.luz ? esc(t(`hoja.luz.${h.luz}`)) : "—"), true),
     fila(esc(t("hoja.f.nota")), (h, i) => {
+      if (bloqueada) return i === 0 ? `<a class="hp-candado" href="/suscripcion">${esc(t("hoja.nota_premium"))}</a>` : '<span class="hp-candado-mini" aria-hidden="true">🔒</span>';
       const n = notas[i];
       if (!n) return "—";
       if (n.prohibida) return `<span class="hp-nota"><b class="malo">0</b><small>${esc(t("hoja.de_noche_no"))}</small></span>`;
