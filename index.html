@@ -5956,6 +5956,7 @@ async function datosHorariosSpot(s) {
       };
     });
     const factor = factorOleaje(s.lat, s.lon);
+    const horaAhoraSpot = horaActualISO(zona).slice(0, 13) + ":00";
     const mar = {};
     (marino.hourly?.time || []).forEach((t, i) => {
       const ola = marino.hourly.wave_height?.[i];
@@ -5965,9 +5966,14 @@ async function datosHorariosSpot(s) {
       const coefOri = ola === null || ola === undefined ? null : coefOrillaDesdeTabla(orilla, ola * factor, marino.hourly.wave_period?.[i]);
       const coef = coefOri === null ? coefAbr : orilla.propia || !abrigo ? coefOri : Math.min(coefOri, coefAbr);
       const fCam = cam ? factorCamara(cam.cociente, horasEntreLocales(horaCam, t), cam.peso, cam.decaimientoHoras) : 1;
+      // Corrección aprendida de lo previsto frente a lo real, por plazo
+      // (functions/_lib/sesgo-plazo.js; 0-6, 6-24, 24-48 y 48-72 h).
+      const plazo = horasEntreLocales(horaAhoraSpot, t);
+      const sp = s.zonaOleaje?.sesgoPlazo;
+      const fPlazo = !sp || coefOri === null || !(plazo >= 0) ? 1 : sp[plazo < 6 ? 0 : plazo < 24 ? 1 : plazo < 48 ? 2 : 3] ?? 1;
       mar[t] = {
         nivelMar: marino.hourly.sea_level_height_msl?.[i] ?? null,
-        ola: ola === null || ola === undefined ? null : ola * factor * coef * fCam,
+        ola: ola === null || ola === undefined ? null : ola * factor * coef * fCam * fPlazo,
         // Mar de fondo en mar abierto (con el factor de zona) y el mismo
         // coeficiente de orilla: la ventana calcula la resaca con ellos.
         fondoAltura: Number.isFinite(marino.hourly.swell_wave_height?.[i]) ? marino.hourly.swell_wave_height[i] * factor : null,

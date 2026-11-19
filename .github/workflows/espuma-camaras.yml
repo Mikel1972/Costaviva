@@ -123,13 +123,15 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "noreply@anthropic.com"
           git add "$D/espuma.jsonl" "$D/calibracion.json"
+          # Previsión del día archivada (lo que dijimos; sesgo-plazo.mjs).
+          if [ -d "$D/pronosticos" ]; then git add -A "$D/pronosticos"; fi
           HAY=0
           if ! git diff --cached --quiet; then git commit -qm "Oleaje por cámara [skip ci]"; HAY=1; fi
           # Coeficiente de costa reaprendido (solo cambia si algún valor se
           # mueve > 3 %): commit aparte SIN [skip ci], para que Cloudflare
           # Pages vuelva a desplegar y /prevision use el nuevo.
-          git add functions/_lib/coef-costa-datos.js
-          if ! git diff --cached --quiet; then git commit -qm "Oleaje: coeficiente de costa reaprendido de las etiquetas"; HAY=1; fi
+          git add functions/_lib/coef-costa-datos.js functions/_lib/sesgo-plazo-datos.js
+          if ! git diff --cached --quiet; then git commit -qm "Oleaje: coeficiente de costa y sesgo por plazo reaprendidos"; HAY=1; fi
           if [ "$HAY" = 0 ]; then echo "Sin cambios."; exit 0; fi
           # Si otra rama tocó calibracion.json a la vez (la rutina de
           # etiquetado), manda la de esta ejecución: es la única que lleva las
