@@ -1184,6 +1184,8 @@
   "diario.sin_conexion.pendientes": {"one": "{n} registo feito sem rede, por enviar. Será enviado sozinho quando voltar o sinal.", "other": "{n} registos feitos sem rede, por enviar. Serão enviados sozinhos quando voltar o sinal."},
   "diario.sin_conexion.copia": "Sem rede: está a ver o que ficou guardado neste telemóvel a {fecha}. Pode registar capturas e toques; serão enviados sozinhos quando voltar o sinal.",
   "diario.sin_conexion.cerrar_sesion": {"one": "Tem {n} registo por enviar (feito sem rede). Se terminar a sessão agora, perde-se. Terminar a sessão mesmo assim?", "other": "Tem {n} registos por enviar (feitos sem rede). Se terminar a sessão agora, perdem-se. Terminar a sessão mesmo assim?"},
+  "diario.talla.bajo_minima": "{talla}: abaixo do tamanho mínimo ({minima}, {ambito}).",
+  "diario.talla.devolver": "Se estiver vivo, devolva-o à água com cuidado.",
   "diario.editar": "✏️ Editar",
   "diario.tec.currican": "Corrico",
   "diario.tec.fondo": "Fundo",

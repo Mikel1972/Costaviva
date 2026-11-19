@@ -1182,6 +1182,8 @@
   "diario.sin_conexion.pendientes": {"one": "{n} entry made without signal, waiting to upload. It will upload by itself when the signal is back.", "other": "{n} entries made without signal, waiting to upload. They will upload by themselves when the signal is back."},
   "diario.sin_conexion.copia": "No signal: you're seeing what was saved on this phone on {fecha}. You can log catches and bites; they'll upload by themselves when the signal is back.",
   "diario.sin_conexion.cerrar_sesion": {"one": "You have {n} entry not uploaded yet (made without signal). If you log out now it will be lost. Log out anyway?", "other": "You have {n} entries not uploaded yet (made without signal). If you log out now they will be lost. Log out anyway?"},
+  "diario.talla.bajo_minima": "{talla}: below the minimum size ({minima}, {ambito}).",
+  "diario.talla.devolver": "If it's alive, return it to the water carefully.",
   "diario.editar": "✏️ Edit",
   "diario.tec.currican": "Trolling",
   "diario.tec.fondo": "Bottom fishing",

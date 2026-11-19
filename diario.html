@@ -128,6 +128,7 @@
   .aviso-declarar .acciones { margin-top: 4px; }
   .aviso-declarar .acciones button { background: none; border: none; padding: 0; color: var(--acento); font-size: 12px; cursor: pointer; text-decoration: underline; }
   .aviso-pendientes { margin: 8px 0; padding: 8px 10px; border-radius: 8px; border: 1px dashed var(--acento); font-size: 13px; }
+  .aviso-talla { margin-top: 6px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--peligro); font-size: 12px; color: var(--peligro-texto); }
   .aviso-declarar.hecho { color: var(--ok-texto); border-style: dashed; }
   .aviso-declarar .norma { margin-top: 2px; font-size: 10px; color: var(--tinta-3); }
   .galeria-fotos { display: flex; gap: 6px; margin-top: 8px; overflow-x: auto; }
@@ -1665,6 +1666,30 @@ function contextoHTML(salida) {
   return `<div class="contexto-ambiental">${filas.map(([e, v]) => `<div class="dato"><div class="etq">${e}</div><div class="val">${v}</div></div>`).join("")}</div>${notaEstado}${notaIndice}${notaBoya}${notaSonda}${notaCoef}${notaMeteo}`;
 }
 
+let actualizarAvisoTalla = () => {};
+// Talla mínima (2026-11-19): la misma tabla verificada que la ficha del mapa
+// (especies.json -> talla_minima, por jurisdicción y con su fuente) y la
+// misma elección por zona (VentanaActividad.tallasParaRegion). Sin dato
+// verificado para la zona, o en Nueva Zelanda (solo enlace a MPI), no se avisa.
+async function tallaMinimaAplicable(cientifico, lat, lon) {
+  if (!cientifico || String(cientifico).includes("/") || !Number.isFinite(lat) || !Number.isFinite(lon)) return null;
+  try {
+    const datos = await cargarEspeciesIndice();
+    const especies = Array.isArray(datos) ? datos : datos.especies || [];
+    const esp = especies.find((e) => e.cientifico === cientifico);
+    if (!esp) return null;
+    const region = Regiones.regionPescaPorCoordenadas(lat, lon);
+    const t = VentanaActividad.tallasParaRegion(esp, region, VentanaActividad.enEuskadi(lat, lon)).find((x) => x.valor_cm != null);
+    return t ? { t, editor: (datos.fuentes?.[t.fuente]?.editor || "").split(",")[0] } : null;
+  } catch { return null; }
+}
+function avisoTallaTexto(min, talla) {
+  const t = min.t;
+  return `⚠ ${I18n.t("diario.talla.bajo_minima", { talla: textoTalla(talla), minima: textoTalla(t.valor_cm), ambito: I18n.dato(t, "ambito_corto") || I18n.dato(t, "ambito") || "" })}`
+    + `${t.nota ? ` ${escNombre(I18n.dato(t, "nota"))}` : ""}`
+    + ` <a href="${escNombre(t.url)}" target="_blank" rel="noopener">${escNombre(min.editor || I18n.t("mapa.va.norma_oficial"))}</a>. ${I18n.t("mapa.va.manda_norma")}`;
+}
+
 // Aviso de declaración obligatoria (2026-11-19, assets/js/declaracion-capturas.js):
 // solo avisa y enlaza a la app oficial; Costaviva no declara por nadie.
 function avisoDeclaracionHTML(captura, salida, cientifico) {
@@ -1712,12 +1737,16 @@ async function tarjetaCapturaHTML(captura, salida) {
   const { data: fotos } = navigator.onLine === false ? { data: [] } : await supabase.from("captura_fotos").select("*").eq("captura_id", captura.id).order("orden");
   const urls = await Promise.all((fotos || []).map((f) => urlFirmada(f.foto_path)));
   const cientifico = await cientificoDe(captura.especie);
+  const minima = captura.talla_cm && salida ? await tallaMinimaAplicable(cientifico, salida.lat, salida.lon) : null;
+  const avisoTalla = minima && Number(captura.talla_cm) < Number(minima.t.valor_cm)
+    ? `<div class="aviso-talla" role="note">${avisoTallaTexto(minima, captura.talla_cm)}</div>` : "";
   return `
     <div class="tarjeta-captura" data-captura-id="${captura.id}">
       <div class="fila-titulo"><span class="especie">🐟 ${captura.especie}${cientifico ? ` <i class="cientifico">${escNombre(cientifico)}</i>` : ""}</span><span class="detalle">${captura.hora ? "🕐 " + captura.hora.slice(0, 5) + " " + flechaMareaHtml(captura.marea_tendencia) + " " : ""}${captura.talla_cm ? textoTalla(captura.talla_cm) : ""} ${captura.peso_g ? "· " + textoPeso(captura.peso_g) : ""}</span></div>
       ${captura.tecnica ? `<div class="detalle">🎣 ${textoTecnica(captura.tecnica)}</div>` : ""}
       ${captura.cebo || captura.aparejo || captura.senuelo ? `<div class="detalle">${CondSalida.textoCeboAparejo(captura)}</div>` : ""}
       ${captura.notas ? `<div class="detalle">${captura.notas}</div>` : ""}
+      ${avisoTalla}
       ${avisoDeclaracionHTML(captura, salida, cientifico)}
       ${compartidas.ids.has(captura.id) ? htmlEtiquetaCompartida() : ""}
       ${urls.length ? `<div class="galeria-fotos">${urls.map((u) => `<img src="${u}" alt="${I18n.t("diario.foto_de", { especie: captura.especie })}" />`).join("")}</div>` : ""}
@@ -1748,6 +1777,7 @@ function formularioCaptura() {
       <div class="hora-select" id="ruedaCapturaHora"></div>
       <label for="capturaTalla">${I18n.t("diario.cap.talla")}</label>
       <input type="number" id="capturaTalla" step="0.5" min="0" />
+      <div class="aviso-talla" id="avisoTallaFormulario" role="status" hidden></div>
       <label class="casilla-talla-medida" style="display:flex; align-items:center; gap:8px; font-weight:400; margin-top:6px;">
         <input type="checkbox" id="capturaTallaMedida" style="width:auto; margin:0;" />
         <span>${I18n.t("diario.cap.talla_medida")}</span>
@@ -2284,7 +2314,23 @@ function engancharFormularioCaptura(iso, salidaId, idExistente, ordenFotoBase) {
   const especieSel = document.getElementById("capturaEspecie");
   especieSel.addEventListener("change", () => {
     document.getElementById("capturaEspecieOtraBox").style.display = especieSel.value === "Otra" ? "block" : "none";
+    actualizarAvisoTalla();
   });
+  // Aviso de talla mínima mientras se rellena (2026-11-19).
+  const salidaForm = (salidasPorFecha[iso] || []).find((e) => e.salida.id === salidaId)?.salida;
+  actualizarAvisoTalla = async () => {
+    const el = document.getElementById("avisoTallaFormulario");
+    if (!el) return;
+    const talla = Number(document.getElementById("capturaTalla")?.value);
+    const nombre = especieSel.value === "Otra" ? document.getElementById("capturaEspecieOtra")?.value : especieSel.value;
+    const minima = talla > 0 && salidaForm ? await tallaMinimaAplicable(await cientificoDe(nombre), salidaForm.lat, salidaForm.lon) : null;
+    const bajo = minima && talla < Number(minima.t.valor_cm);
+    el.hidden = !bajo;
+    el.innerHTML = bajo ? avisoTallaTexto(minima, talla) + " " + I18n.t("diario.talla.devolver") : "";
+  };
+  document.getElementById("capturaTalla").addEventListener("input", actualizarAvisoTalla);
+  document.getElementById("capturaEspecieOtra")?.addEventListener("input", actualizarAvisoTalla);
+  actualizarAvisoTalla();
   const tecnicaSel = document.getElementById("capturaTecnica");
   tecnicaSel.addEventListener("change", () => {
     const conSenuelo = TECNICAS_CON_SENUELO.has(tecnicaSel.value);
@@ -2421,7 +2467,7 @@ async function identificarFotoDesdeArchivo(file) {
       talla_estimada_cm: resultado.talla_foto_cm ?? resultado.talla_cm ?? null,
       peso_estimado_g: resultado.peso_foto_g ?? resultado.peso_g ?? null,
     };
-    if (resultado.talla_cm != null) document.getElementById("capturaTalla").value = resultado.talla_cm;
+    if (resultado.talla_cm != null) { document.getElementById("capturaTalla").value = resultado.talla_cm; actualizarAvisoTalla(); }
     if (resultado.peso_g != null) document.getElementById("capturaPeso").value = resultado.peso_g;
 
     const partes = [];

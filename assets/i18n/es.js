@@ -1182,6 +1182,8 @@
   "diario.sin_conexion.pendientes": {"one": "{n} apunte hecho sin cobertura, pendiente de subir. Se subirá solo al volver la señal.", "other": "{n} apuntes hechos sin cobertura, pendientes de subir. Se subirán solos al volver la señal."},
   "diario.sin_conexion.copia": "Sin cobertura: ves lo guardado en este móvil el {fecha}. Puedes apuntar capturas y picadas; se subirán solas al volver la señal.",
   "diario.sin_conexion.cerrar_sesion": {"one": "Tienes {n} apunte sin subir (hecho sin cobertura). Si cierras sesión ahora se perderá. ¿Cerrar sesión igualmente?", "other": "Tienes {n} apuntes sin subir (hechos sin cobertura). Si cierras sesión ahora se perderán. ¿Cerrar sesión igualmente?"},
+  "diario.talla.bajo_minima": "{talla}: por debajo de la talla mínima ({minima}, {ambito}).",
+  "diario.talla.devolver": "Si está vivo, devuélvelo al agua con cuidado.",
   "diario.editar": "✏️ Editar",
   "diario.tec.currican": "Curricán",
   "diario.tec.fondo": "Fondo",
