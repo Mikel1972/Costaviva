@@ -30,6 +30,64 @@ export function serieDesdeAhora(horas, ahoraISO, n = HORAS_HOJA) {
   return i < 0 ? [] : horas.slice(i, i + n + 1);
 }
 
+// «Ahora mismo, medido» (2026-11-19, fase 2 de la hoja): lo que miden de
+// verdad, ahora, la cámara del spot, la boya y la estación de AEMET más
+// cercanas, al lado de la previsión de esta hora. Así se ve si el modelo se
+// queda corto o se pasa. Solo datos reales y recientes: sin dato, «—»
+// (nunca se rellena con el modelo).
+export const MEDIDO_MAX_HORAS = 3, MEDIDO_MAX_KM_BOYA = 80, MEDIDO_MAX_KM_ESTACION = 30;
+
+export function distanciaKm(lat1, lon1, lat2, lon2) {
+  const r = Math.PI / 180, R = 6371;
+  const a = Math.sin(((lat2 - lat1) * r) / 2) ** 2 + Math.cos(lat1 * r) * Math.cos(lat2 * r) * Math.sin(((lon2 - lon1) * r) / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(a));
+}
+
+const reciente = (iso, ahoraMs) => {
+  const t = Date.parse(iso);
+  return Number.isFinite(t) && ahoraMs - t <= MEDIDO_MAX_HORAS * 3600e3 && t - ahoraMs <= 15 * 60e3;
+};
+const masCercana = (lista, lat, lon, maxKm, valida, ahoraMs) => {
+  let mejor = null;
+  for (const x of lista || []) {
+    if (!fin(x?.lat) || !fin(x?.lon) || !valida(x) || !reciente(x.actualizado, ahoraMs)) continue;
+    const km = distanciaKm(lat, lon, x.lat, x.lon);
+    if (km <= maxKm && (!mejor || km < mejor.km)) mejor = { x, km };
+  }
+  return mejor;
+};
+
+// camara: s.oleajeCamara de /prevision ({ propia, nombre, fecha, estimacion }).
+// Solo la cámara PROPIA del spot: la de una playa vecina no mide esta orilla.
+// boyas: BOYAS del mapa ({ nombre, lat, lon, alturaSignificativa,
+// periodoPico, dirOla, tempAgua, actualizado }).
+// estaciones: ESTACIONES_METEO ({ nombre, lat, lon, vv (m/s), dv, pres,
+// prec, actualizado }). horaTexto: ISO -> "HH:MM" en la zona del spot.
+export function medidoAhora({ lat, lon, camara, boyas, estaciones, ahoraMs = Date.now(), horaTexto = (iso) => String(iso).slice(11, 16) }) {
+  if (!fin(lat) || !fin(lon)) return null;
+  const out = {};
+  if (camara?.propia && fin(camara.estimacion) && reciente(camara.fecha, ahoraMs)) {
+    out.ola = { valor: Number(camara.estimacion), nombre: camara.nombre || "", hora: horaTexto(camara.fecha) };
+  }
+  const b = masCercana(boyas, lat, lon, MEDIDO_MAX_KM_BOYA, (x) => fin(x.alturaSignificativa), ahoraMs);
+  if (b) {
+    out.boya = {
+      nombre: b.x.nombre, km: Math.round(b.km), hora: horaTexto(b.x.actualizado),
+      hs: Number(b.x.alturaSignificativa), periodo: fin(b.x.periodoPico) ? Number(b.x.periodoPico) : null,
+      dir: b.x.dirOla || null, agua: fin(b.x.tempAgua) ? Number(b.x.tempAgua) : null,
+    };
+  }
+  const e = masCercana(estaciones, lat, lon, MEDIDO_MAX_KM_ESTACION, (x) => fin(x.vv) || fin(x.pres) || fin(x.prec), ahoraMs);
+  if (e) {
+    out.estacion = {
+      nombre: e.x.nombre, km: Math.round(e.km), hora: horaTexto(e.x.actualizado),
+      viento: fin(e.x.vv) ? Number(e.x.vv) * 3.6 : null, vientoDir: fin(e.x.dv) ? Number(e.x.dv) : null,
+      presion: fin(e.x.pres) ? Number(e.x.pres) : null, lluvia: fin(e.x.prec) ? Number(e.x.prec) : null,
+    };
+  }
+  return Object.keys(out).length ? out : null;
+}
+
 // Resaca de cada hora (mismo cálculo que la nota: mar-de-fondo.js).
 export const resacaHora = (h) => marDeFondo(h?.fondoAltura, h?.fondoPeriodo, h?.fondoCoef);
 const NIVEL_RESACA = { suave: 0, moderada: 1, fuerte: 2, muy_fuerte: 3 };
@@ -134,7 +192,7 @@ export function textoResumen(r, nombreEspecie = (id) => id) {
 
 // bloqueada: sin Premium la fila de la nota sale con candado (Mikel,
 // 2026-11-19: "Candado"); el resto de la hoja es gratis.
-export function htmlTabla(serie, notas, { todos = false, nombreEspecie = (id) => id, bloqueada = false } = {}) {
+export function htmlTabla(serie, notas, { todos = false, nombreEspecie = (id) => id, bloqueada = false, medido = null } = {}) {
   const hitos = hitosMarea(serie);
   const flecha = (a, b, malo = "sube") => {
     if (!fin(a) || !fin(b)) return "";
@@ -147,26 +205,38 @@ export function htmlTabla(serie, notas, { todos = false, nombreEspecie = (id) =>
     const otroDia = h.hora.slice(0, 10) !== serie[0].hora.slice(0, 10);
     return `<th scope="col" class="${i === 0 ? "hp-ahora" : ""}">${i === 0 ? esc(t("hoja.ahora")) : `${hh(h.hora)}h`}<span class="hp-dia">${esc(i === 0 ? t("hoja.modelo") : otroDia ? t("comun.manana") : t("comun.hoy"))}</span></th>`;
   }).join("");
-  const fila = (titulo, celda, extra = false, cls = "") =>
-    `<tr class="${extra ? "hp-extra" : ""} ${cls}"${extra && !todos ? " hidden" : ""}><th scope="row">${titulo}</th>${serie.map((h, i) => `<td class="${i === 0 ? "hp-ahora" : ""}${h.luz === "noche" ? " hp-noche" : ""}">${celda(h, i)}</td>`).join("")}</tr>`;
+  // Columna «Medido» (antes de la de ahora): cada fila dice qué mide y de
+  // dónde sale; sin medida, «—».
+  const md = medido || null;
+  const fuente = (icono, nombre, hora) => `<small>${icono} ${esc(nombre)}${hora ? ` · ${esc(hora)}` : ""}</small>`;
+  const deBoya = (v) => (md?.boya && v !== null && v !== undefined && v !== "" ? `${v}${fuente("⚓", md.boya.nombre, md.boya.hora)}` : "—");
+  const deEstacion = (v) => (md?.estacion && v !== null && v !== undefined && v !== "" ? `${v}${fuente("🌬️", md.estacion.nombre, md.estacion.hora)}` : "—");
+  const fila = (titulo, celda, extra = false, cls = "", celdaMedida = () => "—") =>
+    `<tr class="${extra ? "hp-extra" : ""} ${cls}"${extra && !todos ? " hidden" : ""}><th scope="row">${titulo}</th>${md ? `<td class="hp-medido">${celdaMedida()}</td>` : ""}${serie.map((h, i) => `<td class="${i === 0 ? "hp-ahora" : ""}${h.luz === "noche" ? " hp-noche" : ""}">${celda(h, i)}</td>`).join("")}</tr>`;
   const filas = [
-    fila(esc(t("hoja.f.ola")), (h, i) => (fin(h.ola) ? `${m1(h.ola)} ${i ? flecha(serie[i - 1].ola, h.ola) : ""}` : "—")),
+    fila(esc(t("hoja.f.ola")), (h, i) => (fin(h.ola) ? `${m1(h.ola)} ${i ? flecha(serie[i - 1].ola, h.ola) : ""}` : "—"), false, "",
+      () => (md?.ola ? `~${m1(md.ola.valor)}${fuente("📷", md.ola.nombre, md.ola.hora)}` : "—")),
     fila(esc(t("hoja.f.resaca")), (h) => {
       const r = resacaHora(h);
       return r ? `<span class="hp-res ${r.nivel}">${esc(t(`hoja.resaca.${r.nivel}`))}</span><small>${m1(r.altura)} · ${r.periodo} s</small>` : "—";
     }),
-    fila(esc(t("hoja.f.viento")), (h, i) => (fin(h.viento) ? `${vel(h.viento)} ${esc(I18n.rumbo(h.vientoDir) || "")} ${i ? flecha(serie[i - 1].viento, h.viento) : ""}` : "—")),
+    fila(esc(t("hoja.f.viento")), (h, i) => (fin(h.viento) ? `${vel(h.viento)} ${esc(I18n.rumbo(h.vientoDir) || "")} ${i ? flecha(serie[i - 1].viento, h.viento) : ""}` : "—"), false, "",
+      () => deEstacion(fin(md?.estacion?.viento) ? `${vel(md.estacion.viento)} ${esc(I18n.rumbo(md.estacion.vientoDir) || "")}` : null)),
     fila(esc(t("hoja.f.marea")), (h, i) => {
       if (!fin(h.nivelMar)) return "—";
       if (hitos[i]) return `<b class="hp-hito">${esc(t(`hoja.${hitos[i]}`))}</b><small>${m1(h.nivelMar)}</small>`;
       const prev = serie[i - 1]?.nivelMar;
       return `${m1(h.nivelMar)} ${fin(prev) ? (h.nivelMar > prev ? "↑" : "↓") : ""}`;
     }),
-    fila(esc(t("hoja.f.mar_abierto")), (h) => m1(h.olaMarAbierto), true),
-    fila(esc(t("hoja.f.periodo")), (h) => (fin(h.periodo) ? `${Math.round(h.periodo)} s ${esc(I18n.rumbo(h.dirOla) || "")}` : "—"), true),
-    fila(esc(t("hoja.f.presion")), (h) => (fin(h.presion) ? `${Math.round(h.presion)} hPa` : "—"), true),
-    fila(esc(t("hoja.f.lluvia")), (h) => (fin(h.lluvia) ? (h.lluvia > 0 ? `${I18n.num(h.lluvia, 1)} mm` : "0") : "—"), true),
-    fila(esc(t("hoja.f.agua")), (h) => (fin(h.tempAgua) ? I18n.temp(h.tempAgua) : "—"), true),
+    fila(esc(t("hoja.f.mar_abierto")), (h) => m1(h.olaMarAbierto), true, "", () => deBoya(md?.boya ? m1(md.boya.hs) : null)),
+    fila(esc(t("hoja.f.periodo")), (h) => (fin(h.periodo) ? `${Math.round(h.periodo)} s ${esc(I18n.rumbo(h.dirOla) || "")}` : "—"), true, "",
+      () => deBoya(fin(md?.boya?.periodo) ? `${Math.round(md.boya.periodo)} s ${esc(md.boya.dir || "")}` : null)),
+    fila(esc(t("hoja.f.presion")), (h) => (fin(h.presion) ? `${Math.round(h.presion)} hPa` : "—"), true, "",
+      () => deEstacion(fin(md?.estacion?.presion) ? `${Math.round(md.estacion.presion)} hPa` : null)),
+    fila(esc(t("hoja.f.lluvia")), (h) => (fin(h.lluvia) ? (h.lluvia > 0 ? `${I18n.num(h.lluvia, 1)} mm` : "0") : "—"), true, "",
+      () => deEstacion(fin(md?.estacion?.lluvia) ? (md.estacion.lluvia > 0 ? `${I18n.num(md.estacion.lluvia, 1)} mm` : "0") : null)),
+    fila(esc(t("hoja.f.agua")), (h) => (fin(h.tempAgua) ? I18n.temp(h.tempAgua) : "—"), true, "",
+      () => deBoya(fin(md?.boya?.agua) ? I18n.temp(md.boya.agua) : null)),
     fila(esc(t("hoja.f.luz")), (h) => (h.luz ? esc(t(`hoja.luz.${h.luz}`)) : "—"), true),
     fila(esc(t("hoja.f.nota")), (h, i) => {
       if (bloqueada) return i === 0 ? `<a class="hp-candado" href="/suscripcion">${esc(t("hoja.nota_premium"))}</a>` : '<span class="hp-candado-mini" aria-hidden="true">🔒</span>';
@@ -176,5 +246,6 @@ export function htmlTabla(serie, notas, { todos = false, nombreEspecie = (id) =>
       return `<span class="hp-nota"><b class="${nivelNota(n.nota)}">${n.nota}</b><small>${esc(nombreEspecie(n.especie))}</small></span>`;
     }, false, "hp-fila-nota"),
   ];
-  return `<thead><tr><th scope="col">${esc(t("hoja.f.hora"))}</th>${cab}</tr></thead><tbody>${filas.join("")}</tbody>`;
+  const cabMedido = md ? `<th scope="col" class="hp-medido">${esc(t("hoja.medido"))}<span class="hp-dia">${esc(t("hoja.medido_sub"))}</span></th>` : "";
+  return `<thead><tr><th scope="col">${esc(t("hoja.f.hora"))}</th>${cabMedido}${cab}</tr></thead><tbody>${filas.join("")}</tbody>`;
 }

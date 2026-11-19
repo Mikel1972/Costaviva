@@ -5,6 +5,7 @@ import { readFileSync } from "node:fs";
 import { I18n } from "../assets/js/i18n-modulo.js";
 import {
   serieDesdeAhora, hitosMarea, notasPorHora, resumenTendencia, textoResumen, htmlTabla, HORAS_HOJA,
+  medidoAhora, distanciaKm,
 } from "../assets/js/hoja-prevision.js";
 
 function horas(n = 48, f = () => ({})) {
@@ -90,4 +91,50 @@ test("sin Premium la fila de la nota va con candado y no enseña notas", () => {
   const html = htmlTabla(s, notas, { bloqueada: true });
   assert.match(html, /hp-candado" href="\/suscripcion"/);
   assert.ok(!/>77</.test(html));
+});
+
+// «Medido, ahora» (fase 2): solo datos reales, recientes y cercanos.
+const AHORA = Date.UTC(2026, 10, 19, 18, 0);
+const haceMin = (m) => new Date(AHORA - m * 60e3).toISOString();
+const SOPELANA = { lat: 43.385, lon: -2.99 };
+
+test("medido: cámara propia reciente, boya y estación cercanas", () => {
+  const m = medidoAhora({
+    ...SOPELANA, ahoraMs: AHORA,
+    camara: { propia: true, nombre: "Sopela", fecha: haceMin(40), estimacion: 0.9 },
+    boyas: [
+      { nombre: "AP Bilbao", lat: 43.40, lon: -3.13, alturaSignificativa: 2.1, periodoPico: 12.4, dirOla: "NW", tempAgua: 15.8, actualizado: haceMin(60) },
+      { nombre: "Gijón", lat: 43.62, lon: -5.66, alturaSignificativa: 3, actualizado: haceMin(60) },
+    ],
+    estaciones: [{ nombre: "Bilbao Aeropuerto", lat: 43.298, lon: -2.906, vv: 5, dv: 290, pres: 1014, prec: 0, actualizado: haceMin(30) }],
+  });
+  assert.equal(m.ola.valor, 0.9);
+  assert.equal(m.boya.nombre, "AP Bilbao");
+  assert.equal(m.boya.hs, 2.1);
+  assert.equal(m.estacion.viento, 18);
+  assert.equal(m.estacion.presion, 1014);
+});
+
+test("medido: nada viejo, lejano, de cámara vecina ni inventado", () => {
+  const m = medidoAhora({
+    ...SOPELANA, ahoraMs: AHORA,
+    camara: { propia: false, nombre: "Vecina", fecha: haceMin(10), estimacion: 1 },
+    boyas: [{ nombre: "Vieja", lat: 43.40, lon: -3.13, alturaSignificativa: 2, actualizado: haceMin(4 * 60) },
+            { nombre: "Lejos", lat: 43.62, lon: -5.66, alturaSignificativa: 3, actualizado: haceMin(10) }],
+    estaciones: [{ nombre: "Sin datos", lat: 43.3, lon: -2.9, actualizado: haceMin(10) }],
+  });
+  assert.equal(m, null);
+  assert.ok(Math.abs(distanciaKm(43.385, -2.99, 43.40, -3.13) - 11.4) < 1);
+});
+
+test("tabla con medido: columna antes de la de ahora, con su fuente; sin medida, «—»", () => {
+  const s = horas(25, (k) => ({ ola: 1, viento: 10, vientoDir: 270, nivelMar: Math.sin(k / 2), olaMarAbierto: 2, periodo: 11, dirOla: 300, presion: 1012, lluvia: 0, tempAgua: 15 }));
+  const medido = { boya: { nombre: "AP Bilbao", hora: "17:00", hs: 2.1, periodo: 12.4, dir: "NW", agua: 15.8 } };
+  const html = htmlTabla(s, [], { todos: true, medido });
+  assert.equal((html.match(/<th scope="col"/g) || []).length, 27);
+  assert.ok(html.indexOf("Medido") < html.indexOf("Ahora"));
+  assert.match(html, /⚓ AP Bilbao · 17:00/);
+  assert.equal((html.match(/<td class="hp-medido">—<\/td>/g) || []).length, 8);
+  assert.ok(!/undefined|NaN/.test(html));
+  assert.ok(!/hp-medido/.test(htmlTabla(s, [])));
 });
