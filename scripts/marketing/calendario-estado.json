@@ -1,10 +1,5 @@
 {
   "generadas": {
-    "2026-10-19-reel": {
-      "tipo": "reel-peces",
-      "campana": "20261019-reel-peces-ribadesella",
-      "en": "2026-10-18T21:29:46.164Z"
-    },
     "2026-10-20-post": {
       "tipo": "especies",
       "campana": "20261020-especies-calamar-chipiron",
@@ -199,6 +194,11 @@
       "tipo": "reel-peces",
       "campana": "20261119-reel-peces-ribadeo",
       "en": "2026-11-18T17:34:35.630Z"
+    },
+    "2026-11-19-reel-bf": {
+      "tipo": "reel-black-friday",
+      "campana": "20261119-reel-black-friday",
+      "en": "2026-11-19T03:59:18.484Z"
     }
   },
   "ultimaFuncion": "alarma"
