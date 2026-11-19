@@ -75,6 +75,7 @@
      puede llegar al navegador), ver assets/js/meteo.js. -->
 <script src="/assets/js/meteo.js"></script>
 <script src="/assets/js/nivel-indice.js"></script>
+<script src="/assets/js/relleno-datos.js"></script>
 <!-- Webcams en vídeo en directo de Gipuzkoa (2026-09-14) — HLS, no hace
      falta en Safari (soporte nativo) pero sí en Chrome/Firefox/Edge. -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.6.15/hls.min.js"></script>
@@ -6018,7 +6019,6 @@ async function datosHorariosSpot(s) {
         .catch((e) => { console.warn("Mar con mar de fondo no disponible; sin él:", e.message); return pedirOk("marine", marinoBasico); }),
       pedirOk("forecast", `${coord}&past_days=5&forecast_days=2&hourly=windspeed_10m,winddirection_10m,pressure_msl,precipitation&windspeed_unit=kmh`),
     ]);
-    if (rMar.status === "rejected" && rTiempo.status === "rejected") throw new Error("sin datos horarios");
     if (rMar.status === "rejected") console.warn("Datos de mar no disponibles:", rMar.reason?.message);
     if (rTiempo.status === "rejected") console.warn("Datos de tiempo no disponibles:", rTiempo.reason?.message);
     const marino = rMar.status === "fulfilled" ? rMar.value : { hourly: { time: [] } };
@@ -6063,9 +6063,8 @@ async function datosHorariosSpot(s) {
         tempAgua: marino.hourly.sea_surface_temperature?.[i] ?? null,
       };
     });
-    if (!Object.keys(mar).length && !Object.keys(porHora).length) throw new Error("sin datos horarios");
     const tiempos = [...new Set([...Object.keys(porHora), ...Object.keys(mar)])].sort();
-    const horas = tiempos.map((t) => ({
+    const horasReales = tiempos.map((t) => ({
       hora: t,
       nivelMar: mar[t]?.nivelMar ?? null, ola: mar[t]?.ola ?? null, tempAgua: mar[t]?.tempAgua ?? null,
       olaMarAbierto: mar[t]?.olaMarAbierto ?? null, periodo: mar[t]?.periodo ?? null, dirOla: mar[t]?.dirOla ?? null,
@@ -6073,6 +6072,25 @@ async function datosHorariosSpot(s) {
       viento: porHora[t]?.viento ?? null, vientoDir: porHora[t]?.vientoDir ?? null,
       presion: porHora[t]?.presion ?? null, lluvia: porHora[t]?.lluvia ?? null,
     }));
+    // Lo que falte se rellena con la media de los últimos 5 valores
+    // (assets/js/relleno-datos.js); si no llegó nada, con lo último que
+    // llegó de este spot (localStorage, 3 días como mucho) desde la hora
+    // actual. Solo sin datos ni recuerdo se queda sin horas.
+    const RD = window.RellenoDatos;
+    const ahoraLocal = horaActualISO(zona);
+    const claveRec = `cv_recuerdo_horas_${s.slug}`;
+    let recuerdo = null;
+    try { recuerdo = RD.recuerdoVigente(JSON.parse(localStorage.getItem(claveRec) || "null")); } catch (e) { recuerdo = null; }
+    const horas = horasReales.length ? horasReales : RD.horasVacias(ahoraLocal, 48);
+    if (horasReales.length) {
+      // El recuerdo nuevo conserva el viejo de las variables que hoy faltan.
+      const nuevo = RD.recuerdoDe(horasReales, ahoraLocal);
+      try { localStorage.setItem(claveRec, JSON.stringify({ ...(recuerdo || {}), ...nuevo })); } catch (e) { /* sin almacenamiento */ }
+    }
+    const { estimados } = RD.rellenarHoras(horas, recuerdo);
+    if (!horas.some((h) => RD.CAMPOS.some((c) => Number.isFinite(h[c])))) throw new Error("sin datos horarios");
+    if (estimados.length) console.warn(`Datos estimados (media de los últimos ${RD.N_MEDIA}) en ${s.slug}:`, estimados.join(", "));
+    horas.estimados = estimados;
     return horas;
   })();
   vaCacheHoras.set(s.slug, { t: Date.now(), horas: promesa, abrigo: !!abrigo, orilla: !!orilla, cam: claveCam });
@@ -6215,7 +6233,8 @@ async function pintarIndicePesca(s) {
   }
   // Nota + motivos con flechas (sin puntos ni fuentes), como en la ventana.
   pinta(ind.puntuacion, I18n.t("mapa.ip.mejor_ahora", { modalidad: VA.NOMBRE_MODALIDAD[modalidad], especie: ind.especie.nombre })
-    + `${ind.freza ? I18n.t("mapa.ip.en_freza") : ""}`);
+    + `${ind.freza ? I18n.t("mapa.ip.en_freza") : ""}`
+    + `${horas[i].estimados?.length ? I18n.t("mapa.ip.estimados") : ""}`);
   // Ola peligrosa: nota aparte encima de los motivos, nunca un motivo con
   // flecha ni un tope de la nota (decisión de Mikel, 2026-10-08).
   porqueEl.innerHTML = htmlAvisoOla(ind.avisoOla)
