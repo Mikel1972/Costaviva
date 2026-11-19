@@ -1014,6 +1014,12 @@
    "tipo": "criterio_de_diseno",
    "criterio": "Seguridad desde costa primero: por encima de 2,5 m se avisa ('⚠️ Ola peligrosa desde costa'), sin tope en la nota (decisión de Mikel, 2026-10-08; antes, máximo 20); el factor de oleaje sigue restando. El tramo óptimo por especie es una heurística experta (p. ej. a la lubina le gusta la espuma de la rompiente)."
   },
+  "resaca": {
+   "peso_lo": 0.4,
+   "tipo": "criterio_de_diseno",
+   "fuentes_fisica": "Run-up de Stockdon et al. (2006), Coastal Engineering 53: 573-588, https://doi.org/10.1016/j.coastaleng.2005.12.005",
+   "criterio": "Mar de fondo / resaca (Mikel, 2026-11-19: 'la mar tira mucho hacia adentro [...] debiera estar en la fórmula'). Subida del agua en la orilla (run-up de Stockdon 2006, pendiente genérica 0,1) con la mar de fondo de Open-Meteo (swell_wave_height y swell_wave_period) que llega a la orilla, con el mismo coeficiente de orilla que la ola del spot (assets/js/mar-de-fondo.js). Solo resta: suave 0, moderada -0,3 (0,8-1,3 m), fuerte -0,7 (1,3-1,9 m), muy fuerte -1 (≥1,9 m) y aviso aparte desde 'fuerte'. Umbrales sin norma oficial: criterio de diseño a calibrar con la etiqueta 'la mar tira' de las cámaras."
+  },
   "viento": {
    "peso_lo": 0.24,
    "max_kmh": 30,
@@ -19750,7 +19756,8 @@
    "factores_de_modalidad": [
     "oleaje",
     "viento",
-    "turbidez"
+    "turbidez",
+    "resaca"
    ],
    "marea": {
     "peso_lo": 0.16,
@@ -19800,6 +19807,11 @@
       "texto": "no recomendable en kayak"
      }
     ]
+   },
+   "resaca": {
+    "peso_lo": 0.0,
+    "tipo": "criterio_de_diseno",
+    "criterio": "Desde barco, la mar de fondo larga apenas se nota (ondulación): lo que tira es la rompiente de la orilla, que no afecta a la pesca embarcada."
    }
   },
   "submarina": {
@@ -19808,7 +19820,8 @@
     "oleaje",
     "viento",
     "turbidez",
-    "marea"
+    "marea",
+    "resaca"
    ],
    "solo_de_dia": {
     "tipo": "oficial",
@@ -19882,6 +19895,11 @@
     "peso_lo": 0.0,
     "tipo": "informativo",
     "criterio": "La temperatura del agua se muestra para el buceador, sin recomendar traje (no hay fuente)."
+   },
+   "resaca": {
+    "peso_lo": 0.6,
+    "tipo": "criterio_de_diseno",
+    "criterio": "Buceando desde la orilla, la mar de fondo complica la entrada y la salida por las rocas y levanta arena: pesa más que desde costa."
    }
   }
  },

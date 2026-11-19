@@ -65,6 +65,7 @@
 import { reglasEnAmbito, evaluarReglas, iluminacionLunar, coeficienteMareaAstronomico, usaFrentes } from "./reglas-expertas.js";
 import { contextoReglas } from "./batimetria-calculo.js";
 import { t, I18n } from "./i18n-modulo.js";
+import { marDeFondo, VALOR_RESACA } from "./mar-de-fondo.js";
 
 // Idiomas (2026-10-09): cada motivo lleva su `clave` y sus `vars` (assets/i18n,
 // "va.*") además del `texto` ya traducido al idioma de la app, y `textoEs`, el
@@ -83,6 +84,8 @@ const UNIDADES_MOTIVO = {
   "va.viento.fuerte": { v: "kmh" }, "va.seg.viento": { v: "kmh" }, "va.seg.tope": { v: "kmh" },
   "va.seg.ola": { v: "m" }, "va.marea.nula": { rango: "m" }, "va.ola.plana": { h: "m" }, "va.ola.rango_plana": { h: "m" },
   "va.ola.mar_de": { a: "m_num", b: "m" }, "va.ola.rango": { a: "m_num", b: "m" },
+  "va.resaca.suave": { h: "m" }, "va.resaca.moderada": { h: "m" }, "va.resaca.fuerte": { h: "m" },
+  "va.resaca.muy_fuerte": { h: "m" }, "va.resaca.aviso": { h: "m" },
   "va.temp.pendiente": { t: "c" }, "va.temp.agua": { t: "c" },
   "va.temp.fuera": { t: "c", min: "c_num", max: "c_num" }, "va.temp.optimo": { t: "c", min: "c_num", max: "c_num" },
   "va.temp.en_rango": { t: "c", min: "c_num", max: "c_num" },
@@ -662,6 +665,20 @@ export function calcularVentana(especie, reglasDefecto, horas, contexto) {
       else if (h.ola < omin) v = reglas.oleaje.valor_bajo_minimo ?? -0.3;
       else v = 1;
       anota("oleaje", v, rangoOla(h.ola));
+    }
+
+    // Mar de fondo / resaca (2026-11-19, Mikel: "la mar tira mucho hacia
+    // adentro [...] debiera estar en la fórmula"). Energía de la mar de
+    // fondo que llega a la orilla (assets/js/mar-de-fondo.js): solo resta.
+    // Desde costa y en submarina; en embarcación pesa 0 (reglas_por_modalidad).
+    // Sin dato de mar de fondo no cuenta para la cobertura (series antiguas).
+    const fondo = marDeFondo(h.fondoAltura, h.fondoPeriodo, h.fondoCoef);
+    if (fondo && cuenta("resaca", true) && pesoLogOdds(reglas.resaca)) {
+      const vars = { h: fondo.altura, t: fondo.periodo };
+      anota("resaca", VALOR_RESACA[fondo.nivel] ?? 0, tx(`va.resaca.${fondo.nivel}`, vars));
+      if (fondo.nivel === "fuerte" || fondo.nivel === "muy_fuerte") {
+        notas.push({ factor: "resaca", ...tx("va.resaca.aviso", vars), aporte: 0 });
+      }
     }
 
     // Viento: solo penaliza por encima del máximo cómodo. `dir`: de dónde

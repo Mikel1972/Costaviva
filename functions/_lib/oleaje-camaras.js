@@ -288,6 +288,7 @@ export function filasLecturas(filas) {
         estimacion: est,
         rangoMin: num(f.rango_min_m), rangoMax: num(f.rango_max_m),
         modeloCamara: num(f.modelo_camara_m), errorRel: num(f.error_rel),
+        marAbierto: num(f.mar_abierto_m),
         sustituyeModelo: true,
       };
     }
