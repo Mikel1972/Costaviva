@@ -127,6 +127,7 @@
   .aviso-declarar { margin-top: 6px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--linea); font-size: 12px; color: var(--tinta); }
   .aviso-declarar .acciones { margin-top: 4px; }
   .aviso-declarar .acciones button { background: none; border: none; padding: 0; color: var(--acento); font-size: 12px; cursor: pointer; text-decoration: underline; }
+  .aviso-pendientes { margin: 8px 0; padding: 8px 10px; border-radius: 8px; border: 1px dashed var(--acento); font-size: 13px; }
   .aviso-declarar.hecho { color: var(--ok-texto); border-style: dashed; }
   .aviso-declarar .norma { margin-top: 2px; font-size: 10px; color: var(--tinta-3); }
   .galeria-fotos { display: flex; gap: 6px; margin-top: 8px; overflow-x: auto; }
@@ -237,6 +238,7 @@
     <button id="btnMesSiguiente" aria-label="Mes siguiente" data-i18n-aria-label="diario.mes_siguiente">›</button>
   </div>
 
+  <div class="aviso-pendientes" id="avisoPendientes" role="status" hidden></div>
   <div class="calendario" id="calendario"></div>
 
   <div class="leyenda-dias">
@@ -309,6 +311,7 @@ async function fondoSalida(lat, lon, modalidad) {
 }
 import * as CondSalida from "/assets/js/condiciones-salida.js";
 import * as Regiones from "/assets/js/regiones.js";
+import * as ColaSinConexion from "/assets/js/cola-sin-conexion.js";
 import { declaracionNecesaria, puntoEnEspanaOPortugal, textoParaDeclarar, etiquetaFinActividad, icsRecordatorio, leerDeclaradas, marcarDeclarada } from "/assets/js/declaracion-capturas.js";
 import { solLuna } from "/assets/js/sol-luna.js";
 import { extrasMomento, HOURLY_MARINO_EXTRAS, HOURLY_TIEMPO_EXTRAS } from "/assets/js/extras-momento.js";
@@ -1802,7 +1805,7 @@ async function guardarCaptura(salidaId, fecha, idExistente, ordenFotoBase) {
   // Marea en el momento exacto de la captura (2026-09-19, pedido
   // explícito del usuario) — reutiliza el lat/lon y la fecha ya
   // conocidos de la salida a la que pertenece esta captura.
-  const marea = hora && salidaDelDia
+  const marea = hora && salidaDelDia && navigator.onLine !== false
     ? await mareaEnMomento(salidaDelDia.lat, salidaDelDia.lon, hora, fecha)
     : { altura: null, tendencia: null };
 
@@ -1832,7 +1835,31 @@ async function guardarCaptura(salidaId, fecha, idExistente, ordenFotoBase) {
     // La hora pudo cambiar: se recalculan sus condiciones.
     if (hora && salidaDelDia) completarCaptura(idExistente, salidaDelDia, hora);
   } else {
-    const { data: captura, error } = await supabase.from("capturas").insert(datos).select().single();
+    // Sin cobertura (2026-11-19): se guarda en el móvil con las fotos y se
+    // sube sola al volver la red (assets/js/cola-sin-conexion.js).
+    let captura = null, error = null;
+    if (navigator.onLine !== false) {
+      try { ({ data: captura, error } = await supabase.from("capturas").insert(datos).select().single()); }
+      catch (e) { error = e; }
+    }
+    if (navigator.onLine === false || ColaSinConexion.esFalloDeRed(error)) {
+      const fotos = [];
+      for (const f of archivos) { try { fotos.push(await redimensionarImagen(f)); } catch (e) { console.warn("Foto sin conexión:", e?.message); } }
+      try {
+        await ColaSinConexion.encolar({
+          tipo: "captura", datos, fotos, ordenFotoBase: ordenFotoBase || 0,
+          compartir: document.getElementById("capturaCompartir")?.checked === true,
+          salida: salidaDelDia ? { id: salidaDelDia.id, lat: salidaDelDia.lat, lon: salidaDelDia.lon, fecha: salidaDelDia.fecha, hora_inicio: salidaDelDia.hora_inicio, tipo_salida: salidaDelDia.tipo_salida } : null,
+          fecha,
+        });
+      } catch (e) {
+        mensajeEl.className = "mensaje error"; mensajeEl.textContent = I18n.t("diario.sin_conexion.no_guardada"); btn.disabled = false; return;
+      }
+      alert(I18n.t("diario.sin_conexion.guardada"));
+      pintarAvisoPendientes();
+      abrirDia(fecha, new Date(fecha + "T00:00:00"));
+      return;
+    }
     if (error) { mensajeEl.className = "mensaje error"; mensajeEl.textContent = traducirError(error, I18n.t("diario.error_captura")); btn.disabled = false; return; }
     capturaId = captura.id;
     registrarEvento("crear_captura", { especie, tecnica: tecnica || null });
@@ -1989,8 +2016,16 @@ async function registrarPicada(salida, horaDada = null) {
   const ahora = horaActualISO(Regiones.zonaPorCoordenadas(salida.lat, salida.lon));
   const hora = horaDada || ahora.slice(11, 16);
   const fecha = horaDada ? fechaDePicada(salida, horaDada) : ahora.slice(0, 10);
-  const { data, error } = await supabase.from("picadas_pesca")
-    .insert({ salida_id: salida.id, user_id: usuario.id, hora }).select("id").single();
+  let data = null, error = null;
+  if (navigator.onLine !== false) {
+    try { ({ data, error } = await supabase.from("picadas_pesca").insert({ salida_id: salida.id, user_id: usuario.id, hora }).select("id").single()); }
+    catch (e) { error = e; }
+  }
+  if (navigator.onLine === false || ColaSinConexion.esFalloDeRed(error)) {
+    await ColaSinConexion.encolar({ tipo: "picada", hora, fecha, salida: { id: salida.id, lat: salida.lat, lon: salida.lon, fecha: salida.fecha, hora_inicio: salida.hora_inicio, tipo_salida: salida.tipo_salida } })
+      .then(() => pintarAvisoPendientes()).catch((e) => console.warn("Picada sin conexión:", e?.message));
+    return;
+  }
   if (error || !data) { console.warn("Picada:", error?.message); return; }
   completarPicada(data.id, salida, fecha, hora);
 }
@@ -2533,6 +2568,57 @@ async function abrirDia(iso, fechaObj) {
   panel.classList.add("visible");
 }
 
+// --- Apuntes hechos sin cobertura (2026-11-19) ---
+async function pintarAvisoPendientes() {
+  const el = document.getElementById("avisoPendientes");
+  if (!el) return;
+  let n = 0;
+  try { n = (await ColaSinConexion.listar()).length; } catch { n = 0; }
+  el.hidden = n === 0;
+  el.textContent = n ? "⏳ " + I18n.t("diario.sin_conexion.pendientes", { n }) : "";
+}
+// Lanza si el fallo es de red (se reintenta luego); false si es un error
+// real (el apunte se queda en la cola y se avisa en la consola).
+async function subirApunte(item) {
+  const fallo = (error) => { if (ColaSinConexion.esFalloDeRed(error)) throw error; console.warn("Apunte pendiente:", error?.message); return false; };
+  if (item.tipo === "picada") {
+    const { data, error } = await supabase.from("picadas_pesca").insert({ salida_id: item.salida.id, user_id: usuario.id, hora: item.hora }).select("id").single();
+    if (error || !data) return fallo(error);
+    completarPicada(data.id, item.salida, item.fecha, item.hora);
+    return true;
+  }
+  if (item.tipo === "captura") {
+    const { data: captura, error } = await supabase.from("capturas").insert({ ...item.datos, user_id: usuario.id }).select().single();
+    if (error || !captura) return fallo(error);
+    registrarEvento("crear_captura", { especie: item.datos.especie, tecnica: item.datos.tecnica || null, sin_conexion: true });
+    if (item.datos.hora && item.salida) completarCaptura(captura.id, item.salida, item.datos.hora);
+    if (item.compartir) {
+      await sincronizarCompartida(supabase, { capturaId: captura.id, userId: usuario.id, compartir: true, yaCompartida: false }).catch(() => {});
+    }
+    for (let i = 0; i < (item.fotos || []).length; i++) {
+      try {
+        const path = `${usuario.id}/${crypto.randomUUID()}.jpg`;
+        const { error: errSubida } = await supabase.storage.from("capturas-fotos").upload(path, item.fotos[i], { contentType: "image/jpeg" });
+        if (errSubida) { console.error(errSubida); continue; }
+        await supabase.from("captura_fotos").insert({ captura_id: captura.id, user_id: usuario.id, foto_path: path, orden: (item.ordenFotoBase || 0) + i });
+      } catch (e) { console.error("Foto pendiente:", e); }
+    }
+    return true;
+  }
+  return false;
+}
+async function sincronizarApuntes() {
+  if (navigator.onLine === false) { pintarAvisoPendientes(); return; }
+  const subidos = await ColaSinConexion.subirPendientes(subirApunte);
+  await pintarAvisoPendientes();
+  if (subidos > 0) {
+    await cargarDatos();
+    renderCalendario();
+  }
+}
+window.addEventListener("online", () => { sincronizarApuntes(); });
+
+await sincronizarApuntes();
 await cargarDatos();
 await cargarSpotsUsuario();
 await cargarSpotsRegionPrevia();
