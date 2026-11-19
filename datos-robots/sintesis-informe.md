@@ -1,17 +1,21 @@
-<!-- SINTESIS fecha=2026-11-18 hasta_commit=4a84730994739e4f82eeaa1419de13a08573d64a -->
+<!-- SINTESIS fecha=2026-11-19 hasta_commit=d8da294da1c16c7fb3e3af075e64bb02d8676410 -->
 
 ## 🛠 Trabajo interno (calibración y datos)
-El robot de cámaras caídas pasó el 18-nov (05:42 UTC) con datos frescos de las 03:03 UTC. En rojo: Pasaia (`frame_plano`; su foto es diaria y de noche sale plana, fuente sin cambios), San Vicente (`origen_522`; no se pudo verificar porque la red de la rutina no llega a cantabria.es, ni caída ni arreglada) y la cámara de Cambrils de Windy (`windy_inactiva`). Bakio y Mundaka salen congeladas de noche, sin avería. Orio ya no está en rojo. No se cambió código. Del resto de pasadas (calibración, corrientes, presión, caudal) no hay texto nuevo.
+
+Solo dejó entrada el robot de cámaras caídas (pasada del 2026-11-19, con el estado de las 03:04 UTC). En rojo: Pasaia (`frame_plano`, foto diaria de detectia.net que de noche sale plana), Zumaia (`sin_respuesta`; el stream `GIP_zumaia2` da 404 desde la red de la rutina y no se pudo verificar si es avería o cierre nocturno), Comillas, Suances y San Vicente (`origen_522`, dominio de cantabria.es bloqueado desde la rutina: ni caídas ni arregladas confirmadas), Canet de Berenguer (el 404 fue puntual, ya responde 200) y Cambrils por Windy (`windy_inactiva`, pendiente de buscar otra cámara desde fuera de la rutina). Bakio y Mundaka salen congeladas a las 03:00 UTC, de noche: no es avería. No se cambió código. Para la próxima pasada quedan Zumaia y Cambrils.
 **Cámaras nuevas encontradas:** 0
-**Términos de búsqueda:** el texto no menciona términos de webcams probados; solo queda pendiente buscar otra cámara para el puerto de Cambrils desde fuera de la rutina.
+**Términos de búsqueda:** el texto nuevo no menciona términos de webcams probados ni tipos de dueño nuevos.
 
 ## 🧪 Experiencia de usuario y patrones de uso
-**Robot de experiencia de usuario:** no le tocaba pasar hoy (sin entrada suya).
-**Robot de patrones de uso:** no le tocaba pasar esta semana (sin entrada suya).
+
+**Robot de experiencia de usuario:** no le tocaba pasar hoy (no hay entrada suya).
+**Robot de patrones de uso:** no le tocaba pasar esta semana.
 
 ## 🔎 Trabajo externo (investigación de contenido)
-No hay entradas nuevas de buenas prácticas de otras apps ni de estudios institucionales desde la última síntesis.
+
+Sin entradas nuevas de buenas prácticas de otras apps ni de estudios institucionales.
 **Robot de especies:** no le tocaba pasar hoy.
 
 ## 🆕 Nuevas fuentes encontradas, pendientes de validar
+
 Ninguna fuente nueva desde la última síntesis.
